@@ -13,7 +13,7 @@
 #endif
 
 '' tinyptc api
-declare function ptc_open	cdecl alias "ptc_open"		(byval title as string, _
+declare function ptc_open	cdecl alias "ptc_open"		(byval title as zstring ptr, _
 								 byval width as integer, _
 								 byval height as integer ) as integer
 

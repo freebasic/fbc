@@ -65,7 +65,7 @@ Declare Function install_allegro CDecl Alias "install_allegro" (ByVal system_id 
 Declare Sub allegro_exit CDecl Alias "allegro_exit" ()
 
 Declare Sub get_executable_name CDecl Alias "get_executable_name" (ByVal output As ZString Ptr, ByVal size As Integer)
-Declare Sub allegro_message CDecl Alias "allegro_message" (ByVal s As String, ...)
+Declare Sub allegro_message CDecl Alias "allegro_message" (byval s as zstring ptr, ...)
 
 Declare Sub check_cpu CDecl Alias "check_cpu" ()
 

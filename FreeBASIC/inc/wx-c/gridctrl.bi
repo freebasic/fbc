@@ -11,18 +11,18 @@
 
 #include once "wx-c/wx.bi"
 
-declare function wxGridCellDateTimeRenderer cdecl alias "wxGridCellDateTimeRenderer_ctor" (byval outformat as string, byval informat as string) as wxGridCellDateTimeRenderer ptr
+declare function wxGridCellDateTimeRenderer cdecl alias "wxGridCellDateTimeRenderer_ctor" (byval outformat as zstring ptr, byval informat as zstring ptr) as wxGridCellDateTimeRenderer ptr
 declare sub wxGridCellDateTimeRenderer_dtor cdecl alias "wxGridCellDateTimeRenderer_dtor" (byval self as wxGridCellDateTimeRenderer ptr)
 declare sub wxGridCellDateTimeRenderer_Draw cdecl alias "wxGridCellDateTimeRenderer_Draw" (byval self as wxGridCellDateTimeRenderer ptr, byval grid as wxGrid ptr, byval attr as wxGridCellAttr ptr, byval dc as wxDC ptr, byval rect as wxRect ptr, byval row as integer, byval col as integer, byval isSelected as integer)
 declare sub wxGridCellDateTimeRenderer_GetBestSize cdecl alias "wxGridCellDateTimeRenderer_GetBestSize" (byval self as wxGridCellDateTimeRenderer ptr, byval grid as wxGrid ptr, byval attr as wxGridCellAttr ptr, byval dc as wxDC ptr, byval row as integer, byval col as integer, byval size as wxSize ptr)
 declare function wxGridCellDateTimeRenderer_Clone cdecl alias "wxGridCellDateTimeRenderer_Clone" (byval self as wxGridCellDateTimeRenderer ptr) as wxGridCellRenderer ptr
-declare sub wxGridCellDateTimeRenderer_SetParameters cdecl alias "wxGridCellDateTimeRenderer_SetParameters" (byval self as wxGridCellDateTimeRenderer ptr, byval params as string)
+declare sub wxGridCellDateTimeRenderer_SetParameters cdecl alias "wxGridCellDateTimeRenderer_SetParameters" (byval self as wxGridCellDateTimeRenderer ptr, byval params as zstring ptr)
 declare function wxGridCellEnumRenderer cdecl alias "wxGridCellEnumRenderer_ctor" (byval n as integer, byval choices as byte ptr ptr) as wxGridCellEnumRenderer ptr
 declare sub wxGridCellEnumRenderer_dtor cdecl alias "wxGridCellEnumRenderer_dtor" (byval self as wxGridCellEnumRenderer ptr)
 declare sub wxGridCellEnumRenderer_Draw cdecl alias "wxGridCellEnumRenderer_Draw" (byval self as wxGridCellEnumRenderer ptr, byval grid as wxGrid ptr, byval attr as wxGridCellAttr ptr, byval dc as wxDC ptr, byval rect as wxRect ptr, byval row as integer, byval col as integer, byval isSelected as integer)
 declare sub wxGridCellEnumRenderer_GetBestSize cdecl alias "wxGridCellEnumRenderer_GetBestSize" (byval self as wxGridCellEnumRenderer ptr, byval grid as wxGrid ptr, byval attr as wxGridCellAttr ptr, byval dc as wxDC ptr, byval row as integer, byval col as integer, byval size as wxSize ptr)
 declare function wxGridCellEnumRenderer_Clone cdecl alias "wxGridCellEnumRenderer_Clone" (byval self as wxGridCellEnumRenderer ptr) as wxGridCellRenderer ptr
-declare sub wxGridCellEnumRenderer_SetParameters cdecl alias "wxGridCellEnumRenderer_SetParameters" (byval self as wxGridCellEnumRenderer ptr, byval params as string)
+declare sub wxGridCellEnumRenderer_SetParameters cdecl alias "wxGridCellEnumRenderer_SetParameters" (byval self as wxGridCellEnumRenderer ptr, byval params as zstring ptr)
 
 declare function wxGridCellAutoWrapStringRenderer cdecl alias "wxGridCellAutoWrapStringRenderer_ctor" () as wxGridCellAutoWrapStringRenderer ptr
 declare sub wxGridCellAutoWrapStringRenderer_dtor cdecl alias "wxGridCellAutoWrapStringRenderer_dtor" (byval self as wxGridCellAutoWrapStringRenderer ptr)

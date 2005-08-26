@@ -19,8 +19,8 @@ declare sub dSetMessageHandler cdecl alias "dSetMessageHandler" (byval fn as dMe
 declare function dGetErrorHandler cdecl alias "dGetErrorHandler" () as dMessageFunction ptr
 declare function dGetDebugHandler cdecl alias "dGetDebugHandler" () as dMessageFunction ptr
 declare function dGetMessageHandler cdecl alias "dGetMessageHandler" () as dMessageFunction ptr
-declare sub dError cdecl alias "dError" (byval num as integer, byval msg as string, ...)
-declare sub dDebug cdecl alias "dDebug" (byval num as integer, byval msg as string, ...)
-declare sub dMessage cdecl alias "dMessage" (byval num as integer, byval msg as string, ...)
+declare sub dError cdecl alias "dError" (byval num as integer, byval msg as zstring ptr, ...)
+declare sub dDebug cdecl alias "dDebug" (byval num as integer, byval msg as zstring ptr, ...)
+declare sub dMessage cdecl alias "dMessage" (byval num as integer, byval msg as zstring ptr, ...)
 
 #endif

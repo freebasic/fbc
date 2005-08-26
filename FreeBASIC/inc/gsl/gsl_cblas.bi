@@ -179,6 +179,6 @@ declare sub cblas_cher2k cdecl alias "cblas_cher2k" (byval Order as CBLAS_ORDER,
 declare sub cblas_zhemm cdecl alias "cblas_zhemm" (byval Order as CBLAS_ORDER, byval Side as CBLAS_SIDE, byval Uplo as CBLAS_UPLO, byval M as integer, byval N as integer, byval alpha as any ptr, byval A as any ptr, byval lda as integer, byval B as any ptr, byval ldb as integer, byval beta as any ptr, byval C as any ptr, byval ldc as integer)
 declare sub cblas_zherk cdecl alias "cblas_zherk" (byval Order as CBLAS_ORDER, byval Uplo as CBLAS_UPLO, byval Trans as CBLAS_TRANSPOSE, byval N as integer, byval K as integer, byval alpha as double, byval A as any ptr, byval lda as integer, byval beta as double, byval C as any ptr, byval ldc as integer)
 declare sub cblas_zher2k cdecl alias "cblas_zher2k" (byval Order as CBLAS_ORDER, byval Uplo as CBLAS_UPLO, byval Trans as CBLAS_TRANSPOSE, byval N as integer, byval K as integer, byval alpha as any ptr, byval A as any ptr, byval lda as integer, byval B as any ptr, byval ldb as integer, byval beta as double, byval C as any ptr, byval ldc as integer)
-declare sub cblas_xerbla cdecl alias "cblas_xerbla" (byval p as integer, byval rout as string, byval form as string, ...)
+declare sub cblas_xerbla cdecl alias "cblas_xerbla" (byval p as integer, byval rout as zstring ptr, byval form as zstring ptr, ...)
 
 #endif

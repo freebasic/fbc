@@ -154,8 +154,8 @@ extern import gui_mouse_y as function cdecl() as integer
 extern import gui_mouse_z as function cdecl() as integer
 extern import gui_mouse_b as function cdecl() as integer
 
-declare function gui_textout cdecl alias "gui_textout" ( byval bmp as BITMAP ptr, byval s as string, byval x as integer, byval y as integer, byval _color as integer, byval centre as integer) as integer
-declare function gui_strlen cdecl alias "gui_strlen" ( byval s as string ) as integer
+declare function gui_textout cdecl alias "gui_textout" ( byval bmp as BITMAP ptr, byval s as zstring ptr, byval x as integer, byval y as integer, byval _color as integer, byval centre as integer) as integer
+declare function gui_strlen cdecl alias "gui_strlen" ( byval s as zstring ptr ) as integer
 declare sub position_dialog cdecl alias "position_dialog" ( byval dlg as DIALOG ptr, byval x as integer, byval y as integer )
 declare sub centre_dialog cdecl alias "centre_dialog" ( byval dlg as DiALOG ptr )
 declare sub set_dialog_color cdecl alias "set_dialog_color" ( byval dlg as DIALOG ptr, byval fg as integer, byval bg as integer )
@@ -169,14 +169,14 @@ declare function init_dialog cdecl alias "init_dialog" ( byval d as DIALOG ptr, 
 declare function update_dialog cdecl alias "update_dialog" ( byval player as DIALOG_PLAYER) as integer
 declare function shutdown_dialog cdecl alias "shutdown_dialog" ( byval player as DIALOG_PLAYER Ptr ) as integer
 declare function do_menu cdecl alias "do_menu" ( byval menu as MENU ptr, byval x as integer, byval y as integer ) as integer
-Declare Function alert CDecl Alias "alert" (ByVal s1 as String, ByVal s2 As String, ByVal s3 As String, ByVal b1 As String, ByVal b2 As String, ByVal c1 As String, ByVal c2 As String) As Integer
-declare function alert3 cdecl alias "alert3" ( byval s1 as string, byval s2 as string, byval s3 as string, byval b1 as string, byval b2 as string, byval b3 as string, byval c1 as integer, byval c2 as integer, byval c3 as integer ) as integer
+Declare Function alert CDecl Alias "alert" (byval s1 as zstring ptr, byval s2 as zstring ptr, byval s3 as zstring ptr, byval b1 as zstring ptr, byval b2 as zstring ptr, byval c1 as zstring ptr, byval c2 as zstring ptr) As Integer
+declare function alert3 cdecl alias "alert3" ( byval s1 as zstring ptr, byval s2 as zstring ptr, byval s3 as zstring ptr, byval b1 as zstring ptr, byval b2 as zstring ptr, byval b3 as zstring ptr, byval c1 as integer, byval c2 as integer, byval c3 as integer ) as integer
 
 #define OLD_FILESEL_WIDTH   -1
 #define OLD_FILESEL_HEIGHT  -1
 
-declare function file_select cdecl alias "file_select" ( byval message as string, byval path as byte ptr, byval ext as string ) as integer
-declare function file_select_ex cdecl alias "file_select_ex" ( byval message as string, byval path as byte ptr, byval ext as string, byval size as integer, byval w as integer, byval h as integer ) as integer
+declare function file_select cdecl alias "file_select" ( byval message as zstring ptr, byval path as byte ptr, byval ext as zstring ptr ) as integer
+declare function file_select_ex cdecl alias "file_select_ex" ( byval message as zstring ptr, byval path as byte ptr, byval ext as zstring ptr, byval size as integer, byval w as integer, byval h as integer ) as integer
 
 Declare Function gfx_mode_select CDecl Alias "gfx_mode_select" (ByRef card As Integer, ByRef w As Integer, ByRef h As Integer) As Integer
 Declare Function gfx_mode_select_ex CDecl Alias "gfx_mode_select_ex" (ByVal card As Integer Ptr, ByVal w As Integer Ptr, ByVal h As Integer Ptr, ByVal color_depth As Integer Ptr)

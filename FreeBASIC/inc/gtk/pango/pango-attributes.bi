@@ -23,7 +23,7 @@ end type
 declare function pango_color_get_type cdecl alias "pango_color_get_type" () as GType
 declare function pango_color_copy cdecl alias "pango_color_copy" (byval src as PangoColor ptr) as PangoColor ptr
 declare sub pango_color_free cdecl alias "pango_color_free" (byval color as PangoColor ptr)
-declare function pango_color_parse cdecl alias "pango_color_parse" (byval color as PangoColor ptr, byval spec as string) as gboolean
+declare function pango_color_parse cdecl alias "pango_color_parse" (byval color as PangoColor ptr, byval spec as zstring ptr) as gboolean
 
 type PangoAttribute as _PangoAttribute
 type PangoAttrClass as _PangoAttrClass
@@ -132,12 +132,12 @@ type _PangoAttrFontDesc
 	desc as PangoFontDescription ptr
 end type
 
-declare function pango_attr_type_register cdecl alias "pango_attr_type_register" (byval name as string) as PangoAttrType
+declare function pango_attr_type_register cdecl alias "pango_attr_type_register" (byval name as zstring ptr) as PangoAttrType
 declare function pango_attribute_copy cdecl alias "pango_attribute_copy" (byval attr as PangoAttribute ptr) as PangoAttribute ptr
 declare sub pango_attribute_destroy cdecl alias "pango_attribute_destroy" (byval attr as PangoAttribute ptr)
 declare function pango_attribute_equal cdecl alias "pango_attribute_equal" (byval attr1 as PangoAttribute ptr, byval attr2 as PangoAttribute ptr) as gboolean
 declare function pango_attr_language_new cdecl alias "pango_attr_language_new" (byval language as PangoLanguage ptr) as PangoAttribute ptr
-declare function pango_attr_family_new cdecl alias "pango_attr_family_new" (byval family as string) as PangoAttribute ptr
+declare function pango_attr_family_new cdecl alias "pango_attr_family_new" (byval family as zstring ptr) as PangoAttribute ptr
 declare function pango_attr_foreground_new cdecl alias "pango_attr_foreground_new" (byval red as guint16, byval green as guint16, byval blue as guint16) as PangoAttribute ptr
 declare function pango_attr_background_new cdecl alias "pango_attr_background_new" (byval red as guint16, byval green as guint16, byval blue as guint16) as PangoAttribute ptr
 declare function pango_attr_size_new cdecl alias "pango_attr_size_new" (byval size as integer) as PangoAttribute ptr
@@ -175,6 +175,6 @@ declare sub pango_attr_iterator_destroy cdecl alias "pango_attr_iterator_destroy
 declare function pango_attr_iterator_get cdecl alias "pango_attr_iterator_get" (byval iterator as PangoAttrIterator ptr, byval type as PangoAttrType) as PangoAttribute ptr
 declare sub pango_attr_iterator_get_font cdecl alias "pango_attr_iterator_get_font" (byval iterator as PangoAttrIterator ptr, byval desc as PangoFontDescription ptr, byval language as PangoLanguage ptr ptr, byval extra_attrs as GSList ptr ptr)
 declare function pango_attr_iterator_get_attrs cdecl alias "pango_attr_iterator_get_attrs" (byval iterator as PangoAttrIterator ptr) as GSList ptr
-declare function pango_parse_markup cdecl alias "pango_parse_markup" (byval markup_text as string, byval length as integer, byval accel_marker as gunichar, byval attr_list as PangoAttrList ptr ptr, byval text as byte ptr ptr, byval accel_char as gunichar ptr, byval error as GError ptr ptr) as gboolean
+declare function pango_parse_markup cdecl alias "pango_parse_markup" (byval markup_text as zstring ptr, byval length as integer, byval accel_marker as gunichar, byval attr_list as PangoAttrList ptr ptr, byval text as byte ptr ptr, byval accel_char as gunichar ptr, byval error as GError ptr ptr) as gboolean
 
 #endif

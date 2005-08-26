@@ -14,7 +14,7 @@
 
 declare function wxPrinter cdecl alias "wxPrinter_ctor" (byval data as wxPrintDialogData ptr) as wxPrinter ptr
 declare function wxPrinter_CreateAbortWindow cdecl alias "wxPrinter_CreateAbortWindow" (byval self as wxPrinter ptr, byval parent as wxWindow ptr, byval printout as wxPrintout ptr) as wxWindow ptr
-declare sub wxPrinter_ReportError cdecl alias "wxPrinter_ReportError" (byval self as wxPrinter ptr, byval parent as wxWindow ptr, byval printout as wxPrintout ptr, byval message as string)
+declare sub wxPrinter_ReportError cdecl alias "wxPrinter_ReportError" (byval self as wxPrinter ptr, byval parent as wxWindow ptr, byval printout as wxPrintout ptr, byval message as zstring ptr)
 declare function wxPrinter_GetPrintDialogData cdecl alias "wxPrinter_GetPrintDialogData" (byval self as wxPrinter ptr) as wxPrintDialogData ptr
 declare function wxPrinter_GetAbort cdecl alias "wxPrinter_GetAbort" (byval self as wxPrinter ptr) as integer
 declare function wxPrinter_GetLastError cdecl alias "wxPrinter_GetLastError" (byval self as wxPrinter ptr) as wxPrinterError ptr
@@ -27,7 +27,7 @@ type Virtual_ParamsInt as function (byval as integer) as integer
 type Virtual_OnBeginDocument as function (byval as integer, byval as integer) as integer
 type Virtual_GetPageInfo as sub (byval as integer ptr, byval as integer ptr, byval as integer ptr, byval as integer ptr)
 
-declare function wxPrintout cdecl alias "wxPrintout_ctor" (byval title as string) as wxPrintout ptr
+declare function wxPrintout cdecl alias "wxPrintout_ctor" (byval title as zstring ptr) as wxPrintout ptr
 declare sub wxPrintout_RegisterVirtual cdecl alias "wxPrintout_RegisterVirtual" (byval self as _Printout ptr, byval onBeginDocument as Virtual_OnBeginDocument, byval onEndDocument as Virtual_NoParams, byval onBeginPrinting as Virtual_NoParams, byval onEndPrinting as Virtual_NoParams, byval onPreparePrinting as Virtual_NoParams, byval hasPage as Virtual_ParamsInt, byval onPrintPage as Virtual_ParamsInt, byval getPageInfo as Virtual_GetPageInfo)
 declare function wxPrintout_OnBeginDocument cdecl alias "wxPrintout_OnBeginDocument" (byval self as _Printout ptr, byval startPage as integer, byval endPage as integer) as integer
 declare sub wxPrintout_OnEndDocument cdecl alias "wxPrintout_OnEndDocument" (byval self as _Printout ptr)

@@ -56,10 +56,10 @@ declare function pango_layout_copy cdecl alias "pango_layout_copy" (byval src as
 declare function pango_layout_get_context cdecl alias "pango_layout_get_context" (byval layout as PangoLayout ptr) as PangoContext ptr
 declare sub pango_layout_set_attributes cdecl alias "pango_layout_set_attributes" (byval layout as PangoLayout ptr, byval attrs as PangoAttrList ptr)
 declare function pango_layout_get_attributes cdecl alias "pango_layout_get_attributes" (byval layout as PangoLayout ptr) as PangoAttrList ptr
-declare sub pango_layout_set_text cdecl alias "pango_layout_set_text" (byval layout as PangoLayout ptr, byval text as string, byval length as integer)
+declare sub pango_layout_set_text cdecl alias "pango_layout_set_text" (byval layout as PangoLayout ptr, byval text as zstring ptr, byval length as integer)
 declare function pango_layout_get_text cdecl alias "pango_layout_get_text" (byval layout as PangoLayout ptr) as zstring ptr
-declare sub pango_layout_set_markup cdecl alias "pango_layout_set_markup" (byval layout as PangoLayout ptr, byval markup as string, byval length as integer)
-declare sub pango_layout_set_markup_with_accel cdecl alias "pango_layout_set_markup_with_accel" (byval layout as PangoLayout ptr, byval markup as string, byval length as integer, byval accel_marker as gunichar, byval accel_char as gunichar ptr)
+declare sub pango_layout_set_markup cdecl alias "pango_layout_set_markup" (byval layout as PangoLayout ptr, byval markup as zstring ptr, byval length as integer)
+declare sub pango_layout_set_markup_with_accel cdecl alias "pango_layout_set_markup_with_accel" (byval layout as PangoLayout ptr, byval markup as zstring ptr, byval length as integer, byval accel_marker as gunichar, byval accel_char as gunichar ptr)
 declare sub pango_layout_set_font_description cdecl alias "pango_layout_set_font_description" (byval layout as PangoLayout ptr, byval desc as PangoFontDescription ptr)
 declare function pango_layout_get_font_description cdecl alias "pango_layout_get_font_description" (byval layout as PangoLayout ptr) as PangoFontDescription ptr
 declare sub pango_layout_set_width cdecl alias "pango_layout_set_width" (byval layout as PangoLayout ptr, byval width as integer)

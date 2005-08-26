@@ -57,7 +57,7 @@ declare function gsl_vector_ulong_set_basis cdecl alias "gsl_vector_ulong_set_ba
 declare function gsl_vector_ulong_fread cdecl alias "gsl_vector_ulong_fread" (byval stream as FILE ptr, byval v as gsl_vector_ulong ptr) as integer
 declare function gsl_vector_ulong_fwrite cdecl alias "gsl_vector_ulong_fwrite" (byval stream as FILE ptr, byval v as gsl_vector_ulong ptr) as integer
 declare function gsl_vector_ulong_fscanf cdecl alias "gsl_vector_ulong_fscanf" (byval stream as FILE ptr, byval v as gsl_vector_ulong ptr) as integer
-declare function gsl_vector_ulong_fprintf cdecl alias "gsl_vector_ulong_fprintf" (byval stream as FILE ptr, byval v as gsl_vector_ulong ptr, byval format as string) as integer
+declare function gsl_vector_ulong_fprintf cdecl alias "gsl_vector_ulong_fprintf" (byval stream as FILE ptr, byval v as gsl_vector_ulong ptr, byval format as zstring ptr) as integer
 declare function gsl_vector_ulong_memcpy cdecl alias "gsl_vector_ulong_memcpy" (byval dest as gsl_vector_ulong ptr, byval src as gsl_vector_ulong ptr) as integer
 declare function gsl_vector_ulong_reverse cdecl alias "gsl_vector_ulong_reverse" (byval v as gsl_vector_ulong ptr) as integer
 declare function gsl_vector_ulong_swap cdecl alias "gsl_vector_ulong_swap" (byval v as gsl_vector_ulong ptr, byval w as gsl_vector_ulong ptr) as integer

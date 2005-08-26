@@ -1,61 +1,47 @@
-' OpenAL                                                            15/02/2005
-' ----------------------------------------------------------------------------
-' Header port to FreeBASIC by Chris Davies [shiftLynx].
-'
-' c.g.davies@gmail.com
-' http://www.cdsoft.co.uk/
-'
-'
+''
+''
+'' alctypes -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __alctypes_bi__
+#define __alctypes_bi__
 
-#ifndef ALCTYPES_BI
-#define ALCTYPES_BI
-
-
+type ALCdevice as any
+type ALCcontext as any
+type ALCenum as integer
 type ALCboolean as byte
-type ALCbyte    as byte
-type ALCubyte   as ubyte
-type ALCshort   as short
-type ALCushort  as ushort
-type ALCuint    as uinteger
-type ALCint     as integer
-type ALCfloat   as single
-type ALCdouble  as double
-type ALCsizei   as unsigned long
-type ALCvoid    as any
-type ALCenum    as integer
+type ALCbyte as byte
+type ALCubyte as ubyte
+type ALCshort as short
+type ALCushort as ushort
+type ALCuint as uinteger
+type ALCint as integer
+type ALCfloat as single
+type ALCdouble as double
+type ALCsizei as uinteger
+type ALCvoid as any
 
+#define ALC_INVALID 0
+#define ALC_FALSE 0
+#define ALC_TRUE 1
+#define ALC_FREQUENCY &h1007
+#define ALC_REFRESH &h1008
+#define ALC_SYNC &h1009
+#define ALC_NO_ERROR 0
+#define ALC_INVALID_DEVICE &hA001
+#define ALC_INVALID_CONTEXT &hA002
+#define ALC_INVALID_ENUM &hA003
+#define ALC_INVALID_VALUE &hA004
+#define ALC_OUT_OF_MEMORY &hA005
+#define ALC_DEFAULT_DEVICE_SPECIFIER &h1004
+#define ALC_DEVICE_SPECIFIER &h1005
+#define ALC_EXTENSIONS &h1006
+#define ALC_MAJOR_VERSION &h1000
+#define ALC_MINOR_VERSION &h1001
+#define ALC_ATTRIBUTES_SIZE &h1002
+#define ALC_ALL_ATTRIBUTES &h1003
 
-#defineALC_INVALID     -1
-
-' Boolean Defs
-#defineALC_FALSE       0
-#defineALC_TRUE        1
-
-' NoError Def
-#defineALC_NO_ERROR          ALC_FALSE
-
-#defineALC_MAJOR_VERSION     &H1000
-#defineALC_MINOR_VERSION     &H1001
-#defineALC_ATTRIBUTES_SIZE   &H1002
-#defineALC_ALL_ATTRIBUTES    &H1003
-
-#defineALC_DEFAULT_DEVICE_SPECIFIER      &H1004
-#defineALC_DEVICE_SPECIFIER              &H1005
-#defineALC_EXTENSIONS                    &H1006
-
-#defineALC_FREQUENCY                     &H1007
-#defineALC_REFRESH                       &H1008
-#defineALC_SYNC                          &H1009
-
-
-' Error Messages (Invalid XXXX)
-#defineALC_INVALID_DEVICE                &HA001
-#defineALC_INVALID_CONTEXT               &HA002
-#defineALC_INVALID_ENUM                  &HA003
-#defineALC_INVALID_VALUE                 &HA004
-
-
-' Out-of-memory
-#defineALC_OUT_OF_MEMORY                 &HA005
-
-#endif      ' ndef ALCTYPES_BI
+#endif

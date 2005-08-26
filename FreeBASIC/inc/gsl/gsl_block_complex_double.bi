@@ -25,11 +25,11 @@ declare sub gsl_block_complex_free cdecl alias "gsl_block_complex_free" (byval b
 declare function gsl_block_complex_fread cdecl alias "gsl_block_complex_fread" (byval stream as FILE ptr, byval b as gsl_block_complex ptr) as integer
 declare function gsl_block_complex_fwrite cdecl alias "gsl_block_complex_fwrite" (byval stream as FILE ptr, byval b as gsl_block_complex ptr) as integer
 declare function gsl_block_complex_fscanf cdecl alias "gsl_block_complex_fscanf" (byval stream as FILE ptr, byval b as gsl_block_complex ptr) as integer
-declare function gsl_block_complex_fprintf cdecl alias "gsl_block_complex_fprintf" (byval stream as FILE ptr, byval b as gsl_block_complex ptr, byval format as string) as integer
+declare function gsl_block_complex_fprintf cdecl alias "gsl_block_complex_fprintf" (byval stream as FILE ptr, byval b as gsl_block_complex ptr, byval format as zstring ptr) as integer
 declare function gsl_block_complex_raw_fread cdecl alias "gsl_block_complex_raw_fread" (byval stream as FILE ptr, byval b as double ptr, byval n as integer, byval stride as integer) as integer
 declare function gsl_block_complex_raw_fwrite cdecl alias "gsl_block_complex_raw_fwrite" (byval stream as FILE ptr, byval b as double ptr, byval n as integer, byval stride as integer) as integer
 declare function gsl_block_complex_raw_fscanf cdecl alias "gsl_block_complex_raw_fscanf" (byval stream as FILE ptr, byval b as double ptr, byval n as integer, byval stride as integer) as integer
-declare function gsl_block_complex_raw_fprintf cdecl alias "gsl_block_complex_raw_fprintf" (byval stream as FILE ptr, byval b as double ptr, byval n as integer, byval stride as integer, byval format as string) as integer
+declare function gsl_block_complex_raw_fprintf cdecl alias "gsl_block_complex_raw_fprintf" (byval stream as FILE ptr, byval b as double ptr, byval n as integer, byval stride as integer, byval format as zstring ptr) as integer
 declare function gsl_block_complex_size cdecl alias "gsl_block_complex_size" (byval b as gsl_block_complex ptr) as integer
 declare function gsl_block_complex_data cdecl alias "gsl_block_complex_data" (byval b as gsl_block_complex ptr) as double ptr
 

@@ -16,8 +16,8 @@
 
 declare sub gsl_sort_vector_char cdecl alias "gsl_sort_vector_char" (byval v as gsl_vector_char ptr)
 declare function gsl_sort_vector_char_index cdecl alias "gsl_sort_vector_char_index" (byval p as gsl_permutation ptr, byval v as gsl_vector_char ptr) as integer
-declare function gsl_sort_vector_char_smallest cdecl alias "gsl_sort_vector_char_smallest" (byval dest as string, byval k as integer, byval v as gsl_vector_char ptr) as integer
-declare function gsl_sort_vector_char_largest cdecl alias "gsl_sort_vector_char_largest" (byval dest as string, byval k as integer, byval v as gsl_vector_char ptr) as integer
+declare function gsl_sort_vector_char_smallest cdecl alias "gsl_sort_vector_char_smallest" (byval dest as zstring ptr, byval k as integer, byval v as gsl_vector_char ptr) as integer
+declare function gsl_sort_vector_char_largest cdecl alias "gsl_sort_vector_char_largest" (byval dest as zstring ptr, byval k as integer, byval v as gsl_vector_char ptr) as integer
 declare function gsl_sort_vector_char_smallest_index cdecl alias "gsl_sort_vector_char_smallest_index" (byval p as integer ptr, byval k as integer, byval v as gsl_vector_char ptr) as integer
 declare function gsl_sort_vector_char_largest_index cdecl alias "gsl_sort_vector_char_largest_index" (byval p as integer ptr, byval k as integer, byval v as gsl_vector_char ptr) as integer
 

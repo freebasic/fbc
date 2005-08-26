@@ -63,13 +63,13 @@ end type
 #define DIRECTORY &H08
 #define DRIVE	  &H10
 
-declare function	file_tree_walk	cdecl alias "__file_tree_walk"	(byval dir as string, byval fn as function(byval path as string, byval ff as ffblk ptr) as integer) as integer
-declare function	findfirst	cdecl alias "findfirst"		(byval pathname as string, byval ffblk_ as ffblk ptr, byval attrib as integer) as integer
+declare function	file_tree_walk	cdecl alias "__file_tree_walk"	(byval dir as zstring ptr, byval fn as function(byval path as zstring ptr, byval ff as ffblk ptr) as integer) as integer
+declare function	findfirst	cdecl alias "findfirst"		(byval pathname as zstring ptr, byval ffblk_ as ffblk ptr, byval attrib as integer) as integer
 declare function	findnext	cdecl alias "findnext"		(byval ffblk_ as ffblk ptr) as integer
-declare function	fnmerge		cdecl alias "fnmerge"		(byval spath as string, byval sdrive as string, byval sdir as string, byval sname as string, byval ext as string) as integer
-declare function	fnsplit		cdecl alias "fnsplit"		(byval spath as string, byval sdrive as string, byval sdir as string, byval sname as string, byval ext as string) as integer
+declare function	fnmerge		cdecl alias "fnmerge"		(byval spath as zstring ptr, byval sdrive as zstring ptr, byval sdir as zstring ptr, byval sname as zstring ptr, byval ext as zstring ptr) as integer
+declare function	fnsplit		cdecl alias "fnsplit"		(byval spath as zstring ptr, byval sdrive as zstring ptr, byval sdir as zstring ptr, byval sname as zstring ptr, byval ext as zstring ptr) as integer
 declare function	getdisk		cdecl alias "getdisk"		() as integer
-declare function	searchpath	cdecl alias "searchpath"	(byval program as string) as byte ptr
+declare function	searchpath	cdecl alias "searchpath"	(byval program as zstring ptr) as byte ptr
 declare function	setdisk		cdecl alias "setdisk"		(byval sdrive as integer) as integer
 
 #endif ' !__dj_include_dir.h_

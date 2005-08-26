@@ -25,11 +25,11 @@ declare sub gsl_block_free cdecl alias "gsl_block_free" (byval b as gsl_block pt
 declare function gsl_block_fread cdecl alias "gsl_block_fread" (byval stream as FILE ptr, byval b as gsl_block ptr) as integer
 declare function gsl_block_fwrite cdecl alias "gsl_block_fwrite" (byval stream as FILE ptr, byval b as gsl_block ptr) as integer
 declare function gsl_block_fscanf cdecl alias "gsl_block_fscanf" (byval stream as FILE ptr, byval b as gsl_block ptr) as integer
-declare function gsl_block_fprintf cdecl alias "gsl_block_fprintf" (byval stream as FILE ptr, byval b as gsl_block ptr, byval format as string) as integer
+declare function gsl_block_fprintf cdecl alias "gsl_block_fprintf" (byval stream as FILE ptr, byval b as gsl_block ptr, byval format as zstring ptr) as integer
 declare function gsl_block_raw_fread cdecl alias "gsl_block_raw_fread" (byval stream as FILE ptr, byval b as double ptr, byval n as integer, byval stride as integer) as integer
 declare function gsl_block_raw_fwrite cdecl alias "gsl_block_raw_fwrite" (byval stream as FILE ptr, byval b as double ptr, byval n as integer, byval stride as integer) as integer
 declare function gsl_block_raw_fscanf cdecl alias "gsl_block_raw_fscanf" (byval stream as FILE ptr, byval b as double ptr, byval n as integer, byval stride as integer) as integer
-declare function gsl_block_raw_fprintf cdecl alias "gsl_block_raw_fprintf" (byval stream as FILE ptr, byval b as double ptr, byval n as integer, byval stride as integer, byval format as string) as integer
+declare function gsl_block_raw_fprintf cdecl alias "gsl_block_raw_fprintf" (byval stream as FILE ptr, byval b as double ptr, byval n as integer, byval stride as integer, byval format as zstring ptr) as integer
 declare function gsl_block_size cdecl alias "gsl_block_size" (byval b as gsl_block ptr) as integer
 declare function gsl_block_data cdecl alias "gsl_block_data" (byval b as gsl_block ptr) as double ptr
 

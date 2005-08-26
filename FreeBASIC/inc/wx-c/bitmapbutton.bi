@@ -16,9 +16,9 @@ type Virtual_OnSetBitmap as sub ( )
 
 declare function wxBitmapButton cdecl alias "wxBitmapButton_ctor" () as wxBitmapButton ptr
 declare sub wxBitmapButton_RegisterVirtual cdecl alias "wxBitmapButton_RegisterVirtual" (byval self as _BitmapButton ptr, byval onSetBitmap as Virtual_OnSetBitmap)
-declare function wxBitmapButton_Create cdecl alias "wxBitmapButton_Create" (byval self as _BitmapButton ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval bitmap as wxBitmap ptr, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval validator as wxValidator ptr, byval name as string) as integer
+declare function wxBitmapButton_Create cdecl alias "wxBitmapButton_Create" (byval self as _BitmapButton ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval bitmap as wxBitmap ptr, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval validator as wxValidator ptr, byval name as zstring ptr) as integer
 declare sub wxBitmapButton_OnSetBitmap cdecl alias "wxBitmapButton_OnSetBitmap" (byval self as _BitmapButton ptr)
-declare sub wxBitmapButton_SetLabel cdecl alias "wxBitmapButton_SetLabel" (byval self as _BitmapButton ptr, byval label as string)
+declare sub wxBitmapButton_SetLabel cdecl alias "wxBitmapButton_SetLabel" (byval self as _BitmapButton ptr, byval label as zstring ptr)
 declare function wxBitmapButton_GetLabel cdecl alias "wxBitmapButton_GetLabel" (byval self as _BitmapButton ptr) as wxString ptr
 declare function wxBitmapButton_Enable cdecl alias "wxBitmapButton_Enable" (byval self as _BitmapButton ptr, byval enable as integer) as integer
 declare sub wxBitmapButton_SetBitmapLabel cdecl alias "wxBitmapButton_SetBitmapLabel" (byval self as _BitmapButton ptr, byval bitmap as wxBitmap ptr)

@@ -18,12 +18,12 @@ declare sub xsltSetXIncludeDefault cdecl alias "xsltSetXIncludeDefault" (byval x
 declare function xsltGetXIncludeDefault cdecl alias "xsltGetXIncludeDefault" () as integer
 declare function xsltNewTransformContext cdecl alias "xsltNewTransformContext" (byval style as xsltStylesheetPtr, byval doc as xmlDocPtr) as xsltTransformContextPtr
 declare sub xsltFreeTransformContext cdecl alias "xsltFreeTransformContext" (byval ctxt as xsltTransformContextPtr)
-declare function xsltApplyStylesheetUser cdecl alias "xsltApplyStylesheetUser" (byval style as xsltStylesheetPtr, byval doc as xmlDocPtr, byval params as zstring ptr ptr, byval output as string, byval profile as FILE ptr, byval userCtxt as xsltTransformContextPtr) as xmlDocPtr
+declare function xsltApplyStylesheetUser cdecl alias "xsltApplyStylesheetUser" (byval style as xsltStylesheetPtr, byval doc as xmlDocPtr, byval params as zstring ptr ptr, byval output as zstring ptr, byval profile as FILE ptr, byval userCtxt as xsltTransformContextPtr) as xmlDocPtr
 declare sub xsltApplyStripSpaces cdecl alias "xsltApplyStripSpaces" (byval ctxt as xsltTransformContextPtr, byval node as xmlNodePtr)
 declare function xsltApplyStylesheet cdecl alias "xsltApplyStylesheet" (byval style as xsltStylesheetPtr, byval doc as xmlDocPtr, byval params as zstring ptr ptr) as xmlDocPtr
 declare function xsltProfileStylesheet cdecl alias "xsltProfileStylesheet" (byval style as xsltStylesheetPtr, byval doc as xmlDocPtr, byval params as zstring ptr ptr, byval output as FILE ptr) as xmlDocPtr
-declare function xsltRunStylesheet cdecl alias "xsltRunStylesheet" (byval style as xsltStylesheetPtr, byval doc as xmlDocPtr, byval params as zstring ptr ptr, byval output as string, byval SAX as xmlSAXHandlerPtr, byval IObuf as xmlOutputBufferPtr) as integer
-declare function xsltRunStylesheetUser cdecl alias "xsltRunStylesheetUser" (byval style as xsltStylesheetPtr, byval doc as xmlDocPtr, byval params as zstring ptr ptr, byval output as string, byval SAX as xmlSAXHandlerPtr, byval IObuf as xmlOutputBufferPtr, byval profile as FILE ptr, byval userCtxt as xsltTransformContextPtr) as integer
+declare function xsltRunStylesheet cdecl alias "xsltRunStylesheet" (byval style as xsltStylesheetPtr, byval doc as xmlDocPtr, byval params as zstring ptr ptr, byval output as zstring ptr, byval SAX as xmlSAXHandlerPtr, byval IObuf as xmlOutputBufferPtr) as integer
+declare function xsltRunStylesheetUser cdecl alias "xsltRunStylesheetUser" (byval style as xsltStylesheetPtr, byval doc as xmlDocPtr, byval params as zstring ptr ptr, byval output as zstring ptr, byval SAX as xmlSAXHandlerPtr, byval IObuf as xmlOutputBufferPtr, byval profile as FILE ptr, byval userCtxt as xsltTransformContextPtr) as integer
 declare sub xsltApplyOneTemplate cdecl alias "xsltApplyOneTemplate" (byval ctxt as xsltTransformContextPtr, byval node as xmlNodePtr, byval list as xmlNodePtr, byval templ as xsltTemplatePtr, byval params as xsltStackElemPtr)
 declare sub xsltDocumentElem cdecl alias "xsltDocumentElem" (byval ctxt as xsltTransformContextPtr, byval node as xmlNodePtr, byval inst as xmlNodePtr, byval comp as xsltStylePreCompPtr)
 declare sub xsltSort cdecl alias "xsltSort" (byval ctxt as xsltTransformContextPtr, byval node as xmlNodePtr, byval inst as xmlNodePtr, byval comp as xsltStylePreCompPtr)
@@ -43,7 +43,7 @@ declare sub xsltChoose cdecl alias "xsltChoose" (byval ctxt as xsltTransformCont
 declare sub xsltIf cdecl alias "xsltIf" (byval ctxt as xsltTransformContextPtr, byval node as xmlNodePtr, byval inst as xmlNodePtr, byval comp as xsltStylePreCompPtr)
 declare sub xsltForEach cdecl alias "xsltForEach" (byval ctxt as xsltTransformContextPtr, byval node as xmlNodePtr, byval inst as xmlNodePtr, byval comp as xsltStylePreCompPtr)
 declare sub xsltRegisterAllElement cdecl alias "xsltRegisterAllElement" (byval ctxt as xsltTransformContextPtr)
-declare function xsltCopyTextString cdecl alias "xsltCopyTextString" (byval ctxt as xsltTransformContextPtr, byval target as xmlNodePtr, byval string as string, byval noescape as integer) as xmlNodePtr
+declare function xsltCopyTextString cdecl alias "xsltCopyTextString" (byval ctxt as xsltTransformContextPtr, byval target as xmlNodePtr, byval string as zstring ptr, byval noescape as integer) as xmlNodePtr
 declare sub xslHandleDebugger cdecl alias "xslHandleDebugger" (byval cur as xmlNodePtr, byval node as xmlNodePtr, byval templ as xsltTemplatePtr, byval ctxt as xsltTransformContextPtr)
 
 #endif

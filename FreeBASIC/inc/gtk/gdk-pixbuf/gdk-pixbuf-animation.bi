@@ -17,7 +17,7 @@ type GdkPixbufAnimation as _GdkPixbufAnimation
 type GdkPixbufAnimationIter as _GdkPixbufAnimationIter
 
 declare function gdk_pixbuf_animation_get_type cdecl alias "gdk_pixbuf_animation_get_type" () as GType
-declare function gdk_pixbuf_animation_new_from_file cdecl alias "gdk_pixbuf_animation_new_from_file" (byval filename as string, byval error as GError ptr ptr) as GdkPixbufAnimation ptr
+declare function gdk_pixbuf_animation_new_from_file cdecl alias "gdk_pixbuf_animation_new_from_file" (byval filename as zstring ptr, byval error as GError ptr ptr) as GdkPixbufAnimation ptr
 declare function gdk_pixbuf_animation_ref cdecl alias "gdk_pixbuf_animation_ref" (byval animation as GdkPixbufAnimation ptr) as GdkPixbufAnimation ptr
 declare sub gdk_pixbuf_animation_unref cdecl alias "gdk_pixbuf_animation_unref" (byval animation as GdkPixbufAnimation ptr)
 declare function gdk_pixbuf_animation_get_width cdecl alias "gdk_pixbuf_animation_get_width" (byval animation as GdkPixbufAnimation ptr) as integer

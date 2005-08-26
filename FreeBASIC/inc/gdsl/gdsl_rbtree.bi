@@ -15,7 +15,7 @@
 
 type gdsl_rbtree_t as any ptr
 
-declare function gdsl_rbtree_alloc cdecl alias "gdsl_rbtree_alloc" (byval NAME as string, byval ALLOC_F as gdsl_alloc_func_t, byval FREE_F as gdsl_free_func_t, byval COMP_F as gdsl_compare_func_t) as gdsl_rbtree_t
+declare function gdsl_rbtree_alloc cdecl alias "gdsl_rbtree_alloc" (byval NAME as zstring ptr, byval ALLOC_F as gdsl_alloc_func_t, byval FREE_F as gdsl_free_func_t, byval COMP_F as gdsl_compare_func_t) as gdsl_rbtree_t
 declare sub gdsl_rbtree_free cdecl alias "gdsl_rbtree_free" (byval T as gdsl_rbtree_t)
 declare sub gdsl_rbtree_flush cdecl alias "gdsl_rbtree_flush" (byval T as gdsl_rbtree_t)
 declare function gdsl_rbtree_get_name cdecl alias "gdsl_rbtree_get_name" (byval T as gdsl_rbtree_t) as zstring ptr
@@ -23,7 +23,7 @@ declare function gdsl_rbtree_is_empty cdecl alias "gdsl_rbtree_is_empty" (byval 
 declare function gdsl_rbtree_get_root cdecl alias "gdsl_rbtree_get_root" (byval T as gdsl_rbtree_t) as gdsl_element_t
 declare function gdsl_rbtree_get_size cdecl alias "gdsl_rbtree_get_size" (byval T as gdsl_rbtree_t) as ulong
 declare function gdsl_rbtree_height cdecl alias "gdsl_rbtree_height" (byval T as gdsl_rbtree_t) as ulong
-declare function gdsl_rbtree_set_name cdecl alias "gdsl_rbtree_set_name" (byval T as gdsl_rbtree_t, byval NEW_NAME as string) as gdsl_rbtree_t
+declare function gdsl_rbtree_set_name cdecl alias "gdsl_rbtree_set_name" (byval T as gdsl_rbtree_t, byval NEW_NAME as zstring ptr) as gdsl_rbtree_t
 declare function gdsl_rbtree_insert cdecl alias "gdsl_rbtree_insert" (byval T as gdsl_rbtree_t, byval VALUE as any ptr, byval RESULT as integer ptr) as gdsl_element_t
 declare function gdsl_rbtree_remove cdecl alias "gdsl_rbtree_remove" (byval T as gdsl_rbtree_t, byval VALUE as any ptr) as gdsl_element_t
 declare function gdsl_rbtree_delete cdecl alias "gdsl_rbtree_delete" (byval T as gdsl_rbtree_t, byval VALUE as any ptr) as gdsl_rbtree_t

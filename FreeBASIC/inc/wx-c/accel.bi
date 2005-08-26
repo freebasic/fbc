@@ -20,7 +20,7 @@ declare function wxAcceleratorEntry_GetFlags cdecl alias "wxAcceleratorEntry_Get
 declare function wxAcceleratorEntry_GetKeyCode cdecl alias "wxAcceleratorEntry_GetKeyCode" (byval self as wxAcceleratorEntry ptr) as integer
 declare function wxAcceleratorEntry_GetCommand cdecl alias "wxAcceleratorEntry_GetCommand" (byval self as wxAcceleratorEntry ptr) as integer
 declare function wxAcceleratorEntry_GetMenuItem cdecl alias "wxAcceleratorEntry_GetMenuItem" (byval self as wxAcceleratorEntry ptr) as wxMenuItem ptr
-declare function wxAcceleratorEntry_GetAccelFromString cdecl alias "wxAcceleratorEntry_GetAccelFromString" (byval label as string) as wxAcceleratorEntry ptr
+declare function wxAcceleratorEntry_GetAccelFromString cdecl alias "wxAcceleratorEntry_GetAccelFromString" (byval label as zstring ptr) as wxAcceleratorEntry ptr
 declare function wxAcceleratorTable cdecl alias "wxAcceleratorTable_ctor" () as wxAcceleratorTable ptr
 declare function wxAcceleratorTable_Ok cdecl alias "wxAcceleratorTable_Ok" (byval self as wxAcceleratorTable ptr) as integer
 

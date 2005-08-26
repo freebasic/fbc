@@ -160,11 +160,11 @@ end enum
 #define SDL_PHYSPAL &h02
 
 declare function SDL_VideoInit SDLCALL alias "SDL_VideoInit" _
-   (byval driver_name as string, byval flags as uint32) as integer
+   (byval driver_name as zstring ptr, byval flags as uint32) as integer
 declare sub SDL_VideoQuit SDLCALL alias "SDL_VideoQuit" ()
 
 declare function SDL_VideoDriverName SDLCALL alias "SDL_VideoDriverName" _
-   (byval namebuf as string, byval maxlen as integer) as zstring ptr
+   (byval namebuf as zstring ptr, byval maxlen as integer) as zstring ptr
 
 declare function SDL_GetVideoSurface SDLCALL alias "SDL_GetVideoSurface" _
    () as SDL_Surface ptr
@@ -314,10 +314,10 @@ declare sub SDL_FreeYUVOverlay SDLCALL alias "SDL_FreeYUVOverlay" _
    (byval overlay as SDL_Overlay ptr)
 
 declare function SDL_GL_LoadLibrary SDLCALL alias "SDL_GL_LoadLibrary" _
-   (byval path as string) as integer
+   (byval path as zstring ptr) as integer
 
 declare function SDL_GL_GetProcAddress SDLCALL alias "SDL_GL_GetProcAdress" _
-   (byval proc as string) as any ptr
+   (byval proc as zstring ptr) as any ptr
 
 declare function SDL_GL_SetAttribute SDLCALL alias "SDL_GL_SetAttribute" _
    (byval attr as SDL_GLattr, byval value as integer) as integer
@@ -333,7 +333,7 @@ declare sub SDL_GL_Lock SDLCALL alias "SDL_GL_Lock" ()
 declare sub SDL_GL_Unlock SDLCALL alias "SDL_GL_Unlock" ()
 
 declare sub SDL_WM_SetCaption SDLCALL alias "SDL_WM_SetCaption" _
-   (byval title as string, byval icon as string)
+   (byval title as zstring ptr, byval icon as zstring ptr)
 declare sub SDL_WM_GetCaption SDLCALL alias "SDL_WM_GetCaption" _
    (byval title as byte ptr, byval icon as byte ptr)
 

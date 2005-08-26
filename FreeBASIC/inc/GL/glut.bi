@@ -175,11 +175,11 @@
 
 declare sub glutInit alias "glutInit" (byref argcp as integer, byref argv as byte ptr)
 declare sub glutInitDisplayMode alias "glutInitDisplayMode" (byval mode as uinteger)
-declare sub glutInitDisplayString alias "glutInitDisplayString" (byval string as string)
+declare sub glutInitDisplayString alias "glutInitDisplayString" (byval string as zstring ptr)
 declare sub glutInitWindowPosition alias "glutInitWindowPosition" (byval x as integer, byval y as integer)
 declare sub glutInitWindowSize alias "glutInitWindowSize" (byval width as integer, byval height as integer)
 declare sub glutMainLoop alias "glutMainLoop" ()
-declare function glutCreateWindow alias "glutCreateWindow" (byval title as string) as integer
+declare function glutCreateWindow alias "glutCreateWindow" (byval title as zstring ptr) as integer
 declare function glutCreateSubWindow alias "glutCreateSubWindow" (byval win as integer, byval x as integer, byval y as integer, byval width as integer, byval height as integer) as integer
 declare sub glutDestroyWindow alias "glutDestroyWindow" (byval win as integer)
 declare sub glutPostRedisplay alias "glutPostRedisplay" ()
@@ -187,8 +187,8 @@ declare sub glutPostWindowRedisplay alias "glutPostWindowRedisplay" (byval win a
 declare sub glutSwapBuffers alias "glutSwapBuffers" ()
 declare function glutGetWindow alias "glutGetWindow" () as integer
 declare sub glutSetWindow alias "glutSetWindow" (byval win as integer)
-declare sub glutSetWindowTitle alias "glutSetWindowTitle" (byval title as string)
-declare sub glutSetIconTitle alias "glutSetIconTitle" (byval title as string)
+declare sub glutSetWindowTitle alias "glutSetWindowTitle" (byval title as zstring ptr)
+declare sub glutSetIconTitle alias "glutSetIconTitle" (byval title as zstring ptr)
 declare sub glutPositionWindow alias "glutPositionWindow" (byval x as integer, byval y as integer)
 declare sub glutReshapeWindow alias "glutReshapeWindow" (byval width as integer, byval height as integer)
 declare sub glutPopWindow alias "glutPopWindow" ()
@@ -210,10 +210,10 @@ declare function glutCreateMenu alias "glutCreateMenu" (byval func as sub(byval 
 declare sub glutDestroyMenu alias "glutDestroyMenu" (byval menu as integer)
 declare function glutGetMenu alias "glutGetMenu" () as integer
 declare sub glutSetMenu alias "glutSetMenu" (byval menu as integer)
-declare sub glutAddMenuEntry alias "glutAddMenuEntry" (byval label as string, byval value as integer)
-declare sub glutAddSubMenu alias "glutAddSubMenu" (byval label as string, byval submenu as integer)
-declare sub glutChangeToMenuEntry alias "glutChangeToMenuEntry" (byval item as integer, byval label as string, byval value as integer)
-declare sub glutChangeToSubMenu alias "glutChangeToSubMenu" (byval item as integer, byval label as string, byval submenu as integer)
+declare sub glutAddMenuEntry alias "glutAddMenuEntry" (byval label as zstring ptr, byval value as integer)
+declare sub glutAddSubMenu alias "glutAddSubMenu" (byval label as zstring ptr, byval submenu as integer)
+declare sub glutChangeToMenuEntry alias "glutChangeToMenuEntry" (byval item as integer, byval label as zstring ptr, byval value as integer)
+declare sub glutChangeToSubMenu alias "glutChangeToSubMenu" (byval item as integer, byval label as zstring ptr, byval submenu as integer)
 declare sub glutRemoveMenuItem alias "glutRemoveMenuItem" (byval item as integer)
 declare sub glutAttachMenu alias "glutAttachMenu" (byval button as integer)
 declare sub glutDetachMenu alias "glutDetachMenu" (byval button as integer)
@@ -247,7 +247,7 @@ declare function glutGetColor alias "glutGetColor" (byval ndx as integer, byval 
 declare sub glutCopyColormap alias "glutCopyColormap" (byval win as integer)
 declare function glutGet alias "glutGet" (byval type as GLenum) as integer
 declare function glutDeviceGet alias "glutDeviceGet" (byval type as GLenum) as integer
-declare function glutExtensionSupported alias "glutExtensionSupported" (byval name as string) as integer
+declare function glutExtensionSupported alias "glutExtensionSupported" (byval name as zstring ptr) as integer
 declare function glutGetModifiers alias "glutGetModifiers" () as integer
 declare function glutLayerGet alias "glutLayerGet" (byval type as GLenum) as integer
 declare sub glutBitmapCharacter alias "glutBitmapCharacter" (byval font as any ptr, byval character as integer)
@@ -301,7 +301,7 @@ declare sub glutForceJoystickFunc alias "glutForceJoystickFunc" ()
 #define GLUT_GAME_MODE_REFRESH_RATE 5
 #define GLUT_GAME_MODE_DISPLAY_CHANGED 6
 
-declare sub glutGameModeString alias "glutGameModeString" (byval string as string)
+declare sub glutGameModeString alias "glutGameModeString" (byval string as zstring ptr)
 declare function glutEnterGameMode alias "glutEnterGameMode" () as integer
 declare sub glutLeaveGameMode alias "glutLeaveGameMode" ()
 declare function glutGameModeGet alias "glutGameModeGet" (byval mode as GLenum) as integer

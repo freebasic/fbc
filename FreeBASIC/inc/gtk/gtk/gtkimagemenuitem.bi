@@ -26,9 +26,9 @@ end type
 
 declare function gtk_image_menu_item_get_type cdecl alias "gtk_image_menu_item_get_type" () as GType
 declare function gtk_image_menu_item_new cdecl alias "gtk_image_menu_item_new" () as GtkWidget ptr
-declare function gtk_image_menu_item_new_with_label cdecl alias "gtk_image_menu_item_new_with_label" (byval label as string) as GtkWidget ptr
-declare function gtk_image_menu_item_new_with_mnemonic cdecl alias "gtk_image_menu_item_new_with_mnemonic" (byval label as string) as GtkWidget ptr
-declare function gtk_image_menu_item_new_from_stock cdecl alias "gtk_image_menu_item_new_from_stock" (byval stock_id as string, byval accel_group as GtkAccelGroup ptr) as GtkWidget ptr
+declare function gtk_image_menu_item_new_with_label cdecl alias "gtk_image_menu_item_new_with_label" (byval label as zstring ptr) as GtkWidget ptr
+declare function gtk_image_menu_item_new_with_mnemonic cdecl alias "gtk_image_menu_item_new_with_mnemonic" (byval label as zstring ptr) as GtkWidget ptr
+declare function gtk_image_menu_item_new_from_stock cdecl alias "gtk_image_menu_item_new_from_stock" (byval stock_id as zstring ptr, byval accel_group as GtkAccelGroup ptr) as GtkWidget ptr
 declare sub gtk_image_menu_item_set_image cdecl alias "gtk_image_menu_item_set_image" (byval image_menu_item as GtkImageMenuItem ptr, byval image as GtkWidget ptr)
 declare function gtk_image_menu_item_get_image cdecl alias "gtk_image_menu_item_get_image" (byval image_menu_item as GtkImageMenuItem ptr) as GtkWidget ptr
 

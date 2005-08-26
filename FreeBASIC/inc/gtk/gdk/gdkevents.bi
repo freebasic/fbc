@@ -415,6 +415,6 @@ declare function gdk_event_get_screen cdecl alias "gdk_event_get_screen" (byval 
 declare sub gdk_set_show_events cdecl alias "gdk_set_show_events" (byval show_events as gboolean)
 declare function gdk_get_show_events cdecl alias "gdk_get_show_events" () as gboolean
 declare sub gdk_add_client_message_filter cdecl alias "gdk_add_client_message_filter" (byval message_type as GdkAtom, byval func as GdkFilterFunc, byval data as gpointer)
-declare function gdk_setting_get cdecl alias "gdk_setting_get" (byval name as string, byval value as GValue ptr) as gboolean
+declare function gdk_setting_get cdecl alias "gdk_setting_get" (byval name as zstring ptr, byval value as GValue ptr) as gboolean
 
 #endif

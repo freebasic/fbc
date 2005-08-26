@@ -13,9 +13,9 @@
 
 
 
-declare function wxGlobal_GetNumberFromUser cdecl alias "wxGlobal_GetNumberFromUser" (byval msg as string, byval prompt as string, byval caption as string, byval value as integer, byval min as integer, byval max as integer, byval parent as wxWindow ptr, byval pos as wxPoint ptr) as integer
+declare function wxGlobal_GetNumberFromUser cdecl alias "wxGlobal_GetNumberFromUser" (byval msg as zstring ptr, byval prompt as zstring ptr, byval caption as zstring ptr, byval value as integer, byval min as integer, byval max as integer, byval parent as wxWindow ptr, byval pos as wxPoint ptr) as integer
 declare function wxGlobal_GetHomeDir cdecl alias "wxGlobal_GetHomeDir" () as wxString ptr
-declare function wxGlobal_FileSelector cdecl alias "wxGlobal_FileSelector" (byval message as string, byval default_path as string, byval default_filename as string, byval default_extension as string, byval wildcard as string, byval flags as integer, byval parent as wxWindow ptr, byval x as integer, byval y as integer) as wxString ptr
+declare function wxGlobal_FileSelector cdecl alias "wxGlobal_FileSelector" (byval message as zstring ptr, byval default_path as zstring ptr, byval default_filename as zstring ptr, byval default_extension as zstring ptr, byval wildcard as zstring ptr, byval flags as integer, byval parent as wxWindow ptr, byval x as integer, byval y as integer) as wxString ptr
 
 declare function wxArrayInt cdecl alias "wxArrayInt_ctor" () as wxArrayInt ptr
 declare sub wxArrayInt_dtor cdecl alias "wxArrayInt_dtor" (byval self as wxArrayInt ptr)
@@ -27,7 +27,7 @@ declare function wxArrayInt_GetCount cdecl alias "wxArrayInt_GetCount" (byval se
 declare function wxArrayString cdecl alias "wxArrayString_ctor" () as wxArrayString ptr
 declare sub wxArrayString_dtor cdecl alias "wxArrayString_dtor" (byval self as wxArrayString ptr)
 declare sub wxArrayString_RegisterDisposable cdecl alias "wxArrayString_RegisterDisposable" (byval self as _ArrayString ptr, byval onDispose as Virtual_Dispose)
-declare sub wxArrayString_Add cdecl alias "wxArrayString_Add" (byval self as wxArrayString ptr, byval toadd as string)
+declare sub wxArrayString_Add cdecl alias "wxArrayString_Add" (byval self as wxArrayString ptr, byval toadd as zstring ptr)
 declare function wxArrayString_Item cdecl alias "wxArrayString_Item" (byval self as wxArrayString ptr, byval num as integer) as wxString ptr
 declare function wxArrayString_GetCount cdecl alias "wxArrayString_GetCount" (byval self as wxArrayString ptr) as integer
 declare sub wxSleep_func cdecl alias "wxSleep_func" (byval num as integer)
@@ -36,7 +36,7 @@ declare sub wxBeginBusyCursor_func cdecl alias "wxBeginBusyCursor_func" ()
 declare sub wxEndBusyCursor_func cdecl alias "wxEndBusyCursor_func" ()
 declare function wxWindowDisabler cdecl alias "wxWindowDisabler_ctor" (byval winToSkip as wxWindow ptr) as wxWindowDisabler ptr
 declare sub wxWindowDisabler_dtor cdecl alias "wxWindowDisabler_dtor" (byval self as wxWindowDisabler ptr)
-declare function wxBusyInfo cdecl alias "wxBusyInfo_ctor" (byval message as string, byval parent as wxWindow ptr) as wxBusyInfo ptr
+declare function wxBusyInfo cdecl alias "wxBusyInfo_ctor" (byval message as zstring ptr, byval parent as wxWindow ptr) as wxBusyInfo ptr
 declare sub wxBusyInfo_dtor cdecl alias "wxBusyInfo_dtor" (byval self as wxBusyInfo ptr)
 declare sub wxMutexGuiEnter_func cdecl alias "wxMutexGuiEnter_func" ()
 declare sub wxMutexGuiLeave_func cdecl alias "wxMutexGuiLeave_func" ()

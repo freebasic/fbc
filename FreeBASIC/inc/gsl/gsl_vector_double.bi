@@ -57,7 +57,7 @@ declare function gsl_vector_set_basis cdecl alias "gsl_vector_set_basis" (byval 
 declare function gsl_vector_fread cdecl alias "gsl_vector_fread" (byval stream as FILE ptr, byval v as gsl_vector ptr) as integer
 declare function gsl_vector_fwrite cdecl alias "gsl_vector_fwrite" (byval stream as FILE ptr, byval v as gsl_vector ptr) as integer
 declare function gsl_vector_fscanf cdecl alias "gsl_vector_fscanf" (byval stream as FILE ptr, byval v as gsl_vector ptr) as integer
-declare function gsl_vector_fprintf cdecl alias "gsl_vector_fprintf" (byval stream as FILE ptr, byval v as gsl_vector ptr, byval format as string) as integer
+declare function gsl_vector_fprintf cdecl alias "gsl_vector_fprintf" (byval stream as FILE ptr, byval v as gsl_vector ptr, byval format as zstring ptr) as integer
 declare function gsl_vector_memcpy cdecl alias "gsl_vector_memcpy" (byval dest as gsl_vector ptr, byval src as gsl_vector ptr) as integer
 declare function gsl_vector_reverse cdecl alias "gsl_vector_reverse" (byval v as gsl_vector ptr) as integer
 declare function gsl_vector_swap cdecl alias "gsl_vector_swap" (byval v as gsl_vector ptr, byval w as gsl_vector ptr) as integer

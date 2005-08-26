@@ -38,7 +38,7 @@ declare function gtk_text_tag_table_get_type cdecl alias "gtk_text_tag_table_get
 declare function gtk_text_tag_table_new cdecl alias "gtk_text_tag_table_new" () as GtkTextTagTable ptr
 declare sub gtk_text_tag_table_add cdecl alias "gtk_text_tag_table_add" (byval table as GtkTextTagTable ptr, byval tag as GtkTextTag ptr)
 declare sub gtk_text_tag_table_remove cdecl alias "gtk_text_tag_table_remove" (byval table as GtkTextTagTable ptr, byval tag as GtkTextTag ptr)
-declare function gtk_text_tag_table_lookup cdecl alias "gtk_text_tag_table_lookup" (byval table as GtkTextTagTable ptr, byval name as string) as GtkTextTag ptr
+declare function gtk_text_tag_table_lookup cdecl alias "gtk_text_tag_table_lookup" (byval table as GtkTextTagTable ptr, byval name as zstring ptr) as GtkTextTag ptr
 declare sub gtk_text_tag_table_foreach cdecl alias "gtk_text_tag_table_foreach" (byval table as GtkTextTagTable ptr, byval func as GtkTextTagTableForeach, byval data as gpointer)
 declare function gtk_text_tag_table_get_size cdecl alias "gtk_text_tag_table_get_size" (byval table as GtkTextTagTable ptr) as gint
 declare sub _gtk_text_tag_table_add_buffer cdecl alias "_gtk_text_tag_table_add_buffer" (byval table as GtkTextTagTable ptr, byval buffer as gpointer)

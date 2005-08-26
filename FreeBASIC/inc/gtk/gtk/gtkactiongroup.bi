@@ -26,7 +26,7 @@ end type
 
 type _GtkActionGroupClass
 	parent_class as GObjectClass
-	get_action as function cdecl(byval as GtkActionGroup ptr, byval as string) as GtkAction
+	get_action as function cdecl(byval as GtkActionGroup ptr, byval as zstring ptr) as GtkAction
 	_gtk_reserved1 as sub cdecl()
 	_gtk_reserved2 as sub cdecl()
 	_gtk_reserved3 as sub cdecl()
@@ -62,16 +62,16 @@ type _GtkRadioActionEntry
 end type
 
 declare function gtk_action_group_get_type cdecl alias "gtk_action_group_get_type" () as GType
-declare function gtk_action_group_new cdecl alias "gtk_action_group_new" (byval name as string) as GtkActionGroup ptr
+declare function gtk_action_group_new cdecl alias "gtk_action_group_new" (byval name as zstring ptr) as GtkActionGroup ptr
 declare function gtk_action_group_get_name cdecl alias "gtk_action_group_get_name" (byval action_group as GtkActionGroup ptr) as zstring ptr
 declare function gtk_action_group_get_sensitive cdecl alias "gtk_action_group_get_sensitive" (byval action_group as GtkActionGroup ptr) as gboolean
 declare sub gtk_action_group_set_sensitive cdecl alias "gtk_action_group_set_sensitive" (byval action_group as GtkActionGroup ptr, byval sensitive as gboolean)
 declare function gtk_action_group_get_visible cdecl alias "gtk_action_group_get_visible" (byval action_group as GtkActionGroup ptr) as gboolean
 declare sub gtk_action_group_set_visible cdecl alias "gtk_action_group_set_visible" (byval action_group as GtkActionGroup ptr, byval visible as gboolean)
-declare function gtk_action_group_get_action cdecl alias "gtk_action_group_get_action" (byval action_group as GtkActionGroup ptr, byval action_name as string) as GtkAction ptr
+declare function gtk_action_group_get_action cdecl alias "gtk_action_group_get_action" (byval action_group as GtkActionGroup ptr, byval action_name as zstring ptr) as GtkAction ptr
 declare function gtk_action_group_list_actions cdecl alias "gtk_action_group_list_actions" (byval action_group as GtkActionGroup ptr) as GList ptr
 declare sub gtk_action_group_add_action cdecl alias "gtk_action_group_add_action" (byval action_group as GtkActionGroup ptr, byval action as GtkAction ptr)
-declare sub gtk_action_group_add_action_with_accel cdecl alias "gtk_action_group_add_action_with_accel" (byval action_group as GtkActionGroup ptr, byval action as GtkAction ptr, byval accelerator as string)
+declare sub gtk_action_group_add_action_with_accel cdecl alias "gtk_action_group_add_action_with_accel" (byval action_group as GtkActionGroup ptr, byval action as GtkAction ptr, byval accelerator as zstring ptr)
 declare sub gtk_action_group_remove_action cdecl alias "gtk_action_group_remove_action" (byval action_group as GtkActionGroup ptr, byval action as GtkAction ptr)
 declare sub gtk_action_group_add_actions cdecl alias "gtk_action_group_add_actions" (byval action_group as GtkActionGroup ptr, byval entries as GtkActionEntry ptr, byval n_entries as guint, byval user_data as gpointer)
 declare sub gtk_action_group_add_toggle_actions cdecl alias "gtk_action_group_add_toggle_actions" (byval action_group as GtkActionGroup ptr, byval entries as GtkToggleActionEntry ptr, byval n_entries as guint, byval user_data as gpointer)
@@ -80,8 +80,8 @@ declare sub gtk_action_group_add_actions_full cdecl alias "gtk_action_group_add_
 declare sub gtk_action_group_add_toggle_actions_full cdecl alias "gtk_action_group_add_toggle_actions_full" (byval action_group as GtkActionGroup ptr, byval entries as GtkToggleActionEntry ptr, byval n_entries as guint, byval user_data as gpointer, byval destroy as GDestroyNotify)
 declare sub gtk_action_group_add_radio_actions_full cdecl alias "gtk_action_group_add_radio_actions_full" (byval action_group as GtkActionGroup ptr, byval entries as GtkRadioActionEntry ptr, byval n_entries as guint, byval value as gint, byval on_change as GCallback, byval user_data as gpointer, byval destroy as GDestroyNotify)
 declare sub gtk_action_group_set_translate_func cdecl alias "gtk_action_group_set_translate_func" (byval action_group as GtkActionGroup ptr, byval func as GtkTranslateFunc, byval data as gpointer, byval notify as GtkDestroyNotify)
-declare sub gtk_action_group_set_translation_domain cdecl alias "gtk_action_group_set_translation_domain" (byval action_group as GtkActionGroup ptr, byval domain as string)
-declare function gtk_action_group_translate_string cdecl alias "gtk_action_group_translate_string" (byval action_group as GtkActionGroup ptr, byval string as string) as zstring ptr
+declare sub gtk_action_group_set_translation_domain cdecl alias "gtk_action_group_set_translation_domain" (byval action_group as GtkActionGroup ptr, byval domain as zstring ptr)
+declare function gtk_action_group_translate_string cdecl alias "gtk_action_group_translate_string" (byval action_group as GtkActionGroup ptr, byval string as zstring ptr) as zstring ptr
 declare sub _gtk_action_group_emit_connect_proxy cdecl alias "_gtk_action_group_emit_connect_proxy" (byval action_group as GtkActionGroup ptr, byval action as GtkAction ptr, byval proxy as GtkWidget ptr)
 declare sub _gtk_action_group_emit_disconnect_proxy cdecl alias "_gtk_action_group_emit_disconnect_proxy" (byval action_group as GtkActionGroup ptr, byval action as GtkAction ptr, byval proxy as GtkWidget ptr)
 declare sub _gtk_action_group_emit_pre_activate cdecl alias "_gtk_action_group_emit_pre_activate" (byval action_group as GtkActionGroup ptr, byval action as GtkAction ptr)

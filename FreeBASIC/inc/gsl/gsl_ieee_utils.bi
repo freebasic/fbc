@@ -64,7 +64,7 @@ enum
 end enum
 
 declare sub gsl_ieee_env_setup cdecl alias "gsl_ieee_env_setup" ()
-declare function gsl_ieee_read_mode_string cdecl alias "gsl_ieee_read_mode_string" (byval description as string, byval precision as integer ptr, byval rounding as integer ptr, byval exception_mask as integer ptr) as integer
+declare function gsl_ieee_read_mode_string cdecl alias "gsl_ieee_read_mode_string" (byval description as zstring ptr, byval precision as integer ptr, byval rounding as integer ptr, byval exception_mask as integer ptr) as integer
 declare function gsl_ieee_set_mode cdecl alias "gsl_ieee_set_mode" (byval precision as integer, byval rounding as integer, byval exception_mask as integer) as integer
 
 #endif

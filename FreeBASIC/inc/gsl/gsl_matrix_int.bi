@@ -72,7 +72,7 @@ declare sub gsl_matrix_int_set_all cdecl alias "gsl_matrix_int_set_all" (byval m
 declare function gsl_matrix_int_fread cdecl alias "gsl_matrix_int_fread" (byval stream as FILE ptr, byval m as gsl_matrix_int ptr) as integer
 declare function gsl_matrix_int_fwrite cdecl alias "gsl_matrix_int_fwrite" (byval stream as FILE ptr, byval m as gsl_matrix_int ptr) as integer
 declare function gsl_matrix_int_fscanf cdecl alias "gsl_matrix_int_fscanf" (byval stream as FILE ptr, byval m as gsl_matrix_int ptr) as integer
-declare function gsl_matrix_int_fprintf cdecl alias "gsl_matrix_int_fprintf" (byval stream as FILE ptr, byval m as gsl_matrix_int ptr, byval format as string) as integer
+declare function gsl_matrix_int_fprintf cdecl alias "gsl_matrix_int_fprintf" (byval stream as FILE ptr, byval m as gsl_matrix_int ptr, byval format as zstring ptr) as integer
 declare function gsl_matrix_int_memcpy cdecl alias "gsl_matrix_int_memcpy" (byval dest as gsl_matrix_int ptr, byval src as gsl_matrix_int ptr) as integer
 declare function gsl_matrix_int_swap cdecl alias "gsl_matrix_int_swap" (byval m1 as gsl_matrix_int ptr, byval m2 as gsl_matrix_int ptr) as integer
 declare function gsl_matrix_int_swap_rows cdecl alias "gsl_matrix_int_swap_rows" (byval m as gsl_matrix_int ptr, byval i as integer, byval j as integer) as integer

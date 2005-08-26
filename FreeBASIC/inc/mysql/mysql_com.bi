@@ -165,9 +165,9 @@ declare sub my_net_local_init alias "my_net_local_init" (byval net as NET ptr)
 declare sub net_end alias "net_end" (byval net as NET ptr)
 declare sub net_clear alias "net_clear" (byval net as NET ptr)
 declare function net_flush alias "net_flush" (byval net as NET ptr) as integer
-declare function my_net_write alias "my_net_write" (byval net as NET ptr, byval packet as string, byval len as uinteger) as integer
-declare function net_write_command alias "net_write_command" (byval net as NET ptr, byval command as ubyte, byval packet as string, byval len as uinteger) as integer
-declare function net_real_write alias "net_real_write" (byval net as NET ptr, byval packet as string, byval len as uinteger) as integer
+declare function my_net_write alias "my_net_write" (byval net as NET ptr, byval packet as zstring ptr, byval len as uinteger) as integer
+declare function net_write_command alias "net_write_command" (byval net as NET ptr, byval command as ubyte, byval packet as zstring ptr, byval len as uinteger) as integer
+declare function net_real_write alias "net_real_write" (byval net as NET ptr, byval packet as zstring ptr, byval len as uinteger) as integer
 declare function my_net_read alias "my_net_read" (byval net as NET ptr) as uinteger
 #ifndef sockaddr
 type sockaddr as any
@@ -212,15 +212,15 @@ type UDF_INIT as st_udf_init
 
 declare sub randominit alias "randominit" (byval as rand_struct ptr, byval seed1 as uinteger, byval seed2 as uinteger)
 declare function my_rnd alias "my_rnd" (byval as rand_struct ptr) as double
-declare sub make_scrambled_password alias "make_scrambled_password" (byval to as string, byval password as string)
-declare sub get_salt_from_password alias "get_salt_from_password" (byval res as uinteger ptr, byval password as string)
-declare sub make_password_from_salt alias "make_password_from_salt" (byval to as string, byval hash_res as uinteger ptr)
-declare function scramble alias "scramble" (byval to as string, byval message as string, byval password as string, byval old_ver as my_bool) as zstring ptr
-declare function check_scramble alias "check_scramble" (byval as string, byval message as string, byval salt as uinteger ptr, byval old_ver as my_bool) as my_bool
-declare function get_tty_password alias "get_tty_password" (byval opt_message as string) as zstring ptr
-declare sub hash_password alias "hash_password" (byval result as uinteger ptr, byval password as string)
+declare sub make_scrambled_password alias "make_scrambled_password" (byval to as zstring ptr, byval password as zstring ptr)
+declare sub get_salt_from_password alias "get_salt_from_password" (byval res as uinteger ptr, byval password as zstring ptr)
+declare sub make_password_from_salt alias "make_password_from_salt" (byval to as zstring ptr, byval hash_res as uinteger ptr)
+declare function scramble alias "scramble" (byval to as zstring ptr, byval message as zstring ptr, byval password as zstring ptr, byval old_ver as my_bool) as zstring ptr
+declare function check_scramble alias "check_scramble" (byval as zstring ptr, byval message as zstring ptr, byval salt as uinteger ptr, byval old_ver as my_bool) as my_bool
+declare function get_tty_password alias "get_tty_password" (byval opt_message as zstring ptr) as zstring ptr
+declare sub hash_password alias "hash_password" (byval result as uinteger ptr, byval password as zstring ptr)
 declare function my_init alias "my_init" () as my_bool
-declare function load_defaults alias "load_defaults" (byval conf_file as string, byval groups as byte ptr ptr, byval argc as integer ptr, byval argv as byte ptr ptr ptr) as integer
+declare function load_defaults alias "load_defaults" (byval conf_file as zstring ptr, byval groups as byte ptr ptr, byval argc as integer ptr, byval argv as byte ptr ptr ptr) as integer
 declare function my_thread_init alias "my_thread_init" () as my_bool
 declare sub my_thread_end alias "my_thread_end" ()
 

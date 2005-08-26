@@ -13,7 +13,7 @@
 
 
 declare function wxScrollBar cdecl alias "wxScrollBar_ctor" () as wxScrollBar ptr
-declare function wxScrollBar_Create cdecl alias "wxScrollBar_Create" (byval self as wxScrollBar ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval validator as wxValidator ptr, byval name as string) as integer
+declare function wxScrollBar_Create cdecl alias "wxScrollBar_Create" (byval self as wxScrollBar ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval validator as wxValidator ptr, byval name as zstring ptr) as integer
 declare function wxScrollBar_GetThumbPosition cdecl alias "wxScrollBar_GetThumbPosition" (byval self as wxScrollBar ptr) as integer
 declare function wxScrollBar_GetThumbSize cdecl alias "wxScrollBar_GetThumbSize" (byval self as wxScrollBar ptr) as integer
 declare function wxScrollBar_GetPageSize cdecl alias "wxScrollBar_GetPageSize" (byval self as wxScrollBar ptr) as integer

@@ -20,8 +20,8 @@
 
 #include "allegro/base.bi"
 
-declare sub al_assert cdecl alias "al_assert" ( byval file as string, byval _line as integer )
-declare sub al_trace cdecl alias "al_trace" ( byval msg as string, ... )
+declare sub al_assert cdecl alias "al_assert" ( byval file as zstring ptr, byval _line as integer )
+declare sub al_trace cdecl alias "al_trace" ( byval msg as zstring ptr, ... )
 
 declare sub register_assert_handler cdecl alias "register_assert_handler" ( byval handler as function(byval msg as byte ptr) as integer)
 declare sub register_trace_handler cdecl alias "register_trace_handler" ( byval handler as function(byval msg as byte ptr) as integer)

@@ -95,7 +95,7 @@ enum AtkRole
 end enum
 
 
-declare function atk_role_register cdecl alias "atk_role_register" (byval name as string) as AtkRole
+declare function atk_role_register cdecl alias "atk_role_register" (byval name as zstring ptr) as AtkRole
 
 enum AtkLayer
 	ATK_LAYER_INVALID
@@ -148,8 +148,8 @@ type _AtkObjectClass
 	get_layer as function cdecl(byval as AtkObject ptr) as AtkLayer
 	get_mdi_zorder as function cdecl(byval as AtkObject ptr) as gint
 	ref_state_set as function cdecl(byval as AtkObject ptr) as AtkStateSet ptr
-	set_name as sub cdecl(byval as AtkObject ptr, byval as string)
-	set_description as sub cdecl(byval as AtkObject ptr, byval as string)
+	set_name as sub cdecl(byval as AtkObject ptr, byval as zstring ptr)
+	set_description as sub cdecl(byval as AtkObject ptr, byval as zstring ptr)
 	set_parent as sub cdecl(byval as AtkObject ptr, byval as AtkObject ptr)
 	set_role as sub cdecl(byval as AtkObject ptr, byval as AtkRole)
 	connect_property_change_handler as function cdecl(byval as AtkObject ptr, byval as AtkPropertyChangeHandler ptr) as guint
@@ -158,7 +158,7 @@ type _AtkObjectClass
 	children_changed as sub cdecl(byval as AtkObject ptr, byval as guint, byval as gpointer)
 	focus_event as sub cdecl(byval as AtkObject ptr, byval as gboolean)
 	property_change as sub cdecl(byval as AtkObject ptr, byval as AtkPropertyValues ptr)
-	state_change as sub cdecl(byval as AtkObject ptr, byval as string, byval as gboolean)
+	state_change as sub cdecl(byval as AtkObject ptr, byval as zstring ptr, byval as gboolean)
 	visible_data_changed as sub cdecl(byval as AtkObject ptr)
 	active_descendant_changed as sub cdecl(byval as AtkObject ptr, byval as gpointer ptr)
 	pad1 as AtkFunction
@@ -186,8 +186,8 @@ declare function atk_object_get_layer cdecl alias "atk_object_get_layer" (byval 
 declare function atk_object_get_mdi_zorder cdecl alias "atk_object_get_mdi_zorder" (byval accessible as AtkObject ptr) as gint
 declare function atk_object_ref_state_set cdecl alias "atk_object_ref_state_set" (byval accessible as AtkObject ptr) as AtkStateSet ptr
 declare function atk_object_get_index_in_parent cdecl alias "atk_object_get_index_in_parent" (byval accessible as AtkObject ptr) as gint
-declare sub atk_object_set_name cdecl alias "atk_object_set_name" (byval accessible as AtkObject ptr, byval name as string)
-declare sub atk_object_set_description cdecl alias "atk_object_set_description" (byval accessible as AtkObject ptr, byval description as string)
+declare sub atk_object_set_name cdecl alias "atk_object_set_name" (byval accessible as AtkObject ptr, byval name as zstring ptr)
+declare sub atk_object_set_description cdecl alias "atk_object_set_description" (byval accessible as AtkObject ptr, byval description as zstring ptr)
 declare sub atk_object_set_parent cdecl alias "atk_object_set_parent" (byval accessible as AtkObject ptr, byval parent as AtkObject ptr)
 declare sub atk_object_set_role cdecl alias "atk_object_set_role" (byval accessible as AtkObject ptr, byval role as AtkRole)
 declare function atk_object_connect_property_change_handler cdecl alias "atk_object_connect_property_change_handler" (byval accessible as AtkObject ptr, byval handler as AtkPropertyChangeHandler ptr) as guint
@@ -195,7 +195,7 @@ declare sub atk_object_remove_property_change_handler cdecl alias "atk_object_re
 declare sub atk_object_notify_state_change cdecl alias "atk_object_notify_state_change" (byval accessible as AtkObject ptr, byval state as AtkState, byval value as gboolean)
 declare sub atk_object_initialize cdecl alias "atk_object_initialize" (byval accessible as AtkObject ptr, byval data as gpointer)
 declare function atk_role_get_name cdecl alias "atk_role_get_name" (byval role as AtkRole) as zstring ptr
-declare function atk_role_for_name cdecl alias "atk_role_for_name" (byval name as string) as AtkRole
+declare function atk_role_for_name cdecl alias "atk_role_for_name" (byval name as zstring ptr) as AtkRole
 declare function atk_object_add_relationship cdecl alias "atk_object_add_relationship" (byval object as AtkObject ptr, byval relationship as AtkRelationType, byval target as AtkObject ptr) as gboolean
 declare function atk_object_remove_relationship cdecl alias "atk_object_remove_relationship" (byval object as AtkObject ptr, byval relationship as AtkRelationType, byval target as AtkObject ptr) as gboolean
 declare function atk_role_get_localized_name cdecl alias "atk_role_get_localized_name" (byval role as AtkRole) as zstring ptr

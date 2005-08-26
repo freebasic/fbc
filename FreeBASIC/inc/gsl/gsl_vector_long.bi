@@ -57,7 +57,7 @@ declare function gsl_vector_long_set_basis cdecl alias "gsl_vector_long_set_basi
 declare function gsl_vector_long_fread cdecl alias "gsl_vector_long_fread" (byval stream as FILE ptr, byval v as gsl_vector_long ptr) as integer
 declare function gsl_vector_long_fwrite cdecl alias "gsl_vector_long_fwrite" (byval stream as FILE ptr, byval v as gsl_vector_long ptr) as integer
 declare function gsl_vector_long_fscanf cdecl alias "gsl_vector_long_fscanf" (byval stream as FILE ptr, byval v as gsl_vector_long ptr) as integer
-declare function gsl_vector_long_fprintf cdecl alias "gsl_vector_long_fprintf" (byval stream as FILE ptr, byval v as gsl_vector_long ptr, byval format as string) as integer
+declare function gsl_vector_long_fprintf cdecl alias "gsl_vector_long_fprintf" (byval stream as FILE ptr, byval v as gsl_vector_long ptr, byval format as zstring ptr) as integer
 declare function gsl_vector_long_memcpy cdecl alias "gsl_vector_long_memcpy" (byval dest as gsl_vector_long ptr, byval src as gsl_vector_long ptr) as integer
 declare function gsl_vector_long_reverse cdecl alias "gsl_vector_long_reverse" (byval v as gsl_vector_long ptr) as integer
 declare function gsl_vector_long_swap cdecl alias "gsl_vector_long_swap" (byval v as gsl_vector_long ptr, byval w as gsl_vector_long ptr) as integer

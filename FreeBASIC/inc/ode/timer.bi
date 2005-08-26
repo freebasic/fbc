@@ -20,8 +20,8 @@ declare sub dStopwatchReset cdecl alias "dStopwatchReset" (byval as dStopwatch p
 declare sub dStopwatchStart cdecl alias "dStopwatchStart" (byval as dStopwatch ptr)
 declare sub dStopwatchStop cdecl alias "dStopwatchStop" (byval as dStopwatch ptr)
 declare function dStopwatchTime cdecl alias "dStopwatchTime" (byval as dStopwatch ptr) as double
-declare sub dTimerStart cdecl alias "dTimerStart" (byval description as string)
-declare sub dTimerNow cdecl alias "dTimerNow" (byval description as string)
+declare sub dTimerStart cdecl alias "dTimerStart" (byval description as zstring ptr)
+declare sub dTimerNow cdecl alias "dTimerNow" (byval description as zstring ptr)
 declare sub dTimerEnd cdecl alias "dTimerEnd" ()
 declare sub dTimerReport cdecl alias "dTimerReport" (byval fout as FILE ptr, byval average as integer)
 declare function dTimerTicksPerSecond cdecl alias "dTimerTicksPerSecond" () as double

@@ -27,7 +27,7 @@ declare sub gtk_init cdecl alias "gtk_init" (byval argc as integer ptr, byval ar
 declare function gtk_init_check cdecl alias "gtk_init_check" (byval argc as integer ptr, byval argv as byte ptr ptr ptr) as gboolean
 #endif
 
-declare function gtk_init_with_args cdecl alias "gtk_init_with_args" (byval argc as integer ptr, byval argv as byte ptr ptr ptr, byval parameter_string as string, byval entries as GOptionEntry ptr, byval translation_domain as string, byval error as GError ptr ptr) as gboolean
+declare function gtk_init_with_args cdecl alias "gtk_init_with_args" (byval argc as integer ptr, byval argv as byte ptr ptr ptr, byval parameter_string as zstring ptr, byval entries as GOptionEntry ptr, byval translation_domain as zstring ptr, byval error as GError ptr ptr) as gboolean
 declare function gtk_get_option_group cdecl alias "gtk_get_option_group" (byval open_default_display as gboolean) as GOptionGroup ptr
 declare sub gtk_exit cdecl alias "gtk_exit" (byval error_code as gint)
 declare sub gtk_disable_setlocale cdecl alias "gtk_disable_setlocale" ()

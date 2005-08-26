@@ -25,11 +25,11 @@ declare sub gsl_block_float_free cdecl alias "gsl_block_float_free" (byval b as 
 declare function gsl_block_float_fread cdecl alias "gsl_block_float_fread" (byval stream as FILE ptr, byval b as gsl_block_float ptr) as integer
 declare function gsl_block_float_fwrite cdecl alias "gsl_block_float_fwrite" (byval stream as FILE ptr, byval b as gsl_block_float ptr) as integer
 declare function gsl_block_float_fscanf cdecl alias "gsl_block_float_fscanf" (byval stream as FILE ptr, byval b as gsl_block_float ptr) as integer
-declare function gsl_block_float_fprintf cdecl alias "gsl_block_float_fprintf" (byval stream as FILE ptr, byval b as gsl_block_float ptr, byval format as string) as integer
+declare function gsl_block_float_fprintf cdecl alias "gsl_block_float_fprintf" (byval stream as FILE ptr, byval b as gsl_block_float ptr, byval format as zstring ptr) as integer
 declare function gsl_block_float_raw_fread cdecl alias "gsl_block_float_raw_fread" (byval stream as FILE ptr, byval b as single ptr, byval n as integer, byval stride as integer) as integer
 declare function gsl_block_float_raw_fwrite cdecl alias "gsl_block_float_raw_fwrite" (byval stream as FILE ptr, byval b as single ptr, byval n as integer, byval stride as integer) as integer
 declare function gsl_block_float_raw_fscanf cdecl alias "gsl_block_float_raw_fscanf" (byval stream as FILE ptr, byval b as single ptr, byval n as integer, byval stride as integer) as integer
-declare function gsl_block_float_raw_fprintf cdecl alias "gsl_block_float_raw_fprintf" (byval stream as FILE ptr, byval b as single ptr, byval n as integer, byval stride as integer, byval format as string) as integer
+declare function gsl_block_float_raw_fprintf cdecl alias "gsl_block_float_raw_fprintf" (byval stream as FILE ptr, byval b as single ptr, byval n as integer, byval stride as integer, byval format as zstring ptr) as integer
 declare function gsl_block_float_size cdecl alias "gsl_block_float_size" (byval b as gsl_block_float ptr) as integer
 declare function gsl_block_float_data cdecl alias "gsl_block_float_data" (byval b as gsl_block_float ptr) as single ptr
 

@@ -25,11 +25,11 @@ declare sub gsl_block_ushort_free cdecl alias "gsl_block_ushort_free" (byval b a
 declare function gsl_block_ushort_fread cdecl alias "gsl_block_ushort_fread" (byval stream as FILE ptr, byval b as gsl_block_ushort ptr) as integer
 declare function gsl_block_ushort_fwrite cdecl alias "gsl_block_ushort_fwrite" (byval stream as FILE ptr, byval b as gsl_block_ushort ptr) as integer
 declare function gsl_block_ushort_fscanf cdecl alias "gsl_block_ushort_fscanf" (byval stream as FILE ptr, byval b as gsl_block_ushort ptr) as integer
-declare function gsl_block_ushort_fprintf cdecl alias "gsl_block_ushort_fprintf" (byval stream as FILE ptr, byval b as gsl_block_ushort ptr, byval format as string) as integer
+declare function gsl_block_ushort_fprintf cdecl alias "gsl_block_ushort_fprintf" (byval stream as FILE ptr, byval b as gsl_block_ushort ptr, byval format as zstring ptr) as integer
 declare function gsl_block_ushort_raw_fread cdecl alias "gsl_block_ushort_raw_fread" (byval stream as FILE ptr, byval b as ushort ptr, byval n as integer, byval stride as integer) as integer
 declare function gsl_block_ushort_raw_fwrite cdecl alias "gsl_block_ushort_raw_fwrite" (byval stream as FILE ptr, byval b as ushort ptr, byval n as integer, byval stride as integer) as integer
 declare function gsl_block_ushort_raw_fscanf cdecl alias "gsl_block_ushort_raw_fscanf" (byval stream as FILE ptr, byval b as ushort ptr, byval n as integer, byval stride as integer) as integer
-declare function gsl_block_ushort_raw_fprintf cdecl alias "gsl_block_ushort_raw_fprintf" (byval stream as FILE ptr, byval b as ushort ptr, byval n as integer, byval stride as integer, byval format as string) as integer
+declare function gsl_block_ushort_raw_fprintf cdecl alias "gsl_block_ushort_raw_fprintf" (byval stream as FILE ptr, byval b as ushort ptr, byval n as integer, byval stride as integer, byval format as zstring ptr) as integer
 declare function gsl_block_ushort_size cdecl alias "gsl_block_ushort_size" (byval b as gsl_block_ushort ptr) as integer
 declare function gsl_block_ushort_data cdecl alias "gsl_block_ushort_data" (byval b as gsl_block_ushort ptr) as ushort ptr
 

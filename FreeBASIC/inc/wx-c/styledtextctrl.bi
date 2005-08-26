@@ -37,10 +37,10 @@ declare function wxStyledTextCtrl_EVT_STC_HOTSPOT_CLICK cdecl alias "wxStyledTex
 declare function wxStyledTextCtrl_EVT_STC_HOTSPOT_DCLICK cdecl alias "wxStyledTextCtrl_EVT_STC_HOTSPOT_DCLICK" () as integer
 declare function wxStyledTextCtrl_EVT_STC_CALLTIP_CLICK cdecl alias "wxStyledTextCtrl_EVT_STC_CALLTIP_CLICK" () as integer
 
-declare function wxStyledTextCtrl cdecl alias "wxStyledTextCtrl_ctor" (byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as wxStyledTextCtrl ptr
-declare sub wxStyledTextCtrl_AddText cdecl alias "wxStyledTextCtrl_AddText" (byval self as wxStyledTextCtrl ptr, byval text as string)
+declare function wxStyledTextCtrl cdecl alias "wxStyledTextCtrl_ctor" (byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as zstring ptr) as wxStyledTextCtrl ptr
+declare sub wxStyledTextCtrl_AddText cdecl alias "wxStyledTextCtrl_AddText" (byval self as wxStyledTextCtrl ptr, byval text as zstring ptr)
 declare sub wxStyledTextCtrl_AddStyledText cdecl alias "wxStyledTextCtrl_AddStyledText" (byval self as wxStyledTextCtrl ptr, byval data as wxMemoryBuffer ptr)
-declare sub wxStyledTextCtrl_InsertText cdecl alias "wxStyledTextCtrl_InsertText" (byval self as wxStyledTextCtrl ptr, byval pos as integer, byval text as string)
+declare sub wxStyledTextCtrl_InsertText cdecl alias "wxStyledTextCtrl_InsertText" (byval self as wxStyledTextCtrl ptr, byval pos as integer, byval text as zstring ptr)
 declare sub wxStyledTextCtrl_ClearAll cdecl alias "wxStyledTextCtrl_ClearAll" (byval self as wxStyledTextCtrl ptr)
 declare sub wxStyledTextCtrl_ClearDocumentStyle cdecl alias "wxStyledTextCtrl_ClearDocumentStyle" (byval self as wxStyledTextCtrl ptr)
 declare function wxStyledTextCtrl_GetLength cdecl alias "wxStyledTextCtrl_GetLength" (byval self as wxStyledTextCtrl ptr) as integer
@@ -100,7 +100,7 @@ declare sub wxStyledTextCtrl_StyleSetBackground cdecl alias "wxStyledTextCtrl_St
 declare sub wxStyledTextCtrl_StyleSetBold cdecl alias "wxStyledTextCtrl_StyleSetBold" (byval self as wxStyledTextCtrl ptr, byval style as integer, byval bold as integer)
 declare sub wxStyledTextCtrl_StyleSetItalic cdecl alias "wxStyledTextCtrl_StyleSetItalic" (byval self as wxStyledTextCtrl ptr, byval style as integer, byval italic as integer)
 declare sub wxStyledTextCtrl_StyleSetSize cdecl alias "wxStyledTextCtrl_StyleSetSize" (byval self as wxStyledTextCtrl ptr, byval style as integer, byval sizePoints as integer)
-declare sub wxStyledTextCtrl_StyleSetFaceName cdecl alias "wxStyledTextCtrl_StyleSetFaceName" (byval self as wxStyledTextCtrl ptr, byval style as integer, byval fontName as string)
+declare sub wxStyledTextCtrl_StyleSetFaceName cdecl alias "wxStyledTextCtrl_StyleSetFaceName" (byval self as wxStyledTextCtrl ptr, byval style as integer, byval fontName as zstring ptr)
 declare sub wxStyledTextCtrl_StyleSetEOLFilled cdecl alias "wxStyledTextCtrl_StyleSetEOLFilled" (byval self as wxStyledTextCtrl ptr, byval style as integer, byval filled as integer)
 declare sub wxStyledTextCtrl_StyleResetDefault cdecl alias "wxStyledTextCtrl_StyleResetDefault" (byval self as wxStyledTextCtrl ptr)
 declare sub wxStyledTextCtrl_StyleSetUnderline cdecl alias "wxStyledTextCtrl_StyleSetUnderline" (byval self as wxStyledTextCtrl ptr, byval style as integer, byval underline as integer)
@@ -113,11 +113,11 @@ declare sub wxStyledTextCtrl_SetCaretForeground cdecl alias "wxStyledTextCtrl_Se
 declare sub wxStyledTextCtrl_CmdKeyAssign cdecl alias "wxStyledTextCtrl_CmdKeyAssign" (byval self as wxStyledTextCtrl ptr, byval key as integer, byval modifiers as integer, byval cmd as integer)
 declare sub wxStyledTextCtrl_CmdKeyClear cdecl alias "wxStyledTextCtrl_CmdKeyClear" (byval self as wxStyledTextCtrl ptr, byval key as integer, byval modifiers as integer)
 declare sub wxStyledTextCtrl_CmdKeyClearAll cdecl alias "wxStyledTextCtrl_CmdKeyClearAll" (byval self as wxStyledTextCtrl ptr)
-declare sub wxStyledTextCtrl_SetStyleBytes cdecl alias "wxStyledTextCtrl_SetStyleBytes" (byval self as wxStyledTextCtrl ptr, byval length as integer, byval styleBytes as string)
+declare sub wxStyledTextCtrl_SetStyleBytes cdecl alias "wxStyledTextCtrl_SetStyleBytes" (byval self as wxStyledTextCtrl ptr, byval length as integer, byval styleBytes as zstring ptr)
 declare sub wxStyledTextCtrl_StyleSetVisible cdecl alias "wxStyledTextCtrl_StyleSetVisible" (byval self as wxStyledTextCtrl ptr, byval style as integer, byval visible as integer)
 declare function wxStyledTextCtrl_GetCaretPeriod cdecl alias "wxStyledTextCtrl_GetCaretPeriod" (byval self as wxStyledTextCtrl ptr) as integer
 declare sub wxStyledTextCtrl_SetCaretPeriod cdecl alias "wxStyledTextCtrl_SetCaretPeriod" (byval self as wxStyledTextCtrl ptr, byval periodMilliseconds as integer)
-declare sub wxStyledTextCtrl_SetWordChars cdecl alias "wxStyledTextCtrl_SetWordChars" (byval self as wxStyledTextCtrl ptr, byval characters as string)
+declare sub wxStyledTextCtrl_SetWordChars cdecl alias "wxStyledTextCtrl_SetWordChars" (byval self as wxStyledTextCtrl ptr, byval characters as zstring ptr)
 declare sub wxStyledTextCtrl_BeginUndoAction cdecl alias "wxStyledTextCtrl_BeginUndoAction" (byval self as wxStyledTextCtrl ptr)
 declare sub wxStyledTextCtrl_EndUndoAction cdecl alias "wxStyledTextCtrl_EndUndoAction" (byval self as wxStyledTextCtrl ptr)
 declare sub wxStyledTextCtrl_IndicatorSetStyle cdecl alias "wxStyledTextCtrl_IndicatorSetStyle" (byval self as wxStyledTextCtrl ptr, byval indic as integer, byval style as integer)
@@ -136,23 +136,23 @@ declare sub wxStyledTextCtrl_SetCaretLineVisible cdecl alias "wxStyledTextCtrl_S
 declare function wxStyledTextCtrl_GetCaretLineBack cdecl alias "wxStyledTextCtrl_GetCaretLineBack" (byval self as wxStyledTextCtrl ptr) as wxColour ptr
 declare sub wxStyledTextCtrl_SetCaretLineBack cdecl alias "wxStyledTextCtrl_SetCaretLineBack" (byval self as wxStyledTextCtrl ptr, byval back as wxColour ptr)
 declare sub wxStyledTextCtrl_StyleSetChangeable cdecl alias "wxStyledTextCtrl_StyleSetChangeable" (byval self as wxStyledTextCtrl ptr, byval style as integer, byval changeable as integer)
-declare sub wxStyledTextCtrl_AutoCompShow cdecl alias "wxStyledTextCtrl_AutoCompShow" (byval self as wxStyledTextCtrl ptr, byval lenEntered as integer, byval itemList as string)
+declare sub wxStyledTextCtrl_AutoCompShow cdecl alias "wxStyledTextCtrl_AutoCompShow" (byval self as wxStyledTextCtrl ptr, byval lenEntered as integer, byval itemList as zstring ptr)
 declare sub wxStyledTextCtrl_AutoCompCancel cdecl alias "wxStyledTextCtrl_AutoCompCancel" (byval self as wxStyledTextCtrl ptr)
 declare function wxStyledTextCtrl_AutoCompActive cdecl alias "wxStyledTextCtrl_AutoCompActive" (byval self as wxStyledTextCtrl ptr) as integer
 declare function wxStyledTextCtrl_AutoCompPosStart cdecl alias "wxStyledTextCtrl_AutoCompPosStart" (byval self as wxStyledTextCtrl ptr) as integer
 declare sub wxStyledTextCtrl_AutoCompComplete cdecl alias "wxStyledTextCtrl_AutoCompComplete" (byval self as wxStyledTextCtrl ptr)
-declare sub wxStyledTextCtrl_AutoCompStops cdecl alias "wxStyledTextCtrl_AutoCompStops" (byval self as wxStyledTextCtrl ptr, byval characterSet as string)
+declare sub wxStyledTextCtrl_AutoCompStops cdecl alias "wxStyledTextCtrl_AutoCompStops" (byval self as wxStyledTextCtrl ptr, byval characterSet as zstring ptr)
 declare sub wxStyledTextCtrl_AutoCompSetSeparator cdecl alias "wxStyledTextCtrl_AutoCompSetSeparator" (byval self as wxStyledTextCtrl ptr, byval separatorCharacter as integer)
 declare function wxStyledTextCtrl_AutoCompGetSeparator cdecl alias "wxStyledTextCtrl_AutoCompGetSeparator" (byval self as wxStyledTextCtrl ptr) as integer
-declare sub wxStyledTextCtrl_AutoCompSelect cdecl alias "wxStyledTextCtrl_AutoCompSelect" (byval self as wxStyledTextCtrl ptr, byval text as string)
+declare sub wxStyledTextCtrl_AutoCompSelect cdecl alias "wxStyledTextCtrl_AutoCompSelect" (byval self as wxStyledTextCtrl ptr, byval text as zstring ptr)
 declare sub wxStyledTextCtrl_AutoCompSetCancelAtStart cdecl alias "wxStyledTextCtrl_AutoCompSetCancelAtStart" (byval self as wxStyledTextCtrl ptr, byval cancel as integer)
 declare function wxStyledTextCtrl_AutoCompGetCancelAtStart cdecl alias "wxStyledTextCtrl_AutoCompGetCancelAtStart" (byval self as wxStyledTextCtrl ptr) as integer
-declare sub wxStyledTextCtrl_AutoCompSetFillUps cdecl alias "wxStyledTextCtrl_AutoCompSetFillUps" (byval self as wxStyledTextCtrl ptr, byval characterSet as string)
+declare sub wxStyledTextCtrl_AutoCompSetFillUps cdecl alias "wxStyledTextCtrl_AutoCompSetFillUps" (byval self as wxStyledTextCtrl ptr, byval characterSet as zstring ptr)
 declare sub wxStyledTextCtrl_AutoCompSetChooseSingle cdecl alias "wxStyledTextCtrl_AutoCompSetChooseSingle" (byval self as wxStyledTextCtrl ptr, byval chooseSingle as integer)
 declare function wxStyledTextCtrl_AutoCompGetChooseSingle cdecl alias "wxStyledTextCtrl_AutoCompGetChooseSingle" (byval self as wxStyledTextCtrl ptr) as integer
 declare sub wxStyledTextCtrl_AutoCompSetIgnoreCase cdecl alias "wxStyledTextCtrl_AutoCompSetIgnoreCase" (byval self as wxStyledTextCtrl ptr, byval ignoreCase as integer)
 declare function wxStyledTextCtrl_AutoCompGetIgnoreCase cdecl alias "wxStyledTextCtrl_AutoCompGetIgnoreCase" (byval self as wxStyledTextCtrl ptr) as integer
-declare sub wxStyledTextCtrl_UserListShow cdecl alias "wxStyledTextCtrl_UserListShow" (byval self as wxStyledTextCtrl ptr, byval listType as integer, byval itemList as string)
+declare sub wxStyledTextCtrl_UserListShow cdecl alias "wxStyledTextCtrl_UserListShow" (byval self as wxStyledTextCtrl ptr, byval listType as integer, byval itemList as zstring ptr)
 declare sub wxStyledTextCtrl_AutoCompSetAutoHide cdecl alias "wxStyledTextCtrl_AutoCompSetAutoHide" (byval self as wxStyledTextCtrl ptr, byval autoHide as integer)
 declare function wxStyledTextCtrl_AutoCompGetAutoHide cdecl alias "wxStyledTextCtrl_AutoCompGetAutoHide" (byval self as wxStyledTextCtrl ptr) as integer
 declare sub wxStyledTextCtrl_AutoCompSetDropRestOfWord cdecl alias "wxStyledTextCtrl_AutoCompSetDropRestOfWord" (byval self as wxStyledTextCtrl ptr, byval dropRestOfWord as integer)
@@ -188,7 +188,7 @@ declare sub wxStyledTextCtrl_SetPrintMagnification cdecl alias "wxStyledTextCtrl
 declare function wxStyledTextCtrl_GetPrintMagnification cdecl alias "wxStyledTextCtrl_GetPrintMagnification" (byval self as wxStyledTextCtrl ptr) as integer
 declare sub wxStyledTextCtrl_SetPrintColourMode cdecl alias "wxStyledTextCtrl_SetPrintColourMode" (byval self as wxStyledTextCtrl ptr, byval mode as integer)
 declare function wxStyledTextCtrl_GetPrintColourMode cdecl alias "wxStyledTextCtrl_GetPrintColourMode" (byval self as wxStyledTextCtrl ptr) as integer
-declare function wxStyledTextCtrl_FindText cdecl alias "wxStyledTextCtrl_FindText" (byval self as wxStyledTextCtrl ptr, byval minPos as integer, byval maxPos as integer, byval text as string, byval flags as integer) as integer
+declare function wxStyledTextCtrl_FindText cdecl alias "wxStyledTextCtrl_FindText" (byval self as wxStyledTextCtrl ptr, byval minPos as integer, byval maxPos as integer, byval text as zstring ptr, byval flags as integer) as integer
 ''''''' declare function wxStyledTextCtrl_FormatRange cdecl alias "wxStyledTextCtrl_FormatRange" (byval self as wxStyledTextCtrl ptr, byval doDraw as integer, byval startPos as integer, byval endPos as integer, byval draw as wxDC ptr, byval target as wxDC ptr, byval renderRect as wxRect, byval pageRect as wxRect) as integer
 declare function wxStyledTextCtrl_GetFirstVisibleLine cdecl alias "wxStyledTextCtrl_GetFirstVisibleLine" (byval self as wxStyledTextCtrl ptr) as integer
 declare function wxStyledTextCtrl_GetLine cdecl alias "wxStyledTextCtrl_GetLine" (byval self as wxStyledTextCtrl ptr, byval line as integer) as wxString ptr
@@ -206,7 +206,7 @@ declare function wxStyledTextCtrl_LineFromPosition cdecl alias "wxStyledTextCtrl
 declare function wxStyledTextCtrl_PositionFromLine cdecl alias "wxStyledTextCtrl_PositionFromLine" (byval self as wxStyledTextCtrl ptr, byval line as integer) as integer
 declare sub wxStyledTextCtrl_LineScroll cdecl alias "wxStyledTextCtrl_LineScroll" (byval self as wxStyledTextCtrl ptr, byval columns as integer, byval lines as integer)
 declare sub wxStyledTextCtrl_EnsureCaretVisible cdecl alias "wxStyledTextCtrl_EnsureCaretVisible" (byval self as wxStyledTextCtrl ptr)
-declare sub wxStyledTextCtrl_ReplaceSelection cdecl alias "wxStyledTextCtrl_ReplaceSelection" (byval self as wxStyledTextCtrl ptr, byval text as string)
+declare sub wxStyledTextCtrl_ReplaceSelection cdecl alias "wxStyledTextCtrl_ReplaceSelection" (byval self as wxStyledTextCtrl ptr, byval text as zstring ptr)
 declare sub wxStyledTextCtrl_SetReadOnly cdecl alias "wxStyledTextCtrl_SetReadOnly" (byval self as wxStyledTextCtrl ptr, byval readOnly as integer)
 declare function wxStyledTextCtrl_CanPaste cdecl alias "wxStyledTextCtrl_CanPaste" (byval self as wxStyledTextCtrl ptr) as integer
 declare function wxStyledTextCtrl_CanUndo cdecl alias "wxStyledTextCtrl_CanUndo" (byval self as wxStyledTextCtrl ptr) as integer
@@ -216,7 +216,7 @@ declare sub wxStyledTextCtrl_Cut cdecl alias "wxStyledTextCtrl_Cut" (byval self 
 declare sub wxStyledTextCtrl_Copy cdecl alias "wxStyledTextCtrl_Copy" (byval self as wxStyledTextCtrl ptr)
 declare sub wxStyledTextCtrl_Paste cdecl alias "wxStyledTextCtrl_Paste" (byval self as wxStyledTextCtrl ptr)
 declare sub wxStyledTextCtrl_Clear cdecl alias "wxStyledTextCtrl_Clear" (byval self as wxStyledTextCtrl ptr)
-declare sub wxStyledTextCtrl_SetText cdecl alias "wxStyledTextCtrl_SetText" (byval self as wxStyledTextCtrl ptr, byval text as string)
+declare sub wxStyledTextCtrl_SetText cdecl alias "wxStyledTextCtrl_SetText" (byval self as wxStyledTextCtrl ptr, byval text as zstring ptr)
 declare function wxStyledTextCtrl_GetText cdecl alias "wxStyledTextCtrl_GetText" (byval self as wxStyledTextCtrl ptr) as wxString ptr
 declare function wxStyledTextCtrl_GetTextLength cdecl alias "wxStyledTextCtrl_GetTextLength" (byval self as wxStyledTextCtrl ptr) as integer
 declare sub wxStyledTextCtrl_SetOvertype cdecl alias "wxStyledTextCtrl_SetOvertype" (byval self as wxStyledTextCtrl ptr, byval overtype as integer)
@@ -227,12 +227,12 @@ declare sub wxStyledTextCtrl_SetTargetStart cdecl alias "wxStyledTextCtrl_SetTar
 declare function wxStyledTextCtrl_GetTargetStart cdecl alias "wxStyledTextCtrl_GetTargetStart" (byval self as wxStyledTextCtrl ptr) as integer
 declare sub wxStyledTextCtrl_SetTargetEnd cdecl alias "wxStyledTextCtrl_SetTargetEnd" (byval self as wxStyledTextCtrl ptr, byval pos as integer)
 declare function wxStyledTextCtrl_GetTargetEnd cdecl alias "wxStyledTextCtrl_GetTargetEnd" (byval self as wxStyledTextCtrl ptr) as integer
-declare function wxStyledTextCtrl_ReplaceTarget cdecl alias "wxStyledTextCtrl_ReplaceTarget" (byval self as wxStyledTextCtrl ptr, byval text as string) as integer
-declare function wxStyledTextCtrl_ReplaceTargetRE cdecl alias "wxStyledTextCtrl_ReplaceTargetRE" (byval self as wxStyledTextCtrl ptr, byval text as string) as integer
-declare function wxStyledTextCtrl_SearchInTarget cdecl alias "wxStyledTextCtrl_SearchInTarget" (byval self as wxStyledTextCtrl ptr, byval text as string) as integer
+declare function wxStyledTextCtrl_ReplaceTarget cdecl alias "wxStyledTextCtrl_ReplaceTarget" (byval self as wxStyledTextCtrl ptr, byval text as zstring ptr) as integer
+declare function wxStyledTextCtrl_ReplaceTargetRE cdecl alias "wxStyledTextCtrl_ReplaceTargetRE" (byval self as wxStyledTextCtrl ptr, byval text as zstring ptr) as integer
+declare function wxStyledTextCtrl_SearchInTarget cdecl alias "wxStyledTextCtrl_SearchInTarget" (byval self as wxStyledTextCtrl ptr, byval text as zstring ptr) as integer
 declare sub wxStyledTextCtrl_SetSearchFlags cdecl alias "wxStyledTextCtrl_SetSearchFlags" (byval self as wxStyledTextCtrl ptr, byval flags as integer)
 declare function wxStyledTextCtrl_GetSearchFlags cdecl alias "wxStyledTextCtrl_GetSearchFlags" (byval self as wxStyledTextCtrl ptr) as integer
-declare sub wxStyledTextCtrl_CallTipShow cdecl alias "wxStyledTextCtrl_CallTipShow" (byval self as wxStyledTextCtrl ptr, byval pos as integer, byval definition as string)
+declare sub wxStyledTextCtrl_CallTipShow cdecl alias "wxStyledTextCtrl_CallTipShow" (byval self as wxStyledTextCtrl ptr, byval pos as integer, byval definition as zstring ptr)
 declare sub wxStyledTextCtrl_CallTipCancel cdecl alias "wxStyledTextCtrl_CallTipCancel" (byval self as wxStyledTextCtrl ptr)
 declare function wxStyledTextCtrl_CallTipActive cdecl alias "wxStyledTextCtrl_CallTipActive" (byval self as wxStyledTextCtrl ptr) as integer
 declare function wxStyledTextCtrl_CallTipPosAtStart cdecl alias "wxStyledTextCtrl_CallTipPosAtStart" (byval self as wxStyledTextCtrl ptr) as integer
@@ -269,13 +269,13 @@ declare sub wxStyledTextCtrl_SetLayoutCache cdecl alias "wxStyledTextCtrl_SetLay
 declare function wxStyledTextCtrl_GetLayoutCache cdecl alias "wxStyledTextCtrl_GetLayoutCache" (byval self as wxStyledTextCtrl ptr) as integer
 declare sub wxStyledTextCtrl_SetScrollWidth cdecl alias "wxStyledTextCtrl_SetScrollWidth" (byval self as wxStyledTextCtrl ptr, byval pixelWidth as integer)
 declare function wxStyledTextCtrl_GetScrollWidth cdecl alias "wxStyledTextCtrl_GetScrollWidth" (byval self as wxStyledTextCtrl ptr) as integer
-declare function wxStyledTextCtrl_TextWidth cdecl alias "wxStyledTextCtrl_TextWidth" (byval self as wxStyledTextCtrl ptr, byval style as integer, byval text as string) as integer
+declare function wxStyledTextCtrl_TextWidth cdecl alias "wxStyledTextCtrl_TextWidth" (byval self as wxStyledTextCtrl ptr, byval style as integer, byval text as zstring ptr) as integer
 declare sub wxStyledTextCtrl_SetEndAtLastLine cdecl alias "wxStyledTextCtrl_SetEndAtLastLine" (byval self as wxStyledTextCtrl ptr, byval endAtLastLine as integer)
 declare function wxStyledTextCtrl_GetEndAtLastLine cdecl alias "wxStyledTextCtrl_GetEndAtLastLine" (byval self as wxStyledTextCtrl ptr) as integer
 declare function wxStyledTextCtrl_TextHeight cdecl alias "wxStyledTextCtrl_TextHeight" (byval self as wxStyledTextCtrl ptr, byval line as integer) as integer
 declare sub wxStyledTextCtrl_SetUseVerticalScrollBar cdecl alias "wxStyledTextCtrl_SetUseVerticalScrollBar" (byval self as wxStyledTextCtrl ptr, byval show as integer)
 declare function wxStyledTextCtrl_GetUseVerticalScrollBar cdecl alias "wxStyledTextCtrl_GetUseVerticalScrollBar" (byval self as wxStyledTextCtrl ptr) as integer
-declare sub wxStyledTextCtrl_AppendText cdecl alias "wxStyledTextCtrl_AppendText" (byval self as wxStyledTextCtrl ptr, byval length as integer, byval text as string)
+declare sub wxStyledTextCtrl_AppendText cdecl alias "wxStyledTextCtrl_AppendText" (byval self as wxStyledTextCtrl ptr, byval length as integer, byval text as zstring ptr)
 declare function wxStyledTextCtrl_GetTwoPhaseDraw cdecl alias "wxStyledTextCtrl_GetTwoPhaseDraw" (byval self as wxStyledTextCtrl ptr) as integer
 declare sub wxStyledTextCtrl_SetTwoPhaseDraw cdecl alias "wxStyledTextCtrl_SetTwoPhaseDraw" (byval self as wxStyledTextCtrl ptr, byval twoPhase as integer)
 declare sub wxStyledTextCtrl_TargetFromSelection cdecl alias "wxStyledTextCtrl_TargetFromSelection" (byval self as wxStyledTextCtrl ptr)
@@ -305,8 +305,8 @@ declare sub wxStyledTextCtrl_SetEdgeMode cdecl alias "wxStyledTextCtrl_SetEdgeMo
 declare function wxStyledTextCtrl_GetEdgeColour cdecl alias "wxStyledTextCtrl_GetEdgeColour" (byval self as wxStyledTextCtrl ptr) as wxColour ptr
 declare sub wxStyledTextCtrl_SetEdgeColour cdecl alias "wxStyledTextCtrl_SetEdgeColour" (byval self as wxStyledTextCtrl ptr, byval edgeColour as wxColour ptr)
 declare sub wxStyledTextCtrl_SearchAnchor cdecl alias "wxStyledTextCtrl_SearchAnchor" (byval self as wxStyledTextCtrl ptr)
-declare function wxStyledTextCtrl_SearchNext cdecl alias "wxStyledTextCtrl_SearchNext" (byval self as wxStyledTextCtrl ptr, byval flags as integer, byval text as string) as integer
-declare function wxStyledTextCtrl_SearchPrev cdecl alias "wxStyledTextCtrl_SearchPrev" (byval self as wxStyledTextCtrl ptr, byval flags as integer, byval text as string) as integer
+declare function wxStyledTextCtrl_SearchNext cdecl alias "wxStyledTextCtrl_SearchNext" (byval self as wxStyledTextCtrl ptr, byval flags as integer, byval text as zstring ptr) as integer
+declare function wxStyledTextCtrl_SearchPrev cdecl alias "wxStyledTextCtrl_SearchPrev" (byval self as wxStyledTextCtrl ptr, byval flags as integer, byval text as zstring ptr) as integer
 declare function wxStyledTextCtrl_LinesOnScreen cdecl alias "wxStyledTextCtrl_LinesOnScreen" (byval self as wxStyledTextCtrl ptr) as integer
 declare sub wxStyledTextCtrl_UsePopUp cdecl alias "wxStyledTextCtrl_UsePopUp" (byval self as wxStyledTextCtrl ptr, byval allowPopUp as integer)
 declare function wxStyledTextCtrl_SelectionIsRectangle cdecl alias "wxStyledTextCtrl_SelectionIsRectangle" (byval self as wxStyledTextCtrl ptr) as integer
@@ -348,13 +348,13 @@ declare sub wxStyledTextCtrl_StopRecord cdecl alias "wxStyledTextCtrl_StopRecord
 declare sub wxStyledTextCtrl_SetLexer cdecl alias "wxStyledTextCtrl_SetLexer" (byval self as wxStyledTextCtrl ptr, byval lexer as integer)
 declare function wxStyledTextCtrl_GetLexer cdecl alias "wxStyledTextCtrl_GetLexer" (byval self as wxStyledTextCtrl ptr) as integer
 declare sub wxStyledTextCtrl_Colourise cdecl alias "wxStyledTextCtrl_Colourise" (byval self as wxStyledTextCtrl ptr, byval start as integer, byval end as integer)
-declare sub wxStyledTextCtrl_SetProperty cdecl alias "wxStyledTextCtrl_SetProperty" (byval self as wxStyledTextCtrl ptr, byval key as string, byval value as string)
-declare sub wxStyledTextCtrl_SetKeyWords cdecl alias "wxStyledTextCtrl_SetKeyWords" (byval self as wxStyledTextCtrl ptr, byval keywordSet as integer, byval keyWords as string)
-declare sub wxStyledTextCtrl_SetLexerLanguage cdecl alias "wxStyledTextCtrl_SetLexerLanguage" (byval self as wxStyledTextCtrl ptr, byval language as string)
+declare sub wxStyledTextCtrl_SetProperty cdecl alias "wxStyledTextCtrl_SetProperty" (byval self as wxStyledTextCtrl ptr, byval key as zstring ptr, byval value as zstring ptr)
+declare sub wxStyledTextCtrl_SetKeyWords cdecl alias "wxStyledTextCtrl_SetKeyWords" (byval self as wxStyledTextCtrl ptr, byval keywordSet as integer, byval keyWords as zstring ptr)
+declare sub wxStyledTextCtrl_SetLexerLanguage cdecl alias "wxStyledTextCtrl_SetLexerLanguage" (byval self as wxStyledTextCtrl ptr, byval language as zstring ptr)
 declare function wxStyledTextCtrl_GetCurrentLine cdecl alias "wxStyledTextCtrl_GetCurrentLine" (byval self as wxStyledTextCtrl ptr) as integer
-declare sub wxStyledTextCtrl_StyleSetSpec cdecl alias "wxStyledTextCtrl_StyleSetSpec" (byval self as wxStyledTextCtrl ptr, byval styleNum as integer, byval spec as string)
+declare sub wxStyledTextCtrl_StyleSetSpec cdecl alias "wxStyledTextCtrl_StyleSetSpec" (byval self as wxStyledTextCtrl ptr, byval styleNum as integer, byval spec as zstring ptr)
 declare sub wxStyledTextCtrl_StyleSetFont cdecl alias "wxStyledTextCtrl_StyleSetFont" (byval self as wxStyledTextCtrl ptr, byval styleNum as integer, byval font as wxFont ptr)
-declare sub wxStyledTextCtrl_StyleSetFontAttr cdecl alias "wxStyledTextCtrl_StyleSetFontAttr" (byval self as wxStyledTextCtrl ptr, byval styleNum as integer, byval size as integer, byval faceName as string, byval bold as integer, byval italic as integer, byval underline as integer)
+declare sub wxStyledTextCtrl_StyleSetFontAttr cdecl alias "wxStyledTextCtrl_StyleSetFontAttr" (byval self as wxStyledTextCtrl ptr, byval styleNum as integer, byval size as integer, byval faceName as zstring ptr, byval bold as integer, byval italic as integer, byval underline as integer)
 declare sub wxStyledTextCtrl_CmdKeyExecute cdecl alias "wxStyledTextCtrl_CmdKeyExecute" (byval self as wxStyledTextCtrl ptr, byval cmd as integer)
 declare sub wxStyledTextCtrl_SetMargins cdecl alias "wxStyledTextCtrl_SetMargins" (byval self as wxStyledTextCtrl ptr, byval left as integer, byval right as integer)
 declare sub wxStyledTextCtrl_GetSelection cdecl alias "wxStyledTextCtrl_GetSelection" (byval self as wxStyledTextCtrl ptr, byval startPos as integer ptr, byval endPos as integer ptr)
@@ -366,14 +366,14 @@ declare sub wxStyledTextCtrl_SetVScrollBar cdecl alias "wxStyledTextCtrl_SetVScr
 declare sub wxStyledTextCtrl_SetHScrollBar cdecl alias "wxStyledTextCtrl_SetHScrollBar" (byval self as wxStyledTextCtrl ptr, byval bar as wxScrollBar ptr)
 declare function wxStyledTextCtrl_GetLastKeydownProcessed cdecl alias "wxStyledTextCtrl_GetLastKeydownProcessed" (byval self as wxStyledTextCtrl ptr) as integer
 declare sub wxStyledTextCtrl_SetLastKeydownProcessed cdecl alias "wxStyledTextCtrl_SetLastKeydownProcessed" (byval self as wxStyledTextCtrl ptr, byval val as integer)
-declare function wxStyledTextCtrl_SaveFile cdecl alias "wxStyledTextCtrl_SaveFile" (byval self as wxStyledTextCtrl ptr, byval filename as string) as integer
-declare function wxStyledTextCtrl_LoadFile cdecl alias "wxStyledTextCtrl_LoadFile" (byval self as wxStyledTextCtrl ptr, byval filename as string) as integer
+declare function wxStyledTextCtrl_SaveFile cdecl alias "wxStyledTextCtrl_SaveFile" (byval self as wxStyledTextCtrl ptr, byval filename as zstring ptr) as integer
+declare function wxStyledTextCtrl_LoadFile cdecl alias "wxStyledTextCtrl_LoadFile" (byval self as wxStyledTextCtrl ptr, byval filename as zstring ptr) as integer
 declare function wxStyledTextEvent cdecl alias "wxStyledTextEvent_ctor" (byval commandType as wxEventType, byval id as integer) as wxStyledTextEvent ptr
 declare sub wxStyledTextEvent_SetPosition cdecl alias "wxStyledTextEvent_SetPosition" (byval self as wxStyledTextEvent ptr, byval pos as integer)
 declare sub wxStyledTextEvent_SetKey cdecl alias "wxStyledTextEvent_SetKey" (byval self as wxStyledTextEvent ptr, byval k as integer)
 declare sub wxStyledTextEvent_SetModifiers cdecl alias "wxStyledTextEvent_SetModifiers" (byval self as wxStyledTextEvent ptr, byval m as integer)
 declare sub wxStyledTextEvent_SetModificationType cdecl alias "wxStyledTextEvent_SetModificationType" (byval self as wxStyledTextEvent ptr, byval t as integer)
-declare sub wxStyledTextEvent_SetText cdecl alias "wxStyledTextEvent_SetText" (byval self as wxStyledTextEvent ptr, byval t as string)
+declare sub wxStyledTextEvent_SetText cdecl alias "wxStyledTextEvent_SetText" (byval self as wxStyledTextEvent ptr, byval t as zstring ptr)
 declare sub wxStyledTextEvent_SetLength cdecl alias "wxStyledTextEvent_SetLength" (byval self as wxStyledTextEvent ptr, byval len as integer)
 declare sub wxStyledTextEvent_SetLinesAdded cdecl alias "wxStyledTextEvent_SetLinesAdded" (byval self as wxStyledTextEvent ptr, byval num as integer)
 declare sub wxStyledTextEvent_SetLine cdecl alias "wxStyledTextEvent_SetLine" (byval self as wxStyledTextEvent ptr, byval val as integer)
@@ -386,7 +386,7 @@ declare sub wxStyledTextEvent_SetLParam cdecl alias "wxStyledTextEvent_SetLParam
 declare sub wxStyledTextEvent_SetListType cdecl alias "wxStyledTextEvent_SetListType" (byval self as wxStyledTextEvent ptr, byval val as integer)
 declare sub wxStyledTextEvent_SetX cdecl alias "wxStyledTextEvent_SetX" (byval self as wxStyledTextEvent ptr, byval val as integer)
 declare sub wxStyledTextEvent_SetY cdecl alias "wxStyledTextEvent_SetY" (byval self as wxStyledTextEvent ptr, byval val as integer)
-declare sub wxStyledTextEvent_SetDragText cdecl alias "wxStyledTextEvent_SetDragText" (byval self as wxStyledTextEvent ptr, byval val as string)
+declare sub wxStyledTextEvent_SetDragText cdecl alias "wxStyledTextEvent_SetDragText" (byval self as wxStyledTextEvent ptr, byval val as zstring ptr)
 declare sub wxStyledTextEvent_SetDragAllowMove cdecl alias "wxStyledTextEvent_SetDragAllowMove" (byval self as wxStyledTextEvent ptr, byval val as integer)
 declare sub wxStyledTextEvent_SetDragResult cdecl alias "wxStyledTextEvent_SetDragResult" (byval self as wxStyledTextEvent ptr, byval val as wxDragResult)
 declare function wxStyledTextEvent_GetPosition cdecl alias "wxStyledTextEvent_GetPosition" (byval self as wxStyledTextEvent ptr) as integer

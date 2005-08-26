@@ -42,11 +42,11 @@ declare function gtk_rc_property_parse_enum cdecl alias "gtk_rc_property_parse_e
 declare function gtk_rc_property_parse_flags cdecl alias "gtk_rc_property_parse_flags" (byval pspec as GParamSpec ptr, byval gstring as GString ptr, byval property_value as GValue ptr) as gboolean
 declare function gtk_rc_property_parse_requisition cdecl alias "gtk_rc_property_parse_requisition" (byval pspec as GParamSpec ptr, byval gstring as GString ptr, byval property_value as GValue ptr) as gboolean
 declare function gtk_rc_property_parse_border cdecl alias "gtk_rc_property_parse_border" (byval pspec as GParamSpec ptr, byval gstring as GString ptr, byval property_value as GValue ptr) as gboolean
-declare sub gtk_settings_set_property_value cdecl alias "gtk_settings_set_property_value" (byval settings as GtkSettings ptr, byval name as string, byval svalue as GtkSettingsValue ptr)
-declare sub gtk_settings_set_string_property cdecl alias "gtk_settings_set_string_property" (byval settings as GtkSettings ptr, byval name as string, byval v_string as string, byval origin as string)
-declare sub gtk_settings_set_long_property cdecl alias "gtk_settings_set_long_property" (byval settings as GtkSettings ptr, byval name as string, byval v_long as glong, byval origin as string)
-declare sub gtk_settings_set_double_property cdecl alias "gtk_settings_set_double_property" (byval settings as GtkSettings ptr, byval name as string, byval v_double as gdouble, byval origin as string)
-declare sub _gtk_settings_set_property_value_from_rc cdecl alias "_gtk_settings_set_property_value_from_rc" (byval settings as GtkSettings ptr, byval name as string, byval svalue as GtkSettingsValue ptr)
+declare sub gtk_settings_set_property_value cdecl alias "gtk_settings_set_property_value" (byval settings as GtkSettings ptr, byval name as zstring ptr, byval svalue as GtkSettingsValue ptr)
+declare sub gtk_settings_set_string_property cdecl alias "gtk_settings_set_string_property" (byval settings as GtkSettings ptr, byval name as zstring ptr, byval v_string as zstring ptr, byval origin as zstring ptr)
+declare sub gtk_settings_set_long_property cdecl alias "gtk_settings_set_long_property" (byval settings as GtkSettings ptr, byval name as zstring ptr, byval v_long as glong, byval origin as zstring ptr)
+declare sub gtk_settings_set_double_property cdecl alias "gtk_settings_set_double_property" (byval settings as GtkSettings ptr, byval name as zstring ptr, byval v_double as gdouble, byval origin as zstring ptr)
+declare sub _gtk_settings_set_property_value_from_rc cdecl alias "_gtk_settings_set_property_value_from_rc" (byval settings as GtkSettings ptr, byval name as zstring ptr, byval svalue as GtkSettingsValue ptr)
 declare sub _gtk_settings_reset_rc_values cdecl alias "_gtk_settings_reset_rc_values" (byval settings as GtkSettings ptr)
 declare sub _gtk_settings_handle_event cdecl alias "_gtk_settings_handle_event" (byval event as GdkEventSetting ptr)
 declare function _gtk_rc_property_parser_from_type cdecl alias "_gtk_rc_property_parser_from_type" (byval type as GType) as GtkRcPropertyParser

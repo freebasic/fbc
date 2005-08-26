@@ -61,64 +61,87 @@ declare sub dhUninitialize cdecl alias "dhUninitialize" (byval bUninitializeCOM 
 
 #define SAFE_FREE_STRING(s) dhFreeString(s): s = NULL
 
-#define WITH0(objName, pDisp, szMember) scope :_
-	DISPATCH_OBJ(objName)					  :_
-	if (SUCCEEDED(dhGetValue("%o", @objName, pDisp, szMember))) then
+#define WITH0(objName, pDisp, szMember) _
+	scope 																						:_
+		DISPATCH_OBJ(objName)					  												:_
+		if( SUCCEEDED(dhGetValue("%o", @objName, pDisp, szMember)) ) then
 
-#define WITH1(objName, pDisp, szMember, arg1) scope :_
-	DISPATCH_OBJ(objName)							:_
-	if (SUCCEEDED(dhGetValue("%o", @objName, pDisp, szMember, arg1))) then
+#define WITH1(objName, pDisp, szMember, arg1) _
+	scope 																						:_
+		DISPATCH_OBJ(objName)																	:_
+		if( SUCCEEDED(dhGetValue("%o", @objName, pDisp, szMember, arg1)) ) then
 
-#define WITH2(objName, pDisp, szMember, arg1, arg2) scope 	:_
-	DISPATCH_OBJ(objName)									:_
-	if (SUCCEEDED(dhGetValue("%o", @objName, pDisp, szMember, arg1, arg2)) then
+#define WITH2(objName, pDisp, szMember, arg1, arg2) _
+	scope																						:_
+		DISPATCH_OBJ(objName)																	:_
+		if( SUCCEEDED(dhGetValue("%o", @objName, pDisp, szMember, arg1, arg2) ) then
 
-#define WITH3(objName, pDisp, szMember, arg1, arg2, arg3) scope :_
-		DISPATCH_OBJ(objName)									:_
-	if (SUCCEEDED(dhGetValue("%o", @objName, pDisp, szMember, arg1, arg2, arg3))) then
+#define WITH3(objName, pDisp, szMember, arg1, arg2, arg3) _
+	scope 																						:_
+		DISPATCH_OBJ(objName)																	:_
+		if( SUCCEEDED(dhGetValue("%o", @objName, pDisp, szMember, arg1, arg2, arg3)) ) then
 
-#define WITH4(objName, pDisp, szMember, arg1, arg2, arg3, arg4) scope   :_
-	DISPATCH_OBJ(objName)												:_
-	if (SUCCEEDED(dhGetValue("%o", @objName, pDisp, szMember, arg1, arg2, arg3, arg4))) then
+#define WITH4(objName, pDisp, szMember, arg1, arg2, arg3, arg4) _
+	scope																						:_
+		DISPATCH_OBJ(objName)																	:_
+		if( SUCCEEDED(dhGetValue("%o", @objName, pDisp, szMember, arg1, arg2, arg3, arg4)) ) then
 
-#define ON_WITH_ERROR(objName) else
+#define ON_WITH_ERROR(objName) _
+		else
 
-#define END_WITH(objName) end if : SAFE_RELEASE(objName) : end scope
+#define END_WITH(objName) _
+		end if 					:_ 
+		SAFE_RELEASE(objName) 	:_
+	end scope
 
 
-#define FOR_EACH0(objName, pDisp, szMember) escope :_
-	dim as IEnumVARIANT ptr xx_pEnum_xx = NULL    :_
-	DISPATCH_OBJ(objName)                :_
-	if (SUCCEEDED(dhEnumBegin(@xx_pEnum_xx, pDisp, szMember))) then :_
-		do while(dhEnumNextObject(xx_pEnum_xx, @objName) = NOERROR)
+#define FOR_EACH0(objName, pDisp, szMember) _
+	escope 																						:_
+		dim as IEnumVARIANT ptr xx_pEnum_xx = NULL    											:_
+		DISPATCH_OBJ(objName)                													:_
+		if (SUCCEEDED(dhEnumBegin(@xx_pEnum_xx, pDisp, szMember))) then 						:_
+			do while(dhEnumNextObject(xx_pEnum_xx, @objName) = NOERROR)
 
-#define FOR_EACH1(objName, pDisp, szMember, arg1) escope :_
-	dim as IEnumVARIANT ptr xx_pEnum_xx = NULL          :_
-	DISPATCH_OBJ(objName)                      :_
-	if (SUCCEEDED(dhEnumBegin(@xx_pEnum_xx, pDisp, szMember, arg1))) then :_
-		do while(dhEnumNextObject(xx_pEnum_xx, @objName) = NOERROR)
+#define FOR_EACH1(objName, pDisp, szMember, arg1) _
+	escope 																						:_
+		dim as IEnumVARIANT ptr xx_pEnum_xx = NULL          									:_
+		DISPATCH_OBJ(objName)                      												:_
+		if (SUCCEEDED(dhEnumBegin(@xx_pEnum_xx, pDisp, szMember, arg1))) then 					:_
+			do while(dhEnumNextObject(xx_pEnum_xx, @objName) = NOERROR)
 
-#define FOR_EACH2(objName, pDisp, szMember, arg1, arg2) escope :_
-	dim as IEnumVARIANT ptr xx_pEnum_xx = NULL          :_
-	DISPATCH_OBJ(objName)                      :_
-	if (SUCCEEDED(dhEnumBegin(@xx_pEnum_xx, pDisp, szMember, arg1, arg2))) then :_
-		do while(dhEnumNextObject(xx_pEnum_xx, @objName) = NOERROR)
+#define FOR_EACH2(objName, pDisp, szMember, arg1, arg2) _
+	escope 																						:_
+		dim as IEnumVARIANT ptr xx_pEnum_xx = NULL          									:_
+		DISPATCH_OBJ(objName)                      												:_
+		if (SUCCEEDED(dhEnumBegin(@xx_pEnum_xx, pDisp, szMember, arg1, arg2))) then 			:_
+			do while(dhEnumNextObject(xx_pEnum_xx, @objName) = NOERROR)
 
-#define FOR_EACH3(objName, pDisp, szMember, arg1, arg2, arg3) escope :_
-	dim as IEnumVARIANT ptr xx_pEnum_xx = NULL          :_
-	DISPATCH_OBJ(objName)                      :_
-	if (SUCCEEDED(dhEnumBegin(@xx_pEnum_xx, pDisp, szMember, arg1, arg2, arg3))) then :_
-		do while(dhEnumNextObject(xx_pEnum_xx, @objName) = NOERROR)
+#define FOR_EACH3(objName, pDisp, szMember, arg1, arg2, arg3) _
+	escope 																						:_
+		dim as IEnumVARIANT ptr xx_pEnum_xx = NULL          									:_
+		DISPATCH_OBJ(objName)                      												:_
+		if (SUCCEEDED(dhEnumBegin(@xx_pEnum_xx, pDisp, szMember, arg1, arg2, arg3))) then		:_
+			do while(dhEnumNextObject(xx_pEnum_xx, @objName) = NOERROR)
 
-#define FOR_EACH4(objName, pDisp, szMember, arg1, arg2, arg3, arg4) escope :_
-	dim as IEnumVARIANT ptr xx_pEnum_xx = NULL          :_
-	DISPATCH_OBJ(objName)                      :_
-	if (SUCCEEDED(dhEnumBegin(@xx_pEnum_xx, pDisp, szMember, arg1, arg2, arg3, arg4))) then :_
-		do while(dhEnumNextObject(xx_pEnum_xx, @objName) = NOERROR)
+#define FOR_EACH4(objName, pDisp, szMember, arg1, arg2, arg3, arg4) _
+	escope 																						:_
+		dim as IEnumVARIANT ptr xx_pEnum_xx = NULL          									:_
+		DISPATCH_OBJ(objName)                      												:_
+		if (SUCCEEDED(dhEnumBegin(@xx_pEnum_xx, pDisp, szMember, arg1, arg2, arg3, arg4))) then :_
+			do while(dhEnumNextObject(xx_pEnum_xx, @objName) = NOERROR)
 
-#define ON_FOR_EACH_ERROR(objName) SAFE_RELEASE(objName) : loop : else : do while 0
+#define ON_FOR_EACH_ERROR(objName) _
+				SAFE_RELEASE(objName) 	:_
+			loop 						:_
+		else 							:_
+			do while 0
 
-#define NEXT_(objName) SAFE_RELEASE(objName) loop: end if : SAFE_RELEASE(objName) : SAFE_RELEASE(xx_pEnum_xx) : end scope
+#define NEXT_(objName) SAFE_RELEASE(objName) _
+			loop					:_
+		end if 						:_
+		SAFE_RELEASE(objName) 		:_
+		SAFE_RELEASE(xx_pEnum_xx) 	:_
+	end scope
 
 
 

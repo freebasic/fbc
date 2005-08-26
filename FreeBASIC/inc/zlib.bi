@@ -121,14 +121,14 @@ declare function uncompress cdecl alias "uncompress" (byval dest as Bytef ptr, b
 
 type gzFile as voidp
 
-declare function gzopen cdecl alias "gzopen" (byval path as string, byval mode as string) as gzFile
-declare function gzdopen cdecl alias "gzdopen" (byval fd as integer, byval mode as string) as gzFile
+declare function gzopen cdecl alias "gzopen" (byval path as zstring ptr, byval mode as zstring ptr) as gzFile
+declare function gzdopen cdecl alias "gzdopen" (byval fd as integer, byval mode as zstring ptr) as gzFile
 declare function gzsetparams cdecl alias "gzsetparams" (byval file as gzFile, byval level as integer, byval strategy as integer) as integer
 declare function gzread cdecl alias "gzread" (byval file as gzFile, byval buf as voidp, byval len as uinteger) as integer
 declare function gzwrite cdecl alias "gzwrite" (byval file as gzFile, byval buf as voidpc, byval len as uinteger) as integer
-declare function gzprintf cdecl alias "gzprintf" (byval file as gzFile, byval format as string, ...) as integer
-declare function gzputs cdecl alias "gzputs" (byval file as gzFile, byval s as string) as integer
-declare function gzgets cdecl alias "gzgets" (byval file as gzFile, byval buf as string, byval len as integer) as zstring ptr
+declare function gzprintf cdecl alias "gzprintf" (byval file as gzFile, byval format as zstring ptr, ...) as integer
+declare function gzputs cdecl alias "gzputs" (byval file as gzFile, byval s as zstring ptr) as integer
+declare function gzgets cdecl alias "gzgets" (byval file as gzFile, byval buf as zstring ptr, byval len as integer) as zstring ptr
 declare function gzputc cdecl alias "gzputc" (byval file as gzFile, byval c as integer) as integer
 declare function gzgetc cdecl alias "gzgetc" (byval file as gzFile) as integer
 declare function gzungetc cdecl alias "gzungetc" (byval c as integer, byval file as gzFile) as integer
@@ -142,11 +142,11 @@ declare function gzerror cdecl alias "gzerror" (byval file as gzFile, byval errn
 declare sub gzclearerr cdecl alias "gzclearerr" (byval file as gzFile)
 declare function adler32 cdecl alias "adler32" (byval adler as uLong, byval buf as Bytef ptr, byval len as uInt) as uLong
 declare function crc32 cdecl alias "crc32" (byval crc as uLong, byval buf as Bytef ptr, byval len as uInt) as uLong
-declare function deflateInit_ cdecl alias "deflateInit_" (byval strm as z_streamp, byval level as integer, byval version as string, byval stream_size as integer) as integer
-declare function inflateInit_ cdecl alias "inflateInit_" (byval strm as z_streamp, byval version as string, byval stream_size as integer) as integer
-declare function deflateInit2_ cdecl alias "deflateInit2_" (byval strm as z_streamp, byval level as integer, byval method as integer, byval windowBits as integer, byval memLevel as integer, byval strategy as integer, byval version as string, byval stream_size as integer) as integer
-declare function inflateInit2_ cdecl alias "inflateInit2_" (byval strm as z_streamp, byval windowBits as integer, byval version as string, byval stream_size as integer) as integer
-declare function inflateBackInit_ cdecl alias "inflateBackInit_" (byval strm as z_stream ptr, byval windowBits as integer, byval window as ubyte ptr, byval version as string, byval stream_size as integer) as integer
+declare function deflateInit_ cdecl alias "deflateInit_" (byval strm as z_streamp, byval level as integer, byval version as zstring ptr, byval stream_size as integer) as integer
+declare function inflateInit_ cdecl alias "inflateInit_" (byval strm as z_streamp, byval version as zstring ptr, byval stream_size as integer) as integer
+declare function deflateInit2_ cdecl alias "deflateInit2_" (byval strm as z_streamp, byval level as integer, byval method as integer, byval windowBits as integer, byval memLevel as integer, byval strategy as integer, byval version as zstring ptr, byval stream_size as integer) as integer
+declare function inflateInit2_ cdecl alias "inflateInit2_" (byval strm as z_streamp, byval windowBits as integer, byval version as zstring ptr, byval stream_size as integer) as integer
+declare function inflateBackInit_ cdecl alias "inflateBackInit_" (byval strm as z_stream ptr, byval windowBits as integer, byval window as ubyte ptr, byval version as zstring ptr, byval stream_size as integer) as integer
 
 declare function zError cdecl alias "zError" (byval as integer) as zstring ptr
 declare function inflateSyncPoint cdecl alias "inflateSyncPoint" (byval z as z_streamp) as integer

@@ -46,10 +46,10 @@ type _GtkMessageDialogClass
 end type
 
 declare function gtk_message_dialog_get_type cdecl alias "gtk_message_dialog_get_type" () as GType
-declare function gtk_message_dialog_new cdecl alias "gtk_message_dialog_new" (byval parent as GtkWindow ptr, byval flags as GtkDialogFlags, byval type as GtkMessageType, byval buttons as GtkButtonsType, byval message_format as string, ...) as GtkWidget ptr
-declare function gtk_message_dialog_new_with_markup cdecl alias "gtk_message_dialog_new_with_markup" (byval parent as GtkWindow ptr, byval flags as GtkDialogFlags, byval type as GtkMessageType, byval buttons as GtkButtonsType, byval message_format as string, ...) as GtkWidget ptr
-declare sub gtk_message_dialog_set_markup cdecl alias "gtk_message_dialog_set_markup" (byval message_dialog as GtkMessageDialog ptr, byval str as string)
-declare sub gtk_message_dialog_format_secondary_text cdecl alias "gtk_message_dialog_format_secondary_text" (byval message_dialog as GtkMessageDialog ptr, byval message_format as string, ...)
-declare sub gtk_message_dialog_format_secondary_markup cdecl alias "gtk_message_dialog_format_secondary_markup" (byval message_dialog as GtkMessageDialog ptr, byval message_format as string, ...)
+declare function gtk_message_dialog_new cdecl alias "gtk_message_dialog_new" (byval parent as GtkWindow ptr, byval flags as GtkDialogFlags, byval type as GtkMessageType, byval buttons as GtkButtonsType, byval message_format as zstring ptr, ...) as GtkWidget ptr
+declare function gtk_message_dialog_new_with_markup cdecl alias "gtk_message_dialog_new_with_markup" (byval parent as GtkWindow ptr, byval flags as GtkDialogFlags, byval type as GtkMessageType, byval buttons as GtkButtonsType, byval message_format as zstring ptr, ...) as GtkWidget ptr
+declare sub gtk_message_dialog_set_markup cdecl alias "gtk_message_dialog_set_markup" (byval message_dialog as GtkMessageDialog ptr, byval str as zstring ptr)
+declare sub gtk_message_dialog_format_secondary_text cdecl alias "gtk_message_dialog_format_secondary_text" (byval message_dialog as GtkMessageDialog ptr, byval message_format as zstring ptr, ...)
+declare sub gtk_message_dialog_format_secondary_markup cdecl alias "gtk_message_dialog_format_secondary_markup" (byval message_dialog as GtkMessageDialog ptr, byval message_format as zstring ptr, ...)
 
 #endif

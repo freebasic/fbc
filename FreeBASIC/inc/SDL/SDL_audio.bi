@@ -61,7 +61,7 @@ type SDL_AudioCVT
 end type
 
 declare function SDL_AudioInit SDLCALL alias "SDL_AudioInit" _
-   (byval driver_name as string) as integer
+   (byval driver_name as zstring ptr) as integer
 declare sub SDL_AudioQuit SDLCALL alias "SDL_AudioQuit" ()
 
 declare function SDL_AudioDriverName SDLCALL alias "SDL_AudioDriverName" _

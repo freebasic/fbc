@@ -13,6 +13,6 @@
 
 
 declare function wxStaticText cdecl alias "wxStaticText_ctor" () as wxStaticText ptr
-declare function wxStaticText_Create cdecl alias "wxStaticText_Create" (byval self as wxStaticText ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval label as string, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as integer
+declare function wxStaticText_Create cdecl alias "wxStaticText_Create" (byval self as wxStaticText ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval label as zstring ptr, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as zstring ptr) as integer
 
 #endif

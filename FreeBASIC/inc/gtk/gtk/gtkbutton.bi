@@ -49,9 +49,9 @@ end type
 
 declare function gtk_button_get_type cdecl alias "gtk_button_get_type" () as GType
 declare function gtk_button_new cdecl alias "gtk_button_new" () as GtkWidget ptr
-declare function gtk_button_new_with_label cdecl alias "gtk_button_new_with_label" (byval label as string) as GtkWidget ptr
-declare function gtk_button_new_from_stock cdecl alias "gtk_button_new_from_stock" (byval stock_id as string) as GtkWidget ptr
-declare function gtk_button_new_with_mnemonic cdecl alias "gtk_button_new_with_mnemonic" (byval label as string) as GtkWidget ptr
+declare function gtk_button_new_with_label cdecl alias "gtk_button_new_with_label" (byval label as zstring ptr) as GtkWidget ptr
+declare function gtk_button_new_from_stock cdecl alias "gtk_button_new_from_stock" (byval stock_id as zstring ptr) as GtkWidget ptr
+declare function gtk_button_new_with_mnemonic cdecl alias "gtk_button_new_with_mnemonic" (byval label as zstring ptr) as GtkWidget ptr
 declare sub gtk_button_pressed cdecl alias "gtk_button_pressed" (byval button as GtkButton ptr)
 declare sub gtk_button_released cdecl alias "gtk_button_released" (byval button as GtkButton ptr)
 declare sub gtk_button_clicked cdecl alias "gtk_button_clicked" (byval button as GtkButton ptr)
@@ -59,7 +59,7 @@ declare sub gtk_button_enter cdecl alias "gtk_button_enter" (byval button as Gtk
 declare sub gtk_button_leave cdecl alias "gtk_button_leave" (byval button as GtkButton ptr)
 declare sub gtk_button_set_relief cdecl alias "gtk_button_set_relief" (byval button as GtkButton ptr, byval newstyle as GtkReliefStyle)
 declare function gtk_button_get_relief cdecl alias "gtk_button_get_relief" (byval button as GtkButton ptr) as GtkReliefStyle
-declare sub gtk_button_set_label cdecl alias "gtk_button_set_label" (byval button as GtkButton ptr, byval label as string)
+declare sub gtk_button_set_label cdecl alias "gtk_button_set_label" (byval button as GtkButton ptr, byval label as zstring ptr)
 declare function gtk_button_get_label cdecl alias "gtk_button_get_label" (byval button as GtkButton ptr) as zstring ptr
 declare sub gtk_button_set_use_underline cdecl alias "gtk_button_set_use_underline" (byval button as GtkButton ptr, byval use_underline as gboolean)
 declare function gtk_button_get_use_underline cdecl alias "gtk_button_get_use_underline" (byval button as GtkButton ptr) as gboolean
@@ -72,6 +72,6 @@ declare sub gtk_button_get_alignment cdecl alias "gtk_button_get_alignment" (byv
 declare sub gtk_button_set_image cdecl alias "gtk_button_set_image" (byval button as GtkButton ptr, byval image as GtkWidget ptr)
 declare function gtk_button_get_image cdecl alias "gtk_button_get_image" (byval button as GtkButton ptr) as GtkWidget ptr
 declare sub _gtk_button_set_depressed cdecl alias "_gtk_button_set_depressed" (byval button as GtkButton ptr, byval depressed as gboolean)
-declare sub _gtk_button_paint cdecl alias "_gtk_button_paint" (byval button as GtkButton ptr, byval area as GdkRectangle ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval main_detail as string, byval default_detail as string)
+declare sub _gtk_button_paint cdecl alias "_gtk_button_paint" (byval button as GtkButton ptr, byval area as GdkRectangle ptr, byval state_type as GtkStateType, byval shadow_type as GtkShadowType, byval main_detail as zstring ptr, byval default_detail as zstring ptr)
 
 #endif

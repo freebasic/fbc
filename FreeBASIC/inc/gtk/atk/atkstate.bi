@@ -49,8 +49,8 @@ end enum
 
 type AtkState as guint64
 
-declare function atk_state_type_register cdecl alias "atk_state_type_register" (byval name as string) as AtkStateType
+declare function atk_state_type_register cdecl alias "atk_state_type_register" (byval name as zstring ptr) as AtkStateType
 declare function atk_state_type_get_name cdecl alias "atk_state_type_get_name" (byval type as AtkStateType) as zstring ptr
-declare function atk_state_type_for_name cdecl alias "atk_state_type_for_name" (byval name as string) as AtkStateType
+declare function atk_state_type_for_name cdecl alias "atk_state_type_for_name" (byval name as zstring ptr) as AtkStateType
 
 #endif

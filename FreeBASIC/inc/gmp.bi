@@ -95,12 +95,12 @@ declare function gmp_randinit_lc_2exp_size cdecl alias "__gmp_randinit_lc_2exp_s
 declare sub gmp_randseed cdecl alias "__gmp_randseed" (byval as gmp_randstate_t, byval as mpz_srcptr)
 declare sub gmp_randseed_ui cdecl alias "__gmp_randseed_ui" (byval as gmp_randstate_t, byval as uinteger)
 declare sub gmp_randclear cdecl alias "__gmp_randclear" (byval as gmp_randstate_t)
-declare function gmp_asprintf cdecl alias "__gmp_asprintf" (byval as byte ptr ptr, byval as string, ...) as integer
-declare function gmp_printf cdecl alias "__gmp_printf" (byval as string, ...) as integer
-declare function gmp_snprintf cdecl alias "__gmp_snprintf" (byval as string, byval as integer, byval as string, ...) as integer
-declare function gmp_sprintf cdecl alias "__gmp_sprintf" (byval as string, byval as string, ...) as integer
-declare function gmp_scanf cdecl alias "__gmp_scanf" (byval as string, ...) as integer
-declare function gmp_sscanf cdecl alias "__gmp_sscanf" (byval as string, byval as string, ...) as integer
+declare function gmp_asprintf cdecl alias "__gmp_asprintf" (byval as byte ptr ptr, byval as zstring ptr, ...) as integer
+declare function gmp_printf cdecl alias "__gmp_printf" (byval as zstring ptr, ...) as integer
+declare function gmp_snprintf cdecl alias "__gmp_snprintf" (byval as zstring ptr, byval as integer, byval as zstring ptr, ...) as integer
+declare function gmp_sprintf cdecl alias "__gmp_sprintf" (byval as zstring ptr, byval as zstring ptr, ...) as integer
+declare function gmp_scanf cdecl alias "__gmp_scanf" (byval as zstring ptr, ...) as integer
+declare function gmp_sscanf cdecl alias "__gmp_sscanf" (byval as zstring ptr, byval as zstring ptr, ...) as integer
 
 ''**************** Integer (i.e. Z) routines.  ****************
 
@@ -167,7 +167,7 @@ declare sub mpz_gcdext cdecl alias "__gmpz_gcdext" (byval as mpz_ptr, byval as m
 declare function mpz_get_d cdecl alias "__gmpz_get_d" (byval as mpz_srcptr) as double
 declare function mpz_get_d_2exp cdecl alias "__gmpz_get_d_2exp" (byval as integer ptr, byval as mpz_srcptr) as double
 declare function mpz_get_si cdecl alias "__gmpz_get_si" (byval as mpz_srcptr) as integer
-declare function mpz_get_str cdecl alias "__gmpz_get_str" (byval as string, byval as integer, byval as mpz_srcptr) as zstring ptr
+declare function mpz_get_str cdecl alias "__gmpz_get_str" (byval as zstring ptr, byval as integer, byval as mpz_srcptr) as zstring ptr
 declare function mpz_get_ui cdecl alias "__gmpz_get_ui" (byval as mpz_srcptr) as uinteger
 declare function mpz_hamdist cdecl alias "__gmpz_hamdist" (byval as mpz_srcptr, byval as mpz_srcptr) as uinteger
 declare sub mpz_import cdecl alias "__gmpz_import" (byval as mpz_ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as any ptr)
@@ -176,7 +176,7 @@ declare sub mpz_init2 cdecl alias "__gmpz_init2" (byval as mpz_ptr, byval as uin
 declare sub mpz_init_set cdecl alias "__gmpz_init_set" (byval as mpz_ptr, byval as mpz_srcptr)
 declare sub mpz_init_set_d cdecl alias "__gmpz_init_set_d" (byval as mpz_ptr, byval as double)
 declare sub mpz_init_set_si cdecl alias "__gmpz_init_set_si" (byval as mpz_ptr, byval as integer)
-declare function mpz_init_set_str cdecl alias "__gmpz_init_set_str" (byval as mpz_ptr, byval as string, byval as integer) as integer
+declare function mpz_init_set_str cdecl alias "__gmpz_init_set_str" (byval as mpz_ptr, byval as zstring ptr, byval as integer) as integer
 declare sub mpz_init_set_ui cdecl alias "__gmpz_init_set_ui" (byval as mpz_ptr, byval as uinteger)
 declare function mpz_invert cdecl alias "__gmpz_invert" (byval as mpz_ptr, byval as mpz_srcptr, byval as mpz_srcptr) as integer
 declare sub mpz_ior cdecl alias "__gmpz_ior" (byval as mpz_ptr, byval as mpz_srcptr, byval as mpz_srcptr)
@@ -217,7 +217,7 @@ declare sub mpz_set_d cdecl alias "__gmpz_set_d" (byval as mpz_ptr, byval as dou
 declare sub mpz_set_f cdecl alias "__gmpz_set_f" (byval as mpz_ptr, byval as mpf_srcptr)
 declare sub mpz_set_q cdecl alias "__gmpz_set_q" (byval as mpz_ptr, byval as mpq_srcptr)
 declare sub mpz_set_si cdecl alias "__gmpz_set_si" (byval as mpz_ptr, byval as integer)
-declare function mpz_set_str cdecl alias "__gmpz_set_str" (byval as mpz_ptr, byval as string, byval as integer) as integer
+declare function mpz_set_str cdecl alias "__gmpz_set_str" (byval as mpz_ptr, byval as zstring ptr, byval as integer) as integer
 declare sub mpz_set_ui cdecl alias "__gmpz_set_ui" (byval as mpz_ptr, byval as uinteger)
 declare sub mpz_setbit cdecl alias "__gmpz_setbit" (byval as mpz_ptr, byval as uinteger)
 declare function mpz_size cdecl alias "__gmpz_size" (byval as mpz_srcptr) as integer
@@ -260,7 +260,7 @@ declare function mpq_equal cdecl alias "__gmpq_equal" (byval as mpq_srcptr, byva
 declare sub mpq_get_num cdecl alias "__gmpq_get_num" (byval as mpz_ptr, byval as mpq_srcptr)
 declare sub mpq_get_den cdecl alias "__gmpq_get_den" (byval as mpz_ptr, byval as mpq_srcptr)
 declare function mpq_get_d cdecl alias "__gmpq_get_d" (byval as mpq_srcptr) as double
-declare function mpq_get_str cdecl alias "__gmpq_get_str" (byval as string, byval as integer, byval as mpq_srcptr) as zstring ptr
+declare function mpq_get_str cdecl alias "__gmpq_get_str" (byval as zstring ptr, byval as integer, byval as mpq_srcptr) as zstring ptr
 declare sub mpq_init cdecl alias "__gmpq_init" (byval as mpq_ptr)
 declare sub mpq_inv cdecl alias "__gmpq_inv" (byval as mpq_ptr, byval as mpq_srcptr)
 declare sub mpq_mul cdecl alias "__gmpq_mul" (byval as mpq_ptr, byval as mpq_srcptr, byval as mpq_srcptr)
@@ -272,7 +272,7 @@ declare sub mpq_set_den cdecl alias "__gmpq_set_den" (byval as mpq_ptr, byval as
 declare sub mpq_set_f cdecl alias "__gmpq_set_f" (byval as mpq_ptr, byval as mpf_srcptr)
 declare sub mpq_set_num cdecl alias "__gmpq_set_num" (byval as mpq_ptr, byval as mpz_srcptr)
 declare sub mpq_set_si cdecl alias "__gmpq_set_si" (byval as mpq_ptr, byval as integer, byval as uinteger)
-declare function mpq_set_str cdecl alias "__gmpq_set_str" (byval as mpq_ptr, byval as string, byval as integer) as integer
+declare function mpq_set_str cdecl alias "__gmpq_set_str" (byval as mpq_ptr, byval as zstring ptr, byval as integer) as integer
 declare sub mpq_set_ui cdecl alias "__gmpq_set_ui" (byval as mpq_ptr, byval as uinteger, byval as uinteger)
 declare sub mpq_set_z cdecl alias "__gmpq_set_z" (byval as mpq_ptr, byval as mpz_srcptr)
 declare sub mpq_sub cdecl alias "__gmpq_sub" (byval as mpq_ptr, byval as mpq_srcptr, byval as mpq_srcptr)
@@ -306,14 +306,14 @@ declare function mpf_get_d_2exp cdecl alias "__gmpf_get_d_2exp" (byval as intege
 declare function mpf_get_default_prec cdecl alias "__gmpf_get_default_prec" () as uinteger
 declare function mpf_get_prec cdecl alias "__gmpf_get_prec" (byval as mpf_srcptr) as uinteger
 declare function mpf_get_si cdecl alias "__gmpf_get_si" (byval as mpf_srcptr) as integer
-declare function mpf_get_str cdecl alias "__gmpf_get_str" (byval as string, byval as mp_exp_t ptr, byval as integer, byval as integer, byval as mpf_srcptr) as zstring ptr
+declare function mpf_get_str cdecl alias "__gmpf_get_str" (byval as zstring ptr, byval as mp_exp_t ptr, byval as integer, byval as integer, byval as mpf_srcptr) as zstring ptr
 declare function mpf_get_ui cdecl alias "__gmpf_get_ui" (byval as mpf_srcptr) as uinteger
 declare sub mpf_init cdecl alias "__gmpf_init" (byval as mpf_ptr)
 declare sub mpf_init2 cdecl alias "__gmpf_init2" (byval as mpf_ptr, byval as uinteger)
 declare sub mpf_init_set cdecl alias "__gmpf_init_set" (byval as mpf_ptr, byval as mpf_srcptr)
 declare sub mpf_init_set_d cdecl alias "__gmpf_init_set_d" (byval as mpf_ptr, byval as double)
 declare sub mpf_init_set_si cdecl alias "__gmpf_init_set_si" (byval as mpf_ptr, byval as integer)
-declare function mpf_init_set_str cdecl alias "__gmpf_init_set_str" (byval as mpf_ptr, byval as string, byval as integer) as integer
+declare function mpf_init_set_str cdecl alias "__gmpf_init_set_str" (byval as mpf_ptr, byval as zstring ptr, byval as integer) as integer
 declare sub mpf_init_set_ui cdecl alias "__gmpf_init_set_ui" (byval as mpf_ptr, byval as uinteger)
 declare function mpf_integer_p cdecl alias "__gmpf_integer_p" (byval as mpf_srcptr) as integer
 declare sub mpf_mul cdecl alias "__gmpf_mul" (byval as mpf_ptr, byval as mpf_srcptr, byval as mpf_srcptr)
@@ -330,7 +330,7 @@ declare sub mpf_set_prec cdecl alias "__gmpf_set_prec" (byval as mpf_ptr, byval 
 declare sub mpf_set_prec_raw cdecl alias "__gmpf_set_prec_raw" (byval as mpf_ptr, byval as uinteger)
 declare sub mpf_set_q cdecl alias "__gmpf_set_q" (byval as mpf_ptr, byval as mpq_srcptr)
 declare sub mpf_set_si cdecl alias "__gmpf_set_si" (byval as mpf_ptr, byval as integer)
-declare function mpf_set_str cdecl alias "__gmpf_set_str" (byval as mpf_ptr, byval as string, byval as integer) as integer
+declare function mpf_set_str cdecl alias "__gmpf_set_str" (byval as mpf_ptr, byval as zstring ptr, byval as integer) as integer
 declare sub mpf_set_ui cdecl alias "__gmpf_set_ui" (byval as mpf_ptr, byval as uinteger)
 declare sub mpf_set_z cdecl alias "__gmpf_set_z" (byval as mpf_ptr, byval as mpz_srcptr)
 declare function mpf_size cdecl alias "__gmpf_size" (byval as mpf_srcptr) as integer

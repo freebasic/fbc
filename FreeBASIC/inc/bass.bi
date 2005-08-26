@@ -7,6 +7,8 @@
 ' FB header converted from bassmod.bas for VB by Plasma  [11-13-2004]
 ' Mostly untested, so don't be surprised if something doesn't work :P
 
+#inclib "bass"
+
 #define BASSTRUE  1
 #define BASSFALSE  0
 
@@ -636,112 +638,112 @@ Type GUID             ' used with BASS_Init - use VarPtr(guid) in clsid paramete
 End Type
 
 
-Declare Function BASS_SetConfig Lib "bass" (ByVal opt As Integer, ByVal value As Integer) As Integer
-Declare Function BASS_GetConfig Lib "bass" (ByVal opt As Integer) As Integer
-Declare Function BASS_GetVersion Lib "bass" () As Integer
-Declare Function BASS_GetDeviceDescription Lib "bass" (ByVal device As Integer) as zstring ptr
-Declare Function BASS_ErrorGetCode Lib "bass" () As Integer
-Declare Function BASS_Init Lib "bass" (ByVal device As Integer, ByVal freq As Integer, ByVal flags As Integer, ByVal win As Integer, ByVal clsid As Integer) As Integer
-Declare Function BASS_SetDevice Lib "bass" (ByVal device As Integer) As Integer
-Declare Function BASS_GetDevice Lib "bass" () As Integer
-Declare Function BASS_Free Lib "bass" () As Integer
-Declare Function BASS_GetDSoundObject Lib "bass" (ByVal object As Integer) As Integer
-Declare Function BASS_GetInfo Lib "bass" (byval info As BASS_INFO ptr) As Integer
-Declare Function BASS_Update Lib "bass" () As Integer
-Declare Function BASS_GetCPU Lib "bass" () As Single
-Declare Function BASS_Start Lib "bass" () As Integer
-Declare Function BASS_Stop Lib "bass" () As Integer
-Declare Function BASS_Pause Lib "bass" () As Integer
-Declare Function BASS_SetVolume Lib "bass" (ByVal volume As Integer) As Integer
-Declare Function BASS_GetVolume Lib "bass" () As Integer
+Declare Function BASS_SetConfig alias "BASS_SetConfig" (ByVal opt As Integer, ByVal value As Integer) As Integer
+Declare Function BASS_GetConfig alias "BASS_GetConfig" (ByVal opt As Integer) As Integer
+Declare Function BASS_GetVersion alias "BASS_GetVersion" () As Integer
+Declare Function BASS_GetDeviceDescription alias "BASS_GetDeviceDescription" (ByVal device As Integer) as zstring ptr
+Declare Function BASS_ErrorGetCode alias "BASS_ErrorGetCode" () As Integer
+Declare Function BASS_Init alias "BASS_Init" (ByVal device As Integer, ByVal freq As Integer, ByVal flags As Integer, ByVal win As Integer, ByVal clsid As Integer) As Integer
+Declare Function BASS_SetDevice alias "BASS_SetDevice" (ByVal device As Integer) As Integer
+Declare Function BASS_GetDevice alias "BASS_GetDevice" () As Integer
+Declare Function BASS_Free alias "BASS_Free" () As Integer
+Declare Function BASS_GetDSoundObject alias "BASS_GetDSoundObject" (ByVal object As Integer) As Integer
+Declare Function BASS_GetInfo alias "BASS_GetInfo" (byval info As BASS_INFO ptr) As Integer
+Declare Function BASS_Update alias "BASS_Update" () As Integer
+Declare Function BASS_GetCPU alias "BASS_GetCPU" () As Single
+Declare Function BASS_Start alias "BASS_Start" () As Integer
+Declare Function BASS_Stop alias "BASS_Stop" () As Integer
+Declare Function BASS_Pause alias "BASS_Pause" () As Integer
+Declare Function BASS_SetVolume alias "BASS_SetVolume" (ByVal volume As Integer) As Integer
+Declare Function BASS_GetVolume alias "BASS_GetVolume" () As Integer
 
-Declare Function BASS_Set3DFactors Lib "bass" (ByVal distf As Single, ByVal rollf As Single, ByVal doppf As Single) As Integer
-Declare Function BASS_Get3DFactors Lib "bass" (Byval distf As Single ptr, Byval rollf As Single ptr, Byval doppf As Single ptr) As Integer
-Declare Function BASS_Set3DPosition Lib "bass" (Byval pos As Any ptr, Byval vel As Any ptr, Byval front As Any ptr, Byval top As Any ptr) As Integer
-Declare Function BASS_Get3DPosition Lib "bass" (Byval pos As Any ptr, Byval vel As Any ptr, Byval front As Any ptr, Byval top As Any ptr) As Integer
-Declare Function BASS_Apply3D Lib "bass" () As Integer
-Declare Function BASS_SetEAXParameters Lib "bass" (ByVal env As Integer, ByVal vol As Single, ByVal decay As Single, ByVal damp As Single) As Integer
-Declare Function BASS_GetEAXParameters Lib "bass" (Byval env As Integer ptr, Byval vol As Single ptr, Byval decay As Single ptr, Byval damp As Single ptr) As Integer
+Declare Function BASS_Set3DFactors alias "BASS_Set3DFactors" (ByVal distf As Single, ByVal rollf As Single, ByVal doppf As Single) As Integer
+Declare Function BASS_Get3DFactors alias "BASS_Get3DFactors" (Byval distf As Single ptr, Byval rollf As Single ptr, Byval doppf As Single ptr) As Integer
+Declare Function BASS_Set3DPosition alias "BASS_Set3DPosition" (Byval pos As Any ptr, Byval vel As Any ptr, Byval front As Any ptr, Byval top As Any ptr) As Integer
+Declare Function BASS_Get3DPosition alias "BASS_Get3DPosition" (Byval pos As Any ptr, Byval vel As Any ptr, Byval front As Any ptr, Byval top As Any ptr) As Integer
+Declare Function BASS_Apply3D alias "BASS_Apply3D" () As Integer
+Declare Function BASS_SetEAXParameters alias "BASS_SetEAXParameters" (ByVal env As Integer, ByVal vol As Single, ByVal decay As Single, ByVal damp As Single) As Integer
+Declare Function BASS_GetEAXParameters alias "BASS_GetEAXParameters" (Byval env As Integer ptr, Byval vol As Single ptr, Byval decay As Single ptr, Byval damp As Single ptr) As Integer
 
-Declare Function BASS_MusicLoad Lib "bass" (ByVal mem As Integer, ByVal f As String, ByVal offset As Integer, ByVal length As Integer, ByVal flags As Integer, ByVal freq As Integer) As Integer
-Declare Sub BASS_MusicFree Lib "bass" (ByVal handle As Integer)
-Declare Function BASS_MusicGetName Lib "bass" (ByVal handle As Integer) as zstring ptr
-Declare Function BASS_MusicGetLength Lib "bass" (ByVal handle As Integer, ByVal playlen As Integer) As Integer
-Declare Function BASS_MusicPreBuf Lib "bass" (ByVal handle As Integer) As Integer
-Declare Function BASS_MusicPlay Lib "bass" (ByVal handle As Integer) As Integer
-Declare Function BASS_MusicPlayEx Lib "bass" (ByVal handle As Integer, ByVal pos As Integer, ByVal flags As Integer, ByVal reset As Integer) As Integer
-Declare Function BASS_MusicSetAmplify Lib "bass" (ByVal handle As Integer, amp As Integer) As Integer
-Declare Function BASS_MusicSetPanSep Lib "bass" (ByVal handle As Integer, pan As Integer) As Integer
-Declare Function BASS_MusicSetPositionScaler Lib "bass" (ByVal handle As Integer, ByVal pscale As Integer) As Integer
-Declare Function BASS_MusicSetVolume Lib "bass" (ByVal handle As Integer, ByVal chanins As Integer, ByVal volume As Integer) As Integer
-Declare Function BASS_MusicGetVolume Lib "bass" (ByVal handle As Integer, ByVal chanins As Integer) As Integer
+Declare Function BASS_MusicLoad alias "BASS_MusicLoad" (ByVal mem As Integer, byval f as zstring ptr, ByVal offset As Integer, ByVal length As Integer, ByVal flags As Integer, ByVal freq As Integer) As Integer
+Declare Sub BASS_MusicFree alias "BASS_MusicFree" (ByVal handle As Integer)
+Declare Function BASS_MusicGetName alias "BASS_MusicGetName" (ByVal handle As Integer) as zstring ptr
+Declare Function BASS_MusicGetLength alias "BASS_MusicGetLength" (ByVal handle As Integer, ByVal playlen As Integer) As Integer
+Declare Function BASS_MusicPreBuf alias "BASS_MusicPreBuf" (ByVal handle As Integer) As Integer
+Declare Function BASS_MusicPlay alias "BASS_MusicPlay" (ByVal handle As Integer) As Integer
+Declare Function BASS_MusicPlayEx alias "BASS_MusicPlayEx" (ByVal handle As Integer, ByVal pos As Integer, ByVal flags As Integer, ByVal reset As Integer) As Integer
+Declare Function BASS_MusicSetAmplify alias "BASS_MusicSetAmplify" (ByVal handle As Integer, amp As Integer) As Integer
+Declare Function BASS_MusicSetPanSep alias "BASS_MusicSetPanSep" (ByVal handle As Integer, pan As Integer) As Integer
+Declare Function BASS_MusicSetPositionScaler alias "BASS_MusicSetPositionScaler" (ByVal handle As Integer, ByVal pscale As Integer) As Integer
+Declare Function BASS_MusicSetVolume alias "BASS_MusicSetVolume" (ByVal handle As Integer, ByVal chanins As Integer, ByVal volume As Integer) As Integer
+Declare Function BASS_MusicGetVolume alias "BASS_MusicGetVolume" (ByVal handle As Integer, ByVal chanins As Integer) As Integer
 
-Declare Function BASS_SampleLoad Lib "bass" (ByVal mem As Integer, ByVal f As String, ByVal offset As Integer, ByVal length As Integer, ByVal max As Integer, ByVal flags As Integer) As Integer
-Declare Function BASS_SampleCreate Lib "bass" (ByVal length As Integer, ByVal freq As Integer, ByVal max As Integer, ByVal flags As Integer) As Integer
-Declare Function BASS_SampleCreateDone Lib "bass" () As Integer
-Declare Sub BASS_SampleFree Lib "bass" (ByVal handle As Integer)
-Declare Function BASS_SampleGetInfo Lib "bass" (ByVal handle As Integer, Byval info As BASS_SAMPLE ptr) As Integer
-Declare Function BASS_SampleSetInfo Lib "bass" (ByVal handle As Integer, Byval info As BASS_SAMPLE ptr) As Integer
-Declare Function BASS_SamplePlay Lib "bass" (ByVal handle As Integer) As Integer
-Declare Function BASS_SamplePlayEx Lib "bass" (ByVal handle As Integer, ByVal start As Integer, ByVal freq As Integer, ByVal volume As Integer, ByVal pan As Integer, ByVal pLoop As Integer) As Integer
-Declare Function BASS_SamplePlay3D Lib "bass" (ByVal handle As Integer, Byval pos As Any ptr, Byval orient As Any ptr, Byval vel As Any ptr) As Integer
-Declare Function BASS_SamplePlay3DEx Lib "bass" (ByVal handle As Integer, Byval pos As Any ptr, Byval orient As Any ptr, Byval vel As Any ptr, ByVal start As Integer, ByVal freq As Integer, ByVal volume As Integer, ByVal pLoop As Integer) As Integer
-Declare Function BASS_SampleStop Lib "bass" (ByVal handle As Integer) As Integer
+Declare Function BASS_SampleLoad alias "BASS_SampleLoad" (ByVal mem As Integer, byval f as zstring ptr, ByVal offset As Integer, ByVal length As Integer, ByVal max As Integer, ByVal flags As Integer) As Integer
+Declare Function BASS_SampleCreate alias "BASS_SampleCreate" (ByVal length As Integer, ByVal freq As Integer, ByVal max As Integer, ByVal flags As Integer) As Integer
+Declare Function BASS_SampleCreateDone alias "BASS_SampleCreateDone" () As Integer
+Declare Sub BASS_SampleFree alias "BASS_SampleFree" (ByVal handle As Integer)
+Declare Function BASS_SampleGetInfo alias "BASS_SampleGetInfo" (ByVal handle As Integer, Byval info As BASS_SAMPLE ptr) As Integer
+Declare Function BASS_SampleSetInfo alias "BASS_SampleSetInfo" (ByVal handle As Integer, Byval info As BASS_SAMPLE ptr) As Integer
+Declare Function BASS_SamplePlay alias "BASS_SamplePlay" (ByVal handle As Integer) As Integer
+Declare Function BASS_SamplePlayEx alias "BASS_SamplePlayEx" (ByVal handle As Integer, ByVal start As Integer, ByVal freq As Integer, ByVal volume As Integer, ByVal pan As Integer, ByVal pLoop As Integer) As Integer
+Declare Function BASS_SamplePlay3D alias "BASS_SamplePlay3D" (ByVal handle As Integer, Byval pos As Any ptr, Byval orient As Any ptr, Byval vel As Any ptr) As Integer
+Declare Function BASS_SamplePlay3DEx alias "BASS_SamplePlay3DEx" (ByVal handle As Integer, Byval pos As Any ptr, Byval orient As Any ptr, Byval vel As Any ptr, ByVal start As Integer, ByVal freq As Integer, ByVal volume As Integer, ByVal pLoop As Integer) As Integer
+Declare Function BASS_SampleStop alias "BASS_SampleStop" (ByVal handle As Integer) As Integer
 
-Declare Function BASS_StreamCreate Lib "bass" (ByVal freq As Integer, ByVal chans As Integer, ByVal flags As Integer, ByVal proc As Integer, ByVal user As Integer) As Integer
-Declare Function BASS_StreamCreateFile Lib "bass" (ByVal mem As Integer, ByVal f As String, ByVal offset As Integer, ByVal length As Integer, ByVal flags As Integer) As Integer
-Declare Function BASS_StreamCreateURL Lib "bass" (ByVal url As String, ByVal offset As Integer, ByVal flags As Integer, ByVal proc As Integer, ByVal user As Integer) As Integer
-Declare Function BASS_StreamCreateFileUser Lib "bass" (ByVal buffered As Integer, ByVal flags As Integer, ByVal proc As Integer, ByVal user As Integer) As Integer
-Declare Sub BASS_StreamFree Lib "bass" (ByVal handle As Integer)
-Declare Function BASS_StreamGetLength Lib "bass" (ByVal handle As Integer) As Integer
-Declare Function BASS_StreamGetTags Lib "bass" (ByVal handle As Integer, ByVal tags As Integer) as zstring ptr
-Declare Function BASS_StreamPreBuf Lib "bass" (ByVal handle As Integer) As Integer
-Declare Function BASS_StreamPlay Lib "bass" (ByVal handle As Integer, ByVal flush As Integer, ByVal flags As Integer) As Integer
-Declare Function BASS_StreamGetFilePosition Lib "bass" (ByVal handle As Integer, ByVal mode As Integer) As Integer
+Declare Function BASS_StreamCreate alias "BASS_StreamCreate" (ByVal freq As Integer, ByVal chans As Integer, ByVal flags As Integer, ByVal proc As Integer, ByVal user As Integer) As Integer
+Declare Function BASS_StreamCreateFile alias "BASS_StreamCreateFile" (ByVal mem As Integer, byval f as zstring ptr, ByVal offset As Integer, ByVal length As Integer, ByVal flags As Integer) As Integer
+Declare Function BASS_StreamCreateURL alias "BASS_StreamCreateURL" (byval url as zstring ptr, ByVal offset As Integer, ByVal flags As Integer, ByVal proc As Integer, ByVal user As Integer) As Integer
+Declare Function BASS_StreamCreateFileUser alias "BASS_StreamCreateFileUser" (ByVal buffered As Integer, ByVal flags As Integer, ByVal proc As Integer, ByVal user As Integer) As Integer
+Declare Sub BASS_StreamFree alias "BASS_StreamFree" (ByVal handle As Integer)
+Declare Function BASS_StreamGetLength alias "BASS_StreamGetLength" (ByVal handle As Integer) As Integer
+Declare Function BASS_StreamGetTags alias "BASS_StreamGetTags" (ByVal handle As Integer, ByVal tags As Integer) as zstring ptr
+Declare Function BASS_StreamPreBuf alias "BASS_StreamPreBuf" (ByVal handle As Integer) As Integer
+Declare Function BASS_StreamPlay alias "BASS_StreamPlay" (ByVal handle As Integer, ByVal flush As Integer, ByVal flags As Integer) As Integer
+Declare Function BASS_StreamGetFilePosition alias "BASS_StreamGetFilePosition" (ByVal handle As Integer, ByVal mode As Integer) As Integer
 
-Declare Function BASS_RecordGetDeviceDescription Lib "bass" (ByVal device As Integer) as zstring ptr
-Declare Function BASS_RecordInit Lib "bass" (ByVal device As Integer) As Integer
-Declare Function BASS_RecordSetDevice Lib "bass" (ByVal device As Integer) As Integer
-Declare Function BASS_RecordGetDevice Lib "bass" () As Integer
-Declare Function BASS_RecordFree Lib "bass" () As Integer
-Declare Function BASS_RecordGetInfo Lib "bass" (Byval info As BASS_RECORDINFO ptr) As Integer
-Declare Function BASS_RecordGetInputName Lib "bass" (ByVal inputn As Integer) as zstring ptr
-Declare Function BASS_RecordSetInput Lib "bass" (ByVal inputn As Integer, ByVal setting As Integer) As Integer
-Declare Function BASS_RecordGetInput Lib "bass" (ByVal inputn As Integer) As Integer
-Declare Function BASS_RecordStart Lib "bass" (ByVal freq As Integer, ByVal flags As Integer, ByVal proc As Integer, ByVal user As Integer) As Integer
+Declare Function BASS_RecordGetDeviceDescription alias "BASS_RecordGetDeviceDescription" (ByVal device As Integer) as zstring ptr
+Declare Function BASS_RecordInit alias "BASS_RecordInit" (ByVal device As Integer) As Integer
+Declare Function BASS_RecordSetDevice alias "BASS_RecordSetDevice" (ByVal device As Integer) As Integer
+Declare Function BASS_RecordGetDevice alias "BASS_RecordGetDevice" () As Integer
+Declare Function BASS_RecordFree alias "BASS_RecordFree" () As Integer
+Declare Function BASS_RecordGetInfo alias "BASS_RecordGetInfo" (Byval info As BASS_RECORDINFO ptr) As Integer
+Declare Function BASS_RecordGetInputName alias "BASS_RecordGetInputName" (ByVal inputn As Integer) as zstring ptr
+Declare Function BASS_RecordSetInput alias "BASS_RecordSetInput" (ByVal inputn As Integer, ByVal setting As Integer) As Integer
+Declare Function BASS_RecordGetInput alias "BASS_RecordGetInput" (ByVal inputn As Integer) As Integer
+Declare Function BASS_RecordStart alias "BASS_RecordStart" (ByVal freq As Integer, ByVal flags As Integer, ByVal proc As Integer, ByVal user As Integer) As Integer
 
-Declare Function BASS_ChannelBytes2Seconds64 Lib "bass" Alias "BASS_ChannelBytes2Seconds" (ByVal handle As Integer, ByVal pos As Integer, ByVal poshigh As Integer) As Single
-Declare Function BASS_ChannelSeconds2Bytes Lib "bass" (ByVal handle As Integer, ByVal pos As Single) As Integer
-Declare Function BASS_ChannelGetDevice Lib "bass" (ByVal handle As Integer) As Integer
-Declare Function BASS_ChannelIsActive Lib "bass" (ByVal handle As Integer) As Integer
-Declare Function BASS_ChannelGetInfo Lib "bass" (ByVal handle As Integer, Byval info As BASS_CHANNELINFO ptr) As Integer
-Declare Function BASS_ChannelStop Lib "bass" (ByVal handle As Integer) As Integer
-Declare Function BASS_ChannelPause Lib "bass" (ByVal handle As Integer) As Integer
-Declare Function BASS_ChannelResume Lib "bass" (ByVal handle As Integer) As Integer
-Declare Function BASS_ChannelSetAttributes Lib "bass" (ByVal handle As Integer, ByVal freq As Integer, ByVal volume As Integer, ByVal pan As Integer) As Integer
-Declare Function BASS_ChannelGetAttributes Lib "bass" (ByVal handle As Integer, Byval freq As Integer ptr, Byval volume As Integer ptr, Byval pan As Integer ptr) As Integer
-Declare Function BASS_ChannelSlideAttributes Lib "bass" (ByVal handle As Integer, ByVal freq As Integer, ByVal volume As Integer, ByVal pan As Integer, ByVal time As Integer) As Integer
-Declare Function BASS_ChannelIsSliding Lib "bass" (ByVal handle As Integer) As Integer
-Declare Function BASS_ChannelSet3DAttributes Lib "bass" (ByVal handle As Integer, ByVal mode As Integer, ByVal min As Single, ByVal max As Single, ByVal iangle As Integer, ByVal oangle As Integer, ByVal outvol As Integer) As Integer
-Declare Function BASS_ChannelGet3DAttributes Lib "bass" (ByVal handle As Integer, Byval mode As Integer ptr, Byval min As Single ptr, Byval max As Single ptr, Byval iangle As Integer ptr, Byval oangle As Integer ptr, Byval outvol As Integer ptr) As Integer
-Declare Function BASS_ChannelSet3DPosition Lib "bass" (ByVal handle As Integer, Byval pos As Any ptr, Byval orient As Any ptr, Byval vel As Any ptr) As Integer
-Declare Function BASS_ChannelGet3DPosition Lib "bass" (ByVal handle As Integer, Byval pos As Any ptr, Byval orient As Any ptr, Byval vel As Any ptr) As Integer
-Declare Function BASS_ChannelSetPosition64 Lib "bass" Alias "BASS_ChannelSetPosition" (ByVal handle As Integer, ByVal pos As Integer, ByVal poshigh As Integer) As Integer
-Declare Function BASS_ChannelGetPosition Lib "bass" (ByVal handle As Integer) As Integer
-Declare Function BASS_ChannelGetLevel Lib "bass" (ByVal handle As Integer) As Integer
-Declare Function BASS_ChannelGetData Lib "bass" (ByVal handle As Integer, Byval buffer As Any ptr, ByVal length As Integer) As Integer
-Declare Function BASS_ChannelSetSync64 Lib "bass" Alias "BASS_ChannelSetSync" (ByVal handle As Integer, ByVal atype As Integer, ByVal param As Integer, ByVal paramhigh As Integer, ByVal proc As Integer, ByVal user As Integer) As Integer
-Declare Function BASS_ChannelRemoveSync Lib "bass" (ByVal handle As Integer, ByVal sync As Integer) As Integer
-Declare Function BASS_ChannelSetDSP Lib "bass" (ByVal handle As Integer, ByVal proc As Integer, ByVal user As Integer, ByVal priority As Integer) As Integer
-Declare Function BASS_ChannelRemoveDSP Lib "bass" (ByVal handle As Integer, ByVal dsp As Integer) As Integer
-Declare Function BASS_ChannelSetEAXMix Lib "bass" (ByVal handle As Integer, ByVal mix As Single) As Integer
-Declare Function BASS_ChannelGetEAXMix Lib "bass" (ByVal handle As Integer, Byval mix As Single ptr) As Integer
-Declare Function BASS_ChannelSetLink Lib "bass" (ByVal handle As Integer, ByVal chan As Integer) As Integer
-Declare Function BASS_ChannelRemoveLink Lib "bass" (ByVal handle As Integer, ByVal chan As Integer) As Integer
-Declare Function BASS_ChannelSetFX Lib "bass" (ByVal handle As Integer, ByVal atype As Integer) As Integer
-Declare Function BASS_ChannelRemoveFX Lib "bass" (ByVal handle As Integer, ByVal fx As Integer) As Integer
-Declare Function BASS_FXSetParameters Lib "bass" (ByVal handle As Integer, Byval par As Any ptr) As Integer
-Declare Function BASS_FXGetParameters Lib "bass" (ByVal handle As Integer, Byval par As Any ptr) As Integer
+Declare Function BASS_ChannelBytes2Seconds64 alias "BASS_ChannelBytes2Seconds64" Alias "BASS_ChannelBytes2Seconds" (ByVal handle As Integer, ByVal pos As Integer, ByVal poshigh As Integer) As Single
+Declare Function BASS_ChannelSeconds2Bytes alias "BASS_ChannelSeconds2Bytes" (ByVal handle As Integer, ByVal pos As Single) As Integer
+Declare Function BASS_ChannelGetDevice alias "BASS_ChannelGetDevice" (ByVal handle As Integer) As Integer
+Declare Function BASS_ChannelIsActive alias "BASS_ChannelIsActive" (ByVal handle As Integer) As Integer
+Declare Function BASS_ChannelGetInfo alias "BASS_ChannelGetInfo" (ByVal handle As Integer, Byval info As BASS_CHANNELINFO ptr) As Integer
+Declare Function BASS_ChannelStop alias "BASS_ChannelStop" (ByVal handle As Integer) As Integer
+Declare Function BASS_ChannelPause alias "BASS_ChannelPause" (ByVal handle As Integer) As Integer
+Declare Function BASS_ChannelResume alias "BASS_ChannelResume" (ByVal handle As Integer) As Integer
+Declare Function BASS_ChannelSetAttributes alias "BASS_ChannelSetAttributes" (ByVal handle As Integer, ByVal freq As Integer, ByVal volume As Integer, ByVal pan As Integer) As Integer
+Declare Function BASS_ChannelGetAttributes alias "BASS_ChannelGetAttributes" (ByVal handle As Integer, Byval freq As Integer ptr, Byval volume As Integer ptr, Byval pan As Integer ptr) As Integer
+Declare Function BASS_ChannelSlideAttributes alias "BASS_ChannelSlideAttributes" (ByVal handle As Integer, ByVal freq As Integer, ByVal volume As Integer, ByVal pan As Integer, ByVal time As Integer) As Integer
+Declare Function BASS_ChannelIsSliding alias "BASS_ChannelIsSliding" (ByVal handle As Integer) As Integer
+Declare Function BASS_ChannelSet3DAttributes alias "BASS_ChannelSet3DAttributes" (ByVal handle As Integer, ByVal mode As Integer, ByVal min As Single, ByVal max As Single, ByVal iangle As Integer, ByVal oangle As Integer, ByVal outvol As Integer) As Integer
+Declare Function BASS_ChannelGet3DAttributes alias "BASS_ChannelGet3DAttributes" (ByVal handle As Integer, Byval mode As Integer ptr, Byval min As Single ptr, Byval max As Single ptr, Byval iangle As Integer ptr, Byval oangle As Integer ptr, Byval outvol As Integer ptr) As Integer
+Declare Function BASS_ChannelSet3DPosition alias "BASS_ChannelSet3DPosition" (ByVal handle As Integer, Byval pos As Any ptr, Byval orient As Any ptr, Byval vel As Any ptr) As Integer
+Declare Function BASS_ChannelGet3DPosition alias "BASS_ChannelGet3DPosition" (ByVal handle As Integer, Byval pos As Any ptr, Byval orient As Any ptr, Byval vel As Any ptr) As Integer
+Declare Function BASS_ChannelSetPosition64 alias "BASS_ChannelSetPosition64" Alias "BASS_ChannelSetPosition" (ByVal handle As Integer, ByVal pos As Integer, ByVal poshigh As Integer) As Integer
+Declare Function BASS_ChannelGetPosition alias "BASS_ChannelGetPosition" (ByVal handle As Integer) As Integer
+Declare Function BASS_ChannelGetLevel alias "BASS_ChannelGetLevel" (ByVal handle As Integer) As Integer
+Declare Function BASS_ChannelGetData alias "BASS_ChannelGetData" (ByVal handle As Integer, Byval buffer As Any ptr, ByVal length As Integer) As Integer
+Declare Function BASS_ChannelSetSync64 alias "BASS_ChannelSetSync64" Alias "BASS_ChannelSetSync" (ByVal handle As Integer, ByVal atype As Integer, ByVal param As Integer, ByVal paramhigh As Integer, ByVal proc As Integer, ByVal user As Integer) As Integer
+Declare Function BASS_ChannelRemoveSync alias "BASS_ChannelRemoveSync" (ByVal handle As Integer, ByVal sync As Integer) As Integer
+Declare Function BASS_ChannelSetDSP alias "BASS_ChannelSetDSP" (ByVal handle As Integer, ByVal proc As Integer, ByVal user As Integer, ByVal priority As Integer) As Integer
+Declare Function BASS_ChannelRemoveDSP alias "BASS_ChannelRemoveDSP" (ByVal handle As Integer, ByVal dsp As Integer) As Integer
+Declare Function BASS_ChannelSetEAXMix alias "BASS_ChannelSetEAXMix" (ByVal handle As Integer, ByVal mix As Single) As Integer
+Declare Function BASS_ChannelGetEAXMix alias "BASS_ChannelGetEAXMix" (ByVal handle As Integer, Byval mix As Single ptr) As Integer
+Declare Function BASS_ChannelSetLink alias "BASS_ChannelSetLink" (ByVal handle As Integer, ByVal chan As Integer) As Integer
+Declare Function BASS_ChannelRemoveLink alias "BASS_ChannelRemoveLink" (ByVal handle As Integer, ByVal chan As Integer) As Integer
+Declare Function BASS_ChannelSetFX alias "BASS_ChannelSetFX" (ByVal handle As Integer, ByVal atype As Integer) As Integer
+Declare Function BASS_ChannelRemoveFX alias "BASS_ChannelRemoveFX" (ByVal handle As Integer, ByVal fx As Integer) As Integer
+Declare Function BASS_FXSetParameters alias "BASS_FXSetParameters" (ByVal handle As Integer, Byval par As Any ptr) As Integer
+Declare Function BASS_FXGetParameters alias "BASS_FXGetParameters" (ByVal handle As Integer, Byval par As Any ptr) As Integer
 
 
 

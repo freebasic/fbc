@@ -49,17 +49,17 @@ declare function gtk_icon_theme_get_for_screen cdecl alias "gtk_icon_theme_get_f
 declare sub gtk_icon_theme_set_screen cdecl alias "gtk_icon_theme_set_screen" (byval icon_theme as GtkIconTheme ptr, byval screen as GdkScreen ptr)
 declare sub gtk_icon_theme_set_search_path cdecl alias "gtk_icon_theme_set_search_path" (byval icon_theme as GtkIconTheme ptr, byval path as zstring ptr ptr, byval n_elements as gint)
 declare sub gtk_icon_theme_get_search_path cdecl alias "gtk_icon_theme_get_search_path" (byval icon_theme as GtkIconTheme ptr, byval path as zstring ptr ptr ptr, byval n_elements as gint ptr)
-declare sub gtk_icon_theme_append_search_path cdecl alias "gtk_icon_theme_append_search_path" (byval icon_theme as GtkIconTheme ptr, byval path as string)
-declare sub gtk_icon_theme_prepend_search_path cdecl alias "gtk_icon_theme_prepend_search_path" (byval icon_theme as GtkIconTheme ptr, byval path as string)
-declare sub gtk_icon_theme_set_custom_theme cdecl alias "gtk_icon_theme_set_custom_theme" (byval icon_theme as GtkIconTheme ptr, byval theme_name as string)
-declare function gtk_icon_theme_has_icon cdecl alias "gtk_icon_theme_has_icon" (byval icon_theme as GtkIconTheme ptr, byval icon_name as string) as gboolean
-declare function gtk_icon_theme_get_icon_sizes cdecl alias "gtk_icon_theme_get_icon_sizes" (byval icon_theme as GtkIconTheme ptr, byval icon_name as string) as gint ptr
-declare function gtk_icon_theme_lookup_icon cdecl alias "gtk_icon_theme_lookup_icon" (byval icon_theme as GtkIconTheme ptr, byval icon_name as string, byval size as gint, byval flags as GtkIconLookupFlags) as GtkIconInfo ptr
-declare function gtk_icon_theme_load_icon cdecl alias "gtk_icon_theme_load_icon" (byval icon_theme as GtkIconTheme ptr, byval icon_name as string, byval size as gint, byval flags as GtkIconLookupFlags, byval error as GError ptr ptr) as GdkPixbuf ptr
-declare function gtk_icon_theme_list_icons cdecl alias "gtk_icon_theme_list_icons" (byval icon_theme as GtkIconTheme ptr, byval context as string) as GList ptr
+declare sub gtk_icon_theme_append_search_path cdecl alias "gtk_icon_theme_append_search_path" (byval icon_theme as GtkIconTheme ptr, byval path as zstring ptr)
+declare sub gtk_icon_theme_prepend_search_path cdecl alias "gtk_icon_theme_prepend_search_path" (byval icon_theme as GtkIconTheme ptr, byval path as zstring ptr)
+declare sub gtk_icon_theme_set_custom_theme cdecl alias "gtk_icon_theme_set_custom_theme" (byval icon_theme as GtkIconTheme ptr, byval theme_name as zstring ptr)
+declare function gtk_icon_theme_has_icon cdecl alias "gtk_icon_theme_has_icon" (byval icon_theme as GtkIconTheme ptr, byval icon_name as zstring ptr) as gboolean
+declare function gtk_icon_theme_get_icon_sizes cdecl alias "gtk_icon_theme_get_icon_sizes" (byval icon_theme as GtkIconTheme ptr, byval icon_name as zstring ptr) as gint ptr
+declare function gtk_icon_theme_lookup_icon cdecl alias "gtk_icon_theme_lookup_icon" (byval icon_theme as GtkIconTheme ptr, byval icon_name as zstring ptr, byval size as gint, byval flags as GtkIconLookupFlags) as GtkIconInfo ptr
+declare function gtk_icon_theme_load_icon cdecl alias "gtk_icon_theme_load_icon" (byval icon_theme as GtkIconTheme ptr, byval icon_name as zstring ptr, byval size as gint, byval flags as GtkIconLookupFlags, byval error as GError ptr ptr) as GdkPixbuf ptr
+declare function gtk_icon_theme_list_icons cdecl alias "gtk_icon_theme_list_icons" (byval icon_theme as GtkIconTheme ptr, byval context as zstring ptr) as GList ptr
 declare function gtk_icon_theme_get_example_icon_name cdecl alias "gtk_icon_theme_get_example_icon_name" (byval icon_theme as GtkIconTheme ptr) as zstring ptr
 declare function gtk_icon_theme_rescan_if_needed cdecl alias "gtk_icon_theme_rescan_if_needed" (byval icon_theme as GtkIconTheme ptr) as gboolean
-declare sub gtk_icon_theme_add_builtin_icon cdecl alias "gtk_icon_theme_add_builtin_icon" (byval icon_name as string, byval size as gint, byval pixbuf as GdkPixbuf ptr)
+declare sub gtk_icon_theme_add_builtin_icon cdecl alias "gtk_icon_theme_add_builtin_icon" (byval icon_name as zstring ptr, byval size as gint, byval pixbuf as GdkPixbuf ptr)
 declare function gtk_icon_info_get_type cdecl alias "gtk_icon_info_get_type" () as GType
 declare function gtk_icon_info_copy cdecl alias "gtk_icon_info_copy" (byval icon_info as GtkIconInfo ptr) as GtkIconInfo ptr
 declare sub gtk_icon_info_free cdecl alias "gtk_icon_info_free" (byval icon_info as GtkIconInfo ptr)

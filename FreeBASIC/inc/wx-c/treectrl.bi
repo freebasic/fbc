@@ -14,7 +14,7 @@
 
 type Virtual_OnCompareItems as function (byval as wxTreeItemId ptr, byval as wxTreeItemId ptr) as integer
 
-declare function wxTreeCtrl_Create cdecl alias "wxTreeCtrl_Create" (byval self as wxTreeCtrl ptr, byval parent as wxWindow ptr, byval id as integer, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval val as wxValidator ptr, byval name as string) as integer
+declare function wxTreeCtrl_Create cdecl alias "wxTreeCtrl_Create" (byval self as wxTreeCtrl ptr, byval parent as wxWindow ptr, byval id as integer, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval val as wxValidator ptr, byval name as zstring ptr) as integer
 declare function wxTreeCtrl_GetDefaultStyle cdecl alias "wxTreeCtrl_GetDefaultStyle" () as integer
 declare function wxTreeCtrl_GetIndent cdecl alias "wxTreeCtrl_GetIndent" (byval self as wxTreeCtrl ptr) as uinteger
 declare sub wxTreeCtrl_SetIndent cdecl alias "wxTreeCtrl_SetIndent" (byval self as wxTreeCtrl ptr, byval indent as uinteger)
@@ -35,7 +35,7 @@ declare sub wxTreeCtrl_SelectItem cdecl alias "wxTreeCtrl_SelectItem" (byval sel
 declare function wxTreeCtrl_GetSelection cdecl alias "wxTreeCtrl_GetSelection" (byval self as wxTreeCtrl ptr) as wxTreeItemId ptr
 declare function wxTreeCtrl_IsSelected cdecl alias "wxTreeCtrl_IsSelected" (byval self as wxTreeCtrl ptr, byval item as wxTreeItemId ptr) as integer
 declare function wxTreeCtrl_GetSelections cdecl alias "wxTreeCtrl_GetSelections" (byval self as wxTreeCtrl ptr) as wxArrayTreeItemIds ptr
-declare sub wxTreeCtrl_SetItemText cdecl alias "wxTreeCtrl_SetItemText" (byval self as wxTreeCtrl ptr, byval item as wxTreeItemId ptr, byval text as string)
+declare sub wxTreeCtrl_SetItemText cdecl alias "wxTreeCtrl_SetItemText" (byval self as wxTreeCtrl ptr, byval item as wxTreeItemId ptr, byval text as zstring ptr)
 declare function wxTreeCtrl_GetItemText cdecl alias "wxTreeCtrl_GetItemText" (byval self as wxTreeCtrl ptr, byval item as wxTreeItemId ptr) as wxString ptr
 declare sub wxTreeCtrl_SetItemData cdecl alias "wxTreeCtrl_SetItemData" (byval self as wxTreeCtrl ptr, byval item as wxTreeItemId ptr, byval data as wxTreeItemData ptr)
 declare function wxTreeCtrl_GetItemData cdecl alias "wxTreeCtrl_GetItemData" (byval self as wxTreeCtrl ptr, byval item as wxTreeItemId ptr) as wxTreeItemData ptr
@@ -52,9 +52,9 @@ declare function wxTreeCtrl_GetPrevSibling cdecl alias "wxTreeCtrl_GetPrevSiblin
 declare function wxTreeCtrl_GetFirstVisibleItem cdecl alias "wxTreeCtrl_GetFirstVisibleItem" (byval self as wxTreeCtrl ptr) as wxTreeItemId ptr
 declare function wxTreeCtrl_GetNextVisible cdecl alias "wxTreeCtrl_GetNextVisible" (byval self as wxTreeCtrl ptr, byval item as wxTreeItemId ptr) as wxTreeItemId ptr
 declare function wxTreeCtrl_GetPrevVisible cdecl alias "wxTreeCtrl_GetPrevVisible" (byval self as wxTreeCtrl ptr, byval item as wxTreeItemId ptr) as wxTreeItemId ptr
-declare function wxTreeCtrl_PrependItem cdecl alias "wxTreeCtrl_PrependItem" (byval self as wxTreeCtrl ptr, byval parent as wxTreeItemId ptr, byval text as string, byval image as integer, byval selectedImage as integer, byval data as wxTreeItemData ptr) as wxTreeItemId ptr
-declare function wxTreeCtrl_InsertItem cdecl alias "wxTreeCtrl_InsertItem" (byval self as wxTreeCtrl ptr, byval parent as wxTreeItemId ptr, byval idPrevious as wxTreeItemId ptr, byval text as string, byval image as integer, byval selectedImage as integer, byval data as wxTreeItemData ptr) as wxTreeItemId ptr
-declare function wxTreeCtrl_InsertItem2 cdecl alias "wxTreeCtrl_InsertItem2" (byval self as wxTreeCtrl ptr, byval parent as wxTreeItemId ptr, byval before as integer, byval text as string, byval image as integer, byval selectedImage as integer, byval data as wxTreeItemData ptr) as wxTreeItemId ptr
+declare function wxTreeCtrl_PrependItem cdecl alias "wxTreeCtrl_PrependItem" (byval self as wxTreeCtrl ptr, byval parent as wxTreeItemId ptr, byval text as zstring ptr, byval image as integer, byval selectedImage as integer, byval data as wxTreeItemData ptr) as wxTreeItemId ptr
+declare function wxTreeCtrl_InsertItem cdecl alias "wxTreeCtrl_InsertItem" (byval self as wxTreeCtrl ptr, byval parent as wxTreeItemId ptr, byval idPrevious as wxTreeItemId ptr, byval text as zstring ptr, byval image as integer, byval selectedImage as integer, byval data as wxTreeItemData ptr) as wxTreeItemId ptr
+declare function wxTreeCtrl_InsertItem2 cdecl alias "wxTreeCtrl_InsertItem2" (byval self as wxTreeCtrl ptr, byval parent as wxTreeItemId ptr, byval before as integer, byval text as zstring ptr, byval image as integer, byval selectedImage as integer, byval data as wxTreeItemData ptr) as wxTreeItemId ptr
 declare sub wxTreeCtrl_Expand cdecl alias "wxTreeCtrl_Expand" (byval self as wxTreeCtrl ptr, byval item as wxTreeItemId ptr)
 declare sub wxTreeCtrl_Collapse cdecl alias "wxTreeCtrl_Collapse" (byval self as wxTreeCtrl ptr, byval item as wxTreeItemId ptr)
 declare sub wxTreeCtrl_CollapseAndReset cdecl alias "wxTreeCtrl_CollapseAndReset" (byval self as wxTreeCtrl ptr, byval item as wxTreeItemId ptr)
@@ -98,13 +98,13 @@ declare function wxTreeEvent_GetKeyEvent cdecl alias "wxTreeEvent_GetKeyEvent" (
 declare function wxTreeEvent_GetKeyCode cdecl alias "wxTreeEvent_GetKeyCode" (byval self as wxTreeEvent ptr) as integer
 declare sub wxTreeEvent_SetKeyEvent cdecl alias "wxTreeEvent_SetKeyEvent" (byval self as wxTreeEvent ptr, byval evt as wxKeyEvent ptr)
 declare function wxTreeEvent_GetLabel cdecl alias "wxTreeEvent_GetLabel" (byval self as wxTreeEvent ptr) as wxString ptr
-declare sub wxTreeEvent_SetLabel cdecl alias "wxTreeEvent_SetLabel" (byval self as wxTreeEvent ptr, byval label as string)
+declare sub wxTreeEvent_SetLabel cdecl alias "wxTreeEvent_SetLabel" (byval self as wxTreeEvent ptr, byval label as zstring ptr)
 declare function wxTreeEvent_IsEditCancelled cdecl alias "wxTreeEvent_IsEditCancelled" (byval self as wxTreeEvent ptr) as integer
 declare sub wxTreeEvent_SetEditCanceled cdecl alias "wxTreeEvent_SetEditCanceled" (byval self as wxTreeEvent ptr, byval editCancelled as integer)
 declare sub wxTreeEvent_Veto cdecl alias "wxTreeEvent_Veto" (byval self as wxTreeEvent ptr)
 declare sub wxTreeEvent_Allow cdecl alias "wxTreeEvent_Allow" (byval self as wxTreeEvent ptr)
 declare function wxTreeEvent_IsAllowed cdecl alias "wxTreeEvent_IsAllowed" (byval self as wxTreeEvent ptr) as integer
-declare sub wxTreeEvent_SetToolTip cdecl alias "wxTreeEvent_SetToolTip" (byval self as wxTreeEvent ptr, byval toolTip as string)
+declare sub wxTreeEvent_SetToolTip cdecl alias "wxTreeEvent_SetToolTip" (byval self as wxTreeEvent ptr, byval toolTip as zstring ptr)
 
 declare function wxTreeItemData cdecl alias "wxTreeItemData_ctor" () as wxTreeItemData ptr
 declare sub wxTreeItemData_dtor cdecl alias "wxTreeItemData_dtor" (byval self as wxTreeItemData ptr)

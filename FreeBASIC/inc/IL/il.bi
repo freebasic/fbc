@@ -328,7 +328,7 @@ declare sub ilSetInteger cdecl alias "ilSetInteger" (byval Mode as ILenum, byval
 declare sub ilSetMemory cdecl alias "ilSetMemory" (byval as mAlloc, byval as mFree)
 declare sub ilSetPixels cdecl alias "ilSetPixels" (byval XOff as ILint, byval YOff as ILint, byval ZOff as ILint, byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint, byval Format as ILenum, byval Type as ILenum, byval Data as ILvoid ptr)
 declare sub ilSetRead cdecl alias "ilSetRead" (byval as fOpenRProc, byval as fCloseRProc, byval as fEofProc, byval as fGetcProc, byval as fReadProc, byval as fSeekRProc, byval as fTellRProc)
-declare sub ilSetString cdecl alias "ilSetString" (byval Mode as ILenum, byval String as string)
+declare sub ilSetString cdecl alias "ilSetString" (byval Mode as ILenum, byval String as zstring ptr)
 declare sub ilSetWrite cdecl alias "ilSetWrite" (byval as fOpenWProc, byval as fCloseWProc, byval as fPutcProc, byval as fSeekWProc, byval as fTellWProc, byval as fWriteProc)
 declare sub ilShutDown cdecl alias "ilShutDown" ()
 declare function ilTexImage cdecl alias "ilTexImage" (byval Width as ILuint, byval Height as ILuint, byval Depth as ILuint, byval Bpp as ILubyte, byval Format as ILenum, byval Type as ILenum, byval Data as ILvoid ptr) as ILboolean

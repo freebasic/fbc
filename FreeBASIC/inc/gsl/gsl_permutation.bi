@@ -28,7 +28,7 @@ declare function gsl_permutation_memcpy cdecl alias "gsl_permutation_memcpy" (by
 declare function gsl_permutation_fread cdecl alias "gsl_permutation_fread" (byval stream as FILE ptr, byval p as gsl_permutation ptr) as integer
 declare function gsl_permutation_fwrite cdecl alias "gsl_permutation_fwrite" (byval stream as FILE ptr, byval p as gsl_permutation ptr) as integer
 declare function gsl_permutation_fscanf cdecl alias "gsl_permutation_fscanf" (byval stream as FILE ptr, byval p as gsl_permutation ptr) as integer
-declare function gsl_permutation_fprintf cdecl alias "gsl_permutation_fprintf" (byval stream as FILE ptr, byval p as gsl_permutation ptr, byval format as string) as integer
+declare function gsl_permutation_fprintf cdecl alias "gsl_permutation_fprintf" (byval stream as FILE ptr, byval p as gsl_permutation ptr, byval format as zstring ptr) as integer
 declare function gsl_permutation_size cdecl alias "gsl_permutation_size" (byval p as gsl_permutation ptr) as integer
 declare function gsl_permutation_data cdecl alias "gsl_permutation_data" (byval p as gsl_permutation ptr) as integer ptr
 declare function gsl_permutation_get cdecl alias "gsl_permutation_get" (byval p as gsl_permutation ptr, byval i as integer) as integer

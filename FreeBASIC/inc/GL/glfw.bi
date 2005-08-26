@@ -211,7 +211,7 @@ declare sub glfwGetVersion GLFWAPIENTRY alias "glfwGetVersion" (byval major as i
 declare function glfwOpenWindow GLFWAPIENTRY alias "glfwOpenWindow" (byval width as integer, byval height as integer, byval redbits as integer, byval greenbits as integer, byval bluebits as integer, byval alphabits as integer, byval depthbits as integer, byval stencilbits as integer, byval mode as integer) as integer
 declare sub glfwOpenWindowHint GLFWAPIENTRY alias "glfwOpenWindowHint" (byval target as integer, byval hint as integer)
 declare sub glfwCloseWindow GLFWAPIENTRY alias "glfwCloseWindow" ()
-declare sub glfwSetWindowTitle GLFWAPIENTRY alias "glfwSetWindowTitle" (byval title as string)
+declare sub glfwSetWindowTitle GLFWAPIENTRY alias "glfwSetWindowTitle" (byval title as zstring ptr)
 declare sub glfwGetWindowSize GLFWAPIENTRY alias "glfwGetWindowSize" (byval width as integer ptr, byval height as integer ptr)
 declare sub glfwSetWindowSize GLFWAPIENTRY alias "glfwSetWindowSize" (byval width as integer, byval height as integer)
 declare sub glfwSetWindowPos GLFWAPIENTRY alias "glfwSetWindowPos" (byval x as integer, byval y as integer)
@@ -241,8 +241,8 @@ declare function glfwGetJoystickButtons GLFWAPIENTRY alias "glfwGetJoystickButto
 declare function glfwGetTime GLFWAPIENTRY alias "glfwGetTime" () as double
 declare sub glfwSetTime GLFWAPIENTRY alias "glfwSetTime" (byval time as double)
 declare sub glfwSleep GLFWAPIENTRY alias "glfwSleep" (byval time as double)
-declare function glfwExtensionSupported GLFWAPIENTRY alias "glfwExtensionSupported" (byval extension as string) as integer
-declare function glfwGetProcAddress GLFWAPIENTRY alias "glfwGetProcAddress" (byval procname as string) as any ptr
+declare function glfwExtensionSupported GLFWAPIENTRY alias "glfwExtensionSupported" (byval extension as zstring ptr) as integer
+declare function glfwGetProcAddress GLFWAPIENTRY alias "glfwGetProcAddress" (byval procname as zstring ptr) as any ptr
 declare sub glfwGetGLVersion GLFWAPIENTRY alias "glfwGetGLVersion" (byval major as integer ptr, byval minor as integer ptr, byval rev as integer ptr)
 declare function glfwCreateThread GLFWAPIENTRY alias "glfwCreateThread" (byval fun as GLFWthreadfun, byval arg as any ptr) as GLFWthread
 declare sub glfwDestroyThread GLFWAPIENTRY alias "glfwDestroyThread" (byval ID as GLFWthread)
@@ -260,8 +260,8 @@ declare sub glfwBroadcastCond GLFWAPIENTRY alias "glfwBroadcastCond" (byval cond
 declare function glfwGetNumberOfProcessors GLFWAPIENTRY alias "glfwGetNumberOfProcessors" () as integer
 declare sub glfwEnable GLFWAPIENTRY alias "glfwEnable" (byval token as integer)
 declare sub glfwDisable GLFWAPIENTRY alias "glfwDisable" (byval token as integer)
-declare function glfwReadImage GLFWAPIENTRY alias "glfwReadImage" (byval name as string, byval img as GLFWimage ptr, byval flags as integer) as integer
+declare function glfwReadImage GLFWAPIENTRY alias "glfwReadImage" (byval name as zstring ptr, byval img as GLFWimage ptr, byval flags as integer) as integer
 declare sub glfwFreeImage GLFWAPIENTRY alias "glfwFreeImage" (byval img as GLFWimage ptr)
-declare function glfwLoadTexture2D GLFWAPIENTRY alias "glfwLoadTexture2D" (byval name as string, byval flags as integer) as integer
+declare function glfwLoadTexture2D GLFWAPIENTRY alias "glfwLoadTexture2D" (byval name as zstring ptr, byval flags as integer) as integer
 
 #endif

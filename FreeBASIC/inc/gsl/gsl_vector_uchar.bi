@@ -57,7 +57,7 @@ declare function gsl_vector_uchar_set_basis cdecl alias "gsl_vector_uchar_set_ba
 declare function gsl_vector_uchar_fread cdecl alias "gsl_vector_uchar_fread" (byval stream as FILE ptr, byval v as gsl_vector_uchar ptr) as integer
 declare function gsl_vector_uchar_fwrite cdecl alias "gsl_vector_uchar_fwrite" (byval stream as FILE ptr, byval v as gsl_vector_uchar ptr) as integer
 declare function gsl_vector_uchar_fscanf cdecl alias "gsl_vector_uchar_fscanf" (byval stream as FILE ptr, byval v as gsl_vector_uchar ptr) as integer
-declare function gsl_vector_uchar_fprintf cdecl alias "gsl_vector_uchar_fprintf" (byval stream as FILE ptr, byval v as gsl_vector_uchar ptr, byval format as string) as integer
+declare function gsl_vector_uchar_fprintf cdecl alias "gsl_vector_uchar_fprintf" (byval stream as FILE ptr, byval v as gsl_vector_uchar ptr, byval format as zstring ptr) as integer
 declare function gsl_vector_uchar_memcpy cdecl alias "gsl_vector_uchar_memcpy" (byval dest as gsl_vector_uchar ptr, byval src as gsl_vector_uchar ptr) as integer
 declare function gsl_vector_uchar_reverse cdecl alias "gsl_vector_uchar_reverse" (byval v as gsl_vector_uchar ptr) as integer
 declare function gsl_vector_uchar_swap cdecl alias "gsl_vector_uchar_swap" (byval v as gsl_vector_uchar ptr, byval w as gsl_vector_uchar ptr) as integer

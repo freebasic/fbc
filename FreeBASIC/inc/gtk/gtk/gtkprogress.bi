@@ -42,7 +42,7 @@ end type
 declare function gtk_progress_get_type cdecl alias "gtk_progress_get_type" () as GType
 declare sub gtk_progress_set_show_text cdecl alias "gtk_progress_set_show_text" (byval progress as GtkProgress ptr, byval show_text as gboolean)
 declare sub gtk_progress_set_text_alignment cdecl alias "gtk_progress_set_text_alignment" (byval progress as GtkProgress ptr, byval x_align as gfloat, byval y_align as gfloat)
-declare sub gtk_progress_set_format_string cdecl alias "gtk_progress_set_format_string" (byval progress as GtkProgress ptr, byval format as string)
+declare sub gtk_progress_set_format_string cdecl alias "gtk_progress_set_format_string" (byval progress as GtkProgress ptr, byval format as zstring ptr)
 declare sub gtk_progress_set_adjustment cdecl alias "gtk_progress_set_adjustment" (byval progress as GtkProgress ptr, byval adjustment as GtkAdjustment ptr)
 declare sub gtk_progress_configure cdecl alias "gtk_progress_configure" (byval progress as GtkProgress ptr, byval value as gdouble, byval min as gdouble, byval max as gdouble)
 declare sub gtk_progress_set_percentage cdecl alias "gtk_progress_set_percentage" (byval progress as GtkProgress ptr, byval percentage as gdouble)

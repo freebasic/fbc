@@ -47,15 +47,15 @@ type xmlEntitiesTable as _xmlHashTable
 type xmlEntitiesTablePtr as xmlEntitiesTable ptr
 
 declare sub xmlInitializePredefinedEntities cdecl alias "xmlInitializePredefinedEntities" ()
-declare function xmlAddDocEntity cdecl alias "xmlAddDocEntity" (byval doc as xmlDocPtr, byval name as string, byval type as integer, byval ExternalID as string, byval SystemID as string, byval content as string) as xmlEntityPtr
-declare function xmlAddDtdEntity cdecl alias "xmlAddDtdEntity" (byval doc as xmlDocPtr, byval name as string, byval type as integer, byval ExternalID as string, byval SystemID as string, byval content as string) as xmlEntityPtr
-declare function xmlGetPredefinedEntity cdecl alias "xmlGetPredefinedEntity" (byval name as string) as xmlEntityPtr
-declare function xmlGetDocEntity cdecl alias "xmlGetDocEntity" (byval doc as xmlDocPtr, byval name as string) as xmlEntityPtr
-declare function xmlGetDtdEntity cdecl alias "xmlGetDtdEntity" (byval doc as xmlDocPtr, byval name as string) as xmlEntityPtr
-declare function xmlGetParameterEntity cdecl alias "xmlGetParameterEntity" (byval doc as xmlDocPtr, byval name as string) as xmlEntityPtr
-declare function xmlEncodeEntities cdecl alias "xmlEncodeEntities" (byval doc as xmlDocPtr, byval input as string) as zstring ptr
-declare function xmlEncodeEntitiesReentrant cdecl alias "xmlEncodeEntitiesReentrant" (byval doc as xmlDocPtr, byval input as string) as zstring ptr
-declare function xmlEncodeSpecialChars cdecl alias "xmlEncodeSpecialChars" (byval doc as xmlDocPtr, byval input as string) as zstring ptr
+declare function xmlAddDocEntity cdecl alias "xmlAddDocEntity" (byval doc as xmlDocPtr, byval name as zstring ptr, byval type as integer, byval ExternalID as zstring ptr, byval SystemID as zstring ptr, byval content as zstring ptr) as xmlEntityPtr
+declare function xmlAddDtdEntity cdecl alias "xmlAddDtdEntity" (byval doc as xmlDocPtr, byval name as zstring ptr, byval type as integer, byval ExternalID as zstring ptr, byval SystemID as zstring ptr, byval content as zstring ptr) as xmlEntityPtr
+declare function xmlGetPredefinedEntity cdecl alias "xmlGetPredefinedEntity" (byval name as zstring ptr) as xmlEntityPtr
+declare function xmlGetDocEntity cdecl alias "xmlGetDocEntity" (byval doc as xmlDocPtr, byval name as zstring ptr) as xmlEntityPtr
+declare function xmlGetDtdEntity cdecl alias "xmlGetDtdEntity" (byval doc as xmlDocPtr, byval name as zstring ptr) as xmlEntityPtr
+declare function xmlGetParameterEntity cdecl alias "xmlGetParameterEntity" (byval doc as xmlDocPtr, byval name as zstring ptr) as xmlEntityPtr
+declare function xmlEncodeEntities cdecl alias "xmlEncodeEntities" (byval doc as xmlDocPtr, byval input as zstring ptr) as zstring ptr
+declare function xmlEncodeEntitiesReentrant cdecl alias "xmlEncodeEntitiesReentrant" (byval doc as xmlDocPtr, byval input as zstring ptr) as zstring ptr
+declare function xmlEncodeSpecialChars cdecl alias "xmlEncodeSpecialChars" (byval doc as xmlDocPtr, byval input as zstring ptr) as zstring ptr
 declare function xmlCreateEntitiesTable cdecl alias "xmlCreateEntitiesTable" () as xmlEntitiesTablePtr
 declare function xmlCopyEntitiesTable cdecl alias "xmlCopyEntitiesTable" (byval table as xmlEntitiesTablePtr) as xmlEntitiesTablePtr
 declare sub xmlFreeEntitiesTable cdecl alias "xmlFreeEntitiesTable" (byval table as xmlEntitiesTablePtr)

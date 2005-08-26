@@ -64,7 +64,7 @@ declare function gsl_vector_complex_float_set_basis cdecl alias "gsl_vector_comp
 declare function gsl_vector_complex_float_fread cdecl alias "gsl_vector_complex_float_fread" (byval stream as FILE ptr, byval v as gsl_vector_complex_float ptr) as integer
 declare function gsl_vector_complex_float_fwrite cdecl alias "gsl_vector_complex_float_fwrite" (byval stream as FILE ptr, byval v as gsl_vector_complex_float ptr) as integer
 declare function gsl_vector_complex_float_fscanf cdecl alias "gsl_vector_complex_float_fscanf" (byval stream as FILE ptr, byval v as gsl_vector_complex_float ptr) as integer
-declare function gsl_vector_complex_float_fprintf cdecl alias "gsl_vector_complex_float_fprintf" (byval stream as FILE ptr, byval v as gsl_vector_complex_float ptr, byval format as string) as integer
+declare function gsl_vector_complex_float_fprintf cdecl alias "gsl_vector_complex_float_fprintf" (byval stream as FILE ptr, byval v as gsl_vector_complex_float ptr, byval format as zstring ptr) as integer
 declare function gsl_vector_complex_float_memcpy cdecl alias "gsl_vector_complex_float_memcpy" (byval dest as gsl_vector_complex_float ptr, byval src as gsl_vector_complex_float ptr) as integer
 declare function gsl_vector_complex_float_reverse cdecl alias "gsl_vector_complex_float_reverse" (byval v as gsl_vector_complex_float ptr) as integer
 declare function gsl_vector_complex_float_swap cdecl alias "gsl_vector_complex_float_swap" (byval v as gsl_vector_complex_float ptr, byval w as gsl_vector_complex_float ptr) as integer

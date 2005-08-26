@@ -156,8 +156,8 @@
 
     declare function characterColor cdecl alias "characterColor" (byval dst as SDL_Surface ptr, byval x as Sint16, byval y as Sint16, byval c as byte, byval color as Uint32) as integer
     declare function characterRGBA cdecl alias "characterRGBA" (byval dst as SDL_Surface ptr, byval x as Sint16, byval y as Sint16, byval c as byte, byval r as Uint8, byval g as Uint8, byval b as Uint8, byval a as Uint8) as integer
-    declare function stringColor cdecl alias "stringColor" (byval dst as SDL_Surface ptr, byval x as Sint16, byval y as Sint16, byval c as string, byval color as Uint32) as integer
-    declare function stringRGBA cdecl alias "stringRGBA" (byval dst as SDL_Surface ptr, byval x as Sint16, byval y as Sint16, byval c as string, byval r as Uint8, byval g as Uint8, byval b as Uint8, byval a as Uint8) as integer
+    declare function stringColor cdecl alias "stringColor" (byval dst as SDL_Surface ptr, byval x as Sint16, byval y as Sint16, byval c as zstring ptr, byval color as Uint32) as integer
+    declare function stringRGBA cdecl alias "stringRGBA" (byval dst as SDL_Surface ptr, byval x as Sint16, byval y as Sint16, byval c as zstring ptr, byval r as Uint8, byval g as Uint8, byval b as Uint8, byval a as Uint8) as integer
 
     declare sub gfxPrimitivesSetFont cdecl alias "gfxPrimitivesSetFont" (byval fontdata as any ptr, byval cw as integer, byval ch as integer)
 

@@ -59,10 +59,10 @@ end enum
 
 
 declare function pango_language_get_type cdecl alias "pango_language_get_type" () as GType
-declare function pango_language_from_string cdecl alias "pango_language_from_string" (byval language as string) as PangoLanguage ptr
-declare function pango_language_matches cdecl alias "pango_language_matches" (byval language as PangoLanguage ptr, byval range_list as string) as gboolean
+declare function pango_language_from_string cdecl alias "pango_language_from_string" (byval language as zstring ptr) as PangoLanguage ptr
+declare function pango_language_matches cdecl alias "pango_language_matches" (byval language as PangoLanguage ptr, byval range_list as zstring ptr) as gboolean
 declare function pango_get_mirror_char cdecl alias "pango_get_mirror_char" (byval ch as gunichar, byval mirrored_ch as gunichar ptr) as gboolean
 declare function pango_unichar_direction cdecl alias "pango_unichar_direction" (byval ch as gunichar) as PangoDirection
-declare function pango_find_base_dir cdecl alias "pango_find_base_dir" (byval text as string, byval length as gint) as PangoDirection
+declare function pango_find_base_dir cdecl alias "pango_find_base_dir" (byval text as zstring ptr, byval length as gint) as PangoDirection
 
 #endif

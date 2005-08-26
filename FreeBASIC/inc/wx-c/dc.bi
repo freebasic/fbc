@@ -16,7 +16,7 @@ declare sub wxDC_DrawBitmap cdecl alias "wxDC_DrawBitmap" (byval self as wxDC pt
 declare sub wxDC_DrawPolygon cdecl alias "wxDC_DrawPolygon" (byval self as wxDC ptr, byval n as integer, byval points as wxPoint ptr, byval xoffset as wxCoord, byval yoffset as wxCoord, byval fill_style as integer)
 declare sub wxDC_DrawLine cdecl alias "wxDC_DrawLine" (byval self as wxDC ptr, byval x1 as wxCoord, byval y1 as wxCoord, byval x2 as wxCoord, byval y2 as wxCoord)
 declare sub wxDC_DrawRectangle cdecl alias "wxDC_DrawRectangle" (byval self as wxDC ptr, byval x1 as wxCoord, byval y1 as wxCoord, byval x2 as wxCoord, byval y2 as wxCoord)
-declare sub wxDC_DrawText cdecl alias "wxDC_DrawText" (byval self as wxDC ptr, byval text as string, byval x as integer, byval y as integer)
+declare sub wxDC_DrawText cdecl alias "wxDC_DrawText" (byval self as wxDC ptr, byval text as zstring ptr, byval x as integer, byval y as integer)
 declare sub wxDC_DrawEllipse cdecl alias "wxDC_DrawEllipse" (byval self as wxDC ptr, byval x as integer, byval y as integer, byval width as integer, byval height as integer)
 declare sub wxDC_DrawPoint cdecl alias "wxDC_DrawPoint" (byval self as wxDC ptr, byval x as integer, byval y as integer)
 declare sub wxDC_DrawRoundedRectangle cdecl alias "wxDC_DrawRoundedRectangle" (byval self as wxDC ptr, byval x as integer, byval y as integer, byval width as integer, byval height as integer, byval radius as double)
@@ -33,7 +33,7 @@ declare function wxDC_GetTextBackground cdecl alias "wxDC_GetTextBackground" (by
 declare sub wxDC_SetTextBackground cdecl alias "wxDC_SetTextBackground" (byval self as wxDC ptr, byval colour as wxColour ptr)
 declare function wxDC_GetFont cdecl alias "wxDC_GetFont" (byval self as wxDC ptr) as wxFont ptr
 declare sub wxDC_SetFont cdecl alias "wxDC_SetFont" (byval self as wxDC ptr, byval font as wxFont ptr)
-declare sub wxDC_GetTextExtent cdecl alias "wxDC_GetTextExtent" (byval self as wxDC ptr, byval string as string, byval x as integer ptr, byval y as integer ptr, byval descent as integer ptr, byval externalLeading as integer ptr, byval theFont as wxFont ptr)
+declare sub wxDC_GetTextExtent cdecl alias "wxDC_GetTextExtent" (byval self as wxDC ptr, byval string as zstring ptr, byval x as integer ptr, byval y as integer ptr, byval descent as integer ptr, byval externalLeading as integer ptr, byval theFont as wxFont ptr)
 declare sub wxDC_Clear cdecl alias "wxDC_Clear" (byval self as wxDC ptr)
 declare sub wxDC_DestroyClippingRegion cdecl alias "wxDC_DestroyClippingRegion" (byval self as wxDC ptr)
 declare sub wxDC_SetClippingRegion cdecl alias "wxDC_SetClippingRegion" (byval self as wxDC ptr, byval x as wxCoord, byval y as wxCoord, byval width as wxCoord, byval height as wxCoord)
@@ -54,19 +54,19 @@ declare sub wxDC_DrawEllipticArc cdecl alias "wxDC_DrawEllipticArc" (byval self 
 declare sub wxDC_DrawLines cdecl alias "wxDC_DrawLines" (byval self as wxDC ptr, byval n as integer, byval points as wxPoint ptr, byval xoffset as integer, byval yoffset as integer)
 declare sub wxDC_DrawCircle cdecl alias "wxDC_DrawCircle" (byval self as wxDC ptr, byval x as integer, byval y as integer, byval radius as integer)
 declare sub wxDC_DrawIcon cdecl alias "wxDC_DrawIcon" (byval self as wxDC ptr, byval icon as wxIcon ptr, byval x as integer, byval y as integer)
-declare sub wxDC_DrawRotatedText cdecl alias "wxDC_DrawRotatedText" (byval self as wxDC ptr, byval text as string, byval x as integer, byval y as integer, byval angle as double)
-declare sub wxDC_DrawLabel cdecl alias "wxDC_DrawLabel" (byval self as wxDC ptr, byval text as string, byval image as wxBitmap ptr, byval rect as wxRect ptr, byval alignment as integer, byval indexAccel as integer, byval rectBounding as wxRect ptr)
-declare sub wxDC_DrawLabel2 cdecl alias "wxDC_DrawLabel2" (byval self as wxDC ptr, byval text as string, byval rect as wxRect ptr, byval alignment as integer, byval indexAccel as integer)
+declare sub wxDC_DrawRotatedText cdecl alias "wxDC_DrawRotatedText" (byval self as wxDC ptr, byval text as zstring ptr, byval x as integer, byval y as integer, byval angle as double)
+declare sub wxDC_DrawLabel cdecl alias "wxDC_DrawLabel" (byval self as wxDC ptr, byval text as zstring ptr, byval image as wxBitmap ptr, byval rect as wxRect ptr, byval alignment as integer, byval indexAccel as integer, byval rectBounding as wxRect ptr)
+declare sub wxDC_DrawLabel2 cdecl alias "wxDC_DrawLabel2" (byval self as wxDC ptr, byval text as zstring ptr, byval rect as wxRect ptr, byval alignment as integer, byval indexAccel as integer)
 declare sub wxDC_DrawSpline cdecl alias "wxDC_DrawSpline" (byval self as wxDC ptr, byval x1 as integer, byval y1 as integer, byval x2 as integer, byval y2 as integer, byval x3 as integer, byval y3 as integer)
 declare sub wxDC_DrawSpline2 cdecl alias "wxDC_DrawSpline2" (byval self as wxDC ptr, byval n as integer, byval points as wxPoint ptr)
-declare function wxDC_StartDoc cdecl alias "wxDC_StartDoc" (byval self as wxDC ptr, byval message as string) as integer
+declare function wxDC_StartDoc cdecl alias "wxDC_StartDoc" (byval self as wxDC ptr, byval message as zstring ptr) as integer
 declare sub wxDC_EndDoc cdecl alias "wxDC_EndDoc" (byval self as wxDC ptr)
 declare sub wxDC_StartPage cdecl alias "wxDC_StartPage" (byval self as wxDC ptr)
 declare sub wxDC_EndPage cdecl alias "wxDC_EndPage" (byval self as wxDC ptr)
 declare sub wxDC_GetClippingBox cdecl alias "wxDC_GetClippingBox" (byval self as wxDC ptr, byval x as integer ptr, byval y as integer ptr, byval w as integer ptr, byval h as integer ptr)
 declare sub wxDC_GetClippingBox2 cdecl alias "wxDC_GetClippingBox2" (byval self as wxDC ptr, byval rect as wxRect ptr)
-declare sub wxDC_GetMultiLineTextExtent cdecl alias "wxDC_GetMultiLineTextExtent" (byval self as wxDC ptr, byval text as string, byval width as integer ptr, byval height as integer ptr, byval heightLine as integer ptr, byval font as wxFont ptr)
-declare function wxDC_GetPartialTextExtents cdecl alias "wxDC_GetPartialTextExtents" (byval self as wxDC ptr, byval text as string, byval widths as wxArrayInt ptr) as integer
+declare sub wxDC_GetMultiLineTextExtent cdecl alias "wxDC_GetMultiLineTextExtent" (byval self as wxDC ptr, byval text as zstring ptr, byval width as integer ptr, byval height as integer ptr, byval heightLine as integer ptr, byval font as wxFont ptr)
+declare function wxDC_GetPartialTextExtents cdecl alias "wxDC_GetPartialTextExtents" (byval self as wxDC ptr, byval text as zstring ptr, byval widths as wxArrayInt ptr) as integer
 declare sub wxDC_GetSize cdecl alias "wxDC_GetSize" (byval self as wxDC ptr, byval width as integer ptr, byval height as integer ptr)
 declare sub wxDC_GetSize2 cdecl alias "wxDC_GetSize2" (byval self as wxDC ptr, byval size as wxSize ptr)
 declare sub wxDC_GetSizeMM cdecl alias "wxDC_GetSizeMM" (byval self as wxDC ptr, byval width as integer ptr, byval height as integer ptr)

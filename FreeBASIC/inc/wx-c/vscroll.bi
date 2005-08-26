@@ -15,9 +15,9 @@
 type Virtual_IntInt as function (byval as integer) as integer
 #endif
 
-declare function wxVScrollWnd cdecl alias "wxVScrollWnd_ctor" (byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as wxVScrolledWindow ptr
+declare function wxVScrollWnd cdecl alias "wxVScrollWnd_ctor" (byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as zstring ptr) as wxVScrolledWindow ptr
 declare sub wxVScrolledWindow_RegisterVirtual cdecl alias "wxVScrolledWindow_RegisterVirtual" (byval self as _VScrolledWindow ptr, byval onGetLineHeight as Virtual_IntInt)
-declare function wxVScrolledWindow_Create cdecl alias "wxVScrolledWindow_Create" (byval self as _VScrolledWindow ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as integer
+declare function wxVScrolledWindow_Create cdecl alias "wxVScrolledWindow_Create" (byval self as _VScrolledWindow ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as zstring ptr) as integer
 declare sub wxVScrolledWindow_SetLineCount cdecl alias "wxVScrolledWindow_SetLineCount" (byval self as _VScrolledWindow ptr, byval count as integer)
 declare function wxVScrolledWindow_ScrollToLine cdecl alias "wxVScrolledWindow_ScrollToLine" (byval self as _VScrolledWindow ptr, byval line as integer) as integer
 declare function wxVScrolledWindow_ScrollLines cdecl alias "wxVScrolledWindow_ScrollLines" (byval self as _VScrolledWindow ptr, byval lines as integer) as integer

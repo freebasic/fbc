@@ -21,9 +21,9 @@ declare function wxApp_OnInit cdecl alias "wxApp_OnInit" (byval self as _App ptr
 declare function wxApp_OnExit cdecl alias "wxApp_OnExit" (byval self as _App ptr) as integer
 declare sub wxApp_Run cdecl alias "wxApp_Run" (byval argc as integer, byval argv as byte ptr ptr)
 declare function wxApp_GetVendorName cdecl alias "wxApp_GetVendorName" (byval self as wxApp ptr) as wxString ptr
-declare sub wxApp_SetVendorName cdecl alias "wxApp_SetVendorName" (byval self as wxApp ptr, byval name as string)
+declare sub wxApp_SetVendorName cdecl alias "wxApp_SetVendorName" (byval self as wxApp ptr, byval name as zstring ptr)
 declare function wxApp_GetAppName cdecl alias "wxApp_GetAppName" (byval self as wxApp ptr) as wxString ptr
-declare sub wxApp_SetAppName cdecl alias "wxApp_SetAppName" (byval self as wxApp ptr, byval name as string)
+declare sub wxApp_SetAppName cdecl alias "wxApp_SetAppName" (byval self as wxApp ptr, byval name as zstring ptr)
 declare function wxApp_SafeYield cdecl alias "wxApp_SafeYield" (byval win as wxWindow ptr, byval onlyIfNeeded as integer) as integer
 declare function wxApp_Yield cdecl alias "wxApp_Yield" (byval self as wxApp ptr, byval onlyIfNeeded as integer) as integer
 declare sub wxApp_WakeUpIdle cdecl alias "wxApp_WakeUpIdle" ()

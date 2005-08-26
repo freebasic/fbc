@@ -247,7 +247,7 @@ declare function caca_get_feature_name cdecl alias "caca_get_feature_name" ( byv
 declare function caca_get_rendertime cdecl alias "caca_get_rendertime" ( ) as uinteger
 declare function caca_get_width cdecl alias "caca_get_width" ( ) as uinteger
 declare function caca_get_height cdecl alias "caca_get_height" ( ) as uinteger
-declare function caca_set_window_title cdecl alias "caca_set_window_title" ( byval as string ) as integer
+declare function caca_set_window_title cdecl alias "caca_set_window_title" ( byval as zstring ptr ) as integer
 declare function caca_get_window_width cdecl alias "caca_get_window_width" ( ) as uinteger
 declare function caca_get_window_height cdecl alias "caca_get_window_height" ( ) as uinteger
 declare sub caca_refresh cdecl alias "caca_refresh" ()
@@ -277,8 +277,8 @@ declare function caca_get_fg_color cdecl alias "caca_get_fg_color" ( ) as caca_c
 declare function caca_get_bg_color cdecl alias "caca_get_bg_color" ( ) as caca_color
 declare function caca_get_color_name cdecl alias "caca_get_color_name" ( byval as caca_color ) as byte ptr
 declare sub caca_putchar cdecl alias "caca_putchar" ( byval as integer, byval as integer, byval as byte )
-declare sub caca_putstr cdecl alias "caca_putstr" ( byval as integer, byval as integer, byval as string )
-'declare sub caca_printf cdecl alias "caca_printf" ( byval as integer, byval as integer, byval as string, ... )
+declare sub caca_putstr cdecl alias "caca_putstr" ( byval as integer, byval as integer, byval as zstring ptr )
+'declare sub caca_printf cdecl alias "caca_printf" ( byval as integer, byval as integer, byval as zstring ptr, ... )
 declare sub caca_clear cdecl alias "caca_clear" ( )
 '/*  @} */
 
@@ -326,7 +326,7 @@ declare function caca_sqrt cdecl alias "caca_sqrt" ( byval as uinteger ) as uint
 'type caca_sprite as any
 
 #define caca_sprite any
-declare function caca_load_sprite cdecl alias "caca_load_sprite" ( byval as string ) as caca_sprite ptr
+declare function caca_load_sprite cdecl alias "caca_load_sprite" ( byval as zstring ptr ) as caca_sprite ptr
 declare function caca_get_sprite_frames cdecl alias "caca_get_sprite_frames" ( byval as caca_sprite ptr ) as integer
 declare function caca_get_sprite_width cdecl alias "caca_get_sprite_width" ( byval as caca_sprite ptr, byval as integer ) as integer
 declare function caca_get_sprite_height cdecl alias "caca_get_sprite_height" ( byval as caca_sprite ptr, byval as integer ) as integer

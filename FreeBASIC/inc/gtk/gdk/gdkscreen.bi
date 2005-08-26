@@ -49,6 +49,6 @@ declare function gdk_screen_get_monitor_at_point cdecl alias "gdk_screen_get_mon
 declare function gdk_screen_get_monitor_at_window cdecl alias "gdk_screen_get_monitor_at_window" (byval screen as GdkScreen ptr, byval window as GdkWindow ptr) as gint
 declare sub gdk_screen_broadcast_client_message cdecl alias "gdk_screen_broadcast_client_message" (byval screen as GdkScreen ptr, byval event as GdkEvent ptr)
 declare function gdk_screen_get_default cdecl alias "gdk_screen_get_default" () as GdkScreen ptr
-declare function gdk_screen_get_setting cdecl alias "gdk_screen_get_setting" (byval screen as GdkScreen ptr, byval name as string, byval value as GValue ptr) as gboolean
+declare function gdk_screen_get_setting cdecl alias "gdk_screen_get_setting" (byval screen as GdkScreen ptr, byval name as zstring ptr, byval value as GValue ptr) as gboolean
 
 #endif

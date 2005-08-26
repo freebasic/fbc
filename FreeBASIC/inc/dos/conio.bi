@@ -67,9 +67,9 @@ declare function	cgets			cdecl alias "cgets"		(byval strn as byte ptr) as byte p
 declare sub		clreol			cdecl alias "clreol"		()
 declare sub		clrscr			cdecl alias "clrscr"		()
 declare function	conio_kbhit		cdecl alias "_conio_kbhit"	() as integer ' checks for ungetch char
-declare function	cprintf			cdecl alias "cprintf"		(byval sformat as string) as integer
-declare function	cputs			cdecl alias "cputs"		(byval strn as string) as integer
-''''declare function	cscanf			cdecl alias "cscanf"		(byval sformat as string) as integer
+declare function	cprintf			cdecl alias "cprintf"		(byval sformat as zstring ptr) as integer
+declare function	cputs			cdecl alias "cputs"		(byval strn as zstring ptr) as integer
+''''declare function	cscanf			cdecl alias "cscanf"		(byval sformat as zstring ptr) as integer
 declare sub		delline			cdecl alias "delline"		()
 declare function	getch			cdecl alias "getch"		() as integer
 declare function	getche			cdecl alias "getche"		() as integer

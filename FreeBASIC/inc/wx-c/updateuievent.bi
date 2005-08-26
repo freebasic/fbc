@@ -25,7 +25,7 @@ declare function wxUpdateUIEvent_GetMode cdecl alias "wxUpdateUIEvent_GetMode" (
 declare function wxUpdateUIEvent_GetUpdateInterval cdecl alias "wxUpdateUIEvent_GetUpdateInterval" () as integer
 declare sub wxUpdateUIEvent_ResetUpdateTime cdecl alias "wxUpdateUIEvent_ResetUpdateTime" ()
 declare sub wxUpdateUIEvent_SetMode cdecl alias "wxUpdateUIEvent_SetMode" (byval mode as wxUpdateUIMode)
-declare sub wxUpdateUIEvent_SetText cdecl alias "wxUpdateUIEvent_SetText" (byval self as wxUpdateUIEvent ptr, byval text as string)
+declare sub wxUpdateUIEvent_SetText cdecl alias "wxUpdateUIEvent_SetText" (byval self as wxUpdateUIEvent ptr, byval text as zstring ptr)
 declare sub wxUpdateUIEvent_SetUpdateInterval cdecl alias "wxUpdateUIEvent_SetUpdateInterval" (byval updateInterval as integer)
 
 #endif

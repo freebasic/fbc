@@ -100,8 +100,8 @@ end type
 type GIOFunc as function cdecl(byval as GIOChannel ptr, byval as GIOCondition, byval as gpointer) as gboolean
 
 type _GIOFuncs
-	io_read as function cdecl(byval as GIOChannel ptr, byval as string, byval as gsize, byval as gsize ptr, byval as GError ptr ptr) as GIOStatus
-	io_write as function cdecl(byval as GIOChannel ptr, byval as string, byval as gsize, byval as gsize ptr, byval as GError ptr ptr) as GIOStatus
+	io_read as function cdecl(byval as GIOChannel ptr, byval as zstring ptr, byval as gsize, byval as gsize ptr, byval as GError ptr ptr) as GIOStatus
+	io_write as function cdecl(byval as GIOChannel ptr, byval as zstring ptr, byval as gsize, byval as gsize ptr, byval as GError ptr ptr) as GIOStatus
 	io_seek as function cdecl(byval as GIOChannel ptr, byval as gint64, byval as GSeekType, byval as GError ptr ptr) as GIOStatus
 	io_close as function cdecl(byval as GIOChannel ptr, byval as GError ptr ptr) as GIOStatus
 	io_create_watch as function cdecl(byval as GIOChannel ptr, byval as GIOCondition) as GSource
@@ -113,8 +113,8 @@ end type
 declare sub g_io_channel_init cdecl alias "g_io_channel_init" (byval channel as GIOChannel ptr)
 declare function g_io_channel_ref cdecl alias "g_io_channel_ref" (byval channel as GIOChannel ptr) as GIOChannel ptr
 declare sub g_io_channel_unref cdecl alias "g_io_channel_unref" (byval channel as GIOChannel ptr)
-declare function g_io_channel_read cdecl alias "g_io_channel_read" (byval channel as GIOChannel ptr, byval buf as string, byval count as gsize, byval bytes_read as gsize ptr) as GIOError
-declare function g_io_channel_write cdecl alias "g_io_channel_write" (byval channel as GIOChannel ptr, byval buf as string, byval count as gsize, byval bytes_written as gsize ptr) as GIOError
+declare function g_io_channel_read cdecl alias "g_io_channel_read" (byval channel as GIOChannel ptr, byval buf as zstring ptr, byval count as gsize, byval bytes_read as gsize ptr) as GIOError
+declare function g_io_channel_write cdecl alias "g_io_channel_write" (byval channel as GIOChannel ptr, byval buf as zstring ptr, byval count as gsize, byval bytes_written as gsize ptr) as GIOError
 declare function g_io_channel_seek cdecl alias "g_io_channel_seek" (byval channel as GIOChannel ptr, byval offset as gint64, byval type as GSeekType) as GIOError
 declare sub g_io_channel_close cdecl alias "g_io_channel_close" (byval channel as GIOChannel ptr)
 declare function g_io_channel_shutdown cdecl alias "g_io_channel_shutdown" (byval channel as GIOChannel ptr, byval flush as gboolean, byval err as GError ptr ptr) as GIOStatus
@@ -126,11 +126,11 @@ declare function g_io_channel_get_buffer_size cdecl alias "g_io_channel_get_buff
 declare function g_io_channel_get_buffer_condition cdecl alias "g_io_channel_get_buffer_condition" (byval channel as GIOChannel ptr) as GIOCondition
 declare function g_io_channel_set_flags cdecl alias "g_io_channel_set_flags" (byval channel as GIOChannel ptr, byval flags as GIOFlags, byval error as GError ptr ptr) as GIOStatus
 declare function g_io_channel_get_flags cdecl alias "g_io_channel_get_flags" (byval channel as GIOChannel ptr) as GIOFlags
-declare sub g_io_channel_set_line_term cdecl alias "g_io_channel_set_line_term" (byval channel as GIOChannel ptr, byval line_term as string, byval length as gint)
+declare sub g_io_channel_set_line_term cdecl alias "g_io_channel_set_line_term" (byval channel as GIOChannel ptr, byval line_term as zstring ptr, byval length as gint)
 declare function g_io_channel_get_line_term cdecl alias "g_io_channel_get_line_term" (byval channel as GIOChannel ptr, byval length as gint ptr) as zstring ptr
 declare sub g_io_channel_set_buffered cdecl alias "g_io_channel_set_buffered" (byval channel as GIOChannel ptr, byval buffered as gboolean)
 declare function g_io_channel_get_buffered cdecl alias "g_io_channel_get_buffered" (byval channel as GIOChannel ptr) as gboolean
-declare function g_io_channel_set_encoding cdecl alias "g_io_channel_set_encoding" (byval channel as GIOChannel ptr, byval encoding as string, byval error as GError ptr ptr) as GIOStatus
+declare function g_io_channel_set_encoding cdecl alias "g_io_channel_set_encoding" (byval channel as GIOChannel ptr, byval encoding as zstring ptr, byval error as GError ptr ptr) as GIOStatus
 declare function g_io_channel_get_encoding cdecl alias "g_io_channel_get_encoding" (byval channel as GIOChannel ptr) as zstring ptr
 declare sub g_io_channel_set_close_on_unref cdecl alias "g_io_channel_set_close_on_unref" (byval channel as GIOChannel ptr, byval do_close as gboolean)
 declare function g_io_channel_get_close_on_unref cdecl alias "g_io_channel_get_close_on_unref" (byval channel as GIOChannel ptr) as gboolean
@@ -138,12 +138,12 @@ declare function g_io_channel_flush cdecl alias "g_io_channel_flush" (byval chan
 declare function g_io_channel_read_line cdecl alias "g_io_channel_read_line" (byval channel as GIOChannel ptr, byval str_return as zstring ptr ptr, byval length as gsize ptr, byval terminator_pos as gsize ptr, byval error as GError ptr ptr) as GIOStatus
 declare function g_io_channel_read_line_string cdecl alias "g_io_channel_read_line_string" (byval channel as GIOChannel ptr, byval buffer as GString ptr, byval terminator_pos as gsize ptr, byval error as GError ptr ptr) as GIOStatus
 declare function g_io_channel_read_to_end cdecl alias "g_io_channel_read_to_end" (byval channel as GIOChannel ptr, byval str_return as zstring ptr ptr, byval length as gsize ptr, byval error as GError ptr ptr) as GIOStatus
-declare function g_io_channel_read_chars cdecl alias "g_io_channel_read_chars" (byval channel as GIOChannel ptr, byval buf as string, byval count as gsize, byval bytes_read as gsize ptr, byval error as GError ptr ptr) as GIOStatus
+declare function g_io_channel_read_chars cdecl alias "g_io_channel_read_chars" (byval channel as GIOChannel ptr, byval buf as zstring ptr, byval count as gsize, byval bytes_read as gsize ptr, byval error as GError ptr ptr) as GIOStatus
 declare function g_io_channel_read_unichar cdecl alias "g_io_channel_read_unichar" (byval channel as GIOChannel ptr, byval thechar as gunichar ptr, byval error as GError ptr ptr) as GIOStatus
-declare function g_io_channel_write_chars cdecl alias "g_io_channel_write_chars" (byval channel as GIOChannel ptr, byval buf as string, byval count as gssize, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as GIOStatus
+declare function g_io_channel_write_chars cdecl alias "g_io_channel_write_chars" (byval channel as GIOChannel ptr, byval buf as zstring ptr, byval count as gssize, byval bytes_written as gsize ptr, byval error as GError ptr ptr) as GIOStatus
 declare function g_io_channel_write_unichar cdecl alias "g_io_channel_write_unichar" (byval channel as GIOChannel ptr, byval thechar as gunichar, byval error as GError ptr ptr) as GIOStatus
 declare function g_io_channel_seek_position cdecl alias "g_io_channel_seek_position" (byval channel as GIOChannel ptr, byval offset as gint64, byval type as GSeekType, byval error as GError ptr ptr) as GIOStatus
-declare function g_io_channel_new_file_utf8 cdecl alias "g_io_channel_new_file_utf8" (byval filename as string, byval mode as string, byval error as GError ptr ptr) as GIOChannel ptr
+declare function g_io_channel_new_file_utf8 cdecl alias "g_io_channel_new_file_utf8" (byval filename as zstring ptr, byval mode as zstring ptr, byval error as GError ptr ptr) as GIOChannel ptr
 declare function g_io_channel_error_quark cdecl alias "g_io_channel_error_quark" () as GQuark
 declare function g_io_channel_error_from_errno cdecl alias "g_io_channel_error_from_errno" (byval en as gint) as GIOChannelError
 declare function g_io_channel_unix_new cdecl alias "g_io_channel_unix_new" (byval fd as integer) as GIOChannel ptr

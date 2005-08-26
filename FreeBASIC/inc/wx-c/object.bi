@@ -13,6 +13,6 @@
 
 declare function wxObject_GetTypeName cdecl alias "wxObject_GetTypeName" (byval obj as wxObject ptr) as wxString ptr
 declare sub wxObject_dtor cdecl alias "wxObject_dtor" (byval self as wxObject ptr)
-declare function wxGetTranslation_func cdecl alias "wxGetTranslation_func" (byval str as string) as wxString ptr
+declare function wxGetTranslation_func cdecl alias "wxGetTranslation_func" (byval str as zstring ptr) as wxString ptr
 
 #endif

@@ -14,7 +14,7 @@
 #include once "libxml/xpath.bi"
 #include once "libxml/xpathInternals.bi"
 
-declare function xsltXPathFunctionLookup cdecl alias "xsltXPathFunctionLookup" (byval ctxt as xmlXPathContextPtr, byval name as string, byval ns_uri as string) as xmlXPathFunction
+declare function xsltXPathFunctionLookup cdecl alias "xsltXPathFunctionLookup" (byval ctxt as xmlXPathContextPtr, byval name as zstring ptr, byval ns_uri as zstring ptr) as xmlXPathFunction
 declare sub xsltDocumentFunction cdecl alias "xsltDocumentFunction" (byval ctxt as xmlXPathParserContextPtr, byval nargs as integer)
 declare sub xsltKeyFunction cdecl alias "xsltKeyFunction" (byval ctxt as xmlXPathParserContextPtr, byval nargs as integer)
 declare sub xsltUnparsedEntityURIFunction cdecl alias "xsltUnparsedEntityURIFunction" (byval ctxt as xmlXPathParserContextPtr, byval nargs as integer)

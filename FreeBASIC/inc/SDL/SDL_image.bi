@@ -20,10 +20,10 @@ declare function IMG_Linked_Version SDLCALL alias "IMG_Linked_Version" _
    () as SDL_version ptr
 
 declare function IMG_LoadTyped_RW SDLCALL alias "IMG_LoadTyped_RW" _
-   (byval src as SDL_RWops ptr, byval freesrc as integer, byval typ as string) _
+   (byval src as SDL_RWops ptr, byval freesrc as integer, byval typ as zstring ptr) _
    as SDL_Surface ptr
 declare function IMG_Load SDLCALL alias "IMG_Load" _
-   (byval file as string) as SDL_Surface ptr
+   (byval file as zstring ptr) as SDL_Surface ptr
 declare function IMG_Load_RW SDLCALL alias "IMG_Load_RW" _
    (byval src as SDL_RWops ptr, freesrc as integer) as SDL_Surface ptr
 

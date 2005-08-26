@@ -15,7 +15,7 @@ type wxListCtrlCompare as function (byval item1 as integer, byval item2 as integ
 
 
 declare function wxListCtrl cdecl alias "wxListCtrl_ctor" () as wxListCtrl ptr
-declare function wxListCtrl_Create cdecl alias "wxListCtrl_Create" (byval self as wxListCtrl ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval validator as wxValidator ptr, byval name as string) as integer
+declare function wxListCtrl_Create cdecl alias "wxListCtrl_Create" (byval self as wxListCtrl ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval validator as wxValidator ptr, byval name as zstring ptr) as integer
 declare sub wxListCtrl_dtor cdecl alias "wxListCtrl_dtor" (byval self as wxListCtrl ptr)
 declare function wxListCtrl_GetColumn cdecl alias "wxListCtrl_GetColumn" (byval self as wxListCtrl ptr, byval col as integer, byval item as wxListItem ptr) as integer
 declare function wxListCtrl_SetColumn cdecl alias "wxListCtrl_SetColumn" (byval self as wxListCtrl ptr, byval col as integer, byval item as wxListItem ptr) as integer
@@ -24,13 +24,13 @@ declare function wxListCtrl_SetColumnWidth cdecl alias "wxListCtrl_SetColumnWidt
 declare function wxListCtrl_GetCountPerPage cdecl alias "wxListCtrl_GetCountPerPage" (byval self as wxListCtrl ptr) as integer
 declare function wxListCtrl_GetItem cdecl alias "wxListCtrl_GetItem" (byval self as wxListCtrl ptr, byval info as wxListItem ptr, byval retval as integer ptr) as wxListItem ptr
 declare function wxListCtrl_SetItem cdecl alias "wxListCtrl_SetItem" (byval self as wxListCtrl ptr, byval info as wxListItem ptr) as integer
-declare function wxListCtrl_SetItem_By_Row_Col cdecl alias "wxListCtrl_SetItem_By_Row_Col" (byval self as wxListCtrl ptr, byval index as integer, byval col as integer, byval label as string, byval imageId as integer) as integer
-declare function wxListCtrl_SetTextImageItem cdecl alias "wxListCtrl_SetTextImageItem" (byval self as wxListCtrl ptr, byval index as integer, byval col as integer, byval label as string, byval imageId as integer) as integer
+declare function wxListCtrl_SetItem_By_Row_Col cdecl alias "wxListCtrl_SetItem_By_Row_Col" (byval self as wxListCtrl ptr, byval index as integer, byval col as integer, byval label as zstring ptr, byval imageId as integer) as integer
+declare function wxListCtrl_SetTextImageItem cdecl alias "wxListCtrl_SetTextImageItem" (byval self as wxListCtrl ptr, byval index as integer, byval col as integer, byval label as zstring ptr, byval imageId as integer) as integer
 declare function wxListCtrl_GetItemState cdecl alias "wxListCtrl_GetItemState" (byval self as wxListCtrl ptr, byval item as integer, byval stateMask as integer) as integer
 declare function wxListCtrl_SetItemState cdecl alias "wxListCtrl_SetItemState" (byval self as wxListCtrl ptr, byval item as integer, byval state as integer, byval stateMask as integer) as integer
 declare function wxListCtrl_SetItemImage cdecl alias "wxListCtrl_SetItemImage" (byval self as wxListCtrl ptr, byval item as integer, byval image as integer, byval selImage as integer) as integer
 declare function wxListCtrl_GetItemText cdecl alias "wxListCtrl_GetItemText" (byval self as wxListCtrl ptr, byval item as integer) as wxString ptr
-declare sub wxListCtrl_SetItemText cdecl alias "wxListCtrl_SetItemText" (byval self as wxListCtrl ptr, byval item as integer, byval str as string)
+declare sub wxListCtrl_SetItemText cdecl alias "wxListCtrl_SetItemText" (byval self as wxListCtrl ptr, byval item as integer, byval str as zstring ptr)
 declare function wxListCtrl_GetItemData cdecl alias "wxListCtrl_GetItemData" (byval self as wxListCtrl ptr, byval item as integer) as any ptr
 declare function wxListCtrl_SetItemData cdecl alias "wxListCtrl_SetItemData" (byval self as wxListCtrl ptr, byval item as integer, byval data as any ptr) as integer
 declare function wxListCtrl_SetItemData2 cdecl alias "wxListCtrl_SetItemData2" (byval self as wxListCtrl ptr, byval item as integer, byval data as integer) as integer
@@ -62,16 +62,16 @@ declare function wxListCtrl_DeleteColumn cdecl alias "wxListCtrl_DeleteColumn" (
 declare sub wxListCtrl_SetItemCount cdecl alias "wxListCtrl_SetItemCount" (byval self as wxListCtrl ptr, byval count as integer)
 declare sub wxListCtrl_EditLabel cdecl alias "wxListCtrl_EditLabel" (byval self as wxListCtrl ptr, byval item as integer)
 declare function wxListCtrl_EnsureVisible cdecl alias "wxListCtrl_EnsureVisible" (byval self as wxListCtrl ptr, byval item as integer) as integer
-declare function wxListCtrl_FindItem cdecl alias "wxListCtrl_FindItem" (byval self as wxListCtrl ptr, byval start as integer, byval str as string, byval partial as integer) as integer
+declare function wxListCtrl_FindItem cdecl alias "wxListCtrl_FindItem" (byval self as wxListCtrl ptr, byval start as integer, byval str as zstring ptr, byval partial as integer) as integer
 declare function wxListCtrl_FindItemData cdecl alias "wxListCtrl_FindItemData" (byval self as wxListCtrl ptr, byval start as integer, byval data as integer) as integer
 declare function wxListCtrl_FindItemPoint cdecl alias "wxListCtrl_FindItemPoint" (byval self as wxListCtrl ptr, byval start as integer, byval pt as wxPoint ptr, byval direction as integer) as integer
 declare function wxListCtrl_HitTest cdecl alias "wxListCtrl_HitTest" (byval self as wxListCtrl ptr, byval point as wxPoint ptr, byval flags as integer) as integer
 declare function wxListCtrl_InsertItem cdecl alias "wxListCtrl_InsertItem" (byval self as wxListCtrl ptr, byval info as wxListItem ptr) as integer
-declare function wxListCtrl_InsertTextItem cdecl alias "wxListCtrl_InsertTextItem" (byval self as wxListCtrl ptr, byval index as integer, byval label as string) as integer
+declare function wxListCtrl_InsertTextItem cdecl alias "wxListCtrl_InsertTextItem" (byval self as wxListCtrl ptr, byval index as integer, byval label as zstring ptr) as integer
 declare function wxListCtrl_InsertImageItem cdecl alias "wxListCtrl_InsertImageItem" (byval self as wxListCtrl ptr, byval index as integer, byval imageIndex as integer) as integer
-declare function wxListCtrl_InsertTextImageItem cdecl alias "wxListCtrl_InsertTextImageItem" (byval self as wxListCtrl ptr, byval index as integer, byval label as string, byval imageIndex as integer) as integer
+declare function wxListCtrl_InsertTextImageItem cdecl alias "wxListCtrl_InsertTextImageItem" (byval self as wxListCtrl ptr, byval index as integer, byval label as zstring ptr, byval imageIndex as integer) as integer
 declare function wxListCtrl_InsertColumn cdecl alias "wxListCtrl_InsertColumn" (byval self as wxListCtrl ptr, byval col as integer, byval info as wxListItem ptr) as integer
-declare function wxListCtrl_InsertTextColumn cdecl alias "wxListCtrl_InsertTextColumn" (byval self as wxListCtrl ptr, byval col as integer, byval heading as string, byval format as integer, byval width as integer) as integer
+declare function wxListCtrl_InsertTextColumn cdecl alias "wxListCtrl_InsertTextColumn" (byval self as wxListCtrl ptr, byval col as integer, byval heading as zstring ptr, byval format as integer, byval width as integer) as integer
 declare function wxListCtrl_ScrollList cdecl alias "wxListCtrl_ScrollList" (byval self as wxListCtrl ptr, byval dx as integer, byval dy as integer) as integer
 declare function wxListCtrl_SortItems cdecl alias "wxListCtrl_SortItems" (byval self as wxListCtrl ptr, byval fn as wxListCtrlCompare, byval data as integer) as integer
 declare sub wxListCtrl_GetViewRect cdecl alias "wxListCtrl_GetViewRect" (byval self as wxListCtrl ptr, byval rect as wxRect ptr)
@@ -102,7 +102,7 @@ declare sub wxListItem_SetImage cdecl alias "wxListItem_SetImage" (byval self as
 declare sub wxListItem_SetMask cdecl alias "wxListItem_SetMask" (byval self as wxListItem ptr, byval mask as integer)
 declare sub wxListItem_SetState cdecl alias "wxListItem_SetState" (byval self as wxListItem ptr, byval state as integer)
 declare sub wxListItem_SetStateMask cdecl alias "wxListItem_SetStateMask" (byval self as wxListItem ptr, byval stateMask as integer)
-declare sub wxListItem_SetText cdecl alias "wxListItem_SetText" (byval self as wxListItem ptr, byval text as string)
+declare sub wxListItem_SetText cdecl alias "wxListItem_SetText" (byval self as wxListItem ptr, byval text as zstring ptr)
 declare sub wxListItem_SetTextColour cdecl alias "wxListItem_SetTextColour" (byval self as wxListItem ptr, byval col as wxColour ptr)
 declare sub wxListItem_SetWidth cdecl alias "wxListItem_SetWidth" (byval self as wxListItem ptr, byval width as integer)
 declare function wxListItem_GetAttributes cdecl alias "wxListItem_GetAttributes" (byval self as wxListItem ptr) as wxListItemAttr ptr
@@ -127,7 +127,7 @@ declare sub wxListEvent_Allow cdecl alias "wxListEvent_Allow" (byval self as wxL
 declare function wxListEvent_IsAllowed cdecl alias "wxListEvent_IsAllowed" (byval self as wxListEvent ptr) as integer
 
 declare function wxListView cdecl alias "wxListView_ctor" () as wxListView ptr
-declare function wxListView_Create cdecl alias "wxListView_Create" (byval self as wxListCtrl ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval validator as wxValidator ptr, byval name as string) as integer
+declare function wxListView_Create cdecl alias "wxListView_Create" (byval self as wxListCtrl ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval validator as wxValidator ptr, byval name as zstring ptr) as integer
 declare sub wxListView_Select cdecl alias "wxListView_Select" (byval self as wxListView ptr, byval n as integer, byval on as integer)
 declare sub wxListView_Focus cdecl alias "wxListView_Focus" (byval self as wxListView ptr, byval index as integer)
 declare function wxListView_GetFocusedItem cdecl alias "wxListView_GetFocusedItem" (byval self as wxListView ptr) as integer

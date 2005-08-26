@@ -21,9 +21,9 @@ declare function g_get_real_name_utf8 cdecl alias "g_get_real_name_utf8" () as z
 declare function g_get_home_dir_utf8 cdecl alias "g_get_home_dir_utf8" () as zstring ptr
 declare function g_get_tmp_dir_utf8 cdecl alias "g_get_tmp_dir_utf8" () as zstring ptr
 declare function g_get_prgname cdecl alias "g_get_prgname" () as zstring ptr
-declare sub g_set_prgname cdecl alias "g_set_prgname" (byval prgname as string)
+declare sub g_set_prgname cdecl alias "g_set_prgname" (byval prgname as zstring ptr)
 declare function g_get_application_name cdecl alias "g_get_application_name" () as zstring ptr
-declare sub g_set_application_name cdecl alias "g_set_application_name" (byval application_name as string)
+declare sub g_set_application_name cdecl alias "g_set_application_name" (byval application_name as zstring ptr)
 declare function g_get_user_data_dir cdecl alias "g_get_user_data_dir" () as zstring ptr
 declare function g_get_user_config_dir cdecl alias "g_get_user_config_dir" () as zstring ptr
 declare function g_get_user_cache_dir cdecl alias "g_get_user_cache_dir" () as zstring ptr
@@ -38,24 +38,24 @@ type _GDebugKey
 	value as guint
 end type
 
-declare function g_parse_debug_string cdecl alias "g_parse_debug_string" (byval string as string, byval keys as GDebugKey ptr, byval nkeys as guint) as guint
-declare function g_snprintf cdecl alias "g_snprintf" (byval string as string, byval n as gulong, byval format as string, ...) as gint
-''''''' declare function g_vsnprintf cdecl alias "g_vsnprintf" (byval string as string, byval n as gulong, byval format as string, byval args as va_list) as gint
-declare function g_path_is_absolute cdecl alias "g_path_is_absolute" (byval file_name as string) as gboolean
-declare function g_path_skip_root cdecl alias "g_path_skip_root" (byval file_name as string) as zstring ptr
-declare function g_basename cdecl alias "g_basename" (byval file_name as string) as zstring ptr
+declare function g_parse_debug_string cdecl alias "g_parse_debug_string" (byval string as zstring ptr, byval keys as GDebugKey ptr, byval nkeys as guint) as guint
+declare function g_snprintf cdecl alias "g_snprintf" (byval string as zstring ptr, byval n as gulong, byval format as zstring ptr, ...) as gint
+''''''' declare function g_vsnprintf cdecl alias "g_vsnprintf" (byval string as zstring ptr, byval n as gulong, byval format as zstring ptr, byval args as va_list) as gint
+declare function g_path_is_absolute cdecl alias "g_path_is_absolute" (byval file_name as zstring ptr) as gboolean
+declare function g_path_skip_root cdecl alias "g_path_skip_root" (byval file_name as zstring ptr) as zstring ptr
+declare function g_basename cdecl alias "g_basename" (byval file_name as zstring ptr) as zstring ptr
 declare function g_get_current_dir_utf8 cdecl alias "g_get_current_dir_utf8" () as zstring ptr
-declare function g_path_get_basename cdecl alias "g_path_get_basename" (byval file_name as string) as zstring ptr
-declare function g_path_get_dirname cdecl alias "g_path_get_dirname" (byval file_name as string) as zstring ptr
+declare function g_path_get_basename cdecl alias "g_path_get_basename" (byval file_name as zstring ptr) as zstring ptr
+declare function g_path_get_dirname cdecl alias "g_path_get_dirname" (byval file_name as zstring ptr) as zstring ptr
 declare sub g_nullify_pointer cdecl alias "g_nullify_pointer" (byval nullify_location as gpointer ptr)
-declare function g_getenv_utf8 cdecl alias "g_getenv_utf8" (byval variable as string) as zstring ptr
-declare function g_setenv_utf8 cdecl alias "g_setenv_utf8" (byval variable as string, byval value as string, byval overwrite as gboolean) as gboolean
-declare sub g_unsetenv_utf8 cdecl alias "g_unsetenv_utf8" (byval variable as string)
+declare function g_getenv_utf8 cdecl alias "g_getenv_utf8" (byval variable as zstring ptr) as zstring ptr
+declare function g_setenv_utf8 cdecl alias "g_setenv_utf8" (byval variable as zstring ptr, byval value as zstring ptr, byval overwrite as gboolean) as gboolean
+declare sub g_unsetenv_utf8 cdecl alias "g_unsetenv_utf8" (byval variable as zstring ptr)
 
 type GVoidFunc as sub cdecl()
 
 declare sub g_atexit cdecl alias "g_atexit" (byval func as GVoidFunc)
-declare function g_find_program_in_path_utf8 cdecl alias "g_find_program_in_path_utf8" (byval program as string) as zstring ptr
+declare function g_find_program_in_path_utf8 cdecl alias "g_find_program_in_path_utf8" (byval program as zstring ptr) as zstring ptr
 declare function g_bit_nth_lsf cdecl alias "g_bit_nth_lsf" (byval mask as gulong, byval nth_bit as gint) as gint
 declare function g_bit_nth_msf cdecl alias "g_bit_nth_msf" (byval mask as gulong, byval nth_bit as gint) as gint
 declare function g_bit_storage cdecl alias "g_bit_storage" (byval number as gulong) as guint

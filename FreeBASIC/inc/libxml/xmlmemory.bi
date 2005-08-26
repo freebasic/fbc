@@ -30,11 +30,11 @@ declare sub xmlMemoryDump cdecl alias "xmlMemoryDump" ()
 declare function xmlMemMalloc cdecl alias "xmlMemMalloc" (byval size as integer) as any ptr
 declare function xmlMemRealloc cdecl alias "xmlMemRealloc" (byval ptr as any ptr, byval size as integer) as any ptr
 declare sub xmlMemFree cdecl alias "xmlMemFree" (byval ptr as any ptr)
-declare function xmlMemoryStrdup cdecl alias "xmlMemoryStrdup" (byval str as string) as byte ptr
-declare function xmlMallocLoc cdecl alias "xmlMallocLoc" (byval size as integer, byval file as string, byval line as integer) as any ptr
-declare function xmlReallocLoc cdecl alias "xmlReallocLoc" (byval ptr as any ptr, byval size as integer, byval file as string, byval line as integer) as any ptr
-declare function xmlMallocAtomicLoc cdecl alias "xmlMallocAtomicLoc" (byval size as integer, byval file as string, byval line as integer) as any ptr
-declare function xmlMemStrdupLoc cdecl alias "xmlMemStrdupLoc" (byval str as string, byval file as string, byval line as integer) as byte ptr
+declare function xmlMemoryStrdup cdecl alias "xmlMemoryStrdup" (byval str as zstring ptr) as byte ptr
+declare function xmlMallocLoc cdecl alias "xmlMallocLoc" (byval size as integer, byval file as zstring ptr, byval line as integer) as any ptr
+declare function xmlReallocLoc cdecl alias "xmlReallocLoc" (byval ptr as any ptr, byval size as integer, byval file as zstring ptr, byval line as integer) as any ptr
+declare function xmlMallocAtomicLoc cdecl alias "xmlMallocAtomicLoc" (byval size as integer, byval file as zstring ptr, byval line as integer) as any ptr
+declare function xmlMemStrdupLoc cdecl alias "xmlMemStrdupLoc" (byval str as zstring ptr, byval file as zstring ptr, byval line as integer) as byte ptr
 
 #include once "libxml/threads.bi"
 #include once "libxml/globals.bi"

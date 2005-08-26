@@ -13,7 +13,7 @@
 
 
 declare function wxSpinButton cdecl alias "wxSpinButton_ctor" () as wxSpinButton ptr
-declare function wxSpinButton_Create cdecl alias "wxSpinButton_Create" (byval self as wxSpinButton ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as integer
+declare function wxSpinButton_Create cdecl alias "wxSpinButton_Create" (byval self as wxSpinButton ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as zstring ptr) as integer
 declare function wxSpinButton_GetValue cdecl alias "wxSpinButton_GetValue" (byval self as wxSpinButton ptr) as integer
 declare function wxSpinButton_GetMin cdecl alias "wxSpinButton_GetMin" (byval self as wxSpinButton ptr) as integer
 declare function wxSpinButton_GetMax cdecl alias "wxSpinButton_GetMax" (byval self as wxSpinButton ptr) as integer

@@ -29,7 +29,7 @@ declare sub pango_context_set_base_dir cdecl alias "pango_context_set_base_dir" 
 declare function pango_context_get_base_dir cdecl alias "pango_context_get_base_dir" (byval context as PangoContext ptr) as PangoDirection
 declare sub pango_context_set_matrix cdecl alias "pango_context_set_matrix" (byval context as PangoContext ptr, byval matrix as PangoMatrix ptr)
 declare function pango_context_get_matrix cdecl alias "pango_context_get_matrix" (byval context as PangoContext ptr) as PangoMatrix ptr
-declare function pango_itemize cdecl alias "pango_itemize" (byval context as PangoContext ptr, byval text as string, byval start_index as integer, byval length as integer, byval attrs as PangoAttrList ptr, byval cached_iter as PangoAttrIterator ptr) as GList ptr
-declare function pango_itemize_with_base_dir cdecl alias "pango_itemize_with_base_dir" (byval context as PangoContext ptr, byval base_dir as PangoDirection, byval text as string, byval start_index as integer, byval length as integer, byval attrs as PangoAttrList ptr, byval cached_iter as PangoAttrIterator ptr) as GList ptr
+declare function pango_itemize cdecl alias "pango_itemize" (byval context as PangoContext ptr, byval text as zstring ptr, byval start_index as integer, byval length as integer, byval attrs as PangoAttrList ptr, byval cached_iter as PangoAttrIterator ptr) as GList ptr
+declare function pango_itemize_with_base_dir cdecl alias "pango_itemize_with_base_dir" (byval context as PangoContext ptr, byval base_dir as PangoDirection, byval text as zstring ptr, byval start_index as integer, byval length as integer, byval attrs as PangoAttrList ptr, byval cached_iter as PangoAttrIterator ptr) as GList ptr
 
 #endif

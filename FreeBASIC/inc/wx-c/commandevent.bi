@@ -13,7 +13,7 @@
 
 declare function wxCommandEvent_GetSelection cdecl alias "wxCommandEvent_GetSelection" (byval self as wxCommandEvent ptr) as integer
 declare function wxCommandEvent_GetString cdecl alias "wxCommandEvent_GetString" (byval self as wxCommandEvent ptr) as wxString ptr
-declare sub wxCommandEvent_SetString cdecl alias "wxCommandEvent_SetString" (byval self as wxCommandEvent ptr, byval s as string)
+declare sub wxCommandEvent_SetString cdecl alias "wxCommandEvent_SetString" (byval self as wxCommandEvent ptr, byval s as zstring ptr)
 declare function wxCommandEvent_IsChecked cdecl alias "wxCommandEvent_IsChecked" (byval self as wxCommandEvent ptr) as integer
 declare function wxCommandEvent_IsSelection cdecl alias "wxCommandEvent_IsSelection" (byval self as wxCommandEvent ptr) as integer
 declare function wxCommandEvent_GetInt cdecl alias "wxCommandEvent_GetInt" (byval self as wxCommandEvent ptr) as integer

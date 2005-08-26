@@ -12,13 +12,13 @@
 #include once "wx-c/wx.bi"
 
 declare function wxNotebook cdecl alias "wxNotebook_ctor" () as wxNotebook ptr
-declare function wxNotebook_AddPage cdecl alias "wxNotebook_AddPage" (byval self as wxNotebook ptr, byval page as wxNotebookPage ptr, byval text as string, byval select as integer, byval imageId as integer) as integer
-declare function wxNotebook_Create cdecl alias "wxNotebook_Create" (byval self as wxNotebook ptr, byval parent as wxWindow ptr, byval id as integer, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as integer
+declare function wxNotebook_AddPage cdecl alias "wxNotebook_AddPage" (byval self as wxNotebook ptr, byval page as wxNotebookPage ptr, byval text as zstring ptr, byval select as integer, byval imageId as integer) as integer
+declare function wxNotebook_Create cdecl alias "wxNotebook_Create" (byval self as wxNotebook ptr, byval parent as wxWindow ptr, byval id as integer, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as zstring ptr) as integer
 declare sub wxNotebook_SetImageList cdecl alias "wxNotebook_SetImageList" (byval self as wxNotebookBase ptr, byval imageList as wxImageList ptr)
 declare function wxNotebook_GetPageCount cdecl alias "wxNotebook_GetPageCount" (byval self as wxNotebook ptr) as integer
 declare function wxNotebook_GetPage cdecl alias "wxNotebook_GetPage" (byval self as wxNotebook ptr, byval nPage as integer) as wxNotebookPage ptr
 declare function wxNotebook_GetSelection cdecl alias "wxNotebook_GetSelection" (byval self as wxNotebook ptr) as integer
-declare function wxNotebook_SetPageText cdecl alias "wxNotebook_SetPageText" (byval self as wxNotebook ptr, byval nPage as integer, byval strText as string) as integer
+declare function wxNotebook_SetPageText cdecl alias "wxNotebook_SetPageText" (byval self as wxNotebook ptr, byval nPage as integer, byval strText as zstring ptr) as integer
 declare function wxNotebook_GetPageText cdecl alias "wxNotebook_GetPageText" (byval self as wxNotebook ptr, byval nPage as integer) as wxString ptr
 declare sub wxNotebook_AssignImageList cdecl alias "wxNotebook_AssignImageList" (byval self as wxNotebook ptr, byval imageList as wxImageList ptr)
 declare function wxNotebook_GetImageList cdecl alias "wxNotebook_GetImageList" (byval self as wxNotebook ptr) as wxImageList ptr
@@ -31,7 +31,7 @@ declare sub wxNotebook_SetTabSize cdecl alias "wxNotebook_SetTabSize" (byval sel
 declare function wxNotebook_DeletePage cdecl alias "wxNotebook_DeletePage" (byval self as wxNotebook ptr, byval nPage as integer) as integer
 declare function wxNotebook_RemovePage cdecl alias "wxNotebook_RemovePage" (byval self as wxNotebook ptr, byval nPage as integer) as integer
 declare function wxNotebook_DeleteAllPages cdecl alias "wxNotebook_DeleteAllPages" (byval self as wxNotebook ptr) as integer
-declare function wxNotebook_InsertPage cdecl alias "wxNotebook_InsertPage" (byval self as wxNotebook ptr, byval nPage as integer, byval pPage as wxNotebookPage ptr, byval strText as string, byval bSelect as integer, byval imageId as integer) as integer
+declare function wxNotebook_InsertPage cdecl alias "wxNotebook_InsertPage" (byval self as wxNotebook ptr, byval nPage as integer, byval pPage as wxNotebookPage ptr, byval strText as zstring ptr, byval bSelect as integer, byval imageId as integer) as integer
 declare function wxNotebook_SetSelection cdecl alias "wxNotebook_SetSelection" (byval self as wxNotebook ptr, byval nPage as integer) as integer
 declare sub wxNotebook_AdvanceSelection cdecl alias "wxNotebook_AdvanceSelection" (byval self as wxNotebook ptr, byval forward as integer)
 declare function wxNotebookEvent cdecl alias "wxNotebookEvent_ctor" (byval commandType as wxEventType, byval id as integer, byval nSel as integer, byval nOldSel as integer) as wxNotebookEvent ptr

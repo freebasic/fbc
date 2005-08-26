@@ -17,10 +17,10 @@ type GtkEditableClass as _GtkEditableClass
 
 type _GtkEditableClass
 	base_iface as GTypeInterface
-	insert_text as sub cdecl(byval as GtkEditable ptr, byval as string, byval as gint, byval as gint ptr)
+	insert_text as sub cdecl(byval as GtkEditable ptr, byval as zstring ptr, byval as gint, byval as gint ptr)
 	delete_text as sub cdecl(byval as GtkEditable ptr, byval as gint, byval as gint)
 	changed as sub cdecl(byval as GtkEditable ptr)
-	do_insert_text as sub cdecl(byval as GtkEditable ptr, byval as string, byval as gint, byval as gint ptr)
+	do_insert_text as sub cdecl(byval as GtkEditable ptr, byval as zstring ptr, byval as gint, byval as gint ptr)
 	do_delete_text as sub cdecl(byval as GtkEditable ptr, byval as gint, byval as gint)
 	get_chars as function cdecl(byval as GtkEditable ptr, byval as gint, byval as gint) as gchar
 	set_selection_bounds as sub cdecl(byval as GtkEditable ptr, byval as gint, byval as gint)
@@ -32,7 +32,7 @@ end type
 declare function gtk_editable_get_type cdecl alias "gtk_editable_get_type" () as GType
 declare sub gtk_editable_select_region cdecl alias "gtk_editable_select_region" (byval editable as GtkEditable ptr, byval start as gint, byval end as gint)
 declare function gtk_editable_get_selection_bounds cdecl alias "gtk_editable_get_selection_bounds" (byval editable as GtkEditable ptr, byval start as gint ptr, byval end as gint ptr) as gboolean
-declare sub gtk_editable_insert_text cdecl alias "gtk_editable_insert_text" (byval editable as GtkEditable ptr, byval new_text as string, byval new_text_length as gint, byval position as gint ptr)
+declare sub gtk_editable_insert_text cdecl alias "gtk_editable_insert_text" (byval editable as GtkEditable ptr, byval new_text as zstring ptr, byval new_text_length as gint, byval position as gint ptr)
 declare sub gtk_editable_delete_text cdecl alias "gtk_editable_delete_text" (byval editable as GtkEditable ptr, byval start_pos as gint, byval end_pos as gint)
 declare function gtk_editable_get_chars cdecl alias "gtk_editable_get_chars" (byval editable as GtkEditable ptr, byval start_pos as gint, byval end_pos as gint) as zstring ptr
 declare sub gtk_editable_cut_clipboard cdecl alias "gtk_editable_cut_clipboard" (byval editable as GtkEditable ptr)

@@ -77,7 +77,7 @@ declare function Mix_LoadWAV_RW SDLCALL alias "Mix_LoadWAV_RW" _
 #define Mix_LoadWav(file) Mix_LoadWAV_RW(SDL_RWFromFile(file, "rb"), 1)
 
 declare function Mix_LoadMUS SDLCALL alias "Mix_LoadMUS" _
-   (byval file as string) as Mix_Music ptr
+   (byval file as zstring ptr) as Mix_Music ptr
 
 declare function Mix_QuickLoad_WAV SDLCALL alias "Mix_QuickLoad_WAV" _
    (byval mem as Uint8 ptr) as Mix_Chunk ptr
@@ -238,7 +238,7 @@ declare function Mix_PlayingMusic SDLCALL alias "Mix_PlayingMusic" _
    () as integer
 
 declare function Mix_SetMusicCMD SDLCALL alias "Mix_SetMusicCMD" _
-   (byval command as string) as integer
+   (byval command as zstring ptr) as integer
 
 declare function Mix_SetSynchroValue SDLCALL alias "Mix_SetSynchroValue" _
    (byval value as integer) as integer

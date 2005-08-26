@@ -1,210 +1,88 @@
-' OpenAL                                                            15/02/2005
-' ----------------------------------------------------------------------------
-' Header port to FreeBASIC by Chris Davies [shiftLynx].
-'
-' c.g.davies@gmail.com
-' http://www.cdsoft.co.uk/
-'
-'
-
-'$INCLUDE: 'al/altypes.bi'
-
-#ifndef AL_BI
-#define AL_BI
-
-#define OPENAL
+''
+''
+'' al -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __al_bi__
+#define __al_bi__
 
 #ifdef __FB_WIN32__
-'$INCLIB: 'OpenAL32'
+# inclib "OpenAL32"
 #elseif defined(__FB_LINUX__)
-'$INCLIB: 'openal'
+# inclib "openal"
 #else
-#error Platform not supported
+# error Platform not supported
 #endif
 
-#ifndef AL_NO_PROTOTYPES
+#include once "al/altypes.bi"
 
-   ' State Management
-   declare sub alEnable cdecl ALIAS "alEnable" (byval capability as ALenum)
-   declare sub alDisable cdecl ALIAS "alDisable" (byval capability as ALenum)
-   declare function alIsEnabled cdecl ALIAS "alIsEnabled" (byval capability as ALenum) as ALboolean
-   
-   ' Application Preferences for Driver Performance Choices
-   declare sub alHint cdecl ALIAS "alHint" (target as ALenum, mode as ALenum)
-   
-   ' State Retrieval
-   declare function alGetBoolean cdecl ALIAS "alGetBoolean" (byval param as ALenum) as ALboolean
-   declare function alGetInteger cdecl ALIAS "alGetInteger" (byval param as ALenum) As ALint
-   declare function alGetFloat cdecl ALIAS "alGetFloat" (byval param as ALenum) as ALfloat
-   declare function alGetDouble cdecl ALIAS "alGetDouble" (byval param as ALenum) as ALdouble
-   declare sub alGetBooleanv cdecl ALIAS "alGetBooleanv" (byval param as ALenum, byval dst as ALboolean ptr)
-   declare sub alGetIntegerv cdecl ALIAS "alGetIntegerv" (byval param as ALenum, byval dst as ALint ptr)
-   declare sub alGetFloatv cdecl ALIAS "alGetFloatv" (byval param as ALenum, byval dst as ALfloat ptr)
-   declare sub alGetDoublev cdecl ALIAS "alGetDoublev" (byval param as ALenum, byval dst as ALfloat ptr)
-   declare function alGetString cdecl ALIAS "alGetString" (byval param as ALenum) as ALubyte ptr
-   
-   ' Error Support
-   declare function alGetError cdecl ALIAS "alGetError" () as ALenum
-   
-   ' Extension Support
-   declare function alIsExtensionPresent cdecl ALIAS "alIsExtensionPresent" (byval fname as ALubyte ptr) as ALboolean
-   declare function alGetProcAddress cdecl ALIAS "alGetProcAddress" (byval fname as ALubyte ptr) as any ptr
-   declare function alGetEnumValue cdecl ALIAS "alGetEnumValue" (byval ename as ALubyte ptr) as ALenum
-   
-   
-   ' Listener Functions
-   declare sub alListeneri cdecl ALIAS "alListeneri" (byval param as ALenum, byval value as ALint)
-   declare sub alListenerf cdecl ALIAS "alListenerf" (byval param as ALenum, byval value as ALfloat)
-   declare sub alListener3f cdecl ALIAS "alListener3f" (byval param as ALenum, byval v1 as ALfloat, byval v2 as ALfloat, byval v3 as ALfloat)
-   declare sub alListenerfv cdecl ALIAS "alListenerfv" (byval param as ALenum, byval values as ALfloat ptr)
-   
-   declare sub alGetListeneri cdecl ALIAS "alGetListeneri" (byval param as ALenum, byval value as ALint ptr)
-   declare sub alGetListenerf cdecl ALIAS "alGetListenerf" (byval param as ALenum, byval value as ALfloat ptr)
-   declare sub alGetListener3f cdecl ALIAS "alGetListener3f" (byval param as ALenum, byval v1 as ALfloat ptr, byval v2 as ALfloat ptr, byval v3 as ALfloat ptr)
-   declare sub alGetListenerfv cdecl ALIAS "alGetListenerfv" (byval param as ALenum, byval values as ALfloat ptr)
-   
-   
-   ' Source Functions
-   declare sub alGenSources cdecl ALIAS "alGenSources" (byval n as ALsizei, byval sources as ALuint ptr)
-   declare sub alDeleteSources cdecl ALIAS "alDeleteSources" (byval n as ALsizei, byval source as ALuint ptr)
-   
-   declare function alIsSource cdecl ALIAS "alIsSource" (byval id as ALuint) as ALboolean
-   
-   declare sub alSourcei cdecl ALIAS "alSourcei" (byval source as ALuint, byval param as ALenum, byval value as ALint)
-   declare sub alSourcef cdecl ALIAS "alSourcef" (byval source as ALuint, byval param as ALenum, byval value as ALfloat)
-   declare sub alSource3f cdecl ALIAS "alSource3f" (byval source as ALuint, byval param as ALenum, byval v1 as ALfloat, byval v2 as ALfloat, byval v3 as ALfloat)
-   declare sub alSourcefv cdecl ALIAS "alSourcefv" (byval source as ALuint, byval param as ALenum, byval values as ALfloat ptr)
-   
-   declare sub alGetSourcei cdecl ALIAS "alGetSourcei" (byval source as ALuint, byval param as ALenum, byval value as ALint ptr)
-   declare sub alGetSourcef cdecl ALIAS "alGetSourcef" (byval source as ALuint, byval param as ALenum, byval value as ALfloat ptr)
-   declare sub alGetSource3f cdecl ALIAS "alGetSource3f" (byval source as ALuint, byval param as ALenum, byval v1 as ALfloat ptr, byval v2 as ALfloat ptr, byval v3 as ALfloat ptr)
-   declare sub alGetSourcefv cdecl ALIAS "alGetSourcefb" (byval source as ALuint, byval param as ALenum, byval values as ALfloat ptr)
-   
-   declare sub alSourcePlayv cdecl ALIAS "alSourcePlayv" (byval n as ALsizei, byval sources as ALuint ptr)
-   declare sub alSourcePausev cdecl ALIAS "alSourcePausev" (byval n as ALsizei, byval sources as ALuint ptr)
-   declare sub alSourceStopv cdecl ALIAS "alSourceStopv" (byval n as ALsizei, byval sources as ALuint ptr)
-   declare sub alSourceRewindv cdecl ALIAS "alSourceRewindv" (byval n as ALsizei, byval sources as ALuint ptr)
-   
-   declare sub alSourcePlay cdecl ALIAS "alSourcePlay" (byval source as ALuint)
-   declare sub alSourcePause cdecl ALIAS "alSourcePause" (byval source as ALuint)
-   declare sub alSourceStop cdecl ALIAS "alSourceStop" (byval source as ALuint)
-   declare sub alSourceRewind cdecl ALIAS "alSourceRewind" (byval source as ALuint)
-   
-   
-   ' Buffer Functions
-   declare sub alGenBuffers cdecl ALIAS "alGenBuffers" (byval n as ALsizei, byval buffers as ALuint ptr)
-   declare sub alDeleteBuffers cdecl ALIAS "alDeleteBuffers" (byval n as ALsizei, byval buffers as ALuint ptr)
-   declare function alIsBuffer cdecl ALIAS "alIsBuffer" (byval buffer as ALuint) as ALboolean
-   
-   declare sub alBufferData cdecl ALIAS "alBufferData" (byval buffer as ALuint, byval format as ALenum, byval dat as any ptr, byval size as ALsizei, byval freq as ALsizei)
-   
-   declare sub alGetBufferi cdecl ALIAS "alGetBufferi" (byval buffer as ALuint, byval param as ALenum, byval value as ALint ptr)
-   declare sub alGetBufferf cdecl ALIAS "alGetBufferf" (byval buffer as ALuint, byval param as ALenum, byval value as ALfloat ptr)
-   
-   
-   ' Queue Functions
-   declare sub alSourceQueueBuffers cdecl ALIAS "alSourceQueueBuffers" (byval source as ALuint, byval n as ALsizei, byval buffers as ALuint ptr)
-   declare sub alSourceUnqueueBuffers cdecl ALIAS "alSourceUnqueueBuffers" (byval source as ALuint, byval n as ALsizei, byval buffers as ALuint ptr)
-   
-   
-   ' Tweaker Functions
-   declare sub alDistanceModel cdecl ALIAS "alDistanceModel" (byval value as ALenum)
-   declare sub alDopplerFactor cdecl ALIAS "alDopplerFactor" (byval value as ALfloat)
-   declare sub alDopplerVelocity cdecl ALIAS "alDopplerVelocity" (byval value as ALfloat)
-   
-   
-#else       ' ndef AL_NO_PROTOTYPES
+declare sub alEnable cdecl alias "alEnable" (byval capability as ALenum)
+declare sub alDisable cdecl alias "alDisable" (byval capability as ALenum)
+declare function alIsEnabled cdecl alias "alIsEnabled" (byval capability as ALenum) as ALboolean
+declare sub alHint cdecl alias "alHint" (byval target as ALenum, byval mode as ALenum)
+declare sub alGetBooleanv cdecl alias "alGetBooleanv" (byval param as ALenum, byval data as ALboolean ptr)
+declare sub alGetIntegerv cdecl alias "alGetIntegerv" (byval param as ALenum, byval data as ALint ptr)
+declare sub alGetFloatv cdecl alias "alGetFloatv" (byval param as ALenum, byval data as ALfloat ptr)
+declare sub alGetDoublev cdecl alias "alGetDoublev" (byval param as ALenum, byval data as ALdouble ptr)
+declare function alGetString cdecl alias "alGetString" (byval param as ALenum) as ALubyte ptr
+declare function alGetBoolean cdecl alias "alGetBoolean" (byval param as ALenum) as ALboolean
+declare function alGetInteger cdecl alias "alGetInteger" (byval param as ALenum) as ALint
+declare function alGetFloat cdecl alias "alGetFloat" (byval param as ALenum) as ALfloat
+declare function alGetDouble cdecl alias "alGetDouble" (byval param as ALenum) as ALdouble
+declare function alGetError cdecl alias "alGetError" () as ALenum
+declare function alIsExtensionPresent cdecl alias "alIsExtensionPresent" (byval fname as ALubyte ptr) as ALboolean
+declare function alGetProcAddress cdecl alias "alGetProcAddress" (byval fname as ALubyte ptr) as any ptr
+declare function alGetEnumValue cdecl alias "alGetEnumValue" (byval ename as ALubyte ptr) as ALenum
+declare sub alListenerf cdecl alias "alListenerf" (byval pname as ALenum, byval param as ALfloat)
+declare sub alListeneri cdecl alias "alListeneri" (byval pname as ALenum, byval param as ALint)
+declare sub alListener3f cdecl alias "alListener3f" (byval pname as ALenum, byval f1 as ALfloat, byval f2 as ALfloat, byval f3 as ALfloat)
+declare sub alListenerfv cdecl alias "alListenerfv" (byval pname as ALenum, byval param as ALfloat ptr)
+declare sub alGetListeneri cdecl alias "alGetListeneri" (byval pname as ALenum, byval value as ALint ptr)
+declare sub alGetListenerf cdecl alias "alGetListenerf" (byval pname as ALenum, byval value as ALfloat ptr)
+declare sub alGetListeneriv cdecl alias "alGetListeneriv" (byval pname as ALenum, byval value as ALint ptr)
+declare sub alGetListenerfv cdecl alias "alGetListenerfv" (byval pname as ALenum, byval values as ALfloat ptr)
+declare sub alGetListener3f cdecl alias "alGetListener3f" (byval pname as ALenum, byval f1 as ALfloat ptr, byval f2 as ALfloat ptr, byval f3 as ALfloat ptr)
+declare sub alGenSources cdecl alias "alGenSources" (byval n as ALsizei, byval sources as ALuint ptr)
+declare sub alDeleteSources cdecl alias "alDeleteSources" (byval n as ALsizei, byval sources as ALuint ptr)
+declare function alIsSource cdecl alias "alIsSource" (byval sid as ALuint) as ALboolean
+declare sub alSourcei cdecl alias "alSourcei" (byval sid as ALuint, byval param as ALenum, byval value as ALint)
+declare sub alSourcef cdecl alias "alSourcef" (byval sid as ALuint, byval param as ALenum, byval value as ALfloat)
+declare sub alSource3f cdecl alias "alSource3f" (byval sid as ALuint, byval param as ALenum, byval f1 as ALfloat, byval f2 as ALfloat, byval f3 as ALfloat)
+declare sub alSourcefv cdecl alias "alSourcefv" (byval sid as ALuint, byval param as ALenum, byval values as ALfloat ptr)
+declare sub alGetSourcei cdecl alias "alGetSourcei" (byval sid as ALuint, byval pname as ALenum, byval value as ALint ptr)
+declare sub alGetSourceiv cdecl alias "alGetSourceiv" (byval sid as ALuint, byval pname as ALenum, byval values as ALint ptr)
+declare sub alGetSourcef cdecl alias "alGetSourcef" (byval sid as ALuint, byval pname as ALenum, byval value as ALfloat ptr)
+declare sub alGetSourcefv cdecl alias "alGetSourcefv" (byval sid as ALuint, byval pname as ALenum, byval values as ALfloat ptr)
+declare sub alGetSource3f cdecl alias "alGetSource3f" (byval sid as ALuint, byval pname as ALenum, byval value1 as ALfloat ptr, byval value2 as ALfloat ptr, byval value3 as ALfloat ptr)
+declare sub alSourcePlayv cdecl alias "alSourcePlayv" (byval ns as ALsizei, byval ids as ALuint ptr)
+declare sub alSourceStopv cdecl alias "alSourceStopv" (byval ns as ALsizei, byval ids as ALuint ptr)
+declare sub alSourceRewindv cdecl alias "alSourceRewindv" (byval ns as ALsizei, byval ids as ALuint ptr)
+declare sub alSourcePausev cdecl alias "alSourcePausev" (byval ns as ALsizei, byval ids as ALuint ptr)
+declare sub alSourcePlay cdecl alias "alSourcePlay" (byval sid as ALuint)
+declare sub alSourcePause cdecl alias "alSourcePause" (byval sid as ALuint)
+declare sub alSourceRewind cdecl alias "alSourceRewind" (byval sid as ALuint)
+declare sub alSourceStop cdecl alias "alSourceStop" (byval sid as ALuint)
+declare sub alGenBuffers cdecl alias "alGenBuffers" (byval n as ALsizei, byval buffers as ALuint ptr)
+declare sub alDeleteBuffers cdecl alias "alDeleteBuffers" (byval n as ALsizei, byval buffers as ALuint ptr)
+declare function alIsBuffer cdecl alias "alIsBuffer" (byval buffer as ALuint) as ALboolean
+declare sub alBufferData cdecl alias "alBufferData" (byval buffer as ALuint, byval format as ALenum, byval data as ALvoid ptr, byval size as ALsizei, byval freq as ALsizei)
+declare sub alGetBufferi cdecl alias "alGetBufferi" (byval buffer as ALuint, byval param as ALenum, byval value as ALint ptr)
+declare sub alGetBufferf cdecl alias "alGetBufferf" (byval buffer as ALuint, byval param as ALenum, byval value as ALfloat ptr)
+declare sub alGetBufferiv cdecl alias "alGetBufferiv" (byval buffer as ALuint, byval param as ALenum, byval v as ALint ptr)
+declare sub alGetBufferfv cdecl alias "alGetBufferfv" (byval buffer as ALuint, byval param as ALenum, byval v as ALfloat ptr)
+declare function alGenEnvironmentIASIG cdecl alias "alGenEnvironmentIASIG" (byval n as ALsizei, byval environs as ALuint ptr) as ALsizei
+declare sub alDeleteEnvironmentIASIG cdecl alias "alDeleteEnvironmentIASIG" (byval n as ALsizei, byval environs as ALuint ptr)
+declare function alIsEnvironmentIASIG cdecl alias "alIsEnvironmentIASIG" (byval environ as ALuint) as ALboolean
+declare sub alEnvironmentiIASIG cdecl alias "alEnvironmentiIASIG" (byval eid as ALuint, byval param as ALenum, byval value as ALint)
+declare sub alEnvironmentfIASIG cdecl alias "alEnvironmentfIASIG" (byval eid as ALuint, byval param as ALenum, byval value as ALuint)
+declare sub alSourceQueueBuffers cdecl alias "alSourceQueueBuffers" (byval sid as ALuint, byval numEntries as ALsizei, byval bids as ALuint ptr)
+declare sub alSourceUnqueueBuffers cdecl alias "alSourceUnqueueBuffers" (byval sid as ALuint, byval numEntries as ALsizei, byval bids as ALuint ptr)
+declare sub alQueuei cdecl alias "alQueuei" (byval sid as ALuint, byval param as ALenum, byval value as ALint)
+declare sub alDopplerFactor cdecl alias "alDopplerFactor" (byval value as ALfloat)
+declare sub alDopplerVelocity cdecl alias "alDopplerVelocity" (byval value as ALfloat)
+declare sub alDistanceModel cdecl alias "alDistanceModel" (byval distanceModel as ALenum)
 
-
-   ' State Management
-   type alEnable as sub cdecl (byval capability as ALenum)
-   type alDisable as sub cdecl (byval capability as ALenum)
-   type alIsEnabled as function cdecl (byval capability as ALenum)
-   
-   ' Application Preferences for Driver Performance Choices
-   type alHint as sub cdecl (target as ALenum, mode as ALenum)
-   
-   ' State Retrieval
-   type alGetBoolean as function cdecl (byval param as ALenum)
-   type alGetInteger as function cdecl (byval param as ALenum)
-   type alGetFloat as function cdecl (byval param as ALenum)
-   type alGetDouble as function cdecl (byval param as ALenum)
-   type alGetBooleanv as sub cdecl (byval param as ALenum, byval dst as ALboolean ptr)
-   type alGetIntegerv as sub cdecl (byval param as ALenum, byval dst as ALint ptr)
-   type alGetFloatv as sub cdecl (byval param as ALenum, byval dst as ALfloat ptr)
-   type alGetDoublev as sub cdecl (byval param as ALenum, byval dst as ALfloat ptr)
-   type alGetString as function cdecl (byval param as ALenum)
-   
-   ' Error Support
-   type alGetError as function cdecl ()
-   
-   ' Extension Support
-   type alIsExtensionPresent as function cdecl (byval fname as ALubyte ptr)
-   type alGetProcAddress as function cdecl (byval fname as ALubyte ptr)
-   type alGetEnumValue as function cdecl (byval ename as ALubyte ptr)
-   
-   
-   ' Listener Functions
-   type alListeneri as sub cdecl (byval param as ALenum, byval value as ALint)
-   type alListenerf as sub cdecl (byval param as ALenum, byval value as ALfloat)
-   type alListener3f as sub cdecl (byval param as ALenum, byval v1 as ALfloat, byval v2 as ALfloat, byval v3 as ALfloat)
-   type alListenerfv as sub cdecl (byval param as ALenum, byval values as ALfloat ptr)
-   
-   type alGetListeneri as sub cdecl (byval param as ALenum, byval value as ALint ptr)
-   type alGetListenerf as sub cdecl (byval param as ALenum, byval value as ALfloat ptr)
-   type alGetListener3f as sub cdecl (byval param as ALenum, byval v1 as ALfloat ptr, byval v2 as ALfloat ptr, byval v3 as ALfloat ptr)
-   type alGetListenerfv as sub cdecl (byval param as ALenum, byval values as ALfloat ptr)
-   
-   
-   ' Source Functions
-   type alGenSources as sub cdecl (byval n as ALsizei, byval sources as ALuint ptr)
-   type alDeleteSources as sub cdecl (byval n as ALsizei, byval source as ALuint ptr)
-   
-   type alIsSource as function cdecl (byval id as ALuint)
-   
-   type alSourcei as sub cdecl (byval source as ALuint, byval param as ALenum, byval value as ALint)
-   type alSourcef as sub cdecl (byval source as ALuint, byval param as ALenum, byval value as ALfloat)
-   type alSource3f as sub cdecl (byval source as ALuint, byval param as ALenum, byval v1 as ALfloat, byval v2 as ALfloat, byval v3 as ALfloat)
-   type alSourcefv as sub cdecl (byval source as ALuint, byval param as ALenum, byval values as ALfloat ptr)
-   
-   type alGetSourcei as sub cdecl (byval source as ALuint, byval param as ALenum, byval value as ALint ptr)
-   type alGetSourcef as sub cdecl (byval source as ALuint, byval param as ALenum, byval value as ALfloat ptr)
-   type alGetSource3f as sub cdecl (byval source as ALuint, byval param as ALenum, byval v1 as ALfloat ptr, byval v2 as ALfloat ptr, byval v3 as ALfloat ptr)
-   type alGetSourcefv as sub cdecl (byval source as ALuint, byval param as ALenum, byval values as ALfloat ptr)
-   
-   type alSourcePlayv as sub cdecl (byval n as ALsizei, byval sources as ALuint ptr)
-   type alSourcePausev as sub cdecl (byval n as ALsizei, byval sources as ALuint ptr)
-   type alSourceStopv as sub cdecl (byval n as ALsizei, byval sources as ALuint ptr)
-   type alSourceRewindv as sub cdecl (byval n as ALsizei, byval sources as ALuint ptr)
-   
-   type alSourcePlay as sub cdecl (byval source as ALuint)
-   type alSourcePause as sub cdecl (byval source as ALuint)
-   type alSourceStop as sub cdecl (byval source as ALuint)
-   type alSourceRewind as sub cdecl (byval source as ALuint)
-   
-   
-   ' Buffer Functions
-   type alGenBuffers as sub cdecl (byval n as ALsizei, byval buffers as ALuint ptr)
-   type alDeleteBuffers as sub cdecl (byval n as ALsizei, byval buffers as ALuint ptr)
-   type alIsBuffer as function cdecl (byval buffer as ALuint)
-   
-   type alBufferData as sub cdecl (byval buffer as ALuint, byval format as ALenum, byval dat as any ptr, byval size as ALsizei, byval freq as ALsizei)
-   
-   type alGetBufferi as sub cdecl (byval buffer as ALuint, byval param as ALenum, byval value as ALint ptr)
-   type alGetBufferf as sub cdecl (byval buffer as ALuint, byval param as ALenum, byval value as ALfloat ptr)
-   
-   
-   ' Queue Functions
-   type alSourceQueueBuffers as sub cdecl (byval source as ALuint, byval n as ALsizei, byval buffers as ALuint ptr)
-   type alSourceUnqueueBuffers as sub cdecl (byval source as ALuint, byval n as ALsizei, byval buffers as ALuint ptr)
-   
-   
-   ' Tweaker Functions
-   type alDistanceModel as sub cdecl (byval value as ALenum)
-   type alDopplerFactor as sub cdecl (byval value as ALfloat)
-   type alDopplerVelocity as sub cdecl (byval value as ALfloat)
-   
-
-#endif      ' ndef AL_NO_PROTOTYPES
-
-#endif      ' ndef AL_BI
+#endif

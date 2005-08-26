@@ -12,7 +12,7 @@
 #include once "wx-c/wx.bi"
 
 
-declare function wxScrollWnd cdecl alias "wxScrollWnd_ctor" (byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as wxScrolledWindow ptr
+declare function wxScrollWnd cdecl alias "wxScrollWnd_ctor" (byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as zstring ptr) as wxScrolledWindow ptr
 declare sub wxScrollWnd_PrepareDC cdecl alias "wxScrollWnd_PrepareDC" (byval self as wxScrolledWindow ptr, byval dc as wxDC ptr)
 declare sub wxScrollWnd_SetScrollbars cdecl alias "wxScrollWnd_SetScrollbars" (byval self as wxScrolledWindow ptr, byval pixelsPerUnitX as integer, byval pixelsPerUnitY as integer, byval noUnitsX as integer, byval noUnitsY as integer, byval xPos as integer, byval yPos as integer, byval noRefresh as integer)
 declare sub wxScrollWnd_GetViewStart cdecl alias "wxScrollWnd_GetViewStart" (byval self as wxScrolledWindow ptr, byval x as integer ptr, byval y as integer ptr)

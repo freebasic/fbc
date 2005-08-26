@@ -7,12 +7,12 @@
 '$include: 'SDL/begin_code.bi'
 
 declare function SDL_putenv SDLCALL alias "SDL_putenv" _
-   (byval variable as string) as integer
+   (byval variable as zstring ptr) as integer
 
 #define putenv(X) SDL_putenv(X)
 
 declare function SDL_getenv SDLCALL alias "SDL_getenv" _
-   (byval name as string) as zstring ptr
+   (byval name as zstring ptr) as zstring ptr
 
 #define getenv(X) SDL_getenv(X)
 

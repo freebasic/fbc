@@ -13,7 +13,7 @@
 
 type gdsl_bstree_t as any ptr
 
-declare function gdsl_bstree_alloc cdecl alias "gdsl_bstree_alloc" (byval NAME as string, byval ALLOC_F as gdsl_alloc_func_t, byval FREE_F as gdsl_free_func_t, byval COMP_F as gdsl_compare_func_t) as gdsl_bstree_t
+declare function gdsl_bstree_alloc cdecl alias "gdsl_bstree_alloc" (byval NAME as zstring ptr, byval ALLOC_F as gdsl_alloc_func_t, byval FREE_F as gdsl_free_func_t, byval COMP_F as gdsl_compare_func_t) as gdsl_bstree_t
 declare sub gdsl_bstree_free cdecl alias "gdsl_bstree_free" (byval T as gdsl_bstree_t)
 declare sub gdsl_bstree_flush cdecl alias "gdsl_bstree_flush" (byval T as gdsl_bstree_t)
 declare function gdsl_bstree_get_name cdecl alias "gdsl_bstree_get_name" (byval T as gdsl_bstree_t) as zstring ptr
@@ -21,7 +21,7 @@ declare function gdsl_bstree_is_empty cdecl alias "gdsl_bstree_is_empty" (byval 
 declare function gdsl_bstree_get_root cdecl alias "gdsl_bstree_get_root" (byval T as gdsl_bstree_t) as gdsl_element_t
 declare function gdsl_bstree_get_size cdecl alias "gdsl_bstree_get_size" (byval T as gdsl_bstree_t) as ulong
 declare function gdsl_bstree_get_height cdecl alias "gdsl_bstree_get_height" (byval T as gdsl_bstree_t) as ulong
-declare function gdsl_bstree_set_name cdecl alias "gdsl_bstree_set_name" (byval T as gdsl_bstree_t, byval NEW_NAME as string) as gdsl_bstree_t
+declare function gdsl_bstree_set_name cdecl alias "gdsl_bstree_set_name" (byval T as gdsl_bstree_t, byval NEW_NAME as zstring ptr) as gdsl_bstree_t
 declare function gdsl_bstree_insert cdecl alias "gdsl_bstree_insert" (byval T as gdsl_bstree_t, byval VALUE as any ptr, byval RESULT as integer ptr) as gdsl_element_t
 declare function gdsl_bstree_remove cdecl alias "gdsl_bstree_remove" (byval T as gdsl_bstree_t, byval VALUE as any ptr) as gdsl_element_t
 declare function gdsl_bstree_delete cdecl alias "gdsl_bstree_delete" (byval T as gdsl_bstree_t, byval VALUE as any ptr) as gdsl_bstree_t

@@ -27,17 +27,17 @@ declare function wxDataObjectSimple_GetDataSize cdecl alias "wxDataObjectSimple_
 declare function wxDataObjectSimple_GetDataHere cdecl alias "wxDataObjectSimple_GetDataHere" (byval self as wxDataObjectSimple ptr, byval buf as any ptr) as integer
 declare function wxDataObjectSimple_SetData cdecl alias "wxDataObjectSimple_SetData" (byval self as wxDataObjectSimple ptr, byval len as integer, byval buf as any ptr) as integer
 
-declare function wxTextDataObject cdecl alias "wxTextDataObject_ctor" (byval text as string) as wxTextDataObject ptr
+declare function wxTextDataObject cdecl alias "wxTextDataObject_ctor" (byval text as zstring ptr) as wxTextDataObject ptr
 declare sub wxTextDataObject_dtor cdecl alias "wxTextDataObject_dtor" (byval self as wxTextDataObject ptr)
 declare sub wxTextDataObject_RegisterDisposable cdecl alias "wxTextDataObject_RegisterDisposable" (byval self as _TextDataObject ptr, byval onDispose as Virtual_Dispose)
 declare function wxTextDataObject_GetTextLength cdecl alias "wxTextDataObject_GetTextLength" (byval self as wxTextDataObject ptr) as integer
 declare function wxTextDataObject_GetText cdecl alias "wxTextDataObject_GetText" (byval self as wxTextDataObject ptr) as wxString ptr
-declare sub wxTextDataObject_SetText cdecl alias "wxTextDataObject_SetText" (byval self as wxTextDataObject ptr, byval text as string)
+declare sub wxTextDataObject_SetText cdecl alias "wxTextDataObject_SetText" (byval self as wxTextDataObject ptr, byval text as zstring ptr)
 
 declare function wxFileDataObject cdecl alias "wxFileDataObject_ctor" () as wxFileDataObject ptr
 declare sub wxFileDataObject_dtor cdecl alias "wxFileDataObject_dtor" (byval self as wxFileDataObject ptr)
 declare sub wxFileDataObject_RegisterDisposable cdecl alias "wxFileDataObject_RegisterDisposable" (byval self as _FileDataObject ptr, byval onDispose as Virtual_Dispose)
-declare sub wxFileDataObject_AddFile cdecl alias "wxFileDataObject_AddFile" (byval self as wxFileDataObject ptr, byval filename as string)
+declare sub wxFileDataObject_AddFile cdecl alias "wxFileDataObject_AddFile" (byval self as wxFileDataObject ptr, byval filename as zstring ptr)
 declare function wxFileDataObject_GetFilenames cdecl alias "wxFileDataObject_GetFilenames" (byval self as wxFileDataObject ptr) as wxArrayString ptr
 
 #endif

@@ -51,7 +51,7 @@ declare sub gdk_pre_parse_libgtk_only cdecl alias "gdk_pre_parse_libgtk_only" ()
 declare sub gdk_exit cdecl alias "gdk_exit" (byval error_code as gint)
 declare function gdk_set_locale cdecl alias "gdk_set_locale" () as zstring ptr
 declare function gdk_get_program_class cdecl alias "gdk_get_program_class" () as zstring ptr
-declare sub gdk_set_program_class cdecl alias "gdk_set_program_class" (byval program_class as string)
+declare sub gdk_set_program_class cdecl alias "gdk_set_program_class" (byval program_class as zstring ptr)
 declare sub gdk_error_trap_push cdecl alias "gdk_error_trap_push" ()
 declare function gdk_error_trap_pop cdecl alias "gdk_error_trap_pop" () as gint
 declare sub gdk_set_use_xshm cdecl alias "gdk_set_use_xshm" (byval use_xshm as gboolean)
@@ -79,7 +79,7 @@ declare function gdk_rectangle_intersect cdecl alias "gdk_rectangle_intersect" (
 declare sub gdk_rectangle_union cdecl alias "gdk_rectangle_union" (byval src1 as GdkRectangle ptr, byval src2 as GdkRectangle ptr, byval dest as GdkRectangle ptr)
 declare function gdk_rectangle_get_type cdecl alias "gdk_rectangle_get_type" () as GType
 declare function gdk_wcstombs cdecl alias "gdk_wcstombs" (byval src as GdkWChar ptr) as zstring ptr
-declare function gdk_mbstowcs cdecl alias "gdk_mbstowcs" (byval dest as GdkWChar ptr, byval src as string, byval dest_max as gint) as gint
+declare function gdk_mbstowcs cdecl alias "gdk_mbstowcs" (byval dest as GdkWChar ptr, byval src as zstring ptr, byval dest_max as gint) as gint
 declare function gdk_event_send_client_message cdecl alias "gdk_event_send_client_message" (byval event as GdkEvent ptr, byval winid as GdkNativeWindow) as gboolean
 declare sub gdk_event_send_clientmessage_toall cdecl alias "gdk_event_send_clientmessage_toall" (byval event as GdkEvent ptr)
 declare function gdk_event_send_client_message_for_display cdecl alias "gdk_event_send_client_message_for_display" (byval display as GdkDisplay ptr, byval event as GdkEvent ptr, byval winid as GdkNativeWindow) as gboolean

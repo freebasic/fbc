@@ -34,8 +34,8 @@ end type
 
 declare function gdk_pixbuf_loader_get_type cdecl alias "gdk_pixbuf_loader_get_type" () as GType
 declare function gdk_pixbuf_loader_new cdecl alias "gdk_pixbuf_loader_new" () as GdkPixbufLoader ptr
-declare function gdk_pixbuf_loader_new_with_type cdecl alias "gdk_pixbuf_loader_new_with_type" (byval image_type as string, byval error as GError ptr ptr) as GdkPixbufLoader ptr
-declare function gdk_pixbuf_loader_new_with_mime_type cdecl alias "gdk_pixbuf_loader_new_with_mime_type" (byval mime_type as string, byval error as GError ptr ptr) as GdkPixbufLoader ptr
+declare function gdk_pixbuf_loader_new_with_type cdecl alias "gdk_pixbuf_loader_new_with_type" (byval image_type as zstring ptr, byval error as GError ptr ptr) as GdkPixbufLoader ptr
+declare function gdk_pixbuf_loader_new_with_mime_type cdecl alias "gdk_pixbuf_loader_new_with_mime_type" (byval mime_type as zstring ptr, byval error as GError ptr ptr) as GdkPixbufLoader ptr
 declare sub gdk_pixbuf_loader_set_size cdecl alias "gdk_pixbuf_loader_set_size" (byval loader as GdkPixbufLoader ptr, byval width as integer, byval height as integer)
 declare function gdk_pixbuf_loader_write cdecl alias "gdk_pixbuf_loader_write" (byval loader as GdkPixbufLoader ptr, byval buf as guchar ptr, byval count as gsize, byval error as GError ptr ptr) as gboolean
 declare function gdk_pixbuf_loader_get_pixbuf cdecl alias "gdk_pixbuf_loader_get_pixbuf" (byval loader as GdkPixbufLoader ptr) as GdkPixbuf ptr

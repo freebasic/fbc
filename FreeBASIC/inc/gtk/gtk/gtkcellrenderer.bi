@@ -52,10 +52,10 @@ type _GtkCellRendererClass
 	parent_class as GtkObjectClass
 	get_size as sub cdecl(byval as GtkCellRenderer ptr, byval as GtkWidget ptr, byval as GdkRectangle ptr, byval as gint ptr, byval as gint ptr, byval as gint ptr, byval as gint ptr)
 	render as sub cdecl(byval as GtkCellRenderer ptr, byval as GdkDrawable ptr, byval as GtkWidget ptr, byval as GdkRectangle ptr, byval as GdkRectangle ptr, byval as GdkRectangle ptr, byval as GtkCellRendererState)
-	activate as function cdecl(byval as GtkCellRenderer ptr, byval as GdkEvent ptr, byval as GtkWidget ptr, byval as string, byval as GdkRectangle ptr, byval as GdkRectangle ptr, byval as GtkCellRendererState) as gboolean
-	start_editing as function cdecl(byval as GtkCellRenderer ptr, byval as GdkEvent ptr, byval as GtkWidget ptr, byval as string, byval as GdkRectangle ptr, byval as GdkRectangle ptr, byval as GtkCellRendererState) as GtkCellEditable ptr
+	activate as function cdecl(byval as GtkCellRenderer ptr, byval as GdkEvent ptr, byval as GtkWidget ptr, byval as zstring ptr, byval as GdkRectangle ptr, byval as GdkRectangle ptr, byval as GtkCellRendererState) as gboolean
+	start_editing as function cdecl(byval as GtkCellRenderer ptr, byval as GdkEvent ptr, byval as GtkWidget ptr, byval as zstring ptr, byval as GdkRectangle ptr, byval as GdkRectangle ptr, byval as GtkCellRendererState) as GtkCellEditable ptr
 	editing_canceled as sub cdecl(byval as GtkCellRenderer ptr)
-	editing_started as sub cdecl(byval as GtkCellRenderer ptr, byval as GtkCellEditable ptr, byval as string)
+	editing_started as sub cdecl(byval as GtkCellRenderer ptr, byval as GtkCellEditable ptr, byval as zstring ptr)
 	_gtk_reserved1 as sub cdecl()
 	_gtk_reserved2 as sub cdecl()
 end type
@@ -63,8 +63,8 @@ end type
 declare function gtk_cell_renderer_get_type cdecl alias "gtk_cell_renderer_get_type" () as GType
 declare sub gtk_cell_renderer_get_size cdecl alias "gtk_cell_renderer_get_size" (byval cell as GtkCellRenderer ptr, byval widget as GtkWidget ptr, byval cell_area as GdkRectangle ptr, byval x_offset as gint ptr, byval y_offset as gint ptr, byval width as gint ptr, byval height as gint ptr)
 declare sub gtk_cell_renderer_render cdecl alias "gtk_cell_renderer_render" (byval cell as GtkCellRenderer ptr, byval window as GdkWindow ptr, byval widget as GtkWidget ptr, byval background_area as GdkRectangle ptr, byval cell_area as GdkRectangle ptr, byval expose_area as GdkRectangle ptr, byval flags as GtkCellRendererState)
-declare function gtk_cell_renderer_activate cdecl alias "gtk_cell_renderer_activate" (byval cell as GtkCellRenderer ptr, byval event as GdkEvent ptr, byval widget as GtkWidget ptr, byval path as string, byval background_area as GdkRectangle ptr, byval cell_area as GdkRectangle ptr, byval flags as GtkCellRendererState) as gboolean
-declare function gtk_cell_renderer_start_editing cdecl alias "gtk_cell_renderer_start_editing" (byval cell as GtkCellRenderer ptr, byval event as GdkEvent ptr, byval widget as GtkWidget ptr, byval path as string, byval background_area as GdkRectangle ptr, byval cell_area as GdkRectangle ptr, byval flags as GtkCellRendererState) as GtkCellEditable ptr
+declare function gtk_cell_renderer_activate cdecl alias "gtk_cell_renderer_activate" (byval cell as GtkCellRenderer ptr, byval event as GdkEvent ptr, byval widget as GtkWidget ptr, byval path as zstring ptr, byval background_area as GdkRectangle ptr, byval cell_area as GdkRectangle ptr, byval flags as GtkCellRendererState) as gboolean
+declare function gtk_cell_renderer_start_editing cdecl alias "gtk_cell_renderer_start_editing" (byval cell as GtkCellRenderer ptr, byval event as GdkEvent ptr, byval widget as GtkWidget ptr, byval path as zstring ptr, byval background_area as GdkRectangle ptr, byval cell_area as GdkRectangle ptr, byval flags as GtkCellRendererState) as GtkCellEditable ptr
 declare sub gtk_cell_renderer_set_fixed_size cdecl alias "gtk_cell_renderer_set_fixed_size" (byval cell as GtkCellRenderer ptr, byval width as gint, byval height as gint)
 declare sub gtk_cell_renderer_get_fixed_size cdecl alias "gtk_cell_renderer_get_fixed_size" (byval cell as GtkCellRenderer ptr, byval width as gint ptr, byval height as gint ptr)
 declare sub gtk_cell_renderer_editing_canceled cdecl alias "gtk_cell_renderer_editing_canceled" (byval cell as GtkCellRenderer ptr)

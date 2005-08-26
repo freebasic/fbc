@@ -12,9 +12,9 @@
 #include once "wx-c/wx.bi"
 
 
-declare function wxMsgBox cdecl alias "wxMsgBox" (byval parent as wxWindow ptr, byval msg as string, byval cap as string, byval style as integer, byval pos as wxPoint ptr) as integer
+declare function wxMsgBox cdecl alias "wxMsgBox" (byval parent as wxWindow ptr, byval msg as zstring ptr, byval cap as zstring ptr, byval style as integer, byval pos as wxPoint ptr) as integer
 
-declare function wxMessageDialog cdecl alias "wxMessageDialog_ctor" (byval parent as wxWindow ptr, byval message as string, byval caption as string, byval style as integer, byval pos as wxPoint ptr) as wxMessageDialog ptr
+declare function wxMessageDialog cdecl alias "wxMessageDialog_ctor" (byval parent as wxWindow ptr, byval message as zstring ptr, byval caption as zstring ptr, byval style as integer, byval pos as wxPoint ptr) as wxMessageDialog ptr
 declare function wxMessageDialog_ShowModal cdecl alias "wxMessageDialog_ShowModal" (byval self as wxMessageDialog ptr) as integer
 
 #endif

@@ -40,7 +40,7 @@ end type
 
 type _GtkCellRendererTextClass
 	parent_class as GtkCellRendererClass
-	edited as sub cdecl(byval as GtkCellRendererText ptr, byval as string, byval as string)
+	edited as sub cdecl(byval as GtkCellRendererText ptr, byval as zstring ptr, byval as zstring ptr)
 	_gtk_reserved1 as sub cdecl()
 	_gtk_reserved2 as sub cdecl()
 	_gtk_reserved3 as sub cdecl()

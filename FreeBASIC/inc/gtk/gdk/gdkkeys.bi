@@ -42,7 +42,7 @@ declare function gdk_keymap_get_entries_for_keyval cdecl alias "gdk_keymap_get_e
 declare function gdk_keymap_get_entries_for_keycode cdecl alias "gdk_keymap_get_entries_for_keycode" (byval keymap as GdkKeymap ptr, byval hardware_keycode as guint, byval keys as GdkKeymapKey ptr ptr, byval keyvals as guint ptr ptr, byval n_entries as gint ptr) as gboolean
 declare function gdk_keymap_get_direction cdecl alias "gdk_keymap_get_direction" (byval keymap as GdkKeymap ptr) as PangoDirection
 declare function gdk_keyval_name cdecl alias "gdk_keyval_name" (byval keyval as guint) as zstring ptr
-declare function gdk_keyval_from_name cdecl alias "gdk_keyval_from_name" (byval keyval_name as string) as guint
+declare function gdk_keyval_from_name cdecl alias "gdk_keyval_from_name" (byval keyval_name as zstring ptr) as guint
 declare sub gdk_keyval_convert_case cdecl alias "gdk_keyval_convert_case" (byval symbol as guint, byval lower as guint ptr, byval upper as guint ptr)
 declare function gdk_keyval_to_upper cdecl alias "gdk_keyval_to_upper" (byval keyval as guint) as guint
 declare function gdk_keyval_to_lower cdecl alias "gdk_keyval_to_lower" (byval keyval as guint) as guint

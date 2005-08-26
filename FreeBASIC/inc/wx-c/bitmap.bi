@@ -13,7 +13,7 @@
 
 declare function wxBitmap cdecl alias "wxBitmap_ctor" () as wxBitmap ptr
 declare function wxBitmap_ctorByImage cdecl alias "wxBitmap_ctorByImage" (byval image as wxImage ptr, byval depth as integer) as wxBitmap ptr
-declare function wxBitmap_ctorByName cdecl alias "wxBitmap_ctorByName" (byval name as string, byval type as integer) as wxBitmap ptr
+declare function wxBitmap_ctorByName cdecl alias "wxBitmap_ctorByName" (byval name as zstring ptr, byval type as integer) as wxBitmap ptr
 declare function wxBitmap_ctorBySize cdecl alias "wxBitmap_ctorBySize" (byval width as integer, byval height as integer, byval depth as integer) as wxBitmap ptr
 declare function wxBitmap_ctorByBitmap cdecl alias "wxBitmap_ctorByBitmap" (byval bitmap as wxBitmap ptr) as wxBitmap ptr
 declare function wxBitmap_ConvertToImage cdecl alias "wxBitmap_ConvertToImage" (byval self as wxBitmap ptr) as wxImage ptr
@@ -21,8 +21,8 @@ declare function wxBitmap_GetHeight cdecl alias "wxBitmap_GetHeight" (byval self
 declare sub wxBitmap_SetHeight cdecl alias "wxBitmap_SetHeight" (byval self as wxBitmap ptr, byval height as integer)
 declare function wxBitmap_GetWidth cdecl alias "wxBitmap_GetWidth" (byval self as wxBitmap ptr) as integer
 declare sub wxBitmap_SetWidth cdecl alias "wxBitmap_SetWidth" (byval self as wxBitmap ptr, byval width as integer)
-declare function wxBitmap_LoadFile cdecl alias "wxBitmap_LoadFile" (byval self as wxBitmap ptr, byval name as string, byval type as wxBitmapType) as integer
-declare function wxBitmap_SaveFile cdecl alias "wxBitmap_SaveFile" (byval self as wxBitmap ptr, byval name as string, byval type as wxBitmapType, byval palette as wxPalette ptr) as integer
+declare function wxBitmap_LoadFile cdecl alias "wxBitmap_LoadFile" (byval self as wxBitmap ptr, byval name as zstring ptr, byval type as wxBitmapType) as integer
+declare function wxBitmap_SaveFile cdecl alias "wxBitmap_SaveFile" (byval self as wxBitmap ptr, byval name as zstring ptr, byval type as wxBitmapType, byval palette as wxPalette ptr) as integer
 declare function wxBitmap_Ok cdecl alias "wxBitmap_Ok" (byval self as wxBitmap ptr) as integer
 declare function wxBitmap_GetDepth cdecl alias "wxBitmap_GetDepth" (byval self as wxBitmap ptr) as integer
 declare sub wxBitmap_SetDepth cdecl alias "wxBitmap_SetDepth" (byval self as wxBitmap ptr, byval depth as integer)

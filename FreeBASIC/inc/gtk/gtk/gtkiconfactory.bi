@@ -29,16 +29,16 @@ end type
 
 declare function gtk_icon_factory_get_type cdecl alias "gtk_icon_factory_get_type" () as GType
 declare function gtk_icon_factory_new cdecl alias "gtk_icon_factory_new" () as GtkIconFactory ptr
-declare sub gtk_icon_factory_add cdecl alias "gtk_icon_factory_add" (byval factory as GtkIconFactory ptr, byval stock_id as string, byval icon_set as GtkIconSet ptr)
-declare function gtk_icon_factory_lookup cdecl alias "gtk_icon_factory_lookup" (byval factory as GtkIconFactory ptr, byval stock_id as string) as GtkIconSet ptr
+declare sub gtk_icon_factory_add cdecl alias "gtk_icon_factory_add" (byval factory as GtkIconFactory ptr, byval stock_id as zstring ptr, byval icon_set as GtkIconSet ptr)
+declare function gtk_icon_factory_lookup cdecl alias "gtk_icon_factory_lookup" (byval factory as GtkIconFactory ptr, byval stock_id as zstring ptr) as GtkIconSet ptr
 declare sub gtk_icon_factory_add_default cdecl alias "gtk_icon_factory_add_default" (byval factory as GtkIconFactory ptr)
 declare sub gtk_icon_factory_remove_default cdecl alias "gtk_icon_factory_remove_default" (byval factory as GtkIconFactory ptr)
-declare function gtk_icon_factory_lookup_default cdecl alias "gtk_icon_factory_lookup_default" (byval stock_id as string) as GtkIconSet ptr
+declare function gtk_icon_factory_lookup_default cdecl alias "gtk_icon_factory_lookup_default" (byval stock_id as zstring ptr) as GtkIconSet ptr
 declare function gtk_icon_size_lookup cdecl alias "gtk_icon_size_lookup" (byval size as GtkIconSize, byval width as gint ptr, byval height as gint ptr) as gboolean
 declare function gtk_icon_size_lookup_for_settings cdecl alias "gtk_icon_size_lookup_for_settings" (byval settings as GtkSettings ptr, byval size as GtkIconSize, byval width as gint ptr, byval height as gint ptr) as gboolean
-declare function gtk_icon_size_register cdecl alias "gtk_icon_size_register" (byval name as string, byval width as gint, byval height as gint) as GtkIconSize
-declare sub gtk_icon_size_register_alias cdecl alias "gtk_icon_size_register_alias" (byval alias as string, byval target as GtkIconSize)
-declare function gtk_icon_size_from_name cdecl alias "gtk_icon_size_from_name" (byval name as string) as GtkIconSize
+declare function gtk_icon_size_register cdecl alias "gtk_icon_size_register" (byval name as zstring ptr, byval width as gint, byval height as gint) as GtkIconSize
+declare sub gtk_icon_size_register_alias cdecl alias "gtk_icon_size_register_alias" (byval alias as zstring ptr, byval target as GtkIconSize)
+declare function gtk_icon_size_from_name cdecl alias "gtk_icon_size_from_name" (byval name as zstring ptr) as GtkIconSize
 declare function gtk_icon_size_get_name cdecl alias "gtk_icon_size_get_name" (byval size as GtkIconSize) as zstring ptr
 declare function gtk_icon_set_get_type cdecl alias "gtk_icon_set_get_type" () as GType
 declare function gtk_icon_set_new cdecl alias "gtk_icon_set_new" () as GtkIconSet ptr
@@ -46,15 +46,15 @@ declare function gtk_icon_set_new_from_pixbuf cdecl alias "gtk_icon_set_new_from
 declare function gtk_icon_set_ref cdecl alias "gtk_icon_set_ref" (byval icon_set as GtkIconSet ptr) as GtkIconSet ptr
 declare sub gtk_icon_set_unref cdecl alias "gtk_icon_set_unref" (byval icon_set as GtkIconSet ptr)
 declare function gtk_icon_set_copy cdecl alias "gtk_icon_set_copy" (byval icon_set as GtkIconSet ptr) as GtkIconSet ptr
-declare function gtk_icon_set_render_icon cdecl alias "gtk_icon_set_render_icon" (byval icon_set as GtkIconSet ptr, byval style as GtkStyle ptr, byval direction as GtkTextDirection, byval state as GtkStateType, byval size as GtkIconSize, byval widget as GtkWidget ptr, byval detail as string) as GdkPixbuf ptr
+declare function gtk_icon_set_render_icon cdecl alias "gtk_icon_set_render_icon" (byval icon_set as GtkIconSet ptr, byval style as GtkStyle ptr, byval direction as GtkTextDirection, byval state as GtkStateType, byval size as GtkIconSize, byval widget as GtkWidget ptr, byval detail as zstring ptr) as GdkPixbuf ptr
 declare sub gtk_icon_set_add_source cdecl alias "gtk_icon_set_add_source" (byval icon_set as GtkIconSet ptr, byval source as GtkIconSource ptr)
 declare sub gtk_icon_set_get_sizes cdecl alias "gtk_icon_set_get_sizes" (byval icon_set as GtkIconSet ptr, byval sizes as GtkIconSize ptr ptr, byval n_sizes as gint ptr)
 declare function gtk_icon_source_get_type cdecl alias "gtk_icon_source_get_type" () as GType
 declare function gtk_icon_source_new cdecl alias "gtk_icon_source_new" () as GtkIconSource ptr
 declare function gtk_icon_source_copy cdecl alias "gtk_icon_source_copy" (byval source as GtkIconSource ptr) as GtkIconSource ptr
 declare sub gtk_icon_source_free cdecl alias "gtk_icon_source_free" (byval source as GtkIconSource ptr)
-declare sub gtk_icon_source_set_filename cdecl alias "gtk_icon_source_set_filename" (byval source as GtkIconSource ptr, byval filename as string)
-declare sub gtk_icon_source_set_icon_name cdecl alias "gtk_icon_source_set_icon_name" (byval source as GtkIconSource ptr, byval icon_name as string)
+declare sub gtk_icon_source_set_filename cdecl alias "gtk_icon_source_set_filename" (byval source as GtkIconSource ptr, byval filename as zstring ptr)
+declare sub gtk_icon_source_set_icon_name cdecl alias "gtk_icon_source_set_icon_name" (byval source as GtkIconSource ptr, byval icon_name as zstring ptr)
 declare sub gtk_icon_source_set_pixbuf cdecl alias "gtk_icon_source_set_pixbuf" (byval source as GtkIconSource ptr, byval pixbuf as GdkPixbuf ptr)
 declare function gtk_icon_source_get_filename cdecl alias "gtk_icon_source_get_filename" (byval source as GtkIconSource ptr) as zstring ptr
 declare function gtk_icon_source_get_icon_name cdecl alias "gtk_icon_source_get_icon_name" (byval source as GtkIconSource ptr) as zstring ptr

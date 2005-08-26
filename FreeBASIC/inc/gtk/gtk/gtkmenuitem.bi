@@ -52,8 +52,8 @@ end type
 
 declare function gtk_menu_item_get_type cdecl alias "gtk_menu_item_get_type" () as GType
 declare function gtk_menu_item_new cdecl alias "gtk_menu_item_new" () as GtkWidget ptr
-declare function gtk_menu_item_new_with_label cdecl alias "gtk_menu_item_new_with_label" (byval label as string) as GtkWidget ptr
-declare function gtk_menu_item_new_with_mnemonic cdecl alias "gtk_menu_item_new_with_mnemonic" (byval label as string) as GtkWidget ptr
+declare function gtk_menu_item_new_with_label cdecl alias "gtk_menu_item_new_with_label" (byval label as zstring ptr) as GtkWidget ptr
+declare function gtk_menu_item_new_with_mnemonic cdecl alias "gtk_menu_item_new_with_mnemonic" (byval label as zstring ptr) as GtkWidget ptr
 declare sub gtk_menu_item_set_submenu cdecl alias "gtk_menu_item_set_submenu" (byval menu_item as GtkMenuItem ptr, byval submenu as GtkWidget ptr)
 declare function gtk_menu_item_get_submenu cdecl alias "gtk_menu_item_get_submenu" (byval menu_item as GtkMenuItem ptr) as GtkWidget ptr
 declare sub gtk_menu_item_remove_submenu cdecl alias "gtk_menu_item_remove_submenu" (byval menu_item as GtkMenuItem ptr)
@@ -64,8 +64,8 @@ declare sub gtk_menu_item_toggle_size_request cdecl alias "gtk_menu_item_toggle_
 declare sub gtk_menu_item_toggle_size_allocate cdecl alias "gtk_menu_item_toggle_size_allocate" (byval menu_item as GtkMenuItem ptr, byval allocation as gint)
 declare sub gtk_menu_item_set_right_justified cdecl alias "gtk_menu_item_set_right_justified" (byval menu_item as GtkMenuItem ptr, byval right_justified as gboolean)
 declare function gtk_menu_item_get_right_justified cdecl alias "gtk_menu_item_get_right_justified" (byval menu_item as GtkMenuItem ptr) as gboolean
-declare sub gtk_menu_item_set_accel_path cdecl alias "gtk_menu_item_set_accel_path" (byval menu_item as GtkMenuItem ptr, byval accel_path as string)
-declare sub _gtk_menu_item_refresh_accel_path cdecl alias "_gtk_menu_item_refresh_accel_path" (byval menu_item as GtkMenuItem ptr, byval prefix as string, byval accel_group as GtkAccelGroup ptr, byval group_changed as gboolean)
+declare sub gtk_menu_item_set_accel_path cdecl alias "gtk_menu_item_set_accel_path" (byval menu_item as GtkMenuItem ptr, byval accel_path as zstring ptr)
+declare sub _gtk_menu_item_refresh_accel_path cdecl alias "_gtk_menu_item_refresh_accel_path" (byval menu_item as GtkMenuItem ptr, byval prefix as zstring ptr, byval accel_group as GtkAccelGroup ptr, byval group_changed as gboolean)
 declare function _gtk_menu_item_is_selectable cdecl alias "_gtk_menu_item_is_selectable" (byval menu_item as GtkWidget ptr) as gboolean
 declare sub _gtk_menu_item_popup_submenu cdecl alias "_gtk_menu_item_popup_submenu" (byval menu_item as GtkWidget ptr)
 

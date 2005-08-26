@@ -39,7 +39,7 @@ declare function xmlXPtrWrapLocationSet cdecl alias "xmlXPtrWrapLocationSet" (by
 declare sub xmlXPtrLocationSetDel cdecl alias "xmlXPtrLocationSetDel" (byval cur as xmlLocationSetPtr, byval val as xmlXPathObjectPtr)
 declare sub xmlXPtrLocationSetRemove cdecl alias "xmlXPtrLocationSetRemove" (byval cur as xmlLocationSetPtr, byval val as integer)
 declare function xmlXPtrNewContext cdecl alias "xmlXPtrNewContext" (byval doc as xmlDocPtr, byval here as xmlNodePtr, byval origin as xmlNodePtr) as xmlXPathContextPtr
-declare function xmlXPtrEval cdecl alias "xmlXPtrEval" (byval str as string, byval ctx as xmlXPathContextPtr) as xmlXPathObjectPtr
+declare function xmlXPtrEval cdecl alias "xmlXPtrEval" (byval str as zstring ptr, byval ctx as xmlXPathContextPtr) as xmlXPathObjectPtr
 declare sub xmlXPtrRangeToFunction cdecl alias "xmlXPtrRangeToFunction" (byval ctxt as xmlXPathParserContextPtr, byval nargs as integer)
 declare function xmlXPtrBuildNodeList cdecl alias "xmlXPtrBuildNodeList" (byval obj as xmlXPathObjectPtr) as xmlNodePtr
 declare sub xmlXPtrEvalRangePredicate cdecl alias "xmlXPtrEvalRangePredicate" (byval ctxt as xmlXPathParserContextPtr)

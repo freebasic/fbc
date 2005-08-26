@@ -64,7 +64,7 @@ declare function gsl_vector_complex_set_basis cdecl alias "gsl_vector_complex_se
 declare function gsl_vector_complex_fread cdecl alias "gsl_vector_complex_fread" (byval stream as FILE ptr, byval v as gsl_vector_complex ptr) as integer
 declare function gsl_vector_complex_fwrite cdecl alias "gsl_vector_complex_fwrite" (byval stream as FILE ptr, byval v as gsl_vector_complex ptr) as integer
 declare function gsl_vector_complex_fscanf cdecl alias "gsl_vector_complex_fscanf" (byval stream as FILE ptr, byval v as gsl_vector_complex ptr) as integer
-declare function gsl_vector_complex_fprintf cdecl alias "gsl_vector_complex_fprintf" (byval stream as FILE ptr, byval v as gsl_vector_complex ptr, byval format as string) as integer
+declare function gsl_vector_complex_fprintf cdecl alias "gsl_vector_complex_fprintf" (byval stream as FILE ptr, byval v as gsl_vector_complex ptr, byval format as zstring ptr) as integer
 declare function gsl_vector_complex_memcpy cdecl alias "gsl_vector_complex_memcpy" (byval dest as gsl_vector_complex ptr, byval src as gsl_vector_complex ptr) as integer
 declare function gsl_vector_complex_reverse cdecl alias "gsl_vector_complex_reverse" (byval v as gsl_vector_complex ptr) as integer
 declare function gsl_vector_complex_swap cdecl alias "gsl_vector_complex_swap" (byval v as gsl_vector_complex ptr, byval w as gsl_vector_complex ptr) as integer

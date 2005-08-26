@@ -35,8 +35,8 @@ end type
 
 declare function gtk_check_menu_item_get_type cdecl alias "gtk_check_menu_item_get_type" () as GType
 declare function gtk_check_menu_item_new cdecl alias "gtk_check_menu_item_new" () as GtkWidget ptr
-declare function gtk_check_menu_item_new_with_label cdecl alias "gtk_check_menu_item_new_with_label" (byval label as string) as GtkWidget ptr
-declare function gtk_check_menu_item_new_with_mnemonic cdecl alias "gtk_check_menu_item_new_with_mnemonic" (byval label as string) as GtkWidget ptr
+declare function gtk_check_menu_item_new_with_label cdecl alias "gtk_check_menu_item_new_with_label" (byval label as zstring ptr) as GtkWidget ptr
+declare function gtk_check_menu_item_new_with_mnemonic cdecl alias "gtk_check_menu_item_new_with_mnemonic" (byval label as zstring ptr) as GtkWidget ptr
 declare sub gtk_check_menu_item_set_active cdecl alias "gtk_check_menu_item_set_active" (byval check_menu_item as GtkCheckMenuItem ptr, byval is_active as gboolean)
 declare function gtk_check_menu_item_get_active cdecl alias "gtk_check_menu_item_get_active" (byval check_menu_item as GtkCheckMenuItem ptr) as gboolean
 declare sub gtk_check_menu_item_toggled cdecl alias "gtk_check_menu_item_toggled" (byval check_menu_item as GtkCheckMenuItem ptr)

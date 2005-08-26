@@ -95,11 +95,11 @@ declare sub gtk_notebook_popup_enable cdecl alias "gtk_notebook_popup_enable" (b
 declare sub gtk_notebook_popup_disable cdecl alias "gtk_notebook_popup_disable" (byval notebook as GtkNotebook ptr)
 declare function gtk_notebook_get_tab_label cdecl alias "gtk_notebook_get_tab_label" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as GtkWidget ptr
 declare sub gtk_notebook_set_tab_label cdecl alias "gtk_notebook_set_tab_label" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_label as GtkWidget ptr)
-declare sub gtk_notebook_set_tab_label_text cdecl alias "gtk_notebook_set_tab_label_text" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_text as string)
+declare sub gtk_notebook_set_tab_label_text cdecl alias "gtk_notebook_set_tab_label_text" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_text as zstring ptr)
 declare function gtk_notebook_get_tab_label_text cdecl alias "gtk_notebook_get_tab_label_text" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as zstring ptr
 declare function gtk_notebook_get_menu_label cdecl alias "gtk_notebook_get_menu_label" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as GtkWidget ptr
 declare sub gtk_notebook_set_menu_label cdecl alias "gtk_notebook_set_menu_label" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval menu_label as GtkWidget ptr)
-declare sub gtk_notebook_set_menu_label_text cdecl alias "gtk_notebook_set_menu_label_text" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval menu_text as string)
+declare sub gtk_notebook_set_menu_label_text cdecl alias "gtk_notebook_set_menu_label_text" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval menu_text as zstring ptr)
 declare function gtk_notebook_get_menu_label_text cdecl alias "gtk_notebook_get_menu_label_text" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as zstring ptr
 declare sub gtk_notebook_query_tab_label_packing cdecl alias "gtk_notebook_query_tab_label_packing" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval expand as gboolean ptr, byval fill as gboolean ptr, byval pack_type as GtkPackType ptr)
 declare sub gtk_notebook_set_tab_label_packing cdecl alias "gtk_notebook_set_tab_label_packing" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval expand as gboolean, byval fill as gboolean, byval pack_type as GtkPackType)

@@ -14,7 +14,7 @@
 declare sub art_affine_point cdecl alias "art_affine_point" (byval dst as ArtPoint ptr, byval src as ArtPoint ptr, byval affine as double ptr)
 declare sub art_affine_invert cdecl alias "art_affine_invert" (byval dst_affine as double ptr, byval src_affine as double ptr)
 declare sub art_affine_flip cdecl alias "art_affine_flip" (byval dst_affine as double ptr, byval src_affine as double ptr, byval horz as integer, byval vert as integer)
-declare sub art_affine_to_string cdecl alias "art_affine_to_string" (byval str as string, byval src as double ptr)
+declare sub art_affine_to_string cdecl alias "art_affine_to_string" (byval str as zstring ptr, byval src as double ptr)
 declare sub art_affine_multiply cdecl alias "art_affine_multiply" (byval dst as double ptr, byval src1 as double ptr, byval src2 as double ptr)
 declare sub art_affine_identity cdecl alias "art_affine_identity" (byval dst as double ptr)
 declare sub art_affine_scale cdecl alias "art_affine_scale" (byval dst as double ptr, byval sx as double, byval sy as double)

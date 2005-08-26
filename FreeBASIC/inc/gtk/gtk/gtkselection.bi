@@ -62,7 +62,7 @@ declare sub gtk_selection_add_targets cdecl alias "gtk_selection_add_targets" (b
 declare sub gtk_selection_clear_targets cdecl alias "gtk_selection_clear_targets" (byval widget as GtkWidget ptr, byval selection as GdkAtom)
 declare function gtk_selection_convert cdecl alias "gtk_selection_convert" (byval widget as GtkWidget ptr, byval selection as GdkAtom, byval target as GdkAtom, byval time_ as guint32) as gboolean
 declare sub gtk_selection_data_set cdecl alias "gtk_selection_data_set" (byval selection_data as GtkSelectionData ptr, byval type as GdkAtom, byval format as gint, byval data as guchar ptr, byval length as gint)
-declare function gtk_selection_data_set_text cdecl alias "gtk_selection_data_set_text" (byval selection_data as GtkSelectionData ptr, byval str as string, byval len as gint) as gboolean
+declare function gtk_selection_data_set_text cdecl alias "gtk_selection_data_set_text" (byval selection_data as GtkSelectionData ptr, byval str as zstring ptr, byval len as gint) as gboolean
 declare function gtk_selection_data_get_text cdecl alias "gtk_selection_data_get_text" (byval selection_data as GtkSelectionData ptr) as guchar ptr
 declare function gtk_selection_data_set_pixbuf cdecl alias "gtk_selection_data_set_pixbuf" (byval selection_data as GtkSelectionData ptr, byval pixbuf as GdkPixbuf ptr) as gboolean
 declare function gtk_selection_data_get_pixbuf cdecl alias "gtk_selection_data_get_pixbuf" (byval selection_data as GtkSelectionData ptr) as GdkPixbuf ptr

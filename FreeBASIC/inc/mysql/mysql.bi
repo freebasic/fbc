@@ -217,29 +217,29 @@ declare function mysql_info alias "mysql_info" (byval mysql as MYSQL ptr) as zst
 declare function mysql_thread_id alias "mysql_thread_id" (byval mysql as MYSQL ptr) as uinteger
 declare function mysql_character_set_name alias "mysql_character_set_name" (byval mysql as MYSQL ptr) as zstring ptr
 declare function mysql_init alias "mysql_init" (byval mysql as MYSQL ptr) as MYSQL ptr
-declare function mysql_ssl_set alias "mysql_ssl_set" (byval mysql as MYSQL ptr, byval key as string, byval cert as string, byval ca as string, byval capath as string, byval cipher as string) as integer
-declare function mysql_change_user alias "mysql_change_user" (byval mysql as MYSQL ptr, byval user as string, byval passwd as string, byval db as string) as my_bool
-declare function mysql_real_connect alias "mysql_real_connect" (byval mysql as MYSQL ptr, byval host as string, byval user as string, byval passwd as string, byval db as string, byval port as uinteger, byval unix_socket as string, byval clientflag as uinteger) as MYSQL ptr
+declare function mysql_ssl_set alias "mysql_ssl_set" (byval mysql as MYSQL ptr, byval key as zstring ptr, byval cert as zstring ptr, byval ca as zstring ptr, byval capath as zstring ptr, byval cipher as zstring ptr) as integer
+declare function mysql_change_user alias "mysql_change_user" (byval mysql as MYSQL ptr, byval user as zstring ptr, byval passwd as zstring ptr, byval db as zstring ptr) as my_bool
+declare function mysql_real_connect alias "mysql_real_connect" (byval mysql as MYSQL ptr, byval host as zstring ptr, byval user as zstring ptr, byval passwd as zstring ptr, byval db as zstring ptr, byval port as uinteger, byval unix_socket as zstring ptr, byval clientflag as uinteger) as MYSQL ptr
 declare sub mysql_close alias "mysql_close" (byval sock as MYSQL ptr)
-declare function mysql_select_db alias "mysql_select_db" (byval mysql as MYSQL ptr, byval db as string) as integer
-declare function mysql_query alias "mysql_query" (byval mysql as MYSQL ptr, byval q as string) as integer
-declare function mysql_send_query alias "mysql_send_query" (byval mysql as MYSQL ptr, byval q as string, byval length as uinteger) as integer
+declare function mysql_select_db alias "mysql_select_db" (byval mysql as MYSQL ptr, byval db as zstring ptr) as integer
+declare function mysql_query alias "mysql_query" (byval mysql as MYSQL ptr, byval q as zstring ptr) as integer
+declare function mysql_send_query alias "mysql_send_query" (byval mysql as MYSQL ptr, byval q as zstring ptr, byval length as uinteger) as integer
 declare function mysql_read_query_result alias "mysql_read_query_result" (byval mysql as MYSQL ptr) as integer
-declare function mysql_real_query alias "mysql_real_query" (byval mysql as MYSQL ptr, byval q as string, byval length as uinteger) as integer
-declare function mysql_master_query alias "mysql_master_query" (byval mysql as MYSQL ptr, byval q as string, byval length as uinteger) as integer
-declare function mysql_master_send_query alias "mysql_master_send_query" (byval mysql as MYSQL ptr, byval q as string, byval length as uinteger) as integer
-declare function mysql_slave_query alias "mysql_slave_query" (byval mysql as MYSQL ptr, byval q as string, byval length as uinteger) as integer
-declare function mysql_slave_send_query alias "mysql_slave_send_query" (byval mysql as MYSQL ptr, byval q as string, byval length as uinteger) as integer
+declare function mysql_real_query alias "mysql_real_query" (byval mysql as MYSQL ptr, byval q as zstring ptr, byval length as uinteger) as integer
+declare function mysql_master_query alias "mysql_master_query" (byval mysql as MYSQL ptr, byval q as zstring ptr, byval length as uinteger) as integer
+declare function mysql_master_send_query alias "mysql_master_send_query" (byval mysql as MYSQL ptr, byval q as zstring ptr, byval length as uinteger) as integer
+declare function mysql_slave_query alias "mysql_slave_query" (byval mysql as MYSQL ptr, byval q as zstring ptr, byval length as uinteger) as integer
+declare function mysql_slave_send_query alias "mysql_slave_send_query" (byval mysql as MYSQL ptr, byval q as zstring ptr, byval length as uinteger) as integer
 declare sub mysql_enable_rpl_parse alias "mysql_enable_rpl_parse" (byval mysql as MYSQL ptr)
 declare sub mysql_disable_rpl_parse alias "mysql_disable_rpl_parse" (byval mysql as MYSQL ptr)
 declare function mysql_rpl_parse_enabled alias "mysql_rpl_parse_enabled" (byval mysql as MYSQL ptr) as integer
 declare sub mysql_enable_reads_from_master alias "mysql_enable_reads_from_master" (byval mysql as MYSQL ptr)
 declare sub mysql_disable_reads_from_master alias "mysql_disable_reads_from_master" (byval mysql as MYSQL ptr)
 declare function mysql_reads_from_master_enabled alias "mysql_reads_from_master_enabled" (byval mysql as MYSQL ptr) as integer
-declare function mysql_rpl_query_type alias "mysql_rpl_query_type" (byval q as string, byval len as integer) as mysql_rpl_type
+declare function mysql_rpl_query_type alias "mysql_rpl_query_type" (byval q as zstring ptr, byval len as integer) as mysql_rpl_type
 declare function mysql_rpl_probe alias "mysql_rpl_probe" (byval mysql as MYSQL ptr) as integer
-declare function mysql_set_master alias "mysql_set_master" (byval mysql as MYSQL ptr, byval host as string, byval port as uinteger, byval user as string, byval passwd as string) as integer
-declare function mysql_add_slave alias "mysql_add_slave" (byval mysql as MYSQL ptr, byval host as string, byval port as uinteger, byval user as string, byval passwd as string) as integer
+declare function mysql_set_master alias "mysql_set_master" (byval mysql as MYSQL ptr, byval host as zstring ptr, byval port as uinteger, byval user as zstring ptr, byval passwd as zstring ptr) as integer
+declare function mysql_add_slave alias "mysql_add_slave" (byval mysql as MYSQL ptr, byval host as zstring ptr, byval port as uinteger, byval user as zstring ptr, byval passwd as zstring ptr) as integer
 declare function mysql_shutdown alias "mysql_shutdown" (byval mysql as MYSQL ptr) as integer
 declare function mysql_dump_debug_info alias "mysql_dump_debug_info" (byval mysql as MYSQL ptr) as integer
 declare function mysql_refresh alias "mysql_refresh" (byval mysql as MYSQL ptr, byval refresh_options as uinteger) as integer
@@ -251,13 +251,13 @@ declare function mysql_get_client_info alias "mysql_get_client_info" () as zstri
 declare function mysql_get_client_version alias "mysql_get_client_version" () as uinteger
 declare function mysql_get_host_info alias "mysql_get_host_info" (byval mysql as MYSQL ptr) as zstring ptr
 declare function mysql_get_proto_info alias "mysql_get_proto_info" (byval mysql as MYSQL ptr) as uinteger
-declare function mysql_list_dbs alias "mysql_list_dbs" (byval mysql as MYSQL ptr, byval wild as string) as MYSQL_RES ptr
-declare function mysql_list_tables alias "mysql_list_tables" (byval mysql as MYSQL ptr, byval wild as string) as MYSQL_RES ptr
-declare function mysql_list_fields alias "mysql_list_fields" (byval mysql as MYSQL ptr, byval table as string, byval wild as string) as MYSQL_RES ptr
+declare function mysql_list_dbs alias "mysql_list_dbs" (byval mysql as MYSQL ptr, byval wild as zstring ptr) as MYSQL_RES ptr
+declare function mysql_list_tables alias "mysql_list_tables" (byval mysql as MYSQL ptr, byval wild as zstring ptr) as MYSQL_RES ptr
+declare function mysql_list_fields alias "mysql_list_fields" (byval mysql as MYSQL ptr, byval table as zstring ptr, byval wild as zstring ptr) as MYSQL_RES ptr
 declare function mysql_list_processes alias "mysql_list_processes" (byval mysql as MYSQL ptr) as MYSQL_RES ptr
 declare function mysql_store_result alias "mysql_store_result" (byval mysql as MYSQL ptr) as MYSQL_RES ptr
 declare function mysql_use_result alias "mysql_use_result" (byval mysql as MYSQL ptr) as MYSQL_RES ptr
-declare function mysql_options alias "mysql_options" (byval mysql as MYSQL ptr, byval option as mysql_option, byval arg as string) as integer
+declare function mysql_options alias "mysql_options" (byval mysql as MYSQL ptr, byval option as mysql_option, byval arg as zstring ptr) as integer
 declare sub mysql_free_result alias "mysql_free_result" (byval result as MYSQL_RES ptr)
 declare sub mysql_data_seek alias "mysql_data_seek" (byval result as MYSQL_RES ptr, byval offset as my_ulonglong)
 declare function mysql_row_seek alias "mysql_row_seek" (byval result as MYSQL_RES ptr, byval offset as MYSQL_ROW_OFFSET) as MYSQL_ROW_OFFSET
@@ -265,18 +265,18 @@ declare function mysql_field_seek alias "mysql_field_seek" (byval result as MYSQ
 declare function mysql_fetch_row alias "mysql_fetch_row" (byval result as MYSQL_RES ptr) as MYSQL_ROW
 declare function mysql_fetch_lengths alias "mysql_fetch_lengths" (byval result as MYSQL_RES ptr) as uinteger ptr
 declare function mysql_fetch_field alias "mysql_fetch_field" (byval result as MYSQL_RES ptr) as MYSQL_FIELD ptr
-declare function mysql_escape_string alias "mysql_escape_string" (byval to as string, byval from as string, byval from_length as uinteger) as uinteger
-declare function mysql_real_escape_string alias "mysql_real_escape_string" (byval mysql as MYSQL ptr, byval to as string, byval from as string, byval length as uinteger) as uinteger
-declare sub mysql_debug alias "mysql_debug" (byval debug as string)
-declare function mysql_odbc_escape_string alias "mysql_odbc_escape_string" (byval mysql as MYSQL ptr, byval to as string, byval to_length as uinteger, byval from as string, byval from_length as uinteger, byval param as any ptr, byval extend_buffer as function(byval as any ptr, byval as string, byval as uinteger ptr) as byte) as zstring ptr
-declare sub myodbc_remove_escape alias "myodbc_remove_escape" (byval mysql as MYSQL ptr, byval name as string)
+declare function mysql_escape_string alias "mysql_escape_string" (byval to as zstring ptr, byval from as zstring ptr, byval from_length as uinteger) as uinteger
+declare function mysql_real_escape_string alias "mysql_real_escape_string" (byval mysql as MYSQL ptr, byval to as zstring ptr, byval from as zstring ptr, byval length as uinteger) as uinteger
+declare sub mysql_debug alias "mysql_debug" (byval debug as zstring ptr)
+declare function mysql_odbc_escape_string alias "mysql_odbc_escape_string" (byval mysql as MYSQL ptr, byval to as zstring ptr, byval to_length as uinteger, byval from as zstring ptr, byval from_length as uinteger, byval param as any ptr, byval extend_buffer as function(byval as any ptr, byval as zstring ptr, byval as uinteger ptr) as byte) as zstring ptr
+declare sub myodbc_remove_escape alias "myodbc_remove_escape" (byval mysql as MYSQL ptr, byval name as zstring ptr)
 declare function mysql_thread_safe alias "mysql_thread_safe" () as uinteger
 declare function mysql_manager_init alias "mysql_manager_init" (byval con as MYSQL_MANAGER ptr) as MYSQL_MANAGER ptr
-declare function mysql_manager_connect alias "mysql_manager_connect" (byval con as MYSQL_MANAGER ptr, byval host as string, byval user as string, byval passwd as string, byval port as uinteger) as MYSQL_MANAGER ptr
+declare function mysql_manager_connect alias "mysql_manager_connect" (byval con as MYSQL_MANAGER ptr, byval host as zstring ptr, byval user as zstring ptr, byval passwd as zstring ptr, byval port as uinteger) as MYSQL_MANAGER ptr
 declare sub mysql_manager_close alias "mysql_manager_close" (byval con as MYSQL_MANAGER ptr)
-declare function mysql_manager_command alias "mysql_manager_command" (byval con as MYSQL_MANAGER ptr, byval cmd as string, byval cmd_len as integer) as integer
-declare function mysql_manager_fetch_line alias "mysql_manager_fetch_line" (byval con as MYSQL_MANAGER ptr, byval res_buf as string, byval res_buf_size as integer) as integer
-declare function simple_command alias "simple_command" (byval mysql as MYSQL ptr, byval command as enum_server_command, byval arg as string, byval length as uinteger, byval skipp_check as my_bool) as integer
+declare function mysql_manager_command alias "mysql_manager_command" (byval con as MYSQL_MANAGER ptr, byval cmd as zstring ptr, byval cmd_len as integer) as integer
+declare function mysql_manager_fetch_line alias "mysql_manager_fetch_line" (byval con as MYSQL_MANAGER ptr, byval res_buf as zstring ptr, byval res_buf_size as integer) as integer
+declare function simple_command alias "simple_command" (byval mysql as MYSQL ptr, byval command as enum_server_command, byval arg as zstring ptr, byval length as uinteger, byval skipp_check as my_bool) as integer
 declare function net_safe_read alias "net_safe_read" (byval mysql as MYSQL ptr) as uinteger
 declare function mysql_once_init alias "mysql_once_init" () as integer
 

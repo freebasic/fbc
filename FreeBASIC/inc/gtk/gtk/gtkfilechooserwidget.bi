@@ -27,6 +27,6 @@ end type
 
 declare function gtk_file_chooser_widget_get_type cdecl alias "gtk_file_chooser_widget_get_type" () as GType
 declare function gtk_file_chooser_widget_new cdecl alias "gtk_file_chooser_widget_new" (byval action as GtkFileChooserAction) as GtkWidget ptr
-declare function gtk_file_chooser_widget_new_with_backend cdecl alias "gtk_file_chooser_widget_new_with_backend" (byval action as GtkFileChooserAction, byval backend as string) as GtkWidget ptr
+declare function gtk_file_chooser_widget_new_with_backend cdecl alias "gtk_file_chooser_widget_new_with_backend" (byval action as GtkFileChooserAction, byval backend as zstring ptr) as GtkWidget ptr
 
 #endif

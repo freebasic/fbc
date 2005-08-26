@@ -143,7 +143,7 @@ type _GR_videoDriver
 	modes as GrVideoMode ptr
 	nmodes as integer
 	detect as function cdecl() as integer
-	init as function cdecl(byval as string) as integer
+	init as function cdecl(byval as zstring ptr) as integer
 	reset as sub cdecl()
 	selectmode as function cdecl(byval as GrVideoDriver ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as uinteger ptr) as GrVideoMode ptr
 	drvflags as uinteger
@@ -193,7 +193,7 @@ type _GR_frameDriver
 	drawhline as sub cdecl(byval as integer, byval as integer, byval as integer, byval as GrColor)
 	drawvline as sub cdecl(byval as integer, byval as integer, byval as integer, byval as GrColor)
 	drawblock as sub cdecl(byval as integer, byval as integer, byval as integer, byval as integer, byval as GrColor)
-	drawbitmap as sub cdecl(byval as integer, byval as integer, byval as integer, byval as integer, byval as string, byval as integer, byval as integer, byval as GrColor, byval as GrColor)
+	drawbitmap as sub cdecl(byval as integer, byval as integer, byval as integer, byval as integer, byval as zstring ptr, byval as integer, byval as integer, byval as GrColor, byval as GrColor)
 	drawpattern as sub cdecl(byval as integer, byval as integer, byval as integer, byval as byte, byval as GrColor, byval as GrColor)
 	bitblt as sub cdecl(byval as GrFrame ptr, byval as integer, byval as integer, byval as GrFrame ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as GrColor)
 	bltv2r as sub cdecl(byval as GrFrame ptr, byval as integer, byval as integer, byval as GrFrame ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as GrColor)
@@ -229,7 +229,7 @@ end type
 
 extern GrDriverInfo alias "GrDriverInfo" as _GR_driverInfo ptr
 
-declare function GrSetDriver cdecl alias "GrSetDriver" (byval drvspec as string) as integer
+declare function GrSetDriver cdecl alias "GrSetDriver" (byval drvspec as zstring ptr) as integer
 declare function GrSetMode cdecl alias "GrSetMode" (byval which as GrGraphicsMode, ...) as integer
 declare function GrSetViewport cdecl alias "GrSetViewport" (byval xpos as integer, byval ypos as integer) as integer
 declare sub GrSetModeHook cdecl alias "GrSetModeHook" (byval hookfunc as sub cdecl())
@@ -536,13 +536,13 @@ extern GrFont_PC8x14 alias "GrFont_PC8x14" as GrFont
 extern GrFont_PC8x16 alias "GrFont_PC8x16" as GrFont
 
 
-declare function GrLoadFont cdecl alias "GrLoadFont" (byval name as string) as GrFont ptr
-declare function GrLoadConvertedFont cdecl alias "GrLoadConvertedFont" (byval name as string, byval cvt as integer, byval w as integer, byval h as integer, byval minch as integer, byval maxch as integer) as GrFont ptr
+declare function GrLoadFont cdecl alias "GrLoadFont" (byval name as zstring ptr) as GrFont ptr
+declare function GrLoadConvertedFont cdecl alias "GrLoadConvertedFont" (byval name as zstring ptr, byval cvt as integer, byval w as integer, byval h as integer, byval minch as integer, byval maxch as integer) as GrFont ptr
 declare function GrBuildConvertedFont cdecl alias "GrBuildConvertedFont" (byval from as GrFont ptr, byval cvt as integer, byval w as integer, byval h as integer, byval minch as integer, byval maxch as integer) as GrFont ptr
 declare sub GrUnloadFont cdecl alias "GrUnloadFont" (byval font as GrFont ptr)
-declare sub GrDumpFont cdecl alias "GrDumpFont" (byval f as GrFont ptr, byval CsymbolName as string, byval fileName as string)
-declare sub GrDumpFnaFont cdecl alias "GrDumpFnaFont" (byval f as GrFont ptr, byval fileName as string)
-declare sub GrSetFontPath cdecl alias "GrSetFontPath" (byval path_list as string)
+declare sub GrDumpFont cdecl alias "GrDumpFont" (byval f as GrFont ptr, byval CsymbolName as zstring ptr, byval fileName as zstring ptr)
+declare sub GrDumpFnaFont cdecl alias "GrDumpFnaFont" (byval f as GrFont ptr, byval fileName as zstring ptr)
+declare sub GrSetFontPath cdecl alias "GrSetFontPath" (byval path_list as zstring ptr)
 declare function GrFontCharPresent cdecl alias "GrFontCharPresent" (byval font as GrFont ptr, byval chr as integer) as integer
 declare function GrFontCharWidth cdecl alias "GrFontCharWidth" (byval font as GrFont ptr, byval chr as integer) as integer
 declare function GrFontCharHeight cdecl alias "GrFontCharHeight" (byval font as GrFont ptr, byval chr as integer) as integer
@@ -596,7 +596,7 @@ declare function GrStringHeight cdecl alias "GrStringHeight" (byval text as any 
 declare sub GrStringSize cdecl alias "GrStringSize" (byval text as any ptr, byval length as integer, byval opt as GrTextOption ptr, byval w as integer ptr, byval h as integer ptr)
 declare sub GrDrawChar cdecl alias "GrDrawChar" (byval chr as integer, byval x as integer, byval y as integer, byval opt as GrTextOption ptr)
 declare sub GrDrawString cdecl alias "GrDrawString" (byval text as any ptr, byval length as integer, byval x as integer, byval y as integer, byval opt as GrTextOption ptr)
-declare sub GrTextXY cdecl alias "GrTextXY" (byval x as integer, byval y as integer, byval text as string, byval fg as GrColor, byval bg as GrColor)
+declare sub GrTextXY cdecl alias "GrTextXY" (byval x as integer, byval y as integer, byval text as zstring ptr, byval fg as GrColor, byval bg as GrColor)
 declare sub GrDumpChar cdecl alias "GrDumpChar" (byval chr as integer, byval col as integer, byval row as integer, byval r as GrTextRegion ptr)
 declare sub GrDumpText cdecl alias "GrDumpText" (byval col as integer, byval row as integer, byval wdt as integer, byval hgt as integer, byval r as GrTextRegion ptr)
 declare sub GrDumpTextRegion cdecl alias "GrDumpTextRegion" (byval r as GrTextRegion ptr)
@@ -651,8 +651,8 @@ type GrLinePattern
 	lnp_option as GrLineOption ptr
 end type
 
-declare function GrBuildPixmap cdecl alias "GrBuildPixmap" (byval pixels as string, byval w as integer, byval h as integer, byval colors as GrColorTableP) as GrPattern ptr
-declare function GrBuildPixmapFromBits cdecl alias "GrBuildPixmapFromBits" (byval bits as string, byval w as integer, byval h as integer, byval fgc as GrColor, byval bgc as GrColor) as GrPattern ptr
+declare function GrBuildPixmap cdecl alias "GrBuildPixmap" (byval pixels as zstring ptr, byval w as integer, byval h as integer, byval colors as GrColorTableP) as GrPattern ptr
+declare function GrBuildPixmapFromBits cdecl alias "GrBuildPixmapFromBits" (byval bits as zstring ptr, byval w as integer, byval h as integer, byval fgc as GrColor, byval bgc as GrColor) as GrPattern ptr
 declare function GrConvertToPixmap cdecl alias "GrConvertToPixmap" (byval src as GrContext ptr) as GrPattern ptr
 declare sub GrDestroyPattern cdecl alias "GrDestroyPattern" (byval p as GrPattern ptr)
 declare sub GrPatternedLine cdecl alias "GrPatternedLine" (byval x1 as integer, byval y1 as integer, byval x2 as integer, byval y2 as integer, byval lp as GrLinePattern ptr)
@@ -680,7 +680,7 @@ declare sub GrPatternDrawStringExt cdecl alias "GrPatternDrawStringExt" (byval t
 #define GR_IMAGE_INVERSE_LR &h01
 #define GR_IMAGE_INVERSE_TD &h02
 
-declare function GrImageBuild cdecl alias "GrImageBuild" (byval pixels as string, byval w as integer, byval h as integer, byval colors as GrColorTableP) as GrPixmap ptr
+declare function GrImageBuild cdecl alias "GrImageBuild" (byval pixels as zstring ptr, byval w as integer, byval h as integer, byval colors as GrColorTableP) as GrPixmap ptr
 declare sub GrImageDestroy cdecl alias "GrImageDestroy" (byval i as GrPixmap ptr)
 declare sub GrImageDisplay cdecl alias "GrImageDisplay" (byval x as integer, byval y as integer, byval i as GrPixmap ptr)
 declare sub GrImageDisplayExt cdecl alias "GrImageDisplayExt" (byval x1 as integer, byval y1 as integer, byval x2 as integer, byval y2 as integer, byval i as GrPixmap ptr)
@@ -691,7 +691,7 @@ declare function GrImageInverse cdecl alias "GrImageInverse" (byval p as GrPixma
 declare function GrImageStretch cdecl alias "GrImageStretch" (byval p as GrPixmap ptr, byval nwidth as integer, byval nheight as integer) as GrPixmap ptr
 declare function GrImageFromPattern cdecl alias "GrImageFromPattern" (byval p as GrPattern ptr) as GrPixmap ptr
 declare function GrImageFromContext cdecl alias "GrImageFromContext" (byval c as GrContext ptr) as GrPixmap ptr
-declare function GrImageBuildUsedAsPattern cdecl alias "GrImageBuildUsedAsPattern" (byval pixels as string, byval w as integer, byval h as integer, byval colors as GrColorTableP) as GrPixmap ptr
+declare function GrImageBuildUsedAsPattern cdecl alias "GrImageBuildUsedAsPattern" (byval pixels as zstring ptr, byval w as integer, byval h as integer, byval colors as GrColorTableP) as GrPixmap ptr
 declare function GrPatternFromImage cdecl alias "GrPatternFromImage" (byval p as GrPixmap ptr) as GrPattern ptr
 declare sub GrSetUserWindow cdecl alias "GrSetUserWindow" (byval x1 as integer, byval y1 as integer, byval x2 as integer, byval y2 as integer)
 declare sub GrGetUserWindow cdecl alias "GrGetUserWindow" (byval x1 as integer ptr, byval y1 as integer ptr, byval x2 as integer ptr, byval y2 as integer ptr)
@@ -746,8 +746,8 @@ declare sub GrUsrPatternFilledConvexPolygon cdecl alias "GrUsrPatternFilledConve
 declare sub GrUsrPatternFilledPolygon cdecl alias "GrUsrPatternFilledPolygon" (byval numpts as integer, byval points as integer ptr ptr ptr, byval p as GrPattern ptr)
 declare sub GrUsrPatternFloodFill cdecl alias "GrUsrPatternFloodFill" (byval x as integer, byval y as integer, byval border as GrColor, byval p as GrPattern ptr)
 declare sub GrUsrDrawChar cdecl alias "GrUsrDrawChar" (byval chr as integer, byval x as integer, byval y as integer, byval opt as GrTextOption ptr)
-declare sub GrUsrDrawString cdecl alias "GrUsrDrawString" (byval text as string, byval length as integer, byval x as integer, byval y as integer, byval opt as GrTextOption ptr)
-declare sub GrUsrTextXY cdecl alias "GrUsrTextXY" (byval x as integer, byval y as integer, byval text as string, byval fg as GrColor, byval bg as GrColor)
+declare sub GrUsrDrawString cdecl alias "GrUsrDrawString" (byval text as zstring ptr, byval length as integer, byval x as integer, byval y as integer, byval opt as GrTextOption ptr)
+declare sub GrUsrTextXY cdecl alias "GrUsrTextXY" (byval x as integer, byval y as integer, byval text as zstring ptr, byval fg as GrColor, byval bg as GrColor)
 
 type _GR_cursor
 	work as _GR_context
@@ -766,7 +766,7 @@ end type
 
 type GrCursor as _GR_cursor
 
-declare function GrBuildCursor cdecl alias "GrBuildCursor" (byval pixels as string, byval pitch as integer, byval w as integer, byval h as integer, byval xo as integer, byval yo as integer, byval c as GrColorTableP) as GrCursor ptr
+declare function GrBuildCursor cdecl alias "GrBuildCursor" (byval pixels as zstring ptr, byval pitch as integer, byval w as integer, byval h as integer, byval xo as integer, byval yo as integer, byval c as GrColorTableP) as GrCursor ptr
 declare sub GrDestroyCursor cdecl alias "GrDestroyCursor" (byval cursor as GrCursor ptr)
 declare sub GrDisplayCursor cdecl alias "GrDisplayCursor" (byval cursor as GrCursor ptr)
 declare sub GrEraseCursor cdecl alias "GrEraseCursor" (byval cursor as GrCursor ptr)
@@ -884,27 +884,27 @@ declare sub GrMouseUnBlock cdecl alias "GrMouseUnBlock" (byval return_value_from
 #define PGMFORMAT 5
 #define PPMFORMAT 6
 
-declare function GrSaveContextToPbm cdecl alias "GrSaveContextToPbm" (byval grc as GrContext ptr, byval pbmfn as string, byval docn as string) as integer
-declare function GrSaveContextToPgm cdecl alias "GrSaveContextToPgm" (byval grc as GrContext ptr, byval pgmfn as string, byval docn as string) as integer
-declare function GrSaveContextToPpm cdecl alias "GrSaveContextToPpm" (byval grc as GrContext ptr, byval ppmfn as string, byval docn as string) as integer
-declare function GrLoadContextFromPnm cdecl alias "GrLoadContextFromPnm" (byval grc as GrContext ptr, byval pnmfn as string) as integer
-declare function GrQueryPnm cdecl alias "GrQueryPnm" (byval pnmfn as string, byval width as integer ptr, byval height as integer ptr, byval maxval as integer ptr) as integer
-declare function GrLoadContextFromPnmBuffer cdecl alias "GrLoadContextFromPnmBuffer" (byval grc as GrContext ptr, byval buffer as string) as integer
-declare function GrQueryPnmBuffer cdecl alias "GrQueryPnmBuffer" (byval buffer as string, byval width as integer ptr, byval height as integer ptr, byval maxval as integer ptr) as integer
+declare function GrSaveContextToPbm cdecl alias "GrSaveContextToPbm" (byval grc as GrContext ptr, byval pbmfn as zstring ptr, byval docn as zstring ptr) as integer
+declare function GrSaveContextToPgm cdecl alias "GrSaveContextToPgm" (byval grc as GrContext ptr, byval pgmfn as zstring ptr, byval docn as zstring ptr) as integer
+declare function GrSaveContextToPpm cdecl alias "GrSaveContextToPpm" (byval grc as GrContext ptr, byval ppmfn as zstring ptr, byval docn as zstring ptr) as integer
+declare function GrLoadContextFromPnm cdecl alias "GrLoadContextFromPnm" (byval grc as GrContext ptr, byval pnmfn as zstring ptr) as integer
+declare function GrQueryPnm cdecl alias "GrQueryPnm" (byval pnmfn as zstring ptr, byval width as integer ptr, byval height as integer ptr, byval maxval as integer ptr) as integer
+declare function GrLoadContextFromPnmBuffer cdecl alias "GrLoadContextFromPnmBuffer" (byval grc as GrContext ptr, byval buffer as zstring ptr) as integer
+declare function GrQueryPnmBuffer cdecl alias "GrQueryPnmBuffer" (byval buffer as zstring ptr, byval width as integer ptr, byval height as integer ptr, byval maxval as integer ptr) as integer
 declare function GrPngSupport cdecl alias "GrPngSupport" () as integer
-declare function GrSaveContextToPng cdecl alias "GrSaveContextToPng" (byval grc as GrContext ptr, byval pngfn as string) as integer
-declare function GrLoadContextFromPng cdecl alias "GrLoadContextFromPng" (byval grc as GrContext ptr, byval pngfn as string, byval use_alpha as integer) as integer
-declare function GrQueryPng cdecl alias "GrQueryPng" (byval pngfn as string, byval width as integer ptr, byval height as integer ptr) as integer
+declare function GrSaveContextToPng cdecl alias "GrSaveContextToPng" (byval grc as GrContext ptr, byval pngfn as zstring ptr) as integer
+declare function GrLoadContextFromPng cdecl alias "GrLoadContextFromPng" (byval grc as GrContext ptr, byval pngfn as zstring ptr, byval use_alpha as integer) as integer
+declare function GrQueryPng cdecl alias "GrQueryPng" (byval pngfn as zstring ptr, byval width as integer ptr, byval height as integer ptr) as integer
 declare function GrJpegSupport cdecl alias "GrJpegSupport" () as integer
-declare function GrLoadContextFromJpeg cdecl alias "GrLoadContextFromJpeg" (byval grc as GrContext ptr, byval jpegfn as string, byval scale as integer) as integer
-declare function GrQueryJpeg cdecl alias "GrQueryJpeg" (byval jpegfn as string, byval width as integer ptr, byval height as integer ptr) as integer
-declare function GrSaveContextToJpeg cdecl alias "GrSaveContextToJpeg" (byval grc as GrContext ptr, byval jpegfn as string, byval quality as integer) as integer
-declare function GrSaveContextToGrayJpeg cdecl alias "GrSaveContextToGrayJpeg" (byval grc as GrContext ptr, byval jpegfn as string, byval quality as integer) as integer
+declare function GrLoadContextFromJpeg cdecl alias "GrLoadContextFromJpeg" (byval grc as GrContext ptr, byval jpegfn as zstring ptr, byval scale as integer) as integer
+declare function GrQueryJpeg cdecl alias "GrQueryJpeg" (byval jpegfn as zstring ptr, byval width as integer ptr, byval height as integer ptr) as integer
+declare function GrSaveContextToJpeg cdecl alias "GrSaveContextToJpeg" (byval grc as GrContext ptr, byval jpegfn as zstring ptr, byval quality as integer) as integer
+declare function GrSaveContextToGrayJpeg cdecl alias "GrSaveContextToGrayJpeg" (byval grc as GrContext ptr, byval jpegfn as zstring ptr, byval quality as integer) as integer
 declare sub GrResizeGrayMap cdecl alias "GrResizeGrayMap" (byval map as ubyte ptr, byval pitch as integer, byval ow as integer, byval oh as integer, byval nw as integer, byval nh as integer)
-declare function GrMatchString cdecl alias "GrMatchString" (byval pattern as string, byval strg as string) as integer
-declare sub GrSetWindowTitle cdecl alias "GrSetWindowTitle" (byval title as string)
+declare function GrMatchString cdecl alias "GrMatchString" (byval pattern as zstring ptr, byval strg as zstring ptr) as integer
+declare sub GrSetWindowTitle cdecl alias "GrSetWindowTitle" (byval title as zstring ptr)
 declare sub GrSleep cdecl alias "GrSleep" (byval msec as integer)
 
-declare function SaveContextToTiff cdecl alias "SaveContextToTiff" (byval cxt as GrContext ptr, byval tiffn as string, byval compr as uinteger, byval docn as string) as integer
+declare function SaveContextToTiff cdecl alias "SaveContextToTiff" (byval cxt as GrContext ptr, byval tiffn as zstring ptr, byval compr as uinteger, byval docn as zstring ptr) as integer
 
 #endif

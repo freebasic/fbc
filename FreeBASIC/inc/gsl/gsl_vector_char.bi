@@ -39,10 +39,10 @@ declare function gsl_vector_char_calloc cdecl alias "gsl_vector_char_calloc" (by
 declare function gsl_vector_char_alloc_from_block cdecl alias "gsl_vector_char_alloc_from_block" (byval b as gsl_block_char ptr, byval offset as integer, byval n as integer, byval stride as integer) as gsl_vector_char ptr
 declare function gsl_vector_char_alloc_from_vector cdecl alias "gsl_vector_char_alloc_from_vector" (byval v as gsl_vector_char ptr, byval offset as integer, byval n as integer, byval stride as integer) as gsl_vector_char ptr
 declare sub gsl_vector_char_free cdecl alias "gsl_vector_char_free" (byval v as gsl_vector_char ptr)
-declare function gsl_vector_char_view_array cdecl alias "gsl_vector_char_view_array" (byval v as string, byval n as integer) as _gsl_vector_char_view
-declare function gsl_vector_char_view_array_with_stride cdecl alias "gsl_vector_char_view_array_with_stride" (byval base as string, byval stride as integer, byval n as integer) as _gsl_vector_char_view
-declare function gsl_vector_char_const_view_array cdecl alias "gsl_vector_char_const_view_array" (byval v as string, byval n as integer) as _gsl_vector_char_const_view
-declare function gsl_vector_char_const_view_array_with_stride cdecl alias "gsl_vector_char_const_view_array_with_stride" (byval base as string, byval stride as integer, byval n as integer) as _gsl_vector_char_const_view
+declare function gsl_vector_char_view_array cdecl alias "gsl_vector_char_view_array" (byval v as zstring ptr, byval n as integer) as _gsl_vector_char_view
+declare function gsl_vector_char_view_array_with_stride cdecl alias "gsl_vector_char_view_array_with_stride" (byval base as zstring ptr, byval stride as integer, byval n as integer) as _gsl_vector_char_view
+declare function gsl_vector_char_const_view_array cdecl alias "gsl_vector_char_const_view_array" (byval v as zstring ptr, byval n as integer) as _gsl_vector_char_const_view
+declare function gsl_vector_char_const_view_array_with_stride cdecl alias "gsl_vector_char_const_view_array_with_stride" (byval base as zstring ptr, byval stride as integer, byval n as integer) as _gsl_vector_char_const_view
 declare function gsl_vector_char_subvector cdecl alias "gsl_vector_char_subvector" (byval v as gsl_vector_char ptr, byval i as integer, byval n as integer) as _gsl_vector_char_view
 declare function gsl_vector_char_subvector_with_stride cdecl alias "gsl_vector_char_subvector_with_stride" (byval v as gsl_vector_char ptr, byval i as integer, byval stride as integer, byval n as integer) as _gsl_vector_char_view
 declare function gsl_vector_char_const_subvector cdecl alias "gsl_vector_char_const_subvector" (byval v as gsl_vector_char ptr, byval i as integer, byval n as integer) as _gsl_vector_char_const_view
@@ -57,14 +57,14 @@ declare function gsl_vector_char_set_basis cdecl alias "gsl_vector_char_set_basi
 declare function gsl_vector_char_fread cdecl alias "gsl_vector_char_fread" (byval stream as FILE ptr, byval v as gsl_vector_char ptr) as integer
 declare function gsl_vector_char_fwrite cdecl alias "gsl_vector_char_fwrite" (byval stream as FILE ptr, byval v as gsl_vector_char ptr) as integer
 declare function gsl_vector_char_fscanf cdecl alias "gsl_vector_char_fscanf" (byval stream as FILE ptr, byval v as gsl_vector_char ptr) as integer
-declare function gsl_vector_char_fprintf cdecl alias "gsl_vector_char_fprintf" (byval stream as FILE ptr, byval v as gsl_vector_char ptr, byval format as string) as integer
+declare function gsl_vector_char_fprintf cdecl alias "gsl_vector_char_fprintf" (byval stream as FILE ptr, byval v as gsl_vector_char ptr, byval format as zstring ptr) as integer
 declare function gsl_vector_char_memcpy cdecl alias "gsl_vector_char_memcpy" (byval dest as gsl_vector_char ptr, byval src as gsl_vector_char ptr) as integer
 declare function gsl_vector_char_reverse cdecl alias "gsl_vector_char_reverse" (byval v as gsl_vector_char ptr) as integer
 declare function gsl_vector_char_swap cdecl alias "gsl_vector_char_swap" (byval v as gsl_vector_char ptr, byval w as gsl_vector_char ptr) as integer
 declare function gsl_vector_char_swap_elements cdecl alias "gsl_vector_char_swap_elements" (byval v as gsl_vector_char ptr, byval i as integer, byval j as integer) as integer
 declare function gsl_vector_char_max cdecl alias "gsl_vector_char_max" (byval v as gsl_vector_char ptr) as byte
 declare function gsl_vector_char_min cdecl alias "gsl_vector_char_min" (byval v as gsl_vector_char ptr) as byte
-declare sub gsl_vector_char_minmax cdecl alias "gsl_vector_char_minmax" (byval v as gsl_vector_char ptr, byval min_out as string, byval max_out as string)
+declare sub gsl_vector_char_minmax cdecl alias "gsl_vector_char_minmax" (byval v as gsl_vector_char ptr, byval min_out as zstring ptr, byval max_out as zstring ptr)
 declare function gsl_vector_char_max_index cdecl alias "gsl_vector_char_max_index" (byval v as gsl_vector_char ptr) as integer
 declare function gsl_vector_char_min_index cdecl alias "gsl_vector_char_min_index" (byval v as gsl_vector_char ptr) as integer
 declare sub gsl_vector_char_minmax_index cdecl alias "gsl_vector_char_minmax_index" (byval v as gsl_vector_char ptr, byval imin as integer ptr, byval imax as integer ptr)

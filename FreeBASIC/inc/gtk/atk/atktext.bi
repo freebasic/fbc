@@ -54,7 +54,7 @@ enum AtkTextAttribute
 end enum
 
 
-declare function atk_text_attribute_register cdecl alias "atk_text_attribute_register" (byval name as string) as AtkTextAttribute
+declare function atk_text_attribute_register cdecl alias "atk_text_attribute_register" (byval name as zstring ptr) as AtkTextAttribute
 
 type AtkText as _AtkText
 type AtkTextIface as _AtkTextIface
@@ -146,7 +146,7 @@ declare function atk_text_get_bounded_ranges cdecl alias "atk_text_get_bounded_r
 declare sub atk_text_free_ranges cdecl alias "atk_text_free_ranges" (byval ranges as AtkTextRange ptr ptr)
 declare sub atk_attribute_set_free cdecl alias "atk_attribute_set_free" (byval attrib_set as AtkAttributeSet ptr)
 declare function atk_text_attribute_get_name cdecl alias "atk_text_attribute_get_name" (byval attr as AtkTextAttribute) as zstring ptr
-declare function atk_text_attribute_for_name cdecl alias "atk_text_attribute_for_name" (byval name as string) as AtkTextAttribute
+declare function atk_text_attribute_for_name cdecl alias "atk_text_attribute_for_name" (byval name as zstring ptr) as AtkTextAttribute
 declare function atk_text_attribute_get_value cdecl alias "atk_text_attribute_get_value" (byval attr as AtkTextAttribute, byval index_ as gint) as zstring ptr
 
 #endif

@@ -504,15 +504,15 @@ declare function longname cdecl alias "longname" () as zstring ptr
 declare function meta cdecl alias "meta" (byval as WINDOW ptr, byval as integer) as integer
 declare function mvcur cdecl alias "mvcur" (byval as integer, byval as integer, byval as integer, byval as integer) as integer
 declare function mvderwin cdecl alias "mvderwin" (byval as WINDOW ptr, byval as integer, byval as integer) as integer
-declare function mvwaddnstr cdecl alias "mvwaddnstr" (byval as WINDOW ptr, byval as integer, byval as integer, byval as string, byval as integer) as integer
+declare function mvwaddnstr cdecl alias "mvwaddnstr" (byval as WINDOW ptr, byval as integer, byval as integer, byval as zstring ptr, byval as integer) as integer
 declare function mvwin cdecl alias "mvwin" (byval as WINDOW ptr, byval as integer, byval as integer) as integer
 declare function mvwinsertln cdecl alias "mvwinsertln" (byval as WINDOW ptr, byval as integer, byval as integer) as integer
-declare function mvprintw cdecl alias "mvprintw" (byval as integer, byval as integer, byval as string, ...) as integer
-declare function mvscanw cdecl alias "mvscanw" (byval as integer, byval as integer, byval as string, ...) as integer
-declare function mvwprintw cdecl alias "mvwprintw" (byval as WINDOW ptr, byval as integer, byval as integer, byval as string, ...) as integer
-declare function mvwscanw cdecl alias "mvwscanw" (byval as WINDOW ptr, byval as integer, byval as integer, byval as string, ...) as integer
+declare function mvprintw cdecl alias "mvprintw" (byval as integer, byval as integer, byval as zstring ptr, ...) as integer
+declare function mvscanw cdecl alias "mvscanw" (byval as integer, byval as integer, byval as zstring ptr, ...) as integer
+declare function mvwprintw cdecl alias "mvwprintw" (byval as WINDOW ptr, byval as integer, byval as integer, byval as zstring ptr, ...) as integer
+declare function mvwscanw cdecl alias "mvwscanw" (byval as WINDOW ptr, byval as integer, byval as integer, byval as zstring ptr, ...) as integer
 declare function newpad cdecl alias "newpad" (byval as integer, byval as integer) as WINDOW ptr
-declare function newterm cdecl alias "newterm" (byval as string, byval as FILE ptr, byval as FILE ptr) as SCREEN ptr
+declare function newterm cdecl alias "newterm" (byval as zstring ptr, byval as FILE ptr, byval as FILE ptr) as SCREEN ptr
 declare function newwin cdecl alias "newwin" (byval as integer, byval as integer, byval as integer, byval as integer) as WINDOW ptr
 declare function noraw cdecl alias "noraw" () as integer
 declare function notimeout cdecl alias "notimeout" (byval as WINDOW ptr, byval as integer) as integer
@@ -522,8 +522,8 @@ declare function pair_content cdecl alias "pair_content" (byval as integer, byva
 declare function pechochar cdecl alias "pechochar" (byval as WINDOW ptr, byval as chtype) as integer
 declare function pnoutrefresh cdecl alias "pnoutrefresh" (byval as WINDOW ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as integer
 declare function prefresh cdecl alias "prefresh" (byval as WINDOW ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as integer
-declare function printw cdecl alias "printw" (byval as string, ...) as integer
-declare function scanw cdecl alias "scanw" (byval as string, ...) as integer
+declare function printw cdecl alias "printw" (byval as zstring ptr, ...) as integer
+declare function scanw cdecl alias "scanw" (byval as zstring ptr, ...) as integer
 declare function raw cdecl alias "raw" () as integer
 declare function refresh cdecl alias "refresh" () as integer
 declare function reset_prog_mode cdecl alias "reset_prog_mode" () as integer
@@ -542,7 +542,7 @@ declare function set_term cdecl alias "set_term" (byval as SCREEN ptr) as SCREEN
 declare function setsyx cdecl alias "setsyx" (byval as integer, byval as integer) as integer
 declare function start_color cdecl alias "start_color" () as integer
 declare function slk_init cdecl alias "slk_init" (byval as integer) as integer
-declare function slk_set cdecl alias "slk_set" (byval as integer, byval as string, byval as integer) as integer
+declare function slk_set cdecl alias "slk_set" (byval as integer, byval as zstring ptr, byval as integer) as integer
 declare function slk_refresh cdecl alias "slk_refresh" () as integer
 declare function slk_noutrefresh cdecl alias "slk_noutrefresh" () as integer
 declare function slk_label cdecl alias "slk_label" (byval as integer) as zstring ptr
@@ -565,8 +565,8 @@ declare function typeahead cdecl alias "typeahead" (byval as integer) as integer
 declare function unctrl cdecl alias "unctrl" (byval as chtype) as zstring ptr
 declare function vline cdecl alias "vline" (byval as chtype, byval as integer) as integer
 declare function waddchnstr cdecl alias "waddchnstr" (byval as WINDOW ptr, byval as chtype ptr, byval as integer) as integer
-declare function waddnstr cdecl alias "waddnstr" (byval as WINDOW ptr, byval as string, byval as integer) as integer
-declare function waddstr cdecl alias "waddstr" (byval as WINDOW ptr, byval as string) as integer
+declare function waddnstr cdecl alias "waddnstr" (byval as WINDOW ptr, byval as zstring ptr, byval as integer) as integer
+declare function waddstr cdecl alias "waddstr" (byval as WINDOW ptr, byval as zstring ptr) as integer
 declare function wattroff cdecl alias "wattroff" (byval as WINDOW ptr, byval as attr_t) as integer
 declare function wattron cdecl alias "wattron" (byval as WINDOW ptr, byval as attr_t) as integer
 declare function wattrset cdecl alias "wattrset" (byval as WINDOW ptr, byval as attr_t) as integer
@@ -581,15 +581,15 @@ declare function wdelch cdecl alias "wdelch" (byval as WINDOW ptr) as integer
 declare function wdeleteln cdecl alias "wdeleteln" (byval as WINDOW ptr) as integer
 declare function werase cdecl alias "werase" (byval as WINDOW ptr) as integer
 declare function wgetch cdecl alias "wgetch" (byval as WINDOW ptr) as integer
-declare function wgetnstr cdecl alias "wgetnstr" (byval as WINDOW ptr, byval as string, byval as integer) as integer
-declare function wgetstr cdecl alias "wgetstr" (byval as WINDOW ptr, byval as string) as integer
+declare function wgetnstr cdecl alias "wgetnstr" (byval as WINDOW ptr, byval as zstring ptr, byval as integer) as integer
+declare function wgetstr cdecl alias "wgetstr" (byval as WINDOW ptr, byval as zstring ptr) as integer
 declare function whline cdecl alias "whline" (byval as WINDOW ptr, byval as chtype, byval as integer) as integer
 declare function winchnstr cdecl alias "winchnstr" (byval as WINDOW ptr, byval as chtype ptr, byval as integer) as integer
-declare function winnstr cdecl alias "winnstr" (byval as WINDOW ptr, byval as string, byval as integer) as integer
+declare function winnstr cdecl alias "winnstr" (byval as WINDOW ptr, byval as zstring ptr, byval as integer) as integer
 declare function winsch cdecl alias "winsch" (byval as WINDOW ptr, byval as chtype) as integer
 declare function winsdelln cdecl alias "winsdelln" (byval as WINDOW ptr, byval as integer) as integer
 declare function winsertln cdecl alias "winsertln" (byval as WINDOW ptr) as integer
-declare function winsnstr cdecl alias "winsnstr" (byval as WINDOW ptr, byval as string, byval as integer) as integer
+declare function winsnstr cdecl alias "winsnstr" (byval as WINDOW ptr, byval as zstring ptr, byval as integer) as integer
 declare function wmove cdecl alias "wmove" (byval as WINDOW ptr, byval as integer, byval as integer) as integer
 declare function wnoutrefresh cdecl alias "wnoutrefresh" (byval as WINDOW ptr) as integer
 declare function wordchar cdecl alias "wordchar" () as byte
@@ -602,8 +602,8 @@ declare function wtouchln cdecl alias "wtouchln" (byval as WINDOW ptr, byval as 
 declare sub wsyncdown cdecl alias "wsyncdown" (byval as WINDOW ptr)
 declare sub wsyncup cdecl alias "wsyncup" (byval as WINDOW ptr)
 declare function wvline cdecl alias "wvline" (byval as WINDOW ptr, byval as chtype, byval as integer) as integer
-declare function wprintw cdecl alias "wprintw" (byval as WINDOW ptr, byval as string, ...) as integer
-declare function wscanw cdecl alias "wscanw" (byval as WINDOW ptr, byval as string, ...) as integer
+declare function wprintw cdecl alias "wprintw" (byval as WINDOW ptr, byval as zstring ptr, ...) as integer
+declare function wscanw cdecl alias "wscanw" (byval as WINDOW ptr, byval as zstring ptr, ...) as integer
 declare function raw_output cdecl alias "raw_output" (byval as integer) as integer
 declare function resize_term cdecl alias "resize_term" (byval as integer, byval as integer) as integer
 declare function resize_window cdecl alias "resize_window" (byval as WINDOW ptr, byval as integer, byval as integer) as WINDOW ptr
@@ -619,10 +619,10 @@ declare function getbmap cdecl alias "getbmap" () as uinteger
 declare function PDC_chadd cdecl alias "PDC_chadd" (byval as WINDOW ptr, byval as chtype, byval as integer, byval as integer) as integer
 declare function PDC_chins cdecl alias "PDC_chins" (byval as WINDOW ptr, byval as chtype, byval as integer) as integer
 declare function PDC_ungetch cdecl alias "PDC_ungetch" (byval as integer) as integer
-declare sub PDC_set_title cdecl alias "PDC_set_title" (byval as string)
+declare sub PDC_set_title cdecl alias "PDC_set_title" (byval as zstring ptr)
 declare function PDC_getclipboard cdecl alias "PDC_getclipboard" (byval as byte ptr ptr, byval as integer ptr) as integer
-declare function PDC_setclipboard cdecl alias "PDC_setclipboard" (byval as string, byval as integer) as integer
-declare function PDC_freeclipboard cdecl alias "PDC_freeclipboard" (byval as string) as integer
+declare function PDC_setclipboard cdecl alias "PDC_setclipboard" (byval as zstring ptr, byval as integer) as integer
+declare function PDC_freeclipboard cdecl alias "PDC_freeclipboard" (byval as zstring ptr) as integer
 declare function PDC_clearclipboard cdecl alias "PDC_clearclipboard" () as integer
 declare function PDC_get_input_fd cdecl alias "PDC_get_input_fd" () as uinteger
 declare function PDC_curs_set cdecl alias "PDC_curs_set" (byval as integer) as integer

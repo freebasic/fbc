@@ -17,9 +17,9 @@ type Virtual_voidDcRectSizeT as sub (byval as wxDC ptr, byval as wxRect ptr, byv
 type Virtual_IntInt as function (byval as integer) as integer
 #endif
 
-declare function wxVListBox cdecl alias "wxVListBox_ctor" (byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as wxVListBox ptr
+declare function wxVListBox cdecl alias "wxVListBox_ctor" (byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as zstring ptr) as wxVListBox ptr
 declare sub wxVListBox_RegisterVirtual cdecl alias "wxVListBox_RegisterVirtual" (byval self as _VListBox ptr, byval onDrawItem as Virtual_voidDcRectSizeT, byval onMeasureItem as Virtual_IntInt, byval onDrawSeparator as Virtual_voidDcRectSizeT, byval onDrawBackground as Virtual_voidDcRectSizeT, byval onGetLineHeight as Virtual_IntInt)
-declare function wxVListBox_Create cdecl alias "wxVListBox_Create" (byval self as _VListBox ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as integer
+declare function wxVListBox_Create cdecl alias "wxVListBox_Create" (byval self as _VListBox ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as zstring ptr) as integer
 declare sub wxVListBox_OnDrawSeparator cdecl alias "wxVListBox_OnDrawSeparator" (byval self as _VListBox ptr, byval dc as wxDC ptr, byval rect as wxRect ptr, byval n as integer)
 declare sub wxVListBox_OnDrawBackground cdecl alias "wxVListBox_OnDrawBackground" (byval self as _VListBox ptr, byval dc as wxDC ptr, byval rect as wxRect ptr, byval n as integer)
 declare function wxVListBox_OnGetLineHeight cdecl alias "wxVListBox_OnGetLineHeight" (byval self as _VListBox ptr, byval line as integer) as wxCoord

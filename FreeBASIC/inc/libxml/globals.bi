@@ -96,7 +96,7 @@ declare function xmlThrDefGetWarningsDefaultValue cdecl alias "xmlThrDefGetWarni
 declare function __xmlIndentTreeOutput cdecl alias "__xmlIndentTreeOutput" () as integer ptr
 declare function xmlThrDefIndentTreeOutput cdecl alias "xmlThrDefIndentTreeOutput" (byval v as integer) as integer
 declare function __xmlTreeIndentString cdecl alias "__xmlTreeIndentString" () as byte ptr ptr
-declare function xmlThrDefTreeIndentString cdecl alias "xmlThrDefTreeIndentString" (byval v as string) as byte ptr
+declare function xmlThrDefTreeIndentString cdecl alias "xmlThrDefTreeIndentString" (byval v as zstring ptr) as byte ptr
 declare function __xmlKeepBlanksDefaultValue cdecl alias "__xmlKeepBlanksDefaultValue" () as integer ptr
 declare function xmlThrDefKeepBlanksDefaultValue cdecl alias "xmlThrDefKeepBlanksDefaultValue" (byval v as integer) as integer
 declare function __xmlLineNumbersDefaultValue cdecl alias "__xmlLineNumbersDefaultValue" () as integer ptr

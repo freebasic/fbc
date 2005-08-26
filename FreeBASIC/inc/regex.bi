@@ -87,18 +87,18 @@ end enum
 #define RE_DUP_MAX 255
 
 '' The POSIX.2 regexp functions 
-declare function regcomp cdecl alias "regcomp" 		(byval preg as regex_t ptr, byval regex as string, byval cflags as integer) as integer
-declare function regexec cdecl alias "regexec" 		(byval preg as regex_t ptr, byval string as string, byval nmatch as size_t, _
+declare function regcomp cdecl alias "regcomp" 		(byval preg as regex_t ptr, byval regex as zstring ptr, byval cflags as integer) as integer
+declare function regexec cdecl alias "regexec" 		(byval preg as regex_t ptr, byval string as zstring ptr, byval nmatch as size_t, _
 	    											 byval pmatch as regmatch_t ptr, byval eflags as integer) as integer
-declare function regerror cdecl alias "regerror"	(byval errcode as integer, byval preg as regex_t ptr, byval errbuf as string, _
+declare function regerror cdecl alias "regerror"	(byval errcode as integer, byval preg as regex_t ptr, byval errbuf as zstring ptr, _
 													 byval errbuf_size as size_t) as size_t
 declare sub 	 regfree cdecl alias "regfree" 		(byval preg as regex_t ptr)
  
  
 '' Versions with a maximum length argument and therefore the capability to
 '' handle null characters in the middle of the strings (not in POSIX.2).
-declare function regncomp cdecl alias "regncomp" 	(byval preg as regex_t ptr, byval regex as string, byval len as size_t, byval cflags as integer) as integer
-declare function regnexec cdecl alias "regnexec" 	(byval preg as regex_t ptr, byval string as string, byval len as size_t, _
+declare function regncomp cdecl alias "regncomp" 	(byval preg as regex_t ptr, byval regex as zstring ptr, byval len as size_t, byval cflags as integer) as integer
+declare function regnexec cdecl alias "regnexec" 	(byval preg as regex_t ptr, byval string as zstring ptr, byval len as size_t, _
 	     											 byval nmatch as size_t, byval pmatch as regmatch_t ptr, byval eflags as integer) as integer
 
 
@@ -128,9 +128,9 @@ end type
 
 
 '' Approximate matching functions. 
-declare function regaexec cdecl alias "regaexec"	(byval preg as regex_t ptr, byval string as string, _
+declare function regaexec cdecl alias "regaexec"	(byval preg as regex_t ptr, byval string as zstring ptr, _
 	     											 byval match as regamatch_t ptr, byval params as regaparams_t, byval eflags as integer) as integer
-declare function reganexec cdecl alias "reganexec" 	(byval preg as regex_t ptr, byval string as string, byval len as size_t, _
+declare function reganexec cdecl alias "reganexec" 	(byval preg as regex_t ptr, byval string as zstring ptr, byval len as size_t, _
 	      											 byval match as regamatch_t ptr, byval params as regaparams_t, byval eflags as integer) as integer
 
 

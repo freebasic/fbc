@@ -19,7 +19,7 @@ declare function wxSashEdge_m_border cdecl alias "wxSashEdge_m_border" (byval se
 declare function wxSashEdge_m_margin cdecl alias "wxSashEdge_m_margin" (byval self as wxSashEdge ptr) as integer
 
 declare function wxSashWindow cdecl alias "wxSashWindow_ctor" () as wxSashWindow ptr
-declare function wxSashWindow_Create cdecl alias "wxSashWindow_Create" (byval self as wxSashWindow ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as integer
+declare function wxSashWindow_Create cdecl alias "wxSashWindow_Create" (byval self as wxSashWindow ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as zstring ptr) as integer
 declare sub wxSashWindow_SetSashVisible cdecl alias "wxSashWindow_SetSashVisible" (byval self as wxSashWindow ptr, byval edge as wxSashEdgePosition, byval sash as integer)
 declare function wxSashWindow_GetSashVisible cdecl alias "wxSashWindow_GetSashVisible" (byval self as wxSashWindow ptr, byval edge as wxSashEdgePosition) as integer
 declare sub wxSashWindow_SetSashBorder cdecl alias "wxSashWindow_SetSashBorder" (byval self as wxSashWindow ptr, byval edge as wxSashEdgePosition, byval border as integer)

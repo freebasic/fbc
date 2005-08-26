@@ -202,7 +202,7 @@ declare function	__dpmi_get_raw_mode_switch_addr cdecl alias "__dpmi_get_raw_mod
 
 declare function	__dpmi_get_version cdecl alias "__dpmi_get_version"								( byval _ret as __dpmi_version_ret ptr ) as integer							' DPMI 0.9 AX=0400
 
-declare function	__dpmi_get_capabilities cdecl alias "__dpmi_get_capabilities"							( byval _flags as integer ptr, byval vendor_info as string ) as integer					' DPMI 1.0 AX=0401
+declare function	__dpmi_get_capabilities cdecl alias "__dpmi_get_capabilities"							( byval _flags as integer ptr, byval vendor_info as zstring ptr ) as integer					' DPMI 1.0 AX=0401
 
 declare function	__dpmi_get_free_memory_information cdecl alias "__dpmi_get_free_memory_information"				( byval _info as __dpmi_free_mem_info ptr ) as integer							' DPMI 0.9 AX=0500
 declare function	__dpmi_allocate_memory cdecl alias "__dpmi_allocate_memory"							( byval _info as __dpmi_meminfo ptr ) as integer							' DPMI 0.9 AX=0501
@@ -236,7 +236,7 @@ declare function	__dpmi_get_and_enable_virtual_interrupt_state cdecl alias "__dp
 declare function	__dpmi_get_and_set_virtual_interrupt_state cdecl alias "__dpmi_get_and_set_virtual_interrupt_state"		( byval _old_state as integer ) as integer								' DPMI 0.9 AH=09
 declare function	__dpmi_get_virtual_interrupt_state cdecl alias "__dpmi_get_virtual_interrupt_state"				( ) as integer												' DPMI 0.9 AX=0902
 
-declare function	__dpmi_get_vendor_specific_api_entry_point cdecl alias "__dpmi_get_vendor_specific_api_entry_point"		( byval _id as string, byval _api as __dpmi_paddr ptr ) as integer					' DPMI 0.9 AX=0a00
+declare function	__dpmi_get_vendor_specific_api_entry_point cdecl alias "__dpmi_get_vendor_specific_api_entry_point"		( byval _id as zstring ptr, byval _api as __dpmi_paddr ptr ) as integer					' DPMI 0.9 AX=0a00
 
 declare function	__dpmi_set_debug_watchpoint cdecl alias "__dpmi_set_debug_watchpoint"						( byval _info as __dpmi_meminfo ptr, byval _type as integer ) as integer				' DPMI 0.9 AX=0b00
 declare function	__dpmi_clear_debug_watchpoint cdecl alias "__dpmi_clear_debug_watchpoint"					( byval _handle as uinteger ) as integer								' DPMI 0.9 AX=0b01

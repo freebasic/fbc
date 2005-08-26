@@ -27,10 +27,10 @@
 #define FLI_ERROR       -2
 #define FLI_NOT_OPEN    -3
 
-Declare Function play_fli CDecl Alias "play_fli" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal iloop As Integer, ByVal callback As Function() As Integer) As Integer
+Declare Function play_fli CDecl Alias "play_fli" (byval filename as zstring ptr, ByVal bmp As BITMAP Ptr, ByVal iloop As Integer, ByVal callback As Function() As Integer) As Integer
 Declare Function play_memory_fli CDecl Alias "play_memory_fli" (ByVal fli_data As Integer, ByVal bmp As BITMAP Ptr, ByVal iloop As Integer, ByVal callback As Function() As Integer) As Integer
 
-Declare Function open_fli CDecl Alias "open_fli" (ByVal filename As String) As Integer
+Declare Function open_fli CDecl Alias "open_fli" (byval filename as zstring ptr) As Integer
 Declare Function open_memory_fli CDecl Alias "open_memory_fli" (ByVal fli_data As Integer) As Integer
 Declare Sub close_fli CDecl Alias "close_fli" ()
 Declare Function next_fli_frame CDecl Alias "next_fli_frame" (ByVal iloop As Integer) As Integer

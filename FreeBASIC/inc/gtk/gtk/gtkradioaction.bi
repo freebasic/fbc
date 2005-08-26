@@ -30,7 +30,7 @@ type _GtkRadioActionClass
 end type
 
 declare function gtk_radio_action_get_type cdecl alias "gtk_radio_action_get_type" () as GType
-declare function gtk_radio_action_new cdecl alias "gtk_radio_action_new" (byval name as string, byval label as string, byval tooltip as string, byval stock_id as string, byval value as gint) as GtkRadioAction ptr
+declare function gtk_radio_action_new cdecl alias "gtk_radio_action_new" (byval name as zstring ptr, byval label as zstring ptr, byval tooltip as zstring ptr, byval stock_id as zstring ptr, byval value as gint) as GtkRadioAction ptr
 declare function gtk_radio_action_get_group cdecl alias "gtk_radio_action_get_group" (byval action as GtkRadioAction ptr) as GSList ptr
 declare sub gtk_radio_action_set_group cdecl alias "gtk_radio_action_set_group" (byval action as GtkRadioAction ptr, byval group as GSList ptr)
 declare function gtk_radio_action_get_current_value cdecl alias "gtk_radio_action_get_current_value" (byval action as GtkRadioAction ptr) as gint

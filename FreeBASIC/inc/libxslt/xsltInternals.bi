@@ -309,18 +309,18 @@ type _xsltTransformContext
 end type
 
 declare function xsltNewStylesheet cdecl alias "xsltNewStylesheet" () as xsltStylesheetPtr
-declare function xsltParseStylesheetFile cdecl alias "xsltParseStylesheetFile" (byval filename as string) as xsltStylesheetPtr
+declare function xsltParseStylesheetFile cdecl alias "xsltParseStylesheetFile" (byval filename as zstring ptr) as xsltStylesheetPtr
 declare sub xsltFreeStylesheet cdecl alias "xsltFreeStylesheet" (byval sheet as xsltStylesheetPtr)
-declare function xsltIsBlank cdecl alias "xsltIsBlank" (byval str as string) as integer
+declare function xsltIsBlank cdecl alias "xsltIsBlank" (byval str as zstring ptr) as integer
 declare sub xsltFreeStackElemList cdecl alias "xsltFreeStackElemList" (byval elem as xsltStackElemPtr)
-declare function xsltDecimalFormatGetByName cdecl alias "xsltDecimalFormatGetByName" (byval sheet as xsltStylesheetPtr, byval name as string) as xsltDecimalFormatPtr
+declare function xsltDecimalFormatGetByName cdecl alias "xsltDecimalFormatGetByName" (byval sheet as xsltStylesheetPtr, byval name as zstring ptr) as xsltDecimalFormatPtr
 declare function xsltParseStylesheetProcess cdecl alias "xsltParseStylesheetProcess" (byval ret as xsltStylesheetPtr, byval doc as xmlDocPtr) as xsltStylesheetPtr
 declare sub xsltParseStylesheetOutput cdecl alias "xsltParseStylesheetOutput" (byval style as xsltStylesheetPtr, byval cur as xmlNodePtr)
 declare function xsltParseStylesheetDoc cdecl alias "xsltParseStylesheetDoc" (byval doc as xmlDocPtr) as xsltStylesheetPtr
 declare function xsltParseStylesheetImportedDoc cdecl alias "xsltParseStylesheetImportedDoc" (byval doc as xmlDocPtr, byval style as xsltStylesheetPtr) as xsltStylesheetPtr
 declare function xsltLoadStylesheetPI cdecl alias "xsltLoadStylesheetPI" (byval doc as xmlDocPtr) as xsltStylesheetPtr
 declare sub xsltNumberFormat cdecl alias "xsltNumberFormat" (byval ctxt as xsltTransformContextPtr, byval data as xsltNumberDataPtr, byval node as xmlNodePtr)
-declare function xsltFormatNumberConversion cdecl alias "xsltFormatNumberConversion" (byval self as xsltDecimalFormatPtr, byval format as string, byval number as double, byval result as zstring ptr) as xmlXPathError
+declare function xsltFormatNumberConversion cdecl alias "xsltFormatNumberConversion" (byval self as xsltDecimalFormatPtr, byval format as zstring ptr, byval number as double, byval result as zstring ptr) as xmlXPathError
 declare sub xsltParseTemplateContent cdecl alias "xsltParseTemplateContent" (byval style as xsltStylesheetPtr, byval templ as xmlNodePtr)
 declare function xsltAllocateExtra cdecl alias "xsltAllocateExtra" (byval style as xsltStylesheetPtr) as integer
 declare function xsltAllocateExtraCtxt cdecl alias "xsltAllocateExtraCtxt" (byval ctxt as xsltTransformContextPtr) as integer

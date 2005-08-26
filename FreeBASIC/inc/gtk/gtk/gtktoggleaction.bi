@@ -30,7 +30,7 @@ type _GtkToggleActionClass
 end type
 
 declare function gtk_toggle_action_get_type cdecl alias "gtk_toggle_action_get_type" () as GType
-declare function gtk_toggle_action_new cdecl alias "gtk_toggle_action_new" (byval name as string, byval label as string, byval tooltip as string, byval stock_id as string) as GtkToggleAction ptr
+declare function gtk_toggle_action_new cdecl alias "gtk_toggle_action_new" (byval name as zstring ptr, byval label as zstring ptr, byval tooltip as zstring ptr, byval stock_id as zstring ptr) as GtkToggleAction ptr
 declare sub gtk_toggle_action_toggled cdecl alias "gtk_toggle_action_toggled" (byval action as GtkToggleAction ptr)
 declare sub gtk_toggle_action_set_active cdecl alias "gtk_toggle_action_set_active" (byval action as GtkToggleAction ptr, byval is_active as gboolean)
 declare function gtk_toggle_action_get_active cdecl alias "gtk_toggle_action_get_active" (byval action as GtkToggleAction ptr) as gboolean

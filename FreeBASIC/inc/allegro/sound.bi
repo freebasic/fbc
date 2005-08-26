@@ -29,7 +29,7 @@
 Declare Sub reserve_voices CDecl Alias "reserve_voices" (ByVal _digi_voices As Integer, ByVal _midi_voices As Integer)
 Declare Sub set_volume_per_voice CDecl Alias "set_volume_per_voice" (ByVal scale As Integer)
 
-Declare Function install_sound CDecl Alias "install_sound" (ByVal digi As Integer, ByVal midi As Integer, ByVal cfg_path As String) As Integer
+Declare Function install_sound CDecl Alias "install_sound" (ByVal digi As Integer, ByVal midi As Integer, byval cfg_path as zstring ptr) As Integer
 Declare Sub remove_sound CDecl Alias "remove_sound"
 
 Declare Sub set_volume CDecl Alias "set_volume" (ByVal digi_volume As Integer, ByVal midi_volume As Integer)

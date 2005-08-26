@@ -86,8 +86,8 @@ type GtkFlagValue as GFlagsValue
 
 declare function gtk_type_enum_get_values cdecl alias "gtk_type_enum_get_values" (byval enum_type as GtkType) as GtkEnumValue ptr
 declare function gtk_type_flags_get_values cdecl alias "gtk_type_flags_get_values" (byval flags_type as GtkType) as GtkFlagValue ptr
-declare function gtk_type_enum_find_value cdecl alias "gtk_type_enum_find_value" (byval enum_type as GtkType, byval value_name as string) as GtkEnumValue ptr
-declare function gtk_type_flags_find_value cdecl alias "gtk_type_flags_find_value" (byval flags_type as GtkType, byval value_name as string) as GtkFlagValue ptr
+declare function gtk_type_enum_find_value cdecl alias "gtk_type_enum_find_value" (byval enum_type as GtkType, byval value_name as zstring ptr) as GtkEnumValue ptr
+declare function gtk_type_flags_find_value cdecl alias "gtk_type_flags_find_value" (byval flags_type as GtkType, byval value_name as zstring ptr) as GtkFlagValue ptr
 declare sub gtk_type_init cdecl alias "gtk_type_init" (byval debug_flags as GTypeDebugFlags)
 
 #endif

@@ -74,13 +74,13 @@ declare function gtk_menu_get_active cdecl alias "gtk_menu_get_active" (byval me
 declare sub gtk_menu_set_active cdecl alias "gtk_menu_set_active" (byval menu as GtkMenu ptr, byval index_ as guint)
 declare sub gtk_menu_set_accel_group cdecl alias "gtk_menu_set_accel_group" (byval menu as GtkMenu ptr, byval accel_group as GtkAccelGroup ptr)
 declare function gtk_menu_get_accel_group cdecl alias "gtk_menu_get_accel_group" (byval menu as GtkMenu ptr) as GtkAccelGroup ptr
-declare sub gtk_menu_set_accel_path cdecl alias "gtk_menu_set_accel_path" (byval menu as GtkMenu ptr, byval accel_path as string)
+declare sub gtk_menu_set_accel_path cdecl alias "gtk_menu_set_accel_path" (byval menu as GtkMenu ptr, byval accel_path as zstring ptr)
 declare sub gtk_menu_attach_to_widget cdecl alias "gtk_menu_attach_to_widget" (byval menu as GtkMenu ptr, byval attach_widget as GtkWidget ptr, byval detacher as GtkMenuDetachFunc)
 declare sub gtk_menu_detach cdecl alias "gtk_menu_detach" (byval menu as GtkMenu ptr)
 declare function gtk_menu_get_attach_widget cdecl alias "gtk_menu_get_attach_widget" (byval menu as GtkMenu ptr) as GtkWidget ptr
 declare sub gtk_menu_set_tearoff_state cdecl alias "gtk_menu_set_tearoff_state" (byval menu as GtkMenu ptr, byval torn_off as gboolean)
 declare function gtk_menu_get_tearoff_state cdecl alias "gtk_menu_get_tearoff_state" (byval menu as GtkMenu ptr) as gboolean
-declare sub gtk_menu_set_title cdecl alias "gtk_menu_set_title" (byval menu as GtkMenu ptr, byval title as string)
+declare sub gtk_menu_set_title cdecl alias "gtk_menu_set_title" (byval menu as GtkMenu ptr, byval title as zstring ptr)
 declare function gtk_menu_get_title cdecl alias "gtk_menu_get_title" (byval menu as GtkMenu ptr) as zstring ptr
 declare sub gtk_menu_reorder_child cdecl alias "gtk_menu_reorder_child" (byval menu as GtkMenu ptr, byval child as GtkWidget ptr, byval position as gint)
 declare sub gtk_menu_set_screen cdecl alias "gtk_menu_set_screen" (byval menu as GtkMenu ptr, byval screen as GdkScreen ptr)

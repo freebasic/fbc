@@ -13,7 +13,7 @@
 
 type gdsl_queue_t as any ptr
 
-declare function gdsl_queue_alloc cdecl alias "gdsl_queue_alloc" (byval NAME as string, byval ALLOC_F as gdsl_alloc_func_t, byval FREE_F as gdsl_free_func_t) as gdsl_queue_t
+declare function gdsl_queue_alloc cdecl alias "gdsl_queue_alloc" (byval NAME as zstring ptr, byval ALLOC_F as gdsl_alloc_func_t, byval FREE_F as gdsl_free_func_t) as gdsl_queue_t
 declare sub gdsl_queue_free cdecl alias "gdsl_queue_free" (byval Q as gdsl_queue_t)
 declare sub gdsl_queue_flush cdecl alias "gdsl_queue_flush" (byval Q as gdsl_queue_t)
 declare function gdsl_queue_get_name cdecl alias "gdsl_queue_get_name" (byval Q as gdsl_queue_t) as zstring ptr
@@ -21,7 +21,7 @@ declare function gdsl_queue_get_size cdecl alias "gdsl_queue_get_size" (byval Q 
 declare function gdsl_queue_is_empty cdecl alias "gdsl_queue_is_empty" (byval Q as gdsl_queue_t) as integer
 declare function gdsl_queue_get_head cdecl alias "gdsl_queue_get_head" (byval Q as gdsl_queue_t) as gdsl_element_t
 declare function gdsl_queue_get_tail cdecl alias "gdsl_queue_get_tail" (byval Q as gdsl_queue_t) as gdsl_element_t
-declare function gdsl_queue_set_name cdecl alias "gdsl_queue_set_name" (byval Q as gdsl_queue_t, byval NEW_NAME as string) as gdsl_queue_t
+declare function gdsl_queue_set_name cdecl alias "gdsl_queue_set_name" (byval Q as gdsl_queue_t, byval NEW_NAME as zstring ptr) as gdsl_queue_t
 declare function gdsl_queue_insert cdecl alias "gdsl_queue_insert" (byval Q as gdsl_queue_t, byval VALUE as any ptr) as gdsl_element_t
 declare function gdsl_queue_remove cdecl alias "gdsl_queue_remove" (byval Q as gdsl_queue_t) as gdsl_element_t
 declare function gdsl_queue_search cdecl alias "gdsl_queue_search" (byval Q as gdsl_queue_t, byval COMP_F as gdsl_compare_func_t, byval VALUE as any ptr) as gdsl_element_t

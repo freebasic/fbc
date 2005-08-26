@@ -31,13 +31,13 @@ type _GtkToolButtonClass
 end type
 
 declare function gtk_tool_button_get_type cdecl alias "gtk_tool_button_get_type" () as GType
-declare function gtk_tool_button_new cdecl alias "gtk_tool_button_new" (byval icon_widget as GtkWidget ptr, byval label as string) as GtkToolItem ptr
-declare function gtk_tool_button_new_from_stock cdecl alias "gtk_tool_button_new_from_stock" (byval stock_id as string) as GtkToolItem ptr
-declare sub gtk_tool_button_set_label cdecl alias "gtk_tool_button_set_label" (byval button as GtkToolButton ptr, byval label as string)
+declare function gtk_tool_button_new cdecl alias "gtk_tool_button_new" (byval icon_widget as GtkWidget ptr, byval label as zstring ptr) as GtkToolItem ptr
+declare function gtk_tool_button_new_from_stock cdecl alias "gtk_tool_button_new_from_stock" (byval stock_id as zstring ptr) as GtkToolItem ptr
+declare sub gtk_tool_button_set_label cdecl alias "gtk_tool_button_set_label" (byval button as GtkToolButton ptr, byval label as zstring ptr)
 declare function gtk_tool_button_get_label cdecl alias "gtk_tool_button_get_label" (byval button as GtkToolButton ptr) as zstring ptr
 declare sub gtk_tool_button_set_use_underline cdecl alias "gtk_tool_button_set_use_underline" (byval button as GtkToolButton ptr, byval use_underline as gboolean)
 declare function gtk_tool_button_get_use_underline cdecl alias "gtk_tool_button_get_use_underline" (byval button as GtkToolButton ptr) as gboolean
-declare sub gtk_tool_button_set_stock_id cdecl alias "gtk_tool_button_set_stock_id" (byval button as GtkToolButton ptr, byval stock_id as string)
+declare sub gtk_tool_button_set_stock_id cdecl alias "gtk_tool_button_set_stock_id" (byval button as GtkToolButton ptr, byval stock_id as zstring ptr)
 declare function gtk_tool_button_get_stock_id cdecl alias "gtk_tool_button_get_stock_id" (byval button as GtkToolButton ptr) as zstring ptr
 declare sub gtk_tool_button_set_icon_widget cdecl alias "gtk_tool_button_set_icon_widget" (byval button as GtkToolButton ptr, byval icon_widget as GtkWidget ptr)
 declare function gtk_tool_button_get_icon_widget cdecl alias "gtk_tool_button_get_icon_widget" (byval button as GtkToolButton ptr) as GtkWidget ptr

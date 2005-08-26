@@ -12,7 +12,7 @@
 #include once "wx-c/wx.bi"
 
 
-declare function wxWizard cdecl alias "wxWizard_ctor" (byval parent as wxWindow ptr, byval id as integer, byval title as string, byval bitmap as wxBitmap ptr, byval pos as wxPoint ptr) as wxWizard ptr
+declare function wxWizard cdecl alias "wxWizard_ctor" (byval parent as wxWindow ptr, byval id as integer, byval title as zstring ptr, byval bitmap as wxBitmap ptr, byval pos as wxPoint ptr) as wxWizard ptr
 declare function wxWizard_RunWizard cdecl alias "wxWizard_RunWizard" (byval self as wxWizard ptr, byval firstPage as wxWizardPage ptr) as integer
 declare sub wxWizard_SetPageSize cdecl alias "wxWizard_SetPageSize" (byval self as wxWizard ptr, byval size as wxSize ptr)
 

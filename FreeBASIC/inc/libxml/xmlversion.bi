@@ -25,6 +25,6 @@ declare sub xmlCheckVersion cdecl alias "xmlCheckVersion" (byval version as inte
 #define LIBXML_VERSION_EXTRA "CVS2313"
 #define LIBXML_MODULE_EXTENSION ".dll"
 
-#define LIBXML_TEST_VERSION xmlCheckVersion( 20617 )
+#define LIBXML_TEST_VERSION( ) xmlCheckVersion( LIBXML_VERSION )
 
 #endif

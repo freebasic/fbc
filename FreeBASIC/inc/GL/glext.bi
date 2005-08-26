@@ -3220,7 +3220,7 @@ type PFNGLGETVERTEXATTRIBPOINTERVPROC as SUB (ByVal index As GLuint, ByVal pname
 type PFNGLISPROGRAMPROC as SUB (ByVal program As GLuint)
 type PFNGLISSHADERPROC as SUB (ByVal shader As GLuint)
 type PFNGLLINKPROGRAMPROC as SUB (ByVal program As GLuint)
-type PFNGLSHADERSOURCEPROC as SUB (ByVal shader As GLuint, ByVal count As GLsizei, ByVal s as string, ByVal length As GLint ptr)
+type PFNGLSHADERSOURCEPROC as SUB (ByVal shader As GLuint, ByVal count As GLsizei, byval s as zstring ptr, ByVal length As GLint ptr)
 type PFNGLUSEPROGRAMPROC as SUB (ByVal program As GLuint)
 type PFNGLUNIFORM1FPROC as SUB (ByVal location As GLint, ByVal v0 As GLfloat)
 type PFNGLUNIFORM2FPROC as SUB (ByVal location As GLint, ByVal v0 As GLfloat, ByVal v1 As GLfloat)

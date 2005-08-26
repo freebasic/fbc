@@ -103,50 +103,50 @@ type mxml_index_s
 end type
 
 type mxml_index_t as mxml_index_s
-type mxml_custom_load_cb_t as function cdecl(byval as mxml_node_t ptr, byval as string) as integer
+type mxml_custom_load_cb_t as function cdecl(byval as mxml_node_t ptr, byval as zstring ptr) as integer
 type mxml_custom_save_cb_t as function cdecl(byval as mxml_node_t ptr) as byte
 
 declare sub mxmlAdd cdecl alias "mxmlAdd" (byval parent as mxml_node_t ptr, byval where as integer, byval child as mxml_node_t ptr, byval node as mxml_node_t ptr)
 declare sub mxmlDelete cdecl alias "mxmlDelete" (byval node as mxml_node_t ptr)
-declare function mxmlElementGetAttr cdecl alias "mxmlElementGetAttr" (byval node as mxml_node_t ptr, byval name as string) as zstring ptr
-declare sub mxmlElementSetAttr cdecl alias "mxmlElementSetAttr" (byval node as mxml_node_t ptr, byval name as string, byval value as string)
-declare function mxmlEntityAddCallback cdecl alias "mxmlEntityAddCallback" (byval cb as function cdecl(byval as string) as integer) as integer
+declare function mxmlElementGetAttr cdecl alias "mxmlElementGetAttr" (byval node as mxml_node_t ptr, byval name as zstring ptr) as zstring ptr
+declare sub mxmlElementSetAttr cdecl alias "mxmlElementSetAttr" (byval node as mxml_node_t ptr, byval name as zstring ptr, byval value as zstring ptr)
+declare function mxmlEntityAddCallback cdecl alias "mxmlEntityAddCallback" (byval cb as function cdecl(byval as zstring ptr) as integer) as integer
 declare function mxmlEntityGetName cdecl alias "mxmlEntityGetName" (byval val as integer) as zstring ptr
-declare function mxmlEntityGetValue cdecl alias "mxmlEntityGetValue" (byval name as string) as integer
-declare sub mxmlEntityRemoveCallback cdecl alias "mxmlEntityRemoveCallback" (byval cb as function cdecl(byval as string) as integer)
-declare function mxmlFindElement cdecl alias "mxmlFindElement" (byval node as mxml_node_t ptr, byval top as mxml_node_t ptr, byval name as string, byval attr as string, byval value as string, byval descend as integer) as mxml_node_t ptr
+declare function mxmlEntityGetValue cdecl alias "mxmlEntityGetValue" (byval name as zstring ptr) as integer
+declare sub mxmlEntityRemoveCallback cdecl alias "mxmlEntityRemoveCallback" (byval cb as function cdecl(byval as zstring ptr) as integer)
+declare function mxmlFindElement cdecl alias "mxmlFindElement" (byval node as mxml_node_t ptr, byval top as mxml_node_t ptr, byval name as zstring ptr, byval attr as zstring ptr, byval value as zstring ptr, byval descend as integer) as mxml_node_t ptr
 declare sub mxmlIndexDelete cdecl alias "mxmlIndexDelete" (byval ind as mxml_index_t ptr)
 declare function mxmlIndexEnum cdecl alias "mxmlIndexEnum" (byval ind as mxml_index_t ptr) as mxml_node_t ptr
-declare function mxmlIndexFind cdecl alias "mxmlIndexFind" (byval ind as mxml_index_t ptr, byval element as string, byval value as string) as mxml_node_t ptr
-declare function mxmlIndexNew cdecl alias "mxmlIndexNew" (byval node as mxml_node_t ptr, byval element as string, byval attr as string) as mxml_index_t ptr
+declare function mxmlIndexFind cdecl alias "mxmlIndexFind" (byval ind as mxml_index_t ptr, byval element as zstring ptr, byval value as zstring ptr) as mxml_node_t ptr
+declare function mxmlIndexNew cdecl alias "mxmlIndexNew" (byval node as mxml_node_t ptr, byval element as zstring ptr, byval attr as zstring ptr) as mxml_index_t ptr
 declare function mxmlIndexReset cdecl alias "mxmlIndexReset" (byval ind as mxml_index_t ptr) as mxml_node_t ptr
 declare function mxmlLoadFd cdecl alias "mxmlLoadFd" (byval top as mxml_node_t ptr, byval fd as integer, byval cb as function cdecl(byval as mxml_node_t ptr) as mxml_type_t) as mxml_node_t ptr
 declare function mxmlLoadFile cdecl alias "mxmlLoadFile" (byval top as mxml_node_t ptr, byval fp as FILE ptr, byval cb as function cdecl(byval as mxml_node_t ptr) as mxml_type_t) as mxml_node_t ptr
-declare function mxmlLoadString cdecl alias "mxmlLoadString" (byval top as mxml_node_t ptr, byval s as string, byval cb as function cdecl(byval as mxml_node_t ptr) as mxml_type_t) as mxml_node_t ptr
+declare function mxmlLoadString cdecl alias "mxmlLoadString" (byval top as mxml_node_t ptr, byval s as zstring ptr, byval cb as function cdecl(byval as mxml_node_t ptr) as mxml_type_t) as mxml_node_t ptr
 declare function mxmlNewCustom cdecl alias "mxmlNewCustom" (byval parent as mxml_node_t ptr, byval data as any ptr, byval destroy as sub cdecl(byval as any ptr)) as mxml_node_t ptr
-declare function mxmlNewElement cdecl alias "mxmlNewElement" (byval parent as mxml_node_t ptr, byval name as string) as mxml_node_t ptr
+declare function mxmlNewElement cdecl alias "mxmlNewElement" (byval parent as mxml_node_t ptr, byval name as zstring ptr) as mxml_node_t ptr
 declare function mxmlNewInteger cdecl alias "mxmlNewInteger" (byval parent as mxml_node_t ptr, byval integer as integer) as mxml_node_t ptr
-declare function mxmlNewOpaque cdecl alias "mxmlNewOpaque" (byval parent as mxml_node_t ptr, byval opaque as string) as mxml_node_t ptr
+declare function mxmlNewOpaque cdecl alias "mxmlNewOpaque" (byval parent as mxml_node_t ptr, byval opaque as zstring ptr) as mxml_node_t ptr
 declare function mxmlNewReal cdecl alias "mxmlNewReal" (byval parent as mxml_node_t ptr, byval real as double) as mxml_node_t ptr
-declare function mxmlNewText cdecl alias "mxmlNewText" (byval parent as mxml_node_t ptr, byval whitespace as integer, byval string as string) as mxml_node_t ptr
-declare function mxmlNewTextf cdecl alias "mxmlNewTextf" (byval parent as mxml_node_t ptr, byval whitespace as integer, byval format as string, ...) as mxml_node_t ptr
+declare function mxmlNewText cdecl alias "mxmlNewText" (byval parent as mxml_node_t ptr, byval whitespace as integer, byval string as zstring ptr) as mxml_node_t ptr
+declare function mxmlNewTextf cdecl alias "mxmlNewTextf" (byval parent as mxml_node_t ptr, byval whitespace as integer, byval format as zstring ptr, ...) as mxml_node_t ptr
 declare sub mxmlRemove cdecl alias "mxmlRemove" (byval node as mxml_node_t ptr)
 declare function mxmlSaveAllocString cdecl alias "mxmlSaveAllocString" (byval node as mxml_node_t ptr, byval cb as function cdecl(byval as mxml_node_t ptr, byval as integer) as byte) as zstring ptr
 declare function mxmlSaveFd cdecl alias "mxmlSaveFd" (byval node as mxml_node_t ptr, byval fd as integer, byval cb as function cdecl(byval as mxml_node_t ptr, byval as integer) as byte) as integer
 declare function mxmlSaveFile cdecl alias "mxmlSaveFile" (byval node as mxml_node_t ptr, byval fp as FILE ptr, byval cb as function cdecl(byval as mxml_node_t ptr, byval as integer) as byte) as integer
-declare function mxmlSaveString cdecl alias "mxmlSaveString" (byval node as mxml_node_t ptr, byval buffer as string, byval bufsize as integer, byval cb as function cdecl(byval as mxml_node_t ptr, byval as integer) as byte) as integer
+declare function mxmlSaveString cdecl alias "mxmlSaveString" (byval node as mxml_node_t ptr, byval buffer as zstring ptr, byval bufsize as integer, byval cb as function cdecl(byval as mxml_node_t ptr, byval as integer) as byte) as integer
 declare function mxmlSetCustom cdecl alias "mxmlSetCustom" (byval node as mxml_node_t ptr, byval data as any ptr, byval destroy as sub cdecl(byval as any ptr)) as integer
 declare sub mxmlSetCustomHandlers cdecl alias "mxmlSetCustomHandlers" (byval load as mxml_custom_load_cb_t, byval save as mxml_custom_save_cb_t)
-declare function mxmlSetElement cdecl alias "mxmlSetElement" (byval node as mxml_node_t ptr, byval name as string) as integer
-declare sub mxmlSetErrorCallback cdecl alias "mxmlSetErrorCallback" (byval cb as sub cdecl(byval as string))
+declare function mxmlSetElement cdecl alias "mxmlSetElement" (byval node as mxml_node_t ptr, byval name as zstring ptr) as integer
+declare sub mxmlSetErrorCallback cdecl alias "mxmlSetErrorCallback" (byval cb as sub cdecl(byval as zstring ptr))
 declare function mxmlSetInteger cdecl alias "mxmlSetInteger" (byval node as mxml_node_t ptr, byval integer as integer) as integer
-declare function mxmlSetOpaque cdecl alias "mxmlSetOpaque" (byval node as mxml_node_t ptr, byval opaque as string) as integer
+declare function mxmlSetOpaque cdecl alias "mxmlSetOpaque" (byval node as mxml_node_t ptr, byval opaque as zstring ptr) as integer
 declare function mxmlSetReal cdecl alias "mxmlSetReal" (byval node as mxml_node_t ptr, byval real as double) as integer
-declare function mxmlSetText cdecl alias "mxmlSetText" (byval node as mxml_node_t ptr, byval whitespace as integer, byval string as string) as integer
-declare function mxmlSetTextf cdecl alias "mxmlSetTextf" (byval node as mxml_node_t ptr, byval whitespace as integer, byval format as string, ...) as integer
+declare function mxmlSetText cdecl alias "mxmlSetText" (byval node as mxml_node_t ptr, byval whitespace as integer, byval string as zstring ptr) as integer
+declare function mxmlSetTextf cdecl alias "mxmlSetTextf" (byval node as mxml_node_t ptr, byval whitespace as integer, byval format as zstring ptr, ...) as integer
 declare function mxmlWalkNext cdecl alias "mxmlWalkNext" (byval node as mxml_node_t ptr, byval top as mxml_node_t ptr, byval descend as integer) as mxml_node_t ptr
 declare function mxmlWalkPrev cdecl alias "mxmlWalkPrev" (byval node as mxml_node_t ptr, byval top as mxml_node_t ptr, byval descend as integer) as mxml_node_t ptr
-declare sub mxml_error cdecl alias "mxml_error" (byval format as string, ...)
+declare sub mxml_error cdecl alias "mxml_error" (byval format as zstring ptr, ...)
 declare function mxml_integer_cb cdecl alias "mxml_integer_cb" (byval node as mxml_node_t ptr) as mxml_type_t
 declare function mxml_opaque_cb cdecl alias "mxml_opaque_cb" (byval node as mxml_node_t ptr) as mxml_type_t
 declare function mxml_real_cb cdecl alias "mxml_real_cb" (byval node as mxml_node_t ptr) as mxml_type_t

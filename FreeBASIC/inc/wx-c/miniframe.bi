@@ -13,6 +13,6 @@
 
 
 declare function wxMiniFrame cdecl alias "wxMiniFrame_ctor" () as wxMiniFrame ptr
-declare function wxMiniFrame_Create cdecl alias "wxMiniFrame_Create" (byval self as wxMiniFrame ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval title as string, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as integer
+declare function wxMiniFrame_Create cdecl alias "wxMiniFrame_Create" (byval self as wxMiniFrame ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval title as zstring ptr, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as zstring ptr) as integer
 
 #endif

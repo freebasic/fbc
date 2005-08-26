@@ -31,9 +31,9 @@ type _AtkTableIface
 	get_row_header as function cdecl(byval as AtkTable ptr, byval as gint) as AtkObject
 	get_summary as function cdecl(byval as AtkTable ptr) as AtkObject
 	set_caption as sub cdecl(byval as AtkTable ptr, byval as AtkObject ptr)
-	set_column_description as sub cdecl(byval as AtkTable ptr, byval as gint, byval as string)
+	set_column_description as sub cdecl(byval as AtkTable ptr, byval as gint, byval as zstring ptr)
 	set_column_header as sub cdecl(byval as AtkTable ptr, byval as gint, byval as AtkObject ptr)
-	set_row_description as sub cdecl(byval as AtkTable ptr, byval as gint, byval as string)
+	set_row_description as sub cdecl(byval as AtkTable ptr, byval as gint, byval as zstring ptr)
 	set_row_header as sub cdecl(byval as AtkTable ptr, byval as gint, byval as AtkObject ptr)
 	set_summary as sub cdecl(byval as AtkTable ptr, byval as AtkObject ptr)
 	get_selected_columns as function cdecl(byval as AtkTable ptr, byval as gint ptr ptr) as gint
@@ -74,9 +74,9 @@ declare function atk_table_get_row_description cdecl alias "atk_table_get_row_de
 declare function atk_table_get_row_header cdecl alias "atk_table_get_row_header" (byval table as AtkTable ptr, byval row as gint) as AtkObject ptr
 declare function atk_table_get_summary cdecl alias "atk_table_get_summary" (byval table as AtkTable ptr) as AtkObject ptr
 declare sub atk_table_set_caption cdecl alias "atk_table_set_caption" (byval table as AtkTable ptr, byval caption as AtkObject ptr)
-declare sub atk_table_set_column_description cdecl alias "atk_table_set_column_description" (byval table as AtkTable ptr, byval column as gint, byval description as string)
+declare sub atk_table_set_column_description cdecl alias "atk_table_set_column_description" (byval table as AtkTable ptr, byval column as gint, byval description as zstring ptr)
 declare sub atk_table_set_column_header cdecl alias "atk_table_set_column_header" (byval table as AtkTable ptr, byval column as gint, byval header as AtkObject ptr)
-declare sub atk_table_set_row_description cdecl alias "atk_table_set_row_description" (byval table as AtkTable ptr, byval row as gint, byval description as string)
+declare sub atk_table_set_row_description cdecl alias "atk_table_set_row_description" (byval table as AtkTable ptr, byval row as gint, byval description as zstring ptr)
 declare sub atk_table_set_row_header cdecl alias "atk_table_set_row_header" (byval table as AtkTable ptr, byval row as gint, byval header as AtkObject ptr)
 declare sub atk_table_set_summary cdecl alias "atk_table_set_summary" (byval table as AtkTable ptr, byval accessible as AtkObject ptr)
 declare function atk_table_get_selected_columns cdecl alias "atk_table_get_selected_columns" (byval table as AtkTable ptr, byval selected as gint ptr ptr) as gint

@@ -44,7 +44,7 @@ declare sub wxTextAttr_SetFlags cdecl alias "wxTextAttr_SetFlags" (byval self as
 declare function wxTextAttr_GetFlags cdecl alias "wxTextAttr_GetFlags" (byval self as wxTextAttr ptr) as integer
 
 declare function wxTextCtrl_GetValue cdecl alias "wxTextCtrl_GetValue" (byval self as wxTextCtrl ptr) as wxString ptr
-declare sub wxTextCtrl_SetValue cdecl alias "wxTextCtrl_SetValue" (byval self as wxTextCtrl ptr, byval value as string)
+declare sub wxTextCtrl_SetValue cdecl alias "wxTextCtrl_SetValue" (byval self as wxTextCtrl ptr, byval value as zstring ptr)
 declare function wxTextCtrl_GetRange cdecl alias "wxTextCtrl_GetRange" (byval self as wxTextCtrl ptr, byval from as integer, byval to as integer) as wxString ptr
 declare function wxTextCtrl_GetLineLength cdecl alias "wxTextCtrl_GetLineLength" (byval self as wxTextCtrl ptr, byval lineNo as integer) as integer
 declare function wxTextCtrl_GetLineText cdecl alias "wxTextCtrl_GetLineText" (byval self as wxTextCtrl ptr, byval lineNo as integer) as wxString ptr
@@ -56,14 +56,14 @@ declare function wxTextCtrl_IsMultiLine cdecl alias "wxTextCtrl_IsMultiLine" (by
 declare sub wxTextCtrl_GetSelection cdecl alias "wxTextCtrl_GetSelection" (byval self as wxTextCtrl ptr, byval from as integer ptr, byval to as integer ptr)
 declare function wxTextCtrl_GetStringSelection cdecl alias "wxTextCtrl_GetStringSelection" (byval self as wxTextCtrl ptr) as wxString ptr
 declare sub wxTextCtrl_Clear cdecl alias "wxTextCtrl_Clear" (byval self as wxTextCtrl ptr)
-declare sub wxTextCtrl_Replace cdecl alias "wxTextCtrl_Replace" (byval self as wxTextCtrl ptr, byval from as integer, byval to as integer, byval value as string)
+declare sub wxTextCtrl_Replace cdecl alias "wxTextCtrl_Replace" (byval self as wxTextCtrl ptr, byval from as integer, byval to as integer, byval value as zstring ptr)
 declare sub wxTextCtrl_Remove cdecl alias "wxTextCtrl_Remove" (byval self as wxTextCtrl ptr, byval from as integer, byval to as integer)
-declare function wxTextCtrl_LoadFile cdecl alias "wxTextCtrl_LoadFile" (byval self as wxTextCtrl ptr, byval file as string) as integer
-declare function wxTextCtrl_SaveFile cdecl alias "wxTextCtrl_SaveFile" (byval self as wxTextCtrl ptr, byval file as string) as integer
+declare function wxTextCtrl_LoadFile cdecl alias "wxTextCtrl_LoadFile" (byval self as wxTextCtrl ptr, byval file as zstring ptr) as integer
+declare function wxTextCtrl_SaveFile cdecl alias "wxTextCtrl_SaveFile" (byval self as wxTextCtrl ptr, byval file as zstring ptr) as integer
 declare sub wxTextCtrl_DiscardEdits cdecl alias "wxTextCtrl_DiscardEdits" (byval self as wxTextCtrl ptr)
 declare sub wxTextCtrl_SetMaxLength cdecl alias "wxTextCtrl_SetMaxLength" (byval self as wxTextCtrl ptr, byval len as uinteger)
-declare sub wxTextCtrl_WriteText cdecl alias "wxTextCtrl_WriteText" (byval self as wxTextCtrl ptr, byval text as string)
-declare sub wxTextCtrl_AppendText cdecl alias "wxTextCtrl_AppendText" (byval self as wxTextCtrl ptr, byval text as string)
+declare sub wxTextCtrl_WriteText cdecl alias "wxTextCtrl_WriteText" (byval self as wxTextCtrl ptr, byval text as zstring ptr)
+declare sub wxTextCtrl_AppendText cdecl alias "wxTextCtrl_AppendText" (byval self as wxTextCtrl ptr, byval text as zstring ptr)
 declare function wxTextCtrl_EmulateKeyPress cdecl alias "wxTextCtrl_EmulateKeyPress" (byval self as wxTextCtrl ptr, byval event as wxKeyEvent ptr) as integer
 declare function wxTextCtrl_SetStyle cdecl alias "wxTextCtrl_SetStyle" (byval self as wxTextCtrl ptr, byval start as integer, byval end as integer, byval style as wxTextAttr ptr) as integer
 declare function wxTextCtrl_GetStyle cdecl alias "wxTextCtrl_GetStyle" (byval self as wxTextCtrl ptr, byval position as integer, byval style as wxTextAttr ptr) as integer
@@ -93,7 +93,7 @@ declare function wxTextUrlEvent cdecl alias "wxTextUrlEvent_ctor" (byval id as i
 declare function wxTextUrlEvent_GetURLStart cdecl alias "wxTextUrlEvent_GetURLStart" (byval self as wxTextUrlEvent ptr) as integer
 declare function wxTextUrlEvent_GetURLEnd cdecl alias "wxTextUrlEvent_GetURLEnd" (byval self as wxTextUrlEvent ptr) as integer
 declare function wxTextCtrl cdecl alias "wxTextCtrl_ctor" () as wxTextCtrl ptr
-declare function wxTextCtrl_Create cdecl alias "wxTextCtrl_Create" (byval self as wxTextCtrl ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval value as string, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval validator as wxValidator ptr, byval name as string) as integer
+declare function wxTextCtrl_Create cdecl alias "wxTextCtrl_Create" (byval self as wxTextCtrl ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval value as zstring ptr, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval validator as wxValidator ptr, byval name as zstring ptr) as integer
 declare function wxTextCtrl_Enable cdecl alias "wxTextCtrl_Enable" (byval self as wxTextCtrl ptr, byval enable as integer) as integer
 declare sub wxTextCtrl_OnDropFiles cdecl alias "wxTextCtrl_OnDropFiles" (byval self as wxTextCtrl ptr, byval event as wxDropFilesEvent ptr)
 declare function wxTextCtrl_SetFont cdecl alias "wxTextCtrl_SetFont" (byval self as wxTextCtrl ptr, byval font as wxFont ptr) as integer

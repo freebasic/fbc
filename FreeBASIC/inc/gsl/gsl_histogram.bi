@@ -57,7 +57,7 @@ declare function gsl_histogram_mean cdecl alias "gsl_histogram_mean" (byval h as
 declare function gsl_histogram_sum cdecl alias "gsl_histogram_sum" (byval h as gsl_histogram ptr) as double
 declare function gsl_histogram_fwrite cdecl alias "gsl_histogram_fwrite" (byval stream as FILE ptr, byval h as gsl_histogram ptr) as integer
 declare function gsl_histogram_fread cdecl alias "gsl_histogram_fread" (byval stream as FILE ptr, byval h as gsl_histogram ptr) as integer
-declare function gsl_histogram_fprintf cdecl alias "gsl_histogram_fprintf" (byval stream as FILE ptr, byval h as gsl_histogram ptr, byval range_format as string, byval bin_format as string) as integer
+declare function gsl_histogram_fprintf cdecl alias "gsl_histogram_fprintf" (byval stream as FILE ptr, byval h as gsl_histogram ptr, byval range_format as zstring ptr, byval bin_format as zstring ptr) as integer
 declare function gsl_histogram_fscanf cdecl alias "gsl_histogram_fscanf" (byval stream as FILE ptr, byval h as gsl_histogram ptr) as integer
 declare function gsl_histogram_pdf_alloc cdecl alias "gsl_histogram_pdf_alloc" (byval n as integer) as gsl_histogram_pdf ptr
 declare function gsl_histogram_pdf_init cdecl alias "gsl_histogram_pdf_init" (byval p as gsl_histogram_pdf ptr, byval h as gsl_histogram ptr) as integer

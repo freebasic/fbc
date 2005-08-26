@@ -25,7 +25,7 @@ type _GtkIMContextClass
 	preedit_start as sub cdecl(byval as GtkIMContext ptr)
 	preedit_end as sub cdecl(byval as GtkIMContext ptr)
 	preedit_changed as sub cdecl(byval as GtkIMContext ptr)
-	commit as sub cdecl(byval as GtkIMContext ptr, byval as string)
+	commit as sub cdecl(byval as GtkIMContext ptr, byval as zstring ptr)
 	retrieve_surrounding as function cdecl(byval as GtkIMContext ptr) as gboolean
 	delete_surrounding as function cdecl(byval as GtkIMContext ptr, byval as gint, byval as gint) as gboolean
 	set_client_window as sub cdecl(byval as GtkIMContext ptr, byval as GdkWindow ptr)
@@ -36,7 +36,7 @@ type _GtkIMContextClass
 	reset as sub cdecl(byval as GtkIMContext ptr)
 	set_cursor_location as sub cdecl(byval as GtkIMContext ptr, byval as GdkRectangle ptr)
 	set_use_preedit as sub cdecl(byval as GtkIMContext ptr, byval as gboolean)
-	set_surrounding as sub cdecl(byval as GtkIMContext ptr, byval as string, byval as gint, byval as gint)
+	set_surrounding as sub cdecl(byval as GtkIMContext ptr, byval as zstring ptr, byval as gint, byval as gint)
 	get_surrounding as function cdecl(byval as GtkIMContext ptr, byval as zstring ptr ptr, byval as gint ptr) as gboolean
 	_gtk_reserved1 as sub cdecl()
 	_gtk_reserved2 as sub cdecl()
@@ -55,7 +55,7 @@ declare sub gtk_im_context_focus_out cdecl alias "gtk_im_context_focus_out" (byv
 declare sub gtk_im_context_reset cdecl alias "gtk_im_context_reset" (byval context as GtkIMContext ptr)
 declare sub gtk_im_context_set_cursor_location cdecl alias "gtk_im_context_set_cursor_location" (byval context as GtkIMContext ptr, byval area as GdkRectangle ptr)
 declare sub gtk_im_context_set_use_preedit cdecl alias "gtk_im_context_set_use_preedit" (byval context as GtkIMContext ptr, byval use_preedit as gboolean)
-declare sub gtk_im_context_set_surrounding cdecl alias "gtk_im_context_set_surrounding" (byval context as GtkIMContext ptr, byval text as string, byval len as gint, byval cursor_index as gint)
+declare sub gtk_im_context_set_surrounding cdecl alias "gtk_im_context_set_surrounding" (byval context as GtkIMContext ptr, byval text as zstring ptr, byval len as gint, byval cursor_index as gint)
 declare function gtk_im_context_get_surrounding cdecl alias "gtk_im_context_get_surrounding" (byval context as GtkIMContext ptr, byval text as zstring ptr ptr, byval cursor_index as gint ptr) as gboolean
 declare function gtk_im_context_delete_surrounding cdecl alias "gtk_im_context_delete_surrounding" (byval context as GtkIMContext ptr, byval offset as gint, byval n_chars as gint) as gboolean
 

@@ -18,6 +18,6 @@ declare function xsltParseStylesheetInclude cdecl alias "xsltParseStylesheetIncl
 declare function xsltNextImport cdecl alias "xsltNextImport" (byval style as xsltStylesheetPtr) as xsltStylesheetPtr
 declare function xsltNeedElemSpaceHandling cdecl alias "xsltNeedElemSpaceHandling" (byval ctxt as xsltTransformContextPtr) as integer
 declare function xsltFindElemSpaceHandling cdecl alias "xsltFindElemSpaceHandling" (byval ctxt as xsltTransformContextPtr, byval node as xmlNodePtr) as integer
-declare function xsltFindTemplate cdecl alias "xsltFindTemplate" (byval ctxt as xsltTransformContextPtr, byval name as string, byval nameURI as string) as xsltTemplatePtr
+declare function xsltFindTemplate cdecl alias "xsltFindTemplate" (byval ctxt as xsltTransformContextPtr, byval name as zstring ptr, byval nameURI as zstring ptr) as xsltTemplatePtr
 
 #endif

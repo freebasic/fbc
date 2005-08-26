@@ -14,7 +14,7 @@
 
 declare function wxGauge cdecl alias "wxGauge_ctor" () as wxGauge ptr
 declare sub wxGauge_dtor cdecl alias "wxGauge_dtor" (byval self as wxGauge ptr)
-declare function wxGauge_Create cdecl alias "wxGauge_Create" (byval self as wxGauge ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval range as integer, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval validator as wxValidator ptr, byval name as string) as integer
+declare function wxGauge_Create cdecl alias "wxGauge_Create" (byval self as wxGauge ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval range as integer, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval validator as wxValidator ptr, byval name as zstring ptr) as integer
 declare sub wxGauge_SetRange cdecl alias "wxGauge_SetRange" (byval self as wxGauge ptr, byval range as integer)
 declare function wxGauge_GetRange cdecl alias "wxGauge_GetRange" (byval self as wxGauge ptr) as integer
 declare sub wxGauge_SetValue cdecl alias "wxGauge_SetValue" (byval self as wxGauge ptr, byval pos as integer)

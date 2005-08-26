@@ -11,7 +11,7 @@
 
 #include once "gsl/gsl_types.bi"
 
-declare sub gsl_message cdecl alias "gsl_message" (byval message as string, byval file as string, byval line as integer, byval mask as uinteger)
+declare sub gsl_message cdecl alias "gsl_message" (byval message as zstring ptr, byval file as zstring ptr, byval line as integer, byval mask as uinteger)
 
 #define GSL_MESSAGE_MASK &hffffffffu
 

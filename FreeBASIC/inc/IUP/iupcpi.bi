@@ -36,9 +36,9 @@ declare function iupCpiDefaultCreate cdecl alias "iupCpiDefaultCreate" (byval se
 declare sub iupCpiDefaultDestroy cdecl alias "iupCpiDefaultDestroy" (byval self as Ihandle ptr)
 declare sub iupCpiDefaultMap cdecl alias "iupCpiDefaultMap" (byval self as Ihandle ptr, byval parent as Ihandle ptr)
 declare sub iupCpiDefaultUnmap cdecl alias "iupCpiDefaultUnmap" (byval self as Ihandle ptr)
-declare sub iupCpiDefaultSetAttr cdecl alias "iupCpiDefaultSetAttr" (byval self as Ihandle ptr, byval attr as string, byval value as string)
-declare function iupCpiDefaultGetAttr cdecl alias "iupCpiDefaultGetAttr" (byval self as Ihandle ptr, byval attr as string) as zstring ptr
-declare function iupCpiDefaultGetDefaultAttr cdecl alias "iupCpiDefaultGetDefaultAttr" (byval self as Ihandle ptr, byval attr as string) as zstring ptr
+declare sub iupCpiDefaultSetAttr cdecl alias "iupCpiDefaultSetAttr" (byval self as Ihandle ptr, byval attr as zstring ptr, byval value as zstring ptr)
+declare function iupCpiDefaultGetAttr cdecl alias "iupCpiDefaultGetAttr" (byval self as Ihandle ptr, byval attr as zstring ptr) as zstring ptr
+declare function iupCpiDefaultGetDefaultAttr cdecl alias "iupCpiDefaultGetDefaultAttr" (byval self as Ihandle ptr, byval attr as zstring ptr) as zstring ptr
 declare function iupCpiSetNaturalSize cdecl alias "iupCpiSetNaturalSize" (byval self as Ihandle ptr) as integer
 declare sub iupCpiSetCurrentSize cdecl alias "iupCpiSetCurrentSize" (byval self as Ihandle ptr, byval w as integer, byval h as integer)
 declare function iupCpiGetSize cdecl alias "iupCpiGetSize" (byval self as Ihandle ptr, byval w as integer ptr, byval h as integer ptr) as integer
@@ -46,20 +46,20 @@ declare sub iupCpiSetPosition cdecl alias "iupCpiSetPosition" (byval self as Iha
 declare sub iupCpiDestroy cdecl alias "iupCpiDestroy" (byval self as Ihandle ptr)
 declare sub iupCpiMap cdecl alias "iupCpiMap" (byval self as Ihandle ptr, byval parent as Ihandle ptr)
 declare sub iupCpiUnmap cdecl alias "iupCpiUnmap" (byval self as Ihandle ptr)
-declare sub iupCpiSetAttribute cdecl alias "iupCpiSetAttribute" (byval self as Ihandle ptr, byval attr as string, byval value as string)
-declare function iupCpiGetAttribute cdecl alias "iupCpiGetAttribute" (byval self as Ihandle ptr, byval attr as string) as zstring ptr
-declare function iupCpiGetDefaultAttr cdecl alias "iupCpiGetDefaultAttr" (byval self as Ihandle ptr, byval attr as string) as zstring ptr
+declare sub iupCpiSetAttribute cdecl alias "iupCpiSetAttribute" (byval self as Ihandle ptr, byval attr as zstring ptr, byval value as zstring ptr)
+declare function iupCpiGetAttribute cdecl alias "iupCpiGetAttribute" (byval self as Ihandle ptr, byval attr as zstring ptr) as zstring ptr
+declare function iupCpiGetDefaultAttr cdecl alias "iupCpiGetDefaultAttr" (byval self as Ihandle ptr, byval attr as zstring ptr) as zstring ptr
 declare function iupCpiPopup cdecl alias "iupCpiPopup" (byval self as Ihandle ptr, byval x as integer, byval y as integer) as integer
 declare function iupCpiCreate cdecl alias "iupCpiCreate" (byval ic as Iclass ptr, byval params as Ihandle ptr ptr) as Ihandle ptr
 declare sub iupCpiFinish cdecl alias "iupCpiFinish" ()
 declare sub iupCpiInit cdecl alias "iupCpiInit" ()
 declare function iupCpiGetClassName cdecl alias "iupCpiGetClassName" (byval ic as Iclass ptr) as zstring ptr
-declare function iupCpiGetClass cdecl alias "iupCpiGetClass" (byval name as string) as Iclass ptr
+declare function iupCpiGetClass cdecl alias "iupCpiGetClass" (byval name as zstring ptr) as Iclass ptr
 declare function iupCpiGetClassFormat cdecl alias "iupCpiGetClassFormat" (byval ic as Iclass ptr) as zstring ptr
-declare function iupCpiGetClassMethod cdecl alias "iupCpiGetClassMethod" (byval ic as Iclass ptr, byval method as string) as Imethod
-declare function iupCpiSetClassMethod cdecl alias "iupCpiSetClassMethod" (byval ic as Iclass ptr, byval method as string, byval func as Imethod) as integer
-declare function iupCpiCreateNewClass cdecl alias "iupCpiCreateNewClass" (byval name as string, byval format as string) as Iclass ptr
+declare function iupCpiGetClassMethod cdecl alias "iupCpiGetClassMethod" (byval ic as Iclass ptr, byval method as zstring ptr) as Imethod
+declare function iupCpiSetClassMethod cdecl alias "iupCpiSetClassMethod" (byval ic as Iclass ptr, byval method as zstring ptr, byval func as Imethod) as integer
+declare function iupCpiCreateNewClass cdecl alias "iupCpiCreateNewClass" (byval name as zstring ptr, byval format as zstring ptr) as Iclass ptr
 declare sub iupCpiFreeClass cdecl alias "iupCpiFreeClass" (byval a as Iclass ptr)
-declare function iupstricmp cdecl alias "iupstricmp" (byval s1 as string, byval s2 as string) as integer
+declare function iupstricmp cdecl alias "iupstricmp" (byval s1 as zstring ptr, byval s2 as zstring ptr) as integer
 
 #endif

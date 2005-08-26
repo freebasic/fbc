@@ -55,7 +55,7 @@ end type
 
 declare function FCGX_IsCGI cdecl alias "FCGX_IsCGI" () as integer
 declare function FCGX_Init cdecl alias "FCGX_Init" () as integer
-declare function FCGX_OpenSocket cdecl alias "FCGX_OpenSocket" (byval path as string, byval backlog as integer) as integer
+declare function FCGX_OpenSocket cdecl alias "FCGX_OpenSocket" (byval path as zstring ptr, byval backlog as integer) as integer
 declare function FCGX_InitRequest cdecl alias "FCGX_InitRequest" (byval request as FCGX_Request ptr, byval sock as integer, byval flags as integer) as integer
 declare function FCGX_Accept_r cdecl alias "FCGX_Accept_r" (byval request as FCGX_Request ptr) as integer
 declare sub FCGX_Finish_r cdecl alias "FCGX_Finish_r" (byval request as FCGX_Request ptr)
@@ -64,17 +64,17 @@ declare function FCGX_Accept cdecl alias "FCGX_Accept" (byval in as FCGX_Stream 
 declare sub FCGX_Finish cdecl alias "FCGX_Finish" ()
 declare function FCGX_StartFilterData cdecl alias "FCGX_StartFilterData" (byval stream as FCGX_Stream ptr) as integer
 declare sub FCGX_SetExitStatus cdecl alias "FCGX_SetExitStatus" (byval status as integer, byval stream as FCGX_Stream ptr)
-declare function FCGX_GetParam cdecl alias "FCGX_GetParam" (byval name as string, byval envp as FCGX_ParamArray) as zstring ptr
+declare function FCGX_GetParam cdecl alias "FCGX_GetParam" (byval name as zstring ptr, byval envp as FCGX_ParamArray) as zstring ptr
 declare function FCGX_GetChar cdecl alias "FCGX_GetChar" (byval stream as FCGX_Stream ptr) as integer
 declare function FCGX_UnGetChar cdecl alias "FCGX_UnGetChar" (byval c as integer, byval stream as FCGX_Stream ptr) as integer
-declare function FCGX_GetStr cdecl alias "FCGX_GetStr" (byval str as string, byval n as integer, byval stream as FCGX_Stream ptr) as integer
-declare function FCGX_GetLine cdecl alias "FCGX_GetLine" (byval str as string, byval n as integer, byval stream as FCGX_Stream ptr) as zstring ptr
+declare function FCGX_GetStr cdecl alias "FCGX_GetStr" (byval str as zstring ptr, byval n as integer, byval stream as FCGX_Stream ptr) as integer
+declare function FCGX_GetLine cdecl alias "FCGX_GetLine" (byval str as zstring ptr, byval n as integer, byval stream as FCGX_Stream ptr) as zstring ptr
 declare function FCGX_HasSeenEOF cdecl alias "FCGX_HasSeenEOF" (byval stream as FCGX_Stream ptr) as integer
 declare function FCGX_PutChar cdecl alias "FCGX_PutChar" (byval c as integer, byval stream as FCGX_Stream ptr) as integer
-declare function FCGX_PutStr cdecl alias "FCGX_PutStr" (byval str as string, byval n as integer, byval stream as FCGX_Stream ptr) as integer
-declare function FCGX_PutS cdecl alias "FCGX_PutS" (byval str as string, byval stream as FCGX_Stream ptr) as integer
-declare function FCGX_FPrintF cdecl alias "FCGX_FPrintF" (byval stream as FCGX_Stream ptr, byval format as string, ...) as integer
-''''''' declare function FCGX_VFPrintF cdecl alias "FCGX_VFPrintF" (byval stream as FCGX_Stream ptr, byval format as string, byval arg as va_list) as integer
+declare function FCGX_PutStr cdecl alias "FCGX_PutStr" (byval str as zstring ptr, byval n as integer, byval stream as FCGX_Stream ptr) as integer
+declare function FCGX_PutS cdecl alias "FCGX_PutS" (byval str as zstring ptr, byval stream as FCGX_Stream ptr) as integer
+declare function FCGX_FPrintF cdecl alias "FCGX_FPrintF" (byval stream as FCGX_Stream ptr, byval format as zstring ptr, ...) as integer
+''''''' declare function FCGX_VFPrintF cdecl alias "FCGX_VFPrintF" (byval stream as FCGX_Stream ptr, byval format as zstring ptr, byval arg as va_list) as integer
 declare function FCGX_FFlush cdecl alias "FCGX_FFlush" (byval stream as FCGX_Stream ptr) as integer
 declare function FCGX_FClose cdecl alias "FCGX_FClose" (byval stream as FCGX_Stream ptr) as integer
 declare function FCGX_GetError cdecl alias "FCGX_GetError" (byval stream as FCGX_Stream ptr) as integer

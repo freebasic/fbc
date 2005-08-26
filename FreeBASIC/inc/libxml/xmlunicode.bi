@@ -139,7 +139,7 @@ declare function xmlUCSIsVariationSelectorsSupplement cdecl alias "xmlUCSIsVaria
 declare function xmlUCSIsYiRadicals cdecl alias "xmlUCSIsYiRadicals" (byval code as integer) as integer
 declare function xmlUCSIsYiSyllables cdecl alias "xmlUCSIsYiSyllables" (byval code as integer) as integer
 declare function xmlUCSIsYijingHexagramSymbols cdecl alias "xmlUCSIsYijingHexagramSymbols" (byval code as integer) as integer
-declare function xmlUCSIsBlock cdecl alias "xmlUCSIsBlock" (byval code as integer, byval block as string) as integer
+declare function xmlUCSIsBlock cdecl alias "xmlUCSIsBlock" (byval code as integer, byval block as zstring ptr) as integer
 declare function xmlUCSIsCatC cdecl alias "xmlUCSIsCatC" (byval code as integer) as integer
 declare function xmlUCSIsCatCc cdecl alias "xmlUCSIsCatCc" (byval code as integer) as integer
 declare function xmlUCSIsCatCf cdecl alias "xmlUCSIsCatCf" (byval code as integer) as integer
@@ -176,6 +176,6 @@ declare function xmlUCSIsCatZ cdecl alias "xmlUCSIsCatZ" (byval code as integer)
 declare function xmlUCSIsCatZl cdecl alias "xmlUCSIsCatZl" (byval code as integer) as integer
 declare function xmlUCSIsCatZp cdecl alias "xmlUCSIsCatZp" (byval code as integer) as integer
 declare function xmlUCSIsCatZs cdecl alias "xmlUCSIsCatZs" (byval code as integer) as integer
-declare function xmlUCSIsCat cdecl alias "xmlUCSIsCat" (byval code as integer, byval cat as string) as integer
+declare function xmlUCSIsCat cdecl alias "xmlUCSIsCat" (byval code as integer, byval cat as zstring ptr) as integer
 
 #endif

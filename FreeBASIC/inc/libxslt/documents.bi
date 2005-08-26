@@ -14,10 +14,10 @@
 #include once "libxml/tree.bi"
 
 declare function xsltNewDocument cdecl alias "xsltNewDocument" (byval ctxt as xsltTransformContextPtr, byval doc as xmlDocPtr) as xsltDocumentPtr
-declare function xsltLoadDocument cdecl alias "xsltLoadDocument" (byval ctxt as xsltTransformContextPtr, byval URI as string) as xsltDocumentPtr
+declare function xsltLoadDocument cdecl alias "xsltLoadDocument" (byval ctxt as xsltTransformContextPtr, byval URI as zstring ptr) as xsltDocumentPtr
 declare function xsltFindDocument cdecl alias "xsltFindDocument" (byval ctxt as xsltTransformContextPtr, byval doc as xmlDocPtr) as xsltDocumentPtr
 declare sub xsltFreeDocuments cdecl alias "xsltFreeDocuments" (byval ctxt as xsltTransformContextPtr)
-declare function xsltLoadStyleDocument cdecl alias "xsltLoadStyleDocument" (byval style as xsltStylesheetPtr, byval URI as string) as xsltDocumentPtr
+declare function xsltLoadStyleDocument cdecl alias "xsltLoadStyleDocument" (byval style as xsltStylesheetPtr, byval URI as zstring ptr) as xsltDocumentPtr
 declare function xsltNewStyleDocument cdecl alias "xsltNewStyleDocument" (byval style as xsltStylesheetPtr, byval doc as xmlDocPtr) as xsltDocumentPtr
 declare sub xsltFreeStyleDocuments cdecl alias "xsltFreeStyleDocuments" (byval style as xsltStylesheetPtr)
 

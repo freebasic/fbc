@@ -18,7 +18,7 @@
 #define ICTL_CIRCULAR "CIRCULAR"
 #define ICTL_UNIT "UNIT"
 
-declare function IupDial cdecl alias "IupDial" (byval as string) as Ihandle ptr
+declare function IupDial cdecl alias "IupDial" (byval as zstring ptr) as Ihandle ptr
 declare sub IupDialOpen cdecl alias "IupDialOpen" ()
 
 #endif

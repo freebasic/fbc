@@ -101,8 +101,8 @@ Declare Function initialise_joystick CDecl Alias "initialise_joystick" () As Int
 
 Declare Function poll_joystick CDecl Alias "poll_joystick" () As Integer
 
-Declare Function save_joystick_data CDecl Alias "save_joystick_data" (ByVal filename As String) As Integer
-Declare Function load_joystick_data CDecl Alias "load_joystick_data" (ByVal filename As String) As Integer
+Declare Function save_joystick_data CDecl Alias "save_joystick_data" (byval filename as zstring ptr) As Integer
+Declare Function load_joystick_data CDecl Alias "load_joystick_data" (byval filename as zstring ptr) As Integer
 
 Declare Function calibrate_joystick_name CDecl Alias "calibrate_joystick_name" (ByVal n As Integer) as zstring ptr
 Declare Function calibrate_joystick CDecl Alias "calibrate_joystick" (ByVal n As Integer) As Integer

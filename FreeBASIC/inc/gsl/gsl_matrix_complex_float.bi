@@ -73,7 +73,7 @@ declare sub gsl_matrix_complex_float_set_all cdecl alias "gsl_matrix_complex_flo
 declare function gsl_matrix_complex_float_fread cdecl alias "gsl_matrix_complex_float_fread" (byval stream as FILE ptr, byval m as gsl_matrix_complex_float ptr) as integer
 declare function gsl_matrix_complex_float_fwrite cdecl alias "gsl_matrix_complex_float_fwrite" (byval stream as FILE ptr, byval m as gsl_matrix_complex_float ptr) as integer
 declare function gsl_matrix_complex_float_fscanf cdecl alias "gsl_matrix_complex_float_fscanf" (byval stream as FILE ptr, byval m as gsl_matrix_complex_float ptr) as integer
-declare function gsl_matrix_complex_float_fprintf cdecl alias "gsl_matrix_complex_float_fprintf" (byval stream as FILE ptr, byval m as gsl_matrix_complex_float ptr, byval format as string) as integer
+declare function gsl_matrix_complex_float_fprintf cdecl alias "gsl_matrix_complex_float_fprintf" (byval stream as FILE ptr, byval m as gsl_matrix_complex_float ptr, byval format as zstring ptr) as integer
 declare function gsl_matrix_complex_float_memcpy cdecl alias "gsl_matrix_complex_float_memcpy" (byval dest as gsl_matrix_complex_float ptr, byval src as gsl_matrix_complex_float ptr) as integer
 declare function gsl_matrix_complex_float_swap cdecl alias "gsl_matrix_complex_float_swap" (byval m1 as gsl_matrix_complex_float ptr, byval m2 as gsl_matrix_complex_float ptr) as integer
 declare function gsl_matrix_complex_float_swap_rows cdecl alias "gsl_matrix_complex_float_swap_rows" (byval m as gsl_matrix_complex_float ptr, byval i as integer, byval j as integer) as integer

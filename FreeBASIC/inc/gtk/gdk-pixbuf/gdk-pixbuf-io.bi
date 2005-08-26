@@ -26,6 +26,6 @@ declare function gdk_pixbuf_format_is_scalable cdecl alias "gdk_pixbuf_format_is
 declare function gdk_pixbuf_format_is_disabled cdecl alias "gdk_pixbuf_format_is_disabled" (byval format as GdkPixbufFormat ptr) as gboolean
 declare sub gdk_pixbuf_format_set_disabled cdecl alias "gdk_pixbuf_format_set_disabled" (byval format as GdkPixbufFormat ptr, byval disabled as gboolean)
 declare function gdk_pixbuf_format_get_license cdecl alias "gdk_pixbuf_format_get_license" (byval format as GdkPixbufFormat ptr) as zstring ptr
-declare function gdk_pixbuf_get_file_info cdecl alias "gdk_pixbuf_get_file_info" (byval filename as string, byval width as gint ptr, byval height as gint ptr) as GdkPixbufFormat ptr
+declare function gdk_pixbuf_get_file_info cdecl alias "gdk_pixbuf_get_file_info" (byval filename as zstring ptr, byval width as gint ptr, byval height as gint ptr) as GdkPixbufFormat ptr
 
 #endif

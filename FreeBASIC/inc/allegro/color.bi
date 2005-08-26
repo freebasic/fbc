@@ -83,7 +83,7 @@ Declare Sub select_palette CDecl Alias "select_palette" (ByVal p As RGB Ptr)
 Declare Sub unselect_palette CDecl Alias "unselect_palette" ()
 
 Declare Sub generate_332_palette CDecl Alias "generate_332_palette" (ByVal pal As RGB ptr)
-Declare Function generate_optimized_palette CDecl Alias "generate_optimized_palette" (ByVal bmp As BITMAP Ptr, ByVal pal As RGB ptr, ByVal rsvd As String) As Integer
+Declare Function generate_optimized_palette CDecl Alias "generate_optimized_palette" (ByVal bmp As BITMAP Ptr, ByVal pal As RGB ptr, byval rsvd as zstring ptr) As Integer
 
 Declare Sub create_rgb_table CDecl Alias "create_rgb_table" (ByVal table As RGB_MAP Ptr, ByVal pal As RGB Ptr, ByVal callback As Sub(ByVal ipos As Integer))
 Declare Sub create_light_table CDecl Alias "create_light_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As PALETTE, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal callback As Sub CDecl(ByVal _pos As Integer))

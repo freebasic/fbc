@@ -34,10 +34,10 @@ declare function wxPrintPreview_Ok cdecl alias "wxPrintPreview_Ok" (byval self a
 declare sub wxPrintPreview_SetOk cdecl alias "wxPrintPreview_SetOk" (byval self as wxPrintPreview ptr, byval ok as integer)
 declare function wxPrintPreview_Print cdecl alias "wxPrintPreview_Print" (byval self as wxPrintPreview ptr, byval interactive as integer) as integer
 declare sub wxPrintPreview_DetermineScaling cdecl alias "wxPrintPreview_DetermineScaling" (byval self as wxPrintPreview ptr)
-declare function wxPreviewFrame cdecl alias "wxPreviewFrame_ctor" (byval preview as wxPrintPreviewBase ptr, byval parent as wxFrame ptr, byval title as string, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as wxPreviewFrame ptr
+declare function wxPreviewFrame cdecl alias "wxPreviewFrame_ctor" (byval preview as wxPrintPreviewBase ptr, byval parent as wxFrame ptr, byval title as zstring ptr, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as zstring ptr) as wxPreviewFrame ptr
 declare sub wxPreviewFrame_Initialize cdecl alias "wxPreviewFrame_Initialize" (byval self as wxPreviewFrame ptr)
 declare sub wxPreviewFrame_CreateCanvas cdecl alias "wxPreviewFrame_CreateCanvas" (byval self as wxPreviewFrame ptr)
 declare sub wxPreviewFrame_CreateControlBar cdecl alias "wxPreviewFrame_CreateControlBar" (byval self as wxPreviewFrame ptr)
-declare function wxPreviewCanvas cdecl alias "wxPreviewCanvas_ctor" (byval preview as wxPrintPreviewBase ptr, byval parent as wxWindow ptr, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as wxPreviewCanvas ptr
+declare function wxPreviewCanvas cdecl alias "wxPreviewCanvas_ctor" (byval preview as wxPrintPreviewBase ptr, byval parent as wxWindow ptr, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as zstring ptr) as wxPreviewCanvas ptr
 
 #endif

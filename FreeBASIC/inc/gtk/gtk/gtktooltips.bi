@@ -50,7 +50,7 @@ declare function gtk_tooltips_new cdecl alias "gtk_tooltips_new" () as GtkToolti
 declare sub gtk_tooltips_enable cdecl alias "gtk_tooltips_enable" (byval tooltips as GtkTooltips ptr)
 declare sub gtk_tooltips_disable cdecl alias "gtk_tooltips_disable" (byval tooltips as GtkTooltips ptr)
 declare sub gtk_tooltips_set_delay cdecl alias "gtk_tooltips_set_delay" (byval tooltips as GtkTooltips ptr, byval delay as guint)
-declare sub gtk_tooltips_set_tip cdecl alias "gtk_tooltips_set_tip" (byval tooltips as GtkTooltips ptr, byval widget as GtkWidget ptr, byval tip_text as string, byval tip_private as string)
+declare sub gtk_tooltips_set_tip cdecl alias "gtk_tooltips_set_tip" (byval tooltips as GtkTooltips ptr, byval widget as GtkWidget ptr, byval tip_text as zstring ptr, byval tip_private as zstring ptr)
 declare function gtk_tooltips_data_get cdecl alias "gtk_tooltips_data_get" (byval widget as GtkWidget ptr) as GtkTooltipsData ptr
 declare sub gtk_tooltips_force_window cdecl alias "gtk_tooltips_force_window" (byval tooltips as GtkTooltips ptr)
 declare sub _gtk_tooltips_toggle_keyboard_mode cdecl alias "_gtk_tooltips_toggle_keyboard_mode" (byval widget as GtkWidget ptr)

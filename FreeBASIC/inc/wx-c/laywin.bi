@@ -13,7 +13,7 @@
 
 
 declare function wxSashLayoutWindow cdecl alias "wxSashLayoutWindow_ctor" () as wxSashLayoutWindow ptr
-declare function wxSashLayoutWindow_Create cdecl alias "wxSashLayoutWindow_Create" (byval self as wxSashLayoutWindow ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as integer
+declare function wxSashLayoutWindow_Create cdecl alias "wxSashLayoutWindow_Create" (byval self as wxSashLayoutWindow ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as zstring ptr) as integer
 declare function wxSashLayoutWindow_GetAlignment cdecl alias "wxSashLayoutWindow_GetAlignment" (byval self as wxSashLayoutWindow ptr) as wxLayoutAlignment
 declare sub wxSashLayoutWindow_SetAlignment cdecl alias "wxSashLayoutWindow_SetAlignment" (byval self as wxSashLayoutWindow ptr, byval align as wxLayoutAlignment)
 declare function wxSashLayoutWindow_GetOrientation cdecl alias "wxSashLayoutWindow_GetOrientation" (byval self as wxSashLayoutWindow ptr) as wxLayoutOrientation

@@ -20,7 +20,7 @@ end enum
 
 type gdsl_perm_write_func_t as sub cdecl(byval as ulong, byval as FILE ptr, byval as gdsl_perm_position_t, byval as any ptr)
 
-declare function gdsl_perm_alloc cdecl alias "gdsl_perm_alloc" (byval NAME as string, byval N as ulong) as gdsl_perm_t
+declare function gdsl_perm_alloc cdecl alias "gdsl_perm_alloc" (byval NAME as zstring ptr, byval N as ulong) as gdsl_perm_t
 declare sub gdsl_perm_free cdecl alias "gdsl_perm_free" (byval P as gdsl_perm_t)
 declare function gdsl_perm_copy cdecl alias "gdsl_perm_copy" (byval P as gdsl_perm_t) as gdsl_perm_t
 declare function gdsl_perm_get_name cdecl alias "gdsl_perm_get_name" (byval P as gdsl_perm_t) as zstring ptr
@@ -30,7 +30,7 @@ declare function gdsl_perm_get_elements_array cdecl alias "gdsl_perm_get_element
 declare function gdsl_perm_linear_inversions_count cdecl alias "gdsl_perm_linear_inversions_count" (byval P as gdsl_perm_t) as ulong
 declare function gdsl_perm_linear_cycles_count cdecl alias "gdsl_perm_linear_cycles_count" (byval P as gdsl_perm_t) as ulong
 declare function gdsl_perm_canonical_cycles_count cdecl alias "gdsl_perm_canonical_cycles_count" (byval P as gdsl_perm_t) as ulong
-declare function gdsl_perm_set_name cdecl alias "gdsl_perm_set_name" (byval P as gdsl_perm_t, byval NEW_NAME as string) as gdsl_perm_t
+declare function gdsl_perm_set_name cdecl alias "gdsl_perm_set_name" (byval P as gdsl_perm_t, byval NEW_NAME as zstring ptr) as gdsl_perm_t
 declare function gdsl_perm_linear_next cdecl alias "gdsl_perm_linear_next" (byval P as gdsl_perm_t) as gdsl_perm_t
 declare function gdsl_perm_linear_prev cdecl alias "gdsl_perm_linear_prev" (byval P as gdsl_perm_t) as gdsl_perm_t
 declare function gdsl_perm_set_elements_array cdecl alias "gdsl_perm_set_elements_array" (byval P as gdsl_perm_t, byval ARRAY as ulong ptr) as gdsl_perm_t

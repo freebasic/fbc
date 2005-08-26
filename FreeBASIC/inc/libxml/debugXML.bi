@@ -13,7 +13,7 @@
 #include once "libxml/tree.bi"
 #include once "libxml/xpath.bi"
 
-declare sub xmlDebugDumpString cdecl alias "xmlDebugDumpString" (byval output as FILE ptr, byval str as string)
+declare sub xmlDebugDumpString cdecl alias "xmlDebugDumpString" (byval output as FILE ptr, byval str as zstring ptr)
 declare sub xmlDebugDumpAttr cdecl alias "xmlDebugDumpAttr" (byval output as FILE ptr, byval attr as xmlAttrPtr, byval depth as integer)
 declare sub xmlDebugDumpAttrList cdecl alias "xmlDebugDumpAttrList" (byval output as FILE ptr, byval attr as xmlAttrPtr, byval depth as integer)
 declare sub xmlDebugDumpOneNode cdecl alias "xmlDebugDumpOneNode" (byval output as FILE ptr, byval node as xmlNodePtr, byval depth as integer)
@@ -44,19 +44,19 @@ end type
 
 type xmlShellCmd as integer ptr
 
-declare sub xmlShellPrintXPathError cdecl alias "xmlShellPrintXPathError" (byval errorType as integer, byval arg as string)
+declare sub xmlShellPrintXPathError cdecl alias "xmlShellPrintXPathError" (byval errorType as integer, byval arg as zstring ptr)
 declare sub xmlShellPrintXPathResult cdecl alias "xmlShellPrintXPathResult" (byval list as xmlXPathObjectPtr)
-declare function xmlShellList cdecl alias "xmlShellList" (byval ctxt as xmlShellCtxtPtr, byval arg as string, byval node as xmlNodePtr, byval node2 as xmlNodePtr) as integer
-declare function xmlShellBase cdecl alias "xmlShellBase" (byval ctxt as xmlShellCtxtPtr, byval arg as string, byval node as xmlNodePtr, byval node2 as xmlNodePtr) as integer
-declare function xmlShellDir cdecl alias "xmlShellDir" (byval ctxt as xmlShellCtxtPtr, byval arg as string, byval node as xmlNodePtr, byval node2 as xmlNodePtr) as integer
-declare function xmlShellLoad cdecl alias "xmlShellLoad" (byval ctxt as xmlShellCtxtPtr, byval filename as string, byval node as xmlNodePtr, byval node2 as xmlNodePtr) as integer
+declare function xmlShellList cdecl alias "xmlShellList" (byval ctxt as xmlShellCtxtPtr, byval arg as zstring ptr, byval node as xmlNodePtr, byval node2 as xmlNodePtr) as integer
+declare function xmlShellBase cdecl alias "xmlShellBase" (byval ctxt as xmlShellCtxtPtr, byval arg as zstring ptr, byval node as xmlNodePtr, byval node2 as xmlNodePtr) as integer
+declare function xmlShellDir cdecl alias "xmlShellDir" (byval ctxt as xmlShellCtxtPtr, byval arg as zstring ptr, byval node as xmlNodePtr, byval node2 as xmlNodePtr) as integer
+declare function xmlShellLoad cdecl alias "xmlShellLoad" (byval ctxt as xmlShellCtxtPtr, byval filename as zstring ptr, byval node as xmlNodePtr, byval node2 as xmlNodePtr) as integer
 declare sub xmlShellPrintNode cdecl alias "xmlShellPrintNode" (byval node as xmlNodePtr)
-declare function xmlShellCat cdecl alias "xmlShellCat" (byval ctxt as xmlShellCtxtPtr, byval arg as string, byval node as xmlNodePtr, byval node2 as xmlNodePtr) as integer
-declare function xmlShellWrite cdecl alias "xmlShellWrite" (byval ctxt as xmlShellCtxtPtr, byval filename as string, byval node as xmlNodePtr, byval node2 as xmlNodePtr) as integer
-declare function xmlShellSave cdecl alias "xmlShellSave" (byval ctxt as xmlShellCtxtPtr, byval filename as string, byval node as xmlNodePtr, byval node2 as xmlNodePtr) as integer
-declare function xmlShellValidate cdecl alias "xmlShellValidate" (byval ctxt as xmlShellCtxtPtr, byval dtd as string, byval node as xmlNodePtr, byval node2 as xmlNodePtr) as integer
-declare function xmlShellDu cdecl alias "xmlShellDu" (byval ctxt as xmlShellCtxtPtr, byval arg as string, byval tree as xmlNodePtr, byval node2 as xmlNodePtr) as integer
-declare function xmlShellPwd cdecl alias "xmlShellPwd" (byval ctxt as xmlShellCtxtPtr, byval buffer as string, byval node as xmlNodePtr, byval node2 as xmlNodePtr) as integer
-declare sub xmlShell cdecl alias "xmlShell" (byval doc as xmlDocPtr, byval filename as string, byval input as xmlShellReadlineFunc, byval output as FILE ptr)
+declare function xmlShellCat cdecl alias "xmlShellCat" (byval ctxt as xmlShellCtxtPtr, byval arg as zstring ptr, byval node as xmlNodePtr, byval node2 as xmlNodePtr) as integer
+declare function xmlShellWrite cdecl alias "xmlShellWrite" (byval ctxt as xmlShellCtxtPtr, byval filename as zstring ptr, byval node as xmlNodePtr, byval node2 as xmlNodePtr) as integer
+declare function xmlShellSave cdecl alias "xmlShellSave" (byval ctxt as xmlShellCtxtPtr, byval filename as zstring ptr, byval node as xmlNodePtr, byval node2 as xmlNodePtr) as integer
+declare function xmlShellValidate cdecl alias "xmlShellValidate" (byval ctxt as xmlShellCtxtPtr, byval dtd as zstring ptr, byval node as xmlNodePtr, byval node2 as xmlNodePtr) as integer
+declare function xmlShellDu cdecl alias "xmlShellDu" (byval ctxt as xmlShellCtxtPtr, byval arg as zstring ptr, byval tree as xmlNodePtr, byval node2 as xmlNodePtr) as integer
+declare function xmlShellPwd cdecl alias "xmlShellPwd" (byval ctxt as xmlShellCtxtPtr, byval buffer as zstring ptr, byval node as xmlNodePtr, byval node2 as xmlNodePtr) as integer
+declare sub xmlShell cdecl alias "xmlShell" (byval doc as xmlDocPtr, byval filename as zstring ptr, byval input as xmlShellReadlineFunc, byval output as FILE ptr)
 
 #endif

@@ -31,7 +31,7 @@ end type
 
 declare function gtk_toggle_tool_button_get_type cdecl alias "gtk_toggle_tool_button_get_type" () as GType
 declare function gtk_toggle_tool_button_new cdecl alias "gtk_toggle_tool_button_new" () as GtkToolItem ptr
-declare function gtk_toggle_tool_button_new_from_stock cdecl alias "gtk_toggle_tool_button_new_from_stock" (byval stock_id as string) as GtkToolItem ptr
+declare function gtk_toggle_tool_button_new_from_stock cdecl alias "gtk_toggle_tool_button_new_from_stock" (byval stock_id as zstring ptr) as GtkToolItem ptr
 declare sub gtk_toggle_tool_button_set_active cdecl alias "gtk_toggle_tool_button_set_active" (byval button as GtkToggleToolButton ptr, byval is_active as gboolean)
 declare function gtk_toggle_tool_button_get_active cdecl alias "gtk_toggle_tool_button_get_active" (byval button as GtkToggleToolButton ptr) as gboolean
 

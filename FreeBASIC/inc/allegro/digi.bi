@@ -125,9 +125,9 @@ Extern Import digi_input_card Alias "digi_input_card" As Integer
 
 Declare Function detect_digi_driver CDecl Alias "detect_digi_driver" (ByVal driver_id As Integer) As Integer
 
-Declare Function load_sample CDecl Alias "load_sample" (ByVal filename As String) As SAMPLE Ptr
-Declare Function load_wav CDecl Alias "load_wav" (ByVal filename As String) As SAMPLE Ptr
-Declare Function load_voc CDecl Alias "load_voc" (BYVal filename As String) As SAMPLE Ptr
+Declare Function load_sample CDecl Alias "load_sample" (byval filename as zstring ptr) As SAMPLE Ptr
+Declare Function load_wav CDecl Alias "load_wav" (byval filename as zstring ptr) As SAMPLE Ptr
+Declare Function load_voc CDecl Alias "load_voc" (byval filename as zstring ptr) As SAMPLE Ptr
 Declare Function create_sample CDecl Alias "create_sample" (ByVal bits As Integer, ByVal stereo As Integer, ByVal freq As Integer, ByVal iLen As Integer) As SAMPLE Ptr
 Declare Sub destroy_sample CDecl Alias "destroy_sample" (ByVal spl As SAMPLE Ptr)
 

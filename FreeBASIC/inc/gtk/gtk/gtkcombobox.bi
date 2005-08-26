@@ -53,9 +53,9 @@ declare function gtk_combo_box_get_model cdecl alias "gtk_combo_box_get_model" (
 declare function gtk_combo_box_get_row_separator_func cdecl alias "gtk_combo_box_get_row_separator_func" (byval combo_box as GtkComboBox ptr) as GtkTreeViewRowSeparatorFunc
 declare sub gtk_combo_box_set_row_separator_func cdecl alias "gtk_combo_box_set_row_separator_func" (byval combo_box as GtkComboBox ptr, byval func as GtkTreeViewRowSeparatorFunc, byval data as gpointer, byval destroy as GtkDestroyNotify)
 declare function gtk_combo_box_new_text cdecl alias "gtk_combo_box_new_text" () as GtkWidget ptr
-declare sub gtk_combo_box_append_text cdecl alias "gtk_combo_box_append_text" (byval combo_box as GtkComboBox ptr, byval text as string)
-declare sub gtk_combo_box_insert_text cdecl alias "gtk_combo_box_insert_text" (byval combo_box as GtkComboBox ptr, byval position as gint, byval text as string)
-declare sub gtk_combo_box_prepend_text cdecl alias "gtk_combo_box_prepend_text" (byval combo_box as GtkComboBox ptr, byval text as string)
+declare sub gtk_combo_box_append_text cdecl alias "gtk_combo_box_append_text" (byval combo_box as GtkComboBox ptr, byval text as zstring ptr)
+declare sub gtk_combo_box_insert_text cdecl alias "gtk_combo_box_insert_text" (byval combo_box as GtkComboBox ptr, byval position as gint, byval text as zstring ptr)
+declare sub gtk_combo_box_prepend_text cdecl alias "gtk_combo_box_prepend_text" (byval combo_box as GtkComboBox ptr, byval text as zstring ptr)
 declare sub gtk_combo_box_remove_text cdecl alias "gtk_combo_box_remove_text" (byval combo_box as GtkComboBox ptr, byval position as gint)
 declare function gtk_combo_box_get_active_text cdecl alias "gtk_combo_box_get_active_text" (byval combo_box as GtkComboBox ptr) as zstring ptr
 declare sub gtk_combo_box_popup cdecl alias "gtk_combo_box_popup" (byval combo_box as GtkComboBox ptr)

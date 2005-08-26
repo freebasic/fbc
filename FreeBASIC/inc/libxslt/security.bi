@@ -23,7 +23,7 @@ enum xsltSecurityOption
 	XSLT_SECPREF_WRITE_NETWORK
 end enum
 
-type xsltSecurityCheck as function cdecl(byval as xsltSecurityPrefsPtr, byval as xsltTransformContextPtr, byval as string) as integer
+type xsltSecurityCheck as function cdecl(byval as xsltSecurityPrefsPtr, byval as xsltTransformContextPtr, byval as zstring ptr) as integer
 
 declare function xsltNewSecurityPrefs cdecl alias "xsltNewSecurityPrefs" () as xsltSecurityPrefsPtr
 declare sub xsltFreeSecurityPrefs cdecl alias "xsltFreeSecurityPrefs" (byval sec as xsltSecurityPrefsPtr)
@@ -32,9 +32,9 @@ declare function xsltGetSecurityPrefs cdecl alias "xsltGetSecurityPrefs" (byval 
 declare sub xsltSetDefaultSecurityPrefs cdecl alias "xsltSetDefaultSecurityPrefs" (byval sec as xsltSecurityPrefsPtr)
 declare function xsltGetDefaultSecurityPrefs cdecl alias "xsltGetDefaultSecurityPrefs" () as xsltSecurityPrefsPtr
 declare function xsltSetCtxtSecurityPrefs cdecl alias "xsltSetCtxtSecurityPrefs" (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr) as integer
-declare function xsltSecurityAllow cdecl alias "xsltSecurityAllow" (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval value as string) as integer
-declare function xsltSecurityForbid cdecl alias "xsltSecurityForbid" (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval value as string) as integer
-declare function xsltCheckWrite cdecl alias "xsltCheckWrite" (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval URL as string) as integer
-declare function xsltCheckRead cdecl alias "xsltCheckRead" (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval URL as string) as integer
+declare function xsltSecurityAllow cdecl alias "xsltSecurityAllow" (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval value as zstring ptr) as integer
+declare function xsltSecurityForbid cdecl alias "xsltSecurityForbid" (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval value as zstring ptr) as integer
+declare function xsltCheckWrite cdecl alias "xsltCheckWrite" (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval URL as zstring ptr) as integer
+declare function xsltCheckRead cdecl alias "xsltCheckRead" (byval sec as xsltSecurityPrefsPtr, byval ctxt as xsltTransformContextPtr, byval URL as zstring ptr) as integer
 
 #endif

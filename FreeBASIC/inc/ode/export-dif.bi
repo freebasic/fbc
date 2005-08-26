@@ -11,6 +11,6 @@
 
 #include once "ode/common.bi"
 
-declare sub dWorldExportDIF cdecl alias "dWorldExportDIF" (byval w as dWorldID, byval file as FILE ptr, byval world_name as string)
+declare sub dWorldExportDIF cdecl alias "dWorldExportDIF" (byval w as dWorldID, byval file as FILE ptr, byval world_name as zstring ptr)
 
 #endif

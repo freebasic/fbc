@@ -92,13 +92,13 @@ type _GParamSpecTypeInfo
 	values_cmp as function cdecl(byval as GParamSpec ptr, byval as GValue ptr, byval as GValue ptr) as gint
 end type
 
-declare function g_param_type_register_static cdecl alias "g_param_type_register_static" (byval name as string, byval pspec_info as GParamSpecTypeInfo ptr) as GType
-declare function _g_param_type_register_static_constant cdecl alias "_g_param_type_register_static_constant" (byval name as string, byval pspec_info as GParamSpecTypeInfo ptr, byval opt_type as GType) as GType
-declare function g_param_spec_internal cdecl alias "g_param_spec_internal" (byval param_type as GType, byval name as string, byval nick as string, byval blurb as string, byval flags as GParamFlags) as gpointer
+declare function g_param_type_register_static cdecl alias "g_param_type_register_static" (byval name as zstring ptr, byval pspec_info as GParamSpecTypeInfo ptr) as GType
+declare function _g_param_type_register_static_constant cdecl alias "_g_param_type_register_static_constant" (byval name as zstring ptr, byval pspec_info as GParamSpecTypeInfo ptr, byval opt_type as GType) as GType
+declare function g_param_spec_internal cdecl alias "g_param_spec_internal" (byval param_type as GType, byval name as zstring ptr, byval nick as zstring ptr, byval blurb as zstring ptr, byval flags as GParamFlags) as gpointer
 declare function g_param_spec_pool_new cdecl alias "g_param_spec_pool_new" (byval type_prefixing as gboolean) as GParamSpecPool ptr
 declare sub g_param_spec_pool_insert cdecl alias "g_param_spec_pool_insert" (byval pool as GParamSpecPool ptr, byval pspec as GParamSpec ptr, byval owner_type as GType)
 declare sub g_param_spec_pool_remove cdecl alias "g_param_spec_pool_remove" (byval pool as GParamSpecPool ptr, byval pspec as GParamSpec ptr)
-declare function g_param_spec_pool_lookup cdecl alias "g_param_spec_pool_lookup" (byval pool as GParamSpecPool ptr, byval param_name as string, byval owner_type as GType, byval walk_ancestors as gboolean) as GParamSpec ptr
+declare function g_param_spec_pool_lookup cdecl alias "g_param_spec_pool_lookup" (byval pool as GParamSpecPool ptr, byval param_name as zstring ptr, byval owner_type as GType, byval walk_ancestors as gboolean) as GParamSpec ptr
 declare function g_param_spec_pool_list_owned cdecl alias "g_param_spec_pool_list_owned" (byval pool as GParamSpecPool ptr, byval owner_type as GType) as GList ptr
 declare function g_param_spec_pool_list cdecl alias "g_param_spec_pool_list" (byval pool as GParamSpecPool ptr, byval owner_type as GType, byval n_pspecs_p as guint ptr) as GParamSpec ptr ptr
 

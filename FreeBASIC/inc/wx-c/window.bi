@@ -34,14 +34,14 @@ declare sub wxWindow_SetSizer cdecl alias "wxWindow_SetSizer" (byval self as wxW
 declare sub wxWindow_SetWindowStyleFlag cdecl alias "wxWindow_SetWindowStyleFlag" (byval self as wxWindow ptr, byval style as integer)
 declare function wxWindow_SetFont cdecl alias "wxWindow_SetFont" (byval self as wxWindow ptr, byval font as wxFont ptr) as integer
 declare function wxWindow_GetFont cdecl alias "wxWindow_GetFont" (byval self as wxWindow ptr) as wxFont ptr
-declare sub wxWindow_SetToolTip cdecl alias "wxWindow_SetToolTip" (byval self as wxWindow ptr, byval tip as string)
+declare sub wxWindow_SetToolTip cdecl alias "wxWindow_SetToolTip" (byval self as wxWindow ptr, byval tip as zstring ptr)
 declare function wxWindow_Enable cdecl alias "wxWindow_Enable" (byval self as wxWindow ptr, byval enable as integer) as integer
 declare function wxWindow_IsEnabled cdecl alias "wxWindow_IsEnabled" (byval self as wxWindow ptr) as integer
 declare function wxWindow_Destroy cdecl alias "wxWindow_Destroy" (byval self as wxWindow ptr) as integer
 declare function wxWindow_DestroyChildren cdecl alias "wxWindow_DestroyChildren" (byval self as wxWindow ptr) as integer
-declare sub wxWindow_SetTitle cdecl alias "wxWindow_SetTitle" (byval self as wxWindow ptr, byval title as string)
+declare sub wxWindow_SetTitle cdecl alias "wxWindow_SetTitle" (byval self as wxWindow ptr, byval title as zstring ptr)
 declare function wxWindow_GetTitle cdecl alias "wxWindow_GetTitle" (byval self as wxWindow ptr) as wxString ptr
-declare sub wxWindow_SetName cdecl alias "wxWindow_SetName" (byval self as wxWindow ptr, byval name as string)
+declare sub wxWindow_SetName cdecl alias "wxWindow_SetName" (byval self as wxWindow ptr, byval name as zstring ptr)
 declare function wxWindow_GetName cdecl alias "wxWindow_GetName" (byval self as wxWindow ptr) as wxString ptr
 declare function wxWindow_NewControlId cdecl alias "wxWindow_NewControlId" () as integer
 declare function wxWindow_NextControlId cdecl alias "wxWindow_NextControlId" (byval id as integer) as integer
@@ -98,10 +98,10 @@ declare function wxWindow_Reparent cdecl alias "wxWindow_Reparent" (byval self a
 declare sub wxWindow_AddChild cdecl alias "wxWindow_AddChild" (byval self as wxWindow ptr, byval child as wxWindow ptr)
 declare sub wxWindow_RemoveChild cdecl alias "wxWindow_RemoveChild" (byval self as wxWindow ptr, byval child as wxWindow ptr)
 declare function wxWindow_FindWindowId cdecl alias "wxWindow_FindWindowId" (byval self as wxWindow ptr, byval id as integer) as wxWindow ptr
-declare function wxWindow_FindWindowName cdecl alias "wxWindow_FindWindowName" (byval self as wxWindow ptr, byval name as string) as wxWindow ptr
+declare function wxWindow_FindWindowName cdecl alias "wxWindow_FindWindowName" (byval self as wxWindow ptr, byval name as zstring ptr) as wxWindow ptr
 declare function wxWindow_FindWindowById cdecl alias "wxWindow_FindWindowById" (byval id as integer, byval parent as wxWindow ptr) as wxWindow ptr
-declare function wxWindow_FindWindowByName cdecl alias "wxWindow_FindWindowByName" (byval name as string, byval parent as wxWindow ptr) as wxWindow ptr
-declare function wxWindow_FindWindowByLabel cdecl alias "wxWindow_FindWindowByLabel" (byval label as string, byval parent as wxWindow ptr) as wxWindow ptr
+declare function wxWindow_FindWindowByName cdecl alias "wxWindow_FindWindowByName" (byval name as zstring ptr, byval parent as wxWindow ptr) as wxWindow ptr
+declare function wxWindow_FindWindowByLabel cdecl alias "wxWindow_FindWindowByLabel" (byval label as zstring ptr, byval parent as wxWindow ptr) as wxWindow ptr
 declare function wxWindow_GetEventHandler cdecl alias "wxWindow_GetEventHandler" (byval self as wxWindow ptr) as wxEvtHandler ptr
 declare sub wxWindow_SetEventHandler cdecl alias "wxWindow_SetEventHandler" (byval self as wxWindow ptr, byval handler as wxEvtHandler ptr)
 declare sub wxWindow_PushEventHandler cdecl alias "wxWindow_PushEventHandler" (byval self as wxWindow ptr, byval handler as wxEvtHandler ptr)
@@ -138,7 +138,7 @@ declare sub wxWindow_SetCaret cdecl alias "wxWindow_SetCaret" (byval self as wxW
 declare function wxWindow_GetCaret cdecl alias "wxWindow_GetCaret" (byval self as wxWindow ptr) as wxCaret ptr
 declare function wxWindow_GetCharHeight cdecl alias "wxWindow_GetCharHeight" (byval self as wxWindow ptr) as integer
 declare function wxWindow_GetCharWidth cdecl alias "wxWindow_GetCharWidth" (byval self as wxWindow ptr) as integer
-declare sub wxWindow_GetTextExtent cdecl alias "wxWindow_GetTextExtent" (byval self as wxWindow ptr, byval string as string, byval x as integer ptr, byval y as integer ptr, byval descent as integer ptr, byval externalLeading as integer ptr, byval theFont as wxFont ptr)
+declare sub wxWindow_GetTextExtent cdecl alias "wxWindow_GetTextExtent" (byval self as wxWindow ptr, byval string as zstring ptr, byval x as integer ptr, byval y as integer ptr, byval descent as integer ptr, byval externalLeading as integer ptr, byval theFont as wxFont ptr)
 declare sub wxWindow_ClientToScreen cdecl alias "wxWindow_ClientToScreen" (byval self as wxWindow ptr, byval pt as wxPoint ptr, byval point as wxPoint ptr)
 declare sub wxWindow_ScreenToClient cdecl alias "wxWindow_ScreenToClient" (byval self as wxWindow ptr, byval pt as wxPoint ptr, byval point as wxPoint ptr)
 declare sub wxWindow_HitTest cdecl alias "wxWindow_HitTest" (byval self as wxWindow ptr, byval pt as wxPoint ptr, byval hittest as wxHitTest ptr)
@@ -159,8 +159,8 @@ declare function wxWindow_LineUp cdecl alias "wxWindow_LineUp" (byval self as wx
 declare function wxWindow_LineDown cdecl alias "wxWindow_LineDown" (byval self as wxWindow ptr) as integer
 declare function wxWindow_PageUp cdecl alias "wxWindow_PageUp" (byval self as wxWindow ptr) as integer
 declare function wxWindow_PageDown cdecl alias "wxWindow_PageDown" (byval self as wxWindow ptr) as integer
-declare sub wxWindow_SetHelpText cdecl alias "wxWindow_SetHelpText" (byval self as wxWindow ptr, byval text as string)
-declare sub wxWindow_SetHelpTextForId cdecl alias "wxWindow_SetHelpTextForId" (byval self as wxWindow ptr, byval text as string)
+declare sub wxWindow_SetHelpText cdecl alias "wxWindow_SetHelpText" (byval self as wxWindow ptr, byval text as zstring ptr)
+declare sub wxWindow_SetHelpTextForId cdecl alias "wxWindow_SetHelpTextForId" (byval self as wxWindow ptr, byval text as zstring ptr)
 declare function wxWindow_GetHelpText cdecl alias "wxWindow_GetHelpText" (byval self as wxWindow ptr) as wxString ptr
 declare function wxWindow_GetToolTip cdecl alias "wxWindow_GetToolTip" (byval self as wxWindow ptr) as wxToolTip ptr
 declare function wxWindow_GetAncestorWithCustomPalette cdecl alias "wxWindow_GetAncestorWithCustomPalette" (byval self as wxWindow ptr) as wxWindow ptr

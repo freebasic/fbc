@@ -16,7 +16,7 @@ declare function big_int_str_create cdecl alias "big_int_str_create" (byval len 
 declare function big_int_str_dup cdecl alias "big_int_str_dup" (byval s as big_int_str ptr) as big_int_str ptr
 declare sub big_int_str_destroy cdecl alias "big_int_str_destroy" (byval s as big_int_str ptr)
 declare function big_int_str_copy cdecl alias "big_int_str_copy" (byval dst as big_int_str ptr, byval src as big_int_str ptr) as integer
-declare function big_int_str_copy_s cdecl alias "big_int_str_copy_s" (byval str as string, byval str_len as integer, byval dst as big_int_str ptr) as integer
+declare function big_int_str_copy_s cdecl alias "big_int_str_copy_s" (byval str as zstring ptr, byval str_len as integer, byval dst as big_int_str ptr) as integer
 declare function big_int_str_realloc cdecl alias "big_int_str_realloc" (byval s as big_int_str ptr, byval len as integer) as integer
 
 #endif

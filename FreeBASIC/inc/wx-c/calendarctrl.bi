@@ -13,7 +13,7 @@
 
 
 declare function wxCalendarCtrl cdecl alias "wxCalendarCtrl_ctor" () as wxCalendarCtrl ptr
-declare function wxCalendarCtrl_Create cdecl alias "wxCalendarCtrl_Create" (byval self as wxCalendarCtrl ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval date as wxDateTime ptr, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as integer
+declare function wxCalendarCtrl_Create cdecl alias "wxCalendarCtrl_Create" (byval self as wxCalendarCtrl ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval date as wxDateTime ptr, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as zstring ptr) as integer
 declare function wxCalendarCtrl_SetDate cdecl alias "wxCalendarCtrl_SetDate" (byval self as wxCalendarCtrl ptr, byval date as wxDateTime ptr) as integer
 declare function wxCalendarCtrl_GetDate cdecl alias "wxCalendarCtrl_GetDate" (byval self as wxCalendarCtrl ptr) as wxDateTime ptr
 declare function wxCalendarCtrl_SetLowerDateLimit cdecl alias "wxCalendarCtrl_SetLowerDateLimit" (byval self as wxCalendarCtrl ptr, byval date as wxDateTime ptr) as integer

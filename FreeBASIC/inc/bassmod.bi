@@ -5,6 +5,8 @@
 ' FB header converted from bassmod.bas for VB by Plasma  [11-13-2004]
 ' Mostly untested, so don't be surprised if something doesn't work :P
 
+#inclib "bassmod"
+
 #define BASSTRUE  1
 #define BASSFALSE  0
 
@@ -88,32 +90,32 @@
 #define BASS_ACTIVE_PLAYING  1
 #define BASS_ACTIVE_PAUSED  3
 
-Declare Function BASSMOD_GetVersion Lib "bassmod" () As Integer
-Declare Function BASSMOD_ErrorGetCode Lib "bassmod" () As Integer
-Declare Function BASSMOD_GetDeviceDescription Lib "bassmod" (ByVal devnum As Integer) as zstring ptr
-Declare Function BASSMOD_Init Lib "bassmod" (ByVal device As Integer, ByVal freq As Integer, ByVal flags As Integer) As Integer
-Declare Sub BASSMOD_Free Lib "bassmod" ()
-Declare Function BASSMOD_GetCPU Lib "bassmod" () As Single
-Declare Function BASSMOD_SetVolume Lib "bassmod" (ByVal volume As Integer) As Integer
-Declare Function BASSMOD_GetVolume Lib "bassmod" () As Integer
+Declare Function BASSMOD_GetVersion alias "BASSMOD_GetVersion" () As Integer
+Declare Function BASSMOD_ErrorGetCode alias "BASSMOD_ErrorGetCode" () As Integer
+Declare Function BASSMOD_GetDeviceDescription alias "BASSMOD_GetDeviceDescription" (ByVal devnum As Integer) as zstring ptr
+Declare Function BASSMOD_Init alias "BASSMOD_Init" (ByVal device As Integer, ByVal freq As Integer, ByVal flags As Integer) As Integer
+Declare Sub BASSMOD_Free alias "BASSMOD_Free" ()
+Declare Function BASSMOD_GetCPU alias "BASSMOD_GetCPU" () As Single
+Declare Function BASSMOD_SetVolume alias "BASSMOD_SetVolume" (ByVal volume As Integer) As Integer
+Declare Function BASSMOD_GetVolume alias "BASSMOD_GetVolume" () As Integer
 
-Declare Function BASSMOD_MusicLoad Lib "bassmod" (ByVal mem As Integer, ByVal pfile As String, ByVal offset As Integer, ByVal length As Integer, ByVal flags As Integer) As Integer
-Declare Sub BASSMOD_MusicFree Lib "bassmod" ()
-Declare Function BASSMOD_MusicGetName lib "bassmod" () as zstring ptr
-Declare Function BASSMOD_MusicGetLength Lib "bassmod" (ByVal playlen As Integer) As Integer
-Declare Function BASSMOD_MusicPlay Lib "bassmod" () As Integer
-Declare Function BASSMOD_MusicPlayEx Lib "bassmod" (ByVal pos As Integer, ByVal flags As Integer, ByVal reset As Integer) As Integer
-Declare Function BASSMOD_MusicDecode Lib "bassmod" (Byval buffer As Any ptr, ByVal length As Integer) As Integer
-Declare Function BASSMOD_MusicSetAmplify Lib "bassmod" (ByVal amp As Integer) As Integer
-Declare Function BASSMOD_MusicSetPanSep Lib "bassmod" (ByVal pan As Integer) As Integer
-Declare Function BASSMOD_MusicSetPositionScaler Lib "bassmod" (ByVal pscale As Integer) As Integer
-Declare Function BASSMOD_MusicSetVolume Lib "bassmod" (ByVal chanins As Integer, ByVal volume As Integer) As Integer
-Declare Function BASSMOD_MusicGetVolume Lib "bassmod" (ByVal chanins As Integer) As Integer
+Declare Function BASSMOD_MusicLoad alias "BASSMOD_MusicLoad" (ByVal mem As Integer, byval pfile as zstring ptr, ByVal offset As Integer, ByVal length As Integer, ByVal flags As Integer) As Integer
+Declare Sub BASSMOD_MusicFree alias "BASSMOD_MusicFree" ()
+Declare Function BASSMOD_MusicGetName alias "BASSMOD_MusicGetName" () as zstring ptr
+Declare Function BASSMOD_MusicGetLength alias "BASSMOD_MusicGetLength" (ByVal playlen As Integer) As Integer
+Declare Function BASSMOD_MusicPlay alias "BASSMOD_MusicPlay" () As Integer
+Declare Function BASSMOD_MusicPlayEx alias "BASSMOD_MusicPlayEx" (ByVal pos As Integer, ByVal flags As Integer, ByVal reset As Integer) As Integer
+Declare Function BASSMOD_MusicDecode alias "BASSMOD_MusicDecode" (Byval buffer As Any ptr, ByVal length As Integer) As Integer
+Declare Function BASSMOD_MusicSetAmplify alias "BASSMOD_MusicSetAmplify" (ByVal amp As Integer) As Integer
+Declare Function BASSMOD_MusicSetPanSep alias "BASSMOD_MusicSetPanSep" (ByVal pan As Integer) As Integer
+Declare Function BASSMOD_MusicSetPositionScaler alias "BASSMOD_MusicSetPositionScaler" (ByVal pscale As Integer) As Integer
+Declare Function BASSMOD_MusicSetVolume alias "BASSMOD_MusicSetVolume" (ByVal chanins As Integer, ByVal volume As Integer) As Integer
+Declare Function BASSMOD_MusicGetVolume alias "BASSMOD_MusicGetVolume" (ByVal chanins As Integer) As Integer
 
-Declare Function BASSMOD_MusicIsActive Lib "bassmod" () As Integer
-Declare Function BASSMOD_MusicStop Lib "bassmod" () As Integer
-Declare Function BASSMOD_MusicPause Lib "bassmod" () As Integer
-Declare Function BASSMOD_MusicSetPosition Lib "bassmod" (ByVal pos As Integer) As Integer
-Declare Function BASSMOD_MusicGetPosition Lib "bassmod" () As Integer
-Declare Function BASSMOD_MusicSetSync Lib "bassmod" (ByVal ptype As Integer, ByVal param As Integer, Byval proc as any ptr, ByVal user As Integer) As Integer
-Declare Function BASSMOD_MusicRemoveSync Lib "bassmod" (ByVal sync As Integer) As Integer
+Declare Function BASSMOD_MusicIsActive alias "BASSMOD_MusicIsActive" () As Integer
+Declare Function BASSMOD_MusicStop alias "BASSMOD_MusicStop" () As Integer
+Declare Function BASSMOD_MusicPause alias "BASSMOD_MusicPause" () As Integer
+Declare Function BASSMOD_MusicSetPosition alias "BASSMOD_MusicSetPosition" (ByVal pos As Integer) As Integer
+Declare Function BASSMOD_MusicGetPosition alias "BASSMOD_MusicGetPosition" () As Integer
+Declare Function BASSMOD_MusicSetSync alias "BASSMOD_MusicSetSync" (ByVal ptype As Integer, ByVal param As Integer, Byval proc as any ptr, ByVal user As Integer) As Integer
+Declare Function BASSMOD_MusicRemoveSync alias "BASSMOD_MusicRemoveSync" (ByVal sync As Integer) As Integer

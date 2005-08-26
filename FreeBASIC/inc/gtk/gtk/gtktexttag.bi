@@ -62,7 +62,7 @@ type _GtkTextTagClass
 end type
 
 declare function gtk_text_tag_get_type cdecl alias "gtk_text_tag_get_type" () as GType
-declare function gtk_text_tag_new cdecl alias "gtk_text_tag_new" (byval name as string) as GtkTextTag ptr
+declare function gtk_text_tag_new cdecl alias "gtk_text_tag_new" (byval name as zstring ptr) as GtkTextTag ptr
 declare function gtk_text_tag_get_priority cdecl alias "gtk_text_tag_get_priority" (byval tag as GtkTextTag ptr) as gint
 declare sub gtk_text_tag_set_priority cdecl alias "gtk_text_tag_set_priority" (byval tag as GtkTextTag ptr, byval priority as gint)
 declare function gtk_text_tag_event cdecl alias "gtk_text_tag_event" (byval tag as GtkTextTag ptr, byval event_object as GObject ptr, byval event as GdkEvent ptr, byval iter as GtkTextIter ptr) as gboolean

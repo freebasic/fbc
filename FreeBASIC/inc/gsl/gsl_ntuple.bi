@@ -29,8 +29,8 @@ type gsl_ntuple_value_fn
 	params as any ptr
 end type
 
-declare function gsl_ntuple_open cdecl alias "gsl_ntuple_open" (byval filename as string, byval ntuple_data as any ptr, byval size as integer) as gsl_ntuple ptr
-declare function gsl_ntuple_create cdecl alias "gsl_ntuple_create" (byval filename as string, byval ntuple_data as any ptr, byval size as integer) as gsl_ntuple ptr
+declare function gsl_ntuple_open cdecl alias "gsl_ntuple_open" (byval filename as zstring ptr, byval ntuple_data as any ptr, byval size as integer) as gsl_ntuple ptr
+declare function gsl_ntuple_create cdecl alias "gsl_ntuple_create" (byval filename as zstring ptr, byval ntuple_data as any ptr, byval size as integer) as gsl_ntuple ptr
 declare function gsl_ntuple_write cdecl alias "gsl_ntuple_write" (byval ntuple as gsl_ntuple ptr) as integer
 declare function gsl_ntuple_read cdecl alias "gsl_ntuple_read" (byval ntuple as gsl_ntuple ptr) as integer
 declare function gsl_ntuple_bookdata cdecl alias "gsl_ntuple_bookdata" (byval ntuple as gsl_ntuple ptr) as integer

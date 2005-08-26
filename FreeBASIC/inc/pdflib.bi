@@ -56,16 +56,16 @@ declare function PDF_get_minorversion cdecl alias "PDF_get_minorversion" () as i
 declare sub PDF_boot cdecl alias "PDF_boot" ()
 declare sub PDF_shutdown cdecl alias "PDF_shutdown" ()
 
-type errorproc_t as sub cdecl(byval as PDF ptr, byval as integer, byval as string)
-type allocproc_t as sub cdecl(byval as PDF ptr, byval as integer, byval as string)
-type reallocproc_t as sub cdecl(byval as PDF ptr, byval as any ptr, byval as integer, byval as string)
+type errorproc_t as sub cdecl(byval as PDF ptr, byval as integer, byval as zstring ptr)
+type allocproc_t as sub cdecl(byval as PDF ptr, byval as integer, byval as zstring ptr)
+type reallocproc_t as sub cdecl(byval as PDF ptr, byval as any ptr, byval as integer, byval as zstring ptr)
 type freeproc_t as sub cdecl(byval as PDF ptr, byval as any ptr)
 
 declare function PDF_new2 cdecl alias "PDF_new2" (byval errorhandler as errorproc_t, byval allocproc as allocproc_t, byval reallocproc as reallocproc_t, byval freeproc as freeproc_t, byval opaque as any ptr) as PDF ptr
 declare function PDF_get_opaque cdecl alias "PDF_get_opaque" (byval p as PDF ptr) as any ptr
 declare function PDF_new cdecl alias "PDF_new" () as PDF ptr
 declare sub PDF_delete cdecl alias "PDF_delete" (byval p as PDF ptr)
-declare function PDF_open_file cdecl alias "PDF_open_file" (byval p as PDF ptr, byval filename as string) as integer
+declare function PDF_open_file cdecl alias "PDF_open_file" (byval p as PDF ptr, byval filename as zstring ptr) as integer
 declare function PDF_open_fp cdecl alias "PDF_open_fp" (byval p as PDF ptr, byval fp as FILE ptr) as integer
 
 type writeproc_t as function cdecl(byval as PDF ptr, byval as any ptr, byval as integer) as integer
@@ -88,24 +88,24 @@ declare sub PDF_end_page cdecl alias "PDF_end_page" (byval p as PDF ptr)
 #define PDF_NonfatalError 11
 #define PDF_UnknownError 12
 
-declare sub PDF_set_parameter cdecl alias "PDF_set_parameter" (byval p as PDF ptr, byval key as string, byval value as string)
-declare sub PDF_set_value cdecl alias "PDF_set_value" (byval p as PDF ptr, byval key as string, byval value as single)
-declare function PDF_get_parameter cdecl alias "PDF_get_parameter" (byval p as PDF ptr, byval key as string, byval modifier as single) as zstring ptr
-declare function PDF_get_value cdecl alias "PDF_get_value" (byval p as PDF ptr, byval key as string, byval modifier as single) as single
-declare function PDF_findfont cdecl alias "PDF_findfont" (byval p as PDF ptr, byval fontname as string, byval encoding as string, byval embed as integer) as integer
+declare sub PDF_set_parameter cdecl alias "PDF_set_parameter" (byval p as PDF ptr, byval key as zstring ptr, byval value as zstring ptr)
+declare sub PDF_set_value cdecl alias "PDF_set_value" (byval p as PDF ptr, byval key as zstring ptr, byval value as single)
+declare function PDF_get_parameter cdecl alias "PDF_get_parameter" (byval p as PDF ptr, byval key as zstring ptr, byval modifier as single) as zstring ptr
+declare function PDF_get_value cdecl alias "PDF_get_value" (byval p as PDF ptr, byval key as zstring ptr, byval modifier as single) as single
+declare function PDF_findfont cdecl alias "PDF_findfont" (byval p as PDF ptr, byval fontname as zstring ptr, byval encoding as zstring ptr, byval embed as integer) as integer
 declare sub PDF_setfont cdecl alias "PDF_setfont" (byval p as PDF ptr, byval font as integer, byval fontsize as single)
-declare function PDF_encoding_get_name cdecl alias "PDF_encoding_get_name" (byval p as PDF ptr, byval encoding as string, byval slot as integer) as zstring ptr
-declare sub PDF_show cdecl alias "PDF_show" (byval p as PDF ptr, byval text as string)
-declare sub PDF_show_xy cdecl alias "PDF_show_xy" (byval p as PDF ptr, byval text as string, byval x as single, byval y as single)
-declare sub PDF_continue_text cdecl alias "PDF_continue_text" (byval p as PDF ptr, byval text as string)
-declare function PDF_show_boxed cdecl alias "PDF_show_boxed" (byval p as PDF ptr, byval text as string, byval left as single, byval top as single, byval width as single, byval height as single, byval hmode as string, byval feature as string) as integer
+declare function PDF_encoding_get_name cdecl alias "PDF_encoding_get_name" (byval p as PDF ptr, byval encoding as zstring ptr, byval slot as integer) as zstring ptr
+declare sub PDF_show cdecl alias "PDF_show" (byval p as PDF ptr, byval text as zstring ptr)
+declare sub PDF_show_xy cdecl alias "PDF_show_xy" (byval p as PDF ptr, byval text as zstring ptr, byval x as single, byval y as single)
+declare sub PDF_continue_text cdecl alias "PDF_continue_text" (byval p as PDF ptr, byval text as zstring ptr)
+declare function PDF_show_boxed cdecl alias "PDF_show_boxed" (byval p as PDF ptr, byval text as zstring ptr, byval left as single, byval top as single, byval width as single, byval height as single, byval hmode as zstring ptr, byval feature as zstring ptr) as integer
 declare sub PDF_set_text_matrix cdecl alias "PDF_set_text_matrix" (byval p as PDF ptr, byval a as single, byval b as single, byval c as single, byval d as single, byval e as single, byval f as single)
 declare sub PDF_set_text_pos cdecl alias "PDF_set_text_pos" (byval p as PDF ptr, byval x as single, byval y as single)
-declare function PDF_stringwidth cdecl alias "PDF_stringwidth" (byval p as PDF ptr, byval text as string, byval font as integer, byval size as single) as single
-declare sub PDF_show2 cdecl alias "PDF_show2" (byval p as PDF ptr, byval text as string, byval len as integer)
-declare sub PDF_show_xy2 cdecl alias "PDF_show_xy2" (byval p as PDF ptr, byval text as string, byval len as integer, byval x as single, byval y as single)
-declare sub PDF_continue_text2 cdecl alias "PDF_continue_text2" (byval p as PDF ptr, byval text as string, byval len as integer)
-declare function PDF_stringwidth2 cdecl alias "PDF_stringwidth2" (byval p as PDF ptr, byval text as string, byval len as integer, byval font as integer, byval size as single) as single
+declare function PDF_stringwidth cdecl alias "PDF_stringwidth" (byval p as PDF ptr, byval text as zstring ptr, byval font as integer, byval size as single) as single
+declare sub PDF_show2 cdecl alias "PDF_show2" (byval p as PDF ptr, byval text as zstring ptr, byval len as integer)
+declare sub PDF_show_xy2 cdecl alias "PDF_show_xy2" (byval p as PDF ptr, byval text as zstring ptr, byval len as integer, byval x as single, byval y as single)
+declare sub PDF_continue_text2 cdecl alias "PDF_continue_text2" (byval p as PDF ptr, byval text as zstring ptr, byval len as integer)
+declare function PDF_stringwidth2 cdecl alias "PDF_stringwidth2" (byval p as PDF ptr, byval text as zstring ptr, byval len as integer, byval font as integer, byval size as single) as single
 
 #define MAX_DASH_LENGTH 8
 
@@ -146,36 +146,36 @@ declare sub PDF_setgray cdecl alias "PDF_setgray" (byval p as PDF ptr, byval gra
 declare sub PDF_setrgbcolor_fill cdecl alias "PDF_setrgbcolor_fill" (byval p as PDF ptr, byval red as single, byval green as single, byval blue as single)
 declare sub PDF_setrgbcolor_stroke cdecl alias "PDF_setrgbcolor_stroke" (byval p as PDF ptr, byval red as single, byval green as single, byval blue as single)
 declare sub PDF_setrgbcolor cdecl alias "PDF_setrgbcolor" (byval p as PDF ptr, byval red as single, byval green as single, byval blue as single)
-declare function PDF_makespotcolor cdecl alias "PDF_makespotcolor" (byval p as PDF ptr, byval spotname as string, byval len as integer) as integer
-declare sub PDF_setcolor cdecl alias "PDF_setcolor" (byval p as PDF ptr, byval fstype as string, byval colorspace as string, byval c1 as single, byval c2 as single, byval c3 as single, byval c4 as single)
+declare function PDF_makespotcolor cdecl alias "PDF_makespotcolor" (byval p as PDF ptr, byval spotname as zstring ptr, byval len as integer) as integer
+declare sub PDF_setcolor cdecl alias "PDF_setcolor" (byval p as PDF ptr, byval fstype as zstring ptr, byval colorspace as zstring ptr, byval c1 as single, byval c2 as single, byval c3 as single, byval c4 as single)
 declare function PDF_begin_pattern cdecl alias "PDF_begin_pattern" (byval p as PDF ptr, byval width as single, byval height as single, byval xstep as single, byval ystep as single, byval painttype as integer) as integer
 declare sub PDF_end_pattern cdecl alias "PDF_end_pattern" (byval p as PDF ptr)
 declare function PDF_begin_template cdecl alias "PDF_begin_template" (byval p as PDF ptr, byval width as single, byval height as single) as integer
 declare sub PDF_end_template cdecl alias "PDF_end_template" (byval p as PDF ptr)
 declare sub PDF_place_image cdecl alias "PDF_place_image" (byval p as PDF ptr, byval image as integer, byval x as single, byval y as single, byval scale as single)
-declare function PDF_open_image cdecl alias "PDF_open_image" (byval p as PDF ptr, byval imagetype as string, byval source as string, byval data as string, byval length as integer, byval width as integer, byval height as integer, byval components as integer, byval bpc as integer, byval params as string) as integer
-declare function PDF_open_image_file cdecl alias "PDF_open_image_file" (byval p as PDF ptr, byval imagetype as string, byval filename as string, byval stringparam as string, byval intparam as integer) as integer
+declare function PDF_open_image cdecl alias "PDF_open_image" (byval p as PDF ptr, byval imagetype as zstring ptr, byval source as zstring ptr, byval data as zstring ptr, byval length as integer, byval width as integer, byval height as integer, byval components as integer, byval bpc as integer, byval params as zstring ptr) as integer
+declare function PDF_open_image_file cdecl alias "PDF_open_image_file" (byval p as PDF ptr, byval imagetype as zstring ptr, byval filename as zstring ptr, byval stringparam as zstring ptr, byval intparam as integer) as integer
 declare sub PDF_close_image cdecl alias "PDF_close_image" (byval p as PDF ptr, byval image as integer)
 declare sub PDF_add_thumbnail cdecl alias "PDF_add_thumbnail" (byval p as PDF ptr, byval image as integer)
-declare function PDF_open_CCITT cdecl alias "PDF_open_CCITT" (byval p as PDF ptr, byval filename as string, byval width as integer, byval height as integer, byval BitReverse as integer, byval K as integer, byval BlackIs1 as integer) as integer
-declare function PDF_add_bookmark cdecl alias "PDF_add_bookmark" (byval p as PDF ptr, byval text as string, byval parent as integer, byval open as integer) as integer
-declare sub PDF_set_info cdecl alias "PDF_set_info" (byval p as PDF ptr, byval key as string, byval value as string)
-declare sub PDF_attach_file cdecl alias "PDF_attach_file" (byval p as PDF ptr, byval llx as single, byval lly as single, byval urx as single, byval ury as single, byval filename as string, byval description as string, byval author as string, byval mimetype as string, byval icon as string)
-declare sub PDF_add_note cdecl alias "PDF_add_note" (byval p as PDF ptr, byval llx as single, byval lly as single, byval urx as single, byval ury as single, byval contents as string, byval title as string, byval icon as string, byval open as integer)
-declare sub PDF_add_pdflink cdecl alias "PDF_add_pdflink" (byval p as PDF ptr, byval llx as single, byval lly as single, byval urx as single, byval ury as single, byval filename as string, byval page as integer, byval dest as string)
-declare sub PDF_add_launchlink cdecl alias "PDF_add_launchlink" (byval p as PDF ptr, byval llx as single, byval lly as single, byval urx as single, byval ury as single, byval filename as string)
-declare sub PDF_add_locallink cdecl alias "PDF_add_locallink" (byval p as PDF ptr, byval llx as single, byval lly as single, byval urx as single, byval ury as single, byval page as integer, byval dest as string)
-declare sub PDF_add_weblink cdecl alias "PDF_add_weblink" (byval p as PDF ptr, byval llx as single, byval lly as single, byval urx as single, byval ury as single, byval url as string)
-declare sub PDF_set_border_style cdecl alias "PDF_set_border_style" (byval p as PDF ptr, byval style as string, byval width as single)
+declare function PDF_open_CCITT cdecl alias "PDF_open_CCITT" (byval p as PDF ptr, byval filename as zstring ptr, byval width as integer, byval height as integer, byval BitReverse as integer, byval K as integer, byval BlackIs1 as integer) as integer
+declare function PDF_add_bookmark cdecl alias "PDF_add_bookmark" (byval p as PDF ptr, byval text as zstring ptr, byval parent as integer, byval open as integer) as integer
+declare sub PDF_set_info cdecl alias "PDF_set_info" (byval p as PDF ptr, byval key as zstring ptr, byval value as zstring ptr)
+declare sub PDF_attach_file cdecl alias "PDF_attach_file" (byval p as PDF ptr, byval llx as single, byval lly as single, byval urx as single, byval ury as single, byval filename as zstring ptr, byval description as zstring ptr, byval author as zstring ptr, byval mimetype as zstring ptr, byval icon as zstring ptr)
+declare sub PDF_add_note cdecl alias "PDF_add_note" (byval p as PDF ptr, byval llx as single, byval lly as single, byval urx as single, byval ury as single, byval contents as zstring ptr, byval title as zstring ptr, byval icon as zstring ptr, byval open as integer)
+declare sub PDF_add_pdflink cdecl alias "PDF_add_pdflink" (byval p as PDF ptr, byval llx as single, byval lly as single, byval urx as single, byval ury as single, byval filename as zstring ptr, byval page as integer, byval dest as zstring ptr)
+declare sub PDF_add_launchlink cdecl alias "PDF_add_launchlink" (byval p as PDF ptr, byval llx as single, byval lly as single, byval urx as single, byval ury as single, byval filename as zstring ptr)
+declare sub PDF_add_locallink cdecl alias "PDF_add_locallink" (byval p as PDF ptr, byval llx as single, byval lly as single, byval urx as single, byval ury as single, byval page as integer, byval dest as zstring ptr)
+declare sub PDF_add_weblink cdecl alias "PDF_add_weblink" (byval p as PDF ptr, byval llx as single, byval lly as single, byval urx as single, byval ury as single, byval url as zstring ptr)
+declare sub PDF_set_border_style cdecl alias "PDF_set_border_style" (byval p as PDF ptr, byval style as zstring ptr, byval width as single)
 declare sub PDF_set_border_color cdecl alias "PDF_set_border_color" (byval p as PDF ptr, byval red as single, byval green as single, byval blue as single)
 declare sub PDF_set_border_dash cdecl alias "PDF_set_border_dash" (byval p as PDF ptr, byval b as single, byval w as single)
-declare function PDF_open_pdi cdecl alias "PDF_open_pdi" (byval p as PDF ptr, byval filename as string, byval stringparam as string, byval intparam as integer) as integer
+declare function PDF_open_pdi cdecl alias "PDF_open_pdi" (byval p as PDF ptr, byval filename as zstring ptr, byval stringparam as zstring ptr, byval intparam as integer) as integer
 declare sub PDF_close_pdi cdecl alias "PDF_close_pdi" (byval p as PDF ptr, byval doc as integer)
-declare function PDF_open_pdi_page cdecl alias "PDF_open_pdi_page" (byval p as PDF ptr, byval doc as integer, byval page as integer, byval label as string) as integer
+declare function PDF_open_pdi_page cdecl alias "PDF_open_pdi_page" (byval p as PDF ptr, byval doc as integer, byval page as integer, byval label as zstring ptr) as integer
 declare sub PDF_place_pdi_page cdecl alias "PDF_place_pdi_page" (byval p as PDF ptr, byval page as integer, byval x as single, byval y as single, byval sx as single, byval sy as single)
 declare sub PDF_close_pdi_page cdecl alias "PDF_close_pdi_page" (byval p as PDF ptr, byval page as integer)
-declare function PDF_get_pdi_parameter cdecl alias "PDF_get_pdi_parameter" (byval p as PDF ptr, byval key as string, byval doc as integer, byval page as integer, byval index as integer, byval len as integer ptr) as zstring ptr
-declare function PDF_get_pdi_value cdecl alias "PDF_get_pdi_value" (byval p as PDF ptr, byval key as string, byval doc as integer, byval page as integer, byval index as integer) as single
+declare function PDF_get_pdi_parameter cdecl alias "PDF_get_pdi_parameter" (byval p as PDF ptr, byval key as zstring ptr, byval doc as integer, byval page as integer, byval index as integer, byval len as integer ptr) as zstring ptr
+declare function PDF_get_pdi_value cdecl alias "PDF_get_pdi_value" (byval p as PDF ptr, byval key as zstring ptr, byval doc as integer, byval page as integer, byval index as integer) as single
 declare function PDF_get_buffer cdecl alias "PDF_get_buffer" (byval p as PDF ptr, byval size as integer ptr) as zstring ptr
 
 #define a0_width 2380.0

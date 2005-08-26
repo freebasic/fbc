@@ -74,7 +74,7 @@ end enum
 
 
 declare function pango_script_for_unichar cdecl alias "pango_script_for_unichar" (byval ch as gunichar) as PangoScript
-declare function pango_script_iter_new cdecl alias "pango_script_iter_new" (byval text as string, byval length as integer) as PangoScriptIter ptr
+declare function pango_script_iter_new cdecl alias "pango_script_iter_new" (byval text as zstring ptr, byval length as integer) as PangoScriptIter ptr
 declare sub pango_script_iter_get_range cdecl alias "pango_script_iter_get_range" (byval iter as PangoScriptIter ptr, byval start as byte ptr ptr, byval end as byte ptr ptr, byval script as PangoScript ptr)
 declare function pango_script_iter_next cdecl alias "pango_script_iter_next" (byval iter as PangoScriptIter ptr) as gboolean
 declare sub pango_script_iter_free cdecl alias "pango_script_iter_free" (byval iter as PangoScriptIter ptr)

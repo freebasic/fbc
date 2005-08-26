@@ -12,9 +12,9 @@
 #include once "wx-c/wx.bi"
 
 
-declare function wxProgressDialog cdecl alias "wxProgressDialog_ctor" (byval title as string, byval message as string, byval maximum as integer, byval parent as wxWindow ptr, byval style as integer) as wxProgressDialog ptr
+declare function wxProgressDialog cdecl alias "wxProgressDialog_ctor" (byval title as zstring ptr, byval message as zstring ptr, byval maximum as integer, byval parent as wxWindow ptr, byval style as integer) as wxProgressDialog ptr
 declare sub wxProgressDialog_dtor cdecl alias "wxProgressDialog_dtor" (byval self as wxProgressDialog ptr)
-declare function wxProgressDialog_Update cdecl alias "wxProgressDialog_Update" (byval self as wxProgressDialog ptr, byval value as integer, byval newmsg as string) as integer
+declare function wxProgressDialog_Update cdecl alias "wxProgressDialog_Update" (byval self as wxProgressDialog ptr, byval value as integer, byval newmsg as zstring ptr) as integer
 declare sub wxProgressDialog_Resume cdecl alias "wxProgressDialog_Resume" (byval self as wxProgressDialog ptr)
 declare function wxProgressDialog_Show cdecl alias "wxProgressDialog_Show" (byval self as wxProgressDialog ptr, byval show as integer) as integer
 

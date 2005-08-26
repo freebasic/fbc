@@ -30,7 +30,7 @@ declare function gsl_combination_memcpy cdecl alias "gsl_combination_memcpy" (by
 declare function gsl_combination_fread cdecl alias "gsl_combination_fread" (byval stream as FILE ptr, byval c as gsl_combination ptr) as integer
 declare function gsl_combination_fwrite cdecl alias "gsl_combination_fwrite" (byval stream as FILE ptr, byval c as gsl_combination ptr) as integer
 declare function gsl_combination_fscanf cdecl alias "gsl_combination_fscanf" (byval stream as FILE ptr, byval c as gsl_combination ptr) as integer
-declare function gsl_combination_fprintf cdecl alias "gsl_combination_fprintf" (byval stream as FILE ptr, byval c as gsl_combination ptr, byval format as string) as integer
+declare function gsl_combination_fprintf cdecl alias "gsl_combination_fprintf" (byval stream as FILE ptr, byval c as gsl_combination ptr, byval format as zstring ptr) as integer
 declare function gsl_combination_n cdecl alias "gsl_combination_n" (byval c as gsl_combination ptr) as integer
 declare function gsl_combination_k cdecl alias "gsl_combination_k" (byval c as gsl_combination ptr) as integer
 declare function gsl_combination_data cdecl alias "gsl_combination_data" (byval c as gsl_combination ptr) as integer ptr

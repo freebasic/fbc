@@ -72,7 +72,7 @@ declare sub gsl_matrix_ushort_set_all cdecl alias "gsl_matrix_ushort_set_all" (b
 declare function gsl_matrix_ushort_fread cdecl alias "gsl_matrix_ushort_fread" (byval stream as FILE ptr, byval m as gsl_matrix_ushort ptr) as integer
 declare function gsl_matrix_ushort_fwrite cdecl alias "gsl_matrix_ushort_fwrite" (byval stream as FILE ptr, byval m as gsl_matrix_ushort ptr) as integer
 declare function gsl_matrix_ushort_fscanf cdecl alias "gsl_matrix_ushort_fscanf" (byval stream as FILE ptr, byval m as gsl_matrix_ushort ptr) as integer
-declare function gsl_matrix_ushort_fprintf cdecl alias "gsl_matrix_ushort_fprintf" (byval stream as FILE ptr, byval m as gsl_matrix_ushort ptr, byval format as string) as integer
+declare function gsl_matrix_ushort_fprintf cdecl alias "gsl_matrix_ushort_fprintf" (byval stream as FILE ptr, byval m as gsl_matrix_ushort ptr, byval format as zstring ptr) as integer
 declare function gsl_matrix_ushort_memcpy cdecl alias "gsl_matrix_ushort_memcpy" (byval dest as gsl_matrix_ushort ptr, byval src as gsl_matrix_ushort ptr) as integer
 declare function gsl_matrix_ushort_swap cdecl alias "gsl_matrix_ushort_swap" (byval m1 as gsl_matrix_ushort ptr, byval m2 as gsl_matrix_ushort ptr) as integer
 declare function gsl_matrix_ushort_swap_rows cdecl alias "gsl_matrix_ushort_swap_rows" (byval m as gsl_matrix_ushort ptr, byval i as integer, byval j as integer) as integer

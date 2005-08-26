@@ -23,29 +23,29 @@ declare function FCGI_Accept cdecl alias "FCGI_Accept" () as integer
 declare sub FCGI_Finish cdecl alias "FCGI_Finish" ()
 declare function FCGI_StartFilterData cdecl alias "FCGI_StartFilterData" () as integer
 declare sub FCGI_SetExitStatus cdecl alias "FCGI_SetExitStatus" (byval status as integer)
-declare sub FCGI_perror cdecl alias "FCGI_perror" (byval str as string)
-declare function FCGI_fopen cdecl alias "FCGI_fopen" (byval path as string, byval mode as string) as FCGI_FILE ptr
+declare sub FCGI_perror cdecl alias "FCGI_perror" (byval str as zstring ptr)
+declare function FCGI_fopen cdecl alias "FCGI_fopen" (byval path as zstring ptr, byval mode as zstring ptr) as FCGI_FILE ptr
 declare function FCGI_fclose cdecl alias "FCGI_fclose" (byval fp as FCGI_FILE ptr) as integer
 declare function FCGI_fflush cdecl alias "FCGI_fflush" (byval fp as FCGI_FILE ptr) as integer
-declare function FCGI_freopen cdecl alias "FCGI_freopen" (byval path as string, byval mode as string, byval fp as FCGI_FILE ptr) as FCGI_FILE ptr
-declare function FCGI_setvbuf cdecl alias "FCGI_setvbuf" (byval fp as FCGI_FILE ptr, byval buf as string, byval bufmode as integer, byval size as integer) as integer
-declare sub FCGI_setbuf cdecl alias "FCGI_setbuf" (byval fp as FCGI_FILE ptr, byval buf as string)
+declare function FCGI_freopen cdecl alias "FCGI_freopen" (byval path as zstring ptr, byval mode as zstring ptr, byval fp as FCGI_FILE ptr) as FCGI_FILE ptr
+declare function FCGI_setvbuf cdecl alias "FCGI_setvbuf" (byval fp as FCGI_FILE ptr, byval buf as zstring ptr, byval bufmode as integer, byval size as integer) as integer
+declare sub FCGI_setbuf cdecl alias "FCGI_setbuf" (byval fp as FCGI_FILE ptr, byval buf as zstring ptr)
 declare function FCGI_fseek cdecl alias "FCGI_fseek" (byval fp as FCGI_FILE ptr, byval offset as integer, byval whence as integer) as integer
 declare function FCGI_ftell cdecl alias "FCGI_ftell" (byval fp as FCGI_FILE ptr) as integer
 declare sub FCGI_rewind cdecl alias "FCGI_rewind" (byval fp as FCGI_FILE ptr)
 declare function FCGI_fgetc cdecl alias "FCGI_fgetc" (byval fp as FCGI_FILE ptr) as integer
 declare function FCGI_getchar cdecl alias "FCGI_getchar" () as integer
 declare function FCGI_ungetc cdecl alias "FCGI_ungetc" (byval c as integer, byval fp as FCGI_FILE ptr) as integer
-declare function FCGI_fgets cdecl alias "FCGI_fgets" (byval str as string, byval size as integer, byval fp as FCGI_FILE ptr) as zstring ptr
-declare function FCGI_gets cdecl alias "FCGI_gets" (byval str as string) as zstring ptr
+declare function FCGI_fgets cdecl alias "FCGI_fgets" (byval str as zstring ptr, byval size as integer, byval fp as FCGI_FILE ptr) as zstring ptr
+declare function FCGI_gets cdecl alias "FCGI_gets" (byval str as zstring ptr) as zstring ptr
 declare function FCGI_fputc cdecl alias "FCGI_fputc" (byval c as integer, byval fp as FCGI_FILE ptr) as integer
 declare function FCGI_putchar cdecl alias "FCGI_putchar" (byval c as integer) as integer
-declare function FCGI_fputs cdecl alias "FCGI_fputs" (byval str as string, byval fp as FCGI_FILE ptr) as integer
-declare function FCGI_puts cdecl alias "FCGI_puts" (byval str as string) as integer
-declare function FCGI_fprintf cdecl alias "FCGI_fprintf" (byval fp as FCGI_FILE ptr, byval format as string, ...) as integer
-declare function FCGI_printf cdecl alias "FCGI_printf" (byval format as string, ...) as integer
-''''''' declare function FCGI_vfprintf cdecl alias "FCGI_vfprintf" (byval fp as FCGI_FILE ptr, byval format as string, byval ap as va_list) as integer
-''''''' declare function FCGI_vprintf cdecl alias "FCGI_vprintf" (byval format as string, byval ap as va_list) as integer
+declare function FCGI_fputs cdecl alias "FCGI_fputs" (byval str as zstring ptr, byval fp as FCGI_FILE ptr) as integer
+declare function FCGI_puts cdecl alias "FCGI_puts" (byval str as zstring ptr) as integer
+declare function FCGI_fprintf cdecl alias "FCGI_fprintf" (byval fp as FCGI_FILE ptr, byval format as zstring ptr, ...) as integer
+declare function FCGI_printf cdecl alias "FCGI_printf" (byval format as zstring ptr, ...) as integer
+''''''' declare function FCGI_vfprintf cdecl alias "FCGI_vfprintf" (byval fp as FCGI_FILE ptr, byval format as zstring ptr, byval ap as va_list) as integer
+''''''' declare function FCGI_vprintf cdecl alias "FCGI_vprintf" (byval format as zstring ptr, byval ap as va_list) as integer
 declare function FCGI_fread cdecl alias "FCGI_fread" (byval ptr as any ptr, byval size as integer, byval nmemb as integer, byval fp as FCGI_FILE ptr) as integer
 declare function FCGI_fwrite cdecl alias "FCGI_fwrite" (byval ptr as any ptr, byval size as integer, byval nmemb as integer, byval fp as FCGI_FILE ptr) as integer
 declare function FCGI_feof cdecl alias "FCGI_feof" (byval fp as FCGI_FILE ptr) as integer
@@ -53,8 +53,8 @@ declare function FCGI_ferror cdecl alias "FCGI_ferror" (byval fp as FCGI_FILE pt
 declare sub FCGI_clearerr cdecl alias "FCGI_clearerr" (byval fp as FCGI_FILE ptr)
 declare function FCGI_tmpfile cdecl alias "FCGI_tmpfile" () as FCGI_FILE ptr
 declare function FCGI_fileno cdecl alias "FCGI_fileno" (byval fp as FCGI_FILE ptr) as integer
-declare function FCGI_fdopen cdecl alias "FCGI_fdopen" (byval fd as integer, byval mode as string) as FCGI_FILE ptr
-declare function FCGI_popen cdecl alias "FCGI_popen" (byval cmd as string, byval type as string) as FCGI_FILE ptr
+declare function FCGI_fdopen cdecl alias "FCGI_fdopen" (byval fd as integer, byval mode as zstring ptr) as FCGI_FILE ptr
+declare function FCGI_popen cdecl alias "FCGI_popen" (byval cmd as zstring ptr, byval type as zstring ptr) as FCGI_FILE ptr
 declare function FCGI_pclose cdecl alias "FCGI_pclose" (byval as FCGI_FILE ptr) as integer
 
 #ifndef NO_FCGI_DEFINES

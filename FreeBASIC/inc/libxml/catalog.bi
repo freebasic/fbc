@@ -34,40 +34,40 @@ type xmlCatalog as _xmlCatalog
 type xmlCatalogPtr as xmlCatalog ptr
 
 declare function xmlNewCatalog cdecl alias "xmlNewCatalog" (byval sgml as integer) as xmlCatalogPtr
-declare function xmlLoadACatalog cdecl alias "xmlLoadACatalog" (byval filename as string) as xmlCatalogPtr
-declare function xmlLoadSGMLSuperCatalog cdecl alias "xmlLoadSGMLSuperCatalog" (byval filename as string) as xmlCatalogPtr
+declare function xmlLoadACatalog cdecl alias "xmlLoadACatalog" (byval filename as zstring ptr) as xmlCatalogPtr
+declare function xmlLoadSGMLSuperCatalog cdecl alias "xmlLoadSGMLSuperCatalog" (byval filename as zstring ptr) as xmlCatalogPtr
 declare function xmlConvertSGMLCatalog cdecl alias "xmlConvertSGMLCatalog" (byval catal as xmlCatalogPtr) as integer
-declare function xmlACatalogAdd cdecl alias "xmlACatalogAdd" (byval catal as xmlCatalogPtr, byval type as string, byval orig as string, byval replace as string) as integer
-declare function xmlACatalogRemove cdecl alias "xmlACatalogRemove" (byval catal as xmlCatalogPtr, byval value as string) as integer
-declare function xmlACatalogResolve cdecl alias "xmlACatalogResolve" (byval catal as xmlCatalogPtr, byval pubID as string, byval sysID as string) as zstring ptr
-declare function xmlACatalogResolveSystem cdecl alias "xmlACatalogResolveSystem" (byval catal as xmlCatalogPtr, byval sysID as string) as zstring ptr
-declare function xmlACatalogResolvePublic cdecl alias "xmlACatalogResolvePublic" (byval catal as xmlCatalogPtr, byval pubID as string) as zstring ptr
-declare function xmlACatalogResolveURI cdecl alias "xmlACatalogResolveURI" (byval catal as xmlCatalogPtr, byval URI as string) as zstring ptr
+declare function xmlACatalogAdd cdecl alias "xmlACatalogAdd" (byval catal as xmlCatalogPtr, byval type as zstring ptr, byval orig as zstring ptr, byval replace as zstring ptr) as integer
+declare function xmlACatalogRemove cdecl alias "xmlACatalogRemove" (byval catal as xmlCatalogPtr, byval value as zstring ptr) as integer
+declare function xmlACatalogResolve cdecl alias "xmlACatalogResolve" (byval catal as xmlCatalogPtr, byval pubID as zstring ptr, byval sysID as zstring ptr) as zstring ptr
+declare function xmlACatalogResolveSystem cdecl alias "xmlACatalogResolveSystem" (byval catal as xmlCatalogPtr, byval sysID as zstring ptr) as zstring ptr
+declare function xmlACatalogResolvePublic cdecl alias "xmlACatalogResolvePublic" (byval catal as xmlCatalogPtr, byval pubID as zstring ptr) as zstring ptr
+declare function xmlACatalogResolveURI cdecl alias "xmlACatalogResolveURI" (byval catal as xmlCatalogPtr, byval URI as zstring ptr) as zstring ptr
 declare sub xmlACatalogDump cdecl alias "xmlACatalogDump" (byval catal as xmlCatalogPtr, byval out as FILE ptr)
 declare sub xmlFreeCatalog cdecl alias "xmlFreeCatalog" (byval catal as xmlCatalogPtr)
 declare function xmlCatalogIsEmpty cdecl alias "xmlCatalogIsEmpty" (byval catal as xmlCatalogPtr) as integer
 declare sub xmlInitializeCatalog cdecl alias "xmlInitializeCatalog" ()
-declare function xmlLoadCatalog cdecl alias "xmlLoadCatalog" (byval filename as string) as integer
-declare sub xmlLoadCatalogs cdecl alias "xmlLoadCatalogs" (byval paths as string)
+declare function xmlLoadCatalog cdecl alias "xmlLoadCatalog" (byval filename as zstring ptr) as integer
+declare sub xmlLoadCatalogs cdecl alias "xmlLoadCatalogs" (byval paths as zstring ptr)
 declare sub xmlCatalogCleanup cdecl alias "xmlCatalogCleanup" ()
 declare sub xmlCatalogDump cdecl alias "xmlCatalogDump" (byval out as FILE ptr)
-declare function xmlCatalogResolve cdecl alias "xmlCatalogResolve" (byval pubID as string, byval sysID as string) as zstring ptr
-declare function xmlCatalogResolveSystem cdecl alias "xmlCatalogResolveSystem" (byval sysID as string) as zstring ptr
-declare function xmlCatalogResolvePublic cdecl alias "xmlCatalogResolvePublic" (byval pubID as string) as zstring ptr
-declare function xmlCatalogResolveURI cdecl alias "xmlCatalogResolveURI" (byval URI as string) as zstring ptr
-declare function xmlCatalogAdd cdecl alias "xmlCatalogAdd" (byval type as string, byval orig as string, byval replace as string) as integer
-declare function xmlCatalogRemove cdecl alias "xmlCatalogRemove" (byval value as string) as integer
-declare function xmlParseCatalogFile cdecl alias "xmlParseCatalogFile" (byval filename as string) as xmlDocPtr
+declare function xmlCatalogResolve cdecl alias "xmlCatalogResolve" (byval pubID as zstring ptr, byval sysID as zstring ptr) as zstring ptr
+declare function xmlCatalogResolveSystem cdecl alias "xmlCatalogResolveSystem" (byval sysID as zstring ptr) as zstring ptr
+declare function xmlCatalogResolvePublic cdecl alias "xmlCatalogResolvePublic" (byval pubID as zstring ptr) as zstring ptr
+declare function xmlCatalogResolveURI cdecl alias "xmlCatalogResolveURI" (byval URI as zstring ptr) as zstring ptr
+declare function xmlCatalogAdd cdecl alias "xmlCatalogAdd" (byval type as zstring ptr, byval orig as zstring ptr, byval replace as zstring ptr) as integer
+declare function xmlCatalogRemove cdecl alias "xmlCatalogRemove" (byval value as zstring ptr) as integer
+declare function xmlParseCatalogFile cdecl alias "xmlParseCatalogFile" (byval filename as zstring ptr) as xmlDocPtr
 declare function xmlCatalogConvert cdecl alias "xmlCatalogConvert" () as integer
 declare sub xmlCatalogFreeLocal cdecl alias "xmlCatalogFreeLocal" (byval catalogs as any ptr)
-declare function xmlCatalogAddLocal cdecl alias "xmlCatalogAddLocal" (byval catalogs as any ptr, byval URL as string) as any ptr
-declare function xmlCatalogLocalResolve cdecl alias "xmlCatalogLocalResolve" (byval catalogs as any ptr, byval pubID as string, byval sysID as string) as zstring ptr
-declare function xmlCatalogLocalResolveURI cdecl alias "xmlCatalogLocalResolveURI" (byval catalogs as any ptr, byval URI as string) as zstring ptr
+declare function xmlCatalogAddLocal cdecl alias "xmlCatalogAddLocal" (byval catalogs as any ptr, byval URL as zstring ptr) as any ptr
+declare function xmlCatalogLocalResolve cdecl alias "xmlCatalogLocalResolve" (byval catalogs as any ptr, byval pubID as zstring ptr, byval sysID as zstring ptr) as zstring ptr
+declare function xmlCatalogLocalResolveURI cdecl alias "xmlCatalogLocalResolveURI" (byval catalogs as any ptr, byval URI as zstring ptr) as zstring ptr
 declare function xmlCatalogSetDebug cdecl alias "xmlCatalogSetDebug" (byval level as integer) as integer
 declare function xmlCatalogSetDefaultPrefer cdecl alias "xmlCatalogSetDefaultPrefer" (byval prefer as xmlCatalogPrefer) as xmlCatalogPrefer
 declare sub xmlCatalogSetDefaults cdecl alias "xmlCatalogSetDefaults" (byval allow as xmlCatalogAllow)
 declare function xmlCatalogGetDefaults cdecl alias "xmlCatalogGetDefaults" () as xmlCatalogAllow
-declare function xmlCatalogGetSystem cdecl alias "xmlCatalogGetSystem" (byval sysID as string) as zstring ptr
-declare function xmlCatalogGetPublic cdecl alias "xmlCatalogGetPublic" (byval pubID as string) as zstring ptr
+declare function xmlCatalogGetSystem cdecl alias "xmlCatalogGetSystem" (byval sysID as zstring ptr) as zstring ptr
+declare function xmlCatalogGetPublic cdecl alias "xmlCatalogGetPublic" (byval pubID as zstring ptr) as zstring ptr
 
 #endif

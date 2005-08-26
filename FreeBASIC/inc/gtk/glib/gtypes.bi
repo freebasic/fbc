@@ -37,7 +37,7 @@ type GFunc as sub cdecl(byval as gpointer, byval as gpointer)
 type GHashFunc as function cdecl(byval as gconstpointer) as guint
 type GHFunc as sub cdecl(byval as gpointer, byval as gpointer, byval as gpointer)
 type GFreeFunc as sub cdecl(byval as gpointer)
-type GTranslateFunc as function cdecl(byval as string, byval as gpointer) as gchar
+type GTranslateFunc as function cdecl(byval as zstring ptr, byval as gpointer) as gchar
 
 #define G_E 2.7182818284590452353602874713526624977572470937000
 #define G_LN2 0.69314718055994530941723212145817656807550013436026

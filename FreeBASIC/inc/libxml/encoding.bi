@@ -55,13 +55,13 @@ declare sub xmlInitCharEncodingHandlers cdecl alias "xmlInitCharEncodingHandlers
 declare sub xmlCleanupCharEncodingHandlers cdecl alias "xmlCleanupCharEncodingHandlers" ()
 declare sub xmlRegisterCharEncodingHandler cdecl alias "xmlRegisterCharEncodingHandler" (byval handler as xmlCharEncodingHandlerPtr)
 declare function xmlGetCharEncodingHandler cdecl alias "xmlGetCharEncodingHandler" (byval enc as xmlCharEncoding) as xmlCharEncodingHandlerPtr
-declare function xmlFindCharEncodingHandler cdecl alias "xmlFindCharEncodingHandler" (byval name as string) as xmlCharEncodingHandlerPtr
-declare function xmlNewCharEncodingHandler cdecl alias "xmlNewCharEncodingHandler" (byval name as string, byval input as xmlCharEncodingInputFunc, byval output as xmlCharEncodingOutputFunc) as xmlCharEncodingHandlerPtr
-declare function xmlAddEncodingAlias cdecl alias "xmlAddEncodingAlias" (byval name as string, byval alias as string) as integer
-declare function xmlDelEncodingAlias cdecl alias "xmlDelEncodingAlias" (byval alias as string) as integer
-declare function xmlGetEncodingAlias cdecl alias "xmlGetEncodingAlias" (byval alias as string) as byte ptr
+declare function xmlFindCharEncodingHandler cdecl alias "xmlFindCharEncodingHandler" (byval name as zstring ptr) as xmlCharEncodingHandlerPtr
+declare function xmlNewCharEncodingHandler cdecl alias "xmlNewCharEncodingHandler" (byval name as zstring ptr, byval input as xmlCharEncodingInputFunc, byval output as xmlCharEncodingOutputFunc) as xmlCharEncodingHandlerPtr
+declare function xmlAddEncodingAlias cdecl alias "xmlAddEncodingAlias" (byval name as zstring ptr, byval alias as zstring ptr) as integer
+declare function xmlDelEncodingAlias cdecl alias "xmlDelEncodingAlias" (byval alias as zstring ptr) as integer
+declare function xmlGetEncodingAlias cdecl alias "xmlGetEncodingAlias" (byval alias as zstring ptr) as byte ptr
 declare sub xmlCleanupEncodingAliases cdecl alias "xmlCleanupEncodingAliases" ()
-declare function xmlParseCharEncoding cdecl alias "xmlParseCharEncoding" (byval name as string) as xmlCharEncoding
+declare function xmlParseCharEncoding cdecl alias "xmlParseCharEncoding" (byval name as zstring ptr) as xmlCharEncoding
 declare function xmlGetCharEncodingName cdecl alias "xmlGetCharEncodingName" (byval enc as xmlCharEncoding) as byte ptr
 declare function xmlDetectCharEncoding cdecl alias "xmlDetectCharEncoding" (byval in as ubyte ptr, byval len as integer) as xmlCharEncoding
 declare function xmlCharEncOutFunc cdecl alias "xmlCharEncOutFunc" (byval handler as xmlCharEncodingHandler ptr, byval out as xmlBufferPtr, byval in as xmlBufferPtr) as integer

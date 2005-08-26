@@ -221,15 +221,15 @@ type _DOSERROR
 end type
 #define DOSERROR _DOSERROR
 
-declare function	_dos_creat cdecl alias "_dos_creat"		( byval _filename as string, byval _attr as uinteger, byval _handle as integer ptr ) as uinteger
-declare function	_dos_creatnew cdecl alias "_dos_creatnew"	( byval _filename as string, byval _attr as uinteger, byval _handle as integer ptr ) as uinteger
-declare function	_dos_open cdecl alias "_dos_open"		( byval _filename as string, byval _mode as uinteger, byval _handle as integer ptr ) as uinteger
+declare function	_dos_creat cdecl alias "_dos_creat"		( byval _filename as zstring ptr, byval _attr as uinteger, byval _handle as integer ptr ) as uinteger
+declare function	_dos_creatnew cdecl alias "_dos_creatnew"	( byval _filename as zstring ptr, byval _attr as uinteger, byval _handle as integer ptr ) as uinteger
+declare function	_dos_open cdecl alias "_dos_open"		( byval _filename as zstring ptr, byval _mode as uinteger, byval _handle as integer ptr ) as uinteger
 declare function	_dos_write cdecl alias "_dos_write"		( byval _handle as integer, byval _buffer as any ptr, byval _count as uinteger, byval _result as uinteger ptr ) as uinteger
 declare function	_dos_read cdecl alias "_dos_read"		( byval _handle as integer, byval _buffer as any ptr, byval _count as uinteger, byval _result as uinteger ptr ) as uinteger
 declare function	_dos_close cdecl alias "_dos_close"		( byval _handle as integer ) as uinteger
 declare function	_dos_commit cdecl alias "_dos_commit"		( byval _handle as integer ) as uinteger
 
-declare function	_dos_findfirst cdecl alias "_dos_findfirst"	( byval _name as string, byval _attr as uinteger, byval _result as _find_t ptr ) as uinteger
+declare function	_dos_findfirst cdecl alias "_dos_findfirst"	( byval _name as zstring ptr, byval _attr as uinteger, byval _result as _find_t ptr ) as uinteger
 declare function	_dos_findnext cdecl alias "_dos_findnext"	( byval _result as _find_t ptr ) as uinteger
 
 declare sub		_dos_getdate cdecl alias "_dos_getdate"		( byval _date as _dosdate_t ptr )
@@ -239,8 +239,8 @@ declare function	_dos_settime cdecl alias "_dos_settime"		( byval _time as _dost
 
 declare function	_dos_getftime cdecl alias "_dos_getftime"	( byval _handle as integer, byval _p_date as uinteger ptr, byval _p_time as uinteger ptr ) as uinteger
 declare function	_dos_setftime cdecl alias "_dos_setftime"	( byval _handle as integer, byval _date as uinteger, byval _time as uinteger ) as uinteger
-declare function	_dos_getfileattr cdecl alias "_dos_getfileattr"	( byval _filename as string, byval _p_attr as uinteger ptr ) as uinteger
-declare function	_dos_setfileattr cdecl alias "_dos_setfileattr"	( byval _filename as string, byval _attr as uinteger ) as uinteger
+declare function	_dos_getfileattr cdecl alias "_dos_getfileattr"	( byval _filename as zstring ptr, byval _p_attr as uinteger ptr ) as uinteger
+declare function	_dos_setfileattr cdecl alias "_dos_setfileattr"	( byval _filename as zstring ptr, byval _attr as uinteger ) as uinteger
 
 declare sub		_dos_getdrive cdecl alias "_dos_getdrive"	( byval _p_drive as uinteger ptr )
 declare sub		_dos_setdrive cdecl alias "_dos_setdrive"	( byval _drive as uinteger, byval _p_drives as uinteger ptr )

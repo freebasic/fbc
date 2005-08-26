@@ -55,8 +55,8 @@ type xmlSchemaParserCtxtPtr as xmlSchemaParserCtxt ptr
 type xmlSchemaValidCtxt as _xmlSchemaValidCtxt
 type xmlSchemaValidCtxtPtr as xmlSchemaValidCtxt ptr
 
-declare function xmlSchemaNewParserCtxt cdecl alias "xmlSchemaNewParserCtxt" (byval URL as string) as xmlSchemaParserCtxtPtr
-declare function xmlSchemaNewMemParserCtxt cdecl alias "xmlSchemaNewMemParserCtxt" (byval buffer as string, byval size as integer) as xmlSchemaParserCtxtPtr
+declare function xmlSchemaNewParserCtxt cdecl alias "xmlSchemaNewParserCtxt" (byval URL as zstring ptr) as xmlSchemaParserCtxtPtr
+declare function xmlSchemaNewMemParserCtxt cdecl alias "xmlSchemaNewMemParserCtxt" (byval buffer as zstring ptr, byval size as integer) as xmlSchemaParserCtxtPtr
 declare function xmlSchemaNewDocParserCtxt cdecl alias "xmlSchemaNewDocParserCtxt" (byval doc as xmlDocPtr) as xmlSchemaParserCtxtPtr
 declare sub xmlSchemaFreeParserCtxt cdecl alias "xmlSchemaFreeParserCtxt" (byval ctxt as xmlSchemaParserCtxtPtr)
 declare sub xmlSchemaSetParserErrors cdecl alias "xmlSchemaSetParserErrors" (byval ctxt as xmlSchemaParserCtxtPtr, byval err as xmlSchemaValidityErrorFunc, byval warn as xmlSchemaValidityWarningFunc, byval ctx as any ptr)

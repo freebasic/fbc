@@ -300,47 +300,47 @@ declare sub xmlInitParser cdecl alias "xmlInitParser" ()
 declare sub xmlCleanupParser cdecl alias "xmlCleanupParser" ()
 declare function xmlParserInputRead cdecl alias "xmlParserInputRead" (byval in as xmlParserInputPtr, byval len as integer) as integer
 declare function xmlParserInputGrow cdecl alias "xmlParserInputGrow" (byval in as xmlParserInputPtr, byval len as integer) as integer
-declare function xmlParseDoc cdecl alias "xmlParseDoc" (byval cur as string) as xmlDocPtr
-declare function xmlParseFile cdecl alias "xmlParseFile" (byval filename as string) as xmlDocPtr
-declare function xmlParseMemory cdecl alias "xmlParseMemory" (byval buffer as string, byval size as integer) as xmlDocPtr
+declare function xmlParseDoc cdecl alias "xmlParseDoc" (byval cur as zstring ptr) as xmlDocPtr
+declare function xmlParseFile cdecl alias "xmlParseFile" (byval filename as zstring ptr) as xmlDocPtr
+declare function xmlParseMemory cdecl alias "xmlParseMemory" (byval buffer as zstring ptr, byval size as integer) as xmlDocPtr
 declare function xmlSubstituteEntitiesDefault cdecl alias "xmlSubstituteEntitiesDefault" (byval val as integer) as integer
 declare function xmlKeepBlanksDefault cdecl alias "xmlKeepBlanksDefault" (byval val as integer) as integer
 declare sub xmlStopParser cdecl alias "xmlStopParser" (byval ctxt as xmlParserCtxtPtr)
 declare function xmlPedanticParserDefault cdecl alias "xmlPedanticParserDefault" (byval val as integer) as integer
 declare function xmlLineNumbersDefault cdecl alias "xmlLineNumbersDefault" (byval val as integer) as integer
-declare function xmlRecoverDoc cdecl alias "xmlRecoverDoc" (byval cur as string) as xmlDocPtr
-declare function xmlRecoverMemory cdecl alias "xmlRecoverMemory" (byval buffer as string, byval size as integer) as xmlDocPtr
-declare function xmlRecoverFile cdecl alias "xmlRecoverFile" (byval filename as string) as xmlDocPtr
+declare function xmlRecoverDoc cdecl alias "xmlRecoverDoc" (byval cur as zstring ptr) as xmlDocPtr
+declare function xmlRecoverMemory cdecl alias "xmlRecoverMemory" (byval buffer as zstring ptr, byval size as integer) as xmlDocPtr
+declare function xmlRecoverFile cdecl alias "xmlRecoverFile" (byval filename as zstring ptr) as xmlDocPtr
 declare function xmlParseDocument cdecl alias "xmlParseDocument" (byval ctxt as xmlParserCtxtPtr) as integer
 declare function xmlParseExtParsedEnt cdecl alias "xmlParseExtParsedEnt" (byval ctxt as xmlParserCtxtPtr) as integer
-declare function xmlSAXUserParseFile cdecl alias "xmlSAXUserParseFile" (byval sax as xmlSAXHandlerPtr, byval user_data as any ptr, byval filename as string) as integer
-declare function xmlSAXUserParseMemory cdecl alias "xmlSAXUserParseMemory" (byval sax as xmlSAXHandlerPtr, byval user_data as any ptr, byval buffer as string, byval size as integer) as integer
-declare function xmlSAXParseDoc cdecl alias "xmlSAXParseDoc" (byval sax as xmlSAXHandlerPtr, byval cur as string, byval recovery as integer) as xmlDocPtr
-declare function xmlSAXParseMemory cdecl alias "xmlSAXParseMemory" (byval sax as xmlSAXHandlerPtr, byval buffer as string, byval size as integer, byval recovery as integer) as xmlDocPtr
-declare function xmlSAXParseMemoryWithData cdecl alias "xmlSAXParseMemoryWithData" (byval sax as xmlSAXHandlerPtr, byval buffer as string, byval size as integer, byval recovery as integer, byval data as any ptr) as xmlDocPtr
-declare function xmlSAXParseFile cdecl alias "xmlSAXParseFile" (byval sax as xmlSAXHandlerPtr, byval filename as string, byval recovery as integer) as xmlDocPtr
-declare function xmlSAXParseFileWithData cdecl alias "xmlSAXParseFileWithData" (byval sax as xmlSAXHandlerPtr, byval filename as string, byval recovery as integer, byval data as any ptr) as xmlDocPtr
-declare function xmlSAXParseEntity cdecl alias "xmlSAXParseEntity" (byval sax as xmlSAXHandlerPtr, byval filename as string) as xmlDocPtr
-declare function xmlParseEntity cdecl alias "xmlParseEntity" (byval filename as string) as xmlDocPtr
-declare function xmlSAXParseDTD cdecl alias "xmlSAXParseDTD" (byval sax as xmlSAXHandlerPtr, byval ExternalID as string, byval SystemID as string) as xmlDtdPtr
-declare function xmlParseDTD cdecl alias "xmlParseDTD" (byval ExternalID as string, byval SystemID as string) as xmlDtdPtr
+declare function xmlSAXUserParseFile cdecl alias "xmlSAXUserParseFile" (byval sax as xmlSAXHandlerPtr, byval user_data as any ptr, byval filename as zstring ptr) as integer
+declare function xmlSAXUserParseMemory cdecl alias "xmlSAXUserParseMemory" (byval sax as xmlSAXHandlerPtr, byval user_data as any ptr, byval buffer as zstring ptr, byval size as integer) as integer
+declare function xmlSAXParseDoc cdecl alias "xmlSAXParseDoc" (byval sax as xmlSAXHandlerPtr, byval cur as zstring ptr, byval recovery as integer) as xmlDocPtr
+declare function xmlSAXParseMemory cdecl alias "xmlSAXParseMemory" (byval sax as xmlSAXHandlerPtr, byval buffer as zstring ptr, byval size as integer, byval recovery as integer) as xmlDocPtr
+declare function xmlSAXParseMemoryWithData cdecl alias "xmlSAXParseMemoryWithData" (byval sax as xmlSAXHandlerPtr, byval buffer as zstring ptr, byval size as integer, byval recovery as integer, byval data as any ptr) as xmlDocPtr
+declare function xmlSAXParseFile cdecl alias "xmlSAXParseFile" (byval sax as xmlSAXHandlerPtr, byval filename as zstring ptr, byval recovery as integer) as xmlDocPtr
+declare function xmlSAXParseFileWithData cdecl alias "xmlSAXParseFileWithData" (byval sax as xmlSAXHandlerPtr, byval filename as zstring ptr, byval recovery as integer, byval data as any ptr) as xmlDocPtr
+declare function xmlSAXParseEntity cdecl alias "xmlSAXParseEntity" (byval sax as xmlSAXHandlerPtr, byval filename as zstring ptr) as xmlDocPtr
+declare function xmlParseEntity cdecl alias "xmlParseEntity" (byval filename as zstring ptr) as xmlDocPtr
+declare function xmlSAXParseDTD cdecl alias "xmlSAXParseDTD" (byval sax as xmlSAXHandlerPtr, byval ExternalID as zstring ptr, byval SystemID as zstring ptr) as xmlDtdPtr
+declare function xmlParseDTD cdecl alias "xmlParseDTD" (byval ExternalID as zstring ptr, byval SystemID as zstring ptr) as xmlDtdPtr
 declare function xmlIOParseDTD cdecl alias "xmlIOParseDTD" (byval sax as xmlSAXHandlerPtr, byval input as xmlParserInputBufferPtr, byval enc as xmlCharEncoding) as xmlDtdPtr
-declare function xmlParseBalancedChunkMemory cdecl alias "xmlParseBalancedChunkMemory" (byval doc as xmlDocPtr, byval sax as xmlSAXHandlerPtr, byval user_data as any ptr, byval depth as integer, byval string as string, byval lst as xmlNodePtr ptr) as integer
-declare function xmlParseInNodeContext cdecl alias "xmlParseInNodeContext" (byval node as xmlNodePtr, byval data as string, byval datalen as integer, byval options as integer, byval lst as xmlNodePtr ptr) as xmlParserErrors
-declare function xmlParseBalancedChunkMemoryRecover cdecl alias "xmlParseBalancedChunkMemoryRecover" (byval doc as xmlDocPtr, byval sax as xmlSAXHandlerPtr, byval user_data as any ptr, byval depth as integer, byval string as string, byval lst as xmlNodePtr ptr, byval recover as integer) as integer
-declare function xmlParseExternalEntity cdecl alias "xmlParseExternalEntity" (byval doc as xmlDocPtr, byval sax as xmlSAXHandlerPtr, byval user_data as any ptr, byval depth as integer, byval URL as string, byval ID as string, byval lst as xmlNodePtr ptr) as integer
-declare function xmlParseCtxtExternalEntity cdecl alias "xmlParseCtxtExternalEntity" (byval ctx as xmlParserCtxtPtr, byval URL as string, byval ID as string, byval lst as xmlNodePtr ptr) as integer
+declare function xmlParseBalancedChunkMemory cdecl alias "xmlParseBalancedChunkMemory" (byval doc as xmlDocPtr, byval sax as xmlSAXHandlerPtr, byval user_data as any ptr, byval depth as integer, byval string as zstring ptr, byval lst as xmlNodePtr ptr) as integer
+declare function xmlParseInNodeContext cdecl alias "xmlParseInNodeContext" (byval node as xmlNodePtr, byval data as zstring ptr, byval datalen as integer, byval options as integer, byval lst as xmlNodePtr ptr) as xmlParserErrors
+declare function xmlParseBalancedChunkMemoryRecover cdecl alias "xmlParseBalancedChunkMemoryRecover" (byval doc as xmlDocPtr, byval sax as xmlSAXHandlerPtr, byval user_data as any ptr, byval depth as integer, byval string as zstring ptr, byval lst as xmlNodePtr ptr, byval recover as integer) as integer
+declare function xmlParseExternalEntity cdecl alias "xmlParseExternalEntity" (byval doc as xmlDocPtr, byval sax as xmlSAXHandlerPtr, byval user_data as any ptr, byval depth as integer, byval URL as zstring ptr, byval ID as zstring ptr, byval lst as xmlNodePtr ptr) as integer
+declare function xmlParseCtxtExternalEntity cdecl alias "xmlParseCtxtExternalEntity" (byval ctx as xmlParserCtxtPtr, byval URL as zstring ptr, byval ID as zstring ptr, byval lst as xmlNodePtr ptr) as integer
 declare function xmlNewParserCtxt cdecl alias "xmlNewParserCtxt" () as xmlParserCtxtPtr
 declare function xmlInitParserCtxt cdecl alias "xmlInitParserCtxt" (byval ctxt as xmlParserCtxtPtr) as integer
 declare sub xmlClearParserCtxt cdecl alias "xmlClearParserCtxt" (byval ctxt as xmlParserCtxtPtr)
 declare sub xmlFreeParserCtxt cdecl alias "xmlFreeParserCtxt" (byval ctxt as xmlParserCtxtPtr)
-declare sub xmlSetupParserForBuffer cdecl alias "xmlSetupParserForBuffer" (byval ctxt as xmlParserCtxtPtr, byval buffer as string, byval filename as string)
-declare function xmlCreateDocParserCtxt cdecl alias "xmlCreateDocParserCtxt" (byval cur as string) as xmlParserCtxtPtr
+declare sub xmlSetupParserForBuffer cdecl alias "xmlSetupParserForBuffer" (byval ctxt as xmlParserCtxtPtr, byval buffer as zstring ptr, byval filename as zstring ptr)
+declare function xmlCreateDocParserCtxt cdecl alias "xmlCreateDocParserCtxt" (byval cur as zstring ptr) as xmlParserCtxtPtr
 declare function xmlGetFeaturesList cdecl alias "xmlGetFeaturesList" (byval len as integer ptr, byval result as byte ptr ptr) as integer
-declare function xmlGetFeature cdecl alias "xmlGetFeature" (byval ctxt as xmlParserCtxtPtr, byval name as string, byval result as any ptr) as integer
-declare function xmlSetFeature cdecl alias "xmlSetFeature" (byval ctxt as xmlParserCtxtPtr, byval name as string, byval value as any ptr) as integer
-declare function xmlCreatePushParserCtxt cdecl alias "xmlCreatePushParserCtxt" (byval sax as xmlSAXHandlerPtr, byval user_data as any ptr, byval chunk as string, byval size as integer, byval filename as string) as xmlParserCtxtPtr
-declare function xmlParseChunk cdecl alias "xmlParseChunk" (byval ctxt as xmlParserCtxtPtr, byval chunk as string, byval size as integer, byval terminate as integer) as integer
+declare function xmlGetFeature cdecl alias "xmlGetFeature" (byval ctxt as xmlParserCtxtPtr, byval name as zstring ptr, byval result as any ptr) as integer
+declare function xmlSetFeature cdecl alias "xmlSetFeature" (byval ctxt as xmlParserCtxtPtr, byval name as zstring ptr, byval value as any ptr) as integer
+declare function xmlCreatePushParserCtxt cdecl alias "xmlCreatePushParserCtxt" (byval sax as xmlSAXHandlerPtr, byval user_data as any ptr, byval chunk as zstring ptr, byval size as integer, byval filename as zstring ptr) as xmlParserCtxtPtr
+declare function xmlParseChunk cdecl alias "xmlParseChunk" (byval ctxt as xmlParserCtxtPtr, byval chunk as zstring ptr, byval size as integer, byval terminate as integer) as integer
 declare function xmlCreateIOParserCtxt cdecl alias "xmlCreateIOParserCtxt" (byval sax as xmlSAXHandlerPtr, byval user_data as any ptr, byval ioread as xmlInputReadCallback, byval ioclose as xmlInputCloseCallback, byval ioctx as any ptr, byval enc as xmlCharEncoding) as xmlParserCtxtPtr
 declare function xmlNewIOInputStream cdecl alias "xmlNewIOInputStream" (byval ctxt as xmlParserCtxtPtr, byval input as xmlParserInputBufferPtr, byval enc as xmlCharEncoding) as xmlParserInputPtr
 declare function xmlParserFindNodeInfo cdecl alias "xmlParserFindNodeInfo" (byval ctxt as xmlParserCtxtPtr, byval node as xmlNodePtr) as xmlParserNodeInfo ptr
@@ -350,7 +350,7 @@ declare function xmlParserFindNodeInfoIndex cdecl alias "xmlParserFindNodeInfoIn
 declare sub xmlParserAddNodeInfo cdecl alias "xmlParserAddNodeInfo" (byval ctxt as xmlParserCtxtPtr, byval info as xmlParserNodeInfoPtr)
 declare sub xmlSetExternalEntityLoader cdecl alias "xmlSetExternalEntityLoader" (byval f as xmlExternalEntityLoader)
 declare function xmlGetExternalEntityLoader cdecl alias "xmlGetExternalEntityLoader" () as xmlExternalEntityLoader
-declare function xmlLoadExternalEntity cdecl alias "xmlLoadExternalEntity" (byval URL as string, byval ID as string, byval ctxt as xmlParserCtxtPtr) as xmlParserInputPtr
+declare function xmlLoadExternalEntity cdecl alias "xmlLoadExternalEntity" (byval URL as zstring ptr, byval ID as zstring ptr, byval ctxt as xmlParserCtxtPtr) as xmlParserInputPtr
 declare function xmlByteConsumed cdecl alias "xmlByteConsumed" (byval ctxt as xmlParserCtxtPtr) as integer
 
 enum xmlParserOption
@@ -374,17 +374,17 @@ end enum
 
 
 declare sub xmlCtxtReset cdecl alias "xmlCtxtReset" (byval ctxt as xmlParserCtxtPtr)
-declare function xmlCtxtResetPush cdecl alias "xmlCtxtResetPush" (byval ctxt as xmlParserCtxtPtr, byval chunk as string, byval size as integer, byval filename as string, byval encoding as string) as integer
+declare function xmlCtxtResetPush cdecl alias "xmlCtxtResetPush" (byval ctxt as xmlParserCtxtPtr, byval chunk as zstring ptr, byval size as integer, byval filename as zstring ptr, byval encoding as zstring ptr) as integer
 declare function xmlCtxtUseOptions cdecl alias "xmlCtxtUseOptions" (byval ctxt as xmlParserCtxtPtr, byval options as integer) as integer
-declare function xmlReadDoc cdecl alias "xmlReadDoc" (byval cur as string, byval URL as string, byval encoding as string, byval options as integer) as xmlDocPtr
-declare function xmlReadFile cdecl alias "xmlReadFile" (byval URL as string, byval encoding as string, byval options as integer) as xmlDocPtr
-declare function xmlReadMemory cdecl alias "xmlReadMemory" (byval buffer as string, byval size as integer, byval URL as string, byval encoding as string, byval options as integer) as xmlDocPtr
-declare function xmlReadFd cdecl alias "xmlReadFd" (byval fd as integer, byval URL as string, byval encoding as string, byval options as integer) as xmlDocPtr
-declare function xmlReadIO cdecl alias "xmlReadIO" (byval ioread as xmlInputReadCallback, byval ioclose as xmlInputCloseCallback, byval ioctx as any ptr, byval URL as string, byval encoding as string, byval options as integer) as xmlDocPtr
-declare function xmlCtxtReadDoc cdecl alias "xmlCtxtReadDoc" (byval ctxt as xmlParserCtxtPtr, byval cur as string, byval URL as string, byval encoding as string, byval options as integer) as xmlDocPtr
-declare function xmlCtxtReadFile cdecl alias "xmlCtxtReadFile" (byval ctxt as xmlParserCtxtPtr, byval filename as string, byval encoding as string, byval options as integer) as xmlDocPtr
-declare function xmlCtxtReadMemory cdecl alias "xmlCtxtReadMemory" (byval ctxt as xmlParserCtxtPtr, byval buffer as string, byval size as integer, byval URL as string, byval encoding as string, byval options as integer) as xmlDocPtr
-declare function xmlCtxtReadFd cdecl alias "xmlCtxtReadFd" (byval ctxt as xmlParserCtxtPtr, byval fd as integer, byval URL as string, byval encoding as string, byval options as integer) as xmlDocPtr
-declare function xmlCtxtReadIO cdecl alias "xmlCtxtReadIO" (byval ctxt as xmlParserCtxtPtr, byval ioread as xmlInputReadCallback, byval ioclose as xmlInputCloseCallback, byval ioctx as any ptr, byval URL as string, byval encoding as string, byval options as integer) as xmlDocPtr
+declare function xmlReadDoc cdecl alias "xmlReadDoc" (byval cur as zstring ptr, byval URL as zstring ptr, byval encoding as zstring ptr, byval options as integer) as xmlDocPtr
+declare function xmlReadFile cdecl alias "xmlReadFile" (byval URL as zstring ptr, byval encoding as zstring ptr, byval options as integer) as xmlDocPtr
+declare function xmlReadMemory cdecl alias "xmlReadMemory" (byval buffer as zstring ptr, byval size as integer, byval URL as zstring ptr, byval encoding as zstring ptr, byval options as integer) as xmlDocPtr
+declare function xmlReadFd cdecl alias "xmlReadFd" (byval fd as integer, byval URL as zstring ptr, byval encoding as zstring ptr, byval options as integer) as xmlDocPtr
+declare function xmlReadIO cdecl alias "xmlReadIO" (byval ioread as xmlInputReadCallback, byval ioclose as xmlInputCloseCallback, byval ioctx as any ptr, byval URL as zstring ptr, byval encoding as zstring ptr, byval options as integer) as xmlDocPtr
+declare function xmlCtxtReadDoc cdecl alias "xmlCtxtReadDoc" (byval ctxt as xmlParserCtxtPtr, byval cur as zstring ptr, byval URL as zstring ptr, byval encoding as zstring ptr, byval options as integer) as xmlDocPtr
+declare function xmlCtxtReadFile cdecl alias "xmlCtxtReadFile" (byval ctxt as xmlParserCtxtPtr, byval filename as zstring ptr, byval encoding as zstring ptr, byval options as integer) as xmlDocPtr
+declare function xmlCtxtReadMemory cdecl alias "xmlCtxtReadMemory" (byval ctxt as xmlParserCtxtPtr, byval buffer as zstring ptr, byval size as integer, byval URL as zstring ptr, byval encoding as zstring ptr, byval options as integer) as xmlDocPtr
+declare function xmlCtxtReadFd cdecl alias "xmlCtxtReadFd" (byval ctxt as xmlParserCtxtPtr, byval fd as integer, byval URL as zstring ptr, byval encoding as zstring ptr, byval options as integer) as xmlDocPtr
+declare function xmlCtxtReadIO cdecl alias "xmlCtxtReadIO" (byval ctxt as xmlParserCtxtPtr, byval ioread as xmlInputReadCallback, byval ioclose as xmlInputCloseCallback, byval ioctx as any ptr, byval URL as zstring ptr, byval encoding as zstring ptr, byval options as integer) as xmlDocPtr
 
 #endif

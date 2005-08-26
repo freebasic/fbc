@@ -23,7 +23,7 @@ end type
 
 type _GtkCellRendererToggleClass
 	parent_class as GtkCellRendererClass
-	toggled as sub cdecl(byval as GtkCellRendererToggle ptr, byval as string)
+	toggled as sub cdecl(byval as GtkCellRendererToggle ptr, byval as zstring ptr)
 	_gtk_reserved1 as sub cdecl()
 	_gtk_reserved2 as sub cdecl()
 	_gtk_reserved3 as sub cdecl()

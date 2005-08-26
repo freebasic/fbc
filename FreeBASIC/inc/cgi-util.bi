@@ -64,22 +64,22 @@ end enum
 declare function cgi_init cdecl alias "cgi_init" () as integer
 declare sub cgi_quit cdecl alias "cgi_quit" ()
 declare function cgi_parse_cookies cdecl alias "cgi_parse_cookies" () as integer
-declare function cgi_getcookie cdecl alias "cgi_getcookie" (byval cookie_name as string) as zstring ptr
-declare function cgi_getnumentries cdecl alias "cgi_getnumentries" (byval field_name as string) as integer
-declare function cgi_getentrystr cdecl alias "cgi_getentrystr" (byval field_name as string) as zstring ptr
-declare function cgi_getnentrystr cdecl alias "cgi_getnentrystr" (byval field_name as string, byval n as integer) as zstring ptr
-declare function cgi_getentrytype cdecl alias "cgi_getentrytype" (byval field_name as string) as zstring ptr
-declare function cgi_getnentrytype cdecl alias "cgi_getnentrytype" (byval field_name as string, byval n as integer) as zstring ptr
-declare function cgi_getentryint cdecl alias "cgi_getentryint" (byval field_name as string) as integer
-declare function cgi_getnentryint cdecl alias "cgi_getnentryint" (byval field_name as string, byval n as integer) as integer
-declare function cgi_getentrydouble cdecl alias "cgi_getentrydouble" (byval field_name as string) as double
-declare function cgi_getnentrydouble cdecl alias "cgi_getnentrydouble" (byval field_name as string, byval n as integer) as double
-declare function cgi_getentrybool cdecl alias "cgi_getentrybool" (byval field_name as string, byval def as integer) as integer
-declare function cgi_getnentrybool cdecl alias "cgi_getnentrybool" (byval field_name as string, byval def as integer, byval n as integer) as integer
-declare function cgi_dump_no_abort cdecl alias "cgi_dump_no_abort" (byval filename as string) as integer
-declare sub cgi_dump cdecl alias "cgi_dump" (byval filename as string)
-declare function cgi_goodemailaddress cdecl alias "cgi_goodemailaddress" (byval addr as string) as integer
-declare sub cgi_error cdecl alias "cgi_error" (byval reason as string)
+declare function cgi_getcookie cdecl alias "cgi_getcookie" (byval cookie_name as zstring ptr) as zstring ptr
+declare function cgi_getnumentries cdecl alias "cgi_getnumentries" (byval field_name as zstring ptr) as integer
+declare function cgi_getentrystr cdecl alias "cgi_getentrystr" (byval field_name as zstring ptr) as zstring ptr
+declare function cgi_getnentrystr cdecl alias "cgi_getnentrystr" (byval field_name as zstring ptr, byval n as integer) as zstring ptr
+declare function cgi_getentrytype cdecl alias "cgi_getentrytype" (byval field_name as zstring ptr) as zstring ptr
+declare function cgi_getnentrytype cdecl alias "cgi_getnentrytype" (byval field_name as zstring ptr, byval n as integer) as zstring ptr
+declare function cgi_getentryint cdecl alias "cgi_getentryint" (byval field_name as zstring ptr) as integer
+declare function cgi_getnentryint cdecl alias "cgi_getnentryint" (byval field_name as zstring ptr, byval n as integer) as integer
+declare function cgi_getentrydouble cdecl alias "cgi_getentrydouble" (byval field_name as zstring ptr) as double
+declare function cgi_getnentrydouble cdecl alias "cgi_getnentrydouble" (byval field_name as zstring ptr, byval n as integer) as double
+declare function cgi_getentrybool cdecl alias "cgi_getentrybool" (byval field_name as zstring ptr, byval def as integer) as integer
+declare function cgi_getnentrybool cdecl alias "cgi_getnentrybool" (byval field_name as zstring ptr, byval def as integer, byval n as integer) as integer
+declare function cgi_dump_no_abort cdecl alias "cgi_dump_no_abort" (byval filename as zstring ptr) as integer
+declare sub cgi_dump cdecl alias "cgi_dump" (byval filename as zstring ptr)
+declare function cgi_goodemailaddress cdecl alias "cgi_goodemailaddress" (byval addr as zstring ptr) as integer
+declare sub cgi_error cdecl alias "cgi_error" (byval reason as zstring ptr)
 declare function cgi_strerror cdecl alias "cgi_strerror" (byval err as integer) as zstring ptr
 
 #endif

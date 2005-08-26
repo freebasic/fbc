@@ -94,7 +94,7 @@ declare function gtk_text_get_point cdecl alias "gtk_text_get_point" (byval text
 declare function gtk_text_get_length cdecl alias "gtk_text_get_length" (byval text as GtkText ptr) as guint
 declare sub gtk_text_freeze cdecl alias "gtk_text_freeze" (byval text as GtkText ptr)
 declare sub gtk_text_thaw cdecl alias "gtk_text_thaw" (byval text as GtkText ptr)
-declare sub gtk_text_insert cdecl alias "gtk_text_insert" (byval text as GtkText ptr, byval font as GdkFont ptr, byval fore as GdkColor ptr, byval back as GdkColor ptr, byval chars as string, byval length as gint)
+declare sub gtk_text_insert cdecl alias "gtk_text_insert" (byval text as GtkText ptr, byval font as GdkFont ptr, byval fore as GdkColor ptr, byval back as GdkColor ptr, byval chars as zstring ptr, byval length as gint)
 declare function gtk_text_backward_delete cdecl alias "gtk_text_backward_delete" (byval text as GtkText ptr, byval nchars as guint) as gboolean
 declare function gtk_text_forward_delete cdecl alias "gtk_text_forward_delete" (byval text as GtkText ptr, byval nchars as guint) as gboolean
 

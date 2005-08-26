@@ -25,11 +25,11 @@ declare sub gsl_block_uint_free cdecl alias "gsl_block_uint_free" (byval b as gs
 declare function gsl_block_uint_fread cdecl alias "gsl_block_uint_fread" (byval stream as FILE ptr, byval b as gsl_block_uint ptr) as integer
 declare function gsl_block_uint_fwrite cdecl alias "gsl_block_uint_fwrite" (byval stream as FILE ptr, byval b as gsl_block_uint ptr) as integer
 declare function gsl_block_uint_fscanf cdecl alias "gsl_block_uint_fscanf" (byval stream as FILE ptr, byval b as gsl_block_uint ptr) as integer
-declare function gsl_block_uint_fprintf cdecl alias "gsl_block_uint_fprintf" (byval stream as FILE ptr, byval b as gsl_block_uint ptr, byval format as string) as integer
+declare function gsl_block_uint_fprintf cdecl alias "gsl_block_uint_fprintf" (byval stream as FILE ptr, byval b as gsl_block_uint ptr, byval format as zstring ptr) as integer
 declare function gsl_block_uint_raw_fread cdecl alias "gsl_block_uint_raw_fread" (byval stream as FILE ptr, byval b as uinteger ptr, byval n as integer, byval stride as integer) as integer
 declare function gsl_block_uint_raw_fwrite cdecl alias "gsl_block_uint_raw_fwrite" (byval stream as FILE ptr, byval b as uinteger ptr, byval n as integer, byval stride as integer) as integer
 declare function gsl_block_uint_raw_fscanf cdecl alias "gsl_block_uint_raw_fscanf" (byval stream as FILE ptr, byval b as uinteger ptr, byval n as integer, byval stride as integer) as integer
-declare function gsl_block_uint_raw_fprintf cdecl alias "gsl_block_uint_raw_fprintf" (byval stream as FILE ptr, byval b as uinteger ptr, byval n as integer, byval stride as integer, byval format as string) as integer
+declare function gsl_block_uint_raw_fprintf cdecl alias "gsl_block_uint_raw_fprintf" (byval stream as FILE ptr, byval b as uinteger ptr, byval n as integer, byval stride as integer, byval format as zstring ptr) as integer
 declare function gsl_block_uint_size cdecl alias "gsl_block_uint_size" (byval b as gsl_block_uint ptr) as integer
 declare function gsl_block_uint_data cdecl alias "gsl_block_uint_data" (byval b as gsl_block_uint ptr) as uinteger ptr
 

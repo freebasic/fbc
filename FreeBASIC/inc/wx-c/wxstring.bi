@@ -11,7 +11,7 @@
 
 #include once "wx-c/wx.bi"
 
-declare function wxString cdecl alias "wxString_ctor" (byval str as string) as wxString ptr
+declare function wxString cdecl alias "wxString_ctor" (byval str as zstring ptr) as wxString ptr
 declare sub wxString_dtor cdecl alias "wxString_dtor" (byval self as wxString ptr)
 declare function wxString_mb_str cdecl alias "wxString_mb_str" (byval self as wxString ptr) as zstring ptr
 declare function wxString_Length cdecl alias "wxString_Length" (byval self as wxString ptr) as integer

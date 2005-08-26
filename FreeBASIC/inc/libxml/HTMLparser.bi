@@ -50,26 +50,26 @@ type _htmlEntityDesc
 	desc as byte ptr
 end type
 
-declare function htmlTagLookup cdecl alias "htmlTagLookup" (byval tag as string) as htmlElemDesc ptr
-declare function htmlEntityLookup cdecl alias "htmlEntityLookup" (byval name as string) as htmlEntityDesc ptr
+declare function htmlTagLookup cdecl alias "htmlTagLookup" (byval tag as zstring ptr) as htmlElemDesc ptr
+declare function htmlEntityLookup cdecl alias "htmlEntityLookup" (byval name as zstring ptr) as htmlEntityDesc ptr
 declare function htmlEntityValueLookup cdecl alias "htmlEntityValueLookup" (byval value as uinteger) as htmlEntityDesc ptr
 declare function htmlIsAutoClosed cdecl alias "htmlIsAutoClosed" (byval doc as htmlDocPtr, byval elem as htmlNodePtr) as integer
-declare function htmlAutoCloseTag cdecl alias "htmlAutoCloseTag" (byval doc as htmlDocPtr, byval name as string, byval elem as htmlNodePtr) as integer
+declare function htmlAutoCloseTag cdecl alias "htmlAutoCloseTag" (byval doc as htmlDocPtr, byval name as zstring ptr, byval elem as htmlNodePtr) as integer
 declare function htmlParseEntityRef cdecl alias "htmlParseEntityRef" (byval ctxt as htmlParserCtxtPtr, byval str as zstring ptr ptr) as htmlEntityDesc ptr
 declare function htmlParseCharRef cdecl alias "htmlParseCharRef" (byval ctxt as htmlParserCtxtPtr) as integer
 declare sub htmlParseElement cdecl alias "htmlParseElement" (byval ctxt as htmlParserCtxtPtr)
-declare function htmlCreateMemoryParserCtxt cdecl alias "htmlCreateMemoryParserCtxt" (byval buffer as string, byval size as integer) as htmlParserCtxtPtr
+declare function htmlCreateMemoryParserCtxt cdecl alias "htmlCreateMemoryParserCtxt" (byval buffer as zstring ptr, byval size as integer) as htmlParserCtxtPtr
 declare function htmlParseDocument cdecl alias "htmlParseDocument" (byval ctxt as htmlParserCtxtPtr) as integer
-declare function htmlSAXParseDoc cdecl alias "htmlSAXParseDoc" (byval cur as string, byval encoding as string, byval sax as htmlSAXHandlerPtr, byval userData as any ptr) as htmlDocPtr
-declare function htmlParseDoc cdecl alias "htmlParseDoc" (byval cur as string, byval encoding as string) as htmlDocPtr
-declare function htmlSAXParseFile cdecl alias "htmlSAXParseFile" (byval filename as string, byval encoding as string, byval sax as htmlSAXHandlerPtr, byval userData as any ptr) as htmlDocPtr
-declare function htmlParseFile cdecl alias "htmlParseFile" (byval filename as string, byval encoding as string) as htmlDocPtr
+declare function htmlSAXParseDoc cdecl alias "htmlSAXParseDoc" (byval cur as zstring ptr, byval encoding as zstring ptr, byval sax as htmlSAXHandlerPtr, byval userData as any ptr) as htmlDocPtr
+declare function htmlParseDoc cdecl alias "htmlParseDoc" (byval cur as zstring ptr, byval encoding as zstring ptr) as htmlDocPtr
+declare function htmlSAXParseFile cdecl alias "htmlSAXParseFile" (byval filename as zstring ptr, byval encoding as zstring ptr, byval sax as htmlSAXHandlerPtr, byval userData as any ptr) as htmlDocPtr
+declare function htmlParseFile cdecl alias "htmlParseFile" (byval filename as zstring ptr, byval encoding as zstring ptr) as htmlDocPtr
 declare function UTF8ToHtml cdecl alias "UTF8ToHtml" (byval out as ubyte ptr, byval outlen as integer ptr, byval in as ubyte ptr, byval inlen as integer ptr) as integer
 declare function htmlEncodeEntities cdecl alias "htmlEncodeEntities" (byval out as ubyte ptr, byval outlen as integer ptr, byval in as ubyte ptr, byval inlen as integer ptr, byval quoteChar as integer) as integer
-declare function htmlIsScriptAttribute cdecl alias "htmlIsScriptAttribute" (byval name as string) as integer
+declare function htmlIsScriptAttribute cdecl alias "htmlIsScriptAttribute" (byval name as zstring ptr) as integer
 declare function htmlHandleOmittedElem cdecl alias "htmlHandleOmittedElem" (byval val as integer) as integer
-declare function htmlCreatePushParserCtxt cdecl alias "htmlCreatePushParserCtxt" (byval sax as htmlSAXHandlerPtr, byval user_data as any ptr, byval chunk as string, byval size as integer, byval filename as string, byval enc as xmlCharEncoding) as htmlParserCtxtPtr
-declare function htmlParseChunk cdecl alias "htmlParseChunk" (byval ctxt as htmlParserCtxtPtr, byval chunk as string, byval size as integer, byval terminate as integer) as integer
+declare function htmlCreatePushParserCtxt cdecl alias "htmlCreatePushParserCtxt" (byval sax as htmlSAXHandlerPtr, byval user_data as any ptr, byval chunk as zstring ptr, byval size as integer, byval filename as zstring ptr, byval enc as xmlCharEncoding) as htmlParserCtxtPtr
+declare function htmlParseChunk cdecl alias "htmlParseChunk" (byval ctxt as htmlParserCtxtPtr, byval chunk as zstring ptr, byval size as integer, byval terminate as integer) as integer
 declare sub htmlFreeParserCtxt cdecl alias "htmlFreeParserCtxt" (byval ctxt as htmlParserCtxtPtr)
 
 enum htmlParserOption
@@ -83,16 +83,16 @@ end enum
 
 declare sub htmlCtxtReset cdecl alias "htmlCtxtReset" (byval ctxt as htmlParserCtxtPtr)
 declare function htmlCtxtUseOptions cdecl alias "htmlCtxtUseOptions" (byval ctxt as htmlParserCtxtPtr, byval options as integer) as integer
-declare function htmlReadDoc cdecl alias "htmlReadDoc" (byval cur as string, byval URL as string, byval encoding as string, byval options as integer) as htmlDocPtr
-declare function htmlReadFile cdecl alias "htmlReadFile" (byval URL as string, byval encoding as string, byval options as integer) as htmlDocPtr
-declare function htmlReadMemory cdecl alias "htmlReadMemory" (byval buffer as string, byval size as integer, byval URL as string, byval encoding as string, byval options as integer) as htmlDocPtr
-declare function htmlReadFd cdecl alias "htmlReadFd" (byval fd as integer, byval URL as string, byval encoding as string, byval options as integer) as htmlDocPtr
-declare function htmlReadIO cdecl alias "htmlReadIO" (byval ioread as xmlInputReadCallback, byval ioclose as xmlInputCloseCallback, byval ioctx as any ptr, byval URL as string, byval encoding as string, byval options as integer) as htmlDocPtr
-declare function htmlCtxtReadDoc cdecl alias "htmlCtxtReadDoc" (byval ctxt as xmlParserCtxtPtr, byval cur as string, byval URL as string, byval encoding as string, byval options as integer) as htmlDocPtr
-declare function htmlCtxtReadFile cdecl alias "htmlCtxtReadFile" (byval ctxt as xmlParserCtxtPtr, byval filename as string, byval encoding as string, byval options as integer) as htmlDocPtr
-declare function htmlCtxtReadMemory cdecl alias "htmlCtxtReadMemory" (byval ctxt as xmlParserCtxtPtr, byval buffer as string, byval size as integer, byval URL as string, byval encoding as string, byval options as integer) as htmlDocPtr
-declare function htmlCtxtReadFd cdecl alias "htmlCtxtReadFd" (byval ctxt as xmlParserCtxtPtr, byval fd as integer, byval URL as string, byval encoding as string, byval options as integer) as htmlDocPtr
-declare function htmlCtxtReadIO cdecl alias "htmlCtxtReadIO" (byval ctxt as xmlParserCtxtPtr, byval ioread as xmlInputReadCallback, byval ioclose as xmlInputCloseCallback, byval ioctx as any ptr, byval URL as string, byval encoding as string, byval options as integer) as htmlDocPtr
+declare function htmlReadDoc cdecl alias "htmlReadDoc" (byval cur as zstring ptr, byval URL as zstring ptr, byval encoding as zstring ptr, byval options as integer) as htmlDocPtr
+declare function htmlReadFile cdecl alias "htmlReadFile" (byval URL as zstring ptr, byval encoding as zstring ptr, byval options as integer) as htmlDocPtr
+declare function htmlReadMemory cdecl alias "htmlReadMemory" (byval buffer as zstring ptr, byval size as integer, byval URL as zstring ptr, byval encoding as zstring ptr, byval options as integer) as htmlDocPtr
+declare function htmlReadFd cdecl alias "htmlReadFd" (byval fd as integer, byval URL as zstring ptr, byval encoding as zstring ptr, byval options as integer) as htmlDocPtr
+declare function htmlReadIO cdecl alias "htmlReadIO" (byval ioread as xmlInputReadCallback, byval ioclose as xmlInputCloseCallback, byval ioctx as any ptr, byval URL as zstring ptr, byval encoding as zstring ptr, byval options as integer) as htmlDocPtr
+declare function htmlCtxtReadDoc cdecl alias "htmlCtxtReadDoc" (byval ctxt as xmlParserCtxtPtr, byval cur as zstring ptr, byval URL as zstring ptr, byval encoding as zstring ptr, byval options as integer) as htmlDocPtr
+declare function htmlCtxtReadFile cdecl alias "htmlCtxtReadFile" (byval ctxt as xmlParserCtxtPtr, byval filename as zstring ptr, byval encoding as zstring ptr, byval options as integer) as htmlDocPtr
+declare function htmlCtxtReadMemory cdecl alias "htmlCtxtReadMemory" (byval ctxt as xmlParserCtxtPtr, byval buffer as zstring ptr, byval size as integer, byval URL as zstring ptr, byval encoding as zstring ptr, byval options as integer) as htmlDocPtr
+declare function htmlCtxtReadFd cdecl alias "htmlCtxtReadFd" (byval ctxt as xmlParserCtxtPtr, byval fd as integer, byval URL as zstring ptr, byval encoding as zstring ptr, byval options as integer) as htmlDocPtr
+declare function htmlCtxtReadIO cdecl alias "htmlCtxtReadIO" (byval ctxt as xmlParserCtxtPtr, byval ioread as xmlInputReadCallback, byval ioclose as xmlInputCloseCallback, byval ioctx as any ptr, byval URL as zstring ptr, byval encoding as zstring ptr, byval options as integer) as htmlDocPtr
 
 enum htmlStatus
 	HTML_NA = 0

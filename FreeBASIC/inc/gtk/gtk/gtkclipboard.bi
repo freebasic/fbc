@@ -12,7 +12,7 @@
 #include once "gtk/gtk/gtkselection.bi"
 
 type GtkClipboardReceivedFunc as sub cdecl(byval as GtkClipboard ptr, byval as GtkSelectionData ptr, byval as gpointer)
-type GtkClipboardTextReceivedFunc as sub cdecl(byval as GtkClipboard ptr, byval as string, byval as gpointer)
+type GtkClipboardTextReceivedFunc as sub cdecl(byval as GtkClipboard ptr, byval as zstring ptr, byval as gpointer)
 type GtkClipboardImageReceivedFunc as sub cdecl(byval as GtkClipboard ptr, byval as GdkPixbuf ptr, byval as gpointer)
 type GtkClipboardTargetsReceivedFunc as sub cdecl(byval as GtkClipboard ptr, byval as GdkAtom ptr, byval as gint, byval as gpointer)
 type GtkClipboardGetFunc as sub cdecl(byval as GtkClipboard ptr, byval as GtkSelectionData ptr, byval as guint, byval as gpointer)
@@ -26,7 +26,7 @@ declare function gtk_clipboard_set_with_data cdecl alias "gtk_clipboard_set_with
 declare function gtk_clipboard_set_with_owner cdecl alias "gtk_clipboard_set_with_owner" (byval clipboard as GtkClipboard ptr, byval targets as GtkTargetEntry ptr, byval n_targets as guint, byval get_func as GtkClipboardGetFunc, byval clear_func as GtkClipboardClearFunc, byval owner as GObject ptr) as gboolean
 declare function gtk_clipboard_get_owner cdecl alias "gtk_clipboard_get_owner" (byval clipboard as GtkClipboard ptr) as GObject ptr
 declare sub gtk_clipboard_clear cdecl alias "gtk_clipboard_clear" (byval clipboard as GtkClipboard ptr)
-declare sub gtk_clipboard_set_text cdecl alias "gtk_clipboard_set_text" (byval clipboard as GtkClipboard ptr, byval text as string, byval len as gint)
+declare sub gtk_clipboard_set_text cdecl alias "gtk_clipboard_set_text" (byval clipboard as GtkClipboard ptr, byval text as zstring ptr, byval len as gint)
 declare sub gtk_clipboard_set_image cdecl alias "gtk_clipboard_set_image" (byval clipboard as GtkClipboard ptr, byval pixbuf as GdkPixbuf ptr)
 declare sub gtk_clipboard_request_contents cdecl alias "gtk_clipboard_request_contents" (byval clipboard as GtkClipboard ptr, byval target as GdkAtom, byval callback as GtkClipboardReceivedFunc, byval user_data as gpointer)
 declare sub gtk_clipboard_request_text cdecl alias "gtk_clipboard_request_text" (byval clipboard as GtkClipboard ptr, byval callback as GtkClipboardTextReceivedFunc, byval user_data as gpointer)

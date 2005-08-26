@@ -12,11 +12,11 @@
 #include once "wx-c/wx.bi"
 
 declare function wxDocument cdecl alias "wxDocument_ctor" (byval parent as wxDocument ptr) as wxDocument ptr
-declare sub wxDocument_SetFilename cdecl alias "wxDocument_SetFilename" (byval self as wxDocument ptr, byval filename as string, byval notifyViews as integer)
+declare sub wxDocument_SetFilename cdecl alias "wxDocument_SetFilename" (byval self as wxDocument ptr, byval filename as zstring ptr, byval notifyViews as integer)
 declare function wxDocument_GetFilename cdecl alias "wxDocument_GetFilename" (byval self as wxDocument ptr) as wxString ptr
-declare sub wxDocument_SetTitle cdecl alias "wxDocument_SetTitle" (byval self as wxDocument ptr, byval title as string)
+declare sub wxDocument_SetTitle cdecl alias "wxDocument_SetTitle" (byval self as wxDocument ptr, byval title as zstring ptr)
 declare function wxDocument_GetTitle cdecl alias "wxDocument_GetTitle" (byval self as wxDocument ptr) as wxString ptr
-declare sub wxDocument_SetDocumentName cdecl alias "wxDocument_SetDocumentName" (byval self as wxDocument ptr, byval name as string)
+declare sub wxDocument_SetDocumentName cdecl alias "wxDocument_SetDocumentName" (byval self as wxDocument ptr, byval name as zstring ptr)
 declare function wxDocument_GetDocumentName cdecl alias "wxDocument_GetDocumentName" (byval self as wxDocument ptr) as wxString ptr
 declare function wxDocument_GetDocumentSaved cdecl alias "wxDocument_GetDocumentSaved" (byval self as wxDocument ptr) as integer
 declare sub wxDocument_SetDocumentSaved cdecl alias "wxDocument_SetDocumentSaved" (byval self as wxDocument ptr, byval saved as integer)

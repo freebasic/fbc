@@ -8,10 +8,10 @@
 '$include: "SDL/begin_code.bi"
 
 declare function SDL_LoadObject SDLCALL alias "SDL_LoadObject" _
-   (byval sofile as string) as any ptr
+   (byval sofile as zstring ptr) as any ptr
 
 declare function SDL_LoadFunction SDLCALL alias "SDL_LoadFunction" _
-   (byval handle as any ptr, byval name as string) as any ptr
+   (byval handle as any ptr, byval name as zstring ptr) as any ptr
 
 declare sub SDL_UnloadObject SDLCALL alias "SDL_UnloadObject" _
    (byval handle as any ptr)

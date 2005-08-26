@@ -13,7 +13,7 @@
 
 
 declare function wxSlider cdecl alias "wxSlider_ctor" () as wxSlider ptr
-declare function wxSlider_Create cdecl alias "wxSlider_Create" (byval self as wxSlider ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval value as integer, byval minValue as integer, byval maxValue as integer, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval validator as wxValidator ptr, byval name as string) as integer
+declare function wxSlider_Create cdecl alias "wxSlider_Create" (byval self as wxSlider ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval value as integer, byval minValue as integer, byval maxValue as integer, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval validator as wxValidator ptr, byval name as zstring ptr) as integer
 declare function wxSlider_GetValue cdecl alias "wxSlider_GetValue" (byval self as wxSlider ptr) as integer
 declare sub wxSlider_SetValue cdecl alias "wxSlider_SetValue" (byval self as wxSlider ptr, byval value as integer)
 declare sub wxSlider_SetRange cdecl alias "wxSlider_SetRange" (byval self as wxSlider ptr, byval minValue as integer, byval maxValue as integer)

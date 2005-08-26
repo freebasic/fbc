@@ -13,7 +13,7 @@
 #include once "gsl/gsl_permutation.bi"
 #include once "gsl/gsl_types.bi"
 
-declare function gsl_permute_char cdecl alias "gsl_permute_char" (byval p as integer ptr, byval data as string, byval stride as integer, byval n as integer) as integer
-declare function gsl_permute_char_inverse cdecl alias "gsl_permute_char_inverse" (byval p as integer ptr, byval data as string, byval stride as integer, byval n as integer) as integer
+declare function gsl_permute_char cdecl alias "gsl_permute_char" (byval p as integer ptr, byval data as zstring ptr, byval stride as integer, byval n as integer) as integer
+declare function gsl_permute_char_inverse cdecl alias "gsl_permute_char_inverse" (byval p as integer ptr, byval data as zstring ptr, byval stride as integer, byval n as integer) as integer
 
 #endif

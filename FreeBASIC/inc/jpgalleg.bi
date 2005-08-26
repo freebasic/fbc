@@ -61,13 +61,13 @@
 
 Declare Function jpgalleg_init CDecl Alias "jpgalleg_init" () As Integer
 
-Declare Function load_jpg CDecl Alias "load_jpg" (ByVal filename As String, ByVal palette As RGB Ptr) As BITMAP Ptr
-Declare Function load_jpg_ex CDecl Alias "load_jpg_ex" (byVal filename As String, ByVal palette As RGB Ptr, ByVal callback As Sub(ByVal progress As Integer)) As BITMAP Ptr
+Declare Function load_jpg CDecl Alias "load_jpg" (byval filename as zstring ptr, ByVal palette As RGB Ptr) As BITMAP Ptr
+Declare Function load_jpg_ex CDecl Alias "load_jpg_ex" (byval filename as zstring ptr, ByVal palette As RGB Ptr, ByVal callback As Sub(ByVal progress As Integer)) As BITMAP Ptr
 Declare Function load_memory_jpg CDecl Alias "load_memory_jpg" (ByVal buffer As Any Ptr, ByVal size As Integer, ByVal palette As RGB Ptr) As BITMAP Ptr
 Declare Function load_memory_jpg_ex CDecl Alias "load_memory_jpg_ex" (ByVal buffer As Any Ptr, ByVal size As Integer, ByVal palette As RGB Ptr, ByVal callback As Sub(ByVal progress As Integer)) As BITMAP Ptr
 
-Declare Function save_jpg CDecl Alias "save_jpg" (ByVal filename As String, ByVal image As BITMAP Ptr, ByVal palette As RGB Ptr) As Integer
-Declare Function save_jpg_ex CDecl Alias "save_jpg_ex" (ByVal filename As String, ByVal image As BITMAP Ptr, ByVal palette As RGB Ptr, ByVal quality As Integer, ByVal flags As Integer, ByVal callback As Sub(ByVal progress As Integer)) As Integer
+Declare Function save_jpg CDecl Alias "save_jpg" (byval filename as zstring ptr, ByVal image As BITMAP Ptr, ByVal palette As RGB Ptr) As Integer
+Declare Function save_jpg_ex CDecl Alias "save_jpg_ex" (byval filename as zstring ptr, ByVal image As BITMAP Ptr, ByVal palette As RGB Ptr, ByVal quality As Integer, ByVal flags As Integer, ByVal callback As Sub(ByVal progress As Integer)) As Integer
 Declare Function save_memory_jpg CDecl Alias "save_memory_jpg" (ByVal buffer As Any Ptr, ByVal size As Integer Ptr, ByVal image As BITMAP Ptr, ByVal palette As RGB Ptr) As Integer
 Declare Function save_memory_jpg_ex CDecl Alias "save_memory_jpg_ex" (ByVal buffer As Any Ptr, ByVal size As Integer Ptr, ByVal image As BITMAP Ptr, ByVal palette As RGB Ptr, ByVal quality As Integer, ByVal flags As Integer, BYVal callback as Sub(ByVal progress As Integer)) As Integer
 

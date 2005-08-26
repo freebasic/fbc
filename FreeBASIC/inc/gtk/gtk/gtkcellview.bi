@@ -28,8 +28,8 @@ end type
 
 declare function gtk_cell_view_get_type cdecl alias "gtk_cell_view_get_type" () as GType
 declare function gtk_cell_view_new cdecl alias "gtk_cell_view_new" () as GtkWidget ptr
-declare function gtk_cell_view_new_with_text cdecl alias "gtk_cell_view_new_with_text" (byval text as string) as GtkWidget ptr
-declare function gtk_cell_view_new_with_markup cdecl alias "gtk_cell_view_new_with_markup" (byval markup as string) as GtkWidget ptr
+declare function gtk_cell_view_new_with_text cdecl alias "gtk_cell_view_new_with_text" (byval text as zstring ptr) as GtkWidget ptr
+declare function gtk_cell_view_new_with_markup cdecl alias "gtk_cell_view_new_with_markup" (byval markup as zstring ptr) as GtkWidget ptr
 declare function gtk_cell_view_new_with_pixbuf cdecl alias "gtk_cell_view_new_with_pixbuf" (byval pixbuf as GdkPixbuf ptr) as GtkWidget ptr
 declare sub gtk_cell_view_set_model cdecl alias "gtk_cell_view_set_model" (byval cell_view as GtkCellView ptr, byval model as GtkTreeModel ptr)
 declare sub gtk_cell_view_set_displayed_row cdecl alias "gtk_cell_view_set_displayed_row" (byval cell_view as GtkCellView ptr, byval path as GtkTreePath ptr)

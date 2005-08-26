@@ -171,12 +171,12 @@ type _GtkWidgetShapeInfo
 end type
 
 declare function gtk_widget_get_type cdecl alias "gtk_widget_get_type" () as GType
-declare function gtk_widget_new cdecl alias "gtk_widget_new" (byval type as GType, byval first_property_name as string, ...) as GtkWidget ptr
+declare function gtk_widget_new cdecl alias "gtk_widget_new" (byval type as GType, byval first_property_name as zstring ptr, ...) as GtkWidget ptr
 declare function gtk_widget_ref cdecl alias "gtk_widget_ref" (byval widget as GtkWidget ptr) as GtkWidget ptr
 declare sub gtk_widget_unref cdecl alias "gtk_widget_unref" (byval widget as GtkWidget ptr)
 declare sub gtk_widget_destroy cdecl alias "gtk_widget_destroy" (byval widget as GtkWidget ptr)
 declare sub gtk_widget_destroyed cdecl alias "gtk_widget_destroyed" (byval widget as GtkWidget ptr, byval widget_pointer as GtkWidget ptr ptr)
-declare sub gtk_widget_set cdecl alias "gtk_widget_set" (byval widget as GtkWidget ptr, byval first_property_name as string, ...)
+declare sub gtk_widget_set cdecl alias "gtk_widget_set" (byval widget as GtkWidget ptr, byval first_property_name as zstring ptr, ...)
 declare sub gtk_widget_unparent cdecl alias "gtk_widget_unparent" (byval widget as GtkWidget ptr)
 declare sub gtk_widget_show cdecl alias "gtk_widget_show" (byval widget as GtkWidget ptr)
 declare sub gtk_widget_show_now cdecl alias "gtk_widget_show_now" (byval widget as GtkWidget ptr)
@@ -199,9 +199,9 @@ declare sub gtk_widget_draw cdecl alias "gtk_widget_draw" (byval widget as GtkWi
 declare sub gtk_widget_size_request cdecl alias "gtk_widget_size_request" (byval widget as GtkWidget ptr, byval requisition as GtkRequisition ptr)
 declare sub gtk_widget_size_allocate cdecl alias "gtk_widget_size_allocate" (byval widget as GtkWidget ptr, byval allocation as GtkAllocation ptr)
 declare sub gtk_widget_get_child_requisition cdecl alias "gtk_widget_get_child_requisition" (byval widget as GtkWidget ptr, byval requisition as GtkRequisition ptr)
-declare sub gtk_widget_add_accelerator cdecl alias "gtk_widget_add_accelerator" (byval widget as GtkWidget ptr, byval accel_signal as string, byval accel_group as GtkAccelGroup ptr, byval accel_key as guint, byval accel_mods as GdkModifierType, byval accel_flags as GtkAccelFlags)
+declare sub gtk_widget_add_accelerator cdecl alias "gtk_widget_add_accelerator" (byval widget as GtkWidget ptr, byval accel_signal as zstring ptr, byval accel_group as GtkAccelGroup ptr, byval accel_key as guint, byval accel_mods as GdkModifierType, byval accel_flags as GtkAccelFlags)
 declare function gtk_widget_remove_accelerator cdecl alias "gtk_widget_remove_accelerator" (byval widget as GtkWidget ptr, byval accel_group as GtkAccelGroup ptr, byval accel_key as guint, byval accel_mods as GdkModifierType) as gboolean
-declare sub gtk_widget_set_accel_path cdecl alias "gtk_widget_set_accel_path" (byval widget as GtkWidget ptr, byval accel_path as string, byval accel_group as GtkAccelGroup ptr)
+declare sub gtk_widget_set_accel_path cdecl alias "gtk_widget_set_accel_path" (byval widget as GtkWidget ptr, byval accel_path as zstring ptr, byval accel_group as GtkAccelGroup ptr)
 declare function _gtk_widget_get_accel_path cdecl alias "_gtk_widget_get_accel_path" (byval widget as GtkWidget ptr, byval locked as gboolean ptr) as zstring ptr
 declare function gtk_widget_list_accel_closures cdecl alias "gtk_widget_list_accel_closures" (byval widget as GtkWidget ptr) as GList ptr
 declare function gtk_widget_can_activate_accel cdecl alias "gtk_widget_can_activate_accel" (byval widget as GtkWidget ptr, byval signal_id as guint) as gboolean
@@ -214,12 +214,12 @@ declare sub gtk_widget_reparent cdecl alias "gtk_widget_reparent" (byval widget 
 declare function gtk_widget_intersect cdecl alias "gtk_widget_intersect" (byval widget as GtkWidget ptr, byval area as GdkRectangle ptr, byval intersection as GdkRectangle ptr) as gboolean
 declare function gtk_widget_region_intersect cdecl alias "gtk_widget_region_intersect" (byval widget as GtkWidget ptr, byval region as GdkRegion ptr) as GdkRegion ptr
 declare sub gtk_widget_freeze_child_notify cdecl alias "gtk_widget_freeze_child_notify" (byval widget as GtkWidget ptr)
-declare sub gtk_widget_child_notify cdecl alias "gtk_widget_child_notify" (byval widget as GtkWidget ptr, byval child_property as string)
+declare sub gtk_widget_child_notify cdecl alias "gtk_widget_child_notify" (byval widget as GtkWidget ptr, byval child_property as zstring ptr)
 declare sub gtk_widget_thaw_child_notify cdecl alias "gtk_widget_thaw_child_notify" (byval widget as GtkWidget ptr)
 declare function gtk_widget_is_focus cdecl alias "gtk_widget_is_focus" (byval widget as GtkWidget ptr) as gboolean
 declare sub gtk_widget_grab_focus cdecl alias "gtk_widget_grab_focus" (byval widget as GtkWidget ptr)
 declare sub gtk_widget_grab_default cdecl alias "gtk_widget_grab_default" (byval widget as GtkWidget ptr)
-declare sub gtk_widget_set_name cdecl alias "gtk_widget_set_name" (byval widget as GtkWidget ptr, byval name as string)
+declare sub gtk_widget_set_name cdecl alias "gtk_widget_set_name" (byval widget as GtkWidget ptr, byval name as zstring ptr)
 declare function gtk_widget_get_name cdecl alias "gtk_widget_get_name" (byval widget as GtkWidget ptr) as zstring ptr
 declare sub gtk_widget_set_state cdecl alias "gtk_widget_set_state" (byval widget as GtkWidget ptr, byval state as GtkStateType)
 declare sub gtk_widget_set_sensitive cdecl alias "gtk_widget_set_sensitive" (byval widget as GtkWidget ptr, byval sensitive as gboolean)
@@ -270,9 +270,9 @@ declare sub gtk_widget_modify_base cdecl alias "gtk_widget_modify_base" (byval w
 declare sub gtk_widget_modify_font cdecl alias "gtk_widget_modify_font" (byval widget as GtkWidget ptr, byval font_desc as PangoFontDescription ptr)
 declare function gtk_widget_create_pango_context cdecl alias "gtk_widget_create_pango_context" (byval widget as GtkWidget ptr) as PangoContext ptr
 declare function gtk_widget_get_pango_context cdecl alias "gtk_widget_get_pango_context" (byval widget as GtkWidget ptr) as PangoContext ptr
-declare function gtk_widget_create_pango_layout cdecl alias "gtk_widget_create_pango_layout" (byval widget as GtkWidget ptr, byval text as string) as PangoLayout ptr
-declare function gtk_widget_render_icon cdecl alias "gtk_widget_render_icon" (byval widget as GtkWidget ptr, byval stock_id as string, byval size as GtkIconSize, byval detail as string) as GdkPixbuf ptr
-declare sub gtk_widget_set_composite_name cdecl alias "gtk_widget_set_composite_name" (byval widget as GtkWidget ptr, byval name as string)
+declare function gtk_widget_create_pango_layout cdecl alias "gtk_widget_create_pango_layout" (byval widget as GtkWidget ptr, byval text as zstring ptr) as PangoLayout ptr
+declare function gtk_widget_render_icon cdecl alias "gtk_widget_render_icon" (byval widget as GtkWidget ptr, byval stock_id as zstring ptr, byval size as GtkIconSize, byval detail as zstring ptr) as GdkPixbuf ptr
+declare sub gtk_widget_set_composite_name cdecl alias "gtk_widget_set_composite_name" (byval widget as GtkWidget ptr, byval name as zstring ptr)
 declare function gtk_widget_get_composite_name cdecl alias "gtk_widget_get_composite_name" (byval widget as GtkWidget ptr) as zstring ptr
 declare sub gtk_widget_reset_rc_styles cdecl alias "gtk_widget_reset_rc_styles" (byval widget as GtkWidget ptr)
 declare sub gtk_widget_push_colormap cdecl alias "gtk_widget_push_colormap" (byval cmap as GdkColormap ptr)
@@ -281,11 +281,11 @@ declare sub gtk_widget_pop_composite_child cdecl alias "gtk_widget_pop_composite
 declare sub gtk_widget_pop_colormap cdecl alias "gtk_widget_pop_colormap" ()
 declare sub gtk_widget_class_install_style_property cdecl alias "gtk_widget_class_install_style_property" (byval klass as GtkWidgetClass ptr, byval pspec as GParamSpec ptr)
 declare sub gtk_widget_class_install_style_property_parser cdecl alias "gtk_widget_class_install_style_property_parser" (byval klass as GtkWidgetClass ptr, byval pspec as GParamSpec ptr, byval parser as GtkRcPropertyParser)
-declare function gtk_widget_class_find_style_property cdecl alias "gtk_widget_class_find_style_property" (byval klass as GtkWidgetClass ptr, byval property_name as string) as GParamSpec ptr
+declare function gtk_widget_class_find_style_property cdecl alias "gtk_widget_class_find_style_property" (byval klass as GtkWidgetClass ptr, byval property_name as zstring ptr) as GParamSpec ptr
 declare function gtk_widget_class_list_style_properties cdecl alias "gtk_widget_class_list_style_properties" (byval klass as GtkWidgetClass ptr, byval n_properties as guint ptr) as GParamSpec ptr ptr
-declare sub gtk_widget_style_get_property cdecl alias "gtk_widget_style_get_property" (byval widget as GtkWidget ptr, byval property_name as string, byval value as GValue ptr)
-''''''' declare sub gtk_widget_style_get_valist cdecl alias "gtk_widget_style_get_valist" (byval widget as GtkWidget ptr, byval first_property_name as string, byval var_args as va_list)
-declare sub gtk_widget_style_get cdecl alias "gtk_widget_style_get" (byval widget as GtkWidget ptr, byval first_property_name as string, ...)
+declare sub gtk_widget_style_get_property cdecl alias "gtk_widget_style_get_property" (byval widget as GtkWidget ptr, byval property_name as zstring ptr, byval value as GValue ptr)
+''''''' declare sub gtk_widget_style_get_valist cdecl alias "gtk_widget_style_get_valist" (byval widget as GtkWidget ptr, byval first_property_name as zstring ptr, byval var_args as va_list)
+declare sub gtk_widget_style_get cdecl alias "gtk_widget_style_get" (byval widget as GtkWidget ptr, byval first_property_name as zstring ptr, ...)
 declare sub gtk_widget_set_default_colormap cdecl alias "gtk_widget_set_default_colormap" (byval colormap as GdkColormap ptr)
 declare function gtk_widget_get_default_style cdecl alias "gtk_widget_get_default_style" () as GtkStyle ptr
 declare function gtk_widget_get_default_colormap cdecl alias "gtk_widget_get_default_colormap" () as GdkColormap ptr

@@ -68,7 +68,7 @@ type SDL_RWops
 end type
 
 declare function SDL_RWFromFile SDLCALL alias "SDL_RWFromFile" _
-   (byval file as string, byval mode as string) as SDL_RWops ptr
+   (byval file as zstring ptr, byval mode as zstring ptr) as SDL_RWops ptr
   
 declare function SDL_RWFromFP SDLCALL alias "SDL_RWFromFP" _
    (byval fp as FILE ptr, byval autoclose as integer) as SDL_RWops ptr

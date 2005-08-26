@@ -40,7 +40,7 @@ declare sub g_mem_profile cdecl alias "g_mem_profile" ()
 #define G_ALLOC_ONLY 1
 #define G_ALLOC_AND_FREE 2
 
-declare function g_mem_chunk_new cdecl alias "g_mem_chunk_new" (byval name as string, byval atom_size as gint, byval area_size as gulong, byval type as gint) as GMemChunk ptr
+declare function g_mem_chunk_new cdecl alias "g_mem_chunk_new" (byval name as zstring ptr, byval atom_size as gint, byval area_size as gulong, byval type as gint) as GMemChunk ptr
 declare sub g_mem_chunk_destroy cdecl alias "g_mem_chunk_destroy" (byval mem_chunk as GMemChunk ptr)
 declare function g_mem_chunk_alloc cdecl alias "g_mem_chunk_alloc" (byval mem_chunk as GMemChunk ptr) as gpointer
 declare function g_mem_chunk_alloc0 cdecl alias "g_mem_chunk_alloc0" (byval mem_chunk as GMemChunk ptr) as gpointer
@@ -50,7 +50,7 @@ declare sub g_mem_chunk_reset cdecl alias "g_mem_chunk_reset" (byval mem_chunk a
 declare sub g_mem_chunk_print cdecl alias "g_mem_chunk_print" (byval mem_chunk as GMemChunk ptr)
 declare sub g_mem_chunk_info cdecl alias "g_mem_chunk_info" ()
 declare sub g_blow_chunks cdecl alias "g_blow_chunks" ()
-declare function g_allocator_new cdecl alias "g_allocator_new" (byval name as string, byval n_preallocs as guint) as GAllocator ptr
+declare function g_allocator_new cdecl alias "g_allocator_new" (byval name as zstring ptr, byval n_preallocs as guint) as GAllocator ptr
 declare sub g_allocator_free cdecl alias "g_allocator_free" (byval allocator as GAllocator ptr)
 
 #define G_ALLOCATOR_LIST (1)

@@ -18,8 +18,8 @@ type art_boolean as integer
 #define M_PI 3.14159265358979323846
 #define M_SQRT2 1.41421356237309504880
 
-declare sub art_die cdecl alias "art_die" (byval fmt as string, ...)
-declare sub art_warn cdecl alias "art_warn" (byval fmt as string, ...)
-declare sub art_dprint cdecl alias "art_dprint" (byval fmt as string, ...)
+declare sub art_die cdecl alias "art_die" (byval fmt as zstring ptr, ...)
+declare sub art_warn cdecl alias "art_warn" (byval fmt as zstring ptr, ...)
+declare sub art_dprint cdecl alias "art_dprint" (byval fmt as zstring ptr, ...)
 
 #endif

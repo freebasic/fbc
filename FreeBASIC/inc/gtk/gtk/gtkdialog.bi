@@ -55,10 +55,10 @@ end type
 
 declare function gtk_dialog_get_type cdecl alias "gtk_dialog_get_type" () as GType
 declare function gtk_dialog_new cdecl alias "gtk_dialog_new" () as GtkWidget ptr
-declare function gtk_dialog_new_with_buttons cdecl alias "gtk_dialog_new_with_buttons" (byval title as string, byval parent as GtkWindow ptr, byval flags as GtkDialogFlags, byval first_button_text as string, ...) as GtkWidget ptr
+declare function gtk_dialog_new_with_buttons cdecl alias "gtk_dialog_new_with_buttons" (byval title as zstring ptr, byval parent as GtkWindow ptr, byval flags as GtkDialogFlags, byval first_button_text as zstring ptr, ...) as GtkWidget ptr
 declare sub gtk_dialog_add_action_widget cdecl alias "gtk_dialog_add_action_widget" (byval dialog as GtkDialog ptr, byval child as GtkWidget ptr, byval response_id as gint)
-declare function gtk_dialog_add_button cdecl alias "gtk_dialog_add_button" (byval dialog as GtkDialog ptr, byval button_text as string, byval response_id as gint) as GtkWidget ptr
-declare sub gtk_dialog_add_buttons cdecl alias "gtk_dialog_add_buttons" (byval dialog as GtkDialog ptr, byval first_button_text as string, ...)
+declare function gtk_dialog_add_button cdecl alias "gtk_dialog_add_button" (byval dialog as GtkDialog ptr, byval button_text as zstring ptr, byval response_id as gint) as GtkWidget ptr
+declare sub gtk_dialog_add_buttons cdecl alias "gtk_dialog_add_buttons" (byval dialog as GtkDialog ptr, byval first_button_text as zstring ptr, ...)
 declare sub gtk_dialog_set_response_sensitive cdecl alias "gtk_dialog_set_response_sensitive" (byval dialog as GtkDialog ptr, byval response_id as gint, byval setting as gboolean)
 declare sub gtk_dialog_set_default_response cdecl alias "gtk_dialog_set_default_response" (byval dialog as GtkDialog ptr, byval response_id as gint)
 declare sub gtk_dialog_set_has_separator cdecl alias "gtk_dialog_set_has_separator" (byval dialog as GtkDialog ptr, byval setting as gboolean)

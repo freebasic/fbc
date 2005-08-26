@@ -13,7 +13,7 @@
 
 type gdsl_stack_t as any ptr
 
-declare function gdsl_stack_alloc cdecl alias "gdsl_stack_alloc" (byval NAME as string, byval ALLOC_F as gdsl_alloc_func_t, byval FREE_F as gdsl_free_func_t) as gdsl_stack_t
+declare function gdsl_stack_alloc cdecl alias "gdsl_stack_alloc" (byval NAME as zstring ptr, byval ALLOC_F as gdsl_alloc_func_t, byval FREE_F as gdsl_free_func_t) as gdsl_stack_t
 declare sub gdsl_stack_free cdecl alias "gdsl_stack_free" (byval S as gdsl_stack_t)
 declare sub gdsl_stack_flush cdecl alias "gdsl_stack_flush" (byval S as gdsl_stack_t)
 declare function gdsl_stack_get_name cdecl alias "gdsl_stack_get_name" (byval S as gdsl_stack_t) as zstring ptr
@@ -22,7 +22,7 @@ declare function gdsl_stack_get_growing_factor cdecl alias "gdsl_stack_get_growi
 declare function gdsl_stack_is_empty cdecl alias "gdsl_stack_is_empty" (byval S as gdsl_stack_t) as integer
 declare function gdsl_stack_get_top cdecl alias "gdsl_stack_get_top" (byval S as gdsl_stack_t) as gdsl_element_t
 declare function gdsl_stack_get_bottom cdecl alias "gdsl_stack_get_bottom" (byval S as gdsl_stack_t) as gdsl_element_t
-declare function gdsl_stack_set_name cdecl alias "gdsl_stack_set_name" (byval S as gdsl_stack_t, byval NEW_NAME as string) as gdsl_stack_t
+declare function gdsl_stack_set_name cdecl alias "gdsl_stack_set_name" (byval S as gdsl_stack_t, byval NEW_NAME as zstring ptr) as gdsl_stack_t
 declare sub gdsl_stack_set_growing_factor cdecl alias "gdsl_stack_set_growing_factor" (byval S as gdsl_stack_t, byval G as ubyte)
 declare function gdsl_stack_insert cdecl alias "gdsl_stack_insert" (byval S as gdsl_stack_t, byval VALUE as any ptr) as gdsl_element_t
 declare function gdsl_stack_remove cdecl alias "gdsl_stack_remove" (byval S as gdsl_stack_t) as gdsl_element_t

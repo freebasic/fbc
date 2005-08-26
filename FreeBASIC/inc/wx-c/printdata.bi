@@ -95,7 +95,7 @@ declare function wxPrintData_GetQuality cdecl alias "wxPrintData_GetQuality" (by
 declare sub wxPrintData_SetNoCopies cdecl alias "wxPrintData_SetNoCopies" (byval self as wxPrintData ptr, byval v as integer)
 declare sub wxPrintData_SetCollate cdecl alias "wxPrintData_SetCollate" (byval self as wxPrintData ptr, byval flag as integer)
 declare sub wxPrintData_SetOrientation cdecl alias "wxPrintData_SetOrientation" (byval self as wxPrintData ptr, byval orient as integer)
-declare sub wxPrintData_SetPrinterName cdecl alias "wxPrintData_SetPrinterName" (byval self as wxPrintData ptr, byval name as string)
+declare sub wxPrintData_SetPrinterName cdecl alias "wxPrintData_SetPrinterName" (byval self as wxPrintData ptr, byval name as zstring ptr)
 declare sub wxPrintData_SetColour cdecl alias "wxPrintData_SetColour" (byval self as wxPrintData ptr, byval colour as integer)
 declare sub wxPrintData_SetDuplex cdecl alias "wxPrintData_SetDuplex" (byval self as wxPrintData ptr, byval duplex as wxDuplexMode)
 declare sub wxPrintData_SetPaperId cdecl alias "wxPrintData_SetPaperId" (byval self as wxPrintData ptr, byval sizeId as wxPaperSize)
@@ -111,11 +111,11 @@ declare function wxPrintData_GetPrinterScaleY cdecl alias "wxPrintData_GetPrinte
 declare function wxPrintData_GetPrinterTranslateX cdecl alias "wxPrintData_GetPrinterTranslateX" (byval self as wxPrintData ptr) as integer
 declare function wxPrintData_GetPrinterTranslateY cdecl alias "wxPrintData_GetPrinterTranslateY" (byval self as wxPrintData ptr) as integer
 declare function wxPrintData_GetPrintMode cdecl alias "wxPrintData_GetPrintMode" (byval self as wxPrintData ptr) as wxPrintMode
-declare sub wxPrintData_SetPrinterCommand cdecl alias "wxPrintData_SetPrinterCommand" (byval self as wxPrintData ptr, byval command as string)
-declare sub wxPrintData_SetPrinterOptions cdecl alias "wxPrintData_SetPrinterOptions" (byval self as wxPrintData ptr, byval options as string)
-declare sub wxPrintData_SetPreviewCommand cdecl alias "wxPrintData_SetPreviewCommand" (byval self as wxPrintData ptr, byval command as string)
-declare sub wxPrintData_SetFilename cdecl alias "wxPrintData_SetFilename" (byval self as wxPrintData ptr, byval filename as string)
-declare sub wxPrintData_SetFontMetricPath cdecl alias "wxPrintData_SetFontMetricPath" (byval self as wxPrintData ptr, byval path as string)
+declare sub wxPrintData_SetPrinterCommand cdecl alias "wxPrintData_SetPrinterCommand" (byval self as wxPrintData ptr, byval command as zstring ptr)
+declare sub wxPrintData_SetPrinterOptions cdecl alias "wxPrintData_SetPrinterOptions" (byval self as wxPrintData ptr, byval options as zstring ptr)
+declare sub wxPrintData_SetPreviewCommand cdecl alias "wxPrintData_SetPreviewCommand" (byval self as wxPrintData ptr, byval command as zstring ptr)
+declare sub wxPrintData_SetFilename cdecl alias "wxPrintData_SetFilename" (byval self as wxPrintData ptr, byval filename as zstring ptr)
+declare sub wxPrintData_SetFontMetricPath cdecl alias "wxPrintData_SetFontMetricPath" (byval self as wxPrintData ptr, byval path as zstring ptr)
 declare sub wxPrintData_SetPrinterScaleX cdecl alias "wxPrintData_SetPrinterScaleX" (byval self as wxPrintData ptr, byval x as double)
 declare sub wxPrintData_SetPrinterScaleY cdecl alias "wxPrintData_SetPrinterScaleY" (byval self as wxPrintData ptr, byval y as double)
 declare sub wxPrintData_SetPrinterScaling cdecl alias "wxPrintData_SetPrinterScaling" (byval self as wxPrintData ptr, byval x as double, byval y as double)

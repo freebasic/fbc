@@ -20,8 +20,8 @@ enum xmlModuleOption
 end enum
 
 
-declare function xmlModuleOpen cdecl alias "xmlModuleOpen" (byval filename as string, byval options as integer) as xmlModulePtr
-declare function xmlModuleSymbol cdecl alias "xmlModuleSymbol" (byval module as xmlModulePtr, byval name as string, byval result as any ptr ptr) as integer
+declare function xmlModuleOpen cdecl alias "xmlModuleOpen" (byval filename as zstring ptr, byval options as integer) as xmlModulePtr
+declare function xmlModuleSymbol cdecl alias "xmlModuleSymbol" (byval module as xmlModulePtr, byval name as zstring ptr, byval result as any ptr ptr) as integer
 declare function xmlModuleClose cdecl alias "xmlModuleClose" (byval module as xmlModulePtr) as integer
 declare function xmlModuleFree cdecl alias "xmlModuleFree" (byval module as xmlModulePtr) as integer
 

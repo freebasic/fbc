@@ -37,7 +37,7 @@ type _GtkActionClass
 end type
 
 declare function gtk_action_get_type cdecl alias "gtk_action_get_type" () as GType
-declare function gtk_action_new cdecl alias "gtk_action_new" (byval name as string, byval label as string, byval tooltip as string, byval stock_id as string) as GtkAction ptr
+declare function gtk_action_new cdecl alias "gtk_action_new" (byval name as zstring ptr, byval label as zstring ptr, byval tooltip as zstring ptr, byval stock_id as zstring ptr) as GtkAction ptr
 declare function gtk_action_get_name cdecl alias "gtk_action_get_name" (byval action as GtkAction ptr) as zstring ptr
 declare function gtk_action_is_sensitive cdecl alias "gtk_action_is_sensitive" (byval action as GtkAction ptr) as gboolean
 declare function gtk_action_get_sensitive cdecl alias "gtk_action_get_sensitive" (byval action as GtkAction ptr) as gboolean
@@ -58,7 +58,7 @@ declare function gtk_action_get_accel_path cdecl alias "gtk_action_get_accel_pat
 declare sub gtk_action_block_activate_from cdecl alias "gtk_action_block_activate_from" (byval action as GtkAction ptr, byval proxy as GtkWidget ptr)
 declare sub gtk_action_unblock_activate_from cdecl alias "gtk_action_unblock_activate_from" (byval action as GtkAction ptr, byval proxy as GtkWidget ptr)
 declare sub _gtk_action_emit_activate cdecl alias "_gtk_action_emit_activate" (byval action as GtkAction ptr)
-declare sub gtk_action_set_accel_path cdecl alias "gtk_action_set_accel_path" (byval action as GtkAction ptr, byval accel_path as string)
+declare sub gtk_action_set_accel_path cdecl alias "gtk_action_set_accel_path" (byval action as GtkAction ptr, byval accel_path as zstring ptr)
 declare sub gtk_action_set_accel_group cdecl alias "gtk_action_set_accel_group" (byval action as GtkAction ptr, byval accel_group as GtkAccelGroup ptr)
 
 #endif

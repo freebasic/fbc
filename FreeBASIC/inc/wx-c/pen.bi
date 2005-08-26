@@ -11,7 +11,7 @@
 
 #include once "wx-c/wx.bi"
 
-declare function wxPen_ctorByName cdecl alias "wxPen_ctorByName" (byval name as string, byval width as integer, byval style as integer) as wxPen ptr
+declare function wxPen_ctorByName cdecl alias "wxPen_ctorByName" (byval name as zstring ptr, byval width as integer, byval style as integer) as wxPen ptr
 declare function wxPen cdecl alias "wxPen_ctor" (byval col as wxColour ptr, byval width as integer, byval style as integer) as wxPen ptr
 declare sub wxPen_SetWidth cdecl alias "wxPen_SetWidth" (byval self as wxPen ptr, byval width as integer)
 declare function wxPen_GetWidth cdecl alias "wxPen_GetWidth" (byval self as wxPen ptr) as integer

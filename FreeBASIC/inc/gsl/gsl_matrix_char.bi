@@ -48,8 +48,8 @@ declare function gsl_matrix_char_column cdecl alias "gsl_matrix_char_column" (by
 declare function gsl_matrix_char_diagonal cdecl alias "gsl_matrix_char_diagonal" (byval m as gsl_matrix_char ptr) as _gsl_vector_char_view
 declare function gsl_matrix_char_subdiagonal cdecl alias "gsl_matrix_char_subdiagonal" (byval m as gsl_matrix_char ptr, byval k as integer) as _gsl_vector_char_view
 declare function gsl_matrix_char_superdiagonal cdecl alias "gsl_matrix_char_superdiagonal" (byval m as gsl_matrix_char ptr, byval k as integer) as _gsl_vector_char_view
-declare function gsl_matrix_char_view_array cdecl alias "gsl_matrix_char_view_array" (byval base as string, byval n1 as integer, byval n2 as integer) as _gsl_matrix_char_view
-declare function gsl_matrix_char_view_array_with_tda cdecl alias "gsl_matrix_char_view_array_with_tda" (byval base as string, byval n1 as integer, byval n2 as integer, byval tda as integer) as _gsl_matrix_char_view
+declare function gsl_matrix_char_view_array cdecl alias "gsl_matrix_char_view_array" (byval base as zstring ptr, byval n1 as integer, byval n2 as integer) as _gsl_matrix_char_view
+declare function gsl_matrix_char_view_array_with_tda cdecl alias "gsl_matrix_char_view_array_with_tda" (byval base as zstring ptr, byval n1 as integer, byval n2 as integer, byval tda as integer) as _gsl_matrix_char_view
 declare function gsl_matrix_char_view_vector cdecl alias "gsl_matrix_char_view_vector" (byval v as gsl_vector_char ptr, byval n1 as integer, byval n2 as integer) as _gsl_matrix_char_view
 declare function gsl_matrix_char_view_vector_with_tda cdecl alias "gsl_matrix_char_view_vector_with_tda" (byval v as gsl_vector_char ptr, byval n1 as integer, byval n2 as integer, byval tda as integer) as _gsl_matrix_char_view
 declare function gsl_matrix_char_const_submatrix cdecl alias "gsl_matrix_char_const_submatrix" (byval m as gsl_matrix_char ptr, byval i as integer, byval j as integer, byval n1 as integer, byval n2 as integer) as _gsl_matrix_char_const_view
@@ -58,8 +58,8 @@ declare function gsl_matrix_char_const_column cdecl alias "gsl_matrix_char_const
 declare function gsl_matrix_char_const_diagonal cdecl alias "gsl_matrix_char_const_diagonal" (byval m as gsl_matrix_char ptr) as _gsl_vector_char_const_view
 declare function gsl_matrix_char_const_subdiagonal cdecl alias "gsl_matrix_char_const_subdiagonal" (byval m as gsl_matrix_char ptr, byval k as integer) as _gsl_vector_char_const_view
 declare function gsl_matrix_char_const_superdiagonal cdecl alias "gsl_matrix_char_const_superdiagonal" (byval m as gsl_matrix_char ptr, byval k as integer) as _gsl_vector_char_const_view
-declare function gsl_matrix_char_const_view_array cdecl alias "gsl_matrix_char_const_view_array" (byval base as string, byval n1 as integer, byval n2 as integer) as _gsl_matrix_char_const_view
-declare function gsl_matrix_char_const_view_array_with_tda cdecl alias "gsl_matrix_char_const_view_array_with_tda" (byval base as string, byval n1 as integer, byval n2 as integer, byval tda as integer) as _gsl_matrix_char_const_view
+declare function gsl_matrix_char_const_view_array cdecl alias "gsl_matrix_char_const_view_array" (byval base as zstring ptr, byval n1 as integer, byval n2 as integer) as _gsl_matrix_char_const_view
+declare function gsl_matrix_char_const_view_array_with_tda cdecl alias "gsl_matrix_char_const_view_array_with_tda" (byval base as zstring ptr, byval n1 as integer, byval n2 as integer, byval tda as integer) as _gsl_matrix_char_const_view
 declare function gsl_matrix_char_const_view_vector cdecl alias "gsl_matrix_char_const_view_vector" (byval v as gsl_vector_char ptr, byval n1 as integer, byval n2 as integer) as _gsl_matrix_char_const_view
 declare function gsl_matrix_char_const_view_vector_with_tda cdecl alias "gsl_matrix_char_const_view_vector_with_tda" (byval v as gsl_vector_char ptr, byval n1 as integer, byval n2 as integer, byval tda as integer) as _gsl_matrix_char_const_view
 declare function gsl_matrix_char_get cdecl alias "gsl_matrix_char_get" (byval m as gsl_matrix_char ptr, byval i as integer, byval j as integer) as byte
@@ -72,7 +72,7 @@ declare sub gsl_matrix_char_set_all cdecl alias "gsl_matrix_char_set_all" (byval
 declare function gsl_matrix_char_fread cdecl alias "gsl_matrix_char_fread" (byval stream as FILE ptr, byval m as gsl_matrix_char ptr) as integer
 declare function gsl_matrix_char_fwrite cdecl alias "gsl_matrix_char_fwrite" (byval stream as FILE ptr, byval m as gsl_matrix_char ptr) as integer
 declare function gsl_matrix_char_fscanf cdecl alias "gsl_matrix_char_fscanf" (byval stream as FILE ptr, byval m as gsl_matrix_char ptr) as integer
-declare function gsl_matrix_char_fprintf cdecl alias "gsl_matrix_char_fprintf" (byval stream as FILE ptr, byval m as gsl_matrix_char ptr, byval format as string) as integer
+declare function gsl_matrix_char_fprintf cdecl alias "gsl_matrix_char_fprintf" (byval stream as FILE ptr, byval m as gsl_matrix_char ptr, byval format as zstring ptr) as integer
 declare function gsl_matrix_char_memcpy cdecl alias "gsl_matrix_char_memcpy" (byval dest as gsl_matrix_char ptr, byval src as gsl_matrix_char ptr) as integer
 declare function gsl_matrix_char_swap cdecl alias "gsl_matrix_char_swap" (byval m1 as gsl_matrix_char ptr, byval m2 as gsl_matrix_char ptr) as integer
 declare function gsl_matrix_char_swap_rows cdecl alias "gsl_matrix_char_swap_rows" (byval m as gsl_matrix_char ptr, byval i as integer, byval j as integer) as integer
@@ -82,7 +82,7 @@ declare function gsl_matrix_char_transpose cdecl alias "gsl_matrix_char_transpos
 declare function gsl_matrix_char_transpose_memcpy cdecl alias "gsl_matrix_char_transpose_memcpy" (byval dest as gsl_matrix_char ptr, byval src as gsl_matrix_char ptr) as integer
 declare function gsl_matrix_char_max cdecl alias "gsl_matrix_char_max" (byval m as gsl_matrix_char ptr) as byte
 declare function gsl_matrix_char_min cdecl alias "gsl_matrix_char_min" (byval m as gsl_matrix_char ptr) as byte
-declare sub gsl_matrix_char_minmax cdecl alias "gsl_matrix_char_minmax" (byval m as gsl_matrix_char ptr, byval min_out as string, byval max_out as string)
+declare sub gsl_matrix_char_minmax cdecl alias "gsl_matrix_char_minmax" (byval m as gsl_matrix_char ptr, byval min_out as zstring ptr, byval max_out as zstring ptr)
 declare sub gsl_matrix_char_max_index cdecl alias "gsl_matrix_char_max_index" (byval m as gsl_matrix_char ptr, byval imax as integer ptr, byval jmax as integer ptr)
 declare sub gsl_matrix_char_min_index cdecl alias "gsl_matrix_char_min_index" (byval m as gsl_matrix_char ptr, byval imin as integer ptr, byval jmin as integer ptr)
 declare sub gsl_matrix_char_minmax_index cdecl alias "gsl_matrix_char_minmax_index" (byval m as gsl_matrix_char ptr, byval imin as integer ptr, byval jmin as integer ptr, byval imax as integer ptr, byval jmax as integer ptr)

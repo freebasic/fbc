@@ -41,9 +41,9 @@ declare function wxCYAN_BRUSH_Get cdecl alias "wxCYAN_BRUSH_Get" () as wxBrush p
 declare function wxRED_BRUSH_Get cdecl alias "wxRED_BRUSH_Get" () as wxBrush ptr
 declare function wxColourDatabase cdecl alias "wxColourDatabase_ctor" () as wxColourDatabase ptr
 declare sub wxColourDataBase_dtor cdecl alias "wxColourDataBase_dtor" (byval self as wxColourDatabase ptr)
-declare function wxColourDatabase_Find cdecl alias "wxColourDatabase_Find" (byval self as wxColourDatabase ptr, byval name as string) as wxColour ptr
+declare function wxColourDatabase_Find cdecl alias "wxColourDatabase_Find" (byval self as wxColourDatabase ptr, byval name as zstring ptr) as wxColour ptr
 declare function wxColourDatabase_FindName cdecl alias "wxColourDatabase_FindName" (byval self as wxColourDatabase ptr, byval colour as wxColour ptr) as wxString ptr
-declare sub wxColourDatabase_AddColour cdecl alias "wxColourDatabase_AddColour" (byval self as wxColourDatabase ptr, byval name as string, byval colour as wxColour ptr)
+declare sub wxColourDatabase_AddColour cdecl alias "wxColourDatabase_AddColour" (byval self as wxColourDatabase ptr, byval name as zstring ptr, byval colour as wxColour ptr)
 declare function wxPenList cdecl alias "wxPenList_ctor" () as wxPenList ptr
 declare sub wxPenList_AddPen cdecl alias "wxPenList_AddPen" (byval self as wxPenList ptr, byval pen as wxPen ptr)
 declare sub wxPenList_RemovePen cdecl alias "wxPenList_RemovePen" (byval self as wxPenList ptr, byval pen as wxPen ptr)
@@ -55,7 +55,7 @@ declare function wxBrushList_FindOrCreateBrush cdecl alias "wxBrushList_FindOrCr
 declare function wxFontList cdecl alias "wxFontList_ctor" () as wxFontList ptr
 declare sub wxFontList_AddFont cdecl alias "wxFontList_AddFont" (byval self as wxFontList ptr, byval font as wxFont ptr)
 declare sub wxFontList_RemoveFont cdecl alias "wxFontList_RemoveFont" (byval self as wxFontList ptr, byval font as wxFont ptr)
-declare function wxFontList_FindOrCreateFont cdecl alias "wxFontList_FindOrCreateFont" (byval self as wxFontList ptr, byval pointSize as integer, byval family as integer, byval style as integer, byval weight as integer, byval underline as integer, byval face as string, byval encoding as wxFontEncoding) as wxFont ptr
+declare function wxFontList_FindOrCreateFont cdecl alias "wxFontList_FindOrCreateFont" (byval self as wxFontList ptr, byval pointSize as integer, byval family as integer, byval style as integer, byval weight as integer, byval underline as integer, byval face as zstring ptr, byval encoding as wxFontEncoding) as wxFont ptr
 declare function wxBitmapList cdecl alias "wxBitmapList_ctor" () as wxBitmapList ptr
 declare sub wxBitmapList_AddBitmap cdecl alias "wxBitmapList_AddBitmap" (byval self as wxBitmapList ptr, byval bitmap as wxBitmap ptr)
 declare sub wxBitmapList_RemoveBitmap cdecl alias "wxBitmapList_RemoveBitmap" (byval self as wxBitmapList ptr, byval bitmap as wxBitmap ptr)

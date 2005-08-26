@@ -16,8 +16,8 @@
 #include once "libxml/dict.bi"
 #include once "libxml/xmlerror.bi"
 
-declare function xsltGetNsProp cdecl alias "xsltGetNsProp" (byval node as xmlNodePtr, byval name as string, byval nameSpace as string) as zstring ptr
-declare function xsltGetCNsProp cdecl alias "xsltGetCNsProp" (byval style as xsltStylesheetPtr, byval node as xmlNodePtr, byval name as string, byval nameSpace as string) as zstring ptr
+declare function xsltGetNsProp cdecl alias "xsltGetNsProp" (byval node as xmlNodePtr, byval name as zstring ptr, byval nameSpace as zstring ptr) as zstring ptr
+declare function xsltGetCNsProp cdecl alias "xsltGetCNsProp" (byval style as xsltStylesheetPtr, byval node as xmlNodePtr, byval name as zstring ptr, byval nameSpace as zstring ptr) as zstring ptr
 declare function xsltGetUTF8Char cdecl alias "xsltGetUTF8Char" (byval utf as ubyte ptr, byval len as integer ptr) as integer
 
 enum xsltDebugTraceCodes
@@ -50,7 +50,7 @@ declare sub xsltMessage cdecl alias "xsltMessage" (byval ctxt as xsltTransformCo
 declare sub xsltSetGenericErrorFunc cdecl alias "xsltSetGenericErrorFunc" (byval ctx as any ptr, byval handler as xmlGenericErrorFunc)
 declare sub xsltSetGenericDebugFunc cdecl alias "xsltSetGenericDebugFunc" (byval ctx as any ptr, byval handler as xmlGenericErrorFunc)
 declare sub xsltSetTransformErrorFunc cdecl alias "xsltSetTransformErrorFunc" (byval ctxt as xsltTransformContextPtr, byval ctx as any ptr, byval handler as xmlGenericErrorFunc)
-declare sub xsltTransformError cdecl alias "xsltTransformError" (byval ctxt as xsltTransformContextPtr, byval style as xsltStylesheetPtr, byval node as xmlNodePtr, byval msg as string, ...)
+declare sub xsltTransformError cdecl alias "xsltTransformError" (byval ctxt as xsltTransformContextPtr, byval style as xsltStylesheetPtr, byval node as xmlNodePtr, byval msg as zstring ptr, ...)
 declare function xsltSetCtxtParseOptions cdecl alias "xsltSetCtxtParseOptions" (byval ctxt as xsltTransformContextPtr, byval options as integer) as integer
 declare sub xsltDocumentSortFunction cdecl alias "xsltDocumentSortFunction" (byval list as xmlNodeSetPtr)
 declare sub xsltSetSortFunc cdecl alias "xsltSetSortFunc" (byval handler as xsltSortFunc)
@@ -58,15 +58,15 @@ declare sub xsltSetCtxtSortFunc cdecl alias "xsltSetCtxtSortFunc" (byval ctxt as
 declare sub xsltDefaultSortFunction cdecl alias "xsltDefaultSortFunction" (byval ctxt as xsltTransformContextPtr, byval sorts as xmlNodePtr ptr, byval nbsorts as integer)
 declare sub xsltDoSortFunction cdecl alias "xsltDoSortFunction" (byval ctxt as xsltTransformContextPtr, byval sorts as xmlNodePtr ptr, byval nbsorts as integer)
 declare function xsltComputeSortResult cdecl alias "xsltComputeSortResult" (byval ctxt as xsltTransformContextPtr, byval sort as xmlNodePtr) as xmlXPathObjectPtr ptr
-declare function xsltSplitQName cdecl alias "xsltSplitQName" (byval dict as xmlDictPtr, byval name as string, byval prefix as zstring ptr ptr) as zstring ptr
+declare function xsltSplitQName cdecl alias "xsltSplitQName" (byval dict as xmlDictPtr, byval name as zstring ptr, byval prefix as zstring ptr ptr) as zstring ptr
 declare function xsltGetQNameURI cdecl alias "xsltGetQNameURI" (byval node as xmlNodePtr, byval name as zstring ptr ptr) as zstring ptr
 declare function xsltGetQNameURI2 cdecl alias "xsltGetQNameURI2" (byval style as xsltStylesheetPtr, byval node as xmlNodePtr, byval name as zstring ptr ptr) as zstring ptr
 declare function xsltSaveResultTo cdecl alias "xsltSaveResultTo" (byval buf as xmlOutputBufferPtr, byval result as xmlDocPtr, byval style as xsltStylesheetPtr) as integer
-declare function xsltSaveResultToFilename cdecl alias "xsltSaveResultToFilename" (byval URI as string, byval result as xmlDocPtr, byval style as xsltStylesheetPtr, byval compression as integer) as integer
+declare function xsltSaveResultToFilename cdecl alias "xsltSaveResultToFilename" (byval URI as zstring ptr, byval result as xmlDocPtr, byval style as xsltStylesheetPtr, byval compression as integer) as integer
 declare function xsltSaveResultToFile cdecl alias "xsltSaveResultToFile" (byval file as FILE ptr, byval result as xmlDocPtr, byval style as xsltStylesheetPtr) as integer
 declare function xsltSaveResultToFd cdecl alias "xsltSaveResultToFd" (byval fd as integer, byval result as xmlDocPtr, byval style as xsltStylesheetPtr) as integer
 declare function xsltSaveResultToString cdecl alias "xsltSaveResultToString" (byval doc_txt_ptr as zstring ptr ptr, byval doc_txt_len as integer ptr, byval result as xmlDocPtr, byval style as xsltStylesheetPtr) as integer
-declare function xsltXPathCompile cdecl alias "xsltXPathCompile" (byval style as xsltStylesheetPtr, byval str as string) as xmlXPathCompExprPtr
+declare function xsltXPathCompile cdecl alias "xsltXPathCompile" (byval style as xsltStylesheetPtr, byval str as zstring ptr) as xmlXPathCompExprPtr
 declare sub xsltSaveProfiling cdecl alias "xsltSaveProfiling" (byval ctxt as xsltTransformContextPtr, byval output as FILE ptr)
 declare function xsltGetProfileInformation cdecl alias "xsltGetProfileInformation" (byval ctxt as xsltTransformContextPtr) as xmlDocPtr
 declare function xsltTimestamp cdecl alias "xsltTimestamp" () as integer

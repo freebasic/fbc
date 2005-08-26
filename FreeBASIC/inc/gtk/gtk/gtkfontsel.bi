@@ -68,15 +68,15 @@ declare function gtk_font_selection_get_type cdecl alias "gtk_font_selection_get
 declare function gtk_font_selection_new cdecl alias "gtk_font_selection_new" () as GtkWidget ptr
 declare function gtk_font_selection_get_font_name cdecl alias "gtk_font_selection_get_font_name" (byval fontsel as GtkFontSelection ptr) as zstring ptr
 declare function gtk_font_selection_get_font cdecl alias "gtk_font_selection_get_font" (byval fontsel as GtkFontSelection ptr) as GdkFont ptr
-declare function gtk_font_selection_set_font_name cdecl alias "gtk_font_selection_set_font_name" (byval fontsel as GtkFontSelection ptr, byval fontname as string) as gboolean
+declare function gtk_font_selection_set_font_name cdecl alias "gtk_font_selection_set_font_name" (byval fontsel as GtkFontSelection ptr, byval fontname as zstring ptr) as gboolean
 declare function gtk_font_selection_get_preview_text cdecl alias "gtk_font_selection_get_preview_text" (byval fontsel as GtkFontSelection ptr) as zstring ptr
-declare sub gtk_font_selection_set_preview_text cdecl alias "gtk_font_selection_set_preview_text" (byval fontsel as GtkFontSelection ptr, byval text as string)
+declare sub gtk_font_selection_set_preview_text cdecl alias "gtk_font_selection_set_preview_text" (byval fontsel as GtkFontSelection ptr, byval text as zstring ptr)
 declare function gtk_font_selection_dialog_get_type cdecl alias "gtk_font_selection_dialog_get_type" () as GType
-declare function gtk_font_selection_dialog_new cdecl alias "gtk_font_selection_dialog_new" (byval title as string) as GtkWidget ptr
+declare function gtk_font_selection_dialog_new cdecl alias "gtk_font_selection_dialog_new" (byval title as zstring ptr) as GtkWidget ptr
 declare function gtk_font_selection_dialog_get_font_name cdecl alias "gtk_font_selection_dialog_get_font_name" (byval fsd as GtkFontSelectionDialog ptr) as zstring ptr
 declare function gtk_font_selection_dialog_get_font cdecl alias "gtk_font_selection_dialog_get_font" (byval fsd as GtkFontSelectionDialog ptr) as GdkFont ptr
-declare function gtk_font_selection_dialog_set_font_name cdecl alias "gtk_font_selection_dialog_set_font_name" (byval fsd as GtkFontSelectionDialog ptr, byval fontname as string) as gboolean
+declare function gtk_font_selection_dialog_set_font_name cdecl alias "gtk_font_selection_dialog_set_font_name" (byval fsd as GtkFontSelectionDialog ptr, byval fontname as zstring ptr) as gboolean
 declare function gtk_font_selection_dialog_get_preview_text cdecl alias "gtk_font_selection_dialog_get_preview_text" (byval fsd as GtkFontSelectionDialog ptr) as zstring ptr
-declare sub gtk_font_selection_dialog_set_preview_text cdecl alias "gtk_font_selection_dialog_set_preview_text" (byval fsd as GtkFontSelectionDialog ptr, byval text as string)
+declare sub gtk_font_selection_dialog_set_preview_text cdecl alias "gtk_font_selection_dialog_set_preview_text" (byval fsd as GtkFontSelectionDialog ptr, byval text as zstring ptr)
 
 #endif

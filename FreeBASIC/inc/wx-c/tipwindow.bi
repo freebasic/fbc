@@ -12,8 +12,8 @@
 #include once "wx-c/wx.bi"
 
 
-declare function wxTipWindow cdecl alias "wxTipWindow_ctor" (byval parent as wxWindow ptr, byval text as string, byval maxLength as wxCoord, byval rectBound as wxRect ptr) as wxTipWindow ptr
-declare function wxTipWindow_ctorNoRect cdecl alias "wxTipWindow_ctorNoRect" (byval parent as wxWindow ptr, byval text as string, byval maxLength as wxCoord) as wxTipWindow ptr
+declare function wxTipWindow cdecl alias "wxTipWindow_ctor" (byval parent as wxWindow ptr, byval text as zstring ptr, byval maxLength as wxCoord, byval rectBound as wxRect ptr) as wxTipWindow ptr
+declare function wxTipWindow_ctorNoRect cdecl alias "wxTipWindow_ctorNoRect" (byval parent as wxWindow ptr, byval text as zstring ptr, byval maxLength as wxCoord) as wxTipWindow ptr
 declare sub wxTipWindow_SetBoundingRect cdecl alias "wxTipWindow_SetBoundingRect" (byval self as wxTipWindow ptr, byval rectBound as wxRect ptr)
 
 #endif

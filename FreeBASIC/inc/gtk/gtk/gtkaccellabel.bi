@@ -42,7 +42,7 @@ type _GtkAccelLabelClass
 end type
 
 declare function gtk_accel_label_get_type cdecl alias "gtk_accel_label_get_type" () as GType
-declare function gtk_accel_label_new cdecl alias "gtk_accel_label_new" (byval string as string) as GtkWidget ptr
+declare function gtk_accel_label_new cdecl alias "gtk_accel_label_new" (byval string as zstring ptr) as GtkWidget ptr
 declare function gtk_accel_label_get_accel_widget cdecl alias "gtk_accel_label_get_accel_widget" (byval accel_label as GtkAccelLabel ptr) as GtkWidget ptr
 declare function gtk_accel_label_get_accel_width cdecl alias "gtk_accel_label_get_accel_width" (byval accel_label as GtkAccelLabel ptr) as guint
 declare sub gtk_accel_label_set_accel_widget cdecl alias "gtk_accel_label_set_accel_widget" (byval accel_label as GtkAccelLabel ptr, byval accel_widget as GtkWidget ptr)

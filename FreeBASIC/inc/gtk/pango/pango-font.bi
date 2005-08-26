@@ -71,8 +71,8 @@ declare function pango_font_description_hash cdecl alias "pango_font_description
 declare function pango_font_description_equal cdecl alias "pango_font_description_equal" (byval desc1 as PangoFontDescription ptr, byval desc2 as PangoFontDescription ptr) as gboolean
 declare sub pango_font_description_free cdecl alias "pango_font_description_free" (byval desc as PangoFontDescription ptr)
 declare sub pango_font_descriptions_free cdecl alias "pango_font_descriptions_free" (byval descs as PangoFontDescription ptr ptr, byval n_descs as integer)
-declare sub pango_font_description_set_family cdecl alias "pango_font_description_set_family" (byval desc as PangoFontDescription ptr, byval family as string)
-declare sub pango_font_description_set_family_static cdecl alias "pango_font_description_set_family_static" (byval desc as PangoFontDescription ptr, byval family as string)
+declare sub pango_font_description_set_family cdecl alias "pango_font_description_set_family" (byval desc as PangoFontDescription ptr, byval family as zstring ptr)
+declare sub pango_font_description_set_family_static cdecl alias "pango_font_description_set_family_static" (byval desc as PangoFontDescription ptr, byval family as zstring ptr)
 declare function pango_font_description_get_family cdecl alias "pango_font_description_get_family" (byval desc as PangoFontDescription ptr) as zstring ptr
 declare sub pango_font_description_set_style cdecl alias "pango_font_description_set_style" (byval desc as PangoFontDescription ptr, byval style as PangoStyle)
 declare function pango_font_description_get_style cdecl alias "pango_font_description_get_style" (byval desc as PangoFontDescription ptr) as PangoStyle
@@ -91,7 +91,7 @@ declare sub pango_font_description_unset_fields cdecl alias "pango_font_descript
 declare sub pango_font_description_merge cdecl alias "pango_font_description_merge" (byval desc as PangoFontDescription ptr, byval desc_to_merge as PangoFontDescription ptr, byval replace_existing as gboolean)
 declare sub pango_font_description_merge_static cdecl alias "pango_font_description_merge_static" (byval desc as PangoFontDescription ptr, byval desc_to_merge as PangoFontDescription ptr, byval replace_existing as gboolean)
 declare function pango_font_description_better_match cdecl alias "pango_font_description_better_match" (byval desc as PangoFontDescription ptr, byval old_match as PangoFontDescription ptr, byval new_match as PangoFontDescription ptr) as gboolean
-declare function pango_font_description_from_string cdecl alias "pango_font_description_from_string" (byval str as string) as PangoFontDescription ptr
+declare function pango_font_description_from_string cdecl alias "pango_font_description_from_string" (byval str as zstring ptr) as PangoFontDescription ptr
 declare function pango_font_description_to_string cdecl alias "pango_font_description_to_string" (byval desc as PangoFontDescription ptr) as zstring ptr
 declare function pango_font_description_to_filename cdecl alias "pango_font_description_to_filename" (byval desc as PangoFontDescription ptr) as zstring ptr
 declare function pango_font_metrics_get_type cdecl alias "pango_font_metrics_get_type" () as GType

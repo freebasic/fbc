@@ -14,7 +14,7 @@
 type gdsl_list_t as _any ptr
 type gdsl_list_cursor_t as any ptr
 
-declare function gdsl_list_alloc cdecl alias "gdsl_list_alloc" (byval NAME as string, byval ALLOC_F as gdsl_alloc_func_t, byval FREE_F as gdsl_free_func_t) as gdsl_list_t
+declare function gdsl_list_alloc cdecl alias "gdsl_list_alloc" (byval NAME as zstring ptr, byval ALLOC_F as gdsl_alloc_func_t, byval FREE_F as gdsl_free_func_t) as gdsl_list_t
 declare sub gdsl_list_free cdecl alias "gdsl_list_free" (byval L as gdsl_list_t)
 declare sub gdsl_list_flush cdecl alias "gdsl_list_flush" (byval L as gdsl_list_t)
 declare function gdsl_list_get_name cdecl alias "gdsl_list_get_name" (byval L as gdsl_list_t) as zstring ptr
@@ -22,7 +22,7 @@ declare function gdsl_list_get_size cdecl alias "gdsl_list_get_size" (byval L as
 declare function gdsl_list_is_empty cdecl alias "gdsl_list_is_empty" (byval L as gdsl_list_t) as integer
 declare function gdsl_list_get_head cdecl alias "gdsl_list_get_head" (byval L as gdsl_list_t) as gdsl_element_t
 declare function gdsl_list_get_tail cdecl alias "gdsl_list_get_tail" (byval L as gdsl_list_t) as gdsl_element_t
-declare function gdsl_list_set_name cdecl alias "gdsl_list_set_name" (byval L as gdsl_list_t, byval NEW_NAME as string) as gdsl_list_t
+declare function gdsl_list_set_name cdecl alias "gdsl_list_set_name" (byval L as gdsl_list_t, byval NEW_NAME as zstring ptr) as gdsl_list_t
 declare function gdsl_list_insert_head cdecl alias "gdsl_list_insert_head" (byval L as gdsl_list_t, byval VALUE as any ptr) as gdsl_element_t
 declare function gdsl_list_insert_tail cdecl alias "gdsl_list_insert_tail" (byval L as gdsl_list_t, byval VALUE as any ptr) as gdsl_element_t
 declare function gdsl_list_remove_head cdecl alias "gdsl_list_remove_head" (byval L as gdsl_list_t) as gdsl_element_t

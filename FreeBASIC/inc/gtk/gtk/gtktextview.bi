@@ -88,7 +88,7 @@ type _GtkTextViewClass
 	move_cursor as sub cdecl(byval as GtkTextView ptr, byval as GtkMovementStep, byval as gint, byval as gboolean)
 	page_horizontally as sub cdecl(byval as GtkTextView ptr, byval as gint, byval as gboolean)
 	set_anchor as sub cdecl(byval as GtkTextView ptr)
-	insert_at_cursor as sub cdecl(byval as GtkTextView ptr, byval as string)
+	insert_at_cursor as sub cdecl(byval as GtkTextView ptr, byval as zstring ptr)
 	delete_from_cursor as sub cdecl(byval as GtkTextView ptr, byval as GtkDeleteType, byval as gint)
 	backspace as sub cdecl(byval as GtkTextView ptr)
 	cut_clipboard as sub cdecl(byval as GtkTextView ptr)

@@ -41,7 +41,7 @@ declare function	ScreenRows cdecl alias "ScreenRows"		( ) as integer
 declare function	ScreenCols cdecl alias "ScreenCols"		( ) as integer
 declare sub		ScreenPutChar cdecl alias "ScreenPutChar"	( byval _ch as integer, byval _attr as integer, byval _x as integer, byval _y as integer )
 declare sub		ScreenGetChar cdecl alias "ScreenGetChar"	( byval _ch as integer ptr, byval _attr as integer ptr, byval _x as integer, byval _y as integer )
-declare sub		ScreenPutString cdecl alias "ScreenPutString"	( byval _ch as string, byval _attr as integer, byval _x as integer, byval _y as integer )
+declare sub		ScreenPutString cdecl alias "ScreenPutString"	( byval _ch as zstring ptr, byval _attr as integer, byval _x as integer, byval _y as integer )
 declare sub		ScreenSetCursor cdecl alias "ScreenSetCursor"	( byval _row as integer, byval _col as integer )
 declare sub		ScreenGetCursor cdecl alias "ScreenGetCursor"	( byval _row as integer ptr, byval _col as integer ptr )
 declare sub		ScreenClear cdecl alias "ScreenClear"		( )

@@ -30,7 +30,7 @@ type _GtkAspectFrameClass
 end type
 
 declare function gtk_aspect_frame_get_type cdecl alias "gtk_aspect_frame_get_type" () as GType
-declare function gtk_aspect_frame_new cdecl alias "gtk_aspect_frame_new" (byval label as string, byval xalign as gfloat, byval yalign as gfloat, byval ratio as gfloat, byval obey_child as gboolean) as GtkWidget ptr
+declare function gtk_aspect_frame_new cdecl alias "gtk_aspect_frame_new" (byval label as zstring ptr, byval xalign as gfloat, byval yalign as gfloat, byval ratio as gfloat, byval obey_child as gboolean) as GtkWidget ptr
 declare sub gtk_aspect_frame_set cdecl alias "gtk_aspect_frame_set" (byval aspect_frame as GtkAspectFrame ptr, byval xalign as gfloat, byval yalign as gfloat, byval ratio as gfloat, byval obey_child as gboolean)
 
 #endif

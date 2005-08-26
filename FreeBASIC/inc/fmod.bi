@@ -470,7 +470,7 @@ Declare Sub FSOUND_GetMemoryStats Alias "FSOUND_GetMemoryStats" (Byval currental
 '          Use FSOUND_LOADRAW      flag with FSOUND_Sample_Load to treat as as raw pcm data.
 
 
-Declare Function FSOUND_Sample_Load Alias "FSOUND_Sample_Load" (ByVal index As Integer, ByVal name As String, ByVal mode As FSOUND_MODES, ByVal offset As Integer, ByVal length As Integer) As Integer
+Declare Function FSOUND_Sample_Load Alias "FSOUND_Sample_Load" (ByVal index As Integer, byval name as zstring ptr, ByVal mode As FSOUND_MODES, ByVal offset As Integer, ByVal length As Integer) As Integer
 Declare Function FSOUND_Sample_Alloc Alias "FSOUND_Sample_Alloc" (ByVal index As Integer, ByVal length As Integer, ByVal mode As Integer, ByVal deffreq As Integer, ByVal defvol As Integer, ByVal defpan As Integer, ByVal defpri As Integer) As Integer
 Declare Function FSOUND_Sample_Free Alias "FSOUND_Sample_Free" (ByVal sptr As Integer) As Integer
 Declare Function FSOUND_Sample_Upload Alias "FSOUND_Sample_Upload" (ByVal sptr As Integer, Byval srcdata As Integer ptr, ByVal mode As Integer) As Byte
@@ -615,7 +615,7 @@ Declare Function FSOUND_FX_SetWavesReverb Alias "FSOUND_FX_SetWavesReverb" (ByVa
 
 Declare Function FSOUND_Stream_SetBufferSize Alias "FSOUND_Stream_SetBufferSize" (ByVal ms As Integer) As Byte
 
-Declare Function FSOUND_Stream_Open Alias "FSOUND_Stream_Open" (ByVal filename As String, ByVal mode As FSOUND_MODES, ByVal offset As Integer, ByVal length As Integer) As Integer
+Declare Function FSOUND_Stream_Open Alias "FSOUND_Stream_Open" (byval filename as zstring ptr, ByVal mode As FSOUND_MODES, ByVal offset As Integer, ByVal length As Integer) As Integer
 Declare Function FSOUND_Stream_Open2 Alias "FSOUND_Stream_Open" (Byval fdata As Byte ptr, ByVal mode As FSOUND_MODES, ByVal offset As Integer, ByVal length As Integer) As Integer
 Declare Function FSOUND_Stream_Create Alias "FSOUND_Stream_Create" (ByVal callback As Integer, ByVal length As Integer, ByVal mode As Integer, ByVal samplerate As Integer, ByVal userdata As Integer) As Integer
 Declare Function FSOUND_Stream_Close Alias "FSOUND_Stream_Close" (ByVal stream As Integer) As Byte
@@ -642,7 +642,7 @@ Declare Function FSOUND_Stream_CreateDSP Alias "FSOUND_Stream_CreateDSP" (ByVal 
 Declare Function FSOUND_Stream_SetEndCallback Alias "FSOUND_Stream_SetEndCallback" (ByVal stream As Integer, ByVal callback As Integer, ByVal userdata As Integer) As Byte
 Declare Function FSOUND_Stream_SetSyncCallback Alias "FSOUND_Stream_SetSyncCallback" (ByVal stream As Integer, ByVal callback As Integer, ByVal userdata As Integer) As Byte
 
-Declare Function FSOUND_Stream_AddSyncPoint Alias "FSOUND_Stream_AddSyncPoint" (ByVal stream As Integer, ByVal pcmoffset As Integer, ByVal name As String) As Integer
+Declare Function FSOUND_Stream_AddSyncPoint Alias "FSOUND_Stream_AddSyncPoint" (ByVal stream As Integer, ByVal pcmoffset As Integer, byval name as zstring ptr) As Integer
 Declare Function FSOUND_Stream_DeleteSyncPoint Alias "FSOUND_Stream_DeleteSyncPoint" (ByVal point As Integer) As Byte
 Declare Function FSOUND_Stream_GetNumSyncPoints Alias "FSOUND_Stream_GetNumSyncPoints" (ByVal stream As Integer) As Integer
 Declare Function FSOUND_Stream_GetSyncPoint Alias "FSOUND_Stream_GetSyncPoint" (ByVal stream As Integer, ByVal index As Integer) As Integer
@@ -654,13 +654,13 @@ Declare Function FSOUND_Stream_SetSubStreamSentence Alias "FSOUND_Stream_SetSubS
 
 Declare Function FSOUND_Stream_GetNumTagFields Alias "FSOUND_Stream_GetNumTagFields" (ByVal stream As Integer, Byval num As Integer ptr) As Byte
 Declare Function FSOUND_Stream_GetTagField Alias "FSOUND_Stream_GetTagField" (ByVal stream As Integer, ByVal num As Integer, Byval tagtype As Integer ptr, Byval name As byte ptr ptr, Byval value As byte ptr ptr, Byval length As Integer ptr) As Byte
-Declare Function FSOUND_Stream_FindTagField Alias "FSOUND_Stream_FindTagField" (ByVal stream As Integer, ByVal tagtype As Integer, ByVal name As String, Byval value As any ptr ptr, Byval length As Integer ptr) As Byte
+Declare Function FSOUND_Stream_FindTagField Alias "FSOUND_Stream_FindTagField" (ByVal stream As Integer, ByVal tagtype As Integer, byval name as zstring ptr, Byval value As any ptr ptr, Byval length As Integer ptr) As Byte
 
 '
 '   Internet streaming functions
 '
 
-Declare Function FSOUND_Stream_Net_SetProxy Alias "FSOUND_Stream_Net_SetProxy" (ByVal proxy As String) As Byte
+Declare Function FSOUND_Stream_Net_SetProxy Alias "FSOUND_Stream_Net_SetProxy" (byval proxy as zstring ptr) As Byte
 Declare Function FSOUND_Stream_Net_GetLastServerStatus Alias "FSOUND_Stream_Net_GetLastServerStatus" () as zstring ptr
 Declare Function FSOUND_Stream_Net_SetBufferProperties Alias "FSOUND_Stream_Net_SetBufferProperties" (ByVal buffersize As Integer, ByVal prebuffer_percent As Integer, ByVal rebuffer_percent As Integer) As Byte
 Declare Function FSOUND_Stream_Net_GetBufferProperties Alias "FSOUND_Stream_Net_GetBufferProperties" (Byval buffersize As Integer ptr, Byval prebuffer_percent As Integer ptr, Byval rebuffer_percent As Integer ptr) As Byte
@@ -771,8 +771,8 @@ Declare Function FSOUND_Record_GetPosition Alias "FSOUND_Record_GetPosition" () 
 '   Song management / playback functions.
 
 
-Declare Function FMUSIC_LoadSong Alias "FMUSIC_LoadSong" (ByVal name As String) As Integer
-Declare Function FMUSIC_LoadSongEx Alias "FMUSIC_LoadSongEx" (ByVal name As String, ByVal offset As Integer, ByVal length As Integer, ByVal mode As FSOUND_MODES, Byval sentencelist As Integer ptr, ByVal numitems As Integer) As Integer
+Declare Function FMUSIC_LoadSong Alias "FMUSIC_LoadSong" (byval name as zstring ptr) As Integer
+Declare Function FMUSIC_LoadSongEx Alias "FMUSIC_LoadSongEx" (byval name as zstring ptr, ByVal offset As Integer, ByVal length As Integer, ByVal mode As FSOUND_MODES, Byval sentencelist As Integer ptr, ByVal numitems As Integer) As Integer
 Declare Function FMUSIC_LoadSongEx2 Alias "FMUSIC_LoadSongEx" (Byval fdata As Byte ptr, ByVal offset As Integer, ByVal length As Integer, ByVal mode As FSOUND_MODES, Byval sentencelist As Integer ptr, ByVal numitems As Integer) As Integer
 Declare Function FMUSIC_GetOpenState Alias "FMUSIC_GetOpenState" (ByVal module As Integer) As Integer
 

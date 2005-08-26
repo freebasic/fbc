@@ -93,7 +93,7 @@ Extern Import midi_loop_end Alias "midi_loop_end" As Integer	' loop when we hit 
 
 Declare Function detect_midi_driver CDecl Alias "detect_midi_driver" (ByVal driver_id As Integer) As Integer
 
-Declare Function load_midi CDecl Alias "load_midi" (ByVal filename As String) As MIDI Ptr
+Declare Function load_midi CDecl Alias "load_midi" (byval filename as zstring ptr) As MIDI Ptr
 Declare Sub destroy_midi CDecl Alias "destroy_midi" (ByVal midi As MIDI Ptr)
 Declare Function play_midi CDecl Alias "play_midi" (BYVal midi As MIDI Ptr, ByVal iloop As Integer) As Integer
 Declare Function play_looped_midi CDecl Alias "play_looped_midi" (ByVal midi As MIDI Ptr, ByVal loop_start As Integer, ByVal loop_end As Integer) As Integer

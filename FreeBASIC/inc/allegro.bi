@@ -1260,8 +1260,8 @@ extern import gui_menu_draw_menu_item as sub cdecl(byval m as MENU ptr, byval x 
 ' system
 Declare Function install_allegro CDecl Alias "install_allegro" (ByVal system_id As Integer, ByVal errno_ptr As Integer Ptr, ByVal atexit_ptr as function cdecl( byval as sub cdecl() ) as integer) As Integer
 Declare Sub allegro_exit CDecl Alias "allegro_exit" ()
-Declare Sub allegro_message CDecl Alias "allegro_message" (ByVal s As String)
-Declare Sub set_window_title CDecl Alias "set_window_title" (ByVal name As String)
+Declare Sub allegro_message CDecl Alias "allegro_message" (byval s as zstring ptr)
+Declare Sub set_window_title CDecl Alias "set_window_title" (byval name as zstring ptr)
 Declare Function set_close_button CDecl Alias "set_close_button" (ByVal enable As Integer) As Integer
 Declare Sub set_window_close_hook CDecl Alias "set_window_close_hook" (ByVal proc As Sub cdecl())
 Declare Function desktop_color_depth CDecl Alias "desktop_color_depth" () As Integer
@@ -1272,28 +1272,28 @@ Declare Sub check_cpu CDecl Alias "check_cpu" ()
 ' unicode - todo
 
 ' configuration routines
-Declare Sub set_config_file CDecl Alias "set_config_file" (ByVal filename As String)
-Declare Sub set_config_data CDecl Alias "set_config_data" (ByVal sdata As String, ByVal length As Integer)
-Declare Sub override_config_file CDecl Alias "override_config_file" (ByVal filename As String)
-Declare Sub override_config_data CDecl Alias "override_config_data" (ByVal sdata As String, ByVal length As Integer)
+Declare Sub set_config_file CDecl Alias "set_config_file" (byval filename as zstring ptr)
+Declare Sub set_config_data CDecl Alias "set_config_data" (byval sdata as zstring ptr, ByVal length As Integer)
+Declare Sub override_config_file CDecl Alias "override_config_file" (byval filename as zstring ptr)
+Declare Sub override_config_data CDecl Alias "override_config_data" (byval sdata as zstring ptr, ByVal length As Integer)
 Declare Sub push_config_state CDecl Alias "push_config_state" ()
 Declare Sub pop_config_state CDecl Alias "pop_config_state" ()
 Declare Sub flush_config_file CDecl Alias "flush_config_file" ()
-Declare Sub reload_config_texts CDecl Alias "reload_config_texts" (ByVal new_language As String)
-Declare Sub hook_config_section CDecl Alias "hook_config_section" (ByVal section As String, ByVal intgetter As Function cdecl(ByVal name As String, ByVal idef As Integer) As Integer, ByVal stringgetter As Function cdecl(ByVal name As String, ByVal sdef As String) As Integer, ByVal stringsetter As Sub cdecl (ByVal name As String, ByVal value As String))
-Declare Function config_is_hooked CDecl Alias "config_is_hooked" (ByVal section As String) As Integer
-Declare Function get_config_string CDecl Alias "get_config_string" (ByVal section As String, ByVal name As String, Byval sdef As String) as zstring ptr
-Declare Function get_config_int CDecl Alias "get_config_int" (ByVal section As String, ByVal name As String, ByVal idef As Integer) As Integer
-Declare Function get_config_hex CDecl Alias "get_config_hex" (ByVal section As String, ByVal name As String, ByVal idef As Integer) As Integer
-Declare Function get_config_float CDecl Alias "get_config_float" (ByVal section As String, ByVal name As String, ByVal fdef As Single) As Single
-Declare Function get_config_id CDecl Alias "get_config_id" (ByVal section As String, ByVal name As String, ByVal idef As Integer) As Integer
-Declare Function get_config_argv CDecl Alias "get_config_argv" (ByVal section As String, ByVal s_name As String, ByVal argc As Integer Ptr) as zstring ptr Ptr
-Declare Function get_config_text CDecl Alias "get_config_text" (ByVal msg As String) as zstring ptr
-Declare Sub set_config_string CDecl Alias "set_config_string" (ByVal section As String, ByVal name As String, ByVal val As String)
-Declare Sub set_config_int CDecl Alias "set_config_int" (ByVal section As String, ByVal name As String, ByVal val As Integer)
-Declare Sub set_config_hex CDecl Alias "set_config_hex" (ByVal section As String, ByVal name As String, ByVal val As Integer)
-Declare Sub set_config_float CDecl Alias "set_config_float" (ByVal section As String, ByVal name As String, ByVal val As Single)
-Declare Sub set_config_id CDecl Alias "set_config_id" (ByVal section As String, ByVal name As String, ByVal val As Integer)
+Declare Sub reload_config_texts CDecl Alias "reload_config_texts" (byval new_language as zstring ptr)
+Declare Sub hook_config_section CDecl Alias "hook_config_section" (byval section as zstring ptr, ByVal intgetter As Function cdecl(byval name as zstring ptr, ByVal idef As Integer) As Integer, ByVal stringgetter As Function cdecl(byval name as zstring ptr, byval sdef as zstring ptr) As Integer, ByVal stringsetter As Sub cdecl (byval name as zstring ptr, byval value as zstring ptr))
+Declare Function config_is_hooked CDecl Alias "config_is_hooked" (byval section as zstring ptr) As Integer
+Declare Function get_config_string CDecl Alias "get_config_string" (byval section as zstring ptr, byval name as zstring ptr, byval sdef as zstring ptr) as zstring ptr
+Declare Function get_config_int CDecl Alias "get_config_int" (byval section as zstring ptr, byval name as zstring ptr, ByVal idef As Integer) As Integer
+Declare Function get_config_hex CDecl Alias "get_config_hex" (byval section as zstring ptr, byval name as zstring ptr, ByVal idef As Integer) As Integer
+Declare Function get_config_float CDecl Alias "get_config_float" (byval section as zstring ptr, byval name as zstring ptr, ByVal fdef As Single) As Single
+Declare Function get_config_id CDecl Alias "get_config_id" (byval section as zstring ptr, byval name as zstring ptr, ByVal idef As Integer) As Integer
+Declare Function get_config_argv CDecl Alias "get_config_argv" (byval section as zstring ptr, byval s_name as zstring ptr, ByVal argc As Integer Ptr) as zstring ptr Ptr
+Declare Function get_config_text CDecl Alias "get_config_text" (byval msg as zstring ptr) as zstring ptr
+Declare Sub set_config_string CDecl Alias "set_config_string" (byval section as zstring ptr, byval name as zstring ptr, byval val as zstring ptr)
+Declare Sub set_config_int CDecl Alias "set_config_int" (byval section as zstring ptr, byval name as zstring ptr, ByVal val As Integer)
+Declare Sub set_config_hex CDecl Alias "set_config_hex" (byval section as zstring ptr, byval name as zstring ptr, ByVal val As Integer)
+Declare Sub set_config_float CDecl Alias "set_config_float" (byval section as zstring ptr, byval name as zstring ptr, ByVal val As Single)
+Declare Sub set_config_id CDecl Alias "set_config_id" (byval section as zstring ptr, byval name as zstring ptr, ByVal val As Integer)
 
 ' mouse routines
 Declare Function install_mouse CDecl Alias "install_mouse" () As Integer
@@ -1348,8 +1348,8 @@ Declare Sub remove_joystick CDecl Alias "remove_joystick" ()
 Declare Function poll_joystick CDecl Alias "poll_joystick" () As Integer
 Declare Function calibrate_joystick_name CDecl Alias "calibrate_joystick_name" (ByVal n As Integer) as zstring ptr
 Declare Function calibrate_joystick CDecl Alias "calibrate_joystick" (ByVal n As Integer) As Integer
-Declare Function save_joystick_data CDecl Alias "save_joystick_data" (ByVal filename As String) As Integer
-Declare Function load_joystick_data CDecl Alias "load_joystick_data" (ByVal filename As String) As Integer
+Declare Function save_joystick_data CDecl Alias "save_joystick_data" (byval filename as zstring ptr) As Integer
+Declare Function load_joystick_data CDecl Alias "load_joystick_data" (byval filename as zstring ptr) As Integer
 Declare Function initialise_joystick CDecl Alias "initialise_joystick" () As Integer
 
 ' graphics modes
@@ -1401,16 +1401,16 @@ Declare Sub set_clip CDecl Alias "set_clip" (ByVal bmp As BITMAP Ptr, ByVal x1 A
 'Declare Function is_inside_bitmap CDecl Alias "is_inside_bitmap" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal clip As Integer) As Integer
 
 ' loading image files
-Declare Function load_bitmap CDecl Alias "load_bitmap" (ByVal filename As String, ByVal pal As RGB Ptr) As BITMAP Ptr
-Declare Function load_bmp CDecl Alias "load_bmp" (ByVal filename As String, ByVal pal As RGB Ptr) As BITMAP Ptr
-Declare Function load_lbm CDecl Alias "load_lbm" (ByVal filename As String, ByVal pal As RGB Ptr) As BITMAP Ptr
-Declare Function load_pcx CDecl Alias "load_pcx" (ByVal filename As String, ByVal pal As RGB Ptr) As BITMAP Ptr
-Declare Function load_tga CDecl Alias "load_tga" (ByVal filename As String, ByVal pal As RGB Ptr) As BITMAP Ptr
-Declare Function save_bitmap CDecl Alias "save_bitmap" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As RGB Ptr) As Integer
-Declare Function save_bmp CDecl Alias "save_bmp" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As RGB Ptr) As Integer
-Declare Function save_pcx CDecl Alias "save_pcx" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As RGB Ptr) As Integer
-Declare Function save_tga CDecl Alias "save_tga" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As RGB Ptr) As Integer
-Declare Sub register_bitmap_file_type CDecl Alias "register_bitmap_file_type" (ByVal ext As String, ByVal load As Function cdecl(ByVal filename As String, ByVal pal As RGB Ptr) As BITMAP Ptr, ByVal save As sub cdecl(ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal pal As RGB Ptr))
+Declare Function load_bitmap CDecl Alias "load_bitmap" (byval filename as zstring ptr, ByVal pal As RGB Ptr) As BITMAP Ptr
+Declare Function load_bmp CDecl Alias "load_bmp" (byval filename as zstring ptr, ByVal pal As RGB Ptr) As BITMAP Ptr
+Declare Function load_lbm CDecl Alias "load_lbm" (byval filename as zstring ptr, ByVal pal As RGB Ptr) As BITMAP Ptr
+Declare Function load_pcx CDecl Alias "load_pcx" (byval filename as zstring ptr, ByVal pal As RGB Ptr) As BITMAP Ptr
+Declare Function load_tga CDecl Alias "load_tga" (byval filename as zstring ptr, ByVal pal As RGB Ptr) As BITMAP Ptr
+Declare Function save_bitmap CDecl Alias "save_bitmap" (byval filename as zstring ptr, ByVal bmp As BITMAP Ptr, ByVal pal As RGB Ptr) As Integer
+Declare Function save_bmp CDecl Alias "save_bmp" (byval filename as zstring ptr, ByVal bmp As BITMAP Ptr, ByVal pal As RGB Ptr) As Integer
+Declare Function save_pcx CDecl Alias "save_pcx" (byval filename as zstring ptr, ByVal bmp As BITMAP Ptr, ByVal pal As RGB Ptr) As Integer
+Declare Function save_tga CDecl Alias "save_tga" (byval filename as zstring ptr, ByVal bmp As BITMAP Ptr, ByVal pal As RGB Ptr) As Integer
+Declare Sub register_bitmap_file_type CDecl Alias "register_bitmap_file_type" (byval ext as zstring ptr, ByVal load As Function cdecl(byval filename as zstring ptr, ByVal pal As RGB Ptr) As BITMAP Ptr, ByVal save As sub cdecl(byval filename as zstring ptr, ByVal bmp As BITMAP Ptr, ByVal pal As RGB Ptr))
 Declare Sub set_color_conversion CDecl Alias "set_color_conversion" (ByVal mode As Integer)
 Declare Function get_color_conversion CDecl Alias "get_color_conversion" () As Integer
 
@@ -1431,7 +1431,7 @@ Declare Sub fade_out CDecl Alias "fade_out" (ByVal speed As Integer)
 Declare Sub select_palette CDecl Alias "select_palette" (ByVal p As RGB Ptr)
 Declare Sub unselect_palette CDecl Alias "unselect_palette" ()
 Declare Sub generate_332_palette CDecl Alias "generate_332_palette" (ByVal pal As RGB ptr)
-Declare Function generate_optimized_palette CDecl Alias "generate_optimized_palette" (ByVal bmp As BITMAP Ptr, ByVal pal As RGB ptr, ByVal rsvd As String) As Integer
+Declare Function generate_optimized_palette CDecl Alias "generate_optimized_palette" (ByVal bmp As BITMAP Ptr, ByVal pal As RGB ptr, byval rsvd as zstring ptr) As Integer
 
 ' truecolor pixel formats
 Declare Function makecol8 CDecl Alias "makecol8" (ByVal r As Integer, ByVal g As Integer, ByVal b As Integer) As Integer
@@ -1540,21 +1540,21 @@ declare sub draw_compiled_sprite cdecl alias "draw_compiled_sprite" ( byval bmp 
 
 ' text output
 Declare Function text_mode CDecl Alias "text_mode" (ByVal mode As Integer) As Integer
-Declare Sub textout CDecl Alias "textout" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, ByVal s As String, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer)
-Declare Sub textout_centre CDecl Alias "textout_centre" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, ByVal s As String, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer)
-Declare Sub textout_right CDecl Alias "textout_right" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, ByVal s As String, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer)
-Declare Sub textout_justify CDecl Alias "textout_justify" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, ByVal s As String, ByVal x1 As Integer, ByVal x2 As Integer, ByVal y As Integer, ByVal diff As Integer, ByVal c As Integer)
-Declare Sub textprintf CDecl Alias "textprintf" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer, ByVal s As String)
-Declare Function text_length CDecl Alias "text_length" (ByVal f As FONT Ptr, ByVal s As String) As Integer
+Declare Sub textout CDecl Alias "textout" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, byval s as zstring ptr, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer)
+Declare Sub textout_centre CDecl Alias "textout_centre" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, byval s as zstring ptr, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer)
+Declare Sub textout_right CDecl Alias "textout_right" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, byval s as zstring ptr, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer)
+Declare Sub textout_justify CDecl Alias "textout_justify" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, byval s as zstring ptr, ByVal x1 As Integer, ByVal x2 As Integer, ByVal y As Integer, ByVal diff As Integer, ByVal c As Integer)
+Declare Sub textprintf CDecl Alias "textprintf" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer, byval s as zstring ptr)
+Declare Function text_length CDecl Alias "text_length" (ByVal f As FONT Ptr, byval s as zstring ptr) As Integer
 Declare Function text_height CDecl Alias "text_height" (ByVal f As FONT Ptr) As Integer
 Declare Sub destroy_font CDecl Alias "destroy_font" (ByVal f As FONT Ptr)
-'Declare Sub textout_ex CDecl Alias "textout_ex" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, ByVal s As String, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer, ByVal bg As Integer)
-'Declare Sub textout_centre_ex CDecl Alias "textout_centre_ex" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, ByVal s As String, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer, ByVal bg As Integer)
-'Declare Sub textout_right_ex CDecl Alias "textout_right_ex" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, ByVal s As String, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer, ByVal bg As Integer)
-'Declare Sub textout_justify_ex CDecl Alias "textout_justify_ex" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, ByVal s As String, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer, ByVal bg As Integer)
-'Declare Sub textprintf_ex CDecl Alias "textprintf_ex" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, ByVal s As String, ByVal x As Integer, ByVal y As Integer)
-'Declare Sub textprintf_right_ex CDecl Alias "textprintf_right_ex" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, ByVal s As String, ByVal x As Integer, ByVal y As Integer)
-'Declare Sub textprintf_justify_ex CDecl Alias "textprintf_justify_ex" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, ByVal s As String, ByVal x As Integer, ByVal y As Integer)
+'Declare Sub textout_ex CDecl Alias "textout_ex" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, byval s as zstring ptr, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer, ByVal bg As Integer)
+'Declare Sub textout_centre_ex CDecl Alias "textout_centre_ex" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, byval s as zstring ptr, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer, ByVal bg As Integer)
+'Declare Sub textout_right_ex CDecl Alias "textout_right_ex" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, byval s as zstring ptr, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer, ByVal bg As Integer)
+'Declare Sub textout_justify_ex CDecl Alias "textout_justify_ex" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, byval s as zstring ptr, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer, ByVal bg As Integer)
+'Declare Sub textprintf_ex CDecl Alias "textprintf_ex" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, byval s as zstring ptr, ByVal x As Integer, ByVal y As Integer)
+'Declare Sub textprintf_right_ex CDecl Alias "textprintf_right_ex" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, byval s as zstring ptr, ByVal x As Integer, ByVal y As Integer)
+'Declare Sub textprintf_justify_ex CDecl Alias "textprintf_justify_ex" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, byval s as zstring ptr, ByVal x As Integer, ByVal y As Integer)
 
 ' polygon rendering
 Declare Sub polygon3d CDecl Alias "polygon3d" (ByVal bmp As BITMAP Ptr, ByVal typ As Integer, ByVal texture As BITMAP Ptr, ByVal vc As Integer, vtx() As V3D Ptr)
@@ -1614,9 +1614,9 @@ Declare Function bmp_read_line CDecl Alias "bmp_read_line" (ByVal bmp As BITMAP 
 Declare Function bmp_unwrite_line CDecl Alias "bmp_unwrite_line" (ByVal bmp As BITMAP Ptr) As unsigned Integer
 
 ' FLIC routines
-Declare Function play_fli CDecl Alias "play_fli" (ByVal filename As String, ByVal bmp As BITMAP Ptr, ByVal iloop As Integer, ByVal callback As Function cdecl() As Integer) As Integer
+Declare Function play_fli CDecl Alias "play_fli" (byval filename as zstring ptr, ByVal bmp As BITMAP Ptr, ByVal iloop As Integer, ByVal callback As Function cdecl() As Integer) As Integer
 Declare Function play_memory_fli CDecl Alias "play_memory_fli" (ByVal fli_data As Integer, ByVal bmp As BITMAP Ptr, ByVal iloop As Integer, ByVal callback As Function cdecl() As Integer) As Integer
-Declare Function open_fli CDecl Alias "open_fli" (ByVal filename As String) As Integer
+Declare Function open_fli CDecl Alias "open_fli" (byval filename as zstring ptr) As Integer
 Declare Function open_memory_fli CDecl Alias "open_memory_fli" (ByVal fli_data As Integer) As Integer
 Declare Sub close_fli CDecl Alias "close_fli" ()
 Declare Function next_fli_frame CDecl Alias "next_fli_frame" (ByVal iloop As Integer) As Integer
@@ -1627,14 +1627,14 @@ Declare Function detect_digi_driver CDecl Alias "detect_digi_driver" (ByVal driv
 Declare Function detect_midi_driver CDecl Alias "detect_midi_driver" (ByVal driver_id As Integer) As Integer
 Declare Sub reserve_voices CDecl Alias "reserve_voices" (ByVal digi_voices As Integer, ByVal midi_voices As Integer)
 Declare Sub set_volume_per_voice CDecl Alias "set_volume_per_voice" (ByVal scale As Integer)
-Declare Function install_sound CDecl Alias "install_sound" (ByVal digi As Integer, ByVal midi As Integer, ByVal cfg_path As String) As Integer
+Declare Function install_sound CDecl Alias "install_sound" (ByVal digi As Integer, ByVal midi As Integer, byval cfg_path as zstring ptr) As Integer
 Declare Sub remove_sound CDecl Alias "remove_sound"
 Declare Sub set_volume CDecl Alias "set_volume" (ByVal digi_volume As Integer, ByVal midi_volume As Integer)
 
 ' digital sample routines
-Declare Function load_sample CDecl Alias "load_sample" (ByVal filename As String) As SAMPLE Ptr
-Declare Function load_wav CDecl Alias "load_wav" (ByVal filename As String) As SAMPLE Ptr
-Declare Function load_voc CDecl Alias "load_voc" (BYVal filename As String) As SAMPLE Ptr
+Declare Function load_sample CDecl Alias "load_sample" (byval filename as zstring ptr) As SAMPLE Ptr
+Declare Function load_wav CDecl Alias "load_wav" (byval filename as zstring ptr) As SAMPLE Ptr
+Declare Function load_voc CDecl Alias "load_voc" (byval filename as zstring ptr) As SAMPLE Ptr
 Declare Function create_sample CDecl Alias "create_sample" (ByVal bits As Integer, ByVal stereo As Integer, ByVal freq As Integer, ByVal iLen As Integer) As SAMPLE Ptr
 Declare Sub destroy_sample CDecl Alias "destroy_sample" (ByVal spl As SAMPLE Ptr)
 Declare Sub lock_sample CDecl Alias "lock_sample" (ByVal spl As SAMPLE Ptr)
@@ -1669,7 +1669,7 @@ Declare Sub voice_set_tremolo CDecl Alias "voice_set_tremolo" (ByVal voice As In
 Declare Sub voice_set_vibrato CDecl Alias "voice_set_vibrato" (ByVal voice As Integer, ByVal rate As Integer, ByVal depth As Integer)
 
 ' music routines (MIDI)
-Declare Function load_midi CDecl Alias "load_midi" (ByVal filename As String) As MIDI Ptr
+Declare Function load_midi CDecl Alias "load_midi" (byval filename as zstring ptr) As MIDI Ptr
 Declare Sub destroy_midi CDecl Alias "destroy_midi" (ByVal midi As MIDI Ptr)
 Declare Sub lock_midi CDecl Alias "lock_midi" (ByVal midi As MIDI Ptr)
 Declare Function play_midi CDecl Alias "play_midi" (BYVal midi As MIDI Ptr, ByVal iloop As Integer) As Integer
@@ -1680,7 +1680,7 @@ Declare Sub midi_resume CDecl Alias "midi_resume" ()
 Declare Function midi_seek CDecl Alias "midi_seek" (ByVal target As Integer) As Integer
 Declare Sub midi_out CDecl Alias "midi_out" (ByVal dat As UByte Ptr, ByVal length As Integer)
 Declare Function load_midi_patches CDecl Alias "load_midi_patches" () As Integer
-Declare Function load_ibk CDecl Alias "load_ibk" (ByVal filename As String, ByVal drums As Integer) As Integer
+Declare Function load_ibk CDecl Alias "load_ibk" (byval filename as zstring ptr, ByVal drums As Integer) As Integer
 
 ' audio stream routines
 declare function play_audio_stream cdecl alias "play_audio_stream" ( byval length as integer, byval bits as integer, byval stereo as integer, byval freq as integer, byval vol as integer, byval pan as integer ) as AUDIOSTREAM ptr
@@ -1704,12 +1704,12 @@ Declare Function read_sound_input CDecl Alias "read_sound_input" (ByVal buffer A
 ' todo ...
 
 ' datafile routines
-Declare Function load_datafile CDecl Alias "load_datafile" (ByVal filename As String) As DATAFILE Ptr
-Declare Function load_datafile_callback CDecl Alias "load_datafile_callback" (ByVal filename As String, ByVal callback As Sub cdecl(ByVal d As DATAFILE Ptr)) As DATAFILE Ptr
+Declare Function load_datafile CDecl Alias "load_datafile" (byval filename as zstring ptr) As DATAFILE Ptr
+Declare Function load_datafile_callback CDecl Alias "load_datafile_callback" (byval filename as zstring ptr, ByVal callback As Sub cdecl(ByVal d As DATAFILE Ptr)) As DATAFILE Ptr
 Declare Sub unload_datafile CDecl Alias "unload_datafile" (ByVal dat As DATAFILE Ptr)
-Declare Function load_datafile_object CDecl Alias "load_datafile_object" (ByVal filename As String, ByVal objectname As String) As DATAFILE Ptr
+Declare Function load_datafile_object CDecl Alias "load_datafile_object" (byval filename as zstring ptr, byval objectname as zstring ptr) As DATAFILE Ptr
 Declare Sub unload_datafile_object CDecl Alias "unload_datafile_object" (ByVal dat As DATAFILE Ptr)
-Declare Function find_datafile_object CDecl Alias "find_datafile_object" (ByVal dat As DATAFILE Ptr, ByVal objectname As String) As DATAFILE Ptr
+Declare Function find_datafile_object CDecl Alias "find_datafile_object" (ByVal dat As DATAFILE Ptr, byval objectname as zstring ptr) As DATAFILE Ptr
 Declare Function get_datafile_property CDecl Alias "get_datafile_property" (ByVal dat As DATAFILE Ptr, ByVal typ As Integer) as zstring ptr
 Declare Sub register_datafile_object CDecl Alias "register_datafile_object" (ByVal id As Integer, ByVal load As Sub cdecl(ByVal f As PACKFILE Ptr, ByVal size As Long), ByVal destroy As Sub cdecl(ByVal dat As Integer))
 Declare Sub fixup_datafile CDecl Alias "fixup_datafile" (ByVal dat As DATAFILE Ptr)
@@ -1811,8 +1811,8 @@ declare function d_text_list_proc cdecl alias "d_text_list_proc" ( byval msg as 
 declare function d_textbox_proc cdecl alias "d_textbox_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
 declare function d_slider_proc cdecl alias "d_slider_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
 declare function d_menu_proc cdecl alias "d_menu_proc" ( byval msg as integer, byval d as DIALOG ptr, byval c as integer ) as integer
-declare function gui_textout cdecl alias "gui_textout" ( byval bmp as BITMAP ptr, byval s as string, byval x as integer, byval y as integer, byval _color as integer, byval centre as integer) as integer
-declare function gui_strlen cdecl alias "gui_strlen" ( byval s as string ) as integer
+declare function gui_textout cdecl alias "gui_textout" ( byval bmp as BITMAP ptr, byval s as zstring ptr, byval x as integer, byval y as integer, byval _color as integer, byval centre as integer) as integer
+declare function gui_strlen cdecl alias "gui_strlen" ( byval s as zstring ptr ) as integer
 declare sub position_dialog cdecl alias "position_dialog" ( byval dlg as DIALOG ptr, byval x as integer, byval y as integer )
 declare sub centre_dialog cdecl alias "centre_dialog" ( byval dlg as DiALOG ptr )
 declare sub set_dialog_color cdecl alias "set_dialog_color" ( byval dlg as DIALOG ptr, byval fg as integer, byval bg as integer )
@@ -1826,16 +1826,16 @@ declare function init_dialog cdecl alias "init_dialog" ( byval d as DIALOG ptr, 
 declare function update_dialog cdecl alias "update_dialog" ( byval player as DIALOG_PLAYER) as integer
 declare function shutdown_dialog cdecl alias "shutdown_dialog" ( byval player as DIALOG_PLAYER Ptr ) as integer
 declare function do_menu cdecl alias "do_menu" ( byval menu as MENU ptr, byval x as integer, byval y as integer ) as integer
-Declare Function alert CDecl Alias "alert" (ByVal s1 as String, ByVal s2 As String, ByVal s3 As String, ByVal b1 As String, ByVal b2 As String, ByVal c1 As String, ByVal c2 As String) As Integer
-declare function alert3 cdecl alias "alert3" ( byval s1 as string, byval s2 as string, byval s3 as string, byval b1 as string, byval b2 as string, byval b3 as string, byval c1 as integer, byval c2 as integer, byval c3 as integer ) as integer
-declare function file_select cdecl alias "file_select" ( byval message as string, byval path as byte ptr, byval ext as string ) as integer
-declare function file_select_ex cdecl alias "file_select_ex" ( byval message as string, byval path as byte ptr, byval ext as string, byval size as integer, byval w as integer, byval h as integer ) as integer
+Declare Function alert CDecl Alias "alert" (byval s1 as zstring ptr, byval s2 as zstring ptr, byval s3 as zstring ptr, byval b1 as zstring ptr, byval b2 as zstring ptr, byval c1 as zstring ptr, byval c2 as zstring ptr) As Integer
+declare function alert3 cdecl alias "alert3" ( byval s1 as zstring ptr, byval s2 as zstring ptr, byval s3 as zstring ptr, byval b1 as zstring ptr, byval b2 as zstring ptr, byval b3 as zstring ptr, byval c1 as integer, byval c2 as integer, byval c3 as integer ) as integer
+declare function file_select cdecl alias "file_select" ( byval message as zstring ptr, byval path as byte ptr, byval ext as zstring ptr ) as integer
+declare function file_select_ex cdecl alias "file_select_ex" ( byval message as zstring ptr, byval path as byte ptr, byval ext as zstring ptr, byval size as integer, byval w as integer, byval h as integer ) as integer
 Declare Function gfx_mode_select CDecl Alias "gfx_mode_select" (ByRef card As Integer, ByRef w As Integer, ByRef h As Integer) As Integer
 Declare Function gfx_mode_select_ex CDecl Alias "gfx_mode_select_ex" (ByVal card As Integer Ptr, ByVal w As Integer Ptr, ByVal h As Integer Ptr, ByVal color_depth As Integer Ptr)
 
 ' debug facilities
-declare sub al_assert cdecl alias "al_assert" ( byval file as string, byval _line as integer )
-declare sub al_trace cdecl alias "al_trace" ( byval msg as string, ... )
+declare sub al_assert cdecl alias "al_assert" ( byval file as zstring ptr, byval _line as integer )
+declare sub al_trace cdecl alias "al_trace" ( byval msg as zstring ptr, ... )
 declare sub register_assert_handler cdecl alias "register_assert_handler" ( byval handler as function cdecl(byval msg as byte ptr) as integer)
 declare sub register_trace_handler cdecl alias "register_trace_handler" ( byval handler as function cdecl(byval msg as byte ptr) as integer)
 
@@ -1868,6 +1868,7 @@ declare sub register_trace_handler cdecl alias "register_trace_handler" ( byval 
 ' -- random hacks --
 
 #ifdef __FB_LINUX__
+#ifdef __FB_MAIN__
 
 extern __crt0_argc alias "__crt0_argc" as integer
 extern __crt0_argv alias "__crt0_argv" as ubyte ptr ptr
@@ -1886,9 +1887,11 @@ private sub build_args constructor
 		__crt0_args(__crt0_argc) = command(__crt0_argc)
 		__crt0_argc += 1
 	wend
+	
 	for i = 1 to __crt0_argc
 		__crt0_argp(i) = cptr(zstring ptr, @__crt0_args(i))
-	next i
+	next
+	
 	__crt0_argv = @__crt0_argp(0)
 end sub
 
@@ -1897,5 +1900,5 @@ public sub _mangled_main_address alias "_mangled_main_address"
 
 end sub
 
-
-#endif
+#endif ''__FB_MAIN__
+#endif ''__FB_LINUX__

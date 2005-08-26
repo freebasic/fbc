@@ -26,7 +26,7 @@ type _GtkFileChooserDialog
 end type
 
 declare function gtk_file_chooser_dialog_get_type cdecl alias "gtk_file_chooser_dialog_get_type" () as GType
-declare function gtk_file_chooser_dialog_new cdecl alias "gtk_file_chooser_dialog_new" (byval title as string, byval parent as GtkWindow ptr, byval action as GtkFileChooserAction, byval first_button_text as string, ...) as GtkWidget ptr
-declare function gtk_file_chooser_dialog_new_with_backend cdecl alias "gtk_file_chooser_dialog_new_with_backend" (byval title as string, byval parent as GtkWindow ptr, byval action as GtkFileChooserAction, byval backend as string, byval first_button_text as string, ...) as GtkWidget ptr
+declare function gtk_file_chooser_dialog_new cdecl alias "gtk_file_chooser_dialog_new" (byval title as zstring ptr, byval parent as GtkWindow ptr, byval action as GtkFileChooserAction, byval first_button_text as zstring ptr, ...) as GtkWidget ptr
+declare function gtk_file_chooser_dialog_new_with_backend cdecl alias "gtk_file_chooser_dialog_new_with_backend" (byval title as zstring ptr, byval parent as GtkWindow ptr, byval action as GtkFileChooserAction, byval backend as zstring ptr, byval first_button_text as zstring ptr, ...) as GtkWidget ptr
 
 #endif

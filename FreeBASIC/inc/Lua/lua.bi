@@ -137,10 +137,10 @@ declare function lua_topointer LUA_API alias "lua_topointer" (byval L as lua_Sta
 ''
 declare sub lua_pushnil LUA_API alias "lua_pushnil" (byval L as lua_State ptr)
 declare sub lua_pushnumber LUA_API alias "lua_pushnumber" (byval L as lua_State ptr, byval n as lua_Number)
-declare sub lua_pushlstring LUA_API alias "lua_pushlstring" (byval L as lua_State ptr, byval s as string, byval l as integer)
-declare sub lua_pushstring LUA_API alias "lua_pushstring" (byval L as lua_State ptr, byval s as string)
-declare function lua_pushvfstring LUA_API alias "lua_pushvfstring" (byval L as lua_State ptr, byval fmt as string, byval argp as any ptr ) as zstring ptr
-declare function lua_pushfstring LUA_API alias "lua_pushfstring" (byval L as lua_State ptr, byval fmt as string, ...) as zstring ptr
+declare sub lua_pushlstring LUA_API alias "lua_pushlstring" (byval L as lua_State ptr, byval s as zstring ptr, byval l as integer)
+declare sub lua_pushstring LUA_API alias "lua_pushstring" (byval L as lua_State ptr, byval s as zstring ptr)
+declare function lua_pushvfstring LUA_API alias "lua_pushvfstring" (byval L as lua_State ptr, byval fmt as zstring ptr, byval argp as any ptr ) as zstring ptr
+declare function lua_pushfstring LUA_API alias "lua_pushfstring" (byval L as lua_State ptr, byval fmt as zstring ptr, ...) as zstring ptr
 declare sub lua_pushcclosure LUA_API alias "lua_pushcclosure" (byval L as lua_State ptr, byval fn as lua_CFunction, byval n as integer)
 declare sub lua_pushboolean LUA_API alias "lua_pushboolean" (byval L as lua_State ptr, byval b as integer)
 declare sub lua_pushlightuserdata LUA_API alias "lua_pushlightuserdata" (byval L as lua_State ptr, byval p as any ptr)
@@ -174,7 +174,7 @@ declare function lua_setfenv LUA_API alias "lua_setfenv" (byval L as lua_State p
 declare sub lua_call LUA_API alias "lua_call" (byval L as lua_State ptr, byval nargs as integer, byval nresults as integer)
 declare function lua_pcall LUA_API alias "lua_pcall" (byval L as lua_State ptr, byval nargs as integer, byval nresults as integer, byval errfunc as integer) as integer
 declare function lua_cpcall LUA_API alias "lua_cpcall" (byval L as lua_State ptr, byval func as lua_CFunction, byval ud as any ptr) as integer
-declare function lua_load LUA_API alias "lua_load" (byval L as lua_State ptr, byval reader as lua_Chunkreader, byval dt as any ptr, byval chunkname as string) as integer
+declare function lua_load LUA_API alias "lua_load" (byval L as lua_State ptr, byval reader as lua_Chunkreader, byval dt as any ptr, byval chunkname as zstring ptr) as integer
 
 declare function lua_dump LUA_API alias "lua_dump" (byval L as lua_State ptr, byval writer as lua_Chunkwriter, byval data as any ptr) as integer
 
@@ -282,7 +282,7 @@ end type
 type lua_Hook as sub cdecl(byval L as lua_State ptr, byval ar as lua_Debug ptr)
 
 declare function lua_getstack LUA_API alias "lua_getstack" (byval L as lua_State ptr, byval level as integer, byval ar as lua_Debug ptr) as integer
-declare function lua_getinfo LUA_API alias "lua_getinfo" (byval L as lua_State ptr, byval what as string, byval ar as lua_Debug ptr) as integer
+declare function lua_getinfo LUA_API alias "lua_getinfo" (byval L as lua_State ptr, byval what as zstring ptr, byval ar as lua_Debug ptr) as integer
 declare function lua_getlocal LUA_API alias "lua_getlocal" (byval L as lua_State ptr, byval ar as lua_Debug ptr, byval n as integer) as byte ptr
 declare function lua_setlocal LUA_API alias "lua_setlocal" (byval L as lua_State ptr, byval ar as lua_Debug ptr, byval n as integer) as byte ptr
 declare function lua_getupvalue LUA_API alias "lua_getupvalue" (byval L as lua_State ptr, byval funcindex, byval n as integer) as byte ptr

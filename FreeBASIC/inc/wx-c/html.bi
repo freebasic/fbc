@@ -19,23 +19,23 @@ type Virtual_OnCellClicked as sub (byval as wxHtmlCell ptr, byval as wxCoord, by
 type Virtual_OnOpeningURL as function (byval as wxHtmlURLType, byval as wxString ptr, byval as wxString ptr) as wxHtmlOpeningStatus
 
 declare function wxHtmlWindow cdecl alias "wxHtmlWindow_ctor" () as wxHtmlWindow ptr
-declare function wxHtmlWindow_ctor2 cdecl alias "wxHtmlWindow_ctor2" (byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as wxHtmlWindow ptr
+declare function wxHtmlWindow_ctor2 cdecl alias "wxHtmlWindow_ctor2" (byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as zstring ptr) as wxHtmlWindow ptr
 declare sub wxHtmlWindow_RegisterVirtual cdecl alias "wxHtmlWindow_RegisterVirtual" (byval self as _HtmlWindow ptr, byval onLinkClicked as Virtual_OnLinkClicked, byval onSetTitle as Virtual_OnSetTitle, byval onCellMouseHover as Virtual_OnCellMouseHover, byval onCellClicked as Virtual_OnCellClicked, byval onOpeningURL as Virtual_OnOpeningURL)
-declare function wxHtmlWindow_Create cdecl alias "wxHtmlWindow_Create" (byval self as _HtmlWindow ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as integer
-declare function wxHtmlWindow_SetPage cdecl alias "wxHtmlWindow_SetPage" (byval self as _HtmlWindow ptr, byval source as string) as integer
-declare function wxHtmlWindow_AppendToPage cdecl alias "wxHtmlWindow_AppendToPage" (byval self as _HtmlWindow ptr, byval source as string) as integer
-declare function wxHtmlWindow_LoadPage cdecl alias "wxHtmlWindow_LoadPage" (byval self as _HtmlWindow ptr, byval location as string) as integer
-declare function wxHtmlWindow_LoadFile cdecl alias "wxHtmlWindow_LoadFile" (byval self as _HtmlWindow ptr, byval filename as string) as integer
+declare function wxHtmlWindow_Create cdecl alias "wxHtmlWindow_Create" (byval self as _HtmlWindow ptr, byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as zstring ptr) as integer
+declare function wxHtmlWindow_SetPage cdecl alias "wxHtmlWindow_SetPage" (byval self as _HtmlWindow ptr, byval source as zstring ptr) as integer
+declare function wxHtmlWindow_AppendToPage cdecl alias "wxHtmlWindow_AppendToPage" (byval self as _HtmlWindow ptr, byval source as zstring ptr) as integer
+declare function wxHtmlWindow_LoadPage cdecl alias "wxHtmlWindow_LoadPage" (byval self as _HtmlWindow ptr, byval location as zstring ptr) as integer
+declare function wxHtmlWindow_LoadFile cdecl alias "wxHtmlWindow_LoadFile" (byval self as _HtmlWindow ptr, byval filename as zstring ptr) as integer
 declare function wxHtmlWindow_GetOpenedPage cdecl alias "wxHtmlWindow_GetOpenedPage" (byval self as _HtmlWindow ptr) as wxString ptr
 declare function wxHtmlWindow_GetOpenedAnchor cdecl alias "wxHtmlWindow_GetOpenedAnchor" (byval self as _HtmlWindow ptr) as wxString ptr
 declare function wxHtmlWindow_GetOpenedPageTitle cdecl alias "wxHtmlWindow_GetOpenedPageTitle" (byval self as _HtmlWindow ptr) as wxString ptr
-declare sub wxHtmlWindow_SetRelatedFrame cdecl alias "wxHtmlWindow_SetRelatedFrame" (byval self as _HtmlWindow ptr, byval frame as wxFrame ptr, byval format as string)
+declare sub wxHtmlWindow_SetRelatedFrame cdecl alias "wxHtmlWindow_SetRelatedFrame" (byval self as _HtmlWindow ptr, byval frame as wxFrame ptr, byval format as zstring ptr)
 declare function wxHtmlWindow_GetRelatedFrame cdecl alias "wxHtmlWindow_GetRelatedFrame" (byval self as _HtmlWindow ptr) as wxFrame ptr
 declare sub wxHtmlWindow_SetRelatedStatusBar cdecl alias "wxHtmlWindow_SetRelatedStatusBar" (byval self as _HtmlWindow ptr, byval bar as integer)
-declare sub wxHtmlWindow_SetFonts cdecl alias "wxHtmlWindow_SetFonts" (byval self as _HtmlWindow ptr, byval normal_face as string, byval fixed_face as string, byval sizes as integer ptr)
+declare sub wxHtmlWindow_SetFonts cdecl alias "wxHtmlWindow_SetFonts" (byval self as _HtmlWindow ptr, byval normal_face as zstring ptr, byval fixed_face as zstring ptr, byval sizes as integer ptr)
 declare sub wxHtmlWindow_SetBorders cdecl alias "wxHtmlWindow_SetBorders" (byval self as _HtmlWindow ptr, byval b as integer)
-declare sub wxHtmlWindow_ReadCustomization cdecl alias "wxHtmlWindow_ReadCustomization" (byval self as _HtmlWindow ptr, byval cfg as wxConfigBase ptr, byval path as string)
-declare sub wxHtmlWindow_WriteCustomization cdecl alias "wxHtmlWindow_WriteCustomization" (byval self as _HtmlWindow ptr, byval cfg as wxConfigBase ptr, byval path as string)
+declare sub wxHtmlWindow_ReadCustomization cdecl alias "wxHtmlWindow_ReadCustomization" (byval self as _HtmlWindow ptr, byval cfg as wxConfigBase ptr, byval path as zstring ptr)
+declare sub wxHtmlWindow_WriteCustomization cdecl alias "wxHtmlWindow_WriteCustomization" (byval self as _HtmlWindow ptr, byval cfg as wxConfigBase ptr, byval path as zstring ptr)
 declare function wxHtmlWindow_HistoryBack cdecl alias "wxHtmlWindow_HistoryBack" (byval self as _HtmlWindow ptr) as integer
 declare function wxHtmlWindow_HistoryForward cdecl alias "wxHtmlWindow_HistoryForward" (byval self as _HtmlWindow ptr) as integer
 declare function wxHtmlWindow_HistoryCanBack cdecl alias "wxHtmlWindow_HistoryCanBack" (byval self as _HtmlWindow ptr) as integer
@@ -47,10 +47,10 @@ declare function wxHtmlWindow_GetParser cdecl alias "wxHtmlWindow_GetParser" (by
 declare sub wxHtmlWindow_AddProcessor cdecl alias "wxHtmlWindow_AddProcessor" (byval self as _HtmlWindow ptr, byval processor as wxHtmlProcessor ptr)
 declare sub wxHtmlWindow_AddGlobalProcessor cdecl alias "wxHtmlWindow_AddGlobalProcessor" (byval processor as wxHtmlProcessor ptr)
 declare function wxHtmlWindow_AcceptsFocusFromKeyboard cdecl alias "wxHtmlWindow_AcceptsFocusFromKeyboard" (byval self as _HtmlWindow ptr) as integer
-declare sub wxHtmlWindow_OnSetTitle cdecl alias "wxHtmlWindow_OnSetTitle" (byval self as _HtmlWindow ptr, byval title as string)
+declare sub wxHtmlWindow_OnSetTitle cdecl alias "wxHtmlWindow_OnSetTitle" (byval self as _HtmlWindow ptr, byval title as zstring ptr)
 declare sub wxHtmlWindow_OnCellClicked cdecl alias "wxHtmlWindow_OnCellClicked" (byval self as _HtmlWindow ptr, byval cell as wxHtmlCell ptr, byval x as wxCoord, byval y as wxCoord, byval event as wxMouseEvent ptr)
 declare sub wxHtmlWindow_OnLinkClicked cdecl alias "wxHtmlWindow_OnLinkClicked" (byval self as _HtmlWindow ptr, byval link as wxHtmlLinkInfo ptr)
-declare function wxHtmlWindow_OnOpeningURL cdecl alias "wxHtmlWindow_OnOpeningURL" (byval self as _HtmlWindow ptr, byval type as wxHtmlURLType, byval url as string, byval redirect as string) as wxHtmlOpeningStatus
+declare function wxHtmlWindow_OnOpeningURL cdecl alias "wxHtmlWindow_OnOpeningURL" (byval self as _HtmlWindow ptr, byval type as wxHtmlURLType, byval url as zstring ptr, byval redirect as zstring ptr) as wxHtmlOpeningStatus
 declare sub wxHtmlWindow_SelectAll cdecl alias "wxHtmlWindow_SelectAll" (byval self as _HtmlWindow ptr)
 declare sub wxHtmlWindow_SelectWord cdecl alias "wxHtmlWindow_SelectWord" (byval self as _HtmlWindow ptr, byval pos as wxPoint ptr)
 declare sub wxHtmlWindow_SelectLine cdecl alias "wxHtmlWindow_SelectLine" (byval self as _HtmlWindow ptr, byval pos as wxPoint ptr)
@@ -82,7 +82,7 @@ declare function wxHtmlCell_GetWidth cdecl alias "wxHtmlCell_GetWidth" (byval se
 declare function wxHtmlCell_GetHeight cdecl alias "wxHtmlCell_GetHeight" (byval self as wxHtmlCell ptr) as integer
 declare function wxHtmlCell_GetDescent cdecl alias "wxHtmlCell_GetDescent" (byval self as wxHtmlCell ptr) as integer
 declare function wxHtmlCell_GetId cdecl alias "wxHtmlCell_GetId" (byval self as wxHtmlCell ptr) as wxString ptr
-declare sub wxHtmlCell_SetId cdecl alias "wxHtmlCell_SetId" (byval self as wxHtmlCell ptr, byval id as string)
+declare sub wxHtmlCell_SetId cdecl alias "wxHtmlCell_SetId" (byval self as wxHtmlCell ptr, byval id as zstring ptr)
 declare function wxHtmlCell_GetNext cdecl alias "wxHtmlCell_GetNext" (byval self as wxHtmlCell ptr) as wxHtmlCell ptr
 declare sub wxHtmlCell_SetPos cdecl alias "wxHtmlCell_SetPos" (byval self as wxHtmlCell ptr, byval x as integer, byval y as integer)
 declare sub wxHtmlCell_SetLink cdecl alias "wxHtmlCell_SetLink" (byval self as wxHtmlCell ptr, byval link as wxHtmlLinkInfo ptr)
@@ -96,7 +96,7 @@ declare function wxHtmlCell_AdjustPagebreak cdecl alias "wxHtmlCell_AdjustPagebr
 declare sub wxHtmlCell_SetCanLiveOnPagebreak cdecl alias "wxHtmlCell_SetCanLiveOnPagebreak" (byval self as wxHtmlCell ptr, byval can as integer)
 declare function wxHtmlCell_IsTerminalCell cdecl alias "wxHtmlCell_IsTerminalCell" (byval self as wxHtmlCell ptr) as integer
 declare function wxHtmlCell_FindCellByPos cdecl alias "wxHtmlCell_FindCellByPos" (byval self as wxHtmlCell ptr, byval x as wxCoord, byval y as wxCoord) as wxHtmlCell ptr
-declare function wxHtmlWordCell cdecl alias "wxHtmlWordCell_ctor" (byval word as string, byval dc as wxDC ptr) as wxHtmlWordCell ptr
+declare function wxHtmlWordCell cdecl alias "wxHtmlWordCell_ctor" (byval word as zstring ptr, byval dc as wxDC ptr) as wxHtmlWordCell ptr
 declare sub wxHtmlWordCell_Draw cdecl alias "wxHtmlWordCell_Draw" (byval self as wxHtmlWordCell ptr, byval dc as wxDC ptr, byval x as integer, byval y as integer, byval view_y1 as integer, byval view_y2 as integer, byval info as wxHtmlRenderingInfo ptr)
 declare function wxHtmlContainerCell cdecl alias "wxHtmlContainerCell_ctor" (byval parent as wxHtmlContainerCell ptr) as wxHtmlContainerCell ptr
 declare sub wxHtmlContainerCell_Layout cdecl alias "wxHtmlContainerCell_Layout" (byval self as wxHtmlContainerCell ptr, byval w as integer)
@@ -131,11 +131,11 @@ declare function wxHtmlTag_GetPreviousSibling cdecl alias "wxHtmlTag_GetPrevious
 declare function wxHtmlTag_GetNextSibling cdecl alias "wxHtmlTag_GetNextSibling" (byval self as wxHtmlTag ptr) as wxHtmlTag ptr
 declare function wxHtmlTag_GetNextTag cdecl alias "wxHtmlTag_GetNextTag" (byval self as wxHtmlTag ptr) as wxHtmlTag ptr
 declare function wxHtmlTag_GetName cdecl alias "wxHtmlTag_GetName" (byval self as wxHtmlTag ptr) as wxString ptr
-declare function wxHtmlTag_HasParam cdecl alias "wxHtmlTag_HasParam" (byval self as wxHtmlTag ptr, byval par as string) as integer
-declare function wxHtmlTag_GetParam cdecl alias "wxHtmlTag_GetParam" (byval self as wxHtmlTag ptr, byval par as string, byval with_commas as integer) as wxString ptr
-declare function wxHtmlTag_GetParamAsColour cdecl alias "wxHtmlTag_GetParamAsColour" (byval self as wxHtmlTag ptr, byval par as string, byval clr as wxColour ptr) as integer
-declare function wxHtmlTag_GetParamAsInt cdecl alias "wxHtmlTag_GetParamAsInt" (byval self as wxHtmlTag ptr, byval par as string, byval clr as integer ptr) as integer
-declare function wxHtmlTag_ScanParam cdecl alias "wxHtmlTag_ScanParam" (byval self as wxHtmlTag ptr, byval par as string, byval format as string, byval param as any ptr) as integer
+declare function wxHtmlTag_HasParam cdecl alias "wxHtmlTag_HasParam" (byval self as wxHtmlTag ptr, byval par as zstring ptr) as integer
+declare function wxHtmlTag_GetParam cdecl alias "wxHtmlTag_GetParam" (byval self as wxHtmlTag ptr, byval par as zstring ptr, byval with_commas as integer) as wxString ptr
+declare function wxHtmlTag_GetParamAsColour cdecl alias "wxHtmlTag_GetParamAsColour" (byval self as wxHtmlTag ptr, byval par as zstring ptr, byval clr as wxColour ptr) as integer
+declare function wxHtmlTag_GetParamAsInt cdecl alias "wxHtmlTag_GetParamAsInt" (byval self as wxHtmlTag ptr, byval par as zstring ptr, byval clr as integer ptr) as integer
+declare function wxHtmlTag_ScanParam cdecl alias "wxHtmlTag_ScanParam" (byval self as wxHtmlTag ptr, byval par as zstring ptr, byval format as zstring ptr, byval param as any ptr) as integer
 declare function wxHtmlTag_GetAllParams cdecl alias "wxHtmlTag_GetAllParams" (byval self as wxHtmlTag ptr) as wxString ptr
 declare function wxHtmlTag_HasEnding cdecl alias "wxHtmlTag_HasEnding" (byval self as wxHtmlTag ptr) as integer
 declare function wxHtmlTag_GetBeginPos cdecl alias "wxHtmlTag_GetBeginPos" (byval self as wxHtmlTag ptr) as integer
@@ -152,17 +152,17 @@ declare function wxHtmlTagsModule_OnInit cdecl alias "wxHtmlTagsModule_OnInit" (
 declare sub wxHtmlTagsModule_OnExit cdecl alias "wxHtmlTagsModule_OnExit" (byval self as wxHtmlTagsModule ptr)
 declare sub wxHtmlTagsModule_FillHandlersTable cdecl alias "wxHtmlTagsModule_FillHandlersTable" (byval self as wxHtmlTagsModule ptr, byval parser as wxHtmlWinParser ptr)
 declare function wxHtmlWinParser cdecl alias "wxHtmlWinParser_ctor" (byval wnd as wxHtmlWindow ptr) as wxHtmlWinParser ptr
-declare sub wxHtmlWinParser_InitParser cdecl alias "wxHtmlWinParser_InitParser" (byval self as wxHtmlWinParser ptr, byval source as string)
+declare sub wxHtmlWinParser_InitParser cdecl alias "wxHtmlWinParser_InitParser" (byval self as wxHtmlWinParser ptr, byval source as zstring ptr)
 declare sub wxHtmlWinParser_DoneParser cdecl alias "wxHtmlWinParser_DoneParser" (byval self as wxHtmlWinParser ptr)
 declare function wxHtmlWinParser_GetProduct cdecl alias "wxHtmlWinParser_GetProduct" (byval self as wxHtmlWinParser ptr) as wxObject ptr
-declare function wxHtmlWinParser_OpenURL cdecl alias "wxHtmlWinParser_OpenURL" (byval self as wxHtmlWinParser ptr, byval type as wxHtmlURLType, byval url as string) as wxFSFile ptr
+declare function wxHtmlWinParser_OpenURL cdecl alias "wxHtmlWinParser_OpenURL" (byval self as wxHtmlWinParser ptr, byval type as wxHtmlURLType, byval url as zstring ptr) as wxFSFile ptr
 declare sub wxHtmlWinParser_SetDC cdecl alias "wxHtmlWinParser_SetDC" (byval self as wxHtmlWinParser ptr, byval dc as wxDC ptr, byval pixel_scale as double)
 declare function wxHtmlWinParser_GetDC cdecl alias "wxHtmlWinParser_GetDC" (byval self as wxHtmlWinParser ptr) as wxDC ptr
 declare function wxHtmlWinParser_GetPixelScale cdecl alias "wxHtmlWinParser_GetPixelScale" (byval self as wxHtmlWinParser ptr) as double
 declare function wxHtmlWinParser_GetCharHeight cdecl alias "wxHtmlWinParser_GetCharHeight" (byval self as wxHtmlWinParser ptr) as integer
 declare function wxHtmlWinParser_GetCharWidth cdecl alias "wxHtmlWinParser_GetCharWidth" (byval self as wxHtmlWinParser ptr) as integer
 declare function wxHtmlWinParser_GetWindow cdecl alias "wxHtmlWinParser_GetWindow" (byval self as wxHtmlWinParser ptr) as wxHtmlWindow ptr
-declare sub wxHtmlWinParser_SetFonts cdecl alias "wxHtmlWinParser_SetFonts" (byval self as wxHtmlWinParser ptr, byval normal_face as string, byval fixed_face as string, byval sizes as integer ptr)
+declare sub wxHtmlWinParser_SetFonts cdecl alias "wxHtmlWinParser_SetFonts" (byval self as wxHtmlWinParser ptr, byval normal_face as zstring ptr, byval fixed_face as zstring ptr, byval sizes as integer ptr)
 declare sub wxHtmlWinParser_AddModule cdecl alias "wxHtmlWinParser_AddModule" (byval self as wxHtmlWinParser ptr, byval module as wxHtmlTagsModule ptr)
 declare sub wxHtmlWinParser_RemoveModule cdecl alias "wxHtmlWinParser_RemoveModule" (byval self as wxHtmlWinParser ptr, byval module as wxHtmlTagsModule ptr)
 declare function wxHtmlWinParser_GetContainer cdecl alias "wxHtmlWinParser_GetContainer" (byval self as wxHtmlWinParser ptr) as wxHtmlContainerCell ptr
@@ -180,7 +180,7 @@ declare sub wxHtmlWinParser_SetFontUnderlined cdecl alias "wxHtmlWinParser_SetFo
 declare function wxHtmlWinParser_GetFontFixed cdecl alias "wxHtmlWinParser_GetFontFixed" (byval self as wxHtmlWinParser ptr) as integer
 declare sub wxHtmlWinParser_SetFontFixed cdecl alias "wxHtmlWinParser_SetFontFixed" (byval self as wxHtmlWinParser ptr, byval x as integer)
 declare function wxHtmlWinParser_GetFontFace cdecl alias "wxHtmlWinParser_GetFontFace" (byval self as wxHtmlWinParser ptr) as wxString ptr
-declare sub wxHtmlWinParser_SetFontFace cdecl alias "wxHtmlWinParser_SetFontFace" (byval self as wxHtmlWinParser ptr, byval face as string)
+declare sub wxHtmlWinParser_SetFontFace cdecl alias "wxHtmlWinParser_SetFontFace" (byval self as wxHtmlWinParser ptr, byval face as zstring ptr)
 declare function wxHtmlWinParser_GetAlign cdecl alias "wxHtmlWinParser_GetAlign" (byval self as wxHtmlWinParser ptr) as integer
 declare sub wxHtmlWinParser_SetAlign cdecl alias "wxHtmlWinParser_SetAlign" (byval self as wxHtmlWinParser ptr, byval a as integer)
 declare function wxHtmlWinParser_GetLinkColor cdecl alias "wxHtmlWinParser_GetLinkColor" (byval self as wxHtmlWinParser ptr) as wxColour ptr
@@ -195,14 +195,14 @@ declare function wxHtmlTagHandler_HandleTag cdecl alias "wxHtmlTagHandler_Handle
 declare function wxHtmlEntitiesParser cdecl alias "wxHtmlEntitiesParser_ctor" () as wxHtmlEntitiesParser ptr
 declare sub wxHtmlEntitiesParser_dtor cdecl alias "wxHtmlEntitiesParser_dtor" (byval self as wxHtmlEntitiesParser ptr)
 declare sub wxHtmlEntitiesParser_SetEncoding cdecl alias "wxHtmlEntitiesParser_SetEncoding" (byval self as wxHtmlEntitiesParser ptr, byval encoding as wxFontEncoding)
-declare function wxHtmlEntitiesParser_Parse cdecl alias "wxHtmlEntitiesParser_Parse" (byval self as wxHtmlEntitiesParser ptr, byval input as string) as wxString ptr
-declare function wxHtmlEntitiesParser_GetEntityChar cdecl alias "wxHtmlEntitiesParser_GetEntityChar" (byval self as wxHtmlEntitiesParser ptr, byval entity as string) as byte
+declare function wxHtmlEntitiesParser_Parse cdecl alias "wxHtmlEntitiesParser_Parse" (byval self as wxHtmlEntitiesParser ptr, byval input as zstring ptr) as wxString ptr
+declare function wxHtmlEntitiesParser_GetEntityChar cdecl alias "wxHtmlEntitiesParser_GetEntityChar" (byval self as wxHtmlEntitiesParser ptr, byval entity as zstring ptr) as byte
 declare function wxHtmlEntitiesParser_GetCharForCode cdecl alias "wxHtmlEntitiesParser_GetCharForCode" (byval self as wxHtmlEntitiesParser ptr, byval code as uinteger) as byte
 declare sub wxHtmlParser_SetFS cdecl alias "wxHtmlParser_SetFS" (byval self as wxHtmlParser ptr, byval fs as wxFileSystem ptr)
 declare function wxHtmlParser_GetFS cdecl alias "wxHtmlParser_GetFS" (byval self as wxHtmlParser ptr) as wxFileSystem ptr
-declare function wxHtmlParser_OpenURL cdecl alias "wxHtmlParser_OpenURL" (byval self as wxHtmlParser ptr, byval type as wxHtmlURLType, byval url as string) as wxFSFile ptr
-declare function wxHtmlParser_Parse cdecl alias "wxHtmlParser_Parse" (byval self as wxHtmlParser ptr, byval source as string) as wxObject ptr
-declare sub wxHtmlParser_InitParser cdecl alias "wxHtmlParser_InitParser" (byval self as wxHtmlParser ptr, byval source as string)
+declare function wxHtmlParser_OpenURL cdecl alias "wxHtmlParser_OpenURL" (byval self as wxHtmlParser ptr, byval type as wxHtmlURLType, byval url as zstring ptr) as wxFSFile ptr
+declare function wxHtmlParser_Parse cdecl alias "wxHtmlParser_Parse" (byval self as wxHtmlParser ptr, byval source as zstring ptr) as wxObject ptr
+declare sub wxHtmlParser_InitParser cdecl alias "wxHtmlParser_InitParser" (byval self as wxHtmlParser ptr, byval source as zstring ptr)
 declare sub wxHtmlParser_DoneParser cdecl alias "wxHtmlParser_DoneParser" (byval self as wxHtmlParser ptr)
 declare sub wxHtmlParser_StopParsing cdecl alias "wxHtmlParser_StopParsing" (byval self as wxHtmlParser ptr)
 declare sub wxHtmlParser_DoParsing cdecl alias "wxHtmlParser_DoParsing" (byval self as wxHtmlParser ptr, byval begin_pos as integer, byval end_pos as integer)
@@ -210,13 +210,13 @@ declare sub wxHtmlParser_DoParsingAll cdecl alias "wxHtmlParser_DoParsingAll" (b
 declare function wxHtmlParser_GetCurrentTag cdecl alias "wxHtmlParser_GetCurrentTag" (byval self as wxHtmlParser ptr) as wxHtmlTag ptr
 declare function wxHtmlParser_GetProduct cdecl alias "wxHtmlParser_GetProduct" (byval self as wxHtmlParser ptr) as wxObject ptr
 declare sub wxHtmlParser_AddTagHandler cdecl alias "wxHtmlParser_AddTagHandler" (byval self as wxHtmlParser ptr, byval handler as wxHtmlTagHandler ptr)
-declare sub wxHtmlParser_PushTagHandler cdecl alias "wxHtmlParser_PushTagHandler" (byval self as wxHtmlParser ptr, byval handler as wxHtmlTagHandler ptr, byval tags as string)
+declare sub wxHtmlParser_PushTagHandler cdecl alias "wxHtmlParser_PushTagHandler" (byval self as wxHtmlParser ptr, byval handler as wxHtmlTagHandler ptr, byval tags as zstring ptr)
 declare sub wxHtmlParser_PopTagHandler cdecl alias "wxHtmlParser_PopTagHandler" (byval self as wxHtmlParser ptr)
 declare function wxHtmlParser_GetSource cdecl alias "wxHtmlParser_GetSource" (byval self as wxHtmlParser ptr) as wxString ptr
-declare sub wxHtmlParser_SetSource cdecl alias "wxHtmlParser_SetSource" (byval self as wxHtmlParser ptr, byval src as string)
-declare sub wxHtmlParser_SetSourceAndSaveState cdecl alias "wxHtmlParser_SetSourceAndSaveState" (byval self as wxHtmlParser ptr, byval src as string)
+declare sub wxHtmlParser_SetSource cdecl alias "wxHtmlParser_SetSource" (byval self as wxHtmlParser ptr, byval src as zstring ptr)
+declare sub wxHtmlParser_SetSourceAndSaveState cdecl alias "wxHtmlParser_SetSourceAndSaveState" (byval self as wxHtmlParser ptr, byval src as zstring ptr)
 declare function wxHtmlParser_RestoreState cdecl alias "wxHtmlParser_RestoreState" (byval self as wxHtmlParser ptr) as integer
-declare function wxHtmlParser_ExtractCharsetInformation cdecl alias "wxHtmlParser_ExtractCharsetInformation" (byval self as wxHtmlParser ptr, byval markup as string) as wxString ptr
+declare function wxHtmlParser_ExtractCharsetInformation cdecl alias "wxHtmlParser_ExtractCharsetInformation" (byval self as wxHtmlParser ptr, byval markup as zstring ptr) as wxString ptr
 declare function wxHtmlProcessor_GetPriority cdecl alias "wxHtmlProcessor_GetPriority" (byval self as wxHtmlProcessor ptr) as integer
 declare sub wxHtmlProcessor_Enable cdecl alias "wxHtmlProcessor_Enable" (byval self as wxHtmlProcessor ptr, byval enable as integer)
 declare function wxHtmlProcessor_IsEnabled cdecl alias "wxHtmlProcessor_IsEnabled" (byval self as wxHtmlProcessor ptr) as integer
@@ -238,17 +238,17 @@ declare sub wxHtmlSelection_SetFromPrivPos cdecl alias "wxHtmlSelection_SetFromP
 declare sub wxHtmlSelection_SetToPrivPos cdecl alias "wxHtmlSelection_SetToPrivPos" (byval self as wxHtmlSelection ptr, byval pos as wxPoint ptr)
 declare sub wxHtmlSelection_ClearPrivPos cdecl alias "wxHtmlSelection_ClearPrivPos" (byval self as wxHtmlSelection ptr)
 declare function wxHtmlSelection_IsEmpty cdecl alias "wxHtmlSelection_IsEmpty" (byval self as wxHtmlSelection ptr) as integer
-declare function wxHtmlEasyPrinting cdecl alias "wxHtmlEasyPrinting_ctor" (byval name as string, byval parent as wxWindow ptr) as wxHtmlEasyPrinting ptr
-declare function wxHtmlEasyPrinting_PreviewFile cdecl alias "wxHtmlEasyPrinting_PreviewFile" (byval self as wxHtmlEasyPrinting ptr, byval htmlfile as string) as integer
-declare function wxHtmlEasyPrinting_PreviewText cdecl alias "wxHtmlEasyPrinting_PreviewText" (byval self as wxHtmlEasyPrinting ptr, byval htmltext as string, byval basepath as string) as integer
-declare function wxHtmlEasyPrinting_PrintFile cdecl alias "wxHtmlEasyPrinting_PrintFile" (byval self as wxHtmlEasyPrinting ptr, byval htmlfile as string) as integer
-declare function wxHtmlEasyPrinting_PrintText cdecl alias "wxHtmlEasyPrinting_PrintText" (byval self as wxHtmlEasyPrinting ptr, byval htmltext as string, byval basepath as string) as integer
+declare function wxHtmlEasyPrinting cdecl alias "wxHtmlEasyPrinting_ctor" (byval name as zstring ptr, byval parent as wxWindow ptr) as wxHtmlEasyPrinting ptr
+declare function wxHtmlEasyPrinting_PreviewFile cdecl alias "wxHtmlEasyPrinting_PreviewFile" (byval self as wxHtmlEasyPrinting ptr, byval htmlfile as zstring ptr) as integer
+declare function wxHtmlEasyPrinting_PreviewText cdecl alias "wxHtmlEasyPrinting_PreviewText" (byval self as wxHtmlEasyPrinting ptr, byval htmltext as zstring ptr, byval basepath as zstring ptr) as integer
+declare function wxHtmlEasyPrinting_PrintFile cdecl alias "wxHtmlEasyPrinting_PrintFile" (byval self as wxHtmlEasyPrinting ptr, byval htmlfile as zstring ptr) as integer
+declare function wxHtmlEasyPrinting_PrintText cdecl alias "wxHtmlEasyPrinting_PrintText" (byval self as wxHtmlEasyPrinting ptr, byval htmltext as zstring ptr, byval basepath as zstring ptr) as integer
 declare sub wxHtmlEasyPrinting_PrinterSetup cdecl alias "wxHtmlEasyPrinting_PrinterSetup" (byval self as wxHtmlEasyPrinting ptr)
 declare sub wxHtmlEasyPrinting_PageSetup cdecl alias "wxHtmlEasyPrinting_PageSetup" (byval self as wxHtmlEasyPrinting ptr)
-declare sub wxHtmlEasyPrinting_SetHeader cdecl alias "wxHtmlEasyPrinting_SetHeader" (byval self as wxHtmlEasyPrinting ptr, byval header as string, byval pg as integer)
-declare sub wxHtmlEasyPrinting_SetFooter cdecl alias "wxHtmlEasyPrinting_SetFooter" (byval self as wxHtmlEasyPrinting ptr, byval footer as string, byval pg as integer)
-declare sub wxHtmlEasyPrinting_SetFonts cdecl alias "wxHtmlEasyPrinting_SetFonts" (byval self as wxHtmlEasyPrinting ptr, byval normal_face as string, byval fixed_face as string, byval sizes as integer ptr)
-declare sub wxHtmlEasyPrinting_SetStandardFonts cdecl alias "wxHtmlEasyPrinting_SetStandardFonts" (byval self as wxHtmlEasyPrinting ptr, byval size as integer, byval normal_face as string, byval fixed_face as string)
+declare sub wxHtmlEasyPrinting_SetHeader cdecl alias "wxHtmlEasyPrinting_SetHeader" (byval self as wxHtmlEasyPrinting ptr, byval header as zstring ptr, byval pg as integer)
+declare sub wxHtmlEasyPrinting_SetFooter cdecl alias "wxHtmlEasyPrinting_SetFooter" (byval self as wxHtmlEasyPrinting ptr, byval footer as zstring ptr, byval pg as integer)
+declare sub wxHtmlEasyPrinting_SetFonts cdecl alias "wxHtmlEasyPrinting_SetFonts" (byval self as wxHtmlEasyPrinting ptr, byval normal_face as zstring ptr, byval fixed_face as zstring ptr, byval sizes as integer ptr)
+declare sub wxHtmlEasyPrinting_SetStandardFonts cdecl alias "wxHtmlEasyPrinting_SetStandardFonts" (byval self as wxHtmlEasyPrinting ptr, byval size as integer, byval normal_face as zstring ptr, byval fixed_face as zstring ptr)
 declare function wxHtmlEasyPrinting_GetPrintData cdecl alias "wxHtmlEasyPrinting_GetPrintData" (byval self as wxHtmlEasyPrinting ptr) as wxPrintData ptr
 declare function wxHtmlEasyPrinting_GetPageSetupData cdecl alias "wxHtmlEasyPrinting_GetPageSetupData" (byval self as wxHtmlEasyPrinting ptr) as wxPageSetupDialogData ptr
 

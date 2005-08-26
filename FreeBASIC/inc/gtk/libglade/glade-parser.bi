@@ -91,9 +91,9 @@ type _GladeInterface
 	strings as GHashTable ptr
 end type
 
-declare function glade_parser_parse_file cdecl alias "glade_parser_parse_file" (byval file as string, byval domain as string) as GladeInterface ptr
-declare function glade_parser_parse_buffer cdecl alias "glade_parser_parse_buffer" (byval buffer as string, byval len as gint, byval domain as string) as GladeInterface ptr
+declare function glade_parser_parse_file cdecl alias "glade_parser_parse_file" (byval file as zstring ptr, byval domain as zstring ptr) as GladeInterface ptr
+declare function glade_parser_parse_buffer cdecl alias "glade_parser_parse_buffer" (byval buffer as zstring ptr, byval len as gint, byval domain as zstring ptr) as GladeInterface ptr
 declare sub glade_interface_destroy cdecl alias "glade_interface_destroy" (byval interface as GladeInterface ptr)
-declare sub glade_interface_dump cdecl alias "glade_interface_dump" (byval interface as GladeInterface ptr, byval filename as string)
+declare sub glade_interface_dump cdecl alias "glade_interface_dump" (byval interface as GladeInterface ptr, byval filename as zstring ptr)
 
 #endif

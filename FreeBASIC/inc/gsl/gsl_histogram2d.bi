@@ -68,7 +68,7 @@ declare function gsl_histogram2d_scale cdecl alias "gsl_histogram2d_scale" (byva
 declare function gsl_histogram2d_shift cdecl alias "gsl_histogram2d_shift" (byval h as gsl_histogram2d ptr, byval shift as double) as integer
 declare function gsl_histogram2d_fwrite cdecl alias "gsl_histogram2d_fwrite" (byval stream as FILE ptr, byval h as gsl_histogram2d ptr) as integer
 declare function gsl_histogram2d_fread cdecl alias "gsl_histogram2d_fread" (byval stream as FILE ptr, byval h as gsl_histogram2d ptr) as integer
-declare function gsl_histogram2d_fprintf cdecl alias "gsl_histogram2d_fprintf" (byval stream as FILE ptr, byval h as gsl_histogram2d ptr, byval range_format as string, byval bin_format as string) as integer
+declare function gsl_histogram2d_fprintf cdecl alias "gsl_histogram2d_fprintf" (byval stream as FILE ptr, byval h as gsl_histogram2d ptr, byval range_format as zstring ptr, byval bin_format as zstring ptr) as integer
 declare function gsl_histogram2d_fscanf cdecl alias "gsl_histogram2d_fscanf" (byval stream as FILE ptr, byval h as gsl_histogram2d ptr) as integer
 declare function gsl_histogram2d_pdf_alloc cdecl alias "gsl_histogram2d_pdf_alloc" (byval nx as integer, byval ny as integer) as gsl_histogram2d_pdf ptr
 declare function gsl_histogram2d_pdf_init cdecl alias "gsl_histogram2d_pdf_init" (byval p as gsl_histogram2d_pdf ptr, byval h as gsl_histogram2d ptr) as integer

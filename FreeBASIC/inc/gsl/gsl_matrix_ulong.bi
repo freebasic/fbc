@@ -72,7 +72,7 @@ declare sub gsl_matrix_ulong_set_all cdecl alias "gsl_matrix_ulong_set_all" (byv
 declare function gsl_matrix_ulong_fread cdecl alias "gsl_matrix_ulong_fread" (byval stream as FILE ptr, byval m as gsl_matrix_ulong ptr) as integer
 declare function gsl_matrix_ulong_fwrite cdecl alias "gsl_matrix_ulong_fwrite" (byval stream as FILE ptr, byval m as gsl_matrix_ulong ptr) as integer
 declare function gsl_matrix_ulong_fscanf cdecl alias "gsl_matrix_ulong_fscanf" (byval stream as FILE ptr, byval m as gsl_matrix_ulong ptr) as integer
-declare function gsl_matrix_ulong_fprintf cdecl alias "gsl_matrix_ulong_fprintf" (byval stream as FILE ptr, byval m as gsl_matrix_ulong ptr, byval format as string) as integer
+declare function gsl_matrix_ulong_fprintf cdecl alias "gsl_matrix_ulong_fprintf" (byval stream as FILE ptr, byval m as gsl_matrix_ulong ptr, byval format as zstring ptr) as integer
 declare function gsl_matrix_ulong_memcpy cdecl alias "gsl_matrix_ulong_memcpy" (byval dest as gsl_matrix_ulong ptr, byval src as gsl_matrix_ulong ptr) as integer
 declare function gsl_matrix_ulong_swap cdecl alias "gsl_matrix_ulong_swap" (byval m1 as gsl_matrix_ulong ptr, byval m2 as gsl_matrix_ulong ptr) as integer
 declare function gsl_matrix_ulong_swap_rows cdecl alias "gsl_matrix_ulong_swap_rows" (byval m as gsl_matrix_ulong ptr, byval i as integer, byval j as integer) as integer

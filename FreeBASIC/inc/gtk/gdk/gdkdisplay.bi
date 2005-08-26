@@ -48,7 +48,7 @@ type _GdkDisplayPointerHooks
 end type
 
 declare function gdk_display_get_type cdecl alias "gdk_display_get_type" () as GType
-declare function gdk_display_open cdecl alias "gdk_display_open" (byval display_name as string) as GdkDisplay ptr
+declare function gdk_display_open cdecl alias "gdk_display_open" (byval display_name as zstring ptr) as GdkDisplay ptr
 declare function gdk_display_get_name cdecl alias "gdk_display_get_name" (byval display as GdkDisplay ptr) as zstring ptr
 declare function gdk_display_get_n_screens cdecl alias "gdk_display_get_n_screens" (byval display as GdkDisplay ptr) as gint
 declare function gdk_display_get_screen cdecl alias "gdk_display_get_screen" (byval display as GdkDisplay ptr, byval screen_num as gint) as GdkScreen ptr

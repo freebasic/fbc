@@ -45,7 +45,7 @@ declare function wxGridCellWorker cdecl alias "wxGridCellWorker_ctor" () as wxGr
 declare sub wxGridCellWorker_RegisterVirtual cdecl alias "wxGridCellWorker_RegisterVirtual" (byval self as _GridCellWorker ptr, byval setParameters as Virtual_SetParameters)
 declare sub wxGridCellWorker_IncRef cdecl alias "wxGridCellWorker_IncRef" (byval self as _GridCellWorker ptr)
 declare sub wxGridCellWorker_DecRef cdecl alias "wxGridCellWorker_DecRef" (byval self as _GridCellWorker ptr)
-declare sub wxGridCellWorker_SetParameters cdecl alias "wxGridCellWorker_SetParameters" (byval self as _GridCellWorker ptr, byval params as string)
+declare sub wxGridCellWorker_SetParameters cdecl alias "wxGridCellWorker_SetParameters" (byval self as _GridCellWorker ptr, byval params as zstring ptr)
 declare function wxGridEditorCreatedEvent cdecl alias "wxGridEditorCreatedEvent_ctor" (byval id as integer, byval type as wxEventType, byval obj as wxObject ptr, byval row as integer, byval col as integer, byval ctrl as wxControl ptr) as wxGridEditorCreatedEvent ptr
 declare function wxGridEditorCreatedEvent_GetRow cdecl alias "wxGridEditorCreatedEvent_GetRow" (byval self as wxGridEditorCreatedEvent ptr) as integer
 declare function wxGridEditorCreatedEvent_GetCol cdecl alias "wxGridEditorCreatedEvent_GetCol" (byval self as wxGridEditorCreatedEvent ptr) as integer
@@ -55,7 +55,7 @@ declare sub wxGridEditorCreatedEvent_SetCol cdecl alias "wxGridEditorCreatedEven
 declare sub wxGridEditorCreatedEvent_SetControl cdecl alias "wxGridEditorCreatedEvent_SetControl" (byval self as wxGridEditorCreatedEvent ptr, byval ctrl as wxControl ptr)
 
 declare function wxGrid cdecl alias "wxGrid_ctor" () as wxGrid ptr
-declare function wxGrid_ctorFull cdecl alias "wxGrid_ctorFull" (byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as string) as wxGrid ptr
+declare function wxGrid_ctorFull cdecl alias "wxGrid_ctorFull" (byval parent as wxWindow ptr, byval id as wxWindowID, byval pos as wxPoint ptr, byval size as wxSize ptr, byval style as integer, byval name as zstring ptr) as wxGrid ptr
 declare sub wxGrid_dtor cdecl alias "wxGrid_dtor" (byval self as wxGrid ptr)
 declare function wxGrid_CreateGrid cdecl alias "wxGrid_CreateGrid" (byval self as wxGrid ptr, byval numRows as integer, byval numCols as integer, byval selmode as integer) as integer
 declare sub wxGrid_SetSelectionMode cdecl alias "wxGrid_SetSelectionMode" (byval self as wxGrid ptr, byval selmode as integer)
@@ -134,8 +134,8 @@ declare sub wxGrid_SetLabelTextColour cdecl alias "wxGrid_SetLabelTextColour" (b
 declare sub wxGrid_SetLabelFont cdecl alias "wxGrid_SetLabelFont" (byval self as wxGrid ptr, byval font as wxFont ptr)
 declare sub wxGrid_SetRowLabelAlignment cdecl alias "wxGrid_SetRowLabelAlignment" (byval self as wxGrid ptr, byval horiz as integer, byval vert as integer)
 declare sub wxGrid_SetColLabelAlignment cdecl alias "wxGrid_SetColLabelAlignment" (byval self as wxGrid ptr, byval horiz as integer, byval vert as integer)
-declare sub wxGrid_SetRowLabelValue cdecl alias "wxGrid_SetRowLabelValue" (byval self as wxGrid ptr, byval row as integer, byval val as string)
-declare sub wxGrid_SetColLabelValue cdecl alias "wxGrid_SetColLabelValue" (byval self as wxGrid ptr, byval col as integer, byval val as string)
+declare sub wxGrid_SetRowLabelValue cdecl alias "wxGrid_SetRowLabelValue" (byval self as wxGrid ptr, byval row as integer, byval val as zstring ptr)
+declare sub wxGrid_SetColLabelValue cdecl alias "wxGrid_SetColLabelValue" (byval self as wxGrid ptr, byval col as integer, byval val as zstring ptr)
 declare sub wxGrid_SetGridLineColour cdecl alias "wxGrid_SetGridLineColour" (byval self as wxGrid ptr, byval col as wxColour ptr)
 declare sub wxGrid_SetCellHighlightColour cdecl alias "wxGrid_SetCellHighlightColour" (byval self as wxGrid ptr, byval col as wxColour ptr)
 declare sub wxGrid_SetCellHighlightPenWidth cdecl alias "wxGrid_SetCellHighlightPenWidth" (byval self as wxGrid ptr, byval width as integer)
@@ -155,7 +155,7 @@ declare sub wxGrid_SetColAttr cdecl alias "wxGrid_SetColAttr" (byval self as wxG
 declare sub wxGrid_SetColFormatBool cdecl alias "wxGrid_SetColFormatBool" (byval self as wxGrid ptr, byval col as integer)
 declare sub wxGrid_SetColFormatNumber cdecl alias "wxGrid_SetColFormatNumber" (byval self as wxGrid ptr, byval col as integer)
 declare sub wxGrid_SetColFormatFloat cdecl alias "wxGrid_SetColFormatFloat" (byval self as wxGrid ptr, byval col as integer, byval width as integer, byval precision as integer)
-declare sub wxGrid_SetColFormatCustom cdecl alias "wxGrid_SetColFormatCustom" (byval self as wxGrid ptr, byval col as integer, byval typeName as string)
+declare sub wxGrid_SetColFormatCustom cdecl alias "wxGrid_SetColFormatCustom" (byval self as wxGrid ptr, byval col as integer, byval typeName as zstring ptr)
 declare sub wxGrid_EnableGridLines cdecl alias "wxGrid_EnableGridLines" (byval self as wxGrid ptr, byval enable as integer)
 declare function wxGrid_GridLinesEnabled cdecl alias "wxGrid_GridLinesEnabled" (byval self as wxGrid ptr) as integer
 declare function wxGrid_GetDefaultRowSize cdecl alias "wxGrid_GetDefaultRowSize" (byval self as wxGrid ptr) as integer
@@ -206,7 +206,7 @@ declare sub wxGrid_SetCellEditor cdecl alias "wxGrid_SetCellEditor" (byval self 
 declare function wxGrid_GetDefaultEditor cdecl alias "wxGrid_GetDefaultEditor" (byval self as wxGrid ptr) as wxGridCellEditor ptr
 declare function wxGrid_GetCellEditor cdecl alias "wxGrid_GetCellEditor" (byval self as wxGrid ptr, byval row as integer, byval col as integer) as wxGridCellEditor ptr
 declare function wxGrid_GetCellValue cdecl alias "wxGrid_GetCellValue" (byval self as wxGrid ptr, byval row as integer, byval col as integer) as wxString ptr
-declare sub wxGrid_SetCellValue cdecl alias "wxGrid_SetCellValue" (byval self as wxGrid ptr, byval row as integer, byval col as integer, byval s as string)
+declare sub wxGrid_SetCellValue cdecl alias "wxGrid_SetCellValue" (byval self as wxGrid ptr, byval row as integer, byval col as integer, byval s as zstring ptr)
 declare function wxGrid_IsReadOnly cdecl alias "wxGrid_IsReadOnly" (byval self as wxGrid ptr, byval row as integer, byval col as integer) as integer
 declare sub wxGrid_SetReadOnly cdecl alias "wxGrid_SetReadOnly" (byval self as wxGrid ptr, byval row as integer, byval col as integer, byval isReadOnly as integer)
 declare sub wxGrid_SelectRow cdecl alias "wxGrid_SelectRow" (byval self as wxGrid ptr, byval row as integer, byval addToSelected as integer)
@@ -224,11 +224,11 @@ declare function wxGrid_GetSelectionBackground cdecl alias "wxGrid_GetSelectionB
 declare function wxGrid_GetSelectionForeground cdecl alias "wxGrid_GetSelectionForeground" (byval self as wxGrid ptr) as wxColour ptr
 declare sub wxGrid_SetSelectionBackground cdecl alias "wxGrid_SetSelectionBackground" (byval self as wxGrid ptr, byval c as wxColour ptr)
 declare sub wxGrid_SetSelectionForeground cdecl alias "wxGrid_SetSelectionForeground" (byval self as wxGrid ptr, byval c as wxColour ptr)
-declare sub wxGrid_RegisterDataType cdecl alias "wxGrid_RegisterDataType" (byval self as wxGrid ptr, byval typeName as string, byval renderer as wxGridCellRenderer ptr, byval editor as wxGridCellEditor ptr)
+declare sub wxGrid_RegisterDataType cdecl alias "wxGrid_RegisterDataType" (byval self as wxGrid ptr, byval typeName as zstring ptr, byval renderer as wxGridCellRenderer ptr, byval editor as wxGridCellEditor ptr)
 declare function wxGrid_GetDefaultEditorForCell cdecl alias "wxGrid_GetDefaultEditorForCell" (byval self as wxGrid ptr, byval row as integer, byval col as integer) as wxGridCellEditor ptr
 declare function wxGrid_GetDefaultRendererForCell cdecl alias "wxGrid_GetDefaultRendererForCell" (byval self as wxGrid ptr, byval row as integer, byval col as integer) as wxGridCellRenderer ptr
-declare function wxGrid_GetDefaultEditorForType cdecl alias "wxGrid_GetDefaultEditorForType" (byval self as wxGrid ptr, byval typeName as string) as wxGridCellEditor ptr
-declare function wxGrid_GetDefaultRendererForType cdecl alias "wxGrid_GetDefaultRendererForType" (byval self as wxGrid ptr, byval typeName as string) as wxGridCellRenderer ptr
+declare function wxGrid_GetDefaultEditorForType cdecl alias "wxGrid_GetDefaultEditorForType" (byval self as wxGrid ptr, byval typeName as zstring ptr) as wxGridCellEditor ptr
+declare function wxGrid_GetDefaultRendererForType cdecl alias "wxGrid_GetDefaultRendererForType" (byval self as wxGrid ptr, byval typeName as zstring ptr) as wxGridCellRenderer ptr
 declare sub wxGrid_SetMargins cdecl alias "wxGrid_SetMargins" (byval self as wxGrid ptr, byval extraWidth as integer, byval extraHeight as integer)
 declare function wxGrid_GetGridWindow cdecl alias "wxGrid_GetGridWindow" (byval self as wxGrid ptr) as wxWindow ptr
 declare function wxGrid_GetGridRowLabelWindow cdecl alias "wxGrid_GetGridRowLabelWindow" (byval self as wxGrid ptr) as wxWindow ptr
@@ -252,7 +252,7 @@ declare sub wxGrid_SetLabelSize cdecl alias "wxGrid_SetLabelSize" (byval self as
 declare function wxGrid_GetLabelSize cdecl alias "wxGrid_GetLabelSize" (byval self as wxGrid ptr, byval orientation as integer) as integer
 declare sub wxGrid_SetLabelAlignment cdecl alias "wxGrid_SetLabelAlignment" (byval self as wxGrid ptr, byval orientation as integer, byval align as integer)
 declare function wxGrid_GetLabelAlignment cdecl alias "wxGrid_GetLabelAlignment" (byval self as wxGrid ptr, byval orientation as integer, byval align as integer) as integer
-declare sub wxGrid_SetLabelValue cdecl alias "wxGrid_SetLabelValue" (byval self as wxGrid ptr, byval orientation as integer, byval val as string, byval pos as integer)
+declare sub wxGrid_SetLabelValue cdecl alias "wxGrid_SetLabelValue" (byval self as wxGrid ptr, byval orientation as integer, byval val as zstring ptr, byval pos as integer)
 declare function wxGrid_GetLabelValue cdecl alias "wxGrid_GetLabelValue" (byval self as wxGrid ptr, byval orientation as integer, byval pos as integer) as wxString ptr
 declare function wxGrid_GetCellTextFontGrid cdecl alias "wxGrid_GetCellTextFontGrid" (byval self as wxGrid ptr) as wxFont ptr
 declare function wxGrid_GetCellTextFont cdecl alias "wxGrid_GetCellTextFont" (byval self as wxGrid ptr, byval row as integer, byval col as integer) as wxFont ptr
@@ -383,16 +383,16 @@ type Virtual_SetRowAttr as sub (byval as wxGridCellAttr ptr, byval as integer)
 declare function wxGridTableBase cdecl alias "wxGridTableBase_ctor" () as wxGridTableBase ptr
 declare sub wxGridTableBase_RegisterVirtual cdecl alias "wxGridTableBase_RegisterVirtual" (byval self as _GridTableBase ptr, byval getNumberRows as Virtual_GetNumberRows, byval getNumberCols as Virtual_GetNumberCols, byval isEmptyCell as Virtual_IsEmptyCell, byval getValue as Virtual_GetValue2, byval setValue as Virtual_SetValue, byval getTypeName as Virtual_GetValue2, byval canGetValueAs as Virtual_CanGetValueAs, byval canSetValueAs as Virtual_CanGetValueAs, byval getValueAsLong as Virtual_GetValueAsLong, byval getValueAsDouble as Virtual_GetValueAsDouble, byval getValueAsBool as Virtual_IsEmptyCell, byval setValueAsLong as Virtual_SetValueAsLong, byval setValueAsDouble as Virtual_SetValueAsDouble, byval setValueAsBool as Virtual_SetValueAsBool, byval getValueAsCustom as Virtual_GetValueAsCustom, byval setValueAsCustom as Virtual_SetValueAsCustom, byval setView as Virtual_SetView, byval getView as Virtual_GetView, byval clear as Virtual_Clear, byval insertRows as Virtual_InsertRows, byval appendRows as Virtual_AppendRows, byval deleteRows as Virtual_InsertRows, byval insertCols as Virtual_InsertRows, byval appendCols as Virtual_AppendRows, byval deleteCols as Virtual_InsertRows, byval getRowLabelValue as Virtual_GetColLabelValue, byval getColLabelValue as Virtual_GetColLabelValue, byval setRowLabelValue as Virtual_SetRowLabelValue, byval setColLabelValue as Virtual_SetRowLabelValue, byval setAttrProvider as Virtual_SetAttrProvider, byval getAttrProvider as Virtual_GetAttrProvider, byval canHaveAttributes as Virtual_CanHaveAttributes, byval getAttr as Virtual_GetAttr, byval setAttr as Virtual_SetAttr, byval setRowAttr as Virtual_SetRowAttr, byval setColAttr as Virtual_SetRowAttr)
 declare function wxGridTableBase_GetTypeName cdecl alias "wxGridTableBase_GetTypeName" (byval self as _GridTableBase ptr, byval row as integer, byval col as integer) as wxString ptr
-declare function wxGridTableBase_CanGetValueAs cdecl alias "wxGridTableBase_CanGetValueAs" (byval self as _GridTableBase ptr, byval row as integer, byval col as integer, byval typeName as string) as integer
-declare function wxGridTableBase_CanSetValueAs cdecl alias "wxGridTableBase_CanSetValueAs" (byval self as _GridTableBase ptr, byval row as integer, byval col as integer, byval typeName as string) as integer
+declare function wxGridTableBase_CanGetValueAs cdecl alias "wxGridTableBase_CanGetValueAs" (byval self as _GridTableBase ptr, byval row as integer, byval col as integer, byval typeName as zstring ptr) as integer
+declare function wxGridTableBase_CanSetValueAs cdecl alias "wxGridTableBase_CanSetValueAs" (byval self as _GridTableBase ptr, byval row as integer, byval col as integer, byval typeName as zstring ptr) as integer
 declare function wxGridTableBase_GetValueAsLong cdecl alias "wxGridTableBase_GetValueAsLong" (byval self as _GridTableBase ptr, byval row as integer, byval col as integer) as integer
 declare function wxGridTableBase_GetValueAsDouble cdecl alias "wxGridTableBase_GetValueAsDouble" (byval self as _GridTableBase ptr, byval row as integer, byval col as integer) as double
 declare function wxGridTableBase_GetValueAsBool cdecl alias "wxGridTableBase_GetValueAsBool" (byval self as _GridTableBase ptr, byval row as integer, byval col as integer) as integer
 declare sub wxGridTableBase_SetValueAsLong cdecl alias "wxGridTableBase_SetValueAsLong" (byval self as _GridTableBase ptr, byval row as integer, byval col as integer, byval value as integer)
 declare sub wxGridTableBase_SetValueAsDouble cdecl alias "wxGridTableBase_SetValueAsDouble" (byval self as _GridTableBase ptr, byval row as integer, byval col as integer, byval value as double)
 declare sub wxGridTableBase_SetValueAsBool cdecl alias "wxGridTableBase_SetValueAsBool" (byval self as _GridTableBase ptr, byval row as integer, byval col as integer, byval value as integer)
-declare function wxGridTableBase_GetValueAsCustom cdecl alias "wxGridTableBase_GetValueAsCustom" (byval self as _GridTableBase ptr, byval row as integer, byval col as integer, byval typeName as string) as any ptr
-declare sub wxGridTableBase_SetValueAsCustom cdecl alias "wxGridTableBase_SetValueAsCustom" (byval self as _GridTableBase ptr, byval row as integer, byval col as integer, byval typeName as string, byval value as any ptr)
+declare function wxGridTableBase_GetValueAsCustom cdecl alias "wxGridTableBase_GetValueAsCustom" (byval self as _GridTableBase ptr, byval row as integer, byval col as integer, byval typeName as zstring ptr) as any ptr
+declare sub wxGridTableBase_SetValueAsCustom cdecl alias "wxGridTableBase_SetValueAsCustom" (byval self as _GridTableBase ptr, byval row as integer, byval col as integer, byval typeName as zstring ptr, byval value as any ptr)
 declare sub wxGridTableBase_SetView cdecl alias "wxGridTableBase_SetView" (byval self as _GridTableBase ptr, byval grid as wxGrid ptr)
 declare function wxGridTableBase_GetView cdecl alias "wxGridTableBase_GetView" (byval self as _GridTableBase ptr) as wxGrid ptr
 declare sub wxGridTableBase_Clear cdecl alias "wxGridTableBase_Clear" (byval self as _GridTableBase ptr)
@@ -404,8 +404,8 @@ declare function wxGridTableBase_AppendCols cdecl alias "wxGridTableBase_AppendC
 declare function wxGridTableBase_DeleteCols cdecl alias "wxGridTableBase_DeleteCols" (byval self as _GridTableBase ptr, byval pos as integer, byval numCols as integer) as integer
 declare function wxGridTableBase_GetRowLabelValue cdecl alias "wxGridTableBase_GetRowLabelValue" (byval self as _GridTableBase ptr, byval row as integer) as wxString ptr
 declare function wxGridTableBase_GetColLabelValue cdecl alias "wxGridTableBase_GetColLabelValue" (byval self as _GridTableBase ptr, byval col as integer) as wxString ptr
-declare sub wxGridTableBase_SetRowLabelValue cdecl alias "wxGridTableBase_SetRowLabelValue" (byval self as _GridTableBase ptr, byval row as integer, byval value as string)
-declare sub wxGridTableBase_SetColLabelValue cdecl alias "wxGridTableBase_SetColLabelValue" (byval self as _GridTableBase ptr, byval col as integer, byval value as string)
+declare sub wxGridTableBase_SetRowLabelValue cdecl alias "wxGridTableBase_SetRowLabelValue" (byval self as _GridTableBase ptr, byval row as integer, byval value as zstring ptr)
+declare sub wxGridTableBase_SetColLabelValue cdecl alias "wxGridTableBase_SetColLabelValue" (byval self as _GridTableBase ptr, byval col as integer, byval value as zstring ptr)
 declare sub wxGridTableBase_SetAttrProvider cdecl alias "wxGridTableBase_SetAttrProvider" (byval self as _GridTableBase ptr, byval attrProvider as wxGridCellAttrProvider ptr)
 declare function wxGridTableBase_GetAttrProvider cdecl alias "wxGridTableBase_GetAttrProvider" (byval self as _GridTableBase ptr) as wxGridCellAttrProvider ptr
 declare function wxGridTableBase_CanHaveAttributes cdecl alias "wxGridTableBase_CanHaveAttributes" (byval self as _GridTableBase ptr) as integer
@@ -423,7 +423,7 @@ declare sub wxGridCellTextEditor_BeginEdit cdecl alias "wxGridCellTextEditor_Beg
 declare function wxGridCellTextEditor_EndEdit cdecl alias "wxGridCellTextEditor_EndEdit" (byval self as wxGridCellTextEditor ptr, byval row as integer, byval col as integer, byval grid as wxGrid ptr) as integer
 declare sub wxGridCellTextEditor_Reset cdecl alias "wxGridCellTextEditor_Reset" (byval self as wxGridCellTextEditor ptr)
 declare sub wxGridCellTextEditor_StartingKey cdecl alias "wxGridCellTextEditor_StartingKey" (byval self as wxGridCellTextEditor ptr, byval event as wxKeyEvent ptr)
-declare sub wxGridCellTextEditor_SetParameters cdecl alias "wxGridCellTextEditor_SetParameters" (byval self as wxGridCellTextEditor ptr, byval params as string)
+declare sub wxGridCellTextEditor_SetParameters cdecl alias "wxGridCellTextEditor_SetParameters" (byval self as wxGridCellTextEditor ptr, byval params as zstring ptr)
 declare function wxGridCellTextEditor_Clone cdecl alias "wxGridCellTextEditor_Clone" (byval self as wxGridCellTextEditor ptr) as wxGridCellEditor ptr
 
 declare function wxGridCellAttrProvider cdecl alias "wxGridCellAttrProvider_ctor" () as wxGridCellAttrProvider ptr
@@ -445,7 +445,7 @@ declare sub wxGridCellNumberEditor_BeginEdit cdecl alias "wxGridCellNumberEditor
 declare function wxGridCellNumberEditor_EndEdit cdecl alias "wxGridCellNumberEditor_EndEdit" (byval self as wxGridCellNumberEditor ptr, byval row as integer, byval col as integer, byval grid as wxGrid ptr) as integer
 declare sub wxGridCellNumberEditor_Reset cdecl alias "wxGridCellNumberEditor_Reset" (byval self as wxGridCellNumberEditor ptr)
 declare sub wxGridCellNumberEditor_StartingKey cdecl alias "wxGridCellNumberEditor_StartingKey" (byval self as wxGridCellNumberEditor ptr, byval event as wxKeyEvent ptr)
-declare sub wxGridCellNumberEditor_SetParameters cdecl alias "wxGridCellNumberEditor_SetParameters" (byval self as wxGridCellNumberEditor ptr, byval params as string)
+declare sub wxGridCellNumberEditor_SetParameters cdecl alias "wxGridCellNumberEditor_SetParameters" (byval self as wxGridCellNumberEditor ptr, byval params as zstring ptr)
 declare function wxGridCellNumberEditor_Clone cdecl alias "wxGridCellNumberEditor_Clone" (byval self as wxGridCellNumberEditor ptr) as wxGridCellEditor ptr
 declare function wxGridCellFloatEditor cdecl alias "wxGridCellFloatEditor_ctor" (byval width as integer, byval precision as integer) as wxGridCellFloatEditor ptr
 declare sub wxGridCellFloatEditor_dtor cdecl alias "wxGridCellFloatEditor_dtor" (byval self as wxGridCellFloatEditor ptr)
@@ -455,7 +455,7 @@ declare sub wxGridCellFloatEditor_BeginEdit cdecl alias "wxGridCellFloatEditor_B
 declare function wxGridCellFloatEditor_EndEdit cdecl alias "wxGridCellFloatEditor_EndEdit" (byval self as wxGridCellFloatEditor ptr, byval row as integer, byval col as integer, byval grid as wxGrid ptr) as integer
 declare sub wxGridCellFloatEditor_Reset cdecl alias "wxGridCellFloatEditor_Reset" (byval self as wxGridCellFloatEditor ptr)
 declare sub wxGridCellFloatEditor_StartingKey cdecl alias "wxGridCellFloatEditor_StartingKey" (byval self as wxGridCellFloatEditor ptr, byval event as wxKeyEvent ptr)
-declare sub wxGridCellFloatEditor_SetParameters cdecl alias "wxGridCellFloatEditor_SetParameters" (byval self as wxGridCellFloatEditor ptr, byval params as string)
+declare sub wxGridCellFloatEditor_SetParameters cdecl alias "wxGridCellFloatEditor_SetParameters" (byval self as wxGridCellFloatEditor ptr, byval params as zstring ptr)
 declare function wxGridCellFloatEditor_Clone cdecl alias "wxGridCellFloatEditor_Clone" (byval self as wxGridCellFloatEditor ptr) as wxGridCellEditor ptr
 
 declare function wxGridCellBoolEditor cdecl alias "wxGridCellBoolEditor_ctor" () as wxGridCellBoolEditor ptr
@@ -478,7 +478,7 @@ declare sub wxGridCellChoiceEditor_PaintBackground cdecl alias "wxGridCellChoice
 declare sub wxGridCellChoiceEditor_BeginEdit cdecl alias "wxGridCellChoiceEditor_BeginEdit" (byval self as wxGridCellChoiceEditor ptr, byval row as integer, byval col as integer, byval grid as wxGrid ptr)
 declare function wxGridCellChoiceEditor_EndEdit cdecl alias "wxGridCellChoiceEditor_EndEdit" (byval self as wxGridCellChoiceEditor ptr, byval row as integer, byval col as integer, byval grid as wxGrid ptr) as integer
 declare sub wxGridCellChoiceEditor_Reset cdecl alias "wxGridCellChoiceEditor_Reset" (byval self as wxGridCellChoiceEditor ptr)
-declare sub wxGridCellChoiceEditor_SetParameters cdecl alias "wxGridCellChoiceEditor_SetParameters" (byval self as wxGridCellChoiceEditor ptr, byval params as string)
+declare sub wxGridCellChoiceEditor_SetParameters cdecl alias "wxGridCellChoiceEditor_SetParameters" (byval self as wxGridCellChoiceEditor ptr, byval params as zstring ptr)
 declare function wxGridCellChoiceEditor_Clone cdecl alias "wxGridCellChoiceEditor_Clone" (byval self as wxGridCellChoiceEditor ptr) as wxGridCellEditor ptr
 
 declare function wxGridCellStringRenderer cdecl alias "wxGridCellStringRenderer_ctor" () as wxGridCellStringRenderer ptr
@@ -501,7 +501,7 @@ declare function wxGridCellFloatRenderer_GetWidth cdecl alias "wxGridCellFloatRe
 declare sub wxGridCellFloatRenderer_SetWidth cdecl alias "wxGridCellFloatRenderer_SetWidth" (byval self as wxGridCellFloatRenderer ptr, byval width as integer)
 declare function wxGridCellFloatRenderer_GetPrecision cdecl alias "wxGridCellFloatRenderer_GetPrecision" (byval self as wxGridCellFloatRenderer ptr) as integer
 declare sub wxGridCellFloatRenderer_SetPrecision cdecl alias "wxGridCellFloatRenderer_SetPrecision" (byval self as wxGridCellFloatRenderer ptr, byval precision as integer)
-declare sub wxGridCellFloatRenderer_SetParameters cdecl alias "wxGridCellFloatRenderer_SetParameters" (byval self as wxGridCellFloatRenderer ptr, byval params as string)
+declare sub wxGridCellFloatRenderer_SetParameters cdecl alias "wxGridCellFloatRenderer_SetParameters" (byval self as wxGridCellFloatRenderer ptr, byval params as zstring ptr)
 
 declare function wxGridCellBoolRenderer cdecl alias "wxGridCellBoolRenderer_ctor" () as wxGridCellBoolRenderer ptr
 declare sub wxGridCellBoolRenderer_dtor cdecl alias "wxGridCellBoolRenderer_dtor" (byval self as wxGridCellBoolRenderer ptr)
