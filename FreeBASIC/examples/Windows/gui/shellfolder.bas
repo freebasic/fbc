@@ -23,7 +23,7 @@ function BrowseCallbackProc(byval hWnd as HWND, _
     case BFFM_SELCHANGED 
         dim as zstring * MAX_PATH sPath
       	
-      	if SHGetPathFromIDList(lParam, sPath) = 0 then 
+      	if SHGetPathFromIDList( cptr( LPCITEMIDLIST, lParam ), sPath) = 0 then 
             sPath = "Unknown"
         else 
             sPath = "PATH: " + sPath

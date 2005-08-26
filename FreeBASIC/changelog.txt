@@ -11,11 +11,15 @@ Version 0.15 Beta:
   from functions, recompile the libraries if clients will be compiled with this version
 - LOCATE/CLS/WIDTH/SCREEN are now window-local (left/top of window = 1/1) on Win32 (mjs)
 - VAL64 function renamed to VALLNG as longint's can be wider than 64 bits in future ports (v1c)
-- WITH can now accepts dereferenced pointers as argument and the depth became unlimited (v1c)
+- WITH can now accept dereferenced pointers as argument and the depth became unlimited (v1c)
 - Linux version can now be installed in any directory (lillo)
 - DATA can now be used inside functions too (mjs)
 - duplicated EXTERN's are now accepted if they have the same type (v1c)
 - the depth of nested anonymous inner TYPE's and UNION's is now unlimited (v1c)
+- the function names won't be anymore preserved if only LIB is used, an ALIAS must be present now (v1c)
+- IF THEN followed by a statement separator (':') will be seen as a multi-line IF now, so END IF is obligatory (v1c)
+- non-shared or public variables declared on module-level (outside any proc) will be now show as LOCAL in GDB/Insight (v1c)
+- level of indirection checking when assigning or passing pointers (v1c)
 
 [added]
 - OPEN CONS, OPEN LPT, OPEN ERR, OPEN PIPE (OPEN "PIPE:" won't work), OPEN SCRN (mjs)
@@ -43,6 +47,8 @@ Version 0.15 Beta:
   FORMAT (mjs)
 - the & operator, allowing to concatenate strings, automatically converting types to string if needed (lillo)
 - basic CYGWIN port (mjs)
+- the SCOPE .. END SCOPE compound statement, to create inner symbol scopes in main-module or inside functions or macros (v1c)
+- the __FB_MAIN__ define, set when the main-module is been parsed (could also be used to unit-test libraries) (v1c)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)

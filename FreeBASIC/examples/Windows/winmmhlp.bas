@@ -3,7 +3,7 @@
 ''
 
 #ifdef __FB_MAIN__
-#error "ERROR: this is a module, not an application"
+#error this is a module, not an application
 #endif
 
 option explicit

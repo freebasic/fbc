@@ -63,10 +63,12 @@ function InitDirectDraw( byval hWnd as HWND ) as integer
 
 	' create the primary surface with 1 back-buffer
 	clear ddsd, 0, len( ddsd )
-	ddsd.dwSize 			= len( ddsd )
-	ddsd.dwFlags 			= DDSD_CAPS or DDSD_BACKBUFFERCOUNT
-	ddsd.ddsCaps.dwCaps 	= DDSCAPS_PRIMARYSURFACE or DDSCAPS_FLIP or DDSCAPS_COMPLEX
-	ddsd.dwBackBufferCount 	= 1
+	with ddsd
+		.dwSize 			= len( ddsd )
+		.dwFlags 			= DDSD_CAPS or DDSD_BACKBUFFERCOUNT
+		.ddsCaps.dwCaps 	= DDSCAPS_PRIMARYSURFACE or DDSCAPS_FLIP or DDSCAPS_COMPLEX
+		.dwBackBufferCount 	= 1
+	end with
 
 	if( IDirectDraw7_CreateSurface( pDD, @ddsd, @pDDSFront, NULL ) <> DD_OK ) then
 		exit function
@@ -96,7 +98,7 @@ sub doRendering
 		exit function
 	end if
 	
-	'' get pointer to back-buffer
+	'' get the pointer to back-buffer
 	dst = ddsd.lpSurface
 	
    	'' draw some static (code from ptc_test)
@@ -109,6 +111,7 @@ sub doRendering
 			*dst = VAL2RGB(noise)
 			dst += 1
 		next x
+		'' advance to next scanline
 		cptr(byte ptr, dst) += ddsd.lPitch - (SCR_WIDTH * len( SCR_TYPE ))
    	next y
 	
@@ -240,7 +243,8 @@ function WinMain ( byval hInstance as HINSTANCE, _
 		exit function
 	end if
 
-	hWnd = CreateWindowEx( WS_EX_TOPMOST, appName, appName, WS_POPUP, NULL, NULL, SCR_WIDTH, SCR_HEIGHT, _
+	hWnd = CreateWindowEx( WS_EX_TOPMOST, appName, appName, WS_POPUP, NULL, NULL, _
+						   SCR_WIDTH, SCR_HEIGHT, _
 						   NULL, NULL, hInst, NULL )
 
 	if( hWnd = null ) then

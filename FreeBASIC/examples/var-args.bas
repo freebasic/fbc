@@ -27,33 +27,36 @@ sub myprintf cdecl (fmtstr as string, ...)
 	
 	'' for each char on format string..
 	p = strptr( fmtstr )
-	for i = 0 to len( fmtstr )-1
+	i = len( fmtstr )
+	do while( i > 0 ) 
 		char = *p
 		p += 1
+		i -= 1
 		
 		'' is it a format char?
 		if( char = asc( "%" ) ) then
 			'' get type
 			char = *p
 			p += 1
+			i -= 1
 			
 			'' print var-arg, depending on the type
 			select case char
 			case asc( "i" )
-				print str$( va_arg( arg, integer ) );
+				print str( va_arg( arg, integer ) );
 				'' different from C, va_next() must be used as va_arg() won't update the pointer
 				arg = va_next( arg, integer )
 
 			case asc( "l" )
-				print str$( va_arg( arg, longint ) );
+				print str( va_arg( arg, longint ) );
 				arg = va_next( arg, longint )			'' /
 			
 			case asc( "f" )
-				print str$( va_arg( arg, single ) );
+				print str( va_arg( arg, single ) );
 				arg = va_next( arg, single )			'' /
 			
 			case asc( "d" )
-				print str$( va_arg( arg, double ) );
+				print str( va_arg( arg, double ) );
 				arg = va_next( arg, double )			'' /
 			
 			case asc( "s" )
@@ -64,9 +67,9 @@ sub myprintf cdecl (fmtstr as string, ...)
 			
 		'' ordinary char, just print as-is
 		else
-			print chr$( char );
+			print chr( char );
 		end if
 		
-	next
+	loop
 
 end sub
