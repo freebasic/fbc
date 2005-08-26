@@ -68,7 +68,7 @@ declare function sqlite3_busy_timeout cdecl alias "sqlite3_busy_timeout" (byval 
 declare function sqlite3_get_table cdecl alias "sqlite3_get_table" (byval as sqlite3 ptr, byval sql as zstring ptr, byval resultp as byte ptr ptr ptr, byval nrow as integer ptr, byval ncolumn as integer ptr, byval errmsg as byte ptr ptr) as integer
 declare sub sqlite3_free_table cdecl alias "sqlite3_free_table" (byval result as byte ptr ptr)
 declare function sqlite3_mprintf cdecl alias "sqlite3_mprintf" (byval as zstring ptr, ...) as zstring ptr
-''''''' declare function sqlite3_vmprintf cdecl alias "sqlite3_vmprintf" (byval as zstring ptr, byval as va_list) as zstring ptr
+declare function sqlite3_vmprintf cdecl alias "sqlite3_vmprintf" (byval as zstring ptr, byval as any ptr) as zstring ptr
 declare sub sqlite3_free cdecl alias "sqlite3_free" (byval z as zstring ptr)
 declare function sqlite3_snprintf cdecl alias "sqlite3_snprintf" (byval as integer, byval as zstring ptr, byval as zstring ptr, ...) as zstring ptr
 declare function sqlite3_set_authorizer cdecl alias "sqlite3_set_authorizer" (byval as sqlite3 ptr, byval xAuth as function(byval as any ptr, byval as integer, byval as zstring ptr, byval as zstring ptr, byval as zstring ptr, byval as zstring ptr) as integer, byval pUserData as any ptr) as integer

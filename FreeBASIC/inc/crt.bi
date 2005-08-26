@@ -374,6 +374,20 @@ declare function toupper cdecl alias "toupper" ( byval c as integer ) as integer
 
 declare function vsprintf cdecl alias "vsprintf" (byval buffer as zstring ptr, byval format as zstring ptr, byval argptr as any ptr) as integer
 
+#ifdef __FB_WIN32__
+declare function vsnprintf cdecl alias "_vsnprintf" ( _
+  byval buffer as any ptr, _
+  byval count as integer, _
+  byval format as zstring ptr, _
+  byval argptr as any ptr ) as integer
+#else
+declare function vsnprintf cdecl alias "vsnprintf" ( _
+  byval buffer as any ptr, _
+  byval count as integer, _
+  byval format as zstring ptr, _
+  byval argptr as any ptr ) as integer
+#endif
+
 ''
 '' globals
 ''
