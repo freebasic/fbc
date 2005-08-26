@@ -198,18 +198,23 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 					{
 						fb_PrintFixString( fnum, s->data, 0 );
 
-						for( i = 0; i < strchars - FB_STRSIZE( s ); i++ )
+						strchars -= FB_STRSIZE( s );
+						for( i = 0; i < strchars; i++ )
 							buffer[i] = ' ';
 						buffer[i] = '\0';
-
-						fb_PrintFixString( fnum, buffer, 0 );
 					}
 					else
 					{
 						memcpy( buffer, s->data, strchars );
 						buffer[strchars] = '\0';
-						fb_PrintFixString( fnum, buffer, 0 );
 					}
+
+					/* replace null-terminators by spaces */
+					for( i = 0; i < strchars; i++ )
+						if( buffer[i] == '\0' )
+							buffer[i] = ' ';
+
+					fb_PrintFixString( fnum, buffer, 0 );
 
 					FB_TLSSET( fb_printusgctx.ptr, (char *)FB_TLSGET( fb_printusgctx.ptr ) + 1 );
 					FB_TLSSET( fb_printusgctx.chars, (int)FB_TLSGET( fb_printusgctx.chars ) - 1 );
