@@ -40,9 +40,9 @@ declare sub 	 emitSubEnd				( )
 declare sub 	 emitWriteHeader		( )
 declare sub 	 emitWriteRtInit		( byval isdllmain as integer )
 declare sub 	 emitWriteFooter		( byval tottime as double )
-declare sub 	 emitWriteBss			( )
-declare sub 	 emitWriteConst			( )
-declare sub 	 emitWriteData			( )
+declare sub 	 emitWriteBss			( byval s as FBSYMBOL ptr )
+declare sub 	 emitWriteConst			( byval s as FBSYMBOL ptr )
+declare sub 	 emitWriteData			( byval s as FBSYMBOL ptr )
 declare sub 	 emitWriteExport		( )
 
 
@@ -69,6 +69,9 @@ sub emitInit static
 	emit.inited 		= TRUE
 	emit.pos			= 0
 
+	''
+	edbgInit( )
+
 end sub
 
 '':::::
@@ -77,6 +80,9 @@ sub emitEnd static
 	if( not emit.inited ) then
 		exit sub
 	end if
+
+	''
+	edbgEnd( )
 
 	''
 	emitSubEnd( )
@@ -93,30 +99,34 @@ private sub hDllMainBegin( )
    	dim as ASTPROCNODE ptr procnode
     dim as integer argn
 
+	''
+	proc = symbPreAddProc( )
+
 	'' instance
-	arg = symbAddArg( "{dllmain_instance}", NULL, _
-					  FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID, NULL, 1, _
-					  FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+	symbAddArg( proc, "{dllmain_instance}", _
+				FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID, NULL, 1, _
+				FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
 
 	'' reason
-	arg = symbAddArg( "{dllmain_reason}", arg, _
-					  FB_SYMBTYPE_UINT, NULL, 0, _
-					  FB_INTEGERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+	symbAddArg( proc, "{dllmain_reason}", _
+				FB_SYMBTYPE_UINT, NULL, 0, _
+				FB_INTEGERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
 
 	'' reserved
-	arg = symbAddArg( "{dllmain_reserved}", arg, _
-					  FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID, NULL, 1, _
-					  FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+	symbAddArg( proc, "{dllmain_reserved}", _
+				FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID, NULL, 1, _
+				FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+
 	''
-	proc = symbAddProc( "", "DllMain", "", _
+	proc = symbAddProc( proc, NULL, strptr( "DllMain" ), NULL, _
 						FB_SYMBTYPE_INTEGER, NULL, 0, FB_ALLOCTYPE_PUBLIC, _
-						FB_FUNCMODE_STDCALL, 3, arg )
+						FB_FUNCMODE_STDCALL )
 
     symbSetProcIncFile( proc, INVALID )
 
     ''
-	initlabel = symbAddLabel( "" )
-	exitlabel = symbAddLabel( "" )
+	initlabel = symbAddLabel( NULL )
+	exitlabel = symbAddLabel( NULL )
 
     ''
 	procnode = astProcBegin( proc, initlabel, exitlabel, FALSE )
@@ -129,7 +139,7 @@ private sub hDllMainBegin( )
 	argn = 1
 	do while( arg <> NULL )
 
-		s = symbAddArgAsVar( arg->alias, arg )
+		s = symbAddArgAsVar( strptr( arg->alias ), arg )
 		if( argn = 2 ) then
 			argreason = s
 		end if
@@ -150,7 +160,7 @@ private sub hDllMainBegin( )
 
 	'' if( reason = DLL_PROCESS_ATTACH ) then
 	reason = astNewVAR( argreason, NULL, 0, symbGetType( argreason ) )
-	label = symbAddLabel( "" )
+	label = symbAddLabel( NULL )
 	astAdd( astNewBOP( IR_OP_NE, reason, astNewCONSTi( 1, IR_DATATYPE_UINT ), label, FALSE ) )
 
 	''	main( 0, NULL )
@@ -180,33 +190,39 @@ end sub
 
 ':::::
 private sub hMainBegin( byval isdllmain as integer )
-    dim as FBSYMBOL ptr arg
+    dim as FBSYMBOL ptr proc, arg
     dim as integer alloctype
 
+	''
+	proc = symbPreAddProc( )
+
 	'' argc
-	arg = symbAddArg( "{argc}", NULL, _
-					  FB_SYMBTYPE_INTEGER, NULL, 0, _
-					  FB_INTEGERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+	symbAddArg( proc, "{argc}", _
+				FB_SYMBTYPE_INTEGER, NULL, 0, _
+				FB_INTEGERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
 
 	'' argv
-	arg = symbAddArg( "{argv}", arg, _
-					  FB_SYMBTYPE_POINTER+FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR, NULL, 2, _
-					  FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+	symbAddArg( proc, "{argv}", _
+				FB_SYMBTYPE_POINTER+FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR, NULL, 2, _
+				FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+
 	''
 	if( not isdllmain ) then
 		alloctype = FB_ALLOCTYPE_PUBLIC
 	else
 		alloctype = FB_ALLOCTYPE_PRIVATE
 	end if
-	emit.main.proc = symbAddProc( "", fbGetEntryPoint( ), "", _
-								  FB_SYMBTYPE_VOID, NULL, 0, alloctype or FB_ALLOCTYPE_MAINPROC, _
-								  FB_FUNCMODE_CDECL, 2, arg )
+
+	emit.main.proc = symbAddProc( proc, NULL, fbGetEntryPoint( ), NULL, _
+								  FB_SYMBTYPE_VOID, NULL, 0, _
+								  alloctype or FB_ALLOCTYPE_MAINPROC, _
+								  FB_FUNCMODE_CDECL )
 
     symbSetProcIncFile( emit.main.proc, INVALID )
 
     ''
-	emit.main.initlabel = symbAddLabel( "" )
-	emit.main.exitlabel = symbAddLabel( "" )
+	emit.main.initlabel = symbAddLabel( NULL )
+	emit.main.exitlabel = symbAddLabel( NULL )
 
     ''
 	emit.main.node = astProcBegin( emit.main.proc, _
@@ -217,10 +233,13 @@ private sub hMainBegin( byval isdllmain as integer )
 	env.currproc = emit.main.proc
 
 	arg = symbGetProcHeadArg( emit.main.proc )
-	emit.main.argc = symbAddArgAsVar( arg->alias, arg )
+	emit.main.argc = symbAddArgAsVar( strptr( arg->alias ), arg )
 	arg = symbGetProcTailArg( emit.main.proc )
-	emit.main.argv = symbAddArgAsVar( arg->alias, arg )
+	emit.main.argv = symbAddArgAsVar( strptr( arg->alias ), arg )
 
+	'' symbols declared in main() must go to the global tables, as main() has
+	'' no beginning or end, all include files are parsed "inside" it, pure hack..
+	symbSetSymbolTb( NULL )
 	env.currproc = NULL
 	env.scope = 0
 
@@ -243,7 +262,7 @@ private sub hMainEnd( byval isdllmain as integer )
 
     '' set default data label (def label isn't global as it could clash with other
     '' modules, so DataRestore alone can't figure out where to start)
-    if( symbFindByNameAndClass( FB_DATALABELNAME, FB_SYMBCLASS_LABEL ) <> NULL ) then
+    if( symbFindByNameAndClass( strptr( FB_DATALABELNAME ), FB_SYMBCLASS_LABEL ) <> NULL ) then
     	rtlDataRestore( NULL, emit.main.initnode, TRUE )
     end if
 
@@ -257,19 +276,26 @@ private sub hModLevelBegin( )
     dim as FBSYMBOL ptr proc
 
 	''
-	proc = symbAddProc( "{main}", fbGetModuleEntry( ), "", _
-						FB_SYMBTYPE_VOID, NULL, 0, FB_ALLOCTYPE_PRIVATE or FB_ALLOCTYPE_CONSTRUCTOR, _
-						FB_FUNCMODE_CDECL, 0, NULL )
+	proc = symbAddProc( symbPreAddProc( ), _
+						strptr( "{main}" ), fbGetModuleEntry( ), NULL, _
+						FB_SYMBTYPE_VOID, NULL, 0, _
+						FB_ALLOCTYPE_PRIVATE or FB_ALLOCTYPE_CONSTRUCTOR, _
+						FB_FUNCMODE_CDECL )
 
     symbSetProcIncFile( proc, INVALID )
     symbSetProcIsCalled( proc, TRUE )
 
     ''
-	emit.main.initlabel = symbAddLabel( "" )
-	emit.main.exitlabel = symbAddLabel( "" )
+	emit.main.initlabel = symbAddLabel( NULL )
+	emit.main.exitlabel = symbAddLabel( NULL )
 
     ''
 	emit.main.node = astProcBegin( proc, emit.main.initlabel, emit.main.exitlabel, TRUE )
+
+	'' see hMainBegin..
+	symbSetSymbolTb( NULL )
+	env.currproc = NULL
+	env.scope = 0
 
    	astAdd( astNewLABEL( emit.main.initlabel ) )
 
@@ -345,13 +371,13 @@ sub emitClose( byval tottime as double )
     emitWriteFooter( tottime )
 
 	'' const
-	emitWriteConst( )
+	emitWriteConst( symbGetGlobalTbHead( ) )
 
 	'' data
-	emitWriteData( )
+	emitWriteData( symbGetGlobalTbHead( ) )
 
 	'' bss
-	emitWriteBss( )
+	emitWriteBss( symbGetGlobalTbHead( ) )
 
 	''
 	if( env.clopt.export ) then

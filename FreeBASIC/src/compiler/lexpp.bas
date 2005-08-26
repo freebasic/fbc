@@ -362,7 +362,7 @@ private function ppDefine( ) as integer
 			lastarg = NULL
 			do
 		    	lexEatToken( argname, LEXCHECK_NODEFINE )
-		    	lastarg = symbAddDefineArg( lastarg, argname )
+		    	lastarg = symbAddDefineArg( lastarg, @argname )
 		    	args += 1
 
 		    	if( arghead = NULL ) then
@@ -412,7 +412,7 @@ private function ppDefine( ) as integer
     	end if
 
     else
-    	symbAddDefine( defname, text, textlen, args, arghead, isargless )
+    	symbAddDefine( @defname, text, textlen, args, arghead, isargless )
     end if
 
 	function = TRUE

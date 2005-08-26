@@ -78,13 +78,13 @@ function cGotoStmt as integer
 		lexSkipToken( )
 
 		if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
-			l = symbFindByNameAndClass( *lexGetText( ), FB_SYMBCLASS_LABEL )
+			l = symbFindByNameAndClass( lexGetText( ), FB_SYMBCLASS_LABEL )
 		else
 			l = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_LABEL )
 		end if
 
 		if( l = NULL ) then
-			l = symbAddLabel( *lexGetText( ), FALSE, TRUE )
+			l = symbAddLabel( lexGetText( ), FALSE, TRUE )
 		end if
 		lexSkipToken( )
 
@@ -97,13 +97,13 @@ function cGotoStmt as integer
 		lexSkipToken( )
 
 		if( lexGetClass = FB_TKCLASS_NUMLITERAL ) then
-			l = symbFindByNameAndClass( *lexGetText( ), FB_SYMBCLASS_LABEL )
+			l = symbFindByNameAndClass( lexGetText( ), FB_SYMBCLASS_LABEL )
 		else
 			l = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_LABEL )
 		end if
 
 		if( l = NULL ) then
-			l = symbAddLabel( *lexGetText( ), FALSE, TRUE )
+			l = symbAddLabel( lexGetText( ), FALSE, TRUE )
 		end if
 		lexSkipToken( )
 
@@ -122,7 +122,7 @@ function cGotoStmt as integer
 			'' try to guess here.. if inside a proc currently and no user label was
 			'' emitted, it's probably a FUNCTION return, not a GOSUB return
 			l = NULL
-			if( env.scope > 0 ) then
+			if( fbIsLocal( ) ) then
 				l = symbGetLastLabel( )
 				if( l <> NULL ) then
 					if( l->scope <> env.scope ) then
@@ -131,7 +131,7 @@ function cGotoStmt as integer
 				end if
 			end if
 
-			if( (env.scope = 0) or (l <> NULL) ) then
+			if( not fbIsLocal( ) or (l <> NULL) ) then
 				'' return 0
 				astAdd( astNewBRANCH( IR_OP_RET, NULL ) )
 			else
@@ -146,7 +146,7 @@ function cGotoStmt as integer
 			select case lexGetLookAhead( 1 )
 			case FB_TK_EOL, FB_TK_STATSEPCHAR, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
 				if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
-					l = symbFindByNameAndClass( *lexGetText( ), FB_SYMBCLASS_LABEL )
+					l = symbFindByNameAndClass( lexGetText( ), FB_SYMBCLASS_LABEL )
 				else
 					l = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_LABEL )
 				end if
@@ -392,7 +392,7 @@ function cDataStmt as integer static
 		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_NUMLITERAL
 			s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_LABEL )
 			if( s = NULL ) then
-				s = symbAddLabel( *lexGetText( ), FALSE, TRUE )
+				s = symbAddLabel( lexGetText( ), FALSE, TRUE )
 				if( s = NULL ) then
 					hReportError( FB_ERRMSG_DUPDEFINITION )
 					exit function
@@ -424,15 +424,13 @@ function cDataStmt as integer static
 	'' DATA literal|constant expr (',' literal|constant expr)*
 	case FB_TK_DATA
 
-        '' it should be allowed inside procs to avoid global namespace
-        '' pollution - so I simply removed the check if we're inside
-        '' a proc.
-
-''		'' not allowed inside procs
-''		if( env.scope > 0 ) then
-''			hReportError FB_ERRMSG_ILLEGALINSIDEASUB
-''			exit function
-''		end if
+		'' not allowed if inside an scope block
+		if( env.scope > 0 ) then
+			if( env.lastcompound = FB_TK_SCOPE ) then
+				hReportError FB_ERRMSG_ILLEGALINSIDEASCOPE
+				exit function
+			end if
+		end if
 
 		lexSkipToken( )
 
@@ -1660,9 +1658,9 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
 		end if
 
 		'' Label
-		labelTB(l) = symbFindByClass( lexGetSymbol, FB_SYMBCLASS_LABEL )
+		labelTB(l) = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_LABEL )
 		if( labelTB(l) = NULL ) then
-			labelTB(l) = symbAddLabel( *lexGetText( ), FALSE, TRUE )
+			labelTB(l) = symbAddLabel( lexGetText( ), FALSE, TRUE )
 		end if
 		lexSkipToken( )
 
@@ -1670,7 +1668,7 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
 	loop while( hMatch( CHAR_COMMA ) )
 
 	''
-	exitlabel = symbAddLabel( "" )
+	exitlabel = symbAddLabel( NULL )
 
 	'' < 1?
 	expr = astNewBOP( IR_OP_LT, astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
@@ -1729,8 +1727,8 @@ function cOnStmt as integer
 
 	'' LOCAL?
 	if( hMatch( FB_TK_LOCAL ) ) then
-		if( env.scope = 0 ) then
-			hReportError FB_ERRMSG_SYNTAXERROR, TRUE
+		if( not fbIsLocal( ) ) then
+			hReportError( FB_ERRMSG_SYNTAXERROR, TRUE )
 			exit function
 		end if
 		islocal = TRUE
@@ -1775,9 +1773,9 @@ function cOnStmt as integer
 
 		if( not isrestore ) then
 			'' Label
-			label = symbFindByClass( lexGetSymbol, FB_SYMBCLASS_LABEL )
+			label = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_LABEL )
 			if( label = NULL ) then
-				label = symbAddLabel( *lexGetText( ), FALSE, TRUE )
+				label = symbAddLabel( lexGetText( ), FALSE, TRUE )
 			end if
 			lexSkipToken( )
 
@@ -2719,7 +2717,7 @@ function cVAFunct( byref funcexpr as ASTNODE ptr ) as integer
 		exit function
 	end if
 
-	sym = symbFindByNameAndClass( arg->alias, FB_SYMBCLASS_VAR )
+	sym = symbFindByNameAndClass( strptr( arg->alias ), FB_SYMBCLASS_VAR )
 	if( sym = NULL ) then
 		exit function
 	end if
@@ -2839,7 +2837,8 @@ function cQuirkFunction( byref funcexpr as ASTNODE ptr ) as integer
 	res = FALSE
 
 	select case as const lexGetToken( )
-	case FB_TK_STR, FB_TK_MID, FB_TK_STRING, FB_TK_CHR, FB_TK_ASC, FB_TK_INSTR, FB_TK_TRIM, FB_TK_RTRIM, FB_TK_LTRIM
+	case FB_TK_STR, FB_TK_MID, FB_TK_STRING, FB_TK_CHR, FB_TK_ASC, _
+		 FB_TK_INSTR, FB_TK_TRIM, FB_TK_RTRIM, FB_TK_LTRIM
 		res = cStringFunct( funcexpr )
 
 	case FB_TK_ABS, FB_TK_SGN, FB_TK_FIX, FB_TK_LEN, FB_TK_SIZEOF, _
@@ -2853,7 +2852,8 @@ function cQuirkFunction( byref funcexpr as ASTNODE ptr ) as integer
 	case FB_TK_LBOUND, FB_TK_UBOUND
 		res = cArrayFunct( funcexpr )
 
-	case FB_TK_SEEK, FB_TK_INPUT, FB_TK_OPEN, FB_TK_CLOSE, FB_TK_GET, FB_TK_PUT, FB_TK_NAME
+	case FB_TK_SEEK, FB_TK_INPUT, FB_TK_OPEN, FB_TK_CLOSE, _
+		 FB_TK_GET, FB_TK_PUT, FB_TK_NAME
 		res = cFileFunct( funcexpr )
 
 	case FB_TK_ERR

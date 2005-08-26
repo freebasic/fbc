@@ -210,8 +210,6 @@ type ASTPROCNODE
 	initlabel		as FBSYMBOL ptr
 	exitlabel		as FBSYMBOL ptr
 
-	loctb			as FBSYMBOLTB					'' local symbols list
-
 	head			as ASTNODE ptr					'' first node
 	tail			as ASTNODE ptr					'' last node
 end type
@@ -252,6 +250,10 @@ declare function 	astProcBegin		( byval proc as FBSYMBOL ptr, _
 					   					  byval ismain as integer = FALSE ) as ASTPROCNODE ptr
 
 declare sub 		astProcEnd			( byval p as ASTPROCNODE ptr )
+
+declare sub 		astScopeBegin		( byval s as FBSYMBOL ptr )
+
+declare sub 		astScopeEnd			( byval s as FBSYMBOL ptr )
 
 declare sub			astAdd				( byval n as ASTNODE ptr )
 
@@ -394,7 +396,7 @@ declare sub 		astDump 			( byval p as ASTNODE ptr, _
 ''
 '' macros
 ''
-#define astGetClass(n) iif( n <> NULL, n->class, INVALID )
+#define astGetClass(n) n->class
 
 #define astIsCONST(n) n->defined
 
@@ -414,16 +416,16 @@ declare sub 		astDump 			( byval p as ASTNODE ptr, _
 
 #define astGetValue64(n) n->v.value64
 
-#define astGetDataType(n) iif( n <> NULL, n->dtype, INVALID )
+#define astGetDataType(n) n->dtype
 
-#define astGetSubtype(n) iif( n <> NULL, n->subtype, NULL )
+#define astGetSubtype(n) n->subtype
 
-#define astGetDataClass(n) iif( n <> NULL, irGetDataClass( n->dtype ), INVALID )
+#define astGetDataClass(n) irGetDataClass( n->dtype )
 
-#define astGetDataSize(n) iif( n <> NULL, irGetDataSize( n->dtype ), INVALID )
+#define astGetDataSize(n) irGetDataSize( n->dtype )
 
-#define astSetDataType(n,t) if( n <> NULL ) then n->dtype = t end if
+#define astSetDataType(n,t) n->dtype = t
 
-#define astSetSubType(n,t) if( n <> NULL ) then n->subtype = t end if
+#define astSetSubType(n,t) n->subtype = t
 
 #endif '' __AST_BI__

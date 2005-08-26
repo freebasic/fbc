@@ -55,7 +55,7 @@ declare function hGetDataType			( byval sym as FBSYMBOL ptr ) as string
 '' globals
 	dim shared ctx as EDBGCTX
 
-	dim shared remapTB(0 to FB_SYMBOLTYPES-1) = _
+	dim shared remapTB(0 to FB_SYMBOLTYPES-1) as integer = _
 	{ _
 		7, 2, 3, 4, 5, 6, 1, 8, 1, 9, 10, 11, 12, 13, 14 _
 	}
@@ -78,6 +78,24 @@ data "string:t13=s12data:15,0,32;len:1,32,32;size:1,64,32;;"
 data "fixstr:t14=-2"
 data "pchar:t15=*4;"
 data ""
+
+'':::::
+sub	edbgInit( )
+
+    if( not env.clopt.debug ) then
+    	exit sub
+    end if
+
+end sub
+
+'':::::
+sub	edbgEnd( )
+
+    if( not env.clopt.debug ) then
+    	exit sub
+    end if
+
+end sub
 
 '':::::
 private sub hEmitSTABS( byval _type as integer, _
@@ -249,7 +267,7 @@ sub edbgLineBegin( byval proc as FBSYMBOL ptr, _
     ctx.pos	 = emitGetPos( )
     ctx.lnum = lnum
     if( ctx.isnewline ) then
-    	ctx.label = symbAddLabel( "" )
+    	ctx.label = symbAddLabel( NULL )
     	emitLABEL( ctx.label )
     	ctx.isnewline = FALSE
     end if
@@ -257,7 +275,8 @@ sub edbgLineBegin( byval proc as FBSYMBOL ptr, _
 end sub
 
 '':::::
-sub edbgLineEnd( byval proc as FBSYMBOL ptr )
+sub edbgLineEnd( byval proc as FBSYMBOL ptr, _
+				 byval unused as integer  )
 
     if( not env.clopt.debug ) then
     	exit sub
@@ -311,6 +330,56 @@ sub edbgEmitLineFlush( byval proc as FBSYMBOL ptr, _
 end sub
 
 '':::::
+sub edbgScopeBegin( byval s as FBSYMBOL ptr ) static
+
+	'' called by ir->ast
+
+    if( not env.clopt.debug ) then
+    	exit sub
+    end if
+
+	s->scp.dbg.iniline = lexLineNum( )
+    s->scp.dbg.inilabel = symbAddLabel( NULL )
+
+end sub
+
+'':::::
+sub edbgScopeEnd( byval s as FBSYMBOL ptr ) static
+
+	'' called by ir->ast
+
+    if( not env.clopt.debug ) then
+    	exit sub
+    end if
+
+	s->scp.dbg.endline = lexLineNum( )
+    s->scp.dbg.endlabel = symbAddLabel( NULL )
+
+end sub
+
+'':::::
+sub edbgEmitScopeINI( byval s as FBSYMBOL ptr ) static
+
+    if( not env.clopt.debug ) then
+    	exit sub
+    end if
+
+    emitLABEL( s->scp.dbg.inilabel )
+
+end sub
+
+'':::::
+sub edbgEmitScopeEND( byval s as FBSYMBOL ptr ) static
+
+    if( not env.clopt.debug ) then
+    	exit sub
+    end if
+
+    emitLABEL( s->scp.dbg.endlabel )
+
+end sub
+
+'':::::
 sub edbgProcBegin( byval proc as FBSYMBOL ptr ) static
 
 	'' called by ir->ast
@@ -342,7 +411,7 @@ end sub
 private sub hDeclArgs( byval proc as FBSYMBOL ptr ) static
 	dim as FBSYMBOL ptr s
 
-	s = symbGetLocalHead( )
+	s = symbGetProcLocTbHead( proc )
 	do while( s <> NULL )
 
     	if( symbIsVar( s ) ) then
@@ -423,33 +492,85 @@ sub edbgEmitProcHeader( byval proc as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-private sub hDeclLocalVars( byval proc as FBSYMBOL ptr ) static
-	dim as FBSYMBOL ptr s, funcres
+private sub hDeclLocalVars( byval proc as FBSYMBOL ptr, _
+							byval blk as FBSYMBOL ptr, _
+			     	  		byval inilabel as FBSYMBOL ptr, _
+			      			byval endlabel as FBSYMBOL ptr )
 
-	if( proc->typ <> FB_SYMBTYPE_VOID ) then
-		funcres = symbLookupProcResult( proc )
+	dim as FBSYMBOL ptr shead, s
+	static as integer scopecnt, mask, forcestatic
+
+	'' proc?
+	if( symbIsProc( blk ) ) then
+		'' not main?
+		if( not symbIsMainProc( blk ) ) then
+			shead = symbGetProcLocTbHead( blk )
+		'' main..
+		else
+			shead = symbGetGlobalTbHead( )
+		end if
+
+	'' scope block..
 	else
-		funcres = NULL
+		shead = symbGetScopeTbHead( blk )
 	end if
 
-	s = symbGetLocalHead( )
+	'' not main?
+	if( not symbIsMainProc( proc ) ) then
+		'' not an argument or temporary?
+		mask = FB_ALLOCTYPE_ARGUMENTBYDESC or _
+			   FB_ALLOCTYPE_ARGUMENTBYVAL or _
+			   FB_ALLOCTYPE_ARGUMENTBYREF or _
+    		   FB_ALLOCTYPE_TEMP
+
+    	forcestatic = FALSE
+
+	else
+		'' not public, shared, static (locals moved) or temp?
+		mask = FB_ALLOCTYPE_SHARED or _
+			   FB_ALLOCTYPE_PUBLIC or _
+    		   FB_ALLOCTYPE_STATIC or _
+    		   FB_ALLOCTYPE_TEMP
+		forcestatic = TRUE
+	end if
+
+	'' for each symbol..
+	scopecnt = 0
+	s = shead
 	do while( s <> NULL )
 
-    	if( symbIsVar( s ) ) then
-			'' not an argument?
-    		if( (s->alloctype and (FB_ALLOCTYPE_ARGUMENTBYDESC or _
-    			  				   FB_ALLOCTYPE_ARGUMENTBYVAL or _
-    			  				   FB_ALLOCTYPE_ARGUMENTBYREF or _
-    			  				   FB_ALLOCTYPE_TEMP)) = 0 ) then
+    	select case symbGetClass( s )
+    	'' variable?
+    	case FB_SYMBCLASS_VAR
 
-				if( s <> funcres ) then
-					edbgEmitLocalVar( s )
-				end if
+    		if( (symbGetAllocType( s ) and mask) = 0 ) then
+				edbgEmitLocalVar( s, symbIsStatic( s ) or forcestatic )
 			end if
-		end if
+
+		'' scope? must be emitted later, due the GDB quirks
+		case FB_SYMBCLASS_SCOPE
+			scopecnt += 1
+		end select
 
 		s = s->next
 	loop
+
+	'' emit block (change the scope)
+	hEmitSTABN( STAB_TYPE_LBRAC, 0, 0, symbGetName( inilabel ) + "-" + symbGetName( proc ) )
+
+	if( scopecnt > 0 ) then
+		'' for each scope..
+		s = shead
+		do while( s <> NULL )
+    		if( symbIsScope( s ) ) then
+    			hDeclLocalVars( proc, s, s->scp.dbg.inilabel, s->scp.dbg.endlabel )
+    		end if
+
+			s = s->next
+    	loop
+    end if
+
+	hEmitSTABN( STAB_TYPE_RBRAC, 0, 0, symbGetName( endlabel ) + "-" + symbGetName( proc ) )
 
 end sub
 
@@ -468,14 +589,7 @@ sub edbgEmitProcFooter( byval proc as FBSYMBOL ptr, _
 	procname = symbGetName( proc )
 
     ''
-    hDeclLocalVars( proc )
-
-	'' main?
-	if( not symbIsMainProc( proc ) ) then
-		'' emit block (change the scope)
-		hEmitSTABN( STAB_TYPE_LBRAC, 0, 0, symbGetName( initlabel ) + "-" + procname )
-		hEmitSTABN( STAB_TYPE_RBRAC, 0, 0, symbGetName( exitlabel ) + "-" + procname )
-	end if
+    hDeclLocalVars( proc, proc, initlabel, exitlabel )
 
 	lname = *hMakeTmpStr( )
 	hLABEL( lname )
@@ -494,11 +608,24 @@ end sub
 private function hDeclUDTField( byval sname as string, _
 								byval stype as integer, _
 								byval soffs as integer, _
-								byval ssize as integer ) as string static
+								byval ssize as integer, _
+								byval stypeopt as zstring ptr = NULL ) as string static
 
 	dim as string desc
 
-	desc = sname + ":" + str( remapTB(stype) ) + "," + str( soffs ) + "," + str( ssize ) + ";"
+    desc = sname + ":"
+
+    if( stype >= FB_SYMBTYPE_POINTER ) then
+    	desc += hDeclPointer( stype )
+    end if
+
+	if( stypeopt = NULL ) then
+		desc += str( remapTB(stype) )
+	else
+		desc += *stypeopt
+	end if
+
+	desc += "," + str( soffs * 8 ) + "," + str( ssize * 8 ) + ";"
 
 	function = desc
 
@@ -518,29 +645,55 @@ private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
 	dimdesc = hDeclArrayDims( sym ) + str( remapTB(symbGetType( sym )) )
 
 	'' data	as any ptr
-	desc += "data:" + hDeclPointer( IR_DATATYPE_POINTER ) + dimdesc + ",0,32;"
+	desc += hDeclUDTField( "data", _
+		    			   IR_DATATYPE_POINTER, _
+		                   offsetof( FB_ARRAYDESC, data ), _
+		                   FB_POINTERSIZE, _
+		                   strptr( dimdesc ) )
 	'' ptr as any ptr
-	desc += "ptr:" + hDeclPointer( IR_DATATYPE_POINTER ) + dimdesc + ",32,32;"
+	desc += hDeclUDTField( "ptr", _
+						   IR_DATATYPE_POINTER, _
+		                   offsetof( FB_ARRAYDESC, ptr ), _
+		                   FB_POINTERSIZE, _
+		                   strptr( dimdesc ) )
     '' size	as integer
-	desc += hDeclUDTField( "size", IR_DATATYPE_INTEGER, 64, 32 )
+	desc += hDeclUDTField( "size", _
+						   IR_DATATYPE_INTEGER, _
+						   offsetof( FB_ARRAYDESC, size ), _
+						   FB_INTEGERSIZE )
     '' element_len as integer
-    desc += hDeclUDTField( "elen", IR_DATATYPE_INTEGER, 96, 32 )
+    desc += hDeclUDTField( "elen", _
+    					   IR_DATATYPE_INTEGER, _
+    					   offsetof( FB_ARRAYDESC, element_len ), _
+    					   FB_INTEGERSIZE )
     '' dimensions as integer
-    desc += hDeclUDTField( "dims", IR_DATATYPE_INTEGER, 128, 32 )
+    desc += hDeclUDTField( "dims", _
+    					   IR_DATATYPE_INTEGER, _
+    					   offsetof( FB_ARRAYDESC, dimensions ), _
+    					   FB_INTEGERSIZE )
 
     '' dimension fields
-    ofs = 160
+    ofs = FB_ARRAYDESCLEN
     i = 1
     d = symbGetArrayFirstDim( sym )
     do while( d <> NULL )
     	dimdesc = "dim" + str( i )
 
     	'' elements as integer
-    	desc += hDeclUDTField( dimdesc + "_elemns", IR_DATATYPE_INTEGER, ofs+00, 32 )
+    	desc += hDeclUDTField( dimdesc + "_elemns", _
+    						   IR_DATATYPE_INTEGER, _
+    						   ofs + offsetof( FB_ARRAYDESCDIM, elements ), _
+    						   FB_INTEGERSIZE )
     	'' lbound as integer
-    	desc += hDeclUDTField( dimdesc + "_lbound", IR_DATATYPE_INTEGER, ofs+32, 32 )
+    	desc += hDeclUDTField( dimdesc + "_lbound", _
+    						   IR_DATATYPE_INTEGER, _
+    						   ofs + offsetof( FB_ARRAYDESCDIM, lbound ), _
+    						   FB_INTEGERSIZE )
     	'' ubound as integer
-    	desc += hDeclUDTField( dimdesc + "_ubound", IR_DATATYPE_INTEGER, ofs+64, 32 )
+    	desc += hDeclUDTField( dimdesc + "_ubound", _
+    						   IR_DATATYPE_INTEGER, _
+    						   ofs + offsetof( FB_ARRAYDESCDIM, ubound ), _
+    						   FB_INTEGERSIZE )
 
     	ofs += FB_ARRAYDESC_DIMLEN
     	d = d->next
@@ -621,21 +774,21 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
     case FB_SYMBTYPE_USERDEF
     	subtype = sym->subtype
     	if( subtype <> FB_DESCTYPE_ARRAY ) then
-    		if( subtype->dbg.typenum = INVALID ) then
+    		if( subtype->udt.dbg.typenum = INVALID ) then
     			hDeclUDT( subtype )
     		end if
 
-    		desc += str( subtype->dbg.typenum )
+    		desc += str( subtype->udt.dbg.typenum )
     	end if
 
     '' ENUM?
     case FB_SYMBTYPE_ENUM
     	subtype = sym->subtype
-    	if( subtype->dbg.typenum = INVALID ) then
+    	if( subtype->enum.dbg.typenum = INVALID ) then
     		hDeclENUM( subtype )
     	end if
 
-    	desc += str( subtype->dbg.typenum )
+    	desc += str( subtype->enum.dbg.typenum )
 
     '' function pointer?
     case FB_SYMBTYPE_FUNCTION
@@ -662,16 +815,16 @@ private sub hDeclUDT( byval sym as FBSYMBOL ptr )
     dim as FBSYMBOL ptr e
     dim as string desc
 
-	sym->dbg.typenum = ctx.typecnt
+	sym->udt.dbg.typenum = ctx.typecnt
 	ctx.typecnt += 1
 
 	desc = symbGetOrgName( sym )
 
-	desc += ":T" + str( sym->dbg.typenum ) + "=s" + str( symbGetUDTLen( sym ) )
+	desc += ":T" + str( sym->udt.dbg.typenum ) + "=s" + str( symbGetUDTLen( sym ) )
 
 	e = symbGetUDTFirstElm( sym )
 	do while( e <> NULL )
-        desc += symbGetName( e ) + ":" + hGetDataType( e )
+        desc += symbGetOrgName( e ) + ":" + hGetDataType( e )
 
         desc += "," + str( symbGetUDTElmBitOfs( e ) ) + "," + _
         		str( symbGetUDTElmBitLen( e ) ) + ";"
@@ -690,12 +843,12 @@ private sub hDeclENUM( byval sym as FBSYMBOL ptr )
     dim as FBSYMBOL ptr e
     dim as string desc
 
-	sym->dbg.typenum = ctx.typecnt
+	sym->enum.dbg.typenum = ctx.typecnt
 	ctx.typecnt += 1
 
 	desc = symbGetOrgName( sym )
 
-	desc += ":T" + str$( sym->dbg.typenum ) + "=e"
+	desc += ":T" + str( sym->enum.dbg.typenum ) + "=e"
 
 	e = symbGetENUMFirstElm( sym )
 	do while( e <> NULL )
@@ -721,16 +874,6 @@ sub edbgEmitGlobalVar( byval sym as FBSYMBOL ptr, _
 		exit sub
 	end if
 
-	'' local declared as static..
-	if( sym->scope > 0 ) then
-		exit sub
-	end if
-
-	'' external static arrays..
-	if( symbIsExtern( sym ) ) then
-		exit sub
-	end if
-
 	'' temporary?
 	if( symbIsTemp( sym ) ) then
 		exit sub
@@ -752,7 +895,7 @@ sub edbgEmitGlobalVar( byval sym as FBSYMBOL ptr, _
     alloctype = symbGetAllocType( sym )
     if( (alloctype and (FB_ALLOCTYPE_PUBLIC or FB_ALLOCTYPE_COMMON)) > 0 ) then
     	desc += ":G"
-    elseif( (sym->scope = 0) or (alloctype and FB_ALLOCTYPE_STATIC) > 0 ) then
+    elseif( not symbIsLocal( sym ) or (alloctype and FB_ALLOCTYPE_STATIC) > 0 ) then
         desc += ":S"
     else
     	desc += ":"
@@ -774,7 +917,8 @@ sub edbgEmitGlobalVar( byval sym as FBSYMBOL ptr, _
 end sub
 
 '':::::
-sub edbgEmitLocalVar( byval sym as FBSYMBOL ptr ) static
+sub edbgEmitLocalVar( byval sym as FBSYMBOL ptr, _
+					  byval isstatic as integer ) static
 	dim as integer t
 	dim as string desc, value
 
@@ -785,18 +929,29 @@ sub edbgEmitLocalVar( byval sym as FBSYMBOL ptr ) static
     desc = symbGetOrgName( sym )
 
     ''
-    if( symbIsStatic( sym ) ) then
+    if( isstatic ) then
 		if( symbGetVarEmited( sym ) ) then
 			t = STAB_TYPE_STSYM
 		else
 			t = STAB_TYPE_LCSYM
 		end if
 		desc += ":V"
-		value = symbGetName( sym )
+
+    	'' dynamic array? use the descriptor
+    	if( symbIsDynamic( sym ) ) then
+    		value = symbGetVarDescName( sym )
+    	else
+			value = symbGetName( sym )
+		end if
     else
     	t = STAB_TYPE_LSYM
     	desc += ":"
-    	value = str( symbGetVarOfs( sym ) )
+    	'' dynamic array? use the descriptor
+    	if( symbIsDynamic( sym ) ) then
+    		value = str( symbGetVarOfs( symbGetArrayDescriptor( sym ) ) )
+    	else
+    		value = str( symbGetVarOfs( sym ) )
+    	end if
     end if
 
     '' data type

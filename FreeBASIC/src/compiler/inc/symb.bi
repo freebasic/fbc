@@ -22,11 +22,11 @@
 
 #include once "inc\ast.bi"
 
-declare sub 		symbInit				( )
+declare sub 		symbInit				( byval ismain as integer )
 
 declare sub 		symbEnd					( )
 
-declare function 	symbLookup				( byval symbol as string, _
+declare function 	symbLookup				( byval symbol as zstring ptr, _
 											  id as integer, _
 											  class as integer, _
 											  byval preservecase as integer = FALSE ) as FBSYMBOL ptr
@@ -38,27 +38,26 @@ declare function 	symbFindBySuffix		( byval s as FBSYMBOL ptr, _
 											  byval suffix as integer, _
 						   					  byval deftyp as integer ) as FBSYMBOL ptr
 
-declare function 	symbFindByNameAndClass	( byval symbol as string, _
+declare function 	symbFindByNameAndClass	( byval symbol as zstring ptr, _
 											  byval class as integer, _
 											  byval preservecase as integer = FALSE ) as FBSYMBOL ptr
 
-declare function 	symbFindByNameAndSuffix	( byval symbol as string, _
+declare function 	symbFindByNameAndSuffix	( byval symbol as zstring ptr, _
 											  byval suffix as integer, _
 											  byval preservecase as integer = FALSE ) as FBSYMBOL ptr
 
-declare function 	symbFindOverloadProc	( byval proc as FBSYMBOL ptr, _
-					   	       				  byval argc as integer, _
-					   	       				  byval argtail as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function 	symbFindOverloadProc	( byval parent as FBSYMBOL ptr, _
+											  byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function 	symbFindClosestOvlProc	( byval proc as FBSYMBOL ptr, _
 					   		    			  byval params as integer, _
 					   		    			  exprTB() as ASTNODE ptr, _
 					   		    			  modeTB() as integer ) as FBSYMBOL ptr
 
-declare function 	symbLookupUDTVar		( byval symbol as string, _
+declare function 	symbLookupUDTVar		( byval symbol as zstring ptr, _
 											  byval dotpos as integer ) as FBSYMBOL ptr
 
-declare function 	symbLookupUDTElm		( byval symbol as string, _
+declare function 	symbLookupUDTElm		( byval symbol as zstring ptr, _
 											  byval dotpos as integer, _
 											  suffix as integer, _
 											  ofs as integer, _
@@ -67,9 +66,9 @@ declare function 	symbLookupUDTElm		( byval symbol as string, _
 
 declare function 	symbLookupProcResult	( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
 
-declare	function 	symbGetGlobalHead 		( ) as FBSYMBOL ptr
+declare	function 	symbGetGlobalTbHead		( ) as FBSYMBOL ptr
 
-declare	function 	symbGetLocalHead 		( ) as FBSYMBOL ptr
+declare	function 	symbGetSymbolTbHead 	( ) as FBSYMBOL ptr
 
 declare function 	symbGetVarText			( byval s as FBSYMBOL ptr ) as string
 
@@ -80,7 +79,7 @@ declare function 	symbGetProcLib			( byval p as FBSYMBOL ptr ) as string
 declare function 	symbGetUDTElmOffset		( elm as FBSYMBOL ptr, _
 											  typ as integer, _
 											  subtype as FBSYMBOL ptr, _
-											  byval fields as string ) as integer
+											  byval fields as zstring ptr ) as integer
 
 declare function 	symbGetProcPrevArg		( byval f as FBSYMBOL ptr, _
 											  byval a as FBSYMBOL ptr, _
@@ -100,10 +99,12 @@ declare function 	symbCalcArgLen			( byval typ as integer, _
 declare function 	symbListLibs			( namelist() as string, _
 											  byval index as integer ) as integer
 
-declare function 	symbAddKeyword			( byval symbol as string, byval id as integer, byval class as integer ) as FBSYMBOL ptr
+declare function 	symbAddKeyword			( byval symbol as zstring ptr, _
+											  byval id as integer, _
+											  byval class as integer ) as FBSYMBOL ptr
 
-declare function 	symbAddDefine			( byval symbol as string, _
-											  byval text as string, _
+declare function 	symbAddDefine			( byval symbol as zstring ptr, _
+											  byval text as zstring ptr, _
 											  byval lgt as integer, _
 											  byval args as integer = 0, _
 											  byval arghead as FBDEFARG ptr = NULL, _
@@ -112,21 +113,21 @@ declare function 	symbAddDefine			( byval symbol as string, _
                                               byval flags as integer = 0) as FBSYMBOL ptr
 
 declare function 	symbAddDefineArg		( byval lastarg as FBDEFARG ptr, _
-											  byval symbol as string ) as FBDEFARG ptr
+											  byval symbol as zstring ptr ) as FBDEFARG ptr
 
-declare function 	symbAddFwdRef			( byval symbol as string ) as FBSYMBOL ptr
+declare function 	symbAddFwdRef			( byval symbol as zstring ptr ) as FBSYMBOL ptr
 
-declare function 	symbAddTypedef			( byval symbol as string, _
+declare function 	symbAddTypedef			( byval symbol as zstring ptr, _
 											  byval typ as integer, _
 											  byval subtype as FBSYMBOL ptr, _
 						 					  byval ptrcnt as integer, _
 						 					  byval lgt as integer ) as FBSYMBOL ptr
 
-declare function 	symbAddLabel			( byval symbol as string, _
+declare function 	symbAddLabel			( byval symbol as zstring ptr, _
 											  byval declaring as integer = TRUE, _
 											  byval createalias as integer = FALSE ) as FBSYMBOL ptr
 
-declare function 	symbAddVar				( byval symbol as string, _
+declare function 	symbAddVar				( byval symbol as zstring ptr, _
 											  byval typ as integer, _
 											  byval subtype as FBSYMBOL ptr, _
 					  						  byval ptrcnt as integer, _
@@ -134,8 +135,8 @@ declare function 	symbAddVar				( byval symbol as string, _
 					  						  dTB() as FBARRAYDIM, _
 				      						  byval alloctype as integer ) as FBSYMBOL ptr
 
-declare function 	symbAddVarEx			( byval symbol as string, _
-											  byval aliasname as string, _
+declare function 	symbAddVarEx			( byval symbol as zstring ptr, _
+											  byval aliasname as zstring ptr, _
 											  byval typ as integer, _
 											  byval subtype as FBSYMBOL ptr, _
 											  byval ptrcnt as integer, _
@@ -150,19 +151,19 @@ declare function 	symbAddVarEx			( byval symbol as string, _
 declare function 	symbAddTempVar			( byval typ as integer, _
 											  byval subtype as FBSYMBOL ptr = NULL ) as FBSYMBOL ptr
 
-declare function 	symbAddConst			( byval symbol as string, _
+declare function 	symbAddConst			( byval symbol as zstring ptr, _
 											  byval typ as integer, _
 											  byval subtype as FBSYMBOL ptr, _
-											  byval text as string, _
+											  byval text as zstring ptr, _
 											  byval lgt as integer ) as FBSYMBOL ptr
 
 declare function 	symbAddUDT				( byval parent as FBSYMBOL ptr, _
-											  byval symbol as string, _
+											  byval symbol as zstring ptr, _
 											  byval isunion as integer, _
 											  byval align as integer ) as FBSYMBOL ptr
 
 declare function 	symbAddUDTElement		( byval t as FBSYMBOL ptr, _
-											  byval id as string, _
+											  byval id as zstring ptr, _
 											  byval dimensions as integer, _
 											  dTB() as FBARRAYDIM, _
 											  byval typ as integer, _
@@ -174,15 +175,15 @@ declare function 	symbAddUDTElement		( byval t as FBSYMBOL ptr, _
 declare sub 		symbInsertInnerUDT		( byval t as FBSYMBOL ptr, _
 							 				  byval inner as FBSYMBOL ptr )
 
-declare function 	symbAddEnum				( byval symbol as string ) as FBSYMBOL ptr
+declare function 	symbAddEnum				( byval symbol as zstring ptr ) as FBSYMBOL ptr
 
 declare function 	symbAddEnumElement		( byval parent as FBSYMBOL ptr, _
-											  byval symbol as string, _
+											  byval symbol as zstring ptr, _
 					         				  byval value as integer ) as FBSYMBOL ptr
 
-declare function 	symbAddArg				( byval symbol as string, _
-											  byval tail as FBSYMBOL ptr, _
-					 						  byval typ as integer, _
+declare function 	symbAddArg				( byval proc as FBSYMBOL ptr, _
+											  byval symbol as zstring ptr, _
+											  byval typ as integer, _
 					 						  byval subtype as FBSYMBOL ptr, _
 					 						  byval ptrcnt as integer, _
 					 						  byval lgt as integer, _
@@ -191,29 +192,29 @@ declare function 	symbAddArg				( byval symbol as string, _
 					 						  byval optional as integer, _
 					 						  byval optval as FBVALUE ptr ) as FBSYMBOL ptr
 
-declare function 	symbAddPrototype		( byval symbol as string, _
-											  byval aliasname as string, _
-											  byval libname as string, _
+declare function 	symbAddPrototype		( byval proc as FBSYMBOL ptr, _
+											  byval symbol as zstring ptr, _
+											  byval aliasname as zstring ptr, _
+											  byval libname as zstring ptr, _
 											  byval typ as integer, _
 											  byval subtype as FBSYMBOL ptr, _
 											  byval ptrcnt as integer, _
 											  byval alloctype as integer, _
 											  byval mode as integer, _
-											  byval argc as integer, _
-											  byval argtail as FBSYMBOL ptr, _
 											  byval isexternal as integer, _
 											  byval preservecase as integer = FALSE ) as FBSYMBOL ptr
 
-declare function 	symbAddProc				( byval symbol as string, _
-											  byval aliasname as string, _
-											  byval libname as string, _
+declare function 	symbAddProc				( byval proc as FBSYMBOL ptr, _
+											  byval symbol as zstring ptr, _
+											  byval aliasname as zstring ptr, _
+											  byval libname as zstring ptr, _
 					  						  byval typ as integer, _
 					  						  byval subtype as FBSYMBOL ptr, _
 					  						  byval ptrcnt as integer, _
 					  						  byval alloctype as integer, _
-					  						  byval mode as integer, _
-					  						  byval argc as integer, _
-					  						  byval argtail as FBSYMBOL ptr ) as FBSYMBOL ptr
+					  						  byval mode as integer ) as FBSYMBOL ptr
+
+declare function 	symbPreAddProc			( ) as FBSYMBOL ptr
 
 declare function 	symbAddProcResult		( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
 
@@ -221,8 +222,10 @@ declare function 	symbAddProcResArg		( byval proc as FBSYMBOL ptr ) as FBSYMBOL 
 
 declare function 	symbAddLib				( byval libname as string ) as FBLIBRARY ptr
 
-declare function 	symbAddArgAsVar			( byval symbol as string, _
+declare function 	symbAddArgAsVar			( byval symbol as zstring ptr, _
 											  byval arg as FBSYMBOL ptr ) as FBSYMBOL ptr
+
+declare function 	symbAddScope			( ) as FBSYMBOL ptr
 
 declare sub 		symbRoundUDTSize		( byval t as FBSYMBOL ptr )
 
@@ -236,12 +239,18 @@ declare sub 		symbSetArrayDims		( byval s as FBSYMBOL ptr, _
 					  						  byval dimensions as integer, _
 					  						  dTB() as FBARRAYDIM )
 
-declare sub 		symbSetLocalTb			( byval tb as FBSYMBOLTB ptr )
+declare function 	symbSetSymbolTb			( byval tb as FBSYMBOLTB ptr ) as FBSYMBOLTB ptr
 
 declare sub 		symbFreeLocalDynVars	( byval proc as FBSYMBOL ptr, _
 											  byval issub as integer )
 
-declare sub 		symbDelLocalTb			( byval hashonly as integer )
+
+declare sub 		symbFreeScopeDynVars 	( byval scp as FBSYMBOL ptr )
+
+declare sub 		symbDelSymbolTb			( byval tb as FBSYMBOLTB ptr, _
+											  byval hashonly as integer )
+
+declare sub 		symbDelScopeTb			( byval scp as FBSYMBOL ptr )
 
 declare sub 		symbDelSymbol			( byval s as FBSYMBOL ptr )
 
@@ -334,6 +343,8 @@ declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
 
 #define symbIsFwdRef(s) (s->class = FB_SYMBCLASS_FWDREF)
 
+#define symbIsScope(s) (s->class = FB_SYMBCLASS_SCOPE)
+
 #define symbGetAllocType(s) s->alloctype
 
 #define symbSetAllocType(s,t) s->alloctype = t
@@ -370,9 +381,9 @@ declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
 
 #define symbGetConstText(c) c->con.text
 
-#define symbGetUDTFirstElm(s) s->udt.head
+#define symbGetUDTFirstElm(s) s->udt.fldtb.head
 
-#define symbGetUDTNextElm(e) e->var.elm.next
+#define symbGetUDTNextElm(e) e->next
 
 #define symbGetUDTElmBitOfs(e) (e->var.elm.ofs * 8 + e->var.elm.bitpos)
 
@@ -384,11 +395,15 @@ declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
 
 #define symbGetUDTElements(s) s->udt.elements
 
-#define symbGetENUMFirstElm(s) s->enum.head
+#define symbGetENUMFirstElm(s) s->enum.elmtb.head
 
-#define symbGetENUMNextElm(e) e->con.eelm.nxt
+#define symbGetENUMNextElm(e) e->next
 
 #define symbGetEnumElements(s) s->enum.elements
+
+#define symbGetScopeTb(s) s->scp.loctb
+
+#define symbGetScopeTbHead(s) s->scp.loctb.head
 
 #define symbGetLabelIsDeclared(l) l->lbl.declared
 
@@ -396,13 +411,13 @@ declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
 
 #define symbSetProcIsDeclared(f,d) f->proc.isdeclared = d
 
-#define symbGetProcFirstArg(f) iif( f->proc.mode = FB_FUNCMODE_PASCAL, f->proc.arghead, f->proc.argtail )
+#define symbGetProcFirstArg(f) iif( f->proc.mode = FB_FUNCMODE_PASCAL, f->proc.argtb.head, f->proc.argtb.tail )
 
-#define symbGetProcLastArg(f) iif( f->proc.mode = FB_FUNCMODE_PASCAL, f->proc.argtail, f->proc.arghead )
+#define symbGetProcLastArg(f) iif( f->proc.mode = FB_FUNCMODE_PASCAL, f->proc.argtb.tail, f->proc.argtb.head )
 
-#define symbGetProcHeadArg(f) f->proc.arghead
+#define symbGetProcHeadArg(f) f->proc.argtb.head
 
-#define symbGetProcTailArg(f) f->proc.argtail
+#define symbGetProcTailArg(f) f->proc.argtb.tail
 
 #define symbGetProcCallback(f) f->proc.rtlcallback
 
@@ -430,9 +445,13 @@ declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
 
 #define symbGetProcRealType(f) f->proc.realtype
 
-#define symbGetArgMode(f,a) iif( a = NULL, INVALID, a->arg.mode )
+#define symbGetProcLocTb(f) f->proc.loctb
 
-#define symbGetArgSuffix(f,a) iif( a = NULL, INVALID, a->arg.suffix )
+#define symbGetProcLocTbHead(f) f->proc.loctb.head
+
+#define symbGetArgMode(f,a) a->arg.mode
+
+#define symbGetArgSuffix(f,a) a->arg.suffix
 
 #define symbGetArgOptional(f,a) a->arg.optional
 
@@ -466,7 +485,7 @@ declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
 
 #define symbIsArg(s) ((s->alloctype and (FB_ALLOCTYPE_ARGUMENTBYREF or FB_ALLOCTYPE_ARGUMENTBYVAL or FB_ALLOCTYPE_ARGUMENTBYDESC)) > 0)
 
-#define symbIsLocal(s) (s->scope > 0)
+#define symbIsLocal(s) ((s->alloctype and FB_ALLOCTYPE_LOCAL) > 0)
 
 #define symbIsPublic(s) ((s->alloctype and FB_ALLOCTYPE_PUBLIC) > 0)
 

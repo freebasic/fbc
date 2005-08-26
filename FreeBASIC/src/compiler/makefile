@@ -55,7 +55,7 @@ FBCMPFLAGS := -e -c -arch 486
 FBLNKFLAGS := -v
 
 ifdef DEBUG
-    FBCMPFLAGS += -g -r
+    FBCMPFLAGS += -g
     FBLNKFLAGS += -g
 endif
 ifdef PROFILE

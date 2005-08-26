@@ -156,11 +156,15 @@ enum IROP_ENUM									'' if order is changed, update the opTB array
 end enum
 
 '' operations below won't reach IR, used by AST
-const IR_OP_DBG_LINEINI		= 250
-const IR_OP_DBG_LINEEND		= 251
-const IR_OP_TOPOINTER		= 252
-const IR_OP_TOSIGNED		= 253
-const IR_OP_TOUNSIGNED		= 254
+enum
+	IR_OP_DBG_LINEINI		= 200
+	IR_OP_DBG_LINEEND
+	IR_OP_DBG_SCOPEINI
+	IR_OP_DBG_SCOPEEND
+	IR_OP_TOPOINTER
+	IR_OP_TOSIGNED
+	IR_OP_TOUNSIGNED
+end enum
 
 ''
 type IRVREG_ as IRVREG
@@ -250,6 +254,10 @@ declare function 	irAllocVROFS		( byval dtype as integer, _
 declare sub 		irProcBegin			( byval proc as FBSYMBOL ptr )
 
 declare sub 		irProcEnd			( byval proc as FBSYMBOL ptr )
+
+declare sub 		irScopeBegin		( byval s as FBSYMBOL ptr )
+
+declare sub 		irScopeEnd			( byval s as FBSYMBOL ptr )
 
 declare sub 		irEmit				( byval op as integer, _
 										  byval v1 as IRVREG ptr, _

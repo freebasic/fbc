@@ -61,6 +61,8 @@ end type
 
 const FB_ARRAYDESCLEN		= len( FB_ARRAYDESC )
 
+const FB_ARRAYDESC_DATAOFFS = offsetof( FB_ARRAYDESC, data )
+
 type FB_ARRAYDESCDIM
 	elements		as integer
 	lbound			as integer
@@ -68,13 +70,17 @@ type FB_ARRAYDESCDIM
 end type
 
 const FB_ARRAYDESC_DIMLEN	= len( FB_ARRAYDESCDIM )
-const FB_ARRAYDESC_LBOUNDOFS= FB_INTEGERSIZE
-const FB_ARRAYDESC_UBOUNDOFS= FB_INTEGERSIZE+FB_INTEGERSIZE
-
-const FB_ARRAYDESC_DATAOFFS = 0
+const FB_ARRAYDESC_LBOUNDOFS= offsetof( FB_ARRAYDESCDIM, lbound )
+const FB_ARRAYDESC_UBOUNDOFS= offsetof( FB_ARRAYDESCDIM, ubound )
 
 ''
-const FB_STRSTRUCTSIZE		= FB_POINTERSIZE+FB_INTEGERSIZE+FB_INTEGERSIZE
+type FB_STRDESC
+	data			as zstring ptr
+	len				as integer
+	size			as integer
+end type
+
+const FB_STRDESCLEN			= len( FB_STRDESC )
 
 '' "fake" descriptors as UDT's
 const FB_DESCTYPE_ARRAY 	= -2
@@ -250,6 +256,7 @@ enum FBTK_ENUM
 	FB_TK_STEP
 	FB_TK_NEXT
 	FB_TK_TO
+	FB_TK_SCOPE
 
 	FB_TK_INCLUDE
 	FB_TK_DYNAMIC
@@ -357,10 +364,10 @@ enum FBTK_ENUM
 	FB_TK_CHR
 	FB_TK_STR
 	FB_TK_MID
-    FB_TK_INSTR
-    FB_TK_TRIM
-    FB_TK_RTRIM
-    FB_TK_LTRIM
+	FB_TK_INSTR
+	FB_TK_TRIM
+	FB_TK_RTRIM
+	FB_TK_LTRIM
 	FB_TK_RESTORE
 	FB_TK_READ
 	FB_TK_DATA
@@ -515,24 +522,25 @@ const FB_SYMBOLTYPES			= 19
 
 '' allocation types mask
 enum FBALLOCTYPE_ENUM
-	FB_ALLOCTYPE_SHARED			= 1
-	FB_ALLOCTYPE_STATIC			= 2
-	FB_ALLOCTYPE_DYNAMIC		= 4
-	FB_ALLOCTYPE_COMMON			= 8
-	FB_ALLOCTYPE_TEMP			= 16
-	FB_ALLOCTYPE_ARGUMENTBYDESC	= 32
-	FB_ALLOCTYPE_ARGUMENTBYVAL	= 64
-	FB_ALLOCTYPE_ARGUMENTBYREF 	= 128
-	FB_ALLOCTYPE_PUBLIC 		= 256
-	FB_ALLOCTYPE_PRIVATE 		= 512
-	FB_ALLOCTYPE_EXTERN			= 1024			'' extern's become public when DIM'ed
-	FB_ALLOCTYPE_EXPORT			= 2048
-	FB_ALLOCTYPE_IMPORT			= 4096
-	FB_ALLOCTYPE_OVERLOADED		= 8192			'' functions only
-	FB_ALLOCTYPE_JUMPTB			= 16384
-	FB_ALLOCTYPE_MAINPROC		= &H08000
-    FB_ALLOCTYPE_CONSTRUCTOR    = &H10000       '' it can be either constructor
-    FB_ALLOCTYPE_DESTRUCTOR     = &H20000       '' or destructor, but not both ...
+	FB_ALLOCTYPE_SHARED			= &h000001
+	FB_ALLOCTYPE_STATIC			= &h000002
+	FB_ALLOCTYPE_DYNAMIC		= &h000004
+	FB_ALLOCTYPE_COMMON			= &h000008
+	FB_ALLOCTYPE_TEMP			= &h000010
+	FB_ALLOCTYPE_ARGUMENTBYDESC	= &h000020
+	FB_ALLOCTYPE_ARGUMENTBYVAL	= &h000040
+	FB_ALLOCTYPE_ARGUMENTBYREF 	= &h000080
+	FB_ALLOCTYPE_PUBLIC 		= &h000100
+	FB_ALLOCTYPE_PRIVATE 		= &h000200
+	FB_ALLOCTYPE_EXTERN			= &h000400		'' extern's become public when DIM'ed
+	FB_ALLOCTYPE_EXPORT			= &h000800
+	FB_ALLOCTYPE_IMPORT			= &h001000
+	FB_ALLOCTYPE_OVERLOADED		= &h002000		'' functions only
+	FB_ALLOCTYPE_JUMPTB			= &h004000
+	FB_ALLOCTYPE_MAINPROC		= &H008000
+    FB_ALLOCTYPE_CONSTRUCTOR    = &h010000      '' it can be either constructor
+    FB_ALLOCTYPE_DESTRUCTOR     = &h020000      '' or destructor, but not both ...
+    FB_ALLOCTYPE_LOCAL			= &h040000
 end enum
 
 #include once "inc\hash.bi"
@@ -579,6 +587,7 @@ enum SYMBCLASS_ENUM
 	FB_SYMBCLASS_UDTELM
 	FB_SYMBCLASS_TYPEDEF
 	FB_SYMBCLASS_FWDREF
+	FB_SYMBCLASS_SCOPE
 end enum
 
 
@@ -586,6 +595,11 @@ type FBSYMBOL_ as FBSYMBOL
 
 
 ''
+type FBSYMBOLTB
+    head			as FBSYMBOL_ ptr			'' first node
+    tail			as FBSYMBOL_ ptr			'' last node
+end type
+
 union FBVALUE
 	valuestr		as FBSYMBOL_ ptr
 	valuei			as integer
@@ -594,7 +608,7 @@ union FBVALUE
 end union
 
 ''
-type FBSKEYWORD
+type FBS_KEYWORD
 	id				as integer
 	class			as integer
 end type
@@ -605,19 +619,18 @@ type FBDEFARG
 
 	name			as string
 	id				as short					'' unique id
-
 	next			as FBDEFARG ptr
 end type
 
 ''
-type FBSDEFINE
+type FBS_DEFINE
 	text			as string
 	args			as integer
 	arghead 		as FBDEFARG ptr
 	isargless		as integer
-    flags           as integer          '' flags:
-                                        '' bit    meaning
-                                        '' 0      1=numeric, 0=string
+    flags           as integer          		'' flags:
+                                        		'' bit    meaning
+                                        		'' 0      1=numeric, 0=string
 	proc			as function( ) as string
 end type
 
@@ -630,107 +643,95 @@ type FBFWDREF
 	prev			as FBFWDREF ptr
 end type
 
-type FBSFWDREF
+type FBS_FWDREF
 	refs			as integer
 	reftail			as FBFWDREF ptr
 end type
 
 ''
-type FBLABEL
+type FBS_LABEL
 	declared		as integer
 end type
 
 ''
-type FBSARRAY
+type FBS_ARRAY
 	dims			as integer
 	dimhead 		as FBVARDIM ptr
 	dimtail			as FBVARDIM ptr
 	dif				as integer
 	elms			as integer
-
 	desc			as FBSYMBOL_ ptr
 end type
 
 ''
-type FBSUDT
+type FB_TYPEDBG
+	typenum			as integer
+end type
+
+type FBS_UDT
 	parent			as FBSYMBOL_ ptr
 	isunion			as integer
 	elements		as integer
-	head			as FBSYMBOL_ ptr			'' first element
-	tail			as FBSYMBOL_ ptr			'' last  /
+	fldtb			as FBSYMBOLTB				'' fields symbol tb
 	ofs				as integer
 	align			as integer
 	lfldlen			as integer					'' largest field len
 	bitpos			as uinteger
 	unpadlgt		as integer					'' unpadded len
+	dbg				as FB_TYPEDBG
 end type
 
-type FBSUDTELM
+type FBS_UDTELM
 	ofs				as integer
 	bitpos			as integer
 	bits			as integer
 	parent			as FBSYMBOL_ ptr
-
-	prev			as FBSYMBOL_ ptr
-	next			as FBSYMBOL_ ptr
 end type
 
 ''
-type FBSENUM
+type FBS_ENUM
 	elements		as integer
-	head			as FBSYMBOL_ ptr			'' first element
-	tail			as FBSYMBOL_ ptr			'' last  /
-end type
-
-type FBSENUMELM
-	nxt				as FBSYMBOL_ ptr			'' next element
+	elmtb			as FBSYMBOLTB				'' elements symbol tb
+	dbg				as FB_TYPEDBG
 end type
 
 ''
-type FBSCONST
+type FBS_CONST
 	text			as string
-	eelm			as FBSENUMELM
 end type
 
 ''
-type FBSPROCARG
-	mode			as integer
+type FBS_PROCARG
+	mode			as FBARGMODE_ENUM
 	suffix			as integer					'' QB quirk..
-
 	optional		as integer					'' true or false
 	optval			as FBVALUE                  '' default value
-
-	prev			as FBSYMBOL_ ptr
-	next			as FBSYMBOL_ ptr
 end type
 
 type FBRTLCALLBACK as function( byval sym as FBSYMBOL_ ptr ) as integer
 
-type FBPROCOVL
+type FB_PROCOVL
 	maxargs			as integer
-	nxt				as FBSYMBOL_ ptr
+	next			as FBSYMBOL_ ptr
 end type
 
-type FBPROCSTK
+type FB_PROCSTK
 	localptr		as integer
 	argptr			as integer					'' /
 end type
 
-type FBPROCDBG
+type FB_PROCDBG
 	iniline			as integer					'' sub|function
 	endline			as integer					'' end sub|function
 	incfile			as integer
 end type
 
-type FBSPROC
-	mode			as integer					'' calling convention (STDCALL, PASCAL, C)
+type FBS_PROC
+	mode			as FBFUNCMODE_ENUM			'' calling convention (STDCALL, PASCAL, C)
 	realtype		as integer					'' used with STRING and UDT functions
-
 	lib				as FBLIBRARY ptr
-
 	args			as integer
-	arghead 		as FBSYMBOL_ ptr
-	argtail			as FBSYMBOL_ ptr
+	argtb			as FBSYMBOLTB				'' arguments symbol tb
 
 	isdeclared		as byte						'' FALSE = just the prototype
 	iscalled		as byte
@@ -738,28 +739,33 @@ type FBSPROC
 	doerrorcheck	as byte
 
 	rtlcallback		as FBRTLCALLBACK
+	ovl				as FB_PROCOVL				'' overloading
+	stk				as FB_PROCSTK				'' to keep track of the stack frame
 
-	ovl				as FBPROCOVL				'' overloading
+	loctb			as FBSYMBOLTB				'' local symbols table
 
-	stk				as FBPROCSTK				'' to keep track of the stack frame
-
-	dbg				as FBPROCDBG				'' debugging
+	dbg				as FB_PROCDBG				'' debugging
 end type
 
-type FBSVAR
+type FB_SCOPEDBG
+	iniline			as integer					'' scope
+	endline			as integer					'' end scope
+	inilabel		as FBSYMBOL_ ptr
+	endlabel		as FBSYMBOL_ ptr
+end type
+
+type FBS_SCOPE
+	loctb			as FBSYMBOLTB
+	dbg				as FB_SCOPEDBG
+end type
+
+type FBS_VAR
 	suffix			as integer					'' QB quirk..
 	initialized		as integer
 	inittext		as string
-
 	emited			as integer
-
-	array			as FBSARRAY
-
-	elm				as FBSUDTELM
-end type
-
-type FBDBG
-	typenum			as integer
+	array			as FBS_ARRAY
+	elm				as FBS_UDTELM
 end type
 
 ''
@@ -767,50 +773,42 @@ type FBSYMBOL
 	ll_prv			as FBSYMBOL ptr				'' linked-list nodes
 	ll_nxt			as FBSYMBOL ptr				'' /
 
-	class			as integer					'' VAR, CONST, PROC, ..
+	class			as SYMBCLASS_ENUM			'' VAR, CONST, PROC, ..
 	typ				as integer					'' integer, float, string, pointer, ..
 	subtype			as FBSYMBOL ptr				'' used by UDT's
 	ptrcnt 			as integer
-	alloctype		as integer					'' STATIC, DYNAMIC, SHARED, ARG, ..
+	alloctype		as FBALLOCTYPE_ENUM			'' STATIC, DYNAMIC, SHARED, ARG, ..
 
 	name			as string					'' original name, shared by hash tb
 	alias			as string
-
 	hashitem		as HASHITEM ptr
 	hashindex		as uinteger
 
-	scope			as integer
-
+	scope			as uinteger
 	lgt				as integer
 	ofs				as integer					'' used with local vars and args
-
 	acccnt			as integer					'' access counter (number of lookup's)
 
 	union
-		var			as FBSVAR
-		con			as FBSCONST
-		udt			as FBSUDT
-		proc		as FBSPROC
-		arg			as FBSPROCARG
-		lbl			as FBLABEL
-		def			as FBSDEFINE
-		key			as FBSKEYWORD
-		fwd			as FBSFWDREF
-		enum		as FBSENUM
+		var			as FBS_VAR
+		con			as FBS_CONST
+		udt			as FBS_UDT
+		proc		as FBS_PROC
+		arg			as FBS_PROCARG
+		lbl			as FBS_LABEL
+		def			as FBS_DEFINE
+		key			as FBS_KEYWORD
+		fwd			as FBS_FWDREF
+		enum		as FBS_ENUM
+		scp			as FBS_SCOPE
 	end union
-
-	dbg				as FBDBG
 
 	left			as FBSYMBOL ptr 			'' same name symbols list
 	right			as FBSYMBOL ptr				'' /
 
+	symtb			as FBSYMBOLTB ptr			'' symbol tb it's part of
 	prev			as FBSYMBOL ptr				'' symbol tb list
 	next			as FBSYMBOL ptr             '' /
-end type
-
-type FBSYMBOLTB
-    head			as FBSYMBOL ptr				'' first node
-    tail			as FBSYMBOL ptr				'' last node
 end type
 
 
@@ -852,7 +850,7 @@ type FBENV
 	procstmt		as FBCMPSTMT
 
 	'' globals
-	scope			as integer					'' current scope (0=main module)
+	scope			as uinteger					'' current scope (0=main module)
 	reclevel		as integer					'' >0 if parsing an include file
 	currproc 		as FBSYMBOL ptr				'' current proc (def= NULL)
 	withvar			as FBSYMBOL ptr				'' current WITH var
@@ -877,6 +875,10 @@ end type
 
 #include once "inc\hlp.bi"
 
+''
+'' macros
+''
+#define fbIsLocal( ) (env.currproc <> NULL)
 
 ''
 '' super globals

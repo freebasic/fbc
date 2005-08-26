@@ -46,7 +46,7 @@ type SYMBCTX
 	symhash			as THASH
 
 	globtb			as FBSYMBOLTB
-	loctb			as FBSYMBOLTB ptr
+	symtb			as FBSYMBOLTB ptr			'' current table
 
 	liblist 		as TLIST					'' libraries
 	libhash			as THASH
@@ -61,6 +61,21 @@ type SYMBCTX
 	defargcnt		as integer
 end type
 
+type SYMBKWD
+	name			as zstring * 16
+	id				as integer
+    class			as integer
+end type
+
+type DEFCALLBACK as function() as string
+
+type SYMBDEF
+	name			as zstring * 20
+	value			as zstring * 12
+	flags			as integer
+	proc			as DEFCALLBACK
+end type
+
 declare sub			symbDelGlobalTb ( )
 
 declare sub 		hFreeSymbol		( byval s as FBSYMBOL ptr, _
@@ -73,8 +88,6 @@ declare function 	hCalcDiff		( byval dimensions as integer, _
 declare function 	hCalcElements2	( byval dimensions as integer, _
 									  dTB() as FBARRAYDIM ) as integer
 
-type DEFCALLBACK as function() as string
-
 declare function	hDefFile_cb		( ) as string
 declare function	hDefFunction_cb	( ) as string
 declare function	hDefLine_cb		( ) as string
@@ -86,227 +99,233 @@ declare function    hDefMultithread_cb( ) as string
 ''globals
 	dim shared ctx as SYMBCTX
 
-'' predefined #defines: name, value, flags, proc
-'' for description flags, see FBSDEFINE
-definesdata:
-data "__FB_VERSION__",			FB_VERSION,		  0, NULL
-data "__FB_VER_MAJOR__",		FB_VER_STR_MAJOR, 1, NULL
-data "__FB_VER_MINOR__",		FB_VER_STR_MINOR, 1, NULL
-data "__FB_VER_PATCH__",		FB_VER_STR_PATCH, 1, NULL
-data "__FB_SIGNATURE__",		FB_SIGN,		  0, NULL
-data "__FB_MT__",				"",				  1, @hDefMultithread_cb
-data "__FILE__",				"",				  0, @hDefFile_cb
-data "__FUNCTION__",			"",				  0, @hDefFunction_cb
-data "__LINE__",				"",				  1, @hDefLine_cb
-data "__DATE__",				"",				  0, @hDefDate_cb
-data "__TIME__",				"",				  0, @hDefTime_cb
-data ""
+'' predefined #defines: name, value, flags, proc (for description flags, see FBS_DEFINE)
+const SYMB_MAXDEFINES = 16
 
+	dim shared defTb( 0 to SYMB_MAXDEFINES-1 ) as SYMBDEF => _
+	{ _
+		("__FB_VERSION__",			FB_VERSION,		  0, NULL				), _
+		("__FB_VER_MAJOR__",		FB_VER_STR_MAJOR, 1, NULL               ), _
+		("__FB_VER_MINOR__",		FB_VER_STR_MINOR, 1, NULL               ), _
+		("__FB_VER_PATCH__",		FB_VER_STR_PATCH, 1, NULL               ), _
+		("__FB_SIGNATURE__",		FB_SIGN,		  0, NULL               ), _
+		("__FB_MT__",				"",				  1, @hDefMultithread_cb), _
+		("__FILE__",				"",				  0, @hDefFile_cb       ), _
+		("__FUNCTION__",			"",				  0, @hDefFunction_cb   ), _
+		("__LINE__",				"",				  1, @hDefLine_cb       ), _
+		("__DATE__",				"",				  0, @hDefDate_cb       ), _
+		("__TIME__",				"",				  0, @hDefTime_cb       ), _
+		("") _
+	}
 
-'' keywords: name, id (token), class
-keyworddata:
-data "AND"		, FB_TK_AND			, FB_TKCLASS_OPERATOR
-data "OR"		, FB_TK_OR			, FB_TKCLASS_OPERATOR
-data "XOR"		, FB_TK_XOR			, FB_TKCLASS_OPERATOR
-data "EQV"		, FB_TK_EQV			, FB_TKCLASS_OPERATOR
-data "IMP"		, FB_TK_IMP			, FB_TKCLASS_OPERATOR
-data "NOT"		, FB_TK_NOT			, FB_TKCLASS_OPERATOR
-data "MOD"		, FB_TK_MOD			, FB_TKCLASS_OPERATOR
-data "SHL"		, FB_TK_SHL			, FB_TKCLASS_OPERATOR
-data "SHR"		, FB_TK_SHR			, FB_TKCLASS_OPERATOR
-data "REM"		, FB_TK_REM			, FB_TKCLASS_KEYWORD
-data "DIM"		, FB_TK_DIM			, FB_TKCLASS_KEYWORD
-data "STATIC"	, FB_TK_STATIC		, FB_TKCLASS_KEYWORD
-data "SHARED"	, FB_TK_SHARED		, FB_TKCLASS_KEYWORD
-data "INTEGER"	, FB_TK_INTEGER		, FB_TKCLASS_KEYWORD
-data "LONG"		, FB_TK_LONG		, FB_TKCLASS_KEYWORD
-data "SINGLE"	, FB_TK_SINGLE		, FB_TKCLASS_KEYWORD
-data "DOUBLE"	, FB_TK_DOUBLE		, FB_TKCLASS_KEYWORD
-data "STRING"	, FB_TK_STRING		, FB_TKCLASS_KEYWORD
-data "CALL"		, FB_TK_CALL		, FB_TKCLASS_KEYWORD
-data "BYVAL"	, FB_TK_BYVAL		, FB_TKCLASS_KEYWORD
-data "INCLUDE"	, FB_TK_INCLUDE		, FB_TKCLASS_KEYWORD
-data "DYNAMIC"	, FB_TK_DYNAMIC		, FB_TKCLASS_KEYWORD
-data "AS"		, FB_TK_AS			, FB_TKCLASS_KEYWORD
-data "DECLARE"	, FB_TK_DECLARE		, FB_TKCLASS_KEYWORD
-data "GOTO"		, FB_TK_GOTO		, FB_TKCLASS_KEYWORD
-data "GOSUB"	, FB_TK_GOSUB		, FB_TKCLASS_KEYWORD
-data "DEFBYTE"	, FB_TK_DEFBYTE		, FB_TKCLASS_KEYWORD
-data "DEFUBYTE"	, FB_TK_DEFUBYTE	, FB_TKCLASS_KEYWORD
-data "DEFSHORT"	, FB_TK_DEFSHORT	, FB_TKCLASS_KEYWORD
-data "DEFUSHORT", FB_TK_DEFUSHORT	, FB_TKCLASS_KEYWORD
-data "DEFINT"	, FB_TK_DEFINT		, FB_TKCLASS_KEYWORD
-data "DEFUINT"	, FB_TK_DEFUINT		, FB_TKCLASS_KEYWORD
-data "DEFLNG"	, FB_TK_DEFLNG		, FB_TKCLASS_KEYWORD
-data "DEFLONGINT", FB_TK_DEFLNGINT	, FB_TKCLASS_KEYWORD
-data "DEFULONGINT", FB_TK_DEFULNGINT, FB_TKCLASS_KEYWORD
-data "DEFSNG"	, FB_TK_DEFSNG		, FB_TKCLASS_KEYWORD
-data "DEFDBL"	, FB_TK_DEFDBL		, FB_TKCLASS_KEYWORD
-data "DEFSTR"	, FB_TK_DEFSTR		, FB_TKCLASS_KEYWORD
-data "CONST"	, FB_TK_CONST		, FB_TKCLASS_KEYWORD
-data "FOR"		, FB_TK_FOR			, FB_TKCLASS_KEYWORD
-data "STEP"		, FB_TK_STEP		, FB_TKCLASS_KEYWORD
-data "NEXT"		, FB_TK_NEXT		, FB_TKCLASS_KEYWORD
-data "TO"		, FB_TK_TO			, FB_TKCLASS_KEYWORD
-data "TYPE"		, FB_TK_TYPE		, FB_TKCLASS_KEYWORD
-data "END"		, FB_TK_END			, FB_TKCLASS_KEYWORD
-data "SUB"		, FB_TK_SUB			, FB_TKCLASS_KEYWORD
-data "FUNCTION"	, FB_TK_FUNCTION	, FB_TKCLASS_KEYWORD
-data "CDECL"	, FB_TK_CDECL		, FB_TKCLASS_KEYWORD
-data "STDCALL"	, FB_TK_STDCALL		, FB_TKCLASS_KEYWORD
-data "ALIAS"	, FB_TK_ALIAS		, FB_TKCLASS_KEYWORD
-data "LIB"		, FB_TK_LIB			, FB_TKCLASS_KEYWORD
-data "LET"		, FB_TK_LET			, FB_TKCLASS_KEYWORD
-data "BYTE"		, FB_TK_BYTE		, FB_TKCLASS_KEYWORD
-data "UBYTE"	, FB_TK_UBYTE		, FB_TKCLASS_KEYWORD
-data "SHORT"	, FB_TK_SHORT		, FB_TKCLASS_KEYWORD
-data "USHORT"	, FB_TK_USHORT		, FB_TKCLASS_KEYWORD
-data "UINTEGER"	, FB_TK_UINT		, FB_TKCLASS_KEYWORD
-data "EXIT"		, FB_TK_EXIT		, FB_TKCLASS_KEYWORD
-data "DO"		, FB_TK_DO			, FB_TKCLASS_KEYWORD
-data "LOOP"		, FB_TK_LOOP		, FB_TKCLASS_KEYWORD
-data "RETURN"	, FB_TK_RETURN		, FB_TKCLASS_KEYWORD
-data "ANY"		, FB_TK_ANY			, FB_TKCLASS_KEYWORD
-data "PTR"		, FB_TK_PTR			, FB_TKCLASS_KEYWORD
-data "POINTER"	, FB_TK_POINTER		, FB_TKCLASS_KEYWORD
-data "VARPTR"	, FB_TK_VARPTR		, FB_TKCLASS_KEYWORD
-data "WHILE"	, FB_TK_WHILE		, FB_TKCLASS_KEYWORD
-data "UNTIL"	, FB_TK_UNTIL		, FB_TKCLASS_KEYWORD
-data "WEND"		, FB_TK_WEND		, FB_TKCLASS_KEYWORD
-data "CONTINUE"	, FB_TK_CONTINUE	, FB_TKCLASS_KEYWORD
-data "CBYTE"	, FB_TK_CBYTE		, FB_TKCLASS_KEYWORD
-data "CSHORT"	, FB_TK_CSHORT		, FB_TKCLASS_KEYWORD
-data "CINT"		, FB_TK_CINT		, FB_TKCLASS_KEYWORD
-data "CLNG"		, FB_TK_CLNG		, FB_TKCLASS_KEYWORD
-data "CLNGINT"	, FB_TK_CLNGINT		, FB_TKCLASS_KEYWORD
-data "CUBYTE"	, FB_TK_CUBYTE		, FB_TKCLASS_KEYWORD
-data "CUSHORT"	, FB_TK_CUSHORT		, FB_TKCLASS_KEYWORD
-data "CUINT"	, FB_TK_CUINT		, FB_TKCLASS_KEYWORD
-data "CULNGINT"	, FB_TK_CULNGINT	, FB_TKCLASS_KEYWORD
-data "CSNG"		, FB_TK_CSNG		, FB_TKCLASS_KEYWORD
-data "CDBL"		, FB_TK_CDBL		, FB_TKCLASS_KEYWORD
-data "CSIGN"	, FB_TK_CSIGN		, FB_TKCLASS_KEYWORD
-data "CUNSG"	, FB_TK_CUNSG		, FB_TKCLASS_KEYWORD
-data "CPTR"		, FB_TK_CPTR		, FB_TKCLASS_KEYWORD
-data "IF"		, FB_TK_IF			, FB_TKCLASS_KEYWORD
-data "THEN"		, FB_TK_THEN		, FB_TKCLASS_KEYWORD
-data "ELSE"		, FB_TK_ELSE		, FB_TKCLASS_KEYWORD
-data "ELSEIF"	, FB_TK_ELSEIF		, FB_TKCLASS_KEYWORD
-data "SELECT"	, FB_TK_SELECT		, FB_TKCLASS_KEYWORD
-data "CASE"		, FB_TK_CASE		, FB_TKCLASS_KEYWORD
-data "IS"		, FB_TK_IS			, FB_TKCLASS_KEYWORD
-data "UNSIGNED"	, FB_TK_UNSIGNED	, FB_TKCLASS_KEYWORD
-data "REDIM"	, FB_TK_REDIM		, FB_TKCLASS_KEYWORD
-data "ERASE"	, FB_TK_ERASE		, FB_TKCLASS_KEYWORD
-data "LBOUND"	, FB_TK_LBOUND		, FB_TKCLASS_KEYWORD
-data "UBOUND"	, FB_TK_UBOUND		, FB_TKCLASS_KEYWORD
-data "UNION"	, FB_TK_UNION		, FB_TKCLASS_KEYWORD
-data "PUBLIC"	, FB_TK_PUBLIC		, FB_TKCLASS_KEYWORD
-data "PRIVATE"	, FB_TK_PRIVATE		, FB_TKCLASS_KEYWORD
-data "STR"		, FB_TK_STR			, FB_TKCLASS_KEYWORD
-data "MID"		, FB_TK_MID			, FB_TKCLASS_KEYWORD
-data "INSTR"	, FB_TK_INSTR		, FB_TKCLASS_KEYWORD
-data "TRIM"		, FB_TK_TRIM		, FB_TKCLASS_KEYWORD
-data "RTRIM"	, FB_TK_RTRIM		, FB_TKCLASS_KEYWORD
-data "LTRIM"	, FB_TK_LTRIM		, FB_TKCLASS_KEYWORD
-data "BYREF"	, FB_TK_BYREF		, FB_TKCLASS_KEYWORD
-data "OPTION"	, FB_TK_OPTION		, FB_TKCLASS_KEYWORD
-data "BASE"		, FB_TK_BASE		, FB_TKCLASS_KEYWORD
-data "EXPLICIT"	, FB_TK_EXPLICIT	, FB_TKCLASS_KEYWORD
-data "PASCAL"	, FB_TK_PASCAL		, FB_TKCLASS_KEYWORD
-data "PROCPTR"	, FB_TK_PROCPTR		, FB_TKCLASS_KEYWORD
-data "SADD"		, FB_TK_SADD		, FB_TKCLASS_KEYWORD
-data "RESTORE"	, FB_TK_RESTORE		, FB_TKCLASS_KEYWORD
-data "READ"		, FB_TK_READ		, FB_TKCLASS_KEYWORD
-data "DATA"		, FB_TK_DATA		, FB_TKCLASS_KEYWORD
-data "ABS"		, FB_TK_ABS			, FB_TKCLASS_KEYWORD
-data "SGN"		, FB_TK_SGN			, FB_TKCLASS_KEYWORD
-data "FIX"		, FB_TK_FIX			, FB_TKCLASS_KEYWORD
-data "PRINT"	, FB_TK_PRINT		, FB_TKCLASS_KEYWORD
-data "LPRINT"	, FB_TK_LPRINT		, FB_TKCLASS_KEYWORD
-data "USING"	, FB_TK_USING		, FB_TKCLASS_KEYWORD
-data "LEN"		, FB_TK_LEN			, FB_TKCLASS_KEYWORD
-data "PEEK"		, FB_TK_PEEK		, FB_TKCLASS_KEYWORD
-data "POKE"		, FB_TK_POKE		, FB_TKCLASS_KEYWORD
-data "SWAP"		, FB_TK_SWAP		, FB_TKCLASS_KEYWORD
-data "COMMON"	, FB_TK_COMMON		, FB_TKCLASS_KEYWORD
-data "OPEN"		, FB_TK_OPEN		, FB_TKCLASS_KEYWORD
-data "CLOSE"	, FB_TK_CLOSE		, FB_TKCLASS_KEYWORD
-data "SEEK"		, FB_TK_SEEK		, FB_TKCLASS_KEYWORD
-data "PUT"		, FB_TK_PUT			, FB_TKCLASS_KEYWORD
-data "GET"		, FB_TK_GET			, FB_TKCLASS_KEYWORD
-data "ACCESS"	, FB_TK_ACCESS		, FB_TKCLASS_KEYWORD
-data "WRITE"	, FB_TK_WRITE		, FB_TKCLASS_KEYWORD
-data "LOCK"		, FB_TK_LOCK		, FB_TKCLASS_KEYWORD
-data "INPUT"	, FB_TK_INPUT		, FB_TKCLASS_KEYWORD
-data "OUTPUT"	, FB_TK_OUTPUT		, FB_TKCLASS_KEYWORD
-data "BINARY"	, FB_TK_BINARY		, FB_TKCLASS_KEYWORD
-data "RANDOM"	, FB_TK_RANDOM		, FB_TKCLASS_KEYWORD
-data "APPEND"	, FB_TK_APPEND		, FB_TKCLASS_KEYWORD
-data "NAME"		, FB_TK_NAME		, FB_TKCLASS_KEYWORD
-data "WIDTH"	, FB_TK_WIDTH		, FB_TKCLASS_KEYWORD
-data "PRESERVE"	, FB_TK_PRESERVE	, FB_TKCLASS_KEYWORD
-data "ON"		, FB_TK_ON			, FB_TKCLASS_KEYWORD
-data "ERROR"	, FB_TK_ERROR		, FB_TKCLASS_KEYWORD
-data "ENUM"		, FB_TK_ENUM		, FB_TKCLASS_KEYWORD
-data "INCLIB"	, FB_TK_INCLIB		, FB_TKCLASS_KEYWORD
-data "ASM"		, FB_TK_ASM			, FB_TKCLASS_KEYWORD
-data "SPC"		, FB_TK_SPC			, FB_TKCLASS_KEYWORD
-data "TAB"		, FB_TK_TAB			, FB_TKCLASS_KEYWORD
-data "LINE"		, FB_TK_LINE		, FB_TKCLASS_KEYWORD
-data "VIEW"		, FB_TK_VIEW		, FB_TKCLASS_KEYWORD
-data "UNLOCK"	, FB_TK_UNLOCK		, FB_TKCLASS_KEYWORD
-data "FIELD"	, FB_TK_FIELD		, FB_TKCLASS_KEYWORD
-data "LOCAL"	, FB_TK_LOCAL		, FB_TKCLASS_KEYWORD
-data "ERR"		, FB_TK_ERR			, FB_TKCLASS_KEYWORD
-data "DEFINE"	, FB_TK_DEFINE		, FB_TKCLASS_KEYWORD
-data "UNDEF"	, FB_TK_UNDEF		, FB_TKCLASS_KEYWORD
-data "IFDEF"	, FB_TK_IFDEF		, FB_TKCLASS_KEYWORD
-data "IFNDEF"	, FB_TK_IFNDEF		, FB_TKCLASS_KEYWORD
-data "ENDIF"	, FB_TK_ENDIF		, FB_TKCLASS_KEYWORD
-data "DEFINED"	, FB_TK_DEFINED		, FB_TKCLASS_KEYWORD
-data "RESUME"	, FB_TK_RESUME		, FB_TKCLASS_KEYWORD
-data "PSET"		, FB_TK_PSET		, FB_TKCLASS_KEYWORD
-data "PRESET"	, FB_TK_PRESET		, FB_TKCLASS_KEYWORD
-data "POINT"	, FB_TK_POINT		, FB_TKCLASS_KEYWORD
-data "CIRCLE"	, FB_TK_CIRCLE		, FB_TKCLASS_KEYWORD
-data "WINDOW"	, FB_TK_WINDOW		, FB_TKCLASS_KEYWORD
-data "PALETTE"	, FB_TK_PALETTE		, FB_TKCLASS_KEYWORD
-data "SCREEN"	, FB_TK_SCREEN		, FB_TKCLASS_KEYWORD
-data "SCREENRES", FB_TK_SCREENRES	, FB_TKCLASS_KEYWORD
-data "PAINT"	, FB_TK_PAINT		, FB_TKCLASS_KEYWORD
-data "DRAW"		, FB_TK_DRAW		, FB_TKCLASS_KEYWORD
-data "EXTERN"	, FB_TK_EXTERN		, FB_TKCLASS_KEYWORD
-data "STRPTR"	, FB_TK_STRPTR		, FB_TKCLASS_KEYWORD
-data "WITH"		, FB_TK_WITH		, FB_TKCLASS_KEYWORD
-data "EXPORT"	, FB_TK_EXPORT		, FB_TKCLASS_KEYWORD
-data "IMPORT"	, FB_TK_IMPORT		, FB_TKCLASS_KEYWORD
-data "LIBPATH"	, FB_TK_LIBPATH		, FB_TKCLASS_KEYWORD
-data "CHR"		, FB_TK_CHR			, FB_TKCLASS_KEYWORD
-data "ASC"		, FB_TK_ASC			, FB_TKCLASS_KEYWORD
-data "LSET"		, FB_TK_LSET		, FB_TKCLASS_KEYWORD
-data "IIF"		, FB_TK_IIF			, FB_TKCLASS_KEYWORD
-data "..."		, FB_TK_VARARG		, FB_TKCLASS_KEYWORD
-data "VA_FIRST"	, FB_TK_VA_FIRST	, FB_TKCLASS_KEYWORD
-data "LONGINT"	, FB_TK_LONGINT		, FB_TKCLASS_KEYWORD
-data "ULONGINT" , FB_TK_ULONGINT	, FB_TKCLASS_KEYWORD
-data "ZSTRING"	, FB_TK_ZSTRING		, FB_TKCLASS_KEYWORD
-data "SIZEOF"	, FB_TK_SIZEOF		, FB_TKCLASS_KEYWORD
-data "SIN"		, FB_TK_SIN			, FB_TKCLASS_KEYWORD
-data "ASIN"		, FB_TK_ASIN		, FB_TKCLASS_KEYWORD
-data "COS"		, FB_TK_COS			, FB_TKCLASS_KEYWORD
-data "ACOS"		, FB_TK_ACOS		, FB_TKCLASS_KEYWORD
-data "TAN"		, FB_TK_TAN			, FB_TKCLASS_KEYWORD
-data "ATN"		, FB_TK_ATN			, FB_TKCLASS_KEYWORD
-data "SQR"		, FB_TK_SQR			, FB_TKCLASS_KEYWORD
-data "LOG"		, FB_TK_LOG			, FB_TKCLASS_KEYWORD
-data "INT"		, FB_TK_INT			, FB_TKCLASS_KEYWORD
-data "ATAN2"	, FB_TK_ATAN2		, FB_TKCLASS_KEYWORD
-data "OVERLOAD"	, FB_TK_OVERLOAD	, FB_TKCLASS_KEYWORD
-data "CONSTRUCTOR", FB_TK_CONSTRUCTOR, FB_TKCLASS_KEYWORD
-data "DESTRUCTOR", FB_TK_DESTRUCTOR	, FB_TKCLASS_KEYWORD
-data ""
+	'' keywords: name, id (token), class
+const SYMB_MAXKEYWORDS = 210
 
+	dim shared kwdTb( 0 to SYMB_MAXKEYWORDS-1 ) as SYMBKWD => _
+	{ _
+		("AND"		, FB_TK_AND			, FB_TKCLASS_OPERATOR), _
+        ("OR"		, FB_TK_OR			, FB_TKCLASS_OPERATOR), _
+        ("XOR"		, FB_TK_XOR			, FB_TKCLASS_OPERATOR), _
+        ("EQV"		, FB_TK_EQV			, FB_TKCLASS_OPERATOR), _
+        ("IMP"		, FB_TK_IMP			, FB_TKCLASS_OPERATOR), _
+        ("NOT"		, FB_TK_NOT			, FB_TKCLASS_OPERATOR), _
+        ("MOD"		, FB_TK_MOD			, FB_TKCLASS_OPERATOR), _
+        ("SHL"		, FB_TK_SHL			, FB_TKCLASS_OPERATOR), _
+        ("SHR"		, FB_TK_SHR			, FB_TKCLASS_OPERATOR), _
+        ("REM"		, FB_TK_REM			, FB_TKCLASS_KEYWORD), _
+        ("DIM"		, FB_TK_DIM			, FB_TKCLASS_KEYWORD), _
+        ("STATIC"	, FB_TK_STATIC		, FB_TKCLASS_KEYWORD), _
+        ("SHARED"	, FB_TK_SHARED		, FB_TKCLASS_KEYWORD), _
+        ("INTEGER"	, FB_TK_INTEGER		, FB_TKCLASS_KEYWORD), _
+        ("LONG"		, FB_TK_LONG		, FB_TKCLASS_KEYWORD), _
+        ("SINGLE"	, FB_TK_SINGLE		, FB_TKCLASS_KEYWORD), _
+        ("DOUBLE"	, FB_TK_DOUBLE		, FB_TKCLASS_KEYWORD), _
+        ("STRING"	, FB_TK_STRING		, FB_TKCLASS_KEYWORD), _
+        ("CALL"		, FB_TK_CALL		, FB_TKCLASS_KEYWORD), _
+        ("BYVAL"	, FB_TK_BYVAL		, FB_TKCLASS_KEYWORD), _
+        ("INCLUDE"	, FB_TK_INCLUDE		, FB_TKCLASS_KEYWORD), _
+        ("DYNAMIC"	, FB_TK_DYNAMIC		, FB_TKCLASS_KEYWORD), _
+        ("AS"		, FB_TK_AS			, FB_TKCLASS_KEYWORD), _
+        ("DECLARE"	, FB_TK_DECLARE		, FB_TKCLASS_KEYWORD), _
+        ("GOTO"		, FB_TK_GOTO		, FB_TKCLASS_KEYWORD), _
+        ("GOSUB"	, FB_TK_GOSUB		, FB_TKCLASS_KEYWORD), _
+        ("DEFBYTE"	, FB_TK_DEFBYTE		, FB_TKCLASS_KEYWORD), _
+        ("DEFUBYTE"	, FB_TK_DEFUBYTE	, FB_TKCLASS_KEYWORD), _
+        ("DEFSHORT"	, FB_TK_DEFSHORT	, FB_TKCLASS_KEYWORD), _
+        ("DEFUSHORT", FB_TK_DEFUSHORT	, FB_TKCLASS_KEYWORD), _
+        ("DEFINT"	, FB_TK_DEFINT		, FB_TKCLASS_KEYWORD), _
+        ("DEFUINT"	, FB_TK_DEFUINT		, FB_TKCLASS_KEYWORD), _
+        ("DEFLNG"	, FB_TK_DEFLNG		, FB_TKCLASS_KEYWORD), _
+        ("DEFLONGINT", FB_TK_DEFLNGINT	, FB_TKCLASS_KEYWORD), _
+        ("DEFULONGINT", FB_TK_DEFULNGINT, FB_TKCLASS_KEYWORD), _
+        ("DEFSNG"	, FB_TK_DEFSNG		, FB_TKCLASS_KEYWORD), _
+        ("DEFDBL"	, FB_TK_DEFDBL		, FB_TKCLASS_KEYWORD), _
+        ("DEFSTR"	, FB_TK_DEFSTR		, FB_TKCLASS_KEYWORD), _
+        ("CONST"	, FB_TK_CONST		, FB_TKCLASS_KEYWORD), _
+        ("FOR"		, FB_TK_FOR			, FB_TKCLASS_KEYWORD), _
+        ("STEP"		, FB_TK_STEP		, FB_TKCLASS_KEYWORD), _
+        ("NEXT"		, FB_TK_NEXT		, FB_TKCLASS_KEYWORD), _
+        ("TO"		, FB_TK_TO			, FB_TKCLASS_KEYWORD), _
+        ("TYPE"		, FB_TK_TYPE		, FB_TKCLASS_KEYWORD), _
+        ("END"		, FB_TK_END			, FB_TKCLASS_KEYWORD), _
+        ("SUB"		, FB_TK_SUB			, FB_TKCLASS_KEYWORD), _
+        ("FUNCTION"	, FB_TK_FUNCTION	, FB_TKCLASS_KEYWORD), _
+        ("CDECL"	, FB_TK_CDECL		, FB_TKCLASS_KEYWORD), _
+        ("STDCALL"	, FB_TK_STDCALL		, FB_TKCLASS_KEYWORD), _
+        ("ALIAS"	, FB_TK_ALIAS		, FB_TKCLASS_KEYWORD), _
+        ("LIB"		, FB_TK_LIB			, FB_TKCLASS_KEYWORD), _
+        ("LET"		, FB_TK_LET			, FB_TKCLASS_KEYWORD), _
+        ("BYTE"		, FB_TK_BYTE		, FB_TKCLASS_KEYWORD), _
+        ("UBYTE"	, FB_TK_UBYTE		, FB_TKCLASS_KEYWORD), _
+        ("SHORT"	, FB_TK_SHORT		, FB_TKCLASS_KEYWORD), _
+        ("USHORT"	, FB_TK_USHORT		, FB_TKCLASS_KEYWORD), _
+        ("UINTEGER"	, FB_TK_UINT		, FB_TKCLASS_KEYWORD), _
+        ("EXIT"		, FB_TK_EXIT		, FB_TKCLASS_KEYWORD), _
+        ("DO"		, FB_TK_DO			, FB_TKCLASS_KEYWORD), _
+        ("LOOP"		, FB_TK_LOOP		, FB_TKCLASS_KEYWORD), _
+        ("RETURN"	, FB_TK_RETURN		, FB_TKCLASS_KEYWORD), _
+        ("ANY"		, FB_TK_ANY			, FB_TKCLASS_KEYWORD), _
+        ("PTR"		, FB_TK_PTR			, FB_TKCLASS_KEYWORD), _
+        ("POINTER"	, FB_TK_POINTER		, FB_TKCLASS_KEYWORD), _
+        ("VARPTR"	, FB_TK_VARPTR		, FB_TKCLASS_KEYWORD), _
+        ("WHILE"	, FB_TK_WHILE		, FB_TKCLASS_KEYWORD), _
+        ("UNTIL"	, FB_TK_UNTIL		, FB_TKCLASS_KEYWORD), _
+        ("WEND"		, FB_TK_WEND		, FB_TKCLASS_KEYWORD), _
+        ("CONTINUE"	, FB_TK_CONTINUE	, FB_TKCLASS_KEYWORD), _
+        ("CBYTE"	, FB_TK_CBYTE		, FB_TKCLASS_KEYWORD), _
+        ("CSHORT"	, FB_TK_CSHORT		, FB_TKCLASS_KEYWORD), _
+        ("CINT"		, FB_TK_CINT		, FB_TKCLASS_KEYWORD), _
+        ("CLNG"		, FB_TK_CLNG		, FB_TKCLASS_KEYWORD), _
+        ("CLNGINT"	, FB_TK_CLNGINT		, FB_TKCLASS_KEYWORD), _
+        ("CUBYTE"	, FB_TK_CUBYTE		, FB_TKCLASS_KEYWORD), _
+        ("CUSHORT"	, FB_TK_CUSHORT		, FB_TKCLASS_KEYWORD), _
+        ("CUINT"	, FB_TK_CUINT		, FB_TKCLASS_KEYWORD), _
+        ("CULNGINT"	, FB_TK_CULNGINT	, FB_TKCLASS_KEYWORD), _
+        ("CSNG"		, FB_TK_CSNG		, FB_TKCLASS_KEYWORD), _
+        ("CDBL"		, FB_TK_CDBL		, FB_TKCLASS_KEYWORD), _
+        ("CSIGN"	, FB_TK_CSIGN		, FB_TKCLASS_KEYWORD), _
+        ("CUNSG"	, FB_TK_CUNSG		, FB_TKCLASS_KEYWORD), _
+        ("CPTR"		, FB_TK_CPTR		, FB_TKCLASS_KEYWORD), _
+        ("IF"		, FB_TK_IF			, FB_TKCLASS_KEYWORD), _
+        ("THEN"		, FB_TK_THEN		, FB_TKCLASS_KEYWORD), _
+        ("ELSE"		, FB_TK_ELSE		, FB_TKCLASS_KEYWORD), _
+        ("ELSEIF"	, FB_TK_ELSEIF		, FB_TKCLASS_KEYWORD), _
+        ("SELECT"	, FB_TK_SELECT		, FB_TKCLASS_KEYWORD), _
+        ("CASE"		, FB_TK_CASE		, FB_TKCLASS_KEYWORD), _
+        ("IS"		, FB_TK_IS			, FB_TKCLASS_KEYWORD), _
+        ("UNSIGNED"	, FB_TK_UNSIGNED	, FB_TKCLASS_KEYWORD), _
+        ("REDIM"	, FB_TK_REDIM		, FB_TKCLASS_KEYWORD), _
+        ("ERASE"	, FB_TK_ERASE		, FB_TKCLASS_KEYWORD), _
+        ("LBOUND"	, FB_TK_LBOUND		, FB_TKCLASS_KEYWORD), _
+        ("UBOUND"	, FB_TK_UBOUND		, FB_TKCLASS_KEYWORD), _
+        ("UNION"	, FB_TK_UNION		, FB_TKCLASS_KEYWORD), _
+        ("PUBLIC"	, FB_TK_PUBLIC		, FB_TKCLASS_KEYWORD), _
+        ("PRIVATE"	, FB_TK_PRIVATE		, FB_TKCLASS_KEYWORD), _
+        ("STR"		, FB_TK_STR			, FB_TKCLASS_KEYWORD), _
+        ("MID"		, FB_TK_MID			, FB_TKCLASS_KEYWORD), _
+ 		("INSTR"	, FB_TK_INSTR		, FB_TKCLASS_KEYWORD), _
+		("TRIM"		, FB_TK_TRIM		, FB_TKCLASS_KEYWORD), _
+        ("RTRIM"	, FB_TK_RTRIM		, FB_TKCLASS_KEYWORD), _
+        ("LTRIM"	, FB_TK_LTRIM		, FB_TKCLASS_KEYWORD), _
+        ("BYREF"	, FB_TK_BYREF		, FB_TKCLASS_KEYWORD), _
+        ("OPTION"	, FB_TK_OPTION		, FB_TKCLASS_KEYWORD), _
+        ("BASE"		, FB_TK_BASE		, FB_TKCLASS_KEYWORD), _
+        ("EXPLICIT"	, FB_TK_EXPLICIT	, FB_TKCLASS_KEYWORD), _
+        ("PASCAL"	, FB_TK_PASCAL		, FB_TKCLASS_KEYWORD), _
+        ("PROCPTR"	, FB_TK_PROCPTR		, FB_TKCLASS_KEYWORD), _
+        ("SADD"		, FB_TK_SADD		, FB_TKCLASS_KEYWORD), _
+        ("RESTORE"	, FB_TK_RESTORE		, FB_TKCLASS_KEYWORD), _
+        ("READ"		, FB_TK_READ		, FB_TKCLASS_KEYWORD), _
+        ("DATA"		, FB_TK_DATA		, FB_TKCLASS_KEYWORD), _
+        ("ABS"		, FB_TK_ABS			, FB_TKCLASS_KEYWORD), _
+        ("SGN"		, FB_TK_SGN			, FB_TKCLASS_KEYWORD), _
+        ("FIX"		, FB_TK_FIX			, FB_TKCLASS_KEYWORD), _
+        ("PRINT"	, FB_TK_PRINT		, FB_TKCLASS_KEYWORD), _
+        ("LPRINT"	, FB_TK_LPRINT		, FB_TKCLASS_KEYWORD), _
+        ("USING"	, FB_TK_USING		, FB_TKCLASS_KEYWORD), _
+        ("LEN"		, FB_TK_LEN			, FB_TKCLASS_KEYWORD), _
+        ("PEEK"		, FB_TK_PEEK		, FB_TKCLASS_KEYWORD), _
+        ("POKE"		, FB_TK_POKE		, FB_TKCLASS_KEYWORD), _
+        ("SWAP"		, FB_TK_SWAP		, FB_TKCLASS_KEYWORD), _
+        ("COMMON"	, FB_TK_COMMON		, FB_TKCLASS_KEYWORD), _
+        ("OPEN"		, FB_TK_OPEN		, FB_TKCLASS_KEYWORD), _
+        ("CLOSE"	, FB_TK_CLOSE		, FB_TKCLASS_KEYWORD), _
+        ("SEEK"		, FB_TK_SEEK		, FB_TKCLASS_KEYWORD), _
+        ("PUT"		, FB_TK_PUT			, FB_TKCLASS_KEYWORD), _
+        ("GET"		, FB_TK_GET			, FB_TKCLASS_KEYWORD), _
+        ("ACCESS"	, FB_TK_ACCESS		, FB_TKCLASS_KEYWORD), _
+        ("WRITE"	, FB_TK_WRITE		, FB_TKCLASS_KEYWORD), _
+        ("LOCK"		, FB_TK_LOCK		, FB_TKCLASS_KEYWORD), _
+        ("INPUT"	, FB_TK_INPUT		, FB_TKCLASS_KEYWORD), _
+        ("OUTPUT"	, FB_TK_OUTPUT		, FB_TKCLASS_KEYWORD), _
+        ("BINARY"	, FB_TK_BINARY		, FB_TKCLASS_KEYWORD), _
+        ("RANDOM"	, FB_TK_RANDOM		, FB_TKCLASS_KEYWORD), _
+        ("APPEND"	, FB_TK_APPEND		, FB_TKCLASS_KEYWORD), _
+        ("NAME"		, FB_TK_NAME		, FB_TKCLASS_KEYWORD), _
+        ("WIDTH"	, FB_TK_WIDTH		, FB_TKCLASS_KEYWORD), _
+        ("PRESERVE"	, FB_TK_PRESERVE	, FB_TKCLASS_KEYWORD), _
+        ("ON"		, FB_TK_ON			, FB_TKCLASS_KEYWORD), _
+        ("ERROR"	, FB_TK_ERROR		, FB_TKCLASS_KEYWORD), _
+        ("ENUM"		, FB_TK_ENUM		, FB_TKCLASS_KEYWORD), _
+        ("INCLIB"	, FB_TK_INCLIB		, FB_TKCLASS_KEYWORD), _
+        ("ASM"		, FB_TK_ASM			, FB_TKCLASS_KEYWORD), _
+        ("SPC"		, FB_TK_SPC			, FB_TKCLASS_KEYWORD), _
+        ("TAB"		, FB_TK_TAB			, FB_TKCLASS_KEYWORD), _
+        ("LINE"		, FB_TK_LINE		, FB_TKCLASS_KEYWORD), _
+        ("VIEW"		, FB_TK_VIEW		, FB_TKCLASS_KEYWORD), _
+        ("UNLOCK"	, FB_TK_UNLOCK		, FB_TKCLASS_KEYWORD), _
+        ("FIELD"	, FB_TK_FIELD		, FB_TKCLASS_KEYWORD), _
+        ("LOCAL"	, FB_TK_LOCAL		, FB_TKCLASS_KEYWORD), _
+        ("ERR"		, FB_TK_ERR			, FB_TKCLASS_KEYWORD), _
+        ("DEFINE"	, FB_TK_DEFINE		, FB_TKCLASS_KEYWORD), _
+        ("UNDEF"	, FB_TK_UNDEF		, FB_TKCLASS_KEYWORD), _
+        ("IFDEF"	, FB_TK_IFDEF		, FB_TKCLASS_KEYWORD), _
+        ("IFNDEF"	, FB_TK_IFNDEF		, FB_TKCLASS_KEYWORD), _
+        ("ENDIF"	, FB_TK_ENDIF		, FB_TKCLASS_KEYWORD), _
+        ("DEFINED"	, FB_TK_DEFINED		, FB_TKCLASS_KEYWORD), _
+        ("RESUME"	, FB_TK_RESUME		, FB_TKCLASS_KEYWORD), _
+        ("PSET"		, FB_TK_PSET		, FB_TKCLASS_KEYWORD), _
+        ("PRESET"	, FB_TK_PRESET		, FB_TKCLASS_KEYWORD), _
+        ("POINT"	, FB_TK_POINT		, FB_TKCLASS_KEYWORD), _
+        ("CIRCLE"	, FB_TK_CIRCLE		, FB_TKCLASS_KEYWORD), _
+        ("WINDOW"	, FB_TK_WINDOW		, FB_TKCLASS_KEYWORD), _
+        ("PALETTE"	, FB_TK_PALETTE		, FB_TKCLASS_KEYWORD), _
+        ("SCREEN"	, FB_TK_SCREEN		, FB_TKCLASS_KEYWORD), _
+        ("SCREENRES", FB_TK_SCREENRES	, FB_TKCLASS_KEYWORD), _
+        ("PAINT"	, FB_TK_PAINT		, FB_TKCLASS_KEYWORD), _
+        ("DRAW"		, FB_TK_DRAW		, FB_TKCLASS_KEYWORD), _
+        ("EXTERN"	, FB_TK_EXTERN		, FB_TKCLASS_KEYWORD), _
+        ("STRPTR"	, FB_TK_STRPTR		, FB_TKCLASS_KEYWORD), _
+        ("WITH"		, FB_TK_WITH		, FB_TKCLASS_KEYWORD), _
+        ("SCOPE"	, FB_TK_SCOPE		, FB_TKCLASS_KEYWORD), _
+        ("EXPORT"	, FB_TK_EXPORT		, FB_TKCLASS_KEYWORD), _
+        ("IMPORT"	, FB_TK_IMPORT		, FB_TKCLASS_KEYWORD), _
+        ("LIBPATH"	, FB_TK_LIBPATH		, FB_TKCLASS_KEYWORD), _
+        ("CHR"		, FB_TK_CHR			, FB_TKCLASS_KEYWORD), _
+        ("ASC"		, FB_TK_ASC			, FB_TKCLASS_KEYWORD), _
+        ("LSET"		, FB_TK_LSET		, FB_TKCLASS_KEYWORD), _
+        ("IIF"		, FB_TK_IIF			, FB_TKCLASS_KEYWORD), _
+        ("..."		, FB_TK_VARARG		, FB_TKCLASS_KEYWORD), _
+        ("VA_FIRST"	, FB_TK_VA_FIRST	, FB_TKCLASS_KEYWORD), _
+        ("LONGINT"	, FB_TK_LONGINT		, FB_TKCLASS_KEYWORD), _
+        ("ULONGINT" , FB_TK_ULONGINT	, FB_TKCLASS_KEYWORD), _
+        ("ZSTRING"	, FB_TK_ZSTRING		, FB_TKCLASS_KEYWORD), _
+        ("SIZEOF"	, FB_TK_SIZEOF		, FB_TKCLASS_KEYWORD), _
+        ("SIN"		, FB_TK_SIN			, FB_TKCLASS_KEYWORD), _
+        ("ASIN"		, FB_TK_ASIN		, FB_TKCLASS_KEYWORD), _
+        ("COS"		, FB_TK_COS			, FB_TKCLASS_KEYWORD), _
+        ("ACOS"		, FB_TK_ACOS		, FB_TKCLASS_KEYWORD), _
+        ("TAN"		, FB_TK_TAN			, FB_TKCLASS_KEYWORD), _
+        ("ATN"		, FB_TK_ATN			, FB_TKCLASS_KEYWORD), _
+        ("SQR"		, FB_TK_SQR			, FB_TKCLASS_KEYWORD), _
+        ("LOG"		, FB_TK_LOG			, FB_TKCLASS_KEYWORD), _
+        ("INT"		, FB_TK_INT			, FB_TKCLASS_KEYWORD), _
+        ("ATAN2"	, FB_TK_ATAN2		, FB_TKCLASS_KEYWORD), _
+        ("OVERLOAD"	, FB_TK_OVERLOAD	, FB_TKCLASS_KEYWORD), _
+        ("CONSTRUCTOR", FB_TK_CONSTRUCTOR, FB_TKCLASS_KEYWORD), _
+        ("DESTRUCTOR", FB_TK_DESTRUCTOR	, FB_TKCLASS_KEYWORD), _
+        ("") _
+	}
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' init/end
@@ -322,6 +341,8 @@ sub symbInitSymbols static
 
 	ctx.globtb.head = NULL
 	ctx.globtb.tail = NULL
+
+	ctx.symtb = @ctx.globtb
 
 	ctx.lastlbl = NULL
 
@@ -353,36 +374,31 @@ sub symbInitLibs static
 end sub
 
 '':::::
-sub symbInitDefines static
+sub symbInitDefines( byval ismain as integer ) static
 	dim as string def, value
-    dim as integer flags
-	dim as DEFCALLBACK proc
+	dim as integer i
 
     listNew( @ctx.defarglist, FB_INITDEFARGNODES, len( FBDEFARG ), FALSE )
 
     ctx.defargcnt = 0
 
-    restore definesdata
-    do
-    	read def
-    	if( len( def ) = 0 ) then
-    		exit do
+    for i = 0 to SYMB_MAXDEFINES-1
+    	if( len( defTb(i).name ) = 0 ) then
+    		exit for
     	end if
 
-    	read value
-        read flags
-    	read proc
-
+    	value = defTb(i).value
     	if( value <> "" ) then
-            if( not bit( flags, 0 ) )then
+            if( not bit( defTb(i).flags, 0 ) )then
     			value = "\"" + value + "\""
             end if
     	end if
 
-    	symbAddDefine( def, value, len( value ), 0, NULL, FALSE, proc, flags )
-    loop
+    	symbAddDefine( @defTb(i).name, strptr( value ), len( value ), _
+    				   0, NULL, FALSE, defTb(i).proc, defTb(i).flags )
+    next
 
-	''
+	'' target
 	select case as const env.clopt.target
 	case FB_COMPTARGET_WIN32
 		def = "__FB_WIN32__"
@@ -396,31 +412,32 @@ sub symbInitDefines static
 		def = "__FB_XBOX__"
 	end select
 
-	symbAddDefine( def, "", 0, 0, NULL, FALSE, NULL, 0 )
+	symbAddDefine( strptr( def ), NULL, 0, 0, NULL, FALSE, NULL, 0 )
+
+	'' main
+	if( ismain ) then
+		symbAddDefine( strptr( "__FB_MAIN__" ), NULL, 0, 0, NULL, FALSE, NULL, 0 )
+	end if
 
 end sub
 
 '':::::
 sub symbInitKeywords static
-	dim as string kname
-	dim as integer id, class
+    dim as integer i
 
-	restore keyworddata
-	do
-    	read kname
-    	if( len( kname ) = 0 ) then
-    		exit do
+	for i = 0 to SYMB_MAXKEYWORDS-1
+    	if( len( kwdTb(i).name ) = 0 ) then
+    		exit for
     	end if
-    	read id, class
-    	if( symbAddKeyword( kname, id, class ) = NULL ) then
+    	if( symbAddKeyword( @kwdTb(i).name, kwdTb(i).id, kwdTb(i).class ) = NULL ) then
     		exit sub
     	end if
-    loop
+    next
 
 end sub
 
 '':::::
-sub symbInit
+sub symbInit( byval ismain as integer )
 
 	''
 	if( ctx.inited ) then
@@ -443,7 +460,7 @@ sub symbInit
 	''
 	'' defines
 	''
-	symbInitDefines( )
+	symbInitDefines( ismain )
 
 	''
 	'' forward refs
@@ -477,6 +494,7 @@ sub symbEnd
 
 	ctx.globtb.head = NULL
 	ctx.globtb.tail = NULL
+	ctx.symtb = NULL
 
     ''
 	hashFree( @ctx.libhash )
@@ -498,6 +516,34 @@ sub symbEnd
 	ctx.inited = FALSE
 
 end sub
+
+'':::::
+function symbSetSymbolTb( byval tb as FBSYMBOLTB ptr ) as FBSYMBOLTB ptr
+
+	function = ctx.symtb
+
+	if( tb = NULL ) then
+		ctx.symtb = @ctx.globtb
+	else
+		ctx.symtb = tb
+	end if
+
+end function
+
+'':::::
+function symbGetSymbolTbHead( ) as FBSYMBOL ptr static
+
+	function = ctx.symtb->head
+
+end function
+
+'':::::
+function symbGetGlobalTbHead( ) as FBSYMBOL ptr static
+
+	function = ctx.globtb.head
+
+end function
+
 
 '':::::
 function hDefFile_cb( ) as string static
@@ -666,7 +712,7 @@ private sub hFixForwardRef( byval f as FBSYMBOL ptr, _
 		typ 	= FB_SYMBTYPE_USERDEF
 		ptrcnt 	= 0
 	case FB_SYMBCLASS_ENUM
-		typ 	= FB_SYMBTYPE_UINT
+		typ 	= FB_SYMBTYPE_ENUM
 		ptrcnt 	= 0
 	case FB_SYMBCLASS_TYPEDEF
 		typ 	= sym->typ
@@ -712,10 +758,12 @@ private sub hAddToFwdRef( byval f as FBSYMBOL ptr, _
 end sub
 
 '':::::
-function hNewSymbol( byval class as integer, _
+function hNewSymbol( byval s as FBSYMBOL ptr, _
+					 byval symtb as FBSYMBOLTB ptr, _
+					 byval class as SYMBCLASS_ENUM, _
 					 byval dohash as integer = TRUE, _
-					 byval symbol as string, _
-					 byval aliasname as string, _
+					 byval symbol as zstring ptr, _
+					 byval aliasname as zstring ptr, _
 					 byval islocal as integer = FALSE, _
 					 byval typ as integer = INVALID, _
 					 byval subtype as FBSYMBOL ptr = NULL, _
@@ -723,25 +771,28 @@ function hNewSymbol( byval class as integer, _
 					 byval suffix as integer = INVALID, _
 					 byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
 
-    dim as FBSYMBOL ptr s, n
-    dim as integer slen
-    dim as FBSYMBOLTB ptr tb
+    dim as FBSYMBOL ptr n
+    dim as integer slen, delok
 
     function = NULL
 
-    s = listNewNode( @ctx.symlist )
+    delok = FALSE
     if( s = NULL ) then
-    	exit function
+    	delok = TRUE
+    	s = listNewNode( @ctx.symlist )
+    	if( s = NULL ) then
+    		exit function
+    	end if
     end if
 
     ''
     s->class		= class
-    s->scope		= iif( islocal, 1, 0 )
+    s->scope		= env.scope
     s->typ			= typ
     s->subtype		= subtype
     s->ptrcnt		= ptrcnt
 
-	s->alloctype	= 0
+	s->alloctype	= iif( islocal, FB_ALLOCTYPE_LOCAL, 0 )
     s->lgt			= 0
     s->ofs			= 0
 
@@ -752,24 +803,25 @@ function hNewSymbol( byval class as integer, _
 
     ''
     ZEROSTRDESC( s->name )
-    slen = len( symbol )
+    slen = len( *symbol )
     if( slen > 0 ) then
     	if( not preservecase ) then
-    		s->name = ucase( symbol )
+    		s->name = ucase( *symbol )
     	else
-    	    s->name = symbol
+    	    s->name = *symbol
 		end if
     else
     	dohash = FALSE
     end if
 
     ZEROSTRDESC( s->alias )
-    if( len( aliasname ) > 0 ) then
-    	s->alias = aliasname
+    if( aliasname <> NULL ) then
+    	s->alias = *aliasname
     else
-    	if( slen > 0 ) then
-    		s->alias = s->name
-    	end if
+		select case class
+		case FB_SYMBCLASS_VAR, FB_SYMBCLASS_PROC
+			s->alias = s->name
+		end select
     end if
 
 	s->left  = NULL
@@ -789,15 +841,17 @@ function hNewSymbol( byval class as integer, _
 			if( not hCanDuplicate( n, s ) ) then
 				s->name = ""
 				s->alias = ""
-				listDelNode( @ctx.symlist, cptr( TLISTNODE ptr, s ) )
-
+				if( delok ) then
+					listDelNode( @ctx.symlist, cptr( TLISTNODE ptr, s ) )
+				end if
 				exit function
 			end if
 
 			s->hashitem  = n->hashitem
 			s->hashindex = n->hashindex
 
-			if( not islocal ) then
+			'' module-level scope?
+			if( s->scope = 0 ) then
 				'' add to tail
 				do while( n->right <> NULL )
 					n = n->right
@@ -827,22 +881,19 @@ function hNewSymbol( byval class as integer, _
 		hAddToFwdRef( subtype, s )
 	end if
 
-	'' add to symbol table (local or global)
-	if( not islocal ) then
-		tb = @ctx.globtb
+	'' add to symbol table
+	if( symtb->tail <> NULL ) then
+		symtb->tail->next = s
 	else
-		tb = ctx.loctb
+		symtb->head = s
 	end if
 
-	if( tb->tail <> NULL ) then
-		tb->tail->next = s
-	else
-		tb->head = s
-	end if
+	s->prev  = symtb->tail
+	s->next  = NULL
 
-	s->prev = tb->tail
-	s->next = NULL
-	tb->tail = s
+	symtb->tail = s
+
+	s->symtb = symtb
 
     ''
     function = s
@@ -850,12 +901,13 @@ function hNewSymbol( byval class as integer, _
 end function
 
 '':::::
-function symbAddKeyword( byval symbol as string, _
+function symbAddKeyword( byval symbol as zstring ptr, _
 						 byval id as integer, _
 						 byval class as integer ) as FBSYMBOL ptr
     dim k as FBSYMBOL ptr
 
-    k = hNewSymbol( FB_SYMBCLASS_KEYWORD, TRUE, symbol, "" )
+    k = hNewSymbol( NULL, @ctx.globtb, FB_SYMBCLASS_KEYWORD, TRUE, _
+    				symbol, NULL )
     if( k = NULL ) then
     	return NULL
     end if
@@ -869,8 +921,8 @@ function symbAddKeyword( byval symbol as string, _
 end function
 
 '':::::
-function symbAddDefine( byval symbol as string, _
-						byval text as string, _
+function symbAddDefine( byval symbol as zstring ptr, _
+						byval text as zstring ptr, _
 						byval lgt as integer, _
 						byval args as integer = 0, _
 						byval arghead as FBDEFARG ptr = NULL, _
@@ -882,14 +934,15 @@ function symbAddDefine( byval symbol as string, _
     function = NULL
 
     '' allocate new node
-    d = hNewSymbol( FB_SYMBCLASS_DEFINE, TRUE, symbol, "", env.scope > 0 )
+    d = hNewSymbol( NULL, ctx.symtb, FB_SYMBCLASS_DEFINE, TRUE, _
+    				symbol, NULL, fbIsLocal( ) )
     if( d = NULL ) then
     	exit function
     end if
 
 	''
 	ZEROSTRDESC( d->def.text )
-	d->def.text 	= text
+	d->def.text 	= *text
 	d->lgt			= lgt
 	d->def.args		= args
 	d->def.arghead	= arghead
@@ -904,7 +957,7 @@ end function
 
 '':::::
 function symbAddDefineArg( byval lastarg as FBDEFARG ptr, _
-						   byval symbol as string ) as FBDEFARG ptr static
+						   byval symbol as zstring ptr ) as FBDEFARG ptr static
     dim a as FBDEFARG ptr
 
     function = NULL
@@ -920,7 +973,7 @@ function symbAddDefineArg( byval lastarg as FBDEFARG ptr, _
 
 	''
     ZEROSTRDESC( a->name )
-    a->name 	= ucase( symbol )
+    a->name 	= ucase( *symbol )
     a->next		= NULL
     a->id		= ctx.defargcnt
     ctx.defargcnt += 1
@@ -948,7 +1001,7 @@ private sub hCheckFwdRef( byval s as FBSYMBOL ptr, _
 end sub
 
 '':::::
-function symbAddTypedef( byval symbol as string, _
+function symbAddTypedef( byval symbol as zstring ptr, _
 						 byval typ as integer, _
 						 byval subtype as FBSYMBOL ptr, _
 						 byval ptrcnt as integer, _
@@ -958,14 +1011,15 @@ function symbAddTypedef( byval symbol as string, _
     function = NULL
 
     '' allocate new node
-    t = hNewSymbol( FB_SYMBCLASS_TYPEDEF, TRUE, symbol, "", env.scope > 0, typ, subtype, ptrcnt )
+    t = hNewSymbol( NULL, ctx.symtb, FB_SYMBCLASS_TYPEDEF, TRUE, _
+    				symbol, NULL, _
+    				fbIsLocal( ), typ, subtype, ptrcnt )
     if( t = NULL ) then
     	exit function
     end if
 
 	''
 	t->lgt 	= lgt
-	t->dbg.typenum = INVALID
 
 	'' check for forward references
 	if( ctx.fwdrefcnt > 0 ) then
@@ -978,13 +1032,14 @@ function symbAddTypedef( byval symbol as string, _
 end function
 
 '':::::
-function symbAddFwdRef( byval symbol as string ) as FBSYMBOL ptr static
+function symbAddFwdRef( byval symbol as zstring ptr ) as FBSYMBOL ptr static
     dim f as FBSYMBOL ptr
 
     function = NULL
 
     '' allocate new node
-    f = hNewSymbol( FB_SYMBCLASS_FWDREF, TRUE, symbol, "", env.scope > 0 )
+    f = hNewSymbol( NULL, ctx.symtb, FB_SYMBCLASS_FWDREF, TRUE, _
+    				symbol, NULL, fbIsLocal( ) )
     if( f = NULL ) then
     	exit function
     end if
@@ -1021,21 +1076,30 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 	iscommon 	= symbIsCommon( s )
 	ispubext 	= (s->alloctype and (FB_ALLOCTYPE_PUBLIC or FB_ALLOCTYPE_EXTERN)) > 0
 
+	'' COMMON, public or dynamic? use the array name for the descriptor,
+	'' as only it will be allocated or seen by other modules
 	if( (iscommon) or (ispubext and isdynamic) ) then
 		sname = symbGetName( s )
+
+	'' otherwise, create a temporary name..
 	else
 		sname = *hMakeTmpStr( FALSE )
 	end if
 
-	if( (env.scope = 0) or (isshared) or (isstatic) ) then
+	'' module-level or static? no alias
+	if( not fbIsLocal( ) or (isshared) or (isstatic) ) then
 		aname = sname
 		ofs = 0
+
+	'' local.. let emit do it
 	else
 		lgt = FB_ARRAYDESCLEN + dimensions * FB_ARRAYDESC_DIMLEN
 		aname = *emitAllocLocal( env.currproc, lgt, ofs )
 	end if
 
-	d = hNewSymbol( FB_SYMBCLASS_VAR, FALSE, "", aname, (env.scope > 0) and (not isshared), _
+	d = hNewSymbol( NULL, ctx.symtb, FB_SYMBCLASS_VAR, FALSE, _
+					NULL, aname, _
+					fbIsLocal( ) and (not isshared), _
 					FB_SYMBTYPE_USERDEF, cptr( FBSYMBOL ptr, FB_DESCTYPE_ARRAY ), 0 )
     if( d = NULL ) then
     	exit function
@@ -1043,11 +1107,9 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 
 	''
 	if( isshared ) then
-		d->alloctype	= FB_ALLOCTYPE_SHARED
+		d->alloctype  or= FB_ALLOCTYPE_SHARED
 	elseif( isstatic ) then
-		d->alloctype	= FB_ALLOCTYPE_STATIC
-	else
-		d->alloctype	= 0
+		d->alloctype  or= FB_ALLOCTYPE_STATIC
 	end if
 
 	d->ofs				= ofs
@@ -1138,8 +1200,7 @@ end sub
 
 '':::::
 private sub hSetupVar( byval s as FBSYMBOL ptr, _
-			   		   byval symbol as string, _
-			   		   byval aname as string, _
+			   		   byval symbol as zstring ptr, _
 			   		   byval typ as integer, _
 			   		   byval subtype as FBSYMBOL ptr, _
 			   		   byval lgt as integer, _
@@ -1149,15 +1210,15 @@ private sub hSetupVar( byval s as FBSYMBOL ptr, _
 			   		   byval alloctype as integer ) static
 
 	if( typ = INVALID ) then
-		typ = hGetDefType( symbol )
+		typ = hGetDefType( *symbol )
 	end if
 
 	''
-	s->alloctype= alloctype
-	s->acccnt 	= 0
+	s->alloctype  or= alloctype
+	s->acccnt		= 0
 
-	s->lgt		= lgt
-	s->ofs		= ofs
+	s->lgt			= lgt
+	s->ofs			= ofs
 
 	'' array fields
 	s->var.array.dimhead = NULL
@@ -1178,8 +1239,8 @@ private sub hSetupVar( byval s as FBSYMBOL ptr, _
 end sub
 
 '':::::
-function symbAddVarEx( byval symbol as string, _
-					   byval aliasname as string, _
+function symbAddVarEx( byval symbol as zstring ptr, _
+					   byval aliasname as zstring ptr, _
 					   byval typ as integer, _
 					   byval subtype as FBSYMBOL ptr, _
 					   byval ptrcnt as integer, _
@@ -1191,11 +1252,10 @@ function symbAddVarEx( byval symbol as string, _
 				       byval preservecase as integer, _
 				       byval clearname as integer ) as FBSYMBOL ptr static
 
-    static as zstring * FB_MAXINTNAMELEN+1 aname
+    dim as zstring ptr aname
     dim as FBSYMBOL ptr s
-    dim as integer elms, suffix, arglen
-    dim as integer isshared, isstatic, ispublic, isextern
-    dim as integer isarg, islocal, ofs
+    dim as integer isshared, isstatic, ispublic, isextern, isarg, islocal
+    dim as integer suffix, locofs, loclen
 
     function = NULL
 
@@ -1207,8 +1267,6 @@ function symbAddVarEx( byval symbol as string, _
     isarg    = (alloctype and (FB_ALLOCTYPE_ARGUMENTBYDESC or _
     						   FB_ALLOCTYPE_ARGUMENTBYVAL or _
     						   FB_ALLOCTYPE_ARGUMENTBYREF)) > 0
-	islocal  = FALSE
-
     ''
     if( lgt <= 0 ) then
 		if( typ = INVALID ) then
@@ -1227,69 +1285,83 @@ function symbAddVarEx( byval symbol as string, _
     end if
 
     ''
-    ofs = 0
+    locofs = 0
 
 	'' create an alias name (the real one that will be emited)
-	if( len( aliasname ) > 0 ) then
+	islocal  = FALSE
+	if( aliasname <> NULL ) then
+		'' if alias was given, it can't be a local var
 		aname = aliasname
 
 	else
+		'' static?
 		if( (not isshared) and (isstatic) ) then
-			aname = *hMakeTmpStr( FALSE )
+			aname = hMakeTmpStr( FALSE )
 
 		else
-			if( (ispublic) or (isextern) ) then
-			    aname = *hCreateName( symbol, suffix, preservecase, _
-			    					  TRUE, clearname )
+			'' global/shared or module-level?
+			if( (ispublic) or _
+				(isextern) or _
+				(isshared) or _
+				not fbIsLocal( ) ) then
 
-			elseif( (isshared) or (env.scope = 0) ) then
-				aname = *hCreateName( symbol, suffix, preservecase, _
-									  TRUE, clearname )
+			    '' not inside a SCOPE block?
+			    if( env.scope = 0 ) then
+			    	aname = hCreateName( *symbol, suffix, preservecase, _
+			    					  	 TRUE, clearname )
 
-			else
-				if( not isarg ) then
-					elms = hCalcElements2( dimensions, dTB() )
-					aname = *emitAllocLocal( env.currproc, lgt * elms, ofs )
-					islocal = TRUE
-
+				'' inside a SCOPE..
 				else
-        			if( alloctype = FB_ALLOCTYPE_ARGUMENTBYVAL ) then
-        				arglen = lgt
-        			else
-        				arglen = FB_POINTERSIZE
-        			end if
-					aname = *emitAllocArg( env.currproc, arglen, ofs )
+					aname = hMakeTmpStr( FALSE )
+				end if
+
+			'' local..
+			else
+				islocal = TRUE
+				'' an argument?
+				if( isarg ) then
+					loclen = iif( alloctype = FB_ALLOCTYPE_ARGUMENTBYVAL, lgt, FB_POINTERSIZE )
+					aname = emitAllocArg( env.currproc, loclen, locofs )
+
+				'' local..
+				else
+					loclen = lgt * hCalcElements2( dimensions, dTB() )
+					aname = emitAllocLocal( env.currproc, loclen, locofs )
 				end if
 			end if
 		end if
 	end if
 
-	''
-	s = hNewSymbol( FB_SYMBCLASS_VAR, TRUE, symbol, aname, _
-					(env.scope > 0) and (not isshared), _
+	'' if SHARED, use the global symbol tb, even if inside a proc
+	s = hNewSymbol( NULL, iif( isshared, @ctx.globtb, ctx.symtb ), _
+					FB_SYMBCLASS_VAR, TRUE, _
+					symbol, aname, _
+					fbIsLocal( ) and (not isshared), _
 					typ, subtype, ptrcnt, suffix, preservecase )
 
 	if( s = NULL ) then
 		'' remove a local or arg or else emit will reserve unused space for it..
 		if( islocal ) then
-			emitFreeLocal( env.currproc, lgt * elms )
-		elseif( isarg ) then
-			emitFreeArg( env.currproc, arglen )
+			if( isarg ) then
+				emitFreeArg( env.currproc, loclen )
+			else
+				emitFreeLocal( env.currproc, loclen )
+			end if
 		end if
 
 		exit function
 	end if
 
 	''
-	hSetupVar( s, symbol, aname, typ, subtype, lgt, _
-			   ofs, dimensions, dTB(), alloctype )
+	hSetupVar( s, symbol, typ, subtype, lgt, _
+			   locofs, dimensions, dTB(), alloctype )
 
 	function = s
 
 end function
 
 '':::::
-function symbAddVar( byval symbol as string, _
+function symbAddVar( byval symbol as zstring ptr, _
 					 byval typ as integer, _
 					 byval subtype as FBSYMBOL ptr, _
 				     byval ptrcnt as integer, _
@@ -1297,7 +1369,7 @@ function symbAddVar( byval symbol as string, _
 				     dTB() as FBARRAYDIM, _
 				     byval alloctype as integer ) as FBSYMBOL ptr static
 
-    function = symbAddVarEx( symbol, "", typ, subtype, ptrcnt, _
+    function = symbAddVarEx( symbol, NULL, typ, subtype, ptrcnt, _
     		  			     0, dimensions, dTB(), _
     						 alloctype, _
     						 TRUE, FALSE, TRUE )
@@ -1314,13 +1386,13 @@ function symbAddTempVar( byval typ as integer, _
 	sname = *hMakeTmpStr( FALSE )
 
 	alloctype = FB_ALLOCTYPE_TEMP
-	if( env.scope > 0 ) then
+	if( fbIsLocal( ) ) then
 		if( env.isprocstatic ) then
 			alloctype or= FB_ALLOCTYPE_STATIC
 		end if
 	end if
 
-	function = symbAddVarEx( sname, "", typ, subtype, 0, _
+	function = symbAddVarEx( sname, NULL, typ, subtype, 0, _
 							 0, 0, dTB(), _
 							 alloctype, _
 							 FALSE, FALSE, FALSE )
@@ -1341,14 +1413,17 @@ function hAllocNumericConst( byval sname as string, _
 	cname = "{fbnc}"
 	cname += sname
 
-	s = symbFindByNameAndSuffix( cname, typ, FALSE )
+	s = symbFindByNameAndSuffix( @cname, typ, FALSE )
 	if( s <> NULL ) then
 		return s
 	end if
 
 	aname = *hMakeTmpStr( FALSE )
 
-	s = symbAddVarEx( cname, aname, typ, NULL, 0, 0, 0, dTB(), _
+	'' it must be declare as SHARED, because even if currently inside an
+	'' proc, the global symbol tb should be used, so just one constant
+	'' will be ever allocated over the module
+	s = symbAddVarEx( @cname, @aname, typ, NULL, 0, 0, 0, dTB(), _
 					  FB_ALLOCTYPE_SHARED, TRUE, FALSE, FALSE )
 
 	''
@@ -1391,7 +1466,7 @@ function hAllocStringConst( byval sname as string, _
 	end if
 
 	''
-	s = symbFindByNameAndClass( cname, FB_SYMBCLASS_VAR, TRUE )
+	s = symbFindByNameAndClass( @cname, FB_SYMBCLASS_VAR, TRUE )
 	if( s <> NULL ) then
 		return s 's->var.array.desc
 	end if
@@ -1401,7 +1476,9 @@ function hAllocStringConst( byval sname as string, _
 	'' plus the null-char as rtlib wrappers will take it into account
 	lgt += 1
 
-	s = symbAddVarEx( cname, aname, FB_SYMBTYPE_FIXSTR, NULL, 0, lgt, 0, dTB(), _
+	'' it must be declare as SHARED, see hAllocNumericConst()
+	s = symbAddVarEx( @cname, @aname, FB_SYMBTYPE_FIXSTR, NULL, _
+					  0, lgt, 0, dTB(), _
 					  FB_ALLOCTYPE_SHARED, FALSE, TRUE, FALSE )
 
 	''
@@ -1410,7 +1487,8 @@ function hAllocStringConst( byval sname as string, _
 	ZEROSTRDESC( s->var.inittext )
 	s->var.inittext = sname
 
-	'' can't fake a descriptor as the literal string passed to user procs can be modified/reused
+	'' can't fake a descriptor as the literal string passed to
+	'' user procs can be modified/reused
 	's->var.array.desc = hCreateStringDesc( s )
 
 	function = s 's->var.array.desc
@@ -1418,31 +1496,34 @@ function hAllocStringConst( byval sname as string, _
 end function
 
 '':::::
-function symbAddConst( byval symbol as string, _
+function symbAddConst( byval symbol as zstring ptr, _
 					   byval typ as integer, _
 					   byval subtype as FBSYMBOL ptr, _
-					   byval text as string, _
+					   byval text as zstring ptr, _
 					   byval lgt as integer ) as FBSYMBOL ptr static
-    dim c as FBSYMBOL ptr
+
+    dim as FBSYMBOL ptr c
 
     function = NULL
 
-    ''
-    c = hNewSymbol( FB_SYMBCLASS_CONST, TRUE, symbol, "", env.scope > 0, typ, subtype )
+    c = hNewSymbol( NULL, iif( typ = FB_SYMBTYPE_ENUM, @subtype->enum.elmtb, ctx.symtb ), _
+    				FB_SYMBCLASS_CONST, TRUE, _
+    				symbol, NULL, _
+    				fbIsLocal( ), typ, subtype )
 	if( c = NULL ) then
 		exit function
 	end if
 
 	c->lgt		= lgt
 	ZEROSTRDESC( c->con.text )
-	c->con.text	= text
+	c->con.text	= *text
 
 	function = c
 
 end function
 
 '':::::
-function symbAddLabel( byval symbol as string, _
+function symbAddLabel( byval symbol as zstring ptr, _
 					   byval declaring as integer = TRUE, _
 					   byval createalias as integer = FALSE ) as FBSYMBOL ptr static
 
@@ -1451,7 +1532,7 @@ function symbAddLabel( byval symbol as string, _
 
     function = NULL
 
-    if( len( symbol ) > 0 ) then
+    if( symbol <> NULL ) then
     	'' check if label already exists
     	l = symbFindByNameAndClass( symbol, FB_SYMBCLASS_LABEL )
     	if( l <> NULL ) then
@@ -1469,19 +1550,20 @@ function symbAddLabel( byval symbol as string, _
 
 		'' add the new label
 		if( not createalias ) then
-    		aname = strptr( symbol )
+    		aname = symbol
 		else
 			aname = hMakeTmpStr( TRUE )
 		end if
 
-		lname = strptr( symbol )
+		lname = symbol
 
 	else
 		lname = hMakeTmpStr( TRUE )
 		aname = lname
 	end if
 
-    l = hNewSymbol( FB_SYMBCLASS_LABEL, TRUE, lname, aname, env.scope > 0 )
+    l = hNewSymbol( NULL, ctx.symtb, FB_SYMBCLASS_LABEL, TRUE, _
+    				lname, aname, fbIsLocal( ) )
     if( l = NULL ) then
     	exit function
     end if
@@ -1495,30 +1577,31 @@ end function
 
 '':::::
 function symbAddUDT( byval parent as FBSYMBOL ptr, _
-					 byval symbol as string, _
+					 byval symbol as zstring ptr, _
 					 byval isunion as integer, _
 					 byval align as integer ) as FBSYMBOL ptr static
     dim t as FBSYMBOL ptr
 
     function = NULL
 
-    t = hNewSymbol( FB_SYMBCLASS_UDT, TRUE, symbol, "", env.scope > 0 )
+    t = hNewSymbol( NULL, ctx.symtb, FB_SYMBCLASS_UDT, TRUE, _
+    				symbol, NULL, fbIsLocal( ) )
 	if( t = NULL ) then
 		exit function
 	end if
 
-	t->udt.parent	= parent
-	t->udt.isunion	= isunion
-	t->udt.elements	= 0
-	t->udt.head 	= NULL
-	t->udt.tail 	= NULL
-	t->udt.ofs		= 0
-	t->udt.align	= align
-	t->udt.lfldlen	= 0
-	t->udt.bitpos	= 0
-	t->udt.unpadlgt = 0
+	t->udt.parent		= parent
+	t->udt.isunion		= isunion
+	t->udt.elements		= 0
+	t->udt.fldtb.head	= NULL
+	t->udt.fldtb.tail	= NULL
+	t->udt.ofs			= 0
+	t->udt.align		= align
+	t->udt.lfldlen		= 0
+	t->udt.bitpos		= 0
+	t->udt.unpadlgt 	= 0
 
-	t->dbg.typenum	= INVALID
+	t->udt.dbg.typenum	= INVALID
 
 	function = t
 
@@ -1600,7 +1683,7 @@ end function
 
 '':::::
 function symbAddUDTElement( byval t as FBSYMBOL ptr, _
-							byval elmname as string, _
+							byval elmname as zstring ptr, _
 						    byval dimensions as integer, _
 						    dTB() as FBARRAYDIM, _
 						    byval typ as integer, _
@@ -1615,25 +1698,25 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 
     function = NULL
 
-    hUcase( elmname, ename )
+    hUcase( *elmname, ename )
 
     '' check if element already exists in the current struct and parents
     p = t
     do
-    	e = p->udt.head
+    	e = p->udt.fldtb.head
     	do while( e <> NULL )
-    		if( e->alias = ename ) then
+    		if( e->name = ename ) then
     			exit function
     		end if
 
     		'' next
-    		e = e->var.elm.next
+    		e = e->next
     	loop
 
     	p = p->udt.parent
     loop while( p <> NULL )
 
-	tail = t->udt.tail
+	tail = t->udt.fldtb.tail
 
     '' calc length if it wasn't given
 	if( lgt <= 0 ) then
@@ -1673,22 +1756,15 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
     end if
 
 	''
-    e = hNewSymbol( FB_SYMBCLASS_UDTELM, FALSE, ename, "", FALSE, typ, subtype, ptrcnt )
+    e = hNewSymbol( NULL, @t->udt.fldtb, FB_SYMBCLASS_UDTELM, FALSE, _
+    				@ename, NULL, _
+    				FALSE, typ, subtype, ptrcnt )
     if( e = NULL ) then
     	exit function
     end if
 
 	'' add to parent's linked-list
-	e->var.elm.prev 	= tail
-	e->var.elm.next		= NULL
-    e->var.elm.parent	= t
-	t->udt.tail 		= e
-	if( tail <> NULL ) then
-		tail->var.elm.next = e
-	else
-		t->udt.head 	= e
-	end if
-
+    e->var.elm.parent = t
     t->udt.elements	+= 1
 
 	''
@@ -1781,50 +1857,56 @@ sub symbInsertInnerUDT( byval t as FBSYMBOL ptr, _
 						byval inner as FBSYMBOL ptr ) static
 
     dim as FBSYMBOL ptr e
+    dim as FBSYMBOLTB ptr symtb
     dim as integer pad
 
 	if( not t->udt.isunion ) then
 		'' calc padding (should be aligned like if an UDT field were been added)
-		pad = hCalcALign( inner->udt.lfldlen, t->udt.ofs, t->udt.align, FB_SYMBTYPE_VOID, NULL )
+		pad = hCalcALign( inner->udt.lfldlen, t->udt.ofs, t->udt.align, _
+						  FB_SYMBTYPE_VOID, NULL )
 		if( pad > 0 ) then
 			t->udt.ofs += pad
 		end if
 	end if
 
     '' move the nodes from inner to parent
-    e = inner->udt.head
+    e = inner->udt.fldtb.head
 
-    e->var.elm.prev = t->udt.tail
-    if( t->udt.tail = NULL ) then
-    	t->udt.head = e
+    e->prev = t->udt.fldtb.tail
+    if( t->udt.fldtb.tail = NULL ) then
+    	t->udt.fldtb.head = e
     else
-    	t->udt.tail->var.elm.next = e
+    	t->udt.fldtb.tail->next = e
     end if
+
+    symtb = @t->udt.fldtb
 
     if( t->udt.isunion ) then
     	'' link to parent
     	do while( e <> NULL )
     		e->var.elm.parent = t
+    		e->symtb = symtb
 
     		'' next
-    		e = e->var.elm.next
+    		e = e->next
     	loop
 
     else
     	'' link to parent
     	do while( e <> NULL )
     		e->var.elm.parent = t
+    		e->symtb = symtb
 
 			'' update the offsets
 			t->udt.ofs += e->var.elm.ofs
 			e->var.elm.ofs = t->udt.ofs
 
     		'' next
-    		e = e->var.elm.next
+    		e = e->next
     	loop
     end if
 
-    t->udt.tail = inner->udt.tail
+    t->udt.fldtb.tail = inner->udt.fldtb.tail
 
     '' update elements
     t->udt.elements	+= inner->udt.elements
@@ -1851,8 +1933,8 @@ sub symbInsertInnerUDT( byval t as FBSYMBOL ptr, _
     t->udt.bitpos = 0
 
     '' remove from inner udt list
-    inner->udt.head = NULL
-    inner->udt.tail = NULL
+    inner->udt.fldtb.head = NULL
+    inner->udt.fldtb.tail = NULL
 
 end sub
 
@@ -1893,22 +1975,23 @@ sub symbRoundUDTSize( byval t as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-function symbAddEnum( byval symbol as string ) as FBSYMBOL ptr static
+function symbAddEnum( byval symbol as zstring ptr ) as FBSYMBOL ptr static
     dim as integer i
     dim as FBSYMBOL ptr e
 
     function = NULL
 
     ''
-    e = hNewSymbol( FB_SYMBCLASS_ENUM, TRUE, symbol, "", env.scope > 0 )
+    e = hNewSymbol( NULL, ctx.symtb, FB_SYMBCLASS_ENUM, TRUE, _
+    				symbol, NULL, fbIsLocal( ) )
 	if( e = NULL ) then
 		exit function
 	end if
 
-	e->enum.elements = 0
-	e->enum.head 	 = NULL
-	e->enum.tail 	 = NULL
-	e->dbg.typenum = INVALID
+	e->enum.elements	= 0
+	e->enum.elmtb.head 	= NULL
+	e->enum.elmtb.tail	= NULL
+	e->enum.dbg.typenum = INVALID
 
 	'' check for forward references
 	if( ctx.fwdrefcnt > 0 ) then
@@ -1921,30 +2004,21 @@ end function
 
 '':::::
 function symbAddEnumElement( byval parent as FBSYMBOL ptr, _
-							 byval symbol as string, _
+							 byval symbol as zstring ptr, _
 					         byval value as integer ) as FBSYMBOL ptr static
 
 	dim as FBSYMBOL ptr elm, tail
+	dim as string text
 
-	elm = symbAddConst( symbol, FB_SYMBTYPE_ENUM, parent, str( value ), 0 )
+	text = str( value )
+	elm = symbAddConst( symbol, FB_SYMBTYPE_ENUM, parent, _
+						strptr( text ), 0 )
 
 	if( elm = NULL ) then
 		return NULL
 	end if
 
 	parent->enum.elements += 1
-
-	'' add element to parent's linked-list
-	tail = parent->enum.tail
-	if( tail <> NULL ) then
-		tail->con.eelm.nxt = elm
-	else
-		parent->enum.head = elm
-	end if
-
-	parent->enum.tail = elm
-
-	elm->con.eelm.nxt = NULL
 
 	''
 	function = elm
@@ -1991,13 +2065,14 @@ private function hCalcProcArgsLen( byval args as integer, _
 	do while( argtail <> NULL )
 		select case argtail->arg.mode
 		case FB_ARGMODE_BYVAL
-			lgt	+= ((argtail->lgt + 3) and not 3)			'' x86 assumption!
+			lgt	+= ((argtail->lgt + (FB_INTEGERSIZE-1)) and _
+				   not (FB_INTEGERSIZE-1))						'' x86 assumption!
 
 		case FB_ARGMODE_BYREF, FB_ARGMODE_BYDESC
 			lgt	+= FB_POINTERSIZE
 		end select
 
-		argtail = argtail->arg.prev
+		argtail = argtail->prev
 	loop
 
 	function = lgt
@@ -2005,8 +2080,8 @@ private function hCalcProcArgsLen( byval args as integer, _
 end function
 
 '':::::
-function symbAddArg( byval symbol as string, _
-					 byval tail as FBSYMBOL ptr, _
+function symbAddArg( byval proc as FBSYMBOL ptr, _
+					 byval symbol as zstring ptr, _
 					 byval typ as integer, _
 					 byval subtype as FBSYMBOL ptr, _
 					 byval ptrcnt as integer, _
@@ -2015,21 +2090,19 @@ function symbAddArg( byval symbol as string, _
 					 byval suffix as integer, _
 					 byval optional as integer, _
 					 byval optval as FBVALUE ptr ) as FBSYMBOL ptr static
+
     dim a as FBSYMBOL ptr
 
     function = NULL
 
-    a = hNewSymbol( FB_SYMBCLASS_PROCARG, FALSE, "", _
-    				symbol, FALSE, typ, subtype, ptrcnt, INVALID, TRUE )
+    a = hNewSymbol( NULL, @proc->proc.argtb, FB_SYMBCLASS_PROCARG, FALSE, _
+    				NULL, symbol, _
+    				FALSE, typ, subtype, ptrcnt, INVALID, TRUE )
     if( a = NULL ) then
     	exit function
     end if
 
-	a->arg.prev = tail
-	a->arg.next = NULL
-	if( tail <> NULL ) then
-		tail->arg.next = a
-	end if
+	proc->proc.args += 1
 
 	''
 	a->lgt			= lgt
@@ -2041,10 +2114,13 @@ function symbAddArg( byval symbol as string, _
 		select case as const typ
 		case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
 			a->arg.optval.valuestr = optval->valuestr
+
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
 			a->arg.optval.value64 = optval->value64
+
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
 			a->arg.optval.valuef = optval->valuef
+
 		case else
 			a->arg.optval.valuei = optval->valuei
 		end select
@@ -2076,7 +2152,7 @@ private function hGetProcRealType( byval typ as integer, _
 
 		case 3
 			'' return as int only if first is a short
-			if( subtype->udt.head->lgt = 2 ) then
+			if( subtype->udt.fldtb.head->lgt = 2 ) then
 				'' and if the struct is not packed
 				if( subtype->lgt >= FB_INTEGERSIZE ) then
 					return FB_SYMBTYPE_INTEGER
@@ -2088,15 +2164,15 @@ private function hGetProcRealType( byval typ as integer, _
 			'' return in ST(0) if there's only one element and it's a SINGLE
 			if( subtype->udt.elements = 1 ) then
 				do
-					if( subtype->udt.head->typ = FB_SYMBTYPE_SINGLE ) then
+					if( subtype->udt.fldtb.head->typ = FB_SYMBTYPE_SINGLE ) then
 						return FB_SYMBTYPE_SINGLE
 					end if
 
-					if( subtype->udt.head->typ <> FB_SYMBTYPE_USERDEF ) then
+					if( subtype->udt.fldtb.head->typ <> FB_SYMBTYPE_USERDEF ) then
 						exit do
 					end if
 
-					subtype = subtype->udt.head->subtype
+					subtype = subtype->udt.fldtb.head->subtype
 
 					if( subtype->udt.elements <> 1 ) then
 						exit do
@@ -2109,7 +2185,7 @@ private function hGetProcRealType( byval typ as integer, _
 		case FB_INTEGERSIZE + 1, FB_INTEGERSIZE + 2, FB_INTEGERSIZE + 3
 
 			'' return as longint only if first is a int
-			if( subtype->udt.head->lgt = FB_INTEGERSIZE ) then
+			if( subtype->udt.fldtb.head->lgt = FB_INTEGERSIZE ) then
 				'' and if the struct is not packed
 				if( subtype->lgt >= FB_INTEGERSIZE*2 ) then
 					return FB_SYMBTYPE_LONGINT
@@ -2121,15 +2197,15 @@ private function hGetProcRealType( byval typ as integer, _
 			'' return in ST(0) if there's only one element and it's a DOUBLE
 			if( subtype->udt.elements = 1 ) then
 				do
-					if( subtype->udt.head->typ = FB_SYMBTYPE_DOUBLE ) then
+					if( subtype->udt.fldtb.head->typ = FB_SYMBTYPE_DOUBLE ) then
 						return FB_SYMBTYPE_DOUBLE
 					end if
 
-					if( subtype->udt.head->typ <> FB_SYMBTYPE_USERDEF ) then
+					if( subtype->udt.fldtb.head->typ <> FB_SYMBTYPE_USERDEF ) then
 						exit do
 					end if
 
-					subtype = subtype->udt.head->subtype
+					subtype = subtype->udt.fldtb.head->subtype
 
 					if( subtype->udt.elements <> 1 ) then
 						exit do
@@ -2153,39 +2229,39 @@ private function hGetProcRealType( byval typ as integer, _
 end function
 
 '':::::
-private function hAddOvlProc( byval ovlf as FBSYMBOL ptr, _
-							  byval symbol as string, _
-							  byval aname as string, _
+private function hAddOvlProc( byval proc as FBSYMBOL ptr, _
+							  byval parent as FBSYMBOL ptr, _
+							  byval symbol as zstring ptr, _
+							  byval aname as zstring ptr, _
 							  byval typ as integer, _
 							  byval subtype as FBSYMBOL ptr, _
 							  byval ptrcnt as integer, _
-				              byval argc as integer, _
-				              byval argtail as FBSYMBOL ptr, _
 				              byval preservecase as integer ) as FBSYMBOL ptr static
 
 	dim as FBSYMBOL ptr f, farg, parg, fsubtype, psubtype
-	dim as integer optcnt
+	dim as integer optcnt, argc
 
 	function = NULL
 
 	'' arg-less?
+	argc = symbGetProcArgs( proc )
 	if( argc = 0 ) then
 		exit function
 	end if
 
 	'' can't be vararg..
-	if( argtail->arg.mode = FB_ARGMODE_VARARG ) then
+	parg = symbGetProcTailArg( proc )
+	if( parg->arg.mode = FB_ARGMODE_VARARG ) then
 		exit function
 	end if
 
 	'' all args can't be optional
 	optcnt = 0
-	parg = argtail
 	do while( parg <> NULL )
 		if( parg->arg.optional ) then
 			optcnt += 1
 		end if
-		parg = parg->arg.prev
+		parg = parg->prev
 	loop
 
 	if( optcnt = argc ) then
@@ -2193,15 +2269,15 @@ private function hAddOvlProc( byval ovlf as FBSYMBOL ptr, _
 	end if
 
 	'' for each overloaded proc..
-	f = ovlf
+	f = parent
 	do while( f <> NULL )
 
 		'' same number of args?
 		if( f->proc.args = argc ) then
 
 			'' for each arg..
-			parg = argtail
-			farg = f->proc.argtail
+			parg = symbGetProcTailArg( proc )
+			farg = f->proc.argtb.tail
 
 			do while( parg <> NULL )
 				'' not the same type? check next proc..
@@ -2213,8 +2289,8 @@ private function hAddOvlProc( byval ovlf as FBSYMBOL ptr, _
 					exit do
 				end if
 
-				parg = parg->arg.prev
-				farg = farg->arg.prev
+				parg = parg->prev
+				farg = farg->prev
 			loop
 
 			'' all args equal? can't overload..
@@ -2224,128 +2300,125 @@ private function hAddOvlProc( byval ovlf as FBSYMBOL ptr, _
 
 		end if
 
-		f = f->proc.ovl.nxt
+		f = f->proc.ovl.next
 	loop
 
 
     '' add the new proc symbol, w/o adding it to the hash table
-	f = hNewSymbol( FB_SYMBCLASS_PROC, FALSE, symbol, aname, FALSE, _
-					typ, subtype, ptrcnt, INVALID, preservecase )
+	proc = hNewSymbol( proc, @ctx.globtb, FB_SYMBCLASS_PROC, FALSE, _
+					   symbol, aname, _
+					   FALSE, typ, subtype, ptrcnt, INVALID, preservecase )
 
-	if( f = NULL ) then
+	if( proc = NULL ) then
 		exit function
 	end if
 
 	'' add to linked-list or getOrgName will fail
-	ovlf->right  = f
-	f->left      = ovlf
+	parent->right	= proc
+	proc->left      = parent
 
-	f->hashitem  = ovlf->hashitem
-	f->hashindex = ovlf->hashindex
+	proc->hashitem  = parent->hashitem
+	proc->hashindex	= parent->hashindex
 
     ''
-	function = f
+	function = proc
 
 end function
 
 '':::::
-private function hSetupProc( byval symbol as string, _
-							 byval aliasname as string, _
-							 byval libname as string, _
+private function hSetupProc( byval sym as FBSYMBOL ptr, _
+							 byval id as zstring ptr, _
+							 byval aliasname as zstring ptr, _
+							 byval libname as zstring ptr, _
 				             byval typ as integer, _
 				             byval subtype as FBSYMBOL ptr, _
 				             byval ptrcnt as integer, _
 				             byval alloctype as integer, _
 				             byval mode as integer, _
-				             byval argc as integer, _
-				             byval argtail as FBSYMBOL ptr, _
 			                 byval declaring as integer, _
 			                 byval preservecase as integer ) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXINTNAMELEN+1 aname
-    dim as integer lgt, i, realtype
-    dim as FBSYMBOL ptr f, ovlf
+    dim as integer lgt, realtype
+    dim as FBSYMBOL ptr proc, parent
 
     function = NULL
 
 	''
 	if( typ = INVALID ) then
-		typ = hGetDefType( symbol )
+		typ = hGetDefType( *id )
 		subtype = NULL
 	end if
 
     realtype = hGetProcRealType( typ, subtype )
 
-    lgt = hCalcProcArgsLen( argc, argtail )
+    lgt = hCalcProcArgsLen( symbGetProcArgs( sym ), symbGetProcTailArg( sym ) )
 
     '' no alias? make one..
-    if( len( aliasname ) = 0 ) then
+    if( aliasname = NULL ) then
 
-    	if( len( libname ) = 0 ) then
-    		hUcase( symbol, aname )
-    	else
-    		aname = symbol
-    	end if
+    	hUcase( *id, aname )
 
     	'' overloaded?
 		if( (alloctype and FB_ALLOCTYPE_OVERLOADED) > 0 ) then
-			aname = *hCreateOvlProcAlias( aname, argc, argtail )
+			aname = *hCreateOvlProcAlias( aname, _
+										  symbGetProcArgs( sym ), _
+										  symbGetProcTailArg( sym ) )
 		end if
 
 		aname = *hCreateProcAlias( aname, lgt, mode )
 
     '' alias given..
     else
-	   	aname = *hCreateProcAlias( aliasname, lgt, mode )
+	   	aname = *hCreateProcAlias( *aliasname, lgt, mode )
     end if
 
     ''
-	f = hNewSymbol( FB_SYMBCLASS_PROC, TRUE, symbol, aname, FALSE, _
-					typ, subtype, ptrcnt, INVALID, preservecase )
+	proc = hNewSymbol( sym, @ctx.globtb, FB_SYMBCLASS_PROC, TRUE, _
+					   id, @aname, _
+					   FALSE, typ, subtype, ptrcnt, INVALID, preservecase )
 
 	'' dup def?
-	if( f = NULL ) then
+	if( proc = NULL ) then
 		'' is the dup a proc symbol?
-		ovlf = symbFindByNameAndClass( symbol, FB_SYMBCLASS_PROC, preservecase )
-		if( ovlf = NULL ) then
+		parent = symbFindByNameAndClass( id, FB_SYMBCLASS_PROC, preservecase )
+		if( parent = NULL ) then
 			exit function
 		end if
 
 		'' proc was defined as overloadable?
-		if( not symbIsOverloaded( ovlf ) ) then
+		if( not symbIsOverloaded( parent ) ) then
 			exit function
 		end if
 
     	'' no alias?
-    	if( len( aliasname ) = 0 ) then
+    	if( aliasname = NULL ) then
+			'' not declared explicitly as overloaded?
 			if( (alloctype and FB_ALLOCTYPE_OVERLOADED) = 0 ) then
-    			if( len( libname ) = 0 ) then
-    				hUcase( symbol, aname )
-    			else
-    				aname = symbol
-    			end if
+    			hUcase( *id, aname )
 
-				aname = *hCreateOvlProcAlias( aname, argc, argtail )
+				aname = *hCreateOvlProcAlias( aname, _
+											  symbGetProcArgs( sym ), _
+											  symbGetProcTailArg( sym ) )
 
 				aname = *hCreateProcAlias( aname, lgt, mode )
 			end if
 		end if
 
 		'' try to overload..
-		f = hAddOvlProc( ovlf, symbol, aname, typ, subtype, ptrcnt, _
-						 argc, argtail, preservecase )
-		if( f = NULL ) then
+		proc = hAddOvlProc( sym, parent, id, aname, typ, subtype, ptrcnt, preservecase )
+		if( proc = NULL ) then
 			exit function
 		end if
 
 		alloctype or= FB_ALLOCTYPE_OVERLOADED
 
 	else
-		ovlf = NULL
+		parent = NULL
 	end if
 
     ''
-	f->alloctype		= alloctype or FB_ALLOCTYPE_SHARED
+	proc->alloctype			= alloctype or FB_ALLOCTYPE_SHARED
 
     '' if proc returns an UDT, add the hidden pointer passed as the 1st arg
     if( typ = FB_SYMBTYPE_USERDEF ) then
@@ -2354,111 +2427,116 @@ private function hSetupProc( byval symbol as string, _
     	end if
     end if
 
-	f->lgt				= lgt
+	proc->lgt				= lgt
 
-	f->proc.isdeclared 	= declaring
-	f->proc.iscalled	= FALSE
-	f->proc.isrtl		= FALSE
-	f->proc.doerrorcheck= FALSE
+	proc->proc.isdeclared 	= declaring
+	proc->proc.iscalled		= FALSE
+	proc->proc.isrtl		= FALSE
+	proc->proc.doerrorcheck	= FALSE
 
-	f->proc.mode		= mode
-	f->proc.realtype	= realtype
+	proc->proc.mode			= mode
+	proc->proc.realtype		= realtype
 
-	f->proc.rtlcallback = NULL
+	proc->proc.rtlcallback 	= NULL
 
-	if( len( libname ) > 0 ) then
-		f->proc.lib 	= symbAddLib( libname )
+	if( libname <> NULL ) then
+		if( len( libname ) > 0 ) then
+			proc->proc.lib 	= symbAddLib( *libname )
+		else
+			proc->proc.lib 	= NULL
+		end if
 	else
-		f->proc.lib 	= NULL
+		proc->proc.lib 		= NULL
 	end if
-
-	'' add arguments (w/o declaring them as symbols)
-	f->proc.args 		= argc
-	f->proc.argtail		= argtail
-
-	if( argtail <> NULL ) then
-		do while( argtail->arg.prev <> NULL )
-			argtail = argtail->arg.prev
-		loop
-	end if
-
-	f->proc.arghead		= argtail
 
 	'' if overloading, update the linked-list
 	if( (alloctype and FB_ALLOCTYPE_OVERLOADED) > 0 ) then
-		if( ovlf <> NULL ) then
-			f->proc.ovl.nxt	= ovlf->proc.ovl.nxt
-			ovlf->proc.ovl.nxt = f
+		if( parent <> NULL ) then
+			proc->proc.ovl.next = parent->proc.ovl.next
+			parent->proc.ovl.next = proc
 
-			if( argc > ovlf->proc.ovl.maxargs ) then
-				ovlf->proc.ovl.maxargs = argc
+			if( symbGetProcArgs( proc ) > parent->proc.ovl.maxargs ) then
+				parent->proc.ovl.maxargs = symbGetProcArgs( proc )
 			end if
 		else
-			f->proc.ovl.nxt	= NULL
-			f->proc.ovl.maxargs	= 0
+			proc->proc.ovl.next		= NULL
+			proc->proc.ovl.maxargs	= 0
 		end if
 	end if
 
-	function = f
+	function = proc
 
 end function
 
 '':::::
-function symbAddPrototype( byval symbol as string, _
-						   byval aliasname as string, _
-						   byval libname as string, _
+function symbAddPrototype( byval proc as FBSYMBOL ptr, _
+						   byval symbol as zstring ptr, _
+						   byval aliasname as zstring ptr, _
+						   byval libname as zstring ptr, _
 						   byval typ as integer, _
 						   byval subtype as FBSYMBOL ptr, _
 						   byval ptrcnt as integer, _
 						   byval alloctype as integer, _
 						   byval mode as integer, _
-						   byval argc as integer, _
-						   byval argtail as FBSYMBOL ptr, _
 						   byval isexternal as integer, _
 						   byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
 
-    dim f as FBSYMBOL ptr
-
     function = NULL
 
-	f = hSetupProc( symbol, aliasname, libname, typ, subtype, ptrcnt, _
-					alloctype, mode, argc, argtail, isexternal, preservecase )
-	if( f = NULL ) then
+	proc = hSetupProc( proc, symbol, aliasname, libname, _
+					   typ, subtype, ptrcnt, _
+					   alloctype, mode, isexternal, preservecase )
+	if( proc = NULL ) then
 		exit function
 	end if
 
-	function = f
+	function = proc
 
 end function
 
 '':::::
-function symbAddProc( byval symbol as string, _
-					  byval aliasname as string, _
-					  byval libname as string, _
+function symbAddProc( byval proc as FBSYMBOL ptr, _
+					  byval symbol as zstring ptr, _
+					  byval aliasname as zstring ptr, _
+					  byval libname as zstring ptr, _
 					  byval typ as integer, _
 					  byval subtype as FBSYMBOL ptr, _
 					  byval ptrcnt as integer, _
 					  byval alloctype as integer, _
-					  byval mode as integer, _
-					  byval argc as integer, _
-					  byval argtail as FBSYMBOL ptr ) as FBSYMBOL ptr static
-
-    dim f as FBSYMBOL ptr
+					  byval mode as integer ) as FBSYMBOL ptr static
 
     function = NULL
 
-	f = hSetupProc( symbol, aliasname, libname, typ, subtype, ptrcnt, _
-					alloctype, mode, argc, argtail, TRUE, FALSE )
-	if( f = NULL ) then
+	proc = hSetupProc( proc, symbol, aliasname, libname, _
+					   typ, subtype, ptrcnt, _
+					   alloctype, mode, TRUE, FALSE )
+	if( proc = NULL ) then
 		exit function
 	end if
 
-	function = f
+	function = proc
 
 end function
 
 '':::::
-function symbAddArgAsVar( byval symbol as string, _
+function symbPreAddProc( ) as FBSYMBOL ptr static
+    dim as FBSYMBOL ptr proc
+
+	proc = listNewNode( @ctx.symlist )
+	if( proc = NULL ) then
+		exit function
+	end if
+
+	proc->proc.args 		= 0
+	proc->proc.argtb.head	= NULL
+	proc->proc.argtb.tail	= NULL
+
+	function = proc
+
+end function
+
+'':::::
+function symbAddArgAsVar( byval symbol as zstring ptr, _
 						  byval arg as FBSYMBOL ptr ) as FBSYMBOL ptr static
 
     dim as FBARRAYDIM dTB(0)
@@ -2489,8 +2567,9 @@ function symbAddArgAsVar( byval symbol as string, _
     	exit function
 	end select
 
-    s = symbAddVarEx( symbol, "", typ, arg->subtype, 0, 0, _
-    				  0, dTB(), alloctype, arg->arg.suffix <> INVALID, FALSE, TRUE )
+    s = symbAddVarEx( symbol, NULL, typ, arg->subtype, 0, 0, _
+    				  0, dTB(), alloctype, _
+    				  arg->arg.suffix <> INVALID, FALSE, TRUE )
 
     if( s = NULL ) then
     	exit function
@@ -2519,8 +2598,10 @@ function symbAddProcResArg( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
 	symbol = FBPREFIX_PROCRES
 	symbol += symbGetOrgName( proc )
 
-    s = symbAddVarEx( symbol, "", FB_SYMBTYPE_POINTER+FB_SYMBTYPE_USERDEF, proc->subtype, 0, 0, _
-    				  0, dTB(), FB_ALLOCTYPE_ARGUMENTBYVAL, TRUE, TRUE, FALSE )
+    s = symbAddVarEx( @symbol, NULL, _
+    				  FB_SYMBTYPE_POINTER+FB_SYMBTYPE_USERDEF, proc->subtype, 0, 0, _
+    				  0, dTB(), FB_ALLOCTYPE_ARGUMENTBYVAL, _
+    				  TRUE, TRUE, FALSE )
 
 	function = s
 
@@ -2544,7 +2625,7 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
 	rname = FBPREFIX_PROCRES
 	rname += symbGetOrgName( proc )
 
-	s = symbAddVarEx( rname, "", proc->typ, proc->subtype, 0, 0, 0, _
+	s = symbAddVarEx( @rname, NULL, proc->typ, proc->subtype, 0, 0, 0, _
 					  dTB(), 0, TRUE, TRUE, FALSE )
 
 	function = s
@@ -2552,23 +2633,42 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
 end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' scopes
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function symbAddScope( ) as FBSYMBOL ptr
+    dim as FBSYMBOL ptr s
+
+    s = hNewSymbol( NULL, ctx.symtb, FB_SYMBCLASS_SCOPE, FALSE, NULL, NULL )
+
+    s->scp.loctb.head = NULL
+    s->scp.loctb.tail = NULL
+
+	function = s
+
+end function
+
+
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' lookups
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbLookup( byval symbol as string, _
+function symbLookup( byval symbol as zstring ptr, _
 					 id as integer, _
 					 class as integer, _
-					 byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
+					 byval preservecase as integer = FALSE _
+				   ) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXNAMELEN+1 sname
     dim as FBSYMBOL ptr s
 
     if( not preservecase ) then
-    	hUcase( symbol, sname )
-    	s = hashLookup( @ctx.symhash, strptr( sname ) )
+    	hUcase( *symbol, sname )
+    	s = hashLookup( @ctx.symhash, @sname )
     else
-    	s = hashLookup( @ctx.symhash, strptr( symbol ) )
+    	s = hashLookup( @ctx.symhash, symbol )
     end if
 
 	'' assume it's an unknown identifier
@@ -2591,18 +2691,19 @@ end function
 function symbGetUDTElmOffset( elm as FBSYMBOL ptr, _
 							  typ as integer, _
 							  subtype as FBSYMBOL ptr, _
-							  byval fields as string ) as integer
+							  byval fields as zstring ptr _
+							) as integer
 
 	static as zstring * FB_MAXNAMELEN+1 ename
 	dim as FBSYMBOL ptr e
 	dim as integer p, ofs, res
 	dim as integer flen
 
-    flen = len( fields )
+    flen = len( *fields )
 
     '' find next dot
-    p = instr( 1, fields, "." )
-    ename = fields
+    p = instr( 1, *fields, "." )
+    ename = *fields
     if( p > 0 ) then
     	ename[p-1] = 0							'' ename = left$( fields, p-1 )
     else
@@ -2621,11 +2722,11 @@ function symbGetUDTElmOffset( elm as FBSYMBOL ptr, _
     end if
 
 	'' for each field
-	e = subtype->udt.head
+	e = subtype->udt.fldtb.head
 	do while( e <> NULL )
 
         '' names match?
-        if( e->alias = ename ) then
+        if( e->name = ename ) then
 
         	elm 		= e
         	ofs 		= e->var.elm.ofs
@@ -2645,7 +2746,9 @@ function symbGetUDTElmOffset( elm as FBSYMBOL ptr, _
     			return ofs
     		end if
 
-    		res = symbGetUDTElmOffset( elm, typ, subtype, byval @ename[p] )	'' mid$( fields, p+1 )
+    		res = symbGetUDTElmOffset( elm, _
+    								   typ, subtype, _
+    								   @ename[p] )		'' mid$( fields, p+1 )
     		if( res < 0 ) then
     			return -1
     		end if
@@ -2655,7 +2758,7 @@ function symbGetUDTElmOffset( elm as FBSYMBOL ptr, _
         end if
 
 		'' next
-		e = e->var.elm.next
+		e = e->next
     loop
 
     function = -1
@@ -2663,8 +2766,9 @@ function symbGetUDTElmOffset( elm as FBSYMBOL ptr, _
 end function
 
 '':::::
-function symbLookupUDTVar( byval symbol as string, _
-						   byval dotpos as integer ) as FBSYMBOL ptr static
+function symbLookupUDTVar( byval symbol as zstring ptr, _
+						   byval dotpos as integer _
+						 ) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXNAMELEN+1 sname
 	dim as FBSYMBOL ptr s
@@ -2677,10 +2781,10 @@ function symbLookupUDTVar( byval symbol as string, _
     end if
 
 	'' check if it's an UDT field
-    sname = symbol
+    sname = *symbol
     sname[dotpos-1] = 0 						'' left$( symbol, dotpos-1 )
 
-    s = symbFindByNameAndClass( sname, FB_SYMBCLASS_VAR )
+    s = symbFindByNameAndClass( @sname, FB_SYMBCLASS_VAR )
 	if( s = NULL ) then
 		exit function
 	end if
@@ -2694,12 +2798,13 @@ function symbLookupUDTVar( byval symbol as string, _
 end function
 
 '':::::
-function symbLookupUDTElm( byval symbol as string, _
+function symbLookupUDTElm( byval symbol as zstring ptr, _
 						   byval dotpos as integer, _
 						   typ as integer, _
 						   ofs as integer, _
 					       elm as FBSYMBOL ptr, _
-					       subtype as FBSYMBOL ptr ) as FBSYMBOL ptr static
+					       subtype as FBSYMBOL ptr _
+					     ) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr s
 
@@ -2716,7 +2821,9 @@ function symbLookupUDTElm( byval symbol as string, _
     typ 	= s->typ
 
 	'' find the offset
-	ofs = symbGetUDTElmOffset( elm, typ, subtype, byval @symbol[dotpos] )	'' mid$( symbol, dotpos+1 )
+	ofs = symbGetUDTElmOffset( elm, _
+							   typ, subtype, _
+							   @symbol[dotpos] )		'' mid$( symbol, dotpos+1 )
 	if( ofs < 0 ) then
 		hReportError( FB_ERRMSG_ELEMENTNOTDEFINED )
     	exit function
@@ -2740,13 +2847,14 @@ function symbLookupProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
 	rname = FBPREFIX_PROCRES
 	rname += symbGetOrgName( f )
 
-	function = symbFindByNameAndClass( rname, FB_SYMBCLASS_VAR, TRUE )
+	function = symbFindByNameAndClass( @rname, FB_SYMBCLASS_VAR, TRUE )
 
 end function
 
 '':::::
 function symbFindByClass( byval s as FBSYMBOL ptr, _
-						  byval class as integer ) as FBSYMBOL ptr static
+						  byval class as integer _
+						) as FBSYMBOL ptr static
 
     '' lookup a symbol with the same class
     do while( s <> NULL )
@@ -2756,23 +2864,22 @@ function symbFindByClass( byval s as FBSYMBOL ptr, _
     	s = s->right
     loop
 
+	if( s = NULL ) then
+		return NULL
+	end if
+
 	'' check if symbol isn't a non-shared module level one
+
 	if( class = FB_SYMBCLASS_VAR ) then
-		if( env.scope > 0 ) then
-			if( s <> NULL ) then
-				if( s->scope = 0 ) then
-					if( (s->alloctype and FB_ALLOCTYPE_SHARED) = 0 ) then
-						s = NULL
-					end if
-				end if
+		if( fbIsLocal( ) ) then
+			if( (s->alloctype and (FB_ALLOCTYPE_LOCAL or FB_ALLOCTYPE_SHARED)) = 0 ) then
+				return NULL
 			end if
 		end if
 	end if
 
 	'' update the access counter
-	if( s <> NULL ) then
-		s->acccnt += 1
-	end if
+	s->acccnt += 1
 
 	function = s
 
@@ -2781,7 +2888,8 @@ end function
 '':::::
 function symbFindBySuffix( byval s as FBSYMBOL ptr, _
 						   byval suffix as integer, _
-						   byval deftyp as integer ) as FBSYMBOL ptr static
+						   byval deftyp as integer _
+						 ) as FBSYMBOL ptr static
 
     '' symbol has a suffix? lookup a symbol with the same type, suffixed or not
     if( suffix <> INVALID ) then
@@ -2808,30 +2916,30 @@ function symbFindBySuffix( byval s as FBSYMBOL ptr, _
     	loop
     end if
 
+	if( s = NULL ) then
+		return NULL
+	end if
+
 	'' check if symbol isn't a non-shared module level one
-	if( env.scope > 0 ) then
-		if( s <> NULL ) then
-			if( s->scope = 0 ) then
-				if( (s->alloctype and FB_ALLOCTYPE_SHARED) = 0 ) then
-					s = NULL
-				end if
-			end if
+	if( fbIsLocal( ) ) then
+		if( (s->alloctype and (FB_ALLOCTYPE_LOCAL or FB_ALLOCTYPE_SHARED)) = 0 ) then
+			return NULL
 		end if
 	end if
 
     '' update the access counter
-	if( s <> NULL ) then
-		s->acccnt += 1
-	end if
+	s->acccnt += 1
 
 	function = s
 
 end function
 
 '':::::
-function symbFindByNameAndClass( byval symbol as string, _
-								 byval class as integer, _
-								 byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
+function symbFindByNameAndClass ( byval symbol as zstring ptr, _
+	  							  byval class as integer, _
+	  							  byval preservecase as integer = FALSE _
+								) as FBSYMBOL ptr static
+
 	dim s as FBSYMBOL ptr
 	dim tkid as integer, tkclass as integer
 
@@ -2848,9 +2956,10 @@ function symbFindByNameAndClass( byval symbol as string, _
 end function
 
 '':::::
-function symbFindByNameAndSuffix( byval symbol as string, _
+function symbFindByNameAndSuffix( byval symbol as zstring ptr, _
 								  byval suffix as integer, _
-								  byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
+								  byval preservecase as integer = FALSE _
+								) as FBSYMBOL ptr static
 	dim s as FBSYMBOL ptr
 	dim deftyp as integer
 	dim tkid as integer, tkclass as integer
@@ -2861,7 +2970,7 @@ function symbFindByNameAndSuffix( byval symbol as string, _
     if( s <> NULL ) then
     	'' get default type if no suffix was given
     	if( suffix = INVALID ) then
-    		deftyp = hGetDefType( symbol )
+    		deftyp = hGetDefType( *symbol )
     	end if
 
 		'' check if types match
@@ -2873,21 +2982,23 @@ function symbFindByNameAndSuffix( byval symbol as string, _
 end function
 
 '':::::
-function symbFindOverloadProc( byval proc as FBSYMBOL ptr, _
-					   	       byval argc as integer, _
-					   	       byval argtail as FBSYMBOL ptr ) as FBSYMBOL ptr static
+function symbFindOverloadProc( byval parent as FBSYMBOL ptr, _
+							   byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
 
 	dim as FBSYMBOL ptr f, farg, parg, fsubtype, psubtype
+	dim as integer argc
 
-	'' for each proc..
-	f = proc
+	argc = symbGetProcArgs( proc )
+
+	'' for each proc starting from parent..
+	f = parent
 	do while( f <> NULL )
 
 		if( argc = f->proc.args ) then
 
 			'' for each arg..
-			farg = f->proc.argtail
-			parg = argtail
+			farg = f->proc.argtb.tail
+			parg = symbGetProcTailArg( proc )
 			do while( parg <> NULL )
 
 				'' not the same type? check next proc..
@@ -2899,8 +3010,8 @@ function symbFindOverloadProc( byval proc as FBSYMBOL ptr, _
 					exit do
 				end if
 
-				parg = parg->arg.prev
-				farg = farg->arg.prev
+				parg = parg->prev
+				farg = farg->prev
 			loop
 
 			'' all args equal?
@@ -2910,7 +3021,7 @@ function symbFindOverloadProc( byval proc as FBSYMBOL ptr, _
 
 		end if
 
-		f = f->proc.ovl.nxt
+		f = f->proc.ovl.next
 	loop
 
 	function = NULL
@@ -2921,7 +3032,8 @@ end function
 function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 					   		     byval params as integer, _
 					   		     exprTB() as ASTNODE ptr, _
-					   		     modeTB() as integer ) as FBSYMBOL ptr static
+					   		     modeTB() as integer _
+					   		   ) as FBSYMBOL ptr static
 
 	dim as FBSYMBOL ptr f, farg, marg, match, psubtype, fsubtype
 	dim as integer p, pdclass, pdtype, fdclass
@@ -2936,7 +3048,7 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 		if( params <= f->proc.args ) then
 
 			'' for each arg..
-			farg = f->proc.argtail
+			farg = f->proc.argtb.tail
 			for p = params-1 to 0 step -1
 
 				'' optional?
@@ -2984,7 +3096,7 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 					end if
 				end if
 
-				farg = farg->arg.prev
+				farg = farg->prev
 			next
 
 			'' all params okay?
@@ -2999,8 +3111,8 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 
 					'' same num of args, check the closest..
 					else
-						farg = f->proc.argtail
-						marg = match->proc.argtail
+						farg = f->proc.argtb.tail
+						marg = match->proc.argtb.tail
 						fmatches = 0
 						mmatches = 0
 
@@ -3024,8 +3136,8 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 								end if
 							end if
 
-		                	farg = farg->arg.prev
-		                	marg = marg->arg.prev
+		                	farg = farg->prev
+		                	marg = marg->prev
 		                next
 
 		                '' proc has more args close to the final?
@@ -3039,7 +3151,7 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 
 		end if
 
-		f = f->proc.ovl.nxt
+		f = f->proc.ovl.next
 	loop
 
 	if( match <> NULL ) then
@@ -3058,53 +3170,51 @@ end function
 function symbCalcLen( byval typ as integer, _
 					  byval subtype as FBSYMBOL ptr, _
 					  byval realsize as integer = FALSE ) as integer static
-    dim lgt as integer
+
     dim e as FBSYMBOL ptr
 
-	lgt = 0
+	function = 0
 
 	select case as const typ
 	case FB_SYMBTYPE_FWDREF
-		lgt = 0
+		function = 0
 
 	case FB_SYMBTYPE_BYTE, FB_SYMBTYPE_UBYTE, FB_SYMBTYPE_CHAR
-		lgt = 1
+		function = 1
 
 	case FB_SYMBTYPE_SHORT, FB_SYMBTYPE_USHORT
-		lgt = 2
+		function = 2
 
 	case FB_SYMBTYPE_INTEGER, FB_SYMBTYPE_LONG, FB_SYMBTYPE_UINT, FB_SYMBTYPE_ENUM
-		lgt = FB_INTEGERSIZE
+		function = FB_INTEGERSIZE
 
 	case FB_SYMBTYPE_LONGINT, FB_SYMBTYPE_ULONGINT
-		lgt = FB_INTEGERSIZE*2
+		function = FB_INTEGERSIZE*2
 
 	case FB_SYMBTYPE_SINGLE
-		lgt = 4
+		function = 4
 
 	case FB_SYMBTYPE_DOUBLE
-    	lgt = 8
+    	function = 8
 
 	case FB_SYMBTYPE_FIXSTR
-		lgt = 0									'' 0-len literal-strings
+		function = 0									'' 0-len literal-strings
 
 	case FB_SYMBTYPE_STRING
-		lgt = FB_STRSTRUCTSIZE
+		function = FB_STRDESCLEN
 
 	case FB_SYMBTYPE_USERDEF
 		if( not realsize ) then
-			lgt = subtype->lgt
+			function = subtype->lgt
 		else
-			lgt = subtype->udt.unpadlgt
+			function = subtype->udt.unpadlgt
 		end if
 
 	case else
 		if( typ >= FB_SYMBTYPE_POINTER ) then
-			lgt = FB_POINTERSIZE
+			function = FB_POINTERSIZE
 		end if
 	end select
-
-	function = lgt
 
 end function
 
@@ -3144,7 +3254,7 @@ function hCalcDiff( byval dimensions as integer, _
 	for d = 0 to (dimensions-1)-1
 		elms = (dTB(d+1).upper - dTB(d+1).lower) + 1
 		diff = (diff+dTB(d).lower) * elms
-	next d
+	next
 
 	diff += dTB(dimensions-1).lower
 
@@ -3207,24 +3317,6 @@ end function
 
 
 '':::::
-function symbGetGlobalHead( ) as FBSYMBOL ptr static
-
-	function = ctx.globtb.head
-
-end function
-
-'':::::
-function symbGetLocalHead( ) as FBSYMBOL ptr static
-
-	if( ctx.loctb = NULL ) then
-		function = NULL
-	else
-		function = ctx.loctb->head
-	end if
-
-end function
-
-'':::::
 function symbGetProcLib( byval p as FBSYMBOL ptr ) as string static
     dim l as FBLIBRARY ptr
 
@@ -3273,12 +3365,12 @@ function symbGetProcPrevArg( byval f as FBSYMBOL ptr, _
 
 	if( checkconv ) then
 		if( f->proc.mode = FB_FUNCMODE_PASCAL ) then
-			function = a->arg.prev
+			function = a->prev
 		else
-			function = a->arg.next
+			function = a->next
 		end if
 	else
-		function = a->arg.prev
+		function = a->prev
 	end if
 
 end function
@@ -3294,12 +3386,12 @@ function symbGetProcNextArg( byval f as FBSYMBOL ptr, _
 
 	if( checkconv ) then
 		if( f->proc.mode = FB_FUNCMODE_PASCAL ) then
-			function = a->arg.next
+			function = a->next
 		else
-			function = a->arg.prev
+			function = a->prev
 		end if
 	else
-		function = a->arg.next
+		function = a->next
 	end if
 
 end function
@@ -3356,11 +3448,7 @@ private sub hFreeSymbol( byval s as FBSYMBOL ptr, _
 	hDelFromHash( s )
 
     '' del from table
-    if( s->scope = 0 ) then
-    	tb = @ctx.globtb
-    else
-    	tb = ctx.loctb
-    end if
+    tb = s->symtb
 
     prv = s->prev
     nxt = s->next
@@ -3396,9 +3484,7 @@ private sub hFreeSymbol( byval s as FBSYMBOL ptr, _
 		s->prev = ctx.globtb.tail
 		s->next = NULL
 		ctx.globtb.tail = s
-
-		s->scope = 0
-
+		s->symtb = @ctx.globtb
     end if
 
 end sub
@@ -3425,14 +3511,14 @@ end function
 
 '':::::
 private sub hDelDefineArgs( byval s as FBSYMBOL ptr )
-	dim a as FBDEFARG ptr, n as FBDEFARG ptr
+	dim as FBDEFARG ptr arg, nxt
 
-    a = s->def.arghead
-    do while( a <> NULL )
-    	n = a->next
-    	a->name = ""
-    	listDelNode( @ctx.defarglist, cptr( TLISTNODE ptr, a ) )
-    	a = n
+    arg = s->def.arghead
+    do while( arg <> NULL )
+    	nxt = arg->next
+    	arg->name = ""
+    	listDelNode( @ctx.defarglist, cptr( TLISTNODE ptr, arg ) )
+    	arg = nxt
     loop
 
 end sub
@@ -3457,7 +3543,7 @@ function symbDelDefine( byval s as FBSYMBOL ptr, _
 
 	hDelDefineArgs( s )
 
-    ''
+    '' del the define node
     hFreeSymbol( s )
 
 	''
@@ -3515,13 +3601,14 @@ sub symbDelUDT( byval s as FBSYMBOL ptr, _
     end if
 
     '' del all udt elements
-    e = s->udt.head
+    e = s->udt.fldtb.head
     do while( e <> NULL )
-        nxt = e->var.elm.next
+        nxt = e->next
     	hFreeSymbol( e )
     	e = nxt
     loop
 
+	'' del the udt node
 	hFreeSymbol( s )
 
 end sub
@@ -3541,14 +3628,36 @@ sub symbDelEnum( byval s as FBSYMBOL ptr, _
     end if
 
     '' del all enum constants
-	e = s->enum.head
+	e = s->enum.elmtb.head
     do while( e <> NULL )
-        nxt = e->con.eelm.nxt
+        nxt = e->next
 		hFreeSymbol( e )
 		e = nxt
 	loop
 
+	'' del the enum node
 	hFreeSymbol( s )
+
+end sub
+
+'':::::
+sub symbDelScope( byval scp as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr s, nxt
+
+    if( scp = NULL ) then
+    	exit sub
+    end if
+
+    '' del all enum constants
+	s = scp->scp.loctb.head
+    do while( s <> NULL )
+        nxt = s->next
+		symbDelSymbol( s )
+		s = nxt
+	loop
+
+	'' del the scope node
+	hFreeSymbol( scp )
 
 end sub
 
@@ -3556,9 +3665,9 @@ end sub
 private sub hDelArgs( byval f as FBSYMBOL ptr )
 	dim as FBSYMBOL ptr a, n
 
-    a = f->proc.arghead
+    a = f->proc.argtb.head
     do while( a <> NULL )
-    	n = a->arg.next
+    	n = a->next
     	hFreeSymbol( a )
     	a = n
     loop
@@ -3581,7 +3690,7 @@ sub symbDelPrototype( byval s as FBSYMBOL ptr, _
 	do
 		'' overloaded?
 		if( symbIsOverloaded( s ) ) then
-			n = s->proc.ovl.nxt
+			n = s->proc.ovl.next
 		else
 			n = NULL
 		end if
@@ -3631,10 +3740,13 @@ sub symbDelVar( byval s as FBSYMBOL ptr, _
 	movetoglob = FALSE
 
 	'' local?
-	if( s->scope > 0 ) then
-    	'' static? move it to global list
+	if( (s->alloctype and FB_ALLOCTYPE_LOCAL ) > 0 ) then
+    	'' static?
     	if( symbIsStatic( s ) ) then
-    		movetoglob = TRUE
+    		'' move it to global list if not already
+    		if( s->symtb <> @ctx.globtb ) then
+    			movetoglob = TRUE
+    		end if
     	end if
 	end if
 
@@ -3698,6 +3810,9 @@ sub symbDelSymbol( byval s as FBSYMBOL ptr )
     case FB_SYMBCLASS_UDT
     	symbDelUDT( s, FALSE )
 
+    case FB_SYMBCLASS_SCOPE
+    	symbDelScope( s )
+
 	case else
 		hFreeSymbol( s )
 
@@ -3720,25 +3835,16 @@ sub symbDelGlobalTb( ) static
 
 end sub
 
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' locals
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
 '':::::
-sub symbSetLocalTb( byval tb as FBSYMBOLTB ptr )
+sub symbDelSymbolTb( byval tb as FBSYMBOLTB ptr, _
+					 byval hashonly as integer ) static
 
-	ctx.loctb = tb
-
-end sub
-
-'':::::
-sub symbDelLocalTb( byval hashonly as integer ) static
     dim as FBSYMBOL ptr s
 
     '' del from hash tb only?
     if( hashonly ) then
 
-    	s = ctx.loctb->head
+    	s = tb->head
     	do while( s <> NULL )
 
 	    	select case as const s->class
@@ -3747,6 +3853,9 @@ sub symbDelLocalTb( byval hashonly as integer ) static
 
     			hDelFromHash( s )
 
+    		case FB_SYMBCLASS_SCOPE
+    			'' already removed..
+    			''''' symbDelScopeTb( s )
     		end select
 
     		s = s->next
@@ -3756,37 +3865,21 @@ sub symbDelLocalTb( byval hashonly as integer ) static
     else
 
     	do
-    	    s = ctx.loctb->head
+    	    s = tb->head
     		if( s = NULL ) then
     			exit do
     		end if
 
-	    	select case as const s->class
-    		case FB_SYMBCLASS_VAR
-    			symbDelVar( s, FALSE )
-
-    		case FB_SYMBCLASS_CONST
-	    		symbDelConst( s, FALSE )
-
-    		case FB_SYMBCLASS_UDT
-    			symbDelUDT( s, FALSE )
-
-    		case FB_SYMBCLASS_ENUM
-	    		symbDelEnum( s, FALSE )
-
-    		case FB_SYMBCLASS_LABEL
-    			symbDelLabel( s, FALSE )
-
-    		case else
-    			hFreeSymbol( s )
-    		end select
+	    	symbDelSymbol( s )
     	loop
 
     end if
 
-    ctx.loctb = NULL
-
 end sub
+
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' locals
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
 sub symbFreeLocalDynVars( byval proc as FBSYMBOL ptr, _
@@ -3802,10 +3895,11 @@ sub symbFreeLocalDynVars( byval proc as FBSYMBOL ptr, _
     	fres = symbLookupProcResult( proc )
 	end if
 
-	s = ctx.loctb->head
+	s = ctx.symtb->head
     do while( s <> NULL )
-
+    	'' variable?
     	if( s->class = FB_SYMBCLASS_VAR ) then
+    		'' not shared or static?
     		if( (s->alloctype and (FB_ALLOCTYPE_SHARED or FB_ALLOCTYPE_STATIC)) = 0 ) then
 
 				'' not an argument?
@@ -3814,13 +3908,17 @@ sub symbFreeLocalDynVars( byval proc as FBSYMBOL ptr, _
     				  				   FB_ALLOCTYPE_ARGUMENTBYREF or _
     				  				   FB_ALLOCTYPE_TEMP)) = 0 ) then
 
+					'' array?
 					if( s->var.array.dims > 0 ) then
+						'' dynamic?
 						if( symbIsDynamic( s ) ) then
 							rtlArrayErase( astNewVAR( s, NULL, 0, s->typ ) )
+						'' array of dyn strings?
 						elseif( s->typ = FB_SYMBTYPE_STRING ) then
 							rtlArrayStrErase( s )
 						end if
 
+					'' dyn string?
 					elseif( s->typ = FB_SYMBTYPE_STRING ) then
 						'' not funct's result?
 						if( s <> fres ) then
@@ -3840,13 +3938,65 @@ sub symbFreeLocalDynVars( byval proc as FBSYMBOL ptr, _
 end sub
 
 '':::::
+sub symbFreeScopeDynVars( byval scp as FBSYMBOL ptr ) static
+
+    dim as FBSYMBOL ptr s
+    dim as ASTNODE ptr strg
+
+	'' for each symbol declared inside the SCOPE block..
+	s = scp->scp.loctb.head
+    do while( s <> NULL )
+    	'' variable?
+    	if( s->class = FB_SYMBCLASS_VAR ) then
+    		'' not shared or static (for locals)
+    		if( (s->alloctype and (FB_ALLOCTYPE_SHARED or FB_ALLOCTYPE_STATIC)) = 0 ) then
+                '' array?
+				if( s->var.array.dims > 0 ) then
+					'' dynamic?
+					if( symbIsDynamic( s ) ) then
+						rtlArrayErase( astNewVAR( s, NULL, 0, s->typ ) )
+					'' array of dyn strings?
+					elseif( s->typ = FB_SYMBTYPE_STRING ) then
+						rtlArrayStrErase( s )
+					end if
+
+				'' dyn string?
+				elseif( s->typ = FB_SYMBTYPE_STRING ) then
+					strg = astNewVAR( s, NULL, 0, IR_DATATYPE_STRING )
+					astAdd( rtlStrDelete( strg ) )
+				end if
+    		end if
+    	end if
+
+    	s = s->next
+    loop
+
+end sub
+
+'':::::
+sub symbDelScopeTb( byval scp as FBSYMBOL ptr ) static
+
+    dim as FBSYMBOL ptr s
+
+	'' for each symbol declared inside the SCOPE block..
+	s = scp->scp.loctb.head
+    do while( s <> NULL )
+    	'' remove from hash only
+    	hDelFromHash( s )
+
+    	s = s->next
+    loop
+
+end sub
+
+'':::::
 function symbCheckLocalLabels(  ) as integer
     dim as FBSYMBOL ptr s
     dim as integer cnt
 
     cnt = 0
 
-    s = ctx.loctb->head
+    s = ctx.symtb->head
     do while( s <> NULL )
 
     	if( s->class = FB_SYMBCLASS_LABEL ) then
@@ -3988,12 +4138,12 @@ function symbIsEqual( byval sym1 as FBSYMBOL ptr, _
     	end if
 
     	''
-    	if( sym1->udt.head <> sym2->udt.head ) then
+    	if( sym1->udt.fldtb.head <> sym2->udt.fldtb.head ) then
     		exit function
     	end if
 
     	''
-    	if( sym1->udt.tail <> sym2->udt.tail ) then
+    	if( sym1->udt.fldtb.tail <> sym2->udt.fldtb.tail ) then
     		exit function
     	end if
 
@@ -4048,8 +4198,8 @@ function symbIsEqual( byval sym1 as FBSYMBOL ptr, _
 			end if
 
     		'' next arg..
-    		argl = argl->arg.next
-    		argr = argr->arg.next
+    		argl = argl->next
+    		argr = argr->next
     	loop
     end select
 

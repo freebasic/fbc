@@ -226,8 +226,12 @@ function compileFiles as integer
     '' for each input file..
     for i = 0 to fbc.inps-1
 
+    	if( checkmain ) then
+    		ismain = fbc.mainfile = hStripPath( hStripExt( fbc.inplist(i) ) )
+    	end if
+
     	'' init the parser
-    	if( not fbInit( ) ) then
+    	if( not fbInit( ismain ) ) then
     		exit function
     	end if
 
@@ -246,10 +250,6 @@ function compileFiles as integer
     		print "compiling: ", fbc.inplist(i); " -o "; fbc.asmlist(i)
     	end if
 
-    	if( checkmain ) then
-    		ismain = fbc.mainfile = hStripPath( hStripExt( fbc.inplist(i) ) )
-    	end if
-
     	if( not fbCompile( fbc.inplist(i), fbc.asmlist(i), ismain ) ) then
     		exit function
     	end if
@@ -264,7 +264,7 @@ function compileFiles as integer
 
     '' no default libs would be added if no inp files were given
     if( fbc.inps = 0 ) then
-   		fbInit( )
+   		fbInit( FALSE )
    		fbAddDefaultLibs( )
    		getLibList( )
    		fbend( )

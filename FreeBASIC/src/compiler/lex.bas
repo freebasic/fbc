@@ -567,12 +567,12 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 	'' hex
 	case CHAR_HUPP, CHAR_HLOW
 		lexEatChar( )
-		
+
 		'' skip trailing zeroes
 		while( lexCurrentChar( ) = CHAR_0 )
 			lexEatChar( )
 		wend
-		
+
 		do
 			select case lexCurrentChar( )
 			case CHAR_ALOW to CHAR_FLOW, CHAR_AUPP to CHAR_FUPP, CHAR_0 to CHAR_9
@@ -611,7 +611,7 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 		while( lexCurrentChar( ) = CHAR_0 )
 			lexEatChar( )
 		wend
-		
+
 		first_c = lexCurrentChar( )
 		do
 			select case lexCurrentChar( )
@@ -663,7 +663,7 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 		while( lexCurrentChar( ) = CHAR_0 )
 			lexEatChar( )
 		wend
-		
+
 		do
 			select case lexCurrentChar( )
 			case CHAR_0, CHAR_1
@@ -894,7 +894,7 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 			case else
 				exit do
 			end select
-			
+
 			select case as const tlen
 			case 10
 				if( *pnum_start > "2147483647" ) then
@@ -904,28 +904,28 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 						islong = TRUE
 					end if
 				end if
-			
+
 			case 11
 				islong = TRUE
 				issigned = TRUE
-			
+
 			case 19
 				if( *pnum_start > "9223372036854775807" ) then
 					issigned = FALSE
 				end if
-			
+
 			case 20
 				issigned = FALSE
 				if( *pnum_start > "18446744073709551615" ) then
 					hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
 					exit function
 				end if
-			
+
 			case 21
 				hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
 				exit function
 			end select
-			
+
 			if( tlen > FB_MAXNUMLEN ) then
  				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
  					hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
@@ -1330,7 +1330,7 @@ readnumber:
 readid:
 		lexReadIdentifier( @t.text, t.tlen, t.typ, t.dotpos, flags )
 
-		t.sym = symbLookup( t.text, t.id, t.class )
+		t.sym = symbLookup( @t.text, t.id, t.class )
 
 		if( (flags and LEXCHECK_NODEFINE) = 0 ) then
 			'' is it a define?

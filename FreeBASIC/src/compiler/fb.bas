@@ -46,7 +46,6 @@ defint a-z
 	const PATHDIV = "/"
 #endif
 
-
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' interface
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -75,7 +74,7 @@ end sub
 sub fbAddDefine( byval dname as string, _
 				 byval dtext as string )
 
-    symbAddDefine( dname, dtext, len( dtext ) )
+    symbAddDefine( @dname, @dtext, len( dtext ) )
 
 end sub
 
@@ -174,13 +173,13 @@ private sub hSetCtx( )
 end sub
 
 '':::::
-function fbInit( ) as integer static
+function fbInit( byval ismain as integer ) as integer static
 
 	''
 	function = FALSE
 
 	''
-	symbInit( )
+	symbInit( ismain )
 
 	hlpInit( )
 

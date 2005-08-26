@@ -480,7 +480,7 @@ data "fb_Init","", _
 	 NULL, FALSE, FALSE, _
 	 2, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
 '' fb_InitSignals ( ) as void
 data "fb_InitSignals","", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
@@ -2560,11 +2560,12 @@ data ""
 private sub hAddIntrinsicProcs
 	dim as integer i, typ
 	dim as string pname, aname, optstr
-	dim as integer p, ptype, pmode, pargs, palloctype
+	dim as integer p, pargs, ptype, pmode, palloctype
 	dim as integer a, atype, alen, amode, optional, ptrcnt, errorcheck, overloaded
-	dim as FBSYMBOL ptr proc, argtail
+	dim as FBSYMBOL ptr proc
 	dim as FBRTLCALLBACK pcallback
 	dim as FBVALUE optval
+	dim as zstring ptr palias
 
 	''
 	redim ifuncTB( 0 to FB_RTL_MAXFUNCTIONS-1 ) as FBSYMBOL ptr
@@ -2572,6 +2573,7 @@ private sub hAddIntrinsicProcs
 	restore ifuncdata
 	i = 0
 	do
+		'' for each proc..
 		read pname
 		if( len( pname ) = 0 ) then
 			exit do
@@ -2582,7 +2584,9 @@ private sub hAddIntrinsicProcs
 		read pcallback, errorcheck, overloaded
 		read pargs
 
-		argtail = NULL
+		proc = symbPreAddProc( )
+
+		'' for each argument..
 		for a = 0 to pargs-1
 			read atype, amode, optional
 
@@ -2608,9 +2612,11 @@ private sub hAddIntrinsicProcs
 
 			cntptr( atype, typ, ptrcnt )
 
-			argtail = symbAddArg( "", argtail, atype, NULL, ptrcnt, _
-								  alen, amode, INVALID, optional, @optval )
-		next a
+			symbAddArg( proc, NULL, _
+						atype, NULL, ptrcnt, _
+						alen, amode, INVALID, _
+						optional, @optval )
+		next
 
 		''
 		if( overloaded ) then
@@ -2622,8 +2628,16 @@ private sub hAddIntrinsicProcs
 		''
 		cntptr( ptype, typ, ptrcnt )
 
-		proc = symbAddPrototype( pname, aname, "fb", ptype, NULL, ptrcnt, _
-								 palloctype, pmode, pargs, argtail, TRUE )
+		if( len( aname ) = 0 ) then
+			palias = strptr( pname )
+		else
+			palias = strptr( aname )
+		end if
+
+		proc = symbAddPrototype( proc, _
+								 strptr( pname ), palias, strptr( "fb" ), _
+								 ptype, NULL, ptrcnt, _
+								 palloctype, pmode, TRUE )
 
 		ifuncTB(i) = proc
 
@@ -2662,7 +2676,7 @@ private sub hAddIntrinsicMacros
 		for i = 0 to args-1
 			read aname
 
-			lastarg = symbAddDefineArg( lastarg, aname )
+			lastarg = symbAddDefineArg( lastarg, strptr( aname ) )
 
 			if( arghead = NULL ) then
 				arghead = lastarg
@@ -2693,7 +2707,7 @@ private sub hAddIntrinsicMacros
         	loop
         end if
 
-        symbAddDefine( mname, mtext, len( mtext ), args, arghead )
+        symbAddDefine( strptr( mname ), strptr( mtext ), len( mtext ), args, arghead )
 
 	loop
 
@@ -3507,7 +3521,7 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, _
 
     ''
     if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( "" )
+    	reslabel = symbAddLabel( NULL )
     	astAdd( astNewLABEL( reslabel ) )
     else
     	reslabel = NULL
@@ -3933,9 +3947,10 @@ end function
 function rtlDataRestore( byval label as FBSYMBOL ptr, _
 						 byval afternode as ASTNODE ptr, _
 						 byval isprofiler as integer = FALSE ) as integer static
+
+    static as zstring * FB_MAXNAMELEN+1 lname
     dim as ASTNODE ptr proc, expr
     dim as FBSYMBOL ptr s, f
-    dim as string lname
 
     function = FALSE
 
@@ -3950,13 +3965,13 @@ function rtlDataRestore( byval label as FBSYMBOL ptr, _
     end if
 
     '' label already declared?
-    s = symbFindByNameAndClass( lname, FB_SYMBCLASS_LABEL )
+    s = symbFindByNameAndClass( @lname, FB_SYMBCLASS_LABEL )
     if( s = NULL ) then
-       	s = symbAddLabel( lname, TRUE, TRUE )
+       	s = symbAddLabel( @lname, TRUE, TRUE )
     end if
 
     '' byval labeladdrs as void ptr
-    expr = astNewADDR( IR_OP_ADDROF, astNewVAR( s, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID ), s )
+    expr = astNewADDR( IR_OP_ADDROF, astNewVAR( s, NULL, 0, IR_DATATYPE_BYTE ), s )
     if( astNewPARAM( proc, expr ) = NULL ) then
  		exit function
  	end if
@@ -3974,7 +3989,7 @@ end function
 
 '':::::
 sub rtlDataStoreBegin static
-    dim as string lname
+    static as zstring * FB_MAXNAMELEN+1 lname
     dim as FBSYMBOL ptr l, label, s
 
 	'' switch section, can't be code coz it will screw up debugging
@@ -3984,16 +3999,16 @@ sub rtlDataStoreBegin static
 	if( not ctx.datainited ) then
 		ctx.datainited = TRUE
 
-		l = symbAddLabel( FB_DATALABELNAME, TRUE, TRUE )
+		l = symbAddLabel( strptr( FB_DATALABELNAME ), TRUE, TRUE )
 		if( l = NULL ) then
-			l = symbFindByNameAndClass( FB_DATALABELNAME, FB_SYMBCLASS_LABEL )
+			l = symbFindByNameAndClass( strptr( FB_DATALABELNAME ), FB_SYMBCLASS_LABEL )
 		end if
 
 		lname = symbGetName( l )
 		emitDATALABEL( lname )
 
 	else
-		s = symbFindByNameAndClass( FB_DATALABELNAME, FB_SYMBCLASS_LABEL )
+		s = symbFindByNameAndClass( strptr( FB_DATALABELNAME ), FB_SYMBCLASS_LABEL )
 		lname = symbGetName( s )
 	end if
 
@@ -4003,9 +4018,9 @@ sub rtlDataStoreBegin static
 	if( label <> NULL ) then
     	''
     	lname = FB_DATALABELPREFIX + symbGetName( label )
-    	l = symbFindByNameAndClass( lname, FB_SYMBCLASS_LABEL )
+    	l = symbFindByNameAndClass( @lname, FB_SYMBCLASS_LABEL )
     	if( l = NULL ) then
-       		l = symbAddLabel( lname, TRUE, TRUE )
+       		l = symbAddLabel( @lname, TRUE, TRUE )
     	end if
 
     	lname = symbGetName( l )
@@ -4022,7 +4037,8 @@ sub rtlDataStoreBegin static
     	emitDATALABEL( lname )
 
     else
-    	symbSetLastLabel( symbFindByNameAndClass( FB_DATALABELNAME, FB_SYMBCLASS_LABEL ) )
+    	symbSetLastLabel( symbFindByNameAndClass( strptr( FB_DATALABELNAME ), _
+    											  FB_SYMBCLASS_LABEL ) )
     end if
 
 	'' emit will link the last DATA with this one if any exists
@@ -4207,7 +4223,7 @@ private function hCalcExprLen( byval expr as ASTNODE ptr, _
 		lgt = 8
 
 	case IR_DATATYPE_STRING
-		lgt = FB_STRSTRUCTSIZE
+		lgt = FB_STRDESCLEN
 
 	case IR_DATATYPE_FIXSTR
 		lgt = FIXSTRGETLEN( expr )
@@ -4745,7 +4761,7 @@ function rtlCpuCheck( ) as integer static
 	cpu = astNewBOP( IR_OP_SHR, proc, astNewCONSTi( 24, IR_DATATYPE_UINT ) )
 
 	'' if( cpu < env.clopt.cputype ) then
-	label = symbAddLabel( "" )
+	label = symbAddLabel( NULL )
 	astAdd( astNewBOP( IR_OP_GE, cpu, astNewCONSTi( env.clopt.cputype, IR_DATATYPE_UINT ), label, FALSE ) )
 
 	'' print "This program requires at least a <cpu> to run."
@@ -5127,7 +5143,7 @@ function rtlWidthScreen ( byval width_arg as ASTNODE ptr, _
     if( not isfunc ) then
     	dim reslabel as FBSYMBOL ptr
     	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( "" )
+    		reslabel = symbAddLabel( NULL )
     		astAdd( astNewLABEL( reslabel ) )
     	else
     		reslabel = NULL
@@ -5170,7 +5186,7 @@ function rtlWidthDev ( byval device as ASTNODE ptr, _
     	dim reslabel as FBSYMBOL ptr
 
     	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( "" )
+    		reslabel = symbAddLabel( NULL )
     		astAdd( astNewLABEL( reslabel ) )
     	else
     		reslabel = NULL
@@ -5209,7 +5225,7 @@ function rtlWidthFile ( byval fnum as ASTNODE ptr, _
     	dim reslabel as FBSYMBOL ptr
 
     	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( "" )
+    		reslabel = symbAddLabel( NULL )
     		astAdd( astNewLABEL( reslabel ) )
     	else
     		reslabel = NULL
@@ -5305,7 +5321,7 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 	proc = astNewFUNCT( f )
 
 	''
-	nxtlabel = symbAddLabel( "" )
+	nxtlabel = symbAddLabel( NULL )
 
 	'' result >= FB_RTERROR_OK? skip..
 	resexpr = astNewBOP( IR_OP_EQ, resexpr, astNewCONSTi( 0, IR_DATATYPE_INTEGER ), nxtlabel, FALSE )
@@ -5321,7 +5337,7 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 
 	'' reslabel
 	if( reslabel <> NULL ) then
-		param = astNewADDR( IR_OP_ADDROF, astNewVAR( reslabel, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID ) )
+		param = astNewADDR( IR_OP_ADDROF, astNewVAR( reslabel, NULL, 0, IR_DATATYPE_BYTE ) )
 	else
 		param = astNewCONSTi( NULL, IR_DATATYPE_UINT )
 	end if
@@ -5331,7 +5347,7 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 
 	'' resnxtlabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDR( IR_OP_ADDROF, astNewVAR( nxtlabel, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID ) )
+		param = astNewADDR( IR_OP_ADDROF, astNewVAR( nxtlabel, NULL, 0, IR_DATATYPE_BYTE ) )
 	else
 		param = astNewCONSTi( NULL, IR_DATATYPE_UINT )
 	end if
@@ -5366,10 +5382,10 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
 	proc = astNewFUNCT( f )
 
 	''
-    reslabel = symbAddLabel( "" )
+    reslabel = symbAddLabel( NULL )
     astAdd( astNewLABEL( reslabel ) )
 
-	nxtlabel = symbAddLabel( "" )
+	nxtlabel = symbAddLabel( NULL )
 
 	'' fb_ErrorThrowEx( errnum, linenum, reslabel, resnxtlabel );
 
@@ -5385,7 +5401,7 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
 
 	'' reslabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDR( IR_OP_ADDROF, astNewVAR( reslabel, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID ) )
+		param = astNewADDR( IR_OP_ADDROF, astNewVAR( reslabel, NULL, 0, IR_DATATYPE_BYTE ) )
 	else
 		param = astNewCONSTi( NULL, IR_DATATYPE_UINT )
 	end if
@@ -5395,7 +5411,7 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
 
 	'' resnxtlabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDR( IR_OP_ADDROF, astNewVAR( nxtlabel, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID ) )
+		param = astNewADDR( IR_OP_ADDROF, astNewVAR( nxtlabel, NULL, 0, IR_DATATYPE_BYTE ) )
 	else
 		param = astNewCONSTi( NULL, IR_DATATYPE_UINT )
 	end if
@@ -5434,7 +5450,7 @@ sub rtlErrorSetHandler( byval newhandler as ASTNODE ptr, _
     ''
     expr = NULL
     if( savecurrent ) then
-    	if( env.scope > 0 ) then
+    	if( fbIsLocal( ) ) then
     		if( env.procerrorhnd = NULL ) then
 				env.procerrorhnd = symbAddTempVar( FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID )
                 expr = astNewVAR( env.procerrorhnd, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
@@ -5609,7 +5625,7 @@ function rtlFileOpen( byval filename as ASTNODE ptr, _
     ''
     if( not isfunc ) then
     	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( "" )
+    		reslabel = symbAddLabel( NULL )
     		astAdd( astNewLABEL( reslabel ) )
     	else
     		reslabel = NULL
@@ -5643,7 +5659,7 @@ function rtlFileClose( byval filenum as ASTNODE ptr, _
     ''
     if( not isfunc ) then
     	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( "" )
+    		reslabel = symbAddLabel( NULL )
     		astAdd( astNewLABEL( reslabel ) )
     	else
     		reslabel = NULL
@@ -5681,7 +5697,7 @@ function rtlFileSeek( byval filenum as ASTNODE ptr, _
 
     ''
     if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( "" )
+    	reslabel = symbAddLabel( NULL )
     	astAdd( astNewLABEL( reslabel ) )
     else
     	reslabel = NULL
@@ -5767,7 +5783,7 @@ function rtlFilePut( byval filenum as ASTNODE ptr, _
     ''
     if( not isfunc ) then
     	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( "" )
+    		reslabel = symbAddLabel( NULL )
     		astAdd( astNewLABEL( reslabel ) )
     	else
     		reslabel = NULL
@@ -5817,7 +5833,7 @@ function rtlFilePutArray( byval filenum as ASTNODE ptr, _
     ''
     if( not isfunc ) then
     	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( "" )
+    		reslabel = symbAddLabel( NULL )
     		astAdd( astNewLABEL( reslabel ) )
     	else
 	    	reslabel = NULL
@@ -5886,7 +5902,7 @@ function rtlFileGet( byval filenum as ASTNODE ptr, _
     ''
     if( not isfunc ) then
     	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( "" )
+    		reslabel = symbAddLabel( NULL )
     		astAdd( astNewLABEL( reslabel ) )
     	else
     		reslabel = NULL
@@ -5936,7 +5952,7 @@ function rtlFileGetArray( byval filenum as ASTNODE ptr, _
     ''
     if( not isfunc ) then
     	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( "" )
+    		reslabel = symbAddLabel( NULL )
     		astAdd( astNewLABEL( reslabel ) )
     	else
     		reslabel = NULL
@@ -6213,7 +6229,7 @@ function rtlFileRename( byval filename_new as ASTNODE ptr, _
     ''
     if( not isfunc ) then
     	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( "" )
+    		reslabel = symbAddLabel( NULL )
     		astAdd( astNewLABEL( reslabel ) )
     	else
     		reslabel = NULL
@@ -7026,7 +7042,7 @@ function rtlGfxPut( byval target as ASTNODE ptr, _
 
     ''
     if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( "" )
+    	reslabel = symbAddLabel( NULL )
     	astAdd( astNewLABEL( reslabel ) )
     else
     	reslabel = NULL
@@ -7120,7 +7136,7 @@ function rtlGfxGet( byval target as ASTNODE ptr, _
 
     ''
     if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( "" )
+    	reslabel = symbAddLabel( NULL )
     	astAdd( astNewLABEL( reslabel ) )
     else
     	reslabel = NULL
@@ -7190,7 +7206,7 @@ function rtlGfxScreenSet( byval wexpr as ASTNODE ptr, _
 
     ''
     if( env.clopt.resumeerr ) then
-    	reslabel = symbAddLabel( "" )
+    	reslabel = symbAddLabel( NULL )
     	astAdd( astNewLABEL( reslabel ) )
     else
     	reslabel = NULL

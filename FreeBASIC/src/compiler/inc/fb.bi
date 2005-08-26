@@ -37,6 +37,8 @@ const FB_MAXNUMLEN			= 64
 const FB_MAXOPERANDLEN		= FB_MAXNAMELEN + 2 + 16 + 2 + 1
 const FB_MAXDEFINELEN		= FB_MAXLITLEN*4
 
+const FB_MAXSCOPEDEPTH		= 32
+
 ''
 const TRUE			= -1
 const FALSE			= 0
@@ -231,6 +233,8 @@ enum FBERRMSG_ENUM
 	FB_ERRMSG_MISSINGCMDOPTION
 	FB_ERRMSG_MATHOVERFLOW
 	FB_ERRMSG_EXPECTEDANY
+	FB_ERRMSG_EXPECTEDENDSCOPE
+	FB_ERRMSG_ILLEGALINSIDEASCOPE
 	FB_ERRMSGS
 end enum
 
@@ -324,7 +328,7 @@ end enum
 ''
 ''
 ''
-declare function 	fbInit			( ) as integer
+declare function 	fbInit			( byval ismain as integer ) as integer
 declare sub 		fbEnd			( )
 declare function 	fbCompile		( byval infname as string, _
 									  byval outfname as string, _

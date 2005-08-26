@@ -1101,7 +1101,8 @@ private sub _emitSTORI2L( byval dvreg as IRVREG ptr, _
 	if( svreg->typ = IR_VREGTYPE_IMM ) then
 		hMOV dst1, src1
 
-		if( svreg->value < -1 ) then
+		'' negative?
+		if( irIsSigned( svreg->dtype ) and (svreg->value and &h80000000) ) then
 			hMOV dst2, "-1"
 		else
 			hMOV dst2, "0"
@@ -1645,7 +1646,8 @@ private sub _emitLOADI2L( byval dvreg as IRVREG ptr, _
 
         hMOV dst1, src1
 
-		if( svreg->value < -1 ) then
+		'' negative?
+		if( irIsSigned( svreg->dtype ) and (svreg->value and &h80000000) ) then
 			hMOV dst2, "-1"
 		else
 			hMOV dst2, "0"
@@ -5082,9 +5084,12 @@ sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr ) static
 
 	emitSECTION( EMIT_SECTYPE_DATA )
 
-   	edbgEmitGlobalVar( sym, EMIT_SECTYPE_DATA )
+	'' add dbg info, if public or shared
+    if( (symbGetAlloctype( sym ) and (FB_ALLOCTYPE_SHARED or FB_ALLOCTYPE_PUBLIC)) > 0 ) then
+   		edbgEmitGlobalVar( sym, EMIT_SECTYPE_DATA )
+   	end if
 
-   	if( sym->typ = FB_SYMBTYPE_DOUBLE ) then
+   	if( symbGetType( sym ) = FB_SYMBTYPE_DOUBLE ) then
     	hALIGN( 8 )
 	else
     	hALIGN( 4 )
@@ -5249,18 +5254,22 @@ end sub
 
 
 '':::::
-sub emitWriteBss( ) static
-    dim as string alloc, ostr
-    dim as FBSYMBOL ptr s
-    dim as integer alloctype, elements, doemit
+sub emitWriteBss( byval s as FBSYMBOL ptr )
+    static as string alloc, ostr
+    static as integer alloctype, elements
+    dim as integer doemit
 
-    s = symbGetGlobalHead( )
     do while( s <> NULL )
 
 		doemit = FALSE
 
-		'' var?
-		if( symbIsVAR( s ) ) then
+    	select case symbGetClass( s )
+		'' scope block?
+		case FB_SYMBCLASS_SCOPE
+			emitWriteBss( symbGetScopeTbHead( s ) )
+
+    	'' variable?
+    	case FB_SYMBCLASS_VAR
 			'' not initialized?
 			if( not symbGetVarInitialized( s ) ) then
 				'' not emited already?
@@ -5277,7 +5286,7 @@ sub emitWriteBss( ) static
     				end if
     			end if
     		end if
-    	end if
+    	end select
 
     	if( doemit ) then
     	    alloctype = symbGetAllocType( s )
@@ -5312,9 +5321,10 @@ sub emitWriteBss( ) static
     	    ostr = alloc + "\t" + symbGetName( s ) + "," + str( s->lgt * elements )
     	    hWriteStr( TRUE, ostr )
 
-    	    '' add dbg info
-    	    edbgEmitGlobalVar( s, EMIT_SECTYPE_BSS )
-
+    	    '' add dbg info, if public or shared
+    	    if( (alloctype and (FB_ALLOCTYPE_SHARED or FB_ALLOCTYPE_PUBLIC)) > 0 ) then
+    	    	edbgEmitGlobalVar( s, EMIT_SECTYPE_BSS )
+    	    end if
     	end if
 
     	s = s->next
@@ -5338,18 +5348,22 @@ private sub hEmitConstHeader( )
 end sub
 
 '':::::
-sub emitWriteConst( ) static
-    dim as string stext, stype, ostr
-    dim as FBSYMBOL ptr s
-    dim as integer dtype, doemit
+sub emitWriteConst( byval s as FBSYMBOL ptr )
+    static as string stext, stype, ostr
+    static as integer dtype
+    dim as integer doemit
 
-    s = symbGetGlobalHead( )
     do while( s <> NULL )
 
     	doemit = FALSE
 
-    	'' var?
-    	if( symbIsVAR( s ) ) then
+    	select case symbGetClass( s )
+		'' scope block?
+		case FB_SYMBCLASS_SCOPE
+			emitWriteConst( symbGetScopeTbHead( s ) )
+
+    	'' variable?
+    	case FB_SYMBCLASS_VAR
     		'' initialized?
     		if( symbGetVarInitialized( s ) ) then
     	    	dtype = symbGetType( s )
@@ -5361,7 +5375,7 @@ sub emitWriteConst( ) static
     	    		end if
     	    	end if
     	    end if
-		end if
+		end select
 
     	if( doemit ) then
     		stype = hGetTypeString( dtype )
@@ -5420,7 +5434,10 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
 
 	dname = symbGetVarDescName( s )
 
-    edbgEmitGlobalVar( s, EMIT_SECTYPE_DATA )
+   	'' add dbg info, if public or shared
+    if( (symbGetAllocType( s ) and (FB_ALLOCTYPE_SHARED or FB_ALLOCTYPE_PUBLIC)) > 0 ) then
+    	edbgEmitGlobalVar( s, EMIT_SECTYPE_DATA )
+    end if
 
     '' COMMON?
     if( symbIsCommon( s ) ) then
@@ -5522,14 +5539,18 @@ private sub hEmitDataHeader( )
 end sub
 
 '':::::
-sub emitWriteData( ) static
-    dim as FBSYMBOL ptr s, d
+sub emitWriteData( byval s as FBSYMBOL ptr )
+    static as FBSYMBOL ptr d
 
-    s = symbGetGlobalHead( )
     do while( s <> NULL )
 
-    	'' var?
-    	if( symbIsVAR( s ) ) then
+    	select case symbGetClass( s )
+		'' scope block?
+		case FB_SYMBCLASS_SCOPE
+			emitWriteData( symbGetScopeTbHead( s ) )
+
+    	'' variable?
+    	case FB_SYMBCLASS_VAR
     	    '' with descriptor?
     	    d = symbGetArrayDescriptor( s )
     	    if( d <> NULL ) then
@@ -5544,7 +5565,7 @@ sub emitWriteData( ) static
     	    		hWriteStringDesc( s )
     	    	end select
     	    end if
-    	end if
+    	end select
 
     	s = s->next
     loop
@@ -5570,7 +5591,8 @@ sub emitWriteExport( ) static
     dim s as FBSYMBOL ptr
     dim sname as string
 
-    s = symbGetGlobalHead( )
+    '' for each proc exported..
+    s = symbGetGlobalTbHead( )
     do while( s <> NULL )
 
     	if( symbIsPROC( s ) ) then

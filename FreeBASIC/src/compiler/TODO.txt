@@ -1,4 +1,22 @@
 
+[ ] SCOPE..END SCOPE:
+    - vars should be reused (that's is, the stack "rewinded") because it's only
+      assured that the vars will be initialized to 0 when the scope block is 
+      entered by the first time, so reusing would be more efficient - that will 
+      screw up var-len strings, the descriptor MUST be zeroed or an assignment 
+      will fail, same care must be taken with object instances, but then the
+      constructor will be called, it would be way easier if STRING was actually
+      a class.. nm..
+    - error handlers should be restored too (or not allowed at all)
+
+[ ] windows api headers:
+    - add missing headers: win/__TODO__ and others not translated (DX, TAPI, etc)
+    - check all PSHPACK#.h inclusions and also #pragma push|pop
+    - convert the once-nameless unions (u as) and structs (s as) to inner nameless types
+    - add the #inclib's
+    - add the missing macros (MAKELONG etc) and complex #define's (ones with type casting)
+    - add UNICODE and ASCII support
+
 [ ] unicode strings (WSTRING type):
     - not var-len, just like ZSTRING's (fixed-len + pointers)
     - wide as the target platform (16-bit in Windows, 8-bit in Linux, etc)
@@ -6,24 +24,22 @@
     - maybe libutf8 when unicode is not supported by the platform
     - how to express literal unicode strings? W""?
     - to make it simpler to implement and to not bloat the str_ objects, don't allow
-      wstring's to be compared or concatenated to other string types, just copied/assigned or neither that
+      wstring's to be compared or concatenated to other string types, just copied/assigned or
+      neither that
 
-[ ] add fix-len and zstring * support to arrays args passed by descriptor
+[ ] add fix-len and zstring * support to array args passed by descriptor
 
 [ ] named field initializers: ( "foo" => bar, "udt" => ( 1, { 2, 3 }, 4 ) )
     - all fields initialized must be named as a special parser routine will have to be used,
       that will keep track of what wasn't initialized to fill 'em with 0's - static only, locals
       are already cleared
 
-[ ] EMIT:
-    - optimize load after store
-    - re-ordering optimization if target cpu is +586
 
+*** *** *** *** ***
 [ ] full debug support
     - add dynamic arrays - couldn't get GDB to use Fortran-like arrays
     - each overloaded function will show the locals of *ALL* functions
 
-*** *** *** *** ***
 [ ] AndAlso and OrElse, short-circuit versions of And and Or
     - pay attention to register spills if functions or complex expressions are
       used in left or right sides

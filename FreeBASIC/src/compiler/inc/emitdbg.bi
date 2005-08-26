@@ -16,12 +16,17 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
+declare sub			edbgInit			( )
+
+declare sub			edbgEnd				( )
+
 declare sub 		edbgEmitHeader		( byval filename as string )
 
 declare sub 		edbgLineBegin		( byval proc as FBSYMBOL ptr, _
 										  byval lnum as integer )
 
-declare sub 		edbgLineEnd			( byval proc as FBSYMBOL ptr )
+declare sub 		edbgLineEnd			( byval proc as FBSYMBOL ptr, _
+										  byval unused as integer )
 
 declare sub 		edbgEmitLine		( byval proc as FBSYMBOL ptr, _
 										  byval lnum as integer, _
@@ -30,6 +35,14 @@ declare sub 		edbgEmitLine		( byval proc as FBSYMBOL ptr, _
 declare sub 		edbgEmitLineFlush	( byval proc as FBSYMBOL ptr, _
 										  byval lnum as integer, _
 										  byval label as FBSYMBOL ptr )
+
+declare sub 		edbgScopeBegin		( byval s as FBSYMBOL ptr )
+
+declare sub 		edbgScopeEnd		( byval s as FBSYMBOL ptr )
+
+declare sub 		edbgEmitScopeINI	( byval s as FBSYMBOL ptr )
+
+declare sub 		edbgEmitScopeEND	( byval s as FBSYMBOL ptr )
 
 declare sub 		edbgProcBegin		( byval proc as FBSYMBOL ptr )
 
@@ -48,9 +61,10 @@ declare sub 		edbgEmitFooter		( )
 declare sub 		edbgEmitGlobalVar	( byval sym as FBSYMBOL ptr, _
 				   						  byval section as integer )
 
-declare sub 		edbgEmitLocalVar	( byval sym as FBSYMBOL ptr )
-
 declare sub 		edbgEmitProcArg		( byval sym as FBSYMBOL ptr )
+
+declare sub 		edbgEmitLocalVar	( byval sym as FBSYMBOL ptr, _
+										  byval isstatic as integer )
 
 declare sub 		edbgIncludeBegin 	( byval incname as string, _
 					   					  byval incfile as integer )

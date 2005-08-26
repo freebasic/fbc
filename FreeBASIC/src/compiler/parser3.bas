@@ -184,7 +184,7 @@ function cTypeField( byref elm as FBSYMBOL ptr, _
 				isderef = FALSE
 			end if
 
-    		ofs = symbGetUDTElmOffset( elm, typ, subtype, *fields )
+    		ofs = symbGetUDTElmOffset( elm, typ, subtype, fields )
     		if( ofs < 0 ) then
     			hReportError( FB_ERRMSG_ELEMENTNOTDEFINED )
     			return FALSE
@@ -830,7 +830,7 @@ function hVarAddUndecl( byval id as string, _
 		alloctype = 0
 	end if
 
-    s = symbAddVar( id, typ, NULL, 0, 0, dTB(), alloctype )
+    s = symbAddVar( @id, typ, NULL, 0, 0, dTB(), alloctype )
     if( s = NULL ) then
 		exit function
 	end if
@@ -901,7 +901,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 	else
 
 		'' it can be also an UDT, as periods can be part of symbol names..
-		sym = symbLookupUDTElm( *id, lexGetPeriodPos( ), typ, ofs, elm, subtype )
+		sym = symbLookupUDTElm( id, lexGetPeriodPos( ), typ, ofs, elm, subtype )
 		if( sym = NULL ) then
 			'' add undeclared variable
 			if( hGetLastError( ) <> FB_ERRMSG_OK ) then

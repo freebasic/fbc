@@ -141,7 +141,7 @@ declare sub 		irDump				( byval op as integer, _
 		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2	, 8*FB_INTEGERSIZE*2, FALSE, IR_DATATYPE_ULONGINT), _
 		(IR_DATACLASS_FPOINT , 4             	, 8*4				, TRUE , IR_DATATYPE_SINGLE	 ), _
 		(IR_DATACLASS_FPOINT , 8			 	, 8*8				, TRUE , IR_DATATYPE_DOUBLE	 ), _
-		(IR_DATACLASS_STRING , FB_STRSTRUCTSIZE	, 0					, FALSE, IR_DATATYPE_STRING	 ), _
+		(IR_DATACLASS_STRING , FB_STRDESCLEN	, 0					, FALSE, IR_DATATYPE_STRING	 ), _
 		(IR_DATACLASS_STRING , 1			 	, 8*1				, FALSE, IR_DATATYPE_FIXSTR	 ), _
 		(IR_DATACLASS_UDT	 , 0			 	, 0					, FALSE, IR_DATATYPE_USERDEF ), _
 		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, IR_DATATYPE_UINT	 ), _ '' func
@@ -799,6 +799,20 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
 end function
 
 '':::::
+sub irScopeBegin( byval s as FBSYMBOL ptr ) static
+
+	edbgScopeBegin( s )
+
+end sub
+
+'':::::
+sub irScopeEnd( byval s as FBSYMBOL ptr ) static
+
+	edbgScopeEnd( s )
+
+end sub
+
+'':::::
 sub irEmitASM( byval text as string ) static
 
 	irFlush( )
@@ -831,11 +845,16 @@ sub irEmitDBG( byval proc as FBSYMBOL ptr, _
 
 	irFlush( )
 
-	select case op
+	select case as const op
 	case IR_OP_DBG_LINEINI
 		edbgLineBegin( proc, ex )
 	case IR_OP_DBG_LINEEND
-		edbgLineEnd( proc )
+		edbgLineEnd( proc, ex )
+
+	case IR_OP_DBG_SCOPEINI
+		edbgEmitScopeINI( cptr( FBSYMBOL ptr, ex ) )
+	case IR_OP_DBG_SCOPEEND
+		edbgEmitScopeEND( cptr( FBSYMBOL ptr, ex ) )
 	end select
 
 end sub

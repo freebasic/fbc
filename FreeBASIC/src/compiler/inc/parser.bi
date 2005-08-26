@@ -78,14 +78,12 @@ declare function 	cProcDecl               ( ) as integer
 
 declare function 	cSubOrFuncDecl 			( byval isSub as integer ) as integer
 
-declare function 	cArguments              ( byval procmode as integer, _
-											  byref argc as integer, _
-											  byval argtail as FBSYMBOL ptr, _
+declare function 	cArguments              ( byval proc as FBSYMBOL ptr, _
+											  byval procmode as integer, _
 											  byval isproto as integer ) as FBSYMBOL ptr
 
-declare function 	cArgDecl				( byval procmode as integer, _
-				   							  byval argc as integer, _
-				   							  byval argtail as FBSYMBOL ptr, _
+declare function 	cArgDecl				( byval proc as FBSYMBOL ptr, _
+											  byval procmode as integer, _
 				   							  byval isproto as integer ) as FBSYMBOL ptr
 
 declare function 	cDefDecl				( ) as integer
@@ -129,6 +127,8 @@ declare function 	cEndStatement			( ) as integer
 declare function 	cContinueStatement		( ) as integer
 
 declare function 	cWithStatement          ( ) as integer
+
+declare function 	cScopeStatement			( ) as integer
 
 declare function 	cAssignmentOrPtrCall	( ) as integer
 

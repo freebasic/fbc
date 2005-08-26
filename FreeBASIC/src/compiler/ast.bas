@@ -188,6 +188,7 @@ end sub
 private sub hProcFlush( byval p as ASTPROCNODE ptr, _
 						byval doemit as integer ) static
     dim as ASTNODE ptr n, nxt
+    dim as FBSYMBOLTB ptr oldtb
 
 	''
 	ctx.curproc = p
@@ -195,12 +196,14 @@ private sub hProcFlush( byval p as ASTPROCNODE ptr, _
 
 	if( not p->ismain ) then
 		env.scope = 1
+		env.currproc = p->proc
 	else
 		env.scope = 0
+		env.currproc = NULL
 	end if
 
-	env.currproc 	= p->proc
-	symbSetLocalTb( @p->loctb )
+	env.currproc = p->proc
+	oldtb = symbSetSymbolTb( @p->proc->proc.loctb )
 
 	''
 	if( ctx.doemit ) then
@@ -221,17 +224,18 @@ private sub hProcFlush( byval p as ASTPROCNODE ptr, _
     end if
 
     '' del symbols from hash and symbol tb's
-    symbDelLocalTb( FALSE )
+    symbDelSymbolTb( @p->proc->proc.loctb, FALSE )
 
-	''
-	hDelProcNode( p )
-
-    ''
-    symbSetLocalTb( NULL )
+    '' back to global/module-level/main
+    symbSetSymbolTb( NULL )
+    env.currproc = NULL
     env.scope = 0
 
 	ctx.doemit  = TRUE
 	ctx.curproc = NULL
+
+	''
+	hDelProcNode( p )
 
 end sub
 
@@ -320,9 +324,9 @@ function astProcBegin( byval proc as FBSYMBOL ptr, _
 	p->ismain	 = ismain
 
 	''
-	p->loctb.head = NULL
-	p->loctb.tail = NULL
-	symbSetLocalTb( @p->loctb )
+	proc->proc.loctb.head = NULL
+	proc->proc.loctb.tail = NULL
+	symbSetSymbolTb( @proc->proc.loctb )
 
 	ctx.curproc = p
 
@@ -346,7 +350,7 @@ sub astProcEnd( byval p as ASTPROCNODE ptr ) static
 
 		'' remove from hash tb only
 		else
-			symbDelLocalTb( TRUE )
+			symbDelSymbolTb( @p->proc->proc.loctb, TRUE )
 		end if
 
 	'' main? flush all remaining, it's the latest
@@ -355,10 +359,46 @@ sub astProcEnd( byval p as ASTPROCNODE ptr ) static
 
 	end if
 
-	symbSetLocalTb( NULL )
+	'' back to global table
+	symbSetSymbolTb( NULL )
 
 	'' back to main (or NULL)
 	ctx.curproc = listGetHead( @ctx.proclist )
+
+end sub
+
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' scope handling
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+sub astScopeBegin( byval s as FBSYMBOL ptr ) static
+
+    '' change to scope's symbol tb
+    s->scp.loctb.head = NULL
+    s->scp.loctb.tail = NULL
+
+	symbSetSymbolTb( @s->scp.loctb )
+
+	''
+	irScopeBegin( s )
+
+	''
+	astAdd( astNewDBG( IR_OP_DBG_SCOPEINI, cint( s ) ) )
+
+end sub
+
+'':::::
+sub astScopeEnd( byval s as FBSYMBOL ptr ) static
+
+	''
+	astAdd( astNewDBG( IR_OP_DBG_SCOPEEND, cint( s ) ) )
+
+	''
+	irScopeEnd( s )
+
+	'' back to preview symbol tb
+	symbSetSymbolTb( s->symtb )
 
 end sub
 
@@ -1895,7 +1935,7 @@ function astPtrCheck( byval pdtype as integer, _
 					  byval psubtype as FBSYMBOL ptr, _
 					  byval expr as ASTNODE ptr ) as integer static
 
-	dim as integer edtype
+	dim as integer edtype, pdtype_np, edtype_np
 
 	function = FALSE
 
@@ -1922,24 +1962,27 @@ function astPtrCheck( byval pdtype as integer, _
 
 	'' different types?
 	if( pdtype <> edtype ) then
-    	'' same level of indirection?
-    	'''if( abs( pdtype - dtype ) >= IR_DATATYPE_POINTER ) then
-    	''	exit function
-    	'''end if
 
-    	'' one of them is a ANY PTR?
-    	pdtype mod= IR_DATATYPE_POINTER
-    	edtype mod= IR_DATATYPE_POINTER
-    	if( pdtype = IR_DATATYPE_VOID ) then
+    	'' remove the pointers
+    	pdtype_np mod= IR_DATATYPE_POINTER
+    	edtype_np mod= IR_DATATYPE_POINTER
+
+    	'' 1st) one of them is a ANY PTR?
+    	if( pdtype_np = IR_DATATYPE_VOID ) then
     		return TRUE
-    	elseif( edtype = IR_DATATYPE_VOID ) then
+    	elseif( edtype_np = IR_DATATYPE_VOID ) then
     		return TRUE
     	end if
 
-    	'' same size?
-    	if( (pdtype <= IR_DATATYPE_DOUBLE) and _
-    		(edtype <= IR_DATATYPE_DOUBLE) ) then
-    		if( irGetDataSize( pdtype ) = irGetDataSize( edtype ) ) then
+    	'' 2nd) same level of indirection?
+    	if( abs( pdtype - edtype ) >= IR_DATATYPE_POINTER ) then
+    		exit function
+    	end if
+
+    	'' 3rd) same size?
+    	if( (pdtype_np <= IR_DATATYPE_DOUBLE) and _
+    		(edtype_np <= IR_DATATYPE_DOUBLE) ) then
+    		if( irGetDataSize( pdtype_np ) = irGetDataSize( edtype_np ) ) then
     			return TRUE
     		end if
     	end if
@@ -3825,26 +3868,6 @@ function astNewUOP( byval op as integer, _
 
 		if( op = IR_OP_NEG ) then
 			if( astGetDataClass( o ) = IR_DATACLASS_INTEGER ) then
-				select case dtype
-				case IR_DATATYPE_INTEGER, IR_DATATYPE_UINT, IR_DATATYPE_ENUM
-					'' special case of integers/enums
-					if( astGetValueAsInt( o ) and &h80000000 ) then
-						if( astGetValueAsInt( o ) <> &h80000000 ) then
-							hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
-						end if
-					end if
-				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-					'' special case for longints
-					if( astGetValueAsLongInt( o ) and &h8000000000000000 ) then
-						if( astGetValueAsLongInt( o ) <> &h8000000000000000 ) then
-							hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
-						end if
-					end if
-				case else
-					if( -astGetValueAsLongInt( o ) < minlimitTB( astGetDataType( o ) ) ) then
-						hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
-					end if
-				end select
 				if( not irIsSigned( dtype ) ) then
 					dtype = irGetSignedType( dtype )
 				end if
@@ -4922,7 +4945,7 @@ private function hCheckConst( byval dtype as integer, _
 			dmax = 1.7976931348623147e+308
 		end if
 
-		dval = abs(astGetValueAsDouble( n ))
+		dval = abs( astGetValueAsDouble( n ) )
     	if( dval <> 0 ) then
     		if( (dval < dmin) or (dval > dmax) ) then
     			hReportError( FB_ERRMSG_MATHOVERFLOW, TRUE )
@@ -4932,14 +4955,20 @@ private function hCheckConst( byval dtype as integer, _
 
 	case IR_DATATYPE_LONGINT
 
-		if( culngint( astGetValueAsLongInt( n ) ) > 9223372036854775807ULL ) then
-			n = astNewCONV( INVALID, dtype, NULL, n )
-			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+		'' unsigned constant?
+		if( not irIsSigned( astGetDataType( n ) ) ) then
+			'' too big?
+			if( culngint( astGetValueAsLongInt( n ) ) > 9223372036854775807ULL ) then
+				n = astNewCONV( INVALID, dtype, NULL, n )
+				hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+			end if
 		end if
 
 	case IR_DATATYPE_ULONGINT
 
+		'' signed constant?
 		if( irIsSigned( astGetDataType( n ) ) ) then
+			'' too big?
 			if( astGetValueAsLongInt( n ) and &h8000000000000000 ) then
 				n = astNewCONV( INVALID, dtype, NULL, n )
 				hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
@@ -5063,7 +5092,8 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 
     	'' not the same?
     	if( ldtype <> rdtype ) then
-    		if( (ldclass <> IR_DATACLASS_INTEGER) or (rdclass <> IR_DATACLASS_INTEGER) ) then
+    		if( (ldclass <> IR_DATACLASS_INTEGER) or _
+    			(rdclass <> IR_DATACLASS_INTEGER) ) then
     			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
     		end if
     	end if
@@ -5081,7 +5111,7 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 				'' x86 assumption: let the fpu do the convertion if any operand is a float
 				if( (ldclass <> IR_DATACLASS_FPOINT) and _
 					(rdclass <> IR_DATACLASS_FPOINT) ) then
-					r = astNewCONV( INVALID, ldtype, NULL, r )
+					r = astNewCONV( INVALID, ldtype, l->subtype, r )
 				end if
 			end if
 
@@ -5090,6 +5120,25 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 			end if
 		end if
 	end if
+
+    '' check pointers
+    if( ldtype >= IR_DATATYPE_POINTER ) then
+    	'' function ptr?
+    	if( ldtype = IR_DATATYPE_POINTER + IR_DATATYPE_FUNCTION ) then
+    		if( not astFuncPtrCheck( ldtype, l->subtype, r ) ) then
+   				hReportWarning( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
+    		end if
+    	'' ordinary ptr..
+    	else
+			if( not astPtrCheck( ldtype, l->subtype, r ) ) then
+				hReportWarning( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
+			end if
+		end if
+
+    '' r-side expr is a ptr?
+    elseif( rdtype >= IR_DATATYPE_POINTER ) then
+    	hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+    end if
 
 	'' alloc new node
 	n = hNewNode( AST_NODECLASS_ASSIGN, ldtype )
@@ -5517,23 +5566,24 @@ private function hStrParamToPtrArg( byval f as ASTNODE ptr, _
     						   NULL, _
     						   astNewADDR( IR_OP_DEREF, n->l ) )
 
-        '' fixed-len? get the address of
-        elseif( pclass <> AST_NODECLASS_PTR ) then
-			n->l = astNewCONV( IR_OP_TOPOINTER, _
-    						   IR_DATATYPE_POINTER + IR_DATATYPE_CHAR, _
-    						   NULL, _
-							   astNewADDR( IR_OP_ADDROF, n->l ) )
+        '' fixed-len..
+        else
+            '' get the address of
+        	if( pclass <> AST_NODECLASS_PTR ) then
+				n->l = astNewCONV( IR_OP_TOPOINTER, _
+    						   	   IR_DATATYPE_POINTER + IR_DATATYPE_CHAR, _
+    						   	   NULL, _
+							   	   astNewADDR( IR_OP_ADDROF, n->l ) )
+			end if
 		end if
 
 		n->dtype = n->l->dtype
 
 	else
-    	'' zstring? if not a ptr yet, get the address of
+    	'' zstring? take the address of
     	if( pdtype = IR_DATATYPE_CHAR ) then
-			if( pclass <> AST_NODECLASS_PTR ) then
-				n->l = astNewADDR( IR_OP_ADDROF, n->l )
-				n->dtype = n->l->dtype
-			end if
+			n->l = astNewADDR( IR_OP_ADDROF, n->l )
+			n->dtype = n->l->dtype
 		end if
 
 	end if
@@ -6202,8 +6252,8 @@ private function hLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 	toalign = 0
 
 	''
-	args 	= proc->proc.args
-	lastarg = proc->proc.argtail
+	args 	= symbGetProcArgs( proc )
+	lastarg = symbGetProcTailArg( proc )
 	if( params <= args ) then
 		arg = symbGetProcFirstArg( proc )
 		'' vararg and param not passed?
@@ -6214,7 +6264,8 @@ private function hLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 
 		else
 #ifdef DO_STACK_ALIGN
-			toalign = (16 - (bytestopop and 15)) and 15
+			toalign = ((FB_INTEGERSIZE*4) - _
+					  (bytestopop and (FB_INTEGERSIZE*4-1))) and (FB_INTEGERSIZE*4-1)
 			if( toalign > 0 ) then
 				if( ctx.doemit ) then
 					irEmitSTACKALIGN( toalign )
@@ -6236,8 +6287,10 @@ private function hLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 
 		''
 		if( arg = lastarg ) then
-			if( arg->arg.mode = FB_ARGMODE_VARARG ) then
-				bytestopop += (symbCalcLen( l->dtype, NULL ) + 3) and not 3 '' x86 assumption!
+			if( symbGetArgMode( proc, arg ) = FB_ARGMODE_VARARG ) then
+				bytestopop += (symbCalcLen( l->dtype, NULL ) + _
+					 		  (FB_INTEGERSIZE-1)) and _
+					 		  not (FB_INTEGERSIZE-1) 		'' x86 assumption!
 			end if
 		end if
 
@@ -6336,7 +6389,7 @@ function astNewIIF( byval condexpr as ASTNODE ptr, _
     	end if
     end if
 
-	falselabel = symbAddLabel( "" )
+	falselabel = symbAddLabel( NULL )
 
 	condexpr = astUpdComp2Branch( condexpr, falselabel, FALSE )
 	if( condexpr = NULL ) then
@@ -6385,7 +6438,7 @@ private function hLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 	hFLush( l )
 
 	''
-	exitlabel = symbAddLabel( "" )
+	exitlabel = symbAddLabel( NULL )
 
 	'' true expr
 	vr = hLoad( r->l )
@@ -6584,7 +6637,7 @@ function astNewDBG( byval op as integer, _
     dim as ASTNODE ptr n
 
 	if( not env.clopt.debug ) then
-		exit sub
+		exit function
 	end if
 
 	'' alloc new node
@@ -6741,7 +6794,7 @@ private function hLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
 
     if( ctx.doemit ) then
     	'' handler = boundchk( ... ): if handler <> NULL then handler( )
-    	label = symbAddLabel( "" )
+    	label = symbAddLabel( NULL )
     	irEmitBOPEx( IR_OP_EQ, vr, irAllocVRIMM( IR_DATATYPE_INTEGER, 0 ), NULL, label )
     	irEmitJUMPPTR( vr )
     	irEmitLABELNF( label )
@@ -6801,7 +6854,7 @@ private function hLoadPTRCHK( byval n as ASTNODE ptr ) as IRVREG ptr
 
     if( ctx.doemit ) then
     	'' handler = ptrchk( ... ): if handler <> NULL then handler( )
-    	label = symbAddLabel( "" )
+    	label = symbAddLabel( NULL )
     	irEmitBOPEx( IR_OP_EQ, vr, irAllocVRIMM( IR_DATATYPE_INTEGER, 0 ), NULL, label )
     	irEmitJUMPPTR( vr )
     	irEmitLABELNF( label )

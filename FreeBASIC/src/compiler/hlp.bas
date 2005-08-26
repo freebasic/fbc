@@ -159,7 +159,9 @@ end type
 		"Array out-of-bounds", _
 		"Missing command-line option for", _
 		"Math overflow", _
-		"Expected 'ANY'" _
+		"Expected 'ANY'", _
+		"Expected 'END SCOPE'", _
+		"Illegal inside a SCOPE block" _
 	}
 
 
@@ -796,7 +798,7 @@ function hCreateOvlProcAlias( byval symbol as string, _
     		aname += symbGetName( argtail->subtype )
     	end if
 
-    	argtail = argtail->arg.prev
+    	argtail = argtail->prev
     next i
 
 	function = @aname
@@ -1013,7 +1015,7 @@ function hJumpTbAllocSym( ) as any ptr static
 
 	sname = *hMakeTmpStr( )
 
-	s = symbAddVarEx( sname, "", FB_SYMBTYPE_UINT, NULL, 0, _
+	s = symbAddVarEx( @sname, NULL, FB_SYMBTYPE_UINT, NULL, 0, _
 					  FB_INTEGERSIZE, 1, dTB(), FB_ALLOCTYPE_SHARED+FB_ALLOCTYPE_JUMPTB, _
 					  FALSE, FALSE, FALSE )
 

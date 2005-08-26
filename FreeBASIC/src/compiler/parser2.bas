@@ -1011,6 +1011,7 @@ function cAddrOfExpression( byref addrofexpr as ASTNODE ptr ) as integer
 		if( not cLiteral( expr ) ) then
 			if( not cConstant( expr ) ) then
 				if( not cVariable( expr, sym, elm ) ) then
+					hReportError( FB_ERRMSG_INVALIDDATATYPES )
 					exit function
 				end if
 			end if
