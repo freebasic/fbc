@@ -75,6 +75,7 @@ Version 0.15 Beta:
 - storing a longint (64-bit) to a integer was causing a stack fault in the compiler (v1c)
 - assigning UDT's returned from functions to arrays was generating invalid code, depending on the UDT type (v1c)
 - profiling multithreaded apps caused a crash on program exit (lillo)
+- GETMOUSE now works in combination with INKEY$ on Win32 (mjs)
 
 
 Version 0.14 Beta:
