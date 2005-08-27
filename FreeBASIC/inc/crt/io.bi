@@ -67,7 +67,6 @@ declare function _creat cdecl alias "_creat" (byval as zstring ptr, byval as int
 declare function _dup cdecl alias "_dup" (byval as integer) as integer
 declare function _dup2 cdecl alias "_dup2" (byval as integer, byval as integer) as integer
 declare function _filelength cdecl alias "_filelength" (byval as integer) as integer
-declare function _fileno cdecl alias "_fileno" (byval as FILE ptr) as integer
 declare function _get_osfhandle cdecl alias "_get_osfhandle" (byval as integer) as integer
 declare function _isatty cdecl alias "_isatty" (byval as integer) as integer
 declare function _eof cdecl alias "_eof" (byval as integer) as integer
