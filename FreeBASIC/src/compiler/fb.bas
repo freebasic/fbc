@@ -595,7 +595,7 @@ function fbIncludeFile( byval filename as string, _
 	if( not hFileExists( filename ) ) then
 
 		'' try finding it at same path as env.infile
-		incfile = hStripFilename( env.inf.name ) + hStripPath( filename )
+		incfile = hStripFilename( env.inf.name ) + filename
 		if( not hFileExists( incfile ) ) then
 
 			'' try finding it at the inc paths
