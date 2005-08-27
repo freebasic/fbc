@@ -1,7 +1,7 @@
 #ifndef __openhook_bi__
 #define __openhook_bi__
 
-#ifdef __FB_WIN32__
+#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
 #inclib "winspool"
 #endif
 
