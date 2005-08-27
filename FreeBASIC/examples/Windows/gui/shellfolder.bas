@@ -18,7 +18,7 @@ function BrowseCallbackProc(byval hWnd as HWND, _
 
     select case uMsg 
     case BFFM_INITIALIZED 
-        SendMessage( hWnd, BFFM_SETSELECTIONA, -1, strptr( sFolder ) ) 
+        SendMessage( hWnd, BFFM_SETSELECTION, -1, strptr( sFolder ) ) 
     
     case BFFM_SELCHANGED 
         dim as zstring * MAX_PATH sPath
@@ -29,7 +29,7 @@ function BrowseCallbackProc(byval hWnd as HWND, _
             sPath = "PATH: " + sPath
         end if 
         
-        SendMessage( hWnd, BFFM_SETSTATUSTEXTA, 0, @sPath )
+        SendMessage( hWnd, BFFM_SETSTATUSTEXT, 0, @sPath )
    end select 
    
    function = 0 
