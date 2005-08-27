@@ -563,7 +563,7 @@ Credits (in alphabetic order):
     - Ported FreeBASIC to Linux; port maintainer.
     - Developer of GFXLib2.
     - Added profiling support.
-    - Added build-in threads and dynlib support.
+    - Added build-in threads, dynlib support and I/O ports access support.
     - Made the rtlib thread-safe, besides many other runtime lib
       and compiler improvements.
 
@@ -572,7 +572,7 @@ Credits (in alphabetic order):
     - Wrote the glext example at the examples/GL dir.
 
   o Chris Davies (c.g.davies@gmail.com):
-    - Translated the OpenAL headers.
+    - Translated the OpenAL headers (later replaced by the SWIG FB wrapper version).
     - Wrote the OpenAL demonstration in the examples/sound directory.
 
   o Daniel R. Verkamp (i_am_drv@yahoo.com) - Project Member:
@@ -580,10 +580,9 @@ Credits (in alphabetic order):
     - Translated the Allegro headers (W.I.P.).
     - Wrote the DLL and static library automation, plus resource scripts
       support on Windows.
-    - Completed the CRTDLL and DDRAW headers.
 
   o Dumbledore
-    - Ported the wx-c header (later replaced by the SWIG FB wrapper version)
+    - Ported the wx-c headers (later replaced by the SWIG FB wrapper version).
     - Wrote the wx demonstration in the examples/wx-c dir.
 
   o Edmond Leung (leung.edmond@gmail.com):
@@ -592,7 +591,7 @@ Credits (in alphabetic order):
 
   o Eric Lope (vic_viperph@yahoo.com):
     - Translated the OpenGL and GLU headers (later replaced by the SWIG FB 
-      wrapper version)
+      wrapper version).
     - Wrote the rel-* graphics demonstrations in the examples/gfx directory.
     - Wrote the examples/GL/fbgfx_texture.bas OpenGL example.
 
@@ -618,7 +617,10 @@ Credits (in alphabetic order):
       sent by Edmond Leung some days before) and wrote the SDL_ttf demonstration.
 
   o Mark Junker (mjscod@gmx.de) - Project Member:
-    - Runtime library fixes and improvements.
+    - Added support for file systems like SCR, LPTx, COM, etc.
+    - Added printer support.
+    - Added the automated runtime-lib and compiler tests.
+    - Many runtime library fixes and improvements.
 
   o Marzec:
     - Wrote the SDL_bassgl, SDL_opengl, and SDL_key tests in the SDL directory.
