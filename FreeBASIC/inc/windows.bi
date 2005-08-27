@@ -41,7 +41,7 @@
 # if defined(__USE_W32_SOCKETS)
 #  include once "win/winsock2.bi"
 # endif
-''''''''''''''''# include once "win/ole2.bi"
+# include once "win/ole2.bi"
 #endif
 
 #endif
