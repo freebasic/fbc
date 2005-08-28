@@ -88,6 +88,7 @@ declare sub chkoptlibs( optTb() as OPTLIB, byval libs as integer )
 	print
 
 	genlibs( "\winapi\", TRUE )
+	genlibs( "\winapi\ddk\", TRUE )
 
 	genlibs( "\", FALSE )
 
