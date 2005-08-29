@@ -27,102 +27,6 @@
 #include <process.h>
 #include "fb.h"
 
-#ifdef DEBUG
-static CRITICAL_SECTION fb_output_mutex;
-static int mutex_inited = FALSE;
-
-typedef struct _CS_INFO {
-    CRITICAL_SECTION *pCS;
-    DWORD             dwThreadId;
-    DWORD             dwLockCount;
-} CS_INFO;
-
-static CS_INFO cs_infos[10] = { { 0 } };
-
-void fb_hInitLock( void )
-{
-    if( mutex_inited )
-        return;
-    mutex_inited = TRUE;
-	InitializeCriticalSection(&fb_output_mutex);
-}
-
-void fb_hDoLock(CRITICAL_SECTION *pLock)
-{
-    DWORD dwThreadId = GetCurrentThreadId();
-
-    fb_hInitLock();
-
-    EnterCriticalSection(&fb_output_mutex);
-    printf("Try lock of %p from %lx\n", pLock, dwThreadId);
-    LeaveCriticalSection(&fb_output_mutex);
-
-    EnterCriticalSection(pLock);
-
-    EnterCriticalSection(&fb_output_mutex);
-    {
-        size_t iCount = sizeof(cs_infos)/sizeof(cs_infos[0]);
-        size_t i;
-        for( i=0; i!=iCount; ++i ) {
-            CS_INFO *cs_info = cs_infos + i;
-            if( cs_info->pCS==pLock ) {
-                cs_info->dwThreadId = dwThreadId;
-                ++cs_info->dwLockCount;
-                break;
-            }
-        }
-        if( i==iCount ) {
-            for( i=0; i!=iCount; ++i ) {
-                CS_INFO *cs_info = cs_infos + i;
-                if( cs_info->pCS==NULL ) {
-                    cs_info->pCS = pLock;
-                    cs_info->dwThreadId = GetCurrentThreadId();
-                    cs_info->dwLockCount = 1;
-                    break;
-                }
-            }
-        }
-        printf("Lock level (%p, %lx) = %lu\n", pLock, dwThreadId, cs_infos[i].dwLockCount );
-    }
-    LeaveCriticalSection(&fb_output_mutex);
-
-}
-
-void fb_hDoUnlock(CRITICAL_SECTION *pLock)
-{
-    DWORD dwThreadId = GetCurrentThreadId();
-
-    fb_hInitLock();
-
-    EnterCriticalSection(&fb_output_mutex);
-    {
-        size_t iCount = sizeof(cs_infos)/sizeof(cs_infos[0]);
-        size_t i;
-        for( i=0; i!=iCount; ++i ) {
-            CS_INFO *cs_info = cs_infos + i;
-            if( cs_info->pCS==pLock ) {
-                if( cs_info->dwThreadId==dwThreadId ) {
-                    if( --cs_info->dwLockCount==0 ) {
-                        cs_info->dwThreadId = 0;
-                    }
-                    printf("Unlock level (%p, %lx) = %lu\n", pLock, dwThreadId, cs_info->dwLockCount );
-                } else {
-                    printf("Internal error 2\n");
-                    abort();
-                }
-                break;
-            }
-        }
-        if( i==iCount ) {
-            printf("Internal error 1\n");
-            abort();
-        }
-    }
-    LeaveCriticalSection(&fb_output_mutex);
-
-    LeaveCriticalSection(pLock);
-}
-#endif
 
 typedef struct _FBTHREAD
 {
@@ -172,7 +76,7 @@ FBCALL void fb_ThreadWait( FBTHREAD *thread )
 	if( (thread < thdTB) || (thread >= &thdTB[FB_MAXTHREADS]) )
 		return;
 
-    WaitForSingleObject( thread->id, INFINITE );
+	WaitForSingleObject( thread->id, INFINITE );
 
 #ifdef TARGET_WIN32
     /* Never forget to close the threads handle ... otherwise we'll
