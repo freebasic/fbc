@@ -569,10 +569,12 @@ int fb_hProcessMask( FBSTRING *dst,
                                             did_thousandsep = FALSE;
                                         } else {
                                             did_thousandsep = TRUE;
-                                            pszAdd = &chThousandsSep;
-                                            LenAdd = 1;
-                                            do_add = TRUE;
-                                            --i;
+                                            if( NumSkipFix==0 && IndexFix!=0 ) {
+                                                pszAdd = &chThousandsSep;
+                                                LenAdd = 1;
+                                                do_add = TRUE;
+                                                --i;
+                                            }
                                         }
                                     }
                                 }
