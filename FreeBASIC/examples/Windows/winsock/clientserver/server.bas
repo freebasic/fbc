@@ -58,10 +58,12 @@ end function
 
 '':::::
 sub serverDel( byval client as CLIENT ptr )
-			
+	dim s as SOCKET
+	
 	if( client->socket <> NULL ) then
-		hClose( client->socket )
+		s = client->socket
 		client->socket = NULL
+		hClose( s )
 		
 		condsignal( client->recvbuffer.cond )
 		condsignal( client->sendbuffer.cond )
@@ -115,7 +117,7 @@ function serverProcess( byval client as CLIENT ptr, byval buffer as zstring ptr 
 		answer = 0
 
 	end select
-
+	
 	''
 	if( answer <> 0 ) then
 		client->sendbuffer.ptr = @client->sendbuffer.buff

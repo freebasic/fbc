@@ -46,13 +46,11 @@ declare function clientSend( byval s as SOCKET, byval id as integer, byval buffe
 		
 		select case SERVER_ID( @buffer )
 		case SERVER_MSG_SUP
-    		sleep 5000
+    		
     		if( not clientSend( s, SERVER_MSG_BYE, @buffer ) ) then
 			
 			end if
     		
-    		exit do
-    	
     	end select
     	
     loop
