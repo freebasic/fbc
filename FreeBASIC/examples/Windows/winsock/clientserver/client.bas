@@ -51,6 +51,8 @@ declare function clientSend( byval s as SOCKET, byval id as integer, byval buffe
 			
 			end if
     		
+    	case SERVER_MSG_CYA
+    		exit do
     	end select
     	
     loop
