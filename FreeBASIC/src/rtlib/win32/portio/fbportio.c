@@ -34,8 +34,13 @@
  * This code was written to provide a tiny implementation of the theory described there.
  */
 
+#ifndef __GNUC__
 #include <ntddk.h>
-#include <fbportio.h>
+#else
+#include <ddk/ntddk.h>
+#endif
+
+#include "fbportio.h"
 
 #define DEVICE_NAME			L"\\Device\\fbportio"
 #define DEVICE_DOS_NAME		L"\\DosDevices\\fbportio"
@@ -48,13 +53,13 @@ static IOPM *IOPM_map = NULL;
 
 
 /* some undocumented kernel API calls ;) */
-NTSTATUS PsLookupProcessByProcessId( IN ULONG, OUT struct _EPROCESS ** );
-void Ke386SetIoAccessMap( int, IOPM * );
-void Ke386IoSetAccessProcess( PEPROCESS, int );
+NTSTATUS NTAPI PsLookupProcessByProcessId( IN ULONG, OUT struct _EPROCESS ** );
+void NTAPI Ke386SetIoAccessMap( int, IOPM * );
+void NTAPI Ke386IoSetAccessProcess( PEPROCESS, int );
 
 
 /*:::::*/
-static NTSTATUS device_dispatch( IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp )
+static NTSTATUS STDCALL device_dispatch( IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp )
 {
     Irp->IoStatus.Information = 0;
     Irp->IoStatus.Status = STATUS_SUCCESS;
@@ -65,7 +70,7 @@ static NTSTATUS device_dispatch( IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp )
 
 
 /*:::::*/
-static NTSTATUS device_control( IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp )
+static NTSTATUS STDCALL device_control( IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp )
 {
     PIO_STACK_LOCATION stack;
     PULONG ldata;
@@ -123,7 +128,7 @@ static NTSTATUS device_control( IN PDEVICE_OBJECT DeviceObject, IN PIRP Irp )
 
 
 /*:::::*/
-static VOID driver_unload( IN PDRIVER_OBJECT DriverObject )
+static VOID STDCALL driver_unload( IN PDRIVER_OBJECT DriverObject )
 {
     WCHAR dos_name_buffer[] = DEVICE_DOS_NAME;
     UNICODE_STRING unicode_dos_name;
@@ -138,7 +143,7 @@ static VOID driver_unload( IN PDRIVER_OBJECT DriverObject )
 
 
 /*:::::*/
-NTSTATUS DriverEntry( IN PDRIVER_OBJECT DriverObject, IN PUNICODE_STRING RegistryPath )
+NTSTATUS STDCALL DriverEntry( IN PDRIVER_OBJECT DriverObject, IN PUNICODE_STRING RegistryPath )
 {
     PDEVICE_OBJECT device_object;
     NTSTATUS status;
@@ -164,9 +169,12 @@ NTSTATUS DriverEntry( IN PDRIVER_OBJECT DriverObject, IN PUNICODE_STRING Registr
     if( !NT_SUCCESS( status ) )
         return status;
 
-    DriverObject->MajorFunction[IRP_MJ_CREATE] = device_dispatch;
-    DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] = device_control;
-    DriverObject->DriverUnload = driver_unload;
+    DriverObject->MajorFunction[IRP_MJ_CREATE] =
+        device_dispatch;
+    DriverObject->MajorFunction[IRP_MJ_DEVICE_CONTROL] =
+        device_control;
+    DriverObject->DriverUnload =
+        driver_unload;
 
     return STATUS_SUCCESS;
 }
