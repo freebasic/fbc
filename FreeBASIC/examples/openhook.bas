@@ -23,6 +23,7 @@ private function IsNumberedDevice( filename as string, _
         ' &H3A = ':'
         if ch=&H3A then function = index
     end if
+    function = -1
 end function
 
 private function MyOpenHook( filename as string, _
@@ -46,9 +47,9 @@ private function MyOpenHook( filename as string, _
             filename = mid$(filename, 6)
         elseif ucase$(left$(filename,8))="FILE:///" then
             filename = mid$(filename, 9)
-        elseif IsNumberedDevice(filename, "LPT") then
+        elseif IsNumberedDevice(filename, "LPT")>=0 then
             *pfnFileOpen = @fb_DevLptOpen
-        elseif IsNumberedDevice(filename, "COM") then
+        elseif IsNumberedDevice(filename, "COM")>=1 then
             *pfnFileOpen = @fb_DevComOpen
         end if
     end select

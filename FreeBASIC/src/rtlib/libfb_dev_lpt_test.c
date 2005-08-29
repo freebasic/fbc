@@ -25,16 +25,24 @@
  */
 
 #include <stdio.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
-/*:::::*/
+/** Tests for the right file name for LPT access.
+ *
+ * Allowed file names are:
+ *
+ * - PRN:
+ * - LPTx: with x>=1
+ * - LPT:printer_name
+ */
 int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len )
 {
-    size_t i;
+    size_t i, port;
 
     if( strcasecmp(filename, "PRN:")==0 )
         return TRUE;
@@ -43,15 +51,34 @@ int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename, size_t
         return FALSE;
     if( strncasecmp(filename, "LPT", 3)!=0 )
         return FALSE;
-    if( filename[filename_len-1]!=':' )
-        return FALSE;
 
+    port = 0;
     for( i = 3;
-         i != (filename_len-1);
+         i != filename_len;
          ++i )
     {
         char ch = filename[i];
         if( ch<'0' || ch>'9')
+            break;
+        port = port * 10 + (ch - '0');
+    }
+
+    if( i==filename_len )
+        return FALSE;
+
+    if( filename[i]!=':' )
+        return FALSE;
+
+    if( i==3 ) {
+        ++i;
+        while( isspace( filename[i] ) )
+            ++i;
+        if( i==filename_len )
+            return FALSE;
+    } else {
+        if( port==0 )
+            return FALSE;
+        if( i!=filename_len-1 )
             return FALSE;
     }
 

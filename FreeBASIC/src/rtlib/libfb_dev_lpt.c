@@ -115,12 +115,15 @@ int fb_DevLptOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
         info->pszDevice = strdup("LPT1:");
     } else {
         size_t i;
+        info->iPort = 0;
         for( i = 3;
              i != (filename_len - 1);
              ++i )
         {
-            info->iPort *= 10;
-            info->iPort += (unsigned) (filename[i] - '0');
+            char ch = filename[i];
+            if( ch<'0' || ch>'9' )
+                break;
+            info->iPort = info->iPort * 10 + (ch - '0');
         }
         info->pszDevice = strdup(filename);
         memcpy(info->pszDevice, "LPT", 3);

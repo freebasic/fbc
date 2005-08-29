@@ -26,11 +26,93 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <ctype.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 #include "fb.h"
 #include "fb_rterr.h"
+
+typedef struct _DEV_PRINTER_DEVICE {
+    FB_LISTELEM     elem;
+    char           *device;
+    char           *printer_name;
+} DEV_PRINTER_DEVICE;
+
+/** Initialize the list of device info nodes.
+ */
+static void
+fb_hListDevInit      ( FB_LIST *list )
+{
+    fb_hListDynInit( list );
+}
+
+/** Allocate a new device info node.
+ *
+ * @return pointer to the new node
+ */
+static DEV_PRINTER_DEVICE *
+fb_hListDevElemAlloc ( FB_LIST *list, const char *device, const char *printer_name )
+{
+    DEV_PRINTER_DEVICE *node = (DEV_PRINTER_DEVICE*) calloc( 1, sizeof(DEV_PRINTER_DEVICE) );
+    node->device = strdup(device);
+    node->printer_name = strdup(printer_name);
+    fb_hListDynElemAdd( list, &node->elem );
+    return node;
+}
+
+/** Remove the device info node and release its memory.
+ */
+static void
+fb_hListDevElemFree  ( FB_LIST *list, DEV_PRINTER_DEVICE *node )
+{
+    fb_hListDynElemRemove( list, &node->elem );
+    free(node->device);
+    free(node->printer_name);
+    free(node);
+}
+
+/** Clear the list of device info nodes.
+ */
+static void
+fb_hListDevClear     ( FB_LIST *list )
+{
+    while( list->head != NULL ) {
+        fb_hListDevElemFree( list, (DEV_PRINTER_DEVICE*) list->head );
+    }
+}
+
+/** Find the node containing the requested device.
+ */
+static DEV_PRINTER_DEVICE*
+fb_hListDevFindDevice( FB_LIST *list, const char *pszDevice )
+{
+    DEV_PRINTER_DEVICE* node = (DEV_PRINTER_DEVICE*) list->head;
+    for( ;
+         node!=NULL;
+         node = (DEV_PRINTER_DEVICE*) node->elem.next )
+    {
+        if( strcasecmp( pszDevice, node->device )==0 )
+            return node;
+    }
+    return NULL;
+}
+
+/** Find the node containing the requested printer name.
+ */
+static DEV_PRINTER_DEVICE*
+fb_hListDevFindName  ( FB_LIST *list, const char *pszPrinterName )
+{
+    DEV_PRINTER_DEVICE* node = (DEV_PRINTER_DEVICE*) list->head;
+    for( ;
+         node!=NULL;
+         node = (DEV_PRINTER_DEVICE*) node->elem.next )
+    {
+        if( strcasecmp( pszPrinterName, node->printer_name )==0 )
+            return node;
+    }
+    return NULL;
+}
 
 typedef struct _W32_PRINTER_INFO {
     HANDLE          hPrinter;
@@ -158,37 +240,108 @@ static char *GetDefaultPrinterName(void)
     return result;
 }
 
-static char *GetPrinterForDevice( const char *pszDevice )
+static void
+fb_hPrinterBuildListLocal( FB_LIST *list )
 {
-    char *result = NULL;
     size_t i, count;
     PRINTER_INFO_2 *printers = GetPrinters(&count);
     for( i=0; i!=count; ++i ) {
-        int found = FALSE;
         PRINTER_INFO_2 *printer = printers + i;
-        LPTSTR pPortName = printer->pPortName;
-        LPTSTR pFoundPos = strchr(pPortName, ',');
-        while (pFoundPos) {
-            *pFoundPos = 0;
-            if( strcmp( pszDevice, pPortName ) == 0 ) {
-                found = TRUE;
-                break;
+        if( printer->pServerName==NULL ) {
+            /* get the port from local printers only */
+            LPTSTR pPortName = printer->pPortName;
+            LPTSTR pFoundPos = strchr(pPortName, ',');
+            while (pFoundPos) {
+                DEV_PRINTER_DEVICE* node;
+                *pFoundPos = 0;
+
+                /* We only add printers to the list that are attached to
+                 * an LPTx: port */
+                if( strncasecmp( pPortName, "LPT", 3 )==0 ) {
+                    node = fb_hListDevFindDevice( list, pPortName );
+                    if( node==NULL ) {
+                        fb_hListDevElemAlloc ( list, pPortName, printer->pPrinterName );
+                    }
+                }
+
+                pPortName = pFoundPos + 1;
+                while( isspace( *pPortName ) )
+                    ++pPortName;
+                pFoundPos = strchr(pPortName, ',');
             }
-            pPortName = pFoundPos + 1;
-            pFoundPos = strchr(pPortName, ',');
-        }
-        if( !found && pFoundPos==NULL ) {
-            if( strcmp( pszDevice, pPortName ) == 0 ) {
-                found = TRUE;
+            if( strncasecmp( pPortName, "LPT", 3 )==0 ) {
+                DEV_PRINTER_DEVICE* node = fb_hListDevFindDevice( list, pPortName );
+                if( node==NULL ) {
+                    fb_hListDevElemAlloc ( list, pPortName, printer->pPrinterName );
+                }
             }
-        }
-        if( found ) {
-            result = strdup( printer->pPrinterName );
-            break;
         }
     }
     free(printers);
-    return result;
+}
+
+static int
+fb_hPrinterBuildListDefault( FB_LIST *list, int iStartPort )
+{
+    char Buffer[32];
+    size_t iPort = iStartPort - 1;
+    char *printer_name = GetDefaultPrinterName( );
+
+    if( printer_name!=NULL ) {
+        if( fb_hListDevFindName( list, printer_name )==NULL ) {
+            DEV_PRINTER_DEVICE* node;
+
+            do {
+                ++iPort;
+                sprintf( Buffer, "LPT%d:", iPort );
+                node = fb_hListDevFindDevice( list, Buffer );
+            } while( node!=NULL );
+
+            fb_hListDevElemAlloc ( list, Buffer, printer_name );
+        }
+        free( printer_name );
+    }
+
+    return iPort + 1;
+}
+
+static int
+fb_hPrinterBuildListOther( FB_LIST *list, int iStartPort )
+{
+    char Buffer[32];
+    size_t i, count, iPort = iStartPort - 1;
+    PRINTER_INFO_2 *printers = GetPrinters(&count);
+
+    for( i=0; i!=count; ++i ) {
+        PRINTER_INFO_2 *printer = printers + i;
+        if( fb_hListDevFindName( list, printer->pPrinterName )==NULL ) {
+            DEV_PRINTER_DEVICE* node;
+            do {
+                ++iPort;
+                sprintf( Buffer, "LPT%d:", iPort );
+                node = fb_hListDevFindDevice( list, Buffer );
+            } while( node!=NULL );
+
+            fb_hListDevElemAlloc ( list, Buffer, printer->pPrinterName );
+        }
+    }
+    free(printers);
+
+    return iPort + 1;
+}
+
+static void
+fb_hPrinterBuildList( FB_LIST *list )
+{
+    fb_hPrinterBuildListLocal( list );
+
+    /* The default printer should be mapped to LPT1: if no other local printer
+     * is mapped to LPT1: */
+    fb_hPrinterBuildListDefault( list, 1 );
+
+    /* Other printers that aren't local or attached to an LPTx: port
+     * are mapped to LPT128: and above. */
+    fb_hPrinterBuildListOther( list, 128 );
 }
 
 int fb_PrinterOpen( int iPort, const char *pszDevice, void **ppvHandle )
@@ -198,43 +351,38 @@ int fb_PrinterOpen( int iPort, const char *pszDevice, void **ppvHandle )
     DWORD dwJob = 0;
     BOOL fResult;
     HANDLE hPrinter = NULL;
-    /* Find printer attached to specified device */
-    char *printer_name = GetPrinterForDevice( pszDevice );
-    if( printer_name == NULL ) {
-        printer_name = GetDefaultPrinterName( );
-        if( iPort!=1 ) {
-            /* When we don't want LPT1, we number all printers that aren't
-             * the default printer starting at 2.
-             */
-            int found = FALSE;
-            int iCurrentPort = ((printer_name==NULL) ? 0 : 1);
-            size_t i, count;
-            PRINTER_INFO_2 *printers = GetPrinters(&count);
-            for( i=0; i!=count; ++i ) {
-                PRINTER_INFO_2 *printer = printers + i;
-                if( printer_name==NULL
-                    || strcmp( printer->pPrinterName, printer_name ) != 0 )
-                {
-                    ++iCurrentPort;
-                    if( iCurrentPort==iPort ) {
-                        found = TRUE;
-                        break;
-                    }
-                }
-            }
-            if( found ) {
-                if( printer_name )
-                    free( printer_name );
-                /* "i" still points to a valid printer index */
-                printer_name = strdup( printers[i].pPrinterName );
-            }
-            free(printers);
+    char *printer_name = NULL;
+
+    if( iPort==0 ) {
+        char *pFoundPos = strchr(pszDevice, ':');
+        if( pFoundPos!=NULL ) {
+            ++pFoundPos;
+#if 0
+            while( isspace( *pFoundPos ) )
+                ++pFoundPos;
+#endif
+            if( *pFoundPos!=0 )
+                printer_name = strdup( pFoundPos );
         }
-        if( printer_name == NULL )
-            result = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
+    } else {
+        FB_LIST dev_printer_devs;
+        DEV_PRINTER_DEVICE* node;
+
+        fb_hListDevInit( &dev_printer_devs );
+        fb_hPrinterBuildList( &dev_printer_devs );
+
+        /* Find printer attached to specified device */
+        node = fb_hListDevFindDevice( &dev_printer_devs, pszDevice );
+        if( node!=NULL ) {
+            printer_name = node->printer_name;
+        }
+
+        fb_hListDevClear( &dev_printer_devs );
     }
 
-    if( result==FB_RTERROR_OK ) {
+    if( printer_name == NULL ) {
+        result = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
+    } else {
         fResult = OpenPrinter(printer_name, &hPrinter, NULL);
         if( !fResult ) {
             result = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
@@ -272,7 +420,8 @@ int fb_PrinterOpen( int iPort, const char *pszDevice, void **ppvHandle )
         }
     }
 
-    free( printer_name );
+    if( printer_name!=NULL )
+        free( printer_name );
 
     return result;
 }

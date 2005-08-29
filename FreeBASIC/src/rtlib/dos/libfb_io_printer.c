@@ -37,13 +37,17 @@ int fb_PrinterOpen( int iPort, const char *pszDevice, void **ppvHandle )
     char filename[64];
     FILE *fp;
 
-    sprintf(filename, "LPT%d", iPort);
-    fp = fopen(filename, "wb");
-    if( fp==NULL ) {
-        result = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
+    if( iPort==0 ) {
+        result = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     } else {
-        *ppvHandle = fp;
-        result = fb_ErrorSetNum( FB_RTERROR_OK );
+        sprintf(filename, "LPT%d", iPort);
+        fp = fopen(filename, "wb");
+        if( fp==NULL ) {
+            result = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
+        } else {
+            *ppvHandle = fp;
+            result = fb_ErrorSetNum( FB_RTERROR_OK );
+        }
     }
 
     return result;
