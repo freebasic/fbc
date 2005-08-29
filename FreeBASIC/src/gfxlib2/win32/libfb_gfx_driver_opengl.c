@@ -85,7 +85,7 @@ static int opengl_init(void)
 	
 	ShowWindow(fb_win32.wnd, SW_HIDE);
 	
-	if (fb_win32.fullscreen) {
+	if (fb_win32.flags & DRIVER_FULLSCREEN) {
 		fb_hMemSet(&mode, 0, sizeof(mode));
 		mode.dmSize = sizeof(mode);
 		mode.dmPelsWidth = fb_win32.w;
@@ -100,6 +100,8 @@ static int opengl_init(void)
 	}
 	else {
 		style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+		if (fb_win32.flags & DRIVER_NO_SWITCH)
+			style &= ~WS_MAXIMIZEBOX;
 		root = HWND_NOTOPMOST;
 	}
 	SetWindowLong(fb_win32.wnd, GWL_STYLE, style);
@@ -107,7 +109,7 @@ static int opengl_init(void)
 	rect.left = rect.top = x = y = 0;
 	rect.right = fb_win32.w;
 	rect.bottom = fb_win32.h;
-	if (!fb_win32.fullscreen) {
+	if (!(fb_win32.flags & DRIVER_FULLSCREEN)) {
 		AdjustWindowRectEx(&rect, style, FALSE, 0);
 		x = (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1;
 		y = (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1;
@@ -125,7 +127,7 @@ static int opengl_init(void)
 /*:::::*/
 static void opengl_exit(void)
 {
-	if (fb_win32.fullscreen)
+	if (fb_win32.flags & DRIVER_FULLSCREEN)
 		ChangeDisplaySettings(NULL, 0);
 }
 
@@ -205,7 +207,7 @@ static void driver_exit(void)
 		}
 		if (hdc)
 			ReleaseDC(fb_win32.wnd, hdc);
-		if (fb_win32.fullscreen)
+		if (fb_win32.flags & DRIVER_FULLSCREEN)
 			ChangeDisplaySettings(NULL, 0);
 		if (fb_win32.wnd)
 			DestroyWindow(fb_win32.wnd);

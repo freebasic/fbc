@@ -49,6 +49,8 @@ Version 0.15 Beta:
 - basic CYGWIN port (mjs)
 - the SCOPE .. END SCOPE compound statement, to create inner symbol scopes in main-module or inside functions or macros (v1c)
 - the __FB_MAIN__ define, set when the main-module is been parsed (could also be used to unit-test libraries) (v1c)
+- you can OR the &h4 value (GFX_NO_SWITCH constant from fbgfx.bi) to the forth SCREEN parameter (flags) to prevent
+  user from switching fullscreen/windowed via maximize button or ALT-Enter (lillo)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)

@@ -98,17 +98,17 @@ static int opengl_window_init(void)
 	int x = 0, y = 0;
 	char *display_name;
 	
-	if (!fb_linux.fullscreen) {
+	if (!fb_linux.flags & DRIVER_FULLSCREEN) {
 		x = (XDisplayWidth(fb_linux.display, fb_linux.screen) - fb_linux.w) >> 1;
 		y = (XDisplayHeight(fb_linux.display, fb_linux.screen) - fb_linux.h) >> 1;
 	}
 	XMoveResizeWindow(fb_linux.display, fb_linux.window, x, y, fb_linux.w, fb_linux.h);
-	attribs.override_redirect = (fb_linux.fullscreen ? True : False);
+	attribs.override_redirect = ((fb_linux.flags & DRIVER_FULLSCREEN) ? True : False);
 	XChangeWindowAttributes(fb_linux.display, fb_linux.window, CWOverrideRedirect, &attribs);
 	XMapRaised(fb_linux.display, fb_linux.window);
 	
 	fb_linux.display_offset = 0;
-	if (fb_linux.fullscreen) {
+	if (fb_linux.flags & DRIVER_FULLSCREEN) {
 		display_name = XDisplayName(NULL);
 		if ((!display_name[0]) || (display_name[0] == ':') || (!strncmp(display_name, "unix:", 5))) {
 			if (fb_hX11EnterFullscreen(fb_linux.h)) {
@@ -129,7 +129,7 @@ static int opengl_window_init(void)
 /*:::::*/
 static void opengl_window_exit(void)
 {
-	if (fb_linux.fullscreen)
+	if (fb_linux.flags & DRIVER_FULLSCREEN)
 		fb_hX11LeaveFullscreen();
 	XUnmapWindow(fb_linux.display, fb_linux.window);
 	XSync(fb_linux.display, False);

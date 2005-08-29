@@ -145,13 +145,13 @@ static void *window_thread(void *arg)
 					if (has_focus) {
 						if (event.type == KeyPress)
 							fb_mode->key[fb_linux.keymap[event.xkey.keycode]] = TRUE;
-						if ((fb_mode->key[0x1C]) && (fb_mode->key[0x38])) {
+						if ((fb_mode->key[0x1C]) && (fb_mode->key[0x38]) && (!(fb_linux.flags & DRIVER_NO_SWITCH))) {
 							fb_linux.exit();
-							fb_linux.fullscreen ^= TRUE;
+							fb_linux.flags ^= DRIVER_FULLSCREEN;
 							if (fb_linux.init()) {
 								fb_linux.exit();
 								XSync(fb_linux.display, True);
-								fb_linux.fullscreen ^= TRUE;
+								fb_linux.flags ^= DRIVER_FULLSCREEN;
 								fb_linux.init();
 							}
 							fb_hRestorePalette();
@@ -294,7 +294,7 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	
 	fb_linux.w = w;
 	fb_linux.h = h;
-	fb_linux.fullscreen = (flags & DRIVER_FULLSCREEN) ? TRUE : FALSE;
+	fb_linux.flags = flags;
 	fb_linux.refresh_rate = refresh_rate;
 	
 	color_map = None;
@@ -350,8 +350,14 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	size->x = size->y = 0;
 	size->min_width = size->base_width = fb_linux.w;
 	size->min_height = size->base_height = fb_linux.h;
-	size->max_width = XDisplayWidth(fb_linux.display, fb_linux.screen);
-	size->max_height = XDisplayHeight(fb_linux.display, fb_linux.screen);
+	if (flags & DRIVER_NO_SWITCH) {
+		size->max_width = size->min_width;
+		size->max_height = size->min_height;
+	}
+	else {
+		size->max_width = XDisplayWidth(fb_linux.display, fb_linux.screen);
+		size->max_height = XDisplayHeight(fb_linux.display, fb_linux.screen);
+	}
 	size->width_inc = 0x10000;
 	size->height_inc = 0x10000;
 	XSetWMNormalHints(fb_linux.display, fb_linux.window, size);

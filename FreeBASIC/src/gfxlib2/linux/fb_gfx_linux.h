@@ -45,7 +45,7 @@ typedef struct LINUXDRIVER
 	int screen;
 	Window window;
 	GC gc;
-	int w, h, depth, visual_depth, fullscreen;
+	int w, h, depth, visual_depth, flags;
 	int refresh_rate, display_offset;
 	unsigned char keymap[256];
 	int (*init)(void);

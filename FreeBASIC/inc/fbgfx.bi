@@ -29,6 +29,8 @@
 #define GFX_WINDOWED		&h00
 #define GFX_FULLSCREEN		&h01
 #define GFX_OPENGL		&h02
+#define GFX_NO_SWITCH		&h04
+'' OpenGL options
 #define GFX_STENCIL_BUFFER	&h10
 #define GFX_ACCUMULATION_BUFFER	&h20
 

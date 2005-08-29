@@ -102,7 +102,7 @@ static void directx_paint(void)
 	RECT src, dest;
 	POINT point;
 
-	if (fb_win32.fullscreen)
+	if (fb_win32.flags & DRIVER_FULLSCREEN)
 		return;
 
 	src.left = src.top = 0;
@@ -145,6 +145,7 @@ static int directx_init(void)
 	DDSURFACEDESC desc;
 	DDPIXELFORMAT format;
 	HRESULT res;
+	DWORD style;
 	int i, depth, is_rgb = FALSE, height, flags;
 
 	lpDD = NULL;
@@ -177,7 +178,7 @@ static int directx_init(void)
 	rect.right = fb_win32.w;
 	rect.bottom = fb_win32.h;
 
-	if (fb_win32.fullscreen) {
+	if (fb_win32.flags & DRIVER_FULLSCREEN) {
 		fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title, WS_POPUP | WS_VISIBLE, 0, 0,
 				   GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), NULL, NULL, fb_win32.hinstance, NULL);
 		if (!fb_win32.wnd)
@@ -217,8 +218,10 @@ static int directx_init(void)
 		AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME, 0);
 		rect.right -= rect.left;
 		rect.bottom -= rect.top;
-		fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title,
-				   (WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME) | WS_VISIBLE,
+		style = (WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME) | WS_VISIBLE;
+		if (fb_win32.flags & DRIVER_NO_SWITCH)
+			style &= ~WS_MAXIMIZEBOX;
+		fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title, style,
 				   (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1,
 				   (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1,
 				   rect.right, rect.bottom, NULL, NULL, fb_win32.hinstance, NULL);
@@ -240,7 +243,7 @@ static int directx_init(void)
 	if (IDirectDraw2_CreateSurface(lpDD, &desc, &lpDDS, NULL) != DD_OK)
 		return -1;
 
-	if (!fb_win32.fullscreen) {
+	if (!fb_win32.flags & DRIVER_FULLSCREEN) {
 		if (IDirectDrawSurface_SetClipper(lpDDS, lpDDC) != DD_OK)
 			return -1;
 		fb_hMemSet(&desc, 0, sizeof(DDSURFACEDESC));
@@ -315,7 +318,7 @@ static void directx_exit(void)
 	}
 	
 	if (lpDD) {
-		if (fb_win32.fullscreen && lpDDS) {
+		if ((fb_win32.flags & DRIVER_FULLSCREEN) && lpDDS) {
 			bltfx.dwSize = sizeof(bltfx);
 			bltfx.dwDDFX = 0;
 			bltfx.dwFillColor = 0;
@@ -323,11 +326,11 @@ static void directx_exit(void)
 		}
 		if (lpDDS)
 			IDirectDrawSurface_Release(lpDDS);
-		if ((!fb_win32.fullscreen) && (lpDDS_back))
+		if ((!(fb_win32.flags & DRIVER_FULLSCREEN)) && (lpDDS_back))
 			IDirectDrawSurface_Release(lpDDS_back);
-		if (fb_win32.fullscreen)
+		if (fb_win32.flags & DRIVER_FULLSCREEN)
 			IDirectDraw2_RestoreDisplayMode(lpDD);
-		if (fb_win32.fullscreen)
+		if (fb_win32.flags & DRIVER_FULLSCREEN)
 			IDirectDraw2_SetCooperativeLevel(lpDD, fb_win32.wnd, DDSCL_NORMAL);
 		IDirectDraw2_Release(lpDD);
 	}
@@ -358,9 +361,9 @@ static void directx_thread(HANDLE running_event)
 	{
 		fb_hWin32Lock();
 
-		if ((fb_win32.is_active) || (!fb_win32.fullscreen)) {
+		if ((fb_win32.is_active) || (!(fb_win32.flags & DRIVER_FULLSCREEN))) {
 			IDirectDrawSurface_Restore(lpDDS);
-			if (!fb_win32.fullscreen)
+			if (!(fb_win32.flags & DRIVER_FULLSCREEN))
 				IDirectDrawSurface_Restore(lpDDS_back);
 
 			if (fb_win32.is_palette_changed && lpDDP) {

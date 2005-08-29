@@ -67,7 +67,7 @@ static int gdi_init(void)
 	buffer = NULL;
 	HDC hdc;
 	
-	if (fb_win32.fullscreen)
+	if (fb_win32.flags & DRIVER_FULLSCREEN)
 		return -1;
 	
 	rect.left = rect.top = 0;

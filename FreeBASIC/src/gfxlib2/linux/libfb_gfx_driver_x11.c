@@ -89,12 +89,12 @@ static int x11_init(void)
 	if (!blitter)
 		return -1;
 	
-	if (!fb_linux.fullscreen) {
+	if (!(fb_linux.flags & DRIVER_FULLSCREEN)) {
 		x = (XDisplayWidth(fb_linux.display, fb_linux.screen) - fb_linux.w) >> 1;
 		y = (XDisplayHeight(fb_linux.display, fb_linux.screen) - fb_linux.h) >> 1;
 	}
 	XMoveResizeWindow(fb_linux.display, fb_linux.window, x, y, fb_linux.w, fb_linux.h);
-	attribs.override_redirect = (fb_linux.fullscreen ? True : False);
+	attribs.override_redirect = ((fb_linux.flags & DRIVER_FULLSCREEN) ? True : False);
 	XChangeWindowAttributes(fb_linux.display, fb_linux.window, CWOverrideRedirect, &attribs);
 	XMapRaised(fb_linux.display, fb_linux.window);
 	
@@ -102,7 +102,7 @@ static int x11_init(void)
 	display_name = XDisplayName(NULL);
 	if (((!display_name[0]) || (display_name[0] == ':') || (!strncmp(display_name, "unix:", 5))) &&
 	    (XShmQueryExtension(fb_linux.display))) {
-		if (fb_linux.fullscreen) {
+		if (fb_linux.flags & DRIVER_FULLSCREEN) {
 			if (fb_hX11EnterFullscreen(fb_linux.h)) {
 				fb_hX11LeaveFullscreen();
 				if (!(h = calc_comp_height(fb_linux.h)))
@@ -130,7 +130,7 @@ static int x11_init(void)
 			}
 		}
 	}
-	else if (fb_linux.fullscreen)
+	else if (fb_linux.flags & DRIVER_FULLSCREEN)
 		return -1;
 	if (!image) {
 		is_shm = FALSE;
@@ -154,7 +154,7 @@ static int x11_init(void)
 /*:::::*/
 static void x11_exit(void)
 {
-	if (fb_linux.fullscreen)
+	if (fb_linux.flags & DRIVER_FULLSCREEN)
 		fb_hX11LeaveFullscreen();
 	XUnmapWindow(fb_linux.display, fb_linux.window);
 	XSync(fb_linux.display, False);

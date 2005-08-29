@@ -104,15 +104,15 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 		
 		case WM_SIZE:
 		case WM_SYSKEYDOWN:
-			if (!fb_win32.is_active)
+			if ((!fb_win32.is_active) || (fb_win32.flags & DRIVER_NO_SWITCH))
 				break;
 			if (((message == WM_SIZE) && (wParam == SIZE_MAXIMIZED)) ||
 			    ((message == WM_SYSKEYDOWN) && (wParam == VK_RETURN) && (lParam & 0x20000000))) {
 				fb_win32.exit();
-				fb_win32.fullscreen ^= TRUE;
+				fb_win32.flags ^= DRIVER_FULLSCREEN;
 				if (fb_win32.init()) {
 					fb_win32.exit();
-					fb_win32.fullscreen ^= TRUE;
+					fb_win32.flags ^= DRIVER_FULLSCREEN;
 					fb_win32.init();
 				}
 				fb_hRestorePalette();
@@ -206,7 +206,7 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	fb_win32.w = w;
 	fb_win32.h = h;
 	fb_win32.depth = depth;
-	fb_win32.fullscreen = (flags & DRIVER_FULLSCREEN) ? TRUE : FALSE;
+	fb_win32.flags = flags;
 	fb_win32.refresh_rate = refresh_rate;
 	fb_win32.wndclass.lpfnWndProc = fb_hWin32WinProc;
 	fb_win32.wndclass.lpszClassName = fb_win32.window_class;
@@ -310,7 +310,7 @@ int fb_hWin32GetMouse(int *x, int *y, int *z, int *buttons)
 	
 	GetCursorPos(&point);
 	
-	if (fb_win32.fullscreen) {
+	if (fb_win32.flags & DRIVER_FULLSCREEN) {
 		*x = MID(0, point.x, fb_win32.w - 1);
 		*y = MID(0, point.y, fb_win32.h - 1);
 	}
@@ -340,7 +340,7 @@ void fb_hWin32SetMouse(int x, int y, int cursor)
 	if (x >= 0) {
 		point.x = MID(0, x, fb_win32.w - 1);
 		point.y = MID(0, y, fb_win32.h - 1);
-		if (!fb_win32.fullscreen)
+		if (!(fb_win32.flags & DRIVER_FULLSCREEN))
 			ClientToScreen(fb_win32.wnd, &point);
 		SetCursorPos(point.x, point.y);
 	}

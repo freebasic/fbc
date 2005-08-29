@@ -42,7 +42,7 @@ typedef struct WIN32DRIVER
 	PALETTEENTRY palette[256];
 	BLITTER *blitter;
 	int is_running, is_palette_changed, is_active;
-	int w, h, depth, fullscreen, refresh_rate;
+	int w, h, depth, flags, refresh_rate;
 	char *window_title;
 	char window_class[WINDOW_TITLE_SIZE+sizeof( WINDOW_CLASS_PREFIX )];
 	int (*init)(void);
