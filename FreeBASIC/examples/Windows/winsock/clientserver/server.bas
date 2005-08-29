@@ -66,7 +66,9 @@ sub serverDel( byval client as CLIENT ptr )
 		hClose( s )
 		
 		condsignal( client->recvbuffer.cond )
-		condsignal( client->sendbuffer.cond )
+		
+		threadwait( client->recvthread )
+		threadwait( client->sendthread )
 		
 		print "Closing connection for: " & CLIENTADDR(client)
 
