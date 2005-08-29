@@ -47,7 +47,6 @@ static XIM xim;
 static Drawable root_window;
 static Atom wm_delete_window;
 static Colormap color_map;
-static XRRScreenConfiguration* config;
 static int orig_size, target_size, current_size;
 static int orig_rate, target_rate;
 static Rotation orig_rotation;
@@ -218,15 +217,15 @@ static void *window_thread(void *arg)
 /*:::::*/
 int fb_hX11EnterFullscreen(int h)
 {
-	if ((!config) || (target_size < 0))
+	if ((!fb_linux.config) || (target_size < 0))
 		return -1;
 	
 	if (target_rate < 0) {
-		if (XRRSetScreenConfig(fb_linux.display, config, root_window, target_size, orig_rotation, CurrentTime) == BadValue)
+		if (XRRSetScreenConfig(fb_linux.display, fb_linux.config, root_window, target_size, orig_rotation, CurrentTime) == BadValue)
 			return -1;
 	}
 	else {
-		if (XRRSetScreenConfigAndRate(fb_linux.display, config, root_window, target_size, orig_rotation, target_rate, CurrentTime) == BadValue)
+		if (XRRSetScreenConfigAndRate(fb_linux.display, fb_linux.config, root_window, target_size, orig_rotation, target_rate, CurrentTime) == BadValue)
 			return -1;
 	}
 	
@@ -248,13 +247,13 @@ int fb_hX11EnterFullscreen(int h)
 /*:::::*/
 void fb_hX11LeaveFullscreen(void)
 {
-	if ((!config) || (target_size < 0))
+	if ((!fb_linux.config) || (target_size < 0))
 		return;
 	
 	if (current_size != orig_size) {
 		XUngrabPointer(fb_linux.display, CurrentTime);
 		XUngrabKeyboard(fb_linux.display, CurrentTime);
-		if (XRRSetScreenConfigAndRate(fb_linux.display, config, root_window, orig_size, orig_rotation, orig_rate, CurrentTime) == BadValue)
+		if (XRRSetScreenConfigAndRate(fb_linux.display, fb_linux.config, root_window, orig_size, orig_rotation, orig_rate, CurrentTime) == BadValue)
 			return;
 		current_size = orig_size;
 	}
@@ -301,7 +300,6 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	arrow_cursor = None;
 	xim = NULL;
 	xic = NULL;
-	config = NULL;
 	
 	if (fb_linux.visual) {
 		fb_linux.depth = depth;
@@ -393,10 +391,10 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	
 	if (XRRQueryExtension(fb_linux.display, &dummy, &dummy) &&
 	    XRRQueryVersion(fb_linux.display, &version, &dummy) && (version >= 1)) {
-		config = XRRGetScreenInfo(fb_linux.display, root_window);
-		orig_size = current_size = XRRConfigCurrentConfiguration(config, &orig_rotation);
-		orig_rate = XRRConfigCurrentRate(config);
-		sizes = XRRConfigSizes(config, &num_sizes);
+		fb_linux.config = XRRGetScreenInfo(fb_linux.display, root_window);
+		orig_size = current_size = XRRConfigCurrentConfiguration(fb_linux.config, &orig_rotation);
+		orig_rate = XRRConfigCurrentRate(fb_linux.config);
+		sizes = XRRConfigSizes(fb_linux.config, &num_sizes);
 		target_size = -1;
 		for (i = 0; i < num_sizes; i++) {
 			if ((sizes[i].width == fb_linux.w) && (sizes[i].height == fb_linux.h)) {
@@ -406,7 +404,7 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 		}
 		target_rate = -1;
 		if ((fb_linux.refresh_rate > 0) && (target_size >= 0)) {
-			rates = XRRConfigRates(config, target_size, &num_rates);
+			rates = XRRConfigRates(fb_linux.config, target_size, &num_rates);
 			for (i = 0; i < num_rates; i++) {
 				if (rates[i] == fb_linux.refresh_rate) {
 					target_rate = i;
@@ -415,7 +413,7 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 			}
 		}
 		else {
-			rates = XRRConfigRates(config, orig_size, &num_rates);
+			rates = XRRConfigRates(fb_linux.config, orig_size, &num_rates);
 			fb_linux.refresh_rate = rates[orig_rate];
 		}
 	}
@@ -482,12 +480,12 @@ void fb_hX11Exit(void)
 			XDestroyIC(xic);
 		if (xim)
 			XCloseIM(xim);
-		if (config) {
+		if (fb_linux.config) {
 			if ((target_size >= 0) && (current_size != orig_size))
-				XRRSetScreenConfig(fb_linux.display, config, root_window, orig_size, orig_rotation, CurrentTime);
+				XRRSetScreenConfig(fb_linux.display, fb_linux.config, root_window, orig_size, orig_rotation, CurrentTime);
 			XSync(fb_linux.display, False);
-			XRRFreeScreenConfigInfo(config);
-			config = NULL;
+			XRRFreeScreenConfigInfo(fb_linux.config);
+			fb_linux.config = NULL;
 		}
 		XCloseDisplay(fb_linux.display);
 	}
@@ -595,8 +593,8 @@ int *fb_hX11FetchModes(int depth, int *size)
 		dpy = fb_linux.display;
 	else
 		dpy = XOpenDisplay(NULL);
-	if (config)
-		cfg = config;
+	if (fb_linux.config)
+		cfg = fb_linux.config;
 	else
 		cfg = XRRGetScreenInfo(dpy, XDefaultRootWindow(dpy));
 	
@@ -609,7 +607,7 @@ int *fb_hX11FetchModes(int depth, int *size)
 		for (i = 0; i < *size; i++)
 			sizes[i] = (rr_sizes[i].width << 16) | (rr_sizes[i].height);
 	}	
-	if (!config)
+	if (!fb_linux.config)
 		XRRFreeScreenConfigInfo(cfg);
 	if (!fb_linux.display)
 		XCloseDisplay(dpy);
