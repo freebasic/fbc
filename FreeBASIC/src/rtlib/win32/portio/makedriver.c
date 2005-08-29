@@ -25,12 +25,13 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #define FBPORTIO_SYS		"i386\\fbportio.sys"
 #define FBPORTIO_DRIVER_H	"fbportio_driver.h"
 
 
-int main()
+int main(int argc, char **argv)
 {
 	FILE *f;
 	unsigned char *buffer;
