@@ -18,32 +18,22 @@
  */
 
 /*
- * hook_width.c -- width entrypoint, default to console mode
+ *	file_opencom - open COMx
  *
- * chng: nov/2004 written [v1ctor]
+ * chng: aug/2005 written [mjs]
  *
  */
 
+#include <stdlib.h>
 #include "fb.h"
+#include "fb_rterr.h"
 
-/*:::::*/
-FBCALL int fb_Width( int cols, int rows )
+FBCALL int          fb_FileOpenCom      ( FBSTRING *str_filename, unsigned int mode,
+                                          unsigned int access, unsigned int lock,
+                                          int fnum, int len )
 {
-	int cur;
-
-	fb_DevScrnInit_NoOpen( );
-
-	FB_LOCK();
-
-	if( fb_hooks.widthproc )
-		cur = fb_hooks.widthproc( cols, rows );
-	else
-        cur = fb_ConsoleWidth( cols, rows );
-
-    if( cols>0 )
-        FB_HANDLE_SCREEN->width = cols;
-
-	FB_UNLOCK();
-
-    return ((cols<1 && rows<1) ? cur : 0);
+    return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
+                             str_filename, mode, access,
+                             lock, len, fb_DevComOpen );
 }
+

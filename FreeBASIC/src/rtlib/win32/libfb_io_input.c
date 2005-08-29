@@ -50,7 +50,6 @@ static const FB_KEY_LIST_ENTRY fb_ext_key_entries[] = {
     { 0x0048, { 0x4800, 0x4800, 0x8D00, 0x9800 } },
     { 0x0049, { 0x4900, 0x4900, 0x8400, 0x9900 } },
     { 0x004B, { 0x4B00, 0x4B00, 0x7300, 0x9B00 } },
-    { 0x004C, { 0x4C00, 0x4C00, 0x8F00, 0x0000 } },
     { 0x004D, { 0x4D00, 0x4D00, 0x7400, 0x9D00 } },
     { 0x004F, { 0x4F00, 0x4F00, 0x7500, 0x9F00 } },
     { 0x0050, { 0x5000, 0x5000, 0x9100, 0xA000 } },
@@ -157,7 +156,7 @@ static const FB_KEY_CODES fb_asc_key_codes[] = {
 	{ 0x0000, 0x002D, 0x0000, 0x0000 },
 	{ 0x4B00, 0x0034, 0x7300, 0x0000 },
 
-    { 0x0000, 0x0035, 0x8F00, 0x0000 },
+    { 0x4C00, 0x0035, 0x8F00, 0x4C00 },
 	{ 0x4D00, 0x0036, 0x7400, 0x0000 },
 	{ 0x0000, 0x002B, 0x0000, 0x0000 },
 	{ 0x4F00, 0x0031, 0x7500, 0x0000 },
@@ -288,6 +287,9 @@ static void fb_hConsoleProcessKeyEvent( KEY_EVENT_RECORD *event )
         /* Test if we must translate a "normal" key into an enhanced key */
         if( wVsCode < FB_KEY_CODES_SIZE ) {
             const FB_KEY_CODES *codes = fb_asc_key_codes + wVsCode;
+
+            uiNormalKey = MapVirtualKey( event->wVirtualKeyCode, 2 );
+
             if( event->dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED) ) {
                 KeyCode = codes->value_alt;
             } else if( event->dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED) ) {
@@ -295,7 +297,11 @@ static void fb_hConsoleProcessKeyEvent( KEY_EVENT_RECORD *event )
             } else if( event->dwControlKeyState & SHIFT_PRESSED ) {
                 KeyCode = codes->value_shift;
             } else {
-                KeyCode = codes->value_normal;
+                if( uiAsciiChar==0 ) {
+                    KeyCode = codes->value_normal;
+                } else {
+                    KeyCode = uiNormalKey;
+                }
             }
             /* Add the found key code only when the following conditions are
              * met:
@@ -304,7 +310,6 @@ static void fb_hConsoleProcessKeyEvent( KEY_EVENT_RECORD *event )
              *    "normal" character - this test is required to allow
              *    AltGr+character combinations that are language-specific
              *    and therefore quite hard to detect ... */
-            uiNormalKey = MapVirtualKey( event->wVirtualKeyCode, 2 );
             AddKeyCode = (KeyCode > 255) && (uiAsciiChar==uiNormalKey);
         }
 

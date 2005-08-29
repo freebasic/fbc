@@ -1198,6 +1198,13 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 			lexSkipToken( )
     		open_kind = FB_FILE_TYPE_LPT
     	end if
+
+    case "COM"
+		'' not a symbol?
+		if( lexGetSymbol( ) = NULL ) then
+			lexSkipToken( )
+    		open_kind = FB_FILE_TYPE_COM
+    	end if
     end select
 
 	if( isfunc ) then
@@ -1206,7 +1213,7 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 	end if
 
     select case open_kind
-    case FB_FILE_TYPE_FILE, FB_FILE_TYPE_PIPE, FB_FILE_TYPE_LPT
+    case FB_FILE_TYPE_FILE, FB_FILE_TYPE_PIPE, FB_FILE_TYPE_LPT, FB_FILE_TYPE_COM
         '' a filename is only valid for some file types
 
 		hMatchExpression( filename )
@@ -1432,14 +1439,14 @@ private function cWidth( byval isfunc as integer ) as ASTNODE ptr
         if( hMatch( CHAR_COMMA ) ) then
         	hMatchExpression( width_arg )
 		else
-        	width_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+        	width_arg = astNewCONSTi( -1, IR_DATATYPE_INTEGER )
 		end if
 
         function = rtlWidthFile( fnum, width_arg, isfunc )
 
 	elseif( hMatch( CHAR_COMMA ) ) then
     	' fb_WidthScreen
-        width_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+        width_arg = astNewCONSTi( -1, IR_DATATYPE_INTEGER )
         hMatchExpression( height_arg )
         function = rtlWidthScreen( width_arg, height_arg, isfunc )
 
@@ -1452,7 +1459,7 @@ private function cWidth( byval isfunc as integer ) as ASTNODE ptr
         	if( hMatch( CHAR_COMMA ) ) then
             	hMatchExpression( width_arg )
 			else
-            	width_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+            	width_arg = astNewCONSTi( -1, IR_DATATYPE_INTEGER )
 			end if
             function = rtlWidthDev( dev_name, width_arg, isfunc )
 
@@ -1464,7 +1471,7 @@ private function cWidth( byval isfunc as integer ) as ASTNODE ptr
             if( hMatch( CHAR_COMMA ) ) then
             	hMatchExpression( height_arg )
 			else
-            	height_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+            	height_arg = astNewCONSTi( -1, IR_DATATYPE_INTEGER )
 			end if
             function = rtlWidthScreen( width_arg, height_arg, isfunc )
 

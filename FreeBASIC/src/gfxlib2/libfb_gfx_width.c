@@ -34,7 +34,7 @@ int fb_GfxWidth(int w, int h)
 	const FONT *font = NULL;
 	int cur = fb_mode->text_w | (fb_mode->text_h << 16);
 	
-	if( (w == 0) && (h == 0) )
+	if( (w < 1) && (h < 1) )
 		return cur;
 	
 	if (w > 0)

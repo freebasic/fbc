@@ -248,6 +248,10 @@ declare function fb_DevLptOpen cdecl _
           alias "fb_DevLptOpen"  ( handle as FB_FILE, _
                                    byval filename as zstring ptr, _
                                    byval filename_len as uinteger ) as integer
+declare function fb_DevComOpen cdecl _
+          alias "fb_DevComOpen"  ( handle as FB_FILE, _
+                                   byval filename as zstring ptr, _
+                                   byval filename_len as uinteger ) as integer
 declare function fb_DevPipeOpen cdecl _
           alias "fb_DevPipeOpen" ( handle as FB_FILE, _
                                    byval filename as zstring ptr, _

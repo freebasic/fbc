@@ -65,13 +65,16 @@ declare sub setbuf cdecl alias "setbuf" (byval as FILE ptr, byval as zstring ptr
 declare function fprintf cdecl alias "fprintf" (byval as FILE ptr, byval as zstring ptr, ...) as integer
 declare function printf cdecl alias "printf" (byval as zstring ptr, ...) as integer
 declare function sprintf cdecl alias "sprintf" (byval as zstring ptr, byval as zstring ptr, ...) as integer
-declare function _snprintf cdecl alias "_snprintf" (byval as zstring ptr, byval as size_t, byval as zstring ptr, ...) as integer
+#ifdef __FB_WIN32__
+declare function snprintf cdecl alias "_snprintf" (byval as zstring ptr, byval as size_t, byval as zstring ptr, ...) as integer
+declare function vsnprintf cdecl alias "_vsnprintf" (byval as zstring ptr, byval as size_t, byval as zstring ptr, byval as va_list) as integer
+#else
+declare function snprintf cdecl alias "snprintf" (byval s as zstring ptr, byval n as size_t, byval format as zstring ptr, ...) as integer
+declare function vsnprintf cdecl alias "vsnprintf" (byval s as zstring ptr, byval n as size_t, byval format as zstring ptr, byval arg as va_list) as integer
+#endif
 declare function vfprintf cdecl alias "vfprintf" (byval as FILE ptr, byval as zstring ptr, byval as va_list) as integer
 declare function vprintf cdecl alias "vprintf" (byval as zstring ptr, byval as va_list) as integer
 declare function vsprintf cdecl alias "vsprintf" (byval as zstring ptr, byval as zstring ptr, byval as va_list) as integer
-declare function _vsnprintf cdecl alias "_vsnprintf" (byval as zstring ptr, byval as size_t, byval as zstring ptr, byval as va_list) as integer
-declare function snprintf cdecl alias "snprintf" (byval s as zstring ptr, byval n as size_t, byval format as zstring ptr, ...) as integer
-declare function vsnprintf cdecl alias "vsnprintf" (byval s as zstring ptr, byval n as size_t, byval format as zstring ptr, byval arg as va_list) as integer
 declare function vscanf cdecl alias "vscanf" (byval __restrict__ as zstring ptr, byval as va_list) as integer
 declare function vfscanf cdecl alias "vfscanf" (byval __restrict__ as FILE ptr, byval __restrict__ as zstring ptr, byval as va_list) as integer
 declare function vsscanf cdecl alias "vsscanf" (byval __restrict__ as zstring ptr, byval __restrict__ as zstring ptr, byval as va_list) as integer

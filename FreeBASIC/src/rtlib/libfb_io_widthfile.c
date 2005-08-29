@@ -55,13 +55,13 @@ FBCALL int fb_WidthFile( int fnum, int width )
 
     if( handle==FB_HANDLE_SCREEN ) {
         /* SCREEN device */
-        if( width!=0 ) {
-            fb_Width( width, 0 );
+        if( width!=-1 ) {
+            fb_Width( width, -1 );
         }
         cur = FB_HANDLE_SCREEN->width;
 
     } else {
-        if( width!=0 ) {
+        if( width!=-1 ) {
             handle->width = width;
             if( handle->hooks->pfnSetWidth!=NULL )
                 handle->hooks->pfnSetWidth( handle, width );
@@ -71,7 +71,7 @@ FBCALL int fb_WidthFile( int fnum, int width )
 
 	FB_UNLOCK();
 
-    if( width==0 ) {
+    if( width==-1 ) {
         return cur;
     }
 

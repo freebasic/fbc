@@ -920,6 +920,9 @@ FBCALL int          fb_FileOpenScrn     ( FBSTRING *str_filename, unsigned int m
 FBCALL int          fb_FileOpenLpt      ( FBSTRING *str_filename, unsigned int mode,
                                           unsigned int access, unsigned int lock,
                                           int fnum, int len );
+FBCALL int          fb_FileOpenCom      ( FBSTRING *str_filename, unsigned int mode,
+                                          unsigned int access, unsigned int lock,
+                                          int fnum, int len );
 
 FBCALL int          fb_FileFree         ( void );
 FBCALL int          fb_FileOpen         ( FBSTRING *str, unsigned int mode, unsigned int access,
@@ -1023,15 +1026,71 @@ typedef struct _DEV_SCRN_INFO {
        /* LPT */
        int          fb_DevLptOpen       ( struct _FB_FILE *handle, const char *filename, size_t filename_len );
 
+       /* COM */
+       int          fb_DevComOpen       ( struct _FB_FILE *handle, const char *filename, size_t filename_len );
+
 /**************************************************************************************************
  * printer
  **************************************************************************************************/
 
-       int          fb_hSetPrinterWidth ( const char *pszDevice, int width, int default_width );
-       int          fb_hGetPrinterOffset( const char *pszDevice );
+       int          fb_DevPrinterSetWidth ( const char *pszDevice, int width, int default_width );
+       int          fb_DevPrinterGetOffset( const char *pszDevice );
        int          fb_PrinterOpen      ( int iPort, const char *pszDevice, void **ppvHandle );
        int          fb_PrinterWrite     ( void *pvHandle, const void *data, size_t length );
        int          fb_PrinterClose     ( void *pvHandle );
+
+/**************************************************************************************************
+ * serial
+ **************************************************************************************************/
+
+       typedef enum _FB_SERIAL_PARITY {
+           FB_SERIAL_PARITY_NONE,
+           FB_SERIAL_PARITY_EVEN,
+           FB_SERIAL_PARITY_ODD,
+           FB_SERIAL_PARITY_SPACE,
+           FB_SERIAL_PARITY_MARK
+       } FB_SERIAL_PARITY;
+
+       typedef enum _FB_SERIAL_STOP_BITS {
+           FB_SERIAL_STOP_BITS_1,
+           FB_SERIAL_STOP_BITS_1_5,
+           FB_SERIAL_STOP_BITS_2
+       } FB_SERIAL_STOP_BITS;
+
+       typedef struct _FB_SERIAL_OPTIONS {
+           unsigned           uiSpeed;
+           unsigned           uiDataBits;
+           FB_SERIAL_PARITY   Parity;
+           FB_SERIAL_STOP_BITS StopBits;
+           unsigned           DurationCTS;        /* CS[msec] */
+           unsigned           DurationDSR;        /* DS[msec] */
+           unsigned           DurationCD;         /* CD[msec] */
+           unsigned           OpenTimeout;        /* OP[msec] */
+           int                SuppressRTS;        /* RS */
+           int                AddLF;              /* LF, or ASC, or BIN */
+           int                CheckParity;        /* PE */
+           int                KeepDTREnabled;     /* DT */
+           int                DiscardOnError;     /* FE */
+           int                IgnoreAllErrors;    /* ME */
+           unsigned           IRQNumber;          /* IR2..IR15 */
+           unsigned           TransmitBuffer;     /* TBn - a value 0 means: default value */
+           unsigned           ReceiveBuffer;      /* RBn - a value 0 means: default value */
+       } FB_SERIAL_OPTIONS;
+
+       int          fb_DevSerialSetWidth( const char *pszDevice, int width, int default_width );
+       int          fb_SerialOpen       ( struct _FB_FILE *handle,
+                                          int iPort,
+                                          FB_SERIAL_OPTIONS *options,
+                                          const char *pszDevice,
+                                          void **ppvHandle );
+       int          fb_SerialGetRemaining( struct _FB_FILE *handle, 
+                                           void *pvHandle, long *pLength );
+       int          fb_SerialWrite      ( struct _FB_FILE *handle, 
+                                          void *pvHandle, const void *data, size_t length );
+       int          fb_SerialRead       ( struct _FB_FILE *handle, 
+                                          void *pvHandle, void *data, size_t *pLength );
+       int          fb_SerialClose      ( struct _FB_FILE *handle, 
+                                          void *pvHandle );
 
 /**************************************************************************************************
  * date/time

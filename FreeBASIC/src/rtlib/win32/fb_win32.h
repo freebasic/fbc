@@ -53,10 +53,19 @@ typedef struct _FB_DIRCTX
 #ifdef MULTITHREADED
 extern CRITICAL_SECTION fb_global_mutex;
 extern CRITICAL_SECTION fb_string_mutex;
+#ifdef DEBUG
+void fb_hDoLock(CRITICAL_SECTION *pLock);
+void fb_hDoUnlock(CRITICAL_SECTION *pLock);
+# define FB_LOCK()					fb_hDoLock(&fb_global_mutex)
+# define FB_UNLOCK()				fb_hDoUnlock(&fb_global_mutex)
+# define FB_STRLOCK()				fb_hDoLock(&fb_string_mutex)
+# define FB_STRUNLOCK()				fb_hDoUnlock(&fb_string_mutex)
+#else
 # define FB_LOCK()					EnterCriticalSection(&fb_global_mutex)
 # define FB_UNLOCK()				LeaveCriticalSection(&fb_global_mutex)
 # define FB_STRLOCK()				EnterCriticalSection(&fb_string_mutex)
 # define FB_STRUNLOCK()				LeaveCriticalSection(&fb_string_mutex)
+#endif
 # define FB_TLSENTRY				DWORD
 # define FB_TLSSET(key,value)		TlsSetValue((key), (LPVOID)(value))
 # define FB_TLSGET(key)				TlsGetValue((key))

@@ -1,3 +1,7 @@
+' This example application shows how to implement a QB compatible
+' OPEN statement using the OPEN hook.
+'
+
 option explicit
 
 #include "openhook.bi"
@@ -10,11 +14,13 @@ private function IsNumberedDevice( filename as string, _
         dim as integer i, ch, index
         i = len(prefix)
         ch = filename[i]
+        ' &H30 .. &H39 = '0' .. '9'
         while ch>=&H30 and ch<=&H39
             index = index * 10 + (ch - &H30)
             i += 1
 	        ch = filename[i]
         wend
+        ' &H3A = ':'
         if ch=&H3A then function = index
     end if
 end function
@@ -42,6 +48,8 @@ private function MyOpenHook( filename as string, _
             filename = mid$(filename, 9)
         elseif IsNumberedDevice(filename, "LPT") then
             *pfnFileOpen = @fb_DevLptOpen
+        elseif IsNumberedDevice(filename, "COM") then
+            *pfnFileOpen = @fb_DevComOpen
         end if
     end select
 end function

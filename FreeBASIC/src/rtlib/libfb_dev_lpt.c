@@ -24,6 +24,7 @@
  *
  */
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -135,17 +136,13 @@ int fb_DevLptOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
             DEV_LPT_INFO *tmp_info = (DEV_LPT_INFO*) tmp_handle->opaque;
             if( strcmp(tmp_info->pszDevice, info->pszDevice)==0 ) {
                 free(info);
-                if( tmp_handle!=FB_HANDLE_PRINTER
-                    && handle!=FB_HANDLE_PRINTER )
-                {
-                    FB_UNLOCK();
-                    return fb_ErrorSetNum( FB_RTERROR_FILEIO );
-                } else {
-                    redir_handle = tmp_handle;
-                    info = tmp_info;
-                    ++info->uiRefCount;
-                    break;
-                }
+                /* bugcheck */
+                assert( tmp_handle!=FB_HANDLE_PRINTER
+                        && handle!=FB_HANDLE_PRINTER );
+                redir_handle = tmp_handle;
+                info = tmp_info;
+                ++info->uiRefCount;
+                break;
             }
         }
     }
@@ -173,7 +170,9 @@ int fb_DevLptOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
         handle->hooks = &fb_hooks_dev_lpt;
         handle->opaque = info;
     } else {
-        free(info);
+        if( info->pszDevice )
+            free( info->pszDevice );
+        free( info );
     }
 
     FB_UNLOCK();
@@ -181,9 +180,9 @@ int fb_DevLptOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
 	return res;
 }
 
-int fb_hSetPrinterWidth( const char *pszDevice, int width, int default_width )
+int fb_DevPrinterSetWidth( const char *pszDevice, int width, int default_width )
 {
-    int cur = ((default_width==0) ? 80 : default_width);
+    int cur = ((default_width==-1) ? 80 : default_width);
     size_t i;
     char *pszDev;
 
@@ -207,7 +206,7 @@ int fb_hSetPrinterWidth( const char *pszDevice, int width, int default_width )
         {
             DEV_LPT_INFO *tmp_info = (DEV_LPT_INFO*) tmp_handle->opaque;
             if( strcmp(tmp_info->pszDevice, pszDev)==0 ) {
-                if( width!=0 )
+                if( width!=-1 )
                     tmp_handle->width = width;
                 cur = tmp_handle->width;
                 break;
@@ -219,7 +218,7 @@ int fb_hSetPrinterWidth( const char *pszDevice, int width, int default_width )
     return cur;
 }
 
-int fb_hGetPrinterOffset( const char *pszDevice )
+int fb_DevPrinterGetOffset( const char *pszDevice )
 {
     int cur = 0;
     size_t i;

@@ -32,6 +32,7 @@
 #include "fb_rterr.h"
 
 int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len );
+int fb_DevComTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len );
 
 typedef struct _DEV_INFO_WIDTH {
     FB_LISTELEM     elem;
@@ -121,7 +122,7 @@ FBCALL int fb_WidthDev( FBSTRING *dev, int width )
         }
     }
 
-    if( width != 0 ) {
+    if( width != -1 ) {
         if( node == NULL ) {
             /* Allocate a new list node if device name not found */
             node = fb_hListDevElemAlloc ( dev_info_widths, device, width );
@@ -136,14 +137,18 @@ FBCALL int fb_WidthDev( FBSTRING *dev, int width )
     /* search the width for all open (and known) devices */
     if( strcmp( device, "SCRN:" )==0 ) {
         /* SCREEN device */
-        if( width!=0 ) {
-            fb_Width( width, 0 );
+        if( width!=-1 ) {
+            fb_Width( width, -1 );
         }
         cur = FB_HANDLE_SCREEN->width;
 
     } else if ( fb_DevLptTestProtocol( NULL, device, size ) ) {
         /* PRINTER device */
-        cur = fb_hSetPrinterWidth( device, width, cur );
+        cur = fb_DevPrinterSetWidth( device, width, cur );
+
+    } else if ( fb_DevComTestProtocol( NULL, device, size ) ) {
+        /* SERIAL device */
+        cur = fb_DevSerialSetWidth( device, width, cur );
 
     } else {
         /* unknown device */
@@ -151,7 +156,7 @@ FBCALL int fb_WidthDev( FBSTRING *dev, int width )
 
 	FB_UNLOCK();
 
-    if( width==0 ) {
+    if( width==-1 ) {
         return cur;
     }
 
