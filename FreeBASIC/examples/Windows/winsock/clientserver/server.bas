@@ -13,6 +13,8 @@ declare sub serverAccept( byval unused as integer )
 declare sub serverReceive( byval client as CLIENT ptr )
 declare sub serverSend( byval client as CLIENT ptr )
 
+#define CLIENTADDR(c) *hIp2Addr( c->ip ) & "(" & c->port & ")"
+
 	
 	dim shared ctx as SERVER
 	
@@ -64,7 +66,7 @@ sub serverDel( byval client as CLIENT ptr )
 		condsignal( client->recvbuffer.cond )
 		condsignal( client->sendbuffer.cond )
 		
-		print "Closing connection for: " & *hIp2Addr( client->ip )
+		print "Closing connection for: " & CLIENTADDR(client)
 
 		conddestroy( client->sendbuffer.cond )
 		conddestroy( client->recvbuffer.cond )
@@ -99,7 +101,7 @@ end function
 function serverProcess( byval client as CLIENT ptr, byval buffer as zstring ptr ) as integer
 	dim answer as integer
 	
-	print "Received from " & *hIp2Addr( client->ip ) & ": "; *buffer
+	print "Received from " & CLIENTADDR(client) & ": "; *buffer
 	
 	'' check message by ID
 	select case SERVER_ID( buffer )
@@ -173,7 +175,7 @@ sub serverSend( byval client as CLIENT ptr )
 		'' any data to send?
 		if( client->sendbuffer.len > 0 ) then
 			
-			print "Sending to " & *hIp2Addr( client->ip ) & ": "; client->sendbuffer.buff
+			print "Sending to " & CLIENTADDR(client) & ": "; client->sendbuffer.buff
 		
 			'' keep trying until the whole buffer is sent
 			bytes = hSend( client->socket, client->sendbuffer.ptr, client->sendbuffer.len )
@@ -233,7 +235,7 @@ sub serverAdd( byval s as SOCKET, byval sa as sockaddr_in ptr )
 	client->recvthread 			= threadcreate( @serverReceive, cint( client ) )
 	client->sendthread 			= threadcreate( @serverSend, cint( client ) )
 	
-	print "New connection from: " & *hIp2Addr( client->ip )
+	print "New connection from: " & CLIENTADDR(client)
 
 end sub
 
