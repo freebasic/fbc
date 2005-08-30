@@ -75,7 +75,7 @@ FBCALL void *fb_StrAssign ( void *dst, int dst_size, void *src, int src_size, in
 				((FBSTRING *)src)->len  = 0;
 				((FBSTRING *)src)->size = 0;
 
-				fb_hStrDelTempDesc_NoLock( (FBSTRING *)src );
+				fb_hStrDelTempDesc( (FBSTRING *)src );
 
 				FB_STRUNLOCK();
 
