@@ -3,7 +3,6 @@
 
 const SERVER_ADDR 		= "localhost"
 const SERVER_PORT 		= 6666
-const SERVER_MAXCLIENTS = 100
 const SERVER_BUFFSIZE	= 256
 
 #define MAKEMSG(a0,a1,a2,a3) asc(a0) + asc(a1) shl 8 + asc(a2) shl 16 + asc(a3) shl 24
@@ -30,15 +29,9 @@ type CLIENT
 	sendthread		as integer
 	recvbuffer 		as BUFFER
 	sendbuffer 		as BUFFER
+	
+	prev			as CLIENT ptr
+	next			as CLIENT ptr
 end type
 
-type SERVER
-	socket			as SOCKET
-	acceptthread	as integer
-	isrunning		as integer
-	globmutex		as integer
-	
-	clients			as integer
-	clientTb(0 to SERVER_MAXCLIENTS-1) as CLIENT
-end type
 

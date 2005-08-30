@@ -276,7 +276,7 @@ type LPWSADATA as WSADATA ptr
 #define SO_RCVTIMEO &h1006
 #define SO_ERROR &h1007
 #define SO_TYPE &h1008
-#define INVALID_SOCKET cuint(not 0)
+#define INVALID_SOCKET cuint(-1)
 #define SOCKET_ERROR (-1)
 #define SOCK_STREAM 1
 #define SOCK_DGRAM 2

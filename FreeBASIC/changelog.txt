@@ -2,7 +2,7 @@ Version 0.15 Beta:
 
 [changed]
 - IMPORTANT: all the Windows API headers (under inc/win) were re-translated using the h2bi
-  too, the old sources are NOT compatible with those headers because they use the C-like
+  tool, the old sources are NOT compatible with those headers because they use the C-like
   standard (pointers instead of BYREF arguments, etc). If you really want to still
   using the old headers, remove the inc/win dir and copy the old one over it - the old
   headers won't be anymore updated though (v1c)
@@ -78,6 +78,7 @@ Version 0.15 Beta:
 - assigning UDT's returned from functions to arrays was generating invalid code, depending on the UDT type (v1c)
 - profiling multithreaded apps caused a crash on program exit (lillo)
 - GETMOUSE now works in combination with INKEY$ on Win32 (mjs)
+- string's dead-lock when using the thread-safe version of the runtime library (v1c)
 
 
 Version 0.14 Beta:

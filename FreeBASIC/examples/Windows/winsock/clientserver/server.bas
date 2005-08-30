@@ -3,6 +3,20 @@ option explicit
 #include once "wshelper.bi"
 #include once "myprotocol.bi"
 
+type CLIENTLIST
+	head			as CLIENT ptr	
+	tail			as CLIENT ptr
+end type
+
+type SERVERCTX
+	socket			as SOCKET
+	acceptthread	as integer
+	isrunning		as integer
+	globmutex		as integer
+	
+	clientlist		as CLIENTLIST
+end type
+
 declare function serverIni( ) as integer	
 declare function serverRun( ) as integer
 declare function serverEnd( ) as integer	
@@ -16,7 +30,7 @@ declare sub serverSend( byval client as CLIENT ptr )
 #define CLIENTADDR(c) *hIp2Addr( c->ip ) & "(" & c->port & ")"
 
 	
-	dim shared ctx as SERVER
+	dim shared ctx as SERVERCTX
 	
 	if( not serverIni( ) ) then
 		serverEnd( )
@@ -60,28 +74,51 @@ end function
 sub serverDel( byval client as CLIENT ptr )
 	dim s as SOCKET
 	
-	if( client->socket <> NULL ) then
-		s = client->socket
-		client->socket = NULL
+	'' not already removed?
+	if( client->socket <> NULL ) then		
+		s = NULL 
+		swap s, client->socket						'' this should be atomic..
+		
+		'' close connection
 		hClose( s )
 		
-		condsignal( client->recvbuffer.cond )
+		'' recv thread stills running?
+		if( client->recvthread <> NULL ) then
+			condsignal( client->recvbuffer.cond )
+			threadwait( client->recvthread )			
+		end if
 		
-		threadwait( client->recvthread )
-		threadwait( client->sendthread )
+		conddestroy( client->recvbuffer.cond )
+	
+		'' send thread stills running?
+		if( client->sendthread <> NULL ) then
+			condsignal( client->sendbuffer.cond )
+			threadwait( client->sendthread )			
+		end if
+		
+		conddestroy( client->sendbuffer.cond )
 		
 		print "Closing connection for: " & CLIENTADDR(client)
-
-		conddestroy( client->sendbuffer.cond )
-		conddestroy( client->recvbuffer.cond )
 		
+		'' remove from list
+		if( client->next ) then
+			client->next->prev = client->prev
+		else
+			ctx.clientlist.tail = client->prev
+		end if
+		if( client->prev ) then
+			client->prev->next = client->next
+		else
+			ctx.clientlist.head = client->next
+		end if
 	end if
 
 end sub
 
 '':::::
 function serverEnd( ) as integer
-
+	dim client as CLIENT ptr
+	
 	'' close the listening socket
 	if( ctx.socket <> 0 ) then
 		hClose( ctx.socket )
@@ -91,9 +128,13 @@ function serverEnd( ) as integer
 	'' remove all clients yet running
 	dim i as integer
 	
-	for i = 0 to ctx.clients-1
-		serverDel( @ctx.clientTb(i) )
-	next 
+	do
+		client = ctx.clientlist.head
+		if( client = NULL ) then
+			exit do
+		end if
+		serverDel( client )
+	loop
 	
 	'' shutdown winsock
 	function = hShutdown( )
@@ -160,11 +201,12 @@ sub serverReceive( byval client as CLIENT ptr )
 		'' process the incoming msg
 		if( serverProcess( client, @client->recvbuffer.buff ) ) then
 			'' wait until it's okay to receive
-			condwait( client->recvbuffer.cond )
+			condwait( client->recvbuffer.cond )			
 		end if
 	loop
 	
 	'' remove client
+	client->recvthread = NULL
 	serverDel( client )
 	
 end sub
@@ -205,6 +247,7 @@ sub serverSend( byval client as CLIENT ptr )
 	loop
 	
 	'' remove client
+	client->sendthread = NULL
 	serverDel( client )
 	
 end sub
@@ -213,18 +256,21 @@ end sub
 sub serverAdd( byval s as SOCKET, byval sa as sockaddr_in ptr )
 	dim client as CLIENT ptr
 	
-	'' too many?
-	if( ctx.clients >= SERVER_MAXCLIENTS ) then
-		print "Error: too many clients"
-		exit sub
-	end if
-	
 	'' access global data, lock it
 	mutexlock( ctx.globmutex )
 	
-	'' add
-	client = @ctx.clientTb(ctx.clients)
-	ctx.clients += 1
+	'' allocate node
+	client = allocate( len( CLIENT ) )
+	
+	'' add to list
+	if( ctx.clientlist.tail <> NULL ) then
+		ctx.clientlist.tail->next = client
+	else
+		ctx.clientlist.head = client
+	end if
+	client->prev = ctx.clientlist.tail
+	client->next = NULL
+	ctx.clientlist.tail = client
 	
 	mutexunlock( ctx.globmutex )
 	
@@ -280,7 +326,8 @@ function serverRun( ) as integer
 		return FALSE
 	end if
 	
-	ctx.clients = 0
+	ctx.clientlist.head = NULL
+	ctx.clientlist.tail = NULL
 	ctx.isrunning = TRUE
 	
 	ctx.globmutex = mutexcreate( )
@@ -294,7 +341,7 @@ function serverRun( ) as integer
 		if( inkey( ) = chr( 27 ) ) then
 			exit do
 		end if
-		showStatus( )
+		''''''showStatus( )
 		sleep( 25 )
 	loop
 	
