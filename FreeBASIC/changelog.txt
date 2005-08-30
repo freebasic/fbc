@@ -51,6 +51,7 @@ Version 0.15 Beta:
 - the __FB_MAIN__ define, set when the main-module is been parsed (could also be used to unit-test libraries) (v1c)
 - you can OR the &h4 value (GFX_NO_SWITCH constant from fbgfx.bi) to the forth SCREEN parameter (flags) to prevent
   user from switching fullscreen/windowed via maximize button or ALT-Enter (lillo)
+- OPEN COM for Win32 (mjs)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)

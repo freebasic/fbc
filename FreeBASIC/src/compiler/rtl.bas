@@ -1262,43 +1262,43 @@ data "fb_ConsoleInput", "", _
 '' fb_InputByte ( x as byte ) as void
 data "fb_InputByte","", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 @hMultinput_cb, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_BYTE,FB_ARGMODE_BYREF, FALSE
 '' fb_InputShort ( x as short ) as void
 data "fb_InputShort","", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 @hMultinput_cb, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_SHORT,FB_ARGMODE_BYREF, FALSE
 '' fb_InputInt ( x as integer ) as void
 data "fb_InputInt","", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 @hMultinput_cb, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYREF, FALSE
 '' fb_InputLongint ( x as longint ) as void
 data "fb_InputLongint","", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 @hMultinput_cb, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_LONGINT,FB_ARGMODE_BYREF, FALSE
 '' fb_InputSingle ( x as single ) as void
 data "fb_InputSingle","", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 @hMultinput_cb, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_SINGLE,FB_ARGMODE_BYREF, FALSE
 '' fb_InputDouble ( x as double ) as void
 data "fb_InputDouble","", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 @hMultinput_cb, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYREF, FALSE
 '' fb_InputString ( x as any, byval strlen as integer, byval fillrem as integer = 1 ) as void
 data "fb_InputString","", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 @hMultinput_cb, FALSE, FALSE, _
 	 3, _
 	 FB_SYMBTYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _

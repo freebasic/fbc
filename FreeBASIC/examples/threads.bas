@@ -29,11 +29,12 @@ declare sub mythread ( byval num as integer )
 	
 '':::::	
 sub mythread ( byval num as integer )
-	dim i as integer
+	dim i as integer, k as string
 	
 	for i = 0 to SECS-1
 		print "Hello from thread: " + str$( num ) + " (" + str$( SECS-i ) + " sec(s) left)"
 		Sleep 1000
+        k$ = inkey$
 	next i
 
 end sub
