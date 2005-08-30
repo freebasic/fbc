@@ -64,13 +64,13 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 /*:::::*/
 int fb_ConsoleGetX( void )
 {
-	return wherex() + 1;
+	return wherex();
 }
 
 /*:::::*/
 int fb_ConsoleGetY( void )
 {
-	return wherey() + 1;
+	return wherey();
 }
 
 /*:::::*/
