@@ -45,8 +45,6 @@ FBCALL int fb_Run ( FBSTRING *program )
 	{
 		char buffer2[MAX_PATH+3];
 
-		FB_UNLOCK();
-
 		fb_hExitConsole();
 		fb_hGetShortPath( program->data, buffer, MAX_PATH );
 		fb_hConvertPath( buffer, MAX_PATH );
