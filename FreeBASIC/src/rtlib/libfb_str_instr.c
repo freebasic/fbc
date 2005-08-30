@@ -178,34 +178,47 @@ FBCALL int fb_StrInstr ( int start, FBSTRING *src, FBSTRING *patt )
 {
     int r;
 
-    FB_STRLOCK();
-
-    if( (src == NULL) || (src->data == NULL) || (patt == NULL) || (patt->data == NULL) ) {
+    if( (src == NULL) || (src->data == NULL) || (patt == NULL) || (patt->data == NULL) )
+    {
         r = 0;
-    } else {
+    }
+    else
+    {
         size_t size_src = FB_STRSIZE(src);
         size_t size_patt = FB_STRSIZE(patt);
-        if( ((start < 1) || (start > size_src)) || (size_patt > size_src) ) {
+        if( ((start < 1) || (start > size_src)) || (size_patt > size_src) )
+        {
             r = 0;
-        } else if( size_patt==0 && size_src!=0 ) {
+        }
+        else if( size_patt==0 && size_src!=0 )
+        {
             r = start;
-        } else if( size_patt==1 ) {
+        }
+        else if( size_patt==1 )
+        {
             const char *pszEnd = FB_MEMCHR( src->data + start - 1, patt->data[0], size_src - start + 1);
-            if( pszEnd==NULL ) {
+            if( pszEnd==NULL )
+            {
                 r = 0;
-            } else {
+            }
+            else
+            {
                 r = pszEnd - src->data + 1;
             }
-        } else {
+        }
+        else
+        {
             r = fb_hFindBM( start - 1,
                             src->data, size_src,
                             patt->data, size_patt );
         }
     }
 
+	FB_STRLOCK();
+
 	/* del if temp */
-	fb_hStrDelTemp( src );
-	fb_hStrDelTemp( patt );
+	fb_hStrDelTemp_NoLock( src );
+	fb_hStrDelTemp_NoLock( patt );
 
     FB_STRUNLOCK();
 

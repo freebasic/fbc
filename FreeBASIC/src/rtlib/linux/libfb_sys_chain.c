@@ -41,8 +41,6 @@ FBCALL int fb_Chain ( FBSTRING *program )
     char	buffer[MAX_PATH+1];
     int		res = 0;
 
-	FB_STRLOCK();
-	
 	if( (program != NULL) && (program->data != NULL) )
 	{
 		pid_t pid;
@@ -52,8 +50,6 @@ FBCALL int fb_Chain ( FBSTRING *program )
 		if ((pid = fork()) == 0)
 		{
 			char buffer2[MAX_PATH+3];
-
-			FB_STRUNLOCK();
 
 			fb_hGetShortPath( program->data, buffer, MAX_PATH );
 			fb_hConvertPath( buffer, MAX_PATH );
@@ -81,8 +77,6 @@ FBCALL int fb_Chain ( FBSTRING *program )
 
 	/* del if temp */
 	fb_hStrDelTemp( program );
-
-	FB_STRUNLOCK();
 
 	return res;
 }

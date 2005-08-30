@@ -151,8 +151,6 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 	/* any text first */
 	fb_PrintUsingFmtStr( fnum );
 
-	FB_STRLOCK();
-
 	strchars = -1;
 
 	if( FB_TLSGET( fb_printusgctx.ptr ) == 0 )
@@ -257,11 +255,9 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 		aux.data = (char *)FB_TLSGET( fb_printusgctx.fmtstr.data );
 		aux.len = (int)FB_TLSGET( fb_printusgctx.fmtstr.len );
 		aux.size = (int)FB_TLSGET( fb_printusgctx.fmtstr.size );
-#ifdef MULTITHREADED
-		fb_hStrDeleteLocked( &aux );
-#else
+
 		fb_StrDelete( &aux );
-#endif
+
 		FB_TLSSET( fb_printusgctx.fmtstr.data, aux.data );
 		FB_TLSSET( fb_printusgctx.fmtstr.len, aux.len );
 		FB_TLSSET( fb_printusgctx.fmtstr.size, aux.size );
@@ -269,8 +265,6 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 
 	/* del if temp */
 	fb_hStrDelTemp( s );
-
-	FB_STRUNLOCK();
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
@@ -575,7 +569,9 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 		s.data = (char *)FB_TLSGET( fb_printusgctx.fmtstr.data );
 		s.len = (int)FB_TLSGET( fb_printusgctx.fmtstr.len );
 		s.size = (int)FB_TLSGET( fb_printusgctx.fmtstr.size );
+
 		fb_StrDelete( &s );
+
 		FB_TLSSET( fb_printusgctx.fmtstr.data, s.data );
 		FB_TLSSET( fb_printusgctx.fmtstr.len, s.len );
 		FB_TLSSET( fb_printusgctx.fmtstr.size, s.size );

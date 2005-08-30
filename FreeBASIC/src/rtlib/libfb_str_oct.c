@@ -34,8 +34,6 @@ static FBSTRING *hOCT ( unsigned int num, int len )
 {
 	FBSTRING 	*dst;
 
-	FB_STRLOCK();
-
 	/* alloc temp string */
     dst = fb_hStrAllocTemp( NULL, len * 4 );
 	if( dst != NULL )
@@ -50,8 +48,6 @@ static FBSTRING *hOCT ( unsigned int num, int len )
 	}
 	else
 		dst = &fb_strNullDesc;
-
-	FB_STRUNLOCK();
 
 	return dst;
 }

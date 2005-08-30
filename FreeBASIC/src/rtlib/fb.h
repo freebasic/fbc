@@ -386,22 +386,23 @@ static __inline__ void fb_hStrSetLength( FBSTRING *str, size_t size ) {
     str->len = size | (str->len & FB_TEMPSTRBIT);
 }
 
-       FBSTRING    *fb_hStrAllocTmpDesc ( void );
-       int          fb_hStrDelTempDesc  ( FBSTRING *str );
-       FBSTRING    *fb_hStrRealloc      ( FBSTRING *str, int size, int preserve );
-       FBSTRING    *fb_hStrAllocTemp    ( FBSTRING *str, int size );
-       int          fb_hStrDelTemp      ( FBSTRING *str );
-       void         fb_hStrCopy         ( char *dst, const char *src, int bytes );
-       char        *fb_hStrSkipChar     ( char *s, int len, int c );
-       char        *fb_hStrSkipCharRev  ( char *s, int len, int c );
+FBCALL FBSTRING    *fb_hStrAllocTmpDesc 	( void );
+FBCALL int          fb_hStrDelTempDesc  	( FBSTRING *str );
+FBCALL FBSTRING    *fb_hStrRealloc      	( FBSTRING *str, int size, int preserve );
+FBCALL FBSTRING    *fb_hStrRealloc_NoLock	( FBSTRING *str, int size, int preserve );
+FBCALL FBSTRING    *fb_hStrAllocTemp    	( FBSTRING *str, int size );
+FBCALL FBSTRING    *fb_hStrAllocTemp_NoLock	( FBSTRING *str, int size );
+FBCALL int          fb_hStrDelTemp      	( FBSTRING *str );
+FBCALL int          fb_hStrDelTemp_NoLock  	( FBSTRING *str );
+FBCALL void         fb_hStrCopy         	( char *dst, const char *src, int bytes );
+FBCALL char        *fb_hStrSkipChar     	( char *s, int len, int c );
+FBCALL char        *fb_hStrSkipCharRev  	( char *s, int len, int c );
 
 
 /* public */
 
 FBCALL void         fb_StrDelete        ( FBSTRING *str );
-#ifdef MULTITHREADED
-       void         fb_hStrDeleteLocked ( FBSTRING *str );
-#endif
+FBCALL void         fb_StrDelete_NoLock ( FBSTRING *str );
 FBCALL void        *fb_StrAssign        ( void *dst, int dst_size, void *src, int src_size, int fillrem );
 FBCALL FBSTRING    *fb_StrConcat        ( FBSTRING *dst, void *str1, int str1_size, void *str2, int str2_size );
 FBCALL void        *fb_StrConcatAssign  ( void *dst, int dst_size, void *src, int src_size, int fillrem );
@@ -1083,13 +1084,13 @@ typedef struct _DEV_SCRN_INFO {
                                           FB_SERIAL_OPTIONS *options,
                                           const char *pszDevice,
                                           void **ppvHandle );
-       int          fb_SerialGetRemaining( struct _FB_FILE *handle, 
+       int          fb_SerialGetRemaining( struct _FB_FILE *handle,
                                            void *pvHandle, long *pLength );
-       int          fb_SerialWrite      ( struct _FB_FILE *handle, 
+       int          fb_SerialWrite      ( struct _FB_FILE *handle,
                                           void *pvHandle, const void *data, size_t length );
-       int          fb_SerialRead       ( struct _FB_FILE *handle, 
+       int          fb_SerialRead       ( struct _FB_FILE *handle,
                                           void *pvHandle, void *data, size_t *pLength );
-       int          fb_SerialClose      ( struct _FB_FILE *handle, 
+       int          fb_SerialClose      ( struct _FB_FILE *handle,
                                           void *pvHandle );
 
 /**************************************************************************************************

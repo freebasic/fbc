@@ -60,8 +60,6 @@ FBCALL FBSTRING *fb_BIN_l ( unsigned long long num )
 {
 	FBSTRING 	*dst;
 
-	FB_STRLOCK();
-
 	/* alloc temp string */
     dst = fb_hStrAllocTemp( NULL, sizeof( long long ) * 8 );
 	if( dst != NULL )
@@ -76,8 +74,6 @@ FBCALL FBSTRING *fb_BIN_l ( unsigned long long num )
 	}
 	else
 		dst = &fb_strNullDesc;
-
-	FB_STRUNLOCK();
 
 	return dst;
 }

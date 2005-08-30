@@ -34,8 +34,6 @@ FBCALL int fb_StrInstrAny ( int start, FBSTRING *src, FBSTRING *patt )
 {
     int r;
 
-    FB_STRLOCK();
-
     if( (src == NULL) || (src->data == NULL) || (patt == NULL) || (patt->data == NULL) ) {
         r = 0;
     } else {
@@ -65,9 +63,11 @@ FBCALL int fb_StrInstrAny ( int start, FBSTRING *src, FBSTRING *patt )
         }
     }
 
+    FB_STRLOCK();
+
 	/* del if temp */
-	fb_hStrDelTemp( src );
-	fb_hStrDelTemp( patt );
+	fb_hStrDelTemp_NoLock( src );
+	fb_hStrDelTemp_NoLock( patt );
 
     FB_STRUNLOCK();
 

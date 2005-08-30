@@ -42,14 +42,11 @@ FBCALL int fb_FileOpenShort( FBSTRING *str_file_mode,
     int access_mode = -1, lock_mode = -1;
     size_t file_mode_len, access_mode_len, lock_mode_len;
 
-	FB_STRLOCK();
-
     file_mode_len = FB_STRSIZE( str_file_mode );
     access_mode_len = FB_STRSIZE( str_access_mode );
     lock_mode_len = FB_STRSIZE( str_lock_mode );
 
     if( file_mode_len != 1 || access_mode_len>2 || lock_mode_len>2 ) {
-        FB_STRUNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
@@ -64,7 +61,6 @@ FBCALL int fb_FileOpenShort( FBSTRING *str_file_mode,
     } else if( strcasecmp(str_file_mode->data, "R")==0 ) {
         file_mode = FB_FILE_MODE_RANDOM;
     } else {
-        FB_STRUNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
@@ -76,7 +72,6 @@ FBCALL int fb_FileOpenShort( FBSTRING *str_file_mode,
         } else if ( strcasecmp(str_access_mode->data, "RW")==0 ) {
             access_mode = FB_FILE_ACCESS_READWRITE;
         } else {
-            FB_STRUNLOCK();
             return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
         }
     }
@@ -91,12 +86,9 @@ FBCALL int fb_FileOpenShort( FBSTRING *str_file_mode,
         } else if ( strcasecmp(str_lock_mode->data, "RW")==0 ) {
             lock_mode = FB_FILE_LOCK_READWRITE;
         } else {
-            FB_STRUNLOCK();
             return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
         }
     }
-
-    FB_STRUNLOCK();
 
     if( access_mode == -1 ) {
         /* determine the default access mode for a given file mode */

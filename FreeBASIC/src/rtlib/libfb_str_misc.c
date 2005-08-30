@@ -34,8 +34,6 @@ FBCALL FBSTRING *fb_SPACE ( int len )
 
 	if( len > 0 )
 	{
-    	FB_STRLOCK();
-
 		/* alloc temp string */
         dst = fb_hStrAllocTemp( NULL, len );
 		if( dst != NULL )
@@ -48,8 +46,6 @@ FBCALL FBSTRING *fb_SPACE ( int len )
 		}
 		else
 			dst = &fb_strNullDesc;
-
-    	FB_STRUNLOCK();
     }
 	else
 		dst = &fb_strNullDesc;

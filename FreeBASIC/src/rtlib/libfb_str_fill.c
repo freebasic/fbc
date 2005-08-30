@@ -36,8 +36,6 @@ FBCALL FBSTRING *fb_StrFill1 ( int cnt, int fchar )
 
 	if( cnt > 0 )
 	{
-		FB_STRLOCK();
-		
 		/* alloc temp string */
         dst = fb_hStrAllocTemp( NULL, cnt );
 		if( dst != NULL )
@@ -49,9 +47,7 @@ FBCALL FBSTRING *fb_StrFill1 ( int cnt, int fchar )
 		}
 		else
 			dst = &fb_strNullDesc;
-		
-		FB_STRUNLOCK();
-    }
+	}
 	else
 		dst = &fb_strNullDesc;
 
@@ -65,13 +61,9 @@ FBCALL FBSTRING *fb_StrFill2 ( int cnt, FBSTRING *src )
 	FBSTRING 	*dst;
 	int			fchar;
 
-	FB_STRLOCK();
-	
 	if( (cnt > 0) && (src != NULL) && (src->data != NULL) && (FB_STRSIZE( src ) > 0) ) {
 		fchar = (int)src->data[0];
-		FB_STRUNLOCK();
 		dst = fb_StrFill1( cnt, fchar );
-		FB_STRLOCK();
 	}
 	else
 		dst = &fb_strNullDesc;
@@ -79,8 +71,6 @@ FBCALL FBSTRING *fb_StrFill2 ( int cnt, FBSTRING *src )
 	/* del if temp */
 	fb_hStrDelTemp( src );
 
-	FB_STRUNLOCK();
-	
 	return dst;
 }
 

@@ -36,8 +36,6 @@ int fb_FilePutStrEx( FB_FILE *handle, long pos, void *str, int str_len )
     long len;
     char *data;
 
-	FB_STRLOCK();
-
     /* get string data len */
 	FB_STRSETUP_DYN( str, str_len, data, len );
 
@@ -50,8 +48,6 @@ int fb_FilePutStrEx( FB_FILE *handle, long pos, void *str, int str_len )
     /* del if temp */
     if( str_len == -1 )
         fb_hStrDelTemp( (FBSTRING *)str );
-
-	FB_STRUNLOCK();
 
 	return res;
 }

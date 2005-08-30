@@ -39,7 +39,7 @@
 #include "fb.h"
 
 /**********
- * temp string descriptors
+ * temp string descriptors (string lock is assumed to be held in the thread-safe rlib version)
  **********/
 
 static FB_LIST tmpdsList = { 0 };
@@ -47,7 +47,7 @@ static FB_LIST tmpdsList = { 0 };
 static FB_STR_TMPDESC fb_tmpdsTB[FB_STR_TMPDESCRIPTORS];
 
 /*:::::*/
-FBSTRING *fb_hStrAllocTmpDesc( void )
+FBCALL FBSTRING *fb_hStrAllocTmpDesc( void )
 {
 	FB_STR_TMPDESC *dsc;
 
@@ -68,7 +68,7 @@ FBSTRING *fb_hStrAllocTmpDesc( void )
 }
 
 /*:::::*/
-void fb_hStrFreeTmpDesc( FB_STR_TMPDESC *dsc )
+FBCALL void fb_hStrFreeTmpDesc( FB_STR_TMPDESC *dsc )
 {
 	fb_hListFreeElem( &tmpdsList,  &dsc->elem );
 
@@ -79,7 +79,7 @@ void fb_hStrFreeTmpDesc( FB_STR_TMPDESC *dsc )
 }
 
 /*:::::*/
-int fb_hStrDelTempDesc( FBSTRING *str )
+FBCALL int fb_hStrDelTempDesc( FBSTRING *str )
 {
     FB_STR_TMPDESC *item =
         (FB_STR_TMPDESC*) ( (char*)str - offsetof( FB_STR_TMPDESC, desc ) );
@@ -94,11 +94,11 @@ int fb_hStrDelTempDesc( FBSTRING *str )
 }
 
 /**********
- * internal helper routines (these assume the string lock to be already held when called)
+ * internal helper routines
  **********/
 
 /*:::::*/
-FBSTRING *fb_hStrRealloc( FBSTRING *str, int size, int preserve )
+FBCALL FBSTRING *fb_hStrRealloc_NoLock( FBSTRING *str, int size, int preserve )
 {
 	int newsize;
 
@@ -111,11 +111,7 @@ FBSTRING *fb_hStrRealloc( FBSTRING *str, int size, int preserve )
 	{
 		if( preserve == FB_FALSE )
 		{
-#ifdef MULTITHREADED
-			fb_hStrDeleteLocked( str );
-#else
-			fb_StrDelete( str );
-#endif
+			fb_StrDelete_NoLock( str );
 
 			str->data = (char *)malloc( newsize + 1 );
 			/* failed? try the original request */
@@ -158,7 +154,21 @@ FBSTRING *fb_hStrRealloc( FBSTRING *str, int size, int preserve )
 }
 
 /*:::::*/
-FBSTRING *fb_hStrAllocTemp( FBSTRING *str, int size )
+FBCALL FBSTRING *fb_hStrRealloc( FBSTRING *str, int size, int preserve )
+{
+	FBSTRING *res;
+
+	FB_STRLOCK( );
+
+	res = fb_hStrRealloc_NoLock( str, size, preserve );
+
+	FB_STRUNLOCK( );
+
+	return res;
+}
+
+/*:::::*/
+FBCALL FBSTRING *fb_hStrAllocTemp_NoLock( FBSTRING *str, int size )
 {
     int try_alloc = str==NULL;
 
@@ -169,7 +179,7 @@ FBSTRING *fb_hStrAllocTemp( FBSTRING *str, int size )
             return NULL;
     }
 
-    if( fb_hStrRealloc( str, size, FB_FALSE )==NULL )
+    if( fb_hStrRealloc( str, size, FB_FALSE ) == NULL )
     {
         if( try_alloc )
             fb_hStrDelTempDesc( str );
@@ -182,28 +192,49 @@ FBSTRING *fb_hStrAllocTemp( FBSTRING *str, int size )
 }
 
 /*:::::*/
-int fb_hStrDelTemp( FBSTRING *str )
+FBCALL FBSTRING *fb_hStrAllocTemp( FBSTRING *str, int size )
+{
+    FBSTRING *res;
+
+    FB_STRLOCK( );
+
+    res = fb_hStrAllocTemp_NoLock( str, size );
+
+    FB_STRUNLOCK( );
+
+    return res;
+}
+
+/*:::::*/
+FBCALL int fb_hStrDelTemp_NoLock( FBSTRING *str )
 {
 	if( str == NULL )
 		return -1;
 
 	/* is it really a temp? */
 	if( FB_ISTEMP( str ) )
-	{
-        /* del data */
-#ifdef MULTITHREADED
-        fb_hStrDeleteLocked( str );
-#else
-        fb_StrDelete( str );
-#endif
-    }
+        fb_StrDelete_NoLock( str );
 
     /* del descriptor (must be done by last as it will be cleared) */
     return fb_hStrDelTempDesc( str );
 }
 
 /*:::::*/
-void fb_hStrCopy( char *dst, const char *src, int bytes )
+FBCALL int fb_hStrDelTemp( FBSTRING *str )
+{
+	int res;
+
+	FB_STRLOCK( );
+
+	res = fb_hStrDelTemp_NoLock( str );
+
+	FB_STRUNLOCK( );
+
+	return res;
+}
+
+/*:::::*/
+FBCALL void fb_hStrCopy( char *dst, const char *src, int bytes )
 {
     if( (src != NULL) && (bytes > 0 ) ) {
         dst = FB_MEMCPYX( dst, src, bytes );
@@ -213,7 +244,7 @@ void fb_hStrCopy( char *dst, const char *src, int bytes )
 
 
 /*:::::*/
-char *fb_hStrSkipChar( char *s, int len, int c )
+FBCALL char *fb_hStrSkipChar( char *s, int len, int c )
 {
 	char *p = s;
 
@@ -225,7 +256,7 @@ char *fb_hStrSkipChar( char *s, int len, int c )
 }
 
 /*:::::*/
-char *fb_hStrSkipCharRev( char *s, int len, int c )
+FBCALL char *fb_hStrSkipCharRev( char *s, int len, int c )
 {
 	char *p;
 
@@ -234,18 +265,8 @@ char *fb_hStrSkipCharRev( char *s, int len, int c )
 
 	p = &s[len-1];
 
+    /* fixed-len's are filled with null's as in PB, strip them too */
     while( (--len >= 0) && (((int)*p == c) || ((int)*p == 0) ) )
-        /* ??? strip nulls too ???
-         *
-         * This is an unexpected behaviour for dynamic strings which
-         * will cause problems in many applications ... the current
-         * work-around is to use RTRIM$(var, ANY "  ") but this is (IMHO)
-         * a very bad hack.
-         *
-         * This was - I guess - mainly be done because fixed-length strings
-         * are filled with NUL (in FB) instead of SPC (in QB).
-         *
-         * This function is only used by RTRIM */
 		--p;
 
     return p;

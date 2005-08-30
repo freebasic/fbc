@@ -40,7 +40,7 @@ FBCALL void *fb_StrAssign ( void *dst, int dst_size, void *src, int src_size, in
 	if( dst == NULL )
 	{
 		if( src_size == -1 )
-			fb_hStrDelTemp( (FBSTRING *)src );
+			fb_hStrDelTemp_NoLock( (FBSTRING *)src );
 
 		FB_STRUNLOCK();
 
@@ -58,22 +58,14 @@ FBCALL void *fb_StrAssign ( void *dst, int dst_size, void *src, int src_size, in
 		/* src NULL? */
 		if( src_len == 0 )
 		{
-#ifdef MULTITHREADED
-			fb_hStrDeleteLocked( dstr );
-#else
-			fb_StrDelete( dstr );
-#endif
+			fb_StrDelete_NoLock( dstr );
 		}
 		else
 		{
 			/* if src is a temp, just copy the descriptor */
 			if( (src_size == -1) && FB_ISTEMP(src) )
 			{
-#ifdef MULTITHREADED
-				fb_hStrDeleteLocked( dstr );
-#else
-				fb_StrDelete( dstr );
-#endif
+				fb_StrDelete_NoLock( dstr );
 
 				dstr->data = src_ptr;
 				dstr->len  = src_len;
@@ -83,7 +75,7 @@ FBCALL void *fb_StrAssign ( void *dst, int dst_size, void *src, int src_size, in
 				((FBSTRING *)src)->len  = 0;
 				((FBSTRING *)src)->size = 0;
 
-				fb_hStrDelTempDesc( (FBSTRING *)src );
+				fb_hStrDelTempDesc_NoLock( (FBSTRING *)src );
 
 				FB_STRUNLOCK();
 
@@ -94,7 +86,7 @@ FBCALL void *fb_StrAssign ( void *dst, int dst_size, void *src, int src_size, in
         	dst_len = FB_STRSIZE( dst );
 
 			if( dst_len != src_len )
-				fb_hStrRealloc( dstr, src_len, FB_FALSE );
+				fb_hStrRealloc_NoLock( dstr, src_len, FB_FALSE );
 
 			fb_hStrCopy( dstr->data, src_ptr, src_len );
 		}
@@ -133,7 +125,7 @@ FBCALL void *fb_StrAssign ( void *dst, int dst_size, void *src, int src_size, in
 
 	/* delete temp? */
 	if( src_size == -1 )
-		fb_hStrDelTemp( (FBSTRING *)src );
+		fb_hStrDelTemp_NoLock( (FBSTRING *)src );
 
 	FB_STRUNLOCK();
 

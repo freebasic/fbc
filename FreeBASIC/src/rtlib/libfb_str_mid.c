@@ -52,7 +52,7 @@ FBCALL FBSTRING *fb_StrMid ( FBSTRING *src, int start, int len )
         		len = src_len - start;
 
 			/* alloc temp string */
-            dst = fb_hStrAllocTemp( NULL, len );
+            dst = fb_hStrAllocTemp_NoLock( NULL, len );
 			if( dst != NULL )
             {
 				FB_MEMCPY( dst->data, src->data + start, len );
@@ -69,7 +69,7 @@ FBCALL FBSTRING *fb_StrMid ( FBSTRING *src, int start, int len )
 		dst = &fb_strNullDesc;
 
 	/* del if temp */
-	fb_hStrDelTemp( src );
+	fb_hStrDelTemp_NoLock( src );
 
 	FB_STRUNLOCK();
 

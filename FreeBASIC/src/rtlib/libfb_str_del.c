@@ -29,33 +29,25 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL void fb_StrDelete ( FBSTRING *str )
-{
-	FB_STRLOCK();
-	
-    if( (str != NULL) && (str->data != NULL) ) {
-    	
-	    free( (void *)str->data );
-
-		str->data = NULL;
-		str->len  = 0;
-		str->size = 0;
-	}
-	
-	FB_STRUNLOCK();
-}
-
-#ifdef MULTITHREADED
-/*:::::*/
-void fb_hStrDeleteLocked ( FBSTRING *str )
+FBCALL void fb_StrDelete_NoLock ( FBSTRING *str )
 {
     if( (str == NULL) || (str->data == NULL) )
     	return;
-    	
+
     free( (void *)str->data );
 
 	str->data = NULL;
 	str->len  = 0;
 	str->size = 0;
 }
-#endif
+
+/*:::::*/
+FBCALL void fb_StrDelete ( FBSTRING *str )
+{
+	FB_STRLOCK();
+
+	fb_StrDelete_NoLock( str );
+
+	FB_STRUNLOCK();
+}
+

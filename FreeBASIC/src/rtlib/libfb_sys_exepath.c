@@ -40,8 +40,6 @@ FBCALL FBSTRING *fb_ExePath ( void )
 
 	if( p != NULL )
 	{
-		FB_STRLOCK();
-		
 		/* alloc temp string */
         len = strlen( tmp );
         dst = fb_hStrAllocTemp( NULL, len );
@@ -51,8 +49,6 @@ FBCALL FBSTRING *fb_ExePath ( void )
 		}
 		else
 			dst = &fb_strNullDesc;
-
-		FB_STRUNLOCK();
 	}
 	else
 		dst = &fb_strNullDesc;

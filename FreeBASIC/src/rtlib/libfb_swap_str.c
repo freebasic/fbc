@@ -37,8 +37,6 @@ FBCALL void fb_StrSwap( void *str1, int str1_size, void *str2, int str2_size )
 	if( (str1 == NULL) || (str2 == NULL) )
 		return;
 
-	FB_STRLOCK();
-
 	/* both var-len? */
 	if( (str1_size == -1) && (str2_size == -1) )
 	{
@@ -51,8 +49,6 @@ FBCALL void fb_StrSwap( void *str1, int str1_size, void *str2, int str2_size )
 
      	((FBSTRING *)str2)->data = td.data;
      	((FBSTRING *)str2)->len = td.len;
-
-		FB_STRUNLOCK();
 
         return;
 	}
@@ -79,6 +75,4 @@ FBCALL void fb_StrSwap( void *str1, int str1_size, void *str2, int str2_size )
 	/* add the null-terms */
 	str1_ptr[size] = '\0';
 	str2_ptr[size] = '\0';
-
-	FB_STRUNLOCK();
 }

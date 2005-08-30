@@ -84,10 +84,8 @@ int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
     cursor_visible = (fb_Locate( -1, -1, -1 ) & 0x10000) != 0;
     fb_Locate( -1, -1, 0 );
 
-    FB_STRLOCK();
     pos = len = FB_STRSIZE(dst);
     handle->hooks->pfnWrite( handle, dst->data, len );
-    FB_STRUNLOCK();
 
     fb_Locate( -1, -1, cursor_visible );
 
@@ -201,9 +199,7 @@ int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
             fb_StrConcatAssign( dst, -1, str_right, -1, FALSE );
             --len;
 
-            FB_STRLOCK();
             handle->hooks->pfnWrite( handle, dst->data + pos, len - pos );
-            FB_STRUNLOCK();
             handle->hooks->pfnWrite( handle, " ", 1 );
             fb_Locate( tmp_y, tmp_x, -1 );
         }
@@ -224,9 +220,7 @@ int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
             fb_StrConcatAssign( dst, -1, str_right, -1, FALSE );
             len += tmp_buffer_len;
 
-            FB_STRLOCK();
             handle->hooks->pfnWrite( handle, dst->data + pos, len - pos );
-            FB_STRUNLOCK();
 
             pos += tmp_buffer_len;
 
@@ -261,9 +255,7 @@ int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
     res = fb_DevFileReadLineDumb( stdin, dst );
     fb_GetXY( NULL, &old_y );
 
-    FB_STRLOCK();
     len = FB_STRSIZE(dst);
-    FB_STRUNLOCK();
 
     DBG_ASSERT(handle->width!=0);
 

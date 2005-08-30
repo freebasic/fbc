@@ -37,7 +37,7 @@ FBCALL FBSTRING *fb_LEFT ( FBSTRING *src, int chars )
 		return &fb_strNullDesc;
 
 	FB_STRLOCK();
-	
+
 	src_len = FB_STRSIZE( src );
 	if( (src->data != NULL)	&& (chars > 0) && (src_len > 0) )
 	{
@@ -47,7 +47,7 @@ FBCALL FBSTRING *fb_LEFT ( FBSTRING *src, int chars )
 			len = chars;
 
 		/* alloc temp string */
-        dst = fb_hStrAllocTemp( NULL, len );
+        dst = fb_hStrAllocTemp_NoLock( NULL, len );
 		if( dst != NULL )
 		{
 			/* simple copy */
@@ -60,7 +60,7 @@ FBCALL FBSTRING *fb_LEFT ( FBSTRING *src, int chars )
     	dst = &fb_strNullDesc;
 
 	/* del if temp */
-	fb_hStrDelTemp( src );
+	fb_hStrDelTemp_NoLock( src );
 
 	FB_STRUNLOCK();
 

@@ -36,16 +36,12 @@ void fb_DevScrnFillInput( DEV_SCRN_INFO *info )
     FBSTRING *str;
     size_t len;
 
-    FB_STRLOCK();
-
     str = fb_Inkey( );
     len = FB_STRSIZE( str );
     DBG_ASSERT(len <= sizeof(info->buffer));
     memcpy(info->buffer, str->data, len);
 
     fb_hStrDelTemp( str );
-
-    FB_STRUNLOCK();
 
     info->length = len;
 }

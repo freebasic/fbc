@@ -35,19 +35,15 @@
 FBCALL int fb_ChDir( FBSTRING *path )
 {
 	int res;
-	
-	FB_STRLOCK();
-	
+
 #ifdef TARGET_WIN32
 	res = _chdir( path->data );
 #else
 	res = chdir( path->data );
 #endif
-	
+
 	/* del if temp */
 	fb_hStrDelTemp( path );
-
-	FB_STRUNLOCK();
 
 	return res;
 }

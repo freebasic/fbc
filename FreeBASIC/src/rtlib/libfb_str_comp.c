@@ -35,8 +35,6 @@ FBCALL int fb_StrCompare ( void *str1, int str1_size, void *str2, int str2_size 
 	int 	str1_len, str2_len;
 	int		res;
 
-	FB_STRLOCK();
-
 	/* both not null? */
 	if( (str1 != NULL) && (str2 != NULL) )
 	{
@@ -76,11 +74,14 @@ FBCALL int fb_StrCompare ( void *str1, int str1_size, void *str2, int str2_size 
 			res = 1;
 	}
 
+
+	FB_STRLOCK();
+
 	/* delete temps? */
 	if( str1_size == -1 )
-		fb_hStrDelTemp( (FBSTRING *)str1 );
+		fb_hStrDelTemp_NoLock( (FBSTRING *)str1 );
 	if( str2_size == -1 )
-		fb_hStrDelTemp( (FBSTRING *)str2 );
+		fb_hStrDelTemp_NoLock( (FBSTRING *)str2 );
 
 	FB_STRUNLOCK();
 

@@ -41,7 +41,7 @@ FBCALL void *fb_StrConcatAssign ( void *dst, int dst_size, void *src, int src_si
 	{
 		/* delete temp? */
 		if( src_size == -1 )
-			fb_hStrDelTemp( (FBSTRING *)src );
+			fb_hStrDelTemp_NoLock( (FBSTRING *)src );
 
 		FB_STRUNLOCK();
 
@@ -60,7 +60,7 @@ FBCALL void *fb_StrConcatAssign ( void *dst, int dst_size, void *src, int src_si
         	dstr = (FBSTRING *)dst;
         	dst_len = FB_STRSIZE( dst );
 
-			fb_hStrRealloc( dstr, dst_len+src_len, FB_TRUE );
+			fb_hStrRealloc_NoLock( dstr, dst_len+src_len, FB_TRUE );
 
 			fb_hStrCopy( &dstr->data[dst_len], src_ptr, src_len );
 		}
@@ -93,7 +93,7 @@ FBCALL void *fb_StrConcatAssign ( void *dst, int dst_size, void *src, int src_si
 
 	/* delete temp? */
 	if( src_size == -1 )
-		fb_hStrDelTemp( (FBSTRING *)src );
+		fb_hStrDelTemp_NoLock( (FBSTRING *)src );
 
 	FB_STRUNLOCK();
 

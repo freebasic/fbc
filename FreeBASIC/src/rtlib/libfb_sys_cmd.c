@@ -136,8 +136,6 @@ FBCALL FBSTRING *fb_Command ( int argc )
 	if( len <= 0 )
 		return &fb_strNullDesc;
 
-	FB_STRLOCK();
-	
 	/* alloc temp string */
     dst = fb_hStrAllocTemp( NULL, len );
 	if( dst != NULL )
@@ -146,11 +144,8 @@ FBCALL FBSTRING *fb_Command ( int argc )
 		dst->data[len] = '\0';
 	}
 	else {
-		FB_STRUNLOCK();
 		return &fb_strNullDesc;
 	}
-
-	FB_STRUNLOCK();
 
 	return dst;
 }

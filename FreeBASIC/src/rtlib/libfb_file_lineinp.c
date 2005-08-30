@@ -74,7 +74,6 @@ static int fb_hFileLineInputEx( FB_FILE *handle,
      * pointers ... */
     if( is_console )
     {
-        FB_STRLOCK();
 		if( text != NULL )
 		{
             if( text->data != NULL ) {
@@ -87,8 +86,6 @@ static int fb_hFileLineInputEx( FB_FILE *handle,
 				fb_PrintFixStringEx( handle, buffer, 0 );
 			}
 		}
-
-        FB_STRUNLOCK();
 	}
 
 

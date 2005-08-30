@@ -47,7 +47,7 @@ FBCALL FBSTRING *fb_RIGHT ( FBSTRING *src, int chars )
 			len = chars;
 
 		/* alloc temp string */
-        dst = fb_hStrAllocTemp( NULL, len );
+        dst = fb_hStrAllocTemp_NoLock( NULL, len );
 		if( dst != NULL )
 		{
 			/* simple rev copy */
@@ -60,7 +60,7 @@ FBCALL FBSTRING *fb_RIGHT ( FBSTRING *src, int chars )
         dst = &fb_strNullDesc;
 
 	/* del if temp */
-	fb_hStrDelTemp( src );
+	fb_hStrDelTemp_NoLock( src );
 
    	FB_STRUNLOCK();
 

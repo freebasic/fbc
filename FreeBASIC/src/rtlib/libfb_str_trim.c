@@ -58,7 +58,7 @@ FBCALL FBSTRING *fb_TRIM ( FBSTRING *src )
 		if( len > 0 )
 		{
 			/* alloc temp string */
-            dst = fb_hStrAllocTemp( NULL, len );
+            dst = fb_hStrAllocTemp_NoLock( NULL, len );
 			if( dst != NULL )
 			{
 				/* simple copy */
@@ -74,7 +74,7 @@ FBCALL FBSTRING *fb_TRIM ( FBSTRING *src )
 		dst = &fb_strNullDesc;
 
 	/* del if temp */
-	fb_hStrDelTemp( src );
+	fb_hStrDelTemp_NoLock( src );
 
 	FB_STRUNLOCK();
 

@@ -33,19 +33,15 @@
 FBCALL int fb_Shell ( FBSTRING *program )
 {
 	int errcode = -1;
-	
-	FB_STRLOCK();
-	
+
 	if( (program) && (program->data)) {
 		fb_hExitConsole();
 		errcode = system( program->data );
 		fb_hInitConsole( fb_con.inited );
 	}
-	
+
 	/* del if temp */
 	fb_hStrDelTemp( program );
 
-	FB_STRUNLOCK();
-	
 	return errcode;
 }

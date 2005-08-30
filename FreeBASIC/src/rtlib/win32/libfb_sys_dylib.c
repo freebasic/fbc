@@ -36,15 +36,11 @@ FBCALL void *fb_DylibLoad( FBSTRING *library )
 {
 	void *res = NULL;
 
-	FB_STRLOCK();
-
 	if( (library) && (library->data) )
 		res = LoadLibrary( library->data );
 
 	/* del if temp */
 	fb_hStrDelTemp( library );
-
-	FB_STRUNLOCK();
 
 	return res;
 }
@@ -58,8 +54,6 @@ FBCALL void *fb_DylibSymbol( void *library, FBSTRING *symbol )
 
 	if( library == NULL )
 		library = GetModuleHandle( NULL );
-
-	FB_STRLOCK();
 
 	if( (symbol) && (symbol->data) )
 	{
@@ -77,8 +71,6 @@ FBCALL void *fb_DylibSymbol( void *library, FBSTRING *symbol )
 
 	/* del if temp */
 	fb_hStrDelTemp( symbol );
-
-	FB_STRUNLOCK();
 
 	return proc;
 }

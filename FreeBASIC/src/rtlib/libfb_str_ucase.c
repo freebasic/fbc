@@ -46,7 +46,7 @@ FBCALL FBSTRING *fb_UCASE ( FBSTRING *src )
 		len = FB_STRSIZE( src );
 
 		/* alloc temp string */
-		dst = fb_hStrAllocTemp( NULL, len );
+		dst = fb_hStrAllocTemp_NoLock( NULL, len );
 	}
 	else
 		dst = NULL;
@@ -78,7 +78,7 @@ FBCALL FBSTRING *fb_UCASE ( FBSTRING *src )
 		dst = &fb_strNullDesc;
 
 	/* del if temp */
-	fb_hStrDelTemp( src );
+	fb_hStrDelTemp_NoLock( src );
 
 	FB_STRUNLOCK();
 

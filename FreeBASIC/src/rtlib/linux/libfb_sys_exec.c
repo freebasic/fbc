@@ -50,8 +50,6 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 	pid_t	pid;
 	int		status;
 
-	FB_STRLOCK();
-	
 	if( (program != NULL) && (program->data != NULL) )
 	{
 		if( (args == NULL) || (args->data == NULL) )
@@ -102,9 +100,11 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 	}
 
 	/* del if temp */
-	fb_hStrDelTemp( args );
-	fb_hStrDelTemp( program );
-	
+	FB_STRLOCK();
+
+	fb_hStrDelTemp_NoLock( args );
+	fb_hStrDelTemp_NoLock( program );
+
 	FB_STRUNLOCK();
 
 	return res;

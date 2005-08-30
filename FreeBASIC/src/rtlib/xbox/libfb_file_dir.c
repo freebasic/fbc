@@ -163,8 +163,6 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 	char		*name, *p;
 	struct stat	info;
 
-	FB_STRLOCK();
-
 	len = FB_STRSIZE( filespec );
 	name = NULL;
 
@@ -238,11 +236,14 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 			name = find_next( );
 	}
 
+
+	FB_STRLOCK();
+
 	/* store filename if found */
 	if( name )
 	{
         len = strlen( name );
-        res = fb_hStrAllocTemp( NULL, len );
+        res = fb_hStrAllocTemp_NoLock( NULL, len );
 		if( res )
 		{
 			fb_hStrCopy( res->data, name, len );
@@ -253,7 +254,7 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 	else
 		res = &fb_strNullDesc;
 
-	fb_hStrDelTemp( filespec );
+	fb_hStrDelTemp_NoLock( filespec );
 
 	FB_STRUNLOCK();
 

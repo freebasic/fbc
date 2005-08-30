@@ -43,17 +43,18 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
 	FB_LOCK();
 
     handle = FB_FILE_TO_HANDLE(fnum);
-    if( !FB_HANDLE_USED(handle) ) {
+    if( !FB_HANDLE_USED(handle) )
+    {
 		FB_UNLOCK();
 		return &fb_strNullDesc;
 	}
 
-	FB_STRLOCK();
-
     dst = fb_hStrAllocTemp( NULL, bytes );
-    if( dst!=NULL ) {
+    if( dst!=NULL )
+    {
         size_t read_count = 0;
-        if( FB_HANDLE_IS_SCREEN(handle) ) {
+        if( FB_HANDLE_IS_SCREEN(handle) )
+        {
             dst->data[0] = 0;
             while( read_count!=bytes ) {
                 len = bytes - read_count;
@@ -67,7 +68,9 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
                 read_count += len;
                 dst->data[read_count] = 0;
             }
-        } else {
+        }
+        else
+        {
             len = bytes;
             res = fb_FileGetDataEx( handle,
                                     0,
@@ -82,19 +85,22 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
             dst->data[read_count] = '\0';
             fb_hStrSetLength( dst, read_count );
         }
-    } else {
+    }
+    else
+    {
         res = FB_RTERROR_OUTOFMEM;
     }
 
-    if( res != FB_RTERROR_OK ) {
-        if( dst != NULL ) {
-            fb_hStrDelTempDesc( dst );
+    if( res != FB_RTERROR_OK )
+    {
+        if( dst != NULL )
+        {
+            fb_hStrDelTemp( dst );
         }
 
         dst = &fb_strNullDesc;
     }
 
-    FB_STRUNLOCK();
     FB_UNLOCK();
 
     return dst;

@@ -35,7 +35,7 @@
 static void close_dir ( void )
 {
 	FB_DIRCTX *ctx = (FB_DIRCTX *)FB_TLSGET(fb_dirctx);
-	
+
 	closedir( ctx->dir );
 	ctx->in_use = FALSE;
 }
@@ -71,7 +71,7 @@ static int match_spec( char *name )
 	char *spec;
 
 	spec = ctx->filespec;
-	
+
 	while( ( *spec ) || ( *name ) )
 	{
 		switch( *spec )
@@ -147,8 +147,6 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 	char *name, *p;
 	struct stat	info;
 
-	FB_STRLOCK();
-	
 	len = FB_STRSIZE( filespec );
 	name = NULL;
 
@@ -192,7 +190,7 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 			/* compatibility convertions */
 			if( (!strcmp( ctx->filespec, "*.*" )) || (!strcmp( ctx->filespec, "*." )) )
 				strcpy( ctx->filespec, "*" );
-			
+
 			if( (attrib & 0x10) == 0 )
 				attrib |= 0x20;
 			ctx->attrib = attrib;
@@ -226,11 +224,13 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 			name = find_next( );
 	}
 
+	FB_STRLOCK();
+
 	/* store filename if found */
 	if( name )
 	{
         len = strlen( name );
-        res = fb_hStrAllocTemp( NULL, len );
+        res = fb_hStrAllocTemp_NoLock( NULL, len );
 		if( res )
 		{
 			fb_hStrCopy( res->data, name, len );
@@ -242,8 +242,8 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 	else
 		res = &fb_strNullDesc;
 
-	fb_hStrDelTemp( filespec );
-	
+	fb_hStrDelTemp_NoLock( filespec );
+
 	FB_STRUNLOCK();
 
 	return res;

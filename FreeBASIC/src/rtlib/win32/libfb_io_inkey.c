@@ -31,26 +31,34 @@ FBSTRING *fb_ConsoleInkey( void )
 {
 	FBSTRING 	 *res;
     int  key = fb_hConsoleGetKey( TRUE );
-    FB_STRLOCK();
-    if( key==-1 ) {
+
+    if( key==-1 )
+    {
         res = &fb_strNullDesc;
-    } else if( key > 255 ) {
+    }
+    else if( key > 255 )
+    {
         res = fb_hStrAllocTemp( NULL, 2 );
-        if( res!=NULL ) {
+        if( res!=NULL )
+        {
             res->data[0] = FB_EXT_CHAR;
             res->data[1] = (key >> 8) & 0xFF;
             res->data[2] = 0;
         }
-    } else {
+    }
+    else
+    {
         res = fb_hStrAllocTemp( NULL, 1 );
-        if( res!=NULL ) {
+        if( res!=NULL )
+        {
             res->data[0] = key & 0xFF;
             res->data[1] = 0;
         }
     }
-    FB_STRUNLOCK();
+
     if( res==NULL )
         res = &fb_strNullDesc;
+
 	return res;
 }
 

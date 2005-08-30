@@ -34,21 +34,21 @@ FBCALL FBSTRING *fb_GetEnviron ( FBSTRING *varname )
 	char 		*tmp;
 	int			len;
 
-	FB_STRLOCK();
-		
 	if( (varname != NULL) && (varname->data != NULL) )
 		tmp = getenv( varname->data );
 	else
 		tmp = NULL;
 
+	FB_STRLOCK();
+
 	if( tmp != NULL )
 	{
         len = strlen( tmp );
-        dst = fb_hStrAllocTemp( NULL, len );
+        dst = fb_hStrAllocTemp_NoLock( NULL, len );
 		if( dst != NULL )
 		{
-			fb_hStrCopy( dst->data, tmp, len );		
-		} 
+			fb_hStrCopy( dst->data, tmp, len );
+		}
 		else
 			dst = &fb_strNullDesc;
 	}
@@ -56,7 +56,7 @@ FBCALL FBSTRING *fb_GetEnviron ( FBSTRING *varname )
 		dst = &fb_strNullDesc;
 
 	/* del if temp */
-	fb_hStrDelTemp( varname );
+	fb_hStrDelTemp_NoLock( varname );
 
 	FB_STRUNLOCK();
 
@@ -68,8 +68,6 @@ FBCALL FBSTRING *fb_GetEnviron ( FBSTRING *varname )
 FBCALL int fb_SetEnviron ( FBSTRING *str )
 {
 	int res = 0;
-
-	FB_STRLOCK();
 
 	if( (str != NULL) && (str->data != NULL) )
 	{
@@ -83,8 +81,6 @@ FBCALL int fb_SetEnviron ( FBSTRING *str )
 	/* del if temp */
 	fb_hStrDelTemp( str );
 
-	FB_STRUNLOCK();
-		
 	return res;
 }
 

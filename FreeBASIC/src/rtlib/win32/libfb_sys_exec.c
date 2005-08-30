@@ -43,14 +43,11 @@ FBCALL int fb_hExec ( FBSTRING *program, FBSTRING *args, int do_wait )
     size_t  len_program;
 #endif
 
-    FB_STRLOCK();
-
     got_program = (program != NULL) && (program->data != NULL);
 
     if( !got_program ) {
         fb_hStrDelTemp( args );
         fb_hStrDelTemp( program );
-        FB_STRUNLOCK();
         return -1;
     }
 
@@ -86,8 +83,10 @@ FBCALL int fb_hExec ( FBSTRING *program, FBSTRING *args, int do_wait )
     arguments[len_program + len_arguments + 1] = 0;
 #endif
 
-	fb_hStrDelTemp( args );
-    fb_hStrDelTemp( program );
+	FB_STRLOCK();
+
+	fb_hStrDelTemp_NoLock( args );
+    fb_hStrDelTemp_NoLock( program );
 
     FB_STRUNLOCK();
 

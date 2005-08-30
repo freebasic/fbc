@@ -32,8 +32,6 @@ static void hCV( FBSTRING *str, int len, void *num )
 {
 	int	i;
 
-	FB_STRLOCK();
-
 	if( (str->data != NULL) && (FB_STRSIZE( str ) == len) )
 	{
 		for( i = 0; i < len; i++ )
@@ -42,8 +40,6 @@ static void hCV( FBSTRING *str, int len, void *num )
 
 	/* del if temp */
 	fb_hStrDelTemp( str );
-
-	FB_STRUNLOCK();
 }
 
 /*:::::*/
@@ -56,7 +52,7 @@ FBCALL double fb_CVD ( FBSTRING *str )
 
 	num = 0.0;
 	hCV( str, sizeof( double ), &num );
-	
+
 	return num;
 }
 
@@ -122,8 +118,6 @@ static FBSTRING *hMK( int len, void *num )
 	int	i;
 	FBSTRING *dst;
 
-	FB_STRLOCK();
-
 	/* alloc temp string */
     dst = fb_hStrAllocTemp( NULL, len );
 	if( dst != NULL )
@@ -137,8 +131,6 @@ static FBSTRING *hMK( int len, void *num )
 	else
 		dst = &fb_strNullDesc;
 
-	FB_STRUNLOCK();
-	
 	return dst;
 }
 

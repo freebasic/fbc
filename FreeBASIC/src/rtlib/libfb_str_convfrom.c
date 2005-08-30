@@ -75,8 +75,6 @@ FBCALL double fb_VAL ( FBSTRING *str )
 	if( str == NULL )
 	    return 0.0;
 
-	FB_STRLOCK();
-
 	if( (str->data == NULL) || (FB_STRSIZE( str ) == 0) )
 		val = 0.0;
 	else
@@ -84,8 +82,6 @@ FBCALL double fb_VAL ( FBSTRING *str )
 
 	/* del if temp */
 	fb_hStrDelTemp( str );
-
-	FB_STRUNLOCK();
 
 	return val;
 }

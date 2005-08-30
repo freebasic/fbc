@@ -125,8 +125,6 @@ int fb_FileOpenVfsEx( FB_FILE *handle,
     char *filename;
     size_t filename_length;
 
-	FB_STRLOCK();
-
 	/* copy file name */
     filename_length = FB_STRSIZE( str_filename );
     filename = (char*) alloca( filename_length + 1 );
@@ -135,8 +133,6 @@ int fb_FileOpenVfsEx( FB_FILE *handle,
 
 	/* del if temp */
 	fb_hStrDelTemp( str_filename );
-
-    FB_STRUNLOCK();
 
     return fb_FileOpenVfsRawEx( handle, filename, filename_length,
                                 mode, access, lock, len, pfnOpen );

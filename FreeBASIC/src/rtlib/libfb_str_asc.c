@@ -37,18 +37,14 @@ FBCALL unsigned int fb_ASC ( FBSTRING *str, int pos )
 	if( str == NULL )
 		return 0;
 
-	FB_STRLOCK();
-	
 	len = FB_STRSIZE( str );
 	if( (str->data == NULL) || (len == 0) || (pos <= 0) || (pos > len) )
 		a = 0;
 	else
 		a = (unsigned char)str->data[pos-1];
-	
+
 	/* del if temp */
 	fb_hStrDelTemp( str );
-
-	FB_STRUNLOCK();
 
 	return a;
 }

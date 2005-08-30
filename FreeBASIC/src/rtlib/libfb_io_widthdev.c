@@ -93,15 +93,11 @@ FBCALL int fb_WidthDev( FBSTRING *dev, int width )
 
     FB_UNLOCK();
 
-    FB_STRLOCK();
-
     /* */
     size = FB_STRSIZE(dev);
     device = alloca(size + 1);
     memcpy( device, dev->data, size );
     device[size] = 0;
-
-    FB_STRUNLOCK();
 
     /* make the name uppercase */
     for( i=0; i!=size; ++i ) {
@@ -109,7 +105,7 @@ FBCALL int fb_WidthDev( FBSTRING *dev, int width )
         if( islower(ch) )
             device[i] = (char) toupper(ch);
     }
-	
+
     FB_LOCK();
 
     /* Search list of devices for the requested device name */

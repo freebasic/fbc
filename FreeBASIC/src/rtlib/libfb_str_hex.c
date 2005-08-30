@@ -39,8 +39,6 @@ static FBSTRING *hHEX ( unsigned int num, int len )
 	char		 *buf;
 	int			 i;
 
-	FB_STRLOCK();
-
 	/* alloc temp string */
     dst = fb_hStrAllocTemp( NULL, len * 2 );
 	if( dst != NULL )
@@ -53,7 +51,7 @@ static FBSTRING *hHEX ( unsigned int num, int len )
 		else
 		{
 			num <<= (32 - (len*8));
-	
+
 			for( i = 0; i < len*2; i++, num <<= 4 )
 				if( num > 0x0FFFFFFF )
 					break;
@@ -61,19 +59,17 @@ static FBSTRING *hHEX ( unsigned int num, int len )
 			for( ; i < len*2; i++, num <<= 4 )
 				if( num > 0x0FFFFFFF )
 					*buf++ = hex_table[(num & 0xF0000000) >> 28];
-				else 
+				else
 					*buf++ = '0';
 		}
-		
+
 		/* add null-term */
 		*buf = '\0';
-		
+
         fb_hStrSetLength( dst, buf - dst->data );
 	}
 	else
 		dst = &fb_strNullDesc;
-
-	FB_STRUNLOCK();
 
 	return dst;
 }

@@ -40,8 +40,6 @@ int fb_FileGetStrEx( FB_FILE *handle, long pos, void *str, int str_len )
     if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
-	FB_STRLOCK();
-
     /* get string len */
 	FB_STRSETUP_DYN( str, str_len, data, len );
 
@@ -56,8 +54,6 @@ int fb_FileGetStrEx( FB_FILE *handle, long pos, void *str, int str_len )
 	/* del if temp */
 	if( str_len == -1 )
 		fb_hStrDelTemp( (FBSTRING *)str );		/* will free the temp desc if fix-len passed */
-
-	FB_STRUNLOCK();
 
 	return res;
 }

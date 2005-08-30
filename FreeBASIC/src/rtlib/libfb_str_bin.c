@@ -49,7 +49,7 @@ static void hToBin( unsigned int num, char *dst, int len )
 			else
 				*dst++ = '0';
 	}
-	
+
 	/* add null-term */
 	*dst = '\0';
 
@@ -60,8 +60,6 @@ static void hToBin( unsigned int num, char *dst, int len )
 static FBSTRING *hBIN ( unsigned int num, int len )
 {
 	FBSTRING 	*dst;
-
-	FB_STRLOCK();
 
 	/* alloc temp string */
     dst = fb_hStrAllocTemp( NULL, len * 8 );
@@ -77,8 +75,6 @@ static FBSTRING *hBIN ( unsigned int num, int len )
 	}
 	else
 		dst = &fb_strNullDesc;
-
-	FB_STRUNLOCK();
 
 	return dst;
 }

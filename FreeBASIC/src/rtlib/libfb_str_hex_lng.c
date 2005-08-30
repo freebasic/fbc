@@ -21,7 +21,7 @@
  * str_hex_lng.c -- hex$ routine for long long's
  *
  * chng: apr/2005 written [v1ctor]
- *       jul/2005 rewritten to use consistent case across platforms [DrV] 
+ *       jul/2005 rewritten to use consistent case across platforms [DrV]
  *
  */
 
@@ -38,15 +38,13 @@ FBCALL FBSTRING *fb_HEX_l ( unsigned long long num )
 	char		*buf;
 	int			i;
 
-	FB_STRLOCK();
-
 	/* alloc temp string */
     dst = fb_hStrAllocTemp( NULL, sizeof( long long ) * 2 );
 	if( dst != NULL )
 	{
 		/* convert */
 		buf = dst->data;
-		
+
 		if( num == 0ULL )
 			*buf++ = '0';
 		else
@@ -54,14 +52,14 @@ FBCALL FBSTRING *fb_HEX_l ( unsigned long long num )
 			for( i = 0; i < sizeof( long long )*2; i++, num <<= 4 )
 				if( num > 0x0FFFFFFFFFFFFFFFULL )
 					break;
-	
+
 			for( ; i < sizeof( long long )*2; i++, num <<= 4 )
 				if( num > 0x0FFFFFFFFFFFFFFFULL )
 					*buf++ = hex_table[(num & 0xF000000000000000ULL) >> 60];
 				else
 					*buf++ = '0';
 		}
-		
+
 		/* add null-term */
 		*buf = '\0';
 
@@ -69,8 +67,6 @@ FBCALL FBSTRING *fb_HEX_l ( unsigned long long num )
 	}
 	else
 		dst = &fb_strNullDesc;
-
-	FB_STRUNLOCK();
 
 	return dst;
 }

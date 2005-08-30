@@ -84,8 +84,6 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
     char		*name;
     int         handle_ok;
 
-	FB_STRLOCK();
-
 	len = FB_STRSIZE( filespec );
 	name = NULL;
 
@@ -94,7 +92,7 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 		ctx = (FB_DIRCTX *)calloc(1, sizeof(FB_DIRCTX));
 		FB_TLSSET(fb_dirctx, ctx);
 	}
-		
+
 	if( len > 0 )
 	{
 		/* findfirst */
@@ -112,7 +110,7 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 		{
 			/* Handle any other possible bits different Windows versions could return */
 			ctx->attrib = attrib | 0xFFFFFF00;
-			
+
 			if( (attrib & 0x10) == 0 )
 				ctx->attrib |= 0x20;
 #ifdef TARGET_WIN32
@@ -137,11 +135,13 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 			name = find_next( );
 	}
 
+	FB_STRLOCK();
+
 	/* store filename if found */
 	if( name )
 	{
         len = strlen( name );
-        res = fb_hStrAllocTemp( NULL, len );
+        res = fb_hStrAllocTemp_NoLock( NULL, len );
 		if( res )
 		{
 			fb_hStrCopy( res->data, name, len );
@@ -152,7 +152,7 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 	else
 		res = &fb_strNullDesc;
 
-	fb_hStrDelTemp( filespec );
+	fb_hStrDelTemp_NoLock( filespec );
 
 	FB_STRUNLOCK();
 

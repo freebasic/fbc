@@ -35,19 +35,15 @@
 FBCALL int fb_MkDir( FBSTRING *path )
 {
 	int res;
-	
-	FB_STRLOCK();
-	
+
 #ifdef TARGET_WIN32
 	res = _mkdir( path->data );
 #else
 	res = mkdir( path->data, 00644 );
 #endif
-	
+
 	/* del if temp */
 	fb_hStrDelTemp( path );
-
-	FB_STRUNLOCK();
 
 	return res;
 }
