@@ -37,8 +37,6 @@ FBCALL int fb_DateTimeParse( FBSTRING *s,
     int result = FALSE;
     size_t length, text_len;
 
-    FB_STRLOCK();
-
     text = s->data;
     text_len = FB_STRSIZE( s );
 
@@ -89,8 +87,6 @@ FBCALL int fb_DateTimeParse( FBSTRING *s,
             }
         }
     }
-
-    FB_STRUNLOCK();
 
     return result;
 }

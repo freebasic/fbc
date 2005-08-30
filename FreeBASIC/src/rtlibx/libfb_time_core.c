@@ -107,7 +107,7 @@ void fb_hNormalizeDate( int *pDay, int *pMonth, int *pYear )
 int fb_hTimeGetIntervalType( FBSTRING *interval )
 {
     int result = FB_TIME_INTERVAL_INVALID;
-    FB_STRLOCK();
+
     if( interval!=NULL && interval->data!=NULL ) {
         if( strcmp( interval->data, "yyyy" )==0 ) {
             result = FB_TIME_INTERVAL_YEAR;
@@ -131,6 +131,6 @@ int fb_hTimeGetIntervalType( FBSTRING *interval )
             result = FB_TIME_INTERVAL_SECOND;
         }
     }
-    FB_STRUNLOCK();
+
     return result;
 }

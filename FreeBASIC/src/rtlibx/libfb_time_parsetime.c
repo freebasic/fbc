@@ -85,8 +85,6 @@ int fb_hTimeParse( const char *text, size_t text_len, int *pHour, int *pMinute, 
     int hour = 0, minute = 0, second = 0;
     char *endptr;
 
-    FB_STRLOCK();
-
     hour = strtol( text, &endptr, 10 );
     if( hour >= 0 && hour < 24 && endptr!=text) {
         int is_ampm_hour = ( hour >= 1 && hour <= 12 );
@@ -145,8 +143,6 @@ int fb_hTimeParse( const char *text, size_t text_len, int *pHour, int *pMinute, 
         /* Update used length */
         length = text - text_start;
     }
-
-    FB_STRUNLOCK();
 
     if( result ) {
         if( pHour )

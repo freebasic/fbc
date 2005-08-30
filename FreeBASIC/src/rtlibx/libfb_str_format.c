@@ -154,8 +154,6 @@ FBSTRING *fb_hBuildDouble ( double num,
     LenDecPoint = ( ( LenFrac!=0 ) ? 1 : 0 );
     LenTotal = LenSign + LenFix + LenDecPoint + LenFrac;
 
-	FB_STRLOCK();
-
 	/* alloc temp string */
     dst = fb_hStrAllocTemp( NULL, LenTotal );
 	if( dst != NULL )
@@ -174,8 +172,6 @@ FBSTRING *fb_hBuildDouble ( double num,
 	}
 	else
 		dst = &fb_strNullDesc;
-
-    FB_STRUNLOCK();
 
 	return dst;
 }
@@ -1066,7 +1062,6 @@ FBCALL FBSTRING *fb_hStrFormat ( double value,
         dst = fb_hBuildDouble( value, chDecimalPoint, 0 );
     } else {
         FormatMaskInfo info;
-        FB_STRLOCK();
 
         /* Extract all information from the mask string */
         if( !fb_hProcessMask( NULL,
@@ -1074,14 +1069,12 @@ FBCALL FBSTRING *fb_hStrFormat ( double value,
                               value, &info,
                               chThousandsSep, chDecimalPoint,
                               chDateSep, chTimeSep ) ) {
-            FB_STRUNLOCK();
             return dst;
         }
 
         dst = fb_hStrAllocTemp( NULL, info.length_min + info.length_opt );
         if( dst == NULL ) {
             fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
-            FB_STRUNLOCK();
             return &fb_strNullDesc;
         }
 
@@ -1091,8 +1084,6 @@ FBCALL FBSTRING *fb_hStrFormat ( double value,
                          value, &info,
                          chThousandsSep, chDecimalPoint,
                          chDateSep, chTimeSep );
-
-        FB_STRUNLOCK();
     }
 
     return dst;
@@ -1103,10 +1094,10 @@ FBCALL FBSTRING *fb_StrFormat ( double value, FBSTRING *mask )
 {
     FBSTRING *dst;
 
-    FB_STRLOCK();
     dst = fb_hStrFormat( value, mask->data, FB_STRSIZE(mask) );
+
+	/* del if temp */
 	fb_hStrDelTemp( mask );
-    FB_STRUNLOCK();
 
     return dst;
 }

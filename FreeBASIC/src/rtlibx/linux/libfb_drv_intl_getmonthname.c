@@ -57,14 +57,10 @@ FBSTRING *fb_DrvIntlGetMonthName( int month, int short_names )
 
     name_len = strlen( pszName );
 
-    FB_STRLOCK();
-
     result = fb_hStrAllocTemp( NULL, name_len );
     if( result!=NULL ) {
         FB_MEMCPY( result->data, pszName, name_len + 1 );
     }
-
-    FB_STRUNLOCK();
 
     FB_UNLOCK();
 

@@ -53,8 +53,6 @@ FBSTRING *fb_DrvIntlGetMonthName( int month, int short_names )
 
     name_len = strlen(pszName);
 
-    FB_STRLOCK();
-
     result = fb_hStrAllocTemp( NULL, name_len );
     if( result!=NULL ) {
         int target_cp = ( FB_GFX_ACTIVE() ? FB_GFX_GET_CODEPAGE() : GetConsoleCP() );
@@ -65,8 +63,6 @@ FBSTRING *fb_DrvIntlGetMonthName( int month, int short_names )
                                             target_cp );
         }
     }
-
-    FB_STRUNLOCK();
 
     free( pszName );
 
