@@ -21,7 +21,7 @@ private function IsNumberedDevice( filename as string, _
 	        ch = filename[i]
         wend
         ' &H3A = ':'
-        if ch=&H3A then function = index
+        if ch=&H3A then return index
     end if
     function = -1
 end function
