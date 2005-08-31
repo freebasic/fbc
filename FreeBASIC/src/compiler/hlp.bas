@@ -795,7 +795,7 @@ function hCreateOvlProcAlias( byval symbol as string, _
 
     	aname += suffixTB( typ )
     	if( (typ = FB_SYMBTYPE_USERDEF) or (typ = FB_SYMBTYPE_ENUM) ) then
-    		aname += symbGetName( argtail->subtype )
+    		aname += symbGetOrgName( argtail->subtype )
     	end if
 
     	argtail = argtail->prev
