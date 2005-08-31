@@ -2326,6 +2326,44 @@ private function hAddOvlProc( byval proc as FBSYMBOL ptr, _
 end function
 
 '':::::
+function symbProcIsOverloadOf( byval proc as FBSYMBOL ptr, _
+							   byval parent as FBSYMBOL ptr ) as integer static
+
+	dim as FBSYMBOL ptr f
+
+	'' no parent?
+	if( parent = NULL ) then
+		return FALSE
+	end if
+
+	'' same?
+	if( proc = parent ) then
+		return TRUE
+	end if
+
+	'' not overloaded?
+	if( not symbIsOverloaded( parent ) ) then
+		return FALSE
+	end if
+
+	'' for each overloaded proc..
+	f = parent->proc.ovl.next
+	do while( f <> NULL )
+
+		'' same?
+		if( proc = f ) then
+			return TRUE
+		end if
+
+		f = f->proc.ovl.next
+	loop
+
+	'' none found..
+	return FALSE
+
+end function
+
+'':::::
 private function hSetupProc( byval sym as FBSYMBOL ptr, _
 							 byval id as zstring ptr, _
 							 byval aliasname as zstring ptr, _

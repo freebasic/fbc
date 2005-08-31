@@ -4296,12 +4296,18 @@ function cProcCallOrAssign as integer
 
 			'' ID '=' Expression
 			else
+                '' check if name is valid (or if overloaded)
+				if( not symbProcIsOverloadOf( env.currproc, s ) ) then
+					hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB, TRUE )
+					exit function
+				end if
+
 				if( not cExpression( expr ) ) then
 					hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 					exit function
 				end if
 
-        		return hAssignFunctResult( s, expr )
+        		return hAssignFunctResult( env.currproc, expr )
 			end if
 
 		end if

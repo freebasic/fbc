@@ -305,6 +305,8 @@ declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
 					  						  byval sym2 as FBSYMBOL ptr ) as integer
 
+declare function 	symbProcIsOverloadOf	( byval proc as FBSYMBOL ptr, _
+							   				  byval parent as FBSYMBOL ptr ) as integer
 ''
 '' getters and setters as macros
 ''
