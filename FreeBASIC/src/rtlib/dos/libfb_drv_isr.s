@@ -103,7 +103,10 @@ FUNC(\INT_HANDLER_NAME)
         pop es
         pop ds
         
-        /* TRUE = continue with old ISR */
+        /* FALSE = continue with old ISR 
+         * TRUE  = don't continue with old ISR
+         *       = signal that ISR was processed completely
+         */
         test eax, eax
 
         /* Restoring the pointer to the old ISR address ... */
