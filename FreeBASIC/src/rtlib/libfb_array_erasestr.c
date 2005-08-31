@@ -46,13 +46,17 @@ int fb_hArrayFreeVarLenStrs( FBARRAY *array, int base )
     for( i = 1; i < array->dimensions; i++, d++ )
     	elements *= d->elements;
 
+	FB_STRLOCK();
+
 	while( elements != 0 )
 	{
 		--elements;
 		if( p->data != NULL )
-			fb_StrDelete( p );
+			fb_StrDelete_NoLock( p );
 		++p;
 	}
+
+	FB_STRUNLOCK();
 
 	return FB_TRUE;
 }
