@@ -25,7 +25,7 @@
 #
 
 		.intel_syntax noprefix
-		.arch i386
+/*		.arch i386 */ /* This option is only for ALPHA */
 
 
 .section .text

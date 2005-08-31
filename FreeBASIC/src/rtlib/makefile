@@ -132,10 +132,12 @@ $(objpath)/%.o : $(OSDEPPATH)/%.c $(headers)
 	$(CC) -c $(CFLAGS) $< -o $@
 
 $(objpath)/%.o : %.s $(headers)
-	$(AS) $< -o $@
+#	$(AS) $< -o $@
+	$(CC) -x assembler-with-cpp -c $(CFLAGS) $< -o $@
 
 $(objpath)/%.o : $(OSDEPPATH)/%.s $(headers)
-	$(AS) $< -o $@
+#	$(AS) $< -o $@
+	$(CC) -x assembler-with-cpp -c $(CFLAGS) $< -o $@
 
 $(lib) : $(objects) $(osdepobjs)
 	$(AR) cr $(lib) $(objects) $(osdepobjs)

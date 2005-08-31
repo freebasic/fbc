@@ -47,4 +47,19 @@ typedef struct _FB_DOS_TXTMODE {
 
 extern FB_DOS_TXTMODE fb_dos_txtmode;
 
+typedef int (*FnIntHandler)(unsigned irq_number);
+
+int fb_isr_set( unsigned irq_number,
+                FnIntHandler pfnIntHandler,
+                size_t fn_size );
+
+int fb_isr_reset( unsigned irq_number );
+
+/* To allow recursive CLI/STI */
+int fb_dos_cli( void );
+int fb_dos_sti( void );
+
+int fb_dos_lock_mem(const void *address, size_t size);
+int fb_dos_unlock_mem(const void *address, size_t size);
+
 #endif
