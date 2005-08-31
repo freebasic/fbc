@@ -55,6 +55,8 @@ int fb_isr_set( unsigned irq_number,
 
 int fb_isr_reset( unsigned irq_number );
 
+FnIntHandler fb_isr_get( unsigned irq_number );
+
 /* To allow recursive CLI/STI */
 int fb_dos_cli( void );
 int fb_dos_sti( void );

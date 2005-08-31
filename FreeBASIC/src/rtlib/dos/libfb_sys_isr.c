@@ -271,3 +271,9 @@ int fb_isr_reset( unsigned irq_number )
 
     return TRUE;
 }
+
+FnIntHandler fb_isr_get( unsigned irq_number )
+{
+    assert( irq_number < 16 );
+    return fb_hDrvIntHandler[irq_number];
+}
