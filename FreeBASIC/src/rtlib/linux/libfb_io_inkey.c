@@ -174,8 +174,6 @@ int fb_hGetCh(int remove)
 {
 	int k;
 
-	fb_hResize();
-	
 	k = get_input();
 	if (k >= 0) {
 		key_buffer[key_tail] = k;
@@ -201,6 +199,8 @@ FBSTRING *fb_ConsoleInkey( void )
 	if (!fb_con.inited)
 		return &fb_strNullDesc;
 
+	fb_hResize();
+	
 	if ((ch = fb_hGetCh(TRUE)) >= 0) {
 		chars = 1;
 		if (ch & 0x100) {
@@ -232,6 +232,8 @@ int fb_ConsoleGetkey( void )
 	if (!fb_con.inited)
 		return fgetc(stdin);
 
+	fb_hResize();
+	
 	while ((k = fb_hGetCh(TRUE)) < 0)
 		;
 
@@ -245,6 +247,8 @@ int fb_ConsoleKeyHit( void )
 	if (!fb_con.inited)
 		return feof(stdin) ? FALSE : TRUE;
 
+	fb_hResize();
+	
 	return (fb_hGetCh(FALSE) < 0) ? 0 : 1;
 }
 
