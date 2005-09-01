@@ -118,7 +118,7 @@ sub test_timeserial
 end sub
 
 sub test_timevalue
-    dim as double  serial_time
+    dim as double  serial_time, calc_serial_time
 	dim as integer chk_hour, chk_minute, chk_second
     dim as integer want_ok, is_ok
     dim sTime as string
@@ -139,7 +139,9 @@ sub test_timevalue
 #endif
         if want_ok=1 then
             read chk_hour, chk_minute, chk_second
-	        ASSERT( serial_time = timeserial( chk_hour, chk_minute, chk_second ) )
+            ' Store result in a temporary variable to avoid rounding errors
+            calc_serial_time = timeserial( chk_hour, chk_minute, chk_second )
+	        ASSERT( serial_time = calc_serial_time )
         end if
 did_fail:
         on local error goto 0
