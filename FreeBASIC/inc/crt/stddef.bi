@@ -10,7 +10,13 @@
 #define __stddef_bi__
 
 type size_t as uinteger
-type wchar_t as integer
-type wint_t as uinteger
+
+#ifndef wchar_t
+type wchar_t as ushort
+#endif
+
+#ifndef wint_t
+type wint_t as ushort
+#endif
 
 #endif
