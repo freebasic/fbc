@@ -34,6 +34,11 @@
 #include <go32.h>
 #include <pc.h>
 
+typedef struct _FB_DOS_STACK_INFO {
+    void  *offset;
+    size_t size;
+} FB_DOS_STACK_INFO;
+
 static int isr_inited = FALSE;
 static size_t function_sizes[16] = { 0 };
 
@@ -41,7 +46,8 @@ static size_t function_sizes[16] = { 0 };
 extern char fb_hDrvIntHandler_start;
 extern __dpmi_paddr fb_hDrvIntHandler_OldIRQs[16];
 extern FnIntHandler fb_hDrvIntHandler[16];
-extern unsigned short fb_hDrvSelectors[4];
+extern FB_DOS_STACK_INFO fb_hDrvIntStacks[16];
+extern unsigned short fb_hDrvSelectors[5];
 void fb_hDrvIntHandler_PIC1(void);
 void fb_hDrvIntHandler_PIC2(void);
 extern char fb_hDrvIntHandler_end;
@@ -134,6 +140,7 @@ static int fb_isr_init(void)
     fb_hDrvSelectors[1] = _my_es();
     fb_hDrvSelectors[2] = _my_fs();
     fb_hDrvSelectors[3] = _my_gs();
+    fb_hDrvSelectors[4] = _my_ss();
 
     /* query DPMI version */
     if( __dpmi_get_version( &version )!=0 ) {
@@ -230,8 +237,10 @@ static int fb_isr_init(void)
 
 int fb_isr_set( unsigned irq_number,
                 FnIntHandler pfnIntHandler,
-                size_t fn_size )
+                size_t fn_size,
+                size_t stack_size )
 {
+    void *pStack;
     assert( irq_number < 16 );
 
     if( !fb_isr_init() )
@@ -243,9 +252,29 @@ int fb_isr_set( unsigned irq_number,
     if( fb_dos_lock_mem( pfnIntHandler, fn_size )!=0 )
         return FALSE;
 
+    if( stack_size!=0 ) {
+        if( stack_size < _go32_interrupt_stack_size )
+            stack_size = _go32_interrupt_stack_size;
+        if( stack_size < 512 )
+            stack_size = 512;
+
+        pStack = malloc( stack_size );
+        if( pStack==NULL )
+            return FALSE;
+
+        if( fb_dos_lock_mem( pStack, stack_size )!=0 ) {
+            free( pStack );
+            return FALSE;
+        }
+    } else {
+        pStack = NULL;
+    }
+
     fb_dos_cli();
     function_sizes[irq_number] = fn_size;
     fb_hDrvIntHandler[irq_number] = pfnIntHandler;
+    fb_hDrvIntStacks[irq_number].offset = pStack;
+    fb_hDrvIntStacks[irq_number].size   = stack_size;
     fb_dos_sti();
 
     return TRUE;
@@ -259,14 +288,25 @@ int fb_isr_reset( unsigned irq_number )
         return FALSE;
 
     if( fb_hDrvIntHandler[irq_number]!=NULL ) {
-        if( fb_dos_unlock_mem( fb_hDrvIntHandler[irq_number],
-                               function_sizes[irq_number] )!=0 )
-            return FALSE;
+        void *pStack;
+        size_t stack_size;
+        FnIntHandler pfnIntHandler;
+        size_t fn_size;
 
         fb_dos_cli();
+        pfnIntHandler = fb_hDrvIntHandler[irq_number];
+        fn_size = function_sizes[irq_number];
         fb_hDrvIntHandler[irq_number] = NULL;
         function_sizes[irq_number] = 0;
+
+        pStack = fb_hDrvIntStacks[irq_number].offset;
+        stack_size = fb_hDrvIntStacks[irq_number].size;
+        fb_hDrvIntStacks[irq_number].offset = NULL;
+        fb_hDrvIntStacks[irq_number].size = 0;
         fb_dos_sti();
+
+        fb_dos_unlock_mem( pfnIntHandler, fn_size );
+        fb_dos_unlock_mem( pStack, stack_size );
     }
 
     return TRUE;

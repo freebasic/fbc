@@ -51,7 +51,8 @@ typedef int (*FnIntHandler)(unsigned irq_number);
 
 int fb_isr_set( unsigned irq_number,
                 FnIntHandler pfnIntHandler,
-                size_t fn_size );
+                size_t fn_size,
+                size_t stack_size );
 
 int fb_isr_reset( unsigned irq_number );
 

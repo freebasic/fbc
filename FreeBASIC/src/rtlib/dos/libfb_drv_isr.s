@@ -21,9 +21,13 @@ FUNC(fb_hDrvIntHandler_OldIRQs)
 FUNC(fb_hDrvIntHandler)
         .fill 16, 4, 0
 
+/* This stores all ISR stack informations (position and size) */
+FUNC(fb_hDrvIntStacks)
+        .fill 16, 8, 0
+
 /* DS selector */
 FUNC(fb_hDrvSelectors)
-        .fill 4, 4, 0
+        .fill 5, 4, 0
 
 
 
@@ -77,14 +81,37 @@ FUNC(\INT_HANDLER_NAME)
         push gs
 
         /* Load the applications selectors */
-        mov eax, cs:[GLOBL(fb_hDrvSelectors)]
-        mov ds, ax
+        mov eax, cs:[GLOBL(fb_hDrvSelectors) + 12]
+        mov gs, ax
+        mov eax, cs:[GLOBL(fb_hDrvSelectors) + 8]
+        mov fs, ax
         mov eax, cs:[GLOBL(fb_hDrvSelectors) + 4]
         mov es, ax
-        mov eax, cs:[GLOBL(fb_hDrvSelectors)  + 8]
-        mov fs, ax
-        mov eax, cs:[GLOBL(fb_hDrvSelectors)  + 12]
-        mov gs, ax
+        mov eax, cs:[GLOBL(fb_hDrvSelectors)]
+        mov ds, ax
+        
+        /* Switch to user-stack */
+        mov edi, esp
+        mov ax, ss
+        nop
+        
+        lea esi, [GLOBL(fb_hDrvIntStacks) + ebx * 8]
+        mov ecx, [esi]        /* Stack offset */
+        test ecx, ecx
+        jz 3f                 /* OFFSET==0 -> no stack switch */
+
+        add ecx, [esi + 4]    /* Add stack size to stack offset */
+        
+        /* Set the new stack ...
+         * It seems to be legal to use the DS selector here ... */
+        mov si, ds
+        mov ss, si
+        mov esp, ecx
+        nop
+
+3:
+	push eax              /* Push old stack segment */
+        push edi              /* Push old stack offset */
 
         /* As a nice feature, the ISR gets the interrupt number as first
          * argument */
@@ -96,6 +123,13 @@ FUNC(\INT_HANDLER_NAME)
 
         /* Remove all arguments from stack */
         add esp, 4
+
+        /* Restore old stack segment/offset */
+        pop edi               /* Old stack offset */
+        pop edx               /* Old stack segment */
+        mov ss, dx
+        mov esp, edi
+        nop                   /* Might be required for some strange CPUs */
 
         /* Restore the selectors to the values they had at ISR entry */
         pop gs
