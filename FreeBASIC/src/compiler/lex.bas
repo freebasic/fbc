@@ -692,48 +692,20 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 	end select
 
 	if( not islong ) then
-		'' int to ascii
-		if( value = 0 ) then
-			*pnum = CHAR_0
-			pnum += 1
-			tlen += 1
-
-		else
-
-			'' convert to unsigned
-			if( (value and &h80000000) > 0 ) then
-				value = -value
-
-				isneg = TRUE
-				*pnum = CHAR_MINUS
-				pnum += 1
-				tlen += 1
-			end if
-
-			i = 0
-			do while( value > 0 )
-				tb(i) = value mod 10
-				i += 1
-				value \= 10
-			loop
-
-			do while( i > 0 )
-				i -= 1
-				*pnum = CHAR_0 + tb(i)
-				pnum += 1
-				tlen += 1
-			loop
+		if( value and &h80000000 ) then
+			isneg = TRUE
 		end if
-
+		*pnum = str$( value )
 	else
 		if( value64 < 0 ) then
 			isneg = TRUE
 		end if
 		*pnum = str$( value64 )
-		tlen = len( *pnum )
-		pnum += tlen
 	end if
-
+	
+	tlen = len( *pnum )
+	pnum += tlen
+	
 end sub
 
 '':::::
