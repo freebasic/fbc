@@ -813,7 +813,7 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 						   tlen as integer, _
 				   		   byval flags as LEXCHECK_ENUM ) static
 	dim as uinteger c
-	dim as integer isfloat, issigned, islong
+	dim as integer isfloat, issigned, islong, forcedsign
 	dim as zstring ptr pnum_start
 
 	isfloat    = FALSE
@@ -823,6 +823,7 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 	*pnum 	   = 0
 	pnum_start = pnum
 	tlen 	   = 0
+	forcedsign = FALSE
 
 	c = lexEatChar( )
 
@@ -943,6 +944,7 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 			case CHAR_UUPP, CHAR_ULOW
 				lexEatChar( )
 				issigned = FALSE
+				forcedsign = TRUE
 			end select
 
 			select case as const lexCurrentChar( )
@@ -954,6 +956,14 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 				if( (c = CHAR_LUPP) or (c = CHAR_LLOW) ) then
 					lexEatChar( )
 					islong = TRUE
+					'' restore sign if needed
+					if( not forcedsign ) then
+						if( *pnum_start > "2147483647" ) then
+							if( *pnum_start < "9223372036854775808" ) then
+								issigned = TRUE
+							end if
+						end if
+					end if
 				else
 					if( islong ) then
 						hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )

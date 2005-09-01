@@ -4114,10 +4114,20 @@ private sub hCONVConstEval64( byval dtype as integer, _
 		end if
 
 	case else
+		'' when expanding to 64bit, we must take care of signedness of source operand
+		
 		if( dtype = IR_DATATYPE_LONGINT ) then
-			v->v.value64 = clngint( v->v.valuei )
+			if( irIsSigned( v->dtype ) ) then
+				v->v.value64 = clngint( v->v.valuei )
+			else
+				v->v.value64 = clngint( cuint( v->v.valuei ) )
+			end if
 		else
-			v->v.value64 = culngint( v->v.valuei )
+			if( irIsSigned( v->dtype ) ) then
+				v->v.value64 = culngint( v->v.valuei )
+			else
+				v->v.value64 = culngint( cuint( v->v.valuei ) )
+			end if
 		end if
 
 	end select
