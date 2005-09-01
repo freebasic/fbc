@@ -47,10 +47,10 @@ void fb_ConsoleClear( int mode )
 	for (i = start; i <= end; i++) {
 		memset(fb_con.char_buffer + ((i - 1) * fb_con.w), ' ', fb_con.w);
 		memset(fb_con.attr_buffer + ((i - 1) * fb_con.w), fb_con.fg_color | (fb_con.bg_color << 4), fb_con.w);
-		fprintf(fb_con.f_out, "\e[%d;1H", i);
-		fputs("\e[2K", fb_con.f_out);
+		fb_hTermOut(SEQ_LOCATE, 0, i-1);
+		fb_hTermOut(SEQ_CLEOL, 0, 0);
 	}
-	fprintf(fb_con.f_out, "\e[%d;1H", start);
+	fb_hTermOut(SEQ_HOME, 0, 0);
 	fb_con.cur_y = start;
 	fb_con.cur_x = 1;
 }

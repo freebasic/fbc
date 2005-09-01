@@ -37,5 +37,5 @@ void fb_ConsoleViewUpdate(void)
 
 	fb_hResize();
 	
-	fprintf(fb_con.f_out, "\e[%d;%dr", fb_ConsoleGetTopRow() + 1, fb_ConsoleGetBotRow() + 1);
+	fb_hTermOut(SEQ_SCROLL_REGION, fb_ConsoleGetBotRow(), fb_ConsoleGetTopRow());
 }

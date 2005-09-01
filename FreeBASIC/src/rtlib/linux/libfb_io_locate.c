@@ -58,13 +58,13 @@ int fb_ConsoleLocate( int row, int col, int cursor )
 		fb_con.cur_y = y;
 	else
 		fb_con.cur_y = fb_con.h;
-	fprintf(fb_con.f_out, "\e[%d;%dH", y, x);
+	fb_hTermOut(SEQ_LOCATE, x-1, y-1);
 	if (cursor == 0) {
-		fputs("\e[?25l", fb_con.f_out);
+		fb_hTermOut(SEQ_HIDE_CURSOR, 0, 0);
 		visible = 0;
 	}
 	else if (cursor == 1) {
-		fputs("\e[?25h", fb_con.f_out);
+		fb_hTermOut(SEQ_SHOW_CURSOR, 0, 0);
 		visible = 0x10000;
 	}
 	
@@ -95,14 +95,20 @@ int fb_ConsoleGetY( void )
 /*:::::*/
 FBCALL void fb_ConsoleGetXY( int *col, int *row )
 {
-	int x = 0, y = 0;
+	int x = fb_con.cur_x, y = fb_con.cur_y;
 
 	if (fb_con.inited) {
 		/* Note we read reply from stdin, NOT from fb_con.f_in */
+		BG_LOCK();
+		
 		fflush(stdin);
-		fputs("\e[6n", fb_con.f_out);
-		if (fscanf(stdin, "\e[%d;%dR", &y, &x) != 2)
-			x = y = 0;
+		fb_hTermOut(SEQ_QUERY_CURSOR, 0, 0);
+		if (fscanf(stdin, "\e[%d;%dR", &y, &x) != 2) {
+			x = fb_con.cur_x;
+			y = fb_con.cur_y;
+		}
+		
+		BG_UNLOCK();
 	}
 	if (col)
 		*col = x;

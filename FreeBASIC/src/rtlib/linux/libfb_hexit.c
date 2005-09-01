@@ -43,20 +43,21 @@ void fb_hExitConsole( void )
 		if (fb_con.mouse_exit)
 			fb_con.mouse_exit();
 		BG_UNLOCK();
-
+		
 		bottom = fb_ConsoleGetMaxRow();
 		if ((fb_ConsoleGetTopRow() != 0) || (fb_ConsoleGetBotRow() != bottom - 1)) {
 			/* Restore scrolling region to whole screen and clear */
-			fprintf(fb_con.f_out, "\e[1;%dr", bottom);
-			fputs("\e[2J", fb_con.f_out);
+			fb_hTermOut(SEQ_SCROLL_REGION, bottom - 1, 0);
+			fb_hTermOut(SEQ_CLS, 0, 0);
+			fb_hTermOut(SEQ_HOME, 0, 0);
 		}
-		/* Restore latin1 charset */
-		fputs("\e(B", fb_con.f_out);
-		/* Restore default attributes and color */
-		fputs("\e[0m", fb_con.f_out);
-		/* Force cursor display */
-		fputs("\e[?25h", fb_con.f_out);
-		fflush(fb_con.f_out);
+		
+		/* Cleanup terminal */
+		if (fb_con.inited == INIT_CONSOLE)
+			fb_hTermOut(SEQ_EXIT_CHARSET, 0, 0);
+		fb_hTermOut(SEQ_RESET_COLOR, 0, 0);
+		fb_hTermOut(SEQ_SHOW_CURSOR, 0, 0);
+		fb_hTermOut(SEQ_EXIT_KEYPAD, 0, 0);
 		tcsetattr(fb_con.h_out, TCSAFLUSH, &fb_con.old_term_out);
 
 		/* Restore old console keyboard state */

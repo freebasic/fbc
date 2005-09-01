@@ -380,6 +380,10 @@ int fb_ConsoleMultikey(int scancode)
 			fb_con.keyboard_init = keyboard_init;
 			fb_con.keyboard_exit = keyboard_exit;
 			fb_con.keyboard_handler = keyboard_handler;
+			/* Let the handler execute at least once to fill in states */
+			pthread_mutex_unlock(&fb_con.bg_mutex);
+			usleep(50000);
+			pthread_mutex_lock(&fb_con.bg_mutex);
 		}
 	}
 	res = key_state[scancode & 0x7F];

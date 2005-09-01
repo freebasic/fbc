@@ -92,7 +92,7 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 			else
 				res = -1;
 		}
-		fb_hInitConsole(fb_con.inited);
+		fb_hInitConsole();
 		free(cmdline);
 		for (i = 1; i < argc; i++)
 			free(argv[i]);

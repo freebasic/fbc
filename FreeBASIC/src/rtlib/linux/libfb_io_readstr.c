@@ -60,8 +60,8 @@ char *fb_ConsoleReadStr( char *buffer, int len )
 					if (y <= 0)
 						x = y = 1;
 				}
-				fprintf(fb_con.f_out, "\e[%d;%dH", y, x);
-				fputs("\e[1P", fb_con.f_out);
+				fb_hTermOut(SEQ_LOCATE, x-1, y-1);
+				fb_hTermOut(SEQ_DEL_CHAR, 0, 0);
 				pos--;
 			}
 		}

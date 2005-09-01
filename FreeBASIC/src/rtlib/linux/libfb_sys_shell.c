@@ -37,7 +37,7 @@ FBCALL int fb_Shell ( FBSTRING *program )
 	if( (program) && (program->data)) {
 		fb_hExitConsole();
 		errcode = system( program->data );
-		fb_hInitConsole( fb_con.inited );
+		fb_hInitConsole();
 	}
 
 	/* del if temp */

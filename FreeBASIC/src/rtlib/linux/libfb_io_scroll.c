@@ -32,8 +32,5 @@
 /*:::::*/
 void fb_ConsoleScroll(int nrows)
 {
-	if (!fb_con.inited)
-		return;
-	
-	fprintf(fb_con.f_out, "\e[%dS", nrows);
+	fb_hTermOut(SEQ_SCROLL, 0, nrows);
 }

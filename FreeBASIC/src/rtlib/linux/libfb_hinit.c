@@ -43,11 +43,8 @@ FBCONSOLE fb_con;
 
 typedef void (*SIGHANDLER)(int);
 static SIGHANDLER old_sighandler[NSIG];
-static const char color_map[16]= { 0, 4, 2, 6, 1, 5, 3, 7, 8, 12, 10, 14, 9, 13, 11, 15 };
-static const unsigned char color[] =  { 0x00, 0x00, 0x00, 0x00, 0x00, 0xA8, 0x00, 0xA8, 0x00, 0x00, 0xA8, 0xA8,
-					0xA8, 0x00, 0x00, 0xA8, 0x00, 0xA8, 0xA8, 0x54, 0x00, 0xA8, 0xA8, 0xA8,
-					0x54, 0x54, 0x54, 0x54, 0x54, 0xFC, 0x54, 0xFC, 0x54, 0x54, 0xFC, 0xFC,
-					0xFC, 0x54, 0x54, 0xFC, 0x54, 0xFC, 0xFC, 0xFC, 0x54, 0xFC, 0xFC, 0xFC };
+static const char *seq[] = { "cm", "ho", "cs", "cl", "ce", "WS", "bl", "AF", "AB",
+							 "me", "md", "SF", "ve", "vi", "dc", "ks", "ke" };
 
 
 /*:::::*/
@@ -101,15 +98,13 @@ void fb_hResize()
 	struct winsize win;
 	int r, c, w, h;
 
-	fflush(stdout);
-
 	if ((!fb_con.inited) || (!fb_con.resized))
 		return;
 	
 	win.ws_row = 0xFFFF;
 	ioctl(fb_con.h_out, TIOCGWINSZ, &win);
 	if (win.ws_row == 0xFFFF) {
-		fputs("\e[18t", fb_con.f_out);
+		fb_hTermOut(SEQ_QUERY_WINDOW, 0, 0);
 		if (fscanf(stdin, "\e[8;%d;%dt", &r, &c) == 2) {
 			win.ws_row = r;
 			win.ws_col = c;
@@ -136,7 +131,7 @@ void fb_hResize()
 	fb_con.h = win.ws_row;
 	fb_con.w = win.ws_col;
 	fflush(stdin);
-	fputs("\e[6n", fb_con.f_out);
+	fb_hTermOut(SEQ_QUERY_CURSOR, 0, 0);
 	fscanf(stdin, "\e[%d;%dR", &fb_con.cur_y, &fb_con.cur_x);
 
 	fb_con.resized = FALSE;
@@ -144,19 +139,48 @@ void fb_hResize()
 
 
 /*:::::*/
-int fb_hInitConsole ( int init )
+int fb_hTermOut( int code, int param1, int param2 )
+{
+	const char *extra_seq[] = { "\e(U", "\e(B", "\e[6n", "\e[18t", "\e[?1000h\e[?1003h", "\e[?1003l\e[?1000l" };
+	char *str;
+	
+	if (!fb_con.inited)
+		return -1;
+	
+	fflush(stdout);
+	if (code > SEQ_MAX) {
+		fputs(extra_seq[code - SEQ_EXTRA], fb_con.f_out);
+	}
+	else {
+		if (!fb_con.seq[code])
+			return -1;
+		str = tgoto(fb_con.seq[code], param1, param2);
+		if (!str)
+			return -1;
+		tputs(str, 1, putchar);
+	}
+	return 0;
+}
+
+
+/*:::::*/
+int fb_hInitConsole ( )
 {
 	struct termios term_out, term_in;
-	int i;
 
-	/* Init terminal I/O */
-	fb_con.h_out = fileno(stdout);
-	fb_con.h_in = fileno(stdin);
-	fb_con.f_out = stdout;
-	fb_con.f_in = stdin;
-	if (!isatty(fb_con.h_out) || !isatty(fb_con.h_in))
+	if (!fb_con.inited)
 		return -1;
-
+	
+	/* Init terminal I/O */
+	fb_con.f_out = stdout;
+	fb_con.h_out = fileno(stdout);
+	if (!isatty(fb_con.h_out) || !isatty(fileno(stdin)))
+		return -1;
+	fb_con.f_in = fopen("/dev/tty", "r+b");
+	if (!fb_con.f_in)
+		return -1;
+	fb_con.h_in = fileno(fb_con.f_in);
+	
 	/* Output setup */
 	if (tcgetattr(fb_con.h_out, &fb_con.old_term_out))
 		return -1;
@@ -166,12 +190,6 @@ int fb_hInitConsole ( int init )
 		return -1;
 
 	/* Input setup */
-	if (init != INIT_CONSOLE) {
-		fb_con.f_in = fopen("/dev/tty", "r+b");
-		if (!fb_con.f_in)
-			return -1;
-		fb_con.h_in = fileno(fb_con.f_in);
-	}
 	if (tcgetattr(fb_con.h_in, &fb_con.old_term_in))
 		return -1;
 	memcpy(&term_in, &fb_con.old_term_in, sizeof(term_in));
@@ -191,15 +209,10 @@ int fb_hInitConsole ( int init )
 	fb_con.old_in_flags = fcntl(fb_con.h_in, F_GETFL, 0);
 	fb_con.in_flags = fb_con.old_in_flags | O_NONBLOCK;
 	fcntl(fb_con.h_in, F_SETFL, fb_con.in_flags);
-
-	if (init == INIT_CONSOLE) {
-		/* Set our default palette */
-		for (i = 0; i < 16; i++)
-			fprintf(fb_con.f_out, "\e]P%1.1X%2.2X%2.2X%2.2X", color_map[i], color[i*3], color[(i*3)+1], color[(i*3)+2]);
-	}
-	fb_con.fg_color = 0x7;
-	/* Set IBM PC 437 charset */
-	fputs("\e(U", fb_con.f_out);
+	
+	if (fb_con.inited == INIT_CONSOLE)
+		fb_hTermOut(SEQ_INIT_CHARSET, 0, 0);
+	fb_hTermOut(SEQ_INIT_KEYPAD, 0, 0);
 
 	/* Initialize keyboard and mouse handlers if set */
 	BG_LOCK();
@@ -217,13 +230,13 @@ int fb_hInitConsole ( int init )
 void fb_hInit ( int argc, char **argv )
 {
 	const int sigs[] = { SIGABRT, SIGFPE, SIGILL, SIGSEGV, SIGTERM, SIGINT, SIGQUIT, -1 };
+	char buffer[2048], *p, *term;
+	struct termios tty;
+    int i;
 	           
 #ifdef MULTITHREADED
     pthread_mutexattr_t attr;
 #endif
-	int init = FALSE;
-    char *term;
-    int i;
 
 	/* rebuild command line from argv */
 	fb_commandline[0] = '\0';
@@ -285,21 +298,29 @@ void fb_hInit ( int argc, char **argv )
 
 	fb_con.has_perm = ioperm(0, 0x400, 1) ? FALSE : TRUE;
 	
+	/* Init termcap */
 	term = getenv("TERM");
-	if (term) {
-		if ((!strcmp(term, "console")) || (!strncmp(term, "linux", 5)))
-			init = INIT_CONSOLE;
-		if ((!strncmp(term, "xterm", 5)) || (!strncmp(term, "rxvt", 4)))
-			init = INIT_XTERM;
-		if (!strncasecmp(term, "eterm", 5))
-			init = INIT_ETERM;
+	if ((!term) || (tgetent(buffer, term) <= 0))
+		return;
+	BC = UP = 0;
+	p = tgetstr("pc", NULL);
+	PC = p ? *p : 0;
+	if (tcgetattr(1, &tty))
+		return;
+	ospeed = cfgetospeed(&tty);
+	if (!tgetflag("am"))
+		return;
+	for (i = 0; i < SEQ_MAX; i++)
+		fb_con.seq[i] = tgetstr(seq[i], NULL);
+	
+	if ((!strcmp(term, "console")) || (!strncmp(term, "linux", 5)))
+		fb_con.inited = INIT_CONSOLE;
+	else
+		fb_con.inited = INIT_X11;
+	if (fb_hInitConsole()) {
+		fb_con.inited = FALSE;
+		return;
 	}
-	if (!init)
-		return;
-
-	if (fb_hInitConsole(init))
-		return;
-	fb_con.inited = init;
 	fb_con.keyboard_getch = default_getch;
 
 	pthread_create( &fb_con.bg_thread, NULL, bg_thread, NULL );

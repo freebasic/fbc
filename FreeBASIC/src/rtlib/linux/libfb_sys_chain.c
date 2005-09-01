@@ -72,7 +72,7 @@ FBCALL int fb_Chain ( FBSTRING *program )
 			else
 				res = -1;
 		}
-		fb_hInitConsole(fb_con.inited);
+		fb_hInitConsole();
 	}
 
 	/* del if temp */

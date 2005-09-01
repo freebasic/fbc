@@ -557,6 +557,7 @@ sub fbAddDefaultLibs( ) static
 		symbAddLib( "m" )
 		symbAddLib( "pthread" )
 		symbAddLib( "dl" )
+		symbAddLib( "termcap" )
 
 	case FB_COMPTARGET_DOS
 		symbAddLib( "c" )

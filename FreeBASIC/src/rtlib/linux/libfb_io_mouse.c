@@ -39,34 +39,34 @@ static GPM_CLOSE fb_Gpm_Close;
 static GPM_GETEVENT fb_Gpm_GetEvent;
 static int *fb_gpm_fd;
 static Gpm_Connect conn;
+static int has_focus = TRUE;
 static int mouse_x = 0, mouse_y = 0, mouse_z = 0, mouse_buttons = 0;
 
 
 /*:::::*/
 static void mouse_update(int cb, int cx, int cy)
 {
-	if (!fb_hXTermHasFocus())
-		return;
-	
-	cb &= ~0x1C;
-	if (cb >= 0x60) {
-		if (cb - 0x60)
-			mouse_z--;
-		else
-			mouse_z++;
-	}
-	else {
-		if (cb >= 0x40)
-			cb -= 0x20;
-		switch (cb) {
-			case 0x20:	mouse_buttons |= 0x1; break;
-			case 0x21:	mouse_buttons |= 0x4; break;
-			case 0x22:	mouse_buttons |= 0x2; break;
-			case 0x23:	mouse_buttons = 0; break;
+	if (has_focus) {
+		cb &= ~0x1C;
+		if (cb >= 0x60) {
+			if (cb - 0x60)
+				mouse_z--;
+			else
+				mouse_z++;
 		}
+		else {
+			if (cb >= 0x40)
+				cb -= 0x20;
+			switch (cb) {
+				case 0x20:	mouse_buttons |= 0x1; break;
+				case 0x21:	mouse_buttons |= 0x4; break;
+				case 0x22:	mouse_buttons |= 0x2; break;
+				case 0x23:	mouse_buttons = 0; break;
+			}
+		}
+		mouse_x = cx - 0x21;
+		mouse_y = cy - 0x21;
 	}
-	mouse_x = cx - 0x21;
-	mouse_y = cy - 0x21;
 }
 
 
@@ -78,8 +78,22 @@ static void mouse_handler(void)
 	struct timeval tv = { 0, 0 };
 	int count = 0;
 	
-	if (fb_con.inited != INIT_CONSOLE)
+	if (fb_con.inited == INIT_X11) {
+		if (fb_hXTermHasFocus()) {
+			if (!has_focus)
+				mouse_buttons = 0;
+			has_focus = TRUE;
+		}
+		else {
+			if (has_focus) {
+				mouse_x = -1;
+				mouse_y = -1;
+				mouse_buttons = -1;
+			}
+			has_focus = FALSE;
+		}
 		return;
+	}
 	
 	FD_ZERO(&set);
 	FD_SET(*fb_gpm_fd, &set);
@@ -129,7 +143,7 @@ static int mouse_init(void)
 		}
 	}
 	else {
-		fputs("\e[?1003h", fb_con.f_out);
+		fb_hTermOut(SEQ_INIT_XMOUSE, 0, 0);
 		fb_con.mouse_update = mouse_update;
 		fb_hXTermInitFocus();
 	}
@@ -145,9 +159,9 @@ static void mouse_exit(void)
 		dlclose(gpm_lib);
 	}
 	else {
-		fputs("\e[?1003l", fb_con.f_out);
-		fb_con.mouse_update = NULL;
+		fb_hTermOut(SEQ_EXIT_XMOUSE, 0, 0);
 		fb_hXTermExitFocus();
+		fb_con.mouse_update = NULL;
 	}
 	fb_con.mouse_handler = NULL;
 }

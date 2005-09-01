@@ -59,46 +59,71 @@ typedef struct NODE
 {
 	unsigned char key;
 	unsigned short code;
-	struct NODE *next;
+	struct NODE *next, *child;
 } NODE;
 
-static NODE F1[] = { { '~', KEY_F1, NULL }, { 0 } },
-	    F2[] = { { '~', KEY_F2, NULL }, { 0 } },
-	    F3[] = { { '~', KEY_F3, NULL }, { 0 } },
-	    F4[] = { { '~', KEY_F4, NULL }, { 0 } },
-	    F5[] = { { '~', KEY_F5, NULL }, { 0 } },
-	    F6[] = { { '~', KEY_F6, NULL }, { 0 } },
-	    F7[] = { { '~', KEY_F7, NULL }, { 0 } },
-	    F8[] = { { '~', KEY_F8, NULL }, { 0 } },
-	    F9[] = { { '~', KEY_F9, NULL }, { 0 } },
-	    F10[] = { { '~', KEY_F10, NULL }, { 0 } },
-	    Delete[] = { { '~', KEY_DEL, NULL }, { 0 } },
-	    Home[] = { { '~', KEY_HOME, NULL }, { 0 } },
-	    End[] = { { '~', KEY_END, NULL }, { 0 } },
-	    PageUp[] = { { '~', KEY_PAGE_UP, NULL }, { 0 } },
-	    PageDown[] = { { '~', KEY_PAGE_DOWN, NULL }, { 0 } },
-	    Sub1[] = { { '~', KEY_HOME, NULL }, { '7', 0, F6 }, { '8', 0, F7 }, { '9', 0, F8 }, { 0, 0, F1 },
-	    	       { 0, 0, F2 }, { 0, 0, F3 }, { 0, 0, F4 }, { 0, 0, F5 }, { 0 } },
-	    Sub2[] = { { '~', KEY_INS, NULL }, { '0', 0, F9 }, { '1', 0, F10 }, { 0 } },
-	    SubBrace[] = { { 'A', KEY_F1, NULL }, { 'B', KEY_F2, NULL }, { 'C', KEY_F3, NULL }, { 'D', KEY_F4, NULL },
-			   { 'E', KEY_F5, NULL }, { 0 } },
-	    Console[] = { { '[', 0, SubBrace }, { 'A', KEY_UP, NULL }, { 'B', KEY_DOWN, NULL }, { 'C', KEY_RIGHT, NULL },
-	    		  { 'D', KEY_LEFT, NULL }, { 'M', KEY_MOUSE, NULL }, { '1', 0, Sub1 }, { '2', 0, Sub2 }, { '3', 0, Delete },
-	    		  { '4', 0, End }, { '5', 0, PageUp }, { '6', 0, PageDown }, { 0, 0, Home },
-	    		  { 0, 0, End }, { 0, KEY_TAB, NULL }, { 0, KEY_BACKSPACE, NULL }, { 0 } },
-	    X11[] = { { 'P', KEY_F1, NULL }, { 'Q', KEY_F2, NULL }, { 'R', KEY_F3, NULL }, { 'S', KEY_F4, NULL },
-	    	      { 'F', KEY_END, NULL }, { 'H', KEY_HOME, NULL }, { 'A', KEY_UP, NULL }, { 'B', KEY_DOWN, NULL },
-	    	      { 'C', KEY_RIGHT, NULL }, { 'D', KEY_LEFT, NULL }, { 0 } },
-	    Sequence[] = { { '[', 0, Console }, { 0, 0, X11 }, { 0 } };
+typedef struct KEY_DATA
+{
+	unsigned char *cap;
+	int code;
+} KEY_DATA;
+
+static const KEY_DATA key_data[] = {
+	{ "ku", KEY_UP }, { "kd", KEY_DOWN }, { "kl", KEY_LEFT }, { "kr", KEY_RIGHT }, { "kI", KEY_INS },
+	{ "kD", KEY_DEL }, { "kh", KEY_HOME }, { "@7", KEY_END }, { "kP", KEY_PAGE_UP }, { "kN", KEY_PAGE_DOWN },
+	{ "k1", KEY_F1 }, { "k2", KEY_F2 }, { "k3", KEY_F3 }, { "k4", KEY_F4 }, { "k5", KEY_F5 },
+	{ "k6", KEY_F6 }, { "k7", KEY_F7 }, { "k8", KEY_F8 }, { "k9", KEY_F9 }, { "k;", KEY_F10 },
+	{ "kT", KEY_TAB }, { "kb", KEY_BACKSPACE }, { NULL, 0 }
+};
 
 
 static int key_buffer[MAX_BUFFER_LEN], key_head = 0, key_tail = 0;
+static NODE *root_node = NULL;
+
+
+/*:::::*/
+static void add_key(NODE **node, unsigned char *key, short code)
+{
+	NODE *n;
+	
+	for (n = *node; n; n = n->next) {
+		if (n->key == *key) {
+			add_key(&n->child, key + 1, code);
+			return;
+		}
+	}
+	n = malloc(sizeof(NODE));
+	n->child = NULL;
+	n->next = *node;
+	n->key = *key;
+	n->code = 0;
+	*node = n;
+	
+	if (*(key + 1))
+		add_key(&n->child, key + 1, code);
+	else
+		n->code = code;
+}
+
+
+/*:::::*/
+static void init_keys()
+{
+	KEY_DATA *data;
+	char *key;
+	
+	for (data = (KEY_DATA *)key_data; data->cap; data++) {
+		key = tgetstr(data->cap, NULL);
+		if (key)
+			add_key(&root_node, key + 1, data->code);
+	}
+	add_key(&root_node, "[M", KEY_MOUSE);
+}
 
 
 /*:::::*/
 static int get_input()
 {
-	static int getch_inited = FALSE;
 	NODE *node;
 	int k, cb, cx, cy;
 
@@ -111,50 +136,33 @@ static int get_input()
 		k = fb_con.keyboard_getch();
 		if (k == EOF)
 			return 27;
-		if (!getch_inited) {
-			if (fb_con.inited != INIT_CONSOLE) {
-				/* Fixups for X11 compatibility */
-				Sub1[4].key = '1';
-				Sub1[5].key = '2';
-				Sub1[6].key = '3';
-				Sub1[7].key = '4';
-				Sub1[8].key = '5';
-				Console[12].key = '7';
-				Console[13].key = '8';
-				Console[14].key = 'T';
-				Console[15].key = 'K';
-				Sequence[1].key = 'O';
-			}
-			getch_inited = TRUE;
-		}
-		node = Sequence;
-		for (;;) {
-			while (node->key) {
-				if (k == node->key) {
-					if (node->code) {
-						if (node->code == KEY_MOUSE) {
-							cb = fb_con.keyboard_getch();
-							cx = fb_con.keyboard_getch();
-							cy = fb_con.keyboard_getch();
-							if (fb_con.mouse_update)
-								fb_con.mouse_update(cb, cx, cy);
-							return -1;
-						}
-						return node->code;
+		if (!root_node)
+			init_keys();
+		node = root_node;
+		while (node) {
+			if (k == node->key) {
+				if (node->code) {
+					if (node->code == KEY_MOUSE) {
+						cb = fb_con.keyboard_getch();
+						cx = fb_con.keyboard_getch();
+						cy = fb_con.keyboard_getch();
+						if (fb_con.mouse_update)
+							fb_con.mouse_update(cb, cx, cy);
+						return -1;
 					}
-					node = node->next;
-					break;
+					return node->code;
 				}
-				node++;
+				k = fb_con.keyboard_getch();
+				if (k == -1)
+					return -1;
+				node = node->child;
+				continue;
 			}
-			if (!node->key) {
-				fflush(fb_con.f_in);
-				return -1;
-			}
-			k = fb_con.keyboard_getch();
-			if (k == -1)
-				return -1;
+			node = node->next;
 		}
+		while(fb_con.keyboard_getch() >= 0)
+			;
+		return -1;
 	}
 
 	return k;

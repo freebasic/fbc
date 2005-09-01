@@ -32,7 +32,7 @@ int fb_ConsoleWidth( int cols, int rows )
 {
 	int cur = (fb_con.inited ? (fb_con.w | (fb_con.h << 16)) : (80 | (25 << 16)));
 	
-	if (((fb_con.inited == INIT_XTERM) || (fb_con.inited == INIT_ETERM)) && ((cols > 0) || (rows > 0))) {
+	if ((cols > 0) || (rows > 0)) {
 		
 		BG_LOCK();
 		
@@ -40,7 +40,7 @@ int fb_ConsoleWidth( int cols, int rows )
 			cols = fb_con.w;
 		if (rows <= 0)
 			rows = fb_con.h;
-		fprintf(fb_con.f_out, "\e[8;%d;%dt", rows, cols);
+		fb_hTermOut(SEQ_WINDOW_SIZE, rows, cols);
 
 		BG_UNLOCK();
 	}

@@ -32,10 +32,6 @@
 /*:::::*/
 FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
 {
-#if 0
-    int toprow, botrow;
-#endif
-
 	fb_hResize();
 	
 	if (cols) {
@@ -45,17 +41,10 @@ FBCALL void fb_ConsoleGetSize( int *cols, int *rows )
 			*cols = 80;
 	}
 	
-    if( rows != NULL )
-    {
-#if 0
-    	fb_ConsoleGetView( &toprow, &botrow );
-
-        *rows = botrow - toprow + 1;
-#else
+    if (rows) {
 		if (fb_con.inited)
 			*rows = fb_con.h;
 		else
 			*rows = 24;
-#endif
     }
 }

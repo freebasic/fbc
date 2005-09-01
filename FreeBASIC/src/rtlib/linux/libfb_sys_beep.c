@@ -31,6 +31,5 @@
 /*:::::*/
 FBCALL void beep(void)
 {
-	if (fb_con.inited)
-		putc('\a', fb_con.f_out);
+	fb_hTermOut(SEQ_BEEP);
 }
