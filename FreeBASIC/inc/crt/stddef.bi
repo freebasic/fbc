@@ -9,13 +9,18 @@
 #ifndef __stddef_bi__
 #define __stddef_bi__
 
+#ifndef _SIZE_T_
+#define _SIZE_T_
 type size_t as uinteger
+#endif
 
-#ifndef wchar_t
+#ifndef _WCHAR_T_
+#define _WCHAR_T_
 type wchar_t as ushort
 #endif
 
-#ifndef wint_t
+#ifndef _WINT_T_
+#define _WINT_T_
 type wint_t as ushort
 #endif
 

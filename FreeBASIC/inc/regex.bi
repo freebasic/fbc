@@ -23,7 +23,8 @@
 
 #inclib "tre"
 
-#ifndef size_t
+#ifndef _SIZE_T_
+#define _SIZE_T_
 type size_t as integer
 #endif
 
