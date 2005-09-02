@@ -193,4 +193,10 @@ static __inline__ FB_WCHAR *fb_wstr_SkipCharRev( const FB_WCHAR *s, int chars, F
     return p;
 }
 
+/*:::::*/
+static __inline__ FB_WCHAR *fb_wstr_Instr( FB_WCHAR *s, FB_WCHAR *patt )
+{
+	return wcsstr( s, patt );
+}
+
 #endif /* __FB_UNICODE__ */
