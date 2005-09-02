@@ -2660,6 +2660,20 @@ function astGetValueAsLongInt( byval n as ASTNODE ptr ) as longint
 end function
 
 '':::::
+function astGetValueAsULongInt( byval n as ASTNODE ptr ) as ulongint
+
+  	select case as const astGetDataType( n )
+  	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  	    function = astGetValue64( n )
+  	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  		function = culngint( astGetValuef( n ) )
+  	case else
+  		function = culngint( cuint( astGetValuei( n ) ) )
+  	end select
+
+end function
+
+'':::::
 function astGetValueAsDouble( byval n as ASTNODE ptr ) as double
 
   	select case as const astGetDataType( n )
@@ -3886,7 +3900,7 @@ function astNewUOP( byval op as integer, _
 						end if
 
 					case else
-						if( -astGetValueAsLongint( o ) < minlimitTB( astGetDataType( o ) ) ) then
+						if( -astGetValueAsLongint( o ) < minlimitTB( o->dtype ) ) then
 							hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 						end if
 					end select
@@ -4962,6 +4976,7 @@ private function hCheckConst( byval dtype as integer, _
 					   		  byval n as ASTNODE ptr ) as ASTNODE ptr static
 
 	dim as longint lval
+	dim as ulongint ulval
 	dim as double dval, dmin, dmax
 
 	'' x86 assumptions
@@ -4990,7 +5005,7 @@ private function hCheckConst( byval dtype as integer, _
 		'' unsigned constant?
 		if( not irIsSigned( astGetDataType( n ) ) ) then
 			'' too big?
-			if( culngint( astGetValueAsLongInt( n ) ) > 9223372036854775807ULL ) then
+			if( astGetValueAsULongInt( n ) > 9223372036854775807ULL ) then
 				n = astNewCONV( INVALID, dtype, NULL, n )
 				hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 			end if
@@ -5007,12 +5022,21 @@ private function hCheckConst( byval dtype as integer, _
 			end if
 		end if
 
-    case IR_DATATYPE_BYTE, IR_DATATYPE_UBYTE, IR_DATATYPE_CHAR, _
-    	 IR_DATATYPE_SHORT, IR_DATATYPE_USHORT, _
-    	 IR_DATATYPE_INTEGER, IR_DATATYPE_UINT, IR_DATATYPE_ENUM
+    case IR_DATATYPE_BYTE, IR_DATATYPE_CHAR, IR_DATATYPE_SHORT, _
+    	 IR_DATATYPE_INTEGER, IR_DATATYPE_ENUM
 
 		lval = astGetValueAsLongInt( n )
-		if( (lval < minlimitTB( dtype )) or (lval > maxlimitTB( dtype )) ) then
+		if( (lval < minlimitTB( dtype )) or _
+			(lval > maxlimitTB( dtype )) ) then
+			n = astNewCONV( INVALID, dtype, NULL, n )
+			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+		end if
+
+    case IR_DATATYPE_UBYTE, IR_DATATYPE_USHORT, IR_DATATYPE_UINT
+
+		ulval = astGetValueAsULongInt( n )
+		if( (ulval < culngint( minlimitTB( dtype ) )) or _
+			(ulval > culngint( maxlimitTB( dtype ) )) ) then
 			n = astNewCONV( INVALID, dtype, NULL, n )
 			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 		end if

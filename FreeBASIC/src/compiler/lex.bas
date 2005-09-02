@@ -558,7 +558,7 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 	dim as ulongint value64
 	dim as integer lgt
 
-	issigned = TRUE
+	issigned = FALSE
 	islong = FALSE
 	value = 0
 	lgt = 0
@@ -692,13 +692,13 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 	end select
 
 	if( not islong ) then
-		if( value and &h80000000 ) then
-			issigned = FALSE
+		if( value and &h80000000UL ) then
+			issigned = TRUE
 		end if
 		*pnum = str( value )
 	else
-		if( value64 < 0 ) then
-			issigned = FALSE
+		if( value64 and &h8000000000000000ULL ) then
+			issigned = TRUE
 		end if
 		*pnum = str( value64 )
 	end if
