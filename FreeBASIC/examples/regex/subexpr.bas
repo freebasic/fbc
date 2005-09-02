@@ -6,17 +6,29 @@ option explicit
 
 '$include: "regex.bi"
 
-function get_filepart( buffer as string, byval index as integer ) as string
+enum eFilePartKind
+    eFPK_Full
+    eFPK_Path
+    eFPK_File
+    eFPK_Basename
+    eFPK_Extension
+end enum
+
+function get_filepart( buffer as string, byval kind as eFilePartKind ) as string
     dim re as regex_t
     dim pm as regmatch_t
     dim pbuff as zstring ptr
     dim res as integer
     dim nsub as integer
+
+    if len(buffer)=0 then exit function
     
 	pbuff = strptr( buffer )
 	
 	'' compile the pattern
-	regcomp( @re, "^(.*/)*([^/]*)\.([^.]*)$", REG_EXTENDED or REG_ICASE )
+	if regcomp( @re, "^(.*/)*([^/.]*)(((\.[^.]*)*)(\.[^.]*))?$", REG_EXTENDED or REG_ICASE )<>0 then
+        exit function
+    end if
 
     nsub = re.re_nsub + 1
     redim match(1 to nsub) as regmatch_t
@@ -27,32 +39,60 @@ function get_filepart( buffer as string, byval index as integer ) as string
 
 '        dim i as integer
 '        for i=1 to nsub
-'            print mid$( *pbuff, 1 + match(i).rm_so, match(i).rm_eo - match(i).rm_so )
+'            print i, mid$( *pbuff, 1 + match(i).rm_so, match(i).rm_eo - match(i).rm_so )
 '        next
-    	function = mid$( *pbuff, 1 + match(index).rm_so, match(index).rm_eo - match(index).rm_so )
-    	
+
+        select case kind
+        case eFPK_Full
+    		function = buffer
+        case eFPK_Path
+    		function = mid$( *pbuff, 1 + match(2).rm_so, match(2).rm_eo - match(2).rm_so )
+        case eFPK_File
+    		function = mid$( *pbuff, 1 + match(3).rm_so, match(3).rm_eo - match(3).rm_so ) + _
+    		           mid$( *pbuff, 1 + match(4).rm_so, match(4).rm_eo - match(4).rm_so )
+        case eFPK_Basename
+    		function = mid$( *pbuff, 1 + match(3).rm_so, match(3).rm_eo - match(3).rm_so ) + _
+    		           mid$( *pbuff, 1 + match(5).rm_so, match(5).rm_eo - match(5).rm_so )
+        case eFPK_Extension
+    		function = mid$( *pbuff, 1 + match(7).rm_so, match(7).rm_eo - match(7).rm_so )
+        end select
+
     end if
     
 end function
 
-function get_filepath( buffer as string ) as string
-	function = get_filepart( buffer, 2 )
-end function
+#if 0
 
-function get_filebase( buffer as string ) as string
-	function = get_filepart( buffer, 3 )
-end function
+print get_filepart("lib/win32/def/winapi/advapi32.dll.def.ext3", 0)
+print get_filepart("lib/win32/def/winapi/advapi32.dll.def", 0)
+print get_filepart("lib/", 0)
+print get_filepart("advapi32.dll.def", 0)
+print get_filepart("advapi32", 0)
+print get_filepart("", 0)
 
-function get_fileext( buffer as string ) as string
-	function = get_filepart( buffer, 4 )
-end function
+#else
 
-print "lib/win32/def/bass.dll.def"
-print get_filepath("lib/win32/def/bass.dll.def")
-print get_filebase("lib/win32/def/bass.dll.def")
-print get_fileext("lib/win32/def/bass.dll.def")
+private sub ShowAll( s as string )
+	print "Full:", s
+	print "Path:", get_filepart(s, eFPK_Path)
+	print "File:", get_filepart(s, eFPK_File)
+	print "Base:", get_filepart(s, eFPK_Basename)
+	print "Ext :", get_filepart(s, eFPK_Extension)
+	print
+end sub
 
-print "lib/win32/def/winapi/advapi32.dll.def"
-print get_filepath("lib/win32/def/winapi/advapi32.dll.def")
-print get_filebase("lib/win32/def/winapi/advapi32.dll.def")
-print get_fileext("lib/win32/def/winapi/advapi32.dll.def")
+ShowAll "path/name.ext"
+ShowAll "path/name.ext1.ext2"
+ShowAll "path/name.ext1.ext2.ext3"
+ShowAll "path/name"
+ShowAll "path/"
+ShowAll "name.ext"
+ShowAll "name.ext1.ext2"
+ShowAll "name.ext1.ext2.ext3"
+ShowAll "name"
+ShowAll ".ext"
+ShowAll ".ext1.ext2"
+ShowAll ".ext1.ext2.ext3"
+ShowAll ""
+
+#endif
