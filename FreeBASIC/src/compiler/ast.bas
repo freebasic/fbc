@@ -3869,24 +3869,28 @@ function astNewUOP( byval op as integer, _
 		if( op = IR_OP_NEG ) then
 			if( astGetDataClass( o ) = IR_DATACLASS_INTEGER ) then
 				if( not irIsSigned( dtype ) ) then
+					'' test overflow
 					select case dtype
 					case IR_DATATYPE_UINT
-						if( astGetValueAsInt( o ) and &h80000000 ) then
-							if ( astGetValueAsInt( o ) <> &h80000000 ) then
+						if( astGetValuei( o ) and &h80000000 ) then
+							if( astGetValuei( o ) <> &h80000000 ) then
 								hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 							end if
 						end if
+
 					case IR_DATATYPE_ULONGINT
-						if( astGetValueAsLongInt( o ) and &h8000000000000000 ) then
-							if( astGetValueAsLongInt( o ) <> &h8000000000000000 ) then
+						if( astGetValue64( o ) and &h8000000000000000 ) then
+							if( astGetValue64( o ) <> &h8000000000000000 ) then
 								hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 							end if
 						end if
+
 					case else
-						if( -astGetValueAsLongInt( o ) < minlimitTB( astGetDataType( o ) ) ) then
+						if( -astGetValue64( o ) < minlimitTB( astGetDataType( o ) ) ) then
 							hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 						end if
 					end select
+
 					dtype = irGetSignedType( dtype )
 				end if
 			end if
@@ -4115,7 +4119,7 @@ private sub hCONVConstEval64( byval dtype as integer, _
 
 	case else
 		'' when expanding to 64bit, we must take care of signedness of source operand
-		
+
 		if( dtype = IR_DATATYPE_LONGINT ) then
 			if( irIsSigned( v->dtype ) ) then
 				v->v.value64 = clngint( v->v.valuei )
