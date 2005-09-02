@@ -1,4 +1,11 @@
 
+-- wstring types (w/o ptr) returned by functions should be recognized a temporary 
+   string that should be deleted automatically, or anything that returns a temp 
+   wstring (like BINW for example), will have to use static buffers, breaking 
+   multi-threading..
+
+-- overload won't recognize z|w|string ptr args when non-ptr's params are passed
+
 [ ] SCOPE..END SCOPE:
     - vars should be reused (that's is, the stack "rewinded") because it's only
       assured that the vars will be initialized to 0 when the scope block is 
@@ -16,16 +23,6 @@
     - add the #inclib's
     - add the missing macros (MAKELONG etc) and complex #define's (ones with type casting)
     - add UNICODE and ASCII support
-
-[ ] unicode strings (WSTRING type):
-    - not var-len, just like ZSTRING's (fixed-len + pointers)
-    - wide as the target platform (16-bit in Windows, 8-bit in Linux, etc)
-      no copy, no helper libs, just the wstr* functions to help
-    - maybe libutf8 when unicode is not supported by the platform
-    - how to express literal unicode strings? W""?
-    - to make it simpler to implement and to not bloat the str_ objects, don't allow
-      wstring's to be compared or concatenated to other string types, just copied/assigned or
-      neither that
 
 [ ] add fix-len and zstring * support to array args passed by descriptor
 
