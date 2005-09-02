@@ -3886,7 +3886,7 @@ function astNewUOP( byval op as integer, _
 						end if
 
 					case else
-						if( -astGetValue64( o ) < minlimitTB( astGetDataType( o ) ) ) then
+						if( -astGetValueAsLongint( o ) < minlimitTB( astGetDataType( o ) ) ) then
 							hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 						end if
 					end select
