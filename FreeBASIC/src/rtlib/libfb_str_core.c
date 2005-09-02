@@ -236,9 +236,12 @@ FBCALL int fb_hStrDelTemp( FBSTRING *str )
 /*:::::*/
 FBCALL void fb_hStrCopy( char *dst, const char *src, int bytes )
 {
-    if( (src != NULL) && (bytes > 0 ) ) {
+    if( (src != NULL) && (bytes > 0) )
+    {
         dst = FB_MEMCPYX( dst, src, bytes );
     }
+
+    /* add the null-term */
     *dst = 0;
 }
 

@@ -91,6 +91,7 @@ FBCALL void *fb_StrAssign ( void *dst, int dst_size, void *src, int src_size, in
 			fb_hStrCopy( dstr->data, src_ptr, src_len );
 		}
 	}
+	/* fixed-len or zstring.. */
 	else
 	{
 		/* src NULL? */

@@ -297,9 +297,14 @@ void                fb_hListDynElemRemove   ( FB_LIST *list, FB_LISTELEM *elem )
  */
 #define FB_ISTEMP(s) ((((FBSTRING *)s)->len & FB_TEMPSTRBIT) != 0)
 
-/** Returns a strings length.
+/** Returns a string length.
  */
 #define FB_STRSIZE(s) (((FBSTRING *)s)->len & ~FB_TEMPSTRBIT)
+
+/** Returns the string data.
+ */
+#define FB_STRPTR(s,size)                     \
+    ( s == NULL? NULL : ( size == -1? ((FBSTRING *)s)->data : (char *)s ) )
 
 #define FB_STRSETUP_FIX(s,size,ptr,len)                     \
 do {                                                        \
