@@ -18,7 +18,7 @@
  */
 
 /*
- * strw_midassign.c -- midw$ statement
+ * strw_comp.c -- wstring compare function
  *
  * chng: oct/2004 written [v1ctor]
  *
@@ -28,32 +28,41 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL void fb_wStrAssignMid ( FB_WCHAR *dst, int start, int len, const FB_WCHAR *src )
+FBCALL int fb_wStrCompare ( const FB_WCHAR *str1, const FB_WCHAR *str2 )
 {
-    int src_len, dst_len;
+	int res, str1_len, str2_len;
 
-    if( (dst == NULL) || (src == NULL) )
-    	return;
+	/* both not null? */
+	if( (str1 != NULL) && (str2 != NULL) )
+	{
+		str1_len = fb_wstr_Len( str1 );
+        str2_len = fb_wstr_Len( str2 );
 
-    dst_len = fb_wstr_Len( dst );
-    if( dst_len == 0 )
-    	return;
+        res = fb_wstr_Compare( str1, str2, ((str1_len < str2_len) ? str1_len : str2_len) );
+        if( (res == 0) && (str1_len != str2_len) )
+        	res = (( str1_len > str2_len ) ? 1 : -1 );
 
-    src_len = fb_wstr_Len( src );
-    if( src_len == 0 )
-    	return;
+        return res;
 
-    if( (start > 0) && (start <= dst_len) )
+	}
+	/* left null? */
+	else if( str1 == NULL )
+	{
+		/* right also null? return == */
+		if( str2 == NULL )
+			return 0;
+		else
+		{
+			/* return < */
+			return -1;
+		}
+	}
+    /* only right is null */
+    else
     {
-		--start;
-
-        if( (len < 1) || (len > src_len) )
-			len = src_len;
-
-        if( start + len > dst_len )
-        	len = (dst_len - start) - 1;
-
-		/* without the null-term */
-		fb_wstr_Move( fb_wstr_OffsetOf( dst, start ), src, len );
-    }
+		/* return > */
+		return 1;
+	}
 }
+
+

@@ -18,9 +18,9 @@
  */
 
 /*
- * strw_midassign.c -- midw$ statement
+ * strw_concatassign.c -- string concat and assign (s = s + expr) function
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jan/2005 written [v1ctor]
  *
  */
 
@@ -28,32 +28,31 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL void fb_wStrAssignMid ( FB_WCHAR *dst, int start, int len, const FB_WCHAR *src )
+FBCALL FB_WCHAR *fb_wStrConcatAssign ( FB_WCHAR *dst, int dst_chars, const FB_WCHAR *src )
 {
-    int src_len, dst_len;
+	int src_len, dst_len;
 
-    if( (dst == NULL) || (src == NULL) )
-    	return;
+	/* NULL? */
+	if( (dst == NULL) || (src == NULL) )
+		return dst;
 
-    dst_len = fb_wstr_Len( dst );
-    if( dst_len == 0 )
-    	return;
+	src_len = fb_wstr_Len( src );
+	if( src_len == 0 )
+		return dst;
 
-    src_len = fb_wstr_Len( src );
-    if( src_len == 0 )
-    	return;
+	dst_len = fb_wstr_Len( dst );
 
-    if( (start > 0) && (start <= dst_len) )
-    {
-		--start;
+	/* don't check ptr's */
+	if( dst_chars > 0 )
+	{
+		--dst_chars;							/* less the null-term */
 
-        if( (len < 1) || (len > src_len) )
-			len = src_len;
+		if( src_len > dst_chars - dst_len )
+			src_len = dst_chars - dst_len;
+	}
 
-        if( start + len > dst_len )
-        	len = (dst_len - start) - 1;
+	/* copy the null-term too */
+	fb_wstr_Move( fb_wstr_OffsetOf( dst, dst_len ), src, src_len + 1 );
 
-		/* without the null-term */
-		fb_wstr_Move( fb_wstr_OffsetOf( dst, start ), src, len );
-    }
+	return dst;
 }

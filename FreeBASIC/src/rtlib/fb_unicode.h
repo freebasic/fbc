@@ -16,26 +16,6 @@
 
 
 /*:::::*/
-static __inline__ FB_WCHAR *fb_wstr_AllocTemp( int chars )
-{
-	/* plus the null-term */
-	return (FB_WCHAR *)malloc( (chars + 1) * sizeof( FB_WCHAR ) );
-}
-
-/*:::::*/
-static __inline__ void fb_wstr_Del( FB_WCHAR *s )
-{
-	free( (void *)s );
-}
-
-/*:::::*/
-static __inline__ int fb_wstr_Len( const FB_WCHAR *s )
-{
-	/* without the null-term */
-	return wcslen( s );
-}
-
-/*:::::*/
 static __inline__ int fb_wstr_CharLen( FB_WCHAR c )
 {
 	return sizeof( FB_WCHAR );
@@ -84,10 +64,38 @@ static __inline__ int fb_wstr_CalcDiff( const FB_WCHAR *ini, const FB_WCHAR *end
 }
 
 /*:::::*/
-static __inline__ size_t fb_wstr_ConvFromA( FB_WCHAR *dst, int dst_chars, const char *src )
+static __inline__ FB_WCHAR *fb_wstr_AllocTemp( int chars )
 {
 	/* plus the null-term */
-	return mbstowcs( dst, src, (dst_chars + 1) * sizeof( FB_WCHAR ) );
+	return (FB_WCHAR *)malloc( (chars + 1) * sizeof( FB_WCHAR ) );
+}
+
+/*:::::*/
+static __inline__ void fb_wstr_Del( FB_WCHAR *s )
+{
+	free( (void *)s );
+}
+
+/*:::::*/
+static __inline__ int fb_wstr_Len( const FB_WCHAR *s )
+{
+	/* without the null-term */
+	return wcslen( s );
+}
+
+/*:::::*/
+static __inline__ FB_WCHAR *fb_wstr_ConvFromA( FB_WCHAR *dst, int dst_chars, const char *src )
+{
+	/* NULL? */
+	if( src == NULL )
+	{
+		fb_wstr_SetCharAt( dst, 0, L'\0' );
+		return dst;
+	}
+
+	/* plus the null-term */
+	return (FB_WCHAR *)(((char *)dst) +
+						mbstowcs( dst, src, (dst_chars + 1) * sizeof( FB_WCHAR ) ));
 }
 
 /*:::::*/
@@ -122,19 +130,21 @@ static __inline__ FB_WCHAR fb_wstr_ToUpper( FB_WCHAR c )
 }
 
 /*:::::*/
-static __inline__ void fb_wstr_Copy( FB_WCHAR *dst, const FB_WCHAR *src, int chars )
+static __inline__ FB_WCHAR *fb_wstr_Copy( FB_WCHAR *dst, const FB_WCHAR *src, int chars )
 {
     if( (src != NULL) && (chars > 0) )
-        FB_MEMCPY( dst, src, chars * sizeof( FB_WCHAR ) );
+        dst = FB_MEMCPYX( dst, src, chars * sizeof( FB_WCHAR ) );
 
     /* add the null-term */
-    fb_wstr_SetCharAt( dst, chars, '\0' );
+    fb_wstr_PutChar( &dst, L'\0' );
+
+    return dst;
 }
 
 /*:::::*/
-static __inline__ void fb_wstr_Move( FB_WCHAR *dst, const FB_WCHAR *src, int chars )
+static __inline__ FB_WCHAR *fb_wstr_Move( FB_WCHAR *dst, const FB_WCHAR *src, int chars )
 {
-	FB_MEMCPY( dst, src, chars * sizeof( FB_WCHAR ) );
+	return FB_MEMCPYX( dst, src, chars * sizeof( FB_WCHAR ) );
 }
 
 /*:::::*/
@@ -146,7 +156,7 @@ static __inline__ void fb_wstr_Fill( FB_WCHAR *dst, FB_WCHAR c, int chars )
 		fb_wstr_PutChar( &dst, c );
 
 	/* add null-term */
-	fb_wstr_PutChar( &dst, 0 );
+	fb_wstr_PutChar( &dst, L'\0' );
 }
 
 /*:::::*/
@@ -194,9 +204,15 @@ static __inline__ FB_WCHAR *fb_wstr_SkipCharRev( const FB_WCHAR *s, int chars, F
 }
 
 /*:::::*/
-static __inline__ FB_WCHAR *fb_wstr_Instr( FB_WCHAR *s, FB_WCHAR *patt )
+static __inline__ FB_WCHAR *fb_wstr_Instr( const FB_WCHAR *s, const FB_WCHAR *patt )
 {
 	return wcsstr( s, patt );
+}
+
+/*:::::*/
+static __inline__ int fb_wstr_Compare( const FB_WCHAR *str1, const FB_WCHAR *str2, int chars )
+{
+	return wcsncmp( str1, str2, chars );
 }
 
 #endif /* __FB_UNICODE__ */

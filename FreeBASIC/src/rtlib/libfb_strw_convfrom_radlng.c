@@ -17,43 +17,46 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/*
- * strw_midassign.c -- midw$ statement
- *
- * chng: oct/2004 written [v1ctor]
- *
- */
-
 #include "fb.h"
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL void fb_wStrAssignMid ( FB_WCHAR *dst, int start, int len, const FB_WCHAR *src )
+FBCALL long long fb_wStrRadix2Longint( const FB_WCHAR *s, int len, int radix )
 {
-    int src_len, dst_len;
+	long long v;
+	int c;
 
-    if( (dst == NULL) || (src == NULL) )
-    	return;
+	v = 0;
 
-    dst_len = fb_wstr_Len( dst );
-    if( dst_len == 0 )
-    	return;
+	switch( radix )
+	{
+		/* hex */
+		case 16:
+			while( --len >= 0 )
+			{
+				c = (int)fb_wstr_GetChar( (FB_WCHAR **)&s ) - 48;
+                if( c > 9 )
+                	c -= (65 - 57 - 1);
+				if( c > 16 )
+					c -= (97 - 65);
 
-    src_len = fb_wstr_Len( src );
-    if( src_len == 0 )
-    	return;
+				v = (v * 16) + c;
+			}
+			break;
 
-    if( (start > 0) && (start <= dst_len) )
-    {
-		--start;
+		/* oct */
+		case 8:
+			while( --len >= 0 )
+				v = (v * 8) + ((int)fb_wstr_GetChar( (FB_WCHAR **)&s ) - 48);
+			break;
 
-        if( (len < 1) || (len > src_len) )
-			len = src_len;
+		/* bin */
+		case 2:
+			while( --len >= 0 )
+				v = (v * 2) + ((int)fb_wstr_GetChar( (FB_WCHAR **)&s ) - 48);
+			break;
+	}
 
-        if( start + len > dst_len )
-        	len = (dst_len - start) - 1;
-
-		/* without the null-term */
-		fb_wstr_Move( fb_wstr_OffsetOf( dst, start ), src, len );
-    }
+	return v;
 }
+

@@ -30,18 +30,8 @@
 /*:::::*/
 FBCALL FB_WCHAR *fb_wStrAssignFromA ( FB_WCHAR *dst, int dst_chars, void *src, int src_chars )
 {
-	char *src_ptr;
-
 	if( dst != NULL )
-	{
-		src_ptr = FB_STRPTR( src, src_chars );
-
-		/* src NULL? */
-		if( src_ptr == NULL )
-			fb_wstr_SetCharAt( dst, 0, '\0' );
-		else
-			fb_wstr_ConvFromA( dst, dst_chars, src_ptr );
-	}
+		fb_wstr_ConvFromA( dst, dst_chars, FB_STRPTR( src, src_chars ) );
 
 	/* delete temp? */
 	if( src_chars == -1 )

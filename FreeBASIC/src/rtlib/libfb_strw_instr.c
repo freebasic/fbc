@@ -28,7 +28,7 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL int fb_wStrInstr ( int start, FB_WCHAR *src, FB_WCHAR *patt )
+FBCALL int fb_wStrInstr ( int start, const FB_WCHAR *src, const FB_WCHAR *patt )
 {
     int r;
     FB_WCHAR *p;
@@ -36,7 +36,7 @@ FBCALL int fb_wStrInstr ( int start, FB_WCHAR *src, FB_WCHAR *patt )
     if( (src == NULL) || (patt == NULL) )
     	return 0;
 
-    if( (start > 0) && (start <= FB_STRSIZE( src )) )
+    if( (start > 0) && (start <= fb_wstr_Len( src )) )
     {
     	p = fb_wstr_Instr( fb_wstr_OffsetOf( src, start-1 ), patt );
     	if( p != NULL )

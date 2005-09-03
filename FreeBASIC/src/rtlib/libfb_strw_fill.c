@@ -48,7 +48,7 @@ FBCALL FB_WCHAR *fb_wStrFill1 ( int chars, FB_WCHAR c )
 
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrFill2 ( int chars, FB_WCHAR *src )
+FBCALL FB_WCHAR *fb_wStrFill2 ( int chars, const FB_WCHAR *src )
 {
 	FB_WCHAR *dst;
 

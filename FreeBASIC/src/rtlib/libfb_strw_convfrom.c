@@ -18,7 +18,7 @@
  */
 
 /*
- * strw_midassign.c -- midw$ statement
+ * strw_convfrom.c -- valw function
  *
  * chng: oct/2004 written [v1ctor]
  *
@@ -28,32 +28,62 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL void fb_wStrAssignMid ( FB_WCHAR *dst, int start, int len, const FB_WCHAR *src )
+FBCALL double fb_wStr2Double( const FB_WCHAR *src, int len )
 {
-    int src_len, dst_len;
+    FB_WCHAR *p, *r;
+    int radix;
 
-    if( (dst == NULL) || (src == NULL) )
-    	return;
+	/* skip white spc */
+	p = fb_wstr_SkipChar( src, len, 32 );
 
-    dst_len = fb_wstr_Len( dst );
-    if( dst_len == 0 )
-    	return;
+	len -= fb_wstr_CalcDiff( src, p );
+	if( len < 1 )
+		return 0.0;
 
-    src_len = fb_wstr_Len( src );
-    if( src_len == 0 )
-    	return;
+	r = p;
+	if( (len >= 2) && (fb_wstr_GetChar( &r ) == L'&') )
+	{
+		radix = 0;
+		switch( fb_wstr_GetChar( &r ) )
+		{
+			case L'h':
+			case L'H':
+				radix = 16;
+				break;
+			case L'o':
+			case L'O':
+				radix = 8;
+				break;
+			case L'b':
+			case L'B':
+				radix = 2;
+				break;
+		}
 
-    if( (start > 0) && (start <= dst_len) )
-    {
-		--start;
+		if( radix != 0 )
+			return (double)fb_wStrRadix2Int( r, len - fb_wstr_CalcDiff( p, r ), radix );
+	}
 
-        if( (len < 1) || (len > src_len) )
-			len = src_len;
+	return wcstod( p, NULL );
 
-        if( start + len > dst_len )
-        	len = (dst_len - start) - 1;
-
-		/* without the null-term */
-		fb_wstr_Move( fb_wstr_OffsetOf( dst, start ), src, len );
-    }
 }
+
+/*:::::*/
+FBCALL double fb_wStrVal ( const FB_WCHAR *str )
+{
+    double val;
+    int len;
+
+	if( str == NULL )
+	    return 0.0;
+
+	len = fb_wstr_Len( str );
+	if( len == 0 )
+		val = 0.0;
+	else
+		val = fb_wStr2Double( str, len );
+
+	return val;
+}
+
+

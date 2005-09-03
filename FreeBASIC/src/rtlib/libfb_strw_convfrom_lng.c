@@ -18,9 +18,9 @@
  */
 
 /*
- * strw_ltrim.c -- ltrimw$ function
+ * strw_convfrom_lng.c -- valwlng function
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: mar/2005 written [v1ctor]
  *
  */
 
@@ -28,26 +28,70 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrLtrim ( const FB_WCHAR *src )
+FBCALL long long fb_wStr2Longint( const FB_WCHAR *src, int len )
 {
-	FB_WCHAR *dst, *p;
-	int len;
+    FB_WCHAR *p, *r;
+    int radix;
 
-	if( src == NULL )
-		return NULL;
-
-	len = fb_wstr_Len( src );
+	/* skip white spc */
 	p = fb_wstr_SkipChar( src, len, 32 );
 
 	len -= fb_wstr_CalcDiff( src, p );
-	if( len <= 0 )
-		return NULL;
+	if( len < 1 )
+		return 0;
 
-	/* alloc temp string */
-    dst = fb_wstr_AllocTemp( len );
-	if( dst != NULL )
-		fb_wstr_Copy( dst, p, len );
+	radix = 10;
+	r = p;
+	if( (len >= 2) && (fb_wstr_GetChar( &r ) == L'&') )
+	{
+		switch( fb_wstr_GetChar( &r ) )
+		{
+			case L'h':
+			case L'H':
+				radix = 16;
+				break;
+			case L'o':
+			case L'O':
+				radix = 8;
+				break;
+			case L'b':
+			case L'B':
+				radix = 2;
+				break;
+		}
 
-	return dst;
+		if( radix != 10 )
+		{
+#ifdef TARGET_WIN32
+			return fb_wStrRadix2Longint( r, len - fb_wstr_CalcDiff( p, r ), radix );
+#else
+			p = r;
+#endif
+		}
+	}
+
+#ifdef TARGET_WIN32
+	return wtoll( p );
+#else
+	return wcstoll( p, NULL, radix );
+#endif
+}
+
+/*:::::*/
+FBCALL long long fb_wStrValLng ( const FB_WCHAR *str )
+{
+    long long val;
+    int len;
+
+	if( str == NULL )
+	    return 0;
+
+	len = fb_wstr_Len( str );
+	if( len == 0 )
+		val = 0;
+	else
+		val = fb_wStr2Longint( str, len );
+
+	return val;
 }
 

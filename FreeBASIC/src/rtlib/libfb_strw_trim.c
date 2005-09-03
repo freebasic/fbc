@@ -29,7 +29,7 @@
 
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrTrim ( FB_WCHAR *src )
+FBCALL FB_WCHAR *fb_wStrTrim ( const FB_WCHAR *src )
 {
 	FB_WCHAR *dst, *p;
 	int chars;

@@ -29,9 +29,10 @@
 
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrLcase ( FB_WCHAR *src )
+FBCALL FB_WCHAR *fb_wStrLcase ( const FB_WCHAR *src )
 {
-	FB_WCHAR *dst, *s, *d;
+	FB_WCHAR *dst, *d;
+	const FB_WCHAR *s;
 	FB_WCHAR c;
 	int chars, i;
 
@@ -50,7 +51,7 @@ FBCALL FB_WCHAR *fb_wStrLcase ( FB_WCHAR *src )
 	d = dst;
 	for( i = 0; i < chars; i++ )
     {
-		c = fb_wstr_GetChar( &s );
+		c = fb_wstr_GetChar( (FB_WCHAR **)&s );
 
 		if( fb_wstr_IsUpper( c ) )
 			c = fb_wstr_ToLower( c );

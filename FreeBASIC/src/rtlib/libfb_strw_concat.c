@@ -18,7 +18,7 @@
  */
 
 /*
- * strw_midassign.c -- midw$ statement
+ * strw_concat.c -- wstring concatenation function
  *
  * chng: oct/2004 written [v1ctor]
  *
@@ -28,32 +28,33 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL void fb_wStrAssignMid ( FB_WCHAR *dst, int start, int len, const FB_WCHAR *src )
+FBCALL FB_WCHAR *fb_wStrConcat ( const FB_WCHAR *str1, const FB_WCHAR *str2 )
 {
-    int src_len, dst_len;
+	FB_WCHAR *dst, *d;
+	int str1_len, str2_len;
 
-    if( (dst == NULL) || (src == NULL) )
-    	return;
+	if( str1 != NULL )
+		str1_len = fb_wstr_Len( str1 );
+	else
+		str1_len = 0;
 
-    dst_len = fb_wstr_Len( dst );
-    if( dst_len == 0 )
-    	return;
+	if( str2 != NULL )
+		str2_len = fb_wstr_Len( str2 );
+	else
+		str2_len = 0;
 
-    src_len = fb_wstr_Len( src );
-    if( src_len == 0 )
-    	return;
+	/* NULL? */
+	if( str1_len + str2_len == 0 )
+		return NULL;
 
-    if( (start > 0) && (start <= dst_len) )
-    {
-		--start;
+	/* alloc temp string */
+    dst = fb_wstr_AllocTemp( str1_len + str2_len );
 
-        if( (len < 1) || (len > src_len) )
-			len = src_len;
+	/* do the concatenation */
+    d = fb_wstr_Move( dst, str1, str1_len );
+    d = fb_wstr_Move( d, str2, str2_len );
+    fb_wstr_SetCharAt( d, 0, L'\0' );
 
-        if( start + len > dst_len )
-        	len = (dst_len - start) - 1;
-
-		/* without the null-term */
-		fb_wstr_Move( fb_wstr_OffsetOf( dst, start ), src, len );
-    }
+	return dst;
 }
+
