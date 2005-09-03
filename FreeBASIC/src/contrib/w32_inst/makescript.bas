@@ -34,6 +34,11 @@ type FileNameEntry
     next            as FileNameEntry ptr
 end type
 
+type MainConfig
+    template        as string
+    output_file     as string
+end type
+
 type SectionInfo
     id              as string
     kind            as SectionKind
@@ -95,89 +100,144 @@ declare sub OutputSection( byval section as SectionInfo ptr, _
                            prefix as string, _
                            suffix as string )
 
+redim as string ConfigFiles( 1 to 1 )
+dim as string cmd
+dim as uinteger cmd_idx, config_file_count, config_file_idx
+
+ConfigFiles( 1 ) = "replace.conf"
+config_file_count = 1
+
+cmd_idx = 1
+cmd = command$( 1 )
+while len( cmd ) > 0
+    config_file_count += 1
+    redim preserve as string ConfigFiles( 1 to config_file_count )
+
+    ConfigFiles( config_file_count ) = cmd
+
+    cmd_idx += 1
+    cmd = command$( cmd_idx )
+wend
+
+dim as MainConfig app_config
 redim as SectionInfo sections(1 to 1)
 dim as integer section_count = 0, section_nr, tmp_section_nr
 dim as SectionInfo ptr section, tmp_section
 
-dim as string l, key, value
+dim as string l, key, value, section_id
 dim as integer p, p2, old_p
 dim as StringEntry ptr string_entry
 dim as FileNameEntry ptr file_entry, tmp_file_entry
 
-print "Reading configuration ..."
-open "I",1,"replace.conf"
-while not eof(1)
-    line input #1, l
-    select case left$(l,1)
-    case "["
-        ' new section
-        section_count += 1
-        redim preserve as SectionInfo sections( 1 to section_count )
-        p = instr(l, "]")
-        sections( section_count ).id = trim$(mid$(l,2,p-2))
-    case ";",""
-        ' comment / empty line
-    case else
-        ' entry
-        p = instr(l, "=")
-        key = trim$(left$(l, p-1))
-        value = trim$(mid$(l,p+1))
-        select case ucase$(key)
-        case "TYPE"
-            select case ucase$(value)
-            case "TEXT"
-                sections( section_count ).kind = SK_Text
-            case "FILE_LIST"
-                sections( section_count ).kind = SK_FileList
+app_config.template = "template.nsi"
+app_config.output_file = "FreeBASIC.nsi"
+
+for config_file_idx=1 to config_file_count
+	print "Reading configuration from file " + ConfigFiles( config_file_idx )
+    open "I",1,ConfigFiles( config_file_idx )
+    while not eof(1)
+        line input #1, l
+        select case left$(l,1)
+        case "["
+            ' new section
+            p = instr(l, "]")
+            section_id = trim$(mid$(l,2,p-2))
+            section = NULL
+
+            select case ucase$(section_id)
+            case "GENERIC"
+                ' special section
             case else
-            	print "Error: unknown value '";value;"' for key '"; key;"'"
-	            end 1
+                for section_nr=1 to section_count
+                    if sections( section_nr ).id = section_id then
+                        section = @sections( section_nr )
+                        exit for
+                    end if
+                next
+                if section = NULL then
+                    section_count += 1
+                    redim preserve as SectionInfo sections( 1 to section_count )
+                    sections( section_count ).id = section_id
+                    section = @sections( section_count )
+                end if
             end select
-        case "SORT"
-            select case ucase$(value)
-            case "ASCENDING","A","ASC","ASCEND"
-                sections( section_count ).sort_descending = FALSE
-            case "DESCENDING","D","DESC","DESCEND"
-                sections( section_count ).sort_descending = TRUE
-            case else
-            	print "Error: unknown value '";value;"' for key '"; key;"'"
-	            end 1
-            end select
-        case "MASK"
-        	sections( section_count ).mask = value
-        case "ROOT"
-        	sections( section_count ).root = value
-        case "MASKFOLDER","MASK_FOLDER"
-        	sections( section_count ).mask_folder = value
-        case "MASKFILE","MASK_FILE"
-        	sections( section_count ).mask_file = value
-        case "SELECT"
-            string_entry = callocate( len(StringEntry) )
-            string_entry->value = value
-            string_entry->next = sections( section_count ).selections
-            sections( section_count ).selections = string_entry
-        case "EXCLUDE"
-            string_entry = callocate( len(StringEntry) )
-            string_entry->value = value
-            string_entry->next = sections( section_count ).excludes
-            sections( section_count ).excludes = string_entry
-            sections( section_count ).exclude_count += 1
-        case "LISTFROM","LIST_FROM"
-            string_entry = callocate( len(StringEntry) )
-            string_entry->value = value
-            string_entry->next = sections( section_count ).list_from
-            sections( section_count ).list_from = string_entry
-        case "FILTER"
-        	sections( section_count ).filter = value
-        case "REPLACEBY","REPLACE_BY"
-        	sections( section_count ).replace_by = value
+        case ";",""
+            ' comment / empty line
         case else
-            print "Error: unknown key '"; key;"'"
-            end 1
+            ' entry
+            p = instr(l, "=")
+            key = trim$(left$(l, p-1))
+            value = trim$(mid$(l,p+1))
+            select case ucase$( section_id )
+            case "GENERIC"
+                select case ucase$(key)
+                case "TEMPLATE"
+                    app_config.template = value
+                case "OUTPUT"
+                    app_config.output_file = value
+                case else
+                    print "Error: unknown key '"; key;"'"
+                    end 1
+                end select
+            case else
+                select case ucase$(key)
+                case "TYPE"
+                    select case ucase$(value)
+                    case "TEXT"
+                        section->kind = SK_Text
+                    case "FILE_LIST"
+                        section->kind = SK_FileList
+                    case else
+                        print "Error: unknown value '";value;"' for key '"; key;"'"
+                        end 1
+                    end select
+                case "SORT"
+                    select case ucase$(value)
+                    case "ASCENDING","A","ASC","ASCEND"
+                        section->sort_descending = FALSE
+                    case "DESCENDING","D","DESC","DESCEND"
+                        section->sort_descending = TRUE
+                    case else
+                        print "Error: unknown value '";value;"' for key '"; key;"'"
+                        end 1
+                    end select
+                case "MASK"
+                    section->mask = value
+                case "ROOT"
+                    section->root = value
+                case "MASKFOLDER","MASK_FOLDER"
+                    section->mask_folder = value
+                case "MASKFILE","MASK_FILE"
+                    sections( section_count ).mask_file = value
+                case "SELECT"
+                    string_entry = callocate( len(StringEntry) )
+                    string_entry->value = value
+                    string_entry->next = section->selections
+                    section->selections = string_entry
+                case "EXCLUDE"
+                    string_entry = callocate( len(StringEntry) )
+                    string_entry->value = value
+                    string_entry->next = section->excludes
+                    section->excludes = string_entry
+                    section->exclude_count += 1
+                case "LISTFROM","LIST_FROM"
+                    string_entry = callocate( len(StringEntry) )
+                    string_entry->value = value
+                    string_entry->next = section->list_from
+                    section->list_from = string_entry
+                case "FILTER"
+                    section->filter = value
+                case "REPLACEBY","REPLACE_BY"
+                    section->replace_by = value
+                case else
+                    print "Error: unknown key '"; key;"'"
+                    end 1
+                end select
+            end select
         end select
-    end select
-wend
-close 1
+    wend
+    close 1
+next
 
 if section_count=0 then
     print "Invalid number of sections"
@@ -361,11 +421,11 @@ for section_nr=1 to section_count
 next
 #endif
 
-dim as string section_id, text_prefix, text_suffix
+dim as string text_prefix, text_suffix
 
 print "Processing template"
-open "I",1,"template.nsi"
-open "O",2,"FreeBASIC.nsi"
+open "I",1,app_config.template
+open "O",2,app_config.output_file
 while not eof(1)
     line input #1, l
     p = instr( l, ";;;" )

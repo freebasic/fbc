@@ -66,7 +66,7 @@ var ICONS_GROUP
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "Setup.exe"
+OutFile "SetupSource.exe"
 InstallDir "$PROGRAMFILES\FreeBASIC"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
@@ -78,11 +78,17 @@ LangString TEXT_SECTION_MAIN     ${LANG_GERMAN}  "Hauptgruppe"
 LangString TEXT_SECTION_EXAMPLES ${LANG_ENGLISH} "Examples"
 LangString TEXT_SECTION_EXAMPLES ${LANG_GERMAN}  "Beispiele"
 
+LangString TEXT_SECTION_SOURCES  ${LANG_ENGLISH} "Sources"
+LangString TEXT_SECTION_SOURCES  ${LANG_GERMAN}  "Quelltexte"
+
 LangString TEXT_SECT_DESCR_MAIN     ${LANG_ENGLISH} "Compiler, libraries and header files"
 LangString TEXT_SECT_DESCR_MAIN     ${LANG_GERMAN}  "Compiler, Bibliotheken und Include-Dateien"
 
 LangString TEXT_SECT_DESCR_EXAMPLES ${LANG_ENGLISH} "Example applications"
 LangString TEXT_SECT_DESCR_EXAMPLES ${LANG_GERMAN}  "Beispiel-Programme"
+
+LangString TEXT_SECT_DESCR_SOURCES  ${LANG_ENGLISH} "Sources the compiler and its libraries were built from"
+LangString TEXT_SECT_DESCR_SOURCES  ${LANG_GERMAN}  "Quelltexte aus denen der Compiler und die Bibliotheken erstellt wurden"
 
 LangString TEXT_INSTALL_SUCCESS  ${LANG_ENGLISH} "$(^Name) was removed successfully."
 LangString TEXT_INSTALL_SUCCESS  ${LANG_GERMAN}  "$(^Name) wurde erfolgreich deinstalliert."
@@ -122,6 +128,14 @@ Section $(TEXT_SECTION_EXAMPLES) SEC02
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
+Section /o $(TEXT_SECTION_SOURCES) SEC03
+  ;;;FILES_SOURCES;;;
+
+; Shortcuts
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+  !insertmacro MUI_STARTMENU_WRITE_END
+SectionEnd
+
 Section -AdditionalIcons
   SetOutPath $INSTDIR
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -147,6 +161,7 @@ SectionEnd
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "$(TEXT_SECT_DESCR_MAIN)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "$(TEXT_SECT_DESCR_EXAMPLES)"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "$(TEXT_SECT_DESCR_SOURCES)"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 
@@ -167,6 +182,7 @@ Section Uninstall
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\fblogo.ico"
   Delete "$INSTDIR\start_shell.exe"
+  ;;;DELETE_SOURCES;;;
   ;;;DELETE_EXAMPLES;;;
   ;;;DELETE_MAIN;;;
   ;;;DELETE_IMPORT_LIBS;;;

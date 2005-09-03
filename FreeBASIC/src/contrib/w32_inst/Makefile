@@ -12,13 +12,16 @@ MAKENSIS=makensis
 endif
 endif
 
-all: start_shell.exe makescript.exe FreeBASIC.nsi
+all: start_shell.exe makescript.exe FreeBASIC.nsi FreeBASIC_src.nsi
 
 clean:
 	rm -f obj/*.o *.exe $(shell find . -name "*~") FreeBASIC.nsi
 
 FreeBASIC.nsi: template.nsi replace.conf
 	makescript
+
+FreeBASIC_src.nsi: tmpl_src.nsi replace.conf repl_src.conf
+	makescript repl_src.conf
 
 start_shell.exe: start_shell.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
