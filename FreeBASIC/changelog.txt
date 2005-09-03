@@ -81,6 +81,7 @@ Version 0.15 Beta:
 - GETMOUSE now works in combination with INKEY$ on Win32 (mjs)
 - string's dead-lock when using the thread-safe version of the runtime library (v1c)
 - now the Linux console routines use termcap for output for wider terminals compatibility (lillo)
+- comparing strings would give wrong results if characters above 127 were present (v1c)
 
 
 Version 0.14 Beta:
