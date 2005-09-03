@@ -39,7 +39,7 @@ extern "C" {
                " cmpsb            \n"
                " je 0f            \n"
                " movl $1, %%ecx   \n"
-               " jg 0f            \n"
+               " ja 0f            \n"
                " neg %%ecx        \n"
                "0:                \n"
                " popl %%edi       \n"
