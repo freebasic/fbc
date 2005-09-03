@@ -158,6 +158,8 @@ Section Uninstall
   !insertmacro MUI_STARTMENU_GETFOLDER "Application" $ICONS_GROUP
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
   Delete "$INSTDIR\uninst.exe"
+  Delete "$INSTDIR\fblogo.ico"
+  Delete "$INSTDIR\start_shell.exe"
   ;;;DELETE_EXAMPLES;;;
   ;;;DELETE_MAIN;;;
   ;;;DELETE_IMPORT_LIBS;;;
