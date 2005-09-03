@@ -41,19 +41,19 @@ FBCALL int fb_hStrRadix2Int( char *src, int len, int radix )
 
 				v = (v * 16) + c;
 			}
-		break;
+			break;
 
 		/* oct */
 		case 8:
 			while( --len >= 0 )
 				v = (v * 8) + ((int)*src++ - 48);
-		break;
+			break;
 
 		/* bin */
 		case 2:
 			while( --len >= 0 )
 				v = (v * 2) + ((int)*src++ - 48);
-		break;
+			break;
 	}
 
 	return v;

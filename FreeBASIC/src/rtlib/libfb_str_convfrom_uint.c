@@ -49,15 +49,15 @@ FBCALL unsigned int fb_hStr2UInt( char *src, int len )
 			case 'h':
 			case 'H':
 				radix = 16;
-			break;
+				break;
 			case 'o':
 			case 'O':
 				radix = 8;
-			break;
+				break;
 			case 'b':
 			case 'B':
 				radix = 2;
-			break;
+				break;
 		}
 
 		if( radix != 10 )

@@ -23,7 +23,8 @@
 /*:::::*/
 FBCALL long long fb_hStrRadix2Longint( char *s, int len, int radix )
 {
-	long long c, v;
+	long long v;
+	int c;
 
 	v = 0;
 
@@ -33,7 +34,7 @@ FBCALL long long fb_hStrRadix2Longint( char *s, int len, int radix )
 		case 16:
 			while( --len >= 0 )
 			{
-				c = (long long)*s++ - 48;
+				c = (int)*s++ - 48;
                 if( c > 9 )
                 	c -= (65 - 57 - 1);
 				if( c > 16 )
@@ -41,19 +42,19 @@ FBCALL long long fb_hStrRadix2Longint( char *s, int len, int radix )
 
 				v = (v * 16) + c;
 			}
-		break;
+			break;
 
 		/* oct */
 		case 8:
 			while( --len >= 0 )
 				v = (v * 8) + ((long long)*s++ - 48);
-		break;
+			break;
 
 		/* bin */
 		case 2:
 			while( --len >= 0 )
 				v = (v * 2) + ((long long)*s++ - 48);
-		break;
+			break;
 	}
 
 	return v;
