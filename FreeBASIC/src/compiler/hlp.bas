@@ -161,7 +161,8 @@ end type
 		"Math overflow", _
 		"Expected 'ANY'", _
 		"Expected 'END SCOPE'", _
-		"Illegal inside a SCOPE block" _
+		"Illegal inside a SCOPE block", _
+		"Cannot pass an UDT result by reference" _
 	}
 
 

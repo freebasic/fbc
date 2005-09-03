@@ -5412,11 +5412,31 @@ function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 
 end function
 
-'':::::
-private sub hReportParamError( byval f as ASTNODE ptr )
 
-	hReportErrorEx( FB_ERRMSG_PARAMTYPEMISMATCHAT, _
-					"at parameter: " + str( f->proc.params+1 ) )
+'':::::
+private function hReportMakeDesc( byval f as ASTNODE ptr ) as zstring ptr
+    static as zstring * FB_MAXINTNAMELEN+32+1 desc
+
+	desc = "at parameter " + str( f->proc.params+1 )
+	if( f->proc.sym <> NULL ) then
+		desc += " of "
+		if( len( symbGetOrgName( f->proc.sym ) ) > 0 ) then
+			desc += symbGetOrgName( f->proc.sym )
+		else
+			desc += symbGetName( f->proc.sym )
+		end if
+		desc += "()"
+	end if
+
+	function = @desc
+
+end function
+
+'':::::
+private sub hReportParamError( byval f as ASTNODE ptr, _
+							   byval msgnum as integer = FB_ERRMSG_PARAMTYPEMISMATCHAT )
+
+	hReportErrorEx( msgnum, *hReportMakeDesc( f ) )
 
 end sub
 
@@ -5424,8 +5444,7 @@ end sub
 private sub hReportParamWarning( byval f as ASTNODE ptr, _
 								 byval msgnum as integer )
 
-	hReportWarning( msgnum, _
-					"at parameter: " + str( f->proc.params+1 ) )
+	hReportWarning( msgnum, *hReportMakeDesc( f ) )
 
 end sub
 
@@ -5892,18 +5911,28 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 
 			'' UDT arg? check if the same, can't convert
 			elseif( adtype = IR_DATATYPE_USERDEF ) then
+				'' not another UDT?
 				if( pdtype <> IR_DATATYPE_USERDEF ) then
+					'' not a proc? (can be an UDT been returned in registers)
 					if( pclass <> AST_NODECLASS_FUNCT ) then
 						hReportParamError( f )
 						exit function
 					end if
 
+					'' it's a proc, but was it originally returning an UDT?
 					s = p->proc.sym
 					if( s->typ <> FB_SYMBTYPE_USERDEF ) then
 						hReportParamError( f )
 						exit function
 					end if
 
+					'' byref argument? can't create a tempory UDT..
+					if( amode = FB_ARGMODE_BYREF ) then
+						hReportParamError( f, FB_ERRMSG_CANTPASSUDTRESULTBYREF )
+						exit function
+					end if
+
+					'' set type..
 					n->dtype = pdtype
 					s = s->subtype
 
