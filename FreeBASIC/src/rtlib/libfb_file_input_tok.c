@@ -192,6 +192,9 @@ savechar:
 		case EOF:
 			break;
 
+        case 10:
+            break;
+
 		case 13:
 			if( (c = fb_hReadChar( )) != 10 )
 				fb_hUnreadChar( c );
