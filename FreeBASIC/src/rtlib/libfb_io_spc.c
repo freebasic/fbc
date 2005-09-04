@@ -58,9 +58,42 @@ FBCALL void fb_PrintTab( int fnum, int newcol )
     		fb_Locate( -1, 1, -1 );
 
     	else
-    		fb_Locate( -1, newcol, -1 );
+            fb_Locate( -1, newcol, -1 );
+
     } else {
-        fb_PrintPadEx ( handle, 0 );
+
+        if( handle->type==FB_FILE_TYPE_PIPE ) {
+
+            fb_PrintPadEx ( handle, 0 );
+
+        } else {
+
+            if( newcol > handle->line_length ) {
+                fb_PrintStringEx( handle,
+                                  fb_StrFill1( newcol - handle->line_length - 1, ' ' ),
+                                  0 );
+            } else {
+
+                if( handle->mode==FB_FILE_MODE_BINARY ) {
+                    fb_PrintStringEx( handle,
+                                      fb_StrAllocTempDescF( FB_BINARY_NEWLINE, sizeof( FB_BINARY_NEWLINE ) ),
+                                      0 );
+                } else {
+                    fb_PrintStringEx( handle,
+                                      fb_StrAllocTempDescF( FB_NEWLINE, sizeof( FB_NEWLINE ) ),
+                                      0 );
+                }
+
+                if( newcol > 0 ) {
+                    fb_PrintStringEx( handle,
+                                      fb_StrFill1( newcol - 1, ' ' ),
+                                      0 );
+                }
+
+            }
+
+        }
+
     }
 
     FB_UNLOCK();
@@ -100,7 +133,7 @@ FBCALL void fb_PrintSPC( int fnum, int n )
 
     } else {
 
-        fb_PrintStringEx ( handle, fb_StrFill1 ( n, ' ' ), 0 );
+        fb_PrintStringEx( handle, fb_StrFill1( n, ' ' ), 0 );
 
     }
 

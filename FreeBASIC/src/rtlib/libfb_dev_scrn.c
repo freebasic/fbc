@@ -61,6 +61,7 @@ int fb_DevScrnOpen( struct _FB_FILE *handle, const char *filename, size_t filena
     	if( handle->hooks == NULL )
     		fb_DevScrnInit_Screen( );
     	handle->hooks = &fb_hooks_dev_scrn;
+        handle->type = FB_FILE_TYPE_CONSOLE;
     }
 
     FB_UNLOCK();

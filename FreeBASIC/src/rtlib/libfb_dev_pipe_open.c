@@ -99,6 +99,7 @@ int fb_DevPipeOpen( struct _FB_FILE *handle, const char *filename, size_t filena
             res = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
         }
         handle->opaque = fp;
+        handle->type = FB_FILE_TYPE_PIPE;
     }
 
     FB_UNLOCK();

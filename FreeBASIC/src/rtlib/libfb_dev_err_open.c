@@ -56,6 +56,7 @@ int fb_DevErrOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
 
     if( res == FB_RTERROR_OK ) {
         handle->opaque = stderr;
+        handle->type = FB_FILE_TYPE_PIPE;
     }
 
     FB_UNLOCK();
