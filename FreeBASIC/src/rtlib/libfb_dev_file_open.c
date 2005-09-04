@@ -40,7 +40,9 @@ static FB_FILE_HOOKS fb_hooks_dev_file = {
     fb_DevFileWrite,
     fb_DevFileLock,
     fb_DevFileUnlock,
-    fb_DevFileReadLine
+    fb_DevFileReadLine,
+    NULL,
+    fb_DevFileFlush
 };
 
 int fb_DevFileOpen( struct _FB_FILE *handle, const char *filename, size_t fname_len )
@@ -145,6 +147,10 @@ int fb_DevFileOpen( struct _FB_FILE *handle, const char *filename, size_t fname_
     handle->opaque = fp;
     if (handle->access == FB_FILE_ACCESS_ANY)
         handle->access = FB_FILE_ACCESS_READWRITE;
+
+    /* We just need this for TAB(n) and SPC(n) */
+    if( strcasecmp( fname, "CON" )==0 )
+        handle->type = FB_FILE_TYPE_CONSOLE;
 
     FB_UNLOCK();
 

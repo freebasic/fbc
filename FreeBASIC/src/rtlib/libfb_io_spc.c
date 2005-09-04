@@ -38,8 +38,13 @@ FBCALL void fb_PrintTab( int fnum, int newcol )
 
     handle = FB_FILE_TO_HANDLE(fnum);
 
-	if( FB_HANDLE_IS_SCREEN(handle) )
-	{
+	if( FB_HANDLE_IS_SCREEN(handle) || handle->type == FB_FILE_TYPE_CONSOLE )
+    {
+        if( handle->type == FB_FILE_TYPE_CONSOLE ) {
+            if( handle->hooks && handle->hooks->pfnFlush )
+                handle->hooks->pfnFlush( handle );
+        }
+
 		fb_GetXY( &col, &row );
 		fb_GetSize( &cols, &rows );
 
@@ -54,6 +59,8 @@ FBCALL void fb_PrintTab( int fnum, int newcol )
 
     	else
     		fb_Locate( -1, newcol, -1 );
+    } else {
+        fb_PrintPadEx ( handle, 0 );
     }
 
     FB_UNLOCK();
@@ -72,10 +79,15 @@ FBCALL void fb_PrintSPC( int fnum, int n )
 
     handle = FB_FILE_TO_HANDLE(fnum);
 
-	if( FB_HANDLE_IS_SCREEN(handle) )
+	if( FB_HANDLE_IS_SCREEN(handle) || handle->type == FB_FILE_TYPE_CONSOLE )
 	{
 		if( n == 0 )
 			return;
+
+        if( handle->type == FB_FILE_TYPE_CONSOLE ) {
+            if( handle->hooks && handle->hooks->pfnFlush )
+                handle->hooks->pfnFlush( handle );
+        }
 
 		fb_GetXY( &col, &row );
 		fb_GetSize( &cols, &rows );
@@ -84,7 +96,14 @@ FBCALL void fb_PrintSPC( int fnum, int n )
     	if( newcol > cols )
     		newcol %= cols;
 
-		fb_Locate( -1, newcol, -1 );
-	}
+        fb_Locate( -1, newcol, -1 );
+
+    } else {
+
+        fb_PrintStringEx ( handle, fb_StrFill1 ( n, ' ' ), 0 );
+
+    }
+
+    FB_UNLOCK();
 }
 

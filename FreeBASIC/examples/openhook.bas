@@ -35,9 +35,9 @@ private function MyOpenHook( filename as string, _
     print "Testing file name " & filename
     *pfnFileOpen = @fb_DevFileOpen
     select case ucase$(filename)
-    case "SCRN:"
+    case "SCRN:","CON","CON:"
         *pfnFileOpen = @fb_DevScrnOpen
-    case "CONS:", "CON:"
+    case "CONS:"
         *pfnFileOpen = @fb_DevConsOpen
     case "ERR:"
         *pfnFileOpen = @fb_DevErrOpen

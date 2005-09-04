@@ -29,6 +29,7 @@ end enum
 
 enum FB_FILE_TYPE
     FB_FILE_TYPE_NORMAL = 0
+    FB_FILE_TYPE_CONSOLE = 1
     FB_FILE_TYPE_VFS = 5
 end enum
 
@@ -196,6 +197,15 @@ type fb_FnFileReadLine as _
           function cdecl ( handle as FB_FILE, _
                            dst as string ) as integer
 
+'' Function to flush buffered output to disk
+'
+' IN:
+' handle            file handle
+'
+' RET:              error code (see ERROR statement)
+type fb_FnFileFlush as _
+          function cdecl ( handle as FB_FILE ) as integer
+
 type FB_FILE_HOOKS
     pfnEof          as fb_FnFileEof
     pfnClose        as fb_FnFileClose
@@ -207,6 +217,7 @@ type FB_FILE_HOOKS
     pfnUnlock       as fb_FnFileUnlock
     pfnReadLine     as fb_FnFileReadLine
     pfnSetWidth     as fb_FnFileSetWidth
+    pfnFlush        as fb_FnFileFlush
 end type
 
 '' Function to query a file name's open function

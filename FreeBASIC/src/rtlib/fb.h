@@ -852,6 +852,7 @@ typedef int (*FnFileWrite)    ( struct _FB_FILE *handle, const void* value, size
 typedef int (*FnFileLock)     ( struct _FB_FILE *handle, unsigned int position, unsigned int size );
 typedef int (*FnFileUnlock)   ( struct _FB_FILE *handle, unsigned int position, unsigned int size );
 typedef int (*FnFileReadLine) ( struct _FB_FILE *handle, FBSTRING *dst );
+typedef int (*FnFileFlush)    ( struct _FB_FILE *handle );
 
 typedef struct _FB_FILE_HOOKS {
     FnFileEof       pfnEof;
@@ -864,6 +865,7 @@ typedef struct _FB_FILE_HOOKS {
     FnFileUnlock    pfnUnlock;
     FnFileReadLine  pfnReadLine;
     FnFileSetWidth  pfnSetWidth;
+    FnFileFlush     pfnFlush;
 } FB_FILE_HOOKS;
 
 typedef struct _FB_FILE {
@@ -1067,6 +1069,7 @@ FBCALL int          fb_SetPos           ( FB_FILE *handle, int line_length );
        int          fb_DevFileTell      ( struct _FB_FILE *handle, long *pOffset );
        int          fb_DevFileUnlock    ( struct _FB_FILE *handle, unsigned int position, unsigned int size );
        int          fb_DevFileWrite     ( struct _FB_FILE *handle, const void* value, size_t valuelen );
+       int          fb_DevFileFlush     ( struct _FB_FILE *handle );
 
        /* PIPE */
        int          fb_DevPipeOpen      ( struct _FB_FILE *handle, const char *filename, size_t filename_len );
