@@ -25,11 +25,14 @@
  *
  */
 
+#include <assert.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
 #define KEY_BUFFER_LEN 512
-static int key_buffer[KEY_BUFFER_LEN], key_head = 0, key_tail = 0;
+static int key_buffer[KEY_BUFFER_LEN];
+static size_t key_head = 0, key_tail = 0;
+static INPUT_RECORD input_events[KEY_BUFFER_LEN];
 
 typedef struct _FB_KEY_CODES {
     unsigned short value_normal;
@@ -196,11 +199,22 @@ static void fb_hConsoleInit(void)
 }
 
 /*:::::*/
-void fb_hConsolePostKey(int key)
+void fb_hConsolePostKey(int key, const KEY_EVENT_RECORD *key_event)
 {
+    INPUT_RECORD *record;
+
     FB_LOCK();
 
-	key_buffer[key_tail] = key;
+    key_buffer[key_tail] = key;
+
+    assert( key_event!=NULL );
+
+    record = input_events + key_tail;
+    memcpy( &record->Event.KeyEvent,
+            key_event,
+            sizeof( KEY_EVENT_RECORD ) );
+    record->EventType = KEY_EVENT;
+
 	if (((key_tail + 1) & (KEY_BUFFER_LEN - 1)) == key_head)
 		key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
     key_tail = (key_tail + 1) & (KEY_BUFFER_LEN - 1);
@@ -246,6 +260,34 @@ int fb_hConsoleGetKey(int full)
 int fb_hConsolePeekKey(int full)
 {
     return fb_hConsoleGetKeyEx( full, FALSE );
+}
+
+/*:::::*/
+void fb_hConsolePutBackEvents( void )
+{
+    size_t key_idx;
+
+    FB_LOCK();
+
+    while( fb_ConsoleProcessEvents( ) )
+        ;
+
+    key_idx = key_head;
+    while( key_idx != key_tail ) {
+        DWORD dwEventsWritten = 0;
+        size_t count = (key_idx > key_tail) ? (KEY_BUFFER_LEN - key_idx) : (key_tail - key_idx);
+
+        WriteConsoleInput( fb_in_handle,
+                           input_events + key_idx,
+                           count,
+                           &dwEventsWritten );
+
+        key_idx += count;
+        if( key_idx==KEY_BUFFER_LEN )
+            key_idx = 0;
+    }
+
+    FB_UNLOCK();
 }
 
 
@@ -344,7 +386,7 @@ static void fb_hConsoleProcessKeyEvent( KEY_EVENT_RECORD *event )
     if( AddKeyCode ) {
         if( KeyCode > 255 )
             KeyCode = FB_MAKE_EXT_KEY((char) (KeyCode >> 8));
-        fb_hConsolePostKey(KeyCode);
+        fb_hConsolePostKey(KeyCode, event);
     }
 }
 

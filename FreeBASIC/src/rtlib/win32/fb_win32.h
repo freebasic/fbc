@@ -96,9 +96,10 @@ FBCALL void fb_ConsoleGetScreenSize     ( int *cols, int *rows );
        void fb_hConsoleGetWindow        ( int *left, int *top, int *cols, int *rows );
 
        int  fb_ConsoleProcessEvents     ( void );
-       void fb_hConsolePostKey          ( int key );
+       void fb_hConsolePostKey          ( int key, const KEY_EVENT_RECORD *key_event );
        int  fb_hConsoleGetKey           ( int full );
        int  fb_hConsolePeekKey          ( int full );
+       void fb_hConsolePutBackEvents    ( void );
 
 #define FB_CONSOLE_WINDOW_EMPTY() \
     ((srConsoleWindow.Left==srConsoleWindow.Right) \

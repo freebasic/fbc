@@ -33,6 +33,7 @@ char *fb_ConsoleReadStr( char *buffer, int len )
 {
     char *res;
     fb_hRestoreConsoleWindow( );
+    fb_hConsolePutBackEvents( );
     res = fgets( buffer, len, stdin );
     fb_hUpdateConsoleWindow( );
     return res;
