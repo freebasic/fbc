@@ -34,8 +34,14 @@ int fb_ConsoleWidth( int cols, int rows )
 {
 	int cur = ScreenCols() | (ScreenRows() << 16);
 	
-	if( rows > 0 )
+	if( rows > 0 ) {
+		if (cols == 40)
+			textmode(C40);
+		else
+			textmode(C80);
+		
 		_set_screen_lines(rows);
+	}
 	
 	return cur;
 }
