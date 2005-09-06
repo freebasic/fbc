@@ -39,6 +39,8 @@ FB_TLSENTRY fb_dirctx = 0;
 
 FBSTRING fb_strNullDesc = { NULL, 0 };
 
+FnDevOpenHook fb_pfnDevOpenHook = NULL;
+
 /*:::::*/
 FBCALL void fb_Init ( int argc, char **argv )
 {

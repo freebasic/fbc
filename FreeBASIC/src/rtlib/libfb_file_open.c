@@ -32,8 +32,6 @@
 
 void fb_hFileCtx ( int doinit );
 
-FnDevOpenHook fb_pfnDevOpenHook = NULL;
-
 #ifdef MULTITHREADED
 int __fb_is_exiting = FALSE;
 #endif

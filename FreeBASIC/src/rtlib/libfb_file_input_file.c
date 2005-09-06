@@ -36,7 +36,7 @@ FBCALL int fb_FileInput( int fnum )
     FBSTRING s;
     int res = fb_ErrorSetNum( FB_RTERROR_OK );
 
-    fb_DevScrnInit_Read( );
+    /* fb_DevScrnInit_Read( ); */
 
 	FB_LOCK();
 

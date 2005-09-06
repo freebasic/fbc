@@ -3,6 +3,7 @@
 
 #if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
 #inclib "winspool"
+#inclib "user32"
 #endif
 
 enum FB_FILE_MODE

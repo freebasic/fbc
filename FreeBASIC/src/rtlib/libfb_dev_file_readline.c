@@ -31,8 +31,17 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
+static char *fb_hDevFileReadStringWrapper( char *buffer,
+                                           size_t count,
+                                           FILE *fp )
+{
+    return fgets( buffer, count, fp );
+}
+
 /*:::::*/
-int fb_DevFileReadLineDumb( FILE *fp, FBSTRING *dst )
+int fb_DevFileReadLineDumb( FILE *fp,
+                            FBSTRING *dst,
+                            fb_FnDevReadString pfnReadString )
 {
     int res = fb_ErrorSetNum( FB_RTERROR_OK );
     char buffer[512];
@@ -55,8 +64,14 @@ int fb_DevFileReadLineDumb( FILE *fp, FBSTRING *dst )
             res = FB_RTERROR_FILEIO; /* but we have to notify the caller */
             break;
         }
-#else
+#elif 0
         if( fb_ReadString( buffer, sizeof(buffer), fp ) == NULL ) {
+            /* EOF reached ... this is not an error !!! */
+            res = FB_RTERROR_FILEIO; /* but we have to notify the caller */
+            break;
+        }
+#else
+        if( pfnReadString( buffer, sizeof( buffer ), fp ) == NULL ) {
             /* EOF reached ... this is not an error !!! */
             res = FB_RTERROR_FILEIO; /* but we have to notify the caller */
             break;
@@ -135,7 +150,7 @@ int fb_DevFileReadLine( struct _FB_FILE *handle, FBSTRING *dst )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
-    res = fb_DevFileReadLineDumb( fp, dst );
+    res = fb_DevFileReadLineDumb( fp, dst, fb_hDevFileReadStringWrapper );
 
 	FB_UNLOCK();
 

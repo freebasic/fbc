@@ -39,22 +39,17 @@ typedef enum _eInputMode {
 
 /*:::::*/
 static int fb_hFileLineInputEx( FB_FILE *handle,
-                                FBSTRING *text, void *dst, int dst_len,
-                                int fillrem, int addquestion, int addnewline )
+                                void *dst, int dst_len, int fillrem )
 {
-	int			len, readlen, is_console;
+	int			len, readlen;
 	char		buffer[BUFFER_LEN];
     FBSTRING   *str_result;
     eInputMode  mode = eIM_Invalid;
-
-    fb_DevScrnInit_ReadLine( );
 
     if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
     FB_LOCK();
-
-    is_console = FB_HANDLE_IS_SCREEN(handle);
 
     if( handle->hooks->pfnReadLine != NULL ) {
         mode = eIM_ReadLine;
@@ -64,32 +59,10 @@ static int fb_hFileLineInputEx( FB_FILE *handle,
         mode = eIM_Read;
     }
 
-    FB_UNLOCK();
-
-    if( mode==eIM_Invalid )
+    if( mode==eIM_Invalid ) {
+        FB_UNLOCK();
         return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-
-    /* Only devices with a width and read function are allowed to print
-     * a question. Currently, I don't test for the width and read function
-     * pointers ... */
-    if( is_console )
-    {
-		if( text != NULL )
-		{
-            if( text->data != NULL ) {
-                fb_PrintStringEx( handle, text, 0 );
-			}
-
-			if( addquestion != FB_FALSE )
-			{
-				strcpy( buffer, "? " );
-				fb_PrintFixStringEx( handle, buffer, 0 );
-			}
-		}
-	}
-
-
-    FB_LOCK();
+    }
 
     switch( mode ) {
     case eIM_Read:
@@ -156,7 +129,6 @@ static int fb_hFileLineInputEx( FB_FILE *handle,
             /* add contents of tempporary string to result buffer */
             fb_StrAssign( dst, dst_len, str_result, -1, fillrem );
             /* INFO: temporary string will be deleted during assignment */
-            readlen = FB_STRSIZE( dst );
         }
         break;
     case eIM_Invalid:
@@ -165,47 +137,14 @@ static int fb_hFileLineInputEx( FB_FILE *handle,
         break;
     }
 
-	/* - */
-    if( is_console ) {
-        if( addnewline ) {
-            fb_FilePutDataEx( handle, 0, FB_NEWLINE, sizeof(FB_NEWLINE)-1, FALSE, TRUE );
-        }
-    }
-
     FB_UNLOCK();
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 /*:::::*/
-static int fb_hFileLineInput( int fnum, FBSTRING *text, void *dst, int dst_len,
-                              int fillrem, int addquestion, int addnewline )
-{
-    return fb_hFileLineInputEx( FB_FILE_TO_HANDLE(fnum), text, dst, dst_len,
-                                fillrem, addquestion, addnewline);
-}
-
-/*:::::*/
 FBCALL int fb_FileLineInput( int fnum, void *dst, int dst_len, int fillrem )
 {
-	int res;
-
-	FB_LOCK();
-	res = fb_hFileLineInput( fnum, NULL, dst, dst_len, fillrem, FB_FALSE, FB_FALSE );
-	FB_UNLOCK();
-
-	return res;
-}
-
-/*:::::*/
-FBCALL int fb_LineInput( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline )
-{
-	int res;
-
-	FB_LOCK();
-	res = fb_hFileLineInput( 0, text, dst, dst_len, fillrem, addquestion, addnewline );
-	FB_UNLOCK();
-
-	return res;
+    return fb_hFileLineInputEx( FB_FILE_TO_HANDLE(fnum), dst, dst_len, fillrem );
 }
 

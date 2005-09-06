@@ -1071,6 +1071,13 @@ FBCALL int          fb_SetPos           ( FB_FILE *handle, int line_length );
        int          fb_DevFileWrite     ( struct _FB_FILE *handle, const void* value, size_t valuelen );
        int          fb_DevFileFlush     ( struct _FB_FILE *handle );
 
+       typedef char* (*fb_FnDevReadString)( char *buffer,
+                                            size_t count,
+                                            FILE *fp );
+       int          fb_DevFileReadLineDumb( FILE *fp,
+                                            FBSTRING *dst,
+                                            fb_FnDevReadString pfnReadString );
+
        /* PIPE */
        int          fb_DevPipeOpen      ( struct _FB_FILE *handle, const char *filename, size_t filename_len );
        int          fb_DevPipeClose     ( struct _FB_FILE *handle );

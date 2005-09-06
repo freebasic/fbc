@@ -64,7 +64,12 @@ void DoMove( FB_FILE *handle, int *x, int *y, int dx, int dy, int cols, int rows
 
 #else
 
-int fb_DevFileReadLineDumb( FILE *fp, FBSTRING *dst );
+static char *fb_hDevFileReadStringWrapper( char *buffer,
+                                           size_t count,
+                                           FILE *fp )
+{
+    return fgets( buffer, count, fp );
+}
 
 #endif
 
@@ -252,7 +257,7 @@ int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
     fb_GetSize( &cols, &rows );
 
     fb_GetXY( &old_x, NULL );
-    res = fb_DevFileReadLineDumb( stdin, dst );
+    res = fb_DevFileReadLineDumb( stdin, dst, fb_hDevFileReadStringWrapper );
     fb_GetXY( NULL, &old_y );
 
     len = FB_STRSIZE(dst);
