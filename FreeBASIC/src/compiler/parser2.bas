@@ -870,6 +870,7 @@ end function
 private function hProcPtrBody( byval proc as FBSYMBOL ptr, _
 							   byref addrofexpr as ASTNODE ptr ) as integer
 	dim as ASTNODE ptr expr
+	dim as FBSYMBOL ptr sym
 
 	function = FALSE
 
@@ -879,6 +880,16 @@ private function hProcPtrBody( byval proc as FBSYMBOL ptr, _
 			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
 			exit function
 		end if
+	end if
+
+	'' resolve overloaded procs
+	if( symbIsOverloaded( proc ) ) then
+        if( env.ctxsym <> NULL ) then
+        	sym = symbFindOverloadProc( proc, symbGetSubType( env.ctxsym ) )
+        	if( sym <> NULL ) then
+        		proc = sym
+        	end if
+        end if
 	end if
 
 	expr = astNewVAR( proc, NULL, 0, IR_DATATYPE_FUNCTION, proc )

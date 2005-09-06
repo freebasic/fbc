@@ -144,7 +144,7 @@ private sub hDllMainBegin( )
 			argreason = s
 		end if
 
-		arg = symbGetProcNextArg( proc, arg, FALSE )
+		arg = symbGetArgNext( arg )
 		argn += 1
 	loop
 

@@ -2326,7 +2326,7 @@ private function hAddOvlProc( byval proc as FBSYMBOL ptr, _
 end function
 
 '':::::
-function symbProcIsOverloadOf( byval proc as FBSYMBOL ptr, _
+function symbIsProcOverloadOf( byval proc as FBSYMBOL ptr, _
 							   byval parent as FBSYMBOL ptr ) as integer static
 
 	dim as FBSYMBOL ptr f
@@ -2565,6 +2565,7 @@ function symbPreAddProc( ) as FBSYMBOL ptr static
 		exit function
 	end if
 
+	proc->class				= FB_SYMBCLASS_PROC
 	proc->proc.args 		= 0
 	proc->proc.argtb.head	= NULL
 	proc->proc.argtb.tail	= NULL
@@ -3026,6 +3027,17 @@ function symbFindOverloadProc( byval parent as FBSYMBOL ptr, _
 	dim as FBSYMBOL ptr f, farg, parg, fsubtype, psubtype
 	dim as integer argc
 
+	''
+	if( (parent = NULL) or (proc = NULL) ) then
+		return NULL
+	end if
+
+	'' procs?
+	if( (symbGetClass( parent ) <> FB_SYMBCLASS_PROC) or _
+		(symbGetClass( proc ) <> FB_SYMBCLASS_PROC) ) then
+		return NULL
+	end if
+
 	argc = symbGetProcArgs( proc )
 
 	'' for each proc starting from parent..
@@ -3086,31 +3098,24 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 		if( params <= f->proc.args ) then
 
 			'' for each arg..
-			farg = f->proc.argtb.tail
-			for p = params-1 to 0 step -1
+			farg = symbGetProcLastArg( f )
+			for p = 0 to params-1
 
 				'' optional?
 				if( exprTB(p) = NULL ) then
 					if( not farg->arg.optional ) then
 						exit for
 					end if
+
+				'' not optional..
 				else
-
-					''
+					'' param
 					pdtype = astGetDataType( exprTB(p) )
-					if( pdtype >= IR_DATATYPE_POINTER ) then
-						psubtype = NULL
-					else
-						psubtype = astGetSubtype( exprTB(p) )
-					end if
+					psubtype = astGetSubtype( exprTB(p) )
 
-					''
+					'' arg
 					fdtype = farg->typ
-					if( fdtype >= IR_DATATYPE_POINTER ) then
-						fsubtype = NULL
-					else
-						fsubtype = farg->subtype
-					end if
+					fsubtype = farg->subtype
 
 					'' same class?
 					fdclass = irGetDataClass( fdtype )
@@ -3129,28 +3134,29 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 						end if
 					end if
 
+					''
 					if( fsubtype <> psubtype ) then
 						exit for
 					end if
 				end if
 
-				farg = farg->prev
+				farg = symbGetProcPrevArg( f, farg )
 			next
 
 			'' all params okay?
 			if( farg = NULL ) then
-				'' no preview matches?
+				'' no preview match?
 				if( match = NULL ) then
 					match = f
 				else
-					'' proc with less args has more precedence
+					'' the proc with less args has more precedence
 					if( f->proc.args < match->proc.args ) then
 						match = f
 
 					'' same num of args, check the closest..
 					else
-						farg = f->proc.argtb.tail
-						marg = match->proc.argtb.tail
+						farg = symbGetProcLastArg( f )
+						marg = symbGetProcLastArg( match )
 						fmatches = 0
 						mmatches = 0
 
@@ -3171,11 +3177,19 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 										mmatches += 1
 									end if
 
+								else
+									'' different sub types?
+									if( farg->subtype <> marg->subtype ) then
+										if( farg->subtype = astGetSubType( exprTB(p) ) ) then
+											fmatches += 1
+										end if
+									end if
+
 								end if
 							end if
 
-		                	farg = farg->prev
-		                	marg = marg->prev
+		                	farg = symbGetProcPrevArg( f, farg )
+		                	marg = symbGetProcPrevArg( match, marg )
 		                next
 
 		                '' proc has more args close to the final?
@@ -3353,7 +3367,6 @@ function symbGetUDTLen( byval s as FBSYMBOL ptr, _
 
 end function
 
-
 '':::::
 function symbGetProcLib( byval p as FBSYMBOL ptr ) as string static
     dim l as FBLIBRARY ptr
@@ -3366,7 +3379,6 @@ function symbGetProcLib( byval p as FBSYMBOL ptr ) as string static
 	end if
 
 end function
-
 
 '':::::
 function symbGetVarDescName( byval s as FBSYMBOL ptr ) as string static
@@ -3388,48 +3400,6 @@ function symbGetVarText( byval s as FBSYMBOL ptr ) as string static
 		function = s->var.inittext
 	else
 		function = ""
-	end if
-
-end function
-
-'':::::
-function symbGetProcPrevArg( byval f as FBSYMBOL ptr, _
-							 byval a as FBSYMBOL ptr, _
-							 byval checkconv as integer = TRUE ) as FBSYMBOL ptr static
-
-	if( a = NULL ) then
-		return NULL
-	end if
-
-	if( checkconv ) then
-		if( f->proc.mode = FB_FUNCMODE_PASCAL ) then
-			function = a->prev
-		else
-			function = a->next
-		end if
-	else
-		function = a->prev
-	end if
-
-end function
-
-'':::::
-function symbGetProcNextArg( byval f as FBSYMBOL ptr, _
-							 byval a as FBSYMBOL ptr, _
-							 byval checkconv as integer = TRUE ) as FBSYMBOL ptr static
-
-	if( a = NULL ) then
-		return NULL
-	end if
-
-	if( checkconv ) then
-		if( f->proc.mode = FB_FUNCMODE_PASCAL ) then
-			function = a->next
-		else
-			function = a->prev
-		end if
-	else
-		function = a->next
 	end if
 
 end function

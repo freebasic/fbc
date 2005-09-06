@@ -145,7 +145,7 @@ private function hDeclareArgs( byval proc as FBSYMBOL ptr ) as integer static
 			end if
 		end if
 
-		arg = symbGetProcNextArg( proc, arg, FALSE )
+		arg = symbGetArgNext( arg )
 		a += 1
 	loop
 
@@ -174,7 +174,7 @@ function cSubOrFuncHeader( byval issub as integer, _
 	end if
 
 	typ 	= lexGetType( )
-	sym    = lexGetSymbol( )
+	sym     = lexGetSymbol( )
 	lexEatToken( id )
 	subtype = NULL
 	ptrcnt  = 0

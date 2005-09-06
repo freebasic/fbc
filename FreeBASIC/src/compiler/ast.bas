@@ -6107,7 +6107,7 @@ function astNewPARAM( byval f as ASTNODE ptr, _
 	f->proc.params += 1
 
 	if( f->proc.params < proc->proc.args ) then
-		f->proc.arg = symbGetProcNextArg( proc, f->proc.arg, FALSE )
+		f->proc.arg = symbGetArgNext( f->proc.arg )
 	end if
 
 end function

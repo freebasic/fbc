@@ -2886,11 +2886,10 @@ function cFunctionMode as integer
 
 end function
 
-
 '':::::
-''SubOrFuncDecl      =  ID (CDECL|STDCALL|PASCAL)? OVERLOAD?
+''SubOrFuncDecl      =  ID FunctionMode? OVERLOAD?
 ''						(ALIAS STR_LIT)? (LIB STR_LIT)? ('(' Arguments? ')')?
-''					 |	ID (CDECL|STDCALL|PASCAL)? OVERLOAD?
+''					 |	ID FunctionMode? OVERLOAD?
 ''						(ALIAS STR_LIT)? (LIB STR_LIT)? ('(' Arguments? ')')? (AS SymbolType)? .
 ''
 function cSubOrFuncDecl( byval isSub as integer ) as integer static
@@ -3534,8 +3533,8 @@ function cProcParam( byval proc as FBSYMBOL ptr, _
 					 byval isfunc as integer, _
 					 byval optonly as integer ) as integer
 
-	dim amode as integer
-	dim typ as integer
+	dim as integer amode
+	dim as FBSYMBOL ptr oldsym
 
 	function = FALSE
 
@@ -3550,10 +3549,15 @@ function cProcParam( byval proc as FBSYMBOL ptr, _
 			pmode = FB_ARGMODE_BYVAL
 		end if
 
+		oldsym = env.ctxsym
+		env.ctxsym = arg
+
 		'' Expression
 		if( not cExpression( expr ) ) then
 
+			'' error?
 			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+				env.ctxsym = oldsym
 				exit function
 			end if
 
@@ -3563,6 +3567,7 @@ function cProcParam( byval proc as FBSYMBOL ptr, _
 			else
 				'' failed and expr not null?
 				if( expr <> NULL ) then
+					env.ctxsym = oldsym
 					exit function
 				end if
 
@@ -3579,6 +3584,8 @@ function cProcParam( byval proc as FBSYMBOL ptr, _
 			end if
 
 		end if
+
+		env.ctxsym = oldsym
 	end if
 
 	if( expr = NULL ) then
@@ -3592,18 +3599,22 @@ function cProcParam( byval proc as FBSYMBOL ptr, _
 		end if
 
 		'' create an arg
-		typ = symbGetType( arg )
-		select case as const typ
+		select case as const symbGetType( arg )
   		case IR_DATATYPE_ENUM
   			expr = astNewENUM( symbGetArgOptvalI( proc, arg ), symbGetSubType( arg ) )
+
 		case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
 			expr = astNewVAR( symbGetArgOptvalStr( proc, arg ), NULL, 0, IR_DATATYPE_FIXSTR )
+
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			expr = astNewCONST64( symbGetArgOptval64( proc, arg ), typ )
+			expr = astNewCONST64( symbGetArgOptval64( proc, arg ), symbGetType( arg ) )
+
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			expr = astNewCONSTf( symbGetArgOptvalF( proc, arg ), typ )
+			expr = astNewCONSTf( symbGetArgOptvalF( proc, arg ), symbGetType( arg ) )
+
 		case else
-			expr = astNewCONSTi( symbGetArgOptvalI( proc, arg ), typ, symbGetSubType( arg ) )
+			expr = astNewCONSTi( symbGetArgOptvalI( proc, arg ), _
+								 symbGetType( arg ), symbGetSubType( arg ) )
 		end select
 
 	else
@@ -3629,7 +3640,8 @@ function cProcParam( byval proc as FBSYMBOL ptr, _
 	if( pmode <> INVALID ) then
 		if( amode <> pmode ) then
             if( amode <> FB_ARGMODE_VARARG ) then
-            	'' allow BYVAL params passed to BYREF/BYDESC args (to pass NULL to pointers and so on)
+            	'' allow BYVAL params passed to BYREF/BYDESC args
+            	'' (to pass NULL to pointers and so on)
             	if( pmode <> FB_ARGMODE_BYVAL ) then
 					if( amode <> pmode ) then
 						hReportError( FB_ERRMSG_PARAMTYPEMISMATCH )
@@ -3653,7 +3665,7 @@ function cOvlProcParam( byval param as integer, _
 					    byval isfunc as integer, _
 					    byval optonly as integer ) as integer
 
-	dim typ as integer
+	dim as FBSYMBOL ptr oldsym
 
 	function = FALSE
 
@@ -3666,10 +3678,15 @@ function cOvlProcParam( byval param as integer, _
 			pmode = FB_ARGMODE_BYVAL
 		end if
 
+		oldsym = env.ctxsym
+		env.ctxsym = NULL
+
 		'' Expression
 		if( not cExpression( expr ) ) then
 
+			'' error?
 			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+				env.ctxsym = oldsym
 				exit function
 			end if
 
@@ -3679,6 +3696,7 @@ function cOvlProcParam( byval param as integer, _
 			else
 				'' failed and expr not null?
 				if( expr <> NULL ) then
+					env.ctxsym = oldsym
 					exit function
 				end if
 
@@ -3695,6 +3713,9 @@ function cOvlProcParam( byval param as integer, _
 			end if
 
 		end if
+
+		env.ctxsym = oldsym
+
 	end if
 
 	if( expr <> NULL ) then
@@ -3736,7 +3757,7 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 
 	if( not optonly ) then
 		do
-			if( params > args ) then
+			if( params >= args ) then
 				hReportError( FB_ERRMSG_ARGCNTMISMATCH )
 				exit function
 			end if
@@ -3773,7 +3794,7 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 
 		do while( params < args )
 			if( params >= FB_MAXPROCARGS ) then
-				hReportError FB_ERRMSG_TOOMANYPARAMS
+				hReportError( FB_ERRMSG_TOOMANYPARAMS )
 				exit function
 			end if
 
@@ -3795,7 +3816,7 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 	for p = 0 to params-1
 
 		if( astNewPARAM( procexpr, exprTB(p), INVALID, modeTB(p) ) = NULL ) then
-			hReportError FB_ERRMSG_PARAMTYPEMISMATCH
+			hReportError( FB_ERRMSG_PARAMTYPEMISMATCH )
 			exit function
 		end if
 
@@ -3862,7 +3883,7 @@ function cProcParamList( byval proc as FBSYMBOL ptr, _
 			if( not cProcParam( proc, arg, params, _
 								exprTB(params), modeTB(params), _
 								isfunc, FALSE ) ) then
-				if( hGetLastError <> FB_ERRMSG_OK ) then
+				if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 					exit function
 				else
 					exit do
@@ -4051,8 +4072,7 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 	if( doflush ) then
 		'' can proc's result be skipped?
 		if( typ <> FB_SYMBTYPE_VOID ) then
-			if( (irGetDataClass( typ ) = IR_DATACLASS_FPOINT) or _
-				(typ = IR_DATATYPE_STRING) ) then
+			if( irGetDataClass( typ ) <> IR_DATACLASS_INTEGER ) then
 				hReportError( FB_ERRMSG_VARIABLEREQUIRED )
 				exit function
 			end if
@@ -4089,7 +4109,6 @@ private function hAssign( byval assgexpr as ASTNODE ptr ) as integer
 	dim as integer op, dtype
 
 	function = FALSE
-
 
 	'' BOP?
     op = INVALID
@@ -4144,11 +4163,18 @@ private function hAssign( byval assgexpr as ASTNODE ptr ) as integer
     	exit function
     end if
 
+    '' function pointer?
+    if( astGetDataType( assgexpr ) >= IR_DATATYPE_POINTER+IR_DATATYPE_FUNCTION ) then
+    	env.ctxsym = astGetSymbolOrElm( assgexpr )
+    end if
+
     '' Expression
     if( not cExpression( expr ) ) then
        	hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
        	exit function
     end if
+
+    env.ctxsym = NULL
 
     '' BOP?
     if( op <> INVALID ) then
@@ -4187,7 +4213,7 @@ end function
 ''				  |	  Variable{function ptr} '(' ProcParamList ')' .
 ''
 function cAssignmentOrPtrCall as integer
-	dim as integer islet, dtype
+	dim as integer islet
 	dim as ASTNODE ptr assgexpr
 
 	function = FALSE
@@ -4209,10 +4235,8 @@ function cAssignmentOrPtrCall as integer
     	'' calling a FUNCTION ptr?
     	if( astIsFUNCT( assgexpr ) ) then
 			'' can the result be skipped?
-			dtype = astGetDataType( assgexpr )
-			if( (irGetDataClass( dtype ) = IR_DATACLASS_FPOINT) or _
-				( dtype = IR_DATATYPE_STRING ) ) then
-				hReportError FB_ERRMSG_VARIABLEREQUIRED
+			if( irGetDataClass( astGetDataType( assgexpr ) ) <> IR_DATACLASS_INTEGER ) then
+				hReportError( FB_ERRMSG_VARIABLEREQUIRED )
 				exit function
 			end if
 
@@ -4220,7 +4244,7 @@ function cAssignmentOrPtrCall as integer
     		astAdd( assgexpr )
     		function = TRUE
 
-    	'' ordinary assignament..
+    	'' ordinary assignment..
     	else
 
     		function = hAssign( assgexpr )
@@ -4230,7 +4254,7 @@ function cAssignmentOrPtrCall as integer
 
 	else
 		if( islet ) then
-        	hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
+        	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
         	exit function
 		end if
 	end if
@@ -4297,7 +4321,7 @@ function cProcCallOrAssign as integer
 			'' ID '=' Expression
 			else
                 '' check if name is valid (or if overloaded)
-				if( not symbProcIsOverloadOf( env.currproc, s ) ) then
+				if( not symbIsProcOverloadOf( env.currproc, s ) ) then
 					hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB, TRUE )
 					exit function
 				end if

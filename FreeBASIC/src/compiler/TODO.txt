@@ -1,16 +1,27 @@
 
--- wstring types (w/o ptr) returned by functions should be recognized a temporary 
-   string that should be deleted automatically, or anything that returns a temp 
-   wstring (like BINW for example), will have to use static buffers, breaking 
-   multi-threading..
+[ ] make macros' text size unlimited, allocating a list for EACH token (with the
+    type (arg or ordinary text), text (if not an arg, a zstring ptr), mode (#), etc):
+    - hReplace() can be removed in lex, speeding up macro's
+    - #arg could support literal strings too
+    - intrinsic macros can be hard to define in rtl..
 
--- overload won't recognize z|w|string ptr args when non-ptr's params are passed
+[ ] add support for functions returning references (reuse "BYREF"), so those can
+    be automatically dereferenced AND deleted
+    - be sure no hidden arg is passed in C++, we never know..
+    - change STRING, UDT (above 8 bytes) and WSTRING (no ptr) results to BYREF so
+      they can be handled automatically
+
+[ ] overload won't recognize z|w|string ptr args when non-ptr's params are passed
+
+[ ] remove the CONST's type to string, string to type conversions, save the
+    constants as-is (using the FBVALUE union) to speed up it a bit - won't help much
+    as most of the system headers use #define's, not const's
 
 [ ] SCOPE..END SCOPE:
     - vars should be reused (that's is, the stack "rewinded") because it's only
-      assured that the vars will be initialized to 0 when the scope block is 
-      entered by the first time, so reusing would be more efficient - that will 
-      screw up var-len strings, the descriptor MUST be zeroed or an assignment 
+      assured that the vars will be initialized to 0 when the scope block is
+      entered by the first time, so reusing would be more efficient - that will
+      screw up var-len strings, the descriptor MUST be zeroed or an assignment
       will fail, same care must be taken with object instances, but then the
       constructor will be called, it would be way easier if STRING was actually
       a class.. nm..

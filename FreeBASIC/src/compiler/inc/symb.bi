@@ -81,14 +81,6 @@ declare function 	symbGetUDTElmOffset		( elm as FBSYMBOL ptr, _
 											  subtype as FBSYMBOL ptr, _
 											  byval fields as zstring ptr ) as integer
 
-declare function 	symbGetProcPrevArg		( byval f as FBSYMBOL ptr, _
-											  byval a as FBSYMBOL ptr, _
-											  byval checkconv as integer = TRUE ) as FBSYMBOL ptr
-
-declare function 	symbGetProcNextArg		( byval f as FBSYMBOL ptr, _
-											  byval a as FBSYMBOL ptr, _
-											  byval checkconv as integer = TRUE ) as FBSYMBOL ptr
-
 declare function 	symbGetUDTLen			( byval udt as FBSYMBOL ptr, _
 											  byval realsize as integer = TRUE ) as integer
 
@@ -305,7 +297,7 @@ declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
 					  						  byval sym2 as FBSYMBOL ptr ) as integer
 
-declare function 	symbProcIsOverloadOf	( byval proc as FBSYMBOL ptr, _
+declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 							   				  byval parent as FBSYMBOL ptr ) as integer
 ''
 '' getters and setters as macros
@@ -417,6 +409,10 @@ declare function 	symbProcIsOverloadOf	( byval proc as FBSYMBOL ptr, _
 
 #define symbGetProcLastArg(f) iif( f->proc.mode = FB_FUNCMODE_PASCAL, f->proc.argtb.tail, f->proc.argtb.head )
 
+#define symbGetProcPrevArg(f,a) iif( f->proc.mode = FB_FUNCMODE_PASCAL, a->prev, a->next )
+
+#define symbGetProcNextArg(f,a) iif( f->proc.mode = FB_FUNCMODE_PASCAL, a->next, a->prev )
+
 #define symbGetProcHeadArg(f) f->proc.argtb.head
 
 #define symbGetProcTailArg(f) f->proc.argtb.tail
@@ -464,6 +460,10 @@ declare function 	symbProcIsOverloadOf	( byval proc as FBSYMBOL ptr, _
 #define symbGetArgOptval64(f,a) a->arg.optval.value64
 
 #define symbGetArgOptvalStr(f,a) a->arg.optval.valuestr
+
+#define symbGetArgPrev(a) a->prev
+
+#define symbGetArgNext(a) a->next
 
 #define symbGetIsDynamic(s) iif( s->class = FB_SYMBCLASS_UDTELM, FALSE, (s->alloctype and (FB_ALLOCTYPE_DYNAMIC or FB_ALLOCTYPE_ARGUMENTBYDESC)) > 0 )
 

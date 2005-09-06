@@ -778,18 +778,18 @@ function cGfxPut as integer
 
 					arg1 = symbGetProcHeadArg( s )
 
-					arg2 = symbGetProcNextArg( s, arg1, FALSE )
+					arg2 = symbGetArgNext( arg1 )
 
 					if( ( symbGetType( arg1 ) <> FB_SYMBTYPE_UINT ) or _
 						( symbGetType( arg2 ) <> FB_SYMBTYPE_UINT ) or _
 						( arg1->arg.mode <> FB_ARGMODE_BYVAL ) or _
 						( arg2->arg.mode <> FB_ARGMODE_BYVAL ) ) then
-						hReportError FB_ERRMSG_TYPEMISMATCH
+						hReportError( FB_ERRMSG_TYPEMISMATCH )
 						exit function
 					end if
 
 				else
-					hReportError FB_ERRMSG_SYNTAXERROR
+					hReportError( FB_ERRMSG_SYNTAXERROR )
 					exit function
 				end if
 			end select
