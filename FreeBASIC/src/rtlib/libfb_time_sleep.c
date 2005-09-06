@@ -29,20 +29,19 @@
 /*:::::*/
 FBCALL void fb_Sleep ( int msecs )
 {
+    /* clear input buffer */
+    while( fb_KeyHit( ) )
+        fb_Getkey( );
 
 	/* infinite? wait until any key is pressed */
 	if( msecs == -1 )
 	{
-		/* clear input buffer */
-		while( fb_KeyHit( ) )
-			fb_Getkey( );
-
 		while( !fb_KeyHit( ) )
 			fb_hSleep( 50 );
 		return;
 	}
 
-	/* if above n-mili-seconds, check for key input, otherwise, 
+	/* if above n-mili-seconds, check for key input, otherwise,
 	   don't screw the precision with slow console checks */
 	if( msecs >= 100 )
 		while( msecs > 50 )
