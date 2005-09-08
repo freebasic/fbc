@@ -86,6 +86,7 @@ Version 0.15 Beta:
 - address of overloaded functions can now be taken correctly (v1c)
 - wrong overload type could be returned if pointers to UDT's were used as parameters and arguments (v1c)
 - PASCAL functions couldn't be overloaded (v1c)
+- Fixed the TAB and SPC when used with OPEN "CON" and files (mjs)
 
 
 Version 0.14 Beta:
