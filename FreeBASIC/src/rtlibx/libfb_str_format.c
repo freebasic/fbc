@@ -564,8 +564,8 @@ int fb_hProcessMask( FBSTRING *dst,
                                         if( did_thousandsep ) {
                                             did_thousandsep = FALSE;
                                         } else {
-                                            did_thousandsep = TRUE;
                                             if( NumSkipFix==0 && IndexFix!=0 ) {
+                                                did_thousandsep = TRUE;
                                                 pszAdd = &chThousandsSep;
                                                 LenAdd = 1;
                                                 do_add = TRUE;
