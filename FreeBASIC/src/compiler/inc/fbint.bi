@@ -37,7 +37,8 @@ const FB_MAXGOTBITEMS		= 64
 ''
 const FB_INITSYMBOLNODES	= 8000
 
-const FB_INITDEFARGNODES	= 400
+const FB_INITDEFARGNODES	= 500
+const FB_INITDEFTOKNODES	= 1000
 
 const FB_INITDIMNODES		= 400
 
@@ -614,6 +615,7 @@ type FBS_KEYWORD
 	class			as integer
 end type
 
+''
 type FBDEFARG
 	ll_prv			as FBDEFARG ptr				'' linked-list nodes
 	ll_nxt			as FBDEFARG ptr				'' /
@@ -623,11 +625,35 @@ type FBDEFARG
 	next			as FBDEFARG ptr
 end type
 
-''
+enum FB_DEFTOK_TYPE
+	FB_DEFTOK_TYPE_ARG
+	FB_DEFTOK_TYPE_ARGSTR
+	FB_DEFTOK_TYPE_TEX
+end enum
+
+type FBDEFTOK
+	ll_prv			as FBDEFTOK ptr				'' linked-list nodes
+	ll_nxt			as FBDEFTOK ptr				'' /
+
+	type			as FB_DEFTOK_TYPE
+
+	union
+		text		as string
+		argnum		as integer
+	end union
+
+	next			as FBDEFTOK ptr
+end type
+
 type FBS_DEFINE
-	text			as string
 	args			as integer
 	arghead 		as FBDEFARG ptr
+
+	union
+		tokhead			as FBDEFTOK ptr			'' only if args > 0
+		text			as string				'' //           = 0
+	end union
+
 	isargless		as integer
     flags           as integer          		'' flags:
                                         		'' bit    meaning

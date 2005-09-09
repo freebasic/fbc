@@ -48,7 +48,8 @@ end type
 
 	dim shared deftypeTB( 0 to (90-65+1)-1 ) as integer
 
-	dim shared suffixTB( 0 to FB_SYMBOLTYPES-1 ) as zstring * 1+1 => { _
+	dim shared suffixTB( 0 to FB_SYMBOLTYPES-1 ) as zstring * 1+1 => _
+	{ _
 				"v", _							'' void
 				"b", "a", _                     '' byte, ubyte
 				"c", _                          '' char
@@ -61,10 +62,12 @@ end type
 				"u", _                     		'' udt
 				"n", _							'' function
 				"z", _                          '' fwd-ref
-				"p" }                           '' pointer
+				"p" _                           '' pointer
+	}
 
 
-	dim shared warningMsgs( 1 to FB_WARNINGMSGS-1 ) as FBWARNING = { _
+	dim shared warningMsgs( 1 to FB_WARNINGMSGS-1 ) as FBWARNING = _
+	{ _
 		( 0, "Passing scalar as pointer" ), _
 		( 0, "Passing different pointer types" ), _
 		( 0, "Suspicious pointer assignment" ), _
@@ -72,7 +75,8 @@ end type
 		( 0, "Cannot export symbol without -export option" ) _
 	}
 
-	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring * 128 => { _
+	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring * 128 => _
+	{ _
 		"Argument count mismatch", _
 		"Expected End-of-File", _
 		"Expected End-of-Line", _
@@ -162,7 +166,8 @@ end type
 		"Expected 'ANY'", _
 		"Expected 'END SCOPE'", _
 		"Illegal inside a SCOPE block", _
-		"Cannot pass an UDT result by reference" _
+		"Cannot pass an UDT result by reference", _
+		"Ambiguous call to overloaded function" _
 	}
 
 
@@ -173,14 +178,14 @@ sub hlpInit
 	''
 	for i = 0 to (90-65+1)-1
 		deftypeTB(i) = FB_SYMBTYPE_INTEGER
-	next i
+	next
 
 	''
 	for i = 0 to FB_SYMBOLTYPES-1
 		if( len( suffixTB(i) ) = 0 ) then
-			suffixTB(i) = chr$( CHAR_ALOW + i )
+			suffixTB(i) = chr( CHAR_ALOW + i )
 		end if
-	next i
+	next
 
 	''
 	ctx.lastline= -1
@@ -778,7 +783,7 @@ end function
 '':::::
 function hCreateOvlProcAlias( byval symbol as string, _
 					    	  byval argc as integer, _
-					    	  byval argtail as FBSYMBOL ptr ) as zstring ptr static
+					    	  byval arg as FBSYMBOL ptr ) as zstring ptr static
     dim as integer i, typ
     static as zstring * FB_MAXINTNAMELEN+1 aname
 
@@ -788,19 +793,21 @@ function hCreateOvlProcAlias( byval symbol as string, _
     for i = 0 to argc-1
     	aname += "_"
 
-    	typ = argtail->typ
+    	typ = arg->typ
     	do while( typ >= FB_SYMBTYPE_POINTER )
     		aname += "p"
     		typ -= FB_SYMBTYPE_POINTER
     	loop
 
     	aname += suffixTB( typ )
-    	if( (typ = FB_SYMBTYPE_USERDEF) or (typ = FB_SYMBTYPE_ENUM) ) then
-    		aname += symbGetOrgName( argtail->subtype )
+    	if( (typ = FB_SYMBTYPE_USERDEF) or _
+    		(typ = FB_SYMBTYPE_ENUM) ) then
+    		aname += symbGetOrgName( arg->subtype )
     	end if
 
-    	argtail = argtail->prev
-    next i
+    	'' next
+    	arg = symbGetArgNext( arg )
+    next
 
 	function = @aname
 

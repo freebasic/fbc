@@ -2512,25 +2512,23 @@ function hMangleFuncPtrName( byval proc as FBSYMBOL ptr, _
 							 byval subtype as FBSYMBOL ptr, _
 					    	 byval mode as integer ) as zstring ptr static
 
-    static as zstring * FB_MAXINTNAMELEN+1 mname, aname
+    static as zstring * FB_MAXINTNAMELEN+1 mname
     dim as FBSYMBOL ptr arg
     dim as integer i
 
     mname = "{fbfp}"
 
-    arg = symbGetProcTailArg( proc )
+    arg = symbGetProcHeadArg( proc )
     for i = 0 to symbGetProcArgs( proc )-1
     	mname += "_"
 
     	if( arg->subtype = NULL ) then
-    		aname = hex( arg->typ * arg->arg.mode )
+    		mname += hex( arg->typ * arg->arg.mode )
     	else
-    		aname = hex( arg->subtype )
+    		mname += hex( arg->subtype )
     	end if
 
-    	mname += aname
-
-    	arg = arg->prev
+    	arg = symbGetArgNext( arg )
     next
 
     mname += "@"
@@ -3781,6 +3779,11 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 
 	''
 	proc = symbFindClosestOvlProc( proc, params, exprTB(), modeTB() )
+
+	if( proc = NULL ) then
+		hReportError( FB_ERRMSG_AMBIGUOUSCALLTOPROC )
+		exit function
+	end if
 
 	''
 	args = symbGetProcArgs( proc )

@@ -53,6 +53,7 @@ type SYMBCTX
 
 	dimlist			as TLIST					'' array dimensions
 	defarglist		as TLIST					'' define arguments
+	deftoklist		as TLIST					'' define tokens
 	fwdlist			as TLIST					'' forward typedef refs
 
 	lastlbl			as FBSYMBOL ptr
@@ -380,6 +381,8 @@ sub symbInitDefines( byval ismain as integer ) static
 
     listNew( @ctx.defarglist, FB_INITDEFARGNODES, len( FBDEFARG ), FALSE )
 
+    listNew( @ctx.deftoklist, FB_INITDEFTOKNODES, len( FBDEFTOK ), FALSE )
+
     ctx.defargcnt = 0
 
     for i = 0 to SYMB_MAXDEFINES-1
@@ -395,7 +398,7 @@ sub symbInitDefines( byval ismain as integer ) static
     	end if
 
     	symbAddDefine( @defTb(i).name, strptr( value ), len( value ), _
-    				   0, NULL, FALSE, defTb(i).proc, defTb(i).flags )
+    				   FALSE, defTb(i).proc, defTb(i).flags )
     next
 
 	'' target
@@ -412,11 +415,11 @@ sub symbInitDefines( byval ismain as integer ) static
 		def = "__FB_XBOX__"
 	end select
 
-	symbAddDefine( strptr( def ), NULL, 0, 0, NULL, FALSE, NULL, 0 )
+	symbAddDefine( strptr( def ), NULL, 0 )
 
 	'' main
 	if( ismain ) then
-		symbAddDefine( strptr( "__FB_MAIN__" ), NULL, 0, 0, NULL, FALSE, NULL, 0 )
+		symbAddDefine( strptr( "__FB_MAIN__" ), NULL, 0 )
 	end if
 
 end sub
@@ -507,6 +510,8 @@ sub symbEnd
 	listFree( @ctx.dimlist )
 
 	listFree( @ctx.fwdlist )
+
+	listFree( @ctx.deftoklist )
 
 	listFree( @ctx.defarglist )
 
@@ -924,11 +929,11 @@ end function
 function symbAddDefine( byval symbol as zstring ptr, _
 						byval text as zstring ptr, _
 						byval lgt as integer, _
-						byval args as integer = 0, _
-						byval arghead as FBDEFARG ptr = NULL, _
 						byval isargless as integer = FALSE, _
 						byval proc as function( ) as string = NULL, _
-                        byval flags as integer = 0) as FBSYMBOL ptr static
+                        byval flags as integer = 0 _
+                      ) as FBSYMBOL ptr static
+
     dim d as FBSYMBOL ptr
 
     function = NULL
@@ -944,8 +949,8 @@ function symbAddDefine( byval symbol as zstring ptr, _
 	ZEROSTRDESC( d->def.text )
 	d->def.text 	= *text
 	d->lgt			= lgt
-	d->def.args		= args
-	d->def.arghead	= arghead
+	d->def.args		= 0
+	d->def.arghead	= NULL
 	d->def.isargless= isargless
 	d->def.proc     = proc
     d->def.flags    = flags
@@ -956,8 +961,40 @@ function symbAddDefine( byval symbol as zstring ptr, _
 end function
 
 '':::::
+function symbAddDefineMacro( byval symbol as zstring ptr, _
+							 byval tokhead as FBDEFTOK ptr, _
+							 byval args as integer, _
+						 	 byval arghead as FBDEFARG ptr _
+						   ) as FBSYMBOL ptr static
+
+    dim d as FBSYMBOL ptr
+
+    function = NULL
+
+    '' allocate new node
+    d = hNewSymbol( NULL, ctx.symtb, FB_SYMBCLASS_DEFINE, TRUE, _
+    				symbol, NULL, fbIsLocal( ) )
+    if( d = NULL ) then
+    	exit function
+    end if
+
+	''
+	d->def.tokhead  = tokhead
+	d->def.args		= args
+	d->def.arghead	= arghead
+	d->def.isargless= FALSE
+	d->def.proc     = NULL
+    d->def.flags    = 0
+
+	''
+	function = d
+
+end function
+
+'':::::
 function symbAddDefineArg( byval lastarg as FBDEFARG ptr, _
-						   byval symbol as zstring ptr ) as FBDEFARG ptr static
+						   byval symbol as zstring ptr _
+						 ) as FBDEFARG ptr static
     dim a as FBDEFARG ptr
 
     function = NULL
@@ -979,6 +1016,33 @@ function symbAddDefineArg( byval lastarg as FBDEFARG ptr, _
     ctx.defargcnt += 1
 
     function = a
+
+end function
+
+'':::::
+function symbAddDefineTok( byval lasttok as FBDEFTOK ptr, _
+						   byval typ as FB_DEFTOK_TYPE _
+						 ) as FBDEFTOK ptr static
+
+    dim t as FBDEFTOK ptr
+
+    function = NULL
+
+    t = listNewNode( @ctx.deftoklist )
+    if( t = NULL ) then
+    	exit function
+    end if
+
+	if( lasttok <> NULL ) then
+		lasttok->next = t
+	end if
+	t->next	= NULL
+
+	''
+	t->type = typ
+	ZEROSTRDESC( t->text )
+
+    function = t
 
 end function
 
@@ -2401,7 +2465,7 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 		if( (alloctype and FB_ALLOCTYPE_OVERLOADED) > 0 ) then
 			aname = *hCreateOvlProcAlias( aname, _
 										  symbGetProcArgs( sym ), _
-										  symbGetProcTailArg( sym ) )
+										  symbGetProcHeadArg( sym ) )
 		end if
 
 		aname = *hCreateProcAlias( aname, lgt, mode )
@@ -2437,7 +2501,7 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 
 				aname = *hCreateOvlProcAlias( aname, _
 											  symbGetProcArgs( sym ), _
-											  symbGetProcTailArg( sym ) )
+											  symbGetProcHeadArg( sym ) )
 
 				aname = *hCreateProcAlias( aname, lgt, mode )
 			end if
@@ -3085,132 +3149,202 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 					   		     modeTB() as integer _
 					   		   ) as FBSYMBOL ptr static
 
-	dim as FBSYMBOL ptr f, farg, marg, match, psubtype, fsubtype
-	dim as integer p, pdclass, pdtype, fdclass
-	dim as integer fdtype, mdtype, fmatches, mmatches
+	dim as FBSYMBOL ptr f, arg, s
+	dim as integer p, pdtype, pdclass
+	dim as integer fmatches, matches
 
-	match = NULL
+	'' enough to an impossible-to-reach level of indirection
+	const FB_OVLPROC_FULLMATCH = 1073741824 \ FB_MAXPROCARGS
+	const FB_OVLPROC_HALFMATCH = FB_OVLPROC_FULLMATCH \ 2
+
+	matches = 0
 
 	'' for each proc..
 	f = proc
 	do while( f <> NULL )
 
-		if( params <= f->proc.args ) then
+		if( params <= symbGetProcArgs( f ) ) then
+
+			arg = symbGetProcLastArg( f )
+			fmatches = 0
 
 			'' for each arg..
-			farg = symbGetProcLastArg( f )
 			for p = 0 to params-1
 
-				'' optional?
-				if( exprTB(p) = NULL ) then
-					if( not farg->arg.optional ) then
-						exit for
-					end if
+				'' not optional?
+				if( exprTB(p) <> NULL ) then
 
-				'' not optional..
-				else
-					'' param
+					'' different types?
 					pdtype = astGetDataType( exprTB(p) )
-					psubtype = astGetSubtype( exprTB(p) )
+					if( arg->typ <> pdtype ) then
 
-					'' arg
-					fdtype = farg->typ
-					fsubtype = farg->subtype
+						pdclass = irGetDataClass( pdtype )
 
-					'' same class?
-					fdclass = irGetDataClass( fdtype )
-					pdclass = irGetDataClass( pdtype )
-					if( fdclass <> pdclass ) then
-						'' could be a float passed to an int arg or vice-versa
-						if( fdclass >= IR_DATACLASS_STRING ) then
-							'' zstring?
-							if( pdtype <> IR_DATATYPE_CHAR ) then
+						'' check classes
+						select case as const irGetDataClass( arg->typ )
+						'' integer?
+						case IR_DATACLASS_INTEGER
+							select case as const pdclass
+							'' another integer or float is ok (due the auto-coercion)
+							case IR_DATACLASS_INTEGER, IR_DATACLASS_FPOINT
+								fmatches += (FB_OVLPROC_HALFMATCH - abs( arg->typ - pdtype ))
+
+							'' string? only if it's a zstring ptr arg
+							case IR_DATACLASS_STRING
+								if( arg->typ <> IR_DATATYPE_POINTER+IR_DATATYPE_CHAR ) then
+									fmatches = 0
+									exit for
+								end if
+
+								fmatches += FB_OVLPROC_FULLMATCH
+
+							'' refuse anything else
+							case else
+								fmatches = 0
+								exit for
+							end select
+
+						'' floating-point?
+						case IR_DATACLASS_FPOINT
+							'' only accept another float or integer
+							select case as const pdclass
+							case IR_DATACLASS_INTEGER, IR_DATACLASS_FPOINT
+								fmatches += (FB_OVLPROC_HALFMATCH - abs( arg->typ - pdtype ))
+
+							'' refuse anything else
+							case else
+								fmatches = 0
+								exit for
+							end select
+
+						'' string?
+						case IR_DATACLASS_STRING
+
+							select case pdclass
+							'' okay if it's another var- or fixed-len string
+							case IR_DATACLASS_STRING
+								fmatches += (FB_OVLPROC_HALFMATCH - abs( arg->typ - pdtype ))
+
+							'' integer only if it's a zstring
+							case IR_DATACLASS_INTEGER
+								if( pdtype <> IR_DATATYPE_CHAR ) then
+									fmatches = 0
+									exit for
+								end if
+
+								fmatches += FB_OVLPROC_FULLMATCH
+
+							'' refuse anything else
+							case else
+								fmatches = 0
+								exit for
+							end select
+
+						'' user-defined..
+						case IR_DATACLASS_UDT
+
+							'' not another udt?
+							if( pdclass <> IR_DATACLASS_UDT ) then
+								'' not a proc? (can be an UDT been returned in registers)
+								if( astGetClass( exprTB(p) ) <> AST_NODECLASS_FUNCT ) then
+									fmatches = 0
+									exit for
+								end if
+
+								'' it's a proc, but was it originally returning an UDT?
+								s = astGetSymbol( exprTB(p) )
+								if( s->typ <> FB_SYMBTYPE_USERDEF ) then
+									fmatches = 0
+									exit for
+								end if
+
+								'' get the original subtype
+								s = s->subtype
+
+                            '' udt..
+                            else
+                            	s = astGetSubType( exprTB(p) )
+                            end if
+
+                			'' can't be different
+							if( arg->subtype <> s ) then
+								fmatches = 0
 								exit for
 							end if
+
+							fmatches += FB_OVLPROC_FULLMATCH
+
+						end select
+
+                    '' same types..
+					else
+						fmatches += FB_OVLPROC_HALFMATCH
+
+						'' check the subtype
+						if( arg->subtype <> astGetSubType( exprTB(p) ) ) then
+
+							'' check classes
+							select case irGetDataClass( arg->typ )
+
+							'' UDT? can't be different..
+							case IR_DATACLASS_UDT
+								fmatches = 0
+								exit for
+
+							end select
+
+						'' same subtype too..
 						else
-							if( pdclass >= IR_DATACLASS_STRING ) then
-								exit for
-							end if
+							fmatches += FB_OVLPROC_HALFMATCH
 						end if
 					end if
 
-					''
-					if( fsubtype <> psubtype ) then
+				'' optional..
+				else
+					'' but arg isn't?
+					if( not symbGetArgOptional( f, arg ) ) then
+						fmatches = 0
 						exit for
 					end if
+
+					fmatches += FB_OVLPROC_FULLMATCH
+
 				end if
 
-				farg = symbGetProcPrevArg( f, farg )
+               	'' next arg
+				arg = symbGetProcPrevArg( f, arg )
 			next
 
-			'' all params okay?
-			if( farg = NULL ) then
-				'' no preview match?
-				if( match = NULL ) then
-					match = f
-				else
-					'' the proc with less args has more precedence
-					if( f->proc.args < match->proc.args ) then
-						match = f
+			if( fmatches > 0 ) then
+				'' fewer params? check if the ones missing are optional
+				if( params < symbGetProcArgs( f ) ) then
+					do while( arg <> NULL )
+				    	'' not optional? exit
+				    	if( not symbGetArgOptional( f, arg ) ) then
+				    		fmatches = 0
+				    		exit do
+				    	end if
 
-					'' same num of args, check the closest..
-					else
-						farg = symbGetProcLastArg( f )
-						marg = symbGetProcLastArg( match )
-						fmatches = 0
-						mmatches = 0
-
-						'' for each param..
-						for p = 0 to params-1
-							'' not optional?
-							if( exprTB(p) <> NULL ) then
-								'' different types?
-								if( farg->typ <> marg->typ ) then
-
-									pdtype = astGetDataType( exprTB(p) )
-
-									'' get the distance..
-									if( abs( farg->typ - pdtype ) < _
-										abs( marg->typ - pdtype ) ) then
-										fmatches += 1
-									else
-										mmatches += 1
-									end if
-
-								else
-									'' different sub types?
-									if( farg->subtype <> marg->subtype ) then
-										if( farg->subtype = astGetSubType( exprTB(p) ) ) then
-											fmatches += 1
-										end if
-									end if
-
-								end if
-							end if
-
-		                	farg = symbGetProcPrevArg( f, farg )
-		                	marg = symbGetProcPrevArg( match, marg )
-		                next
-
-		                '' proc has more args close to the final?
-		                if( fmatches > mmatches ) then
-		                	match = f
-		                end if
-
-					end if
+						'' next arg
+						arg = symbGetProcPrevArg( f, arg )
+					loop
 				end if
+			end if
+
+		    '' closer?
+		    if( fmatches > matches ) then
+			   	proc = f
+			   	matches = fmatches
 			end if
 
 		end if
 
+		'' next overloaded proc
 		f = f->proc.ovl.next
 	loop
 
-	if( match <> NULL ) then
-		function = match
-	else
-		function = proc
-	end if
+	''
+	function = proc
 
 end function
 
@@ -3532,6 +3666,24 @@ private sub hDelDefineArgs( byval s as FBSYMBOL ptr )
 end sub
 
 '':::::
+private sub hDelDefineTokens( byval s as FBSYMBOL ptr )
+	dim as FBDEFTOK ptr tok, nxt
+
+    tok = s->def.tokhead
+    do while( tok <> NULL )
+    	nxt = tok->next
+
+    	if( tok->type = FB_DEFTOK_TYPE_TEX ) then
+    		tok->text = ""
+    	end if
+
+    	listDelNode( @ctx.deftoklist, cptr( TLISTNODE ptr, tok ) )
+    	tok = nxt
+    loop
+
+end sub
+
+'':::::
 function symbDelDefine( byval s as FBSYMBOL ptr, _
 				        byval dolookup as integer ) as integer static
     dim arg as FBDEFARG ptr, narg as FBDEFARG ptr
@@ -3547,7 +3699,11 @@ function symbDelDefine( byval s as FBSYMBOL ptr, _
     end if
 
 	''
-	s->def.text = ""
+	if( symbGetDefineArgs( s ) = 0 ) then
+		s->def.text = ""
+	else
+		hDelDefineTokens( s )
+	end if
 
 	hDelDefineArgs( s )
 

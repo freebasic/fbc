@@ -30,7 +30,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-defint a-z
 option explicit
 option escape
 
@@ -44,13 +43,13 @@ option escape
 #include once "inc\dag.bi"
 
 
-type IROPCODE
+type IR_OPCODE
 	typ			as integer
 	cummutative as integer
 	name		as zstring * 3+1
 end type
 
-type IRCTX
+type IR_CTX
 	tacTB			as TFLIST
 	taccnt			as integer
 	tacidx			as IRTAC ptr
@@ -121,7 +120,7 @@ declare sub 		irDump				( byval op as integer, _
 										  byval vr as IRVREG ptr )
 
 '' globals
-	dim shared ctx as IRCTX
+	dim shared ir as IR_CTX
 
 	dim shared regTB(0 to EMIT_REGCLASSES-1) as REGCLASS ptr
 
@@ -150,7 +149,7 @@ declare sub 		irDump				( byval op as integer, _
 	}
 
 	'' same order as IROP_ENUM
-	dim shared opTB( 0 to IR_OPS-1 ) as IROPCODE => _
+	dim shared opTB( 0 to IR_OPS-1 ) as IR_OPCODE => _
 	{ _
 		( IR_OPTYPE_LOAD	, FALSE, "ld"  ), _ '' IR_OP_LOAD
 		( IR_OPTYPE_LOAD	, FALSE, "ldr" ), _ '' IR_OP_LOADRESULT
@@ -222,13 +221,13 @@ sub irInit
 	dim as integer i
 
 	''
-	ctx.tacidx = NULL
-	ctx.taccnt = 0
+	ir.tacidx = NULL
+	ir.taccnt = 0
 
-	flistNew( @ctx.tacTB, IR_INITADDRNODES, len( IRTAC ) )
+	flistNew( @ir.tacTB, IR_INITADDRNODES, len( IRTAC ) )
 
 	''
-	flistNew( @ctx.vregTB, IR_INITVREGNODES, len( IRVREG ) )
+	flistNew( @ir.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 
 	''
 	emitInit( )
@@ -244,13 +243,13 @@ end sub
 sub irEnd
 
 	''
-	flistFree( @ctx.vregTB )
+	flistFree( @ir.vregTB )
 
 	''
-	flistFree( @ctx.tacTB )
+	flistFree( @ir.tacTB )
 
-	ctx.tacidx = NULL
-	ctx.taccnt = 0
+	ir.tacidx = NULL
+	ir.taccnt = 0
 
 end sub
 
@@ -514,9 +513,9 @@ sub irEmit( byval op as integer, _
 
     dim as IRTAC ptr t
 
-    t = flistNewItem( @ctx.tacTB )
+    t = flistNewItem( @ir.tacTB )
 
-    t->pos		 = ctx.taccnt
+    t->pos		 = ir.taccnt
 
     t->op  		 = op
 
@@ -532,7 +531,7 @@ sub irEmit( byval op as integer, _
     t->ex1 		 = ex1
     t->ex2 		 = ex2
 
-    ctx.taccnt += 1
+    ir.taccnt += 1
 
 end sub
 
@@ -964,7 +963,7 @@ function irNewVR( byval dtype as integer, _
 		dtype = IR_DATATYPE_POINTER
 	end if
 
-	v = flistNewItem( @ctx.vregTB )
+	v = flistNewItem( @ir.vregTB )
 
 	v->typ 	= vtype
 	v->dtype= dtype
@@ -1193,7 +1192,7 @@ private sub hRename( byval vold as IRVREG ptr, _
 	vnew->tacvtail = vold->tacvtail
 
 	'' index and auxiliar regs must be checked one by one..
-	v = flistGetHead( @ctx.vregTB )
+	v = flistGetHead( @ir.vregTB )
 	do while( v <> NULL )
 		select case v->typ
 		case IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
@@ -1306,15 +1305,15 @@ sub irFlush static
     dim as integer op
     dim as IRTAC ptr t
 
-	if( ctx.taccnt = 0 ) then
+	if( ir.taccnt = 0 ) then
 		exit sub
 	end if
 
 	'hOptimize
 
-	t = flistGetHead( @ctx.tacTB )
+	t = flistGetHead( @ir.tacTB )
 	do
-		ctx.tacidx = t
+		ir.tacidx = t
 
 		hReuse( t )
 
@@ -1366,12 +1365,12 @@ sub irFlush static
 	loop while( t <> NULL )
 
 	''
-	ctx.tacidx = NULL
-	ctx.taccnt = 0
-	flistReset( @ctx.tacTB )
+	ir.tacidx = NULL
+	ir.taccnt = 0
+	flistReset( @ir.tacTB )
 
 	''
-	flistReset( @ctx.vregTB )
+	flistReset( @ir.vregTB )
 
 end sub
 
@@ -2266,7 +2265,7 @@ function irGetDistance( byval vreg as IRVREG ptr ) as uinteger
 	end if
 
 	'' skip the current tac
-	t = ctx.tacidx->next
+	t = ir.tacidx->next
 
 	'' eol?
 	if( t = NULL ) then
@@ -2437,11 +2436,11 @@ sub irOptimize static
     dim IRVREG ptr v1, v2, vr
     dim vtx1 as integer, vtx2 as integer, vtxo as integer
 
-	if( ctx.codes = 0 ) then
+	if( ir.codes = 0 ) then
 		exit sub
 	end if
 
-	for i = 0 to ctx.codes-1
+	for i = 0 to ir.codes-1
 
 		op 	 = tacTB(i).op
 		v1   = tacTB(i).v1

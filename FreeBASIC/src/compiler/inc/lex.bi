@@ -26,6 +26,7 @@ enum LEXCHECK_ENUM
 	LEXCHECK_NODEFINE	= 2
 	LEXCHECK_NOWHITESPC	= 4
 	LEXCHECK_NOSUFFIX	= 8
+	LEXCHECK_NOQUOTES	= 16
 end enum
 
 type FBTOKEN
@@ -38,8 +39,39 @@ type FBTOKEN
 	sym				as FBSYMBOL ptr				'' symbol found, if any
 end type
 
+const FB_LEX_MAXK	= 1
 
-declare sub 		lexInit                 ( )
+type LEX_CTX
+	tokenTB(0 to FB_LEX_MAXK) as FBTOKEN
+	k				as integer					'' look ahead cnt (1..MAXK)
+
+	currchar		as uinteger					'' current char
+	lahdchar		as uinteger					'' look ahead char
+
+	linenum 		as integer
+	colnum 			as integer
+	lasttoken 		as integer
+
+	reclevel 		as integer					'' PP recursion
+
+	'' last #define's text
+	deftext			as zstring * FB_MAXINTDEFINELEN+1
+	defptr 			as zstring ptr
+	deflen 			as integer
+
+	'' last WITH
+	withcnt 		as integer
+
+	'' input buffer
+	bufflen			as integer
+	buffptr			as zstring ptr
+	buff			as zstring * 8192+1
+	filepos			as integer
+	lastfilepos 	as integer
+end type
+
+
+declare sub 		lexInit                 ( byval isinclude as integer )
 
 declare sub 		lexEnd					( )
 
@@ -85,6 +117,29 @@ declare sub 		lexSkipLine				( )
 declare sub 		lexSetToken				( byval id as integer, _
 											  byval class as integer )
 
-declare function 	lexPreProcessor 		( ) as integer
+declare sub 		lexNextToken 			( t as FBTOKEN, _
+											  byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )
+
+declare function 	lexCurrentChar          ( byval skipwhitespc as integer = FALSE ) as uinteger
+
+declare function 	lexGetLookAheadChar     ( byval skipwhitespc as integer = FALSE ) as uinteger
+
+declare function 	lexEatChar              ( ) as uinteger
 
 declare function	lexPeekCurrentLine		( byref token_pos as string ) as string
+
+declare sub 		lexPPInit				( )
+
+declare sub 		lexPPEnd				( )
+
+declare function 	lexPreProcessor 		( ) as integer
+
+declare function	lexPPLoadDefine			( byval s as FBSYMBOL ptr ) as integer
+
+''
+'' inter-module globals
+''
+extern lex as LEX_CTX
+
+
+

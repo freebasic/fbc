@@ -2730,7 +2730,7 @@ function cVAFunct( byref funcexpr as ASTNODE ptr ) as integer
 	end if
 
 	'' VA_FIRST
-	lexSkipToken
+	lexSkipToken( )
 
 	'' ('(' ')')?
 	if( hMatch( CHAR_LPRNT ) ) then

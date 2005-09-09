@@ -98,14 +98,20 @@ declare function 	symbAddKeyword			( byval symbol as zstring ptr, _
 declare function 	symbAddDefine			( byval symbol as zstring ptr, _
 											  byval text as zstring ptr, _
 											  byval lgt as integer, _
-											  byval args as integer = 0, _
-											  byval arghead as FBDEFARG ptr = NULL, _
 											  byval isargless as integer = FALSE, _
 											  byval proc as function( ) as string = NULL, _
-                                              byval flags as integer = 0) as FBSYMBOL ptr
+                        					  byval flags as integer = 0 ) as FBSYMBOL ptr
+
+declare function 	symbAddDefineMacro		( byval symbol as zstring ptr, _
+							 				  byval tokhead as FBDEFTOK ptr, _
+							 				  byval args as integer, _
+						 	 				  byval arghead as FBDEFARG ptr ) as FBSYMBOL ptr
 
 declare function 	symbAddDefineArg		( byval lastarg as FBDEFARG ptr, _
 											  byval symbol as zstring ptr ) as FBDEFARG ptr
+
+declare function 	symbAddDefineTok		( byval lasttok as FBDEFTOK ptr, _
+						     				  byval typ as FB_DEFTOK_TYPE ) as FBDEFTOK ptr
 
 declare function 	symbAddFwdRef			( byval symbol as zstring ptr ) as FBSYMBOL ptr
 
@@ -344,6 +350,34 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 #define symbSetAllocType(s,t) s->alloctype = t
 
 #define symbGetDefineText(d) d->def.text
+
+#define symbGetDefineHeadToken(d) d->def.tokhead
+
+#define symbGetDefTokNext(t) t->next
+
+#define symbGetDefTokType(t) t->type
+
+#define symbSetDefTokType(t,_typ) t->type = _typ
+
+#define symbGetDefTokText(t) t->text
+
+#define symbGetDefTokArgNum(t) t->argnum
+
+#define symbSetDefTokArgNum(t,n) t->argnum = n
+
+#define symbGetDefineArgs(d) d->def.args
+
+#define symbGetDefineHeadArg(d) d->def.arghead
+
+#define symbGetDefArgNext(a) a->next
+
+#define symbGetDefArgName(a) a->name
+
+#define symbGetDefineCallback(d) d->def.proc
+
+#define symbGetDefineIsArgless(d) d->def.isargless
+
+#define symbGetDefineFlags(d) d->def.flags
 
 #define symbGetVarInitialized(s) s->var.initialized
 

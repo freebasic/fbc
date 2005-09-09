@@ -180,6 +180,16 @@ function fbInit( byval ismain as integer ) as integer static
 	function = FALSE
 
 	''
+	redim infileTb( 0 to FB_MAXINCRECLEVEL-1 )
+
+	redim incpathTB( 0 to FB_MAXINCPATHS-1 )
+
+	redim incfileTB( 0 to FB_INITINCFILES-1 )
+
+	''
+	hSetCtx( )
+
+	''
 	symbInit( ismain )
 
 	hlpInit( )
@@ -190,19 +200,9 @@ function fbInit( byval ismain as integer ) as integer static
 
 	rtlInit( )
 
-	lexInit( )
+	lexInit( FALSE )
 
 	emitInit( )
-
-	''
-	redim infileTb( 0 to FB_MAXINCRECLEVEL-1 )
-
-	redim incpathTB( 0 to FB_MAXINCPATHS-1 )
-
-	redim incfileTB( 0 to FB_INITINCFILES-1 )
-
-	''
-	hSetCtx( )
 
 	''
 	function = TRUE
@@ -644,7 +644,7 @@ function fbIncludeFile( byval filename as string, _
 		env.inf.incfile = fileidx
 
 		''
-		lexInit( )
+		lexInit( TRUE )
 
 		''
 		env.inf.num = freefile
