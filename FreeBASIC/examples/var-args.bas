@@ -42,23 +42,24 @@ sub myprintf cdecl (fmtstr as string, ...)
 			
 			'' print var-arg, depending on the type
 			select case char
+			'' integer?
 			case asc( "i" )
 				print str( va_arg( arg, integer ) );
 				'' different from C, va_next() must be used as va_arg() won't update the pointer
 				arg = va_next( arg, integer )
 
+			'' long integer? (64-bit)
 			case asc( "l" )
 				print str( va_arg( arg, longint ) );
 				arg = va_next( arg, longint )			'' /
 			
-			case asc( "f" )
-				print str( va_arg( arg, single ) );
-				arg = va_next( arg, single )			'' /
-			
-			case asc( "d" )
+			'' single or double? (note: because the C ABI, all single's passed on var-args 
+			''							are converted to double's)
+			case asc( "f" ), asc( "d" )
 				print str( va_arg( arg, double ) );
 				arg = va_next( arg, double )			'' /
 			
+			'' string?
 			case asc( "s" )
 				'' strings are passed byval, so the len is unknown
 				print *va_arg( arg, zstring ptr );
