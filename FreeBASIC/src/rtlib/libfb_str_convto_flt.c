@@ -83,7 +83,7 @@ FBCALL FBSTRING *fb_DoubleToStr ( double num )
 
 		/* convert */
 #ifdef TARGET_WIN32
-		_gcvt( (double)num, 16, dst->data );
+		_gcvt( num, 16, dst->data );
 #else
 		sprintf( dst->data, "%.16g", num);
 #endif
