@@ -23,7 +23,6 @@
 option explicit
 option escape
 
-defint a-z
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\parser.bi"
@@ -919,8 +918,10 @@ private function hVarPtrBody( byref addrofexpr as ASTNODE ptr) as integer
 		exit function
 	end select
 
-	addrofexpr = astNewADDR( IR_OP_ADDROF, addrofexpr, _
-						 	 astGetSymbol( addrofexpr ), astGetElm( addrofexpr ) )
+	addrofexpr = astNewADDR( IR_OP_ADDROF, _
+							 addrofexpr, _
+							 astGetSymbol( addrofexpr ), _
+							 astGetElm( addrofexpr ) )
 
     function = (addrofexpr <> NULL)
 
@@ -1049,7 +1050,9 @@ function cAddrOfExpression( byref addrofexpr as ASTNODE ptr ) as integer
 			expr = astNewADDR( IR_OP_ADDROF, expr, sym, elm )
 		end if
 
-		addrofexpr = astNewCONV( IR_OP_TOPOINTER, IR_DATATYPE_POINTER+IR_DATATYPE_CHAR, NULL, expr )
+		addrofexpr = astNewCONV( IR_OP_TOPOINTER, _
+								 IR_DATATYPE_POINTER+IR_DATATYPE_CHAR, NULL, _
+								 expr )
 
 		return (addrofexpr <> NULL)
 	end select
@@ -1130,7 +1133,6 @@ end function
 '' Constant       = ID .
 ''
 function cConstant( byref constexpr as ASTNODE ptr ) as integer static
-	static as zstring * FB_MAXLITLEN+1 text
 	dim as FBSYMBOL ptr s
 	dim as integer typ
 
@@ -1139,41 +1141,24 @@ function cConstant( byref constexpr as ASTNODE ptr ) as integer static
 	s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_CONST )
 	if( s <> NULL ) then
 
-  		text = symbGetConstText( s )
   		typ = symbGetType( s )
-
   		if( irGetDataClass( typ ) = IR_DATACLASS_STRING ) then
 
-			s = hAllocStringConst( text, symbGetLen( s ) )
-			constexpr = astNewVAR( s, NULL, 0, IR_DATATYPE_FIXSTR )
+			constexpr = astNewVAR( symbGetConstValStr( s ), NULL, 0, IR_DATATYPE_FIXSTR )
 
   		else
   			select case as const typ
   			case IR_DATATYPE_ENUM
-  				constexpr = astNewENUM( valint( text ), symbGetSubType( s ) )
+  				constexpr = astNewENUM( symbGetConstValInt( s ), symbGetSubType( s ) )
 
-			'' !!!REMOVEME!!!
-#ifdef val64
   			case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-  				constexpr = astNewCONST64( val64( text ), typ )
-#else
-  			case IR_DATATYPE_LONGINT
-  				constexpr = astNewCONST64( vallng( text ), typ )
-
-  			case IR_DATATYPE_ULONGINT
-  				constexpr = astNewCONST64( valulng( text ), typ )
-#endif
+  				constexpr = astNewCONST64( symbGetConstValLong( s ), typ )
 
   			case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-  				constexpr = astNewCONSTf( val( text ), typ )
+  				constexpr = astNewCONSTf( symbGetConstValFloat( s ), typ )
 
-			'' !!!REMOVEME!!!
-#ifdef valuint
-			case IR_DATATYPE_UINT
-				constexpr = astNewCONSTi( valuint( text ), typ )
-#endif
   			case else
-  				constexpr = astNewCONSTi( valint( text ), typ, symbGetSubType( s ) )
+  				constexpr = astNewCONSTi( symbGetConstValInt( s ), typ, symbGetSubType( s ) )
 
   			end select
   		end if
@@ -1198,26 +1183,18 @@ function cLiteral( byref litexpr as ASTNODE ptr ) as integer
   		typ = lexGetType( )
   		select case as const typ
 
-		'' !!!REMOVEME!!!
-#ifdef val64
-  		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			litexpr = astNewCONST64( val64( *lexGetText( ) ), typ )
-#else
   		case IR_DATATYPE_LONGINT
 			litexpr = astNewCONST64( vallng( *lexGetText( ) ), typ )
 
 		case IR_DATATYPE_ULONGINT
 			litexpr = astNewCONST64( valulng( *lexGetText( ) ), typ )
-#endif
 
   		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
 			litexpr = astNewCONSTf( val( *lexGetText( ) ), typ )
 
-		'' !!!REMOVEME!!!
-#ifdef valuint
 		case IR_DATATYPE_UINT
 			litexpr = astNewCONSTi( valuint( *lexGetText( ) ), typ )
-#endif
+
 		case else
 			litexpr = astNewCONSTi( valint( *lexGetText( ) ), typ )
   		end select

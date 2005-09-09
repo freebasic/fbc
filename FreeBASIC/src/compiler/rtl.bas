@@ -21,7 +21,6 @@
 ''
 '' chng: oct/2004 written [v1ctor]
 
-defint a-z
 option explicit
 option escape
 
@@ -2688,13 +2687,13 @@ private sub hAddIntrinsicProcs( )
 				select case as const atype
 				case IR_DATATYPE_STRING
 					read optstr
-					optval.valuestr = hAllocStringConst( optstr, 0 )
+					optval.str = hAllocStringConst( optstr, 0 )
 				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-					read optval.value64
+					read optval.long
 				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-					read optval.valuef
+					read optval.float
 				case else
-					read optval.valuei
+					read optval.int
 				end select
 			end if
 

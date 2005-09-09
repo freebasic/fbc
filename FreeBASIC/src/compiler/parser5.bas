@@ -23,7 +23,6 @@
 option explicit
 option escape
 
-defint a-z
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\parser.bi"

@@ -84,6 +84,8 @@ declare function 	symbGetUDTElmOffset		( elm as FBSYMBOL ptr, _
 declare function 	symbGetUDTLen			( byval udt as FBSYMBOL ptr, _
 											  byval realsize as integer = TRUE ) as integer
 
+declare function 	symbGetConstValueAsStr	( byval s as FBSYMBOL ptr ) as string
+
 declare function 	symbCalcArgLen			( byval typ as integer, _
 											  byval subtype as FBSYMBOL ptr, _
 											  byval mode as integer ) as integer
@@ -152,8 +154,7 @@ declare function 	symbAddTempVar			( byval typ as integer, _
 declare function 	symbAddConst			( byval symbol as zstring ptr, _
 											  byval typ as integer, _
 											  byval subtype as FBSYMBOL ptr, _
-											  byval text as zstring ptr, _
-											  byval lgt as integer ) as FBSYMBOL ptr
+											  byval value as FBVALUE ptr ) as FBSYMBOL ptr
 
 declare function 	symbAddUDT				( byval parent as FBSYMBOL ptr, _
 											  byval symbol as zstring ptr, _
@@ -282,7 +283,7 @@ declare function 	symbCalcLen				( byval typ as integer, _
 											  byval subtype as FBSYMBOL ptr, _
 											  byval realsize as integer = FALSE ) as integer
 
-declare function 	hAllocNumericConst		( byval sname as string, _
+declare function 	hAllocFloatConst		( byval value as double, _
 											  byval typ as integer ) as FBSYMBOL ptr
 
 declare function 	hAllocStringConst		( byval sname as string, _
@@ -310,6 +311,8 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 ''
 
 #define symbGetAccessCnt(s) s->acccnt
+
+#define symbIncAccessCnt(s) s->acccnt += 1
 
 #define symbGetLen(s) iif( s <> NULL, s->lgt, 0 )
 
@@ -348,6 +351,14 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 #define symbGetAllocType(s) s->alloctype
 
 #define symbSetAllocType(s,t) s->alloctype = t
+
+#define symbGetConstValStr(s) s->con.val.str
+
+#define symbGetConstValInt(s) s->con.val.int
+
+#define symbGetConstValFloat(s) s->con.val.float
+
+#define symbGetConstValLong(s) s->con.val.long
 
 #define symbGetDefineText(d) d->def.text
 
@@ -406,8 +417,6 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 #define symbGetName(s) s->alias
 
 #define symbGetVarOfs(s) s->ofs
-
-#define symbGetConstText(c) c->con.text
 
 #define symbGetUDTFirstElm(s) s->udt.fldtb.head
 
@@ -487,13 +496,13 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 
 #define symbGetArgOptional(f,a) a->arg.optional
 
-#define symbGetArgOptvalI(f,a) a->arg.optval.valuei
+#define symbGetArgOptValInt(f,a) a->arg.optval.int
 
-#define symbGetArgOptvalF(f,a) a->arg.optval.valuef
+#define symbGetArgOptValFloat(f,a) a->arg.optval.float
 
-#define symbGetArgOptval64(f,a) a->arg.optval.value64
+#define symbGetArgOptValLong(f,a) a->arg.optval.long
 
-#define symbGetArgOptvalStr(f,a) a->arg.optval.valuestr
+#define symbGetArgOptValStr(f,a) a->arg.optval.str
 
 #define symbGetArgPrev(a) a->prev
 

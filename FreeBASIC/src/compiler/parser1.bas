@@ -26,7 +26,6 @@
 option explicit
 option escape
 
-defint a-z
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\parser.bi"
@@ -477,10 +476,10 @@ end function
 ''
 function cConstAssign as integer static
     static as zstring * FB_MAXNAMELEN+1 id
-    static as zstring * FB_MAXLITLEN+1 valtext
     dim as integer typ, lgt, ptrcnt
     dim as ASTNODE ptr expr
     dim as FBSYMBOL ptr sym, subtype
+    dim as FBVALUE value
 
 	function = FALSE
 
@@ -545,37 +544,34 @@ function cConstAssign as integer static
 
 	'' string?
 	if( sym <> NULL ) then
-		astDel( expr )
 
-		lgt = symbGetLen( sym ) - 1 			'' less the null-char
-		if( symbAddConst( @id, FB_SYMBTYPE_STRING, NULL, _
-						  strptr( sym->var.inittext ), lgt ) = NULL ) then
+		value.str = sym
+		if( symbAddConst( @id, FB_SYMBTYPE_STRING, NULL, @value ) = NULL ) then
     		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
     		exit function
 		end if
 
-		if( symbGetAccessCnt( sym ) = 0 ) then
-			symbDelVar( sym )
-		end if
-
+	'' anything else..
 	else
 
+		'' not a constant?
 		if( not astIsCONST( expr ) ) then
 			hReportErrorEx( FB_ERRMSG_EXPECTEDCONST, id )
 			exit function
 		end if
 
-		typ 	= astGetDataType( expr )
-		subtype = astGetSubtype( expr )
-		valtext = astGetValueAsStr( expr )
-		astDel( expr )
-
-		if( symbAddConst( @id, typ, subtype, @valtext, 0 ) = NULL ) then
+		if( symbAddConst( @id, _
+						  astGetDataType( expr ), _
+						  astGetSubtype( expr ), _
+						  @astGetValue( expr ) ) = NULL ) then
     		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
     		exit function
 		end if
 
     end if
+
+	''
+	astDel( expr )
 
 	function = TRUE
 
@@ -1399,11 +1395,11 @@ private sub hMakeArrayDimTB( byval dimensions as integer, _
 
 		select case as const astGetDataType( expr )
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			dTB(i).lower = astGetValue64( expr )
+			dTB(i).lower = astGetValLong( expr )
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			dTB(i).lower = astGetValuef( expr )
+			dTB(i).lower = astGetValFloat( expr )
 		case else
-			dTB(i).lower = astGetValuei( expr )
+			dTB(i).lower = astGetValInt( expr )
 		end select
 
 		astDel( expr )
@@ -1413,11 +1409,11 @@ private sub hMakeArrayDimTB( byval dimensions as integer, _
 
 		select case as const astGetDataType( expr )
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			dTB(i).upper = astGetValue64( expr )
+			dTB(i).upper = astGetValLong( expr )
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			dTB(i).upper = astGetValuef( expr )
+			dTB(i).upper = astGetValFloat( expr )
 		case else
-			dTB(i).upper = astGetValuei( expr )
+			dTB(i).upper = astGetValInt( expr )
 		end select
 
 		astDel( expr )
@@ -1997,11 +1993,11 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 
 				select case as const sym->typ
 				case FB_SYMBTYPE_LONGINT, FB_SYMBTYPE_ULONGINT
-					irEmitVARINI64( sym->typ, astGetValue64( expr ) )
+					irEmitVARINI64( sym->typ, astGetValLong( expr ) )
 				case FB_SYMBTYPE_SINGLE, FB_SYMBTYPE_DOUBLE
-					irEmitVARINIf( sym->typ, astGetValuef( expr ) )
+					irEmitVARINIf( sym->typ, astGetValFloat( expr ) )
 				case else
-					irEmitVARINIi( sym->typ, astGetValuei( expr ) )
+					irEmitVARINIi( sym->typ, astGetValInt( expr ) )
 				end select
 
 			end if
@@ -2022,10 +2018,6 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 
 			'' less the null-char
 			irEmitVARINISTR( sym->lgt - 1, symbGetVarText( litsym ), symbGetLen( litsym ) - 1 )
-
-			if( symbGetAccessCnt( litsym ) = 0 ) then
-				symbDelVar( litsym )
-			end if
 
 		end if
 
@@ -2351,11 +2343,11 @@ function cStaticArrayDecl( byref dimensions as integer, _
 
 		select case as const astGetDataType( expr )
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			dTB(i).lower = astGetValue64( expr )
+			dTB(i).lower = astGetValLong( expr )
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			dTB(i).lower = astGetValuef( expr )
+			dTB(i).lower = astGetValFloat( expr )
 		case else
-			dTB(i).lower = astGetValuei( expr )
+			dTB(i).lower = astGetValInt( expr )
 		end select
 
 		astDel( expr )
@@ -3300,7 +3292,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     	'' string?
     	select case as const atype
     	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR
-    		optval.valuestr = sym
+    		optval.str = sym
     	case else
     		astConvertValue( expr, @optval, atype )
     	end select
@@ -3599,19 +3591,19 @@ function cProcParam( byval proc as FBSYMBOL ptr, _
 		'' create an arg
 		select case as const symbGetType( arg )
   		case IR_DATATYPE_ENUM
-  			expr = astNewENUM( symbGetArgOptvalI( proc, arg ), symbGetSubType( arg ) )
+  			expr = astNewENUM( symbGetArgOptValInt( proc, arg ), symbGetSubType( arg ) )
 
 		case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
-			expr = astNewVAR( symbGetArgOptvalStr( proc, arg ), NULL, 0, IR_DATATYPE_FIXSTR )
+			expr = astNewVAR( symbGetArgOptValStr( proc, arg ), NULL, 0, IR_DATATYPE_FIXSTR )
 
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			expr = astNewCONST64( symbGetArgOptval64( proc, arg ), symbGetType( arg ) )
+			expr = astNewCONST64( symbGetArgOptValLong( proc, arg ), symbGetType( arg ) )
 
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			expr = astNewCONSTf( symbGetArgOptvalF( proc, arg ), symbGetType( arg ) )
+			expr = astNewCONSTf( symbGetArgOptValFloat( proc, arg ), symbGetType( arg ) )
 
 		case else
-			expr = astNewCONSTi( symbGetArgOptvalI( proc, arg ), _
+			expr = astNewCONSTi( symbGetArgOptValInt( proc, arg ), _
 								 symbGetType( arg ), symbGetSubType( arg ) )
 		end select
 
@@ -4396,7 +4388,7 @@ function cAsmCode as integer static
 					'' const?
 					s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_CONST )
 				    if( s <> NULL ) then
-						text = symbGetConstText( s )
+						text = symbGetConstValueAsStr( s )
 					else
 						'' var?
 						s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_VAR )

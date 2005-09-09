@@ -20,7 +20,6 @@
 ''
 '' chng: nov/2004 written [v1ctor]
 
-defint a-z
 option explicit
 option escape
 
@@ -852,7 +851,7 @@ private sub hDeclENUM( byval sym as FBSYMBOL ptr )
 
 	e = symbGetENUMFirstElm( sym )
 	do while( e <> NULL )
-        desc += symbGetName( e ) + ":" + symbGetConstText( e ) + ","
+        desc += symbGetName( e ) + ":" + str( symbGetConstValInt( e ) ) + ","
 
 		e = symbGetENUMNextElm( e )
 	loop

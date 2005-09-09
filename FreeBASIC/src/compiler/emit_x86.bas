@@ -21,7 +21,6 @@
 '' chng: sep/2004 written [v1ctor]
 ''  	 mar/2005 longint support added [v1ctor]
 
-defint a-z
 option explicit
 option escape
 
@@ -5112,9 +5111,10 @@ end sub
 '':::::
 sub emitVARINIi( byval dtype as integer, _
 				 byval value as integer ) static
+
 	dim ostr as string
 
-	ostr = hGetTypeString( dtype ) + " " + str$( value ) + NEWLINE
+	ostr = hGetTypeString( dtype ) + " " + str( value ) + NEWLINE
 	outEx( ostr, FALSE )
 
 end sub
@@ -5122,9 +5122,13 @@ end sub
 '':::::
 sub emitVARINIf( byval dtype as integer, _
 				 byval value as double ) static
-	dim ostr as string
 
-	ostr = hGetTypeString( dtype ) + " " + str$( value ) + NEWLINE
+	dim as string svalue, ostr
+
+	'' can't use STR() because GAS doesn't support the 1.#INF notation
+	svalue = hFloatToStr( value, dtype )
+
+	ostr = hGetTypeString( dtype ) + " " + svalue + NEWLINE
 	outEx( ostr, FALSE )
 
 end sub
@@ -5134,7 +5138,7 @@ sub emitVARINI64( byval dtype as integer, _
 				  byval value as longint ) static
 	dim ostr as string
 
-	ostr = hGetTypeString( dtype ) + " " + str$( value ) + NEWLINE
+	ostr = hGetTypeString( dtype ) + " " + str( value ) + NEWLINE
 	outEx( ostr, FALSE )
 
 end sub
@@ -5367,13 +5371,18 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
     		'' initialized?
     		if( symbGetVarInitialized( s ) ) then
     	    	dtype = symbGetType( s )
-    	    	'' not an udt?
-    	    	if( dtype <> FB_SYMBTYPE_USERDEF ) then
-					'' not string or array descriptors (fix-len's can be 0-len too)
-					if( (symbGetLen( s ) > 0) or (dtype = FB_SYMBTYPE_FIXSTR) ) then
-                    	doemit = TRUE
-    	    		end if
-    	    	end if
+    	    	select case dtype
+    	    	'' udt? don't emit
+    	    	case FB_SYMBTYPE_USERDEF
+
+    	    	'' string? check if ever referenced
+    	    	case FB_SYMBTYPE_FIXSTR
+    	    		doemit = symbGetAccessCnt( s ) > 0
+
+				'' anything else, only if len > 0
+				case else
+					doemit = symbGetLen( s ) > 0
+    	    	end select
     	    end if
 		end select
 

@@ -167,7 +167,7 @@ type ASTNODE
 	subtype			as FBSYMBOL ptr					'' if dtype is an USERDEF or ENUM
 
 	defined 		as integer						'' only true for constants
-	v				as FBVALUE
+	val				as FBVALUE
 
 	op				as integer						'' f/ BOP, UOP, ... nodes
 	allocres 		as integer						'' /
@@ -410,11 +410,13 @@ declare sub 		astDump 			( byval p as ASTNODE ptr, _
 
 #define astIsOFFSET(n) (n->class = AST_NODECLASS_OFFSET)
 
-#define astGetValuei(n) n->v.valuei
+#define astGetValue(n) n->val
 
-#define astGetValuef(n) n->v.valuef
+#define astGetValInt(n) n->val.int
 
-#define astGetValue64(n) n->v.value64
+#define astGetValFloat(n) n->val.float
+
+#define astGetValLong(n) n->val.long
 
 #define astGetDataType(n) n->dtype
 

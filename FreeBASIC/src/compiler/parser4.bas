@@ -23,7 +23,6 @@
 option explicit
 option escape
 
-defint a-z
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\parser.bi"
@@ -452,11 +451,11 @@ private sub cFlushBOP( byval op as integer, _
 	else
 		select case as const dtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			expr1 = astNewCONST64( val1->value64, dtype )
+			expr1 = astNewCONST64( val1->long, dtype )
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			expr1 = astNewCONSTf( val1->valuef, dtype )
+			expr1 = astNewCONSTf( val1->float, dtype )
 		case else
-			expr1 = astNewCONSTi( val1->valuei, dtype )
+			expr1 = astNewCONSTi( val1->int, dtype )
 		end select
 	end if
 
@@ -465,11 +464,11 @@ private sub cFlushBOP( byval op as integer, _
 	else
 		select case as const dtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			expr2 = astNewCONST64( val2->value64, dtype )
+			expr2 = astNewCONST64( val2->long, dtype )
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			expr2 = astNewCONSTf( val2->valuef, dtype )
+			expr2 = astNewCONSTf( val2->float, dtype )
 		case else
-			expr2 = astNewCONSTi( val2->valuei, dtype )
+			expr2 = astNewCONSTi( val2->int, dtype )
 		end select
 	end if
 
@@ -497,11 +496,11 @@ private sub cFlushSelfBOP( byval op as integer, _
 	else
 		select case as const dtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			expr2 = astNewCONST64( val2->value64, dtype )
+			expr2 = astNewCONST64( val2->long, dtype )
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			expr2 = astNewCONSTf( val2->valuef, dtype )
+			expr2 = astNewCONSTf( val2->float, dtype )
 		case else
-			expr2 = astNewCONSTi( val2->valuei, dtype )
+			expr2 = astNewCONSTi( val2->int, dtype )
 		end select
 	end if
 
@@ -619,11 +618,11 @@ function cForStatement as integer
 		if( astIsCONST( expr ) ) then
 			select case as const astGetDataType( expr )
 			case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-				ispositive = (astGetValue64( expr ) >= 0)
+				ispositive = (astGetValLong( expr ) >= 0)
 			case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-				ispositive = (astGetValueF( expr ) >= 0)
+				ispositive = (astGetValFloat( expr ) >= 0)
 			case else
-				ispositive = (astGetValueI( expr ) >= 0)
+				ispositive = (astGetValInt( expr ) >= 0)
 			end select
 		else
 			iscomplex = TRUE
@@ -649,11 +648,11 @@ function cForStatement as integer
 	else
 		select case as const dtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			sval.value64 = 1
+			sval.long = 1
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			sval.valuef = 1.0
+			sval.float = 1.0
 		case else
-			sval.valuei = 1
+			sval.int = 1
 		end select
 		stp = NULL
 		isconst += 1
@@ -676,7 +675,7 @@ function cForStatement as integer
     	end if
 
     	expr = astNewBOP( op, astNewCONST( @ival, dtype ), astNewCONST( @eval, dtype ) )
-    	if( not astGetValueI( expr ) ) then
+    	if( not astGetValInt( expr ) ) then
     		astAdd( astNewBRANCH( IR_OP_JMP, el ) )
     	end if
     	astDel( expr )
@@ -759,11 +758,11 @@ function cForStatement as integer
     	'' test step sign and branch
 		select case as const dtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			ival.value64 = 0
+			ival.long = 0
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			ival.valuef = 0.0
+			ival.float = 0.0
 		case else
-			ival.valuei = 0
+			ival.int = 0
 		end select
 
 		cFlushBOP( IR_OP_GE, dtype, stp, @sval, NULL, @ival, c2l )

@@ -24,7 +24,6 @@
 option explicit
 option escape
 
-defint a-z
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\hash.bi"
@@ -1464,18 +1463,22 @@ function symbAddTempVar( byval typ as integer, _
 end function
 
 '':::::
-function hAllocNumericConst( byval sname as string, _
-							 byval typ as integer ) as FBSYMBOL ptr static
+function hAllocFloatConst( byval value as double, _
+						   byval typ as integer _
+						 ) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXINTNAMELEN+1 cname, aname
 	dim as FBSYMBOL ptr s
 	dim as FBARRAYDIM dTB(0)
-    dim as integer p
+	dim as string svalue
 
 	function = NULL
 
+	'' can't use STR() because GAS doesn't support the 1.#INF notation
+	svalue = hFloatToStr( value, typ )
+
 	cname = "{fbnc}"
-	cname += sname
+	cname += svalue
 
 	s = symbFindByNameAndSuffix( @cname, typ, FALSE )
 	if( s <> NULL ) then
@@ -1493,15 +1496,8 @@ function hAllocNumericConst( byval sname as string, _
 	''
 	s->var.initialized = TRUE
 
-	if( typ = FB_SYMBTYPE_DOUBLE ) then
-		p = instr( sname, "D" )
-		if( p <> 0 ) then
-			sname[p-1] = asc( "E" )
-		end if
-	end if
-
 	ZEROSTRDESC( s->var.inittext )
-	s->var.inittext	= sname
+	s->var.inittext	= svalue
 
 	function = s
 
@@ -1532,7 +1528,7 @@ function hAllocStringConst( byval sname as string, _
 	''
 	s = symbFindByNameAndClass( @cname, FB_SYMBCLASS_VAR, TRUE )
 	if( s <> NULL ) then
-		return s 's->var.array.desc
+		return s '''''s->var.array.desc
 	end if
 
 	aname = *hMakeTmpStr( FALSE )
@@ -1540,7 +1536,7 @@ function hAllocStringConst( byval sname as string, _
 	'' plus the null-char as rtlib wrappers will take it into account
 	lgt += 1
 
-	'' it must be declare as SHARED, see hAllocNumericConst()
+	'' it must be declare as SHARED, see hAllocFloatConst()
 	s = symbAddVarEx( @cname, @aname, FB_SYMBTYPE_FIXSTR, NULL, _
 					  0, lgt, 0, dTB(), _
 					  FB_ALLOCTYPE_SHARED, FALSE, TRUE, FALSE )
@@ -1553,9 +1549,9 @@ function hAllocStringConst( byval sname as string, _
 
 	'' can't fake a descriptor as the literal string passed to
 	'' user procs can be modified/reused
-	's->var.array.desc = hCreateStringDesc( s )
+	'''''s->var.array.desc = hCreateStringDesc( s )
 
-	function = s 's->var.array.desc
+	function = s '''''s->var.array.desc
 
 end function
 
@@ -1563,8 +1559,8 @@ end function
 function symbAddConst( byval symbol as zstring ptr, _
 					   byval typ as integer, _
 					   byval subtype as FBSYMBOL ptr, _
-					   byval text as zstring ptr, _
-					   byval lgt as integer ) as FBSYMBOL ptr static
+					   byval value as FBVALUE ptr _
+					 ) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr c
 
@@ -1578,9 +1574,7 @@ function symbAddConst( byval symbol as zstring ptr, _
 		exit function
 	end if
 
-	c->lgt		= lgt
-	ZEROSTRDESC( c->con.text )
-	c->con.text	= *text
+	c->con.val = *value
 
 	function = c
 
@@ -2069,14 +2063,13 @@ end function
 '':::::
 function symbAddEnumElement( byval parent as FBSYMBOL ptr, _
 							 byval symbol as zstring ptr, _
-					         byval value as integer ) as FBSYMBOL ptr static
+					         byval intval as integer ) as FBSYMBOL ptr static
 
 	dim as FBSYMBOL ptr elm, tail
-	dim as string text
+	dim as FBVALUE value
 
-	text = str( value )
-	elm = symbAddConst( symbol, FB_SYMBTYPE_ENUM, parent, _
-						strptr( text ), 0 )
+	value.int = intval
+	elm = symbAddConst( symbol, FB_SYMBTYPE_ENUM, parent, @value )
 
 	if( elm = NULL ) then
 		return NULL
@@ -2175,19 +2168,7 @@ function symbAddArg( byval proc as FBSYMBOL ptr, _
 	a->arg.optional	= optional
 
 	if( optional ) then
-		select case as const typ
-		case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
-			a->arg.optval.valuestr = optval->valuestr
-
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			a->arg.optval.value64 = optval->value64
-
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			a->arg.optval.valuef = optval->valuef
-
-		case else
-			a->arg.optval.valuei = optval->valuei
-		end select
+		a->arg.optval = *optval
 	end if
 
     function = a
@@ -2932,9 +2913,6 @@ function symbLookupUDTElm( byval symbol as zstring ptr, _
     	exit function
 	end if
 
-	'' update the access counter
-	s->acccnt += 1
-
 	function = s
 
 end function
@@ -2981,9 +2959,6 @@ function symbFindByClass( byval s as FBSYMBOL ptr, _
 		end if
 	end if
 
-	'' update the access counter
-	s->acccnt += 1
-
 	function = s
 
 end function
@@ -3029,9 +3004,6 @@ function symbFindBySuffix( byval s as FBSYMBOL ptr, _
 			return NULL
 		end if
 	end if
-
-    '' update the access counter
-	s->acccnt += 1
 
 	function = s
 
@@ -3538,6 +3510,31 @@ function symbGetVarText( byval s as FBSYMBOL ptr ) as string static
 
 end function
 
+'':::::
+function symbGetConstValueAsStr( byval s as FBSYMBOL ptr ) as string
+
+  	select case as const symbGetType( s )
+  	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR
+  		function = symbGetConstValStr( s )->var.inittext
+
+  	case IR_DATATYPE_LONGINT
+  		function = str( symbGetConstValLong( s ) )
+
+  	case IR_DATATYPE_ULONGINT
+  	    function = str( cunsg( symbGetConstValLong( s ) ) )
+
+  	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  		function = str( symbGetConstValFloat( s ) )
+
+  	case IR_DATATYPE_UBYTE, IR_DATATYPE_USHORT, IR_DATATYPE_UINT
+  		function = str( cunsg( symbGetConstValInt( s ) ) )
+
+  	case else
+  		function = str( symbGetConstValInt( s ) )
+  	end select
+
+end function
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' del
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -3743,8 +3740,7 @@ sub symbDelConst( byval s as FBSYMBOL ptr, _
     	exit sub
     end if
 
-    ''
-    s->con.text = ""
+    '' if it's a string, the symbol attached will be deleted be delVar()
 
 	hFreeSymbol( s )
 

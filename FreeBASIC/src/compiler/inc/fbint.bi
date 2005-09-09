@@ -603,10 +603,10 @@ type FBSYMBOLTB
 end type
 
 union FBVALUE
-	valuestr		as FBSYMBOL_ ptr
-	valuei			as integer
-	valuef			as double
-	value64			as longint
+	str				as FBSYMBOL_ ptr
+	int				as integer
+	float			as double
+	long			as longint
 end union
 
 ''
@@ -724,7 +724,7 @@ end type
 
 ''
 type FBS_CONST
-	text			as string
+	val				as FBVALUE
 end type
 
 ''
@@ -814,7 +814,7 @@ type FBSYMBOL
 	scope			as uinteger
 	lgt				as integer
 	ofs				as integer					'' used with local vars and args
-	acccnt			as integer					'' access counter (number of lookup's)
+	acccnt			as integer					'' access counter (set by AST for VAR's only atm)
 
 	union
 		var			as FBS_VAR

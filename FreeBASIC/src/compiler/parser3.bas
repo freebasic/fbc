@@ -25,7 +25,6 @@
 option explicit
 option escape
 
-defint a-z
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\parser.bi"
@@ -937,11 +936,13 @@ function cVariable( byref varexpr as ASTNODE ptr, _
     ''
     isbyref = symbIsArgByRef( sym )
 
-	if( env.clopt.target = FB_COMPTARGET_WIN32 or env.clopt.target = FB_COMPTARGET_CYGWIN ) then
+	'' check if it's an import (only if target is Windows)
+	select case env.clopt.target
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
 		isimport = symbIsImport( sym )
-	else
+	case else
 		isimport = FALSE
-	end if
+	end select
 
     ''
     idxexpr  = NULL

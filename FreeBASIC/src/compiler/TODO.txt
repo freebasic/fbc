@@ -1,21 +1,12 @@
 
-[ ] make macros' text size unlimited, allocating a list for EACH token (with the
-    type (arg or ordinary text), text (if not an arg, a zstring ptr), mode (#), etc):
-    - hReplace() can be removed in lex, speeding up macro's
-    - #arg could support literal strings too
-    - intrinsic macros can be hard to define in rtl..
+[ ] add the cast() intrinsic function - CAST( type, expression ), works like in C,
+    so macros (and maybe function templates one day) can be better designed
 
 [ ] add support for functions returning references (reuse "BYREF"), so those can
     be automatically dereferenced AND deleted
     - be sure no hidden arg is passed in C++, we never know..
     - change STRING, UDT (above 8 bytes) and WSTRING (no ptr) results to BYREF so
       they can be handled automatically
-
-[ ] overload won't recognize z|w|string ptr args when non-ptr's params are passed
-
-[ ] remove the CONST's type to string, string to type conversions, save the
-    constants as-is (using the FBVALUE union) to speed up it a bit - won't help much
-    as most of the system headers use #define's, not const's
 
 [ ] SCOPE..END SCOPE:
     - vars should be reused (that's is, the stack "rewinded") because it's only

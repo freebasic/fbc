@@ -23,7 +23,6 @@
 option explicit
 option escape
 
-defint a-z
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\ir.bi"
@@ -167,7 +166,8 @@ end type
 		"Expected 'END SCOPE'", _
 		"Illegal inside a SCOPE block", _
 		"Cannot pass an UDT result by reference", _
-		"Ambiguous call to overloaded function" _
+		"Ambiguous call to overloaded function", _
+		"Division by zero" _
 	}
 
 
@@ -375,6 +375,50 @@ function hMakeTmpStr( byval islabel as integer ) as zstring ptr static
 	ctx.tmpcnt += 1
 
 	function = @res
+
+end function
+
+'':::::
+function hFloatToStr( byval value as double, _
+					  byref typ as integer ) as string static
+
+    dim as integer expval
+
+	'' x86 little-endian assumption
+	expval = cptr( integer ptr, @value )[1]
+
+	select case expval
+	'' -|+ infinite?
+	case &h7FF00000UL, &hFFF00000UL
+		if( typ = FB_SYMBTYPE_DOUBLE ) then
+			typ = FB_SYMBTYPE_LONGINT
+			if( expval >= 0 ) then
+				function = "0x7FF0000000000000"
+			else
+				function = "0xFFF0000000000000"
+			end if
+		else
+			typ = FB_SYMBTYPE_INTEGER
+			if( expval >= 0 ) then
+				function = "0x7F800000"
+			else
+				function = "0xFF800000"
+			end if
+		end if
+
+	'' -|+ NaN? Quiet-NaN's only
+	case &h7FF80000UL, &hFFF80000UL
+		if( typ = FB_SYMBTYPE_DOUBLE ) then
+			typ = FB_SYMBTYPE_LONGINT
+			function = "0x7FF8000000000000"
+		else
+			typ = FB_SYMBTYPE_INTEGER
+			function = "0x7FF00000"
+		end if
+
+	case else
+		function = str( value )
+	end select
 
 end function
 

@@ -24,7 +24,6 @@
 option explicit
 option escape
 
-defint a-z
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\parser.bi"
@@ -409,7 +408,7 @@ function cDataStmt as integer static
 
 		do
 		    if( not cVarOrDeref( expr ) ) then
-		    	hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
+		    	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		    	exit function
 		    end if
 
@@ -427,7 +426,7 @@ function cDataStmt as integer static
 		'' not allowed if inside an scope block
 		if( env.scope > 0 ) then
 			if( env.lastcompound = FB_TK_SCOPE ) then
-				hReportError FB_ERRMSG_ILLEGALINSIDEASCOPE
+				hReportError( FB_ERRMSG_ILLEGALINSIDEASCOPE )
 				exit function
 			end if
 		end if
@@ -457,15 +456,11 @@ function cDataStmt as integer static
 
 			'' string?
 			if( s <> NULL ) then
-				astDel expr
+				astDel( expr )
 
                 typ = FB_SYMBTYPE_FIXSTR
 				litlen  = symbGetLen( s ) - 1 				'' less the null-char
 				littext = symbGetVarText( s )
-
-				if( symbGetAccessCnt( s ) = 0 ) then
-					symbDelVar s
-				end if
 
             	if( not rtlDataStore( littext, litlen, typ ) ) then
 	            	exit function
@@ -481,7 +476,7 @@ function cDataStmt as integer static
 				else
 
 					if( not astIsCONST( expr ) ) then
-						hReportError FB_ERRMSG_EXPECTEDCONST
+						hReportError( FB_ERRMSG_EXPECTEDCONST )
 						exit function
 					end if
 
@@ -500,7 +495,7 @@ function cDataStmt as integer static
 
 		loop while( hMatch( CHAR_COMMA ) )
 
-		rtlDataStoreEnd
+		rtlDataStoreEnd( )
 
 		function = TRUE
 
@@ -1394,7 +1389,8 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
     end if
 
 	''
-	function = rtlFileOpen( filename, fmode, faccess, flock, filenum, flen, isfunc, open_kind )
+	function = rtlFileOpen( filename, fmode, faccess, flock, _
+							filenum, flen, isfunc, open_kind )
 
 end function
 
@@ -2093,13 +2089,9 @@ private function cStrASC( byref funcexpr as ASTNODE ptr ) as integer
 					end if
 
 					if( p >= 0 ) then
-						funcexpr = astNewCONSTi( asc( hEscapeToChar( symbGetVarText( sym ) ) , p ), _
-											 	 IR_DATATYPE_INTEGER )
-
-						'' delete var if it was never accessed before
-						if( symbGetAccessCnt( sym ) = 0 ) then
-							symbDelVar( sym )
-						end if
+						funcexpr = _
+							astNewCONSTi( asc( hEscapeToChar( symbGetVarText( sym ) ) , p ), _
+										  IR_DATATYPE_INTEGER )
 
 	    				astDel( expr1 )
 	    				expr1 = NULL
@@ -2744,7 +2736,9 @@ function cVAFunct( byref funcexpr as ASTNODE ptr ) as integer
 	'' + arglen( arg )
 	funcexpr = astNewBOP( IR_OP_ADD, _
 						  expr, _
-						  astNewCONSTi( symbCalcArgLen( arg->typ, arg->subtype, arg->arg.mode ), _
+						  astNewCONSTi( symbCalcArgLen( arg->typ, _
+						  								arg->subtype, _
+						  								arg->arg.mode ), _
 						  				IR_DATATYPE_UINT ) )
 
 

@@ -28,7 +28,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-defint a-z
 option explicit
 option escape
 
@@ -57,7 +56,7 @@ end Type
 
 type ASTVALUE
 	dtype			as integer
-	v				as FBVALUE
+	val				as FBVALUE
 end type
 
 
@@ -464,9 +463,9 @@ private sub hConvDataType( byval v as FBVALUE ptr, _
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
 		    '' no conversion
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			v->value64 = clngint( v->valuef )
+			v->long = clngint( v->float )
 		case else
-			v->value64 = clngint( v->valuei )
+			v->long = clngint( v->int )
 		end select
 
 	''
@@ -476,9 +475,9 @@ private sub hConvDataType( byval v as FBVALUE ptr, _
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
 		    '' no conversion
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			v->value64 = culngint( v->valuef )
+			v->long = culngint( v->float )
 		case else
-			v->value64 = culngint( v->valuei )
+			v->long = culngint( v->int )
 		end select
 
 	''
@@ -490,15 +489,15 @@ private sub hConvDataType( byval v as FBVALUE ptr, _
 
 		select case as const vdtype
 		case IR_DATATYPE_LONGINT
-		    v->valuef = cdbl( v->value64 )
+		    v->float = cdbl( v->long )
 		case IR_DATATYPE_ULONGINT
-			v->valuef = cdbl( cunsg( v->value64 ) )
+			v->float = cdbl( cunsg( v->long ) )
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
 			'' do nothing
 		case IR_DATATYPE_UINT, IR_DATATYPE_POINTER
-			v->valuef = cdbl( cuint( v->valuei ) )
+			v->float = cdbl( cuint( v->int ) )
 		case else
-			v->valuef = cdbl( v->valuei )
+			v->float = cdbl( v->int )
 		end select
 
 	''
@@ -506,9 +505,9 @@ private sub hConvDataType( byval v as FBVALUE ptr, _
 
 	 	select case as const vdtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-		    v->valuei = cuint( v->value64 )
+		    v->int = cuint( v->long )
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			v->valuei = cuint( v->valuef )
+			v->int = cuint( v->float )
 		end select
 
 	''
@@ -516,9 +515,9 @@ private sub hConvDataType( byval v as FBVALUE ptr, _
 
 		select case as const vdtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-		    v->valuei = cint( v->value64 )
+		    v->int = cint( v->long )
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			v->valuei = cint( v->valuef )
+			v->int = cint( v->float )
 		end select
 
     end select
@@ -535,11 +534,11 @@ private function hPrepConst( byval v as ASTVALUE ptr, _
 		v->dtype = r->dtype
 		select case as const v->dtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			v->v.value64 = r->v.value64
+			v->val.long = r->val.long
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			v->v.valuef = r->v.valuef
+			v->val.float = r->val.float
 		case else
-            v->v.valuei = r->v.valuei
+            v->val.int = r->val.int
 		end select
 
 		return INVALID
@@ -560,11 +559,11 @@ private function hPrepConst( byval v as ASTVALUE ptr, _
 
 	'' convert r to v's type
 	if( dtype = v->dtype ) then
-		hConvDataType( @r->v, r->dtype, dtype )
+		hConvDataType( @r->val, r->dtype, dtype )
 
 	'' convert v to r's type
 	else
-		hConvDataType( @v->v, v->dtype, dtype )
+		hConvDataType( @v->val, v->dtype, dtype )
 		v->dtype = dtype
 	end if
 
@@ -612,21 +611,21 @@ private function hConstAccumADDSUB( byval n as ASTNODE ptr, _
 				case IR_OP_ADD
 					select case as const dtype
 					case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-						v->v.value64 += r->v.value64
+						v->val.long += r->val.long
 					case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-						v->v.valuef += r->v.valuef
+						v->val.float += r->val.float
 					case else
-				    	v->v.valuei += r->v.valuei
+				    	v->val.int += r->val.int
 					end select
 
 				case IR_OP_SUB
 					select case as const dtype
 					case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-						v->v.value64 -= r->v.value64
+						v->val.long -= r->val.long
 					case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-						v->v.valuef -= r->v.valuef
+						v->val.float -= r->val.float
 					case else
-						v->v.valuei -= r->v.valuei
+						v->val.int -= r->val.int
 					end select
 				end select
 			end if
@@ -679,11 +678,11 @@ private function hConstAccumMUL( byval n as ASTNODE ptr, _
 			if( dtype <> INVALID ) then
 				select case as const dtype
 				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-					v->v.value64 *= r->v.value64
+					v->val.long *= r->val.long
 				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-					v->v.valuef *= r->v.valuef
+					v->val.float *= r->val.float
 				case else
-					v->v.valuei *= r->v.valuei
+					v->val.int *= r->val.int
 				end select
 			end if
 
@@ -728,11 +727,11 @@ private function hOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 				select case as const v.dtype
 				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-					nn = astNewCONST64( v.v.value64, v.dtype )
+					nn = astNewCONST64( v.val.long, v.dtype )
 				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			    	nn = astNewCONSTf( v.v.valuef, v.dtype )
+			    	nn = astNewCONSTf( v.val.float, v.dtype )
 				case else
-					nn = astNewCONSTi( v.v.valuei, v.dtype )
+					nn = astNewCONSTi( v.val.int, v.dtype )
 				end select
 
 				n = astNewBOP( IR_OP_ADD, n, nn )
@@ -743,11 +742,11 @@ private function hOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 				select case as const v.dtype
 				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-					nn = astNewCONST64( v.v.value64, v.dtype )
+					nn = astNewCONST64( v.val.long, v.dtype )
 				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-					nn = astNewCONSTf( v.v.valuef, v.dtype )
+					nn = astNewCONSTf( v.val.float, v.dtype )
 				case else
-					nn = astNewCONSTi( v.v.valuei, v.dtype )
+					nn = astNewCONSTi( v.val.int, v.dtype )
 				end select
 
 				n = astNewBOP( IR_OP_MUL, n, nn )
@@ -758,11 +757,11 @@ private function hOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 				select case as const v.dtype
 				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-					nn = astNewCONST64( v.v.value64, v.dtype )
+					nn = astNewCONST64( v.val.long, v.dtype )
 				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-					nn = astNewCONSTf( v.v.valuef, v.dtype )
+					nn = astNewCONSTf( v.val.float, v.dtype )
 				case else
-					nn = astNewCONSTi( v.v.valuei, v.dtype )
+					nn = astNewCONSTi( v.val.int, v.dtype )
 				end select
 
 				n = astNewBOP( IR_OP_SUB, n, nn )
@@ -810,11 +809,11 @@ private sub hOptConstAccum2( byval n as ASTNODE ptr )
 					n->l = astNewBOP( IR_OP_ADD, n->l, n->r )
 					select case as const v.dtype
 					case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-						n->r = astNewCONST64( v.v.value64, v.dtype )
+						n->r = astNewCONST64( v.val.long, v.dtype )
 					case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-						n->r = astNewCONSTf( v.v.valuef, v.dtype )
+						n->r = astNewCONSTf( v.val.float, v.dtype )
 					case else
-						n->r = astNewCONSTi( v.v.valuei, v.dtype )
+						n->r = astNewCONSTi( v.val.int, v.dtype )
 					end select
 					checktype = TRUE
 				end if
@@ -829,11 +828,11 @@ private sub hOptConstAccum2( byval n as ASTNODE ptr )
 				n->l = astNewBOP( IR_OP_MUL, n->l, n->r )
 				select case as const v.dtype
 				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-					n->r = astNewCONST64( v.v.value64, v.dtype )
+					n->r = astNewCONST64( v.val.long, v.dtype )
 				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-					n->r = astNewCONSTf( v.v.valuef, v.dtype )
+					n->r = astNewCONSTf( v.val.float, v.dtype )
 				case else
-					n->r = astNewCONSTi( v.v.valuei, v.dtype )
+					n->r = astNewCONSTi( v.val.int, v.dtype )
 				end select
 				checktype = TRUE
 			end if
@@ -900,11 +899,11 @@ private function hConstDistMUL( byval n as ASTNODE ptr, _
 			if( dtype <> INVALID ) then
 				select case as const dtype
 				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-					v->v.value64 += r->v.value64
+					v->val.long += r->val.long
 				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-					v->v.valuef += r->v.valuef
+					v->val.float += r->val.float
 				case else
-					v->v.valuei += r->v.valuei
+					v->val.int += r->val.int
 				end select
 			end if
 
@@ -952,57 +951,57 @@ private function hOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
 					case IR_DATATYPE_LONGINT
 						select case as const r->dtype
 						case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-							v.v.value64 *= r->v.value64
+							v.val.long *= r->val.long
 						case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-							v.v.value64 *= clngint( r->v.valuef )
+							v.val.long *= clngint( r->val.float )
 						case else
-							v.v.value64 *= clngint( r->v.valuei )
+							v.val.long *= clngint( r->val.int )
 						end select
 
-						r = astNewCONST64( v.v.value64, v.dtype )
+						r = astNewCONST64( v.val.long, v.dtype )
 
 					''
 					case IR_DATATYPE_ULONGINT
 						select case as const r->dtype
 						case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-							v.v.value64 *= cunsg( r->v.value64 )
+							v.val.long *= cunsg( r->val.long )
 						case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-							v.v.value64 *= culngint( r->v.valuef )
+							v.val.long *= culngint( r->val.float )
 						case else
-							v.v.value64 *= culngint( r->v.valuei )
+							v.val.long *= culngint( r->val.int )
 						end select
 
-						r = astNewCONST64( v.v.value64, v.dtype )
+						r = astNewCONST64( v.val.long, v.dtype )
 
 					''
 					case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
 						select case as const r->dtype
 						case IR_DATATYPE_LONGINT
-							v.v.valuef *= cdbl( r->v.value64 )
+							v.val.float *= cdbl( r->val.long )
 						case IR_DATATYPE_ULONGINT
-							v.v.valuef *= cdbl( cunsg( r->v.value64 ) )
+							v.val.float *= cdbl( cunsg( r->val.long ) )
 						case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-							v.v.valuef *= r->v.valuef
+							v.val.float *= r->val.float
 						case IR_DATATYPE_UINT
-							v.v.valuef *= cdbl( cunsg( r->v.valuei ) )
+							v.val.float *= cdbl( cunsg( r->val.int ) )
 						case else
-							v.v.valuef *= cdbl( r->v.valuei )
+							v.val.float *= cdbl( r->val.int )
 						end select
 
-						r = astNewCONSTf( v.v.valuef, v.dtype )
+						r = astNewCONSTf( v.val.float, v.dtype )
 
 					''
 					case else
 						select case as const r->dtype
 						case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-							v.v.valuei *= cint( r->v.value64 )
+							v.val.int *= cint( r->val.long )
 						case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-							v.v.valuei *= cint( r->v.valuef )
+							v.val.int *= cint( r->val.float )
 						case else
-							v.v.valuei *= r->v.valuei
+							v.val.int *= r->val.int
 						end select
 
-						r = astNewCONSTi( v.v.valuei, v.dtype )
+						r = astNewCONSTi( v.val.int, v.dtype )
 					end select
 
 					n = astNewBOP( IR_OP_ADD, n, r )
@@ -1049,11 +1048,11 @@ private sub hOptConstIDX( byval n as ASTNODE ptr )
         	if( v.dtype <> INVALID ) then
         		select case as const v.dtype
         		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-        			c = cint( v.v.value64 )
+        			c = cint( v.val.long )
         		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-        			c = cint( v.v.valuef )
+        			c = cint( v.val.float )
         		case else
-        			c = v.v.valuei
+        			c = v.val.int
         		end select
 
         		if( n->class = AST_NODECLASS_IDX ) then
@@ -1068,11 +1067,11 @@ private sub hOptConstIDX( byval n as ASTNODE ptr )
         	if( l->defined ) then
 				select case as const l->dtype
 				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-					c = cint( l->v.value64 )
+					c = cint( l->val.long )
 				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-					c = cint( l->v.valuef )
+					c = cint( l->val.float )
 				case else
-					c = cint( l->v.valuei )
+					c = cint( l->val.int )
 				end select
 
 				if( n->class = AST_NODECLASS_IDX ) then
@@ -1099,11 +1098,11 @@ private sub hOptConstIDX( byval n as ASTNODE ptr )
 
 						select case as const lr->dtype
 						case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-							c = cint( lr->v.value64 )
+							c = cint( lr->val.long )
 						case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-							c = cint( lr->v.valuef )
+							c = cint( lr->val.float )
 						case else
-							c = cint( lr->v.valuei )
+							c = cint( lr->val.int )
 						end select
 
 						if( c < 10 ) then
@@ -1289,7 +1288,7 @@ private sub hOptToShift( byval n as ASTNODE ptr )
 			if( r->defined ) then
 				if( irGetDataClass( n->dtype ) = IR_DATACLASS_INTEGER ) then
 					if( irGetDataSize( r->dtype ) <= FB_INTEGERSIZE ) then
-						v = r->v.valuei
+						v = r->val.int
 						if( v > 0 ) then
 							v = hToPow2( v )
 							if( v > 0 ) then
@@ -1297,16 +1296,16 @@ private sub hOptToShift( byval n as ASTNODE ptr )
 								case IR_OP_MUL
 									if( v <= 32 ) then
 										n->op = IR_OP_SHL
-										r->v.valuei = v
+										r->val.int = v
 									end if
 								case IR_OP_INTDIV
 									if( v <= 32 ) then
 										n->op = IR_OP_SHR
-										r->v.valuei = v
+										r->val.int = v
 									end if
 								case IR_OP_MOD
 									n->op = IR_OP_AND
-									r->v.valuei -= 1
+									r->val.int -= 1
 								end select
 							end if
 						end if
@@ -1356,7 +1355,7 @@ private function hOptNullOp( byval n as ASTNODE ptr ) as ASTNODE ptr static
 		if( r->defined ) then
 			if( irGetDataClass( n->dtype ) = IR_DATACLASS_INTEGER ) then
 				if( irGetDataSize( r->dtype ) <= FB_INTEGERSIZE ) then
-					v = r->v.valuei
+					v = r->val.int
 					select case as const op
 					case IR_OP_MUL
 						if( v = 0 ) then
@@ -1371,7 +1370,7 @@ private function hOptNullOp( byval n as ASTNODE ptr ) as ASTNODE ptr static
 
 					case IR_OP_MOD
 						if( v = 1 ) then
-							r->v.valuei = 0
+							r->val.int = 0
 							astDelTree( l )
 							astDel( n )
 							return r
@@ -1799,11 +1798,11 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 				'' branch if false
 				select case as const dtype
 				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-					istrue = n->v.value64 = 0
+					istrue = n->val.long = 0
 				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-					istrue = n->v.valuef = 0
+					istrue = n->val.float = 0
 				case else
-					istrue = n->v.valuei = 0
+					istrue = n->val.int = 0
 				end select
 
 				if( istrue ) then
@@ -1817,11 +1816,11 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 				'' branch if true
 				select case as const dtype
 				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-					istrue = n->v.value64 <> 0
+					istrue = n->val.long <> 0
 				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-					istrue = n->v.valuef <> 0
+					istrue = n->val.float <> 0
 				case else
-					istrue = n->v.valuei <> 0
+					istrue = n->val.int <> 0
 				end select
 
 				if( istrue ) then
@@ -1946,7 +1945,7 @@ function astPtrCheck( byval pdtype as integer, _
     	'' expr not a pointer?
     	if( edtype < IR_DATATYPE_POINTER ) then
     		'' not NULL?
-    		if( astGetValuei( expr ) <> NULL ) then
+    		if( astGetValInt( expr ) <> NULL ) then
     			exit function
     		else
     			return TRUE
@@ -2082,7 +2081,7 @@ sub astDump ( byval p as ASTNODE ptr, _
 	case AST_NODECLASS_VAR
 		v = "[" + mid$( symbGetName( n->var.sym ), 2 ) + "]"
 	case AST_NODECLASS_CONST
-		v = "<" + str$( n->v.valuei ) + ">"
+		v = "<" + str$( n->val.int ) + ">"
 	case AST_NODECLASS_CONV
 		v = "{" + str$( n->dtype ) + "}"
 '	case AST_NODECLASS_IDX
@@ -2281,21 +2280,21 @@ const DBL_EPSILON# = 2.2204460492503131e-016
 
 		select case as const l->dtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			if( l->v.value64 <> r->v.value64 ) then
+			if( l->val.long <> r->val.long ) then
 				exit function
 			end if
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			if( abs( l->v.valuef - r->v.valuef ) > DBL_EPSILON ) then
+			if( abs( l->val.float - r->val.float ) > DBL_EPSILON ) then
 				exit function
 			end if
 		case else
-			if( l->v.valuei <> r->v.valuei ) then
+			if( l->val.int <> r->val.int ) then
 				exit function
 			end if
 		end select
 
 	case AST_NODECLASS_ENUM
-		if( l->v.valuei <> r->v.valuei ) then
+		if( l->val.int <> r->val.int ) then
 			exit function
 		end if
 
@@ -2618,11 +2617,11 @@ function astGetValueAsInt( byval n as ASTNODE ptr ) as integer
 
   	select case as const astGetDataType( n )
   	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-  	    function = cint( astGetValue64( n ) )
+  	    function = cint( astGetValLong( n ) )
   	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-  		function = cint( astGetValuef( n ) )
+  		function = cint( astGetValFloat( n ) )
   	case else
-  		function = astGetValuei( n )
+  		function = astGetValInt( n )
   	end select
 
 end function
@@ -2632,11 +2631,11 @@ function astGetValueAsStr( byval n as ASTNODE ptr ) as string
 
   	select case as const astGetDataType( n )
   	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-  	    function = str( astGetValue64( n ) )
+  	    function = str( astGetValLong( n ) )
   	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-  		function = str( astGetValuef( n ) )
+  		function = str( astGetValFloat( n ) )
   	case else
-  		function = str( astGetValuei( n ) )
+  		function = str( astGetValInt( n ) )
   	end select
 
 end function
@@ -2646,14 +2645,14 @@ function astGetValueAsLongInt( byval n as ASTNODE ptr ) as longint
 
   	select case as const astGetDataType( n )
   	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-  	    function = astGetValue64( n )
+  	    function = astGetValLong( n )
   	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-  		function = clngint( astGetValuef( n ) )
+  		function = clngint( astGetValFloat( n ) )
   	case else
   		if( irIsSigned( astGetDataType( n ) ) ) then
-  			function = clngint( astGetValuei( n ) )
+  			function = clngint( astGetValInt( n ) )
   		else
-  			function = clngint( cuint( astGetValuei( n ) ) )
+  			function = clngint( cuint( astGetValInt( n ) ) )
   		end if
   	end select
 
@@ -2664,11 +2663,11 @@ function astGetValueAsULongInt( byval n as ASTNODE ptr ) as ulongint
 
   	select case as const astGetDataType( n )
   	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-  	    function = astGetValue64( n )
+  	    function = astGetValLong( n )
   	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-  		function = culngint( astGetValuef( n ) )
+  		function = culngint( astGetValFloat( n ) )
   	case else
-  		function = culngint( cuint( astGetValuei( n ) ) )
+  		function = culngint( cuint( astGetValInt( n ) ) )
   	end select
 
 end function
@@ -2678,11 +2677,11 @@ function astGetValueAsDouble( byval n as ASTNODE ptr ) as double
 
   	select case as const astGetDataType( n )
   	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-  	    function = cdbl( astGetValue64( n ) )
+  	    function = cdbl( astGetValLong( n ) )
   	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-  		function = astGetValuef( n )
+  		function = astGetValFloat( n )
   	case else
-  		function = cdbl( astGetValuei( n ) )
+  		function = cdbl( astGetValInt( n ) )
   	end select
 
 end function
@@ -2696,31 +2695,31 @@ sub astConvertValue( byval n as ASTNODE ptr, _
 	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
 		select case as const todtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			v->value64 = n->v.value64
+			v->long = n->val.long
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			v->valuef  = n->v.value64
+			v->float  = n->val.long
 		case else
-			v->valuei  = n->v.value64
+			v->int  = n->val.long
 		end select
 
 	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
 		select case as const todtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			v->value64 = n->v.valuef
+			v->long = n->val.float
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			v->valuef  = n->v.valuef
+			v->float  = n->val.float
 		case else
-			v->valuei  = n->v.valuef
+			v->int  = n->val.float
 		end select
 
 	case else
 		select case as const todtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			v->value64 = n->v.valuei
+			v->long = n->val.int
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			v->valuef  = n->v.valuei
+			v->float  = n->val.int
 		case else
-			v->valuei  = n->v.valuei
+			v->int  = n->val.int
 		end select
 	end select
 
@@ -2930,15 +2929,6 @@ private function hStrLiteralConcat( byval l as ASTNODE ptr, _
 
 	function = astNewVAR( s, NULL, 0, IR_DATATYPE_FIXSTR )
 
-	'' delete both vars if they were never accessed before
-	if( symbGetAccessCnt( ls ) = 0 ) then
-		symbDelVar( ls )
-	end if
-
-	if( symbGetAccessCnt( rs ) = 0 ) then
-		symbDelVar( rs )
-	end if
-
 	astDel( r )
 	astDel( l )
 
@@ -2960,101 +2950,103 @@ private sub hBOPConstFoldInt( byval op as integer, _
 
 	select case as const op
 	case IR_OP_ADD
-		l->v.valuei = l->v.valuei + r->v.valuei
+		l->val.int = l->val.int + r->val.int
 
 	case IR_OP_SUB
-		l->v.valuei = l->v.valuei - r->v.valuei
+		l->val.int = l->val.int - r->val.int
 
 	case IR_OP_MUL
 		if( issigned ) then
-			l->v.valuei = l->v.valuei * r->v.valuei
+			l->val.int = l->val.int * r->val.int
 		else
-			l->v.valuei = cunsg(l->v.valuei) * cunsg(r->v.valuei)
+			l->val.int = cunsg(l->val.int) * cunsg(r->val.int)
 		end if
 
 	case IR_OP_INTDIV
-		if( r->v.valuei <> 0 ) then
+		if( r->val.int <> 0 ) then
 			if( issigned ) then
-				l->v.valuei = l->v.valuei \ r->v.valuei
+				l->val.int = l->val.int \ r->val.int
 			else
-				l->v.valuei = cunsg( l->v.valuei ) \ cunsg( r->v.valuei )
+				l->val.int = cunsg( l->val.int ) \ cunsg( r->val.int )
 			end if
 		else
-			l->v.valuei = 0
+			l->val.int = 0
+			hReportError( FB_ERRMSG_DIVBYZERO )
 		end if
 
 	case IR_OP_MOD
-		if( r->v.valuei <> 0 ) then
+		if( r->val.int <> 0 ) then
 			if( issigned ) then
-				l->v.valuei = l->v.valuei mod r->v.valuei
+				l->val.int = l->val.int mod r->val.int
 			else
-				l->v.valuei = cunsg( l->v.valuei ) mod cunsg( r->v.valuei )
+				l->val.int = cunsg( l->val.int ) mod cunsg( r->val.int )
 			end if
 		else
-			l->v.valuei = 0
+			l->val.int = 0
+			hReportError( FB_ERRMSG_DIVBYZERO )
 		end if
 
 	case IR_OP_SHL
 		if( issigned ) then
-			l->v.valuei = l->v.valuei shl r->v.valuei
+			l->val.int = l->val.int shl r->val.int
 		else
-			l->v.valuei = cunsg( l->v.valuei ) shl r->v.valuei
+			l->val.int = cunsg( l->val.int ) shl r->val.int
 		end if
 
 	case IR_OP_SHR
 		if( issigned ) then
-			l->v.valuei = l->v.valuei shr r->v.valuei
+			l->val.int = l->val.int shr r->val.int
 		else
-			l->v.valuei = cunsg( l->v.valuei ) shr r->v.valuei
+			l->val.int = cunsg( l->val.int ) shr r->val.int
 		end if
 
 	case IR_OP_AND
-		l->v.valuei = l->v.valuei and r->v.valuei
+		l->val.int = l->val.int and r->val.int
 
 	case IR_OP_OR
-		l->v.valuei = l->v.valuei or r->v.valuei
+		l->val.int = l->val.int or r->val.int
 
 	case IR_OP_XOR
-		l->v.valuei = l->v.valuei xor r->v.valuei
+		l->val.int = l->val.int xor r->val.int
 
 	case IR_OP_EQV
-		l->v.valuei = l->v.valuei eqv r->v.valuei
+		l->val.int = l->val.int eqv r->val.int
 
 	case IR_OP_IMP
-		l->v.valuei = l->v.valuei imp r->v.valuei
+		l->val.int = l->val.int imp r->val.int
 
 	case IR_OP_NE
-		l->v.valuei = l->v.valuei <> r->v.valuei
+		l->val.int = l->val.int <> r->val.int
 
 	case IR_OP_EQ
-		l->v.valuei = l->v.valuei = r->v.valuei
+		l->val.int = l->val.int = r->val.int
 
 	case IR_OP_GT
 		if( issigned ) then
-			l->v.valuei = l->v.valuei > r->v.valuei
+			l->val.int = l->val.int > r->val.int
 		else
-			l->v.valuei = cunsg( l->v.valuei ) > cunsg( r->v.valuei )
+			l->val.int = cunsg( l->val.int ) > cunsg( r->val.int )
 		end if
 
 	case IR_OP_LT
 		if( issigned ) then
-			l->v.valuei = l->v.valuei < r->v.valuei
+			l->val.int = l->val.int < r->val.int
 		else
-			l->v.valuei = cunsg( l->v.valuei ) < cunsg( r->v.valuei )
+			l->val.int = cunsg( l->val.int ) < cunsg( r->val.int )
 		end if
 
 	case IR_OP_LE
 		if( issigned ) then
-			l->v.valuei = l->v.valuei <= r->v.valuei
+			l->val.int = l->val.int <= r->val.int
 		else
-			l->v.valuei = cunsg( l->v.valuei ) <= cunsg( r->v.valuei )
+			l->val.int = cunsg( l->val.int ) <= cunsg( r->val.int )
 		end if
 
 	case IR_OP_GE
 		if( issigned ) then
-			l->v.valuei = l->v.valuei >= r->v.valuei
+			l->val.int = l->val.int >= r->val.int
 		else
-			l->v.valuei = cunsg( l->v.valuei ) >= cunsg( r->v.valuei )
+			l->val.int = cunsg( l->val.int ) >= cunsg( r->val.int )
 		end if
 	end select
 
@@ -3067,40 +3059,40 @@ private sub hBOPConstFoldFlt( byval op as integer, _
 
 	select case as const op
 	case IR_OP_ADD
-		l->v.valuef = l->v.valuef + r->v.valuef
+		l->val.float = l->val.float + r->val.float
 
 	case IR_OP_SUB
-		l->v.valuef = l->v.valuef - r->v.valuef
+		l->val.float = l->val.float - r->val.float
 
 	case IR_OP_MUL
-		l->v.valuef = l->v.valuef * r->v.valuef
+		l->val.float = l->val.float * r->val.float
 
 	case IR_OP_DIV
-		l->v.valuef = l->v.valuef / r->v.valuef
+		l->val.float = l->val.float / r->val.float
 
     case IR_OP_POW
-		l->v.valuef = l->v.valuef ^ r->v.valuef
+		l->val.float = l->val.float ^ r->val.float
 
 	case IR_OP_NE
-		l->v.valuei = l->v.valuef <> r->v.valuef
+		l->val.int = l->val.float <> r->val.float
 
 	case IR_OP_EQ
-		l->v.valuei = l->v.valuef = r->v.valuef
+		l->val.int = l->val.float = r->val.float
 
 	case IR_OP_GT
-		l->v.valuei = l->v.valuef > r->v.valuef
+		l->val.int = l->val.float > r->val.float
 
 	case IR_OP_LT
-		l->v.valuei = l->v.valuef < r->v.valuef
+		l->val.int = l->val.float < r->val.float
 
 	case IR_OP_LE
-		l->v.valuei = l->v.valuef <= r->v.valuef
+		l->val.int = l->val.float <= r->val.float
 
 	case IR_OP_GE
-		l->v.valuei = l->v.valuef >= r->v.valuef
+		l->val.int = l->val.float >= r->val.float
 
     case IR_OP_ATAN2
-		l->v.valuef = atan2( l->v.valuef, r->v.valuef )
+		l->val.float = atan2( l->val.float, r->val.float )
 	end select
 
 end sub
@@ -3116,101 +3108,103 @@ private sub hBOPConstFold64( byval op as integer, _
 
 	select case as const op
 	case IR_OP_ADD
-		l->v.value64 = l->v.value64 + r->v.value64
+		l->val.long = l->val.long + r->val.long
 
 	case IR_OP_SUB
-		l->v.value64 = l->v.value64 - r->v.value64
+		l->val.long = l->val.long - r->val.long
 
 	case IR_OP_MUL
 		if( issigned ) then
-			l->v.value64 = l->v.value64 * r->v.value64
+			l->val.long = l->val.long * r->val.long
 		else
-			l->v.value64 = cunsg(l->v.value64) * cunsg(r->v.value64)
+			l->val.long = cunsg(l->val.long) * cunsg(r->val.long)
 		end if
 
 	case IR_OP_INTDIV
-		if( r->v.value64 <> 0 ) then
+		if( r->val.long <> 0 ) then
 			if( issigned ) then
-				l->v.value64 = l->v.value64 \ r->v.value64
+				l->val.long = l->val.long \ r->val.long
 			else
-				l->v.value64 = cunsg( l->v.value64 ) \ cunsg( r->v.value64 )
+				l->val.long = cunsg( l->val.long ) \ cunsg( r->val.long )
 			end if
 		else
-			l->v.value64 = 0
+			l->val.long = 0
+			hReportError( FB_ERRMSG_DIVBYZERO )
 		end if
 
 	case IR_OP_MOD
-		if( r->v.value64 <> 0 ) then
+		if( r->val.long <> 0 ) then
 			if( issigned ) then
-				l->v.value64 = l->v.value64 mod r->v.value64
+				l->val.long = l->val.long mod r->val.long
 			else
-				l->v.value64 = cunsg( l->v.value64 ) mod cunsg( r->v.value64 )
+				l->val.long = cunsg( l->val.long ) mod cunsg( r->val.long )
 			end if
 		else
-			l->v.value64 = 0
+			l->val.long = 0
+			hReportError( FB_ERRMSG_DIVBYZERO )
 		end if
 
 	case IR_OP_SHL
 		if( issigned ) then
-			l->v.value64 = l->v.value64 shl r->v.valuei
+			l->val.long = l->val.long shl r->val.int
 		else
-			l->v.value64 = cunsg( l->v.value64 ) shl r->v.valuei
+			l->val.long = cunsg( l->val.long ) shl r->val.int
 		end if
 
 	case IR_OP_SHR
 		if( issigned ) then
-			l->v.value64 = l->v.value64 shr r->v.valuei
+			l->val.long = l->val.long shr r->val.int
 		else
-			l->v.value64 = cunsg( l->v.value64 ) shr r->v.valuei
+			l->val.long = cunsg( l->val.long ) shr r->val.int
 		end if
 
 	case IR_OP_AND
-		l->v.value64 = l->v.value64 and r->v.value64
+		l->val.long = l->val.long and r->val.long
 
 	case IR_OP_OR
-		l->v.value64 = l->v.value64 or r->v.value64
+		l->val.long = l->val.long or r->val.long
 
 	case IR_OP_XOR
-		l->v.value64 = l->v.value64 xor r->v.value64
+		l->val.long = l->val.long xor r->val.long
 
 	case IR_OP_EQV
-		l->v.value64 = l->v.value64 eqv r->v.value64
+		l->val.long = l->val.long eqv r->val.long
 
 	case IR_OP_IMP
-		l->v.value64 = l->v.value64 imp r->v.value64
+		l->val.long = l->val.long imp r->val.long
 
 	case IR_OP_NE
-		l->v.valuei = l->v.value64 <> r->v.value64
+		l->val.int = l->val.long <> r->val.long
 
 	case IR_OP_EQ
-		l->v.valuei = l->v.value64 = r->v.value64
+		l->val.int = l->val.long = r->val.long
 
 	case IR_OP_GT
 		if( issigned ) then
-			l->v.valuei = l->v.value64 > r->v.value64
+			l->val.int = l->val.long > r->val.long
 		else
-			l->v.valuei = cunsg( l->v.value64 ) > cunsg( r->v.value64 )
+			l->val.int = cunsg( l->val.long ) > cunsg( r->val.long )
 		end if
 
 	case IR_OP_LT
 		if( issigned ) then
-			l->v.valuei = l->v.value64 < r->v.value64
+			l->val.int = l->val.long < r->val.long
 		else
-			l->v.valuei = cunsg( l->v.value64 ) < cunsg( r->v.value64 )
+			l->val.int = cunsg( l->val.long ) < cunsg( r->val.long )
 		end if
 
 	case IR_OP_LE
 		if( issigned ) then
-			l->v.valuei = l->v.value64 <= r->v.value64
+			l->val.int = l->val.long <= r->val.long
 		else
-			l->v.valuei = cunsg( l->v.value64 ) <= cunsg( r->v.value64 )
+			l->val.int = cunsg( l->val.long ) <= cunsg( r->val.long )
 		end if
 
 	case IR_OP_GE
 		if( issigned ) then
-			l->v.valuei = l->v.value64 >= r->v.value64
+			l->val.int = l->val.long >= r->val.long
 		else
-			l->v.valuei = cunsg( l->v.value64 ) >= cunsg( r->v.value64 )
+			l->val.int = cunsg( l->val.long ) >= cunsg( r->val.long )
 		end if
 	end select
 
@@ -3610,18 +3604,18 @@ function astNewBOP( byval op as integer, _
 			'' ? - c = ? + -c
 			select case as const rdtype
 			case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-				r->v.value64 = -r->v.value64
+				r->val.long = -r->val.long
 			case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-				r->v.valuef = -r->v.valuef
+				r->val.float = -r->val.float
 			case else
-				r->v.valuei = -r->v.valuei
+				r->val.int = -r->val.int
 			end select
 			op = IR_OP_ADD
 
 		case IR_OP_POW
 
 			'' convert var ^ 2 to var * var
-			if( r->v.valuef = 2.0 ) then
+			if( r->val.float = 2.0 ) then
 
 				'' operands will be converted to DOUBLE if not floats..
 				if( l->class = AST_NODECLASS_CONV ) then
@@ -3728,16 +3722,16 @@ private sub hUOPConstFoldInt( byval op as integer, _
 
 	select case as const op
 	case IR_OP_NOT
-		v->v.valuei = not v->v.valuei
+		v->val.int = not v->val.int
 
 	case IR_OP_NEG
-		v->v.valuei = -v->v.valuei
+		v->val.int = -v->val.int
 
 	case IR_OP_ABS
-		v->v.valuei = abs( v->v.valuei )
+		v->val.int = abs( v->val.int )
 
 	case IR_OP_SGN
-		v->v.valuei = sgn( v->v.valuei )
+		v->val.int = sgn( v->val.int )
 	end select
 
 end sub
@@ -3748,43 +3742,43 @@ private sub hUOPConstFoldFlt( byval op as integer, _
 
 	select case as const op
 	case IR_OP_NOT
-		v->v.valuei = not cint( v->v.valuef )
+		v->val.int = not cint( v->val.float )
 
 	case IR_OP_NEG
-		v->v.valuef = -v->v.valuef
+		v->val.float = -v->val.float
 
 	case IR_OP_ABS
-		v->v.valuef = abs( v->v.valuef )
+		v->val.float = abs( v->val.float )
 
 	case IR_OP_SGN
-		v->v.valuei = sgn( v->v.valuef )
+		v->val.int = sgn( v->val.float )
 
 	case IR_OP_SIN
-		v->v.valuef = sin( v->v.valuef )
+		v->val.float = sin( v->val.float )
 
 	case IR_OP_ASIN
-		v->v.valuef = asin( v->v.valuef )
+		v->val.float = asin( v->val.float )
 
 	case IR_OP_COS
-		v->v.valuef = cos( v->v.valuef )
+		v->val.float = cos( v->val.float )
 
 	case IR_OP_ACOS
-		v->v.valuef = acos( v->v.valuef )
+		v->val.float = acos( v->val.float )
 
 	case IR_OP_TAN
-		v->v.valuef = tan( v->v.valuef )
+		v->val.float = tan( v->val.float )
 
 	case IR_OP_ATAN
-		v->v.valuef = atn( v->v.valuef )
+		v->val.float = atn( v->val.float )
 
 	case IR_OP_SQRT
-		v->v.valuef = sqr( v->v.valuef )
+		v->val.float = sqr( v->val.float )
 
 	case IR_OP_LOG
-		v->v.valuef = log( v->v.valuef )
+		v->val.float = log( v->val.float )
 
 	case IR_OP_FLOOR
-		v->v.valuef = int( v->v.valuef )
+		v->val.float = int( v->val.float )
 	end select
 
 end sub
@@ -3795,16 +3789,16 @@ private sub hUOPConstFold64( byval op as integer, _
 
 	select case as const op
 	case IR_OP_NOT
-		v->v.value64 = not v->v.value64
+		v->val.long = not v->val.long
 
 	case IR_OP_NEG
-		v->v.value64 = -v->v.value64
+		v->val.long = -v->val.long
 
 	case IR_OP_ABS
-		v->v.value64 = abs( v->v.value64 )
+		v->val.long = abs( v->val.long )
 
 	case IR_OP_SGN
-		v->v.valuei = sgn( v->v.value64 )
+		v->val.int = sgn( v->val.long )
 	end select
 
 end sub
@@ -3886,15 +3880,15 @@ function astNewUOP( byval op as integer, _
 					'' test overflow
 					select case dtype
 					case IR_DATATYPE_UINT
-						if( astGetValuei( o ) and &h80000000 ) then
-							if( astGetValuei( o ) <> &h80000000 ) then
+						if( astGetValInt( o ) and &h80000000 ) then
+							if( astGetValInt( o ) <> &h80000000 ) then
 								hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 							end if
 						end if
 
 					case IR_DATATYPE_ULONGINT
-						if( astGetValue64( o ) and &h8000000000000000 ) then
-							if( astGetValue64( o ) <> &h8000000000000000 ) then
+						if( astGetValLong( o ) and &h8000000000000000 ) then
+							if( astGetValLong( o ) <> &h8000000000000000 ) then
 								hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 							end if
 						end if
@@ -4004,22 +3998,22 @@ private sub hCONVConstEvalInt( byval dtype as integer, _
 	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
 		select case as const dtype
 		case IR_DATATYPE_BYTE
-			v->v.valuei = cbyte( v->v.value64 )
+			v->val.int = cbyte( v->val.long )
 
 		case IR_DATATYPE_UBYTE
-			v->v.valuei = cubyte( culngint( v->v.value64 ) )
+			v->val.int = cubyte( culngint( v->val.long ) )
 
 		case IR_DATATYPE_SHORT
-			v->v.valuei = cshort( v->v.value64 )
+			v->val.int = cshort( v->val.long )
 
 		case IR_DATATYPE_USHORT
-			v->v.valuei = cushort( culngint( v->v.value64 ) )
+			v->val.int = cushort( culngint( v->val.long ) )
 
 		case IR_DATATYPE_INTEGER, IR_DATATYPE_ENUM
-			v->v.valuei = cint( v->v.value64 )
+			v->val.int = cint( v->val.long )
 
 		case IR_DATATYPE_UINT, IR_DATATYPE_POINTER
-			v->v.valuei = cuint( culngint( v->v.value64 ) )
+			v->val.int = cuint( culngint( v->val.long ) )
 
 		end select
 
@@ -4027,38 +4021,38 @@ private sub hCONVConstEvalInt( byval dtype as integer, _
 
 		select case as const dtype
 		case IR_DATATYPE_BYTE
-			v->v.valuei = cbyte( v->v.valuef )
+			v->val.int = cbyte( v->val.float )
 
 		case IR_DATATYPE_UBYTE
-			v->v.valuei = cubyte( v->v.valuef )
+			v->val.int = cubyte( v->val.float )
 
 		case IR_DATATYPE_SHORT
-			v->v.valuei = cshort( v->v.valuef )
+			v->val.int = cshort( v->val.float )
 
 		case IR_DATATYPE_USHORT
-			v->v.valuei = cushort( v->v.valuef )
+			v->val.int = cushort( v->val.float )
 
 		case IR_DATATYPE_INTEGER, IR_DATATYPE_ENUM
-			v->v.valuei = cint( v->v.valuef )
+			v->val.int = cint( v->val.float )
 
 		case IR_DATATYPE_UINT, IR_DATATYPE_POINTER
-			v->v.valuei = cuint( v->v.valuef )
+			v->val.int = cuint( v->val.float )
 
 		end select
 
 	case else
 		select case as const dtype
 		case IR_DATATYPE_BYTE
-			v->v.valuei = cbyte( v->v.valuei )
+			v->val.int = cbyte( v->val.int )
 
 		case IR_DATATYPE_UBYTE
-			v->v.valuei = cubyte( cuint( v->v.valuei ) )
+			v->val.int = cubyte( cuint( v->val.int ) )
 
 		case IR_DATATYPE_SHORT
-			v->v.valuei = cshort( v->v.valuei )
+			v->val.int = cshort( v->val.int )
 
 		case IR_DATATYPE_USHORT
-			v->v.valuei = cushort( cuint( v->v.valuei ) )
+			v->val.int = cushort( cuint( v->val.int ) )
 		end select
 
 	end select
@@ -4083,33 +4077,33 @@ private sub hCONVConstEvalFlt( byval dtype as integer, _
 	case IR_DATATYPE_LONGINT
 
 		if( dtype = IR_DATATYPE_SINGLE ) then
-			v->v.valuef = csng( v->v.value64 )
+			v->val.float = csng( v->val.long )
 		else
-			v->v.valuef = cdbl( v->v.value64 )
+			v->val.float = cdbl( v->val.long )
 		end if
 
 	case IR_DATATYPE_ULONGINT
 
 		if( dtype = IR_DATATYPE_SINGLE ) then
-			v->v.valuef = csng( cunsg( v->v.value64 ) )
+			v->val.float = csng( cunsg( v->val.long ) )
 		else
-			v->v.valuef = cdbl( cunsg( v->v.value64 ) )
+			v->val.float = cdbl( cunsg( v->val.long ) )
 		end if
 
 	case IR_DATATYPE_UINT, IR_DATATYPE_POINTER
 
 		if( dtype = IR_DATATYPE_SINGLE ) then
-			v->v.valuef = csng( cunsg( v->v.valuei ) )
+			v->val.float = csng( cunsg( v->val.int ) )
 		else
-			v->v.valuef = cdbl( cunsg( v->v.valuei ) )
+			v->val.float = cdbl( cunsg( v->val.int ) )
 		end if
 
 	case else
 
 		if( dtype = IR_DATATYPE_SINGLE ) then
-			v->v.valuef = csng( v->v.valuei )
+			v->val.float = csng( v->val.int )
 		else
-			v->v.valuef = cdbl( v->v.valuei )
+			v->val.float = cdbl( v->val.int )
 		end if
 
 	end select
@@ -4126,9 +4120,9 @@ private sub hCONVConstEval64( byval dtype as integer, _
 
 	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
 		if( dtype = IR_DATATYPE_LONGINT ) then
-			v->v.value64 = clngint( v->v.valuef )
+			v->val.long = clngint( v->val.float )
 		else
-			v->v.value64 = culngint( v->v.valuef )
+			v->val.long = culngint( v->val.float )
 		end if
 
 	case else
@@ -4136,15 +4130,15 @@ private sub hCONVConstEval64( byval dtype as integer, _
 
 		if( dtype = IR_DATATYPE_LONGINT ) then
 			if( irIsSigned( v->dtype ) ) then
-				v->v.value64 = clngint( v->v.valuei )
+				v->val.long = clngint( v->val.int )
 			else
-				v->v.value64 = clngint( cuint( v->v.valuei ) )
+				v->val.long = clngint( cuint( v->val.int ) )
 			end if
 		else
 			if( irIsSigned( v->dtype ) ) then
-				v->v.value64 = culngint( v->v.valuei )
+				v->val.long = culngint( v->val.int )
 			else
-				v->v.value64 = culngint( cuint( v->v.valuei ) )
+				v->val.long = culngint( cuint( v->val.int ) )
 			end if
 		end if
 
@@ -4321,7 +4315,7 @@ function astNewCONSTi( byval value as integer, _
 		exit function
 	end if
 
-	n->v.valuei= value
+	n->val.int= value
 	n->defined = TRUE
 
 end function
@@ -4339,7 +4333,7 @@ function astNewCONSTf( byval value as double, _
 		exit function
 	end if
 
-	n->v.valuef= value
+	n->val.float= value
 	n->defined = TRUE
 
 end function
@@ -4357,7 +4351,7 @@ function astNewCONST64( byval value as longint, _
 		exit function
 	end if
 
-	n->v.value64 = value
+	n->val.long = value
 	n->defined   = TRUE
 
 end function
@@ -4377,11 +4371,11 @@ function astNewCONST( byval v as FBVALUE ptr, _
 
 	select case as const dtype
 	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-		n->v.value64 = v->value64
+		n->val.long = v->long
 	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-		n->v.valuef = v->valuef
+		n->val.float = v->float
 	case else
-		n->v.valuei = v->valuei
+		n->val.int = v->int
 	end select
 
 	n->defined = TRUE
@@ -4390,8 +4384,8 @@ end function
 
 '':::::
 private function hLoadCONST( byval n as ASTNODE ptr ) as IRVREG ptr static
-	dim as FBSYMBOL ptr s
 	dim as integer dtype
+	dim as FBSYMBOL ptr s
 
 	if( ctx.doemit ) then
 		dtype = n->dtype
@@ -4399,16 +4393,16 @@ private function hLoadCONST( byval n as ASTNODE ptr ) as IRVREG ptr static
 		select case dtype
 		'' longints?
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			return irAllocVRIMM64( dtype, n->v.value64 )
+			return irAllocVRIMM64( dtype, n->val.long )
 
 		'' if node is a float, create a temp float var (x86 assumption)
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			s = hAllocNumericConst( str$( n->v.valuef ), dtype )
+			s = hAllocFloatConst( n->val.float, dtype )
 			return irAllocVRVAR( dtype, s, s->ofs )
 
 		''
 		case else
-			return irAllocVRIMM( dtype, n->v.valuei )
+			return irAllocVRIMM( dtype, n->val.int )
 		end select
 	end if
 
@@ -4486,8 +4480,13 @@ private function hLoadVAR( byval n as ASTNODE ptr ) as IRVREG ptr static
 		end if
 	end if
 
+	s = n->var.sym
+	if( s <> NULL ) then
+		symbIncAccessCnt( s )
+	end if
+
 	if( ctx.doemit ) then
-		function = irAllocVRVAR( n->dtype, n->var.sym, n->var.ofs )
+		function = irAllocVRVAR( n->dtype, s, n->var.ofs )
 	end if
 
 end function
@@ -4620,7 +4619,7 @@ function astNewENUM( byval value as integer, _
 		exit function
 	end if
 
-	n->v.valuei = value
+	n->val.int = value
 	n->defined	= TRUE
 
 end function
@@ -4629,7 +4628,7 @@ end function
 private function hLoadENUM( byval n as ASTNODE ptr ) as IRVREG ptr static
 
 	if( ctx.doemit ) then
-		function = irAllocVRIMM( IR_DATATYPE_INTEGER, n->v.valuei )
+		function = irAllocVRIMM( IR_DATATYPE_INTEGER, n->val.int )
 	end if
 
 end function
@@ -4665,17 +4664,23 @@ function astNewOFFSET( byval l as ASTNODE ptr, _
 end function
 
 '':::::
-private function hLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr
+private function hLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr static
     dim as ASTNODE ptr v
     dim as IRVREG ptr vr
+    dim as FBSYMBOL ptr s
 
 	v  = n->l
 	if( v = NULL ) then
 		return NULL
 	end if
 
+	s = v->var.sym
+	if( s <> NULL ) then
+		symbIncAccessCnt( s )
+	end if
+
 	if( ctx.doemit ) then
-		vr = irAllocVROFS( n->dtype, v->var.sym )
+		vr = irAllocVROFS( n->dtype, s )
 	end if
 
 	astDel( v )
@@ -5791,7 +5796,24 @@ private function hCheckParam( byval f as ASTNODE ptr, _
     '' vararg?
     elseif( amode = FB_ARGMODE_VARARG ) then
 
-		return hStrParamToPtrArg( f, n, pclass, pdtype, pdclass )
+		'' string? check..
+		if( (pdclass = IR_DATACLASS_STRING) or _
+			(pdtype = IR_DATATYPE_CHAR) ) then
+			return hStrParamToPtrArg( f, n, pclass, pdtype, pdclass )
+
+		'' float? follow C ABI and convert it to double
+		elseif( pdtype = IR_DATATYPE_SINGLE ) then
+
+			p = astNewCONV( INVALID, IR_DATATYPE_DOUBLE, NULL, p )
+			if( p = NULL ) then
+				return FALSE
+			end if
+
+			n->dtype = p->dtype
+			n->l     = p
+
+			return TRUE
+		end if
 
 	'' as any?
     elseif( adtype = IR_DATATYPE_VOID ) then
@@ -5836,7 +5858,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 			    		if( pmode <> FB_ARGMODE_BYVAL ) then
 							'' const? only accept if it's NULL
 			    			if( p->defined ) then
-			    				if( p->v.valuei <> NULL ) then
+			    				if( p->val.int <> NULL ) then
 									hReportParamError( f )
 									exit function
 			    				end if
@@ -6818,11 +6840,11 @@ function astNewBOUNDCHK( byval l as ASTNODE ptr, _
 			'' index also?
 			if( l->defined ) then
 				'' i < lbound?
-				if( l->v.valuei < lb->v.valuei ) then
+				if( l->val.int < lb->val.int ) then
 					return NULL
 				end if
 				'' i > ubound?
-				if( l->v.valuei > ub->v.valuei ) then
+				if( l->val.int > ub->val.int ) then
 					return NULL
 				end if
 
@@ -6833,7 +6855,7 @@ function astNewBOUNDCHK( byval l as ASTNODE ptr, _
 		end if
 
 		'' 0? del it
-		if( lb->v.valuei = 0 ) then
+		if( lb->val.int = 0 ) then
 			astDel( lb )
 			lb = NULL
 		end if

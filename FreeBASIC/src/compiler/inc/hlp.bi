@@ -114,6 +114,9 @@ declare function 	hToPow2					( byval value as uinteger ) as uinteger
 
 declare function 	hJumpTbAllocSym			( ) as any ptr
 
+declare function 	hFloatToStr				( byval value as double, _
+					  						  byref typ as integer ) as string
+
 
 '':::::
 #define ZEROSTRDESC(s)	                                _
