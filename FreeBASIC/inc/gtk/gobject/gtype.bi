@@ -11,12 +11,51 @@
 
 #include once "gtk/glib.bi"
 
-#define G_TYPE_FUNDAMENTAL_SHIFT (2)
-#define G_TYPE_RESERVED_GLIB_FIRST (21)
-#define G_TYPE_RESERVED_GLIB_LAST (31)
-#define G_TYPE_RESERVED_BSE_FIRST (32)
-#define G_TYPE_RESERVED_BSE_LAST (48)
-#define G_TYPE_RESERVED_USER_FIRST (49)
+#define G_TYPE_FUNDAMENTAL(_type) (g_type_fundamental_(_type))
+#define	G_TYPE_FUNDAMENTAL_MAX (255 shl G_TYPE_FUNDAMENTAL_SHIFT)
+
+#define G_TYPE_INVALID G_TYPE_MAKE_FUNDAMENTAL (0)
+#define G_TYPE_NONE	G_TYPE_MAKE_FUNDAMENTAL (1)
+#define G_TYPE_INTERFACE G_TYPE_MAKE_FUNDAMENTAL (2)
+#define G_TYPE_CHAR	G_TYPE_MAKE_FUNDAMENTAL (3)
+#define G_TYPE_UCHAR G_TYPE_MAKE_FUNDAMENTAL (4)
+#define G_TYPE_BOOLEAN G_TYPE_MAKE_FUNDAMENTAL (5)
+#define G_TYPE_INT G_TYPE_MAKE_FUNDAMENTAL (6)
+#define G_TYPE_UINT	G_TYPE_MAKE_FUNDAMENTAL (7)
+#define G_TYPE_LONG	G_TYPE_MAKE_FUNDAMENTAL (8)
+#define G_TYPE_ULONG G_TYPE_MAKE_FUNDAMENTAL (9)
+#define G_TYPE_INT64 G_TYPE_MAKE_FUNDAMENTAL (10)
+#define G_TYPE_UINT64 G_TYPE_MAKE_FUNDAMENTAL (11)
+#define G_TYPE_ENUM	G_TYPE_MAKE_FUNDAMENTAL (12)
+#define G_TYPE_FLAGS G_TYPE_MAKE_FUNDAMENTAL (13)
+#define G_TYPE_FLOAT G_TYPE_MAKE_FUNDAMENTAL (14)
+#define G_TYPE_DOUBLE G_TYPE_MAKE_FUNDAMENTAL (15)
+#define G_TYPE_STRING G_TYPE_MAKE_FUNDAMENTAL (16)
+#define G_TYPE_POINTER G_TYPE_MAKE_FUNDAMENTAL (17)
+#define G_TYPE_BOXED G_TYPE_MAKE_FUNDAMENTAL (18)
+#define G_TYPE_PARAM G_TYPE_MAKE_FUNDAMENTAL (19)
+#define G_TYPE_OBJECT G_TYPE_MAKE_FUNDAMENTAL (20)
+
+#define	G_TYPE_FUNDAMENTAL_SHIFT 2
+#define	G_TYPE_MAKE_FUNDAMENTAL(x) cuint((x) shl G_TYPE_FUNDAMENTAL_SHIFT)
+#define G_TYPE_RESERVED_GLIB_FIRST 21
+#define G_TYPE_RESERVED_GLIB_LAST 31
+#define G_TYPE_RESERVED_BSE_FIRST 32
+#define G_TYPE_RESERVED_BSE_LAST 48
+#define G_TYPE_RESERVED_USER_FIRST 49
+
+#define G_TYPE_IS_FUNDAMENTAL(_type) ((_type) <= G_TYPE_FUNDAMENTAL_MAX)
+#define G_TYPE_IS_DERIVED(_type) ((_type) > G_TYPE_FUNDAMENTAL_MAX)
+#define G_TYPE_IS_INTERFACE(_type) (G_TYPE_FUNDAMENTAL(_type) = G_TYPE_INTERFACE)
+#define G_TYPE_IS_CLASSED(_type) (g_type_test_flags((_type), G_TYPE_FLAG_CLASSED))
+#define G_TYPE_IS_INSTANTIATABLE(_type) (g_type_test_flags((_type), G_TYPE_FLAG_INSTANTIATABLE))
+#define G_TYPE_IS_DERIVABLE(_type) (g_type_test_flags((_type), G_TYPE_FLAG_DERIVABLE))
+#define G_TYPE_IS_DEEP_DERIVABLE(_type) (g_type_test_flags((_type), G_TYPE_FLAG_DEEP_DERIVABLE))
+#define G_TYPE_IS_ABSTRACT(_type) (g_type_test_flags((_type), G_TYPE_FLAG_ABSTRACT))
+#define G_TYPE_IS_VALUE_ABSTRACT(_type) (g_type_test_flags((_type), G_TYPE_FLAG_VALUE_ABSTRACT))
+#define G_TYPE_IS_VALUE_TYPE(_type) (g_type_check_is_value_type(_type))
+#define G_TYPE_HAS_VALUE_TABLE(_type) (g_type_value_table_peek(_type) <> NULL)
+
 
 type GType as gulong
 type GValue as _GValue
@@ -57,7 +96,6 @@ enum GTypeDebugFlags
 	G_TYPE_DEBUG_SIGNALS = 1 shl 1
 	G_TYPE_DEBUG_MASK = &h03
 end enum
-
 
 declare sub g_type_init cdecl alias "g_type_init" ()
 declare sub g_type_init_with_debug_flags cdecl alias "g_type_init_with_debug_flags" (byval debug_flags as GTypeDebugFlags)
@@ -150,11 +188,11 @@ declare sub g_type_add_interface_dynamic cdecl alias "g_type_add_interface_dynam
 declare sub g_type_interface_add_prerequisite cdecl alias "g_type_interface_add_prerequisite" (byval interface_type as GType, byval prerequisite_type as GType)
 declare function g_type_interface_prerequisites cdecl alias "g_type_interface_prerequisites" (byval interface_type as GType, byval n_prerequisites as guint ptr) as GType ptr
 declare sub g_type_class_add_private cdecl alias "g_type_class_add_private" (byval g_class as gpointer, byval private_size as gsize)
-declare function g_type_instance_get_private cdecl alias "g_type_instance_get_private" (byval instance as GTypeInstance ptr, byval private_type as GType) as gpointer
+declare function g_type_instance_get_private_ cdecl alias "g_type_instance_get_private" (byval instance as GTypeInstance ptr, byval private_type as GType) as gpointer
 declare function g_type_get_plugin cdecl alias "g_type_get_plugin" (byval type as GType) as GTypePlugin ptr
 declare function g_type_interface_get_plugin cdecl alias "g_type_interface_get_plugin" (byval instance_type as GType, byval interface_type as GType) as GTypePlugin ptr
 declare function g_type_fundamental_next cdecl alias "g_type_fundamental_next" () as GType
-declare function g_type_fundamental cdecl alias "g_type_fundamental" (byval type_id as GType) as GType
+declare function g_type_fundamental_ cdecl alias "g_type_fundamental" (byval type_id as GType) as GType
 declare function g_type_create_instance cdecl alias "g_type_create_instance" (byval type as GType) as GTypeInstance ptr
 declare sub g_type_free_instance cdecl alias "g_type_free_instance" (byval instance as GTypeInstance ptr)
 declare sub g_type_add_class_cache_func cdecl alias "g_type_add_class_cache_func" (byval cache_data as gpointer, byval cache_func as GTypeClassCacheFunc)
@@ -184,6 +222,11 @@ declare sub g_param_spec_types_init cdecl alias "g_param_spec_types_init" ()
 declare sub g_value_transforms_init cdecl alias "g_value_transforms_init" ()
 declare sub g_signal_init cdecl alias "g_signal_init" ()
 
+#define G_DEFINE_TYPE(TN, t_n, T_P) G_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, 0, { 0 })
+#define G_DEFINE_TYPE_WITH_CODE(TN, t_n, T_P, _C_) G_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, 0, _C_)
+#define G_DEFINE_ABSTRACT_TYPE(TN, t_n, T_P) G_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, G_TYPE_FLAG_ABSTRACT, {})
+#define G_DEFINE_ABSTRACT_TYPE_WITH_CODE(TN, t_n, T_P, _C_) G_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, G_TYPE_FLAG_ABSTRACT, _C_)
+
 #ifndef G_DISABLE_CAST_CHECKS
 #  define _G_TYPE_CIC(ip, gt, ct) cptr(ct ptr, g_type_check_instance_cast_( cptr(GTypeInstance ptr, ip), gt ))
 #  define _G_TYPE_CCC(cp, gt, ct) cptr(ct ptr, g_type_check_class_cast_( cptr(GTypeClass ptr, cp), gt ))
@@ -209,5 +252,6 @@ declare sub g_signal_init cdecl alias "g_signal_init" ()
 #define G_TYPE_FROM_INSTANCE(instance) G_TYPE_FROM_CLASS( cptr(GTypeInstance ptr, instance)->g_class )
 #define G_TYPE_FROM_CLASS(g_class) cptr(GTypeClass ptr, g_class)->g_type
 #define G_TYPE_FROM_INTERFACE(g_iface) cptr(GTypeInterface ptr, g_iface)->g_type
+#define G_TYPE_INSTANCE_GET_PRIVATE(instance, g_type, c_type) cptr(c_type ptr, g_type_instance_get_private(cptr(GTypeInstance ptr,instance), (g_type)))
 
 #endif
