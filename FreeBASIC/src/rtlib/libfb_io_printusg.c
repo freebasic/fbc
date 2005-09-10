@@ -402,8 +402,8 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 
 		if( totdigs <= 0 )
 			totdigs = 1;
-		else if( totdigs > 16 )
-			totdigs = 16;
+		else if( totdigs > 15 )
+			totdigs = 15;
 
 		fb_hFloat2Str( value, buffer, totdigs, FB_F2A_NOEXP );
 
