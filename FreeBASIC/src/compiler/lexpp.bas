@@ -215,7 +215,6 @@ function lexPPLoadDefine( byval s as FBSYMBOL ptr ) as integer
 			listDelNode( @lexpp.argtblist, cptr( TLISTNODE ptr, argtb ) )
 		end if
 
-		print text
 		lgt = len( text )
 
 		''
