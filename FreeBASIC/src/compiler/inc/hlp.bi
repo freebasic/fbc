@@ -75,9 +75,9 @@ declare sub 		hClearName				( byval src as string )
 declare sub 		hUcase					( byval src as string, _
 											  byval dst as string )
 
-declare sub 		hReplace				( text as string, _
+declare function	hReplace				( byval text as string, _
 											  byval oldtext as string, _
-											  byval newtext as string )
+											  byval newtext as string ) as string
 
 declare function 	hCreateProcAlias		( byval symbol as string, _
 											  byval argslen as integer, _

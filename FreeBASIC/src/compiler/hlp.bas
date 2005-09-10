@@ -506,16 +506,17 @@ function hFileExists( byval filename as string ) as integer static
 end function
 
 '':::::
-sub hReplace( text as string, _
-			  byval oldtext as string, _
-			  byval newtext as string ) static
-    dim remtext as string
-    dim oldlen as integer, newlen as integer
-    dim p as integer
+function hReplace( byval orgtext as string, _
+			 	   byval oldtext as string, _
+			  	   byval newtext as string ) as string static
+
+    dim as integer oldlen, newlen, p
+    dim as string text, remtext
 
 	oldlen = len( oldtext )
 	newlen = len( newtext )
 
+	text = orgtext
 	p = 0
 	do
 		p = instr( p+1, text, oldtext )
@@ -530,7 +531,9 @@ sub hReplace( text as string, _
 		p += newlen
 	loop
 
-end sub
+	function = text
+
+end function
 
 '':::::
 function hEscapeStr( byval text as string ) as string static

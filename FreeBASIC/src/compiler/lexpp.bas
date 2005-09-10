@@ -103,7 +103,7 @@ function lexPPLoadDefine( byval s as FBSYMBOL ptr ) as integer
     dim as FBDEFTOK ptr dt
     dim as FBTOKEN t
     dim as LEXPP_ARGTB ptr argtb
-    dim as integer prntcnt, lgt, num, addquotes
+    dim as integer prntcnt, lgt, num
     static as string text
 
     function = FALSE
@@ -198,21 +198,7 @@ function lexPPLoadDefine( byval s as FBSYMBOL ptr ) as integer
 				'' stringize argument?
 				case FB_DEFTOK_TYPE_ARGSTR
 					text += "\""
-					with argtb->tb(symbGetDefTokArgNum( dt ))
-
-						addquotes = FALSE
-                    	if( .text[0] = CHAR_QUOTE ) then
-                    		text += "\""
-                    		addquotes = TRUE
-                    	end if
-
-						text += .text
-
-						if( addquotes ) then
-							text += "\""
-						end if
-
-					end with
+					text += hReplace( argtb->tb(symbGetDefTokArgNum( dt )).text, "\"", "\"\"" )
 					text += "\""
 
 				'' ordinary text..
@@ -229,6 +215,7 @@ function lexPPLoadDefine( byval s as FBSYMBOL ptr ) as integer
 			listDelNode( @lexpp.argtblist, cptr( TLISTNODE ptr, argtb ) )
 		end if
 
+		print text
 		lgt = len( text )
 
 		''
