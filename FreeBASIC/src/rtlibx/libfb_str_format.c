@@ -80,7 +80,7 @@ void fb_hGetNumberParts( double number,
         dblFrac = -dblFrac;
 
     /* Store fractional part of number into buffer */
-    len_frac = sprintf( pachFracPart, "%.16lf", dblFrac );
+    len_frac = sprintf( pachFracPart, "%.16f", dblFrac );
 
     /* Remove trailing zeroes and - if it completely consists of zeroes -
      * also remove the decimal point */

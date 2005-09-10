@@ -8,6 +8,13 @@ declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as integer )
 defint a-z
 
 tests_num:
+	data 0.1236,    "",                 ".1236"
+' The following example will fail because there are rounding errors
+' due to the IEEE floating point format.
+'	data 4578.1236, "",                 "4578.1236"
+	data 4578.125,  "",                 "4578.125"
+	data 1234.0,    "",                 "1234"
+
 	data 0.1236,    "##0.00%",          "12.36%"
     data 123,       "\"asd\\\"",        "asd\\"
 	data 0,         "###",              "0"
@@ -160,7 +167,7 @@ sub test_num
 '        print sWanted,
 	    sResult = Format$(dblValue, sMask)
 '        print sResult
-        ASSERT( sResult = sWanted )
+        ASSERT( sWanted = sResult )
         print ".";
         read sValue
 	wend
@@ -182,7 +189,7 @@ sub test_dt
 '        print sWanted,
 	    sResult = Format$(dblValue, sMask)
 '        print sResult
-        ASSERT( sResult = sWanted )
+        ASSERT( sWanted = sResult )
         print ".";
         read sValue
 	wend
