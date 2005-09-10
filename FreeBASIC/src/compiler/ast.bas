@@ -4659,6 +4659,12 @@ function astNewOFFSET( byval l as ASTNODE ptr, _
 	n->addr.elm	= elm
 	n->chkbitfld= elm <> NULL
 
+	'' access counter must be updated here too
+	'' because the var initializers used with static strings
+	if( sym <> NULL ) then
+		symbIncAccessCnt( sym )
+	end if
+
 	function = n
 
 end function
@@ -4669,7 +4675,7 @@ private function hLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr static
     dim as IRVREG ptr vr
     dim as FBSYMBOL ptr s
 
-	v  = n->l
+	v = n->l
 	if( v = NULL ) then
 		return NULL
 	end if
