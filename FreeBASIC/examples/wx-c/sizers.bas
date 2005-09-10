@@ -25,7 +25,7 @@ sub sizer_OnRecalcSizes( )
 end sub 
 
 ''
-function sizer_OnCalcMin( ) as wxSize 
+function sizer_OnCalcMin( ) as wxSize ptr
     
     function = wxBoxSizer_CalcMin( sizer ) 
     

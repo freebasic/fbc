@@ -13,7 +13,7 @@
 
 
 type Virtual_voidvoid as sub ( )
-type Virtual_sizevoid as function ( ) as wxSize
+type Virtual_sizevoid as function ( ) as wxSize ptr
 
 declare sub wxBoxSizer_RegisterVirtual cdecl alias "wxBoxSizer_RegisterVirtual" (byval self as _BoxSizer ptr, byval recalcSizes as Virtual_voidvoid, byval calcMin as Virtual_sizevoid)
 declare function wxBoxSizer cdecl alias "wxBoxSizer_ctor" (byval orient as integer) as wxBoxSizer ptr
