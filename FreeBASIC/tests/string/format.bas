@@ -9,9 +9,9 @@ defint a-z
 
 tests_num:
 	data 0.1236,    "",                 ".1236"
-' The following example will fail because there are rounding errors
-' due to the IEEE floating point format.
-'	data 4578.1236, "",                 "4578.1236"
+' The following example now works because FORMAT now restricts the precision
+' to 11 when no format specifier was given.
+	data 4578.1236, "",                 "4578.1236"
 	data 4578.125,  "",                 "4578.125"
 	data 1234.0,    "",                 "1234"
 

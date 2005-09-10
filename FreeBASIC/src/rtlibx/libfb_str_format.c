@@ -60,13 +60,19 @@ FBCALL FBSTRING *fb_hStrFormat ( double value,
                                  const char *mask, size_t mask_length );
 
 /** Splits a number into its fixed and fractional part.
+ *
+ * precision        info
+ * 11               VBDOS' default floating point precision for FORMAT$()
+ *                  when no mask was specified
+ * 16               Precision when the user specified a mask
  */
 static
 void fb_hGetNumberParts( double number,
                          char *pachFixPart, size_t *pcchLenFix,
                          char *pachFracPart, size_t *pcchLenFrac,
                          char *pchSign,
-                         char chDecimalPoint)
+                         char chDecimalPoint,
+                         int precision )
 {
     char *pszFracStart, *pszFracEnd;
     char chSign;
@@ -80,7 +86,7 @@ void fb_hGetNumberParts( double number,
         dblFrac = -dblFrac;
 
     /* Store fractional part of number into buffer */
-    len_frac = sprintf( pachFracPart, "%.16f", dblFrac );
+    len_frac = sprintf( pachFracPart, "%.*f", precision, dblFrac );
 
     /* Remove trailing zeroes and - if it completely consists of zeroes -
      * also remove the decimal point */
@@ -148,7 +154,8 @@ FBSTRING *fb_hBuildDouble ( double num,
                         FixPart, &LenFix,
                         FracPart, &LenFrac,
                         &chSign,
-                        '.' );
+                        '.',
+                        11 );
 
     LenSign = ( ( chSign=='-' ) ? 1 : 0 );
     LenDecPoint = ( ( LenFrac!=0 ) ? 1 : 0 );
@@ -236,7 +243,8 @@ int fb_hProcessMask( FBSTRING *dst,
                                     FixPart, &LenFix,
                                     FracPart, &LenFrac,
                                     &chSign,
-                                    '.' );
+                                    '.',
+                                    16 );
 
                 if( pInfo->has_exponent ) {
                     /* When output of exponent is required, shift value to the
@@ -263,7 +271,8 @@ int fb_hProcessMask( FBSTRING *dst,
                                         FixPart, &LenFix,
                                         FracPart, &LenFrac,
                                         &chSign,
-                                        '.' );
+                                        '.',
+                                        16 );
 
                     ExpValue = -MoveDigits;
 
@@ -304,7 +313,8 @@ int fb_hProcessMask( FBSTRING *dst,
                             FixPart, &LenFix,
                             FracPart, &LenFrac,
                             &chSign,
-                            '.' );
+                            '.',
+                            16 );
     }
 
     IndexFix = IndexFrac = 0;
