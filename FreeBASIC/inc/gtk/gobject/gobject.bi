@@ -15,6 +15,18 @@
 #include once "gtk/gobject/gclosure.bi"
 #include once "gtk/gobject/gsignal.bi"
 
+#define G_TYPE_IS_OBJECT(_type) (G_TYPE_FUNDAMENTAL(_type) = G_TYPE_OBJECT)
+#define G_OBJECT(object) G_TYPE_CHECK_INSTANCE_CAST ((object), G_TYPE_OBJECT, GObject)
+#define G_OBJECT_CLASS(class) G_TYPE_CHECK_CLASS_CAST ((class), G_TYPE_OBJECT, GObjectClass)
+#define G_IS_OBJECT(object) G_TYPE_CHECK_INSTANCE_TYPE ((object), G_TYPE_OBJECT)
+#define G_IS_OBJECT_CLASS(class) G_TYPE_CHECK_CLASS_TYPE ((class), G_TYPE_OBJECT)
+#define G_OBJECT_GET_CLASS(object) G_TYPE_INSTANCE_GET_CLASS ((object), G_TYPE_OBJECT, GObjectClass)
+#define G_OBJECT_TYPE(object) G_TYPE_FROM_INSTANCE (object)
+#define G_OBJECT_TYPE_NAME(object) g_type_name (G_OBJECT_TYPE (object))
+#define G_OBJECT_CLASS_TYPE(class) G_TYPE_FROM_CLASS (class)
+#define G_OBJECT_CLASS_NAME(class) g_type_name (G_OBJECT_CLASS_TYPE (class))
+#define G_VALUE_HOLDS_OBJECT(value) G_TYPE_CHECK_VALUE_TYPE ((value), G_TYPE_OBJECT)
+
 type GObject as _GObject
 type GObjectClass as _GObjectClass
 type GObjectConstructParam as _GObjectConstructParam

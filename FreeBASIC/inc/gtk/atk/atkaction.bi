@@ -11,6 +11,11 @@
 
 #include once "gtk/atk/atkobject.bi"
 
+#define ATK_TYPE_ACTION() atk_action_get_type())
+#define ATK_IS_ACTION(obj) G_TYPE_CHECK_INSTANCE_TYPE((obj), ATK_TYPE_ACTION)
+#define ATK_ACTION(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), ATK_TYPE_ACTION, AtkAction)
+#define ATK_ACTION_GET_IFACE(obj) G_TYPE_INSTANCE_GET_INTERFACE((obj), ATK_TYPE_ACTION, AtkActionIface)
+
 type AtkAction as _AtkAction
 type AtkActionIface as _AtkActionIface
 

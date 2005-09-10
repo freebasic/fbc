@@ -13,6 +13,11 @@
 #include once "gtk/atk/atkobject.bi"
 #include once "gtk/atk/atkutil.bi"
 
+#define ATK_TYPE_TEXT() atk_text_get_type()
+#define ATK_IS_TEXT(obj) G_TYPE_CHECK_INSTANCE_TYPE ((obj), ATK_TYPE_TEXT)
+#define ATK_TEXT(obj) G_TYPE_CHECK_INSTANCE_CAST ((obj), ATK_TYPE_TEXT, AtkText)
+#define ATK_TEXT_GET_IFACE(obj) G_TYPE_INSTANCE_GET_INTERFACE ((obj), ATK_TYPE_TEXT, AtkTextIface)
+
 type AtkAttributeSet as GSList
 type AtkAttribute as _AtkAttribute
 

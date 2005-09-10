@@ -12,6 +12,11 @@
 #include once "gtk/atk/atkobject.bi"
 #include once "gtk/atk/atkutil.bi"
 
+#define ATK_TYPE_DOCUMENT() atk_document_get_type()
+#define ATK_IS_DOCUMENT(obj) G_TYPE_CHECK_INSTANCE_TYPE ((obj), ATK_TYPE_DOCUMENT)
+#define ATK_DOCUMENT(obj) G_TYPE_CHECK_INSTANCE_CAST ((obj), ATK_TYPE_DOCUMENT, AtkDocument)
+#define ATK_DOCUMENT_GET_IFACE(obj) G_TYPE_INSTANCE_GET_INTERFACE ((obj), ATK_TYPE_DOCUMENT, AtkDocumentIface)
+
 type AtkDocument as _AtkDocument
 type AtkDocumentIface as _AtkDocumentIface
 

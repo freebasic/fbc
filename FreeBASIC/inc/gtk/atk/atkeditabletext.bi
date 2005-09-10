@@ -12,6 +12,11 @@
 #include once "gtk/atk/atkobject.bi"
 #include once "gtk/atk/atktext.bi"
 
+#define ATK_TYPE_EDITABLE_TEXT() atk_editable_text_get_type()
+#define ATK_IS_EDITABLE_TEXT(obj) G_TYPE_CHECK_INSTANCE_TYPE ((obj), ATK_TYPE_EDITABLE_TEXT)
+#define ATK_EDITABLE_TEXT(obj) G_TYPE_CHECK_INSTANCE_CAST ((obj), ATK_TYPE_EDITABLE_TEXT, AtkEditableText)
+#define ATK_EDITABLE_TEXT_GET_IFACE(obj) G_TYPE_INSTANCE_GET_INTERFACE ((obj), ATK_TYPE_EDITABLE_TEXT, AtkEditableTextIface)
+
 type AtkEditableText as _AtkEditableText
 type AtkEditableTextIface as _AtkEditableTextIface
 

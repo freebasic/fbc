@@ -12,6 +12,13 @@
 #include once "gtk/glib-object.bi"
 #include once "gtk/atk/atkobjectfactory.bi"
 
+#define ATK_TYPE_REGISTRY() atk_registry_get_type ()
+#define ATK_REGISTRY(obj) G_TYPE_CHECK_INSTANCE_CAST ((obj), ATK_TYPE_REGISTRY, AtkRegistry)
+#define ATK_REGISTRY_CLASS(klass) G_TYPE_CHECK_CLASS_CAST ((klass), ATK_TYPE_REGISTRY, AtkRegistryClass)
+#define ATK_IS_REGISTRY(obj) G_TYPE_CHECK_INSTANCE_TYPE ((obj), ATK_TYPE_REGISTRY)
+#define ATK_IS_REGISTRY_CLASS(klass) G_TYPE_CHECK_CLASS_TYPE ((klass), ATK_TYPE_REGISTRY)
+#define ATK_REGISTRY_GET_CLASS(obj) G_TYPE_INSTANCE_GET_CLASS ((obj), ATK_TYPE_REGISTRY, AtkRegistryClass)
+
 type _AtkRegistry
 	parent as GObject
 	factory_type_registry as GHashTable ptr

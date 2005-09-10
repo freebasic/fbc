@@ -12,6 +12,11 @@
 #include once "gtk/atk/atkobject.bi"
 #include once "gtk/atk/atkutil.bi"
 
+#define ATK_TYPE_COMPONENT() atk_component_get_type()
+#define ATK_IS_COMPONENT(obj) G_TYPE_CHECK_INSTANCE_TYPE((obj), ATK_TYPE_COMPONENT)
+#define ATK_COMPONENT(obj) G_TYPE_CHECK_INSTANCE_CAST((obj), ATK_TYPE_COMPONENT, AtkComponent)
+#define ATK_COMPONENT_GET_IFACE(obj) G_TYPE_INSTANCE_GET_INTERFACE((obj), ATK_TYPE_COMPONENT, AtkComponentIface)
+
 type AtkComponent as _AtkComponent
 type AtkComponentIface as _AtkComponentIface
 type AtkFocusHandler as sub cdecl(byval as AtkObject ptr, byval as gboolean)

@@ -11,6 +11,13 @@
 
 #include once "gtk/atk/atkobject.bi"
 
+#define ATK_TYPE_UTIL() atk_util_get_type ()
+#define ATK_IS_UTIL(obj)G_TYPE_CHECK_INSTANCE_TYPE ((obj), ATK_TYPE_UTIL)
+#define ATK_UTIL(obj) G_TYPE_CHECK_INSTANCE_CAST ((obj), ATK_TYPE_UTIL, AtkUtil)
+#define ATK_UTIL_CLASS(klass) G_TYPE_CHECK_CLASS_CAST ((klass), ATK_TYPE_UTIL, AtkUtilClass)
+#define ATK_IS_UTIL_CLASS(klass) G_TYPE_CHECK_CLASS_TYPE ((klass), ATK_TYPE_UTIL)
+#define ATK_UTIL_GET_CLASS(obj) G_TYPE_INSTANCE_GET_CLASS ((obj), ATK_TYPE_UTIL, AtkUtilClass)
+
 type AtkUtil as _AtkUtil
 type AtkUtilClass as _AtkUtilClass
 type AtkKeyEventStruct as _AtkKeyEventStruct

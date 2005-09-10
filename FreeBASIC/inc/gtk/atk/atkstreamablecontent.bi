@@ -11,6 +11,11 @@
 
 #include once "gtk/atk/atkobject.bi"
 
+#define ATK_TYPE_STREAMABLE_CONTENT() atk_streamable_content_get_type ()
+#define ATK_IS_STREAMABLE_CONTENT(obj) G_TYPE_CHECK_INSTANCE_TYPE ((obj), ATK_TYPE_STREAMABLE_CONTENT)
+#define ATK_STREAMABLE_CONTENT(obj) G_TYPE_CHECK_INSTANCE_CAST ((obj), ATK_TYPE_STREAMABLE_CONTENT, AtkStreamableContent)
+#define ATK_STREAMABLE_CONTENT_GET_IFACE(obj) G_TYPE_INSTANCE_GET_INTERFACE ((obj), ATK_TYPE_STREAMABLE_CONTENT, AtkStreamableContentIface)
+
 type AtkStreamableContent as _AtkStreamableContent
 type AtkStreamableContentIface as _AtkStreamableContentIface
 

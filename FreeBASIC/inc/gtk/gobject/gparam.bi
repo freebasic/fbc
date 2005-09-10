@@ -11,6 +11,18 @@
 
 #include once "gtk/gobject/gvalue.bi"
 
+#define G_TYPE_IS_PARAM(_type) (G_TYPE_FUNDAMENTAL (_type) == G_TYPE_PARAM)
+#define G_PARAM_SPEC(pspec) G_TYPE_CHECK_INSTANCE_CAST ((pspec), G_TYPE_PARAM, GParamSpec)
+#define G_IS_PARAM_SPEC(pspec) G_TYPE_CHECK_INSTANCE_TYPE ((pspec), G_TYPE_PARAM)
+#define G_PARAM_SPEC_CLASS(pclass) G_TYPE_CHECK_CLASS_CAST ((pclass), G_TYPE_PARAM, GParamSpecClass)
+#define G_IS_PARAM_SPEC_CLASS(pclass) G_TYPE_CHECK_CLASS_TYPE ((pclass), G_TYPE_PARAM)
+#define G_PARAM_SPEC_GET_CLASS(pspec) G_TYPE_INSTANCE_GET_CLASS ((pspec), G_TYPE_PARAM, GParamSpecClass)
+
+#define G_PARAM_SPEC_TYPE(pspec) G_TYPE_FROM_INSTANCE (pspec)
+#define G_PARAM_SPEC_TYPE_NAME(pspec) g_type_name (G_PARAM_SPEC_TYPE (pspec))
+#define	G_PARAM_SPEC_VALUE_TYPE(pspec) (G_PARAM_SPEC (pspec)->value_type)
+#define G_VALUE_HOLDS_PARAM(value) G_TYPE_CHECK_VALUE_TYPE ((value), G_TYPE_PARAM)
+
 enum GParamFlags
 	G_PARAM_READABLE = 1 shl 0
 	G_PARAM_WRITABLE = 1 shl 1
