@@ -87,6 +87,7 @@ Version 0.15 Beta:
 - wrong overload type could be returned if pointers to UDT's were used as parameters and arguments (v1c)
 - PASCAL functions couldn't be overloaded (v1c)
 - Fixed the TAB and SPC when used with OPEN "CON" and files (mjs)
+- the precision was one digit too wide when PRINT'ing single's and double's, causing some artifacts (v1c)
 
 
 Version 0.14 Beta:
