@@ -179,25 +179,6 @@ static const FB_KEY_CODES fb_asc_key_codes[] = {
 
 #define FB_KEY_CODES_SIZE (sizeof(fb_asc_key_codes)/sizeof(FB_KEY_CODES))
 
-static void fb_hConsoleInit(void)
-{
-    static int console_inited = FALSE;
-    DWORD dwMode;
-    if( console_inited )
-        return;
-
-    FB_LOCK();
-    if( console_inited ) {
-        FB_UNLOCK();
-        return;
-    }
-    GetConsoleMode( fb_in_handle, &dwMode );
-    dwMode |= ENABLE_PROCESSED_INPUT;
-    SetConsoleMode( fb_in_handle, dwMode );
-    console_inited = TRUE;
-    FB_UNLOCK();
-}
-
 /*:::::*/
 void fb_hConsolePostKey(int key, const KEY_EVENT_RECORD *key_event)
 {
@@ -396,8 +377,6 @@ int fb_ConsoleProcessEvents( void )
     int got_event = FALSE;
 	INPUT_RECORD ir;
     DWORD dwRead;
-
-    fb_hConsoleInit();
 
     do {
         if( !PeekConsoleInput( fb_in_handle, &ir, 1, &dwRead ) )
