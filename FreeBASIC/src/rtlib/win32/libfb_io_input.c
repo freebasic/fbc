@@ -399,10 +399,12 @@ int fb_ConsoleProcessEvents( void )
 
     fb_hConsoleInit();
 
-	if( PeekConsoleInput( fb_in_handle, &ir, 1, &dwRead ) )
-	{
-		if( dwRead > 0 )
-		{
+    do {
+        if( !PeekConsoleInput( fb_in_handle, &ir, 1, &dwRead ) )
+            dwRead = 0;
+
+        if( dwRead > 0 )
+        {
             ReadConsoleInput( fb_in_handle, &ir, 1, &dwRead );
 
             FB_LOCK();
@@ -426,8 +428,9 @@ int fb_ConsoleProcessEvents( void )
             }
 
             FB_UNLOCK();
-		}
-    }
+        }
+
+    } while( dwRead != 0 );
 
 	return got_event;
 }
