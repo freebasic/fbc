@@ -12,10 +12,12 @@ MAKENSIS=makensis
 endif
 endif
 
-all: start_shell.exe makescript.exe FreeBASIC.nsi FreeBASIC_src.nsi
+OUTPUT=start_shell.exe makescript.exe FreeBASIC.nsi FreeBASIC_src.nsi
+
+all: $(OUTPUT)
 
 clean:
-	rm -f obj/*.o *.exe $(shell find . -name "*~") FreeBASIC.nsi
+	rm -f obj/*.o *.exe $(shell find . -name "*~") $(OUTPUT)
 
 FreeBASIC.nsi: template.nsi replace.conf
 	makescript
