@@ -1286,6 +1286,7 @@ typedef int         (*FB_GETYPROC)      ( void );
 typedef void        (*FB_GETXYPROC)     ( int *col, int *row );
 typedef void        (*FB_GETSIZEPROC)   ( int *cols, int *rows );
 
+FBCALL int          fb_Pos              ( int dummy );
 FBCALL int          fb_GetX             ( void );
 FBCALL int          fb_GetY             ( void );
 FBCALL void         fb_GetXY            ( int *col, int *row );

@@ -2126,8 +2126,14 @@ data "date","fb_Date", _
 '' pos( ) as integer
 data "pos", "fb_GetX", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FALSE, TRUE, _
 	 0
+'' pos( dummy ) as integer
+data "pos", "fb_Pos", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+     1, _
+     FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 '' csrlin( ) as integer
 data "csrlin", "fb_GetY", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
