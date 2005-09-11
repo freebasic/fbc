@@ -3764,13 +3764,13 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 				end if
 			end if
 
-			if( exprTB(params) = NULL ) then
-				exit do
-			end if
-
 			params += 1
 
 		loop while( hMatch( CHAR_COMMA ) )
+	end if
+
+	if( params=1 and exprTB(0)=NULL) then
+		params=0
 	end if
 
 	''
