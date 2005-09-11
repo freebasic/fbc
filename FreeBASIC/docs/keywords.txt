@@ -114,7 +114,7 @@
   LOCATE Statement      (diff: there are no start and stop optional arguments)
   LINE INPUT (Screen) Statement
   LINE INPUT (File) Statement
-  LSET Statement        (diff: syntax is "LSET dst, src" not "LSET dst = src")
+  LSET Statement
   LOCK Statement
   LOF Function
   LOC Function
@@ -144,12 +144,12 @@
   ON ERROR Statement
   ON...GOSUB Statement
   ON...GOTO Statement
-  OPEN (File) Statement (diff: SCRN: and KEYB: aren't supported (yet))
+  OPEN (File) Statement (diff: SCRN: and KEYB: aren't supported - see OPEN SCRN instead)
   OUTPUT
 
   POKE Statement
   PEEK Function
-  POS Function          (diff: there's no always-0 argument)
+  POS Function
   PRINT Statement
   PUT (File) Statement  (diff: writes full arrays too, as in VB: "PUT #f, , outarray()" )
   PRINT (Screen) Statement
