@@ -3086,9 +3086,9 @@ function symbFindOverloadProc( byval parent as FBSYMBOL ptr, _
 
 		if( argc = f->proc.args ) then
 
-			'' argless?
+			'' arg-less?
 			if( argc = 0 ) then
-				exit do
+				return f
 			end if
 
 			'' for each arg..
