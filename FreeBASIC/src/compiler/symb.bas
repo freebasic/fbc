@@ -2283,34 +2283,33 @@ private function hAddOvlProc( byval proc as FBSYMBOL ptr, _
 							  byval ptrcnt as integer, _
 				              byval preservecase as integer ) as FBSYMBOL ptr static
 
-	dim as FBSYMBOL ptr f, farg, parg, fsubtype, psubtype
+	dim as FBSYMBOL ptr f, farg, parg
 	dim as integer optcnt, argc
 
 	function = NULL
 
-	'' arg-less?
+	'' not arg-less?
 	argc = symbGetProcArgs( proc )
-	if( argc = 0 ) then
-		exit function
-	end if
+	if( argc > 0 ) then
 
-	'' can't be vararg..
-	parg = symbGetProcTailArg( proc )
-	if( parg->arg.mode = FB_ARGMODE_VARARG ) then
-		exit function
-	end if
-
-	'' all args can't be optional
-	optcnt = 0
-	do while( parg <> NULL )
-		if( parg->arg.optional ) then
-			optcnt += 1
+		'' can't be vararg..
+		parg = symbGetProcTailArg( proc )
+		if( parg->arg.mode = FB_ARGMODE_VARARG ) then
+			exit function
 		end if
-		parg = parg->prev
-	loop
 
-	if( optcnt = argc ) then
-		exit function
+		'' all args can't be optional
+		optcnt = 0
+		do while( parg <> NULL )
+			if( parg->arg.optional ) then
+				optcnt += 1
+			end if
+			parg = parg->prev
+		loop
+
+		if( optcnt = argc ) then
+			exit function
+		end if
 	end if
 
 	'' for each overloaded proc..
@@ -2320,9 +2319,14 @@ private function hAddOvlProc( byval proc as FBSYMBOL ptr, _
 		'' same number of args?
 		if( f->proc.args = argc ) then
 
+			'' both arg-less?
+			if( argc = 0 ) then
+				exit function
+			end if
+
 			'' for each arg..
 			parg = symbGetProcTailArg( proc )
-			farg = f->proc.argtb.tail
+			farg = symbGetProcTailArg( f )
 
 			do while( parg <> NULL )
 				'' not the same type? check next proc..
@@ -2543,7 +2547,7 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 			end if
 		else
 			proc->proc.ovl.next		= NULL
-			proc->proc.ovl.maxargs	= 0
+			proc->proc.ovl.maxargs	= symbGetProcArgs( proc )
 		end if
 	end if
 
@@ -3082,8 +3086,13 @@ function symbFindOverloadProc( byval parent as FBSYMBOL ptr, _
 
 		if( argc = f->proc.args ) then
 
+			'' argless?
+			if( argc = 0 ) then
+				exit do
+			end if
+
 			'' for each arg..
-			farg = f->proc.argtb.tail
+			farg = symbGetProcTailArg( f )
 			parg = symbGetProcTailArg( proc )
 			do while( parg <> NULL )
 
@@ -3136,6 +3145,11 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 	do while( f <> NULL )
 
 		if( params <= symbGetProcArgs( f ) ) then
+
+			'' arg-less? exit..
+			if( symbGetProcArgs( f ) = 0 ) then
+				return f
+			end if
 
 			arg = symbGetProcLastArg( f )
 			fmatches = 0

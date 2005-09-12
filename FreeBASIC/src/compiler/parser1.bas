@@ -1318,7 +1318,11 @@ function cSymbolDecl as integer
 		else
 			'' IMPORT?
 			if( hMatch( FB_TK_IMPORT ) ) then
-				alloctype or= FB_ALLOCTYPE_IMPORT
+				'' only if target is Windows
+				select case env.clopt.target
+				case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+					alloctype or= FB_ALLOCTYPE_IMPORT
+				end select
 			end if
 		end if
 
@@ -3745,13 +3749,32 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 	params = 0
 	args = symGetProcOvlMaxArgs( proc )
 
+	'' no args? (could happen by mistake..)
+	if( args = 0 ) then
+		'' sub? check the optional parentheses
+		if( not isfunc ) then
+			'' '('
+			if( hMatch( CHAR_LPRNT ) ) then
+				'' ')'
+				if( not hMatch( CHAR_RPRNT ) ) then
+					hReportError( FB_ERRMSG_EXPECTEDRPRNT )
+					exit function
+				end if
+			end if
+		end if
+
+		return astNewFUNCT( proc, ptrexpr )
+	end if
+
 	if( not optonly ) then
 		do
+			'' count mismatch?
 			if( params >= args ) then
 				hReportError( FB_ERRMSG_ARGCNTMISMATCH )
 				exit function
 			end if
 
+			'' too many?
 			if( params >= FB_MAXPROCARGS ) then
 				hReportError( FB_ERRMSG_TOOMANYPARAMS )
 				exit function
@@ -3759,21 +3782,27 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 
 			if( not cOvlProcParam( params, exprTB(params), modeTB(params), _
 								   isfunc, FALSE ) ) then
+				'' not an error? (could be an optional)
 				if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 					exit function
 				end if
 			end if
 
+			'' next
 			params += 1
 
+		'' ','?
 		loop while( hMatch( CHAR_COMMA ) )
 	end if
 
-	if( params=1 and exprTB(0)=NULL) then
-		params=0
+	'' just one param and was it optional?
+	if( params = 1 ) then
+		if( exprTB(0) = NULL ) then
+			params = 0
+		end if
 	end if
 
-	''
+	'' try finding the closest overloaded proc
 	proc = symbFindClosestOvlProc( proc, params, exprTB(), modeTB() )
 
 	if( proc = NULL ) then
@@ -3781,37 +3810,39 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 		exit function
 	end if
 
-	''
+	'' add the optional args, if any
 	args = symbGetProcArgs( proc )
-
 	if( params < args ) then
 
+	    '' rewind the list
 	    arg = symbGetProcLastArg( proc )
 	    for p = 1 to params
 	    	arg = symbGetProcPrevArg( proc, arg )
 	    next
 
 		do while( params < args )
+			'' too many?
 			if( params >= FB_MAXPROCARGS ) then
 				hReportError( FB_ERRMSG_TOOMANYPARAMS )
 				exit function
 			end if
 
+			'' not optional?
 			if( not cProcParam( proc, arg, params, _
 								exprTB(params), modeTB(params), _
 								isfunc, TRUE ) ) then
 				exit function
 			end if
 
+			'' next
 			params += 1
 			arg = symbGetProcPrevArg( proc, arg )
 		loop
 	end if
 
-	''
 	procexpr = astNewFUNCT( proc, ptrexpr )
 
-    ''
+    '' add to tree
 	for p = 0 to params-1
 
 		if( astNewPARAM( procexpr, exprTB(p), INVALID, modeTB(p) ) = NULL ) then
@@ -3833,9 +3864,9 @@ function cProcParamList( byval proc as FBSYMBOL ptr, _
 						 byval isfunc as integer, _
 						 byval optonly as integer ) as ASTNODE ptr
 
-    dim as integer args, p, params, modeTB(0 to FB_MAXPROCARGS-1)
+    dim as integer args, params, mode
     dim as FBSYMBOL ptr arg
-    dim as ASTNODE ptr procexpr, exprTB(0 to FB_MAXPROCARGS-1)
+    dim as ASTNODE ptr procexpr, expr
 
 	'' overloaded?
 	if( symbGetProcIsOverloaded( proc ) ) then
@@ -3844,10 +3875,12 @@ function cProcParamList( byval proc as FBSYMBOL ptr, _
 
 	function = NULL
 
-	args = symbGetProcArgs( proc )
+    procexpr = astNewFUNCT( proc, ptrexpr )
 
 	'' proc has no args?
+	args = symbGetProcArgs( proc )
 	if( args = 0 ) then
+		'' sub? check the optional parentheses
 		if( not isfunc ) then
 			'' '('
 			if( hMatch( CHAR_LPRNT ) ) then
@@ -3859,7 +3892,7 @@ function cProcParamList( byval proc as FBSYMBOL ptr, _
 			end if
 		end if
 
-		return astNewFUNCT( proc, ptrexpr )
+		return procexpr
 	end if
 
 	params = 0
@@ -3867,6 +3900,7 @@ function cProcParamList( byval proc as FBSYMBOL ptr, _
 
 	if( not optonly ) then
 		do
+			'' count mismatch?
 			if( params >= args ) then
 				if( arg->arg.mode <> FB_ARGMODE_VARARG ) then
 					hReportError( FB_ERRMSG_ARGCNTMISMATCH )
@@ -3874,14 +3908,16 @@ function cProcParamList( byval proc as FBSYMBOL ptr, _
 				end if
 			end if
 
+			'' too many?
 			if( params >= FB_MAXPROCARGS ) then
 				hReportError( FB_ERRMSG_TOOMANYPARAMS )
 				exit function
 			end if
 
 			if( not cProcParam( proc, arg, params, _
-								exprTB(params), modeTB(params), _
+								expr, mode, _
 								isfunc, FALSE ) ) then
+				'' not an error? (could be an optional)
 				if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 					exit function
 				else
@@ -3889,48 +3925,50 @@ function cProcParamList( byval proc as FBSYMBOL ptr, _
 				end if
 			end if
 
-			params += 1
+			'' add to tree
+			if( astNewPARAM( procexpr, expr, INVALID, mode ) = NULL ) then
+				exit function
+			end if
 
+			'' next
+			params += 1
 			if( params < args ) then
 				arg = symbGetProcPrevArg( proc, arg )
 			end if
 
+		'' ','?
 		loop while( hMatch( CHAR_COMMA ) )
 	end if
 
-	''
+	'' if not all params were given, check for the optional ones
 	do while( params < args )
+		'' var-arg? can't be optional..
 		if( arg->arg.mode = FB_ARGMODE_VARARG ) then
 			exit do
 		end if
 
+		'' too many?
 		if( params >= FB_MAXPROCARGS ) then
 			hReportError( FB_ERRMSG_TOOMANYPARAMS )
 			exit function
 		end if
 
+		'' not optional?
 		if( not cProcParam( proc, arg, params, _
-							exprTB(params), modeTB(params), _
+							expr, mode, _
 							isfunc, TRUE ) ) then
 			exit function
 		end if
 
-		params += 1
-		arg = symbGetProcPrevArg( proc, arg )
-	loop
-
-    ''
-    procexpr = astNewFUNCT( proc, ptrexpr )
-
-    ''
-	for p = 0 to params-1
-
-		if( astNewPARAM( procexpr, exprTB(p), INVALID, modeTB(p) ) = NULL ) then
-			hReportError( FB_ERRMSG_PARAMTYPEMISMATCH )
+		'' add to tree
+		if( astNewPARAM( procexpr, expr, INVALID, mode ) = NULL ) then
 			exit function
 		end if
 
-	next
+		'' next
+		params += 1
+		arg = symbGetProcPrevArg( proc, arg )
+	loop
 
 	function = procexpr
 

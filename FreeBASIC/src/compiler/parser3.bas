@@ -936,13 +936,8 @@ function cVariable( byref varexpr as ASTNODE ptr, _
     ''
     isbyref = symbIsArgByRef( sym )
 
-	'' check if it's an import (only if target is Windows)
-	select case env.clopt.target
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-		isimport = symbIsImport( sym )
-	case else
-		isimport = FALSE
-	end select
+	'' check if it's an import (only set if target is Windows)
+	isimport = symbIsImport( sym )
 
     ''
     idxexpr  = NULL
