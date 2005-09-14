@@ -90,6 +90,7 @@ Version 0.15 Beta:
 - the precision was one digit too wide when PRINT'ing single's and double's, causing some artifacts (v1c)
 - QB-compatible POS(n) is now allowed too (mjs)
 - Calling an overloaded function with 0 arguments (mjs)
+- Hopefully fixed all output issues on Win32 (mjs)
 
 
 Version 0.14 Beta:
