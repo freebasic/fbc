@@ -1274,7 +1274,7 @@ FBCALL int          fb_Color            ( int fc, int bc );
 
 typedef int         (*FB_LOCATEPROC)    ( int row, int col, int cursor );
 
-FBCALL int          fb_LocateFn         ( int row, int col, int cursor );
+FBCALL int          fb_Locate           ( int row, int col, int cursor );
 FBCALL int          fb_LocateSub        ( int row, int col, int cursor );
 
 typedef int         (*FB_WIDTHPROC)     ( int cols, int rows );
