@@ -91,6 +91,7 @@ Version 0.15 Beta:
 - QB-compatible POS(n) is now allowed too (mjs)
 - Calling an overloaded function with 0 arguments (mjs)
 - Hopefully fixed all output issues on Win32 (mjs)
+- LOCATE will now throw an error if it gets invalid arguments(mjs)
 
 
 Version 0.14 Beta:

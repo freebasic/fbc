@@ -61,7 +61,7 @@ FBCALL int fb_ConsoleView( int toprow, int botrow )
     if( do_update ) {
         /* to top row */
         fb_ConsoleViewUpdate( );
-        fb_Locate( toprow, 1, -1 );
+        fb_LocateFn( toprow, 1, -1 );
     }
 
     return toprow + (botrow << 16);

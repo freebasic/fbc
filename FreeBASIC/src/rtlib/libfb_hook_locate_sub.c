@@ -28,25 +28,22 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-FBCALL int fb_LocateFn( int row, int col, int cursor )
+FBCALL int fb_LocateSub( int row, int col, int cursor )
 {
-    int res, start_y, end_y;
+    int start_y, end_y;
 
     fb_ConsoleGetView(&start_y, &end_y);
-    if( row>0 && (row<start_y || row>end_y) ) {
-        /* It's not allowed to change the cursor position if the new position
-         * is invalid! */
-        row = col = 0;
-    }
+    if( row>0 && (row<start_y || row>end_y) )
+        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
     fb_DevScrnInit_NoOpen( );
 
     FB_LOCK();
 
     if( fb_hooks.locateproc ) {
-		res = fb_hooks.locateproc( row, col, cursor );
+		fb_hooks.locateproc( row, col, cursor );
     } else {
-        res = fb_ConsoleLocate( row, col, cursor );
+        fb_ConsoleLocate( row, col, cursor );
     }
 
     if( col > 0 )
@@ -54,5 +51,5 @@ FBCALL int fb_LocateFn( int row, int col, int cursor )
 
     FB_UNLOCK();
 
-	return res;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

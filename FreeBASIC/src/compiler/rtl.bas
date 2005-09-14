@@ -979,6 +979,24 @@ data "fb_LPrintUsingInit","", _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
 
 
+'' locate( byval row as integer = 0, byval col as integer = 0, byval cursor as integer = -1 ) as integer
+data "fb_LocateFn", "", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,-1
+
+'' locate( byval row as integer = 0, byval col as integer = 0, byval cursor as integer = -1 ) as integer
+data "fb_LocateSub", "", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,-1
+
 '' fb_ConsoleView ( byval toprow as integer = 0, byval botrow as integer = 0 ) as void
 data "fb_ConsoleView","", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
@@ -2145,14 +2163,6 @@ data "cls", "fb_Cls", _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,&hFFFF0000
-'' locate( byval row as integer = 0, byval col as integer = 0, byval cursor as integer = -1 ) as integer
-data "locate", "fb_Locate", _
-	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
-	 3, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,-1
 '' color( byval fc as integer = -1, byval bc as integer = -1 ) as integer
 data "color", "fb_Color", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
@@ -5195,6 +5205,63 @@ function rtlConsoleView ( byval topexpr as ASTNODE ptr, _
 
     function = proc
 
+end function
+
+'':::::
+function rtlLocate ( byval row_arg as ASTNODE ptr, _
+					 byval col_arg as ASTNODE ptr, _
+					 byval cursor_vis_arg as ASTNODE ptr, _
+                     byval isfunc as integer ) as ASTNODE ptr
+    dim proc as ASTNODE ptr, f as FBSYMBOL ptr
+
+	function = NULL
+
+	''
+    if( isfunc ) then
+		f = ifuncTB(FB_RTL_LOCATE_FN)
+    else
+		f = ifuncTB(FB_RTL_LOCATE_SUB)
+    end if
+    proc = astNewFUNCT( f )
+
+    '' byval row_arg as integer
+    if( row_arg = NULL ) then
+    	row_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+    end if
+    if( astNewPARAM( proc, row_arg ) = NULL ) then
+    	exit function
+    end if
+
+    '' byval col_arg as integer
+    if( col_arg = NULL ) then
+        col_arg = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+    end if
+    if( astNewPARAM( proc, col_arg ) = NULL ) then
+    	exit function
+    end if
+
+    '' byval cursor_vis_arg as integer
+    if( cursor_vis_arg = NULL ) then
+        cursor_vis_arg = astNewCONSTi( -1, IR_DATATYPE_INTEGER )
+    end if
+    if( astNewPARAM( proc, cursor_vis_arg ) = NULL ) then
+    	exit function
+    end if
+
+    if( not isfunc ) then
+    	dim reslabel as FBSYMBOL ptr
+    	if( env.clopt.resumeerr ) then
+    		reslabel = symbAddLabel( NULL )
+    		astAdd( astNewLABEL( reslabel ) )
+    	else
+    		reslabel = NULL
+    	end if
+
+    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
+
+    else
+    	function = proc
+    end if
 end function
 
 '':::::

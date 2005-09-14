@@ -157,6 +157,9 @@ enum FBRTL_ENUM
 
 	FB_RTL_LPRINTUSGINIT
 
+	FB_RTL_LOCATE_FN
+	FB_RTL_LOCATE_SUB
+
 	FB_RTL_CONSOLEVIEW
 	FB_RTL_CONSOLEREADXY
 
@@ -540,6 +543,11 @@ declare sub 		rtlErrorResume		( byval isnext as integer )
 
 declare function	rtlConsoleView		( byval topexpr as ASTNODE ptr, _
 										  byval botexpr as ASTNODE ptr ) as ASTNODE ptr
+
+declare function    rtlLocate           ( byval row_arg as ASTNODE ptr, _
+                                          byval col_arg as ASTNODE ptr, _
+                                          byval cursor_vis_arg as ASTNODE ptr, _
+                                          byval isfunc as integer ) as ASTNODE ptr
 
 declare function	rtlConsoleReadXY	( byval rowexpr as ASTNODE ptr, _
 										  byval columnexpr as ASTNODE ptr, _

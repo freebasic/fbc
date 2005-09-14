@@ -1274,12 +1274,14 @@ FBCALL int          fb_Color            ( int fc, int bc );
 
 typedef int         (*FB_LOCATEPROC)    ( int row, int col, int cursor );
 
-FBCALL int          fb_Locate           ( int row, int col, int cursor );
+FBCALL int          fb_LocateFn         ( int row, int col, int cursor );
+FBCALL int          fb_LocateSub        ( int row, int col, int cursor );
 
 typedef int         (*FB_WIDTHPROC)     ( int cols, int rows );
 
 FBCALL int          fb_Width            ( int cols, int rows );
 FBCALL int          fb_WidthDev         ( FBSTRING *dev, int width );
+FBCALL int          fb_WidthFile        ( int fnum, int width );
 
 typedef int         (*FB_GETXPROC)      ( void );
 typedef int         (*FB_GETYPROC)      ( void );

@@ -55,10 +55,10 @@ void DoMove( FB_FILE *handle, int *x, int *y, int dx, int dy, int cols, int rows
     *y += 1;
 
     if( *y==(rows+1) && *x==1 ) {
-        fb_Locate( rows, cols, -1 );
+        fb_LocateFn( rows, cols, -1 );
         handle->hooks->pfnWrite( handle, "\n", 1 );
     } else {
-        fb_Locate( *y, *x, -1 );
+        fb_LocateFn( *y, *x, -1 );
     }
 }
 
@@ -86,13 +86,13 @@ int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
 
     fb_GetSize(&cols, &rows);
 
-    cursor_visible = (fb_Locate( -1, -1, -1 ) & 0x10000) != 0;
-    fb_Locate( -1, -1, 0 );
+    cursor_visible = (fb_LocateFn( -1, -1, -1 ) & 0x10000) != 0;
+    fb_LocateFn( -1, -1, 0 );
 
     pos = len = FB_STRSIZE(dst);
     handle->hooks->pfnWrite( handle, dst->data, len );
 
-    fb_Locate( -1, -1, cursor_visible );
+    fb_LocateFn( -1, -1, cursor_visible );
 
     FB_LOCK();
 
@@ -206,7 +206,7 @@ int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
 
             handle->hooks->pfnWrite( handle, dst->data + pos, len - pos );
             handle->hooks->pfnWrite( handle, " ", 1 );
-            fb_Locate( tmp_y, tmp_x, -1 );
+            fb_LocateFn( tmp_y, tmp_x, -1 );
         }
 
         if( add_char ) {
@@ -237,7 +237,7 @@ int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
             DoMove( handle, &tmp_x, &tmp_y, pos - len, 0, cols, rows );
         }
 
-        fb_Locate( -1, -1, cursor_visible );
+        fb_LocateFn( -1, -1, cursor_visible );
 
 	} while (k!='\r' && k!='\n');
 
@@ -269,7 +269,7 @@ int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
     old_x += 1;
     old_y -= 1;
 
-    fb_Locate( old_y, old_x, -1 );
+    fb_LocateFn( old_y, old_x, -1 );
 
     return res;
 #endif

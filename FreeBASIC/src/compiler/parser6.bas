@@ -1482,6 +1482,37 @@ private function cWidth( byval isfunc as integer ) as ASTNODE ptr
 end function
 
 '':::::
+private function cLocate( byval isfunc as integer ) as ASTNODE ptr
+	dim as ASTNODE ptr row_arg, col_arg, cursor_vis_arg
+    dim as ASTNODE ptr func
+
+	function = NULL
+
+	lexSkipToken( )
+
+	if( isfunc ) then
+		'' '('?
+		hMatchLPRNT()
+	end if
+
+    cExpression( row_arg )
+    if( hMatch( CHAR_COMMA ) ) then
+    	cExpression( col_arg )
+	    if( hMatch( CHAR_COMMA ) ) then
+		    cExpression( cursor_vis_arg )
+	    end if
+    end if
+
+	if( isfunc ) then
+		'' ')'?
+		hMatchRPRNT()
+	end if
+
+    function = rtlLocate( row_arg, col_arg, cursor_vis_arg, isfunc )
+
+end function
+
+'':::::
 private function hFileRename( byval isfunc as integer ) as ASTNODE ptr
 	dim as ASTNODE ptr filename_old, filename_new
 	dim as integer matchprnt
@@ -1882,6 +1913,8 @@ function cQuirkStmt as integer
 	case FB_TK_OPEN, FB_TK_CLOSE, FB_TK_SEEK, FB_TK_PUT, FB_TK_GET, _
 		 FB_TK_LOCK, FB_TK_UNLOCK, FB_TK_NAME
 		res = cFileStmt( )
+	case FB_TK_LOCATE
+		res = cLocate( FALSE )<>NULL
 	case FB_TK_ON
 		res = cOnStmt( )
 	case FB_TK_WRITE
@@ -2856,6 +2889,10 @@ function cQuirkFunction( byref funcexpr as ASTNODE ptr ) as integer
 	case FB_TK_SEEK, FB_TK_INPUT, FB_TK_OPEN, FB_TK_CLOSE, _
 		 FB_TK_GET, FB_TK_PUT, FB_TK_NAME
 		res = cFileFunct( funcexpr )
+
+	case FB_TK_LOCATE
+		funcexpr = cLocate( TRUE )
+        res = funcexpr<>NULL
 
 	case FB_TK_ERR
 		res = cErrorFunct( funcexpr )
