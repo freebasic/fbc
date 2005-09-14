@@ -980,7 +980,7 @@ data "fb_LPrintUsingInit","", _
 
 
 '' locate( byval row as integer = 0, byval col as integer = 0, byval cursor as integer = -1 ) as integer
-data "fb_LocateFn", "", _
+data "fb_Locate", "", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 3, _

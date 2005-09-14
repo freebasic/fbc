@@ -31,28 +31,20 @@
 /*:::::*/
 static void hToBin( unsigned int num, FB_WCHAR *dst, int len )
 {
-	unsigned int mask = 1UL << ((len*8)-1);
-	int i;
-
 	if( num == 0 )
 		fb_wstr_PutChar( &dst, '0' );
 	else
-	{
-		for( i = 0; i < len*8; i++, num <<= 1 )
-			if( num & mask )
-				break;
-
-		pos = 0;
-		for( ; i < len*8; i++, num <<= 1 )
-			if( num & mask )
+    {
+        while( num!=0 ) {
+			if( num & 1 )
 				fb_wstr_PutChar( &dst, '1' );
 			else
-				fb_wstr_PutChar( &dst, '0' );
+                fb_wstr_PutChar( &dst, '0' );
+            num >>= 1;
+        }
 	}
-
 	/* add null-term */
 	fb_wstr_PutChar( &dst, 0 );
-
 }
 #endif
 

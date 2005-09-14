@@ -28,7 +28,7 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-FBCALL int fb_LocateFn( int row, int col, int cursor )
+FBCALL int fb_Locate( int row, int col, int cursor )
 {
     int res, start_y, end_y;
 
