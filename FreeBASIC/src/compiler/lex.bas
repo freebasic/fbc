@@ -409,7 +409,9 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 						islong = TRUE
 				    	value64 = (culngint( value ) * 16) + c
 				    elseif( lgt = 17 ) then
-				    	hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+				    	if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+				    		hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+				    	end if
 				    	exit do
 					else
 				    	value64 = (value64 * 16) + c
@@ -455,13 +457,17 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 						value64 = (value64 * 8) + c
 					case 22
 						if( first_c > CHAR_1 ) then
-							hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+							if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+								hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+							end if
 							exit do
 						else
 							value64 = (value64 * 8) + c
 						end if
 					case 23
-						hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+							hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+						end if
 						exit do
 					case else
 						value64 = (value64 * 8) + c
@@ -493,7 +499,9 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 						islong = TRUE
 				    	value64 = (culngint( value ) * 2) + c
 				    elseif( lgt = 65 ) then
-				    	hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+				    	if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+				    		hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+				    	end if
 				    	exit do
 				    else
 				    	value64 = (value64 * 2) + c
@@ -709,13 +717,17 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 			case 20
 				issigned = FALSE
 				if( *pnum_start > "18446744073709551615" ) then
-					hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
-					exit function
+					if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+						hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+						exit function
+					end if
 				end if
 
 			case 21
-				hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
-				exit function
+				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+					hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+					exit function
+				end if
 			end select
 
 			if( tlen > FB_MAXNUMLEN ) then
@@ -785,8 +797,10 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 					end if
 				else
 					if( islong ) then
-						hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
-						exit function
+						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+							hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+							exit function
+						end if
 					end if
 				end if
 
@@ -794,8 +808,10 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 			case FB_TK_INTTYPECHAR, FB_TK_LNGTYPECHAR
 				lexEatChar( )
 				if( islong ) then
-					hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
-					exit function
+					if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+						hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+						exit function
+					end if
 				end if
 
 			'' '!' | 'F' | 'f'
