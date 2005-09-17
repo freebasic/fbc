@@ -60,11 +60,13 @@ end sub
 private sub FD_SET_(byval fd as integer, byval set as fd_set ptr)
 	dim i as u_int
 
-	for i = 0 to set->fd_count-1
-		if( set->fd_array(i) = fd ) then
-			exit sub
-		end if
-	next 
+	if set->fd_count > 0 then
+		for i = 0 to set->fd_count-1
+			if( set->fd_array(i) = fd ) then
+				exit sub
+			end if
+		next 
+	end if
 
 	if( set->fd_count < FD_SETSIZE ) then
 		set->fd_array(i) = fd
