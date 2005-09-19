@@ -277,10 +277,12 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
             || info.dwCursorPosition.Y != (srView.Bottom+1) )
         {
             fb_hConsoleCheckScroll( fb_out_handle, &srView, &info.dwCursorPosition );
-            SetConsoleCursorPosition( fb_out_handle, info.dwCursorPosition );
         } else {
             ScrollWasOff = TRUE;
+            info.dwCursorPosition.X = srView.Right;
+            info.dwCursorPosition.Y = srView.Bottom;
         }
+        SetConsoleCursorPosition( fb_out_handle, info.dwCursorPosition );
     }
 
     fb_hUpdateConsoleWindow( );

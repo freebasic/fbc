@@ -81,12 +81,31 @@ int fb_ConsoleWidth( int cols, int rows )
         /* reset view */
         fb_ConsoleSetTopBotRows( rect.Top, rect.Bottom );
 
-        /* Execute this twice to handle the case where the
-         * screen buffer gets smaller than the window */
+        /* Ensure that the window isn't larget than the destination screen
+         * buffer size */
+        if( rect.Bottom < (nrows-1) ) {
+            SMALL_RECT rTmp;
+            memcpy( &rTmp, &rect, sizeof(SMALL_RECT) );
+            if( rTmp.Right >= ncols )
+                rTmp.Right = ncols - 1;
+            SetConsoleWindowInfo( fb_out_handle, TRUE, &rTmp );
+        } else if( rect.Right < (ncols-1) ) {
+            SMALL_RECT rTmp;
+            memcpy( &rTmp, &rect, sizeof(SMALL_RECT) );
+            if( rTmp.Bottom >= nrows )
+                rTmp.Bottom = nrows - 1;
+            SetConsoleWindowInfo( fb_out_handle, TRUE, &rTmp );
+        }
+
+        /* Now set the screen buffer size and ensure that the window is
+         * large enough to show the whole buffer */
         SetConsoleScreenBufferSize( fb_out_handle, size );
         SetConsoleWindowInfo( fb_out_handle, TRUE, &rect );
+#if 0
+        /* Shouldn't be required any more ... */
         SetConsoleScreenBufferSize( fb_out_handle, size );
         SetConsoleWindowInfo( fb_out_handle, TRUE, &rect );
+#endif
     }
 
     SetConsoleActiveScreenBuffer( fb_out_handle );
