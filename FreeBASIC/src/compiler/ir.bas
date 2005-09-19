@@ -630,7 +630,6 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
     dim as integer isptr
     dim as integer adtype, adclass, amode
     dim as integer pdtype, pdclass, pclass
-    dim as FBSYMBOL ptr s, d
 
 	function = FALSE
 
@@ -774,16 +773,6 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
 				irEmitPUSH( vr->vidx )
 
 			else
-				'' byref arg and it's not a var? create a temp one..
-				if( not irIsVAR( vr ) ) then
-					if( not irIsIDX( vr ) ) then
-						s = symbAddTempVar( adtype )
-						vt = irAllocVRVAR( adtype, s, s->ofs )
-						irEmitSTORE( vt, vr )
-						vr = vt
-					end if
-				end if
-
 				vt = irAllocVREG( IR_DATATYPE_UINT )
 				irEmitADDR( IR_OP_ADDROF, vr, vt )
 				irEmitPUSH( vt )

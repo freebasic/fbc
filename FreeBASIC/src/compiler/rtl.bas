@@ -2863,6 +2863,9 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
+'' note: STRGETLEN must be called *before* astNewPARAM(e) because the expression 'e'
+''       can be changed inside the former (address-of string's etc)
+
 #define FIXSTRGETLEN(e) symbGetLen( astGetSymbolOrElm( e ) )
 
 #define ZSTRGETLEN(e) iif( astIsPTR( e ), 0, symbGetLen( astGetSymbolOrElm( e ) ) )
@@ -2895,7 +2898,7 @@ function rtlStrCompare ( byval str1 as ASTNODE ptr, _
 	f = ifuncTB(FB_RTL_STRCOMPARE)
     proc = astNewFUNCT( f )
 
-   	''
+   	'' always calc len before pushing the param
    	STRGETLEN( str1, sdtype1, str1len )
 
 	STRGETLEN( str2, sdtype2, str2len )
@@ -2943,7 +2946,7 @@ function rtlStrConcat( byval str1 as ASTNODE ptr, _
     	exit function
     end if
 
-   	''
+   	'' always calc len before pushing the param
    	STRGETLEN( str1, sdtype1, str1len )
 
 	STRGETLEN( str2, sdtype2, str2len )
@@ -2985,29 +2988,29 @@ function rtlStrConcatAssign( byval dst as ASTNODE ptr, _
     ''
    	ddtype = astGetDataType( dst )
 
+	'' always calc len before pushing the param
+	STRGETLEN( dst, ddtype, lgt )
+
 	'' dst as any
 	if( astNewPARAM( proc, dst, ddtype ) = NULL ) then
     	exit function
     end if
 
 	'' byval dstlen as integer
-	STRGETLEN( dst, ddtype, lgt )
-
 	if( astNewPARAM( proc, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
-   	''
+   	'' always calc len before pushing the param
    	sdtype = astGetDataType( src )
+	STRGETLEN( src, sdtype, lgt )
 
 	'' src as any
 	if( astNewPARAM( proc, src, sdtype ) = NULL ) then
     	exit function
     end if
 
-	'' byval srclen as integer
-	STRGETLEN( src, sdtype, lgt )
-
+    '' byval srclen as integer
 	if( astNewPARAM( proc, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
@@ -3035,8 +3038,9 @@ function rtlStrAssign( byval dst as ASTNODE ptr, _
 	f = ifuncTB(FB_RTL_STRASSIGN)
     proc =  astNewFUNCT( f )
 
-    ''
+	'' always calc len before pushing the param
    	ddtype = astGetDataType( dst )
+	STRGETLEN( dst, ddtype, lgt )
 
 	'' dst as any
 	if( astNewPARAM( proc, dst, ddtype ) = NULL ) then
@@ -3044,14 +3048,13 @@ function rtlStrAssign( byval dst as ASTNODE ptr, _
     end if
 
 	'' byval dstlen as integer
-	STRGETLEN( dst, ddtype, lgt )
-
 	if( astNewPARAM( proc, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
-   	''
+   	'' always calc len before pushing the param
    	sdtype = astGetDataType( src )
+	STRGETLEN( src, sdtype, lgt )
 
 	'' src as any
 	if( astNewPARAM( proc, src, sdtype ) = NULL ) then
@@ -3059,8 +3062,6 @@ function rtlStrAssign( byval dst as ASTNODE ptr, _
     end if
 
 	'' byval srclen as integer
-	STRGETLEN( src, sdtype, lgt )
-
 	if( astNewPARAM( proc, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
@@ -3148,14 +3149,15 @@ function rtlStrAllocTmpDesc	( byval strg as ASTNODE ptr ) as ASTNODE ptr static
 		f = ifuncTB(FB_RTL_STRALLOCTMPDESCF)
     	proc = astNewFUNCT( f )
 
+    	'' always calc len before pushing the param
+		STRGETLEN( strg, dtype, lgt )
+
     	'' str as any
     	if( astNewPARAM( proc, strg ) = NULL ) then
     		exit function
     	end if
 
-    	'' byval strlen as integer
-		STRGETLEN( strg, dtype, lgt )
-
+		'' byval strlen as integer
 		if( astNewPARAM( proc, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
     		exit function
     	end if
@@ -3649,23 +3651,23 @@ end function
 
 '':::::
 function rtlArrayErase( byval arrayexpr as ASTNODE ptr ) as integer static
-    dim proc as ASTNODE ptr, f as FBSYMBOL ptr
-    dim isvarlen as integer
+    dim as ASTNODE ptr proc
+    dim as integer dtype
 
 	function = FALSE
 
 	''
-	f = ifuncTB(FB_RTL_ARRAYERASE)
-    proc = astNewFUNCT( f )
+    proc = astNewFUNCT( ifuncTB(FB_RTL_ARRAYERASE) )
+
+	dtype = astGetDataType( arrayexpr )
 
     '' array() as ANY
-    if( astNewPARAM( proc, arrayexpr, astGetDataType( arrayexpr ) ) = NULL ) then
+    if( astNewPARAM( proc, arrayexpr, dtype ) = NULL ) then
     	exit function
     end if
 
 	'' byval isvarlen as integer
-	isvarlen = (astGetDataType( arrayexpr ) = IR_DATATYPE_STRING)
-	if( astNewPARAM( proc, astNewCONSTi( isvarlen, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewPARAM( proc, astNewCONSTi( dtype = IR_DATATYPE_STRING, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
@@ -3679,26 +3681,22 @@ end function
 '':::::
 function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as integer static
     dim as ASTNODE ptr proc
-    dim as integer isvarlen, dtype
-    dim as FBSYMBOL ptr f, s
+    dim as integer dtype
 
     function = FALSE
 
 	''
-	f = ifuncTB(FB_RTL_ARRAYCLEAR)
-    proc = astNewFUNCT( f )
+    proc = astNewFUNCT( ifuncTB(FB_RTL_ARRAYCLEAR) )
+
+    dtype = astGetDataType( arrayexpr )
 
     '' array() as ANY
-    if( astNewPARAM( proc, arrayexpr, astGetDataType( arrayexpr ) ) = NULL ) then
+    if( astNewPARAM( proc, arrayexpr, dtype ) = NULL ) then
     	exit function
     end if
 
 	'' byval isvarlen as integer
-	s = astGetSymbolOrElm( arrayexpr )
-	dtype = symbGetType( s )
-
-    isvarlen = (dtype = IR_DATATYPE_STRING)
-	if( astNewPARAM( proc, astNewCONSTi( isvarlen, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewPARAM( proc, astNewCONSTi( (dtype = IR_DATATYPE_STRING), IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
@@ -4032,6 +4030,12 @@ function rtlDataRead( byval varexpr as ASTNODE ptr ) as integer static
 
     proc = astNewFUNCT( f )
 
+    if( args = 3 ) then
+    	'' always calc len before pushing the param
+		dtype = astGetDataType( varexpr )
+		STRGETLEN( varexpr, dtype, lgt )
+	end if
+
     '' byref var as any
     if( astNewPARAM( proc, varexpr ) = NULL ) then
  		exit function
@@ -4039,8 +4043,6 @@ function rtlDataRead( byval varexpr as ASTNODE ptr ) as integer static
 
     if( args = 3 ) then
 		'' byval dst_size as integer
-		dtype = astGetDataType( varexpr )
-		STRGETLEN( varexpr, dtype, lgt )
 		if( astNewPARAM( proc, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
  			exit function
  		end if
@@ -4310,64 +4312,69 @@ function rtlMathFIX ( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 end function
 
 '':::::
+'' note: hCalcExprLen must be called *before* astNewPARAM(e) because the
+''       expression 'e' can be changed inside the former (address-of string's etc)
 private function hCalcExprLen( byval expr as ASTNODE ptr, _
 							   byval realsize as integer = TRUE ) as integer static
-	dim lgt as integer, s as FBSYMBOL ptr
-	dim dtype as integer
 
-	lgt = -1
+	dim as FBSYMBOL ptr s
+	dim as integer lgt, dtype
+
+	function = -1
 
 	dtype = astGetDataType( expr )
 	select case as const dtype
 	case IR_DATATYPE_BYTE, IR_DATATYPE_UBYTE
-		lgt = 1
+		function = 1
 
 	case IR_DATATYPE_SHORT, IR_DATATYPE_USHORT
-		lgt = 2
+		function = 2
 
 	case IR_DATATYPE_INTEGER, IR_DATATYPE_UINT, IR_DATATYPE_ENUM
-		lgt = FB_INTEGERSIZE
+		function = FB_INTEGERSIZE
 
 	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-		lgt = FB_INTEGERSIZE*2
+		function = FB_INTEGERSIZE*2
 
 	case IR_DATATYPE_SINGLE
-		lgt = 4
+		function = 4
 
 	case IR_DATATYPE_DOUBLE
-		lgt = 8
+		function = 8
 
 	case IR_DATATYPE_STRING
-		lgt = FB_STRDESCLEN
+		function = FB_STRDESCLEN
 
 	case IR_DATATYPE_FIXSTR
-		lgt = FIXSTRGETLEN( expr )
+		function = FIXSTRGETLEN( expr )
 
 	case IR_DATATYPE_CHAR
 		lgt = ZSTRGETLEN( expr )
+		'' char?
 		if( lgt = 0 ) then
-			lgt = 1
+			function = 1
+		else
+			function = lgt
 		end if
 
 	case IR_DATATYPE_USERDEF
 		s = astGetSymbolOrElm( expr )
 		if( s <> NULL ) then
-			'' if it's a type field that's an udt, no pad is ever added, realsize is always TRUE
+			'' if it's a type field that's an udt, no padding is
+			'' ever added, realsize is always TRUE
 			if( s->class = FB_SYMBCLASS_UDTELM ) then
 				realsize = TRUE
 			end if
-			lgt = symbGetUDTLen( symbGetSubtype( s ), realsize )
+			function = symbGetUDTLen( symbGetSubtype( s ), realsize )
 		else
-			lgt = 0
+			function = 0
 		end if
 
 	case else
 		if( dtype >= IR_DATATYPE_POINTER ) then
-			lgt = FB_POINTERSIZE
+			function = FB_POINTERSIZE
 		end if
 	end select
-
-	hCalcExprLen = lgt
 
 end function
 
@@ -4388,14 +4395,15 @@ function rtlMathLen( byval expr as ASTNODE ptr, _
 			f = ifuncTB(FB_RTL_STRLEN)
     		proc = astNewFUNCT( f )
 
+    		'' always calc len before pushing the param
+    		STRGETLEN( expr, dtype, lgt )
+
     		'' str as any
     		if( astNewPARAM( proc, expr, IR_DATATYPE_STRING ) = NULL ) then
  				exit function
  			end if
 
     		'' byval strlen as integer
-			STRGETLEN( expr, dtype, lgt )
-
 			if( astNewPARAM( proc, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
  				exit function
  			end if
@@ -5074,6 +5082,9 @@ function rtlMemSwap( byval dst as ASTNODE ptr, _
 	f = ifuncTB(FB_RTL_MEMSWAP)
     proc = astNewFUNCT( f )
 
+    '' always calc len before pushing the param
+    bytes = hCalcExprLen( dst )
+
     '' dst as any
     if( astNewPARAM( proc, dst ) = NULL ) then
     	exit function
@@ -5085,7 +5096,6 @@ function rtlMemSwap( byval dst as ASTNODE ptr, _
     end if
 
     '' byval bytes as integer
-	bytes = hCalcExprLen( dst )
     if( astNewPARAM( proc, astNewCONSTi( bytes, IR_DATATYPE_INTEGER ) ) = NULL ) then
     	exit function
     end if
@@ -5109,17 +5119,23 @@ function rtlStrSwap( byval str1 as ASTNODE ptr, _
 	f = ifuncTB(FB_RTL_STRSWAP)
     proc = astNewFUNCT( f )
 
+	'' always calc len before pushing the param
+	dtype = astGetDataType( str1 )
+	STRGETLEN( str1, dtype, lgt )
+
     '' str1 as any
     if( astNewPARAM( proc, str1, IR_DATATYPE_STRING ) = NULL ) then
     	exit function
     end if
 
     '' byval str1len as integer
-	dtype = astGetDataType( str1 )
-	STRGETLEN( str1, dtype, lgt )
 	if( astNewPARAM( proc, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
+
+	'' always calc len before pushing the param
+	dtype = astGetDataType( str2 )
+	STRGETLEN( str2, dtype, lgt )
 
     '' str2 as any
     if( astNewPARAM( proc, str2, IR_DATATYPE_STRING ) = NULL ) then
@@ -5127,8 +5143,6 @@ function rtlStrSwap( byval str1 as ASTNODE ptr, _
     end if
 
     '' byval str1len as integer
-	dtype = astGetDataType( str2 )
-	STRGETLEN( str2, dtype, lgt )
 	if( astNewPARAM( proc, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
@@ -5917,18 +5931,19 @@ function rtlFilePut( byval filenum as ASTNODE ptr, _
  		exit function
  	end if
 
-    '' value as any | s as string
-    if( astNewPARAM( proc, src ) = NULL ) then
- 		exit function
- 	end if
-
-    '' byval valuelen as integer
+    '' always calc len before pushing the param
     if( isstring ) then
     	STRGETLEN( src, dtype, lgt )
     else
     	lgt = hCalcExprLen( src )
     end if
 
+    '' value as any | s as string
+    if( astNewPARAM( proc, src ) = NULL ) then
+ 		exit function
+ 	end if
+
+    '' byval valuelen as integer
    	if( astNewPARAM( proc, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ) ) = NULL ) then
 		exit function
 	end if
@@ -6036,18 +6051,19 @@ function rtlFileGet( byval filenum as ASTNODE ptr, _
  		exit function
  	end if
 
-    '' value as any
-    if( astNewPARAM( proc, dst ) = NULL ) then
- 		exit function
- 	end if
-
-    '' byval valuelen as integer
+    '' always calc len before pushing the param
     if( isstring ) then
     	STRGETLEN( dst, dtype, lgt )
     else
     	lgt = hCalcExprLen( dst )
     end if
 
+    '' value as any
+    if( astNewPARAM( proc, dst ) = NULL ) then
+ 		exit function
+ 	end if
+
+    '' byval valuelen as integer
     if( astNewPARAM( proc, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ) ) = NULL ) then
  		exit function
  	end if
@@ -6176,14 +6192,16 @@ function rtlFileLineInput( byval isfile as integer, _
  		exit function
  	end if
 
-    '' dst as any
+    '' always calc len before pushing the param
+	dtype = astGetDataType( dstexpr )
+	STRGETLEN( dstexpr, dtype, lgt )
+
+	'' dst as any
     if( astNewPARAM( proc, dstexpr ) = NULL ) then
  		exit function
  	end if
 
 	'' byval dstlen as integer
-	dtype = astGetDataType( dstexpr )
-	STRGETLEN( dstexpr, dtype, lgt )
 	if( astNewPARAM( proc, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
  		exit function
  	end if
@@ -6295,6 +6313,11 @@ function rtlFileInputGet( byval dstexpr as ASTNODE ptr ) as integer
 
     proc = astNewFUNCT( f )
 
+    '' always calc len before pushing the param
+    if( args > 1 ) then
+		STRGETLEN( dstexpr, dtype, lgt )
+	end if
+
     '' dst as any
     if( astNewPARAM( proc, dstexpr ) = NULL ) then
  		exit function
@@ -6302,7 +6325,6 @@ function rtlFileInputGet( byval dstexpr as ASTNODE ptr ) as integer
 
     if( args > 1 ) then
 		'' byval dstlen as integer
-		STRGETLEN( dstexpr, dtype, lgt )
 		if( astNewPARAM( proc, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
  			exit function
  		end if
@@ -6488,7 +6510,7 @@ function rtlGfxPset( byval target as ASTNODE ptr, _
  	'' byref target as any
  	if( target = NULL ) then
  		target = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
- 		targetmode = INVALID
+ 		targetmode = FB_ARGMODE_BYVAL
  	else
 		if( targetisptr ) then
 			targetmode = FB_ARGMODE_BYVAL
@@ -6548,7 +6570,7 @@ function rtlGfxPoint( byval target as ASTNODE ptr, _
 	'' byref target as any
 	if( target = NULL ) then
  		target = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
- 		targetmode = INVALID
+ 		targetmode = FB_ARGMODE_BYVAL
  	else
 		if( targetisptr ) then
 			targetmode = FB_ARGMODE_BYVAL
@@ -6600,7 +6622,7 @@ function rtlGfxLine( byval target as ASTNODE ptr, _
  	'' byref target as any
  	if( target = NULL ) then
  		target = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
- 		targetmode = INVALID
+ 		targetmode = FB_ARGMODE_BYVAL
  	else
 		if( targetisptr ) then
 			targetmode = FB_ARGMODE_BYVAL
@@ -6686,7 +6708,7 @@ function rtlGfxCircle( byval target as ASTNODE ptr, _
  	'' byref target as any
  	if( target = NULL ) then
  		target = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
- 		targetmode = INVALID
+ 		targetmode = FB_ARGMODE_BYVAL
  	else
 		if( targetisptr ) then
 			targetmode = FB_ARGMODE_BYVAL
@@ -6780,7 +6802,7 @@ function rtlGfxPaint( byval target as ASTNODE ptr, _
  	'' byref target as any
  	if( target = NULL ) then
  		target = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
- 		targetmode = INVALID
+ 		targetmode = FB_ARGMODE_BYVAL
  	else
 		if( targetisptr ) then
 			targetmode = FB_ARGMODE_BYVAL
@@ -6865,7 +6887,7 @@ function rtlGfxDraw( byval target as ASTNODE ptr, _
  	'' byref target as any
  	if( target = NULL ) then
  		target = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
- 		targetmode = INVALID
+ 		targetmode = FB_ARGMODE_BYVAL
  	else
 		if( targetisptr ) then
 			targetmode = FB_ARGMODE_BYVAL
@@ -7135,7 +7157,7 @@ function rtlGfxPut( byval target as ASTNODE ptr, _
  	'' byref target as any
  	if( target = NULL ) then
  		target = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
- 		targetmode = INVALID
+ 		targetmode = FB_ARGMODE_BYVAL
  	else
 		if( targetisptr ) then
 			targetmode = FB_ARGMODE_BYVAL
@@ -7250,7 +7272,7 @@ function rtlGfxGet( byval target as ASTNODE ptr, _
  	'' byref target as any
  	if( target = NULL ) then
  		target = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
- 		targetmode = INVALID
+ 		targetmode = FB_ARGMODE_BYVAL
  	else
 		if( targetisptr ) then
 			targetmode = FB_ARGMODE_BYVAL

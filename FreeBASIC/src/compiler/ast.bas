@@ -4738,6 +4738,7 @@ function astNewADDR( byval op as integer, _
 			if( l->var.ofs = 0 ) then
 				return astNewOFFSET( l, sym, elm )
 			end if
+
 		end select
 
 		''
@@ -5060,18 +5061,20 @@ end function
 '':::::
 function astNewASSIGN( byval l as ASTNODE ptr, _
 					   byval r as ASTNODE ptr ) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
     dim as integer dtype
     dim as integer ldtype, rdtype
     dim as integer ldclass, rdclass
-    dim as FBSYMBOL ptr proc
+    dim as FBSYMBOL ptr lsubtype, proc
 
 	function = NULL
 
-	ldtype = l->dtype
-	rdtype = r->dtype
-	ldclass = irGetDataClass( ldtype )
-	rdclass = irGetDataClass( rdtype )
+	ldtype   = l->dtype
+	lsubtype = l->subtype
+	rdtype   = r->dtype
+	ldclass  = irGetDataClass( ldtype )
+	rdclass	 = irGetDataClass( rdtype )
 
     '' strings?
     if( (ldclass = IR_DATACLASS_STRING) or (rdclass = IR_DATACLASS_STRING) ) then
@@ -5135,7 +5138,8 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
             end if
 
             '' fake l's type
-            ldtype = proc->proc.realtype
+            ldtype   = proc->proc.realtype
+            lsubtype = NULL
             l->dtype = ldtype
 
 		'' both are UDT's, do a mem copy..
@@ -5208,7 +5212,7 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
     end if
 
 	'' alloc new node
-	n = hNewNode( AST_NODECLASS_ASSIGN, ldtype )
+	n = hNewNode( AST_NODECLASS_ASSIGN, ldtype, lsubtype )
 
 	if( n = NULL ) then
 		return NULL
@@ -5753,6 +5757,52 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 end function
 
 '':::::
+private function hCheckByRefArg( byval dtype as integer, _
+								 byval subtype as FBSYMBOL ptr, _
+								 byval n as ASTNODE ptr ) as ASTNODE ptr static
+
+    dim as ASTNODE ptr p
+
+	p = n->l
+
+	select case as const p->class
+	'' var, array index or pointer? pass as-is (assuming the type was already checked)
+	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_PTR
+
+	case else
+		'' string? do nothing (ie: functions returning var-len string's)
+		select case as const dtype
+		case FB_SYMBTYPE_STRING, FB_SYMBTYPE_FIXSTR, FB_SYMBTYPE_CHAR
+			return p
+
+		'' UDT? do nothing, just take the addr of
+		case FB_SYMBTYPE_USERDEF
+
+		case else
+			'' scalars: store param to a temp var and pass it
+			p = astNewASSIGN( astNewVAR( symbAddTempVar( dtype, subtype ), _
+									 	 NULL, _
+									 	 0, _
+									 	 dtype, _
+									 	 subtype ), _
+							  p )
+		end select
+
+	end select
+
+	'' take the address of
+	p = astNewADDR( IR_OP_ADDROF, p, astGetSymbol( p ), astGetElm( p ) )
+
+	n->l 		  = p
+	n->dtype 	  = p->dtype
+	n->subtype 	  = p->subtype
+	n->param.mode = FB_ARGMODE_BYVAL
+
+	function = p
+
+end function
+
+'':::::
 private function hCheckParam( byval f as ASTNODE ptr, _
 							  byval n as ASTNODE ptr ) as integer
 
@@ -5773,8 +5823,8 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 	end if
 
 	'' argument
-	amode   	= symbGetArgMode( proc, arg )
-	adtype  	= symbGetType( arg )
+	amode   = symbGetArgMode( proc, arg )
+	adtype  = symbGetType( arg )
 	if( adtype <> INVALID ) then
 		adclass = irGetDataClass( adtype )
 	end if
@@ -5783,11 +5833,11 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 	n->l = astUpdStrConcat( n->l )
 
     '' parameter
-	p = n->l
-	pmode    	= n->param.mode
-	pdtype   	= p->dtype
-	pdclass  	= irGetDataClass( pdtype )
-	pclass	 	= p->class
+	p 		 = n->l
+	pmode    = n->param.mode
+	pdtype   = p->dtype
+	pdclass  = irGetDataClass( pdtype )
+	pclass	 = p->class
 
 	'' by descriptor?
 	if( amode = FB_ARGMODE_BYDESC ) then
@@ -5828,6 +5878,12 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 
 			'' another quirk: BYVAL strings passed to BYREF ANY args..
 			return hStrParamToPtrArg( f, n, pclass, pdtype, pdclass )
+
+		'' byref arg, check if a temp param isn't needed
+		else
+
+			'' use the param type, not the arg type (as it's VOID)
+			p = hCheckByRefArg( pdtype, p->subtype, n )
 
 		end if
 
@@ -6038,9 +6094,15 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 					end if
 
 					p = astNewCONV( INVALID, adtype, symbGetSubtype( arg ), p )
-					n->dtype = p->dtype
-					n->l     = p
+					n->dtype   = adtype
+					n->subtype = symbGetSubtype( arg )
+					n->l       = p
 
+				end if
+
+				'' byref arg? check if a temp param isn't needed
+				if( amode = FB_ARGMODE_BYREF ) then
+					p = hCheckByRefArg( adtype, symbGetSubtype( arg ), n )
 				end if
 
 				'' pointer checking

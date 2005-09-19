@@ -1,12 +1,18 @@
 
+[ ] add the non-ms bitfield's option
+    - GCC will reuse the pad of the preview non-bitfield, so a
+      "foo as short" followed by "bar:1 as integer" allocate
+      "bar" at "foo:17"
+    - w/o that, GTK is screwed up in anything but Windows
+    - make it default in anything but Win32 *or* add a #PRAGMA to change
+      cmd-line options and add "#PRAGMA msbitfields" to the Gtk headers #if WIN32
+
 [ ] add the cast() intrinsic function - CAST( type, expression ), works like in C,
     so macros (and maybe function templates one day) can be better designed
 
 [ ] add support for functions returning references (reuse "BYREF"), so those can
-    be automatically dereferenced AND deleted
-    - be sure no hidden arg is passed in C++, we never know..
-    - change STRING, UDT (above 8 bytes) and WSTRING (no ptr) results to BYREF so
-      they can be handled automatically
+    be automatically dereferenced - but *NOT* deleted, only non-local data can
+    be referenced in C++
 
 [ ] SCOPE..END SCOPE:
     - vars should be reused (that's is, the stack "rewinded") because it's only
