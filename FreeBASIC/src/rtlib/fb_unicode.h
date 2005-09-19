@@ -3,13 +3,15 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <wchar.h>
-#include <wctype.h>
 
 #if defined(TARGET_DOS)
 #include "dos/fb_unicode.h"
 #elif defined(TARGET_XBOX)
 #include "xbox/fb_unicode.h"
+#else
+#include <wchar.h>
+#include <wctype.h>
+#define _LC(c) L ## c
 #endif
 
 #define FB_WCHAR wchar_t

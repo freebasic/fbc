@@ -40,7 +40,7 @@ static FB_WCHAR *hOCT ( unsigned int num, int len )
 #ifdef TARGET_WIN32
 		_itow( num, dst, 8 );
 #else
-		swprintf( dst, L"%o", num );
+		swprintf( dst, _LC("%o"), num );
 #endif
 	}
 

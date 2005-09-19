@@ -40,7 +40,7 @@ FBCALL FB_WCHAR *fb_wStrOct_l ( unsigned long long num )
 #ifdef TARGET_WIN32
 		_i64tow( num, dst, 8 );
 #else
-		swprintf( dst->data, L"%llo", num );
+		swprintf( dst, _LC("%llo"), num );
 #endif
 	}
 

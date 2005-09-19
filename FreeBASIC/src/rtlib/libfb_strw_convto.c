@@ -40,7 +40,7 @@ FBCALL FB_WCHAR *fb_wStrFromInt ( int num )
 #ifdef TARGET_WIN32
 		_itow( num, dst, 10 );
 #else
-		swprintf( dst, L"%d", num );
+		swprintf( dst, _LC("%d"), num );
 #endif
 	}
 
@@ -60,7 +60,7 @@ FBCALL FB_WCHAR *fb_wStrFromUInt ( unsigned int num )
 #ifdef TARGET_WIN32
 		_ultow( num, dst, 10 );
 #else
-		swprintf( dst, L"%u", num );
+		swprintf( dst, _LC("%u"), num );
 #endif
 	}
 

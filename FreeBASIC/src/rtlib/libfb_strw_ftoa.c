@@ -42,12 +42,12 @@ FB_WCHAR *fb_wStrFromFloatEx( double val, FB_WCHAR *buffer, int digits, int mask
 	/* no exponent? (if exp is too big, that won't matter) */
 	if( (mask & FB_F2A_NOEXP) > 0 )
 	{
-		swprintf( fmtstr, L"%%.%df", digits );
+		swprintf( fmtstr, _LC("%%.%df"), digits );
 		swprintf( p, fmtstr, val );
 	}
 	else
 	{
-		swprintf( fmtstr, L"%%.%dg", digits );
+		swprintf( fmtstr, _LC("%%.%dg"), digits );
 		swprintf( p, fmtstr, val );
 	}
 
@@ -59,25 +59,25 @@ FB_WCHAR *fb_wStrFromFloatEx( double val, FB_WCHAR *buffer, int digits, int mask
 		{
 			/* skip the zeros at end */
 			r = fb_wstr_OffsetOf( p, len - 1 );
-			while( fb_wstr_GetCharRev( &r ) == L'0' )
+			while( fb_wstr_GetCharRev( &r ) == _LC('0') )
 			{
-				fb_wstr_SetCharAt( r, 1, L'\0' );
+				fb_wstr_SetCharAt( r, 1, _LC('\0') );
 				--len;
 			}
 		}
 
 		/* skip the dot at end if any */
 		if( len > 0 )
-			if( fb_wstr_GetCharAt( p, len-1 ) == L'.' )
-				fb_wstr_SetCharAt( p, len-1, L'\0' );
+			if( fb_wstr_GetCharAt( p, len-1 ) == _LC('.') )
+				fb_wstr_SetCharAt( p, len-1, _LC('\0') );
 	}
 
 	/* */
 	if( (mask & FB_F2A_ADDBLANK) > 0 )
 	{
-		if( fb_wstr_GetCharAt( p, 0 ) != L'-' )
+		if( fb_wstr_GetCharAt( p, 0 ) != _LC('-') )
 		{
-			fb_wstr_SetCharAt( buffer, 0, L' ' );
+			fb_wstr_SetCharAt( buffer, 0, _LC(' ') );
 			return &buffer[0];
 		}
 		else

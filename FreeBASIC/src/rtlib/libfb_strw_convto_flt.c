@@ -38,15 +38,15 @@ FBCALL FB_WCHAR *fb_wStrFromFloat ( float num )
 	if( dst != NULL )
     {
 		/* convert */
-		swprintf( dst, L"%.8g", num );
+		swprintf( dst, _LC("%.8g"), num );
 
 		/* skip the dot at end if any */
 		len = fb_wstr_Len( dst );
 		if( len > 0 )
 		{
 			d = fb_wstr_OffsetOf( dst, len-1 );
-			if( fb_wstr_GetCharAt( d, 0 ) == L'.' )
-				fb_wstr_SetCharAt( d, 0, L'\0' );
+			if( fb_wstr_GetCharAt( d, 0 ) == _LC('.') )
+				fb_wstr_SetCharAt( d, 0, _LC('\0') );
         }
     }
 
@@ -64,15 +64,15 @@ FBCALL FB_WCHAR *fb_wStrFromDouble ( double num )
 	if( dst != NULL )
 	{
 		/* convert */
-		swprintf( dst, L"%.16g", num);
+		swprintf( dst, _LC("%.16g"), num);
 
 		/* skip the dot at end if any */
 		len = fb_wstr_Len( dst );
 		if( len > 0 )
 		{
 			d = fb_wstr_OffsetOf( dst, len-1 );
-			if( fb_wstr_GetCharAt( d, 0 ) == L'.' )
-				fb_wstr_SetCharAt( d, 0, L'\0' );
+			if( fb_wstr_GetCharAt( d, 0 ) == _LC('.') )
+				fb_wstr_SetCharAt( d, 0, _LC('\0') );
         }
 	}
 
