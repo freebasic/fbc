@@ -260,6 +260,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
         if( ScrollWasOff ) {
             ScrollWasOff = FALSE;
             ++info.dwCursorPosition.Y;
+            info.dwCursorPosition.X = srView.Left;
             fb_hConsoleCheckScroll( fb_out_handle,
                                     &srView,
                                     &info.dwCursorPosition );
