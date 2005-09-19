@@ -52,6 +52,7 @@ Version 0.15 Beta:
 - you can OR the &h4 value (GFX_NO_SWITCH constant from fbgfx.bi) to the forth SCREEN parameter (flags) to prevent
   user from switching fullscreen/windowed via maximize button or ALT-Enter (lillo)
 - OPEN COM for Win32 (mjs)
+- QB-compatible POS(n) is now allowed too (mjs)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)
@@ -88,10 +89,10 @@ Version 0.15 Beta:
 - PASCAL functions couldn't be overloaded (v1c)
 - Fixed the TAB and SPC when used with OPEN "CON" and files (mjs)
 - the precision was one digit too wide when PRINT'ing single's and double's, causing some artifacts (v1c)
-- QB-compatible POS(n) is now allowed too (mjs)
 - Calling an overloaded function with 0 arguments (mjs)
 - Hopefully fixed all output issues on Win32 (mjs)
 - LOCATE will now throw an error if it gets invalid arguments(mjs)
+- byref args with optional values were reusing the temp var in the case of strings and floating-point types (v1c)
 
 
 Version 0.14 Beta:
