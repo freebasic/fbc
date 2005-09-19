@@ -30,8 +30,8 @@
 
 
 MODE *fb_mode = NULL;
-void *(*fb_hMemCpy)(void *dest, const void *src, size_t size) = NULL;
-void *(*fb_hMemSet)(void *dest, int value, size_t size) = NULL;
+void *(*fb_hMemCpy)(void *dest, const void *src, size_t size) = memcpy;
+void *(*fb_hMemSet)(void *dest, int value, size_t size) = memset;
 void (*fb_hPutPixel)(int x, int y, unsigned int color) = NULL;
 unsigned int (*fb_hGetPixel)(int x, int y) = NULL;
 void *(*fb_hPixelCpy)(void *dest, const void *src, size_t size) = NULL;

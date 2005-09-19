@@ -93,6 +93,7 @@ Version 0.15 Beta:
 - Hopefully fixed all output issues on Win32 (mjs)
 - LOCATE will now throw an error if it gets invalid arguments(mjs)
 - byref args with optional values were reusing the temp var in the case of strings and floating-point types (v1c)
+- SIGSEGV happened when GETJOYSTICK was used in CONSOLE mode (mjs)
 
 
 Version 0.14 Beta:
