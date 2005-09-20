@@ -27,10 +27,6 @@
 #include <process.h>
 #include "fb.h"
 
-#ifdef TARGET_CYGWIN
-#define _execl execl
-#endif
-
 /*:::::*/
 FBCALL int fb_Run ( FBSTRING *program )
 {

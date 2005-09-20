@@ -72,6 +72,12 @@ extern fb_FnProcessMouseEvent MouseEventHook;
 extern int ConsoleSetByUser;
 extern int ScrollWasOff;
 
+#define FB_CON_CORRECT_POSITION() \
+    do { \
+        if( ScrollWasOff ) \
+            fb_ConsolePrintBufferEx( NULL, 0, FB_PRINT_RESERVED_1 ); \
+    } while (0)
+
 FBCALL int fb_hExec                     ( struct _FBSTRING *program,
                                           struct _FBSTRING *args,
                                           int do_wait );

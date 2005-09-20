@@ -218,8 +218,14 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
     int win_left, win_top, win_cols, win_rows;
     int view_top, view_bottom;
 
-    if( len==0 )
-        return;
+    /* Do we want to correct the Win32 console cursor position? */
+    if( (mask & FB_PRINT_RESERVED_1)==0 ) {
+        /* No, we can check for the length to avoid unnecessary stuff ... */
+        if( len==0 )
+            return;
+    }
+
+    FB_LOCK();
 
     if( FB_CONSOLE_WINDOW_EMPTY() ) {
         /* output was redirected! */
@@ -234,6 +240,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
             pachText += dwBytesWritten;
             len -= dwBytesWritten;
         }
+        FB_UNLOCK();
         return;
     }
 
@@ -287,6 +294,8 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 
     fb_hUpdateConsoleWindow( );
     SetConsoleMode( fb_out_handle, mode );
+
+    FB_UNLOCK();
 }
 
 /*:::::*/

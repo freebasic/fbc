@@ -62,15 +62,6 @@ void DoMove( FB_FILE *handle, int *x, int *y, int dx, int dy, int cols, int rows
     }
 }
 
-#else
-
-static char *fb_hDevFileReadStringWrapper( char *buffer,
-                                           size_t count,
-                                           FILE *fp )
-{
-    return fgets( buffer, count, fp );
-}
-
 #endif
 
 int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
@@ -250,28 +241,8 @@ int fb_DevScrnReadLine( struct _FB_FILE *handle, FBSTRING *dst )
 
 #else
 
-    int old_x, old_y, rows, cols;
-    size_t len;
-    int res;
+    return fb_LineInput( NULL, dst, -1, FALSE, FALSE, TRUE );
 
-    fb_GetSize( &cols, &rows );
-
-    fb_GetXY( &old_x, NULL );
-    res = fb_DevFileReadLineDumb( stdin, dst, fb_hDevFileReadStringWrapper );
-    fb_GetXY( NULL, &old_y );
-
-    len = FB_STRSIZE(dst);
-
-    DBG_ASSERT(handle->width!=0);
-
-    old_x += len - 1;
-    old_x %= handle->width;
-    old_x += 1;
-    old_y -= 1;
-
-    fb_Locate( old_y, old_x, -1 );
-
-    return res;
 #endif
 }
 

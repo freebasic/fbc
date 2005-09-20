@@ -90,6 +90,8 @@ FBCALL int fb_hExec ( FBSTRING *program, FBSTRING *args, int do_wait )
 
     FB_STRUNLOCK();
 
+    FB_CON_CORRECT_POSITION();
+
 	{
 #ifdef TARGET_WIN32
         res = _spawnl( (do_wait ? _P_WAIT : _P_NOWAIT), buffer, buffer, arguments, NULL );
@@ -111,17 +113,21 @@ FBCALL int fb_hExec ( FBSTRING *program, FBSTRING *args, int do_wait )
         {
             res = -1;
         } else {
-            DWORD dwExitCode;
             /* Release main thread handle - we're not interested in it */
             CloseHandle( ProcessInfo.hThread );
-            WaitForSingleObject( ProcessInfo.hProcess,
-                                 INFINITE );
-            if( !GetExitCodeProcess( ProcessInfo.hProcess, &dwExitCode ) ) {
-                res = -1;
+            if( do_wait ) {
+                DWORD dwExitCode;
+                WaitForSingleObject( ProcessInfo.hProcess,
+                                     INFINITE );
+                if( !GetExitCodeProcess( ProcessInfo.hProcess, &dwExitCode ) ) {
+                    res = -1;
+                } else {
+                    res = (int) dwExitCode;
+                }
+                CloseHandle( ProcessInfo.hProcess );
             } else {
-                res = (int) dwExitCode;
+                res = (int) ProcessInfo.hProcess;
             }
-            CloseHandle( ProcessInfo.hProcess );
         }
 #endif
 	}
