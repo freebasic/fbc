@@ -27,8 +27,8 @@ declare function __p___argc cdecl alias "__p___argc" () as integer ptr
 declare function __p___argv cdecl alias "__p___argv" () as byte ptr ptr ptr
 declare function __p___wargv cdecl alias "__p___wargv" () as wchar_t ptr ptr ptr
 extern import _imp____mbcur_max alias "_imp____mbcur_max" as integer ptr
-declare function _errno cdecl alias "_errno" () as integer ptr
 declare function __doserrno cdecl alias "__doserrno" () as integer ptr
+#define	_doserrno (*__doserrno)
 declare function __p__environ cdecl alias "__p__environ" () as byte ptr ptr ptr
 declare function __p__wenviron cdecl alias "__p__wenviron" () as wchar_t ptr ptr ptr
 extern import _imp___sys_nerr alias "_imp___sys_nerr" as integer ptr

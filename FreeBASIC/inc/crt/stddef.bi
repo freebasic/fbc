@@ -9,19 +9,24 @@
 #ifndef __stddef_bi__
 #define __stddef_bi__
 
-#ifndef _SIZE_T_
-#define _SIZE_T_
+#ifndef size_t
 type size_t as uinteger
 #endif
 
-#ifndef _WCHAR_T_
-#define _WCHAR_T_
+#ifndef wchar_t
+# ifdef __FB_LINUX__
+type wchar_t as uinteger
+# else
 type wchar_t as ushort
+# endif
 #endif
 
-#ifndef _WINT_T_
-#define _WINT_T_
-type wint_t as ushort
+#ifndef wint_t
+type wint_t as wchar_t
+#endif
+
+#ifndef NULL
+#define NULL 0
 #endif
 
 #endif
