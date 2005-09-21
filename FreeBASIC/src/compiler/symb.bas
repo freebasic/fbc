@@ -2835,6 +2835,12 @@ function symbGetUDTElmOffset( elm as FBSYMBOL ptr, _
     			return ofs
     		end if
 
+			'' array and no index?
+			if( symbGetArrayDimensions( e ) <> 0 ) then
+				hReportError( FB_ERRMSG_EXPECTEDINDEX )
+				return -1
+			end if
+
     		res = symbGetUDTElmOffset( elm, _
     								   typ, subtype, _
     								   @ename[p] )		'' mid$( fields, p+1 )
@@ -2903,6 +2909,12 @@ function symbLookupUDTElm( byval symbol as zstring ptr, _
     if( s = NULL ) then
     	exit function
     end if
+
+	'' array and no index?
+	if( symbGetArrayDimensions( s ) <> 0 ) then
+		hReportError( FB_ERRMSG_EXPECTEDINDEX )
+		exit function
+	end if
 
     ''
     elm	    = NULL
