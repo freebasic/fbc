@@ -444,6 +444,7 @@ function lexPreProcessor( ) as integer
 
 	function = FALSE
 
+    '' note: when adding any new PP symbol, update ppSkip() too
     select case as const lexGetToken( )
 
     '' DEFINE ID (!WHITESPC '(' ID (',' ID)* ')')? LITERAL+
@@ -503,7 +504,7 @@ function lexPreProcessor( ) as integer
 
 	'' LIBPATH LIT_STR
 	case FB_TK_LIBPATH
-		lexSkipToken
+		lexSkipToken( )
 		function = ppLibPath( )
 
 	case else
@@ -856,6 +857,13 @@ private function ppSkip as integer
 				else
         			iflevel -= 1
         		end if
+
+    		case FB_TK_DEFINE, FB_TK_UNDEF, FB_TK_PRINT, FB_TK_LPRINT, _
+    			 FB_TK_ERROR, FB_TK_INCLUDE, FB_TK_INCLIB, FB_TK_LIBPATH
+
+        	case else
+        		hReportError( FB_ERRMSG_SYNTAXERROR )
+        		exit function
         	end select
 
        	case FB_TK_EOF
