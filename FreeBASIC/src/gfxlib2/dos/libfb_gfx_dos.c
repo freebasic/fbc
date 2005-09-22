@@ -44,8 +44,10 @@ const GFXDRIVER *fb_gfx_driver_list[] = {
 
 fb_dos_t fb_dos;
 
+#if 0
 /* special externs for locking code */
 extern void fb_hPostKey_End(void);
+#endif
 
 #define MOUSE_WIDTH     12
 #define MOUSE_HEIGHT    21
@@ -78,6 +80,7 @@ static unsigned char mouse_color[3] = {0, 15, 0};
 
 static unsigned char mouse_save[MOUSE_WIDTH * MOUSE_HEIGHT * 3 + 4];
 
+#if 0
 #define KB_EXTENDED (255 << 8)
 
 #define X KB_EXTENDED
@@ -173,6 +176,7 @@ static unsigned short kb_scan_to_ascii[128][3] = {
 	{X|134, X|138, X|138}	/* F12 */
 };
 #undef X
+#endif
 
 static void fb_dos_save_video_mode(void);
 static void fb_dos_restore_video_mode(void);
@@ -205,7 +209,7 @@ static void _unlock_mem(unsigned int address, size_t size)
 #define unlock_array(array)    unlock_mem( (array), sizeof(array) )
 #define unlock_proc(proc)      unlock_mem( proc, end_##proc )
 
-
+#if 0
 /*:::::*/
 static void kb_handler(void)
 /* keyboard interrupt handler - 
@@ -245,16 +249,23 @@ static void kb_handler(void)
 
 static void end_kb_handler(void)
 { /* this function exists to get length of kb_handler() code */ }
-				
+#endif
 
 /*:::::*/
 static void fb_dos_kb_init(void)
 {
+#if 0
 	_go32_dpmi_get_protected_mode_interrupt_vector(0x9, &fb_dos.old_kb_int);
 	fb_dos.new_kb_int.pm_offset = (unsigned int)kb_handler;
 	fb_dos.new_kb_int.pm_selector = _go32_my_cs();
 	_go32_dpmi_allocate_iret_wrapper(&fb_dos.new_kb_int);
-	_go32_dpmi_set_protected_mode_interrupt_vector(0x9, &fb_dos.new_kb_int);
+    _go32_dpmi_set_protected_mode_interrupt_vector(0x9, &fb_dos.new_kb_int);
+#else
+    fb_hooks.inkeyproc  = NULL;
+    fb_hooks.getkeyproc = NULL;
+    fb_hooks.keyhitproc = NULL;
+    fb_hooks.multikeyproc = NULL;
+#endif
 	return;
 }
 
@@ -262,7 +273,9 @@ static void fb_dos_kb_init(void)
 /*:::::*/
 static void fb_dos_kb_exit(void)
 {
-	_go32_dpmi_set_protected_mode_interrupt_vector(0x9, &fb_dos.old_kb_int);
+#if 0
+    _go32_dpmi_set_protected_mode_interrupt_vector(0x9, &fb_dos.old_kb_int);
+#endif
 }
 
 
@@ -631,15 +644,21 @@ void fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int fla
 	
 	lock_array(fb_dos_mouse_image);
 	lock_array(mouse_color);
-	lock_array(mouse_save);
-	lock_array(kb_scan_to_ascii);
-	
-	lock_proc(kb_handler);
+    lock_array(mouse_save);
+#if 0
+    lock_array(kb_scan_to_ascii);
+#endif
+
+#if 0
+    lock_proc(kb_handler);
+#endif
 	lock_proc(fb_dos_timer_handler);
 	lock_proc(fb_dos_update_mouse);
 	lock_proc(fb_dos_draw_mouse_8);
-	lock_proc(fb_dos_undraw_mouse_8);
-	lock_mem(fb_hPostKey, (unsigned)fb_hPostKey_End - (unsigned)fb_hPostKey);
+    lock_proc(fb_dos_undraw_mouse_8);
+#if 0
+    lock_mem(fb_hPostKey, (unsigned)fb_hPostKey_End - (unsigned)fb_hPostKey);
+#endif
 	lock_mem(fb_dos.update, fb_dos.update_len);
 	
 	/* TODO: lock fb_hMemCpy and fb_hMemSet (the actual code and the pointers) */
@@ -655,8 +674,8 @@ void fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int fla
 			fb_dos.undraw_mouse = fb_dos_undraw_mouse_8;
 			break;
 	}
-	
-	fb_dos_kb_init();
+
+    fb_dos_kb_init();
 	fb_dos_mouse_init();
 	fb_dos_timer_init();
 	fb_dos_timer_set_rate(refresh_rate);
@@ -695,15 +714,21 @@ void fb_dos_exit(void)
 	
 	unlock_array(fb_dos_mouse_image);
 	unlock_array(mouse_color);
-	unlock_array(mouse_save);
-	unlock_array(kb_scan_to_ascii);
-	
-	unlock_proc(kb_handler);
+    unlock_array(mouse_save);
+#if 0
+    unlock_array(kb_scan_to_ascii);
+#endif
+
+#if 0
+    unlock_proc(kb_handler);
+#endif
 	unlock_proc(fb_dos_timer_handler);
 	unlock_proc(fb_dos_update_mouse);
 	unlock_proc(fb_dos_draw_mouse_8);
-	unlock_proc(fb_dos_undraw_mouse_8);
-	unlock_mem(fb_hPostKey, (unsigned)fb_hPostKey_End - (unsigned)fb_hPostKey);
+    unlock_proc(fb_dos_undraw_mouse_8);
+#if 0
+    unlock_mem(fb_hPostKey, (unsigned)fb_hPostKey_End - (unsigned)fb_hPostKey);
+#endif
 	unlock_mem(fb_dos.update, fb_dos.update_len);
 	
 	fb_dos.inited = FALSE;

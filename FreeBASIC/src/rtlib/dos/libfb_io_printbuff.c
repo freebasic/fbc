@@ -25,17 +25,143 @@
  */
 
 #include "fb.h"
-#include <conio.h>
+#include "fb_con.h"
+#include <unistd.h>
 #include <string.h>
 #include <malloc.h>
 #include <sys/farptr.h>
 #include <go32.h>
 #include <pc.h>
 
-
-#define TEXT_ADDR	ScreenPrimary
-
 void (*fb_ConsolePrintBufferProc) (const void *buffer, size_t len, int mask);
+
+typedef struct _fb_PrintInfo {
+    fb_Rect rWindow;
+    FILE   *hOutput;
+    int     fViewSet;
+} fb_PrintInfo;
+
+static
+void fb_hHookConScroll(struct _fb_ConHooks *handle,
+                       int x1,
+                       int y1,
+                       int x2,
+                       int y2,
+                       int rows)
+{
+    fb_ConsoleScroll_BIOS( x1, y1, x2, y2, rows );
+}
+
+static
+void fb_hHookConLocate( struct _fb_ConHooks *handle )
+{
+}
+
+static
+int  fb_hHookConWrite (struct _fb_ConHooks *handle,
+                       const void *buffer,
+                       size_t length,
+                       size_t *written )
+{
+    const char *pachText = (const char *)buffer;
+    size_t write_count = length;
+    __dpmi_regs regs;
+    unsigned char uchAttr = (unsigned char) fb_ConsoleGetColorAtt();
+    int tmp_x = handle->Coord.X;
+    int tmp_y = handle->Coord.Y;
+
+    while( length-- ) {
+        unsigned short usPos = (unsigned short) (tmp_y << 8) + tmp_x++;
+        _movedataw( _my_ds(), (int) &usPos, _dos_ds, 0x450, 1 );
+        regs.h.ah = 0x09;
+        regs.h.al = *pachText++;
+        regs.h.bh = 0x00;
+        regs.h.bl = uchAttr;
+        regs.x.cx = 1;
+        __dpmi_int(0x10, &regs);
+    }
+
+    if( written )
+        *written = write_count;
+
+    return TRUE;
+}
+
+/*:::::*/
+void fb_ConsolePrintBufferEx_BIOS( const void *buffer, size_t len, int mask )
+{
+    const char *pachText = (const char *) buffer;
+    int win_left, win_top, win_cols, win_rows;
+    int view_top, view_bottom;
+    fb_PrintInfo info;
+    fb_ConHooks hooks;
+
+    /* Do we want to correct the Win32 console cursor position? */
+    if( (mask & FB_PRINT_FORCE_ADJUST)==0 ) {
+        /* No, we can check for the length to avoid unnecessary stuff ... */
+        if( len==0 )
+            return;
+    }
+
+    FB_LOCK();
+
+    fb_ConsoleGetSize( &win_cols, &win_rows );
+    fb_ConsoleGetView( &view_top, &view_bottom );
+    win_left = win_top = 0;
+
+    hooks.Opaque        = &info;
+    hooks.Scroll        = fb_hHookConScroll;
+    hooks.Locate        = fb_hHookConLocate;
+    hooks.Write         = fb_hHookConWrite ;
+    hooks.Border.Left   = win_left;
+    hooks.Border.Top    = win_top + view_top - 1;
+    hooks.Border.Right  = win_left + win_cols - 1;
+    hooks.Border.Bottom = win_top + view_bottom - 1;
+
+    info.hOutput        = stdout;
+    info.rWindow.Left   = win_left;
+    info.rWindow.Top    = win_top;
+    info.rWindow.Right  = win_left + win_cols - 1;
+    info.rWindow.Bottom = win_top + win_rows - 1;
+    info.fViewSet       = hooks.Border.Top!=info.rWindow.Top
+        || hooks.Border.Bottom!=info.rWindow.Bottom;
+
+    {
+        fb_ConsoleGetXY_BIOS( &hooks.Coord.X, &hooks.Coord.Y );
+
+        if( ScrollWasOff ) {
+            ScrollWasOff = FALSE;
+            ++hooks.Coord.Y;
+            hooks.Coord.X = hooks.Border.Left;
+            fb_hConCheckScroll( &hooks );
+        }
+
+        fb_ConPrintTTY( &hooks,
+                        pachText,
+                        len,
+                        TRUE );
+
+        if( hooks.Coord.X != hooks.Border.Left
+            || hooks.Coord.Y != (hooks.Border.Bottom+1) )
+        {
+            fb_hConCheckScroll( &hooks );
+        } else {
+            ScrollWasOff = TRUE;
+            hooks.Coord.X = hooks.Border.Right;
+            hooks.Coord.Y = hooks.Border.Bottom;
+        }
+        fb_ConsoleLocate_BIOS( hooks.Coord.Y, hooks.Coord.X, -1 );
+    }
+
+    FB_UNLOCK();
+}
+
+/*:::::*/
+void fb_ConsolePrintBufferEx_STDIO(const void *buffer, size_t len, int mask)
+{
+    fwrite(buffer, len, 1, stdout);
+    fflush(stdout);
+}
 
 /*:::::*/
 void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
@@ -48,98 +174,3 @@ void fb_ConsolePrintBuffer( const char *buffer, int mask )
 {
 	fb_ConsolePrintBufferProc(buffer, strlen(buffer), mask);
 }
-
-/*:::::*/
-static const char *fb_hConsolePrintLine( const char *pLast, size_t len )
-{
-    const char *pFoundLF = (const char *) memchr( pLast, '\n', len );
-    if (pFoundLF!=NULL) {
-        int tmp_len = pFoundLF - pLast;
-        int has_cr = ((tmp_len > 0) ? (*(pFoundLF-1)=='\r') : FALSE);
-        char *tmp_buffer = alloca(tmp_len + 3);
-        memcpy(tmp_buffer, pLast, tmp_len);
-        if( !has_cr ) {
-            memcpy(tmp_buffer + tmp_len, "\r\n", 3);
-        } else {
-            memcpy(tmp_buffer + tmp_len, "\n", 2);
-        }
-        cputs( tmp_buffer );
-    }
-    return pFoundLF;
-}
-
-/*:::::*/
-void fb_ConsolePrintBufferConioEx(const void * buffer, size_t len, int mask)
-{
-	int col, row;
-	int toprow, botrow;
-	int cols, rows;
-	int no_scroll = FALSE;
-    unsigned short end_char = 0;
-    const char *pachText = (const char *) buffer;
-    const char *pFoundLF, *pLast = pachText;
-
-	fb_ConsoleGetSize( &cols, &rows );
-	fb_ConsoleGetView( &toprow, &botrow );
-	fb_ConsoleGetXY( &col, &row );
-
-	/* if no newline and row at bottom and col+string at right, disable scrolling */
-	if( (mask & FB_PRINT_NEWLINE) == 0 )
-		if( row == botrow )
-			if( col + len - 1 == cols )
-			{
-                end_char = ((unsigned char *)buffer)[len - 1];
-                if (end_char >= 32 ) {
-                    /* WARNING: This might destroy a constant string */
-                    ((unsigned char *)buffer)[len - 1] = '\0';
-                    no_scroll = TRUE;
-                    --len;
-                }
-			}
-
-    /* s/o means that we can only use cputs ... too bad ... so we've
-     * to scan for LF and (optionally) insert a CR ourselves */
-    pFoundLF = fb_hConsolePrintLine( pLast, len );
-    while ( pFoundLF!=NULL ) {
-        size_t tmp_len = pFoundLF - pLast;
-        len -= tmp_len;
-        pLast = pFoundLF + 1;
-        pFoundLF = fb_hConsolePrintLine( pLast, len );
-    }
-
-    /* Print the strings remainder */
-    cputs( pLast );
-
-	if (no_scroll) {
-		_farpokew(	_dos_ds,
-                    TEXT_ADDR + (((wherey() + toprow - 2) * ScreenCols() + wherex() - 1) << 1),
-                    (((unsigned short)ScreenAttrib)<< 8) + end_char );
-        /* Restore the previously destroyed constant string */
-        ((unsigned char *)buffer)[len] = end_char;
-	}
-
-	if (mask & FB_PRINT_NEWLINE) {
-		gotoxy(1, wherey()); /* carriage return */
-	}
-
-}
-
-/*:::::*/
-void fb_ConsolePrintBufferConio(const char * buffer, int mask)
-{
-    fb_ConsolePrintBufferConioEx(buffer, strlen(buffer), mask);
-}
-
-/*:::::*/
-void fb_ConsolePrintBufferPrintfEx(const void *buffer, size_t len, int mask)
-{
-    fwrite(buffer, len, 1, stdout);
-    fflush(stdout);
-}
-
-/*:::::*/
-void fb_ConsolePrintBufferPrintf(const char *buffer, int mask)
-{
-    fb_ConsolePrintBufferPrintfEx(buffer, strlen(buffer), mask);
-}
-

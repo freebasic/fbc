@@ -39,6 +39,17 @@
 # include <conio.h>
 #endif
 
+typedef struct {
+    unsigned long edi;
+    unsigned long esi;
+    unsigned long ebp;
+    unsigned long res;
+    unsigned long ebx;
+    unsigned long edx;
+    unsigned long ecx;
+    unsigned long eax;
+} __dpmi_regs_d;
+
 typedef struct _FB_DOS_TXTMODE {
 	int w;
 	int h;
@@ -48,6 +59,15 @@ typedef struct _FB_DOS_TXTMODE {
 extern FB_DOS_TXTMODE fb_dos_txtmode;
 
 typedef int (*FnIntHandler)(unsigned irq_number);
+
+extern int ScrollWasOff;
+
+int fb_ConsoleLocate_BIOS( int row, int col, int cursor );
+void fb_ConsoleGetXY_BIOS( int *col, int *row );
+int fb_ConsoleReadXY_BIOS( int col, int row, int colorflag );
+
+void fb_ConsoleScroll_BIOS( int x1, int y1, int x2, int y2, int nrows );
+void fb_ConsoleScrollEx( int x1, int y1, int x2, int y2, int nrows );
 
 int fb_isr_set( unsigned irq_number,
                 FnIntHandler pfnIntHandler,

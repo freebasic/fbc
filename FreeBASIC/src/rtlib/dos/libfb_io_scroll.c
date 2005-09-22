@@ -21,26 +21,66 @@
  * io_scroll.c -- console scrolling for when VIEW is used for DOS
  *
  * chng: jan/2005 written [DrV]
+ *       sep/2005 heavily enhanced to do *real* scrolling [mjs]
  *
  */
 
 #include "fb.h"
+#include <dpmi.h>
 
 /*:::::*/
+void fb_ConsoleScroll_BIOS( int x1, int y1, int x2, int y2, int nrows )
+{
+    __dpmi_regs regs;
+	
+    regs.h.bl = 0;
+    regs.h.bh = (unsigned char) fb_ConsoleGetColorAtt();
+    regs.h.cl = (unsigned char) x1;
+    regs.h.ch = (unsigned char) y1;
+    regs.h.dl = (unsigned char) x2;
+    regs.h.dh = (unsigned char) y2;
+
+    if( nrows >= 0 ) {
+        regs.x.ax = (unsigned short) (0x0600 + nrows);
+    } else {
+        regs.x.ax = (unsigned short) (0x0700 + -nrows);
+    }
+    __dpmi_int(0x10, &regs);
+}
+
+void fb_ConsoleScrollEx( int x1, int y1, int x2, int y2, int nrows )
+{
+    int rows;
+
+	if( nrows == 0 )
+        return;
+
+	fb_ConsoleGetSize( NULL, &rows );
+
+    if( nrows <= -rows || nrows >= rows )
+        nrows = 0;
+	
+    fb_ConsoleScroll_BIOS( x1-1, y1-1, x2-1, y2-1, nrows );
+
+    if( nrows > 0 ) {
+        fb_ConsoleLocate_BIOS( y2 - 1 - nrows, x1, -1 );
+    } else if( nrows < 0 ) {
+        fb_ConsoleLocate_BIOS( y1 - 1 - nrows, x1, -1 );
+    } else {
+        fb_ConsoleLocate_BIOS( y1 - 1, x1 - 1, -1 );
+    }
+}
+
 void fb_ConsoleScroll( int nrows )
 {
 	int toprow, botrow;
-	int cols, rows;
-	
-	if( nrows <= 0 )
-		return;
-	
-	fb_ConsoleGetSize( &cols, &rows );
-	fb_ConsoleGetView( &toprow, &botrow );
-	
-	/* todo - move rect from (0, cols-1)-(toprow-1 + nrows, botrow-1) to (0, toprow-1) */
-	
-	fb_ConsoleLocate( botrow - (nrows-1), -1, -1 );
+    int cols;
 
+	if( nrows == 0 )
+        return;
+
+	fb_ConsoleGetSize( &cols, NULL );
+    fb_ConsoleGetView( &toprow, &botrow );
+
+    return fb_ConsoleScrollEx( 1, toprow, cols, botrow, nrows );
 }
-

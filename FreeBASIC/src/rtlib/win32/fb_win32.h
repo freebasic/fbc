@@ -75,7 +75,7 @@ extern int ScrollWasOff;
 #define FB_CON_CORRECT_POSITION() \
     do { \
         if( ScrollWasOff ) \
-            fb_ConsolePrintBufferEx( NULL, 0, FB_PRINT_RESERVED_1 ); \
+            fb_ConsolePrintBufferEx( NULL, 0, FB_PRINT_FORCE_ADJUST ); \
     } while (0)
 
 FBCALL int fb_hExec                     ( struct _FBSTRING *program,

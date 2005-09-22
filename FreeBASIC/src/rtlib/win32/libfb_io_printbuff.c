@@ -22,204 +22,111 @@
  *
  * chng: oct/2004 written [v1ctor]
  *       nov/2004 fixed scrolling problem if printing at Bottom/Right w/o a newline [v1ctor]
+ *       sep/2005 re-implemented all printing stuff [mjs]
  *
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "fb.h"
+#include "fb_con.h"
 
-#define OUTPUT_BUFFER_SIZE 128
-
-static __inline__
-int fb_hConsoleCheckScroll( HANDLE hConsoleOutput,
-                            SMALL_RECT *pBorder,
-                            COORD *pCoord )
-{
-    if( pBorder->Bottom!=-1 ) {
-        if( pCoord->Y > pBorder->Bottom ) {
-            int nRows = pCoord->Y - pBorder->Bottom;
-            fb_ConsoleScrollRawEx( hConsoleOutput,
-                                   pBorder->Left,
-                                   pBorder->Top,
-                                   pBorder->Right,
-                                   pBorder->Bottom,
-                                   nRows );
-            pCoord->Y = pBorder->Bottom;
-            return TRUE;
-        }
-    }
-    return FALSE;
-}
+typedef struct _fb_PrintInfo {
+    fb_Rect rWindow;
+    HANDLE  hOutput;
+    int     fViewSet;
+} fb_PrintInfo;
 
 static
-void fb_hConsolePrintRaw( HANDLE hConsoleOutput,
-                          const char *pachText,
-                          size_t TextLength,
-                          SMALL_RECT *pBorder,
-                          COORD *pCoord )
+void fb_hHookConScroll(struct _fb_ConHooks *handle,
+                       int x1,
+                       int y1,
+                       int x2,
+                       int y2,
+                       int rows)
 {
-    while( TextLength!=0 ) {
-        size_t RemainingWidth = pBorder->Right - pCoord->X + 1;
-        size_t MaxCopySize = (TextLength > RemainingWidth) ? RemainingWidth : TextLength;
-        size_t CopySize = MaxCopySize;
-        DWORD dwBytesWritten;
+    fb_PrintInfo *pInfo = (fb_PrintInfo*) handle->Opaque;
+    HANDLE hnd = pInfo->hOutput;
 
-        TextLength -= MaxCopySize;
-
-        fb_hConsoleCheckScroll( hConsoleOutput, pBorder, pCoord );
-        SetConsoleCursorPosition( hConsoleOutput, *pCoord );
-
-        while( CopySize!=0 &&
-               WriteFile( hConsoleOutput,
-                          pachText,
-                          CopySize,
-                          &dwBytesWritten,
-                          NULL ) == TRUE )
-        {
-            pachText += dwBytesWritten;
-            CopySize -= dwBytesWritten;
-        }
-
-        pCoord->X += MaxCopySize - CopySize;
-        if( pCoord->X==(pBorder->Right + 1) ) {
-            pCoord->X = pBorder->Left;
-            pCoord->Y += 1;
-        }
-
-        if( CopySize!=0 )
-            break;
+    if( pInfo->fViewSet ) {
+        fb_ConsoleScrollRawEx( hnd,
+                               x1,
+                               y1,
+                               x2,
+                               y2,
+                               rows );
+    } else {
+        int win_left, win_top, win_cols, win_rows;
+        handle->Write( handle,
+                       FB_NEWLINE,
+                       sizeof(FB_NEWLINE)-1,
+                       NULL );
+        fb_hUpdateConsoleWindow( );
+        fb_hConsoleGetWindow( &win_left, &win_top, &win_cols, &win_rows );
+        handle->Border.Left   = win_left;
+        handle->Border.Top    = win_top;
+        handle->Border.Right  = win_left + win_cols - 1;
+        handle->Border.Bottom = win_top + win_rows - 1;
     }
 }
 
 static
-void fb_hConsolePrintTTY( HANDLE hConsoleOutput,
-                          const char *pachText,
-                          size_t TextLength,
-                          SMALL_RECT *pBorder,
-                          COORD *pCoord,
-                          int is_text_mode )
+void fb_hHookConLocate( struct _fb_ConHooks *handle )
 {
-    static const char achTabSpaces[8] = { 32, 32, 32, 32, 32, 32, 32, 32 };
-    char OutputBuffer[OUTPUT_BUFFER_SIZE];
-    size_t OutputBufferLength = 0;
+    fb_PrintInfo *pInfo = (fb_PrintInfo*) handle->Opaque;
+    HANDLE hnd = pInfo->hOutput;
+    COORD dwCoord = { (SHORT) handle->Coord.X, (SHORT) handle->Coord.Y };
+    SetConsoleCursorPosition( hnd,
+                              dwCoord );
+}
 
-    COORD dwCurrentCoord, dwConsoleCoord;
-    size_t IndexText;
-    int fGotNewCoordinate = FALSE;
-    SHORT BorderWidth = pBorder->Right - pBorder->Left + 1;
+static
+int  fb_hHookConWrite (struct _fb_ConHooks *handle,
+                       const void *buffer,
+                       size_t length,
+                       size_t *written )
+{
+    fb_PrintInfo *pInfo = (fb_PrintInfo*) handle->Opaque;
+    HANDLE hnd = pInfo->hOutput;
+    DWORD dwBytesWritten = 0;
+    DWORD dwMode = 0;
+    int touches_right_bottom =
+        ((handle->Coord.X + length - 1)==handle->Border.Right)
+        && (handle->Coord.Y==handle->Border.Bottom);
+    int result;
 
-    memcpy( &dwCurrentCoord, pCoord, sizeof( COORD ) );
-    memcpy( &dwConsoleCoord, pCoord, sizeof( COORD ) );
-
-    for( IndexText=0; IndexText!=TextLength; ++IndexText ) {
-        const char *pachOutputData = pachText + IndexText;
-        size_t OutputDataLength = 0;
-        int fDoFlush = FALSE;
-        int fSetNewCoord = FALSE;
-        COORD dwNewCoord;
-        switch ( *pachOutputData ) {
-        case '\a':
-            /* ALARM */
-            fb_Beep();
-            break;
-        case '\b':
-            /* BACKSPACE */
-            fSetNewCoord = TRUE;
-            if( dwCurrentCoord.X > pBorder->Left ) {
-                dwNewCoord.X = dwCurrentCoord.X - 1;
-            } else {
-                dwNewCoord.X = pBorder->Left;
-            }
-            dwNewCoord.Y = dwCurrentCoord.Y;
-            break;
-        case '\n':
-            /* LINE FEED / NEW LINE */
-            fSetNewCoord = TRUE;
-            if( is_text_mode ) {
-                dwNewCoord.X = pBorder->Left;
-                dwNewCoord.Y = dwCurrentCoord.Y + 1;
-            } else {
-                dwNewCoord.X = dwCurrentCoord.X;
-                dwNewCoord.Y = dwCurrentCoord.Y + 1;
-            }
-            break;
-        case '\r':
-            /* CARRIAGE RETURN */
-            fSetNewCoord = TRUE;
-            dwNewCoord.X = pBorder->Left;
-            dwNewCoord.Y = dwCurrentCoord.Y;
-            break;
-        case '\t':
-            /* TAB */
-            pachOutputData = achTabSpaces;
-            OutputDataLength = ((dwCurrentCoord.X - pBorder->Left + 8) & ~7) - (dwCurrentCoord.X - pBorder->Left);
-            break;
-        default:
-            OutputDataLength = 1;
-            break;
-        }
-        if( OutputDataLength + OutputBufferLength > OUTPUT_BUFFER_SIZE ) {
-            fDoFlush = TRUE;
-        } else if( fSetNewCoord ) {
-            fDoFlush = TRUE;
-        }
-        if( fDoFlush ) {
-            fDoFlush = FALSE;
-            if( OutputBufferLength!=0 ) {
-                fb_hConsolePrintRaw( hConsoleOutput,
-                                     OutputBuffer,
-                                     OutputBufferLength,
-                                     pBorder,
-                                     &dwConsoleCoord );
-                OutputBufferLength = 0;
-                fGotNewCoordinate = FALSE;
-            }
-        }
-        if( fSetNewCoord ) {
-            fSetNewCoord = FALSE;
-            memcpy( &dwCurrentCoord, &dwNewCoord, sizeof( COORD ) );
-            memcpy( &dwConsoleCoord, &dwNewCoord, sizeof( COORD ) );
-            fGotNewCoordinate = TRUE;
-        }
-        if( OutputDataLength!=0 ) {
-            dwCurrentCoord.X += OutputDataLength;
-            if( dwCurrentCoord.X > pBorder->Right ) {
-                SHORT NormalX = dwCurrentCoord.X - pBorder->Left;
-                dwCurrentCoord.X = (NormalX % BorderWidth) + pBorder->Left;
-                dwCurrentCoord.Y += NormalX / BorderWidth;
-            }
-            while( OutputDataLength-- ) {
-                OutputBuffer[OutputBufferLength++] = *pachOutputData++;
-            }
-        }
+    if( touches_right_bottom ) {
+        GetConsoleMode( hnd, &dwMode );
+        SetConsoleMode( hnd, dwMode & ~ENABLE_WRAP_AT_EOL_OUTPUT );
     }
 
-    if( OutputBufferLength!=0 ) {
-        fb_hConsolePrintRaw( hConsoleOutput,
-                             OutputBuffer,
-                             OutputBufferLength,
-                             pBorder,
-                             &dwConsoleCoord );
-    } else if( fGotNewCoordinate ) {
-        fb_hConsoleCheckScroll( hConsoleOutput, pBorder, &dwConsoleCoord );
-        SetConsoleCursorPosition( hConsoleOutput, dwConsoleCoord );
+    result =
+        WriteFile( hnd,
+                   buffer,
+                   length,
+                   &dwBytesWritten,
+                   NULL )==TRUE;
+
+    if( touches_right_bottom ) {
+        SetConsoleMode( hnd, dwMode );
     }
 
-    memcpy( pCoord, &dwConsoleCoord, sizeof( COORD ) );
+    if( written )
+        *written = (size_t) dwBytesWritten;
+    return result;
 }
 
 /*:::::*/
 void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 {
     const char *pachText = (const char *) buffer;
-    DWORD mode;
     int win_left, win_top, win_cols, win_rows;
     int view_top, view_bottom;
+    fb_PrintInfo info;
+    fb_ConHooks hooks;
 
     /* Do we want to correct the Win32 console cursor position? */
-    if( (mask & FB_PRINT_RESERVED_1)==0 ) {
+    if( (mask & FB_PRINT_FORCE_ADJUST)==0 ) {
         /* No, we can check for the length to avoid unnecessary stuff ... */
         if( len==0 )
             return;
@@ -247,53 +154,59 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 	fb_ConsoleGetView( &view_top, &view_bottom );
     fb_hConsoleGetWindow( &win_left, &win_top, &win_cols, &win_rows );
 
-    GetConsoleMode( fb_out_handle, &mode );
-    SetConsoleMode( fb_out_handle, mode & ~ENABLE_WRAP_AT_EOL_OUTPUT );
+    hooks.Opaque        = &info;
+    hooks.Scroll        = fb_hHookConScroll;
+    hooks.Locate        = fb_hHookConLocate;
+    hooks.Write         = fb_hHookConWrite ;
+    hooks.Border.Left   = win_left;
+    hooks.Border.Top    = win_top + view_top - 1;
+    hooks.Border.Right  = win_left + win_cols - 1;
+    hooks.Border.Bottom = win_top + view_bottom - 1;
+
+    info.hOutput        = fb_out_handle;
+    info.rWindow.Left   = win_left;
+    info.rWindow.Top    = win_top;
+    info.rWindow.Right  = win_left + win_cols - 1;
+    info.rWindow.Bottom = win_top + win_rows - 1;
+    info.fViewSet       = hooks.Border.Top!=info.rWindow.Top
+        || hooks.Border.Bottom!=info.rWindow.Bottom;
 
     {
-        CONSOLE_SCREEN_BUFFER_INFO info;
-        SMALL_RECT srView;
+        CONSOLE_SCREEN_BUFFER_INFO screen_info;
 
-        srView.Left = win_left;
-        srView.Right = win_cols - 1;
-        srView.Top = win_top + view_top - 1;
-        srView.Bottom = win_top + view_bottom - 1;
-
-        if( !GetConsoleScreenBufferInfo( fb_out_handle, &info ) ) {
-            info.dwCursorPosition.X = win_left;
-            info.dwCursorPosition.Y = win_top;
+        if( !GetConsoleScreenBufferInfo( fb_out_handle, &screen_info ) ) {
+            hooks.Coord.X = hooks.Border.Left;
+            hooks.Coord.Y = hooks.Border.Top;
+        } else {
+            hooks.Coord.X = screen_info.dwCursorPosition.X;
+            hooks.Coord.Y = screen_info.dwCursorPosition.Y;
         }
 
         if( ScrollWasOff ) {
             ScrollWasOff = FALSE;
-            ++info.dwCursorPosition.Y;
-            info.dwCursorPosition.X = srView.Left;
-            fb_hConsoleCheckScroll( fb_out_handle,
-                                    &srView,
-                                    &info.dwCursorPosition );
+            ++hooks.Coord.Y;
+            hooks.Coord.X = hooks.Border.Left;
+            fb_hConCheckScroll( &hooks );
         }
 
-        fb_hConsolePrintTTY( fb_out_handle,
-                             pachText,
-                             len,
-                             &srView,
-                             &info.dwCursorPosition,
-                             TRUE );
+        fb_ConPrintTTY( &hooks,
+                        pachText,
+                        len,
+                        TRUE );
 
-        if( info.dwCursorPosition.X != srView.Left
-            || info.dwCursorPosition.Y != (srView.Bottom+1) )
+        if( hooks.Coord.X != hooks.Border.Left
+            || hooks.Coord.Y != (hooks.Border.Bottom+1) )
         {
-            fb_hConsoleCheckScroll( fb_out_handle, &srView, &info.dwCursorPosition );
+            fb_hConCheckScroll( &hooks );
         } else {
             ScrollWasOff = TRUE;
-            info.dwCursorPosition.X = srView.Right;
-            info.dwCursorPosition.Y = srView.Bottom;
+            hooks.Coord.X = hooks.Border.Right;
+            hooks.Coord.Y = hooks.Border.Bottom;
         }
-        SetConsoleCursorPosition( fb_out_handle, info.dwCursorPosition );
+        fb_hHookConLocate( &hooks );
     }
 
     fb_hUpdateConsoleWindow( );
-    SetConsoleMode( fb_out_handle, mode );
 
     FB_UNLOCK();
 }

@@ -35,18 +35,20 @@
 int	fb_argc;
 char **	fb_argv;
 
+int ScrollWasOff = FALSE;
+
 extern char fb_commandline[];
 
 extern void (*fb_ConsolePrintBufferProc) (const void *buffer, size_t len, int mask);
-extern void fb_ConsolePrintBufferConioEx(const void * buffer, size_t len, int mask);
-extern void fb_ConsolePrintBufferPrintfEx(const void *buffer, size_t len, int mask);
+extern void fb_ConsolePrintBufferEx_BIOS (const void *buffer, size_t len, int mask);
+extern void fb_ConsolePrintBufferEx_STDIO(const void *buffer, size_t len, int mask);
 
 
 /*:::::*/
 void fb_hInit ( int argc, char **argv )
 {
-	int i;
-	
+    int i;
+
 	/* rebuild command line from argv */
 	for( i = 0; i < argc; i++ ) 
 	{
@@ -63,11 +65,9 @@ void fb_hInit ( int argc, char **argv )
 
 	/* turn off blink */
 	intensevideo();
-	
+
 	/* use cprintf() if STDOUT is the console; 
 	   otherwise (with shell I/O redirection) use printf() */
-	fb_ConsolePrintBufferProc = (isatty(1) ?
-					fb_ConsolePrintBufferConioEx :
-					fb_ConsolePrintBufferPrintfEx);
-
+    fb_ConsolePrintBufferProc =
+        (isatty(1) ? fb_ConsolePrintBufferEx_BIOS : fb_ConsolePrintBufferEx_STDIO);
 }

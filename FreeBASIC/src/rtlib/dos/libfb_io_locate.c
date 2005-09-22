@@ -21,82 +21,127 @@
  * io_locate.c -- locate (console, no gfx) function for DOS
  *
  * chng: jan/2005 written [DrV]
+ *       sep/2005 heavily rewritten to use BIOS instead [mjs]
  *
  */
 
 #include "fb.h"
-#include <conio.h>
 #include <go32.h>
 #include <pc.h>
+#include <dpmi.h>
 #include <sys/farptr.h>
+
+/*:::::*/
+int fb_ConsoleLocate_BIOS( int row, int col, int cursor )
+{
+    __dpmi_regs regs;
+    int x, y;
+    int shape_start, shape_end, shape_visible;
+
+    regs.x.ax = 0x0300;
+    regs.x.bx = 0x0000;
+    __dpmi_int(0x10, &regs);
+    shape_start = regs.h.ch & 0x1F;
+    shape_end   = regs.h.cl & 0x1F;
+    shape_visible = (regs.h.ch & 0x60)==0;
+
+    if( col >= 0 ) {
+        x = col;
+    } else {
+        x = regs.h.dl;
+    }
+
+    if( row >= 0 ) {
+        y = row;
+    } else {
+        y = regs.h.dh;
+    }
+
+    regs.x.ax = 0x0200;
+    regs.x.bx = 0x0000;
+    regs.h.dh = (unsigned char) y;
+    regs.h.dl = (unsigned char) x;
+    __dpmi_int(0x10, &regs);
+
+    if( cursor >= 0) {
+        shape_visible = cursor!=0;
+        regs.x.ax = 0x0100;
+        regs.h.ch = (unsigned char) (shape_start + (shape_visible ? 0x00 : 0x20));
+        regs.h.cl = (unsigned char) shape_end;
+        __dpmi_int(0x10, &regs);
+    }
+
+    return ( (x & 0xFF) | ((y & 0xFF) << 8) | (shape_visible ? 0x10000 : 0) );
+}
 
 /*:::::*/
 int fb_ConsoleLocate( int row, int col, int cursor )
 {
-	int x, y;
-	static int visible = 0x10000;
-
-  	if( col > 0 )
-  		x = col;
-  	else
-  		x = wherex();
-
-  	if( row > 0 )
-  		y = row;
-  	else
-  		y = wherey();
-
-	y -= fb_ConsoleGetTopRow( );
-
-	if (cursor >= 0) {
-		visible = cursor ? 0x10000 : 0;
-		_setcursortype( cursor ? _NORMALCURSOR : _NOCURSOR );
-	}
-
-    FB_HANDLE_SCREEN->line_length = x - 1;
-
-	gotoxy(x, y);
-
-	return (x & 0xFF) | ((y & 0xFF) << 8) | visible;
+    int result = fb_ConsoleLocate_BIOS( row-1, col-1, cursor );
+    ScrollWasOff = FALSE;
+    return result + 0x0101;
 }
-
 
 /*:::::*/
 int fb_ConsoleGetX( void )
 {
-	return wherex();
+    int x;
+    fb_ConsoleGetXY( &x, NULL );
+	return x;
 }
 
 /*:::::*/
 int fb_ConsoleGetY( void )
 {
-	return wherey();
+    int y;
+    fb_ConsoleGetXY( NULL, &y );
+	return y;
+}
+
+/*:::::*/
+void fb_ConsoleGetXY_BIOS( int *col, int *row )
+{
+    __dpmi_regs regs;
+    regs.x.ax = 0x0300;
+    regs.x.bx = 0x0000;
+    __dpmi_int(0x10, &regs);
+    if( col!=NULL )
+        *col = regs.h.dl;
+    if( row!=NULL )
+        *row = regs.h.dh;
 }
 
 /*:::::*/
 FBCALL void fb_ConsoleGetXY( int *col, int *row )
 {
-	int r, c;
+    fb_ConsoleGetXY_BIOS( col, row );
+    if( col )
+        ++*col;
+    if( row )
+        ++*row;
+}
 
-	ScreenGetCursor(&r, &c);
+/*:::::*/
+int fb_ConsoleReadXY_BIOS( int col, int row, int colorflag )
+{
+    unsigned short usPosOld;
+    unsigned short usPos = (unsigned short) ((row << 8) + col);
+    __dpmi_regs regs;
 
-	if( col != NULL )
-		*col = c + 1;
+    _movedataw( _dos_ds, 0x450, _my_ds(), (int) &usPosOld, 1 );
+    _movedataw( _my_ds(), (int) &usPos, _dos_ds, 0x450, 1 );
+    regs.x.ax = 0x0800;
+    regs.x.bx = 0x0000;
+    __dpmi_int(0x10, &regs);
+    _movedataw( _my_ds(), (int) &usPosOld, _dos_ds, 0x450, 1 );
 
-	if( row != NULL )
-		*row = r + 1;
+    if( colorflag )
+        return regs.h.ah;
+    return regs.h.al;
 }
 
 /*:::::*/
 FBCALL int fb_ConsoleReadXY( int col, int row, int colorflag )
 {
-	unsigned short word;
-
-	word = _farpeekw(_dos_ds, ScreenPrimary + (((row - 1) * ScreenCols() + (col - 1)) << 1));
-
-	if (colorflag) {
-		return (word >> 8) & 0xFF;
-	} else {
-		return word & 0xFF;
-	}
+    return fb_ConsoleReadXY_BIOS( col - 1, row - 1, colorflag );
 }

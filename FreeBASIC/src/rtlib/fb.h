@@ -659,7 +659,10 @@ typedef struct _FB_PRINTUSGCTX {
 #define FB_PRINT_NEWLINE      0x00000001
 #define FB_PRINT_PAD          0x00000002
 #define FB_PRINT_BIN_NEWLINE  0x00000004
-#define FB_PRINT_RESERVED_1   0x00000008          /* On Win32: correct position */
+#define FB_PRINT_FORCE_ADJUST 0x00000008     /* Enforce position adjustment
+                                              * when last character in screen
+                                              * buffer gets handles in a special
+                                              * way */
 #define FB_PRINT_ISLAST       0x80000000     /* only for USING */
 
 /** Small helper function that converts a TEXT new-line to a BINARY new-line.
@@ -766,6 +769,9 @@ FBCALL int          fb_ConsoleView      ( int toprow, int botrow );
        void         fb_ConsoleViewUpdate( void );
 
        void         fb_ConsoleScroll    ( int nrows );
+
+       void         fb_ConReadLineEx    ( FBSTRING *dst );
+FBCALL FBSTRING    *fb_ConReadLine      ( void );
 
 FBCALL void         fb_PrintPad         ( int fnum, int mask );
        void         fb_PrintPadEx       ( struct _FB_FILE *handle, int mask );

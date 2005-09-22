@@ -2,6 +2,7 @@
 '' hello world example
 ''
 
+    locate ,,0
 	oldcolor = color
 	oldwidth = width
 
@@ -39,3 +40,4 @@
 	color oldcolor and &HFFFF, oldcolor shr 16
 	view print 1 to oldwidth shr 16
 	cls
+    locate ,,1

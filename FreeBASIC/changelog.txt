@@ -20,6 +20,7 @@ Version 0.15 Beta:
 - IF THEN followed by a statement separator (':') will be seen as a multi-line IF now, so END IF is obligatory (v1c)
 - non-shared or public variables declared on module-level (outside any proc) will be now show as LOCAL in GDB/Insight (v1c)
 - level of indirection checking when assigning or passing pointers (v1c)
+- All DOS console I/O now depends on BIOS or direct memory access (mjs)
 
 [added]
 - OPEN CONS, OPEN LPT, OPEN ERR, OPEN PIPE (OPEN "PIPE:" won't work), OPEN SCRN (mjs)
@@ -94,6 +95,8 @@ Version 0.15 Beta:
 - LOCATE will now throw an error if it gets invalid arguments(mjs)
 - byref args with optional values were reusing the temp var in the case of strings and floating-point types (v1c)
 - SIGSEGV happened when GETJOYSTICK was used in CONSOLE mode (mjs)
+- Everything that depends on VIEW PRINT on DOS (mjs)
+- MULTIKEY now recognizes enhanced scan codes on DOS (mjs)
 
 
 Version 0.14 Beta:

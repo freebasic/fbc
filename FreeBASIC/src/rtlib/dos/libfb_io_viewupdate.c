@@ -21,18 +21,16 @@
  * libfb_io_vwupd.c -- view print update (console, no gfx) for DOS
  *
  * chng: jan/2005 written [DrV]
+ *       sep/2005 removed conio dependency [mjs]
  *
  */
 
 #include "fb.h"
 
-#include <conio.h>
-#include <pc.h>
-
 /*:::::*/
 void fb_ConsoleViewUpdate( void )
 {
-	int top, bot;
+	int top;
 
 	top = fb_ConsoleGetTopRow( );
 	if( top >= 0 )
@@ -40,13 +38,5 @@ void fb_ConsoleViewUpdate( void )
 	else
 		top = 1;
 
-	bot = fb_ConsoleGetBotRow( );
-	if( bot >= 0 )
-		++bot;
-	else
-		bot = ScreenRows( );
-
-	/* left, top, right, bottom */
-	window( 1, top, ScreenCols( ), bot );
-
+    fb_ConsoleLocate( top, 1, -1 );
 }

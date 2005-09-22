@@ -32,6 +32,46 @@
 
 static const char *pszDefaultQuestion = "? ";
 
+#if defined(TARGET_WIN32) || defined(TARGET_CYGWIN) || defined(TARGET_DOS)
+
+FBCALL int fb_LineInput( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline )
+{
+    FBSTRING *tmp_result;
+
+    FB_LOCK();
+
+    fb_PrintBufferEx( NULL, 0, FB_PRINT_FORCE_ADJUST );
+
+    if( text != NULL )
+    {
+        if( text->data != NULL ) {
+            fb_PrintString( 0, text, 0 );
+        }
+
+        if( addquestion != FB_FALSE )
+        {
+            fb_PrintFixString( 0, pszDefaultQuestion, 0 );
+        }
+    }
+
+    tmp_result = fb_ConReadLine();
+
+    if( addnewline ) {
+        fb_PrintBufferEx( FB_NEWLINE, sizeof(FB_NEWLINE)-1, 0 );
+    }
+
+    FB_UNLOCK();
+
+    if( tmp_result!=NULL ) {
+        fb_StrAssign( dst, dst_len, tmp_result, -1, fillrem );
+        return fb_ErrorSetNum( FB_RTERROR_OK );
+    }
+
+    return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
+}
+
+#else
+
 static char *fb_hDevScrnReadLineWrapper( char *buffer,
                                          size_t count,
                                          FILE *fp )
@@ -45,9 +85,8 @@ FBCALL int fb_LineInput( FBSTRING *text, void *dst, int dst_len, int fillrem, in
 	int res;
     size_t len;
     int old_x, old_y;
-#if defined(TARGET_WIN32) || defined(TARGET_CYGWIN)
-    fb_PrintBufferEx( NULL, 0, FB_PRINT_RESERVED_1 );
-#endif
+
+    fb_PrintBufferEx( NULL, 0, FB_PRINT_FORCE_ADJUST );
     fb_GetXY( &old_x, &old_y );
 
 	FB_LOCK();
@@ -105,3 +144,4 @@ FBCALL int fb_LineInput( FBSTRING *text, void *dst, int dst_len, int fillrem, in
     return res;
 }
 
+#endif

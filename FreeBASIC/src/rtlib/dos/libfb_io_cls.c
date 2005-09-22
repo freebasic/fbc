@@ -32,28 +32,19 @@
 /*:::::*/
 void fb_ConsoleClear( int mode )
 {
-
-	int start_x, start_y;
-	int chars, toprow, botrow;
-
-	fb_ConsoleGetView( &toprow, &botrow );
+	int toprow, botrow;
 
 	if( (mode == 1) || (mode == 0xFFFF0000) ) {	/* same as gfxlib's DEFAULT_COLOR */
-		start_x = 0;
-		start_y = toprow - 1;
-
-		chars = ScreenCols() * (botrow - toprow + 1);
-	} else {
-		start_x = 0;
-		start_y = 0;
-
-		chars = ScreenCols() * ScreenRows();
+        fb_ConsoleGetView( &toprow, &botrow );
+        --toprow;
+        --botrow;
+    } else {
+        toprow = 0;
+        botrow = ScreenRows() - 1;
 	}
 
-	clrscr();
-
-	fb_ConsoleLocate( toprow, 1, -1 );
-
+    fb_ConsoleScroll_BIOS( 0, toprow, ScreenCols()-1, botrow, 0 );
+	fb_ConsoleLocate_BIOS( toprow, 0, -1 );
 }
 
 
