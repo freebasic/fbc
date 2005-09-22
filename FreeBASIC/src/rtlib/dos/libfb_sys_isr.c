@@ -123,6 +123,53 @@ _my_gs(void)
     return result;
 }
 
+static void fb_isr_exit(void)
+{
+    __dpmi_version_ret version;
+    int i;
+
+    FB_LOCK();
+    if( !isr_inited ) {
+        FB_UNLOCK();
+        return;
+    }
+
+    /* query DPMI version */
+    if( __dpmi_get_version( &version )!=0 ) {
+        FB_UNLOCK();
+        abort();
+    }
+
+    fb_dos_cli();
+
+    /* restore ISR offsets for master PIC */
+    for( i=0; i!=8; ++i ) {
+        int irq_vector = version.master_pic + i;
+        __dpmi_paddr *offset = fb_hDrvIntHandler_OldIRQs + i;
+        if( __dpmi_set_protected_mode_interrupt_vector( irq_vector, offset ) != 0 ) {
+            FB_UNLOCK();
+            abort();
+            return;
+        }
+    }
+
+    /* restore ISR offsets for slave PIC */
+    for( i=0; i!=8; ++i ) {
+        int irq_vector = version.slave_pic + i;
+        __dpmi_paddr *offset = fb_hDrvIntHandler_OldIRQs + i + 8;
+        if( __dpmi_set_protected_mode_interrupt_vector( irq_vector, offset ) != 0 ) {
+            FB_UNLOCK();
+            abort();
+        }
+    }
+
+    fb_dos_sti();
+
+    isr_inited = FALSE;
+
+    FB_UNLOCK();
+}
+
 static int fb_isr_init(void)
 {
     __dpmi_version_ret version;
@@ -229,6 +276,7 @@ static int fb_isr_init(void)
     }
 
     isr_inited = TRUE;
+    atexit( fb_isr_exit );
 
     FB_UNLOCK();
 
@@ -307,6 +355,8 @@ int fb_isr_reset( unsigned irq_number )
 
         fb_dos_unlock_mem( pfnIntHandler, fn_size );
         fb_dos_unlock_mem( pStack, stack_size );
+
+        free( pStack );
     }
 
     return TRUE;

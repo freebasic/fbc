@@ -46,7 +46,7 @@
 #define END_OF_STATIC_FUNCTION(proc) static void end_##proc (void) { }
 
 static int inited = FALSE;
-static volatile char key[256];
+static volatile char key[128];
 static volatile int  got_extended_key = FALSE;
 
 /*:::::*/
