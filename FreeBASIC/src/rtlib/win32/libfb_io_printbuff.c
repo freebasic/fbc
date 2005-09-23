@@ -236,7 +236,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
         fb_hHookConLocate( &hooks );
     }
 
-    if( hooks.Border.Top!=win_top ) {
+    if( hooks.Border.Top!=win_top && !info.fViewSet ) {
         /* Now we have to ensure that the window shows the right part
          * of the screen buffer when it was moved previously ... */
         SMALL_RECT srWindow =
