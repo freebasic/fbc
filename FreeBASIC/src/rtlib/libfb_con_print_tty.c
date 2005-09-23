@@ -134,6 +134,5 @@ void fb_ConPrintTTY( fb_ConHooks *handle,
                         OutputBufferLength );
     } else if( fGotNewCoordinate ) {
         fb_hConCheckScroll( handle );
-        handle->Locate( handle );
     }
 }

@@ -18,14 +18,12 @@ extern "C" {
     struct _fb_ConHooks;
 
     typedef void (*fb_fnHookConScroll)( struct _fb_ConHooks *handle, int x1, int y1, int x2, int y2, int rows );
-    typedef void (*fb_fnHookConLocate)( struct _fb_ConHooks *handle );
-    typedef int  (*fb_fnHookConWrite )( struct _fb_ConHooks *handle, const void *buffer, size_t length, size_t *written );
+    typedef int  (*fb_fnHookConWrite )( struct _fb_ConHooks *handle, const void *buffer, size_t length );
 
     typedef struct _fb_ConHooks {
         void                     *Opaque;
 
         fb_fnHookConScroll        Scroll;
-        fb_fnHookConLocate        Locate;
         fb_fnHookConWrite         Write;
 
         fb_Rect                   Border;

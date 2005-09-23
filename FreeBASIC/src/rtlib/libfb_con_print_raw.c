@@ -34,32 +34,22 @@ void fb_ConPrintRaw( fb_ConHooks *handle,
     fb_Coord *pCoord = &handle->Coord;
     while( TextLength!=0 ) {
         size_t RemainingWidth = pBorder->Right - pCoord->X + 1;
-        size_t MaxCopySize = (TextLength > RemainingWidth) ? RemainingWidth : TextLength;
-        size_t CopySize = MaxCopySize;
-        size_t BytesWritten;
-
-        TextLength -= MaxCopySize;
+        size_t CopySize = (TextLength > RemainingWidth) ? RemainingWidth : TextLength;
 
         fb_hConCheckScroll( handle );
-        handle->Locate( handle );
 
-        while( CopySize!=0 &&
-               handle->Write( handle,
-                              pachText,
-                              CopySize,
-                              &BytesWritten )==TRUE )
-        {
-            pachText += BytesWritten;
-            CopySize -= BytesWritten;
-        }
+        if( handle->Write( handle,
+                           pachText,
+                           CopySize )!=TRUE )
+            break;
 
-        pCoord->X += MaxCopySize - CopySize;
+        TextLength -= CopySize;
+        pachText += CopySize;
+        pCoord->X += CopySize;
+
         if( pCoord->X==(pBorder->Right + 1) ) {
             pCoord->X = pBorder->Left;
             pCoord->Y += 1;
         }
-
-        if( CopySize!=0 )
-            break;
     }
 }

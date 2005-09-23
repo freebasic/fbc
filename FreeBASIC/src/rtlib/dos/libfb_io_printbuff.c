@@ -53,18 +53,11 @@ void fb_hHookConScroll(struct _fb_ConHooks *handle,
 }
 
 static
-void fb_hHookConLocate( struct _fb_ConHooks *handle )
-{
-}
-
-static
 int  fb_hHookConWrite (struct _fb_ConHooks *handle,
                        const void *buffer,
-                       size_t length,
-                       size_t *written )
+                       size_t length )
 {
     const char *pachText = (const char *)buffer;
-    size_t write_count = length;
     __dpmi_regs regs;
     unsigned char uchAttr = (unsigned char) fb_ConsoleGetColorAtt();
     int tmp_x = handle->Coord.X;
@@ -80,9 +73,6 @@ int  fb_hHookConWrite (struct _fb_ConHooks *handle,
         regs.x.cx = 1;
         __dpmi_int(0x10, &regs);
     }
-
-    if( written )
-        *written = write_count;
 
     return TRUE;
 }
@@ -111,7 +101,6 @@ void fb_ConsolePrintBufferEx_BIOS( const void *buffer, size_t len, int mask )
 
     hooks.Opaque        = &info;
     hooks.Scroll        = fb_hHookConScroll;
-    hooks.Locate        = fb_hHookConLocate;
     hooks.Write         = fb_hHookConWrite ;
     hooks.Border.Left   = win_left;
     hooks.Border.Top    = win_top + view_top - 1;

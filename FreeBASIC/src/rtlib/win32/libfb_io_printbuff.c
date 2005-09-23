@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <malloc.h>
 #include "fb_con.h"
 
 typedef struct _fb_PrintInfo {
@@ -95,48 +96,36 @@ void fb_hHookConScroll(struct _fb_ConHooks *handle,
 }
 
 static
-void fb_hHookConLocate( struct _fb_ConHooks *handle )
-{
-    fb_PrintInfo *pInfo = (fb_PrintInfo*) handle->Opaque;
-    HANDLE hnd = pInfo->hOutput;
-    COORD dwCoord = { (SHORT) handle->Coord.X, (SHORT) handle->Coord.Y };
-    SetConsoleCursorPosition( hnd,
-                              dwCoord );
-}
-
-static
 int  fb_hHookConWrite (struct _fb_ConHooks *handle,
                        const void *buffer,
-                       size_t length,
-                       size_t *written )
+                       size_t length )
 {
     fb_PrintInfo *pInfo = (fb_PrintInfo*) handle->Opaque;
     HANDLE hnd = pInfo->hOutput;
-    DWORD dwBytesWritten = 0;
-    DWORD dwMode = 0;
-    int touches_right_bottom =
-        ((handle->Coord.X + length - 1)==handle->Border.Right)
-        && (handle->Coord.Y==handle->Border.Bottom);
+    const char *pachText = (const char *) buffer;
+    CHAR_INFO *lpBuffer = alloca( sizeof(CHAR_INFO) * length );
+    WORD wAttributes = pInfo->wAttributes;
+    COORD dwBufferSize = { (SHORT) length, 1 };
+    COORD dwBufferCoord = { 0, 0 };
+    SMALL_RECT srWriteRegion = {
+        (SHORT) handle->Coord.X,
+        (SHORT) handle->Coord.Y,
+        (SHORT) (handle->Coord.X + length - 1),
+        (SHORT) handle->Coord.Y
+    };
+    size_t i;
     int result;
 
-    if( touches_right_bottom ) {
-        GetConsoleMode( hnd, &dwMode );
-        SetConsoleMode( hnd, dwMode & ~ENABLE_WRAP_AT_EOL_OUTPUT );
+    for( i=0; i!=length; ++i ) {
+        CHAR_INFO *pCharInfo = lpBuffer + i;
+        pCharInfo->Attributes = wAttributes;
+        pCharInfo->Char.AsciiChar = pachText[i];
     }
-
-    result =
-        WriteFile( hnd,
-                   buffer,
-                   length,
-                   &dwBytesWritten,
-                   NULL )==TRUE;
-
-    if( touches_right_bottom ) {
-        SetConsoleMode( hnd, dwMode );
-    }
-
-    if( written )
-        *written = (size_t) dwBytesWritten;
+    result = WriteConsoleOutput( hnd,
+                                 lpBuffer,
+                                 dwBufferSize,
+                                 dwBufferCoord,
+                                 &srWriteRegion );
     return result;
 }
 
@@ -180,7 +169,6 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 
     hooks.Opaque        = &info;
     hooks.Scroll        = fb_hHookConScroll;
-    hooks.Locate        = fb_hHookConLocate;
     hooks.Write         = fb_hHookConWrite ;
     hooks.Border.Left   = win_left;
     hooks.Border.Top    = win_top + view_top - 1;
@@ -233,7 +221,11 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
             hooks.Coord.X = hooks.Border.Right;
             hooks.Coord.Y = hooks.Border.Bottom;
         }
-        fb_hHookConLocate( &hooks );
+        {
+            COORD dwCoord = { (SHORT) hooks.Coord.X, (SHORT) hooks.Coord.Y };
+            SetConsoleCursorPosition( info.hOutput,
+                                      dwCoord );
+        }
     }
 
     if( hooks.Border.Top!=win_top && !info.fViewSet ) {
