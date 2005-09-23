@@ -26,15 +26,18 @@
  *
  */
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "fb_con.h"
 
 typedef struct _fb_PrintInfo {
-    fb_Rect rWindow;
-    HANDLE  hOutput;
-    int     fViewSet;
+    fb_Rect         rWindow;
+    fb_Coord        BufferSize;
+    WORD            wAttributes;
+    HANDLE          hOutput;
+    int             fViewSet;
 } fb_PrintInfo;
 
 static
@@ -48,26 +51,47 @@ void fb_hHookConScroll(struct _fb_ConHooks *handle,
     fb_PrintInfo *pInfo = (fb_PrintInfo*) handle->Opaque;
     HANDLE hnd = pInfo->hOutput;
 
-    if( pInfo->fViewSet ) {
-        fb_ConsoleScrollRawEx( hnd,
-                               x1,
-                               y1,
-                               x2,
-                               y2,
-                               rows );
+    SMALL_RECT srScroll;
+    COORD dwDest;
+    CHAR_INFO FillChar;
+
+    assert( rows==1 );
+
+    if( !pInfo->fViewSet ) {
+        /* Try to move the window first ... */
+        if( (handle->Border.Bottom+1) < pInfo->BufferSize.Y ) {
+            int remaining = pInfo->BufferSize.Y - handle->Border.Bottom - 1;
+            int move_size = ((remaining < rows) ? remaining : rows);
+
+            handle->Border.Top += move_size;
+            handle->Border.Bottom += move_size;
+
+            rows -= move_size;
+            if( rows==0 )
+                return;
+        }
+
+        /* We're at the end of the screen buffer - so we have to
+         * scroll the complete screen buffer */
+        dwDest.X = dwDest.Y = 0;
+        srScroll.Right = (SHORT) (pInfo->BufferSize.X-1);
+        srScroll.Bottom = (SHORT) (pInfo->BufferSize.Y-1);
+
     } else {
-        int win_left, win_top, win_cols, win_rows;
-        handle->Write( handle,
-                       FB_NEWLINE,
-                       sizeof(FB_NEWLINE)-1,
-                       NULL );
-        fb_hUpdateConsoleWindow( );
-        fb_hConsoleGetWindow( &win_left, &win_top, &win_cols, &win_rows );
-        handle->Border.Left   = win_left;
-        handle->Border.Top    = win_top;
-        handle->Border.Right  = win_left + win_cols - 1;
-        handle->Border.Bottom = win_top + win_rows - 1;
+        /* Scroll only the area defined by a previous VIEW PRINT */
+        dwDest.X = (SHORT) handle->Border.Left;
+        dwDest.Y = (SHORT) handle->Border.Top;
+        srScroll.Right = (SHORT) handle->Border.Right;
+        srScroll.Bottom = (SHORT) handle->Border.Bottom;
     }
+
+    srScroll.Left = dwDest.X;
+    srScroll.Top = (SHORT) (dwDest.Y + rows);
+
+    FillChar.Attributes = pInfo->wAttributes;
+    FillChar.Char.AsciiChar = 32;
+
+    ScrollConsoleScreenBuffer( hnd, &srScroll, NULL, dwDest, &FillChar );
 }
 
 static
@@ -177,9 +201,15 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
         if( !GetConsoleScreenBufferInfo( fb_out_handle, &screen_info ) ) {
             hooks.Coord.X = hooks.Border.Left;
             hooks.Coord.Y = hooks.Border.Top;
+            info.BufferSize.X = FB_SCRN_DEFAULT_WIDTH;
+            info.BufferSize.Y = FB_SCRN_DEFAULT_HEIGHT;
+            info.wAttributes = 7;
         } else {
             hooks.Coord.X = screen_info.dwCursorPosition.X;
             hooks.Coord.Y = screen_info.dwCursorPosition.Y;
+            info.BufferSize.X = screen_info.dwSize.X;
+            info.BufferSize.Y = screen_info.dwSize.Y;
+            info.wAttributes = screen_info.wAttributes;
         }
 
         if( ScrollWasOff ) {
@@ -204,6 +234,19 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
             hooks.Coord.Y = hooks.Border.Bottom;
         }
         fb_hHookConLocate( &hooks );
+    }
+
+    if( hooks.Border.Top!=win_top ) {
+        /* Now we have to ensure that the window shows the right part
+         * of the screen buffer when it was moved previously ... */
+        SMALL_RECT srWindow =
+        {
+            (SHORT) hooks.Border.Left,
+            (SHORT) hooks.Border.Top,
+            (SHORT) hooks.Border.Right,
+            (SHORT) hooks.Border.Bottom
+        };
+        SetConsoleWindowInfo( info.hOutput, TRUE, &srWindow );
     }
 
     fb_hUpdateConsoleWindow( );

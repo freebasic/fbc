@@ -58,8 +58,9 @@ void fb_ConsoleScrollRawEx( HANDLE hConsole, int x1, int y1, int x2, int y2, int
         cinf.Attributes 	= fb_ConsoleGetColorAttEx( hConsole );
 
         ScrollConsoleScreenBuffer( hConsole, &srec, NULL, dcoord, &cinf );
-
+#if 0
         fb_ConsoleLocateRawEx( hConsole, y2 - nrows, -1, -1 );
+#endif
     }
 }
 

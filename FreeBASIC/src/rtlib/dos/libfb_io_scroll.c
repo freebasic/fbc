@@ -62,6 +62,7 @@ void fb_ConsoleScrollEx( int x1, int y1, int x2, int y2, int nrows )
 	
     fb_ConsoleScroll_BIOS( x1-1, y1-1, x2-1, y2-1, nrows );
 
+#if 0
     if( nrows > 0 ) {
         fb_ConsoleLocate_BIOS( y2 - 1 - nrows, x1, -1 );
     } else if( nrows < 0 ) {
@@ -69,6 +70,7 @@ void fb_ConsoleScrollEx( int x1, int y1, int x2, int y2, int nrows )
     } else {
         fb_ConsoleLocate_BIOS( y1 - 1, x1 - 1, -1 );
     }
+#endif
 }
 
 void fb_ConsoleScroll( int nrows )
