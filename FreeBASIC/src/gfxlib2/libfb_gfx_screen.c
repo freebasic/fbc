@@ -52,7 +52,7 @@ static const MODEINFO mode_info[NUM_MODES] = {
  { 640, 350, 4, 1, &fb_palette_64,  &fb_font_8x14,  80, 25 },		/* EGA mode 9 */
  { 640, 350, 1, 1, &fb_palette_2,   &fb_font_8x14,  80, 25 },		/* EGA mode 10 */
  { 640, 480, 1, 1, &fb_palette_2,   &fb_font_8x16,  80, 30 },		/* VGA mode 11 */
- { 640, 480, 4, 1, &fb_palette_16,  &fb_font_8x16,  80, 30 },		/* VGA mode 12 */
+ { 640, 480, 4, 1, &fb_palette_256, &fb_font_8x16,  80, 30 },		/* VGA mode 12 */
  { 320, 200, 8, 1, &fb_palette_256, &fb_font_8x8,   40, 25 },		/* VGA mode 13 */
 
 									/* New modes */
