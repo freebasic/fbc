@@ -2506,7 +2506,7 @@ Mode 1:		0	Black
 		2	Magenta
 		3	White
 
-Modes 2 and 11:	0	Black
+Modes 2,10, and 11:	0	Black
 		1	White
 
 Mode 7, 8, 9	0	Black

@@ -29,17 +29,6 @@
 #define NUM_MODES		21
 
 
-MODE *fb_mode = NULL;
-void *(*fb_hMemCpy)(void *dest, const void *src, size_t size) = memcpy;
-void *(*fb_hMemSet)(void *dest, int value, size_t size) = memset;
-void (*fb_hPutPixel)(int x, int y, unsigned int color) = NULL;
-unsigned int (*fb_hGetPixel)(int x, int y) = NULL;
-void *(*fb_hPixelCpy)(void *dest, const void *src, size_t size) = NULL;
-void *(*fb_hPixelSet)(void *dest, int color, size_t size) = NULL;
-unsigned int *fb_color_conv_16to32 = NULL;
-
-
-
 typedef struct MODEINFO
 {
 	int w;
@@ -61,9 +50,9 @@ static const MODEINFO mode_info[NUM_MODES] = {
  { 320, 200, 4, 1, &fb_palette_16,  &fb_font_8x8,   40, 25 },		/* EGA mode 7 */
  { 640, 200, 4, 2, &fb_palette_16,  &fb_font_8x8,   80, 25 },		/* EGA mode 8 */
  { 640, 350, 4, 1, &fb_palette_64,  &fb_font_8x14,  80, 25 },		/* EGA mode 9 */
- { -1 },								/* Unsupported mode (10) */
- { 640, 480, 1, 1, &fb_palette_256, &fb_font_8x16,  80, 30 },		/* VGA mode 11 */
- { 640, 480, 4, 1, &fb_palette_256, &fb_font_8x16,  80, 30 },		/* VGA mode 12 */
+ { 640, 350, 1, 1, &fb_palette_2,   &fb_font_8x14,  80, 25 },		/* EGA mode 10 */
+ { 640, 480, 1, 1, &fb_palette_2,   &fb_font_8x16,  80, 30 },		/* VGA mode 11 */
+ { 640, 480, 4, 1, &fb_palette_16,  &fb_font_8x16,  80, 30 },		/* VGA mode 12 */
  { 320, 200, 8, 1, &fb_palette_256, &fb_font_8x8,   40, 25 },		/* VGA mode 13 */
 
 									/* New modes */
@@ -79,29 +68,16 @@ static const MODEINFO mode_info[NUM_MODES] = {
 
 static char window_title_buff[WINDOW_TITLE_SIZE] = "";
 static char *window_title = NULL;
+static int  exit_proc_set = FALSE;
 
 
-/*:::::*/
-static void exit_proc(void)
+static void release_gfx_mem(void)
 {
-	fb_GfxScreen(0, 0, 0, SCREEN_EXIT, 0);
-}
-
-
-/*:::::*/
-static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, int refresh_rate, int flags)
-{
-	const GFXDRIVER *driver = NULL;
-	int i, try;
-	char *c, *driver_name;
-
-	if (num_pages <= 0)
-		num_pages = 1;
-
 	if (fb_mode) {
 		if ((fb_mode->driver) && (fb_mode->driver->exit))
 			fb_mode->driver->exit();
-		if (fb_mode->page) {
+        if (fb_mode->page) {
+            int i;
 			for (i = 0; i < fb_mode->num_pages; i++)
 				free(fb_mode->page[i]);
 			free(fb_mode->page);
@@ -119,15 +95,43 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 		if (fb_mode->key)
 			free(fb_mode->key);
 		free(fb_mode);
-		if (fb_color_conv_16to32)
-			free(fb_color_conv_16to32);
+        fb_mode = NULL;
 	}
+    if (fb_color_conv_16to32) {
+        free(fb_color_conv_16to32);
+        fb_color_conv_16to32 = NULL;
+    }
+}
 
-	if (mode == 0) {
+/*:::::*/
+static void exit_proc(void)
+{
+    if( fb_mode )
+        fb_GfxScreen(0, 0, 0, SCREEN_EXIT, 0);
+}
+
+
+/*:::::*/
+static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, int refresh_rate, int flags)
+{
+	const GFXDRIVER *driver = NULL;
+	int i, try;
+	char *c, *driver_name;
+
+	if (num_pages <= 0)
+		num_pages = 1;
+
+    release_gfx_mem();
+
+    switch (mode) {
+    case 0:
+    case 3:
+    case 4:
 		memset(&fb_hooks, 0, sizeof(fb_hooks));
-		fb_mode = NULL;
-	}
-	else {
+        fb_mode = NULL;
+        break;
+
+    default:
 		fb_hooks.inkeyproc = fb_GfxInkey;
 		fb_hooks.getkeyproc = fb_GfxGetkey;
 		fb_hooks.keyhitproc = fb_GfxKeyHit;
@@ -146,7 +150,8 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 		fb_hooks.setmouseproc = fb_GfxSetMouse;
 		fb_hooks.inproc = fb_GfxIn;
 		fb_hooks.outproc = fb_GfxOut;
-		fb_mode = (MODE *)calloc(1, sizeof(MODE));
+        fb_mode = (MODE *)calloc(1, sizeof(MODE));
+        break;
 	}
 
 	if (fb_mode) {
@@ -225,7 +230,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 		}
 
 		if (!driver) {
-			exit_proc();
+            exit_proc();
 			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 		}
 		fb_mode->driver = driver;
@@ -242,7 +247,10 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 		fb_mode->text_w = info->text_w;
 		fb_mode->text_h = info->text_h;
 
-		atexit(exit_proc);
+        if( !exit_proc_set ) {
+            exit_proc_set = TRUE;
+            atexit(exit_proc);
+        }
 	}
 
 	return FB_RTERROR_OK;

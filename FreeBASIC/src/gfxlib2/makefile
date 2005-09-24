@@ -113,16 +113,19 @@ endif
 
 ##################################################################
 
-objects := $(patsubst %.c,$(objpath)/%.o,$(wildcard *.c))
+objects := $(patsubst %.c,$(objpath)/%.o,$(wildcard *.c) libfb_gfx_data.c)
 objects += $(patsubst %.s,$(objpath)/%.o,$(wildcard *.s))
 osdepobjs := $(patsubst $(OSDEPPATH)/%.c,$(objpath)/%.o,$(wildcard $(OSDEPPATH)/*.c))
 osdepobjs += $(patsubst $(OSDEPPATH)/%.s,$(objpath)/%.o,$(wildcard $(OSDEPPATH)/*.s))
 headers := $(wildcard *.h)
 headers += $(wildcard $(OSDEPPATH)/*.h)
+toolsobjs := $(patsubst tools/%.c,tools/%.o,$(wildcard tools/*.c))
+tools     := $(patsubst tools/%.o,tools/%.exe,$(toolsobjs))
+datafiles := $(wildcard data/*.fnt) $(wildcard data/*.pal)
 
 ##################################################################
 
-all : checkhost checktarget checkdirs $(objects) $(osdepobjs) $(lib)
+all : checkhost checktarget checkdirs $(tools) $(objects) $(osdepobjs) $(lib)
 
 $(objpath)/%.o : %.c $(headers)
 	$(CC) -c $(CFLAGS) $< -o $@
@@ -138,6 +141,17 @@ $(objpath)/%.o : $(OSDEPPATH)/%.s $(headers)
 
 $(lib) : $(objects) $(osdepobjs)
 	$(AR) cr $(lib) $(objects) $(osdepobjs)
+
+libfb_gfx_data.c: tools/mk_dat.exe data/data.lst $(datafiles)
+	tools/mk_dat.exe -o $@
+
+tools/mk_dat.exe: tools/mk_dat.o $(objpath)/libfb_gfx_lzw.o $(objpath)/libfb_gfx_vars.o
+
+tools/%.exe: tools/%.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+tools/%.o: tools/%.c
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(libpath) :
 	mkdir -p $(libpath)
@@ -156,7 +170,12 @@ checkhost : ; $(CHECKHOST_MSG)
 checkdirs : $(libpath) $(objpath)
 
 .PHONY : clean
-clean :
+clean : clean_tools
 	rm -f $(lib)
 	rm -f $(objects)
 	rm -f $(osdepobjs)
+	rm -f data/data.dat libfb_gfx_data.c
+
+.PHONY : clean_tools
+clean_tools :
+	rm -f tools/*.o tools/*.exe

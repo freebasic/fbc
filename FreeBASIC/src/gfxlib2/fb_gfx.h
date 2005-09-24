@@ -215,13 +215,7 @@ extern unsigned int (*fb_hGetPixel)(int x, int y);
 extern void *(*fb_hPixelCpy)(void *dest, const void *src, size_t size);
 extern void *(*fb_hPixelSet)(void *dest, int color, size_t size);
 extern unsigned int *fb_color_conv_16to32;
-extern const PALETTE fb_palette_16;
-extern const PALETTE fb_palette_64;
-extern const PALETTE fb_palette_256;
-extern const FONT fb_font_8x8;
-extern const FONT fb_font_8x14;
-extern const FONT fb_font_8x16;
-
+#include "fb_gfx_data.h"
 
 /* Internal functions */
 extern void fb_hSetupFuncs(void);

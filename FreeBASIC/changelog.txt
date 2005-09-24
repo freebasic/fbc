@@ -21,6 +21,7 @@ Version 0.15 Beta:
 - non-shared or public variables declared on module-level (outside any proc) will be now show as LOCAL in GDB/Insight (v1c)
 - level of indirection checking when assigning or passing pointers (v1c)
 - All DOS console I/O now depends on BIOS or direct memory access (mjs)
+- libfb_gfx_data.c is now created from the "original" data files (mjs)
 
 [added]
 - OPEN CONS, OPEN LPT, OPEN ERR, OPEN PIPE (OPEN "PIPE:" won't work), OPEN SCRN (mjs)

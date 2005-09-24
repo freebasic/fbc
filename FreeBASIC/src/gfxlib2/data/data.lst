@@ -1,0 +1,10 @@
+;VAR_TYPE  OFFSET_DEFINE       VAR_NAME            NUM_VALUE FILENAME
+
+FONT      FONT_8              fb_font_8x8         8         fnt08x08.fnt
+FONT      FONT_14             fb_font_8x14        14        fnt08x14.fnt
+FONT      FONT_16             fb_font_8x16        16        fnt08x16.fnt
+
+PALETTE   PALETTE_2           fb_palette_2        2         pal002.pal
+PALETTE   PALETTE_16          fb_palette_16       16        pal016.pal
+PALETTE   PALETTE_64          fb_palette_64       64        pal064.pal
+PALETTE   PALETTE_256         fb_palette_256      256       pal256.pal
