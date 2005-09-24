@@ -281,7 +281,8 @@ void fb_hConsoleProcessKeyEvent( KEY_EVENT_RECORD *event )
         fb_hConsoleTranslateKey( event->uChar.AsciiChar,
                                  event->wVirtualScanCode,
                                  event->wVirtualKeyCode,
-                                 event->dwControlKeyState );
+                                 event->dwControlKeyState,
+                                 FALSE );
     if( KeyCode!=-1 ) {
         fb_hConsolePostKey(KeyCode, event);
     }

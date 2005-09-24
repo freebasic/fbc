@@ -182,7 +182,8 @@ static const FB_KEY_CODES fb_asc_key_codes[] = {
 int fb_hConsoleTranslateKey( char AsciiChar,
                              WORD wVsCode,
                              WORD wVkCode,
-                             DWORD dwControlKeyState )
+                             DWORD dwControlKeyState,
+                             int bEnhancedKeysOnly )
 {
     int KeyCode = 0, AddKeyCode = FALSE;
     int is_ext_code = AsciiChar==0;
@@ -243,7 +244,7 @@ int fb_hConsoleTranslateKey( char AsciiChar,
             AddKeyCode = (KeyCode > 255) && (uiAsciiChar==uiNormalKey);
         }
 
-        if( !AddKeyCode ) {
+        if( !AddKeyCode && !bEnhancedKeysOnly) {
             if( is_ext_code ) {
                 /* This is the old fall-back code that creates an enhanced
                  * key code for all keys that don't have an ASCII value and

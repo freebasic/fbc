@@ -85,7 +85,8 @@ FBCALL int fb_hExec                     ( struct _FBSTRING *program,
        int fb_hConsoleTranslateKey      ( char AsciiChar,
                                           WORD wVsCode,
                                           WORD wVkCode,
-                                          DWORD dwControlKeyState );
+                                          DWORD dwControlKeyState,
+                                          int bEnhancedKeysOnly );
 
 FBCALL void fb_hRestoreConsoleWindow    ( void );
 FBCALL void fb_hUpdateConsoleWindow     ( void );

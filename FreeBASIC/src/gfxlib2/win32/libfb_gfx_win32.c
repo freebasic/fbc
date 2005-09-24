@@ -50,15 +50,31 @@ static UINT msg_cursor;
 static int mouse_buttons, mouse_wheel;
 
 
+static void ToggleFullScreen( void )
+{
+    if (fb_win32.flags & DRIVER_NO_SWITCH)
+        return;
+
+    fb_win32.exit();
+    fb_win32.flags ^= DRIVER_FULLSCREEN;
+    if (fb_win32.init()) {
+        fb_win32.exit();
+        fb_win32.flags ^= DRIVER_FULLSCREEN;
+        fb_win32.init();
+    }
+    fb_hRestorePalette();
+    fb_hMemSet(fb_mode->dirty, TRUE, fb_win32.h);
+    fb_win32.is_active = TRUE;
+}
+
 /*:::::*/
 LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	char key_state[256];
-	int key = -1;
 
 	if (message == msg_cursor) {
 		ShowCursor(wParam);
-		return 0;
+		return FALSE;
 	}
 
 	switch (message)
@@ -104,48 +120,33 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			break;
 
 		case WM_SIZE:
-		case WM_SYSKEYDOWN:
+        case WM_SYSKEYDOWN:
+            if (!fb_win32.is_active)
+                break;
             {
-                if ((!fb_win32.is_active) || (fb_win32.flags & DRIVER_NO_SWITCH))
-                    break;
                 int is_alt_enter = ((message == WM_SYSKEYDOWN) && (wParam == VK_RETURN) && (lParam & 0x20000000));
-                if (((message == WM_SIZE) && (wParam == SIZE_MAXIMIZED))
-                    || is_alt_enter)
-                {
-                    fb_win32.exit();
-                    fb_win32.flags ^= DRIVER_FULLSCREEN;
-                    if (fb_win32.init()) {
-                        fb_win32.exit();
-                        fb_win32.flags ^= DRIVER_FULLSCREEN;
-                        fb_win32.init();
-                    }
-                    fb_hRestorePalette();
-                    fb_hMemSet(fb_mode->dirty, TRUE, fb_win32.h);
-                    fb_win32.is_active = TRUE;
+                int is_maximize = ((message == WM_SIZE) && (wParam == SIZE_MAXIMIZED));
+                if ( is_maximize || is_alt_enter) {
+                    ToggleFullScreen();
+                    return FALSE;
                 }
-                if( message==WM_SYSKEYDOWN ) {
-                    if( is_alt_enter ) {
-                        return 0;
-                    }
-                    if( wParam!=VK_F10 )
-                        break;
-                    /* otherwise: fall thru to WM_KEYDOWN */
-                } else {
-                    return 0;
-                }
+                if( message!=WM_SYSKEYDOWN || wParam!=VK_F10 )
+                    break;
             }
+            /* fall thru to WM_KEYDOWN because we want F10 */
 
         case WM_KEYDOWN:
             /* Beware of the fall-thru from WM_SYSKEYDOWN */
 			if (!fb_win32.is_active)
                 break;
+
             {
-                WORD wVkCode = wParam;
-                WORD wVsCode = ( lParam & 0xFF0000 ) >> 16;
+                WORD wVkCode = (WORD) wParam;
+                WORD wVsCode = (WORD) (( lParam & 0xFF0000 ) >> 16);
                 int is_ext_keycode = ( lParam & 0x1000000 )!=0;
                 size_t repeat_count = ( lParam & 0xFFFF );
                 DWORD dwControlKeyState = 0;
-                char chAsciiChar;
+                int key;
 
                 GetKeyboardState(key_state);
                 if( (key_state[VK_SHIFT] || key_state[VK_LSHIFT] || key_state[VK_RSHIFT]) & 0x80 )
@@ -158,43 +159,57 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
                     dwControlKeyState ^= LEFT_ALT_PRESSED;
                 if( key_state[VK_RMENU] & 0x80 )
                     dwControlKeyState ^= RIGHT_ALT_PRESSED;
+                if( is_ext_keycode )
+                    dwControlKeyState |= ENHANCED_KEY;
 
-                printf("State = %02lx %02x %02x %02x\n",
-                       dwControlKeyState,
-                       (unsigned) (unsigned char) key_state[VK_CONTROL],
-                       (unsigned) (unsigned char) key_state[VK_LCONTROL],
-                       (unsigned) (unsigned char) key_state[VK_RCONTROL]
-                      );
-
-                if( is_ext_keycode ) {
-                    chAsciiChar = 0;
-                } else {
-                    WORD wKey;
-                    if (ToAscii(wParam, wVsCode, key_state, &wKey, 0) != 1) {
-                        chAsciiChar = 0;
-                    } else {
-                        chAsciiChar = (char) wKey;
+                key =
+                    fb_hConsoleTranslateKey( 0,
+                                             wVsCode,
+                                             wVkCode,
+                                             dwControlKeyState,
+                                             TRUE );
+                if (key!=-1) {
+                    while( repeat_count-- ) {
+                        fb_hPostKey(key);
                     }
                 }
-                if( chAsciiChar!=0 )
-                    printf("Char = %c\n", chAsciiChar);
-                printf( "ScanCode = %04hx\n", wVsCode );
-                printf( "KeyCode = %04hx\n", wVkCode );
-                key = fb_hConsoleTranslateKey( chAsciiChar,
-                                               wVsCode,
-                                               wVkCode,
-                                               dwControlKeyState );
-                printf("Result = %04x\n", key );
-                if (key!=-1) {
-                    while( repeat_count-- )
+
+                /* We don't want to enter the menu ... */
+                if( wVkCode==VK_F10 )
+                    return FALSE;
+            }
+            break;
+
+        case WM_CHAR:
+            {
+                size_t repeat_count = ( lParam & 0xFFFF );
+                int key = (int) wParam;
+                if( key < 256 ) {
+                    int target_cp = FB_GFX_GET_CODEPAGE();
+                    if( target_cp!=-1 ) {
+                        char ch[2] = {
+                            (char) key,
+                            0
+                        };
+                        FBSTRING *result =
+                            fb_StrAllocTempDescF( ch, 2 );
+                        result = fb_hIntlConvertString( result,
+                                                        CP_ACP,
+                                                        target_cp );
+                        key = (unsigned) (unsigned char) result->data[0];
+                    }
+
+                    while( repeat_count-- ) {
                         fb_hPostKey(key);
+                    }
                 }
             }
-			return 0;
+
+            break;
 
 		case WM_CLOSE:
 			fb_hPostKey(KEY_QUIT);
-			return 0;
+			return FALSE;
 
 		case WM_PAINT:
 			fb_win32.paint();
