@@ -18,7 +18,7 @@
  */
 
 /*
- * io_input.c -- console input functions for Windows console mode apps
+ * io_keys.c -- console input functions for Windows console mode apps
  *
  * chng: jun/2005 written [lillo]
  *       aug/2005 modified to read keyboard events [mjs]
@@ -28,11 +28,6 @@
 #include <assert.h>
 #include "fb.h"
 #include "fb_rterr.h"
-
-#define KEY_BUFFER_LEN 512
-static int key_buffer[KEY_BUFFER_LEN];
-static size_t key_head = 0, key_tail = 0;
-static INPUT_RECORD input_events[KEY_BUFFER_LEN];
 
 typedef struct _FB_KEY_CODES {
     unsigned short value_normal;
@@ -179,153 +174,106 @@ static const FB_KEY_CODES fb_asc_key_codes[] = {
 
 #define FB_KEY_CODES_SIZE (sizeof(fb_asc_key_codes)/sizeof(FB_KEY_CODES))
 
-/*:::::*/
-void fb_hConsolePostKey(int key, const KEY_EVENT_RECORD *key_event)
+/** Translates an ASCII character, Virtual scan code and Virtual key code to
+ *  a single QB-compatible keyboard code.
+ *
+ * @returns -1 if key not translatable
+ */
+int fb_hConsoleTranslateKey( char AsciiChar,
+                             WORD wVsCode,
+                             WORD wVkCode,
+                             DWORD dwControlKeyState )
 {
-    INPUT_RECORD *record;
+    int KeyCode = 0, AddKeyCode = FALSE;
+    int is_ext_code = AsciiChar==0;
 
-    FB_LOCK();
-
-    key_buffer[key_tail] = key;
-
-    assert( key_event!=NULL );
-
-    record = input_events + key_tail;
-    memcpy( &record->Event.KeyEvent,
-            key_event,
-            sizeof( KEY_EVENT_RECORD ) );
-    record->EventType = KEY_EVENT;
-
-	if (((key_tail + 1) & (KEY_BUFFER_LEN - 1)) == key_head)
-		key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
-    key_tail = (key_tail + 1) & (KEY_BUFFER_LEN - 1);
-
-    FB_UNLOCK();
-}
-
-/*:::::*/
-int fb_hConsoleGetKeyEx(int full, int allow_remove)
-{
-    int key = -1;
-
-    fb_ConsoleProcessEvents( );
-
-	FB_LOCK();
-
-    if (key_head != key_tail) {
-        int do_remove = allow_remove;
-        key = key_buffer[key_head];
-        if( key > 255 ) {
-            if( !full ) {
-                key_buffer[key_head] = (key >> 8);
-                key = (unsigned) (unsigned char) FB_EXT_CHAR;
-                do_remove = FALSE;
-            }
-        }
-        if( do_remove )
-            key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
-	}
-
-	FB_UNLOCK();
-
-	return key;
-}
-
-/*:::::*/
-int fb_hConsoleGetKey(int full)
-{
-    return fb_hConsoleGetKeyEx( full, TRUE );
-}
-
-/*:::::*/
-int fb_hConsolePeekKey(int full)
-{
-    return fb_hConsoleGetKeyEx( full, FALSE );
-}
-
-/*:::::*/
-void fb_hConsolePutBackEvents( void )
-{
-    size_t key_idx;
-
-    FB_LOCK();
-
-    while( fb_ConsoleProcessEvents( ) )
-        ;
-
-    key_idx = key_head;
-    while( key_idx != key_tail ) {
-        DWORD dwEventsWritten = 0;
-        size_t count = (key_idx > key_tail) ? (KEY_BUFFER_LEN - key_idx) : (key_tail - key_idx);
-
-        WriteConsoleInput( fb_in_handle,
-                           input_events + key_idx,
-                           count,
-                           &dwEventsWritten );
-
-        key_idx += count;
-        if( key_idx==KEY_BUFFER_LEN )
-            key_idx = 0;
-    }
-
-    FB_UNLOCK();
-}
-
-
-fb_FnProcessMouseEvent MouseEventHook = (fb_FnProcessMouseEvent) NULL;
-
-static __inline__
-void fb_hConsoleProcessKeyEvent( KEY_EVENT_RECORD *event )
-{
-    int KeyCode =
-        fb_hConsoleTranslateKey( event->uChar.AsciiChar,
-                                 event->wVirtualScanCode,
-                                 event->wVirtualKeyCode,
-                                 event->dwControlKeyState );
-    if( KeyCode!=-1 ) {
-        fb_hConsolePostKey(KeyCode, event);
-    }
-}
-
-/*:::::*/
-int fb_ConsoleProcessEvents( void )
-{
-    int got_event = FALSE;
-	INPUT_RECORD ir;
-    DWORD dwRead;
-
-    do {
-        if( !PeekConsoleInput( fb_in_handle, &ir, 1, &dwRead ) )
-            dwRead = 0;
-
-        if( dwRead > 0 )
-        {
-            ReadConsoleInput( fb_in_handle, &ir, 1, &dwRead );
-
-            FB_LOCK();
-
-            switch ( ir.EventType )
-            {
-            case KEY_EVENT:
-                if( ir.Event.KeyEvent.bKeyDown && ir.Event.KeyEvent.wRepeatCount!=0 )
-                {
-                    fb_hConsoleProcessKeyEvent( &ir.Event.KeyEvent );
-                }
-                break;
-
-            case MOUSE_EVENT:
-                if( MouseEventHook != (fb_FnProcessMouseEvent) NULL )
-                {
-                    MouseEventHook( &ir.Event.MouseEvent );
-                    got_event = TRUE;
+    /* Process ENHANCED_KEY's in a different way */
+    if( (dwControlKeyState & ENHANCED_KEY)!=0 && is_ext_code) {
+        size_t i;
+        for( i=0; i!=FB_KEY_LIST_SIZE; ++i ) {
+            const FB_KEY_LIST_ENTRY *entry =
+                fb_ext_key_entries + i;
+            if(entry->scan_code==wVsCode) {
+                const FB_KEY_CODES *codes = &entry->codes;
+                if( dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED) ) {
+                    KeyCode = codes->value_alt;
+                    AddKeyCode = KeyCode!=0;
+                } else if( dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED) ) {
+                    KeyCode = codes->value_ctrl;
+                    AddKeyCode = KeyCode!=0;
+                } else if( dwControlKeyState & SHIFT_PRESSED ) {
+                    KeyCode = codes->value_shift;
+                    AddKeyCode = KeyCode!=0;
+                } else {
+                    KeyCode = codes->value_normal;
+                    AddKeyCode = TRUE;
                 }
                 break;
             }
+        }
+    } else {
+        unsigned uiAsciiChar = (unsigned) (unsigned char) AsciiChar;
+        unsigned uiNormalKey;
+        /* Test if we must translate a "normal" key into an enhanced key */
+        if( wVsCode < FB_KEY_CODES_SIZE ) {
+            const FB_KEY_CODES *codes = fb_asc_key_codes + wVsCode;
 
-            FB_UNLOCK();
+            uiNormalKey = MapVirtualKey( wVkCode, 2 );
+
+            if( dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED) ) {
+                KeyCode = codes->value_alt;
+            } else if( dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED) ) {
+                KeyCode = codes->value_ctrl;
+            } else if( dwControlKeyState & SHIFT_PRESSED ) {
+                KeyCode = codes->value_shift;
+            } else {
+                if( uiAsciiChar==0 ) {
+                    KeyCode = codes->value_normal;
+                } else {
+                    KeyCode = uiNormalKey;
+                }
+            }
+            /* Add the found key code only when the following conditions are
+             * met:
+             * 1. KeyCode must be > 255 (enhanced)
+             * 2. The ASCII character provided must be different from the
+             *    "normal" character - this test is required to allow
+             *    AltGr+character combinations that are language-specific
+             *    and therefore quite hard to detect ... */
+            AddKeyCode = (KeyCode > 255) && (uiAsciiChar==uiNormalKey);
         }
 
-    } while( dwRead != 0 );
+        if( !AddKeyCode ) {
+            if( is_ext_code ) {
+                /* This is the old fall-back code that creates an enhanced
+                 * key code for all keys that don't have an ASCII value and
+                 * don't fall into a specific range of key codes ... */
+                AddKeyCode = ( wVkCode >= VK_SPACE )
+                    && ( wVkCode <= VK_NUMLOCK )
+                    && ( wVsCode > 0 )
+                    && ( wVsCode <= 254 );
+                switch ( wVkCode )
+                {
+                case VK_LWIN:
+                case VK_RWIN:
+                case VK_APPS:
+                    AddKeyCode = FALSE;
+                    break;
+                }
+                if( AddKeyCode )
+                    KeyCode = wVsCode << 8;
+            } else {
+                /* The key code is simply the returned ASCII character */
+                KeyCode = uiAsciiChar;
+                AddKeyCode = TRUE;
+            }
+        }
+    }
 
-	return got_event;
+    if( AddKeyCode ) {
+        if( KeyCode > 255 )
+            KeyCode = FB_MAKE_EXT_KEY((char) (KeyCode >> 8));
+        return KeyCode;
+    }
+    return -1;
 }

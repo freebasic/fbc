@@ -27,6 +27,7 @@
 #include "fb_gfx.h"
 #include "fb_gfx_win32.h"
 #include <process.h>
+#include <stdio.h>
 #include <assert.h>
 
 
@@ -53,8 +54,8 @@ static int mouse_buttons, mouse_wheel;
 LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	char key_state[256];
-	WORD key = 0;
-	
+	int key = -1;
+
 	if (message == msg_cursor) {
 		ShowCursor(wParam);
 		return 0;
@@ -68,31 +69,31 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			mouse_buttons = 0;
 			fb_hMemSet(fb_mode->dirty, TRUE, fb_win32.h);
 			break;
-		
+
 		case WM_LBUTTONDOWN:
 			mouse_buttons |= 0x1;
 			break;
-		
+
 		case WM_LBUTTONUP:
 			mouse_buttons &= ~0x1;
 			break;
-		
+
 		case WM_RBUTTONDOWN:
 			mouse_buttons |= 0x2;
 			break;
-		
+
 		case WM_RBUTTONUP:
 			mouse_buttons &= ~0x2;
 			break;
-		
+
 		case WM_MBUTTONDOWN:
 			mouse_buttons |= 0x4;
 			break;
-		
+
 		case WM_MBUTTONUP:
 			mouse_buttons &= ~0x4;
 			break;
-		
+
 		case WM_MOUSEWHEEL:
 			if (fb_win32.version < 0x40A)
 				break;
@@ -101,60 +102,94 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			else
 				mouse_wheel--;
 			break;
-		
+
 		case WM_SIZE:
 		case WM_SYSKEYDOWN:
-			if ((!fb_win32.is_active) || (fb_win32.flags & DRIVER_NO_SWITCH))
-				break;
-			if (((message == WM_SIZE) && (wParam == SIZE_MAXIMIZED)) ||
-			    ((message == WM_SYSKEYDOWN) && (wParam == VK_RETURN) && (lParam & 0x20000000))) {
-				fb_win32.exit();
-				fb_win32.flags ^= DRIVER_FULLSCREEN;
-				if (fb_win32.init()) {
-					fb_win32.exit();
-					fb_win32.flags ^= DRIVER_FULLSCREEN;
-					fb_win32.init();
-				}
-				fb_hRestorePalette();
-				fb_hMemSet(fb_mode->dirty, TRUE, fb_win32.h);
-				fb_win32.is_active = TRUE;
-			}
-			return 0;
+            {
+                if ((!fb_win32.is_active) || (fb_win32.flags & DRIVER_NO_SWITCH))
+                    break;
+                int is_alt_enter = ((message == WM_SYSKEYDOWN) && (wParam == VK_RETURN) && (lParam & 0x20000000));
+                if (((message == WM_SIZE) && (wParam == SIZE_MAXIMIZED))
+                    || is_alt_enter)
+                {
+                    fb_win32.exit();
+                    fb_win32.flags ^= DRIVER_FULLSCREEN;
+                    if (fb_win32.init()) {
+                        fb_win32.exit();
+                        fb_win32.flags ^= DRIVER_FULLSCREEN;
+                        fb_win32.init();
+                    }
+                    fb_hRestorePalette();
+                    fb_hMemSet(fb_mode->dirty, TRUE, fb_win32.h);
+                    fb_win32.is_active = TRUE;
+                }
+                if( message==WM_SYSKEYDOWN ) {
+                    if( is_alt_enter ) {
+                        return 0;
+                    }
+                    if( wParam!=VK_F10 )
+                        break;
+                    /* otherwise: fall thru to WM_KEYDOWN */
+                } else {
+                    return 0;
+                }
+            }
 
-		case WM_KEYDOWN:
+        case WM_KEYDOWN:
+            /* Beware of the fall-thru from WM_SYSKEYDOWN */
 			if (!fb_win32.is_active)
-				break;
-			switch (wParam) {
+                break;
+            {
+                WORD wVkCode = wParam;
+                WORD wVsCode = ( lParam & 0xFF0000 ) >> 16;
+                int is_ext_keycode = ( lParam & 0x1000000 )!=0;
+                size_t repeat_count = ( lParam & 0xFFFF );
+                DWORD dwControlKeyState = 0;
+                char chAsciiChar;
 
-				case VK_UP:		key = KEY_UP;		break;
-				case VK_DOWN:		key = KEY_DOWN;		break;
-				case VK_LEFT:		key = KEY_LEFT;		break;
-				case VK_RIGHT:		key = KEY_RIGHT;	break;
-				case VK_INSERT:		key = KEY_INS;		break;
-				case VK_DELETE:		key = KEY_DEL;		break;
-				case VK_HOME:		key = KEY_HOME;		break;
-				case VK_END:		key = KEY_END;		break;
-				case VK_PRIOR:		key = KEY_PAGE_UP;	break;
-				case VK_NEXT:		key = KEY_PAGE_DOWN;	break;
-				case VK_F1:
-				case VK_F2:
-				case VK_F3:
-				case VK_F4:
-				case VK_F5:
-				case VK_F6:
-				case VK_F7:
-				case VK_F8:
-				case VK_F9:
-				case VK_F10:		key = KEY_F(wParam - VK_F1 + 1); break;
+                GetKeyboardState(key_state);
+                if( (key_state[VK_SHIFT] || key_state[VK_LSHIFT] || key_state[VK_RSHIFT]) & 0x80 )
+                    dwControlKeyState ^= SHIFT_PRESSED;
+                if( (key_state[VK_LCONTROL] || key_state[VK_CONTROL]) & 0x80 )
+                    dwControlKeyState ^= LEFT_CTRL_PRESSED;
+                if( key_state[VK_RCONTROL] & 0x80 )
+                    dwControlKeyState ^= RIGHT_CTRL_PRESSED;
+                if( (key_state[VK_LMENU] || key_state[VK_MENU]) & 0x80 )
+                    dwControlKeyState ^= LEFT_ALT_PRESSED;
+                if( key_state[VK_RMENU] & 0x80 )
+                    dwControlKeyState ^= RIGHT_ALT_PRESSED;
 
-				default:
-					GetKeyboardState(key_state);
-					if (ToAscii(wParam, (lParam >> 16) & 0xff, key_state, &key, 0) != 1)
-						key = 0;
-					break;
-			}
-			if (key)
-				fb_hPostKey(key);
+                printf("State = %02lx %02x %02x %02x\n",
+                       dwControlKeyState,
+                       (unsigned) (unsigned char) key_state[VK_CONTROL],
+                       (unsigned) (unsigned char) key_state[VK_LCONTROL],
+                       (unsigned) (unsigned char) key_state[VK_RCONTROL]
+                      );
+
+                if( is_ext_keycode ) {
+                    chAsciiChar = 0;
+                } else {
+                    WORD wKey;
+                    if (ToAscii(wParam, wVsCode, key_state, &wKey, 0) != 1) {
+                        chAsciiChar = 0;
+                    } else {
+                        chAsciiChar = (char) wKey;
+                    }
+                }
+                if( chAsciiChar!=0 )
+                    printf("Char = %c\n", chAsciiChar);
+                printf( "ScanCode = %04hx\n", wVsCode );
+                printf( "KeyCode = %04hx\n", wVkCode );
+                key = fb_hConsoleTranslateKey( chAsciiChar,
+                                               wVsCode,
+                                               wVkCode,
+                                               dwControlKeyState );
+                printf("Result = %04x\n", key );
+                if (key!=-1) {
+                    while( repeat_count-- )
+                        fb_hPostKey(key);
+                }
+            }
 			return 0;
 
 		case WM_CLOSE:
@@ -192,13 +227,13 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 	info.dwOSVersionInfoSize = sizeof(info);
 	GetVersionEx(&info);
 	fb_win32.version = (info.dwMajorVersion << 8) | info.dwMinorVersion;
-	
+
 	msg_cursor = RegisterWindowMessage("FB mouse cursor");
 	cursor_shown = TRUE;
-	
+
 	SystemParametersInfo(SPI_GETSCREENSAVEACTIVE, 0, &screensaver_active, 0);
 	SystemParametersInfo(SPI_SETSCREENSAVEACTIVE, FALSE, NULL, 0);
-	
+
 	fb_win32.hinstance = (HINSTANCE)GetModuleHandle(NULL);
 	fb_win32.window_title = title;
 	strcpy( fb_win32.window_class, WINDOW_CLASS_PREFIX );
@@ -243,12 +278,12 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
 		handle = events[1];
 		if (result != WAIT_OBJECT_0)
 			return -1;
-	
+
 		SetThreadPriority(handle, THREAD_PRIORITY_ABOVE_NORMAL);
 	}
 	else
 		handle = NULL;
-	
+
 	return 0;
 }
 
@@ -304,12 +339,12 @@ void fb_hWin32WaitVSync(void)
 int fb_hWin32GetMouse(int *x, int *y, int *z, int *buttons)
 {
 	POINT point;
-	
+
 	if (!fb_win32.is_active)
 		return -1;
-	
+
 	GetCursorPos(&point);
-	
+
 	if (fb_win32.flags & DRIVER_FULLSCREEN) {
 		*x = MID(0, point.x, fb_win32.w - 1);
 		*y = MID(0, point.y, fb_win32.h - 1);
@@ -327,7 +362,7 @@ int fb_hWin32GetMouse(int *x, int *y, int *z, int *buttons)
 	}
 	*z = mouse_wheel;
 	*buttons = mouse_buttons;
-	
+
 	return 0;
 }
 
@@ -336,7 +371,7 @@ int fb_hWin32GetMouse(int *x, int *y, int *z, int *buttons)
 void fb_hWin32SetMouse(int x, int y, int cursor)
 {
 	POINT point;
-	
+
 	if (x >= 0) {
 		point.x = MID(0, x, fb_win32.w - 1);
 		point.y = MID(0, y, fb_win32.h - 1);
@@ -344,7 +379,7 @@ void fb_hWin32SetMouse(int x, int y, int cursor)
 			ClientToScreen(fb_win32.wnd, &point);
 		SetCursorPos(point.x, point.y);
 	}
-	
+
 	if ((cursor == 0) && (cursor_shown)) {
 		PostMessage(fb_win32.wnd, msg_cursor, FALSE, 0);
 		cursor_shown = FALSE;
@@ -367,7 +402,7 @@ void fb_hWin32SetWindowTitle(char *title)
 void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh)
 {
 	HDC hdc;
-	
+
 	hdc = GetDC(NULL);
 	*width = GetDeviceCaps(hdc, HORZRES);
 	*height = GetDeviceCaps(hdc, VERTRES);

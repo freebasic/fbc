@@ -106,12 +106,16 @@ FBSTRING *fb_GfxInkey(void)
 	int key;
 
 	if ((fb_mode) && (key = get_key())) {
-		if (key > 0xFF) {
-			key = MIN(key - 0x100, KEY_MAX_SPECIALS - 1);
-			res = (FBSTRING *)fb_hStrAllocTmpDesc();
-			fb_hStrAllocTemp(res, 2);
-			res->data[0] = 0xFF;
-			res->data[1] = code[key];
+        if (key > 0xFF) {
+            res = (FBSTRING *)fb_hStrAllocTmpDesc();
+            fb_hStrAllocTemp(res, 2);
+            if( (key & 0xFF)==0xFF ) {
+                res->data[1] = (char) (key >> 8);
+            } else {
+                key = MIN(key - 0x100, KEY_MAX_SPECIALS - 1);
+                res->data[1] = code[key];
+            }
+            res->data[0] = FB_EXT_CHAR;
 			res->data[2] = '\0';
 
 			return res;
