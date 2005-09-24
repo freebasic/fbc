@@ -31,7 +31,13 @@
 FBCALL void fb_WriteString ( int fnum, FBSTRING *s, int mask )
 {
     if( (s == NULL) || (s->data == NULL) )
-    	fb_WriteVoid( fnum, mask );
+    {
+#if 1
+        FB_WRITESTR( fnum, "", mask, "\"%s\"" );
+#else
+        fb_WriteVoid( fnum, mask );
+#endif
+    }
     else
     {
     	FB_WRITESTR( fnum, s->data, mask, "\"%s\"" );
@@ -44,8 +50,13 @@ FBCALL void fb_WriteString ( int fnum, FBSTRING *s, int mask )
 /*:::::*/
 FBCALL void fb_WriteFixString ( int fnum, char *s, int mask )
 {
-    if( s == NULL )
-    	fb_WriteVoid( fnum, mask );
+    if( s == NULL ) {
+#if 1
+    	FB_WRITESTR( fnum, "", mask, "%s" );
+#else
+        fb_WriteVoid( fnum, mask );
+#endif
+    }
     else
     {
     	FB_WRITESTR( fnum, s, mask, "%s" );

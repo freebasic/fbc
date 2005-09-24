@@ -99,6 +99,7 @@ Version 0.15 Beta:
 - Everything that depends on VIEW PRINT on DOS (mjs)
 - MULTIKEY now recognizes enhanced scan codes on DOS (mjs)
 - F10/F11/F12 are now returned in Win32 gfx mode (mjs)
+- WRITE with empty strings must result in a "" (mjs)
 
 
 Version 0.14 Beta:
