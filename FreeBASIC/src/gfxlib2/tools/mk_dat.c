@@ -39,7 +39,7 @@ int main(int argc, char **argv)
 #endif
     const char *pszDataSourceFileName = "data/data.c";
 
-    size_t data_size_raw, data_size_compressed;
+    int data_size_raw, data_size_compressed;
     unsigned char *data_raw;
     unsigned char *data_compressed;
     data_entry *pEntry;
@@ -49,10 +49,10 @@ int main(int argc, char **argv)
     FILE *fpDataOut;
 #endif
     char data_list_entry[256];
-    size_t data_offset = 0;
+    unsigned data_offset = 0;
     data_entry *data_start = NULL, *data_end = NULL;
 
-    size_t i;
+    int i;
     int arg_index;
 
     if( argc!=0 ) {
@@ -230,7 +230,10 @@ int main(int argc, char **argv)
     fwrite( data_raw, data_size_raw, 1, fpDataOut );
 #endif
 
-    fb_hEncode(data_raw, data_size_raw, data_compressed, &data_size_compressed);
+    fb_hEncode(data_raw,
+               data_size_raw,
+               data_compressed,
+               &data_size_compressed);
 
     fprintf( fpSourceOut,
              "\n"

@@ -108,7 +108,7 @@ long long wcstoull( const wchar_t *nptr, wchar_t **endptr, int base )
 #include <stdarg.h>
 #include <stdio.h>
 
-#define wchar_t char
+#define FB_WCHAR char
 #define wcslen(s) strlen(s)
 #define iswlower(c) islower(c)
 #define iswupper(c) isupper(c)
@@ -116,13 +116,13 @@ long long wcstoull( const wchar_t *nptr, wchar_t **endptr, int base )
 #define towupper(c) toupper(c)
 
 static __inline__
-size_t __dos_mbstowcs(wchar_t *wcstr, const char *mbstr, size_t count)
+size_t __dos_mbstowcs(FB_WCHAR *wcstr, const char *mbstr, size_t count)
 {
     return memcpy(wcstr,mbstr,count), count;
 }
 
 static __inline__
-size_t __dos_wcstombs(char *mbstr, const wchar_t *wcstr, size_t count)
+size_t __dos_wcstombs(char *mbstr, const FB_WCHAR *wcstr, size_t count)
 {
     return memcpy(mbstr,wcstr,count), count;
 }
@@ -137,8 +137,8 @@ size_t __dos_wcstombs(char *mbstr, const wchar_t *wcstr, size_t count)
     strncmp(str1, str2, count)
 
 static __inline__
-int swprintf(wchar_t *buffer,
-             const wchar_t *format,
+int swprintf(FB_WCHAR *buffer,
+             const FB_WCHAR *format,
              ...)
 {
     int result;

@@ -8,13 +8,18 @@
 #include "dos/fb_unicode.h"
 #elif defined(TARGET_XBOX)
 #include "xbox/fb_unicode.h"
+#elif defined(TARGET_CYGWIN)
+/* dumb cygwin ... */
+#include "dos/fb_unicode.h"
 #else
 #include <wchar.h>
 #include <wctype.h>
 #define _LC(c) L ## c
 #endif
 
+#ifndef FB_WCHAR
 #define FB_WCHAR wchar_t
+#endif
 
 
 /*:::::*/

@@ -70,7 +70,7 @@ static void ToggleFullScreen( void )
 /*:::::*/
 LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	char key_state[256];
+	unsigned char key_state[256];
 
 	if (message == msg_cursor) {
 		ShowCursor(wParam);
