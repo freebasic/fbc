@@ -374,7 +374,9 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 								 islong as integer, _
 								 byval flags as LEXCHECK_ENUM ) static
 	dim as uinteger value, c, first_c
+    dim as integer svalue
 	dim as ulongint value64
+    dim as longint svalue64
 	dim as integer lgt
 
 	issigned = FALSE
@@ -521,13 +523,19 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 	if( not islong ) then
 		if( value and &h80000000UL ) then
 			issigned = TRUE
+            svalue = value
+			*pnum = str( svalue )
+        else
+			*pnum = str( value )
 		end if
-		*pnum = str( value )
 	else
 		if( value64 and &h8000000000000000ULL ) then
 			issigned = TRUE
+            svalue64 = value64
+			*pnum = str( svalue64 )
+        else
+			*pnum = str( value64 )
 		end if
-		*pnum = str( value64 )
 	end if
 
 	tlen = len( *pnum )

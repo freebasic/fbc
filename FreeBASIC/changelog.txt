@@ -101,6 +101,9 @@ Version 0.15 Beta:
 - Completely fixed key handling in Win32 gfx mode (mjs)
 - WRITE with empty strings must result in a "" (mjs)
 - Win32: Don't reflect key status changes when application is not active (mjs)
+- Non-Win32: Numerical constants are converted from unsigned to signed
+  before converted to string to match the reported constant type.
+  Fixes bug with constants >=&H80000000 (mjs)
 
 
 Version 0.14 Beta:
