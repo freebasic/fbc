@@ -70,7 +70,7 @@ static void ToggleFullScreen( void )
 /*:::::*/
 LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	unsigned char key_state[256];
+	BYTE key_state[256];
 
 	if (message == msg_cursor) {
 		ShowCursor(wParam);
@@ -130,52 +130,63 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
                     ToggleFullScreen();
                     return FALSE;
                 }
-                if( message!=WM_SYSKEYDOWN || wParam!=VK_F10 )
+                if( message!=WM_SYSKEYDOWN )
                     break;
             }
-            /* fall thru to WM_KEYDOWN because we want F10 */
 
         case WM_KEYDOWN:
-            /* Beware of the fall-thru from WM_SYSKEYDOWN */
-			if (!fb_win32.is_active)
-                break;
-
             {
                 WORD wVkCode = (WORD) wParam;
                 WORD wVsCode = (WORD) (( lParam & 0xFF0000 ) >> 16);
                 int is_ext_keycode = ( lParam & 0x1000000 )!=0;
                 size_t repeat_count = ( lParam & 0xFFFF );
                 DWORD dwControlKeyState = 0;
+                char chAsciiChar;
+                int is_dead_key;
                 int key;
 
                 GetKeyboardState(key_state);
-                if( (key_state[VK_SHIFT] || key_state[VK_LSHIFT] || key_state[VK_RSHIFT]) & 0x80 )
+
+                if( (key_state[VK_SHIFT] | key_state[VK_LSHIFT] | key_state[VK_RSHIFT]) & 0x80 )
                     dwControlKeyState ^= SHIFT_PRESSED;
-                if( (key_state[VK_LCONTROL] || key_state[VK_CONTROL]) & 0x80 )
+                if( (key_state[VK_LCONTROL] | key_state[VK_CONTROL]) & 0x80 )
                     dwControlKeyState ^= LEFT_CTRL_PRESSED;
                 if( key_state[VK_RCONTROL] & 0x80 )
                     dwControlKeyState ^= RIGHT_CTRL_PRESSED;
-                if( (key_state[VK_LMENU] || key_state[VK_MENU]) & 0x80 )
+                if( (key_state[VK_LMENU] | key_state[VK_MENU]) & 0x80 )
                     dwControlKeyState ^= LEFT_ALT_PRESSED;
                 if( key_state[VK_RMENU] & 0x80 )
                     dwControlKeyState ^= RIGHT_ALT_PRESSED;
                 if( is_ext_keycode )
                     dwControlKeyState |= ENHANCED_KEY;
 
+                is_dead_key = (MapVirtualKey( wVkCode, 2 ) & 0x80000000)!=0;
+                if( !is_dead_key ) {
+                    WORD wKey = 0;
+                    if( ToAscii( wVkCode, wVsCode, key_state, &wKey, 0 )==1 ) {
+                        chAsciiChar = (char) wKey;
+                    } else {
+                        chAsciiChar = 0;
+                    }
+                } else {
+                    /* Never use ToAscii when a dead key is used - otherwise
+                     * we don't get the combined character (for accents) */
+                    chAsciiChar = 0;
+                }
                 key =
-                    fb_hConsoleTranslateKey( 0,
+                    fb_hConsoleTranslateKey( chAsciiChar,
                                              wVsCode,
                                              wVkCode,
                                              dwControlKeyState,
-                                             TRUE );
-                if (key!=-1) {
+                                             FALSE );
+                if ( key>255 ) {
                     while( repeat_count-- ) {
                         fb_hPostKey(key);
                     }
                 }
 
                 /* We don't want to enter the menu ... */
-                if( wVkCode==VK_F10 )
+                if( wVkCode==VK_F10 || wVkCode==VK_MENU || key==0x6BFF )
                     return FALSE;
             }
             break;
@@ -208,7 +219,11 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
             break;
 
 		case WM_CLOSE:
-			fb_hPostKey(KEY_QUIT);
+#if 0
+			fb_hPostKey(0x6BFF); /* ALT + F4 */
+#else
+            fb_hPostKey(KEY_QUIT); /* "\xFF" "X" */
+#endif
 			return FALSE;
 
 		case WM_PAINT:

@@ -56,8 +56,6 @@ void fb_hHookConScroll(struct _fb_ConHooks *handle,
     COORD dwDest;
     CHAR_INFO FillChar;
 
-    assert( rows==1 );
-
     if( !pInfo->fViewSet ) {
         /* Try to move the window first ... */
         if( (handle->Border.Bottom+1) < pInfo->BufferSize.Y ) {

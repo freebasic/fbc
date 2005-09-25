@@ -164,7 +164,7 @@ static int directx_init(void)
 
 	DirectDrawCreate = (DIRECTDRAWCREATE)GetProcAddress(dd_library, "DirectDrawCreate");
 	DirectInputCreate = (DIRECTINPUTCREATE)GetProcAddress(di_library, "DirectInputCreateA");
-	
+
 	if ((!DirectDrawCreate) || (DirectDrawCreate(NULL, &lpDD1, NULL) != DD_OK))
 		return -1;
 	res = IDirectDraw_QueryInterface(lpDD1, &IID_IDirectDraw2, (LPVOID)&lpDD);
@@ -190,7 +190,7 @@ static int directx_init(void)
 		while( 1 )
 		{
 			flags = ((fb_win32.w == 320) && (height == 200) && (fb_win32.depth == 8)) ? DDSDM_STANDARDVGAMODE : 0;
-			
+
 			if (IDirectDraw2_SetDisplayMode(lpDD, fb_win32.w, height, fb_win32.depth, fb_win32.refresh_rate, flags) == DD_OK)
 				break;
 
@@ -235,7 +235,7 @@ static int directx_init(void)
 			return -1;
 		display_offset = 0;
 	}
-	
+
 	fb_hMemSet(&desc, 0, sizeof(DDSURFACEDESC));
 	desc.dwSize = sizeof(desc);
 	desc.dwFlags = DDSD_CAPS;
@@ -282,11 +282,11 @@ static int directx_init(void)
 	fb_win32.blitter = fb_hGetBlitter(depth, is_rgb);
 	if (!fb_win32.blitter)
 		return -1;
-	
+
 	IDirectDraw2_GetMonitorFrequency(lpDD, (LPDWORD)&fb_mode->refresh_rate);
-	
+
 	SetForegroundWindow(fb_win32.wnd);
-	
+
 	for (i = 0; i < 256; i++) {
 		c_rgodfDIKeyboard[i].pguid = &GUID_Key;
 		c_rgodfDIKeyboard[i].dwOfs = i;
@@ -299,7 +299,7 @@ static int directx_init(void)
 		return -1;
 	if (IDirectInputDevice_Acquire(lpDID) != DI_OK)
 		return -1;
-	
+
 	return 0;
 }
 
@@ -308,7 +308,7 @@ static int directx_init(void)
 static void directx_exit(void)
 {
 	DDBLTFX bltfx;
-	
+
 	if (lpDI) {
 		if (lpDID) {
 			IDirectInputDevice_Unacquire(lpDID);
@@ -316,7 +316,7 @@ static void directx_exit(void)
 		}
 		IDirectInput_Release(lpDI);
 	}
-	
+
 	if (lpDD) {
 		if ((fb_win32.flags & DRIVER_FULLSCREEN) && lpDDS) {
 			bltfx.dwSize = sizeof(bltfx);
@@ -380,17 +380,19 @@ static void directx_thread(HANDLE running_event)
 			directx_paint();
 		}
 
-		result = IDirectInputDevice_GetDeviceState(lpDID, 256, keystate);
-		if ((result == DIERR_NOTACQUIRED) || (result == DIERR_INPUTLOST))
-			IDirectInputDevice_Acquire(lpDID);
-		else {
-			/* Simplicistic way to deal with extended scancodes */
-			for (i = 0; i < 128; i++)
-				fb_mode->key[i] = ((keystate[i] | keystate[i + 128]) & 0x80) ? TRUE : FALSE;
-		}
-		
+        if( fb_win32.is_active ) {
+            result = IDirectInputDevice_GetDeviceState(lpDID, 256, keystate);
+            if ((result == DIERR_NOTACQUIRED) || (result == DIERR_INPUTLOST))
+                IDirectInputDevice_Acquire(lpDID);
+            else {
+                /* Simplicistic way to deal with extended scancodes */
+                for (i = 0; i < 128; i++)
+                    fb_mode->key[i] = ((keystate[i] | keystate[i + 128]) & 0x80) ? TRUE : FALSE;
+            }
+        }
+
 		fb_hHandleMessages();
-		
+
 		fb_hWin32Unlock();
 
 		Sleep(10);
@@ -405,14 +407,14 @@ error:
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	fb_hMemSet(&fb_win32, 0, sizeof(fb_win32));
-	
+
 	if (flags & DRIVER_OPENGL)
 		return -1;
 	fb_win32.init = directx_init;
 	fb_win32.exit = directx_exit;
 	fb_win32.paint = directx_paint;
 	fb_win32.thread = directx_thread;
-	
+
 	return fb_hWin32Init(title, w, h, depth, refresh_rate, flags);
 }
 
@@ -429,7 +431,7 @@ static HRESULT CALLBACK fetch_modes_callback(LPDDSURFACEDESC desc, LPVOID data)
 {
 	MODESLIST *modes = (MODESLIST *)data;
 	int depth = desc->ddpfPixelFormat.dwRGBBitCount;
-	
+
 	if ((depth == 16) && (desc->ddpfPixelFormat.dwGBitMask == 0x03E0))
 		depth = 15;
 	if (depth == modes->depth) {
@@ -437,7 +439,7 @@ static HRESULT CALLBACK fetch_modes_callback(LPDDSURFACEDESC desc, LPVOID data)
 		modes->data = (int *)realloc(modes->data, modes->size * sizeof(int));
 		modes->data[modes->size - 1] = (desc->dwWidth << 16) | desc->dwHeight;
 	}
-	
+
 	return DDENUMRET_OK;
 }
 
@@ -451,7 +453,7 @@ static int *driver_fetch_modes(int depth, int *size)
 	DIRECTDRAWCREATE DirectDrawCreate;
 	HMODULE library = NULL;
 	HRESULT res;
-	
+
 	if (!lpDD) {
 		library = (HMODULE)LoadLibrary("ddraw.dll");
 		if (!library)
@@ -473,12 +475,12 @@ static int *driver_fetch_modes(int depth, int *size)
 	}
 	if (IDirectDraw2_EnumDisplayModes(dd2, DDEDM_STANDARDVGAMODES, NULL, (LPVOID)&modes, fetch_modes_callback) != DD_OK)
 		modes.data = NULL;
-	
+
 	if (!lpDD) {
 		IDirectDraw_Release(dd2);
 		FreeLibrary(library);
 	}
-	
+
 	*size = modes.size;
 	return modes.data;
 }

@@ -98,8 +98,9 @@ Version 0.15 Beta:
 - SIGSEGV happened when GETJOYSTICK was used in CONSOLE mode (mjs)
 - Everything that depends on VIEW PRINT on DOS (mjs)
 - MULTIKEY now recognizes enhanced scan codes on DOS (mjs)
-- F10/F11/F12 are now returned in Win32 gfx mode (mjs)
+- Completely fixed key handling in Win32 gfx mode (mjs)
 - WRITE with empty strings must result in a "" (mjs)
+- Win32: Don't reflect key status changes when application is not active (mjs)
 
 
 Version 0.14 Beta:

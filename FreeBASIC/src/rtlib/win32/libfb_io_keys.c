@@ -26,6 +26,7 @@
  */
 
 #include <assert.h>
+#include <ctype.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
@@ -214,12 +215,19 @@ int fb_hConsoleTranslateKey( char AsciiChar,
         }
     } else {
         unsigned uiAsciiChar = (unsigned) (unsigned char) AsciiChar;
-        unsigned uiNormalKey;
+        unsigned uiNormalKey, uiNormalKeyOtherCase;
         /* Test if we must translate a "normal" key into an enhanced key */
         if( wVsCode < FB_KEY_CODES_SIZE ) {
             const FB_KEY_CODES *codes = fb_asc_key_codes + wVsCode;
 
-            uiNormalKey = MapVirtualKey( wVkCode, 2 );
+            uiNormalKey = MapVirtualKey( wVkCode, 2 ) & 0xFFFF;
+            if( isupper( (int) uiNormalKey ) ) {
+                uiNormalKeyOtherCase = tolower( (int) uiNormalKey );
+            } else if( islower( (int) uiNormalKey ) ) {
+                uiNormalKeyOtherCase = toupper( (int) uiNormalKey );
+            } else {
+                uiNormalKeyOtherCase = uiNormalKey;
+            }
 
             if( dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED) ) {
                 KeyCode = codes->value_alt;
@@ -241,7 +249,8 @@ int fb_hConsoleTranslateKey( char AsciiChar,
              *    "normal" character - this test is required to allow
              *    AltGr+character combinations that are language-specific
              *    and therefore quite hard to detect ... */
-            AddKeyCode = (KeyCode > 255) && (uiAsciiChar==uiNormalKey);
+            AddKeyCode = (KeyCode > 255)
+                && ((uiAsciiChar==uiNormalKey) || (uiAsciiChar==uiNormalKeyOtherCase));
         }
 
         if( !AddKeyCode && !bEnhancedKeysOnly) {

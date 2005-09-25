@@ -66,10 +66,10 @@ static int gdi_init(void)
 	bitmap_info = NULL;
 	buffer = NULL;
 	HDC hdc;
-	
+
 	if (fb_win32.flags & DRIVER_FULLSCREEN)
 		return -1;
-	
+
 	rect.left = rect.top = 0;
 	rect.right = fb_win32.w;
 	rect.bottom = fb_win32.h;
@@ -83,7 +83,7 @@ static int gdi_init(void)
 			   rect.right, rect.bottom, NULL, NULL, fb_win32.hinstance, NULL);
 	if (!fb_win32.wnd)
 		return -1;
-	
+
 	bitmap_info = (BITMAPINFO *)calloc(1, sizeof(BITMAPINFO) + (sizeof(RGBQUAD) * 256));
 	if (!bitmap_info)
 		return -1;
@@ -94,7 +94,7 @@ static int gdi_init(void)
 	bitmap_info->bmiHeader.biHeight = -fb_win32.h;
 	bitmap_info->bmiHeader.biClrUsed = 256;
 	bitmap_info->bmiHeader.biCompression = BI_RGB;
-	
+
 	if (fb_win32.depth == 16) {
 		fb_win32.blitter = fb_hGetBlitter(15, FALSE);
 		if (!fb_win32.blitter)
@@ -103,12 +103,12 @@ static int gdi_init(void)
 		if (!buffer)
 			return -1;
 	}
-	
+
 	SetForegroundWindow(fb_win32.wnd);
 	hdc = GetDC(fb_win32.wnd);
 	fb_mode->refresh_rate = GetDeviceCaps(hdc, VREFRESH);
 	ReleaseDC(fb_win32.wnd, hdc);
-	
+
 	return 0;
 }
 
@@ -131,17 +131,17 @@ static void gdi_thread(HANDLE running_event)
 	int i, y1, y2, h;
 	unsigned char *source, keystate[256];
 	HDC hdc;
-	
+
 	if (gdi_init())
 		goto error;
-	
+
 	SetEvent(running_event);
 	fb_win32.is_active = TRUE;
-	
+
 	while (fb_win32.is_running)
 	{
 		fb_hWin32Lock();
-		
+
 		if (fb_win32.is_palette_changed) {
 			/* Can't use fb_hMemCpy as structure layout is different :( */
 			for (i = 0; i < 256; i++) {
@@ -169,25 +169,27 @@ static void gdi_thread(HANDLE running_event)
 			}
 		}
 		ReleaseDC(fb_win32.wnd, hdc);
-		
+
 		fb_hMemSet(fb_mode->dirty, FALSE, fb_win32.h);
-		
-		GetKeyboardState(keystate);
-		for (i = 0; fb_keytable[i][0]; i++) {
-			if (fb_keytable[i][2])
-				fb_mode->key[fb_keytable[i][0]] = ((keystate[fb_keytable[i][1]] & 0x80) |
-								   (keystate[fb_keytable[i][2]] & 0x80)) ? TRUE : FALSE;
-			else
-				fb_mode->key[fb_keytable[i][0]] = (keystate[fb_keytable[i][1]] & 0x80) ? TRUE : FALSE;
-		}
-		
+
+        if( fb_win32.is_active ) {
+            GetKeyboardState(keystate);
+            for (i = 0; fb_keytable[i][0]; i++) {
+                if (fb_keytable[i][2])
+                    fb_mode->key[fb_keytable[i][0]] = ((keystate[fb_keytable[i][1]] & 0x80) |
+                                                       (keystate[fb_keytable[i][2]] & 0x80)) ? TRUE : FALSE;
+                else
+                    fb_mode->key[fb_keytable[i][0]] = (keystate[fb_keytable[i][1]] & 0x80) ? TRUE : FALSE;
+            }
+        }
+
 		fb_hHandleMessages();
-		
+
 		fb_hWin32Unlock();
-		
+
 		Sleep(10);
 	}
-	
+
 error:
 	gdi_exit();
 }
@@ -197,13 +199,13 @@ error:
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	fb_hMemSet(&fb_win32, 0, sizeof(fb_win32));
-	
+
 	if (flags & DRIVER_OPENGL)
 		return -1;
 	fb_win32.init = gdi_init;
 	fb_win32.exit = gdi_exit;
 	fb_win32.paint = gdi_paint;
 	fb_win32.thread = gdi_thread;
-	
+
 	return fb_hWin32Init(title, w, h, depth, refresh_rate, flags);
 }

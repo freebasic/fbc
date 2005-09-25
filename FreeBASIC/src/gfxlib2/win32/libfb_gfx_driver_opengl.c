@@ -82,9 +82,9 @@ static int opengl_init(void)
 	RECT rect;
 	HWND root;
 	int x, y;
-	
+
 	ShowWindow(fb_win32.wnd, SW_HIDE);
-	
+
 	if (fb_win32.flags & DRIVER_FULLSCREEN) {
 		fb_hMemSet(&mode, 0, sizeof(mode));
 		mode.dmSize = sizeof(mode);
@@ -119,7 +119,7 @@ static int opengl_init(void)
 	SetForegroundWindow(fb_win32.wnd);
 	fb_win32.is_active = TRUE;
 	fb_mode->refresh_rate = GetDeviceCaps(hdc, VREFRESH);
-	
+
 	return 0;
 }
 
@@ -137,13 +137,13 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 {
 	PIXELFORMATDESCRIPTOR pfd;
 	int pf, gl_options;
-	
+
 	fb_hMemSet(&fb_win32, 0, sizeof(fb_win32));
 
 	library	= NULL;
 	hglrc = NULL;
 	hdc = NULL;
-	
+
 	if (!(flags & DRIVER_OPENGL))
 		return -1;
 
@@ -151,10 +151,10 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	fb_win32.exit = opengl_exit;
 	fb_win32.paint = opengl_paint;
 	gl_options = flags & DRIVER_OPENGL_OPTIONS;
-	
+
 	if (fb_hWin32Init(title, w, h, depth, refresh_rate, flags))
 		return -1;
-	
+
 	library = (HMODULE)LoadLibrary("opengl32.dll");
 	if (!library)
 		return -1;
@@ -164,13 +164,13 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	fb_wglDeleteContext = (WGLDELETECONTEXT)GetProcAddress(library, "wglDeleteContext");
 	if ((!fb_wglCreateContext) || (!fb_wglMakeCurrent) || (!fb_wglDeleteContext))
 		return -1;
-	
+
 	fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title,
 				    WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE,
 				    0, 0, 320, 200, NULL, NULL, fb_win32.hinstance, NULL);
 	if ((!fb_win32.wnd) || (opengl_init()))
 		return -1;
-	
+
 	fb_hMemSet(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
 	pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
 	pfd.nVersion = 1;
@@ -183,7 +183,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	if (gl_options & HAS_ACCUMULATION_BUFFER)
 		pfd.cAccumBits = 32;
 	pfd.iLayerType = PFD_MAIN_PLANE;
-	
+
 	hdc = GetDC(fb_win32.wnd);
 	pf = ChoosePixelFormat(hdc, &pfd);
 	if ((!pf) || (!SetPixelFormat(hdc, pf, &pfd)))
@@ -192,7 +192,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	if (!hglrc)
 		return -1;
 	fb_wglMakeCurrent(hdc, hglrc);
-	
+
 	return 0;
 }
 
@@ -213,7 +213,7 @@ static void driver_exit(void)
 			DestroyWindow(fb_win32.wnd);
 		FreeLibrary(library);
 	}
-	
+
 	fb_hWin32Exit();
 }
 
@@ -239,20 +239,22 @@ static void driver_set_palette(int index, int r, int g, int b)
 /*:::::*/
 static void driver_flip(void)
 {
-	int i;
-	unsigned char keystate[256];
-	
-	GetKeyboardState(keystate);
-	for (i = 0; fb_keytable[i][0]; i++) {
-		if (fb_keytable[i][2])
-			fb_mode->key[fb_keytable[i][0]] = ((keystate[fb_keytable[i][1]] & 0x80) |
-							   (keystate[fb_keytable[i][2]] & 0x80)) ? TRUE : FALSE;
-		else
-			fb_mode->key[fb_keytable[i][0]] = (keystate[fb_keytable[i][1]] & 0x80) ? TRUE : FALSE;
-	}
-		
+    if( fb_win32.is_active ) {
+        int i;
+        unsigned char keystate[256];
+
+        GetKeyboardState(keystate);
+        for (i = 0; fb_keytable[i][0]; i++) {
+            if (fb_keytable[i][2])
+                fb_mode->key[fb_keytable[i][0]] = ((keystate[fb_keytable[i][1]] & 0x80) |
+                                                   (keystate[fb_keytable[i][2]] & 0x80)) ? TRUE : FALSE;
+            else
+                fb_mode->key[fb_keytable[i][0]] = (keystate[fb_keytable[i][1]] & 0x80) ? TRUE : FALSE;
+        }
+    }
+
 	fb_hHandleMessages();
-		
+
 	SwapBuffers(hdc);
 }
 
@@ -262,9 +264,9 @@ static int *driver_fetch_modes(int depth, int *size)
 {
 	DEVMODE devmode;
 	int *modes = NULL, index = 0;
-	
+
 	*size = 0;
-	
+
 	for (;;) {
 		if (!EnumDisplaySettings(NULL, index, &devmode))
 			break;
@@ -275,6 +277,6 @@ static int *driver_fetch_modes(int depth, int *size)
 			modes[(*size) - 1] = (devmode.dmPelsWidth << 16) | devmode.dmPelsHeight;
 		}
 	}
-	
+
 	return modes;
 }
