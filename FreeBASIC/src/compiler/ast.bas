@@ -5436,13 +5436,16 @@ private function hReportMakeDesc( byval f as ASTNODE ptr ) as zstring ptr
 
 	desc = "at parameter " + str( f->proc.params+1 )
 	if( f->proc.sym <> NULL ) then
-		desc += " of "
-		if( len( symbGetOrgName( f->proc.sym ) ) > 0 ) then
-			desc += symbGetOrgName( f->proc.sym )
-		else
-			desc += symbGetName( f->proc.sym )
+		'' not part of the rtlib?
+		if( not f->proc.isrtl ) then
+			desc += " of "
+			if( len( symbGetOrgName( f->proc.sym ) ) > 0 ) then
+				desc += symbGetOrgName( f->proc.sym )
+			else
+				desc += symbGetName( f->proc.sym )
+			end if
+			desc += "()"
 		end if
-		desc += "()"
 	end if
 
 	function = @desc
