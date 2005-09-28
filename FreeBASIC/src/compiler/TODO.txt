@@ -1,9 +1,9 @@
 
 [ ] add the non-ms bitfield's option
     - GCC will reuse the pad of the preview non-bitfield, so a
-      "foo as short" followed by "bar:1 as integer" allocate
-      "bar" at "foo:17"
-    - w/o that, GTK is screwed up in anything but Windows
+      "foo as short" followed by "bar:1 as integer" will allocate
+      "bar" at "foo:17" and 2 bytes long
+    - w/o that, GTK is screwed in anything but Windows
     - make it default in anything but Win32 *or* add a #PRAGMA to change
       cmd-line options and add "#PRAGMA msbitfields" to the Gtk headers #if WIN32
 
@@ -12,7 +12,7 @@
 
 [ ] add support for functions returning references (reuse "BYREF"), so those can
     be automatically dereferenced - but *NOT* deleted, only non-local data can
-    be referenced in C++
+    be returned by reference in C++
 
 [ ] SCOPE..END SCOPE:
     - vars should be reused (that's is, the stack "rewinded") because it's only
