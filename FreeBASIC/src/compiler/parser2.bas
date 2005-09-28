@@ -31,6 +31,10 @@ option escape
 #include once "inc\emit.bi"
 #include once "inc\rtl.bi"
 
+declare function cLogOrExpression			( byref logexpr as ASTNODE ptr ) as integer
+
+declare function cLogAndExpression			( byref logexpr as ASTNODE ptr ) as integer
+
 '':::::
 sub cUpdPointer( byval op as integer, _
 				 byref p as ASTNODE ptr, _
@@ -90,7 +94,7 @@ sub cUpdPointer( byval op as integer, _
 end sub
 
 '':::::
-''Expression      =   LogExpression .
+''Expression      =   CatExpression .
 ''
 function cExpression( byref expr as ASTNODE ptr ) as integer
 
@@ -102,7 +106,7 @@ end function
 ''CatExpression   =   LogExpression ( & LogExpression )* .
 ''
 function cCatExpression( byref catexpr as ASTNODE ptr ) as integer
-	dim as ASTNODE ptr logexpr
+	dim as ASTNODE ptr expr
 
 	function = FALSE
 
@@ -119,7 +123,7 @@ function cCatExpression( byref catexpr as ASTNODE ptr ) as integer
     		catexpr = rtlToStr( catexpr )
 
    			if( catexpr = NULL ) then
-   				hReportError FB_ERRMSG_TYPEMISMATCH
+   				hReportError( FB_ERRMSG_TYPEMISMATCH )
    				exit function
     		end if
     	end if
@@ -135,26 +139,26 @@ function cCatExpression( byref catexpr as ASTNODE ptr ) as integer
 		lexSkipToken( )
 
 		'' LogExpression
-    	if( not cLogExpression( logexpr ) ) then
-    		hReportError FB_ERRMSG_EXPECTEDEXPRESSION
+    	if( not cLogExpression( expr ) ) then
+    		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit function
     	end if
 
 		'' convert operand to string if needed
-		if( astGetDataClass( logexpr ) <> IR_DATACLASS_STRING ) then
-	   		logexpr = rtlToStr( logexpr )
+		if( astGetDataClass( expr ) <> IR_DATACLASS_STRING ) then
+	   		expr = rtlToStr( expr )
 
-	   		if( logexpr = NULL ) then
-	   			hReportError FB_ERRMSG_TYPEMISMATCH
+	   		if( expr = NULL ) then
+	   			hReportError( FB_ERRMSG_TYPEMISMATCH )
 	   			exit function
 	   		end if
     	end if
 
     	'' concatenate
-    	catexpr = astNewBOP( IR_OP_ADD, catexpr, logexpr )
+    	catexpr = astNewBOP( IR_OP_ADD, catexpr, expr )
 
         if( catexpr = NULL ) then
-			hReportError FB_ERRMSG_TYPEMISMATCH
+			hReportError( FB_ERRMSG_TYPEMISMATCH )
             exit function
         end if
 
@@ -165,16 +169,16 @@ function cCatExpression( byref catexpr as ASTNODE ptr ) as integer
 end function
 
 '':::::
-''LogExpression      =   RelExpression ( (AND | OR | XOR | EQV | IMP) RelExpression )* .
+''LogExpression      =   LogOrExpression ( (XOR | EQV | IMP) LogOrExpression )* .
 ''
 function cLogExpression( byref logexpr as ASTNODE ptr ) as integer
     dim as integer op
-    dim as ASTNODE ptr relexpr
+    dim as ASTNODE ptr expr
 
 	function = FALSE
 
-    '' RelExpression
-    if( not cRelExpression( logexpr ) ) then
+    '' LogOrExpression
+    if( not cLogOrExpression( logexpr ) ) then
 	   	exit function
     end if
 
@@ -182,10 +186,6 @@ function cLogExpression( byref logexpr as ASTNODE ptr ) as integer
     do
     	'' Logical operator
     	select case as const lexGetToken( )
-    	case FB_TK_AND
-    	    op = IR_OP_AND
-    	case FB_TK_OR
-    	    op = IR_OP_OR
     	case FB_TK_XOR
     		op = IR_OP_XOR
     	case FB_TK_EQV
@@ -198,17 +198,101 @@ function cLogExpression( byref logexpr as ASTNODE ptr ) as integer
 
     	lexSkipToken( )
 
-    	'' RelExpression
-    	if( not cRelExpression( relexpr ) ) then
-    		hReportError FB_ERRMSG_EXPECTEDEXPRESSION
+    	'' LogOrExpression
+    	if( not cLogOrExpression( expr ) ) then
+    		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit function
     	end if
 
     	'' do operation
-    	logexpr = astNewBOP( op, logexpr, relexpr )
+    	logexpr = astNewBOP( op, logexpr, expr )
 
         if( logexpr = NULL ) then
-			hReportError FB_ERRMSG_TYPEMISMATCH
+			hReportError( FB_ERRMSG_TYPEMISMATCH )
+            exit function
+        end if
+
+    loop
+
+	function = TRUE
+
+end function
+
+'':::::
+''LogOrExpression    =   LogAndExpression ( OR LogAndExpression )* .
+''
+function cLogOrExpression( byref logexpr as ASTNODE ptr ) as integer
+    dim as ASTNODE ptr expr
+
+	function = FALSE
+
+    '' LogAndExpression
+    if( not cLogAndExpression( logexpr ) ) then
+	   	exit function
+    end if
+
+    '' ( ... )*
+    do
+    	'' OR?
+    	if( lexGetToken( ) <> FB_TK_OR ) then
+    		exit do
+    	end if
+
+    	lexSkipToken( )
+
+    	'' LogAndExpression
+    	if( not cLogAndExpression( expr ) ) then
+    		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
+    		exit function
+    	end if
+
+    	'' do operation
+    	logexpr = astNewBOP( IR_OP_OR, logexpr, expr )
+
+        if( logexpr = NULL ) then
+			hReportError( FB_ERRMSG_TYPEMISMATCH )
+            exit function
+        end if
+
+    loop
+
+	function = TRUE
+
+end function
+
+'':::::
+''LogAndExpression   =   RelExpression ( AND RelExpression )* .
+''
+function cLogAndExpression( byref logexpr as ASTNODE ptr ) as integer
+    dim as ASTNODE ptr expr
+
+	function = FALSE
+
+    '' RelExpression
+    if( not cRelExpression( logexpr ) ) then
+	   	exit function
+    end if
+
+    '' ( ... )*
+    do
+    	'' AND?
+    	if( lexGetToken( ) <> FB_TK_AND ) then
+    		exit do
+    	end if
+
+    	lexSkipToken( )
+
+    	'' RelExpression
+    	if( not cRelExpression( expr ) ) then
+    		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
+    		exit function
+    	end if
+
+    	'' do operation
+    	logexpr = astNewBOP( IR_OP_AND, logexpr, expr )
+
+        if( logexpr = NULL ) then
+			hReportError( FB_ERRMSG_TYPEMISMATCH )
             exit function
         end if
 
@@ -223,7 +307,7 @@ end function
 ''
 function cRelExpression( byref relexpr as ASTNODE ptr ) as integer
     dim as integer op
-    dim as ASTNODE ptr addexpr
+    dim as ASTNODE ptr expr
 
     function = FALSE
 
@@ -255,16 +339,16 @@ function cRelExpression( byref relexpr as ASTNODE ptr ) as integer
     	lexSkipToken( )
 
     	'' AddExpression
-    	if( not cAddExpression( addexpr ) ) then
-    		hReportError FB_ERRMSG_EXPECTEDEXPRESSION
+    	if( not cAddExpression( expr ) ) then
+    		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit function
     	end if
 
    		'' do operation
-   		relexpr = astNewBOP( op, relexpr, addexpr )
+   		relexpr = astNewBOP( op, relexpr, expr )
 
     	if( relexpr = NULL ) Then
-    		hReportError FB_ERRMSG_TYPEMISMATCH
+    		hReportError( FB_ERRMSG_TYPEMISMATCH )
     		exit function
     	end if
     loop
@@ -278,7 +362,7 @@ end function
 ''
 function cAddExpression( byref addexpr as ASTNODE ptr ) as integer
     dim as integer op
-    dim as ASTNODE ptr shiftexpr
+    dim as ASTNODE ptr expr
 
     function = FALSE
 
@@ -302,21 +386,21 @@ function cAddExpression( byref addexpr as ASTNODE ptr ) as integer
     	lexSkipToken( )
 
     	'' ShiftExpression
-    	if( not cShiftExpression( shiftexpr ) ) then
-    		hReportError FB_ERRMSG_EXPECTEDEXPRESSION
+    	if( not cShiftExpression( expr ) ) then
+    		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit do
     	end if
 
     	'' check pointers
     	if( astGetDataType( addexpr ) >= IR_DATATYPE_POINTER ) then
-    		cUpdPointer( op, addexpr, shiftexpr )
-    		if( shiftexpr = NULL ) then
+    		cUpdPointer( op, addexpr, expr )
+    		if( expr = NULL ) then
     			hReportError( FB_ERRMSG_TYPEMISMATCH )
     			exit function
     		end if
 
-    	elseif( astGetDataType( shiftexpr ) >= IR_DATATYPE_POINTER ) then
-    		cUpdPointer( op, shiftexpr, addexpr )
+    	elseif( astGetDataType( expr ) >= IR_DATATYPE_POINTER ) then
+    		cUpdPointer( op, expr, addexpr )
     		if( addexpr = NULL ) then
     			hReportError( FB_ERRMSG_TYPEMISMATCH )
     			exit function
@@ -324,10 +408,10 @@ function cAddExpression( byref addexpr as ASTNODE ptr ) as integer
     	end if
 
     	'' do operation
-    	addexpr = astNewBOP( op, addexpr, shiftexpr )
+    	addexpr = astNewBOP( op, addexpr, expr )
 
     	if( addexpr = NULL ) Then
-    		hReportError FB_ERRMSG_TYPEMISMATCH
+    		hReportError( FB_ERRMSG_TYPEMISMATCH )
     		exit function
     	end if
     loop
@@ -341,7 +425,7 @@ end function
 ''
 function cShiftExpression( byref shiftexpr as ASTNODE ptr ) as integer
     dim as integer op
-    dim as ASTNODE ptr modexpr
+    dim as ASTNODE ptr expr
 
     function = FALSE
 
@@ -365,16 +449,16 @@ function cShiftExpression( byref shiftexpr as ASTNODE ptr ) as integer
     	lexSkipToken( )
 
     	'' ModExpression
-    	if( not cModExpression( modexpr ) ) then
-    		hReportError FB_ERRMSG_EXPECTEDEXPRESSION
+    	if( not cModExpression( expr ) ) then
+    		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit do
     	end if
 
     	'' do operation
-    	shiftexpr = astNewBOP( op, shiftexpr, modexpr )
+    	shiftexpr = astNewBOP( op, shiftexpr, expr )
 
     	if( shiftexpr = NULL ) Then
-    		hReportError FB_ERRMSG_TYPEMISMATCH
+    		hReportError( FB_ERRMSG_TYPEMISMATCH )
     		exit function
     	end if
     loop
@@ -387,7 +471,7 @@ end function
 ''ModExpression   =   IntDivExpression ( MOD IntDivExpression )* .
 ''
 function cModExpression( byref modexpr as ASTNODE ptr ) as integer
-    dim as ASTNODE ptr idivexpr
+    dim as ASTNODE ptr expr
 
     function = FALSE
 
@@ -406,16 +490,16 @@ function cModExpression( byref modexpr as ASTNODE ptr ) as integer
     	end if
 
     	'' IntDivExpression
-    	if( not cIntDivExpression( idivexpr ) ) then
-    		hReportError FB_ERRMSG_EXPECTEDEXPRESSION
+    	if( not cIntDivExpression( expr ) ) then
+    		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit function
     	end if
 
     	'' do operation
-    	modexpr = astNewBOP( IR_OP_MOD, modexpr, idivexpr )
+    	modexpr = astNewBOP( IR_OP_MOD, modexpr, expr )
 
     	if( modexpr = NULL ) Then
-    		hReportError FB_ERRMSG_TYPEMISMATCH
+    		hReportError( FB_ERRMSG_TYPEMISMATCH )
     		exit function
     	end if
     loop
@@ -428,7 +512,7 @@ end function
 ''IntDivExpression=   MultExpression ( '\' MultExpression )* .
 ''
 function cIntDivExpression( byref idivexpr as ASTNODE ptr ) as integer
-	dim as ASTNODE ptr mulexpr
+	dim as ASTNODE ptr expr
 
     function = FALSE
 
@@ -447,16 +531,16 @@ function cIntDivExpression( byref idivexpr as ASTNODE ptr ) as integer
     	end if
 
     	'' MultExpression
-    	if( not cMultExpression( mulexpr ) ) then
-    		hReportError FB_ERRMSG_EXPECTEDEXPRESSION
+    	if( not cMultExpression( expr ) ) then
+    		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit function
     	end if
 
     	'' do operation
-    	idivexpr = astNewBOP( IR_OP_INTDIV, idivexpr, mulexpr )
+    	idivexpr = astNewBOP( IR_OP_INTDIV, idivexpr, expr )
 
     	if( idivexpr = NULL ) Then
-    		hReportError FB_ERRMSG_TYPEMISMATCH
+    		hReportError( FB_ERRMSG_TYPEMISMATCH )
     		exit function
     	end if
     loop
@@ -470,7 +554,7 @@ end function
 ''
 function cMultExpression( byref mulexpr as ASTNODE ptr ) as integer
     dim as integer op
-    dim as ASTNODE ptr expexpr
+    dim as ASTNODE ptr expr
 
     function = FALSE
 
@@ -494,16 +578,16 @@ function cMultExpression( byref mulexpr as ASTNODE ptr ) as integer
     	lexSkipToken( )
 
     	'' ExpExpression
-    	if( not cExpExpression( expexpr ) ) then
-    		hReportError FB_ERRMSG_EXPECTEDEXPRESSION
+    	if( not cExpExpression( expr ) ) then
+    		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit do
     	end if
 
     	'' do operation
-    	mulexpr = astNewBOP( op, mulexpr, expexpr )
+    	mulexpr = astNewBOP( op, mulexpr, expr )
 
     	if( mulexpr = NULL ) Then
-    		hReportError FB_ERRMSG_TYPEMISMATCH
+    		hReportError( FB_ERRMSG_TYPEMISMATCH )
     		exit function
     	end if
     loop
@@ -516,7 +600,7 @@ end function
 ''ExpExpression   =   NegNotExpression ( '^' NegNotExpression )* .
 ''
 function cExpExpression( byref expexpr as ASTNODE ptr ) as integer
-	dim as ASTNODE ptr negexpr
+	dim as ASTNODE ptr expr
 
     function = FALSE
 
@@ -534,16 +618,16 @@ function cExpExpression( byref expexpr as ASTNODE ptr ) as integer
     	end if
 
     	'' NegNotExpression
-    	if( not cNegNotExpression( negexpr ) ) then
-    		hReportError FB_ERRMSG_EXPECTEDEXPRESSION
+    	if( not cNegNotExpression( expr ) ) then
+    		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit do
     	end if
 
     	'' do operation
-    	expexpr = astNewBOP( IR_OP_POW, expexpr, negexpr )
+    	expexpr = astNewBOP( IR_OP_POW, expexpr, expr )
 
     	if( expexpr = NULL ) Then
-    		hReportError FB_ERRMSG_TYPEMISMATCH
+    		hReportError( FB_ERRMSG_TYPEMISMATCH )
     		exit function
     	end if
     loop
@@ -574,7 +658,7 @@ function cNegNotExpression( byref negexpr as ASTNODE ptr ) as integer
 		negexpr = astNewUOP( IR_OP_NEG, negexpr )
 
     	if( negexpr = NULL ) Then
-    		hReportError FB_ERRMSG_TYPEMISMATCH
+    		hReportError( FB_ERRMSG_TYPEMISMATCH )
     		exit function
     	end if
 
@@ -609,7 +693,7 @@ function cNegNotExpression( byref negexpr as ASTNODE ptr ) as integer
 		negexpr = astNewUOP( IR_OP_NOT, negexpr )
 
     	if( negexpr = NULL ) Then
-    		hReportError FB_ERRMSG_TYPEMISMATCH
+    		hReportError( FB_ERRMSG_TYPEMISMATCH )
     		exit function
     	end if
 
