@@ -893,7 +893,7 @@ function cTypeBody( byval s as FBSYMBOL ptr ) as integer
 			select case lexGetLookAhead( 1 )
 			case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
 
-				'' it's an anonymous inner UDT
+declinner:		'' it's an anonymous inner UDT
 				istype = lexGetToken( ) = FB_TK_TYPE
 				if( istype ) then
 					if( not symbGetUDTIsUnion( s ) ) then
@@ -917,6 +917,18 @@ function cTypeBody( byval s as FBSYMBOL ptr ) as integer
 
 				'' insert it into the parent UDT
 				symbInsertInnerUDT( s, inner )
+
+			'' ambiguity: can be a stmt separator or bitfield
+			case CHAR_COLON
+				'' not a bitfield? separator..
+				if( lexGetLookAheadClass( 2 ) <> FB_TKCLASS_NUMLITERAL ) then
+					goto declinner
+				end if
+
+				'' bitfield..
+				if( not cTypeElementDecl( s ) ) then
+					exit function
+				end if
 
 			'' it's a field, parse it
 			case else

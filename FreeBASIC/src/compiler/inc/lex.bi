@@ -39,7 +39,7 @@ type FBTOKEN
 	sym				as FBSYMBOL ptr				'' symbol found, if any
 end type
 
-const FB_LEX_MAXK	= 1
+const FB_LEX_MAXK	= 2
 
 type LEX_CTX
 	tokenTB(0 to FB_LEX_MAXK) as FBTOKEN
