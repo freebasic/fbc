@@ -103,6 +103,7 @@ Version 0.15 Beta:
 - Win32: Don't reflect key status changes when application is not active (mjs)
 - Non-Win32: non-decimal signed integer constants were been saturated when over &h80000000 (mjs)
 - QB has a different order of precedence for the logical operators OR and AND (v1c)
+- ambiguity with colon ':' used after anonymous inner UDT's (v1c)
 
 
 Version 0.14 Beta:
