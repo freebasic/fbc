@@ -20,7 +20,7 @@
 /*
  * time_tmr.c -- linux timer# function
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: oct/2004 written [lillo]
  *
  */
 
@@ -36,5 +36,6 @@ FBCALL double fb_Timer( void )
         struct timeval tv;
         
         gettimeofday(&tv, NULL);
-        return (double)(((tv.tv_sec % 86400) * 1000000) + tv.tv_usec) / 1000000.0;
+        
+        return ( ((double)tv.tv_sec * 1000000.0) + (double)tv.tv_usec) * 0.000001;
 }
