@@ -36,14 +36,14 @@ static __stdcall LONG exception_filter( LPEXCEPTION_POINTERS info )
 	switch( info->ExceptionRecord->ExceptionCode )
 	{
 	case EXCEPTION_ACCESS_VIOLATION:
+	case EXCEPTION_STACK_OVERFLOW:
 		raise( SIGSEGV );
 	    break;
 
 	case EXCEPTION_FLT_DIVIDE_BY_ZERO:
-		raise( SIGFPE );
-		break;
-
+	case EXCEPTION_FLT_OVERFLOW:
 	case EXCEPTION_INT_DIVIDE_BY_ZERO:
+	case EXCEPTION_INT_OVERFLOW:
 		raise( SIGFPE );
 		break;
 	}
