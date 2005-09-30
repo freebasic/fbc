@@ -124,7 +124,7 @@ function WinMain ( byval hInstance as HINSTANCE, _
     '' Register the window class     
     ''     
     if( RegisterClass( @wcls ) = FALSE ) then
-       MessageBox( null, "This program requires Windows NT!", szAppName, MB_ICONERROR )
+       MessageBox( null, "Failed to register wcls!", szAppName, MB_ICONERROR )
        exit function
     end if
     
