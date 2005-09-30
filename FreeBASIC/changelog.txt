@@ -55,6 +55,8 @@ Version 0.15 Beta:
   user from switching fullscreen/windowed via maximize button or ALT-Enter (lillo)
 - OPEN COM for Win32 (mjs)
 - QB-compatible POS(n) is now allowed too (mjs)
+- SQLite static library for DOS (DrV)
+- stack size (-t) parameter for DOS (DrV)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)
