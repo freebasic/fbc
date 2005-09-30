@@ -74,7 +74,7 @@ end function
 
 '':::::
 function _linkFiles as integer
-	dim as integer i
+	dim as integer i, f
 	dim as string ldcline, ldpath
 #ifndef TARGET_DOS
 	dim as string resfile
@@ -172,9 +172,23 @@ function _linkFiles as integer
 #ifndef TARGET_DOS
 	kill( resfile )
 #endif
-
+	
+	if fbc.stacksize < FB_MINSTACKSIZE then
+		fbc.stacksize = FB_MINSTACKSIZE
+	end if
+	
+	f = freefile()
+	
+	if (open(fbc.outname, for binary, access read write, as #f) <> 0) then
+		exit function
+	end if
+	
+	put #f, 533, fbc.stacksize
+	
+	close #f
+	
     function = TRUE
-
+	
 end function
 
 '':::::
@@ -216,8 +230,18 @@ end function
 function _processOptions( byval opt as string, _
 						  byval argv as string ) as integer
 
-
-	function = FALSE
+	select case mid$( opt, 2 )
+	case "t"
+		fbc.stacksize = valint( argv ) * 1024
+		if( fbc.stacksize < FB_MINSTACKSIZE ) then
+			fbc.stacksize = FB_MINSTACKSIZE
+		end if
+		return TRUE
+		
+	case else
+		return FALSE
+		
+	end select
 
 end function
 

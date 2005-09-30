@@ -473,6 +473,8 @@ sub printOptions( )
 	printOption( "-r", "Do not delete the asm file(s)" )
 	if( fbc.target = FB_COMPTARGET_WIN32 or fbc.target = FB_COMPTARGET_CYGWIN ) then
 		printOption( "-s <name>", "Set subsystem (gui, console)" )
+	end if
+	if( fbc.target = FB_COMPTARGET_WIN32 or fbc.target = FB_COMPTARGET_CYGWIN or fbc.target = FB_COMPTARGET_DOS) then
 		printOption( "-t <value>", "Set stack size in kbytes (default: 1M)" )
 	end if
 
