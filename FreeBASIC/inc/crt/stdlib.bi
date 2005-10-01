@@ -14,7 +14,9 @@
 #define RAND_MAX &h7FFF
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
+#ifndef MAX_PATH
 #define MAX_PATH (260)
+#endif
 #define _MAX_PATH (260)
 #define _MAX_DRIVE (3)
 #define _MAX_DIR 256
