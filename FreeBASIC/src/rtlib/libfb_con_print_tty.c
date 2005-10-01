@@ -52,7 +52,7 @@ void fb_ConPrintTTY( fb_ConHooks *handle,
         size_t OutputDataLength = 0;
         int fDoFlush = FALSE;
         int fSetNewCoord = FALSE;
-        fb_Coord dwNewCoord;
+        fb_Coord dwMoveCoord;
         switch ( *pachOutputData ) {
         case '\a':
             /* ALARM */
@@ -62,28 +62,28 @@ void fb_ConPrintTTY( fb_ConHooks *handle,
             /* BACKSPACE */
             fSetNewCoord = TRUE;
             if( dwCurrentCoord.X > pBorder->Left ) {
-                dwNewCoord.X = dwCurrentCoord.X - 1;
+                dwMoveCoord.X = -1;
             } else {
-                dwNewCoord.X = pBorder->Left;
+                dwMoveCoord.X = 0;
             }
-            dwNewCoord.Y = dwCurrentCoord.Y;
+            dwMoveCoord.Y = 0;
             break;
         case '\n':
             /* LINE FEED / NEW LINE */
             fSetNewCoord = TRUE;
             if( is_text_mode ) {
-                dwNewCoord.X = pBorder->Left;
-                dwNewCoord.Y = dwCurrentCoord.Y + 1;
+                dwMoveCoord.X = pBorder->Left - dwCurrentCoord.X;
+                dwMoveCoord.Y = 1;
             } else {
-                dwNewCoord.X = dwCurrentCoord.X;
-                dwNewCoord.Y = dwCurrentCoord.Y + 1;
+                dwMoveCoord.X = 0;
+                dwMoveCoord.Y = 1;
             }
             break;
         case '\r':
             /* CARRIAGE RETURN */
             fSetNewCoord = TRUE;
-            dwNewCoord.X = pBorder->Left;
-            dwNewCoord.Y = dwCurrentCoord.Y;
+            dwMoveCoord.X = pBorder->Left - dwCurrentCoord.X;
+            dwMoveCoord.Y = 0;
             break;
         case '\t':
             /* TAB */
@@ -111,8 +111,9 @@ void fb_ConPrintTTY( fb_ConHooks *handle,
         }
         if( fSetNewCoord ) {
             fSetNewCoord = FALSE;
-            memcpy( &dwCurrentCoord, &dwNewCoord, sizeof( fb_Coord ) );
-            memcpy( pCoord, &dwNewCoord, sizeof( fb_Coord ) );
+            pCoord->X += dwMoveCoord.X;
+            pCoord->Y += dwMoveCoord.Y;
+            memcpy( &dwCurrentCoord, pCoord, sizeof( fb_Coord ) );
             fGotNewCoordinate = TRUE;
         }
         if( OutputDataLength!=0 ) {
