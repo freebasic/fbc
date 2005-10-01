@@ -24,13 +24,8 @@ type PVOID as any ptr
 type LPVOID as any ptr
 type PVOID64 as any ptr
 
-#ifndef _WCHAR_T_DEFINED
-#define _WCHAR_T_DEFINED
-#ifndef _WCHAR_T_
-#define _WCHAR_T_
-#undef __need_wchar_t
+#ifndef wchar_t
 type wchar_t as ushort
-#endif
 #endif
 
 type WCHAR as wchar_t
@@ -55,15 +50,14 @@ type LPCCH as zstring ptr
 type PCSTR as zstring ptr
 type LPCSTR as zstring ptr
 
-#ifndef _TCHAR_DEFINED
-#define _TCHAR_DEFINED
-#ifdef UNICODE
+#ifndef TCHAR
+# ifdef UNICODE
 type TCHAR as WCHAR 
 type _TCHAR as WCHAR
-#else
+# else
 type TCHAR as CHAR
 type _TCHAR as CHAR
-#endif
+# endif
 #endif
 
 type TBYTE as TCHAR

@@ -21,6 +21,8 @@
 #ifndef _WIN32
 #define _WIN32
 #endif
+
+#undef MAX_PATH
 #define MAX_PATH 260
 
 #ifndef NULL
