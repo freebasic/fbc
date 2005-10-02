@@ -12,6 +12,11 @@
 #include once "gtk/gtk/gtkfilefilter.bi"
 #include once "gtk/gtk/gtkwidget.bi"
 
+#define GTK_TYPE_FILE_CHOOSER gtk_file_chooser_get_type()
+#define GTK_FILE_CHOOSER(obj) G_TYPE_CHECK_INSTANCE_CAST(obj, GTK_TYPE_FILE_CHOOSER, GtkFileChooser)
+#define GTK_IS_FILE_CHOOSER(obj) G_TYPE_CHECK_INSTANCE_TYPE(obj, GTK_TYPE_FILE_CHOOSER)
+
+
 type GtkFileChooser as _GtkFileChooser
 
 enum GtkFileChooserAction

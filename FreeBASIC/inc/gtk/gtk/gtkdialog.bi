@@ -12,6 +12,13 @@
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkwindow.bi"
 
+#define GTK_TYPE_DIALOG gtk_dialog_get_type()
+#define GTK_DIALOG(obj) G_TYPE_CHECK_INSTANCE_CAST (obj, GTK_TYPE_DIALOG, GtkDialog)
+#define GTK_DIALOG_CLASS(klass) G_TYPE_CHECK_CLASS_CAST (klass, GTK_TYPE_DIALOG, GtkDialogClass)
+#define GTK_IS_DIALOG(obj) G_TYPE_CHECK_INSTANCE_TYPE (obj, GTK_TYPE_DIALOG)
+#define GTK_IS_DIALOG_CLASS(klass) G_TYPE_CHECK_CLASS_TYPE (klass, GTK_TYPE_DIALOG)
+#define GTK_DIALOG_GET_CLASS(obj) G_TYPE_INSTANCE_GET_CLASS (obj, GTK_TYPE_DIALOG, GtkDialogClass)
+
 enum GtkDialogFlags
 	GTK_DIALOG_MODAL = 1 shl 0
 	GTK_DIALOG_DESTROY_WITH_PARENT = 1 shl 1
