@@ -1953,7 +1953,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 
 	if( not cExpression( expr ) ) then
 		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-		return FALSE
+		return 0
 	end if
 
     dtype = astGetDataType( expr )
@@ -1978,19 +1978,19 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 		if( litsym = NULL ) then
 
 			'' string?
-			if( hIsString( sym->typ ) ) then
+			if( hIsString( symbGetType( sym ) ) ) then
 				hReportError( FB_ERRMSG_INVALIDDATATYPES )
-				return FALSE
+				return 0
 			end if
 
 			'' offset?
 			if( astIsOFFSET( expr ) ) then
 
 				'' different types?
-				if( (irGetDataClass( sym->typ ) <> IR_DATACLASS_INTEGER) or _
-					(irGetDataSize( sym->typ ) <> FB_POINTERSIZE) ) then
+				if( (irGetDataClass( symbGetType( sym ) ) <> IR_DATACLASS_INTEGER) or _
+					(irGetDataSize( symbGetType( sym ) ) <> FB_POINTERSIZE) ) then
 					hReportError( FB_ERRMSG_INVALIDDATATYPES )
-					return FALSE
+					return 0
 				end if
 
 				irEmitVARINIOFS( astGetSymbolOrElm( expr ) )
@@ -1999,21 +1999,21 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 				'' not a constant?
 				if( not astIsCONST( expr ) ) then
 					hReportError( FB_ERRMSG_EXPECTEDCONST )
-					return FALSE
+					return 0
 				end if
 
 				'' different types?
-				if( dtype <> sym->typ ) then
-					expr = astNewCONV( INVALID, sym->typ, sym->subtype, expr )
+				if( dtype <> symbGetType( sym ) ) then
+					expr = astNewCONV( INVALID, symbGetType( sym ), symbGetSubtype( sym ), expr )
 				end if
 
-				select case as const sym->typ
+				select case as const symbGetType( sym )
 				case FB_SYMBTYPE_LONGINT, FB_SYMBTYPE_ULONGINT
-					irEmitVARINI64( sym->typ, astGetValLong( expr ) )
+					irEmitVARINI64( symbGetType( sym ), astGetValLong( expr ) )
 				case FB_SYMBTYPE_SINGLE, FB_SYMBTYPE_DOUBLE
-					irEmitVARINIf( sym->typ, astGetValFloat( expr ) )
+					irEmitVARINIf( symbGetType( sym ), astGetValFloat( expr ) )
 				case else
-					irEmitVARINIi( sym->typ, astGetValInt( expr ) )
+					irEmitVARINIi( symbGetType( sym ), astGetValInt( expr ) )
 				end select
 
 			end if
@@ -2021,19 +2021,20 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 		else
 
 			'' not a string?
-			if( not hIsString( sym->typ ) ) then
+			if( not hIsString( symbGetType( sym ) ) ) then
 				hReportError( FB_ERRMSG_INVALIDDATATYPES )
-				return FALSE
+				return 0
 			end if
 
 			'' can't be a variable-len string
-			if( sym->typ = FB_SYMBTYPE_STRING ) then
+			if( symbGetType( sym ) = FB_SYMBTYPE_STRING ) then
 				hReportError( FB_ERRMSG_CANTINITDYNAMICSTRINGS )
-				return FALSE
+				return 0
 			end if
 
 			'' less the null-char
-			irEmitVARINISTR( sym->lgt - 1, symbGetVarText( litsym ), symbGetLen( litsym ) - 1 )
+			irEmitVARINISTR( symbGetLen( sym ) - 1, _
+							 symbGetVarText( litsym ), symbGetLen( litsym ) - 1 )
 
 		end if
 
@@ -2041,7 +2042,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 
 	else
 
-        assgexpr = astNewVAR( basesym, NULL, ofs, sym->typ, sym->subtype )
+        assgexpr = astNewVAR( basesym, NULL, ofs, symbGetType( sym ), symbGetSubtype( sym ) )
 
         assgexpr = astNewASSIGN( assgexpr, expr )
 
@@ -2054,9 +2055,9 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 
 	end if
 
-	ofs += sym->lgt
+	ofs += symbGetLen( sym )
 
-	function = TRUE
+	function = symbGetLen( sym )
 
 end function
 
@@ -2071,13 +2072,13 @@ function cSymbArrayInit( byval basesym as FBSYMBOL ptr, _
     dim as integer isopen, lgt, pad
     dim as FBVARDIM ptr d, ld
 
-	function = FALSE
+	function = 0
 
-	dimensions = sym->var.array.dims
+	dimensions = symbGetArrayDimensions( sym )
     dimcnt = 0
 
 	if( isarray ) then
-		d = sym->var.array.dimhead
+		d = symbGetArrayFirstDim( sym )
 	else
 		d = NULL
 	end if
@@ -2113,12 +2114,12 @@ function cSymbArrayInit( byval basesym as FBSYMBOL ptr, _
 		elmcnt = 0
 		do
 
-			if( sym->typ <> FB_SYMBTYPE_USERDEF ) then
-				if( not cSymbElmInit( basesym, sym, ofs, islocal ) ) then
+			if( symbGetType( sym ) <> FB_SYMBTYPE_USERDEF ) then
+				if( cSymbElmInit( basesym, sym, ofs, islocal ) = 0 ) then
 					exit function
 				end if
 			else
-				if( not cSymbUDTInit( basesym, sym, ofs, islocal ) ) then
+				if( cSymbUDTInit( basesym, sym, ofs, islocal ) = 0 ) then
 					exit function
 				end if
 			end if
@@ -2134,11 +2135,11 @@ function cSymbArrayInit( byval basesym as FBSYMBOL ptr, _
 		'' pad
 		if( not islocal ) then
 			if( elmcnt < elements ) then
-				irEmitVARINIPAD (elements - elmcnt) * sym->lgt
+				irEmitVARINIPAD( (elements - elmcnt) * symbGetLen( sym ) )
 			end if
-			lgt += elements * sym->lgt
+			lgt += elements * symbGetLen( sym )
 		else
-			lgt += elmcnt * sym->lgt
+			lgt += elmcnt * symbGetLen( sym )
 		end if
 
 		if( not isopen ) then
@@ -2160,7 +2161,7 @@ function cSymbArrayInit( byval basesym as FBSYMBOL ptr, _
 	loop while( hMatch( CHAR_COMMA ) )
 
 	'' pad
-	pad = (sym->lgt * hCalcElements( sym )) - lgt
+	pad = (symbGetLen( sym ) * hCalcElements( sym )) - lgt
 	if( pad > 0 ) then
 		if( not islocal ) then
 			irEmitVARINIPAD( pad )
@@ -2169,7 +2170,7 @@ function cSymbArrayInit( byval basesym as FBSYMBOL ptr, _
 		end if
 	end if
 
-	function = TRUE
+	function = lgt + pad
 
 end function
 
@@ -2180,9 +2181,9 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 					   byval islocal as integer ) as integer
 
 	dim as integer elements, elmcnt, isarray, elmofs, lgt, pad
-    dim as FBSYMBOL ptr elm, lelm, udt
+    dim as FBSYMBOL ptr elm, udt
 
-    function = FALSE
+    function = 0
 
 	'' '('
 	if( not hMatch( CHAR_LPRNT ) ) then
@@ -2190,11 +2191,10 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 		exit function
 	end if
 
-	udt = sym->subtype
+	udt = symbGetSubtype( sym )
 	elm = symbGetUDTFirstElm( udt )
-	lelm = NULL
 
-	elements = udt->udt.elements
+	elements = symbGetUDTElements( udt )
 	elmcnt = 0
 
 	lgt = 0
@@ -2212,8 +2212,8 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 
 		elmofs = elm->var.elm.ofs
 		if( not islocal ) then
-			if( lelm <> NULL ) then
-				pad = (elmofs - lelm->var.elm.ofs) - lelm->lgt
+			if( lgt > 0 ) then
+				pad = elmofs - lgt
 				if( pad > 0 ) then
 					irEmitVARINIPAD( pad )
 					lgt += pad
@@ -2223,9 +2223,12 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 
 		elmofs += ofs
 
-        if( not cSymbArrayInit( basesym, elm, elmofs, islocal, isarray ) ) then
+        pad = cSymbArrayInit( basesym, elm, elmofs, islocal, isarray )
+        if( pad = 0 ) then
           	exit function
         end if
+
+        lgt += pad
 
         if( isarray ) then
 			'' '}'
@@ -2235,16 +2238,13 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 			end if
 		end if
 
-		lgt += elm->lgt
-
 		'' next
-		lelm = elm
 		elm = symbGetUDTNextElm( elm )
 
 	'' ','
 	loop while( hMatch( CHAR_COMMA ) )
 
-	ofs += sym->lgt
+	ofs += symbGetLen( sym )
 
 	'' ')'
 	if( not hMatch( CHAR_RPRNT ) ) then
@@ -2254,13 +2254,15 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 
 	'' pad
 	if( not islocal ) then
-		pad = sym->lgt - lgt
+		pad = symbGetLen( sym ) - lgt
 		if( pad > 0 ) then
 			irEmitVARINIPAD( pad )
 		end if
+	else
+		pad = 0
 	end if
 
-	function = TRUE
+	function = lgt + pad
 
 end function
 
@@ -2302,7 +2304,7 @@ function cSymbolInit( byval sym as FBSYMBOL ptr ) as integer
 
 	ofs = 0
 
-	if( not cSymbArrayInit( sym, sym, ofs, islocal, isarray ) ) then
+	if( cSymbArrayInit( sym, sym, ofs, islocal, isarray ) = 0 ) then
 		exit function
 	end if
 
