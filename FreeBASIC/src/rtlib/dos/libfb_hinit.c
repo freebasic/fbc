@@ -30,17 +30,20 @@
 #include <float.h>
 #include <conio.h>
 #include <unistd.h>
+#include <sys/farptr.h>
 
 /* globals */
 int	fb_argc;
 char **	fb_argv;
 
 int ScrollWasOff = FALSE;
+FB_DOS_TXTMODE fb_dos_txtmode;
+
 
 extern char fb_commandline[];
 
 extern void (*fb_ConsolePrintBufferProc) (const void *buffer, size_t len, int mask);
-extern void fb_ConsolePrintBufferEx_BIOS (const void *buffer, size_t len, int mask);
+extern void fb_ConsolePrintBufferEx_SCRN (const void *buffer, size_t len, int mask);
 extern void fb_ConsolePrintBufferEx_STDIO(const void *buffer, size_t len, int mask);
 
 
@@ -64,10 +67,13 @@ void fb_hInit ( int argc, char **argv )
 	_control87(PC_64|RC_NEAR, MCW_PC|MCW_RC);
 
 	/* turn off blink */
-	intensevideo();
+    intensevideo();
 
 	/* use cprintf() if STDOUT is the console; 
-	   otherwise (with shell I/O redirection) use printf() */
-    fb_ConsolePrintBufferProc =
-        (isatty(1) ? fb_ConsolePrintBufferEx_BIOS : fb_ConsolePrintBufferEx_STDIO);
+     otherwise (with shell I/O redirection) use printf() */
+    if( isatty(1) ) {
+        fb_ConsolePrintBufferProc = fb_ConsolePrintBufferEx_SCRN;
+    } else {
+        fb_ConsolePrintBufferProc = fb_ConsolePrintBufferEx_STDIO;
+    }
 }

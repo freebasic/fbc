@@ -36,25 +36,23 @@ int fb_ConsoleLocate_BIOS( int row, int col, int cursor )
 {
     __dpmi_regs regs;
     int x, y;
-    int shape_start, shape_end, shape_visible;
+    int shape_visible;
+    unsigned short usShapePos, usShapeSize;
 
-    regs.x.ax = 0x0300;
-    regs.x.bx = 0x0000;
-    __dpmi_int(0x10, &regs);
-    shape_start = regs.h.ch & 0x1F;
-    shape_end   = regs.h.cl & 0x1F;
-    shape_visible = (regs.h.ch & 0x60)==0;
+    _movedataw( _dos_ds, 0x450, _my_ds(), (int) &usShapePos, 1 );
+    _movedataw( _dos_ds, 0x460, _my_ds(), (int) &usShapeSize, 1 );
+    shape_visible = (usShapeSize & 0xC000)==0x0000;
 
     if( col >= 0 ) {
         x = col;
     } else {
-        x = regs.h.dl;
+        x = usShapePos & 0xFF;
     }
 
     if( row >= 0 ) {
         y = row;
     } else {
-        y = regs.h.dh;
+        y = (usShapePos >> 8) & 0xFF;
     }
 
     regs.x.ax = 0x0200;
@@ -64,7 +62,12 @@ int fb_ConsoleLocate_BIOS( int row, int col, int cursor )
     __dpmi_int(0x10, &regs);
 
     if( cursor >= 0) {
+        int shape_start, shape_end;
+
+        shape_start = (usShapeSize >> 8) & 0x1F;
+        shape_end = usShapeSize & 0x1F;
         shape_visible = cursor!=0;
+
         regs.x.ax = 0x0100;
         regs.h.ch = (unsigned char) (shape_start + (shape_visible ? 0x00 : 0x20));
         regs.h.cl = (unsigned char) shape_end;
@@ -101,6 +104,7 @@ int fb_ConsoleGetY( void )
 /*:::::*/
 void fb_ConsoleGetXY_BIOS( int *col, int *row )
 {
+#if 0
     __dpmi_regs regs;
     regs.x.ax = 0x0300;
     regs.x.bx = 0x0000;
@@ -109,6 +113,14 @@ void fb_ConsoleGetXY_BIOS( int *col, int *row )
         *col = regs.h.dl;
     if( row!=NULL )
         *row = regs.h.dh;
+#else
+    unsigned short usPos;
+    _movedataw( _dos_ds, 0x450, _my_ds(), (int) &usPos, 1 );
+    if( col )
+        *col = usPos & 0xFF;
+    if( row )
+        *row = (usPos >> 8) & 0xFF;
+#endif
 }
 
 /*:::::*/

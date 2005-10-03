@@ -36,30 +36,27 @@
 void (*fb_ConsolePrintBufferProc) (const void *buffer, size_t len, int mask);
 
 typedef struct _fb_PrintInfo {
-    fb_Rect rWindow;
-    FILE   *hOutput;
-    int     fViewSet;
+    unsigned short usAttr;
 } fb_PrintInfo;
 
 static
-void fb_hHookConScroll(struct _fb_ConHooks *handle,
-                       int x1,
-                       int y1,
-                       int x2,
-                       int y2,
-                       int rows)
+void fb_hHookConScroll_BIOS(struct _fb_ConHooks *handle,
+                            int x1, int y1,
+                            int x2, int y2,
+                            int rows)
 {
     fb_ConsoleScroll_BIOS( x1, y1, x2, y2, rows );
 }
 
 static
-int  fb_hHookConWrite (struct _fb_ConHooks *handle,
-                       const void *buffer,
-                       size_t length )
+int  fb_hHookConWrite_BIOS (struct _fb_ConHooks *handle,
+                            const void *buffer,
+                            size_t length )
 {
+    fb_PrintInfo *pInfo = (fb_PrintInfo*) handle->Opaque;
     const char *pachText = (const char *)buffer;
     __dpmi_regs regs;
-    unsigned char uchAttr = (unsigned char) fb_ConsoleGetColorAtt();
+    unsigned char uchAttr = (unsigned char) pInfo->usAttr;
     int tmp_x = handle->Coord.X;
     int tmp_y = handle->Coord.Y;
 
@@ -77,8 +74,35 @@ int  fb_hHookConWrite (struct _fb_ConHooks *handle,
     return TRUE;
 }
 
+static
+int  fb_hHookConWrite_MEM (struct _fb_ConHooks *handle,
+                           const void *buffer,
+                           size_t length )
+{
+    fb_PrintInfo *pInfo = (fb_PrintInfo*) handle->Opaque;
+    const char *pachText = (const char *)buffer;
+    unsigned short usAttr = pInfo->usAttr << 8;
+    int tmp_x = handle->Coord.X;
+    int tmp_y = handle->Coord.Y;
+    unsigned char *puchBuffer = alloca( length * 2 );
+    unsigned short *pusBuffer = (unsigned short*) puchBuffer;
+    size_t i;
+
+    i = length;
+    pusBuffer += length;
+    while( i-- ) {
+        *--pusBuffer = usAttr + (unsigned short) (unsigned char) pachText[i];
+    }
+
+    _movedataw( _my_ds(), (int) puchBuffer,
+                _dos_ds, fb_dos_txtmode.phys_addr + (fb_dos_txtmode.w << 1) * tmp_y + (tmp_x << 1),
+                length );
+
+    return TRUE;
+}
+
 /*:::::*/
-void fb_ConsolePrintBufferEx_BIOS( const void *buffer, size_t len, int mask )
+void fb_ConsolePrintBufferEx_SCRN( const void *buffer, size_t len, int mask )
 {
     const char *pachText = (const char *) buffer;
     int win_left, win_top, win_cols, win_rows;
@@ -99,21 +123,34 @@ void fb_ConsolePrintBufferEx_BIOS( const void *buffer, size_t len, int mask )
     fb_ConsoleGetView( &view_top, &view_bottom );
     win_left = win_top = 0;
 
+    {
+        unsigned char uchCurrentMode = _farpeekb( _dos_ds, 0x465 );
+        fb_dos_txtmode.w = win_cols;
+        fb_dos_txtmode.h = win_rows;
+        if( uchCurrentMode & 0x02 ) {
+            fb_dos_txtmode.phys_addr = 0x00000;
+        } else if( uchCurrentMode & 0x04 ) {
+            fb_dos_txtmode.phys_addr = 0xB0000;
+        } else {
+            fb_dos_txtmode.phys_addr = 0xB8000;
+        }
+
+    }
+
     hooks.Opaque        = &info;
-    hooks.Scroll        = fb_hHookConScroll;
-    hooks.Write         = fb_hHookConWrite ;
+    if( fb_dos_txtmode.phys_addr ) {
+        hooks.Scroll        = fb_hHookConScroll_BIOS;
+        hooks.Write         = fb_hHookConWrite_MEM;
+    } else {
+        hooks.Scroll        = fb_hHookConScroll_BIOS;
+        hooks.Write         = fb_hHookConWrite_BIOS;
+    }
     hooks.Border.Left   = win_left;
     hooks.Border.Top    = win_top + view_top - 1;
     hooks.Border.Right  = win_left + win_cols - 1;
     hooks.Border.Bottom = win_top + view_bottom - 1;
 
-    info.hOutput        = stdout;
-    info.rWindow.Left   = win_left;
-    info.rWindow.Top    = win_top;
-    info.rWindow.Right  = win_left + win_cols - 1;
-    info.rWindow.Bottom = win_top + win_rows - 1;
-    info.fViewSet       = hooks.Border.Top!=info.rWindow.Top
-        || hooks.Border.Bottom!=info.rWindow.Bottom;
+    info.usAttr         = (unsigned short) (unsigned char) fb_ConsoleGetColorAtt();
 
     {
         fb_ConsoleGetXY_BIOS( &hooks.Coord.X, &hooks.Coord.Y );
