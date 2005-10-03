@@ -51,10 +51,10 @@ void fb_hHookConScroll(struct _fb_ConHooks *handle,
 {
     fb_PrintInfo *pInfo = (fb_PrintInfo*) handle->Opaque;
     HANDLE hnd = pInfo->hOutput;
+    int iBufferHeight, iScrollHeight, iClearFrom, iClearTo, iClearPos;
 
     SMALL_RECT srScroll;
     COORD dwDest;
-    CHAR_INFO FillChar;
 
     if( !pInfo->fViewSet ) {
         /* Try to move the window first ... */
@@ -75,6 +75,7 @@ void fb_hHookConScroll(struct _fb_ConHooks *handle,
         dwDest.X = dwDest.Y = 0;
         srScroll.Right = (SHORT) (pInfo->BufferSize.X-1);
         srScroll.Bottom = (SHORT) (pInfo->BufferSize.Y-1);
+        iBufferHeight = pInfo->BufferSize.Y;
 
     } else {
         /* Scroll only the area defined by a previous VIEW PRINT */
@@ -82,15 +83,50 @@ void fb_hHookConScroll(struct _fb_ConHooks *handle,
         dwDest.Y = (SHORT) handle->Border.Top;
         srScroll.Right = (SHORT) handle->Border.Right;
         srScroll.Bottom = (SHORT) handle->Border.Bottom;
+        iBufferHeight = handle->Border.Bottom - handle->Border.Top + 1;
     }
 
-    srScroll.Left = dwDest.X;
-    srScroll.Top = (SHORT) (dwDest.Y + rows);
+    if( iBufferHeight <= rows ) {
+        /* simply clear the buffer */
+        iClearFrom = handle->Border.Top;
+        iClearTo = handle->Border.Bottom + 1;
+    } else {
+        /* Move some part of the console screen buffer to another
+         * position. */
+        CHAR_INFO FillChar;
 
-    FillChar.Attributes = pInfo->wAttributes;
-    FillChar.Char.AsciiChar = 32;
+        srScroll.Left = dwDest.X;
+        srScroll.Top = (SHORT) (dwDest.Y + rows);
 
-    ScrollConsoleScreenBuffer( hnd, &srScroll, NULL, dwDest, &FillChar );
+        iScrollHeight = srScroll.Bottom - srScroll.Top + 1;
+        if( iScrollHeight < rows ) {
+            /* Don't forget that we have to clear some screen buffer regions
+             * not covered by the original scrolling region */
+            iClearFrom = dwDest.Y + iScrollHeight;
+            iClearTo = srScroll.Bottom + 1;
+        } else {
+            iClearFrom = iClearTo = 0;
+        }
+
+        FillChar.Attributes = pInfo->wAttributes;
+        FillChar.Char.AsciiChar = 32;
+
+        ScrollConsoleScreenBuffer( hnd, &srScroll, NULL, dwDest, &FillChar );
+    }
+
+    /* Clear all parts of the screen buffer not covered by the scrolling
+     * region */
+    if( iClearFrom!=iClearTo ) {
+        SHORT x1 = handle->Border.Left;
+        WORD attr = pInfo->wAttributes;
+        DWORD width = handle->Border.Right - x1 + 1;
+        for( iClearPos=iClearFrom; iClearPos!=iClearTo; ++iClearPos ) {
+            DWORD written;
+            COORD coord = { x1, (SHORT) iClearPos };
+            FillConsoleOutputAttribute( hnd, attr, width, coord, &written);
+            FillConsoleOutputCharacter( hnd, ' ', width, coord, &written );
+        }
+    }
 }
 
 static

@@ -1120,7 +1120,7 @@ data "fb_FileOpenPipe","", _
 ''		           byval lock as integer, byval filenum as integer, byval len as integer ) as integer
 data "fb_FileOpenScrn","", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 @hMultinput_cb, FALSE, FALSE, _
 	 6, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
