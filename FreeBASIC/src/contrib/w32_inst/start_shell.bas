@@ -21,6 +21,6 @@ if len(dir$(sPath + "setvars.bat"))=0 then
 	close #1
 end if
 
-shell sPath + "setvars.bat"
+shell """" + sPath + "setvars.bat" + """"
 
 end
