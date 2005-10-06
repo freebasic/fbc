@@ -30,3 +30,9 @@ start_shell.exe: start_shell.bas
 
 makescript.exe: makescript.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
+
+Setup.exe: FreeBASIC.nsi
+	$(MAKENSIS) $^
+
+SetupSource.exe: FreeBasic_src.nsi
+	$(MAKENSIS) $^
