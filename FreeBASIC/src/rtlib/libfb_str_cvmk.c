@@ -32,7 +32,7 @@ static void hCV( FBSTRING *str, int len, void *num )
 {
 	int	i;
 
-	if( (str->data != NULL) && (FB_STRSIZE( str ) == len) )
+	if( (str->data != NULL) && (FB_STRSIZE( str ) >= len) )
 	{
 		for( i = 0; i < len; i++ )
 			((char *)num)[i] = str->data[i];
