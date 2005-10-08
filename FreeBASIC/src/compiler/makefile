@@ -157,9 +157,9 @@ sources += parser-decl-typedef.bas parser-decl.bas parser-inlineasm.bas parser-l
 sources += parser-proccall-args.bas parser-proccall.bas parser-statement.bas parser-toplevel.bas
 sources += parser-compound.bas parser-compound-do.bas parser-compound-for.bas
 sources += parser-compound-if.bas parser-compound-scope.bas parser-compound-select.bas
-sources += parser-compound-while.bas parser-compound-with.bas
+sources += parser-compound-while.bas parser-compound-with.bas parser-proc.bas
 
-sources += parser2.bas parser3.bas parser5.bas parser6.bas parser7.bas
+sources += parser2.bas parser3.bas parser6.bas parser7.bas
 sources += reg.bas rtl.bas symb.bas
 sources += $(osdepsrcs)
 

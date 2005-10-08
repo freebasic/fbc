@@ -16,7 +16,7 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-'' parser part 5 - SUB's and FUNCTION's bodies
+'' proc (SUB and FUNCTION) body parsing
 ''
 '' chng: sep/2004 written [v1ctor]
 
@@ -28,8 +28,6 @@ option escape
 #include once "inc\parser.bi"
 #include once "inc\rtl.bi"
 #include once "inc\ast.bi"
-#include once "inc\ir.bi"
-#include once "inc\emit.bi"
 
 '':::::
 private sub hReportParamError( byval argnum as integer, _
