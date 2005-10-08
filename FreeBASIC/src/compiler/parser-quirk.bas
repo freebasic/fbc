@@ -157,6 +157,8 @@ function cQuirkFunction( byref funcexpr as ASTNODE ptr ) as integer
         funcexpr = cWidthStmt( TRUE )
         res = funcexpr <> NULL
 
+	case FB_TK_SCREEN
+		res = cScreenFunct( funcexpr )
 	end select
 
 	if( not res ) then

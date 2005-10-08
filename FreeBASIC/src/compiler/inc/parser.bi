@@ -281,6 +281,7 @@ declare function 	cIIFFunct				( byref funcexpr as ASTNODE ptr ) as integer
 
 declare function 	cVAFunct				( byref funcexpr as ASTNODE ptr ) as integer
 
+declare function 	cScreenFunct			( byref funcexpr as ASTNODE ptr ) as integer
 
 '':::::
 #define hMatchToken(token, errcode)							 _

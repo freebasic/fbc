@@ -52,8 +52,8 @@ function cViewStmt(byval is_func as integer = FALSE, _
 		exit function
 	end if
 
-	lexSkipToken
-	lexSkipToken
+	lexSkipToken( )
+	lexSkipToken( )
 
 	'' (Expression TO Expression)?
 	if( not is_func ) then
@@ -181,6 +181,7 @@ function cLocateStmt( byval isfunc as integer ) as ASTNODE ptr
 
 	function = NULL
 
+	'' LOCATE
 	lexSkipToken( )
 
 	if( isfunc ) then
@@ -202,6 +203,38 @@ function cLocateStmt( byval isfunc as integer ) as ASTNODE ptr
 	end if
 
     function = rtlLocate( row_arg, col_arg, cursor_vis_arg, isfunc )
+
+end function
+
+'':::::
+'' ScreenFunct   =   SCREEN '(' expr ',' expr ( ',' expr )? ')'
+''
+function cScreenFunct( byref funcexpr as ASTNODE ptr ) as integer
+    dim as ASTNODE ptr yexpr, xexpr, fexpr
+
+	function = FALSE
+
+	'' SCREEN
+	lexSkipToken( )
+
+	hMatchLPRNT( )
+
+	hMatchExpression( yexpr )
+
+	hMatchCOMMA( )
+
+	hMatchExpression( xexpr )
+
+	fexpr = NULL
+	if( hMatch( CHAR_COMMA ) ) then
+		hMatchExpression( fexpr )
+	end if
+
+	hMatchRPRNT( )
+
+	funcexpr = rtlConsoleReadXY( yexpr, xexpr, fexpr )
+
+	function = funcexpr <> NULL
 
 end function
 
