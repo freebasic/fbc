@@ -33,6 +33,9 @@ defint a-z
 #include once "inc\emit.bi"
 #include once "inc\emitdbg.bi"
 
+declare sub		 parserInit				( )
+declare sub		 parserEnd				( )
+
 '' globals
 	dim shared infileTb( ) as FBFILE
 	dim shared incpathTB( ) as zstring * FB_MAXPATHLEN+1
@@ -485,11 +488,11 @@ function fbCompile( byval infname as string, _
 	'' parse
 	tmr = timer
 
-	parser4Init( )
+	parserInit( )
 
 	res = cProgram( )
 
-	parser4End( )
+	parserEnd( )
 
 	tmr = timer - tmr
 

@@ -30,6 +30,23 @@ option escape
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
 
+declare sub		 parserCompoundStmtInit		( )
+declare sub		 parserCompoundStmtEnd		( )
+
+'':::::
+sub	parserInit( )
+
+	parserCompoundStmtInit( )
+
+end sub
+
+'':::::
+sub	parserEnd( )
+
+	parserCompoundStmtEnd( )
+
+end sub
+
 '':::::
 ''Program         =   Line* EOF .
 ''

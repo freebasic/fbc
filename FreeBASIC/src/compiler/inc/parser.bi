@@ -23,10 +23,6 @@
 #include once "inc\lex.bi"
 #include once "inc\ast.bi"
 
-declare sub 		parser4Init				( )
-
-declare sub 		parser4End				( )
-
 declare function 	cProgram				( ) as integer
 
 declare function 	cLine					( ) as integer

@@ -150,13 +150,16 @@ compiler = $(exepath)/$(subst .bas,_new$(EXE),$(main))
 sources := $(main) ast.bas edbg_stab.bas emit.bas emit_x86.bas fb.bas
 sources += flist.bas hash.bas hlp.bas ir.bas lex.bas lexpp.bas list.bas
 
-sources += parser-assignment.bas parser-comment.bas parser-decl-const.bas parser-decl-def.bas 
-sources += parser-decl-enum.bas parser-decl-option.bas parser-decl-proc-params.bas parser-decl-proc.bas 
-sources += parser-decl-struct.bas parser-decl-symb-init.bas parser-decl-symb.bas parser-decl-symbtype.bas 
-sources += parser-decl-typedef.bas parser-decl.bas parser-inlineasm.bas parser-label.bas 
+sources += parser-assignment.bas parser-comment.bas parser-decl-const.bas parser-decl-def.bas
+sources += parser-decl-enum.bas parser-decl-option.bas parser-decl-proc-params.bas parser-decl-proc.bas
+sources += parser-decl-struct.bas parser-decl-symb-init.bas parser-decl-symb.bas parser-decl-symbtype.bas
+sources += parser-decl-typedef.bas parser-decl.bas parser-inlineasm.bas parser-label.bas
 sources += parser-proccall-args.bas parser-proccall.bas parser-statement.bas parser-toplevel.bas
+sources += parser-compound.bas parser-compound-do.bas parser-compound-for.bas
+sources += parser-compound-if.bas parser-compound-scope.bas parser-compound-select.bas
+sources += parser-compound-while.bas parser-compound-with.bas
 
-sources += parser2.bas parser3.bas parser4.bas parser5.bas parser6.bas parser7.bas
+sources += parser2.bas parser3.bas parser5.bas parser6.bas parser7.bas
 sources += reg.bas rtl.bas symb.bas
 sources += $(osdepsrcs)
 
