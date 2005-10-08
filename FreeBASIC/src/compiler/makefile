@@ -163,8 +163,9 @@ sources += parser-quirk-data.bas parser-quirk-error.bas parser-quirk-file.bas
 sources += parser-quirk-goto-return.bas parser-quirk-iif.bas parser-quirk-math.bas
 sources += parser-quirk-on.bas parser-quirk-peekpoke.bas parser-quirk-string.bas
 sources += parser-quirk-vafirst.bas parser-quirk.bas parser-quirk-gfx.bas
+sources += parser-expr-atom.bas parser-expr-binary.bas parser-expr-constant.bas
+sources += parser-expr-function.bas parser-expr-unary.bas parser-expr-variable.bas
 
-sources += parser2.bas parser3.bas
 sources += reg.bas rtl.bas symb.bas
 sources += $(osdepsrcs)
 

@@ -16,8 +16,7 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-'' parser part 3 - just variables parsing.. QB quirks make it so damn
-''				   complex that a whole module was needed..
+'' variable parsing (scalars, arrays, fields and anything between)
 ''
 '' chng: sep/2004 written [v1ctor]
 ''		 oct/2004 arrays on fields [v1c]
@@ -29,8 +28,6 @@ option escape
 #include once "inc\fbint.bi"
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
-#include once "inc\ir.bi"
-#include once "inc\emit.bi"
 
 
 '':::::
