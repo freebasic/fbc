@@ -158,8 +158,13 @@ sources += parser-proccall-args.bas parser-proccall.bas parser-statement.bas par
 sources += parser-compound.bas parser-compound-do.bas parser-compound-for.bas
 sources += parser-compound-if.bas parser-compound-scope.bas parser-compound-select.bas
 sources += parser-compound-while.bas parser-compound-with.bas parser-proc.bas
+sources += parser-quirk-array.bas parser-quirk-casting.bas parser-quirk-console.bas
+sources += parser-quirk-data.bas parser-quirk-error.bas parser-quirk-file.bas
+sources += parser-quirk-goto-return.bas parser-quirk-iif.bas parser-quirk-math.bas
+sources += parser-quirk-on.bas parser-quirk-peekpoke.bas parser-quirk-string.bas
+sources += parser-quirk-vafirst.bas parser-quirk.bas
 
-sources += parser2.bas parser3.bas parser6.bas parser7.bas
+sources += parser2.bas parser3.bas parser7.bas
 sources += reg.bas rtl.bas symb.bas
 sources += $(osdepsrcs)
 

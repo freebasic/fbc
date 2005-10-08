@@ -1,0 +1,165 @@
+''	FreeBASIC - 32-bit BASIC Compiler.
+''	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+''
+''	This program is free software; you can redistribute it and/or modify
+''	it under the terms of the GNU General Public License as published by
+''	the Free Software Foundation; either version 2 of the License, or
+''	(at your option) any later version.
+''
+''	This program is distributed in the hope that it will be useful,
+''	but WITHOUT ANY WARRANTY; without even the implied warranty of
+''	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+''	GNU General Public License for more details.
+''
+''	You should have received a copy of the GNU General Public License
+''	along with this program; if not, write to the Free Software
+''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
+
+
+'' quirk array statements (ERASE, SWAP) and functions (LBOUND, UBOUND) parsing
+''
+'' chng: sep/2004 written [v1ctor]
+
+option explicit
+option escape
+
+#include once "inc\fb.bi"
+#include once "inc\fbint.bi"
+#include once "inc\parser.bi"
+#include once "inc\rtl.bi"
+#include once "inc\ast.bi"
+
+'':::::
+''ArrayStmt   	  =   ERASE ID (',' ID)*;
+''				  |   SWAP Variable, Variable .
+''
+function cArrayStmt as integer
+	dim as FBSYMBOL ptr s
+	dim as ASTNODE ptr expr1, expr2
+
+	function = FALSE
+
+	select case lexGetToken
+	case FB_TK_ERASE
+		lexSkipToken
+
+		do
+			if( not cVarOrDeref( expr1, FALSE ) ) then
+				hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
+				exit function
+			end if
+
+			'' array?
+    		s = astGetSymbolOrElm( expr1 )
+    		if( s = NULL ) then
+    			hReportError( FB_ERRMSG_EXPECTEDARRAY )
+    			exit function
+    		end if
+
+    		if( not symbIsArray( s ) ) then
+				hReportError( FB_ERRMSG_EXPECTEDARRAY )
+				exit function
+			end if
+
+			if( symbGetIsDynamic( s ) ) then
+				if( not rtlArrayErase( expr1 ) ) then
+					exit function
+				end if
+			else
+				if( not rtlArrayClear( expr1 ) ) then
+					exit function
+				end if
+			end if
+
+		'' ','?
+		loop while( hMatch( CHAR_COMMA ) )
+
+		function = TRUE
+
+	'' SWAP Variable, Variable
+	case FB_TK_SWAP
+		lexSkipToken
+
+		if( not cVarOrDeref( expr1 ) ) then
+			hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
+			exit function
+		end if
+
+		hMatchCOMMA( )
+
+		if( not cVarOrDeref( expr2 ) ) then
+			hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
+			exit function
+		end if
+
+		select case astGetDataType( expr1 )
+		case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR
+			function = rtlStrSwap( expr1, expr2 )
+		case else
+			function = rtlMemSwap( expr1, expr2 )
+		end select
+
+	end select
+
+end function
+
+'':::::
+''cArrayFunct =   (LBOUND|UBOUND) '(' ID (',' Expression)? ')' .
+''
+function cArrayFunct( byref funcexpr as ASTNODE ptr ) as integer
+	dim as ASTNODE ptr sexpr, expr
+	dim as integer islbound
+	dim as FBSYMBOL ptr s
+
+	function = FALSE
+
+	select case lexGetToken
+
+	'' (LBOUND|UBOUND) '(' ID (',' Expression)? ')'
+	case FB_TK_LBOUND, FB_TK_UBOUND
+		if( lexGetToken = FB_TK_LBOUND ) then
+			islbound = TRUE
+		else
+			islbound = FALSE
+		end if
+		lexSkipToken
+
+		'' '('
+		hMatchLPRNT( )
+
+		'' ID
+		if( not cVarOrDeref( sexpr, FALSE ) ) then
+			hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
+			exit function
+		end if
+
+		'' array?
+		s = astGetSymbolOrElm( sexpr )
+		if( s = NULL ) then
+			hReportError( FB_ERRMSG_EXPECTEDARRAY, TRUE )
+			exit function
+		end if
+
+		if( not symbIsArray( s ) ) then
+			hReportError( FB_ERRMSG_EXPECTEDARRAY, TRUE )
+			exit function
+		end if
+
+		'' (',' Expression)?
+		if( hMatch( CHAR_COMMA ) ) then
+			hMatchExpression( expr )
+		else
+			expr = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+		end if
+
+		'' ')'
+		hMatchRPRNT( )
+
+		funcexpr = rtlArrayBound( sexpr, expr, islbound )
+
+		function = funcexpr <> NULL
+
+	end select
+
+end function
+

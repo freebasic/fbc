@@ -232,6 +232,55 @@ declare function 	cGfxStmt 				( ) as integer
 
 declare function 	cGfxFunct				( byref funcexpr as ASTNODE ptr ) as integer
 
+declare function 	cGotoStmt				( ) as integer
+
+declare function 	cPrintStmt				( ) as integer
+
+declare function 	cDataStmt				( ) as integer
+
+declare function 	cArrayStmt				( ) as integer
+
+declare function 	cLineInputStmt			( ) as integer
+
+declare function 	cInputStmt				( ) as integer
+
+declare function 	cPokeStmt				( ) as integer
+
+declare function 	cFileStmt				( ) as integer
+
+declare function 	cLocateStmt				( byval isfunc as integer ) as ASTNODE ptr
+
+declare function 	cOnStmt					( ) as integer
+
+declare function 	cWriteStmt				( ) as integer
+
+declare function 	cErrorStmt				( ) as integer
+
+declare function 	cViewStmt				( byval is_func as integer = FALSE, _
+                   							 byref funcexpr as ASTNODE ptr = NULL ) as integer
+
+declare function 	cMidStmt				( ) as integer
+
+declare function 	cLSetStmt				( ) as integer
+
+declare function 	cWidthStmt				( byval isfunc as integer ) as ASTNODE ptr
+
+declare function 	cStringFunct			( byref funcexpr as ASTNODE ptr ) as integer
+
+declare function 	cMathFunct				( byref funcexpr as ASTNODE ptr ) as integer
+
+declare function 	cPeekFunct				( byref funcexpr as ASTNODE ptr ) as integer
+
+declare function 	cArrayFunct				( byref funcexpr as ASTNODE ptr ) as integer
+
+declare function 	cFileFunct				( byref funcexpr as ASTNODE ptr ) as integer
+
+declare function 	cErrorFunct				( byref funcexpr as ASTNODE ptr ) as integer
+
+declare function 	cIIFFunct				( byref funcexpr as ASTNODE ptr ) as integer
+
+declare function 	cVAFunct				( byref funcexpr as ASTNODE ptr ) as integer
+
 
 '':::::
 #define hMatchToken(token, errcode)							 _
