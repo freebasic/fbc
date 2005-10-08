@@ -53,6 +53,8 @@ declare function 	cConstAssign            ( ) as integer
 
 declare function 	cTypeDecl               ( ) as integer
 
+declare function 	cTypedefDecl			( byval id as string ) as integer
+
 declare function 	cEnumDecl               ( ) as integer
 
 declare function 	cSymbolDecl             ( ) as integer
@@ -224,6 +226,8 @@ declare function    cFuncPtrOrDerefFields	( byref sym as FBSYMBOL ptr, _
 declare sub 		cUpdPointer				( byval op as integer, _
 					  						  byref p as ASTNODE ptr, _
 					  						  byref e as ASTNODE ptr )
+
+declare function 	cAssignment				( byval assgexpr as ASTNODE ptr ) as integer
 
 declare function 	hAssignFunctResult		( byval proc as FBSYMBOL ptr, _
 											  byval expr as ASTNODE ptr ) as integer
