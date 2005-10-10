@@ -148,49 +148,94 @@ static LRESULT CALLBACK WndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lPar
 #endif
 #endif
 
+    case WM_SYSKEYDOWN:
+        if (!active)
+            break;
+
     case WM_KEYDOWN:
         {
-            BYTE KeyStates[256];
-            WORD key = 0;
-            if (!active)
-                break;
-            switch (wParam) {
+            WORD wVkCode = (WORD) wParam;
+            WORD wVsCode = (WORD) (( lParam & 0xFF0000 ) >> 16);
+            int is_ext_keycode = ( lParam & 0x1000000 )!=0;
+            size_t repeat_count = ( lParam & 0xFFFF );
+            DWORD dwControlKeyState = 0;
+            char chAsciiChar;
+            int is_dead_key;
+            int key;
+            BYTE key_state[256];
 
-            case VK_UP:		    key = KEY_UP;		break;
-            case VK_DOWN:		key = KEY_DOWN;		break;
-            case VK_LEFT:		key = KEY_LEFT;		break;
-            case VK_RIGHT:		key = KEY_RIGHT;	break;
-            case VK_INSERT:		key = KEY_INS;		break;
-            case VK_DELETE:		key = KEY_DEL;		break;
-            case VK_HOME:		key = KEY_HOME;		break;
-            case VK_END:		key = KEY_END;		break;
-            case VK_PRIOR:		key = KEY_PAGE_UP;	break;
-            case VK_NEXT:		key = KEY_PAGE_DOWN;	break;
-            case VK_F1:
-            case VK_F2:
-            case VK_F3:
-            case VK_F4:
-            case VK_F5:
-            case VK_F6:
-            case VK_F7:
-            case VK_F8:
-            case VK_F9:
-            case VK_F10:		key = KEY_F(wParam - VK_F1 + 1); break;
+            GetKeyboardState(key_state);
 
-            default:
-                GetKeyboardState(KeyStates);
-                if (ToAscii(wParam,
-                            (lParam >> 16) & 0xff,
-                            KeyStates,
-                            &key,
-                            0) != 1)
-                    key = 0;
-                break;
+            if( (key_state[VK_SHIFT] | key_state[VK_LSHIFT] | key_state[VK_RSHIFT]) & 0x80 )
+                dwControlKeyState ^= SHIFT_PRESSED;
+            if( (key_state[VK_LCONTROL] | key_state[VK_CONTROL]) & 0x80 )
+                dwControlKeyState ^= LEFT_CTRL_PRESSED;
+            if( key_state[VK_RCONTROL] & 0x80 )
+                dwControlKeyState ^= RIGHT_CTRL_PRESSED;
+            if( (key_state[VK_LMENU] | key_state[VK_MENU]) & 0x80 )
+                dwControlKeyState ^= LEFT_ALT_PRESSED;
+            if( key_state[VK_RMENU] & 0x80 )
+                dwControlKeyState ^= RIGHT_ALT_PRESSED;
+            if( is_ext_keycode )
+                dwControlKeyState |= ENHANCED_KEY;
+
+            is_dead_key = (MapVirtualKey( wVkCode, 2 ) & 0x80000000)!=0;
+            if( !is_dead_key ) {
+                WORD wKey = 0;
+                if( ToAscii( wVkCode, wVsCode, key_state, &wKey, 0 )==1 ) {
+                    chAsciiChar = (char) wKey;
+                } else {
+                    chAsciiChar = 0;
+                }
+            } else {
+                /* Never use ToAscii when a dead key is used - otherwise
+                 * we don't get the combined character (for accents) */
+                chAsciiChar = 0;
             }
-            if (key)
-                fb_hTinyPtcPostKey(key);
+            key =
+                fb_hConsoleTranslateKey( chAsciiChar,
+                                         wVsCode,
+                                         wVkCode,
+                                         dwControlKeyState,
+                                         FALSE );
+            if ( key>255 ) {
+                while( repeat_count-- ) {
+                    fb_hTinyPtcPostKey(key);
+                }
+            }
+
+            /* We don't want to enter the menu ... */
+            if( wVkCode==VK_F10 || wVkCode==VK_MENU || key==0x6BFF )
+                return FALSE;
         }
-        return 0;
+        break;
+
+    case WM_CHAR:
+        {
+            size_t repeat_count = ( lParam & 0xFFFF );
+            int key = (int) wParam;
+            if( key < 256 ) {
+                int target_cp = FB_GFX_GET_CODEPAGE();
+                if( target_cp!=-1 ) {
+                    char ch[2] = {
+                        (char) key,
+                        0
+                    };
+                    FBSTRING *result =
+                        fb_StrAllocTempDescF( ch, 2 );
+                    result = fb_hIntlConvertString( result,
+                                                    CP_ACP,
+                                                    target_cp );
+                    key = (unsigned) (unsigned char) result->data[0];
+                }
+
+                while( repeat_count-- ) {
+                    fb_hTinyPtcPostKey(key);
+                }
+            }
+        }
+
+        break;
 
     default:
         {

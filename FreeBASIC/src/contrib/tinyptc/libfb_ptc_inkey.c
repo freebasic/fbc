@@ -107,21 +107,22 @@ FBSTRING *fb_TinyPtcInkey(void)
 	int key;
 
 	if ((key = get_key())!=0) {
-		if (key > 0xFF) {
-            key = MIN(key - 0x100, KEY_MAX_SPECIALS - 1);
-
-            FB_STRLOCK();
+        if (key > 0xFF) {
+            int key_code;
+            if( (key & 0xFF)!=0xFF ) {
+                key_code = code[MIN(key - 0x100, KEY_MAX_SPECIALS - 1)];
+            } else {
+                key_code = key;
+            }
 
             res = fb_hStrAllocTemp(NULL, 2);
             if( res ) {
-                res->data[0] = 0xFF;
-                res->data[1] = code[key];
+                res->data[0] = FB_EXT_CHAR;
+                res->data[1] = key_code;
                 res->data[2] = '\0';
             } else {
                 res = &fb_strNullDesc;
             }
-
-            FB_STRUNLOCK();
 
 			return res;
 		}
