@@ -18,9 +18,9 @@
  */
 
 /*
- * hook_locate.c -- locate entrypoint, default to console mode
+ * hook_readxy.c -- reads color valoe or character from X/Y position
  *
- * chng: nov/2004 written [v1ctor]
+ * chng: sep/2005 written [mjs]
  *
  */
 
@@ -28,11 +28,19 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-FBCALL int fb_Locate( int row, int col, int cursor )
+FBCALL int fb_ReadXY( int col, int row, int colorflag )
 {
-    int new_pos;
-    int res = fb_LocateEx( row, col, cursor, &new_pos );
-    if( res!=FB_RTERROR_OK )
-        fb_LocateEx( 0, 0, cursor, &new_pos );
-	return new_pos;
+    int res;
+
+    FB_LOCK();
+
+    if( fb_hooks.readxyproc ) {
+        res = fb_hooks.readxyproc( col, row, colorflag );
+    } else {
+        res = fb_ConsoleReadXY( col, row, colorflag );
+    }
+
+    FB_UNLOCK();
+
+	return res;
 }
