@@ -58,6 +58,7 @@ Version 0.15 Beta:
 - QB-compatible POS(n) is now allowed too (mjs)
 - SQLite static library for DOS (DrV)
 - stack size (-t) parameter for DOS (DrV)
+- CLS 2 is now supported in graphics mode (mjs)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)
@@ -108,6 +109,8 @@ Version 0.15 Beta:
 - QB has a different order of precedence for the logical operators OR and AND (v1c)
 - ambiguity with colon ':' used after anonymous inner UDT's (v1c)
 - var-initializing of non-local data was not taking the number of array elements into account, causing wrong alignments (v1c)
+- CLS 1 (does nothing) and CLS 2 (clears view port only) now work as expeced in CONSOLE mode (mjs)
+- VIEW PRINT is now always reset when SCREEN or WIDTH are called (mjs)
 
 
 Version 0.14 Beta:
