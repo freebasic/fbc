@@ -37,7 +37,15 @@ void fb_GfxClear(int mode)
 	
 	fb_hPrepareTarget(NULL);
 	
-	DRIVER_LOCK();
+    DRIVER_LOCK();
+
+    if( mode==0xFFFF0000 ) {
+        if( fb_mode->flags & VIEW_PORT_SET ) {
+            mode = 1;
+        } else {
+            mode = 2;
+        }
+    }
 	
 	switch (mode) {
 		
