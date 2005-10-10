@@ -33,6 +33,7 @@
 static int key_buffer[KEY_BUFFER_LEN];
 static size_t key_head = 0, key_tail = 0;
 static INPUT_RECORD input_events[KEY_BUFFER_LEN];
+static unsigned key_scratch_pad = 0;
 
 typedef struct _FB_KEY_CODES {
     unsigned short value_normal;
@@ -277,12 +278,61 @@ fb_FnProcessMouseEvent MouseEventHook = (fb_FnProcessMouseEvent) NULL;
 static __inline__
 void fb_hConsoleProcessKeyEvent( KEY_EVENT_RECORD *event )
 {
-    int KeyCode =
-        fb_hConsoleTranslateKey( event->uChar.AsciiChar,
-                                 event->wVirtualScanCode,
-                                 event->wVirtualKeyCode,
-                                 event->dwControlKeyState,
-                                 FALSE );
+    int KeyCode;
+    if( event->bKeyDown ) {
+        KeyCode =
+            fb_hConsoleTranslateKey( event->uChar.AsciiChar,
+                                     event->wVirtualScanCode,
+                                     event->wVirtualKeyCode,
+                                     event->dwControlKeyState,
+                                     FALSE );
+    } else {
+        KeyCode = -1;
+    }
+
+    int ValidKeyStatus =
+        ((event->dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED | SHIFT_PRESSED))==0)
+        && ((event->dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED))!=0);
+
+    int AddScratchPadKey = FALSE;
+
+    if( (event->wVirtualKeyCode >= VK_NUMPAD0)
+        && (event->wVirtualKeyCode <= VK_NUMPAD9)
+        && ValidKeyStatus
+      )
+    {
+        if( event->bKeyDown ) {
+            key_scratch_pad *= 10;
+            key_scratch_pad += (event->wVirtualKeyCode - VK_NUMPAD0);
+        }
+    } else if( KeyCode!=-1 ) {
+        key_scratch_pad = 0;
+    } else if( !ValidKeyStatus ) {
+        AddScratchPadKey = key_scratch_pad!=0;
+    }
+
+#if 0
+    printf("%04hx\n", event->wVirtualScanCode);
+    printf("%04hx\n", event->wVirtualKeyCode);
+    printf("%02x\n", (unsigned) (unsigned char) event->uChar.AsciiChar);
+    printf("%08x, %d\n", key_scratch_pad, ValidKeyStatus);
+#endif
+
+    if( AddScratchPadKey ) {
+        char chAsciiCode= (char) (key_scratch_pad & 0xFF);
+        KEY_EVENT_RECORD rec;
+        SHORT wVkCode = VkKeyScan(chAsciiCode);
+        memset( &rec, 0, sizeof(KEY_EVENT_RECORD) );
+        rec.uChar.AsciiChar = chAsciiCode;
+        rec.wVirtualKeyCode = wVkCode & 0xFF;
+        rec.dwControlKeyState |= (((wVkCode & 0x100)!=0) ? SHIFT_PRESSED : 0);
+        rec.dwControlKeyState |= (((wVkCode & 0x200)!=0) ? LEFT_CTRL_PRESSED : 0);
+        rec.dwControlKeyState |= (((wVkCode & 0x400)!=0) ? LEFT_ALT_PRESSED : 0);
+        rec.wVirtualScanCode = MapVirtualKey( rec.wVirtualKeyCode, 0 );
+        fb_hConsolePostKey( key_scratch_pad & 0xFF, &rec );
+        key_scratch_pad = 0;
+    }
+
     if( KeyCode!=-1 ) {
         fb_hConsolePostKey(KeyCode, event);
     }
@@ -310,6 +360,8 @@ int fb_ConsoleProcessEvents( void )
             case KEY_EVENT:
                 if( ir.Event.KeyEvent.bKeyDown && ir.Event.KeyEvent.wRepeatCount!=0 )
                 {
+                    fb_hConsoleProcessKeyEvent( &ir.Event.KeyEvent );
+                } else if( !ir.Event.KeyEvent.bKeyDown ) {
                     fb_hConsoleProcessKeyEvent( &ir.Event.KeyEvent );
                 }
                 break;
