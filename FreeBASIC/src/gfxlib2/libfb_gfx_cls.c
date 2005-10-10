@@ -59,8 +59,8 @@ void fb_GfxClear(int mode)
             /* Clear text viewport */
             {
                 int cursor_y = fb_ConsoleGetTopRow();
-                int y_start = cursor_y * fb_mode->text_h;
-                int y_end = (fb_ConsoleGetBotRow() + 1) * fb_mode->text_h;
+                int y_start = cursor_y * fb_mode->font->h;
+                int y_end = (fb_ConsoleGetBotRow() + 1) * fb_mode->font->h;
                 int view_height = y_end - y_start;
 
                 fb_hPixelSet(fb_mode->line[y_start],
