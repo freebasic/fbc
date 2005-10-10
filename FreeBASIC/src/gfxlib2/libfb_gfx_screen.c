@@ -110,6 +110,11 @@ static void exit_proc(void)
         fb_GfxScreen(0, 0, 0, SCREEN_EXIT, 0);
 }
 
+/* Dummy function to ensure that the CONSOLE "update" hook for a VIEW PRINT
+ * doesn't get called */
+void fb_GfxViewUpdate( void )
+{
+}
 
 /*:::::*/
 static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, int refresh_rate, int flags)
@@ -149,7 +154,8 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 		fb_hooks.getmouseproc = fb_GfxGetMouse;
 		fb_hooks.setmouseproc = fb_GfxSetMouse;
 		fb_hooks.inproc = fb_GfxIn;
-		fb_hooks.outproc = fb_GfxOut;
+        fb_hooks.outproc = fb_GfxOut;
+        fb_hooks.viewupdateproc = fb_GfxViewUpdate;
         fb_mode = (MODE *)calloc(1, sizeof(MODE));
         break;
 	}
@@ -245,7 +251,10 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
 		fb_mode->view_w = fb_mode->w;
 		fb_mode->view_h = fb_mode->max_h = fb_mode->h;
 		fb_mode->text_w = info->text_w;
-		fb_mode->text_h = info->text_h;
+        fb_mode->text_h = info->text_h;
+
+        /* Reset VIEW PRINT */
+        fb_ConsoleView( 0, 0 );
 
         if( !exit_proc_set ) {
             exit_proc_set = TRUE;

@@ -34,7 +34,7 @@ FBCALL int fb_ConsoleView( int toprow, int botrow )
 
 
     minrow = 1;
-    fb_ConsoleGetSize( NULL, &maxrow );
+    fb_GetSize( NULL, &maxrow );
     if( maxrow==0 )
         maxrow = FB_SCRN_DEFAULT_HEIGHT;
 
@@ -56,11 +56,21 @@ FBCALL int fb_ConsoleView( int toprow, int botrow )
         botrow = fb_ConsoleGetBotRow() + 1;
     }
 
-    fb_ConsoleSetTopBotRows( toprow - 1, botrow - 1 );
+    if( toprow > botrow
+        || toprow < 1
+        || botrow < 1
+        || toprow > maxrow
+        || botrow > maxrow )
+    {
+        /* This is an error ... */
+        do_update = FALSE;
+        botrow = toprow = 0;
+    }
 
     if( do_update ) {
-        /* to top row */
-        fb_ConsoleViewUpdate( );
+        fb_ConsoleSetTopBotRows( toprow - 1, botrow - 1 );
+        fb_ViewUpdate( );
+        /* set cursor to top row */
         fb_Locate( toprow, 1, -1 );
     }
 

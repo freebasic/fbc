@@ -56,11 +56,23 @@ int fb_GfxWidth(int w, int h)
 		case 16: font = &fb_font_8x16; break;
 	}
 	
-	if (font) {
+    if (font) {
+        /* Update font data */
 		fb_mode->text_w = w;
 		fb_mode->text_h = h;
-		fb_mode->font = font;
-		fb_GfxClear(-1);
+        fb_mode->font = font;
+
+        /* Reset graphics VIEW */
+        fb_GfxView( -32768, -32768,
+                    -32768, -32768,
+                    DEFAULT_COLOR, DEFAULT_COLOR,
+                    FALSE );
+
+        /* Reset VIEW PRINT */
+        fb_ConsoleView( 0, 0 );
+
+        /* Clear the whole screen */
+		fb_GfxClear(0);
 	}
 
 	return cur;

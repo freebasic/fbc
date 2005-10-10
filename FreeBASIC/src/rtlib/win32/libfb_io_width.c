@@ -78,9 +78,6 @@ int fb_ConsoleWidth( int cols, int rows )
         if( rect.Bottom > max.Y )
             rect.Bottom = max.Y;
 
-        /* reset view */
-        fb_ConsoleSetTopBotRows( rect.Top, rect.Bottom );
-
         /* Ensure that the window isn't larget than the destination screen
          * buffer size */
         if( rect.Bottom < (nrows-1) ) {

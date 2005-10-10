@@ -30,26 +30,5 @@
 /*:::::*/
 FBCALL int fb_LocateSub( int row, int col, int cursor )
 {
-    int start_y, end_y;
-
-    fb_ConsoleGetView(&start_y, &end_y);
-    if( row>0 && (row<start_y || row>end_y) )
-        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-
-    fb_DevScrnInit_NoOpen( );
-
-    FB_LOCK();
-
-    if( fb_hooks.locateproc ) {
-		fb_hooks.locateproc( row, col, cursor );
-    } else {
-        fb_ConsoleLocate( row, col, cursor );
-    }
-
-    if( col > 0 )
-        FB_HANDLE_SCREEN->line_length = col - 1;
-
-    FB_UNLOCK();
-
-	return fb_ErrorSetNum( FB_RTERROR_OK );
+    return fb_LocateEx( row, col, cursor, NULL );
 }

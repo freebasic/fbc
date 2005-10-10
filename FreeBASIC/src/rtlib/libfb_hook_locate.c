@@ -30,29 +30,9 @@
 /*:::::*/
 FBCALL int fb_Locate( int row, int col, int cursor )
 {
-    int res, start_y, end_y;
-
-    fb_ConsoleGetView(&start_y, &end_y);
-    if( row>0 && (row<start_y || row>end_y) ) {
-        /* It's not allowed to change the cursor position if the new position
-         * is invalid! */
-        row = col = 0;
-    }
-
-    fb_DevScrnInit_NoOpen( );
-
-    FB_LOCK();
-
-    if( fb_hooks.locateproc ) {
-		res = fb_hooks.locateproc( row, col, cursor );
-    } else {
-        res = fb_ConsoleLocate( row, col, cursor );
-    }
-
-    if( col > 0 )
-        FB_HANDLE_SCREEN->line_length = col - 1;
-
-    FB_UNLOCK();
-
-	return res;
+    int new_pos;
+    int res = fb_LocateEx( row, col, cursor, &new_pos );
+    if( res!=FB_RTERROR_OK )
+        fb_LocateEx( 0, 0, cursor, &new_pos );
+	return new_pos;
 }

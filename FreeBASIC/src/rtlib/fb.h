@@ -1284,8 +1284,13 @@ FBCALL int          fb_Color            ( int fc, int bc );
 
 typedef int         (*FB_LOCATEPROC)    ( int row, int col, int cursor );
 
+FBCALL int          fb_LocateEx         ( int row, int col, int cursor, int *current_pos );
 FBCALL int          fb_Locate           ( int row, int col, int cursor );
 FBCALL int          fb_LocateSub        ( int row, int col, int cursor );
+
+typedef void        (*FB_VIEWUPDATEPROC)( void );
+
+FBCALL void         fb_ViewUpdate       ( void );
 
 typedef int         (*FB_WIDTHPROC)     ( int cols, int rows );
 
@@ -1340,6 +1345,7 @@ typedef struct _FB_HOOKSTB {
     FB_SETMOUSEPROC setmouseproc;
     FB_INPROC       inproc;
     FB_OUTPROC      outproc;
+    FB_VIEWUPDATEPROC viewupdateproc;
 } FB_HOOKSTB;
 
 extern FB_HOOKSTB   fb_hooks;
