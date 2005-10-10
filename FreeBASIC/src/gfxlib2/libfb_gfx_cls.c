@@ -30,7 +30,6 @@
 /*:::::*/
 void fb_GfxClear(int mode)
 {
-	unsigned char *dest;
     int i, dirty, dirty_len;
     int reset_gfx_pos;
 	
@@ -42,11 +41,18 @@ void fb_GfxClear(int mode)
 		
 		case 0:
 			/* Clear entire screen */
-			fb_hPixelSet(fb_mode->line[0], fb_mode->bg_color, fb_mode->w * fb_mode->h);
-			dirty = 0;
-			dirty_len = fb_mode->h;
-            fb_mode->cursor_x = fb_mode->cursor_y = 0;
-            reset_gfx_pos = TRUE;
+            {
+                int cursor_y = fb_ConsoleGetTopRow();
+
+                fb_hPixelSet(fb_mode->line[0], fb_mode->bg_color, fb_mode->w * fb_mode->h);
+                dirty = 0;
+                dirty_len = fb_mode->h;
+
+                fb_mode->cursor_x = 0;
+                fb_mode->cursor_y = cursor_y;
+
+                reset_gfx_pos = TRUE;
+            }
 			break;
 		
 		case 2:
@@ -56,34 +62,42 @@ void fb_GfxClear(int mode)
                 int y_start = cursor_y * fb_mode->text_h;
                 int y_end = (fb_ConsoleGetBotRow() + 1) * fb_mode->text_h;
                 int view_height = y_end - y_start;
+
                 fb_hPixelSet(fb_mode->line[y_start],
                              fb_mode->bg_color,
                              fb_mode->w * view_height);
                 dirty = y_start;
                 dirty_len = view_height;
+
                 fb_mode->cursor_x = 0;
                 fb_mode->cursor_y = cursor_y;
+
                 reset_gfx_pos = FALSE;
             }
             break;
 
 		case 1:
 		default:
-			/* Clear graphics viewport if set */
-			dest = fb_mode->line[fb_mode->view_y] + (fb_mode->view_x * fb_mode->bpp);
-			for (i = 0; i < fb_mode->view_h; i++) {
-				fb_hPixelSet(dest, fb_mode->bg_color, fb_mode->view_w);
-				dest += fb_mode->pitch;
-			}
-			dirty = fb_mode->view_y;
-			dirty_len = fb_mode->view_h;
-            reset_gfx_pos = TRUE;
+            /* Clear graphics viewport if set */
+            {
+                unsigned char *dest = fb_mode->line[fb_mode->view_y] + (fb_mode->view_x * fb_mode->bpp);
+                for (i = 0; i < fb_mode->view_h; i++) {
+                    fb_hPixelSet(dest, fb_mode->bg_color, fb_mode->view_w);
+                    dest += fb_mode->pitch;
+                }
+                dirty = fb_mode->view_y;
+                dirty_len = fb_mode->view_h;
+
+                reset_gfx_pos = TRUE;
+            }
 			break;
 	}
 	SET_DIRTY(dirty, dirty_len);
 	
 	DRIVER_UNLOCK();
-	
-	fb_mode->last_x = fb_mode->view_x + (fb_mode->view_w >> 1);
-	fb_mode->last_y = fb_mode->view_y + (fb_mode->view_h >> 1);
+
+    if( reset_gfx_pos ) {
+        fb_mode->last_x = fb_mode->view_x + (fb_mode->view_w >> 1);
+        fb_mode->last_y = fb_mode->view_y + (fb_mode->view_h >> 1);
+    }
 }
