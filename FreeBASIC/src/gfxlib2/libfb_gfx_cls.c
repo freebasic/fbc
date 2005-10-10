@@ -43,7 +43,14 @@ void fb_GfxClear(int mode)
         if( fb_mode->flags & VIEW_PORT_SET ) {
             mode = 1;
         } else {
-            mode = 2;
+            int con_y_start = fb_ConsoleGetTopRow();
+            int con_y_end = fb_ConsoleGetBotRow();
+            if( con_y_start==0 && (con_y_end==fb_mode->text_h-1) ) {
+                /* No VIEW PRINT range set */
+                mode = 0;
+            } else {
+                mode = 2;
+            }
         }
     }
 	
