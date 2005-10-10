@@ -31,17 +31,21 @@
 FBCALL void fb_GfxFlip(int from_page, int to_page)
 {
 	unsigned char *dest, *src;
-	int i, size, lock = FALSE;
+    int i, size, lock = FALSE;
+    int src_page, dst_page;
 	
-	if (!fb_mode || ((from_page==to_page) && from_page>=0))
+	if (!fb_mode)
         return;
 
-    {
+    src_page = ((from_page<0) ? fb_mode->work_page : from_page);
+    dst_page = ((  to_page<0) ? fb_mode->work_page :   to_page);
+
+    if( src_page!=dst_page) {
         /* Copy the character cell pages too */
         size_t text_size = fb_mode->text_w * fb_mode->text_h;
         DRIVER_LOCK();
-        fb_hMemCpy( fb_mode->con_pages[to_page],
-                    fb_mode->con_pages[from_page],
+        fb_hMemCpy( fb_mode->con_pages[dst_page],
+                    fb_mode->con_pages[src_page],
                     text_size * sizeof(GFX_CHAR_CELL) );
         DRIVER_UNLOCK();
     }
