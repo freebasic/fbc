@@ -764,6 +764,7 @@ FBCALL int          fb_ConsoleReadXY    ( int col, int row, int colorflag );
        int          fb_ConsoleGetColorAtt( void );
 
 FBCALL int          fb_ConsoleView      ( int toprow, int botrow );
+       int          fb_ConsoleViewEx    ( int toprow, int botrow, int set_cursor );
        void         fb_ConsoleGetView   ( int *toprow, int *botrow );
        int          fb_ConsoleGetMaxRow ( void );
        void         fb_ConsoleViewUpdate( void );
@@ -1047,7 +1048,6 @@ FBCALL int          fb_FilePutBack      ( int fnum, const void *data, size_t len
 FBCALL FBSTRING    *fb_FileStrInput     ( int bytes, int fnum );
 
 FBCALL int          fb_FileLineInput    ( int fnum, void *dst, int dst_len, int fillrem );
-FBCALL int          fb_LineInput        ( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline );
 
        int          fb_hFilePrintBuffer ( int fnum, const char *buffer );
        int          fb_hFilePrintBufferEx( FB_FILE *handle, const void *buffer, size_t len );
@@ -1309,10 +1309,17 @@ FBCALL int          fb_GetY             ( void );
 FBCALL void         fb_GetXY            ( int *col, int *row );
 FBCALL void         fb_GetSize          ( int *cols, int *rows );
 
+typedef int         (*FB_READXYPROC)    ( int col, int row, int colorflag );
+FBCALL int          fb_ReadXY           ( int col, int row, int colorflag );
+
 typedef void        (*FB_PRINTBUFFPROC) ( const void *buffer, size_t len, int mask );
 
 typedef char        *(*FB_READSTRPROC)  ( char *buffer, int len );
         char        *fb_ReadString      ( char *buffer, int len, FILE *f );
+
+typedef int         (*FB_LINEINPUTPROC) ( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline );
+FBCALL int          fb_LineInput        ( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline );
+       int          fb_ConsoleLineInput ( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline );
 
 FBCALL int          fb_Multikey         ( int scancode );
 FBCALL int          fb_GetMouse         ( int *x, int *y, int *z, int *buttons );
@@ -1346,6 +1353,8 @@ typedef struct _FB_HOOKSTB {
     FB_INPROC       inproc;
     FB_OUTPROC      outproc;
     FB_VIEWUPDATEPROC viewupdateproc;
+    FB_LINEINPUTPROC lineinputproc;
+    FB_READXYPROC   readxyproc;
 } FB_HOOKSTB;
 
 extern FB_HOOKSTB   fb_hooks;

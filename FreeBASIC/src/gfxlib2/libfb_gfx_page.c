@@ -33,8 +33,18 @@ FBCALL void fb_GfxFlip(int from_page, int to_page)
 	unsigned char *dest, *src;
 	int i, size, lock = FALSE;
 	
-	if (!fb_mode)
-		return;
+	if (!fb_mode || ((from_page==to_page) && from_page>=0))
+        return;
+
+    {
+        /* Copy the character cell pages too */
+        size_t text_size = fb_mode->text_w * fb_mode->text_h;
+        DRIVER_LOCK();
+        fb_hMemCpy( fb_mode->con_pages[to_page],
+                    fb_mode->con_pages[from_page],
+                    text_size * sizeof(GFX_CHAR_CELL) );
+        DRIVER_UNLOCK();
+    }
 	
 	if (fb_mode->driver->flip) {
 		fb_mode->driver->flip();

@@ -110,7 +110,7 @@ void fb_ConsolePrintBufferEx_SCRN( const void *buffer, size_t len, int mask )
     fb_PrintInfo info;
     fb_ConHooks hooks;
 
-    /* Do we want to correct the Win32 console cursor position? */
+    /* Do we want to correct the console cursor position? */
     if( (mask & FB_PRINT_FORCE_ADJUST)==0 ) {
         /* No, we can check for the length to avoid unnecessary stuff ... */
         if( len==0 )

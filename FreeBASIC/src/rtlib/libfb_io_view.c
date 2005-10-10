@@ -27,7 +27,7 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL int fb_ConsoleView( int toprow, int botrow )
+int fb_ConsoleViewEx( int toprow, int botrow, int set_cursor )
 {
     int do_update = FALSE;
     int maxrow, minrow;
@@ -70,10 +70,18 @@ FBCALL int fb_ConsoleView( int toprow, int botrow )
     if( do_update ) {
         fb_ConsoleSetTopBotRows( toprow - 1, botrow - 1 );
         fb_ViewUpdate( );
-        /* set cursor to top row */
-        fb_Locate( toprow, 1, -1 );
+        if( set_cursor ) {
+            /* set cursor to top row */
+            fb_Locate( toprow, 1, -1 );
+        }
     }
 
     return toprow + (botrow << 16);
+}
+
+/*:::::*/
+FBCALL int fb_ConsoleView( int toprow, int botrow )
+{
+    return fb_ConsoleViewEx( toprow, botrow, TRUE );
 }
 

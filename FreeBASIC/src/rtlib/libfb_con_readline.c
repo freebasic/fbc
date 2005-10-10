@@ -85,6 +85,8 @@ void fb_ConReadLineEx( FBSTRING *dst )
 
     fb_Locate( -1, -1, cursor_visible );
 
+    FB_UNLOCK();
+
     do {
         size_t delete_char_count = 0, add_char = FALSE;
         size_t read_len;
@@ -198,6 +200,8 @@ void fb_ConReadLineEx( FBSTRING *dst )
             fb_StrConcatAssign( dst, -1, str_right, -1, FALSE );
             len -= delete_char_count;
 
+            FB_LOCK();
+
             fb_PrintBufferEx( dst->data + pos, len - pos, 0 );
 
             /* Overwrite all deleted characters with SPC's */
@@ -206,6 +210,8 @@ void fb_ConReadLineEx( FBSTRING *dst )
             fb_hStrDelTemp( str_fill );
 
             fb_Locate( current_y, current_x, -1 );
+
+            FB_UNLOCK();
         }
 
         if( add_char ) {
@@ -223,6 +229,8 @@ void fb_ConReadLineEx( FBSTRING *dst )
             fb_StrConcatAssign( dst, -1, str_add, -1, FALSE );
             fb_StrConcatAssign( dst, -1, str_right, -1, FALSE );
             len += tmp_buffer_len;
+
+            FB_LOCK();
 
             fb_PrintBufferEx( dst->data + pos, len - pos, 0 );
 
@@ -242,11 +250,15 @@ void fb_ConReadLineEx( FBSTRING *dst )
                 }
             }
             pos += tmp_buffer_len;
+
+            FB_UNLOCK();
         }
 
         fb_Locate( -1, -1, cursor_visible );
 
 	} while (k!='\r' && k!='\n');
+
+    FB_LOCK();
 
     /* set cursor to end of line */
     fb_GetXY(&current_x, &current_y);

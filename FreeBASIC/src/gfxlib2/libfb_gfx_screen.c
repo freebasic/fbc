@@ -75,12 +75,14 @@ static void release_gfx_mem(void)
 {
 	if (fb_mode) {
 		if ((fb_mode->driver) && (fb_mode->driver->exit))
-			fb_mode->driver->exit();
+            fb_mode->driver->exit();
+        fb_hResetCharCells(FALSE);
         if (fb_mode->page) {
             int i;
-			for (i = 0; i < fb_mode->num_pages; i++)
-				free(fb_mode->page[i]);
-			free(fb_mode->page);
+            for (i = 0; i < fb_mode->num_pages; i++) {
+                free(fb_mode->page[i]);
+            }
+            free(fb_mode->page);
 		}
 		if (fb_mode->line)
 			free(fb_mode->line);
@@ -116,15 +118,71 @@ void fb_GfxViewUpdate( void )
 {
 }
 
+void fb_hResetCharCells(int do_alloc)
+{
+    int i;
+    if( fb_mode!=NULL ) {
+        /* Free the previously allocated character cells */
+        if( fb_mode->con_pages!=NULL ) {
+            for (i = 0; i < fb_mode->num_pages; i++) {
+                free(fb_mode->con_pages[i]);
+            }
+            free(fb_mode->con_pages);
+        }
+
+        if( do_alloc ) {
+            size_t text_size = fb_mode->text_w * fb_mode->text_h;
+
+            /* Allocate memory for all character cells */
+            fb_mode->con_pages = (GFX_CHAR_CELL **)malloc(sizeof(GFX_CHAR_CELL *) * fb_mode->num_pages);
+            for (i = 0; i < fb_mode->num_pages; i++) {
+                fb_mode->con_pages[i] =
+                    (GFX_CHAR_CELL *)calloc(1, sizeof(GFX_CHAR_CELL) * text_size);
+            }
+
+            /* Reset all character cells with default values */
+            fb_hClearCharCells( 0, 0,
+                                fb_mode->text_w, fb_mode->text_h,
+                                fb_mode->work_page,
+                                32,
+                                fb_mode->fg_color, fb_mode->bg_color );
+        } else {
+            fb_mode->con_pages = NULL;
+        }
+    }
+}
+
+void fb_hClearCharCells( int x1, int y1, int x2, int y2,
+                         int page,
+                         FB_WCHAR ch, unsigned fg, unsigned bg )
+{
+    GFX_CHAR_CELL fill_cell = { ch, fg, bg };
+    int clear_w = x2 - x1;
+    int text_w = fb_mode->text_w;
+    int move_w = text_w - clear_w;
+    GFX_CHAR_CELL *cell_line = fb_mode->con_pages[page]
+        + y1 * text_w + x1;
+    int y;
+    for( y=y1; y!=y2; ++y ) {
+        int x = clear_w;
+        while( x-- ) {
+            memcpy( cell_line++,
+                    &fill_cell,
+                    sizeof( GFX_CHAR_CELL ) );
+        }
+        cell_line += move_w;
+    }
+}
+
 /*:::::*/
 static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, int refresh_rate, int flags)
 {
-	const GFXDRIVER *driver = NULL;
-	int i, try;
-	char *c, *driver_name;
+    const GFXDRIVER *driver = NULL;
+    int i, try_count;
+    char *c, *driver_name;
 
-	if (num_pages <= 0)
-		num_pages = 1;
+    if (num_pages <= 0)
+        num_pages = 1;
 
     release_gfx_mem();
 
@@ -132,137 +190,150 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
     case 0:
     case 3:
     case 4:
-		memset(&fb_hooks, 0, sizeof(fb_hooks));
+        memset(&fb_hooks, 0, sizeof(fb_hooks));
         fb_mode = NULL;
         break;
 
     default:
-		fb_hooks.inkeyproc = fb_GfxInkey;
-		fb_hooks.getkeyproc = fb_GfxGetkey;
-		fb_hooks.keyhitproc = fb_GfxKeyHit;
-		fb_hooks.clsproc = fb_GfxClear;
-		fb_hooks.colorproc = fb_GfxColor;
-		fb_hooks.locateproc = fb_GfxLocate;
-		fb_hooks.widthproc = fb_GfxWidth;
-		fb_hooks.getxproc = fb_GfxGetX;
-		fb_hooks.getyproc = fb_GfxGetY;
-		fb_hooks.getxyproc = fb_GfxGetXY;
-		fb_hooks.getsizeproc = fb_GfxGetSize;
-		fb_hooks.printbuffproc = fb_GfxPrintBufferEx;
-		fb_hooks.readstrproc = fb_GfxReadStr;
-		fb_hooks.multikeyproc = fb_GfxMultikey;
-		fb_hooks.getmouseproc = fb_GfxGetMouse;
-		fb_hooks.setmouseproc = fb_GfxSetMouse;
-		fb_hooks.inproc = fb_GfxIn;
+        fb_hooks.inkeyproc = fb_GfxInkey;
+        fb_hooks.getkeyproc = fb_GfxGetkey;
+        fb_hooks.keyhitproc = fb_GfxKeyHit;
+        fb_hooks.clsproc = fb_GfxClear;
+        fb_hooks.colorproc = fb_GfxColor;
+        fb_hooks.locateproc = fb_GfxLocate;
+        fb_hooks.widthproc = fb_GfxWidth;
+        fb_hooks.getxproc = fb_GfxGetX;
+        fb_hooks.getyproc = fb_GfxGetY;
+        fb_hooks.getxyproc = fb_GfxGetXY;
+        fb_hooks.getsizeproc = fb_GfxGetSize;
+        fb_hooks.printbuffproc = fb_GfxPrintBufferEx;
+        fb_hooks.readstrproc = fb_GfxReadStr;
+        fb_hooks.multikeyproc = fb_GfxMultikey;
+        fb_hooks.getmouseproc = fb_GfxGetMouse;
+        fb_hooks.setmouseproc = fb_GfxSetMouse;
+        fb_hooks.inproc = fb_GfxIn;
         fb_hooks.outproc = fb_GfxOut;
         fb_hooks.viewupdateproc = fb_GfxViewUpdate;
+        fb_hooks.lineinputproc = fb_GfxLineInput;
+        fb_hooks.readxyproc = fb_GfxReadXY;
         fb_mode = (MODE *)calloc(1, sizeof(MODE));
         break;
-	}
+    }
 
-	if (fb_mode) {
-		fb_mode->mode_num = mode;
-		fb_mode->w = info->w;
-		fb_mode->h = info->h;
-		fb_mode->depth = info->depth;
-		if ((mode > 13) && ((depth == 8) || (depth == 15) || (depth == 16) || (depth == 24) || (depth == 32)))
-			fb_mode->depth = depth;
-		if ((flags >= 0) && (flags & DRIVER_OPENGL))
-			fb_mode->depth = MAX(16, fb_mode->depth);
-		fb_mode->default_palette = info->palette;
-		fb_mode->scanline_size = info->scanline_size;
-		fb_mode->font = (FONT *)info->font;
+    if (fb_mode) {
+        fb_mode->mode_num = mode;
+        fb_mode->w = info->w;
+        fb_mode->h = info->h;
+        fb_mode->depth = info->depth;
+        if ((mode > 13) && ((depth == 8) || (depth == 15) || (depth == 16) || (depth == 24) || (depth == 32)))
+            fb_mode->depth = depth;
+        if ((flags >= 0) && (flags & DRIVER_OPENGL))
+            fb_mode->depth = MAX(16, fb_mode->depth);
+        fb_mode->default_palette = info->palette;
+        fb_mode->scanline_size = info->scanline_size;
+        fb_mode->font = (FONT *)info->font;
 
-		switch (fb_mode->depth) {
-			case 15:
-			case 16:	fb_mode->color_mask = 0xFFFF; fb_mode->depth = 16; break;
-			case 24:
-			case 32:	fb_mode->color_mask = 0xFFFFFFFF; fb_mode->depth = 32; break;
-			default:	fb_mode->color_mask = (1 << fb_mode->depth) - 1;
-		}
+        switch (fb_mode->depth) {
+        case 15:
+        case 16:	fb_mode->color_mask = 0xFFFF; fb_mode->depth = 16; break;
+        case 24:
+        case 32:	fb_mode->color_mask = 0xFFFFFFFF; fb_mode->depth = 32; break;
+        default:	fb_mode->color_mask = (1 << fb_mode->depth) - 1;
+        }
 
-		fb_mode->bpp = BYTES_PER_PIXEL(fb_mode->depth);
-		fb_mode->pitch = fb_mode->target_pitch = fb_mode->w * fb_mode->bpp;
-		fb_mode->page = (unsigned char **)malloc(sizeof(unsigned char *) * num_pages);
-		for (i = 0; i < num_pages; i++)
-			fb_mode->page[i] = (unsigned char *)calloc(1, (fb_mode->pitch * fb_mode->h));
-		fb_mode->num_pages = num_pages;
-		fb_mode->framebuffer = fb_mode->page[0];
-		fb_mode->line = (unsigned char **)malloc(fb_mode->h * sizeof(unsigned char *));
-		for (i = 0; i < fb_mode->h; i++)
-			fb_mode->line[i] = fb_mode->framebuffer + (i * fb_mode->pitch);
-		/* dirty lines array may be bigger than needed; this is to please the
-		   gfx driver which is not aware of the scanline size */
-		fb_mode->dirty = (char *)calloc(1, fb_mode->h * fb_mode->scanline_size);
-		fb_mode->device_palette = (unsigned int *)calloc(1, sizeof(int) * 256);
-		fb_mode->palette = (unsigned int *)calloc(1, sizeof(int) * 256);
-		fb_mode->color_association = (unsigned char *)malloc(16);
-		fb_mode->key = (char *)calloc(1, 128);
-		fb_color_conv_16to32 = (unsigned int *)malloc(sizeof(int) * 512);
+        fb_mode->bpp = BYTES_PER_PIXEL(fb_mode->depth);
+        fb_mode->pitch = fb_mode->target_pitch = fb_mode->w * fb_mode->bpp;
+        fb_mode->page = (unsigned char **)malloc(sizeof(unsigned char *) * num_pages);
+        for (i = 0; i < num_pages; i++) {
+            fb_mode->page[i] =
+                (unsigned char *)calloc(1, (fb_mode->pitch * fb_mode->h));
+        }
+        fb_mode->num_pages = num_pages;
+        fb_mode->framebuffer = fb_mode->page[0];
+        fb_mode->line = (unsigned char **)malloc(fb_mode->h * sizeof(unsigned char *));
+        for (i = 0; i < fb_mode->h; i++)
+            fb_mode->line[i] = fb_mode->framebuffer + (i * fb_mode->pitch);
+        /* dirty lines array may be bigger than needed; this is to please the
+         gfx driver which is not aware of the scanline size */
+        fb_mode->dirty = (char *)calloc(1, fb_mode->h * fb_mode->scanline_size);
+        fb_mode->device_palette = (unsigned int *)calloc(1, sizeof(int) * 256);
+        fb_mode->palette = (unsigned int *)calloc(1, sizeof(int) * 256);
+        fb_mode->color_association = (unsigned char *)malloc(16);
+        fb_mode->key = (char *)calloc(1, 128);
+        fb_color_conv_16to32 = (unsigned int *)malloc(sizeof(int) * 512);
 
-		fb_hSetupFuncs();
-		fb_hSetupData();
+        fb_hSetupFuncs();
+        fb_hSetupData();
 
-		if (!window_title)
-		{
-			window_title = fb_hGetExeName( window_title_buff, WINDOW_TITLE_SIZE - 1 );
-			if ((c = strrchr(window_title, '.')))
-				*c = '\0';
-		}
+        if (!window_title)
+        {
+            window_title = fb_hGetExeName( window_title_buff, WINDOW_TITLE_SIZE - 1 );
+            if ((c = strrchr(window_title, '.')))
+                *c = '\0';
+        }
 
-		driver_name = getenv("FBGFX");
-		if ((flags == DRIVER_NULL) || ((driver_name) && (!strcasecmp(driver_name, "null"))))
-			driver = &fb_gfxDriverNull;
-		else {
-			for (try = (driver_name ? 4 : 2); try; try--) {
-				for (i = 0; fb_gfx_driver_list[i >> 1]; i++) {
-					driver = fb_gfx_driver_list[i >> 1];
-					if ((driver_name) && !(try & 0x1) && (strcasecmp(driver_name, driver->name)))
-						continue;
-					if (!driver->init(window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, MAX(8, fb_mode->depth), (i & 0x1) ? 0 : refresh_rate, flags))
-						break;
-					driver->exit();
-					driver = NULL;
-				}
-				if (driver)
-					break;
-				if (driver_name) {
-					if (try == 2)
-						flags ^= DRIVER_FULLSCREEN;
-				}
-				else
-					flags ^= DRIVER_FULLSCREEN;
-			}
-		}
+        driver_name = getenv("FBGFX");
+        if ((flags == DRIVER_NULL) || ((driver_name) && (!strcasecmp(driver_name, "null"))))
+            driver = &fb_gfxDriverNull;
+        else {
+            for (try_count = (driver_name ? 4 : 2); try_count; try_count--) {
+                for (i = 0; fb_gfx_driver_list[i >> 1]; i++) {
+                    driver = fb_gfx_driver_list[i >> 1];
+                    if ((driver_name) && !(try_count & 0x1) && (strcasecmp(driver_name, driver->name)))
+                        continue;
+                    if (!driver->init(window_title, fb_mode->w, fb_mode->h * fb_mode->scanline_size, MAX(8, fb_mode->depth), (i & 0x1) ? 0 : refresh_rate, flags))
+                        break;
+                    driver->exit();
+                    driver = NULL;
+                }
+                if (driver)
+                    break;
+                if (driver_name) {
+                    if (try_count == 2)
+                        flags ^= DRIVER_FULLSCREEN;
+                }
+                else
+                    flags ^= DRIVER_FULLSCREEN;
+            }
+        }
 
-		if (!driver) {
+        if (!driver) {
             exit_proc();
-			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
-		}
-		fb_mode->driver = driver;
+            return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+        }
+        fb_mode->driver = driver;
 
-		fb_GfxPalette(-1, 0, 0, 0);
+        fb_GfxPalette(-1, 0, 0, 0);
 
-		if (fb_mode->depth == 8)
-			fb_mode->fg_color = 15;
-		else
-			fb_mode->fg_color = fb_mode->color_mask;
+        if ( fb_mode->depth <= 8 && fb_mode->depth>4 )
+            fb_mode->fg_color = 15;
+        else
+            fb_mode->fg_color = fb_mode->color_mask;
 
-		fb_mode->view_w = fb_mode->w;
-		fb_mode->view_h = fb_mode->max_h = fb_mode->h;
-		fb_mode->text_w = info->text_w;
+        fb_mode->view_w = fb_mode->w;
+        fb_mode->view_h = fb_mode->max_h = fb_mode->h;
+        fb_mode->text_w = info->text_w;
         fb_mode->text_h = info->text_h;
 
-        /* Reset VIEW PRINT */
-        fb_ConsoleView( 0, 0 );
+        fb_hResetCharCells(TRUE);
 
         if( !exit_proc_set ) {
             exit_proc_set = TRUE;
             atexit(exit_proc);
         }
-	}
+    }
 
-	return FB_RTERROR_OK;
+    /* Reset VIEW PRINT
+     *
+     * Normally, resetting VIEW PRINT should also result in setting the cursor
+     * position to Y,X = 1,1 but this doesn't seem to be suitable (at least
+     * on Win32 platforms). I don't believe that this is a problem because
+     * on DOS, the cursor position will automatically be reset when the screen
+     * mode changes and not changing the console cursor position on Win32
+     * and Linux seem to be more "natural". */
+    fb_ConsoleViewEx( 0, 0, fb_mode!=NULL );
+
+    return FB_RTERROR_OK;
 }
 
 
@@ -303,8 +374,8 @@ FBCALL int fb_GfxScreenRes(int w, int h, int depth, int num_pages, int flags, in
 	info.scanline_size = 1;
 	info.palette = &fb_palette_256;
 	info.font = &fb_font_8x8;
-	info.text_w = w / 8;
-	info.text_h = h / 8;
+	info.text_w = w / info.font->w;
+	info.text_h = h / info.font->h;
 
     res = set_mode((const MODEINFO *)&info, -1, depth, num_pages, refresh_rate, flags);
     if( res==FB_RTERROR_OK )

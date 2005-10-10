@@ -139,7 +139,7 @@ int main(int argc, char **argv)
             } while( (strToken = strtok( NULL, strTokDelim ))!=NULL );
         }
 
-        if( columns!=5 ) {
+        if( columns!=6 ) {
             fprintf( stderr, "Invalid number of columns in data list\n" );
             return 3;
         }
@@ -149,20 +149,31 @@ int main(int argc, char **argv)
             const char *pszType = GetColumnToken( pColumns, columns, 0 );
             const char *pszOffsetDefine = GetColumnToken( pColumns, columns, 1 );
             const char *pszVarName = GetColumnToken( pColumns, columns, 2 );
-            const char *pszNumValue = GetColumnToken( pColumns, columns, 3 );
-            const char *pszFileName = GetColumnToken( pColumns, columns, 4 );
+            const char *pszNumValue1 = GetColumnToken( pColumns, columns, 3 );
+            const char *pszNumValue2 = GetColumnToken( pColumns, columns, 4 );
+            const char *pszFileName = GetColumnToken( pColumns, columns, 5 );
             long lDataSize;
 
             fprintf( fpSourceOut,
                      "#define DATA_%s\t0x%08x\n",
                      pszOffsetDefine,
                      data_offset );
-            fprintf( fpSourceOut,
-                     "const %s %s\t= { %s, &internal_data[DATA_%s] };\n",
-                     pszType,
-                     pszVarName,
-                     pszNumValue,
-                     pszOffsetDefine );
+            if( strcmp( pszType, "FONT" )==0 ) {
+                fprintf( fpSourceOut,
+                         "const %s %s\t= { %s, %s, &internal_data[DATA_%s] };\n",
+                         pszType,
+                         pszVarName,
+                         pszNumValue1,
+                         pszNumValue2,
+                         pszOffsetDefine );
+            } else {
+                fprintf( fpSourceOut,
+                         "const %s %s\t= { %s, &internal_data[DATA_%s] };\n",
+                         pszType,
+                         pszVarName,
+                         pszNumValue1,
+                         pszOffsetDefine );
+            }
 
             {
                 char *pszFullDataFilePath = (char *) malloc( strlen( pszFileName ) + strlen( pszDataListPath ) + 1 );

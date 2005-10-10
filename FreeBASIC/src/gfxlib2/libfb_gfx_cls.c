@@ -32,6 +32,8 @@ void fb_GfxClear(int mode)
 {
     int i, dirty, dirty_len;
     int reset_gfx_pos;
+    int reset_console_start = 0, reset_console_end = 0;
+    int new_x = -1, new_y = -1;
 	
 	fb_hPrepareTarget(NULL);
 	
@@ -48,8 +50,10 @@ void fb_GfxClear(int mode)
                 dirty = 0;
                 dirty_len = fb_mode->h;
 
-                fb_mode->cursor_x = 0;
-                fb_mode->cursor_y = cursor_y;
+                new_x = 0;
+                new_y = cursor_y;
+
+                reset_console_end = fb_mode->text_h;
 
                 reset_gfx_pos = TRUE;
             }
@@ -58,9 +62,10 @@ void fb_GfxClear(int mode)
 		case 2:
             /* Clear text viewport */
             {
-                int cursor_y = fb_ConsoleGetTopRow();
-                int y_start = cursor_y * fb_mode->font->h;
-                int y_end = (fb_ConsoleGetBotRow() + 1) * fb_mode->font->h;
+                int con_y_start = fb_ConsoleGetTopRow();
+                int con_y_end = fb_ConsoleGetBotRow();
+                int y_start = con_y_start * fb_mode->font->h;
+                int y_end = (con_y_end + 1) * fb_mode->font->h;
                 int view_height = y_end - y_start;
 
                 fb_hPixelSet(fb_mode->line[y_start],
@@ -69,8 +74,11 @@ void fb_GfxClear(int mode)
                 dirty = y_start;
                 dirty_len = view_height;
 
-                fb_mode->cursor_x = 0;
-                fb_mode->cursor_y = cursor_y;
+                new_x = 0;
+                new_y = con_y_start;
+
+                reset_console_start = con_y_start;
+                reset_console_end = con_y_end + 1;
 
                 reset_gfx_pos = FALSE;
             }
@@ -94,10 +102,20 @@ void fb_GfxClear(int mode)
 	}
 	SET_DIRTY(dirty, dirty_len);
 	
-	DRIVER_UNLOCK();
-
     if( reset_gfx_pos ) {
         fb_mode->last_x = fb_mode->view_x + (fb_mode->view_w >> 1);
         fb_mode->last_y = fb_mode->view_y + (fb_mode->view_h >> 1);
     }
+
+    fb_hClearCharCells( 0, reset_console_start,
+                        fb_mode->text_w, reset_console_end,
+                        fb_mode->work_page,
+                        32,
+                        fb_mode->fg_color, fb_mode->bg_color );
+
+    if( new_x!=-1 || new_y!=-1 ) {
+        fb_GfxLocate( new_y + 1, new_x + 1, -1 );
+    }
+
+    DRIVER_UNLOCK();
 }

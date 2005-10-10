@@ -44,11 +44,6 @@ const GFXDRIVER *fb_gfx_driver_list[] = {
 
 fb_dos_t fb_dos;
 
-#if 0
-/* special externs for locking code */
-extern void fb_hPostKey_End(void);
-#endif
-
 #define MOUSE_WIDTH     12
 #define MOUSE_HEIGHT    21
 
@@ -79,104 +74,6 @@ static unsigned char fb_dos_mouse_image[] = {
 static unsigned char mouse_color[3] = {0, 15, 0};
 
 static unsigned char mouse_save[MOUSE_WIDTH * MOUSE_HEIGHT * 3 + 4];
-
-#if 0
-#define KB_EXTENDED (255 << 8)
-
-#define X KB_EXTENDED
-static unsigned short kb_scan_to_ascii[128][3] = {
-	/*
-	normal
-		   +shift
-	                +ctrl
-	*/
-	{    0,     0,     0},
-	{   27,    27,     0},	/* esc */
-	{   49,    33,     0},	/* 1 ! */
-	{   50,    64,   X|3},	/* 2 @ */
-	{   51,    35,     0},	/* 3 # */
-	{   52,    36,     0},	/* 4 $ */
-	{   53,    37,     0},	/* 5 % */
-	{   54,    94,     0},	/* 6 ^ */
-	{   55,    38,     0},	/* 7 & */
-	{   56,    42,     0},	/* 8 * */
-	{   57,    40,     0},	/* 9 ( */
-	{   48,    41,     0},	/* 0 ) */
-	{   45,    95,     0},	/* - _ */
-	{   61,    43,     0},	/* = + */
-	{    8,     8,   127},	/* backspace */
-	{    9,     9, X|148},	/* tab */
-	{  113,    81,    17},	/* q Q */
-	{  119,    87,    23},	/* w W */
-	{  101,    69,     5},	/* e E */
-	{  114,    82,    18},	/* r R */
-	{  116,    84,    20},	/* t T */
-	{  121,    89,    25},	/* y Y */
-	{  117,    85,    21},	/* u U */
-	{  105,    73,     9},	/* i I */
-	{  111,    79,    15},	/* o O */
-	{  112,    80,    16},	/* p P */
-	{   91,   123,    27},	/* [ { */
-	{   93,   125,    29},	/* ] } */
-	{   13,    13,    10},	/* enter */
-	{    0,     0,     0},	/* ctrl */
-	{   97,    65,     1},	/* a A */
-	{  115,    83,     0},	/* s S */
-	{  100,    68,     4},	/* d D */
-	{  102,    70,     6},	/* f F */
-	{  103,    71,     7},	/* g G */
-	{  104,    72,     8},	/* h H */
-	{  106,    74,    10},	/* j J */
-	{  107,    75,    11},	/* k K */
-	{  108,    76,    12},	/* l L */
-	{   59,    58,     0},	/* ; : */
-	{   39,    34,     0},	/* ' " */
-	{   96,   126,     0},	/* ` ~ */
-	{    0,     0,     0},	/* lshift */
-	{   92,   124,    28},	/* \ | */
-	{  122,    90,    26},	/* z Z */
-	{  120,    88,    24},	/* x X */
-	{   99,    67,     0},	/* c C */
-	{  118,    86,    22},	/* v V */
-	{   98,    66,     2},	/* b B */
-	{  110,    78,    14},	/* n N */
-	{  109,    77,    13},	/* m M */
-	{   44,    60,     0},	/* , < */
-	{   46,    62,     0},	/* . > */
-	{   47,    63,     0},	/* / ? */
-	{    0,     0,     0},	/* rshift */
-	{   42,    42,     0},	/* numpad * */
-	{    0,     0,     0},	/* alt */
-	{   32,    32,    32},	/* space */
-	{    0,     0,     0},	/* caps lock */
-	{ X|59,  X|84,  X|94},	/* F1  */
-	{ X|60,  X|85,  X|95},	/* F2  */
-	{ X|61,  X|86,  X|96},	/* F3  */
-	{ X|62,  X|87,  X|97},	/* F4  */
-	{ X|63,  X|88,  X|98},	/* F5  */
-	{ X|64,  X|89,  X|99},	/* F6  */
-	{ X|65,  X|90, X|100},	/* F7  */
-	{ X|66,  X|91, X|101},	/* F8  */
-	{ X|67,  X|92, X|102},	/* F9  */
-	{ X|68,  X|93, X|103},	/* F10 */
-	{    0,     0,     0},	/* num lock */
-	{    0,     0,     0},	/* scroll lock */
-	{ X|71,  X|71, X|119},	/* home */
-	{ X|72,  X|72, X|141},	/* up */
-	{ X|73,  X|73, X|134},	/* page up */
-	{ X|75,  X|75, X|115},	/* left */
-	{ X|77,  X|77, X|116},	/* right */
-	{   43,    43,     0},	/* numpad + */
-	{ X|79,  X|79, X|117},	/* end */
-	{ X|80,  X|80, X|145},	/* down */
-	{ X|81,  X|81, X|118},	/* page down */
-	{ X|82,  X|82, X|146},	/* insert */
-	{ X|83,  X|83, X|147},	/* delete */
-	{X|133, X|135, X|137},	/* F11 */
-	{X|134, X|138, X|138}	/* F12 */
-};
-#undef X
-#endif
 
 static void fb_dos_save_video_mode(void);
 static void fb_dos_restore_video_mode(void);
@@ -209,63 +106,13 @@ static void _unlock_mem(unsigned int address, size_t size)
 #define unlock_array(array)    unlock_mem( (array), sizeof(array) )
 #define unlock_proc(proc)      unlock_mem( proc, end_##proc )
 
-#if 0
-/*:::::*/
-static void kb_handler(void)
-/* keyboard interrupt handler - 
-   all accessed code and data must be locked! */
-{
-	unsigned char scan;
-	unsigned char status;
-	unsigned short ascii;
-	
-	/* read the raw scan code from the keyboard */
-	scan = inportb(0x60);           /* read scan code */
-	status = inportb(0x61);         /* read keyboard status */
-	outportb(0x61, status | 0x80);  /* set bit 7 and write */
-	outportb(0x61, status);         /* write again, bit 7 clear */
-	outportb(0x20, 0x20);           /* reset PIC */
-	
-	/* TODO: handle extended keys */
-	
-	if (scan & 0x80) {              /* release */
-		fb_mode->key[scan & ~0x80] = FALSE;
-	} else {                        /* press */
-		fb_mode->key[scan] = TRUE;
-		
-		/* TODO: check state of CapsLock */
-		
-		if ((fb_mode->key[SC_LSHIFT]) || (fb_mode->key[SC_RSHIFT])) {
-			ascii = kb_scan_to_ascii[scan][1];
-		} else if (fb_mode->key[SC_CONTROL]) {
-			ascii = kb_scan_to_ascii[scan][2];
-		} else {
-			ascii = kb_scan_to_ascii[scan][0];
-		}
-		
-		if (ascii) fb_hPostKey(ascii);
-	}
-}
-
-static void end_kb_handler(void)
-{ /* this function exists to get length of kb_handler() code */ }
-#endif
-
 /*:::::*/
 static void fb_dos_kb_init(void)
 {
-#if 0
-	_go32_dpmi_get_protected_mode_interrupt_vector(0x9, &fb_dos.old_kb_int);
-	fb_dos.new_kb_int.pm_offset = (unsigned int)kb_handler;
-	fb_dos.new_kb_int.pm_selector = _go32_my_cs();
-	_go32_dpmi_allocate_iret_wrapper(&fb_dos.new_kb_int);
-    _go32_dpmi_set_protected_mode_interrupt_vector(0x9, &fb_dos.new_kb_int);
-#else
     fb_hooks.inkeyproc  = NULL;
     fb_hooks.getkeyproc = NULL;
     fb_hooks.keyhitproc = NULL;
     fb_hooks.multikeyproc = NULL;
-#endif
 	return;
 }
 
@@ -273,9 +120,6 @@ static void fb_dos_kb_init(void)
 /*:::::*/
 static void fb_dos_kb_exit(void)
 {
-#if 0
-    _go32_dpmi_set_protected_mode_interrupt_vector(0x9, &fb_dos.old_kb_int);
-#endif
 }
 
 
@@ -645,20 +489,11 @@ void fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int fla
 	lock_array(fb_dos_mouse_image);
 	lock_array(mouse_color);
     lock_array(mouse_save);
-#if 0
-    lock_array(kb_scan_to_ascii);
-#endif
 
-#if 0
-    lock_proc(kb_handler);
-#endif
 	lock_proc(fb_dos_timer_handler);
 	lock_proc(fb_dos_update_mouse);
 	lock_proc(fb_dos_draw_mouse_8);
     lock_proc(fb_dos_undraw_mouse_8);
-#if 0
-    lock_mem(fb_hPostKey, (unsigned)fb_hPostKey_End - (unsigned)fb_hPostKey);
-#endif
 	lock_mem(fb_dos.update, fb_dos.update_len);
 	
 	/* TODO: lock fb_hMemCpy and fb_hMemSet (the actual code and the pointers) */
@@ -715,20 +550,11 @@ void fb_dos_exit(void)
 	unlock_array(fb_dos_mouse_image);
 	unlock_array(mouse_color);
     unlock_array(mouse_save);
-#if 0
-    unlock_array(kb_scan_to_ascii);
-#endif
 
-#if 0
-    unlock_proc(kb_handler);
-#endif
 	unlock_proc(fb_dos_timer_handler);
 	unlock_proc(fb_dos_update_mouse);
 	unlock_proc(fb_dos_draw_mouse_8);
     unlock_proc(fb_dos_undraw_mouse_8);
-#if 0
-    unlock_mem(fb_hPostKey, (unsigned)fb_hPostKey_End - (unsigned)fb_hPostKey);
-#endif
 	unlock_mem(fb_dos.update, fb_dos.update_len);
 	
 	fb_dos.inited = FALSE;

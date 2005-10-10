@@ -58,7 +58,7 @@ Version 0.15 Beta:
 - QB-compatible POS(n) is now allowed too (mjs)
 - SQLite static library for DOS (DrV)
 - stack size (-t) parameter for DOS (DrV)
-- CLS 2 is now supported in graphics mode (mjs)
+- CLS 2, VIEW PRINT, LINE INPUT and SCREEN(y,x,colorflag) are now supported in graphics mode (mjs)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)

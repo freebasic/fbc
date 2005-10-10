@@ -1004,8 +1004,8 @@ data "fb_ConsoleView","", _
 	 2, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0
-'' fb_ConsoleReadXY ( byval y as integer, byval x as integer, byval colorflag as integer ) as integer
-data "fb_ConsoleReadXY","", _
+'' fb_ReadXY ( byval x as integer, byval y as integer, byval colorflag as integer ) as integer
+data "fb_ReadXY","", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 3, _

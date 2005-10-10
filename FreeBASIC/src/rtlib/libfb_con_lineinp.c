@@ -34,7 +34,7 @@ static const char *pszDefaultQuestion = "? ";
 
 #if defined(TARGET_WIN32) || defined(TARGET_CYGWIN) || defined(TARGET_DOS)
 
-FBCALL int fb_LineInput( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline )
+int fb_ConsoleLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline )
 {
     FBSTRING *tmp_result;
 
@@ -54,13 +54,13 @@ FBCALL int fb_LineInput( FBSTRING *text, void *dst, int dst_len, int fillrem, in
         }
     }
 
+    FB_UNLOCK();
+
     tmp_result = fb_ConReadLine();
 
     if( addnewline ) {
         fb_PrintBufferEx( FB_NEWLINE, sizeof(FB_NEWLINE)-1, 0 );
     }
-
-    FB_UNLOCK();
 
     if( tmp_result!=NULL ) {
         fb_StrAssign( dst, dst_len, tmp_result, -1, fillrem );
@@ -80,7 +80,7 @@ static char *fb_hDevScrnReadLineWrapper( char *buffer,
 }
 
 /*:::::*/
-FBCALL int fb_LineInput( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline )
+int fb_ConsoleLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline )
 {
 	int res;
     size_t len;

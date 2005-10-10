@@ -88,6 +88,7 @@ extern "C" {
 #define BUFFER_SET		0x00000008
 #define SCREEN_LOCKED		0x00000010
 #define SCREEN_AUTOLOCKED	0x00000020
+#define PRINT_SCROLL_WAS_OFF	0x00000040
 
 #define COORD_TYPE_AA		0
 #define COORD_TYPE_AR		1
@@ -133,40 +134,45 @@ extern "C" {
 
 #define WINDOW_TITLE_SIZE	128
 
+typedef struct _GFX_CHAR_CELL {
+    FB_WCHAR ch;
+    unsigned fg, bg;
+} GFX_CHAR_CELL;
 
 typedef struct MODE
 {
-	int mode_num;					/* Current mode number */
-	unsigned char **page;				/* Pages memory */
-	int num_pages;					/* Number of requested pages */
-	int work_page;					/* Current work page number */
-	unsigned char *framebuffer;			/* Our current visible framebuffer */
-	unsigned char **line;				/* Line pointers into current active framebuffer */
-	int pitch;					/* Width of a framebuffer line in bytes */
-	int target_pitch;				/* Width of current target buffer line in bytes */
-	void *last_target;				/* Last target buffer set */
-	int max_h;					/* Max registered height of target buffer */
-	int bpp;					/* Bytes per pixel */
-	unsigned int *palette;				/* Current RGB color values for each palette index */
-	unsigned int *device_palette;			/* Current RGB color values of visible device palette */
-	unsigned char *color_association;		/* Palette color index associations for CGA/EGA emulation */
-	char *dirty;					/* Dirty lines buffer */
-	const struct GFXDRIVER *driver;			/* Gfx driver in use */
-	int w, h;					/* Current mode width and height */
-	int depth;					/* Current mode depth */
-	int color_mask;					/* Color bit mask for colordepth emulation */
-	const struct PALETTE *default_palette;		/* Default palette for current mode */
-	int scanline_size;				/* Vertical size of a single scanline in pixels */
-	unsigned int fg_color, bg_color;		/* Current foreground and background colors */
-	float last_x, last_y;				/* Last pen position */
-	int cursor_x, cursor_y;				/* Current graphical text cursor position (in chars, 0 based) */
-	const struct FONT *font;			/* Current font */
-	int view_x, view_y, view_w, view_h;		/* VIEW coordinates */
-	float win_x, win_y, win_w, win_h;		/* WINDOW coordinates */
-	int text_w, text_h;				/* Graphical text console size in characters */
-	char *key;					/* Keyboard states */
-	int refresh_rate;				/* Driver refresh rate */
-	int flags;					/* Status flags */
+    int mode_num;				/* Current mode number */
+    unsigned char **page;			/* Pages memory */
+    int num_pages;				/* Number of requested pages */
+    int work_page;				/* Current work page number */
+    unsigned char *framebuffer;			/* Our current visible framebuffer */
+    unsigned char **line;			/* Line pointers into current active framebuffer */
+    int pitch;					/* Width of a framebuffer line in bytes */
+    int target_pitch;				/* Width of current target buffer line in bytes */
+    void *last_target;				/* Last target buffer set */
+    int max_h;					/* Max registered height of target buffer */
+    int bpp;					/* Bytes per pixel */
+    unsigned int *palette;			/* Current RGB color values for each palette index */
+    unsigned int *device_palette;		/* Current RGB color values of visible device palette */
+    unsigned char *color_association;		/* Palette color index associations for CGA/EGA emulation */
+    char *dirty;				/* Dirty lines buffer */
+    const struct GFXDRIVER *driver;		/* Gfx driver in use */
+    int w, h;					/* Current mode width and height */
+    int depth;					/* Current mode depth */
+    int color_mask;				/* Color bit mask for colordepth emulation */
+    const struct PALETTE *default_palette;	/* Default palette for current mode */
+    int scanline_size;				/* Vertical size of a single scanline in pixels */
+    unsigned int fg_color, bg_color;		/* Current foreground and background colors */
+    float last_x, last_y;			/* Last pen position */
+    int cursor_x, cursor_y;			/* Current graphical text cursor position (in chars, 0 based) */
+    const struct FONT *font;			/* Current font */
+    int view_x, view_y, view_w, view_h;		/* VIEW coordinates */
+    float win_x, win_y, win_w, win_h;		/* WINDOW coordinates */
+    int text_w, text_h;				/* Graphical text console size in characters */
+    char *key;					/* Keyboard states */
+    int refresh_rate;				/* Driver refresh rate */
+    int flags;					/* Status flags */
+    GFX_CHAR_CELL **con_pages;                  /* Character information for all pages */
 } MODE;
 
 
@@ -196,7 +202,8 @@ typedef struct PALETTE
 
 typedef struct FONT
 {
-	const int h;
+    const int w;
+    const int h;
 	const unsigned char *data;
 } FONT;
 
@@ -235,6 +242,8 @@ extern void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int f
 extern void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh);
 extern void *fb_hMemCpyMMX(void *dest, const void *src, size_t size);
 extern void *fb_hMemSetMMX(void *dest, int value, size_t size);
+extern void fb_hResetCharCells(int do_alloc);
+extern void fb_hClearCharCells( int x1, int y1, int x2, int y2, int page, FB_WCHAR ch, unsigned fg, unsigned bg );
 
 /* Public API */
 extern FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, int refresh_rate);
@@ -274,6 +283,7 @@ int fb_GfxKeyHit(void);
 int fb_GfxColor(int fg_color, int bg_color);
 void fb_GfxClear(int mode);
 int fb_GfxWidth(int w, int h);
+int fb_GfxLocateRaw(int y, int x, int cursor);
 int fb_GfxLocate(int y, int x, int cursor);
 int fb_GfxGetX(void);
 int fb_GfxGetY(void);
@@ -287,6 +297,8 @@ int fb_GfxGetMouse(int *x, int *y, int *z, int *buttons);
 int fb_GfxSetMouse(int x, int y, int cursor);
 int fb_GfxOut(unsigned short port, unsigned char value);
 int fb_GfxIn(unsigned short port);
+int fb_GfxLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline );
+int fb_GfxReadXY( int col, int row, int colorflag );
 
 /** Returns TRUE if application is in graphics mode.
  *

@@ -119,8 +119,8 @@ osdepobjs := $(patsubst $(OSDEPPATH)/%.c,$(objpath)/%.o,$(wildcard $(OSDEPPATH)/
 osdepobjs += $(patsubst $(OSDEPPATH)/%.s,$(objpath)/%.o,$(wildcard $(OSDEPPATH)/*.s))
 headers := $(wildcard *.h)
 headers += $(wildcard $(OSDEPPATH)/*.h)
-toolsobjs := $(patsubst tools/%.c,tools/%.o,$(wildcard tools/*.c))
-tools     := $(patsubst tools/%.o,tools/%.exe,$(toolsobjs))
+toolsobjs := $(patsubst tools/%.c,$(objpath)/%.o,$(wildcard tools/*.c))
+tools     := $(patsubst $(objpath)/%.o,$(objpath)/%.exe,$(toolsobjs))
 datafiles := $(wildcard data/*.fnt) $(wildcard data/*.pal)
 
 ##################################################################
@@ -142,15 +142,15 @@ $(objpath)/%.o : $(OSDEPPATH)/%.s $(headers)
 $(lib) : $(objects) $(osdepobjs)
 	$(AR) cr $(lib) $(objects) $(osdepobjs)
 
-libfb_gfx_data.c: tools/mk_dat.exe data/data.lst $(datafiles)
-	tools/mk_dat.exe -o $@
+libfb_gfx_data.c: $(objpath)/mk_dat.exe data/data.lst $(datafiles)
+	$(objpath)/mk_dat.exe -o $@
 
-tools/mk_dat.exe: tools/mk_dat.o $(objpath)/libfb_gfx_lzw.o $(objpath)/libfb_gfx_vars.o
+$(objpath)/mk_dat.exe: $(objpath)/mk_dat.o $(objpath)/libfb_gfx_lzw.o $(objpath)/libfb_gfx_vars.o
 
-tools/%.exe: tools/%.o
+$(objpath)/%.exe: $(objpath)/%.o
 	$(CC) $(CFLAGS) -o $@ $^
 
-tools/%.o: tools/%.c
+$(objpath)/%.o: tools/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(libpath) :
@@ -178,4 +178,4 @@ clean : clean_tools
 
 .PHONY : clean_tools
 clean_tools :
-	rm -f tools/*.o tools/*.exe
+	rm -f tools/*.o $(tools) $(toolsobjs)
