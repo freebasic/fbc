@@ -34,13 +34,13 @@ void fb_ConsoleClear( int mode )
 {
 	int start, end, i;
 	
-	if (!fb_con.inited)
+	if (!fb_con.inited || mode==1)
 		return;
 	
 	fb_hResize();
 	
 	fb_ConsoleGetView(&start, &end);
-	if ((mode != 1) && (mode != 0xFFFF0000)) {
+	if ((mode != 2) && (mode != 0xFFFF0000)) {
 		start = 1;
 		end = fb_ConsoleGetMaxRow();
 	}

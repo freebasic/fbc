@@ -32,9 +32,12 @@
 /*:::::*/
 void fb_ConsoleClear( int mode )
 {
-	int toprow, botrow;
+    int toprow, botrow;
 
-	if( (mode == 1) || (mode == 0xFFFF0000) ) {	/* same as gfxlib's DEFAULT_COLOR */
+    if( mode==1 )
+        return;
+
+	if( (mode == 2) || (mode == 0xFFFF0000) ) {	/* same as gfxlib's DEFAULT_COLOR */
         fb_ConsoleGetView( &toprow, &botrow );
         --toprow;
         --botrow;
