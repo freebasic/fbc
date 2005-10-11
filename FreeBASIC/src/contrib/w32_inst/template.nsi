@@ -33,7 +33,7 @@ SetCompressor /SOLID lzma
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
 ; License page
-; !insertmacro MUI_PAGE_LICENSE "license.txt"
+!insertmacro MUI_PAGE_LICENSE "license.txt"
 ; Components page
 !insertmacro MUI_PAGE_COMPONENTS
 ; Directory page
@@ -59,6 +59,7 @@ var ICONS_GROUP
 ; Language files
 !insertmacro MUI_LANGUAGE "English"
 !insertmacro MUI_LANGUAGE "German"
+!insertmacro MUI_LANGUAGE "Portuguese"
 
 ; Reserve files
 !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
@@ -74,21 +75,27 @@ ShowUnInstDetails show
 
 LangString TEXT_SECTION_MAIN     ${LANG_ENGLISH} "Main group"
 LangString TEXT_SECTION_MAIN     ${LANG_GERMAN}  "Hauptgruppe"
+LangString TEXT_SECTION_MAIN     ${LANG_PORTUGUESE}  "Grupo Principal"
 
 LangString TEXT_SECTION_EXAMPLES ${LANG_ENGLISH} "Examples"
 LangString TEXT_SECTION_EXAMPLES ${LANG_GERMAN}  "Beispiele"
+LangString TEXT_SECTION_EXAMPLES ${LANG_PORTUGUESE} "Exemplos"
 
 LangString TEXT_SECT_DESCR_MAIN     ${LANG_ENGLISH} "Compiler, libraries and header files"
 LangString TEXT_SECT_DESCR_MAIN     ${LANG_GERMAN}  "Compiler, Bibliotheken und Include-Dateien"
+LangString TEXT_SECT_DESCR_MAIN     ${LANG_PORTUGUESE} "Compilador, bibliotecas e arquivos de cabeçalho"
 
 LangString TEXT_SECT_DESCR_EXAMPLES ${LANG_ENGLISH} "Example applications"
 LangString TEXT_SECT_DESCR_EXAMPLES ${LANG_GERMAN}  "Beispiel-Programme"
+LangString TEXT_SECT_DESCR_EXAMPLES ${LANG_PORTUGUESE} "Aplicativos de examplo"
 
 LangString TEXT_INSTALL_SUCCESS  ${LANG_ENGLISH} "$(^Name) was removed successfully."
 LangString TEXT_INSTALL_SUCCESS  ${LANG_GERMAN}  "$(^Name) wurde erfolgreich deinstalliert."
+LangString TEXT_INSTALL_SUCCESS  ${LANG_PORTUGUESE} "$(^Name) foi removido com sucesso."
 
 LangString TEXT_UNISTALL_QUERY   ${LANG_ENGLISH} "Do you want to remove $(^Name) and all its components?"
 LangString TEXT_UNISTALL_QUERY   ${LANG_GERMAN}  "Möchten Sie $(^Name) und alle seinen Komponenten deinstallieren?"
+LangString TEXT_UNISTALL_QUERY   ${LANG_PORTUGUESE} "Você quer remover $(^Name) e todos os seus componentes?"
 
 Function .onInit
   !insertmacro MUI_LANGDLL_DISPLAY
