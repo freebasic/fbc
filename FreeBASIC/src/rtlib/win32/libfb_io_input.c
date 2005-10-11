@@ -293,18 +293,38 @@ void fb_hConsoleProcessKeyEvent( KEY_EVENT_RECORD *event )
     int ValidKeyStatus =
         ((event->dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED | SHIFT_PRESSED))==0)
         && ((event->dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED))!=0);
-
+    int ValidKeys =
+#if 1
+        (event->wVirtualScanCode >= 0x47 && event->wVirtualScanCode<=0x49)
+        || (event->wVirtualScanCode >= 0x4b && event->wVirtualScanCode<=0x4d)
+        || (event->wVirtualScanCode >= 0x4f && event->wVirtualScanCode<=0x52)
+#else
+        (event->wVirtualKeyCode >= VK_NUMPAD0
+         && event->wVirtualKeyCode <= VK_NUMPAD9 )
+#endif
+        ;
     int AddScratchPadKey = FALSE;
 
-    if( (event->wVirtualKeyCode >= VK_NUMPAD0)
-        && (event->wVirtualKeyCode <= VK_NUMPAD9)
-        && ValidKeyStatus
-      )
-    {
+    if( ValidKeys && ValidKeyStatus ) {
         if( event->bKeyDown ) {
+            int number;
+#if 1
+            if( event->wVirtualScanCode <= 0x49 ) {
+                number = event->wVirtualScanCode - 0x40;
+            } else if( event->wVirtualScanCode <= 0x4d ) {
+                number = event->wVirtualScanCode - 0x47;
+            } else if( event->wVirtualScanCode <= 0x51 ) {
+                number = event->wVirtualScanCode - 0x4e;
+            } else {
+                number = 0;
+            }
+#else
+            number = event->wVirtualKeyCode - VK_NUMPAD0;
+#endif
             key_scratch_pad *= 10;
-            key_scratch_pad += (event->wVirtualKeyCode - VK_NUMPAD0);
+            key_scratch_pad += number;
         }
+        KeyCode = -1;
     } else if( KeyCode!=-1 ) {
         key_scratch_pad = 0;
     } else if( !ValidKeyStatus ) {
@@ -313,7 +333,7 @@ void fb_hConsoleProcessKeyEvent( KEY_EVENT_RECORD *event )
 
 #if 0
     printf("%04hx\n", event->wVirtualScanCode);
-    printf("%04hx\n", event->wVirtualKeyCode);
+    printf("%04hx, %08x\n", event->wVirtualKeyCode, MapVirtualKey( event->wVirtualScanCode, 1));
     printf("%02x\n", (unsigned) (unsigned char) event->uChar.AsciiChar);
     printf("%08x, %d\n", key_scratch_pad, ValidKeyStatus);
 #endif
