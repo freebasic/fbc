@@ -254,25 +254,7 @@ int fb_hConsoleTranslateKey( char AsciiChar,
         }
 
         if( !AddKeyCode && !bEnhancedKeysOnly) {
-            if( is_ext_code ) {
-                /* This is the old fall-back code that creates an enhanced
-                 * key code for all keys that don't have an ASCII value and
-                 * don't fall into a specific range of key codes ... */
-                AddKeyCode = ( wVkCode >= VK_SPACE )
-                    && ( wVkCode <= VK_NUMLOCK )
-                    && ( wVsCode > 0 )
-                    && ( wVsCode <= 254 );
-                switch ( wVkCode )
-                {
-                case VK_LWIN:
-                case VK_RWIN:
-                case VK_APPS:
-                    AddKeyCode = FALSE;
-                    break;
-                }
-                if( AddKeyCode )
-                    KeyCode = wVsCode << 8;
-            } else {
+            if( !is_ext_code ) {
                 /* The key code is simply the returned ASCII character */
                 KeyCode = uiAsciiChar;
                 AddKeyCode = TRUE;

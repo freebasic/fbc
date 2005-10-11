@@ -219,11 +219,7 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
             break;
 
 		case WM_CLOSE:
-#if 0
 			fb_hPostKey(0x6BFF); /* ALT + F4 */
-#else
-            fb_hPostKey(KEY_QUIT); /* "\xFF" "X" */
-#endif
 			return FALSE;
 
 		case WM_PAINT:

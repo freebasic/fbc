@@ -279,6 +279,7 @@ static __inline__
 void fb_hConsoleProcessKeyEvent( KEY_EVENT_RECORD *event )
 {
     int KeyCode;
+    int ValidKeyStatus, ValidKeys, AddScratchPadKey = FALSE;
     if( event->bKeyDown ) {
         KeyCode =
             fb_hConsoleTranslateKey( event->uChar.AsciiChar,
@@ -290,25 +291,24 @@ void fb_hConsoleProcessKeyEvent( KEY_EVENT_RECORD *event )
         KeyCode = -1;
     }
 
-    int ValidKeyStatus =
+    ValidKeyStatus =
         ((event->dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED | SHIFT_PRESSED))==0)
         && ((event->dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED))!=0);
-    int ValidKeys =
-#if 1
-        (event->wVirtualScanCode >= 0x47 && event->wVirtualScanCode<=0x49)
-        || (event->wVirtualScanCode >= 0x4b && event->wVirtualScanCode<=0x4d)
-        || (event->wVirtualScanCode >= 0x4f && event->wVirtualScanCode<=0x52)
+#if 0
+    ValidKeys =
+        (event->wVirtualScanCode >= 0x47 && event->wVirtualScanCode <= 0x49)
+        || (event->wVirtualScanCode >= 0x4b && event->wVirtualScanCode <= 0x4d)
+        || (event->wVirtualScanCode >= 0x4f && event->wVirtualScanCode <= 0x52);
 #else
+    ValidKeys =
         (event->wVirtualKeyCode >= VK_NUMPAD0
-         && event->wVirtualKeyCode <= VK_NUMPAD9 )
+         && event->wVirtualKeyCode <= VK_NUMPAD9);
 #endif
-        ;
-    int AddScratchPadKey = FALSE;
 
     if( ValidKeys && ValidKeyStatus ) {
         if( event->bKeyDown ) {
             int number;
-#if 1
+#if 0
             if( event->wVirtualScanCode <= 0x49 ) {
                 number = event->wVirtualScanCode - 0x40;
             } else if( event->wVirtualScanCode <= 0x4d ) {
@@ -324,7 +324,6 @@ void fb_hConsoleProcessKeyEvent( KEY_EVENT_RECORD *event )
             key_scratch_pad *= 10;
             key_scratch_pad += number;
         }
-        KeyCode = -1;
     } else if( KeyCode!=-1 ) {
         key_scratch_pad = 0;
     } else if( !ValidKeyStatus ) {
