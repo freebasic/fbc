@@ -54,7 +54,9 @@ var ICONS_GROUP
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller pages
+!insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
+!insertmacro MUI_UNPAGE_FINISH
 
 ; Language files
 !insertmacro MUI_LANGUAGE "English"
@@ -67,7 +69,7 @@ var ICONS_GROUP
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "Setup.exe"
+OutFile ;;;SETUP_EXE_NAME;;;
 InstallDir "$PROGRAMFILES\FreeBASIC"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
@@ -81,6 +83,9 @@ LangString TEXT_SECTION_EXAMPLES ${LANG_ENGLISH} "Examples"
 LangString TEXT_SECTION_EXAMPLES ${LANG_GERMAN}  "Beispiele"
 LangString TEXT_SECTION_EXAMPLES ${LANG_PORTUGUESE} "Exemplos"
 
+;;;ENABLE_SOURCES;;;LangString TEXT_SECTION_SOURCES  ${LANG_ENGLISH} "Sources"
+;;;ENABLE_SOURCES;;;LangString TEXT_SECTION_SOURCES  ${LANG_GERMAN}  "Quelltexte"
+
 LangString TEXT_SECT_DESCR_MAIN     ${LANG_ENGLISH} "Compiler, libraries and header files"
 LangString TEXT_SECT_DESCR_MAIN     ${LANG_GERMAN}  "Compiler, Bibliotheken und Include-Dateien"
 LangString TEXT_SECT_DESCR_MAIN     ${LANG_PORTUGUESE} "Compilador, bibliotecas e arquivos de cabeçalho"
@@ -89,13 +94,8 @@ LangString TEXT_SECT_DESCR_EXAMPLES ${LANG_ENGLISH} "Example applications"
 LangString TEXT_SECT_DESCR_EXAMPLES ${LANG_GERMAN}  "Beispiel-Programme"
 LangString TEXT_SECT_DESCR_EXAMPLES ${LANG_PORTUGUESE} "Aplicativos de examplo"
 
-LangString TEXT_INSTALL_SUCCESS  ${LANG_ENGLISH} "$(^Name) was removed successfully."
-LangString TEXT_INSTALL_SUCCESS  ${LANG_GERMAN}  "$(^Name) wurde erfolgreich deinstalliert."
-LangString TEXT_INSTALL_SUCCESS  ${LANG_PORTUGUESE} "$(^Name) foi removido com sucesso."
-
-LangString TEXT_UNISTALL_QUERY   ${LANG_ENGLISH} "Do you want to remove $(^Name) and all its components?"
-LangString TEXT_UNISTALL_QUERY   ${LANG_GERMAN}  "Möchten Sie $(^Name) und alle seinen Komponenten deinstallieren?"
-LangString TEXT_UNISTALL_QUERY   ${LANG_PORTUGUESE} "Você quer remover $(^Name) e todos os seus componentes?"
+;;;ENABLE_SOURCES;;;LangString TEXT_SECT_DESCR_SOURCES  ${LANG_ENGLISH} "Sources the compiler and its libraries were built from"
+;;;ENABLE_SOURCES;;;LangString TEXT_SECT_DESCR_SOURCES  ${LANG_GERMAN}  "Quelltexte aus denen der Compiler und die Bibliotheken erstellt wurden"
 
 Function .onInit
   !insertmacro MUI_LANGDLL_DISPLAY
@@ -109,9 +109,9 @@ Section $(TEXT_SECTION_MAIN) SEC01
   File "start_shell.exe"
   File "fblogo.ico"
 
-;  SetOutPath "$INSTDIR\bin\win32"
-;  File "E:\tmp\FreeBASIC\bin\win32\ar.exe"
   ;;;FILES_MAIN;;;
+;;;ENABLE_IMPORT_LIBS;;;  SetOutPath "$INSTDIR\lib\win32"
+  ;;;FILES_IMPORT_LIBS;;;
 
 ; Shortcuts
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -129,11 +129,21 @@ Section $(TEXT_SECTION_EXAMPLES) SEC02
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
+;;;ENABLE_SOURCES;;;Section /o $(TEXT_SECTION_SOURCES) SEC03
+  ;;;FILES_SOURCES;;;
+
+; Shortcuts
+;;;ENABLE_SOURCES;;;  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+;;;ENABLE_SOURCES;;;  !insertmacro MUI_STARTMENU_WRITE_END
+;;;ENABLE_SOURCES;;;SectionEnd
+
 Section -AdditionalIcons
   SetOutPath $INSTDIR
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   WriteIniStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
-  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Website.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
+  WriteIniStr "$INSTDIR\${PRODUCT_NAME}_forum.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}/forum"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Project website.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Project forum.lnk" "$INSTDIR\${PRODUCT_NAME}_forum.url"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Uninstall.lnk" "$INSTDIR\uninst.exe"
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
@@ -147,33 +157,24 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
-  ExecWait '"$INSTDIR\lib\win32\def\genimplibs.exe" -f -a'
+  ;;;GEN_IMP_LIBS;;;
 SectionEnd
 
 ; Section descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "$(TEXT_SECT_DESCR_MAIN)"
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "$(TEXT_SECT_DESCR_EXAMPLES)"
+;;;ENABLE_SOURCES;;;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "$(TEXT_SECT_DESCR_SOURCES)"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
-
-
-Function un.onUninstSuccess
-  HideWindow
-  MessageBox MB_ICONINFORMATION|MB_OK "$(TEXT_INSTALL_SUCCESS)"
-FunctionEnd
-
-Function un.onInit
-!insertmacro MUI_UNGETLANGUAGE
-  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "$(TEXT_UNISTALL_QUERY)" IDYES +2
-  Abort
-FunctionEnd
 
 Section Uninstall
   !insertmacro MUI_STARTMENU_GETFOLDER "Application" $ICONS_GROUP
   Delete "$INSTDIR\${PRODUCT_NAME}.url"
+  Delete "$INSTDIR\${PRODUCT_NAME}_forum.url"
   Delete "$INSTDIR\uninst.exe"
   Delete "$INSTDIR\fblogo.ico"
   Delete "$INSTDIR\start_shell.exe"
+  ;;;DELETE_SOURCES;;;
   ;;;DELETE_EXAMPLES;;;
   ;;;DELETE_MAIN;;;
   ;;;DELETE_IMPORT_LIBS;;;
