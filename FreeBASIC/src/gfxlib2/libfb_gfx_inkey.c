@@ -99,7 +99,7 @@ int fb_GfxKeyHit(void)
 FBSTRING *fb_GfxInkey(void)
 {
 	const unsigned char code[KEY_MAX_SPECIALS] = {
-		'X', 'H', 'P', 'K', 'M', 'R', 'S', 'G', 'O', 'I', 'Q',
+		'k', 'H', 'P', 'K', 'M', 'R', 'S', 'G', 'O', 'I', 'Q',
 		';', '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D'
 	};
 	FBSTRING *res;

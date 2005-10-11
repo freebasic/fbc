@@ -272,7 +272,6 @@ void fb_hConsolePutBackEvents( void )
     FB_UNLOCK();
 }
 
-
 fb_FnProcessMouseEvent MouseEventHook = (fb_FnProcessMouseEvent) NULL;
 
 static __inline__
@@ -357,12 +356,57 @@ void fb_hConsoleProcessKeyEvent( KEY_EVENT_RECORD *event )
     }
 }
 
+static
+BOOL WINAPI fb_hConsoleHandlerRoutine( DWORD dwCtrlType )
+{
+    switch( dwCtrlType ) {
+    case CTRL_CLOSE_EVENT:
+    case CTRL_LOGOFF_EVENT:
+    case CTRL_SHUTDOWN_EVENT:
+        {
+            KEY_EVENT_RECORD rec;
+            memset( &rec, 0, sizeof(KEY_EVENT_RECORD) );
+            rec.wVirtualKeyCode = VK_F4;
+            rec.dwControlKeyState = LEFT_ALT_PRESSED;
+            rec.wVirtualScanCode = MapVirtualKey( rec.wVirtualKeyCode, 0 );
+            fb_hConsolePostKey( FB_MAKE_EXT_KEY(0x6B), &rec );
+        }
+        return TRUE;
+    }
+    return FALSE;
+}
+
+static int control_handler_inited = FALSE;
+
+static void fb_hExitControlHandler( void )
+{
+    FB_LOCK();
+    if( control_handler_inited ) {
+        control_handler_inited = FALSE;
+        SetConsoleCtrlHandler( fb_hConsoleHandlerRoutine, FALSE );
+    }
+    FB_UNLOCK();
+}
+
+static void fb_hInitControlHandler( void )
+{
+    FB_LOCK();
+    if( !control_handler_inited ) {
+        control_handler_inited = TRUE;
+        atexit( fb_hExitControlHandler );
+        SetConsoleCtrlHandler( fb_hConsoleHandlerRoutine, TRUE );
+    }
+    FB_UNLOCK();
+}
+
 /*:::::*/
 int fb_ConsoleProcessEvents( void )
 {
     int got_event = FALSE;
 	INPUT_RECORD ir;
     DWORD dwRead;
+
+    fb_hInitControlHandler();
 
     do {
         if( !PeekConsoleInput( fb_in_handle, &ir, 1, &dwRead ) )

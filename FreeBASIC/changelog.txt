@@ -23,6 +23,7 @@ Version 0.15 Beta:
 - All DOS console I/O now depends on BIOS or direct memory access (mjs)
 - libfb_gfx_data.c is now created from the "original" data files (mjs)
 - speed-up of DOS console output due to direct memory accesses (mjs) 
+- The "CLOSE WINDOW" key code is now changed to ALT+F4 (mjs)
 
 [added]
 - OPEN CONS, OPEN LPT, OPEN ERR, OPEN PIPE (OPEN "PIPE:" won't work), OPEN SCRN (mjs)
@@ -60,6 +61,7 @@ Version 0.15 Beta:
 - stack size (-t) parameter for DOS (DrV)
 - CLS 2, VIEW PRINT, LINE INPUT and SCREEN(y,x,colorflag) are now supported in graphics mode (mjs)
 - ALT+NumKeys works in Win32 console mode (mjs)
+- "CLOSE WINDOW" key code (ALT+F4) now works in Win32 console too (mjs)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)
