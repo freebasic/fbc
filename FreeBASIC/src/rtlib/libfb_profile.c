@@ -165,7 +165,7 @@ FBCALL void *fb_ProfileBeginCall( const char *procname )
 	FBPROC *orig_parent_proc, *parent_proc, *proc;
 	const char *p;
 	unsigned int i, hash = 0, offset = 1;
-	
+
 	parent_proc = (FBPROC *)FB_TLSGET( cur_proc );
 	if( !parent_proc ) {
 		/* First function call of a newly spawned thread has no parent proc set */
@@ -173,7 +173,7 @@ FBCALL void *fb_ProfileBeginCall( const char *procname )
 		parent_proc->name = THREAD_PROC_NAME;
 	}
 	orig_parent_proc = parent_proc;
-	
+
 	FB_LOCK();
 
 	for ( p = procname; *p; p += 4 )
@@ -291,24 +291,6 @@ FBCALL int fb_EndProfile( int errorlevel )
 			    "------------------\n\n" );
 	fb_hGetExeName( buffer, MAX_PATH-1 );
 	fprintf( f, "Executable name: %s\n", buffer );
-	p = fb_hGetCommandLine( );
-#ifdef TARGET_WIN32
-	/* exe paths with white-spaces are quoted on Windows */
-	if( p[0] == '"' )
-	{
-		p = strchr( &p[1], '"' );
-		if( p )
-			p++;
-	}
-#endif
-	if( p ) {
-		/* skip argv[0] */
-		p = strchr( p, ' ' );
-		if( p )
-			p++;
-	}
-	if( ( p ) && ( *p ) )
-		fprintf( f, "Passed argument(s): %s\n", p );
 	fprintf( f, "Launched on: %s\n", launch_time );
 	fprintf( f, "Total program execution time: %5.4g seconds\n\n", main_proc->total_time );
 

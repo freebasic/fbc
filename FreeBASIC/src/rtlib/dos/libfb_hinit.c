@@ -33,14 +33,9 @@
 #include <sys/farptr.h>
 
 /* globals */
-int	fb_argc;
-char **	fb_argv;
-
 int ScrollWasOff = FALSE;
 FB_DOS_TXTMODE fb_dos_txtmode;
 
-
-extern char fb_commandline[];
 
 extern void (*fb_ConsolePrintBufferProc) (const void *buffer, size_t len, int mask);
 extern void fb_ConsolePrintBufferEx_SCRN (const void *buffer, size_t len, int mask);
@@ -50,26 +45,13 @@ extern void fb_ConsolePrintBufferEx_STDIO(const void *buffer, size_t len, int ma
 /*:::::*/
 void fb_hInit ( int argc, char **argv )
 {
-    int i;
-
-	/* rebuild command line from argv */
-	for( i = 0; i < argc; i++ ) 
-	{
-		strncat( fb_commandline, argv[i], 1024 );
-		if( i != argc-1 ) 
-			strncat( fb_commandline, " ", 1024 );
-	}
-	
-	fb_argc = argc;
-	fb_argv = argv;
-
 	/* set FPU precision to 64-bit and round to nearest (as in QB) */
 	_control87(PC_64|RC_NEAR, MCW_PC|MCW_RC);
 
 	/* turn off blink */
     intensevideo();
 
-	/* use cprintf() if STDOUT is the console; 
+	/* use cprintf() if STDOUT is the console;
      otherwise (with shell I/O redirection) use printf() */
     if( isatty(1) ) {
         fb_ConsolePrintBufferProc = fb_ConsolePrintBufferEx_SCRN;

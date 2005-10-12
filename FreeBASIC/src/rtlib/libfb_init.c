@@ -28,6 +28,9 @@
 #include "fb.h"
 
 /* globals */
+int fb_argc;
+char **fb_argv;
+
 FB_HOOKSTB fb_hooks = { NULL };
 FB_FILE fb_fileTB[FB_MAX_FILES];
 int __fb_file_handles_cleared = FALSE;
@@ -44,6 +47,10 @@ FnDevOpenHook fb_pfnDevOpenHook = NULL;
 /*:::::*/
 FBCALL void fb_Init ( int argc, char **argv )
 {
+    /* save argc and argv */
+	fb_argc = argc;
+	fb_argv = argv;
+
 	/* initialize files table */
     memset( fb_fileTB, 0, sizeof( fb_fileTB ) );
     __fb_file_handles_cleared = TRUE;

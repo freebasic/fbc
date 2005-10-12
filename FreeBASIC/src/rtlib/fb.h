@@ -600,7 +600,6 @@ FBCALL void         fb_DylibFree        ( void *library );
        char        *fb_hGetShortPath    ( char *src, char *dst, int maxlen );
 
        int          fb_hGetCurrentDir   ( char *dst, int maxlen );
-       char        *fb_hGetCommandLine  ( void );
        char        *fb_hGetExePath      ( char *dst, int maxlen );
        char        *fb_hGetExeName      ( char *dst, int maxlen );
 

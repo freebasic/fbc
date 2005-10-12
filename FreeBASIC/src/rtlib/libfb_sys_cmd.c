@@ -24,128 +24,54 @@
  *
  */
 
-#include <malloc.h>
 #include <string.h>
 #include "fb.h"
 
+extern int fb_argc;
+extern char **fb_argv;
 
 /*:::::*/
-FBCALL FBSTRING *fb_Command ( int argc )
+FBCALL FBSTRING *fb_Command ( int arg )
 {
-	FBSTRING 	*dst;
-	char		*cline, *p, c;
-	int			len, arg, isstr;
+	FBSTRING *dst;
+	int	i, len;
 
-	cline = fb_hGetCommandLine( );
-
-	if( cline == NULL )
-		return &fb_strNullDesc;
-
-	if( argc < 0 )
+	/* return all arguments? */
+	if( arg < 0 )
 	{
-
-#ifdef TARGET_WIN32
-		/* exe paths with white-spaces are quoted on Windows */
-		if( cline[0] == '"' )
-		{
-			cline = strchr( &cline[1], '"' );
-			if( cline != NULL )
-				++cline;
-			else
-				return &fb_strNullDesc;
-		}
-#endif
-
-		/* skip argv[0] */
-		cline = strchr( cline, ' ' );
-
-		if( cline == NULL )
+		/* no args? */
+		if( fb_argc == 1 )
 			return &fb_strNullDesc;
-		++cline;
 
-        len = strlen( cline );
-
-        /* remove spaces at end of line */
-        while( len!=0 && cline[len-1]==' ' )
-            --len;
-	}
-	else
-	{
-		p = cline;
-		arg = 0;
+		/* concatenate all args but 0 */
 		len = 0;
+		for( i = 1; i < fb_argc; i++ )
+			len += strlen( fb_argv[i] );
 
-		while( *p != '\0' )
+		dst = fb_hStrAllocTemp( NULL, len + fb_argc-2 );
+		if( dst == NULL )
+			return &fb_strNullDesc;
+
+		dst->data[0] = '\0';
+		for( i = 1; i < fb_argc; i++ )
 		{
-			/* skip white-spc */
-			while( 1 )
-			{
-				c = *p;
-				if( (c != ' ') && (c != '\t') )
-					break;
-				++p;
-			}
+			strcat( dst->data, fb_argv[i] );
+			if( i != fb_argc-1 )
+				strcat( dst->data, " " );
+    	}
 
-			/* end? */
-			if( (c == '\r') || (c == '\0') )
-				break;
-
-			cline = p;
-
-			/* read until next white-space */
-			isstr = 0;
-			do
-			{
-				++p;
-
-				/* handle quotes */
-				if( c == '"' )
-				{
-					if( isstr != 0 )
-					{
-						if( arg == argc )
-							--p;
-						break;
-					}
-					else
-					{
-						isstr = 1;
-						if( arg == argc )
-							++cline;
-					}
-				}
-
-				c = *p;
-				if( isstr == 0 )
-					if( (c == ' ') || (c == '\t') )
-						break;
-
-			} while( (c != '\r') && (c != '\0') );
-
-			/* found? */
-			if( arg == argc )
-			{
-				len = p - cline;
-				break;
-			}
-
-			++arg;
-		}
+    	return dst;
 	}
 
-	if( len <= 0 )
+    /* return just one argument */
+	if( arg >= fb_argc )
+	    return &fb_strNullDesc;
+
+    dst = fb_hStrAllocTemp( NULL, strlen( fb_argv[arg] ) );
+	if( dst == NULL )
 		return &fb_strNullDesc;
 
-	/* alloc temp string */
-    dst = fb_hStrAllocTemp( NULL, len );
-	if( dst != NULL )
-	{
-		memcpy( dst->data, cline, len );
-		dst->data[len] = '\0';
-	}
-	else {
-		return &fb_strNullDesc;
-	}
+	strcpy( dst->data, fb_argv[arg] );
 
 	return dst;
 }
