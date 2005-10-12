@@ -4,6 +4,7 @@
 #if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
 #inclib "winspool"
 #inclib "user32"
+#inclib "gdi32"
 #endif
 
 enum FB_FILE_MODE
@@ -260,10 +261,12 @@ declare function fb_DevLptOpen cdecl _
           alias "fb_DevLptOpen"  ( handle as FB_FILE, _
                                    byval filename as zstring ptr, _
                                    byval filename_len as uinteger ) as integer
+#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
 declare function fb_DevComOpen cdecl _
           alias "fb_DevComOpen"  ( handle as FB_FILE, _
                                    byval filename as zstring ptr, _
                                    byval filename_len as uinteger ) as integer
+#endif
 declare function fb_DevPipeOpen cdecl _
           alias "fb_DevPipeOpen" ( handle as FB_FILE, _
                                    byval filename as zstring ptr, _

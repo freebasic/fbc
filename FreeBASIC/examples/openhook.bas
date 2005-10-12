@@ -49,8 +49,10 @@ private function MyOpenHook( filename as string, _
             filename = mid$(filename, 9)
         elseif IsNumberedDevice(filename, "LPT")>=0 then
             *pfnFileOpen = @fb_DevLptOpen
+#if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
         elseif IsNumberedDevice(filename, "COM")>=1 then
             *pfnFileOpen = @fb_DevComOpen
+#endif
         end if
     end select
 end function
