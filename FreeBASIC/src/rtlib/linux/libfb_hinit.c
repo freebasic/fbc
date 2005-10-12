@@ -98,7 +98,7 @@ void fb_hResize()
 
 	if ((!fb_con.inited) || (!fb_con.resized))
 		return;
-	
+
 	win.ws_row = 0xFFFF;
 	ioctl(fb_con.h_out, TIOCGWINSZ, &win);
 	if (win.ws_row == 0xFFFF) {
@@ -141,10 +141,10 @@ int fb_hTermOut( int code, int param1, int param2 )
 {
 	const char *extra_seq[] = { "\e(U", "\e(B", "\e[6n", "\e[18t", "\e[?1000h\e[?1003h", "\e[?1003l\e[?1000l" };
 	char *str;
-	
+
 	if (!fb_con.inited)
 		return -1;
-	
+
 	fflush(stdout);
 	if (code > SEQ_MAX) {
 		fputs(extra_seq[code - SEQ_EXTRA], fb_con.f_out);
@@ -168,7 +168,7 @@ int fb_hInitConsole ( )
 
 	if (!fb_con.inited)
 		return -1;
-	
+
 	/* Init terminal I/O */
 	fb_con.f_out = stdout;
 	fb_con.h_out = fileno(stdout);
@@ -178,7 +178,7 @@ int fb_hInitConsole ( )
 	if (!fb_con.f_in)
 		return -1;
 	fb_con.h_in = fileno(fb_con.f_in);
-	
+
 	/* Output setup */
 	if (tcgetattr(fb_con.h_out, &fb_con.old_term_out))
 		return -1;
@@ -207,7 +207,7 @@ int fb_hInitConsole ( )
 	fb_con.old_in_flags = fcntl(fb_con.h_in, F_GETFL, 0);
 	fb_con.in_flags = fb_con.old_in_flags | O_NONBLOCK;
 	fcntl(fb_con.h_in, F_SETFL, fb_con.in_flags);
-	
+
 	if (fb_con.inited == INIT_CONSOLE)
 		fb_hTermOut(SEQ_INIT_CHARSET, 0, 0);
 	fb_hTermOut(SEQ_INIT_KEYPAD, 0, 0);
@@ -219,7 +219,7 @@ int fb_hInitConsole ( )
 	if (fb_con.mouse_init)
 		fb_con.mouse_init();
 	BG_UNLOCK();
-	
+
 	return 0;
 }
 
@@ -231,7 +231,7 @@ void fb_hInit ( int argc, char **argv )
 	char buffer[2048], *p, *term;
 	struct termios tty;
     int i;
-	           
+
 #ifdef MULTITHREADED
     pthread_mutexattr_t attr;
 #endif
@@ -255,30 +255,6 @@ void fb_hInit ( int argc, char **argv )
 	/* Init multithreading support */
 	pthread_mutex_init(&fb_global_mutex, &attr);
 	pthread_mutex_init(&fb_string_mutex, &attr);
-
-	/* allocate thread local storage vars for runtime error handling */
-	pthread_key_create(&fb_errctx.handler,   NULL);
-	pthread_key_create(&fb_errctx.num,       NULL);
-	pthread_key_create(&fb_errctx.linenum,   NULL);
-	pthread_key_create(&fb_errctx.reslbl,    NULL);
-	pthread_key_create(&fb_errctx.resnxtlbl, NULL);
-
-	/* allocate thread local storage vars for input context */
-	pthread_key_create(&fb_inpctx.handle,    NULL);
-	pthread_key_create(&fb_inpctx.i,         NULL);
-	pthread_key_create(&fb_inpctx.s.data,    NULL);
-	pthread_key_create(&fb_inpctx.s.len,     NULL);
-	pthread_key_create(&fb_inpctx.s.size,    NULL);
-
-	/* allocate thread local storage vars for print using context */
-	pthread_key_create(&fb_printusgctx.chars,       NULL);
-	pthread_key_create(&fb_printusgctx.ptr,         NULL);
-	pthread_key_create(&fb_printusgctx.fmtstr.data, NULL);
-	pthread_key_create(&fb_printusgctx.fmtstr.len,  NULL);
-	pthread_key_create(&fb_printusgctx.fmtstr.size, NULL);
-	
-	/* allocate thread local storage var for dir context */
-	pthread_key_create(&fb_dirctx,           NULL);
 #endif
 
 	pthread_mutex_init( &fb_con.bg_mutex, NULL );
@@ -286,7 +262,7 @@ void fb_hInit ( int argc, char **argv )
 	memset(&fb_con, 0, sizeof(fb_con));
 
 	fb_con.has_perm = ioperm(0, 0x400, 1) ? FALSE : TRUE;
-	
+
 	/* Init termcap */
 	term = getenv("TERM");
 	if ((!term) || (tgetent(buffer, term) <= 0))
@@ -301,7 +277,7 @@ void fb_hInit ( int argc, char **argv )
 		return;
 	for (i = 0; i < SEQ_MAX; i++)
 		fb_con.seq[i] = tgetstr(seq[i], NULL);
-	
+
 	if ((!strcmp(term, "console")) || (!strncmp(term, "linux", 5)))
 		fb_con.inited = INIT_CONSOLE;
 	else

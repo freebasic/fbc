@@ -61,42 +61,21 @@ void drawScreen(int width, int height, int bpp)
 void fb_hInit ( int argc, char **argv )
 {
 	unsigned int control_word;
-	
+
 	/* Get FPU control word */
 	__asm__ __volatile__( "fstcw %0" : "=m" (control_word) : );
 	/* Set 64-bit and round to nearest */
 	control_word = (control_word & 0xF0FF) | 0x300;
 	/* Write back FPU control word */
 	__asm__ __volatile__( "fldcw %0" : : "m" (control_word) );
-	
-	
+
+
 #ifdef MULTITHREADED
 
 	/* !!!FIXME!!! replace with xbox/openxdk equivalents */
-	
+
 	InitializeCriticalSection(&fb_global_mutex);
 	InitializeCriticalSection(&fb_string_mutex);
-	
-	/* allocate thread local storage vars for runtime error handling */
-	fb_errctx.handler   = TlsAlloc();
-	fb_errctx.num       = TlsAlloc();
-	fb_errctx.linenum   = TlsAlloc();
-	fb_errctx.reslbl    = TlsAlloc();
-	fb_errctx.resnxtlbl = TlsAlloc();
-	
-	/* allocate thread local storage vars for input context */
-	fb_inpctx.f         = TlsAlloc();
-	fb_inpctx.i         = TlsAlloc();
-	fb_inpctx.s.data    = TlsAlloc();
-	fb_inpctx.s.len     = TlsAlloc();
-	fb_inpctx.s.size    = TlsAlloc();
-	
-	/* allocate thread local storage vars for print using context */
-	fb_printusgctx.chars       = TlsAlloc();
-	fb_printusgctx.ptr         = TlsAlloc();
-	fb_printusgctx.fmtstr.data = TlsAlloc();
-	fb_printusgctx.fmtstr.len  = TlsAlloc();
-	fb_printusgctx.fmtstr.size = TlsAlloc();
 
 #endif
 

@@ -37,7 +37,7 @@ int __fb_is_exiting = FALSE;
 #endif
 
 /*:::::*/
-static void fb_hFileExit( void )
+static void atexit_cb( void )
 {
 
 #ifdef MULTITHREADED
@@ -55,32 +55,43 @@ void fb_hFileCtx ( int doinit )
 {
 	static int inited = 0;
 
-	//
+#ifdef MULTITHREADED
+	if( !__fb_is_exiting )
+    	FB_LOCK();
+#endif
+
+	// initialize?
 	if( doinit )
 	{
-        FB_LOCK();
-		if( inited )
-			return;
+		if( !inited )
+		{
 
-        if( !__fb_file_handles_cleared ) {
-            memset( fb_fileTB, 0, sizeof( FB_FILE ) * FB_MAX_FILES );
-            __fb_file_handles_cleared = TRUE;
-        }
-		atexit( &fb_hFileExit );
+        	if( !__fb_file_handles_cleared ) {
+            	memset( fb_fileTB, 0, sizeof( FB_FILE ) * FB_MAX_FILES );
+            	__fb_file_handles_cleared = TRUE;
+        	}
 
-		inited = 1;
-        FB_UNLOCK();
+			atexit( &atexit_cb );
+
+			inited = 1;
+		}
 	}
-	//
+
+	// finalize..
 	else
 	{
-		if( !inited )
-			return;
+		if( inited )
+		{
+			fb_FileReset( );
 
-		fb_FileReset( );
-
-		inited = 0;
+			inited = 0;
+		}
 	}
+
+#ifdef MULTITHREADED
+	if( !__fb_is_exiting )
+    	FB_UNLOCK();
+#endif
 }
 
 /*:::::*/

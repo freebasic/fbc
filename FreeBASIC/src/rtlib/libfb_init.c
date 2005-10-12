@@ -35,11 +35,6 @@ FB_HOOKSTB fb_hooks = { NULL };
 FB_FILE fb_fileTB[FB_MAX_FILES];
 int __fb_file_handles_cleared = FALSE;
 
-FB_ERRORCTX fb_errctx = { 0 };
-FB_INPCTX fb_inpctx = { 0 };
-FB_PRINTUSGCTX fb_printusgctx = { 0 };
-FB_TLSENTRY fb_dirctx = 0;
-
 FBSTRING fb_strNullDesc = { NULL, 0 };
 
 FnDevOpenHook fb_pfnDevOpenHook = NULL;
@@ -47,6 +42,10 @@ FnDevOpenHook fb_pfnDevOpenHook = NULL;
 /*:::::*/
 FBCALL void fb_Init ( int argc, char **argv )
 {
+#ifdef MULTITHREADED
+	int i;
+#endif
+
     /* save argc and argv */
 	fb_argc = argc;
 	fb_argv = argv;
@@ -58,6 +57,11 @@ FBCALL void fb_Init ( int argc, char **argv )
 	/* os-dep initialization */
     fb_hInit( argc, argv );
 
+#ifdef MULTITHREADED
+	/* allocate thread local storage keys */
+	for( i = 0; i < FB_TLSKEYS; i++ )
+		FB_TLSALLOC( fb_tls_ctxtb[i] );
+#endif
 }
 
 

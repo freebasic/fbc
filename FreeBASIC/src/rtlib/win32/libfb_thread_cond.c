@@ -32,14 +32,10 @@
 
 typedef struct _FBCOND
 {
-	FB_LISTELEM elem;
 	int waiters;
 	CRITICAL_SECTION lock;
 	HANDLE event[2];
 } FBCOND;
-
-static FBCOND condTB[FB_MAXCONDS];
-static FB_LIST condList = { 0 };
 
 
 /*:::::*/
@@ -47,10 +43,7 @@ FBCALL FBCOND *fb_CondCreate( void )
 {
 	FBCOND *cond;
 
-	if( (condList.fhead == NULL) && (condList.head == NULL) )
-		fb_hListInit( &condList, (void *)condTB, sizeof(FBCOND), FB_MAXCONDS );
-
-	cond = (FBCOND *)fb_hListAllocElem( &condList );
+	cond = (FBCOND *)malloc( sizeof( FBCOND ) );
 	if( !cond )
 		return NULL;
 
@@ -66,13 +59,14 @@ FBCALL FBCOND *fb_CondCreate( void )
 FBCALL void fb_CondDestroy( FBCOND *cond )
 {
 	/* dumb address checking */
-	if( (cond < condTB) || (cond >= &condTB[FB_MAXCONDS]) )
+	if( cond == NULL )
 		return;
 
 	DeleteCriticalSection( &cond->lock );
 	CloseHandle( cond->event[SIGNAL] );
 	CloseHandle( cond->event[BROADCAST] );
-	fb_hListFreeElem( &condList, (FB_LISTELEM *)cond );
+
+	free( (void *)cond );
 }
 
 /*:::::*/
@@ -80,8 +74,7 @@ FBCALL void fb_CondSignal( FBCOND *cond )
 {
 	int has_waiters;
 
-	/* dumb address checking */
-	if( (cond < condTB) || (cond >= &condTB[FB_MAXCONDS]) )
+	if( cond == NULL )
 		return;
 
 	EnterCriticalSection( &cond->lock );
@@ -96,8 +89,7 @@ FBCALL void fb_CondBroadcast( FBCOND *cond )
 {
 	int has_waiters;
 
-	/* dumb address checking */
-	if( (cond < condTB) || (cond >= &condTB[FB_MAXCONDS]) )
+	if( cond == NULL )
 		return;
 
 	EnterCriticalSection( &cond->lock );
@@ -112,8 +104,7 @@ FBCALL void fb_CondWait( FBCOND *cond )
 {
 	int result, last_waiter;
 
-	/* dumb address checking */
-	if( (cond < condTB) || (cond >= &condTB[FB_MAXCONDS]) )
+	if( cond == NULL )
 		return;
 
 	EnterCriticalSection( &cond->lock );

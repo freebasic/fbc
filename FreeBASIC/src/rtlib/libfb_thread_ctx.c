@@ -18,23 +18,52 @@
  */
 
 /*
- * exit.c -- end helper for Windows
+ * thread_ctx.c -- thread local context storage
  *
- * chng: jan/2005 written [v1ctor]
+ * chng: oct/2005 written [v1ctor]
  *
  */
 
-#include <stdlib.h>
-#include "../fb.h"
+#include "fb.h"
+
+FB_TLSENTRY fb_tls_ctxtb[FB_TLSKEYS] = { 0 };
 
 
 /*:::::*/
-void fb_hEnd ( int errlevel )
+FBCALL void *fb_TlsGetCtx( int index, int len )
 {
+	void *ctx = (void *)FB_TLSGET( fb_tls_ctxtb[index] );
 
-#ifdef MULTITHREADED
-	DeleteCriticalSection(&fb_global_mutex);
-	DeleteCriticalSection(&fb_string_mutex);
-#endif
+	if( ctx == NULL )
+	{
+		ctx = (void *)calloc( 1, len );
+		FB_TLSSET( fb_tls_ctxtb[index], ctx );
+	}
+
+	return ctx;
+}
+
+/*:::::*/
+FBCALL void fb_TlsDelCtx( int index )
+{
+    void *ctx = (void *)FB_TLSGET( fb_tls_ctxtb[index] );
+
+	/* free mem block if any */
+	if( ctx != NULL )
+	{
+		free( ctx );
+		FB_TLSSET( fb_tls_ctxtb[index], NULL );
+	}
+}
+
+/*:::::*/
+FBCALL void fb_TlsFreeCtxTb( void )
+{
+    int i;
+
+	/* free all thread local storage ctx's */
+	for( i = 0; i < FB_TLSKEYS; i++ )
+     	fb_TlsDelCtx( i );
 
 }
+

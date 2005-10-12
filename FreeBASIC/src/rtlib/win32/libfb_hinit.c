@@ -73,30 +73,6 @@ void fb_hInit ( int argc, char **argv )
 #ifdef MULTITHREADED
 	InitializeCriticalSection(&fb_global_mutex);
 	InitializeCriticalSection(&fb_string_mutex);
-
-	/* allocate thread local storage vars for runtime error handling */
-	fb_errctx.handler   = TlsAlloc();
-	fb_errctx.num       = TlsAlloc();
-	fb_errctx.linenum   = TlsAlloc();
-	fb_errctx.reslbl    = TlsAlloc();
-	fb_errctx.resnxtlbl = TlsAlloc();
-
-	/* allocate thread local storage vars for input context */
-	fb_inpctx.handle    = TlsAlloc();
-	fb_inpctx.i         = TlsAlloc();
-	fb_inpctx.s.data    = TlsAlloc();
-	fb_inpctx.s.len     = TlsAlloc();
-	fb_inpctx.s.size    = TlsAlloc();
-
-	/* allocate thread local storage vars for print using context */
-	fb_printusgctx.chars       = TlsAlloc();
-	fb_printusgctx.ptr         = TlsAlloc();
-	fb_printusgctx.fmtstr.data = TlsAlloc();
-	fb_printusgctx.fmtstr.len  = TlsAlloc();
-	fb_printusgctx.fmtstr.size = TlsAlloc();
-
-	/* allocate thread local storage var for dir context */
-	fb_dirctx           = TlsAlloc();
 #endif
 
 }

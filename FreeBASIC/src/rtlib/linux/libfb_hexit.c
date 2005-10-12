@@ -34,16 +34,16 @@ void fb_hExitConsole( void )
 	int bottom;
 
 	if (fb_con.inited) {
-	
+
 		fb_hResize();
-		
+
 		BG_LOCK();
 		if (fb_con.keyboard_exit)
 			fb_con.keyboard_exit();
 		if (fb_con.mouse_exit)
 			fb_con.mouse_exit();
 		BG_UNLOCK();
-		
+
 		bottom = fb_ConsoleGetMaxRow();
 		if ((fb_ConsoleGetTopRow() != 0) || (fb_ConsoleGetBotRow() != bottom - 1)) {
 			/* Restore scrolling region to whole screen and clear */
@@ -51,7 +51,7 @@ void fb_hExitConsole( void )
 			fb_hTermOut(SEQ_CLS, 0, 0);
 			fb_hTermOut(SEQ_HOME, 0, 0);
 		}
-		
+
 		/* Cleanup terminal */
 		if (fb_con.inited == INIT_CONSOLE)
 			fb_hTermOut(SEQ_EXIT_CHARSET, 0, 0);
@@ -77,35 +77,9 @@ void fb_hEnd ( int errlevel )
 	}
 	pthread_mutex_destroy(&fb_con.bg_mutex);
 
-	if( FB_TLSGET(fb_dirctx) )
-		free( (FB_DIRCTX *)FB_TLSGET(fb_dirctx) );
-
 #ifdef MULTITHREADED
 	/* Release multithreading support resources */
 	pthread_mutex_destroy(&fb_global_mutex);
 	pthread_mutex_destroy(&fb_string_mutex);
-
-	/* allocate thread local storage vars for runtime error handling */
-	pthread_key_delete(fb_errctx.handler);
-	pthread_key_delete(fb_errctx.num);
-	pthread_key_delete(fb_errctx.linenum);
-	pthread_key_delete(fb_errctx.reslbl);
-	pthread_key_delete(fb_errctx.resnxtlbl);
-
-	/* allocate thread local storage vars for input context */
-	pthread_key_delete(fb_inpctx.handle);
-	pthread_key_delete(fb_inpctx.i);
-	pthread_key_delete(fb_inpctx.s.data);
-	pthread_key_delete(fb_inpctx.s.len);
-	pthread_key_delete(fb_inpctx.s.size);
-
-	/* allocate thread local storage vars for print using context */
-	pthread_key_delete(fb_printusgctx.chars);
-	pthread_key_delete(fb_printusgctx.ptr);
-	pthread_key_delete(fb_printusgctx.fmtstr.data);
-	pthread_key_delete(fb_printusgctx.fmtstr.len);
-	pthread_key_delete(fb_printusgctx.fmtstr.size);
-	
-	pthread_key_delete(fb_dirctx);
 #endif
 }

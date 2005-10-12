@@ -34,7 +34,7 @@
 /*:::::*/
 static void close_dir ( void )
 {
-	FB_DIRCTX *ctx = (FB_DIRCTX *)FB_TLSGET(fb_dirctx);
+	FB_DIRCTX *ctx = (FB_DIRCTX *)fb_TlsGetCtx( FB_TLSKEY_DIR, FB_TLSLEN_DIR );
 
 	closedir( ctx->dir );
 	ctx->in_use = FALSE;
@@ -66,7 +66,7 @@ static int get_attrib ( char *name, struct stat *info )
 /*:::::*/
 static int match_spec( char *name )
 {
-	FB_DIRCTX *ctx = (FB_DIRCTX *)FB_TLSGET(fb_dirctx);
+	FB_DIRCTX *ctx = (FB_DIRCTX *)fb_TlsGetCtx( FB_TLSKEY_DIR, FB_TLSLEN_DIR );
 	char *any = NULL;
 	char *spec;
 
@@ -112,7 +112,7 @@ static int match_spec( char *name )
 /*:::::*/
 static char *find_next ( void )
 {
-	FB_DIRCTX *ctx = (FB_DIRCTX *)FB_TLSGET(fb_dirctx);
+	FB_DIRCTX *ctx = (FB_DIRCTX *)fb_TlsGetCtx( FB_TLSKEY_DIR, FB_TLSLEN_DIR );
 	char *name = NULL;
 	struct stat	info;
 	struct dirent *entry;
@@ -150,11 +150,7 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 	len = FB_STRSIZE( filespec );
 	name = NULL;
 
-	ctx = (FB_DIRCTX *)FB_TLSGET(fb_dirctx);
-	if (!ctx) {
-		ctx = (FB_DIRCTX *)calloc(1, sizeof(FB_DIRCTX));
-		FB_TLSSET(fb_dirctx, ctx);
-	}
+	ctx = (FB_DIRCTX *)fb_TlsGetCtx( FB_TLSKEY_DIR, FB_TLSLEN_DIR );
 
 	if( len > 0 )
 	{

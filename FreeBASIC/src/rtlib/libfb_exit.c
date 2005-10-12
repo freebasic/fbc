@@ -33,10 +33,25 @@ void fb_CallDTORS(void);
 /*:::::*/
 FBCALL void fb_End ( int errlevel )
 {
+#ifdef MULTITHREADED
+    int i;
+#endif
+
     fb_CallDTORS();
 
 	/* os-dep termination */
 	fb_hEnd( errlevel );
+
+#ifdef MULTITHREADED
+	/* free thread local storage plus the keys */
+	for( i = 0; i < FB_TLSKEYS; i++ )
+	{
+     	fb_TlsDelCtx( i );
+
+		/* del key/index */
+		FB_TLSFREE( fb_tls_ctxtb[i] );
+	}
+#endif
 
 	exit( errlevel );
 

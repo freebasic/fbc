@@ -79,18 +79,6 @@ extern "C" {
      */
 #define FB_FILE_BUFSIZE       8192
 
-    /** Maximum number of threads.
-     */
-#define FB_MAXTHREADS         256
-
-    /** Maximum number of mutexes.
-     */
-#define FB_MAXMUTEXES         256
-
-    /** Maximum number of conditions.
-     */
-#define FB_MAXCONDS           256
-
     /* =================================================================
      * RTLIB default values
      * ================================================================= */
@@ -193,11 +181,20 @@ extern "C" {
      */
 # define FB_STRUNLOCK()
 #endif
+
 #ifndef FB_TLSENTRY
     /** Define a TLS (Thread local storage) slot.
      */
 # define FB_TLSENTRY                unsigned int
 #endif
+
+#ifndef FB_TLSALLOC
+# define FB_TLSALLOC(key) 			...
+#endif
+#ifndef FB_TLSFREE
+# define FB_TLSFREE(key)			...
+#endif
+
 #ifndef FB_TLSSET
     /** Set the value of a TLS (Thread local storage) slot.
      */
@@ -207,6 +204,10 @@ extern "C" {
     /** Get the value from a TLS (Thread local storage) slot.
      */
 # define FB_TLSGET(key)                key
+#endif
+
+#ifndef FB_THREADID
+# define FB_THREADID int
 #endif
 
 #ifndef FB_BINARY_NEWLINE
@@ -641,16 +642,6 @@ FBCALL void         fb_DataReadDouble   ( double *dst );
  * console
  **************************************************************************************************/
 
-typedef struct _FB_PRINTUSGCTX {
-    FB_TLSENTRY     chars;
-    FB_TLSENTRY     ptr;
-    struct {
-        FB_TLSENTRY data;
-        FB_TLSENTRY len;
-        FB_TLSENTRY size;
-    } fmtstr;
-} FB_PRINTUSGCTX;
-
 #if FB_TAB_WIDTH == 8
 #define FB_NATIVE_TAB 1
 #endif
@@ -663,6 +654,12 @@ typedef struct _FB_PRINTUSGCTX {
                                               * buffer gets handles in a special
                                               * way */
 #define FB_PRINT_ISLAST       0x80000000     /* only for USING */
+
+typedef struct _FB_PRINTUSGCTX {
+    int     		chars;
+    char 			*ptr;
+    FBSTRING		fmtstr;
+} FB_PRINTUSGCTX;
 
 /** Small helper function that converts a TEXT new-line to a BINARY new-line.
  *
@@ -746,7 +743,6 @@ static __inline__ int FB_PRINT_CONVERT_BIN_NEWLINE(int mask)
 #define FB_WRITESTR(fnum, val, mask, type) 				    \
     FB_WRITESTR_EX(FB_FILE_TO_HANDLE(fnum), val, mask, type)
 
-extern FB_PRINTUSGCTX fb_printusgctx;
 struct _FB_FILE;
 
        int          fb_ConsoleWidth     ( int cols, int rows );
@@ -900,14 +896,10 @@ typedef struct _FB_FILE {
 } FB_FILE;
 
 typedef struct _FB_INPCTX {
-    FB_TLSENTRY     handle;
-    FB_TLSENTRY     status;
-    FB_TLSENTRY     i;
-    struct {
-        FB_TLSENTRY data;
-        FB_TLSENTRY len;
-        FB_TLSENTRY size;
-    } s;
+    FB_FILE*		handle;
+    int      		status;
+    int     		i;
+    FBSTRING 		s;
 } FB_INPCTX;
 
 
@@ -919,8 +911,6 @@ typedef FBCALL int (*FnDevOpenHook)( FBSTRING *filename,
                                      FnFileOpen *pfnFileOpen );
 
 extern FB_FILE                fb_fileTB[];
-extern FB_INPCTX              fb_inpctx;
-extern FB_TLSENTRY            fb_dirctx;
 extern FnDevOpenHook          fb_pfnDevOpenHook;
 
 static __inline__ struct _FB_FILE *FB_FILE_TO_HANDLE(int index)
@@ -1202,17 +1192,15 @@ FBCALL void         fb_Sleep            ( int msecs );
  * error
  **************************************************************************************************/
 
-typedef struct _FB_ERRORCTX {
-    FB_TLSENTRY     handler;
-    FB_TLSENTRY     num;
-    FB_TLSENTRY     linenum;
-    FB_TLSENTRY     reslbl;
-    FB_TLSENTRY     resnxtlbl;
-} FB_ERRORCTX;
-
-extern FB_ERRORCTX  fb_errctx;
-
 typedef void (*FB_ERRHANDLER) (void);
+
+typedef struct _FB_ERRORCTX {
+    FB_ERRHANDLER  	handler;
+    int				num;
+    int				linenum;
+    void		   *reslbl;
+    void		   *resnxtlbl;
+} FB_ERRORCTX;
 
        FB_ERRHANDLER fb_ErrorThrowEx    ( int errnum, int linenum, void *res_label, void *resnext_label );
        FB_ERRHANDLER fb_ErrorThrow      ( int linenum, void *res_label, void *resnext_label );
@@ -1226,12 +1214,20 @@ FBCALL int           fb_ErrorSetNum     ( int errnum );
  * thread
  **************************************************************************************************/
 
-struct _FBTHREAD;
+typedef void (FBCALL *FB_THREADPROC)( int param );
+
+typedef struct _FBTHREAD
+{
+	FB_THREADID		id;
+	FB_THREADPROC	proc;
+	int 			param;
+} FBTHREAD;
+
 struct _FBMUTEX;
 struct _FBCOND;
 
-FBCALL struct _FBTHREAD *fb_ThreadCreate( void *proc, int param );
-FBCALL void              fb_ThreadWait  ( struct _FBTHREAD *thread );
+FBCALL FBTHREAD 		*fb_ThreadCreate( FB_THREADPROC proc, int param );
+FBCALL void              fb_ThreadWait  ( FBTHREAD *thread );
 
 FBCALL struct _FBMUTEX  *fb_MutexCreate ( void );
 FBCALL void              fb_MutexDestroy( struct _FBMUTEX *mutex );
@@ -1357,6 +1353,32 @@ typedef struct _FB_HOOKSTB {
 } FB_HOOKSTB;
 
 extern FB_HOOKSTB   fb_hooks;
+
+/**************************************************************************************************
+ * per-thread local storage context
+ **************************************************************************************************/
+
+enum {
+	FB_TLSKEY_ERROR,
+	FB_TLSKEY_DIR,
+	FB_TLSKEY_INPUT,
+	FB_TLSKEY_PRINTUSG,
+
+	FB_TLSKEYS
+};
+
+enum {
+	FB_TLSLEN_ERROR 	= sizeof( FB_ERRORCTX ),
+	FB_TLSLEN_DIR		= sizeof( FB_DIRCTX ),
+	FB_TLSLEN_INPUT		= sizeof( FB_INPCTX ),
+	FB_TLSLEN_PRINTUSG  = sizeof( FB_PRINTUSGCTX ),
+};
+
+extern FB_TLSENTRY fb_tls_ctxtb[];
+
+FBCALL void		   *fb_TlsGetCtx		( int index, int len );
+FBCALL void			fb_TlsDelCtx		( int index );
+FBCALL void 		fb_TlsFreeCtxTb		( void );
 
 #ifdef __cplusplus
 }

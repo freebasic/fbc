@@ -29,43 +29,47 @@
 #include "fb.h"
 
 
-typedef struct _FBTHREAD
+/* thread proxy to user's thread proc */
+static void *threadproc( void *param )
 {
-	FB_LISTELEM elem;
-	pthread_t id;
-} FBTHREAD;
+	FBTHREAD *thread = param;
 
-static FBTHREAD thdTB[FB_MAXTHREADS];
-static FB_LIST thdList = { 0 };
+	/* call the user thread */
+	thread->proc( thread->param );
 
+	/* free mem */
+	fb_TlsFreeCtxTb( );
+
+	free( thread );
+
+	return NULL;
+}
 
 /*:::::*/
-FBCALL FBTHREAD *fb_ThreadCreate( void *proc, int param )
+FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, int param )
 {
 	FBTHREAD *thread;
-	
-	if( (thdList.fhead == NULL) && (thdList.head == NULL) )
-		fb_hListInit( &thdList, (void *)thdTB, sizeof(FBTHREAD), FB_MAXTHREADS );
-	
-	thread = (FBTHREAD *)fb_hListAllocElem( &thdList );
+
+	thread = (FBTHREAD *)malloc( sizeof(FBTHREAD) )
 	if( !thread )
 		return NULL;
-	
-	if( pthread_create( &thread->id, NULL, (void *(*)(void *))proc, (void *)param ) ) {
-		fb_hListFreeElem( &thdList, (FB_LISTELEM *)thread );
+
+    thread->proc	= proc;
+    thread->param 	= param;
+
+	if( pthread_create( &thread->id, NULL, threadproc, (void *)thread ) ) {
+		free( (void *)thread );
 		return NULL;
 	}
-	
+
 	return thread;
 }
 
 /*:::::*/
 FBCALL void fb_ThreadWait( FBTHREAD *thread )
 {
-	/* dumb address checking */
-	if( (thread < thdTB) || (thread >= &thdTB[FB_MAXTHREADS]) )
+	if( thread == NULL )
 		return;
-	
+
 	pthread_join( thread->id, NULL );
-	fb_hListFreeElem( &thdList, (FB_LISTELEM *)thread );
 }

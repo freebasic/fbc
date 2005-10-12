@@ -56,9 +56,13 @@ extern pthread_mutex_t fb_string_mutex;
 # define FB_STRLOCK()				pthread_mutex_lock(&fb_string_mutex)
 # define FB_STRUNLOCK()				pthread_mutex_unlock(&fb_string_mutex)
 # define FB_TLSENTRY				pthread_key_t
+# define FB_TLSALLOC(key) 			pthread_key_create( &(key), NULL )
+# define FB_TLSFREE(key)			pthread_key_delete( &(key) )
 # define FB_TLSSET(key,value)		pthread_setspecific((key), (const void *)(value))
 # define FB_TLSGET(key)				pthread_getspecific((key))
 #endif
+
+#define FB_THREADID pthread_t
 
 #define SEQ_LOCATE			0			/* "cm" - move cursor */
 #define SEQ_HOME			1			/* "ho" - home cursor */

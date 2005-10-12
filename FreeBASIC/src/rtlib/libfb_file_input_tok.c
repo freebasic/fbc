@@ -36,27 +36,26 @@
 /*:::::*/
 static int fb_hReadChar( void )
 {
-    FB_FILE *handle = (FB_FILE*) FB_TLSGET( fb_inpctx.handle );
-	char *data;
-	int i, res;
+	int res;
+	FB_INPCTX *ctx = (FB_INPCTX *)fb_TlsGetCtx( FB_TLSKEY_INPUT, FB_TLSLEN_INPUT );
 
-    if( FB_HANDLE_USED(handle) ) {
+    if( FB_HANDLE_USED(ctx->handle) )
+    {
         char ch;
         size_t len = 1;
-        res = fb_FileGetDataEx( handle, 0, &ch, &len, FALSE );
+        res = fb_FileGetDataEx( ctx->handle, 0, &ch, &len, FALSE );
         if( res!=FB_RTERROR_OK || len==0) {
             return EOF;
         }
         return ch;
 
-    } else {
-		if( (int)FB_TLSGET( fb_inpctx.i ) >= ( (int)FB_TLSGET( fb_inpctx.s.len ) & ~FB_TEMPSTRBIT ) )
+    }
+    else
+    {
+		if( ctx->i >= FB_STRSIZE( &ctx->s.len ) )
 			return EOF;
 		else {
-			data = (char *)FB_TLSGET( fb_inpctx.s.data );
-			i = (int)FB_TLSGET( fb_inpctx.i );
-			res = (int)data[i++];
-			FB_TLSSET( fb_inpctx.i, i );
+			res = ctx->s.data[ctx->i++];
 			return res;
 		}
 	}
@@ -66,19 +65,17 @@ static int fb_hReadChar( void )
 /*:::::*/
 static int fb_hUnreadChar( int c )
 {
-    FB_FILE *handle = (FB_FILE*) FB_TLSGET( fb_inpctx.handle );
-    int i;
+    FB_INPCTX *ctx = (FB_INPCTX *)fb_TlsGetCtx( FB_TLSKEY_INPUT, FB_TLSLEN_INPUT );
 
-    if( FB_HANDLE_USED(handle) ) {
+    if( FB_HANDLE_USED(ctx->handle) ) {
         char ch = (char) c;
-        return fb_FilePutBackEx( handle, &ch, 1 );
+        return fb_FilePutBackEx( ctx->handle, &ch, 1 );
     } else {
-		i = (int)FB_TLSGET( fb_inpctx.i );
-		if( i <= 0 )
+		if( ctx->i <= 0 )
 			return 0;
 		else
 		{
-			FB_TLSSET( fb_inpctx.i, i - 1 );
+			--ctx->i;
 			return 1;
 		}
 	}

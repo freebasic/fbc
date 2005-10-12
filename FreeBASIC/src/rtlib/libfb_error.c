@@ -68,15 +68,16 @@ static void fb_Die( int errnum, int linenum )
 /*:::::*/
 FB_ERRHANDLER fb_ErrorThrowEx ( int errnum, int linenum, void *res_label, void *resnext_label )
 {
+    FB_ERRORCTX *ctx = (FB_ERRORCTX *)fb_TlsGetCtx( FB_TLSKEY_ERROR, FB_TLSLEN_ERROR );
 
-    if( FB_TLSGET( fb_errctx.handler ) )
+    if( ctx->handler )
     {
-    	FB_TLSSET( fb_errctx.num, errnum );
-    	FB_TLSSET( fb_errctx.linenum, linenum );
-    	FB_TLSSET( fb_errctx.reslbl, res_label );
-    	FB_TLSSET( fb_errctx.resnxtlbl, resnext_label );
+    	ctx->num = errnum;
+    	ctx->linenum = linenum;
+    	ctx->reslbl = res_label;
+    	ctx->resnxtlbl = resnext_label;
 
-    	return (FB_ERRHANDLER)FB_TLSGET( fb_errctx.handler );
+    	return ctx->handler;
     }
 
 	/* if no user handler defined, die */
@@ -88,19 +89,21 @@ FB_ERRHANDLER fb_ErrorThrowEx ( int errnum, int linenum, void *res_label, void *
 /*:::::*/
 FB_ERRHANDLER fb_ErrorThrow ( int linenum, void *res_label, void *resnext_label )
 {
+	FB_ERRORCTX *ctx = (FB_ERRORCTX *)fb_TlsGetCtx( FB_TLSKEY_ERROR, FB_TLSLEN_ERROR );
 
-	return fb_ErrorThrowEx( (int)FB_TLSGET( fb_errctx.num ), linenum, res_label, resnext_label );
+	return fb_ErrorThrowEx( ctx->num, linenum, res_label, resnext_label );
 
 }
 
 /*:::::*/
 FBCALL FB_ERRHANDLER fb_ErrorSetHandler ( FB_ERRHANDLER newhandler )
 {
+	FB_ERRORCTX *ctx = (FB_ERRORCTX *)fb_TlsGetCtx( FB_TLSKEY_ERROR, FB_TLSLEN_ERROR );
 	FB_ERRHANDLER oldhandler;
 
-    oldhandler = (FB_ERRHANDLER)FB_TLSGET( fb_errctx.handler );
+    oldhandler = ctx->handler;
 
-    FB_TLSSET( fb_errctx.handler, newhandler );
+    ctx->handler = newhandler;
 
 	return oldhandler;
 }
@@ -108,15 +111,16 @@ FBCALL FB_ERRHANDLER fb_ErrorSetHandler ( FB_ERRHANDLER newhandler )
 /*:::::*/
 void *fb_ErrorResume ( void )
 {
-    void *label = (void *)FB_TLSGET( fb_errctx.reslbl );
+    FB_ERRORCTX *ctx = (FB_ERRORCTX *)fb_TlsGetCtx( FB_TLSKEY_ERROR, FB_TLSLEN_ERROR );
+    void *label = ctx->reslbl;
 
 	/* not defined? die */
 	if( label == NULL )
 		fb_Die( FB_RTERROR_ILLEGALRESUME, -1 );
 
 	/* don't loop forever */
-	FB_TLSSET( fb_errctx.reslbl, NULL );
-	FB_TLSSET( fb_errctx.resnxtlbl, NULL );
+	ctx->reslbl = NULL;
+	ctx->resnxtlbl = NULL;
 
 	return label;
 }
@@ -124,15 +128,16 @@ void *fb_ErrorResume ( void )
 /*:::::*/
 void *fb_ErrorResumeNext ( void )
 {
-    void *label = (void *)FB_TLSGET( fb_errctx.resnxtlbl );
+    FB_ERRORCTX *ctx = (FB_ERRORCTX *)fb_TlsGetCtx( FB_TLSKEY_ERROR, FB_TLSLEN_ERROR );
+    void *label = ctx->resnxtlbl;
 
 	/* not defined? die */
 	if( label == NULL )
 		fb_Die( FB_RTERROR_ILLEGALRESUME, -1 );
 
 	/* don't loop forever */
-	FB_TLSSET( fb_errctx.reslbl, NULL );
-	FB_TLSSET( fb_errctx.resnxtlbl, NULL );
+	ctx->reslbl = NULL;
+	ctx->resnxtlbl = NULL;
 
 	return label;
 }

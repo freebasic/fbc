@@ -26,14 +26,9 @@
 
 #include "fb.h"
 
-typedef struct _FBMUTEX
-{
-	FB_LISTELEM elem;
+typedef struct _FBMUTEX {
 	HANDLE id;
 } FBMUTEX;
-
-static FBMUTEX mtxTB[FB_MAXMUTEXES];
-static FB_LIST mtxList = { 0 };
 
 
 /*:::::*/
@@ -41,10 +36,7 @@ FBCALL FBMUTEX *fb_MutexCreate( void )
 {
 	FBMUTEX *mutex;
 
-	if( (mtxList.fhead == NULL) && (mtxList.head == NULL) )
-		fb_hListInit( &mtxList, (void *)mtxTB, sizeof(FBMUTEX), FB_MAXMUTEXES );
-
-	mutex = (FBMUTEX *)fb_hListAllocElem( &mtxList );
+	mutex = (FBMUTEX *)malloc( sizeof(FBMUTEX) );
 	if( !mutex )
 		return NULL;
 
@@ -56,19 +48,18 @@ FBCALL FBMUTEX *fb_MutexCreate( void )
 /*:::::*/
 FBCALL void fb_MutexDestroy( FBMUTEX *mutex )
 {
-	/* dumb address checking */
-	if( (mutex < mtxTB) || (mutex >= &mtxTB[FB_MAXMUTEXES]) )
+	if( mutex == NULL )
 		return;
 
 	CloseHandle( mutex->id );
-	fb_hListFreeElem( &mtxList, (FB_LISTELEM *)mutex );
+
+	free( (void *)mutex );
 }
 
 /*:::::*/
 FBCALL void fb_MutexLock( FBMUTEX *mutex )
 {
-	/* dumb address checking */
-	if( (mutex < mtxTB) || (mutex >= &mtxTB[FB_MAXMUTEXES]) )
+	if( mutex == NULL )
 		return;
 
 	WaitForSingleObject( mutex->id, INFINITE );
@@ -77,8 +68,7 @@ FBCALL void fb_MutexLock( FBMUTEX *mutex )
 /*:::::*/
 FBCALL void fb_MutexUnlock( FBMUTEX *mutex )
 {
-	/* dumb address checking */
-	if( (mutex < mtxTB) || (mutex >= &mtxTB[FB_MAXMUTEXES]) )
+	if( mutex == NULL )
 		return;
 
 	ReleaseSemaphore( mutex->id, 1, NULL );

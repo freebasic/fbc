@@ -29,20 +29,20 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-
 /*:::::*/
 FBCALL int fb_ErrorGetNum ( void )
 {
+	FB_ERRORCTX *ctx = (FB_ERRORCTX *)fb_TlsGetCtx( FB_TLSKEY_ERROR, FB_TLSLEN_ERROR );
 
-	return (int)FB_TLSGET( fb_errctx.num );
-
+	return ctx->num;
 }
 
 /*:::::*/
 FBCALL int fb_ErrorSetNum ( int errnum )
 {
+    FB_ERRORCTX *ctx = (FB_ERRORCTX *)fb_TlsGetCtx( FB_TLSKEY_ERROR, FB_TLSLEN_ERROR );
 
-	FB_TLSSET( fb_errctx.num, errnum );
+	ctx->num = errnum;
 
 	return errnum;
 
@@ -51,7 +51,8 @@ FBCALL int fb_ErrorSetNum ( int errnum )
 /*:::::*/
 FBCALL int fb_ErrorGetLineNum ( void )
 {
+    FB_ERRORCTX *ctx = (FB_ERRORCTX *)fb_TlsGetCtx( FB_TLSKEY_ERROR, FB_TLSLEN_ERROR );
 
-	return (int)FB_TLSGET( fb_errctx.linenum );
+	return ctx->linenum;
 
 }

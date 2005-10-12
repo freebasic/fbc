@@ -30,13 +30,23 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
+#ifdef MULTITHREADED
+extern int __fb_is_exiting;
+#endif
+
 /*:::::*/
 int fb_FileCloseEx( FB_FILE *handle )
 {
-    FB_LOCK();
+#ifdef MULTITHREADED
+	if( !__fb_is_exiting )
+    	FB_LOCK();
+#endif
 
     if( !FB_HANDLE_USED(handle) ) {
-        FB_UNLOCK();
+#ifdef MULTITHREADED
+		if( !__fb_is_exiting )
+        	FB_UNLOCK();
+#endif
         return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
@@ -44,14 +54,20 @@ int fb_FileCloseEx( FB_FILE *handle )
     DBG_ASSERT(handle->hooks->pfnClose != NULL);
     int result = handle->hooks->pfnClose( handle );
     if (result != 0) {
-        FB_UNLOCK();
+#ifdef MULTITHREADED
+		if( !__fb_is_exiting )
+        	FB_UNLOCK();
+#endif
         return result;
     }
 
     /* clear structure */
     memset(handle, 0, sizeof(FB_FILE));
 
-	FB_UNLOCK();
+#ifdef MULTITHREADED
+	if( !__fb_is_exiting )
+		FB_UNLOCK();
+#endif
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

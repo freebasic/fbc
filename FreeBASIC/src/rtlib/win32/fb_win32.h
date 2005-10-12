@@ -58,9 +58,13 @@ extern CRITICAL_SECTION fb_string_mutex;
 # define FB_STRLOCK()				EnterCriticalSection(&fb_string_mutex)
 # define FB_STRUNLOCK()				LeaveCriticalSection(&fb_string_mutex)
 # define FB_TLSENTRY				DWORD
-# define FB_TLSSET(key,value)		TlsSetValue((key), (LPVOID)(value))
-# define FB_TLSGET(key)				TlsGetValue((key))
+# define FB_TLSALLOC(key) 			key = TlsAlloc( )
+# define FB_TLSFREE(key)			TlsFree( (key) )
+# define FB_TLSSET(key,value)		TlsSetValue( (key), (LPVOID)(value))
+# define FB_TLSGET(key)				TlsGetValue( (key))
 #endif
+
+#define FB_THREADID HANDLE
 
 struct _FBSTRING;
 typedef void (*fb_FnProcessMouseEvent)(const MOUSE_EVENT_RECORD *pEvent);

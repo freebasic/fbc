@@ -32,8 +32,8 @@
 /*:::::*/
 FBCALL int fb_FileInput( int fnum )
 {
+    FB_INPCTX *ctx;
     FB_FILE *handle = NULL;
-    FBSTRING s;
     int res = fb_ErrorSetNum( FB_RTERROR_OK );
 
     /* fb_DevScrnInit_Read( ); */
@@ -45,18 +45,13 @@ FBCALL int fb_FileInput( int fnum )
         res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
-    if( res == FB_RTERROR_OK ) {
-        FB_TLSSET( fb_inpctx.handle, handle);
-        FB_TLSSET( fb_inpctx.status, 0);
+    if( res == FB_RTERROR_OK )
+    {
+    	ctx = (FB_INPCTX *)fb_TlsGetCtx( FB_TLSKEY_INPUT, FB_TLSLEN_INPUT );
 
-        s.data = (char *)FB_TLSGET( fb_inpctx.s.data );
-        s.len  = (int)FB_TLSGET( fb_inpctx.s.len );
-        s.size = (int)FB_TLSGET( fb_inpctx.s.size );
-        fb_StrDelete( &s );
-
-        FB_TLSSET( fb_inpctx.s.data, 0 );
-        FB_TLSSET( fb_inpctx.s.len, 0 );
-        FB_TLSSET( fb_inpctx.s.size, 0 );
+        ctx->handle = handle;
+        ctx->status = 0;
+        fb_StrDelete( &ctx->s );
     }
 
 	FB_UNLOCK();

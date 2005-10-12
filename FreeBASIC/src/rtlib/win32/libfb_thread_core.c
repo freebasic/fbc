@@ -27,40 +27,55 @@
 #include <process.h>
 #include "fb.h"
 
-
-typedef struct _FBTHREAD
+/* thread proxy to user's thread proc */
+#ifdef TARGET_WIN32
+static void threadproc( void *param )
+#else
+static DWORD WINAPI threadproc( LPVOID param )
+#endif
 {
-	FB_LISTELEM elem;
-	HANDLE id;
-} FBTHREAD;
+	FBTHREAD *thread = param;
 
-static FBTHREAD thdTB[FB_MAXTHREADS];
-static FB_LIST thdList = { 0 };
+	/* call the user thread */
+	thread->proc( thread->param );
 
-typedef void( __cdecl *ThreadStartFn )( void * );
+#ifdef TARGET_WIN32
+    /* Never forget to close the threads handle ... otherwise we'll
+     * have "zombie" threads in the system ... */
+    CloseHandle( thread->id );
+#endif
 
+	/* free mem */
+	fb_TlsFreeCtxTb( );
+
+	free( thread );
+
+#ifndef TARGET_WIN32
+	return 1;
+#endif
+}
 
 /*:::::*/
-FBCALL FBTHREAD *fb_ThreadCreate( void *proc, int param )
+FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, int param )
 {
 	FBTHREAD *thread;
 
-	if( (thdList.fhead == NULL) && (thdList.head == NULL) )
-		fb_hListInit( &thdList, (void *)thdTB, sizeof(FBTHREAD), FB_MAXTHREADS );
-
-	thread = (FBTHREAD *)fb_hListAllocElem( &thdList );
+	thread = (FBTHREAD *)malloc( sizeof(FBTHREAD) );
 	if( !thread )
 		return NULL;
 
+    thread->proc	= proc;
+    thread->param 	= param;
+
 #ifdef TARGET_WIN32
-    thread->id = (HANDLE)_beginthread( (ThreadStartFn) proc, 0, (void *)param );
+    thread->id = (HANDLE)_beginthread( threadproc, 0, (void *)thread );
 #else
     {
         DWORD dwThreadId;
         thread->id = CreateThread( NULL,
                                    0,
-                                   (LPTHREAD_START_ROUTINE) proc,
-                                   (void*) param,
+                                   threadproc,
+                                   (void*)thread,
                                    0,
                                    &dwThreadId );
     }
@@ -72,17 +87,13 @@ FBCALL FBTHREAD *fb_ThreadCreate( void *proc, int param )
 /*:::::*/
 FBCALL void fb_ThreadWait( FBTHREAD *thread )
 {
-	/* dumb address checking */
-	if( (thread < thdTB) || (thread >= &thdTB[FB_MAXTHREADS]) )
+	if( thread == NULL )
+		return;
+
+	/* race-condition can happen because the pointer could
+	   be deallocated if user thread returned already */
+	if( IsBadReadPtr( thread, sizeof(FBTHREAD) ) )
 		return;
 
 	WaitForSingleObject( thread->id, INFINITE );
-
-#ifdef TARGET_WIN32
-    /* Never forget to close the threads handle ... otherwise we'll
-     * have "zombie" threads in the system ... */
-    CloseHandle( thread->id );
-#endif
-
-	fb_hListFreeElem( &thdList, (FB_LISTELEM *)thread );
 }

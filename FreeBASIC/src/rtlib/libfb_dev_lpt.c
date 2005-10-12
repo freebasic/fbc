@@ -32,6 +32,10 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
+#ifdef MULTITHREADED
+extern int __fb_is_exiting;
+#endif
+
 int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len );
 
 typedef struct _DEV_LPT_INFO {
@@ -47,7 +51,10 @@ static int fb_DevLptClose( struct _FB_FILE *handle )
     int res;
     DEV_LPT_INFO *pInfo;
 
-    FB_LOCK();
+#ifdef MULTITHREADED
+	if( !__fb_is_exiting )
+    	FB_LOCK();
+#endif
 
     pInfo = (DEV_LPT_INFO*) handle->opaque;
     if( pInfo->uiRefCount==1 ) {
@@ -61,7 +68,10 @@ static int fb_DevLptClose( struct _FB_FILE *handle )
         res = fb_ErrorSetNum( FB_RTERROR_OK );
     }
 
-    FB_UNLOCK();
+#ifdef MULTITHREADED
+	if( !__fb_is_exiting )
+    	FB_UNLOCK();
+#endif
 
 	return res;
 }

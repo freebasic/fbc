@@ -32,23 +32,18 @@
 /*:::::*/
 FBCALL int fb_ConsoleInput( FBSTRING *text, int addquestion, int addnewline )
 {
-	FBSTRING s;
+	FB_INPCTX *ctx;
 	int res;
 
 	fb_DevScrnInit_Read( );
 
-	FB_TLSSET( fb_inpctx.handle, 0 );
-	FB_TLSSET( fb_inpctx.status, 0);
-	FB_TLSSET( fb_inpctx.i, 0 );
-	s.data = (char *)FB_TLSGET( fb_inpctx.s.data );
-	s.len  = (int)FB_TLSGET( fb_inpctx.s.len );
-	s.size = (int)FB_TLSGET( fb_inpctx.s.size );
+    ctx = (FB_INPCTX *)fb_TlsGetCtx( FB_TLSKEY_INPUT, FB_TLSLEN_INPUT );
 
-	res = fb_LineInput( text, &s, -1, 0, addquestion, addnewline );
+	ctx->handle = 0;
+	ctx->status = 0;
+	ctx->i = 0;
 
-	FB_TLSSET( fb_inpctx.s.data, s.data );
-	FB_TLSSET( fb_inpctx.s.len, s.len );
-	FB_TLSSET( fb_inpctx.s.size, s.size );
+	res = fb_LineInput( text, &ctx->s, -1, 0, addquestion, addnewline );
 
 	return res;
 }

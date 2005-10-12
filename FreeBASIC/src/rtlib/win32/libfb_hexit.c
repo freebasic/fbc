@@ -31,35 +31,10 @@
 /*:::::*/
 void fb_hEnd ( int errlevel )
 {
-    {
-        FB_DIRCTX *ctx = (FB_DIRCTX *)FB_TLSGET(fb_dirctx);
-        if( ctx )
-            free( ctx );
-    }
 
 #ifdef MULTITHREADED
 	DeleteCriticalSection(&fb_global_mutex);
 	DeleteCriticalSection(&fb_string_mutex);
-
-	TlsFree( fb_errctx.handler );
-	TlsFree( fb_errctx.num );
-	TlsFree( fb_errctx.linenum );
-	TlsFree( fb_errctx.reslbl );
-	TlsFree( fb_errctx.resnxtlbl );
-
-	TlsFree( fb_inpctx.handle );
-	TlsFree( fb_inpctx.i );
-	TlsFree( fb_inpctx.s.data );
-	TlsFree( fb_inpctx.s.len );
-	TlsFree( fb_inpctx.s.size );
-
-	TlsFree( fb_printusgctx.chars );
-	TlsFree( fb_printusgctx.ptr );
-	TlsFree( fb_printusgctx.fmtstr.data );
-	TlsFree( fb_printusgctx.fmtstr.len );
-	TlsFree( fb_printusgctx.fmtstr.size );
-	
-	TlsFree( fb_dirctx );
 #endif
 
 }

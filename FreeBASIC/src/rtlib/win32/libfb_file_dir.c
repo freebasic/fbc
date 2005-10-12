@@ -32,7 +32,7 @@
 /*:::::*/
 static void close_dir ( void )
 {
-	FB_DIRCTX *ctx = (FB_DIRCTX *)FB_TLSGET(fb_dirctx);
+	FB_DIRCTX *ctx = (FB_DIRCTX *)fb_TlsGetCtx( FB_TLSKEY_DIR, FB_TLSLEN_DIR );
 #ifdef TARGET_WIN32
     _findclose( ctx->handle );
 #else
@@ -46,7 +46,7 @@ static void close_dir ( void )
 static char *find_next ( void )
 {
 	char *name = NULL;
-	FB_DIRCTX *ctx = (FB_DIRCTX *)FB_TLSGET(fb_dirctx);
+	FB_DIRCTX *ctx = (FB_DIRCTX *)fb_TlsGetCtx( FB_TLSKEY_DIR, FB_TLSLEN_DIR );
 
 #ifdef TARGET_WIN32
 	do
@@ -87,11 +87,7 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 	len = FB_STRSIZE( filespec );
 	name = NULL;
 
-	ctx = (FB_DIRCTX *)FB_TLSGET(fb_dirctx);
-	if (!ctx) {
-		ctx = (FB_DIRCTX *)calloc(1, sizeof(FB_DIRCTX));
-		FB_TLSSET(fb_dirctx, ctx);
-	}
+	ctx = (FB_DIRCTX *)fb_TlsGetCtx( FB_TLSKEY_DIR, FB_TLSLEN_DIR );
 
 	if( len > 0 )
 	{
