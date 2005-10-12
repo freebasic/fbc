@@ -29,25 +29,15 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-#ifdef MULTITHREADED
-extern int __fb_is_exiting;
-#endif
-
 /*:::::*/
 int fb_DevScrnClose( struct _FB_FILE *handle )
 {
-#ifdef MULTITHREADED
-	if( !__fb_is_exiting )
-    	FB_LOCK();
-#endif
+    FB_IO_EXIT_LOCK();
 
     if( handle->opaque != NULL )
         free(handle->opaque);
 
-#ifdef MULTITHREADED
-	if( !__fb_is_exiting )
-    	FB_UNLOCK();
-#endif
+    FB_IO_EXIT_UNLOCK();
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

@@ -34,6 +34,9 @@ char **fb_argv;
 FB_HOOKSTB fb_hooks = { NULL };
 FB_FILE fb_fileTB[FB_MAX_FILES];
 int __fb_file_handles_cleared = FALSE;
+#ifdef MULTITHREADED
+int __fb_io_is_exiting = FALSE;
+#endif
 
 FBSTRING fb_strNullDesc = { NULL, 0 };
 

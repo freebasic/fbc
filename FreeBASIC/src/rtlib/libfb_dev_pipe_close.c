@@ -31,10 +31,6 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-#ifdef MULTITHREADED
-extern int __fb_is_exiting;
-#endif
-
 #ifndef TARGET_XBOX
 
 #ifdef TARGET_WIN32
@@ -47,10 +43,7 @@ int fb_DevPipeClose( struct _FB_FILE *handle )
 {
     FILE *fp;
 
-#ifdef MULTITHREADED
-	if( !__fb_is_exiting )
-		FB_LOCK();
-#endif
+    FB_IO_EXIT_LOCK();
 
     fp = (FILE*) handle->opaque;
 
@@ -60,10 +53,7 @@ int fb_DevPipeClose( struct _FB_FILE *handle )
 
 	handle->opaque = NULL;
 
-#ifdef MULTITHREADED
-	if( !__fb_is_exiting )
-		FB_UNLOCK();
-#endif
+    FB_IO_EXIT_UNLOCK();
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

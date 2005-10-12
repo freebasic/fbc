@@ -30,19 +30,12 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-#ifdef MULTITHREADED
-extern int __fb_is_exiting;
-#endif
-
 /*:::::*/
 FBCALL void fb_FileReset ( void )
 {
 	int i;
 
-#ifdef MULTITHREADED
-	if (!__fb_is_exiting)
-		FB_LOCK();
-#endif
+    FB_IO_EXIT_LOCK();
 
     for( i = 1; i != (FB_MAX_FILES - FB_RESERVED_FILES); i++ ) {
         FB_FILE *handle = FB_FILE_TO_HANDLE(i);
@@ -56,8 +49,5 @@ FBCALL void fb_FileReset ( void )
            0,
            sizeof(FB_FILE) * (FB_MAX_FILES - FB_RESERVED_FILES));
 
-#ifdef MULTITHREADED
-	if (!__fb_is_exiting)
-		FB_UNLOCK();
-#endif
+    FB_IO_EXIT_UNLOCK();
 }

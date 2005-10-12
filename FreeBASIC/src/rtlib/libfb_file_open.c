@@ -32,16 +32,12 @@
 
 void fb_hFileCtx ( int doinit );
 
-#ifdef MULTITHREADED
-int __fb_is_exiting = FALSE;
-#endif
-
 /*:::::*/
 static void atexit_cb( void )
 {
 
 #ifdef MULTITHREADED
-	__fb_is_exiting = TRUE;
+	__fb_io_is_exiting = TRUE;
 #endif
 
 	fb_hFileCtx( 0 );
@@ -55,10 +51,7 @@ void fb_hFileCtx ( int doinit )
 {
 	static int inited = 0;
 
-#ifdef MULTITHREADED
-	if( !__fb_is_exiting )
-    	FB_LOCK();
-#endif
+    FB_IO_EXIT_LOCK();
 
 	// initialize?
 	if( doinit )
@@ -88,10 +81,7 @@ void fb_hFileCtx ( int doinit )
 		}
 	}
 
-#ifdef MULTITHREADED
-	if( !__fb_is_exiting )
-    	FB_UNLOCK();
-#endif
+    FB_IO_EXIT_UNLOCK();
 }
 
 /*:::::*/

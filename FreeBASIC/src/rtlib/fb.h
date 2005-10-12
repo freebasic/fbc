@@ -912,6 +912,16 @@ typedef FBCALL int (*FnDevOpenHook)( FBSTRING *filename,
 
 extern FB_FILE                fb_fileTB[];
 extern FnDevOpenHook          fb_pfnDevOpenHook;
+#ifdef MULTITHREADED
+extern int __fb_io_is_exiting;
+#define FB_IO_EXIT_LOCK() \
+    if( !__fb_io_is_exiting) FB_LOCK()
+#define FB_IO_EXIT_UNLOCK() \
+    if( !__fb_io_is_exiting) FB_UNLOCK()
+#else
+#define FB_IO_EXIT_LOCK()
+#define FB_IO_EXIT_UNLOCK()
+#endif
 
 static __inline__ struct _FB_FILE *FB_FILE_TO_HANDLE(int index)
 {
