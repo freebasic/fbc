@@ -380,12 +380,9 @@ static int control_handler_inited = FALSE;
 
 static void fb_hExitControlHandler( void )
 {
-    FB_LOCK();
     if( control_handler_inited ) {
-        control_handler_inited = FALSE;
         SetConsoleCtrlHandler( fb_hConsoleHandlerRoutine, FALSE );
     }
-    FB_UNLOCK();
 }
 
 static void fb_hInitControlHandler( void )

@@ -31,9 +31,11 @@
 /*:::::*/
 void fb_hEnd ( int errlevel )
 {
-
-	if( fb_dirctx )
-		free( (FB_DIRCTX *)fb_dirctx );
+    {
+        FB_DIRCTX *ctx = (FB_DIRCTX *)FB_TLSGET(fb_dirctx);
+        if( ctx )
+            free( ctx );
+    }
 
 #ifdef MULTITHREADED
 	DeleteCriticalSection(&fb_global_mutex);

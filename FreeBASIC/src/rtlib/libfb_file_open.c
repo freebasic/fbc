@@ -55,10 +55,10 @@ void fb_hFileCtx ( int doinit )
 {
 	static int inited = 0;
 
-    FB_LOCK();
 	//
 	if( doinit )
 	{
+        FB_LOCK();
 		if( inited )
 			return;
 
@@ -69,6 +69,7 @@ void fb_hFileCtx ( int doinit )
 		atexit( &fb_hFileExit );
 
 		inited = 1;
+        FB_UNLOCK();
 	}
 	//
 	else
@@ -80,7 +81,6 @@ void fb_hFileCtx ( int doinit )
 
 		inited = 0;
 	}
-    FB_UNLOCK();
 }
 
 /*:::::*/
