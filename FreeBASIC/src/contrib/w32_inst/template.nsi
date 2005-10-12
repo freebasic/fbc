@@ -185,7 +185,8 @@ Section Uninstall
   Delete "$INSTDIR\setvars.bat"
 
   Delete "$SMPROGRAMS\$ICONS_GROUP\Uninstall.lnk"
-  Delete "$SMPROGRAMS\$ICONS_GROUP\Website.lnk"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\Project website.lnk"
+  Delete "$SMPROGRAMS\$ICONS_GROUP\Project forum.lnk"
   Delete "$DESKTOP\FreeBASIC.lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\FreeBASIC.lnk"
 
