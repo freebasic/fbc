@@ -68,7 +68,7 @@ static void fb_Die( int errnum, int linenum )
 /*:::::*/
 FB_ERRHANDLER fb_ErrorThrowEx ( int errnum, int linenum, void *res_label, void *resnext_label )
 {
-    FB_ERRORCTX *ctx = (FB_ERRORCTX *)fb_TlsGetCtx( FB_TLSKEY_ERROR, FB_TLSLEN_ERROR );
+    FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
 
     if( ctx->handler )
     {
@@ -89,7 +89,7 @@ FB_ERRHANDLER fb_ErrorThrowEx ( int errnum, int linenum, void *res_label, void *
 /*:::::*/
 FB_ERRHANDLER fb_ErrorThrow ( int linenum, void *res_label, void *resnext_label )
 {
-	FB_ERRORCTX *ctx = (FB_ERRORCTX *)fb_TlsGetCtx( FB_TLSKEY_ERROR, FB_TLSLEN_ERROR );
+	FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
 
 	return fb_ErrorThrowEx( ctx->num, linenum, res_label, resnext_label );
 
@@ -98,7 +98,7 @@ FB_ERRHANDLER fb_ErrorThrow ( int linenum, void *res_label, void *resnext_label 
 /*:::::*/
 FBCALL FB_ERRHANDLER fb_ErrorSetHandler ( FB_ERRHANDLER newhandler )
 {
-	FB_ERRORCTX *ctx = (FB_ERRORCTX *)fb_TlsGetCtx( FB_TLSKEY_ERROR, FB_TLSLEN_ERROR );
+	FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
 	FB_ERRHANDLER oldhandler;
 
     oldhandler = ctx->handler;
@@ -111,7 +111,7 @@ FBCALL FB_ERRHANDLER fb_ErrorSetHandler ( FB_ERRHANDLER newhandler )
 /*:::::*/
 void *fb_ErrorResume ( void )
 {
-    FB_ERRORCTX *ctx = (FB_ERRORCTX *)fb_TlsGetCtx( FB_TLSKEY_ERROR, FB_TLSLEN_ERROR );
+    FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
     void *label = ctx->reslbl;
 
 	/* not defined? die */
@@ -128,7 +128,7 @@ void *fb_ErrorResume ( void )
 /*:::::*/
 void *fb_ErrorResumeNext ( void )
 {
-    FB_ERRORCTX *ctx = (FB_ERRORCTX *)fb_TlsGetCtx( FB_TLSKEY_ERROR, FB_TLSLEN_ERROR );
+    FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
     void *label = ctx->resnxtlbl;
 
 	/* not defined? die */

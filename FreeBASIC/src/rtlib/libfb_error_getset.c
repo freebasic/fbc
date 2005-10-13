@@ -32,7 +32,7 @@
 /*:::::*/
 FBCALL int fb_ErrorGetNum ( void )
 {
-	FB_ERRORCTX *ctx = (FB_ERRORCTX *)fb_TlsGetCtx( FB_TLSKEY_ERROR, FB_TLSLEN_ERROR );
+	FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
 
 	return ctx->num;
 }
@@ -40,7 +40,7 @@ FBCALL int fb_ErrorGetNum ( void )
 /*:::::*/
 FBCALL int fb_ErrorSetNum ( int errnum )
 {
-    FB_ERRORCTX *ctx = (FB_ERRORCTX *)fb_TlsGetCtx( FB_TLSKEY_ERROR, FB_TLSLEN_ERROR );
+    FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
 
 	ctx->num = errnum;
 
@@ -51,7 +51,7 @@ FBCALL int fb_ErrorSetNum ( int errnum )
 /*:::::*/
 FBCALL int fb_ErrorGetLineNum ( void )
 {
-    FB_ERRORCTX *ctx = (FB_ERRORCTX *)fb_TlsGetCtx( FB_TLSKEY_ERROR, FB_TLSLEN_ERROR );
+    FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
 
 	return ctx->linenum;
 

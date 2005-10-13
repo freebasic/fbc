@@ -37,7 +37,7 @@
 static int fb_hReadChar( void )
 {
 	int res;
-	FB_INPCTX *ctx = (FB_INPCTX *)fb_TlsGetCtx( FB_TLSKEY_INPUT, FB_TLSLEN_INPUT );
+	FB_INPUTCTX *ctx = FB_TLSGETCTX( INPUT );
 
     if( FB_HANDLE_USED(ctx->handle) )
     {
@@ -65,7 +65,7 @@ static int fb_hReadChar( void )
 /*:::::*/
 static int fb_hUnreadChar( int c )
 {
-    FB_INPCTX *ctx = (FB_INPCTX *)fb_TlsGetCtx( FB_TLSKEY_INPUT, FB_TLSLEN_INPUT );
+    FB_INPUTCTX *ctx = FB_TLSGETCTX( INPUT );
 
     if( FB_HANDLE_USED(ctx->handle) ) {
         char ch = (char) c;

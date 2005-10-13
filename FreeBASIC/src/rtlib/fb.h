@@ -189,10 +189,10 @@ extern "C" {
 #endif
 
 #ifndef FB_TLSALLOC
-# define FB_TLSALLOC(key) 			...
+# define FB_TLSALLOC(key) 			key = NULL
 #endif
 #ifndef FB_TLSFREE
-# define FB_TLSFREE(key)			...
+# define FB_TLSFREE(key)			key = NULL
 #endif
 
 #ifndef FB_TLSSET
@@ -895,12 +895,12 @@ typedef struct _FB_FILE {
     struct _FB_FILE *redirection_to;
 } FB_FILE;
 
-typedef struct _FB_INPCTX {
+typedef struct _FB_INPUTCTX {
     FB_FILE*		handle;
     int      		status;
     int     		i;
     FBSTRING 		s;
-} FB_INPCTX;
+} FB_INPUTCTX;
 
 
 typedef FBCALL int (*FnDevOpenHook)( FBSTRING *filename,
@@ -1380,7 +1380,7 @@ enum {
 enum {
 	FB_TLSLEN_ERROR 	= sizeof( FB_ERRORCTX ),
 	FB_TLSLEN_DIR		= sizeof( FB_DIRCTX ),
-	FB_TLSLEN_INPUT		= sizeof( FB_INPCTX ),
+	FB_TLSLEN_INPUT		= sizeof( FB_INPUTCTX ),
 	FB_TLSLEN_PRINTUSG  = sizeof( FB_PRINTUSGCTX ),
 };
 
@@ -1389,6 +1389,8 @@ extern FB_TLSENTRY fb_tls_ctxtb[];
 FBCALL void		   *fb_TlsGetCtx		( int index, int len );
 FBCALL void			fb_TlsDelCtx		( int index );
 FBCALL void 		fb_TlsFreeCtxTb		( void );
+
+#define FB_TLSGETCTX(id) (FB_##id##CTX *)fb_TlsGetCtx( FB_TLSKEY_##id, FB_TLSLEN_##id );
 
 #ifdef __cplusplus
 }

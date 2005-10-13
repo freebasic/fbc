@@ -41,7 +41,7 @@ FBCALL int fb_PrintUsingInit( FBSTRING *fmtstr )
 
     FB_LOCK();
 
-    ctx = (FB_PRINTUSGCTX *)fb_TlsGetCtx( FB_TLSKEY_PRINTUSG, FB_TLSLEN_PRINTUSG );
+    ctx = FB_TLSGETCTX( PRINTUSG );
 
 	fb_StrAssign( (void *)&ctx->fmtstr, -1, fmtstr, -1, 0 );
 	ctx->ptr = ctx->fmtstr.data;
@@ -61,7 +61,7 @@ FBCALL int fb_PrintUsingEnd( int fnum )
 
 	FB_LOCK();
 
-	ctx = (FB_PRINTUSGCTX *)fb_TlsGetCtx( FB_TLSKEY_PRINTUSG, FB_TLSLEN_PRINTUSG );
+	ctx = FB_TLSGETCTX( PRINTUSG );
 
 	fb_StrDelete( &ctx->fmtstr );
 	ctx->ptr = 0;
@@ -79,7 +79,7 @@ static int fb_PrintUsingFmtStr( int fnum )
 	char buffer[BUFFERLEN+1];
 	int c, len, doexit;
 
-	ctx = (FB_PRINTUSGCTX *)fb_TlsGetCtx( FB_TLSKEY_PRINTUSG, FB_TLSLEN_PRINTUSG );
+	ctx = FB_TLSGETCTX( PRINTUSG );
 
 	len = 0;
 	if( ctx->ptr == 0 )
@@ -137,7 +137,7 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 	char buffer[BUFFERLEN+1];
 	int c, nc, lc, strchars, doexit, i;
 
-	ctx = (FB_PRINTUSGCTX *)fb_TlsGetCtx( FB_TLSKEY_PRINTUSG, FB_TLSLEN_PRINTUSG );
+	ctx = FB_TLSGETCTX( PRINTUSG );
 
     /* restart if needed */
 	if( ctx->chars == 0 )
@@ -269,7 +269,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	int doexit, padchar, intdigs, decdigs, totdigs, expdigs;
 	int	adddolar, addcomma, endcomma, signatend, isexp, isneg;
 
-	ctx = (FB_PRINTUSGCTX *)fb_TlsGetCtx( FB_TLSKEY_PRINTUSG, FB_TLSLEN_PRINTUSG );
+	ctx = FB_TLSGETCTX( PRINTUSG );
 
     /* restart if needed */
 	if( ctx->chars == 0 )

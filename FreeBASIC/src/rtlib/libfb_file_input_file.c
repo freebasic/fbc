@@ -32,7 +32,7 @@
 /*:::::*/
 FBCALL int fb_FileInput( int fnum )
 {
-    FB_INPCTX *ctx;
+    FB_INPUTCTX *ctx;
     FB_FILE *handle = NULL;
     int res = fb_ErrorSetNum( FB_RTERROR_OK );
 
@@ -47,7 +47,7 @@ FBCALL int fb_FileInput( int fnum )
 
     if( res == FB_RTERROR_OK )
     {
-    	ctx = (FB_INPCTX *)fb_TlsGetCtx( FB_TLSKEY_INPUT, FB_TLSLEN_INPUT );
+    	ctx = FB_TLSGETCTX( INPUT );
 
         ctx->handle = handle;
         ctx->status = 0;

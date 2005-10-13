@@ -32,12 +32,12 @@
 /*:::::*/
 FBCALL int fb_ConsoleInput( FBSTRING *text, int addquestion, int addnewline )
 {
-	FB_INPCTX *ctx;
+	FB_INPUTCTX *ctx;
 	int res;
 
 	fb_DevScrnInit_Read( );
 
-    ctx = (FB_INPCTX *)fb_TlsGetCtx( FB_TLSKEY_INPUT, FB_TLSLEN_INPUT );
+    ctx = FB_TLSGETCTX( INPUT );
 
 	ctx->handle = 0;
 	ctx->status = 0;
