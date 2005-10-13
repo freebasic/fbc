@@ -42,7 +42,8 @@ static void *threadproc( void *param )
 
 	free( thread );
 
-	return NULL;
+	/* don't return NULL or exit() will be called */
+	return (void *)1;
 }
 
 /*:::::*/
