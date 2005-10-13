@@ -20,31 +20,44 @@
 /*
  * time_sleep.c -- sleep function
  *
- * chng: nov/2004 written [v1ctor]
+ * chng: oct/2005 written [mjs]
  *
  */
 
 #include "fb.h"
 
-/*:::::*/
-FBCALL void fb_Sleep ( int msecs )
+static int iCircBufferStatusInited = FALSE;
+static unsigned short usCircBufferStatus = 0;
+
+static int fb_hConsoleInputBufferChanged( void )
 {
-    /* NOTE: input buffer should not be cleared or that will break
-             multi-threading when Sleep() is called inside a thread
-             to release the time-slice and any user input method like
-             INPUT is been used in other thread
-     */
+    int is_changed;
+    unsigned short usNewStatus;
 
-#ifndef MULTITHREADED
-    /* clear input buffer */
-    while( fb_KeyHit( ) )
-        fb_Getkey( );
-#endif
+    FB_LOCK();
 
+    if( !iCircBufferStatusInited ) {
+        iCircBufferStatusInited = TRUE;
+        _movedataw( _dos_ds, 0x41C, _my_ds(), (int) &usCircBufferStatus, 1 );
+    }
+
+    _movedatal( _dos_ds, 0x41C, _my_ds(), (int) &usNewStatus, 1 );
+    is_changed = usNewStatus!=usCircBufferStatus;
+    if( is_changed )
+        usCircBufferStatus = usNewStatus;
+
+    FB_UNLOCK();
+
+    return is_changed;
+}
+
+/*:::::*/
+void fb_ConsoleSleep ( int msecs )
+{
 	/* infinite? wait until any key is pressed */
 	if( msecs == -1 )
 	{
-		while( !fb_KeyHit( ) )
+		while( !fb_hConsoleInputBufferChanged( ) )
 			fb_hSleep( 50 );
 		return;
 	}
@@ -54,7 +67,7 @@ FBCALL void fb_Sleep ( int msecs )
 	if( msecs >= 100 )
 		while( msecs > 50 )
 		{
-			if( fb_KeyHit( ) )
+			if( fb_hConsoleInputBufferChanged( ) )
 				return;
 
 			fb_hSleep( 50 );
@@ -65,4 +78,3 @@ FBCALL void fb_Sleep ( int msecs )
 		fb_hSleep( msecs );
 
 }
-

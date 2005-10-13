@@ -18,25 +18,40 @@
  */
 
 /*
- * thread_core.c -- DOS thread creation and destruction (empty)
+ * time_sleep.c -- sleep function
  *
- * chng: feb/2005 written [DrV]
+ * chng: oct/2005 written [mjs]
  *
  */
 
-
 #include "fb.h"
 
-
-
-/*:::::*/
-FBCALL FBTHREAD	*fb_ThreadCreate( FB_THREADPROC proc, int param )
-{
-	return NULL;
-}
+int fb_hConsoleInputBufferChanged( void );
 
 /*:::::*/
-FBCALL void fb_ThreadWait( FBTHREAD	*thread )
+void fb_ConsoleSleep ( int msecs )
 {
-	/* */
+	/* infinite? wait until any key is pressed */
+	if( msecs == -1 )
+	{
+		while( !fb_hConsoleInputBufferChanged( ) )
+			fb_hSleep( 50 );
+		return;
+	}
+
+	/* if above n-mili-seconds, check for key input, otherwise,
+	   don't screw the precision with slow console checks */
+	if( msecs >= 100 )
+		while( msecs > 50 )
+		{
+			if( fb_hConsoleInputBufferChanged( ) )
+				return;
+
+			fb_hSleep( 50 );
+			msecs -= 50;
+		}
+
+	if( msecs > 0 )
+		fb_hSleep( msecs );
+
 }

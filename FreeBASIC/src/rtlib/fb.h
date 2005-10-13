@@ -1191,12 +1191,9 @@ FBCALL FBSTRING    *fb_Time             ( void );
 FBCALL int          fb_SetTime          ( FBSTRING *time );
 FBCALL FBSTRING    *fb_Date             ( void );
 FBCALL int          fb_SetDate          ( FBSTRING *date );
-FBCALL void         fb_Sleep            ( int msecs );
 
        int          fb_hSetTime         ( int h, int m, int s );
        int          fb_hSetDate         ( int y, int m, int d );
-
-       void         fb_hSleep           ( int msecs );
 
 /**************************************************************************************************
  * error
@@ -1338,6 +1335,11 @@ FBCALL int          fb_Out              ( unsigned short port, unsigned char val
 typedef int         (*FB_INPROC)        ( unsigned short port );
 typedef int         (*FB_OUTPROC)       ( unsigned short port, unsigned char value );
 
+FBCALL void         fb_Sleep            ( int msecs );
+       void         fb_hSleep           ( int msecs );
+       void         fb_ConsoleSleep     ( int msecs );
+typedef void        (*FB_SLEEPPROC)     ( int msecs );
+
 typedef struct _FB_HOOKSTB {
     FB_INKEYPROC    inkeyproc;
     FB_GETKEYPROC   getkeyproc;
@@ -1360,6 +1362,7 @@ typedef struct _FB_HOOKSTB {
     FB_VIEWUPDATEPROC viewupdateproc;
     FB_LINEINPUTPROC lineinputproc;
     FB_READXYPROC   readxyproc;
+    FB_SLEEPPROC    sleepproc;
 } FB_HOOKSTB;
 
 extern FB_HOOKSTB   fb_hooks;

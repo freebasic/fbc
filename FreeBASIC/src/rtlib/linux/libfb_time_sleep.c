@@ -18,25 +18,47 @@
  */
 
 /*
- * thread_core.c -- DOS thread creation and destruction (empty)
+ * time_sleep.c -- sleep function
  *
- * chng: feb/2005 written [DrV]
+ * chng: nov/2004 written [v1ctor]
  *
  */
 
-
 #include "fb.h"
 
-
-
 /*:::::*/
-FBCALL FBTHREAD	*fb_ThreadCreate( FB_THREADPROC proc, int param )
+void fb_ConsoleSleep ( int msecs )
 {
-	return NULL;
-}
+    /* FIXME: We need to find a method to set a flag whenver a NEW character
+     *        was passed to the input buffer. Maybe we can use something
+     *        like ftell( stdin ) + some modifications of key input functions?
+     *
+     * INFO: Don't clear the input buffer in any case because this will
+     *       cause more trouble than not clearing the input buffer.
+     *
+     * mjs, 2005-10-13
+     */
 
-/*:::::*/
-FBCALL void fb_ThreadWait( FBTHREAD	*thread )
-{
-	/* */
+	/* infinite? wait until any key is pressed */
+	if( msecs == -1 )
+	{
+		while( !fb_KeyHit( ) )
+			fb_hSleep( 50 );
+		return;
+	}
+
+	/* if above n-mili-seconds, check for key input, otherwise,
+	   don't screw the precision with slow console checks */
+	if( msecs >= 100 )
+		while( msecs > 50 )
+		{
+			if( fb_KeyHit( ) )
+				return;
+
+			fb_hSleep( 50 );
+			msecs -= 50;
+		}
+
+	if( msecs > 0 )
+		fb_hSleep( msecs );
 }

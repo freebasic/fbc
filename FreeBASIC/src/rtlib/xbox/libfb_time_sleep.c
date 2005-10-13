@@ -18,25 +18,23 @@
  */
 
 /*
- * thread_core.c -- DOS thread creation and destruction (empty)
+ * time_sleep.c -- sleep function
  *
- * chng: feb/2005 written [DrV]
+ * chng: nov/2004 written [v1ctor]
  *
  */
 
-
 #include "fb.h"
 
-
-
 /*:::::*/
-FBCALL FBTHREAD	*fb_ThreadCreate( FB_THREADPROC proc, int param )
+void fb_ConsoleSleep ( int msecs )
 {
-	return NULL;
+    /* NOTE: No need to test for input keys because sleep will be hooked
+     *       when the application is switched to graphics mode and the
+     *       console implementations for keyboard handling are only dummy
+     *       functions.
+     */
+
+    fb_hSleep( msecs );
 }
 
-/*:::::*/
-FBCALL void fb_ThreadWait( FBTHREAD	*thread )
-{
-	/* */
-}

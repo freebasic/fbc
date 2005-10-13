@@ -39,6 +39,8 @@
 # include <conio.h>
 #endif
 
+typedef int FB_DIRCTX; /* dummy to make fb.h happy */
+
 typedef struct {
     unsigned long edi;
     unsigned long esi;

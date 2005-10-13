@@ -235,7 +235,10 @@ int fb_ConsoleGetkey( void )
 	fb_hResize();
 	
 	while ((k = fb_hGetCh(TRUE)) < 0)
-		;
+        ;
+
+    if( k & 0x100 )
+        return FB_MAKE_EXT_KEY( k & 0xFF );
 
 	return k & 0xFF;
 }

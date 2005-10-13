@@ -300,6 +300,7 @@ int fb_GfxOut(unsigned short port, unsigned char value);
 int fb_GfxIn(unsigned short port);
 int fb_GfxLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline );
 int fb_GfxReadXY( int col, int row, int colorflag );
+void fb_GfxSleep( int msecs );
 
 /** Returns TRUE if application is in graphics mode.
  *

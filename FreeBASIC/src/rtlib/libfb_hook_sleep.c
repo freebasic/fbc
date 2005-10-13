@@ -18,25 +18,25 @@
  */
 
 /*
- * thread_core.c -- DOS thread creation and destruction (empty)
+ * time_sleep.c -- sleep function
  *
- * chng: feb/2005 written [DrV]
+ * chng: nov/2004 written [v1ctor]
  *
  */
 
-
 #include "fb.h"
 
-
-
 /*:::::*/
-FBCALL FBTHREAD	*fb_ThreadCreate( FB_THREADPROC proc, int param )
+FBCALL void fb_Sleep ( int msecs )
 {
-	return NULL;
+    FB_SLEEPPROC sleepproc;
+    FB_LOCK();
+    sleepproc = fb_hooks.sleepproc;
+    FB_UNLOCK();
+    if( sleepproc ) {
+        sleepproc( msecs );
+    } else {
+        fb_ConsoleSleep( msecs );
+    }
 }
 
-/*:::::*/
-FBCALL void fb_ThreadWait( FBTHREAD	*thread )
-{
-	/* */
-}

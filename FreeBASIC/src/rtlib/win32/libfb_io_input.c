@@ -34,6 +34,7 @@ static int key_buffer[KEY_BUFFER_LEN];
 static size_t key_head = 0, key_tail = 0;
 static INPUT_RECORD input_events[KEY_BUFFER_LEN];
 static unsigned key_scratch_pad = 0;
+static int key_buffer_changed = FALSE;
 
 typedef struct _FB_KEY_CODES {
     unsigned short value_normal;
@@ -201,7 +202,24 @@ void fb_hConsolePostKey(int key, const KEY_EVENT_RECORD *key_event)
 		key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
     key_tail = (key_tail + 1) & (KEY_BUFFER_LEN - 1);
 
+    key_buffer_changed = TRUE;
+
     FB_UNLOCK();
+}
+
+/*:::::*/
+int fb_hConsoleInputBufferChanged(void)
+{
+    int result;
+
+    fb_ConsoleProcessEvents( );
+
+    FB_LOCK();
+    result = key_buffer_changed;
+    key_buffer_changed = FALSE;
+    FB_UNLOCK();
+
+    return result;
 }
 
 /*:::::*/
