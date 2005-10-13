@@ -31,8 +31,8 @@ FBCALL void fb_Sleep ( int msecs )
 {
     /* NOTE: input buffer should not be cleared or that will break
              multi-threading when Sleep() is called inside a thread
-             to release the time-slice and any suer input method like
-             INPUT is been used in the other thread
+             to release the time-slice and any user input method like
+             INPUT is been used in other thread
      */
 
 #ifndef MULTITHREADED
