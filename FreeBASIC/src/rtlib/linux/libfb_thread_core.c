@@ -50,7 +50,7 @@ FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, int param )
 {
 	FBTHREAD *thread;
 
-	thread = (FBTHREAD *)malloc( sizeof(FBTHREAD) )
+	thread = (FBTHREAD *)malloc( sizeof(FBTHREAD) );
 	if( !thread )
 		return NULL;
 
