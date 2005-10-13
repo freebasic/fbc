@@ -5297,7 +5297,7 @@ sub emitWriteBss( byval s as FBSYMBOL ptr )
 
 	    	elements = 1
     	    if( symbGetArrayDimensions( s ) > 0 ) then
-    	    	elements = hCalcElements( s )
+    	    	elements = symbCalcArrayElements( s )
     	    end if
 
     	    hEmitBssHeader( )
@@ -5481,7 +5481,7 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
 	''	void		*ptr
 	hWriteStr( TRUE,  ".int\t" + sname )
 	''	uint		size
-	hWriteStr( TRUE,  ".int\t" + str( s->lgt * hCalcElements( s ) ) )
+	hWriteStr( TRUE,  ".int\t" + str( s->lgt * symbCalcArrayElements( s ) ) )
 	''	uint		element_len
     hWriteStr( TRUE,  ".int\t" + str( s->lgt ) )
 	''	uint		dimensions

@@ -255,7 +255,7 @@ function cSymbArrayInit( byval basesym as FBSYMBOL ptr, _
 	loop while( hMatch( CHAR_COMMA ) )
 
 	'' pad
-	pad = (symbGetLen( sym ) * hCalcElements( sym )) - lgt
+	pad = (symbGetLen( sym ) * symbCalcArrayElements( sym )) - lgt
 	if( pad > 0 ) then
 		if( not islocal ) then
 			irEmitVARINIPAD( pad )

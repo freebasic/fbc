@@ -166,7 +166,12 @@ sources += parser-quirk-vafirst.bas parser-quirk.bas parser-quirk-gfx.bas
 sources += parser-expr-atom.bas parser-expr-binary.bas parser-expr-constant.bas
 sources += parser-expr-function.bas parser-expr-unary.bas parser-expr-variable.bas
 
-sources += reg.bas rtl.bas symb.bas
+sources += reg.bas rtl.bas
+
+sources += symb.bas symb-const.bas symb-define.bas symb-enum.bas symb-keyword.bas
+sources += symb-label.bas symb-lib.bas symb-proc.bas symb-scope.bas symb-struct.bas
+sources += symb-typedef.bas symb-var.bas
+
 sources += $(osdepsrcs)
 
 objpath = obj/$(OSOBJPATH)

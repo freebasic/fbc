@@ -22,6 +22,29 @@
 
 #include once "inc\ast.bi"
 
+type SYMBCTX
+	inited			as integer
+
+	symlist			as TLIST					'' symbols (VAR, CONST, FUNCTION, UDT, ENUM, LABEL, etc)
+	symhash			as THASH
+
+	globtb			as FBSYMBOLTB
+	symtb			as FBSYMBOLTB ptr			'' current table
+
+	liblist 		as TLIST					'' libraries
+	libhash			as THASH
+
+	dimlist			as TLIST					'' array dimensions
+	defarglist		as TLIST					'' define arguments
+	deftoklist		as TLIST					'' define tokens
+	fwdlist			as TLIST					'' forward typedef refs
+
+	lastlbl			as FBSYMBOL ptr
+
+	fwdrefcnt 		as integer
+	defargcnt		as integer
+end type
+
 declare sub 		symbInit				( byval ismain as integer )
 
 declare sub 		symbEnd					( )
@@ -279,6 +302,31 @@ declare sub 		symbDelConst			( byval s as FBSYMBOL ptr, _
 
 declare sub 		symbDelLib				( byval l as FBLIBRARY ptr )
 
+declare sub 		symbDelScope			( byval scp as FBSYMBOL ptr )
+
+declare function 	symbNewSymbol			( byval s as FBSYMBOL ptr, _
+					 						  byval symtb as FBSYMBOLTB ptr, _
+					 						  byval class as SYMBCLASS_ENUM, _
+					 						  byval dohash as integer = TRUE, _
+					 						  byval symbol as zstring ptr, _
+					 						  byval aliasname as zstring ptr, _
+					 						  byval islocal as integer = FALSE, _
+					 						  byval typ as integer = INVALID, _
+					 						  byval subtype as FBSYMBOL ptr = NULL, _
+					 						  byval ptrcnt as integer = 0, _
+					 						  byval suffix as integer = INVALID, _
+					 						  byval preservecase as integer = FALSE ) as FBSYMBOL ptr
+
+declare sub 		symbFreeSymbol			( byval s as FBSYMBOL ptr, _
+									  		  byval movetoglob as integer = FALSE )
+
+declare sub 		symbDelFromHash			( byval s as FBSYMBOL ptr )
+
+declare function 	symbNewArrayDim			( byref head as FBVARDIM ptr, _
+				  		  					  byref tail as FBVARDIM ptr, _
+				  		  					  byval lower as integer, _
+				  		  					  byval upper as integer ) as FBVARDIM ptr
+
 declare function 	symbCalcLen				( byval typ as integer, _
 											  byval subtype as FBSYMBOL ptr, _
 											  byval realsize as integer = FALSE ) as integer
@@ -289,8 +337,12 @@ declare function 	hAllocFloatConst		( byval value as double, _
 declare function 	hAllocStringConst		( byval sname as string, _
 											  byval lgt as integer ) as FBSYMBOL ptr
 
-declare function 	hCalcElements 			( byval s as FBSYMBOL ptr, _
+declare function 	symbCalcArrayElements	( byval s as FBSYMBOL ptr, _
 											  byval n as FBVARDIM ptr = NULL ) as integer
+
+declare function 	symbCalcArrayDiff		( byval dimensions as integer, _
+									  	  	  dTB() as FBARRAYDIM, _
+									  	  	  byval lgt as integer ) as integer
 
 declare function 	symbCheckLabels 		( ) as integer
 
@@ -300,6 +352,9 @@ declare function 	symbCheckBitField		( byval udt as FBSYMBOL ptr, _
 											  byval typ as integer, _
 											  byval lgt as integer, _
 											  byval bits as integer ) as integer
+
+declare sub 		symbCheckFwdRef			( byval s as FBSYMBOL ptr, _
+					 						  byval class as integer )
 
 declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
 					  						  byval sym2 as FBSYMBOL ptr ) as integer
@@ -556,4 +611,7 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 #define hIsString(t) ((t = IR_DATATYPE_STRING) or (t = IR_DATATYPE_FIXSTR) or (t = IR_DATATYPE_CHAR))
 
 
-
+''
+'' inter-module globals
+''
+extern symb as SYMBCTX
