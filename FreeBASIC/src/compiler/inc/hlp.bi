@@ -44,20 +44,6 @@ declare	sub 		hSetDefType				( byval ichar as integer, _
 
 declare function 	hMatch					( byval token as integer ) as integer
 
-declare sub 		hReportErrorEx			( byval errnum as integer, _
-											  byval msgex as string, _
-											  byval linenum as integer = 0 )
-
-declare sub 		hReportError			( byval errnum as integer, _
-											  byval isbefore as integer = FALSE )
-
-declare function 	hGetLastError 			( ) as integer
-
-declare function 	hGetErrorCnt 			( ) as integer
-
-declare sub 		hReportWarning			( byval msgnum as integer, _
-											  byval msgex as string = "" )
-
 declare function 	hMakeTmpStr 			( byval islabel as integer = TRUE ) as zstring ptr
 
 declare function 	hFBrelop2IRrelop		( byval op as integer ) as integer

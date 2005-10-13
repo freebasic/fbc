@@ -197,6 +197,8 @@ function fbInit( byval ismain as integer ) as integer static
 
 	hlpInit( )
 
+	errInit( )
+
 	astInit( )
 
 	irInit( )
@@ -235,6 +237,7 @@ sub fbSetDefaultOptions( )
 	env.clopt.target		= FB_DEFAULTTARGET
 	env.clopt.naming		= FB_COMPNAMING_DEFAULT
 	env.clopt.extraerrchk	= FALSE
+	env.clopt.msbitfields	= FALSE
 
 end sub
 
@@ -275,6 +278,8 @@ sub fbSetOption ( byval opt as integer, _
 		env.clopt.naming = value
 	case FB_COMPOPT_EXTRAERRCHECK
 		env.clopt.extraerrchk = value
+	case FB_COMPOPT_MSBITFIELDS
+		env.clopt.msbitfields = value
 	end select
 
 end sub
@@ -315,6 +320,8 @@ function fbGetOption ( byval opt as integer ) as integer
 		function = env.clopt.naming
 	case FB_COMPOPT_EXTRAERRCHECK
 		function = env.clopt.extraerrchk
+	case FB_COMPOPT_MSBITFIELDS
+		function = env.clopt.msbitfields
 	case else
 		function = FALSE
 	end select
@@ -443,6 +450,8 @@ sub fbEnd
 	irEnd( )
 
 	astEnd( )
+
+	errEnd( )
 
 	hlpEnd( )
 
