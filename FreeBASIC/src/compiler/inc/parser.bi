@@ -283,6 +283,8 @@ declare function 	cVAFunct				( byref funcexpr as ASTNODE ptr ) as integer
 
 declare function 	cScreenFunct			( byref funcexpr as ASTNODE ptr ) as integer
 
+declare function 	cConstExprValue			( byref value as integer ) as integer
+
 '':::::
 #define hMatchToken(token, errcode)							 _
 	if( not hMatch( token ) ) then							:_

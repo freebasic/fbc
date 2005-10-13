@@ -128,13 +128,6 @@ declare function 	lexEatChar              ( ) as uinteger
 
 declare function	lexPeekCurrentLine		( byref token_pos as string ) as string
 
-declare sub 		lexPPInit				( )
-
-declare sub 		lexPPEnd				( )
-
-declare function 	lexPreProcessor 		( ) as integer
-
-declare function	lexPPLoadDefine			( byval s as FBSYMBOL ptr ) as integer
 
 ''
 '' inter-module globals

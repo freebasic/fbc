@@ -20,7 +20,6 @@
 ''
 ''
 '' chng: sep/2004 written [v1ctor]
-'' 	     dec/2004 pre-processor added (all code at lexpp.bas) [v1ctor]
 
 option explicit
 option escape
@@ -28,6 +27,7 @@ option escape
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\lex.bi"
+#include once "inc\pp.bi"
 #include once "inc\ast.bi"
 
 const UINVALID as uinteger = cuint( INVALID )
@@ -89,7 +89,7 @@ sub lexInit( byval isinclude as integer )
 	end if
 
 	if( not isinclude ) then
-		lexPPInit( )
+		ppInit( )
 	end if
 
 end sub
@@ -101,7 +101,7 @@ sub lexEnd( )
 		curline = ""
 	end if
 
-	lexPPEnd( )
+	ppEnd( )
 
 end sub
 
@@ -1175,7 +1175,7 @@ readid:
 			s = symbFindByClass( t.sym, FB_SYMBCLASS_DEFINE )
 			if( s <> NULL ) then
 				'' no error? restart..
-				if( lexPPLoadDefine( s  ) ) then
+				if( ppDefineLoad( s ) ) then
 					goto reread
 				end if
         	end if
@@ -1314,7 +1314,7 @@ private sub hCheckPP( )
        			end if
 
        			'' pp failed? exit
-       			if( not lexPreProcessor( ) ) then
+       			if( not ppParse( ) ) then
        				lex.reclevel -= 1
        				exit sub
        			end if

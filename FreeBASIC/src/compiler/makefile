@@ -148,7 +148,9 @@ exepath = ../..
 compiler = $(exepath)/$(subst .bas,_new$(EXE),$(main))
 
 sources := $(main) ast.bas edbg_stab.bas emit.bas emit_x86.bas fb.bas
-sources += flist.bas hash.bas hlp.bas ir.bas lex.bas lexpp.bas list.bas
+sources += flist.bas hash.bas error.bas hlp.bas ir.bas lex.bas list.bas
+
+sources += pp.bas pp-cond.bas pp-define.bas pp-pragma.bas
 
 sources += parser-assignment.bas parser-comment.bas parser-decl-const.bas parser-decl-def.bas
 sources += parser-decl-enum.bas parser-decl-option.bas parser-decl-proc-params.bas parser-decl-proc.bas
