@@ -191,7 +191,8 @@
   SADD Function
   SGN Function
   SWAP Statement
-  SLEEP Statement       (diff: millisecond accuracy, 1 is equal to 1 msec, not 1 sec)
+  SLEEP Statement       (diff: millisecond accuracy, 1 is equal to 1 msec, not 1 sec;
+			       the input buffer is not cleared when using multi-threading version of the run-time library)
   SHELL Statement
   SYSTEM Statement
   STOP Statement
