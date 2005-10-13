@@ -24,7 +24,7 @@ declare sub mythread ( byval num as integer )
 	
 	'' wait all threads to finish
 	for i = 0 to THREADS-1
-		threadwait thread(i)
+		threadwait( thread(i) )
 	next i
 	
 '':::::	
@@ -32,9 +32,9 @@ sub mythread ( byval num as integer )
 	dim i as integer, k as string
 	
 	for i = 0 to SECS-1
-		print "Hello from thread: " + str$( num ) + " (" + str$( SECS-i ) + " sec(s) left)"
-		Sleep 1000
-        k$ = inkey$
+		print "Hello from thread: " & num & " (" & SECS-i & " sec(s) left)"
+		sleep( 1000 )
+        getkey( )
 	next i
 
 end sub
