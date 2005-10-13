@@ -29,14 +29,17 @@
 /*:::::*/
 FBCALL void fb_Sleep ( int msecs )
 {
-    /* FIXME: We must not clear the input buffer. Instead, we have to
-     * remember if a key press aborted the previous SLEEP and if a key
-     * code was read (by INKEY$ or INPUT$ or (LINE) INPUT afterwards.
+    /* NOTE: input buffer should not be cleared or that will break
+             multi-threading when Sleep() is called inside a thread
+             to release the time-slice and any suer input method like
+             INPUT is been used in the other thread
      */
 
+#ifndef MULTITHREADED
     /* clear input buffer */
     while( fb_KeyHit( ) )
         fb_Getkey( );
+#endif
 
 	/* infinite? wait until any key is pressed */
 	if( msecs == -1 )

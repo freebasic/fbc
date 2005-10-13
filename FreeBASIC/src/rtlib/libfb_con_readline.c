@@ -89,7 +89,6 @@ void fb_ConReadLineEx( FBSTRING *dst )
 
     do {
         size_t delete_char_count = 0, add_char = FALSE;
-        size_t read_len;
         FBSTRING *sTmp;
 
         while( !fb_KeyHit() ) {
@@ -98,16 +97,27 @@ void fb_ConReadLineEx( FBSTRING *dst )
             fb_hSleep(25);
         }
 
-        sTmp = fb_Inkey();
-        read_len = FB_STRSIZE(sTmp);
-        if( read_len==2 ) {
-            k = FB_MAKE_EXT_KEY(sTmp->data[1]);
-            ch = 0;
-        } else {
-            k = FB_MAKE_KEY(ch = sTmp->data[0]);
+        sTmp = fb_Inkey( );
+        if( sTmp->data != NULL )
+        {
+        	if( FB_STRSIZE(sTmp) == 2 )
+        	{
+            	k = FB_MAKE_EXT_KEY(sTmp->data[1]);
+            	ch = 0;
+        	}
+        	else
+        	{
+            	k = FB_MAKE_KEY(ch = sTmp->data[0]);
+        	}
+
+        	fb_hStrDelTemp( sTmp );
+        }
+        else
+        {
+        	k = 0;
+        	continue;
         }
 
-        fb_hStrDelTemp( sTmp );
 
         fb_GetXY(&current_x, &current_y);
 
