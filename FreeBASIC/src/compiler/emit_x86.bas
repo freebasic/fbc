@@ -5219,7 +5219,7 @@ private function hGetTypeString( byval typ as integer ) as string static
     	function = ".byte"
     case FB_SYMBTYPE_USHORT, FB_SYMBTYPE_SHORT
     	function = ".short"
-    case FB_SYMBTYPE_INTEGER, FB_SYMBTYPE_UINT
+    case FB_SYMBTYPE_INTEGER, FB_SYMBTYPE_UINT, FB_SYMBTYPE_ENUM
     	function = ".int"
     case FB_SYMBTYPE_LONGINT, FB_SYMBTYPE_ULONGINT
     	function = ".quad"
