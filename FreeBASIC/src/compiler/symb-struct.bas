@@ -71,7 +71,8 @@ private function hCalcALign( byval lgt as integer, _
 					 		 byval ofs as integer, _
 					 		 byval align as integer, _
 					 		 byval dtype as integer, _
-					 		 byval subtype as FBSYMBOL ptr ) as integer static
+					 		 byval subtype as FBSYMBOL ptr _
+					 	   ) as integer static
 
 	function = 0
 
@@ -128,8 +129,10 @@ end function
 function symbCheckBitField( byval udt as FBSYMBOL ptr, _
 							byval typ as integer, _
 							byval lgt as integer, _
-							byval bits as integer ) as integer
+							byval bits as integer _
+						  ) as integer
 
+	'' <= 0 or > sizeof(type) or not an integer type?
 	if( (bits <= 0) or _
 		(bits > lgt*8) or _
 		(typ >= FB_SYMBTYPE_ENUM) ) then
@@ -149,7 +152,8 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 						    byval subtype as FBSYMBOL ptr, _
 						    byval ptrcnt as integer, _
 						    byval lgt as integer, _
-						    byval bits as integer ) as FBSYMBOL ptr static
+						    byval bits as integer _
+						  ) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXINTNAMELEN+1 ename
     dim as FBSYMBOL ptr p, e, tail
@@ -175,14 +179,12 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
     	p = p->udt.parent
     loop while( p <> NULL )
 
-	tail = t->udt.fldtb.tail
-
     '' calc length if it wasn't given
 	if( lgt <= 0 ) then
 		lgt	= symbCalcLen( typ, subtype, TRUE )
 
-	'' or if it's a non-array UDT field (the len w/o padding) -- for array
-	'' of UDT's fields, the padded len will be used, to be GCC 3.x compatible
+	'' or use the non-padded len if it's a non-array UDT field (for array
+	'' of UDT's fields the padded len will be used, to follow the GCC ABI)
 	elseif( typ = FB_SYMBTYPE_USERDEF ) then
 		if( dimensions = 0 ) then
 			lgt = subtype->udt.unpadlgt
@@ -192,7 +194,9 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
     '' check if the parent ofs must be updated
     updateudt = TRUE
     if( bits > 0 ) then
+    	'' last field was a bitfield too? try to merge..
     	if( t->udt.bitpos > 0 ) then
+    		tail = t->udt.fldtb.tail
     		'' does it fit? if not, start at a new pos..
     		if( t->udt.bitpos + bits > tail->lgt*8 ) then
     			t->udt.bitpos = 0
@@ -215,21 +219,43 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
     end if
 
 	''
-    e = symbNewSymbol( NULL, @t->udt.fldtb, FB_SYMBCLASS_UDTELM, FALSE, _
-    				   @ename, NULL, _
-    				   FALSE, typ, subtype, ptrcnt )
-    if( e = NULL ) then
-    	exit function
-    end if
-
-	'' add to parent's linked-list
-    e->var.elm.parent = t
-    t->udt.elements	+= 1
-
-	''
 	if( updateudt ) then
 		pad = hCalcALign( lgt, t->udt.ofs, t->udt.align, typ, subtype )
 		if( pad > 0 ) then
+
+			'' bitfield?
+			if( bits > 0 ) then
+				'' not M$-way?
+				if( not env.clopt.msbitfields ) then
+					'' follow the GCC ABI..
+					if( bits <= pad * 8 ) then
+						lgt = pad
+                        pad = 0
+
+						'' remap type
+						select case lgt
+						case 1
+							if( irIsSigned( typ ) ) then
+								typ = FB_SYMBTYPE_BYTE
+							else
+								typ = FB_SYMBTYPE_UBYTE
+							end if
+						case 2
+							if( irIsSigned( typ ) ) then
+								typ = FB_SYMBTYPE_SHORT
+							else
+								typ = FB_SYMBTYPE_USHORT
+							end if
+
+						'' padding won't be >= sizeof(int) because only
+						'' integers can be used as bitfields
+						end select
+
+					end if
+
+				end if
+			end if
+
 			t->udt.ofs += pad
 		end if
 
@@ -254,6 +280,18 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 			t->udt.lfldlen = elen
 		end if
 	end if
+
+	''
+    e = symbNewSymbol( NULL, @t->udt.fldtb, FB_SYMBCLASS_UDTELM, FALSE, _
+    				   @ename, NULL, _
+    				   FALSE, typ, subtype, ptrcnt )
+    if( e = NULL ) then
+    	exit function
+    end if
+
+	'' add to parent's linked-list
+    e->var.elm.parent = t
+    t->udt.elements	+= 1
 
 	e->lgt 				= lgt
 	if( updateudt ) then

@@ -1,12 +1,4 @@
 
-[ ] add the non-ms bitfield's option
-    - GCC will reuse the pad of the preview non-bitfield, so a
-      "foo as short" followed by "bar:1 as integer" will allocate
-      "bar" at "foo:17" and 2 bytes long
-    - w/o that, GTK is screwed in anything but Windows
-    - make it default in anything but Win32 *or* add a #PRAGMA to change
-      cmd-line options and add "#PRAGMA msbitfields" to the Gtk headers #if WIN32
-
 [ ] add the cast() intrinsic function - CAST( type, expression ), works like in C,
     so macros (and maybe function templates one day) can be better designed
 
