@@ -9,6 +9,10 @@
 #ifndef __atk_bi__
 #define __atk_bi__
 
+#ifdef __FB_WIN32__
+# pragma push(msbitfields)
+#endif
+
 #inclib "atk-1.0"
 
 #include once "gtk/atk/atkobject.bi"
@@ -35,5 +39,9 @@
 #include once "gtk/atk/atktext.bi"
 #include once "gtk/atk/atkutil.bi"
 #include once "gtk/atk/atkvalue.bi"
+
+#ifdef __FB_WIN32__
+# pragma pop(msbitfields)
+#endif
 
 #endif

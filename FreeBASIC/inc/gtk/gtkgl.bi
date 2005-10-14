@@ -10,11 +10,12 @@
 #define __gtkgl_bi__
 
 #ifdef __FB_WIN32__
-#inclib "gtkglext-win32-1.0"
+# inclib "gtkglext-win32-1.0"
+# pragma push(msbitfields)
 #elseif defined(__FB_LINUX__)
-#inclib "gtkglext-x11-1.0"
+# inclib "gtkglext-x11-1.0"
 #else
-#error Platform not supported!
+# error Platform not supported!
 #endif
 
 #include once "gtk/gdkgl.bi"
@@ -22,5 +23,9 @@
 #include once "gtk/gtkgl/gtkglversion.bi"
 #include once "gtk/gtkgl/gtkglinit.bi"
 #include once "gtk/gtkgl/gtkglwidget.bi"
+
+#ifdef __FB_WIN32__
+# pragma pop(msbitfields)
+#endif
 
 #endif

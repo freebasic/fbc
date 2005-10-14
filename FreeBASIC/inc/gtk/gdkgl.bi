@@ -10,11 +10,12 @@
 #define __gdkgl_bi__
 
 #ifdef __FB_WIN32__
-#inclib "gdkglext-win32-1.0"
+# pragma push(msbitfields)
+# inclib "gdkglext-win32-1.0"
 #elseif defined(__FB_LINUX__)
-#inclib "gdkglext-x11-1.0"
+# inclib "gdkglext-x11-1.0"
 #else
-#error Platform not supported!
+# error Platform not supported!
 #endif
 
 #include once "gtk/gdkgl/gdkgldefs.bi"
@@ -31,5 +32,9 @@
 #include once "gtk/gdkgl/gdkglwindow.bi"
 #include once "gtk/gdkgl/gdkglfont.bi"
 #include once "gtk/gdkgl/gdkglshapes.bi"
+
+#ifdef __FB_WIN32__
+# pragma pop(msbitfields)
+#endif
 
 #endif

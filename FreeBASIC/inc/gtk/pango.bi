@@ -12,11 +12,12 @@
 #inclib "pango-1.0"
 
 #ifdef __FB_WIN32__
-#inclib "pangowin32-1.0"
+# pragma push(msbitfields)
+# inclib "pangowin32-1.0"
 #elseif defined(__FB_LINUX__)
-#inclib "pangox-1.0"
+# inclib "pangox-1.0"
 #else
-#error Platform not supported!
+# error Platform not supported!
 #endif
 
 #include once "gtk/pango/pango-attributes.bi"
@@ -33,5 +34,9 @@
 #include once "gtk/pango/pango-renderer.bi"
 #include once "gtk/pango/pango-script.bi"
 #include once "gtk/pango/pango-types.bi"
+
+#ifdef __FB_WIN32__
+# pragma pop(msbitfields)
+#endif
 
 #endif

@@ -9,6 +9,10 @@
 #ifndef __glib_object_bi__
 #define __glib_object_bi__
 
+#ifdef __FB_WIN32__
+# pragma push(msbitfields)
+#endif
+
 #inclib "gobject-2.0"
 
 #include once "gtk/gobject/gboxed.bi"
@@ -24,5 +28,9 @@
 #include once "gtk/gobject/gvalue.bi"
 #include once "gtk/gobject/gvaluearray.bi"
 #include once "gtk/gobject/gvaluetypes.bi"
+
+#ifdef __FB_WIN32__
+# pragma pop(msbitfields)
+#endif
 
 #endif

@@ -10,11 +10,12 @@
 #define __gtk_bi__
 
 #ifdef __FB_WIN32__
-#inclib "gtk-win32-2.0"
+# inclib "gtk-win32-2.0"
+# pragma push(msbitfields)
 #elseif defined(__FB_LINUX__)
-#inclib "gtk-x11-2.0"
+# inclib "gtk-x11-2.0"
 #else
-#error Platform not supported!
+# error Platform not supported!
 #endif
 
 #include once "gtk/gdk.bi"
@@ -178,5 +179,9 @@
 #include once "gtk/gtk/gtkvseparator.bi"
 #include once "gtk/gtk/gtkwidget.bi"
 #include once "gtk/gtk/gtkwindow.bi"
+
+#ifdef __FB_WIN32__
+# pragma pop(msbitfields)
+#endif
 
 #endif

@@ -9,6 +9,10 @@
 #ifndef __libart_bi__
 #define __libart_bi__
 
+#ifdef __FB_WIN32__
+# pragma push(msbitfields)
+#endif
+
 #inclib "art_lgpl_2"
 
 #include once "gtk/libart/art_affine.bi"
@@ -45,5 +49,9 @@
 #include once "gtk/libart/art_vpath_bpath.bi"
 #include once "gtk/libart/art_vpath_dash.bi"
 #include once "gtk/libart/art_vpath_svp.bi"
+
+#ifdef __FB_WIN32__
+# pragma pop(msbitfields)
+#endif
 
 #endif

@@ -9,10 +9,18 @@
 #ifndef __glade_bi__
 #define __glade_bi__
 
+#ifdef __FB_WIN32__
+# pragma push(msbitfields)
+#endif
+
 #inclib "glade-2.0"
 
 #include once "gtk/glib.bi"
 #include once "gtk/libglade/glade-init.bi"
 #include once "gtk/libglade/glade-xml.bi"
+
+#ifdef __FB_WIN32__
+# pragma pop(msbitfields)
+#endif
 
 #endif

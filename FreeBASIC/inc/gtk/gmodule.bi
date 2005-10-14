@@ -9,6 +9,10 @@
 #ifndef __gmodule_bi__
 #define __gmodule_bi__
 
+#ifdef __FB_WIN32__
+# pragma push(msbitfields)
+#endif
+
 #inclib "gmodule-2.0"
 
 enum GModuleFlags
@@ -33,5 +37,9 @@ declare function g_module_error cdecl alias "g_module_error" () as zstring ptr
 declare function g_module_symbol cdecl alias "g_module_symbol" (byval module as GModule ptr, byval symbol_name as zstring ptr, byval symbol as gpointer ptr) as gboolean
 declare function g_module_name cdecl alias "g_module_name" (byval module as GModule ptr) as zstring ptr
 declare function g_module_build_path cdecl alias "g_module_build_path" (byval directory as zstring ptr, byval module_name as zstring ptr) as zstring ptr
+
+#ifdef __FB_WIN32__
+# pragma pop(msbitfields)
+#endif
 
 #endif

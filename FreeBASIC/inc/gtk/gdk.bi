@@ -10,11 +10,12 @@
 #define __gdk_bi__
 
 #ifdef __FB_WIN32__
-#inclib "gdk-win32-2.0"
+# pragma push(msbitfields)
+# inclib "gdk-win32-2.0"
 #elseif defined(__FB_LINUX__)
-#inclib "gdk-x11-2.0"
+# inclib "gdk-x11-2.0"
 #else
-#error Platform not supported!
+# error Platform not supported!
 #endif
 
 #include once "gtk/gdk/gdkcolor.bi"
@@ -88,5 +89,9 @@ declare sub gdk_threads_enter cdecl alias "gdk_threads_enter" ()
 declare sub gdk_threads_leave cdecl alias "gdk_threads_leave" ()
 declare sub gdk_threads_init cdecl alias "gdk_threads_init" ()
 declare sub gdk_threads_set_lock_functions cdecl alias "gdk_threads_set_lock_functions" (byval enter_fn as GCallback, byval leave_fn as GCallback)
+
+#ifdef __FB_WIN32__
+# pragma pop(msbitfields)
+#endif
 
 #endif

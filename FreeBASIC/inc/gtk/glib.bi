@@ -9,6 +9,10 @@
 #ifndef __glib_bi__
 #define __glib_bi__
 
+#ifdef __FB_WIN32__
+# pragma push(msbitfields)
+#endif
+
 #inclib "glib-2.0"
 
 #include once "gtk/glib/galloca.bi"
@@ -57,5 +61,9 @@
 #include once "gtk/glib/gunicode.bi"
 #include once "gtk/glib/gutils.bi"
 #include once "gtk/glib/gwin32.bi"
+
+#ifdef __FB_WIN32__
+# pragma pop(msbitfields)
+#endif
 
 #endif
