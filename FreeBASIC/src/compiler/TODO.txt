@@ -1,4 +1,12 @@
 
+[ ] add the wstring type:
+    - like zstring's, not dynamic, but temporaries should be deallocated
+      automatically what can be hard to do - take care with the rtlib and
+      infinite recursion..
+    - conversions from/to zstring's including arguments should be done automatically
+    - char size is not fixed, it depends on the -target, so it can't a constant
+    - allow string indexing too
+
 [ ] add the cast() intrinsic function - CAST( type, expression ), works like in C,
     so macros (and maybe function templates one day) can be better designed
 
@@ -17,6 +25,8 @@
     - error handlers should be restored too (or not allowed at all)
 
 [ ] windows api headers:
+    - update the current headers with the very latest Mingw ones - there are loads
+      of additions in some headers
     - add missing headers: win/__TODO__ and others not translated (DX, TAPI, etc)
     - check all PSHPACK#.h inclusions and also #pragma push|pop
     - convert the once-nameless unions (u as) and structs (s as) to inner nameless types

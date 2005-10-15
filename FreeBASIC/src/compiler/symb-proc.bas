@@ -207,30 +207,16 @@ private function hAddOvlProc( byval proc as FBSYMBOL ptr, _
 				              byval preservecase as integer ) as FBSYMBOL ptr static
 
 	dim as FBSYMBOL ptr f, farg, parg
-	dim as integer optcnt, argc
+	dim as integer argc
 
 	function = NULL
 
 	'' not arg-less?
 	argc = symbGetProcArgs( proc )
 	if( argc > 0 ) then
-
 		'' can't be vararg..
 		parg = symbGetProcTailArg( proc )
 		if( parg->arg.mode = FB_ARGMODE_VARARG ) then
-			exit function
-		end if
-
-		'' all args can't be optional
-		optcnt = 0
-		do while( parg <> NULL )
-			if( parg->arg.optional ) then
-				optcnt += 1
-			end if
-			parg = parg->prev
-		loop
-
-		if( optcnt = argc ) then
 			exit function
 		end if
 	end if
@@ -734,16 +720,18 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 
 	dim as FBSYMBOL ptr f, arg, s
 	dim as integer p, pdtype, pdclass
-	dim as integer fmatches, matches
+	dim as integer fmatches, matches, ambcnt
 
 	'' enough to an impossible-to-reach level of indirection
 	const FB_OVLPROC_FULLMATCH = 1073741824 \ FB_MAXPROCARGS
 	const FB_OVLPROC_HALFMATCH = FB_OVLPROC_FULLMATCH \ 2
 
 	matches = 0
+	ambcnt = 0
 
 	'' for each proc..
 	f = proc
+	proc = NULL
 	do while( f <> NULL )
 
 		if( params <= symbGetProcArgs( f ) ) then
@@ -903,26 +891,31 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 				arg = symbGetProcPrevArg( f, arg )
 			next
 
-			if( fmatches > 0 ) then
-				'' fewer params? check if the ones missing are optional
-				if( params < symbGetProcArgs( f ) ) then
-					do while( arg <> NULL )
-				    	'' not optional? exit
-				    	if( not symbGetArgOptional( f, arg ) ) then
-				    		fmatches = 0
-				    		exit do
-				    	end if
+			'' fewer params? check if the ones missing are optional
+			if( params < symbGetProcArgs( f ) ) then
+				do while( arg <> NULL )
+			    	'' not optional? exit
+			    	if( not symbGetArgOptional( f, arg ) ) then
+			    		fmatches = 0
+			    		exit do
+			    	else
+			    		fmatches += FB_OVLPROC_FULLMATCH
+			    	end if
 
-						'' next arg
-						arg = symbGetProcPrevArg( f, arg )
-					loop
-				end if
+					'' next arg
+					arg = symbGetProcPrevArg( f, arg )
+				loop
 			end if
 
 		    '' closer?
 		    if( fmatches > matches ) then
 			   	proc = f
 			   	matches = fmatches
+			   	ambcnt = 0
+
+			'' same? ambiguity..
+			elseif( fmatches = matches ) then
+				ambcnt += 1
 			end if
 
 		end if
@@ -931,8 +924,12 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 		f = f->proc.ovl.next
 	loop
 
-	''
-	function = proc
+	'' more than one possibility?
+	if( ambcnt > 0 ) then
+		function = NULL
+	else
+		function = proc
+	end if
 
 end function
 

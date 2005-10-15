@@ -29,6 +29,33 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
+private function hCreateOptArg( byval proc as FBSYMBOL ptr, _
+					 		    byval arg as FBSYMBOL ptr _
+							  ) as ASTNODE ptr
+
+	'' create an arg
+	select case as const symbGetType( arg )
+  	case IR_DATATYPE_ENUM
+  		function = astNewENUM( symbGetArgOptValInt( proc, arg ), symbGetSubType( arg ) )
+
+	case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
+		function = astNewVAR( symbGetArgOptValStr( proc, arg ), NULL, 0, IR_DATATYPE_FIXSTR )
+
+	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		function = astNewCONST64( symbGetArgOptValLong( proc, arg ), symbGetType( arg ) )
+
+	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		function = astNewCONSTf( symbGetArgOptValFloat( proc, arg ), symbGetType( arg ) )
+
+	case else
+		function = astNewCONSTi( symbGetArgOptValInt( proc, arg ), _
+								 symbGetType( arg ), symbGetSubType( arg ) )
+	end select
+
+end function
+
+
+'':::::
 ''ProcParam         =   BYVAL? (ID(('(' ')')? | Expression) .
 ''
 function cProcParam( byval proc as FBSYMBOL ptr, _
@@ -104,24 +131,7 @@ function cProcParam( byval proc as FBSYMBOL ptr, _
 			exit function
 		end if
 
-		'' create an arg
-		select case as const symbGetType( arg )
-  		case IR_DATATYPE_ENUM
-  			expr = astNewENUM( symbGetArgOptValInt( proc, arg ), symbGetSubType( arg ) )
-
-		case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
-			expr = astNewVAR( symbGetArgOptValStr( proc, arg ), NULL, 0, IR_DATATYPE_FIXSTR )
-
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			expr = astNewCONST64( symbGetArgOptValLong( proc, arg ), symbGetType( arg ) )
-
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			expr = astNewCONSTf( symbGetArgOptValFloat( proc, arg ), symbGetType( arg ) )
-
-		case else
-			expr = astNewCONSTi( symbGetArgOptValInt( proc, arg ), _
-								 symbGetType( arg ), symbGetSubType( arg ) )
-		end select
+		expr = hCreateOptArg( proc, arg )
 
 	else
 
@@ -307,13 +317,6 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 		loop while( hMatch( CHAR_COMMA ) )
 	end if
 
-	'' just one param and was it optional?
-	if( params = 1 ) then
-		if( exprTB(0) = NULL ) then
-			params = 0
-		end if
-	end if
-
 	'' try finding the closest overloaded proc
 	proc = symbFindClosestOvlProc( proc, params, exprTB(), modeTB() )
 
@@ -355,13 +358,21 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 	procexpr = astNewFUNCT( proc, ptrexpr )
 
     '' add to tree
+	arg = symbGetProcLastArg( proc )
 	for p = 0 to params-1
+
+		'' optional arg not at end of list? fill it..
+		if( exprTB(p) = NULL ) then
+			exprTB(p) = hCreateOptArg( proc, arg )
+			modeTB(p) = INVALID
+		end if
 
 		if( astNewPARAM( procexpr, exprTB(p), INVALID, modeTB(p) ) = NULL ) then
 			hReportError( FB_ERRMSG_PARAMTYPEMISMATCH )
 			exit function
 		end if
 
+		arg = symbGetProcPrevArg( proc, arg )
 	next
 
 	function = procexpr
