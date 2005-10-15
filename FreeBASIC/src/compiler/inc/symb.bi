@@ -565,7 +565,7 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 
 #define symbGetIsDynamic(s) iif( s->class = FB_SYMBCLASS_UDTELM, FALSE, (s->alloctype and (FB_ALLOCTYPE_DYNAMIC or FB_ALLOCTYPE_ARGUMENTBYDESC)) > 0 )
 
-#define symbIsArray(s) iif( (s->alloctype and (FB_ALLOCTYPE_DYNAMIC or FB_ALLOCTYPE_ARGUMENTBYDESC)) > 0, TRUE, s->var.array.dims > 0 )
+#define symbIsArray(s) iif( (s->alloctype and (FB_ALLOCTYPE_DYNAMIC or FB_ALLOCTYPE_ARGUMENTBYDESC)) > 0, TRUE, iif( s->class = FB_SYMBCLASS_VAR, s->var.array.dims > 0, FALSE ) )
 
 #define symbIsShared(s) ((s->alloctype and FB_ALLOCTYPE_SHARED) > 0)
 
