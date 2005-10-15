@@ -91,7 +91,8 @@ TESTS = \
         datetime/testdate$(EXEEXT) \
         datetime/testtime$(EXEEXT) \
         datetime/calc$(EXEEXT) \
-        numbers/numbers$(EXEEXT)
+        numbers/numbers$(EXEEXT) \
+        overload/bydesc$(EXEEXT)
 
 all: $(TESTS) run_tests
 
@@ -115,6 +116,7 @@ run_tests:
 	string/compare
 	string/format
 	numbers/numbers
+	overload/bydesc
 
 file/text_in$(EXEEXT): file/text_in.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
@@ -162,6 +164,9 @@ datetime/calc$(EXEEXT): datetime/calc.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
 
 numbers/numbers$(EXEEXT): numbers/numbers.bas
+	$(FBC) $(FBCFLAGS) -x $@ $^
+
+overload/bydesc$(EXEEXT): overload/bydesc.bas
 	$(FBC) $(FBCFLAGS) -x $@ $^
 
 dim/submod_a.bas: dim/submod_c.bi
