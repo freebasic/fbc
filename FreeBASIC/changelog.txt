@@ -62,6 +62,7 @@ Version 0.15 Beta:
 - CLS 2, VIEW PRINT, LINE INPUT and SCREEN(y,x,colorflag) are now supported in graphics mode (mjs)
 - ALT+NumKeys works in Win32 console mode (mjs)
 - "CLOSE WINDOW" key code (ALT+F4) now works in Win32 console too (mjs)
+- "deep sleep" (i.e. sleep that cannot be interrupted by key press, use with SLEEP msecs, 1 (mjs)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)

@@ -1337,6 +1337,7 @@ typedef int         (*FB_OUTPROC)       ( unsigned short port, unsigned char val
 
 FBCALL void         fb_Sleep            ( int msecs );
 FBCALL void         fb_Delay            ( int msecs );
+FBCALL int          fb_SleepEx          ( int msecs, int kind );
        void         fb_ConsoleSleep     ( int msecs );
 typedef void        (*FB_SLEEPPROC)     ( int msecs );
 

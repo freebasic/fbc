@@ -2236,10 +2236,17 @@ data "setenviron","fb_SetEnviron", _
 
 '' sleep ( byval msecs as integer ) as void
 data "sleep","fb_Sleep", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hMultinput_cb, FALSE, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 @hMultinput_cb, FALSE, TRUE, _
 	 1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE, -1
+'' sleepex ( byval msecs as integer, byval kind as integer ) as integer
+data "sleep","fb_SleepEx", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 @hMultinput_cb, TRUE, TRUE, _
+	 2, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' reset ( ) as void
 data "reset","fb_FileReset", _
