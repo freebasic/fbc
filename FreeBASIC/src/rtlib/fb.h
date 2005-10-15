@@ -1336,7 +1336,7 @@ typedef int         (*FB_INPROC)        ( unsigned short port );
 typedef int         (*FB_OUTPROC)       ( unsigned short port, unsigned char value );
 
 FBCALL void         fb_Sleep            ( int msecs );
-       void         fb_hSleep           ( int msecs );
+FBCALL void         fb_Delay            ( int msecs );
        void         fb_ConsoleSleep     ( int msecs );
 typedef void        (*FB_SLEEPPROC)     ( int msecs );
 

@@ -94,7 +94,7 @@ void fb_ConReadLineEx( FBSTRING *dst )
         while( !fb_KeyHit() ) {
             /* release time slice - does this work on other platforms the
              * same way? */
-            fb_hSleep(25);
+            fb_Delay(25);
         }
 
         sTmp = fb_Inkey( );

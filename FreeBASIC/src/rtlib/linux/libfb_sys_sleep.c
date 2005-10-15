@@ -29,7 +29,7 @@
 #include <sys/time.h>
 
 /*:::::*/
-void fb_hSleep ( int msecs )
+FBCALL void fb_Delay ( int msecs )
 {
 	struct timeval tv;
 

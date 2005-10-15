@@ -29,7 +29,7 @@
 #include <unistd.h>
 
 /*:::::*/
-void fb_hSleep ( int msecs )
+FBCALL void fb_Delay ( int msecs )
 {
 
 	usleep(msecs * 1000);

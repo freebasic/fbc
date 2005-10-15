@@ -35,6 +35,6 @@ void fb_ConsoleSleep ( int msecs )
      *       functions.
      */
 
-    fb_hSleep( msecs );
+    fb_Delay( msecs );
 }
 

@@ -43,7 +43,7 @@ void fb_ConsoleSleep ( int msecs )
 	if( msecs == -1 )
 	{
 		while( !fb_KeyHit( ) )
-			fb_hSleep( 50 );
+			fb_Delay( 50 );
 		return;
 	}
 
@@ -55,10 +55,10 @@ void fb_ConsoleSleep ( int msecs )
 			if( fb_KeyHit( ) )
 				return;
 
-			fb_hSleep( 50 );
+			fb_Delay( 50 );
 			msecs -= 50;
 		}
 
 	if( msecs > 0 )
-		fb_hSleep( msecs );
+		fb_Dleay( msecs );
 }
