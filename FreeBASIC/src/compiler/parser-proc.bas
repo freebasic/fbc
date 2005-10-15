@@ -91,7 +91,7 @@ private function hCheckPrototype( byval proto as FBSYMBOL ptr, _
     	end if
 
     	'' and mode
-    	if( proc_arg->arg.mode <> symbGetArgMode( proto, proto_arg ) ) then
+    	if( proc_arg->arg.mode <> symbGetArgMode( proto_arg ) ) then
 			hReportParamError( argc )
             exit function
     	end if

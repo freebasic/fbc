@@ -606,7 +606,12 @@ function hCreateOvlProcAlias( byval symbol as string, _
     for i = 0 to argc-1
     	aname += "_"
 
-    	typ = arg->typ
+		'' by descriptor?
+		if( symbGetArgMode( arg ) = FB_ARGMODE_BYDESC ) then
+			aname += "d"
+		end if
+
+    	typ = symbGetType( arg )
     	do while( typ >= FB_SYMBTYPE_POINTER )
     		aname += "p"
     		typ -= FB_SYMBTYPE_POINTER
@@ -615,7 +620,7 @@ function hCreateOvlProcAlias( byval symbol as string, _
     	aname += suffixTB( typ )
     	if( (typ = FB_SYMBTYPE_USERDEF) or _
     		(typ = FB_SYMBTYPE_ENUM) ) then
-    		aname += symbGetOrgName( arg->subtype )
+    		aname += symbGetOrgName( symbGetSubType( arg ) )
     	end if
 
     	'' next

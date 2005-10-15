@@ -634,7 +634,7 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
 	function = FALSE
 
 	''
-	amode  = symbGetArgMode( proc, arg )
+	amode  = symbGetArgMode( arg )
 	adtype = symbGetType( arg )
 	if( adtype <> INVALID ) then
 		adclass = irGetDataClass( adtype )

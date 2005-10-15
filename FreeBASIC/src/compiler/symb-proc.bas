@@ -238,6 +238,17 @@ private function hAddOvlProc( byval proc as FBSYMBOL ptr, _
 			farg = symbGetProcTailArg( f )
 
 			do while( parg <> NULL )
+				'' different modes?
+				if( parg->arg.mode <> farg->arg.mode ) then
+					'' one is by desc? allow byref and byval args
+					'' with the same type or subtype
+					if( parg->arg.mode = FB_ARGMODE_BYDESC ) then
+						exit do
+					elseif( farg->arg.mode = FB_ARGMODE_BYDESC ) then
+						exit do
+					end if
+				end if
+
 				'' not the same type? check next proc..
 				if( parg->typ <> farg->typ ) then
 					exit do
@@ -684,6 +695,16 @@ function symbFindOverloadProc( byval parent as FBSYMBOL ptr, _
 			parg = symbGetProcTailArg( proc )
 			do while( parg <> NULL )
 
+				'' different modes?
+				if( parg->arg.mode <> farg->arg.mode ) then
+					'' one is by desc? can't be the same..
+					if( parg->arg.mode = FB_ARGMODE_BYDESC ) then
+						exit do
+					elseif( farg->arg.mode = FB_ARGMODE_BYDESC ) then
+						exit do
+					end if
+				end if
+
 				'' not the same type? check next proc..
 				if( parg->typ <> farg->typ ) then
 					exit do
@@ -711,6 +732,176 @@ function symbFindOverloadProc( byval parent as FBSYMBOL ptr, _
 
 end function
 
+'' enough to an impossible-to-reach level of indirection
+const FB_OVLPROC_FULLMATCH = 1073741824 \ FB_MAXPROCARGS
+const FB_OVLPROC_HALFMATCH = FB_OVLPROC_FULLMATCH \ 2
+
+'':::::
+private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
+							   byval pexpr as ASTNODE ptr, _
+							   byval pmode as integer _
+							 ) as integer static
+
+	dim as integer pdtype, pdclass
+	dim as FBSYMBOL ptr s
+
+	'' param optional?
+	if( pexpr = NULL ) then
+		'' but arg isn't?
+		if( not symbGetArgOptional( arg ) ) then
+			return 0
+		end if
+
+		return FB_OVLPROC_FULLMATCH
+    end if
+
+	pdtype = astGetDataType( pexpr )
+
+	'' by descriptor arg?
+	if( symbGetArgMode( arg ) = FB_ARGMODE_BYDESC ) then
+		'' but param isn't?
+		if( pmode <> FB_ARGMODE_BYDESC ) then
+			return 0
+		end if
+
+		'' not a full match?
+        if( symbGetType( arg ) <> pdtype ) then
+        	return 0
+        end if
+
+        if( symbGetSubType( arg ) <> astGetSubType( pexpr ) ) then
+        	return 0
+        end if
+
+		return FB_OVLPROC_FULLMATCH
+
+	'' by descriptor param?
+	elseif( pmode = FB_ARGMODE_BYDESC ) then
+		'' refuse
+		return 0
+	end if
+
+	'' different types?
+	if( symbGetType( arg ) <> pdtype ) then
+
+		pdclass = irGetDataClass( pdtype )
+
+		'' check classes
+		select case as const irGetDataClass( symbGetType( arg ) )
+		'' integer?
+		case IR_DATACLASS_INTEGER
+			select case as const pdclass
+			'' another integer or float is ok (due the auto-coercion)
+			case IR_DATACLASS_INTEGER, IR_DATACLASS_FPOINT
+				return FB_OVLPROC_HALFMATCH - abs( symbGetType( arg ) - pdtype )
+
+			'' string? only if it's a zstring ptr arg
+			case IR_DATACLASS_STRING
+				if( symbGetType( arg ) <> IR_DATATYPE_POINTER+IR_DATATYPE_CHAR ) then
+					return 0
+				end if
+
+				return FB_OVLPROC_FULLMATCH
+
+			'' refuse anything else
+			case else
+				return 0
+			end select
+
+		'' floating-point?
+		case IR_DATACLASS_FPOINT
+			'' only accept another float or integer
+			select case as const pdclass
+			case IR_DATACLASS_INTEGER, IR_DATACLASS_FPOINT
+				return FB_OVLPROC_HALFMATCH - abs( symbGetType( arg ) - pdtype )
+
+			'' refuse anything else
+			case else
+				return 0
+
+			end select
+
+		'' string?
+		case IR_DATACLASS_STRING
+
+			select case pdclass
+			'' okay if it's another var- or fixed-len string
+			case IR_DATACLASS_STRING
+				return FB_OVLPROC_HALFMATCH - abs( symbGetType( arg ) - pdtype )
+
+			'' integer only if it's a zstring
+			case IR_DATACLASS_INTEGER
+				if( pdtype <> IR_DATATYPE_CHAR ) then
+					return 0
+				end if
+
+				return FB_OVLPROC_FULLMATCH
+
+			'' refuse anything else
+			case else
+				return 0
+			end select
+
+		'' user-defined..
+		case IR_DATACLASS_UDT
+
+			'' not another udt?
+			if( pdclass <> IR_DATACLASS_UDT ) then
+				'' not a proc? (can be an UDT been returned in registers)
+				if( astGetClass( pexpr ) <> AST_NODECLASS_FUNCT ) then
+					return 0
+				end if
+
+				'' it's a proc, but was it originally returning an UDT?
+				s = astGetSymbol( pexpr )
+				if( symbGetType( s ) <> FB_SYMBTYPE_USERDEF ) then
+					return 0
+				end if
+
+				'' get the original subtype
+				s = symbGetSubType( s )
+
+			'' udt..
+            else
+            	s = astGetSubType( pexpr )
+			end if
+
+            '' can't be different
+			if( symbGetSubType( arg ) <> s ) then
+				return 0
+			end if
+
+			return FB_OVLPROC_FULLMATCH
+
+		'' can't happen?
+		case else
+			return 0
+
+		end select
+
+	'' same types..
+	else
+		'' check the subtype
+		if( symbGetSubType( arg ) <> astGetSubType( pexpr ) ) then
+
+			'' check classes
+			select case irGetDataClass( symbGetType( arg ) )
+			'' UDT? can't be different..
+			case IR_DATACLASS_UDT
+				return 0
+			end select
+
+			return FB_OVLPROC_HALFMATCH
+
+		'' same subtype too, full match..
+		else
+			return FB_OVLPROC_FULLMATCH
+		end if
+	end if
+
+end function
+
+
 '':::::
 function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 					   		     byval params as integer, _
@@ -718,217 +909,80 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 					   		     modeTB() as integer _
 					   		   ) as FBSYMBOL ptr static
 
-	dim as FBSYMBOL ptr f, arg, s
-	dim as integer p, pdtype, pdclass
-	dim as integer fmatches, matches, ambcnt
+	dim as FBSYMBOL ptr ovlproc, arg
+	dim as integer p, argmatches, matches, maxmatches, ambcnt
 
-	'' enough to an impossible-to-reach level of indirection
-	const FB_OVLPROC_FULLMATCH = 1073741824 \ FB_MAXPROCARGS
-	const FB_OVLPROC_HALFMATCH = FB_OVLPROC_FULLMATCH \ 2
-
-	matches = 0
+	ovlproc = NULL
+	maxmatches = 0
 	ambcnt = 0
 
 	'' for each proc..
-	f = proc
-	proc = NULL
-	do while( f <> NULL )
+	do while( proc <> NULL )
 
-		if( params <= symbGetProcArgs( f ) ) then
+		if( params <= symbGetProcArgs( proc ) ) then
 
 			'' arg-less? exit..
-			if( symbGetProcArgs( f ) = 0 ) then
-				return f
+			if( symbGetProcArgs( proc ) = 0 ) then
+				return proc
 			end if
 
-			arg = symbGetProcLastArg( f )
-			fmatches = 0
+			arg = symbGetProcLastArg( proc )
+			matches = 0
 
 			'' for each arg..
 			for p = 0 to params-1
 
-				'' not optional?
-				if( exprTB(p) <> NULL ) then
-
-					'' different types?
-					pdtype = astGetDataType( exprTB(p) )
-					if( arg->typ <> pdtype ) then
-
-						pdclass = irGetDataClass( pdtype )
-
-						'' check classes
-						select case as const irGetDataClass( arg->typ )
-						'' integer?
-						case IR_DATACLASS_INTEGER
-							select case as const pdclass
-							'' another integer or float is ok (due the auto-coercion)
-							case IR_DATACLASS_INTEGER, IR_DATACLASS_FPOINT
-								fmatches += (FB_OVLPROC_HALFMATCH - abs( arg->typ - pdtype ))
-
-							'' string? only if it's a zstring ptr arg
-							case IR_DATACLASS_STRING
-								if( arg->typ <> IR_DATATYPE_POINTER+IR_DATATYPE_CHAR ) then
-									fmatches = 0
-									exit for
-								end if
-
-								fmatches += FB_OVLPROC_FULLMATCH
-
-							'' refuse anything else
-							case else
-								fmatches = 0
-								exit for
-							end select
-
-						'' floating-point?
-						case IR_DATACLASS_FPOINT
-							'' only accept another float or integer
-							select case as const pdclass
-							case IR_DATACLASS_INTEGER, IR_DATACLASS_FPOINT
-								fmatches += (FB_OVLPROC_HALFMATCH - abs( arg->typ - pdtype ))
-
-							'' refuse anything else
-							case else
-								fmatches = 0
-								exit for
-							end select
-
-						'' string?
-						case IR_DATACLASS_STRING
-
-							select case pdclass
-							'' okay if it's another var- or fixed-len string
-							case IR_DATACLASS_STRING
-								fmatches += (FB_OVLPROC_HALFMATCH - abs( arg->typ - pdtype ))
-
-							'' integer only if it's a zstring
-							case IR_DATACLASS_INTEGER
-								if( pdtype <> IR_DATATYPE_CHAR ) then
-									fmatches = 0
-									exit for
-								end if
-
-								fmatches += FB_OVLPROC_FULLMATCH
-
-							'' refuse anything else
-							case else
-								fmatches = 0
-								exit for
-							end select
-
-						'' user-defined..
-						case IR_DATACLASS_UDT
-
-							'' not another udt?
-							if( pdclass <> IR_DATACLASS_UDT ) then
-								'' not a proc? (can be an UDT been returned in registers)
-								if( astGetClass( exprTB(p) ) <> AST_NODECLASS_FUNCT ) then
-									fmatches = 0
-									exit for
-								end if
-
-								'' it's a proc, but was it originally returning an UDT?
-								s = astGetSymbol( exprTB(p) )
-								if( s->typ <> FB_SYMBTYPE_USERDEF ) then
-									fmatches = 0
-									exit for
-								end if
-
-								'' get the original subtype
-								s = s->subtype
-
-                            '' udt..
-                            else
-                            	s = astGetSubType( exprTB(p) )
-                            end if
-
-                			'' can't be different
-							if( arg->subtype <> s ) then
-								fmatches = 0
-								exit for
-							end if
-
-							fmatches += FB_OVLPROC_FULLMATCH
-
-						end select
-
-                    '' same types..
-					else
-						fmatches += FB_OVLPROC_HALFMATCH
-
-						'' check the subtype
-						if( arg->subtype <> astGetSubType( exprTB(p) ) ) then
-
-							'' check classes
-							select case irGetDataClass( arg->typ )
-
-							'' UDT? can't be different..
-							case IR_DATACLASS_UDT
-								fmatches = 0
-								exit for
-
-							end select
-
-						'' same subtype too..
-						else
-							fmatches += FB_OVLPROC_HALFMATCH
-						end if
-					end if
-
-				'' optional..
-				else
-					'' but arg isn't?
-					if( not symbGetArgOptional( f, arg ) ) then
-						fmatches = 0
-						exit for
-					end if
-
-					fmatches += FB_OVLPROC_FULLMATCH
-
+				argmatches = hCheckOvlArg( arg, exprTB(p), modeTB(p) )
+				if( argmatches = 0 ) then
+					matches = 0
+					exit for
 				end if
+				matches += argmatches
 
                	'' next arg
-				arg = symbGetProcPrevArg( f, arg )
+				arg = symbGetProcPrevArg( proc, arg )
 			next
 
 			'' fewer params? check if the ones missing are optional
-			if( params < symbGetProcArgs( f ) ) then
-				do while( arg <> NULL )
-			    	'' not optional? exit
-			    	if( not symbGetArgOptional( f, arg ) ) then
-			    		fmatches = 0
-			    		exit do
-			    	else
-			    		fmatches += FB_OVLPROC_FULLMATCH
-			    	end if
+			if( params < symbGetProcArgs( proc ) ) then
+				if( (matches > 0) or (params = 0) ) then
+					do while( arg <> NULL )
+			    		'' not optional? exit
+			    		if( not symbGetArgOptional( arg ) ) then
+			    			matches = 0
+			    			exit do
+			    		else
+			    			matches += FB_OVLPROC_FULLMATCH
+			    		end if
 
-					'' next arg
-					arg = symbGetProcPrevArg( f, arg )
-				loop
+						'' next arg
+						arg = symbGetProcPrevArg( proc, arg )
+					loop
+				end if
 			end if
 
 		    '' closer?
-		    if( fmatches > matches ) then
-			   	proc = f
-			   	matches = fmatches
+		    if( matches > maxmatches ) then
+			   	ovlproc = proc
+			   	maxmatches = matches
 			   	ambcnt = 0
 
 			'' same? ambiguity..
-			elseif( fmatches = matches ) then
+			elseif( matches = maxmatches ) then
 				ambcnt += 1
 			end if
 
 		end if
 
 		'' next overloaded proc
-		f = f->proc.ovl.next
+		proc = proc->proc.ovl.next
 	loop
 
 	'' more than one possibility?
 	if( ambcnt > 0 ) then
 		function = NULL
 	else
-		function = proc
+		function = ovlproc
 	end if
 
 end function

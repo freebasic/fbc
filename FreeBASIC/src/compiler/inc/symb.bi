@@ -545,19 +545,17 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 
 #define symbGetProcLocTbHead(f) f->proc.loctb.head
 
-#define symbGetArgMode(f,a) a->arg.mode
+#define symbGetArgMode(a) a->arg.mode
 
-#define symbGetArgSuffix(f,a) a->arg.suffix
+#define symbGetArgOptional(a) a->arg.optional
 
-#define symbGetArgOptional(f,a) a->arg.optional
+#define symbGetArgOptValInt(a) a->arg.optval.int
 
-#define symbGetArgOptValInt(f,a) a->arg.optval.int
+#define symbGetArgOptValFloat(a) a->arg.optval.float
 
-#define symbGetArgOptValFloat(f,a) a->arg.optval.float
+#define symbGetArgOptValLong(a) a->arg.optval.long
 
-#define symbGetArgOptValLong(f,a) a->arg.optval.long
-
-#define symbGetArgOptValStr(f,a) a->arg.optval.str
+#define symbGetArgOptValStr(a) a->arg.optval.str
 
 #define symbGetArgPrev(a) a->prev
 

@@ -5531,7 +5531,7 @@ private function hCheckStringArg( byval f as ASTNODE ptr, _
 	adtype  = symbGetType( arg )
 	pdtype  = p->dtype
 
-	amode = symbGetArgMode( f->proc.sym, arg )
+	amode = symbGetArgMode( arg )
 
 	'' calling the runtime lib?
 	if( f->proc.isrtl ) then
@@ -5828,7 +5828,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 	end if
 
 	'' argument
-	amode   = symbGetArgMode( proc, arg )
+	amode   = symbGetArgMode( arg )
 	adtype  = symbGetType( arg )
 	if( adtype <> INVALID ) then
 		adclass = irGetDataClass( adtype )
@@ -6467,7 +6467,7 @@ private function hLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 
 		''
 		if( arg = lastarg ) then
-			if( symbGetArgMode( proc, arg ) = FB_ARGMODE_VARARG ) then
+			if( symbGetArgMode( arg ) = FB_ARGMODE_VARARG ) then
 				bytestopop += (symbCalcLen( l->dtype, NULL ) + _
 					 		  (FB_INTEGERSIZE-1)) and _
 					 		  not (FB_INTEGERSIZE-1) 		'' x86 assumption!

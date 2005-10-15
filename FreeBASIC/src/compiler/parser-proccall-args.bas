@@ -29,26 +29,25 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-private function hCreateOptArg( byval proc as FBSYMBOL ptr, _
-					 		    byval arg as FBSYMBOL ptr _
+private function hCreateOptArg( byval arg as FBSYMBOL ptr _
 							  ) as ASTNODE ptr
 
 	'' create an arg
 	select case as const symbGetType( arg )
   	case IR_DATATYPE_ENUM
-  		function = astNewENUM( symbGetArgOptValInt( proc, arg ), symbGetSubType( arg ) )
+  		function = astNewENUM( symbGetArgOptValInt( arg ), symbGetSubType( arg ) )
 
 	case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
-		function = astNewVAR( symbGetArgOptValStr( proc, arg ), NULL, 0, IR_DATATYPE_FIXSTR )
+		function = astNewVAR( symbGetArgOptValStr( arg ), NULL, 0, IR_DATATYPE_FIXSTR )
 
 	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-		function = astNewCONST64( symbGetArgOptValLong( proc, arg ), symbGetType( arg ) )
+		function = astNewCONST64( symbGetArgOptValLong( arg ), symbGetType( arg ) )
 
 	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-		function = astNewCONSTf( symbGetArgOptValFloat( proc, arg ), symbGetType( arg ) )
+		function = astNewCONSTf( symbGetArgOptValFloat( arg ), symbGetType( arg ) )
 
 	case else
-		function = astNewCONSTi( symbGetArgOptValInt( proc, arg ), _
+		function = astNewCONSTi( symbGetArgOptValInt( arg ), _
 								 symbGetType( arg ), symbGetSubType( arg ) )
 	end select
 
@@ -71,7 +70,7 @@ function cProcParam( byval proc as FBSYMBOL ptr, _
 
 	function = FALSE
 
-	amode = symbGetArgMode( proc, arg )
+	amode = symbGetArgMode( arg )
 
 	pmode = INVALID
 	expr = NULL
@@ -124,14 +123,14 @@ function cProcParam( byval proc as FBSYMBOL ptr, _
 	if( expr = NULL ) then
 
 		'' check if argument is optional
-		if( not symbGetArgOptional( proc, arg ) ) then
+		if( not symbGetArgOptional( arg ) ) then
 			if( amode <> FB_ARGMODE_VARARG ) then
 				hReportError( FB_ERRMSG_ARGCNTMISMATCH )
 			end if
 			exit function
 		end if
 
-		expr = hCreateOptArg( proc, arg )
+		expr = hCreateOptArg( arg )
 
 	else
 
@@ -338,7 +337,7 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 
 		'' optional arg not at end of list? fill it..
 		if( exprTB(p) = NULL ) then
-			exprTB(p) = hCreateOptArg( proc, arg )
+			exprTB(p) = hCreateOptArg( arg )
 			modeTB(p) = INVALID
 		end if
 
@@ -355,7 +354,7 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 	args = symbGetProcArgs( proc )
 	if( params < args ) then
         do while( params < args )
-			astNewPARAM( procexpr, hCreateOptArg( proc, arg ), INVALID, INVALID )
+			astNewPARAM( procexpr, hCreateOptArg( arg ), INVALID, INVALID )
 
 			'' next
 			params += 1
