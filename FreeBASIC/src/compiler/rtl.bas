@@ -1708,7 +1708,7 @@ data @"pmap", "fb_GfxPMap", _
 
 '' fb_Out( byval port as ushort, byval data as ubyte ) as void
 data @"out", "fb_Out", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 @hPorts_cb, TRUE, FALSE, _
 	 2, _
 	 FB_SYMBTYPE_USHORT,FB_ARGMODE_BYVAL, FALSE, _
@@ -1717,7 +1717,7 @@ data @"out", "fb_Out", _
 '' fb_In( byval port as ushort ) as integer
 data @"inp", "fb_In", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hPorts_cb, TRUE, FALSE, _
+	 @hPorts_cb, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_USHORT,FB_ARGMODE_BYVAL, FALSE
 
