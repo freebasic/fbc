@@ -1,3 +1,5 @@
+LIBRARY     PCRE.DLL
+
 EXPORTS
     pcre_callout @1 DATA
     pcre_compile @2
