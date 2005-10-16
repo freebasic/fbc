@@ -4416,16 +4416,17 @@ end sub
 '':::::
 private sub _emitPUSHUDT( byval svreg as IRVREG ptr, _
 				 		  byval sdsize as integer ) static
-    dim i as integer
-    dim ostr as string
-    dim src as string
+    dim as integer ofs
+    dim as string ostr, src
 
 	'' !!!FIXME!!! assuming it's okay to push over the UDT if's not dword aligned
-	for i = 0 to sdsize-1 step 4
-		hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, i )
+	ofs = sdsize - FB_INTEGERSIZE
+	do while( ofs >= 0 )
+		hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, ofs )
 		ostr = "push " + src
-		outp ostr
-	next i
+		outp( ostr )
+		ofs -= FB_INTEGERSIZE
+	loop
 
 end sub
 
