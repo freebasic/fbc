@@ -39,13 +39,13 @@ function cArrayStmt as integer
 
 	function = FALSE
 
-	select case lexGetToken
+	select case lexGetToken( )
 	case FB_TK_ERASE
-		lexSkipToken
+		lexSkipToken( )
 
 		do
 			if( not cVarOrDeref( expr1, FALSE ) ) then
-				hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
+				hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 				exit function
 			end if
 
@@ -78,17 +78,17 @@ function cArrayStmt as integer
 
 	'' SWAP Variable, Variable
 	case FB_TK_SWAP
-		lexSkipToken
+		lexSkipToken( )
 
 		if( not cVarOrDeref( expr1 ) ) then
-			hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
+			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			exit function
 		end if
 
 		hMatchCOMMA( )
 
 		if( not cVarOrDeref( expr2 ) ) then
-			hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
+			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			exit function
 		end if
 
@@ -113,23 +113,23 @@ function cArrayFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 	function = FALSE
 
-	select case lexGetToken
+	select case lexGetToken( )
 
 	'' (LBOUND|UBOUND) '(' ID (',' Expression)? ')'
 	case FB_TK_LBOUND, FB_TK_UBOUND
-		if( lexGetToken = FB_TK_LBOUND ) then
+		if( lexGetToken( ) = FB_TK_LBOUND ) then
 			islbound = TRUE
 		else
 			islbound = FALSE
 		end if
-		lexSkipToken
+		lexSkipToken( )
 
 		'' '('
 		hMatchLPRNT( )
 
 		'' ID
 		if( not cVarOrDeref( sexpr, FALSE ) ) then
-			hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
+			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			exit function
 		end if
 
