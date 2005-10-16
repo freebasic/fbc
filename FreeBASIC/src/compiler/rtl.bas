@@ -2693,6 +2693,8 @@ private sub hAddIntrinsicProcs( )
 		read pcallback, errorcheck, overloaded
 		read pargs
 
+		assert( ( errorcheck and ptype=FB_SYMBTYPE_INTEGER ) or not errorcheck )
+
 		proc = symbPreAddProc( )
 
 		'' for each argument..
