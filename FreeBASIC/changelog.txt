@@ -63,6 +63,7 @@ Version 0.15 Beta:
 - ALT+NumKeys works in Win32 console mode (mjs)
 - "CLOSE WINDOW" key code (ALT+F4) now works in Win32 console too (mjs)
 - "deep sleep" (i.e. sleep that cannot be interrupted by key press, use with SLEEP msecs, 1 (mjs)
+- parameters passed by descriptor to overloaded functions are now supported (v1c)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)
@@ -115,6 +116,8 @@ Version 0.15 Beta:
 - var-initializing of non-local data was not taking the number of array elements into account, causing wrong alignments (v1c)
 - CLS 1 (does nothing) and CLS 2 (clears view port only) now work as expeced in CONSOLE mode (mjs)
 - VIEW PRINT is now always reset when SCREEN or WIDTH are called (mjs)
+- ambiguity check for overloaded functions with optional arguments not in the end of list (v1c)
+- udt's passed by value were been pushed in the inverse order to stack (v1c)
 
 
 Version 0.14 Beta:
