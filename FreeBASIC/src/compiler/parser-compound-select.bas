@@ -420,7 +420,7 @@ private function hSelConstAddCase( byval swtbase as integer, _
 	'' move up
 	for i = ctx.swt.base+1 to swtbase+high+1 step -1
 		ctx.swt.caseTB(i) = ctx.swt.caseTB(i-1)
-	next i
+	next
 
 	'' insert new item
 	ctx.swt.caseTB(swtbase+high).value = value
@@ -492,8 +492,19 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 				astDel( expr2 )
 
 				for value = value to tovalue
-					if( value < minval ) then minval = value
-					if( value > maxval ) then maxval = value
+					if( value < minval ) then
+						minval = value
+					end if
+					if( value > maxval ) then
+						maxval = value
+					end if
+
+					 '' too big?
+					 if( (minval > maxval) or _
+					 	 (maxval - minval > FB_MAXSWTCASERANGE) or _
+					 	 (culngint(minval) * FB_INTEGERSIZE > 4294967292ULL) ) then
+					 	exit function
+					 end if
 
 					'' add item
 					if( not hSelConstAddCase( swtbase, value, label ) ) then
@@ -502,8 +513,19 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 				next
 
 			else
-				if( value < minval ) then minval = value
-				if( value > maxval ) then maxval = value
+				if( value < minval ) then
+					minval = value
+				end if
+				if( value > maxval ) then
+					maxval = value
+				end if
+
+				'' too big?
+				if( (minval > maxval) or _
+					(maxval - minval > FB_MAXSWTCASERANGE) or _
+					(culngint(minval) * FB_INTEGERSIZE > 4294967292ULL) ) then
+					exit function
+				end if
 
 				'' add item
 				if( not hSelConstAddCase( swtbase, value, label ) ) then
@@ -624,7 +646,9 @@ function cSelectConstStmt as integer
 	loop while( lexGetToken <> FB_TK_EOF )
 
     '' too large?
-    if( (minval > maxval) or (maxval - minval > FB_MAXSWTCASERANGE) ) then
+    if( (minval > maxval) or _
+    	(maxval - minval > FB_MAXSWTCASERANGE) or _
+    	(culngint(minval) * FB_INTEGERSIZE > 4294967292ULL) ) then
     	hReportError( FB_ERRMSG_RANGETOOLARGE )
     	exit function
     end if
@@ -676,7 +700,7 @@ function cSelectConstStmt as integer
     	else
     		astAdd( astNewJMPTB( IR_DATATYPE_UINT, deflabel ) )
     	end if
-    next value
+    next
 
     ctx.swt.base = swtbase
 
