@@ -118,6 +118,7 @@ Version 0.15 Beta:
 - VIEW PRINT is now always reset when SCREEN or WIDTH are called (mjs)
 - ambiguity check for overloaded functions with optional arguments not in the end of list (v1c)
 - udt's passed by value were been pushed in the inverse order to stack (v1c)
+- too big constants (above 1GB) could be missed by Select As Const (v1c)
 
 
 Version 0.14 Beta:
