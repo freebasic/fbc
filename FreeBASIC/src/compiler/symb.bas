@@ -436,8 +436,8 @@ end function
 
 '':::::
 function symbLookup( byval symbol as zstring ptr, _
-					 id as integer, _
-					 class as integer, _
+					 byref id as integer, _
+					 byref class as integer, _
 					 byval preservecase as integer = FALSE _
 				   ) as FBSYMBOL ptr static
 
