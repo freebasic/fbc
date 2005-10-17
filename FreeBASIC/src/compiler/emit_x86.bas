@@ -4420,6 +4420,10 @@ private sub _emitPUSHUDT( byval svreg as IRVREG ptr, _
     dim as string ostr, src
 
 	'' !!!FIXME!!! assuming it's okay to push over the UDT if's not dword aligned
+	if( sdsize < FB_INTEGERSIZE ) then
+		sdsize = FB_INTEGERSIZE
+	end if
+
 	ofs = sdsize - FB_INTEGERSIZE
 	do while( ofs >= 0 )
 		hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, ofs )
