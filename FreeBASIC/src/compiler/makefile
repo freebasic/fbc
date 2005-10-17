@@ -168,7 +168,11 @@ sources += parser-quirk-vafirst.bas parser-quirk.bas parser-quirk-gfx.bas
 sources += parser-expr-atom.bas parser-expr-binary.bas parser-expr-constant.bas
 sources += parser-expr-function.bas parser-expr-unary.bas parser-expr-variable.bas
 
-sources += reg.bas rtl.bas
+sources += reg.bas
+
+sources += rtl.bas rtl-array.bas rtl-console.bas rtl-data.bas rtl-error.bas
+sources += rtl-file.bas rtl-gfx.bas rtl-macro.bas rtl-math.bas rtl-mem.bas
+sources += rtl-print.bas rtl-string.bas rtl-system.bas
 
 sources += symb.bas symb-const.bas symb-define.bas symb-enum.bas symb-keyword.bas
 sources += symb-label.bas symb-lib.bas symb-proc.bas symb-scope.bas symb-struct.bas

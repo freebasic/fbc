@@ -1,4 +1,7 @@
 
+[ ] file names with periods (.)'s cannot be opened anymore?
+
+
 [ ] add the wstring type:
     - like zstring's, not dynamic, but temporaries should be deallocated
       automatically what can be hard to do - take care with the rtlib and

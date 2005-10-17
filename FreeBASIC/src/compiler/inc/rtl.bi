@@ -472,6 +472,15 @@ declare sub 		rtlInit				( )
 
 declare sub 		rtlEnd				( )
 
+declare sub 		rtlAddIntrinsicProcs( )
+
+declare function 	rtlProcLookup		( byval pname as zstring ptr, _
+			   							  byval pidx as integer ) as FBSYMBOL ptr
+
+declare function 	rtlCalcExprLen		( byval expr as ASTNODE ptr, _
+						 				  byval realsize as integer = TRUE ) as integer
+
+
 declare function 	rtlStrCompare 		( byval str1 as ASTNODE ptr, _
 										  byval sdtype1 as integer, _
 					     			  	  byval str2 as ASTNODE ptr, _
@@ -885,3 +894,34 @@ declare function	rtlGfxScreenSet		( byval wexpr as ASTNODE ptr, _
 declare function	rtlProfileBeginCall ( byval symbol as FBSYMBOL ptr ) as ASTNODE ptr
 
 declare function	rtlProfileEndCall	( ) as ASTNODE ptr
+
+
+declare function 	rtlMultinput_cb		( byval sym as FBSYMBOL ptr ) as integer
+
+declare function    rtlPrinter_cb       ( byval sym as FBSYMBOL ptr ) as integer
+
+''
+'' macros
+''
+
+#define PROCLOOKUP(id) rtlProcLookup( strptr( FB_RTL_##id ), FB_RTL_IDX_##id )
+
+'' note: STRGETLEN must be called *before* astNewPARAM(e) because the expression 'e'
+''       can be changed inside the former (address-of string's etc)
+
+#define FIXSTRGETLEN(e) symbGetLen( astGetSymbolOrElm( e ) )
+
+#define ZSTRGETLEN(e) iif( astIsPTR( e ), 0, symbGetLen( astGetSymbolOrElm( e ) ) )
+
+#define STRGETLEN(e,t,l)												_
+	select case as const t                                              :_
+	case IR_DATATYPE_BYTE, IR_DATATYPE_UBYTE       						:_
+		l = 0                                                           :_
+	case IR_DATATYPE_FIXSTR                                             :_
+		l = FIXSTRGETLEN( e )                         					:_
+	case IR_DATATYPE_CHAR                                               :_
+		l = ZSTRGETLEN( e )                            					:_
+	case else                                                           :_
+		l = -1															:_
+	end select
+
