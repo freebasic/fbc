@@ -56,7 +56,8 @@ declare sub 	 setCompOptions			( )
 ''globals
 	dim shared fbc as FBCCTX
 
-	dim shared argc as integer, argv(0 to FB_MAXARGS-1) as string
+	dim shared argc as integer
+	dim shared argv(0 to FB_MAXARGS-1) as string
 
     ''
     setDefaultOptions( )
@@ -1007,48 +1008,16 @@ function listFiles( ) as integer
 end function
 
 '':::::
-sub parseCmd ( argc as integer, argv() as string )
-    dim cmd as string
-    dim p as integer, char as uinteger
-    dim isstr as integer
+sub parseCmd ( byref argc as integer, argv() as string )
 
-	cmd = command$ + "\r"
-
-	p = 0
 	argc = 0
-
 	do
-		do
-			char = cmd[p]
-			p += 1
-		loop while ( (char = 32) or (char = 7) )
-
-		if( char = 13 ) then exit do
-
-		isstr = 0
-		do
-			if( char = 34 ) then
-				isstr = not isstr
-            else
-				argv(argc) += chr$( char )
-			end if
-
-			char = cmd[p]
-			p += 1
-
-			if( not isstr ) then
-				if( (char = 32) or (char = 7) ) then
-					exit do
-				end if
-			end if
-
-		loop until ( char = 13 )
-
-		argc += 1
-		if( argc >= FB_MAXARGS ) then
+		argv(argc) = command( 1 + argc )
+		if( len( argv(argc) ) = 0 ) then
 			exit do
 		end if
-	loop while ( char <> 13 )
+		argc += 1
+	loop while argc < FB_MAXARGS
 
 end sub
 

@@ -20,7 +20,7 @@
 
 const QUOTE = "\""
 
-const FB_MAXARGS	  = 100
+const FB_MAXARGS	  = 250
 const FB_MINSTACKSIZE = 32 * 1024
 const FB_DEFSTACKSIZE = 1024 * 1024
 
