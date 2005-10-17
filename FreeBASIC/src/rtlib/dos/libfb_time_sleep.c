@@ -29,7 +29,7 @@
 static int iCircBufferStatusInited = FALSE;
 static unsigned short usCircBufferStatus = 0;
 
-static int fb_hConsoleInputBufferChanged( void )
+int fb_hConsoleInputBufferChanged( void )
 {
     int is_changed;
     unsigned short usNewStatus;

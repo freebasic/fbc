@@ -52,6 +52,10 @@ FBSTRING *fb_ConsoleInkey( void )
 
         res->data[chars-1] = (unsigned char)k;
         res->data[chars-0] = '\0';
+
+        /* Reset the status for "key buffer changed" when a key
+         * was removed from the input queue. */
+        fb_hConsoleInputBufferChanged();
     }
 	else
 		res = &fb_strNullDesc;
@@ -67,6 +71,10 @@ int fb_ConsoleGetkey( void )
 	k = getch( );
 	if( k == 0x00 || k == 0xE0 )
 		k = getch( );
+
+    /* Reset the status for "key buffer changed" when a key
+     * was removed from the input queue. */
+    fb_hConsoleInputBufferChanged();
 
 	return k;
 }

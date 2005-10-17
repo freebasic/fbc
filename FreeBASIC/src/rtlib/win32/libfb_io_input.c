@@ -241,8 +241,12 @@ int fb_hConsoleGetKeyEx(int full, int allow_remove)
                 do_remove = FALSE;
             }
         }
-        if( do_remove )
+        if( do_remove ) {
             key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
+            /* Reset the status for "key buffer changed" when a key
+             * was removed from the input queue. */
+            fb_hConsoleInputBufferChanged();
+        }
 	}
 
 	FB_UNLOCK();

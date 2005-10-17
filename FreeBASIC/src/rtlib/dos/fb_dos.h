@@ -71,6 +71,8 @@ int fb_ConsoleReadXY_BIOS( int col, int row, int colorflag );
 void fb_ConsoleScroll_BIOS( int x1, int y1, int x2, int y2, int nrows );
 void fb_ConsoleScrollEx( int x1, int y1, int x2, int y2, int nrows );
 
+int fb_hConsoleInputBufferChanged( void );
+
 int fb_isr_set( unsigned irq_number,
                 FnIntHandler pfnIntHandler,
                 size_t fn_size,

@@ -32,6 +32,21 @@ static int key_buffer_changed = FALSE;
 
 
 /*:::::*/
+int fb_hGfxInputBufferChanged( void )
+{
+	int res;
+
+	DRIVER_LOCK();
+
+    res = key_buffer_changed;
+    key_buffer_changed = FALSE;
+
+	DRIVER_UNLOCK();
+
+	return res;
+}
+
+/*:::::*/
 void fb_hPostKey(int key)
 {
 	key_buffer[key_tail] = key;
@@ -60,6 +75,10 @@ static int get_key(void)
 		key = key_buffer[key_head];
 		key_head = (key_head + 1) & (KEY_BUFFER_LEN - 1);
 	}
+
+    /* Reset the status for "key buffer changed" when a key
+     * was removed from the input queue. */
+    fb_hGfxInputBufferChanged();
 
 	DRIVER_UNLOCK();
 
@@ -91,21 +110,6 @@ int fb_GfxKeyHit(void)
 	DRIVER_LOCK();
 
 	res = (key_head != key_tail? 1: 0);
-
-	DRIVER_UNLOCK();
-
-	return res;
-}
-
-/*:::::*/
-int fb_hGfxInputBufferChanged( void )
-{
-	int res;
-
-	DRIVER_LOCK();
-
-    res = key_buffer_changed;
-    key_buffer_changed = FALSE;
 
 	DRIVER_UNLOCK();
 
