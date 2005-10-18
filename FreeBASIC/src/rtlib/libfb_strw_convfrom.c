@@ -28,7 +28,7 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL double fb_wStr2Double( const FB_WCHAR *src, int len )
+FBCALL double fb_WstrToDouble( const FB_WCHAR *src, int len )
 {
     FB_WCHAR *p, *r;
     int radix;
@@ -61,7 +61,7 @@ FBCALL double fb_wStr2Double( const FB_WCHAR *src, int len )
 		}
 
 		if( radix != 0 )
-			return (double)fb_wStrRadix2Int( r, len - fb_wstr_CalcDiff( p, r ), radix );
+			return (double)fb_WstrRadix2Int( r, len - fb_wstr_CalcDiff( p, r ), radix );
 	}
 
 	return wcstod( p, NULL );
@@ -69,7 +69,7 @@ FBCALL double fb_wStr2Double( const FB_WCHAR *src, int len )
 }
 
 /*:::::*/
-FBCALL double fb_wStrVal ( const FB_WCHAR *str )
+FBCALL double fb_WstrVal ( const FB_WCHAR *str )
 {
     double val;
     int len;
@@ -81,7 +81,7 @@ FBCALL double fb_wStrVal ( const FB_WCHAR *str )
 	if( len == 0 )
 		val = 0.0;
 	else
-		val = fb_wStr2Double( str, len );
+		val = fb_WstrToDouble( str, len );
 
 	return val;
 }

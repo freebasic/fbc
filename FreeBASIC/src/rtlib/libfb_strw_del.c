@@ -28,7 +28,7 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL void fb_wStrDelete ( FB_WCHAR *str )
+FBCALL void fb_WstrDelete ( FB_WCHAR *str )
 {
     if( str == NULL )
     	return;

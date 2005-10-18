@@ -28,7 +28,7 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrAssignFromA ( FB_WCHAR *dst, int dst_chars, void *src, int src_chars )
+FBCALL FB_WCHAR *fb_WstrAssignFromA ( FB_WCHAR *dst, int dst_chars, void *src, int src_chars )
 {
 	if( dst != NULL )
 		fb_wstr_ConvFromA( dst, dst_chars, FB_STRPTR( src, src_chars ) );
@@ -41,7 +41,7 @@ FBCALL FB_WCHAR *fb_wStrAssignFromA ( FB_WCHAR *dst, int dst_chars, void *src, i
 }
 
 /*:::::*/
-FBCALL void *fb_wStrAssignToA ( void *dst, int dst_chars, FB_WCHAR *src, int fillrem )
+FBCALL void *fb_WstrAssignToA ( void *dst, int dst_chars, FB_WCHAR *src, int fillrem )
 {
 	int src_chars;
 

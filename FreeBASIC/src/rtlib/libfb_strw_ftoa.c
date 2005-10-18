@@ -28,7 +28,7 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FB_WCHAR *fb_wStrFromFloatEx( double val, FB_WCHAR *buffer, int digits, int mask )
+FB_WCHAR *fb_FloatExToWstr( double val, FB_WCHAR *buffer, int digits, int mask )
 {
 	FB_WCHAR *p, *r;
 	FB_WCHAR fmtstr[16];

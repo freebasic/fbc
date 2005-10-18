@@ -28,7 +28,7 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL long long fb_wStr2Longint( const FB_WCHAR *src, int len )
+FBCALL long long fb_WstrToLongint( const FB_WCHAR *src, int len )
 {
     FB_WCHAR *p, *r;
     int radix;
@@ -63,7 +63,7 @@ FBCALL long long fb_wStr2Longint( const FB_WCHAR *src, int len )
 		if( radix != 10 )
 		{
 #ifdef TARGET_WIN32
-			return fb_wStrRadix2Longint( r, len - fb_wstr_CalcDiff( p, r ), radix );
+			return fb_WstrRadix2Longint( r, len - fb_wstr_CalcDiff( p, r ), radix );
 #else
 			p = r;
 #endif
@@ -78,7 +78,7 @@ FBCALL long long fb_wStr2Longint( const FB_WCHAR *src, int len )
 }
 
 /*:::::*/
-FBCALL long long fb_wStrValLng ( const FB_WCHAR *str )
+FBCALL long long fb_WstrValLng ( const FB_WCHAR *str )
 {
     long long val;
     int len;
@@ -90,7 +90,7 @@ FBCALL long long fb_wStrValLng ( const FB_WCHAR *str )
 	if( len == 0 )
 		val = 0;
 	else
-		val = fb_wStr2Longint( str, len );
+		val = fb_WstrToLongint( str, len );
 
 	return val;
 }

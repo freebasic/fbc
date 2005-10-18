@@ -28,7 +28,7 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL unsigned int fb_wStrAsc ( const FB_WCHAR *str, int pos )
+FBCALL unsigned int fb_WstrAsc ( const FB_WCHAR *str, int pos )
 {
     unsigned int a;
     int len;

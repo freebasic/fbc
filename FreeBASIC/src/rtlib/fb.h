@@ -481,53 +481,53 @@ FBCALL void         fb_StrAssignMid     ( FBSTRING *dst, int start, int len, FBS
  * Unicode strings
  **************************************************************************************************/
 
-FBCALL void         fb_wStrDelete       ( FB_WCHAR *str );
-FBCALL void        *fb_wStrAssign       ( FB_WCHAR *dst, int dst_chars, FB_WCHAR *src );
-FBCALL FB_WCHAR    *fb_wStrConcat 		( const FB_WCHAR *str1, const FB_WCHAR *str2 );
-FBCALL FB_WCHAR    *fb_wStrConcatWA 	( const FB_WCHAR *str1, const void *str2, int str2_size );
-FBCALL FB_WCHAR    *fb_wStrConcatAW 	( const void *str1, int str1_size, const FB_WCHAR *str2 );
-FBCALL int          fb_wStrLen          ( FB_WCHAR *str );
-FBCALL int 			fb_wStrCompare 		( const FB_WCHAR *str1, const FB_WCHAR *str2 );
+FBCALL void         fb_WstrDelete       ( FB_WCHAR *str );
+FBCALL void        *fb_WstrAssign       ( FB_WCHAR *dst, int dst_chars, FB_WCHAR *src );
+FBCALL FB_WCHAR    *fb_WstrConcat 		( const FB_WCHAR *str1, const FB_WCHAR *str2 );
+FBCALL FB_WCHAR    *fb_WstrConcatWA 	( const FB_WCHAR *str1, const void *str2, int str2_size );
+FBCALL FB_WCHAR    *fb_WstrConcatAW 	( const void *str1, int str1_size, const FB_WCHAR *str2 );
+FBCALL int          fb_WstrLen          ( FB_WCHAR *str );
+FBCALL int 			fb_WstrCompare 		( const FB_WCHAR *str1, const FB_WCHAR *str2 );
 
-FBCALL FB_WCHAR    *fb_wStrFromInt     	( int num );
-FBCALL FB_WCHAR    *fb_wStrFromUInt    	( unsigned int num );
-FBCALL FB_WCHAR    *fb_wStrFromFloat   	( float num );
-       FB_WCHAR    *fb_wStrFromFloatEx  ( double val, FB_WCHAR *buffer, int digits, int mask );
-FBCALL FB_WCHAR    *fb_wStrFromDouble  	( double num );
+FBCALL FB_WCHAR    *fb_IntToWstr     	( int num );
+FBCALL FB_WCHAR    *fb_UIntToWstr    	( unsigned int num );
+FBCALL FB_WCHAR    *fb_FloatToWstr   	( float num );
+       FB_WCHAR    *fb_FloatExToWstr  	( double val, FB_WCHAR *buffer, int digits, int mask );
+FBCALL FB_WCHAR    *fb_DoubleToWstr  	( double num );
 
-FBCALL double       fb_wStr2Double      ( const FB_WCHAR *src, int len );
-FBCALL int          fb_wStr2Int         ( const FB_WCHAR *src, int len );
-FBCALL unsigned int fb_wStr2UInt        ( const FB_WCHAR *src, int len );
-FBCALL long long    fb_wStr2Longint     ( const FB_WCHAR *src, int len );
-FBCALL unsigned long long fb_wStr2ULongint ( const FB_WCHAR *src, int len );
-FBCALL int          fb_wStrRadix2Int    ( const FB_WCHAR *src, int len, int radix );
-FBCALL long long 	fb_wStrRadix2Longint( const FB_WCHAR *s, int len, int radix );
+FBCALL double       fb_WstrToDouble     ( const FB_WCHAR *src, int len );
+FBCALL int          fb_WstrToInt        ( const FB_WCHAR *src, int len );
+FBCALL unsigned int fb_WstrToUInt       ( const FB_WCHAR *src, int len );
+FBCALL long long    fb_WstrToLongint    ( const FB_WCHAR *src, int len );
+FBCALL unsigned long long fb_WstrToULongint ( const FB_WCHAR *src, int len );
+FBCALL int          fb_WstrRadix2Int    ( const FB_WCHAR *src, int len, int radix );
+FBCALL long long 	fb_WstrRadix2Longint( const FB_WCHAR *s, int len, int radix );
 
-FB_WCHAR    	   *fb_wStrChr			( int args, ... );
-FBCALL unsigned int fb_wStrAsc          ( const FB_WCHAR *str, int pos );
-FBCALL double       fb_wStrVal          ( const FB_WCHAR *str );
-FBCALL int			fb_wStrValInt       ( const FB_WCHAR *str );
-FBCALL unsigned int	fb_wStrValUInt      ( const FB_WCHAR *str );
-FBCALL long long	fb_wStrValLng       ( const FB_WCHAR *str );
-FBCALL unsigned long long fb_wStrValULng( const FB_WCHAR *str );
-FBCALL FB_WCHAR    *fb_wStrLeft         ( const FB_WCHAR *str, int chars );
-FBCALL FB_WCHAR    *fb_wStrRight        ( const FB_WCHAR *str, int chars );
-FBCALL FB_WCHAR    *fb_wStrSpace        ( int chars );
-FBCALL FB_WCHAR    *fb_wStrLtrim        ( const FB_WCHAR *str );
-FBCALL FB_WCHAR    *fb_wStrLTrimEx      ( const FB_WCHAR *str, const FB_WCHAR *pattern );
-FBCALL FB_WCHAR    *fb_wStrLTrimAny     ( const FB_WCHAR *str, const FB_WCHAR *pattern );
-FBCALL FB_WCHAR    *fb_wStrRtrim        ( const FB_WCHAR *str );
-FBCALL FB_WCHAR    *fb_wStrRTrimEx      ( const FB_WCHAR *str, const FB_WCHAR *pattern );
-FBCALL FB_WCHAR    *fb_wStrRTrimAny     ( const FB_WCHAR *str, const FB_WCHAR *pattern );
-FBCALL FB_WCHAR    *fb_wStrTrim         ( const FB_WCHAR *src );
-FBCALL FB_WCHAR    *fb_wStrLcase        ( const FB_WCHAR *str );
-FBCALL FB_WCHAR    *fb_wStrUcase        ( const FB_WCHAR *str );
-FBCALL FB_WCHAR    *fb_wStrFill1        ( int cnt, FB_WCHAR c );
-FBCALL FB_WCHAR    *fb_wStrFill2        ( int cnt, const FB_WCHAR *src );
-FBCALL int          fb_wStrInstr        ( int start, const FB_WCHAR *src, const FB_WCHAR *patt );
-FBCALL int          fb_wStrInstrAny     ( int start, const FB_WCHAR *src, const FB_WCHAR *patt );
-FBCALL FB_WCHAR    *fb_wStrMid          ( const FB_WCHAR *src, int start, int len );
-FBCALL void         fb_wStrAssignMid    ( FB_WCHAR *dst, int start, int len, const FB_WCHAR *src );
+FB_WCHAR    	   *fb_WstrChr			( int args, ... );
+FBCALL unsigned int fb_WstrAsc          ( const FB_WCHAR *str, int pos );
+FBCALL double       fb_WstrVal          ( const FB_WCHAR *str );
+FBCALL int			fb_WstrValInt       ( const FB_WCHAR *str );
+FBCALL unsigned int	fb_WstrValUInt      ( const FB_WCHAR *str );
+FBCALL long long	fb_WstrValLng       ( const FB_WCHAR *str );
+FBCALL unsigned long long fb_WstrValULng( const FB_WCHAR *str );
+FBCALL FB_WCHAR    *fb_WstrLeft         ( const FB_WCHAR *str, int chars );
+FBCALL FB_WCHAR    *fb_WstrRight        ( const FB_WCHAR *str, int chars );
+FBCALL FB_WCHAR    *fb_WstrSpace        ( int chars );
+FBCALL FB_WCHAR    *fb_WstrLTrim        ( const FB_WCHAR *str );
+FBCALL FB_WCHAR    *fb_WstrLTrimEx      ( const FB_WCHAR *str, const FB_WCHAR *pattern );
+FBCALL FB_WCHAR    *fb_WstrLTrimAny     ( const FB_WCHAR *str, const FB_WCHAR *pattern );
+FBCALL FB_WCHAR    *fb_WstrRTrim        ( const FB_WCHAR *str );
+FBCALL FB_WCHAR    *fb_WstrRTrimEx      ( const FB_WCHAR *str, const FB_WCHAR *pattern );
+FBCALL FB_WCHAR    *fb_WstrRTrimAny     ( const FB_WCHAR *str, const FB_WCHAR *pattern );
+FBCALL FB_WCHAR    *fb_WstrTrim         ( const FB_WCHAR *src );
+FBCALL FB_WCHAR    *fb_WstrLcase        ( const FB_WCHAR *str );
+FBCALL FB_WCHAR    *fb_WstrUcase        ( const FB_WCHAR *str );
+FBCALL FB_WCHAR    *fb_WstrFill1        ( int cnt, FB_WCHAR c );
+FBCALL FB_WCHAR    *fb_WstrFill2        ( int cnt, const FB_WCHAR *src );
+FBCALL int          fb_WstrInstr        ( int start, const FB_WCHAR *src, const FB_WCHAR *patt );
+FBCALL int          fb_WstrInstrAny     ( int start, const FB_WCHAR *src, const FB_WCHAR *patt );
+FBCALL FB_WCHAR    *fb_WstrMid          ( const FB_WCHAR *src, int start, int len );
+FBCALL void         fb_WstrAssignMid    ( FB_WCHAR *dst, int start, int len, const FB_WCHAR *src );
 
 /**************************************************************************************************
  * arrays

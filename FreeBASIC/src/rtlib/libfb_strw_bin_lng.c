@@ -55,7 +55,7 @@ static void hToBin( unsigned long long num, FB_WCHAR *dst )
 #endif
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrBin_l ( unsigned long long num )
+FBCALL FB_WCHAR *fb_WstrBin_l ( unsigned long long num )
 {
 	FB_WCHAR *dst;
 

@@ -48,19 +48,19 @@ static FB_WCHAR *hOCT ( unsigned int num, int len )
 }
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrOct_b ( unsigned char num )
+FBCALL FB_WCHAR *fb_WstrOct_b ( unsigned char num )
 {
 	return hOCT( num, sizeof( char ) );
 }
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrOct_s ( unsigned short num )
+FBCALL FB_WCHAR *fb_WstrOct_s ( unsigned short num )
 {
 	return hOCT( num, sizeof( short ) );
 }
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrOct_i ( unsigned int num )
+FBCALL FB_WCHAR *fb_WstrOct_i ( unsigned int num )
 {
 	return hOCT( num, sizeof( int ) );
 }

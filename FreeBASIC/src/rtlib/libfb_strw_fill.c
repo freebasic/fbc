@@ -28,7 +28,7 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrFill1 ( int chars, FB_WCHAR c )
+FBCALL FB_WCHAR *fb_WstrFill1 ( int chars, FB_WCHAR c )
 {
 	FB_WCHAR *dst;
 
@@ -48,13 +48,13 @@ FBCALL FB_WCHAR *fb_wStrFill1 ( int chars, FB_WCHAR c )
 
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrFill2 ( int chars, const FB_WCHAR *src )
+FBCALL FB_WCHAR *fb_WstrFill2 ( int chars, const FB_WCHAR *src )
 {
 	FB_WCHAR *dst;
 
 	if( (chars > 0) && (src != NULL) && (fb_wstr_Len( src ) > 0) )
 	{
-		dst = fb_wStrFill1( chars, src[0] );
+		dst = fb_WstrFill1( chars, src[0] );
 	}
 	else
 		dst = NULL;

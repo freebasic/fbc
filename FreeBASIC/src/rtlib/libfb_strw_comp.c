@@ -28,7 +28,7 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL int fb_wStrCompare ( const FB_WCHAR *str1, const FB_WCHAR *str2 )
+FBCALL int fb_WstrCompare ( const FB_WCHAR *str1, const FB_WCHAR *str2 )
 {
 	int res, str1_len, str2_len;
 

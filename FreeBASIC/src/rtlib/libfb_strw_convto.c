@@ -28,7 +28,7 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrFromInt ( int num )
+FBCALL FB_WCHAR *fb_IntToWstr ( int num )
 {
 	FB_WCHAR *dst;
 
@@ -48,7 +48,7 @@ FBCALL FB_WCHAR *fb_wStrFromInt ( int num )
 }
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrFromUInt ( unsigned int num )
+FBCALL FB_WCHAR *fb_UIntToWstr ( unsigned int num )
 {
 	FB_WCHAR *dst;
 

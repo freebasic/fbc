@@ -28,7 +28,7 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrRtrim ( const FB_WCHAR *src )
+FBCALL FB_WCHAR *fb_WstrRTrim ( const FB_WCHAR *src )
 {
 	FB_WCHAR *dst, *p;
 	int chars;

@@ -29,7 +29,7 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FB_WCHAR *fb_wStrChr ( int args, ... )
+FB_WCHAR *fb_WstrChr ( int args, ... )
 {
 	FB_WCHAR 	*dst, *s;
 	va_list 	ap;

@@ -69,19 +69,19 @@ static FB_WCHAR *hHEX ( unsigned int num, int len )
 }
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrHex_b ( unsigned char num )
+FBCALL FB_WCHAR *fb_WstrHex_b ( unsigned char num )
 {
 	return hHEX( num, sizeof( char ) );
 }
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrHex_s ( unsigned short num )
+FBCALL FB_WCHAR *fb_WstrHex_s ( unsigned short num )
 {
 	return hHEX( num, sizeof( short ) );
 }
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrHex_i ( unsigned int num )
+FBCALL FB_WCHAR *fb_WstrHex_i ( unsigned int num )
 {
 	return hHEX( num, sizeof( int ) );
 }

@@ -21,7 +21,7 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL long long fb_wStrRadix2Longint( const FB_WCHAR *s, int len, int radix )
+FBCALL long long fb_WstrRadix2Longint( const FB_WCHAR *s, int len, int radix )
 {
 	long long v;
 	int c;

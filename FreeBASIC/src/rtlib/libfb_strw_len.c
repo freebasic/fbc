@@ -28,7 +28,7 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL int fb_wStrLen( FB_WCHAR *str )
+FBCALL int fb_WstrLen( FB_WCHAR *str )
 {
 	if( str == NULL )
 		return 0;

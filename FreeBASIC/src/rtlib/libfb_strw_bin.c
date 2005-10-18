@@ -75,19 +75,19 @@ static FB_WCHAR *hBin ( unsigned int num, int len )
 }
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrBin_b ( unsigned char num )
+FBCALL FB_WCHAR *fb_WstrBin_b ( unsigned char num )
 {
 	return hBin( num, sizeof( char ) );
 }
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrBin_s ( unsigned short num )
+FBCALL FB_WCHAR *fb_WstrBin_s ( unsigned short num )
 {
 	return hBin( num, sizeof( short ) );
 }
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrBin_i ( unsigned int num )
+FBCALL FB_WCHAR *fb_WstrBin_i ( unsigned int num )
 {
 	return hBin( num, sizeof( int ) );
 }

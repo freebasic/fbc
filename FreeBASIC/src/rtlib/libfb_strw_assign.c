@@ -28,7 +28,7 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL void *fb_wStrAssign ( FB_WCHAR *dst, int dst_chars, FB_WCHAR *src )
+FBCALL void *fb_WstrAssign ( FB_WCHAR *dst, int dst_chars, FB_WCHAR *src )
 {
 	int src_chars;
 

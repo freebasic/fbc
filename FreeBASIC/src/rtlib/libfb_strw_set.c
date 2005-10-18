@@ -28,7 +28,7 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL void fb_wStrLset ( FB_WCHAR *dst, FB_WCHAR *src )
+FBCALL void fb_WstrLset ( FB_WCHAR *dst, FB_WCHAR *src )
 {
     int slen, dlen, len;
 
@@ -52,7 +52,7 @@ FBCALL void fb_wStrLset ( FB_WCHAR *dst, FB_WCHAR *src )
 }
 
 /*:::::*/
-FBCALL void fb_wStrRset ( FB_WCHAR *dst, FB_WCHAR *src )
+FBCALL void fb_WstrRset ( FB_WCHAR *dst, FB_WCHAR *src )
 {
     int slen, dlen, len, padlen;
 

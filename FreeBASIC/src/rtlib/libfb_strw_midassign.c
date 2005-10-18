@@ -28,7 +28,7 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL void fb_wStrAssignMid ( FB_WCHAR *dst, int start, int len, const FB_WCHAR *src )
+FBCALL void fb_WstrAssignMid ( FB_WCHAR *dst, int start, int len, const FB_WCHAR *src )
 {
     int src_len, dst_len;
 

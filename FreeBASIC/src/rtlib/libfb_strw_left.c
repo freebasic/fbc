@@ -28,7 +28,7 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrLeft ( const FB_WCHAR *src, int chars )
+FBCALL FB_WCHAR *fb_WstrLeft ( const FB_WCHAR *src, int chars )
 {
 	FB_WCHAR *dst;
 	int len;

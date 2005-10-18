@@ -29,7 +29,7 @@
 
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_wStrUcase ( const FB_WCHAR *src )
+FBCALL FB_WCHAR *fb_WstrUcase ( const FB_WCHAR *src )
 {
 	FB_WCHAR *dst, *d;
 	const FB_WCHAR *s;

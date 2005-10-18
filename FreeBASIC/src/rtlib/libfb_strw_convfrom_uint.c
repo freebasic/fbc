@@ -28,7 +28,7 @@
 #include "fb_unicode.h"
 
 /*:::::*/
-FBCALL unsigned int fb_wStr2UInt( const FB_WCHAR *src, int len )
+FBCALL unsigned int fb_WstrToUInt( const FB_WCHAR *src, int len )
 {
     FB_WCHAR *p, *r;
     int radix;
@@ -68,7 +68,7 @@ FBCALL unsigned int fb_wStr2UInt( const FB_WCHAR *src, int len )
 }
 
 /*:::::*/
-FBCALL unsigned int fb_wStrValUInt ( const FB_WCHAR *str )
+FBCALL unsigned int fb_WstrValUInt ( const FB_WCHAR *str )
 {
     unsigned int val;
     int len;
@@ -80,7 +80,7 @@ FBCALL unsigned int fb_wStrValUInt ( const FB_WCHAR *str )
 	if( len == 0 )
 		val = 0;
 	else
-		val = fb_wStr2UInt( str, len );
+		val = fb_WstrToUInt( str, len );
 
 	return val;
 }
