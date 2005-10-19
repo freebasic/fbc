@@ -1,22 +1,22 @@
-' SDL_main.h header ported to freeBasic by Edmond Leung (leung.edmond@gmail.com)
+''
+''
+'' SDL_main -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __SDL_main_bi__
+#define __SDL_main_bi__
 
-'$inclib: "SDL"
+declare function SDL_main cdecl alias "SDL_main" (byval argc as integer, byval argv as byte ptr ptr) as integer
 
-#ifndef SDL_main_bi_
-#define SDL_main_bi_
+#include once "SDL/SDL_types.bi"
+#include once "SDL/begin_code.bi"
 
-#if defined(__FB_WIN32__)
-'$include: 'SDL/SDL_types.bi'
-'$include: 'SDL/begin_code.bi'
+declare sub SDL_SetModuleHandle cdecl alias "SDL_SetModuleHandle" (byval hInst as any ptr)
+declare function SDL_RegisterApp cdecl alias "SDL_RegisterApp" (byval name as zstring ptr, byval style as Uint32, byval hInst as any ptr) as integer
 
-declare sub SDL_SetModuleHandle SDLCALL alias "SDL_SetModuleHandle" _
-   (byval hInst as any ptr)
-
-declare function SDL_RegisterApp SDLCALL alias "SDL_RegisterApp" _
-   (byval name as zstring ptr, byval style as Uint32, byval hInst as any ptr) _
-   as integer
-
-'$include: 'SDL/close_code.bi'
-#endif
+#include once "SDL/close_code.bi"
 
 #endif

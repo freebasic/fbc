@@ -1,10 +1,14 @@
-' SDL_quit.h header ported to freeBasic by Edmond Leung (leung.edmond@gmail.com)
+''
+''
+'' SDL_quit -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __SDL_quit_bi__
+#define __SDL_quit_bi__
 
-'$inclib: "SDL"
-
-#ifndef SDL_quit_bi_
-#define SDL_quit_bi_
-
-#define SDL_QuitRequested (SDL_PumpEvents(), SDL_PeepEvents(NULL, 0, SDL_PEEKEVENT, SDL_QUITMASK))
+#define SDL_QuitRequested() (SDL_PumpEvents(), SDL_PeepEvents(NULL,0,SDL_PEEKEVENT,SDL_QUITMASK))
 
 #endif

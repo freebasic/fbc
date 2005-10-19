@@ -1,28 +1,25 @@
-' SDL_cpuinfo.h header ported to freeBasic by Edmond Leung (leung.edmond@gmail.com)
+''
+''
+'' SDL_cpuinfo -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __SDL_cpuinfo_bi__
+#define __SDL_cpuinfo_bi__
 
-'$inclib: "SDL"
+#include once "SDL/begin_code.bi"
 
-#ifndef SDL_cpuinfo_bi_
-#define SDL_cpuinfo_bi_
+declare function SDL_HasRDTSC cdecl alias "SDL_HasRDTSC" () as SDL_bool
+declare function SDL_HasMMX cdecl alias "SDL_HasMMX" () as SDL_bool
+declare function SDL_HasMMXExt cdecl alias "SDL_HasMMXExt" () as SDL_bool
+declare function SDL_Has3DNow cdecl alias "SDL_Has3DNow" () as SDL_bool
+declare function SDL_Has3DNowExt cdecl alias "SDL_Has3DNowExt" () as SDL_bool
+declare function SDL_HasSSE cdecl alias "SDL_HasSSE" () as SDL_bool
+declare function SDL_HasSSE2 cdecl alias "SDL_HasSSE2" () as SDL_bool
+declare function SDL_HasAltiVec cdecl alias "SDL_HasAltiVec" () as SDL_bool
 
-'$include: "SDL/begin_code.bi"
-
-declare function SDL_HasRDTSC SDLCALL alias "SDL_HasRDTSC" () as SDL_bool
-
-declare function SDL_HasMMX SDLCALL alias "SDL_HasMMX" () as SDL_bool
-
-declare function SDL_HasMMXExt SDLCALL alias "SDL_HasMMXExt" () as SDL_bool
-
-declare function SDL_Has3DNow SDLCALL alias "SDL_Has3DNow" () as SDL_bool
-
-declare function SDL_Has3DNowExt SDLCALL alias "SDL_Has3DNowExt" () as SDL_bool
-
-declare function SDL_HasSSE SDLCALL alias "SDL_HasSSE" () as SDL_bool
-
-declare function SDL_HasSSE2 SDLCALL alias "SDL_HasSSE2" () as SDL_bool
-
-declare function SDL_HasAltiVec SDLCALL alias "SDL_HasAltiVec" () as SDL_bool
-
-'$include: "SDL/close_code.bi"
+#include once "SDL/close_code.bi"
 
 #endif

@@ -1,26 +1,33 @@
-' SDL_error.h header ported to freeBasic by Edmond Leung (leung.edmond@gmail.com)
+''
+''
+'' SDL_error -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __SDL_error_bi__
+#define __SDL_error_bi__
 
-'$inclib: "SDL"
+#include once "SDL/begin_code.bi"
 
-#ifndef SDL_error_bi_
-#define SDL_error_bi_
+declare sub SDL_SetError cdecl alias "SDL_SetError" (byval fmt as zstring ptr, ...)
+declare function SDL_GetError cdecl alias "SDL_GetError" () as zstring ptr
+declare sub SDL_ClearError cdecl alias "SDL_ClearError" ()
 
-'$include: 'SDL/begin_code.bi'
+#define SDL_OutOfMemory() SDL_Error(SDL_ENOMEM)
 
-declare sub SDL_SetError SDLCALL alias "SDL_SetError" (byval errorMsg as zstring ptr)
-declare function SDL_GetError SDLCALL alias "SDL_GetError" () as zstring ptr
-declare sub SDL_ClearError SDLCALL alias "SDL_ClearError" ()
-
-#define SDL_OutOfMemory SDL_Error(SDL_ENONEM)
 enum SDL_errorcode
-   SDL_ENOMEM
-   SDL_EFREAD
-   SDL_EFWRITE
-   SDL_EFSEEK
-   SDL_LASTERROR
+	SDL_ENOMEM
+	SDL_EFREAD
+	SDL_EFWRITE
+	SDL_EFSEEK
+	SDL_LASTERROR
 end enum
-declare sub SDL_Error SDLCALL alias "SDL_Error" (byval code as SDL_errorcode)
 
-'$include: 'SDL/close_code.bi'
+
+declare sub SDL_Error cdecl alias "SDL_Error" (byval code as SDL_errorcode)
+
+#include once "SDL/close_code.bi"
 
 #endif

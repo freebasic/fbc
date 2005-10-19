@@ -1,9 +1,14 @@
-' SDL_image.h header ported to freeBasic by Edmond Leung (leung.edmond@gmail.com)
+''
+''
+'' SDL_image -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __SDL_image_bi__
+#define __SDL_image_bi__
 
-#ifndef SDL_IMAGE_BI_
-#define SDL_IMAGE_BI_
-
-#inclib "SDL"
 #inclib "SDL_image"
 
 #include once "SDL/SDL.bi"
@@ -14,68 +19,38 @@
 #define SDL_IMAGE_MINOR_VERSION 2
 #define SDL_IMAGE_PATCHLEVEL 4
 
-#define SDL_IMAGE_VERSION(X) X->major = SDL_IMAGE_MAJOR_VERSION : X->minor = SDL_IMAGE_MINOR_VERSION : X->patch = SDL_IMAGE_PATCHLEVEL
+#define SDL_IMAGE_VERSION(X)					_
+	(X)->major = SDL_IMAGE_MAJOR_VERSION		:_
+	(X)->minor = SDL_IMAGE_MINOR_VERSION		:_
+	(X)->patch = SDL_IMAGE_PATCHLEVEL
 
-declare function IMG_Linked_Version SDLCALL alias "IMG_Linked_Version" _
-   () as SDL_version ptr
-
-declare function IMG_LoadTyped_RW SDLCALL alias "IMG_LoadTyped_RW" _
-   (byval src as SDL_RWops ptr, byval freesrc as integer, byval typ as zstring ptr) _
-   as SDL_Surface ptr
-declare function IMG_Load SDLCALL alias "IMG_Load" _
-   (byval file as zstring ptr) as SDL_Surface ptr
-declare function IMG_Load_RW SDLCALL alias "IMG_Load_RW" _
-   (byval src as SDL_RWops ptr, freesrc as integer) as SDL_Surface ptr
-
-declare function IMG_InvertAlpha SDLCALL alias "Img_InvertAlpha" _
-   (byval on as integer) as integer
-
-declare function IMG_isBMP SDLCALL alias "IMG_isBMP" _
-   (byval src as SDL_RWops ptr) as integer
-declare function IMG_isPNM SDLCALL alias "IMG_isPNM" _
-   (byval src as SDL_RWops ptr) as integer
-declare function IMG_isXPM SDLCALL alias "IMG_isXPM" _
-   (byval src as SDL_RWops ptr) as integer
-declare function IMG_isXCF SDLCALL alias "IMG_isXCF" _
-   (byval src as SDL_RWops ptr) as integer
-declare function IMG_isPCX SDLCALL alias "IMG_isPCX" _
-   (byval src as SDL_RWops ptr) as integer
-declare function IMG_isGIF SDLCALL alias "IMG_isGIF" _
-   (byval src as SDL_RWops ptr) as integer
-declare function IMG_isJPG SDLCALL alias "IMG_isJPG" _
-   (byval src as SDL_RWops ptr) as integer
-declare function IMG_isTIF SDLCALL alias "IMG_isTIF" _
-   (byval src as SDL_RWops ptr) as integer
-declare function IMG_isPNG SDLCALL alias "IMG_isPNG" _
-   (byval src as SDL_RWops ptr) as integer
-declare function IMG_isLBM SDLCALL alias "IMG_isLBM" _
-   (byval src as SDL_RWops ptr) as integer
-
-declare function IMG_LoadBMP_RW SDLCALL alias "IMG_LoadBMP_RW" _
-   (byval src as SDL_RWops ptr) as SDL_Surface ptr
-declare function IMG_LoadPNM_RW SDLCALL alias "IMG_LoadPNM_RW" _
-   (byval src as SDL_RWops ptr) as SDL_Surface ptr
-declare function IMG_LoadXPM_RW SDLCALL alias "IMG_LoadXPM_RW" _
-   (byval src as SDL_RWops ptr) as SDL_Surface ptr
-declare function IMG_LoadXCF_RW SDLCALL alias "IMG_LoadXCF_RW" _
-   (byval src as SDL_RWops ptr) as SDL_Surface ptr
-declare function IMG_LoadPCX_RW SDLCALL alias "IMG_LoadPCX_RW" _
-   (byval src as SDL_RWops ptr) as SDL_Surface ptr
-declare function IMG_LoadGIF_RW SDLCALL alias "IMG_LoadGIF_RW" _
-   (byval src as SDL_RWops ptr) as SDL_Surface ptr
-declare function IMG_LoadJPG_RW SDLCALL alias "IMG_LoadJPG_RW" _
-   (byval src as SDL_RWops ptr) as SDL_Surface ptr
-declare function IMG_LoadTIF_RW SDLCALL alias "IMG_LoadTIF_RW" _
-   (byval src as SDL_RWops ptr) as SDL_Surface ptr
-declare function IMG_LoadPNG_RW SDLCALL alias "IMG_LoadPNG_RW" _
-   (byval src as SDL_RWops ptr) as SDL_Surface ptr
-declare function IMG_LoadTGA_RW SDLCALL alias "IMG_LoadTGA_RW" _
-   (byval src as SDL_RWops ptr) as SDL_Surface ptr
-declare function IMG_LoadLBM_RW SDLCALL alias "IMG_LoadLBM_RW" _
-   (byval src as SDL_RWops ptr) as SDL_Surface ptr
-
-declare function IMG_ReadXMPFromArray SDLCALL alias "IMG_ReadXMPFromArray" _
-   (byval xpm as byte ptr) as SDL_Surface ptr
+declare function IMG_Linked_Version cdecl alias "IMG_Linked_Version" () as SDL_version ptr
+declare function IMG_LoadTyped_RW cdecl alias "IMG_LoadTyped_RW" (byval src as SDL_RWops ptr, byval freesrc as integer, byval type as zstring ptr) as SDL_Surface ptr
+declare function IMG_Load cdecl alias "IMG_Load" (byval file as zstring ptr) as SDL_Surface ptr
+declare function IMG_Load_RW cdecl alias "IMG_Load_RW" (byval src as SDL_RWops ptr, byval freesrc as integer) as SDL_Surface ptr
+declare function IMG_InvertAlpha cdecl alias "IMG_InvertAlpha" (byval on as integer) as integer
+declare function IMG_isBMP cdecl alias "IMG_isBMP" (byval src as SDL_RWops ptr) as integer
+declare function IMG_isPNM cdecl alias "IMG_isPNM" (byval src as SDL_RWops ptr) as integer
+declare function IMG_isXPM cdecl alias "IMG_isXPM" (byval src as SDL_RWops ptr) as integer
+declare function IMG_isXCF cdecl alias "IMG_isXCF" (byval src as SDL_RWops ptr) as integer
+declare function IMG_isPCX cdecl alias "IMG_isPCX" (byval src as SDL_RWops ptr) as integer
+declare function IMG_isGIF cdecl alias "IMG_isGIF" (byval src as SDL_RWops ptr) as integer
+declare function IMG_isJPG cdecl alias "IMG_isJPG" (byval src as SDL_RWops ptr) as integer
+declare function IMG_isTIF cdecl alias "IMG_isTIF" (byval src as SDL_RWops ptr) as integer
+declare function IMG_isPNG cdecl alias "IMG_isPNG" (byval src as SDL_RWops ptr) as integer
+declare function IMG_isLBM cdecl alias "IMG_isLBM" (byval src as SDL_RWops ptr) as integer
+declare function IMG_LoadBMP_RW cdecl alias "IMG_LoadBMP_RW" (byval src as SDL_RWops ptr) as SDL_Surface ptr
+declare function IMG_LoadPNM_RW cdecl alias "IMG_LoadPNM_RW" (byval src as SDL_RWops ptr) as SDL_Surface ptr
+declare function IMG_LoadXPM_RW cdecl alias "IMG_LoadXPM_RW" (byval src as SDL_RWops ptr) as SDL_Surface ptr
+declare function IMG_LoadXCF_RW cdecl alias "IMG_LoadXCF_RW" (byval src as SDL_RWops ptr) as SDL_Surface ptr
+declare function IMG_LoadPCX_RW cdecl alias "IMG_LoadPCX_RW" (byval src as SDL_RWops ptr) as SDL_Surface ptr
+declare function IMG_LoadGIF_RW cdecl alias "IMG_LoadGIF_RW" (byval src as SDL_RWops ptr) as SDL_Surface ptr
+declare function IMG_LoadJPG_RW cdecl alias "IMG_LoadJPG_RW" (byval src as SDL_RWops ptr) as SDL_Surface ptr
+declare function IMG_LoadTIF_RW cdecl alias "IMG_LoadTIF_RW" (byval src as SDL_RWops ptr) as SDL_Surface ptr
+declare function IMG_LoadPNG_RW cdecl alias "IMG_LoadPNG_RW" (byval src as SDL_RWops ptr) as SDL_Surface ptr
+declare function IMG_LoadTGA_RW cdecl alias "IMG_LoadTGA_RW" (byval src as SDL_RWops ptr) as SDL_Surface ptr
+declare function IMG_LoadLBM_RW cdecl alias "IMG_LoadLBM_RW" (byval src as SDL_RWops ptr) as SDL_Surface ptr
+declare function IMG_ReadXPMFromArray cdecl alias "IMG_ReadXPMFromArray" (byval xpm as byte ptr ptr) as SDL_Surface ptr
 
 #define IMG_SetError	SDL_SetError
 #define IMG_GetError	SDL_GetError

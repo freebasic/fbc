@@ -1,18 +1,22 @@
-' SDL_active.h header ported to freeBasic by Edmond Leung (leung.edmond@gmail.com)
+''
+''
+'' SDL_active -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __SDL_active_bi__
+#define __SDL_active_bi__
 
-'$inclib: "SDL"
-
-#ifndef SDL_active_bi_
-#define SDL_active_bi_
-
-'$include: 'SDL/begin_code.bi'
+#include once "SDL/begin_code.bi"
 
 #define SDL_APPMOUSEFOCUS &h01
 #define SDL_APPINPUTFOCUS &h02
 #define SDL_APPACTIVE &h04
 
-declare function SDL_GetAppState SDLCALL alias "SDL_GetAppState" () as Uint8
+declare function SDL_GetAppState cdecl alias "SDL_GetAppState" () as Uint8
 
-'$include: 'SDL/close_code.bi'
+#include once "SDL/close_code.bi"
 
 #endif

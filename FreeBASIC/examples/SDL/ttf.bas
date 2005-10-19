@@ -18,13 +18,13 @@ const FONTTEXT	 = "tff!"
 
 declare sub drawtext( byval video as SDL_Surface ptr, _
 			  		  byval x as integer, byval y as integer, byval clr as SDL_Color, _
-			  		  text as string, byval font as TTF_Font )
+			  		  text as string, byval font as TTF_Font ptr )
 
    
 	dim video as SDL_Surface ptr
 	dim event as SDL_Event
    	dim clr as SDL_Color
-   	dim Font1 as TTF_Font
+   	dim Font1 as TTF_Font ptr
 
    
    	''   
@@ -92,7 +92,7 @@ end sub
 '':::::
 sub drawtext( byval video as SDL_Surface ptr, _
 			  byval x as integer, byval y as integer, byval clr as SDL_Color, _
-			  text as string, byval font as TTF_Font ) static
+			  text as string, byval font as TTF_Font ptr ) static
       
       dim surface as SDL_Surface ptr
       dim rgbcolor as SDL_Color

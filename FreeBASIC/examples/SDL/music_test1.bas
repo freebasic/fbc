@@ -16,7 +16,7 @@
 	music = NULL
 
 declare sub handlekey(byval key as SDL_KeyboardEvent ptr)
-declare sub musicDone()
+declare sub musicDone cdecl ()
 
 	dim video as SDL_Surface ptr
 	dim event as SDL_Event
@@ -117,7 +117,7 @@ end sub
 ' was finished. In our case, we're going to simply unload the music
 ' as though the player wanted it stopped.  In other applications, a
 ' different music file might be loaded and played.
-sub musicDone ()
+sub musicDone cdecl ()
    	Mix_HaltMusic
    	Mix_FreeMusic(music)
    	music = NULL

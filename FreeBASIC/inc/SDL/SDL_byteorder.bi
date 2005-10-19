@@ -1,9 +1,13 @@
-' SDL_byteorder.h header ported to freeBasic by Edmond Leung (leung.edmond@gmail.com)
-
-'$inclib: "SDL"
-
-#ifndef SDL_byteorder_bi_
-#define SDL_byteorder_bi_
+''
+''
+'' SDL_byteorder -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __SDL_byteorder_bi__
+#define __SDL_byteorder_bi__
 
 #define SDL_LIL_ENDIAN 1234
 #define SDL_BIG_ENDIAN 4321

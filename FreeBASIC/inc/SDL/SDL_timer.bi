@@ -1,39 +1,34 @@
-' SDL_timer.h header ported to freeBasic by Edmond Leung (leung.edmond@gmail.com)
+''
+''
+'' SDL_timer -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __SDL_timer_bi__
+#define __SDL_timer_bi__
 
-'$inclib: "SDL"
-
-#ifndef SDL_timer_bi_
-#define SDL_timer_bi_
-
-'$include: 'SDL/SDL_main.bi'
-'$include: 'SDL/SDL_types.bi'
-
-'$include: 'SDL/begin_code.bi'
+#include once "SDL/SDL_main.bi"
+#include once "SDL/SDL_types.bi"
+#include once "SDL/begin_code.bi"
 
 #define SDL_TIMESLICE 10
+#define TIMER_RESOLUTION 10
 
-#define TIMER_SOLUTION 10
+declare function SDL_GetTicks cdecl alias "SDL_GetTicks" () as Uint32
+declare sub SDL_Delay cdecl alias "SDL_Delay" (byval ms as Uint32)
 
-declare function SDL_GetTicks SDLCALL alias "SDL_GetTicks" () as Uint32
+type SDL_TimerCallback as function cdecl(byval as Uint32) as Uint32
 
-declare sub SDL_Delay SDLCALL alias "SDL_Delay" (byval ms as Uint32)
+declare function SDL_SetTimer cdecl alias "SDL_SetTimer" (byval interval as Uint32, byval callback as SDL_TimerCallback) as integer
 
-type SDL_TimerCallBack as function SDLCALL (byval interval as Uint32) as Uint32
+type SDL_NewTimerCallback as function cdecl(byval as Uint32, byval as any ptr) as Uint32
+type SDL_TimerID as _SDL_TimerID ptr
 
-declare function SDL_SetTimer SDLCALL alias "SDL_SetTimer" _
-   (byval interval as Uint32, byval callback as SDL_TimerCallBack ) as integer
+declare function SDL_AddTimer cdecl alias "SDL_AddTimer" (byval interval as Uint32, byval callback as SDL_NewTimerCallback, byval param as any ptr) as SDL_TimerID
+declare function SDL_RemoveTimer cdecl alias "SDL_RemoveTimer" (byval t as SDL_TimerID) as SDL_bool
 
-type SDL_NewTimerCallBack as function SDLCALL (byval interval as Uint32, byval param as any ptr) as Uint32
-
-type SDL_TimerID as any ptr
-
-declare function SDL_AddTimer SDLCALL alias "SDL_AddTimer" _
-   (byval interval as Uint32, byval callback as SDL_NewTimerCallBack, _
-   byval param as any ptr) as SDL_TimerID
-
-declare function SDL_RemoveTimer SDLCALL alias "SDL_RemoveTimer" _
-   (byval t as SDL_TimerID) as SDL_bool
-
-'$include: 'SDL/close_code.bi'
+#include once "SDL/close_code.bi"
 
 #endif

@@ -1,95 +1,63 @@
-' SDL_rwops.h header ported to freeBasic by Edmond Leung (leung.edmond@gmail.com)
+''
+''
+'' SDL_rwops -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __SDL_rwops_bi__
+#define __SDL_rwops_bi__
 
-'$inclib: "SDL"
+#include once "crt/stdio.bi"
+#include once "SDL/SDL_types.bi"
+#include once "SDL/begin_code.bi"
 
-#ifndef SDL_RWops_bi_
-#define SDL_RWops_bi_
-
-'$include: 'SDL/SDL_types.bi'
-
-'$include: 'SDL/begin_code.bi'
-
-#ifndef FILE_DEFINED_
-type FILE
-   ptr_ as byte ptr
-   cnt_ as integer
-   base_ as byte ptr
-   flag_ as integer
-   file_ as integer
-   charbuf_ as integer
-   bufsiz_ as integer
-   tmpfname_ as byte ptr
-end type
-#define FILE_DEFINED_
-#endif
-
-#ifndef SEEK_SET
-#define SEEK_SET 0
-#define SEEK_CUR 1
-#define SEEK_END 2
-#endif
-
-type stdio
-   autoclose as integer
-   fp as FILE ptr
+type SDL_RWops_unknown
+	data1 as any ptr
 end type
 
-type mem
-   base as Uint8 ptr
-   here as Uint8 ptr
-   stop as Uint8 ptr
+type SDL_RWops_mem
+	base as Uint8 ptr
+	here as Uint8 ptr
+	stop as Uint8 ptr
 end type
 
-type unknown
-   data1 as any ptr
+type SDL_RWops_stdio
+	autoclose as integer
+	fp as FILE ptr
 end type
 
-union hidden
-   stdio as stdio
-   mem as mem
-   unknown as unknown
+union SDL_RWops_hidden
+	stdio as SDL_RWops_stdio
+	mem as SDL_RWops_mem
+	unknown as SDL_RWops_unknown
 end union
 
 type SDL_RWops
-   seek as function SDLCALL _
-      (byval context as SDL_RWops ptr, byval offset as integer, _
-      byval whence as integer) as integer
-   read as function SDLCALL _
-      (byval context as SDL_RWops ptr, byval pntr as any ptr, _
-      byval size as integer, byval maxnum as integer) as integer
-   write as function SDLCALL _
-      (byval context as SDL_RWops ptr, byref pntr as any ptr, size as integer, _
-      num as integer) as integer
-   close as function SDLCALL _
-      (byval context as SDL_RWops ptr) as integer
-   
-   type as Uint32   
-   hidden as hidden
+	seek as function cdecl(byval as SDL_RWops ptr, byval as integer, byval as integer) as integer
+	read as function cdecl(byval as SDL_RWops ptr, byval as any ptr, byval as integer, byval as integer) as integer
+	write as function cdecl(byval as SDL_RWops ptr, byval as any ptr, byval as integer, byval as integer) as integer
+	close as function cdecl(byval as SDL_RWops ptr) as integer
+	type as Uint32
+	hidden as SDL_RWops_hidden
 end type
 
-declare function SDL_RWFromFile SDLCALL alias "SDL_RWFromFile" _
-   (byval file as zstring ptr, byval mode as zstring ptr) as SDL_RWops ptr
-  
-declare function SDL_RWFromFP SDLCALL alias "SDL_RWFromFP" _
-   (byval fp as FILE ptr, byval autoclose as integer) as SDL_RWops ptr
 
-declare function SDL_RWFromMem SDLCALL alias "SDL_RWFromMem" _
-   (byval mem as any ptr, size as integer) as SDL_RWops ptr
+declare function SDL_RWFromFile cdecl alias "SDL_RWFromFile" (byval file as zstring ptr, byval mode as zstring ptr) as SDL_RWops ptr
+declare function SDL_RWFromFP cdecl alias "SDL_RWFromFP" (byval fp as FILE ptr, byval autoclose as integer) as SDL_RWops ptr
+declare function SDL_RWFromMem cdecl alias "SDL_RWFromMem" (byval mem as any ptr, byval size as integer) as SDL_RWops ptr
+declare function SDL_RWFromConstMem cdecl alias "SDL_RWFromConstMem" (byval mem as any ptr, byval size as integer) as SDL_RWops ptr
+declare function SDL_AllocRW cdecl alias "SDL_AllocRW" () as SDL_RWops ptr
+declare sub SDL_FreeRW cdecl alias "SDL_FreeRW" (byval area as SDL_RWops ptr)
 
-declare function SDL_AllocRW SDLCALL alias "SDL_AllocRW" () as SDL_RWops ptr
-declare function SDL_FreeRW SDLCALL alias "SDL_FreeRW" _
-   (area as SDL_RWops ptr) as SDL_RWops ptr
+#define SDL_RWseek(ctx,offset,whence)	(ctx)->seek(ctx, offset, whence)
+#define SDL_RWtell(ctx)	(ctx)->seek(ctx, 0, SEEK_CUR)
+#define SDL_RWread(ctx,ptr_,size,n) (ctx)->read(ctx, ptr_, size, n)
+#define SDL_RWwrite(ctx,ptr_,size,n) (ctx)->write(ctx, ptr_, size, n)
+#define SDL_RWclose(ctx) (ctx)->close(ctx)
 
-#define SDL_RWseek(ctx,offset,whence) ctx->seek(ctx, offset, whence)
 
-#define SDL_RWtell(ctx) ctx->seek(ctx, 0, SEEK_CUR)
-
-#define SDL_RWread(ctx,pntr,size,n) ctx->read(ctx, pntr, size, n)
-
-#define SDL_RWwrite(ctx,pntr,size,n) ctx->write(ctx, pntr, size, n)
-
-#define SDL_RWclose(ctx) ctx->close(ctx)
-
-'$include: 'SDL/close_code.bi'
+#include once "SDL/close_code.bi"
 
 #endif

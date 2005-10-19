@@ -1,80 +1,49 @@
-' SDL_mutex.h header ported to freeBasic by Edmond Leung (leung.edmond@gmail.com)
+''
+''
+'' SDL_mutex -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __SDL_mutex_bi__
+#define __SDL_mutex_bi__
 
-'$inclib: "SDL"
-
-#ifndef SDL_mutex_bi_
-#define SDL_mutex_bi_
-
-'$include: "SDL/SDL_main.bi"
-'$include: "SDL/SDL_types.bi"
-
-'$include: "SDL/begin_code.bi"
+#include once "SDL/SDL_main.bi"
+#include once "SDL/SDL_types.bi"
+#include once "SDL/begin_code.bi"
 
 #define SDL_MUTEX_TIMEDOUT 1
-#define SDL_MUTEX_MAXWAIT not 0
 
-type SDL_mutex as any
+type SDL_mutex as _SDL_mutex
 
-declare function SDL_CreateMutext SDLCALL alias "SDL_CreateMutext" _
-   () as SDL_mutex ptr
-
-declare function SDL_mutexP SDLCALL alias "SDL_mutexP" _
-   (byval mutex as SDL_mutex ptr) as integer
+declare function SDL_CreateMutex cdecl alias "SDL_CreateMutex" () as SDL_mutex ptr
+declare function SDL_mutexP cdecl alias "SDL_mutexP" (byval mutex as SDL_mutex ptr) as integer
+declare function SDL_mutexV cdecl alias "SDL_mutexV" (byval mutex as SDL_mutex ptr) as integer
+declare sub SDL_DestroyMutex cdecl alias "SDL_DestroyMutex" (byval mutex as SDL_mutex ptr)
 
 #define SDL_LockMutex(m) SDL_mutexP(m)
+#define SDL_UnlockMutex(m) SDL_mutexV(m)
 
-declare function SDL_mutexV SDLCALL alias "SDL_mutexV" _
-   (byval mutex as SDL_mutex ptr) as integer
+type SDL_sem as _SDL_sem
 
-#define SDL_UnlockMutex(m) SDL_mutexP(m)
+declare function SDL_CreateSemaphore cdecl alias "SDL_CreateSemaphore" (byval initial_value as Uint32) as SDL_sem ptr
+declare sub SDL_DestroySemaphore cdecl alias "SDL_DestroySemaphore" (byval sem as SDL_sem ptr)
+declare function SDL_SemWait cdecl alias "SDL_SemWait" (byval sem as SDL_sem ptr) as integer
+declare function SDL_SemTryWait cdecl alias "SDL_SemTryWait" (byval sem as SDL_sem ptr) as integer
+declare function SDL_SemWaitTimeout cdecl alias "SDL_SemWaitTimeout" (byval sem as SDL_sem ptr, byval ms as Uint32) as integer
+declare function SDL_SemPost cdecl alias "SDL_SemPost" (byval sem as SDL_sem ptr) as integer
+declare function SDL_SemValue cdecl alias "SDL_SemValue" (byval sem as SDL_sem ptr) as Uint32
 
-declare sub SDL_DestroyMutex SDLCALL alias "SDL_DestroyMutex" _
-   (byval mutex as SDL_mutex ptr)
+type SDL_cond as _SDL_cond
 
-type SDL_sem as any
+declare function SDL_CreateCond cdecl alias "SDL_CreateCond" () as SDL_cond ptr
+declare sub SDL_DestroyCond cdecl alias "SDL_DestroyCond" (byval cond as SDL_cond ptr)
+declare function SDL_CondSignal cdecl alias "SDL_CondSignal" (byval cond as SDL_cond ptr) as integer
+declare function SDL_CondBroadcast cdecl alias "SDL_CondBroadcast" (byval cond as SDL_cond ptr) as integer
+declare function SDL_CondWait cdecl alias "SDL_CondWait" (byval cond as SDL_cond ptr, byval mut as SDL_mutex ptr) as integer
+declare function SDL_CondWaitTimeout cdecl alias "SDL_CondWaitTimeout" (byval cond as SDL_cond ptr, byval mutex as SDL_mutex ptr, byval ms as Uint32) as integer
 
-declare function SDL_CreateSemaphore SDLCALL alias "SDL_CreateSemaphore" _
-   (byval initial_value as Uint32) as SDL_sem ptr
-
-declare sub SDL_DestorySemaphore SDLCALL alias "SDL_DestorySemaphore" _
-   (byval sem as SDL_sem ptr)
-
-declare function SDL_SemWait SDLCALL alias "SDL_SemWait" _
-   (byval sem as SDL_sem ptr) as integer
-
-declare function SDL_SemTryWait SDLCALL alias "SDL_SemTryWait" _
-   (byval sem as SDL_sem ptr) as integer
-
-declare function SDL_SemWaitTimeout SDLCALL alias "SDL_SemWaitTimeout" _
-   (byval sem as SDL_sem ptr, byval ms as Uint32) as integer
-
-declare function SDL_SemPost SDLCALL alias "SDL_SemPost" _ 
-   (byval sem as SDL_sem ptr) as integer
-
-declare function SDL_SemValue SDLCALL alias "SDL_SemValue" _
-   (byval sem as SDL_sem ptr) as Uint32
-
-type SDL_cond as any
-
-declare function SDL_CreateCond SDLCALL alias "SDL_CreateCond" _
-   as SDL_cond ptr
-
-declare sub SDL_DestroyCond SDLCALL alias "SDL_DestroyCond" _
-   (byval cond as SDL_cond ptr)
-
-declare function SDL_CondSignal SDLCALL alias "SDL_CondSignal" _
-   (byval cond as SDL_cond ptr) as integer
-
-declare function SDL_CondBroadcast SDLCALL alias "SDL_CondBroadcast" _
-   (byval cond as SDL_cond ptr) as integer
-
-declare function SDL_CondWait SDLCALL alias "SDL_CondWait" _
-   (byval cond as SDL_cond ptr, byval mut as SDL_mutex ptr) as integer
-
-declare function SDL_CondWaitTimeout SDLCALL alias "SDL_CondWaitTimeout" _
-   (byval cond as SDL_cond ptr, byval mutex as SDL_mutex ptr, _
-   byval ms as Uint32) as integer
-
-'$include: "SDL/close_code.bi"
+#include once "SDL/close_code.bi"
 
 #endif

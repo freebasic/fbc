@@ -1,89 +1,84 @@
-#ifndef SDLTTF_BI
-#define SDLTTF_BI
 ''
-'' constants and types for SDL_TTF functions (sdl_ttf.h)
-'' brought to you by
-'' Matthias Faust (Fausti)
+''
+'' SDL_ttf -- TrueType fonts rendering library
+''			  (header translated with help of SWIG FB wrapper)
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __SDL_ttf_bi__
+#define __SDL_ttf_bi__
 
-#inclib "SDL"
 #inclib "SDL_ttf"
 
 #include once "SDL/SDL.bi"
-#include "SDL/begin_code.bi"
+#include once "SDL/begin_code.bi"
 
-#define SDL_TTF_MAJOR_VERSION	2
-#define SDL_TTF_MINOR_VERSION	0
-#define SDL_TTF_PATCHLEVEL	7
+#define SDL_TTF_MAJOR_VERSION 2
+#define SDL_TTF_MINOR_VERSION 0
+#define SDL_TTF_PATCHLEVEL 7
 
-#define SDL_TTF_VERSION(X) X->major = SDL_TTF_MAJOR_VERSION : X->minor = SDL_TTF_MINOR_VERSION : X->patch = SDL_TTF_PATCHLEVEL
+#define SDL_TTF_VERSION(X)						_
+	(X)->major = SDL_TTF_MAJOR_VERSION			:_
+	(X)->minor = SDL_TTF_MINOR_VERSION			:_
+	(X)->patch = SDL_TTF_PATCHLEVEL
 
 #define TTF_MAJOR_VERSION	SDL_TTF_MAJOR_VERSION
 #define TTF_MINOR_VERSION	SDL_TTF_MINOR_VERSION
 #define TTF_PATCHLEVEL		SDL_TTF_PATCHLEVEL
-#define TTF_VERSION(X) 		SDL_TTF_VERSION(X)
+#define TTF_VERSION(X)		SDL_TTF_VERSION(X)
 
-declare function TTF_Linked_Version SDLCALL alias "TTF_Linked_Version" () as SDL_version ptr
+declare function TTF_Linked_Version cdecl alias "TTF_Linked_Version" () as SDL_version ptr
 
+#define UNICODE_BOM_NATIVE &hFEFF
+#define UNICODE_BOM_SWAPPED &hFFFE
 
-#define UNICODE_BOM_NATIVE &Hfeff
-#define UNICODE_BOM_SWAPPED &Hfffe
+declare sub TTF_ByteSwappedUNICODE cdecl alias "TTF_ByteSwappedUNICODE" (byval swapped as integer)
 
-Declare Sub TTF_ByteSwappedUNICODE SDLCALL alias "TTF_ByteSwappedUNICODE" (byval swapped as integer)
+type TTF_Font as _TTF_Font
 
-type TTF_Font as any ptr
+declare function TTF_Init cdecl alias "TTF_Init" () as integer
+declare function TTF_OpenFont cdecl alias "TTF_OpenFont" (byval file as zstring ptr, byval ptsize as integer) as TTF_Font ptr
+declare function TTF_OpenFontIndex cdecl alias "TTF_OpenFontIndex" (byval file as zstring ptr, byval ptsize as integer, byval index as integer) as TTF_Font ptr
+declare function TTF_OpenFontRW cdecl alias "TTF_OpenFontRW" (byval src as SDL_RWops ptr, byval freesrc as integer, byval ptsize as integer) as TTF_Font ptr
+declare function TTF_OpenFontIndexRW cdecl alias "TTF_OpenFontIndexRW" (byval src as SDL_RWops ptr, byval freesrc as integer, byval ptsize as integer, byval index as integer) as TTF_Font ptr
 
-Declare Function TTF_Init SDLCALL alias "TTF_Init" () as integer
+#define TTF_STYLE_NORMAL &h00
+#define TTF_STYLE_BOLD &h01
+#define TTF_STYLE_ITALIC &h02
+#define TTF_STYLE_UNDERLINE &h04
 
-Declare Function TTF_OpenFont SDLCALL alias "TTF_OpenFont" (byval file as zstring ptr, byval ptsize as integer) as TTF_Font
-Declare Function TTF_OpenFontIndex SDLCALL alias "TTF_OpenFontIndex" (byval file as zstring ptr, byval ptsize as integer, byval index as integer) as TTF_Font
-Declare Function TTF_OpenFontRW SDLCALL alias "TTF_OpenFontRW" (byval src as SDL_RWops ptr, byval freesrc as integer, byval ptsize as integer) as TTF_Font
-Declare Function TTF_OpenFontIndexRW SDLCALL alias "TTF_OpenFontIndexRW" (byval src as SDL_RWops ptr, byval freesrc as integer, byval ptsize as integer, byval index as integer) as TTF_Font
+declare function TTF_GetFontStyle cdecl alias "TTF_GetFontStyle" (byval font as TTF_Font ptr) as integer
+declare sub TTF_SetFontStyle cdecl alias "TTF_SetFontStyle" (byval font as TTF_Font ptr, byval style as integer)
+declare function TTF_FontHeight cdecl alias "TTF_FontHeight" (byval font as TTF_Font ptr) as integer
+declare function TTF_FontAscent cdecl alias "TTF_FontAscent" (byval font as TTF_Font ptr) as integer
+declare function TTF_FontDescent cdecl alias "TTF_FontDescent" (byval font as TTF_Font ptr) as integer
+declare function TTF_FontLineSkip cdecl alias "TTF_FontLineSkip" (byval font as TTF_Font ptr) as integer
+declare function TTF_FontFaces cdecl alias "TTF_FontFaces" (byval font as TTF_Font ptr) as integer
+declare function TTF_FontFaceIsFixedWidth cdecl alias "TTF_FontFaceIsFixedWidth" (byval font as TTF_Font ptr) as integer
+declare function TTF_FontFaceFamilyName cdecl alias "TTF_FontFaceFamilyName" (byval font as TTF_Font ptr) as zstring ptr
+declare function TTF_FontFaceStyleName cdecl alias "TTF_FontFaceStyleName" (byval font as TTF_Font ptr) as zstring ptr
+declare function TTF_GlyphMetrics cdecl alias "TTF_GlyphMetrics" (byval font as TTF_Font ptr, byval ch as Uint16, byval minx as integer ptr, byval maxx as integer ptr, byval miny as integer ptr, byval maxy as integer ptr, byval advance as integer ptr) as integer
+declare function TTF_SizeText cdecl alias "TTF_SizeText" (byval font as TTF_Font ptr, byval text as zstring ptr, byval w as integer ptr, byval h as integer ptr) as integer
+declare function TTF_SizeUTF8 cdecl alias "TTF_SizeUTF8" (byval font as TTF_Font ptr, byval text as zstring ptr, byval w as integer ptr, byval h as integer ptr) as integer
+declare function TTF_SizeUNICODE cdecl alias "TTF_SizeUNICODE" (byval font as TTF_Font ptr, byval text as Uint16 ptr, byval w as integer ptr, byval h as integer ptr) as integer
+declare function TTF_RenderText_Solid cdecl alias "TTF_RenderText_Solid" (byval font as TTF_Font ptr, byval text as zstring ptr, byval fg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderUTF8_Solid cdecl alias "TTF_RenderUTF8_Solid" (byval font as TTF_Font ptr, byval text as zstring ptr, byval fg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderUNICODE_Solid cdecl alias "TTF_RenderUNICODE_Solid" (byval font as TTF_Font ptr, byval text as Uint16 ptr, byval fg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderGlyph_Solid cdecl alias "TTF_RenderGlyph_Solid" (byval font as TTF_Font ptr, byval ch as Uint16, byval fg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderText_Shaded cdecl alias "TTF_RenderText_Shaded" (byval font as TTF_Font ptr, byval text as zstring ptr, byval fg as SDL_Color, byval bg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderUTF8_Shaded cdecl alias "TTF_RenderUTF8_Shaded" (byval font as TTF_Font ptr, byval text as zstring ptr, byval fg as SDL_Color, byval bg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderUNICODE_Shaded cdecl alias "TTF_RenderUNICODE_Shaded" (byval font as TTF_Font ptr, byval text as Uint16 ptr, byval fg as SDL_Color, byval bg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderGlyph_Shaded cdecl alias "TTF_RenderGlyph_Shaded" (byval font as TTF_Font ptr, byval ch as Uint16, byval fg as SDL_Color, byval bg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderText_Blended cdecl alias "TTF_RenderText_Blended" (byval font as TTF_Font ptr, byval text as zstring ptr, byval fg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderUTF8_Blended cdecl alias "TTF_RenderUTF8_Blended" (byval font as TTF_Font ptr, byval text as zstring ptr, byval fg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderUNICODE_Blended cdecl alias "TTF_RenderUNICODE_Blended" (byval font as TTF_Font ptr, byval text as Uint16 ptr, byval fg as SDL_Color) as SDL_Surface ptr
+declare function TTF_RenderGlyph_Blended cdecl alias "TTF_RenderGlyph_Blended" (byval font as TTF_Font ptr, byval ch as Uint16, byval fg as SDL_Color) as SDL_Surface ptr
+declare sub TTF_CloseFont cdecl alias "TTF_CloseFont" (byval font as TTF_Font ptr)
+declare sub TTF_Quit cdecl alias "TTF_Quit" ()
+declare function TTF_WasInit cdecl alias "TTF_WasInit" () as integer
 
-#define TTF_STYLE_NORMAL 0
-#define TTF_STYLE_BOLD 1
-#define TTF_STYLE_ITALIC 2
-#define TTF_STYLE_UNDERLINE 4
+#include once "SDL/close_code.bi"
 
-Declare Function TTF_GetFontStyle SDLCALL alias "TTF_GetFontStyle" (byval font as TTF_Font) as integer
-Declare Sub TTF_SetFontStyle SDLCALL alias "TTF_SetFontStyle" (byval font as TTF_Font, byval style as integer)
-
-Declare Function TTF_FontHeight SDLCALL alias "TTF_FontHeight" (byval font as TTF_Font) as integer
-Declare Function TTF_FontAscent SDLCALL alias "TTF_FontAscent" (byval font as TTF_Font) as integer
-Declare Function TTF_FontDescent SDLCALL alias "TTF_FontDescent" (byval font as TTF_Font) as integer
-Declare Function TTF_FontLineSkip SDLCALL alias "TTF_FontLineSkip" (byval font as TTF_Font) as integer
-Declare Function TTF_FontFaces SDLCALL alias "TTF_FontFaces" (byval font as TTF_Font) as integer
-Declare Function TTF_FontFaceIsFixedWidth SDLCALL alias "TTF_FontFaceIsFixedWidth" (byval font as TTF_Font) as integer
-Declare Function TTF_FontFaceFamilyName SDLCALL alias "TTF_FontFaceFamilyName" (byval font as TTF_Font) as zstring ptr
-Declare Function TTF_FontFaceStyleName SDLCALL alias "TTF_FontFaceStyleName" (byval font as TTF_Font) as zstring ptr
-
-Declare Function TTF_GlyphMetrics SDLCALL alias "TTF_GlyphMetrics" (byval font as TTF_Font, byval ch as Uint16, byval minx as integer ptr, byval maxx as integer ptr, byval miny as integer ptr, byval maxy as integer ptr, byval advance as integer ptr) as integer
-
-Declare Function TTF_SizeText SDLCALL alias "TTF_SizeText" (byval font as TTF_Font, byval text as zstring ptr, byval w as integer ptr, byval h as integer ptr) as integer
-Declare Function TTF_SizeUTF8 SDLCALL alias "TTF_SizeUTF8" (byval font as TTF_Font, byval text as zstring ptr, byval w as integer ptr, byval h as integer ptr) as integer
-Declare Function TTF_SizeUNICODE SDLCALL alias "TTF_SizeUNICODE" (byval font as TTF_Font, byval text as Uint16 ptr, byval w as integer ptr, byval h as integer ptr) as integer
-
-Declare Function TTF_RenderText_Solid SDLCALL alias "TTF_RenderText_Solid" (byval font as TTF_Font, byval text as zstring ptr, byval fg as SDL_Color) as SDL_Surface ptr
-Declare Function TTF_RenderUTF8_Solid SDLCALL alias "TTF_RenderUTF8_Solid" (byval font as TTF_Font, byval text as zstring ptr, byval fg as SDL_Color) as SDL_Surface ptr
-Declare Function TTF_RenderUNICODE_Solid SDLCALL alias "TTF_RenderUNICODE_Solid" (byval font as TTF_Font, byval text as Uint16 ptr, byval fg as SDL_Color) as SDL_Surface ptr
-
-Declare Function TTF_RenderGlyph_Solid SDLCALL alias "TTF_RenderGlyph_Solid" (byval font as TTF_Font, byval ch as Uint16, byval fg as SDL_Color) as SDL_Surface ptr
-
-Declare Function TTF_RenderText_Shaded SDLCALL alias "TTF_RenderText_Shaded" (byval font as TTF_Font, byval text as zstring ptr, byval fg as SDL_Color, byval bg as SDL_Color) as SDL_Surface ptr
-Declare Function TTF_RenderUTF8_Shaded SDLCALL alias "TTF_RenderUTF8_Shaded" (byval font as TTF_Font, byval text as zstring ptr, byval fg as SDL_Color, byval bg as SDL_Color) as SDL_Surface ptr
-Declare Function TTF_RenderUNICODE_Shaded SDLCALL alias "TTF_RenderUNICODE_Shaded" (byval font as TTF_Font, byval text as Uint16 ptr, byval fg as SDL_Color, byval bg as SDL_Color) as SDL_Surface ptr
-
-Declare Function TTF_RenderGlyph_Shaded SDLCALL alias "TTF_RenderGlyph_Shaded" (byval font as TTF_Font, byval ch as Uint16, byval fg as SDL_Color, byval bg as SDL_Color) as SDL_Surface ptr
-
-Declare Function TTF_RenderText_Blended SDLCALL alias "TTF_RenderText_Blended" (byval font as TTF_Font, byval text as zstring ptr, byval fg as SDL_Color) as SDL_Surface ptr
-Declare Function TTF_RenderUTF8_Blended SDLCALL alias "TTF_RenderUTF8_Blended" (byval font as TTF_Font, byval text as zstring ptr, byval fg as SDL_Color) as SDL_Surface ptr
-Declare Function TTF_RenderUNICODE_Blended SDLCALL alias "TTF_RenderUNICODE_Blended" (byval font as TTF_Font, byval text as Uint16 ptr, byval fg as SDL_Color) as SDL_Surface ptr
-
-Declare Function TTF_RenderGlyph_Blended SDLCALL alias "TTF_RenderGlyph_Blended" (byval font as TTF_Font, byval ch as Uint16, byval fg as SDL_Color) as SDL_Surface ptr
-
-Declare Sub TTF_CloseFont SDLCALL alias "TTF_CloseFont" (byval font as TTF_Font)
-Declare Sub TTF_Quit SDLCALL alias "TTF_Quit" ()
-Declare Function TTF_WasInit SDLCALL alias "TTF_WasInit" () as integer
-
-#include "SDL/close_code.bi"
-
-#endif ''SDLTTF_BI
+#endif
