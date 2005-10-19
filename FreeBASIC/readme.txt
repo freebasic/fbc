@@ -586,7 +586,8 @@ Credits (in alphabetic order):
     - Wrote the wx demonstration in the examples/wx-c dir.
 
   o Edmond Leung (leung.edmond@gmail.com):
-    - Translated the SDL headers, including SDL_mixer and SDL_image.
+    - Translated the SDL headers, including SDL_mixer and SDL_image (later replaced 
+      by the SWIG FB wrapper version).
     - Wrote/ported many of the examples in the examples/SDL dir.
 
   o Eric Lope (vic_viperph@yahoo.com):
@@ -613,8 +614,8 @@ Credits (in alphabetic order):
     - Wrote the GSL matrix test at the examples/GSL directory.
 
   o Matthias Faust (matthias_faust@web.de):
-    - Translated the SDL_ttf header (also SDL_mixer, that unfortunately was
-      sent by Edmond Leung some days before) and wrote the SDL_ttf demonstration.
+    - Translated the SDL_ttf header (later replaced by the SWIG FB wrapper version).
+    - Wrote the SDL_ttf demonstration.
 
   o Mark Junker (mjscod@gmx.de) - Project Member:
     - Added support for file systems like SCR, LPTx, COM, etc.
@@ -654,9 +655,6 @@ Credits (in alphabetic order):
 
     - Xbox version: OpenXDK (http://www.openxdk.org/)
 
-  o Many console routines used in the Win32 version of the run-time library
-    were based on the CONIO implementation for Mingw32.
-
   o The long integers (64-bit) division and modulo routines are from the GCC's
     libgcc2 sources.
 
@@ -685,11 +683,6 @@ Greetings:
 
   o Nek, na_th_an, Sj Zero, Z!re: Some serious beta testing - meaning: loads of
     bugs found.
-
-  o People at Qbasicnews (too many to list, thanks all!) for all the support and
-    feedback.
-
-  o You, for giving it a try - you won't regret.. er.
 
 
 Links:
