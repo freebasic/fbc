@@ -36,6 +36,10 @@ int fb_hConsoleInputBufferChanged( void )
 
     FB_LOCK();
 
+    /* This is required to ensure that SLEEP still works even when
+     * the input buffer is full (QB quirk) */
+    fb_ConsoleMultikeyInit( );
+
     if( !iCircBufferStatusInited ) {
         iCircBufferStatusInited = TRUE;
         _movedataw( _dos_ds, 0x41C, _my_ds(), (int) &usCircBufferStatus, 1 );
@@ -45,6 +49,12 @@ int fb_hConsoleInputBufferChanged( void )
     is_changed = usNewStatus!=usCircBufferStatus;
     if( is_changed )
         usCircBufferStatus = usNewStatus;
+
+    /* Ensure that no IRQ disturbs us ... */
+    fb_dos_cli();
+    is_changed |= fb_force_input_buffer_changed;
+    fb_force_input_buffer_changed = FALSE;
+    fb_dos_sti();
 
     FB_UNLOCK();
 

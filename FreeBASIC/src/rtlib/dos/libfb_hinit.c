@@ -35,6 +35,7 @@
 /* globals */
 int ScrollWasOff = FALSE;
 FB_DOS_TXTMODE fb_dos_txtmode;
+int fb_force_input_buffer_changed = FALSE;
 
 
 extern void (*fb_ConsolePrintBufferProc) (const void *buffer, size_t len, int mask);
