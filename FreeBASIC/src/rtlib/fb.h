@@ -218,6 +218,8 @@ extern "C" {
 #define FB_BINARY_NEWLINE "\r\n"
 #endif
 
+#define FB_BINARY_NEWLINE_WSTR L"\r\n"
+
 #ifndef FB_NEWLINE
     /** The "NEW LINE" character used for all I/O.
      *
@@ -226,6 +228,8 @@ extern "C" {
      */
 #define FB_NEWLINE "\n"
 #endif
+
+#define FB_NEWLINE_WSTR L"\n"
 
 #ifndef FB_LL_FMTMOD
     /** LONG LONG format modifier.
@@ -482,7 +486,7 @@ FBCALL void         fb_StrAssignMid     ( FBSTRING *dst, int start, int len, FBS
  **************************************************************************************************/
 
 FBCALL void         fb_WstrDelete       ( FB_WCHAR *str );
-FBCALL void        *fb_WstrAssign       ( FB_WCHAR *dst, int dst_chars, FB_WCHAR *src );
+FBCALL FB_WCHAR    *fb_WstrAssign       ( FB_WCHAR *dst, int dst_chars, FB_WCHAR *src );
 FBCALL FB_WCHAR    *fb_WstrConcat 		( const FB_WCHAR *str1, const FB_WCHAR *str2 );
 FBCALL FB_WCHAR    *fb_WstrConcatWA 	( const FB_WCHAR *str1, const void *str2, int str2_size );
 FBCALL FB_WCHAR    *fb_WstrConcatAW 	( const void *str1, int str1_size, const FB_WCHAR *str2 );
@@ -494,7 +498,9 @@ FBCALL FB_WCHAR    *fb_UIntToWstr    	( unsigned int num );
 FBCALL FB_WCHAR    *fb_FloatToWstr   	( float num );
        FB_WCHAR    *fb_FloatExToWstr  	( double val, FB_WCHAR *buffer, int digits, int mask );
 FBCALL FB_WCHAR    *fb_DoubleToWstr  	( double num );
+FBCALL FB_WCHAR    *fb_StrToWstr		( const char *src );
 
+FBCALL FBSTRING    *fb_WstrToStr		( const FB_WCHAR *src );
 FBCALL double       fb_WstrToDouble     ( const FB_WCHAR *src, int len );
 FBCALL int          fb_WstrToInt        ( const FB_WCHAR *src, int len );
 FBCALL unsigned int fb_WstrToUInt       ( const FB_WCHAR *src, int len );
@@ -685,6 +691,12 @@ static __inline__ int FB_PRINT_CONVERT_BIN_NEWLINE(int mask)
 #define FB_PRINT(fnum, s, mask)                                       \
     FB_PRINT_EX( FB_FILE_TO_HANDLE(fnum), s, strlen(s), 0 )
 
+#define FB_PRINTWSTR_EX(handle, s, len, mask)                         \
+    fb_hFilePrintBufferWstrEx( handle, s, len )
+
+#define FB_PRINTWSTR(fnum, s, mask)                                   \
+    FB_PRINTWSTR_EX( FB_FILE_TO_HANDLE(fnum), s, fb_wstr_len(s), 0 )
+
 #define FB_PRINTNUM_EX(handle, val, mask, fmt, type)                  \
     do {                                                              \
         char buffer[80];                                              \
@@ -742,6 +754,24 @@ static __inline__ int FB_PRINT_CONVERT_BIN_NEWLINE(int mask)
 
 #define FB_WRITESTR(fnum, val, mask, type) 				    \
     FB_WRITESTR_EX(FB_FILE_TO_HANDLE(fnum), val, mask, type)
+
+#define FB_WRITEWSTR_EX(handle, val, mask, type) 			          \
+    do {                                                              \
+        FB_WCHAR buffer[80*25+1];								      \
+        size_t len;             							          \
+                                                                      \
+        if( mask & FB_PRINT_BIN_NEWLINE )           		          \
+            len = swprintf( buffer, type FB_BINARY_NEWLINE_WSTR, val );  \
+        else if( mask & FB_PRINT_NEWLINE )           			      \
+            len = swprintf( buffer, type FB_NEWLINE_WSTR, val );         \
+        else												          \
+            len = swprintf( buffer, type L",", val );                 \
+                                                                      \
+        fb_hFilePrintBufferWstrEx( handle, buffer, len );             \
+    } while (0)
+
+#define FB_WRITEWSTR(fnum, val, mask, type) 				   \
+    FB_WRITEWSTR_EX(FB_FILE_TO_HANDLE(fnum), val, mask, type)
 
 struct _FB_FILE;
 
@@ -813,7 +843,9 @@ FBCALL void         fb_WriteFixString   ( int fnum, char *s, int mask );
        int          fb_ConsoleSetMouse  ( int x, int y, int cursor );
 
        void         fb_ConsolePrintBuffer( const char *buffer, int mask );
+       void         fb_ConsolePrintBufferWstr( const FB_WCHAR *buffer, int mask );
        void         fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask );
+       void         fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t len, int mask );
 
        char        *fb_ConsoleReadStr   ( char *buffer, int len );
 
@@ -855,6 +887,7 @@ typedef int (*FnFileSeek)     ( struct _FB_FILE *handle, long offset, int whence
 typedef int (*FnFileTell)     ( struct _FB_FILE *handle, long *pOffset );
 typedef int (*FnFileRead)     ( struct _FB_FILE *handle, void* value, size_t *pValuelen );
 typedef int (*FnFileWrite)    ( struct _FB_FILE *handle, const void* value, size_t valuelen );
+typedef int (*FnFileWriteWstr)( struct _FB_FILE *handle, const FB_WCHAR* value, size_t valuelen );
 typedef int (*FnFileLock)     ( struct _FB_FILE *handle, unsigned int position, unsigned int size );
 typedef int (*FnFileUnlock)   ( struct _FB_FILE *handle, unsigned int position, unsigned int size );
 typedef int (*FnFileReadLine) ( struct _FB_FILE *handle, FBSTRING *dst );
@@ -867,6 +900,7 @@ typedef struct _FB_FILE_HOOKS {
     FnFileTell      pfnTell;
     FnFileRead      pfnRead;
     FnFileWrite     pfnWrite;
+    FnFileWriteWstr pfnWriteWstr;
     FnFileLock      pfnLock;
     FnFileUnlock    pfnUnlock;
     FnFileReadLine  pfnReadLine;
@@ -973,7 +1007,7 @@ static __inline__ struct _FB_FILE *FB_HANDLE_DEREF(struct _FB_FILE *handle)
        									  size_t length, int adjust_rec_pos, int checknewline );
        int          fb_FilePutDataEx    ( FB_FILE *handle, long pos, const void *data,
        									  size_t length, int adjust_rec_pos,
-       									  int checknewline );
+       									  int checknewline, int isunicode );
        int          fb_FileGetData      ( int fnum, long pos, void *data,
                                           size_t length, int adjust_rec_pos );
        int          fb_FileGetDataEx    ( FB_FILE *handle, long pos, void *data,
@@ -1049,7 +1083,9 @@ FBCALL FBSTRING    *fb_FileStrInput     ( int bytes, int fnum );
 FBCALL int          fb_FileLineInput    ( int fnum, void *dst, int dst_len, int fillrem );
 
        int          fb_hFilePrintBuffer ( int fnum, const char *buffer );
+       int          fb_hFilePrintBufferWstr ( int fnum, const FB_WCHAR *buffer );
        int          fb_hFilePrintBufferEx( FB_FILE *handle, const void *buffer, size_t len );
+       int          fb_hFilePrintBufferWstrEx( FB_FILE *handle, const FB_WCHAR *buffer, size_t len );
 
        int          fb_hFileLock        ( FILE *f, unsigned int inipos, unsigned int size );
        int          fb_hFileUnlock      ( FILE *f, unsigned int inipos, unsigned int size );
@@ -1078,6 +1114,7 @@ FBCALL int          fb_SetPos           ( FB_FILE *handle, int line_length );
        int          fb_DevFileTell      ( struct _FB_FILE *handle, long *pOffset );
        int          fb_DevFileUnlock    ( struct _FB_FILE *handle, unsigned int position, unsigned int size );
        int          fb_DevFileWrite     ( struct _FB_FILE *handle, const void* value, size_t valuelen );
+       int          fb_DevFileWriteWstr ( struct _FB_FILE *handle, const FB_WCHAR* value, size_t valuelen );
        int          fb_DevFileFlush     ( struct _FB_FILE *handle );
 
        typedef char* (*fb_FnDevReadString)( char *buffer,
@@ -1100,6 +1137,7 @@ typedef struct _DEV_SCRN_INFO {
        void 		fb_DevScrnInit		( void );
        void 		fb_DevScrnInit_NoOpen	( void );
        void 		fb_DevScrnInit_Write	( void );
+       void 		fb_DevScrnInit_WriteWstr( void );
        void 		fb_DevScrnInit_Read		( void );
        void 		fb_DevScrnInit_ReadLine	( void );
        int          fb_DevScrnOpen      ( struct _FB_FILE *handle, const char *filename, size_t filename_len );
@@ -1107,6 +1145,7 @@ typedef struct _DEV_SCRN_INFO {
        int 			fb_DevScrnEof		( struct _FB_FILE *handle );
        int 			fb_DevScrnRead		( struct _FB_FILE *handle, void* value, size_t *pLength );
        int 			fb_DevScrnWrite		( struct _FB_FILE *handle, const void* value, size_t valuelen );
+       int 			fb_DevScrnWriteWstr	( struct _FB_FILE *handle, const FB_WCHAR* value, size_t valuelen );
        int 			fb_DevScrnReadLine	( struct _FB_FILE *handle, FBSTRING *dst );
        void 		fb_DevScrnFillInput	( DEV_SCRN_INFO *info );
 
@@ -1127,6 +1166,7 @@ typedef struct _DEV_SCRN_INFO {
        int          fb_DevPrinterGetOffset( const char *pszDevice );
        int          fb_PrinterOpen      ( int iPort, const char *pszDevice, void **ppvHandle );
        int          fb_PrinterWrite     ( void *pvHandle, const void *data, size_t length );
+       int          fb_PrinterWriteWstr ( void *pvHandle, const FB_WCHAR *data, size_t length );
        int          fb_PrinterClose     ( void *pvHandle );
 
 /**************************************************************************************************
@@ -1177,6 +1217,8 @@ typedef struct _DEV_SCRN_INFO {
                                            void *pvHandle, long *pLength );
        int          fb_SerialWrite      ( struct _FB_FILE *handle,
                                           void *pvHandle, const void *data, size_t length );
+       int          fb_SerialWriteWstr  ( struct _FB_FILE *handle,
+                                          void *pvHandle, const FB_WCHAR *data, size_t length );
        int          fb_SerialRead       ( struct _FB_FILE *handle,
                                           void *pvHandle, void *data, size_t *pLength );
        int          fb_SerialClose      ( struct _FB_FILE *handle,
@@ -1315,6 +1357,7 @@ typedef int         (*FB_READXYPROC)    ( int col, int row, int colorflag );
 FBCALL int          fb_ReadXY           ( int col, int row, int colorflag );
 
 typedef void        (*FB_PRINTBUFFPROC) ( const void *buffer, size_t len, int mask );
+typedef void        (*FB_PRINTBUFFWSTRPROC)( const FB_WCHAR *buffer, size_t len, int mask );
 
 typedef char        *(*FB_READSTRPROC)  ( char *buffer, int len );
         char        *fb_ReadString      ( char *buffer, int len, FILE *f );
@@ -1342,28 +1385,29 @@ FBCALL int          fb_SleepEx          ( int msecs, int kind );
 typedef void        (*FB_SLEEPPROC)     ( int msecs );
 
 typedef struct _FB_HOOKSTB {
-    FB_INKEYPROC    inkeyproc;
-    FB_GETKEYPROC   getkeyproc;
-    FB_KEYHITPROC   keyhitproc;
-    FB_CLSPROC      clsproc;
-    FB_COLORPROC    colorproc;
-    FB_LOCATEPROC   locateproc;
-    FB_WIDTHPROC    widthproc;
-    FB_GETXPROC     getxproc;
-    FB_GETYPROC     getyproc;
-    FB_GETXYPROC    getxyproc;
-    FB_GETSIZEPROC  getsizeproc;
-    FB_PRINTBUFFPROC printbuffproc;
-    FB_READSTRPROC  readstrproc;
-    FB_MULTIKEYPROC multikeyproc;
-    FB_GETMOUSEPROC getmouseproc;
-    FB_SETMOUSEPROC setmouseproc;
-    FB_INPROC       inproc;
-    FB_OUTPROC      outproc;
-    FB_VIEWUPDATEPROC viewupdateproc;
-    FB_LINEINPUTPROC lineinputproc;
-    FB_READXYPROC   readxyproc;
-    FB_SLEEPPROC    sleepproc;
+    FB_INKEYPROC    		inkeyproc;
+    FB_GETKEYPROC   		getkeyproc;
+    FB_KEYHITPROC   		keyhitproc;
+    FB_CLSPROC      		clsproc;
+    FB_COLORPROC    		colorproc;
+    FB_LOCATEPROC   		locateproc;
+    FB_WIDTHPROC    		widthproc;
+    FB_GETXPROC     		getxproc;
+    FB_GETYPROC     		getyproc;
+    FB_GETXYPROC    		getxyproc;
+    FB_GETSIZEPROC  		getsizeproc;
+    FB_PRINTBUFFPROC 		printbuffproc;
+    FB_PRINTBUFFWSTRPROC 	printbuffwstrproc;
+    FB_READSTRPROC  		readstrproc;
+    FB_MULTIKEYPROC 		multikeyproc;
+    FB_GETMOUSEPROC 		getmouseproc;
+    FB_SETMOUSEPROC 		setmouseproc;
+    FB_INPROC       		inproc;
+    FB_OUTPROC      		outproc;
+    FB_VIEWUPDATEPROC 		viewupdateproc;
+    FB_LINEINPUTPROC 		lineinputproc;
+    FB_READXYPROC   		readxyproc;
+    FB_SLEEPPROC    		sleepproc;
 } FB_HOOKSTB;
 
 extern FB_HOOKSTB   fb_hooks;

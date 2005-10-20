@@ -25,7 +25,6 @@
  */
 
 #include "fb.h"
-#include "fb_unicode.h"
 
 /*:::::*/
 FBCALL FB_WCHAR *fb_WstrFill1 ( int chars, FB_WCHAR c )

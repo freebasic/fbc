@@ -25,12 +25,10 @@
  */
 
 #include "fb.h"
-#include "fb_unicode.h"
 
 /*:::::*/
 FBCALL unsigned int fb_WstrAsc ( const FB_WCHAR *str, int pos )
 {
-    unsigned int a;
     int len;
 
 	if( str == NULL )
@@ -38,10 +36,9 @@ FBCALL unsigned int fb_WstrAsc ( const FB_WCHAR *str, int pos )
 
 	len = fb_wstr_Len( str );
 	if( (len == 0) || (pos <= 0) || (pos > len) )
-		a = 0;
+		return 0;
 	else
-		a = fb_wstr_GetCharAt( str, pos-1 );
+		return str[pos-1];
 
-	return a;
 }
 

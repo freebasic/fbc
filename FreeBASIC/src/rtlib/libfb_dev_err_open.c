@@ -38,6 +38,7 @@ static FB_FILE_HOOKS fb_hooks_dev_err = {
     NULL,
     fb_DevFileRead,
     fb_DevFileWrite,
+    fb_DevFileWriteWstr,
     NULL,
     NULL,
     fb_DevFileReadLine

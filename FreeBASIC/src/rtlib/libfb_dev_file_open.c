@@ -38,6 +38,7 @@ static FB_FILE_HOOKS fb_hooks_dev_file = {
     fb_DevFileTell,
     fb_DevFileRead,
     fb_DevFileWrite,
+    fb_DevFileWriteWstr,
     fb_DevFileLock,
     fb_DevFileUnlock,
     fb_DevFileReadLine,

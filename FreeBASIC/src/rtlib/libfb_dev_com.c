@@ -65,7 +65,7 @@ static int fb_DevComClose( struct _FB_FILE *handle )
 }
 
 /*:::::*/
-static int fb_DevComWrite( struct _FB_FILE *handle, const void* value, size_t valuelen )
+static int fb_DevComWriteEx( struct _FB_FILE *handle, const void* value, size_t valuelen )
 {
     int res;
     DEV_COM_INFO *pInfo;
@@ -78,6 +78,18 @@ static int fb_DevComWrite( struct _FB_FILE *handle, const void* value, size_t va
     FB_UNLOCK();
 
 	return res;
+}
+
+/*:::::*/
+static int fb_DevComWrite( struct _FB_FILE *handle, const void* value, size_t valuelen )
+{
+	return fb_DevComWriteEx( handle, value, valuelen );
+}
+
+/*:::::*/
+static int fb_DevComWriteWstr( struct _FB_FILE *handle, const FB_WCHAR* value, size_t valuelen )
+{
+	return fb_DevComWriteEx( handle, (void*)value, valuelen * sizeof( FB_WCHAR ) );
 }
 
 /*:::::*/
@@ -141,6 +153,7 @@ static FB_FILE_HOOKS fb_hooks_dev_com = {
     fb_DevComTell,
     fb_DevComRead,
     fb_DevComWrite,
+    fb_DevComWriteWstr,
     NULL,
     NULL,
     NULL,

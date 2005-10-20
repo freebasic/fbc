@@ -25,7 +25,6 @@
  */
 
 #include "fb.h"
-#include "fb_unicode.h"
 
 /*:::::*/
 FBCALL FB_WCHAR *fb_WstrConcatAssign ( FB_WCHAR *dst, int dst_chars, const FB_WCHAR *src )
@@ -52,7 +51,7 @@ FBCALL FB_WCHAR *fb_WstrConcatAssign ( FB_WCHAR *dst, int dst_chars, const FB_WC
 	}
 
 	/* copy the null-term too */
-	fb_wstr_Move( fb_wstr_OffsetOf( dst, dst_len ), src, src_len + 1 );
+	fb_wstr_Move( &dst[dst_len], src, src_len + 1 );
 
 	return dst;
 }

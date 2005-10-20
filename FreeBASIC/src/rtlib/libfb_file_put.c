@@ -35,10 +35,9 @@ int fb_FilePutDataEx( FB_FILE *handle,
 					  const void *data,
 					  size_t length,
 					  int adjust_rec_pos,
-					  int checknewline )
+					  int checknewline,
+					  int is_unicode )
 {
-    const char *pachText = (const char *) data;
-    size_t i;
 	int res;
 
     if( !FB_HANDLE_USED(handle) )
@@ -58,22 +57,34 @@ int fb_FilePutDataEx( FB_FILE *handle,
     if (res==FB_RTERROR_OK)
     {
         /* do write */
-        if( handle->hooks->pfnWrite != NULL )
-            res = handle->hooks->pfnWrite( handle, data, length );
+        if( !is_unicode )
+        {
+        	if( handle->hooks->pfnWrite != NULL )
+            	res = handle->hooks->pfnWrite( handle, data, length );
+        	else
+            	res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+        }
         else
-            res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+        {
+        	if( handle->hooks->pfnWriteWstr != NULL )
+            	res = handle->hooks->pfnWriteWstr( handle, (FB_WCHAR *)data, length );
+        	else
+            	res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+        }
+
     }
 
     if( handle->mode == FB_FILE_MODE_RANDOM &&
-    	res==FB_RTERROR_OK && 
+    	res==FB_RTERROR_OK &&
     	adjust_rec_pos &&
-        handle->len!=0 && 
+        handle->len!=0 &&
         handle->hooks->pfnSeek!=NULL )
     {
         /* if in random mode, writes must be of reclen.
          * The device must also support the SEEK method and the length
          * must be non-null */
-        size_t skip_size = handle->len - (length % handle->len);
+        size_t skip_size = handle->len -
+        				   ((!is_unicode? length: length*sizeof( FB_WCHAR )) % handle->len);
         if (skip_size != 0)
         {
             /* devices that don't support seek should simulate it
@@ -84,22 +95,42 @@ int fb_FilePutDataEx( FB_FILE *handle,
 
 #ifndef FB_NATIVE_TAB
     if( checknewline )
-    	if ( res == FB_RTERROR_OK ) {
-        	/* search for last printed CR or LF */
-        	i=length;
-        	while (i--) {
-            	char ch = pachText[i];
-            	if (ch=='\n' || ch=='\r') {
-	                break;
-    	        }
+    	if ( res == FB_RTERROR_OK )
+    	{
+    		size_t i = length;
+    		if( !is_unicode )
+    		{
+    			const char *pachText = (const char *) data;
+
+        		/* search for last printed CR or LF */
+        		while (i--)
+        		{
+            		char ch = pachText[i];
+            		if (ch=='\n' || ch=='\r')
+	                	break;
+        		}
         	}
+        	else
+        	{
+    			const FB_WCHAR *pachText = (const FB_WCHAR *) data;
+
+        		/* search for last printed CR or LF */
+        		while (i--)
+        		{
+            		FB_WCHAR ch = pachText[i];
+            		if (ch == _LC('\n') || ch== _LC('\r') )
+	                	break;
+        		}
+
+        	}
+
+	       	handle = FB_HANDLE_DEREF(handle);
         	++i;
-        	handle = FB_HANDLE_DEREF(handle);
-        	if (i==0) {
+        	if (i==0)
 	            handle->line_length += length;
-    	    } else {
+    	    else
         	    handle->line_length = length - i;
-        	}
+
         	{
             	int iWidth = FB_HANDLE_DEREF(handle)->width;
             	if( iWidth!=0 ) {
@@ -123,7 +154,7 @@ int fb_FilePutData( int fnum,
 					int checknewline )
 {
     return fb_FilePutDataEx( FB_FILE_TO_HANDLE(fnum),
-    						 pos, data, length, adjust_rec_pos, checknewline );
+    						 pos, data, length, adjust_rec_pos, checknewline, FALSE );
 }
 
 /*:::::*/

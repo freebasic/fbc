@@ -18,7 +18,6 @@
  */
 
 #include "fb.h"
-#include "fb_unicode.h"
 
 /*:::::*/
 FBCALL int fb_WstrRadix2Int( const FB_WCHAR *s, int len, int radix )
@@ -33,7 +32,7 @@ FBCALL int fb_WstrRadix2Int( const FB_WCHAR *s, int len, int radix )
 		case 16:
 			while( --len >= 0 )
 			{
-				c = (int)fb_wstr_GetChar( (FB_WCHAR **)&s ) - 48;
+				c = (int)(*s++) - 48;
                 if( c > 9 )
                 	c -= (65 - 57 - 1);
 				if( c > 16 )
@@ -46,13 +45,13 @@ FBCALL int fb_WstrRadix2Int( const FB_WCHAR *s, int len, int radix )
 		/* oct */
 		case 8:
 			while( --len >= 0 )
-				v = (v * 8) + ((int)fb_wstr_GetChar( (FB_WCHAR **)&s ) - 48);
+				v = (v * 8) + ((int)(*s++) - 48);
 			break;
 
 		/* bin */
 		case 2:
 			while( --len >= 0 )
-				v = (v * 2) + ((int)fb_wstr_GetChar( (FB_WCHAR **)&s ) - 48);
+				v = (v * 2) + ((int)(*s++) - 48);
 			break;
 	}
 

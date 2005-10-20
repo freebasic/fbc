@@ -18,36 +18,33 @@
  */
 
 /*
- *	file_print - print # function (formating is done at io_prn)
+ * strw_convto_str.c -- unicode to ascii string convertion function
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: ago/2005 written [v1ctor]
  *
  */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
-#include "fb_rterr.h"
-
 
 /*:::::*/
-int fb_hFilePrintBufferEx( FB_FILE *handle, const void *buffer, size_t len )
+FBCALL FBSTRING *fb_WstrToStr( const FB_WCHAR *src )
 {
-    int res;
+	FBSTRING *dst;
+	int chars;
 
-    fb_DevScrnInit_Write( );
+    if( src == NULL )
+    	return &fb_strNullDesc;
 
-    if( !FB_HANDLE_USED(handle) )
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	chars = fb_wstr_Len( src );
+    if( chars == 0 )
+    	return &fb_strNullDesc;
 
-    res = fb_FilePutDataEx( handle, 0, buffer, len, TRUE, TRUE, FALSE );
+    dst = fb_hStrAllocTemp( NULL, chars );
+	if( dst == NULL )
+		return &fb_strNullDesc;
 
-    return res;
+	fb_wstr_ConvToA( (char *)dst, chars, src );
+
+	return dst;
 }
 
-/*:::::*/
-int fb_hFilePrintBuffer( int fnum, const char *buffer )
-{
-    return fb_hFilePrintBufferEx( FB_FILE_TO_HANDLE(fnum),
-                                  buffer, strlen( buffer ) );
-}

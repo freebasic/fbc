@@ -25,7 +25,6 @@
  */
 
 #include "fb.h"
-#include "fb_unicode.h"
 
 /*:::::*/
 FBCALL FB_WCHAR *fb_WstrConcatWA ( const FB_WCHAR *str1, const void *str2, int str2_size )
@@ -92,7 +91,7 @@ FBCALL FB_WCHAR *fb_WstrConcatAW ( const void *str1, int str1_size, const FB_WCH
     	if( str2_len > 0 )
     		fb_wstr_Move( d, str2, str2_len + 1 );
     	else
-    		fb_wstr_SetCharAt( d, 0, L'\0' );
+    		*d = L'\0';
     }
 
 	/* delete temp? */

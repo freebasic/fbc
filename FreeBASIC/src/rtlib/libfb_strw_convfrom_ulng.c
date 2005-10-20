@@ -25,7 +25,6 @@
  */
 
 #include "fb.h"
-#include "fb_unicode.h"
 
 /*:::::*/
 FBCALL unsigned long long fb_WstrToULongint( const FB_WCHAR *src, int len )
@@ -42,9 +41,9 @@ FBCALL unsigned long long fb_WstrToULongint( const FB_WCHAR *src, int len )
 
 	radix = 10;
 	r = p;
-	if( (len >= 2) && (fb_wstr_GetChar( &r ) == L'&') )
+	if( (len >= 2) && (*r++ == L'&') )
 	{
-		switch( fb_wstr_GetChar( &r ) )
+		switch( *r++ )
 		{
 			case L'h':
 			case L'H':

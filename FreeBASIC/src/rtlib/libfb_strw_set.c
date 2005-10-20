@@ -25,7 +25,6 @@
  */
 
 #include "fb.h"
-#include "fb_unicode.h"
 
 /*:::::*/
 FBCALL void fb_WstrLset ( FB_WCHAR *dst, FB_WCHAR *src )

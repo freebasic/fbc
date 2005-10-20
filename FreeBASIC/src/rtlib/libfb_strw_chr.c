@@ -26,7 +26,6 @@
 
 #include <stdarg.h>
 #include "fb.h"
-#include "fb_unicode.h"
 
 /*:::::*/
 FB_WCHAR *fb_WstrChr ( int args, ... )
@@ -50,10 +49,10 @@ FB_WCHAR *fb_WstrChr ( int args, ... )
 		for( i = 0; i < args; i++ )
 		{
 			num = va_arg( ap, unsigned int );
-			fb_wstr_PutChar( &s, num );
+			*s++ = num;
 		}
 		/* null-term */
-		fb_wstr_PutChar( &s, 0 );
+		*s = 0;
 	}
 
 	va_end( ap );

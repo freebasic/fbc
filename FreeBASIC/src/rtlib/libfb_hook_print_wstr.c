@@ -18,36 +18,32 @@
  */
 
 /*
- *	file_print - print # function (formating is done at io_prn)
+ * hook_print_wstr.c -- print wstring entrypoint, default to console mode
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: nov/2004 written [v1ctor]
  *
  */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
-#include "fb_rterr.h"
-
 
 /*:::::*/
-int fb_hFilePrintBufferEx( FB_FILE *handle, const void *buffer, size_t len )
+FBCALL void fb_PrintBufferWstrEx( const FB_WCHAR *buffer, size_t len, int mask )
 {
-    int res;
+	FB_LOCK();
 
-    fb_DevScrnInit_Write( );
+    if( fb_hooks.printbuffwstrproc )
+        fb_hooks.printbuffwstrproc( buffer, len, mask );
+    else
+        fb_ConsolePrintBufferWstrEx( buffer, len, mask );
 
-    if( !FB_HANDLE_USED(handle) )
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	FB_UNLOCK();
 
-    res = fb_FilePutDataEx( handle, 0, buffer, len, TRUE, TRUE, FALSE );
-
-    return res;
 }
 
 /*:::::*/
-int fb_hFilePrintBuffer( int fnum, const char *buffer )
+FBCALL void fb_PrintBufferWstr( const FB_WCHAR *buffer, int mask )
 {
-    return fb_hFilePrintBufferEx( FB_FILE_TO_HANDLE(fnum),
-                                  buffer, strlen( buffer ) );
+
+    return fb_PrintBufferWstrEx( buffer, fb_wstr_Len( buffer ), mask );
+
 }

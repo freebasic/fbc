@@ -26,7 +26,6 @@
  */
 
 #include "fb.h"
-#include "fb_unicode.h"
 
 static char hex_table[16] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
@@ -45,7 +44,7 @@ static FB_WCHAR *hHEX ( unsigned int num, int len )
 		buf = dst;
 
 		if( num == 0 )
-			fb_wstr_PutChar( &buf, '0' );
+			*buf++ = '0';
 		else
 		{
 			num <<= (32 - (len*8));
@@ -56,13 +55,13 @@ static FB_WCHAR *hHEX ( unsigned int num, int len )
 
 			for( ; i < len*2; i++, num <<= 4 )
 				if( num > 0x0FFFFFFF )
-					fb_wstr_PutChar( &buf, hex_table[(num & 0xF0000000) >> 28] );
+					*buf++ = hex_table[(num & 0xF0000000) >> 28];
 				else
-					fb_wstr_PutChar( &buf, '0' );
+					*buf++ = '0';
 		}
 
 		/* add null-term */
-		fb_wstr_PutChar( &buf, '\0' );
+		*buf++ = '\0';
 	}
 
 	return dst;

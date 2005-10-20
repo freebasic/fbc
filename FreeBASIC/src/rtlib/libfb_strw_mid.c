@@ -25,7 +25,6 @@
  */
 
 #include "fb.h"
-#include "fb_unicode.h"
 
 /*:::::*/
 FBCALL FB_WCHAR *fb_WstrMid ( const FB_WCHAR *src, int start, int len )
@@ -54,7 +53,7 @@ FBCALL FB_WCHAR *fb_WstrMid ( const FB_WCHAR *src, int start, int len )
 	/* alloc temp string */
     dst = fb_wstr_AllocTemp( len );
 	if( dst != NULL )
-		fb_wstr_Copy( dst, fb_wstr_OffsetOf( src, start ), len );
+		fb_wstr_Copy( dst, &src[start], len );
 
 	return dst;
 }

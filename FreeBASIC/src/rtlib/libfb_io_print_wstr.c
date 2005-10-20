@@ -18,36 +18,43 @@
  */
 
 /*
- *	file_print - print # function (formating is done at io_prn)
+ * io_print_wstr.c -- print [#] wstring functions
  *
  * chng: oct/2004 written [v1ctor]
  *
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
-
 /*:::::*/
-int fb_hFilePrintBufferEx( FB_FILE *handle, const void *buffer, size_t len )
+static void fb_hPrintWstrEx( FB_FILE *handle, const FB_WCHAR *s, size_t len, int mask )
 {
-    int res;
+    /* add a lock here or the new-line won't be printed in the right
+       place if PRINT is been used in multiple threads and a context
+       switch happens between FB_PRINT_EX() and PrintVoidEx() */
+    FB_LOCK( );
 
-    fb_DevScrnInit_Write( );
+    if( len != 0 )
+        FB_PRINTWSTR_EX(handle, s, len, 0);
 
-    if( !FB_HANDLE_USED(handle) )
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+    fb_PrintVoidEx( handle, mask );
 
-    res = fb_FilePutDataEx( handle, 0, buffer, len, TRUE, TRUE, FALSE );
-
-    return res;
+    FB_UNLOCK( );
 }
 
 /*:::::*/
-int fb_hFilePrintBuffer( int fnum, const char *buffer )
+void fb_PrintWstrEx ( FB_FILE *handle, const FB_WCHAR *s, int mask )
 {
-    return fb_hFilePrintBufferEx( FB_FILE_TO_HANDLE(fnum),
-                                  buffer, strlen( buffer ) );
+    if( s == NULL )
+    	fb_PrintVoidEx( handle, mask );
+    else
+    	fb_hPrintWstrEx( handle, s, fb_wstr_Len( s ), mask );
+}
+
+/*:::::*/
+FBCALL void fb_PrintWstr ( int fnum, const FB_WCHAR *s, int mask )
+{
+    fb_PrintWstrEx(FB_FILE_TO_HANDLE(fnum), s, mask);
 }

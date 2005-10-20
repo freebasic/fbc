@@ -41,7 +41,7 @@ int fb_FilePutStrEx( FB_FILE *handle, long pos, void *str, int str_len )
 
 	/* perform call ... but only if there's data ... */
     if( (data != NULL) && (len > 0) )
-        res = fb_FilePutDataEx( handle, pos, data, len, TRUE, TRUE );
+        res = fb_FilePutDataEx( handle, pos, data, len, TRUE, TRUE, FALSE );
     else
     	res = fb_ErrorSetNum( FB_RTERROR_OK );
 

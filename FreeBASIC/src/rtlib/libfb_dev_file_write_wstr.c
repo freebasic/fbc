@@ -18,36 +18,41 @@
  */
 
 /*
- *	file_print - print # function (formating is done at io_prn)
+ *	dev_file - file device
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jul/2005 written [mjs]
  *
  */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <malloc.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
-
 /*:::::*/
-int fb_hFilePrintBufferEx( FB_FILE *handle, const void *buffer, size_t len )
+int fb_DevFileWriteWstr( struct _FB_FILE *handle, const FB_WCHAR* value, size_t valuelen )
 {
-    int res;
+    FILE *fp;
 
-    fb_DevScrnInit_Write( );
+    FB_LOCK();
 
-    if( !FB_HANDLE_USED(handle) )
+    fp = (FILE*) handle->opaque;
+
+	if( fp == NULL ) {
+		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	}
 
-    res = fb_FilePutDataEx( handle, 0, buffer, len, TRUE, TRUE, FALSE );
+	/* !!!FIXME!!! is it okay to use fwrite() if file was opened in text mode? !!!FIXME!!! */
+	/* do write */
+	if( fwrite( (void *)value, sizeof( FB_WCHAR ), valuelen, fp ) != valuelen ) {
+		FB_UNLOCK();
+		return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+	}
 
-    return res;
-}
+	FB_UNLOCK();
 
-/*:::::*/
-int fb_hFilePrintBuffer( int fnum, const char *buffer )
-{
-    return fb_hFilePrintBufferEx( FB_FILE_TO_HANDLE(fnum),
-                                  buffer, strlen( buffer ) );
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

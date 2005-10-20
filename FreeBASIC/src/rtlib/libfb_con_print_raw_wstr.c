@@ -18,65 +18,38 @@
  */
 
 /*
- * strw_convto_flt.c -- strw$ routines for float and double
+ * con_print_raw.c -- print raw data - no interpretation is done
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: sep/2005 written [mjs]
  *
  */
 
-#include "fb.h"
+#include "fb_con.h"
 
-/*:::::*/
-FBCALL FB_WCHAR *fb_FloatToWstr ( float num )
+void fb_ConPrintRawWstr( fb_ConHooks *handle,
+                     	 const FB_WCHAR *pachText,
+                     	 size_t TextLength )
 {
-	FB_WCHAR *dst, *d;
-    int len;
+    fb_Rect *pBorder = &handle->Border;
+    fb_Coord *pCoord = &handle->Coord;
+    while( TextLength!=0 ) {
+        size_t RemainingWidth = pBorder->Right - pCoord->X + 1;
+        size_t CopySize = (TextLength > RemainingWidth) ? RemainingWidth : TextLength;
 
-	/* alloc temp string */
-    dst = fb_wstr_AllocTemp( 8+8 );
-	if( dst != NULL )
-    {
-		/* convert */
-		swprintf( dst, _LC("%.8g"), num );
+        fb_hConCheckScroll( handle );
 
-		/* skip the dot at end if any */
-		len = fb_wstr_Len( dst );
-		if( len > 0 )
-		{
-			d = &dst[len-1];
-			if( *d == _LC('.') )
-				*d = _LC('\0');
+        if( handle->Write( handle,
+                           (char *)pachText,
+                           CopySize )!=TRUE )
+            break;
+
+        TextLength -= CopySize;
+        pachText += CopySize;
+        pCoord->X += CopySize;
+
+        if( pCoord->X==(pBorder->Right + 1) ) {
+            pCoord->X = pBorder->Left;
+            pCoord->Y += 1;
         }
     }
-
-	return dst;
 }
-
-/*:::::*/
-FBCALL FB_WCHAR *fb_DoubleToWstr ( double num )
-{
-	FB_WCHAR *dst, *d;
-	int len;
-
-	/* alloc temp string */
-    dst = fb_wstr_AllocTemp( 16+8 );
-	if( dst != NULL )
-	{
-		/* convert */
-		swprintf( dst, _LC("%.16g"), num);
-
-		/* skip the dot at end if any */
-		len = fb_wstr_Len( dst );
-		if( len > 0 )
-		{
-			d = &dst[len-1];
-			if( *d == _LC('.') )
-				*d = _LC('\0');
-        }
-	}
-
-	return dst;
-}
-
-
-

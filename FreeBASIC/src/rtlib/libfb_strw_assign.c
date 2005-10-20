@@ -25,10 +25,9 @@
  */
 
 #include "fb.h"
-#include "fb_unicode.h"
 
 /*:::::*/
-FBCALL void *fb_WstrAssign ( FB_WCHAR *dst, int dst_chars, FB_WCHAR *src )
+FBCALL FB_WCHAR *fb_WstrAssign ( FB_WCHAR *dst, int dst_chars, FB_WCHAR *src )
 {
 	int src_chars;
 
@@ -43,7 +42,7 @@ FBCALL void *fb_WstrAssign ( FB_WCHAR *dst, int dst_chars, FB_WCHAR *src )
 	/* src NULL? */
 	if( src_chars == 0 )
 	{
-		fb_wstr_SetCharAt( dst, 0, 0 );
+		*dst = 0;
 	}
 	else
 	{

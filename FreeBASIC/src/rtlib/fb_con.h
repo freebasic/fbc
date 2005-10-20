@@ -51,14 +51,15 @@ extern "C" {
         return FALSE;
     }
 
-    void fb_ConPrintRaw( fb_ConHooks *handle,
-                         const char *pachText,
-                         size_t TextLength );
+    void fb_ConPrintRaw				( fb_ConHooks *handle, const char *pachText,
+                         			  size_t TextLength );
+    void fb_ConPrintRawWstr			( fb_ConHooks *handle, const FB_WCHAR *pachText,
+                         			  size_t TextLength );
 
-    void fb_ConPrintTTY( fb_ConHooks *handle,
-                         const char *pachText,
-                         size_t TextLength,
-                         int is_text_mode );
+    void fb_ConPrintTTY				( fb_ConHooks *handle, const char *pachText,
+                         			  size_t TextLength, int is_text_mode );
+    void fb_ConPrintTTYWstr			( fb_ConHooks *handle, const FB_WCHAR *pachText,
+                         			  size_t TextLength, int is_text_mode );
 
 #ifdef __cplusplus
 }

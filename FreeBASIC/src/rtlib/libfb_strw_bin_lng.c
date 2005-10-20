@@ -25,7 +25,6 @@
  */
 
 #include "fb.h"
-#include "fb_unicode.h"
 
 #ifndef TARGET_WIN32
 /*:::::*/
@@ -34,7 +33,7 @@ static void hToBin( unsigned long long num, FB_WCHAR *dst )
 	int i;
 
 	if( num == 0ULL )
-		fb_wstr_PutChar( &dst, '0' );
+		*dst++ = _LC('0');
 	else
 	{
 		for( i = 0; i < sizeof( long long )*8; i++, num <<= 1 )
@@ -43,13 +42,13 @@ static void hToBin( unsigned long long num, FB_WCHAR *dst )
 
 		for( ; i < sizeof( long long )*8; i++, num <<= 1 )
 			if( num & 0x8000000000000000ULL )
-				fb_wstr_PutChar( &dst, '1' );
+				*dst++ = _LC('1');
 			else
-				fb_wstr_PutChar( &dst, '0' );
+				*dst++ = _LC('0');
 	}
 
 	/* add null-term */
-	fb_wstr_PutChar( &dst, 0 );
+	*dst = 0;
 
 }
 #endif

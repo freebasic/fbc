@@ -25,32 +25,31 @@
  */
 
 #include "fb.h"
-#include "fb_unicode.h"
 
 #ifndef TARGET_WIN32
 /*:::::*/
 static void hToBin( unsigned int num, FB_WCHAR *dst, int len )
 {
-	unsigned int mask = 1UL << ((len*8)-1);   
-	int i; 
-	
+	unsigned int mask = 1UL << ((len*8)-1);
+	int i;
+
 	if( num == 0 )
-		fb_wstr_PutChar( &dst, '0' );
+		*dst++ = _LC('0');
 	else
     {
 		for( i = 0; i < len*8; i++, num <<= 1 )
             if( num & mask )
-				break;   
-    
-			for( ; i < len*8; i++, num <<= 1 )   
-            	if( num & mask ) 
-					fb_wstr_PutChar( &dst, '1' );
+				break;
+
+			for( ; i < len*8; i++, num <<= 1 )
+            	if( num & mask )
+					*dst++ = _LC('1');
 				else
-                	fb_wstr_PutChar( &dst, '0' );
+                	*dst++ = _LC('0');
 	}
-	
+
 	/* add null-term */
-	fb_wstr_PutChar( &dst, 0 );
+	*dst = 0;
 }
 #endif
 

@@ -25,7 +25,6 @@
  */
 
 #include "fb.h"
-#include "fb_unicode.h"
 
 /*:::::*/
 FBCALL int fb_WstrCompare ( const FB_WCHAR *str1, const FB_WCHAR *str2 )

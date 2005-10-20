@@ -18,36 +18,28 @@
  */
 
 /*
- *	file_print - print # function (formating is done at io_prn)
+ * io_write_wstr.c -- write [#] wstring functions
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: nov/2004 written [v1ctor]
  *
  */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
-#include "fb_rterr.h"
-
 
 /*:::::*/
-int fb_hFilePrintBufferEx( FB_FILE *handle, const void *buffer, size_t len )
+FBCALL void fb_WriteWstr ( int fnum, FB_WCHAR *s, int mask )
 {
-    int res;
-
-    fb_DevScrnInit_Write( );
-
-    if( !FB_HANDLE_USED(handle) )
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-
-    res = fb_FilePutDataEx( handle, 0, buffer, len, TRUE, TRUE, FALSE );
-
-    return res;
-}
-
-/*:::::*/
-int fb_hFilePrintBuffer( int fnum, const char *buffer )
-{
-    return fb_hFilePrintBufferEx( FB_FILE_TO_HANDLE(fnum),
-                                  buffer, strlen( buffer ) );
+    if( s == NULL )
+    {
+#if 1
+        FB_WRITEWSTR( fnum, "", mask, L"\"%s\"" );
+#else
+        fb_WriteVoid( fnum, mask );
+#endif
+    }
+    else
+    {
+    	FB_WRITEWSTR( fnum, s, mask, L"\"%s\"" );
+    }
 }

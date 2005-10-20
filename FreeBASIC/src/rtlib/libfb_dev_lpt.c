@@ -82,6 +82,22 @@ static int fb_DevLptWrite( struct _FB_FILE *handle, const void* value, size_t va
 	return res;
 }
 
+/*:::::*/
+static int fb_DevLptWriteWstr( struct _FB_FILE *handle, const FB_WCHAR* value, size_t valuelen )
+{
+    int res;
+    DEV_LPT_INFO *pInfo;
+
+    FB_LOCK();
+
+    pInfo = (DEV_LPT_INFO*) handle->opaque;
+    res = fb_PrinterWriteWstr(pInfo->hPrinter, value, valuelen );
+
+    FB_UNLOCK();
+
+	return res;
+}
+
 static FB_FILE_HOOKS fb_hooks_dev_lpt = {
     NULL,
     fb_DevLptClose,
@@ -89,6 +105,7 @@ static FB_FILE_HOOKS fb_hooks_dev_lpt = {
     NULL,
     NULL,
     fb_DevLptWrite,
+    fb_DevLptWriteWstr,
     NULL,
     NULL,
     NULL

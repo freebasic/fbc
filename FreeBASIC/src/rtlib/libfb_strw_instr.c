@@ -25,7 +25,6 @@
  */
 
 #include "fb.h"
-#include "fb_unicode.h"
 
 /*:::::*/
 FBCALL int fb_WstrInstr ( int start, const FB_WCHAR *src, const FB_WCHAR *patt )
@@ -38,7 +37,7 @@ FBCALL int fb_WstrInstr ( int start, const FB_WCHAR *src, const FB_WCHAR *patt )
 
     if( (start > 0) && (start <= fb_wstr_Len( src )) )
     {
-    	p = fb_wstr_Instr( fb_wstr_OffsetOf( src, start-1 ), patt );
+    	p = fb_wstr_Instr( &src[start-1], patt );
     	if( p != NULL )
     		r = fb_wstr_CalcDiff( src, p ) + 1;
     	else

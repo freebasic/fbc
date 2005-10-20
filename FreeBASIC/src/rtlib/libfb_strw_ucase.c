@@ -25,7 +25,6 @@
  */
 
 #include "fb.h"
-#include "fb_unicode.h"
 
 
 /*:::::*/
@@ -51,16 +50,16 @@ FBCALL FB_WCHAR *fb_WstrUcase ( const FB_WCHAR *src )
 	d = dst;
 	for( i = 0; i < chars; i++ )
     {
-		c = fb_wstr_GetChar( (FB_WCHAR **)&s );
+		c = *s++;
 
 		if( fb_wstr_IsLower( c ) )
 			c = fb_wstr_ToUpper( c );
 
-		fb_wstr_PutChar( &d, c );
+		*d++ = c;
 	}
 
 	/* null char */
-	fb_wstr_PutChar( &d, 0 );
+	*d = _LC('\0');
 
 	return dst;
 }

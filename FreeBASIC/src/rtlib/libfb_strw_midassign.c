@@ -25,7 +25,6 @@
  */
 
 #include "fb.h"
-#include "fb_unicode.h"
 
 /*:::::*/
 FBCALL void fb_WstrAssignMid ( FB_WCHAR *dst, int start, int len, const FB_WCHAR *src )
@@ -54,6 +53,6 @@ FBCALL void fb_WstrAssignMid ( FB_WCHAR *dst, int start, int len, const FB_WCHAR
         	len = (dst_len - start) - 1;
 
 		/* without the null-term */
-		fb_wstr_Move( fb_wstr_OffsetOf( dst, start ), src, len );
+		fb_wstr_Move( &dst[start], src, len );
     }
 }

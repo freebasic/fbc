@@ -18,7 +18,7 @@
  */
 
 /*
- *	file_print - print # function (formating is done at io_prn)
+ *	file_put_wstr - put # function for wstrings
  *
  * chng: oct/2004 written [v1ctor]
  *
@@ -29,25 +29,23 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-
 /*:::::*/
-int fb_hFilePrintBufferEx( FB_FILE *handle, const void *buffer, size_t len )
+int fb_FilePutWstrEx( FB_FILE *handle, long pos, FB_WCHAR *str, int len )
 {
     int res;
 
-    fb_DevScrnInit_Write( );
+	/* perform call ... but only if there's data ... */
+    if( (str != NULL) && (len > 0) )
+        res = fb_FilePutDataEx( handle, pos, (void *)str, len, TRUE, TRUE, TRUE );
+    else
+    	res = fb_ErrorSetNum( FB_RTERROR_OK );
 
-    if( !FB_HANDLE_USED(handle) )
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-
-    res = fb_FilePutDataEx( handle, 0, buffer, len, TRUE, TRUE, FALSE );
-
-    return res;
+	return res;
 }
 
 /*:::::*/
-int fb_hFilePrintBuffer( int fnum, const char *buffer )
+FBCALL int fb_FilePutWstr( int fnum, long pos, FB_WCHAR *str, int str_len )
 {
-    return fb_hFilePrintBufferEx( FB_FILE_TO_HANDLE(fnum),
-                                  buffer, strlen( buffer ) );
+	return fb_FilePutWstrEx(FB_FILE_TO_HANDLE(fnum), pos, str, str_len);
 }
+

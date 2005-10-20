@@ -31,23 +31,23 @@
 
 
 /*:::::*/
-int fb_hFilePrintBufferEx( FB_FILE *handle, const void *buffer, size_t len )
+int fb_hFilePrintBufferWstrEx( FB_FILE *handle, const FB_WCHAR *buffer, size_t len )
 {
     int res;
 
-    fb_DevScrnInit_Write( );
+    fb_DevScrnInit_WriteWstr( );
 
     if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
-    res = fb_FilePutDataEx( handle, 0, buffer, len, TRUE, TRUE, FALSE );
+    res = fb_FilePutDataEx( handle, 0, buffer, len, TRUE, TRUE, TRUE );
 
     return res;
 }
 
 /*:::::*/
-int fb_hFilePrintBuffer( int fnum, const char *buffer )
+int fb_hFilePrintBufferWstr( int fnum, const FB_WCHAR *buffer )
 {
-    return fb_hFilePrintBufferEx( FB_FILE_TO_HANDLE(fnum),
-                                  buffer, strlen( buffer ) );
+    return fb_hFilePrintBufferWstrEx( FB_FILE_TO_HANDLE(fnum),
+                                  	  buffer, fb_wstr_Len( buffer ) );
 }

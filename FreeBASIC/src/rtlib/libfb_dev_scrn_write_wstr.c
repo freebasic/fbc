@@ -18,36 +18,33 @@
  */
 
 /*
- *	file_print - print # function (formating is done at io_prn)
+ *	dev_file - file device
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: jul/2005 written [mjs]
  *
  */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <malloc.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
+FBCALL void fb_PrintBufferWstrEx( const FB_WCHAR *buffer, size_t len, int mask );
 
 /*:::::*/
-int fb_hFilePrintBufferEx( FB_FILE *handle, const void *buffer, size_t len )
+int fb_DevScrnWriteWstr( struct _FB_FILE *handle, const FB_WCHAR* value, size_t valuelen )
 {
-    int res;
-
-    fb_DevScrnInit_Write( );
-
-    if( !FB_HANDLE_USED(handle) )
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-
-    res = fb_FilePutDataEx( handle, 0, buffer, len, TRUE, TRUE, FALSE );
-
-    return res;
+    fb_PrintBufferWstrEx( value, valuelen, 0 );
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 /*:::::*/
-int fb_hFilePrintBuffer( int fnum, const char *buffer )
+void fb_DevScrnInit_WriteWstr( void )
 {
-    return fb_hFilePrintBufferEx( FB_FILE_TO_HANDLE(fnum),
-                                  buffer, strlen( buffer ) );
+	fb_DevScrnInit_NoOpen( );
+
+    if( FB_HANDLE_SCREEN->hooks->pfnWriteWstr == NULL )
+    	FB_HANDLE_SCREEN->hooks->pfnWriteWstr = fb_DevScrnWriteWstr;
 }

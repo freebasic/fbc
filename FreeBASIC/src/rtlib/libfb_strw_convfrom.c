@@ -25,7 +25,6 @@
  */
 
 #include "fb.h"
-#include "fb_unicode.h"
 
 /*:::::*/
 FBCALL double fb_WstrToDouble( const FB_WCHAR *src, int len )
@@ -41,10 +40,10 @@ FBCALL double fb_WstrToDouble( const FB_WCHAR *src, int len )
 		return 0.0;
 
 	r = p;
-	if( (len >= 2) && (fb_wstr_GetChar( &r ) == L'&') )
+	if( (len >= 2) && (*r++ == L'&') )
 	{
 		radix = 0;
-		switch( fb_wstr_GetChar( &r ) )
+		switch( *r++ )
 		{
 			case L'h':
 			case L'H':

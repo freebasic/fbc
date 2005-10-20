@@ -25,7 +25,6 @@
  */
 
 #include "fb.h"
-#include "fb_unicode.h"
 
 /*:::::*/
 static FB_WCHAR *hOCT ( unsigned int num, int len )

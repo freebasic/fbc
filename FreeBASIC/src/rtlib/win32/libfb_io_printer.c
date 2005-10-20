@@ -444,6 +444,24 @@ int fb_PrinterWrite( void *pvHandle, const void *data, size_t length )
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
+int fb_PrinterWriteWstr( void *pvHandle, const FB_WCHAR *data, size_t length )
+{
+    W32_PRINTER_INFO *pInfo = (W32_PRINTER_INFO*) pvHandle;
+    DWORD dwWritten;
+
+    if( !WritePrinter( pInfo->hPrinter,
+                       (LPVOID) data,
+                       length * sizeof( FB_WCHAR ),
+                       &dwWritten ) )
+    {
+        return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+    } else if ( dwWritten != length ) {
+        return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+    }
+
+    return fb_ErrorSetNum( FB_RTERROR_OK );
+}
+
 int fb_PrinterClose( void *pvHandle )
 {
     W32_PRINTER_INFO *pInfo = (W32_PRINTER_INFO*) pvHandle;

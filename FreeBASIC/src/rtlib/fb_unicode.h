@@ -23,48 +23,6 @@
 
 
 /*:::::*/
-static __inline__ int fb_wstr_CharLen( FB_WCHAR c )
-{
-	return sizeof( FB_WCHAR );
-}
-
-/*:::::*/
-static __inline__ FB_WCHAR *fb_wstr_OffsetOf( const FB_WCHAR *s, int p )
-{
-	return (FB_WCHAR *)(&s[p]);
-}
-
-/*:::::*/
-static __inline__ FB_WCHAR fb_wstr_GetCharAt( const FB_WCHAR *s, int p )
-{
-	return *fb_wstr_OffsetOf( (FB_WCHAR *)s, p );
-}
-
-/*:::::*/
-static __inline__ void fb_wstr_SetCharAt( FB_WCHAR *s, int p, FB_WCHAR c )
-{
-	*fb_wstr_OffsetOf( s, p ) = c;
-}
-
-/*:::::*/
-static __inline__ FB_WCHAR fb_wstr_GetChar( FB_WCHAR **s )
-{
-	return *((*s)++);
-}
-
-/*:::::*/
-static __inline__ void fb_wstr_PutChar( FB_WCHAR **s, FB_WCHAR c )
-{
-	*((*s)++) = c;
-}
-
-/*:::::*/
-static __inline__ FB_WCHAR fb_wstr_GetCharRev( FB_WCHAR **s )
-{
-	return *((*s)--);
-}
-
-/*:::::*/
 static __inline__ int fb_wstr_CalcDiff( const FB_WCHAR *ini, const FB_WCHAR *end )
 {
 	return ((int)end - (int)ini) / sizeof( FB_WCHAR );
@@ -96,7 +54,7 @@ static __inline__ FB_WCHAR *fb_wstr_ConvFromA( FB_WCHAR *dst, int dst_chars, con
 	/* NULL? */
 	if( src == NULL )
 	{
-		fb_wstr_SetCharAt( dst, 0, L'\0' );
+		*dst = L'\0';
 		return dst;
 	}
 
@@ -137,15 +95,13 @@ static __inline__ FB_WCHAR fb_wstr_ToUpper( FB_WCHAR c )
 }
 
 /*:::::*/
-static __inline__ FB_WCHAR *fb_wstr_Copy( FB_WCHAR *dst, const FB_WCHAR *src, int chars )
+static __inline__ void fb_wstr_Copy( FB_WCHAR *dst, const FB_WCHAR *src, int chars )
 {
     if( (src != NULL) && (chars > 0) )
         dst = FB_MEMCPYX( dst, src, chars * sizeof( FB_WCHAR ) );
 
     /* add the null-term */
-    fb_wstr_PutChar( &dst, L'\0' );
-
-    return dst;
+    *dst = L'\0';
 }
 
 /*:::::*/
@@ -160,10 +116,10 @@ static __inline__ void fb_wstr_Fill( FB_WCHAR *dst, FB_WCHAR c, int chars )
 	int i;
 
 	for( i = 0; i < chars; i++ )
-		fb_wstr_PutChar( &dst, c );
+		*dst++ = c;
 
 	/* add null-term */
-	fb_wstr_PutChar( &dst, L'\0' );
+	*dst = L'\0';
 }
 
 /*:::::*/
@@ -178,7 +134,7 @@ static __inline__ FB_WCHAR *fb_wstr_SkipChar( const FB_WCHAR *s, int chars, FB_W
 	while( chars > 0 )
 	{
 		op = p;
-		if( fb_wstr_GetChar( &p ) != c )
+		if( *p++ != c )
 			return op;
 		--chars;
 	}
@@ -189,25 +145,23 @@ static __inline__ FB_WCHAR *fb_wstr_SkipChar( const FB_WCHAR *s, int chars, FB_W
 /*:::::*/
 static __inline__ FB_WCHAR *fb_wstr_SkipCharRev( const FB_WCHAR *s, int chars, FB_WCHAR c )
 {
-	FB_WCHAR *p, *op;
-	FB_WCHAR pc;
+	const FB_WCHAR *p;
 
 	if( (s == NULL) || (chars <= 0) )
 		return (FB_WCHAR *)s;
 
-	p = fb_wstr_OffsetOf( s, chars-1 );
+	p = &s[chars-1];
 
     /* fixed-len's are filled with null's as in PB, strip them too */
     while( chars > 0 )
     {
-		op = p;
-		pc = fb_wstr_GetCharRev( &p );
-		if( (pc != 0) && (pc != c) )
-			return op;
+		if( (*p != 0) && (*p != c) )
+			return (FB_WCHAR *)p;
+		--p;
 		--chars;
 	}
 
-    return p;
+    return (FB_WCHAR *)p;
 }
 
 /*:::::*/
