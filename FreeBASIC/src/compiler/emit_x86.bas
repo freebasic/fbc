@@ -74,25 +74,26 @@ declare function 	hGetTypeString		( byval typ as integer ) as string
 	'' same order as IRDATATYPE_ENUM
 	dim shared dtypeTB(0 to IR_MAXDATATYPES-1) as EMITDATATYPE => _
 	{ _
-		( IR_DATACLASS_INTEGER, 0 			    , 0, "void ptr"  ), _
-		( IR_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _
-		( IR_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _
-		( IR_DATACLASS_INTEGER, 1               , 0, "byte ptr"  ), _
-		( IR_DATACLASS_INTEGER, 2               , 1, "word ptr"  ), _
-		( IR_DATACLASS_INTEGER, 2               , 1, "word ptr"  ), _
-		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _
-		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _
-		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _
-		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2, 2, "qword ptr" ), _
-		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2, 2, "qword ptr" ), _
-		( IR_DATACLASS_FPOINT , 4			    , 3, "dword ptr" ), _
-		( IR_DATACLASS_FPOINT , 8			    , 3, "qword ptr" ), _
-		( IR_DATACLASS_STRING , 8               , 0, ""          ), _
-		( IR_DATACLASS_STRING , 1               , 0, "byte ptr"  ), _
-		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _
-		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _
-		( IR_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _
-		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ) _
+		( IR_DATACLASS_INTEGER, 0 			    , 0, "void ptr"  ), _	'' void
+		( IR_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' byte
+		( IR_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' ubyte
+		( IR_DATACLASS_INTEGER, 1               , 0, "byte ptr"  ), _	'' char
+		( IR_DATACLASS_INTEGER, 2               , 1, "word ptr"  ), _	'' short
+		( IR_DATACLASS_INTEGER, 2               , 1, "word ptr"  ), _	'' ushort
+		( IR_DATACLASS_INTEGER, 2  				, 1, "word ptr" ), _	'' wchar
+		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' int
+		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _   '' uint
+		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' enum
+		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2, 2, "qword ptr" ), _	'' longint
+		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2, 2, "qword ptr" ), _	'' ulongint
+		( IR_DATACLASS_FPOINT , 4			    , 3, "dword ptr" ), _	'' single
+		( IR_DATACLASS_FPOINT , 8			    , 3, "qword ptr" ), _	'' double
+		( IR_DATACLASS_STRING , FB_STRDESCLEN	, 0, ""          ), _	'' string
+		( IR_DATACLASS_STRING , 1               , 0, "byte ptr"  ), _	'' fix-len string
+		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' udt
+		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' function
+		( IR_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' fwd-ref
+		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ) _	'' pointer
 	}
 
 const EMIT_MAXKEYWORDS = 600
@@ -261,6 +262,21 @@ sub emitSubInit
 
 	''
 	hInitRegTB( )
+
+	'' wchar len depends on the target platform
+	with dtypeTB(IR_DATATYPE_WCHAR)
+		select case env.clopt.target
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+			.size 	 = 2
+			.rnametb = 1						'' short's tb
+			.mname	 = "word ptr"
+		case else
+			.size 	 = FB_INTEGERSIZE
+			.rnametb = 2                        '' int's tb
+			.mname	 = "dword ptr"
+		end select
+
+    end with
 
 	''
 	emit.keyinited 	= FALSE
@@ -5158,11 +5174,19 @@ sub emitVARINIOFS( byval sname as string ) static
 end sub
 
 '':::::
-sub emitVARINISTR( byval lgt as integer, _
-				   byval s as string ) static
+sub emitVARINISTR( byval s as string ) static
     dim ostr as string
 
 	ostr = ".ascii \"" + s + "\\0\"" + NEWLINE
+	outEx( ostr, FALSE )
+
+end sub
+
+'':::::
+sub emitVARINIWSTR( byval s as string ) static
+    dim ostr as string
+
+	ostr = ".ascii \"" + s + "\\0\\0\"" + NEWLINE
 	outEx( ostr, FALSE )
 
 end sub
@@ -5220,24 +5244,35 @@ end sub
 private function hGetTypeString( byval typ as integer ) as string static
 
 	select case as const typ
-    case FB_SYMBTYPE_UBYTE, FB_SYMBTYPE_BYTE, FB_SYMBTYPE_CHAR
+    case FB_SYMBTYPE_UBYTE, FB_SYMBTYPE_BYTE, _
+    	 FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR
+    	 '' wchar stills the same as it is emitted as escape sequences
     	function = ".byte"
+
     case FB_SYMBTYPE_USHORT, FB_SYMBTYPE_SHORT
     	function = ".short"
+
     case FB_SYMBTYPE_INTEGER, FB_SYMBTYPE_UINT, FB_SYMBTYPE_ENUM
     	function = ".int"
+
     case FB_SYMBTYPE_LONGINT, FB_SYMBTYPE_ULONGINT
     	function = ".quad"
+
     case FB_SYMBTYPE_SINGLE
 		function = ".float"
+
 	case FB_SYMBTYPE_DOUBLE
     	function = ".double"
+
 	case FB_SYMBTYPE_FIXSTR
     	function = ".ascii"
+
     case FB_SYMBTYPE_STRING
     	function = ".int"
+
 	case FB_SYMBTYPE_USERDEF
 		function = "INVALID"
+
     case else
     	if( typ >= FB_SYMBTYPE_POINTER ) then
     		function = ".int"
@@ -5327,7 +5362,7 @@ sub emitWriteBss( byval s as FBSYMBOL ptr )
     	    end if
 
     	    '' emit
-    	    ostr = alloc + "\t" + symbGetName( s ) + "," + str( s->lgt * elements )
+    	    ostr = alloc + "\t" + symbGetName( s ) + "," + str( symbGetLen( s ) * elements )
     	    hWriteStr( TRUE, ostr )
 
     	    '' add dbg info, if public or shared
@@ -5381,7 +5416,7 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
     	    	case FB_SYMBTYPE_USERDEF
 
     	    	'' string? check if ever referenced
-    	    	case FB_SYMBTYPE_FIXSTR
+    	    	case FB_SYMBTYPE_FIXSTR, FB_SYMBTYPE_WCHAR
     	    		doemit = symbGetAccessCnt( s ) > 0
 
 				'' anything else, only if len > 0
@@ -5392,12 +5427,16 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
 		end select
 
     	if( doemit ) then
-    		stype = hGetTypeString( dtype )
-    	    if( dtype = FB_SYMBTYPE_FIXSTR ) then
+    	    select case dtype
+    	    case FB_SYMBTYPE_FIXSTR
     	    	stext = "\"" + hEscapeStr( s->var.inittext ) + "\\0\""
-    	    else
+    	    case FB_SYMBTYPE_WCHAR
+    	    	'' !!!FIXME!!!
+				'''''stext = "\"" + hEscapeWstr( s->var.inittext ) + "\\0\\0\""
+				''!!!FIXME!!!
+    	    case else
     	    	stext = s->var.inittext
-    	    end if
+    	    end select
 
     	    hEmitConstHeader( )
 
@@ -5407,6 +5446,7 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
     	    	hALIGN( 4 )
     	    end if
 
+    	    stype = hGetTypeString( dtype )
     	    ostr = symbGetName( s ) + ":\t" + stype + "\t" + stext
     	    hWriteStr( FALSE, ostr )
 
@@ -5486,9 +5526,9 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
 	''	void		*ptr
 	hWriteStr( TRUE,  ".int\t" + sname )
 	''	uint		size
-	hWriteStr( TRUE,  ".int\t" + str( s->lgt * symbCalcArrayElements( s ) ) )
+	hWriteStr( TRUE,  ".int\t" + str( symbGetLen( s ) * symbCalcArrayElements( s ) ) )
 	''	uint		element_len
-    hWriteStr( TRUE,  ".int\t" + str( s->lgt ) )
+    hWriteStr( TRUE,  ".int\t" + str( symbGetLen( s ) ) )
 	''	uint		dimensions
 	if( dims = -1 ) then dims = 1
 	hWriteStr( TRUE,  ".int\t" + str( dims ) )
@@ -5531,9 +5571,9 @@ private sub hWriteStringDesc( byval s as FBSYMBOL ptr ) static
 	''	void		*data
 	hWriteStr( TRUE,  ".int\t" + s->alias )
 	''	int			len
-	hWriteStr( TRUE,  ".int\t" + str( s->lgt ) )
+	hWriteStr( TRUE,  ".int\t" + str( symbGetLen( s ) ) )
 	''	int			size
-	hWriteStr( TRUE,  ".int\t" + str( s->lgt ) )
+	hWriteStr( TRUE,  ".int\t" + str( symbGetLen( s ) ) )
 
 end sub
 

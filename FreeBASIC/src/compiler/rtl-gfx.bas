@@ -249,14 +249,14 @@ data @FB_RTL_GFXSCREENRES, "", _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0
 
-'' fb_ProfileBeginCall ( procname as string ) as any ptr
+'' fb_ProfileBeginCall ( byval procname as zstring ptr ) as any ptr
 data @FB_RTL_PROFILEBEGINCALL, "", _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
 
-'' fb_ProfileEndCall ( call as any ptr ) as void
+'' fb_ProfileEndCall ( byval call as any ptr ) as void
 data @FB_RTL_PROFILEENDCALL, "", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _

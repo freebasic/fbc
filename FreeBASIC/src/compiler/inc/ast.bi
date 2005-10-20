@@ -214,6 +214,24 @@ type ASTPROCNODE
 	tail			as ASTNODE ptr					'' last node
 end type
 
+type ASTCTX
+	astTB			as TLIST
+
+	proclist		as TLIST
+	curproc			as ASTPROCNODE ptr
+
+	doemit			as integer
+	isopt			as integer
+
+	tempstr			as TLIST
+	temparray		as TLIST
+end Type
+
+type ASTVALUE
+	dtype			as integer
+	val				as FBVALUE
+end type
+
 
 declare sub 		astInit				( )
 
@@ -242,7 +260,15 @@ declare sub 		astConvertValue     ( byval n as ASTNODE ptr, _
 
 declare function 	astGetValueAsInt	( byval n as ASTNODE ptr ) as integer
 
+declare function 	astGetValueAsLongInt( byval n as ASTNODE ptr ) as longint
+
+declare function 	astGetValueAsULongInt( byval n as ASTNODE ptr ) as ulongint
+
+declare function 	astGetValueAsDouble ( byval n as ASTNODE ptr ) as double
+
 declare function 	astGetValueAsStr	( byval n as ASTNODE ptr ) as string
+
+declare function 	astGetValueAsWstr	( byval n as ASTNODE ptr ) as string
 
 declare function 	astProcBegin		( byval proc as FBSYMBOL ptr, _
 					   					  byval initlabel as FBSYMBOL ptr, _
@@ -293,6 +319,8 @@ declare function 	astNewCONST			( byval v as FBVALUE ptr, _
 					  					  byval dtype as integer ) as ASTNODE ptr
 
 declare function 	astNewCONSTs		( byval v as string ) as ASTNODE ptr
+
+declare function 	astNewCONSTws		( byval v as string ) as ASTNODE ptr
 
 declare function 	astNewCONSTi		( byval value as integer, _
 										  byval dtype as integer, _
@@ -386,13 +414,45 @@ declare function 	astNewBOUNDCHK		( byval l as ASTNODE ptr, _
 declare function 	astNewPTRCHK		( byval l as ASTNODE ptr, _
 					   					  byval linenum as integer ) as ASTNODE ptr
 
+
+
 declare sub 		astDump 			( byval p as ASTNODE ptr, _
 										  byval n as ASTNODE ptr, _
 										  byval isleft as integer, _
 										  byval ln as integer, _
 										  byval cn as integer )
 
+declare function 	astNewNode			( byval class as integer, _
+									  	  byval dtype as integer, _
+									  	  byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr
 
+declare function 	astLoad				( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare sub 		astFlush			( byval n as ASTNODE ptr )
+
+declare function 	astOptimize			( byval n as ASTNODE ptr ) as ASTNODE ptr
+
+declare function 	astOptAssignament	( byval n as ASTNODE ptr ) as ASTNODE ptr
+
+declare function 	astCheckConst		( byval dtype as integer, _
+					   		    		  byval n as ASTNODE ptr ) as ASTNODE ptr
+
+declare function	astUpdStrConcat		( byval n as ASTNODE ptr ) as ASTNODE ptr
+
+declare sub 		astCopy				( byval d as ASTNODE ptr, _
+			 							  byval s as ASTNODE ptr )
+
+declare sub 		astSwap				( byval d as ASTNODE ptr, _
+			 							  byval s as ASTNODE ptr )
+
+declare function 	astIsClassOnTree	( byval class as integer, _
+						   				  byval n as ASTNODE ptr ) as ASTNODE ptr
+
+declare function 	astIsSymbolOnTree	( byval sym as FBSYMBOL ptr, _
+										  byval n as ASTNODE ptr ) as integer
+
+declare function 	astGetBitField		( byval n as ASTNODE ptr, _
+						 				  byval s as FBSYMBOL ptr ) as ASTNODE ptr
 ''
 '' macros
 ''
@@ -429,5 +489,14 @@ declare sub 		astDump 			( byval p as ASTNODE ptr, _
 #define astSetDataType(n,t) n->dtype = t
 
 #define astSetSubType(n,t) n->subtype = t
+
+''
+'' inter-module globals
+''
+extern ast as ASTCTX
+
+extern ast_bitmaskTB( 0 to 32 ) as uinteger
+
+extern ast_minlimitTB( IR_DATATYPE_BYTE to IR_DATATYPE_ULONGINT ) as longint
 
 #endif '' __AST_BI__

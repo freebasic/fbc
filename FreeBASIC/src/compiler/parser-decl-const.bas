@@ -96,8 +96,9 @@ function cConstAssign as integer static
 			exit function
 		end if
 
-		select case typ
-		case FB_SYMBTYPE_VOID, FB_SYMBTYPE_FIXSTR, FB_SYMBTYPE_CHAR
+		select case as const typ
+		case FB_SYMBTYPE_VOID, FB_SYMBTYPE_FIXSTR, _
+			 FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR
 			hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 			exit function
 		end select

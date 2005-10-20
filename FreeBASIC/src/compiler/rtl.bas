@@ -136,7 +136,7 @@ sub rtlAddIntrinsicProcs( )
 		read pcallback, errorcheck, overloaded
 		read pargs
 
-		assert( ( errorcheck and ptype=FB_SYMBTYPE_INTEGER ) or not errorcheck )
+		assert( ( errorcheck and ptype = FB_SYMBTYPE_INTEGER ) or not errorcheck )
 
 		proc = symbPreAddProc( )
 
@@ -198,6 +198,8 @@ sub rtlAddIntrinsicProcs( )
 			symbSetProcIsRTL( proc, TRUE )
 			symbSetProcCallback( proc, pcallback )
 			symbSetProcErrorCheck( proc, errorcheck )
+		else
+			hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *pname )
 		end if
 	loop
 
@@ -214,6 +216,9 @@ function rtlProcLookup( byval pname as zstring ptr, _
     '' what is pretty unlikely with internal fb_* procs
 	if( rtlLookupTB( pidx ) = NULL ) then
 		rtlLookupTB( pidx ) = symbLookup( pname, id, class )
+		if( rtlLookupTB( pidx ) = NULL ) then
+			hReportErrorEx( FB_ERRMSG_UNDEFINEDSYMBOL, *pname )
+		end if
 	end if
 
 	function = rtlLookupTB( pidx )
@@ -237,7 +242,7 @@ function rtlCalcExprLen( byval expr as ASTNODE ptr, _
 	case IR_DATATYPE_FIXSTR
 		function = FIXSTRGETLEN( expr )
 
-	case IR_DATATYPE_CHAR
+	case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
 		lgt = ZSTRGETLEN( expr )
 		'' char?
 		if( lgt = 0 ) then

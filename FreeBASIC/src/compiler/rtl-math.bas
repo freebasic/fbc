@@ -306,7 +306,8 @@ function rtlMathLen( byval expr as ASTNODE ptr, _
 	'' LEN()?
 	if( checkstrings ) then
 		'' dyn-len or zstring?
-		if( (dtype = IR_DATATYPE_STRING) or (dtype = IR_DATATYPE_CHAR) ) then
+		select case dtype
+		case IR_DATATYPE_STRING, IR_DATATYPE_CHAR
     		proc = astNewFUNCT( PROCLOOKUP( STRLEN ) )
 
     		'' always calc len before pushing the param
@@ -323,7 +324,18 @@ function rtlMathLen( byval expr as ASTNODE ptr, _
  			end if
 
 			return proc
-		end if
+
+		case IR_DATATYPE_WCHAR
+    		proc = astNewFUNCT( PROCLOOKUP( WSTRLEN ) )
+
+    		'' byval str as wchar ptr
+    		if( astNewPARAM( proc, expr ) = NULL ) then
+ 				exit function
+ 			end if
+
+ 			return proc
+
+		end select
 	end if
 
 	''

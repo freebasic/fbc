@@ -553,8 +553,9 @@ declare sub 		emitVARINI64		( byval dtype as integer, _
 
 declare sub 		emitVARINIOFS		( byval sname as string )
 
-declare sub 		emitVARINISTR		( byval lgt as integer, _
-				   						  byval s as string )
+declare sub 		emitVARINISTR		( byval s as string )
+
+declare sub 		emitVARINIWSTR		( byval s as string )
 
 declare sub 		emitVARINIPAD		( byval bytes as integer )
 

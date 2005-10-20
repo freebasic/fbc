@@ -96,27 +96,27 @@ data @"erl", "fb_ErrorGetLineNum", _
 	 NULL, FALSE, FALSE, _
 	 0
 
-'' fb_Assert ( byval fname as string, byval linenum as integer, byval funcname as string, _
-''			   byval expression as string ) as void
+'' fb_Assert ( byval fname as zstring ptr, byval linenum as integer, _
+'''			   byval funcname as zstring ptr, byval expression as zstring ptr ) as void
 data @"fb_Assert","", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 4, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
 
-'' fb_AssertWarn ( byval fname as string, byval linenum as integer, byval funcname as string, _
-''			       byval expression as string ) as void
+'' fb_AssertWarn ( byval fname as zstring ptr, byval linenum as integer, _
+''				   byval funcname as zstring ptr, byval expression as zstring ptr ) as void
 data @"fb_AssertWarn","", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 4, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
 
 '' EOL
 data NULL

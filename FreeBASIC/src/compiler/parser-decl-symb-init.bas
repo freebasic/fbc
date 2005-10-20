@@ -126,9 +126,21 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 				return 0
 			end if
 
-			'' less the null-char
-			irEmitVARINISTR( symbGetLen( sym ) - 1, _
-							 symbGetVarText( litsym ), symbGetLen( litsym ) - 1 )
+			'' not a wstring?
+			if( symbGetType( sym ) <> FB_SYMBTYPE_WCHAR ) then
+				'' less the null-char
+				irEmitVARINISTR( symbGetStrLen( sym ) - 1, _
+							 	 symbGetVarText( litsym ), symbGetStrLen( litsym ) - 1 )
+
+			'' wstring..
+			else
+				'' less the null-char
+				''!!!FIXME!!!
+				irEmitVARINIWSTR( symbGetWstrLen( sym ) - 1, _
+							 	  symbGetVarText( litsym ), symbGetWstrLen( litsym ) - 1 )
+							 	  '''''symbGetVarTextW( litsym )
+				''!!!FIXME!!!
+			end if
 
 		end if
 

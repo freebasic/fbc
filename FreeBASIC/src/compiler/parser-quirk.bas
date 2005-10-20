@@ -112,7 +112,8 @@ function cQuirkFunction( byref funcexpr as ASTNODE ptr ) as integer
 	res = FALSE
 
 	select case as const lexGetToken( )
-	case FB_TK_STR, FB_TK_MID, FB_TK_STRING, FB_TK_CHR, FB_TK_ASC, _
+	case FB_TK_STR, FB_TK_WSTR, FB_TK_MID, FB_TK_STRING, FB_TK_WSTRING, _
+		 FB_TK_CHR, FB_TK_WCHR, FB_TK_ASC, _
 		 FB_TK_INSTR, FB_TK_TRIM, FB_TK_RTRIM, FB_TK_LTRIM
 		res = cStringFunct( funcexpr )
 

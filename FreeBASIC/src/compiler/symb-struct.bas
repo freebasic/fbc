@@ -67,6 +67,40 @@ function symbAddUDT( byval parent as FBSYMBOL ptr, _
 end function
 
 '':::::
+private function hGetRealLen( byval orglen as integer, _
+							  byval dtype as integer, _
+							  byval subtype as FBSYMBOL ptr _
+					 	    ) as integer static
+
+	select case as const dtype
+	'' UDT? return its largest field len
+	case FB_SYMBTYPE_USERDEF
+		function = subtype->udt.lfldlen
+
+	'' zstring or fixed-len? size is actually sizeof(byte)
+	case FB_SYMBTYPE_CHAR, FB_SYMBTYPE_FIXSTR
+		function = 1
+
+	'' wstring?
+	case FB_SYMBTYPE_WCHAR
+		select case env.clopt.target
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+			function = 2
+		case else
+			function = FB_INTEGERSIZE
+		end select
+
+	'' var-len string: first field is a pointer
+	case FB_SYMBTYPE_STRING
+		function = FB_POINTERSIZE
+
+	case else
+		function = orglen
+	end select
+
+end function
+
+'':::::
 private function hCalcALign( byval lgt as integer, _
 					 		 byval ofs as integer, _
 					 		 byval align as integer, _
@@ -74,27 +108,13 @@ private function hCalcALign( byval lgt as integer, _
 					 		 byval subtype as FBSYMBOL ptr _
 					 	   ) as integer static
 
-	function = 0
-
 	'' do align?
 	if( align = 1 ) then
-		exit function
+		return 0
 	end if
 
 	'' handle special types
-	select case dtype
-	'' another UDT? use its largest field len
-	case FB_SYMBTYPE_USERDEF
-		lgt = subtype->udt.lfldlen
-
-	'' zstring or fixed-len? size is actually sizeof(byte)
-	case FB_SYMBTYPE_CHAR, FB_SYMBTYPE_FIXSTR
-		lgt = 1
-
-	'' var-len string: first field is a pointer
-	case FB_SYMBTYPE_STRING
-		lgt = FB_POINTERSIZE
-	end select
+	lgt = hGetRealLen( lgt, dtype, subtype )
 
 	'' default?
 	if( align = 0 ) then
@@ -260,20 +280,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 		end if
 
 		'' update largest field len
-		select case as const typ
-		'' another UDT? use its largest field len
-		case FB_SYMBTYPE_USERDEF
-			elen = subtype->udt.lfldlen
-		'' zstring or fixed-len? size is actually sizeof(byte)
-		case FB_SYMBTYPE_CHAR, FB_SYMBTYPE_FIXSTR
-			elen = 1
-		'' var-len string? first field is a pointer
-		case FB_SYMBTYPE_STRING
-			elen = FB_POINTERSIZE
-		'' anything else..
-		case else
-			elen = lgt
-		end select
+		elen = hGetRealLen( lgt, typ, subtype )
 
 		'' larger?
 		if( elen > t->udt.lfldlen ) then

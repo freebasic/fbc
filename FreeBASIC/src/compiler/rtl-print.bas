@@ -145,6 +145,15 @@ data @FB_RTL_PRINTSTR,"", _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
+'' fb_PrintWstr ( byval filenum as integer = 0, byval x as wstring ptr, byval mask as integer ) as void
+data @FB_RTL_PRINTWSTR,"", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
 ''
 '' fb_LPrintVoid ( byval filenum as integer = 0, byval mask as integer ) as void
 data @FB_RTL_LPRINTVOID,"", _
@@ -251,6 +260,15 @@ data @FB_RTL_LPRINTSTR,"", _
 	 3, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
+'' fb_LPrintWstr ( byval filenum as integer = 0, byval x as wstring ptr, byval mask as integer ) as void
+data @FB_RTL_LPRINTWSTR,"", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 @rtlPrinter_cb, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' spc ( byval filenum as integer = 0, byval n as integer ) as void
@@ -377,6 +395,15 @@ data @FB_RTL_WRITESTR,"", _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
+'' fb_WriteWstr ( byval filenum as integer = 0, byval x as wstring ptr, byval mask as integer ) as void
+data @FB_RTL_WRITEWSTR,"", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
 '' fb_PrintUsingInit ( fmtstr as string ) as integer
 data @FB_RTL_PRINTUSGINIT,"", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
@@ -391,6 +418,15 @@ data @FB_RTL_PRINTUSGSTR,"", _
 	 3, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
+'' fb_PrintUsingWstr ( byval filenum as integer, byval s as wstring ptr, byval mask as integer ) as integer
+data @FB_RTL_PRINTUSGWSTR,"", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_PrintUsingVal ( byval filenum as integer, byval v as double, byval mask as integer ) as integer
@@ -466,6 +502,12 @@ function rtlPrint( byval fileexpr as ASTNODE ptr, _
 			else
 				f = PROCLOOKUP( PRINTSTR )
 			end if
+		case IR_DATATYPE_WCHAR
+			if( islprint ) then
+				f = PROCLOOKUP( LPRINTWSTR )
+			else
+				f = PROCLOOKUP( PRINTWSTR )
+			end if
 		case IR_DATATYPE_BYTE
 			if( islprint ) then
 				f = PROCLOOKUP( LPRINTBYTE )
@@ -538,6 +580,8 @@ function rtlPrint( byval fileexpr as ASTNODE ptr, _
 					f = PROCLOOKUP( PRINTUINT )
 				end if
 				expr = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, expr )
+			else
+				exit function
 			end if
 		end select
 
@@ -663,6 +707,8 @@ function rtlWrite( byval fileexpr as ASTNODE ptr, _
 		select case as const dtype
 		case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
 			f = PROCLOOKUP( WRITESTR )
+		case IR_DATATYPE_WCHAR
+			f = PROCLOOKUP( WRITEWSTR )
 		case IR_DATATYPE_BYTE
 			f = PROCLOOKUP( WRITEBYTE )
 		case IR_DATATYPE_UBYTE
@@ -689,6 +735,8 @@ function rtlWrite( byval fileexpr as ASTNODE ptr, _
 			if( dtype >= IR_DATATYPE_POINTER ) then
 				f = PROCLOOKUP( WRITEUINT )
 				expr = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, expr )
+			else
+				exit function
 			end if
 		end select
 
@@ -803,6 +851,8 @@ function rtlPrintUsing( byval fileexpr as ASTNODE ptr, _
 	select case astGetDataType( expr )
 	case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
 		f = PROCLOOKUP( PRINTUSGSTR )
+	case IR_DATATYPE_WCHAR
+		f = PROCLOOKUP( PRINTUSGWSTR )
 	case else
 		f = PROCLOOKUP( PRINTUSGVAL )
 	end select

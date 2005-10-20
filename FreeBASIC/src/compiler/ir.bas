@@ -130,9 +130,10 @@ declare sub 		irDump				( byval op as integer, _
 		(IR_DATACLASS_UNKNOWN, 0			 	, 0					, FALSE, IR_DATATYPE_VOID    ), _
 		(IR_DATACLASS_INTEGER, 1			 	, 8*1				, TRUE , IR_DATATYPE_BYTE    ), _
 		(IR_DATACLASS_INTEGER, 1			 	, 8*1				, FALSE, IR_DATATYPE_UBYTE   ), _
-		(IR_DATACLASS_INTEGER, 1			 	, 8*1				, FALSE, IR_DATATYPE_CHAR	 ), _ '' zstring
+		(IR_DATACLASS_INTEGER, 1			 	, 8*1				, FALSE, IR_DATATYPE_UBYTE	 ), _ '' zstring
 		(IR_DATACLASS_INTEGER, 2			 	, 8*2				, TRUE , IR_DATATYPE_SHORT 	 ), _
 		(IR_DATACLASS_INTEGER, 2			 	, 8*2				, FALSE, IR_DATATYPE_USHORT	 ), _
+		(IR_DATACLASS_INTEGER, 2			 	, 8*2				, FALSE, IR_DATATYPE_USHORT	 ), _ '' wstring
 		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, TRUE , IR_DATATYPE_INTEGER ), _
 		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, IR_DATATYPE_UINT 	 ), _
 		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, TRUE , IR_DATATYPE_INTEGER ), _ '' enum
@@ -229,6 +230,20 @@ sub irInit
 	''
 	flistNew( @ir.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 
+	'' wchar len depends on the target platform
+	with dtypeTB(IR_DATATYPE_WCHAR)
+		select case env.clopt.target
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+			.remaptype = IR_DATATYPE_USHORT
+			.size = 2
+		case else
+			.remaptype = IR_DATATYPE_UINT
+			.size = FB_INTEGERSIZE
+		end select
+
+    	.bits = .size * 8
+    end with
+
 	''
 	emitInit( )
 
@@ -284,39 +299,53 @@ function irMaxDataType( byval ldtype as integer, _
     	dtype2 = dtypeTB(rdtype).remaptype
     end if
 
-    '' don't convert between zstring's and (u)byte's
-    if( dtype2 = IR_DATATYPE_CHAR ) then
- 		select case dtype1
- 		case IR_DATATYPE_BYTE, IR_DATATYPE_UBYTE
- 			exit function
-    	end select
-    elseif( dtype1 = IR_DATATYPE_CHAR ) then
- 		select case dtype2
- 		case IR_DATATYPE_BYTE, IR_DATATYPE_UBYTE
- 			exit function
-    	end select
-    end if
-
-    ''
+    '' same?
     if( dtype1 = dtype2 ) then
     	exit function
     end if
 
-    '' don't convert byte <-> char, word <-> short, dword <-> integer, single <-> double
+    '' don't convert byte <-> char
     select case as const dtype1
-    case IR_DATATYPE_UBYTE, IR_DATATYPE_USHORT, IR_DATATYPE_UINT, _
-    	 IR_DATATYPE_ULONGINT, IR_DATATYPE_DOUBLE
-    	if( dtype1 - dtype2 = 1 ) then
+    case IR_DATATYPE_BYTE, IR_DATATYPE_UBYTE
+    	select case dtype2
+    	case IR_DATATYPE_BYTE, IR_DATATYPE_UBYTE
     		exit function
-    	end if
+    	end select
 
+    '' neither word <-> short
+    case IR_DATATYPE_SHORT, IR_DATATYPE_USHORT
+    	select case dtype2
+    	case IR_DATATYPE_SHORT, IR_DATATYPE_USHORT
+    		exit function
+    	end select
+
+	'' neither dword <-> integer
+	case IR_DATATYPE_INTEGER, IR_DATATYPE_UINT
+    	select case dtype2
+    	case IR_DATATYPE_INTEGER, IR_DATATYPE_UINT
+    		exit function
+    	end select
+
+    '' neither qword <-> longint
+    case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+    	select case dtype2
+    	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+    		exit function
+    	end select
+
+    '' neither single <-> double
+    case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+    	select case dtype2
+    	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+    		exit function
+    	end select
+
+    '' neither string, fixstring
     case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR
     	return IR_DATATYPE_STRING
 
     case else
-    	if( dtype1 - dtype2 = -1 ) then
-    		exit function
-    	end if
+    	hReportErrorEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
     end select
 
     '' assuming DATATYPE's are in order of precision
@@ -375,13 +404,29 @@ function irGetSignedType( byval dtype as integer ) as integer static
 	end if
 
 	select case as const dt
-	case IR_DATATYPE_UBYTE, IR_DATATYPE_USHORT, IR_DATATYPE_UINT, IR_DATATYPE_ULONGINT
-		dtype -= 1							'' hack! assuming sign/unsig are in pairs
-	case IR_DATATYPE_POINTER
-		dtype = IR_DATATYPE_INTEGER
-	end select
+	case IR_DATATYPE_UBYTE, IR_DATATYPE_CHAR
+		function = IR_DATATYPE_BYTE
 
-	function = dtype
+	case IR_DATATYPE_USHORT
+		function = IR_DATATYPE_SHORT
+
+	case IR_DATATYPE_UINT, IR_DATATYPE_POINTER
+		function = IR_DATATYPE_INTEGER
+
+	case IR_DATATYPE_WCHAR
+		select case env.clopt.target
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+			function = IR_DATATYPE_SHORT
+		case else
+			function = IR_DATATYPE_INTEGER
+		end select
+
+	case IR_DATATYPE_ULONGINT
+		function = IR_DATATYPE_LONGINT
+
+	case else
+		function = dtype
+	end select
 
 end function
 
@@ -399,15 +444,21 @@ function irGetUnsignedType( byval dtype as integer ) as integer static
 	end if
 
 	select case as const dt
-	case IR_DATATYPE_BYTE, IR_DATATYPE_SHORT, IR_DATATYPE_INTEGER, IR_DATATYPE_LONGINT
-		dtype = dtype + 1					'' hack! assuming sign/unsig are in pairs
-	case IR_DATATYPE_CHAR
-		dtype = IR_DATATYPE_BYTE
-	case IR_DATATYPE_ENUM
-		dtype = IR_DATATYPE_UINT
-	end select
+	case IR_DATATYPE_BYTE
+		function = IR_DATATYPE_UBYTE
 
-	function = dtype
+	case IR_DATATYPE_SHORT
+		function = IR_DATATYPE_USHORT
+
+	case IR_DATATYPE_INTEGER, IR_DATATYPE_ENUM, IR_DATATYPE_POINTER
+		function = IR_DATATYPE_UINT
+
+	case IR_DATATYPE_LONGINT
+		function = IR_DATATYPE_ULONGINT
+
+	case else
+		function = dtype
+	end select
 
 end function
 
@@ -656,7 +707,8 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
 
     	'' string argument?
     	if( (pdclass = IR_DATACLASS_STRING) or _
-    		(pdtype = IR_DATATYPE_CHAR) ) then
+    		(pdtype = IR_DATATYPE_CHAR) or _
+    		(pdtype = IR_DATATYPE_WCHAR) ) then
 			'' not a pointer yet?
 			if( pclass = IR_VREGTYPE_PTR ) then
 				amode = FB_ARGMODE_BYREF
@@ -684,7 +736,8 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
     			end if
 
     		'' zstring?
-    		elseif( pdtype = IR_DATATYPE_CHAR ) then
+    		elseif( (pdtype = IR_DATATYPE_CHAR) or _
+    			    (pdtype = IR_DATATYPE_WCHAR) ) then
     			'' not a pointer yet?
     			if( pclass <> IR_VREGTYPE_PTR ) then
     				amode = FB_ARGMODE_BYVAL
@@ -922,9 +975,9 @@ sub irEmitVARINISTR( byval totlgt as integer, _
 
 	''
 	if( litlgt > totlgt ) then
-		emitVARINISTR( totlgt, left$( s, totlgt ) )
+		emitVARINISTR( left( s, totlgt ) )
 	else
-		emitVARINISTR( litlgt, s )
+		emitVARINISTR( s )
 
 		if( litlgt < totlgt ) then
 			emitVARINIPAD( totlgt - litlgt )
@@ -932,6 +985,47 @@ sub irEmitVARINISTR( byval totlgt as integer, _
 	end if
 
 end sub
+
+'':::::
+''!!!FIXME!!!
+sub irEmitVARINIWSTR( byval totlgt as integer, _
+				      byval litstr as string, _
+				      byval litlgt as integer ) static
+
+	dim as string s
+	dim as integer wclen
+
+	'' wstring * 1?
+	if( totlgt = 0 ) then
+		select case env.clopt.target
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+			emitVARINIi( IR_DATATYPE_USHORT, 0 )
+		case else
+			emitVARINIi( IR_DATATYPE_UINT, 0 )
+		end select
+		exit sub
+	end if
+
+	''
+	s = hEscapeStr( litstr )
+	'''''s = hEscapeWstr( litstr )
+
+	''
+	wclen = irGetDataSize( IR_DATATYPE_WCHAR )
+	if( litlgt > totlgt ) then
+		emitVARINISTR( left( s, totlgt * wclen ) )
+		'''''emitVARINIWSTR( totlgt, left( s, totlgt * wclen ) )
+	else
+		emitVARINISTR( s )
+		'''''emitVARINIWSTR( s )
+
+		if( litlgt < totlgt ) then
+			emitVARINIPAD( (totlgt - litlgt) * wclen )
+		end if
+	end if
+
+end sub
+''!!!FIXME!!!
 
 '':::::
 sub irEmitVARINIPAD( byval bytes as integer ) static

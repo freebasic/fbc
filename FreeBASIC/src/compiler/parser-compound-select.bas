@@ -146,10 +146,11 @@ function cSelectStatement as integer
 	elabel = symbAddLabel( NULL )
 
 	'' store expression into a temp var
-	dtype  = astGetDataType( expr )
-	if( (dtype = FB_SYMBTYPE_FIXSTR) or (dtype = FB_SYMBTYPE_CHAR) ) then
+	dtype = astGetDataType( expr )
+	select case dtype
+	case FB_SYMBTYPE_FIXSTR, FB_SYMBTYPE_CHAR
 		dtype = FB_SYMBTYPE_STRING
-	end if
+	end select
 
 	symbol = symbAddTempVar( dtype, astGetSubType( expr ) )
 	if( symbol = NULL ) then
@@ -186,10 +187,10 @@ function cSelectStatement as integer
 	end if
 
 	'' if a temp string was allocated, delete it
-	if( dtype = FB_SYMBTYPE_STRING ) then
-		expr = rtlStrDelete( astNewVAR( symbol, NULL, 0, dtype ) )
-		astAdd( expr )
-	end if
+	select case dtype
+	case FB_SYMBTYPE_STRING, FB_SYMBTYPE_WCHAR
+		astAdd( rtlStrDelete( astNewVAR( symbol, NULL, 0, dtype ) ) )
+	end select
 
 	env.lastcompound = lastcompstmt
 

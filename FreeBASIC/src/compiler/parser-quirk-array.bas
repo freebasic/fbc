@@ -94,7 +94,17 @@ function cArrayStmt as integer
 
 		select case astGetDataType( expr1 )
 		case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR
+			if( astGetDataType( expr2 ) = IR_DATATYPE_WCHAR ) then
+				hReportError( FB_ERRMSG_INVALIDDATATYPES )
+				exit function
+			end if
 			function = rtlStrSwap( expr1, expr2 )
+		case IR_DATATYPE_WCHAR
+			if( astGetDataType( expr2 ) <> IR_DATATYPE_WCHAR ) then
+				hReportError( FB_ERRMSG_INVALIDDATATYPES )
+				exit function
+			end if
+			function = rtlWstrSwap( expr1, expr2 )
 		case else
 			function = rtlMemSwap( expr1, expr2 )
 		end select

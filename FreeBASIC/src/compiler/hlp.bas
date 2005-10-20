@@ -43,7 +43,8 @@ end type
 				"v", _							'' void
 				"b", "a", _                     '' byte, ubyte
 				"c", _                          '' char
-				"s", "S", _                     '' short, ushort
+				"s", "r", _                     '' short, ushort
+				"w", _                          '' wchar
 				"i", "j", _                     '' integer, uinteger
 				"e", _                          '' enum
 				"l", "m", _                     '' longint, ulongint

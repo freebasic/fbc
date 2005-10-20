@@ -87,7 +87,9 @@ function cLSetStmt( ) as integer
 
 	dtype1 = astGetDataType( dstexpr )
 	select case dtype1
-	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR, IR_DATATYPE_USERDEF
+	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
+		 IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR, _
+		 IR_DATATYPE_USERDEF
 	case else
 		hReportError( FB_ERRMSG_INVALIDDATATYPES )
 		exit function
@@ -106,13 +108,16 @@ function cLSetStmt( ) as integer
 
 	dtype2 = astGetDataType( srcexpr )
 	select case dtype2
-	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR, IR_DATATYPE_USERDEF
+	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
+		 IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR, _
+		 IR_DATATYPE_USERDEF
 	case else
 		hReportError( FB_ERRMSG_INVALIDDATATYPES )
 		exit function
 	end select
 
-	if( (dtype1 = IR_DATATYPE_USERDEF) or (dtype2 = IR_DATATYPE_USERDEF) ) then
+	if( (dtype1 = IR_DATATYPE_USERDEF) or _
+		(dtype2 = IR_DATATYPE_USERDEF) ) then
 
 		if( dtype1 <> dtype2 ) then
 			hReportError( FB_ERRMSG_INVALIDDATATYPES )
@@ -135,7 +140,8 @@ function cLSetStmt( ) as integer
 end function
 
 '':::::
-private function cStrCHR( byref funcexpr as ASTNODE ptr ) as integer
+private function cStrCHR( byref funcexpr as ASTNODE ptr, _
+						  byval is_wstr as integer ) as integer
 	static as zstring * 32*6+1 s
 	static as zstring * 8+1 o
 	dim as integer v, i, cnt, isconst
@@ -164,11 +170,9 @@ private function cStrCHR( byref funcexpr as ASTNODE ptr ) as integer
 			exit for
         else
 
-            '' when the constant value is 0, we must not handle this as a
-            '' constant string
-  			expr = exprtb(i)
-  			v = astGetValueAsInt( expr )
-
+            '' when the constant value is 0, we must not handle
+            '' this as a constant string
+  			v = astGetValueAsInt( exprtb(i) )
 			if( v = 0 ) then
 				isconst = FALSE
 				exit for
@@ -177,7 +181,11 @@ private function cStrCHR( byref funcexpr as ASTNODE ptr ) as integer
 		end if
 	next i
 
-	if( isconst ) then
+	''	!!!FIXME!!!
+	''	chicken-egg: wstring type needed
+	''	!!!FIXME!!!
+	if( not is_wstr and isconst ) then
+
 		s = ""
 
 		for i = 0 to cnt-1
@@ -187,19 +195,19 @@ private function cStrCHR( byref funcexpr as ASTNODE ptr ) as integer
 
 			if( (v < CHAR_SPACE) or (v > 127) ) then
 				s += "\27"
-				o = oct$( v )
-				s += chr$( len( o ) )
+				o = oct( v )
+				s += chr( len( o ) )
 				s += o
 			else
-				s += chr$( v )
+				s += chr( v )
 			end if
-		next i
+		next
 
 		funcexpr = astNewVAR( hAllocStringConst( s, cnt ), NULL, 0, IR_DATATYPE_FIXSTR )
 
     else
 
-		funcexpr = rtlStrChr( cnt, exprtb() )
+		funcexpr = rtlStrChr( cnt, exprtb(), is_wstr )
 
 	end if
 
@@ -275,33 +283,39 @@ private function cStrASC( byref funcexpr as ASTNODE ptr ) as integer
 end function
 
 '':::::
-'' cStringFunct	=	STR$ '(' Expression{int|float|double} ')'
+'' cStringFunct	=	W|STR$ '(' Expression{int|float|double} ')'
 '' 				|   MID$ '(' Expression ',' Expression (',' Expression)? ')'
-'' 				|   STRING$ '(' Expression ',' Expression{int|str} ')' .
+'' 				|   W|STRING$ '(' Expression ',' Expression{int|str} ')' .
 ''              |   INSTR '(' (Expression{int} ',')? Expression{str}, "ANY"? Expression{str} ')'
 ''              |   RTRIM$ '(' Expression{str} (, "ANY" Expression{str} )? ')'
 ''
 function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
     dim as ASTNODE ptr expr1, expr2, expr3
-    dim as integer dclass, dtype, is_any
+    dim as integer dclass, dtype, is_any, is_wstr
 
 	function = FALSE
 
 	select case lexGetToken( )
-	'' STR$ '(' Expression{int|float|double} ')'
-	case FB_TK_STR
+	'' W|STR '(' Expression{int|float|double|wstring} ')'
+	case FB_TK_STR, FB_TK_WSTR
+		is_wstr = (lexGetToken( ) = FB_TK_WSTR)
 		lexSkipToken( )
+
 		hMatchLPRNT( )
 
 		hMatchExpression( expr1 )
 
 		hMatchRPRNT( )
 
-		funcexpr = rtlToStr( expr1 )
+		if( not is_wstr ) then
+			funcexpr = rtlToStr( expr1 )
+		else
+			funcexpr = rtlToWstr( expr1 )
+		end if
 
 		function = funcexpr <> NULL
 
-	'' MID$ '(' Expression ',' Expression (',' Expression)? ')'
+	'' MID '(' Expression ',' Expression (',' Expression)? ')'
 	case FB_TK_MID
 		lexSkipToken( )
 
@@ -326,8 +340,9 @@ function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
 		function = funcexpr <> NULL
 
 
-	'' STRING$ '(' Expression ',' Expression{int|str} ')'
-	case FB_TK_STRING
+	'' W|STRING '(' Expression ',' Expression{int|str} ')'
+	case FB_TK_STRING, FB_TK_WSTRING
+		is_wstr = (lexGetToken( ) = FB_TK_WSTRING)
 		lexSkipToken( )
 
 		hMatchLPRNT( )
@@ -340,15 +355,21 @@ function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 		hMatchRPRNT( )
 
-		funcexpr = rtlStrFill( expr1, expr2 )
+		if( not is_wstr ) then
+			funcexpr = rtlStrFill( expr1, expr2 )
+		else
+			funcexpr = rtlWstrFill( expr1, expr2 )
+		end if
 
 		function = funcexpr <> NULL
 
-	'' CHR$ '(' Expression (',' Expression )* ')'
-	case FB_TK_CHR
+
+	'' W|CHR '(' Expression (',' Expression )* ')'
+	case FB_TK_CHR, FB_TK_WCHR
+		is_wstr = (lexGetToken( ) = FB_TK_WCHR)
 		lexSkipToken( )
 
-		function = cStrCHR( funcexpr )
+		function = cStrCHR( funcexpr, is_wstr )
 
 	'' ASC '(' Expression (',' Expression)? ')'
 	case FB_TK_ASC

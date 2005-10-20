@@ -214,9 +214,9 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     end if
 
     '' check for invalid args
-    select case atype
+    select case as const atype
     '' can't be a fixed-len string
-    case FB_SYMBTYPE_FIXSTR, FB_SYMBTYPE_CHAR
+    case FB_SYMBTYPE_FIXSTR, FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR
     	hReportParamError( symbGetProcArgs( proc ), *pid )
     	exit function
 
@@ -313,7 +313,8 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     	optional = TRUE
     	'' string?
     	select case as const atype
-    	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR
+    	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
+    		 IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
     		optval.str = sym
     	case else
     		astConvertValue( expr, @optval, atype )

@@ -40,7 +40,7 @@ function cFieldArray( byval elm as FBSYMBOL ptr, _
     dim as FBVARDIM ptr d
     dim as integer maxdims, dims
     dim as ASTNODE ptr expr, dimexpr, constexpr
-    dim as integer diff, lgt
+    dim as integer diff
 
     function = FALSE
 
@@ -117,8 +117,7 @@ function cFieldArray( byval elm as FBSYMBOL ptr, _
     end if
 
 	'' times length
-	lgt = symbGetLen( elm )
-	constexpr = astNewCONSTi( lgt, IR_DATATYPE_INTEGER )
+	constexpr = astNewCONSTi( symbGetLen( elm ), IR_DATATYPE_INTEGER )
 	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
 
     '' plus difference
@@ -304,11 +303,12 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 				return FALSE
 			end if
 
-			'' string, fixstr, zstring?
+			'' string, fixstr, w|zstring?
 			if( dtype < FB_SYMBTYPE_POINTER ) then
 
 				select case dtype
-				case FB_SYMBTYPE_STRING, FB_SYMBTYPE_FIXSTR, FB_SYMBTYPE_CHAR
+				case FB_SYMBTYPE_STRING, FB_SYMBTYPE_FIXSTR, _
+					 FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR
 
 					if( dtype = FB_SYMBTYPE_STRING ) then
 						'' deref
@@ -320,11 +320,23 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 
 					'' add index
 					varexpr = astNewBOP( IR_OP_ADD, varexpr, idxexpr )
+
+					'' not a wstring?
+					if( dtype <> FB_SYMBTYPE_WCHAR ) then
+						dtype = IR_DATATYPE_UBYTE
+					else
+						select case env.clopt.target
+						case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+							dtype = IR_DATATYPE_USHORT
+						case else
+							dtype = IR_DATATYPE_UINT
+						end select
+					end if
+
 					'' make a pointer
-					varexpr = astNewPTR( NULL, NULL, 0, varexpr, IR_DATATYPE_UBYTE, NULL )
+					varexpr = astNewPTR( NULL, NULL, 0, varexpr, dtype, NULL )
 
 					'' reset type
-					dtype = IR_DATATYPE_UBYTE
 					subtype = NULL
 					elm = NULL
 
@@ -506,7 +518,7 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
 					   byref idxexpr as ASTNODE ptr ) as integer
 
     dim as FBSYMBOL ptr d
-    dim as integer lgt, i, dims, maxdims
+    dim as integer i, dims, maxdims
     dim as ASTNODE ptr expr, dimexpr, constexpr, varexpr
 
     function = FALSE
@@ -529,14 +541,14 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
     	'' check dimensions, if not common
     	if( maxdims <> INVALID ) then
     		if( dims > maxdims ) then
-				hReportError FB_ERRMSG_WRONGDIMENSIONS
+				hReportError( FB_ERRMSG_WRONGDIMENSIONS )
 				exit function
     		end if
     	end if
 
     	'' Expression
 		if( not cExpression( dimexpr ) ) then
-			hReportError FB_ERRMSG_EXPECTEDEXPRESSION
+			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
 
@@ -545,7 +557,7 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
 			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
 			dimexpr = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
-				hReportError FB_ERRMSG_INVALIDDATATYPES
+				hReportError( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
 			end if
 		end if
@@ -565,28 +577,30 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
     	end if
 
     	'' separator
-    	if( lexGetToken <> FB_TK_DECLSEPCHAR ) then
+    	if( lexGetToken( ) <> FB_TK_DECLSEPCHAR ) then
     		exit do
     	else
-    		lexSkipToken
+    		lexSkipToken( )
     	end if
 
     	i += 1
 
     	'' times desc(i).elements
-    	varexpr = astNewVAR( d, NULL, FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN, IR_DATATYPE_INTEGER )
+    	varexpr = astNewVAR( d, _
+    						 NULL, _
+    						 FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN, _
+    						 IR_DATATYPE_INTEGER )
     	expr = astNewBOP( IR_OP_MUL, expr, varexpr )
 	loop
 
 	'' times length
-	lgt = symbGetLen( sym )
-	constexpr = astNewCONSTi( lgt, IR_DATATYPE_INTEGER )
+	constexpr = astNewCONSTi( symbGetLen( sym ), IR_DATATYPE_INTEGER )
 	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
 
     '' check dimensions, if not common
     if( maxdims <> INVALID ) then
     	if( dims < maxdims ) then
-			hReportError FB_ERRMSG_WRONGDIMENSIONS
+			hReportError( FB_ERRMSG_WRONGDIMENSIONS )
 			exit function
     	end if
     end if
@@ -631,7 +645,7 @@ end function
 function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
 					   byref idxexpr as ASTNODE ptr ) as integer
 
-    dim as integer i, lgt
+    dim as integer i
     dim as ASTNODE ptr expr, dimexpr, constexpr, varexpr, t
 
     function = FALSE
@@ -642,7 +656,7 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
     do
     	'' Expression
 		if( not cExpression( dimexpr ) ) then
-			hReportError FB_ERRMSG_EXPECTEDEXPRESSION
+			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
 
@@ -651,7 +665,7 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
 			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
 			dimexpr = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
-				hReportError FB_ERRMSG_INVALIDDATATYPES
+				hReportError( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
 			end if
 		end if
@@ -671,10 +685,10 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
     	end if
 
     	'' separator
-    	if( lexGetToken <> FB_TK_DECLSEPCHAR ) then
+    	if( lexGetToken( ) <> FB_TK_DECLSEPCHAR ) then
     		exit do
     	else
-    		lexSkipToken
+    		lexSkipToken( )
     	end if
 
     	i += 1
@@ -682,13 +696,17 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
     	'' it's a descriptor pointer, dereference (only with DAG this will be optimized)
     	t = astNewVAR( sym, NULL, 0, IR_DATATYPE_INTEGER )
     	'' times desc[i].elements
-    	varexpr = astNewPTR( sym, NULL, FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN, t, IR_DATATYPE_INTEGER, NULL )
+    	varexpr = astNewPTR( sym, _
+    						 NULL, _
+    						 FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN, _
+    						 t, _
+    						 IR_DATATYPE_INTEGER, _
+    						 NULL )
     	expr = astNewBOP( IR_OP_MUL, expr, varexpr )
 	loop
 
 	'' times length
-	lgt = symbGetLen( sym )
-	constexpr = astNewCONSTi( lgt, IR_DATATYPE_INTEGER )
+	constexpr = astNewCONSTi( symbGetLen( sym ), IR_DATATYPE_INTEGER )
 	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
 
    	'' plus dsc->data (= ptr + diff)
@@ -710,7 +728,7 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
 					byref idxexpr as ASTNODE ptr ) as integer
 
     dim as FBVARDIM ptr d
-    dim as integer dtype, lgt, dims, maxdims
+    dim as integer dtype, dims, maxdims
     dim as ASTNODE ptr expr, dimexpr, constexpr, varexpr
 
     function = FALSE
@@ -799,9 +817,9 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
 		exit function
     end if
 
-	'' times length (this will be optimized if len < 10 and there's no arrays on following fields)
-	lgt = symbGetLen( s )
-	constexpr = astNewCONSTi( lgt, IR_DATATYPE_INTEGER )
+	'' times length (this will be optimized if len < 10 and there's
+	'' no arrays on following fields)
+	constexpr = astNewCONSTi( symbGetLen( s ), IR_DATATYPE_INTEGER )
 	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
 
 	idxexpr = expr

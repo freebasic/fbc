@@ -32,33 +32,13 @@
 #define FB_RTL_STRALLOCTMPDESCF			"fb_StrAllocTempDescF"
 #define FB_RTL_STRALLOCTMPDESCZ			"fb_StrAllocTempDescZ"
 
-#define FB_RTL_LONGINTDIV				"__divdi3"
-#define FB_RTL_ULONGINTDIV				"__udivdi3"
-#define FB_RTL_LONGINTMOD				"__moddi3"
-#define FB_RTL_ULONGINTMOD				"__umoddi3"
-#define FB_RTL_DBL2ULONGINT				"__fixunsdfdi"
-
-#define FB_RTL_ARRAYREDIM				"fb_ArrayRedim"
-#define FB_RTL_ARRAYREDIMPRESV			"fb_ArrayRedimPresv"
-#define FB_RTL_ARRAYERASE				"fb_ArrayErase"
-#define FB_RTL_ARRAYCLEAR				"fb_ArrayClear"
-#define FB_RTL_ARRAYLBOUND				"fb_ArrayLBound"
-#define FB_RTL_ARRAYUBOUND				"fb_ArrayUBound"
-#define FB_RTL_ARRAYSETDESC				"fb_ArraySetDesc"
-#define FB_RTL_ARRAYSTRERASE			"fb_ArrayStrErase"
-#define FB_RTL_ARRAYALLOCTMPDESC		"fb_ArrayAllocTempDesc"
-#define FB_RTL_ARRAYFREETMPDESC			"fb_ArrayFreeTempDesc"
-
-#define FB_RTL_ARRAYSNGBOUNDCHK			"fb_ArraySngBoundChk"
-#define FB_RTL_ARRAYBOUNDCHK			"fb_ArrayBoundChk"
-#define FB_RTL_NULLPTRCHK				"fb_NullPtrChk"
-
 #define FB_RTL_INT2STR					"fb_IntToStr"
 #define FB_RTL_UINT2STR					"fb_UIntToStr"
 #define FB_RTL_LONGINT2STR				"fb_LongintToStr"
 #define FB_RTL_ULONGINT2STR				"fb_ULongintToStr"
 #define FB_RTL_FLT2STR					"fb_FloatToStr"
 #define FB_RTL_DBL2STR					"fb_DoubleToStr"
+#define FB_RTL_WSTR2STR					"fb_WstrToStr"
 
 #define FB_RTL_STRMID					"fb_StrMid"
 #define FB_RTL_STRASSIGNMID				"fb_StrAssignMid"
@@ -79,6 +59,67 @@
 #define FB_RTL_STRLTRIM 				"fb_LTRIM"
 #define FB_RTL_STRLTRIMANY 				"fb_LTrimAny"
 #define FB_RTL_STRLTRIMEX 				"fb_LTrimEx"
+#define FB_RTL_STRSWAP 					"fb_StrSwap"
+
+#define FB_RTL_WSTRCONCAT 				"fb_WstrConcat"
+#define FB_RTL_WSTRCONCATWA				"fb_WstrConcatWA"
+#define FB_RTL_WSTRCONCATAW				"fb_WstrConcatAW"
+#define FB_RTL_WSTRCOMPARE				"fb_WstrCompare"
+#define FB_RTL_WSTRASSIGN				"fb_WstrAssign"
+#define FB_RTL_WSTRASSIGNWA				"fb_WstrAssignFromA"
+#define FB_RTL_WSTRASSIGNAW				"fb_WstrAssignToA"
+#define FB_RTL_WSTRCONCATASSIGN			"fb_WstrConcatAssign"
+#define FB_RTL_WSTRDELETE				"fb_WstrDelete"
+
+#define FB_RTL_INT2WSTR					"fb_IntToWstr"
+#define FB_RTL_UINT2WSTR				"fb_UIntToWstr"
+#define FB_RTL_LONGINT2WSTR				"fb_LongintToWstr"
+#define FB_RTL_ULONGINT2WSTR			"fb_ULongintToWstr"
+#define FB_RTL_FLT2WSTR					"fb_FloatToWstr"
+#define FB_RTL_DBL2WSTR					"fb_DoubleToWstr"
+#define FB_RTL_STR2WSTR					"fb_StrToWstr"
+
+#define FB_RTL_WSTRMID					"fb_WstrMid"
+#define FB_RTL_WSTRASSIGNMID			"fb_WstrAssignMid"
+#define FB_RTL_WSTRFILL1				"fb_WstrFill1"
+#define FB_RTL_WSTRFILL2 				"fb_WstrFill2"
+#define FB_RTL_WSTRLEN 					"fb_WstrLen"
+#define FB_RTL_WSTRLSET 				"fb_WstrLset"
+#define FB_RTL_WSTRASC 					"fb_WstrAsc"
+#define FB_RTL_WSTRCHR 					"fb_WstrChr"
+#define FB_RTL_WSTRINSTR 				"fb_WstrInstr"
+#define FB_RTL_WSTRINSTRANY				"fb_WstrInstrAny"
+#define FB_RTL_WSTRTRIM 				"fb_WstrTrim"
+#define FB_RTL_WSTRTRIMANY 				"fb_WstrTrimAny"
+#define FB_RTL_WSTRTRIMEX 				"fb_WstrTrimEx"
+#define FB_RTL_WSTRRTRIM 				"fb_WstrRTrim"
+#define FB_RTL_WSTRRTRIMANY 			"fb_WstrRTrimAny"
+#define FB_RTL_WSTRRTRIMEX 				"fb_WstrRTrimEx"
+#define FB_RTL_WSTRLTRIM 				"fb_WstrLTrim"
+#define FB_RTL_WSTRLTRIMANY 			"fb_WstrLTrimAny"
+#define FB_RTL_WSTRLTRIMEX 				"fb_WstrLTrimEx"
+#define FB_RTL_WSTRSWAP 				"fb_WstrSwap"
+
+#define FB_RTL_LONGINTDIV				"__divdi3"
+#define FB_RTL_ULONGINTDIV				"__udivdi3"
+#define FB_RTL_LONGINTMOD				"__moddi3"
+#define FB_RTL_ULONGINTMOD				"__umoddi3"
+#define FB_RTL_DBL2ULONGINT				"__fixunsdfdi"
+
+#define FB_RTL_ARRAYREDIM				"fb_ArrayRedim"
+#define FB_RTL_ARRAYREDIMPRESV			"fb_ArrayRedimPresv"
+#define FB_RTL_ARRAYERASE				"fb_ArrayErase"
+#define FB_RTL_ARRAYCLEAR				"fb_ArrayClear"
+#define FB_RTL_ARRAYLBOUND				"fb_ArrayLBound"
+#define FB_RTL_ARRAYUBOUND				"fb_ArrayUBound"
+#define FB_RTL_ARRAYSETDESC				"fb_ArraySetDesc"
+#define FB_RTL_ARRAYSTRERASE			"fb_ArrayStrErase"
+#define FB_RTL_ARRAYALLOCTMPDESC		"fb_ArrayAllocTempDesc"
+#define FB_RTL_ARRAYFREETMPDESC			"fb_ArrayFreeTempDesc"
+#define FB_RTL_ARRAYSNGBOUNDCHK			"fb_ArraySngBoundChk"
+#define FB_RTL_ARRAYBOUNDCHK			"fb_ArrayBoundChk"
+
+#define FB_RTL_NULLPTRCHK				"fb_NullPtrChk"
 
 #define FB_RTL_CPUDETECT 				"fb_CpuDetect"
 #define FB_RTL_INIT 					"fb_Init"
@@ -90,6 +131,7 @@
 
 #define FB_RTL_DATARESTORE 				"fb_DataRestore"
 #define FB_RTL_DATAREADSTR 				"fb_DataReadStr"
+#define FB_RTL_DATAREADWSTR 			"fb_DataReadWstr"
 #define FB_RTL_DATAREADBYTE 			"fb_DataReadByte"
 #define FB_RTL_DATAREADSHORT 			"fb_DataReadShort"
 #define FB_RTL_DATAREADINT 				"fb_DataReadInt"
@@ -122,6 +164,7 @@
 #define FB_RTL_PRINTSINGLE 				"fb_PrintSingle"
 #define FB_RTL_PRINTDOUBLE 				"fb_PrintDouble"
 #define FB_RTL_PRINTSTR 				"fb_PrintString"
+#define FB_RTL_PRINTWSTR 				"fb_PrintWstr"
 
 #define FB_RTL_LPRINTVOID 				"fb_LPrintVoid"
 #define FB_RTL_LPRINTBYTE 				"fb_LPrintByte"
@@ -135,6 +178,7 @@
 #define FB_RTL_LPRINTSINGLE 			"fb_LPrintSingle"
 #define FB_RTL_LPRINTDOUBLE 			"fb_LPrintDouble"
 #define FB_RTL_LPRINTSTR 				"fb_LPrintString"
+#define FB_RTL_LPRINTWSTR 				"fb_LPrintWstr"
 
 #define FB_RTL_PRINTSPC 				"fb_PrintSPC"
 #define FB_RTL_PRINTTAB 				"fb_PrintTab"
@@ -151,9 +195,11 @@
 #define FB_RTL_WRITESINGLE 				"fb_WriteSingle"
 #define FB_RTL_WRITEDOUBLE 				"fb_WriteDouble"
 #define FB_RTL_WRITESTR 				"fb_WriteString"
+#define FB_RTL_WRITEWSTR 				"fb_WriteWstr"
 
 #define FB_RTL_PRINTUSGINIT 			"fb_PrintUsingInit"
 #define FB_RTL_PRINTUSGSTR 				"fb_PrintUsingStr"
+#define FB_RTL_PRINTUSGWSTR 			"fb_PrintUsingWstr"
 #define FB_RTL_PRINTUSGVAL 				"fb_PrintUsingVal"
 #define FB_RTL_PRINTUSGEND 				"fb_PrintUsingEnd"
 #define FB_RTL_LPRINTUSGINIT 			"fb_LPrintUsingInit"
@@ -166,7 +212,6 @@
 
 #define FB_RTL_MEMCOPY 					"fb_MemCopy"
 #define FB_RTL_MEMSWAP 					"fb_MemSwap"
-#define FB_RTL_STRSWAP 					"fb_StrSwap"
 #define FB_RTL_MEMCOPYCLEAR 			"fb_MemCopyClear"
 
 #define FB_RTL_FILEOPEN 				"fb_FileOpen"
@@ -181,10 +226,12 @@
 
 #define FB_RTL_FILEPUT 					"fb_FilePut"
 #define FB_RTL_FILEPUTSTR 				"fb_FilePutStr"
+#define FB_RTL_FILEPUTWSTR 				"fb_FilePutWstr"
 #define FB_RTL_FILEPUTARRAY 			"fb_FilePutArray"
 
 #define FB_RTL_FILEGET 					"fb_FileGet"
 #define FB_RTL_FILEGETSTR 				"fb_FileGetStr"
+#define FB_RTL_FILEGETWSTR 				"fb_FileGetWstr"
 #define FB_RTL_FILEGETARRAY 			"fb_FileGetArray"
 
 #define FB_RTL_FILETELL 				"fb_FileTell"
@@ -203,10 +250,10 @@
 #define FB_RTL_INPUTSINGLE 				"fb_InputSingle"
 #define FB_RTL_INPUTDOUBLE 				"fb_InputDouble"
 #define FB_RTL_INPUTSTR 				"fb_InputString"
+#define FB_RTL_INPUTWSTR 				"fb_InputWstr"
 
 #define FB_RTL_FILELOCK 				"fb_FileLock"
 #define FB_RTL_FILEUNLOCK 				"fb_FileUnlock"
-
 #define FB_RTL_FILERENAME 				"rename"
 
 #define FB_RTL_WIDTH 					"fb_Width"
@@ -255,33 +302,13 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_STRALLOCTMPDESCF
 	FB_RTL_IDX_STRALLOCTMPDESCZ
 
-	FB_RTL_IDX_LONGINTDIV
-	FB_RTL_IDX_ULONGINTDIV
-	FB_RTL_IDX_LONGINTMOD
-	FB_RTL_IDX_ULONGINTMOD
-	FB_RTL_IDX_DBL2ULONGINT
-
-	FB_RTL_IDX_ARRAYREDIM
-	FB_RTL_IDX_ARRAYREDIMPRESV
-	FB_RTL_IDX_ARRAYERASE
-	FB_RTL_IDX_ARRAYCLEAR
-	FB_RTL_IDX_ARRAYLBOUND
-	FB_RTL_IDX_ARRAYUBOUND
-	FB_RTL_IDX_ARRAYSETDESC
-	FB_RTL_IDX_ARRAYSTRERASE
-	FB_RTL_IDX_ARRAYALLOCTMPDESC
-	FB_RTL_IDX_ARRAYFREETMPDESC
-
-	FB_RTL_IDX_ARRAYSNGBOUNDCHK
-	FB_RTL_IDX_ARRAYBOUNDCHK
-	FB_RTL_IDX_NULLPTRCHK
-
 	FB_RTL_IDX_INT2STR
 	FB_RTL_IDX_UINT2STR
 	FB_RTL_IDX_LONGINT2STR
 	FB_RTL_IDX_ULONGINT2STR
 	FB_RTL_IDX_FLT2STR
 	FB_RTL_IDX_DBL2STR
+	FB_RTL_IDX_WSTR2STR
 
 	FB_RTL_IDX_STRMID
 	FB_RTL_IDX_STRASSIGNMID
@@ -302,6 +329,67 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_STRLTRIM
 	FB_RTL_IDX_STRLTRIMANY
 	FB_RTL_IDX_STRLTRIMEX
+	FB_RTL_IDX_STRSWAP
+
+	FB_RTL_IDX_WSTRCONCAT
+	FB_RTL_IDX_WSTRCONCATWA
+	FB_RTL_IDX_WSTRCONCATAW
+	FB_RTL_IDX_WSTRCOMPARE
+	FB_RTL_IDX_WSTRASSIGN
+	FB_RTL_IDX_WSTRASSIGNWA
+	FB_RTL_IDX_WSTRASSIGNAW
+	FB_RTL_IDX_WSTRCONCATASSIGN
+	FB_RTL_IDX_WSTRDELETE
+
+	FB_RTL_IDX_INT2WSTR
+	FB_RTL_IDX_UINT2WSTR
+	FB_RTL_IDX_LONGINT2WSTR
+	FB_RTL_IDX_ULONGINT2WSTR
+	FB_RTL_IDX_FLT2WSTR
+	FB_RTL_IDX_DBL2WSTR
+	FB_RTL_IDX_STR2WSTR
+
+	FB_RTL_IDX_WSTRMID
+	FB_RTL_IDX_WSTRASSIGNMID
+	FB_RTL_IDX_WSTRFILL1
+	FB_RTL_IDX_WSTRFILL2
+	FB_RTL_IDX_WSTRLEN
+	FB_RTL_IDX_WSTRLSET
+	FB_RTL_IDX_WSTRASC
+	FB_RTL_IDX_WSTRCHR
+	FB_RTL_IDX_WSTRINSTR
+	FB_RTL_IDX_WSTRINSTRANY
+	FB_RTL_IDX_WSTRTRIM
+	FB_RTL_IDX_WSTRTRIMANY
+	FB_RTL_IDX_WSTRTRIMEX
+	FB_RTL_IDX_WSTRRTRIM
+	FB_RTL_IDX_WSTRRTRIMANY
+	FB_RTL_IDX_WSTRRTRIMEX
+	FB_RTL_IDX_WSTRLTRIM
+	FB_RTL_IDX_WSTRLTRIMANY
+	FB_RTL_IDX_WSTRLTRIMEX
+	FB_RTL_IDX_WSTRSWAP
+
+	FB_RTL_IDX_LONGINTDIV
+	FB_RTL_IDX_ULONGINTDIV
+	FB_RTL_IDX_LONGINTMOD
+	FB_RTL_IDX_ULONGINTMOD
+	FB_RTL_IDX_DBL2ULONGINT
+
+	FB_RTL_IDX_ARRAYREDIM
+	FB_RTL_IDX_ARRAYREDIMPRESV
+	FB_RTL_IDX_ARRAYERASE
+	FB_RTL_IDX_ARRAYCLEAR
+	FB_RTL_IDX_ARRAYLBOUND
+	FB_RTL_IDX_ARRAYUBOUND
+	FB_RTL_IDX_ARRAYSETDESC
+	FB_RTL_IDX_ARRAYSTRERASE
+	FB_RTL_IDX_ARRAYALLOCTMPDESC
+	FB_RTL_IDX_ARRAYFREETMPDESC
+	FB_RTL_IDX_ARRAYSNGBOUNDCHK
+	FB_RTL_IDX_ARRAYBOUNDCHK
+
+	FB_RTL_IDX_NULLPTRCHK
 
 	FB_RTL_IDX_CPUDETECT
 	FB_RTL_IDX_INIT
@@ -313,6 +401,7 @@ enum FB_RTL_IDX
 
 	FB_RTL_IDX_DATARESTORE
 	FB_RTL_IDX_DATAREADSTR
+	FB_RTL_IDX_DATAREADWSTR
 	FB_RTL_IDX_DATAREADBYTE
 	FB_RTL_IDX_DATAREADSHORT
 	FB_RTL_IDX_DATAREADINT
@@ -345,6 +434,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_PRINTSINGLE
 	FB_RTL_IDX_PRINTDOUBLE
 	FB_RTL_IDX_PRINTSTR
+	FB_RTL_IDX_PRINTWSTR
 
 	FB_RTL_IDX_LPRINTVOID
 	FB_RTL_IDX_LPRINTBYTE
@@ -358,6 +448,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_LPRINTSINGLE
 	FB_RTL_IDX_LPRINTDOUBLE
 	FB_RTL_IDX_LPRINTSTR
+	FB_RTL_IDX_LPRINTWSTR
 
 	FB_RTL_IDX_PRINTSPC
 	FB_RTL_IDX_PRINTTAB
@@ -374,9 +465,11 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_WRITESINGLE
 	FB_RTL_IDX_WRITEDOUBLE
 	FB_RTL_IDX_WRITESTR
+	FB_RTL_IDX_WRITEWSTR
 
 	FB_RTL_IDX_PRINTUSGINIT
 	FB_RTL_IDX_PRINTUSGSTR
+	FB_RTL_IDX_PRINTUSGWSTR
 	FB_RTL_IDX_PRINTUSGVAL
 	FB_RTL_IDX_PRINTUSGEND
 	FB_RTL_IDX_LPRINTUSGINIT
@@ -389,7 +482,6 @@ enum FB_RTL_IDX
 
 	FB_RTL_IDX_MEMCOPY
 	FB_RTL_IDX_MEMSWAP
-	FB_RTL_IDX_STRSWAP
 	FB_RTL_IDX_MEMCOPYCLEAR
 
 	FB_RTL_IDX_FILEOPEN
@@ -404,10 +496,12 @@ enum FB_RTL_IDX
 
 	FB_RTL_IDX_FILEPUT
 	FB_RTL_IDX_FILEPUTSTR
+	FB_RTL_IDX_FILEPUTWSTR
 	FB_RTL_IDX_FILEPUTARRAY
 
 	FB_RTL_IDX_FILEGET
 	FB_RTL_IDX_FILEGETSTR
+	FB_RTL_IDX_FILEGETWSTR
 	FB_RTL_IDX_FILEGETARRAY
 
 	FB_RTL_IDX_FILETELL
@@ -426,10 +520,10 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_INPUTSINGLE
 	FB_RTL_IDX_INPUTDOUBLE
 	FB_RTL_IDX_INPUTSTR
+	FB_RTL_IDX_INPUTWSTR
 
 	FB_RTL_IDX_FILELOCK
 	FB_RTL_IDX_FILEUNLOCK
-
 	FB_RTL_IDX_FILERENAME
 
 	FB_RTL_IDX_WIDTH
@@ -486,13 +580,26 @@ declare function 	rtlStrCompare 		( byval str1 as ASTNODE ptr, _
 					     			  	  byval str2 as ASTNODE ptr, _
 					     			  	  byval sdtype2 as integer ) as ASTNODE ptr
 
+declare function 	rtlWstrCompare		( byval str1 as ASTNODE ptr, _
+					     				  byval str2 as ASTNODE ptr ) as ASTNODE ptr
+
 declare function 	rtlStrConcat		( byval str1 as ASTNODE ptr, _
 										  byval sdtype1 as integer, _
 					   				  	  byval str2 as ASTNODE ptr, _
 					   				  	  byval sdtype2 as integer ) as ASTNODE ptr
 
+declare function 	rtlWstrConcat		( byval str1 as ASTNODE ptr, _
+					    				  byval sdtype1 as integer, _
+					    				  byval str2 as ASTNODE ptr, _
+					    				  byval sdtype2 as integer ) as ASTNODE ptr
+
 declare function 	rtlStrAssign		( byval dst as ASTNODE ptr, _
 										  byval src as ASTNODE ptr ) as ASTNODE ptr
+
+declare function 	rtlWstrAssign		( byval dst as ASTNODE ptr, _
+					    				  byval ddtype as integer, _
+					    				  byval src as ASTNODE ptr, _
+					    				  byval sdtype as integer ) as ASTNODE ptr
 
 declare function 	rtlStrConcatAssign	( byval dst as ASTNODE ptr, _
 										  byval src as ASTNODE ptr ) as ASTNODE ptr
@@ -504,6 +611,8 @@ declare function 	rtlStrAllocTmpResult( byval strg as ASTNODE ptr ) as ASTNODE p
 declare function 	rtlStrAllocTmpDesc	( byval strg as ASTNODE ptr ) as ASTNODE ptr
 
 declare function 	rtlToStr			( byval expr as ASTNODE ptr ) as ASTNODE ptr
+
+declare function 	rtlToWstr			( byval expr as ASTNODE ptr ) as ASTNODE ptr
 
 declare function 	rtlStrMid			( byval expr1 as ASTNODE ptr, _
 										  byval expr2 as ASTNODE ptr, _
@@ -520,11 +629,15 @@ declare function 	rtlStrLSet			( byval dstexpr as ASTNODE ptr, _
 declare function 	rtlStrFill			( byval expr1 as ASTNODE ptr, _
 										  byval expr2 as ASTNODE ptr ) as ASTNODE ptr
 
+declare function 	rtlWstrFill			( byval expr1 as ASTNODE ptr, _
+										  byval expr2 as ASTNODE ptr ) as ASTNODE ptr
+
 declare function 	rtlStrAsc			( byval expr as ASTNODE ptr, _
 										  byval posexpr as ASTNODE ptr ) as ASTNODE ptr
 
 declare function 	rtlStrChr			( byval args as integer, _
-										  exprtb() as ASTNODE ptr ) as ASTNODE ptr
+										  exprtb() as ASTNODE ptr, _
+										  byval is_wstr as integer ) as ASTNODE ptr
 
 declare function    rtlStrInstr         ( byval nd_start as ASTNODE ptr, _
 					                      byval nd_text as ASTNODE ptr, _
@@ -650,6 +763,9 @@ declare function	rtlMemSwap			( byval dst as ASTNODE ptr, _
 										  byval src as ASTNODE ptr ) as integer
 
 declare function	rtlStrSwap			( byval str1 as ASTNODE ptr, _
+										  byval str2 as ASTNODE ptr ) as integer
+
+declare function	rtlWstrSwap			( byval str1 as ASTNODE ptr, _
 										  byval str2 as ASTNODE ptr ) as integer
 
 declare function 	rtlMemCopyClear		( byval dstexpr as ASTNODE ptr, _
@@ -909,19 +1025,23 @@ declare function    rtlPrinter_cb       ( byval sym as FBSYMBOL ptr ) as integer
 '' note: STRGETLEN must be called *before* astNewPARAM(e) because the expression 'e'
 ''       can be changed inside the former (address-of string's etc)
 
-#define FIXSTRGETLEN(e) symbGetLen( astGetSymbolOrElm( e ) )
+#define FIXSTRGETLEN(e) symbGetStrLen( astGetSymbolOrElm( e ) )
 
-#define ZSTRGETLEN(e) iif( astIsPTR( e ), 0, symbGetLen( astGetSymbolOrElm( e ) ) )
+#define ZSTRGETLEN(e) iif( astIsPTR( e ), 0, symbGetStrLen( astGetSymbolOrElm( e ) ) )
 
-#define STRGETLEN(e,t,l)												_
-	select case as const t                                              :_
-	case IR_DATATYPE_BYTE, IR_DATATYPE_UBYTE       						:_
-		l = 0                                                           :_
-	case IR_DATATYPE_FIXSTR                                             :_
-		l = FIXSTRGETLEN( e )                         					:_
-	case IR_DATATYPE_CHAR                                               :_
-		l = ZSTRGETLEN( e )                            					:_
-	case else                                                           :_
-		l = -1															:_
+#define WSTRGETLEN(e) iif( astIsPTR( e ), 0, symbGetWstrLen( astGetSymbolOrElm( e ) ) )
+
+#define STRGETLEN(e,t,l)								_
+	select case as const t                              :_
+	case IR_DATATYPE_BYTE, IR_DATATYPE_UBYTE       		:_
+		l = 0                                           :_
+	case IR_DATATYPE_FIXSTR                             :_
+		l = FIXSTRGETLEN( e )                         	:_
+	case IR_DATATYPE_CHAR                  				:_
+		l = ZSTRGETLEN( e )                            	:_
+	case IR_DATATYPE_WCHAR                            	:_
+		l = WSTRGETLEN( e )                 			:_
+	case else                               	        :_
+		l = -1											:_
 	end select
 

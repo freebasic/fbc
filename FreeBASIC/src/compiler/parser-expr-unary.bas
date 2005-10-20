@@ -526,8 +526,12 @@ function cAddrOfExpression( byref addrofexpr as ASTNODE ptr ) as integer
 			expr = astNewADDR( IR_OP_ADDROF, expr, sym, elm )
 		end if
 
+		if( dtype <> IR_DATATYPE_WCHAR ) then
+			dtype = IR_DATATYPE_CHAR
+		end if
+
 		addrofexpr = astNewCONV( IR_OP_TOPOINTER, _
-								 IR_DATATYPE_POINTER+IR_DATATYPE_CHAR, NULL, _
+								 IR_DATATYPE_POINTER+dtype, NULL, _
 								 expr )
 
 		return (addrofexpr <> NULL)

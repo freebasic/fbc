@@ -371,6 +371,10 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 
 #define symbGetLen(s) iif( s <> NULL, s->lgt, 0 )
 
+#define symbGetStrLen(s) symbGetLen(s)
+
+#define symbGetWstrLen(s) (s->lgt \ irGetDataSize( IR_DATATYPE_WCHAR ))
+
 #define symbGetType(s) s->typ
 
 #define symbGetSubType(s) s->subtype
@@ -609,7 +613,7 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 #define symbIsDestructor(s) ((s->alloctype and FB_ALLOCTYPE_DESTRUCTOR) > 0)
 
 
-#define hIsString(t) ((t = IR_DATATYPE_STRING) or (t = IR_DATATYPE_FIXSTR) or (t = IR_DATATYPE_CHAR))
+#define hIsString(t) ((t = IR_DATATYPE_STRING) or (t = IR_DATATYPE_FIXSTR) or (t = IR_DATATYPE_CHAR) or (t = IR_DATATYPE_WCHAR))
 
 
 ''

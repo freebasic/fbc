@@ -419,9 +419,9 @@ private function hDynArrayDef( byval id as zstring ptr, _
    			s = symbFindByNameAndClass( id, FB_SYMBCLASS_VAR )
    			'' copy type
    			if( s <> NULL ) then
-   				typ 	= s->typ
-   				subtype = s->subtype
-   				lgt		= s->lgt
+   				typ 	= symbGetType( s )
+   				subtype = symbGetSubtype( s )
+   				lgt		= symbGetLen( s )
    			end if
    		end if
 

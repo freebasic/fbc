@@ -1,0 +1,136 @@
+''	FreeBASIC - 32-bit BASIC Compiler.
+''	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+''
+''	This program is free software; you can redistribute it and/or modify
+''	it under the terms of the GNU General Public License as published by
+''	the Free Software Foundation; either version 2 of the License, or
+''	(at your option) any later version.
+''
+''	This program is distributed in the hope that it will be useful,
+''	but WITHOUT ANY WARRANTY; without even the implied warranty of
+''	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+''	GNU General Public License for more details.
+''
+''	You should have received a copy of the GNU General Public License
+''	along with this program; if not, write to the Free Software
+''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
+
+'' AST pointer nodes
+'' l = pointer expression; r = NULL
+''
+'' chng: sep/2004 written [v1ctor]
+
+option explicit
+option escape
+
+#include once "inc\fb.bi"
+#include once "inc\fbint.bi"
+#include once "inc\ir.bi"
+#include once "inc\ast.bi"
+
+'':::::
+function astNewPTR( byval sym as FBSYMBOL ptr, _
+					byval elm as FBSYMBOL ptr, _
+					byval ofs as integer, _
+					byval l as ASTNODE ptr, _
+					byval dtype as integer, _
+					byval subtype as FBSYMBOL ptr ) as ASTNODE ptr static
+
+    dim as ASTNODE ptr n
+    dim as integer delchild
+
+	'' alloc new node
+	n = astNewNode( AST_NODECLASS_PTR, dtype, subtype )
+	function = n
+
+	if( n = NULL ) then
+		exit function
+	end if
+
+	if( l <> NULL ) then
+		delchild = FALSE
+
+		'' convert *@ to nothing
+		select case l->class
+		case AST_NODECLASS_ADDR
+			if( l->op = IR_OP_ADDROF ) then
+				delchild = TRUE
+			end if
+		case AST_NODECLASS_OFFSET
+			delchild = TRUE
+		end select
+
+		''
+		if( delchild ) then
+			n = l->l
+			n->dtype   = dtype
+			n->subtype = subtype
+			astDel( l )
+			return n
+		end if
+	end if
+
+	n->l   		= l
+	n->ptr.sym	= sym
+	n->ptr.elm	= elm
+	n->ptr.ofs	= ofs
+	n->chkbitfld= elm <> NULL
+
+end function
+
+'':::::
+function astLoadPTR( byval n as ASTNODE ptr ) as IRVREG ptr
+    dim as ASTNODE ptr l
+    dim as integer dtype
+    dim as IRVREG ptr v1, vp, vr
+    dim as FBSYMBOL ptr s
+
+	l = n->l
+	'' no index? can happen with absolute addresses + ptr typecasting
+	if( l = NULL ) then
+		if( ast.doemit ) then
+			vr = irAllocVRPTR( n->dtype, n->ptr.ofs, NULL )
+		end if
+		return vr
+	end if
+
+	'' handle bitfields..
+	if( n->chkbitfld ) then
+		n->chkbitfld = FALSE
+		s = n->ptr.elm
+		if( s <> NULL ) then
+			if( s->var.elm.bits > 0 ) then
+				n = astGetBitField( n, s )
+				function = astLoad( n )
+				astDel( n )
+				exit function
+			end if
+		end if
+	end if
+
+	v1 = astLoad( l )
+
+	''
+	dtype = n->dtype
+
+	if( ast.doemit ) then
+		'' src is not a reg?
+		if( (not irIsREG( v1 )) or _
+			(irGetVRDataClass( v1 ) <> IR_DATACLASS_INTEGER) or _
+			(irGetVRDataSize( v1 ) <> FB_POINTERSIZE) ) then
+
+			vp = irAllocVREG( IR_DATATYPE_POINTER )
+			irEmitADDR( IR_OP_DEREF, v1, vp )
+		else
+			vp = v1
+		end if
+
+		vr = irAllocVRPTR( dtype, n->ptr.ofs, vp )
+	end if
+
+	astDel( l )
+
+	function = vr
+
+end function
+

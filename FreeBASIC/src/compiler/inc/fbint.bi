@@ -306,24 +306,25 @@ enum FBTK_ENUM
 	FB_TK_SUB
 	FB_TK_FUNCTION
 
-	FB_TK_INTEGER
-	FB_TK_LONG
-	FB_TK_SINGLE
-	FB_TK_DOUBLE
-	FB_TK_STRING
 	FB_TK_BYTE
 	FB_TK_UBYTE
 	FB_TK_SHORT
 	FB_TK_USHORT
+	FB_TK_INTEGER
+	FB_TK_LONG
 	FB_TK_UINT
 	FB_TK_LONGINT
 	FB_TK_ULONGINT
+	FB_TK_SINGLE
+	FB_TK_DOUBLE
+	FB_TK_STRING
+	FB_TK_ZSTRING
+	FB_TK_WSTRING
 	FB_TK_ANY
 	FB_TK_PTR
 	FB_TK_POINTER
 	FB_TK_UNSIGNED
 	FB_TK_AS
-	FB_TK_ZSTRING
 
 	FB_TK_PUBLIC
 	FB_TK_PRIVATE
@@ -365,7 +366,9 @@ enum FBTK_ENUM
 	FB_TK_LSET
 	FB_TK_ASC
 	FB_TK_CHR
+	FB_TK_WCHR
 	FB_TK_STR
+	FB_TK_WSTR
 	FB_TK_MID
 	FB_TK_INSTR
 	FB_TK_TRIM
@@ -505,6 +508,7 @@ enum FBSYMBTYPE_ENUM
 	FB_SYMBTYPE_CHAR
 	FB_SYMBTYPE_SHORT
 	FB_SYMBTYPE_USHORT
+	FB_SYMBTYPE_WCHAR
 	FB_SYMBTYPE_INTEGER
 	FB_SYMBTYPE_LONG			= FB_SYMBTYPE_INTEGER
 	FB_SYMBTYPE_UINT
@@ -519,9 +523,9 @@ enum FBSYMBTYPE_ENUM
 	FB_SYMBTYPE_FUNCTION
 	FB_SYMBTYPE_FWDREF
 	FB_SYMBTYPE_POINTER            				'' must be the last
-end enum
 
-const FB_SYMBOLTYPES			= 19
+	FB_SYMBOLTYPES
+end enum
 
 
 '' allocation types mask
@@ -791,7 +795,12 @@ end type
 type FBS_VAR
 	suffix			as integer					'' QB quirk..
 	initialized		as integer
-	inittext		as string
+	union
+		inittext		as string
+		''!!!FIXME!!!
+		'''''inittextw		as wstring ptr
+		''!!!FIXME!!!
+	end union
 	emited			as integer
 	array			as FBS_ARRAY
 	elm				as FBS_UDTELM

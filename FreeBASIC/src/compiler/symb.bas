@@ -615,6 +615,14 @@ function symbCalcLen( byval typ as integer, _
 	case FB_SYMBTYPE_SHORT, FB_SYMBTYPE_USHORT
 		function = 2
 
+	case FB_SYMBTYPE_WCHAR
+		select case env.clopt.target
+		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+			function = 2
+		case else
+			function = FB_INTEGERSIZE
+		end select
+
 	case FB_SYMBTYPE_INTEGER, FB_SYMBTYPE_LONG, FB_SYMBTYPE_UINT, FB_SYMBTYPE_ENUM
 		function = FB_INTEGERSIZE
 

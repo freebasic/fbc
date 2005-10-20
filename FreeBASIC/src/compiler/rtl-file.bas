@@ -342,7 +342,7 @@ data @FB_RTL_FILEUNLOCK,"", _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0
 
-'' rename ( byval oldname as string, byval newname as string ) as integer
+'' rename ( byval oldname as zstring ptr, byval newname as zstring ptr ) as integer
 data @FB_RTL_FILERENAME,"", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
@@ -1022,6 +1022,9 @@ function rtlFileInputGet( byval dstexpr as ASTNODE ptr ) as integer
 	case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
 		f = PROCLOOKUP( INPUTSTR )
 		args = 3
+	case IR_DATATYPE_WCHAR
+		f = PROCLOOKUP( INPUTWSTR )
+		args = 2
 	case IR_DATATYPE_BYTE, IR_DATATYPE_UBYTE
 		f = PROCLOOKUP( INPUTBYTE )
 	case IR_DATATYPE_SHORT, IR_DATATYPE_USHORT
@@ -1061,9 +1064,11 @@ function rtlFileInputGet( byval dstexpr as ASTNODE ptr ) as integer
  			exit function
  		end if
 
-		'' byval fillrem as integer
-		if( astNewPARAM( proc, astNewCONSTi( dtype = IR_DATATYPE_FIXSTR, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
-    		exit function
+		if( args > 2 ) then
+			'' byval fillrem as integer
+			if( astNewPARAM( proc, astNewCONSTi( dtype = IR_DATATYPE_FIXSTR, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
+    			exit function
+    		end if
     	end if
     end if
 

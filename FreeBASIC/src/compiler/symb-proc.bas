@@ -781,106 +781,8 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 		return 0
 	end if
 
-	'' different types?
-	if( symbGetType( arg ) <> pdtype ) then
-
-		pdclass = irGetDataClass( pdtype )
-
-		'' check classes
-		select case as const irGetDataClass( symbGetType( arg ) )
-		'' integer?
-		case IR_DATACLASS_INTEGER
-			select case as const pdclass
-			'' another integer or float is ok (due the auto-coercion)
-			case IR_DATACLASS_INTEGER, IR_DATACLASS_FPOINT
-				return FB_OVLPROC_HALFMATCH - abs( symbGetType( arg ) - pdtype )
-
-			'' string? only if it's a zstring ptr arg
-			case IR_DATACLASS_STRING
-				if( symbGetType( arg ) <> IR_DATATYPE_POINTER+IR_DATATYPE_CHAR ) then
-					return 0
-				end if
-
-				return FB_OVLPROC_FULLMATCH
-
-			'' refuse anything else
-			case else
-				return 0
-			end select
-
-		'' floating-point?
-		case IR_DATACLASS_FPOINT
-			'' only accept another float or integer
-			select case as const pdclass
-			case IR_DATACLASS_INTEGER, IR_DATACLASS_FPOINT
-				return FB_OVLPROC_HALFMATCH - abs( symbGetType( arg ) - pdtype )
-
-			'' refuse anything else
-			case else
-				return 0
-
-			end select
-
-		'' string?
-		case IR_DATACLASS_STRING
-
-			select case pdclass
-			'' okay if it's another var- or fixed-len string
-			case IR_DATACLASS_STRING
-				return FB_OVLPROC_HALFMATCH - abs( symbGetType( arg ) - pdtype )
-
-			'' integer only if it's a zstring
-			case IR_DATACLASS_INTEGER
-				if( pdtype <> IR_DATATYPE_CHAR ) then
-					return 0
-				end if
-
-				return FB_OVLPROC_FULLMATCH
-
-			'' refuse anything else
-			case else
-				return 0
-			end select
-
-		'' user-defined..
-		case IR_DATACLASS_UDT
-
-			'' not another udt?
-			if( pdclass <> IR_DATACLASS_UDT ) then
-				'' not a proc? (can be an UDT been returned in registers)
-				if( astGetClass( pexpr ) <> AST_NODECLASS_FUNCT ) then
-					return 0
-				end if
-
-				'' it's a proc, but was it originally returning an UDT?
-				s = astGetSymbol( pexpr )
-				if( symbGetType( s ) <> FB_SYMBTYPE_USERDEF ) then
-					return 0
-				end if
-
-				'' get the original subtype
-				s = symbGetSubType( s )
-
-			'' udt..
-            else
-            	s = astGetSubType( pexpr )
-			end if
-
-            '' can't be different
-			if( symbGetSubType( arg ) <> s ) then
-				return 0
-			end if
-
-			return FB_OVLPROC_FULLMATCH
-
-		'' can't happen?
-		case else
-			return 0
-
-		end select
-
-	'' same types..
-	else
+	'' same types?
+	if( symbGetType( arg ) = pdtype ) then
 		'' check the subtype
 		if( symbGetSubType( arg ) <> astGetSubType( pexpr ) ) then
 
@@ -892,12 +794,113 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 			end select
 
 			return FB_OVLPROC_HALFMATCH
+        end if
 
 		'' same subtype too, full match..
-		else
-			return FB_OVLPROC_FULLMATCH
-		end if
+		return FB_OVLPROC_FULLMATCH
 	end if
+
+	'' different types..
+	pdclass = irGetDataClass( pdtype )
+
+	'' check classes
+	select case as const irGetDataClass( symbGetType( arg ) )
+	'' integer?
+	case IR_DATACLASS_INTEGER
+		select case as const pdclass
+		'' another integer or float is ok (due the auto-coercion)
+		case IR_DATACLASS_INTEGER, IR_DATACLASS_FPOINT
+			return FB_OVLPROC_HALFMATCH - abs( symbGetType( arg ) - pdtype )
+
+		'' string? only if it's a zstring ptr arg
+		case IR_DATACLASS_STRING
+			'' note: no wstring auto-coercion as that would cause ambiguity
+			''		 if procs where the difference is only a string and a
+			''		 wstring ptr param
+			if( symbGetType( arg ) = IR_DATATYPE_POINTER+IR_DATATYPE_CHAR ) then
+				return FB_OVLPROC_FULLMATCH
+			else
+				return 0
+			end if
+
+		'' refuse anything else
+		case else
+			return 0
+		end select
+
+	'' floating-point?
+	case IR_DATACLASS_FPOINT
+		'' only accept another float or integer
+		select case as const pdclass
+		case IR_DATACLASS_INTEGER, IR_DATACLASS_FPOINT
+			return FB_OVLPROC_HALFMATCH - abs( symbGetType( arg ) - pdtype )
+
+		'' refuse anything else
+		case else
+			return 0
+
+		end select
+
+	'' string?
+	case IR_DATACLASS_STRING
+
+		select case pdclass
+		'' okay if it's another var- or fixed-len string
+		case IR_DATACLASS_STRING
+			return FB_OVLPROC_HALFMATCH - abs( symbGetType( arg ) - pdtype )
+
+		'' integer only if it's a zstring
+		case IR_DATACLASS_INTEGER
+			'' note: no wstring auto-coercion as that would cause ambiguity
+			''		 if procs where the difference is only a string and a
+			''		 wstring ptr param
+			if( pdtype = IR_DATATYPE_CHAR ) then
+				return FB_OVLPROC_FULLMATCH
+			else
+				return 0
+			end if
+
+		'' refuse anything else
+		case else
+			return 0
+		end select
+
+	'' user-defined..
+	case IR_DATACLASS_UDT
+
+		'' not another udt?
+		if( pdclass <> IR_DATACLASS_UDT ) then
+			'' not a proc? (can be an UDT been returned in registers)
+			if( astGetClass( pexpr ) <> AST_NODECLASS_FUNCT ) then
+				return 0
+			end if
+
+			'' it's a proc, but was it originally returning an UDT?
+			s = astGetSymbol( pexpr )
+			if( symbGetType( s ) <> FB_SYMBTYPE_USERDEF ) then
+				return 0
+			end if
+
+			'' get the original subtype
+			s = symbGetSubType( s )
+
+		'' udt..
+		else
+           	s = astGetSubType( pexpr )
+		end if
+
+        '' can't be different
+		if( symbGetSubType( arg ) <> s ) then
+			return 0
+		end if
+
+		return FB_OVLPROC_FULLMATCH
+
+	'' can't happen?
+	case else
+		return 0
+
+	end select
 
 end function
 

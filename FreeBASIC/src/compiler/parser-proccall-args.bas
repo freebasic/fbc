@@ -40,6 +40,9 @@ private function hCreateOptArg( byval arg as FBSYMBOL ptr _
 	case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
 		function = astNewVAR( symbGetArgOptValStr( arg ), NULL, 0, IR_DATATYPE_FIXSTR )
 
+	case IR_DATATYPE_WCHAR
+		function = astNewVAR( symbGetArgOptValStr( arg ), NULL, 0, IR_DATATYPE_WCHAR )
+
 	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
 		function = astNewCONST64( symbGetArgOptValLong( arg ), symbGetType( arg ) )
 

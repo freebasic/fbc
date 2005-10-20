@@ -260,14 +260,22 @@ function cSymbolType( byref typ as integer, _
 			lexSkipToken( )
 		end if
 
-	case FB_TK_ZSTRING
+	case FB_TK_ZSTRING, FB_TK_WSTRING
+
+		if( lexGetToken( ) = FB_TK_ZSTRING ) then
+			typ = FB_SYMBTYPE_CHAR
+		else
+			typ = FB_SYMBTYPE_WCHAR
+		end if
+
 		lexSkipToken( )
+
 		if( lexGetToken( ) = CHAR_STAR ) then
 			lexSkipToken( )
 			if( not cConstExprValue( lgt ) ) then
 				exit function
 			end if
-			typ = FB_SYMBTYPE_CHAR
+
 			'' min 1 char
 			if( lgt < 1 ) then
 				hReportError( FB_ERRMSG_SYNTAXERROR )
@@ -276,8 +284,15 @@ function cSymbolType( byref typ as integer, _
 			allowptr = FALSE
 
 		else
-    		typ = FB_SYMBTYPE_CHAR
     		lgt = 0
+		end if
+
+		'' note: len of "wstring * expr" symbols will be actually
+		''       the number of chars times sizeof(wstring), so
+		''		 always use symbGetWstrLen( ) to retrieve the
+		''       len in characters, not the bytes
+		if( typ = FB_SYMBTYPE_WCHAR ) then
+			lgt *= irGetDataSize( IR_DATATYPE_WCHAR )
 		end if
 
 	case FB_TK_FUNCTION, FB_TK_SUB
@@ -299,7 +314,7 @@ function cSymbolType( byref typ as integer, _
 			lexSkipToken( )
 			typ 	= FB_SYMBTYPE_USERDEF
 			subtype = s
-			lgt 	= s->lgt
+			lgt 	= symbGetLen( s )
 		else
 			s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_ENUM )
 			if( s <> NULL ) then
@@ -311,9 +326,9 @@ function cSymbolType( byref typ as integer, _
 				s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_TYPEDEF )
 				if( s <> NULL ) then
 					lexSkipToken( )
-					typ 	= s->typ
-					subtype = s->subtype
-					lgt 	= s->lgt
+					typ 	= symbGetType( s )
+					subtype = symbGetSubtype( s )
+					lgt 	= symbGetLen( s )
 					ptrcnt	= s->ptrcnt
 			    end if
 			end if
@@ -365,10 +380,11 @@ function cSymbolType( byref typ as integer, _
 				hReportError( FB_ERRMSG_INCOMPLETETYPE )
 				exit function
 			elseif( lgt <= 0 ) then
-				if( typ = FB_SYMBTYPE_CHAR ) then
+				select case typ
+				case FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR
 					hReportError( FB_ERRMSG_EXPECTEDPOINTER )
 					exit function
-				end if
+				end select
 			end if
 		end if
 

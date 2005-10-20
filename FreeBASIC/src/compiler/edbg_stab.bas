@@ -56,7 +56,22 @@ declare function hGetDataType			( byval sym as FBSYMBOL ptr ) as string
 
 	dim shared remapTB(0 to FB_SYMBOLTYPES-1) as integer = _
 	{ _
-		7, 2, 3, 4, 5, 6, 1, 8, 1, 9, 10, 11, 12, 13, 14 _
+		 7, _									'' void
+		 2, _                                   '' byte
+		 3, _                                   '' ubyte
+		 4, _                                   '' char
+		 5, _                                   '' short
+		 6, _                                   '' ushort
+		 6, _                                   '' wchar
+		 1, _                                   '' int
+		 8, _                                   '' uint
+		 1, _                                   '' enum
+		 9, _                                   '' longint
+		10, _                                   '' ulongint
+		11, _                                   '' single
+		12, _                                   '' double
+		13, _                                   '' string
+		14  _                                   '' fix-len string
 	}
 
 
@@ -84,6 +99,15 @@ sub	edbgInit( )
     if( not env.clopt.debug ) then
     	exit sub
     end if
+
+	'' wchar len depends on the target platform
+	select case env.clopt.target
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+		remapTB(FB_SYMBTYPE_WCHAR) = 6			'' ushort
+
+	case else
+		remapTB(FB_SYMBTYPE_WCHAR) = 8			'' uint
+	end select
 
 end sub
 

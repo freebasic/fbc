@@ -41,6 +41,7 @@ enum IRDATATYPE_ENUM
 	IR_DATATYPE_CHAR
 	IR_DATATYPE_SHORT
 	IR_DATATYPE_USHORT
+	IR_DATATYPE_WCHAR
 	IR_DATATYPE_INTEGER
 	IR_DATATYPE_LONG		= IR_DATATYPE_INTEGER
 	IR_DATATYPE_UINT
@@ -55,9 +56,9 @@ enum IRDATATYPE_ENUM
 	IR_DATATYPE_FUNCTION
 	IR_DATATYPE_FWDREF
 	IR_DATATYPE_POINTER							'' ptr must be the last!
-end enum
 
-const IR_MAXDATATYPES 		= 19
+	IR_MAXDATATYPES
+end enum
 
 ''
 enum IRVREGTYPE_ENUM
@@ -288,6 +289,10 @@ declare sub 		irEmitVARINI64		( byval dtype as integer, _
 declare sub 		irEmitVARINIOFS		( byval sym as FBSYMBOL ptr )
 
 declare sub 		irEmitVARINISTR		( byval totlgt as integer, _
+				     					  byval litstr as string, _
+				     					  byval litlgt as integer )
+
+declare sub 		irEmitVARINIWSTR	( byval totlgt as integer, _
 				     					  byval litstr as string, _
 				     					  byval litlgt as integer )
 

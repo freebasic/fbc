@@ -121,7 +121,7 @@ function cDataStmt as integer static
 				astDel( expr )
 
                 typ = FB_SYMBTYPE_FIXSTR
-				litlen  = symbGetLen( s ) - 1 				'' less the null-char
+				litlen  = symbGetStrLen( s ) - 1 			'' less the null-char
 				littext = symbGetVarText( s )
 
             	if( not rtlDataStore( littext, litlen, typ ) ) then

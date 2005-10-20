@@ -173,6 +173,9 @@ function rtlDataRead( byval varexpr as ASTNODE ptr ) as integer static
 	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR
 		f = PROCLOOKUP( DATAREADSTR )
 		args = 3
+	case IR_DATATYPE_WCHAR
+		f = PROCLOOKUP( DATAREADWSTR )
+		args = 2
 	case IR_DATATYPE_BYTE
 		f = PROCLOOKUP( DATAREADBYTE )
 	case IR_DATATYPE_UBYTE
@@ -205,7 +208,7 @@ function rtlDataRead( byval varexpr as ASTNODE ptr ) as integer static
 
     proc = astNewFUNCT( f )
 
-    if( args = 3 ) then
+    if( args > 1 ) then
     	'' always calc len before pushing the param
 		dtype = astGetDataType( varexpr )
 		STRGETLEN( varexpr, dtype, lgt )
@@ -216,15 +219,17 @@ function rtlDataRead( byval varexpr as ASTNODE ptr ) as integer static
  		exit function
  	end if
 
-    if( args = 3 ) then
+    if( args > 1 ) then
 		'' byval dst_size as integer
 		if( astNewPARAM( proc, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
  			exit function
  		end if
 
-		'' byval fillrem as integer
-		if( astNewPARAM( proc, astNewCONSTi( dtype = IR_DATATYPE_FIXSTR, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
-    		exit function
+		if( args > 2 ) then
+			'' byval fillrem as integer
+			if( astNewPARAM( proc, astNewCONSTi( dtype = IR_DATATYPE_FIXSTR, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
+    			exit function
+    		end if
     	end if
     end if
 
