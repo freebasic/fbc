@@ -160,10 +160,21 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
     fb_mode->scanline_size = 1;
     refresh_rate = 70;
 
-	fb_dos.update = depth_modes->pfnUpdate;
-	fb_dos.update_len = (unsigned char*)end_of_driver_update - (unsigned char*)fb_dos.update;
-    fb_dos.set_palette = NULL;
     fb_dos.bios_mode = depth_modes->modes[ iFoundRes ];
+	fb_dos.update = depth_modes->pfnUpdate;
+    fb_dos.update_len = (unsigned char*)end_of_driver_update - (unsigned char*)fb_dos.update;
+    if( fb_dos.bios_mode >= 0x11 ) {
+        /* 16 or 256 colors out of 64*64*64 (262144) */
+        fb_dos.set_palette = fb_dos_vga_set_palette;
+    } else if( fb_dos.bios_mode >= 0x0D ) {
+        /* FIXME: Implement setting the palette for EGA cards.
+         *        (2 or 16 out of 64) */
+        fb_dos.set_palette = NULL;
+    } else {
+        /* FIXME: Implement setting the palette for CGA cards.
+         *        Two sets of four colors. */
+        fb_dos.set_palette = NULL;
+    }
 
 	fb_dos_init(title, w, h, depth, refresh_rate, flags);
 
@@ -214,7 +225,6 @@ static void driver_update_planar_ega_vga( int planes )
             unsigned x, uiDestIndex = 0;
             unsigned char *pFrameBuffer = buffer;
             unsigned plane;
-            unsigned char patterns[4];
 
             /* Split "per pixel" color values into a plane oriented
              * representation */
