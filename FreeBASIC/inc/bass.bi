@@ -712,7 +712,7 @@ Declare Function BASS_RecordSetInput alias "BASS_RecordSetInput" (ByVal inputn A
 Declare Function BASS_RecordGetInput alias "BASS_RecordGetInput" (ByVal inputn As Integer) As Integer
 Declare Function BASS_RecordStart alias "BASS_RecordStart" (ByVal freq As Integer, ByVal flags As Integer, ByVal proc As Integer, ByVal user As Integer) As Integer
 
-Declare Function BASS_ChannelBytes2Seconds64 alias "BASS_ChannelBytes2Seconds64" Alias "BASS_ChannelBytes2Seconds" (ByVal handle As Integer, ByVal pos As Integer, ByVal poshigh As Integer) As Single
+Declare Function BASS_ChannelBytes2Seconds64 alias "BASS_ChannelBytes2Seconds64" (ByVal handle As Integer, ByVal pos As Integer, ByVal poshigh As Integer) As Single
 Declare Function BASS_ChannelSeconds2Bytes alias "BASS_ChannelSeconds2Bytes" (ByVal handle As Integer, ByVal pos As Single) As Integer
 Declare Function BASS_ChannelGetDevice alias "BASS_ChannelGetDevice" (ByVal handle As Integer) As Integer
 Declare Function BASS_ChannelIsActive alias "BASS_ChannelIsActive" (ByVal handle As Integer) As Integer
@@ -728,11 +728,11 @@ Declare Function BASS_ChannelSet3DAttributes alias "BASS_ChannelSet3DAttributes"
 Declare Function BASS_ChannelGet3DAttributes alias "BASS_ChannelGet3DAttributes" (ByVal handle As Integer, Byval mode As Integer ptr, Byval min As Single ptr, Byval max As Single ptr, Byval iangle As Integer ptr, Byval oangle As Integer ptr, Byval outvol As Integer ptr) As Integer
 Declare Function BASS_ChannelSet3DPosition alias "BASS_ChannelSet3DPosition" (ByVal handle As Integer, Byval pos As Any ptr, Byval orient As Any ptr, Byval vel As Any ptr) As Integer
 Declare Function BASS_ChannelGet3DPosition alias "BASS_ChannelGet3DPosition" (ByVal handle As Integer, Byval pos As Any ptr, Byval orient As Any ptr, Byval vel As Any ptr) As Integer
-Declare Function BASS_ChannelSetPosition64 alias "BASS_ChannelSetPosition64" Alias "BASS_ChannelSetPosition" (ByVal handle As Integer, ByVal pos As Integer, ByVal poshigh As Integer) As Integer
+Declare Function BASS_ChannelSetPosition64 alias "BASS_ChannelSetPosition64" (ByVal handle As Integer, ByVal pos As Integer, ByVal poshigh As Integer) As Integer
 Declare Function BASS_ChannelGetPosition alias "BASS_ChannelGetPosition" (ByVal handle As Integer) As Integer
 Declare Function BASS_ChannelGetLevel alias "BASS_ChannelGetLevel" (ByVal handle As Integer) As Integer
 Declare Function BASS_ChannelGetData alias "BASS_ChannelGetData" (ByVal handle As Integer, Byval buffer As Any ptr, ByVal length As Integer) As Integer
-Declare Function BASS_ChannelSetSync64 alias "BASS_ChannelSetSync64" Alias "BASS_ChannelSetSync" (ByVal handle As Integer, ByVal atype As Integer, ByVal param As Integer, ByVal paramhigh As Integer, ByVal proc As Integer, ByVal user As Integer) As Integer
+Declare Function BASS_ChannelSetSync64 alias "BASS_ChannelSetSync64" (ByVal handle As Integer, ByVal atype As Integer, ByVal param As Integer, ByVal paramhigh As Integer, ByVal proc As Integer, ByVal user As Integer) As Integer
 Declare Function BASS_ChannelRemoveSync alias "BASS_ChannelRemoveSync" (ByVal handle As Integer, ByVal sync As Integer) As Integer
 Declare Function BASS_ChannelSetDSP alias "BASS_ChannelSetDSP" (ByVal handle As Integer, ByVal proc As Integer, ByVal user As Integer, ByVal priority As Integer) As Integer
 Declare Function BASS_ChannelRemoveDSP alias "BASS_ChannelRemoveDSP" (ByVal handle As Integer, ByVal dsp As Integer) As Integer
