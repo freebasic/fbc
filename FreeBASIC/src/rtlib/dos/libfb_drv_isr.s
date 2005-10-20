@@ -29,8 +29,37 @@ FUNC(fb_hDrvIntStacks)
 FUNC(fb_hDrvSelectors)
         .fill 5, 4, 0
 
+/* DOS cli level for nested CLI/STI */
+FUNC(dos_cli_level)
+        .fill 1, 4, 0
 
 
+
+
+
+FUNC(fb_dos_cli)
+	push eax
+
+        mov eax, [GLOBL(dos_cli_level)]
+        inc dword ptr [GLOBL(dos_cli_level)]
+	test eax, eax
+        jnz 1f
+	cli
+1:
+        pop eax
+	ret
+
+FUNC(fb_dos_sti)
+	push eax
+
+        dec dword ptr [GLOBL(dos_cli_level)]
+        mov eax, [GLOBL(dos_cli_level)]
+	test eax, eax
+        jnz 1f
+	sti
+1:
+        pop eax
+	ret
 
 
 
@@ -117,12 +146,19 @@ FUNC(\INT_HANDLER_NAME)
          * argument */
         push ebx
 
+	/* Ensure that fb_dos_cli and fb_dos_sti work as expected and
+         * don't enable IF acciedentally */
+        inc dword ptr [GLOBL(dos_cli_level)]
+
         /* The ISR's CS is the same as the applications CS so it's OK to
          * do a near call here ... */
         call edx
 
         /* Remove all arguments from stack */
         add esp, 4
+
+	/* Reset the CLI level */
+        dec dword ptr [GLOBL(dos_cli_level)]
 
         /* Restore old stack segment/offset */
         pop edi               /* Old stack offset */
@@ -176,6 +212,7 @@ FUNC(\INT_HANDLER_NAME)
         /* Reserved space was unused ... */
         add esp, 8
 
+	/* Turn it on regardless of the current "dos_cli_level" value */
         sti         /* IRET doesn't restore the I flag in "virtual" mode
                      * so we have to restore it ourselves */
 

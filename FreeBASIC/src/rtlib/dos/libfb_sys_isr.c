@@ -47,7 +47,8 @@ extern char fb_hDrvIntHandler_start;
 extern __dpmi_paddr fb_hDrvIntHandler_OldIRQs[16];
 extern FnIntHandler fb_hDrvIntHandler[16];
 extern FB_DOS_STACK_INFO fb_hDrvIntStacks[16];
-extern unsigned short fb_hDrvSelectors[5];
+extern unsigned fb_hDrvSelectors[5];
+extern int dos_cli_level;
 void fb_hDrvIntHandler_PIC1(void);
 void fb_hDrvIntHandler_PIC2(void);
 extern char fb_hDrvIntHandler_end;
@@ -62,24 +63,6 @@ extern char fb_hDrvIntHandler_end;
 
 #define fb_lock_memory_data( var_name ) \
     fb_lock_memory( var_name ## _start, var_name ## _end )
-
-static int dos_cli_level = 0;
-
-int fb_dos_cli( void )
-{
-    int next_value = ++dos_cli_level;
-    if( next_value>=1 )
-        __asm__ volatile ("cli");
-    return next_value;
-}
-
-int fb_dos_sti( void )
-{
-    int next_value = --dos_cli_level;
-    if( next_value <= 0 )
-        __asm__ volatile ("sti");
-    return next_value;
-}
 
 /*:::::*/
 int fb_dos_lock_mem(const void *address, size_t size)

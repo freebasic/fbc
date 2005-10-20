@@ -207,5 +207,5 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	fb_win32.paint = gdi_paint;
 	fb_win32.thread = gdi_thread;
 
-	return fb_hWin32Init(title, w, h, depth, refresh_rate, flags);
+	return fb_hWin32Init(title, w, h, MAX(8, depth), refresh_rate, flags);
 }

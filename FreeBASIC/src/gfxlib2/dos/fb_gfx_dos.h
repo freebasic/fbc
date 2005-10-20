@@ -83,7 +83,9 @@ typedef struct fb_dos_t {
 	int mouse_x;
 	int mouse_y;
 	int mouse_z;
-	int mouse_buttons;
+    int mouse_buttons;
+
+    int bios_mode;
 	
 	void (*update)(void);
 	unsigned int update_len;
@@ -92,13 +94,11 @@ typedef struct fb_dos_t {
 	void (*undraw_mouse)(void);
 	void (*set_palette)(void);
 	
-	__dpmi_regs regs;
-	
-	_go32_dpmi_seginfo old_kb_int;
-	_go32_dpmi_seginfo new_kb_int;
-	_go32_dpmi_seginfo old_timer_int;
-	_go32_dpmi_seginfo new_timer_int;
-	
+    __dpmi_regs regs;
+
+    unsigned timer_ticks;
+    unsigned timer_step;
+
 	int vesa_ok;
 	VbeInfoBlock vesa_info;
 	VesaModeInfo vesa_mode_info;
@@ -119,7 +119,7 @@ extern fb_dos_t fb_dos;
 
 extern int fb_dos_get_mouse(int *x, int *y, int *z, int *buttons);
 extern void fb_dos_set_mouse(int x, int y, int cursor);
-extern void fb_dos_update_mouse(void);
+extern int fb_dos_update_mouse(void);
 
 /* VGA */
 

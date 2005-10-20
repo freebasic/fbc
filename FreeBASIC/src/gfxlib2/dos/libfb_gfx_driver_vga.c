@@ -49,16 +49,19 @@ GFXDRIVER fb_gfxDriverVGA =
 };
 
 static int modes[] = {
-	SCREENLIST(320, 200),
-	SCREENLIST(320, 100),
-	SCREENLIST(256, 256),
-	SCREENLIST(160, 120),
-	SCREENLIST(80, 80)
-	};
+    SCREENLIST(320, 200),
+    SCREENLIST(320, 100),
+    SCREENLIST(256, 256),
+    SCREENLIST(160, 120),
+    SCREENLIST(80, 80)
+};
+
 /*:::::*/
-static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
+static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rate, int flags)
 {
-	int c;
+    int depth = depth_arg;
+    int c;
+
 	fb_dos_detect();
 	
 	if (flags & DRIVER_OPENGL)

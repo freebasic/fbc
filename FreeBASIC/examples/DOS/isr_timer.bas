@@ -42,6 +42,8 @@ if fb_dos_lock_mem( @isr_data_start, @isr_data_end - @isr_data_start )<>0 then
     end 1
 end if
 
+old_isr = fb_isr_get( 0 )
+
 dim as byte ptr ptr_end = cptr( byte ptr, @isr_timer_end )
 dim as byte ptr ptr_start = cptr( byte ptr, @isr_timer )
 if not fb_isr_set( 0, @isr_timer, ptr_end - ptr_start, 16384 ) then

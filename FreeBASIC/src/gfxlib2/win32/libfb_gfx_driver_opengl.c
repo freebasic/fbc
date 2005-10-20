@@ -133,9 +133,10 @@ static void opengl_exit(void)
 
 
 /*:::::*/
-static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
+static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rate, int flags)
 {
-	PIXELFORMATDESCRIPTOR pfd;
+    PIXELFORMATDESCRIPTOR pfd;
+    int depth = MAX(8, depth_arg);
 	int pf, gl_options;
 
 	fb_hMemSet(&fb_win32, 0, sizeof(fb_win32));

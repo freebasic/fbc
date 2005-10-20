@@ -65,6 +65,7 @@ Version 0.15 Beta:
 - "CLOSE WINDOW" key code (ALT+F4) now works in Win32 console too (mjs)
 - "deep sleep" (i.e. sleep that cannot be interrupted by key press, use with SLEEP msecs, 1 (mjs)
 - parameters passed by descriptor to overloaded functions are now supported (v1c)
+- support for SCREEN 1, 2, 10, and 11 for DOS (mjs)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)
@@ -121,6 +122,7 @@ Version 0.15 Beta:
 - udt's passed by value were been pushed in the inverse order to stack (v1c)
 - too big constants (above 1GB) could be missed by Select As Const (v1c)
 - declarations for INP (without error check) and OUT (returns INT instead of VOID) are now correct (mjs)
+- Original timer ISR is now called at the rate of 0x10000 (mjs)
 
 
 Version 0.14 Beta:

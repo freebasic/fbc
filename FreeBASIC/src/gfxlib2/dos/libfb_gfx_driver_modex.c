@@ -70,8 +70,9 @@ static unsigned short CRTParams[] = {
 
 
 /*:::::*/
-static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
+static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rate, int flags)
 {
+    int depth = MAX(8, depth_arg);
 	int i;
 	
 	fb_dos_detect();

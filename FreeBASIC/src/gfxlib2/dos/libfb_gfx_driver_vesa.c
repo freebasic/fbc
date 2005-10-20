@@ -50,8 +50,9 @@ GFXDRIVER fb_gfxDriverVESA =
 };
 
 /*:::::*/
-static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
+static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rate, int flags)
 {
+    int depth = MAX(8, depth_arg);
 	int i, mode;
 
 	fb_dos_detect();

@@ -143,13 +143,14 @@ static void opengl_window_update(void)
 
 
 /*:::::*/
-static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
+static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rate, int flags)
 {
+    int depth = MAX(8, depth_arg);
 	XVisualInfo *info;
 	int gl_attrs[21] = { GLX_RGBA, GLX_DOUBLEBUFFER,
 			     GLX_RED_SIZE, 4, GLX_GREEN_SIZE, 4, GLX_BLUE_SIZE, 4,
 			     GLX_DEPTH_SIZE, 16 };
-	int *gl_attr, result, try;
+	int *gl_attr, result, try_count;
 	
 	context = NULL;
 
@@ -193,7 +194,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 		if (load_library())
 			return -1;
 	
-	for (try = 0; try < 3; try++) {
+	for (try_count = 0; try_count < 3; ++try_count) {
 		if ((info = fb_glXChooseVisual(fb_linux.display, fb_linux.screen, gl_attrs))) {
 			fb_linux.visual = info->visual;
 			context = fb_glXCreateContext(fb_linux.display, info, NULL, True);
@@ -203,7 +204,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 			else
 				fb_glXDestroyContext(fb_linux.display, context);
 		}
-		switch (try) {
+		switch (try_count) {
 			case 0:
 				if (depth > 16)
 					gl_attrs[3] = gl_attrs[5] = gl_attrs[7] = 4;
