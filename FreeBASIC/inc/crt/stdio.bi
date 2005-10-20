@@ -32,9 +32,11 @@
 #define _IOERR &h0020
 #define _IOSTRG &h0040
 #define BUFSIZ 512
-#define SEEK_SET (0)
-#define SEEK_CUR (1)
-#define SEEK_END (2)
+#ifndef SEEK_SET
+#define SEEK_SET 0
+#define SEEK_CUR 1
+#define SEEK_END 2
+#endif
 
 type _iobuf
 	_ptr as zstring ptr
