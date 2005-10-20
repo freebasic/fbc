@@ -76,15 +76,16 @@ static const int res_bpp4[] = {
 #if 0
 	SCREENLIST(320, 200),     /* 0x0D */
 	SCREENLIST(640, 200),     /* 0x0E */
+#endif
 	SCREENLIST(640, 350),     /* 0x10 */
     SCREENLIST(640, 480),     /* 0x12 */
-#endif
     0
 };
 static const unsigned char mode_bpp4[] = {
 #if 0
-    0x0D, 0x0E, 0x10, 0x12,
+    0x0D, 0x0E,
 #endif
+    0x10, 0x12,
     0
 };
 
@@ -169,7 +170,81 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	return 0;
 }
 
+static void init_planar_access( void )
+{
+    /* Write mask: Allow all bits */
+    outportb(0x3CE, 0x08);
+    outportb(0x3CF, 0xFF);
 
+    /* Write mode: 0 */
+    outportb(0x3CE, 0x05);
+    outportb(0x3CF, 0x00);
+
+    /* Overwrite mode, no rotation */
+    outportb(0x3CE, 0x03);
+    outportb(0x3CF, 0x00);
+
+    /* Enable write access for plane "plane" */
+    outportb(0x3C4, 0x02);
+}
+
+/*:::::*/
+static void driver_update_planar_ega_vga( int planes )
+{
+    /* EGA/VGA planar mode */
+    int y;
+    unsigned w = fb_dos.w, w8 = w >> 3, w32 = w >> 5;
+    unsigned char *buffer = (unsigned char *)fb_mode->framebuffer;
+    unsigned screen_offset = 0xA0000;
+    static const unsigned char vga_bitmap[8] = {
+        128, 64, 32, 16, 8, 4, 2, 1
+    };
+    static const unsigned char bitmask[4] = {
+        1, 2, 4, 8
+    };
+    unsigned uiDestOffset[4] = { 0, w8, w8*2, w8*3 };
+
+    init_planar_access();
+
+    for (y = 0;
+         y != fb_dos.h;
+         ++y)
+    {
+        if (fb_mode->dirty[y]) {
+            unsigned x, uiDestIndex = 0;
+            unsigned char *pFrameBuffer = buffer;
+            unsigned plane;
+            unsigned char patterns[4];
+
+            /* Split "per pixel" color values into a plane oriented
+             * representation */
+            for( x=0; x!=w; x+=8 ) {
+                unsigned i;
+                for( plane=0; plane!=planes; ++plane ) {
+                    unsigned char color_mask = bitmask[plane];
+                    unsigned char pattern = 0;
+                    for( i=0; i!=8; ++i ) {
+                        if (pFrameBuffer[i] & color_mask)
+                            pattern |= vga_bitmap[i];
+                    }
+                    uchScanLineBuffer[ uiDestOffset[plane] + uiDestIndex ] = pattern;
+                }
+                pFrameBuffer += 8;
+                ++uiDestIndex;
+            }
+            for( plane=0; plane!=planes; ++plane ) {
+                outportb(0x3C5, bitmask[plane] ); /* Select plane */
+                _movedatal(_my_ds(),
+                           (int) uchScanLineBuffer + uiDestOffset[ plane ],
+                           _dos_ds,
+                           screen_offset,
+                           w32);
+            }
+        }
+        buffer += w;
+        screen_offset += w8;
+    }
+}
 
 /*:::::*/
 static void driver_update_bpp1(void)
@@ -225,6 +300,9 @@ static void driver_update_bpp1(void)
         int y, w = fb_dos.w, w4 = w >> 2, w8 = w >> 3, w32 = w >> 5;
         unsigned int *buffer = (unsigned int *)fb_mode->framebuffer;
         unsigned int screen_offset = 0xA0000;
+
+        init_planar_access();
+        outportb(0x3C5, 0x0F); /* All planes */
 
         for (y = 0;
              y != fb_dos.h;
@@ -306,6 +384,9 @@ static void driver_update_bpp4(void)
 {
     /* FIXME: This has to be implemented soon (to support SCREEN 12
      * and others) */
+    if( fb_dos.bios_mode >= 0x10 ) {
+        driver_update_planar_ega_vga( 4 );
+    }
 }
 
 static void end_of_driver_update(void) { /* do not remove */ }

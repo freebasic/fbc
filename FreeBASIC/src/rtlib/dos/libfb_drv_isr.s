@@ -25,6 +25,11 @@ FUNC(fb_hDrvIntHandler)
 FUNC(fb_hDrvIntStacks)
         .fill 16, 8, 0
 
+/* This stores a flag for all ISR's that shows if the ISR was called
+ * -> nested IRQs */
+FUNC(fb_hDrvIntInISR)
+        .fill 16, 1, 0
+
 /* DS selector */
 FUNC(fb_hDrvSelectors)
         .fill 5, 4, 0
@@ -91,6 +96,12 @@ FUNC(\INT_HANDLER_NAME)
         lea eax, [GLOBL(fb_hDrvIntHandler_OldIRQs) + ebx * 8]
         lea ecx, [GLOBL(fb_hDrvIntHandler) + ebx * 4]
 
+	/* Test if the ISR is already executed to avoid clobbering of
+         * ISR stack */
+	mov dl, cs:[GLOBL(fb_hDrvIntInISR) + ebx]
+        test dl, dl
+        jnz 2f
+
         /* Test if the we have a service-routine for this IRQ
          * IOW: When the ISR pointer is NULL, we call the old ISR directly
          */
@@ -141,14 +152,19 @@ FUNC(\INT_HANDLER_NAME)
 3:
 	push eax              /* Push old stack segment */
         push edi              /* Push old stack offset */
+        push ebx              /* Make a copy of the IRQ number */
 
-        /* As a nice feature, the ISR gets the interrupt number as first
-         * argument */
-        push ebx
+	/* Set the "in ISR" flag */
+        mov al, 1
+	mov [GLOBL(fb_hDrvIntInISR) + ebx], al
 
 	/* Ensure that fb_dos_cli and fb_dos_sti work as expected and
          * don't enable IF acciedentally */
         inc dword ptr [GLOBL(dos_cli_level)]
+
+        /* As a nice feature, the ISR gets the interrupt number as first
+         * argument */
+        push ebx
 
         /* The ISR's CS is the same as the applications CS so it's OK to
          * do a near call here ... */
@@ -156,16 +172,30 @@ FUNC(\INT_HANDLER_NAME)
 
         /* Remove all arguments from stack */
         add esp, 4
+        
+        pop ebx               /* Restore the IRQ number */
+
+	/* Test if the "dos_cli_level" was reset manually in the ISR.
+         * This is a tweak to allow debugging of ISRs. */
+	mov edx, [GLOBL(dos_cli_level)]
+        test edx, edx
+        jz 4f
 
 	/* Reset the CLI level */
         dec dword ptr [GLOBL(dos_cli_level)]
 
+4:
         /* Restore old stack segment/offset */
         pop edi               /* Old stack offset */
         pop edx               /* Old stack segment */
         mov ss, dx
         mov esp, edi
         nop                   /* Might be required for some strange CPUs */
+
+        /* Reset the "in ISR" flag. We must reset it after we restored
+         * the ISR stack pointers */
+        mov dl, 0
+	mov [GLOBL(fb_hDrvIntInISR) + ebx], dl
 
         /* Restore the selectors to the values they had at ISR entry */
         pop gs
