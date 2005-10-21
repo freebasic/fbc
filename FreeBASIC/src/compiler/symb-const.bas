@@ -130,7 +130,7 @@ function hAllocStringConst( byval sname as string, _
 	lgt += 1
 
 	'' it must be declare as SHARED, see hAllocFloatConst()
-	s = symbAddVarEx( @cname, @aname, FB_SYMBTYPE_FIXSTR, NULL, _
+	s = symbAddVarEx( @cname, @aname, FB_SYMBTYPE_CHAR, NULL, _
 					  0, lgt, 0, dTB(), _
 					  FB_ALLOCTYPE_SHARED, FALSE, TRUE, FALSE )
 

@@ -203,7 +203,7 @@ private function cStrCHR( byref funcexpr as ASTNODE ptr, _
 			end if
 		next
 
-		funcexpr = astNewVAR( hAllocStringConst( s, cnt ), NULL, 0, IR_DATATYPE_FIXSTR )
+		funcexpr = astNewVAR( hAllocStringConst( s, cnt ), NULL, 0, IR_DATATYPE_CHAR )
 
     else
 
@@ -237,8 +237,8 @@ private function cStrASC( byref funcexpr as ASTNODE ptr ) as integer
 	hMatchRPRNT( )
 
 	'' constant? evaluate at compile-time
-	if( astIsVAR( expr1 ) ) then
-		if( astGetDataType( expr1 ) = IR_DATATYPE_FIXSTR ) then
+	if( astGetDataType( expr1 ) = IR_DATATYPE_CHAR ) then
+		if( astIsVAR( expr1 ) ) then
 			sym = astGetSymbolOrElm( expr1 )
 			if( sym <> NULL ) then
 				if( symbGetVarInitialized( sym ) ) then

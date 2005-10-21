@@ -392,9 +392,9 @@ private sub hLoadResult ( byval proc as FBSYMBOL ptr ) static
 
 	select case dtype
 
-	'' if result is a string, a temp descriptor is needed, as the current one (at stack)
+	'' if result is a string, a temp descriptor is needed, as the current one (on stack)
 	'' will be trashed when the function returns (also, the string returned will be
-	'' set as temp, so any assignament or when passed as parameter to another proc
+	'' set as temp, so any assignment or when passed as parameter to another proc
 	'' will deallocate this string)
 	case FB_SYMBTYPE_STRING
 		t = astNewVAR( s, NULL, 0, IR_DATATYPE_STRING )

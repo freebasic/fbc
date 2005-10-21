@@ -242,8 +242,17 @@ function rtlCalcExprLen( byval expr as ASTNODE ptr, _
 	case IR_DATATYPE_FIXSTR
 		function = FIXSTRGETLEN( expr )
 
-	case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+	case IR_DATATYPE_CHAR
 		lgt = ZSTRGETLEN( expr )
+		'' char?
+		if( lgt = 0 ) then
+			function = 1
+		else
+			function = lgt
+		end if
+
+	case IR_DATATYPE_WCHAR
+		lgt = WSTRGETLEN( expr )
 		'' char?
 		if( lgt = 0 ) then
 			function = 1

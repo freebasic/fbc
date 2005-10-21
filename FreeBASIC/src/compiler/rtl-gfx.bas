@@ -888,7 +888,7 @@ function rtlGfxPaint( byval target as ASTNODE ptr, _
 
 	'' byval color as uinteger
 	pattern = astGetDataType( pexpr )
-	if( ( pattern = IR_DATATYPE_FIXSTR ) or ( pattern = IR_DATATYPE_STRING ) ) then
+	if( hIsString( pattern ) ) then
 		pattern = TRUE
 		if( astNewPARAM( proc, astNewCONSTi( &hFFFF0000, IR_DATATYPE_INTEGER ) ) = NULL ) then
  			exit function
@@ -914,7 +914,7 @@ function rtlGfxPaint( byval target as ASTNODE ptr, _
  			exit function
  		end if
 	else
-    	if( astNewPARAM( proc, astNewVAR( hAllocStringConst( "", 0 ), NULL, 0, IR_DATATYPE_FIXSTR ) ) = NULL ) then
+    	if( astNewPARAM( proc, astNewVAR( hAllocStringConst( "", 0 ), NULL, 0, IR_DATATYPE_CHAR ) ) = NULL ) then
  			exit function
  		end if
 		if( astNewPARAM( proc, astNewCONSTi( 0, IR_DATATYPE_INTEGER ) ) = NULL ) then
@@ -1514,10 +1514,11 @@ private function hGetProcName( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
 		if( len( procname ) and 3 ) then
 			procname += string( 4 - ( len( procname ) and 3 ), 32 )
 		end if
+
 		s = hAllocStringConst( procname, -1 )
 	end if
 
-	expr = astNewADDR( IR_OP_ADDROF, astNewVAR( s, NULL, 0, IR_DATATYPE_FIXSTR ), s, NULL )
+	expr = astNewADDR( IR_OP_ADDROF, astNewVAR( s, NULL, 0, IR_DATATYPE_CHAR ), s, NULL )
 
 	function = expr
 

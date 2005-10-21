@@ -275,6 +275,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     	'' not int, float or string?
     	select case dclass
     	case IR_DATACLASS_INTEGER, IR_DATACLASS_FPOINT, IR_DATACLASS_STRING
+
     	case else
  	   		hReportParamError( symbGetProcArgs( proc ), *pid )
     		exit function
@@ -289,7 +290,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     	'' not a constant?
     	if( not astIsCONST( expr ) ) then
     		'' not a literal string?
-    		if( (not astIsVAR( expr )) or (dtype <> IR_DATATYPE_FIXSTR) ) then
+    		if( (not astIsVAR( expr )) or (dtype <> IR_DATATYPE_CHAR) ) then
 				hReportError( FB_ERRMSG_EXPECTEDCONST )
 				exit function
 			end if

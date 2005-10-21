@@ -63,7 +63,7 @@ end function
 ''
 function cConstAssign as integer static
     static as zstring * FB_MAXNAMELEN+1 id
-    dim as integer typ, lgt, ptrcnt
+    dim as integer sdtype, edtype, lgt, ptrcnt
     dim as ASTNODE ptr expr
     dim as FBSYMBOL ptr sym, subtype
     dim as FBVALUE value
@@ -76,17 +76,17 @@ function cConstAssign as integer static
 	end if
 
 	'' ID
-	typ = lexGetType( )
+	sdtype = lexGetType( )
 	lexEatToken( id )
 
 	'' (AS SymbolType)?
 	if( hMatch( FB_TK_AS ) ) then
-		if( typ <> INVALID ) then
+		if( sdtype <> INVALID ) then
 			hReportError( FB_ERRMSG_SYNTAXERROR )
 			exit function
 		end if
 
-		if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
+		if( not cSymbolType( sdtype, subtype, lgt, ptrcnt ) ) then
 			exit function
 		end if
 
@@ -96,7 +96,7 @@ function cConstAssign as integer static
 			exit function
 		end if
 
-		select case as const typ
+		select case as const sdtype
 		case FB_SYMBTYPE_VOID, FB_SYMBTYPE_FIXSTR, _
 			 FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR
 			hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
@@ -119,7 +119,8 @@ function cConstAssign as integer static
 
 	'' check if it's an string
 	sym = NULL
-	if( astGetDataType( expr ) = IR_DATATYPE_FIXSTR ) then
+	edtype = astGetDataType( expr )
+	if( edtype = IR_DATATYPE_CHAR ) then
 		if( astIsVAR( expr ) ) then
 			sym = astGetSymbolOrElm( expr )
 			if( sym <> NULL ) then
@@ -133,8 +134,15 @@ function cConstAssign as integer static
 	'' string?
 	if( sym <> NULL ) then
 
+		if( sdtype <> INVALID ) then
+			'' not a string?
+			if( sdtype <> FB_SYMBTYPE_STRING ) then
+				hReportErrorEx( FB_ERRMSG_INVALIDDATATYPES, id )
+			end if
+		end if
+
 		value.str = sym
-		if( symbAddConst( @id, FB_SYMBTYPE_STRING, NULL, @value ) = NULL ) then
+		if( symbAddConst( @id, FB_SYMBTYPE_CHAR, NULL, @value ) = NULL ) then
     		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
     		exit function
 		end if
@@ -148,8 +156,15 @@ function cConstAssign as integer static
 			exit function
 		end if
 
+		if( sdtype <> INVALID ) then
+			'' string?
+			if( sdtype = FB_SYMBTYPE_STRING ) then
+				hReportErrorEx( FB_ERRMSG_INVALIDDATATYPES, id )
+			end if
+		end if
+
 		if( symbAddConst( @id, _
-						  astGetDataType( expr ), _
+						  edtype, _
 						  astGetSubtype( expr ), _
 						  @astGetValue( expr ) ) = NULL ) then
     		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )

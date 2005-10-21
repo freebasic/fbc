@@ -152,6 +152,14 @@ function cSelectStatement as integer
 		dtype = FB_SYMBTYPE_STRING
 	end select
 
+	'' !!!FIXME!!! wstring's must be allocated() but size
+	'' is unknown at compilet-time, do
+	'' 		dim wstring ptr tmp = allocate( len( expr ) )
+	'' 		*tmp = expr
+	''		select case *tmp <-- implicitly!
+	''		...
+	''		deallocate( tmp )
+
 	symbol = symbAddTempVar( dtype, astGetSubType( expr ) )
 	if( symbol = NULL ) then
 		exit function

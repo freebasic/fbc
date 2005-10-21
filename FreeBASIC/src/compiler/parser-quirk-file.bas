@@ -341,10 +341,10 @@ function cInputStmt as integer
     else
     	isfile = FALSE
     	'' STRING_LIT?
-    	if( lexGetClass = FB_TKCLASS_STRLITERAL ) then
+    	if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
 			lgt = lexGetTextLen( )
 			filestrexpr = astNewVAR( hAllocStringConst( *lexGetText( ), lgt ), _
-									 NULL, 0, IR_DATATYPE_FIXSTR )
+									 NULL, 0, IR_DATATYPE_CHAR )
 			lexSkipToken( )
     	else
     		filestrexpr = NULL

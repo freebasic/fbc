@@ -33,34 +33,31 @@ option escape
 ''
 function cConstant( byref constexpr as ASTNODE ptr ) as integer static
 	dim as FBSYMBOL ptr s
-	dim as integer typ
+	dim as integer dtype
 
 	function = FALSE
 
 	s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_CONST )
 	if( s <> NULL ) then
 
-  		typ = symbGetType( s )
-  		if( irGetDataClass( typ ) = IR_DATACLASS_STRING ) then
+  		dtype = symbGetType( s )
+  		select case as const dtype
+  		case IR_DATATYPE_CHAR
+  			constexpr = astNewVAR( symbGetConstValStr( s ), NULL, 0, IR_DATATYPE_CHAR )
 
-			constexpr = astNewVAR( symbGetConstValStr( s ), NULL, 0, IR_DATATYPE_FIXSTR )
+  		case IR_DATATYPE_ENUM
+  			constexpr = astNewENUM( symbGetConstValInt( s ), symbGetSubType( s ) )
 
-  		else
-  			select case as const typ
-  			case IR_DATATYPE_ENUM
-  				constexpr = astNewENUM( symbGetConstValInt( s ), symbGetSubType( s ) )
+  		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  			constexpr = astNewCONST64( symbGetConstValLong( s ), dtype )
 
-  			case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-  				constexpr = astNewCONST64( symbGetConstValLong( s ), typ )
+  		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  			constexpr = astNewCONSTf( symbGetConstValFloat( s ), dtype )
 
-  			case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-  				constexpr = astNewCONSTf( symbGetConstValFloat( s ), typ )
+  		case else
+  			constexpr = astNewCONSTi( symbGetConstValInt( s ), dtype, symbGetSubType( s ) )
 
-  			case else
-  				constexpr = astNewCONSTi( symbGetConstValInt( s ), typ, symbGetSubType( s ) )
-
-  			end select
-  		end if
+  		end select
 
   		lexSkipToken( )
   		function = TRUE
@@ -72,7 +69,7 @@ end function
 ''Literal		  = NUM_LITERAL | STR_LITERAL .
 ''
 function cLiteral( byref litexpr as ASTNODE ptr ) as integer
-	dim as FBSYMBOL ptr tc
+	dim as FBSYMBOL ptr s
 	dim as integer typ
 
 	function = FALSE
@@ -102,8 +99,8 @@ function cLiteral( byref litexpr as ASTNODE ptr ) as integer
   		function = TRUE
 
   	case FB_TKCLASS_STRLITERAL
-		tc = hAllocStringConst( *lexGetText( ), lexGetTextLen( ) )
-		litexpr = astNewVAR( tc, NULL, 0, IR_DATATYPE_FIXSTR )
+		s = hAllocStringConst( *lexGetText( ), lexGetTextLen( ) )
+		litexpr = astNewVAR( s, NULL, 0, IR_DATATYPE_CHAR )
 
 		lexSkipToken( )
         function = TRUE

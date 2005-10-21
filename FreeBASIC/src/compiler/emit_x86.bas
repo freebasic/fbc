@@ -5244,9 +5244,7 @@ end sub
 private function hGetTypeString( byval typ as integer ) as string static
 
 	select case as const typ
-    case FB_SYMBTYPE_UBYTE, FB_SYMBTYPE_BYTE, _
-    	 FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR
-    	 '' wchar stills the same as it is emitted as escape sequences
+    case FB_SYMBTYPE_UBYTE, FB_SYMBTYPE_BYTE
     	function = ".byte"
 
     case FB_SYMBTYPE_USHORT, FB_SYMBTYPE_SHORT
@@ -5264,7 +5262,8 @@ private function hGetTypeString( byval typ as integer ) as string static
 	case FB_SYMBTYPE_DOUBLE
     	function = ".double"
 
-	case FB_SYMBTYPE_FIXSTR
+	case FB_SYMBTYPE_FIXSTR, FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR
+		'' wchar stills the same as it is emitted as escape sequences
     	function = ".ascii"
 
     case FB_SYMBTYPE_STRING
@@ -5416,7 +5415,7 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
     	    	case FB_SYMBTYPE_USERDEF
 
     	    	'' string? check if ever referenced
-    	    	case FB_SYMBTYPE_FIXSTR, FB_SYMBTYPE_WCHAR
+    	    	case FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR
     	    		doemit = symbGetAccessCnt( s ) > 0
 
 				'' anything else, only if len > 0
@@ -5428,7 +5427,7 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
 
     	if( doemit ) then
     	    select case dtype
-    	    case FB_SYMBTYPE_FIXSTR
+    	    case FB_SYMBTYPE_CHAR
     	    	stext = "\"" + hEscapeStr( s->var.inittext ) + "\\0\""
     	    case FB_SYMBTYPE_WCHAR
     	    	'' !!!FIXME!!!

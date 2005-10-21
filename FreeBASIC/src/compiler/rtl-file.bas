@@ -431,8 +431,7 @@ function rtlFileOpen( byval filename as ASTNODE ptr, _
 
 	function = NULL
 
-    select case astGetDataType( fmode )
-    case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR:
+    if( hIsString( astGetDataType( fmode ) ) ) then
         '' this is the short form of the OPEN command
         proc = astNewFUNCT( PROCLOOKUP( FILEOPEN_SHORT ) )
 
@@ -466,7 +465,7 @@ function rtlFileOpen( byval filename as ASTNODE ptr, _
             exit function
         end if
 
-    case else
+    else
         ''
         select case openkind
         case FB_FILE_TYPE_FILE
@@ -516,7 +515,7 @@ function rtlFileOpen( byval filename as ASTNODE ptr, _
         if( astNewPARAM( proc, flen ) = NULL ) then
             exit function
         end if
-    end select
+    end if
 
     ''
     if( not isfunc ) then
@@ -913,7 +912,7 @@ function rtlFileLineInput( byval isfile as integer, _
 
     '' "byval filenum as integer" or "text as string "
     if( (not isfile) and (expr = NULL) ) then
-		expr = astNewVAR( hAllocStringConst( "", 0 ), NULL, 0, IR_DATATYPE_FIXSTR )
+		expr = astNewVAR( hAllocStringConst( "", 0 ), NULL, 0, IR_DATATYPE_CHAR )
 	end if
 
     if( astNewPARAM( proc, expr ) = NULL ) then
@@ -982,7 +981,7 @@ function rtlFileInput( byval isfile as integer, _
 
     '' "byval filenum as integer" or "text as string "
     if( (not isfile) and (expr = NULL) ) then
-		expr = astNewVAR( hAllocStringConst( "", 0 ), NULL, 0, IR_DATATYPE_FIXSTR )
+		expr = astNewVAR( hAllocStringConst( "", 0 ), NULL, 0, IR_DATATYPE_CHAR )
 	end if
 
 	if( astNewPARAM( proc, expr ) = NULL ) then

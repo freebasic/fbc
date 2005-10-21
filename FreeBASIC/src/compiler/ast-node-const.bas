@@ -37,7 +37,7 @@ function astNewCONSTs( byval v as string ) as ASTNODE ptr static
     	exit function
     end if
 
-	function = astNewVAR( tc, NULL, 0, IR_DATATYPE_FIXSTR )
+	function = astNewVAR( tc, NULL, 0, IR_DATATYPE_CHAR )
 
 end function
 
@@ -55,7 +55,7 @@ function astNewCONSTws( byval v as string ) as ASTNODE ptr static
     	exit function
     end if
 
-	function = astNewVAR( tc, NULL, 0, IR_DATATYPE_FIXSTR )
+	function = astNewVAR( tc, NULL, 0, IR_DATATYPE_CHAR )
 ''''function = astNewVAR( tc, NULL, 0, IR_DATATYPE_WCHAR )
 
 end function

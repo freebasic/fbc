@@ -38,7 +38,7 @@ private function hCreateOptArg( byval arg as FBSYMBOL ptr _
   		function = astNewENUM( symbGetArgOptValInt( arg ), symbGetSubType( arg ) )
 
 	case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
-		function = astNewVAR( symbGetArgOptValStr( arg ), NULL, 0, IR_DATATYPE_FIXSTR )
+		function = astNewVAR( symbGetArgOptValStr( arg ), NULL, 0, IR_DATATYPE_CHAR )
 
 	case IR_DATATYPE_WCHAR
 		function = astNewVAR( symbGetArgOptValStr( arg ), NULL, 0, IR_DATATYPE_WCHAR )

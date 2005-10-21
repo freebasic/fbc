@@ -41,7 +41,7 @@ private function hStrLiteralConcat( byval l as ASTNODE ptr, _
 	s = hAllocStringConst( symbGetVarText( ls ) + symbGetVarText( rs ), _
 						   symbGetStrLen( ls ) - 1 + symbGetStrLen( rs ) - 1 )
 
-	function = astNewVAR( s, NULL, 0, IR_DATATYPE_FIXSTR )
+	function = astNewVAR( s, NULL, 0, IR_DATATYPE_CHAR )
 
 	astDel( r )
 	astDel( l )
@@ -521,8 +521,8 @@ function astNewBOP( byval op as integer, _
 		'' concatenation?
 		case IR_OP_ADD
 			'' check for string literals
-			if( (ldtype = IR_DATATYPE_FIXSTR) and _
-				(rdtype = IR_DATATYPE_FIXSTR) ) then
+			if( (ldtype = IR_DATATYPE_CHAR) and _
+				(rdtype = IR_DATATYPE_CHAR) ) then
 				if( l->class = AST_NODECLASS_VAR ) then
 					if( r->class = AST_NODECLASS_VAR ) then
 						s = astGetSymbolOrElm( l )

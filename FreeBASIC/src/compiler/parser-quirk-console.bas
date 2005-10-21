@@ -141,10 +141,8 @@ function cWidthStmt( byval isfunc as integer ) as ASTNODE ptr
 
 	else
 		hMatchExpression( dev_name )
-        select case astGetDataType( dev_name )
-        case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR:
-            ' fb_WidthDev
-
+        ' fb_WidthDev
+        if( hIsString( astGetDataType( dev_name ) ) ) then
         	if( hMatch( CHAR_COMMA ) ) then
             	hMatchExpression( width_arg )
 			else
@@ -152,7 +150,7 @@ function cWidthStmt( byval isfunc as integer ) as ASTNODE ptr
 			end if
             function = rtlWidthDev( dev_name, width_arg, isfunc )
 
-		case else
+		else
         	' fb_WidthScreen
             width_arg = dev_name
             dev_name = NULL
@@ -164,7 +162,7 @@ function cWidthStmt( byval isfunc as integer ) as ASTNODE ptr
 			end if
             function = rtlWidthScreen( width_arg, height_arg, isfunc )
 
-		end select
+		end if
 	end if
 
 	if( checkrprnt ) then

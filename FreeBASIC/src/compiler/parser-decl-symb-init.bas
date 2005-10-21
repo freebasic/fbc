@@ -57,7 +57,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 
 		'' check if it's a literal string
 		litsym = NULL
-		if( dtype = IR_DATATYPE_FIXSTR ) then
+		if( dtype = IR_DATATYPE_CHAR ) then
 			if( astIsVAR( expr ) ) then
 				litsym = astGetSymbolOrElm( expr )
 				if( litsym <> NULL ) then

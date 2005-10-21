@@ -105,7 +105,7 @@ function cDataStmt as integer static
 
 			'' check if it's an string
 			s = NULL
-			if( astGetDataType( expr ) = IR_DATATYPE_FIXSTR ) then
+			if( astGetDataType( expr ) = IR_DATATYPE_CHAR ) then
 				if( astIsVAR( expr ) ) then
 					s = astGetSymbolOrElm( expr )
 					if( s <> NULL ) then
@@ -120,7 +120,7 @@ function cDataStmt as integer static
 			if( s <> NULL ) then
 				astDel( expr )
 
-                typ = FB_SYMBTYPE_FIXSTR
+                typ = FB_SYMBTYPE_CHAR
 				litlen  = symbGetStrLen( s ) - 1 			'' less the null-char
 				littext = symbGetVarText( s )
 
@@ -145,7 +145,7 @@ function cDataStmt as integer static
   					littext = astGetValueAsStr( expr )
   					litlen = len( littext )
 
-            		if( not rtlDataStore( littext, litlen, IR_DATATYPE_FIXSTR ) ) then
+            		if( not rtlDataStore( littext, litlen, IR_DATATYPE_CHAR ) ) then
 	            		exit function
     	        	end if
 
