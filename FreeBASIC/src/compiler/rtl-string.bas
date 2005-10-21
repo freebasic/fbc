@@ -1964,11 +1964,11 @@ function rtlStrFill( byval expr1 as ASTNODE ptr, _
 
     function = NULL
 
-	select case astGetDataClass( expr2 )
-	case IR_DATACLASS_INTEGER, IR_DATACLASS_FPOINT
-		f = PROCLOOKUP( STRFILL1 )
-	case else
+	select case astGetDataType( expr2 )
+	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR
 		f = PROCLOOKUP( STRFILL2 )
+	case else
+		f = PROCLOOKUP( STRFILL1 )
 	end select
 
     proc = astNewFUNCT( f )
@@ -1996,12 +1996,11 @@ function rtlWstrFill( byval expr1 as ASTNODE ptr, _
 
     function = NULL
 
-	select case astGetDataClass( expr2 )
-	case IR_DATACLASS_INTEGER, IR_DATACLASS_FPOINT
-		f = PROCLOOKUP( WSTRFILL1 )
-	case else
+	if( astGetDataType( expr2 ) = IR_DATATYPE_WCHAR ) then
 		f = PROCLOOKUP( WSTRFILL2 )
-	end select
+	else
+		f = PROCLOOKUP( WSTRFILL1 )
+	end if
 
     proc = astNewFUNCT( f )
 
