@@ -21,6 +21,7 @@ type DWORD as uinteger
 type BOOL as integer
 # define TRUE 1
 # define FALSE 0
+#define MAKELONG(a,b) cint( cushort(a) or (cuint(cushort(b)) shl 16) )
 #endif '' __FB_WIN32__
 
 type QWORD as ulongint
@@ -303,7 +304,7 @@ end enum
 #define BASS_3DALG_FULL 2
 #define BASS_3DALG_LIGHT 3
 
-type STREAMPROC as DWORD
+type STREAMPROC as function (byval as HSTREAM, byval as any ptr, byval as DWORD, byval as DWORD) as DWORD
 
 #define BASS_STREAMPROC_END &h80000000
 #define BASS_FILEPOS_CURRENT 0
@@ -316,8 +317,8 @@ type STREAMPROC as DWORD
 #define BASS_FILE_LEN 3
 #define BASS_FILE_SEEK 4
 
-type STREAMFILEPROC as DWORD
-type DOWNLOADPROC as any
+type STREAMFILEPROC as function (byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD) as DWORD
+type DOWNLOADPROC as sub (byval as any ptr, byval as DWORD, byval as DWORD)
 
 #define BASS_SYNC_POS 0
 #define BASS_SYNC_END 2
@@ -333,9 +334,9 @@ type DOWNLOADPROC as any
 #define BASS_SYNC_MIXTIME &h40000000
 #define BASS_SYNC_ONETIME &h80000000
 
-type SYNCPROC as any
-type DSPPROC as any
-type RECORDPROC as BOOL
+type SYNCPROC as sub (byval as HSYNC, byval as DWORD, byval as DWORD, byval as DWORD)
+type DSPPROC as sub (byval as HDSP, byval as DWORD, byval as any ptr, byval as DWORD, byval as DWORD)
+type RECORDPROC as function (byval as HRECORD, byval as any ptr, byval as DWORD, byval as DWORD) as BOOL
 
 #define BASS_DATA_AVAILABLE 0
 #define BASS_DATA_FLOAT &h40000000
