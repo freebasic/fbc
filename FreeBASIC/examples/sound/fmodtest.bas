@@ -1,48 +1,45 @@
 'Simple FMOD test for FB
 'by Plasma  [11-16-2004]
 
-DefInt A-Z
-'$Include: 'fmod.bi'
+#include once "fmod.bi"
 
-Declare Sub ErrorQuit (Message$)
+declare sub ErrorQuit( byval Message as string )
 
-Const FALSE = 0
-Const MusicFile = "dne_trtn.mod"
-	Dim Shared Handle As Long
+const FALSE = 0
+const MusicFile = "dne_trtn.mod"
+	
+	dim Shared Handle as long
 
-	If FSOUND_GetVersion < FMOD_VERSION Then
-  		ErrorQuit "FMOD version " + STR$(FMOD_VERSION) + " or greater required"
-	End If
+	if( FSOUND_GetVersion() < FMOD_VERSION ) then
+  		ErrorQuit( "FMOD version " + STR(FMOD_VERSION) + " or greater required" )
+	end if
 
-	If FSOUND_Init(44100, 32, 0) = FALSE Then
-  		ErrorQuit "Can't initialize FMOD"
-	End If
+	if( FSOUND_Init(44100, 32, 0) = FALSE ) then
+  		ErrorQuit( "Can't initialize FMOD" )
+	end if
 
-	Handle = FMUSIC_LoadSong(MusicFile)
-	If Handle = FALSE Then
-  		ErrorQuit "Can't load music file " + CHR$(34) + MusicFile + CHR$(34)
-	End if
+	Handle = FMUSIC_LoadSong( MusicFile )
+	if Handle = FALSE then
+  		ErrorQuit( "Can't load music file """ + MusicFile + """" )
+	end if
 
-	FMUSIC_PlaySong(Handle)
+	FMUSIC_PlaySong( Handle )
 
-	Print "FMOD test for freeBASIC"
-	Print
-	Print "(press any key to quit)"
+	print "Press any key to exit..."
+	sleep
 
-	Sleep
-
-	FMUSIC_FreeSong(Handle)
+	FMUSIC_FreeSong( Handle )
 	FSOUND_Close
 
-	End
+	end
 
 
-Sub ErrorQuit (Message$)
+sub ErrorQuit( byval Message as string )
 
-  print "ERROR: "; Message$
-  FMUSIC_FreeSong(Handle)
+  print "ERROR: "; Message
+  FMUSIC_FreeSong( Handle )
   FSOUND_Close
-  End 1
+  end 1
 
-End Sub
+end sub
 
