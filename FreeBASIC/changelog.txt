@@ -25,6 +25,7 @@ Version 0.15 Beta:
 - speed-up of DOS console output due to direct memory accesses (mjs) 
 - The "CLOSE WINDOW" key code is now changed to ALT+F4 (mjs)
 - all SDL headers were exchanged by machine translated ones (v1c)
+- the BASS and BASSMOD headers were exchanged by machine translated ones (v1c)
 
 [added]
 - OPEN CONS, OPEN LPT, OPEN ERR, OPEN PIPE (OPEN "PIPE:" won't work), OPEN SCRN (mjs)

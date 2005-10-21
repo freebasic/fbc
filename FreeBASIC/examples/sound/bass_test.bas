@@ -1,3 +1,5 @@
+option explicit
+
 #include once "bass.bi"
 
 const MusicFile = "dne_trtn.mod"
