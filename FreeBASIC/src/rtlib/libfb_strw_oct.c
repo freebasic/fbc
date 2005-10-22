@@ -35,12 +35,8 @@ static FB_WCHAR *hOCT ( unsigned int num, int len )
     dst = fb_wstr_AllocTemp( len * 4 );
 	if( dst != NULL )
 	{
-		/* convert */
-#ifdef TARGET_WIN32
-		_itow( num, dst, 8 );
-#else
-		swprintf( dst, _LC("%o"), num );
-#endif
+        /* convert */
+        FB_WSTR_FROM_UINT_OCT( dst, num );
 	}
 
 	return dst;

@@ -36,11 +36,7 @@ FBCALL FB_WCHAR *fb_LongintToWstr ( long long num )
 	if( dst != NULL )
 	{
 		/* convert */
-#ifdef TARGET_WIN32
-		_i64tow( num, dst, 10 );
-#else
-		swprintf( dst, _LC("%lld"), num );
-#endif
+        FB_WSTR_FROM_INT64( dst, num );
 	}
 
 	return dst;
@@ -55,12 +51,8 @@ FBCALL FB_WCHAR *fb_ULongintToWstr ( unsigned long long num )
     dst = fb_wstr_AllocTemp( sizeof( long long ) * 3 );
 	if( dst != NULL )
 	{
-		/* convert */
-#ifdef TARGET_WIN32
-		_ui64tow( num, dst, 10 );
-#else
-		swprintf( dst, _LC("%llu"), num );
-#endif
+        /* convert */
+        FB_WSTR_FROM_UINT64( dst, num );
 	}
 
 	return dst;

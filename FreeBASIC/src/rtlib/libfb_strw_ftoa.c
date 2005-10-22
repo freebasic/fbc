@@ -30,7 +30,6 @@
 FB_WCHAR *fb_FloatExToWstr( double val, FB_WCHAR *buffer, int digits, int mask )
 {
 	FB_WCHAR *p, *r;
-	FB_WCHAR fmtstr[16];
 	int len;
 
 	if( mask & FB_F2A_ADDBLANK )
@@ -41,13 +40,11 @@ FB_WCHAR *fb_FloatExToWstr( double val, FB_WCHAR *buffer, int digits, int mask )
 	/* no exponent? (if exp is too big, that won't matter) */
 	if( (mask & FB_F2A_NOEXP) > 0 )
 	{
-		swprintf( fmtstr, _LC("%%.%df"), digits );
-		swprintf( p, fmtstr, val );
+        swprintf( p, _LC("%.*f"), digits, val );
 	}
 	else
 	{
-		swprintf( fmtstr, _LC("%%.%dg"), digits );
-		swprintf( p, fmtstr, val );
+        swprintf( p, _LC("%.*g"), digits, val );
 	}
 
 	len = fb_wstr_Len( p );

@@ -36,11 +36,7 @@ FBCALL FB_WCHAR *fb_IntToWstr ( int num )
 	if( dst != NULL )
 	{
 		/* convert */
-#ifdef TARGET_WIN32
-		_itow( num, dst, 10 );
-#else
-		swprintf( dst, _LC("%d"), num );
-#endif
+        FB_WSTR_FROM_INT( dst, num );
 	}
 
 	return dst;
@@ -56,11 +52,7 @@ FBCALL FB_WCHAR *fb_UIntToWstr ( unsigned int num )
 	if( dst != NULL )
 	{
 		/* convert */
-#ifdef TARGET_WIN32
-		_ultow( num, dst, 10 );
-#else
-		swprintf( dst, _LC("%u"), num );
-#endif
+        FB_WSTR_FROM_UINT( dst, num );
 	}
 
 	return dst;

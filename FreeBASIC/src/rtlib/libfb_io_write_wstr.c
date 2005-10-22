@@ -33,13 +33,13 @@ FBCALL void fb_WriteWstr ( int fnum, FB_WCHAR *s, int mask )
     if( s == NULL )
     {
 #if 1
-        FB_WRITEWSTR( fnum, "", mask, L"\"%s\"" );
+        FB_WRITEWSTR( fnum, "", mask, _LC("\"%s\"") );
 #else
         fb_WriteVoid( fnum, mask );
 #endif
     }
     else
     {
-    	FB_WRITEWSTR( fnum, s, mask, L"\"%s\"" );
+        FB_WRITEWSTR( fnum, s, mask, _LC("\"%s\"") );
     }
 }

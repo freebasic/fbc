@@ -11,9 +11,14 @@
 #elif defined(TARGET_CYGWIN)
 /* dumb cygwin ... */
 #include "dos/fb_unicode.h"
+#elif defined(TARGET_WIN32)
+#include "win32/fb_unicode.h"
 #else
 #include <wchar.h>
 #include <wctype.h>
+#endif
+
+#ifndef _LC
 #define _LC(c) L ## c
 #endif
 
@@ -21,6 +26,45 @@
 #define FB_WCHAR wchar_t
 #endif
 
+#ifndef FB_WSTR_FROM_INT
+#define FB_WSTR_FROM_INT( buffer, num ) \
+    swprintf( buffer, _LC("%d"), (int) (num) )
+#endif
+
+#ifndef FB_WSTR_FROM_UINT
+#define FB_WSTR_FROM_UINT( buffer, num ) \
+    swprintf( buffer, _LC("%u"), (unsigned) (num) )
+#endif
+
+#ifndef FB_WSTR_FROM_UINT_OCT
+#define FB_WSTR_FROM_UINT_OCT( buffer, num ) \
+    swprintf( buffer, _LC("%o"), (unsigned) (num) )
+#endif
+
+#ifndef FB_WSTR_FROM_INT64
+#define FB_WSTR_FROM_INT64( buffer, num ) \
+    swprintf( buffer, _LC("%lld"), (long long) (num) )
+#endif
+
+#ifndef FB_WSTR_FROM_UINT64
+#define FB_WSTR_FROM_UINT64( buffer, num ) \
+    swprintf( buffer, _LC("%llu"), (unsigned long long) (num) )
+#endif
+
+#ifndef FB_WSTR_FROM_UINT64_OCT
+#define FB_WSTR_FROM_UINT64_OCT( buffer, num ) \
+    swprintf( buffer, _LC("%llo"), (unsigned long long) (num) )
+#endif
+
+#ifndef FB_WSTR_FROM_FLOAT
+#define FB_WSTR_FROM_FLOAT( buffer, num ) \
+    swprintf( buffer, _LC("%.8g"), (double) (num) )
+#endif
+
+#ifndef FB_WSTR_FROM_DOUBLE
+#define FB_WSTR_FROM_DOUBLE( buffer, num ) \
+    swprintf( buffer, _LC("%.16g"), (double) (num) )
+#endif
 
 /*:::::*/
 static __inline__ int fb_wstr_CalcDiff( const FB_WCHAR *ini, const FB_WCHAR *end )

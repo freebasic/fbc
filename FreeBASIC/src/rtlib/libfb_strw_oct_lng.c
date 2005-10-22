@@ -35,12 +35,8 @@ FBCALL FB_WCHAR *fb_WstrOct_l ( unsigned long long num )
     dst = fb_wstr_AllocTemp( sizeof( long long ) * 4 );
 	if( dst != NULL )
 	{
-		/* convert */
-#ifdef TARGET_WIN32
-		_i64tow( num, dst, 8 );
-#else
-		swprintf( dst, _LC("%llo"), num );
-#endif
+        /* convert */
+        FB_WSTR_FROM_UINT64_OCT( dst, num );
 	}
 
 	return dst;

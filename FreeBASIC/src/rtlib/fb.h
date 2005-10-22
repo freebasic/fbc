@@ -218,7 +218,7 @@ extern "C" {
 #define FB_BINARY_NEWLINE "\r\n"
 #endif
 
-#define FB_BINARY_NEWLINE_WSTR L"\r\n"
+#define FB_BINARY_NEWLINE_WSTR _LC("\r\n")
 
 #ifndef FB_NEWLINE
     /** The "NEW LINE" character used for all I/O.
@@ -229,7 +229,7 @@ extern "C" {
 #define FB_NEWLINE "\n"
 #endif
 
-#define FB_NEWLINE_WSTR L"\n"
+#define FB_NEWLINE_WSTR _LC("\n")
 
 #ifndef FB_LL_FMTMOD
     /** LONG LONG format modifier.
@@ -765,7 +765,7 @@ static __inline__ int FB_PRINT_CONVERT_BIN_NEWLINE(int mask)
         else if( mask & FB_PRINT_NEWLINE )           			      \
             len = swprintf( buffer, type FB_NEWLINE_WSTR, val );         \
         else												          \
-            len = swprintf( buffer, type L",", val );                 \
+            len = swprintf( buffer, type _LC(","), val );                 \
                                                                       \
         fb_hFilePrintBufferWstrEx( handle, buffer, len );             \
     } while (0)

@@ -5,6 +5,11 @@
 
 #if 0
 
+#include <wchar.h>
+#include <wctype.h>
+
+#define _LC(c) L ## c
+
 wchar_t *__bsd_wcsstr( const wchar_t *str, const wchar_t *strSearch );
 int __bsd_wcsncmp( const wchar_t *s1, const wchar_t *s2, size_t n );
 long __bsd_wcstol( const wchar_t *nptr, wchar_t **endptr, int base );
@@ -159,4 +164,4 @@ int swprintf(FB_WCHAR *buffer,
 
 #endif
 
-#endif /* __FB_UNICODE__ */
+#endif /* __FB_UNICODE_DOS__ */
