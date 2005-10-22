@@ -64,13 +64,15 @@ declare function __WSAFDIsSet alias "__WSAFDIsSet" (byval as SOCKET, byval as fd
 																	:_
 		for i = 0 to cptr(fd_set ptr, set)->fd_count-1				:_
 			if( cptr(fd_set ptr, set)->fd_array(i) = fd ) then		:_
-				exit sub											:_
+				exit for											:_
 			end if													:_
 		next 														:_
 																	:_
-		if( cptr(fd_set ptr, set)->fd_count < FD_SETSIZE ) then		:_
-			cptr(fd_set ptr, set)->fd_array(i) = fd					:_
-			cptr(fd_set ptr, set)->fd_count += 1					:_
+		if( i = cptr(fd_set ptr, set)->fd_count ) then				:_
+			if( cptr(fd_set ptr, set)->fd_count < FD_SETSIZE ) then	:_
+				cptr(fd_set ptr, set)->fd_array(i) = fd				:_
+				cptr(fd_set ptr, set)->fd_count += 1				:_
+			end if													:_
 		end if														:_
 	end scope
 #endif
