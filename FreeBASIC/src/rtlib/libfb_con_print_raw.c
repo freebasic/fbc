@@ -26,30 +26,10 @@
 
 #include "fb_con.h"
 
-void fb_ConPrintRaw( fb_ConHooks *handle,
-                     const char *pachText,
-                     size_t TextLength )
-{
-    fb_Rect *pBorder = &handle->Border;
-    fb_Coord *pCoord = &handle->Coord;
-    while( TextLength!=0 ) {
-        size_t RemainingWidth = pBorder->Right - pCoord->X + 1;
-        size_t CopySize = (TextLength > RemainingWidth) ? RemainingWidth : TextLength;
+#define FB_CONPRINTRAW fb_ConPrintRaw
+#define FB_TCHAR char
+#define FB_CON_HOOK_TWRITE Write
+#define FB_TCHAR_ADVANCE( iter, count ) \
+    iter += count
 
-        fb_hConCheckScroll( handle );
-
-        if( handle->Write( handle,
-                           pachText,
-                           CopySize )!=TRUE )
-            break;
-
-        TextLength -= CopySize;
-        pachText += CopySize;
-        pCoord->X += CopySize;
-
-        if( pCoord->X==(pBorder->Right + 1) ) {
-            pCoord->X = pBorder->Left;
-            pCoord->Y += 1;
-        }
-    }
-}
+#include "libfb_con_print_raw_uni.h"

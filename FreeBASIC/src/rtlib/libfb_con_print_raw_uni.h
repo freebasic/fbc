@@ -18,21 +18,38 @@
  */
 
 /*
- * con_print_tty.c -- print text data - using TTY (teletype) interpretation
+ * con_print_raw.c -- print raw data - no interpretation is done
  *
  * chng: sep/2005 written [mjs]
  *
  */
 
-#include <string.h>
 #include "fb_con.h"
 
-#define FB_CONPRINTTTY                  fb_ConPrintTTY
-#define FB_CONPRINTRAW                  fb_ConPrintRaw
-#define FB_TCHAR                        char
-#define FB_TCHAR_GET(p)                 (*(p))
-#define FB_TCHAR_ADVANCE(i,c)           i += c
-#define FB_TCHAR_GET_CHAR_SIZE(p)       1
-#define _TC(c)                          c
+void FB_CONPRINTRAW( fb_ConHooks *handle,
+                     const FB_TCHAR *pachText,
+                     size_t TextLength )
+{
+    fb_Rect *pBorder = &handle->Border;
+    fb_Coord *pCoord = &handle->Coord;
+    while( TextLength!=0 ) {
+        size_t RemainingWidth = pBorder->Right - pCoord->X + 1;
+        size_t CopySize = (TextLength > RemainingWidth) ? RemainingWidth : TextLength;
 
-#include "libfb_con_print_tty_uni.h"
+        fb_hConCheckScroll( handle );
+
+        if( handle->FB_CON_HOOK_TWRITE( handle,
+                                        (const char *) pachText,
+                                        CopySize )!=TRUE )
+            break;
+
+        TextLength -= CopySize;
+        FB_TCHAR_ADVANCE( pachText, CopySize );
+        pCoord->X += CopySize;
+
+        if( pCoord->X==(pBorder->Right + 1) ) {
+            pCoord->X = pBorder->Left;
+            pCoord->Y += 1;
+        }
+    }
+}
