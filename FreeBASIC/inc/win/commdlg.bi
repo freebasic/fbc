@@ -20,13 +20,13 @@
 #define HELPMSGSTRINGA "commdlg_help"
 #define FINDMSGSTRINGA "commdlg_FindReplace"
 #else ''UNICODE
-#define LBSELCHSTRINGW  cstrw("commdlg_LBSelChangedNotify")
-#define SHAREVISTRINGW  cstrw("commdlg_ShareViolation")
-#define FILEOKSTRINGW   cstrw("commdlg_FileNameOK")
-#define COLOROKSTRINGW  cstrw("commdlg_ColorOK")
-#define SETRGBSTRINGW   cstrw("commdlg_SetRGBColor")
-#define HELPMSGSTRINGW  cstrw("commdlg_help")
-#define FINDMSGSTRINGW  cstrw("commdlg_FindReplace")
+#define LBSELCHSTRINGW  wstr("commdlg_LBSelChangedNotify")
+#define SHAREVISTRINGW  wstr("commdlg_ShareViolation")
+#define FILEOKSTRINGW   wstr("commdlg_FileNameOK")
+#define COLOROKSTRINGW  wstr("commdlg_ColorOK")
+#define SETRGBSTRINGW   wstr("commdlg_SetRGBColor")
+#define HELPMSGSTRINGW  wstr("commdlg_help")
+#define FINDMSGSTRINGW  wstr("commdlg_FindReplace")
 #endif ''UNICODE
 
 #ifndef CDN_FIRST

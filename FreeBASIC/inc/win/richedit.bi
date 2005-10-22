@@ -10,7 +10,7 @@
 #define __richedit_bi__
 
 #ifdef UNICODE 
-#define RICHEDIT_CLASS cstrw("RichEdit20W")
+#define RICHEDIT_CLASS wstr("RichEdit20W")
 #else
 #define RICHEDIT_CLASS "RichEdit20A"
 #endif
@@ -299,7 +299,7 @@ type CHARFORMATW field=4
 	crTextColor as COLORREF
 	bCharSet as BYTE
 	bPitchAndFamily as BYTE
-	szFaceName(0 to 32-1) as WCHAR
+	szFaceName as wstring * 32
 end type
 
 type CHARFORMAT2W field=4
@@ -311,7 +311,7 @@ type CHARFORMAT2W field=4
 	crTextColor as COLORREF
 	bCharSet as BYTE
 	bPitchAndFamily as BYTE
-	szFaceName(0 to 32-1) as WCHAR
+	szFaceName as wstring * 32
 	wWeight as WORD
 	sSpacing as SHORT
 	crBackColor as COLORREF

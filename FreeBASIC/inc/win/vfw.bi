@@ -432,9 +432,9 @@ type ICINFO
 	dwFlags as DWORD
 	dwVersion as DWORD
 	dwVersionICM as DWORD
-	szName(0 to 16-1) as WCHAR
-	szDescription(0 to 128-1) as WCHAR
-	szDriver(0 to 128-1) as WCHAR
+	szName as wstring * 16
+	szDescription as wstring * 128
+	szDriver as wstring * 128
 end type
 
 type ICDECOMPRESS
@@ -637,7 +637,7 @@ type AVISTREAMINFOW
 	rcFrame as RECT
 	dwEditCount as DWORD
 	dwFormatChangeCount as DWORD
-	szName(0 to 64-1) as WCHAR
+	szName as wstring * 64
 end type
 
 type LPAVISTREAMINFOW as AVISTREAMINFOW ptr
@@ -655,7 +655,7 @@ type AVIFILEINFOW
 	dwRate as DWORD
 	dwLength as DWORD
 	dwEditCount as DWORD
-	szFileType(0 to 64-1) as WCHAR
+	szFileType as wstring * 64
 end type
 
 #endif

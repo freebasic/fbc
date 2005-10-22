@@ -1394,7 +1394,7 @@ type PDEVMODEA as DEVMODEA ptr
 
 #else ''UNICODE
 type DEVMODEW
-	dmDeviceName(0 to 32-1) as WCHAR
+	dmDeviceName as wstring * 32
 	dmSpecVersion as WORD
 	dmDriverVersion as WORD
 	dmSize as WORD
@@ -1420,7 +1420,7 @@ type DEVMODEW
 	dmYResolution as short
 	dmTTOption as short
 	dmCollate as short
-	dmFormName(0 to 32-1) as WCHAR
+	dmFormName as wstring * 32
 	dmLogPixels as WORD
 	dmBitsPerPel as DWORD
 	dmPelsWidth as DWORD
@@ -1588,7 +1588,7 @@ type LOGCOLORSPACEW
 	lcsGammaRed as DWORD
 	lcsGammaGreen as DWORD
 	lcsGammaBlue as DWORD
-	lcsFilename(0 to 260-1) as WCHAR
+	lcsFilename as wstring * 260
 end type
 
 type LPLOGCOLORSPACEW as LOGCOLORSPACEW ptr
@@ -1748,7 +1748,7 @@ type LOGFONTW
 	lfClipPrecision as BYTE
 	lfQuality as BYTE
 	lfPitchAndFamily as BYTE
-	lfFaceName(0 to 32-1) as WCHAR
+	lfFaceName as wstring * 32
 end type
 
 type PLOGFONTW as LOGFONTW ptr
@@ -1775,8 +1775,8 @@ type LPEXTLOGFONTA as EXTLOGFONTA ptr
 #else ''UNICODE
 type EXTLOGFONTW
 	elfLogFont as LOGFONTW
-	elfFullName(0 to 64-1) as WCHAR
-	elfStyle(0 to 32-1) as WCHAR
+	elfFullName as wstring * 64
+	elfStyle as wstring * 32
 	elfVersion as DWORD
 	elfStyleSize as DWORD
 	elfMatch as DWORD
@@ -2800,8 +2800,8 @@ type LPENUMLOGFONTA as ENUMLOGFONTA ptr
 #else ''UNICODE
 type ENUMLOGFONTW
 	elfLogFont as LOGFONTW
-	elfFullName(0 to 64-1) as WCHAR
-	elfStyle(0 to 32-1) as WCHAR
+	elfFullName as wstring * 64
+	elfStyle as wstring * 32
 end type
 
 type LPENUMLOGFONTW as ENUMLOGFONTW ptr
@@ -2820,7 +2820,7 @@ type LPENUMLOGFONTEXA as ENUMLOGFONTEXA ptr
 #else ''UNICODE
 type ENUMLOGFONTEXW
 	elfLogFont as LOGFONTW
-	elfFullName(0 to 64-1) as WCHAR
+	elfFullName as wstring * 64
 	elfStyle(0 to 32-1) as BYTE
 	elfScript(0 to 32-1) as BYTE
 end type
@@ -2966,11 +2966,11 @@ type LPDISPLAY_DEVICEA as DISPLAY_DEVICEA ptr
 #else ''UNICODE
 type DISPLAY_DEVICEW
 	cb as DWORD
-	DeviceName(0 to 32-1) as WCHAR
-	DeviceString(0 to 128-1) as WCHAR
+	DeviceName as wstring * 32
+	DeviceString as wstring * 128
 	StateFlags as DWORD
-	DeviceID(0 to 128-1) as WCHAR
-	DeviceKey(0 to 128-1) as WCHAR
+	DeviceID as wstring * 128
+	DeviceKey as wstring * 128
 end type
 
 type PDISPLAY_DEVICEW as DISPLAY_DEVICEW ptr

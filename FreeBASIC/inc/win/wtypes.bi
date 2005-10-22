@@ -86,7 +86,7 @@ end type
 type OLECHAR as WCHAR
 type LPOLESTR as LPWSTR
 type LPCOLESTR as LPCWSTR
-#define OLESTR(s) cstrw(s)
+#define OLESTR(s) wstr(s)
 #else
 type OLECHAR as byte
 type LPOLESTR as LPSTR

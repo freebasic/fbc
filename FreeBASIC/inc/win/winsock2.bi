@@ -41,38 +41,38 @@ end type
 declare function __WSAFDIsSet alias "__WSAFDIsSet" (byval as SOCKET, byval as fd_set ptr) as integer
 
 #ifndef FD_CLR
-private sub FD_CLR(byval fd as integer, byval set as fd_set ptr)
-	dim i as u_int
-	
-	for i = 0 to set->fd_count-1
-		if( set->fd_array(i) = fd ) then
-			do while( i < set->fd_count-1 )
-				set->fd_array(i) = set->fd_array(i+1)
-				i += 1
-			loop
-		end if
-		set->fd_count -= 1
-	next
-end sub
+#define FD_CLR(fd,set)																				_
+	scope																							:_
+		dim i as integer																			:_
+																									:_
+		for i = 0 to cptr(fd_set ptr, set)->fd_count-1												:_
+			if( cptr(fd_set ptr, set)->fd_array(i) = fd ) then										:_
+				do while( i < cptr(fd_set ptr, set)->fd_count-1 )									:_
+					cptr(fd_set ptr, set)->fd_array(i) = cptr(fd_set ptr, set)->fd_array(i+1)		:_
+					i += 1																			:_
+				loop																				:_
+			end if																					:_
+			cptr(fd_set ptr, set)->fd_count -= 1													:_
+		next																						:_
+	end scope
 #endif
 
 #ifndef FD_SET_
-private sub FD_SET_(byval fd as integer, byval set as fd_set ptr)
-	dim i as u_int
-
-	if set->fd_count > 0 then
-		for i = 0 to set->fd_count-1
-			if( set->fd_array(i) = fd ) then
-				exit sub
-			end if
-		next 
-	end if
-
-	if( set->fd_count < FD_SETSIZE ) then
-		set->fd_array(i) = fd
-		set->fd_count += 1
-	end if
-end sub
+#define FD_SET_(fd,set)												_
+	scope															:_
+		dim i as integer											:_
+																	:_
+		for i = 0 to cptr(fd_set ptr, set)->fd_count-1				:_
+			if( cptr(fd_set ptr, set)->fd_array(i) = fd ) then		:_
+				exit sub											:_
+			end if													:_
+		next 														:_
+																	:_
+		if( cptr(fd_set ptr, set)->fd_count < FD_SETSIZE ) then		:_
+			cptr(fd_set ptr, set)->fd_array(i) = fd					:_
+			cptr(fd_set ptr, set)->fd_count += 1					:_
+		end if														:_
+	end scope
 #endif
 
 #ifndef FD_ZERO

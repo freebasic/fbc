@@ -10,9 +10,9 @@
 #define __winsvc_bi__
 
 #define SERVICES_ACTIVE_DATABASEA "ServicesActive"
-#define SERVICES_ACTIVE_DATABASEW cstrw("ServicesActive")
+#define SERVICES_ACTIVE_DATABASEW wstr("ServicesActive")
 #define SERVICES_FAILED_DATABASEA "ServicesFailed"
-#define SERVICES_FAILED_DATABASEW cstrw("ServicesFailed")
+#define SERVICES_FAILED_DATABASEW wstr("ServicesFailed")
 #define SC_GROUP_IDENTIFIERA asc("+")
 #define SC_GROUP_IDENTIFIERW ascw("+")
 #define SC_MANAGER_ALL_ACCESS &hf003f

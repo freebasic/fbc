@@ -60,7 +60,7 @@ type PROCESSENTRY32W
 	th32ParentProcessID as DWORD
 	pcPriClassBase as LONG
 	dwFlags as DWORD
-	szExeFile(0 to 260-1) as WCHAR
+	szExeFile as wstring * 260
 end type
 
 type PPROCESSENTRY32W as PROCESSENTRY32W ptr
@@ -108,7 +108,7 @@ type MODULEENTRY32W
 	modBaseSize as DWORD
 	hModule as HMODULE
 	szModule(0 to 255+1-1) as WCHAR
-	szExePath(0 to 260-1) as WCHAR
+	szExePath as wstring * 260
 end type
 
 type PMODULEENTRY32W as MODULEENTRY32W ptr

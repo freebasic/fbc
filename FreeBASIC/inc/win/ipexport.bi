@@ -80,7 +80,7 @@ type PICMP_ECHO_REPLY as ICMP_ECHO_REPLY ptr
 
 type IP_ADAPTER_INDEX_MAP
 	Index as ULONG
-	Name(0 to 128-1) as WCHAR
+	Name as wstring * 128
 end type
 
 type PIP_ADAPTER_INDEX_MAP as IP_ADAPTER_INDEX_MAP ptr

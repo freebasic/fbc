@@ -134,7 +134,7 @@ end type
 type PMIB_ICMP as MIB_ICMP ptr
 
 type MIB_IFROW
-	wszName(0 to 256-1) as WCHAR
+	wszName as wstring * 256
 	dwIndex as DWORD
 	dwType as DWORD
 	dwMtu as DWORD

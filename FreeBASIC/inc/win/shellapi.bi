@@ -138,7 +138,7 @@ type NOTIFYICONDATAW field=2
 	uFlags as UINT
 	uCallbackMessage as UINT
 	hIcon as HICON
-	szTip(0 to 64-1) as WCHAR
+	szTip as wstring * 64
 end type
 
 type PNOTIFYICONDATAW as NOTIFYICONDATAW ptr
@@ -230,8 +230,8 @@ type SHFILEINFOW field=2
 	hIcon as HICON
 	iIcon as integer
 	dwAttributes as DWORD
-	szDisplayName(0 to 260-1) as WCHAR
-	szTypeName(0 to 80-1) as WCHAR
+	szDisplayName as wstring * 260
+	szTypeName as wstring * 80
 end type
 #endif ''UNICODE
 

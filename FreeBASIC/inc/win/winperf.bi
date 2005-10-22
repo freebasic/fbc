@@ -79,7 +79,7 @@
 #define PERF_ELAPSED_TIME (256 or 1024 or &h40000 or &h200000 or &h30000000)
 
 type PERF_DATA_BLOCK
-	Signature(0 to 4-1) as WCHAR
+	Signature as wstring * 4
 	LittleEndian as DWORD
 	Version as DWORD
 	Revision as DWORD

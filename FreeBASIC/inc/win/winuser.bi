@@ -2358,7 +2358,7 @@ end type
 type MENUITEMTEMPLATE
 	mtOption as WORD
 	mtID as WORD
-	mtString(0 to 1-1) as WCHAR
+	mtString as wstring * 1
 end type
 
 type MENUTEMPLATE as any
@@ -2752,7 +2752,7 @@ type LPMULTIKEYHELPA as MULTIKEYHELPA ptr
 type MULTIKEYHELPW
 	mkSize as DWORD
 	mkKeylist as WCHAR
-	szKeyphrase(0 to 1-1) as WCHAR
+	szKeyphrase as wstring * 1
 end type
 
 type PMULTIKEYHELPW as MULTIKEYHELPW ptr
@@ -2781,7 +2781,7 @@ type HELPWININFOW
 	dx as integer
 	dy as integer
 	wMax as integer
-	rgchMember(0 to 2-1) as WCHAR
+	rgchMember as wstring * 2
 end type
 
 type PHELPWININFOW as HELPWININFOW ptr
@@ -2934,7 +2934,7 @@ type MONITORINFOEXW
 	rcMonitor as RECT
 	rcWork as RECT
 	dwFlags as DWORD
-	szDevice(0 to 32-1) as WCHAR
+	szDevice as wstring * 32
 end type
 
 type LPMONITORINFOEXW as MONITORINFOEXW ptr

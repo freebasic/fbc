@@ -46,31 +46,31 @@
 #define WC_COMBOBOX	"ComboBox"
 #define WC_SCROLLBAR	"ScrollBar"
 #else ''UNICODE
-#define HOTKEY_CLASS	cstrw("msctls_hotkey32")
-#define PROGRESS_CLASS	cstrw("msctls_progress32")
-#define STATUSCLASSNAME	cstrw("msctls_statusbar32")
-#define TOOLBARCLASSNAME	cstrw("ToolbarWindow32")
-#define TOOLTIPS_CLASS	cstrw("tooltips_class32")
-#define TRACKBAR_CLASS	cstrw("msctls_trackbar32")
-#define UPDOWN_CLASS	cstrw("msctls_updown32")
-#define ANIMATE_CLASS	cstrw("SysAnimate32")
-#define DATETIMEPICK_CLASS cstrw("SysDateTimePick32")
-#define MONTHCAL_CLASS cstrw("SysMonthCal32")
-#define REBARCLASSNAME cstrw("ReBarWindow32")
-#define WC_COMBOBOXEX	cstrw("ComboBoxEx32")
-#define WC_IPADDRESS	cstrw("SysIPAddress32")
-#define WC_LISTVIEW	cstrw("SysListView32")
-#define WC_TABCONTROL	cstrw("SysTabControl32")
-#define WC_TREEVIEW	cstrw("SysTreeView32")
-#define WC_HEADER 	cstrw("SysHeader32")
-#define WC_PAGESCROLLER	cstrw("SysPager")
-#define WC_NATIVEFONTCTL	cstrw("NativeFontCtl")
-#define WC_BUTTON	cstrw("Button")
-#define WC_STATIC	cstrw("Static")
-#define WC_EDIT	cstrw("Edit")
-#define WC_LISTBOX	cstrw("ListBox")
-#define WC_COMBOBOX	cstrw("ComboBox")
-#define WC_SCROLLBAR	cstrw("ScrollBar")
+#define HOTKEY_CLASS	wstr("msctls_hotkey32")
+#define PROGRESS_CLASS	wstr("msctls_progress32")
+#define STATUSCLASSNAME	wstr("msctls_statusbar32")
+#define TOOLBARCLASSNAME	wstr("ToolbarWindow32")
+#define TOOLTIPS_CLASS	wstr("tooltips_class32")
+#define TRACKBAR_CLASS	wstr("msctls_trackbar32")
+#define UPDOWN_CLASS	wstr("msctls_updown32")
+#define ANIMATE_CLASS	wstr("SysAnimate32")
+#define DATETIMEPICK_CLASS wstr("SysDateTimePick32")
+#define MONTHCAL_CLASS wstr("SysMonthCal32")
+#define REBARCLASSNAME wstr("ReBarWindow32")
+#define WC_COMBOBOXEX	wstr("ComboBoxEx32")
+#define WC_IPADDRESS	wstr("SysIPAddress32")
+#define WC_LISTVIEW	wstr("SysListView32")
+#define WC_TABCONTROL	wstr("SysTabControl32")
+#define WC_TREEVIEW	wstr("SysTreeView32")
+#define WC_HEADER 	wstr("SysHeader32")
+#define WC_PAGESCROLLER	wstr("SysPager")
+#define WC_NATIVEFONTCTL	wstr("NativeFontCtl")
+#define WC_BUTTON	wstr("Button")
+#define WC_STATIC	wstr("Static")
+#define WC_EDIT	wstr("Edit")
+#define WC_LISTBOX	wstr("ListBox")
+#define WC_COMBOBOX	wstr("ComboBox")
+#define WC_SCROLLBAR	wstr("ScrollBar")
 #endif ''UNICODE
 
 #define LVM_FIRST &h1000
@@ -1400,7 +1400,7 @@ type NMCBEENDEDITW
 	hdr as NMHDR
 	fChanged as BOOL
 	iNewSelection as integer
-	szText(0 to 260-1) as WCHAR
+	szText as wstring * 260
 	iWhy as integer
 end type
 
@@ -1437,7 +1437,7 @@ type PNMCOMBOBOXEXW as NMCOMBOBOXEXW ptr
 type NMCBEDRAGBEGINW
 	hdr as NMHDR
 	iItemid as integer
-	szText(0 to 260-1) as WCHAR
+	szText as wstring * 260
 end type
 
 type LPNMCBEDRAGBEGINW as NMCBEDRAGBEGINW ptr
@@ -2006,7 +2006,7 @@ type LPTTHITTESTINFOW as TTHITTESTINFOW ptr
 type NMTTDISPINFOW
 	hdr as NMHDR
 	lpszText as LPWSTR
-	szText(0 to 80-1) as WCHAR
+	szText as wstring * 80
 	hinst as HINSTANCE
 	uFlags as UINT
 	lParam as LPARAM

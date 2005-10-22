@@ -325,7 +325,7 @@ type LPREGISTERWORDW as REGISTERWORDW ptr
 
 type STYLEBUFW
 	dwStyle as DWORD
-	szDescription(0 to 32-1) as WCHAR
+	szDescription as wstring * 32
 end type
 
 type PSTYLEBUFW as STYLEBUFW ptr
@@ -339,7 +339,7 @@ type IMEMENUITEMINFOW
 	hbmpChecked as HBITMAP
 	hbmpUnchecked as HBITMAP
 	dwItemData as DWORD
-	szString(0 to 80-1) as WCHAR
+	szString as wstring * 80
 	hbmpItem as HBITMAP
 end type
 

@@ -29,16 +29,16 @@ type wchar_t as ushort
 #endif
 
 type WCHAR as wchar_t
-type PWCHAR as WCHAR ptr
-type LPWCH as WCHAR ptr
-type PWCH as WCHAR ptr
-type NWPSTR as WCHAR ptr
-type LPWSTR as WCHAR ptr
-type PWSTR as WCHAR ptr
-type LPCWCH as WCHAR ptr
-type PCWCH as WCHAR ptr
-type LPCWSTR as WCHAR ptr
-type PCWSTR as WCHAR ptr
+type PWCHAR as wstring ptr
+type LPWCH as wstring ptr
+type PWCH as wstring ptr
+type NWPSTR as wstring ptr
+type LPWSTR as wstring ptr
+type PWSTR as wstring ptr
+type LPCWCH as wstring ptr
+type PCWCH as wstring ptr
+type LPCWSTR as wstring ptr
+type PCWSTR as wstring ptr
 
 type PCHAR as zstring ptr
 type LPCH as zstring ptr
@@ -80,7 +80,7 @@ type PLCID as PDWORD
 type LANGID as WORD
 
 #ifdef UNICODE
-#define __TEXT(q) cstrw(q)
+#define __TEXT(q) wstr(q)
 #else
 #define __TEXT(q) q
 #endif
@@ -1620,7 +1620,7 @@ type FILE_NOTIFY_INFORMATION
 	NextEntryOffset as DWORD
 	Action as DWORD
 	FileNameLength as DWORD
-	FileName(0 to 1-1) as WCHAR
+	FileName as wstring * 1
 end type
 
 type PFILE_NOTIFY_INFORMATION as FILE_NOTIFY_INFORMATION ptr
@@ -1838,7 +1838,7 @@ type OSVERSIONINFOW
 	dwMinorVersion as DWORD
 	dwBuildNumber as DWORD
 	dwPlatformId as DWORD
-	szCSDVersion(0 to 128-1) as WCHAR
+	szCSDVersion as wstring * 128
 end type
 
 type POSVERSIONINFOW as OSVERSIONINFOW ptr
@@ -1870,7 +1870,7 @@ type OSVERSIONINFOEXW
 	dwMinorVersion as DWORD
 	dwBuildNumber as DWORD
 	dwPlatformId as DWORD
-	szCSDVersion(0 to 128-1) as WCHAR
+	szCSDVersion as wstring * 128
 	wServicePackMajor as WORD
 	wServicePackMinor as WORD
 	wSuiteMask as WORD
@@ -2352,7 +2352,7 @@ type PIMAGE_RESOURCE_DIRECTORY_STRING as IMAGE_RESOURCE_DIRECTORY_STRING ptr
 
 type IMAGE_RESOURCE_DIR_STRING_U
 	Length as WORD
-	NameString(0 to 1-1) as WCHAR
+	NameString as wstring * 1
 end type
 
 type PIMAGE_RESOURCE_DIR_STRING_U as IMAGE_RESOURCE_DIR_STRING_U ptr
@@ -2515,7 +2515,7 @@ type REPARSE_DATA_BUFFER_u_MountPointReparseBuffer
 	SubstituteNameLength as WORD
 	PrintNameOffset as WORD
 	PrintNameLength as WORD
-	PathBuffer(0 to 1-1) as WCHAR
+	PathBuffer as wstring * 1
 end type
 
 type REPARSE_DATA_BUFFER_u_SymbolicLinkReparseBuffer
@@ -2523,7 +2523,7 @@ type REPARSE_DATA_BUFFER_u_SymbolicLinkReparseBuffer
 	SubstituteNameLength as WORD
 	PrintNameOffset as WORD
 	PrintNameLength as WORD
-	PathBuffer(0 to 1-1) as WCHAR
+	PathBuffer as wstring * 1
 end type
 
 type REPARSE_DATA_BUFFER

@@ -446,7 +446,7 @@ type CPINFOEXW
 	LeadByte(0 to 12-1) as BYTE
 	UnicodeDefaultChar as WCHAR
 	CodePage as UINT
-	CodePageName(0 to 260-1) as WCHAR
+	CodePageName as wstring * 260
 end type
 
 type LPCPINFOEXW as CPINFOEXW ptr

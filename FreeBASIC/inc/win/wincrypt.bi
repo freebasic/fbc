@@ -21,16 +21,16 @@
 #define MS_DEF_DH_SCHANNEL_PROV "Microsoft DH SChannel Cryptographic Provider"
 #define MS_SCARD_PROV "Microsoft Base Smart Card Crypto Provider"
 #else
-#define MS_DEF_PROV cstrw("Microsoft Base Cryptographic Provider v1.0")
-#define MS_ENHANCED_PROV cstrw("Microsoft Enhanced Cryptographic Provider v1.0")
-#define MS_STRONG_PROV cstrw("Microsoft Strong Cryptographic Provider")
-#define MS_DEF_RSA_SIG_PROV cstrw("Microsoft RSA Signature Cryptographic Provider")
-#define MS_DEF_RSA_SCHANNEL_PROV cstrw("Microsoft RSA SChannel Cryptographic Provider")
-#define MS_DEF_DSS_PROV cstrw("Microsoft Base DSS Cryptographic Provider")
-#define MS_DEF_DSS_DH_PROV cstrw("Microsoft Base DSS and Diffie-Hellman Cryptographic Provider")
-#define MS_ENH_DSS_DH_PROV cstrw("Microsoft Enhanced DSS and Diffie-Hellman Cryptographic Provider")
-#define MS_DEF_DH_SCHANNEL_PROV cstrw("Microsoft DH SChannel Cryptographic Provider")
-#define MS_SCARD_PROV cstrw("Microsoft Base Smart Card Crypto Provider")
+#define MS_DEF_PROV wstr("Microsoft Base Cryptographic Provider v1.0")
+#define MS_ENHANCED_PROV wstr("Microsoft Enhanced Cryptographic Provider v1.0")
+#define MS_STRONG_PROV wstr("Microsoft Strong Cryptographic Provider")
+#define MS_DEF_RSA_SIG_PROV wstr("Microsoft RSA Signature Cryptographic Provider")
+#define MS_DEF_RSA_SCHANNEL_PROV wstr("Microsoft RSA SChannel Cryptographic Provider")
+#define MS_DEF_DSS_PROV wstr("Microsoft Base DSS Cryptographic Provider")
+#define MS_DEF_DSS_DH_PROV wstr("Microsoft Base DSS and Diffie-Hellman Cryptographic Provider")
+#define MS_ENH_DSS_DH_PROV wstr("Microsoft Enhanced DSS and Diffie-Hellman Cryptographic Provider")
+#define MS_DEF_DH_SCHANNEL_PROV wstr("Microsoft DH SChannel Cryptographic Provider")
+#define MS_SCARD_PROV wstr("Microsoft Base Smart Card Crypto Provider")
 #endif
 
 #define ALG_CLASS_ANY 0

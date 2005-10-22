@@ -573,7 +573,7 @@ type COMM_CONFIG
 	dwProviderSubType as DWORD
 	dwProviderOffset as DWORD
 	dwProviderSize as DWORD
-	wcProviderData(0 to 1-1) as WCHAR
+	wcProviderData as wstring * 1
 end type
 
 type LPCOMMCONFIG as COMM_CONFIG ptr
@@ -596,7 +596,7 @@ type COMMPROP
 	dwCurrentRxQueue as DWORD
 	dwProvSpec1 as DWORD
 	dwProvSpec2 as DWORD
-	wcProvChar(0 to 1-1) as WCHAR
+	wcProvChar as wstring * 1
 end type
 
 type LPCOMMPROP as COMMPROP ptr
@@ -864,8 +864,8 @@ type WIN32_FIND_DATAW
 	nFileSizeLow as DWORD
 	dwReserved0 as DWORD
 	dwReserved1 as DWORD
-	cFileName(0 to 260-1) as WCHAR
-	cAlternateFileName(0 to 14-1) as WCHAR
+	cFileName as wstring * 260
+	cAlternateFileName as wstring * 14
 end type
 
 type PWIN32_FIND_DATAW as WIN32_FIND_DATAW ptr
@@ -877,7 +877,7 @@ type WIN32_STREAM_ID
 	dwStreamAttributes as DWORD
 	Size as LARGE_INTEGER
 	dwStreamNameSize as DWORD
-	cStreamName(0 to 1-1) as WCHAR
+	cStreamName as wstring * 1
 end type
 
 enum FINDEX_INFO_LEVELS
@@ -909,8 +909,8 @@ type LPHW_PROFILE_INFOA as HW_PROFILE_INFOA ptr
 #else ''UNICODE
 type HW_PROFILE_INFOW
 	dwDockInfo as DWORD
-	szHwProfileGuid(0 to 39-1) as WCHAR
-	szHwProfileName(0 to 80-1) as WCHAR
+	szHwProfileGuid as wstring * 39
+	szHwProfileName as wstring * 80
 end type
 
 type LPHW_PROFILE_INFOW as HW_PROFILE_INFOW ptr
@@ -955,10 +955,10 @@ type LPSYSTEM_POWER_STATUS as SYSTEM_POWER_STATUS ptr
 
 type TIME_ZONE_INFORMATION
 	Bias as LONG
-	StandardName(0 to 32-1) as WCHAR
+	StandardName as wstring * 32
 	StandardDate as SYSTEMTIME
 	StandardBias as LONG
-	DaylightName(0 to 32-1) as WCHAR
+	DaylightName as wstring * 32
 	DaylightDate as SYSTEMTIME
 	DaylightBias as LONG
 end type

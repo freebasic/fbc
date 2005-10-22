@@ -1040,7 +1040,7 @@ type WAVEOUTCAPSW field=1
 	wMid as WORD
 	wPid as WORD
 	vDriverVersion as MMVERSION
-	szPname(0 to 32-1) as WCHAR
+	szPname as wstring * 32
 	dwFormats as DWORD
 	wChannels as WORD
 	wReserved1 as WORD
@@ -1054,7 +1054,7 @@ type WAVEINCAPSW field=1
 	wMid as WORD
 	wPid as WORD
 	vDriverVersion as MMVERSION
-	szPname(0 to 32-1) as WCHAR
+	szPname as wstring * 32
 	dwFormats as DWORD
 	wChannels as WORD
 	wReserved1 as WORD
@@ -1153,7 +1153,7 @@ type MIDIOUTCAPSW field=1
 	wMid as WORD
 	wPid as WORD
 	vDriverVersion as MMVERSION
-	szPname(0 to 32-1) as WCHAR
+	szPname as wstring * 32
 	wTechnology as WORD
 	wVoices as WORD
 	wNotes as WORD
@@ -1168,7 +1168,7 @@ type MIDIINCAPSW field=1
 	wMid as WORD
 	wPid as WORD
 	vDriverVersion as MMVERSION
-	szPname(0 to 32-1) as WCHAR
+	szPname as wstring * 32
 	dwSupport as DWORD
 end type
 
@@ -1239,7 +1239,7 @@ type AUXCAPSW field=1
 	wMid as WORD
 	wPid as WORD
 	vDriverVersion as MMVERSION
-	szPname(0 to 32-1) as WCHAR
+	szPname as wstring * 32
 	wTechnology as WORD
 	wReserved1 as WORD
 	dwSupport as DWORD
@@ -1357,7 +1357,7 @@ type MIXERCAPSW field=1
 	wMid as WORD
 	wPid as WORD
 	vDriverVersion as MMVERSION
-	szPname(0 to 32-1) as WCHAR
+	szPname as wstring * 32
 	fdwSupport as DWORD
 	cDestinations as DWORD
 end type
@@ -1371,7 +1371,7 @@ type MIXERLINEW_Target field=1
 	wMid as WORD
 	wPid as WORD
 	vDriverVersion as MMVERSION
-	szPname(0 to 32-1) as WCHAR
+	szPname as wstring * 32
 end type
 
 type MIXERLINEW field=1
@@ -1385,8 +1385,8 @@ type MIXERLINEW field=1
 	cChannels as DWORD
 	cConnections as DWORD
 	cControls as DWORD
-	szShortName(0 to 16-1) as WCHAR
-	szName(0 to 64-1) as WCHAR
+	szShortName as wstring * 16
+	szName as wstring * 64
 	Target as MIXERLINEW_Target
 end type
 
@@ -1417,8 +1417,8 @@ type MIXERCONTROLW field=1
 	dwControlType as DWORD
 	fdwControl as DWORD
 	cMultipleItems as DWORD
-	szShortName(0 to 16-1) as WCHAR
-	szName(0 to 64-1) as WCHAR
+	szShortName as wstring * 16
+	szName as wstring * 64
 	Bounds as MIXERCONTROLW_Bounds
 	Metrics as MIXERCONTROLW_Metrics
 end type
@@ -1472,7 +1472,7 @@ type LPMIXERCONTROLDETAILS_LISTTEXTA as MIXERCONTROLDETAILS_LISTTEXTA ptr
 type MIXERCONTROLDETAILS_LISTTEXTW field=1
 	dwParam1 as DWORD
 	dwParam2 as DWORD
-	szName(0 to 64-1) as WCHAR
+	szName as wstring * 64
 end type
 
 type PMIXERCONTROLDETAILS_LISTTEXTW as MIXERCONTROLDETAILS_LISTTEXTW ptr
@@ -1547,7 +1547,7 @@ type LPJOYCAPSA as JOYCAPSA ptr
 type JOYCAPSW field=1
 	wMid as WORD
 	wPid as WORD
-	szPname(0 to 32-1) as WCHAR
+	szPname as wstring * 32
 	wXmin as UINT
 	wXmax as UINT
 	wYmin as UINT
@@ -1567,8 +1567,8 @@ type JOYCAPSW field=1
 	wMaxAxes as UINT
 	wNumAxes as UINT
 	wMaxButtons as UINT
-	szRegKey(0 to 32-1) as WCHAR
-	szOEMVxD(0 to 260-1) as WCHAR
+	szRegKey as wstring * 32
+	szOEMVxD as wstring * 260
 end type
 
 type PJOYCAPSW as JOYCAPSW ptr
