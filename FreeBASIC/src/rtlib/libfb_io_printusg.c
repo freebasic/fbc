@@ -243,7 +243,7 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 	/* any text */
 	fb_PrintUsingFmtStr( fnum );
 
-	//
+	/**/
 	if( mask & FB_PRINT_ISLAST )
 	{
 		if( mask & FB_PRINT_NEWLINE )
@@ -281,7 +281,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	/* any text first */
 	fb_PrintUsingFmtStr( fnum );
 
-	//
+	/**/
 	padchar 	= ' ';
 	intdigs 	= 0;
 	decdigs 	= -1;
@@ -372,7 +372,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 
 	/* ------------------------------------------------------ */
 
-	//
+	/**/
 	if( isexp )
 	{
     	sprintf( buffer, "%e", value );
@@ -388,7 +388,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 		if( decdigs <= 0 )
 			totdigs = intdigs;
 		else
-			totdigs = intdigs+decdigs-1;
+			totdigs = intdigs+decdigs;
 
 		if( totdigs <= 0 )
 			totdigs = 1;
@@ -403,9 +403,19 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 			buffer[len-1] = '\0';
 			--len;
 		}
+
+		/* no integer digits? */
+		if( intdigs == 0 )
+			/* is it a 0? remove.. */
+			if( buffer[0] == '0' )
+			{
+				memmove( buffer, &buffer[1], len-1 + 1 );
+				--len;
+			}
+
 	}
 
-	//
+	/* negative? remove char.. */
 	if( buffer[0] == '-' )
 	{
       	memmove( buffer, &buffer[1], len-1 + 1 );
@@ -415,16 +425,19 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	else
 		isneg = 0;
 
-	//
+	/* any decimal places? */
 	p = strchr( buffer, '.' );
 	if( p == NULL )
 		d = 0;
 	else
 		d = (int)(p - buffer) + 1;
 
+	/* no decimal digits? */
 	if( d == 0 )
+		/* but stills need to print some? */
 		if( decdigs > 0 )
 		{
+			/* create a dec digit in the end */
 			strcat( buffer, "." );
 			++len;
 			d = len;
@@ -435,6 +448,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	else
 		intlgt = d - 1;
 
+	/* separate with commas? */
 	if( addcomma )
 	{
 		len = strlen( buffer );
@@ -456,14 +470,14 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 		}
 	}
 
-	//
+	/* prefix with a dollar sign? */
 	if( adddolar )
 	{
 		memmove( &buffer[1], buffer, strlen( buffer )+1 );
 		buffer[0] = '$';
 	}
 
-	// neg
+	/* neg */
 	if( !signatend && isneg )
 	{
 		memmove( &buffer[1], buffer, strlen( buffer )+1 );
@@ -472,7 +486,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 		++intlgt;
 	}
 
-	// padding
+	/* padding */
 	if( intdigs > 0 )
 	{
 		intdigs -= intlgt;
@@ -484,7 +498,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 		}
 	}
 
-	//
+	/**/
 	if( decdigs > 0 )
 	{
 		p = strchr( buffer, '.' );
@@ -510,7 +524,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 			*p = '\0';
 	}
 
-	//
+	/**/
 	if( isexp )
 	{
 		if( expdigs > 0 )
@@ -533,7 +547,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 		strcat( buffer, expbuff );
 	}
 
-	// neg
+	/* neg */
 	if( signatend && isneg )
 	{
 		strcat( buffer, "-" );
@@ -542,7 +556,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	if( endcomma )
 		strcat( buffer, "," );
 
-	//
+	/**/
 	fb_PrintFixString( fnum, buffer, 0 );
 
 	/* ------------------------------------------------------ */
@@ -550,7 +564,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	/* any text */
 	fb_PrintUsingFmtStr( fnum );
 
-	//
+	/**/
 	if( mask & FB_PRINT_ISLAST )
 	{
 		if( mask & FB_PRINT_NEWLINE )
