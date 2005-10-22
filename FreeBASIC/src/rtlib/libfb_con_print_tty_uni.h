@@ -52,7 +52,7 @@ void FB_CONPRINTTTY( fb_ConHooks *handle,
 
     for( IndexText=0; IndexText!=TextLength; ++IndexText ) {
         const FB_TCHAR *pachOutputData = pachText;
-        size_t OutputDataLength = 0;
+        size_t OutputDataLength = 0, OutputDataChars = 0;
         int fDoFlush = FALSE;
         int fSetNewCoord = FALSE;
         fb_Coord dwMoveCoord;
@@ -92,12 +92,13 @@ void FB_CONPRINTTTY( fb_ConHooks *handle,
         case _TC('\t'):
             /* TAB */
             pachOutputData = achTabSpaces;
-            OutputDataLength = ((dwCurrentCoord.X - pBorder->Left + 8) & ~7) - (dwCurrentCoord.X - pBorder->Left);
-            OutputBufferChars += OutputDataLength;
+            OutputDataLength =
+                OutputDataChars =
+                ((dwCurrentCoord.X - pBorder->Left + 8) & ~7) - (dwCurrentCoord.X - pBorder->Left);
             break;
         default:
             OutputDataLength = FB_TCHAR_GET_CHAR_SIZE( pachOutputData );
-            OutputBufferChars += 1;
+            OutputDataChars = 1;
             break;
         }
         if( OutputDataLength + OutputBufferLength > OUTPUT_BUFFER_SIZE ) {
@@ -123,7 +124,7 @@ void FB_CONPRINTTTY( fb_ConHooks *handle,
             fGotNewCoordinate = TRUE;
         }
         if( OutputDataLength!=0 ) {
-            dwCurrentCoord.X += OutputDataLength;
+            dwCurrentCoord.X += OutputDataChars;
             if( dwCurrentCoord.X > pBorder->Right ) {
                 int NormalX = dwCurrentCoord.X - pBorder->Left;
                 dwCurrentCoord.X = (NormalX % BorderWidth) + pBorder->Left;
@@ -132,6 +133,7 @@ void FB_CONPRINTTTY( fb_ConHooks *handle,
             while( OutputDataLength-- ) {
                 OutputBuffer[OutputBufferLength++] = *pachOutputData++;
             }
+            OutputBufferChars += OutputDataChars;
         }
         FB_TCHAR_ADVANCE( pachText, 1 );
     }
