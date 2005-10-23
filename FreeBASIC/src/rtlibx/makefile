@@ -122,18 +122,14 @@ headers := $(wildcard *.h) $(wildcard $(OSDEPPATH)/*.h) $(wildcard ../rtlib/*.h)
 
 ##################################################################
 
+VPATH = $(OSDEPPATH)
+
 all : checkhost checktarget checkdirs $(objects) $(osdepobjs) $(lib)
 
 $(objpath)/%.o : %.c $(headers)
 	$(CC) -c $(CFLAGS) $< -o $@
 
-$(objpath)/%.o : $(OSDEPPATH)/%.c $(headers)
-	$(CC) -c $(CFLAGS) $< -o $@
-
 $(objpath)/%.o : %.s $(headers)
-	$(AS) $< -o $@
-
-$(objpath)/%.o : $(OSDEPPATH)/%.s $(headers)
 	$(AS) $< -o $@
 
 $(lib) : $(objects) $(osdepobjs)

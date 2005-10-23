@@ -61,18 +61,21 @@ ifeq ($(TARGET),win32)
     OSDEPPATH := win32
     CFLAGS += -DTARGET_WIN32 -DTARGET_X86
     AFLAGS += -DTARGET_WIN32
+	EXEXT := .exe
 endif
     
 ifeq ($(TARGET),dos)
     OSDEPPATH := dos
     CFLAGS += -DTARGET_DOS -DTARGET_X86
     AFLAGS += -DTARGET_DOS
+    EXEXT := .exe
 endif
     
 ifeq ($(TARGET),linux)
     OSDEPPATH := linux
     CFLAGS += -DTARGET_LINUX -DTARGET_X86
     AFLAGS += -DTARGET_LINUX
+    EXEXT :=
 endif
 
 ifeq ($(TARGET),cygwin)
@@ -80,6 +83,7 @@ ifeq ($(TARGET),cygwin)
     OSOBJPATH := cygwin
     CFLAGS += -DTARGET_CYGWIN -DTARGET_X86
     AFLAGS += -DTARGET_CYGWIN
+    EXEXT := .exe
 endif
 
 ifeq ($(TARGET),xbox)
@@ -89,6 +93,7 @@ ifeq ($(TARGET),xbox)
     CFLAGS += -std=gnu99 -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-exceptions -mno-cygwin -march=i386 $(SDLFLAGS)
     CFLAGS += -I../rtlib/xbox/inc -I../rtlib/xbox/inc/SDL
     AFLAGS += -DTARGET_XBOX
+    EXEXT := .exe
 endif
 
 ifndef DEBUG
@@ -120,10 +125,12 @@ osdepobjs += $(patsubst $(OSDEPPATH)/%.s,$(objpath)/%.o,$(wildcard $(OSDEPPATH)/
 headers := $(wildcard *.h)
 headers += $(wildcard $(OSDEPPATH)/*.h)
 toolsobjs := $(patsubst tools/%.c,$(objpath)/%.o,$(wildcard tools/*.c))
-tools     := $(patsubst $(objpath)/%.o,$(objpath)/%.exe,$(toolsobjs))
+tools     := $(patsubst $(objpath)/%.o,$(objpath)/%$(EXEXT),$(toolsobjs))
 datafiles := $(wildcard data/*.fnt) $(wildcard data/*.pal)
 
 ##################################################################
+
+VPATH = $(OSDEPPATH)
 
 all : checkhost checktarget checkdirs $(tools) $(objects) $(osdepobjs) $(lib)
 
@@ -133,21 +140,15 @@ $(objpath)/%.o : %.c $(headers)
 $(objpath)/%.o : %.s $(headers)
 	$(CC) -c $(AFLAGS) $< -o $@
 
-$(objpath)/%.o : $(OSDEPPATH)/%.c $(headers)
-	$(CC) -c $(CFLAGS) $< -o $@
-
-$(objpath)/%.o : $(OSDEPPATH)/%.s $(headers)
-	$(CC) -c $(AFLAGS) $< -o $@
-
 $(lib) : $(objects) $(osdepobjs)
 	$(AR) cr $(lib) $(objects) $(osdepobjs)
 
 libfb_gfx_data.c: $(objpath)/mk_dat.exe data/data.lst $(datafiles)
 	$(objpath)/mk_dat.exe -o $@
 
-$(objpath)/mk_dat.exe: $(objpath)/mk_dat.o $(objpath)/libfb_gfx_lzw.o $(objpath)/libfb_gfx_vars.o
+$(objpath)/mk_dat$(EXEXT): $(objpath)/mk_dat.o $(objpath)/libfb_gfx_lzw.o $(objpath)/libfb_gfx_vars.o
 
-$(objpath)/%.exe: $(objpath)/%.o
+$(objpath)/%$(EXEXT): $(objpath)/%.o
 	$(CC) $(CFLAGS) -o $@ $^
 
 $(objpath)/%.o: tools/%.c
