@@ -1,13 +1,15 @@
-include common.mk
 
 DIRLIST := console data datetime dim file numbers overload string
+
+###
+
+include common.mk
 
 EXELIST := $(patsubst %.bas,%$(EXEEXT),$(foreach i,$(DIRLIST),$(wildcard $(i)/*.bas)))
 
 MAKLIST := $(foreach i,$(DIRLIST),$(wildcard $(i)/*.mk))
 
-RUNLIST := $(foreach i,$(EXELIST),echo [$(patsubst %$(EXEEXT),%,$(i))] && $(i) &&)
-RUNLIST += $(foreach i,$(MAKLIST),echo [$(patsubst %.mk,%,$(i))] && $(patsubst %.mk,%$(EXEEXT),$(i)) &&) cd .
+RUNLIST := $(foreach i,$(EXELIST) $(patsubst %.mk,%$(EXEEXT),$(MAKLIST)),echo [$(i)] && $(i) &&) cd .
 
 VPATH = $(DIRLIST)
 
