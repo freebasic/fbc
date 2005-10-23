@@ -348,6 +348,14 @@ function rtlMathLen( byval expr as ASTNODE ptr, _
 				lgt -= 1						'' less the null-term
 			end if
 		end if
+
+	'' SIZEOF()..
+	else
+		'' wstring? multiply by sizeof(wchar) to get the
+		'' number of bytes, not of chars
+		if( dtype = IR_DATATYPE_WCHAR ) then
+			lgt *= irGetDataSize( IR_DATATYPE_WCHAR )
+		end if
 	end if
 
 	function = astNewCONSTi( lgt, IR_DATATYPE_INTEGER )
