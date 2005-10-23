@@ -167,13 +167,13 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 	'' LEN|SIZEOF( data type | Expression{idx-less arrays too} )
 	case FB_TK_LEN, FB_TK_SIZEOF
-		islen = (lexGetToken = FB_TK_LEN)
-		lexSkipToken
+		islen = (lexGetToken( ) = FB_TK_LEN)
+		lexSkipToken( )
 
 		hMatchLPRNT( )
 
 		expr = NULL
-		if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
+		if( not cSymbolType( typ, subtype, lgt, ptrcnt, FALSE ) ) then
 			env.checkarray = FALSE
 			if( not cExpression( expr ) ) then
 				env.checkarray = TRUE

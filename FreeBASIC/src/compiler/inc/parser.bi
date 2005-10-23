@@ -70,7 +70,8 @@ declare function 	cSymbolInit				( byval s as FBSYMBOL ptr ) as integer
 declare function 	cSymbolType 			( byref typ as integer, _
 											  byref subtype as FBSYMBOL ptr, _
 											  byref lgt as integer, _
-											  byref ptrcnt as integer ) as integer
+											  byref ptrcnt as integer, _
+											  byval checkptr as integer = TRUE ) as integer
 
 declare function 	cProcDecl               ( ) as integer
 

@@ -169,7 +169,9 @@ end function
 function cSymbolType( byref typ as integer, _
 					  byref subtype as FBSYMBOL ptr, _
 					  byref lgt as integer, _
-					  byref ptrcnt as integer ) as integer
+					  byref ptrcnt as integer, _
+					  byval checkptr as integer = TRUE _
+					) as integer
 
     dim as integer isunsigned, isfunction, allowptr
     dim s as FBSYMBOL ptr
@@ -382,8 +384,13 @@ function cSymbolType( byref typ as integer, _
 			elseif( lgt <= 0 ) then
 				select case typ
 				case FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR
-					hReportError( FB_ERRMSG_EXPECTEDPOINTER )
-					exit function
+					'' LEN() and SIZEOF() allow Z|WSTRING to be used w/o PTR
+					if( checkptr ) then
+						hReportError( FB_ERRMSG_EXPECTEDPOINTER )
+						exit function
+					else
+						lgt = irGetDataSize( typ )
+					end if
 				end select
 			end if
 		end if
