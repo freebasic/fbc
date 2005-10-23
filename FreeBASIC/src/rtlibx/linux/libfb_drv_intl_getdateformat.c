@@ -32,7 +32,8 @@
 
 
 /*:::::*/
-int fb_DrvIntlDateGetFormat( char *buffer, size_t len )
+int fb_DrvIntlGetDateFormat( char *buffer, size_t len )
+    
 {
     int do_esc = FALSE, do_fmt = FALSE;
     char *pszOutput = buffer;
