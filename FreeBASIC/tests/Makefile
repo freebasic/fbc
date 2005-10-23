@@ -3,29 +3,19 @@
 #
 # needed: GNU make, GAS, LD and FBC itself
 #
-# set TARGET to dos, win32 or linux -- if not defined, it will 
+# set TARGET to dos, win32 or linux -- if not defined, it will
 # be the same as HOST, if the later could be guessed
 #
 
 ##################################################################
 
-.PHONY: run_tests
 
-ifndef FBC
-FBC=../fbc
-endif
 
-ifndef FBCFLAGS
-FBCFLAGS=-e -exx -g -r
-endif
+FBC := ../fbc
+FBCMPFLAGS := -exx -g
 
-# sorry, but FIXME sounds much better
 ifdef FIXME
-FBCFLAGS+= -d FIXME=1
-else
-ifdef FIXIT
-FBCFLAGS+= -d FIXME=1
-endif
+	FBCMPFLAGS+= -d FIXME=1
 endif
 
 HOST :=
@@ -74,103 +64,25 @@ ifeq ($(TARGET),dos)
     EXEEXT := .exe
 endif
 
+DIRLIST := console data datetime dim file numbers overload string
 
-TESTS = \
-	file/text_in$(EXEEXT) \
-        dim/submod$(EXEEXT) \
-        dim/cmmn_01$(EXEEXT) \
-        string/chr_0$(EXEEXT) \
-        string/mid_set$(EXEEXT) \
-        string/instr_0$(EXEEXT) \
-        string/instr_x$(EXEEXT) \
-        string/rtrim$(EXEEXT) \
-        string/ltrim$(EXEEXT) \
-        string/trim$(EXEEXT) \
-        string/compare$(EXEEXT) \
-        string/format$(EXEEXT) \
-        datetime/testdate$(EXEEXT) \
-        datetime/testtime$(EXEEXT) \
-        datetime/calc$(EXEEXT) \
-        numbers/numbers$(EXEEXT) \
-        overload/bydesc$(EXEEXT)
+EXELIST := $(patsubst %.bas,%$(EXEEXT),$(foreach i,$(DIRLIST),$(wildcard $(i)/*.bas)))
 
-all: $(TESTS) run_tests
+RUNLIST := $(foreach i,$(EXELIST),echo [$(subst %$(EXEEXT),,$(i))] && $(i) &&) cd .
 
+VPATH = $(DIRLIST)
+
+all: run_tests
+
+.PHONY : run_tests
+run_tests: $(EXELIST)
+	$(RUNLIST)
+
+%$(EXEEXT): %.bas
+	$(FBC) $(FBCMPFLAGS) -x $@ $^
+
+.PHONY : clean
 clean:
-	rm -f $(shell find . -iname "*~" -or -iname "*.bak" -or -iname "*.exe" -or -iname "*.o" -or -iname "*.a") $(TESTS)
+	rm -f $(EXELIST) $(patsubst %$(EXEEXT),%.o,$(EXELIST))
 
-run_tests:
-	file/text_in
-	dim/cmmn_01
-	dim/submod
-	datetime/testdate
-	datetime/testtime
-	datetime/calc
-	string/chr_0
-	string/mid_set
-	string/instr_0
-	string/instr_x
-	string/rtrim
-	string/ltrim
-	string/trim
-	string/compare
-	string/format
-	numbers/numbers
-	overload/bydesc
 
-file/text_in$(EXEEXT): file/text_in.bas
-	$(FBC) $(FBCFLAGS) -x $@ $^
-
-dim/submod$(EXEEXT): dim/submod_a.bas dim/submod_b.o
-	$(FBC) $(FBCFLAGS) -x $@ $^
-
-dim/cmmn_01$(EXEEXT): dim/cmmn_01.bas
-	$(FBC) $(FBCFLAGS) -x $@ $^
-
-string/chr_0$(EXEEXT): string/chr_0.bas
-	$(FBC) $(FBCFLAGS) -x $@ $^
-
-string/mid_set$(EXEEXT): string/mid_set.bas
-	$(FBC) $(FBCFLAGS) -x $@ $^
-
-string/instr_0$(EXEEXT): string/instr_0.bas
-	$(FBC) $(FBCFLAGS) -x $@ $^
-
-string/instr_x$(EXEEXT): string/instr_x.bas
-	$(FBC) $(FBCFLAGS) -x $@ $^
-
-string/rtrim$(EXEEXT): string/rtrim.bas
-	$(FBC) $(FBCFLAGS) -x $@ $^
-
-string/ltrim$(EXEEXT): string/ltrim.bas
-	$(FBC) $(FBCFLAGS) -x $@ $^
-
-string/trim$(EXEEXT): string/trim.bas
-	$(FBC) $(FBCFLAGS) -x $@ $^
-
-string/compare$(EXEEXT): string/compare.bas
-	$(FBC) $(FBCFLAGS) -x $@ $^
-
-string/format$(EXEEXT): string/format.bas
-	$(FBC) $(FBCFLAGS) -x $@ $^
-
-datetime/testdate$(EXEEXT): datetime/testdate.bas
-	$(FBC) $(FBCFLAGS) -x $@ $^
-
-datetime/testtime$(EXEEXT): datetime/testtime.bas
-	$(FBC) $(FBCFLAGS) -x $@ $^
-
-datetime/calc$(EXEEXT): datetime/calc.bas
-	$(FBC) $(FBCFLAGS) -x $@ $^
-
-numbers/numbers$(EXEEXT): numbers/numbers.bas
-	$(FBC) $(FBCFLAGS) -x $@ $^
-
-overload/bydesc$(EXEEXT): overload/bydesc.bas
-	$(FBC) $(FBCFLAGS) -x $@ $^
-
-dim/submod_a.bas: dim/submod_c.bi
-dim/submod_b.bas: dim/submod_c.bi
-
-%.o: %.bas
-	$(FBC) $(FBCFLAGS) -c -o $@ $^
