@@ -67,6 +67,7 @@ Version 0.15 Beta:
 - "deep sleep" (i.e. sleep that cannot be interrupted by key press, use with SLEEP msecs, 1 (mjs)
 - parameters passed by descriptor to overloaded functions are now supported (v1c)
 - support for SCREEN 1, 2, 9, 10, 11, and 12 for DOS (mjs)
+- support for printing to GDI printers on Win32 (mjs)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)
