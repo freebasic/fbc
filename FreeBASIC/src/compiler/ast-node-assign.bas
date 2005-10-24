@@ -38,6 +38,7 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
     dim as integer ldtype, rdtype
     dim as integer ldclass, rdclass
     dim as FBSYMBOL ptr lsubtype, proc
+    dim as integer is_str
 
 	function = NULL
 
@@ -47,42 +48,19 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 	ldclass  = irGetDataClass( ldtype )
 	rdclass	 = irGetDataClass( rdtype )
 
-    '' wstrings?
-    if( (ldtype = IR_DATATYPE_WCHAR) or _
-    	(rdtype = IR_DATATYPE_WCHAR) ) then
-
-		'' both not the same?
-		if( ldtype <> rdtype ) then
-			if( ldtype = IR_DATATYPE_WCHAR ) then
-				if( rdclass <> IR_DATACLASS_STRING ) then
-					'' check if it's not zstring
-					if( rdtype <> IR_DATATYPE_CHAR ) then
-						exit function
-					end if
-				end if
-			else
-				if( ldclass <> IR_DATACLASS_STRING ) then
-					'' not a zstring?
-					if( ldtype <> IR_DATATYPE_CHAR ) then
-						exit function
-					end if
-				end if
-			end if
-
-		end if
-
-		return rtlWstrAssign( l, ldtype, r, rdtype )
-
     '' strings?
-    elseif( (ldclass = IR_DATACLASS_STRING) or _
-    		(rdclass = IR_DATACLASS_STRING) ) then
+    if( (ldclass = IR_DATACLASS_STRING) or _
+    	(rdclass = IR_DATACLASS_STRING) ) then
 
 		'' both not the same?
 		if( ldclass <> rdclass ) then
 			'' check if it's not a byte ptr
 			if( ldclass = IR_DATACLASS_STRING ) then
-				'' not a zstring?
-				if( rdtype <> IR_DATATYPE_CHAR ) then
+				'' not a w|zstring?
+				select case rdtype
+				case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+
+				case else
 					if( r->class <> AST_NODECLASS_PTR ) then
 						exit function
 					elseif( rdtype <> IR_DATATYPE_BYTE ) then
@@ -90,10 +68,13 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 							exit function
 						end if
 					end if
-				end if
+				end select
 			else
-				'' not a zstring?
-				if( ldtype <> IR_DATATYPE_CHAR ) then
+				'' not a w|zstring?
+				select case ldtype
+				case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+
+				case else
 					if( l->class <> AST_NODECLASS_PTR ) then
 						exit function
 					elseif( ldtype <> IR_DATATYPE_BYTE ) then
@@ -101,7 +82,7 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 							exit function
 						end if
 					end if
-				end if
+				end select
 			end if
 
 			return rtlStrAssign( l, r )
@@ -149,17 +130,50 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 			return astNewMEM( IR_OP_MEMMOVE, l, r, symbGetUDTLen( l->subtype ) )
 		end if
 
-    '' zstrings?
-    elseif( (ldtype = IR_DATATYPE_CHAR) or _
-    		(rdtype = IR_DATATYPE_CHAR) ) then
+    '' wstrings?
+    elseif( (ldtype = IR_DATATYPE_WCHAR) or _
+    		(rdtype = IR_DATATYPE_WCHAR) ) then
 
-		'' both not the same? assign as string..
+		'' both wstrings?
 		if( ldtype = rdtype ) then
-			return rtlStrAssign( l, r )
+			is_str = TRUE
+
+		'' left?
+		elseif( ldtype = IR_DATATYPE_WCHAR ) then
+			'' is right a zstring?
+			is_str = ( rdtype = IR_DATATYPE_CHAR )
+
+		'' right?
+		else
+			'' is left a zstring?
+			is_str = ( ldtype = IR_DATATYPE_CHAR )
+		end if
+
+		if( is_str ) then
+			return rtlWstrAssign( l, ldtype, r, rdtype )
+		end if
+
+		'' function returning a WSTRING (w/o PTR)?
+		if( astIsFUNCT( r ) ) then
+			if( rdtype = IR_DATATYPE_WCHAR ) then
+				'' can't be assigned to scalar types
+				exit function
+			end if
 		end if
 
 		'' one is not a string, nor a udt, treat as numeric type, let emit
 		'' convert them if needed..
+
+    '' zstrings?
+    elseif( (ldtype = IR_DATATYPE_CHAR) or _
+    		(rdtype = IR_DATATYPE_CHAR) ) then
+
+		'' both the same? assign as string..
+		if( ldtype = rdtype ) then
+			return rtlStrAssign( l, r )
+		end if
+
+		'' same as for wstring's..
 
     '' enums?
     elseif( (ldtype = IR_DATATYPE_ENUM) or _

@@ -365,7 +365,7 @@ function astNewBOP( byval op as integer, _
     dim as ASTNODE ptr n
     dim as integer ldtype, rdtype, dtype
     dim as integer ldclass, rdclass
-    dim as integer doconv
+    dim as integer doconv, is_str
     dim as FBSYMBOL ptr s, subtype
 
 	function = NULL
@@ -462,47 +462,47 @@ function astNewBOP( byval op as integer, _
     if( (ldtype = IR_DATATYPE_WCHAR) or _
     	(rdtype = IR_DATATYPE_WCHAR) ) then
 
-		'' both aren't wstrings?
+		'' aren't both wstrings?
 		if( ldtype <> rdtype ) then
 			if( ldtype = IR_DATATYPE_WCHAR ) then
-				'' not a string?
-				if( rdclass <> IR_DATACLASS_STRING ) then
-					exit function
-				end if
+				'' is right a string?
+				is_str = (rdclass = IR_DATACLASS_STRING) or (rdtype = IR_DATATYPE_CHAR)
 			else
-				'' not a string?
-				if( ldclass <> IR_DATACLASS_STRING ) then
-					exit function
-				end if
+				'' is left a string?
+				is_str = (ldclass = IR_DATACLASS_STRING) or (ldtype = IR_DATATYPE_CHAR)
 			end if
+		else
+			is_str = TRUE
 		end if
 
-		select case as const op
-		'' concatenation?
-		case IR_OP_ADD
-			return rtlWstrConcat( l, ldtype, r, rdtype )
+		if( is_str ) then
+			select case as const op
+			'' concatenation?
+			case IR_OP_ADD
+				return rtlWstrConcat( l, ldtype, r, rdtype )
 
-		'' comparation?
-		case IR_OP_EQ, IR_OP_GT, IR_OP_LT, IR_OP_NE, IR_OP_LE, IR_OP_GE
-			'' convert to: wstrcmp(l,r) op 0
-			l = rtlWstrCompare( l, r )
-			r = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+			'' comparation?
+			case IR_OP_EQ, IR_OP_GT, IR_OP_LT, IR_OP_NE, IR_OP_LE, IR_OP_GE
+				'' convert to: wstrcmp(l,r) op 0
+				l = rtlWstrCompare( l, r )
+				r = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
 
-			ldtype = l->dtype
-			rdtype = r->dtype
-			ldclass = IR_DATACLASS_INTEGER
-			rdclass = IR_DATACLASS_INTEGER
+				ldtype = l->dtype
+				rdtype = r->dtype
+				ldclass = IR_DATACLASS_INTEGER
+				rdclass = IR_DATACLASS_INTEGER
 
-		'' no other operation allowed
-		case else
-			exit function
-		end select
+			'' no other operation allowed
+			case else
+				exit function
+			end select
+		end if
 
     '' strings?
     elseif( (ldclass = IR_DATACLASS_STRING) or _
     		(rdclass = IR_DATACLASS_STRING) ) then
 
-		'' both aren't strings?
+		'' aren't both strings?
 		if( ldclass <> rdclass ) then
 			if( ldclass = IR_DATACLASS_STRING ) then
 				'' not a zstring?

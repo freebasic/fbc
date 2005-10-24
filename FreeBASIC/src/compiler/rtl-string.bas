@@ -1486,9 +1486,14 @@ function rtlStrAssign( byval dst as ASTNODE ptr, _
 	'' wstring source?
     if( sdtype = IR_DATATYPE_WCHAR ) then
     	return rtlWstrAssignAW( dst, ddtype, src )
+
+    '' destine?
+    elseif( ddtype = IR_DATATYPE_WCHAR ) then
+    	return rtlWstrAssignWA( dst, src, sdtype )
     end if
 
-    proc =  astNewFUNCT( PROCLOOKUP( STRASSIGN ) )
+    '' both strings
+    proc = astNewFUNCT( PROCLOOKUP( STRASSIGN ) )
 
 	'' always calc len before pushing the param
 
@@ -1763,6 +1768,10 @@ function rtlToStr( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 			f = PROCLOOKUP( DBL2STR )
 		end if
 
+	case IR_DATACLASS_STRING
+		'' do nothing
+		return expr
+
 	'' anything else (UDT's, classes): can't print
 	case else
 		return NULL
@@ -1827,6 +1836,10 @@ function rtlToWstr( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 		else
 			f = PROCLOOKUP( DBL2WSTR )
 		end if
+
+	case IR_DATACLASS_STRING
+		'' convert
+		return rtlAToWstr( expr )
 
 	'' anything else (UDT's, classes): can't print
 	case else
