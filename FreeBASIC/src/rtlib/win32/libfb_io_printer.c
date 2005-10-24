@@ -807,16 +807,49 @@ static void EmuPrint_TTY( W32_PRINTER_INFO *pInfo,
     hooks.Border.Top    = 0;
     hooks.Border.Right  =
         ( pInfo->Emu.dwSizeX - pInfo->Emu.dwFontSizeX + 1 ) / pInfo->Emu.dwFontSizeX;
-    hooks.Border.Bottom = 
+    hooks.Border.Bottom =
         ( pInfo->Emu.dwSizeY - pInfo->Emu.dwFontSizeX + 1 ) / pInfo->Emu.dwFontSizeY;
 
     hooks.Coord.X = pInfo->Emu.dwCurrentX / pInfo->Emu.dwFontSizeX;
     hooks.Coord.Y = pInfo->Emu.dwCurrentY / pInfo->Emu.dwFontSizeY;
 
-    fb_ConPrintTTY( &hooks,
-                    pachText,
-                    uiLength,
-                    TRUE );
+    while( uiLength!=0 ) {
+        char chControl = 0;
+        unsigned uiLengthTTY = uiLength, ui;
+        /* Check for additional control characters */
+        for( ui=0; ui!=uiLength; ++ui ) {
+            int iFound = FALSE;
+            char ch = pachText[ui];
+            switch( ch ) {
+            case 12:
+                /* FormFeed */
+                iFound = TRUE;
+                break;
+            }
+            if( iFound ) {
+                chControl = ch;
+                uiLengthTTY = ui;
+                break;
+            }
+        }
+        fb_ConPrintTTY( &hooks,
+                        pachText,
+                        uiLengthTTY,
+                        TRUE );
+        if( uiLength!=uiLengthTTY ) {
+            /* Found a control character that's not handled by the TTY output
+             * routines */
+            ++uiLengthTTY;
+            switch( chControl ) {
+            case 12:
+                /* FormFeed */
+                fb_hHookConPrinterScroll( &hooks, 0, 0, 0, 0, 0 );
+                break;
+            }
+        }
+        pachText += uiLengthTTY;
+        uiLength -= uiLengthTTY;
+    }
 
     if( hooks.Coord.X != hooks.Border.Left
         || hooks.Coord.Y != (hooks.Border.Bottom+1) )
