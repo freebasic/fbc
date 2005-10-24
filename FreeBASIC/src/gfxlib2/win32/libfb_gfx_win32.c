@@ -208,6 +208,7 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
                                                         CP_ACP,
                                                         target_cp );
                         key = (unsigned) (unsigned char) result->data[0];
+                        fb_hStrDelTemp( result );
                     }
 
                     while( repeat_count-- ) {
