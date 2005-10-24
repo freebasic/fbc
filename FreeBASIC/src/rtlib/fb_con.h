@@ -44,7 +44,6 @@ extern "C" {
                                 pBorder->Right,
                                 pBorder->Bottom,
                                 nRows );
-                pCoord->Y = pBorder->Bottom;
                 return TRUE;
             }
         }

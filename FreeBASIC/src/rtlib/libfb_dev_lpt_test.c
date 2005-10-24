@@ -78,8 +78,12 @@ int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename, size_t
     } else {
         if( port==0 )
             return FALSE;
+#if 0
+        /* This must be disabled to allow some extensions like setting the
+         * document title on Windows */
         if( i!=filename_len-1 )
             return FALSE;
+#endif
     }
 
     return TRUE;

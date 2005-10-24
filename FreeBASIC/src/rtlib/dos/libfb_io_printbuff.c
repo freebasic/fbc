@@ -46,6 +46,7 @@ void fb_hHookConScroll_BIOS(struct _fb_ConHooks *handle,
                             int rows)
 {
     fb_ConsoleScroll_BIOS( x1, y1, x2, y2, rows );
+    handle->Coord.Y = handle->Border.Bottom;
 }
 
 static

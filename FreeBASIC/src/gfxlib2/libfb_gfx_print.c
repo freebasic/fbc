@@ -130,6 +130,7 @@ void fb_hHookConScroll(struct _fb_ConHooks *handle,
     fb_hClearCharCells( x1, clear_start, x2+1, clear_end,
                         fb_mode->work_page, 32,
                         fb_mode->fg_color, fb_mode->bg_color );
+    handle->Coord.Y = handle->Border.Bottom;
 }
 
 static

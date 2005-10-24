@@ -941,6 +941,7 @@ function rtlPrinter_cb( byval sym as FBSYMBOL ptr ) as integer static
 		select case env.clopt.target
 		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
 			symbAddLib( "winspool" )
+			symbAddLib( "gdi32" )
 		end select
 
 	end if

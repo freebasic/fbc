@@ -127,6 +127,8 @@ void fb_hHookConScroll(struct _fb_ConHooks *handle,
             FillConsoleOutputCharacterW( hnd, _LC(' '), width, coord, &written );
         }
     }
+
+    handle->Coord.Y = handle->Border.Bottom;
 }
 
 static

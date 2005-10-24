@@ -26,18 +26,87 @@
 
 #include <windows.h>
 #include <stdio.h>
+#include <assert.h>
 #include <ctype.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <malloc.h>
 #include "fb.h"
+#include "fb_con.h"
 #include "fb_rterr.h"
 
+typedef BOOL (WINAPI *FnGetDefaultPrinter)(LPTSTR pszBuffer, LPDWORD pcchBuffer);
+
+struct _W32_PRINTER_INFO;
+
+typedef void (*FnEmuPrint)(struct _W32_PRINTER_INFO *pInfo,
+                           const char *pachText,
+                           size_t uiLength );
+
+/* Win32-specific printer information */
+typedef struct _W32_PRINTER_INFO {
+    HANDLE          hPrinter;
+    DWORD           dwJob;
+    HDC             hDc;
+    struct {
+        DWORD       dwFullSizeX;
+        DWORD       dwFullSizeY;
+        DWORD       dwSizeX;
+        DWORD       dwSizeY;
+        DWORD       dwOffsetX;
+        DWORD       dwOffsetY;
+        DWORD       dwDPI_X;
+        DWORD       dwDPI_Y;
+
+        DWORD       dwCurrentX;
+        DWORD       dwCurrentY;
+        HFONT       hFont;
+        COLORREF    clFore, clBack;
+        DWORD       dwFontSizeX;
+        DWORD       dwFontSizeY;
+        int         iPageStarted;
+
+        FnEmuPrint  pfnPrint;
+    } Emu;
+} W32_PRINTER_INFO;
+
+/* Entry for the list of available printers */
 typedef struct _DEV_PRINTER_DEVICE {
     FB_LISTELEM     elem;
     char           *device;
     char           *printer_name;
 } DEV_PRINTER_DEVICE;
+
+/* Information about a single printer emulation mode */
+typedef struct _DEV_PRINTER_EMU_MODE {
+    const char     *pszId;
+    FnEmuPrint      pfnPrint;
+} DEV_PRINTER_EMU_MODE;
+
+static
+void EmuBuild_LOGFONT( LOGFONT *lf,
+                       W32_PRINTER_INFO *pInfo,
+                       unsigned uiCPI );
+static
+    void EmuUpdateInfo( W32_PRINTER_INFO *pInfo );
+static
+    void EmuPrint_RAW( W32_PRINTER_INFO *pInfo, const char *pachText, size_t uiLength );
+static
+    void EmuPrint_TTY( W32_PRINTER_INFO *pInfo, const char *pachText, size_t uiLength );
+#if 0
+static
+    void EmuPrint_ESC_P2( W32_PRINTER_INFO *pInfo, const char *pachText, size_t uiLength );
+#endif
+
+/* List of all known printer emulation modes */
+static const DEV_PRINTER_EMU_MODE aEmulationModes[] = {
+    { "RAW", EmuPrint_RAW }
+    , { "TTY", EmuPrint_TTY }
+#if 0
+    , { "ESC/P2", EmuPrint_ESC_P2 }
+#endif
+};
 
 /** Initialize the list of device info nodes.
  */
@@ -113,13 +182,6 @@ fb_hListDevFindName  ( FB_LIST *list, const char *pszPrinterName )
     }
     return NULL;
 }
-
-typedef struct _W32_PRINTER_INFO {
-    HANDLE          hPrinter;
-    DWORD           dwJob;
-} W32_PRINTER_INFO;
-
-typedef BOOL (WINAPI *FnGetDefaultPrinter)(LPTSTR pszBuffer, LPDWORD pcchBuffer);
 
 static PRINTER_INFO_5 *GetDefaultPrinters(size_t *pCount)
 {
@@ -344,27 +406,147 @@ fb_hPrinterBuildList( FB_LIST *list )
     fb_hPrinterBuildListOther( list, 128 );
 }
 
-int fb_PrinterOpen( int iPort, const char *pszDevice, void **ppvHandle )
+int fb_PrinterOpen( int iPort, const char *pszDeviceRaw, void **ppvHandle )
 {
     int result = fb_ErrorSetNum( FB_RTERROR_OK );
-    DOC_INFO_1 DocInfo;
+    size_t uiDeviceNameLengthRaw = strlen( pszDeviceRaw );
+    size_t uiDeviceNameLength = ((uiDeviceNameLengthRaw < 20) ? 20 : uiDeviceNameLengthRaw);
+    const DEV_PRINTER_EMU_MODE *pFoundEmu = NULL;
     DWORD dwJob = 0;
     BOOL fResult;
     HANDLE hPrinter = NULL;
     char *printer_name = NULL;
+    char *pszTempBuffer = alloca( (uiDeviceNameLength+1) * 3 + 2 );
+    char *pszEmulation = pszTempBuffer + uiDeviceNameLength + 2;
+    char *pszDocName = pszTempBuffer + (uiDeviceNameLength+1) * 2 + 1;
+    const char *pszDevice = NULL;
+    HDC hDc = NULL;
+
+    *pszEmulation = 0;
+
+    /* Parse all options passed after the LPT: or LPT:PrinterName */
+    {
+        const char *pszDevInfo, *pszDevInfoStart, *pszDevNameStart;
+
+        if( iPort!=0 ) {
+            pszDevNameStart = pszDeviceRaw;
+            pszDevInfoStart = strchr(pszDeviceRaw, ':');
+            if( pszDevInfoStart==NULL )
+                return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+            ++pszDevInfoStart;
+        } else {
+            pszDevNameStart = strchr(pszDeviceRaw, ':') + 1;
+            pszDevInfoStart = strchr(pszDeviceRaw, ',');
+            if( pszDevInfoStart!=NULL )
+                ++pszDevInfoStart;
+        }
+
+        pszDevInfo = pszDevInfoStart;
+        if( pszDevInfo!=NULL )
+            while( isspace( *pszDevInfo ) )
+                ++pszDevInfo;
+
+        while( pszDevInfo!=NULL ) {
+            const char *pszInfoEnd = strchr( pszDevInfo, ',' );
+            const char *pszInfoValue = strchr( pszDevInfo, '=' );
+            const char *pszInfoKeyEnd;
+            char *pszTempKey, *pszTempValue;
+            size_t uiTempKeyLen, uiTempValueLen;
+
+            /* Sanitize the found positions */
+            if( pszInfoEnd==NULL )
+                pszInfoEnd = pszDevInfo + strlen( pszDevInfo );
+            if( pszInfoValue!=NULL && pszInfoValue>pszInfoEnd )
+                pszInfoValue = NULL;
+
+            /* Sanitize all remaining variables required for splitting into
+             * KEY and VALUE. */
+            if( pszInfoValue!=NULL ) {
+                pszInfoKeyEnd = pszInfoValue;
+                ++pszInfoValue;
+                uiTempValueLen = pszInfoEnd - pszInfoValue;
+            } else {
+                pszInfoKeyEnd = pszInfoEnd;
+                uiTempValueLen = 0;
+            }
+            uiTempKeyLen = pszInfoKeyEnd - pszDevInfo;
+
+            /* Strip all those annoying white spaces from key and value */
+            while( uiTempKeyLen!=0 && isspace( pszDevInfo[uiTempKeyLen-1] ) )
+                --uiTempKeyLen;
+            while( uiTempValueLen!=0 && isspace( *pszInfoValue ) ) {
+                --uiTempValueLen;
+                ++pszInfoValue;
+            }
+            while( uiTempValueLen!=0 && isspace( pszInfoValue[uiTempValueLen-1] ) )
+                --uiTempValueLen;
+
+            /* Copy KEY and VALUE into temporary buffer */
+            pszTempKey = pszTempBuffer;
+            pszTempValue = pszTempBuffer + uiTempKeyLen + 1;
+            memcpy( pszTempKey, pszDevInfo, uiTempKeyLen );
+            memcpy( pszTempValue, pszInfoValue, uiTempValueLen );
+            pszTempKey[uiTempKeyLen] = 0;
+            pszTempValue[uiTempValueLen] = 0;
+
+            /* Process option */
+            if( uiTempKeyLen!=0 || uiTempValueLen!=0 ) {
+                if( strcasecmp( pszTempKey, "EMU" )==0 ) {
+                    if( uiTempValueLen==0 ) {
+                        strcpy( pszEmulation, "TTY" );
+                    } else {
+                        memcpy( pszEmulation, pszTempValue, uiTempValueLen + 1 );
+                    }
+                } else if( strcasecmp( pszTempKey, "TITLE" )==0 ) {
+                    memcpy( pszDocName, pszTempValue, uiTempValueLen + 1 );
+                } else {
+                    return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+                }
+            }
+
+            pszDevInfo = (( *pszInfoEnd==0 ) ? NULL : (pszInfoEnd+1) );
+            if( pszDevInfo!=NULL )
+                while( isspace( *pszDevInfo ) )
+                    ++pszDevInfo;
+        }
+
+        /* Make a copy of the device name without all those options */
+        uiDeviceNameLength =
+            (pszDevInfoStart - pszDeviceRaw) - ((iPort!=0) ? 0 : 1);
+        pszDevice = pszTempBuffer;
+        memcpy( pszTempBuffer, pszDeviceRaw, uiDeviceNameLength );
+        pszTempBuffer[uiDeviceNameLength] = 0;
+    }
+
+    /* Allow only valid emulation modes */
+    if( *pszEmulation!=0 ) {
+        size_t i;
+        for( i=0;
+             i!=sizeof(aEmulationModes)/sizeof(aEmulationModes[0]);
+             ++i )
+        {
+            const DEV_PRINTER_EMU_MODE *pEmu = aEmulationModes + i;
+            if( strcasecmp( pszEmulation, pEmu->pszId )==0 ) {
+                pFoundEmu = pEmu;
+                break;
+            }
+        }
+        if( !pFoundEmu )
+            return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+    } else {
+        pszEmulation = NULL;
+    }
 
     if( iPort==0 ) {
+        /* LPT:PrinterName */
         char *pFoundPos = strchr(pszDevice, ':');
         if( pFoundPos!=NULL ) {
             ++pFoundPos;
-#if 0
-            while( isspace( *pFoundPos ) )
-                ++pFoundPos;
-#endif
             if( *pFoundPos!=0 )
                 printer_name = strdup( pFoundPos );
         }
     } else {
+        /* LPTx: */
         FB_LIST dev_printer_devs;
         DEV_PRINTER_DEVICE* node;
 
@@ -374,7 +556,7 @@ int fb_PrinterOpen( int iPort, const char *pszDevice, void **ppvHandle )
         /* Find printer attached to specified device */
         node = fb_hListDevFindDevice( &dev_printer_devs, pszDevice );
         if( node!=NULL ) {
-            printer_name = node->printer_name;
+            printer_name = strdup( node->printer_name );
         }
 
         fb_hListDevClear( &dev_printer_devs );
@@ -383,20 +565,50 @@ int fb_PrinterOpen( int iPort, const char *pszDevice, void **ppvHandle )
     if( printer_name == NULL ) {
         result = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
     } else {
-        fResult = OpenPrinter(printer_name, &hPrinter, NULL);
+        if( pszEmulation!=NULL ) {
+            /* When EMULATION is used, we have to use the DC instead of
+             * the PRINTER directly */
+            hDc = CreateDCA( "WINSPOOL",
+                             printer_name,
+                             NULL,
+                             NULL );
+            fResult = hDc!=NULL;
+        } else {
+            /* User PRINTER directly */
+            fResult = OpenPrinter(printer_name, &hPrinter, NULL);
+        }
         if( !fResult ) {
             result = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
         }
     }
 
-    if( result==FB_RTERROR_OK ) {
-        DocInfo.pDocName = TEXT("FreeBASIC document");
-        DocInfo.pOutputFile = NULL;
-        DocInfo.pDatatype = TEXT("RAW");
+    if( *pszDocName==0 ) {
+        strcpy( pszDocName, "FreeBASIC document" );
+    }
 
-        dwJob = StartDocPrinter( hPrinter, 1, (BYTE*) &DocInfo );
-        if( dwJob==0 ) {
-            result = fb_ErrorSetNum( FB_RTERROR_FILEIO );
+    if( result==FB_RTERROR_OK ) {
+        if( pszEmulation!=NULL ) {
+            int iJob;
+            DOCINFO docInfo;
+            memset( &docInfo, 0, sizeof(DOCINFO) );
+            docInfo.cbSize = sizeof(DOCINFO);
+            docInfo.lpszDocName = pszDocName;
+            iJob = StartDoc( hDc, &docInfo );
+            if( iJob <= 0 ) {
+                result = fb_ErrorSetNum( FB_RTERROR_FILEIO );
+            } else {
+                dwJob = (DWORD) iJob;
+            }
+        } else {
+            DOC_INFO_1 DocInfo;
+            DocInfo.pDocName = pszDocName;
+            DocInfo.pOutputFile = NULL;
+            DocInfo.pDatatype = TEXT("RAW");
+
+            dwJob = StartDocPrinter( hPrinter, 1, (BYTE*) &DocInfo );
+            if( dwJob==0 ) {
+                result = fb_ErrorSetNum( FB_RTERROR_FILEIO );
+            }
         }
     }
 
@@ -408,15 +620,60 @@ int fb_PrinterOpen( int iPort, const char *pszDevice, void **ppvHandle )
             *ppvHandle = pInfo;
             pInfo->hPrinter = hPrinter;
             pInfo->dwJob = dwJob;
+            pInfo->hDc = hDc;
+            if( hDc!=NULL ) {
+                LOGFONT lf;
+
+                pInfo->Emu.dwFullSizeX = GetDeviceCaps( hDc, PHYSICALWIDTH );
+                pInfo->Emu.dwFullSizeY = GetDeviceCaps( hDc, PHYSICALHEIGHT );
+                pInfo->Emu.dwSizeX = GetDeviceCaps( hDc, HORZRES );
+                pInfo->Emu.dwSizeY = GetDeviceCaps( hDc, VERTRES );
+                pInfo->Emu.dwOffsetX = GetDeviceCaps( hDc, PHYSICALOFFSETX );
+                pInfo->Emu.dwOffsetY = GetDeviceCaps( hDc, PHYSICALOFFSETY );
+                pInfo->Emu.dwDPI_X = GetDeviceCaps( hDc, LOGPIXELSX );
+                pInfo->Emu.dwDPI_Y = GetDeviceCaps( hDc, LOGPIXELSY );
+#if 0
+                pInfo->Emu.dwCurrentX = pInfo->Emu.dwOffsetX;
+                pInfo->Emu.dwCurrentY = pInfo->Emu.dwOffsetY;
+#else
+                pInfo->Emu.dwCurrentX = 0;
+                pInfo->Emu.dwCurrentY = 0;
+#endif
+                pInfo->Emu.clFore = RGB(0,0,0);
+                pInfo->Emu.clBack = RGB(255,255,255);
+
+                /* Start in 12 CPI monospace mode */
+                EmuBuild_LOGFONT( &lf, pInfo, 12 );
+
+                /* Should never fail - except when some default fonts were
+                 * removed by hand (which is very unlikely) */
+                pInfo->Emu.hFont = CreateFontIndirect( &lf );
+                assert( pInfo->Emu.hFont!=NULL );
+
+                /* Register PRINT function */
+                pInfo->Emu.pfnPrint = pFoundEmu->pfnPrint;
+
+                /* Should not be necessary because this is the default */
+                SetTextAlign( hDc, TA_TOP | TA_LEFT | TA_NOUPDATECP );
+
+                EmuUpdateInfo( pInfo );
+            }
         }
     }
 
     if( result!=FB_RTERROR_OK ) {
         if( dwJob!=0 ) {
-            EndDocPrinter( hPrinter );
+            if( pszEmulation!=NULL ) {
+                EndDoc( hDc );
+            } else {
+                EndDocPrinter( hPrinter );
+            }
         }
         if( hPrinter!=NULL ) {
             ClosePrinter( hPrinter );
+        }
+        if( hDc!=NULL ) {
+            DeleteDC( hDc );
         }
     }
 
@@ -426,19 +683,177 @@ int fb_PrinterOpen( int iPort, const char *pszDevice, void **ppvHandle )
     return result;
 }
 
+static
+void EmuBuild_LOGFONT( LOGFONT *lf,
+                       W32_PRINTER_INFO *pInfo,
+                       unsigned uiCPI )
+{
+    memset( lf, 0, sizeof( LOGFONT ) );
+    lf->lfHeight = pInfo->Emu.dwDPI_Y*10/72;         /* default height */
+    lf->lfWeight = FW_NORMAL;
+    lf->lfCharSet = OEM_CHARSET;
+    lf->lfOutPrecision = OUT_DEFAULT_PRECIS;
+    lf->lfClipPrecision = CLIP_DEFAULT_PRECIS;
+    lf->lfQuality = DRAFT_QUALITY;
+    if( uiCPI!=0 ) {
+        lf->lfWidth = pInfo->Emu.dwDPI_X/uiCPI;
+        lf->lfPitchAndFamily = FIXED_PITCH | FF_MODERN;
+        strcpy( lf->lfFaceName, "System" );
+    } else {
+        lf->lfWidth = 0;
+        lf->lfPitchAndFamily = VARIABLE_PITCH | FF_SWISS;
+        strcpy( lf->lfFaceName, "MS Sans Serif" );
+    }
+}
+
+static void EmuUpdateInfo( W32_PRINTER_INFO *pInfo )
+{
+    TEXTMETRIC tm;
+
+    SelectObject( pInfo->hDc, pInfo->Emu.hFont );
+
+    GetTextMetrics( pInfo->hDc, &tm );
+    pInfo->Emu.dwFontSizeX = tm.tmMaxCharWidth;
+    pInfo->Emu.dwFontSizeY = tm.tmHeight;
+}
+
+static void EmuPageStart( W32_PRINTER_INFO *pInfo )
+{
+    if( pInfo->Emu.iPageStarted )
+        return;
+
+    StartPage( pInfo->hDc );
+    pInfo->Emu.iPageStarted = TRUE;
+
+    EmuUpdateInfo( pInfo );
+
+    SetTextColor( pInfo->hDc, pInfo->Emu.clFore );
+    SetBkColor( pInfo->hDc, pInfo->Emu.clBack );
+}
+
+static void EmuPrint_RAW( W32_PRINTER_INFO *pInfo,
+                          const char *pachText,
+                          size_t uiLength )
+{
+    while( uiLength-- ) {
+        char ch = *pachText++;
+
+        EmuPageStart( pInfo );
+
+        TextOut( pInfo->hDc,
+                 pInfo->Emu.dwCurrentX, pInfo->Emu.dwCurrentY,
+                 &ch, 1 );
+
+        pInfo->Emu.dwCurrentX += pInfo->Emu.dwFontSizeX;
+
+        if( pInfo->Emu.dwCurrentX>=pInfo->Emu.dwSizeX ) {
+            pInfo->Emu.dwCurrentX = 0;
+            pInfo->Emu.dwCurrentY += pInfo->Emu.dwFontSizeY;
+            if( pInfo->Emu.dwCurrentY>=pInfo->Emu.dwSizeY ) {
+                pInfo->Emu.dwCurrentY = 0;
+                EndPage( pInfo->hDc );
+                pInfo->Emu.iPageStarted = FALSE;
+            }
+        }
+    }
+}
+
+static
+void fb_hHookConPrinterScroll(struct _fb_ConHooks *handle,
+                              int x1,
+                              int y1,
+                              int x2,
+                              int y2,
+                              int rows)
+{
+    W32_PRINTER_INFO *pInfo = handle->Opaque;
+    size_t page_rows = (pInfo->Emu.dwSizeY + pInfo->Emu.dwFontSizeY - 1)
+        / pInfo->Emu.dwFontSizeY;
+    if( !pInfo->Emu.iPageStarted ) {
+        StartPage( pInfo->hDc );
+    }
+    EndPage( pInfo->hDc );
+    while( rows >= page_rows ) {
+        StartPage( pInfo->hDc );
+        EndPage( pInfo->hDc );
+        rows -= page_rows;
+    }
+    pInfo->Emu.iPageStarted = FALSE;
+    handle->Coord.Y = 0;
+}
+
+static
+int  fb_hHookConPrinterWrite (struct _fb_ConHooks *handle,
+                              const void *buffer,
+                              size_t length )
+{
+    W32_PRINTER_INFO *pInfo = handle->Opaque;
+    pInfo->Emu.dwCurrentX = handle->Coord.X * pInfo->Emu.dwFontSizeX;
+    pInfo->Emu.dwCurrentY = handle->Coord.Y * pInfo->Emu.dwFontSizeY;
+    EmuPrint_RAW( pInfo, buffer, length );
+    return TRUE;
+}
+
+static void EmuPrint_TTY( W32_PRINTER_INFO *pInfo,
+                          const char *pachText,
+                          size_t uiLength )
+{
+    fb_ConHooks hooks;
+
+    hooks.Opaque        = pInfo;
+    hooks.Scroll        = fb_hHookConPrinterScroll;
+    hooks.Write         = fb_hHookConPrinterWrite ;
+    hooks.Border.Left   = 0;
+    hooks.Border.Top    = 0;
+    hooks.Border.Right  =
+        ( pInfo->Emu.dwSizeX - pInfo->Emu.dwFontSizeX + 1 ) / pInfo->Emu.dwFontSizeX;
+    hooks.Border.Bottom = 
+        ( pInfo->Emu.dwSizeY - pInfo->Emu.dwFontSizeX + 1 ) / pInfo->Emu.dwFontSizeY;
+
+    hooks.Coord.X = pInfo->Emu.dwCurrentX / pInfo->Emu.dwFontSizeX;
+    hooks.Coord.Y = pInfo->Emu.dwCurrentY / pInfo->Emu.dwFontSizeY;
+
+    fb_ConPrintTTY( &hooks,
+                    pachText,
+                    uiLength,
+                    TRUE );
+
+    if( hooks.Coord.X != hooks.Border.Left
+        || hooks.Coord.Y != (hooks.Border.Bottom+1) )
+    {
+        fb_hConCheckScroll( &hooks );
+    }
+
+    pInfo->Emu.dwCurrentX = hooks.Coord.X * pInfo->Emu.dwFontSizeX;
+    pInfo->Emu.dwCurrentY = hooks.Coord.Y * pInfo->Emu.dwFontSizeY;
+}
+
+#if 0
+static void EmuPrint_ESC_P2( W32_PRINTER_INFO *pInfo,
+                             const char *pachText,
+                             size_t uiLength )
+{
+}
+#endif
+
 int fb_PrinterWrite( void *pvHandle, const void *data, size_t length )
 {
     W32_PRINTER_INFO *pInfo = (W32_PRINTER_INFO*) pvHandle;
     DWORD dwWritten;
 
-    if( !WritePrinter( pInfo->hPrinter,
-                       (LPVOID) data,
+    if( !pInfo->hPrinter ) {
+        pInfo->Emu.pfnPrint( pInfo, data, length );
+
+    } else if( !WritePrinter( pInfo->hPrinter,
+                              (LPVOID) data,
                        length,
                        &dwWritten ) )
     {
         return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+
     } else if ( dwWritten != length ) {
         return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+
     }
 
     return fb_ErrorSetNum( FB_RTERROR_OK );
@@ -455,8 +870,10 @@ int fb_PrinterWriteWstr( void *pvHandle, const FB_WCHAR *data, size_t length )
                        &dwWritten ) )
     {
         return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+
     } else if ( dwWritten != length ) {
         return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+
     }
 
     return fb_ErrorSetNum( FB_RTERROR_OK );
@@ -465,8 +882,17 @@ int fb_PrinterWriteWstr( void *pvHandle, const FB_WCHAR *data, size_t length )
 int fb_PrinterClose( void *pvHandle )
 {
     W32_PRINTER_INFO *pInfo = (W32_PRINTER_INFO*) pvHandle;
-    EndDocPrinter( pInfo->hPrinter );
-    ClosePrinter( pInfo->hPrinter );
+
+    if( pInfo->hDc!=NULL ) {
+        if( pInfo->Emu.iPageStarted )
+            EndPage( pInfo->hDc );
+        EndDoc( pInfo->hDc );
+        DeleteDC( pInfo->hDc );
+    } else {
+        EndDocPrinter( pInfo->hPrinter );
+        ClosePrinter( pInfo->hPrinter );
+    }
+
     free(pInfo);
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }
