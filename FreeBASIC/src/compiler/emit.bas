@@ -1410,7 +1410,7 @@ end sub
 '':::::
 sub emitCOMMENT( byval text as string ) static
 
-	hNewLIT( "#" + text )
+	hNewLIT( "##" + text )
 
 end sub
 
