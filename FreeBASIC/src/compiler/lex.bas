@@ -282,8 +282,12 @@ private sub lexReadIdentifier( byval pid as zstring ptr, _
 							   tlen as integer, _
 							   typ as integer, _
 							   dpos as integer, _
-							   byval flags as LEXCHECK_ENUM ) static
-	dim c as uinteger
+							   byval flags as LEXCHECK_ENUM _
+							 ) static
+
+	dim as uinteger c
+	dim as integer skipchar = FALSE
+
 
 	'' (ALPHA | '_' | '.' )
 	*pid = lexEatChar( )
@@ -311,19 +315,23 @@ private sub lexReadIdentifier( byval pid as zstring ptr, _
 			exit do
 		end select
 
-		tlen += 1
-		if( tlen > FB_MAXNUMLEN ) then
- 			if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
- 				hReportError( FB_ERRMSG_IDNAMETOOBIG, TRUE )
-				exit function
-			else
-				tlen -= 1
-				exit do
-			end if
-		end if
+		if( not skipchar ) then
+			tlen += 1
+			if( tlen > FB_MAXNAMELEN ) then
+ 				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+	 				hReportWarning( FB_WARNINGMSG_IDNAMETOOBIG )
+ 				end if
 
-		*pid = lexEatChar( )
-		pid += 1
+				tlen -= 1
+				skipchar = TRUE
+			end if
+
+			*pid = lexEatChar( )
+			pid += 1
+
+		else
+			lexEatChar( )
+		end if
 
 	loop
 
@@ -372,10 +380,13 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 								 tlen as integer, _
 								 issigned as integer, _
 								 islong as integer, _
-								 byval flags as LEXCHECK_ENUM ) static
+								 byval flags as LEXCHECK_ENUM _
+							   ) static
+
 	dim as uinteger value, c, first_c
 	dim as ulongint value64
 	dim as integer lgt
+	dim as integer skipchar = FALSE
 
 	issigned = FALSE
 	islong = FALSE
@@ -403,22 +414,28 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
                   	c -= (CHAR_ALOW - CHAR_AUPP)
                 end if
 
-				lgt += 1
-				if( lgt > 8 ) then
-					if( lgt = 9 ) then
-						islong = TRUE
-				    	value64 = (culngint( value ) * 16) + c
-				    elseif( lgt = 17 ) then
-				    	if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-				    		hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+				if( not skipchar ) then
+					lgt += 1
+					if( lgt > 8 ) then
+						if( lgt = 9 ) then
+							islong = TRUE
+				    		value64 = (culngint( value ) * 16) + c
+
+				    	elseif( lgt = 17 ) then
+				    		if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+				    			hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+				    		end if
+							skipchar = TRUE
+
+						else
+				    		value64 = (value64 * 16) + c
 				    	end if
-				    	exit do
+
 					else
-				    	value64 = (value64 * 16) + c
-				    end if
-				else
-                	value = (value * 16) + c
+                		value = (value * 16) + c
+                	end if
                 end if
+
 			case else
 				exit do
 			end select
@@ -439,42 +456,50 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 			case CHAR_0 to CHAR_7
 				c = lexEatChar( ) - CHAR_0
 
-				lgt += 1
-				if( lgt > 10 ) then
-					select case as const lgt
-					case 11
-						if( first_c > CHAR_3 ) then
-							islong = TRUE
-							value64 = (culngint( value ) * 8) + c
-						else
-							value = (value * 8) + c
-						end if
-					case 12
-						if( not islong ) then
-							islong = TRUE
-							value64 = culngint( value )
-						end if
-						value64 = (value64 * 8) + c
-					case 22
-						if( first_c > CHAR_1 ) then
-							if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-								hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+				if( not skipchar ) then
+					lgt += 1
+					if( lgt > 10 ) then
+						select case as const lgt
+						case 11
+							if( first_c > CHAR_3 ) then
+								islong = TRUE
+								value64 = (culngint( value ) * 8) + c
+							else
+								value = (value * 8) + c
 							end if
-							exit do
-						else
+
+						case 12
+							if( not islong ) then
+								islong = TRUE
+								value64 = culngint( value )
+							end if
 							value64 = (value64 * 8) + c
-						end if
-					case 23
-						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-							hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
-						end if
-						exit do
-					case else
-						value64 = (value64 * 8) + c
-					end select
-				else
-					value = (value * 8) + c
+
+						case 22
+							if( first_c > CHAR_1 ) then
+								if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+									hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+								end if
+								skipchar = TRUE
+							else
+								value64 = (value64 * 8) + c
+							end if
+
+						case 23
+							if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+								hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+							end if
+							skipchar = TRUE
+
+						case else
+							value64 = (value64 * 8) + c
+						end select
+
+					else
+						value = (value * 8) + c
+					end if
 				end if
+
 			case else
 				exit do
 			end select
@@ -493,22 +518,28 @@ private sub lexReadNonDecNumber( pnum as zstring ptr, _
 			select case lexCurrentChar( )
 			case CHAR_0, CHAR_1
 				c = lexEatChar( ) - CHAR_0
-				lgt += 1
-				if( lgt > 32 ) then
-					if( lgt = 33 ) then
-						islong = TRUE
-				    	value64 = (culngint( value ) * 2) + c
-				    elseif( lgt = 65 ) then
-				    	if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-				    		hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
+				if( not skipchar ) then
+					lgt += 1
+					if( lgt > 32 ) then
+						if( lgt = 33 ) then
+							islong = TRUE
+				    		value64 = (culngint( value ) * 2) + c
+
+				    	elseif( lgt = 65 ) then
+				    		if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+				    			hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+				    		end if
+				    		skipchar = TRUE
+
+				    	else
+				    		value64 = (value64 * 2) + c
 				    	end if
-				    	exit do
-				    else
-				    	value64 = (value64 * 2) + c
-				    end if
-				else
-					value = (value * 2) + c
+
+					else
+						value = (value * 2) + c
+					end if
 				end if
+
 			case else
 				exit do
 			end select
@@ -545,9 +576,12 @@ end sub
 private sub lexReadFloatNumber( pnum as zstring ptr, _
 								tlen as integer, _
 								typ as integer, _
-								byval flags as LEXCHECK_ENUM ) static
-    dim c as uinteger
-    dim llen as integer
+								byval flags as LEXCHECK_ENUM _
+							  ) static
+
+    dim as uinteger c
+    dim as integer llen
+    dim as integer skipchar = FALSE
 
 	typ = FB_SYMBTYPE_DOUBLE
 
@@ -558,23 +592,27 @@ private sub lexReadFloatNumber( pnum as zstring ptr, _
 		c = lexCurrentChar( )
 		select case c
 		case CHAR_0 to CHAR_9
-			*pnum = lexEatChar( )
-			pnum += 1
-			tlen += 1
+			if( not skipchar ) then
+				*pnum = lexEatChar( )
+				pnum += 1
+				tlen += 1
+			else
+				lexEatChar( )
+			end if
 		case else
 			exit do
 		end select
 
 		if( tlen > FB_MAXNUMLEN ) then
- 			if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
- 				hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
-				exit function
-			else
+			if( not skipchar ) then
+ 				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+ 					hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+				end if
+
 				tlen -= 1
-				exit do
+				skipchar = TRUE
 			end if
 		end if
-
 	loop
 
 	'' [FSUFFIX | { EXPCHAR [opadd] DIGIT { DIGIT } } | ]
@@ -591,25 +629,35 @@ private sub lexReadFloatNumber( pnum as zstring ptr, _
 	case CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
 		'' EXPCHAR
 		c = lexEatChar( )
-		*pnum = CHAR_ELOW
-		pnum += 1
-		tlen += 1
+		if( not skipchar ) then
+			*pnum = CHAR_ELOW
+			pnum += 1
+			tlen += 1
+		end if
 
 		'' [opadd]
 		c = lexCurrentChar( )
 		if( (c = CHAR_PLUS) or (c = CHAR_MINUS) ) then
-			*pnum = lexEatChar( )
-			pnum += 1
-			tlen += 1
+			if( not skipchar ) then
+				*pnum = lexEatChar( )
+				pnum += 1
+				tlen += 1
+			else
+				lexEatChar( )
+			end if
 		end if
 
 		do
 			c = lexCurrentChar( )
 			select case as const c
 			case CHAR_0 to CHAR_9
-				*pnum = lexEatChar( )
-				pnum += 1
-				tlen += 1
+				if( not skipchar ) then
+					*pnum = lexEatChar( )
+					pnum += 1
+					tlen += 1
+				else
+					lexEatChar( )
+				end if
 			case else
 				exit do
 			end select
@@ -642,10 +690,13 @@ end sub
 private sub lexReadNumber( byval pnum as zstring ptr, _
 						   typ as integer, _
 						   tlen as integer, _
-				   		   byval flags as LEXCHECK_ENUM ) static
+				   		   byval flags as LEXCHECK_ENUM _
+				   		 ) static
+
 	dim as uinteger c
 	dim as integer isfloat, issigned, islong, forcedsign
 	dim as zstring ptr pnum_start
+	dim as integer skipchar = FALSE
 
 	isfloat    = FALSE
 	issigned   = TRUE
@@ -674,24 +725,33 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 			case CHAR_0
 				lexEatChar( )
 				if( tlen > 0 ) then
-					*pnum = CHAR_0
-					pnum += 1
-					tlen += 1
+					if( not skipchar ) then
+						*pnum = CHAR_0
+						pnum += 1
+						tlen += 1
+					end if
 				end if
 
 			case CHAR_1 to CHAR_9
-				*pnum = lexEatChar( )
-				pnum += 1
-				tlen += 1
+				if( not skipchar ) then
+					*pnum = lexEatChar( )
+					pnum += 1
+					tlen += 1
+				else
+					lexEatChar( )
+				end if
 
 			case CHAR_DOT, CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
 				isfloat = TRUE
 				if( c = CHAR_DOT ) then
 					c = lexEatChar( )
-					*pnum = CHAR_DOT
-					pnum += 1
-					tlen += 1
+					if( not skipchar ) then
+						*pnum = CHAR_DOT
+						pnum += 1
+						tlen += 1
+					end if
 				end if
+
 				lexReadFloatNumber( pnum, tlen, typ, flags )
 				exit do
 
@@ -699,48 +759,49 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 				exit do
 			end select
 
-			select case as const tlen
-			case 10
-				if( *pnum_start > "2147483647" ) then
-					issigned = FALSE
-					if( *pnum_start > "4294967295" ) then
-						issigned = TRUE
-						islong = TRUE
+			if( not skipchar ) then
+				select case as const tlen
+				case 10
+					if( *pnum_start > "2147483647" ) then
+						issigned = FALSE
+						if( *pnum_start > "4294967295" ) then
+							issigned = TRUE
+							islong = TRUE
+						end if
 					end if
-				end if
 
-			case 11
-				islong = TRUE
-				issigned = TRUE
+				case 11
+					islong = TRUE
+					issigned = TRUE
 
-			case 19
-				if( *pnum_start > "9223372036854775807" ) then
+				case 19
+					if( *pnum_start > "9223372036854775807" ) then
+						issigned = FALSE
+					end if
+
+				case 20
 					issigned = FALSE
-				end if
+					if( *pnum_start > "18446744073709551615" ) then
+						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+							hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+							skipchar = TRUE
+						end if
+					end if
 
-			case 20
-				issigned = FALSE
-				if( *pnum_start > "18446744073709551615" ) then
+				case 21
 					if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-						hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
-						exit function
+						hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+						skipchar = TRUE
 					end if
-				end if
+				end select
 
-			case 21
-				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-					hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
-					exit function
-				end if
-			end select
+				if( tlen > FB_MAXNUMLEN ) then
+ 					if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+ 						hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+					end if
 
-			if( tlen > FB_MAXNUMLEN ) then
- 				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
- 					hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
-					exit function
-				else
 					tlen -= 1
-					exit do
+					skipchar = TRUE
 				end if
 			end if
 
@@ -801,9 +862,10 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 					end if
 				else
 					if( islong ) then
-						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-							hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
-							exit function
+						if( not skipchar ) then
+							if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+								hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+							end if
 						end if
 					end if
 				end if
@@ -812,9 +874,10 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 			case FB_TK_INTTYPECHAR, FB_TK_LNGTYPECHAR
 				lexEatChar( )
 				if( islong ) then
-					if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-						hReportError( FB_ERRMSG_NUMBERTOOBIG, TRUE )
-						exit function
+					if( not skipchar ) then
+						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+							hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+						end if
 					end if
 				end if
 
@@ -867,6 +930,7 @@ private sub lexReadString ( byval ps as zstring ptr, _
 
 	static as zstring * 16 nval
 	dim as integer rlen, p, ntyp, nlen
+	dim as integer skipchar = FALSE
 
 	*ps = 0
 	tlen = 0
@@ -895,9 +959,11 @@ private sub lexReadString ( byval ps as zstring ptr, _
 
 				'' don't skip quotes?
 				if( (flags and LEXCHECK_NOQUOTES) <> 0 ) then
-					*ps = CHAR_QUOTE
-					ps += 1
-					tlen += 1
+					if( not skipchar ) then
+						*ps = CHAR_QUOTE
+						ps += 1
+						tlen += 1
+					end if
 				end if
 
 				exit do
@@ -909,52 +975,59 @@ private sub lexReadString ( byval ps as zstring ptr, _
 
 				'' can't use '\', it will be escaped anyway because GAS
 				lexEatChar( )
-				*ps = FB_INTSCAPECHAR
-				ps += 1
-				rlen += 1
+				if( not skipchar ) then
+					*ps = FB_INTSCAPECHAR
+					ps += 1
+					rlen += 1
+				end if
 
 				select case lexCurrentChar( )
 				'' if it's a literal number, convert to octagonal
 				case CHAR_0 to CHAR_9, CHAR_AMP
 					lexReadNumber( @nval, ntyp, nlen, 0 )
-					if( nlen > 3 ) then
-						nval[3] = 0
-					end if
 
-					nval = oct( valint( nval ) )
-					'' save the oct len, or concatenation would fail if number chars follow
-					*ps = len( nval )
-					ps += 1
-					rlen += 1
+					if( not skipchar ) then
+						if( nlen > 3 ) then
+							nval[3] = 0
+						end if
 
-					p = 0
-					do until( nval[p] = 0 )
-						*ps = nval[p]
+						nval = oct( valint( nval ) )
+						'' save the oct len, or concatenation would fail if number chars follow
+						*ps = len( nval )
 						ps += 1
 						rlen += 1
-						p += 1
-					loop
-					tlen += 1
+
+						p = 0
+						do until( nval[p] = 0 )
+							*ps = nval[p]
+							ps += 1
+							rlen += 1
+							p += 1
+						loop
+						tlen += 1
+					end if
+
 					continue do
 				end select
 
 			end if
 		end select
 
-		rlen += 1
-		if( rlen > FB_MAXLITLEN ) then
-			if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-				hReportError( FB_ERRMSG_LITSTRINGTOOBIG, TRUE )
-				exit do
-			else
-				rlen -= 1
-				exit do
-			end if
-		end if
+		if( not skipchar ) then
+			rlen += 1
+			if( rlen > FB_MAXLITLEN ) then
+				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+					hReportWarning( FB_WARNINGMSG_LITSTRINGTOOBIG )
+				end if
 
-		*ps = lexEatChar( )
-		ps += 1
-		tlen += 1
+				rlen -= 1
+				skipchar = TRUE
+			end if
+
+			*ps = lexEatChar( )
+			ps += 1
+			tlen += 1
+		end if
 	loop
 
 	'' null-term

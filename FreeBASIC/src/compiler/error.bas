@@ -49,7 +49,10 @@ end type
 		( 0, "Passing different pointer types" ), _
 		( 0, "Suspicious pointer assignment" ), _
 		( 0, "Implicit conversion" ), _
-		( 0, "Cannot export symbol without -export option" ) _
+		( 0, "Cannot export symbol without -export option" ), _
+		( 0, "Identifier's name too big, truncated" ), _
+		( 0, "Literal number too big, truncated" ), _
+		( 0, "Literal string too big, truncated" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring * 128 => _
@@ -108,8 +111,6 @@ end type
 		"Expected dynamic array", _
 		"Cannot return fixed-len strings from functions", _
 		"Array already dimensioned", _
-		"Literal string too big, split it", _
-		"Identifier's name too big", _
 		"Illegal without the -ex option", _
 		"Type mismatch", _
 		"Illegal specification", _
@@ -128,7 +129,6 @@ end type
 		"Expected 'END ENUM'", _
 		"Cannot initialize dynamic arrays", _
 		"Invalid bitfield", _
-		"Literal number too big", _
 		"Too many parameters", _
 		"Macro text too long", _
 		"Invalid command-line option", _
