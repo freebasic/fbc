@@ -100,7 +100,7 @@ int fb_TinyPtcKeyHit(void)
 FBSTRING *fb_TinyPtcInkey(void)
 {
 	static const unsigned char code[KEY_MAX_SPECIALS] = {
-		'X', 'H', 'P', 'K', 'M', 'R', 'S', 'G', 'O', 'I', 'Q',
+		'k', 'H', 'P', 'K', 'M', 'R', 'S', 'G', 'O', 'I', 'Q',
 		';', '<', '=', '>', '?', '@', 'A', 'B', 'C', 'D'
 	};
 	FBSTRING *res;

@@ -227,6 +227,7 @@ static LRESULT CALLBACK WndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lPar
                                                     CP_ACP,
                                                     target_cp );
                     key = (unsigned) (unsigned char) result->data[0];
+                    fb_hStrDelTemp( result );
                 }
 
                 while( repeat_count-- ) {
