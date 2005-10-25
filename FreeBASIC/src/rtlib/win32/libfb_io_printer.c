@@ -779,7 +779,9 @@ void fb_hHookConPrinterScroll(struct _fb_ConHooks *handle,
         rows -= page_rows;
     }
     pInfo->Emu.iPageStarted = FALSE;
-    handle->Coord.Y = 0;
+    if( rows!=0 )
+        --rows;
+    handle->Coord.Y = rows;
 }
 
 static
