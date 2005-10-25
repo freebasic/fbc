@@ -43,7 +43,7 @@ FBCALL FBSTRING *fb_WstrToStr( const FB_WCHAR *src )
 	if( dst == NULL )
 		return &fb_strNullDesc;
 
-	fb_wstr_ConvToA( (char *)dst, chars, src );
+	fb_wstr_ConvToA( dst->data, chars, src );
 
 	return dst;
 }
