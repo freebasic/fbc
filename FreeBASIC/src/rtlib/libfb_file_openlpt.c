@@ -35,11 +35,17 @@ static void close_printer_handle(void)
     FB_HANDLE_PRINTER->hooks->pfnClose( FB_HANDLE_PRINTER );
 }
 
+#if defined( TARGET_WIN32 ) || defined( TARGET_CYGWIN )
+static const char *pszPrinterDev = "LPT1:EMU=TTY";
+#else
+static const char *pszPrinterDev = "LPT1:";
+#endif
+
 int LPrintInit(void)
 {
     if( FB_HANDLE_PRINTER->hooks==NULL) {
         int res = fb_FileOpenVfsRawEx( FB_HANDLE_PRINTER,
-                                       "LPT1:", 5,
+                                       pszPrinterDev, strlen(pszPrinterDev),
                                        FB_FILE_MODE_APPEND,
                                        FB_FILE_ACCESS_WRITE,
                                        FB_FILE_LOCK_READWRITE,
