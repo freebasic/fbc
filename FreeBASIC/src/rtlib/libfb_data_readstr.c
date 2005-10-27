@@ -46,15 +46,14 @@ FBCALL void fb_DataReadStr( void *dst, int dst_size, int fillrem )
 	/* wstring? convert.. */
 	else if( len & 0x8000 )
 	{
+		len &= 0x7FFF;
 		fb_WstrAssignToA( dst, dst_size, (FB_WCHAR *)fb_DataPtr, fillrem );
-		
-		fb_DataPtr += ((len & 0x7FFF) + 1) * sizeof( FB_WCHAR );
+		fb_DataPtr += (len + 1) * sizeof( FB_WCHAR );
 	}
 	/* zstring.. */
 	else
 	{
 		fb_StrAssign( dst, dst_size, (void *)fb_DataPtr, 0, fillrem );
-
 		fb_DataPtr += (len + 1);
 	}
 
