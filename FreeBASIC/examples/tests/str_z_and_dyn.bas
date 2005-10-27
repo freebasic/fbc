@@ -84,7 +84,7 @@ declare function sconcat2 ( byref s as string ) as string
 	z2[sizeof( z2 )-1] = 0
 	print z2
 	
-	if( z2 = 65 ) then
+	if( z2[0] = 65 ) then
 		print -1
 	end if
 
