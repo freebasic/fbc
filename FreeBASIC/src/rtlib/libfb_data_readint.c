@@ -45,38 +45,16 @@ FBCALL void fb_DataReadInt( int *dst )
 		*dst = *(unsigned int *)fb_DataPtr;
 		fb_DataPtr += sizeof( unsigned int );
 	}
+	/* wstring? */
+	else if( len & 0x8000 )
+	{
+        len &= 0x7FFF;
+        *dst = fb_WstrToInt( (FB_WCHAR *)fb_DataPtr, len );
+        fb_DataPtr += (len + 1) * sizeof( FB_WCHAR );
+    }
 	else
 	{
-        *dst = (int)fb_hStr2Int( (char *)fb_DataPtr, len );
-
-		fb_DataPtr += len + 1;
-	}
-
-	FB_UNLOCK();
-}
-
-/*:::::*/
-FBCALL void fb_DataReadUInt( unsigned int *dst )
-{
-	short len;
-
-	FB_LOCK();
-
-	len = fb_DataRead();
-
-	if( len == 0 )
-	{
-		*dst = 0;
-	}
-	else if( len == FB_DATATYPE_OFS )
-	{
-		*dst = *(unsigned int *)fb_DataPtr;
-		fb_DataPtr += sizeof( unsigned int );
-	}
-	else
-	{
-        *dst = (unsigned int)fb_hStr2UInt( (char *)fb_DataPtr, len );
-
+        *dst = fb_hStr2Int( (char *)fb_DataPtr, len );
 		fb_DataPtr += len + 1;
 	}
 

@@ -18,7 +18,7 @@
  */
 
 /*
- * data_str.c -- read stmt for string's
+ * data_ulong.c -- read stmt for ulong integer's
  *
  * chng: oct/2004 written [v1ctor]
  *
@@ -27,10 +27,8 @@
 #include <stdlib.h>
 #include "fb.h"
 
-FBCALL void *fb_WstrAssignToA ( void *dst, int dst_chars, FB_WCHAR *src, int fillrem );
-
 /*:::::*/
-FBCALL void fb_DataReadStr( void *dst, int dst_size, int fillrem )
+FBCALL void fb_DataReadULongint( unsigned long long *dst )
 {
 	short len;
 
@@ -38,26 +36,27 @@ FBCALL void fb_DataReadStr( void *dst, int dst_size, int fillrem )
 
 	len = fb_DataRead();
 
-	if( len == FB_DATATYPE_OFS )
+	if( len == 0 )
 	{
-		/* !!!WRITEME!!! */
+		*dst = 0;
+	}
+	else if( len == FB_DATATYPE_OFS )
+	{
+		*dst = *(unsigned int *)fb_DataPtr;
 		fb_DataPtr += sizeof( unsigned int );
 	}
-	/* wstring? convert.. */
+	/* wstring? */
 	else if( len & 0x8000 )
 	{
-		fb_WstrAssignToA( dst, dst_size, (FB_WCHAR *)fb_DataPtr, fillrem );
-		
-		fb_DataPtr += ((len & 0x7FFF) + 1) * sizeof( FB_WCHAR );
+        len &= 0x7FFF;
+        *dst = fb_WstrToULongint( (FB_WCHAR *)fb_DataPtr, len );
+		fb_DataPtr += (len + 1) * sizeof( FB_WCHAR );
 	}
-	/* zstring.. */
 	else
 	{
-		fb_StrAssign( dst, dst_size, (void *)fb_DataPtr, 0, fillrem );
-
-		fb_DataPtr += (len + 1);
+		*dst = fb_hStr2ULongint( (char *)fb_DataPtr, len );
+		fb_DataPtr += len + 1;
 	}
 
 	FB_UNLOCK();
 }
-

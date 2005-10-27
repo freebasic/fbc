@@ -18,7 +18,7 @@
  */
 
 /*
- * data_str.c -- read stmt for string's
+ * data_wstr.c -- read stmt for wstring's
  *
  * chng: oct/2004 written [v1ctor]
  *
@@ -27,10 +27,10 @@
 #include <stdlib.h>
 #include "fb.h"
 
-FBCALL void *fb_WstrAssignToA ( void *dst, int dst_chars, FB_WCHAR *src, int fillrem );
+FBCALL FB_WCHAR *fb_WstrAssignFromA ( FB_WCHAR *dst, int dst_chars, void *src, int src_chars );
 
 /*:::::*/
-FBCALL void fb_DataReadStr( void *dst, int dst_size, int fillrem )
+FBCALL void fb_DataReadWstr( FB_WCHAR *dst, int dst_size )
 {
 	short len;
 
@@ -43,19 +43,19 @@ FBCALL void fb_DataReadStr( void *dst, int dst_size, int fillrem )
 		/* !!!WRITEME!!! */
 		fb_DataPtr += sizeof( unsigned int );
 	}
-	/* wstring? convert.. */
-	else if( len & 0x8000 )
+	/* not a wstring? convert.. */
+	else if( !(len & 0x8000) )
 	{
-		fb_WstrAssignToA( dst, dst_size, (FB_WCHAR *)fb_DataPtr, fillrem );
+		fb_WstrAssignFromA( dst, dst_size, (void *)fb_DataPtr, len );
 		
-		fb_DataPtr += ((len & 0x7FFF) + 1) * sizeof( FB_WCHAR );
+		fb_DataPtr += (len + 1);
 	}
-	/* zstring.. */
+	/* wstring.. */
 	else
 	{
-		fb_StrAssign( dst, dst_size, (void *)fb_DataPtr, 0, fillrem );
+		fb_WstrAssign( dst, dst_size, (FB_WCHAR *)fb_DataPtr );
 
-		fb_DataPtr += (len + 1);
+		fb_DataPtr += (len + 1) * sizeof( FB_WCHAR );
 	}
 
 	FB_UNLOCK();

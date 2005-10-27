@@ -45,10 +45,16 @@ FBCALL void fb_DataReadSingle( float *dst )
 		*dst = *(unsigned int *)fb_DataPtr;
 		fb_DataPtr += sizeof( unsigned int );
 	}
+	/* wstring? */
+	else if( len & 0x8000 )
+	{
+        len &= 0x7FFF;
+        *dst = (float)fb_WstrToDouble( (FB_WCHAR *)fb_DataPtr, len );
+		fb_DataPtr += (len + 1) * sizeof( FB_WCHAR );
+	}
 	else
 	{
         *dst = (float)fb_hStr2Double( (char *)fb_DataPtr, len );
-
 		fb_DataPtr += len + 1;
 	}
 
