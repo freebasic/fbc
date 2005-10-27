@@ -49,7 +49,7 @@ ifeq ($(TARGET),win32)
 endif
 
 ifeq ($(TARGET),linux)
-    EXEEXT :=
+    EXEEXT := .test
 endif
 
 ifeq ($(TARGET),cygwin)
