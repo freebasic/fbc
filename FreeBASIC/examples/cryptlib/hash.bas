@@ -26,6 +26,8 @@ declare function calc_hash( byval filename as string, byval algo as CRYPT_ALGO_T
 
 	'' shutdown cryptlib
 	cryptEnd( )
+	
+	sleep
 
 	
 '':::::	
