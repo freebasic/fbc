@@ -32,7 +32,7 @@ extern "C" {
         int res;
         if( len==0 )
             return 0;
-        __asm (
+        __asm volatile (
                " pushl %%esi      \n"
                " pushl %%edi      \n"
                " repe             \n"
@@ -52,7 +52,7 @@ extern "C" {
 
     static __inline__ void *FB_MEMCPY( void *dest, const void *src, size_t n )
     {
-        __asm (
+        __asm volatile (
                " pushl %%ecx      \n"
                " pushl %%esi      \n"
                " pushl %%edi      \n"
@@ -77,7 +77,7 @@ extern "C" {
      */
     static __inline__ void *FB_MEMCPYX( void *dest, const void *src, size_t n )
     {
-        __asm (
+        __asm volatile (
                " pushl %%ecx      \n"
                " pushl %%esi      \n"
                " pushl %%ecx      \n"
@@ -101,7 +101,7 @@ extern "C" {
         const void *dst;
         if( n==0 )
             return NULL;
-        __asm (
+        __asm volatile (
                " pushl %%ecx            \n"
                " pushf                  \n"
                " cld                    \n"
@@ -128,7 +128,7 @@ extern "C" {
         size_t len;
         if( n==0 )
             return 0;
-        __asm (
+        __asm volatile (
                " pushl %%edi            \n"
                " pushf                  \n"
                " std                    \n"  /* DF = 1 -> from hi to lo */
