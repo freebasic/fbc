@@ -41,30 +41,33 @@ FBCALL int fb_FileOpenShort( FBSTRING *str_file_mode,
     unsigned file_mode = 0;
     int access_mode = -1, lock_mode = -1;
     size_t file_mode_len, access_mode_len, lock_mode_len;
+    int error_code = FB_RTERROR_OK;
 
     file_mode_len = FB_STRSIZE( str_file_mode );
     access_mode_len = FB_STRSIZE( str_access_mode );
     lock_mode_len = FB_STRSIZE( str_lock_mode );
 
     if( file_mode_len != 1 || access_mode_len>2 || lock_mode_len>2 ) {
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+		error_code = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
-    if( strcasecmp(str_file_mode->data, "B")==0 ) {
-        file_mode = FB_FILE_MODE_BINARY;
-    } else if( strcasecmp(str_file_mode->data, "I")==0 ) {
-        file_mode = FB_FILE_MODE_INPUT;
-    } else if( strcasecmp(str_file_mode->data, "O")==0 ) {
-        file_mode = FB_FILE_MODE_OUTPUT;
-    } else if( strcasecmp(str_file_mode->data, "A")==0 ) {
-        file_mode = FB_FILE_MODE_APPEND;
-    } else if( strcasecmp(str_file_mode->data, "R")==0 ) {
-        file_mode = FB_FILE_MODE_RANDOM;
-    } else {
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+    if( error_code==FB_RTERROR_OK ) {
+        if( strcasecmp(str_file_mode->data, "B")==0 ) {
+            file_mode = FB_FILE_MODE_BINARY;
+        } else if( strcasecmp(str_file_mode->data, "I")==0 ) {
+            file_mode = FB_FILE_MODE_INPUT;
+        } else if( strcasecmp(str_file_mode->data, "O")==0 ) {
+            file_mode = FB_FILE_MODE_OUTPUT;
+        } else if( strcasecmp(str_file_mode->data, "A")==0 ) {
+            file_mode = FB_FILE_MODE_APPEND;
+        } else if( strcasecmp(str_file_mode->data, "R")==0 ) {
+            file_mode = FB_FILE_MODE_RANDOM;
+        } else {
+            error_code = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+        }
     }
 
-    if( access_mode_len!=0 ) {
+    if( access_mode_len!=0 && error_code==FB_RTERROR_OK ) {
         if ( strcasecmp(str_access_mode->data, "R")==0 ) {
             access_mode = FB_FILE_ACCESS_READ;
         } else if ( strcasecmp(str_access_mode->data, "W")==0 ) {
@@ -72,11 +75,11 @@ FBCALL int fb_FileOpenShort( FBSTRING *str_file_mode,
         } else if ( strcasecmp(str_access_mode->data, "RW")==0 ) {
             access_mode = FB_FILE_ACCESS_READWRITE;
         } else {
-            return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+            error_code = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
         }
     }
 
-    if( lock_mode_len!=0 ) {
+    if( lock_mode_len!=0 && error_code==FB_RTERROR_OK ) {
         if ( strcasecmp(str_lock_mode->data, "S")==0 ) {
             lock_mode = FB_FILE_LOCK_SHARED;
         } else if ( strcasecmp(str_lock_mode->data, "R")==0 ) {
@@ -86,9 +89,18 @@ FBCALL int fb_FileOpenShort( FBSTRING *str_file_mode,
         } else if ( strcasecmp(str_lock_mode->data, "RW")==0 ) {
             lock_mode = FB_FILE_LOCK_READWRITE;
         } else {
-            return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+            error_code = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
         }
     }
+
+    FB_LOCK();
+    fb_hStrDelTemp_NoLock( str_file_mode );
+    fb_hStrDelTemp_NoLock( str_access_mode );
+    fb_hStrDelTemp_NoLock( str_lock_mode );
+    FB_UNLOCK();
+
+    if( error_code!=FB_RTERROR_OK )
+        return error_code;
 
     if( access_mode == -1 ) {
         /* determine the default access mode for a given file mode */
