@@ -29,10 +29,11 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function astNewCONSTs( byval v as string ) as ASTNODE ptr static
+function astNewCONSTstr( byval v as string ) as ASTNODE ptr static
     dim as FBSYMBOL ptr tc
 
-	tc = hAllocStringConst( v, len( v ) )
+	'' assuming no escape sequences are used
+	tc = symbAllocStrConst( v, 0 )
     if( tc = NULL ) then
     	exit function
     end if
@@ -42,21 +43,16 @@ function astNewCONSTs( byval v as string ) as ASTNODE ptr static
 end function
 
 '':::::
-''	!!!FIXME!!!
-''	chicken-egg: wstring type needed
-''	!!!FIXME!!!
-function astNewCONSTws( byval v as string ) as ASTNODE ptr static
-''''function astNewCONSTws( byval v as wstring ptr ) as ASTNODE ptr static
+function astNewCONSTwstr( byval v as wstring ptr ) as ASTNODE ptr static
     dim as FBSYMBOL ptr tc
 
-	tc = hAllocStringConst( v, len( v ) )
-''''tc = hAllocWstringConst( v, len( *v ) )
+	'' assuming no escape sequences are used
+	tc = symbAllocWstrConst( v, 0 )
     if( tc = NULL ) then
     	exit function
     end if
 
-	function = astNewVAR( tc, NULL, 0, IR_DATATYPE_CHAR )
-''''function = astNewVAR( tc, NULL, 0, IR_DATATYPE_WCHAR )
+	function = astNewVAR( tc, NULL, 0, IR_DATATYPE_WCHAR )
 
 end function
 
@@ -75,7 +71,7 @@ function astNewCONSTi( byval value as integer, _
 		exit function
 	end if
 
-	n->val.int= value
+	n->val.int = value
 	n->defined = TRUE
 
 end function
@@ -93,8 +89,8 @@ function astNewCONSTf( byval value as double, _
 		exit function
 	end if
 
-	n->val.float= value
-	n->defined = TRUE
+	n->val.float = value
+	n->defined   = TRUE
 
 end function
 
@@ -111,7 +107,7 @@ function astNewCONST64( byval value as longint, _
 		exit function
 	end if
 
-	n->val.long = value
+	n->val.long  = value
 	n->defined   = TRUE
 
 end function
@@ -157,7 +153,7 @@ function astLoadCONST( byval n as ASTNODE ptr ) as IRVREG ptr static
 
 		'' if node is a float, create a temp float var (x86 assumption)
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			s = hAllocFloatConst( n->val.float, dtype )
+			s = symbAllocFloatConst( n->val.float, dtype )
 			return irAllocVRVAR( dtype, s, s->ofs )
 
 		''

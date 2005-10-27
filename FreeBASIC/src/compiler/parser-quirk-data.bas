@@ -36,9 +36,8 @@ option escape
 ''
 function cDataStmt as integer static
 	dim as ASTNODE ptr expr
-	dim as integer typ, litlen
-	dim as FBSYMBOL ptr s
-	static as zstring * FB_MAXLITLEN+1 littext
+	dim as FBSYMBOL ptr litsym, sym
+	dim as string littext
 
 	function = FALSE
 
@@ -48,13 +47,13 @@ function cDataStmt as integer static
 		lexSkipToken( )
 
 		'' LABEL?
-		s = NULL
+		sym = NULL
 		select case lexGetClass( )
 		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_NUMLITERAL
-			s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_LABEL )
-			if( s = NULL ) then
-				s = symbAddLabel( lexGetText( ), FALSE, TRUE )
-				if( s = NULL ) then
+			sym = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_LABEL )
+			if( sym = NULL ) then
+				sym = symbAddLabel( lexGetText( ), FALSE, TRUE )
+				if( sym = NULL ) then
 					hReportError( FB_ERRMSG_DUPDEFINITION )
 					exit function
 				end if
@@ -62,7 +61,7 @@ function cDataStmt as integer static
 			lexSkipToken( )
 		end select
 
-		function = rtlDataRestore( s )
+		function = rtlDataRestore( sym )
 
 	'' READ Variable{int|flt|str} (',' Variable{int|flt|str})*
 	case FB_TK_READ
@@ -98,62 +97,65 @@ function cDataStmt as integer static
 		rtlDataStoreBegin( )
 
 		do
-			littext = ""
-			typ = INVALID
-
 			hMatchExpression( expr )
 
 			'' check if it's an string
-			s = NULL
-			if( astGetDataType( expr ) = IR_DATATYPE_CHAR ) then
-				if( astIsVAR( expr ) ) then
-					s = astGetSymbolOrElm( expr )
-					if( s <> NULL ) then
-						if( not symbGetVarInitialized( s ) ) then
-							s = NULL
-						end if
-					end if
-				end if
-			end if
+			select case astGetDataType( expr )
+			case IR_DATATYPE_CHAR
+				litsym = astGetStrLitSymbol( expr )
+			case IR_DATATYPE_WCHAR
+				litsym = astGetWstrLitSymbol( expr )
+			case else
+				litsym = NULL
+			end select
 
 			'' string?
-			if( s <> NULL ) then
-				astDel( expr )
+			if( litsym <> NULL ) then
+                '' not a wstring?
+                if( astGetDataType( expr ) <> IR_DATATYPE_WCHAR ) then
+            		if( not rtlDataStore( symbGetVarText( litsym ), _
+            							  symbGetStrLen( litsym ) - 1, _ '' less the null-char
+            							  IR_DATATYPE_CHAR ) ) then
+	            		exit function
+    	        	end if
 
-                typ = FB_SYMBTYPE_CHAR
-				litlen  = symbGetStrLen( s ) - 1 			'' less the null-char
-				littext = symbGetVarText( s )
+    	        '' wstring..
+    	        else
+            		if( not rtlDataStoreW( symbGetVarTextW( litsym ), _
+            							   symbGetWstrLen( litsym ) - 1, _ '' ditto
+            							   IR_DATATYPE_WCHAR ) ) then
+	            		exit function
+    	        	end if
 
-            	if( not rtlDataStore( littext, litlen, typ ) ) then
-	            	exit function
     	        end if
 
+			'' scalar..
 			else
-
+				'' address of?
 				if( astIsOFFSET( expr ) ) then
             		if( not rtlDataStoreOFS( astGetSymbolOrElm( expr ) ) ) then
 	            		exit function
     	        	end if
 
 				else
-
+					'' not a constant?
 					if( not astIsCONST( expr ) ) then
 						hReportError( FB_ERRMSG_EXPECTEDCONST )
 						exit function
 					end if
 
-  					littext = astGetValueAsStr( expr )
-  					litlen = len( littext )
-
-            		if( not rtlDataStore( littext, litlen, IR_DATATYPE_CHAR ) ) then
+            		littext = astGetValueAsStr( expr )
+            		if( not rtlDataStore( littext, _
+            							  len( littext ), _
+            							  IR_DATATYPE_CHAR ) ) then
 	            		exit function
     	        	end if
 
   				end if
 
-  				astDel( expr )
-
 		    end if
+
+			astDel( expr )
 
 		loop while( hMatch( CHAR_COMMA ) )
 

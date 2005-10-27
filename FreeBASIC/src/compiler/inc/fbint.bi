@@ -796,10 +796,8 @@ type FBS_VAR
 	suffix			as integer					'' QB quirk..
 	initialized		as integer
 	union
-		inittext		as string
-		''!!!FIXME!!!
-		'''''inittextw		as wstring ptr
-		''!!!FIXME!!!
+		inittext	as string
+		inittextw	as wstring ptr
 	end union
 	emited			as integer
 	array			as FBS_ARRAY
@@ -864,6 +862,16 @@ type FBFILE
 	ismain			as integer
 end type
 
+type FBTARGET_WCHAR
+	type			as FBSYMBTYPE_ENUM
+	size			as integer
+	doconv			as integer					'' ok to convert literals at compile-time?
+end type
+
+type FBTARGET
+	wchar			as FBTARGET_WCHAR
+end type
+
 type FBOPTION
 	base			as integer					'' default= 0
 	argmode			as integer					'' def    = byref
@@ -905,6 +913,7 @@ type FBENV
 	ctxsym			as FBSYMBOL ptr				'' used to resolve the address of overloaded procs
 
 	clopt			as FBCMMLINEOPT				'' cmm-line options
+	target			as FBTARGET					'' target specific
 
 	opt				as FBOPTION					'' context-sensitive options
 end type

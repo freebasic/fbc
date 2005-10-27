@@ -83,12 +83,7 @@ private function hGetRealLen( byval orglen as integer, _
 
 	'' wstring?
 	case FB_SYMBTYPE_WCHAR
-		select case env.clopt.target
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			function = 2
-		case else
-			function = FB_INTEGERSIZE
-		end select
+		function = env.target.wchar.size
 
 	'' var-len string: first field is a pointer
 	case FB_SYMBTYPE_STRING

@@ -168,14 +168,8 @@ sub astInit static
     ast.isopt  = FALSE
 
 	'' wchar len depends on the target platform
-	select case env.clopt.target
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-		ast_minlimitTB(IR_DATATYPE_WCHAR) = ast_minlimitTB(IR_DATATYPE_USHORT)
-		ast_maxlimitTB(IR_DATATYPE_WCHAR) = ast_maxlimitTB(IR_DATATYPE_USHORT)
-	case else
-		ast_minlimitTB(IR_DATATYPE_WCHAR) = ast_minlimitTB(IR_DATATYPE_UINT)
-		ast_maxlimitTB(IR_DATATYPE_WCHAR) = ast_maxlimitTB(IR_DATATYPE_UINT)
-	end select
+	ast_minlimitTB(IR_DATATYPE_WCHAR) = ast_minlimitTB(env.target.wchar.type)
+	ast_maxlimitTB(IR_DATATYPE_WCHAR) = ast_maxlimitTB(env.target.wchar.type)
 
     ''
     hInitProcList( )
@@ -476,12 +470,16 @@ function astUpdStrConcat( byval n as ASTNODE ptr ) as ASTNODE ptr
 		exit function
 	end if
 
-	if( irGetDataClass( n->dtype ) <> IR_DATACLASS_STRING ) then
-		'' this proc will be called for each function param, same
-		'' with assignament -- assuming here that IIF won't
-		'' support strings
+	'' this proc will be called for each function param, same
+	'' with assignment -- assuming here that IIF won't
+	'' support strings
+	select case n->dtype
+	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
+		 IR_DATATYPE_WCHAR
+
+	case else
 		exit function
-	end if
+	end select
 
 	'' walk
 	l = n->l
@@ -499,7 +497,11 @@ function astUpdStrConcat( byval n as ASTNODE ptr ) as ASTNODE ptr
 		if( n->op = IR_OP_ADD ) then
 			l = n->l
 			r = n->r
-			function = rtlStrConcat( l, l->dtype, r, r->dtype )
+			if( n->dtype <> IR_DATATYPE_WCHAR ) then
+				function = rtlStrConcat( l, l->dtype, r, r->dtype )
+			else
+				function = rtlWstrConcat( l, l->dtype, r, r->dtype )
+			end if
 			astDel( n )
 		end if
 	end if
@@ -594,12 +596,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 			case IR_DATATYPE_CHAR
 				dtype = IR_DATATYPE_UINT
 			case IR_DATATYPE_WCHAR
-				select case env.clopt.target
-				case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-					dtype = IR_DATATYPE_USHORT
-				case else
-					dtype = IR_DATATYPE_UINT
-				end select
+				dtype = env.target.wchar.type
 			end select
 
 			select case as const dtype
@@ -1426,23 +1423,19 @@ function astGetValueAsStr( byval n as ASTNODE ptr ) as string
 end function
 
 '':::::
-''	!!!FIXME!!!
-''	chicken-egg: wstring type needed
-''	!!!FIXME!!!
-function astGetValueAsWstr( byval n as ASTNODE ptr ) as string
-''''function astGetValueAsWstr( byval n as ASTNODE ptr ) as wstring ptr
+function astGetValueAsWstr( byval n as ASTNODE ptr ) as wstring ptr
+    static as wstring * 64+1 res
 
   	select case as const astGetDataType( n )
   	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-  	    function = str( astGetValLong( n ) )
-''''''''function = wstr( astGetValLong( n ) )
+		res = wstr( astGetValLong( n ) )
   	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-  		function = str( astGetValFloat( n ) )
-''''''''function = wstr( astGetValFloat( n ) )
+		res = wstr( astGetValFloat( n ) )
   	case else
-  		function = str( astGetValInt( n ) )
-''''''''function = wstr( astGetValInt( n ) )
+		res = wstr( astGetValInt( n ) )
   	end select
+
+  	function = @res
 
 end function
 
@@ -1489,6 +1482,40 @@ function astGetValueAsDouble( byval n as ASTNODE ptr ) as double
   	case else
   		function = cdbl( astGetValInt( n ) )
   	end select
+
+end function
+
+'':::::
+function astGetStrLitSymbol( byval n as ASTNODE ptr ) as FBSYMBOL ptr static
+	dim as FBSYMBOL ptr s
+
+    function = NULL
+
+   	if( astIsVAR( n ) ) then
+		s = astGetSymbolOrElm( n )
+		if( s <> NULL ) then
+			if( symbGetVarInitialized( s ) ) then
+				function = s
+			end if
+		end if
+	end if
+
+end function
+
+'':::::
+function astGetWstrLitSymbol( byval n as ASTNODE ptr ) as FBSYMBOL ptr static
+	dim as FBSYMBOL ptr s
+
+    function = NULL
+
+    if( astIsVAR( n ) ) then
+		s = astGetSymbolOrElm( n )
+		if( s <> NULL ) then
+			if( symbGetVarInitialized( s ) ) then
+				function = s
+			end if
+		end if
+	end if
 
 end function
 
@@ -1704,7 +1731,7 @@ sub astFlush( byval n as ASTNODE ptr )
 	n = astOptimize( n )
 
 	'' needed even when not optimizing
-	n = astOptAssignament( n )
+	n = astOptAssignment( n )
 
 	n = astUpdStrConcat( n )
 

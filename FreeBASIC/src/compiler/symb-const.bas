@@ -56,7 +56,7 @@ function symbAddConst( byval symbol as zstring ptr, _
 end function
 
 '':::::
-function hAllocFloatConst( byval value as double, _
+function symbAllocFloatConst( byval value as double, _
 						   byval typ as integer _
 						 ) as FBSYMBOL ptr static
 
@@ -90,15 +90,16 @@ function hAllocFloatConst( byval value as double, _
 	s->var.initialized = TRUE
 
 	ZEROSTRDESC( s->var.inittext )
-	s->var.inittext	= svalue
+	s->var.inittext = svalue
 
 	function = s
 
 end function
 
 '':::::
-function hAllocStringConst( byval sname as string, _
-							byval lgt as integer ) as FBSYMBOL ptr static
+function symbAllocStrConst( byval sname as string, _
+							byval lgt as integer _
+						  ) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXINTNAMELEN+1 cname, aname
 	dim as FBSYMBOL ptr s
@@ -121,7 +122,7 @@ function hAllocStringConst( byval sname as string, _
 	''
 	s = symbFindByNameAndClass( @cname, FB_SYMBCLASS_VAR, TRUE )
 	if( s <> NULL ) then
-		return s '''''s->var.array.desc
+		return s
 	end if
 
 	aname = *hMakeTmpStr( FALSE )
@@ -129,7 +130,7 @@ function hAllocStringConst( byval sname as string, _
 	'' plus the null-char as rtlib wrappers will take it into account
 	lgt += 1
 
-	'' it must be declare as SHARED, see hAllocFloatConst()
+	'' it must be declare as SHARED, see symbAllocFloatConst()
 	s = symbAddVarEx( @cname, @aname, FB_SYMBTYPE_CHAR, NULL, _
 					  0, lgt, 0, dTB(), _
 					  FB_ALLOCTYPE_SHARED, FALSE, TRUE, FALSE )
@@ -140,11 +141,64 @@ function hAllocStringConst( byval sname as string, _
 	ZEROSTRDESC( s->var.inittext )
 	s->var.inittext = sname
 
-	'' can't fake a descriptor as the literal string passed to
-	'' user procs can be modified/reused
-	'''''s->var.array.desc = hCreateStringDesc( s )
+	function = s
 
-	function = s '''''s->var.array.desc
+end function
+
+'':::::
+function symbAllocWStrConst( byval sname as wstring ptr, _
+						  	 byval lgt as integer _
+						   ) as FBSYMBOL ptr static
+
+    static as zstring * FB_MAXINTNAMELEN+1 cname, aname
+	dim as FBSYMBOL ptr s
+	dim as FBARRAYDIM dTB(0)
+	dim as integer size
+
+	function = NULL
+
+	'' the lgt passed isn't the real one because it doesn't
+	'' take into acount the escape characters
+	size = len( *sname )
+	if( lgt < 0 ) then
+		lgt = size
+	end if
+	size *= irGetDataSize( IR_DATATYPE_WCHAR )
+
+	'' hEscapeWstr() can use up to 4 chars p/ unicode char (\ooo)
+	if( size * (3+1) <= FB_MAXNAMELEN-6 ) then
+		cname = "{fbwc}"
+		cname += *hEscapeWstr( sname )
+	else
+		cname = *hMakeTmpStr( FALSE )
+	end if
+
+	''
+	s = symbFindByNameAndClass( @cname, FB_SYMBCLASS_VAR, TRUE )
+	if( s <> NULL ) then
+		return s
+	end if
+
+	aname = *hMakeTmpStr( FALSE )
+
+	'' plus the null-char as rtlib wrappers will take it into account
+	lgt += 1
+
+	'' times sizeof( wstring ), see parser-decl-symbinit.bas
+	lgt *= irGetDataSize( IR_DATATYPE_WCHAR )
+
+	'' it must be declare as SHARED, see symbAllocFloatConst()
+	s = symbAddVarEx( @cname, @aname, FB_SYMBTYPE_WCHAR, NULL, _
+					  0, lgt, 0, dTB(), _
+					  FB_ALLOCTYPE_SHARED, FALSE, TRUE, FALSE )
+
+	''
+	s->var.initialized = TRUE
+
+	s->var.inittextw = allocate( size + irGetDataSize( IR_DATATYPE_WCHAR ) )
+	*s->var.inittextw = *sname
+
+	function = s
 
 end function
 

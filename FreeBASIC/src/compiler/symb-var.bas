@@ -515,7 +515,14 @@ sub symbDelVar( byval s as FBSYMBOL ptr, _
 
     if( s->var.initialized ) then
     	s->var.initialized = FALSE
-    	s->var.inittext = ""
+    	'' not a wchar literal?
+    	if( s->typ <> IR_DATATYPE_WCHAR ) then
+    		s->var.inittext = ""
+    	else
+    		if( s->var.inittextw <> NULL ) then
+    			deallocate( s->var.inittextw )
+    		end if
+    	end if
     end if
 
     symbFreeSymbol( s, movetoglob )
@@ -595,14 +602,4 @@ function symbGetVarDescName( byval s as FBSYMBOL ptr ) as string static
 
 end function
 
-'':::::
-function symbGetVarText( byval s as FBSYMBOL ptr ) as string static
-
-	if( s->var.initialized ) then
-		function = s->var.inittext
-	else
-		function = ""
-	end if
-
-end function
 

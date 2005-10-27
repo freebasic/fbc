@@ -149,7 +149,7 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 			typ = astGetDataType( procexpr )
 
 			'' if it stills a function, unless type = string (ie: implicit pointer),
-			'' flush it, as the assignament would be invalid
+			'' flush it, as the assignment would be invalid
 			if( astIsFUNCT( procexpr ) ) then
 				if( typ <> IR_DATATYPE_STRING ) then
 					doflush = TRUE
@@ -245,7 +245,7 @@ function cProcCallOrAssign as integer
 					exit function
 				end if
 
-				'' assignament of a function deref?
+				'' assignment of a function deref?
 				if( procexpr <> NULL ) then
 					return cAssignment( procexpr )
             	end if

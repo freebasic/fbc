@@ -52,8 +52,12 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
     if( (ldclass = IR_DATACLASS_STRING) or _
     	(rdclass = IR_DATACLASS_STRING) ) then
 
-		'' both not the same?
-		if( ldclass <> rdclass ) then
+		'' both strings?
+		if( ldclass = rdclass ) then
+			'' don't do any assignment by now to allow optimizations..
+
+		'' nope..
+		else
 			'' check if it's not a byte ptr
 			if( ldclass = IR_DATACLASS_STRING ) then
 				'' not a w|zstring?
@@ -69,6 +73,7 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 						end if
 					end if
 				end select
+
 			else
 				'' not a w|zstring?
 				select case ldtype
@@ -89,8 +94,6 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 
 		end if
 
-		'' both are strings, don't do any assignment by now to
-		'' allow optimizations..
 
 	'' UDT's?
 	elseif( (ldtype = IR_DATATYPE_USERDEF) or _
@@ -136,33 +139,49 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 
 		'' both wstrings?
 		if( ldtype = rdtype ) then
-			is_str = TRUE
+			'' don't do any assignment by now to allow optimizations..
 
-		'' left?
-		elseif( ldtype = IR_DATATYPE_WCHAR ) then
-			'' is right a zstring?
-			is_str = ( rdtype = IR_DATATYPE_CHAR )
-
-		'' right?
 		else
-			'' is left a zstring?
-			is_str = ( ldtype = IR_DATATYPE_CHAR )
-		end if
+		    '' left?
+			if( ldtype = IR_DATATYPE_WCHAR ) then
+				'' is right a zstring? (fixed- or
+				'' var-len strings won't reach here)
+				is_str = ( rdtype = IR_DATATYPE_CHAR )
 
-		if( is_str ) then
-			return rtlWstrAssign( l, ldtype, r, rdtype )
-		end if
+			'' right?
+			else
+				'' is left a zstring?
+				is_str = ( ldtype = IR_DATATYPE_CHAR )
+			end if
 
-		'' function returning a WSTRING (w/o PTR)?
-		if( astIsFUNCT( r ) ) then
-			if( rdtype = IR_DATATYPE_WCHAR ) then
-				'' can't be assigned to scalar types
-				exit function
+			if( is_str ) then
+				return rtlWstrAssign( l, r )
+
+			'' one is not a string, nor a udt, treat as
+			'' numeric type, let emit convert them if needed..
+			else
+
+				if( ldtype = IR_DATATYPE_WCHAR ) then
+					'' don't allow, unless it's a pointer
+					if( l->class <> AST_NODECLASS_PTR ) then
+						exit function
+					end if
+
+					'' remap the type or the optimizer will
+					'' assume it's a string assignment
+					ldtype = env.target.wchar.type
+
+				else
+					'' same as above..
+					if( r->class <> AST_NODECLASS_PTR ) then
+						exit function
+					end if
+
+					rdtype = env.target.wchar.type
+				end if
+
 			end if
 		end if
-
-		'' one is not a string, nor a udt, treat as numeric type, let emit
-		'' convert them if needed..
 
     '' zstrings?
     elseif( (ldtype = IR_DATATYPE_CHAR) or _
@@ -174,6 +193,22 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 		end if
 
 		'' same as for wstring's..
+		if( ldtype = IR_DATATYPE_CHAR ) then
+			'' don't allow, unless it's a pointer
+			if( l->class <> AST_NODECLASS_PTR ) then
+				exit function
+			end if
+
+			ldtype = IR_DATATYPE_UBYTE
+
+		else
+			'' same as above..
+			if( r->class <> AST_NODECLASS_PTR ) then
+				exit function
+			end if
+
+			rdtype = IR_DATATYPE_UBYTE
+		end if
 
     '' enums?
     elseif( (ldtype = IR_DATATYPE_ENUM) or _
@@ -188,6 +223,28 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
     	end if
 
 	end if
+
+
+    '' check pointers
+    if( ldtype >= IR_DATATYPE_POINTER ) then
+    	'' function ptr?
+    	if( ldtype = IR_DATATYPE_POINTER + IR_DATATYPE_FUNCTION ) then
+    		if( not astFuncPtrCheck( ldtype, l->subtype, r ) ) then
+   				hReportWarning( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
+    		end if
+
+    	'' ordinary ptr..
+    	else
+			if( not astPtrCheck( ldtype, l->subtype, r ) ) then
+				hReportWarning( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
+			end if
+		end if
+
+    '' r-side expr is a ptr?
+    elseif( rdtype >= IR_DATATYPE_POINTER ) then
+    	hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+    end if
+
 
 	'' convert types if needed
 	if( ldtype <> rdtype ) then
@@ -212,25 +269,6 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 		end if
 	end if
 
-    '' check pointers
-    if( ldtype >= IR_DATATYPE_POINTER ) then
-    	'' function ptr?
-    	if( ldtype = IR_DATATYPE_POINTER + IR_DATATYPE_FUNCTION ) then
-    		if( not astFuncPtrCheck( ldtype, l->subtype, r ) ) then
-   				hReportWarning( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
-    		end if
-
-    	'' ordinary ptr..
-    	else
-			if( not astPtrCheck( ldtype, l->subtype, r ) ) then
-				hReportWarning( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
-			end if
-		end if
-
-    '' r-side expr is a ptr?
-    elseif( rdtype >= IR_DATATYPE_POINTER ) then
-    	hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
-    end if
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_ASSIGN, ldtype, lsubtype )

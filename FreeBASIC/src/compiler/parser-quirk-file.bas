@@ -343,7 +343,7 @@ function cInputStmt as integer
     	'' STRING_LIT?
     	if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
 			lgt = lexGetTextLen( )
-			filestrexpr = astNewVAR( hAllocStringConst( *lexGetText( ), lgt ), _
+			filestrexpr = astNewVAR( symbAllocStrConst( *lexGetText( ), lgt ), _
 									 NULL, 0, IR_DATATYPE_CHAR )
 			lexSkipToken( )
     	else
@@ -644,7 +644,7 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
     case else
 
         ' no file name provided for this kind of OPEN statmenets
-    	filename = astNewCONSTs( "" )
+    	filename = astNewCONSTstr( "" )
 
     end select
 
@@ -678,8 +678,8 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
             end if
         end if
         if( flen = NULL ) then flen = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
-        if( faccess = NULL ) then faccess = astNewCONSTs( "" )
-        if( flock = NULL ) then flock = astNewCONSTs( "" )
+        if( faccess = NULL ) then faccess = astNewCONSTstr( "" )
+        if( flock = NULL ) then flock = astNewCONSTstr( "" )
     else
         '' (FOR (INPUT|OUTPUT|BINARY|RANDOM|APPEND))?
         if( hMatch( FB_TK_FOR ) ) then

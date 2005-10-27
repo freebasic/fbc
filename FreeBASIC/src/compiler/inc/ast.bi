@@ -268,7 +268,7 @@ declare function 	astGetValueAsDouble ( byval n as ASTNODE ptr ) as double
 
 declare function 	astGetValueAsStr	( byval n as ASTNODE ptr ) as string
 
-declare function 	astGetValueAsWstr	( byval n as ASTNODE ptr ) as string
+declare function 	astGetValueAsWstr	( byval n as ASTNODE ptr ) as wstring ptr
 
 declare function 	astProcBegin		( byval proc as FBSYMBOL ptr, _
 					   					  byval initlabel as FBSYMBOL ptr, _
@@ -304,7 +304,8 @@ declare function 	astNewASSIGN		( byval l as ASTNODE ptr, _
 declare function 	astNewCONV			( byval op as integer, _
 										  byval dtype as integer, _
 										  byval subtype as FBSYMBOL ptr, _
-										  byval l as ASTNODE ptr ) as ASTNODE ptr
+										  byval l as ASTNODE ptr, _
+										  byval check_str as integer = FALSE ) as ASTNODE ptr
 
 declare function 	astNewBOP			( byval op as integer, _
 										  byval l as ASTNODE ptr, _
@@ -318,9 +319,9 @@ declare function 	astNewUOP			( byval op as integer, _
 declare function 	astNewCONST			( byval v as FBVALUE ptr, _
 					  					  byval dtype as integer ) as ASTNODE ptr
 
-declare function 	astNewCONSTs		( byval v as string ) as ASTNODE ptr
+declare function 	astNewCONSTstr		( byval v as string ) as ASTNODE ptr
 
-declare function 	astNewCONSTws		( byval v as string ) as ASTNODE ptr
+declare function 	astNewCONSTwstr		( byval v as wstring ptr ) as ASTNODE ptr
 
 declare function 	astNewCONSTi		( byval value as integer, _
 										  byval dtype as integer, _
@@ -432,7 +433,7 @@ declare sub 		astFlush			( byval n as ASTNODE ptr )
 
 declare function 	astOptimize			( byval n as ASTNODE ptr ) as ASTNODE ptr
 
-declare function 	astOptAssignament	( byval n as ASTNODE ptr ) as ASTNODE ptr
+declare function 	astOptAssignment	( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 declare function 	astCheckConst		( byval dtype as integer, _
 					   		    		  byval n as ASTNODE ptr ) as ASTNODE ptr
@@ -453,6 +454,11 @@ declare function 	astIsSymbolOnTree	( byval sym as FBSYMBOL ptr, _
 
 declare function 	astGetBitField		( byval n as ASTNODE ptr, _
 						 				  byval s as FBSYMBOL ptr ) as ASTNODE ptr
+
+declare function 	astGetStrLitSymbol	( byval n as ASTNODE ptr ) as FBSYMBOL ptr
+
+declare function 	astGetWstrLitSymbol	( byval n as ASTNODE ptr ) as FBSYMBOL ptr
+
 ''
 '' macros
 ''

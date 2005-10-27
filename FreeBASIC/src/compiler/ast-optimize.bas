@@ -427,8 +427,12 @@ private sub hOptConstAccum2( byval n as ASTNODE ptr )
 
 		select case n->op
 		case IR_OP_ADD
-			if( irGetDataClass( n->dtype ) <> IR_DATACLASS_STRING ) then
+			'' don't mess with strings..
+			select case n->dtype
+			case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
+				 IR_DATATYPE_WCHAR
 
+			case else
 				v.dtype = INVALID
 				n->l = hConstAccumADDSUB( n->l, @v, 1 )
 				n->r = hConstAccumADDSUB( n->r, @v, 1 )
@@ -445,7 +449,7 @@ private sub hOptConstAccum2( byval n as ASTNODE ptr )
 					end select
 					checktype = TRUE
 				end if
-			end if
+			end select
 
 		case IR_OP_MUL
 			v.dtype = INVALID
@@ -808,7 +812,12 @@ private sub hOptAssocADD( byval n as ASTNODE ptr )
 	if( n->class = AST_NODECLASS_BOP ) then
 		op = n->op
 		if( op = IR_OP_ADD or op = IR_OP_SUB ) then
-			if( irGetDataClass( n->dtype ) <> IR_DATACLASS_STRING ) then
+			'' don't mess with strings..
+			select case n->dtype
+			case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
+				 IR_DATATYPE_WCHAR
+
+			case else
 				r = n->r
 				if( r->class = AST_NODECLASS_BOP ) then
 					rop = r->op
@@ -837,7 +846,7 @@ private sub hOptAssocADD( byval n as ASTNODE ptr )
 						exit sub
 					end if
 				end if
-			end if
+			end select
 		end if
 	end if
 
@@ -1048,7 +1057,9 @@ end function
 '':::::
 private function hOptStrMultConcat( byval lnk as ASTNODE ptr, _
 							  		byval dst as ASTNODE ptr, _
-							  		byval n as ASTNODE ptr ) as ASTNODE ptr
+							  		byval n as ASTNODE ptr, _
+							  		byval is_wstr as integer _
+							  	  ) as ASTNODE ptr
 
 	if( n = NULL ) then
 		return NULL
@@ -1063,7 +1074,7 @@ private function hOptStrMultConcat( byval lnk as ASTNODE ptr, _
 	'' lowest node first..
 	if( n->l <> NULL ) then
 		if( n->l->class = AST_NODECLASS_BOP ) then
-			lnk = hOptStrMultConcat( lnk, dst, n->l )
+			lnk = hOptStrMultConcat( lnk, dst, n->l, is_wstr )
 			n->l = NULL
 		end if
 	end if
@@ -1071,16 +1082,28 @@ private function hOptStrMultConcat( byval lnk as ASTNODE ptr, _
     '' concat?
     if( n->class = AST_NODECLASS_BOP ) then
     	if( n->l <> NULL ) then
-    	    '' first concatenation? do an assignament..
+    	    '' first concatenation? do an assignment..
     	    if( lnk = NULL ) then
-    	    	lnk = rtlStrAssign( astCloneTree( dst ), n->l )
+    	    	if( not is_wstr ) then
+    	    		lnk = rtlStrAssign( astCloneTree( dst ), n->l )
+    	    	else
+    	    		lnk = rtlWstrAssign( astCloneTree( dst ), n->l )
+    	    	end if
     	    else
-    	    	lnk = astNewLINK( lnk, rtlStrConcatAssign( astCloneTree( dst ), n->l ) )
+    	    	if( not is_wstr ) then
+    	    		lnk = astNewLINK( lnk, rtlStrConcatAssign( astCloneTree( dst ), n->l ) )
+    	    	else
+    	    		lnk = astNewLINK( lnk, rtlWstrConcatAssign( astCloneTree( dst ), n->l ) )
+    	    	end if
     	    end if
     	end if
 
     	if( n->r <> NULL ) then
-    	    lnk = astNewLINK( lnk, rtlStrConcatAssign( astCloneTree( dst ), n->r ) )
+    	    if( not is_wstr ) then
+    	    	lnk = astNewLINK( lnk, rtlStrConcatAssign( astCloneTree( dst ), n->r ) )
+    	    else
+    	    	lnk = astNewLINK( lnk, rtlWstrConcatAssign( astCloneTree( dst ), n->r ) )
+    	    end if
     	end if
 
     	astDel( n )
@@ -1088,9 +1111,17 @@ private function hOptStrMultConcat( byval lnk as ASTNODE ptr, _
     '' string..
     else
 		if( lnk = NULL ) then
-    		lnk = rtlStrAssign( astCloneTree( dst ), n )
+    		if( not is_wstr ) then
+    			lnk = rtlStrAssign( astCloneTree( dst ), n )
+    		else
+    			lnk = rtlWstrAssign( astCloneTree( dst ), n )
+    		end if
 		else
-    		lnk = astNewLINK( lnk, rtlStrConcatAssign( astCloneTree( dst ), n ) )
+    		if( not is_wstr ) then
+    			lnk = astNewLINK( lnk, rtlStrConcatAssign( astCloneTree( dst ), n ) )
+    		else
+    			lnk = astNewLINK( lnk, rtlWstrConcatAssign( astCloneTree( dst ), n ) )
+    		end if
 		end if
     end if
 
@@ -1100,7 +1131,8 @@ end function
 
 ''::::
 private function hIsMultStrConcat( byval l as ASTNODE ptr, _
-								   byval r as ASTNODE ptr ) as integer
+								   byval r as ASTNODE ptr _
+								 ) as integer
 
 	dim as FBSYMBOL ptr sym
 
@@ -1126,11 +1158,12 @@ private function hIsMultStrConcat( byval l as ASTNODE ptr, _
 end function
 
 ''::::
-private function hOptStrAssignament( byval n as ASTNODE ptr, _
-							   		 byval l as ASTNODE ptr, _
-							   		 byval r as ASTNODE ptr ) as ASTNODE ptr static
+private function hOptStrAssignment( byval n as ASTNODE ptr, _
+							   		byval l as ASTNODE ptr, _
+							   		byval r as ASTNODE ptr _
+							   	  ) as ASTNODE ptr static
 
-	dim as integer optimize
+	dim as integer optimize, is_wstr
 
 	optimize = FALSE
 
@@ -1143,6 +1176,8 @@ private function hOptStrAssignament( byval n as ASTNODE ptr, _
 		end select
 	end if
 
+	is_wstr = ( n->dtype = IR_DATATYPE_WCHAR )
+
 	if( optimize ) then
 		astDel( n )
 		n = r
@@ -1151,7 +1186,8 @@ private function hOptStrAssignament( byval n as ASTNODE ptr, _
 		r = n->r
 
 		if( hIsMultStrConcat( l, r ) ) then
-			function = hOptStrMultConcat( l, l, r )
+
+			function = hOptStrMultConcat( l, l, r, is_wstr )
 
 		else
 			''	=            f() -- concatassign
@@ -1160,7 +1196,11 @@ private function hOptStrAssignament( byval n as ASTNODE ptr, _
 			''   / \
 			''  a   expr
 
-			function = rtlStrConcatAssign( l, astUpdStrConcat( r ) )
+            if( not is_wstr ) then
+				function = rtlStrConcatAssign( l, astUpdStrConcat( r ) )
+			else
+				function = rtlWstrConcatAssign( l, astUpdStrConcat( r ) )
+			end if
 		end if
 
 	else
@@ -1168,7 +1208,7 @@ private function hOptStrAssignament( byval n as ASTNODE ptr, _
 		'' convert "a = b + c + d" to "a = b: a += c: a += d"
 		if( hIsMultStrConcat( l, r ) ) then
 
-			function = hOptStrMultConcat( NULL, l, r )
+			function = hOptStrMultConcat( NULL, l, r, is_wstr )
 
 		else
 			''	=            f() -- assign
@@ -1177,7 +1217,11 @@ private function hOptStrAssignament( byval n as ASTNODE ptr, _
 			''   / \           / \
 			''  b   expr      b   expr
 
-			function = rtlStrAssign( l, astUpdStrConcat( r ) )
+			if( not is_wstr ) then
+				function = rtlStrAssign( l, astUpdStrConcat( r ) )
+			else
+				function = rtlWstrAssign( l, astUpdStrConcat( r ) )
+			end if
 		end if
 	end if
 
@@ -1186,7 +1230,7 @@ private function hOptStrAssignament( byval n as ASTNODE ptr, _
 end function
 
 ''::::
-function astOptAssignament( byval n as ASTNODE ptr ) as ASTNODE ptr static
+function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr static
 	dim as ASTNODE ptr l, r
 	dim as integer dtype, dclass
 	dim as FBSYMBOL ptr s
@@ -1198,7 +1242,7 @@ function astOptAssignament( byval n as ASTNODE ptr ) as ASTNODE ptr static
 		exit function
 	end if
 
-	'' there's just one assignament per tree (always at top), so, just check this node
+	'' there's just one assignment per tree (always at top), so, just check this node
 	if( n->class <> AST_NODECLASS_ASSIGN ) then
 		exit function
 	end if
@@ -1207,15 +1251,17 @@ function astOptAssignament( byval n as ASTNODE ptr ) as ASTNODE ptr static
 	r = n->r
 
 	dtype = n->dtype
-	dclass = irGetDataClass( dtype )
+
+	'' strings?
+	select case dtype
+	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
+		 IR_DATATYPE_WCHAR
+		return hOptStrAssignment( n, l, r )
+	end select
 
 	'' integer's only, no way to optimize with a FPU stack (x86 assumption)
+	dclass = irGetDataClass( dtype )
 	if( dclass <> IR_DATACLASS_INTEGER ) then
-
-		'' strings?
-		if( dclass = IR_DATACLASS_STRING ) then
-			return hOptStrAssignament( n, l, r )
-		end if
 
 		'' try to optimize if a constant is being assigned to a float var
   		if( r->defined ) then

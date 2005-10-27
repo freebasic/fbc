@@ -193,7 +193,10 @@ end sub
 function astNewCONV( byval op as integer, _
 					 byval dtype as integer, _
 					 byval subtype as FBSYMBOL ptr, _
-					 byval l as ASTNODE ptr ) as ASTNODE ptr static
+					 byval l as ASTNODE ptr, _
+					 byval check_str as integer _
+				   ) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
     dim as integer dclass, ldtype
 
@@ -216,12 +219,20 @@ function astNewCONV( byval op as integer, _
 
     ''
     ldtype = l->dtype
-
     dclass = irGetDataClass( ldtype )
 
-    '' string? can't operate
-    if( dclass = IR_DATACLASS_STRING ) then
-    	exit function
+    '' string?
+	if( check_str ) then
+		select case as const ldtype
+		case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
+			 IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    		return rtlStrToVal( l, dtype )
+    	end select
+
+    else
+    	if( dclass = IR_DATACLASS_STRING ) then
+    		exit function
+    	end if
     end if
 
 	'' UDT's? ditto

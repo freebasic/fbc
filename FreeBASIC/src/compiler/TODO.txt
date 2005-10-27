@@ -10,11 +10,13 @@
     just a pointer copy that later should be strDelete()'d
 
 [ ] add the wstring type:
-    - implement the \u escape sequence - not fixed len
-    - allow assignment + concatenation optimizations
-    - allow compile-time wstring conversions -- chicken-egg
+    - auto-convert literal strings to w- or z- on assignments,
+      depending on the l-hand side type
     - implement all missing rtlib wstring routines
-    - fix the !!!FIXME!!!'s in the rtlib and compiler
+      - OPEN... INPUT|APPEND|OUTPUT ENCODING "" -- no bloat
+      - LINE INPUT and INPUT -- inferred
+      - WINPUT$ -- no inferrence
+    - fix the !!!FIXME!!!'s in the rtlib
 
 [ ] add the cast() intrinsic function - CAST( type, expression ), works like in C,
     so macros (and maybe function templates one day) can be better designed

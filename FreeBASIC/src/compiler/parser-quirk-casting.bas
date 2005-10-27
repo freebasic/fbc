@@ -87,7 +87,7 @@ function cTypeConvExpr( byref tconvexpr as ASTNODE ptr ) as integer
 		exit function
 	end if
 
-	tconvexpr = astNewCONV( op, totype, NULL, tconvexpr )
+	tconvexpr = astNewCONV( op, totype, NULL, tconvexpr, TRUE )
 
     if( tconvexpr = NULL ) Then
     	hReportError( FB_ERRMSG_TYPEMISMATCH, TRUE )

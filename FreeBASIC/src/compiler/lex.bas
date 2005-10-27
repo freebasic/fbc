@@ -928,8 +928,8 @@ private sub lexReadString ( byval ps as zstring ptr, _
 							tlen as integer, _
 							byval flags as LEXCHECK_ENUM ) static
 
-	static as zstring * 16 nval
-	dim as integer rlen, p, ntyp, nlen
+	static as zstring * FB_MAXNUMLEN+1 nval
+	dim as integer rlen, i, ntyp, nlen
 	dim as integer skipchar = FALSE
 
 	*ps = 0
@@ -987,27 +987,71 @@ private sub lexReadString ( byval ps as zstring ptr, _
 					lexReadNumber( @nval, ntyp, nlen, 0 )
 
 					if( not skipchar ) then
-						if( nlen > 3 ) then
-							nval[3] = 0
+						i = valint( nval )
+						if( cuint( i ) > 255 ) then
+							hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+							i and= 255
 						end if
 
-						nval = oct( valint( nval ) )
-						'' save the oct len, or concatenation would fail if number chars follow
+						nval = oct( i )
+						'' save the oct len, or concatenation would fail
+						'' if other numeric characters follow
 						*ps = len( nval )
 						ps += 1
 						rlen += 1
 
-						p = 0
-						do until( nval[p] = 0 )
-							*ps = nval[p]
+						i = 0
+						do until( nval[i] = 0 )
+							*ps = nval[i]
 							ps += 1
 							rlen += 1
-							p += 1
+							i += 1
 						loop
 						tlen += 1
 					end if
 
 					continue do
+
+				'' unicode 16-bit
+				case CHAR_ULOW
+					if( not skipchar ) then
+						for i = 1 to 1+4
+							lexCurrentChar( )
+							*ps = lexEatChar( )
+							ps += 1
+						next
+
+						tlen += 2
+						rlen += 1+4
+					else
+						for i = 1 to 1+4
+							lexCurrentChar( )
+							lexEatChar( )
+						next
+					end if
+
+					continue do
+
+				'' unicode 32-bit
+				case CHAR_UUPP
+					if( not skipchar ) then
+						for i = 1 to 1+8
+							lexCurrentChar( )
+							*ps = lexEatChar( )
+							ps += 1
+						next
+
+						tlen += 4
+						rlen += 1+8
+					else
+						for i = 1 to 1+8
+							lexCurrentChar( )
+							lexEatChar( )
+						next
+					end if
+
+					continue do
+
 				end select
 
 			end if
@@ -1027,6 +1071,9 @@ private sub lexReadString ( byval ps as zstring ptr, _
 			*ps = lexEatChar( )
 			ps += 1
 			tlen += 1
+
+		else
+			lexEatChar( )
 		end if
 	loop
 

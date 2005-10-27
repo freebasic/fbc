@@ -141,8 +141,11 @@ end function
 
 '':::::
 private function cStrCHR( byref funcexpr as ASTNODE ptr, _
-						  byval is_wstr as integer ) as integer
+						  byval is_wstr as integer _
+						) as integer
+
 	static as zstring * 32*6+1 s
+	static as wstring * 32*6+1 ws
 	static as zstring * 8+1 o
 	dim as integer v, i, cnt, isconst
 	dim as ASTNODE ptr exprtb(0 to 31), expr
@@ -162,48 +165,75 @@ private function cStrCHR( byref funcexpr as ASTNODE ptr, _
 
 	hMatchRPRNT( )
 
-	'' constant? evaluate at compile-time
-	isconst = TRUE
-	for i = 0 to cnt-1
-		if( not astIsCONST( exprtb(i) ) ) then
-			isconst = FALSE
-			exit for
-        else
+	'' if wstring, check if compile-time conversion can be done
+	if( is_wstr and not env.target.wchar.doconv ) then
+		isconst = FALSE
 
-            '' when the constant value is 0, we must not handle
+	else
+		'' constant? evaluate at compile-time
+		isconst = TRUE
+		for i = 0 to cnt-1
+			if( not astIsCONST( exprtb(i) ) ) then
+				isconst = FALSE
+				exit for
+        	end if
+
+        	'' when the constant value is 0, we must not handle
             '' this as a constant string
   			v = astGetValueAsInt( exprtb(i) )
 			if( v = 0 ) then
 				isconst = FALSE
 				exit for
 			end if
+		next
+	end if
 
+	if( isconst ) then
+		if( not is_wstr ) then
+			s = ""
+		else
+			ws = ""
 		end if
-	next i
-
-	''	!!!FIXME!!!
-	''	chicken-egg: wstring type needed
-	''	!!!FIXME!!!
-	if( not is_wstr and isconst ) then
-
-		s = ""
 
 		for i = 0 to cnt-1
   			expr = exprtb(i)
   			v = astGetValueAsInt( expr )
   			astDel( expr )
 
-			if( (v < CHAR_SPACE) or (v > 127) ) then
-				s += "\27"
-				o = oct( v )
-				s += chr( len( o ) )
-				s += o
+			if( not is_wstr ) then
+				v and= 255
+				if( (v < CHAR_SPACE) or (v > 127) ) then
+					s += "\27"
+					o = oct( v )
+					s += chr( len( o ) )
+					s += o
+				else
+					s += chr( v )
+				end if
+
 			else
-				s += chr( v )
+				if( (v < CHAR_SPACE) or (v > 127) ) then
+					ws += "\27"
+					o = oct( v )
+					ws += wchr( len( o ) )
+					ws += o
+				else
+					ws += wchr( v )
+				end if
 			end if
 		next
 
-		funcexpr = astNewVAR( hAllocStringConst( s, cnt ), NULL, 0, IR_DATATYPE_CHAR )
+		if( not is_wstr ) then
+			funcexpr = astNewVAR( symbAllocStrConst( s, cnt ), _
+								  NULL, _
+								  0, _
+								  IR_DATATYPE_CHAR )
+		else
+			funcexpr = astNewVAR( symbAllocWstrConst( ws, cnt ), _
+								  NULL, _
+								  0, _
+								  IR_DATATYPE_WCHAR )
+		end if
 
     else
 
@@ -219,9 +249,9 @@ end function
 private function cStrASC( byref funcexpr as ASTNODE ptr ) as integer
     dim as ASTNODE ptr expr1, posexpr
     dim as integer p
-    dim as FBSYMBOL ptr sym
+    dim as FBSYMBOL ptr litsym
 
-	cStrASC = FALSE
+	function = FALSE
 
 	hMatchLPRNT( )
 
@@ -237,41 +267,60 @@ private function cStrASC( byref funcexpr as ASTNODE ptr ) as integer
 	hMatchRPRNT( )
 
 	'' constant? evaluate at compile-time
-	if( astGetDataType( expr1 ) = IR_DATATYPE_CHAR ) then
-		if( astIsVAR( expr1 ) ) then
-			sym = astGetSymbolOrElm( expr1 )
-			if( sym <> NULL ) then
-				if( symbGetVarInitialized( sym ) ) then
+	select case astGetDataType( expr1 )
+	case IR_DATATYPE_CHAR
+		litsym = astGetStrLitSymbol( expr1 )
+	case IR_DATATYPE_WCHAR
+		litsym = astGetWstrLitSymbol( expr1 )
+	case else
+		litsym = NULL
+	end select
 
-					'' pos is an constant too?
-					if( posexpr <> NULL ) then
-						if( astIsCONST( posexpr ) ) then
+	if( litsym <> NULL ) then
+		'' if wstring, check if compile-time conversion can be done
+        if( (astGetDataType( expr1 ) = IR_DATATYPE_WCHAR) and _
+			(not env.target.wchar.doconv) ) then
+			p = -1
 
-							p = astGetValueAsInt( posexpr )
-							astDel( posexpr )
+		else
+			'' pos is an constant too?
+			if( posexpr <> NULL ) then
+				if( astIsCONST( posexpr ) ) then
+					p = astGetValueAsInt( posexpr )
+					astDel( posexpr )
 
-							if( p < 0 ) then
-								p = 0
-							end if
-						else
-							p = -1
-						end if
-					else
-						p = 1
+					if( p < 0 ) then
+						p = 0
 					end if
 
-					if( p >= 0 ) then
-						funcexpr = _
-							astNewCONSTi( asc( hEscapeToChar( symbGetVarText( sym ) ) , p ), _
-										  IR_DATATYPE_INTEGER )
+				else
+					p = -1
+				end if
 
-	    				astDel( expr1 )
-	    				expr1 = NULL
-	    			end if
-
-	    		end if
-	    	end if
+			else
+				p = 1
+			end if
 		end if
+
+		if( p >= 0 ) then
+			'' zstring?
+			if( astGetDataType( expr1 ) <> IR_DATATYPE_WCHAR ) then
+				funcexpr = astNewCONSTi( asc( *hEscapeToChar( symbGetVarText( litsym ) ), _
+											  p ), _
+										 IR_DATATYPE_INTEGER )
+
+			'' wstring..
+	    	else
+				funcexpr = astNewCONSTi( asc( *hEscapeToCharW( symbGetVarTextW( litsym ) ), _
+											  p ), _
+										 IR_DATATYPE_INTEGER )
+
+			end if
+
+	    	astDel( expr1 )
+	    	expr1 = NULL
+	    end if
+
 	end if
 
 	if( expr1 <> NULL ) then

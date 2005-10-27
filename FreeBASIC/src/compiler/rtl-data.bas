@@ -65,6 +65,14 @@ data @FB_RTL_DATAREADSTR,"", _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,1
 
+'' fb_DataReadWstr ( byval dst as wstring ptr, byval dst_size as integer ) as void
+data @FB_RTL_DATAREADWSTR,"", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 2, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
 '' fb_DataReadByte ( byref dst as byte ) as void
 data @FB_RTL_DATAREADBYTE,"", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
@@ -351,6 +359,19 @@ function rtlDataStore( byval littext as string, _
 
 	'' emit will take care of all dirty details
 	emitDATA( littext, litlen, typ )
+
+	function = TRUE
+
+end function
+
+'':::::
+function rtlDataStoreW( byval littext as wstring ptr, _
+					    byval litlen as integer, _
+					    byval typ as integer _
+					  ) as integer static
+
+	'' emit will take care of all dirty details
+	emitDATAW( littext, litlen, typ )
 
 	function = TRUE
 

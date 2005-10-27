@@ -40,6 +40,12 @@
 #define FB_RTL_DBL2STR					"fb_DoubleToStr"
 #define FB_RTL_WSTR2STR					"fb_WstrToStr"
 
+#define FB_RTL_STR2INT					"valint"
+#define FB_RTL_STR2UINT					"valuint"
+#define FB_RTL_STR2LNG					"vallng"
+#define FB_RTL_STR2ULNG					"valulng"
+#define FB_RTL_STR2DBL					"val"
+
 #define FB_RTL_STRMID					"fb_StrMid"
 #define FB_RTL_STRASSIGNMID				"fb_StrAssignMid"
 #define FB_RTL_STRFILL1					"fb_StrFill1"
@@ -70,6 +76,7 @@
 #define FB_RTL_WSTRASSIGNAW				"fb_WstrAssignToA"
 #define FB_RTL_WSTRCONCATASSIGN			"fb_WstrConcatAssign"
 #define FB_RTL_WSTRDELETE				"fb_WstrDelete"
+#define FB_RTL_WSTRALLOC				"fb_WstrAlloc"
 
 #define FB_RTL_INT2WSTR					"fb_IntToWstr"
 #define FB_RTL_UINT2WSTR				"fb_UIntToWstr"
@@ -310,6 +317,12 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_DBL2STR
 	FB_RTL_IDX_WSTR2STR
 
+	FB_RTL_IDX_STR2INT
+	FB_RTL_IDX_STR2UINT
+	FB_RTL_IDX_STR2LNG
+	FB_RTL_IDX_STR2ULNG
+	FB_RTL_IDX_STR2DBL
+
 	FB_RTL_IDX_STRMID
 	FB_RTL_IDX_STRASSIGNMID
 	FB_RTL_IDX_STRFILL1
@@ -340,6 +353,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_WSTRASSIGNAW
 	FB_RTL_IDX_WSTRCONCATASSIGN
 	FB_RTL_IDX_WSTRDELETE
+	FB_RTL_IDX_WSTRALLOC
 
 	FB_RTL_IDX_INT2WSTR
 	FB_RTL_IDX_UINT2WSTR
@@ -597,12 +611,13 @@ declare function 	rtlStrAssign		( byval dst as ASTNODE ptr, _
 										  byval src as ASTNODE ptr ) as ASTNODE ptr
 
 declare function 	rtlWstrAssign		( byval dst as ASTNODE ptr, _
-					    				  byval ddtype as integer, _
-					    				  byval src as ASTNODE ptr, _
-					    				  byval sdtype as integer ) as ASTNODE ptr
+					    				  byval src as ASTNODE ptr ) as ASTNODE ptr
 
 declare function 	rtlStrConcatAssign	( byval dst as ASTNODE ptr, _
 										  byval src as ASTNODE ptr ) as ASTNODE ptr
+
+declare function 	rtlWstrConcatAssign	( byval dst as ASTNODE ptr, _
+							 			  byval src as ASTNODE ptr ) as ASTNODE ptr
 
 declare function 	rtlStrDelete		( byval strg as ASTNODE ptr ) as ASTNODE ptr
 
@@ -610,9 +625,14 @@ declare function 	rtlStrAllocTmpResult( byval strg as ASTNODE ptr ) as ASTNODE p
 
 declare function 	rtlStrAllocTmpDesc	( byval strg as ASTNODE ptr ) as ASTNODE ptr
 
+declare function 	rtlWstrAlloc		( byval lenexpr as ASTNODE ptr ) as ASTNODE ptr
+
 declare function 	rtlToStr			( byval expr as ASTNODE ptr ) as ASTNODE ptr
 
 declare function 	rtlToWstr			( byval expr as ASTNODE ptr ) as ASTNODE ptr
+
+declare function 	rtlStrToVal			( byval expr as ASTNODE ptr, _
+					  					  byval to_dtype as integer ) as ASTNODE ptr
 
 declare function 	rtlStrMid			( byval expr1 as ASTNODE ptr, _
 										  byval expr2 as ASTNODE ptr, _
@@ -701,6 +721,10 @@ declare sub 		rtlDataStoreBegin	( )
 declare function	rtlDataStore		( byval littext as string, _
 										  byval litlen as integer, _
 										  byval typ as integer ) as integer
+
+declare function 	rtlDataStoreW		( byval littext as wstring ptr, _
+					    				  byval litlen as integer, _
+					    				  byval typ as integer ) as integer
 
 declare function 	rtlDataStoreOFS		( byval sym as FBSYMBOL ptr ) as integer
 

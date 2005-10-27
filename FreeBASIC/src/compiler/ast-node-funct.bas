@@ -506,7 +506,8 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 			end if
 
         	''
-        	n->l     = astNewADDR( IR_OP_ADDROF, astNewVAR( d, NULL, 0, IR_DATATYPE_UINT ) )
+        	n->l     = astNewADDR( IR_OP_ADDROF, _
+        						   astNewVAR( d, NULL, 0, IR_DATATYPE_UINT ) )
         	n->dtype = IR_DATATYPE_POINTER + IR_DATATYPE_VOID
 
     	end if

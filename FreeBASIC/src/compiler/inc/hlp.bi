@@ -50,11 +50,15 @@ declare function 	hFBrelop2IRrelop		( byval op as integer ) as integer
 
 declare function 	hFileExists				( byval filename as string ) as integer
 
-declare function 	hEscapeStr				( byval text as string ) as string
+declare function 	hEscapeStr				( byval text as string ) as zstring ptr
+
+declare function 	hEscapeWstr				( byval text as wstring ptr ) as zstring ptr
 
 declare function 	hUnescapeStr			( byval text as string ) as string
 
-declare function 	hEscapeToChar			( byval text as string ) as string
+declare function 	hEscapeToChar			( byval text as string ) as zstring ptr
+
+declare function 	hEscapeToCharW			( byval text as wstring ptr ) as wstring ptr
 
 declare sub 		hClearName				( byval src as string )
 
@@ -109,5 +113,25 @@ declare function 	hFloatToStr				( byval value as double, _
 	cptr(integer ptr, @s)[0] = NULL 					:_
 	cptr(integer ptr, @s)[1] = NULL						:_
 	cptr(integer ptr, @s)[2] = NULL
+
+'':::::
+#define ALLOC_TEMP_STR(str_ptr, old_len, new_len) 				_
+	if( ((old_len) < (new_len)) or ((str_ptr) = NULL) ) then    :_
+		old_len = (new_len)                                     :_
+		if( (str_ptr) <> NULL ) then                            :_
+			deallocate( str_ptr )                               :_
+		end if                                                  :_
+		str_ptr = allocate( (new_len)+1 )    					:_
+	end if
+
+'':::::
+#define ALLOC_TEMP_WSTR(str_ptr, old_len, new_len) 				_
+	if( ((old_len) < (new_len)) or ((str_ptr) = NULL) ) then    :_
+		old_len = (new_len)                                     :_
+		if( (str_ptr) <> NULL ) then                            :_
+			deallocate( str_ptr )                               :_
+		end if                                                  :_
+		str_ptr = allocate( ((new_len)+1) * len( wstring ) )    :_
+	end if
 
 #endif ''__HELP_BI__

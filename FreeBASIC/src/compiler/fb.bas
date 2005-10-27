@@ -167,12 +167,26 @@ private sub hSetCtx( )
 	env.procstmt.endlabel	= NULL
 	env.procstmt.cmplabel	= NULL
 
-
 	''
 	env.incpaths			= 0
 	env.incfiles			= 0
 
 	fbAddIncPath( exepath( ) + *fbGetPath( FB_PATH_INC ) )
+
+	''
+	select case env.clopt.target
+	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+		env.target.wchar.type = IR_DATATYPE_USHORT
+		env.target.wchar.size = 2
+	case FB_COMPTARGET_DOS
+		env.target.wchar.type = IR_DATATYPE_UBYTE
+		env.target.wchar.size = 1
+	case else
+		env.target.wchar.type = IR_DATATYPE_UINT
+		env.target.wchar.size = FB_INTEGERSIZE
+	end select
+
+	env.target.wchar.doconv = ( len( wstring ) = env.target.wchar.size )
 
 end sub
 
@@ -581,9 +595,7 @@ sub fbAddDefaultLibs( ) static
 		symbAddLib( "openxdk" )
 		symbAddLib( "hal" )
 		symbAddLib( "c" )
-		symbAddLib( "hal" )
 		symbAddLib( "usb" )
-		symbAddLib( "c" )
 		symbAddLib( "xboxkrnl" )
 		symbAddLib( "m" )
 

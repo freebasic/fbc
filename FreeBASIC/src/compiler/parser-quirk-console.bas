@@ -115,7 +115,7 @@ function cWidthStmt( byval isfunc as integer ) as ASTNODE ptr
 
     if( hMatch( FB_TK_LPRINT ) ) then
        ' fb_WidthDev
-       dev_name = astNewCONSTs( "LPT1:" )
+       dev_name = astNewCONSTstr( "LPT1:" )
        hMatchExpression( width_arg )
 
        function = rtlWidthDev( dev_name, width_arg, isfunc )

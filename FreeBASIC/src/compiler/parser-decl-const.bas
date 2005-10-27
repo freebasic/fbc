@@ -65,7 +65,7 @@ function cConstAssign as integer static
     static as zstring * FB_MAXNAMELEN+1 id
     dim as integer sdtype, edtype, lgt, ptrcnt
     dim as ASTNODE ptr expr
-    dim as FBSYMBOL ptr sym, subtype
+    dim as FBSYMBOL ptr litsym, subtype
     dim as FBVALUE value
 
 	function = FALSE
@@ -118,21 +118,18 @@ function cConstAssign as integer static
 	end if
 
 	'' check if it's an string
-	sym = NULL
 	edtype = astGetDataType( expr )
-	if( edtype = IR_DATATYPE_CHAR ) then
-		if( astIsVAR( expr ) ) then
-			sym = astGetSymbolOrElm( expr )
-			if( sym <> NULL ) then
-				if( not symbGetVarInitialized( sym ) ) then
-					sym = NULL
-				end if
-			end if
-		end if
-	end if
+	select case edtype
+	case IR_DATATYPE_CHAR
+		litsym = astGetStrLitSymbol( expr )
+	case IR_DATATYPE_WCHAR
+		litsym = astGetWstrLitSymbol( expr )
+	case else
+		litsym = NULL
+	end select
 
 	'' string?
-	if( sym <> NULL ) then
+	if( litsym <> NULL ) then
 
 		if( sdtype <> INVALID ) then
 			'' not a string?
@@ -141,8 +138,9 @@ function cConstAssign as integer static
 			end if
 		end if
 
-		value.str = sym
-		if( symbAddConst( @id, FB_SYMBTYPE_CHAR, NULL, @value ) = NULL ) then
+		value.str = litsym
+
+		if( symbAddConst( @id, edtype, NULL, @value ) = NULL ) then
     		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
     		exit function
 		end if

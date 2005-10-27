@@ -303,61 +303,210 @@ function hReplace( byval orgtext as string, _
 end function
 
 '':::::
-function hEscapeStr( byval text as string ) as string static
+function hEscapeStr( byval text as string ) as zstring ptr static
+    static as zstring ptr res = NULL
+    static as integer res_len = 0
     dim as integer c, octlen, lgt
-    dim as string res
-    dim as zstring ptr s, d, l
+    dim as zstring ptr src, dst, src_end
 
-	s = strptr( text )
-	lgt = len( text )
-
-	res = space( lgt * 2 )
-	d = strptr( res )
-
-	l = s + lgt
 	octlen = 0
 
-	do while( s < l )
-		c = *s
-		s += 1
+	lgt = len( text )
+	ALLOC_TEMP_STR( res, res_len, lgt*2 )
+
+	src = strptr( text )
+	dst = res
+
+	src_end = src + lgt
+	do while( src < src_end )
+		c = *src
+		src += 1
 
 		select case c
 		case CHAR_RSLASH, CHAR_QUOTE
-			*d = CHAR_RSLASH
-			d += 1
+			*dst = CHAR_RSLASH
+			dst += 1
 
 		case FB_INTSCAPECHAR
-			*d = CHAR_RSLASH
-			d += 1
+			*dst = CHAR_RSLASH
+			dst += 1
 
-			if( s >= l ) then exit do
-			c = *s
-			s += 1
+			if( src >= src_end ) then exit do
+			c = *src
+			src += 1
 
 			'' octagonal?
 			if( c >= 1 and c <= 3 ) then
 				octlen = c
-				c = *s
-				s += 1
+				if( src >= src_end ) then exit do
+				c = *src
+				src += 1
+			end if
+
+		case 0 to 31, 128 to 255
+			*dst = CHAR_RSLASH
+			dst += 1
+
+			if( c < 8 ) then
+				c += CHAR_0
+
+			elseif( c < 64 ) then
+				*dst = CHAR_0 + (c shr 3)
+				dst += 1
+				c = CHAR_0 + (c and 7)
+
+			else
+				dst[0] = CHAR_0 + (c shr 6)
+				dst[1] = CHAR_0 + ((c and &b00111000) shr 3)
+				dst += 2
+				c = CHAR_0 + (c and 7)
 			end if
 
 		end select
 
-		*d = c
-		d += 1
+		*dst = c
+		dst += 1
 
 		'' add quote's when the octagonal escape ends
 		if( octlen > 0 ) then
 			octlen -= 1
 			if( octlen = 0 ) then
-				d[0] = CHAR_QUOTE
-				d[1] = CHAR_QUOTE
-				d += 2
+				dst[0] = CHAR_QUOTE
+				dst[1] = CHAR_QUOTE
+				dst += 2
 			end if
 		end if
 	loop
 
-	function = left( res, cuint(d) - cuint(strptr( res )) )
+	'' null-term
+	*dst = 0
+
+	function = res
+
+end function
+
+'':::::
+function hEscapeWstr( byval text as wstring ptr ) as zstring ptr static
+    static as zstring ptr res = NULL
+    static as integer res_len = 0
+    dim as integer char, c, lgt, i
+    dim as wstring ptr src, src_end
+    dim as zstring ptr dst
+
+	'' up to 4 ascii chars can be used p/ unicode char (\ooo)
+	lgt = len( *text )
+	ALLOC_TEMP_STR( res, res_len, lgt * (1+3) * len( wstring ) )
+
+	src = text
+	dst = res
+
+	src_end = src + lgt
+	do while( src < src_end )
+		char = *src
+		src += 1
+
+		'' internal espace char?
+		if( char = FB_INTSCAPECHAR ) then
+			if( src >= src_end ) then exit do
+			char = *src
+			src += 1
+
+			'' octagonal? convert to integer..
+			'' note: it can be up to 6 digits due wchr()
+			'' when evaluated at compile-time
+			if( (char >= 1) and (char <= 6) ) then
+				i = char
+				char = 0
+
+				if( src + i >= src_end ) then exit do
+				do while( i > 0 )
+					char = (char * 8) + (*src - CHAR_0)
+					src += 1
+					i -= 1
+				loop
+
+			else
+
+			    '' remap char as they will become a octagonal seq
+			    select case as const char
+			    case asc( "r" )
+			    	char = CHAR_CR
+
+			    case asc( "l" ), asc( "n" )
+			    	char = CHAR_LF
+
+			    case asc( "t" )
+			    	char = CHAR_TAB
+
+			    case asc( "b" )
+			    	char = CHAR_BKSPC
+
+			    case asc( "a" )
+			    	char = CHAR_BELL
+
+			    case asc( "f" )
+			    	char = CHAR_FORMFEED
+
+			    case asc( "v" )
+			    	char = CHAR_VTAB
+
+			    '' unicode 16-bit
+			    case asc( "u" )
+			    	'' x86 little-endian assumption
+			    	char = 0
+			    	if( src + 4 >= src_end ) then exit do
+			    	for i = 1 to 4
+			    		c = (*src - CHAR_0)
+			    		src +=1
+
+                		if( c > 9 ) then
+							c -= (CHAR_AUPP - CHAR_9 - 1)
+                		end if
+                		if( c > 16 ) then
+                  			c -= (CHAR_ALOW - CHAR_AUPP)
+                		end if
+
+						char = (char shl 4) or c
+                    next
+
+                end select
+			end if
+
+		end if
+
+		'' convert every char to octagonal form as GAS can't
+		'' handle unicode literal strings
+		for i = 1 to len( wstring )
+			*dst = CHAR_RSLASH
+			dst += 1
+
+			'' x86 little-endian assumption
+			c = char and 255
+			if( c < 8 ) then
+				dst[0] = CHAR_0 + c
+				dst += 1
+
+			elseif( c < 64 ) then
+				dst[0] = CHAR_0 + (c shr 3)
+				dst[1] = CHAR_0 + (c and 7)
+				dst += 2
+
+			else
+				dst[0] = CHAR_0 + (c shr 6)
+				dst[1] = CHAR_0 + ((c and &b00111000) shr 3)
+				dst[2] = CHAR_0 + (c and 7)
+				dst += 3
+			end if
+
+        	char shr= 8
+		next
+
+	loop
+
+	'' null=term
+	*dst = 0
+
+	function = res
 
 end function
 
@@ -365,7 +514,7 @@ end function
 function hUnescapeStr( byval text as string ) as string static
     dim as integer c
     dim as string res
-    dim as zstring ptr s, d, l
+    dim as zstring ptr src, dst, src_len
 
 	if( not env.opt.escapestr ) then
     	return text
@@ -373,20 +522,20 @@ function hUnescapeStr( byval text as string ) as string static
 
 	res = text
 
-	s = strptr( text )
-	d = strptr( res )
+	src = strptr( text )
+	dst = strptr( res )
 
-	l = s + len( text )
-	do while( s < l )
+	src_len = src + len( text )
+	do while( src < src_len )
 
-		c = *s
-		s += 1
+		c = *src
+		src += 1
 
 		if( c = FB_INTSCAPECHAR ) then
-			*d = CHAR_RSLASH
+			*dst = CHAR_RSLASH
 		end if
 
-		d += 1
+		dst += 1
 	loop
 
 	function = res
@@ -394,72 +543,166 @@ function hUnescapeStr( byval text as string ) as string static
 end function
 
 '':::::
-function hEscapeToChar( byval text as string ) as string static
-    dim as integer c
-    dim as string res, octval
-    dim as zstring ptr s, d, l
+function hEscapeToChar( byval text as string ) as zstring ptr static
+    static as zstring ptr res = NULL
+    static as integer res_len = 0
+    dim as integer char, lgt, i
+    dim as zstring ptr src, dst, src_len
 
 	if( not env.opt.escapestr ) then
-    	return text
+    	return strptr( text )
     end if
 
-	res = text
+	lgt = len( text )
+	ALLOC_TEMP_STR( res, res_len, lgt )
 
-	s = strptr( text )
-	d = strptr( res )
+	src = strptr( text )
+	dst = res
 
-	l = s + len( text )
-	do while( s < l )
-		c = *s
-		s += 1
+	src_len = src + lgt
+	do while( src < src_len )
+		char = *src
+		src += 1
 
-		if( c = FB_INTSCAPECHAR ) then
+		if( char = FB_INTSCAPECHAR ) then
 
-			if( s >= l ) then exit do
-			c = *s
-			s += 1
+			if( src >= src_len ) then exit do
+			char = *src
+			src += 1
 
-			'' octagonal?
-			if( c >= 1 and c <= 3 ) then
-
-				octval = "&o"
-				do while( c > 0 )
-					octval += chr$( *s )
-					s += 1
-					c -= 1
+			'' octagonal? convert to integer..
+			if( (char >= 1) and (char <= 3) ) then
+				i = char
+				char = 0
+				do while( i > 0 )
+					char = (char * 8) + (*src - CHAR_0)
+					src += 1
+					i -= 1
 				loop
-
-				c = valint( octval )
 
 			else
 			    '' remap char
-			    select case as const c
+			    select case as const char
 			    case asc( "r" )
-			    	c = CHAR_CR
+			    	char = CHAR_CR
+
 			    case asc( "l" ), asc( "n" )
-			    	c = CHAR_LF
+			    	char = CHAR_LF
+
 			    case asc( "t" )
-			    	c = CHAR_TAB
+			    	char = CHAR_TAB
+
 			    case asc( "b" )
-			    	c = CHAR_BKSPC
+			    	char = CHAR_BKSPC
+
 			    case asc( "a" )
-			    	c = CHAR_BELL
+			    	char = CHAR_BELL
+
 			    case asc( "f" )
-			    	c = CHAR_FORMFEED
+			    	char = CHAR_FORMFEED
+
 			    case asc( "v" )
-			    	c = CHAR_VTAB
+			    	char = CHAR_VTAB
+
 			    end select
 
 			end if
 
 		end if
 
-		*d = c
-		d += 1
+		*dst = char
+		dst += 1
 
 	loop
 
-	function = left( res, cuint(d) - cuint(strptr( res )) )
+	'' null-term
+	*dst = 0
+
+	function = res
+
+end function
+
+
+'':::::
+function hEscapeToCharW( byval text as wstring ptr ) as wstring ptr static
+    static as wstring ptr res = NULL
+    static as integer res_len = 0
+    dim as integer char, lgt, i
+    dim as wstring ptr src, dst, src_len
+
+	if( not env.opt.escapestr ) then
+    	return text
+    end if
+
+	lgt = len( *text )
+	ALLOC_TEMP_WSTR( res, res_len, lgt )
+
+	*res = *text
+
+	src = text
+	dst = res
+
+	src_len = src + lgt
+    do while( src < src_len )
+    	char = *src
+    	src += 1
+
+    	if( char = FB_INTSCAPECHAR ) then
+
+			if( src >= src_len ) then exit do
+			char = *src
+			src += 1
+
+			'' octagonal? convert to integer..
+			'' note: it can be up to 6 digits due wchr()
+			'' when evaluated at compile-time
+			if( (char >= 1) and (char <= 6) ) then
+				i = char
+				char = 0
+				do while( i > 0 )
+					char = (char * 8) + (*src - CHAR_0)
+					src += 1
+					i -= 1
+				loop
+
+			else
+			    '' remap char
+			    select case as const char
+			    case asc( "r" )
+			    	char = CHAR_CR
+
+			    case asc( "l" ), asc( "n" )
+			    	char = CHAR_LF
+
+			    case asc( "t" )
+			    	char = CHAR_TAB
+
+			    case asc( "b" )
+			    	char = CHAR_BKSPC
+
+			    case asc( "a" )
+			    	char = CHAR_BELL
+
+			    case asc( "f" )
+			    	char = CHAR_FORMFEED
+
+			    case asc( "v" )
+			    	char = CHAR_VTAB
+
+			    end select
+			end if
+
+		end if
+
+		*dst = char
+		dst += 1
+
+    loop
+
+    '' null-term
+    *dst = 0
+
+    function = res
 
 end function
 
@@ -488,6 +731,7 @@ sub hUcase( byval src as string, _
 		d += 1
 	next i
 
+	'' null-term
 	*d = 0
 
 end sub
@@ -510,7 +754,7 @@ sub hClearName( byval src as string ) static
 		end select
 
 		p += 1
-	next i
+	next
 
 end sub
 

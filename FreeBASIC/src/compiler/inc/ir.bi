@@ -293,7 +293,7 @@ declare sub 		irEmitVARINISTR		( byval totlgt as integer, _
 				     					  byval litlgt as integer )
 
 declare sub 		irEmitVARINIWSTR	( byval totlgt as integer, _
-				     					  byval litstr as string, _
+				     					  byval litstr as wstring ptr, _
 				     					  byval litlgt as integer )
 
 declare sub 		irEmitVARINIPAD		( byval bytes as integer )

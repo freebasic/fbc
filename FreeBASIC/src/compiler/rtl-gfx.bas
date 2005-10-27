@@ -914,7 +914,7 @@ function rtlGfxPaint( byval target as ASTNODE ptr, _
  			exit function
  		end if
 	else
-    	if( astNewPARAM( proc, astNewVAR( hAllocStringConst( "", 0 ), NULL, 0, IR_DATATYPE_CHAR ) ) = NULL ) then
+    	if( astNewPARAM( proc, astNewVAR( symbAllocStrConst( "", 0 ), NULL, 0, IR_DATATYPE_CHAR ) ) = NULL ) then
  			exit function
  		end if
 		if( astNewPARAM( proc, astNewCONSTi( 0, IR_DATATYPE_INTEGER ) ) = NULL ) then
@@ -1497,7 +1497,7 @@ private function hGetProcName( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
 	dim as integer at
 
 	if( proc = NULL ) then
-		s = hAllocStringConst( "(??)", -1 )
+		s = symbAllocStrConst( "(??)", -1 )
 
 	else
 		procname = symbGetName( proc )
@@ -1515,7 +1515,7 @@ private function hGetProcName( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
 			procname += string( 4 - ( len( procname ) and 3 ), 32 )
 		end if
 
-		s = hAllocStringConst( procname, -1 )
+		s = symbAllocStrConst( procname, -1 )
 	end if
 
 	expr = astNewADDR( IR_OP_ADDROF, astNewVAR( s, NULL, 0, IR_DATATYPE_CHAR ), s, NULL )

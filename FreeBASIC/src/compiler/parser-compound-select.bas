@@ -152,24 +152,55 @@ function cSelectStatement as integer
 		dtype = FB_SYMBTYPE_STRING
 	end select
 
-	'' !!!FIXME!!! wstring's must be allocated() but size
-	'' is unknown at compilet-time, do
-	'' 		dim wstring ptr tmp = allocate( len( expr ) )
-	'' 		*tmp = expr
-	''		select case *tmp <-- implicitly!
-	''		...
-	''		deallocate( tmp )
+    '' not a wstring?
+	if( dtype <> FB_SYMBTYPE_WCHAR ) then
+		symbol = symbAddTempVar( dtype, astGetSubType( expr ) )
+		if( symbol = NULL ) then
+			exit function
+		end if
 
-	symbol = symbAddTempVar( dtype, astGetSubType( expr ) )
-	if( symbol = NULL ) then
-		exit function
-	end if
+		expr = astNewASSIGN( astNewVAR( symbol, NULL, 0, dtype, astGetSubType( expr ) ), expr )
+		if( expr = NULL ) then
+			exit function
+		end if
+		astAdd( expr )
 
-	expr = astNewASSIGN( astNewVAR( symbol, NULL, 0, dtype, astGetSubType( expr ) ), expr )
-	if( expr = NULL ) then
-		exit function
+	else
+		'' the wstring must be allocated() but size
+		'' is unknown at compilet-time, do:
+
+		''  dim wstring ptr tmp
+		symbol = symbAddTempVar( FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR, NULL )
+		if( symbol = NULL ) then
+			exit function
+		end if
+
+		'' tmp = WstrAlloc( len( expr ) )
+		astAdd( astNewASSIGN( astNewVAR( symbol, _
+										 NULL, _
+										 0, _
+										 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR ), _
+							  rtlWstrAlloc( rtlMathLen( astCloneTree( expr ), TRUE ) ) ) )
+
+		astAdd( expr )
+
+		'' *tmp = expr
+		expr = astNewASSIGN( astNewPTR( symbol, _
+										NULL, _
+										0, _
+								  		astNewVAR( symbol, _
+								  		 		   NULL, _
+								  		 		   0, _
+								  		 		   FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR ), _
+								  	    FB_SYMBTYPE_WCHAR, _
+								  	    NULL ), _
+				      		 expr )
+
+		if( expr = NULL ) then
+			exit function
+		end if
+		astAdd( expr )
 	end if
-	astAdd( expr )
 
 	'' SelectLine*
 	do
@@ -196,8 +227,13 @@ function cSelectStatement as integer
 
 	'' if a temp string was allocated, delete it
 	select case dtype
-	case FB_SYMBTYPE_STRING, FB_SYMBTYPE_WCHAR
+	case FB_SYMBTYPE_STRING
 		astAdd( rtlStrDelete( astNewVAR( symbol, NULL, 0, dtype ) ) )
+	case FB_SYMBTYPE_WCHAR
+		astAdd( rtlStrDelete( astNewVAR( symbol, _
+										 NULL, _
+										 0, _
+										 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR ) ) )
 	end select
 
 	env.lastcompound = lastcompstmt
@@ -251,6 +287,20 @@ function cCaseExpression( byref casectx as FBCASECTX ) as integer
 end function
 
 '':::::
+'' if it's a wstring, do "if *tmp op expr"
+#define NEWCASEVAR(symbol,dtype) 				_
+	iif( dtype <> IR_DATATYPE_WCHAR, 			_
+		 astNewVAR( symbol, NULL, 0, dtype ), 	_
+		 astNewPTR( symbol, 					_
+		 			NULL, 						_
+					0, 							_
+					astNewVAR( symbol, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_WCHAR ), _
+					IR_DATATYPE_WCHAR, 			_
+					NULL ) 						_
+	   )
+
+
+'':::::
 private function hExecCaseExpr( byref casectx as FBCASECTX, _
 				           	    byval s as FBSYMBOL ptr, _
 				           	    byval sdtype as integer, _
@@ -258,36 +308,45 @@ private function hExecCaseExpr( byref casectx as FBCASECTX, _
 				           	    byval nextlabel as FBSYMBOL ptr, _
 				           		byval inverselogic as integer ) as integer static
 
-	dim as ASTNODE ptr expr, v
+	dim as ASTNODE ptr expr
 
 	if( casectx.typ <> FB_CASETYPE_RANGE ) then
-		v = astNewVAR( s, NULL, 0, sdtype )
+        expr = NEWCASEVAR( s, sdtype )
 
 		if( not inverselogic ) then
-			expr = astNewBOP( casectx.op, v, casectx.expr1, initlabel, FALSE )
+			expr = astNewBOP( casectx.op, _
+							  expr, _
+							  casectx.expr1, _
+							  initlabel, _
+							  FALSE )
 		else
-			expr = astNewBOP( irGetInverseLogOp( casectx.op ), v, casectx.expr1, nextlabel, FALSE )
+			expr = astNewBOP( irGetInverseLogOp( casectx.op ), _
+							  expr, _
+							  casectx.expr1, _
+							  nextlabel, _
+							  FALSE )
 		end if
 
-		astAdd( expr )
-
 	else
-		v = astNewVAR( s, NULL, 0, sdtype )
-		expr = astNewBOP( IR_OP_LT, v, casectx.expr1, nextlabel, FALSE )
+		expr = NEWCASEVAR( s, sdtype )
+
+		expr = astNewBOP( IR_OP_LT, expr, casectx.expr1, nextlabel, FALSE )
 		astAdd( expr )
 
 		if( expr = NULL ) then
 			return FALSE
 		end if
 
-		v = astNewVAR( s, NULL, 0, sdtype )
+		expr = NEWCASEVAR( s, sdtype )
+
 		if( not inverselogic ) then
-			expr = astNewBOP( IR_OP_LE, v, casectx.expr2, initlabel, FALSE )
+			expr = astNewBOP( IR_OP_LE, expr, casectx.expr2, initlabel, FALSE )
 		else
-			expr = astNewBOP( IR_OP_GT, v, casectx.expr2, nextlabel, FALSE )
+			expr = astNewBOP( IR_OP_GT, expr, casectx.expr2, nextlabel, FALSE )
 		end if
-		astAdd( expr )
 	end if
+
+	astAdd( expr )
 
 	function = expr <> NULL
 
@@ -359,7 +418,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 
 		if( ctx.sel.caseTB(i).typ <> FB_CASETYPE_ELSE ) then
 			if( not hExecCaseExpr( ctx.sel.caseTB(i), s, sdtype, il, nl, i = cntbase ) ) then
-				hReportError FB_ERRMSG_INVALIDDATATYPES, TRUE
+				hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 				exit function
 			end if
 		end if

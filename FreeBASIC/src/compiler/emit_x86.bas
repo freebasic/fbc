@@ -264,19 +264,7 @@ sub emitSubInit
 	hInitRegTB( )
 
 	'' wchar len depends on the target platform
-	with dtypeTB(IR_DATATYPE_WCHAR)
-		select case env.clopt.target
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			.size 	 = 2
-			.rnametb = 1						'' short's tb
-			.mname	 = "word ptr"
-		case else
-			.size 	 = FB_INTEGERSIZE
-			.rnametb = 2                        '' int's tb
-			.mname	 = "dword ptr"
-		end select
-
-    end with
+	dtypeTB(IR_DATATYPE_WCHAR) = dtypeTB(env.target.wchar.type)
 
 	''
 	emit.keyinited 	= FALSE
@@ -5066,17 +5054,40 @@ sub emitDATA ( byval litext as string, _
 			   byval litlen as integer, _
 			   byval typ as integer ) static
 
-    static as zstring * FB_MAXLITLEN*2+1 esctext
+    static as zstring ptr esctext
     dim as string ostr
 
     esctext = hEscapeStr( litext )
 
 	'' len + asciiz
 	if( typ <> INVALID ) then
-		ostr = ".short 0x" + hex$( litlen ) + NEWLINE
+		ostr = ".short 0x" + hex( litlen ) + NEWLINE
 		outEx( ostr, FALSE )
 
-		ostr = ".ascii \"" + esctext + "\\0\"" + NEWLINE
+		ostr = ".ascii \"" + *esctext + "\\0\"" + NEWLINE
+		outEx( ostr, FALSE )
+	else
+		outEx( ".short 0x0000" + NEWLINE, FALSE )
+	end if
+
+end sub
+
+'':::::
+sub emitDATAW( byval litext as wstring ptr, _
+			   byval litlen as integer, _
+			   byval typ as integer ) static
+
+    static as zstring ptr esctext
+    dim as string ostr
+
+    esctext = hEscapeWstr( litext )
+
+	'' (0x8000 or len) + unicode
+	if( typ <> INVALID ) then
+		ostr = ".short 0x" + hex( &h8000 or litlen ) + NEWLINE
+		outEx( ostr, FALSE )
+
+		ostr = ".ascii \"" + *esctext + "\\0\\0\"" + NEWLINE
 		outEx( ostr, FALSE )
 	else
 		outEx( ".short 0x0000" + NEWLINE, FALSE )
@@ -5428,11 +5439,9 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
     	if( doemit ) then
     	    select case dtype
     	    case FB_SYMBTYPE_CHAR
-    	    	stext = "\"" + hEscapeStr( s->var.inittext ) + "\\0\""
+    	    	stext = "\"" + *hEscapeStr( symbGetVarText( s ) ) + "\\0\""
     	    case FB_SYMBTYPE_WCHAR
-    	    	'' !!!FIXME!!!
-				'''''stext = "\"" + hEscapeWstr( s->var.inittext ) + "\\0\\0\""
-				''!!!FIXME!!!
+				stext = "\"" + *hEscapeWstr( symbGetVarTextW( s ) ) + "\\0\\0\""
     	    case else
     	    	stext = s->var.inittext
     	    end select

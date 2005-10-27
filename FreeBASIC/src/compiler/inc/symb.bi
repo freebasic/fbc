@@ -93,8 +93,6 @@ declare	function 	symbGetGlobalTbHead		( ) as FBSYMBOL ptr
 
 declare	function 	symbGetSymbolTbHead 	( ) as FBSYMBOL ptr
 
-declare function 	symbGetVarText			( byval s as FBSYMBOL ptr ) as string
-
 declare function 	symbGetVarDescName		( byval s as FBSYMBOL ptr ) as string
 
 declare function 	symbGetProcLib			( byval p as FBSYMBOL ptr ) as string
@@ -331,10 +329,13 @@ declare function 	symbCalcLen				( byval typ as integer, _
 											  byval subtype as FBSYMBOL ptr, _
 											  byval realsize as integer = FALSE ) as integer
 
-declare function 	hAllocFloatConst		( byval value as double, _
+declare function 	symbAllocFloatConst		( byval value as double, _
 											  byval typ as integer ) as FBSYMBOL ptr
 
-declare function 	hAllocStringConst		( byval sname as string, _
+declare function 	symbAllocStrConst		( byval sname as string, _
+											  byval lgt as integer ) as FBSYMBOL ptr
+
+declare function 	symbAllocWstrConst		( byval sname as wstring ptr, _
 											  byval lgt as integer ) as FBSYMBOL ptr
 
 declare function 	symbCalcArrayElements	( byval s as FBSYMBOL ptr, _
@@ -454,6 +455,10 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 #define symbGetVarEmited(s) s->var.emited
 
 #define symbSetVarEmited(s,v) s->var.emited = v
+
+#define symbGetVarText(s) s->var.inittext
+
+#define symbGetVarTextW(s) s->var.inittextw
 
 #define symbGetArrayDiff(s) s->var.array.dif
 

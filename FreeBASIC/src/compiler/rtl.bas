@@ -148,7 +148,7 @@ sub rtlAddIntrinsicProcs( )
 				select case as const atype
 				case IR_DATATYPE_STRING
 					read optstr
-					optval.str = hAllocStringConst( optstr, 0 )
+					optval.str = symbAllocStrConst( optstr, 0 )
 				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
 					read optval.long
 				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE

@@ -231,18 +231,7 @@ sub irInit
 	flistNew( @ir.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 
 	'' wchar len depends on the target platform
-	with dtypeTB(IR_DATATYPE_WCHAR)
-		select case env.clopt.target
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			.remaptype = IR_DATATYPE_USHORT
-			.size = 2
-		case else
-			.remaptype = IR_DATATYPE_UINT
-			.size = FB_INTEGERSIZE
-		end select
-
-    	.bits = .size * 8
-    end with
+	dtypeTB(IR_DATATYPE_WCHAR) = dtypeTB(env.target.wchar.type)
 
 	''
 	emitInit( )
@@ -414,8 +403,10 @@ function irGetSignedType( byval dtype as integer ) as integer static
 		function = IR_DATATYPE_INTEGER
 
 	case IR_DATATYPE_WCHAR
-		select case env.clopt.target
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+		select case env.target.wchar.type
+		case IR_DATATYPE_UBYTE
+			function = IR_DATATYPE_BYTE
+		case IR_DATATYPE_USHORT
 			function = IR_DATATYPE_SHORT
 		case else
 			function = IR_DATATYPE_INTEGER
@@ -962,7 +953,7 @@ sub irEmitVARINISTR( byval totlgt as integer, _
 				     byval litstr as string, _
 				     byval litlgt as integer ) static
 
-	dim as string s
+	dim as zstring ptr s
 
 	'' zstring * 1?
 	if( totlgt = 0 ) then
@@ -971,61 +962,56 @@ sub irEmitVARINISTR( byval totlgt as integer, _
 	end if
 
 	''
-	s = hEscapeStr( litstr )
+	if( litlgt > totlgt ) then
+		hReportWarning( FB_WARNINGMSG_LITSTRINGTOOBIG )
+		'' !!!FIXME!!! truncate will fail if it lies on an escape seq
+		s = hEscapeStr( left( litstr, totlgt ) )
+	else
+		s = hEscapeStr( litstr )
+	end if
 
 	''
-	if( litlgt > totlgt ) then
-		emitVARINISTR( left( s, totlgt ) )
-	else
-		emitVARINISTR( s )
+	emitVARINISTR( *s )
 
-		if( litlgt < totlgt ) then
-			emitVARINIPAD( totlgt - litlgt )
-		end if
+	if( litlgt < totlgt ) then
+		emitVARINIPAD( totlgt - litlgt )
 	end if
 
 end sub
 
 '':::::
-''!!!FIXME!!!
 sub irEmitVARINIWSTR( byval totlgt as integer, _
-				      byval litstr as string, _
+				      byval litstr as wstring ptr, _
 				      byval litlgt as integer ) static
 
-	dim as string s
+	dim as zstring ptr s
 	dim as integer wclen
 
 	'' wstring * 1?
 	if( totlgt = 0 ) then
-		select case env.clopt.target
-		case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			emitVARINIi( IR_DATATYPE_USHORT, 0 )
-		case else
-			emitVARINIi( IR_DATATYPE_UINT, 0 )
-		end select
+		emitVARINIi( env.target.wchar.type, 0 )
 		exit sub
 	end if
 
 	''
-	s = hEscapeStr( litstr )
-	'''''s = hEscapeWstr( litstr )
+	if( litlgt > totlgt ) then
+		hReportWarning( FB_WARNINGMSG_LITSTRINGTOOBIG )
+		'' !!!FIXME!!! truncate will fail if it lies on an escape seq
+		s = hEscapeWstr( left( *litstr, totlgt ) )
+	else
+		s = hEscapeWstr( litstr )
+	end if
 
 	''
 	wclen = irGetDataSize( IR_DATATYPE_WCHAR )
-	if( litlgt > totlgt ) then
-		emitVARINISTR( left( s, totlgt * wclen ) )
-		'''''emitVARINIWSTR( totlgt, left( s, totlgt * wclen ) )
-	else
-		emitVARINISTR( s )
-		'''''emitVARINIWSTR( s )
 
-		if( litlgt < totlgt ) then
-			emitVARINIPAD( (totlgt - litlgt) * wclen )
-		end if
+	emitVARINIWSTR( *s )
+
+	if( litlgt < totlgt ) then
+		emitVARINIPAD( (totlgt - litlgt) * wclen )
 	end if
 
 end sub
-''!!!FIXME!!!
 
 '':::::
 sub irEmitVARINIPAD( byval bytes as integer ) static

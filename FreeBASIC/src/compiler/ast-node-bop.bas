@@ -31,14 +31,16 @@ option escape
 
 '':::::
 private function hStrLiteralConcat( byval l as ASTNODE ptr, _
-									byval r as ASTNODE ptr ) as ASTNODE ptr
+									byval r as ASTNODE ptr _
+								  ) as ASTNODE ptr
+
     dim as FBSYMBOL ptr s, ls, rs
 
 	ls = astGetSymbolOrElm( l )
 	rs = astGetSymbolOrElm( r )
 
 	'' new len = both strings' len less the 2 null-chars
-	s = hAllocStringConst( symbGetVarText( ls ) + symbGetVarText( rs ), _
+	s = symbAllocStrConst( symbGetVarText( ls ) + symbGetVarText( rs ), _
 						   symbGetStrLen( ls ) - 1 + symbGetStrLen( rs ) - 1 )
 
 	function = astNewVAR( s, NULL, 0, IR_DATATYPE_CHAR )
@@ -49,9 +51,31 @@ private function hStrLiteralConcat( byval l as ASTNODE ptr, _
 end function
 
 '':::::
+private function hWstrLiteralConcat( byval l as ASTNODE ptr, _
+									 byval r as ASTNODE ptr _
+								   ) as ASTNODE ptr
+
+    dim as FBSYMBOL ptr s, ls, rs
+
+	ls = astGetSymbolOrElm( l )
+	rs = astGetSymbolOrElm( r )
+
+	'' new len = both strings' len less the 2 null-chars
+	s = symbAllocWstrConst( *symbGetVarTextW( ls ) + *symbGetVarTextW( rs ), _
+						    symbGetWstrLen( ls ) - 1 + symbGetWstrLen( rs ) - 1 )
+
+	function = astNewVAR( s, NULL, 0, IR_DATATYPE_WCHAR )
+
+	astDel( r )
+	astDel( l )
+
+end function
+
+'':::::
 private sub hBOPConstFoldInt( byval op as integer, _
 							  byval l as ASTNODE ptr, _
-							  byval r as ASTNODE ptr ) static
+							  byval r as ASTNODE ptr _
+							) static
 
 	dim as integer issigned
 
@@ -169,7 +193,8 @@ end sub
 '':::::
 private sub hBOPConstFoldFlt( byval op as integer, _
 						      byval l as ASTNODE ptr, _
-						      byval r as ASTNODE ptr ) static
+						      byval r as ASTNODE ptr _
+						    ) static
 
 	select case as const op
 	case IR_OP_ADD
@@ -214,7 +239,8 @@ end sub
 '':::::
 private sub hBOPConstFold64( byval op as integer, _
 							 byval l as ASTNODE ptr, _
-							 byval r as ASTNODE ptr ) static
+							 byval r as ASTNODE ptr _
+						   ) static
 
 	dim as integer issigned
 
@@ -327,7 +353,8 @@ end sub
 '':::::
 private function hCheckPointer( byval op as integer, _
 								byval dtype as integer, _
-								byval dclass as integer ) as integer
+								byval dclass as integer _
+							  ) as integer
 
     '' not int?
     if( dclass <> IR_DATACLASS_INTEGER ) then
@@ -361,18 +388,22 @@ function astNewBOP( byval op as integer, _
 					byval l as ASTNODE ptr, _
 					byval r as ASTNODE ptr, _
 					byval ex as FBSYMBOL ptr = NULL, _
-					byval allocres as integer = TRUE ) as ASTNODE ptr static
+					byval allocres as integer = TRUE _
+				  ) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
     dim as integer ldtype, rdtype, dtype
     dim as integer ldclass, rdclass
     dim as integer doconv, is_str
-    dim as FBSYMBOL ptr s, subtype
+    dim as FBSYMBOL ptr litsym, subtype
 
 	function = NULL
 
 	if( (l = NULL) or (r = NULL) ) then
 		exit function
 	end if
+
+	is_str = FALSE
 
 	ldtype = l->dtype
 	rdtype = r->dtype
@@ -479,7 +510,30 @@ function astNewBOP( byval op as integer, _
 			select case as const op
 			'' concatenation?
 			case IR_OP_ADD
-				return rtlWstrConcat( l, ldtype, r, rdtype )
+				'' both aren't wstrings?
+				if( ldtype <> rdtype ) then
+					return rtlWstrConcat( l, ldtype, r, rdtype )
+
+				else
+					'' check for wstring literals
+					litsym = astGetWstrLitSymbol( l )
+					if( litsym <> NULL ) then
+						litsym = astGetWstrLitSymbol( r )
+						if( litsym <> NULL ) then
+							return hWstrLiteralConcat( l, r )
+						end if
+					end if
+
+					'' result will be always a wstring
+					ldtype = IR_DATATYPE_WCHAR
+					ldclass = IR_DATACLASS_INTEGER
+					rdtype = ldtype
+					rdclass = ldclass
+					is_str = TRUE
+
+					'' concatenation will only be done when loading,
+					'' to allow optimizations..
+				end if
 
 			'' comparation?
 			case IR_OP_EQ, IR_OP_GT, IR_OP_LT, IR_OP_NE, IR_OP_LE, IR_OP_GE
@@ -496,6 +550,25 @@ function astNewBOP( byval op as integer, _
 			case else
 				exit function
 			end select
+
+		'' one is not a string..
+		else
+			if( ldtype = IR_DATATYPE_WCHAR ) then
+				'' don't allow, unless it's a pointer
+				if( l->class <> AST_NODECLASS_PTR ) then
+					exit function
+				end if
+				'' remap the type or the optimizer can
+				'' make a wrong assumption
+				ldtype = env.target.wchar.type
+
+			else
+				'' same as above..
+				if( r->class <> AST_NODECLASS_PTR ) then
+					exit function
+				end if
+				rdtype = env.target.wchar.type
+			end if
 		end if
 
     '' strings?
@@ -521,16 +594,13 @@ function astNewBOP( byval op as integer, _
 		'' concatenation?
 		case IR_OP_ADD
 			'' check for string literals
-			if( (ldtype = IR_DATATYPE_CHAR) and _
-				(rdtype = IR_DATATYPE_CHAR) ) then
-				if( l->class = AST_NODECLASS_VAR ) then
-					if( r->class = AST_NODECLASS_VAR ) then
-						s = astGetSymbolOrElm( l )
-						if( symbGetVarInitialized( s ) ) then
-							s = astGetSymbolOrElm( r )
-							if( symbGetVarInitialized( s ) ) then
-								return hStrLiteralConcat( l, r )
-							end if
+			if( ldtype = IR_DATATYPE_CHAR ) then
+				if( rdtype = IR_DATATYPE_CHAR ) then
+					litsym = astGetStrLitSymbol( l )
+					if( litsym <> NULL ) then
+						litsym = astGetStrLitSymbol( r )
+						if( litsym <> NULL ) then
+							return hStrLiteralConcat( l, r )
 						end if
 					end if
 				end if
@@ -541,6 +611,7 @@ function astNewBOP( byval op as integer, _
 			ldclass = IR_DATACLASS_STRING
 			rdtype = ldtype
 			rdclass = ldclass
+			is_str = TRUE
 
 			'' concatenation will only be done when loading,
 			'' to allow optimizations..
@@ -560,27 +631,55 @@ function astNewBOP( byval op as integer, _
 		case else
 			exit function
 		end select
+
+    '' zstrings?
+    elseif( (ldtype = IR_DATATYPE_CHAR) or _
+    	    (rdtype = IR_DATATYPE_CHAR) ) then
+
+   		'' one is not a string (not fixed, var-len, z- or w-string,
+   		'' or the tests above would catch them)
+		if( ldtype = IR_DATATYPE_CHAR ) then
+			'' don't allow, unless it's a pointer
+			if( l->class <> AST_NODECLASS_PTR ) then
+				exit function
+			end if
+			'' remap the type or the optimizer can
+			'' make a wrong assumption
+			ldtype = IR_DATATYPE_UBYTE
+
+		else
+			'' same as above..
+			if( r->class <> AST_NODECLASS_PTR ) then
+				exit function
+			end if
+			rdtype = IR_DATATYPE_UBYTE
+		end if
+
     end if
 
     ''::::::
 
 	'' convert byte to int
 	if( irGetDataSize( ldtype ) = 1 ) then
-		if( irIsSigned( ldtype ) ) then
-			ldtype = IR_DATATYPE_INTEGER
-		else
-			ldtype = IR_DATATYPE_UINT
+		if( not is_str ) then
+			if( irIsSigned( ldtype ) ) then
+				ldtype = IR_DATATYPE_INTEGER
+			else
+				ldtype = IR_DATATYPE_UINT
+			end if
+			l = astNewCONV( INVALID, ldtype, NULL, l )
 		end if
-		l = astNewCONV( INVALID, ldtype, NULL, l )
 	end if
 
 	if( irGetDataSize( rdtype ) = 1 ) then
-		if( irIsSigned( rdtype ) ) then
-			rdtype = IR_DATATYPE_INTEGER
-		else
-			rdtype = IR_DATATYPE_UINT
+		if( not is_str ) then
+			if( irIsSigned( rdtype ) ) then
+				rdtype = IR_DATATYPE_INTEGER
+			else
+				rdtype = IR_DATATYPE_UINT
+			end if
+			r = astNewCONV( INVALID, rdtype, NULL, r )
 		end if
-		r = astNewCONV( INVALID, rdtype, NULL, r )
 	end if
 
     '' convert types

@@ -378,7 +378,7 @@ function rtlCpuCheck( ) as integer static
 	astAdd( astNewBOP( IR_OP_GE, cpu, astNewCONSTi( env.clopt.cputype, IR_DATATYPE_UINT ), label, FALSE ) )
 
 	'' print "This program requires at least a <cpu> to run."
-	s = hAllocStringConst( "This program requires at least a " & env.clopt.cputype & "86 to run.", -1 )
+	s = symbAllocStrConst( "This program requires at least a " & env.clopt.cputype & "86 to run.", -1 )
 	rtlPrint( astNewCONSTi( 0, IR_DATATYPE_INTEGER ), _
 			  FALSE, _
 			  FALSE, _

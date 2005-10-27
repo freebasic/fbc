@@ -912,7 +912,7 @@ function rtlFileLineInput( byval isfile as integer, _
 
     '' "byval filenum as integer" or "text as string "
     if( (not isfile) and (expr = NULL) ) then
-		expr = astNewVAR( hAllocStringConst( "", 0 ), NULL, 0, IR_DATATYPE_CHAR )
+		expr = astNewVAR( symbAllocStrConst( "", 0 ), NULL, 0, IR_DATATYPE_CHAR )
 	end if
 
     if( astNewPARAM( proc, expr ) = NULL ) then
@@ -981,7 +981,7 @@ function rtlFileInput( byval isfile as integer, _
 
     '' "byval filenum as integer" or "text as string "
     if( (not isfile) and (expr = NULL) ) then
-		expr = astNewVAR( hAllocStringConst( "", 0 ), NULL, 0, IR_DATATYPE_CHAR )
+		expr = astNewVAR( symbAllocStrConst( "", 0 ), NULL, 0, IR_DATATYPE_CHAR )
 	end if
 
 	if( astNewPARAM( proc, expr ) = NULL ) then

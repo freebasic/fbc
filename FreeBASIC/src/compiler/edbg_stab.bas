@@ -101,13 +101,7 @@ sub	edbgInit( )
     end if
 
 	'' wchar len depends on the target platform
-	select case env.clopt.target
-	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-		remapTB(FB_SYMBTYPE_WCHAR) = 6			'' ushort
-
-	case else
-		remapTB(FB_SYMBTYPE_WCHAR) = 8			'' uint
-	end select
+	remapTB(FB_SYMBTYPE_WCHAR) = remapTB(env.target.wchar.type)
 
 end sub
 

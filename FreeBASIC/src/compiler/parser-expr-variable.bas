@@ -325,12 +325,7 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 					if( dtype <> FB_SYMBTYPE_WCHAR ) then
 						dtype = IR_DATATYPE_UBYTE
 					else
-						select case env.clopt.target
-						case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-							dtype = IR_DATATYPE_USHORT
-						case else
-							dtype = IR_DATATYPE_UINT
-						end select
+						dtype = env.target.wchar.type
 					end if
 
 					'' make a pointer

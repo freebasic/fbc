@@ -56,24 +56,29 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 	if( not islocal ) then
 
 		'' check if it's a literal string
-		litsym = NULL
-		if( dtype = IR_DATATYPE_CHAR ) then
-			if( astIsVAR( expr ) ) then
-				litsym = astGetSymbolOrElm( expr )
-				if( litsym <> NULL ) then
-					if( not symbGetVarInitialized( litsym ) ) then
-						litsym = NULL
-					end if
-				end if
-			end if
-		end if
+		select case dtype
+		case IR_DATATYPE_CHAR
+			litsym = astGetStrLitSymbol( expr )
+		case IR_DATATYPE_WCHAR
+			litsym = astGetWstrLitSymbol( expr )
+		case else
+			litsym = NULL
+		end select
 
 		'' not a literal string?
 		if( litsym = NULL ) then
 
 			'' string?
 			if( hIsString( symbGetType( sym ) ) ) then
-				hReportError( FB_ERRMSG_INVALIDDATATYPES )
+				if( hIsString( dtype ) ) then
+					hReportError( FB_ERRMSG_EXPECTEDCONST )
+				else
+					hReportError( FB_ERRMSG_INVALIDDATATYPES )
+				end if
+				return 0
+
+			elseif( hIsString( dtype ) ) then
+			    hReportError( FB_ERRMSG_INVALIDDATATYPES )
 				return 0
 			end if
 
@@ -128,18 +133,37 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 
 			'' not a wstring?
 			if( symbGetType( sym ) <> FB_SYMBTYPE_WCHAR ) then
-				'' less the null-char
-				irEmitVARINISTR( symbGetStrLen( sym ) - 1, _
-							 	 symbGetVarText( litsym ), symbGetStrLen( litsym ) - 1 )
+
+				'' convert?
+				if( dtype <> IR_DATATYPE_WCHAR ) then
+					'' less the null-char
+					irEmitVARINISTR( symbGetStrLen( sym ) - 1, _
+							 	 	 symbGetVarText( litsym ), _
+							 	 	 symbGetStrLen( litsym ) - 1 )
+				else
+					'' ditto
+					irEmitVARINISTR( symbGetStrLen( sym ) - 1, _
+							 	 	 str( *symbGetVarTextW( litsym ) ), _
+							 	 	 symbGetWstrLen( litsym ) - 1 )
+				end if
+
 
 			'' wstring..
 			else
-				'' less the null-char
-				''!!!FIXME!!!
-				irEmitVARINIWSTR( symbGetWstrLen( sym ) - 1, _
-							 	  symbGetVarText( litsym ), symbGetWstrLen( litsym ) - 1 )
-							 	  '''''symbGetVarTextW( litsym )
-				''!!!FIXME!!!
+
+				'' convert?
+				if( dtype <> IR_DATATYPE_WCHAR ) then
+					'' less the null-char
+					irEmitVARINIWSTR( symbGetWstrLen( sym ) - 1, _
+							 	  	  wstr( symbGetVarText( litsym ) ), _
+							 	  	  symbGetStrLen( litsym ) - 1 )
+				else
+					'' ditto
+					irEmitVARINIWSTR( symbGetWstrLen( sym ) - 1, _
+							 	  	  symbGetVarTextW( litsym ), _
+							 	  	  symbGetWstrLen( litsym ) - 1 )
+				end if
+
 			end if
 
 		end if
