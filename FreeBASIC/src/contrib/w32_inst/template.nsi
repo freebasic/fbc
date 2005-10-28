@@ -114,6 +114,7 @@ Section $(TEXT_SECTION_MAIN) SEC01
   ;;;FILES_IMPORT_LIBS;;;
 
 ; Shortcuts
+  SetOutPath "$INSTDIR"
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
   CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\FreeBASIC.lnk" "$INSTDIR\start_shell.exe" "" "$INSTDIR\fblogo.ico"
