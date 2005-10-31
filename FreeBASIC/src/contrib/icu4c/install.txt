@@ -5,7 +5,7 @@ DJGPP, you should make the following steps:
 
    You can get it from http://icu.sourceforge.net/
 
-2. Apply DJGPP patch (support-djgpp-v3.patch)
+2. Apply DJGPP patch (support-djgpp.patch)
 
    This patch adds support for DJGPP to ICU4C v3.4.
 

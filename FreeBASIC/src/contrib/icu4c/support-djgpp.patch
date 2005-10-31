@@ -31,10 +31,80 @@ diff -U 3 -r -N icu_original/source/common/ustr_wcs.c icu/source/common/ustr_wcs
                  /* Should rarely occur */
                  u_growAnyBufferFromStatic(cStack,(void**)&pCSrc,&cStackCap,
                      cStackCap * _BUFFER_CAPACITY_MULTIPLIER, 0, sizeof(char));
+diff -U 3 -r -N icu_original/source/config/Makefile.inc.in icu/source/config/Makefile.inc.in
+--- icu_original/source/config/Makefile.inc.in	2005-06-08 00:38:08.000000000 +0000
++++ icu/source/config/Makefile.inc.in	2005-10-31 12:38:20.000000000 +0000
+@@ -87,20 +87,19 @@
+ #    - $(ICULIBS_I18N)    - i18n library, formatting, etc.
+ #    - $(ICULIBS_LAYOUT)  - ICU layout library. 
+ #    - $(ICULIBS_ICUIO)   - ICU stdio equivalent library
+-
+-ICULIBS_COMMON = -l$(ICUPREFIX)uc$(ICULIBSUFFIX)$(ICULIBSUFFIX_VERSION)
+-ICULIBS_DATA   = -l$(ICUPREFIX)data$(ICULIBSUFFIX)$(ICULIBSUFFIX_VERSION)
+-ICULIBS_I18N   = -l$(ICUPREFIX)i18n$(ICULIBSUFFIX)$(ICULIBSUFFIX_VERSION)
+-ICULIBS_TOOLUTIL = -l$(ICUPREFIX)tu$(ICULIBSUFFIX)$(ICULIBSUFFIX_VERSION)
++ICULIBS_COMMON = -l$(ICUPREFIX)$(COMMON_STUBNAME)$(ICULIBSUFFIX)$(ICULIBSUFFIX_VERSION)
++ICULIBS_DATA   = -l$(ICUPREFIX)$(DATA_STUBNAME)$(ICULIBSUFFIX)$(ICULIBSUFFIX_VERSION)
++ICULIBS_I18N   = -l$(ICUPREFIX)$(I18N_STUBNAME)$(ICULIBSUFFIX)$(ICULIBSUFFIX_VERSION)
++ICULIBS_TOOLUTIL = -l$(ICUPREFIX)$(TOOLUTIL_STUBNAME)$(ICULIBSUFFIX)$(ICULIBSUFFIX_VERSION)
+ ICULIBS_CTESTFW = -l$(ICUPREFIX)ctestfw$(ICULIBSUFFIX)$(ICULIBSUFFIX_VERSION)
+-ICULIBS_ICUIO = -l$(ICUPREFIX)io$(ICULIBSUFFIX)$(ICULIBSUFFIX_VERSION)
++ICULIBS_ICUIO = -l$(ICUPREFIX)$(IO_STUBNAME)$(ICULIBSUFFIX)$(ICULIBSUFFIX_VERSION)
+ ICULIBS_OBSOLETE = -l$(ICUPREFIX)obsolete$(ICULIBSUFFIX)$(ICULIBSUFFIX_VERSION)
+-ICULIBS_LAYOUT = -l$(ICUPREFIX)le$(ICULIBSUFFIX)$(ICULIBSUFFIX_VERSION)
+-ICULIBS_LAYOUTEX = -l$(ICUPREFIX)lx$(ICULIBSUFFIX)$(ICULIBSUFFIX_VERSION)
++ICULIBS_LAYOUT = -l$(ICUPREFIX)$(LAYOUT_STUBNAME)$(ICULIBSUFFIX)$(ICULIBSUFFIX_VERSION)
++ICULIBS_LAYOUTEX = -l$(ICUPREFIX)$(LAYOUTEX_STUBNAME)$(ICULIBSUFFIX)$(ICULIBSUFFIX_VERSION)
+ ICULIBS_BASE = $(LIBS) -L$(libdir)
+ 
+ # for icu-config to test with
+-ICULIBS_COMMON_LIB_NAME = ${LIBICU}uc${ICULIBSUFFIX}${ICULIBSUFFIX_VERSION}.${SO}
++ICULIBS_COMMON_LIB_NAME = ${LIBICU}${COMMON_STUBNAME}${ICULIBSUFFIX}${ICULIBSUFFIX_VERSION}.${SO}
+ 
+ # ICULIBS is the set of libraries your application should link
+ # with usually. Many applications will want to add $(ICULIBS_I18N) as well. 
+diff -U 3 -r -N icu_original/source/config/icu-config-bottom icu/source/config/icu-config-bottom
+--- icu_original/source/config/icu-config-bottom	2004-04-01 07:49:02.000000000 +0000
++++ icu/source/config/icu-config-bottom	2005-10-31 12:24:14.000000000 +0000
+@@ -10,8 +10,34 @@
+     PKGDATA_MODE=dll
+ fi
+ 
++if [ "x$DATA_STUBNAME" = "x" ]; then
++    DATA_STUBNAME=data
++fi
++if [ "x$COMMON_STUBNAME" = "x" ]; then
++    COMMON_STUBNAME=uc
++fi
++if [ "x$I18N_STUBNAME" = "x" ]; then
++    I18N_STUBNAME=i18n
++fi
++if [ "x$LAYOUT_STUBNAME" = "x" ]; then
++    LAYOUT_STUBNAME=le
++fi
++if [ "x$LAYOUTEX_STUBNAME" = "x" ]; then
++    LAYOUTEX_STUBNAME=lx
++fi
++if [ "x$IO_STUBNAME" = "x" ]; then
++    IO_STUBNAME=io
++fi
++if [ "x$TOOLUTIL_STUBNAME" = "x" ]; then
++    TOOLUTIL_STUBNAME=tu
++fi
++if [ "x$CTESTFW_STUBNAME" = "x" ]; then
++    CTESTFW_STUBNAME=test
++fi
++
+ }
+ 
++
+ ## The actual code of icu-config goes here.
+ 
+ ME=`basename $0`
 diff -U 3 -r -N icu_original/source/config/mh-djgpp icu/source/config/mh-djgpp
 --- icu_original/source/config/mh-djgpp	1970-01-01 00:00:00.000000000 +0000
-+++ icu/source/config/mh-djgpp	2005-10-30 20:53:00.000000000 +0000
-@@ -0,0 +1,124 @@
++++ icu/source/config/mh-djgpp	2005-10-31 11:49:10.000000000 +0000
+@@ -0,0 +1,126 @@
 +## -*-makefile-*-
 +## DJGPP specific setup
 +## Copyright (c) 2001-2005, International Business Machines Corporation and
@@ -92,7 +162,9 @@ diff -U 3 -r -N icu_original/source/config/mh-djgpp icu/source/config/mh-djgpp
 +LD_SONAME = 
 +
 +## Shared object suffix
-+SO = dll
++## --- DJGPP doesn't support shared objects/DLLs so just use the 
++##     static library suffix
++SO = a
 +## Non-shared intermediate object suffix
 +STATIC_O = ao
 +SO_TARGET_VERSION_SUFFIX=
