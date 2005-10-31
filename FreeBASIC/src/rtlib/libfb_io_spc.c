@@ -45,20 +45,24 @@ FBCALL void fb_PrintTab( int fnum, int newcol )
                 handle->hooks->pfnFlush( handle );
         }
 
+        /* Ensure that we get the "real" cursor position - this quirk is
+         * required for cursor positions at the right bottom of the screen */
+        fb_PrintBufferEx( NULL, 0, FB_PRINT_FORCE_ADJUST );
 		fb_GetXY( &col, &row );
 		fb_GetSize( &cols, &rows );
 
     	if( newcol > cols )
     		newcol %= cols;
 
-		if( col > newcol )
-			fb_Locate( row+1, newcol, -1 );
+        if( col > newcol ) {
+            fb_PrintVoidEx ( handle, FB_PRINT_NEWLINE );
+			fb_Locate( 0, newcol, -1 );
 
-	    else if( newcol < 1 )
-    		fb_Locate( -1, 1, -1 );
+        } else if( newcol < 1 )
+    		fb_Locate( 0, 1, -1 );
 
     	else
-            fb_Locate( -1, newcol, -1 );
+            fb_Locate( 0, newcol, -1 );
 
     } else {
 
@@ -104,7 +108,10 @@ FBCALL void fb_PrintTab( int fnum, int newcol )
 FBCALL void fb_PrintSPC( int fnum, int n )
 {
     FB_FILE *handle;
-	int col, row, cols, rows, newcol;
+    int col, row, cols, rows, newcol;
+
+    if( n==0 )
+        return;
 
     fb_DevScrnInit_NoOpen( );
 
@@ -122,14 +129,19 @@ FBCALL void fb_PrintSPC( int fnum, int n )
                 handle->hooks->pfnFlush( handle );
         }
 
+        /* Ensure that we get the "real" cursor position - this quirk is
+         * required for cursor positions at the right bottom of the screen */
+        fb_PrintBufferEx( NULL, 0, FB_PRINT_FORCE_ADJUST );
 		fb_GetXY( &col, &row );
 		fb_GetSize( &cols, &rows );
 
     	newcol = col + n;
-    	if( newcol > cols )
-    		newcol %= cols;
+        if( newcol > cols ) {
+            fb_PrintVoidEx ( handle, FB_PRINT_NEWLINE );
+            newcol %= cols;
+        }
 
-        fb_Locate( -1, newcol, -1 );
+        fb_Locate( 0, newcol, -1 );
 
     } else {
 
