@@ -2778,7 +2778,8 @@ Appendix F: Hints
 		BYVAL col AS INTEGER, BYVAL buffer AS ANY PTR = 0 )
 
 	TYPE fb_FontType
-		h AS INTEGER
+		w AS INTEGER ' Width in pixels
+		h AS INTEGER ' Height in pixels
 		data AS UBYTE PTR
 	END TYPE
 
