@@ -506,27 +506,69 @@ function symbFindBySuffix( byval s as FBSYMBOL ptr, _
 
     '' symbol has a suffix? lookup a symbol with the same type, suffixed or not
     if( suffix <> INVALID ) then
-    	do while( s <> NULL )
-    		if( s->class = FB_SYMBCLASS_VAR ) then
-     			if( s->typ = suffix ) then
-     				exit do
-     			end if
-     		end if
-    		s = s->right
-    	loop
 
-    '' symbol has no suffix, lookup a symbol w/o suffix or with the same type as deftyp
-    else
-    	do while( s <> NULL )
-    		if( s->class = FB_SYMBCLASS_VAR ) then
-     			if( s->var.suffix = INVALID ) then
-     				exit do
-     			elseif( s->typ = deftyp ) then
-     				exit do
+    	'' QB quirk: fixed-len and zstrings referenced using '$' as suffix..
+    	if( suffix = FB_SYMBTYPE_STRING ) then
+    		do while( s <> NULL )
+    			if( s->class = FB_SYMBCLASS_VAR ) then
+     				select case s->typ
+     				case FB_SYMBTYPE_STRING, FB_SYMBTYPE_FIXSTR, _
+     					 FB_SYMBTYPE_CHAR
+     					exit do
+     				end select
      			end if
-     		end if
-    		s = s->right
-    	loop
+
+    			s = s->right
+    		loop
+
+    	'' anything but strings..
+    	else
+    		do while( s <> NULL )
+    			if( s->class = FB_SYMBCLASS_VAR ) then
+     				if( s->typ = suffix ) then
+     					exit do
+     				end if
+     			end if
+
+    			s = s->right
+    		loop
+    	end if
+
+    '' symbol has no suffix: lookup a symbol w/o suffix or with the
+    '' same type as default type (last DEF###)
+    else
+
+    	'' QB quirk: see above
+    	if( deftyp = FB_SYMBTYPE_STRING ) then
+    		do while( s <> NULL )
+    			if( s->class = FB_SYMBCLASS_VAR ) then
+     				if( s->var.suffix = INVALID ) then
+     					exit do
+     				end if
+     				select case s->typ
+     				case FB_SYMBTYPE_STRING, FB_SYMBTYPE_FIXSTR, _
+     					 FB_SYMBTYPE_CHAR
+     					exit do
+     				end select
+     			end if
+
+    			s = s->right
+    		loop
+
+    	'' anything but strings..
+    	else
+    		do while( s <> NULL )
+    			if( s->class = FB_SYMBCLASS_VAR ) then
+     				if( s->var.suffix = INVALID ) then
+     					exit do
+     				elseif( s->typ = deftyp ) then
+     					exit do
+     				end if
+     			end if
+
+    			s = s->right
+    		loop
+    	end if
     end if
 
 	if( s = NULL ) then

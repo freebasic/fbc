@@ -878,31 +878,16 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 	subtype 	= NULL
 	typ			= lexGetType( )
 	id			= lexGetText( )
+
+    '' no suffix? lookup the default type (last DEF###) in the
+    '' case symbol could not be found..
     if( typ = INVALID ) then
     	deftyp = hGetDefType( *id )
     else
     	deftyp = INVALID
     end if
 
-	sym = symbFindBySuffix( lexGetSymbol( ), typ, deftyp )
-	if( sym = NULL ) then
-		'' QB quirk: fixed-len strings referenced using '$' as suffix..
-		if( typ = FB_SYMBTYPE_STRING ) then
-			sym = symbFindBySuffix( lexGetSymbol( ), FB_SYMBTYPE_FIXSTR, deftyp )
-			'' check zstrings too..
-			if( sym = NULL ) then
-				sym = symbFindBySuffix( lexGetSymbol( ), FB_SYMBTYPE_CHAR, deftyp )
-			end if
-
-		elseif( deftyp = FB_SYMBTYPE_STRING ) then
-			sym = symbFindBySuffix( lexGetSymbol( ), INVALID, FB_SYMBTYPE_FIXSTR )
-			'' check zstrings too..
-			if( sym = NULL ) then
-				sym = symbFindBySuffix( lexGetSymbol( ), INVALID, FB_SYMBTYPE_CHAR )
-			end if
-		end if
-	end if
-
+    sym = symbFindBySuffix( lexGetSymbol( ), typ, deftyp )
 	if( sym <> NULL ) then
 		typ 	= sym->typ
 		subtype = sym->subtype

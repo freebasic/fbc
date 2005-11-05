@@ -200,10 +200,10 @@ function hGetDefType( byval symbol as string ) as integer static
 
 	'' to upper
 	if( (c >= 97) and (c <= 122) ) then
-		c = c - (97 - 65)
+		c -= (97 - 65)
 	end if
 
-	function = deftypeTB(c-65)
+	function = deftypeTB(c - 65)
 
 end function
 
