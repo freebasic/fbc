@@ -616,6 +616,9 @@ Credits (in alphabetic order):
     - Ported most of the NeHe's OpenGL lessons at the examples/GL/NeHe dir.
     - Wrote the PDFlib demonstration, at examples/pdflib
 
+  o Jofers (spam@betterwebber.com):
+    - Wrote the examples in the examples/freetype directory.
+
   o Randy Keeling (randy@keeling.com):
     - Wrote the GSL matrix test at the examples/GSL directory.
 
@@ -720,6 +723,8 @@ Links:
     - fmod: http://www.fmod.org/
 
     - FreeImage: http://freeimage.sourceforge.net/
+
+    - FreeType: http://www.freetype.org/
 
     - GD: http://www.boutell.com/gd/ or http://gnuwin32.sourceforge.net/packages/gd.htm
 

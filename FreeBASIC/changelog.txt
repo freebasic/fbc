@@ -72,6 +72,7 @@ Version 0.15 Beta:
 - support for SCREEN 1, 2, 9, 10, 11, and 12 for DOS (mjs)
 - support for printing to GDI printers on Win32 (mjs)
 - C### (CINT, CDBL, etc) can now be used with strings, as in VB (v1c)
+- include file and import-lib for the FreeType2 library (v1c)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)
