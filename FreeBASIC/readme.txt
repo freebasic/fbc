@@ -231,6 +231,8 @@ Most Important Features:
     - DirectX and the Windows API - the most complete headers set between the BASIC
       compilers available
 
+    - DispHelper - COM IDispatch interfaces made easy
+
     - more to come...
 
   o Multi-platform:
@@ -244,15 +246,19 @@ Most Important Features:
       FreeBASIC compiles itself.), what makes it simple to be bootstrapped as it
       doesn't depend on non-portable tools.
 
-  o A large number of variable types available, like BYTE, SHORT, INTEGER,
-    LONGINT, SINGLE, DOUBLE and STRING:
+  o A large number of variable types available:
 
-    - All integer types have unsigned versions (UBYTE, USHORT, UINTEGER, ULONGINT).
+    - Integer: BYTE, UBYTE, SHORT, USHORT, INTEGER, UINTEGER, 
+      LONGINT and ULONGINT (64-bit) 
 
-    - Strings can be fixed, variable-length or null-terminated (zstring's), up
-      to 2GB long.
+    - Floating-point: SINGLE and DOUBLE.
 
-    - The LONGINT and ULONGINT data types are 64-bit wide.
+    - String: fixed (STRING *), variable-length (STRING) or null-
+      terminated (ZSTRING), up to 2GB long.
+
+    - Unicode Strings (WSTRING): like ZSTRING, but with support for wide 
+      characters. Use the Windows unicode API functions directly, etc.
+
 
   o User-defined Types (UDT's):
 
@@ -620,7 +626,9 @@ Credits (in alphabetic order):
   o Mark Junker (mjscod@gmx.de) - Project Member:
     - Added support for file systems like SCR, LPTx, COM, etc.
     - Added printer support.
+    - Developer of the FB runtime-lib extended (libfbx).
     - Added the automated runtime-lib and compiler tests.
+    - Wrote the Windows installer scripts.
     - Many runtime library fixes and improvements.
 
   o Marzec:
