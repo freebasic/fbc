@@ -48,4 +48,6 @@ declare function gdk_rgb_get_visual cdecl alias "gdk_rgb_get_visual" () as GdkVi
 declare function gdk_rgb_ditherable cdecl alias "gdk_rgb_ditherable" () as gboolean
 declare function gdk_rgb_colormap_ditherable cdecl alias "gdk_rgb_colormap_ditherable" (byval cmap as GdkColormap ptr) as gboolean
 
+#define gdk_rgb_get_cmap gdk_rgb_get_colormap
+
 #endif

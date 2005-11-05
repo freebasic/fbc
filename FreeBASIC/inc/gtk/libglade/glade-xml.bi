@@ -52,4 +52,7 @@ type GladeXMLCustomWidgetHandler as function cdecl(byval as GladeXML ptr, byval 
 
 declare sub glade_set_custom_handler cdecl alias "glade_set_custom_handler" (byval handler as GladeXMLCustomWidgetHandler, byval user_data as gpointer)
 
+#define glade_xml_new_with_domain glade_xml_new
+#define glade_xml_new_from_memory glade_xml_new_from_buffer
+
 #endif

@@ -175,4 +175,6 @@ declare sub gtk_draw_string cdecl alias "gtk_draw_string" (byval style as GtkSty
 declare sub gtk_paint_string cdecl alias "gtk_paint_string" (byval style as GtkStyle ptr, byval window as GdkWindow ptr, byval state_type as GtkStateType, byval area as GdkRectangle ptr, byval widget as GtkWidget ptr, byval detail as zstring ptr, byval x as gint, byval y as gint, byval string as zstring ptr)
 declare sub gtk_draw_insertion_cursor cdecl alias "gtk_draw_insertion_cursor" (byval widget as GtkWidget ptr, byval drawable as GdkDrawable ptr, byval area as GdkRectangle ptr, byval location as GdkRectangle ptr, byval is_primary as gboolean, byval direction as GtkTextDirection, byval draw_arrow as gboolean)
 
+#define gtk_style_apply_default_pixmap(s,gw,st,a,x,y,w,h) gtk_style_apply_default_background(s,gw,1,st,a,x,y,w,h)
+
 #endif

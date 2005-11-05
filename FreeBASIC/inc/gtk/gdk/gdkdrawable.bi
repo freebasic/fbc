@@ -112,4 +112,7 @@ declare function gdk_drawable_get_clip_region cdecl alias "gdk_drawable_get_clip
 declare function gdk_drawable_get_visible_region cdecl alias "gdk_drawable_get_visible_region" (byval drawable as GdkDrawable ptr) as GdkRegion ptr
 declare function gdk_draw_rectangle_alpha_libgtk_only cdecl alias "gdk_draw_rectangle_alpha_libgtk_only" (byval drawable as GdkDrawable ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval color as GdkColor ptr, byval alpha as guint16) as gboolean
 
+#define gdk_draw_pixmap gdk_draw_drawable
+#define gdk_draw_bitmap gdk_draw_drawable
+
 #endif

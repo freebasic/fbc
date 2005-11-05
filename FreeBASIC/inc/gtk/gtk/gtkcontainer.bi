@@ -91,4 +91,7 @@ declare function _gtk_container_child_composite_name cdecl alias "_gtk_container
 declare sub _gtk_container_dequeue_resize_handler cdecl alias "_gtk_container_dequeue_resize_handler" (byval container as GtkContainer ptr)
 declare function _gtk_container_focus_sort cdecl alias "_gtk_container_focus_sort" (byval container as GtkContainer ptr, byval children as GList ptr, byval direction as GtkDirectionType, byval old_focus as GtkWidget ptr) as GList ptr
 
+#define gtk_container_children gtk_container_get_children
+#define	gtk_container_border_width gtk_container_set_border_width
+
 #endif

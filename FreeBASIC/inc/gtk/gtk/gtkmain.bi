@@ -12,6 +12,13 @@
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkwidget.bi"
 
+#define GTK_PRIORITY_RESIZE (G_PRIORITY_HIGH_IDLE + 10)
+#define GTK_PRIORITY_REDRAW (G_PRIORITY_HIGH_IDLE + 20)
+#define GTK_PRIORITY_HIGH G_PRIORITY_HIGH
+#define GTK_PRIORITY_INTERNAL GTK_PRIORITY_REDRAW
+#define GTK_PRIORITY_DEFAULT G_PRIORITY_DEFAULT_IDLE
+#define GTK_PRIORITY_LOW G_PRIORITY_LOW
+
 type GtkKeySnoopFunc as function cdecl(byval as GtkWidget ptr, byval as GdkEventKey ptr, byval as gpointer) as gint
 
 declare function gtk_check_version cdecl alias "gtk_check_version" (byval required_major as guint, byval required_minor as guint, byval required_micro as guint) as zstring ptr

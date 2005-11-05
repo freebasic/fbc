@@ -38,4 +38,9 @@ declare function gdk_pixmap_lookup cdecl alias "gdk_pixmap_lookup" (byval anid a
 declare function gdk_pixmap_foreign_new_for_display cdecl alias "gdk_pixmap_foreign_new_for_display" (byval display as GdkDisplay ptr, byval anid as GdkNativeWindow) as GdkPixmap ptr
 declare function gdk_pixmap_lookup_for_display cdecl alias "gdk_pixmap_lookup_for_display" (byval display as GdkDisplay ptr, byval anid as GdkNativeWindow) as GdkPixmap ptr
 
+#define gdk_bitmap_ref gdk_drawable_ref
+#define gdk_bitmap_unref gdk_drawable_unref
+#define gdk_pixmap_ref gdk_drawable_ref
+#define gdk_pixmap_unref gdk_drawable_unref
+
 #endif

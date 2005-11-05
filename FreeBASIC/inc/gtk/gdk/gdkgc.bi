@@ -165,4 +165,6 @@ declare sub gdk_gc_set_rgb_fg_color cdecl alias "gdk_gc_set_rgb_fg_color" (byval
 declare sub gdk_gc_set_rgb_bg_color cdecl alias "gdk_gc_set_rgb_bg_color" (byval gc as GdkGC ptr, byval color as GdkColor ptr)
 declare function gdk_gc_get_screen cdecl alias "gdk_gc_get_screen" (byval gc as GdkGC ptr) as GdkScreen ptr
 
+#define gdk_gc_destroy gdk_gc_unref
+
 #endif

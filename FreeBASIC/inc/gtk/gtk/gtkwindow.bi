@@ -205,4 +205,6 @@ type GtkWindowKeysForeachFunc as sub cdecl(byval as GtkWindow ptr, byval as guin
 declare sub _gtk_window_keys_foreach cdecl alias "_gtk_window_keys_foreach" (byval window as GtkWindow ptr, byval func as GtkWindowKeysForeachFunc, byval func_data as gpointer)
 declare function _gtk_window_query_nonaccels cdecl alias "_gtk_window_query_nonaccels" (byval window as GtkWindow ptr, byval accel_key as guint, byval accel_mods as GdkModifierType) as gboolean
 
+#define	gtk_window_position	gtk_window_set_position
+
 #endif

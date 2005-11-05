@@ -90,4 +90,6 @@ declare function gtk_label_get_single_line_mode cdecl alias "gtk_label_get_singl
 declare sub gtk_label_get cdecl alias "gtk_label_get" (byval label as GtkLabel ptr, byval str as byte ptr ptr)
 declare function gtk_label_parse_uline cdecl alias "gtk_label_parse_uline" (byval label as GtkLabel ptr, byval string as zstring ptr) as guint
 
+#define gtk_label_set gtk_label_set_text
+
 #endif

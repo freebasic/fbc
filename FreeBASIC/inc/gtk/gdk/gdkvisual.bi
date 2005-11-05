@@ -54,4 +54,7 @@ declare sub gdk_query_visual_types cdecl alias "gdk_query_visual_types" (byval v
 declare function gdk_list_visuals cdecl alias "gdk_list_visuals" () as GList ptr
 declare function gdk_visual_get_screen cdecl alias "gdk_visual_get_screen" (byval visual as GdkVisual ptr) as GdkScreen ptr
 
+#define gdk_visual_ref(v) g_object_ref(v)
+#define gdk_visual_unref(v) g_object_unref(v)
+
 #endif

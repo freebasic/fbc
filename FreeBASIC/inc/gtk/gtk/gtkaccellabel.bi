@@ -50,4 +50,6 @@ declare sub gtk_accel_label_set_accel_closure cdecl alias "gtk_accel_label_set_a
 declare function gtk_accel_label_refetch cdecl alias "gtk_accel_label_refetch" (byval accel_label as GtkAccelLabel ptr) as gboolean
 declare function _gtk_accel_label_class_get_accelerator_label cdecl alias "_gtk_accel_label_class_get_accelerator_label" (byval klass as GtkAccelLabelClass ptr, byval accelerator_key as guint, byval accelerator_mods as GdkModifierType) as zstring ptr
 
+#define	gtk_accel_label_accelerator_width gtk_accel_label_get_accel_width
+
 #endif

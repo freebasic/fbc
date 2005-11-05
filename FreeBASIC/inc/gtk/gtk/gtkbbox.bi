@@ -47,4 +47,7 @@ declare sub gtk_button_box_get_child_size cdecl alias "gtk_button_box_get_child_
 declare sub gtk_button_box_get_child_ipadding cdecl alias "gtk_button_box_get_child_ipadding" (byval widget as GtkButtonBox ptr, byval ipad_x as gint ptr, byval ipad_y as gint ptr)
 declare sub _gtk_button_box_child_requisition cdecl alias "_gtk_button_box_child_requisition" (byval widget as GtkWidget ptr, byval nvis_children as integer ptr, byval nvis_secondaries as integer ptr, byval width as integer ptr, byval height as integer ptr)
 
+#define gtk_button_box_set_spacing(b,s) gtk_box_set_spacing(GTK_BOX(b), s)
+#define gtk_button_box_get_spacing(b) gtk_box_get_spacing(GTK_BOX(b))
+
 #endif

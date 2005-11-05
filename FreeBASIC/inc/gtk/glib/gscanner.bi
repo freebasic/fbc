@@ -153,4 +153,12 @@ declare sub g_scanner_unexp_token cdecl alias "g_scanner_unexp_token" (byval sca
 declare sub g_scanner_error cdecl alias "g_scanner_error" (byval scanner as GScanner ptr, byval format as zstring ptr, ...)
 declare sub g_scanner_warn cdecl alias "g_scanner_warn" (byval scanner as GScanner ptr, byval format as zstring ptr, ...)
 
+#define	g_scanner_add_symbol( scanner, symbol, value ) g_scanner_scope_add_symbol(scanner, 0, symbol, value)
+#define	g_scanner_remove_symbol( scanner, symbol ) g_scanner_scope_remove_symbol(scanner, 0, symbol)
+#define	g_scanner_foreach_symbol( scanner, func, data_ ) g_scanner_scope_foreach_symbol(scanner, 0, func, data_)
+
+#define g_scanner_freeze_symbol_table(scanner) 
+#define g_scanner_thaw_symbol_table(scanner)
+
+
 #endif

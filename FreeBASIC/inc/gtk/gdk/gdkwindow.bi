@@ -294,4 +294,16 @@ declare sub gdk_window_configure_finished cdecl alias "gdk_window_configure_fini
 declare function gdk_set_pointer_hooks cdecl alias "gdk_set_pointer_hooks" (byval new_hooks as GdkPointerHooks ptr) as GdkPointerHooks ptr
 declare function gdk_get_default_root_window cdecl alias "gdk_get_default_root_window" () as GdkWindow ptr
 
+#define GDK_ROOT_PARENT() (gdk_get_default_root_window ())
+#define gdk_window_get_size gdk_drawable_get_size
+#define gdk_window_get_type gdk_window_get_window_type
+#define gdk_window_get_colormap gdk_drawable_get_colormap
+#define gdk_window_set_colormap gdk_drawable_set_colormap
+#define gdk_window_get_visual gdk_drawable_get_visual
+#define gdk_window_ref gdk_drawable_ref
+#define gdk_window_unref gdk_drawable_unref
+
+#define gdk_window_copy_area(drawable,gc,x,y,source_drawable,source_x,source_y,width_,height) _
+   gdk_draw_pixmap(drawable,gc,source_drawable,source_x,source_y,x,y,width_,height)
+
 #endif

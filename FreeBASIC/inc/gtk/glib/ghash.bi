@@ -35,4 +35,8 @@ declare function g_int_hash cdecl alias "g_int_hash" (byval v as gconstpointer) 
 declare function g_direct_hash cdecl alias "g_direct_hash" (byval v as gconstpointer) as guint
 declare function g_direct_equal cdecl alias "g_direct_equal" (byval v as gconstpointer, byval v2 as gconstpointer) as gboolean
 
+
+#define g_hash_table_freeze(hash_table) 
+#define g_hash_table_thaw(hash_table) 
+
 #endif

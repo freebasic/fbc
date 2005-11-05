@@ -69,4 +69,6 @@ declare sub _gtk_menu_item_refresh_accel_path cdecl alias "_gtk_menu_item_refres
 declare function _gtk_menu_item_is_selectable cdecl alias "_gtk_menu_item_is_selectable" (byval menu_item as GtkWidget ptr) as gboolean
 declare sub _gtk_menu_item_popup_submenu cdecl alias "_gtk_menu_item_popup_submenu" (byval menu_item as GtkWidget ptr)
 
+#define gtk_menu_item_right_justify(menu_item) gtk_menu_item_set_right_justified(menu_item, TRUE)
+
 #endif

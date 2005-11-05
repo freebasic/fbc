@@ -72,4 +72,7 @@ declare function g_trash_stack_peek cdecl alias "g_trash_stack_peek" (byval stac
 declare function g_trash_stack_height cdecl alias "g_trash_stack_height" (byval stack_p as GTrashStack ptr ptr) as guint
 declare function glib_check_version cdecl alias "glib_check_version" (byval required_major as guint, byval required_minor as guint, byval required_micro as guint) as zstring ptr
 
+#define g_dirname g_path_get_dirname
+#define g_get_current_dir g_get_current_dir_utf8
+
 #endif

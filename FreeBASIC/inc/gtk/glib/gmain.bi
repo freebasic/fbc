@@ -128,4 +128,15 @@ declare function g_idle_add cdecl alias "g_idle_add" (byval function as GSourceF
 declare function g_idle_add_full cdecl alias "g_idle_add_full" (byval priority as gint, byval function as GSourceFunc, byval data as gpointer, byval notify as GDestroyNotify) as guint
 declare function g_idle_remove_by_data cdecl alias "g_idle_remove_by_data" (byval data as gpointer) as gboolean
 
+#define	g_main_new(is_running) g_main_loop_new (NULL, is_running)
+#define g_main_run(loop_) g_main_loop_run(loop_)
+#define g_main_quit(loop_) g_main_loop_quit(loop_)
+#define g_main_destroy(loop_) g_main_loop_unref(loop_)
+#define g_main_is_running(loop_) g_main_loop_is_running(loop_)
+
+#define	g_main_iteration(may_block) g_main_context_iteration(NULL, may_block)
+#define g_main_pending() g_main_context_pending(NULL)
+
+#define g_main_set_poll_func(func) g_main_context_set_poll_func(NULL, func)
+
 #endif

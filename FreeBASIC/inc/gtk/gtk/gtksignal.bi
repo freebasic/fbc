@@ -45,4 +45,6 @@ declare sub gtk_signal_emit_by_name cdecl alias "gtk_signal_emit_by_name" (byval
 declare sub gtk_signal_emitv_by_name cdecl alias "gtk_signal_emitv_by_name" (byval object as GtkObject ptr, byval name as zstring ptr, byval args as GtkArg ptr)
 declare sub gtk_signal_compat_matched cdecl alias "gtk_signal_compat_matched" (byval object as GtkObject ptr, byval func as GtkSignalFunc, byval data as gpointer, byval match as GSignalMatchType, byval action as guint)
 
+#define	gtk_signal_default_marshaller g_cclosure_marshal_VOID__VOID
+
 #endif

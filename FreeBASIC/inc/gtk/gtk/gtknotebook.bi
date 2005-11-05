@@ -105,4 +105,7 @@ declare sub gtk_notebook_query_tab_label_packing cdecl alias "gtk_notebook_query
 declare sub gtk_notebook_set_tab_label_packing cdecl alias "gtk_notebook_set_tab_label_packing" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval expand as gboolean, byval fill as gboolean, byval pack_type as GtkPackType)
 declare sub gtk_notebook_reorder_child cdecl alias "gtk_notebook_reorder_child" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval position as gint)
 
+#define	gtk_notebook_current_page gtk_notebook_get_current_page
+#define gtk_notebook_set_page gtk_notebook_set_current_page
+
 #endif

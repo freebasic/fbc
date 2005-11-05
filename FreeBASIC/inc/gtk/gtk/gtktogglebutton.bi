@@ -43,4 +43,6 @@ declare sub gtk_toggle_button_toggled cdecl alias "gtk_toggle_button_toggled" (b
 declare sub gtk_toggle_button_set_inconsistent cdecl alias "gtk_toggle_button_set_inconsistent" (byval toggle_button as GtkToggleButton ptr, byval setting as gboolean)
 declare function gtk_toggle_button_get_inconsistent cdecl alias "gtk_toggle_button_get_inconsistent" (byval toggle_button as GtkToggleButton ptr) as gboolean
 
+#define	gtk_toggle_button_set_state	gtk_toggle_button_set_active
+
 #endif

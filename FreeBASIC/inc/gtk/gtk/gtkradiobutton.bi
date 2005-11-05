@@ -38,4 +38,6 @@ declare function gtk_radio_button_new_with_mnemonic_from_widget cdecl alias "gtk
 declare function gtk_radio_button_get_group cdecl alias "gtk_radio_button_get_group" (byval radio_button as GtkRadioButton ptr) as GSList ptr
 declare sub gtk_radio_button_set_group cdecl alias "gtk_radio_button_set_group" (byval radio_button as GtkRadioButton ptr, byval group as GSList ptr)
 
+#define gtk_radio_button_group gtk_radio_button_get_group
+
 #endif

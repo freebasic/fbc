@@ -79,4 +79,7 @@ type _GtkAccelGroupEntry
 	accel_path_quark as GQuark
 end type
 
+#define	gtk_accel_group_ref	g_object_ref
+#define	gtk_accel_group_unref g_object_unref
+
 #endif

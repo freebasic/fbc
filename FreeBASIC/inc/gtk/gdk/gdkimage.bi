@@ -49,4 +49,6 @@ declare function gdk_image_get_pixel cdecl alias "gdk_image_get_pixel" (byval im
 declare sub gdk_image_set_colormap cdecl alias "gdk_image_set_colormap" (byval image as GdkImage ptr, byval colormap as GdkColormap ptr)
 declare function gdk_image_get_colormap cdecl alias "gdk_image_get_colormap" (byval image as GdkImage ptr) as GdkColormap ptr
 
+#define gdk_image_destroy gdk_image_unref
+
 #endif

@@ -116,4 +116,16 @@ declare sub g_date_clamp cdecl alias "g_date_clamp" (byval date as GDate ptr, by
 declare sub g_date_order cdecl alias "g_date_order" (byval date1 as GDate ptr, byval date2 as GDate ptr)
 declare function g_date_strftime cdecl alias "g_date_strftime" (byval s as zstring ptr, byval slen as gsize, byval format as zstring ptr, byval date as GDate ptr) as gsize
 
+#define g_date_weekday g_date_get_weekday
+#define g_date_month_ g_date_get_month
+#define g_date_year_ g_date_get_year
+#define g_date_day_ g_date_get_day
+#define g_date_julian g_date_get_julian
+#define g_date_day_of_year g_date_get_day_of_year
+#define g_date_monday_week_of_year g_date_get_monday_week_of_year
+#define g_date_sunday_week_of_year g_date_get_sunday_week_of_year
+#define g_date_days_in_month g_date_get_days_in_month
+#define g_date_monday_weeks_in_year g_date_get_monday_weeks_in_year
+#define g_date_sunday_weeks_in_year	g_date_get_sunday_weeks_in_year
+
 #endif

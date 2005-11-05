@@ -109,4 +109,6 @@ declare function gdk_cursor_get_display cdecl alias "gdk_cursor_get_display" (by
 declare function gdk_cursor_ref cdecl alias "gdk_cursor_ref" (byval cursor as GdkCursor ptr) as GdkCursor ptr
 declare sub gdk_cursor_unref cdecl alias "gdk_cursor_unref" (byval cursor as GdkCursor ptr)
 
+#define gdk_cursor_destroy gdk_cursor_unref
+
 #endif

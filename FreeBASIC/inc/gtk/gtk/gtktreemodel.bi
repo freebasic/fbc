@@ -114,4 +114,7 @@ declare sub gtk_tree_model_row_has_child_toggled cdecl alias "gtk_tree_model_row
 declare sub gtk_tree_model_row_deleted cdecl alias "gtk_tree_model_row_deleted" (byval tree_model as GtkTreeModel ptr, byval path as GtkTreePath ptr)
 declare sub gtk_tree_model_rows_reordered cdecl alias "gtk_tree_model_rows_reordered" (byval tree_model as GtkTreeModel ptr, byval path as GtkTreePath ptr, byval iter as GtkTreeIter ptr, byval new_order as gint ptr)
 
+#define gtk_tree_path_new_root() gtk_tree_path_new_first()
+#define gtk_tree_model_get_iter_root(tree_model, iter) gtk_tree_model_get_iter_first(tree_model, iter)
+
 #endif

@@ -68,4 +68,7 @@ declare function gtk_paned_get_child1 cdecl alias "gtk_paned_get_child1" (byval 
 declare function gtk_paned_get_child2 cdecl alias "gtk_paned_get_child2" (byval paned as GtkPaned ptr) as GtkWidget ptr
 declare sub gtk_paned_compute_position cdecl alias "gtk_paned_compute_position" (byval paned as GtkPaned ptr, byval allocation as gint, byval child1_req as gint, byval child2_req as gint)
 
+#define	gtk_paned_gutter_size(p,s) 
+#define	gtk_paned_set_gutter_size(p,s) 
+
 #endif

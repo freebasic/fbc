@@ -56,4 +56,7 @@ declare sub g_string_append_printf cdecl alias "g_string_append_printf" (byval s
 declare function g_string_down cdecl alias "g_string_down" (byval string as GString ptr) as GString ptr
 declare function g_string_up cdecl alias "g_string_up" (byval string as GString ptr) as GString ptr
 
+#define	g_string_sprintf g_string_printf
+#define	g_string_sprintfa g_string_append_printf
+
 #endif

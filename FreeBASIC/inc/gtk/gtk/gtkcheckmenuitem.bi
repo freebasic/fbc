@@ -46,4 +46,6 @@ declare sub gtk_check_menu_item_set_draw_as_radio cdecl alias "gtk_check_menu_it
 declare function gtk_check_menu_item_get_draw_as_radio cdecl alias "gtk_check_menu_item_get_draw_as_radio" (byval check_menu_item as GtkCheckMenuItem ptr) as gboolean
 declare sub gtk_check_menu_item_set_show_toggle cdecl alias "gtk_check_menu_item_set_show_toggle" (byval menu_item as GtkCheckMenuItem ptr, byval always as gboolean)
 
+#define	gtk_check_menu_item_set_state gtk_check_menu_item_set_active
+
 #endif

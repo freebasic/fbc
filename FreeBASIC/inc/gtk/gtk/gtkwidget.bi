@@ -310,4 +310,12 @@ declare sub _gtk_widget_propagate_hierarchy_changed cdecl alias "_gtk_widget_pro
 declare sub _gtk_widget_propagate_screen_changed cdecl alias "_gtk_widget_propagate_screen_changed" (byval widget as GtkWidget ptr, byval previous_screen as GdkScreen ptr)
 declare function _gtk_widget_peek_colormap cdecl alias "_gtk_widget_peek_colormap" () as GdkColormap ptr
 
+#define gtk_widget_set_visual(widget,visual)
+#define gtk_widget_push_visual(visual) 
+#define gtk_widget_pop_visual() 
+#define gtk_widget_set_default_visual(visual)
+
+#define gtk_widget_set_rc_style(widget) gtk_widget_set_style(widget, NULL)
+#define gtk_widget_restore_default_style(widget) gtk_widget_set_style(widget, NULL)
+
 #endif

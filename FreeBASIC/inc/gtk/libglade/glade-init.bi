@@ -15,4 +15,7 @@ declare sub glade_init cdecl alias "glade_init" ()
 declare sub glade_require cdecl alias "glade_require" (byval library as zstring ptr)
 declare sub glade_provide cdecl alias "glade_provide" (byval library as zstring ptr)
 
+#define glade_gnome_init  glade_init
+#define glade_bonobo_init glade_init
+
 #endif

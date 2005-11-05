@@ -91,4 +91,6 @@ declare sub gtk_spin_button_set_snap_to_ticks cdecl alias "gtk_spin_button_set_s
 declare function gtk_spin_button_get_snap_to_ticks cdecl alias "gtk_spin_button_get_snap_to_ticks" (byval spin_button as GtkSpinButton ptr) as gboolean
 declare sub gtk_spin_button_update cdecl alias "gtk_spin_button_update" (byval spin_button as GtkSpinButton ptr)
 
+#define gtk_spin_button_get_value_as_float gtk_spin_button_get_value
+
 #endif

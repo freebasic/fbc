@@ -38,4 +38,6 @@ declare function gtk_radio_menu_item_new_with_label_from_widget cdecl alias "gtk
 declare function gtk_radio_menu_item_get_group cdecl alias "gtk_radio_menu_item_get_group" (byval radio_menu_item as GtkRadioMenuItem ptr) as GSList ptr
 declare sub gtk_radio_menu_item_set_group cdecl alias "gtk_radio_menu_item_set_group" (byval radio_menu_item as GtkRadioMenuItem ptr, byval group as GSList ptr)
 
+#define gtk_radio_menu_item_group gtk_radio_menu_item_get_group
+
 #endif
