@@ -100,13 +100,10 @@ function cDataStmt as integer static
 			hMatchExpression( expr )
 
 			'' check if it's an string
+			litsym = NULL
 			select case astGetDataType( expr )
-			case IR_DATATYPE_CHAR
+			case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
 				litsym = astGetStrLitSymbol( expr )
-			case IR_DATATYPE_WCHAR
-				litsym = astGetWstrLitSymbol( expr )
-			case else
-				litsym = NULL
 			end select
 
 			'' string?

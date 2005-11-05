@@ -1236,7 +1236,7 @@ function rtlWstrConcatWA( byval str1 as ASTNODE ptr, _
    	'' always calc len before pushing the param
    	STRGETLEN( str2, sdtype2, str2len )
 
-    '' byreg str2 as any
+    '' byref str2 as any
     if( astNewPARAM( proc, str2, sdtype2 ) = NULL ) then
     	exit function
     end if
@@ -1263,12 +1263,12 @@ function rtlWstrConcatAW( byval str1 as ASTNODE ptr, _
 
 	function = NULL
 
-    proc = astNewFUNCT( PROCLOOKUP( WSTRCONCATWA ) )
+    proc = astNewFUNCT( PROCLOOKUP( WSTRCONCATAW ) )
 
    	'' always calc len before pushing the param
    	STRGETLEN( str1, sdtype1, str1len )
 
-    '' byreg str1 as any
+    '' byref str1 as any
     if( astNewPARAM( proc, str1, sdtype1 ) = NULL ) then
     	exit function
     end if
@@ -1800,7 +1800,7 @@ function rtlToStr( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 
     '' wstring literal? convert from unicode at compile-time
     if( astGetDataType( expr ) = IR_DATATYPE_WCHAR ) then
-    	litsym = astGetWstrLitSymbol( expr )
+    	litsym = astGetStrLitSymbol( expr )
     	if( litsym <> NULL ) then
 			if( env.target.wchar.doconv ) then
 				litsym = symbAllocStrConst( str( *symbGetVarTextW( litsym ) ), _

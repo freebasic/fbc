@@ -117,14 +117,18 @@ function cCatExpression( byref catexpr as ASTNODE ptr ) as integer
 	if( lexGetToken( ) = CHAR_AMP ) then
 
     	'' convert operand to string if needed
-    	if( astGetDataClass( catexpr ) <> IR_DATACLASS_STRING ) then
-    		catexpr = rtlToStr( catexpr )
+    	select case as const astGetDataType( catexpr )
+    	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
+    		 IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
 
+    	'' not a string..
+    	case else
+    		catexpr = rtlToStr( catexpr )
    			if( catexpr = NULL ) then
    				hReportError( FB_ERRMSG_TYPEMISMATCH )
    				exit function
     		end if
-    	end if
+    	end select
 	end if
 
 	'' ( ... )*
@@ -143,14 +147,24 @@ function cCatExpression( byref catexpr as ASTNODE ptr ) as integer
     	end if
 
 		'' convert operand to string if needed
-		if( astGetDataClass( expr ) <> IR_DATACLASS_STRING ) then
-	   		expr = rtlToStr( expr )
+    	select case as const astGetDataType( expr )
+    	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
+    		 IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+
+    	'' not a string..
+    	case else
+	   		'' expression is not a wstring?
+	   		if( astGetDataType( catexpr ) <> IR_DATATYPE_WCHAR ) then
+	   			expr = rtlToStr( expr )
+	   		else
+	   			expr = rtlToWstr( expr )
+	   		end if
 
 	   		if( expr = NULL ) then
 	   			hReportError( FB_ERRMSG_TYPEMISMATCH )
 	   			exit function
 	   		end if
-    	end if
+    	end select
 
     	'' concatenate
     	catexpr = astNewBOP( IR_OP_ADD, catexpr, expr )

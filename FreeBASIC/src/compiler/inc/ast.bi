@@ -457,8 +457,6 @@ declare function 	astGetBitField		( byval n as ASTNODE ptr, _
 
 declare function 	astGetStrLitSymbol	( byval n as ASTNODE ptr ) as FBSYMBOL ptr
 
-declare function 	astGetWstrLitSymbol	( byval n as ASTNODE ptr ) as FBSYMBOL ptr
-
 ''
 '' macros
 ''

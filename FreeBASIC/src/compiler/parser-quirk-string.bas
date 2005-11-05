@@ -267,13 +267,10 @@ private function cStrASC( byref funcexpr as ASTNODE ptr ) as integer
 	hMatchRPRNT( )
 
 	'' constant? evaluate at compile-time
+	litsym = NULL
 	select case astGetDataType( expr1 )
-	case IR_DATATYPE_CHAR
+	case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
 		litsym = astGetStrLitSymbol( expr1 )
-	case IR_DATATYPE_WCHAR
-		litsym = astGetWstrLitSymbol( expr1 )
-	case else
-		litsym = NULL
 	end select
 
 	if( litsym <> NULL ) then

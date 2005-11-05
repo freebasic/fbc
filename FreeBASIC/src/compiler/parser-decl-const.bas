@@ -119,13 +119,10 @@ function cConstAssign as integer static
 
 	'' check if it's an string
 	edtype = astGetDataType( expr )
+	litsym = NULL
 	select case edtype
-	case IR_DATATYPE_CHAR
+	case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
 		litsym = astGetStrLitSymbol( expr )
-	case IR_DATATYPE_WCHAR
-		litsym = astGetWstrLitSymbol( expr )
-	case else
-		litsym = NULL
 	end select
 
 	'' string?

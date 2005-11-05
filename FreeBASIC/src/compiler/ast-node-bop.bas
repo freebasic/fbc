@@ -60,9 +60,19 @@ private function hWstrLiteralConcat( byval l as ASTNODE ptr, _
 	ls = astGetSymbolOrElm( l )
 	rs = astGetSymbolOrElm( r )
 
-	'' new len = both strings' len less the 2 null-chars
-	s = symbAllocWstrConst( *symbGetVarTextW( ls ) + *symbGetVarTextW( rs ), _
-						    symbGetWstrLen( ls ) - 1 + symbGetWstrLen( rs ) - 1 )
+	if( symbGetType( ls ) <> IR_DATATYPE_WCHAR ) then
+		'' new len = both strings' len less the 2 null-chars
+		s = symbAllocWstrConst( wstr( symbGetVarText( ls ) ) + *symbGetVarTextW( rs ), _
+						    	symbGetStrLen( ls ) - 1 + symbGetWstrLen( rs ) - 1 )
+
+	elseif( symbGetType( rs ) <> IR_DATATYPE_WCHAR ) then
+		s = symbAllocWstrConst( *symbGetVarTextW( ls ) + wstr( symbGetVarText( rs ) ), _
+						    	symbGetWstrLen( ls ) - 1 + symbGetStrLen( rs ) - 1 )
+
+	else
+		s = symbAllocWstrConst( *symbGetVarTextW( ls ) + *symbGetVarTextW( rs ), _
+						    	symbGetWstrLen( ls ) - 1 + symbGetWstrLen( rs ) - 1 )
+    end if
 
 	function = astNewVAR( s, NULL, 0, IR_DATATYPE_WCHAR )
 
@@ -510,30 +520,40 @@ function astNewBOP( byval op as integer, _
 			select case as const op
 			'' concatenation?
 			case IR_OP_ADD
+				'' check for string literals
+				select case ldtype
+				case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+					litsym = astGetStrLitSymbol( l )
+					if( litsym <> NULL ) then
+
+						select case rdtype
+						case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+							litsym = astGetStrLitSymbol( r )
+							if( litsym <> NULL ) then
+								if( (ldtype = rdtype) or _
+									(env.target.wchar.doconv) ) then
+									return hWstrLiteralConcat( l, r )
+								end if
+							end if
+						end select
+
+					end if
+				end select
+
 				'' both aren't wstrings?
 				if( ldtype <> rdtype ) then
 					return rtlWstrConcat( l, ldtype, r, rdtype )
-
-				else
-					'' check for wstring literals
-					litsym = astGetWstrLitSymbol( l )
-					if( litsym <> NULL ) then
-						litsym = astGetWstrLitSymbol( r )
-						if( litsym <> NULL ) then
-							return hWstrLiteralConcat( l, r )
-						end if
-					end if
-
-					'' result will be always a wstring
-					ldtype = IR_DATATYPE_WCHAR
-					ldclass = IR_DATACLASS_INTEGER
-					rdtype = ldtype
-					rdclass = ldclass
-					is_str = TRUE
-
-					'' concatenation will only be done when loading,
-					'' to allow optimizations..
 				end if
+
+				'' result will be always a wstring
+				ldtype = IR_DATATYPE_WCHAR
+				ldclass = IR_DATACLASS_INTEGER
+				rdtype = ldtype
+				rdclass = ldclass
+				is_str = TRUE
+
+				'' concatenation will only be done when loading,
+				'' to allow optimizations..
 
 			'' comparation?
 			case IR_OP_EQ, IR_OP_GT, IR_OP_LT, IR_OP_NE, IR_OP_LE, IR_OP_GE

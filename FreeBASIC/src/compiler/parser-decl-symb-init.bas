@@ -56,13 +56,10 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 	if( not islocal ) then
 
 		'' check if it's a literal string
+		litsym = NULL
 		select case dtype
-		case IR_DATATYPE_CHAR
+		case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
 			litsym = astGetStrLitSymbol( expr )
-		case IR_DATATYPE_WCHAR
-			litsym = astGetWstrLitSymbol( expr )
-		case else
-			litsym = NULL
 		end select
 
 		'' not a literal string?

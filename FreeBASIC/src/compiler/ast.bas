@@ -1503,23 +1503,6 @@ function astGetStrLitSymbol( byval n as ASTNODE ptr ) as FBSYMBOL ptr static
 end function
 
 '':::::
-function astGetWstrLitSymbol( byval n as ASTNODE ptr ) as FBSYMBOL ptr static
-	dim as FBSYMBOL ptr s
-
-    function = NULL
-
-    if( astIsVAR( n ) ) then
-		s = astGetSymbolOrElm( n )
-		if( s <> NULL ) then
-			if( symbGetVarInitialized( s ) ) then
-				function = s
-			end if
-		end if
-	end if
-
-end function
-
-'':::::
 sub astConvertValue( byval n as ASTNODE ptr, _
 					 byval v as FBVALUE ptr, _
 					 byval todtype as integer ) static
