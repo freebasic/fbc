@@ -7,15 +7,15 @@
 option explicit
 option escape
 
-'$include: 'fmod.bi' 
+#include once "fmod.bi"
 
 declare function 	listmp3			( path as string, mp3table() as string ) as integer
-declare function 	getmp3name		( byval stream as integer ) as string
-declare function 	getmp3artist	( byval stream as integer ) as string
-declare function 	getmp3album		( byval stream as integer ) as string
-declare sub 		printmp3tags	( byval stream as integer )
+declare function 	getmp3name		( byval stream as FSOUND_STREAM ptr ) as string
+declare function 	getmp3artist	( byval stream as FSOUND_STREAM ptr ) as string
+declare function 	getmp3album		( byval stream as FSOUND_STREAM ptr ) as string
+declare sub 		printmp3tags	( byval stream as FSOUND_STREAM ptr )
 
-	dim stream as integer
+	dim stream as FSOUND_STREAM ptr
 	dim mp3table() as string
 	dim songs as integer, currsong as integer
 	dim doexit as integer
@@ -110,7 +110,7 @@ declare sub 		printmp3tags	( byval stream as integer )
 	end
 	
 '':::::
-sub printmp3tags( byval stream as integer )
+sub printmp3tags( byval stream as FSOUND_STREAM ptr )
 	dim numtags as integer
    	dim tagtype as integer, tagname as zstring ptr, tagvalue as zstring ptr, taglen as integer
    	dim tag as integer
@@ -125,7 +125,7 @@ sub printmp3tags( byval stream as integer )
 end sub
 
 '':::::
-function getmp3name( byval stream as integer ) as string
+function getmp3name( byval stream as FSOUND_STREAM ptr ) as string
 	dim tagname as zstring ptr, taglen as integer
    
 	FSOUND_Stream_FindTagField( stream, FSOUND_TAGFIELD_ID3V1, "TITLE", @tagname, @taglen ) 
@@ -138,7 +138,7 @@ function getmp3name( byval stream as integer ) as string
 end function
 
 '':::::
-function getmp3artist( byval stream as integer ) as string
+function getmp3artist( byval stream as FSOUND_STREAM ptr ) as string
 	dim tagname as zstring ptr, taglen as integer
    
 	FSOUND_Stream_FindTagField( stream, FSOUND_TAGFIELD_ID3V1, "ARTIST", @tagname, @taglen ) 
@@ -151,7 +151,7 @@ function getmp3artist( byval stream as integer ) as string
 end function
 
 '':::::
-function getmp3album( byval stream as integer ) as string
+function getmp3album( byval stream as FSOUND_STREAM ptr ) as string
 	dim tagname as zstring ptr, taglen as integer
    
 	FSOUND_Stream_FindTagField( stream, FSOUND_TAGFIELD_ID3V1, "ALBUM", @tagname, @taglen ) 
