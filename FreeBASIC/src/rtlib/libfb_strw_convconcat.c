@@ -29,7 +29,7 @@
 /*:::::*/
 FBCALL FB_WCHAR *fb_WstrConcatWA ( const FB_WCHAR *str1, const void *str2, int str2_size )
 {
-	FB_WCHAR *dst, *d;
+	FB_WCHAR *dst;
 	int str1_len, str2_len;
 	char *str2_ptr;
 
@@ -51,8 +51,8 @@ FBCALL FB_WCHAR *fb_WstrConcatWA ( const FB_WCHAR *str1, const void *str2, int s
     	dst = fb_wstr_AllocTemp( str1_len + str2_len );
 
 		/* do the concatenation */
-    	d = fb_wstr_Move( dst, str1, str1_len );
-    	fb_wstr_ConvFromA( d, str2_len, str2_ptr );
+    	fb_wstr_Move( dst, str1, str1_len );
+    	fb_wstr_ConvFromA( &dst[str1_len], str2_len, str2_ptr );
     }
 
 	/* delete temp? */
@@ -65,7 +65,7 @@ FBCALL FB_WCHAR *fb_WstrConcatWA ( const FB_WCHAR *str1, const void *str2, int s
 /*:::::*/
 FBCALL FB_WCHAR *fb_WstrConcatAW ( const void *str1, int str1_size, const FB_WCHAR *str2 )
 {
-	FB_WCHAR *dst, *d;
+	FB_WCHAR *dst;
 	int str1_len, str2_len;
 	char *str1_ptr;
 
@@ -87,11 +87,9 @@ FBCALL FB_WCHAR *fb_WstrConcatAW ( const void *str1, int str1_size, const FB_WCH
     	dst = fb_wstr_AllocTemp( str1_len + str2_len );
 
 		/* do the concatenation */
-    	d = fb_wstr_ConvFromA( dst, str1_len, str1_ptr );
+    	fb_wstr_ConvFromA( dst, str1_len, str1_ptr );
     	if( str2_len > 0 )
-    		fb_wstr_Move( d, str2, str2_len + 1 );
-    	else
-    		*d = L'\0';
+    		fb_wstr_Move( &dst[str1_len], str2, str2_len + 1 );
     }
 
 	/* delete temp? */

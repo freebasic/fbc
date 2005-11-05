@@ -93,18 +93,17 @@ static __inline__ int fb_wstr_Len( const FB_WCHAR *s )
 }
 
 /*:::::*/
-static __inline__ FB_WCHAR *fb_wstr_ConvFromA( FB_WCHAR *dst, int dst_chars, const char *src )
+static __inline__ size_t fb_wstr_ConvFromA( FB_WCHAR *dst, int dst_chars, const char *src )
 {
 	/* NULL? */
 	if( src == NULL )
 	{
 		*dst = L'\0';
-		return dst;
+		return 0;
 	}
 
 	/* plus the null-term */
-	return (FB_WCHAR *)(((char *)dst) +
-						mbstowcs( dst, src, (dst_chars + 1) * sizeof( FB_WCHAR ) ));
+	return mbstowcs( dst, src, (dst_chars + 1) * sizeof( FB_WCHAR ) );
 }
 
 /*:::::*/
