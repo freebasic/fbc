@@ -107,6 +107,8 @@ declare function 	hJumpTbAllocSym			( ) as any ptr
 declare function 	hFloatToStr				( byval value as double, _
 					  						  byref typ as integer ) as string
 
+declare function 	hGetWstrNull			( ) as zstring ptr
+
 
 '':::::
 #define ZEROSTRDESC(s)	                                _
@@ -131,7 +133,7 @@ declare function 	hFloatToStr				( byval value as double, _
 		if( (str_ptr) <> NULL ) then                            :_
 			deallocate( str_ptr )                               :_
 		end if                                                  :_
-		str_ptr = allocate( ((new_len)+1) * len( wstring ) )    :_
+		str_ptr = allocate( ((new_len)+1) * irGetDataSize( IR_DATATYPE_WCHAR ) )    :_
 	end if
 
 #endif ''__HELP_BI__

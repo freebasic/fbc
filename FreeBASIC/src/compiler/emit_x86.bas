@@ -34,7 +34,6 @@ option escape
 #include once "inc\hash.bi"
 #include once "inc\symb.bi"
 
-
 type EMITDATATYPE
 	class			as integer
 	size			as integer
@@ -5088,7 +5087,7 @@ sub emitDATAW( byval litext as wstring ptr, _
 		ostr = ".short 0x" + hex( &h8000 or litlen ) + NEWLINE
 		outEx( ostr, FALSE )
 
-		ostr = ".ascii \"" + *esctext + "\\0\\0\"" + NEWLINE
+		ostr = ".ascii \"" + *esctext + *hGetWstrNull( ) + "\"" + NEWLINE
 		outEx( ostr, FALSE )
 	else
 		outEx( ".short 0x0000" + NEWLINE, FALSE )
@@ -5198,7 +5197,7 @@ end sub
 sub emitVARINIWSTR( byval s as string ) static
     dim ostr as string
 
-	ostr = ".ascii \"" + s + "\\0\\0\"" + NEWLINE
+	ostr = ".ascii \"" + s + *hGetWstrNull( ) + "\"" + NEWLINE
 	outEx( ostr, FALSE )
 
 end sub
@@ -5442,7 +5441,7 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
     	    case FB_SYMBTYPE_CHAR
     	    	stext = "\"" + *hEscapeStr( symbGetVarText( s ) ) + "\\0\""
     	    case FB_SYMBTYPE_WCHAR
-				stext = "\"" + *hEscapeWstr( symbGetVarTextW( s ) ) + "\\0\\0\""
+				stext = "\"" + *hEscapeWstr( symbGetVarTextW( s ) ) + *hGetWstrNull( ) + "\""
     	    case else
     	    	stext = s->var.inittext
     	    end select

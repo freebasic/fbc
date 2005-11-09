@@ -390,13 +390,15 @@ end function
 function hEscapeWstr( byval text as wstring ptr ) as zstring ptr static
     static as zstring ptr res = NULL
     static as integer res_len = 0
-    dim as integer char, c, lgt, i
+    dim as integer char, c, lgt, i, wstrlen
     dim as wstring ptr src, src_end
     dim as zstring ptr dst
 
+	wstrlen = irGetDataSize( IR_DATATYPE_WCHAR )
+
 	'' up to 4 ascii chars can be used p/ unicode char (\ooo)
 	lgt = len( *text )
-	ALLOC_TEMP_STR( res, res_len, lgt * (1+3) * len( wstring ) )
+	ALLOC_TEMP_STR( res, res_len, lgt * (1+3) * wstrlen )
 
 	src = text
 	dst = res
@@ -477,7 +479,7 @@ function hEscapeWstr( byval text as wstring ptr ) as zstring ptr static
 
 		'' convert every char to octagonal form as GAS can't
 		'' handle unicode literal strings
-		for i = 1 to len( wstring )
+		for i = 1 to wstrlen
 			*dst = CHAR_RSLASH
 			dst += 1
 
@@ -1097,4 +1099,20 @@ function hJumpTbAllocSym( ) as any ptr static
 
 end function
 
+'':::::
+function hGetWstrNull( ) as zstring ptr
+    static as integer isset = FALSE
+    static as zstring * FB_INTEGERSIZE*3+1 nullseq
+    dim as integer i
 
+    if( not isset ) then
+    	isset = TRUE
+    	nullseq = ""
+    	for i = 1 to irGetDataSize( IR_DATATYPE_WCHAR )
+    		nullseq += "\\0"
+    	next
+	end if
+
+	function = @nullseq
+
+end function
