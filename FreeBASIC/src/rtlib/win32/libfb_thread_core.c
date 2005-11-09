@@ -29,7 +29,7 @@
 
 /* thread proxy to user's thread proc */
 #ifdef TARGET_WIN32
-static void threadproc( void *param )
+static unsigned int WINAPI threadproc( void *param )
 #else
 static DWORD WINAPI threadproc( LPVOID param )
 #endif
@@ -39,45 +39,38 @@ static DWORD WINAPI threadproc( LPVOID param )
 	/* call the user thread */
 	thread->proc( thread->param );
 
-#ifdef TARGET_WIN32
-    /* Never forget to close the threads handle ... otherwise we'll
-     * have "zombie" threads in the system ... */
-    CloseHandle( thread->id );
-#endif
-
 	/* free mem */
 	fb_TlsFreeCtxTb( );
 
-	free( thread );
-
-#ifndef TARGET_WIN32
 	return 1;
-#endif
 }
 
 /*:::::*/
 FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, int param )
 {
 	FBTHREAD *thread;
+#ifdef TARGET_WIN32
+	unsigned int dwThreadId;
+#else
+    DWORD dwThreadId;
+#endif
 
 	thread = (FBTHREAD *)malloc( sizeof(FBTHREAD) );
-	if( !thread )
+	if( thread == NULL )
 		return NULL;
 
     thread->proc	= proc;
     thread->param 	= param;
 
 #ifdef TARGET_WIN32
-    thread->id = (HANDLE)_beginthread( threadproc, 0, (void *)thread );
-    if( thread->id == (void *)-1L )
-    {
-    	free( thread );
-    	return NULL;
-    }
-
+    thread->id = (HANDLE)_beginthreadex( NULL, 
+    									 0, 
+    									 threadproc, 
+    									 (void *)thread, 
+    									 0, 
+    									 &dwThreadId );
 #else
     {
-        DWORD dwThreadId;
         thread->id = CreateThread( NULL,
                                    0,
                                    threadproc,
@@ -85,13 +78,13 @@ FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, int param )
                                    0,
                                    &dwThreadId );
     }
+#endif
 
     if( thread->id == NULL )
     {
     	free( thread );
     	return NULL;
     }
-#endif
 
 	return thread;
 }
@@ -102,10 +95,11 @@ FBCALL void fb_ThreadWait( FBTHREAD *thread )
 	if( thread == NULL )
 		return;
 
-	/* race-condition can happen because the pointer could
-	   be deallocated if user thread returned already */
-	if( IsBadReadPtr( thread, sizeof(FBTHREAD) ) )
-		return;
-
 	WaitForSingleObject( thread->id, INFINITE );
+
+    /* Never forget to close the threads handle ... otherwise we'll
+     * have "zombie" threads in the system ... */
+    CloseHandle( thread->id );
+
+	free( thread );
 }
