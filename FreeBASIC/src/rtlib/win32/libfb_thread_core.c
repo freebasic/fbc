@@ -69,6 +69,12 @@ FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, int param )
 
 #ifdef TARGET_WIN32
     thread->id = (HANDLE)_beginthread( threadproc, 0, (void *)thread );
+    if( thread->id == (void *)-1L )
+    {
+    	free( thread );
+    	return NULL;
+    }
+
 #else
     {
         DWORD dwThreadId;
@@ -78,6 +84,12 @@ FBCALL FBTHREAD *fb_ThreadCreate( FB_THREADPROC proc, int param )
                                    (void*)thread,
                                    0,
                                    &dwThreadId );
+    }
+
+    if( thread->id == NULL )
+    {
+    	free( thread );
+    	return NULL;
     }
 #endif
 
