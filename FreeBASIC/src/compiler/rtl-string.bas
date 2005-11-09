@@ -2222,10 +2222,18 @@ function rtlStrChr( byval args as integer, _
     		exit function
     	end if
 
-    	'' convert to int
-    	if( astGetDataType( expr ) <> IR_DATATYPE_INTEGER ) then
+    	'' don't allow w|zstring's either..
+    	select case astGetDataType( expr )
+    	case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    		hReportErrorEx( FB_ERRMSG_PARAMTYPEMISMATCHAT, "at parameter: " + str( i+1 ) )
+    		exit function
+
+    	case IR_DATATYPE_INTEGER
+
+    	'' convert to int as chr() is a varargs function
+    	case else
     		expr = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, expr )
-    	end if
+    	end select
 
     	if( astNewPARAM( proc, expr, IR_DATATYPE_INTEGER ) = NULL ) then
     		exit function
