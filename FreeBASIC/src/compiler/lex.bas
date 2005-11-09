@@ -1773,7 +1773,7 @@ function lexPeekCurrentLine( token_pos as string ) as string
 		c += 1
 	end if
 	while( ( *c <> 0 ) and ( *c <> 10 ) and ( *c <> 13 ) )
-		res += chr(*c)
+		res += chr(cint(*c))
 		if( token_len > 0 ) then
 			token_pos += chr( iif( *c = 9, 9, 32 ) )
 			token_len -= 1
