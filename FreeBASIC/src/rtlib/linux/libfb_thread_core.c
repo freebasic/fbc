@@ -40,8 +40,6 @@ static void *threadproc( void *param )
 	/* free mem */
 	fb_TlsFreeCtxTb( );
 
-	free( thread );
-
 	/* don't return NULL or exit() will be called */
 	return (void *)1;
 }
@@ -73,4 +71,6 @@ FBCALL void fb_ThreadWait( FBTHREAD *thread )
 		return;
 
 	pthread_join( thread->id, NULL );
+
+	free( thread );
 }
