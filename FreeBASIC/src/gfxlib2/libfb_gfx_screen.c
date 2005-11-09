@@ -324,15 +324,17 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         }
     }
 
-    /* Reset VIEW PRINT
-     *
-     * Normally, resetting VIEW PRINT should also result in setting the cursor
-     * position to Y,X = 1,1 but this doesn't seem to be suitable (at least
-     * on Win32 platforms). I don't believe that this is a problem because
-     * on DOS, the cursor position will automatically be reset when the screen
-     * mode changes and not changing the console cursor position on Win32
-     * and Linux seem to be more "natural". */
-    fb_ConsoleViewEx( 0, 0, fb_mode!=NULL );
+    if( flags!=SCREEN_EXIT ) {
+        /* Reset VIEW PRINT
+         *
+         * Normally, resetting VIEW PRINT should also result in setting the cursor
+         * position to Y,X = 1,1 but this doesn't seem to be suitable (at least
+         * on Win32 platforms). I don't believe that this is a problem because
+         * on DOS, the cursor position will automatically be reset when the screen
+         * mode changes and not changing the console cursor position on Win32
+         * and Linux seem to be more "natural". */
+        fb_ConsoleViewEx( 0, 0, fb_mode!=NULL );
+    }
 
     return FB_RTERROR_OK;
 }
