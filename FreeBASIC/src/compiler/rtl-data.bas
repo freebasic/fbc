@@ -295,13 +295,15 @@ end function
 '':::::
 sub rtlDataStoreBegin static
     static as zstring * FB_MAXNAMELEN+1 lname
-    dim as FBSYMBOL ptr l, label, s
+    dim as FBSYMBOL ptr l, label
 
 	'' switch section, can't be code coz it will screw up debugging
 	emitSECTION( EMIT_SECTYPE_CONST )
 
-	'' emit default label if not yet emited
-	if( not ctx.datainited ) then
+	'' emit default label if not yet emited (also if DATA's are
+	'' been used inside procs, the label will get removed)
+	l = symbFindByNameAndClass( strptr( FB_DATALABELNAME ), FB_SYMBCLASS_LABEL )
+	if( (not ctx.datainited) or (l = NULL) ) then
 		ctx.datainited = TRUE
 
 		l = symbAddLabel( strptr( FB_DATALABELNAME ), TRUE, TRUE )
@@ -311,10 +313,6 @@ sub rtlDataStoreBegin static
 
 		lname = symbGetName( l )
 		emitDATALABEL( lname )
-
-	else
-		s = symbFindByNameAndClass( strptr( FB_DATALABELNAME ), FB_SYMBCLASS_LABEL )
-		lname = symbGetName( s )
 	end if
 
 	'' emit last label as a label in const section
