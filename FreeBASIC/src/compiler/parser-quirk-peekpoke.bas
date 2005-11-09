@@ -79,7 +79,7 @@ function cPokeStmt as integer
         end if
 	end select
 
-    expr1 = astNewPTR( NULL, NULL, 0, expr1, poketype, subtype )
+    expr1 = astNewPTR( 0, expr1, poketype, subtype )
 
     expr1 = astNewASSIGN( expr1, expr2 )
 
@@ -143,7 +143,7 @@ function cPeekFunct( byref funcexpr as ASTNODE ptr ) as integer
 		end if
 	end select
 
-    funcexpr = astNewPTR( NULL, NULL, 0, expr, peektype, subtype )
+    funcexpr = astNewPTR( 0, expr, peektype, subtype )
 
 	'' hack! to handle loading to x86 regs DI and SI, as they don't have byte versions &%@#&
     if( peektype = IR_DATATYPE_BYTE ) then

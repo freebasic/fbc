@@ -43,7 +43,7 @@ function astNewSTACK( byval op as integer, _
 		return NULL
 	end if
 
-	n->op = op
+	n->stk.op = op
 	n->l  = l
 
 	function = n
@@ -63,7 +63,7 @@ function astLoadSTACK( byval n as ASTNODE ptr ) as IRVREG ptr
 	vr = astLoad( l )
 
 	if( ast.doemit ) then
-		irEmitSTACK( n->op, vr )
+		irEmitSTACK( n->stk.op, vr )
 	end if
 
 	astDel( l )

@@ -560,7 +560,7 @@ sub symbFreeLocalDynVars( byval proc as FBSYMBOL ptr, _
 					if( s->var.array.dims > 0 ) then
 						'' dynamic?
 						if( symbIsDynamic( s ) ) then
-							rtlArrayErase( astNewVAR( s, NULL, 0, s->typ ) )
+							rtlArrayErase( astNewVAR( s, 0, s->typ ) )
 						'' array of dyn strings?
 						elseif( s->typ = FB_SYMBTYPE_STRING ) then
 							rtlArrayStrErase( s )
@@ -570,7 +570,7 @@ sub symbFreeLocalDynVars( byval proc as FBSYMBOL ptr, _
 					elseif( s->typ = FB_SYMBTYPE_STRING ) then
 						'' not funct's result?
 						if( s <> fres ) then
-							strg = astNewVAR( s, NULL, 0, IR_DATATYPE_STRING )
+							strg = astNewVAR( s, 0, IR_DATATYPE_STRING )
 							astAdd( rtlStrDelete( strg ) )
 						end if
 					end if

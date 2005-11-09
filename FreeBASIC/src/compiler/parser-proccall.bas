@@ -43,13 +43,13 @@ function hAssignFunctResult( byval proc as FBSYMBOL ptr, _
     	exit function
     end if
 
-    assg = astNewVAR( s, NULL, 0, symbGetType( s ), symbGetSubtype( s ) )
+    assg = astNewVAR( s, 0, symbGetType( s ), symbGetSubtype( s ) )
 
 	'' proc returns an UDT?
 	if( symbGetType( proc ) = FB_SYMBTYPE_USERDEF ) then
 		'' pointer? deref
 		if( symbGetProcRealType( proc ) = FB_SYMBTYPE_POINTER + FB_SYMBTYPE_USERDEF ) then
-			assg = astNewPTR( s, NULL, 0, assg, FB_SYMBTYPE_USERDEF, symbGetSubType( proc ) )
+			assg = astNewPTR( 0, assg, FB_SYMBTYPE_USERDEF, symbGetSubType( proc ) )
 		end if
 	end if
 
@@ -69,9 +69,11 @@ end function
 function cProcCall( byval sym as FBSYMBOL ptr, _
 					byref procexpr as ASTNODE ptr, _
 					byval ptrexpr as ASTNODE ptr, _
-					byval checkprnts as integer = FALSE ) as integer
+					byval checkprnts as integer = FALSE _
+				   ) as integer
+
 	dim as integer typ, isfuncptr, doflush
-	dim as FBSYMBOL ptr subtype, elm, reslabel
+	dim as FBSYMBOL ptr subtype, reslabel
 
 	function = FALSE
 
@@ -125,7 +127,6 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 	'' if function returns a pointer, check for field deref
 	doflush = TRUE
 	if( typ >= FB_SYMBTYPE_POINTER ) then
-		elm = NULL
     	subtype = symbGetSubType( sym )
 
 		isfuncptr = FALSE
@@ -136,10 +137,10 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
    		end if
 
 		'' FuncPtrOrDerefFields?
-		if( not cFuncPtrOrDerefFields( sym, elm, typ, subtype, _
+		if( not cFuncPtrOrDerefFields( typ, subtype, _
 									   procexpr, isfuncptr, TRUE ) ) then
 			'' error?
-			if( hGetLastError <> FB_ERRMSG_OK ) then
+			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
 
@@ -157,6 +158,8 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 			end if
 
 		end if
+
+		sym = astGetSymbol( procexpr )
 
 	end if
 

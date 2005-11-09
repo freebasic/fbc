@@ -42,7 +42,7 @@ function astNewLABEL( byval sym as FBSYMBOL ptr, _
 		return NULL
 	end if
 
-	n->lbl.sym	 = sym
+	n->sym	 	 = sym
 	n->lbl.flush = doflush
 
 	function = n
@@ -54,9 +54,9 @@ function astLoadLABEL( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	if( ast.doemit ) then
 		if( n->lbl.flush ) then
-			irEmitLABEL( n->lbl.sym )
+			irEmitLABEL( n->sym )
 		else
-			irEmitLABELNF( n->lbl.sym )
+			irEmitLABELNF( n->sym )
 		end if
 	end if
 
@@ -124,7 +124,7 @@ function astNewDBG( byval op as integer, _
 		return NULL
 	end if
 
-	n->op 	   = op
+	n->dbg.op	   = op
 	n->dbg.ex  = ex
 
 	function = n
@@ -135,7 +135,7 @@ end function
 function astLoadDBG( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	if( ast.doemit ) then
-		irEmitDBG( ast.curproc->proc, n->op, n->dbg.ex )
+		irEmitDBG( ast.curproc->proc, n->dbg.op, n->dbg.ex )
 	end if
 
 end function
@@ -158,7 +158,7 @@ function astNewMEM( byval op as integer, _
 		return NULL
 	end if
 
-	n->op 	   = op
+	n->mem.op  = op
 	n->l	   = l
 	n->r	   = r
 	n->mem.bytes = bytes
@@ -183,7 +183,7 @@ function astLoadMEM( byval n as ASTNODE ptr ) as IRVREG ptr
 	v2 = astLoad( r )
 
 	if( ast.doemit ) then
-		irEmitMEM( n->op, v1, v2, n->mem.bytes )
+		irEmitMEM( n->mem.op, v1, v2, n->mem.bytes )
 	end if
 
 	astDel( l )

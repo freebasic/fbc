@@ -124,8 +124,8 @@ function cLSetStmt( ) as integer
 			exit function
 		end if
 
-		dst = astGetSymbolOrElm( dstexpr )
-		src = astGetSymbolOrElm( srcexpr )
+		dst = astGetSymbol( dstexpr )
+		src = astGetSymbol( srcexpr )
 		if( (dst = NULL) or (src = NULL) ) then
 			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			exit function
@@ -225,12 +225,10 @@ private function cStrCHR( byref funcexpr as ASTNODE ptr, _
 
 		if( not is_wstr ) then
 			funcexpr = astNewVAR( symbAllocStrConst( s, cnt ), _
-								  NULL, _
 								  0, _
 								  IR_DATATYPE_CHAR )
 		else
 			funcexpr = astNewVAR( symbAllocWstrConst( ws, cnt ), _
-								  NULL, _
 								  0, _
 								  IR_DATATYPE_WCHAR )
 		end if

@@ -196,7 +196,7 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, _
 
     '' array() as ANY
     dtype =  symbGetType( s )
-	expr = astNewVAR( s, NULL, 0, dtype )
+	expr = astNewVAR( s, 0, dtype )
     if( astNewPARAM( proc, expr, dtype ) = NULL ) then
     	exit function
     end if
@@ -329,7 +329,7 @@ function rtlArrayStrErase( byval s as FBSYMBOL ptr ) as integer static
 
     '' array() as ANY
     dtype = symbGetType( s )
-    if( astNewPARAM( proc, astNewVAR( s, NULL, 0, dtype ), dtype ) = NULL ) then
+    if( astNewPARAM( proc, astNewVAR( s, 0, dtype ), dtype ) = NULL ) then
     	exit function
     end if
 
@@ -389,13 +389,13 @@ function rtlArraySetDesc( byval s as FBSYMBOL ptr, _
 
     '' array() as ANY
     dtype =  symbGetType( s )
-	expr = astNewVAR( s, NULL, 0, dtype )
+	expr = astNewVAR( s, 0, dtype )
     if( astNewPARAM( proc, expr, dtype ) = NULL ) then
 		exit function
 	end if
 
 	'' arraydata as any
-	expr = astNewVAR( s, NULL, 0, dtype )
+	expr = astNewVAR( s, 0, dtype )
     if( astNewPARAM( proc, expr, dtype ) = NULL ) then
 		exit function
 	end if
@@ -446,14 +446,14 @@ function rtlArrayAllocTmpDesc( byval arrayexpr as ASTNODE ptr, _
 
 	function = NULL
 
-	s = astGetSymbolOrElm( arrayexpr )
+	s = astGetSymbol( arrayexpr )
 
 	dimensions = symbGetArrayDimensions( s )
 
     proc = astNewFUNCT( PROCLOOKUP( ARRAYALLOCTMPDESC ) )
 
     '' byref pdesc as any ptr
-	expr = astNewVAR( pdesc, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
+	expr = astNewVAR( pdesc, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
     if( astNewPARAM( proc, expr, IR_DATATYPE_POINTER+IR_DATATYPE_VOID ) = NULL ) then
     	exit function
     end if
@@ -507,7 +507,7 @@ function rtlArrayFreeTempDesc( byval pdesc as FBSYMBOL ptr ) as ASTNODE ptr
     proc = astNewFUNCT( PROCLOOKUP( ARRAYFREETMPDESC ) )
 
     '' byval pdesc as any ptr
-	expr = astNewVAR( pdesc, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
+	expr = astNewVAR( pdesc, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
     if( astNewPARAM( proc, expr, IR_DATATYPE_POINTER+IR_DATATYPE_VOID ) = NULL ) then
     	exit function
     end if

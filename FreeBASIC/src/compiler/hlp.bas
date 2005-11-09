@@ -47,6 +47,7 @@ end type
 				"w", _                          '' wchar
 				"i", "j", _                     '' integer, uinteger
 				"e", _                          '' enum
+				"~", _                          '' bitfield
 				"l", "m", _                     '' longint, ulongint
 				"f", "d", _                     '' single, double
 				"t", "x", _                     '' var-len string, fix-len string

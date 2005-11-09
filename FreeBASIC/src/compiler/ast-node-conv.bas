@@ -41,22 +41,22 @@ private sub hCONVConstEvalInt( byval dtype as integer, _
 	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
 		select case as const dtype
 		case IR_DATATYPE_BYTE
-			v->val.int = cbyte( v->val.long )
+			v->con.val.int = cbyte( v->con.val.long )
 
 		case IR_DATATYPE_UBYTE
-			v->val.int = cubyte( culngint( v->val.long ) )
+			v->con.val.int = cubyte( culngint( v->con.val.long ) )
 
 		case IR_DATATYPE_SHORT
-			v->val.int = cshort( v->val.long )
+			v->con.val.int = cshort( v->con.val.long )
 
 		case IR_DATATYPE_USHORT
-			v->val.int = cushort( culngint( v->val.long ) )
+			v->con.val.int = cushort( culngint( v->con.val.long ) )
 
 		case IR_DATATYPE_INTEGER, IR_DATATYPE_ENUM
-			v->val.int = cint( v->val.long )
+			v->con.val.int = cint( v->con.val.long )
 
 		case IR_DATATYPE_UINT, IR_DATATYPE_POINTER
-			v->val.int = cuint( culngint( v->val.long ) )
+			v->con.val.int = cuint( culngint( v->con.val.long ) )
 
 		end select
 
@@ -64,38 +64,38 @@ private sub hCONVConstEvalInt( byval dtype as integer, _
 
 		select case as const dtype
 		case IR_DATATYPE_BYTE
-			v->val.int = cbyte( v->val.float )
+			v->con.val.int = cbyte( v->con.val.float )
 
 		case IR_DATATYPE_UBYTE
-			v->val.int = cubyte( v->val.float )
+			v->con.val.int = cubyte( v->con.val.float )
 
 		case IR_DATATYPE_SHORT
-			v->val.int = cshort( v->val.float )
+			v->con.val.int = cshort( v->con.val.float )
 
 		case IR_DATATYPE_USHORT
-			v->val.int = cushort( v->val.float )
+			v->con.val.int = cushort( v->con.val.float )
 
 		case IR_DATATYPE_INTEGER, IR_DATATYPE_ENUM
-			v->val.int = cint( v->val.float )
+			v->con.val.int = cint( v->con.val.float )
 
 		case IR_DATATYPE_UINT, IR_DATATYPE_POINTER
-			v->val.int = cuint( v->val.float )
+			v->con.val.int = cuint( v->con.val.float )
 
 		end select
 
 	case else
 		select case as const dtype
 		case IR_DATATYPE_BYTE
-			v->val.int = cbyte( v->val.int )
+			v->con.val.int = cbyte( v->con.val.int )
 
 		case IR_DATATYPE_UBYTE
-			v->val.int = cubyte( cuint( v->val.int ) )
+			v->con.val.int = cubyte( cuint( v->con.val.int ) )
 
 		case IR_DATATYPE_SHORT
-			v->val.int = cshort( v->val.int )
+			v->con.val.int = cshort( v->con.val.int )
 
 		case IR_DATATYPE_USHORT
-			v->val.int = cushort( cuint( v->val.int ) )
+			v->con.val.int = cushort( cuint( v->con.val.int ) )
 		end select
 
 	end select
@@ -120,33 +120,33 @@ private sub hCONVConstEvalFlt( byval dtype as integer, _
 	case IR_DATATYPE_LONGINT
 
 		if( dtype = IR_DATATYPE_SINGLE ) then
-			v->val.float = csng( v->val.long )
+			v->con.val.float = csng( v->con.val.long )
 		else
-			v->val.float = cdbl( v->val.long )
+			v->con.val.float = cdbl( v->con.val.long )
 		end if
 
 	case IR_DATATYPE_ULONGINT
 
 		if( dtype = IR_DATATYPE_SINGLE ) then
-			v->val.float = csng( cunsg( v->val.long ) )
+			v->con.val.float = csng( cunsg( v->con.val.long ) )
 		else
-			v->val.float = cdbl( cunsg( v->val.long ) )
+			v->con.val.float = cdbl( cunsg( v->con.val.long ) )
 		end if
 
 	case IR_DATATYPE_UINT, IR_DATATYPE_POINTER
 
 		if( dtype = IR_DATATYPE_SINGLE ) then
-			v->val.float = csng( cunsg( v->val.int ) )
+			v->con.val.float = csng( cunsg( v->con.val.int ) )
 		else
-			v->val.float = cdbl( cunsg( v->val.int ) )
+			v->con.val.float = cdbl( cunsg( v->con.val.int ) )
 		end if
 
 	case else
 
 		if( dtype = IR_DATATYPE_SINGLE ) then
-			v->val.float = csng( v->val.int )
+			v->con.val.float = csng( v->con.val.int )
 		else
-			v->val.float = cdbl( v->val.int )
+			v->con.val.float = cdbl( v->con.val.int )
 		end if
 
 	end select
@@ -163,9 +163,9 @@ private sub hCONVConstEval64( byval dtype as integer, _
 
 	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
 		if( dtype = IR_DATATYPE_LONGINT ) then
-			v->val.long = clngint( v->val.float )
+			v->con.val.long = clngint( v->con.val.float )
 		else
-			v->val.long = culngint( v->val.float )
+			v->con.val.long = culngint( v->con.val.float )
 		end if
 
 	case else
@@ -173,15 +173,15 @@ private sub hCONVConstEval64( byval dtype as integer, _
 
 		if( dtype = IR_DATATYPE_LONGINT ) then
 			if( irIsSigned( v->dtype ) ) then
-				v->val.long = clngint( v->val.int )
+				v->con.val.long = clngint( v->con.val.int )
 			else
-				v->val.long = clngint( cuint( v->val.int ) )
+				v->con.val.long = clngint( cuint( v->con.val.int ) )
 			end if
 		else
 			if( irIsSigned( v->dtype ) ) then
-				v->val.long = culngint( v->val.int )
+				v->con.val.long = culngint( v->con.val.int )
 			else
-				v->val.long = culngint( cuint( v->val.int ) )
+				v->con.val.long = culngint( cuint( v->con.val.int ) )
 			end if
 		end if
 
@@ -210,9 +210,7 @@ function astNewCONV( byval op as integer, _
     if( op = IR_OP_TOPOINTER ) then
 
 		'' assuming all type-checking was done already
-
-    	l->dtype   = dtype
-    	l->subtype = subtype
+    	astSetType( l, dtype, subtype )
 
     	return l
     end if
@@ -249,10 +247,12 @@ function astNewCONV( byval op as integer, _
 		end if
 
 		if( op = IR_OP_TOSIGNED ) then
-			l->dtype = irGetSignedType( ldtype )
+			dtype = irGetSignedType( ldtype )
 		else
-			l->dtype = irGetUnsignedType( ldtype )
+			dtype = irGetUnsignedType( ldtype )
 		end if
+
+		astSetDataType( l, dtype )
 
 		return l
 	end if
@@ -276,8 +276,7 @@ function astNewCONV( byval op as integer, _
 			l->class = AST_NODECLASS_ENUM
 		end if
 
-		l->dtype   = dtype
-		l->subtype = subtype
+		astSetType( l, dtype, subtype )
 
 		return l
 	end if
@@ -287,8 +286,7 @@ function astNewCONV( byval op as integer, _
 	if( (dclass = irGetDataClass( dtype )) and _
 		(irGetDataSize( ldtype ) = irGetDataSize( dtype )) ) then
 
-		l->dtype   = dtype
-		l->subtype = subtype
+		astSetType( l, dtype, subtype )
 
 		return l
 	end if
@@ -315,7 +313,6 @@ end function
 '':::::
 function astLoadCONV( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr l
-    dim as integer dtype
     dim as IRVREG ptr vs, vr
 
 	l  = n->l
@@ -326,11 +323,9 @@ function astLoadCONV( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	vs = astLoad( l )
 
-	dtype = n->dtype
-
 	if( ast.doemit ) then
-		vr = irAllocVREG( dtype )
-		irEmitCONVERT( vr, dtype, vs, INVALID )
+		vr = irAllocVREG( n->dtype )
+		irEmitCONVERT( vr, n->dtype, vs, INVALID )
 	end if
 
 	astDel( l )

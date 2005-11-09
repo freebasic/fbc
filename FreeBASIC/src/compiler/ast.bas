@@ -93,6 +93,8 @@ declare function 	astLoadBOUNDCHK	( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astLoadPTRCHK	( byval n as ASTNODE ptr ) as IRVREG ptr
 
+declare function 	astLoadFIELD	( byval n as ASTNODE ptr ) as IRVREG ptr
+
 
 '' globals
 	dim shared ast as ASTCTX
@@ -494,7 +496,7 @@ function astUpdStrConcat( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	'' convert "string + string" to "StrConcat( string, string )"
 	if( n->class = AST_NODECLASS_BOP ) then
-		if( n->op = IR_OP_ADD ) then
+		if( n->bop.op = IR_OP_ADD ) then
 			l = n->l
 			r = n->r
 			if( n->dtype <> IR_DATATYPE_WCHAR ) then
@@ -536,7 +538,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 	if( n->class <> AST_NODECLASS_BOP ) then
 		'' UOP? check if it's a NOT
 		if( n->class = AST_NODECLASS_UOP ) then
-			if( n->op = IR_OP_NOT ) then
+			if( n->bop.op = IR_OP_NOT ) then
 				l = astUpdComp2Branch( n->l, label, isinverse = FALSE )
 				astDel( n )
 				return l
@@ -549,11 +551,11 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 				'' branch if false
 				select case as const dtype
 				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-					istrue = n->val.long = 0
+					istrue = n->con.val.long = 0
 				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-					istrue = n->val.float = 0
+					istrue = n->con.val.float = 0
 				case else
-					istrue = n->val.int = 0
+					istrue = n->con.val.int = 0
 				end select
 
 				if( istrue ) then
@@ -567,11 +569,11 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 				'' branch if true
 				select case as const dtype
 				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-					istrue = n->val.long <> 0
+					istrue = n->con.val.long <> 0
 				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-					istrue = n->val.float <> 0
+					istrue = n->con.val.float <> 0
 				case else
-					istrue = n->val.int <> 0
+					istrue = n->con.val.int <> 0
 				end select
 
 				if( istrue ) then
@@ -620,7 +622,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 	end if
 
 	''
-	op 	  = n->op
+	op 	  = n->bop.op
 
 	'' relational operator?
 	select case as const op
@@ -628,11 +630,11 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 
 		'' invert it
 		if( not isinverse ) then
-			n->op = irGetInverseLogOp( op )
+			n->bop.op = irGetInverseLogOp( op )
 		end if
 
 		'' tell IR that the destine label is already set
-		n->ex = label
+		n->bop.ex = label
 
 		return n
 
@@ -764,7 +766,8 @@ function astFuncPtrCheck( byval pdtype as integer, _
 	select case as const astGetClass( expr )
 	'' address, func, var, ..
 	case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET, _
-		 AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FUNCT, AST_NODECLASS_PTR
+		 AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FIELD, _
+		 AST_NODECLASS_FUNCT, AST_NODECLASS_PTR
 
     	'' not a function pointer?
     	if( astGetDataType( expr ) <> IR_DATATYPE_POINTER + IR_DATATYPE_FUNCTION ) then
@@ -785,30 +788,6 @@ function astFuncPtrCheck( byval pdtype as integer, _
 
 end function
 
-'':::::
-function astGetBitField( byval n as ASTNODE ptr, _
-						 byval s as FBSYMBOL ptr ) as ASTNODE ptr static
-
-	dim as ASTNODE ptr c
-
-	'' make a copy, the node itself can't be used or it will be deleted twice
-	c = astNewNode( INVALID, INVALID )
-	astCopy( c, n )
-
-	if( s->var.elm.bitpos > 0 ) then
-		n = astNewBOP( IR_OP_SHR, c, _
-				   	   astNewCONSTi( s->var.elm.bitpos, IR_DATATYPE_UINT ) )
-	else
-		n = c
-	end if
-
-	n = astNewBOP( IR_OP_AND, n, _
-				   astNewCONSTi( ast_bitmaskTB(s->var.elm.bits), IR_DATATYPE_UINT ) )
-
-	function = n
-
-end function
-
 #if 0
 '':::::
 sub astDump ( byval p as ASTNODE ptr, _
@@ -823,7 +802,7 @@ sub astDump ( byval p as ASTNODE ptr, _
 	v = ""
 	select case n->class
 	case AST_NODECLASS_BOP
-		select case n->op
+		select case n->bop.op
 		case IR_OP_ADD
 			v = "+"
 		case IR_OP_SUB
@@ -848,7 +827,7 @@ sub astDump ( byval p as ASTNODE ptr, _
 		v = "(" + v + ")"
 
 	case AST_NODECLASS_UOP
-		select case n->op
+		select case n->uop.op
 		case IR_OP_NEG
 			v = "-"
 		case IR_OP_NOT
@@ -859,7 +838,7 @@ sub astDump ( byval p as ASTNODE ptr, _
 	case AST_NODECLASS_VAR
 		v = "[" + mid$( symbGetName( n->var.sym ), 2 ) + "]"
 	case AST_NODECLASS_CONST
-		v = "<" + str$( n->val.int ) + ">"
+		v = "<" + str$( n->con.val.int ) + ">"
 	case AST_NODECLASS_CONV
 		v = "{" + str$( n->dtype ) + "}"
 '	case AST_NODECLASS_IDX
@@ -1040,12 +1019,8 @@ function astIsTreeEqual( byval l as ASTNODE ptr, _
 	end if
 
 	select case as const l->class
-	case AST_NODECLASS_VAR
-		if( l->var.sym <> r->var.sym ) then
-			exit function
-		end if
-
-		if( l->var.elm <> r->var.elm ) then
+	case AST_NODECLASS_VAR, AST_NODECLASS_FIELD
+		if( l->sym <> r->sym ) then
 			exit function
 		end if
 
@@ -1058,33 +1033,25 @@ const DBL_EPSILON# = 2.2204460492503131e-016
 
 		select case as const l->dtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			if( l->val.long <> r->val.long ) then
+			if( l->con.val.long <> r->con.val.long ) then
 				exit function
 			end if
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			if( abs( l->val.float - r->val.float ) > DBL_EPSILON ) then
+			if( abs( l->con.val.float - r->con.val.float ) > DBL_EPSILON ) then
 				exit function
 			end if
 		case else
-			if( l->val.int <> r->val.int ) then
+			if( l->con.val.int <> r->con.val.int ) then
 				exit function
 			end if
 		end select
 
 	case AST_NODECLASS_ENUM
-		if( l->val.int <> r->val.int ) then
+		if( l->con.val.int <> r->con.val.int ) then
 			exit function
 		end if
 
 	case AST_NODECLASS_PTR
-		if( l->ptr.sym <> r->ptr.sym ) then
-			exit function
-		end if
-
-		if( l->ptr.elm <> r->ptr.elm ) then
-			exit function
-		end if
-
 		if( l->ptr.ofs <> r->ptr.ofs ) then
 			exit function
 		end if
@@ -1099,37 +1066,33 @@ const DBL_EPSILON# = 2.2204460492503131e-016
 		end if
 
 	case AST_NODECLASS_BOP
-		if( l->op <> r->op ) then
+		if( l->bop.op <> r->bop.op ) then
 			exit function
 		end if
 
-		if( l->allocres <> r->allocres ) then
+		if( l->bop.allocres <> r->bop.allocres ) then
 			exit function
 		end if
 
-		if( l->ex <> r->ex ) then
+		if( l->bop.ex <> r->bop.ex ) then
 			exit function
 		end if
 
 	case AST_NODECLASS_UOP
-		if( l->op <> r->op ) then
+		if( l->uop.op <> r->uop.op ) then
 			exit function
 		end if
 
-		if( l->allocres <> r->allocres ) then
+		if( l->uop.allocres <> r->uop.allocres ) then
 			exit function
 		end if
 
 	case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET
-		if( l->addr.sym <> r->addr.sym ) then
+		if( l->sym <> r->sym ) then
 			exit function
 		end if
 
-		if( l->addr.elm <> r->addr.elm ) then
-			exit function
-		end if
-
-		if( l->op <> r->op ) then
+		if( l->uop.op <> r->uop.op ) then
 			exit function
 		end if
 
@@ -1206,10 +1169,10 @@ function astIsSymbolOnTree( byval sym as FBSYMBOL ptr, _
 	end if
 
 	select case as const n->class
-	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
+	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FIELD, _
 		 AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET
 
-		s = astGetSymbolOrElm( n )
+		s = astGetSymbol( n )
 
 		'' same symbol?
 		if( s = sym ) then
@@ -1266,10 +1229,9 @@ function astNewNode( byval class as integer, _
 	n->dtype 		= dtype
 	n->subtype		= subtype
 	n->defined		= FALSE
-	n->op			= INVALID
 	n->l    		= NULL
 	n->r    		= NULL
-	n->chkbitfld	= FALSE
+	n->sym			= NULL
 
 	function = n
 
@@ -1295,102 +1257,6 @@ function astIsADDR( byval n as ASTNODE ptr ) as integer static
 	case else
 		return FALSE
 	end select
-
-end function
-
-'':::::
-function astGetSymbolOrElm( byval n as ASTNODE ptr ) as FBSYMBOL ptr static
-    dim s as FBSYMBOL ptr
-
-	s = NULL
-
-	if( n <> NULL ) then
-		select case as const n->class
-		case AST_NODECLASS_PTR
-			s = n->ptr.elm
-			if( s = NULL ) then
-				s = n->ptr.sym
-			end if
-
-		case AST_NODECLASS_VAR
-			s = n->var.elm
-			if( s = NULL ) then
-				s = n->var.sym
-			end if
-
-		case AST_NODECLASS_IDX
-			n = n->r
-			if( n <> NULL ) then
-				s = n->var.elm
-				if( s = NULL ) then
-					s = n->var.sym
-				end if
-			end if
-
-		case AST_NODECLASS_FUNCT
-			s = n->proc.sym
-
-		case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET
-			s = n->addr.elm
-			if( s = NULL ) then
-				s = n->addr.sym
-			end if
-		end select
-	end if
-
-	function = s
-
-end function
-
-'':::::
-function astGetSymbol( byval n as ASTNODE ptr ) as FBSYMBOL ptr static
-
-	if( n <> NULL ) then
-		select case as const n->class
-		case AST_NODECLASS_PTR
-			return n->ptr.sym
-
-		case AST_NODECLASS_VAR
-			return n->var.sym
-
-		case AST_NODECLASS_IDX
-			n = n->r
-			if( n <> NULL ) then
-				return n->var.sym
-			end if
-
-		case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET
-			return n->addr.sym
-		end select
-	end if
-
-	function = NULL
-
-end function
-
-'':::::
-function astGetElm( byval n as ASTNODE ptr ) as FBSYMBOL ptr static
-
-	if( n <> NULL ) then
-		select case as const n->class
-		case AST_NODECLASS_PTR
-			return n->ptr.elm
-
-		case AST_NODECLASS_VAR
-			return n->var.elm
-
-		case AST_NODECLASS_IDX
-			n = n->r
-			if( n <> NULL ) then
-				return n->var.elm
-			end if
-
-		case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET
-			return n->addr.elm
-		end select
-	end if
-
-	function = NULL
 
 end function
 
@@ -1492,7 +1358,7 @@ function astGetStrLitSymbol( byval n as ASTNODE ptr ) as FBSYMBOL ptr static
     function = NULL
 
    	if( astIsVAR( n ) ) then
-		s = astGetSymbolOrElm( n )
+		s = astGetSymbol( n )
 		if( s <> NULL ) then
 			if( symbGetVarInitialized( s ) ) then
 				function = s
@@ -1511,31 +1377,31 @@ sub astConvertValue( byval n as ASTNODE ptr, _
 	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
 		select case as const todtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			v->long = n->val.long
+			v->long = n->con.val.long
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			v->float  = n->val.long
+			v->float  = n->con.val.long
 		case else
-			v->int  = n->val.long
+			v->int  = n->con.val.long
 		end select
 
 	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
 		select case as const todtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			v->long = n->val.float
+			v->long = n->con.val.float
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			v->float  = n->val.float
+			v->float  = n->con.val.float
 		case else
-			v->int  = n->val.float
+			v->int  = n->con.val.float
 		end select
 
 	case else
 		select case as const todtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			v->long = n->val.int
+			v->long = n->con.val.int
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			v->float  = n->val.int
+			v->float  = n->con.val.int
 		case else
-			v->int  = n->val.int
+			v->int  = n->con.val.int
 		end select
 	end select
 
@@ -1612,6 +1478,9 @@ function astCheckConst( byval dtype as integer, _
 			n = astNewCONV( INVALID, dtype, NULL, n )
 			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 		end if
+
+	case IR_DATATYPE_BITFIELD
+		'' !!!WRITEME!!! use ->subtype's
 	end select
 
 	function = n
@@ -1643,6 +1512,9 @@ function astLoad( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	case AST_NODECLASS_IDX
 		return astLoadIDX( n )
+
+    case AST_NODECLASS_FIELD
+    	return astLoadFIELD( n )
 
 	case AST_NODECLASS_ENUM
 		return astLoadENUM( n )
@@ -1697,6 +1569,7 @@ function astLoad( byval n as ASTNODE ptr ) as IRVREG ptr
 
     case AST_NODECLASS_PTRCHK
     	return astLoadPTRCHK( n )
+
     end select
 
 end function

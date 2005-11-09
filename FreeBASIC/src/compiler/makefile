@@ -153,7 +153,8 @@ sources += ast.bas ast-node-addr.bas ast-node-assign.bas ast-node-bop.bas
 sources += ast-node-branch.bas ast-node-check.bas ast-node-const.bas ast-node-conv.bas
 sources += ast-node-enum.bas ast-node-funct.bas ast-node-idx.bas ast-node-iif.bas
 sources += ast-node-link.bas ast-node-load.bas ast-node-misc.bas ast-node-ptr.bas
-sources += ast-node-stack.bas ast-node-uop.bas ast-node-var.bas ast-optimize.bas
+sources += ast-node-stack.bas ast-node-uop.bas ast-node-var.bas ast-node-field.bas
+sources += ast-optimize.bas
 
 sources += edbg_stab.bas emit.bas emit_x86.bas fb.bas
 sources += flist.bas hash.bas error.bas hlp.bas ir.bas lex.bas list.bas
@@ -184,7 +185,7 @@ sources += rtl-print.bas rtl-string.bas rtl-system.bas
 
 sources += symb.bas symb-const.bas symb-define.bas symb-enum.bas symb-keyword.bas
 sources += symb-label.bas symb-lib.bas symb-proc.bas symb-scope.bas symb-struct.bas
-sources += symb-typedef.bas symb-var.bas
+sources += symb-typedef.bas symb-var.bas symb-bitfield.bas
 
 sources += $(osdepsrcs)
 

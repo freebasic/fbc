@@ -45,10 +45,17 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 	dim as ASTNODE ptr expr, assgexpr
     dim as FBSYMBOL ptr litsym
 
+    '' set the context symbol to allow taking the address of overloaded procs
+    if( symbGetType( sym ) >= IR_DATATYPE_POINTER+IR_DATATYPE_FUNCTION ) then
+    	env.ctxsym = symbGetSubType( sym )
+    end if
+
 	if( not cExpression( expr ) ) then
 		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 		return 0
 	end if
+
+	env.ctxsym = NULL
 
     dtype = astGetDataType( expr )
 
@@ -89,7 +96,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 					return 0
 				end if
 
-				irEmitVARINIOFS( astGetSymbolOrElm( expr ) )
+				irEmitVARINIOFS( astGetSymbol( expr ) )
 
 			else
 				'' not a constant?
@@ -100,7 +107,10 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 
 				'' different types?
 				if( dtype <> symbGetType( sym ) ) then
-					expr = astNewCONV( INVALID, symbGetType( sym ), symbGetSubtype( sym ), expr )
+					expr = astNewCONV( INVALID, _
+									   symbGetType( sym ), _
+									   symbGetSubtype( sym ), _
+									   expr )
 				end if
 
 				select case as const symbGetType( sym )
@@ -169,7 +179,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 
 	else
 
-        assgexpr = astNewVAR( basesym, NULL, ofs, symbGetType( sym ), symbGetSubtype( sym ) )
+        assgexpr = astNewVAR( basesym, ofs, symbGetType( sym ), symbGetSubtype( sym ) )
 
         assgexpr = astNewASSIGN( assgexpr, expr )
 

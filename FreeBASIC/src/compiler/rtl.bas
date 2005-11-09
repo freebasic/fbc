@@ -226,42 +226,24 @@ function rtlProcLookup( byval pname as zstring ptr, _
 end function
 
 '':::::
-'' note: rtlCalcExprLen must be called *before* astNewPARAM(e) because the
+'' note: this function must be called *before* astNewPARAM(e) because the
 ''       expression 'e' can be changed inside the former (address-of string's etc)
 function rtlCalcExprLen( byval expr as ASTNODE ptr, _
 						 byval realsize as integer = TRUE _
 					   ) as integer static
 
 	dim as FBSYMBOL ptr s
-	dim as integer lgt, dtype
+	dim as integer dtype
 
 	function = -1
 
 	dtype = astGetDataType( expr )
-	select case dtype
-	case IR_DATATYPE_FIXSTR
-		function = FIXSTRGETLEN( expr )
-
-	case IR_DATATYPE_CHAR
-		lgt = ZSTRGETLEN( expr )
-		'' char?
-		if( lgt = 0 ) then
-			function = 1
-		else
-			function = lgt
-		end if
-
-	case IR_DATATYPE_WCHAR
-		lgt = WSTRGETLEN( expr )
-		'' char?
-		if( lgt = 0 ) then
-			function = 1
-		else
-			function = lgt
-		end if
+	select case as const dtype
+	case IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+		function = rtlCalcStrLen( expr, dtype )
 
 	case IR_DATATYPE_USERDEF
-		s = astGetSymbolOrElm( expr )
+		s = astGetSymbol( expr )
 		if( s <> NULL ) then
 			'' if it's a type field that's an udt, no padding is
 			'' ever added, realsize is always TRUE
@@ -278,4 +260,43 @@ function rtlCalcExprLen( byval expr as ASTNODE ptr, _
 	end select
 
 end function
+
+'':::::
+'' note: this function must be called *before* astNewPARAM(e) because the
+''		 expression 'e' can be changed inside the former (address-of string's etc)
+function rtlCalcStrLen( byval expr as ASTNODE ptr, _
+						byval dtype as integer _
+					  ) as integer static
+
+	dim as FBSYMBOL ptr s
+
+	select case as const dtype
+	case IR_DATATYPE_BYTE, IR_DATATYPE_UBYTE
+		function = 0
+
+	case IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR
+		s = astGetSymbol( expr )
+		'' pointer?
+		if( s = NULL ) then
+			function = 0
+		else
+			function = symbGetStrLen( s )
+		end if
+
+	case IR_DATATYPE_WCHAR
+		s = astGetSymbol( expr )
+		'' pointer?
+		if( s = NULL ) then
+			function = 0
+		else
+			function = symbGetWstrLen( s )
+		end if
+
+	case else
+		function = -1
+	end select
+
+end function
+
+
 

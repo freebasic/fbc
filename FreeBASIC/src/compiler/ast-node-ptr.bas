@@ -29,12 +29,11 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function astNewPTR( byval sym as FBSYMBOL ptr, _
-					byval elm as FBSYMBOL ptr, _
-					byval ofs as integer, _
+function astNewPTR( byval ofs as integer, _
 					byval l as ASTNODE ptr, _
 					byval dtype as integer, _
-					byval subtype as FBSYMBOL ptr ) as ASTNODE ptr static
+					byval subtype as FBSYMBOL ptr _
+				  ) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
     dim as integer delchild
@@ -53,7 +52,7 @@ function astNewPTR( byval sym as FBSYMBOL ptr, _
 		'' convert *@ to nothing
 		select case l->class
 		case AST_NODECLASS_ADDR
-			if( l->op = IR_OP_ADDROF ) then
+			if( l->uop.op = IR_OP_ADDROF ) then
 				delchild = TRUE
 			end if
 		case AST_NODECLASS_OFFSET
@@ -71,19 +70,14 @@ function astNewPTR( byval sym as FBSYMBOL ptr, _
 	end if
 
 	n->l   		= l
-	n->ptr.sym	= sym
-	n->ptr.elm	= elm
 	n->ptr.ofs	= ofs
-	n->chkbitfld= elm <> NULL
 
 end function
 
 '':::::
 function astLoadPTR( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr l
-    dim as integer dtype
     dim as IRVREG ptr v1, vp, vr
-    dim as FBSYMBOL ptr s
 
 	l = n->l
 	'' no index? can happen with absolute addresses + ptr typecasting
@@ -94,25 +88,9 @@ function astLoadPTR( byval n as ASTNODE ptr ) as IRVREG ptr
 		return vr
 	end if
 
-	'' handle bitfields..
-	if( n->chkbitfld ) then
-		n->chkbitfld = FALSE
-		s = n->ptr.elm
-		if( s <> NULL ) then
-			if( s->var.elm.bits > 0 ) then
-				n = astGetBitField( n, s )
-				function = astLoad( n )
-				astDel( n )
-				exit function
-			end if
-		end if
-	end if
-
 	v1 = astLoad( l )
 
 	''
-	dtype = n->dtype
-
 	if( ast.doemit ) then
 		'' src is not a reg?
 		if( (not irIsREG( v1 )) or _
@@ -125,7 +103,7 @@ function astLoadPTR( byval n as ASTNODE ptr ) as IRVREG ptr
 			vp = v1
 		end if
 
-		vr = irAllocVRPTR( dtype, n->ptr.ofs, vp )
+		vr = irAllocVRPTR( n->dtype, n->ptr.ofs, vp )
 	end if
 
 	astDel( l )

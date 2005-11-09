@@ -382,7 +382,7 @@ function rtlCpuCheck( ) as integer static
 	rtlPrint( astNewCONSTi( 0, IR_DATATYPE_INTEGER ), _
 			  FALSE, _
 			  FALSE, _
-			  astNewVAR( s, NULL, 0, IR_DATATYPE_CHAR ) )
+			  astNewVAR( s, 0, IR_DATATYPE_CHAR ) )
 
 	'' end 1
     proc = astNewFUNCT( PROCLOOKUP( END ), NULL, TRUE )

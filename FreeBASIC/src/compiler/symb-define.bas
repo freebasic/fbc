@@ -33,8 +33,8 @@ option escape
 type DEFCALLBACK as function() as string
 
 type SYMBDEF
-	name			as zstring * 20
-	value			as zstring * 12
+	name			as zstring * 16+1
+	value			as zstring * 16+1
 	flags			as integer
 	proc			as DEFCALLBACK
 end type

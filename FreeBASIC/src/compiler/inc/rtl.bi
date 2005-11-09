@@ -588,6 +588,8 @@ declare function 	rtlProcLookup		( byval pname as zstring ptr, _
 declare function 	rtlCalcExprLen		( byval expr as ASTNODE ptr, _
 						 				  byval realsize as integer = TRUE ) as integer
 
+declare function 	rtlCalcStrLen		( byval expr as ASTNODE ptr, _
+										  byval dtype as integer ) as integer
 
 declare function 	rtlStrCompare 		( byval str1 as ASTNODE ptr, _
 										  byval sdtype1 as integer, _
@@ -1046,26 +1048,5 @@ declare function    rtlPrinter_cb       ( byval sym as FBSYMBOL ptr ) as integer
 
 #define PROCLOOKUP(id) rtlProcLookup( strptr( FB_RTL_##id ), FB_RTL_IDX_##id )
 
-'' note: STRGETLEN must be called *before* astNewPARAM(e) because the expression 'e'
-''       can be changed inside the former (address-of string's etc)
 
-#define FIXSTRGETLEN(e) symbGetStrLen( astGetSymbolOrElm( e ) )
-
-#define ZSTRGETLEN(e) iif( astIsPTR( e ), 0, symbGetStrLen( astGetSymbolOrElm( e ) ) )
-
-#define WSTRGETLEN(e) iif( astIsPTR( e ), 0, symbGetWstrLen( astGetSymbolOrElm( e ) ) )
-
-#define STRGETLEN(e,t,l)								_
-	select case as const t                              :_
-	case IR_DATATYPE_BYTE, IR_DATATYPE_UBYTE       		:_
-		l = 0                                           :_
-	case IR_DATATYPE_FIXSTR                             :_
-		l = FIXSTRGETLEN( e )                         	:_
-	case IR_DATATYPE_CHAR                  				:_
-		l = ZSTRGETLEN( e )                            	:_
-	case IR_DATATYPE_WCHAR                            	:_
-		l = WSTRGETLEN( e )                 			:_
-	case else                               	        :_
-		l = -1											:_
-	end select
 

@@ -30,7 +30,6 @@ option escape
 
 '':::::
 function cFunctionCall( byval sym as FBSYMBOL ptr, _
-						byref elm as FBSYMBOL ptr, _
 						byref funcexpr as ASTNODE ptr, _
 						byval ptrexpr as ASTNODE ptr ) as integer
 
@@ -76,7 +75,6 @@ function cFunctionCall( byval sym as FBSYMBOL ptr, _
 	end if
 
 	'' if function returns a pointer, check for field deref
-	elm = NULL
 	if( typ >= FB_SYMBTYPE_POINTER ) then
     	subtype = symbGetSubType( sym )
 
@@ -88,7 +86,7 @@ function cFunctionCall( byval sym as FBSYMBOL ptr, _
    		end if
 
 		'' FuncPtrOrDerefFields?
-		cFuncPtrOrDerefFields( sym, elm, typ, subtype, funcexpr, isfuncptr, TRUE )
+		cFuncPtrOrDerefFields( typ, subtype, funcexpr, isfuncptr, TRUE )
 
 		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 			exit function
@@ -102,20 +100,19 @@ end function
 '':::::
 ''Function        =   ID ('(' ProcParamList ')')? FuncPtrOrDerefFields? .
 ''
-function cFunction( byref funcexpr as ASTNODE ptr, _
-					byref sym as FBSYMBOL ptr, _
-					byref elm as FBSYMBOL ptr ) as integer
+function cFunction( byref funcexpr as ASTNODE ptr ) as integer
+    dim as FBSYMBOL ptr sym
 
 	function = FALSE
 
 	'' ID
-	sym = symbFindByClass( lexGetSymbol, FB_SYMBCLASS_PROC )
+	sym = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_PROC )
 	if( sym = NULL ) then
 		exit function
 	end if
 
 	lexSkipToken( )
 
-	function = cFunctionCall( sym, elm, funcexpr, NULL )
+	function = cFunctionCall( sym, funcexpr, NULL )
 
 end function

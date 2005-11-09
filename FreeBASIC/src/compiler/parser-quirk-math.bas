@@ -187,7 +187,7 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 		if( expr <> NULL ) then
 			if( not islen ) then
 				if( astGetDataClass( expr ) = IR_DATACLASS_STRING ) then
-					if( (astGetSymbolOrElm( expr ) = NULL) or (astIsFUNCT( expr )) ) then
+					if( (astGetSymbol( expr ) = NULL) or (astIsFUNCT( expr )) ) then
 						hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
 						exit function
 					end if

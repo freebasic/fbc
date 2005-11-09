@@ -33,7 +33,7 @@ option escape
 '':::::
 ''FieldArray    =   '(' Expression (',' Expression)* ')' .
 ''
-function cFieldArray( byval elm as FBSYMBOL ptr, _
+function cFieldArray( byval sym as FBSYMBOL ptr, _
 					  byval typ as integer, _
 					  byref idxexpr as ASTNODE ptr ) as integer
 
@@ -45,9 +45,9 @@ function cFieldArray( byval elm as FBSYMBOL ptr, _
     function = FALSE
 
     ''
-    maxdims = symbGetArrayDimensions( elm )
+    maxdims = symbGetArrayDimensions( sym )
     dims = 0
-    d = symbGetArrayFirstDim( elm )
+    d = symbGetArrayFirstDim( sym )
     expr = NULL
     do
     	dims += 1
@@ -117,11 +117,11 @@ function cFieldArray( byval elm as FBSYMBOL ptr, _
     end if
 
 	'' times length
-	constexpr = astNewCONSTi( symbGetLen( elm ), IR_DATATYPE_INTEGER )
+	constexpr = astNewCONSTi( symbGetLen( sym ), IR_DATATYPE_INTEGER )
 	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
 
     '' plus difference
-    diff = symbGetArrayDiff( elm )
+    diff = symbGetArrayDiff( sym )
     if( diff <> 0 ) then
     	constexpr = astNewCONSTi( diff, IR_DATATYPE_INTEGER )
     	expr = astNewBOP( IR_OP_ADD, expr, constexpr )
@@ -142,10 +142,10 @@ end function
 '':::::
 ''TypeField       =   ArrayIdx? ('.' ID ArrayIdx?)*
 ''
-function cTypeField( byref elm as FBSYMBOL ptr, _
+function cTypeField( byref sym as FBSYMBOL ptr, _
 					 byref typ as integer, _
 					 byref subtype as FBSYMBOL ptr, _
-					 byref idxexpr as ASTNODE ptr, _
+					 byref expr as ASTNODE ptr, _
 					 byval isderef as integer, _
 					 byval checkarray as integer ) as integer
 
@@ -179,7 +179,7 @@ function cTypeField( byref elm as FBSYMBOL ptr, _
 				isderef = FALSE
 			end if
 
-    		ofs = symbGetUDTElmOffset( elm, typ, subtype, fields )
+    		ofs = symbGetUDTElmOffset( sym, typ, subtype, fields )
     		if( ofs < 0 ) then
     			hReportError( FB_ERRMSG_ELEMENTNOTDEFINED )
     			return FALSE
@@ -189,10 +189,10 @@ function cTypeField( byref elm as FBSYMBOL ptr, _
 
     		if( ofs <> 0 ) then
     			constexpr = astNewCONSTi( ofs, IR_DATATYPE_INTEGER )
-    			if( idxexpr = NULL ) then
-    				idxexpr = constexpr
+    			if( expr = NULL ) then
+    				expr = constexpr
     			else
-	    			idxexpr = astNewBOP( IR_OP_ADD, idxexpr, constexpr )
+	    			expr = astNewBOP( IR_OP_ADD, expr, constexpr )
     			end if
     		end if
 
@@ -201,7 +201,7 @@ function cTypeField( byref elm as FBSYMBOL ptr, _
     	function = TRUE
 
 		''
-		if( elm = NULL ) then
+		if( sym = NULL ) then
 			exit function
 		end if
 
@@ -213,14 +213,14 @@ function cTypeField( byref elm as FBSYMBOL ptr, _
     		end if
 
 			'' if field isn't an array, it can be function field, exit
-			if( symbGetArrayDimensions( elm ) = 0 ) then
+			if( symbGetArrayDimensions( sym ) = 0 ) then
 				exit do
 			end if
 
     		lexSkipToken( )
     	else
 			'' array and no index?
-			if( symbGetArrayDimensions( elm ) <> 0 ) then
+			if( symbGetArrayDimensions( sym ) <> 0 ) then
     			if( checkarray ) then
     				hReportError( FB_ERRMSG_EXPECTEDINDEX )
    					return FALSE
@@ -230,7 +230,7 @@ function cTypeField( byref elm as FBSYMBOL ptr, _
     		exit do
     	end if
 
-    	if( not cFieldArray( elm, typ, idxexpr ) ) then
+    	if( not cFieldArray( sym, typ, expr ) ) then
     		exit function
     	end if
 
@@ -246,9 +246,7 @@ end function
 '':::::
 ''DerefFields	=   ((FIELDDEREF DREF* | '[' Expression ']') TypeField)* .
 ''
-function cDerefFields( byval sym as FBSYMBOL ptr, _
-					   byref elm as FBSYMBOL ptr, _
-					   byref dtype as integer, _
+function cDerefFields( byref dtype as integer, _
 					   byref subtype as FBSYMBOL ptr, _
 					   byref varexpr as ASTNODE ptr, _
 					   byval checkarray as integer ) as integer
@@ -256,6 +254,7 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 	dim as integer cnt, lgt
 	dim as ASTNODE ptr expr, idxexpr
 	dim as integer isfieldderef
+	dim as FBSYMBOL ptr sym
 
 	function = FALSE
 
@@ -312,10 +311,10 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 
 					if( dtype = FB_SYMBTYPE_STRING ) then
 						'' deref
-						varexpr = astNewADDR( IR_OP_DEREF, varexpr, sym, elm )
+						varexpr = astNewADDR( IR_OP_DEREF, varexpr )
 					else
 						'' address of
-						varexpr = astNewADDR( IR_OP_ADDROF, varexpr, sym, elm )
+						varexpr = astNewADDR( IR_OP_ADDROF, varexpr )
 					end if
 
 					'' add index
@@ -329,11 +328,10 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 					end if
 
 					'' make a pointer
-					varexpr = astNewPTR( NULL, NULL, 0, varexpr, dtype, NULL )
+					varexpr = astNewPTR( 0, varexpr, dtype, NULL )
 
 					'' reset type
 					subtype = NULL
-					elm = NULL
 
 					return TRUE
 
@@ -375,15 +373,26 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 
 		'' TypeField
 		expr = NULL
-		if( not cTypeField( elm, dtype, subtype, expr, isfieldderef, checkarray ) ) then
+		sym = astGetSymbol( varexpr )
+		if( not cTypeField( sym, dtype, subtype, expr, isfieldderef, checkarray ) ) then
+
 			if( idxexpr = NULL ) then
 				hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 				return FALSE
 			end if
+
+			sym = NULL
 		end if
 
-		'' this should be optimized by AST, when expr is a constant and varexpr is a scalar var
+		'' null pointer checking
+		if( env.clopt.extraerrchk ) then
+			varexpr = astNewPTRCHK( varexpr, lexLineNum( ) )
+		end if
+
+		'' fields at ofs 0 aren't returned as expressions by cTypeField()
 		if( expr <> NULL ) then
+			'' this should be optimized by AST, when expr is a constant and
+			'' varexpr is a scalar var
 			varexpr = astNewBOP( IR_OP_ADD, varexpr, expr )
 		end if
 
@@ -392,12 +401,13 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 			varexpr = astNewBOP( IR_OP_ADD, varexpr, idxexpr )
 		end if
 
-		'' null pointer checking
-		if( env.clopt.extraerrchk ) then
-			varexpr = astNewPTRCHK( varexpr, lexLineNum( ) )
-		end if
+		''
+		varexpr = astNewPTR( 0, varexpr, dtype, subtype )
 
-		varexpr = astNewPTR( sym, elm, 0, varexpr, dtype, subtype )
+        ''
+		if( sym <> NULL ) then
+			varexpr = astNewFIELD( varexpr, sym, dtype, subtype )
+ 		end if
 
 		''
 		do while( cnt > 0 )
@@ -419,7 +429,7 @@ function cDerefFields( byval sym as FBSYMBOL ptr, _
 				varexpr = astNewPTRCHK( varexpr, lexLineNum( ) )
 			end if
 
-			varexpr = astNewPTR( sym, elm, 0, varexpr, dtype, subtype )
+			varexpr = astNewPTR( 0, varexpr, dtype, subtype )
 
 			cnt -= 1
 		loop
@@ -433,9 +443,7 @@ end function
 ''FuncPtrOrDeref	=   FuncPtr '(' Args? ')'
 ''					|   DerefFields .
 ''
-function cFuncPtrOrDerefFields( byref sym as FBSYMBOL ptr, _
-					      		byref elm as FBSYMBOL ptr, _
-					      		byval typ as integer, _
+function cFuncPtrOrDerefFields( byval typ as integer, _
 					      		byval subtype as FBSYMBOL ptr, _
 					      		byref varexpr as ASTNODE ptr, _
 					      		byval isfuncptr as integer, _
@@ -448,7 +456,7 @@ function cFuncPtrOrDerefFields( byref sym as FBSYMBOL ptr, _
 	''
 	if( not isfuncptr ) then
 		'' DerefFields?
-		cDerefFields( sym, elm, typ, subtype, varexpr, checkarray )
+		cDerefFields( typ, subtype, varexpr, checkarray )
 
 		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 			exit function
@@ -465,17 +473,14 @@ function cFuncPtrOrDerefFields( byref sym as FBSYMBOL ptr, _
 	'' function pointer dref? call it
 	if( isfuncptr ) then
 
-		sym 	= subtype
-		elm 	= NULL
-
 		'' function?
-		if( symbGetType( sym ) <> FB_SYMBTYPE_VOID ) then
-			if( not cFunctionCall( sym, elm, funcexpr, varexpr ) ) then
+		if( symbGetType( subtype ) <> FB_SYMBTYPE_VOID ) then
+			if( not cFunctionCall( subtype, funcexpr, varexpr ) ) then
 				exit function
 			end if
 		'' sub..
 		else
-			if( not cProcCall( sym, funcexpr, varexpr ) ) then
+			if( not cProcCall( subtype, funcexpr, varexpr ) ) then
 				exit function
 			end if
 		end if
@@ -495,11 +500,9 @@ private function hDynArrayBoundChk( byval expr as ASTNODE ptr, _
 
     function = astNewBOUNDCHK( expr, _
     						   astNewVAR( desc, _
-    						   			  NULL, _
     								  	  FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS, _
     								  	  IR_DATATYPE_INTEGER ), _
     						   astNewVAR( desc, _
-    						   			  NULL, _
     								  	  FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS, _
     								  	  IR_DATATYPE_INTEGER ), _
     						   lexLineNum( ) )
@@ -582,7 +585,6 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
 
     	'' times desc(i).elements
     	varexpr = astNewVAR( d, _
-    						 NULL, _
     						 FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN, _
     						 IR_DATATYPE_INTEGER )
     	expr = astNewBOP( IR_OP_MUL, expr, varexpr )
@@ -601,7 +603,7 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
     end if
 
    	'' plus dsc->data (= ptr + diff)
-    varexpr = astNewVAR( d, NULL, FB_ARRAYDESC_DATAOFFS, IR_DATATYPE_INTEGER )
+    varexpr = astNewVAR( d, FB_ARRAYDESC_DATAOFFS, IR_DATATYPE_INTEGER )
     expr = astNewBOP( IR_OP_ADD, expr, varexpr )
 
     idxexpr = expr
@@ -617,16 +619,12 @@ private function hArgArrayBoundChk( byval expr as ASTNODE ptr, _
 									byval idx as integer ) as ASTNODE ptr
 
     function = astNewBOUNDCHK( expr, _
-    						   astNewPTR( desc, _
-    						   			  NULL, _
-    								  	  FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS, _
-    								  	  astNewVAR( desc, NULL, 0, IR_DATATYPE_INTEGER ), _
+    						   astNewPTR( FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS, _
+    								  	  astNewVAR( desc, 0, IR_DATATYPE_INTEGER ), _
     								  	  IR_DATATYPE_INTEGER, _
     								  	  NULL ), _
-    						   astNewPTR( desc, _
-    						   			  NULL, _
-    								  	  FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS, _
-    								  	  astNewVAR( desc, NULL, 0, IR_DATATYPE_INTEGER ), _
+    						   astNewPTR( FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS, _
+    								  	  astNewVAR( desc, 0, IR_DATATYPE_INTEGER ), _
     								  	  IR_DATATYPE_INTEGER, _
     								  	  NULL ), _
     						   lexLineNum( ) )
@@ -689,11 +687,9 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
     	i += 1
 
     	'' it's a descriptor pointer, dereference (only with DAG this will be optimized)
-    	t = astNewVAR( sym, NULL, 0, IR_DATATYPE_INTEGER )
+    	t = astNewVAR( sym, 0, IR_DATATYPE_INTEGER )
     	'' times desc[i].elements
-    	varexpr = astNewPTR( sym, _
-    						 NULL, _
-    						 FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN, _
+    	varexpr = astNewPTR( FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN, _
     						 t, _
     						 IR_DATATYPE_INTEGER, _
     						 NULL )
@@ -704,9 +700,9 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
 	constexpr = astNewCONSTi( symbGetLen( sym ), IR_DATATYPE_INTEGER )
 	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
 
-   	'' plus dsc->data (= ptr + diff)
-    t = astNewVAR( sym, NULL, 0, IR_DATATYPE_INTEGER )
-    varexpr = astNewPTR( sym, NULL, FB_ARRAYDESC_DATAOFFS, t, IR_DATATYPE_INTEGER, NULL )
+   	'' plus desc->data (= ptr + diff)
+    t = astNewVAR( sym, 0, IR_DATATYPE_INTEGER )
+    varexpr = astNewPTR( FB_ARRAYDESC_DATAOFFS, t, IR_DATATYPE_INTEGER, NULL )
     expr = astNewBOP( IR_OP_ADD, expr, varexpr )
 
     idxexpr = expr
@@ -852,14 +848,13 @@ end function
 ''Variable        =   ID ArrayIdx? TypeField? FuncPtrOrDerefFields? .
 ''
 function cVariable( byref varexpr as ASTNODE ptr, _
-					byref sym as FBSYMBOL ptr, _
-					byref elm as FBSYMBOL ptr, _
-					byval checkarray as integer = TRUE ) as integer
+					byval checkarray as integer = TRUE _
+				  ) as integer
 
 	dim as zstring ptr id
 	dim as integer typ, deftyp, ofs
 	dim as ASTNODE ptr idxexpr
-	dim as FBSYMBOL ptr subtype
+	dim as FBSYMBOL ptr sym, elm, subtype
 	dim as integer isbyref, isfuncptr, isbydesc, isimport, isarray
 
 	function = FALSE
@@ -869,10 +864,8 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 		exit function
 	end if
 
-    isfuncptr 	= FALSE
-
 	''
-	'' lookup
+	isfuncptr 	= FALSE
 	ofs 		= 0
 	elm			= NULL
 	subtype 	= NULL
@@ -895,7 +888,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 	else
 
 		'' it can be also an UDT, as periods can be part of symbol names..
-		sym = symbLookupUDTElm( id, lexGetPeriodPos( ), typ, ofs, elm, subtype )
+		sym = symbLookupUDTElm( id, lexGetPeriodPos( ), typ, subtype, ofs, elm )
 		if( sym = NULL ) then
 			'' add undeclared variable
 			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
@@ -962,7 +955,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 	   				isfuncptr = TRUE
     			end if
 
-    			'' using (...) w/ scalars?
+    			'' using (...) with scalars?
     			if( elm = NULL ) then
     				if( not isarray and not isfuncptr ) then
     					hReportError( FB_ERRMSG_ARRAYNOTALLOCATED, TRUE )
@@ -998,9 +991,9 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 	'' AST will handle descriptor pointers
 	if( isbyref or isimport ) then
 		'' byref or import? by now it's a pointer var, the real type will be set bellow
-		varexpr = astNewVAR( sym, elm, 0, IR_DATATYPE_POINTER, NULL )
+		varexpr = astNewVAR( sym, 0, IR_DATATYPE_POINTER, NULL )
 	else
-		varexpr = astNewVAR( sym, elm, ofs, typ, subtype )
+		varexpr = astNewVAR( sym, ofs, typ, subtype )
 	end if
 
 	'' has index?
@@ -1025,11 +1018,15 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 
 	'' check arguments passed by reference (implicity pointer's)
 	if( isbyref or isimport ) then
-   		varexpr = astNewPTR( sym, elm, ofs, varexpr, typ, subtype )
+   		varexpr = astNewPTR( ofs, varexpr, typ, subtype )
 	end if
 
+    if( elm <> NULL ) then
+    	varexpr = astNewFIELD( varexpr, elm, typ, subtype )
+    end if
+
     '' FuncPtrOrDerefFields?
-	cFuncPtrOrDerefFields( sym, elm, typ, subtype, varexpr, isfuncptr, checkarray )
+	cFuncPtrOrDerefFields( typ, subtype, varexpr, isfuncptr, checkarray )
 
 	function = (hGetLastError( ) = FB_ERRMSG_OK)
 
@@ -1045,13 +1042,16 @@ function cVarOrDeref( byref varexpr as ASTNODE ptr, _
 	dim as integer res
 
 	swap env.checkarray, checkarray
+
 	res = cHighestPrecExpr( varexpr )
+
 	swap env.checkarray, checkarray
 
 	if( res ) then
 		if( varexpr <> NULL ) then
 			select case as const astGetClass( varexpr )
-			case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_PTR, AST_NODECLASS_FUNCT
+			case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FIELD, _
+				 AST_NODECLASS_PTR, AST_NODECLASS_FUNCT
 
 			case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET
 				if( not checkaddrof ) then

@@ -173,7 +173,7 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 
 	'' reslabel
 	if( reslabel <> NULL ) then
-		param = astNewADDR( IR_OP_ADDROF, astNewVAR( reslabel, NULL, 0, IR_DATATYPE_BYTE ) )
+		param = astNewADDR( IR_OP_ADDROF, astNewVAR( reslabel, 0, IR_DATATYPE_BYTE ) )
 	else
 		param = astNewCONSTi( NULL, IR_DATATYPE_UINT )
 	end if
@@ -183,7 +183,7 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 
 	'' resnxtlabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDR( IR_OP_ADDROF, astNewVAR( nxtlabel, NULL, 0, IR_DATATYPE_BYTE ) )
+		param = astNewADDR( IR_OP_ADDROF, astNewVAR( nxtlabel, 0, IR_DATATYPE_BYTE ) )
 	else
 		param = astNewCONSTi( NULL, IR_DATATYPE_UINT )
 	end if
@@ -236,7 +236,7 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
 
 	'' reslabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDR( IR_OP_ADDROF, astNewVAR( reslabel, NULL, 0, IR_DATATYPE_BYTE ) )
+		param = astNewADDR( IR_OP_ADDROF, astNewVAR( reslabel, 0, IR_DATATYPE_BYTE ) )
 	else
 		param = astNewCONSTi( NULL, IR_DATATYPE_UINT )
 	end if
@@ -246,7 +246,7 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
 
 	'' resnxtlabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDR( IR_OP_ADDROF, astNewVAR( nxtlabel, NULL, 0, IR_DATATYPE_BYTE ) )
+		param = astNewADDR( IR_OP_ADDROF, astNewVAR( nxtlabel, 0, IR_DATATYPE_BYTE ) )
 	else
 		param = astNewCONSTi( NULL, IR_DATATYPE_UINT )
 	end if
@@ -287,7 +287,7 @@ sub rtlErrorSetHandler( byval newhandler as ASTNODE ptr, _
     	if( fbIsLocal( ) ) then
     		if( env.procerrorhnd = NULL ) then
 				env.procerrorhnd = symbAddTempVar( FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID )
-                expr = astNewVAR( env.procerrorhnd, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
+                expr = astNewVAR( env.procerrorhnd, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
                 astAdd( astNewASSIGN( expr, proc ) )
     		end if
 		end if

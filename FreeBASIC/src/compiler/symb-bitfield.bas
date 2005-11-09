@@ -15,43 +15,38 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-'' AST enumeration nodes
-'' l = NULL; r = NULL
+
+'' symbol table module for bit fields
 ''
-'' chng: sep/2004 written [v1ctor]
+'' chng: nov/2005 written [v1ctor]
+''
 
 option explicit
 option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
-#include once "inc\ir.bi"
+#include once "inc\hash.bi"
+#include once "inc\list.bi"
 #include once "inc\ast.bi"
 
 '':::::
-function astNewENUM( byval value as integer, _
-					 byval sym as FBSYMBOL ptr ) as ASTNODE ptr static
-    dim as ASTNODE ptr n
+function symbAddBitField( byval bitpos as integer, _
+					      byval bits as integer, _
+						  byval typ as integer, _
+						  byval lgt as integer _
+					    ) as FBSYMBOL ptr static
 
-	'' alloc new node
-	n = astNewNode( AST_NODECLASS_ENUM, IR_DATATYPE_ENUM, sym )
-	function = n
+    dim as FBSYMBOL ptr s
 
-	if( n = NULL ) then
-		exit function
-	end if
+    s = symbNewSymbol( NULL, symb.symtb, FB_SYMBCLASS_BITFIELD, FALSE, NULL, NULL, _
+    				   FALSE, typ, NULL )
 
-	n->con.val.int = value
-	n->defined	= TRUE
+    s->bitfld.bitpos = bitpos
+    s->bitfld.bits   = bits
+    s->lgt			 = lgt
 
-end function
-
-'':::::
-function astLoadENUM( byval n as ASTNODE ptr ) as IRVREG ptr static
-
-	if( ast.doemit ) then
-		function = irAllocVRIMM( IR_DATATYPE_INTEGER, n->con.val.int )
-	end if
+	function = s
 
 end function
 

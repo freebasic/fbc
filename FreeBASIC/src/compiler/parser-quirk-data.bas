@@ -130,7 +130,7 @@ function cDataStmt as integer static
 			else
 				'' address of?
 				if( astIsOFFSET( expr ) ) then
-            		if( not rtlDataStoreOFS( astGetSymbolOrElm( expr ) ) ) then
+            		if( not rtlDataStoreOFS( astGetSymbol( expr ) ) ) then
 	            		exit function
     	        	end if
 

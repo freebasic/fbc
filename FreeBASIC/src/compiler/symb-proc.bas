@@ -743,7 +743,7 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 							 ) as integer static
 
 	dim as integer pdtype, pdclass
-	dim as FBSYMBOL ptr s
+	dim as FBSYMBOL ptr s, psubtype
 
 	'' param optional?
 	if( pexpr = NULL ) then
@@ -756,6 +756,7 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
     end if
 
 	pdtype = astGetDataType( pexpr )
+	psubtype = astGetSubType( pexpr )
 
 	'' by descriptor arg?
 	if( symbGetArgMode( arg ) = FB_ARGMODE_BYDESC ) then
@@ -769,7 +770,7 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
         	return 0
         end if
 
-        if( symbGetSubType( arg ) <> astGetSubType( pexpr ) ) then
+        if( symbGetSubType( arg ) <> psubtype ) then
         	return 0
         end if
 
@@ -784,7 +785,7 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 	'' same types?
 	if( symbGetType( arg ) = pdtype ) then
 		'' check the subtype
-		if( symbGetSubType( arg ) <> astGetSubType( pexpr ) ) then
+		if( symbGetSubType( arg ) <> psubtype ) then
 
 			'' check classes
 			select case irGetDataClass( symbGetType( arg ) )
@@ -810,7 +811,9 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 		select case as const pdclass
 		'' another integer or float is ok (due the auto-coercion)
 		case IR_DATACLASS_INTEGER, IR_DATACLASS_FPOINT
-			return FB_OVLPROC_HALFMATCH - abs( symbGetType( arg ) - pdtype )
+			return FB_OVLPROC_HALFMATCH - _
+				   abs( irRemapType( symbGetType( arg ), symbGetSubType( arg ) ) - _
+				   		irRemapType( pdtype, psubtype ) )
 
 		'' string? only if it's a zstring ptr arg
 		case IR_DATACLASS_STRING
@@ -833,7 +836,9 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 		'' only accept another float or integer
 		select case as const pdclass
 		case IR_DATACLASS_INTEGER, IR_DATACLASS_FPOINT
-			return FB_OVLPROC_HALFMATCH - abs( symbGetType( arg ) - pdtype )
+			return FB_OVLPROC_HALFMATCH - _
+				  abs( irRemapType( symbGetType( arg ), symbGetSubType( arg ) ) - _
+				  	   irRemapType( pdtype, psubtype ) )
 
 		'' refuse anything else
 		case else
@@ -886,7 +891,7 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 
 		'' udt..
 		else
-           	s = astGetSubType( pexpr )
+           	s = psubtype
 		end if
 
         '' can't be different

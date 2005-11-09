@@ -283,11 +283,18 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 		end if
 	end if
 
+	'' bitfield?
+	if( bits > 0 ) then
+		subtype = symbAddBitField( t->udt.bitpos, bits, typ, lgt )
+		typ = FB_SYMBTYPE_BITFIELD
+	end if
+
 	''
     e = symbNewSymbol( NULL, @t->udt.fldtb, FB_SYMBCLASS_UDTELM, FALSE, _
     				   @ename, NULL, _
     				   FALSE, typ, subtype, ptrcnt )
     if( e = NULL ) then
+    	print 1
     	exit function
     end if
 
@@ -301,8 +308,6 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 	else
 		e->var.elm.ofs	= t->udt.ofs - lgt
 	end if
-	e->var.elm.bitpos	= t->udt.bitpos
-	e->var.elm.bits		= bits
 
 	'' array fields
 	e->var.array.dif	= symbCalcArrayDiff( dimensions, dTB(), lgt )
@@ -478,9 +483,9 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbGetUDTElmOffset( elm as FBSYMBOL ptr, _
-							  typ as integer, _
-							  subtype as FBSYMBOL ptr, _
+function symbGetUDTElmOffset( byref elm as FBSYMBOL ptr, _
+							  byref typ as integer, _
+							  byref subtype as FBSYMBOL ptr, _
 							  byval fields as zstring ptr _
 							) as integer
 
@@ -596,10 +601,10 @@ end function
 '':::::
 function symbLookupUDTElm( byval symbol as zstring ptr, _
 						   byval dotpos as integer, _
-						   typ as integer, _
-						   ofs as integer, _
-					       elm as FBSYMBOL ptr, _
-					       subtype as FBSYMBOL ptr _
+						   byref typ as integer, _
+					       byref subtype as FBSYMBOL ptr, _
+						   byref ofs as integer, _
+					       byref elm as FBSYMBOL ptr _
 					     ) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr s

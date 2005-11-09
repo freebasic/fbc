@@ -72,7 +72,7 @@ function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 		exit function
 	end if
 
-	n->proc.sym 	= sym
+	n->sym 			= sym
 	n->l 			= ptrexpr
 	n->proc.params 	= 0
 
@@ -112,14 +112,14 @@ private function hReportMakeDesc( byval f as ASTNODE ptr ) as zstring ptr
     static as zstring * FB_MAXINTNAMELEN+32+1 desc
 
 	desc = "at parameter " + str( f->proc.params+1 )
-	if( f->proc.sym <> NULL ) then
+	if( f->sym <> NULL ) then
 		'' not part of the rtlib?
 		if( not f->proc.isrtl ) then
 			desc += " of "
-			if( len( symbGetOrgName( f->proc.sym ) ) > 0 ) then
-				desc += symbGetOrgName( f->proc.sym )
+			if( len( symbGetOrgName( f->sym ) ) > 0 ) then
+				desc += symbGetOrgName( f->sym )
 			else
-				desc += symbGetName( f->proc.sym )
+				desc += symbGetName( f->sym )
 			end if
 			desc += "()"
 		end if
@@ -205,7 +205,7 @@ private function hAllocTmpString( byval proc as ASTNODE ptr, _
 	t = hAllocTmpStrNode( proc, n, FB_SYMBTYPE_STRING, copyback )
 
 	'' temp string = src string
-	return rtlStrAssign( astNewVAR( t->tmpsym, NULL, 0, FB_SYMBTYPE_STRING ), n )
+	return rtlStrAssign( astNewVAR( t->tmpsym, 0, FB_SYMBTYPE_STRING ), n )
 
 end function
 
@@ -222,7 +222,7 @@ private function hAllocTmpWstrPtr( byval proc as ASTNODE ptr, _
 	n = astNewCONV( IR_OP_TOPOINTER, FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR, NULL, n )
 
 	'' temp string = src string
-	return astNewASSIGN( astNewVAR( t->tmpsym, NULL, 0, FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR ), n )
+	return astNewASSIGN( astNewVAR( t->tmpsym, 0, FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR ), n )
 
 end function
 
@@ -455,7 +455,7 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 	p = n->l
 
 	'' type field?
-	s = astGetSymbolOrElm( p )
+	s = astGetSymbol( p )
 
 	if( s = NULL ) then
 		hReportParamError( f )
@@ -479,10 +479,10 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 		end if
 
 		'' address of?
-		if( astIsADDR( p ) ) then
-			hReportParamError( f )
-			return FALSE
-		end if
+		''''''''if( astIsADDR( p ) ) then
+		''''''''	hReportParamError( f )
+		''''''''	return FALSE
+		''''''''end if
 
 		'' create a temp array descriptor
 		n->l     = hAllocTmpArrayDesc( f, p )
@@ -494,7 +494,7 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 		if( symbIsArgByDesc( s ) ) then
         	'' it's a pointer, but could be seen as anything else
         	'' (ie: if it were "s() as string"), so, create an alias
-        	n->l     = astNewVAR( s, NULL, 0, IR_DATATYPE_UINT )
+        	n->l     = astNewVAR( s, 0, IR_DATATYPE_UINT )
         	n->dtype = IR_DATATYPE_POINTER + IR_DATATYPE_VOID
 
     	else
@@ -507,7 +507,7 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 
         	''
         	n->l     = astNewADDR( IR_OP_ADDROF, _
-        						   astNewVAR( d, NULL, 0, IR_DATATYPE_UINT ) )
+        						   astNewVAR( d, 0, IR_DATATYPE_UINT ) )
         	n->dtype = IR_DATATYPE_POINTER + IR_DATATYPE_VOID
 
     	end if
@@ -529,7 +529,8 @@ private function hCheckByRefArg( byval dtype as integer, _
 
 	select case as const p->class
 	'' var, array index or pointer? pass as-is (assuming the type was already checked)
-	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_PTR
+	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
+		 AST_NODECLASS_FIELD, AST_NODECLASS_PTR
 
 	case else
 		'' string? do nothing (ie: functions returning var-len string's)
@@ -544,7 +545,6 @@ private function hCheckByRefArg( byval dtype as integer, _
 		case else
 			'' scalars: store param to a temp var and pass it
 			p = astNewASSIGN( astNewVAR( symbAddTempVar( dtype, subtype ), _
-									 	 NULL, _
 									 	 0, _
 									 	 dtype, _
 									 	 subtype ), _
@@ -554,7 +554,7 @@ private function hCheckByRefArg( byval dtype as integer, _
 	end select
 
 	'' take the address of
-	p = astNewADDR( IR_OP_ADDROF, p, astGetSymbol( p ), astGetElm( p ) )
+	p = astNewADDR( IR_OP_ADDROF, p )
 
 	n->l 		  = p
 	n->dtype 	  = p->dtype
@@ -577,7 +577,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
     function = FALSE
 
 	''
-	proc = f->proc.sym
+	proc = f->sym
 
 	if( f->proc.params >= proc->proc.args ) then
 		arg = symbGetProcTailArg( proc )
@@ -692,7 +692,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 		    		if( pmode <> FB_ARGMODE_BYVAL ) then
 						'' const? only accept if it's NULL
 		    			if( p->defined ) then
-		    				if( p->val.int <> NULL ) then
+		    				if( p->con.val.int <> NULL ) then
 								hReportParamError( f )
 								exit function
 		    				end if
@@ -790,7 +790,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 			end if
 
 			'' it's a proc, but was it originally returning an UDT?
-			s = p->proc.sym
+			s = p->sym
 			if( s->typ <> FB_SYMBTYPE_USERDEF ) then
 				hReportParamError( f )
 				exit function
@@ -810,7 +810,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 			if( pclass <> AST_NODECLASS_FUNCT ) then
 				s = p->subtype
 			else
-				s = p->proc.sym->subtype
+				s = p->sym->subtype
 			end if
 		end if
 
@@ -885,7 +885,8 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 		if( amode = FB_ARGMODE_BYREF ) then
 			'' param diff than arg can't passed by ref if it's a var/array/ptr
 			select case as const pclass
-			case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_PTR
+			case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
+			     AST_NODECLASS_FIELD, AST_NODECLASS_PTR
 				hReportParamError( f )
 				exit function
 			end select
@@ -965,7 +966,7 @@ function astNewPARAM( byval f as ASTNODE ptr, _
 	n->param.lgt  = 0
 
 	'' add param node to function's list
-	proc = f->proc.sym
+	proc = f->sym
 
 	t = f->r
 
@@ -1092,7 +1093,6 @@ end function
 '':::::
 private sub hCheckTmpStrings( byval f as ASTNODE ptr )
     dim as ASTNODE ptr t
-    dim as integer copyback
     dim as ASTTEMPSTR ptr n, p
     dim as FBSYMBOL ptr s
 
@@ -1103,22 +1103,13 @@ private sub hCheckTmpStrings( byval f as ASTNODE ptr )
 
 		'' copy back if needed
 		if( n->srctree <> NULL ) then
-        	'' only if not a literal string passed a fixed-len
-        	copyback = TRUE
-        	if( n->srctree->class = AST_NODECLASS_VAR ) then
-        	    s = astGetSymbolOrElm( n->srctree )
-        	    copyback = symbGetVarInitialized( s ) = FALSE
-        	end if
-
-        	if( copyback ) then
-				t = rtlStrAssign( n->srctree, astNewVAR( n->tmpsym, NULL, 0, IR_DATATYPE_STRING ) )
-				astLoad( t )
-				astDel( t )
-			end if
+			t = rtlStrAssign( n->srctree, astNewVAR( n->tmpsym, 0, IR_DATATYPE_STRING ) )
+			astLoad( t )
+			astDel( t )
 		end if
 
 		'' delete the temp string (or wstring)
-		t = rtlStrDelete( astNewVAR( n->tmpsym, NULL, 0, symbGetType( n->tmpsym ) ) )
+		t = rtlStrDelete( astNewVAR( n->tmpsym, 0, symbGetType( n->tmpsym ) ) )
 		astLoad( t )
 		astDel( t )
 
@@ -1163,7 +1154,7 @@ private sub hAllocTempStruct( byval n as ASTNODE ptr, _
 		if( proc->proc.realtype = FB_SYMBTYPE_POINTER + FB_SYMBTYPE_USERDEF ) then
 			'' create a temp struct and pass its address
 			v = symbAddTempVar( FB_SYMBTYPE_USERDEF, proc->subtype )
-        	p = astNewVar( v, NULL, 0, IR_DATATYPE_USERDEF, proc->subtype )
+        	p = astNewVar( v, 0, IR_DATATYPE_USERDEF, proc->subtype )
         	vr = astLoad( p )
 
         	a.typ = IR_DATATYPE_VOID
@@ -1186,7 +1177,7 @@ function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as IRVREG ptr vr, pcvr
 
 	''
-	proc = n->proc.sym
+	proc = n->sym
 
     ''
 	pstart = n->proc.profbegin
@@ -1208,7 +1199,7 @@ function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 			if( ast.doemit ) then
 				irEmitPUSH( pcvr )
 			end if
-			proc = pend->proc.sym
+			proc = pend->sym
 			hCallProc( pend, proc, proc->proc.mode, 0, 0 )
 			astDel( pend )
 		end if
@@ -1310,7 +1301,7 @@ function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 		if( ast.doemit ) then
 			irEmitPUSH( pcvr )
 		end if
-		proc = pend->proc.sym
+		proc = pend->sym
 		hCallProc( pend, proc, proc->proc.mode, 0, 0 )
 		astDel( pend )
 	end if

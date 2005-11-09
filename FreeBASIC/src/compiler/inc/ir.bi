@@ -46,6 +46,7 @@ enum IRDATATYPE_ENUM
 	IR_DATATYPE_LONG		= IR_DATATYPE_INTEGER
 	IR_DATATYPE_UINT
 	IR_DATATYPE_ENUM
+	IR_DATATYPE_BITFIELD
 	IR_DATATYPE_LONGINT
 	IR_DATATYPE_ULONGINT
 	IR_DATATYPE_SINGLE
@@ -351,6 +352,9 @@ declare function 	irIsSigned			( byval dtype as integer ) as integer
 declare function 	irGetSignedType		( byval dtype as integer ) as integer
 
 declare function 	irGetUnsignedType	( byval dtype as integer ) as integer
+
+declare function 	irRemapType			( byval dtype as integer, _
+					  					  byval subtype as FBSYMBOL ptr ) as integer
 
 declare sub 		irFlush 			( )
 

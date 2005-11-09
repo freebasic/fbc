@@ -104,7 +104,7 @@ end function
 ''				  |   Atom .
 ''
 function cHighestPrecExpr( byref highexpr as ASTNODE ptr ) as integer
-	dim as FBSYMBOL ptr sym, elm, subtype
+	dim as FBSYMBOL ptr subtype
 	dim as integer isfuncptr, dtype
 
 	select case lexGetToken( )
@@ -155,11 +155,9 @@ function cHighestPrecExpr( byref highexpr as ASTNODE ptr ) as integer
 			end if
 		end if
 
-		sym 	= astGetSymbol( highexpr )
-		elm 	= astGetElm( highexpr )
 		subtype = astGetSubType( highexpr )
 
-		cFuncPtrOrDerefFields( sym, elm, dtype, subtype, highexpr, isfuncptr, TRUE )
+		cFuncPtrOrDerefFields( dtype, subtype, highexpr, isfuncptr, TRUE )
 	end if
 
 	function = (hGetLastError() = FB_ERRMSG_OK)
@@ -237,10 +235,9 @@ end function
 '':::::
 private function hDoDeref( byval cnt as integer, _
 						   byref expr as ASTNODE ptr, _
-					       byval sym as FBSYMBOL ptr, _
-					       byval elm as FBSYMBOL ptr, _
 					       byval dtype as integer, _
-					       byval subtype as FBSYMBOL ptr ) as integer
+					       byval subtype as FBSYMBOL ptr _
+					     ) as integer
 
 	function = INVALID
 
@@ -248,7 +245,7 @@ private function hDoDeref( byval cnt as integer, _
 		exit function
 	end if
 
-	do while( cnt > 1 )
+	do while( cnt > 0 )
 		'' not a pointer?
 		if( dtype < IR_DATATYPE_POINTER ) then
 			hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
@@ -268,30 +265,10 @@ private function hDoDeref( byval cnt as integer, _
 			expr = astNewPTRCHK( expr, lexLineNum( ) )
 		end if
 
-		expr = astNewPTR( NULL, NULL, 0, expr, dtype, NULL )
+		expr = astNewPTR( 0, expr, dtype, subtype )
+
 		cnt -= 1
 	loop
-
-	'' not a pointer?
-	if( dtype < IR_DATATYPE_POINTER ) then
-		hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
-		exit function
-	end if
-
-    dtype -= FB_SYMBTYPE_POINTER
-
-	'' incomplete type?
-	if( (dtype = FB_SYMBTYPE_VOID) or (dtype = FB_SYMBTYPE_FWDREF) ) then
-		hReportError( FB_ERRMSG_INCOMPLETETYPE, TRUE )
-		exit function
-	end if
-
-	'' null pointer checking
-	if( env.clopt.extraerrchk ) then
-		expr = astNewPTRCHK( expr, lexLineNum( ) )
-	end if
-
-    expr = astNewPTR( sym, elm, 0, expr, dtype, subtype )
 
     function = dtype
 
@@ -301,7 +278,7 @@ end function
 ''DerefExpression	= 	DREF+ HighestPresExpr .
 ''
 function cDerefExpression( byref derefexpr as ASTNODE ptr ) as integer
-    dim as FBSYMBOL ptr sym, elm, subtype
+    dim as FBSYMBOL ptr subtype
     dim as integer derefcnt, dtype
     dim as ASTNODE ptr funcexpr
 
@@ -326,13 +303,11 @@ function cDerefExpression( byref derefexpr as ASTNODE ptr ) as integer
 	end if
 
 	''
-	sym		= astGetSymbol( derefexpr )
-	elm		= astGetElm( derefexpr )
 	dtype   = astGetDataType( derefexpr )
 	subtype = astGetSubType( derefexpr )
 
 	''
-	dtype = hDoDeref( derefcnt, derefexpr, sym, elm, dtype, subtype )
+	dtype = hDoDeref( derefcnt, derefexpr, dtype, subtype )
 	if( dtype = INVALID ) then
 		exit function
 	end if
@@ -360,15 +335,15 @@ private function hProcPtrBody( byval proc as FBSYMBOL ptr, _
 	'' resolve overloaded procs
 	if( symbIsOverloaded( proc ) ) then
         if( env.ctxsym <> NULL ) then
-        	sym = symbFindOverloadProc( proc, symbGetSubType( env.ctxsym ) )
+        	sym = symbFindOverloadProc( proc, env.ctxsym )
         	if( sym <> NULL ) then
         		proc = sym
         	end if
         end if
 	end if
 
-	expr = astNewVAR( proc, NULL, 0, IR_DATATYPE_FUNCTION, proc )
-	addrofexpr = astNewADDR( IR_OP_ADDROF, expr, proc )
+	expr = astNewVAR( proc, 0, IR_DATATYPE_FUNCTION, proc )
+	addrofexpr = astNewADDR( IR_OP_ADDROF, expr )
 
 	''
 	symbSetProcIsCalled( proc, TRUE )
@@ -389,15 +364,19 @@ private function hVarPtrBody( byref addrofexpr as ASTNODE ptr) as integer
 	select case as const astGetClass( addrofexpr )
 	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_PTR
 
+	case AST_NODECLASS_FIELD
+		'' can't take address of bitfields..
+		if( astGetDataType( addrofexpr ) = IR_DATATYPE_BITFIELD ) then
+			hReportError( FB_ERRMSG_INVALIDDATATYPES )
+			exit function
+		end if
+
 	case else
 		hReportErrorEx( FB_ERRMSG_INVALIDDATATYPES, "for @ or VARPTR" )
 		exit function
 	end select
 
-	addrofexpr = astNewADDR( IR_OP_ADDROF, _
-							 addrofexpr, _
-							 astGetSymbol( addrofexpr ), _
-							 astGetElm( addrofexpr ) )
+	addrofexpr = astNewADDR( IR_OP_ADDROF, addrofexpr )
 
     function = (addrofexpr <> NULL)
 
@@ -412,7 +391,7 @@ end function
 function cAddrOfExpression( byref addrofexpr as ASTNODE ptr ) as integer
     dim as ASTNODE ptr expr
     dim as integer dtype
-    dim as FBSYMBOL ptr sym, elm
+    dim as FBSYMBOL ptr sym
 
 	function = FALSE
 
@@ -498,15 +477,12 @@ function cAddrOfExpression( byref addrofexpr as ASTNODE ptr ) as integer
 
 		if( not cLiteral( expr ) ) then
 			if( not cConstant( expr ) ) then
-				if( not cVariable( expr, sym, elm ) ) then
+				if( not cVariable( expr ) ) then
 					hReportError( FB_ERRMSG_INVALIDDATATYPES )
 					exit function
 				end if
 			end if
 		end if
-
-		sym = astGetSymbol( expr )
-		elm = astGetElm( expr )
 
 		dtype = astGetDataType( expr )
 		if( not hIsString( dtype ) ) then
@@ -521,9 +497,9 @@ function cAddrOfExpression( byref addrofexpr as ASTNODE ptr ) as integer
 		end if
 
 		if( dtype = IR_DATATYPE_STRING ) then
-			expr = astNewADDR( IR_OP_DEREF, expr, sym, elm )
+			expr = astNewADDR( IR_OP_DEREF, expr )
 		else
-			expr = astNewADDR( IR_OP_ADDROF, expr, sym, elm )
+			expr = astNewADDR( IR_OP_ADDROF, expr )
 		end if
 
 		if( dtype <> IR_DATATYPE_WCHAR ) then

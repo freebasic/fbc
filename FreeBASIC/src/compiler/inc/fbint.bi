@@ -513,6 +513,7 @@ enum FBSYMBTYPE_ENUM
 	FB_SYMBTYPE_LONG			= FB_SYMBTYPE_INTEGER
 	FB_SYMBTYPE_UINT
 	FB_SYMBTYPE_ENUM
+	FB_SYMBTYPE_BITFIELD
 	FB_SYMBTYPE_LONGINT
 	FB_SYMBTYPE_ULONGINT
 	FB_SYMBTYPE_SINGLE
@@ -591,6 +592,7 @@ enum SYMBCLASS_ENUM
 	FB_SYMBCLASS_KEYWORD
 	FB_SYMBCLASS_LABEL
 	FB_SYMBCLASS_ENUM
+	FB_SYMBCLASS_BITFIELD
 	FB_SYMBCLASS_UDT
 	FB_SYMBCLASS_UDTELM
 	FB_SYMBCLASS_TYPEDEF
@@ -716,9 +718,12 @@ end type
 
 type FBS_UDTELM
 	ofs				as integer
+	parent			as FBSYMBOL_ ptr
+end type
+
+type FBS_BITFLD
 	bitpos			as integer
 	bits			as integer
-	parent			as FBSYMBOL_ ptr
 end type
 
 ''
@@ -829,13 +834,14 @@ type FBSYMBOL
 		var			as FBS_VAR
 		con			as FBS_CONST
 		udt			as FBS_UDT
+		bitfld		as FBS_BITFLD
+		enum		as FBS_ENUM
 		proc		as FBS_PROC
 		arg			as FBS_PROCARG
 		lbl			as FBS_LABEL
 		def			as FBS_DEFINE
 		key			as FBS_KEYWORD
 		fwd			as FBS_FWDREF
-		enum		as FBS_ENUM
 		scp			as FBS_SCOPE
 	end union
 

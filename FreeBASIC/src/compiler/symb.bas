@@ -685,6 +685,9 @@ function symbCalcLen( byval typ as integer, _
 			function = subtype->udt.unpadlgt
 		end if
 
+	case FB_SYMBTYPE_BITFIELD
+		function = subtype->lgt
+
 	case else
 		if( typ >= FB_SYMBTYPE_POINTER ) then
 			function = FB_POINTERSIZE

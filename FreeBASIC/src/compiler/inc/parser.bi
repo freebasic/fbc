@@ -168,17 +168,13 @@ declare function 	cParentExpression		( byref parexpr as ASTNODE ptr ) as integer
 declare function 	cAtom					( byref atom as ASTNODE ptr ) as integer
 
 declare function 	cVariable				( byref varexpr as ASTNODE ptr, _
-											  byref sym as FBSYMBOL ptr, _
-											  byref elm as FBSYMBOL ptr, _
 											  byval checkarray as integer = TRUE ) as integer
 
 declare function 	cVarOrDeref				( byref varexpr as ASTNODE ptr, _
 											  byval checkarray as integer = TRUE, _
 											  byval checkaddrof as integer = FALSE ) as integer
 
-declare function 	cFunction				( byref funcexpr as ASTNODE ptr, _
-											  byref sym as FBSYMBOL ptr, _
-											  byref elm as FBSYMBOL ptr ) as integer
+declare function 	cFunction				( byref funcexpr as ASTNODE ptr ) as integer
 
 declare function 	cQuirkFunction			( byref funcexpr as ASTNODE ptr ) as integer
 
@@ -196,7 +192,6 @@ declare function 	cAsmBlock				( ) as integer
 declare function 	cFunctionMode 			( ) as integer
 
 declare function 	cFunctionCall			( byval sym as FBSYMBOL ptr, _
-											  byref elm as FBSYMBOL ptr, _
 											  byref funcexpr as ASTNODE ptr, _
 											  byval ptrexpr as ASTNODE ptr ) as integer
 
@@ -205,16 +200,12 @@ declare function 	cProcCall				( byval sym as FBSYMBOL ptr, _
 											  byval ptrexpr as ASTNODE ptr, _
 											  byval checkparents as integer = FALSE ) as integer
 
-declare function 	cDerefFields			( byval sym as FBSYMBOL ptr, _
-											  byref elm as FBSYMBOL ptr, _
-											  byref typ as integer, _
+declare function 	cDerefFields			( byref typ as integer, _
 											  byref subtype as FBSYMBOL ptr, _
 					   						  byref varexpr as ASTNODE ptr, _
 					   						  byval checkarray as integer ) as integer
 
-declare function    cFuncPtrOrDerefFields	( byref sym as FBSYMBOL ptr, _
-					      					  byref elm as FBSYMBOL ptr, _
-					      					  byval typ as integer, _
+declare function    cFuncPtrOrDerefFields	( byval typ as integer, _
 					      					  byval subtype as FBSYMBOL ptr, _
 					      					  byref varexpr as ASTNODE ptr, _
 					      					  byval isfuncptr as integer, _

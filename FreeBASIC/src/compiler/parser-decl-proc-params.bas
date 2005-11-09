@@ -295,7 +295,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 				exit function
 			end if
 
-			sym = astGetSymbolOrElm( expr )
+			sym = astGetSymbol( expr )
 			'' diff types or isn't it a literal string?
 			if( (dclass <> IR_DATACLASS_STRING) or _
 				(not symbGetVarInitialized( sym )) ) then

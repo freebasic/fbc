@@ -43,7 +43,7 @@ function cConstant( byref constexpr as ASTNODE ptr ) as integer static
   		dtype = symbGetType( s )
   		select case as const dtype
   		case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
-  			constexpr = astNewVAR( symbGetConstValStr( s ), NULL, 0, dtype )
+  			constexpr = astNewVAR( symbGetConstValStr( s ), 0, dtype )
 
   		case IR_DATATYPE_ENUM
   			constexpr = astNewENUM( symbGetConstValInt( s ), symbGetSubType( s ) )
@@ -100,7 +100,7 @@ function cLiteral( byref litexpr as ASTNODE ptr ) as integer
 
   	case FB_TKCLASS_STRLITERAL
 		s = symbAllocStrConst( *lexGetText( ), lexGetTextLen( ) )
-		litexpr = astNewVAR( s, NULL, 0, IR_DATATYPE_CHAR )
+		litexpr = astNewVAR( s, 0, IR_DATATYPE_CHAR )
 
 		lexSkipToken( )
         function = TRUE

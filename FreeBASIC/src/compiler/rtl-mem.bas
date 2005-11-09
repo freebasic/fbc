@@ -206,6 +206,7 @@ function rtlMemSwap( byval dst as ASTNODE ptr, _
     function = FALSE
 
 	'' simple type?
+	'' !!!FIXME!!! other classes should be allowed too, but pointers??
 	if( (astGetDataType( dst ) <> IR_DATATYPE_USERDEF) and (astIsVAR( dst )) ) then
 
 		'' push src

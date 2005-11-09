@@ -41,7 +41,7 @@ private function cStoreTemp( byval expr as ASTNODE ptr, _
 		exit function
 	end if
 
-	vexpr = astNewVAR( s, NULL, 0, dtype )
+	vexpr = astNewVAR( s, 0, dtype )
 	astAdd( astNewASSIGN( vexpr, expr ) )
 
 	function = s
@@ -61,7 +61,7 @@ private sub cFlushBOP( byval op as integer, _
 
 	'' bop
 	if( v1 <> NULL ) then
-		expr1 = astNewVAR( v1, NULL, 0, dtype )
+		expr1 = astNewVAR( v1, 0, dtype )
 	else
 		select case as const dtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
@@ -74,7 +74,7 @@ private sub cFlushBOP( byval op as integer, _
 	end if
 
 	if( v2 <> NULL ) then
-		expr2 = astNewVAR( v2, NULL, 0, dtype )
+		expr2 = astNewVAR( v2, 0, dtype )
 	else
 		select case as const dtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
@@ -103,10 +103,10 @@ private sub cFlushSelfBOP( byval op as integer, _
 	dim as ASTNODE ptr expr1, expr2, expr
 
 	'' bop
-	expr1 = astNewVAR( v1, NULL, 0, dtype )
+	expr1 = astNewVAR( v1, 0, dtype )
 
 	if( v2 <> NULL ) then
-		expr2 = astNewVAR( v2, NULL, 0, dtype )
+		expr2 = astNewVAR( v2, 0, dtype )
 	else
 		select case as const dtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
@@ -121,7 +121,7 @@ private sub cFlushSelfBOP( byval op as integer, _
 	expr = astNewBOP( op, expr1, expr2 )
 
 	'' assign
-	expr1 = astNewVAR( v1, NULL, 0, dtype )
+	expr1 = astNewVAR( v1, 0, dtype )
 
 	expr = astNewASSIGN( expr1, expr )
 
@@ -138,7 +138,7 @@ end sub
 function cForStatement as integer
     dim as integer iscomplex, ispositive, isconst
     dim as FBSYMBOL ptr il, tl, el, cl, c2l
-    dim as FBSYMBOL ptr cnt, endc, stp, elm
+    dim as FBSYMBOL ptr cnt, endc, stp
     dim as FBVALUE sval, eval, ival
     dim as ASTNODE ptr idexpr, expr
     dim as integer op, dtype, dclass, typ, lastcompstmt
@@ -150,15 +150,17 @@ function cForStatement as integer
 	lexSkipToken( )
 
 	'' ID
-	if( not cVariable( idexpr, cnt, elm ) ) then
+	if( not cVariable( idexpr ) ) then
 		hReportError( FB_ERRMSG_EXPECTEDVAR )
 		exit function
 	end if
 
-	if( (not astIsVAR( idexpr )) or (elm <> NULL) ) then
+	if( not astIsVAR( idexpr ) ) then
 		hReportError( FB_ERRMSG_EXPECTEDSCALAR, TRUE )
 		exit function
 	end if
+
+	cnt = astGetSymbol( idexpr )
 
 	typ = symbGetType( cnt )
 
@@ -249,7 +251,7 @@ function cForStatement as integer
 				exit function
 			end if
 
-			astAdd( astNewASSIGN( astNewVAR( stp, NULL, 0, dtype ), expr ) )
+			astAdd( astNewASSIGN( astNewVAR( stp, 0, dtype ), expr ) )
 
 		else
             '' get constant step

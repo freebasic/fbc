@@ -15,7 +15,7 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-'' AST enumeration nodes
+'' AST variable nodes
 '' l = NULL; r = NULL
 ''
 '' chng: sep/2004 written [v1ctor]
@@ -29,29 +29,71 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function astNewENUM( byval value as integer, _
-					 byval sym as FBSYMBOL ptr ) as ASTNODE ptr static
+function astNewFIELD( byval p as ASTNODE ptr, _
+					  byval sym as FBSYMBOL ptr, _
+					  byval dtype as integer, _
+					  byval subtype as FBSYMBOL ptr = NULL _
+					) as ASTNODE ptr static
     dim as ASTNODE ptr n
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_ENUM, IR_DATATYPE_ENUM, sym )
+	n = astNewNode( AST_NODECLASS_FIELD, dtype, subtype )
 	function = n
 
 	if( n = NULL ) then
 		exit function
 	end if
 
-	n->con.val.int = value
-	n->defined	= TRUE
+	n->sym = sym
+	n->l   = p
 
 end function
 
 '':::::
-function astLoadENUM( byval n as ASTNODE ptr ) as IRVREG ptr static
+private function hGetBitField( byval n as ASTNODE ptr ) as ASTNODE ptr static
 
-	if( ast.doemit ) then
-		function = irAllocVRIMM( IR_DATATYPE_INTEGER, n->con.val.int )
+	dim as ASTNODE ptr c
+	dim as FBSYMBOL ptr s
+
+	s = n->subtype
+
+	''
+	n->dtype = s->typ
+	n->subtype = NULL
+
+	'' make a copy, the node itself can't be used or it will be deleted twice
+	c = astNewNode( INVALID, INVALID )
+	astCopy( c, n )
+
+	if( s->bitfld.bitpos > 0 ) then
+		n = astNewBOP( IR_OP_SHR, c, _
+				   	   astNewCONSTi( s->bitfld.bitpos, IR_DATATYPE_UINT ) )
+	else
+		n = c
 	end if
 
+	n = astNewBOP( IR_OP_AND, n, _
+				   astNewCONSTi( ast_bitmaskTB(s->bitfld.bits), IR_DATATYPE_UINT ) )
+
+	function = n
+
 end function
+
+'':::::
+function astLoadFIELD( byval n as ASTNODE ptr ) as IRVREG ptr static
+
+	'' handle bitfields..
+	if( n->dtype = IR_DATATYPE_BITFIELD ) then
+		n = hGetBitField( n->l )
+		function = astLoad( n )
+		astDel( n )
+		exit function
+	end if
+
+	function = astLoad( n->l )
+
+	astDel( n->l )
+
+end function
+
 

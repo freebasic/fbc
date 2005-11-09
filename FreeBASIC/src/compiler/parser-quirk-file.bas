@@ -344,7 +344,7 @@ function cInputStmt as integer
     	if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
 			lgt = lexGetTextLen( )
 			filestrexpr = astNewVAR( symbAllocStrConst( *lexGetText( ), lgt ), _
-									 NULL, 0, IR_DATATYPE_CHAR )
+									 0, IR_DATATYPE_CHAR )
 			lexSkipToken( )
     	else
     		filestrexpr = NULL
@@ -475,7 +475,7 @@ private function hFilePut( byval isfunc as integer ) as ASTNODE ptr
     isarray = FALSE
     if( lexGetToken( ) = CHAR_LPRNT ) then
     	if( lexGetLookAhead(1) = CHAR_RPRNT ) then
-    		s = astGetSymbolOrElm( expr2 )
+    		s = astGetSymbol( expr2 )
     		if( s <> NULL ) then
     			isarray = symbIsArray( s )
     			if( isarray ) then
@@ -530,7 +530,7 @@ private function hFileGet( byval isfunc as integer ) as ASTNODE ptr
     isarray = FALSE
     if( lexGetToken( ) = CHAR_LPRNT ) then
     	if( lexGetLookAhead(1) = CHAR_RPRNT ) then
-    		s = astGetSymbolOrElm( expr2 )
+    		s = astGetSymbol( expr2 )
     		if( s <> NULL ) then
     			isarray = symbIsArray( s )
     			if( isarray ) then

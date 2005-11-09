@@ -78,7 +78,7 @@ function ppDefineLoad( byval s as FBSYMBOL ptr ) as integer
 	if( symbGetDefineArgs( s ) > 0 ) then
 
 		'' '('
-		lexNextToken( t, LEXCHECK_NOSUFFIX )
+		lexNextToken( @t, LEXCHECK_NOSUFFIX )
 		if( t.id <> CHAR_LPRNT ) then
 			hReportError( FB_ERRMSG_EXPECTEDLPRNT )
 			exit function
@@ -101,7 +101,7 @@ function ppDefineLoad( byval s as FBSYMBOL ptr ) as integer
 
 			'' read text until a comma or right-parentheses is found
 			do
-				lexNextToken( t, LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX or LEXCHECK_NOQUOTES )
+				lexNextToken( @t, LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX or LEXCHECK_NOQUOTES )
 				select case t.id
 				'' (
 				case CHAR_LPRNT

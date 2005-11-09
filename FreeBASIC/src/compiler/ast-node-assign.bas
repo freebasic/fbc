@@ -118,7 +118,7 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 
             '' handle functions returning UDT's when type isn't a pointer,
             '' but an integer or fpoint register
-            proc = r->proc.sym
+            proc = r->sym
             if( proc->typ <> IR_DATATYPE_USERDEF ) then
             	exit function
             end if
@@ -126,7 +126,7 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
             '' fake l's type
             ldtype   = proc->proc.realtype
             lsubtype = NULL
-            l->dtype = ldtype
+            astSetDataType( l, ldtype )
 
 		'' both are UDT's, do a mem copy..
 		else
@@ -286,16 +286,23 @@ end function
 
 '':::::
 private function hSetBitField( byval l as ASTNODE ptr, _
-							   byval r as ASTNODE ptr, _
-							   byval s as FBSYMBOL ptr ) as ASTNODE ptr static
+							   byval r as ASTNODE ptr _
+							 ) as ASTNODE ptr static
+
+	dim as FBSYMBOL ptr s
+
+	s = l->subtype
+
+	l->dtype = s->typ
+	l->subtype = NULL
 
 	l = astNewBOP( IR_OP_AND, astCloneTree( l ), _
-				   astNewCONSTi( not (ast_bitmaskTB(s->var.elm.bits) shl s->var.elm.bitpos), _
+				   astNewCONSTi( not (ast_bitmaskTB(s->bitfld.bits) shl s->bitfld.bitpos), _
 				   				 IR_DATATYPE_UINT ) )
 
-	if( s->var.elm.bitpos > 0 ) then
+	if( s->bitfld.bitpos > 0 ) then
 		r = astNewBOP( IR_OP_SHL, r, _
-				   	   astNewCONSTi( s->var.elm.bitpos, IR_DATATYPE_UINT ) )
+				   	   astNewCONSTi( s->bitfld.bitpos, IR_DATATYPE_UINT ) )
 	end if
 
 	function = astNewBOP( IR_OP_OR, l, r )
@@ -306,7 +313,6 @@ end function
 function astLoadASSIGN( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as ASTNODE ptr l, r
     dim as IRVREG ptr vs, vr
-    dim as FBSYMBOL ptr s
 
 	l = n->l
 	r = n->r
@@ -315,14 +321,12 @@ function astLoadASSIGN( byval n as ASTNODE ptr ) as IRVREG ptr
 	end if
 
 	'' handle bitfields..
-	if( l->chkbitfld ) then
-		l->chkbitfld = FALSE
-		s = astGetElm( l )
-		if( s <> NULL ) then
-			if( s->var.elm.bits > 0 ) then
-				r = hSetBitField( l, r, s )
-			end if
-		end if
+	if( l->dtype = IR_DATATYPE_BITFIELD ) then
+		'' l is a field node, use its left child instead
+		r = hSetBitField( l->l, r )
+		'' the field node can be removed
+		astDel( l )
+		l = l->l
 	end if
 
 	vs = astLoad( r )

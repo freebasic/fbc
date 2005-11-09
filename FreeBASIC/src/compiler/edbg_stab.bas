@@ -66,6 +66,7 @@ declare function hGetDataType			( byval sym as FBSYMBOL ptr ) as string
 		 1, _                                   '' int
 		 8, _                                   '' uint
 		 1, _                                   '' enum
+		 8, _                                   '' bitfield
 		 9, _                                   '' longint
 		10, _                                   '' ulongint
 		11, _                                   '' single

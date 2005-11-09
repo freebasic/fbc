@@ -35,16 +35,16 @@ private sub hUOPConstFoldInt( byval op as integer, _
 
 	select case as const op
 	case IR_OP_NOT
-		v->val.int = not v->val.int
+		v->con.val.int = not v->con.val.int
 
 	case IR_OP_NEG
-		v->val.int = -v->val.int
+		v->con.val.int = -v->con.val.int
 
 	case IR_OP_ABS
-		v->val.int = abs( v->val.int )
+		v->con.val.int = abs( v->con.val.int )
 
 	case IR_OP_SGN
-		v->val.int = sgn( v->val.int )
+		v->con.val.int = sgn( v->con.val.int )
 	end select
 
 end sub
@@ -55,43 +55,43 @@ private sub hUOPConstFoldFlt( byval op as integer, _
 
 	select case as const op
 	case IR_OP_NOT
-		v->val.int = not cint( v->val.float )
+		v->con.val.int = not cint( v->con.val.float )
 
 	case IR_OP_NEG
-		v->val.float = -v->val.float
+		v->con.val.float = -v->con.val.float
 
 	case IR_OP_ABS
-		v->val.float = abs( v->val.float )
+		v->con.val.float = abs( v->con.val.float )
 
 	case IR_OP_SGN
-		v->val.int = sgn( v->val.float )
+		v->con.val.int = sgn( v->con.val.float )
 
 	case IR_OP_SIN
-		v->val.float = sin( v->val.float )
+		v->con.val.float = sin( v->con.val.float )
 
 	case IR_OP_ASIN
-		v->val.float = asin( v->val.float )
+		v->con.val.float = asin( v->con.val.float )
 
 	case IR_OP_COS
-		v->val.float = cos( v->val.float )
+		v->con.val.float = cos( v->con.val.float )
 
 	case IR_OP_ACOS
-		v->val.float = acos( v->val.float )
+		v->con.val.float = acos( v->con.val.float )
 
 	case IR_OP_TAN
-		v->val.float = tan( v->val.float )
+		v->con.val.float = tan( v->con.val.float )
 
 	case IR_OP_ATAN
-		v->val.float = atn( v->val.float )
+		v->con.val.float = atn( v->con.val.float )
 
 	case IR_OP_SQRT
-		v->val.float = sqr( v->val.float )
+		v->con.val.float = sqr( v->con.val.float )
 
 	case IR_OP_LOG
-		v->val.float = log( v->val.float )
+		v->con.val.float = log( v->con.val.float )
 
 	case IR_OP_FLOOR
-		v->val.float = int( v->val.float )
+		v->con.val.float = int( v->con.val.float )
 	end select
 
 end sub
@@ -102,16 +102,16 @@ private sub hUOPConstFold64( byval op as integer, _
 
 	select case as const op
 	case IR_OP_NOT
-		v->val.long = not v->val.long
+		v->con.val.long = not v->con.val.long
 
 	case IR_OP_NEG
-		v->val.long = -v->val.long
+		v->con.val.long = -v->con.val.long
 
 	case IR_OP_ABS
-		v->val.long = abs( v->val.long )
+		v->con.val.long = abs( v->con.val.long )
 
 	case IR_OP_SGN
-		v->val.int = sgn( v->val.long )
+		v->con.val.int = sgn( v->con.val.long )
 	end select
 
 end sub
@@ -227,7 +227,7 @@ function astNewUOP( byval op as integer, _
 			hUOPConstFoldInt( op, o )
 		end select
 
-		o->dtype = dtype
+		astSetDataType( o, dtype )
 
 		return o
 	end if
@@ -249,11 +249,10 @@ function astNewUOP( byval op as integer, _
 		exit function
 	end if
 
-	n->op 		= op
 	n->l  		= o
 	n->r  		= NULL
-	n->allocres	= TRUE
-	n->ex 		= NULL
+	n->uop.op	= op
+	n->uop.allocres	= TRUE
 
 	function = n
 
@@ -266,7 +265,7 @@ function astLoadUOP( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as IRVREG ptr v1, vr
 
 	o  = n->l
-	op = n->op
+	op = n->uop.op
 
 	if( o = NULL ) then
 		return NULL
@@ -275,7 +274,7 @@ function astLoadUOP( byval n as ASTNODE ptr ) as IRVREG ptr
 	v1 = astLoad( o )
 
 	if( ast.doemit ) then
-		if( n->allocres ) then
+		if( n->uop.allocres ) then
 			vr = irAllocVREG( o->dtype )
 		else
 			vr = NULL

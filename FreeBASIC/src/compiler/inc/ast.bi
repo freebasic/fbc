@@ -33,6 +33,7 @@ enum ASTNODECLASS_ENUM
 	AST_NODECLASS_CONST
 	AST_NODECLASS_VAR
 	AST_NODECLASS_IDX
+	AST_NODECLASS_FIELD
 	AST_NODECLASS_ENUM
 	AST_NODECLASS_BOP
 	AST_NODECLASS_UOP
@@ -77,7 +78,6 @@ end type
 
 ''
 type AST_FUNCT
-	sym				as FBSYMBOL ptr					'' symbol
 	isrtl			as integer
 
 	params			as integer
@@ -97,8 +97,6 @@ type AST_PARAM
 end type
 
 type AST_VAR
-	sym				as FBSYMBOL ptr					'' symbol
-	elm				as FBSYMBOL ptr					'' element, if symbol is an UDT
 	ofs				as integer						'' offset
 end type
 
@@ -108,14 +106,7 @@ type AST_IDX
 end type
 
 type AST_PTR
-	sym				as FBSYMBOL ptr					'' symbol
-	elm				as FBSYMBOL ptr					'' element, if symbol is an UDT
 	ofs				as integer						'' offset
-end type
-
-type AST_ADDR
-	sym				as FBSYMBOL ptr					'' symbol
-	elm				as FBSYMBOL ptr					'' element, if symbol is an UDT
 end type
 
 type AST_IIF
@@ -127,7 +118,6 @@ type AST_LOAD
 end type
 
 type AST_LABEL
-	sym				as FBSYMBOL ptr					'' symbol
 	flush			as integer
 end type
 
@@ -136,16 +126,37 @@ type AST_LIT
 	isasm			as integer
 end type
 
+type AST_BOP                                        '' binary operator
+	op				as integer
+	allocres 		as integer
+	ex				as FBSYMBOL ptr					'' (extra: label, etc)
+end type
+
+type AST_UOP
+	op				as integer                      '' unary operator
+	allocres 		as integer
+end type
+
+type AST_CONST
+	val				as FBVALUE
+end type
+
 type AST_JMPTB
 	label			as FBSYMBOL ptr
 end type
 
 type AST_DBG
 	ex				as integer
+	op				as integer
 end type
 
 type AST_MEM
 	bytes			as integer
+	op				as integer
+end type
+
+type AST_STK
+	op				as integer
 end type
 
 type AST_BOUNDCHK
@@ -155,6 +166,7 @@ end type
 type AST_PTRCHK
 	linenum			as integer
 end type
+
 
 ''
 type ASTNODE
@@ -167,27 +179,26 @@ type ASTNODE
 	subtype			as FBSYMBOL ptr					'' if dtype is an USERDEF or ENUM
 
 	defined 		as integer						'' only true for constants
-	val				as FBVALUE
 
-	op				as integer						'' f/ BOP, UOP, ... nodes
-	allocres 		as integer						'' /
-	ex				as FBSYMBOL ptr					'' / (extra: label, etc)
-	chkbitfld		as integer
+	sym				as FBSYMBOL ptr					'' attached symbol
 
 	union
+		con			as AST_CONST
 		var			as AST_VAR
 		idx			as AST_IDX
 		ptr			as AST_PTR
 		proc		as AST_FUNCT
 		param		as AST_PARAM
-		addr		as AST_ADDR
 		iif			as AST_IIF
+		bop			as AST_BOP
+		uop			as AST_UOP
 		lod			as AST_LOAD
 		lbl			as AST_LABEL
 		lit			as AST_LIT
 		jtb			as AST_JMPTB
 		dbg			as AST_DBG
 		mem			as AST_MEM
+		stk			as AST_STK
 		bchk		as AST_BOUNDCHK
 		pchk		as AST_PTRCHK
 	end union
@@ -247,12 +258,6 @@ declare function 	astIsTreeEqual		( byval l as ASTNODE ptr, _
 										  byval r as ASTNODE ptr ) as integer
 
 declare function 	astIsADDR			( byval n as ASTNODE ptr ) as integer
-
-declare function 	astGetSymbolOrElm	( byval n as ASTNODE ptr ) as FBSYMBOL ptr
-
-declare function 	astGetSymbol		( byval n as ASTNODE ptr ) as FBSYMBOL ptr
-
-declare function 	astGetElm			( byval n as ASTNODE ptr ) as FBSYMBOL ptr
 
 declare sub 		astConvertValue     ( byval n as ASTNODE ptr, _
 					       				  byval v as FBVALUE ptr, _
@@ -334,7 +339,6 @@ declare function 	astNewCONST64		( byval value as longint, _
 										  byval dtype as integer ) as ASTNODE ptr
 
 declare function 	astNewVAR			( byval sym as FBSYMBOL ptr, _
-										  byval elm as FBSYMBOL ptr = NULL, _
 										  byval ofs as integer = 0, _
 										  byval dtype as integer = IR_DATATYPE_INTEGER, _
 										  byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr
@@ -344,9 +348,12 @@ declare function 	astNewIDX			( byval v as ASTNODE ptr, _
 										  byval dtype as integer, _
 										  byval subtype as FBSYMBOL ptr ) as ASTNODE ptr
 
-declare function 	astNewPTR			( byval sym as FBSYMBOL ptr, _
-										  byval elm as FBSYMBOL ptr, _
-										  byval ofs as integer, _
+declare function 	astNewFIELD			( byval p as ASTNODE ptr, _
+										  byval sym as FBSYMBOL ptr, _
+										  byval dtype as integer = IR_DATATYPE_INTEGER, _
+										  byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr
+
+declare function 	astNewPTR			( byval ofs as integer, _
 										  byval l as ASTNODE ptr, _
 										  byval dtype as integer, _
 										  byval subtype as FBSYMBOL ptr ) as ASTNODE ptr
@@ -361,9 +368,7 @@ declare function 	astNewPARAM			( byval f as ASTNODE ptr, _
 										  byval mode as integer = INVALID ) as ASTNODE ptr
 
 declare function 	astNewADDR			( byval op as integer, _
-										  byval p as ASTNODE ptr, _
-										  byval sym as FBSYMBOL ptr = NULL, _
-										  byval elm as FBSYMBOL ptr = NULL ) as ASTNODE ptr
+										  byval p as ASTNODE ptr ) as ASTNODE ptr
 
 declare function 	astNewLOAD			( byval l as ASTNODE ptr, _
 										  byval dtype as integer, _
@@ -377,9 +382,7 @@ declare function 	astNewIIF			( byval condexpr as ASTNODE ptr, _
 										  byval truexpr as ASTNODE ptr, _
 										  byval falsexpr as ASTNODE ptr ) as ASTNODE ptr
 
-declare function 	astNewOFFSET		( byval v as ASTNODE ptr, _
-					   					  byval sym as FBSYMBOL ptr = NULL, _
-					   					  byval elm as FBSYMBOL ptr = NULL ) as ASTNODE ptr
+declare function 	astNewOFFSET		( byval v as ASTNODE ptr ) as ASTNODE ptr
 
 declare function 	astNewLINK			( byval l as ASTNODE ptr, _
 					 					  byval r as ASTNODE ptr ) as ASTNODE ptr
@@ -452,9 +455,6 @@ declare function 	astIsClassOnTree	( byval class as integer, _
 declare function 	astIsSymbolOnTree	( byval sym as FBSYMBOL ptr, _
 										  byval n as ASTNODE ptr ) as integer
 
-declare function 	astGetBitField		( byval n as ASTNODE ptr, _
-						 				  byval s as FBSYMBOL ptr ) as ASTNODE ptr
-
 declare function 	astGetStrLitSymbol	( byval n as ASTNODE ptr ) as FBSYMBOL ptr
 
 ''
@@ -474,13 +474,15 @@ declare function 	astGetStrLitSymbol	( byval n as ASTNODE ptr ) as FBSYMBOL ptr
 
 #define astIsOFFSET(n) (n->class = AST_NODECLASS_OFFSET)
 
-#define astGetValue(n) n->val
+#define astIsFIELD(n) (n->class = AST_NODECLASS_FIELD)
 
-#define astGetValInt(n) n->val.int
+#define astGetValue(n) n->con.val
 
-#define astGetValFloat(n) n->val.float
+#define astGetValInt(n) n->con.val.int
 
-#define astGetValLong(n) n->val.long
+#define astGetValFloat(n) n->con.val.float
+
+#define astGetValLong(n) n->con.val.long
 
 #define astGetDataType(n) n->dtype
 
@@ -490,9 +492,23 @@ declare function 	astGetStrLitSymbol	( byval n as ASTNODE ptr ) as FBSYMBOL ptr
 
 #define astGetDataSize(n) irGetDataSize( n->dtype )
 
-#define astSetDataType(n,t) n->dtype = t
+#define astGetSymbol(n)	n->sym
 
-#define astSetSubType(n,t) n->subtype = t
+#define astSetDataType(n, _dtype) 							_
+    n->dtype = _dtype                                       :_
+	if( n->class = AST_NODECLASS_FIELD ) then               :_
+		n->l->dtype = _dtype                                :_
+	end if
+
+#define astSetType(n, _dtype, _subtype) 					_
+    n->dtype   = _dtype                                     :_
+    n->subtype = _subtype                                   :_
+	if( n->class = AST_NODECLASS_FIELD ) then               :_
+		n->l->dtype   = _dtype                              :_
+		n->l->subtype = _subtype                            :_
+	end if
+
+
 
 ''
 '' inter-module globals

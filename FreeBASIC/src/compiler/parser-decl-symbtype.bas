@@ -208,6 +208,7 @@ function cSymbolType( byref typ as integer, _
 		lexSkipToken( )
 		typ = FB_SYMBTYPE_SHORT
 		lgt = 2
+
 	case FB_TK_USHORT
 		lexSkipToken( )
 		typ = FB_SYMBTYPE_USHORT
@@ -217,6 +218,7 @@ function cSymbolType( byref typ as integer, _
 		lexSkipToken( )
 		typ = FB_SYMBTYPE_INTEGER
 		lgt = FB_INTEGERSIZE
+
 	case FB_TK_UINT
 		lexSkipToken( )
 		typ = FB_SYMBTYPE_UINT
@@ -226,6 +228,7 @@ function cSymbolType( byref typ as integer, _
 		lexSkipToken( )
 		typ = FB_SYMBTYPE_LONGINT
 		lgt = FB_INTEGERSIZE*2
+
 	case FB_TK_ULONGINT
 		lexSkipToken( )
 		typ = FB_SYMBTYPE_ULONGINT
@@ -242,6 +245,7 @@ function cSymbolType( byref typ as integer, _
 		lgt = 8
 
 	case FB_TK_STRING
+		'' fixed-len?
 		if( lexGetLookAhead(1) = CHAR_STAR ) then
 			lexSkipToken( )
 			lexSkipToken( )
@@ -249,13 +253,18 @@ function cSymbolType( byref typ as integer, _
 			if( not cConstExprValue( lgt ) ) then
 				exit function
 			end if
+
+			'' plus the null-term
 			lgt += 1
-			'' min 1 char + null-term
+
+			'' min 1 char (+ null-term)
 			if( lgt <= 1 ) then
 				hReportError( FB_ERRMSG_SYNTAXERROR )
 				exit function
 			end if
 			allowptr = FALSE
+
+		'' var-len string..
 		else
 			typ = FB_SYMBTYPE_STRING
 			lgt = FB_STRDESCLEN
@@ -272,6 +281,7 @@ function cSymbolType( byref typ as integer, _
 
 		lexSkipToken( )
 
+		'' fixed-len?
 		if( lexGetToken( ) = CHAR_STAR ) then
 			lexSkipToken( )
 			if( not cConstExprValue( lgt ) ) then
@@ -285,16 +295,17 @@ function cSymbolType( byref typ as integer, _
 			end if
 			allowptr = FALSE
 
+			'' note: len of "wstring * expr" symbols will be actually
+			''       the number of chars times sizeof(wstring), so
+			''		 always use symbGetWstrLen( ) to retrieve the
+			''       len in characters, not the bytes
+			if( typ = FB_SYMBTYPE_WCHAR ) then
+				lgt *= irGetDataSize( IR_DATATYPE_WCHAR )
+			end if
+
+		'' pointer..
 		else
     		lgt = 0
-		end if
-
-		'' note: len of "wstring * expr" symbols will be actually
-		''       the number of chars times sizeof(wstring), so
-		''		 always use symbGetWstrLen( ) to retrieve the
-		''       len in characters, not the bytes
-		if( typ = FB_SYMBTYPE_WCHAR ) then
-			lgt *= irGetDataSize( IR_DATATYPE_WCHAR )
 		end if
 
 	case FB_TK_FUNCTION, FB_TK_SUB
@@ -381,6 +392,7 @@ function cSymbolType( byref typ as integer, _
 			if( typ = FB_SYMBTYPE_FWDREF ) then
 				hReportError( FB_ERRMSG_INCOMPLETETYPE )
 				exit function
+
 			elseif( lgt <= 0 ) then
 				select case typ
 				case FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR

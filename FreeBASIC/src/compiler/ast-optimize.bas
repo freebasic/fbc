@@ -41,14 +41,14 @@ private sub hOptConstRmNeg( byval n as ASTNODE ptr, _
 	'' check any UOP node, and if its of the kind "-var + const" convert to "const - var"
 	if( p <> NULL ) then
 		if( n->class = AST_NODECLASS_UOP ) then
-			if( n->op = IR_OP_NEG ) then
+			if( n->uop.op = IR_OP_NEG ) then
 				l = n->l
 				if( l->class = AST_NODECLASS_VAR ) then
 					if( p->class = AST_NODECLASS_BOP ) then
-						if( p->op = IR_OP_ADD ) then
+						if( p->bop.op = IR_OP_ADD ) then
 							r = p->r
 							if( r->defined ) then
-								p->op = IR_OP_SUB
+								p->bop.op = IR_OP_SUB
 								p->l = p->r
 								p->r = n->l
 								astDel( n )
@@ -162,11 +162,11 @@ private function hPrepConst( byval v as ASTVALUE ptr, _
 		v->dtype = r->dtype
 		select case as const v->dtype
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			v->val.long = r->val.long
+			v->val.long = r->con.val.long
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			v->val.float = r->val.float
+			v->val.float = r->con.val.float
 		case else
-            v->val.int = r->val.int
+            v->val.int = r->con.val.int
 		end select
 
 		return INVALID
@@ -187,7 +187,7 @@ private function hPrepConst( byval v as ASTVALUE ptr, _
 
 	'' convert r to v's type
 	if( dtype = v->dtype ) then
-		hConvDataType( @r->val, r->dtype, dtype )
+		hConvDataType( @r->con.val, r->dtype, dtype )
 
 	'' convert v to r's type
 	else
@@ -215,7 +215,7 @@ private function hConstAccumADDSUB( byval n as ASTNODE ptr, _
 		return n
 	end if
 
-    o = n->op
+    o = n->bop.op
 
 	select case o
 	case IR_OP_ADD, IR_OP_SUB
@@ -239,21 +239,21 @@ private function hConstAccumADDSUB( byval n as ASTNODE ptr, _
 				case IR_OP_ADD
 					select case as const dtype
 					case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-						v->val.long += r->val.long
+						v->val.long += r->con.val.long
 					case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-						v->val.float += r->val.float
+						v->val.float += r->con.val.float
 					case else
-				    	v->val.int += r->val.int
+				    	v->val.int += r->con.val.int
 					end select
 
 				case IR_OP_SUB
 					select case as const dtype
 					case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-						v->val.long -= r->val.long
+						v->val.long -= r->con.val.long
 					case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-						v->val.float -= r->val.float
+						v->val.float -= r->con.val.float
 					case else
-						v->val.int -= r->val.int
+						v->val.int -= r->con.val.int
 					end select
 				end select
 			end if
@@ -295,7 +295,7 @@ private function hConstAccumMUL( byval n as ASTNODE ptr, _
 		return n
 	end if
 
-	if( n->op = IR_OP_MUL ) then
+	if( n->bop.op = IR_OP_MUL ) then
 		l = n->l
 		r = n->r
 
@@ -306,11 +306,11 @@ private function hConstAccumMUL( byval n as ASTNODE ptr, _
 			if( dtype <> INVALID ) then
 				select case as const dtype
 				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-					v->val.long *= r->val.long
+					v->val.long *= r->con.val.long
 				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-					v->val.float *= r->val.float
+					v->val.float *= r->con.val.float
 				case else
-					v->val.int *= r->val.int
+					v->val.int *= r->con.val.int
 				end select
 			end if
 
@@ -348,7 +348,7 @@ private function hOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
 	if( n->class = AST_NODECLASS_BOP ) then
 		r = n->r
 		if( r->defined ) then
-			select case as const n->op
+			select case as const n->bop.op
 			case IR_OP_ADD
 				v.dtype = INVALID
 				n = hConstAccumADDSUB( n, @v, 1 )
@@ -425,7 +425,7 @@ private sub hOptConstAccum2( byval n as ASTNODE ptr )
 	if( n->class = AST_NODECLASS_BOP ) then
 		checktype = FALSE
 
-		select case n->op
+		select case n->bop.op
 		case IR_OP_ADD
 			'' don't mess with strings..
 			select case n->dtype
@@ -520,7 +520,7 @@ private function hConstDistMUL( byval n as ASTNODE ptr, _
 		return n
 	end if
 
-	if( n->op = IR_OP_ADD ) then
+	if( n->bop.op = IR_OP_ADD ) then
 		l = n->l
 		r = n->r
 
@@ -531,11 +531,11 @@ private function hConstDistMUL( byval n as ASTNODE ptr, _
 			if( dtype <> INVALID ) then
 				select case as const dtype
 				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-					v->val.long += r->val.long
+					v->val.long += r->con.val.long
 				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-					v->val.float += r->val.float
+					v->val.float += r->con.val.float
 				case else
-					v->val.int += r->val.int
+					v->val.int += r->con.val.int
 				end select
 			end if
 
@@ -572,7 +572,7 @@ private function hOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
 	if( n->class = AST_NODECLASS_BOP ) then
 		r = n->r
 		if( r->defined ) then
-			if( n->op = IR_OP_MUL ) then
+			if( n->bop.op = IR_OP_MUL ) then
 
 				v.dtype = INVALID
 				n->l = hConstDistMUL( n->l, @v )
@@ -583,11 +583,11 @@ private function hOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
 					case IR_DATATYPE_LONGINT
 						select case as const r->dtype
 						case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-							v.val.long *= r->val.long
+							v.val.long *= r->con.val.long
 						case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-							v.val.long *= clngint( r->val.float )
+							v.val.long *= clngint( r->con.val.float )
 						case else
-							v.val.long *= clngint( r->val.int )
+							v.val.long *= clngint( r->con.val.int )
 						end select
 
 						r = astNewCONST64( v.val.long, v.dtype )
@@ -596,11 +596,11 @@ private function hOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
 					case IR_DATATYPE_ULONGINT
 						select case as const r->dtype
 						case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-							v.val.long *= cunsg( r->val.long )
+							v.val.long *= cunsg( r->con.val.long )
 						case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-							v.val.long *= culngint( r->val.float )
+							v.val.long *= culngint( r->con.val.float )
 						case else
-							v.val.long *= culngint( r->val.int )
+							v.val.long *= culngint( r->con.val.int )
 						end select
 
 						r = astNewCONST64( v.val.long, v.dtype )
@@ -609,15 +609,15 @@ private function hOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
 					case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
 						select case as const r->dtype
 						case IR_DATATYPE_LONGINT
-							v.val.float *= cdbl( r->val.long )
+							v.val.float *= cdbl( r->con.val.long )
 						case IR_DATATYPE_ULONGINT
-							v.val.float *= cdbl( cunsg( r->val.long ) )
+							v.val.float *= cdbl( cunsg( r->con.val.long ) )
 						case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-							v.val.float *= r->val.float
+							v.val.float *= r->con.val.float
 						case IR_DATATYPE_UINT
-							v.val.float *= cdbl( cunsg( r->val.int ) )
+							v.val.float *= cdbl( cunsg( r->con.val.int ) )
 						case else
-							v.val.float *= cdbl( r->val.int )
+							v.val.float *= cdbl( r->con.val.int )
 						end select
 
 						r = astNewCONSTf( v.val.float, v.dtype )
@@ -626,11 +626,11 @@ private function hOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
 					case else
 						select case as const r->dtype
 						case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-							v.val.int *= cint( r->val.long )
+							v.val.int *= cint( r->con.val.long )
 						case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-							v.val.int *= cint( r->val.float )
+							v.val.int *= cint( r->con.val.float )
 						case else
-							v.val.int *= r->val.int
+							v.val.int *= r->con.val.int
 						end select
 
 						r = astNewCONSTi( v.val.int, v.dtype )
@@ -699,11 +699,11 @@ private sub hOptConstIDX( byval n as ASTNODE ptr )
         	if( l->defined ) then
 				select case as const l->dtype
 				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-					c = cint( l->val.long )
+					c = cint( l->con.val.long )
 				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-					c = cint( l->val.float )
+					c = cint( l->con.val.float )
 				case else
-					c = cint( l->val.int )
+					c = cint( l->con.val.int )
 				end select
 
 				if( n->class = AST_NODECLASS_IDX ) then
@@ -724,17 +724,17 @@ private sub hOptConstIDX( byval n as ASTNODE ptr )
 			'' x86 assumption: if top of tree = idx * lgt, and lgt < 10,
 			''                 save lgt and delete the * node
 			if( l->class = AST_NODECLASS_BOP ) then
-				if( l->op = IR_OP_MUL ) then
+				if( l->bop.op = IR_OP_MUL ) then
 					lr = l->r
 					if( lr->defined ) then
 
 						select case as const lr->dtype
 						case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-							c = cint( lr->val.long )
+							c = cint( lr->con.val.long )
 						case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-							c = cint( lr->val.float )
+							c = cint( lr->con.val.float )
 						case else
-							c = cint( lr->val.int )
+							c = cint( lr->con.val.int )
 						end select
 
 						if( c < 10 ) then
@@ -810,7 +810,7 @@ private sub hOptAssocADD( byval n as ASTNODE ptr )
 
     '' convert a+(b+c) to a+b+c and a-(b-c) to a-b+c
 	if( n->class = AST_NODECLASS_BOP ) then
-		op = n->op
+		op = n->bop.op
 		if( op = IR_OP_ADD or op = IR_OP_SUB ) then
 			'' don't mess with strings..
 			select case n->dtype
@@ -820,7 +820,7 @@ private sub hOptAssocADD( byval n as ASTNODE ptr )
 			case else
 				r = n->r
 				if( r->class = AST_NODECLASS_BOP ) then
-					rop = r->op
+					rop = r->bop.op
 					if( rop = IR_OP_ADD or rop = IR_OP_SUB ) then
 						n->r = r->r
 						r->r = r->l
@@ -839,8 +839,8 @@ private sub hOptAssocADD( byval n as ASTNODE ptr )
 								rop = IR_OP_ADD
 							end if
 						end if
-						n->op = op
-						r->op = rop
+						n->bop.op = op
+						r->bop.op = rop
 
 						hOptAssocADD( n )
 						exit sub
@@ -873,10 +873,10 @@ private sub hOptAssocMUL( byval n as ASTNODE ptr )
 
 	'' convert a*(b*c) to a*b*c
 	if( n->class = AST_NODECLASS_BOP ) then
-		if( n->op = IR_OP_MUL ) then
+		if( n->bop.op = IR_OP_MUL ) then
 			r = n->r
 			if( r->class = AST_NODECLASS_BOP ) then
-				if( r->op = IR_OP_MUL ) then
+				if( r->bop.op = IR_OP_MUL ) then
 					n->r = r->r
 					r->r = r->l
 					r->l = n->l
@@ -918,31 +918,31 @@ private sub hOptToShift( byval n as ASTNODE ptr )
 	''         'a \ pow2 imm'   to 'a SHR pow2' and
 	''         'a MOD pow2 imm' to 'a AND pow2-1'
 	if( n->class = AST_NODECLASS_BOP ) then
-		op = n->op
+		op = n->bop.op
 		select case op
 		case IR_OP_MUL, IR_OP_INTDIV, IR_OP_MOD
 			r = n->r
 			if( r->defined ) then
 				if( irGetDataClass( n->dtype ) = IR_DATACLASS_INTEGER ) then
 					if( irGetDataSize( r->dtype ) <= FB_INTEGERSIZE ) then
-						v = r->val.int
+						v = r->con.val.int
 						if( v > 0 ) then
 							v = hToPow2( v )
 							if( v > 0 ) then
 								select case op
 								case IR_OP_MUL
 									if( v <= 32 ) then
-										n->op = IR_OP_SHL
-										r->val.int = v
+										n->bop.op = IR_OP_SHL
+										r->con.val.int = v
 									end if
 								case IR_OP_INTDIV
 									if( v <= 32 ) then
-										n->op = IR_OP_SHR
-										r->val.int = v
+										n->bop.op = IR_OP_SHR
+										r->con.val.int = v
 									end if
 								case IR_OP_MOD
-									n->op = IR_OP_AND
-									r->val.int -= 1
+									n->bop.op = IR_OP_AND
+									r->con.val.int -= 1
 								end select
 							end if
 						end if
@@ -986,13 +986,13 @@ private function hOptNullOp( byval n as ASTNODE ptr ) as ASTNODE ptr static
 	''         'a XOR 0' to 'a'
 	''         'a AND -1' to 'a'
 	if( n->class = AST_NODECLASS_BOP ) then
-		op = n->op
+		op = n->bop.op
 		l = n->l
 		r = n->r
 		if( r->defined ) then
 			if( irGetDataClass( n->dtype ) = IR_DATACLASS_INTEGER ) then
 				if( irGetDataSize( r->dtype ) <= FB_INTEGERSIZE ) then
-					v = r->val.int
+					v = r->con.val.int
 					select case as const op
 					case IR_OP_MUL
 						if( v = 0 ) then
@@ -1007,7 +1007,7 @@ private function hOptNullOp( byval n as ASTNODE ptr ) as ASTNODE ptr static
 
 					case IR_OP_MOD
 						if( v = 1 ) then
-							r->val.int = 0
+							r->con.val.int = 0
 							astDelTree( l )
 							astDel( n )
 							return r
@@ -1140,8 +1140,9 @@ private function hIsMultStrConcat( byval l as ASTNODE ptr, _
 
 	if( r->class = AST_NODECLASS_BOP ) then
 		select case l->class
-		case AST_NODECLASS_VAR, AST_NODECLASS_IDX
-			sym = astGetSymbolOrElm( l )
+		case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
+			 AST_NODECLASS_FIELD	'' !!!FIXME!!! check if this is okay w/ pointers
+			sym = astGetSymbol( l )
 			if( sym <> NULL ) then
 				if( (sym->alloctype and _
 					(FB_ALLOCTYPE_ARGUMENTBYDESC or FB_ALLOCTYPE_ARGUMENTBYREF)) = 0 ) then
@@ -1170,8 +1171,9 @@ private function hOptStrAssignment( byval n as ASTNODE ptr, _
 	'' is right side a bin operation?
 	if( r->class = AST_NODECLASS_BOP ) then
 		'' is left side a var?
-		select case l->class
-		case AST_NODECLASS_VAR, AST_NODECLASS_PTR, AST_NODECLASS_IDX
+		select case as const l->class
+		case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
+			 AST_NODECLASS_FIELD, AST_NODECLASS_PTR
 			optimize = astIsTreeEqual( l, r->l )
 		end select
 	end if
@@ -1281,22 +1283,32 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr static
 	end if
 
 	'' is left side a var, idx or ptr?
-	select case l->class
+	select case as const l->class
 	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_PTR
+
+	case AST_NODECLASS_FIELD
+		'' isn't it a bitfield?
+		if( l->dtype = IR_DATATYPE_BITFIELD ) then
+			exit function
+		end if
+
 	case else
 		exit function
 	end select
 
-	'' is right side a bin or unary operation?
+	'' is right side an unary or binary operation?
 	select case r->class
-	case AST_NODECLASS_UOP, AST_NODECLASS_BOP
-	case else
-		exit function
-	end select
+	case AST_NODECLASS_UOP
 
-	'' can't be a relative op -- unless EMIT is changed to not assume the res operand is a reg
-	select case as const r->op
-	case IR_OP_EQ, IR_OP_GT, IR_OP_LT, IR_OP_NE, IR_OP_LE, IR_OP_GE
+	case AST_NODECLASS_BOP
+		'' can't be a relative op -- unless EMIT is changed to not assume
+		'' the res operand is a reg
+		select case as const r->bop.op
+		case IR_OP_EQ, IR_OP_GT, IR_OP_LT, IR_OP_NE, IR_OP_LE, IR_OP_GE
+			exit function
+		end select
+
+	case else
 		exit function
 	end select
 
@@ -1310,18 +1322,13 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr static
 		exit function
 	end if
 
-	'' isn't it a bitfield?
-	if( l->chkbitfld ) then
-		s = astGetElm( l )
-		if( s <> NULL ) then
-			if( s->var.elm.bits > 0 ) then
-				exit function
-			end if
-		end if
-	end if
 
 	'' delete assign node and alert UOP/BOP to not allocate a result (IR is aware)
-	r->allocres = FALSE
+	if( r->class = AST_NODECLASS_UOP ) then
+		r->uop.allocres = FALSE
+	else
+		r->bop.allocres = FALSE
+	end if
 
 	''	=             o
 	'' / \           / \

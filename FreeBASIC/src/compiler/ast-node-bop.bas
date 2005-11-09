@@ -36,14 +36,14 @@ private function hStrLiteralConcat( byval l as ASTNODE ptr, _
 
     dim as FBSYMBOL ptr s, ls, rs
 
-	ls = astGetSymbolOrElm( l )
-	rs = astGetSymbolOrElm( r )
+	ls = astGetSymbol( l )
+	rs = astGetSymbol( r )
 
 	'' new len = both strings' len less the 2 null-chars
 	s = symbAllocStrConst( symbGetVarText( ls ) + symbGetVarText( rs ), _
 						   symbGetStrLen( ls ) - 1 + symbGetStrLen( rs ) - 1 )
 
-	function = astNewVAR( s, NULL, 0, IR_DATATYPE_CHAR )
+	function = astNewVAR( s, 0, IR_DATATYPE_CHAR )
 
 	astDel( r )
 	astDel( l )
@@ -57,8 +57,8 @@ private function hWstrLiteralConcat( byval l as ASTNODE ptr, _
 
     dim as FBSYMBOL ptr s, ls, rs
 
-	ls = astGetSymbolOrElm( l )
-	rs = astGetSymbolOrElm( r )
+	ls = astGetSymbol( l )
+	rs = astGetSymbol( r )
 
 	if( symbGetType( ls ) <> IR_DATATYPE_WCHAR ) then
 		'' new len = both strings' len less the 2 null-chars
@@ -74,7 +74,7 @@ private function hWstrLiteralConcat( byval l as ASTNODE ptr, _
 						    	symbGetWstrLen( ls ) - 1 + symbGetWstrLen( rs ) - 1 )
     end if
 
-	function = astNewVAR( s, NULL, 0, IR_DATATYPE_WCHAR )
+	function = astNewVAR( s, 0, IR_DATATYPE_WCHAR )
 
 	astDel( r )
 	astDel( l )
@@ -98,103 +98,103 @@ private sub hBOPConstFoldInt( byval op as integer, _
 
 	select case as const op
 	case IR_OP_ADD
-		l->val.int = l->val.int + r->val.int
+		l->con.val.int = l->con.val.int + r->con.val.int
 
 	case IR_OP_SUB
-		l->val.int = l->val.int - r->val.int
+		l->con.val.int = l->con.val.int - r->con.val.int
 
 	case IR_OP_MUL
 		if( issigned ) then
-			l->val.int = l->val.int * r->val.int
+			l->con.val.int = l->con.val.int * r->con.val.int
 		else
-			l->val.int = cunsg(l->val.int) * cunsg(r->val.int)
+			l->con.val.int = cunsg(l->con.val.int) * cunsg(r->con.val.int)
 		end if
 
 	case IR_OP_INTDIV
-		if( r->val.int <> 0 ) then
+		if( r->con.val.int <> 0 ) then
 			if( issigned ) then
-				l->val.int = l->val.int \ r->val.int
+				l->con.val.int = l->con.val.int \ r->con.val.int
 			else
-				l->val.int = cunsg( l->val.int ) \ cunsg( r->val.int )
+				l->con.val.int = cunsg( l->con.val.int ) \ cunsg( r->con.val.int )
 			end if
 		else
-			l->val.int = 0
+			l->con.val.int = 0
 			hReportError( FB_ERRMSG_DIVBYZERO )
 		end if
 
 	case IR_OP_MOD
-		if( r->val.int <> 0 ) then
+		if( r->con.val.int <> 0 ) then
 			if( issigned ) then
-				l->val.int = l->val.int mod r->val.int
+				l->con.val.int = l->con.val.int mod r->con.val.int
 			else
-				l->val.int = cunsg( l->val.int ) mod cunsg( r->val.int )
+				l->con.val.int = cunsg( l->con.val.int ) mod cunsg( r->con.val.int )
 			end if
 		else
-			l->val.int = 0
+			l->con.val.int = 0
 			hReportError( FB_ERRMSG_DIVBYZERO )
 		end if
 
 	case IR_OP_SHL
 		if( issigned ) then
-			l->val.int = l->val.int shl r->val.int
+			l->con.val.int = l->con.val.int shl r->con.val.int
 		else
-			l->val.int = cunsg( l->val.int ) shl r->val.int
+			l->con.val.int = cunsg( l->con.val.int ) shl r->con.val.int
 		end if
 
 	case IR_OP_SHR
 		if( issigned ) then
-			l->val.int = l->val.int shr r->val.int
+			l->con.val.int = l->con.val.int shr r->con.val.int
 		else
-			l->val.int = cunsg( l->val.int ) shr r->val.int
+			l->con.val.int = cunsg( l->con.val.int ) shr r->con.val.int
 		end if
 
 	case IR_OP_AND
-		l->val.int = l->val.int and r->val.int
+		l->con.val.int = l->con.val.int and r->con.val.int
 
 	case IR_OP_OR
-		l->val.int = l->val.int or r->val.int
+		l->con.val.int = l->con.val.int or r->con.val.int
 
 	case IR_OP_XOR
-		l->val.int = l->val.int xor r->val.int
+		l->con.val.int = l->con.val.int xor r->con.val.int
 
 	case IR_OP_EQV
-		l->val.int = l->val.int eqv r->val.int
+		l->con.val.int = l->con.val.int eqv r->con.val.int
 
 	case IR_OP_IMP
-		l->val.int = l->val.int imp r->val.int
+		l->con.val.int = l->con.val.int imp r->con.val.int
 
 	case IR_OP_NE
-		l->val.int = l->val.int <> r->val.int
+		l->con.val.int = l->con.val.int <> r->con.val.int
 
 	case IR_OP_EQ
-		l->val.int = l->val.int = r->val.int
+		l->con.val.int = l->con.val.int = r->con.val.int
 
 	case IR_OP_GT
 		if( issigned ) then
-			l->val.int = l->val.int > r->val.int
+			l->con.val.int = l->con.val.int > r->con.val.int
 		else
-			l->val.int = cunsg( l->val.int ) > cunsg( r->val.int )
+			l->con.val.int = cunsg( l->con.val.int ) > cunsg( r->con.val.int )
 		end if
 
 	case IR_OP_LT
 		if( issigned ) then
-			l->val.int = l->val.int < r->val.int
+			l->con.val.int = l->con.val.int < r->con.val.int
 		else
-			l->val.int = cunsg( l->val.int ) < cunsg( r->val.int )
+			l->con.val.int = cunsg( l->con.val.int ) < cunsg( r->con.val.int )
 		end if
 
 	case IR_OP_LE
 		if( issigned ) then
-			l->val.int = l->val.int <= r->val.int
+			l->con.val.int = l->con.val.int <= r->con.val.int
 		else
-			l->val.int = cunsg( l->val.int ) <= cunsg( r->val.int )
+			l->con.val.int = cunsg( l->con.val.int ) <= cunsg( r->con.val.int )
 		end if
 
 	case IR_OP_GE
 		if( issigned ) then
-			l->val.int = l->val.int >= r->val.int
+			l->con.val.int = l->con.val.int >= r->con.val.int
 		else
-			l->val.int = cunsg( l->val.int ) >= cunsg( r->val.int )
+			l->con.val.int = cunsg( l->con.val.int ) >= cunsg( r->con.val.int )
 		end if
 	end select
 
@@ -208,40 +208,40 @@ private sub hBOPConstFoldFlt( byval op as integer, _
 
 	select case as const op
 	case IR_OP_ADD
-		l->val.float = l->val.float + r->val.float
+		l->con.val.float = l->con.val.float + r->con.val.float
 
 	case IR_OP_SUB
-		l->val.float = l->val.float - r->val.float
+		l->con.val.float = l->con.val.float - r->con.val.float
 
 	case IR_OP_MUL
-		l->val.float = l->val.float * r->val.float
+		l->con.val.float = l->con.val.float * r->con.val.float
 
 	case IR_OP_DIV
-		l->val.float = l->val.float / r->val.float
+		l->con.val.float = l->con.val.float / r->con.val.float
 
     case IR_OP_POW
-		l->val.float = l->val.float ^ r->val.float
+		l->con.val.float = l->con.val.float ^ r->con.val.float
 
 	case IR_OP_NE
-		l->val.int = l->val.float <> r->val.float
+		l->con.val.int = l->con.val.float <> r->con.val.float
 
 	case IR_OP_EQ
-		l->val.int = l->val.float = r->val.float
+		l->con.val.int = l->con.val.float = r->con.val.float
 
 	case IR_OP_GT
-		l->val.int = l->val.float > r->val.float
+		l->con.val.int = l->con.val.float > r->con.val.float
 
 	case IR_OP_LT
-		l->val.int = l->val.float < r->val.float
+		l->con.val.int = l->con.val.float < r->con.val.float
 
 	case IR_OP_LE
-		l->val.int = l->val.float <= r->val.float
+		l->con.val.int = l->con.val.float <= r->con.val.float
 
 	case IR_OP_GE
-		l->val.int = l->val.float >= r->val.float
+		l->con.val.int = l->con.val.float >= r->con.val.float
 
     case IR_OP_ATAN2
-		l->val.float = atan2( l->val.float, r->val.float )
+		l->con.val.float = atan2( l->con.val.float, r->con.val.float )
 	end select
 
 end sub
@@ -258,103 +258,103 @@ private sub hBOPConstFold64( byval op as integer, _
 
 	select case as const op
 	case IR_OP_ADD
-		l->val.long = l->val.long + r->val.long
+		l->con.val.long = l->con.val.long + r->con.val.long
 
 	case IR_OP_SUB
-		l->val.long = l->val.long - r->val.long
+		l->con.val.long = l->con.val.long - r->con.val.long
 
 	case IR_OP_MUL
 		if( issigned ) then
-			l->val.long = l->val.long * r->val.long
+			l->con.val.long = l->con.val.long * r->con.val.long
 		else
-			l->val.long = cunsg(l->val.long) * cunsg(r->val.long)
+			l->con.val.long = cunsg(l->con.val.long) * cunsg(r->con.val.long)
 		end if
 
 	case IR_OP_INTDIV
-		if( r->val.long <> 0 ) then
+		if( r->con.val.long <> 0 ) then
 			if( issigned ) then
-				l->val.long = l->val.long \ r->val.long
+				l->con.val.long = l->con.val.long \ r->con.val.long
 			else
-				l->val.long = cunsg( l->val.long ) \ cunsg( r->val.long )
+				l->con.val.long = cunsg( l->con.val.long ) \ cunsg( r->con.val.long )
 			end if
 		else
-			l->val.long = 0
+			l->con.val.long = 0
 			hReportError( FB_ERRMSG_DIVBYZERO )
 		end if
 
 	case IR_OP_MOD
-		if( r->val.long <> 0 ) then
+		if( r->con.val.long <> 0 ) then
 			if( issigned ) then
-				l->val.long = l->val.long mod r->val.long
+				l->con.val.long = l->con.val.long mod r->con.val.long
 			else
-				l->val.long = cunsg( l->val.long ) mod cunsg( r->val.long )
+				l->con.val.long = cunsg( l->con.val.long ) mod cunsg( r->con.val.long )
 			end if
 		else
-			l->val.long = 0
+			l->con.val.long = 0
 			hReportError( FB_ERRMSG_DIVBYZERO )
 		end if
 
 	case IR_OP_SHL
 		if( issigned ) then
-			l->val.long = l->val.long shl r->val.int
+			l->con.val.long = l->con.val.long shl r->con.val.int
 		else
-			l->val.long = cunsg( l->val.long ) shl r->val.int
+			l->con.val.long = cunsg( l->con.val.long ) shl r->con.val.int
 		end if
 
 	case IR_OP_SHR
 		if( issigned ) then
-			l->val.long = l->val.long shr r->val.int
+			l->con.val.long = l->con.val.long shr r->con.val.int
 		else
-			l->val.long = cunsg( l->val.long ) shr r->val.int
+			l->con.val.long = cunsg( l->con.val.long ) shr r->con.val.int
 		end if
 
 	case IR_OP_AND
-		l->val.long = l->val.long and r->val.long
+		l->con.val.long = l->con.val.long and r->con.val.long
 
 	case IR_OP_OR
-		l->val.long = l->val.long or r->val.long
+		l->con.val.long = l->con.val.long or r->con.val.long
 
 	case IR_OP_XOR
-		l->val.long = l->val.long xor r->val.long
+		l->con.val.long = l->con.val.long xor r->con.val.long
 
 	case IR_OP_EQV
-		l->val.long = l->val.long eqv r->val.long
+		l->con.val.long = l->con.val.long eqv r->con.val.long
 
 	case IR_OP_IMP
-		l->val.long = l->val.long imp r->val.long
+		l->con.val.long = l->con.val.long imp r->con.val.long
 
 	case IR_OP_NE
-		l->val.int = l->val.long <> r->val.long
+		l->con.val.int = l->con.val.long <> r->con.val.long
 
 	case IR_OP_EQ
-		l->val.int = l->val.long = r->val.long
+		l->con.val.int = l->con.val.long = r->con.val.long
 
 	case IR_OP_GT
 		if( issigned ) then
-			l->val.int = l->val.long > r->val.long
+			l->con.val.int = l->con.val.long > r->con.val.long
 		else
-			l->val.int = cunsg( l->val.long ) > cunsg( r->val.long )
+			l->con.val.int = cunsg( l->con.val.long ) > cunsg( r->con.val.long )
 		end if
 
 	case IR_OP_LT
 		if( issigned ) then
-			l->val.int = l->val.long < r->val.long
+			l->con.val.int = l->con.val.long < r->con.val.long
 		else
-			l->val.int = cunsg( l->val.long ) < cunsg( r->val.long )
+			l->con.val.int = cunsg( l->con.val.long ) < cunsg( r->con.val.long )
 		end if
 
 	case IR_OP_LE
 		if( issigned ) then
-			l->val.int = l->val.long <= r->val.long
+			l->con.val.int = l->con.val.long <= r->con.val.long
 		else
-			l->val.int = cunsg( l->val.long ) <= cunsg( r->val.long )
+			l->con.val.int = cunsg( l->con.val.long ) <= cunsg( r->con.val.long )
 		end if
 
 	case IR_OP_GE
 		if( issigned ) then
-			l->val.int = l->val.long >= r->val.long
+			l->con.val.int = l->con.val.long >= r->con.val.long
 		else
-			l->val.int = cunsg( l->val.long ) >= cunsg( r->val.long )
+			l->con.val.int = cunsg( l->con.val.long ) >= cunsg( r->con.val.long )
 		end if
 	end select
 
@@ -810,8 +810,9 @@ function astNewBOP( byval op as integer, _
 						if( rdclass = IR_DATACLASS_INTEGER ) then
 							'' can't be an longint nor a byte (byte operands are converted above)
 							if( irGetDataSize( rdtype ) < FB_INTEGERSIZE*2 ) then
-								select case r->class
-								case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_PTR
+								select case as const r->class
+								case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
+									 AST_NODECLASS_FIELD, AST_NODECLASS_PTR
 									'' can't be unsigned either
 									if( irIsSigned( rdtype ) ) then
 										doconv = FALSE
@@ -870,8 +871,7 @@ function astNewBOP( byval op as integer, _
 			hBOPConstFoldInt( op, l, r )
 		end select
 
-		l->dtype 	= dtype
-		l->subtype  = subtype
+		astSetType( l, dtype, subtype )
 
 		astDel( r )
 
@@ -899,23 +899,24 @@ function astNewBOP( byval op as integer, _
 			'' ? - c = ? + -c
 			select case as const rdtype
 			case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-				r->val.long = -r->val.long
+				r->con.val.long = -r->con.val.long
 			case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-				r->val.float = -r->val.float
+				r->con.val.float = -r->con.val.float
 			case else
-				r->val.int = -r->val.int
+				r->con.val.int = -r->con.val.int
 			end select
 			op = IR_OP_ADD
 
 		case IR_OP_POW
 
 			'' convert var ^ 2 to var * var
-			if( r->val.float = 2.0 ) then
+			if( r->con.val.float = 2.0 ) then
 
 				'' operands will be converted to DOUBLE if not floats..
 				if( l->class = AST_NODECLASS_CONV ) then
 					select case l->l->class
-					case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_PTR
+					case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
+						 AST_NODECLASS_FIELD, AST_NODECLASS_PTR
 						n = l
 						l = l->l
 						astDel( n )
@@ -924,7 +925,8 @@ function astNewBOP( byval op as integer, _
 				end if
 
 				select case l->class
-				case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_PTR
+				case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
+					 AST_NODECLASS_FIELD, AST_NODECLASS_PTR
 					astDel( r )
 					r = astCloneTree( l )
 					op = IR_OP_MUL
@@ -947,11 +949,11 @@ function astNewBOP( byval op as integer, _
 	end if
 
 	'' fill it
-	n->op 		= op
 	n->l  		= l
 	n->r  		= r
-	n->ex 		= ex
-	n->allocres	= allocres
+	n->bop.ex 	= ex
+	n->bop.op 	= op
+	n->bop.allocres	= allocres
 
 	function = n
 
@@ -963,7 +965,7 @@ function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as integer op
     dim as IRVREG ptr v1, v2, vr
 
-	op = n->op
+	op = n->bop.op
 	l  = n->l
 	r  = n->r
 
@@ -979,16 +981,16 @@ function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	if( ast.doemit ) then
 		'' result type can be different, with boolean operations on floats
-		if( n->allocres ) then
+		if( n->bop.allocres ) then
 			vr = irAllocVREG( n->dtype )
 		else
 			vr = NULL
 		end if
 
 		'' execute the operation
-		if( n->ex <> NULL ) then
+		if( n->bop.ex <> NULL ) then
 			'' hack! ex=label, vr being NULL 'll gen better code at IR..
-			irEmitBOPEx( op, v1, v2, NULL, n->ex )
+			irEmitBOPEx( op, v1, v2, NULL, n->bop.ex )
 		else
 			irEmitBOPEx( op, v1, v2, vr, NULL )
 		end if

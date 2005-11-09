@@ -914,7 +914,7 @@ function rtlGfxPaint( byval target as ASTNODE ptr, _
  			exit function
  		end if
 	else
-    	if( astNewPARAM( proc, astNewVAR( symbAllocStrConst( "", 0 ), NULL, 0, IR_DATATYPE_CHAR ) ) = NULL ) then
+    	if( astNewPARAM( proc, astNewVAR( symbAllocStrConst( "", 0 ), 0, IR_DATATYPE_CHAR ) ) = NULL ) then
  			exit function
  		end if
 		if( astNewPARAM( proc, astNewCONSTi( 0, IR_DATATYPE_INTEGER ) ) = NULL ) then
@@ -1390,7 +1390,7 @@ function rtlGfxGet( byval target as ASTNODE ptr, _
 
  	'' array() as any
  	if( not isptr ) then
- 		arrayexpr = astNewVAR( symbol, NULL, 0, symbGetType( symbol ) )
+ 		arrayexpr = astNewVAR( symbol, 0, symbGetType( symbol ) )
  	else
  		arrayexpr = astNewCONSTi( NULL, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
  	end if
@@ -1518,7 +1518,7 @@ private function hGetProcName( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
 		s = symbAllocStrConst( procname, -1 )
 	end if
 
-	expr = astNewADDR( IR_OP_ADDROF, astNewVAR( s, NULL, 0, IR_DATATYPE_CHAR ), s, NULL )
+	expr = astNewADDR( IR_OP_ADDROF, astNewVAR( s, 0, IR_DATATYPE_CHAR ) )
 
 	function = expr
 

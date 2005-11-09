@@ -50,7 +50,7 @@ function cArrayStmt as integer
 			end if
 
 			'' array?
-    		s = astGetSymbolOrElm( expr1 )
+    		s = astGetSymbol( expr1 )
     		if( s = NULL ) then
     			hReportError( FB_ERRMSG_EXPECTEDARRAY )
     			exit function
@@ -146,7 +146,7 @@ function cArrayFunct( byref funcexpr as ASTNODE ptr ) as integer
 		end if
 
 		'' array?
-		s = astGetSymbolOrElm( sexpr )
+		s = astGetSymbol( sexpr )
 		if( s = NULL ) then
 			hReportError( FB_ERRMSG_EXPECTEDARRAY, TRUE )
 			exit function

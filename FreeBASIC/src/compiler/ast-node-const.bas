@@ -38,7 +38,7 @@ function astNewCONSTstr( byval v as string ) as ASTNODE ptr static
     	exit function
     end if
 
-	function = astNewVAR( tc, NULL, 0, IR_DATATYPE_CHAR )
+	function = astNewVAR( tc, 0, IR_DATATYPE_CHAR )
 
 end function
 
@@ -52,7 +52,7 @@ function astNewCONSTwstr( byval v as wstring ptr ) as ASTNODE ptr static
     	exit function
     end if
 
-	function = astNewVAR( tc, NULL, 0, IR_DATATYPE_WCHAR )
+	function = astNewVAR( tc, 0, IR_DATATYPE_WCHAR )
 
 end function
 
@@ -71,7 +71,7 @@ function astNewCONSTi( byval value as integer, _
 		exit function
 	end if
 
-	n->val.int = value
+	n->con.val.int = value
 	n->defined = TRUE
 
 end function
@@ -89,7 +89,7 @@ function astNewCONSTf( byval value as double, _
 		exit function
 	end if
 
-	n->val.float = value
+	n->con.val.float = value
 	n->defined   = TRUE
 
 end function
@@ -107,7 +107,7 @@ function astNewCONST64( byval value as longint, _
 		exit function
 	end if
 
-	n->val.long  = value
+	n->con.val.long  = value
 	n->defined   = TRUE
 
 end function
@@ -127,11 +127,11 @@ function astNewCONST( byval v as FBVALUE ptr, _
 
 	select case as const dtype
 	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-		n->val.long = v->long
+		n->con.val.long = v->long
 	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-		n->val.float = v->float
+		n->con.val.float = v->float
 	case else
-		n->val.int = v->int
+		n->con.val.int = v->int
 	end select
 
 	n->defined = TRUE
@@ -149,16 +149,16 @@ function astLoadCONST( byval n as ASTNODE ptr ) as IRVREG ptr static
 		select case dtype
 		'' longints?
 		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			return irAllocVRIMM64( dtype, n->val.long )
+			return irAllocVRIMM64( dtype, n->con.val.long )
 
 		'' if node is a float, create a temp float var (x86 assumption)
 		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			s = symbAllocFloatConst( n->val.float, dtype )
+			s = symbAllocFloatConst( n->con.val.float, dtype )
 			return irAllocVRVAR( dtype, s, s->ofs )
 
 		''
 		case else
-			return irAllocVRIMM( dtype, n->val.int )
+			return irAllocVRIMM( dtype, n->con.val.int )
 		end select
 	end if
 

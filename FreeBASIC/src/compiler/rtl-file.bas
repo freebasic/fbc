@@ -660,7 +660,7 @@ function rtlFilePut( byval filenum as ASTNODE ptr, _
 
     '' always calc len before pushing the param
     if( isstring ) then
-    	STRGETLEN( src, dtype, lgt )
+    	lgt = rtlCalcStrLen( src, dtype )
     else
     	lgt = rtlCalcExprLen( src )
     end if
@@ -779,7 +779,7 @@ function rtlFileGet( byval filenum as ASTNODE ptr, _
 
     '' always calc len before pushing the param
     if( isstring ) then
-    	STRGETLEN( dst, dtype, lgt )
+    	lgt = rtlCalcStrLen( dst, dtype )
     else
     	lgt = rtlCalcExprLen( dst )
     end if
@@ -912,7 +912,7 @@ function rtlFileLineInput( byval isfile as integer, _
 
     '' "byval filenum as integer" or "text as string "
     if( (not isfile) and (expr = NULL) ) then
-		expr = astNewVAR( symbAllocStrConst( "", 0 ), NULL, 0, IR_DATATYPE_CHAR )
+		expr = astNewVAR( symbAllocStrConst( "", 0 ), 0, IR_DATATYPE_CHAR )
 	end if
 
     if( astNewPARAM( proc, expr ) = NULL ) then
@@ -921,7 +921,7 @@ function rtlFileLineInput( byval isfile as integer, _
 
     '' always calc len before pushing the param
 	dtype = astGetDataType( dstexpr )
-	STRGETLEN( dstexpr, dtype, lgt )
+	lgt = rtlCalcStrLen( dstexpr, dtype )
 
 	'' dst as any
     if( astNewPARAM( proc, dstexpr ) = NULL ) then
@@ -981,7 +981,7 @@ function rtlFileInput( byval isfile as integer, _
 
     '' "byval filenum as integer" or "text as string "
     if( (not isfile) and (expr = NULL) ) then
-		expr = astNewVAR( symbAllocStrConst( "", 0 ), NULL, 0, IR_DATATYPE_CHAR )
+		expr = astNewVAR( symbAllocStrConst( "", 0 ), 0, IR_DATATYPE_CHAR )
 	end if
 
 	if( astNewPARAM( proc, expr ) = NULL ) then
@@ -1049,7 +1049,7 @@ function rtlFileInputGet( byval dstexpr as ASTNODE ptr ) as integer
 
     '' always calc len before pushing the param
     if( args > 1 ) then
-		STRGETLEN( dstexpr, dtype, lgt )
+		lgt = rtlCalcStrLen( dstexpr, dtype )
 	end if
 
     '' dst as any

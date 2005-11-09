@@ -219,7 +219,7 @@ function rtlDataRead( byval varexpr as ASTNODE ptr ) as integer static
     if( args > 1 ) then
     	'' always calc len before pushing the param
 		dtype = astGetDataType( varexpr )
-		STRGETLEN( varexpr, dtype, lgt )
+		lgt = rtlCalcStrLen( varexpr, dtype )
 	end if
 
     '' byref var as any
@@ -276,7 +276,7 @@ function rtlDataRestore( byval label as FBSYMBOL ptr, _
     end if
 
     '' byval labeladdrs as void ptr
-    expr = astNewADDR( IR_OP_ADDROF, astNewVAR( s, NULL, 0, IR_DATATYPE_BYTE ), s )
+    expr = astNewADDR( IR_OP_ADDROF, astNewVAR( s, 0, IR_DATATYPE_BYTE ) )
     if( astNewPARAM( proc, expr ) = NULL ) then
  		exit function
  	end if

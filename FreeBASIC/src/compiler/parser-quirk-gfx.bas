@@ -63,15 +63,17 @@ private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, _
 
     	astDelTree( arrayexpr )
 
-    	temp	  = astNewVAR( sym, NULL, 0, IR_DATATYPE_INTEGER )
-    	idxexpr   = astNewPTR( sym, NULL, FB_ARRAYDESC_DATAOFFS, temp, IR_DATATYPE_INTEGER, NULL )
+    	temp	  = astNewVAR( sym, 0, IR_DATATYPE_INTEGER )
+    	idxexpr   = astNewPTR( FB_ARRAYDESC_DATAOFFS, temp, IR_DATATYPE_INTEGER, NULL )
     	idxexpr   = astNewLOAD( idxexpr, IR_DATATYPE_INTEGER )
-    	arrayexpr = astNewVAR( sym, NULL, 0, IR_DATATYPE_INTEGER )
+    	arrayexpr = astNewVAR( sym, 0, IR_DATATYPE_INTEGER )
 
     '' dynamic array? (this will handle common's too)
     elseif( symbGetIsDynamic( sym ) ) then
 
-    	idxexpr = astNewVAR( symbGetArrayDescriptor( sym ), NULL, FB_ARRAYDESC_DATAOFFS, IR_DATATYPE_INTEGER )
+    	idxexpr = astNewVAR( symbGetArrayDescriptor( sym ), _
+    						 FB_ARRAYDESC_DATAOFFS, _
+    						 IR_DATATYPE_INTEGER )
     	idxexpr = astNewLOAD( idxexpr, IR_DATATYPE_INTEGER )
 
     '' static array
@@ -94,6 +96,8 @@ private function hGetTarget( byref targetexpr as ASTNODE ptr, _
 
 	function = NULL
 
+	isptr = FALSE
+
 	if( fetchexpr ) then
 		targetexpr = NULL
 		if( lexGetToken( ) <> CHAR_LPRNT ) then
@@ -105,15 +109,15 @@ private function hGetTarget( byref targetexpr as ASTNODE ptr, _
 		end if
 	end if
 
-	s = astGetSymbolOrElm( targetexpr )
-	if( s = NULL ) then
-		exit function
-	end if
-
 	'' address of?
 	if( astIsADDR( targetexpr ) ) then
 		isptr = TRUE
 	else
+		s = astGetSymbol( targetexpr )
+		if( s = NULL ) then
+			exit function
+		end if
+
 		'' pointer?
 		if( symbGetType( s ) >= FB_SYMBTYPE_POINTER ) then
 			isptr = TRUE
@@ -146,7 +150,7 @@ function cGfxPset( byval ispreset as integer ) as integer
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
-	if( target ) then
+	if( (target <> NULL) or (tisptr) ) then
 		hMatchCOMMA( )
 	end if
 
@@ -192,7 +196,7 @@ function cGfxLine as integer
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
-	if( target ) then
+	if( (target <> NULL) or (tisptr) ) then
 		hMatchCOMMA( )
 	end if
 
@@ -299,7 +303,7 @@ function cGfxCircle as integer
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
-	if( target ) then
+	if( (target <> NULL) or (tisptr) ) then
 		hMatchCOMMA( )
 	end if
 
@@ -390,7 +394,7 @@ function cGfxPaint as integer
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
-	if( target ) then
+	if( (target <> NULL) or (tisptr) ) then
 		hMatchCOMMA( )
 	end if
 
@@ -453,7 +457,7 @@ function cGfxDraw as integer
 
 	if( lexGetLookAhead( 1 ) = CHAR_COMMA ) then
 		target = hGetTarget( texpr, tisptr )
-		if( target = NULL ) then
+		if( target = NULL and not tisptr ) then
 			hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 			exit function
 		end if
@@ -566,7 +570,7 @@ function cGfxPalette as integer
             exit function
         end if
 
-		s = astGetSymbolOrElm( arrayexpr )
+		s = astGetSymbol( arrayexpr )
 		if( s = NULL ) then
             hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
             exit function
@@ -652,7 +656,7 @@ function cGfxPut as integer
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
-	if( target ) then
+	if( (target <> NULL) or (tisptr) ) then
 		hMatchCOMMA( )
 	end if
 
@@ -678,8 +682,8 @@ function cGfxPut as integer
 	hMatchCOMMA( )
 
 	s = hGetTarget( arrayexpr, isptr )
-	if( s = NULL ) then
-		hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
+	if( (s = NULL) and (not isptr) ) then
+		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		exit function
 	end if
 
@@ -757,7 +761,7 @@ function cGfxPut as integer
 
 					hMatchExpression( funcexpr )
 
-					s = astGetSymbolOrElm( funcexpr )
+					s = astGetSymbol( funcexpr )
 					if( s = NULL ) then
 						hReportError FB_ERRMSG_TYPEMISMATCH
 						exit function
@@ -813,7 +817,7 @@ function cGfxGet as integer
 
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
-	if( target ) then
+	if( (target <> NULL) or (tisptr) ) then
 		hMatchCOMMA( )
 	end if
 
@@ -871,8 +875,8 @@ function cGfxGet as integer
 	hMatchCOMMA( )
 
 	s = hGetTarget( arrayexpr, isptr )
-	if( s = NULL ) then
-		hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
+	if( (s = NULL) and (not isptr) ) then
+		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		exit function
 	end if
 
@@ -1004,7 +1008,7 @@ function cGfxPoint( byref funcexpr as ASTNODE ptr ) as integer
 
 		if( hMatch( CHAR_COMMA ) ) then
 			target = hGetTarget( texpr, tisptr )
-			if( target = NULL ) then
+			if( target = NULL and not tisptr ) then
 				hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 				exit function
 			end if

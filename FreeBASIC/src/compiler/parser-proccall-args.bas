@@ -38,10 +38,10 @@ private function hCreateOptArg( byval arg as FBSYMBOL ptr _
   		function = astNewENUM( symbGetArgOptValInt( arg ), symbGetSubType( arg ) )
 
 	case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
-		function = astNewVAR( symbGetArgOptValStr( arg ), NULL, 0, IR_DATATYPE_CHAR )
+		function = astNewVAR( symbGetArgOptValStr( arg ), 0, IR_DATATYPE_CHAR )
 
 	case IR_DATATYPE_WCHAR
-		function = astNewVAR( symbGetArgOptValStr( arg ), NULL, 0, IR_DATATYPE_WCHAR )
+		function = astNewVAR( symbGetArgOptValStr( arg ), 0, IR_DATATYPE_WCHAR )
 
 	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
 		function = astNewCONST64( symbGetArgOptValLong( arg ), symbGetType( arg ) )
@@ -85,7 +85,7 @@ function cProcParam( byval proc as FBSYMBOL ptr, _
 		end if
 
 		oldsym = env.ctxsym
-		env.ctxsym = arg
+		env.ctxsym = symbGetSubType( arg )
 
 		'' Expression
 		if( not cExpression( expr ) ) then

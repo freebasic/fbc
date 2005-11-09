@@ -84,6 +84,7 @@ declare function 	hGetTypeString		( byval typ as integer ) as string
 		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' int
 		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _   '' uint
 		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' enum
+		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' bitfield
 		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2, 2, "qword ptr" ), _	'' longint
 		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2, 2, "qword ptr" ), _	'' ulongint
 		( IR_DATACLASS_FPOINT , 4			    , 3, "dword ptr" ), _	'' single
@@ -5243,8 +5244,8 @@ sub emitWriteRtInit( byval isdllmain as integer ) static
     dim as ASTNODE ptr argc, argv
 
 	'' call fb_Init
-	argc = astNewVAR( emit.main.argc, NULL, 0, symbGetType( emit.main.argc ) )
-	argv = astNewVAR( emit.main.argv, NULL, 0, symbGetType( emit.main.argv ) )
+	argc = astNewVAR( emit.main.argc, 0, symbGetType( emit.main.argc ) )
+	argv = astNewVAR( emit.main.argv, 0, symbGetType( emit.main.argv ) )
 
     '' init( argc, argv )
     emit.main.initnode = rtlInitRt( argc, argv, isdllmain )

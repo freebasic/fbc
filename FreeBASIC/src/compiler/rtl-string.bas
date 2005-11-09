@@ -1100,9 +1100,9 @@ function rtlStrCompare ( byval str1 as ASTNODE ptr, _
     proc = astNewFUNCT( PROCLOOKUP( STRCOMPARE ) )
 
    	'' always calc len before pushing the param
-   	STRGETLEN( str1, sdtype1, str1len )
+   	str1len = rtlCalcStrLen( str1, sdtype1 )
 
-	STRGETLEN( str2, sdtype2, str2len )
+	str2len = rtlCalcStrLen( str2, sdtype2 )
 
     '' byref str1 as any
     if( astNewPARAM( proc, str1, sdtype1 ) = NULL ) then
@@ -1177,15 +1177,15 @@ function rtlStrConcat( byval str1 as ASTNODE ptr, _
     '' byref dst as string
     tstr = symbAddTempVar( FB_SYMBTYPE_STRING )
     if( astNewPARAM( proc, _
-    				 astNewVAR( tstr, NULL, 0, IR_DATATYPE_STRING ), _
+    				 astNewVAR( tstr, 0, IR_DATATYPE_STRING ), _
     				 IR_DATATYPE_STRING ) = NULL ) then
     	exit function
     end if
 
    	'' always calc len before pushing the param
-   	STRGETLEN( str1, sdtype1, str1len )
+   	str1len = rtlCalcStrLen( str1, sdtype1 )
 
-	STRGETLEN( str2, sdtype2, str2len )
+	str2len = rtlCalcStrLen( str2, sdtype2 )
 
     '' byref str1 as any
     if( astNewPARAM( proc, str1, sdtype1 ) = NULL ) then
@@ -1234,7 +1234,7 @@ function rtlWstrConcatWA( byval str1 as ASTNODE ptr, _
     end if
 
    	'' always calc len before pushing the param
-   	STRGETLEN( str2, sdtype2, str2len )
+   	str2len = rtlCalcStrLen( str2, sdtype2 )
 
     '' byref str2 as any
     if( astNewPARAM( proc, str2, sdtype2 ) = NULL ) then
@@ -1266,7 +1266,7 @@ function rtlWstrConcatAW( byval str1 as ASTNODE ptr, _
     proc = astNewFUNCT( PROCLOOKUP( WSTRCONCATAW ) )
 
    	'' always calc len before pushing the param
-   	STRGETLEN( str1, sdtype1, str1len )
+   	str1len = rtlCalcStrLen( str1, sdtype1 )
 
     '' byref str1 as any
     if( astNewPARAM( proc, str1, sdtype1 ) = NULL ) then
@@ -1346,7 +1346,7 @@ function rtlStrConcatAssign( byval dst as ASTNODE ptr, _
    	ddtype = astGetDataType( dst )
 
 	'' always calc len before pushing the param
-	STRGETLEN( dst, ddtype, lgt )
+	lgt = rtlCalcStrLen( dst, ddtype )
 
 	'' dst as any
 	if( astNewPARAM( proc, dst, ddtype ) = NULL ) then
@@ -1362,7 +1362,7 @@ function rtlStrConcatAssign( byval dst as ASTNODE ptr, _
 
    	'' always calc len before pushing the param
    	sdtype = astGetDataType( src )
-	STRGETLEN( src, sdtype, lgt )
+	lgt = rtlCalcStrLen( src, sdtype )
 
 	'' src as any
 	if( astNewPARAM( proc, src, sdtype ) = NULL ) then
@@ -1402,7 +1402,7 @@ function rtlWstrConcatAssign( byval dst as ASTNODE ptr, _
     proc = astNewFUNCT( PROCLOOKUP( WSTRCONCATASSIGN ) )
 
 	'' always calc len before pushing the param
-	STRGETLEN( dst, IR_DATATYPE_WCHAR, lgt )
+	lgt = rtlCalcStrLen( dst, IR_DATATYPE_WCHAR )
 
 	'' byval dst as wstring ptr
 	if( astNewPARAM( proc, dst ) = NULL ) then
@@ -1440,8 +1440,8 @@ function rtlWstrAssignWA( byval dst as ASTNODE ptr, _
     proc = astNewFUNCT( PROCLOOKUP( WSTRASSIGNWA ) )
 
    	'' always calc len before pushing the param
-	STRGETLEN( dst, IR_DATATYPE_WCHAR, dstlen )
-	STRGETLEN( src, sdtype, srclen )
+	dstlen = rtlCalcStrLen( dst, IR_DATATYPE_WCHAR )
+	srclen = rtlCalcStrLen( src, sdtype )
 
     '' byval dst as wstring ptr
     if( astNewPARAM( proc, dst ) = NULL ) then
@@ -1485,7 +1485,7 @@ function rtlWstrAssignAW( byval dst as ASTNODE ptr, _
     proc = astNewFUNCT( PROCLOOKUP( WSTRASSIGNAW ) )
 
    	'' always calc len before pushing the param
-	STRGETLEN( dst, ddtype, lgt )
+	lgt = rtlCalcStrLen( dst, ddtype )
 
     '' byref dst as any
     if( astNewPARAM( proc, dst ) = NULL ) then
@@ -1542,7 +1542,7 @@ function rtlStrAssign( byval dst as ASTNODE ptr, _
 
 	'' always calc len before pushing the param
 
-	STRGETLEN( dst, ddtype, lgt )
+	lgt = rtlCalcStrLen( dst, ddtype )
 
 	'' dst as any
 	if( astNewPARAM( proc, dst, ddtype ) = NULL ) then
@@ -1557,7 +1557,7 @@ function rtlStrAssign( byval dst as ASTNODE ptr, _
     end if
 
    	'' always calc len before pushing the param
-	STRGETLEN( src, sdtype, lgt )
+	lgt = rtlCalcStrLen( src, sdtype )
 
 	'' src as any
 	if( astNewPARAM( proc, src, sdtype ) = NULL ) then
@@ -1612,7 +1612,7 @@ function rtlWstrAssign( byval dst as ASTNODE ptr, _
     proc = astNewFUNCT( PROCLOOKUP( WSTRASSIGN ) )
 
    	'' always calc len before pushing the param
-	STRGETLEN( dst, ddtype, lgt )
+	lgt = rtlCalcStrLen( dst, ddtype )
 
     '' byval dst as wstring ptr
     if( astNewPARAM( proc, dst ) = NULL ) then
@@ -1713,7 +1713,7 @@ function rtlStrAllocTmpDesc	( byval strg as ASTNODE ptr ) as ASTNODE ptr static
     	proc = astNewFUNCT( PROCLOOKUP( STRALLOCTMPDESCF ) )
 
     	'' always calc len before pushing the param
-		STRGETLEN( strg, dtype, lgt )
+		lgt = rtlCalcStrLen( strg, dtype )
 
     	'' str as any
     	if( astNewPARAM( proc, strg ) = NULL ) then
@@ -1806,7 +1806,7 @@ function rtlToStr( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 				litsym = symbAllocStrConst( str( *symbGetVarTextW( litsym ) ), _
 							   	   	   		symbGetWstrLen( litsym ) - 1 )
 
-				return astNewVAR( litsym, NULL, 0, IR_DATATYPE_CHAR )
+				return astNewVAR( litsym, 0, IR_DATATYPE_CHAR )
     		end if
     	end if
     end if
@@ -1882,7 +1882,7 @@ function rtlToWstr( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 			if( env.target.wchar.doconv ) then
 				litsym = symbAllocWstrConst( wstr( symbGetVarText( litsym ) ), _
 							 			     symbGetStrLen( litsym ) - 1 )
-    			return astNewVAR( litsym, NULL, 0, IR_DATATYPE_WCHAR )
+    			return astNewVAR( litsym, 0, IR_DATATYPE_WCHAR )
     		end if
     	end if
     end if
@@ -2439,7 +2439,7 @@ function rtlStrSwap( byval str1 as ASTNODE ptr, _
 
 	'' always calc len before pushing the param
 	dtype = astGetDataType( str1 )
-	STRGETLEN( str1, dtype, lgt )
+	lgt = rtlCalcStrLen( str1, dtype )
 
     '' str1 as any
     if( astNewPARAM( proc, str1, IR_DATATYPE_STRING ) = NULL ) then
@@ -2455,7 +2455,7 @@ function rtlStrSwap( byval str1 as ASTNODE ptr, _
 
 	'' always calc len before pushing the param
 	dtype = astGetDataType( str2 )
-	STRGETLEN( str2, dtype, lgt )
+	lgt = rtlCalcStrLen( str2, dtype )
 
     '' str2 as any
     if( astNewPARAM( proc, str2, IR_DATATYPE_STRING ) = NULL ) then

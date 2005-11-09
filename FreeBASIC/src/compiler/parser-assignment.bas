@@ -88,9 +88,9 @@ function cAssignment( byval assgexpr as ASTNODE ptr ) as integer
     	exit function
     end if
 
-    '' function pointer?
+    '' set the context symbol to allow taking the address of overloaded procs
     if( astGetDataType( assgexpr ) >= IR_DATATYPE_POINTER+IR_DATATYPE_FUNCTION ) then
-    	env.ctxsym = astGetSymbolOrElm( assgexpr )
+    	env.ctxsym = astGetSubType( assgexpr )
     end if
 
     '' Expression

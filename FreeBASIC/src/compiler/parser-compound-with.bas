@@ -55,8 +55,8 @@ private function hAllocWithVar( ) as FBSYMBOL ptr
     sym = symbAddTempVar( dtype, subtype )
 
     '' load with the address of expr (sym = @expr)
-    astAdd( astNewASSIGN( astNewVAR( sym, NULL, 0, dtype, subtype ), _
-    			  		  astNewADDR( IR_OP_ADDROF, expr, NULL, NULL ) ) )
+    astAdd( astNewASSIGN( astNewVAR( sym, 0, dtype, subtype ), _
+    			  		  astNewADDR( IR_OP_ADDROF, expr ) ) )
 
 
 	function = sym

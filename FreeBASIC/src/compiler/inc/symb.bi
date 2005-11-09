@@ -50,8 +50,8 @@ declare sub 		symbInit				( byval ismain as integer )
 declare sub 		symbEnd					( )
 
 declare function 	symbLookup				( byval symbol as zstring ptr, _
-											  id as integer, _
-											  class as integer, _
+											  byref id as integer, _
+											  byref class as integer, _
 											  byval preservecase as integer = FALSE ) as FBSYMBOL ptr
 
 declare function 	symbFindByClass			( byval s as FBSYMBOL ptr, _
@@ -82,10 +82,10 @@ declare function 	symbLookupUDTVar		( byval symbol as zstring ptr, _
 
 declare function 	symbLookupUDTElm		( byval symbol as zstring ptr, _
 											  byval dotpos as integer, _
-											  suffix as integer, _
-											  ofs as integer, _
-					       					  elm as FBSYMBOL ptr, _
-					       					  subtype as FBSYMBOL ptr ) as FBSYMBOL ptr
+											  byref typ as integer, _
+											  byref subtype as FBSYMBOL ptr, _
+											  byref ofs as integer, _
+					       					  byref elm as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function 	symbLookupProcResult	( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
 
@@ -97,9 +97,9 @@ declare function 	symbGetVarDescName		( byval s as FBSYMBOL ptr ) as string
 
 declare function 	symbGetProcLib			( byval p as FBSYMBOL ptr ) as string
 
-declare function 	symbGetUDTElmOffset		( elm as FBSYMBOL ptr, _
-											  typ as integer, _
-											  subtype as FBSYMBOL ptr, _
+declare function 	symbGetUDTElmOffset		( byref elm as FBSYMBOL ptr, _
+											  byref typ as integer, _
+											  byref subtype as FBSYMBOL ptr, _
 											  byval fields as zstring ptr ) as integer
 
 declare function 	symbGetUDTLen			( byval udt as FBSYMBOL ptr, _
@@ -246,6 +246,11 @@ declare function 	symbAddArgAsVar			( byval symbol as zstring ptr, _
 											  byval arg as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function 	symbAddScope			( ) as FBSYMBOL ptr
+
+declare function	symbAddBitField			( byval bitpos as integer, _
+					      					  byval bits as integer, _
+						  					  byval typ as integer, _
+						  					  byval lgt as integer ) as FBSYMBOL ptr
 
 declare sub 		symbRoundUDTSize		( byval t as FBSYMBOL ptr )
 
@@ -486,9 +491,14 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 
 #define symbGetUDTNextElm(e) e->next
 
-#define symbGetUDTElmBitOfs(e) (e->var.elm.ofs * 8 + e->var.elm.bitpos)
+#define symbGetUDTElmBitOfs(e) ( e->var.elm.ofs * 8 + _
+								 iif( e->typ = FB_SYMBTYPE_BITFIELD, _
+									  e->subtype->bitfld.bitpos, _
+									  0) )
 
-#define symbGetUDTElmBitLen(e) iif( e->var.elm.bits <> 0, e->var.elm.bits, e->lgt * e->var.array.elms * 8 )
+#define symbGetUDTElmBitLen(e) iif( e->typ = FB_SYMBTYPE_BITFIELD, _
+									e->subtype->bitfld.bits, _
+									e->lgt * e->var.array.elms * 8 )
 
 #define symbGetUDTIsUnion(s) s->udt.isunion
 

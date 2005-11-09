@@ -29,9 +29,8 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function astNewOFFSET( byval l as ASTNODE ptr, _
-					   byval sym as FBSYMBOL ptr = NULL, _
-					   byval elm as FBSYMBOL ptr = NULL ) as ASTNODE ptr static
+function astNewOFFSET( byval l as ASTNODE ptr ) as ASTNODE ptr static
+
 	dim as ASTNODE ptr n
 
 	if( l = NULL ) then
@@ -45,15 +44,14 @@ function astNewOFFSET( byval l as ASTNODE ptr, _
 		return NULL
 	end if
 
-	n->l  		= l
-	n->addr.sym	= sym
-	n->addr.elm	= elm
-	n->chkbitfld= elm <> NULL
+	n->uop.op = INVALID
+	n->l   	  = l
+	n->sym	  = l->sym
 
 	'' access counter must be updated here too
 	'' because the var initializers used with static strings
-	if( sym <> NULL ) then
-		symbIncAccessCnt( sym )
+	if( l->sym <> NULL ) then
+		symbIncAccessCnt( l->sym )
 	end if
 
 	function = n
@@ -64,20 +62,20 @@ end function
 function astLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr static
     dim as ASTNODE ptr v
     dim as IRVREG ptr vr
-    dim as FBSYMBOL ptr s
+    dim as FBSYMBOL ptr sym
 
 	v = n->l
 	if( v = NULL ) then
 		return NULL
 	end if
 
-	s = v->var.sym
-	if( s <> NULL ) then
-		symbIncAccessCnt( s )
+	sym = v->sym
+	if( sym <> NULL ) then
+		symbIncAccessCnt( sym )
 	end if
 
 	if( ast.doemit ) then
-		vr = irAllocVROFS( n->dtype, s )
+		vr = irAllocVROFS( n->dtype, sym )
 	end if
 
 	astDel( v )
@@ -88,9 +86,8 @@ end function
 
 '':::::
 function astNewADDR( byval op as integer, _
-					 byval l as ASTNODE ptr, _
-					 byval sym as FBSYMBOL ptr = NULL, _
-					 byval elm as FBSYMBOL ptr = NULL ) as ASTNODE ptr static
+					 byval l as ASTNODE ptr _
+				   ) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
     dim as integer delchild, dtype
@@ -105,29 +102,45 @@ function astNewADDR( byval op as integer, _
 	delchild = FALSE
 
 	if( op = IR_OP_ADDROF ) then
+
 		select case l->class
-		'' convert @* to nothing
 		case AST_NODECLASS_ADDR
-			if( l->op = IR_OP_DEREF ) then
+			'' convert @* to nothing
+			if( l->uop.op = IR_OP_DEREF ) then
 				delchild = TRUE
 				dtype -= IR_DATATYPE_POINTER
 			end if
 
 		case AST_NODECLASS_PTR
-			'' abs address?
-			if( l->l->class = AST_NODECLASS_CONST ) then
-				n = l->l
+			'' @*const to const
+			n = l->l
+			if( n->class = AST_NODECLASS_CONST ) then
 				astDel( l )
 				return n
-			'' not local or field?
-			elseif( l->ptr.ofs = 0 ) then
+			end if
+
+			'' @[var] to nothing (can't be local or field)
+			if( l->ptr.ofs = 0 ) then
 				delchild = TRUE
 			end if
 
-		'' static scalar? use offset instead
+		case AST_NODECLASS_FIELD
+			'' @0->field to const
+			n = l->l
+			if( n->class = AST_NODECLASS_PTR ) then
+				n = n->l
+				'' abs address?
+				if( n->class = AST_NODECLASS_CONST ) then
+					astDel( l->l )
+					astDel( l )
+					return n
+				end if
+			end if
+
 		case AST_NODECLASS_VAR
+			'' static scalar? use offset instead
 			if( l->var.ofs = 0 ) then
-				return astNewOFFSET( l, sym, elm )
+				return astNewOFFSET( l )
 			end if
 
 		end select
@@ -145,9 +158,10 @@ function astNewADDR( byval op as integer, _
 		'' convert *@ to nothing
 		select case l->class
 		case AST_NODECLASS_ADDR
-			if( l->op = IR_OP_ADDROF ) then
+			if( l->uop.op = IR_OP_ADDROF ) then
 				delchild = TRUE
 			end if
+
 		case AST_NODECLASS_OFFSET
 			delchild = TRUE
 		end select
@@ -168,11 +182,8 @@ function astNewADDR( byval op as integer, _
 		exit function
 	end if
 
-	n->op 		= op
-	n->l  		= l
-	n->addr.sym	= sym
-	n->addr.elm	= elm
-	n->chkbitfld= elm <> NULL
+	n->uop.op = op
+	n->l      = l
 
 	function = n
 
@@ -197,7 +208,7 @@ function astLoadADDR( byval n as ASTNODE ptr ) as IRVREG ptr
 			(irGetVRDataSize( v1 ) <> FB_POINTERSIZE) ) then
 
 			vr = irAllocVREG( IR_DATATYPE_POINTER )
-			irEmitADDR( n->op, v1, vr )
+			irEmitADDR( n->uop.op, v1, vr )
 
 		else
 			vr = v1

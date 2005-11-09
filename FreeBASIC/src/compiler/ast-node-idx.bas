@@ -29,14 +29,15 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function astNewIDX( byval v as ASTNODE ptr, _
-					byval i as ASTNODE ptr, _
+function astNewIDX( byval var as ASTNODE ptr, _
+					byval idx as ASTNODE ptr, _
 					byval dtype as integer, _
 					byval subtype as FBSYMBOL ptr ) as ASTNODE ptr static
     dim as ASTNODE ptr n
 
 	if( dtype = INVALID ) then
-		dtype = astGetDataType( i )
+		dtype = astGetDataType( var )
+		subtype = astGetSubType( var )
 	end if
 
 	'' alloc new node
@@ -47,38 +48,38 @@ function astNewIDX( byval v as ASTNODE ptr, _
 		exit function
 	end if
 
-	n->l 			= i
-	n->r 			= v
+	n->l 			= idx
+	n->r 			= var
+	n->sym			= var->sym
 	n->idx.mult 	= 1
 	n->idx.ofs 		= 0
-	n->chkbitfld  	= v <> NULL
 
 end function
 
 '':::::
 private function hEmitIDX( byval n as ASTNODE ptr, _
-						   byval v as ASTNODE ptr, _
-					  	   byval vi as IRVREG ptr ) as IRVREG ptr static
+						   byval var as ASTNODE ptr, _
+					  	   byval vidx as IRVREG ptr ) as IRVREG ptr static
     dim as FBSYMBOL ptr s
     dim as IRVREG ptr vd
     dim as integer ofs
 
 	'' ofs * length + difference (non-base 0 indexes) + offset (UDT's offset)
-    s = v->var.sym
+    s = var->sym
     ofs = n->idx.ofs
 	if( not symbGetIsDynamic( s ) ) then
-		ofs += symbGetArrayDiff( s ) + v->var.ofs
+		ofs += symbGetArrayDiff( s ) + var->var.ofs
 	else
 		s = NULL
 	end if
 
     ''
     if( ast.doemit ) then
-		if( vi <> NULL ) then
-			vd = irAllocVRIDX( n->dtype, s, ofs, n->idx.mult, vi )
+		if( vidx <> NULL ) then
+			vd = irAllocVRIDX( n->dtype, s, ofs, n->idx.mult, vidx )
 
-			if( irIsIDX( vi ) or irIsVAR( vi ) ) then
-				irEmitLOAD( vi )
+			if( irIsIDX( vidx ) or irIsVAR( vidx ) ) then
+				irEmitLOAD( vidx )
 			end if
 		else
 			vd = irAllocVRVAR( n->dtype, s, ofs )
@@ -91,45 +92,27 @@ end function
 
 '':::::
 function astLoadIDX( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as ASTNODE ptr v, i
-    dim as IRVREG ptr vi, vr
-    dim as FBSYMBOL ptr s
+    dim as ASTNODE ptr var, idx
+    dim as IRVREG ptr vidx, vr
 
-	v = n->r
-	if( v = NULL ) then
+	var = n->r
+	if( var = NULL ) then
 		return NULL
 	end if
 
-	'' handle bitfields..
-	if( n->chkbitfld ) then
-		n->chkbitfld = FALSE
-		if( v->chkbitfld ) then
-			v->chkbitfld = FALSE
-			s = v->var.elm
-			if( s <> NULL ) then
-				if( s->var.elm.bits > 0 ) then
-					n = astGetBitField( n, s )
-					function = astLoad( n )
-					astDel( n )
-					exit function
-				end if
-			end if
-		end if
-	end if
-
-	i = n->l
-	if( i <> NULL ) then
-		vi = astLoad( i )
+	idx = n->l
+	if( idx <> NULL ) then
+		vidx = astLoad( idx )
 	else
-		vi = NULL
+		vidx = NULL
 	end if
 
 	if( ast.doemit ) then
-    	vr = hEmitIDX( n, v, vi )
+    	vr = hEmitIDX( n, var, vidx )
     end if
 
-	astDel( i )
-	astDel( v )
+	astDel( idx )
+	astDel( var )
 
 	function = vr
 

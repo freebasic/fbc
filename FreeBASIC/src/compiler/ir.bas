@@ -137,6 +137,7 @@ declare sub 		irDump				( byval op as integer, _
 		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, TRUE , IR_DATATYPE_INTEGER ), _
 		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, IR_DATATYPE_UINT 	 ), _
 		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, TRUE , IR_DATATYPE_INTEGER ), _ '' enum
+		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, IR_DATATYPE_UINT    ), _ '' bitfield
 		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2	, 8*FB_INTEGERSIZE*2, TRUE , IR_DATATYPE_LONGINT ), _
 		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2	, 8*FB_INTEGERSIZE*2, FALSE, IR_DATATYPE_ULONGINT), _
 		(IR_DATACLASS_FPOINT , 4             	, 8*4				, TRUE , IR_DATATYPE_SINGLE	 ), _
@@ -376,6 +377,23 @@ function irGetDataBits( byval dtype as integer ) as integer static
 	end if
 
 	function = dtypeTB(dtype).bits
+
+end function
+
+'':::::
+function irRemapType( byval dtype as integer, _
+					  byval subtype as FBSYMBOL ptr ) as integer static
+
+	if( dtype > IR_DATATYPE_POINTER ) then
+		function = IR_DATATYPE_UINT
+
+	elseif( dtype = IR_DATATYPE_BITFIELD ) then
+		function = subtype->typ
+
+	else
+		function = dtypeTB(dtype).remaptype
+
+	end if
 
 end function
 

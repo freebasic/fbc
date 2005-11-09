@@ -159,7 +159,7 @@ function cSelectStatement as integer
 			exit function
 		end if
 
-		expr = astNewASSIGN( astNewVAR( symbol, NULL, 0, dtype, astGetSubType( expr ) ), expr )
+		expr = astNewASSIGN( astNewVAR( symbol, 0, dtype, astGetSubType( expr ) ), expr )
 		if( expr = NULL ) then
 			exit function
 		end if
@@ -177,7 +177,6 @@ function cSelectStatement as integer
 
 		'' tmp = WstrAlloc( len( expr ) )
 		astAdd( astNewASSIGN( astNewVAR( symbol, _
-										 NULL, _
 										 0, _
 										 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR ), _
 							  rtlWstrAlloc( rtlMathLen( astCloneTree( expr ), TRUE ) ) ) )
@@ -185,11 +184,8 @@ function cSelectStatement as integer
 		astAdd( expr )
 
 		'' *tmp = expr
-		expr = astNewASSIGN( astNewPTR( symbol, _
-										NULL, _
-										0, _
+		expr = astNewASSIGN( astNewPTR( 0, _
 								  		astNewVAR( symbol, _
-								  		 		   NULL, _
 								  		 		   0, _
 								  		 		   FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR ), _
 								  	    FB_SYMBTYPE_WCHAR, _
@@ -228,10 +224,9 @@ function cSelectStatement as integer
 	'' if a temp string was allocated, delete it
 	select case dtype
 	case FB_SYMBTYPE_STRING
-		astAdd( rtlStrDelete( astNewVAR( symbol, NULL, 0, dtype ) ) )
+		astAdd( rtlStrDelete( astNewVAR( symbol, 0, dtype ) ) )
 	case FB_SYMBTYPE_WCHAR
 		astAdd( rtlStrDelete( astNewVAR( symbol, _
-										 NULL, _
 										 0, _
 										 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR ) ) )
 	end select
@@ -290,11 +285,9 @@ end function
 '' if it's a wstring, do "if *tmp op expr"
 #define NEWCASEVAR(symbol,dtype) 				_
 	iif( dtype <> IR_DATATYPE_WCHAR, 			_
-		 astNewVAR( symbol, NULL, 0, dtype ), 	_
-		 astNewPTR( symbol, 					_
-		 			NULL, 						_
-					0, 							_
-					astNewVAR( symbol, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_WCHAR ), _
+		 astNewVAR( symbol, 0, dtype ), 		_
+		 astNewPTR( 0, 							_
+					astNewVAR( symbol, 0, IR_DATATYPE_POINTER+IR_DATATYPE_WCHAR ), _
 					IR_DATATYPE_WCHAR, 			_
 					NULL ) 						_
 	   )
@@ -687,7 +680,7 @@ function cSelectConstStmt as integer
 		exit function
 	end if
 
-	expr = astNewASSIGN( astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), expr )
+	expr = astNewASSIGN( astNewVAR( sym, 0, IR_DATATYPE_UINT ), expr )
 	if( expr = NULL ) then
 		exit function
 	end if
@@ -731,7 +724,7 @@ function cSelectConstStmt as integer
 	'' check min val
 	if( minval > 0 ) then
 		expr = astNewBOP( IR_OP_LT, _
-						  astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
+						  astNewVAR( sym, 0, IR_DATATYPE_UINT ), _
 						  astNewCONSTi( minval, IR_DATATYPE_UINT ), _
 						  deflabel, FALSE )
 		astAdd( expr )
@@ -739,7 +732,7 @@ function cSelectConstStmt as integer
 
 	'' check max val
 	expr = astNewBOP( IR_OP_GT, _
-					  astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
+					  astNewVAR( sym, 0, IR_DATATYPE_UINT ), _
 					  astNewCONSTi( maxval, IR_DATATYPE_UINT ), _
 					  deflabel, FALSE )
 	astAdd( expr )
@@ -748,10 +741,10 @@ function cSelectConstStmt as integer
     tbsym = hJumpTbAllocSym( )
 
 	idxexpr = astNewBOP( IR_OP_MUL, _
-						 astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
+						 astNewVAR( sym, 0, IR_DATATYPE_UINT ), _
     				  	 astNewCONSTi( FB_INTEGERSIZE, IR_DATATYPE_UINT ) )
 
-    expr = astNewIDX( astNewVAR( tbsym, NULL, -minval*FB_INTEGERSIZE, IR_DATATYPE_UINT ), _
+    expr = astNewIDX( astNewVAR( tbsym, -minval*FB_INTEGERSIZE, IR_DATATYPE_UINT ), _
     				  idxexpr, IR_DATATYPE_UINT, NULL )
 
     astAdd( astNewBRANCH( IR_OP_JUMPPTR, NULL, expr ) )

@@ -67,8 +67,8 @@ function cVAFunct( byref funcexpr as ASTNODE ptr ) as integer
 	end if
 
 	'' @arg
-	expr = astNewVAR( sym, NULL, 0, symbGetType( sym ), NULL )
-	expr = astNewADDR( IR_OP_ADDROF, expr, sym )
+	expr = astNewVAR( sym, 0, symbGetType( sym ), NULL )
+	expr = astNewADDR( IR_OP_ADDROF, expr )
 
 	'' + arglen( arg )
 	funcexpr = astNewBOP( IR_OP_ADD, _

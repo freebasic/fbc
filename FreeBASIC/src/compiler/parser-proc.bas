@@ -397,7 +397,7 @@ private sub hLoadResult ( byval proc as FBSYMBOL ptr ) static
 	'' set as temp, so any assignment or when passed as parameter to another proc
 	'' will deallocate this string)
 	case FB_SYMBTYPE_STRING
-		t = astNewVAR( s, NULL, 0, IR_DATATYPE_STRING )
+		t = astNewVAR( s, 0, IR_DATATYPE_STRING )
 		n = rtlStrAllocTmpResult( t )
 
 	'' UDT? use the real type
@@ -406,7 +406,7 @@ private sub hLoadResult ( byval proc as FBSYMBOL ptr ) static
 	end select
 
 	if( n = NULL ) then
-		n = astNewLOAD( astNewVAR( s, NULL, 0, dtype, NULL ), dtype, TRUE )
+		n = astNewLOAD( astNewVAR( s, 0, dtype, NULL ), dtype, TRUE )
 	end if
 
 	astAdd( n )
@@ -563,7 +563,7 @@ function cProcStatement static
 
 	'' restore old error handler if any was set
 	if( env.procerrorhnd <> NULL ) then
-        expr = astNewVAR( env.procerrorhnd, NULL, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
+        expr = astNewVAR( env.procerrorhnd, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
         rtlErrorSetHandler( expr, FALSE )
 	end if
 

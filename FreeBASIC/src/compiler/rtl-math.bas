@@ -311,7 +311,7 @@ function rtlMathLen( byval expr as ASTNODE ptr, _
     		proc = astNewFUNCT( PROCLOOKUP( STRLEN ) )
 
     		'' always calc len before pushing the param
-    		STRGETLEN( expr, dtype, lgt )
+    		lgt = rtlCalcStrLen( expr, dtype )
 
     		'' str as any
     		if( astNewPARAM( proc, expr, IR_DATATYPE_STRING ) = NULL ) then

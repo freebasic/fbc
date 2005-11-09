@@ -155,11 +155,11 @@ private sub hDllMainBegin( )
 
    	'' function = TRUE
    	s = symbLookupProcResult( proc )
-   	astAdd( astNewASSIGN( astNewVAR( s, NULL, 0, symbGetType( proc ) ), _
+   	astAdd( astNewASSIGN( astNewVAR( s, 0, symbGetType( proc ) ), _
    						  astNewCONSTi( 1, symbGetType( proc ) ) ) )
 
 	'' if( reason = DLL_PROCESS_ATTACH ) then
-	reason = astNewVAR( argreason, NULL, 0, symbGetType( argreason ) )
+	reason = astNewVAR( argreason, 0, symbGetType( argreason ) )
 	label = symbAddLabel( NULL )
 	astAdd( astNewBOP( IR_OP_NE, reason, astNewCONSTi( 1, IR_DATATYPE_UINT ), label, FALSE ) )
 
@@ -177,7 +177,7 @@ private sub hDllMainBegin( )
 
    	'' load result
    	s = symbLookupProcResult( proc )
-   	astAdd( astNewLOAD( astNewVAR( s, NULL, 0, symbGetType( proc ) ), _
+   	astAdd( astNewLOAD( astNewVAR( s, 0, symbGetType( proc ) ), _
    						symbGetType( proc ), _
    						TRUE ) )
 

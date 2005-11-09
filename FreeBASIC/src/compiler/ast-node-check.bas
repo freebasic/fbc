@@ -46,11 +46,11 @@ function astNewBOUNDCHK( byval l as ASTNODE ptr, _
 			'' index also?
 			if( l->defined ) then
 				'' i < lbound?
-				if( l->val.int < lb->val.int ) then
+				if( l->con.val.int < lb->con.val.int ) then
 					return NULL
 				end if
 				'' i > ubound?
-				if( l->val.int > ub->val.int ) then
+				if( l->con.val.int > ub->con.val.int ) then
 					return NULL
 				end if
 
@@ -61,7 +61,7 @@ function astNewBOUNDCHK( byval l as ASTNODE ptr, _
 		end if
 
 		'' 0? del it
-		if( lb->val.int = 0 ) then
+		if( lb->con.val.int = 0 ) then
 			astDel( lb )
 			lb = NULL
 		end if
@@ -130,6 +130,11 @@ end function
 function astNewPTRCHK( byval l as ASTNODE ptr, _
 					   byval linenum as integer ) as ASTNODE ptr static
     dim as ASTNODE ptr n
+
+	'' constant? don't break OffsetOf() when used with Const's..
+	if( l->class = AST_NODECLASS_CONST ) then
+		return l
+	end if
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_PTRCHK, INVALID )

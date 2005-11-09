@@ -30,7 +30,6 @@ option escape
 
 '':::::
 function astNewVAR( byval sym as FBSYMBOL ptr, _
-					byval elm as FBSYMBOL ptr, _
 					byval ofs as integer, _
 					byval dtype as integer, _
 					byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr static
@@ -44,36 +43,19 @@ function astNewVAR( byval sym as FBSYMBOL ptr, _
 		exit function
 	end if
 
-	n->var.sym 	= sym
-	n->var.elm 	= elm
+	n->sym = sym
 	if( sym <> NULL ) then
 		ofs += sym->ofs
 	end if
 	n->var.ofs	= ofs
-	n->chkbitfld= elm <> NULL
 
 end function
-
 
 '':::::
 function astLoadVAR( byval n as ASTNODE ptr ) as IRVREG ptr static
     dim as FBSYMBOL ptr s
 
-	'' handle bitfields..
-	if( n->chkbitfld ) then
-		n->chkbitfld = FALSE
-		s = n->var.elm
-		if( s <> NULL ) then
-			if( s->var.elm.bits > 0 ) then
-				n = astGetBitField( n, s )
-				function = astLoad( n )
-				astDel( n )
-				exit function
-			end if
-		end if
-	end if
-
-	s = n->var.sym
+	s = n->sym
 	if( s <> NULL ) then
 		symbIncAccessCnt( s )
 	end if

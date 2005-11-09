@@ -49,7 +49,7 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
 		exit function
 	end if
 
-	expr = astNewASSIGN( astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), expr )
+	expr = astNewASSIGN( astNewVAR( sym, 0, IR_DATATYPE_UINT ), expr )
 	if( expr = NULL ) then
 		exit function
 	end if
@@ -78,22 +78,22 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
 	exitlabel = symbAddLabel( NULL )
 
 	'' < 1?
-	expr = astNewBOP( IR_OP_LT, astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
+	expr = astNewBOP( IR_OP_LT, astNewVAR( sym, 0, IR_DATATYPE_UINT ), _
 					  astNewCONSTi( 1, IR_DATATYPE_UINT ), exitlabel, FALSE )
 	astAdd( expr )
 
 	'' > labels?
-	expr = astNewBOP( IR_OP_GT, astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
+	expr = astNewBOP( IR_OP_GT, astNewVAR( sym, 0, IR_DATATYPE_UINT ), _
 					  astNewCONSTi( l, IR_DATATYPE_UINT ), exitlabel, FALSE )
 	astAdd( expr )
 
     '' jump to table[idx]
     tbsym = hJumpTbAllocSym( )
 
-	idxexpr = astNewBOP( IR_OP_MUL, astNewVAR( sym, NULL, 0, IR_DATATYPE_UINT ), _
+	idxexpr = astNewBOP( IR_OP_MUL, astNewVAR( sym, 0, IR_DATATYPE_UINT ), _
     				  			    astNewCONSTi( FB_INTEGERSIZE, IR_DATATYPE_UINT ) )
 
-    expr = astNewIDX( astNewVAR( tbsym, NULL, -1*FB_INTEGERSIZE, IR_DATATYPE_UINT ), idxexpr, _
+    expr = astNewIDX( astNewVAR( tbsym, -1*FB_INTEGERSIZE, IR_DATATYPE_UINT ), idxexpr, _
     				  IR_DATATYPE_UINT, NULL )
 
     if( not isgoto ) then
@@ -186,8 +186,8 @@ function cOnStmt as integer
 			end if
 			lexSkipToken( )
 
-			expr = astNewVAR( label, NULL, 0, IR_DATATYPE_UINT )
-			expr = astNewADDR( IR_OP_ADDROF, expr, label )
+			expr = astNewVAR( label, 0, IR_DATATYPE_UINT )
+			expr = astNewADDR( IR_OP_ADDROF, expr )
 			rtlErrorSetHandler( expr, (islocal = TRUE) )
 
 		else

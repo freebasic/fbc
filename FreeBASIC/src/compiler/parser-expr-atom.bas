@@ -72,7 +72,6 @@ end function
 ''Atom            =   Constant | Function | QuirkFunction | Variable | Literal .
 ''
 function cAtom( byref atom as ASTNODE ptr ) as integer
-    dim as FBSYMBOL ptr sym, elm
     dim as integer res
 
   	atom = NULL
@@ -84,9 +83,9 @@ function cAtom( byref atom as ASTNODE ptr ) as integer
   	case FB_TKCLASS_IDENTIFIER
   		res = cConstant( atom )
   		if( not res ) then
-  			res = cFunction( atom, sym, elm )
+  			res = cFunction( atom )
   			if( not res ) then
-  				res = cVariable( atom, sym, elm, env.checkarray )
+  				res = cVariable( atom, env.checkarray )
   			end if
   		end if
 

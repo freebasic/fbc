@@ -37,6 +37,8 @@ type FBTOKEN
 	tlen			as integer                  '' length
 	dotpos			as integer                  '' first '.' position, if any
 	sym				as FBSYMBOL ptr				'' symbol found, if any
+
+	next			as FBTOKEN ptr
 end type
 
 const FB_LEX_MAXK	= 2
@@ -44,6 +46,9 @@ const FB_LEX_MAXK	= 2
 type LEX_CTX
 	tokenTB(0 to FB_LEX_MAXK) as FBTOKEN
 	k				as integer					'' look ahead cnt (1..MAXK)
+
+	head			as FBTOKEN ptr
+	tail			as FBTOKEN ptr
 
 	currchar		as uinteger					'' current char
 	lahdchar		as uinteger					'' look ahead char
@@ -117,7 +122,7 @@ declare sub 		lexSkipLine				( )
 declare sub 		lexSetToken				( byval id as integer, _
 											  byval class as integer )
 
-declare sub 		lexNextToken 			( t as FBTOKEN, _
+declare sub 		lexNextToken 			( byval t as FBTOKEN ptr, _
 											  byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )
 
 declare function 	lexCurrentChar          ( byval skipwhitespc as integer = FALSE ) as uinteger
