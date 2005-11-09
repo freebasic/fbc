@@ -1,0 +1,8 @@
+23c23
+< default:	libcgi-util.a test-cgis
+---
+> default:	libcgi-util.so libcgi-util.a test-cgis
+79c79
+< 	$(CC) $(CFLAGS) cgi-util.c -c -o libcgi-util.o
+---
+> 	$(CC) $(CFLAGS) -fPIC cgi-util.c -c -o libcgi-util.o
