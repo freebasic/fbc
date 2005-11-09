@@ -26,7 +26,6 @@ option explicit
 		next x
 	next y
 	
-	sleep
-	cls
+	sleep 1000
 	
 

@@ -5,7 +5,7 @@
 
 option explicit
 
-#include once "common.bi"
+#include once "../console/common.bi"
 
 declare sub inkey_test( byval title as string )
 
@@ -93,8 +93,8 @@ declare sub inkey_test( byval title as string )
 			locate l, 3: print s & " (ascii " & asc(s) & ")"
 			l = csrlin
 			view print
-			locate h - 5, 1: print chr(179);
-			locate h - 5, w: print chr(179);
+			'locate h - 5, 1: print chr(179);
+			'locate h - 5, w: print chr(179);
 		end if
 		
 	loop until multikey(1)
