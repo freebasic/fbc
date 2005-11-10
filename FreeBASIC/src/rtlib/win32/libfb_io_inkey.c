@@ -66,8 +66,10 @@ FBSTRING *fb_ConsoleInkey( void )
 int fb_ConsoleGetkey( void )
 {
 	int k = fb_hConsoleGetKey( TRUE );
-    if( k==-1 )
-        k = 0;
+    while( k==-1 ) {
+        fb_Sleep( -1 );
+        k = fb_hConsoleGetKey( TRUE );
+    }
     return k;
 }
 
