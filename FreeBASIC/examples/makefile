@@ -1,7 +1,7 @@
 
-DIRLIST := Allegro big_int CGUI cryptlib curses CVS DB disphelper 
-DIRLIST += file freetype gfx GL GL/NeHe GSL Gtk IUP libxml Lua 
-DIRLIST += pdflib regex SDL sound tests Windows Windows/gui wx-c
+DIRLIST := Allegro big_int CGUI cryptlib curses CVS DB disphelper file
+DIRLIST += freetype gfx GL GL/NeHe GSL Gtk IUP libxml Lua pdflib regex
+DIRLIST += SDL sound tests unicode Windows Windows/gui wx-c
 
 ###
 
