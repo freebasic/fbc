@@ -290,9 +290,6 @@ int fb_GfxLocateRaw(int y, int x, int cursor)
 		fb_mode->cursor_x = x;
 	if (y > -1)
 		fb_mode->cursor_y = y;
-
-    fb_SetPos( FB_HANDLE_SCREEN , fb_mode->cursor_x );
-
 	return (fb_mode->cursor_x & 0xFF) | ((fb_mode->cursor_y & 0xFF) << 8);
 }
 
@@ -300,8 +297,11 @@ int fb_GfxLocateRaw(int y, int x, int cursor)
 /*:::::*/
 int fb_GfxLocate(int y, int x, int cursor)
 {
+    int ret;
     fb_mode->flags &= ~PRINT_SCROLL_WAS_OFF;
-    return fb_GfxLocateRaw( y - 1, x - 1, cursor ) + 0x0101;
+    ret = fb_GfxLocateRaw( y - 1, x - 1, cursor ) + 0x0101;
+    fb_SetPos( FB_HANDLE_SCREEN , fb_mode->cursor_x );
+    return ret;
 }
 
 

@@ -43,11 +43,12 @@ static void fb_hPrintPadEx ( FB_FILE *handle, int mask, int current_x, int new_x
     if (new_x <= current_x) {
         FB_PRINT_EX(handle, FB_NEWLINE, sizeof(FB_NEWLINE)-1, mask);
     } else {
-        memset(tab_char_buffer, 32, new_x-current_x);
+        size_t count = new_x - current_x - 1;
+        memset(tab_char_buffer, 32, count);
         /* the terminating NUL shouldn't be required but it makes
          * debugging easier */
-        tab_char_buffer[new_x-current_x] = 0;
-        FB_PRINT_EX(handle, tab_char_buffer, new_x-current_x, mask);
+        tab_char_buffer[count] = 0;
+        FB_PRINT_EX(handle, tab_char_buffer, count, mask);
     }
 #endif
 }
@@ -68,7 +69,10 @@ void fb_PrintPadEx ( FB_FILE *handle, int mask )
     tmp_handle = FB_HANDLE_DEREF(handle);
 
     old_x = tmp_handle->line_length + 1;
-    new_x = ((old_x + (FB_TAB_WIDTH-1)) / FB_TAB_WIDTH) * FB_TAB_WIDTH + 1;
+    new_x = old_x + FB_TAB_WIDTH - 1;
+    new_x /= FB_TAB_WIDTH;
+    new_x *= FB_TAB_WIDTH;
+    new_x += 1;
     if (tmp_handle->width!=0) {
         unsigned dev_width = tmp_handle->width;
         if (new_x > (dev_width - FB_TAB_WIDTH)) {
