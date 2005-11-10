@@ -107,6 +107,16 @@ static int save_bmp(FILE *f, void *src)
 	}
 	
 	filler = biSizeImage / h;
+	switch (fb_mode->bpp) {
+		case 1:
+			break;
+		case 2:
+			filler += ((w * 3 + 1) % 4) - 1;
+			break;
+		case 4:
+			filler += 3 - ((w * 3 - 1) % 4);
+			break;
+	}
 	buffer = (unsigned char *)calloc(1, filler + 3);
 	
 	s += (h - 1) * pitch;
@@ -157,7 +167,7 @@ FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size)
 	
 	fb_hPrepareTarget(NULL);
 
-	p = strchr(filename->data, '.');
+	p = strrchr(filename->data, '.');
 	if ((p) && (!strcasecmp(p + 1, "bmp")))
 		result = save_bmp(f, src);
 	else {
