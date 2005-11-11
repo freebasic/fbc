@@ -29,8 +29,18 @@
 /*:::::*/
 FBCALL FB_WCHAR *fb_WstrAssignFromA ( FB_WCHAR *dst, int dst_chars, void *src, int src_chars )
 {
+	char *src_ptr;
+	
 	if( dst != NULL )
-		fb_wstr_ConvFromA( dst, dst_chars, FB_STRPTR( src, src_chars ) );
+	{
+		/* assume dst is large enough.. */
+		if( dst_chars == 0 )
+			FB_STRSETUP_FIX( src, src_chars, src_ptr, dst_chars );
+		else
+			src_ptr = (char *)src;
+			
+		fb_wstr_ConvFromA( dst, dst_chars, src_ptr );
+	}
 
 	/* delete temp? */
 	if( src_chars == -1 )
