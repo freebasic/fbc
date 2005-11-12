@@ -10,8 +10,6 @@
     will be screwed when WRITE'g/PRINT'g wstring's, do that ourselves - no
     generic pnWrite then, it depends on the file mode, binary or text
 
-[ ] file names with periods (.)'s cannot be opened anymore?
-
 [ ] passing a temporary string to a zstring ptr should not make
     yet-another temporary assignament in hStrParamToPtrArg(),
     just a pointer copy that later should be strDelete()'d
