@@ -422,6 +422,8 @@ private function hIsRegFree( byval dclass as integer, _
 		end select
 	end if
 
+	assert( dclass < EMIT_REGCLASSES )
+
 	'' assume it will be trashed
 	EMIT_REGSETUSED( dclass, reg )
 
@@ -1336,7 +1338,7 @@ private sub _emitSTORF2I( byval dvreg as IRVREG ptr, _
 			aux8 = *hGetRegName( IR_DATATYPE_BYTE, reg )
 			aux  = *hGetRegName( IR_DATATYPE_INTEGER, reg )
 
-			isfree = hIsRegFree( IR_DATATYPE_INTEGER, reg )
+			isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
 
 			if( not isfree ) then
 				hXCHG aux, "dword ptr [esp]"
