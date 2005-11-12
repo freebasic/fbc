@@ -251,8 +251,9 @@ function astNewUOP( byval op as integer, _
 
 	n->l  		= o
 	n->r  		= NULL
-	n->uop.op	= op
-	n->uop.allocres	= TRUE
+	n->op.op	= op
+	n->op.ex	= NULL
+	n->op.allocres = TRUE
 
 	function = n
 
@@ -265,7 +266,7 @@ function astLoadUOP( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as IRVREG ptr v1, vr
 
 	o  = n->l
-	op = n->uop.op
+	op = n->op.op
 
 	if( o = NULL ) then
 		return NULL
@@ -274,7 +275,7 @@ function astLoadUOP( byval n as ASTNODE ptr ) as IRVREG ptr
 	v1 = astLoad( o )
 
 	if( ast.doemit ) then
-		if( n->uop.allocres ) then
+		if( n->op.allocres ) then
 			vr = irAllocVREG( o->dtype )
 		else
 			vr = NULL

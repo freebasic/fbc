@@ -56,7 +56,7 @@ function cAsmCode as integer static
 				'' function?
 				s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_PROC )
 				if( s <> NULL ) then
-					text = symbGetName( s )
+					text = *symbGetName( s )
 				else
 					'' const?
 					s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_CONST )
@@ -71,7 +71,7 @@ function cAsmCode as integer static
 							'' label?
 							s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_LABEL )
 							if( s <> NULL ) then
-								text = symbGetName( s )
+								text = *symbGetName( s )
 							end if
 						end if
 					end if

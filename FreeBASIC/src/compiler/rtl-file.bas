@@ -626,9 +626,10 @@ end function
 function rtlFilePut( byval filenum as ASTNODE ptr, _
 					 byval offset as ASTNODE ptr, _
 					 byval src as ASTNODE ptr, _
+					 byval elements as ASTNODE ptr, _
 					 byval isfunc as integer ) as ASTNODE ptr static
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc, bytes
     dim as integer dtype, lgt, isstring
     dim as FBSYMBOL ptr f, reslabel
 
@@ -665,13 +666,19 @@ function rtlFilePut( byval filenum as ASTNODE ptr, _
     	lgt = rtlCalcExprLen( src )
     end if
 
+    if( elements = NULL ) then
+    	bytes = astNewCONSTi( lgt, IR_DATATYPE_INTEGER )
+    else
+    	bytes = astNewBOP( IR_OP_MUL, elements, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ) )
+    end if
+
     '' value as any | s as string
     if( astNewPARAM( proc, src ) = NULL ) then
  		exit function
  	end if
 
-    '' byval valuelen as integer
-   	if( astNewPARAM( proc, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ) ) = NULL ) then
+    '' byval bytes as integer
+   	if( astNewPARAM( proc, bytes ) = NULL ) then
 		exit function
 	end if
 
@@ -745,9 +752,10 @@ end function
 function rtlFileGet( byval filenum as ASTNODE ptr, _
 					 byval offset as ASTNODE ptr, _
 					 byval dst as ASTNODE ptr, _
+					 byval elements as ASTNODE ptr, _
 					 byval isfunc as integer ) as ASTNODE ptr static
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc, bytes
     dim as integer dtype, lgt, isstring
     dim as FBSYMBOL ptr f, reslabel
 
@@ -784,13 +792,19 @@ function rtlFileGet( byval filenum as ASTNODE ptr, _
     	lgt = rtlCalcExprLen( dst )
     end if
 
+    if( elements = NULL ) then
+    	bytes = astNewCONSTi( lgt, IR_DATATYPE_INTEGER )
+    else
+    	bytes = astNewBOP( IR_OP_MUL, elements, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ) )
+    end if
+
     '' value as any
     if( astNewPARAM( proc, dst ) = NULL ) then
  		exit function
  	end if
 
-    '' byval valuelen as integer
-    if( astNewPARAM( proc, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ) ) = NULL ) then
+    '' byval bytes as integer
+    if( astNewPARAM( proc, bytes ) = NULL ) then
  		exit function
  	end if
 

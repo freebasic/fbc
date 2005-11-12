@@ -251,7 +251,21 @@ private function hAddOvlProc( byval proc as FBSYMBOL ptr, _
 
 				'' not the same type? check next proc..
 				if( parg->typ <> farg->typ ) then
-					exit do
+					'' handle special cases: zstring ptr and string args
+					select case parg->typ
+					case FB_SYMBTYPE_POINTER + FB_SYMBTYPE_CHAR
+						if( farg->typ <> FB_SYMBTYPE_STRING ) then
+							exit do
+						end if
+
+					case FB_SYMBTYPE_STRING
+						if( farg->typ <> FB_SYMBTYPE_POINTER + FB_SYMBTYPE_CHAR ) then
+							exit do
+						end if
+
+					case else
+						exit do
+					end select
 				end if
 
 				if( parg->subtype <> farg->subtype ) then
@@ -353,7 +367,7 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 
 	''
 	if( typ = INVALID ) then
-		typ = hGetDefType( *id )
+		typ = hGetDefType( id )
 		subtype = NULL
 	end if
 
@@ -377,7 +391,7 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 
     '' alias given..
     else
-	   	aname = *hCreateProcAlias( *aliasname, lgt, mode )
+	   	aname = *hCreateProcAlias( aliasname, lgt, mode )
     end if
 
     ''
@@ -604,7 +618,7 @@ function symbAddProcResArg( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
 	end if
 
 	symbol = FBPREFIX_PROCRES
-	symbol += symbGetOrgName( proc )
+	symbol += *symbGetOrgName( proc )
 
     s = symbAddVarEx( @symbol, NULL, _
     				  FB_SYMBTYPE_POINTER+FB_SYMBTYPE_USERDEF, proc->subtype, 0, 0, _
@@ -631,7 +645,7 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
 	end if
 
 	rname = FBPREFIX_PROCRES
-	rname += symbGetOrgName( proc )
+	rname += *symbGetOrgName( proc )
 
 	s = symbAddVarEx( @rname, NULL, proc->typ, proc->subtype, 0, 0, 0, _
 					  dTB(), 0, TRUE, TRUE, FALSE )
@@ -653,7 +667,7 @@ function symbLookupProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
 	end if
 
 	rname = FBPREFIX_PROCRES
-	rname += symbGetOrgName( f )
+	rname += *symbGetOrgName( f )
 
 	function = symbFindByNameAndClass( @rname, FB_SYMBCLASS_VAR, TRUE )
 
@@ -742,7 +756,7 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 							   byval pmode as integer _
 							 ) as integer static
 
-	dim as integer pdtype, pdclass
+	dim as integer pdtype, pdclass, adtype
 	dim as FBSYMBOL ptr s, psubtype
 
 	'' param optional?
@@ -755,6 +769,8 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 		return FB_OVLPROC_FULLMATCH
     end if
 
+	adtype = symbGetType( arg )
+
 	pdtype = astGetDataType( pexpr )
 	psubtype = astGetSubType( pexpr )
 
@@ -766,7 +782,7 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 		end if
 
 		'' not a full match?
-        if( symbGetType( arg ) <> pdtype ) then
+        if( adtype <> pdtype ) then
         	return 0
         end if
 
@@ -783,12 +799,12 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 	end if
 
 	'' same types?
-	if( symbGetType( arg ) = pdtype ) then
+	if( adtype = pdtype ) then
 		'' check the subtype
 		if( symbGetSubType( arg ) <> psubtype ) then
 
 			'' check classes
-			select case irGetDataClass( symbGetType( arg ) )
+			select case irGetDataClass( adtype )
 			'' UDT? can't be different..
 			case IR_DATACLASS_UDT
 				return 0
@@ -805,22 +821,47 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 	pdclass = irGetDataClass( pdtype )
 
 	'' check classes
-	select case as const irGetDataClass( symbGetType( arg ) )
+	select case as const irGetDataClass( adtype )
 	'' integer?
 	case IR_DATACLASS_INTEGER
+
 		select case as const pdclass
-		'' another integer or float is ok (due the auto-coercion)
-		case IR_DATACLASS_INTEGER, IR_DATACLASS_FPOINT
-			return FB_OVLPROC_HALFMATCH - _
-				   abs( irRemapType( symbGetType( arg ), symbGetSubType( arg ) ) - _
-				   		irRemapType( pdtype, psubtype ) )
+		'' another integer..
+		case IR_DATACLASS_INTEGER
+			'' remap to real type if it's a bitfield..
+			if( pdtype = IR_DATATYPE_BITFIELD ) then
+				pdtype = irRemapType( pdtype, psubtype )
+			end if
+
+			'' handle special cases..
+			select case adtype
+			case IR_DATATYPE_POINTER + IR_DATATYPE_CHAR
+				if( pdtype = IR_DATATYPE_CHAR ) then
+					return FB_OVLPROC_FULLMATCH
+				end if
+
+			case IR_DATATYPE_POINTER + IR_DATATYPE_WCHAR
+				if( pdtype = IR_DATATYPE_WCHAR ) then
+					return FB_OVLPROC_FULLMATCH
+				end if
+			end select
+
+			return FB_OVLPROC_HALFMATCH - abs( adtype - pdtype )
+
+		'' float? (ok due the auto-coercion, unless it's a pointer)
+		case IR_DATACLASS_FPOINT
+			if( adtype >= IR_DATATYPE_POINTER ) then
+				return 0
+			end if
+
+			return FB_OVLPROC_HALFMATCH - abs( adtype - pdtype )
 
 		'' string? only if it's a zstring ptr arg
 		case IR_DATACLASS_STRING
 			'' note: no wstring auto-coercion as that would cause ambiguity
-			''		 if procs where the difference is only a string and a
+			''		 with procs where the difference is only a string and a
 			''		 wstring ptr param
-			if( symbGetType( arg ) = IR_DATATYPE_POINTER+IR_DATATYPE_CHAR ) then
+			if( adtype = IR_DATATYPE_POINTER+IR_DATATYPE_CHAR ) then
 				return FB_OVLPROC_FULLMATCH
 			else
 				return 0
@@ -833,12 +874,24 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 
 	'' floating-point?
 	case IR_DATACLASS_FPOINT
-		'' only accept another float or integer
+
 		select case as const pdclass
-		case IR_DATACLASS_INTEGER, IR_DATACLASS_FPOINT
-			return FB_OVLPROC_HALFMATCH - _
-				  abs( irRemapType( symbGetType( arg ), symbGetSubType( arg ) ) - _
-				  	   irRemapType( pdtype, psubtype ) )
+		'' only accept if it's an integer (but pointers)
+		case IR_DATACLASS_INTEGER
+			if( pdtype >= IR_DATATYPE_POINTER ) then
+				return 0
+			end if
+
+			'' remap to real type if it's a bitfield..
+			if( pdtype = IR_DATATYPE_BITFIELD ) then
+				pdtype = irRemapType( pdtype, psubtype )
+			end if
+
+			return FB_OVLPROC_HALFMATCH - abs( adtype - pdtype )
+
+		'' or if another float..
+		case IR_DATACLASS_FPOINT
+			return FB_OVLPROC_HALFMATCH - abs( adtype - pdtype )
 
 		'' refuse anything else
 		case else
@@ -852,7 +905,7 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 		select case pdclass
 		'' okay if it's another var- or fixed-len string
 		case IR_DATACLASS_STRING
-			return FB_OVLPROC_HALFMATCH - abs( symbGetType( arg ) - pdtype )
+			return FB_OVLPROC_HALFMATCH - abs( adtype - pdtype )
 
 		'' integer only if it's a zstring
 		case IR_DATACLASS_INTEGER

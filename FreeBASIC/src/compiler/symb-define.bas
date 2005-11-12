@@ -78,7 +78,7 @@ function hDefFunction_cb( ) as string static
 	if( env.currproc = NULL ) then
 		function = "(main)"
 	else
-		function = symbGetOrgName( env.currproc )
+		function = *symbGetOrgName( env.currproc )
 	end if
 
 end function
@@ -176,14 +176,49 @@ function symbAddDefine( byval symbol as zstring ptr, _
 
     '' allocate new node
     d = symbNewSymbol( NULL, symb.symtb, FB_SYMBCLASS_DEFINE, TRUE, _
-    				   symbol, NULL, fbIsLocal( ) )
+    				   symbol, NULL, fbIsLocal( ), IR_DATATYPE_CHAR, NULL )
     if( d = NULL ) then
     	exit function
     end if
 
 	''
-	ZEROSTRDESC( d->def.text )
-	d->def.text 	= *text
+	d->def.text 	= ZstrAllocate( lgt )
+	*d->def.text 	= *text
+	d->lgt			= lgt
+	d->def.args		= 0
+	d->def.arghead	= NULL
+	d->def.isargless= isargless
+	d->def.proc     = proc
+    d->def.flags    = flags
+
+	''
+	function = d
+
+end function
+
+'':::::
+function symbAddDefineW( byval symbol as zstring ptr, _
+						 byval text as wstring ptr, _
+						 byval lgt as integer, _
+						 byval isargless as integer = FALSE, _
+						 byval proc as function( ) as string = NULL, _
+                         byval flags as integer = 0 _
+                       ) as FBSYMBOL ptr static
+
+    dim d as FBSYMBOL ptr
+
+    function = NULL
+
+    '' allocate new node
+    d = symbNewSymbol( NULL, symb.symtb, FB_SYMBCLASS_DEFINE, TRUE, _
+    				   symbol, NULL, fbIsLocal( ), IR_DATATYPE_WCHAR, NULL )
+    if( d = NULL ) then
+    	exit function
+    end if
+
+	''
+	d->def.textw 	= WstrAllocate( lgt )
+	*d->def.textw 	= *text
 	d->lgt			= lgt
 	d->def.args		= 0
 	d->def.arghead	= NULL
@@ -245,8 +280,8 @@ function symbAddDefineArg( byval lastarg as FBDEFARG ptr, _
 	end if
 
 	''
-    ZEROSTRDESC( a->name )
-    a->name 	= ucase( *symbol )
+    a->name		= ZstrAllocate( len( *symbol ) )
+    hUcase( *symbol, *a->name )
     a->next		= NULL
     a->id		= symb.defargcnt
     symb.defargcnt += 1
@@ -276,7 +311,12 @@ function symbAddDefineTok( byval lasttok as FBDEFTOK ptr, _
 
 	''
 	t->type = typ
-	ZEROSTRDESC( t->text )
+	select case typ
+	case FB_DEFTOK_TYPE_TEX
+		t->text = NULL
+	case FB_DEFTOK_TYPE_TEXW
+		t->textw = NULL
+	end select
 
     function = t
 
@@ -289,7 +329,7 @@ private sub hDelDefineArgs( byval s as FBSYMBOL ptr )
     arg = s->def.arghead
     do while( arg <> NULL )
     	nxt = arg->next
-    	arg->name = ""
+    	ZstrFree( arg->name )
     	listDelNode( @symb.defarglist, cptr( TLISTNODE ptr, arg ) )
     	arg = nxt
     loop
@@ -304,9 +344,12 @@ private sub hDelDefineTokens( byval s as FBSYMBOL ptr )
     do while( tok <> NULL )
     	nxt = tok->next
 
-    	if( tok->type = FB_DEFTOK_TYPE_TEX ) then
-    		tok->text = ""
-    	end if
+    	select case tok->type
+    	case FB_DEFTOK_TYPE_TEX
+    		ZstrFree( tok->text )
+    	case FB_DEFTOK_TYPE_TEXW
+    		WstrFree( tok->textw )
+    	end select
 
     	listDelNode( @symb.deftoklist, cptr( TLISTNODE ptr, tok ) )
     	tok = nxt
@@ -331,7 +374,11 @@ function symbDelDefine( byval s as FBSYMBOL ptr, _
 
 	''
 	if( symbGetDefineArgs( s ) = 0 ) then
-		s->def.text = ""
+		if( symbGetType( s ) <> IR_DATATYPE_WCHAR ) then
+			ZstrFree( s->def.text )
+		else
+			WstrFree( s->def.textw )
+		end if
 	else
 		hDelDefineTokens( s )
 	end if

@@ -53,7 +53,7 @@ function cVAFunct( byref funcexpr as ASTNODE ptr ) as integer
 		exit function
 	end if
 
-	sym = symbFindByNameAndClass( strptr( arg->alias ), FB_SYMBCLASS_VAR )
+	sym = symbFindByNameAndClass( symbGetName( arg ), FB_SYMBCLASS_VAR )
 	if( sym = NULL ) then
 		exit function
 	end if

@@ -863,7 +863,7 @@ sub irScopeEnd( byval s as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub irEmitASM( byval text as string ) static
+sub irEmitASM( byval text as zstring ptr ) static
 
 	irFlush( )
 
@@ -872,7 +872,7 @@ sub irEmitASM( byval text as string ) static
 end sub
 
 '':::::
-sub irEmitCOMMENT( byval text as string ) static
+sub irEmitCOMMENT( byval text as zstring ptr ) static
 
 	emitCOMMENT( text )
 
@@ -968,7 +968,7 @@ end sub
 
 '':::::
 sub irEmitVARINISTR( byval totlgt as integer, _
-				     byval litstr as string, _
+				     byval litstr as zstring ptr, _
 				     byval litlgt as integer ) static
 
 	dim as zstring ptr s
@@ -983,13 +983,13 @@ sub irEmitVARINISTR( byval totlgt as integer, _
 	if( litlgt > totlgt ) then
 		hReportWarning( FB_WARNINGMSG_LITSTRINGTOOBIG )
 		'' !!!FIXME!!! truncate will fail if it lies on an escape seq
-		s = hEscapeStr( left( litstr, totlgt ) )
+		s = hEscapeStr( left( *litstr, totlgt ) )
 	else
 		s = hEscapeStr( litstr )
 	end if
 
 	''
-	emitVARINISTR( *s )
+	emitVARINISTR( s )
 
 	if( litlgt < totlgt ) then
 		emitVARINIPAD( totlgt - litlgt )
@@ -1023,7 +1023,7 @@ sub irEmitVARINIWSTR( byval totlgt as integer, _
 	''
 	wclen = irGetDataSize( IR_DATATYPE_WCHAR )
 
-	emitVARINIWSTR( *s )
+	emitVARINIWSTR( s )
 
 	if( litlgt < totlgt ) then
 		emitVARINIPAD( (totlgt - litlgt) * wclen )

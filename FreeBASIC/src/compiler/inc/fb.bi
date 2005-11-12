@@ -235,7 +235,7 @@ declare function	fbAddLibPath	( byval path as string ) as integer
 declare sub 		fbAddDefine		( byval dname as string, _
 									  byval dtext as string )
 
-declare function 	fbIncludeFile	( byval filename as string, _
+declare function 	fbIncludeFile	( byval filename as zstring ptr, _
 									  byval isonce as integer ) as integer
 
 declare function 	fbGetIncFile	( byval index as integer ) as string

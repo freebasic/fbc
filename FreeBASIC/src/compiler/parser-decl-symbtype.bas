@@ -68,7 +68,7 @@ function hMangleFuncPtrName( byval proc as FBSYMBOL ptr, _
     	mname += "_"
 
     	if( arg->subtype = NULL ) then
-    		mname += hex( arg->typ * arg->arg.mode )
+    		mname += hex( arg->typ * cint(arg->arg.mode) )
     	else
     		mname += hex( arg->subtype )
     	end if

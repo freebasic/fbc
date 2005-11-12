@@ -219,8 +219,6 @@ function fbInit( byval ismain as integer ) as integer static
 
 	rtlInit( )
 
-	lexInit( FALSE )
-
 	emitInit( )
 
 	''
@@ -457,8 +455,6 @@ sub fbEnd
 	''
 	emitEnd( )
 
-	lexEnd( )
-
 	rtlEnd( )
 
 	irEnd( )
@@ -502,22 +498,29 @@ function fbCompile( byval infname as string, _
 		exit function
 	end if
 
+	env.inf.format = hCheckFileFormat( env.inf.num )
+
+	'' emitOpen() will make calls to lex
+	lexInit( FALSE )
+
 	''
 	if( not emitOpen( ) ) then
 		hReportErrorEx( FB_ERRMSG_FILEACCESSERROR, infname, -1 )
 		exit function
 	end if
 
-	'' parse
-	tmr = timer
-
 	parserInit( )
 
+	tmr = timer( )
+
+	'' parse
 	res = cProgram( )
+
+	tmr = timer( ) - tmr
 
 	parserEnd( )
 
-	tmr = timer - tmr
+	lexEnd( )
 
 	'' save
 	emitClose( tmr )
@@ -604,7 +607,7 @@ sub fbAddDefaultLibs( ) static
 end sub
 
 ''::::
-function fbIncludeFile( byval filename as string, _
+function fbIncludeFile( byval filename as zstring ptr, _
 						byval isonce as integer ) as integer
 
     static as zstring * FB_MAXPATHLEN incfile
@@ -621,13 +624,13 @@ function fbIncludeFile( byval filename as string, _
 	if( not hFileExists( filename ) ) then
 
 		'' try finding it at same path as env.infile
-		incfile = hStripFilename( env.inf.name ) + filename
+		incfile = hStripFilename( env.inf.name ) + *filename
 		if( not hFileExists( incfile ) ) then
 
 			'' try finding it at the inc paths
 			for i = env.incpaths-1 to 0 step -1
 
-				incfile = incpathTB(i) + filename
+				incfile = incpathTB(i) + *filename
 				if( hFileExists( incfile ) ) then
 					exit for
 				end if
@@ -636,12 +639,12 @@ function fbIncludeFile( byval filename as string, _
 		end if
 
 	else
-		incfile = filename
+		incfile = *filename
 	end if
 
 	''
 	if( not hFileExists( incfile ) ) then
-		hReportErrorEx( FB_ERRMSG_FILENOTFOUND, "\"" + filename + "\"" )
+		hReportErrorEx( FB_ERRMSG_FILENOTFOUND, "\"" + *filename + "\"" )
 
 	else
 
@@ -659,7 +662,6 @@ function fbIncludeFile( byval filename as string, _
 
 		''
 		infileTb(env.reclevel) = env.inf
-		lexSaveCtx( env.reclevel )
     	env.reclevel += 1
 
         ' We must remember the path - otherwise we'd be unable to
@@ -668,17 +670,22 @@ function fbIncludeFile( byval filename as string, _
 		env.inf.incfile = fileidx
 
 		''
-		lexInit( TRUE )
-
-		''
 		env.inf.num = freefile
 		if( open( incfile, for binary, access read, as #env.inf.num ) <> 0 ) then
 			hReportErrorEx( FB_ERRMSG_FILENOTFOUND, "\"" + filename + "\"" )
 			exit function
 		end if
 
+		env.inf.format = hCheckFileFormat( env.inf.num )
+
 		'' parse
+		lexPushCtx( )
+
+		lexInit( TRUE )
+
 		function = cProgram( )
+
+		lexPopCtx( )
 
 		'' close it
 		if( close( #env.inf.num ) <> 0 ) then
@@ -687,7 +694,6 @@ function fbIncludeFile( byval filename as string, _
 
 		''
 		env.reclevel -= 1
-		lexRestoreCtx( env.reclevel )
 		env.inf = infileTb( env.reclevel )
 	end if
 

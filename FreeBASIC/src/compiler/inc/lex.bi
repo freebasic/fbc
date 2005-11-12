@@ -33,7 +33,13 @@ type FBTOKEN
 	id				as integer
 	class			as integer
 	typ				as integer
-	text			as zstring * FB_MAXLITLEN+1	'' used by literal strings too
+
+	'' used by literal strings too
+	union
+		text		as zstring * FB_MAXLITLEN+1
+		textw		as wstring * FB_MAXLITLEN+1
+	end union
+
 	tlen			as integer                  '' length
 	dotpos			as integer                  '' first '.' position, if any
 	sym				as FBSYMBOL ptr				'' symbol found, if any
@@ -60,17 +66,43 @@ type LEX_CTX
 	reclevel 		as integer					'' PP recursion
 
 	'' last #define's text
-	deftext			as zstring * FB_MAXINTDEFINELEN+1
-	defptr 			as zstring ptr
 	deflen 			as integer
+
+	union
+		type
+			defptr 				as zstring ptr
+			deftext				as zstring * FB_MAXINTDEFINELEN+1
+		end type
+
+		type
+			defptrw				as wstring ptr
+			deftextw			as wstring * FB_MAXINTDEFINELEN+1
+		end type
+	end union
 
 	'' last WITH
 	withcnt 		as integer
 
 	'' input buffer
 	bufflen			as integer
-	buffptr			as zstring ptr
-	buff			as zstring * 8192+1
+
+	union
+		type
+			buffptr				as ubyte ptr
+			buff				as zstring * 8192+1
+		end type
+
+		type
+			buff16ptr			as ushort ptr
+			buff16(0 to 8192-1)	as ushort
+		end type
+
+		type
+			buff32ptr			as uinteger ptr
+			buff32(0 to 8192-1)	as uinteger
+		end type
+	end union
+
 	filepos			as integer
 	lastfilepos 	as integer
 end type
@@ -80,15 +112,17 @@ declare sub 		lexInit                 ( byval isinclude as integer )
 
 declare sub 		lexEnd					( )
 
-declare sub 		lexSaveCtx				( byval level as integer )
+declare sub 		lexPushCtx				( )
 
-declare sub 		lexRestoreCtx			( byval level as integer )
+declare sub 		lexPopCtx				( )
 
 declare function 	lexGetToken 			( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
 
 declare function 	lexGetClass 			( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
 
 declare function 	lexGetText 				( ) as zstring ptr
+
+declare function 	lexGetTextW				( ) as wstring ptr
 
 declare function 	lexGetTextLen 			( ) as integer
 
@@ -137,7 +171,7 @@ declare function	lexPeekCurrentLine		( byref token_pos as string ) as string
 ''
 '' inter-module globals
 ''
-extern lex as LEX_CTX
+extern lex as LEX_CTX ptr
 
 
 

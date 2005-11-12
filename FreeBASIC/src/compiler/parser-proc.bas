@@ -98,7 +98,7 @@ private function hCheckPrototype( byval proto as FBSYMBOL ptr, _
 
     	'' check names and change to the new one if needed
     	if( proc_arg->arg.mode <> FB_ARGMODE_VARARG ) then
-    		proto_arg->alias = proc_arg->alias
+    		ZstrAssign( @symbGetName( proto_arg ),  symbGetName( proc_arg ) )
 
     		'' as both have the same type, re-set the suffix, because for example
     		'' "a as integer" on the prototype and "a%" or just "a" on the proc
@@ -136,7 +136,7 @@ private function hDeclareArgs( byval proc as FBSYMBOL ptr ) as integer static
 	do while( arg <> NULL )
 
 		if( arg->arg.mode <> FB_ARGMODE_VARARG ) then
-			if( symbAddArgAsVar( strptr( arg->alias ), arg ) = NULL ) then
+			if( symbAddArgAsVar( symbGetName( arg ), arg ) = NULL ) then
 				hReportParamError( a, FB_ERRMSG_DUPDEFINITION )
 				exit function
 			end if

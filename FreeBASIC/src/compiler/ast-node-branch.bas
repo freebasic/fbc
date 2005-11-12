@@ -53,8 +53,9 @@ function astNewBRANCH( byval op as integer, _
 	end if
 
 	n->l  	  = l
-	n->bop.ex = label
-	n->bop.op = op
+	n->op.op  = op
+	n->op.ex  = label
+	n->op.allocres = TRUE
 
 end function
 
@@ -74,9 +75,9 @@ function astLoadBRANCH( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	if( ast.doemit ) then
 		'' pointer?
-		if( n->bop.ex = NULL ) then
+		if( n->op.ex = NULL ) then
 			'' jump or call?
-			select case n->bop.op
+			select case n->op.op
 			case IR_OP_JUMPPTR
 				irEmitJUMPPTR( vr )
 
@@ -88,7 +89,7 @@ function astLoadBRANCH( byval n as ASTNODE ptr ) as IRVREG ptr
 			end select
 
 		else
-			irEmitBRANCH( n->bop.op, n->bop.ex )
+			irEmitBRANCH( n->op.op, n->op.ex )
 		end if
 	end if
 

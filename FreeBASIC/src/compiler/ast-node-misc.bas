@@ -69,7 +69,7 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewLIT( byval text as string, _
+function astNewLIT( byval text as zstring ptr, _
 					byval isasm as integer ) as ASTNODE ptr static
     dim as ASTNODE ptr n
 
@@ -79,8 +79,8 @@ function astNewLIT( byval text as string, _
 		return NULL
 	end if
 
-	ZEROSTRDESC( n->lit.text )
-	n->lit.text  = text
+	n->lit.text = ZstrAllocate( len( *text ) )
+	*n->lit.text  = *text
 	n->lit.isasm = isasm
 
 	function = n
@@ -98,7 +98,7 @@ function astLoadLIT( byval n as ASTNODE ptr ) as IRVREG ptr
 		end if
 	end if
 
-	n->lit.text = ""
+	ZstrFree( n->lit.text )
 
 	function = NULL
 
@@ -124,7 +124,7 @@ function astNewDBG( byval op as integer, _
 		return NULL
 	end if
 
-	n->dbg.op	   = op
+	n->dbg.op  = op
 	n->dbg.ex  = ex
 
 	function = n

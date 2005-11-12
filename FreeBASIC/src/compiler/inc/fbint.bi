@@ -547,9 +547,10 @@ enum FBALLOCTYPE_ENUM
 	FB_ALLOCTYPE_OVERLOADED		= &h002000		'' functions only
 	FB_ALLOCTYPE_JUMPTB			= &h004000
 	FB_ALLOCTYPE_MAINPROC		= &H008000
-    FB_ALLOCTYPE_CONSTRUCTOR    = &h010000      '' it can be either constructor
-    FB_ALLOCTYPE_DESTRUCTOR     = &h020000      '' or destructor, but not both ...
-    FB_ALLOCTYPE_LOCAL			= &h040000
+	FB_ALLOCTYPE_MODLEVELPROC	= &h010000
+    FB_ALLOCTYPE_CONSTRUCTOR    = &h020000      '' it can be either constructor
+    FB_ALLOCTYPE_DESTRUCTOR     = &h040000      '' or destructor, but not both ...
+    FB_ALLOCTYPE_LOCAL			= &h080000
 end enum
 
 #include once "inc\hash.bi"
@@ -628,7 +629,7 @@ type FBDEFARG
 	ll_prv			as FBDEFARG ptr				'' linked-list nodes
 	ll_nxt			as FBDEFARG ptr				'' /
 
-	name			as string
+	name			as zstring ptr
 	id				as short					'' unique id
 	next			as FBDEFARG ptr
 end type
@@ -637,6 +638,7 @@ enum FB_DEFTOK_TYPE
 	FB_DEFTOK_TYPE_ARG
 	FB_DEFTOK_TYPE_ARGSTR
 	FB_DEFTOK_TYPE_TEX
+	FB_DEFTOK_TYPE_TEXW
 end enum
 
 type FBDEFTOK
@@ -646,7 +648,8 @@ type FBDEFTOK
 	type			as FB_DEFTOK_TYPE
 
 	union
-		text		as string
+		text		as zstring ptr
+		textw		as wstring ptr
 		argnum		as integer
 	end union
 
@@ -659,7 +662,8 @@ type FBS_DEFINE
 
 	union
 		tokhead			as FBDEFTOK ptr			'' only if args > 0
-		text			as string				'' //           = 0
+		text			as zstring ptr			'' //           = 0
+		textw			as wstring ptr
 	end union
 
 	isargless		as integer
@@ -801,7 +805,7 @@ type FBS_VAR
 	suffix			as integer					'' QB quirk..
 	initialized		as integer
 	union
-		inittext	as string
+		inittext	as zstring ptr
 		inittextw	as wstring ptr
 	end union
 	emited			as integer
@@ -820,8 +824,8 @@ type FBSYMBOL
 	ptrcnt 			as integer
 	alloctype		as FBALLOCTYPE_ENUM			'' STATIC, DYNAMIC, SHARED, ARG, ..
 
-	name			as string					'' original name, shared by hash tb
-	alias			as string
+	name			as zstring ptr				'' original name, shared by hash tb
+	alias			as zstring ptr
 	hashitem		as HASHITEM ptr
 	hashindex		as uinteger
 
@@ -861,11 +865,21 @@ type FBCMPSTMT
 end type
 
 ''
+enum FBFILE_FORMAT
+	FBFILE_FORMAT_ASCII
+	FBFILE_FORMAT_UTF8
+	FBFILE_FORMAT_UTF16LE
+	FBFILE_FORMAT_UTF16BE
+	FBFILE_FORMAT_UTF32LE
+	FBFILE_FORMAT_UTF32BE
+end enum
+
 type FBFILE
 	num				as integer
 	name			as zstring * FB_MAXPATHLEN+1
 	incfile			as integer
 	ismain			as integer
+	format			as FBFILE_FORMAT
 end type
 
 type FBTARGET_WCHAR

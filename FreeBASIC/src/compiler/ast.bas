@@ -119,6 +119,7 @@ declare function 	astLoadFIELD	( byval n as ASTNODE ptr ) as IRVREG ptr
 		-2147483648LL, _                        '' int
 		0LL, _                                  '' uint
 		-2147483648LL, _                        '' enum
+		0LL, _                                  '' bitfield
 		-9223372036854775808LL, _               '' longint
 		0LL _                                   '' ulongint
 	}
@@ -134,6 +135,7 @@ declare function 	astLoadFIELD	( byval n as ASTNODE ptr ) as IRVREG ptr
 		2147483647LL, _                         '' int
 		4294967295LL, _                         '' uint
 		2147483647LL, _                         '' enum
+		4294967295LL, _                         '' bitfield
 		9223372036854775807LL, _                '' longint
 		18446744073709551615LL _                '' ulongint
 	}
@@ -242,7 +244,9 @@ end sub
 
 ''::::
 private sub hProcFlush( byval p as ASTPROCNODE ptr, _
-						byval doemit as integer ) static
+						byval doemit as integer _
+					  ) static
+
     dim as ASTNODE ptr n, nxt
     dim as FBSYMBOLTB ptr oldtb
 
@@ -296,6 +300,39 @@ private sub hProcFlush( byval p as ASTPROCNODE ptr, _
 end sub
 
 ''::::
+private function hModLevelIsEmpty( byval p as ASTPROCNODE ptr ) as integer
+    dim as ASTNODE ptr n, nxt
+
+	'' an empty module-level proc will have just the
+	'' initial and final labels as nodes and nothing else
+	'' (note: when debugging it will be emmited even if empty)
+
+	n = p->head
+	if( n = NULL ) then
+		return TRUE
+	end if
+	if( n->class <> AST_NODECLASS_LABEL ) then
+		return FALSE
+	end if
+
+	n = n->next
+	if( n = NULL ) then
+		return TRUE
+	end if
+	if( n->class <> AST_NODECLASS_LABEL ) then
+		return FALSE
+	end if
+
+	n = n->next
+	if( n = NULL ) then
+		return TRUE
+	end if
+
+	return FALSE
+
+end function
+
+''::::
 private sub hProcFlushAll( ) static
     dim as ASTPROCNODE ptr p
     dim as integer doemit
@@ -314,6 +351,10 @@ private sub hProcFlushAll( ) static
 			'' never called? skip
 			if( not symbGetProcIsCalled( p->proc ) ) then
 				doemit = FALSE
+
+			'' module-level?
+			elseif( symbIsModLevelProc( p->proc ) ) then
+				doemit = (hModLevelIsEmpty( p ) = FALSE)
 			end if
 		end if
 
@@ -496,7 +537,7 @@ function astUpdStrConcat( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	'' convert "string + string" to "StrConcat( string, string )"
 	if( n->class = AST_NODECLASS_BOP ) then
-		if( n->bop.op = IR_OP_ADD ) then
+		if( n->op.op = IR_OP_ADD ) then
 			l = n->l
 			r = n->r
 			if( n->dtype <> IR_DATATYPE_WCHAR ) then
@@ -538,7 +579,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 	if( n->class <> AST_NODECLASS_BOP ) then
 		'' UOP? check if it's a NOT
 		if( n->class = AST_NODECLASS_UOP ) then
-			if( n->bop.op = IR_OP_NOT ) then
+			if( n->op.op = IR_OP_NOT ) then
 				l = astUpdComp2Branch( n->l, label, isinverse = FALSE )
 				astDel( n )
 				return l
@@ -622,7 +663,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 	end if
 
 	''
-	op 	  = n->bop.op
+	op 	  = n->op.op
 
 	'' relational operator?
 	select case as const op
@@ -630,11 +671,11 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 
 		'' invert it
 		if( not isinverse ) then
-			n->bop.op = irGetInverseLogOp( op )
+			n->op.op = irGetInverseLogOp( op )
 		end if
 
 		'' tell IR that the destine label is already set
-		n->bop.ex = label
+		n->op.ex = label
 
 		return n
 
@@ -787,99 +828,6 @@ function astFuncPtrCheck( byval pdtype as integer, _
 	end select
 
 end function
-
-#if 0
-'':::::
-sub astDump ( byval p as ASTNODE ptr, _
-			  byval n as ASTNODE ptr, _
-			  byval isleft as integer, _
-			  byval ln as integer, _
-			  byval cn as integer )
-
-   dim as string v
-   dim as integer c
-
-	v = ""
-	select case n->class
-	case AST_NODECLASS_BOP
-		select case n->bop.op
-		case IR_OP_ADD
-			v = "+"
-		case IR_OP_SUB
-			v = "-"
-		case IR_OP_MUL
-			v = "*"
-		case IR_OP_DIV
-			v = "/"
-		case IR_OP_INTDIV
-			v = "\\"
-		case IR_OP_AND
-			v = "&"
-		case IR_OP_OR
-			v = "|"
-		case IR_OP_XOR
-			v = "^"
-		case IR_OP_SHL
-			v = "<"
-		case IR_OP_SHR
-			v = ">"
-		end select
-		v = "(" + v + ")"
-
-	case AST_NODECLASS_UOP
-		select case n->uop.op
-		case IR_OP_NEG
-			v = "-"
-		case IR_OP_NOT
-			v = "!"
-		end select
-		v = "(" + v + ")"
-
-	case AST_NODECLASS_VAR
-		v = "[" + mid$( symbGetName( n->var.sym ), 2 ) + "]"
-	case AST_NODECLASS_CONST
-		v = "<" + str$( n->con.val.int ) + ">"
-	case AST_NODECLASS_CONV
-		v = "{" + str$( n->dtype ) + "}"
-'	case AST_NODECLASS_IDX
-'		c = n->idx.sym
-'		v = "{" + rtrim$( mid$( symbGetVarName( c->idx.sym ), 2 ) ) + "}"
-
-'	case AST_NODECLASS_FUNCT
-'		v = rtrim$( mid$( symbGetProcName( n->proc.s ), 2 ) ) + "()"
-
-'	case AST_NODECLASS_PARAM
-'		v = "(" + ltrim$( str$( n->l ) ) + ")"
-	end select
-
-	if( len( v ) > 0 and ln <= 50 ) then
-
-		'v = str$( n ) + v
-		if( p <> NULL ) then
-        	if( isleft ) then
-        		v = v + "/"
-        	else
-        		v = "\\" + v
-        	end if
-		end if
-
-		c = cn - (len(v)\2)
-		if( c > 1 and c + len(v)\2 <= 80 ) then
-			locate ln, c
-			print v;
-		end if
-	end if
-
-	if( n->l <> NULL ) then
-		astDump( n, n->l, TRUE, ln+2, cn-4 )
-	end if
-
-	if( n->r <> NULL ) then
-		astDump( n, n->r, FALSE, ln+2, cn+4 )
-	end if
-
-end sub
-#endif
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' tree cloning and deletion
@@ -1066,24 +1014,24 @@ const DBL_EPSILON# = 2.2204460492503131e-016
 		end if
 
 	case AST_NODECLASS_BOP
-		if( l->bop.op <> r->bop.op ) then
+		if( l->op.op <> r->op.op ) then
 			exit function
 		end if
 
-		if( l->bop.allocres <> r->bop.allocres ) then
+		if( l->op.allocres <> r->op.allocres ) then
 			exit function
 		end if
 
-		if( l->bop.ex <> r->bop.ex ) then
+		if( l->op.ex <> r->op.ex ) then
 			exit function
 		end if
 
 	case AST_NODECLASS_UOP
-		if( l->uop.op <> r->uop.op ) then
+		if( l->op.op <> r->op.op ) then
 			exit function
 		end if
 
-		if( l->uop.allocres <> r->uop.allocres ) then
+		if( l->op.allocres <> r->op.allocres ) then
 			exit function
 		end if
 
@@ -1092,7 +1040,7 @@ const DBL_EPSILON# = 2.2204460492503131e-016
 			exit function
 		end if
 
-		if( l->uop.op <> r->uop.op ) then
+		if( l->op.op <> r->op.op ) then
 			exit function
 		end if
 

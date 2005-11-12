@@ -294,7 +294,7 @@ end function
 
 '':::::
 function rtlMathLen( byval expr as ASTNODE ptr, _
-					 byval checkstrings as integer = TRUE ) as ASTNODE ptr static
+					 byval islen as integer = TRUE ) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as integer dtype, lgt
@@ -304,7 +304,7 @@ function rtlMathLen( byval expr as ASTNODE ptr, _
 	dtype = astGetDataType( expr )
 
 	'' LEN()?
-	if( checkstrings ) then
+	if( islen ) then
 		'' dyn-len or zstring?
 		select case dtype
 		case IR_DATATYPE_STRING, IR_DATATYPE_CHAR
@@ -342,7 +342,7 @@ function rtlMathLen( byval expr as ASTNODE ptr, _
 	lgt = rtlCalcExprLen( expr, FALSE )
 
 	'' handle fix-len strings (evaluated at compile-time)
-	if( checkstrings ) then
+	if( islen ) then
 		if( dtype = IR_DATATYPE_FIXSTR ) then
 			if( lgt > 0 ) then
 				lgt -= 1						'' less the null-term

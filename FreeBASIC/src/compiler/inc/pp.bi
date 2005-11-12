@@ -34,4 +34,6 @@ declare function 	ppCondEndIf 			( ) as integer
 
 declare function 	ppReadLiteral			( ) as zstring ptr
 
+declare function 	ppReadLiteralW			( ) as wstring ptr
+
 #endif ''__PP_BI__

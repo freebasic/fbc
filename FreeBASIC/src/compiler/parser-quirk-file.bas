@@ -441,33 +441,36 @@ private function hFileClose( byval isfunc as integer ) as ASTNODE ptr
 end function
 
 '':::::
+'' Put			= PUT '#' Expression ',' Expression? ',' Expression{str|int|float|array} (',' Expression)?
 private function hFilePut( byval isfunc as integer ) as ASTNODE ptr
-	dim as ASTNODE ptr filenum, expr1, expr2
+	dim as ASTNODE ptr fileexpr, posexpr, srcexpr, elmexpr
 	dim as integer isarray
 	dim as FBSYMBOL ptr s
 
 	function = NULL
 
 	'' '#'?
-	if( lexGetToken = CHAR_SHARP ) then
-		lexSkipToken
+	if( lexGetToken( ) = CHAR_SHARP ) then
+		lexSkipToken( )
 	end if
 
-	hMatchExpression( filenum )
+	hMatchExpression( fileexpr )
 
+	'' ',' offset
 	hMatchCOMMA( )
 
-	if( not cExpression( expr1 ) ) then
-		expr1 = NULL
+	if( not cExpression( posexpr ) ) then
+		posexpr = NULL
 	end if
 
+	'' ',' source
 	hMatchCOMMA( )
 
-	hMatchExpression( expr2 )
+	hMatchExpression( srcexpr )
 
 	'' don't allow literal values, due the way "byref as
 	'' any" args work (ie, the VB-way: literals are passed by value)
-	if( astIsCONST( expr2 ) or astIsOFFSET( expr2 ) ) then
+	if( astIsCONST( srcexpr ) or astIsOFFSET( srcexpr ) ) then
 		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
 		exit function
 	end if
@@ -475,7 +478,7 @@ private function hFilePut( byval isfunc as integer ) as ASTNODE ptr
     isarray = FALSE
     if( lexGetToken( ) = CHAR_LPRNT ) then
     	if( lexGetLookAhead(1) = CHAR_RPRNT ) then
-    		s = astGetSymbol( expr2 )
+    		s = astGetSymbol( srcexpr )
     		if( s <> NULL ) then
     			isarray = symbIsArray( s )
     			if( isarray ) then
@@ -491,46 +494,64 @@ private function hFilePut( byval isfunc as integer ) as ASTNODE ptr
     	end if
     end if
 
-	if( not isarray ) then
-		function = rtlFilePut( filenum, expr1, expr2, isfunc )
+	'' (',' elements)?
+	if( hMatch( CHAR_COMMA ) ) then
+		if( isarray ) then
+			hReportError( FB_ERRMSG_SYNTAXERROR )
+			exit function
+		end if
+
+		if( not cExpression( elmexpr ) ) then
+			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
+			exit function
+		end if
 	else
-		function = rtlFilePutArray( filenum, expr1, expr2, isfunc )
+		elmexpr = NULL
+	end if
+
+	if( not isarray ) then
+		function = rtlFilePut( fileexpr, posexpr, srcexpr, elmexpr, isfunc )
+	else
+		function = rtlFilePutArray( fileexpr, posexpr, srcexpr, isfunc )
 	end if
 
 end function
 
 '':::::
+'' Get			= GET '#' Expression ',' Expression? ',' Variable{str|int|float|array} (',' Expression)?
 private function hFileGet( byval isfunc as integer ) as ASTNODE ptr
-	dim as ASTNODE ptr filenum, expr1, expr2
+	dim as ASTNODE ptr fileexpr, posexpr, dstexpr, elmexpr
 	dim as integer isarray
 	dim as FBSYMBOL ptr s
 
 	function = NULL
 
 	'' '#'?
-	if( lexGetToken = CHAR_SHARP ) then
-		lexSkipToken
+	if( lexGetToken( ) = CHAR_SHARP ) then
+		lexSkipToken( )
 	end if
 
-	hMatchExpression( filenum )
+	hMatchExpression( fileexpr )
 
+	'' ',' offset
 	hMatchCOMMA( )
 
-	if( not cExpression( expr1 ) ) then
-		expr1 = NULL
+	if( not cExpression( posexpr ) ) then
+		posexpr = NULL
 	end if
 
+	'' ',' destine
 	hMatchCOMMA( )
 
-	if( not cVarOrDeref( expr2 ) ) then
-		hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
+	if( not cVarOrDeref( dstexpr ) ) then
+		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		exit function
 	end if
 
     isarray = FALSE
     if( lexGetToken( ) = CHAR_LPRNT ) then
     	if( lexGetLookAhead(1) = CHAR_RPRNT ) then
-    		s = astGetSymbol( expr2 )
+    		s = astGetSymbol( dstexpr )
     		if( s <> NULL ) then
     			isarray = symbIsArray( s )
     			if( isarray ) then
@@ -546,10 +567,25 @@ private function hFileGet( byval isfunc as integer ) as ASTNODE ptr
     	end if
     end if
 
-	if( not isarray ) then
-		function = rtlFileGet( filenum, expr1, expr2, isfunc )
+	'' (',' elements)?
+	if( hMatch( CHAR_COMMA ) ) then
+		if( isarray ) then
+			hReportError( FB_ERRMSG_SYNTAXERROR )
+			exit function
+		end if
+
+		if( not cExpression( elmexpr ) ) then
+			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
+			exit function
+		end if
 	else
-		function = rtlFileGetArray( filenum, expr1, expr2, isfunc )
+		elmexpr = NULL
+	end if
+
+	if( not isarray ) then
+		function = rtlFileGet( fileexpr, posexpr, dstexpr, elmexpr, isfunc )
+	else
+		function = rtlFileGetArray( fileexpr, posexpr, dstexpr, isfunc )
 	end if
 
 end function
@@ -849,8 +885,6 @@ end function
 ''                     (',' Expression{int}? (',' Expression{str}? (',' Expression{str})? )? )?
 ''				  |	   CLOSE ('#'? Expression)*
 ''				  |	   SEEK '#'? Expression ',' Expression
-''				  |	   PUT '#' Expression ',' Expression? ',' Expression{str|int|float|array}
-''				  |	   GET '#' Expression ',' Expression? ',' Variable{str|int|float|array}
 ''				  |    (LOCK|UNLOCK) '#'? Expression, Expression (TO Expression)? .
 function cFileStmt as integer
     dim as ASTNODE ptr filenum, expr1, expr2
@@ -905,7 +939,7 @@ function cFileStmt as integer
 			exit function
 		end if
 
-		lexSkipToken
+		lexSkipToken( )
 
 		function = (hFileGet( FALSE ) <> NULL)
 

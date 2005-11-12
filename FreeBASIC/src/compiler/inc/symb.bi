@@ -125,6 +125,13 @@ declare function 	symbAddDefine			( byval symbol as zstring ptr, _
 											  byval proc as function( ) as string = NULL, _
                         					  byval flags as integer = 0 ) as FBSYMBOL ptr
 
+declare function 	symbAddDefineW			( byval symbol as zstring ptr, _
+						 					  byval text as wstring ptr, _
+						 					  byval lgt as integer, _
+						 					  byval isargless as integer = FALSE, _
+						 					  byval proc as function( ) as string = NULL, _
+                         					  byval flags as integer = 0 ) as FBSYMBOL ptr
+
 declare function 	symbAddDefineMacro		( byval symbol as zstring ptr, _
 							 				  byval tokhead as FBDEFTOK ptr, _
 							 				  byval args as integer, _
@@ -337,7 +344,7 @@ declare function 	symbCalcLen				( byval typ as integer, _
 declare function 	symbAllocFloatConst		( byval value as double, _
 											  byval typ as integer ) as FBSYMBOL ptr
 
-declare function 	symbAllocStrConst		( byval sname as string, _
+declare function 	symbAllocStrConst		( byval sname as zstring ptr, _
 											  byval lgt as integer ) as FBSYMBOL ptr
 
 declare function 	symbAllocWstrConst		( byval sname as wstring ptr, _
@@ -427,6 +434,8 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 
 #define symbGetDefineText(d) d->def.text
 
+#define symbGetDefineTextW(d) d->def.textw
+
 #define symbGetDefineHeadToken(d) d->def.tokhead
 
 #define symbGetDefTokNext(t) t->next
@@ -436,6 +445,8 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 #define symbSetDefTokType(t,_typ) t->type = _typ
 
 #define symbGetDefTokText(t) t->text
+
+#define symbGetDefTokTextW(t) t->textw
 
 #define symbGetDefTokArgNum(t) t->argnum
 
@@ -622,6 +633,8 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 #define symbIsJumpTb(s) ((s->alloctype and FB_ALLOCTYPE_JUMPTB) > 0)
 
 #define symbIsMainProc(s) ((s->alloctype and FB_ALLOCTYPE_MAINPROC) > 0)
+
+#define symbIsModLevelProc(s) ((s->alloctype and FB_ALLOCTYPE_MODLEVELPROC) > 0)
 
 #define symbIsConstructor(s) ((s->alloctype and FB_ALLOCTYPE_CONSTRUCTOR) > 0)
 

@@ -78,7 +78,6 @@ function cLiteral( byref litexpr as ASTNODE ptr ) as integer
 	case FB_TKCLASS_NUMLITERAL
   		typ = lexGetType( )
   		select case as const typ
-
   		case IR_DATATYPE_LONGINT
 			litexpr = astNewCONST64( vallng( *lexGetText( ) ), typ )
 
@@ -99,8 +98,15 @@ function cLiteral( byref litexpr as ASTNODE ptr ) as integer
   		function = TRUE
 
   	case FB_TKCLASS_STRLITERAL
-		s = symbAllocStrConst( *lexGetText( ), lexGetTextLen( ) )
-		litexpr = astNewVAR( s, 0, IR_DATATYPE_CHAR )
+  		typ = lexGetType( )
+
+  		if( typ <> IR_DATATYPE_WCHAR ) then
+			s = symbAllocStrConst( *lexGetText( ), lexGetTextLen( ) )
+  		else
+			s = symbAllocWstrConst( *lexGetTextW( ), lexGetTextLen( ) )
+		end if
+
+		litexpr = astNewVAR( s, 0, typ )
 
 		lexSkipToken( )
         function = TRUE

@@ -199,12 +199,12 @@ type EMIT_SOPNODE
 end type
 
 type EMIT_LITNODE
-	text		as string
+	text		as zstring ptr
 end type
 
 type EMIT_JTBNODE
 	dtype		as integer
-	text		as string
+	text		as zstring ptr
 end type
 
 type EMIT_MEMNODE
@@ -248,9 +248,9 @@ type EMIT_BRCCB as sub( byval vreg as IRVREG ptr, byval sym as FBSYMBOL ptr, byv
 
 type EMIT_SOPCB as sub( byval sym as FBSYMBOL ptr )
 
-type EMIT_LITCB as sub( byval text as string )
+type EMIT_LITCB as sub( byval text as zstring ptr )
 
-type EMIT_JTBCB as sub( byval dtype as integer, byval text as string )
+type EMIT_JTBCB as sub( byval dtype as integer, byval text as zstring ptr )
 
 type EMIT_MEMCB as sub( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr, _
 						byval bytes as integer )
@@ -327,22 +327,22 @@ declare function 	emitIsRegPreserved 	( byval dtype as integer, _
 
 declare sub			emitGetResultReg 	( byval dtype as integer, _
 										  byval dclass as integer, _
-										  r1 as integer, _
-										  r2 as integer )
+										  byref r1 as integer, _
+										  byref r2 as integer )
 
 declare function 	emitGetFreePreservedReg( byval dtype as integer, _
 											 byval dclass as integer ) as integer
 
 declare function 	emitAllocLocal		( byval proc as FBSYMBOL ptr, _
 										  byval lgt as integer, _
-										  ofs as integer ) as zstring ptr
+										  byref ofs as integer ) as zstring ptr
 
 declare sub 		emitFreeLocal		( byval proc as FBSYMBOL ptr, _
 										  byval lgt as integer )
 
 declare function 	emitAllocArg		( byval proc as FBSYMBOL ptr, _
 										  byval lgt as integer, _
-										  ofs as integer ) as zstring ptr
+										  byref ofs as integer ) as zstring ptr
 
 declare sub 		emitFreeArg			( byval proc as FBSYMBOL ptr, _
 										  byval lgt as integer )
@@ -355,14 +355,14 @@ declare sub 		emitPROCFOOTER		( byval proc as FBSYMBOL ptr, _
 										  byval initlabel as FBSYMBOL ptr, _
 										  byval exitlabel as FBSYMBOL ptr )
 
-declare sub 		emitASM				( byval text as string )
+declare sub 		emitASM				( byval text as zstring ptr )
 
-declare sub 		emitCOMMENT			( byval text as string )
+declare sub 		emitCOMMENT			( byval text as zstring ptr )
 
-declare sub 		emitLIT				( byval text as string )
+declare sub 		emitLIT				( byval text as zstring ptr )
 
 declare sub 		emitJMPTB			( byval dtype as integer, _
-										  byval text as string )
+										  byval text as zstring ptr )
 
 declare sub 		emitALIGN			( byval bytes as integer )
 
@@ -526,11 +526,11 @@ declare sub 		emitMEMCLEAR		( byval dvreg as IRVREG ptr, _
 
 declare sub 		emitSECTION			( byval section as integer )
 
-declare sub 		emitDATALABEL		( byval label as string )
+declare sub 		emitDATALABEL		( byval label as zstring ptr )
 
-declare sub 		emitDATABEGIN		( byval lname as string )
+declare sub 		emitDATABEGIN		( byval lname as zstring ptr )
 
-declare sub 		emitDATA			( byval litext as string, _
+declare sub 		emitDATA			( byval litext as zstring ptr, _
 										  byval litlen as integer, _
 										  byval dtype as integer )
 
@@ -538,7 +538,7 @@ declare sub 		emitDATAW			( byval litext as wstring ptr, _
 										  byval litlen as integer, _
 										  byval dtype as integer )
 
-declare sub 		emitDATAOFS			( byval sname as string )
+declare sub 		emitDATAOFS			( byval sname as zstring ptr )
 
 declare sub 		emitDATAEND			( )
 
@@ -555,11 +555,11 @@ declare sub 		emitVARINIf			( byval dtype as integer, _
 declare sub 		emitVARINI64		( byval dtype as integer, _
 										  byval value as longint )
 
-declare sub 		emitVARINIOFS		( byval sname as string )
+declare sub 		emitVARINIOFS		( byval sname as zstring ptr )
 
-declare sub 		emitVARINISTR		( byval s as string )
+declare sub 		emitVARINISTR		( byval s as zstring ptr )
 
-declare sub 		emitVARINIWSTR		( byval s as string )
+declare sub 		emitVARINIWSTR		( byval s as zstring ptr )
 
 declare sub 		emitVARINIPAD		( byval bytes as integer )
 

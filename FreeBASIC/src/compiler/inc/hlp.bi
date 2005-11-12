@@ -36,7 +36,7 @@ declare	sub 		hlpInit					( )
 
 declare	sub 		hlpEnd					( )
 
-declare	function 	hGetDefType				( byval symbol as string ) as integer
+declare	function 	hGetDefType				( byval symbol as zstring ptr ) as integer
 
 declare	sub 		hSetDefType				( byval ichar as integer, _
 											  byval echar as integer, _
@@ -48,47 +48,33 @@ declare function 	hMakeTmpStr 			( byval islabel as integer = TRUE ) as zstring 
 
 declare function 	hFBrelop2IRrelop		( byval op as integer ) as integer
 
-declare function 	hFileExists				( byval filename as string ) as integer
+declare function 	hFileExists				( byval filename as zstring ptr ) as integer
 
-declare function 	hEscapeStr				( byval text as string ) as zstring ptr
+declare sub 		hClearName				( byval src as zstring ptr )
 
-declare function 	hEscapeWstr				( byval text as wstring ptr ) as zstring ptr
+declare sub 		hUcase					( byval src as zstring ptr, _
+											  byval dst as zstring ptr )
 
-declare function 	hUnescapeStr			( byval text as string ) as string
-
-declare function 	hEscapeToChar			( byval text as string ) as zstring ptr
-
-declare function 	hEscapeToCharW			( byval text as wstring ptr ) as wstring ptr
-
-declare sub 		hClearName				( byval src as string )
-
-declare sub 		hUcase					( byval src as string, _
-											  byval dst as string )
-
-declare function	hReplace				( byval text as string, _
-											  byval oldtext as string, _
-											  byval newtext as string ) as string
-
-declare function 	hCreateProcAlias		( byval symbol as string, _
+declare function 	hCreateProcAlias		( byval symbol as zstring ptr, _
 											  byval argslen as integer, _
 						   					  byval mode as integer ) as zstring ptr
 
 #ifdef FBSYMBOL
-declare function 	hCreateOvlProcAlias		( byval symbol as string, _
+declare function 	hCreateOvlProcAlias		( byval symbol as zstring ptr, _
 					    	  				  byval argc as integer, _
 					    	  				  byval arg as FBSYMBOL ptr ) as zstring ptr
 #endif
 
-declare function 	hCreateDataAlias		( byval symbol as string, _
+declare function 	hCreateDataAlias		( byval symbol as zstring ptr, _
 											  byval isimport as integer ) as string
 
-declare function 	hCreateName 			( byval symbol as string, _
+declare function 	hCreateName 			( byval symbol as zstring ptr, _
 											  byval typ as integer = INVALID, _
 											  byval preservecase as integer = FALSE, _
 								      		  byval addunderscore as integer = TRUE, _
 								      		  byval clearname as integer  = TRUE) as zstring ptr
 
-declare function 	hStripUnderscore		( byval symbol as string ) as string
+declare function 	hStripUnderscore		( byval symbol as zstring ptr ) as string
 
 declare function 	hStripExt				( byval filename as string ) as string
 
@@ -96,7 +82,7 @@ declare function 	hStripPath				( byval filename as string ) as string
 
 declare function 	hStripFilename 			( byval filename as string ) as string
 
-declare function 	hGetFileExt				( fname as string ) as string
+declare function 	hGetFileExt				( byref fname as string ) as string
 
 declare function 	hRevertSlash			( byval s as string ) as string
 
@@ -107,33 +93,9 @@ declare function 	hJumpTbAllocSym			( ) as any ptr
 declare function 	hFloatToStr				( byval value as double, _
 					  						  byref typ as integer ) as string
 
-declare function 	hGetWstrNull			( ) as zstring ptr
+declare function 	hCheckFileFormat		( byval f as integer ) as integer
 
 
-'':::::
-#define ZEROSTRDESC(s)	                                _
-	cptr(integer ptr, @s)[0] = NULL 					:_
-	cptr(integer ptr, @s)[1] = NULL						:_
-	cptr(integer ptr, @s)[2] = NULL
-
-'':::::
-#define ALLOC_TEMP_STR(str_ptr, old_len, new_len) 				_
-	if( ((old_len) < (new_len)) or ((str_ptr) = NULL) ) then    :_
-		old_len = (new_len)                                     :_
-		if( (str_ptr) <> NULL ) then                            :_
-			deallocate( str_ptr )                               :_
-		end if                                                  :_
-		str_ptr = allocate( (new_len)+1 )    					:_
-	end if
-
-'':::::
-#define ALLOC_TEMP_WSTR(str_ptr, old_len, new_len) 				_
-	if( ((old_len) < (new_len)) or ((str_ptr) = NULL) ) then    :_
-		old_len = (new_len)                                     :_
-		if( (str_ptr) <> NULL ) then                            :_
-			deallocate( str_ptr )                               :_
-		end if                                                  :_
-		str_ptr = allocate( ((new_len)+1) * irGetDataSize( IR_DATATYPE_WCHAR ) )    :_
-	end if
+#include once "inc\hlp-str.bi"
 
 #endif ''__HELP_BI__

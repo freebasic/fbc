@@ -73,7 +73,7 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 	'' COMMON, public or dynamic? use the array name for the descriptor,
 	'' as only it will be allocated or seen by other modules
 	if( (iscommon) or (ispubext and isdynamic) ) then
-		sname = symbGetName( s )
+		sname = *symbGetName( s )
 
 	'' otherwise, create a temporary name..
 	else
@@ -206,7 +206,7 @@ private sub hSetupVar( byval s as FBSYMBOL ptr, _
 			   		   byval alloctype as integer ) static
 
 	if( typ = INVALID ) then
-		typ = hGetDefType( *symbol )
+		typ = hGetDefType( symbol )
 	end if
 
 	''
@@ -303,7 +303,7 @@ function symbAddVarEx( byval symbol as zstring ptr, _
 
 			    '' not inside a SCOPE block?
 			    if( env.scope = 0 ) then
-			    	aname = hCreateName( *symbol, suffix, preservecase, _
+			    	aname = hCreateName( symbol, suffix, preservecase, _
 			    					  	 TRUE, clearname )
 
 				'' inside a SCOPE..
@@ -517,10 +517,12 @@ sub symbDelVar( byval s as FBSYMBOL ptr, _
     	s->var.initialized = FALSE
     	'' not a wchar literal?
     	if( s->typ <> IR_DATATYPE_WCHAR ) then
-    		s->var.inittext = ""
+    		if( s->var.inittext <> NULL ) then
+    			ZstrFree( s->var.inittext )
+    		end if
     	else
     		if( s->var.inittextw <> NULL ) then
-    			deallocate( s->var.inittextw )
+    			WstrFree( s->var.inittextw )
     		end if
     	end if
     end if
@@ -595,7 +597,7 @@ function symbGetVarDescName( byval s as FBSYMBOL ptr ) as string static
 
 	d = s->var.array.desc
 	if( d <> NULL ) then
-		function = d->alias
+		function = *symbGetName( d )
 	else
 		function = ""
 	end if

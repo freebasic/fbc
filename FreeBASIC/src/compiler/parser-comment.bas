@@ -97,7 +97,7 @@ function cDirective as integer static
 		if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
 			lexEatToken( incfile )
 			if( env.opt.escapestr ) then
-				incfile = hUnescapeStr( incfile )
+				incfile = *hUnescapeStr( incfile )
 			end if
 
 		else

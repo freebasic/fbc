@@ -44,7 +44,7 @@ function astNewOFFSET( byval l as ASTNODE ptr ) as ASTNODE ptr static
 		return NULL
 	end if
 
-	n->uop.op = INVALID
+	n->op.op  = INVALID
 	n->l   	  = l
 	n->sym	  = l->sym
 
@@ -106,7 +106,7 @@ function astNewADDR( byval op as integer, _
 		select case l->class
 		case AST_NODECLASS_ADDR
 			'' convert @* to nothing
-			if( l->uop.op = IR_OP_DEREF ) then
+			if( l->op.op = IR_OP_DEREF ) then
 				delchild = TRUE
 				dtype -= IR_DATATYPE_POINTER
 			end if
@@ -158,7 +158,7 @@ function astNewADDR( byval op as integer, _
 		'' convert *@ to nothing
 		select case l->class
 		case AST_NODECLASS_ADDR
-			if( l->uop.op = IR_OP_ADDROF ) then
+			if( l->op.op = IR_OP_ADDROF ) then
 				delchild = TRUE
 			end if
 
@@ -182,7 +182,7 @@ function astNewADDR( byval op as integer, _
 		exit function
 	end if
 
-	n->uop.op = op
+	n->op.op = op
 	n->l      = l
 
 	function = n
@@ -208,7 +208,7 @@ function astLoadADDR( byval n as ASTNODE ptr ) as IRVREG ptr
 			(irGetVRDataSize( v1 ) <> FB_POINTERSIZE) ) then
 
 			vr = irAllocVREG( IR_DATATYPE_POINTER )
-			irEmitADDR( n->uop.op, v1, vr )
+			irEmitADDR( n->op.op, v1, vr )
 
 		else
 			vr = v1

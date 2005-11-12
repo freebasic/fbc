@@ -52,7 +52,7 @@ function astNewPTR( byval ofs as integer, _
 		'' convert *@ to nothing
 		select case l->class
 		case AST_NODECLASS_ADDR
-			if( l->uop.op = IR_OP_ADDROF ) then
+			if( l->op.op = IR_OP_ADDROF ) then
 				delchild = TRUE
 			end if
 		case AST_NODECLASS_OFFSET

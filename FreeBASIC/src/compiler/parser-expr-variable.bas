@@ -875,7 +875,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
     '' no suffix? lookup the default type (last DEF###) in the
     '' case symbol could not be found..
     if( typ = INVALID ) then
-    	deftyp = hGetDefType( *id )
+    	deftyp = hGetDefType( id )
     else
     	deftyp = INVALID
     end if
@@ -898,7 +898,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 			'' add undeclared var
 			if( not env.opt.explicit ) then
 				if( typ = INVALID ) then
-					typ = hGetDefType( *id )
+					typ = hGetDefType( id )
 				end if
 
 				sym = hVarAddUndecl( *id, typ )

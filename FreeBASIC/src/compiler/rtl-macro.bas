@@ -200,7 +200,7 @@ private sub hAddIntrinsicMacros( )
 	dim as integer i, args, dbgonly, typ, argnum
 	dim as FBDEFARG ptr arghead, lastarg, arg
 	dim as FBDEFTOK ptr tok, tokhead
-	dim as string mname, aname
+	dim as string mname, aname, text
 
 	restore macrodata
 	do
@@ -240,8 +240,10 @@ private sub hAddIntrinsicMacros( )
     		select case typ
     		case FB_DEFTOK_TYPE_ARG, FB_DEFTOK_TYPE_ARGSTR
     			read symbGetDefTokArgNum( tok )
+
     		case FB_DEFTOK_TYPE_TEX
-    			read symbGetDefTokText( tok )
+    			read text
+    			ZstrAssign( @symbGetDefTokText( tok ), text )
     		end select
 
 			if( tokhead = NULL ) then

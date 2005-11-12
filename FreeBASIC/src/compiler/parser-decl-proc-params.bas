@@ -209,7 +209,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 
     ''
     if( atype = INVALID ) then
-        atype = hGetDefType( *pid )
+        atype = hGetDefType( pid )
         asuffix = atype
     end if
 

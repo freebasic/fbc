@@ -40,7 +40,7 @@ private function hStrLiteralConcat( byval l as ASTNODE ptr, _
 	rs = astGetSymbol( r )
 
 	'' new len = both strings' len less the 2 null-chars
-	s = symbAllocStrConst( symbGetVarText( ls ) + symbGetVarText( rs ), _
+	s = symbAllocStrConst( *symbGetVarText( ls ) + *symbGetVarText( rs ), _
 						   symbGetStrLen( ls ) - 1 + symbGetStrLen( rs ) - 1 )
 
 	function = astNewVAR( s, 0, IR_DATATYPE_CHAR )
@@ -62,11 +62,11 @@ private function hWstrLiteralConcat( byval l as ASTNODE ptr, _
 
 	if( symbGetType( ls ) <> IR_DATATYPE_WCHAR ) then
 		'' new len = both strings' len less the 2 null-chars
-		s = symbAllocWstrConst( wstr( symbGetVarText( ls ) ) + *symbGetVarTextW( rs ), _
+		s = symbAllocWstrConst( wstr( *symbGetVarText( ls ) ) + *symbGetVarTextW( rs ), _
 						    	symbGetStrLen( ls ) - 1 + symbGetWstrLen( rs ) - 1 )
 
 	elseif( symbGetType( rs ) <> IR_DATATYPE_WCHAR ) then
-		s = symbAllocWstrConst( *symbGetVarTextW( ls ) + wstr( symbGetVarText( rs ) ), _
+		s = symbAllocWstrConst( *symbGetVarTextW( ls ) + wstr( *symbGetVarText( rs ) ), _
 						    	symbGetWstrLen( ls ) - 1 + symbGetStrLen( rs ) - 1 )
 
 	else
@@ -824,11 +824,11 @@ function astNewBOP( byval op as integer, _
 
 					if( doconv ) then
 						r = astNewCONV( INVALID, dtype, subtype, r )
+						rdtype = dtype
+						rdclass = ldclass
 					end if
 				end select
 
-				rdtype = dtype
-				rdclass = ldclass
 			end if
 		end if
 
@@ -951,9 +951,9 @@ function astNewBOP( byval op as integer, _
 	'' fill it
 	n->l  		= l
 	n->r  		= r
-	n->bop.ex 	= ex
-	n->bop.op 	= op
-	n->bop.allocres	= allocres
+	n->op.ex 	= ex
+	n->op.op 	= op
+	n->op.allocres = allocres
 
 	function = n
 
@@ -965,7 +965,7 @@ function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
     dim as integer op
     dim as IRVREG ptr v1, v2, vr
 
-	op = n->bop.op
+	op = n->op.op
 	l  = n->l
 	r  = n->r
 
@@ -981,16 +981,16 @@ function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	if( ast.doemit ) then
 		'' result type can be different, with boolean operations on floats
-		if( n->bop.allocres ) then
+		if( n->op.allocres ) then
 			vr = irAllocVREG( n->dtype )
 		else
 			vr = NULL
 		end if
 
 		'' execute the operation
-		if( n->bop.ex <> NULL ) then
+		if( n->op.ex <> NULL ) then
 			'' hack! ex=label, vr being NULL 'll gen better code at IR..
-			irEmitBOPEx( op, v1, v2, NULL, n->bop.ex )
+			irEmitBOPEx( op, v1, v2, NULL, n->op.ex )
 		else
 			irEmitBOPEx( op, v1, v2, vr, NULL )
 		end if

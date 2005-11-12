@@ -328,7 +328,10 @@ sub edbgEmitLine( byval proc as FBSYMBOL ptr, _
 	ctx.lastline = lnum
 
 	'' emit current line
-	s = hMakeSTABN( STAB_TYPE_SLINE, 0, lnum, symbGetName( label ) + "-" + symbGetName( proc ) )
+	s = hMakeSTABN( STAB_TYPE_SLINE, _
+					0, _
+					lnum, _
+					*symbGetName( label ) + "-" + *symbGetName( proc ) )
 
 	emitLIT( byval s )
 
@@ -343,7 +346,10 @@ sub edbgEmitLineFlush( byval proc as FBSYMBOL ptr, _
 		exit sub
 	end if
 
-	hEmitSTABN( STAB_TYPE_SLINE, 0, lnum, symbGetName( label ) + "-" + symbGetName( proc ) )
+	hEmitSTABN( STAB_TYPE_SLINE, _
+				0, _
+				lnum, _
+				*symbGetName( label ) + "-" + *symbGetName( proc ) )
 
 end sub
 
@@ -473,7 +479,11 @@ sub edbgEmitProcHeader( byval proc as FBSYMBOL ptr ) static
 	'' main?
 	if( symbIsMainProc( proc ) ) then
 		'' main proc (the entry point)
-		hEmitSTABS( STAB_TYPE_MAIN, fbGetEntryPoint( ), 0, ctx.firstline, symbGetName( proc ) )
+		hEmitSTABS( STAB_TYPE_MAIN, _
+					fbGetEntryPoint( ), _
+					0, _
+					ctx.firstline, _
+					*symbGetName( proc ) )
 
     	'' set the entry line
     	hEmitSTABD( STAB_TYPE_SLINE, 0, ctx.firstline )
@@ -484,11 +494,11 @@ sub edbgEmitProcHeader( byval proc as FBSYMBOL ptr ) static
 
     	desc = fbGetEntryPoint( )
     else
-    	desc = symbGetOrgName( proc )
+    	desc = *symbGetOrgName( proc )
     end if
 
 	''
-	procname = symbGetName( proc )
+	procname = *symbGetName( proc )
 
 	if( symbIsPublic( proc ) ) then
 		desc += ":F"
@@ -574,7 +584,10 @@ private sub hDeclLocalVars( byval proc as FBSYMBOL ptr, _
 	loop
 
 	'' emit block (change the scope)
-	hEmitSTABN( STAB_TYPE_LBRAC, 0, 0, symbGetName( inilabel ) + "-" + symbGetName( proc ) )
+	hEmitSTABN( STAB_TYPE_LBRAC, _
+				0, _
+				0, _
+				*symbGetName( inilabel ) + "-" + *symbGetName( proc ) )
 
 	if( scopecnt > 0 ) then
 		'' for each scope..
@@ -588,7 +601,10 @@ private sub hDeclLocalVars( byval proc as FBSYMBOL ptr, _
     	loop
     end if
 
-	hEmitSTABN( STAB_TYPE_RBRAC, 0, 0, symbGetName( endlabel ) + "-" + symbGetName( proc ) )
+	hEmitSTABN( STAB_TYPE_RBRAC, _
+				0, _
+				0, _
+				*symbGetName( endlabel ) + "-" + *symbGetName( proc ) )
 
 end sub
 
@@ -604,7 +620,7 @@ sub edbgEmitProcFooter( byval proc as FBSYMBOL ptr, _
 	end if
 
 	''
-	procname = symbGetName( proc )
+	procname = *symbGetName( proc )
 
     ''
     hDeclLocalVars( proc, proc, initlabel, exitlabel )
@@ -836,13 +852,13 @@ private sub hDeclUDT( byval sym as FBSYMBOL ptr )
 	sym->udt.dbg.typenum = ctx.typecnt
 	ctx.typecnt += 1
 
-	desc = symbGetOrgName( sym )
+	desc = *symbGetOrgName( sym )
 
 	desc += ":T" + str( sym->udt.dbg.typenum ) + "=s" + str( symbGetUDTLen( sym ) )
 
 	e = symbGetUDTFirstElm( sym )
 	do while( e <> NULL )
-        desc += symbGetOrgName( e ) + ":" + hGetDataType( e )
+        desc += *symbGetOrgName( e ) + ":" + hGetDataType( e )
 
         desc += "," + str( symbGetUDTElmBitOfs( e ) ) + "," + _
         		str( symbGetUDTElmBitLen( e ) ) + ";"
@@ -864,13 +880,13 @@ private sub hDeclENUM( byval sym as FBSYMBOL ptr )
 	sym->enum.dbg.typenum = ctx.typecnt
 	ctx.typecnt += 1
 
-	desc = symbGetOrgName( sym )
+	desc = *symbGetOrgName( sym )
 
 	desc += ":T" + str( sym->enum.dbg.typenum ) + "=e"
 
 	e = symbGetENUMFirstElm( sym )
 	do while( e <> NULL )
-        desc += symbGetName( e ) + ":" + str( symbGetConstValInt( e ) ) + ","
+        desc += *symbGetName( e ) + ":" + str( symbGetConstValInt( e ) ) + ","
 
 		e = symbGetENUMNextElm( e )
 	loop
@@ -908,7 +924,7 @@ sub edbgEmitGlobalVar( byval sym as FBSYMBOL ptr, _
 	end select
 
     '' allocation type (static, global, etc)
-    desc = symbGetOrgName( sym )
+    desc = *symbGetOrgName( sym )
 
     alloctype = symbGetAllocType( sym )
     if( (alloctype and (FB_ALLOCTYPE_PUBLIC or FB_ALLOCTYPE_COMMON)) > 0 ) then
@@ -926,7 +942,7 @@ sub edbgEmitGlobalVar( byval sym as FBSYMBOL ptr, _
     if( symbIsDynamic( sym ) ) then
     	sname = symbGetVarDescName( sym )
     else
-    	sname = symbGetName( sym )
+    	sname = *symbGetName( sym )
     end if
 
     ''
@@ -944,7 +960,7 @@ sub edbgEmitLocalVar( byval sym as FBSYMBOL ptr, _
 		exit sub
 	end if
 
-    desc = symbGetOrgName( sym )
+    desc = *symbGetOrgName( sym )
 
     ''
     if( isstatic ) then
@@ -959,7 +975,7 @@ sub edbgEmitLocalVar( byval sym as FBSYMBOL ptr, _
     	if( symbIsDynamic( sym ) ) then
     		value = symbGetVarDescName( sym )
     	else
-			value = symbGetName( sym )
+			value = *symbGetName( sym )
 		end if
     else
     	t = STAB_TYPE_LSYM
@@ -989,7 +1005,7 @@ sub edbgEmitProcArg( byval sym as FBSYMBOL ptr ) static
 		exit sub
 	end if
 
-    desc = symbGetOrgName( sym ) + ":"
+    desc = *symbGetOrgName( sym ) + ":"
 
     if( symbIsArgByVal( sym ) ) then
 	    desc += "p"

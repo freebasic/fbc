@@ -27,6 +27,7 @@ option escape
 #include once "inc\fbint.bi"
 #include once "inc\ir.bi"
 #include once "inc\lex.bi"
+#include once "inc\dstr.bi"
 
 type FBHLPCTX
 	tmpcnt		as uinteger
@@ -191,13 +192,10 @@ function hFloatToStr( byval value as double, _
 end function
 
 '':::::
-function hGetDefType( byval symbol as string ) as integer static
+function hGetDefType( byval symbol as zstring ptr ) as integer static
     dim c as integer
-    dim p as zstring ptr
 
-    p = strptr( symbol )
-
-	c = *p
+	c = symbol[0][0]
 
 	'' to upper
 	if( (c >= 97) and (c <= 122) ) then
@@ -259,12 +257,12 @@ function hFBrelop2IRrelop( byval op as integer ) as integer static
 end function
 
 '':::::
-function hFileExists( byval filename as string ) as integer static
+function hFileExists( byval filename as zstring ptr ) as integer static
     dim f as integer
 
     f = freefile
 
-	if( open( filename, for input, as #f ) = 0 ) then
+	if( open( *filename, for input, as #f ) = 0 ) then
 		function = TRUE
 		close #f
 	else
@@ -274,452 +272,15 @@ function hFileExists( byval filename as string ) as integer static
 end function
 
 '':::::
-function hReplace( byval orgtext as string, _
-			 	   byval oldtext as string, _
-			  	   byval newtext as string ) as string static
-
-    dim as integer oldlen, newlen, p
-    dim as string text, remtext
-
-	oldlen = len( oldtext )
-	newlen = len( newtext )
-
-	text = orgtext
-	p = 0
-	do
-		p = instr( p+1, text, oldtext )
-	    if( p = 0 ) then
-	    	exit do
-	    end if
-
-		remtext = mid( text, p + oldlen )
-		text = left( text, p-1 )
-		text += newtext
-		text += remtext
-		p += newlen
-	loop
-
-	function = text
-
-end function
-
-'':::::
-function hEscapeStr( byval text as string ) as zstring ptr static
-    static as zstring ptr res = NULL
-    static as integer res_len = 0
-    dim as integer c, octlen, lgt
-    dim as zstring ptr src, dst, src_end
-
-	octlen = 0
-
-	lgt = len( text )
-	ALLOC_TEMP_STR( res, res_len, lgt*2 )
-
-	src = strptr( text )
-	dst = res
-
-	src_end = src + lgt
-	do while( src < src_end )
-		c = *src
-		src += 1
-
-		select case c
-		case CHAR_RSLASH, CHAR_QUOTE
-			*dst = CHAR_RSLASH
-			dst += 1
-
-		case FB_INTSCAPECHAR
-			*dst = CHAR_RSLASH
-			dst += 1
-
-			if( src >= src_end ) then exit do
-			c = *src
-			src += 1
-
-			'' octagonal?
-			if( c >= 1 and c <= 3 ) then
-				octlen = c
-				if( src >= src_end ) then exit do
-				c = *src
-				src += 1
-			end if
-
-		case 0 to 31, 128 to 255
-			*dst = CHAR_RSLASH
-			dst += 1
-
-			if( c < 8 ) then
-				c += CHAR_0
-
-			elseif( c < 64 ) then
-				*dst = CHAR_0 + (c shr 3)
-				dst += 1
-				c = CHAR_0 + (c and 7)
-
-			else
-				dst[0] = CHAR_0 + (c shr 6)
-				dst[1] = CHAR_0 + ((c and &b00111000) shr 3)
-				dst += 2
-				c = CHAR_0 + (c and 7)
-			end if
-
-		end select
-
-		*dst = c
-		dst += 1
-
-		'' add quote's when the octagonal escape ends
-		if( octlen > 0 ) then
-			octlen -= 1
-			if( octlen = 0 ) then
-				dst[0] = CHAR_QUOTE
-				dst[1] = CHAR_QUOTE
-				dst += 2
-			end if
-		end if
-	loop
-
-	'' null-term
-	*dst = 0
-
-	function = res
-
-end function
-
-'':::::
-function hEscapeWstr( byval text as wstring ptr ) as zstring ptr static
-    static as zstring ptr res = NULL
-    static as integer res_len = 0
-    dim as integer char, c, lgt, i, wstrlen
-    dim as wstring ptr src, src_end
-    dim as zstring ptr dst
-
-	wstrlen = irGetDataSize( IR_DATATYPE_WCHAR )
-
-	'' up to 4 ascii chars can be used p/ unicode char (\ooo)
-	lgt = len( *text )
-	ALLOC_TEMP_STR( res, res_len, lgt * (1+3) * wstrlen )
-
-	src = text
-	dst = res
-
-	src_end = src + lgt
-	do while( src < src_end )
-		char = *src
-		src += 1
-
-		'' internal espace char?
-		if( char = FB_INTSCAPECHAR ) then
-			if( src >= src_end ) then exit do
-			char = *src
-			src += 1
-
-			'' octagonal? convert to integer..
-			'' note: it can be up to 6 digits due wchr()
-			'' when evaluated at compile-time
-			if( (char >= 1) and (char <= 6) ) then
-				i = char
-				char = 0
-
-				if( src + i >= src_end ) then exit do
-				do while( i > 0 )
-					char = (char * 8) + (*src - CHAR_0)
-					src += 1
-					i -= 1
-				loop
-
-			else
-
-			    '' remap char as they will become a octagonal seq
-			    select case as const char
-			    case asc( "r" )
-			    	char = CHAR_CR
-
-			    case asc( "l" ), asc( "n" )
-			    	char = CHAR_LF
-
-			    case asc( "t" )
-			    	char = CHAR_TAB
-
-			    case asc( "b" )
-			    	char = CHAR_BKSPC
-
-			    case asc( "a" )
-			    	char = CHAR_BELL
-
-			    case asc( "f" )
-			    	char = CHAR_FORMFEED
-
-			    case asc( "v" )
-			    	char = CHAR_VTAB
-
-			    '' unicode 16-bit
-			    case asc( "u" )
-			    	'' x86 little-endian assumption
-			    	char = 0
-			    	if( src + 4 >= src_end ) then exit do
-			    	for i = 1 to 4
-			    		c = (*src - CHAR_0)
-			    		src +=1
-
-                		if( c > 9 ) then
-							c -= (CHAR_AUPP - CHAR_9 - 1)
-                		end if
-                		if( c > 16 ) then
-                  			c -= (CHAR_ALOW - CHAR_AUPP)
-                		end if
-
-						char = (char shl 4) or c
-                    next
-
-                end select
-			end if
-
-		end if
-
-		'' convert every char to octagonal form as GAS can't
-		'' handle unicode literal strings
-		for i = 1 to wstrlen
-			*dst = CHAR_RSLASH
-			dst += 1
-
-			'' x86 little-endian assumption
-			c = char and 255
-			if( c < 8 ) then
-				dst[0] = CHAR_0 + c
-				dst += 1
-
-			elseif( c < 64 ) then
-				dst[0] = CHAR_0 + (c shr 3)
-				dst[1] = CHAR_0 + (c and 7)
-				dst += 2
-
-			else
-				dst[0] = CHAR_0 + (c shr 6)
-				dst[1] = CHAR_0 + ((c and &b00111000) shr 3)
-				dst[2] = CHAR_0 + (c and 7)
-				dst += 3
-			end if
-
-        	char shr= 8
-		next
-
-	loop
-
-	'' null=term
-	*dst = 0
-
-	function = res
-
-end function
-
-'':::::
-function hUnescapeStr( byval text as string ) as string static
-    dim as integer c
-    dim as string res
-    dim as zstring ptr src, dst, src_len
-
-	if( not env.opt.escapestr ) then
-    	return text
-    end if
-
-	res = text
-
-	src = strptr( text )
-	dst = strptr( res )
-
-	src_len = src + len( text )
-	do while( src < src_len )
-
-		c = *src
-		src += 1
-
-		if( c = FB_INTSCAPECHAR ) then
-			*dst = CHAR_RSLASH
-		end if
-
-		dst += 1
-	loop
-
-	function = res
-
-end function
-
-'':::::
-function hEscapeToChar( byval text as string ) as zstring ptr static
-    static as zstring ptr res = NULL
-    static as integer res_len = 0
-    dim as integer char, lgt, i
-    dim as zstring ptr src, dst, src_len
-
-	if( not env.opt.escapestr ) then
-    	return strptr( text )
-    end if
-
-	lgt = len( text )
-	ALLOC_TEMP_STR( res, res_len, lgt )
-
-	src = strptr( text )
-	dst = res
-
-	src_len = src + lgt
-	do while( src < src_len )
-		char = *src
-		src += 1
-
-		if( char = FB_INTSCAPECHAR ) then
-
-			if( src >= src_len ) then exit do
-			char = *src
-			src += 1
-
-			'' octagonal? convert to integer..
-			if( (char >= 1) and (char <= 3) ) then
-				i = char
-				char = 0
-				do while( i > 0 )
-					char = (char * 8) + (*src - CHAR_0)
-					src += 1
-					i -= 1
-				loop
-
-			else
-			    '' remap char
-			    select case as const char
-			    case asc( "r" )
-			    	char = CHAR_CR
-
-			    case asc( "l" ), asc( "n" )
-			    	char = CHAR_LF
-
-			    case asc( "t" )
-			    	char = CHAR_TAB
-
-			    case asc( "b" )
-			    	char = CHAR_BKSPC
-
-			    case asc( "a" )
-			    	char = CHAR_BELL
-
-			    case asc( "f" )
-			    	char = CHAR_FORMFEED
-
-			    case asc( "v" )
-			    	char = CHAR_VTAB
-
-			    end select
-
-			end if
-
-		end if
-
-		*dst = char
-		dst += 1
-
-	loop
-
-	'' null-term
-	*dst = 0
-
-	function = res
-
-end function
-
-
-'':::::
-function hEscapeToCharW( byval text as wstring ptr ) as wstring ptr static
-    static as wstring ptr res = NULL
-    static as integer res_len = 0
-    dim as integer char, lgt, i
-    dim as wstring ptr src, dst, src_len
-
-	if( not env.opt.escapestr ) then
-    	return text
-    end if
-
-	lgt = len( *text )
-	ALLOC_TEMP_WSTR( res, res_len, lgt )
-
-	*res = *text
-
-	src = text
-	dst = res
-
-	src_len = src + lgt
-    do while( src < src_len )
-    	char = *src
-    	src += 1
-
-    	if( char = FB_INTSCAPECHAR ) then
-
-			if( src >= src_len ) then exit do
-			char = *src
-			src += 1
-
-			'' octagonal? convert to integer..
-			'' note: it can be up to 6 digits due wchr()
-			'' when evaluated at compile-time
-			if( (char >= 1) and (char <= 6) ) then
-				i = char
-				char = 0
-				do while( i > 0 )
-					char = (char * 8) + (*src - CHAR_0)
-					src += 1
-					i -= 1
-				loop
-
-			else
-			    '' remap char
-			    select case as const char
-			    case asc( "r" )
-			    	char = CHAR_CR
-
-			    case asc( "l" ), asc( "n" )
-			    	char = CHAR_LF
-
-			    case asc( "t" )
-			    	char = CHAR_TAB
-
-			    case asc( "b" )
-			    	char = CHAR_BKSPC
-
-			    case asc( "a" )
-			    	char = CHAR_BELL
-
-			    case asc( "f" )
-			    	char = CHAR_FORMFEED
-
-			    case asc( "v" )
-			    	char = CHAR_VTAB
-
-			    end select
-			end if
-
-		end if
-
-		*dst = char
-		dst += 1
-
-    loop
-
-    '' null-term
-    *dst = 0
-
-    function = res
-
-end function
-
-'':::::
-sub hUcase( byval src as string, _
-		    byval dst as string ) static
+sub hUcase( byval src as zstring ptr, _
+		    byval dst as zstring ptr ) static
 
     dim as integer i, c
     dim as zstring ptr s, d
 
-	s = strptr( src )
-	d = strptr( dst )
-
-	for i = 1 to len( src )
+	s = src
+	d = dst
+	for i = 1 to len( *src )
 		c = *s
 
 		if( c >= 97 ) then
@@ -732,7 +293,7 @@ sub hUcase( byval src as string, _
 
 		s += 1
 		d += 1
-	next i
+	next
 
 	'' null-term
 	*d = 0
@@ -741,13 +302,13 @@ end sub
 
 
 '':::::
-sub hClearName( byval src as string ) static
+sub hClearName( byval src as zstring ptr ) static
     dim i as integer
     dim p as zstring ptr
 
-	p = strptr( src )
+	p = src
 
-	for i = 1 to len( src )
+	for i = 1 to len( *src )
 
 		select case as const *p
 		case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW, CHAR_0 to CHAR_9, CHAR_UNDER
@@ -762,7 +323,7 @@ sub hClearName( byval src as string ) static
 end sub
 
 '':::::
-function hCreateName( byval symbol as string, _
+function hCreateName( byval symbol as zstring ptr, _
 					  byval typ as integer = INVALID, _
 					  byval preservecase as integer = FALSE, _
 					  byval addunderscore as integer = TRUE, _
@@ -772,9 +333,9 @@ function hCreateName( byval symbol as string, _
 
 	if( addunderscore ) then
 		sname = "_"
-		sname += symbol
+		sname += *symbol
 	else
-		sname = symbol
+		sname = *symbol
 	end if
 
 	if( not preservecase ) then
@@ -797,7 +358,7 @@ function hCreateName( byval symbol as string, _
 end function
 
 '':::::
-function hCreateProcAlias( byval symbol as string, _
+function hCreateProcAlias( byval symbol as zstring ptr, _
 						   byval argslen as integer, _
 						   byval mode as integer ) as zstring ptr static
 
@@ -809,10 +370,10 @@ function hCreateProcAlias( byval symbol as string, _
         dim addat as integer
 
         if( env.clopt.nounderprefix ) then
-            sname = symbol
+            sname = *symbol
         else
             sname = "_"
-            sname += symbol
+            sname += *symbol
         end if
 
         if( env.clopt.nostdcall ) then
@@ -822,18 +383,18 @@ function hCreateProcAlias( byval symbol as string, _
         end if
 
         if( addat ) then
-            if( instr( symbol, "@" ) = 0 ) then
+            if( instr( *symbol, "@" ) = 0 ) then
             	sname += "@"
             	sname += str( argslen )
             end if
         end if
 
 	case FB_COMPNAMING_LINUX
-		sname = symbol
+		sname = *symbol
 
 	case FB_COMPNAMING_DOS, FB_COMPNAMING_XBOX
         sname = "_"
-        sname += symbol
+        sname += *symbol
 
     end select
 
@@ -842,13 +403,13 @@ function hCreateProcAlias( byval symbol as string, _
 end function
 
 '':::::
-function hCreateOvlProcAlias( byval symbol as string, _
+function hCreateOvlProcAlias( byval symbol as zstring ptr, _
 					    	  byval argc as integer, _
 					    	  byval arg as FBSYMBOL ptr ) as zstring ptr static
     dim as integer i, typ
     static as zstring * FB_MAXINTNAMELEN+1 aname
 
-    aname = symbol
+    aname = *symbol
     aname += "__ovl_"
 
     for i = 0 to argc-1
@@ -868,7 +429,7 @@ function hCreateOvlProcAlias( byval symbol as string, _
     	aname += suffixTB( typ )
     	if( (typ = FB_SYMBTYPE_USERDEF) or _
     		(typ = FB_SYMBTYPE_ENUM) ) then
-    		aname += symbGetOrgName( symbGetSubType( arg ) )
+    		aname += *symbGetOrgName( symbGetSubType( arg ) )
     	end if
 
     	'' next
@@ -881,43 +442,43 @@ end function
 
 
 '':::::
-function hCreateDataAlias( byval symbol as string, _
+function hCreateDataAlias( byval symbol as zstring ptr, _
 						   byval isimport as integer ) as string static
 
 	select case as const fbGetNaming()
     case FB_COMPNAMING_WIN32, FB_COMPNAMING_CYGWIN
         if( isimport ) then
-            function = "__imp__" + symbol
+            function = "__imp__" + *symbol
         else
-            function = "_" + symbol
+            function = "_" + *symbol
         end if
 
     case FB_COMPNAMING_DOS, FB_COMPNAMING_XBOX
-		function = "_" + symbol
+		function = "_" + *symbol
 
     case FB_COMPNAMING_LINUX
-		function = symbol
+		function = *symbol
 
     end select
 
 end function
 
 '':::::
-function hStripUnderscore( byval symbol as string ) as string static
+function hStripUnderscore( byval symbol as zstring ptr ) as string static
 
 	select case as const fbGetNaming()
     case FB_COMPNAMING_WIN32, FB_COMPNAMING_CYGWIN
 	    if( not env.clopt.nostdcall ) then
-			function = mid( symbol, 2 )
+			function = *(symbol + 1)
 		else
-			function = symbol
+			function = *symbol
 		end if
 
     case FB_COMPNAMING_DOS, FB_COMPNAMING_XBOX
-    	function = mid( symbol, 2 )
+    	function = *(symbol + 1)
 
     case FB_COMPNAMING_LINUX
-    	function = symbol
+    	function = *symbol
 
     end select
 
@@ -999,7 +560,7 @@ function hStripFilename ( byval filename as string ) as string static
 end function
 
 '':::::
-function hGetFileExt( fname as string ) as string static
+function hGetFileExt( byref fname as string ) as string static
     dim as integer p, lp
     dim as string res
 
@@ -1100,19 +661,46 @@ function hJumpTbAllocSym( ) as any ptr static
 end function
 
 '':::::
-function hGetWstrNull( ) as zstring ptr
-    static as integer isset = FALSE
-    static as zstring * FB_INTEGERSIZE*3+1 nullseq
-    dim as integer i
+function hCheckFileFormat( byval f as integer ) as integer
+    dim as integer BOM
+    dim as FBFILE_FORMAT fmt
 
-    if( not isset ) then
-    	isset = TRUE
-    	nullseq = ""
-    	for i = 1 to irGetDataSize( IR_DATATYPE_WCHAR )
-    		nullseq += "\\0"
-    	next
+	'' little-endian assumptions
+	fmt = FBFILE_FORMAT_ASCII
+
+	if( get( #f, 0, BOM ) = 0 ) then
+		if( BOM = &hFFFE0000 ) then
+			fmt = FBFILE_FORMAT_UTF32BE
+
+		elseif( BOM = &h0000FFFE ) then
+		    fmt = FBFILE_FORMAT_UTF32LE
+
+		else
+			BOM and= &h00FFFFFF
+			if( BOM = &h00BFBBEF ) then
+				fmt = FBFILE_FORMAT_UTF8
+
+			else
+				BOM and= &h0000FFFF
+		        if( BOM = &h0000FEFF ) then
+		        	fmt = FBFILE_FORMAT_UTF16LE
+
+		        elseif( BOM = &h0000FFFE ) then
+		        	fmt = FBFILE_FORMAT_UTF16BE
+		        end if
+			end if
+		end if
+
+		select case fmt
+		case FBFILE_FORMAT_ASCII
+			seek #f, 1
+		case FBFILE_FORMAT_UTF16LE, _
+			 FBFILE_FORMAT_UTF16BE
+			seek #f, 1+2
+		end select
 	end if
 
-	function = @nullseq
+	function = fmt
 
 end function
+

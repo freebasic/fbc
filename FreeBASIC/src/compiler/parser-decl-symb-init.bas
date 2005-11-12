@@ -162,7 +162,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 				if( dtype <> IR_DATATYPE_WCHAR ) then
 					'' less the null-char
 					irEmitVARINIWSTR( symbGetWstrLen( sym ) - 1, _
-							 	  	  wstr( symbGetVarText( litsym ) ), _
+							 	  	  wstr( *symbGetVarText( litsym ) ), _
 							 	  	  symbGetStrLen( litsym ) - 1 )
 				else
 					'' ditto

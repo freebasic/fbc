@@ -229,7 +229,7 @@ end function
 '' note: this function must be called *before* astNewPARAM(e) because the
 ''       expression 'e' can be changed inside the former (address-of string's etc)
 function rtlCalcExprLen( byval expr as ASTNODE ptr, _
-						 byval realsize as integer = TRUE _
+						 byval unpadlen as integer = TRUE _
 					   ) as integer static
 
 	dim as FBSYMBOL ptr s
@@ -243,14 +243,16 @@ function rtlCalcExprLen( byval expr as ASTNODE ptr, _
 		function = rtlCalcStrLen( expr, dtype )
 
 	case IR_DATATYPE_USERDEF
-		s = astGetSymbol( expr )
+		s = astGetSubtype( expr )
 		if( s <> NULL ) then
 			'' if it's a type field that's an udt, no padding is
-			'' ever added, realsize is always TRUE
-			if( symbIsUDTElm( s ) ) then
-				realsize = TRUE
+			'' ever added, unpadlen must be always TRUE
+			if( astIsFIELD( expr ) ) then
+				unpadlen = TRUE
 			end if
-			function = symbGetUDTLen( symbGetSubtype( s ), realsize )
+
+			function = symbGetUDTLen( s, unpadlen )
+
 		else
 			function = 0
 		end if

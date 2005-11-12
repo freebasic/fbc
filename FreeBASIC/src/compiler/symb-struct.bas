@@ -183,7 +183,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
     do
     	e = p->udt.fldtb.head
     	do while( e <> NULL )
-    		if( e->name = ename ) then
+    		if( *e->name = ename ) then
     			exit function
     		end if
 
@@ -521,7 +521,7 @@ function symbGetUDTElmOffset( byref elm as FBSYMBOL ptr, _
 	do while( e <> NULL )
 
         '' names match?
-        if( e->name = ename ) then
+        if( *e->name = ename ) then
 
         	elm 		= e
         	ofs 		= e->var.elm.ofs
@@ -677,12 +677,12 @@ end sub
 
 '':::::
 function symbGetUDTLen( byval s as FBSYMBOL ptr, _
-						byval realsize as integer = TRUE ) as integer static
+						byval unpadlen as integer = TRUE ) as integer static
 
-	if( not realsize ) then
-		function = s->lgt
-	else
+	if( unpadlen ) then
 		function = s->udt.unpadlgt
+	else
+		function = s->lgt
 	end if
 
 end function

@@ -1500,7 +1500,7 @@ private function hGetProcName( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
 		s = symbAllocStrConst( "(??)", -1 )
 
 	else
-		procname = symbGetName( proc )
+		procname = *symbGetName( proc )
 
 		select case fbGetNaming( )
         case FB_COMPNAMING_WIN32, FB_COMPNAMING_CYGWIN

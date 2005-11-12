@@ -332,25 +332,26 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
     end if
 
     ''
-    ZEROSTRDESC( s->name )
+    s->name = NULL
     slen = len( *symbol )
     if( slen > 0 ) then
     	if( not preservecase ) then
-    		s->name = ucase( *symbol )
+    		s->name = ZstrAllocate( slen )
+    		hUcase( symbol, s->name )
     	else
-    	    s->name = *symbol
+    	    ZstrAssign( @s->name, symbol )
 		end if
     else
     	dohash = FALSE
     end if
 
-    ZEROSTRDESC( s->alias )
+    s->alias = NULL
     if( aliasname <> NULL ) then
-    	s->alias = *aliasname
+    	ZstrAssign( @s->alias, aliasname )
     else
 		select case class
 		case FB_SYMBCLASS_VAR, FB_SYMBCLASS_PROC
-			s->alias = s->name
+			ZstrAssign( @s->alias, s->name )
 		end select
     end if
 
@@ -361,16 +362,16 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
 	if( dohash ) then
 
 		'' doesn't exist yet?
-		n = hashLookup( @symb.symhash, strptr( s->name ) )
+		n = hashLookup( @symb.symhash, s->name )
 		if( n = NULL ) then
 			'' add to hash table
-			s->hashitem = hashAdd( @symb.symhash, strptr( s->name ), s, s->hashindex )
+			s->hashitem = hashAdd( @symb.symhash, s->name, s, s->hashindex )
 
 		else
 			'' can be duplicated?
 			if( not hCanDuplicate( n, s ) ) then
-				s->name = ""
-				s->alias = ""
+				ZstrFree( s->name )
+				ZstrFree( s->alias )
 				if( delok ) then
 					listDelNode( @symb.symlist, cptr( TLISTNODE ptr, s ) )
 				end if
@@ -393,7 +394,7 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
 			else
 				'' add to head
 				n->hashitem->idx  = s
-				n->hashitem->name = strptr( s->name )
+				n->hashitem->name = s->name
 			    n->left	 = s
 			    s->right = n
 
@@ -622,7 +623,7 @@ function symbFindByNameAndSuffix( byval symbol as zstring ptr, _
     if( s <> NULL ) then
     	'' get default type if no suffix was given
     	if( suffix = INVALID ) then
-    		deftyp = hGetDefType( *symbol )
+    		deftyp = hGetDefType( symbol )
     	end if
 
 		'' check if types match
@@ -727,7 +728,7 @@ sub symbDelFromHash( byval s as FBSYMBOL ptr ) static
     	'' update list head
     	else
        		s->hashitem->idx  = nxt
-       		s->hashitem->name = strptr( nxt->name )
+       		s->hashitem->name = nxt->name
     	end if
     end if
 
@@ -768,8 +769,8 @@ sub symbFreeSymbol( byval s as FBSYMBOL ptr, _
     if( not movetoglob ) then
     	s->prev  = NULL
     	s->next  = NULL
-    	s->name  = ""
-    	s->alias = ""
+    	ZstrFree( s->name )
+    	ZstrFree( s->alias )
 
     	listDelNode( @symb.symlist, cptr( TLISTNODE ptr, s ) )
 

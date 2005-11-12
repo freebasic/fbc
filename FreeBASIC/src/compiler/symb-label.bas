@@ -122,7 +122,7 @@ function symbCheckLabels( ) as integer
     do while( s <> NULL )
     	if( s->class = FB_SYMBCLASS_LABEL ) then
     		if( not s->lbl.declared ) then
-    			hReportErrorEx( FB_ERRMSG_UNDEFINEDLABEL, symbGetOrgName( s ), -1 )
+    			hReportErrorEx( FB_ERRMSG_UNDEFINEDLABEL, *symbGetOrgName( s ), -1 )
     			cnt += 1
     		end if
     	end if
@@ -146,7 +146,7 @@ function symbCheckLocalLabels(  ) as integer
 
     	if( s->class = FB_SYMBCLASS_LABEL ) then
     		if( not s->lbl.declared ) then
-    			hReportErrorEx( FB_ERRMSG_UNDEFINEDLABEL, symbGetOrgName( s ), -1 )
+    			hReportErrorEx( FB_ERRMSG_UNDEFINEDLABEL, *symbGetOrgName( s ), -1 )
     			cnt += 1
     		end if
     	end if

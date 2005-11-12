@@ -228,10 +228,56 @@ function ppReadLiteral( ) as zstring ptr
     	'' literal string? un-escape it if option escape is on
     	if( (lexGetClass( LIT_FLAGS ) = FB_TKCLASS_STRLITERAL) and _
     		(env.opt.escapestr) ) then
-    		text += hUnescapeStr( *lexGetText( ) )
+
+    		if( lexGetType() <> IR_DATATYPE_WCHAR ) then
+    			text += *hUnescapeStr( lexGetText( ) )
+    		else
+    			text += str( *hUnescapeWstr( lexGetTextW( ) ) )
+    		end if
 
     	else
-    		text += *lexGetText( )
+    		if( lexGetType() <> IR_DATATYPE_WCHAR ) then
+    			text += *lexGetText( )
+    		else
+    		    text += str( *lexGetTextW( ) )
+    		end if
+    	end if
+
+    	lexSkipToken( LIT_FLAGS )
+
+    loop
+
+	function = @text
+
+end function
+
+'':::::
+function ppReadLiteralW( ) as wstring ptr
+	static as wstring * FB_MAXINTDEFINELEN+1+1 text			'' +1 sentinel..
+
+    text = ""
+    do
+    	select case lexGetToken( LIT_FLAGS )
+		case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
+			exit do
+		end select
+
+    	'' literal string? un-escape it if option escape is on
+    	if( (lexGetClass( LIT_FLAGS ) = FB_TKCLASS_STRLITERAL) and _
+    		(env.opt.escapestr) ) then
+
+    		if( lexGetType() = IR_DATATYPE_WCHAR ) then
+    			text += *hUnescapeWstr( lexGetTextW( ) )
+    		else
+    			text += *hUnescapeStr( lexGetText( ) )
+    		end if
+
+    	else
+    		if( lexGetType() = IR_DATATYPE_WCHAR ) then
+    			text += *lexGetTextW( )
+    		else
+    			text += *lexGetText( )
+    		end if
     	end if
 
     	lexSkipToken( LIT_FLAGS )

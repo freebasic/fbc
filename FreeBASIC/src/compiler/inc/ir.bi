@@ -290,7 +290,7 @@ declare sub 		irEmitVARINI64		( byval dtype as integer, _
 declare sub 		irEmitVARINIOFS		( byval sym as FBSYMBOL ptr )
 
 declare sub 		irEmitVARINISTR		( byval totlgt as integer, _
-				     					  byval litstr as string, _
+				     					  byval litstr as zstring ptr, _
 				     					  byval litlgt as integer )
 
 declare sub 		irEmitVARINIWSTR	( byval totlgt as integer, _
@@ -314,9 +314,9 @@ declare function	irEmitPUSHPARAM		( byval proc as FBSYMBOL ptr, _
 										  byval pmode as integer, _
 										  byval plen as integer ) as integer
 
-declare sub 		irEmitASM			( byval text as string )
+declare sub 		irEmitASM			( byval text as zstring ptr )
 
-declare sub 		irEmitCOMMENT		( byval text as string )
+declare sub 		irEmitCOMMENT		( byval text as zstring ptr )
 
 declare sub 		irEmitJMPTB			( byval dtype as integer, _
 				 						  byval label as FBSYMBOL ptr )

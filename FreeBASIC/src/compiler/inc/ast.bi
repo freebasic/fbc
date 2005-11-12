@@ -122,19 +122,14 @@ type AST_LABEL
 end type
 
 type AST_LIT
-	text			as string
+	text			as zstring ptr
 	isasm			as integer
 end type
 
-type AST_BOP                                        '' binary operator
+type AST_OP                                        	'' used by: bop, uop, conv & addr
 	op				as integer
 	allocres 		as integer
 	ex				as FBSYMBOL ptr					'' (extra: label, etc)
-end type
-
-type AST_UOP
-	op				as integer                      '' unary operator
-	allocres 		as integer
 end type
 
 type AST_CONST
@@ -190,8 +185,7 @@ type ASTNODE
 		proc		as AST_FUNCT
 		param		as AST_PARAM
 		iif			as AST_IIF
-		bop			as AST_BOP
-		uop			as AST_UOP
+		op			as AST_OP
 		lod			as AST_LOAD
 		lbl			as AST_LABEL
 		lit			as AST_LIT
@@ -396,7 +390,7 @@ declare function 	astNewENUM			( byval value as integer, _
 declare function 	astNewLABEL			( byval sym as FBSYMBOL ptr, _
 					  					  byval doflush as integer = TRUE ) as ASTNODE ptr
 
-declare function 	astNewLIT			( byval text as string, _
+declare function 	astNewLIT			( byval text as zstring ptr, _
 										  byval isasm as integer ) as ASTNODE ptr
 
 declare function 	astNewJMPTB			( byval dtype as integer, _

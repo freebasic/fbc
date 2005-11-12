@@ -720,7 +720,7 @@ declare function	rtlDataRead			( byval varexpr as ASTNODE ptr ) as integer
 
 declare sub 		rtlDataStoreBegin	( )
 
-declare function	rtlDataStore		( byval littext as string, _
+declare function	rtlDataStore		( byval littext as zstring ptr, _
 										  byval litlen as integer, _
 										  byval typ as integer ) as integer
 
@@ -863,6 +863,7 @@ declare function 	rtlFileTell			( byval filenum as ASTNODE ptr ) as ASTNODE ptr
 declare function	rtlFilePut			( byval filenum as ASTNODE ptr, _
 										  byval offset as ASTNODE ptr, _
 										  byval src as ASTNODE ptr, _
+										  byval bytes as ASTNODE ptr, _
 										  byval isfunc as integer ) as ASTNODE ptr
 
 declare function	rtlFilePutArray		( byval filenum as ASTNODE ptr, _
@@ -873,6 +874,7 @@ declare function	rtlFilePutArray		( byval filenum as ASTNODE ptr, _
 declare function	rtlFileGet			( byval filenum as ASTNODE ptr, _
 										  byval offset as ASTNODE ptr, _
 										  byval dst as ASTNODE ptr, _
+										  byval bytes as ASTNODE ptr, _
 										  byval isfunc as integer ) as ASTNODE ptr
 
 declare function	rtlFileGetArray		( byval filenum as ASTNODE ptr, _

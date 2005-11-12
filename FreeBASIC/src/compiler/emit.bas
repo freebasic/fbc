@@ -139,7 +139,7 @@ private sub hDllMainBegin( )
 	argn = 1
 	do while( arg <> NULL )
 
-		s = symbAddArgAsVar( strptr( arg->alias ), arg )
+		s = symbAddArgAsVar( symbGetName( arg ), arg )
 		if( argn = 2 ) then
 			argreason = s
 		end if
@@ -233,9 +233,9 @@ private sub hMainBegin( byval isdllmain as integer )
 	env.currproc = emit.main.proc
 
 	arg = symbGetProcHeadArg( emit.main.proc )
-	emit.main.argc = symbAddArgAsVar( strptr( arg->alias ), arg )
+	emit.main.argc = symbAddArgAsVar( symbGetName( arg ), arg )
 	arg = symbGetProcTailArg( emit.main.proc )
-	emit.main.argv = symbAddArgAsVar( strptr( arg->alias ), arg )
+	emit.main.argv = symbAddArgAsVar( symbGetName( arg ), arg )
 
 	'' symbols declared in main() must go to the global tables, as main() has
 	'' no beginning or end, all include files are parsed "inside" it, pure hack..
@@ -279,7 +279,8 @@ private sub hModLevelBegin( )
 	proc = symbAddProc( symbPreAddProc( ), _
 						strptr( "{main}" ), fbGetModuleEntry( ), NULL, _
 						FB_SYMBTYPE_VOID, NULL, 0, _
-						FB_ALLOCTYPE_PRIVATE or FB_ALLOCTYPE_CONSTRUCTOR, _
+						FB_ALLOCTYPE_PRIVATE or FB_ALLOCTYPE_CONSTRUCTOR or _
+						FB_ALLOCTYPE_MODLEVELPROC, _
 						FB_FUNCMODE_CDECL )
 
     symbSetProcIncFile( proc, INVALID )
@@ -460,12 +461,12 @@ sub emitFlush( ) static
 		case EMIT_NODECLASS_LIT
 			cptr( EMIT_LITCB, emit_opfTB(EMIT_OP_LIT) )( n->lit.text )
 
-			n->lit.text = ""
+			ZstrFree( n->lit.text )
 
 		case EMIT_NODECLASS_JTB
 			cptr( EMIT_JTBCB, emit_opfTB(EMIT_OP_JMPTB) )( n->jtb.dtype, n->jtb.text )
 
-			n->jtb.text = ""
+			ZstrFree( n->jtb.text )
 
 		case EMIT_NODECLASS_MEM
 			cptr( EMIT_MEMCB, emit_opfTB(n->mem.op) )( n->mem.dvreg, n->mem.svreg, n->mem.bytes )
@@ -674,14 +675,14 @@ private function hNewSYMOP( byval op as integer, _
 end function
 
 '':::::
-private function hNewLIT( byval text as string ) as EMIT_NODE ptr static
+private function hNewLIT( byval text as zstring ptr ) as EMIT_NODE ptr static
 
 	dim as EMIT_NODE ptr n
 
 	n = hNewNode( EMIT_NODECLASS_LIT, FALSE )
 
-	ZEROSTRDESC( n->lit.text )
-	n->lit.text	= text
+	n->lit.text = ZstrAllocate( len( *text ) )
+	*n->lit.text = *text
 
 	function = n
 
@@ -689,15 +690,15 @@ end function
 
 '':::::
 private function hNewJMPTB( byval dtype as integer, _
-							byval text as string ) as EMIT_NODE ptr static
+							byval text as zstring ptr ) as EMIT_NODE ptr static
 
 	dim as EMIT_NODE ptr n
 
 	n = hNewNode( EMIT_NODECLASS_JTB, FALSE )
 
 	n->jtb.dtype = dtype
-	ZEROSTRDESC( n->jtb.text )
-	n->jtb.text	 = text
+	n->jtb.text = ZstrAllocate( len( *text ) )
+	*n->jtb.text = *text
 
 	function = n
 
@@ -1408,14 +1409,14 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitCOMMENT( byval text as string ) static
+sub emitCOMMENT( byval text as zstring ptr ) static
 
-	hNewLIT( "##" + text )
+	hNewLIT( "##" + *text )
 
 end sub
 
 '':::::
-sub emitASM( byval text as string ) static
+sub emitASM( byval text as zstring ptr ) static
     dim as integer c
 
     hNewLIT( text )
@@ -1428,7 +1429,7 @@ sub emitASM( byval text as string ) static
 end sub
 
 '':::::
-sub emitLIT( byval text as string ) static
+sub emitLIT( byval text as zstring ptr ) static
 
 	hNewLIT( text )
 
@@ -1456,7 +1457,7 @@ end sub
 
 '':::::
 sub emitJMPTB( byval dtype as integer, _
-			   byval text as string ) static
+			   byval text as zstring ptr ) static
 
 	hNewJMPTB( dtype, text )
 

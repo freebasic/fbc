@@ -116,10 +116,10 @@ private function hReportMakeDesc( byval f as ASTNODE ptr ) as zstring ptr
 		'' not part of the rtlib?
 		if( not f->proc.isrtl ) then
 			desc += " of "
-			if( len( symbGetOrgName( f->sym ) ) > 0 ) then
-				desc += symbGetOrgName( f->sym )
+			if( len( *symbGetOrgName( f->sym ) ) > 0 ) then
+				desc += *symbGetOrgName( f->sym )
 			else
-				desc += symbGetName( f->sym )
+				desc += *symbGetName( f->sym )
 			end if
 			desc += "()"
 		end if

@@ -57,8 +57,8 @@ end function
 
 '':::::
 function symbAllocFloatConst( byval value as double, _
-						   byval typ as integer _
-						 ) as FBSYMBOL ptr static
+						   	  byval typ as integer _
+						 	) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXINTNAMELEN+1 cname, aname
 	dim as FBSYMBOL ptr s
@@ -89,32 +89,35 @@ function symbAllocFloatConst( byval value as double, _
 	''
 	s->var.initialized = TRUE
 
-	ZEROSTRDESC( s->var.inittext )
-	s->var.inittext = svalue
+	s->var.inittext = ZstrAllocate( len( svalue ) )
+	*s->var.inittext = svalue
 
 	function = s
 
 end function
 
 '':::::
-function symbAllocStrConst( byval sname as string, _
+function symbAllocStrConst( byval sname as zstring ptr, _
 							byval lgt as integer _
 						  ) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXINTNAMELEN+1 cname, aname
 	dim as FBSYMBOL ptr s
 	dim as FBARRAYDIM dTB(0)
+	dim as integer strlen
 
 	function = NULL
 
-	''
+	'' the lgt passed isn't the real one because it doesn't
+	'' take into acount the escape characters
+	strlen = len( *sname )
 	if( lgt < 0 ) then
-		lgt = len( sname )
+		lgt = strlen
 	end if
 
-	if( lgt <= FB_MAXNAMELEN-6 ) then
+	if( strlen <= FB_MAXNAMELEN-6 ) then
 		cname = "{fbsc}"
-		cname += sname
+		cname += *sname
 	else
 		cname = *hMakeTmpStr( FALSE )
 	end if
@@ -127,19 +130,18 @@ function symbAllocStrConst( byval sname as string, _
 
 	aname = *hMakeTmpStr( FALSE )
 
-	'' plus the null-char as rtlib wrappers will take it into account
-	lgt += 1
+	'' lgt += the null-char (rtlib wrappers will take it into account)
 
 	'' it must be declare as SHARED, see symbAllocFloatConst()
 	s = symbAddVarEx( @cname, @aname, FB_SYMBTYPE_CHAR, NULL, _
-					  0, lgt, 0, dTB(), _
+					  0, lgt + 1, 0, dTB(), _
 					  FB_ALLOCTYPE_SHARED, FALSE, TRUE, FALSE )
 
 	''
 	s->var.initialized = TRUE
 
-	ZEROSTRDESC( s->var.inittext )
-	s->var.inittext = sname
+	s->var.inittext = ZstrAllocate( strlen )
+	*s->var.inittext = *sname
 
 	function = s
 
@@ -153,20 +155,19 @@ function symbAllocWStrConst( byval sname as wstring ptr, _
     static as zstring * FB_MAXINTNAMELEN+1 cname, aname
 	dim as FBSYMBOL ptr s
 	dim as FBARRAYDIM dTB(0)
-	dim as integer size
+	dim as integer strlen
 
 	function = NULL
 
 	'' the lgt passed isn't the real one because it doesn't
 	'' take into acount the escape characters
-	size = len( *sname )
+	strlen = len( *sname )
 	if( lgt < 0 ) then
-		lgt = size
+		lgt = strlen
 	end if
-	size *= irGetDataSize( IR_DATATYPE_WCHAR )
 
 	'' hEscapeWstr() can use up to 4 chars p/ unicode char (\ooo)
-	if( size * (3+1) <= FB_MAXNAMELEN-6 ) then
+	if( strlen * (3+1) <= FB_MAXNAMELEN-6 ) then
 		cname = "{fbwc}"
 		cname += *hEscapeWstr( sname )
 	else
@@ -181,21 +182,16 @@ function symbAllocWStrConst( byval sname as wstring ptr, _
 
 	aname = *hMakeTmpStr( FALSE )
 
-	'' plus the null-char as rtlib wrappers will take it into account
-	lgt += 1
-
-	'' times sizeof( wstring ), see parser-decl-symbinit.bas
-	lgt *= irGetDataSize( IR_DATATYPE_WCHAR )
-
+	'' lgt = (lgt + null-char) * sizeof( wstring ) (see parser-decl-symbinit.bas)
 	'' it must be declare as SHARED, see symbAllocFloatConst()
 	s = symbAddVarEx( @cname, @aname, FB_SYMBTYPE_WCHAR, NULL, _
-					  0, lgt, 0, dTB(), _
+					  0, (lgt+1) * len( wstring ), 0, dTB(), _
 					  FB_ALLOCTYPE_SHARED, FALSE, TRUE, FALSE )
 
 	''
 	s->var.initialized = TRUE
 
-	s->var.inittextw = allocate( size + irGetDataSize( IR_DATATYPE_WCHAR ) )
+	s->var.inittextw = WstrAllocate( strlen )
 	*s->var.inittextw = *sname
 
 	function = s
@@ -225,7 +221,7 @@ function symbGetConstValueAsStr( byval s as FBSYMBOL ptr ) as string
 
   	select case as const symbGetType( s )
   	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR
-  		function = symbGetConstValStr( s )->var.inittext
+  		function = *symbGetConstValStr( s )->var.inittext
 
   	case IR_DATATYPE_LONGINT
   		function = str( symbGetConstValLong( s ) )
