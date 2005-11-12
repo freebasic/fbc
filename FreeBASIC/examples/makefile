@@ -1,7 +1,7 @@
 
 DIRLIST := Allegro big_int CGUI cryptlib curses CVS DB disphelper file
 DIRLIST += freetype gfx GL GL/NeHe GSL Gtk IUP libxml Lua pdflib regex
-DIRLIST += SDL sound tests unicode Windows Windows/gui wx-c
+DIRLIST += SDL sound unicode Windows Windows/gui wx-c
 
 ###
 
@@ -15,11 +15,11 @@ EXELIST	:= $(patsubst %.bas,%.exe,$(SRCLIST))
 
 %.exe: %.bas
 	$(FBC) $(FBCFLAGS) -i $(<D) $<
-	
+
 
 all: $(EXELIST)
 
 .PHONY : clean
 clean:
 	rm -f $(EXELIST)
-	
+
