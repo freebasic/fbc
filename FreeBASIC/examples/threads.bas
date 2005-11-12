@@ -34,7 +34,6 @@ sub mythread ( byval num as integer )
 	for i = 0 to SECS-1
 		print "Hello from thread: " & num & " (" & SECS-i & " sec(s) left)"
 		sleep( 1000 )
-        getkey( )
-	next i
+	next
 
 end sub
