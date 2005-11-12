@@ -141,15 +141,18 @@ Debugging:
 
     - Compile the sources using the -g cmd-line option to add debugging support.
 
-    - Load it in GDB using: "gdb myapplicationname.exe"
+    - Load it in GDB using: "gdb myapplicationname.exe".
 
     - Set the arguments to the application been debugged using:
-      "set args arg1 arg2 argn".
+      "set args arg1 arg2 argn". You can also run GBD and pass the arguments directly
+      to the application been debugged: "gdb --args myapp.exe arg1 arg2 arg3".
 
     - If the executable isn't in the same directory of the source files where it
       was compiled, type: "dir path/to/my/application/sources".
 
-    - Place a breakpoint in the first line using: "b main".
+    - Place a breakpoint in the first line using: "b main". To place a breakpoint
+      in a function called "abc" use: "b ABC" (note: all in uppercase, GDB isn't 
+      case insensitive).
 
     - Type "r" to start the application.
 
@@ -160,9 +163,12 @@ Debugging:
 
     - Type "c" to continue execution until the next breakpoint.
 
-    - Use "disp ABC" to display the contents of a variable called "abc"
-      (notes: 1> all in uppercase, GDB isn't case insensitive, 2> undeclared
-       variables or the ones with suffixes like % & ! # $ can't be displayed).
+    - Use "print ABC" to show the contents of the variable called "abc". GDB
+      supports pointer/pointer field dereferencing, indexing and arithmetics
+      too, so "print *MYPOINTER" will also work. (note: undeclared variables 
+      or the ones with suffixes like % & ! # $ can't be printed).
+
+    - Use "disp ABC" to display the contents of a variable called "abc".
 
     - Use "watch ABC" to stop each time a variable called "abc" is changed.
 
@@ -170,7 +176,7 @@ Debugging:
 
     - Type "q" to quit.
 
-    - Type "help" to see a list of commands.
+    - Type "help" to see a list of commands, there are hundred others.
 
 
 Most Important Features:
@@ -496,6 +502,16 @@ Most Important Features:
 
       OPTION ESCAPE
       PRINT "\"Hello from FreeBASIC!\""
+
+  o Unicode support:
+
+    - FreeBASIC can parse UTF-16 (other formats later) source (.bas) or 
+      header (.bi) files, they can freely mixed with ASCII sources/headers 
+      in the same project.
+
+    - Literal strings can be typed in the original non-latin alphabet, freeing
+      them from be converted to unmaintainable \u escape sequences.
+
 
   o Debugging support:
 
