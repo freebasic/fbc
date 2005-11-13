@@ -28,61 +28,117 @@ option escape
 #include once "inc\parser.bi"
 
 '':::::
-function cTypedefDecl( byval id as string ) as integer
-    dim as zstring ptr tname
-    dim as integer typ, lgt, ptrcnt
+'' Typedef		= TYPE ((symbol AS DataType (',')?)+
+''					   AS DataType (symbol (',')?)+
+''
+function cTypedefDecl( byval pid as zstring ptr ) as integer static
+    static as zstring * FB_MAXNAMELEN+1 id, tname
+    dim as zstring ptr ptname
+    dim as integer typ, lgt, ptrcnt, isfwd, ismult
     dim as FBSYMBOL ptr subtype
 
     function = FALSE
 
-    if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
+    ismult = (pid = NULL)
 
-    	if( hGetLastError( ) <> FB_ERRMSG_OK ) then
-    		exit function
-    	end if
+    if( ismult ) then
+    	isfwd = (cSymbolType( typ, subtype, lgt, ptrcnt ) = NULL)
+    	if( isfwd ) then
+    		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+    			exit function
+    		end if
 
-    	tname = lexGetText( )
-    	'' pointing to itself? then it's a void..
-    	if( *tname = id ) then
-    		typ 	= FB_SYMBTYPE_VOID
-    		subtype = NULL
-    		lgt 	= 0
+    		lexEatToken( tname )
+    		ptname = @tname
 
-    	'' else, create a forward reference (or lookup one)
-    	else
-    		typ 	= FB_SYMBTYPE_FWDREF
-    		subtype = symbAddFwdRef( tname )
-			lgt 	= -1
-			if( subtype = NULL ) then
-				subtype = symbFindByNameAndClass( tname, FB_SYMBCLASS_FWDREF )
-				if( subtype = NULL ) then
-					hReportError( FB_ERRMSG_DUPDEFINITION )
-					exit function
-				end if
+			if( ptrcnt = 0 ) then
+				'' (PTR|POINTER)*
+				do
+					select case lexGetToken( )
+					case FB_TK_PTR, FB_TK_POINTER
+						lexSkipToken( )
+						typ += FB_SYMBTYPE_POINTER
+						ptrcnt += 1
+					case else
+						exit do
+					end select
+				loop
 			end if
     	end if
 
-    	lexSkipToken( )
     end if
 
-	if( ptrcnt = 0 ) then
-		'' (PTR|POINTER)*
-		do
-			select case lexGetToken( )
-			case FB_TK_PTR, FB_TK_POINTER
-				lexSkipToken( )
-				typ += FB_SYMBTYPE_POINTER
-				ptrcnt += 1
-			case else
-				exit do
-			end select
-		loop
-	end if
+    do
+		if( not ismult ) then
+    		isfwd = (cSymbolType( typ, subtype, lgt, ptrcnt ) = NULL)
+    		if( isfwd ) then
+    			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+    				exit function
+    			end if
+    			ptname = lexGetText( )
+    		end if
 
-    if( symbAddTypedef( @id, typ, subtype, ptrcnt, lgt ) = NULL ) then
-		hReportError( FB_ERRMSG_DUPDEFINITION, TRUE )
-		exit function
-    end if
+    	else
+    		if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
+    			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+    			exit function
+		    end if
+
+			lexEatToken( id )
+			pid = @id
+    	end if
+
+    	if( isfwd ) then
+    		'' pointing to itself? then it's a void..
+    		if( *ptname = *pid ) then
+    			typ 	= FB_SYMBTYPE_VOID
+    			subtype = NULL
+    			lgt 	= 0
+
+    		'' else, create a forward reference (or lookup one)
+    		else
+    			typ 	= FB_SYMBTYPE_FWDREF
+    			subtype = symbAddFwdRef( ptname )
+				lgt 	= -1
+				if( subtype = NULL ) then
+					subtype = symbFindByNameAndClass( ptname, FB_SYMBCLASS_FWDREF )
+					if( subtype = NULL ) then
+						hReportError( FB_ERRMSG_DUPDEFINITION )
+						exit function
+					end if
+				end if
+    		end if
+
+			if( not ismult ) then
+    			lexSkipToken( )
+
+				if( ptrcnt = 0 ) then
+					'' (PTR|POINTER)*
+					do
+						select case lexGetToken( )
+						case FB_TK_PTR, FB_TK_POINTER
+							lexSkipToken( )
+							typ += FB_SYMBTYPE_POINTER
+							ptrcnt += 1
+						case else
+							exit do
+						end select
+					loop
+				end if
+
+			else
+				typ += ptrcnt * FB_SYMBTYPE_POINTER
+			end if
+    	end if
+
+        ''
+    	if( symbAddTypedef( pid, typ, subtype, ptrcnt, lgt ) = NULL ) then
+			hReportError( FB_ERRMSG_DUPDEFINITION, TRUE )
+			exit function
+    	end if
+
+    '' ','?
+    loop while( hMatch( FB_TK_DECLSEPCHAR ) )
 
 	function = TRUE
 

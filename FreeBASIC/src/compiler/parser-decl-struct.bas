@@ -403,6 +403,14 @@ function cTypeDecl as integer static
 
 	'' ID
 	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
+    	if( not isunion ) then
+    		'' AS?
+    		if( lexGetToken( ) = FB_TK_AS ) then
+    			lexSkipToken( )
+    			return cTypedefDecl( NULL )
+    		end if
+    	end if
+
     	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
     	exit function
     end if

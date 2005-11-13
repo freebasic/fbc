@@ -18,6 +18,8 @@
     - auto-convert literal strings to w- or z- on assignments,
       depending on the l-hand side type
     - implement all missing rtlib wstring routines
+      - SWAP for wide strings
+      - [L|R]TRIM ANY
       - OPEN... INPUT|APPEND|OUTPUT ENCODING "" -- no bloat
       - LINE INPUT and INPUT -- inferred
       - WINPUT$ -- no inferrence

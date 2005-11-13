@@ -76,10 +76,4 @@ declare function 	hGetWstrNull			( ) as zstring ptr
 
 #define WstrFree(p) deallocate( p )
 
-'':::::
-#define ZEROSTRDESC(s)	                                _
-	cptr(integer ptr, @s)[0] = NULL 					:_
-	cptr(integer ptr, @s)[1] = NULL						:_
-	cptr(integer ptr, @s)[2] = NULL
-
 #endif ''__HELP_STR_BI__

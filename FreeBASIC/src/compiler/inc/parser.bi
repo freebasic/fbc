@@ -49,7 +49,7 @@ declare function 	cConstAssign            ( ) as integer
 
 declare function 	cTypeDecl               ( ) as integer
 
-declare function 	cTypedefDecl			( byval id as string ) as integer
+declare function 	cTypedefDecl			( byval id as zstring ptr ) as integer
 
 declare function 	cEnumDecl               ( ) as integer
 
