@@ -79,6 +79,7 @@ Version 0.15 Beta:
 - WCHR() function, same as CHR(), but returns a wstring (v1c)
 - WHEX(), WOCT() and WBIN() function same as HEX(), OCT() and BIN() respectivelly, but return wstrings (v1c)
 - WSPACE() function, same as SPACE(), but returns a wstring (v1c)
+- support for multiple typedef declarations and the inverse notation "TYPE AS DataType (Symbol ',')+" (v1c)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)
