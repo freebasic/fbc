@@ -1307,7 +1307,7 @@ function rtlGfxGet( byval target as ASTNODE ptr, _
 			   		byval symbol as FBSYMBOL ptr, _
 			   		byval coordtype as integer ) as integer
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc, descexpr
     dim as integer targetmode, argmode
     dim as FBSYMBOL ptr reslabel
 
@@ -1353,8 +1353,15 @@ function rtlGfxGet( byval target as ASTNODE ptr, _
  	'' byref array as any
 	if( isptr ) then
 		argmode = FB_ARGMODE_BYVAL
+		descexpr = astNewCONSTi( NULL, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
 	else
 		argmode = INVALID
+
+		if( not astIsFIELD( arrayexpr ) ) then
+			descexpr = astNewVAR( symbol, 0, symbGetType( symbol ) )
+		else
+			descexpr = astCloneTree( arrayexpr )
+		end if
 	end if
  	if( astNewPARAM( proc, arrayexpr, INVALID, argmode ) = NULL ) then
  		exit function
@@ -1366,12 +1373,7 @@ function rtlGfxGet( byval target as ASTNODE ptr, _
  	end if
 
  	'' array() as any
- 	if( not isptr ) then
- 		arrayexpr = astNewVAR( symbol, 0, symbGetType( symbol ) )
- 	else
- 		arrayexpr = astNewCONSTi( NULL, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
- 	end if
- 	if( astNewPARAM( proc, arrayexpr, INVALID, argmode ) = NULL ) then
+ 	if( astNewPARAM( proc, descexpr, INVALID, argmode ) = NULL ) then
  		exit function
  	end if
 

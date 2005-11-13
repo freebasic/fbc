@@ -58,6 +58,11 @@ private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, _
 								  byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
     dim as ASTNODE ptr idxexpr, temp
 
+    '' field?
+    if( astIsFIELD( arrayexpr ) ) then
+    	return arrayexpr
+    end if
+
     ''  argument passed by descriptor?
     if( symbIsArgByDesc( sym ) ) then
 
