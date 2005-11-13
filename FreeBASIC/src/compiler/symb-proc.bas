@@ -828,22 +828,22 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 		select case as const pdclass
 		'' another integer..
 		case IR_DATACLASS_INTEGER
-			'' remap to real type if it's a bitfield..
-			if( pdtype = IR_DATATYPE_BITFIELD ) then
-				pdtype = irRemapType( pdtype, psubtype )
-			end if
 
 			'' handle special cases..
-			select case adtype
-			case IR_DATATYPE_POINTER + IR_DATATYPE_CHAR
-				if( pdtype = IR_DATATYPE_CHAR ) then
+			select case as const pdtype
+			case IR_DATATYPE_CHAR
+				if( adtype = IR_DATATYPE_POINTER + IR_DATATYPE_CHAR ) then
 					return FB_OVLPROC_FULLMATCH
 				end if
 
-			case IR_DATATYPE_POINTER + IR_DATATYPE_WCHAR
-				if( pdtype = IR_DATATYPE_WCHAR ) then
+			case IR_DATATYPE_WCHAR
+				if( adtype = IR_DATATYPE_POINTER + IR_DATATYPE_WCHAR ) then
 					return FB_OVLPROC_FULLMATCH
 				end if
+
+			case IR_DATATYPE_BITFIELD, IR_DATATYPE_ENUM
+				pdtype = irRemapType( pdtype, psubtype )
+
 			end select
 
 			return FB_OVLPROC_HALFMATCH - abs( adtype - pdtype )
@@ -883,9 +883,10 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 			end if
 
 			'' remap to real type if it's a bitfield..
-			if( pdtype = IR_DATATYPE_BITFIELD ) then
+			select case pdtype
+			case IR_DATATYPE_BITFIELD, IR_DATATYPE_ENUM
 				pdtype = irRemapType( pdtype, psubtype )
-			end if
+			end select
 
 			return FB_OVLPROC_HALFMATCH - abs( adtype - pdtype )
 
