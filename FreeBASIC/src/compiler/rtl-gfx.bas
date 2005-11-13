@@ -249,29 +249,6 @@ data @FB_RTL_GFXSCREENRES, "", _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0
 
-'' fb_ProfileBeginCall ( byval procname as zstring ptr ) as any ptr
-data @FB_RTL_PROFILEBEGINCALL, "", _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
-
-'' fb_ProfileEndCall ( byval call as any ptr ) as void
-data @FB_RTL_PROFILEENDCALL, "", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE
-
-'' fb_EndProfile ( byval errlevel as integer ) as integer
-data @FB_RTL_PROFILEEND, "", _
-	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
-
-'':::::::::::::::::::::::::::::::::::::::::::::::::::
-
 '' fb_GfxBload ( filename as string, byval dest as any ptr = NULL ) as integer
 data @"bload", "fb_GfxBload", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
@@ -1485,70 +1462,4 @@ function rtlGfxScreenSet( byval wexpr as ASTNODE ptr, _
 
 end function
 
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' profiling
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-private function hGetProcName( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
-	dim as string procname
-	dim as FBSYMBOL ptr s
-	dim as ASTNODE ptr expr
-	dim as integer at
-
-	if( proc = NULL ) then
-		s = symbAllocStrConst( "(??)", -1 )
-
-	else
-		procname = *symbGetName( proc )
-
-		select case fbGetNaming( )
-        case FB_COMPNAMING_WIN32, FB_COMPNAMING_CYGWIN
-			procname = mid( procname, 2)
-			at = instr( procname, "@" )
-			if( at ) then
-				procname = mid( procname, 1, at - 1 )
-			end if
-        end select
-
-		if( len( procname ) and 3 ) then
-			procname += string( 4 - ( len( procname ) and 3 ), 32 )
-		end if
-
-		s = symbAllocStrConst( procname, -1 )
-	end if
-
-	expr = astNewADDR( IR_OP_ADDROF, astNewVAR( s, 0, IR_DATATYPE_CHAR ) )
-
-	function = expr
-
-end function
-
-'':::::
-function rtlProfileBeginCall( byval symbol as FBSYMBOL ptr ) as ASTNODE ptr
-	dim as ASTNODE ptr proc, expr
-
-	function = NULL
-
-	proc = astNewFUNCT( PROCLOOKUP( PROFILEBEGINCALL ), NULL, TRUE )
-
-	expr = hGetProcName( symbol )
-	if( astNewPARAM( proc, expr, INVALID, FB_ARGMODE_BYVAL ) = NULL ) then
-		exit function
-	end if
-
-	function = proc
-
-end function
-
-'':::::
-function rtlProfileEndCall( ) as ASTNODE ptr
-    dim as ASTNODE ptr proc
-
-	function = NULL
-
-    proc = astNewFUNCT( PROCLOOKUP( PROFILEENDCALL ), NULL, TRUE )
-
-  	function = proc
-
-end function

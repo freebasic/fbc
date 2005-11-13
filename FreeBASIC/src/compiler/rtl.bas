@@ -38,6 +38,7 @@ declare sub			rtlMacroModInit		( )
 declare sub			rtlMathModInit		( )
 declare sub			rtlMemModInit		( )
 declare sub			rtlPrintModInit		( )
+declare sub			rtlProfileModInit	( )
 declare sub			rtlStringModInit	( )
 declare sub			rtlSystemModInit	( )
 
@@ -51,6 +52,7 @@ declare sub			rtlMacroModEnd		( )
 declare sub			rtlMathModEnd		( )
 declare sub			rtlMemModEnd		( )
 declare sub			rtlPrintModEnd		( )
+declare sub			rtlProfileModEnd	( )
 declare sub			rtlStringModEnd		( )
 declare sub			rtlSystemModEnd		( )
 
@@ -75,6 +77,7 @@ sub rtlInit static
 	rtlMathModInit( )
 	rtlMemModInit( )
 	rtlPrintModInit( )
+	rtlProfileModInit( )
 	rtlStringModInit( )
 	rtlSystemModInit( )
 
@@ -83,10 +86,11 @@ end sub
 '':::::
 sub rtlEnd
 
+	rtlSystemModEnd( )
 	rtlStringModEnd( )
+	rtlProfileModEnd( )
 	rtlPrintModEnd( )
 	rtlMemModEnd( )
-	rtlSystemModEnd( )
 	rtlMathModEnd( )
 	rtlMacroModEnd( )
 	rtlGfxModEnd( )
@@ -97,7 +101,7 @@ sub rtlEnd
 	rtlArrayModEnd( )
 
 	'' reset the table as the pointers will change if
-	'' the compiler is reseted
+	'' the compiler is reinitialized
 	erase rtlLookupTB
 
 end sub

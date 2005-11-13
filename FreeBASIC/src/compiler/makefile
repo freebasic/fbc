@@ -181,7 +181,7 @@ sources += reg.bas
 
 sources += rtl.bas rtl-array.bas rtl-console.bas rtl-data.bas rtl-error.bas
 sources += rtl-file.bas rtl-gfx.bas rtl-macro.bas rtl-math.bas rtl-mem.bas
-sources += rtl-print.bas rtl-string.bas rtl-system.bas
+sources += rtl-print.bas rtl-profile.bas rtl-string.bas rtl-system.bas
 
 sources += symb.bas symb-const.bas symb-define.bas symb-enum.bas symb-keyword.bas
 sources += symb-label.bas symb-lib.bas symb-proc.bas symb-scope.bas symb-struct.bas
