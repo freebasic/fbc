@@ -43,7 +43,7 @@ static void fb_hPrintPadEx ( FB_FILE *handle, int mask, int current_x, int new_x
     if (new_x <= current_x) {
         FB_PRINT_EX(handle, FB_NEWLINE, sizeof(FB_NEWLINE)-1, mask);
     } else {
-        size_t count = new_x - current_x - 1;
+        size_t count = new_x - current_x;
         memset(tab_char_buffer, 32, count);
         /* the terminating NUL shouldn't be required but it makes
          * debugging easier */
