@@ -298,6 +298,7 @@ function rtlMathLen( byval expr as ASTNODE ptr, _
 
     dim as ASTNODE ptr proc
     dim as integer dtype, lgt
+    dim as FBSYMBOL ptr litsym
 
 	function = NULL
 
@@ -305,62 +306,87 @@ function rtlMathLen( byval expr as ASTNODE ptr, _
 
 	'' LEN()?
 	if( islen ) then
-		'' dyn-len or zstring?
 		select case dtype
+		'' dyn-len or zstring?
 		case IR_DATATYPE_STRING, IR_DATATYPE_CHAR
-    		proc = astNewFUNCT( PROCLOOKUP( STRLEN ) )
 
-    		'' always calc len before pushing the param
-    		lgt = rtlCalcStrLen( expr, dtype )
+    		'' literal? evaluate at compile-time..
+    		if( dtype = IR_DATATYPE_CHAR ) then
+    			litsym = astGetStrLitSymbol( expr )
+    			if( litsym <> NULL ) then
+    				lgt = symbGetStrLen( litsym ) - 1
+    			end if
+    		else
+    			litsym = NULL
+    		end if
 
-    		'' str as any
-    		if( astNewPARAM( proc, expr, IR_DATATYPE_STRING ) = NULL ) then
- 				exit function
- 			end if
+    		if( litsym = NULL ) then
+    			proc = astNewFUNCT( PROCLOOKUP( STRLEN ) )
 
-    		'' byval strlen as integer
-			if( astNewPARAM( proc, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
- 				exit function
- 			end if
+    			'' always calc len before pushing the param
+    			lgt = rtlCalcStrLen( expr, dtype )
 
-			return proc
+    			'' str as any
+    			if( astNewPARAM( proc, expr, IR_DATATYPE_STRING ) = NULL ) then
+ 					exit function
+ 				end if
 
+    			'' byval strlen as integer
+				if( astNewPARAM( proc, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
+ 					exit function
+ 				end if
+
+				return proc
+			end if
+
+		'' wstring?
 		case IR_DATATYPE_WCHAR
-    		proc = astNewFUNCT( PROCLOOKUP( WSTRLEN ) )
 
-    		'' byval str as wchar ptr
-    		if( astNewPARAM( proc, expr ) = NULL ) then
- 				exit function
+    		'' literal? evaluate at compile-time..
+    		litsym = astGetStrLitSymbol( expr )
+    		if( litsym <> NULL ) then
+    			lgt = symbGetWstrLen( litsym ) - 1
+
+    		else
+    			proc = astNewFUNCT( PROCLOOKUP( WSTRLEN ) )
+
+    			'' byval str as wchar ptr
+    			if( astNewPARAM( proc, expr ) = NULL ) then
+ 					exit function
+ 				end if
+
+ 				return proc
  			end if
 
- 			return proc
+		'' anything else..
+		case else
+			lgt = rtlCalcExprLen( expr, FALSE )
+
+			'' handle fix-len strings (evaluated at compile-time)
+			if( dtype = IR_DATATYPE_FIXSTR ) then
+				if( lgt > 0 ) then
+					lgt -= 1						'' less the null-term
+				end if
+			end if
 
 		end select
-	end if
 
-	''
-	lgt = rtlCalcExprLen( expr, FALSE )
-
-	'' handle fix-len strings (evaluated at compile-time)
-	if( islen ) then
-		if( dtype = IR_DATATYPE_FIXSTR ) then
-			if( lgt > 0 ) then
-				lgt -= 1						'' less the null-term
-			end if
-		end if
-
-	'' SIZEOF()..
+	'' SIZEOF()
 	else
+		lgt = rtlCalcExprLen( expr, FALSE )
+
 		'' wstring? multiply by sizeof(wchar) to get the
 		'' number of bytes, not of chars
 		if( dtype = IR_DATATYPE_WCHAR ) then
 			lgt *= irGetDataSize( IR_DATATYPE_WCHAR )
 		end if
+
 	end if
 
-	function = astNewCONSTi( lgt, IR_DATATYPE_INTEGER )
-
+	''
 	astDelTree( expr )
+
+	function = astNewCONSTi( lgt, IR_DATATYPE_INTEGER )
 
 end function
 
