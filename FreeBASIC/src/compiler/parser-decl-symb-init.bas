@@ -41,12 +41,14 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 					   byref ofs as integer, _
 					   byval islocal as integer ) as integer static
 
-	dim as integer dtype
+	dim as integer dtype, sdtype
 	dim as ASTNODE ptr expr, assgexpr
     dim as FBSYMBOL ptr litsym
 
+    sdtype = symbGetType( sym )
+
     '' set the context symbol to allow taking the address of overloaded procs
-    if( symbGetType( sym ) >= IR_DATATYPE_POINTER+IR_DATATYPE_FUNCTION ) then
+    if( sdtype >= IR_DATATYPE_POINTER+IR_DATATYPE_FUNCTION ) then
     	env.ctxsym = symbGetSubType( sym )
     end if
 
@@ -73,26 +75,34 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 		if( litsym = NULL ) then
 
 			'' string?
-			if( hIsString( symbGetType( sym ) ) ) then
+			if( hIsString( sdtype ) ) then
 				if( hIsString( dtype ) ) then
-					hReportError( FB_ERRMSG_EXPECTEDCONST )
+					hReportError( FB_ERRMSG_EXPECTEDCONST, TRUE )
 				else
-					hReportError( FB_ERRMSG_INVALIDDATATYPES )
+					hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 				end if
 				return 0
 
 			elseif( hIsString( dtype ) ) then
-			    hReportError( FB_ERRMSG_INVALIDDATATYPES )
+			    hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 				return 0
+			end if
+
+			'' bit field?
+			if( symbIsUDTElm( sym ) ) then
+			    if( symbGetType( sym ) = FB_SYMBTYPE_BITFIELD ) then
+			    	hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+					return 0
+				end if
 			end if
 
 			'' offset?
 			if( astIsOFFSET( expr ) ) then
 
 				'' different types?
-				if( (irGetDataClass( symbGetType( sym ) ) <> IR_DATACLASS_INTEGER) or _
-					(irGetDataSize( symbGetType( sym ) ) <> FB_POINTERSIZE) ) then
-					hReportError( FB_ERRMSG_INVALIDDATATYPES )
+				if( (irGetDataClass( sdtype ) <> IR_DATACLASS_INTEGER) or _
+					(irGetDataSize( sdtype ) <> FB_POINTERSIZE) ) then
+					hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 					return 0
 				end if
 
@@ -101,25 +111,25 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 			else
 				'' not a constant?
 				if( not astIsCONST( expr ) ) then
-					hReportError( FB_ERRMSG_EXPECTEDCONST )
+					hReportError( FB_ERRMSG_EXPECTEDCONST, TRUE )
 					return 0
 				end if
 
 				'' different types?
-				if( dtype <> symbGetType( sym ) ) then
+				if( dtype <> sdtype ) then
 					expr = astNewCONV( INVALID, _
-									   symbGetType( sym ), _
+									   sdtype, _
 									   symbGetSubtype( sym ), _
 									   expr )
 				end if
 
-				select case as const symbGetType( sym )
+				select case as const sdtype
 				case FB_SYMBTYPE_LONGINT, FB_SYMBTYPE_ULONGINT
-					irEmitVARINI64( symbGetType( sym ), astGetValLong( expr ) )
+					irEmitVARINI64( sdtype, astGetValLong( expr ) )
 				case FB_SYMBTYPE_SINGLE, FB_SYMBTYPE_DOUBLE
-					irEmitVARINIf( symbGetType( sym ), astGetValFloat( expr ) )
+					irEmitVARINIf( sdtype, astGetValFloat( expr ) )
 				case else
-					irEmitVARINIi( symbGetType( sym ), astGetValInt( expr ) )
+					irEmitVARINIi( sdtype, astGetValInt( expr ) )
 				end select
 
 			end if
@@ -127,19 +137,19 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 		else
 
 			'' not a string?
-			if( not hIsString( symbGetType( sym ) ) ) then
-				hReportError( FB_ERRMSG_INVALIDDATATYPES )
+			if( not hIsString( sdtype ) ) then
+				hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 				return 0
 			end if
 
 			'' can't be a variable-len string
-			if( symbGetType( sym ) = FB_SYMBTYPE_STRING ) then
-				hReportError( FB_ERRMSG_CANTINITDYNAMICSTRINGS )
+			if( sdtype = FB_SYMBTYPE_STRING ) then
+				hReportError( FB_ERRMSG_CANTINITDYNAMICSTRINGS, TRUE )
 				return 0
 			end if
 
 			'' not a wstring?
-			if( symbGetType( sym ) <> FB_SYMBTYPE_WCHAR ) then
+			if( sdtype <> FB_SYMBTYPE_WCHAR ) then
 
 				'' convert?
 				if( dtype <> IR_DATATYPE_WCHAR ) then
@@ -179,12 +189,17 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 
 	else
 
-        assgexpr = astNewVAR( basesym, ofs, symbGetType( sym ), symbGetSubtype( sym ) )
+        assgexpr = astNewVAR( basesym, ofs, sdtype, symbGetSubtype( sym ) )
+
+        '' field?
+        if( symbIsUDTElm( sym ) ) then
+        	assgexpr = astNewFIELD( assgexpr, sym, sdtype, symbGetSubtype( sym ) )
+        end if
 
         assgexpr = astNewASSIGN( assgexpr, expr )
 
         if( assgexpr = NULL ) then
-			hReportError( FB_ERRMSG_INVALIDDATATYPES )
+			hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
             return FALSE
         end if
 

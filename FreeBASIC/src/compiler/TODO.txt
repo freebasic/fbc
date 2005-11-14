@@ -1,7 +1,4 @@
 
-[ ] add the overloaded unicode version fb_Assert when the chicken-egg is
-    resolved (wstring and zstring params were been ambiguous)
-
 [ ] bit-fields shouldn't be allowed to be initialized
 
 [ ] @static_array(const) won't become an OFFSET, not allowing initializations..
