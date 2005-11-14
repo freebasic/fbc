@@ -730,8 +730,7 @@ private sub hPrepOperand64( byval vreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub outEx( byval s as string, _
-				   byval updpos as integer ) static
+private sub outEx( byval s as string ) static
 
 	if( put( #env.outf.num, , s ) = 0 ) then
 	end if
@@ -751,7 +750,7 @@ private sub outp( byval s as string ) static
 		end if
 
 		ostr = "\t" + s + NEWLINE
-		outEX( ostr, TRUE )
+		outEX( ostr )
 
 		if( p > 0 ) then
 			s[p-1] = char
@@ -760,7 +759,7 @@ private sub outp( byval s as string ) static
 	else
 
 		ostr = s + NEWLINE
-		outEX( ostr, TRUE )
+		outEX( ostr )
 
 	end if
 
@@ -819,7 +818,7 @@ private sub hCOMMENT( byval s as string ) static
     dim ostr as string
 
     ostr = "\t\35" + s + NEWLINE
-	outEX( ostr, FALSE )
+	outEX( ostr )
 
 end sub
 
@@ -828,7 +827,7 @@ private sub hPUBLIC( byval label as string ) static
     dim ostr as string
 
 	ostr = "\r\n.globl " + label + NEWLINE
-	outEx( ostr, FALSE )
+	outEx( ostr )
 
 end sub
 
@@ -837,7 +836,7 @@ private sub hLABEL( byval label as string ) static
     dim ostr as string
 
 	ostr = label + ":\r\n"
-	outEx( ostr, FALSE )
+	outEx( ostr )
 
 end sub
 
@@ -846,7 +845,7 @@ private sub hALIGN( byval bytes as integer ) static
     dim ostr as string
 
     ostr = ".balign " + str( bytes ) +  "\r\n"
-	outEx( ostr, FALSE )
+	outEx( ostr )
 
 end sub
 
@@ -859,7 +858,7 @@ private sub _emitLIT( byval s as zstring ptr )
     dim ostr as string
 
     ostr = *s + NEWLINE
-	outEX( ostr, FALSE )
+	outEX( ostr )
 
 end sub
 
@@ -1000,7 +999,7 @@ private sub _emitPUBLIC( byval label as FBSYMBOL ptr ) static
 	ostr = "\r\n.globl "
 	ostr += *symbGetName( label )
 	ostr += NEWLINE
-	outEx( ostr, FALSE )
+	outEx( ostr )
 
 end sub
 
@@ -1010,7 +1009,7 @@ private sub _emitLABEL( byval label as FBSYMBOL ptr ) static
 
 	ostr = *symbGetName( label )
 	ostr += ":\r\n"
-	outEx( ostr, FALSE )
+	outEx( ostr )
 
 end sub
 
@@ -1049,7 +1048,7 @@ sub emitSECTION( byval section as integer ) static
 
 	ostr += NEWLINE
 
-	outEx( ostr, FALSE )
+	outEx( ostr )
 
 	emit.lastsection = section
 
@@ -4891,7 +4890,7 @@ private sub hDestroyFrame( byval proc as FBSYMBOL ptr, _
     end if
 
 	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-    	outEx( ".size " + *symbGetName( proc ) + ", .-" + *symbGetName( proc ) + NEWLINE, FALSE )
+    	outEx( ".size " + *symbGetName( proc ) + ", .-" + *symbGetName( proc ) + NEWLINE )
 	end if
 
 end sub
@@ -4933,7 +4932,7 @@ sub emitPROCFOOTER( byval proc as FBSYMBOL ptr, _
 	hLABEL( *symbGetName( proc ) )
 
 	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-		outEx( ".type " + *symbGetName( proc ) + ", @function" + NEWLINE, FALSE )
+		outEx( ".type " + *symbGetName( proc ) + ", @function" + NEWLINE )
 	end if
 
 	'' frame
@@ -5022,7 +5021,7 @@ sub emitDATALABEL( byval label as zstring ptr ) static
 
 	ostr = *label
 	ostr += ":\r\n"
-	outEx( ostr, FALSE )
+	outEx( ostr )
 
 end sub
 
@@ -5039,7 +5038,7 @@ sub emitDATABEGIN( byval lname as zstring ptr ) static
 		ostr = ".int "
 		ostr += *lname
 		ostr += NEWLINE
-		outEx( ostr, FALSE )
+		outEx( ostr )
 
 		seek #env.outf.num, currpos
 
@@ -5052,12 +5051,12 @@ sub emitDATAEND static
     dim as string ostr
 
     '' link + NULL
-    outEx( ".short 0xffff" + NEWLINE, FALSE )
+    outEx( ".short 0xffff" + NEWLINE )
 
     emit.dataend = seek( env.outf.num )
 
     ostr = ".int 0" + space( FB_MAXNAMELEN ) + NEWLINE
-    outEx( ostr, FALSE )
+    outEx( ostr )
 
 end sub
 
@@ -5074,14 +5073,14 @@ sub emitDATA ( byval litext as zstring ptr, _
 	'' len + asciiz
 	if( typ <> INVALID ) then
 		ostr = ".short 0x" + hex( litlen ) + NEWLINE
-		outEx( ostr, FALSE )
+		outEx( ostr )
 
 		ostr = ".ascii \""
 		ostr += *esctext
 		ostr += "\\0\"" + NEWLINE
-		outEx( ostr, FALSE )
+		outEx( ostr )
 	else
-		outEx( ".short 0x0000" + NEWLINE, FALSE )
+		outEx( ".short 0x0000" + NEWLINE )
 	end if
 
 end sub
@@ -5099,12 +5098,12 @@ sub emitDATAW( byval litext as wstring ptr, _
 	'' (0x8000 or len) + unicode
 	if( typ <> INVALID ) then
 		ostr = ".short 0x" + hex( &h8000 or litlen ) + NEWLINE
-		outEx( ostr, FALSE )
+		outEx( ostr )
 
 		ostr = ".ascii \"" + *esctext + *hGetWstrNull( ) + "\"" + NEWLINE
-		outEx( ostr, FALSE )
+		outEx( ostr )
 	else
-		outEx( ".short 0x0000" + NEWLINE, FALSE )
+		outEx( ".short 0x0000" + NEWLINE )
 	end if
 
 end sub
@@ -5113,12 +5112,12 @@ end sub
 sub emitDATAOFS ( byval sname as zstring ptr ) static
     dim ostr as string
 
-	outEx( ".short 0xfffe" + NEWLINE, FALSE )
+	outEx( ".short 0xfffe" + NEWLINE )
 
 	ostr = ".int "
 	ostr += *sname
 	ostr += NEWLINE
-	outEx( ostr, FALSE )
+	outEx( ostr )
 
 end sub
 
@@ -5163,7 +5162,7 @@ sub emitVARINIi( byval dtype as integer, _
 	dim ostr as string
 
 	ostr = hGetTypeString( dtype ) + " " + str( value ) + NEWLINE
-	outEx( ostr, FALSE )
+	outEx( ostr )
 
 end sub
 
@@ -5177,7 +5176,7 @@ sub emitVARINIf( byval dtype as integer, _
 	svalue = hFloatToStr( value, dtype )
 
 	ostr = hGetTypeString( dtype ) + " " + svalue + NEWLINE
-	outEx( ostr, FALSE )
+	outEx( ostr )
 
 end sub
 
@@ -5187,7 +5186,7 @@ sub emitVARINI64( byval dtype as integer, _
 	dim ostr as string
 
 	ostr = hGetTypeString( dtype ) + " " + str( value ) + NEWLINE
-	outEx( ostr, FALSE )
+	outEx( ostr )
 
 end sub
 
@@ -5198,7 +5197,7 @@ sub emitVARINIOFS( byval sname as zstring ptr ) static
 	ostr = ".int "
 	ostr += *sname
 	ostr += NEWLINE
-	outEx( ostr, FALSE )
+	outEx( ostr )
 
 end sub
 
@@ -5209,7 +5208,7 @@ sub emitVARINISTR( byval s as zstring ptr ) static
 	ostr = ".ascii \""
 	ostr += *s
 	ostr += "\\0\"" + NEWLINE
-	outEx( ostr, FALSE )
+	outEx( ostr )
 
 end sub
 
@@ -5221,7 +5220,7 @@ sub emitVARINIWSTR( byval s as zstring ptr ) static
 	ostr += *s
 	ostr += *hGetWstrNull( )
 	ostr += "\"" + NEWLINE
-	outEx( ostr, FALSE )
+	outEx( ostr )
 
 end sub
 
@@ -5230,7 +5229,7 @@ sub emitVARINIPAD( byval bytes as integer ) static
     dim ostr as string
 
 	ostr = ".skip " + str( bytes ) + ",0" + NEWLINE
-	outEx( ostr, FALSE )
+	outEx( ostr )
 
 end sub
 

@@ -134,6 +134,10 @@ function cAsmBlock as integer
 
 	'' (AsmCode Comment? NewLine)+
 	do
+		if( not issingleline ) then
+			astAdd( astNewDBG( IR_OP_DBG_LINEINI, lexLineNum( ) ) )
+		end if
+
 		cAsmCode( )
 
 		'' Comment?
@@ -155,6 +159,10 @@ function cAsmBlock as integer
     		hReportError( FB_ERRMSG_EXPECTEDEOL )
     		exit function
 		end select
+
+		if( not issingleline ) then
+			astAdd( astNewDBG( IR_OP_DBG_LINEEND ) )
+		end if
 	loop
 
 	if( not issingleline ) then

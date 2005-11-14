@@ -235,24 +235,32 @@ type EMIT_NODE
 end type
 
 
-type EMIT_BOPCB as sub( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+type EMIT_BOPCB as sub( byval dvreg as IRVREG ptr, _
+						byval svreg as IRVREG ptr )
 
 type EMIT_UOPCB as sub( byval dvreg as IRVREG ptr )
 
-type EMIT_RELCB as sub( byval rvreg as IRVREG ptr, byval label as FBSYMBOL ptr, _
-						byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr )
+type EMIT_RELCB as sub( byval rvreg as IRVREG ptr, _
+						byval label as FBSYMBOL ptr, _
+						byval dvreg as IRVREG ptr, _
+						byval svreg as IRVREG ptr )
 
-type EMIT_STKCB as sub( byval vreg as IRVREG ptr, byval extra as integer )
+type EMIT_STKCB as sub( byval vreg as IRVREG ptr, _
+						byval extra as integer )
 
-type EMIT_BRCCB as sub( byval vreg as IRVREG ptr, byval sym as FBSYMBOL ptr, byval extra as integer )
+type EMIT_BRCCB as sub( byval vreg as IRVREG ptr, _
+						byval sym as FBSYMBOL ptr, _
+						byval extra as integer )
 
 type EMIT_SOPCB as sub( byval sym as FBSYMBOL ptr )
 
 type EMIT_LITCB as sub( byval text as zstring ptr )
 
-type EMIT_JTBCB as sub( byval dtype as integer, byval text as zstring ptr )
+type EMIT_JTBCB as sub( byval dtype as integer, _
+						byval text as zstring ptr )
 
-type EMIT_MEMCB as sub( byval dvreg as IRVREG ptr, byval svreg as IRVREG ptr, _
+type EMIT_MEMCB as sub( byval dvreg as IRVREG ptr, _
+						byval svreg as IRVREG ptr, _
 						byval bytes as integer )
 
 

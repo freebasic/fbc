@@ -675,14 +675,15 @@ private function hNewSYMOP( byval op as integer, _
 end function
 
 '':::::
-private function hNewLIT( byval text as zstring ptr ) as EMIT_NODE ptr static
+private function hNewLIT( byval text as zstring ptr, _
+						  byval doupdate as integer ) as EMIT_NODE ptr static
 
 	dim as EMIT_NODE ptr n
 
-	n = hNewNode( EMIT_NODECLASS_LIT, FALSE )
+	n = hNewNode( EMIT_NODECLASS_LIT, doupdate )
 
-	n->lit.text = ZstrAllocate( len( *text ) )
-	*n->lit.text = *text
+	n->lit.text   = ZstrAllocate( len( *text ) )
+	*n->lit.text  = *text
 
 	function = n
 
@@ -1411,7 +1412,7 @@ end sub
 '':::::
 sub emitCOMMENT( byval text as zstring ptr ) static
 
-	hNewLIT( "##" + *text )
+	hNewLIT( "##" + *text, FALSE )
 
 end sub
 
@@ -1419,7 +1420,7 @@ end sub
 sub emitASM( byval text as zstring ptr ) static
     dim as integer c
 
-    hNewLIT( text )
+    hNewLIT( text, TRUE )
 
 	'' reset reg usage
 	for c = 0 to EMIT_REGCLASSES-1
@@ -1431,7 +1432,7 @@ end sub
 '':::::
 sub emitLIT( byval text as zstring ptr ) static
 
-	hNewLIT( text )
+	hNewLIT( text, FALSE )
 
 end sub
 

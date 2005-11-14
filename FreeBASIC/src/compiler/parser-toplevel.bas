@@ -95,7 +95,7 @@ function cLine as integer
     end if
 
 	''
-	astAdd( astNewDBG( IR_OP_DBG_LINEEND, lexLineNum( ) ) )
+	astAdd( astNewDBG( IR_OP_DBG_LINEEND ) )
 
     function = TRUE
 
@@ -131,7 +131,7 @@ function cSimpleLine as integer
 	end if
 
 	''
-	astAdd( astNewDBG( IR_OP_DBG_LINEEND, lexLineNum( ) ) )
+	astAdd( astNewDBG( IR_OP_DBG_LINEEND ) )
 
     function = TRUE
 
