@@ -181,8 +181,6 @@ function cSelectStatement as integer
 										 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR ), _
 							  rtlWstrAlloc( rtlMathLen( astCloneTree( expr ), TRUE ) ) ) )
 
-		astAdd( expr )
-
 		'' *tmp = expr
 		expr = astNewASSIGN( astNewPTR( 0, _
 								  		astNewVAR( symbol, _
