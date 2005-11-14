@@ -100,23 +100,45 @@ data @"erl", "fb_ErrorGetLineNum", _
 '''			   byval funcname as zstring ptr, byval expression as zstring ptr ) as void
 data @"fb_Assert","", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FALSE, TRUE, _
 	 4, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
 
+'' fb_AssertW ( byval fname as zstring ptr, byval linenum as integer, _
+'''			    byval funcname as zstring ptr, byval expression as wstring ptr ) as void
+data @"fb_Assert","fb_AssertW", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 4, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE
+
 '' fb_AssertWarn ( byval fname as zstring ptr, byval linenum as integer, _
 ''				   byval funcname as zstring ptr, byval expression as zstring ptr ) as void
 data @"fb_AssertWarn","", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FALSE, TRUE, _
 	 4, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
+
+'' fb_AssertWarnW ( byval fname as zstring ptr, byval linenum as integer, _
+''				    byval funcname as zstring ptr, byval expression as wstring ptr ) as void
+data @"fb_AssertWarn","fb_AssertWarnW", _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 4, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE
 
 '' EOL
 data NULL
