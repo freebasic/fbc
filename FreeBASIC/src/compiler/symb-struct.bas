@@ -294,7 +294,6 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
     				   @ename, NULL, _
     				   FALSE, typ, subtype, ptrcnt )
     if( e = NULL ) then
-    	print 1
     	exit function
     end if
 
