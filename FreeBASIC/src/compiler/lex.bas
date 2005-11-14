@@ -512,7 +512,6 @@ end sub
 ''
 private function lexReadNonDecNumber( byref pnum as zstring ptr, _
 								 	  byref tlen as integer, _
-								 	  byref issigned as integer, _
 								 	  byref islong as integer, _
 								 	  byval flags as LEXCHECK_ENUM _
 							   	 	) as ulongint static
@@ -522,7 +521,6 @@ private function lexReadNonDecNumber( byref pnum as zstring ptr, _
 	dim as integer lgt
 	dim as integer skipchar = FALSE
 
-	issigned = FALSE
 	islong = FALSE
 	value = 0
 	lgt = 0
@@ -685,7 +683,6 @@ private function lexReadNonDecNumber( byref pnum as zstring ptr, _
 
 	if( not islong ) then
 		if( value and &h80000000UL ) then
-			issigned = TRUE
 			*pnum = str( csign( value ) )
         else
 			*pnum = str( value )
@@ -695,7 +692,6 @@ private function lexReadNonDecNumber( byref pnum as zstring ptr, _
 
 	else
 		if( value64 and &h8000000000000000ULL ) then
-			issigned = TRUE
             *pnum = str( csign( value64 ) )
         else
 			*pnum = str( value64 )
@@ -840,7 +836,6 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 	isfloat    = FALSE
 	issigned   = TRUE
 	islong     = FALSE
-	forcedsign = FALSE
 	value	   = 0
 
 	typ 	   = INVALID
@@ -970,7 +965,10 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 	'' hex, oct, bin
 	case CHAR_AMP
 		tlen = 0
-		value = lexReadNonDecNumber( pnum, tlen, issigned, islong, flags )
+		value = lexReadNonDecNumber( pnum, tlen, islong, flags )
+		'' it should be always assumed to be a signed (long)integer,
+		'' the U(LL) suffix should be used otherwise
+		issigned = TRUE
 	end select
 
 	'' null-term
@@ -986,6 +984,8 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 				lexEatChar( )
 				issigned = FALSE
 				forcedsign = TRUE
+			case else
+				forcedsign = FALSE
 			end select
 
 			select case as const lexCurrentChar( )
