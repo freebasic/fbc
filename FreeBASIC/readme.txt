@@ -105,6 +105,12 @@ Requirements:
     - The gfx routines will use DirectX 5.0 or later if found on the host system,
       otherwise they'll fall back on standard Win32 GDI which will work on any
       Windows system.
+      
+    - Unicode wide-strings (WSTRING's) only work in Windows NT/2000/XP/2003/Vista or 
+      above. Applications that depend on wide-strings will run in Windows 98/Me, but
+      no input/output will work if the character set isn't latin-based, because those 
+      platforms don't support Unicode strings. Windows 95 has most Unicode API functions 
+      missing, applications using wide-strings won't even be loaded by the OS.
 
   o Linux version:
 
