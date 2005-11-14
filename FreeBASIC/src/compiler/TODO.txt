@@ -1,6 +1,4 @@
 
-[ ] bit-fields shouldn't be allowed to be initialized
-
 [ ] @static_array(const) won't become an OFFSET, not allowing initializations..
 
 [ ] files cannot be opened as text-mode in the rlib or the newline handling
