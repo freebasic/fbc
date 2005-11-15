@@ -20,6 +20,6 @@ declare function gtk_widget_create_gl_context cdecl alias "gtk_widget_create_gl_
 declare function gtk_widget_get_gl_context cdecl alias "gtk_widget_get_gl_context" (byval widget as GtkWidget ptr) as GdkGLContext ptr
 declare function gtk_widget_get_gl_window cdecl alias "gtk_widget_get_gl_window" (byval widget as GtkWidget ptr) as GdkGLWindow ptr
 
-#define gtk_widget_get_gl_drawable(w) gtk_widget_get_gl_window(w)
+#define gtk_widget_get_gl_drawable(w) GDK_GL_DRAWABLE(gtk_widget_get_gl_window(w))
 
 #endif

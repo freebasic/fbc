@@ -12,6 +12,13 @@
 #include once "gtk/gdkgl/gdkgldefs.bi"
 #include once "gtk/gdkgl/gdkgltypes.bi"
 
+#define GDK_TYPE_GL_DRAWABLE gdk_gl_drawable_get_type ()
+#define GDK_GL_DRAWABLE(inst) G_TYPE_CHECK_INSTANCE_CAST (inst, GDK_TYPE_GL_DRAWABLE, GdkGLDrawable)
+#define GDK_GL_DRAWABLE_CLASS(vtable) G_TYPE_CHECK_CLASS_CAST (vtable, GDK_TYPE_GL_DRAWABLE, GdkGLDrawableClass)
+#define GDK_IS_GL_DRAWABLE(inst) G_TYPE_CHECK_INSTANCE_TYPE (inst, GDK_TYPE_GL_DRAWABLE)
+#define GDK_IS_GL_DRAWABLE_CLASS(vtable) G_TYPE_CHECK_CLASS_TYPE (vtable, GDK_TYPE_GL_DRAWABLE)
+#define GDK_GL_DRAWABLE_GET_CLASS(inst) G_TYPE_INSTANCE_GET_INTERFACE (inst, GDK_TYPE_GL_DRAWABLE, GdkGLDrawableClass)
+
 type GdkGLDrawableClass as _GdkGLDrawableClass
 
 type _GdkGLDrawableClass
