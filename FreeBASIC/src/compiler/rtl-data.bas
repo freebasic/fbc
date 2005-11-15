@@ -122,6 +122,13 @@ data @FB_RTL_DATAREADUINT,"", _
 	 1, _
 	 FB_SYMBTYPE_UINT,FB_ARGMODE_BYREF, FALSE
 
+'' fb_DataReadUInt ( byref dst as uinteger ) as void
+data @FB_RTL_DATAREADPTR,FB_RTL_DATAREADUINT, _
+	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 1, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYREF, FALSE
+
 '' fb_DataReadULongint ( byref dst as ulongint ) as void
 data @FB_RTL_DATAREADULONGINT,"", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
@@ -177,37 +184,56 @@ function rtlDataRead( byval varexpr as ASTNODE ptr ) as integer static
 
 	f = NULL
 	args = 1
-	select case as const astGetDataType( varexpr )
+	dtype = astGetDataType( varexpr )
+
+	select case as const dtype
 	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR
 		f = PROCLOOKUP( DATAREADSTR )
 		args = 3
+
 	case IR_DATATYPE_WCHAR
 		f = PROCLOOKUP( DATAREADWSTR )
 		args = 2
+
 	case IR_DATATYPE_BYTE
 		f = PROCLOOKUP( DATAREADBYTE )
+
 	case IR_DATATYPE_UBYTE
 		f = PROCLOOKUP( DATAREADUBYTE )
+
 	case IR_DATATYPE_SHORT
 		f = PROCLOOKUP( DATAREADSHORT )
+
 	case IR_DATATYPE_USHORT
 		f = PROCLOOKUP( DATAREADUSHORT )
+
 	case IR_DATATYPE_INTEGER, IR_DATATYPE_ENUM
 		f = PROCLOOKUP( DATAREADINT )
+
 	case IR_DATATYPE_UINT
 		f = PROCLOOKUP( DATAREADUINT )
+
 	case IR_DATATYPE_LONGINT
 		f = PROCLOOKUP( DATAREADLONGINT )
+
 	case IR_DATATYPE_ULONGINT
 		f = PROCLOOKUP( DATAREADULONGINT )
+
 	case IR_DATATYPE_SINGLE
 		f = PROCLOOKUP( DATAREADSINGLE )
+
 	case IR_DATATYPE_DOUBLE
 		f = PROCLOOKUP( DATAREADDOUBLE )
+
 	case IR_DATATYPE_USERDEF
 		exit function						'' illegal
+
 	case else
-		f = PROCLOOKUP( DATAREADUINT )
+		if( dtype >= IR_DATATYPE_POINTER ) then
+			f = PROCLOOKUP( DATAREADPTR )
+		else
+			exit function
+		end if
 	end select
 
     if( f = NULL ) then
@@ -218,7 +244,6 @@ function rtlDataRead( byval varexpr as ASTNODE ptr ) as integer static
 
     if( args > 1 ) then
     	'' always calc len before pushing the param
-		dtype = astGetDataType( varexpr )
 		lgt = rtlCalcStrLen( varexpr, dtype )
 	end if
 

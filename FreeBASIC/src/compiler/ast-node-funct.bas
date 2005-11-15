@@ -548,7 +548,8 @@ private function hCheckByRefArg( byval dtype as integer, _
 									 	 0, _
 									 	 dtype, _
 									 	 subtype ), _
-							  p )
+							  p, _
+							  FALSE )
 		end select
 
 	end select
@@ -910,6 +911,8 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 	'' byref arg? check if a temp param isn't needed
 	if( amode = FB_ARGMODE_BYREF ) then
 		p = hCheckByRefArg( adtype, symbGetSubtype( arg ), n )
+        '' it's an implicit pointer
+		adtype += IR_DATATYPE_POINTER
 	end if
 
 	'' pointer checking
@@ -933,8 +936,8 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 			end if
 		end if
 
-    '''''elseif( p->dtype >= IR_DATATYPE_POINTER ) then
-    '''''	hReportParamWarning( f, FB_WARNINGMSG_IMPLICITCONVERSION )
+    elseif( p->dtype >= IR_DATATYPE_POINTER ) then
+    	hReportParamWarning( f, FB_WARNINGMSG_PASSINGPTRTOSCALAR )
 	end if
 
     function = TRUE

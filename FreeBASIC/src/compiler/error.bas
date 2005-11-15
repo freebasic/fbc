@@ -46,6 +46,7 @@ end type
 	dim shared warningMsgs( 1 to FB_WARNINGMSGS-1 ) as FBWARNING = _
 	{ _
 		( 0, "Passing scalar as pointer" ), _
+		( 0, "Passing pointer to scalar" ), _
 		( 0, "Passing different pointer types" ), _
 		( 0, "Suspicious pointer assignment" ), _
 		( 0, "Implicit conversion" ), _

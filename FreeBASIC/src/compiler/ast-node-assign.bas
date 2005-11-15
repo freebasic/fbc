@@ -31,7 +31,8 @@ option escape
 
 '':::::
 function astNewASSIGN( byval l as ASTNODE ptr, _
-					   byval r as ASTNODE ptr ) as ASTNODE ptr static
+					   byval r as ASTNODE ptr, _
+					   byval checktypes as integer = TRUE ) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
     dim as integer dtype
@@ -226,25 +227,26 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 
 
     '' check pointers
-    if( ldtype >= IR_DATATYPE_POINTER ) then
-    	'' function ptr?
-    	if( ldtype = IR_DATATYPE_POINTER + IR_DATATYPE_FUNCTION ) then
-    		if( not astFuncPtrCheck( ldtype, l->subtype, r ) ) then
-   				hReportWarning( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
-    		end if
+    if( checktypes ) then
+    	if( ldtype >= IR_DATATYPE_POINTER ) then
+	    	'' function ptr?
+    		if( ldtype = IR_DATATYPE_POINTER + IR_DATATYPE_FUNCTION ) then
+    			if( not astFuncPtrCheck( ldtype, l->subtype, r ) ) then
+   					hReportWarning( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
+    			end if
 
-    	'' ordinary ptr..
-    	else
-			if( not astPtrCheck( ldtype, l->subtype, r ) ) then
-				hReportWarning( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
+    		'' ordinary ptr..
+    		else
+				if( not astPtrCheck( ldtype, l->subtype, r ) ) then
+					hReportWarning( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
+				end if
 			end if
-		end if
 
-    '' r-side expr is a ptr?
-    elseif( rdtype >= IR_DATATYPE_POINTER ) then
-    	hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+    	'' r-side expr is a ptr?
+    	elseif( rdtype >= IR_DATATYPE_POINTER ) then
+    		hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+    	end if
     end if
-
 
 	'' convert types if needed
 	if( ldtype <> rdtype ) then

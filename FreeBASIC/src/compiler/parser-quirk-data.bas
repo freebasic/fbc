@@ -145,6 +145,7 @@ function cDataStmt as integer static
             		if( not rtlDataStore( littext, _
             							  len( littext ), _
             							  IR_DATATYPE_CHAR ) ) then
+	            		hReportError( FB_ERRMSG_INVALIDDATATYPES )
 	            		exit function
     	        	end if
 

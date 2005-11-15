@@ -298,7 +298,8 @@ declare function 	astFuncPtrCheck		( byval pdtype as integer, _
 					      				  byval expr as ASTNODE ptr ) as integer
 
 declare function 	astNewASSIGN		( byval l as ASTNODE ptr, _
-										  byval r as ASTNODE ptr ) as ASTNODE ptr
+										  byval r as ASTNODE ptr, _
+										  byval checktypes as integer = TRUE ) as ASTNODE ptr
 
 declare function 	astNewCONV			( byval op as integer, _
 										  byval dtype as integer, _

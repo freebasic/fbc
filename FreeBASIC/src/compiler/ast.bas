@@ -760,10 +760,10 @@ function astPtrCheck( byval pdtype as integer, _
 	if( pdtype <> edtype ) then
 
     	'' remove the pointers
-    	pdtype_np mod= IR_DATATYPE_POINTER
-    	edtype_np mod= IR_DATATYPE_POINTER
+    	pdtype_np = pdtype mod IR_DATATYPE_POINTER
+    	edtype_np = edtype mod IR_DATATYPE_POINTER
 
-    	'' 1st) one of them is a ANY PTR?
+    	'' 1st) is one of them an ANY PTR?
     	if( pdtype_np = IR_DATATYPE_VOID ) then
     		return TRUE
     	elseif( edtype_np = IR_DATATYPE_VOID ) then
@@ -775,11 +775,13 @@ function astPtrCheck( byval pdtype as integer, _
     		exit function
     	end if
 
-    	'' 3rd) same size?
+    	'' 3rd) same size and class?
     	if( (pdtype_np <= IR_DATATYPE_DOUBLE) and _
     		(edtype_np <= IR_DATATYPE_DOUBLE) ) then
     		if( irGetDataSize( pdtype_np ) = irGetDataSize( edtype_np ) ) then
-    			return TRUE
+    			if( irGetDataClass( pdtype_np ) = irGetDataClass( edtype_np ) ) then
+    				return TRUE
+    			end if
     		end if
     	end if
 

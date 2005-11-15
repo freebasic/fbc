@@ -471,7 +471,6 @@ sub rtlPrintModEnd( )
 
 end sub
 
-
 '':::::
 function rtlPrint( byval fileexpr as ASTNODE ptr, _
 				   byval iscomma as integer, _
@@ -502,66 +501,77 @@ function rtlPrint( byval fileexpr as ASTNODE ptr, _
 			else
 				f = PROCLOOKUP( PRINTSTR )
 			end if
+
 		case IR_DATATYPE_WCHAR
 			if( islprint ) then
 				f = PROCLOOKUP( LPRINTWSTR )
 			else
 				f = PROCLOOKUP( PRINTWSTR )
 			end if
+
 		case IR_DATATYPE_BYTE
 			if( islprint ) then
 				f = PROCLOOKUP( LPRINTBYTE )
 			else
 				f = PROCLOOKUP( PRINTBYTE )
 			end if
+
 		case IR_DATATYPE_UBYTE
 			if( islprint ) then
 				f = PROCLOOKUP( LPRINTUBYTE )
 			else
 				f = PROCLOOKUP( PRINTUBYTE )
 			end if
+
 		case IR_DATATYPE_SHORT
 			if( islprint ) then
 				f = PROCLOOKUP( LPRINTSHORT )
 			else
 				f = PROCLOOKUP( PRINTSHORT )
 			end if
+
 		case IR_DATATYPE_USHORT
 			if( islprint ) then
 				f = PROCLOOKUP( LPRINTUSHORT )
 			else
 				f = PROCLOOKUP( PRINTUSHORT )
 			end if
+
 		case IR_DATATYPE_INTEGER, IR_DATATYPE_ENUM
 			if( islprint ) then
 				f = PROCLOOKUP( LPRINTINT )
 			else
 				f = PROCLOOKUP( PRINTINT )
 			end if
+
 		case IR_DATATYPE_UINT
 			if( islprint ) then
 				f = PROCLOOKUP( LPRINTUINT )
 			else
 				f = PROCLOOKUP( PRINTUINT )
 			end if
+
 		case IR_DATATYPE_LONGINT
 			if( islprint ) then
 				f = PROCLOOKUP( LPRINTLONGINT )
 			else
 				f = PROCLOOKUP( PRINTLONGINT )
 			end if
+
 		case IR_DATATYPE_ULONGINT
 			if( islprint ) then
 				f = PROCLOOKUP( LPRINTULONGINT )
 			else
 				f = PROCLOOKUP( PRINTULONGINT )
 			end if
+
 		case IR_DATATYPE_SINGLE
 			if( islprint ) then
 				f = PROCLOOKUP( LPRINTSINGLE )
 			else
 				f = PROCLOOKUP( PRINTSINGLE )
 			end if
+
 		case IR_DATATYPE_DOUBLE
 			if( islprint ) then
 				f = PROCLOOKUP( LPRINTDOUBLE )
@@ -707,30 +717,43 @@ function rtlWrite( byval fileexpr as ASTNODE ptr, _
 		select case as const dtype
 		case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
 			f = PROCLOOKUP( WRITESTR )
+
 		case IR_DATATYPE_WCHAR
 			f = PROCLOOKUP( WRITEWSTR )
+
 		case IR_DATATYPE_BYTE
 			f = PROCLOOKUP( WRITEBYTE )
+
 		case IR_DATATYPE_UBYTE
 			f = PROCLOOKUP( WRITEUBYTE )
+
 		case IR_DATATYPE_SHORT
 			f = PROCLOOKUP( WRITESHORT )
+
 		case IR_DATATYPE_USHORT
 			f = PROCLOOKUP( WRITEUSHORT )
+
 		case IR_DATATYPE_INTEGER, IR_DATATYPE_ENUM
 			f = PROCLOOKUP( WRITEINT )
+
 		case IR_DATATYPE_UINT
 			f = PROCLOOKUP( WRITEUINT )
+
 		case IR_DATATYPE_LONGINT
 			f = PROCLOOKUP( WRITELONGINT )
+
 		case IR_DATATYPE_ULONGINT
 			f = PROCLOOKUP( WRITEULONGINT )
+
 		case IR_DATATYPE_SINGLE
 			f = PROCLOOKUP( WRITESINGLE )
+
 		case IR_DATATYPE_DOUBLE
 			f = PROCLOOKUP( WRITEDOUBLE )
+
 		case IR_DATATYPE_USERDEF
 			exit function						'' illegal
+
 		case else
 			if( dtype >= IR_DATATYPE_POINTER ) then
 				f = PROCLOOKUP( WRITEUINT )
@@ -851,8 +874,10 @@ function rtlPrintUsing( byval fileexpr as ASTNODE ptr, _
 	select case astGetDataType( expr )
 	case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
 		f = PROCLOOKUP( PRINTUSGSTR )
+
 	case IR_DATATYPE_WCHAR
 		f = PROCLOOKUP( PRINTUSGWSTR )
+
 	case else
 		f = PROCLOOKUP( PRINTUSGVAL )
 	end select
