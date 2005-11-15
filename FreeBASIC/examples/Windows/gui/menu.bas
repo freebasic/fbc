@@ -255,7 +255,7 @@ sub menu_insert( byval hmenu as HMENU, byval submenu as integer, title as string
     
     	.hnd 	= CreatePopupMenu( )
     
-    	InsertMenu( hmenu, submenu, MF_BYPOSITION Or MF_POPUP Or MF_STRING or flags, .hnd, title )
+    	InsertMenu( hmenu, submenu, MF_BYPOSITION Or MF_POPUP Or MF_STRING or flags, cuint( .hnd ), title )
     	
     end with
     

@@ -69,7 +69,7 @@ function WndProc ( byval hWnd as HWND, _
             DestroyIcon( hico ) 
         next i 
 
-        SendMessage( htv, TVM_SETIMAGELIST, TVSIL_NORMAL, ilist ) 
+        SendMessage( htv, TVM_SETIMAGELIST, TVSIL_NORMAL, cuint( ilist ) ) 
   
         clear tvis, 0, len(tvis)
         tvis.Item.Mask = TVIF_TEXT or TVIF_IMAGE or TVIF_SELECTEDIMAGE 
@@ -82,47 +82,47 @@ function WndProc ( byval hWnd as HWND, _
         tvis.item.iSelectedImage 	= 1 
         tvis.hInsertAfter        	= 0 
         tvis.hParent             	= TVI_ROOT 
-        hPrev                   	= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, @tvis) )
+        hPrev                   	= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, cuint( @tvis )) )
 
         '-- tv.additem -> tv.item(1) | tv.children=0 
         text            	  		= "Inc" 
         tvis.item.pszText   		= strptr(text) 
         tvis.item.cchTextMax		= len(text) 
         tvis.hParent        		= hPrev 
-        hPrev            	  		= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, @tvis ) )
+        hPrev            	  		= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, cuint( @tvis ) ) )
 
         '-- tv.additem -> tv.item(2) | tv.children=1 
         text            			= "Win" 
         tvis.item.pszText   		= strptr(text) 
         tvis.item.cchTextMax		= len(text) 
         tvis.hParent      			= hPrev 
-        hPrev            			= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, @tvis ) )
+        hPrev            			= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, cuint( @tvis ) ) )
 
         '-- tv.additem -> tv.item(3) | tv.children=2 
         text            = "Gui" 
         tvis.item.pszText   		= strptr(text) 
         tvis.item.cchTextMax		= len(text) 
         tvis.hParent      			= hPrev 
-        hPrev            			= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, @tvis ) )
+        hPrev            			= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, cuint( @tvis ) ) )
 
         '-- tv.additem -> tv.item(4) | tv.children=0 
         text            			= "Assembler" 
         tvis.item.pszText   		= strptr(text) 
         tvis.item.cchTextMax		= len(text) 
         tvis.hParent      			= TVI_ROOT 
-        hPrev            			= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, @tvis ) )
+        hPrev            			= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, cuint( @tvis ) ) )
 
         '-- tv.additem -> tv.item(5) | tv.children=0 
         text            			= "Tutorials" 
         tvis.item.pszText   		= strptr(text) 
         tvis.item.cchTextMax		= len(text) 
-        hPrev            			= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, @tvis ) )
+        hPrev            			= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, cuint( @tvis ) ) )
 
         '-- tv.additem -> tv.item(6) | tv.children=0 
         text            			= "Object Oriented" 
         tvis.item.pszText   		= strptr(text) 
         tvis.item.cchTextMax		= len(text) 
-        hPrev            			= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, @tvis ) )
+        hPrev            			= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, cuint( @tvis ) ) )
       
 	case WM_SIZE 
         GetClientRect( hWnd, @rc )

@@ -8,7 +8,6 @@ option explicit
 #include once "win/shlobj.bi"
 
 
-	dim Shared sFolder as string 
 
 ''
 function BrowseCallbackProc(byval hWnd as HWND, _
@@ -18,7 +17,7 @@ function BrowseCallbackProc(byval hWnd as HWND, _
 
     select case uMsg 
     case BFFM_INITIALIZED 
-        SendMessage( hWnd, BFFM_SETSELECTION, -1, strptr( sFolder ) ) 
+        SendMessage( hWnd, BFFM_SETSELECTION, -1, lpData ) 
     
     case BFFM_SELCHANGED 
         dim as zstring * MAX_PATH sPath
@@ -29,7 +28,7 @@ function BrowseCallbackProc(byval hWnd as HWND, _
             sPath = "PATH: " + sPath
         end if 
         
-        SendMessage( hWnd, BFFM_SETSTATUSTEXT, 0, @sPath )
+        SendMessage( hWnd, BFFM_SETSTATUSTEXT, 0, cuint( @sPath ) )
    end select 
    
    function = 0 
@@ -45,9 +44,12 @@ function BrowseForFolder(byval hWnd as HWND, _
     dim bi         as BROWSEINFO 
     dim pidlReturn as LPITEMIDLIST
     dim pidlStart  as LPITEMIDLIST
+	static sFolder as string 
 
     CoInitialize( NULL ) 
     SHGetSpecialFolderLocation( NULL, CSIDL_DRIVES, @pidlStart ) 
+
+    sFolder       	= DefaultFolder
 
     with bi
 	    .pidlRoot   = pidlStart 
@@ -55,8 +57,8 @@ function BrowseForFolder(byval hWnd as HWND, _
 	    .lpszTitle  = @Prompt
 	    .ulFlags    = Flags 
 	   	.lpfn       = @BrowseCallbackProc 
+	   	.lParam		= cuint( strptr( sFolder ) )
 	end with
-    sFolder       	= DefaultFolder
     
    	pidlReturn = SHBrowseForFolder( @bi ) 
    
