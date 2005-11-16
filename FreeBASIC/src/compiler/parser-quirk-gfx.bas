@@ -55,23 +55,25 @@ const FBGFX_PUTMODE_CUSTOM = 7
 
 '':::::
 private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, _
-								  byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
+								  byval expr as ASTNODE ptr _
+								) as ASTNODE ptr
+
     dim as ASTNODE ptr idxexpr, temp
 
     '' field?
-    if( astIsFIELD( arrayexpr ) ) then
-    	return arrayexpr
+    if( astIsFIELD( expr ) ) then
+    	return expr
     end if
 
     ''  argument passed by descriptor?
     if( symbIsArgByDesc( sym ) ) then
 
-    	astDelTree( arrayexpr )
-
     	temp	  = astNewVAR( sym, 0, IR_DATATYPE_INTEGER )
     	idxexpr   = astNewPTR( FB_ARRAYDESC_DATAOFFS, temp, IR_DATATYPE_INTEGER, NULL )
     	idxexpr   = astNewLOAD( idxexpr, IR_DATATYPE_INTEGER )
-    	arrayexpr = astNewVAR( sym, 0, IR_DATATYPE_INTEGER )
+
+    	astDelTree( expr )
+    	expr 	  = astNewVAR( sym, 0, IR_DATATYPE_INTEGER )
 
     '' dynamic array? (this will handle common's too)
     elseif( symbGetIsDynamic( sym ) ) then
@@ -88,53 +90,59 @@ private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, _
 
     end if
 
-    function = astNewIDX( arrayexpr, idxexpr, _
-    					  astGetDataType( arrayexpr ), astGetSubType( arrayexpr ) )
+    function = astNewIDX( expr, idxexpr, _
+    					  astGetDataType( expr ), astGetSubType( expr ) )
 
 end function
 
 '':::::
-private function hGetTarget( byref targetexpr as ASTNODE ptr, _
-							 byref isptr as integer, _
-							 byval fetchexpr as integer = TRUE ) as FBSYMBOL ptr
+private function hGetTarget( byref expr as ASTNODE ptr, _
+							 byref isptr as integer _
+						   ) as FBSYMBOL ptr
+
 	dim as FBSYMBOL ptr s
 
 	function = NULL
 
 	isptr = FALSE
 
-	if( fetchexpr ) then
-		targetexpr = NULL
-		if( lexGetToken( ) <> CHAR_LPRNT ) then
-			if( not cVarOrDeref( targetexpr, FALSE, TRUE ) ) then
-				exit function
-			end if
-		else
+	expr = NULL
+	if( lexGetToken( ) <> CHAR_LPRNT ) then
+		if( not cVarOrDeref( expr, FALSE, TRUE ) ) then
 			exit function
 		end if
+	else
+		exit function
 	end if
 
 	'' address of?
-	if( astIsADDR( targetexpr ) ) then
+	if( astIsADDR( expr ) ) then
 		isptr = TRUE
+		return NULL
 	else
-		s = astGetSymbol( targetexpr )
+		s = astGetSymbol( expr )
 		if( s = NULL ) then
-			exit function
+			'' pointer?
+			if( astGetDataType( expr ) >= IR_DATATYPE_POINTER ) then
+				isptr = TRUE
+				return NULL
+			else
+				exit function
+			end if
 		end if
 
-		'' pointer?
-		if( symbGetType( s ) >= FB_SYMBTYPE_POINTER ) then
-			isptr = TRUE
+		'' ptr?
+		isptr = ( symbGetType( s ) >= IR_DATATYPE_POINTER )
+
 		'' array?
-		elseif( symbIsArray( s ) ) then
+		if( symbIsArray( s ) ) then
 			'' no index given?
-			if( not astIsIDX( targetexpr ) ) then
-				targetexpr = hMakeArrayIndex( s, targetexpr )
+			if( not astIsIDX( expr ) ) then
+				expr = hMakeArrayIndex( s, expr )
 			end if
-			isptr = FALSE
-		'' fail..
-		else
+
+		'' not a ptr? fail..
+		elseif( not isptr ) then
 			exit function
 		end if
 	end if
@@ -462,7 +470,7 @@ function cGfxDraw as integer
 
 	if( lexGetLookAhead( 1 ) = CHAR_COMMA ) then
 		target = hGetTarget( texpr, tisptr )
-		if( target = NULL and not tisptr ) then
+		if( (target = NULL) and (not tisptr) ) then
 			hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 			exit function
 		end if
@@ -570,7 +578,8 @@ function cGfxPalette as integer
 
 	if( hMatch( FB_TK_USING ) ) then
 
-		if( not hGetTarget( arrayexpr, isptr ) ) then
+		s = hGetTarget( arrayexpr, isptr )
+		if( (s = NULL) and (not isptr) ) then
             hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
             exit function
         end if
@@ -998,7 +1007,7 @@ function cGfxPoint( byref funcexpr as ASTNODE ptr ) as integer
 
 		if( hMatch( CHAR_COMMA ) ) then
 			target = hGetTarget( texpr, tisptr )
-			if( target = NULL and not tisptr ) then
+			if( (target = NULL) and (not tisptr) ) then
 				hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 				exit function
 			end if
