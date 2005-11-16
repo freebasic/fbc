@@ -321,7 +321,7 @@ declare function 	emitGetRegClass		( byval dclass as integer ) as REGCLASS ptr
 
 declare	function 	emitGetPos 			( ) as integer
 
-declare function 	emitIsKeyword		( byval text as string ) as integer
+declare function 	emitIsKeyword		( byval text as zstring ptr ) as integer
 
 declare sub 		emitProcBegin		( byval proc as FBSYMBOL ptr )
 
@@ -572,7 +572,7 @@ declare sub 		emitVARINIWSTR		( byval s as zstring ptr )
 declare sub 		emitVARINIPAD		( byval bytes as integer )
 
 declare sub 		hWriteStr			( byval addtab as integer, _
-										  byval s as string )
+										  byval s as zstring ptr )
 
 declare sub 		emitReset			( )
 

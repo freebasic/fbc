@@ -85,7 +85,6 @@ const FB_STRDESCLEN			= len( FB_STRDESC )
 
 '' "fake" descriptors as UDT's
 const FB_DESCTYPE_ARRAY 	= -2
-const FB_DESCTYPE_STR 		= -3
 
 ''
 const FB_DATALABELNAME 		= "_{fbdata}_begin"
@@ -551,6 +550,7 @@ enum FBALLOCTYPE_ENUM
     FB_ALLOCTYPE_CONSTRUCTOR    = &h020000      '' it can be either constructor
     FB_ALLOCTYPE_DESTRUCTOR     = &h040000      '' or destructor, but not both ...
     FB_ALLOCTYPE_LOCAL			= &h080000
+    FB_ALLOCTYPE_DESCRIPTOR		= &h100000
 end enum
 
 #include once "inc\hash.bi"
@@ -576,7 +576,7 @@ type FBLIBRARY
 	ll_prv			as FBLIBRARY ptr			'' linked-list nodes
 	ll_nxt			as FBLIBRARY ptr			'' /
 
-	name			as zstring * FB_MAXPATHLEN+1
+	name			as zstring ptr
 
 	hashitem		as HASHITEM ptr
 	hashindex		as uinteger

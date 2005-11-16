@@ -319,7 +319,7 @@ declare function 	astNewUOP			( byval op as integer, _
 declare function 	astNewCONST			( byval v as FBVALUE ptr, _
 					  					  byval dtype as integer ) as ASTNODE ptr
 
-declare function 	astNewCONSTstr		( byval v as string ) as ASTNODE ptr
+declare function 	astNewCONSTstr		( byval v as zstring ptr ) as ASTNODE ptr
 
 declare function 	astNewCONSTwstr		( byval v as wstring ptr ) as ASTNODE ptr
 

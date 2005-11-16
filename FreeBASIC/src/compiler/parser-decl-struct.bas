@@ -193,7 +193,7 @@ end function
 
 '':::::
 private function hTypeAdd( byval parent as FBSYMBOL ptr, _
-						   byval id as string, _
+						   byval id as zstring ptr, _
 						   byval isunion as integer, _
 						   byval align as integer ) as FBSYMBOL ptr
 
@@ -201,7 +201,7 @@ private function hTypeAdd( byval parent as FBSYMBOL ptr, _
 
 	function = NULL
 
-	s = symbAddUDT( parent, @id, isunion, align )
+	s = symbAddUDT( parent, id, isunion, align )
 	if( s = NULL ) then
     	hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
     	exit function

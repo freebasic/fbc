@@ -39,13 +39,13 @@ sub symbInitLibs( ) static
 end sub
 
 '':::::
-function symbAddLib( byval libname as string ) as FBLIBRARY ptr static
+function symbAddLib( byval libname as zstring ptr ) as FBLIBRARY ptr static
     dim l as FBLIBRARY ptr
 
     function = NULL
 
     '' check if not already declared
-    l = hashLookup( @symb.libhash, strptr( libname ) )
+    l = hashLookup( @symb.libhash, libname )
     if( l <> NULL ) then
     	return l
     end if
@@ -56,9 +56,10 @@ function symbAddLib( byval libname as string ) as FBLIBRARY ptr static
 	end if
 
 	''
-	l->name		= libname
+	l->name		= ZstrAllocate( len( *libname ) )
+	*l->name	= *libname
 
-	l->hashitem = hashAdd( @symb.libhash, strptr( l->name ), l, l->hashindex )
+	l->hashitem = hashAdd( @symb.libhash, l->name, l, l->hashindex )
 
 	function = l
 
@@ -73,14 +74,14 @@ sub symbDelLib( byval l as FBLIBRARY ptr ) static
 
 	hashDel( @symb.libhash, l->hashitem, l->hashindex )
 
-	l->name = ""
+	ZstrFree( l->name )
 
     listDelNode( @symb.liblist, cptr( TLISTNODE ptr, l ) )
 
 end sub
 
 '':::::
-function hFindLib( byval libname as string, _
+function hFindLib( byval libname as zstring ptr, _
 				   namelist() as string ) as integer
     dim i as integer
 
@@ -92,7 +93,7 @@ function hFindLib( byval libname as string, _
 			exit function
 		end if
 
-		if( namelist(i) = libname ) then
+		if( namelist(i) = *libname ) then
 			return i
 		end if
 	next i
@@ -111,7 +112,7 @@ function symbListLibs( namelist() as string, _
 	do while( node <> NULL )
 
 		if( hFindLib( node->name, namelist() ) = INVALID ) then
-			namelist(cnt) = node->name
+			namelist(cnt) = *node->name
 			cnt += 1
 		end if
 

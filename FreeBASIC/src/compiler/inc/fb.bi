@@ -216,8 +216,8 @@ end enum
 ''
 declare function 	fbInit			( byval ismain as integer ) as integer
 declare sub 		fbEnd			( )
-declare function 	fbCompile		( byval infname as string, _
-									  byval outfname as string, _
+declare function 	fbCompile		( byval infname as zstring ptr, _
+									  byval outfname as zstring ptr, _
 									  byval ismain as integer ) as integer
 
 declare sub 		fbSetPaths		( byval target as integer )
@@ -230,10 +230,10 @@ declare function 	fbGetOption 	( byval opt as integer ) as integer
 
 declare function 	fbListLibs		( namelist() as string, _
 									  byval index as integer ) as integer
-declare sub 		fbAddIncPath	( byval path as string )
-declare function	fbAddLibPath	( byval path as string ) as integer
-declare sub 		fbAddDefine		( byval dname as string, _
-									  byval dtext as string )
+declare sub 		fbAddIncPath	( byval path as zstring ptr )
+declare function	fbAddLibPath	( byval path as zstring ptr ) as integer
+declare sub 		fbAddDefine		( byval dname as zstring ptr, _
+									  byval dtext as zstring ptr )
 
 declare function 	fbIncludeFile	( byval filename as zstring ptr, _
 									  byval isonce as integer ) as integer

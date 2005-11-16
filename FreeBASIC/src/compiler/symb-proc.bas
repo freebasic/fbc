@@ -378,7 +378,7 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
     '' no alias? make one..
     if( aliasname = NULL ) then
 
-    	hUcase( *id, aname )
+    	hUcase( id, aname )
 
     	'' overloaded?
 		if( (alloctype and FB_ALLOCTYPE_OVERLOADED) > 0 ) then
@@ -461,8 +461,8 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 	proc->proc.rtlcallback 	= NULL
 
 	if( libname <> NULL ) then
-		if( len( libname ) > 0 ) then
-			proc->proc.lib 	= symbAddLib( *libname )
+		if( len( *libname ) > 0 ) then
+			proc->proc.lib 	= symbAddLib( libname )
 		else
 			proc->proc.lib 	= NULL
 		end if
@@ -1122,19 +1122,6 @@ function symbCalcArgLen( byval typ as integer, _
 	end select
 
 	function = lgt
-
-end function
-
-'':::::
-function symbGetProcLib( byval p as FBSYMBOL ptr ) as string static
-    dim l as FBLIBRARY ptr
-
-	l = p->proc.lib
-	if( l <> NULL ) then
-		function = l->name
-	else
-	    function = ""
-	end if
 
 end function
 

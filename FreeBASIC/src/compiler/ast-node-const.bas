@@ -29,7 +29,7 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function astNewCONSTstr( byval v as string ) as ASTNODE ptr static
+function astNewCONSTstr( byval v as zstring ptr ) as ASTNODE ptr static
     dim as FBSYMBOL ptr tc
 
 	'' assuming no escape sequences are used

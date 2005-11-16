@@ -485,12 +485,12 @@ function hStripUnderscore( byval symbol as zstring ptr ) as string static
 end function
 
 '':::::
-function hStripExt( byval filename as string ) as string static
+function hStripExt( byval filename as zstring ptr ) as string static
     dim p as integer, lp as integer
 
 	lp = 0
 	do
-		p = instr( lp+1, filename, "." )
+		p = instr( lp+1, *filename, "." )
 	    if( p = 0 ) then
 	    	exit do
 	    end if
@@ -498,21 +498,21 @@ function hStripExt( byval filename as string ) as string static
 	loop
 
 	if( lp > 0 ) then
-		function = left$( filename, lp-1 )
+		function = left( *filename, lp-1 )
 	else
-		function = filename
+		function = *filename
 	end if
 
 end function
 
 '':::::
-function hStripPath( byval filename as string ) as string static
+function hStripPath( byval filename as zstring ptr ) as string static
     dim as integer lp, p_found, p(1 to 2)
 
 	lp = 0
 	do
-		p(1) = instr( lp+1, filename, "\\" )
-		p(2) = instr( lp+1, filename, "/" )
+		p(1) = instr( lp+1, *filename, "\\" )
+		p(2) = instr( lp+1, *filename, "/" )
         if p(1)=0 or (p(2)>0 and p(2)<p(1)) then
             p_found = p(2)
         else
@@ -525,21 +525,21 @@ function hStripPath( byval filename as string ) as string static
 	loop
 
 	if( lp > 0 ) then
-		function = mid( filename, lp+1 )
+		function = mid( *filename, lp+1 )
 	else
-		function = filename
+		function = *filename
 	end if
 
 end function
 
 '':::::
-function hStripFilename ( byval filename as string ) as string static
+function hStripFilename ( byval filename as zstring ptr ) as string static
     dim as integer lp, p_found, p(1 to 2)
 
 	lp = 0
 	do
-		p(1) = instr( lp+1, filename, "\\" )
-		p(2) = instr( lp+1, filename, "/" )
+		p(1) = instr( lp+1, *filename, "\\" )
+		p(2) = instr( lp+1, *filename, "/" )
         if p(1)=0 or (p(2)>0 and p(2)<p(1)) then
             p_found = p(2)
         else
@@ -552,7 +552,7 @@ function hStripFilename ( byval filename as string ) as string static
 	loop
 
 	if( lp > 0 ) then
-		function = left( filename, lp )
+		function = left( *filename, lp )
 	else
 		function = ""
 	end if
@@ -560,13 +560,13 @@ function hStripFilename ( byval filename as string ) as string static
 end function
 
 '':::::
-function hGetFileExt( byref fname as string ) as string static
+function hGetFileExt( byval fname as zstring ptr ) as string static
     dim as integer p, lp
     dim as string res
 
 	lp = 0
 	do
-		p = instr( lp+1, fname, "." )
+		p = instr( lp+1, *fname, "." )
 		if( p = 0 ) then
 			exit do
 		end if
@@ -576,7 +576,7 @@ function hGetFileExt( byref fname as string ) as string static
     if( lp = 0 ) then
     	function = ""
     else
-    	res = lcase( mid( fname, lp+1 ) )
+    	res = lcase( mid( *fname, lp+1 ) )
         if instr( res, "\\" ) > 0 or instr( res, "/" ) > 0 then
             '' We had a folder with a "." inside ...
             function = ""
@@ -593,13 +593,13 @@ function hGetFileExt( byref fname as string ) as string static
 end function
 
 '':::::
-function hRevertSlash( byval s as string ) as string static
+function hRevertSlash( byval s as zstring ptr ) as string static
     dim as integer i
     dim as string res
 
-	res = s
+	res = *s
 
-	for i = 0 to len( s )-1
+	for i = 0 to len( *s )-1
 		if( res[i] = CHAR_RSLASH ) then
 			res[i] = CHAR_SLASH
 		end if

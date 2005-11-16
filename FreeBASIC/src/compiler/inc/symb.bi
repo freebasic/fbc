@@ -93,10 +93,6 @@ declare	function 	symbGetGlobalTbHead		( ) as FBSYMBOL ptr
 
 declare	function 	symbGetSymbolTbHead 	( ) as FBSYMBOL ptr
 
-declare function 	symbGetVarDescName		( byval s as FBSYMBOL ptr ) as string
-
-declare function 	symbGetProcLib			( byval p as FBSYMBOL ptr ) as string
-
 declare function 	symbGetUDTElmOffset		( byref elm as FBSYMBOL ptr, _
 											  byref typ as integer, _
 											  byref subtype as FBSYMBOL ptr, _
@@ -247,7 +243,7 @@ declare function 	symbAddProcResult		( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function 	symbAddProcResArg		( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 
-declare function 	symbAddLib				( byval libname as string ) as FBLIBRARY ptr
+declare function 	symbAddLib				( byval libname as zstring ptr ) as FBLIBRARY ptr
 
 declare function 	symbAddArgAsVar			( byval symbol as zstring ptr, _
 											  byval arg as FBSYMBOL ptr ) as FBSYMBOL ptr
@@ -488,6 +484,8 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 
 #define symbGetArrayFirstDim(s) s->var.array.dimhead
 
+#define symbGetArrayDescName(s) symbGetName( s->var.array.desc )
+
 #define symbGetProcArgs(f) f->proc.args
 
 #define symbGetFuncMode(f) f->proc.mode
@@ -591,54 +589,56 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 
 #define symbGetArgNext(a) a->next
 
-#define symbGetIsDynamic(s) iif( s->class = FB_SYMBCLASS_UDTELM, FALSE, (s->alloctype and (FB_ALLOCTYPE_DYNAMIC or FB_ALLOCTYPE_ARGUMENTBYDESC)) > 0 )
+#define symbGetIsDynamic(s) iif( s->class = FB_SYMBCLASS_UDTELM, FALSE, (s->alloctype and (FB_ALLOCTYPE_DYNAMIC or FB_ALLOCTYPE_ARGUMENTBYDESC)) <> 0 )
 
 #define symbIsArray(s) iif( (s->class = FB_SYMBCLASS_VAR) or (s->class = FB_SYMBCLASS_UDTELM), _
 							iif( (s->alloctype and (FB_ALLOCTYPE_DYNAMIC or FB_ALLOCTYPE_ARGUMENTBYDESC)) > 0, _
 								 TRUE, s->var.array.dims > 0 ), _
 							FALSE )
 
-#define symbIsShared(s) ((s->alloctype and FB_ALLOCTYPE_SHARED) > 0)
+#define symbIsShared(s) ((s->alloctype and FB_ALLOCTYPE_SHARED) <> 0)
 
-#define symbIsStatic(s) ((s->alloctype and FB_ALLOCTYPE_STATIC) > 0)
+#define symbIsStatic(s) ((s->alloctype and FB_ALLOCTYPE_STATIC) <> 0)
 
-#define symbIsDynamic(s) ((s->alloctype and FB_ALLOCTYPE_DYNAMIC) > 0)
+#define symbIsDynamic(s) ((s->alloctype and FB_ALLOCTYPE_DYNAMIC) <> 0)
 
-#define symbIsCommon(s) ((s->alloctype and FB_ALLOCTYPE_COMMON) > 0)
+#define symbIsCommon(s) ((s->alloctype and FB_ALLOCTYPE_COMMON) <> 0)
 
-#define symbIsTemp(s) ((s->alloctype and FB_ALLOCTYPE_TEMP) > 0)
+#define symbIsTemp(s) ((s->alloctype and FB_ALLOCTYPE_TEMP) <> 0)
 
-#define symbIsArgByDesc(s) ((s->alloctype and FB_ALLOCTYPE_ARGUMENTBYDESC) > 0)
+#define symbIsArgByDesc(s) ((s->alloctype and FB_ALLOCTYPE_ARGUMENTBYDESC) <> 0)
 
-#define symbIsArgByVal(s) ((s->alloctype and FB_ALLOCTYPE_ARGUMENTBYVAL) > 0)
+#define symbIsArgByVal(s) ((s->alloctype and FB_ALLOCTYPE_ARGUMENTBYVAL) <> 0)
 
-#define symbIsArgByRef(s) ((s->alloctype and FB_ALLOCTYPE_ARGUMENTBYREF) > 0)
+#define symbIsArgByRef(s) ((s->alloctype and FB_ALLOCTYPE_ARGUMENTBYREF) <> 0)
 
-#define symbIsArg(s) ((s->alloctype and (FB_ALLOCTYPE_ARGUMENTBYREF or FB_ALLOCTYPE_ARGUMENTBYVAL or FB_ALLOCTYPE_ARGUMENTBYDESC)) > 0)
+#define symbIsArg(s) ((s->alloctype and (FB_ALLOCTYPE_ARGUMENTBYREF or FB_ALLOCTYPE_ARGUMENTBYVAL or FB_ALLOCTYPE_ARGUMENTBYDESC)) <> 0)
 
-#define symbIsLocal(s) ((s->alloctype and FB_ALLOCTYPE_LOCAL) > 0)
+#define symbIsLocal(s) ((s->alloctype and FB_ALLOCTYPE_LOCAL) <> 0)
 
-#define symbIsPublic(s) ((s->alloctype and FB_ALLOCTYPE_PUBLIC) > 0)
+#define symbIsPublic(s) ((s->alloctype and FB_ALLOCTYPE_PUBLIC) <> 0)
 
-#define symbIsPrivate(s) ((s->alloctype and FB_ALLOCTYPE_PRIVATE) > 0)
+#define symbIsPrivate(s) ((s->alloctype and FB_ALLOCTYPE_PRIVATE) <> 0)
 
-#define symbIsExtern(s) ((s->alloctype and FB_ALLOCTYPE_EXTERN) > 0)
+#define symbIsExtern(s) ((s->alloctype and FB_ALLOCTYPE_EXTERN) <> 0)
 
-#define symbIsExport(s) ((s->alloctype and FB_ALLOCTYPE_EXPORT) > 0)
+#define symbIsExport(s) ((s->alloctype and FB_ALLOCTYPE_EXPORT) <> 0)
 
-#define symbIsImport(s) ((s->alloctype and FB_ALLOCTYPE_IMPORT) > 0)
+#define symbIsImport(s) ((s->alloctype and FB_ALLOCTYPE_IMPORT) <> 0)
 
-#define symbIsOverloaded(s) ((s->alloctype and FB_ALLOCTYPE_OVERLOADED) > 0)
+#define symbIsOverloaded(s) ((s->alloctype and FB_ALLOCTYPE_OVERLOADED) <> 0)
 
-#define symbIsJumpTb(s) ((s->alloctype and FB_ALLOCTYPE_JUMPTB) > 0)
+#define symbIsJumpTb(s) ((s->alloctype and FB_ALLOCTYPE_JUMPTB) <> 0)
 
-#define symbIsMainProc(s) ((s->alloctype and FB_ALLOCTYPE_MAINPROC) > 0)
+#define symbIsMainProc(s) ((s->alloctype and FB_ALLOCTYPE_MAINPROC) <> 0)
 
-#define symbIsModLevelProc(s) ((s->alloctype and FB_ALLOCTYPE_MODLEVELPROC) > 0)
+#define symbIsModLevelProc(s) ((s->alloctype and FB_ALLOCTYPE_MODLEVELPROC) <> 0)
 
-#define symbIsConstructor(s) ((s->alloctype and FB_ALLOCTYPE_CONSTRUCTOR) > 0)
+#define symbIsConstructor(s) ((s->alloctype and FB_ALLOCTYPE_CONSTRUCTOR) <> 0)
 
-#define symbIsDestructor(s) ((s->alloctype and FB_ALLOCTYPE_DESTRUCTOR) > 0)
+#define symbIsDestructor(s) ((s->alloctype and FB_ALLOCTYPE_DESTRUCTOR) <> 0)
+
+#define symbIsDescriptor( s ) ((s->allocatype and FB_ALLOCTYPE_DESCRIPTOR) <> 0)
 
 
 #define hIsString(t) ((t = IR_DATATYPE_STRING) or (t = IR_DATATYPE_FIXSTR) or (t = IR_DATATYPE_CHAR) or (t = IR_DATATYPE_WCHAR))

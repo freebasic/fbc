@@ -30,12 +30,12 @@ option escape
 #include once "inc\hlp.bi"
 
 declare function _linkFiles 			( ) as integer
-declare function _archiveFiles			( byval cmdline as string ) as integer
+declare function _archiveFiles			( byval cmdline as zstring ptr ) as integer
 declare function _compileResFiles 		( ) as integer
 declare function _delFiles 				( ) as integer
-declare function _listFiles				( byval argv as string ) as integer
-declare function _processOptions		( byval opt as string, _
-						 				  byval argv as string ) as integer
+declare function _listFiles				( byval argv as zstring ptr ) as integer
+declare function _processOptions		( byval opt as zstring ptr, _
+						 				  byval argv as zstring ptr ) as integer
 
 ''
 '' globals
@@ -193,12 +193,12 @@ function _linkFiles as integer
 end function
 
 '':::::
-function _archiveFiles( byval cmdline as string ) as integer
+function _archiveFiles( byval cmdline as zstring ptr ) as integer
 	dim arcpath as string
 
 	arcpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ar.exe"
 
-    if( exec( arcpath, cmdline ) <> 0 ) then
+    if( exec( arcpath, *cmdline ) <> 0 ) then
 		return FALSE
     end if
 
@@ -258,11 +258,11 @@ function _delFiles as integer
 end function
 
 '':::::
-function _listFiles( byval argv as string ) as integer
+function _listFiles( byval argv as zstring ptr ) as integer
 
 	select case hGetFileExt( argv )
 	case "rc", "res"
-		rclist(rcs) = argv
+		rclist(rcs) = *argv
 		rcs += 1
 		return TRUE
 
@@ -273,26 +273,26 @@ function _listFiles( byval argv as string ) as integer
 end function
 
 '':::::
-function _processOptions( byval opt as string, _
-						  byval argv as string ) as integer
+function _processOptions( byval opt as zstring ptr, _
+						  byval argv as zstring ptr ) as integer
 
-    select case mid$( opt, 2 )
+    select case mid( *opt, 2 )
 	case "s"
-		fbc.subsystem = argv
+		fbc.subsystem = *argv
 		if( len( fbc.subsystem ) = 0 ) then
 			return FALSE
 		end if
 		return TRUE
 
 	case "t"
-		fbc.stacksize = valint( argv ) * 1024
+		fbc.stacksize = valint( *argv ) * 1024
 		if( fbc.stacksize < FB_MINSTACKSIZE ) then
 			fbc.stacksize = FB_MINSTACKSIZE
 		end if
 		return TRUE
 
 	case "title"
-		xbe_title = argv
+		xbe_title = *argv
 		return TRUE
 
 	case else

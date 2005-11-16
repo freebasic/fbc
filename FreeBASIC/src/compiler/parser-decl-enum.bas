@@ -31,7 +31,7 @@ option escape
 '':::
 ''EnumConstDecl     =   ID ('=' ConstExpression)? .
 ''
-function cEnumConstDecl( byval id as string, _
+function cEnumConstDecl( byval id as zstring ptr, _
 						 byref value as integer ) as integer
     static as ASTNODE ptr expr
 
@@ -104,7 +104,7 @@ function cEnumBody( byval s as FBSYMBOL ptr ) as integer
 				end if
 
 				'' ConstDecl
-				if( not cEnumConstDecl( ename, value ) ) then
+				if( not cEnumConstDecl( @ename, value ) ) then
 					exit function
 				end if
 

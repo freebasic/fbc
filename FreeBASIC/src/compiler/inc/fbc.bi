@@ -26,11 +26,11 @@ const FB_DEFSTACKSIZE = 1024 * 1024
 
 type FBCCTX
 	'' methods
-	processOptions				as function ( byval opt as string, byval argv as string ) as integer
-	listFiles					as function ( byval argv as string ) as integer
+	processOptions				as function ( byval opt as zstring ptr, byval argv as zstring ptr ) as integer
+	listFiles					as function ( byval argv as zstring ptr ) as integer
 	compileResFiles				as function ( ) as integer
 	linkFiles                   as function ( ) as integer
-	archiveFiles                as function ( byval cmdline as string ) as integer
+	archiveFiles                as function ( byval cmdline as zstring ptr ) as integer
 	delFiles                    as function ( ) as integer
 
 	''

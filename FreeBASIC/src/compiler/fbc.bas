@@ -1029,24 +1029,24 @@ sub getLibList( )
 end sub
 
 '':::::
-public function fbAddLibPath ( byval path as string ) as integer
+public function fbAddLibPath ( byval path as zstring ptr ) as integer
 	dim i as integer
 
 	function = FALSE
 
-	if( ( len( path ) = 0 ) or ( fbc.pths = FB_MAXARGS-1 ) ) then
+	if( ( len( *path ) = 0 ) or ( fbc.pths = FB_MAXARGS-1 ) ) then
 		exit function
 	end if
 
 	function = TRUE
 
 	for i = 0 to fbc.pths-1
-		if( fbc.pthlist(i) = path ) then
+		if( fbc.pthlist(i) = *path ) then
 			exit function
 		end if
 	next i
 
-	fbc.pthlist(fbc.pths) = path
+	fbc.pthlist(fbc.pths) = *path
 	fbc.pths += 1
 
 end function

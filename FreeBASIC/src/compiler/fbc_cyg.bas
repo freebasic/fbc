@@ -30,15 +30,15 @@ option escape
 #include once "inc\hlp.bi"
 
 declare function _linkFiles 			( ) as integer
-declare function _archiveFiles			( byval cmdline as string ) as integer
+declare function _archiveFiles			( byval cmdline as zstring ptr ) as integer
 declare function _compileResFiles 		( ) as integer
 declare function _delFiles 				( ) as integer
-declare function _listFiles				( byval argv as string ) as integer
-declare function _processOptions		( byval opt as string, _
-						 				  byval argv as string ) as integer
+declare function _listFiles				( byval argv as zstring ptr ) as integer
+declare function _processOptions		( byval opt as zstring ptr, _
+						 				  byval argv as zstring ptr ) as integer
 
-declare function makeImpLib 			( byval dllpath as string, _
-										  byval dllname as string ) as integer
+declare function makeImpLib 			( byval dllpath as zstring ptr, _
+										  byval dllname as zstring ptr ) as integer
 
 ''
 '' globals
@@ -220,12 +220,12 @@ function _linkFiles as integer
 end function
 
 '':::::
-function _archiveFiles( byval cmdline as string ) as integer
+function _archiveFiles( byval cmdline as zstring ptr ) as integer
 	dim arcpath as string
 
 	arcpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ar.exe"
 
-    if( exec( arcpath, cmdline ) <> 0 ) then
+    if( exec( arcpath, *cmdline ) <> 0 ) then
 		return FALSE
     end if
 
@@ -285,11 +285,11 @@ function _delFiles as integer
 end function
 
 '':::::
-function _listFiles( byval argv as string ) as integer
+function _listFiles( byval argv as zstring ptr ) as integer
 
 	select case hGetFileExt( argv )
 	case "rc", "res"
-		rclist(rcs) = argv
+		rclist(rcs) = *argv
 		rcs += 1
 		return TRUE
 
@@ -300,19 +300,19 @@ function _listFiles( byval argv as string ) as integer
 end function
 
 '':::::
-function _processOptions( byval opt as string, _
-						  byval argv as string ) as integer
+function _processOptions( byval opt as zstring ptr, _
+						  byval argv as zstring ptr ) as integer
 
-    select case mid$( opt, 2 )
+    select case mid( *opt, 2 )
 	case "s"
-		fbc.subsystem = argv
+		fbc.subsystem = *argv
 		if( len( fbc.subsystem ) = 0 ) then
 			return FALSE
 		end if
 		return TRUE
 
 	case "t"
-		fbc.stacksize = valint( argv ) * 1024
+		fbc.stacksize = valint( *argv ) * 1024
 		if( fbc.stacksize < FB_MINSTACKSIZE ) then
 			fbc.stacksize = FB_MINSTACKSIZE
 		end if
@@ -325,45 +325,21 @@ function _processOptions( byval opt as string, _
 
 end function
 
-#if 0
 '':::::
-function makeDefList( dllname as string ) as integer
-	dim pxpath as string
-	dim pxcline as string
-
-	function = FALSE
-
-   	pxpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "pexports.exe"
-
-   	pxcline = "-o " + dllname + ".dll >" + dllname + ".def"
-
-    '' can't use EXEC coz redirection is needed, damn..
-    '''''if( exec( pxpath, pxcline ) <> 0 ) then
-	'''''	exit function
-    '''''end if
-
-	shell pxpath + " " + pxcline
-
-    function = TRUE
-
-end function
-#endif
-
-'':::::
-function clearDefList( dllfile as string ) as integer
+function clearDefList( byval dllfile as zstring ptr ) as integer
 	dim inpf as integer, outf as integer
 	dim ln as string
 
 	function = FALSE
 
-    if( not hFileExists( dllfile + ".def" ) ) then
+    if( not hFileExists( *dllfile + ".def" ) ) then
     	exit function
     end if
 
     inpf = freefile
-    open dllfile + ".def" for input as #inpf
+    open *dllfile + ".def" for input as #inpf
     outf = freefile
-    open dllfile + ".clean.def" for output as #outf
+    open *dllfile + ".clean.def" for output as #outf
 
     '''''print #outf, "LIBRARY " + hStripPath( dllfile ) + ".dll"
 
@@ -371,8 +347,8 @@ function clearDefList( dllfile as string ) as integer
 
     	line input #inpf, ln
 
-    	if( right$( ln, 4 ) =  "DATA" ) then
-    		ln = left$( ln, len( ln ) - 4 )
+    	if( right( ln, 4 ) =  "DATA" ) then
+    		ln = left( ln, len( ln ) - 4 )
     	end if
 
     	print #outf, ln
@@ -381,16 +357,16 @@ function clearDefList( dllfile as string ) as integer
     close #outf
     close #inpf
 
-    kill( dllfile + ".def" )
-    name dllfile + ".clean.def", dllfile + ".def"
+    kill( *dllfile + ".def" )
+    name *dllfile + ".clean.def", *dllfile + ".def"
 
     function = TRUE
 
 end function
 
 '':::::
-function makeImpLib( byval dllpath as string, _
-					 byval dllname as string ) as integer
+function makeImpLib( byval dllpath as zstring ptr, _
+					 byval dllname as zstring ptr ) as integer
 
 	dim as string dtpath, dtcline, dllfile
 
@@ -405,7 +381,7 @@ function makeImpLib( byval dllpath as string, _
     end if
 
 	''
-	dllfile = dllpath + dllname
+	dllfile = *dllpath + *dllname
 
 	'' output def list
 	'''''if( makeDefList( dllname ) = FALSE ) then
@@ -419,8 +395,8 @@ function makeImpLib( byval dllpath as string, _
 	end if
 
 	dtcline = "--def \"" + dllfile + ".def\"" + _
-			  " --dllname \"" + dllname + ".dll\"" + _
-			  " --output-lib \"" + dllpath + "lib" + dllname + ".dll.a\""
+			  " --dllname \"" + *dllname + ".dll\"" + _
+			  " --output-lib \"" + *dllpath + "lib" + *dllname + ".dll.a\""
 
     if( fbc.verbose ) then
     	print "dlltool: ", dtcline

@@ -166,7 +166,7 @@ end sub
 
 '':::::
 sub hReportErrorEx( byval errnum as integer, _
-					byval msgex as string, _
+					byval msgex as zstring ptr, _
 					byval linenum as integer = 0 )
     dim msg as string
     dim token_pos as string
@@ -193,7 +193,7 @@ sub hReportErrorEx( byval errnum as integer, _
 	if( len( env.inf.name ) > 0 ) then
 		print env.inf.name; "(";
 		if( linenum > 0 ) then
-			print str$( linenum );
+			print str( linenum );
 		end if
 		print ") : ";
 	end if
@@ -201,9 +201,9 @@ sub hReportErrorEx( byval errnum as integer, _
 	print "error";
 
 	if( errnum >= 0 ) then
-		print " "; str$( errnum ); ": "; msg;
-		if( len( msgex ) > 0 ) then
-			print ", "; msgex
+		print " "; str( errnum ); ": "; msg;
+		if( len( *msgex ) > 0 ) then
+			print ", "; *msgex
 		else
 			print
 		end if
@@ -214,7 +214,7 @@ sub hReportErrorEx( byval errnum as integer, _
 			print token_pos
 		end if
 	else
-		print ": "; msgex
+		print ": "; *msgex
 	end if
 
 end sub

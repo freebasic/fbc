@@ -132,7 +132,7 @@ declare function 	lexGetSymbol 			( ) as FBSYMBOL ptr
 
 declare function 	lexGetPeriodPos 		( ) as integer
 
-declare sub 		lexEatToken 			( byval token as string, _
+declare sub 		lexEatToken 			( byval token as zstring ptr, _
 											  byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )
 
 declare sub 		lexSkipToken			( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )
@@ -148,7 +148,7 @@ declare function 	lexLineNum 				( ) as integer
 declare function 	lexColNum 				( ) as integer
 
 declare sub 		lexReadLine				( byval endchar as uinteger = INVALID, _
-											  byval dst as string, _
+											  byval dst as zstring ptr, _
 											  byval skipline as integer = FALSE )
 
 declare sub 		lexSkipLine				( )

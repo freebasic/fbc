@@ -106,6 +106,8 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 		d->alloctype  or= FB_ALLOCTYPE_STATIC
 	end if
 
+	d->alloctype  or= FB_ALLOCTYPE_DESCRIPTOR
+
 	d->ofs				= ofs
 	d->var.array.desc 	= NULL
 	d->var.array.dif  	= 0
@@ -586,22 +588,4 @@ sub symbFreeLocalDynVars( byval proc as FBSYMBOL ptr, _
     loop
 
 end sub
-
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' misc
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'':::::
-function symbGetVarDescName( byval s as FBSYMBOL ptr ) as string static
-	dim d as FBSYMBOL ptr
-
-	d = s->var.array.desc
-	if( d <> NULL ) then
-		function = *symbGetName( d )
-	else
-		function = ""
-	end if
-
-end function
-
 

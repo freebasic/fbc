@@ -1853,35 +1853,6 @@ private sub hMoveKDown( ) static
 end sub
 
 '':::::
-sub lexEatToken( byval token as string, _
-				 byval flags as LEXCHECK_ENUM ) static
-
-    ''
-  	if( lex->head->typ <> IR_DATATYPE_WCHAR ) then
-    	token = lex->head->text
-    else
-    	token = str( lex->head->textw )
-    end if
-
-    ''
-    if( lex->head->id = FB_TK_EOL ) then
-    	lex->linenum += 1
-    	lex->colnum  = 1
-    end if
-
-    lex->lasttoken = lex->head->id
-
-    if( lex->k = 0 ) then
-    	lexNextToken( lex->head, flags )
-    else
-    	hMoveKDown( )
-    end if
-
-    hCheckPP( )
-
-end sub
-
-'':::::
 sub lexSkipToken( byval flags as LEXCHECK_ENUM ) static
 
     if( lex->head->id = FB_TK_EOL ) then
@@ -1903,14 +1874,29 @@ sub lexSkipToken( byval flags as LEXCHECK_ENUM ) static
 end sub
 
 '':::::
+sub lexEatToken( byval token as zstring ptr, _
+				 byval flags as LEXCHECK_ENUM ) static
+
+    ''
+  	if( lex->head->typ <> IR_DATATYPE_WCHAR ) then
+    	*token = lex->head->text
+    else
+    	*token = str( lex->head->textw )
+    end if
+
+    lexSkipToken( flags )
+
+end sub
+
+'':::::
 sub lexReadLine( byval endchar as uinteger = INVALID, _
-				 byval dst as string, _
+				 byval dst as zstring ptr, _
 				 byval skipline as integer = FALSE ) static
 
     dim char as uinteger
 
 	if( not skipline ) then
-		dst = ""
+		*dst = ""
 	end if
 
     '' check look ahead tokens if any
@@ -1920,7 +1906,7 @@ sub lexReadLine( byval endchar as uinteger = INVALID, _
     		exit sub
     	case else
     		if( not skipline ) then
-   				dst += lex->head->text
+   				*dst += lex->head->text
     		end if
     	end select
 
@@ -1933,7 +1919,7 @@ sub lexReadLine( byval endchar as uinteger = INVALID, _
    		exit sub
    	case else
    		if( not skipline ) then
-    		dst += lex->head->text
+    		*dst += lex->head->text
    		end if
    	end select
 
@@ -1982,7 +1968,7 @@ sub lexReadLine( byval endchar as uinteger = INVALID, _
 
 		lexEatChar( )
 		if( not skipline ) then
-			dst += chr( char )
+			*dst += chr( char )
 		end if
 	loop
 
@@ -1991,7 +1977,7 @@ end sub
 '':::::
 sub lexSkipLine( ) static
 
-	lexReadLine( , byval NULL, TRUE )
+	lexReadLine( , NULL, TRUE )
 
 end sub
 

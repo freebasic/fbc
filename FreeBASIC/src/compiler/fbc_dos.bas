@@ -30,12 +30,12 @@ option escape
 #include once "inc\hlp.bi"
 
 declare function _linkFiles 			( ) as integer
-declare function _archiveFiles			( byval cmdline as string ) as integer
+declare function _archiveFiles			( byval cmdline as zstring ptr ) as integer
 declare function _compileResFiles 		( ) as integer
 declare function _delFiles 				( ) as integer
-declare function _listFiles				( byval argv as string ) as integer
-declare function _processOptions		( byval opt as string, _
-						 				  byval argv as string ) as integer
+declare function _listFiles				( byval argv as zstring ptr ) as integer
+declare function _processOptions		( byval opt as zstring ptr, _
+						 				  byval argv as zstring ptr ) as integer
 
 '':::::
 public function fbcInit_dos( ) as integer
@@ -53,7 +53,7 @@ public function fbcInit_dos( ) as integer
 end function
 
 '':::::
-function hCreateResFile( byval cline as string ) as string
+function hCreateResFile( byval cline as zstring ptr ) as string
     dim as integer f
  	dim as string resfile
 
@@ -64,7 +64,7 @@ function hCreateResFile( byval cline as string ) as string
     	return ""
     end if
 
-    print #f, cline
+    print #f, *cline
 
     close #f
 
@@ -172,32 +172,32 @@ function _linkFiles as integer
 #ifndef TARGET_DOS
 	kill( resfile )
 #endif
-	
+
 	if fbc.stacksize < FB_MINSTACKSIZE then
 		fbc.stacksize = FB_MINSTACKSIZE
 	end if
-	
+
 	f = freefile()
-	
+
 	if (open(fbc.outname, for binary, access read write, as #f) <> 0) then
 		exit function
 	end if
-	
+
 	put #f, 533, fbc.stacksize
-	
+
 	close #f
-	
+
     function = TRUE
-	
+
 end function
 
 '':::::
-function _archiveFiles( byval cmdline as string ) as integer
+function _archiveFiles( byval cmdline as zstring ptr ) as integer
 	dim arcpath as string
 
 	arcpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ar.exe"
 
-    if( exec( arcpath, cmdline ) <> 0 ) then
+    if( exec( arcpath, *cmdline ) <> 0 ) then
 		return FALSE
     end if
 
@@ -220,27 +220,27 @@ function _delFiles as integer
 end function
 
 '':::::
-function _listFiles( byval argv as string ) as integer
+function _listFiles( byval argv as zstring ptr ) as integer
 
 	function = FALSE
 
 end function
 
 '':::::
-function _processOptions( byval opt as string, _
-						  byval argv as string ) as integer
+function _processOptions( byval opt as zstring ptr, _
+						  byval argv as zstring ptr ) as integer
 
-	select case mid$( opt, 2 )
+	select case mid( *opt, 2 )
 	case "t"
-		fbc.stacksize = valint( argv ) * 1024
+		fbc.stacksize = valint( *argv ) * 1024
 		if( fbc.stacksize < FB_MINSTACKSIZE ) then
 			fbc.stacksize = FB_MINSTACKSIZE
 		end if
 		return TRUE
-		
+
 	case else
 		return FALSE
-		
+
 	end select
 
 end function

@@ -109,7 +109,7 @@ function cDirective as integer static
 				lexSkipToken( LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE or LEXCHECK_NOWHITESPC )
 			end if
 
-			lexReadLine( CHAR_APOST, incfile )
+			lexReadLine( CHAR_APOST, @incfile )
 
 			'' '\''
 			if( not hMatch( CHAR_APOST ) ) then

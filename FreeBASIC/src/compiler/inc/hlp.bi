@@ -76,15 +76,15 @@ declare function 	hCreateName 			( byval symbol as zstring ptr, _
 
 declare function 	hStripUnderscore		( byval symbol as zstring ptr ) as string
 
-declare function 	hStripExt				( byval filename as string ) as string
+declare function 	hStripExt				( byval filename as zstring ptr ) as string
 
-declare function 	hStripPath				( byval filename as string ) as string
+declare function 	hStripPath				( byval filename as zstring ptr ) as string
 
-declare function 	hStripFilename 			( byval filename as string ) as string
+declare function 	hStripFilename 			( byval filename as zstring ptr ) as string
 
-declare function 	hGetFileExt				( byref fname as string ) as string
+declare function 	hGetFileExt				( byval fname as zstring ptr ) as string
 
-declare function 	hRevertSlash			( byval s as string ) as string
+declare function 	hRevertSlash			( byval s as zstring ptr ) as string
 
 declare function 	hToPow2					( byval value as uinteger ) as uinteger
 

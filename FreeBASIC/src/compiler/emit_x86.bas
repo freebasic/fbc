@@ -51,7 +51,7 @@ const EMIT_MAXRTABLES = 4				'' 8-bit, 16-bit, 32-bit, fpoint
 
 
 ''
-declare sub 		outp				( byval s as string )
+declare sub 		outp				( byval s as zstring ptr )
 
 declare sub 		hSaveAsmHeader		( )
 
@@ -391,13 +391,13 @@ function emitGetFreePreservedReg( byval dtype as integer, _
 end function
 
 '':::::
-function emitIsKeyword( byval text as string ) as integer static
+function emitIsKeyword( byval text as zstring ptr ) as integer static
 
 	if( not emit.keyinited ) then
 		hInitKeywordsTB( )
 	end if
 
-	if( hashLookup( @emit.keyhash, strptr( text ) ) <> NULL ) then
+	if( hashLookup( @emit.keyhash, text ) <> NULL ) then
 		function = TRUE
 	else
 		function = FALSE
@@ -730,112 +730,135 @@ private sub hPrepOperand64( byval vreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub outEx( byval s as string ) static
+private sub outEx( byval s as zstring ptr, _
+				   byval bytes as integer = 0 ) static
 
-	if( put( #env.outf.num, , s ) = 0 ) then
+	if( bytes = 0 ) then
+		bytes = len( *s )
+	end if
+
+	if( put( #env.outf.num, , *s, bytes ) = 0 ) then
 	end if
 
 end sub
 
 '':::::
-private sub outp( byval s as string ) static
+private sub outp( byval s as zstring ptr ) static
     dim as integer p, char
     dim as string ostr
 
 	if( env.clopt.debug ) then
-		p = instr( s, " " )
+		p = instr( *s, " " )
 		if( p > 0 ) then
-			char = s[p-1]
-			s[p-1] = CHAR_TAB			'' unsafe with constants..
+			char = s[0][p-1]
+			s[0][p-1] = CHAR_TAB		'' unsafe with constants..
 		end if
 
-		ostr = "\t" + s + NEWLINE
-		outEX( ostr )
+		ostr = "\t"
+		ostr += *s
+		ostr += NEWLINE
+		outEX( ostr, len( ostr ) )
 
 		if( p > 0 ) then
-			s[p-1] = char
+			s[0][p-1] = char
 		end if
 
 	else
 
-		ostr = s + NEWLINE
-		outEX( ostr )
+		ostr = *s
+		ostr += NEWLINE
+		outEX( ostr, len( ostr ) )
 
 	end if
 
 end sub
 
 '':::::
-private sub hBRANCH( byval mnemonic as string, _
-			 		 byval label as string ) static
+private sub hBRANCH( byval mnemonic as zstring ptr, _
+			 		 byval label as zstring ptr ) static
     dim ostr as string
 
-	ostr = mnemonic + " " + label
+	ostr = *mnemonic
+	ostr += " "
+	ostr += *label
 	outp( ostr )
 
 end sub
 
 '':::::
-private sub hPUSH( byval rname as string ) static
+private sub hPUSH( byval rname as zstring ptr ) static
     dim ostr as string
 
-	ostr = "push " + rname
+	ostr = "push "
+	ostr += *rname
 	outp( ostr )
 
 end sub
 
 '':::::
-private sub hPOP( byval rname as string ) static
+private sub hPOP( byval rname as zstring ptr ) static
     dim ostr as string
 
-    ostr = "pop " + rname
+    ostr = "pop "
+    ostr += *rname
 	outp( ostr )
 
 end sub
 
 '':::::
-private sub hMOV( byval dname as string, _
-		  		  byval sname as string ) static
+private sub hMOV( byval dname as zstring ptr, _
+		  		  byval sname as zstring ptr ) static
     dim ostr as string
 
-	ostr = "mov " + dname + ", " + sname
+	ostr = "mov "
+	ostr += *dname
+	ostr += ", "
+	ostr += *sname
 	outp( ostr )
 
 end sub
 
 '':::::
-private sub hXCHG( byval dname as string, _
-		   		   byval sname as string ) static
+private sub hXCHG( byval dname as zstring ptr, _
+		   		   byval sname as zstring ptr ) static
     dim ostr as string
 
-	ostr = "xchg " + dname + ", " + sname
+	ostr = "xchg "
+	ostr += *dname
+	ostr += ", "
+	ostr += *sname
 	outp( ostr )
 
 end sub
 
 '':::::
-private sub hCOMMENT( byval s as string ) static
+private sub hCOMMENT( byval s as zstring ptr ) static
     dim ostr as string
 
-    ostr = "\t\35" + s + NEWLINE
+    ostr = "\t\35"
+    ostr += *s
+    ostr += NEWLINE
 	outEX( ostr )
 
 end sub
 
 '':::::
-private sub hPUBLIC( byval label as string ) static
+private sub hPUBLIC( byval label as zstring ptr ) static
     dim ostr as string
 
-	ostr = "\r\n.globl " + label + NEWLINE
+	ostr = "\r\n.globl "
+	ostr += *label
+	ostr += NEWLINE
 	outEx( ostr )
 
 end sub
 
 '':::::
-private sub hLABEL( byval label as string ) static
+private sub hLABEL( byval label as zstring ptr ) static
     dim ostr as string
 
-	ostr = label + ":\r\n"
+	ostr = *label
+	ostr += ":\r\n"
 	outEx( ostr )
 
 end sub
@@ -3487,9 +3510,9 @@ end sub
 '':::::
 private sub hCMPL( byval rvreg as IRVREG ptr, _
 			       byval label as FBSYMBOL ptr, _
-			       byval mnemonic as string, _
-			       byval rev_mnemonic as string, _
-			       byval usg_mnemonic as string, _
+			       byval mnemonic as zstring ptr, _
+			       byval rev_mnemonic as zstring ptr, _
+			       byval usg_mnemonic as zstring ptr, _
 			       byval dvreg as IRVREG ptr, _
 			       byval svreg as IRVREG ptr, _
 			       byval isinverse as integer = FALSE ) static
@@ -3517,15 +3540,15 @@ private sub hCMPL( byval rvreg as IRVREG ptr, _
 		hMOV( rname, "-1" )
 	end if
 
-	ostr = "j" + mnemonic
+	ostr = "j" + *mnemonic
 	if( not isinverse ) then
 		hBRANCH( ostr, lname )
 	else
 		hBRANCH( ostr, falselabel )
 	end if
 
-	if( len( rev_mnemonic ) > 0 ) then
-		ostr = "j" + rev_mnemonic
+	if( len( *rev_mnemonic ) > 0 ) then
+		ostr = "j" + *rev_mnemonic
 		hBRANCH( ostr, falselabel )
 	end if
 
@@ -3533,7 +3556,7 @@ private sub hCMPL( byval rvreg as IRVREG ptr, _
 	ostr = "cmp " + dst1 + COMMA + src1
 	outp ostr
 
-	ostr = "j" + usg_mnemonic
+	ostr = "j" + *usg_mnemonic
 	hBRANCH( ostr, lname )
 
 	hLabel( falselabel )
@@ -3550,7 +3573,7 @@ end sub
 '':::::
 private sub hCMPI( byval rvreg as IRVREG ptr, _
 		   		   byval label as FBSYMBOL ptr, _
-		   		   byval mnemonic as string, _
+		   		   byval mnemonic as zstring ptr, _
 		   		   byval dvreg as IRVREG ptr, _
 		   		   byval svreg as IRVREG ptr ) static
 
@@ -3584,7 +3607,7 @@ private sub hCMPI( byval rvreg as IRVREG ptr, _
 
 	'' no result to be set? just branch
 	if( rvreg = NULL ) then
-		ostr = "j" + mnemonic
+		ostr = "j" + *mnemonic
 		hBRANCH( ostr, lname )
 		exit sub
 	end if
@@ -3605,7 +3628,7 @@ private sub hCMPI( byval rvreg as IRVREG ptr, _
 				outp ostr
 			end if
 
-			ostr = "set" + mnemonic + " dl"
+			ostr = "set" + *mnemonic + " dl"
 			outp ostr
 
 			if( not isedxfree ) then
@@ -3616,7 +3639,7 @@ private sub hCMPI( byval rvreg as IRVREG ptr, _
 			end if
 
 		else
-			ostr = "set" + mnemonic + " " + rname8
+			ostr = "set" + *mnemonic + " " + rname8
 			outp ostr
 		end if
 
@@ -3633,7 +3656,7 @@ private sub hCMPI( byval rvreg as IRVREG ptr, _
 		ostr = "mov " + rname + ", -1"
 		outp ostr
 
-		ostr = "j" + mnemonic
+		ostr = "j" + *mnemonic
 		hBRANCH( ostr, lname )
 
 		ostr = "xor " + rname + COMMA + rname
@@ -3647,8 +3670,8 @@ end sub
 '':::::
 private sub hCMPF( byval rvreg as IRVREG ptr, _
 		   		   byval label as FBSYMBOL ptr, _
-		   		   byval mnemonic as string, _
-		   		   byval mask as string, _
+		   		   byval mnemonic as zstring ptr, _
+		   		   byval mask as zstring ptr, _
 		   		   byval dvreg as IRVREG ptr, _
 		   		   byval svreg as IRVREG ptr ) static
 
@@ -3690,8 +3713,8 @@ private sub hCMPF( byval rvreg as IRVREG ptr, _
 
     '' load fpu flags
     outp "fnstsw ax"
-	if( len( mask ) > 0 ) then
-		ostr = "test ah, " + mask
+	if( len( *mask ) > 0 ) then
+		ostr = "test ah, " + *mask
 		outp ostr
 	else
 		outp "sahf"
@@ -3703,7 +3726,7 @@ private sub hCMPF( byval rvreg as IRVREG ptr, _
 
     '' no result to be set? just branch
     if( rvreg = NULL ) then
-    	ostr = "j" + mnemonic
+    	ostr = "j" + *mnemonic
     	hBRANCH( ostr, lname )
     	exit sub
     end if
@@ -3723,7 +3746,7 @@ private sub hCMPF( byval rvreg as IRVREG ptr, _
 				outp ostr
 			end if
 
-			ostr = "set" + mnemonic + "\tdl"
+			ostr = "set" + *mnemonic + "\tdl"
 			outp ostr
 
 			if( not isedxfree ) then
@@ -3733,7 +3756,7 @@ private sub hCMPF( byval rvreg as IRVREG ptr, _
 				hMOV rname, "edx"
 			end if
 		else
-			ostr = "set" + mnemonic + " " + rname8
+			ostr = "set" + *mnemonic + " " + rname8
 			outp ostr
 		end if
 
@@ -3749,7 +3772,7 @@ private sub hCMPF( byval rvreg as IRVREG ptr, _
     	ostr = "mov " + rname + ", -1"
     	outp ostr
 
-    	ostr = "j" + mnemonic
+    	ostr = "j" + *mnemonic
     	hBRANCH( ostr, lname )
 
 		ostr = "xor " + rname + COMMA + rname
@@ -5499,7 +5522,8 @@ end sub
 private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
 	dim as FBVARDIM ptr d
     dim as integer dims, diff, i
-    dim as string sname, dname
+    dim as string sname
+    dim as zstring ptr dname
 
     '' extern?
     if( symbIsExtern( s ) ) then
@@ -5522,7 +5546,9 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
     	sname = *symbGetName( s )
 	end if
 
-	dname = symbGetVarDescName( s )
+	dim as Fbsymbol ptr fuck
+	fuck = s->var.array.desc
+	dname = symbGetArrayDescName( s )
 
    	'' add dbg info, if public or shared
     if( (symbGetAllocType( s ) and (FB_ALLOCTYPE_SHARED or FB_ALLOCTYPE_PUBLIC)) > 0 ) then
@@ -5538,7 +5564,7 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
     	hPUBLIC( dname )
 
     	hALIGN( 4 )
-    	hWriteStr( TRUE,  ".comm\t" + dname + "," + _
+    	hWriteStr( TRUE,  ".comm\t" + *dname + "," + _
     			   str( FB_ARRAYDESCLEN + dims * FB_ARRAYDESC_DIMLEN ) )
 
     	exit sub
@@ -5555,7 +5581,7 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
     end if
 
     hALIGN( 4 )
-    hWriteStr( FALSE, dname + ":" )
+    hWriteStr( FALSE, *dname + ":" )
 
 	''	void		*data 	// ptr + diff
 	hWriteStr( TRUE,  ".int\t" + sname + " +" + str( diff ) )
@@ -5597,12 +5623,12 @@ end sub
 
 '':::::
 private sub hWriteStringDesc( byval s as FBSYMBOL ptr ) static
-    dim as string dname
+    dim as zstring ptr dname
 
-	dname = symbGetVarDescName( s )
+	dname = symbGetArrayDescName( s )
 
     hALIGN( 4 )
-    hWriteStr( FALSE, dname + ":" )
+    hWriteStr( FALSE, *dname + ":" )
 
 	''	void		*data
 	hWriteStr( TRUE,  ".int\t" + *symbGetName( s ) )
@@ -5644,15 +5670,11 @@ sub emitWriteData( byval s as FBSYMBOL ptr )
     	    '' with descriptor?
     	    d = symbGetArrayDescriptor( s )
     	    if( d <> NULL ) then
-    	    	'' subtype is an array or string descriptor?
+    	    	'' array descriptor?
     	    	select case d->subtype
     	    	case FB_DESCTYPE_ARRAY
     	    		hEmitDataHeader( )
     	    		hWriteArrayDesc( s )
-
-    	    	case FB_DESCTYPE_STR
-    	    		hEmitDataHeader( )
-    	    		hWriteStringDesc( s )
     	    	end select
     	    end if
     	end select

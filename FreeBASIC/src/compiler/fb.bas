@@ -54,19 +54,19 @@ declare sub		 parserEnd				( )
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub fbAddIncPath( byval path as string )
+sub fbAddIncPath( byval path as zstring ptr )
 
 	if( env.incpaths < FB_MAXINCPATHS ) then
         ' test for both path dividers because a slash is also supported
         ' under Win32 and DOS using DJGPP. However, the (back)slashes
         ' will always be converted to the OS' preferred type of slash.
-		select case right$( path, 1 )
+		select case right( *path, 1 )
         case "/","\\"
         case else
 			path += PATHDIV
 		end select
 
-		incpathTB( env.incpaths ) = path
+		incpathTB( env.incpaths ) = *path
 
 		env.incpaths += 1
 	end if
@@ -74,19 +74,19 @@ sub fbAddIncPath( byval path as string )
 end sub
 
 '':::::
-sub fbAddDefine( byval dname as string, _
-				 byval dtext as string )
+sub fbAddDefine( byval dname as zstring ptr, _
+				 byval dtext as zstring ptr )
 
-    symbAddDefine( @dname, @dtext, len( dtext ) )
+    symbAddDefine( dname, dtext, len( *dtext ) )
 
 end sub
 
 '':::::
-private function hFindIncFile( byval filename as string ) as integer static
+private function hFindIncFile( byval filename as zstring ptr ) as integer static
 	static as zstring * FB_MAXPATHLEN+1 fname
 	dim as integer i
 
-	fname = ucase( filename )
+	fname = ucase( *filename )
 
 	for i = 0 to env.incfiles-1
 		if( incfileTB( i ) = fname ) then
@@ -99,11 +99,11 @@ private function hFindIncFile( byval filename as string ) as integer static
 end function
 
 '':::::
-private function hAddIncFile( byval filename as string ) as integer static
+private function hAddIncFile( byval filename as zstring ptr ) as integer static
     static as zstring * FB_MAXPATHLEN+1 fname
     dim as integer i
 
-	fname = ucase$( filename )
+	fname = ucase( *filename )
 
 	if( env.incfiles >= ubound( incfileTB ) ) then
 		i = ubound( incfileTB )
@@ -470,8 +470,8 @@ sub fbEnd
 end sub
 
 '':::::
-function fbCompile( byval infname as string, _
-				    byval outfname as string, _
+function fbCompile( byval infname as zstring ptr, _
+				    byval outfname as zstring ptr, _
 				    byval ismain as integer ) as integer
     dim as integer res
 	dim as double tmr
@@ -479,21 +479,21 @@ function fbCompile( byval infname as string, _
 	function = FALSE
 
 	''
-	env.inf.name	= infname
+	env.inf.name	= *infname
 	env.inf.incfile	= INVALID
 	env.inf.ismain	= ismain
 
-	env.outf.name	= outfname
+	env.outf.name	= *outfname
 	env.outf.ismain = ismain
 
 	'' open source file
-	if( not hFileExists( infname ) ) then
+	if( not hFileExists( *infname ) ) then
 		hReportErrorEx( FB_ERRMSG_FILENOTFOUND, infname, -1 )
 		exit function
 	end if
 
 	env.inf.num = freefile
-	if( open( infname, for binary, access read, as #env.inf.num ) <> 0 ) then
+	if( open( *infname, for binary, access read, as #env.inf.num ) <> 0 ) then
 		hReportErrorEx( FB_ERRMSG_FILEACCESSERROR, infname, -1 )
 		exit function
 	end if

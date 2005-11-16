@@ -56,9 +56,13 @@ function cArguments( byval proc as FBSYMBOL ptr, _
 end function
 
 '':::::
-private sub hReportParamError( byval argnum as integer, byval id as string )
+private sub hReportParamError( byval argnum as integer, _
+							   byval id as zstring ptr )
 
-	hReportErrorEx( FB_ERRMSG_ILLEGALPARAMSPECAT, "at parameter " + str$( argnum+1 ) + ": " + id )
+	hReportErrorEx( FB_ERRMSG_ILLEGALPARAMSPECAT, "at parameter " + _
+												  str( argnum+1 ) + _
+												  ": " + _
+												  *id )
 
 end sub
 
@@ -148,7 +152,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 		'' ID
 		atype  = lexGetType( )
 		dotpos = lexGetPeriodPos( )
-		lexEatToken( *pid )
+		lexEatToken( pid )
 
 		'' ('('')')
 		if( hMatch( CHAR_LPRNT ) ) then

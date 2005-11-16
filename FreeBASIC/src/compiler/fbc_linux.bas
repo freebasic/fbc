@@ -30,12 +30,12 @@ option escape
 #include once "inc\hlp.bi"
 
 declare function _linkFiles 			( ) as integer
-declare function _archiveFiles			( byval cmdline as string ) as integer
+declare function _archiveFiles			( byval cmdline as zstring ptr ) as integer
 declare function _compileResFiles 		( ) as integer
 declare function _delFiles 				( ) as integer
-declare function _listFiles				( byval argv as string ) as integer
-declare function _processOptions		( byval opt as string, _
-						 				  byval argv as string ) as integer
+declare function _listFiles				( byval argv as zstring ptr ) as integer
+declare function _processOptions		( byval opt as zstring ptr, _
+						 				  byval argv as zstring ptr ) as integer
 
 ''
 '' globals
@@ -183,7 +183,7 @@ function _linkFiles as integer
 end function
 
 '':::::
-function _archiveFiles( byval cmdline as string ) as integer
+function _archiveFiles( byval cmdline as zstring ptr ) as integer
 	dim arcpath as string
 
 #ifdef TARGET_LINUX
@@ -192,7 +192,7 @@ function _archiveFiles( byval cmdline as string ) as integer
 	arcpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ar.exe"
 #endif
 
-    if( exec( arcpath, cmdline ) <> 0 ) then
+    if( exec( arcpath, *cmdline ) <> 0 ) then
 		return FALSE
     end if
 
@@ -350,14 +350,14 @@ function _delFiles as integer
 end function
 
 '':::::
-function _listFiles( byval argv as string ) as integer
+function _listFiles( byval argv as zstring ptr ) as integer
 
 	if( hGetFileExt( argv ) = "xpm" ) then
 		if( len( xpmfile ) <> 0 ) then
 			return FALSE
 		end if
 
-		xpmfile = argv
+		xpmfile = *argv
 		return TRUE
 
 	else
@@ -367,8 +367,8 @@ function _listFiles( byval argv as string ) as integer
 end function
 
 '':::::
-function _processOptions( byval opt as string, _
-						  byval argv as string ) as integer
+function _processOptions( byval opt as zstring ptr, _
+						  byval argv as zstring ptr ) as integer
 
 
 	function = FALSE

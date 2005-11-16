@@ -137,7 +137,7 @@ declare	sub 		errInit					( )
 declare	sub 		errEnd					( )
 
 declare sub 		hReportErrorEx			( byval errnum as integer, _
-											  byval msgex as string, _
+											  byval msgex as zstring ptr, _
 											  byval linenum as integer = 0 )
 
 declare sub 		hReportError			( byval errnum as integer, _

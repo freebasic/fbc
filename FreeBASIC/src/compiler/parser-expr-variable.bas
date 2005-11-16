@@ -821,7 +821,7 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
 end function
 
 '':::::
-function hVarAddUndecl( byval id as string, _
+function hVarAddUndecl( byval id as zstring ptr, _
 						byval typ as integer ) as FBSYMBOL ptr
 	dim as FBSYMBOL ptr s
 	dim as FBARRAYDIM dTB(0)
@@ -835,7 +835,7 @@ function hVarAddUndecl( byval id as string, _
 		alloctype = 0
 	end if
 
-    s = symbAddVar( @id, typ, NULL, 0, 0, dTB(), alloctype )
+    s = symbAddVar( id, typ, NULL, 0, 0, dTB(), alloctype )
     if( s = NULL ) then
 		exit function
 	end if
@@ -901,7 +901,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 					typ = hGetDefType( id )
 				end if
 
-				sym = hVarAddUndecl( *id, typ )
+				sym = hVarAddUndecl( id, typ )
 				if( sym = NULL ) then
 					hReportError( FB_ERRMSG_DUPDEFINITION )
 					exit function

@@ -20,7 +20,7 @@ declare sub			edbgInit			( )
 
 declare sub			edbgEnd				( )
 
-declare sub 		edbgEmitHeader		( byval filename as string )
+declare sub 		edbgEmitHeader		( byval filename as zstring ptr )
 
 declare sub 		edbgLineBegin		( byval proc as FBSYMBOL ptr, _
 										  byval lnum as integer )
@@ -66,7 +66,7 @@ declare sub 		edbgEmitProcArg		( byval sym as FBSYMBOL ptr )
 declare sub 		edbgEmitLocalVar	( byval sym as FBSYMBOL ptr, _
 										  byval isstatic as integer )
 
-declare sub 		edbgIncludeBegin 	( byval incname as string, _
+declare sub 		edbgIncludeBegin 	( byval incname as zstring ptr, _
 					   					  byval incfile as integer )
 
 declare sub 		edbgIncludeEnd 		( )

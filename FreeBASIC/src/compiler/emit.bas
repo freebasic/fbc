@@ -396,13 +396,15 @@ sub emitClose( byval tottime as double )
 end sub
 
 '':::::
-sub hWriteStr( byval addtab as integer, byval s as string ) static
+sub hWriteStr( byval addtab as integer, _
+			   byval s as zstring ptr ) static
     dim as string ostr
 
 	if( addtab ) then
-		ostr = "\t" + s
+		ostr = "\t"
+		ostr += *s
 	else
-		ostr = s
+		ostr = *s
 	end if
 
 	ostr += NEWLINE
