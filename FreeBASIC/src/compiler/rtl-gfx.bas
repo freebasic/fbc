@@ -1152,10 +1152,12 @@ end function
 
 '':::::
 function rtlGfxPaletteUsing ( byval arrayexpr as ASTNODE ptr, _
+							  byval isptr as integer, _
 							  byval isget as integer ) as integer
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
+    dim as integer mode
 
 	function = FALSE
 
@@ -1167,7 +1169,8 @@ function rtlGfxPaletteUsing ( byval arrayexpr as ASTNODE ptr, _
 	proc = astNewFUNCT( f )
 
  	'' byref array as integer
- 	if( astNewPARAM( proc, arrayexpr ) = NULL ) then
+ 	mode = iif( isptr, FB_ARGMODE_BYVAL, INVALID )
+ 	if( astNewPARAM( proc, arrayexpr, INVALID, mode ) = NULL ) then
  		exit function
  	end if
 

@@ -1002,6 +1002,7 @@ declare function	rtlGfxPalette 		( byval attexpr as ASTNODE ptr, _
 										  byval isget as integer ) as integer
 
 declare function	rtlGfxPaletteUsing	( byval arrayexpr as ASTNODE ptr, _
+										  byval isptr as integer, _
 										  byval isget as integer ) as integer
 
 declare function 	rtlGfxPut			( byval target as ASTNODE ptr, _

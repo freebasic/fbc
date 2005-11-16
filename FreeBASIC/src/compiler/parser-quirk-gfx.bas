@@ -558,7 +558,7 @@ end function
 function cGfxPalette as integer
     dim as ASTNODE ptr arrayexpr, attexpr, rexpr, gexpr, bexpr
     dim as FBSYMBOL ptr s
-    dim as integer isget
+    dim as integer isget, isptr
 
 	function = FALSE
 
@@ -570,27 +570,12 @@ function cGfxPalette as integer
 
 	if( hMatch( FB_TK_USING ) ) then
 
-		if( not cVarOrDeref( arrayexpr, FALSE, TRUE ) ) then
-            hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
+		if( not hGetTarget( arrayexpr, isptr ) ) then
+            hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
             exit function
         end if
 
-		s = astGetSymbol( arrayexpr )
-		if( s = NULL ) then
-            hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
-            exit function
-        end if
-
-		if( symbIsArray( s ) ) then
-			if( not astIsIDX( arrayexpr ) ) then
-				arrayexpr = hMakeArrayIndex( s, arrayexpr )
-			end if
-		elseif( symbGetType( s ) < FB_SYMBTYPE_POINTER ) then
-			hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
-			exit function
-		end if
-
-        function = rtlGfxPaletteUsing( arrayexpr, isget )
+        function = rtlGfxPaletteUsing( arrayexpr, isptr, isget )
 
 	else
 
