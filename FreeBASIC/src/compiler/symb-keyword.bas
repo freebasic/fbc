@@ -127,6 +127,7 @@ const SYMB_MAXKEYWORDS = 210
         ("CSIGN"	, FB_TK_CSIGN			, FB_TKCLASS_KEYWORD), _
         ("CUNSG"	, FB_TK_CUNSG			, FB_TKCLASS_KEYWORD), _
         ("CPTR"		, FB_TK_CPTR			, FB_TKCLASS_KEYWORD), _
+        ("CAST"		, FB_TK_CAST			, FB_TKCLASS_KEYWORD), _
         ("IF"		, FB_TK_IF				, FB_TKCLASS_KEYWORD), _
         ("THEN"		, FB_TK_THEN			, FB_TKCLASS_KEYWORD), _
         ("ELSE"		, FB_TK_ELSE			, FB_TKCLASS_KEYWORD), _

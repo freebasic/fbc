@@ -29,49 +29,101 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-''TypeConvExpr		=    (C### '(' expression ')') .
+'' Casting		=	CAST '(' DataType ',' Expression ')'
 ''
-function cTypeConvExpr( byref tconvexpr as ASTNODE ptr ) as integer
-    dim totype as integer, op as integer
+private function hCasting( byref expr as ASTNODE ptr ) as integer
+    dim as integer dtype, lgt, ptrcnt
+    dim as FBSYMBOL ptr subtype
 
 	function = FALSE
 
-	totype = INVALID
+	'' CAST
+	lexSkipToken( )
+
+	'' '('
+	hMatchLPRNT( )
+
+    '' DataType
+    if( not cSymbolType( dtype, subtype, lgt, ptrcnt ) ) then
+    	hReportError( FB_ERRMSG_SYNTAXERROR )
+    	exit function
+    end if
+
+	'' check for invalid types
+	select case dtype
+	case FB_SYMBTYPE_VOID, FB_SYMBTYPE_FIXSTR
+		hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+		exit function
+	end select
+
+	'' ','
+	hMatchCOMMA( )
+
+	'' expression
+	if( not cExpression( expr ) ) then
+		exit function
+	end if
+
+	expr = astNewCONV( INVALID, dtype, subtype, expr, TRUE )
+    if( expr = NULL ) Then
+    	hReportError( FB_ERRMSG_TYPEMISMATCH, TRUE )
+    	exit function
+    end if
+
+	'' ')'
+	hMatchRPRNT( )
+
+	function = TRUE
+
+end function
+
+'':::::
+''TypeConvExpr		=    (C### '(' expression ')') .
+''
+function cTypeConvExpr( byref expr as ASTNODE ptr ) as integer
+    dim as integer dtype, op
+
+	function = FALSE
+
+	dtype = INVALID
 	op = INVALID
 
 	select case as const lexGetToken( )
 	case FB_TK_CBYTE
-		totype = IR_DATATYPE_BYTE
+		dtype = IR_DATATYPE_BYTE
 	case FB_TK_CSHORT
-		totype = IR_DATATYPE_SHORT
+		dtype = IR_DATATYPE_SHORT
 	case FB_TK_CINT, FB_TK_CLNG
-		totype = IR_DATATYPE_INTEGER
+		dtype = IR_DATATYPE_INTEGER
 	case FB_TK_CLNGINT
-		totype = IR_DATATYPE_LONGINT
+		dtype = IR_DATATYPE_LONGINT
 
 	case FB_TK_CUBYTE
-		totype = IR_DATATYPE_UBYTE
+		dtype = IR_DATATYPE_UBYTE
 	case FB_TK_CUSHORT
-		totype = IR_DATATYPE_USHORT
+		dtype = IR_DATATYPE_USHORT
 	case FB_TK_CUINT
-		totype = IR_DATATYPE_UINT
+		dtype = IR_DATATYPE_UINT
 	case FB_TK_CULNGINT
-		totype = IR_DATATYPE_ULONGINT
+		dtype = IR_DATATYPE_ULONGINT
 
 	case FB_TK_CSNG
-		totype = IR_DATATYPE_SINGLE
+		dtype = IR_DATATYPE_SINGLE
 	case FB_TK_CDBL
-		totype = IR_DATATYPE_DOUBLE
+		dtype = IR_DATATYPE_DOUBLE
 
 	case FB_TK_CSIGN
-		totype = IR_DATATYPE_VOID				'' hack! AST will handle that
+		dtype = IR_DATATYPE_VOID				'' hack! AST will handle that
 		op = IR_OP_TOSIGNED
 	case FB_TK_CUNSG
-		totype = IR_DATATYPE_VOID				'' hack! /
+		dtype = IR_DATATYPE_VOID				'' hack! /
 		op = IR_OP_TOUNSIGNED
+
+	case FB_TK_CAST
+		return hCasting( expr )
 	end select
 
-	if( totype = INVALID ) then
+	if( dtype = INVALID ) then
 		exit function
 	else
 		lexSkipToken( )
@@ -83,13 +135,12 @@ function cTypeConvExpr( byref tconvexpr as ASTNODE ptr ) as integer
 		exit function
 	end if
 
-	if( not cExpression( tconvexpr ) ) then
+	if( not cExpression( expr ) ) then
 		exit function
 	end if
 
-	tconvexpr = astNewCONV( op, totype, NULL, tconvexpr, TRUE )
-
-    if( tconvexpr = NULL ) Then
+	expr = astNewCONV( op, dtype, NULL, expr, TRUE )
+    if( expr = NULL ) Then
     	hReportError( FB_ERRMSG_TYPEMISMATCH, TRUE )
     	exit function
     end if

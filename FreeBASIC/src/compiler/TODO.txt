@@ -1,4 +1,6 @@
 
+[ ] swap of zstring's and var-len string's is not working?? or that's the behaviour..
+
 [ ] @static_array(const) won't become an OFFSET, not allowing initializations..
 
 [ ] files cannot be opened as text-mode in the rlib or the newline handling
@@ -19,9 +21,6 @@
       - LINE INPUT and INPUT -- inferred
       - WINPUT$ -- no inferrence
     - fix the !!!FIXME!!!'s in the rtlib
-
-[ ] add the cast() intrinsic function - CAST( type, expression ), works like in C,
-    so macros (and maybe function templates one day) can be better designed
 
 [ ] add support for functions returning references (reuse "BYREF"), so those can
     be automatically dereferenced - but *NOT* deleted, only non-local data can
