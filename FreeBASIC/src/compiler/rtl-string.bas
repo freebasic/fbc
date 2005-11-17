@@ -213,6 +213,14 @@ data @FB_RTL_STRALLOCTMPDESCZ,"", _
 	 1, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
 
+'' fb_StrAllocTempDescZEx ( byval str as zstring ptr, byval len as integer ) as string
+data @FB_RTL_STRALLOCTMPDESCZEX,"", _
+	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 2, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
 '' fb_WstrAlloc ( byval len as integer ) as WSTRING ptr
 data @FB_RTL_WSTRALLOC,"", _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR,FB_FUNCMODE_STDCALL, _
@@ -1683,40 +1691,60 @@ function rtlStrAllocTmpResult( byval strg as ASTNODE ptr ) as ASTNODE ptr static
 end function
 
 '':::::
-function rtlStrAllocTmpDesc	( byval strg as ASTNODE ptr ) as ASTNODE ptr static
+function rtlStrAllocTmpDesc	( byval strexpr as ASTNODE ptr ) as ASTNODE ptr static
     dim as ASTNODE ptr proc
     dim as integer lgt, dtype
+    dim as FBSYMBOL ptr litsym
 
     function = NULL
 
 	''
-   	dtype = astGetDataType( strg )
+   	dtype = astGetDataType( strexpr )
 
 	select case dtype
 	case IR_DATATYPE_STRING
     	proc = astNewFUNCT( PROCLOOKUP( STRALLOCTMPDESCV ) )
 
     	'' str as string
-    	if( astNewPARAM( proc, strg ) = NULL ) then
+    	if( astNewPARAM( proc, strexpr ) = NULL ) then
     		exit function
     	end if
 
 	case IR_DATATYPE_CHAR
-    	proc = astNewFUNCT( PROCLOOKUP( STRALLOCTMPDESCZ ) )
 
-    	'' byval str as string
-    	if( astNewPARAM( proc, strg ) = NULL ) then
+    	'' literal?
+    	litsym = astGetStrLitSymbol( strexpr )
+    	if( litsym = NULL ) then
+    		proc = astNewFUNCT( PROCLOOKUP( STRALLOCTMPDESCZ ) )
+    	else
+    		proc = astNewFUNCT( PROCLOOKUP( STRALLOCTMPDESCZEX ) )
+    	end if
+
+    	'' byval str as zstring ptr
+    	if( astNewPARAM( proc, strexpr ) = NULL ) then
     		exit function
+    	end if
+
+    	'' length is known at compile-time
+    	if( litsym <> NULL ) then
+    		lgt = symbGetStrLen( litsym ) - 1	'' less the null-term
+
+            '' byval len as integer
+    		if( astNewPARAM( proc, _
+    						 astNewCONSTi( lgt, IR_DATATYPE_INTEGER ), _
+    						 IR_DATATYPE_INTEGER ) = NULL ) then
+    			exit function
+    		end if
     	end if
 
 	case IR_DATATYPE_FIXSTR
     	proc = astNewFUNCT( PROCLOOKUP( STRALLOCTMPDESCF ) )
 
     	'' always calc len before pushing the param
-		lgt = rtlCalcStrLen( strg, dtype )
+		lgt = rtlCalcStrLen( strexpr, dtype )
 
     	'' str as any
-    	if( astNewPARAM( proc, strg ) = NULL ) then
+    	if( astNewPARAM( proc, strexpr ) = NULL ) then
     		exit function
     	end if
 
