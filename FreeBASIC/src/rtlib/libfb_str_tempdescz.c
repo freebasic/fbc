@@ -29,7 +29,7 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL FBSTRING *fb_StrAllocTempDescZ( const char *str )
+FBCALL FBSTRING *fb_StrAllocTempDescZEx( const char *str, int len )
 {
 	FBSTRING *dsc;
 
@@ -37,23 +37,29 @@ FBCALL FBSTRING *fb_StrAllocTempDescZ( const char *str )
 
  	/* alloc a temporary descriptor */
  	dsc = fb_hStrAllocTmpDesc( );
+
+    FB_STRUNLOCK();
+
     if( dsc == NULL )
-    {
-    	FB_STRUNLOCK();
     	return &fb_strNullDesc;
-    }
 
 	dsc->data = (char *)str;
+	dsc->len = len;
+	dsc->size = len;
+
+	return dsc;
+}
+
+/*:::::*/
+FBCALL FBSTRING *fb_StrAllocTempDescZ( const char *str )
+{
+	int len;
 
 	/* find the true size */
 	if( str != NULL )
-		dsc->len = strlen( str );
+		len = strlen( str );
 	else
-		dsc->len = 0;
+		len = 0;
 
-	dsc->size = dsc->len;
-
-	FB_STRUNLOCK();
-
-	return dsc;
+	return fb_StrAllocTempDescZEx( str, len );
 }

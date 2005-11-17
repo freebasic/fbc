@@ -37,17 +37,15 @@ FBCALL FBSTRING *fb_StrAllocTempDescV( FBSTRING *str )
 
  	/* alloc a temporary descriptor */
  	dsc = fb_hStrAllocTmpDesc( );
+
+    FB_STRUNLOCK();
+
     if( dsc == NULL )
-    {
-    	FB_STRUNLOCK();
     	return &fb_strNullDesc;
-    }
 
 	dsc->data = str->data;
 	dsc->len  = FB_STRSIZE( str );
 	dsc->size = str->size;
-
-	FB_STRUNLOCK();
 
 	return dsc;
 }
