@@ -649,6 +649,17 @@ function cSelectConstStmt as integer
 	if( astGetDataClass( expr ) <> IR_DATACLASS_INTEGER ) then
 		hReportError( FB_ERRMSG_INVALIDDATATYPES )
 		exit function
+
+    '' CHAR and WCHAR literals are also from the INTEGER class
+    else
+    	select case astGetDataType( expr )
+    	case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    		'' don't allow, unless it's a deref pointer
+    		if( not astIsPTR( expr ) ) then
+    			hReportError( FB_ERRMSG_INVALIDDATATYPES )
+    			exit function
+    		end if
+    	end select
 	end if
 
 	if( astGetDataType( expr ) <> IR_DATATYPE_UINT ) then

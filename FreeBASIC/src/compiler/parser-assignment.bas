@@ -163,6 +163,14 @@ function cAssignmentOrPtrCall as integer
 			if( irGetDataClass( astGetDataType( assgexpr ) ) <> IR_DATACLASS_INTEGER ) then
 				hReportError( FB_ERRMSG_VARIABLEREQUIRED )
 				exit function
+
+    		'' CHAR and WCHAR literals are also from the INTEGER class
+    		else
+    			select case astGetDataType( assgexpr )
+    			case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+					hReportError( FB_ERRMSG_VARIABLEREQUIRED )
+					exit function
+				end select
 			end if
 
     		'' flush the call

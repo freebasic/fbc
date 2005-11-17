@@ -570,10 +570,18 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 		return NULL
 	end if
 
-	'' UDT? ditto..
-	if( dtype = IR_DATATYPE_USERDEF ) then
+    '' CHAR and WCHAR literals are also from the INTEGER class
+    select case dtype
+    case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    	'' don't allow, unless it's a deref pointer
+    	if( not astIsPTR( n ) ) then
+    		return NULL
+    	end if
+
+	'' UDT?
+	case IR_DATATYPE_USERDEF
 		return NULL
-	end if
+	end select
 
 	'' shortcut "exp logop exp" if it's at top of tree (used to optimize IF/ELSEIF/WHILE/UNTIL)
 	if( n->class <> AST_NODECLASS_BOP ) then

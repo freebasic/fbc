@@ -230,6 +230,16 @@ function astNewCONV( byval op as integer, _
     else
     	if( dclass = IR_DATACLASS_STRING ) then
     		exit function
+
+    	'' CHAR and WCHAR literals are also from the INTEGER class
+    	else
+    		select case ldtype
+    		case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    			'' don't allow, unless it's a deref pointer
+    			if( not astIsPTR( l ) ) then
+    				exit function
+    			end if
+    	    end select
     	end if
     end if
 

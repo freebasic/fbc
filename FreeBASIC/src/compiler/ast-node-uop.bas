@@ -136,18 +136,25 @@ function astNewUOP( byval op as integer, _
     	exit function
     end if
 
-	'' UDT's? ditto
-	if( dtype = IR_DATATYPE_USERDEF ) then
-		exit function
-    end if
+    select case dtype
+    '' CHAR and WCHAR literals are also from the INTEGER class..
+    case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    	'' only if it's a deref pointer, to allow "NOT *p" etc
+    	if( not astIsPTR( o ) ) then
+    		exit function
+    	end if
 
-    '' pointer?
-    if( dtype >= IR_DATATYPE_POINTER ) then
+    '' UDT's?
+    case IR_DATATYPE_USERDEF
+    	exit function
+
+	'' pointer?
+	case IS >= IR_DATATYPE_POINTER
     	'' only NOT allowed
     	if( op <> IR_OP_NOT ) then
     		exit function
     	end if
-    end if
+    end select
 
 	'' convert byte to integer
 	if( irGetDataSize( dtype ) = 1 ) then

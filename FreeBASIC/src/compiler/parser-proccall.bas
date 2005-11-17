@@ -170,6 +170,14 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 			if( irGetDataClass( typ ) <> IR_DATACLASS_INTEGER ) then
 				hReportError( FB_ERRMSG_VARIABLEREQUIRED )
 				exit function
+
+    		'' CHAR and WCHAR literals are also from the INTEGER class
+    		else
+    			select case typ
+    			case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+					hReportError( FB_ERRMSG_VARIABLEREQUIRED )
+					exit function
+				end select
 			end if
 		end if
 

@@ -369,6 +369,13 @@ private function hCheckPointer( byval op as integer, _
     '' not int?
     if( dclass <> IR_DATACLASS_INTEGER ) then
     	return FALSE
+
+    '' CHAR and WCHAR literals are also from the INTEGER class
+    else
+    	select case dtype
+    	case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    		return FALSE
+        end select
     end if
 
     select case op
@@ -574,7 +581,7 @@ function astNewBOP( byval op as integer, _
 		'' one is not a string..
 		else
 			if( ldtype = IR_DATATYPE_WCHAR ) then
-				'' don't allow, unless it's a pointer
+				'' don't allow, unless it's a deref pointer
 				if( l->class <> AST_NODECLASS_PTR ) then
 					exit function
 				end if
@@ -659,7 +666,7 @@ function astNewBOP( byval op as integer, _
    		'' one is not a string (not fixed, var-len, z- or w-string,
    		'' or the tests above would catch them)
 		if( ldtype = IR_DATATYPE_CHAR ) then
-			'' don't allow, unless it's a pointer
+			'' don't allow, unless it's a deref pointer
 			if( l->class <> AST_NODECLASS_PTR ) then
 				exit function
 			end if
