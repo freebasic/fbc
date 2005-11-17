@@ -45,8 +45,18 @@ sub cUpdPointer( byval op as integer, _
 
     '' not integer class?
     if( irGetDataClass( edtype ) <> IR_DATACLASS_INTEGER ) then
+    	astDelTree( e )
     	e = NULL
     	exit sub
+
+    '' CHAR and WCHAR literals are also from the INTEGER class (to allow *p = 0 etc)
+    else
+    	select case edtype
+    	case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    		astDelTree( e )
+    		e = NULL
+    		exit sub
+    	end select
     end if
 
     '' another pointer?
@@ -56,6 +66,7 @@ sub cUpdPointer( byval op as integer, _
     		p = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, p )
     		e = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, e )
     	else
+    		astDelTree( e )
     		e = NULL
     	end if
 
@@ -76,6 +87,7 @@ sub cUpdPointer( byval op as integer, _
 		if( lgt = 0 ) then
 			'' void ptr? pretend it's a byte ptr
 			if( astGetDataType( p ) <> FB_SYMBTYPE_POINTER + FB_SYMBTYPE_VOID ) then
+				astDelTree( e )
 				e = NULL
 			end if
 			exit sub
@@ -85,6 +97,7 @@ sub cUpdPointer( byval op as integer, _
 
     case else
     	'' allow AND and OR??
+    	astDelTree( e )
     	e = NULL
     	exit sub
     end select

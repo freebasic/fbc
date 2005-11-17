@@ -63,7 +63,7 @@ sub fbAddIncPath( byval path as zstring ptr )
 		select case right( *path, 1 )
         case "/","\\"
         case else
-			path += PATHDIV
+			*path += PATHDIV
 		end select
 
 		incpathTB( env.incpaths ) = *path
@@ -672,7 +672,7 @@ function fbIncludeFile( byval filename as zstring ptr, _
 		''
 		env.inf.num = freefile
 		if( open( incfile, for binary, access read, as #env.inf.num ) <> 0 ) then
-			hReportErrorEx( FB_ERRMSG_FILENOTFOUND, "\"" + filename + "\"" )
+			hReportErrorEx( FB_ERRMSG_FILENOTFOUND, "\"" + *filename + "\"" )
 			exit function
 		end if
 
