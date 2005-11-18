@@ -190,14 +190,14 @@ private function lexReadChar as uinteger static
 					end if
 
 				case FBFILE_FORMAT_UTF16LE, FBFILE_FORMAT_UTF16BE
-					if( get( #env.inf.num, , lex->buff16() ) = 0 ) then
+					if( get( #env.inf.num, , lex->buff16(0), 8192 ) = 0 ) then
 						lex->bufflen = seek( env.inf.num ) - lex->filepos
 						lex->buff16ptr = @lex->buff16(0)
 						lex->filepos += lex->bufflen * len( ushort )
 					end if
 
 				case FBFILE_FORMAT_UTF32LE, FBFILE_FORMAT_UTF32BE
-					if( get( #env.inf.num, , lex->buff32() ) = 0 ) then
+					if( get( #env.inf.num, , lex->buff32(0), 8192 ) = 0 ) then
 						lex->bufflen = seek( env.inf.num ) - lex->filepos
 						lex->buff32ptr = @lex->buff32(0)
 						lex->filepos += lex->bufflen * len( uinteger )
