@@ -179,6 +179,9 @@ int fb_DevFileOpenEncod( struct _FB_FILE *handle, const char *filename, size_t f
 
     handle->opaque = fp;
 
+    if ( handle->access == FB_FILE_ACCESS_ANY)
+        handle->access = FB_FILE_ACCESS_READWRITE;
+
     /* handle BOM */
     switch( handle->mode )
     {

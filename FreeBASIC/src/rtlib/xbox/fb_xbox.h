@@ -34,6 +34,8 @@
 #include <openxdk/debug.h>
 #include <SDL.h>
 
+#define FB_NEWLINE "\r\n"
+
 typedef int FB_DIRCTX; /* dummy to make fb.h happy */
 
 extern HANDLE fb_in_handle, fb_out_handle;

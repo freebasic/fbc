@@ -156,10 +156,25 @@ extern "C" {
 #include "xbox/fb_xbox.h"
 #endif
 
+
+/**
+ * CPU-dependent macros and inline functions
+ */
+#ifdef TARGET_X86
+#include "fb_x86.h"
+#else
+#include "fb_port.h"
+#endif
+
+/**
+ * unicode definitions
+ */
+#include "fb_unicode.h"
+
+
 #ifndef FBCALL
 # define FBCALL
 #endif /* !defined FBCALL */
-
 
 #ifndef FB_LOCK
     /** Acquire a global semaphore (recursive mutex).
@@ -218,8 +233,6 @@ extern "C" {
 #define FB_BINARY_NEWLINE "\r\n"
 #endif
 
-#define FB_BINARY_NEWLINE_WSTR _LC("\r\n")
-
 #ifndef FB_NEWLINE
     /** The "NEW LINE" character used for all I/O.
      *
@@ -228,8 +241,6 @@ extern "C" {
      */
 #define FB_NEWLINE "\n"
 #endif
-
-#define FB_NEWLINE_WSTR _LC("\n")
 
 #ifndef FB_LL_FMTMOD
     /** LONG LONG format modifier.
@@ -246,17 +257,6 @@ extern "C" {
 #else
 #define DBG_ASSERT(e) ((void)0)
 #endif
-
-#ifdef TARGET_X86
-#include "fb_x86.h"
-#else
-#include "fb_port.h"
-#endif
-
-/**
- * unicode definitions
- */
-#include "fb_unicode.h"
 
 /**************************************************************************************************
  * helpers
@@ -755,19 +755,19 @@ static __inline__ int FB_PRINT_CONVERT_BIN_NEWLINE(int mask)
 #define FB_WRITESTR(fnum, val, mask, type) 				    \
     FB_WRITESTR_EX(FB_FILE_TO_HANDLE(fnum), val, mask, type)
 
-#define FB_WRITEWSTR_EX(handle, val, mask, type) 			          \
-    do {                                                              \
-        FB_WCHAR buffer[80*25+1];								      \
-        size_t len;             							          \
-                                                                      \
-        if( mask & FB_PRINT_BIN_NEWLINE )           		          \
-            len = swprintf( buffer, type FB_BINARY_NEWLINE_WSTR, val );  \
-        else if( mask & FB_PRINT_NEWLINE )           			      \
-            len = swprintf( buffer, type FB_NEWLINE_WSTR, val );         \
-        else												          \
-            len = swprintf( buffer, type _LC(","), val );                 \
-                                                                      \
-        fb_hFilePrintBufferWstrEx( handle, buffer, len );             \
+#define FB_WRITEWSTR_EX(handle, val, mask, type) 			         			\
+    do {                                                              			\
+        FB_WCHAR buffer[80*25+1];								      			\
+        size_t len;             							          			\
+                                                                      			\
+        if( mask & FB_PRINT_BIN_NEWLINE )           		          			\
+            len = swprintf( buffer, _LC(type FB_BINARY_NEWLINE), val );  	\
+        else if( mask & FB_PRINT_NEWLINE )           			      			\
+            len = swprintf( buffer, _LC(type FB_NEWLINE), val );         	\
+        else												          			\
+            len = swprintf( buffer, _LC(type ","), val );                 	\
+                                                                      			\
+        fb_hFilePrintBufferWstrEx( handle, buffer, len );             			\
     } while (0)
 
 #define FB_WRITEWSTR(fnum, val, mask, type) 				   \

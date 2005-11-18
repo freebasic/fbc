@@ -39,6 +39,8 @@
 # include <conio.h>
 #endif
 
+#define FB_NEWLINE "\r\n"
+
 typedef int FB_DIRCTX; /* dummy to make fb.h happy */
 
 typedef struct {

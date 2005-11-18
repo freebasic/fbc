@@ -37,6 +37,8 @@
 #include <windows.h>
 #include <io.h>
 
+#define FB_NEWLINE "\r\n"
+
 typedef struct _FB_DIRCTX
 {
 	int in_use;

@@ -67,7 +67,7 @@ int fb_DevFileOpen( struct _FB_FILE *handle, const char *filename, size_t fname_
     switch( handle->mode )
     {
     case FB_FILE_MODE_APPEND:
-        openmask = "at";				/* will create the file if it doesn't exist */
+        openmask = "ab";				/* will create the file if it doesn't exist */
         break;
 
     case FB_FILE_MODE_INPUT:
@@ -75,7 +75,7 @@ int fb_DevFileOpen( struct _FB_FILE *handle, const char *filename, size_t fname_
         break;
 
     case FB_FILE_MODE_OUTPUT:
-        openmask = "wt";       			/* will create the file if it doesn't exist */
+        openmask = "wb";       			/* will create the file if it doesn't exist */
         break;
 
     case FB_FILE_MODE_BINARY:

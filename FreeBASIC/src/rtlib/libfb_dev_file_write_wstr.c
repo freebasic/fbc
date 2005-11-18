@@ -45,7 +45,6 @@ int fb_DevFileWriteWstr( struct _FB_FILE *handle, const FB_WCHAR* value, size_t 
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
-	/* !!!FIXME!!! is it okay to use fwrite() if file was opened in text mode? !!!FIXME!!! */
 	/* do write */
 	if( fwrite( (void *)value, sizeof( FB_WCHAR ), valuelen, fp ) != valuelen ) {
 		FB_UNLOCK();
