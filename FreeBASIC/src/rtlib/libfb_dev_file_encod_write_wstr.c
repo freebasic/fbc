@@ -28,7 +28,7 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-int fb_DevFileWriteEncodWstr( struct _FB_FILE *handle, const FB_WCHAR* buffer, size_t len )
+int fb_DevFileWriteEncodWstr( struct _FB_FILE *handle, const FB_WCHAR* buffer, size_t chars )
 {
     FILE *fp;
     char *encod_buffer;
@@ -47,7 +47,7 @@ int fb_DevFileWriteEncodWstr( struct _FB_FILE *handle, const FB_WCHAR* buffer, s
 				so there's no binary data to care) */
 	encod_buffer = fb_WCharToUTF( handle->encod,
 								  buffer,
-								  len / sizeof( FB_WCHAR ),
+								  chars,
 								  &bytes );
 
 	if( encod_buffer != NULL )
