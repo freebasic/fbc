@@ -526,6 +526,9 @@ function rtlFileOpen( byval filename as ASTNODE ptr, _
 
 	if( doencoding ) then
 		'' byval encoding as zstring ptr
+		if( fencoding = NULL ) then
+			fencoding = astNewCONSTi( 0, IR_DATATYPE_POINTER+IR_DATATYPE_CHAR )
+		end if
 		if( astNewPARAM( proc, fencoding ) = NULL ) then
 			exit function
 		end if
