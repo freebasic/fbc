@@ -3,24 +3,17 @@
 
 [ ] @static_array(const) won't become an OFFSET, not allowing initializations..
 
-[ ] files cannot be opened as text-mode in the rlib or the newline handling
-    will be screwed when WRITE'g/PRINT'g wstring's, do that ourselves - no
-    generic pnWrite then, it depends on the file mode, binary or text
-
 [ ] passing a temporary string to a zstring ptr should not make
     yet-another temporary assignament in hStrParamToPtrArg(),
     just a pointer copy that later should be strDelete()'d
 
 [ ] add the wstring type:
-    - auto-convert literal strings to w- or z- on assignments,
-      depending on the l-hand side type
+    - auto-convert literal strings to w- or z- on assignments, depending on the l-hand side type
     - implement all missing rtlib wstring routines
-      - SWAP for wide strings
       - [L|R]TRIM ANY
-      - OPEN... INPUT|APPEND|OUTPUT ENCODING "" -- no bloat
       - LINE INPUT and INPUT -- inferred
       - WINPUT$ -- no inferrence
-    - fix the !!!FIXME!!!'s in the rtlib
+    - fix the !!!FIXME!!!'s and write the !!!WRITEME!!!'s in the rtlib
 
 [ ] add support for functions returning references (reuse "BYREF"), so those can
     be automatically dereferenced - but *NOT* deleted, only non-local data can
@@ -74,6 +67,7 @@
     - single inheritance, plus interfaces
     - exceptions - with unwind support
     - operator overloading
+    - properties
     - pure virtual methods
     - down casting
     - name space

@@ -224,6 +224,7 @@
 #define FB_RTL_MEMCOPYCLEAR 			"fb_MemCopyClear"
 
 #define FB_RTL_FILEOPEN 				"fb_FileOpen"
+#define FB_RTL_FILEOPEN_ENCOD			"fb_FileOpenEncod"
 #define FB_RTL_FILEOPEN_SHORT 			"fb_FileOpenShort"
 #define FB_RTL_FILEOPEN_CONS 			"fb_FileOpenCons"
 #define FB_RTL_FILEOPEN_ERR 			"fb_FileOpenErr"
@@ -503,6 +504,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_MEMCOPYCLEAR
 
 	FB_RTL_IDX_FILEOPEN
+	FB_RTL_IDX_FILEOPEN_ENCOD
 	FB_RTL_IDX_FILEOPEN_SHORT
 	FB_RTL_IDX_FILEOPEN_CONS
 	FB_RTL_IDX_FILEOPEN_ERR
@@ -839,8 +841,17 @@ declare function	rtlFileOpen			( byval filename as ASTNODE ptr, _
 										  byval flock as ASTNODE ptr, _
 										  byval filenum as ASTNODE ptr, _
 										  byval flen as ASTNODE ptr, _
+										  byval fencoding as ASTNODE ptr, _
 										  byval isfunc as integer, _
                                           byval openkind as FBOPENKIND ) as ASTNODE ptr
+
+declare function	rtlFileOpenShort	( byval filename as ASTNODE ptr, _
+										  byval fmode as ASTNODE ptr, _
+										  byval faccess as ASTNODE ptr, _
+										  byval flock as ASTNODE ptr, _
+										  byval filenum as ASTNODE ptr, _
+										  byval flen as ASTNODE ptr, _
+										  byval isfunc as integer ) as ASTNODE ptr
 
 declare function	rtlFileRename		( byval filename_new as ASTNODE ptr, _
 										  byval filename_old as ASTNODE ptr, _

@@ -672,7 +672,7 @@ function hCheckFileFormat( byval f as integer ) as integer
 		if( BOM = &hFFFE0000 ) then
 			fmt = FBFILE_FORMAT_UTF32BE
 
-		elseif( BOM = &h0000FFFE ) then
+		elseif( BOM = &h0000FEFF ) then
 		    fmt = FBFILE_FORMAT_UTF32LE
 
 		else

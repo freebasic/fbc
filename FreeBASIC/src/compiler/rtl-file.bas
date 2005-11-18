@@ -38,7 +38,7 @@ option escape
 funcdata:
 
 ''
-'' fb_FileOpen( s as string, byval mode as integer, byval access as integer,
+'' fb_FileOpen( byref s as string, byval mode as integer, byval access as integer,
 ''		        byval lock as integer, byval filenum as integer, byval len as integer ) as integer
 data @FB_RTL_FILEOPEN,"", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
@@ -50,6 +50,21 @@ data @FB_RTL_FILEOPEN,"", _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
+'' fb_FileOpenEncod( byref s as string, byval mode as integer, byval access as integer,
+''		        	 byval lock as integer, byval filenum as integer,
+''					 byval len as integer, byval encoding as zstring ptr ) as integer
+data @FB_RTL_FILEOPEN_ENCOD,"", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 7, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_FileOpenShort( mode as string, byval filenum as integer,
 ''                   filename as string, byval len as integer,
@@ -66,82 +81,94 @@ data @FB_RTL_FILEOPEN_SHORT,"", _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
 
 '' fb_FileOpenCons( s as string, byval mode as integer, byval access as integer,
-''		           byval lock as integer, byval filenum as integer, byval len as integer ) as integer
+''		            byval lock as integer, byval filenum as integer,
+''					byval len as integer, byval encoding as zstring ptr ) as integer
 data @FB_RTL_FILEOPEN_CONS,"", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
-	 6, _
+	 7, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_FileOpenErr( s as string, byval mode as integer, byval access as integer,
-''		           byval lock as integer, byval filenum as integer, byval len as integer ) as integer
+''		           byval lock as integer, byval filenum as integer,
+''				   byval len as integer, byval encoding as zstring ptr ) as integer
 data @FB_RTL_FILEOPEN_ERR,"", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
-	 6, _
+	 7, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_FileOpenPipe( s as string, byval mode as integer, byval access as integer,
-''		           byval lock as integer, byval filenum as integer, byval len as integer ) as integer
+''		            byval lock as integer, byval filenum as integer,
+''					byval len as integer, byval encoding as zstring ptr ) as integer
 data @FB_RTL_FILEOPEN_PIPE,"", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
-	 6, _
+	 7, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_FileOpenScrn( s as string, byval mode as integer, byval access as integer,
-''		           byval lock as integer, byval filenum as integer, byval len as integer ) as integer
+''		            byval lock as integer, byval filenum as integer,
+''					byval len as integer, byval encoding as zstring ptr ) as integer
 data @FB_RTL_FILEOPEN_SCRN,"", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 @rtlMultinput_cb, FALSE, FALSE, _
-	 6, _
+	 7, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_FileOpenLpt( s as string, byval mode as integer, byval access as integer,
-''		           byval lock as integer, byval filenum as integer, byval len as integer ) as integer
+''		           byval lock as integer, byval filenum as integer,
+''				   byval len as integer, byval encoding as zstring ptr ) as integer
 data @FB_RTL_FILEOPEN_LPT,"", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 @rtlPrinter_cb, FALSE, FALSE, _
-	 6, _
+	 7, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_FileOpenCom( s as string, byval mode as integer, byval access as integer,
-''		           byval lock as integer, byval filenum as integer, byval len as integer ) as integer
+''		           byval lock as integer, byval filenum as integer,
+''				   byval len as integer, byval encoding as zstring ptr ) as integer
 data @FB_RTL_FILEOPEN_COM,"", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
-	 6, _
+	 7, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_FileClose	( byval filenum as integer ) as integer
 data @FB_RTL_FILECLOSE,"", _
@@ -423,99 +450,151 @@ function rtlFileOpen( byval filename as ASTNODE ptr, _
 				      byval flock as ASTNODE ptr, _
 				      byval filenum as ASTNODE ptr, _
 				      byval flen as ASTNODE ptr, _
+				      byval fencoding as ASTNODE ptr, _
 				      byval isfunc as integer, _
-                      byval openkind as FBOPENKIND ) as ASTNODE ptr static
+                      byval openkind as FBOPENKIND _
+                    ) as ASTNODE ptr static
+
+    dim as ASTNODE ptr proc
+    dim as FBSYMBOL ptr f, reslabel
+    dim as integer doencoding
+
+	function = NULL
+
+	''
+	doencoding = TRUE
+
+	select case openkind
+	case FB_FILE_TYPE_FILE
+		if( fencoding = NULL ) then
+			f = PROCLOOKUP( FILEOPEN )
+			doencoding = FALSE
+		else
+			f = PROCLOOKUP( FILEOPEN_ENCOD )
+		end if
+
+    case FB_FILE_TYPE_CONS
+		f = PROCLOOKUP( FILEOPEN_CONS )
+
+    case FB_FILE_TYPE_ERR
+		f = PROCLOOKUP( FILEOPEN_ERR )
+
+    case FB_FILE_TYPE_PIPE
+		f = PROCLOOKUP( FILEOPEN_PIPE )
+
+    case FB_FILE_TYPE_SCRN
+		f = PROCLOOKUP( FILEOPEN_SCRN )
+
+    case FB_FILE_TYPE_LPT
+		f = PROCLOOKUP( FILEOPEN_LPT )
+
+    case FB_FILE_TYPE_COM
+		f = PROCLOOKUP( FILEOPEN_COM )
+	end select
+
+	proc = astNewFUNCT( f )
+
+	'' filename as string
+	if( astNewPARAM( proc, filename ) = NULL ) then
+		exit function
+	end if
+
+	'' byval mode as integer
+	if( astNewPARAM( proc, fmode ) = NULL ) then
+		exit function
+	end if
+
+	'' byval access as integer
+	if( astNewPARAM( proc, faccess ) = NULL ) then
+		exit function
+	end if
+
+	'' byval lock as integer
+	if( astNewPARAM( proc, flock ) = NULL ) then
+		exit function
+	end if
+
+	'' byval filenum as integer
+	if( astNewPARAM( proc, filenum ) = NULL ) then
+		exit function
+	end if
+
+	'' byval len as integer
+	if( astNewPARAM( proc, flen ) = NULL ) then
+		exit function
+	end if
+
+	if( doencoding ) then
+		'' byval encoding as zstring ptr
+		if( astNewPARAM( proc, fencoding ) = NULL ) then
+			exit function
+		end if
+	end if
+
+    ''
+    if( not isfunc ) then
+    	if( env.clopt.resumeerr ) then
+    		reslabel = symbAddLabel( NULL )
+    		astAdd( astNewLABEL( reslabel ) )
+    	else
+    		reslabel = NULL
+    	end if
+
+    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
+
+    else
+    	function = proc
+    end if
+
+end function
+
+'':::::
+function rtlFileOpenShort( byval filename as ASTNODE ptr, _
+					  	   byval fmode as ASTNODE ptr, _
+					  	   byval faccess as ASTNODE ptr, _
+				      	   byval flock as ASTNODE ptr, _
+				           byval filenum as ASTNODE ptr, _
+				           byval flen as ASTNODE ptr, _
+				           byval isfunc as integer _
+				         ) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f, reslabel
 
 	function = NULL
 
-    if( hIsString( astGetDataType( fmode ) ) ) then
-        '' this is the short form of the OPEN command
-        proc = astNewFUNCT( PROCLOOKUP( FILEOPEN_SHORT ) )
+	'' this is the short form of the OPEN command
+	proc = astNewFUNCT( PROCLOOKUP( FILEOPEN_SHORT ) )
 
-        '' mode as string
-        if( astNewPARAM( proc, fmode ) = NULL ) then
-            exit function
-        end if
+	'' mode as string
+	if( astNewPARAM( proc, fmode ) = NULL ) then
+		exit function
+	end if
 
-        '' byval filenum as integer
-        if( astNewPARAM( proc, filenum ) = NULL ) then
-            exit function
-        end if
+	'' byval filenum as integer
+	if( astNewPARAM( proc, filenum ) = NULL ) then
+		exit function
+	end if
 
-        '' filename as string
-        if( astNewPARAM( proc, filename ) = NULL ) then
-            exit function
-        end if
+	'' filename as string
+	if( astNewPARAM( proc, filename ) = NULL ) then
+		exit function
+	end if
 
-        '' byval len as integer
-        if( astNewPARAM( proc, flen ) = NULL ) then
-            exit function
-        end if
+	'' byval len as integer
+	if( astNewPARAM( proc, flen ) = NULL ) then
+		exit function
+	end if
 
-        '' faccess as string
-        if( astNewPARAM( proc, faccess ) = NULL ) then
-            exit function
-        end if
+	'' faccess as string
+	if( astNewPARAM( proc, faccess ) = NULL ) then
+		exit function
+	end if
 
-        '' flock as string
-        if( astNewPARAM( proc, flock ) = NULL ) then
-            exit function
-        end if
-
-    else
-        ''
-        select case openkind
-        case FB_FILE_TYPE_FILE
-        	f = PROCLOOKUP( FILEOPEN )
-    	case FB_FILE_TYPE_CONS
-        	f = PROCLOOKUP( FILEOPEN_CONS )
-    	case FB_FILE_TYPE_ERR
-        	f = PROCLOOKUP( FILEOPEN_ERR )
-    	case FB_FILE_TYPE_PIPE
-        	f = PROCLOOKUP( FILEOPEN_PIPE )
-    	case FB_FILE_TYPE_SCRN
-        	f = PROCLOOKUP( FILEOPEN_SCRN )
-    	case FB_FILE_TYPE_LPT
-        	f = PROCLOOKUP( FILEOPEN_LPT )
-    	case FB_FILE_TYPE_COM
-        	f = PROCLOOKUP( FILEOPEN_COM )
-        end select
-
-        proc = astNewFUNCT( f )
-
-        '' filename as string
-        if( astNewPARAM( proc, filename ) = NULL ) then
-            exit function
-        end if
-
-        '' byval mode as integer
-        if( astNewPARAM( proc, fmode ) = NULL ) then
-            exit function
-        end if
-
-        '' byval access as integer
-        if( astNewPARAM( proc, faccess ) = NULL ) then
-            exit function
-        end if
-
-        '' byval lock as integer
-        if( astNewPARAM( proc, flock ) = NULL ) then
-            exit function
-        end if
-
-        '' byval filenum as integer
-        if( astNewPARAM( proc, filenum ) = NULL ) then
-            exit function
-        end if
-
-        '' byval len as integer
-        if( astNewPARAM( proc, flen ) = NULL ) then
-            exit function
-        end if
-    end if
+	'' flock as string
+	if( astNewPARAM( proc, flock ) = NULL ) then
+		exit function
+	end if
 
     ''
     if( not isfunc ) then
