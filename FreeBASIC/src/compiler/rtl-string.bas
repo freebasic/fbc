@@ -2463,7 +2463,8 @@ end function
 
 '':::::
 function rtlStrSwap( byval str1 as ASTNODE ptr, _
-					 byval str2 as ASTNODE ptr ) as integer static
+					 byval str2 as ASTNODE ptr _
+				   ) as integer static
 
     dim as ASTNODE ptr proc
     dim as integer lgt, dtype
@@ -2498,7 +2499,7 @@ function rtlStrSwap( byval str1 as ASTNODE ptr, _
     	exit function
     end if
 
-    '' byval str1len as integer
+    '' byval str2len as integer
 	if( astNewPARAM( proc, _
 					 astNewCONSTi( lgt, IR_DATATYPE_INTEGER ), _
 					 IR_DATATYPE_INTEGER ) = NULL ) then
@@ -2514,22 +2515,44 @@ end function
 
 '':::::
 function rtlWstrSwap( byval str1 as ASTNODE ptr, _
-					  byval str2 as ASTNODE ptr ) as integer static
+					  byval str2 as ASTNODE ptr _
+					) as integer static
 
     dim as ASTNODE ptr proc
+    dim as integer lgt
 
 	function = FALSE
 
 	''
     proc = astNewFUNCT( PROCLOOKUP( WSTRSWAP ) )
 
+	'' always calc len before pushing the param
+	lgt = rtlCalcStrLen( str1, astGetDataType( str1 ) )
+
     '' byval str1 as wstring ptr
     if( astNewPARAM( proc, str1 ) = NULL ) then
     	exit function
     end if
 
+    '' byval str1len as integer
+	if( astNewPARAM( proc, _
+					 astNewCONSTi( lgt, IR_DATATYPE_INTEGER ), _
+					 IR_DATATYPE_INTEGER ) = NULL ) then
+    	exit function
+    end if
+
+	'' always calc len before pushing the param
+	lgt = rtlCalcStrLen( str2, astGetDataType( str2 ) )
+
     '' byval str2 as wstring ptr
     if( astNewPARAM( proc, str2 ) = NULL ) then
+    	exit function
+    end if
+
+    '' byval str2len as integer
+	if( astNewPARAM( proc, _
+					 astNewCONSTi( lgt, IR_DATATYPE_INTEGER ), _
+					 IR_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
