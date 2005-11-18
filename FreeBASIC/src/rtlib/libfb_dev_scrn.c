@@ -79,6 +79,7 @@ void fb_DevScrnInit( void )
         memset(FB_HANDLE_SCREEN, 0, sizeof(*FB_HANDLE_SCREEN));
 
         FB_HANDLE_SCREEN->mode = FB_FILE_MODE_APPEND;
+        FB_HANDLE_SCREEN->encod = FB_FILE_ENCOD_DEFAULT;
         FB_HANDLE_SCREEN->type = FB_FILE_TYPE_VFS;
         FB_HANDLE_SCREEN->access = FB_FILE_ACCESS_READWRITE;
 

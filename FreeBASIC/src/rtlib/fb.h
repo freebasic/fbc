@@ -857,6 +857,38 @@ FBCALL void         fb_WriteFixString   ( int fnum, char *s, int mask );
  * files
  **************************************************************************************************/
 
+#define FB_FILE_MODE_BINARY             0
+#define FB_FILE_MODE_RANDOM             1
+#define FB_FILE_MODE_INPUT              2
+#define FB_FILE_MODE_OUTPUT             3
+#define FB_FILE_MODE_APPEND             4
+
+#define FB_FILE_ACCESS_ANY              0
+#define FB_FILE_ACCESS_READ             1
+#define FB_FILE_ACCESS_WRITE            2
+#define FB_FILE_ACCESS_READWRITE        3
+
+#define FB_FILE_LOCK_SHARED             0
+#define FB_FILE_LOCK_READ               1
+#define FB_FILE_LOCK_WRITE              2
+#define FB_FILE_LOCK_READWRITE          3
+
+#define FB_FILE_TYPE_NORMAL             0
+#define FB_FILE_TYPE_CONSOLE            1
+#define FB_FILE_TYPE_ERR                2
+#define FB_FILE_TYPE_PIPE               3
+#define FB_FILE_TYPE_VFS                4
+
+typedef enum _FB_FILE_ENCOD {
+	FB_FILE_ENCOD_ASCII,
+	FB_FILE_ENCOD_UTF8,
+	FB_FILE_ENCOD_UTF16,
+	FB_FILE_ENCOD_UTF32
+} FB_FILE_ENCOD;
+
+#define FB_FILE_ENCOD_DEFAULT FB_FILE_ENCOD_ASCII
+
+
 #define FB_FILE_FROM_HANDLE(handle) \
     (((handle) - fb_fileTB) + 1 - FB_RESERVED_FILES)
 #define FB_FILE_INDEX_VALID(index) \
@@ -911,6 +943,7 @@ typedef struct _FB_FILE_HOOKS {
 typedef struct _FB_FILE {
     int             mode;
     int             len;
+    FB_FILE_ENCOD	encod;
     long            size;
     int             type;
     int             access;
@@ -969,28 +1002,6 @@ static __inline__ struct _FB_FILE *FB_FILE_TO_HANDLE(int index)
 }
 
 
-#define FB_FILE_MODE_BINARY             0
-#define FB_FILE_MODE_RANDOM             1
-#define FB_FILE_MODE_INPUT              2
-#define FB_FILE_MODE_OUTPUT             3
-#define FB_FILE_MODE_APPEND             4
-
-#define FB_FILE_ACCESS_ANY              0
-#define FB_FILE_ACCESS_READ             1
-#define FB_FILE_ACCESS_WRITE            2
-#define FB_FILE_ACCESS_READWRITE        3
-
-#define FB_FILE_LOCK_SHARED             0
-#define FB_FILE_LOCK_READ               1
-#define FB_FILE_LOCK_WRITE              2
-#define FB_FILE_LOCK_READWRITE          3
-
-#define FB_FILE_TYPE_NORMAL             0
-#define FB_FILE_TYPE_CONSOLE            1
-#define FB_FILE_TYPE_ERR                2
-#define FB_FILE_TYPE_PIPE               3
-#define FB_FILE_TYPE_VFS                4
-
 static __inline__ struct _FB_FILE *FB_HANDLE_DEREF(struct _FB_FILE *handle)
 {
     if( handle != NULL ) {
@@ -1016,30 +1027,30 @@ static __inline__ struct _FB_FILE *FB_HANDLE_DEREF(struct _FB_FILE *handle)
        int          fb_FileOpenVfsRawEx ( FB_FILE *handle, const char *filename,
                                           size_t filename_length,
                                           unsigned int mode, unsigned int access,
-                                          unsigned int lock, int len,
+                                          unsigned int lock, int len, FB_FILE_ENCOD encoding,
                                           FnFileOpen pfnOpen );
        int          fb_FileOpenVfsEx    ( FB_FILE *handle, FBSTRING *str_filename,
                                           unsigned int mode, unsigned int access,
-                                          unsigned int lock, int len,
+                                          unsigned int lock, int len, FB_FILE_ENCOD encoding,
                                           FnFileOpen pfnOpen );
 FBCALL int          fb_FileOpenCons     ( FBSTRING *str_filename, unsigned int mode,
                                           unsigned int access, unsigned int lock,
-                                          int fnum, int len );
+                                          int fnum, int len, const char *encoding );
 FBCALL int          fb_FileOpenErr      ( FBSTRING *str_filename, unsigned int mode,
                                           unsigned int access, unsigned int lock,
-                                          int fnum, int len );
+                                          int fnum, int len, const char *encoding );
 FBCALL int          fb_FileOpenPipe     ( FBSTRING *str_filename, unsigned int mode,
                                           unsigned int access, unsigned int lock,
-                                          int fnum, int len );
+                                          int fnum, int len, const char *encoding );
 FBCALL int          fb_FileOpenScrn     ( FBSTRING *str_filename, unsigned int mode,
                                           unsigned int access, unsigned int lock,
-                                          int fnum, int len );
+                                          int fnum, int len, const char *encoding );
 FBCALL int          fb_FileOpenLpt      ( FBSTRING *str_filename, unsigned int mode,
                                           unsigned int access, unsigned int lock,
-                                          int fnum, int len );
+                                          int fnum, int len, const char *encoding );
 FBCALL int          fb_FileOpenCom      ( FBSTRING *str_filename, unsigned int mode,
                                           unsigned int access, unsigned int lock,
-                                          int fnum, int len );
+                                          int fnum, int len, const char *encoding );
 
 FBCALL int          fb_FileFree         ( void );
 FBCALL int          fb_FileOpen         ( FBSTRING *str, unsigned int mode, unsigned int access,
@@ -1091,6 +1102,8 @@ FBCALL int          fb_FileLineInput    ( int fnum, void *dst, int dst_len, int 
        int          fb_hFileUnlock      ( FILE *f, unsigned int inipos, unsigned int size );
        char        *fb_hConvertPath     ( char *path, int len );
 
+	  FB_FILE_ENCOD fb_hFileStrToEncoding( const char *encoding );
+
 FBCALL int          fb_SetPos           ( FB_FILE *handle, int line_length );
 
 /**************************************************************************************************
@@ -1124,13 +1137,16 @@ FBCALL int          fb_SetPos           ( FB_FILE *handle, int line_length );
                                             FBSTRING *dst,
                                             fb_FnDevReadString pfnReadString );
 
+       /* ENCOD */
+       int          fb_DevFileOpenUTF   ( struct _FB_FILE *handle, const char *filename, size_t filename_len );
+
        /* PIPE */
        int          fb_DevPipeOpen      ( struct _FB_FILE *handle, const char *filename, size_t filename_len );
        int          fb_DevPipeClose     ( struct _FB_FILE *handle );
 
        /* SCRN */
 typedef struct _DEV_SCRN_INFO {
-    char            buffer[16];
+	char            buffer[16];
     unsigned        length;
 } DEV_SCRN_INFO;
 
@@ -1173,39 +1189,39 @@ typedef struct _DEV_SCRN_INFO {
  * serial
  **************************************************************************************************/
 
-       typedef enum _FB_SERIAL_PARITY {
-           FB_SERIAL_PARITY_NONE,
-           FB_SERIAL_PARITY_EVEN,
-           FB_SERIAL_PARITY_ODD,
-           FB_SERIAL_PARITY_SPACE,
-           FB_SERIAL_PARITY_MARK
-       } FB_SERIAL_PARITY;
+typedef enum _FB_SERIAL_PARITY {
+    FB_SERIAL_PARITY_NONE,
+    FB_SERIAL_PARITY_EVEN,
+    FB_SERIAL_PARITY_ODD,
+    FB_SERIAL_PARITY_SPACE,
+    FB_SERIAL_PARITY_MARK
+} FB_SERIAL_PARITY;
 
-       typedef enum _FB_SERIAL_STOP_BITS {
-           FB_SERIAL_STOP_BITS_1,
-           FB_SERIAL_STOP_BITS_1_5,
-           FB_SERIAL_STOP_BITS_2
-       } FB_SERIAL_STOP_BITS;
+typedef enum _FB_SERIAL_STOP_BITS {
+    FB_SERIAL_STOP_BITS_1,
+    FB_SERIAL_STOP_BITS_1_5,
+	FB_SERIAL_STOP_BITS_2
+} FB_SERIAL_STOP_BITS;
 
-       typedef struct _FB_SERIAL_OPTIONS {
-           unsigned           uiSpeed;
-           unsigned           uiDataBits;
-           FB_SERIAL_PARITY   Parity;
-           FB_SERIAL_STOP_BITS StopBits;
-           unsigned           DurationCTS;        /* CS[msec] */
-           unsigned           DurationDSR;        /* DS[msec] */
-           unsigned           DurationCD;         /* CD[msec] */
-           unsigned           OpenTimeout;        /* OP[msec] */
-           int                SuppressRTS;        /* RS */
-           int                AddLF;              /* LF, or ASC, or BIN */
-           int                CheckParity;        /* PE */
-           int                KeepDTREnabled;     /* DT */
-           int                DiscardOnError;     /* FE */
-           int                IgnoreAllErrors;    /* ME */
-           unsigned           IRQNumber;          /* IR2..IR15 */
-           unsigned           TransmitBuffer;     /* TBn - a value 0 means: default value */
-           unsigned           ReceiveBuffer;      /* RBn - a value 0 means: default value */
-       } FB_SERIAL_OPTIONS;
+typedef struct _FB_SERIAL_OPTIONS {
+	unsigned           uiSpeed;
+    unsigned           uiDataBits;
+    FB_SERIAL_PARITY   Parity;
+    FB_SERIAL_STOP_BITS StopBits;
+    unsigned           DurationCTS;        /* CS[msec] */
+    unsigned           DurationDSR;        /* DS[msec] */
+    unsigned           DurationCD;         /* CD[msec] */
+    unsigned           OpenTimeout;        /* OP[msec] */
+    int                SuppressRTS;        /* RS */
+    int                AddLF;              /* LF, or ASC, or BIN */
+    int                CheckParity;        /* PE */
+    int                KeepDTREnabled;     /* DT */
+    int                DiscardOnError;     /* FE */
+    int                IgnoreAllErrors;    /* ME */
+    unsigned           IRQNumber;          /* IR2..IR15 */
+    unsigned           TransmitBuffer;     /* TBn - a value 0 means: default value */
+    unsigned           ReceiveBuffer;      /* RBn - a value 0 means: default value */
+} FB_SERIAL_OPTIONS;
 
        int          fb_DevSerialSetWidth( const char *pszDevice, int width, int default_width );
        int          fb_SerialOpen       ( struct _FB_FILE *handle,
@@ -1223,6 +1239,28 @@ typedef struct _DEV_SCRN_INFO {
                                           void *pvHandle, void *data, size_t *pLength );
        int          fb_SerialClose      ( struct _FB_FILE *handle,
                                           void *pvHandle );
+
+/**************************************************************************************************
+ * UTF Encoding
+ **************************************************************************************************/
+
+typedef unsigned long  UTF_32;
+typedef unsigned short UTF_16;
+typedef unsigned char  UTF_8;
+
+#define UTF16_MAX_BMP 		 (UTF_32)0x0000FFFF
+#define	UTF16_SUR_HIGH_START (UTF_32)0xD800
+#define	UTF16_SUR_HIGH_END	 (UTF_32)0xDBFF
+#define	UTF16_SUR_LOW_START	 (UTF_32)0xDC00
+#define	UTF16_SUR_LOW_END	 (UTF_32)0xDFFF
+#define	UTF16_HALFSHIFT		 10
+#define	UTF16_HALFBASE 		 (UTF_32)0x0010000UL
+#define	UTF16_HALFMASK 		 (UTF_32)0x3FFUL
+
+	char 		   *fb_CharToUTF		( FB_FILE_ENCOD encod, const char *src,
+										  int chars, int *bytes );
+	char 		   *fb_WCharToUTF		( FB_FILE_ENCOD encod, const FB_WCHAR *src,
+										  int chars, int *bytes );
 
 /**************************************************************************************************
  * date/time

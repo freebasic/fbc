@@ -45,11 +45,14 @@ int LPrintInit(void)
 {
     if( FB_HANDLE_PRINTER->hooks==NULL) {
         int res = fb_FileOpenVfsRawEx( FB_HANDLE_PRINTER,
-                                       pszPrinterDev, strlen(pszPrinterDev),
+                                       pszPrinterDev,
+                                       strlen(pszPrinterDev),
                                        FB_FILE_MODE_APPEND,
                                        FB_FILE_ACCESS_WRITE,
                                        FB_FILE_LOCK_READWRITE,
-                                       0, fb_DevLptOpen );
+                                       0,
+                                       FB_FILE_ENCOD_DEFAULT,
+                                       fb_DevLptOpen );
         if( res==FB_RTERROR_OK ) {
             atexit(close_printer_handle);
         }
@@ -58,12 +61,20 @@ int LPrintInit(void)
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-FBCALL int          fb_FileOpenLpt      ( FBSTRING *str_filename, unsigned int mode,
-                                          unsigned int access, unsigned int lock,
-                                          int fnum, int len )
+/*:::::*/
+FBCALL int fb_FileOpenLpt ( FBSTRING *str_filename, unsigned int mode,
+                            unsigned int access, unsigned int lock,
+                            int fnum, int len, const char *encoding )
 {
+
     return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
-                             str_filename, mode, access,
-                             lock, len, fb_DevLptOpen );
+                             str_filename,
+                             mode,
+                             access,
+                             lock,
+                             len,
+                             fb_hFileStrToEncoding( encoding ),
+                             fb_DevLptOpen );
+
 }
 

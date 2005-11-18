@@ -18,28 +18,55 @@
  */
 
 /*
- *	file_opencom - open COMx
+ * dev_efile_write - UTF-encoded file writing
  *
- * chng: aug/2005 written [mjs]
+ * chng: nov/2005 written [v1ctor]
  *
  */
 
+#include <stdio.h>
 #include <stdlib.h>
+
 #include "fb.h"
 #include "fb_rterr.h"
 
 /*:::::*/
-FBCALL int fb_FileOpenCom ( FBSTRING *str_filename, unsigned int mode,
-                            unsigned int access, unsigned int lock,
-                            int fnum, int len, const char *encoding )
+int fb_DevFileWriteEncod( struct _FB_FILE *handle, const void* buffer, size_t chars )
 {
-    return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
-                             str_filename,
-                             mode,
-                             access,
-                             lock,
-                             len,
-                             fb_hFileStrToEncoding( encoding ),
-                             fb_DevComOpen );
-}
+    FILE *fp;
+    char *encod_buffer;
+    int bytes;
 
+    FB_LOCK();
+
+    fp = (FILE*) handle->opaque;
+
+	if( fp == NULL ) {
+		FB_UNLOCK();
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	}
+
+	/* convert (note: encoded file can only be opened in text-mode, so no
+	   			PUT# is allowed, no binary data should be emitted ever) */
+	encod_buffer = fb_CharToUTF( handle->encod,
+								 (const char *)buffer,
+								 chars,
+								 &bytes );
+
+	if( encod_buffer != NULL )
+	{
+		/* do write */
+		if( fwrite( encod_buffer, 1, bytes, fp ) != bytes )
+		{
+			FB_UNLOCK();
+			return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+		}
+
+		if( encod_buffer != buffer )
+			free( encod_buffer );
+	}
+
+	FB_UNLOCK();
+
+	return fb_ErrorSetNum( FB_RTERROR_OK );
+}

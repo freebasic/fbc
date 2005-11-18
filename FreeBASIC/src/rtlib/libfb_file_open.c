@@ -121,9 +121,14 @@ int fb_FileOpenEx( FB_FILE *handle, FBSTRING *str_filename, unsigned int mode,
             pfnFileOpen = fb_DevFileOpen;
         }
 
-        res = fb_FileOpenVfsEx( handle, filename,
-                                mode, access,
-                                lock, len, pfnFileOpen );
+        res = fb_FileOpenVfsEx( handle,
+        						filename,
+                                mode,
+                                access,
+                                lock,
+                                len,
+                                FB_FILE_ENCOD_DEFAULT,
+                                pfnFileOpen );
     }
     else
     {

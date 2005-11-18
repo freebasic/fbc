@@ -18,28 +18,52 @@
  */
 
 /*
- *	file_opencom - open COMx
+ * dev_efile_write_wstr - UTF-encoded wstring file writing
  *
- * chng: aug/2005 written [mjs]
+ * chng: nov/2005 written [v1ctor]
  *
  */
 
-#include <stdlib.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
 /*:::::*/
-FBCALL int fb_FileOpenCom ( FBSTRING *str_filename, unsigned int mode,
-                            unsigned int access, unsigned int lock,
-                            int fnum, int len, const char *encoding )
+int fb_DevFileWriteEncodWstr( struct _FB_FILE *handle, const FB_WCHAR* buffer, size_t len )
 {
-    return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
-                             str_filename,
-                             mode,
-                             access,
-                             lock,
-                             len,
-                             fb_hFileStrToEncoding( encoding ),
-                             fb_DevComOpen );
-}
+    FILE *fp;
+    char *encod_buffer;
+    int bytes;
 
+    FB_LOCK();
+
+    fp = (FILE*) handle->opaque;
+
+	if( fp == NULL ) {
+		FB_UNLOCK();
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	}
+
+	/* convert (note: only wstrings will be written using this function,
+				so there's no binary data to care) */
+	encod_buffer = fb_WCharToUTF( handle->encod,
+								  buffer,
+								  len / sizeof( FB_WCHAR ),
+								  &bytes );
+
+	if( encod_buffer != NULL )
+	{
+		/* do write */
+		if( fwrite( encod_buffer, 1, bytes, fp ) != bytes )
+		{
+			FB_UNLOCK();
+			return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+		}
+
+		if( encod_buffer != (char *)buffer )
+			free( encod_buffer );
+	}
+
+	FB_UNLOCK();
+
+	return fb_ErrorSetNum( FB_RTERROR_OK );
+}

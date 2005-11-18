@@ -18,25 +18,40 @@
  */
 
 /*
- *	file_openpipe - open PIPE
+ * file_encod - string to file encoding function
  *
- * chng: jul/2005 written [mjs]
+ * chng: nov/2005 written [v1ctor]
  *
  */
 
 #include "fb.h"
 
+
 /*:::::*/
-FBCALL int fb_FileOpenPipe ( FBSTRING *str_filename, unsigned int mode,
-                             unsigned int access, unsigned int lock,
-                             int fnum, int len, const char *encoding )
+FB_FILE_ENCOD fb_hFileStrToEncoding( const char *encoding )
 {
-    return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
-                             str_filename,
-                             mode,
-                             access,
-                             lock,
-                             len,
-                             fb_hFileStrToEncoding( encoding ),
-                             fb_DevPipeOpen );
+	if( encoding == NULL )
+		return FB_FILE_ENCOD_DEFAULT;
+
+	if( strncasecmp( encoding, "UTF", 3 ) == 0 )
+	{
+		encoding += 3;
+
+		if( strcasecmp( encoding, "8" ) == 0 )
+			return FB_FILE_ENCOD_UTF8;
+
+		if( strcasecmp( encoding, "16" ) == 0 )
+			return FB_FILE_ENCOD_UTF16;
+
+		if( strcasecmp( encoding, "32" ) == 0 )
+			return FB_FILE_ENCOD_UTF32;
+	}
+	else
+	{
+		if( strncasecmp( encoding, "ASC", 3 ) == 0 )
+			return FB_FILE_ENCOD_ASCII;
+	}
+
+	return FB_FILE_ENCOD_DEFAULT;
 }
+

@@ -37,7 +37,7 @@ void fb_hFileCtx ( int doinit );
 int fb_FileOpenVfsRawEx( FB_FILE *handle,
                          const char *filename, size_t filename_length,
                          unsigned int mode, unsigned int access,
-                         unsigned int lock, int len,
+                         unsigned int lock, int len, FB_FILE_ENCOD encoding,
                          FnFileOpen pfnOpen )
 {
     int result;
@@ -55,11 +55,12 @@ int fb_FileOpenVfsRawEx( FB_FILE *handle,
     memset(handle, 0, sizeof(FB_FILE));
 
     /* specific file/device handles are stored in the member "opaque" */
-    handle->mode = mode;
-    handle->size = 0;
-    handle->type = FB_FILE_TYPE_VFS;
-    handle->access = access;
-    handle->lock = lock;      /* lock mode not supported yet */
+    handle->mode 	 = mode;
+    handle->encod 	 = encoding;
+    handle->size 	 = 0;
+    handle->type 	 = FB_FILE_TYPE_VFS;
+    handle->access 	 = access;
+    handle->lock 	 = lock;      /* lock mode not supported yet */
     handle->line_length = 0;
 
 
@@ -119,7 +120,7 @@ int fb_FileOpenVfsRawEx( FB_FILE *handle,
 /*::::::*/
 int fb_FileOpenVfsEx( FB_FILE *handle,
                       FBSTRING *str_filename, unsigned int mode, unsigned int access,
-                      unsigned int lock, int len,
+                      unsigned int lock, int len, FB_FILE_ENCOD encoding,
                       FnFileOpen pfnOpen )
 {
     char *filename;
@@ -135,5 +136,5 @@ int fb_FileOpenVfsEx( FB_FILE *handle,
 	fb_hStrDelTemp( str_filename );
 
     return fb_FileOpenVfsRawEx( handle, filename, filename_length,
-                                mode, access, lock, len, pfnOpen );
+                                mode, access, lock, len, encoding, pfnOpen );
 }

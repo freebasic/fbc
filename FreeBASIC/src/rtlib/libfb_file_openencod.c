@@ -18,25 +18,28 @@
  */
 
 /*
- *	file_openpipe - open PIPE
+ * file_openencod - UTF-encoded file open function
  *
- * chng: jul/2005 written [mjs]
+ * chng: nov/2005 written [v1ctor]
  *
  */
 
 #include "fb.h"
+#include "fb_rterr.h"
+
+int fb_DevFileOpenEncod( struct _FB_FILE *handle, const char *filename, size_t fname_len );
+
 
 /*:::::*/
-FBCALL int fb_FileOpenPipe ( FBSTRING *str_filename, unsigned int mode,
-                             unsigned int access, unsigned int lock,
-                             int fnum, int len, const char *encoding )
+FBCALL int fb_FileOpenEncod( FBSTRING *str, unsigned int mode, unsigned int access,
+							 unsigned int lock, int fnum, int len, const char *encoding )
 {
-    return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum),
-                             str_filename,
-                             mode,
-                             access,
-                             lock,
-                             len,
-                             fb_hFileStrToEncoding( encoding ),
-                             fb_DevPipeOpen );
+	FB_FILE_ENCOD encod = fb_hFileStrToEncoding( encoding );
+
+	return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum), str, mode,
+							 access, lock, len, encod,
+							 (encod == FB_FILE_ENCOD_ASCII?
+							  fb_DevFileOpen :
+							  fb_DevFileOpenEncod) );
 }
+
