@@ -18,7 +18,7 @@
  */
 
 /*
- *	dev_file - file device
+ * dev_file_write_wstr - wstring to ascii file writing function
  *
  * chng: jul/2005 written [mjs]
  *
@@ -26,15 +26,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <malloc.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
 /*:::::*/
-int fb_DevFileWriteWstr( struct _FB_FILE *handle, const FB_WCHAR* value, size_t valuelen )
+int fb_DevFileWriteWstr( struct _FB_FILE *handle, const FB_WCHAR* src, size_t chars )
 {
     FILE *fp;
+    char *buffer;
 
     FB_LOCK();
 
@@ -45,8 +45,14 @@ int fb_DevFileWriteWstr( struct _FB_FILE *handle, const FB_WCHAR* value, size_t 
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
+	/* convert to ascii, file should be opened with the ENCODING option
+	   to allow UTF characters to be written */
+	buffer = alloca( chars + 1 );
+	fb_wstr_ConvToA( buffer, chars, src );
+
 	/* do write */
-	if( fwrite( (void *)value, sizeof( FB_WCHAR ), valuelen, fp ) != valuelen ) {
+	if( fwrite( (void *)buffer, 1, chars, fp ) != chars )
+	{
 		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_FILEIO );
 	}
