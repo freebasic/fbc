@@ -18,7 +18,7 @@
 */
 
 /*
- * vesa2.c -- VESA 2 linear gfx driver
+ * vesa2.c -- banked VESA gfx driver
  *
  * chng: apr/2005 written [DrV]
  *
@@ -49,6 +49,120 @@ GFXDRIVER fb_gfxDriverVESA =
 	NULL                     /* void (*flip)(void); */
 };
 
+
+static int vesa_ok;
+static VbeInfoBlock vesa_info;
+static VesaModeInfo vesa_mode_info;
+static VesaModeInfo *vesa_modes;
+static int num_vesa_modes;
+
+static int detected = FALSE;
+
+/*:::::*/
+static int vesa_get_mode_info(int mode)
+{
+	int i;
+
+	_farsetsel(_dos_ds);
+
+	for (i = 0; i < sizeof(vesa_mode_info); i++) {
+		_farnspokeb(MASK_LINEAR(__tb) + i, 0);
+	}
+
+	fb_dos.regs.x.ax = 0x4F01;
+	fb_dos.regs.x.di = RM_OFFSET(__tb);
+	fb_dos.regs.x.es = RM_SEGMENT(__tb);
+	fb_dos.regs.x.cx = mode;
+	__dpmi_int(0x10, &fb_dos.regs);
+	if (fb_dos.regs.h.ah)
+		return -1;
+
+	dosmemget(MASK_LINEAR(__tb), sizeof(vesa_mode_info), &vesa_mode_info);
+	return 0;
+}
+
+/*:::::*/
+static void driver_detect(void)
+{
+
+	int i;
+	int mode_list[256];
+	int number_of_modes;
+	long mode_ptr;
+	int c;
+	
+	if (detected)
+		return;
+	
+	detected = TRUE;
+	
+	/* detect VESA */
+
+	_farsetsel(_dos_ds);
+
+	for (i = 4; i < (int)sizeof(VbeInfoBlock); i++) {
+		_farnspokeb(MASK_LINEAR(__tb) + i, 0);
+	}
+
+	dosmemput("VBE2", 4, MASK_LINEAR(__tb));	/* get VESA 2 info if available */
+
+	fb_dos.regs.x.ax = 0x4F00;
+	fb_dos.regs.x.di = RM_OFFSET(__tb);
+	fb_dos.regs.x.es = RM_SEGMENT(__tb);
+	__dpmi_int(0x10, &fb_dos.regs);
+
+	if (fb_dos.regs.h.ah != 0x00) {
+		vesa_ok = FALSE;
+	} else {
+		dosmemget(MASK_LINEAR(__tb), sizeof(VbeInfoBlock), &vesa_info);
+
+		if (strncmp(vesa_info.vbe_signature, "VESA", 4) != 0) {
+			vesa_ok = FALSE;
+		} else {
+			vesa_ok = TRUE;
+		}
+	}
+
+	/* get VESA modes */
+	if (vesa_ok) {
+
+		mode_ptr = ((vesa_info.video_mode_ptr & 0xFFFF0000) >> 12) + (vesa_info.video_mode_ptr & 0xFFFF);
+
+		number_of_modes = 0;
+
+		while (_farpeekw(_dos_ds, mode_ptr) != 0xFFFF) {
+			mode_list[number_of_modes] = _farpeekw(_dos_ds, mode_ptr);
+			number_of_modes++;
+			mode_ptr += 2;
+		}
+
+		num_vesa_modes = number_of_modes;
+
+		vesa_modes = (VesaModeInfo *)malloc(number_of_modes * sizeof(VesaModeInfo));
+
+		for (c = 0; c < number_of_modes; c++) {
+			if (vesa_get_mode_info(mode_list[c]) != 0)
+				continue;
+
+			/* color graphics mode and supported */
+			if ((vesa_mode_info.ModeAttributes & 0x19) != 0x19)
+				continue;
+
+			if (vesa_mode_info.NumberOfPlanes != 1)
+				continue;
+
+			if ((vesa_mode_info.MemoryModel != VMI_MM_PACK) && (vesa_mode_info.MemoryModel != VMI_MM_DIR))
+				continue;
+
+			/* clobber WinFuncPtr to hold mode number */
+			vesa_mode_info.WinFuncPtr = mode_list[c];
+
+			/* add to list */
+			memcpy(&vesa_modes[c], &vesa_mode_info, sizeof(VesaModeInfo));
+		}
+	}
+}
+
 /*:::::*/
 static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rate, int flags)
 {
@@ -56,6 +170,7 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	int i, mode;
 
 	fb_dos_detect();
+	driver_detect();
 
 	if (flags & DRIVER_OPENGL)
 		return -1;
@@ -65,16 +180,17 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 		return -1;
 	*/
 
-	if (!fb_dos.vesa_ok)
+	if (!vesa_ok)
 		return -1;
 
 	mode = 0;
-	for (i = 0; i < fb_dos.num_vesa_modes; i++) {
-		if ((fb_dos.vesa_modes[i].XResolution == w) && (fb_dos.vesa_modes[i].YResolution == h)) {
-			/* !!!TODO!!! check bpp here!!!! */
-			mode = fb_dos.vesa_modes[i].WinFuncPtr;
-			memcpy(&fb_dos.vesa_mode_info, &fb_dos.vesa_modes[i], sizeof(VesaModeInfo));
-			break;
+	for (i = 0; i < num_vesa_modes; i++) {
+		if ((vesa_modes[i].XResolution == w) && (vesa_modes[i].YResolution == h)) {
+			if ((vesa_modes[i].BitsPerPixel == depth)) {
+				mode = vesa_modes[i].WinFuncPtr;
+				memcpy(&vesa_mode_info, &vesa_modes[i], sizeof(VesaModeInfo));
+				break;
+			}
 		}
 	}
 
@@ -94,11 +210,11 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 		return -1;
 	}
 
-	refresh_rate = 60;
+	refresh_rate = 60; /* FIXME */
 
 	fb_dos.update = driver_update;
 	fb_dos.update_len = (unsigned int)end_of_driver_update - (unsigned int)driver_update;
-	fb_dos.set_palette = fb_dos_vga_set_palette;
+	fb_dos.set_palette = fb_dos_vga_set_palette; /* FIXME */
 
 	fb_dos_init(title, w, h, depth, refresh_rate, flags);
 
@@ -106,63 +222,56 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 
 }
 
-
-   void set_vesa_bank(int bank_number)
-   {
-      __dpmi_regs r;
-
-      r.x.ax = 0x4F05;
-      r.x.bx = 0;
-      r.x.dx = bank_number;
-      __dpmi_int(0x10, &r);
-   }
+/*:::::*/
+static __inline void set_vesa_bank(int bank_number)
+{
+	__dpmi_regs r;
+	
+	r.x.ax = 0x4F05;
+	r.x.bx = 0;
+	r.x.dx = bank_number;
+	__dpmi_int(0x10, &r);
+}
 
 
 /*:::::*/
 static void driver_update(void)
 {
-/*
-	int y;
-	unsigned int buffer = (unsigned int)fb_mode->framebuffer;
-	unsigned int screen = 0xA0000;
-
-	for (y = 0; y < fb_dos.h; y++, buffer += fb_dos.w, screen += fb_dos.w) {
-		if (fb_mode->dirty[y]) {
-			movedata(_my_ds(), buffer, _dos_ds, screen, fb_dos.w);
-		}
+	unsigned char *memory_buffer;
+	int screen_size;
+	
+	int bank_size = vesa_mode_info.WinSize * 1024;
+	int bank_granularity = vesa_mode_info.WinGranularity * 1024;
+	int bank_number = 0;
+	int todo;
+	int copy_size;
+	
+	memory_buffer = fb_mode->framebuffer;
+	
+	/* fixme - use blitter here if necessary */
+	
+	screen_size = fb_dos.h * fb_mode->pitch;
+	
+	todo = screen_size;
+	
+	while (todo > 0) {
+		/* select the appropriate bank */
+		set_vesa_bank(bank_number);
+		
+		/* how much can we copy in one go? */
+		if (todo > bank_size)
+			copy_size = bank_size;
+		else
+			copy_size = todo;
+		
+		/* copy a bank of data to the screen */
+		dosmemput(memory_buffer, copy_size, 0xA0000);
+		
+		/* move on to the next bank of data */
+		todo -= copy_size;
+		memory_buffer += copy_size;
+		bank_number += bank_size / bank_granularity;
 	}
-*/
-
-    unsigned char *memory_buffer;
-    int screen_size;
-
-    int bank_size = fb_dos.vesa_mode_info.WinSize*1024;
-    int bank_granularity = fb_dos.vesa_mode_info.WinGranularity*1024;
-    int bank_number = 0;
-    int todo = screen_size;
-    int copy_size;
-
-    memory_buffer = fb_mode->framebuffer;
-    screen_size = fb_dos.w * fb_dos.h; /* TODO : mul by bytes per pixel or mul bpl * h */
-
-    while (todo > 0) {
-        /* select the appropriate bank */
-        set_vesa_bank(bank_number);
-
-        /* how much can we copy in one go? */
-        if (todo > bank_size)
-            copy_size = bank_size;
-        else
-            copy_size = todo;
-
-        /* copy a bank of data to the screen */
-        dosmemput(memory_buffer, copy_size, 0xA0000);
-
-        /* move on to the next bank of data */
-        todo -= copy_size;
-        memory_buffer += copy_size;
-        bank_number += bank_size/bank_granularity;
-    }
 }
 
 static void end_of_driver_update(void) { /* do not remove */ }
@@ -173,12 +282,13 @@ static int *driver_fetch_modes(int depth, int *size)
 	int count, i;
 
 	if (!fb_dos.detected) fb_dos_detect();
+	if (!detected) driver_detect();
 
-	modes = (int *)malloc(sizeof(VesaModeInfo) * fb_dos.num_vesa_modes);
+	modes = (int *)malloc(sizeof(VesaModeInfo) * num_vesa_modes);
 
-	for (i = 0, count = 0; i < fb_dos.num_vesa_modes; i++) {
-		if ((fb_dos.vesa_modes[i].XResolution != 0) && (fb_dos.vesa_modes[i].BitsPerPixel == depth)) {
-			modes[count++] = SCREENLIST(fb_dos.vesa_modes[i].XResolution, fb_dos.vesa_modes[i].YResolution);
+	for (i = 0, count = 0; i < num_vesa_modes; i++) {
+		if ((vesa_modes[i].XResolution != 0) && (vesa_modes[i].BitsPerPixel == depth)) {
+			modes[count++] = SCREENLIST(vesa_modes[i].XResolution, vesa_modes[i].YResolution);
 		}
 	}
 	*size = count;

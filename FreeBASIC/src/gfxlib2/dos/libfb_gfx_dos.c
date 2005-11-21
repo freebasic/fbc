@@ -37,7 +37,7 @@ extern GFXDRIVER fb_gfxDriverVGA;
 extern GFXDRIVER fb_gfxDriverModeX;
 
 const GFXDRIVER *fb_gfx_driver_list[] = {
-	//&fb_gfxDriverVESA,
+	&fb_gfxDriverVESA,
 	&fb_gfxDriverVGA,
     &fb_gfxDriverModeX,
     &fb_gfxDriverBIOS,
@@ -459,121 +459,28 @@ void fb_dos_vga_wait_vsync(void)
 }
 
 /*:::::*/
-static int fb_dos_vesa_get_mode_info(int mode)
-{
-	int i;
-
-	_farsetsel(_dos_ds);
-
-	for (i = 0; i < sizeof(fb_dos.vesa_mode_info); i++) {
-		_farnspokeb(MASK_LINEAR(__tb) + i, 0);
-	}
-
-	fb_dos.regs.x.ax = 0x4F01;
-	fb_dos.regs.x.di = RM_OFFSET(__tb);
-	fb_dos.regs.x.es = RM_SEGMENT(__tb);
-	fb_dos.regs.x.cx = mode;
-	__dpmi_int(0x10, &fb_dos.regs);
-	if (fb_dos.regs.h.ah)
-		return -1;
-
-	dosmemget(MASK_LINEAR(__tb), sizeof(fb_dos.vesa_mode_info), &fb_dos.vesa_mode_info);
-	return 0;
-}
-
-/*:::::*/
 void fb_dos_detect(void)
 {
-	int i;
-	int mode_list[256];
-	int number_of_modes;
-	long mode_ptr;
-	int c;
-
+	
 	if (!fb_dos.detected) {
 		fb_dos.detected = TRUE;
-		/* detect VESA */
-
-		_farsetsel(_dos_ds);
-
-		for (i = 4; i < (int)sizeof(VbeInfoBlock); i++) {
-			_farnspokeb(MASK_LINEAR(__tb) + i, 0);
-		}
-
-		dosmemput("VBE2", 4, MASK_LINEAR(__tb));	/* get VESA 2 info if available */
-
-		fb_dos.regs.x.ax = 0x4F00;
-		fb_dos.regs.x.di = RM_OFFSET(__tb);
-		fb_dos.regs.x.es = RM_SEGMENT(__tb);
-		__dpmi_int(0x10, &fb_dos.regs);
-
-		if (fb_dos.regs.h.ah != 0x00) {
-			fb_dos.vesa_ok = FALSE;
-		} else {
-			dosmemget(MASK_LINEAR(__tb), sizeof(VbeInfoBlock), &fb_dos.vesa_info);
-
-			if (strncmp(fb_dos.vesa_info.vbe_signature, "VESA", 4) != 0) {
-				fb_dos.vesa_ok = FALSE;
-			} else {
-				fb_dos.vesa_ok = TRUE;
-			}
-		}
-
-		/* get VESA modes */
-		if (fb_dos.vesa_ok) {
-
-			mode_ptr = ((fb_dos.vesa_info.video_mode_ptr & 0xFFFF0000) >> 12) + (fb_dos.vesa_info.video_mode_ptr & 0xFFFF);
-
-			number_of_modes = 0;
-
-			while (_farpeekw(_dos_ds, mode_ptr) != 0xFFFF) {
-				mode_list[number_of_modes] = _farpeekw(_dos_ds, mode_ptr);
-				number_of_modes++;
-				mode_ptr += 2;
-			}
-
-			fb_dos.num_vesa_modes = number_of_modes;
-
-			fb_dos.vesa_modes = (VesaModeInfo *)malloc(number_of_modes * sizeof(VesaModeInfo));
-
-			for (c = 0; c < number_of_modes; c++) {
-				if (fb_dos_vesa_get_mode_info(mode_list[c]) != 0)
-					continue;
-
-				/* color graphics mode and supported */
-				if ((fb_dos.vesa_mode_info.ModeAttributes & 0x19) != 0x19)
-					continue;
-
-				if (fb_dos.vesa_mode_info.NumberOfPlanes != 1)
-					continue;
-
-				if ((fb_dos.vesa_mode_info.MemoryModel != VMI_MM_PACK) && (fb_dos.vesa_mode_info.MemoryModel != VMI_MM_DIR))
-					continue;
-
-				/* clobber WinFuncPtr to hold mode number */
-				fb_dos.vesa_mode_info.WinFuncPtr = mode_list[c];
-
-				/* add to list */
-				memcpy(&fb_dos.vesa_modes[c], &fb_dos.vesa_mode_info, sizeof(VesaModeInfo));
-			}
-		}
-
+		
 		/* detect mouse */
-
+		
 		fb_dos.regs.x.ax = 0x0;
 		__dpmi_int(0x33, &fb_dos.regs);
 		fb_dos.mouse_ok = (fb_dos.regs.x.ax == 0) ? FALSE : TRUE;
-
+		
 		fb_dos.regs.x.ax = 0x11;
 		__dpmi_int(0x33, &fb_dos.regs);
 		fb_dos.mouse_wheel_ok = ((fb_dos.regs.x.ax == 0x574D) && (fb_dos.regs.x.cx & 1)) ? TRUE : FALSE;
-
+		
 		/* detect nearptr */
 		fb_dos.nearptr_ok = __djgpp_nearptr_enable();
 	}
-
+	
 	/* save current video mode */
-
+	
 	fb_dos_save_video_mode();
 
 }

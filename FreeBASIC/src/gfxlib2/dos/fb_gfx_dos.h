@@ -98,12 +98,6 @@ typedef struct fb_dos_t {
 
     unsigned timer_ticks;
     unsigned timer_step;
-
-	int vesa_ok;
-	VbeInfoBlock vesa_info;
-	VesaModeInfo vesa_mode_info;
-	VesaModeInfo *vesa_modes;
-	int num_vesa_modes;
 	
 	int nearptr_ok;
 	
