@@ -73,7 +73,7 @@ static unsigned char fb_dos_mouse_image[] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0 };
 
 
-static unsigned char mouse_color[3] = {0, 15, 0};
+static unsigned int mouse_color[3] = {0, 15, 0};
 
 static unsigned char mouse_save[MOUSE_WIDTH * MOUSE_HEIGHT * 4 + 4];
 
@@ -311,6 +311,195 @@ static void fb_dos_undraw_mouse_8(void)
 
 static void end_fb_dos_undraw_mouse_8(void) {}
 
+
+
+
+/*:::::*/
+static void fb_dos_draw_mouse_16(void)
+{
+    int x1 = fb_dos.mouse_x;
+    int y1 = fb_dos.mouse_y;
+    int x2 = x1 + MOUSE_WIDTH;
+    int y2 = y1 + MOUSE_HEIGHT;
+    int lines, width;
+    int frame_byte_width, copy_byte_width;
+    unsigned char *pMouseImage;
+    unsigned short *pBuffer, *pFrame;
+
+    if (!fb_dos.mouse_cursor)
+        return;
+
+    if( y2 > fb_dos.h )
+        y2 = fb_dos.h;
+    if( x2 > fb_dos.w )
+        x2 = fb_dos.w;
+
+    lines = y2 - y1;
+    width = x2 - x1;
+
+    frame_byte_width = fb_dos.Bpp * fb_dos.w;
+    copy_byte_width = fb_dos.Bpp * width;
+
+    pFrame = (unsigned short *)(fb_mode->framebuffer + (y1 * fb_dos.w + x1) * fb_dos.Bpp);
+    pBuffer = (unsigned short *)mouse_save;
+
+    pMouseImage = fb_dos_mouse_image;
+    while( lines-- ) {
+        int x;
+        fb_hMemCpy( pBuffer, pFrame, copy_byte_width );
+
+        fb_mode->dirty[ y1++ ] = TRUE;
+        for( x=0; x!=width; ++x ) {
+            unsigned mouse_color_index = *pMouseImage++;
+            if( mouse_color_index!=0 ) {
+                /* Only draw non-transparent pixels */
+                pFrame[x] = mouse_color[ mouse_color_index ];
+            }
+        }
+
+        pMouseImage += MOUSE_WIDTH - width;
+        pBuffer += copy_byte_width >> 1;
+        pFrame += frame_byte_width >> 1;
+    }
+}
+
+static void end_fb_dos_draw_mouse_16(void) {}
+
+/*:::::*/
+static void fb_dos_undraw_mouse_16(void)
+{
+    int x1 = fb_dos.mouse_x;
+    int y1 = fb_dos.mouse_y;
+    int x2 = x1 + MOUSE_WIDTH;
+    int y2 = y1 + MOUSE_HEIGHT;
+    int lines, width;
+    int copy_byte_width;
+    unsigned short *pBuffer, *pFrame;
+
+    if( !fb_dos.mouse_cursor )
+        return;
+
+    if( y2 > fb_dos.h )
+        y2 = fb_dos.h;
+    if( x2 > fb_dos.w )
+        x2 = fb_dos.w;
+
+    lines = y2 - y1;
+    width = x2 - x1;
+	
+    copy_byte_width = fb_dos.Bpp * width;
+
+    pFrame = (unsigned short *)(fb_mode->framebuffer + (y1 * fb_dos.w + x1) * fb_dos.Bpp);
+    pBuffer = (unsigned short *)mouse_save;
+
+    while( lines-- ) {
+        fb_hMemCpy( pFrame, pBuffer, copy_byte_width );
+
+        fb_mode->dirty[ y1++ ] = TRUE;
+
+        pBuffer += width;
+        pFrame += fb_dos.w;
+    }
+}
+
+static void end_fb_dos_undraw_mouse_16(void) {}
+
+
+
+
+
+/*:::::*/
+static void fb_dos_draw_mouse_32(void)
+{
+    int x1 = fb_dos.mouse_x;
+    int y1 = fb_dos.mouse_y;
+    int x2 = x1 + MOUSE_WIDTH;
+    int y2 = y1 + MOUSE_HEIGHT;
+    int lines, width;
+    int frame_byte_width, copy_byte_width;
+    unsigned char *pMouseImage;
+    unsigned int *pBuffer, *pFrame;
+
+    if (!fb_dos.mouse_cursor)
+        return;
+
+    if( y2 > fb_dos.h )
+        y2 = fb_dos.h;
+    if( x2 > fb_dos.w )
+        x2 = fb_dos.w;
+
+    lines = y2 - y1;
+    width = x2 - x1;
+
+    frame_byte_width = fb_dos.Bpp * fb_dos.w;
+    copy_byte_width = fb_dos.Bpp * width;
+
+    pFrame = (unsigned int *)(fb_mode->framebuffer + (y1 * fb_dos.w + x1) * fb_dos.Bpp);
+    pBuffer = (unsigned int *)mouse_save;
+
+    pMouseImage = fb_dos_mouse_image;
+    while( lines-- ) {
+        int x;
+        fb_hMemCpy( pBuffer, pFrame, copy_byte_width );
+
+        fb_mode->dirty[ y1++ ] = TRUE;
+        for( x=0; x!=width; ++x ) {
+            unsigned mouse_color_index = *pMouseImage++;
+            if( mouse_color_index!=0 ) {
+                /* Only draw non-transparent pixels */
+                pFrame[x] = mouse_color[ mouse_color_index ];
+            }
+        }
+
+        pMouseImage += MOUSE_WIDTH - width;
+        pBuffer += copy_byte_width >> 2;
+        pFrame += frame_byte_width >> 2;
+    }
+}
+
+static void end_fb_dos_draw_mouse_32(void) {}
+
+/*:::::*/
+static void fb_dos_undraw_mouse_32(void)
+{
+    int x1 = fb_dos.mouse_x;
+    int y1 = fb_dos.mouse_y;
+    int x2 = x1 + MOUSE_WIDTH;
+    int y2 = y1 + MOUSE_HEIGHT;
+    int lines, width;
+    int copy_byte_width;
+    unsigned int *pBuffer, *pFrame;
+
+    if( !fb_dos.mouse_cursor )
+        return;
+
+    if( y2 > fb_dos.h )
+        y2 = fb_dos.h;
+    if( x2 > fb_dos.w )
+        x2 = fb_dos.w;
+
+    lines = y2 - y1;
+    width = x2 - x1;
+	
+    copy_byte_width = fb_dos.Bpp * width;
+
+    pFrame = (unsigned int *)(fb_mode->framebuffer + (y1 * fb_dos.w + x1) * fb_dos.Bpp);
+    pBuffer = (unsigned int *)mouse_save;
+
+    while( lines-- ) {
+        fb_hMemCpy( pFrame, pBuffer, copy_byte_width );
+
+        fb_mode->dirty[ y1++ ] = TRUE;
+
+        pBuffer += width;
+        pFrame += fb_dos.w;
+    }
+}
+
+static void end_fb_dos_undraw_mouse_32(void) {}
+
+
+
 /*:::::*/
 static int fb_dos_timer_handler(unsigned irq)
 {
@@ -395,7 +584,7 @@ void fb_dos_set_palette(int idx, int r, int g, int b)
 }
 
 /*:::::*/
-static int fb_dos_find_nearest_color(unsigned char r, unsigned char g, unsigned char b)
+static unsigned int fb_dos_find_nearest_color(unsigned char r, unsigned char g, unsigned char b)
 {
     if( fb_dos.depth <= 8 ) {
         int i, curr_idx = -1;
@@ -405,9 +594,9 @@ static int fb_dos_find_nearest_color(unsigned char r, unsigned char g, unsigned 
 
         /* find nearest color with least-squares */
         for (i = 0; i!=color_count ; i++) {
-            dr = abs(fb_dos.pal[i].r - r);
-            dg = abs(fb_dos.pal[i].g - g);
-            db = abs(fb_dos.pal[i].b - b);
+            dr = fb_dos.pal[i].r - r;
+            dg = fb_dos.pal[i].g - g;
+            db = fb_dos.pal[i].b - b;
             err = (dr * dr) + (dg * dg) + (db * db);
 
             if (err < curr_err) {
@@ -418,8 +607,7 @@ static int fb_dos_find_nearest_color(unsigned char r, unsigned char g, unsigned 
 
         return curr_idx;
     } else {
-        /* FIXME: Return the correct RGB value */
-        return 0;
+    	return 0;
     }
 }
 
@@ -452,8 +640,6 @@ void fb_dos_vga_set_palette(void)
 /*:::::*/
 void fb_dos_vga_wait_vsync(void)
 {
-	/* !!!FIXME!!! using this creates a delay of approx. 18 FPS on WinXP (not tested on real DOS yet)
-	   maybe something to do with changing rate of PIC? */
 	while ((inportb(0x3DA) & 8) != 0);
 	while ((inportb(0x3DA) & 8) == 0);
 }
@@ -504,6 +690,10 @@ void fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int fla
     lock_proc(fb_dos_update_mouse);
 	lock_proc(fb_dos_draw_mouse_8);
     lock_proc(fb_dos_undraw_mouse_8);
+	lock_proc(fb_dos_draw_mouse_16);
+    lock_proc(fb_dos_undraw_mouse_16);
+	lock_proc(fb_dos_draw_mouse_32);
+    lock_proc(fb_dos_undraw_mouse_32);
 	lock_mem(fb_dos.update, fb_dos.update_len);
 
 	/* TODO: lock fb_hMemCpy and fb_hMemSet (the actual code and the pointers) */
@@ -517,9 +707,16 @@ void fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int fla
 	if (depth <= 8) {
         fb_dos.draw_mouse = fb_dos_draw_mouse_8;
         fb_dos.undraw_mouse = fb_dos_undraw_mouse_8;
+    } else if ((depth == 15) || (depth == 16)) {
+        fb_dos.draw_mouse = fb_dos_draw_mouse_16;
+        fb_dos.undraw_mouse = fb_dos_undraw_mouse_16;
+        mouse_color[1] = 0xFFFF;
+        mouse_color[2] = 0x0000;
     } else {
-        fb_dos.draw_mouse = NULL;
-        fb_dos.undraw_mouse = NULL;
+        fb_dos.draw_mouse = fb_dos_draw_mouse_32;
+        fb_dos.undraw_mouse = fb_dos_undraw_mouse_32;
+        mouse_color[1] = 0xFFFFFF;
+        mouse_color[2] = 0x000000;
 	}
 
     fb_dos_kb_init();
@@ -571,6 +768,10 @@ void fb_dos_exit(void)
 	unlock_proc(fb_dos_update_mouse);
 	unlock_proc(fb_dos_draw_mouse_8);
     unlock_proc(fb_dos_undraw_mouse_8);
+	unlock_proc(fb_dos_draw_mouse_16);
+    unlock_proc(fb_dos_undraw_mouse_16);
+	unlock_proc(fb_dos_draw_mouse_32);
+    unlock_proc(fb_dos_undraw_mouse_32);
 	unlock_mem(fb_dos.update, fb_dos.update_len);
 
 	fb_dos.inited = FALSE;
