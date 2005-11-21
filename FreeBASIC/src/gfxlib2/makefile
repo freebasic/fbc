@@ -143,8 +143,8 @@ $(objpath)/%.o : %.s $(headers)
 $(lib) : $(objects) $(osdepobjs)
 	$(AR) cr $(lib) $(objects) $(osdepobjs)
 
-libfb_gfx_data.c: $(objpath)/mk_dat$(EXEEXT) data/data.lst $(datafiles)
-	$(objpath)/mk_dat$(EXEEXT) -o $@
+libfb_gfx_data.c: $(objpath)/mk_dat$(EXEXT) data/data.lst $(datafiles)
+	$(objpath)/mk_dat$(EXEXT) -o $@
 
 $(objpath)/mk_dat$(EXEXT): $(objpath)/mk_dat.o $(objpath)/libfb_gfx_lzw.o $(objpath)/libfb_gfx_vars.o
 
