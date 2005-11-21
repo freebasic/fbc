@@ -1477,7 +1477,7 @@ red,green,blue	Red, green and blue components ranging 0-255.
 
 Insights:
 
-The RGB macro can be used to compure a valid color value for use while in
+The RGB macro can be used to compute a valid color value for use while in
 hi/truecolor modes. It returns a number in the format &hRRGGBB, where RR, GG
 and BB equals the values passed to this function, in hexadecimal format.
 Internally it's defined as:
