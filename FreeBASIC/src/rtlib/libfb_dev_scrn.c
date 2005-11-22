@@ -38,11 +38,13 @@ static FB_FILE_HOOKS fb_hooks_dev_scrn = {
     NULL,
     NULL,
     fb_DevScrnRead,
+    fb_DevScrnReadWstr,
     fb_DevScrnWrite,
     fb_DevScrnWriteWstr,
     NULL,
     NULL,
-    fb_DevScrnReadLine
+    fb_DevScrnReadLine,
+    fb_DevScrnReadLineWstr
 };
 
 int fb_DevScrnOpen( struct _FB_FILE *handle, const char *filename, size_t filename_len )

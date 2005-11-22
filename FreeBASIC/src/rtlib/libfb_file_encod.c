@@ -37,13 +37,16 @@ FB_FILE_ENCOD fb_hFileStrToEncoding( const char *encoding )
 	{
 		encoding += 3;
 
-		if( strcasecmp( encoding, "8" ) == 0 )
+		if( *encoding == '-' )
+			++encoding;
+
+		if( *encoding == '8' )
 			return FB_FILE_ENCOD_UTF8;
 
-		if( strcasecmp( encoding, "16" ) == 0 )
+		if( strcmp( encoding, "16" ) == 0 )
 			return FB_FILE_ENCOD_UTF16;
 
-		if( strcasecmp( encoding, "32" ) == 0 )
+		if( strcmp( encoding, "32" ) == 0 )
 			return FB_FILE_ENCOD_UTF32;
 	}
 	else

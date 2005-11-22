@@ -31,17 +31,13 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-static char *fb_hDevFileReadStringWrapper( char *buffer,
-                                           size_t count,
-                                           FILE *fp )
+static char *hWrapper( char *buffer, size_t count, FILE *fp )
 {
     return fgets( buffer, count, fp );
 }
 
 /*:::::*/
-int fb_DevFileReadLineDumb( FILE *fp,
-                            FBSTRING *dst,
-                            fb_FnDevReadString pfnReadString )
+int fb_DevFileReadLineDumb( FILE *fp, FBSTRING *dst, fb_FnDevReadString pfnReadString )
 {
     int res = fb_ErrorSetNum( FB_RTERROR_OK );
     char buffer[512];
@@ -53,60 +49,60 @@ int fb_DevFileReadLineDumb( FILE *fp,
 
 	FB_LOCK();
 
+	if( pfnReadString == NULL )
+		pfnReadString = hWrapper;
+
     found = FALSE;
     while (!found) {
         int tmp_buf_len;
 
         memset( buffer, 0, buffer_len );
-#if 0
-        if( fgets( buffer, sizeof(buffer), fp ) == NULL ) {
+
+        if( pfnReadString( buffer, sizeof( buffer ), fp ) == NULL )
+        {
             /* EOF reached ... this is not an error !!! */
             res = FB_RTERROR_FILEIO; /* but we have to notify the caller */
             break;
         }
-#elif 0
-        if( fb_ReadString( buffer, sizeof(buffer), fp ) == NULL ) {
-            /* EOF reached ... this is not an error !!! */
-            res = FB_RTERROR_FILEIO; /* but we have to notify the caller */
-            break;
-        }
-#else
-        if( pfnReadString( buffer, sizeof( buffer ), fp ) == NULL ) {
-            /* EOF reached ... this is not an error !!! */
-            res = FB_RTERROR_FILEIO; /* but we have to notify the caller */
-            break;
-        }
-#endif
 
         /* the last character always is NUL */
         buffer_len = sizeof(buffer) - 1;
 
         /* now let's find the end of the buffer */
-        while (buffer_len--) {
+        while (buffer_len--)
+        {
             char ch = buffer[buffer_len];
-            if (ch==13 || ch==10) {
+            if (ch==13 || ch==10)
+            {
                 /* accept both CR and LF */
                 found = TRUE;
                 break;
-            } else if( ch!=0 ) {
+            }
+            else if( ch!=0 )
+            {
                 /* a character other than CR/LF found ... i.e. buffer full */
                 break;
             }
         }
 
-        if( !found ) {
+        if( !found )
+        {
             /* remember the real length */
             tmp_buf_len = buffer_len += 1;
 
             /* not found ... so simply add this to the result string */
 
-        } else {
+        }
+        else
+        {
             /* remember the real length */
             tmp_buf_len = buffer_len + 1;
 
             /* filter a (possibly valid) CR/LF sequence */
-            if( buffer[buffer_len]==10 && buffer_len!=0 ) {
-                if( buffer[buffer_len-1]==13 ) {
+            if( buffer[buffer_len]==10 && buffer_len!=0 )
+            {
+                if( buffer[buffer_len-1]==13 )
+                {
                     --buffer_len;
                 }
             }
@@ -145,15 +141,15 @@ int fb_DevFileReadLine( struct _FB_FILE *handle, FBSTRING *dst )
     if( fp==stdout || fp==stderr )
         fp = stdin;
 
-	if( fp == NULL ) {
+	if( fp == NULL )
+	{
 		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
-    res = fb_DevFileReadLineDumb( fp, dst, fb_hDevFileReadStringWrapper );
+    res = fb_DevFileReadLineDumb( fp, dst, NULL );
 
 	FB_UNLOCK();
 
 	return res;
-
 }

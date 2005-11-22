@@ -18,51 +18,62 @@
  */
 
 /*
- * dev_efile_write_wstr - UTF-encoded wstring file writing
+ *	dev_file - file device
  *
- * chng: nov/2005 written [v1ctor]
+ * chng: jul/2005 written [mjs]
  *
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <malloc.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
 /*:::::*/
-int fb_DevFileWriteEncodWstr( struct _FB_FILE *handle, const FB_WCHAR* buffer, size_t chars )
+int fb_DevFileReadWstr( struct _FB_FILE *handle, FB_WCHAR *dst, size_t *pchars )
 {
     FILE *fp;
-    char *encod_buffer;
-    int bytes;
+    size_t chars;
+    char *buffer;
 
     FB_LOCK();
 
-    fp = (FILE*) handle->opaque;
 
-	if( fp == NULL ) {
+    fp = (FILE*) handle->opaque;
+    if( fp == stdout || fp == stderr )
+        fp = stdin;
+
+	if( fp == NULL )
+	{
 		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
-	/* convert (note: only wstrings will be written using this function,
-				so there's no binary data to care) */
-	encod_buffer = fb_WCharToUTF( handle->encod,
-								  buffer,
-								  chars,
-								  NULL,
-								  &bytes );
+    chars = *pchars;
 
-	if( encod_buffer != NULL )
-	{
-		/* do write */
-		if( fwrite( encod_buffer, 1, bytes, fp ) != bytes )
-		{
-			FB_UNLOCK();
-			return fb_ErrorSetNum( FB_RTERROR_FILEIO );
-		}
+	if( chars < FB_LOCALBUFF_MAXLEN )
+		buffer = alloca( chars + 1 );
+	else
+		buffer = malloc( chars + 1 );
 
-		if( encod_buffer != (char *)buffer )
-			free( encod_buffer );
-	}
+	/* do read */
+	chars = fread( buffer, 1, chars, fp );
+	buffer[chars] = '\0';
+
+	/* convert to wchar, file should be opened with the ENCODING option
+	   to allow UTF characters to be read */
+	fb_wstr_ConvFromA( dst, chars, buffer );
+
+	if( *pchars >= FB_LOCALBUFF_MAXLEN )
+		free( buffer );
+
+	/* fill with nulls if at eof */
+	if( chars != *pchars )
+        memset( (void *)&dst[chars], 0, (*pchars - chars) * sizeof( FB_WCHAR ) );
+
+    *pchars = chars;
 
 	FB_UNLOCK();
 

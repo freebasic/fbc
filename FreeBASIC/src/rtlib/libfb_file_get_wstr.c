@@ -18,7 +18,7 @@
  */
 
 /*
- * dev_efile_write_wstr - UTF-encoded wstring file writing
+ *	file_get_wstr - get # function for wstrings
  *
  * chng: nov/2005 written [v1ctor]
  *
@@ -28,43 +28,32 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-int fb_DevFileWriteEncodWstr( struct _FB_FILE *handle, const FB_WCHAR* buffer, size_t chars )
+int fb_FileGetWstrEx( FB_FILE *handle, long pos, FB_WCHAR *dst, int dst_chars )
 {
-    FILE *fp;
-    char *encod_buffer;
-    int bytes;
+    int res;
 
-    FB_LOCK();
-
-    fp = (FILE*) handle->opaque;
-
-	if( fp == NULL ) {
-		FB_UNLOCK();
+    if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	}
 
-	/* convert (note: only wstrings will be written using this function,
-				so there's no binary data to care) */
-	encod_buffer = fb_WCharToUTF( handle->encod,
-								  buffer,
-								  chars,
-								  NULL,
-								  &bytes );
+	/* perform call ... but only if there's data ... */
+    if( (dst != NULL) && (dst_chars > 0) )
+    {
+        size_t chars = dst_chars;
+        res = fb_FileGetDataEx( handle, pos, (void *)dst, &chars, TRUE, TRUE );
 
-	if( encod_buffer != NULL )
-	{
-		/* do write */
-		if( fwrite( encod_buffer, 1, bytes, fp ) != bytes )
-		{
-			FB_UNLOCK();
-			return fb_ErrorSetNum( FB_RTERROR_FILEIO );
-		}
+        /* add the null-term */
+        if( res == FB_RTERROR_OK )
+        	dst[chars] = _LC('\0');
+    }
+    else
+		res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
-		if( encod_buffer != (char *)buffer )
-			free( encod_buffer );
-	}
-
-	FB_UNLOCK();
-
-	return fb_ErrorSetNum( FB_RTERROR_OK );
+	return res;
 }
+
+/*:::::*/
+FBCALL int fb_FileGetWstr( int fnum, long pos, FB_WCHAR *dst, int dst_chars )
+{
+	return fb_FileGetWstrEx( FB_FILE_TO_HANDLE(fnum), pos, dst, dst_chars );
+}
+

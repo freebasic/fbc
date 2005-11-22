@@ -80,7 +80,8 @@ int fb_FileOpenVfsRawEx( FB_FILE *handle,
         break;
     }
 
-    if (pfnOpen==NULL) {
+    if (pfnOpen==NULL)
+    {
         /* unknown protocol! */
 		FB_UNLOCK();
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
@@ -90,25 +91,50 @@ int fb_FileOpenVfsRawEx( FB_FILE *handle,
     DBG_ASSERT(result!=FB_RTERROR_OK || handle->hooks!=NULL);
 
     /* query the file size - only if supported */
-    if (result==0) {
-        if ( handle->hooks->pfnSeek!=NULL && handle->hooks->pfnTell!=NULL) {
+    if (result==0)
+    {
+        if ( handle->hooks->pfnSeek!=NULL && handle->hooks->pfnTell!=NULL)
+        {
             switch( mode )
             {
             case FB_FILE_MODE_BINARY:
             case FB_FILE_MODE_RANDOM:
             case FB_FILE_MODE_INPUT:
                 result = handle->hooks->pfnSeek(handle, 0, SEEK_END);
-                if (result==0) {
+                if (result == 0 )
+                {
                     result = handle->hooks->pfnTell(handle, &handle->size);
-                    handle->hooks->pfnSeek(handle, 0, SEEK_SET);
+
+                    /* skip the BOM if in UTF-mode */
+                    int ofs;
+                    switch( handle->encod )
+                    {
+                    case FB_FILE_ENCOD_UTF8:
+                    	ofs = 3;
+                    	break;
+                    case FB_FILE_ENCOD_UTF16:
+                    	ofs = sizeof( UTF_16 );
+                    	break;
+                    case FB_FILE_ENCOD_UTF32:
+                    	ofs = sizeof( UTF_32 );
+                    	break;
+                    default:
+                    	ofs = 0;
+                    	break;
+                    }
+
+                    handle->hooks->pfnSeek(handle, ofs, SEEK_SET);
                 }
                 break;
+
             case FB_FILE_MODE_APPEND:
                 result = handle->hooks->pfnTell(handle, &handle->size);
                 break;
             }
         }
-    } else {
+    }
+    else
+    {
         memset(handle, 0, sizeof(FB_FILE));
     }
 

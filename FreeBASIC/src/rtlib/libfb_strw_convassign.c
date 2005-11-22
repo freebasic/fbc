@@ -30,15 +30,11 @@
 FBCALL FB_WCHAR *fb_WstrAssignFromA ( FB_WCHAR *dst, int dst_chars, void *src, int src_chars )
 {
 	char *src_ptr;
-	
+
 	if( dst != NULL )
 	{
-		/* assume dst is large enough.. */
-		if( dst_chars == 0 )
-			FB_STRSETUP_FIX( src, src_chars, src_ptr, dst_chars );
-		else
-			src_ptr = (char *)src;
-			
+		FB_STRSETUP_FIX( src, src_chars, src_ptr, src_chars );
+
 		fb_wstr_ConvFromA( dst, dst_chars, src_ptr );
 	}
 
@@ -76,7 +72,7 @@ FBCALL void *fb_WstrAssignToA ( void *dst, int dst_chars, FB_WCHAR *src, int fil
 			if( FB_STRSIZE( dst ) != src_chars )
 				fb_hStrRealloc( (FBSTRING *)dst, src_chars, FB_FALSE );
 
-			fb_wstr_ConvToA( ((FBSTRING *)dst)->data, src_chars, src );
+			fb_wstr_ConvToA( ((FBSTRING *)dst)->data, src, src_chars );
 		}
 	}
 	/* fixed-len or zstring.. */
@@ -93,7 +89,9 @@ FBCALL void *fb_WstrAssignToA ( void *dst, int dst_chars, FB_WCHAR *src, int fil
 			if( dst_chars == 0 )
 				dst_chars = src_chars;
 
-			fb_wstr_ConvToA( (char *)dst, dst_chars, src );
+			fb_wstr_ConvToA( (char *)dst,
+							 src,
+							 (dst_chars <= src_chars? dst_chars : src_chars) );
 		}
 
 		/* fill reminder with null's */

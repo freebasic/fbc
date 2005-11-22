@@ -34,27 +34,24 @@ FBCALL int fb_FileInput( int fnum )
 {
     FB_INPUTCTX *ctx;
     FB_FILE *handle = NULL;
-    int res = fb_ErrorSetNum( FB_RTERROR_OK );
-
-    /* fb_DevScrnInit_Read( ); */
 
 	FB_LOCK();
 
     handle = FB_FILE_TO_HANDLE(fnum);
-    if( !FB_HANDLE_USED(handle) ) {
-        res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-    }
-
-    if( res == FB_RTERROR_OK )
+    if( !FB_HANDLE_USED(handle) )
     {
-    	ctx = FB_TLSGETCTX( INPUT );
-
-        ctx->handle = handle;
-        ctx->status = 0;
-        fb_StrDelete( &ctx->s );
+        FB_UNLOCK();
+        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
+
+    ctx = FB_TLSGETCTX( INPUT );
+
+    ctx->handle = handle;
+    ctx->status = 0;
+    fb_StrDelete( &ctx->str );
+    ctx->index	= 0;
 
 	FB_UNLOCK();
 
-	return res;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

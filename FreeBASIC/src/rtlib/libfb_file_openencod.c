@@ -27,9 +27,6 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-int fb_DevFileOpenEncod( struct _FB_FILE *handle, const char *filename, size_t fname_len );
-
-
 /*:::::*/
 FBCALL int fb_FileOpenEncod( FBSTRING *str, unsigned int mode, unsigned int access,
 							 unsigned int lock, int fnum, int len, const char *encoding )

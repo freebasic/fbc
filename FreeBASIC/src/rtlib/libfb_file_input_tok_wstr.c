@@ -30,88 +30,88 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-static int hReadChar( FB_INPUTCTX *ctx )
+static FB_WCHAR hReadChar( FB_INPUTCTX *ctx )
 {
     /* device? */
     if( FB_HANDLE_USED(ctx->handle) )
     {
         int res;
-        int c;
+        FB_WCHAR c;
 
         size_t len = 1;
-        res = fb_FileGetDataEx( ctx->handle, 0, &c, &len, FALSE, FALSE );
+        res = fb_FileGetDataEx( ctx->handle, 0, &c, &len, FALSE, TRUE );
         if( (res != FB_RTERROR_OK) || (len == 0) )
-            return EOF;
+            return WEOF;
 
-        return c & 0x000000FF;
+        return c;
     }
     /* console.. */
     else
     {
 		if( ctx->index >= FB_STRSIZE( &ctx->str.len ) )
-			return EOF;
+			return WEOF;
 		else
-			return ctx->str.data[ctx->index++];
+			return (unsigned char)ctx->str.data[ctx->index++];
 	}
 
 }
 
 /*:::::*/
-static int hUnreadChar( FB_INPUTCTX *ctx, int c )
+static int hUnreadChar( FB_INPUTCTX *ctx, FB_WCHAR c )
 {
     /* device? */
     if( FB_HANDLE_USED(ctx->handle) )
     {
-        return fb_FilePutBackEx( ctx->handle, &c, 1 );
+        return fb_FilePutBackWstrEx( ctx->handle, &c, 1 );
     }
     /* console .. */
     else
     {
 		if( ctx->index <= 0 )
-			return FALSE;
+			return 0;
 		else
 		{
 			--ctx->index;
-			return TRUE;
+			return 1;
 		}
 	}
 
 }
 
 /*:::::*/
-static int hSkipWhiteSpc( FB_INPUTCTX *ctx )
+static FB_WCHAR hSkipWhiteSpc( FB_INPUTCTX *ctx )
 {
-	int c;
+	FB_WCHAR c;
 
 	/* skip white space */
 	do
 	{
 		c = hReadChar( ctx );
-		if( c == EOF )
+		if( c == WEOF )
 			break;
-	} while( (c == ' ') || (c == '\t') || (c == '\r') || (c == '\n') );
+	} while( (c == _LC(' ')) || (c == _LC('\t')) || (c == _LC('\r')) || (c == _LC('\n')) );
 
 	return c;
 }
 
 /*:::::*/
-static void hSkipComma( FB_INPUTCTX *ctx, int c )
+static void hSkipComma( FB_INPUTCTX *ctx, FB_WCHAR c )
 {
 	/* skip white space */
-	while( (c == ' ') || (c == '\t') )
+	while( (c == _LC(' ')) || (c == _LC('\t')) )
 		c = hReadChar( ctx );
 
 	switch( c )
 	{
-	case ',':
-	case EOF:
+	case _LC(','):
+	case WEOF:
 		break;
 
-    case '\n':
+    case _LC('\n'):
         break;
 
-	case '\r':
-		if( (c = hReadChar( ctx )) != '\n' )
+	case _LC('\r'):
+		if( (c = hReadChar( ctx )) != _LC('\n') )
 			hUnreadChar( ctx, c );
 		break;
 
@@ -122,9 +122,10 @@ static void hSkipComma( FB_INPUTCTX *ctx, int c )
 }
 
 /*:::::*/
-void fb_hGetNextToken( char *buffer, int max_chars, int is_string )
+void fb_hGetNextTokenWstr( FB_WCHAR *buffer, int max_chars, int is_string )
 {
-    int c, len, isquote, skipcomma;
+    int len, isquote, skipcomma;
+    FB_WCHAR c;
 	FB_INPUTCTX *ctx = FB_TLSGETCTX( INPUT );
 
 	c = hSkipWhiteSpc( ctx );
@@ -134,22 +135,22 @@ void fb_hGetNextToken( char *buffer, int max_chars, int is_string )
 	len = 0;
 	skipcomma = 0;
 
-	while( c != EOF )
+	while( c != WEOF )
 	{
 		switch( c )
 		{
-		case '\n':
+		case _LC('\n'):
 			len = max_chars;						/* exit */
 			break;
 
-		case '\r':
-			if( (c = hReadChar( ctx )) != '\n' )
+		case _LC('\r'):
+			if( (c = hReadChar( ctx )) != _LC('\n') )
 				hUnreadChar( ctx, c );
 
 			len = max_chars;						/* exit */
 			break;
 
-		case '"':
+		case _LC('"'):
 			if( !isquote )
 			{
 				if( len == 0 )
@@ -170,7 +171,7 @@ void fb_hGetNextToken( char *buffer, int max_chars, int is_string )
 
 			break;
 
-		case ',':
+		case _LC(','):
 			if( !isquote )
 			{
 				len = max_chars;					/* exit */
@@ -179,8 +180,8 @@ void fb_hGetNextToken( char *buffer, int max_chars, int is_string )
 
 			goto savechar;
 
-		case '\t':
-		case ' ':
+		case _LC('\t'):
+		case _LC(' '):
 			if( len == 0 )
 			{
 				if( !is_string || !isquote )
@@ -205,11 +206,11 @@ savechar:
 		c = hReadChar( ctx );
 	}
 
-	/* add the null-term */
-	*buffer = '\0';
+	*buffer = _LC('\0');
 
 	/* skip comma or newline */
 	if( skipcomma )
 		hSkipComma( ctx, c );
 }
+
 

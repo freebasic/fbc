@@ -27,8 +27,6 @@
 #include <stdlib.h>
 #include "fb.h"
 
-FBCALL FB_WCHAR *fb_WstrAssignFromA ( FB_WCHAR *dst, int dst_chars, void *src, int src_chars );
-
 /*:::::*/
 FBCALL void fb_DataReadWstr( FB_WCHAR *dst, int dst_size )
 {

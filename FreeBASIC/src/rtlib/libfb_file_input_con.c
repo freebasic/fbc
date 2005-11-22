@@ -41,9 +41,9 @@ FBCALL int fb_ConsoleInput( FBSTRING *text, int addquestion, int addnewline )
 
 	ctx->handle = 0;
 	ctx->status = 0;
-	ctx->i = 0;
+	ctx->index = 0;
 
-	res = fb_LineInput( text, &ctx->s, -1, 0, addquestion, addnewline );
+	res = fb_LineInput( text, &ctx->str, -1, 0, addquestion, addnewline );
 
 	return res;
 }

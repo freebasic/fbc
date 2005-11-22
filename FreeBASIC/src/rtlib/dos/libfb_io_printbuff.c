@@ -33,8 +33,6 @@
 #include <go32.h>
 #include <pc.h>
 
-void (*fb_ConsolePrintBufferProc) (const void *buffer, size_t len, int mask);
-
 typedef struct _fb_PrintInfo {
     unsigned short usAttr;
 } fb_PrintInfo;
@@ -193,11 +191,23 @@ void fb_ConsolePrintBufferEx_STDIO(const void *buffer, size_t len, int mask)
 /*:::::*/
 void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 {
-	fb_ConsolePrintBufferProc(buffer, len, mask);
+	static void (*fn)(const void *buffer, size_t len, int mask) = NULL;
+
+	if( fn == NULL )
+	{
+		/* use cprintf() if STDOUT is the console;
+       	   otherwise (with shell I/O redirection) use printf() */
+    	if( isatty(1) )
+        	fn = fb_ConsolePrintBufferEx_SCRN;
+    	else
+        	fn = fb_ConsolePrintBufferEx_STDIO;
+    }
+
+    fn( buffer, len, mask );
 }
 
 /*:::::*/
 void fb_ConsolePrintBuffer( const char *buffer, int mask )
 {
-	fb_ConsolePrintBufferProc(buffer, strlen(buffer), mask);
+	fb_ConsolePrintBufferEx( buffer, strlen( buffer ), mask );
 }

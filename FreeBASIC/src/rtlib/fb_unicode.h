@@ -4,6 +4,24 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define FB_WCHAR wchar_t
+
+typedef unsigned long  UTF_32;
+typedef unsigned short UTF_16;
+typedef unsigned char  UTF_8;
+
+#define UTF8_BYTEMASK 		 0xBF
+#define UTF8_BYTEMARK 		 0x80
+
+#define UTF16_MAX_BMP 		 (UTF_32)0x0000FFFF
+#define	UTF16_SUR_HIGH_START (UTF_32)0xD800
+#define	UTF16_SUR_HIGH_END	 (UTF_32)0xDBFF
+#define	UTF16_SUR_LOW_START	 (UTF_32)0xDC00
+#define	UTF16_SUR_LOW_END	 (UTF_32)0xDFFF
+#define	UTF16_HALFSHIFT		 10
+#define	UTF16_HALFBASE 		 (UTF_32)0x0010000UL
+#define	UTF16_HALFMASK 		 (UTF_32)0x3FFUL
+
 #if defined(TARGET_DOS)
 #include "dos/fb_unicode.h"
 #elif defined(TARGET_XBOX)
@@ -20,10 +38,6 @@
 
 #ifndef _LC
 #define _LC(c) L ## c
-#endif
-
-#ifndef FB_WCHAR
-#define FB_WCHAR wchar_t
 #endif
 
 #ifndef FB_WSTR_FROM_INT
@@ -66,6 +80,24 @@
     swprintf( buffer, _LC("%.16g"), (double) (num) )
 #endif
 
+#ifndef FB_WSTR_WCHARTOCHAR
+#define FB_WSTR_WCHARTOCHAR fb_wstr_WcharToChar
+static __inline__ void fb_wstr_WcharToChar( char *dst, const FB_WCHAR *src, int chars )
+{
+	UTF_32 c;
+
+	while( chars-- )
+	{
+		c = *src++;
+
+		if( c > 255 )
+    		c = '?';
+
+		*dst++ = c;
+	}
+}
+#endif
+
 /*:::::*/
 static __inline__ int fb_wstr_CalcDiff( const FB_WCHAR *ini, const FB_WCHAR *end )
 {
@@ -93,24 +125,53 @@ static __inline__ int fb_wstr_Len( const FB_WCHAR *s )
 }
 
 /*:::::*/
-static __inline__ size_t fb_wstr_ConvFromA( FB_WCHAR *dst, int dst_chars, const char *src )
+static __inline__ void fb_wstr_ConvFromA( FB_WCHAR *dst, int dst_chars, const char *src )
 {
+	int bytes;
+
 	/* NULL? */
 	if( src == NULL )
-	{
-		*dst = L'\0';
-		return 0;
-	}
+		bytes = -1;
 
 	/* plus the null-term */
-	return mbstowcs( dst, src, (dst_chars + 1) * sizeof( FB_WCHAR ) );
+	else
+		bytes = mbstowcs( dst, src, (dst_chars + 1) * sizeof( FB_WCHAR ) );
+
+	/* error? */
+	if( bytes == -1 )
+		*dst = _LC('\0');
+
+	/* if there's no enough space in dst the null-term won't be added? */
+	else if( bytes == (dst_chars + 1) * sizeof( FB_WCHAR ) )
+		dst[dst_chars] = _LC('\0');
+
 }
 
 /*:::::*/
-static __inline__ size_t fb_wstr_ConvToA( char *dst, int dst_chars, const FB_WCHAR *src )
+static __inline__ void fb_wstr_ConvToA( char *dst, const FB_WCHAR *src, int chars )
 {
+	/* !!!FIXME!!! wcstombs() will fail and not emit '?' or such if the
+				   characters are above 255 and can't be converted? not good.. */
+#if 0
+	int bytes;
+
 	/* plus the null-term */
-	return wcstombs( dst, src, dst_chars + 1 );
+	bytes = wcstombs( dst, src, chars + 1 );
+
+	/* error? */
+	if( bytes == -1 )
+		*dst = '\0';
+
+	/* if there's no enough space in dst the null-term won't be added? */
+	else if( bytes == chars + 1 )
+		dst[src_chars] = '\0';
+
+#else
+	FB_WSTR_WCHARTOCHAR( dst, src, chars );
+
+    /* plus the null-term */
+    dst[chars] = '\0';
+#endif
 }
 
 /*:::::*/
@@ -144,7 +205,7 @@ static __inline__ void fb_wstr_Copy( FB_WCHAR *dst, const FB_WCHAR *src, int cha
         dst = FB_MEMCPYX( dst, src, chars * sizeof( FB_WCHAR ) );
 
     /* add the null-term */
-    *dst = L'\0';
+    *dst = _LC('\0');
 }
 
 /*:::::*/
@@ -162,7 +223,7 @@ static __inline__ void fb_wstr_Fill( FB_WCHAR *dst, FB_WCHAR c, int chars )
 		*dst++ = c;
 
 	/* add null-term */
-	*dst = L'\0';
+	*dst = _LC('\0');
 }
 
 /*:::::*/

@@ -38,11 +38,6 @@ FB_DOS_TXTMODE fb_dos_txtmode;
 int fb_force_input_buffer_changed = FALSE;
 
 
-extern void (*fb_ConsolePrintBufferProc) (const void *buffer, size_t len, int mask);
-extern void fb_ConsolePrintBufferEx_SCRN (const void *buffer, size_t len, int mask);
-extern void fb_ConsolePrintBufferEx_STDIO(const void *buffer, size_t len, int mask);
-
-
 /*:::::*/
 void fb_hInit ( int argc, char **argv )
 {
@@ -51,12 +46,4 @@ void fb_hInit ( int argc, char **argv )
 
 	/* turn off blink */
     intensevideo();
-
-	/* use cprintf() if STDOUT is the console;
-     otherwise (with shell I/O redirection) use printf() */
-    if( isatty(1) ) {
-        fb_ConsolePrintBufferProc = fb_ConsolePrintBufferEx_SCRN;
-    } else {
-        fb_ConsolePrintBufferProc = fb_ConsolePrintBufferEx_STDIO;
-    }
 }

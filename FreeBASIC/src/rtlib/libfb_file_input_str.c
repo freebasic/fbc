@@ -34,9 +34,9 @@ void fb_hGetNextToken( char *buffer, int maxlen, int isstring );
 /*:::::*/
 FBCALL int fb_InputString( void *dst, int strlen, int fillrem )
 {
-    char buffer[1024+1];
+    char buffer[4096+1];
 
-	fb_hGetNextToken( buffer, 1024, FB_TRUE );
+	fb_hGetNextToken( buffer, 4096, TRUE );
 
 	fb_StrAssign( dst, strlen, buffer, 0, fillrem );
 

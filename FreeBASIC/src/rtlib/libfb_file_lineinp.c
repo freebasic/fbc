@@ -71,11 +71,11 @@ static int fb_hFileLineInputEx( FB_FILE *handle,
         while (!handle->hooks->pfnEof(handle)) {
             int do_add = FALSE, do_break = FALSE;
             size_t read_len = 1;
-            int res = fb_FileGetDataEx( handle, 0, buffer+len, &read_len, FALSE );
+            int res = fb_FileGetDataEx( handle, 0, buffer+len, &read_len, FALSE, FALSE );
             if( res==FB_RTERROR_OK && read_len==1) {
                 char ch = buffer[len];
                 if( ch==13 ) {
-                    res = fb_FileGetDataEx( handle, 0, &ch, &read_len, FALSE );
+                    res = fb_FileGetDataEx( handle, 0, &ch, &read_len, FALSE, FALSE );
                     if( res==FB_RTERROR_OK && ch!=10 && read_len==1) {
                         fb_FilePutBackEx( handle, &ch, 1 );
                     }

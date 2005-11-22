@@ -35,6 +35,7 @@ int fb_DevFileWriteWstr( struct _FB_FILE *handle, const FB_WCHAR* src, size_t ch
 {
     FILE *fp;
     char *buffer;
+    int res;
 
     FB_LOCK();
 
@@ -45,19 +46,22 @@ int fb_DevFileWriteWstr( struct _FB_FILE *handle, const FB_WCHAR* src, size_t ch
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
+	if( chars < FB_LOCALBUFF_MAXLEN )
+		buffer = alloca( chars + 1 );
+	else
+		buffer = malloc( chars + 1 );
+
 	/* convert to ascii, file should be opened with the ENCODING option
 	   to allow UTF characters to be written */
-	buffer = alloca( chars + 1 );
-	fb_wstr_ConvToA( buffer, chars, src );
+	fb_wstr_ConvToA( buffer, src, chars );
 
 	/* do write */
-	if( fwrite( (void *)buffer, 1, chars, fp ) != chars )
-	{
-		FB_UNLOCK();
-		return fb_ErrorSetNum( FB_RTERROR_FILEIO );
-	}
+	res = fwrite( (void *)buffer, 1, chars, fp ) == chars;
+
+	if( chars >= FB_LOCALBUFF_MAXLEN )
+		free( buffer );
 
 	FB_UNLOCK();
 
-	return fb_ErrorSetNum( FB_RTERROR_OK );
+	return fb_ErrorSetNum( (res? FB_RTERROR_OK: FB_RTERROR_FILEIO) );
 }

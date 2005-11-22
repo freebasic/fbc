@@ -31,8 +31,6 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-FBCALL void fb_PrintBufferWstrEx( const FB_WCHAR *buffer, size_t len, int mask );
-
 /*:::::*/
 int fb_DevScrnWriteWstr( struct _FB_FILE *handle, const FB_WCHAR* value, size_t valuelen )
 {

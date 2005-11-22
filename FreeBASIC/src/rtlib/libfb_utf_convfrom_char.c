@@ -27,18 +27,29 @@
 #include "fb.h"
 
 /*:::::*/
-static char *hToUTF8( const char *src, int chars, int *bytes )
+static char *hToUTF8( const char *src, int chars, char *dst, int *bytes )
 {
-	/* !!!WRITEME!!! */
-	*bytes = 0;
-	return NULL;
+	if( chars > 0 )
+	{
+		if( dst == NULL )
+		{
+			dst = malloc( chars * 2 );
+			if( dst == NULL )
+				return NULL;
+		}
+
+		fb_hCharToUTF8( src, chars, dst, bytes );
+	}
+	else
+		*bytes = 0;
+
+	return dst;
 }
 
 /*:::::*/
-static char *hToUTF16( const char *src, int chars, int *bytes )
+static char *hToUTF16( const char *src, int chars, char *dst, int *bytes )
 {
-	char *buffer = NULL;
-	UTF_16 *dst;
+	UTF_16 *p;
 
 	/* !!!FIXME!!! only litle-endian supported */
 
@@ -46,26 +57,28 @@ static char *hToUTF16( const char *src, int chars, int *bytes )
 
 	if( chars > 0 )
 	{
-		buffer = malloc( chars * sizeof( UTF_16 ) );
-		if( buffer == NULL )
-			return NULL;
+		if( dst == NULL )
+		{
+			dst = malloc( chars * sizeof( UTF_16 ) );
+			if( dst == NULL )
+				return NULL;
+		}
 	}
 
-	dst = (UTF_16 *)buffer;
+	p = (UTF_16 *)dst;
 	while( chars > 0 )
 	{
-		*dst++ = (unsigned char)*src++;
+		*p++ = (unsigned char)*src++;
 		--chars;
 	}
 
-	return buffer;
+	return dst;
 }
 
 /*:::::*/
-static char *hToUTF32( const char *src, int chars, int *bytes )
+static char *hToUTF32( const char *src, int chars, char *dst, int *bytes )
 {
-	char *buffer = NULL;
-	UTF_32 *dst;
+	UTF_32 *p;
 
 	/* !!!FIXME!!! only litle-endian supported */
 
@@ -73,34 +86,39 @@ static char *hToUTF32( const char *src, int chars, int *bytes )
 
 	if( chars > 0 )
 	{
-		buffer = malloc( chars * sizeof( UTF_32 ) );
-		if( buffer == NULL )
-			return NULL;
+		if( dst == NULL )
+		{
+			dst = malloc( chars * sizeof( UTF_32 ) );
+			if( dst == NULL )
+				return NULL;
+		}
 	}
 
-	dst = (UTF_32 *)buffer;
+	p = (UTF_32 *)dst;
 	while( chars > 0 )
 	{
-		*dst++ = (unsigned char)*src++;
+		*p++ = (unsigned char)*src++;
 		--chars;
 	}
 
-	return buffer;
+	return dst;
 }
 
 /*:::::*/
-char *fb_CharToUTF( FB_FILE_ENCOD encod, const char *src, int chars, int *bytes )
+char *fb_CharToUTF( FB_FILE_ENCOD encod,
+					const char *src, int chars,
+					char *dst, int *bytes )
 {
 	switch( encod )
 	{
 	case FB_FILE_ENCOD_UTF8:
-		return hToUTF8( src, chars, bytes );
+		return hToUTF8( src, chars, dst, bytes );
 
 	case FB_FILE_ENCOD_UTF16:
-		return hToUTF16( src, chars, bytes );
+		return hToUTF16( src, chars, dst, bytes );
 
 	case FB_FILE_ENCOD_UTF32:
-		return hToUTF32( src, chars, bytes );
+		return hToUTF32( src, chars, dst, bytes );
 
 	default:
 		return NULL;

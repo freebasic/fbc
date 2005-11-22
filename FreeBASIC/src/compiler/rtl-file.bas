@@ -269,6 +269,16 @@ data @FB_RTL_FILELINEINPUT, "", _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,1
 
+'' fb_FileLineInputWstr ( byval filenum as integer, _
+''					  	  byval dst as wstring ptr, byval maxchars as integer ) as integer
+data @FB_RTL_FILELINEINPUTWSTR, "", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
 '' fb_LineInput ( text as string, _
 ''				  dst as any, byval dstlen as integer, byval fillrem as integer = 1, _
 ''				  byval addquestion as integer, byval addnewline as integer ) as integer
@@ -282,6 +292,19 @@ data @FB_RTL_CONSOLELINEINPUT, "", _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,1
+
+'' fb_LineInputWstr ( byval text as wstring ptr, _
+''				      byval dst as wstring ptr, byval max_chars as integer,
+''				      byval addquestion as integer, byval addnewline as integer ) as integer
+data @FB_RTL_CONSOLELINEINPUTWSTR, "", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 @rtlMultinput_cb, FALSE, FALSE, _
+	 5, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_FileInput ( byval filenum as integer ) as integer
 data @FB_RTL_FILEINPUT, "", _
@@ -351,6 +374,14 @@ data @FB_RTL_INPUTSTR,"", _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,1
 
+'' fb_InputWstr ( byval dst as wstring ptr, byval maxchars as integer ) as integer
+data @FB_RTL_INPUTWSTR,"", _
+	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 2, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
 '' fb_FileLock ( byval inipos as integer, byval endpos as integer ) as integer
 data @FB_RTL_FILELOCK,"", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
@@ -376,6 +407,14 @@ data @FB_RTL_FILERENAME,"", _
 	 2, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYVAL, FALSE
+
+'' fb_FileWstrInput ( byval chars as integer, byval filenum as integer = 0 ) as wstring
+data @"winput", "fb_FileWstrInput", _
+	 FB_SYMBTYPE_WCHAR,FB_FUNCMODE_STDCALL, _
+	 @rtlMultinput_cb, FALSE, FALSE, _
+	 2, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0
 
 '' fb_FileFree ( ) as integer
 data @"freefile", "fb_FileFree", _
@@ -618,7 +657,8 @@ end function
 
 '':::::
 function rtlFileClose( byval filenum as ASTNODE ptr, _
-					   byval isfunc as integer ) as ASTNODE ptr static
+					   byval isfunc as integer _
+					 ) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr reslabel
@@ -652,7 +692,8 @@ end function
 
 '':::::
 function rtlFileSeek( byval filenum as ASTNODE ptr, _
-					  byval newpos as ASTNODE ptr ) as integer static
+					  byval newpos as ASTNODE ptr _
+					) as integer static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr reslabel
@@ -709,7 +750,8 @@ function rtlFilePut( byval filenum as ASTNODE ptr, _
 					 byval offset as ASTNODE ptr, _
 					 byval src as ASTNODE ptr, _
 					 byval elements as ASTNODE ptr, _
-					 byval isfunc as integer ) as ASTNODE ptr static
+					 byval isfunc as integer _
+				   ) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc, bytes
     dim as integer dtype, lgt, isstring
@@ -785,7 +827,8 @@ end function
 function rtlFilePutArray( byval filenum as ASTNODE ptr, _
 						  byval offset as ASTNODE ptr, _
 						  byval src as ASTNODE ptr, _
-					 	  byval isfunc as integer ) as ASTNODE ptr static
+					 	  byval isfunc as integer _
+					 	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr reslabel
@@ -835,7 +878,8 @@ function rtlFileGet( byval filenum as ASTNODE ptr, _
 					 byval offset as ASTNODE ptr, _
 					 byval dst as ASTNODE ptr, _
 					 byval elements as ASTNODE ptr, _
-					 byval isfunc as integer ) as ASTNODE ptr static
+					 byval isfunc as integer _
+				   ) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc, bytes
     dim as integer dtype, lgt, isstring
@@ -911,7 +955,8 @@ end function
 function rtlFileGetArray( byval filenum as ASTNODE ptr, _
 						  byval offset as ASTNODE ptr, _
 						  byval dst as ASTNODE ptr, _
-					 	  byval isfunc as integer ) as ASTNODE ptr static
+					 	  byval isfunc as integer _
+					 	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr reslabel
@@ -958,7 +1003,8 @@ end function
 
 '':::::
 function rtlFileStrInput( byval bytesexpr as ASTNODE ptr, _
-						  byval filenum as ASTNODE ptr ) as ASTNODE ptr static
+						  byval filenum as ASTNODE ptr _
+						) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
 
@@ -987,7 +1033,8 @@ function rtlFileLineInput( byval isfile as integer, _
 						   byval expr as ASTNODE ptr, _
 						   byval dstexpr as ASTNODE ptr, _
 					       byval addquestion as integer, _
-					       byval addnewline as integer ) as integer
+					       byval addnewline as integer _
+					     ) as integer static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -1053,10 +1100,77 @@ function rtlFileLineInput( byval isfile as integer, _
 end function
 
 '':::::
+function rtlFileLineInputWstr( byval isfile as integer, _
+						   	   byval expr as ASTNODE ptr, _
+						   	   byval dstexpr as ASTNODE ptr, _
+					       	   byval addquestion as integer, _
+					       	   byval addnewline as integer _
+					       	 ) as integer static
+
+    dim as ASTNODE ptr proc
+    dim as FBSYMBOL ptr f
+    dim as integer args, lgt, dtype
+
+	function = FALSE
+
+	''
+	if( isfile ) then
+		f = PROCLOOKUP( FILELINEINPUTWSTR )
+		args = 3
+	else
+		f = PROCLOOKUP( CONSOLELINEINPUTWSTR )
+		args = 5
+	end if
+
+    proc = astNewFUNCT( f )
+
+    '' "byval filenum as integer" or "byval text as wstring ptr"
+    if( (not isfile) and (expr = NULL) ) then
+		expr = astNewVAR( symbAllocWStrConst( "", 0 ), 0, IR_DATATYPE_WCHAR )
+	end if
+
+    if( astNewPARAM( proc, expr ) = NULL ) then
+ 		exit function
+ 	end if
+
+    '' always calc len before pushing the param
+	dtype = astGetDataType( dstexpr )
+	lgt = rtlCalcStrLen( dstexpr, dtype )
+
+	'' byval dst as wstring ptr
+    if( astNewPARAM( proc, dstexpr ) = NULL ) then
+ 		exit function
+ 	end if
+
+	'' byval max_chars as integer
+	if( astNewPARAM( proc, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
+ 		exit function
+ 	end if
+
+    if( args = 5 ) then
+    	'' byval addquestion as integer
+ 		if( astNewPARAM( proc, astNewCONSTi( addquestion, IR_DATATYPE_INTEGER ) ) = NULL ) then
+ 			exit function
+ 		end if
+
+    	'' byval addnewline as integer
+    	if( astNewPARAM( proc, astNewCONSTi( addnewline, IR_DATATYPE_INTEGER ) ) = NULL ) then
+ 			exit function
+ 		end if
+    end if
+
+    astAdd( proc )
+
+    function = TRUE
+
+end function
+
+'':::::
 function rtlFileInput( byval isfile as integer, _
 					   byval expr as ASTNODE ptr, _
 				       byval addquestion as integer, _
-				       byval addnewline as integer ) as integer
+				       byval addnewline as integer _
+				     ) as integer
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -1117,23 +1231,32 @@ function rtlFileInputGet( byval dstexpr as ASTNODE ptr ) as integer
 	case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
 		f = PROCLOOKUP( INPUTSTR )
 		args = 3
+
 	case IR_DATATYPE_WCHAR
 		f = PROCLOOKUP( INPUTWSTR )
 		args = 2
+
 	case IR_DATATYPE_BYTE, IR_DATATYPE_UBYTE
 		f = PROCLOOKUP( INPUTBYTE )
+
 	case IR_DATATYPE_SHORT, IR_DATATYPE_USHORT
 		f = PROCLOOKUP( INPUTSHORT )
+
 	case IR_DATATYPE_INTEGER, IR_DATATYPE_UINT, IR_DATATYPE_ENUM
 		f = PROCLOOKUP( INPUTINT )
+
 	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
 		f = PROCLOOKUP( INPUTLONGINT )
+
 	case IR_DATATYPE_SINGLE
 		f = PROCLOOKUP( INPUTSINGLE )
+
 	case IR_DATATYPE_DOUBLE
 		f = PROCLOOKUP( INPUTDOUBLE )
+
 	case IR_DATATYPE_USERDEF
 		exit function							'' illegal
+
 	case else
 		if( dtype >= IR_DATATYPE_POINTER ) then	'' non-sense but..
 			f = PROCLOOKUP( INPUTINT )
@@ -1148,7 +1271,7 @@ function rtlFileInputGet( byval dstexpr as ASTNODE ptr ) as integer
 		lgt = rtlCalcStrLen( dstexpr, dtype )
 	end if
 
-    '' dst as any
+    '' byref dst as any | byval dst as wstring ptr
     if( astNewPARAM( proc, dstexpr ) = NULL ) then
  		exit function
  	end if
@@ -1177,7 +1300,8 @@ end function
 function rtlFileLock( byval islock as integer, _
 					  byval filenum as ASTNODE ptr, _
 					  byval iniexpr as ASTNODE ptr, _
-					  byval endexpr as ASTNODE ptr ) as integer
+					  byval endexpr as ASTNODE ptr _
+					) as integer
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -1217,7 +1341,8 @@ end function
 '':::::
 function rtlFileRename( byval filename_new as ASTNODE ptr, _
                         byval filename_old as ASTNODE ptr, _
-                        byval isfunc as integer ) as ASTNODE ptr static
+                        byval isfunc as integer _
+                      ) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr reslabel
@@ -1256,7 +1381,8 @@ end function
 '':::::
 function rtlWidthFile ( byval fnum as ASTNODE ptr, _
 					    byval width_arg as ASTNODE ptr, _
-                        byval isfunc as integer ) as ASTNODE ptr
+                        byval isfunc as integer _
+                      ) as ASTNODE ptr
 
     dim as ASTNODE ptr proc
 

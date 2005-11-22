@@ -18,53 +18,45 @@
  */
 
 /*
- * dev_efile_write_wstr - UTF-encoded wstring file writing
+ * utf_convfrom_wchar - wstring to UTF conversion
  *
  * chng: nov/2005 written [v1ctor]
+ *		 (based on ConvertUTF.c free implementation from Unicode, Inc)
  *
  */
 
 #include "fb.h"
-#include "fb_rterr.h"
+
+const UTF_8 fb_utf8_bmarkTb[7] = { 0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC };
 
 /*:::::*/
-int fb_DevFileWriteEncodWstr( struct _FB_FILE *handle, const FB_WCHAR* buffer, size_t chars )
+void fb_hCharToUTF8( const char *src, int chars, char *dst, int *total_bytes )
 {
-    FILE *fp;
-    char *encod_buffer;
-    int bytes;
+	UTF_8 c;
+	int bytes;
 
-    FB_LOCK();
-
-    fp = (FILE*) handle->opaque;
-
-	if( fp == NULL ) {
-		FB_UNLOCK();
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	}
-
-	/* convert (note: only wstrings will be written using this function,
-				so there's no binary data to care) */
-	encod_buffer = fb_WCharToUTF( handle->encod,
-								  buffer,
-								  chars,
-								  NULL,
-								  &bytes );
-
-	if( encod_buffer != NULL )
+	*total_bytes = 0;
+	while( chars > 0 )
 	{
-		/* do write */
-		if( fwrite( encod_buffer, 1, bytes, fp ) != bytes )
+		c = *src++;
+		if( c < 0x80 )
+			bytes =	1;
+		else
+			bytes = 2;
+
+		dst += bytes;
+
+		switch( bytes )
 		{
-			FB_UNLOCK();
-			return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+		case 2:
+			*--dst = (UTF_8)((c | UTF8_BYTEMARK) & UTF8_BYTEMASK);
+			c >>= 6;
+		case 1:
+			*--dst = (UTF_8) (c | fb_utf8_bmarkTb[bytes]);
 		}
 
-		if( encod_buffer != (char *)buffer )
-			free( encod_buffer );
+		--chars;
+		*total_bytes += bytes;
 	}
-
-	FB_UNLOCK();
-
-	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
+

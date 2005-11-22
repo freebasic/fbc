@@ -18,7 +18,7 @@
  */
 
 /*
- * dev_efile_write_wstr - UTF-encoded wstring file writing
+ * file_lineinput_wstr - line input function for wstrings
  *
  * chng: nov/2005 written [v1ctor]
  *
@@ -28,43 +28,16 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-int fb_DevFileWriteEncodWstr( struct _FB_FILE *handle, const FB_WCHAR* buffer, size_t chars )
+FBCALL int fb_FileLineInputWstr( int fnum, FB_WCHAR *dst, int max_chars )
 {
-    FILE *fp;
-    char *encod_buffer;
-    int bytes;
+    FB_FILE *handle = FB_FILE_TO_HANDLE(fnum);
 
-    FB_LOCK();
-
-    fp = (FILE*) handle->opaque;
-
-	if( fp == NULL ) {
-		FB_UNLOCK();
+    if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	}
 
-	/* convert (note: only wstrings will be written using this function,
-				so there's no binary data to care) */
-	encod_buffer = fb_WCharToUTF( handle->encod,
-								  buffer,
-								  chars,
-								  NULL,
-								  &bytes );
+    if( handle->hooks->pfnReadLineWstr == NULL )
+        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
-	if( encod_buffer != NULL )
-	{
-		/* do write */
-		if( fwrite( encod_buffer, 1, bytes, fp ) != bytes )
-		{
-			FB_UNLOCK();
-			return fb_ErrorSetNum( FB_RTERROR_FILEIO );
-		}
-
-		if( encod_buffer != (char *)buffer )
-			free( encod_buffer );
-	}
-
-	FB_UNLOCK();
-
-	return fb_ErrorSetNum( FB_RTERROR_OK );
+    return handle->hooks->pfnReadLineWstr( handle, dst, max_chars );
 }
+

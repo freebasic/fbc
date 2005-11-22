@@ -249,10 +249,12 @@
 
 #define FB_RTL_FILESTRINPUT 			"fb_FileStrInput"
 #define FB_RTL_FILELINEINPUT 			"fb_FileLineInput"
+#define FB_RTL_FILELINEINPUTWSTR		"fb_FileLineInputWstr"
 #define FB_RTL_CONSOLELINEINPUT 		"fb_LineInput"
+#define FB_RTL_CONSOLELINEINPUTWSTR		"fb_LineInputWstr"
+
 #define FB_RTL_FILEINPUT 				"fb_FileInput"
 #define FB_RTL_CONSOLEINPUT 			"fb_ConsoleInput"
-
 #define FB_RTL_INPUTBYTE 				"fb_InputByte"
 #define FB_RTL_INPUTSHORT 				"fb_InputShort"
 #define FB_RTL_INPUTINT 				"fb_InputInt"
@@ -529,10 +531,12 @@ enum FB_RTL_IDX
 
 	FB_RTL_IDX_FILESTRINPUT
 	FB_RTL_IDX_FILELINEINPUT
+	FB_RTL_IDX_FILELINEINPUTWSTR
 	FB_RTL_IDX_CONSOLELINEINPUT
+	FB_RTL_IDX_CONSOLELINEINPUTWSTR
+
 	FB_RTL_IDX_FILEINPUT
 	FB_RTL_IDX_CONSOLEINPUT
-
 	FB_RTL_IDX_INPUTBYTE
 	FB_RTL_IDX_INPUTSHORT
 	FB_RTL_IDX_INPUTINT
@@ -905,6 +909,12 @@ declare function	rtlFileLineInput	( byval isfile as integer, _
 										  byval dstexpr as ASTNODE ptr, _
 										  byval addquestion as integer, _
 										  byval addnewline as integer ) as integer
+
+declare function 	rtlFileLineInputWstr( byval isfile as integer, _
+						   	   			  byval expr as ASTNODE ptr, _
+						   	   			  byval dstexpr as ASTNODE ptr, _
+					       	   			  byval addquestion as integer, _
+					       	   			  byval addnewline as integer ) as integer
 
 declare function	rtlFileInput		( byval isfile as integer, _
 										  byval expr as ASTNODE ptr, _

@@ -301,13 +301,18 @@ function cLineInputStmt as integer
     	end if
     end if
 
+    select case astGetDataType( dstexpr )
+    case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR
+    	function = rtlFileLineInput( isfile, expr, dstexpr, addquestion, addnewline )
+
+    case IR_DATATYPE_WCHAR
+    	function = rtlFileLineInputWstr( isfile, expr, dstexpr, addquestion, addnewline )
+
     '' not a string?
-    if( not hIsString( astGetDataType( dstexpr ) ) ) then
+    case else
 		hReportError( FB_ERRMSG_INVALIDDATATYPES )
 		exit function
-    end if
-
-    function = rtlFileLineInput( isfile, expr, dstexpr, addquestion, addnewline )
+    end select
 
 end function
 
@@ -356,7 +361,7 @@ function cInputStmt as integer
 	if( (isfile) or (filestrexpr <> NULL) ) then
 		if( not hMatch( CHAR_COMMA ) ) then
 			if( not hMatch( CHAR_SEMICOLON ) ) then
-				hReportError FB_ERRMSG_EXPECTEDCOMMA
+				hReportError( FB_ERRMSG_EXPECTEDCOMMA )
 				exit function
 			else
 				addquestion = TRUE
@@ -372,7 +377,7 @@ function cInputStmt as integer
     '' Variable (',' Variable)*
     do
 		if( not cVarOrDeref( dstexpr ) ) then
-       		hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
+       		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
        		exit function
        	end if
 
@@ -398,7 +403,7 @@ private function hFileClose( byval isfunc as integer ) as ASTNODE ptr
 	function = NULL
 
 	'' CLOSE
-	lexSkipToken
+	lexSkipToken( )
 
 	if( isfunc ) then
 		'' '('

@@ -45,7 +45,7 @@ int fb_FileGetStrEx( FB_FILE *handle, long pos, void *str, int str_len )
 
 	/* perform call ... but only if there's data ... */
     if( (data != NULL) && (len > 0) ) {
-        res = fb_FileGetDataEx( handle, pos, data, &len, TRUE );
+        res = fb_FileGetDataEx( handle, pos, data, &len, TRUE, FALSE );
         data[len] = 0;                                /* add the null-term */
     } else {
 		res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );

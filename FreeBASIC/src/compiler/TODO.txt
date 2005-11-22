@@ -1,4 +1,11 @@
 
+[ ] add the wstring type:
+    - auto-convert literal strings to w- or z- on assignments, depending on the l-hand side type
+    - implement all missing rtlib wstring routines:
+      - [L|R]TRIM ANY
+    - add the missing internal functions in the Linux and DOS ports
+    - fix the !!!FIXME!!!'s and write the !!!WRITEME!!!'s in the rtlib
+
 [ ] swap of zstring's and var-len string's is not working?? or that's the behaviour..
 
 [ ] @static_array(const) won't become an OFFSET, not allowing initializations..
@@ -7,13 +14,6 @@
     yet-another temporary assignament in hStrParamToPtrArg(),
     just a pointer copy that later should be strDelete()'d
 
-[ ] add the wstring type:
-    - auto-convert literal strings to w- or z- on assignments, depending on the l-hand side type
-    - implement all missing rtlib wstring routines
-      - [L|R]TRIM ANY
-      - LINE INPUT and INPUT -- inferred
-      - WINPUT$ -- no inferrence
-    - fix the !!!FIXME!!!'s and write the !!!WRITEME!!!'s in the rtlib
 
 [ ] add support for functions returning references (reuse "BYREF"), so those can
     be automatically dereferenced - but *NOT* deleted, only non-local data can

@@ -18,53 +18,32 @@
  */
 
 /*
- * dev_efile_write_wstr - UTF-encoded wstring file writing
+ * io_printbuff_wstr.c -- low-level print to console function for wstrings
  *
  * chng: nov/2005 written [v1ctor]
  *
  */
 
 #include "fb.h"
-#include "fb_rterr.h"
+#include "fb_con.h"
 
 /*:::::*/
-int fb_DevFileWriteEncodWstr( struct _FB_FILE *handle, const FB_WCHAR* buffer, size_t chars )
+void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t len, int mask )
 {
-    FILE *fp;
-    char *encod_buffer;
-    int bytes;
+    /* !!!FIXME!!! no support for unicode output */
 
-    FB_LOCK();
+    char *temp = alloca( len + 1 );
 
-    fp = (FILE*) handle->opaque;
+    if( len > 0 )
+    	fb_wstr_ConvToA( temp, buffer, len );
+    else
+    	*temp = '\0';
 
-	if( fp == NULL ) {
-		FB_UNLOCK();
-		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	}
+    fb_ConsolePrintBufferEx( temp, len, mask );
+}
 
-	/* convert (note: only wstrings will be written using this function,
-				so there's no binary data to care) */
-	encod_buffer = fb_WCharToUTF( handle->encod,
-								  buffer,
-								  chars,
-								  NULL,
-								  &bytes );
-
-	if( encod_buffer != NULL )
-	{
-		/* do write */
-		if( fwrite( encod_buffer, 1, bytes, fp ) != bytes )
-		{
-			FB_UNLOCK();
-			return fb_ErrorSetNum( FB_RTERROR_FILEIO );
-		}
-
-		if( encod_buffer != (char *)buffer )
-			free( encod_buffer );
-	}
-
-	FB_UNLOCK();
-
-	return fb_ErrorSetNum( FB_RTERROR_OK );
+/*:::::*/
+void fb_ConsolePrintBufferWstr( const FB_WCHAR *buffer, int mask )
+{
+	fb_ConsolePrintBufferWstrEx( buffer, fb_wstr_Len( buffer ), mask );
 }

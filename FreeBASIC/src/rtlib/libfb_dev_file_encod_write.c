@@ -51,6 +51,7 @@ int fb_DevFileWriteEncod( struct _FB_FILE *handle, const void* buffer, size_t ch
 	encod_buffer = fb_CharToUTF( handle->encod,
 								 (const char *)buffer,
 								 chars,
+								 NULL,
 								 &bytes );
 
 	if( encod_buffer != NULL )

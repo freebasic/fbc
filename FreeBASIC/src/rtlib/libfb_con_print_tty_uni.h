@@ -50,12 +50,12 @@ void FB_CONPRINTTTY( fb_ConHooks *handle,
 
     memcpy( &dwCurrentCoord, pCoord, sizeof( fb_Coord ) );
 
+    fb_Coord dwMoveCoord = { 0 };
     for( IndexText=0; IndexText!=TextLength; ++IndexText ) {
         const FB_TCHAR *pachOutputData = pachText;
         size_t OutputDataLength = 0, OutputDataChars = 0;
         int fDoFlush = FALSE;
         int fSetNewCoord = FALSE;
-        fb_Coord dwMoveCoord;
         FB_TCHAR ch = FB_TCHAR_GET( pachOutputData );
         switch ( ch ) {
         case _TC('\a'):

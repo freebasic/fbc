@@ -31,15 +31,17 @@
 #include "fb_rterr.h"
 
 FBCALL
-int fb_LineInput( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline )
+int fb_LineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
+				  int addquestion, int addnewline )
 {
     FB_LINEINPUTPROC lineinputproc;
+
     FB_LOCK();
     lineinputproc = fb_hooks.lineinputproc;
     FB_UNLOCK();
-    if( lineinputproc ) {
+
+    if( lineinputproc )
         return lineinputproc( text, dst, dst_len, fillrem, addquestion, addnewline );
-    } else {
+    else
         return fb_ConsoleLineInput( text, dst, dst_len, fillrem, addquestion, addnewline );
-    }
 }

@@ -20,7 +20,8 @@
 /*
  *	file_get - get # function
  *
- * chng: oct/2004 written [marzec/v1ctor]
+ * chng: oct/2004 written [v1ctor]
+ * chng: nov/2005 unicode support added [v1ctor]
  *
  */
 
@@ -31,15 +32,12 @@
 
 
 /*:::::*/
-int fb_FileGetDataEx( FB_FILE *handle,
-					  long pos,
-					  void* value,
-					  size_t *pLength,
-					  int adjust_rec_pos )
+int fb_FileGetDataEx( FB_FILE *handle, long pos, void *dst, size_t *pchars,
+					  int adjust_rec_pos, int is_unicode )
 {
     int res;
-    size_t length, read_count = 0;
-    char *pachData = (char*) value;
+    size_t chars, read_chars;
+    char *pachData = (char *)dst;
 
     if( !FB_HANDLE_USED(handle) )
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
@@ -48,57 +46,111 @@ int fb_FileGetDataEx( FB_FILE *handle,
 
     res = fb_ErrorSetNum( FB_RTERROR_OK );
 
-    length = *pLength;
+    chars = *pchars;
 
     /* seek to newpos */
     if( pos > 0 )
         res = fb_FileSeekEx( handle, pos );
 
+    /* any data in the put-back buffer? */
     if( handle->putback_size != 0 )
     {
-        size_t copy_size = (handle->putback_size > length) ? handle->putback_size : length;
-        memcpy( pachData, handle->putback_buffer, copy_size );
-        handle->putback_size -= copy_size;
-        read_count = copy_size;
-        length -= copy_size;
-        pachData += copy_size;
-        if( handle->putback_size != 0 )
-        {
-            memmove( handle->putback_buffer,
-                     handle->putback_buffer + copy_size,
-                     handle->putback_size );
-        }
-    }
+        size_t bytes, len;
+    	FB_WCHAR *wcp;
+    	char *cp;
 
-    if ( (res == FB_RTERROR_OK) && (length != 0) )
-    {
-        /* do read */
-        if( handle->hooks->pfnRead!=NULL )
+        bytes = chars;
+        if( handle->encod != FB_FILE_ENCOD_ASCII )
+        	bytes *= sizeof( FB_WCHAR );
+
+        bytes = (handle->putback_size >= bytes? bytes : handle->putback_size);
+
+        if( !is_unicode )
         {
-            size_t rlen = length;
-            res = handle->hooks->pfnRead( handle, pachData, &rlen );
-            read_count += rlen;
+        	if( handle->encod == FB_FILE_ENCOD_ASCII )
+        		memcpy( pachData, handle->putback_buffer, bytes );
+        	else
+        	{
+        		cp = pachData;
+        		wcp = (FB_WCHAR *)handle->putback_buffer;
+        		len = bytes;
+        		while( len > 0 )
+        		{
+        			*cp++ = *wcp++;
+        			len -= sizeof( FB_WCHAR );
+        		}
+        	}
         }
         else
         {
-            res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+        	if( handle->encod != FB_FILE_ENCOD_ASCII )
+        		memcpy( pachData, handle->putback_buffer, bytes );
+        	else
+        	{
+        		cp = pachData;
+        		wcp = (FB_WCHAR *)handle->putback_buffer;
+        		len = bytes;
+        		while( len-- > 0 )
+        			*wcp++ = *cp++;
+        	}
+        }
+
+        handle->putback_size -= bytes;
+        if( handle->putback_size != 0 )
+        {
+            memmove( handle->putback_buffer,
+                     handle->putback_buffer + bytes,
+                     handle->putback_size );
+		}
+
+        pachData += bytes;
+
+        if( handle->encod != FB_FILE_ENCOD_ASCII )
+        	bytes /= sizeof( FB_WCHAR );
+
+        read_chars = bytes;
+        chars -= bytes;
+    }
+    else
+    	read_chars = 0;
+
+    if ( (res == FB_RTERROR_OK) && (chars != 0) )
+    {
+        /* do read */
+        if( !is_unicode )
+        {
+        	if( handle->hooks->pfnRead == NULL )
+            	res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+        	else
+        	{
+        		res = handle->hooks->pfnRead( handle, pachData, &chars );
+        		read_chars += chars;
+        	}
+        }
+        else
+        {
+        	if( handle->hooks->pfnReadWstr == NULL )
+            	res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+        	else
+        	{
+        		res = handle->hooks->pfnReadWstr( handle, (FB_WCHAR *)pachData, &chars );
+        		read_chars += chars;
+        	}
         }
     }
 
-    if( res == FB_RTERROR_OK ) {
-        *pLength = read_count;
-    }
+    *pchars = read_chars;
 
     if( handle->mode == FB_FILE_MODE_RANDOM &&
         res == FB_RTERROR_OK &&
         adjust_rec_pos &&
-        handle->len!=0 &&
-        handle->hooks->pfnSeek!=NULL )
+        handle->len != 0 &&
+        handle->hooks->pfnSeek != NULL )
     {
         /* if in random mode, reads must be of reclen.
          * The device must also support the SEEK method and the length
          * must be non-null */
-        size_t skip_size = handle->len - (read_count % handle->len);
+        size_t skip_size = handle->len - (read_chars % handle->len);
         if( skip_size != 0 )
         {
             /* don't forget the put back buffer */
@@ -128,20 +180,18 @@ int fb_FileGetDataEx( FB_FILE *handle,
 }
 
 /*:::::*/
-int fb_FileGetData( int fnum,
-					long pos,
-					void* value,
-					size_t length,
-					int adjust_rec_pos )
+int fb_FileGetData( int fnum, long pos, void *dst, size_t chars, int adjust_rec_pos )
 {
-    return fb_FileGetDataEx(FB_FILE_TO_HANDLE(fnum), pos, value, &length, adjust_rec_pos);
+    return fb_FileGetDataEx( FB_FILE_TO_HANDLE(fnum),
+    						 pos,
+    						 dst,
+    						 &chars,
+    						 adjust_rec_pos,
+    						 FALSE );
 }
 
 /*:::::*/
-FBCALL int fb_FileGet( int fnum,
-					   long pos,
-					   void* value,
-					   unsigned int valuelen )
+FBCALL int fb_FileGet( int fnum, long pos, void *dst, unsigned int chars )
 {
-	return fb_FileGetData( fnum, pos, value, valuelen, TRUE );
+	return fb_FileGetData( fnum, pos, dst, chars, TRUE );
 }

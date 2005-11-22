@@ -44,11 +44,13 @@ static FB_FILE_HOOKS fb_hooks_dev_pipe = {
     NULL,
     NULL,
     fb_DevFileRead,
+    fb_DevFileReadWstr,
     fb_DevFileWrite,
     fb_DevFileWriteWstr,
     NULL,
     NULL,
-    fb_DevFileReadLine
+    fb_DevFileReadLine,
+    fb_DevFileReadLineWstr
 };
 
 int fb_DevPipeOpen( struct _FB_FILE *handle, const char *filename, size_t filename_len )

@@ -18,27 +18,24 @@
  */
 
 /*
- * file_inputstr - input$ function
+ * file_inputstr - winput$ function
  *
  * chng: nov/2004 written [v1ctor]
  *
  */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
-
 /*:::::*/
-FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
+FBCALL FB_WCHAR *fb_FileWstrInput( int chars, int fnum )
 {
-    FB_FILE   *handle;
-	FBSTRING  *dst;
-    size_t 	   len;
-    int        res = FB_RTERROR_OK;
+    FB_FILE *handle;
+	FB_WCHAR *dst;
+    size_t len;
+    int res = FB_RTERROR_OK;
 
-	fb_DevScrnInit_Read( );
+	fb_DevScrnInit_ReadWstr( );
 
 	FB_LOCK();
 
@@ -46,64 +43,54 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
     if( !FB_HANDLE_USED(handle) )
     {
 		FB_UNLOCK();
-		return &fb_strNullDesc;
+		return NULL;
 	}
 
-    dst = fb_hStrAllocTemp( NULL, bytes );
-    if( dst!=NULL )
+    dst = fb_wstr_AllocTemp( chars );
+    if( dst != NULL )
     {
-        size_t read_count = 0;
+        size_t read_chars = 0;
         if( FB_HANDLE_IS_SCREEN(handle) )
         {
-            dst->data[0] = 0;
-            while( read_count!=bytes ) {
-                len = bytes - read_count;
+            dst[0] = _LC('\0');
+            while( read_chars != chars )
+            {
+                len = chars - read_chars;
                 res = fb_FileGetDataEx( handle,
                                         0,
-                                        dst->data + read_count,
+                                        (void *)&dst[read_chars],
                                         &len,
                                         TRUE,
-                                        FALSE );
-                if( res!=FB_RTERROR_OK ) {
+                                        TRUE );
+                if( res != FB_RTERROR_OK )
                     break;
-                }
-                read_count += len;
-                dst->data[read_count] = 0;
+
+                read_chars += len;
+                dst[read_chars] = _LC('\0');
             }
         }
         else
         {
-            len = bytes;
+            len = chars;
             res = fb_FileGetDataEx( handle,
                                     0,
-                                    dst->data,
+                                    (void *)dst,
                                     &len,
                                     TRUE,
-                                    FALSE );
-            if( res==FB_RTERROR_OK ) {
-                read_count += len;
-            }
+                                    TRUE );
+            if( res == FB_RTERROR_OK )
+                read_chars += chars;
+
         }
-        if( read_count != bytes )
-        {
-            dst->data[read_count] = '\0';
-            fb_hStrSetLength( dst, read_count );
-        }
+
+        if( read_chars != chars )
+            dst[read_chars] = _LC('\0');
     }
     else
-    {
         res = FB_RTERROR_OUTOFMEM;
-    }
 
     if( res != FB_RTERROR_OK )
-    {
-        if( dst != NULL )
-            fb_hStrDelTemp( dst );
-
-        dst = &fb_strNullDesc;
-    }
-
-    FB_UNLOCK();
+        dst = NULL;
 
     return dst;
 }

@@ -104,8 +104,10 @@ static FB_FILE_HOOKS fb_hooks_dev_lpt = {
     NULL,
     NULL,
     NULL,
+    NULL,
     fb_DevLptWrite,
     fb_DevLptWriteWstr,
+    NULL,
     NULL,
     NULL,
     NULL

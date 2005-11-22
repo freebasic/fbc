@@ -38,8 +38,11 @@ void fb_DevScrnFillInput( DEV_SCRN_INFO *info )
 
     str = fb_Inkey( );
     len = FB_STRSIZE( str );
-    DBG_ASSERT(len <= sizeof(info->buffer));
-    memcpy(info->buffer, str->data, len);
+
+    DBG_ASSERT(len < sizeof(info->buffer));
+
+    /* copy null-term too */
+    memcpy( info->buffer, str->data, len+1 );
 
     fb_hStrDelTemp( str );
 

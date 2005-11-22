@@ -18,15 +18,12 @@
  */
 
 /*
- * con_lineinp - console line input function
+ * con_lineinp_wstr - console line input function for wstrings
  *
- * chng: nov/2004 written [v1ctor]
- *       sep/2005 split into two files, file_lineinp.c and con_lineinp.c
+ * chng: nov/2005 written [v1ctor]
  *
  */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
@@ -34,10 +31,13 @@ static const char *pszDefaultQuestion = "? ";
 
 #if defined(TARGET_WIN32) || defined(TARGET_CYGWIN) || defined(TARGET_DOS)
 
-int fb_ConsoleLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
-						 int addquestion, int addnewline )
+/*:::::*/
+int fb_ConsoleLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars,
+							 int addquestion, int addnewline )
 {
     FBSTRING *tmp_result;
+
+    /* !!!FIXME!!! no support for unicode input */
 
     FB_LOCK();
 
@@ -45,48 +45,43 @@ int fb_ConsoleLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
 
     if( text != NULL )
     {
-        if( text->data != NULL ) {
-            fb_PrintString( 0, text, 0 );
-        }
+        fb_PrintWstr( 0, text, 0 );
 
         if( addquestion != FB_FALSE )
-        {
             fb_PrintFixString( 0, pszDefaultQuestion, 0 );
-        }
     }
 
     FB_UNLOCK();
 
     tmp_result = fb_ConReadLine();
 
-    if( addnewline ) {
+    if( addnewline )
         fb_PrintBufferEx( FB_NEWLINE, sizeof(FB_NEWLINE)-1, 0 );
-    }
 
-    if( tmp_result!=NULL ) {
-        fb_StrAssign( dst, dst_len, tmp_result, -1, fillrem );
-        return fb_ErrorSetNum( FB_RTERROR_OK );
-    }
+    if( tmp_result == NULL )
+    	return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
 
-    return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
+	fb_WstrAssignFromA( dst, max_chars, tmp_result, -1 );
+
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
 #else
 
-static char *hWrapper( char *buffer,
-                                         size_t count,
-                                         FILE *fp )
+static char *hWrapper( char *buffer, size_t count, FILE *fp )
 {
     return fb_ReadString( buffer, count, fp );
 }
 
 /*:::::*/
-int fb_ConsoleLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
-						 int addquestion, int addnewline )
+int fb_ConsoleLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars,
+							 int addquestion, int addnewline )
 {
 	int res;
     size_t len;
     int old_x, old_y;
+
+    /* !!!FIXME!!! no support for unicode input */
 
     fb_PrintBufferEx( NULL, 0, FB_PRINT_FORCE_ADJUST );
     fb_GetXY( &old_x, &old_y );
@@ -95,31 +90,21 @@ int fb_ConsoleLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
 
     if( text != NULL )
     {
-        if( text->data != NULL ) {
-            fb_PrintString( 0, text, 0 );
-        }
+		fb_PrintWstr( 0, text, 0 );
 
         if( addquestion != FB_FALSE )
-        {
             fb_PrintFixString( 0, pszDefaultQuestion, 0 );
-        }
     }
 
     {
-        /* create temporary string */
         FBSTRING *str_result = fb_StrAllocTempDescZ( NULL );
-        DBG_ASSERT(str_result != NULL);
 
         res = fb_DevFileReadLineDumb( stdin, str_result, hWrapper );
 
         len = FB_STRSIZE(str_result);
 
-        /* We have to handle the NEWLINE stuff here because we *REQUIRE*
-         * the *COMPLETE* temporary input string for the correct position
-         * adjustment. */
-        if( !addnewline ) {
-            /* This is the easy and dumb method to do the position adjustment.
-             * The problem is that it doesn't take TAB's into account. */
+        if( !addnewline )
+        {
             int cols, rows;
             int old_y;
 
@@ -134,10 +119,7 @@ int fb_ConsoleLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
             fb_Locate( old_y, old_x, -1 );
         }
 
-
-        /* add contents of tempporary string to result buffer */
-        fb_StrAssign( dst, dst_len, str_result, -1, fillrem );
-        /* INFO: temporary string will be deleted during assignment */
+        fb_WstrAssignFromA( dst, max_Chars, str_result, -1 );
     }
 
 	FB_UNLOCK();

@@ -33,18 +33,24 @@
 
 int fb_DevFileWriteEncod( struct _FB_FILE *handle, const void* buffer, size_t chars );
 int fb_DevFileWriteEncodWstr( struct _FB_FILE *handle, const FB_WCHAR* buffer, size_t len );
+int fb_DevFileReadEncod( struct _FB_FILE *handle, void *dst, size_t *max_chars );
+int fb_DevFileReadEncodWstr( struct _FB_FILE *handle, FB_WCHAR *dst, size_t *max_chars );
+int fb_DevFileReadLineEncod( struct _FB_FILE *handle, FBSTRING *dst );
+int fb_DevFileReadLineEncodWstr( struct _FB_FILE *handle, FB_WCHAR *dst, int max_chars );
 
 static FB_FILE_HOOKS fb_hooks_dev_file = {
     fb_DevFileEof,
     fb_DevFileClose,
     fb_DevFileSeek,
     fb_DevFileTell,
-    fb_DevFileRead,				/* !!!FIXME!!! should support encoding */
+    fb_DevFileReadEncod,
+    fb_DevFileReadEncodWstr,
     fb_DevFileWriteEncod,
     fb_DevFileWriteEncodWstr,
     fb_DevFileLock,
     fb_DevFileUnlock,
-    fb_DevFileReadLine,         /* !!!FIXME!!! should support encoding */
+    fb_DevFileReadLineEncod,
+	fb_DevFileReadLineEncodWstr,
     NULL,
     fb_DevFileFlush
 };
@@ -61,14 +67,14 @@ static int hCheckBOM( struct _FB_FILE *handle )
     switch( handle->encod )
     {
     case FB_FILE_ENCOD_UTF8:
-        if( fread( &bom, 1, 3, fp ) != 3 )
+        if( fread( &bom, 3, 1, fp ) != 1 )
         	return 0;
 
     	res = (bom == 0x00BFBBEF);
     	break;
 
 	case FB_FILE_ENCOD_UTF16:
-        if( fread( &bom, 1, 2, fp ) != 2 )
+        if( fread( &bom, sizeof( UTF_16 ), 1, fp ) != 1 )
         	return 0;
 
     	/* !!!FIXME!!! only litle-endian supported */
@@ -77,7 +83,7 @@ static int hCheckBOM( struct _FB_FILE *handle )
 
 	case FB_FILE_ENCOD_UTF32:
 
-        if( fread( &bom, 1, 4, fp ) != 4 )
+        if( fread( &bom, sizeof( UTF_32 ), 1, fp ) != 1 )
         	return 0;
 
     	/* !!!FIXME!!! only litle-endian supported */
@@ -104,21 +110,21 @@ static int hWriteBOM( struct _FB_FILE *handle )
     {
     case FB_FILE_ENCOD_UTF8:
         bom = 0x00BFBBEF;
-        if( fwrite( &bom, 1, 3, fp ) != 3 )
+        if( fwrite( &bom, 3, 1, fp ) != 1 )
         	return 0;
     	break;
 
 	case FB_FILE_ENCOD_UTF16:
         /* !!!FIXME!!! only litle-endian supported */
         bom = 0x0000FEFF;
-        if( fwrite( &bom, 1, 2, fp ) != 2 )
+        if( fwrite( &bom, sizeof( UTF_16 ), 1, fp ) != 1 )
         	return 0;
     	break;
 
 	case FB_FILE_ENCOD_UTF32:
         /* !!!FIXME!!! only litle-endian supported */
         bom = 0x0000FEFF;
-        if( fwrite( &bom, 1, 4, fp ) != 4 )
+        if( fwrite( &bom, sizeof( UTF_32 ), 1, fp ) != 1 )
         	return 0;
 		break;
 

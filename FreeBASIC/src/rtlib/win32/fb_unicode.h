@@ -22,4 +22,26 @@
 #define FB_WSTR_FROM_UINT64_OCT( buffer, num ) \
     _ui64tow( num, buffer, 8 )
 
+/*:::::*/
+static __inline__ void fb_wstr_WcharToChar( char *dst, const FB_WCHAR *src, int chars )
+{
+	UTF_16 c;
+
+	while( chars-- )
+	{
+		c = *src++;
+
+		if( c > 255 )
+		{
+			if( c >= UTF16_SUR_HIGH_START && c <= UTF16_SUR_HIGH_END )
+    			++src;
+    		c = '?';
+    	}
+
+		*dst++ = c;
+	}
+}
+
+#define FB_WSTR_WCHARTOCHAR fb_wstr_WcharToChar
+
 #endif /* __FB_UNICODE_W32__ */
