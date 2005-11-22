@@ -1,6 +1,6 @@
 /*
- *  libgfx2 - FreeBASIC's alternative gfx library
- *	Copyright (C) 2005 Angelo Mottola (a.mottola@libero.it)
+ *  libfb - FreeBASIC's runtime library
+ *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -15,24 +15,24 @@
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
+ */
 
 /*
- * lineinp.c -- LINE INPUT function
+ * lineinp_wstr - console line input function for wstrings
  *
- * chng: sep/2005 written [mjs]
+ * chng: nov/2005 written [v1ctor]
  *
  */
 
 #include "fb_gfx.h"
 
-
-static const char *pszDefaultQuestion = "? ";
-
-int fb_GfxLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
-					 int addquestion, int addnewline )
+/*:::::*/
+int fb_GfxLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars,
+						 int addquestion, int addnewline )
 {
     FBSTRING *tmp_result;
+
+    /* !!!FIXME!!! no support for unicode input */
 
     FB_LOCK();
 
@@ -40,28 +40,25 @@ int fb_GfxLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
 
     if( text != NULL )
     {
-        if( text->data != NULL ) {
-            fb_PrintString( 0, text, 0 );
-        }
+        fb_PrintWstr( 0, text, 0 );
 
         if( addquestion != FB_FALSE )
-        {
-            fb_PrintFixString( 0, pszDefaultQuestion, 0 );
-        }
+            fb_PrintFixString( 0, "? ", 0 );
     }
 
     FB_UNLOCK();
 
     tmp_result = fb_ConReadLine();
 
-    if( addnewline ) {
+    if( addnewline )
         fb_PrintBufferEx( FB_NEWLINE, sizeof(FB_NEWLINE)-1, 0 );
-    }
 
-    if( tmp_result!=NULL ) {
-        fb_StrAssign( dst, dst_len, tmp_result, -1, fillrem );
-        return fb_ErrorSetNum( FB_RTERROR_OK );
-    }
+    if( tmp_result == NULL )
+    	return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
 
-    return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
+	fb_WstrAssignFromA( dst, max_chars, tmp_result, -1 );
+
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
+
+

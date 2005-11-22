@@ -291,7 +291,9 @@ int fb_GfxGetY(void);
 void fb_GfxGetXY(int *col, int *row);
 void fb_GfxGetSize(int *cols, int *rows);
 void fb_GfxPrintBuffer(const char *buffer, int mask);
+void fb_GfxPrintBufferWstr(const FB_WCHAR *buffer, int mask);
 void fb_GfxPrintBufferEx(const void *buffer, size_t len, int mask);
+void fb_GfxPrintBufferWstrEx(const FB_WCHAR *buffer, size_t len, int mask);
 char *fb_GfxReadStr(char *buffer, int maxlen);
 int fb_GfxMultikey(int scancode);
 int fb_GfxGetMouse(int *x, int *y, int *z, int *buttons);
@@ -299,6 +301,7 @@ int fb_GfxSetMouse(int x, int y, int cursor);
 int fb_GfxOut(unsigned short port, unsigned char value);
 int fb_GfxIn(unsigned short port);
 int fb_GfxLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline );
+int fb_GfxLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars, int addquestion, int addnewline );
 int fb_GfxReadXY( int col, int row, int colorflag );
 void fb_GfxSleep( int msecs );
 

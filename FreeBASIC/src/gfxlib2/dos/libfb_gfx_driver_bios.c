@@ -274,7 +274,7 @@ static void driver_update_bpp1(void)
             if (fb_mode->dirty[y]) {
                 unsigned dx = w8;
                 unsigned x = w4;
-                unsigned char uchDst;
+                unsigned char uchDst = 0;
                 while( x-- ) {
                     unsigned value = buffer[x];
                     if( x & 1 ) {
@@ -321,7 +321,7 @@ static void driver_update_bpp1(void)
             if (fb_mode->dirty[y]) {
                 unsigned dx = w8;
                 unsigned x = w4;
-                unsigned char uchDst;
+                unsigned char uchDst = 0;
                 while( x-- ) {
                     unsigned value = buffer[x];
                     if( x & 1 ) {

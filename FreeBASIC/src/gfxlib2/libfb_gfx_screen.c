@@ -207,6 +207,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         fb_hooks.getxyproc = fb_GfxGetXY;
         fb_hooks.getsizeproc = fb_GfxGetSize;
         fb_hooks.printbuffproc = fb_GfxPrintBufferEx;
+        fb_hooks.printbuffwproc = fb_GfxPrintBufferWstrEx;
         fb_hooks.readstrproc = fb_GfxReadStr;
         fb_hooks.multikeyproc = fb_GfxMultikey;
         fb_hooks.getmouseproc = fb_GfxGetMouse;
@@ -215,6 +216,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         fb_hooks.outproc = fb_GfxOut;
         fb_hooks.viewupdateproc = fb_GfxViewUpdate;
         fb_hooks.lineinputproc = fb_GfxLineInput;
+        fb_hooks.lineinputwproc = fb_GfxLineInputWstr;
         fb_hooks.readxyproc = fb_GfxReadXY;
         fb_hooks.sleepproc = fb_GfxSleep;
         fb_mode = (MODE *)calloc(1, sizeof(MODE));

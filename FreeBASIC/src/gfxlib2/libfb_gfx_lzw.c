@@ -77,7 +77,7 @@ static LZW_ENTRY entry[TABLE_SIZE];
 static LZW_ENTRY *find_match(int prefix, int value)
 {
 	int index, offset = 1;
-	
+
 	index = (value << 4) ^ prefix;
 	if (index)
 		offset = TABLE_SIZE - index;
@@ -91,10 +91,10 @@ static LZW_ENTRY *find_match(int prefix, int value)
 
 
 /*:::::*/
-static char *decode_string(unsigned char *buffer, int code)
+static unsigned char *decode_string(unsigned char *buffer, int code)
 {
 	int index = 0;
-	
+
 	while (code > 255) {
 		*buffer++ = entry[code].value;
 		code = entry[code].prefix;
@@ -112,7 +112,7 @@ FBCALL int fb_hEncode(const unsigned char *in_buffer, int in_size, unsigned char
 	LZW_ENTRY *e;
 	int string_code, next_code = 256;
 	int size, bit = 0;
-	
+
 	size = 0;
 	fb_hMemSet(entry, -1, sizeof(entry));
 	string_code = *in_buffer++;
@@ -149,7 +149,7 @@ FBCALL int fb_hDecode(const unsigned char *in_buffer, int in_size, unsigned char
 	int new_code, old_code;
 	int bit = 0;
 	unsigned char *limit, decode_stack[MAX_CODE], *string, byte;
-	
+
 	INPUT_CODE(old_code);
 	byte = old_code;
 	*out_buffer++ = old_code;
