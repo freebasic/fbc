@@ -1,4 +1,4 @@
-LIBRARY     ZLIB.DLL
+LIBRARY     ZLIB1.DLL
 
 EXPORTS
     _dist_code                     @1   
