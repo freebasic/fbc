@@ -110,7 +110,7 @@ Requirements:
       above. Applications that depend on wide-strings will run in Windows 98/Me, but
       no input/output will work if the character set isn't latin-based, because those 
       platforms don't support Unicode strings. Windows 95 has most Unicode API functions 
-      missing, applications using wide-strings won't even be loaded by the OS.
+      missing, applications using wide-strings won't even be loaded by that OS.
 
   o Linux version:
 
@@ -127,6 +127,10 @@ Requirements:
     - If having a working X11 installation is enough to run FreeBASIC gfx programs,
       it may be not enough to compile them; you may need to install the X11
       development libraries from your Linux packages repository.
+
+    - Unicode wide-strings (WSTRING's) with non-ascii character sets can only be 
+      displayed in console if the locale is set to an UTF-8 version - most modern
+      distros come with support that.
 
   o DOS version:
 
