@@ -40,11 +40,11 @@ FB_WCHAR *fb_FloatExToWstr( double val, FB_WCHAR *buffer, int digits, int mask )
 	/* no exponent? (if exp is too big, that won't matter) */
 	if( (mask & FB_F2A_NOEXP) > 0 )
 	{
-        swprintf( p, _LC("%.*f"), digits, val );
+        swprintf( p, 16+8+1, _LC("%.*f"), digits, val );
 	}
 	else
 	{
-        swprintf( p, _LC("%.*g"), digits, val );
+        swprintf( p, 16+8+1, _LC("%.*g"), digits, val );
 	}
 
 	len = fb_wstr_Len( p );

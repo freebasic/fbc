@@ -4,6 +4,8 @@
 #include <wchar.h>
 #include <wctype.h>
 
+#define swprintf _snwprintf
+
 #define FB_WSTR_FROM_INT( buffer, num ) \
     _itow( num, buffer, 10 )
 

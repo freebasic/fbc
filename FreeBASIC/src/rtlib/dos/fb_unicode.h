@@ -154,7 +154,7 @@ static __inline__ void fb_wstr_WcharToChar( char *dst, const FB_WCHAR *src, int 
     strncmp(str1, str2, count)
 
 /*:::::*/
-static __inline__ int swprintf(FB_WCHAR *buffer, const FB_WCHAR *format, ...)
+static __inline__ int swprintf(FB_WCHAR *buffer, size_t n, const FB_WCHAR *format, ...)
 {
     int result;
     va_list ap;

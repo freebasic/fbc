@@ -786,11 +786,11 @@ static __inline__ int FB_PRINT_CONVERT_BIN_NEWLINE(int mask)
         size_t len;             							          			\
                                                                       			\
         if( mask & FB_PRINT_BIN_NEWLINE )           		          			\
-            len = swprintf( buffer, _LC(type FB_BINARY_NEWLINE), val );  	\
+            len = swprintf( buffer, 80*25+1, _LC(type FB_BINARY_NEWLINE), val );\
         else if( mask & FB_PRINT_NEWLINE )           			      			\
-            len = swprintf( buffer, _LC(type FB_NEWLINE), val );         	\
+            len = swprintf( buffer, 80*25+1, _LC(type FB_NEWLINE), val );       \
         else												          			\
-            len = swprintf( buffer, _LC(type ","), val );                 	\
+            len = swprintf( buffer, 80*25+1, _LC(type ","), val );              \
                                                                       			\
         fb_hFilePrintBufferWstrEx( handle, buffer, len );             			\
     } while (0)

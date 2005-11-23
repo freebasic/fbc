@@ -35,7 +35,7 @@ static void printmsg( char *filename, int linenum, char *funcname, FB_WCHAR *exp
 {
 	FB_WCHAR buffer[1024];
 
-	swprintf( buffer, _LC("%S(%d): assertion failed at %S: %s"),
+	swprintf( buffer, 1024, _LC("%S(%d): assertion failed at %S: %s"),
 			  filename, linenum, funcname, expression );
 
 	fb_PrintWstr( 0, buffer, FB_PRINT_NEWLINE );
