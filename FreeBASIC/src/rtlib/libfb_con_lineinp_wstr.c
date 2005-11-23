@@ -119,7 +119,7 @@ int fb_ConsoleLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars,
             fb_Locate( old_y, old_x, -1 );
         }
 
-        fb_WstrAssignFromA( dst, max_Chars, str_result, -1 );
+        fb_WstrAssignFromA( dst, max_chars, str_result, -1 );
     }
 
 	FB_UNLOCK();
