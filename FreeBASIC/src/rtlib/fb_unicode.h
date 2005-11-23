@@ -23,17 +23,18 @@ typedef unsigned char  UTF_8;
 #define	UTF16_HALFMASK 		 (UTF_32)0x3FFUL
 
 #if defined(TARGET_DOS)
-#include "dos/fb_unicode.h"
+# include "dos/fb_unicode.h"
 #elif defined(TARGET_XBOX)
-#include "xbox/fb_unicode.h"
+# include "xbox/fb_unicode.h"
 #elif defined(TARGET_CYGWIN)
 /* dumb cygwin ... */
-#include "dos/fb_unicode.h"
+# include "dos/fb_unicode.h"
 #elif defined(TARGET_WIN32)
-#include "win32/fb_unicode.h"
+# include "win32/fb_unicode.h"
 #else
-#include <wchar.h>
-#include <wctype.h>
+# define __USE_ISOC99
+# include <wchar.h>
+# include <wctype.h>
 #endif
 
 #ifndef _LC
