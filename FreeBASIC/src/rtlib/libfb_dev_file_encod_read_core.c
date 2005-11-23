@@ -21,6 +21,7 @@
  * dev_efile_read_core - UTF-encoded to char or wchar file reading
  *
  * chng: nov/2005 written [v1ctor]
+ *		 (based on ConvertUTF.c free implementation from Unicode, Inc)
  *
  */
 
@@ -29,6 +30,24 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
+static const char utf8_trailingTb[256] =
+	{
+		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+		1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+		2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5
+	};
+
+static const UTF_32 utf8_offsetsTb[6] =
+	{
+		0x00000000UL, 0x00003080UL, 0x000E2080UL, 0x03C82080UL, 0xFA082080UL, 0x82082080UL
+	};
+
+
 /*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*
  * to char                                                                              *
  *::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
@@ -36,8 +55,54 @@
 /*:::::*/
 static int hReadUTF8ToChar( FILE *fp, char *dst, int max_chars )
 {
-	/* !!!WRITEME!!! */
-	return 0;
+	UTF_32 wc = 0;
+	char c[7], *p;
+	int chars, extbytes;
+
+	chars = max_chars;
+    while( chars > 0 )
+    {
+		if( fread( &c[0], 1, 1, fp ) != 1 )
+			break;
+
+		extbytes = utf8_trailingTb[(int)c[0]];
+
+		if( extbytes > 0 )
+			if( fread( &c[1], extbytes, 1, fp ) != 1 )
+				break;
+
+		p = &c[0];
+		switch( extbytes )
+		{
+			case 5:
+				wc += *p++;
+				wc <<= 6;
+			case 4:
+				wc += *p++;
+				wc <<= 6;
+			case 3:
+				wc += *p++;
+				wc <<= 6;
+			case 2:
+				wc += *p++;
+				wc <<= 6;
+			case 1:
+				wc += *p++;
+				wc <<= 6;
+			case 0:
+				wc += *p++;
+		}
+
+		wc -= utf8_offsetsTb[extbytes];
+
+		if( wc > 255 )
+			wc = '?';
+
+		*dst++ = wc;
+		--chars;
+	}
+
+	return max_chars - chars;
 }
 
 /*:::::*/
@@ -116,10 +181,141 @@ int fb_hFileRead_UTFToChar( FILE *fp, FB_FILE_ENCOD encod, char *dst, int max_ch
  *::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
 
 /*:::::*/
+static int hUTF8ToUTF16( FILE *fp, FB_WCHAR *dst, int max_chars )
+{
+	UTF_32 wc = 0;
+	char c[7], *p;
+	int chars, extbytes;
+
+	chars = max_chars;
+    while( chars > 0 )
+    {
+		if( fread( &c[0], 1, 1, fp ) != 1 )
+			break;
+
+		extbytes = utf8_trailingTb[(int)c[0]];
+
+		if( extbytes > 0 )
+			if( fread( &c[1], extbytes, 1, fp ) != 1 )
+				break;
+
+		p = &c[0];
+		switch( extbytes )
+		{
+			case 5:
+				wc += *p++;
+				wc <<= 6;
+			case 4:
+				wc += *p++;
+				wc <<= 6;
+			case 3:
+				wc += *p++;
+				wc <<= 6;
+			case 2:
+				wc += *p++;
+				wc <<= 6;
+			case 1:
+				wc += *p++;
+				wc <<= 6;
+			case 0:
+				wc += *p++;
+		}
+
+		wc -= utf8_offsetsTb[extbytes];
+
+		if( wc <= UTF16_MAX_BMP )
+		{
+			*dst++ = wc;
+		}
+		else
+		{
+			if( chars > 1 )
+			{
+				wc -= UTF16_HALFBASE;
+				*dst++ = ((wc >> UTF16_HALFSHIFT) +	UTF16_SUR_HIGH_START);
+				*dst++ = ((wc & UTF16_HALFMASK)	+ UTF16_SUR_LOW_START);
+				--chars;
+			}
+		}
+
+		--chars;
+	}
+
+	return max_chars - chars;
+}
+
+/*:::::*/
+static int hUTF8ToUTF32( FILE *fp, FB_WCHAR *dst, int max_chars )
+{
+	UTF_32 wc = 0;
+	char c[7], *p;
+	int chars, extbytes;
+
+	chars = max_chars;
+    while( chars > 0 )
+    {
+		if( fread( &c[0], 1, 1, fp ) != 1 )
+			break;
+
+		extbytes = utf8_trailingTb[(int)c[0]];
+
+		if( extbytes > 0 )
+			if( fread( &c[1], extbytes, 1, fp ) != 1 )
+				break;
+
+		p = &c[0];
+		switch( extbytes )
+		{
+			case 5:
+				wc += *p++;
+				wc <<= 6;
+			case 4:
+				wc += *p++;
+				wc <<= 6;
+			case 3:
+				wc += *p++;
+				wc <<= 6;
+			case 2:
+				wc += *p++;
+				wc <<= 6;
+			case 1:
+				wc += *p++;
+				wc <<= 6;
+			case 0:
+				wc += *p++;
+		}
+
+		wc -= utf8_offsetsTb[extbytes];
+
+		*dst++ = wc;
+		--chars;
+	}
+
+	return max_chars - chars;
+}
+
+/*:::::*/
 static int hReadUTF8ToWchar( FILE *fp, FB_WCHAR *dst, int max_chars )
 {
-	/* !!!WRITEME!!! */
-	return 0;
+	int res = 0;
+
+	/* convert.. */
+	switch( sizeof( FB_WCHAR ) )
+	{
+	case sizeof( char ):
+		res = hReadUTF8ToChar( fp, (char *)dst, max_chars );
+		break;
+
+	case sizeof( UTF_16 ):
+		res = hUTF8ToUTF16( fp, dst, max_chars );
+		break;
+
+	case sizeof( UTF_32 ):
+		res = hUTF8ToUTF32( fp, dst, max_chars );
+		break;
+	}
+
+	return res;
 }
 
 /*:::::*/
@@ -167,7 +363,7 @@ static int hReadUTF16ToWchar( FILE *fp, FB_WCHAR *dst, int max_chars )
 		res = hReadUTF16ToChar( fp, (char *)dst, max_chars );
 		break;
 
-	case sizeof( UTF_16 ):
+	case sizeof( UTF_32 ):
 		res = hUTF16ToUTF32( fp, dst, max_chars );
 		break;
 	}
@@ -221,7 +417,7 @@ static int hReadUTF32ToWchar( FILE *fp, FB_WCHAR *dst, int max_chars )
 		res = hReadUTF32ToChar( fp, (char *)dst, max_chars );
 		break;
 
-	case sizeof( UTF_32 ):
+	case sizeof( UTF_16 ):
 		res = hUTF32ToUTF16( fp, dst, max_chars );
 		break;
 	}
