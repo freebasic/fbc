@@ -49,10 +49,10 @@ void fb_hCharToUTF8( const char *src, int chars, char *dst, int *total_bytes )
 		switch( bytes )
 		{
 		case 2:
-			*--dst = (UTF_8)((c | UTF8_BYTEMARK) & UTF8_BYTEMASK);
+			dst[-2] = ((c | UTF8_BYTEMARK) & UTF8_BYTEMASK);
 			c >>= 6;
 		case 1:
-			*--dst = (UTF_8) (c | fb_utf8_bmarkTb[bytes]);
+			dst[-1] = (c | fb_utf8_bmarkTb[bytes]);
 		}
 
 		--chars;
