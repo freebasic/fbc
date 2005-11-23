@@ -32,7 +32,7 @@ typedef unsigned char  UTF_8;
 #elif defined(TARGET_WIN32)
 # include "win32/fb_unicode.h"
 #else
-# define __USE_ISOC99
+# define __USE_ISOC99 1
 # include <wchar.h>
 # include <wctype.h>
 #endif

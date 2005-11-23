@@ -39,7 +39,7 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t chars, int mask
     if( !fb_con.inited )
     {
         /* !!!FIXME!!! is this ok or should it be converted to UTF-8 too? */
-        fwrite( buffer, sizeof( FB_WCHAR ), len, stdout );
+        fwrite( buffer, sizeof( FB_WCHAR ), chars, stdout );
         fflush( stdout );
 		return;
 	}
@@ -80,7 +80,7 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t chars, int mask
 	fputs( EXIT_UTF8, fb_con.f_out );
 
 	/* update x and y coordinates.. */
-	for( ; len; len--, buffer++ )
+	for( ; chars; chars--, buffer++ )
 	{
 		++fb_con.cur_x;
 		if( (*buffer == _LC('\n')) || (fb_con.cur_x >= fb_con.w) )
