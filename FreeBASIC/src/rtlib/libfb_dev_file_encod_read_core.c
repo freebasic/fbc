@@ -55,7 +55,7 @@ static const UTF_32 utf8_offsetsTb[6] =
 /*:::::*/
 static int hReadUTF8ToChar( FILE *fp, char *dst, int max_chars )
 {
-	UTF_32 wc = 0;
+	UTF_32 wc;
 	char c[7], *p;
 	int chars, extbytes;
 
@@ -71,6 +71,7 @@ static int hReadUTF8ToChar( FILE *fp, char *dst, int max_chars )
 			if( fread( &c[1], extbytes, 1, fp ) != 1 )
 				break;
 
+		wc = 0;
 		p = &c[0];
 		switch( extbytes )
 		{
@@ -183,7 +184,7 @@ int fb_hFileRead_UTFToChar( FILE *fp, FB_FILE_ENCOD encod, char *dst, int max_ch
 /*:::::*/
 static int hUTF8ToUTF16( FILE *fp, FB_WCHAR *dst, int max_chars )
 {
-	UTF_32 wc = 0;
+	UTF_32 wc;
 	char c[7], *p;
 	int chars, extbytes;
 
@@ -199,6 +200,7 @@ static int hUTF8ToUTF16( FILE *fp, FB_WCHAR *dst, int max_chars )
 			if( fread( &c[1], extbytes, 1, fp ) != 1 )
 				break;
 
+		wc = 0;
 		p = &c[0];
 		switch( extbytes )
 		{
@@ -247,7 +249,7 @@ static int hUTF8ToUTF16( FILE *fp, FB_WCHAR *dst, int max_chars )
 /*:::::*/
 static int hUTF8ToUTF32( FILE *fp, FB_WCHAR *dst, int max_chars )
 {
-	UTF_32 wc = 0;
+	UTF_32 wc;
 	char c[7], *p;
 	int chars, extbytes;
 
@@ -263,6 +265,7 @@ static int hUTF8ToUTF32( FILE *fp, FB_WCHAR *dst, int max_chars )
 			if( fread( &c[1], extbytes, 1, fp ) != 1 )
 				break;
 
+		wc = 0;
 		p = &c[0];
 		switch( extbytes )
 		{
