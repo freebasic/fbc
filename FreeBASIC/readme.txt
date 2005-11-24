@@ -130,7 +130,8 @@ Requirements:
 
     - Unicode wide-strings (WSTRING's) with non-ascii character sets can only be 
       displayed in console if the locale is set to an UTF-8 version - most modern
-      distros come with support that.
+      distros come with support that and char sets other than latin may work only
+      in xterm.
 
   o DOS version:
 
@@ -140,6 +141,8 @@ Requirements:
       (http://clio.rice.edu/cwsdpmi/csdpmi5b.zip) must be on your PATH
       environment variable (note: FreeDOS comes with it already installed).
 
+    - Unicode isn't supported in DOS, WSTRING will be the same as ZSTRING, character
+      sets other than latin aren't supported.
 
 Debugging:
 
@@ -245,7 +248,7 @@ Most Important Features:
     - cgi-util and FastCGI: web development
 
     - DirectX and the Windows API - the most complete headers set between the BASIC
-      compilers available
+      compilers available, including support for the Unicode functions
 
     - DispHelper - COM IDispatch interfaces made easy
 
@@ -261,6 +264,28 @@ Most Important Features:
       GNU binutils. The compiler is written in 100% FreeBASIC code (that's it,
       FreeBASIC compiles itself.), what makes it simple to be bootstrapped as it
       doesn't depend on non-portable tools.
+
+  o Unicode support:
+
+    - Besides ASCII files with Unicode escape sequences (\u), FreeBASIC can parse 
+      UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source (.bas) or header (.bi) 
+      files, they can freely mixed with other sources/headers in the same project
+      (also with other ASCII files).
+
+    - Literal strings can be typed in the original non-latin alphabet, just use an
+      text-editor that supports some of the Unicode formats listed above.
+      
+    - The WSTRING type holds wide-characters, all string functions (like LEFT, 
+      TRIM, etc) will work with wide-strings too.
+
+    - OPEN was extended to support the ENCODING "format" option, files in UTF-8, 
+      UTF-16LE and UTF-32LE can be read (using INPUT # or LINE INPUT #) and 
+      written (using PRINT # or WRITE #) when opened in INPUT, OUTPUT 
+      and APPEND modes, all the conversion between Unicode to ASCII is be done
+      automatically if necessary.
+      
+    - PRINT'ing to console is also supported (see Requirements), INPUT or LINE
+      INPUT from console still not allowing wide-characters to be entered yet.
 
   o A large number of variable types available:
 
@@ -512,16 +537,6 @@ Most Important Features:
 
       OPTION ESCAPE
       PRINT "\"Hello from FreeBASIC!\""
-
-  o Unicode support:
-
-    - FreeBASIC can parse UTF-16 (other formats later) source (.bas) or 
-      header (.bi) files, they can freely mixed with ASCII sources/headers 
-      in the same project.
-
-    - Literal strings can be typed in the original non-latin alphabet, freeing
-      them from be converted to unmaintainable \u escape sequences.
-
 
   o Debugging support:
 

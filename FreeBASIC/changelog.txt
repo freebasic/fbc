@@ -28,11 +28,12 @@ Version 0.15 Beta:
 - the BASS and BASSMOD headers were exchanged by machine translated ones (v1c)
 
 [added]
-- the WSTRING type, for unicode strings - like ZSTRING's, they can't be variable-length
-  NOTE: I/O functions like PRINT, INPUT, etc does not support unicode strings yet, 
-       *all* ascii string routines like MID$, LEFT$, etc support wstrings already
-- UTF-16 support for source and headers files (they can be freely mixed with ASCII)
+- the WSTRING type, for unicode strings - like ZSTRING's, they can't be variable-length (v1c)
+- UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE support for source and headers files 
+  (they can be freely mixed, also with ASCII files) (v1c)
 - OPEN CONS, OPEN LPT, OPEN ERR, OPEN PIPE (OPEN "PIPE:" won't work), OPEN SCRN (mjs)
+- the ENCODING "fmt" option to OPEN, when mode is INPUT, OUTPUT or APPEND, the "fmt" can be: 
+  "utf-8", "utf-16", "utf-32" or "ascii" (v1c)
 - LPRINT support (mjs)
 - LPOS(n) (mjs)
 - VIEW PRINT() now returns the top and bottom row (mjs)
