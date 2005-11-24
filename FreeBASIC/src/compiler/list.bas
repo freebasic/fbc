@@ -148,7 +148,7 @@ function listNewNode( byval list as TLIST ptr ) as any ptr static
 
 	'' alloc new node list if there are no free nodes
 	if( list->fhead = NULL ) Then
-		listAllocTB( list, list->nodes \ 4 )
+		listAllocTB( list, cunsg(list->nodes) \ 4 )
 	end if
 
 	'' take from free list

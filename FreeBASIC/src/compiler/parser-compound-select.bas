@@ -465,7 +465,7 @@ private function hSelConstAddCase( byval swtbase as integer, _
 	low  = -1
 
 	do while( high - low > 1 )
-		probe = (high + low) \ 2
+		probe = cunsg(high + low) \ 2
 		v = ctx.swt.caseTB(swtbase+probe).value
 		if( v < value ) then
 			low = probe

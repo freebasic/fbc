@@ -322,7 +322,7 @@ end function
 private function hUTF16LEToUTF16LE( ) as integer static
 
 	if( get( #env.inf.num, , lex->buffw ) = 0 ) then
-		function = (seek( env.inf.num ) - lex->filepos) \ len( ushort )
+		function = cunsg(seek( env.inf.num ) - lex->filepos) \ len( ushort )
 	else
 		function = 0
 	end if
@@ -626,7 +626,7 @@ end function
 private function hUTF32LEToUTF32LE( ) as integer static
 
 	if( get( #env.inf.num, , lex->buffw ) = 0 ) then
-		function = (seek( env.inf.num ) - lex->filepos) \ len( uinteger )
+		function = cunsg(seek( env.inf.num ) - lex->filepos) \ len( uinteger )
 	else
 		function = 0
 	end if

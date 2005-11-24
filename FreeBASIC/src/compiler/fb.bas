@@ -107,7 +107,7 @@ private function hAddIncFile( byval filename as zstring ptr ) as integer static
 
 	if( env.incfiles >= ubound( incfileTB ) ) then
 		i = ubound( incfileTB )
-		redim preserve incfileTB(0 to (i + (i \ 2))-1)
+		redim preserve incfileTB(0 to (i + (cunsg(i) \ 2))-1)
 	end if
 
 	i = hFindIncFile( fname )

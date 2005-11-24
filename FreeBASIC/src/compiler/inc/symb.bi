@@ -382,7 +382,7 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 
 #define symbGetStrLen(s) symbGetLen(s)
 
-#define symbGetWstrLen(s) (s->lgt \ irGetDataSize( IR_DATATYPE_WCHAR ))
+#define symbGetWstrLen(s) (cunsg(s->lgt) \ irGetDataSize( IR_DATATYPE_WCHAR ))
 
 #define symbGetType(s) s->typ
 

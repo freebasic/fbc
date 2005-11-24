@@ -69,7 +69,7 @@ function flistNewItem( byval flist as TFLIST ptr ) as any ptr static
 		flist->listtb = flist->listtb->next
 
 		if( flist->listtb = NULL ) then
-			flist->items = flist->totitems \ 2
+			flist->items = cunsg(flist->totitems) \ 2
 			flist->totitems += flist->items
 			listAllocTB( @flist->list, flist->items, FALSE )
 			flist->listtb = flist->list.tbtail

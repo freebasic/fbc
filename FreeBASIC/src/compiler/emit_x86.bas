@@ -4652,7 +4652,7 @@ private sub hMemMoveRep( byval dvreg as IRVREG ptr, _
 	end if
 
 	if( bytes > 4 ) then
-		ostr = "mov ecx, " + str( bytes \ 4 )
+		ostr = "mov ecx, " + str( cunsg(bytes) \ 4 )
 		outp ostr
 		outp "rep movsd"
 
@@ -4719,7 +4719,7 @@ private sub hMemMoveBlk( byval dvreg as IRVREG ptr, _
 
 	ofs = 0
 	'' move dwords
-	for i = 1 to bytes \ 4
+	for i = 1 to cunsg(bytes) \ 4
 		hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, ofs )
 		hMOV( aux, src )
 		hPrepOperand( dvreg, dst, IR_DATATYPE_INTEGER, ofs )
@@ -4824,14 +4824,14 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
 	''
 	if( bytestoalloc > 0 ) then
 		if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
-			if( bytestoalloc \ 8 > 7 ) then
+			if( cunsg(bytestoalloc) \ 8 > 7 ) then
 
 		    	if( not EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
     				hPUSH( "edi" )
     			end if
 
 				outp( "lea edi, [ebp-" + str( bytestoalloc ) + "]" )
-				outp( "mov ecx," + str( bytestoalloc \ 8 ) )
+				outp( "mov ecx," + str( cunsg(bytestoalloc) \ 8 ) )
 				outp( "pxor mm0, mm0" )
 			    lname = *hMakeTmpStr( )
 			    hLABEL( lname )
@@ -4845,9 +4845,9 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
     				hPOP( "edi" )
     			end if
 
-			elseif( bytestoalloc \ 8 > 0 ) then
+			elseif( cunsg(bytestoalloc) \ 8 > 0 ) then
 				outp( "pxor mm0, mm0" )
-				for i = bytestoalloc\8 to 1 step -1
+				for i = cunsg(bytestoalloc) \ 8 to 1 step -1
 					outp( "movq [ebp-" + str( i*8 ) + "], mm0" )
 				next
 				outp( "emms" )
@@ -4859,13 +4859,13 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
 			end if
 
 		else
-			if( bytestoalloc \ 4 > 6 ) then
+			if( cunsg(bytestoalloc) \ 4 > 6 ) then
 		    	if( not EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
     				hPUSH( "edi" )
     			end if
 
 				outp( "lea edi, [ebp-" + str( bytestoalloc ) + "]" )
-				outp( "mov ecx," + str( bytestoalloc \ 4 ) )
+				outp( "mov ecx," + str( cunsg(bytestoalloc) \ 4 ) )
 				outp( "xor eax, eax" )
 				outp( "rep stosd" )
 
@@ -4874,7 +4874,7 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
     			end if
 
 			else
-				for i = bytestoalloc \ 4 to 1 step -1
+				for i = cunsg(bytestoalloc) \ 4 to 1 step -1
 					 outp( "mov dword ptr [ebp-" + str( i*4 ) + "], 0" )
 				next
 			end if
