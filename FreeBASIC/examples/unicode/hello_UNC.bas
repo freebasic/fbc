@@ -1,5 +1,5 @@
 ''
-'' "Hello World!" test, in ascii+unc (\u005cu escape sequencies) format
+'' "Hello World!" test, in ascii+unc (\u escape sequencies) format
 ''
 
 option escape
