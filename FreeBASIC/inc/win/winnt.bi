@@ -102,7 +102,7 @@ type USN as LONGLONG
 #define Int64ShrlMod32(a,b) (culngint(a) shr (b))
 
 #define ANSI_NULL asc( "\0" )
-#define UNICODE_NULL ascw( "\0" )
+#define UNICODE_NULL asc( wstr( "\0" ) )
 
 type BOOLEAN as BYTE
 type PBOOLEAN as BYTE ptr
@@ -345,30 +345,30 @@ type FLONG as DWORD
 #define DOMAIN_ALIAS_RID_PRINT_OPS &h226L
 #define DOMAIN_ALIAS_RID_BACKUP_OPS &h227L
 #define DOMAIN_ALIAS_RID_REPLICATOR &h228L
-#define SE_CREATE_TOKEN_NAME __TEXT("SeCreateTokenPrivilege")
-#define SE_ASSIGNPRIMARYTOKEN_NAME __TEXT("SeAssignPrimaryTokenPrivilege")
-#define SE_LOCK_MEMORY_NAME __TEXT("SeLockMemoryPrivilege")
-#define SE_INCREASE_QUOTA_NAME __TEXT("SeIncreaseQuotaPrivilege")
-#define SE_UNSOLICITED_INPUT_NAME __TEXT("SeUnsolicitedInputPrivilege")
-#define SE_MACHINE_ACCOUNT_NAME __TEXT("SeMachineAccountPrivilege")
-#define SE_TCB_NAME __TEXT("SeTcbPrivilege")
-#define SE_SECURITY_NAME __TEXT("SeSecurityPrivilege")
-#define SE_TAKE_OWNERSHIP_NAME __TEXT("SeTakeOwnershipPrivilege")
-#define SE_LOAD_DRIVER_NAME __TEXT("SeLoadDriverPrivilege")
-#define SE_SYSTEM_PROFILE_NAME __TEXT("SeSystemProfilePrivilege")
-#define SE_SYSTEMTIME_NAME __TEXT("SeSystemtimePrivilege")
-#define SE_PROF_SINGLE_PROCESS_NAME __TEXT("SeProfileSingleProcessPrivilege")
-#define SE_INC_BASE_PRIORITY_NAME __TEXT("SeIncreaseBasePriorityPrivilege")
-#define SE_CREATE_PAGEFILE_NAME __TEXT("SeCreatePagefilePrivilege")
-#define SE_CREATE_PERMANENT_NAME __TEXT("SeCreatePermanentPrivilege")
-#define SE_BACKUP_NAME __TEXT("SeBackupPrivilege")
-#define SE_RESTORE_NAME __TEXT("SeRestorePrivilege")
-#define SE_SHUTDOWN_NAME __TEXT("SeShutdownPrivilege")
-#define SE_DEBUG_NAME __TEXT("SeDebugPrivilege")
-#define SE_AUDIT_NAME __TEXT("SeAuditPrivilege")
-#define SE_SYSTEM_ENVIRONMENT_NAME __TEXT("SeSystemEnvironmentPrivilege")
-#define SE_CHANGE_NOTIFY_NAME __TEXT("SeChangeNotifyPrivilege")
-#define SE_REMOTE_SHUTDOWN_NAME __TEXT("SeRemoteShutdownPrivilege")
+#define SE_CREATE_TOKEN_NAME "SeCreateTokenPrivilege"
+#define SE_ASSIGNPRIMARYTOKEN_NAME "SeAssignPrimaryTokenPrivilege"
+#define SE_LOCK_MEMORY_NAME "SeLockMemoryPrivilege"
+#define SE_INCREASE_QUOTA_NAME "SeIncreaseQuotaPrivilege"
+#define SE_UNSOLICITED_INPUT_NAME "SeUnsolicitedInputPrivilege"
+#define SE_MACHINE_ACCOUNT_NAME "SeMachineAccountPrivilege"
+#define SE_TCB_NAME "SeTcbPrivilege"
+#define SE_SECURITY_NAME "SeSecurityPrivilege"
+#define SE_TAKE_OWNERSHIP_NAME "SeTakeOwnershipPrivilege"
+#define SE_LOAD_DRIVER_NAME "SeLoadDriverPrivilege"
+#define SE_SYSTEM_PROFILE_NAME "SeSystemProfilePrivilege"
+#define SE_SYSTEMTIME_NAME "SeSystemtimePrivilege"
+#define SE_PROF_SINGLE_PROCESS_NAME "SeProfileSingleProcessPrivilege"
+#define SE_INC_BASE_PRIORITY_NAME "SeIncreaseBasePriorityPrivilege"
+#define SE_CREATE_PAGEFILE_NAME "SeCreatePagefilePrivilege"
+#define SE_CREATE_PERMANENT_NAME "SeCreatePermanentPrivilege"
+#define SE_BACKUP_NAME "SeBackupPrivilege"
+#define SE_RESTORE_NAME "SeRestorePrivilege"
+#define SE_SHUTDOWN_NAME "SeShutdownPrivilege"
+#define SE_DEBUG_NAME "SeDebugPrivilege"
+#define SE_AUDIT_NAME "SeAuditPrivilege"
+#define SE_SYSTEM_ENVIRONMENT_NAME "SeSystemEnvironmentPrivilege"
+#define SE_CHANGE_NOTIFY_NAME "SeChangeNotifyPrivilege"
+#define SE_REMOTE_SHUTDOWN_NAME "SeRemoteShutdownPrivilege"
 #define SE_GROUP_MANDATORY 1
 #define SE_GROUP_ENABLED_BY_DEFAULT 2
 #define SE_GROUP_ENABLED 4
@@ -428,6 +428,7 @@ type FLONG as DWORD
 #define LANG_HINDI &h39
 #define LANG_MALAY &h3e
 #define LANG_KAZAK &h3f
+#define LANG_KYRGYZ &h40
 #define LANG_SWAHILI &h41
 #define LANG_UZBEK &h43
 #define LANG_TATAR &h44
@@ -442,11 +443,16 @@ type FLONG as DWORD
 #define LANG_ASSAMESE &h4d
 #define LANG_MARATHI &h4e
 #define LANG_SANSKRIT &h4f
+#define LANG_MONGOLIAN &h50
+#define LANG_GALICIAN &h56
 #define LANG_KONKANI &h57
 #define LANG_MANIPURI &h58
 #define LANG_SINDHI &h59
+#define LANG_SYRIAC &h5a
 #define LANG_KASHMIRI &h60
 #define LANG_NEPALI &h61
+#define LANG_DIVEHI &h65
+#define LANG_INVARIANT &h7f
 #define SUBLANG_NEUTRAL &h00
 #define SUBLANG_DEFAULT &h01
 #define SUBLANG_SYS_DEFAULT &h02
@@ -466,8 +472,8 @@ type FLONG as DWORD
 #define SUBLANG_ARABIC_UAE &h0e
 #define SUBLANG_ARABIC_BAHRAIN &h0f
 #define SUBLANG_ARABIC_QATAR &h10
-#define SUBLANG_AZERI_CYRILLIC &h01
-#define SUBLANG_AZERI_LATIN &h02
+#define SUBLANG_AZERI_LATIN &h01
+#define SUBLANG_AZERI_CYRILLIC &h02
 #define SUBLANG_CHINESE_TRADITIONAL &h01
 #define SUBLANG_CHINESE_SIMPLIFIED &h02
 #define SUBLANG_CHINESE_HONGKONG &h03
@@ -486,8 +492,8 @@ type FLONG as DWORD
 #define SUBLANG_ENGLISH_CARIBBEAN &h09
 #define SUBLANG_ENGLISH_BELIZE &h0a
 #define SUBLANG_ENGLISH_TRINIDAD &h&b
-#define SUBLANG_ENGLISH_PHILIPPINES &h0c
-#define SUBLANG_ENGLISH_ZIMBABWE &h0d
+#define SUBLANG_ENGLISH_ZIMBABWE &h0c
+#define SUBLANG_ENGLISH_PHILIPPINES &h0d
 #define SUBLANG_FRENCH &h01
 #define SUBLANG_FRENCH_BELGIAN &h02
 #define SUBLANG_FRENCH_CANADIAN &h03
@@ -502,6 +508,7 @@ type FLONG as DWORD
 #define SUBLANG_ITALIAN &h01
 #define SUBLANG_ITALIAN_SWISS &h02
 #define SUBLANG_KASHMIRI_INDIA &h02
+#define SUBLANG_KASHMIRI_SASIA &h02
 #define SUBLANG_KOREAN &h01
 #define SUBLANG_LITHUANIAN &h01
 #define SUBLANG_MALAY_MALAYSIA &h01
@@ -509,8 +516,8 @@ type FLONG as DWORD
 #define SUBLANG_NEPALI_INDIA &h02
 #define SUBLANG_NORWEGIAN_BOKMAL &h01
 #define SUBLANG_NORWEGIAN_NYNORSK &h02
-#define SUBLANG_PORTUGUESE &h01
-#define SUBLANG_PORTUGUESE_BRAZILIAN &h02
+#define SUBLANG_PORTUGUESE_BRAZILIAN &h01
+#define SUBLANG_PORTUGUESE &h02
 #define SUBLANG_SERBIAN_LATIN &h02
 #define SUBLANG_SERBIAN_CYRILLIC &h03
 #define SUBLANG_SPANISH &h01
@@ -598,6 +605,9 @@ type FLONG as DWORD
 #define PROCESSOR_ARCHITECTURE_ARM 5
 #define PROCESSOR_ARCHITECTURE_IA64 6
 #define PROCESSOR_ARCHITECTURE_ALPHA64 7
+#define PROCESSOR_ARCHITECTURE_MSIL 8
+#define PROCESSOR_ARCHITECTURE_AMD64 9
+#define PROCESSOR_ARCHITECTURE_IA32_ON_WIN64 10
 #define PROCESSOR_ARCHITECTURE_UNKNOWN &hFFFF
 #define PF_FLOATING_POINT_PRECISION_ERRATA 0
 #define PF_FLOATING_POINT_EMULATED 1
@@ -663,12 +673,16 @@ type FLONG as DWORD
 #define DACL_SECURITY_INFORMATION 4
 #define SACL_SECURITY_INFORMATION 8
 #define MAXIMUM_PROCESSORS 32
-#define PAGE_EXECUTE 16
-#define PAGE_EXECUTE_READ 32
-#define PAGE_EXECUTE_READWRITE 64
-#define PAGE_GUARD 256
-#define PAGE_NOACCESS 1
-#define PAGE_NOCACHE 512
+#define PAGE_NOACCESS &h0001
+#define PAGE_READONLY &h0002
+#define PAGE_READWRITE &h0004
+#define PAGE_WRITECOPY &h0008
+#define PAGE_EXECUTE &h0010
+#define PAGE_EXECUTE_READ &h0020
+#define PAGE_EXECUTE_READWRITE &h0040
+#define PAGE_EXECUTE_WRITECOPY &h0080
+#define PAGE_GUARD &h0100
+#define PAGE_NOCACHE &h0200
 #define MEM_COMMIT &h1000
 #define MEM_RESERVE &h2000
 #define MEM_DECOMMIT &h4000
@@ -932,6 +946,8 @@ type FLONG as DWORD
 #define IMAGE_ARCHIVE_PAD "\n"
 #define IMAGE_ARCHIVE_LINKER_MEMBER "/               "
 #define IMAGE_ARCHIVE_LONGNAMES_MEMBER "//              "
+#define IMAGE_ORDINAL_FLAG32 &h80000000
+#define IMAGE_ORDINAL_FLAG64 &h8000000000000000ULL
 #define IMAGE_ORDINAL_FLAG &h80000000
 #define IMAGE_SNAP_BY_ORDINAL(o) ((o and IMAGE_ORDINAL_FLAG) <> 0)
 #define IMAGE_ORDINAL(o) (o and &hffff)
@@ -1122,6 +1138,21 @@ type FLONG as DWORD
 #define TAPE_LOCK 3
 #define TAPE_UNLOCK 4
 #define TAPE_FORMAT 5
+#define VER_MINORVERSION &h0000001
+#define VER_MAJORVERSION &h0000002
+#define VER_BUILDNUMBER &h0000004
+#define VER_PLATFORMID &h0000008
+#define VER_SERVICEPACKMINOR &h0000010
+#define VER_SERVICEPACKMAJOR &h0000020
+#define VER_SUITENAME &h0000040
+#define VER_PRODUCT_TYPE &h0000080
+#define VER_EQUAL 1
+#define VER_GREATER 2
+#define VER_GREATER_EQUAL 3
+#define VER_LESS 4
+#define VER_LESS_EQUAL 5
+#define VER_AND 6
+#define VER_OR 7
 #define VER_PLATFORM_WIN32s 0
 #define VER_PLATFORM_WIN32_WINDOWS 1
 #define VER_PLATFORM_WIN32_NT 2
@@ -1143,6 +1174,15 @@ type FLONG as DWORD
 #define ISTAG(x) ((x)=IMAGE_SYM_CLASS_STRUCT_TAG or (x)=IMAGE_SYM_CLASS_UNION_TAG or (x)=IMAGE_SYM_CLASS_ENUM_TAG)
 #define INCREF(x) ((((x) and not N_BTMASK) shl N_TSHIFT) or (IMAGE_SYM_DTYPE_POINTER shl N_BTSHFT) or ((x) and N_BTMASK))
 #define DECREF(x) ((((x) shr N_TSHIFT) and not N_BTMASK) or ((x) and N_BTMASK))
+#define WT_TRANSFER_IMPERSONATION &h00000100
+#define ACTIVATION_CONTEXT_SECTION_ASSEMBLY_INFORMATION 1
+#define ACTIVATION_CONTEXT_SECTION_DLL_REDIRECTION 2
+#define ACTIVATION_CONTEXT_SECTION_WINDOW_CLASS_REDIRECTION 3
+#define ACTIVATION_CONTEXT_SECTION_COM_SERVER_REDIRECTION 4
+#define ACTIVATION_CONTEXT_SECTION_COM_INTERFACE_REDIRECTION 5
+#define ACTIVATION_CONTEXT_SECTION_COM_TYPE_LIBRARY_REDIRECTION 6
+#define ACTIVATION_CONTEXT_SECTION_COM_PROGID_REDIRECTION 7
+#define ACTIVATION_CONTEXT_SECTION_CLR_SURROGATES 9
 #define TLS_MINIMUM_AVAILABLE 64
 #define MAXIMUM_REPARSE_DATA_BUFFER_SIZE 16384
 #define IO_REPARSE_TAG_RESERVED_ZERO 0
@@ -1579,6 +1619,11 @@ enum TOKEN_INFORMATION_CLASS
 	TokenStatistics
 	TokenRestrictedSids
 	TokenSessionId
+	TokenGroupsAndPrivileges
+	TokenSessionReference
+	TokenSandBoxInert
+	TokenAuditPolicy
+	TokenOrigin
 end enum
 
 enum SID_NAME_USE
@@ -2312,6 +2357,17 @@ end type
 
 type PIMAGE_TLS_DIRECTORY as IMAGE_TLS_DIRECTORY ptr
 
+type IMAGE_TLS_DIRECTORY64
+	StartAddressOfRawData as ULONGLONG
+	EndAddressOfRawData as ULONGLONG
+	AddressOfIndex as ULONGLONG
+	AddressOfCallBacks as ULONGLONG
+	SizeOfZeroFill as DWORD
+	Characteristics as DWORD
+end type
+
+type PIMAGE_TLS_DIRECTORY64 as IMAGE_TLS_DIRECTORY64 ptr
+
 type IMAGE_RESOURCE_DIRECTORY
 	Characteristics as DWORD
 	TimeDateStamp as DWORD
@@ -2908,6 +2964,8 @@ enum POWER_INFORMATION_LEVEL
 	ProcessorPowerPolicyCurrent
 end enum
 
+type PVECTORED_EXCEPTION_HANDLER as function (byval as PEXCEPTION_POINTERS) as LONG
+
 type SYSTEM_POWER_INFORMATION
 	MaxIdlenessAllowed as ULONG
 	Idleness as ULONG
@@ -2916,6 +2974,78 @@ type SYSTEM_POWER_INFORMATION
 end type
 
 type PSYSTEM_POWER_INFORMATION as SYSTEM_POWER_INFORMATION ptr
+
+enum HEAP_INFORMATION_CLASS
+	HeapCompatibilityInformation
+end enum
+
+enum ACTIVATION_CONTEXT_INFO_CLASS
+	ActivationContextBasicInformation = 1
+	ActivationContextDetailedInformation
+	AssemblyDetailedInformationInActivationContext
+	FileInformationInAssemblyOfAssemblyInActivationContext
+end enum
+
+type ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION
+	ulFlags as DWORD
+	ulEncodedAssemblyIdentityLength as DWORD
+	ulManifestPathType as DWORD
+	ulManifestPathLength as DWORD
+	liManifestLastWriteTime as LARGE_INTEGER
+	ulPolicyPathType as DWORD
+	ulPolicyPathLength as DWORD
+	liPolicyLastWriteTime as LARGE_INTEGER
+	ulMetadataSatelliteRosterIndex as DWORD
+	ulManifestVersionMajor as DWORD
+	ulManifestVersionMinor as DWORD
+	ulPolicyVersionMajor as DWORD
+	ulPolicyVersionMinor as DWORD
+	ulAssemblyDirectoryNameLength as DWORD
+	lpAssemblyEncodedAssemblyIdentity as PCWSTR
+	lpAssemblyManifestPath as PCWSTR
+	lpAssemblyPolicyPath as PCWSTR
+	lpAssemblyDirectoryName as PCWSTR
+end type
+
+type PACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION as ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION ptr
+type PCACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION as ACTIVATION_CONTEXT_ASSEMBLY_DETAILED_INFORMATION ptr
+
+type ACTIVATION_CONTEXT_DETAILED_INFORMATION
+	dwFlags as DWORD
+	ulFormatVersion as DWORD
+	ulAssemblyCount as DWORD
+	ulRootManifestPathType as DWORD
+	ulRootManifestPathChars as DWORD
+	ulRootConfigurationPathType as DWORD
+	ulRootConfigurationPathChars as DWORD
+	ulAppDirPathType as DWORD
+	ulAppDirPathChars as DWORD
+	lpRootManifestPath as PCWSTR
+	lpRootConfigurationPath as PCWSTR
+	lpAppDirPath as PCWSTR
+end type
+
+type PACTIVATION_CONTEXT_DETAILED_INFORMATION as ACTIVATION_CONTEXT_DETAILED_INFORMATION ptr
+type PCACTIVATION_CONTEXT_DETAILED_INFORMATION as ACTIVATION_CONTEXT_DETAILED_INFORMATION ptr
+
+type ACTIVATION_CONTEXT_QUERY_INDEX
+	ulAssemblyIndex as ULONG
+	ulFileIndexInAssembly as ULONG
+end type
+
+type PACTIVATION_CONTEXT_QUERY_INDEX as ACTIVATION_CONTEXT_QUERY_INDEX ptr
+type PCACTIVATION_CONTEXT_QUERY_INDEX as ACTIVATION_CONTEXT_QUERY_INDEX ptr
+
+type ASSEMBLY_FILE_DETAILED_INFORMATION
+	ulFlags as DWORD
+	ulFilenameLength as DWORD
+	ulPathLength as DWORD
+	lpFileName as PCWSTR
+	lpFilePath as PCWSTR
+end type
+
+type PASSEMBLY_FILE_DETAILED_INFORMATION as ASSEMBLY_FILE_DETAILED_INFORMATION ptr
+type PCASSEMBLY_FILE_DETAILED_INFORMATION as ASSEMBLY_FILE_DETAILED_INFORMATION ptr
 
 type PROCESSOR_POWER_POLICY_INFO
 	TimeCheck as ULONG
@@ -2972,6 +3102,7 @@ type POSVERSIONINFOEX as OSVERSIONINFOEXA ptr
 type LPOSVERSIONINFOEX as OSVERSIONINFOEXA ptr
 #endif ''UNICODE
 
+declare function VerSetConditionMask alias "VerSetConditionMask" (byval as ULONGLONG, byval as DWORD, byval as BYTE) as ULONGLONG
 declare function GetCurrentFiber alias "GetCurrentFiber" () as PVOID
 declare function GetFiberData alias "GetFiberData" () as PVOID
 

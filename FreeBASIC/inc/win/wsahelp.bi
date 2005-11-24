@@ -45,6 +45,13 @@ end enum
 
 type PSOCKADDR_ENDPOINT_INFO as SOCKADDR_ENDPOINT_INFO
 
+type SOCKADDR_INFO
+	AddressInfo as SOCKADDR_ADDRESS_INFO
+	EndpointInfo as SOCKADDR_ENDPOINT_INFO
+end type
+
+type PSOCKADDR_INFO as SOCKADDR_INFO ptr
+
 type WINSOCK_MAPPING_Mapping
 	AddressFamily as DWORD
 	SocketType as DWORD

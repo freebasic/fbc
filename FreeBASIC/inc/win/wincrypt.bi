@@ -9,7 +9,6 @@
 #ifndef __wincrypt_bi__
 #define __wincrypt_bi__
 
-#ifndef UNICODE
 #define MS_DEF_PROV "Microsoft Base Cryptographic Provider v1.0"
 #define MS_ENHANCED_PROV "Microsoft Enhanced Cryptographic Provider v1.0"
 #define MS_STRONG_PROV "Microsoft Strong Cryptographic Provider"
@@ -20,18 +19,6 @@
 #define MS_ENH_DSS_DH_PROV "Microsoft Enhanced DSS and Diffie-Hellman Cryptographic Provider"
 #define MS_DEF_DH_SCHANNEL_PROV "Microsoft DH SChannel Cryptographic Provider"
 #define MS_SCARD_PROV "Microsoft Base Smart Card Crypto Provider"
-#else
-#define MS_DEF_PROV wstr("Microsoft Base Cryptographic Provider v1.0")
-#define MS_ENHANCED_PROV wstr("Microsoft Enhanced Cryptographic Provider v1.0")
-#define MS_STRONG_PROV wstr("Microsoft Strong Cryptographic Provider")
-#define MS_DEF_RSA_SIG_PROV wstr("Microsoft RSA Signature Cryptographic Provider")
-#define MS_DEF_RSA_SCHANNEL_PROV wstr("Microsoft RSA SChannel Cryptographic Provider")
-#define MS_DEF_DSS_PROV wstr("Microsoft Base DSS Cryptographic Provider")
-#define MS_DEF_DSS_DH_PROV wstr("Microsoft Base DSS and Diffie-Hellman Cryptographic Provider")
-#define MS_ENH_DSS_DH_PROV wstr("Microsoft Enhanced DSS and Diffie-Hellman Cryptographic Provider")
-#define MS_DEF_DH_SCHANNEL_PROV wstr("Microsoft DH SChannel Cryptographic Provider")
-#define MS_SCARD_PROV wstr("Microsoft Base Smart Card Crypto Provider")
-#endif
 
 #define ALG_CLASS_ANY 0
 #define ALG_CLASS_SIGNATURE 8192
@@ -81,11 +68,16 @@
 #define ALG_SID_SSL3SHAMD5 8
 #define ALG_SID_HMAC 9
 #define ALG_SID_TLS1PRF 10
+#define ALG_SID_AES_128 14
+#define ALG_SID_AES_192 15
+#define ALG_SID_AES_256 16
+#define ALG_SID_AES 17
 #define ALG_SID_EXAMPLE 80
 #define CALG_MD2 (32768 or 0 or 1)
 #define CALG_MD4 (32768 or 0 or 2)
 #define CALG_MD5 (32768 or 0 or 3)
 #define CALG_SHA (32768 or 0 or 4)
+#define CALG_SHA1 (32768 or 0 or 4)
 #define CALG_MAC (32768 or 0 or 5)
 #define CALG_3DES (24576 or 1536 or 3)
 #define CALG_CYLINK_MEK (24576 or 1536 or 12)
@@ -100,6 +92,10 @@
 #define CALG_SEAL (24576 or 2048 or 2)
 #define CALG_DH_EPHEM (40960 or 2048 or 512 or 2)
 #define CALG_DESX (24576 or 1536 or 4)
+#define CALG_AES_128 (24576 or 1536 or 14)
+#define CALG_AES_192 (24576 or 1536 or 15)
+#define CALG_AES_256 (24576 or 1536 or 16)
+#define CALG_AES (24576 or 1536 or 17)
 #define CRYPT_VERIFYCONTEXT &hF0000000
 #define CRYPT_NEWKEYSET 8
 #define CRYPT_DELETEKEYSET 16
@@ -147,6 +143,7 @@
 #define HP_ALGID 1
 #define HP_HASHVAL 2
 #define HP_HASHSIZE 4
+#define HP_HMAC_INFO 5
 #define CRYPT_FAILED 0
 #define CRYPT_SUCCEED 1
 #define RCRYPT_SUCCEEDED(r) ((r)=CRYPT_SUCCEED)
@@ -208,6 +205,7 @@
 #define PROV_SPYRUS_LYNKS 20
 #define PROV_RNG 21
 #define PROV_INTEL_SEC 22
+#define PROV_RSA_AES 24
 #define MAXUIDLEN 64
 #define CUR_BLOB_VERSION 2
 #define X509_ASN_ENCODING 1
@@ -325,6 +323,36 @@
 #define CRYPT_DATA_KEY &h800
 #define CRYPT_VOLATILE &h1000
 #define CRYPT_SGCKEY &h2000
+#define KP_IV &h00000001
+#define KP_SALT &h00000002
+#define KP_PADDING &h00000003
+#define KP_MODE &h00000004
+#define KP_MODE_BITS &h00000005
+#define KP_PERMISSIONS &h00000006
+#define KP_ALGID &h00000007
+#define KP_BLOCKLEN &h00000008
+#define KP_KEYLEN &h00000009
+#define KP_SALT_EX &h0000000a
+#define KP_P &h000000&b
+#define KP_G &h0000000c
+#define KP_Q &h0000000d
+#define KP_X &h0000000e
+#define KP_Y &h0000000f
+#define KP_RA &h00000010
+#define KP_RB &h00000011
+#define KP_INFO &h00000012
+#define KP_EFFECTIVE_KEYLEN &h00000013
+#define KP_SCHANNEL_ALG &h00000014
+#define KP_PUB_PARAMS &h00000027
+#define CRYPT_FLAG_PCT1 &h0001
+#define CRYPT_FLAG_SSL2 &h0002
+#define CRYPT_FLAG_SSL3 &h0004
+#define CRYPT_FLAG_TLS1 &h0008
+#define CRYPT_FLAG_IPSEC &h0010
+#define CRYPT_FLAG_SIGNING &h0020
+#define SCHANNEL_MAC_KEY &h00000000
+#define SCHANNEL_ENC_KEY &h00000001
+#define INTERNATIONAL_USAGE &h00000001
 
 type ALG_ID as UINT
 
@@ -672,6 +700,16 @@ type RSAPUBKEY
 	bitlen as DWORD
 	pubexp as DWORD
 end type
+
+type HMAC_Info
+	HashAlgid as ALG_ID
+	pbInnerString as BYTE ptr
+	cbInnerString as DWORD
+	pbOuterString as BYTE ptr
+	cbOuterString as DWORD
+end type
+
+type PHMAC_INFO as HMAC_Info ptr
 
 declare function CertCloseStore alias "CertCloseStore" (byval as HCERTSTORE, byval as DWORD) as BOOL
 declare function CertGetCertificateChain alias "CertGetCertificateChain" (byval as HCERTCHAINENGINE, byval as PCCERT_CONTEXT, byval as LPFILETIME, byval as HCERTSTORE, byval as PCERT_CHAIN_PARA, byval as DWORD, byval as LPVOID, byval as PCCERT_CHAIN_CONTEXT ptr) as BOOL

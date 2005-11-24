@@ -377,7 +377,7 @@ type ICOPEN
 	fccHandler as DWORD
 	dwVersion as DWORD
 	dwFlags as DWORD
-	dwError as LRESULT
+	dwError as LONG
 	pV1Reserved as LPVOID
 	pV2Reserved as LPVOID
 	dnDevNode as DWORD
@@ -658,12 +658,10 @@ type AVIFILEINFOW
 	szFileType as wstring * 64
 end type
 
-#endif
-
 type LPAVIFILEINFOW as AVIFILEINFOW ptr
 type PAVIFILEINFOW as AVIFILEINFOW ptr
-type LPAVISTREAMINFOW as AVISTREAMINFOW ptr
-type PAVISTREAMINFOW as AVISTREAMINFOW ptr
+
+#endif
 
 type AVICOMPRESSOPTIONS
 	fccType as DWORD
@@ -815,8 +813,6 @@ declare sub ICCompressorFree alias "ICCompressorFree" (byval as PCOMPVARS)
 declare function AVIStreamAddRef alias "AVIStreamAddRef" (byval as PAVISTREAM) as ULONG
 declare function AVIStreamRelease alias "AVIStreamRelease" (byval as PAVISTREAM) as ULONG
 declare function AVIStreamCreate alias "AVIStreamCreate" (byval as PAVISTREAM ptr, byval as LONG, byval as LONG, byval as CLSID ptr) as HRESULT
-declare function AVIStreamInfoA alias "AVIStreamInfoA" (byval as PAVISTREAM, byval as AVISTREAMINFOA ptr, byval as LONG) as HRESULT
-declare function AVIStreamInfoW alias "AVIStreamInfoW" (byval as PAVISTREAM, byval as AVISTREAMINFOW ptr, byval as LONG) as HRESULT
 declare function AVIStreamFindSample alias "AVIStreamFindSample" (byval as PAVISTREAM, byval as LONG, byval as DWORD) as HRESULT
 declare function AVIStreamReadFormat alias "AVIStreamReadFormat" (byval as PAVISTREAM, byval as LONG, byval as LPVOID, byval as LONG ptr) as HRESULT
 declare function AVIStreamSetFormat alias "AVIStreamSetFormat" (byval as PAVISTREAM, byval as LONG, byval as LPVOID, byval as LONG) as HRESULT
@@ -871,11 +867,10 @@ declare function AVIBuildFilter alias "AVIBuildFilterW" (byval as LPWSTR, byval 
 declare function AVISaveV alias "AVISaveVW" (byval as LPCWSTR, byval as CLSID ptr, byval as AVISAVECALLBACK, byval as INT_, byval as PAVISTREAM ptr, byval as LPAVICOMPRESSOPTIONS ptr) as HRESULT
 declare function EditStreamSetInfo alias "EditStreamSetInfoW" (byval as PAVISTREAM, byval as LPAVISTREAMINFOW, byval as LONG) as HRESULT
 declare function EditStreamSetName alias "EditStreamSetNameW" (byval as PAVISTREAM, byval as LPCWSTR) as HRESULT
-declare function EditStreamSetInfo alias "EditStreamSetInfoW" (byval as PAVISTREAM, byval as LPAVISTREAMINFOW, byval as LONG) as HRESULT
-declare function EditStreamSetName alias "EditStreamSetNameW" (byval as PAVISTREAM, byval as LPCWSTR) as HRESULT
 declare function AVIFileOpen alias "AVIFileOpenW" (byval as PAVIFILE ptr, byval as LPCWSTR, byval as UINT, byval as LPCLSID) as HRESULT
 declare function AVIFileInfo alias "AVIFileInfoW" (byval as PAVIFILE, byval as PAVIFILEINFOW, byval as LONG) as HRESULT
 declare function AVIFileCreateStream alias "AVIFileCreateStreamW" (byval as PAVIFILE, byval as PAVISTREAM ptr, byval as AVISTREAMINFOW ptr) as HRESULT
+declare function AVIStreamInfo alias "AVIStreamInfoW" (byval as PAVISTREAM, byval as AVISTREAMINFOW ptr, byval as LONG) as HRESULT
 #ifdef OFN_READONLY
 declare function GetOpenFileNamePreview alias "GetOpenFileNamePreviewW" (byval as LPOPENFILENAMEW) as BOOL
 declare function GetSaveFileNamePreview alias "GetSaveFileNamePreviewW" (byval as LPOPENFILENAMEW) as BOOL
@@ -911,6 +906,7 @@ declare function EditStreamSetName alias "EditStreamSetNameA" (byval as PAVISTRE
 declare function AVIFileOpen alias "AVIFileOpenA" (byval as PAVIFILE ptr, byval as LPCSTR, byval as UINT, byval as LPCLSID) as HRESULT
 declare function AVIFileInfo alias "AVIFileInfoA" (byval as PAVIFILE, byval as PAVIFILEINFOA, byval as LONG) as HRESULT
 declare function AVIFileCreateStream alias "AVIFileCreateStreamA" (byval as PAVIFILE, byval as PAVISTREAM ptr, byval as AVISTREAMINFOA ptr) as HRESULT
+declare function AVIStreamInfo alias "AVIStreamInfoA" (byval as PAVISTREAM, byval as AVISTREAMINFOA ptr, byval as LONG) as HRESULT
 #ifdef OFN_READONLY
 declare function GetOpenFileNamePreview alias "GetOpenFileNamePreviewA" (byval as LPOPENFILENAMEA) as BOOL
 declare function GetSaveFileNamePreview alias "GetSaveFileNamePreviewA" (byval as LPOPENFILENAMEA) as BOOL

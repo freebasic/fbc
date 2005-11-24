@@ -50,8 +50,7 @@
 #define SECBUFFER_STREAM 10
 #define SECBUFFER_READONLY &h80000000
 #define SECBUFFER_ATTRMASK &hf0000000
-#define UNISP_NAME_A "Microsoft Unified Security Protocol Provider"
-#define UNISP_NAME_W wstr("Microsoft Unified Security Protocol Provider")
+#define UNISP_NAME "Microsoft Unified Security Protocol Provider"
 #define SECBUFFER_VERSION 0
 
 type SecHandle
@@ -328,7 +327,6 @@ declare function ApplyControlToken alias "ApplyControlTokenW" (byval as PCtxtHan
 declare function QuerySecurityPackageInfo alias "QuerySecurityPackageInfoW" (byval as SEC_WCHAR ptr, byval as PSecPkgInfoW ptr) as SECURITY_STATUS
 declare function InitSecurityInterface alias "InitSecurityInterfaceW" () as PSecurityFunctionTableW
 
-#define UNISP_NAME UNISP_NAME_W
 type ENUMERATE_SECURITY_PACKAGES_FN as ENUMERATE_SECURITY_PACKAGES_FN_W
 type QUERY_CREDENTIALS_ATTRIBUTES_FN as QUERY_CREDENTIALS_ATTRIBUTES_FN_W
 type ACQUIRE_CREDENTIALS_HANDLE_FN as ACQUIRE_CREDENTIALS_HANDLE_FN_W
@@ -348,7 +346,6 @@ declare function ApplyControlToken alias "ApplyControlTokenA" (byval as PCtxtHan
 declare function QuerySecurityPackageInfo alias "QuerySecurityPackageInfoA" (byval as SEC_CHAR ptr, byval as PSecPkgInfoA ptr) as SECURITY_STATUS
 declare function InitSecurityInterface alias "InitSecurityInterfaceA" () as PSecurityFunctionTableA
 
-#define UNISP_NAME UNISP_NAME_A
 type ENUMERATE_SECURITY_PACKAGES_FN as ENUMERATE_SECURITY_PACKAGES_FN_A
 type QUERY_CREDENTIALS_ATTRIBUTES_FN as QUERY_CREDENTIALS_ATTRIBUTES_FN_A
 type ACQUIRE_CREDENTIALS_HANDLE_FN as ACQUIRE_CREDENTIALS_HANDLE_FN_A

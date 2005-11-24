@@ -328,19 +328,12 @@ declare function DdeCreateStringHandle alias "DdeCreateStringHandleW" (byval as 
 declare function DdeInitialize alias "DdeInitializeW" (byval as PDWORD, byval as PFNCALLBACK, byval as DWORD, byval as DWORD) as UINT
 declare function DdeQueryString alias "DdeQueryStringW" (byval as DWORD, byval as HSZ, byval as LPWSTR, byval as DWORD, byval as integer) as DWORD
 
-#define SZDDESYS_TOPIC	wstr("System")
-#define SZDDESYS_ITEM_TOPICS	wstr("Topics")
-#define SZDDESYS_ITEM_SYSITEMS	wstr("SysItems")
-#define SZDDESYS_ITEM_RTNMSG	wstr("ReturnMessage")
-#define SZDDESYS_ITEM_STATUS	wstr("Status")
-#define SZDDESYS_ITEM_FORMATS	wstr("Formats")
-#define SZDDESYS_ITEM_HELP	wstr("Help")
-#define SZDDE_ITEM_ITEMLIST	wstr("TopicItemList")
-
 #else ''UNICODE
 declare function DdeCreateStringHandle alias "DdeCreateStringHandleA" (byval as DWORD, byval as LPSTR, byval as integer) as HSZ
 declare function DdeInitialize alias "DdeInitializeA" (byval as PDWORD, byval as PFNCALLBACK, byval as DWORD, byval as DWORD) as UINT
 declare function DdeQueryString alias "DdeQueryStringA" (byval as DWORD, byval as HSZ, byval as LPSTR, byval as DWORD, byval as integer) as DWORD
+
+#endif ''UNICODE
 
 #define SZDDESYS_TOPIC "System"
 #define SZDDESYS_ITEM_TOPICS "Topics"
@@ -350,6 +343,5 @@ declare function DdeQueryString alias "DdeQueryStringA" (byval as DWORD, byval a
 #define SZDDESYS_ITEM_FORMATS "Formats"
 #define SZDDESYS_ITEM_HELP "Help"
 #define SZDDE_ITEM_ITEMLIST "TopicItemList"
-#endif ''UNICODE
 
 #endif

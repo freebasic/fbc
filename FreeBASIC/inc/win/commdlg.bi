@@ -11,23 +11,13 @@
 
 #inclib "comdlg32"
 
-#ifndef UNICODE
-#define LBSELCHSTRINGA "commdlg_LBSelChangedNotify"
-#define SHAREVISTRINGA "commdlg_ShareViolation"
-#define FILEOKSTRINGA "commdlg_FileNameOK"
-#define COLOROKSTRINGA "commdlg_ColorOK"
-#define SETRGBSTRINGA "commdlg_SetRGBColor"
-#define HELPMSGSTRINGA "commdlg_help"
-#define FINDMSGSTRINGA "commdlg_FindReplace"
-#else ''UNICODE
-#define LBSELCHSTRINGW  wstr("commdlg_LBSelChangedNotify")
-#define SHAREVISTRINGW  wstr("commdlg_ShareViolation")
-#define FILEOKSTRINGW   wstr("commdlg_FileNameOK")
-#define COLOROKSTRINGW  wstr("commdlg_ColorOK")
-#define SETRGBSTRINGW   wstr("commdlg_SetRGBColor")
-#define HELPMSGSTRINGW  wstr("commdlg_help")
-#define FINDMSGSTRINGW  wstr("commdlg_FindReplace")
-#endif ''UNICODE
+#define LBSELCHSTRING "commdlg_LBSelChangedNotify"
+#define SHAREVISTRING "commdlg_ShareViolation"
+#define FILEOKSTRING "commdlg_FileNameOK"
+#define COLOROKSTRING "commdlg_ColorOK"
+#define SETRGBSTRING "commdlg_SetRGBColor"
+#define HELPMSGSTRING "commdlg_help"
+#define FINDMSGSTRING "commdlg_FindReplace"
 
 #ifndef CDN_FIRST
 #define CDN_FIRST	cuint(-601)
@@ -514,14 +504,6 @@ declare function PageSetupDlg alias "PageSetupDlgW" (byval as LPPAGESETUPDLGW) a
 declare function PrintDlg alias "PrintDlgW" (byval as LPPRINTDLGW) as BOOL
 declare function ReplaceText alias "ReplaceTextW" (byval as LPFINDREPLACEW) as HWND
 
-#define LBSELCHSTRING  LBSELCHSTRINGW
-#define SHAREVISTRING  SHAREVISTRINGW
-#define FILEOKSTRING   FILEOKSTRINGW
-#define COLOROKSTRING  COLOROKSTRINGW
-#define SETRGBSTRING   SETRGBSTRINGW
-#define HELPMSGSTRING  HELPMSGSTRINGW
-#define FINDMSGSTRING  FINDMSGSTRINGW
-
 type CHOOSECOLOR as CHOOSECOLORW
 type LPCHOOSECOLOR as CHOOSECOLORW ptr
 type CHOOSEFONT as CHOOSEFONTW
@@ -547,14 +529,6 @@ declare function GetSaveFileName alias "GetSaveFileNameA" (byval as LPOPENFILENA
 declare function PageSetupDlg alias "PageSetupDlgA" (byval as LPPAGESETUPDLGA) as BOOL
 declare function PrintDlg alias "PrintDlgA" (byval as LPPRINTDLGA) as BOOL
 declare function ReplaceText alias "ReplaceTextA" (byval as LPFINDREPLACEA) as HWND
-
-#define LBSELCHSTRING  LBSELCHSTRINGA
-#define SHAREVISTRING  SHAREVISTRINGA
-#define FILEOKSTRING   FILEOKSTRINGA
-#define COLOROKSTRING  COLOROKSTRINGA
-#define SETRGBSTRING   SETRGBSTRINGA
-#define HELPMSGSTRING  HELPMSGSTRINGA
-#define FINDMSGSTRING  FINDMSGSTRINGA
 
 type CHOOSECOLOR as CHOOSECOLORA
 type LPCHOOSECOLOR as CHOOSECOLORA ptr

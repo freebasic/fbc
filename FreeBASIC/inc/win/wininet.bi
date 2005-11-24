@@ -222,26 +222,26 @@
 #define MAX_GOPHER_CATEGORY_NAME 128
 #define MAX_GOPHER_ATTRIBUTE_NAME 128
 #define MIN_GOPHER_ATTRIBUTE_LENGTH 256
-#define GOPHER_INFO_CATEGORY __TEXT("+INFO")
-#define GOPHER_ADMIN_CATEGORY __TEXT("+ADMIN")
-#define GOPHER_VIEWS_CATEGORY __TEXT("+VIEWS")
-#define GOPHER_ABSTRACT_CATEGORY __TEXT("+ABSTRACT")
-#define GOPHER_VERONICA_CATEGORY __TEXT("+VERONICA")
-#define GOPHER_ADMIN_ATTRIBUTE __TEXT("Admin")
-#define GOPHER_MOD_DATE_ATTRIBUTE __TEXT("Mod-Date")
-#define GOPHER_TTL_ATTRIBUTE __TEXT("TTL")
-#define GOPHER_SCORE_ATTRIBUTE __TEXT("Score")
-#define GOPHER_RANGE_ATTRIBUTE __TEXT("Score-range")
-#define GOPHER_SITE_ATTRIBUTE __TEXT("Site")
-#define GOPHER_ORG_ATTRIBUTE __TEXT("Org")
-#define GOPHER_LOCATION_ATTRIBUTE __TEXT("Loc")
-#define GOPHER_GEOG_ATTRIBUTE __TEXT("Geog")
-#define GOPHER_TIMEZONE_ATTRIBUTE __TEXT("TZ")
-#define GOPHER_PROVIDER_ATTRIBUTE __TEXT("Provider")
-#define GOPHER_VERSION_ATTRIBUTE __TEXT("Version")
-#define GOPHER_ABSTRACT_ATTRIBUTE __TEXT("Abstract")
-#define GOPHER_VIEW_ATTRIBUTE __TEXT("View")
-#define GOPHER_TREEWALK_ATTRIBUTE __TEXT("treewalk")
+#define GOPHER_INFO_CATEGORY "+INFO"
+#define GOPHER_ADMIN_CATEGORY "+ADMIN"
+#define GOPHER_VIEWS_CATEGORY "+VIEWS"
+#define GOPHER_ABSTRACT_CATEGORY "+ABSTRACT"
+#define GOPHER_VERONICA_CATEGORY "+VERONICA"
+#define GOPHER_ADMIN_ATTRIBUTE "Admin"
+#define GOPHER_MOD_DATE_ATTRIBUTE "Mod-Date"
+#define GOPHER_TTL_ATTRIBUTE "TTL"
+#define GOPHER_SCORE_ATTRIBUTE "Score"
+#define GOPHER_RANGE_ATTRIBUTE "Score-range"
+#define GOPHER_SITE_ATTRIBUTE "Site"
+#define GOPHER_ORG_ATTRIBUTE "Org"
+#define GOPHER_LOCATION_ATTRIBUTE "Loc"
+#define GOPHER_GEOG_ATTRIBUTE "Geog"
+#define GOPHER_TIMEZONE_ATTRIBUTE "TZ"
+#define GOPHER_PROVIDER_ATTRIBUTE "Provider"
+#define GOPHER_VERSION_ATTRIBUTE "Version"
+#define GOPHER_ABSTRACT_ATTRIBUTE "Abstract"
+#define GOPHER_VIEW_ATTRIBUTE "View"
+#define GOPHER_TREEWALK_ATTRIBUTE "treewalk"
 #define GOPHER_ATTRIBUTE_ID_BASE &habcccc00
 #define GOPHER_CATEGORY_ID_ALL (&habcccc00+1)
 #define GOPHER_CATEGORY_ID_INFO (&habcccc00+2)
@@ -270,7 +270,7 @@
 #define GOPHER_ATTRIBUTE_ID_UNKNOWN (&habcccc00+25)
 #define HTTP_MAJOR_VERSION 1
 #define HTTP_MINOR_VERSION 0
-#define HTTP_VERSION __TEXT("HTTP/1.0")
+#define HTTP_VERSION "HTTP/1.0"
 #define HTTP_QUERY_MIME_VERSION 0
 #define HTTP_QUERY_CONTENT_TYPE 1
 #define HTTP_QUERY_CONTENT_TRANSFER_ENCODING 2
@@ -463,10 +463,20 @@
 #define INTERNET_AUTODIAL_FORCE_ONLINE 1
 #define INTERNET_AUTODIAL_FORCE_UNATTENDED 2
 #define INTERNET_AUTODIAL_FAILIFSECURITYCHECK 4
-#define INTERNET_CONNECTION_MODEM 1
-#define INTERNET_CONNECTION_LAN 2
-#define INTERNET_CONNECTION_PROXY 4
-#define INTERNET_CONNECTION_MODEM_BUSY 8
+#define INTERNET_CONNECTION_MODEM &h01
+#define INTERNET_CONNECTION_LAN &h02
+#define INTERNET_CONNECTION_PROXY &h04
+#define INTERNET_CONNECTION_MODEM_BUSY &h08
+#define INTERNET_RAS_INSTALLED &h10
+#define INTERNET_CONNECTION_OFFLINE &h20
+#define INTERNET_CONNECTION_CONFIGURED &h40
+#define CACHEGROUP_SEARCH_ALL 0
+#define CACHEGROUP_SEARCH_BYURL 1
+#define INTERNET_CACHE_GROUP_ADD 0
+#define INTERNET_CACHE_GROUP_REMOVE 1
+#define WININET_API_FLAG_ASYNC &h00000001
+#define WININET_API_FLAG_SYNC &h00000004
+#define WININET_API_FLAG_USE_CONTEXT &h00000008
 
 type HINTERNET as PVOID
 type LPHINTERNET as HINTERNET ptr
@@ -836,7 +846,36 @@ type LPINTERNET_CACHE_ENTRY_INFO as LPINTERNET_CACHE_ENTRY_INFOW
 type INTERNET_BUFFERS as INTERNET_BUFFERSW
 type LPINTERNET_BUFFERS as INTERNET_BUFFERSW ptr
 
+#define GROUP_OWNER_STORAGE_SIZE 4
+#define GROUPNAME_MAX_LENGTH 120
+
+#ifnded UNICODE
+type INTERNET_CACHE_GROUP_INFOA
+	dwGroupSize as DWORD
+	dwGroupFlags as DWORD
+	dwGroupType as DWORD
+	dwDiskUsage as DWORD
+	dwDiskQuota as DWORD
+	dwOwnerStorage(0 to 4-1) as DWORD
+	szGroupName as zstring * 120
+end type
+
+type LPINTERNET_CACHE_GROUP_INFOA as INTERNET_CACHE_GROUP_INFOA ptr
+
+#else
+type INTERNET_CACHE_GROUP_INFOW
+	dwGroupSize as DWORD
+	dwGroupFlags as DWORD
+	dwGroupType as DWORD
+	dwDiskUsage as DWORD
+	dwDiskQuota as DWORD
+	dwOwnerStorage(0 to 4-1) as DWORD
+	szGroupName as wstring * 120
+end type
+
+type LPINTERNET_CACHE_GROUP_INFOW as INTERNET_CACHE_GROUP_INFOW ptr
 #endif ''UNICODE
+
 
 declare function InternetTimeFromSystemTime alias "InternetTimeFromSystemTime" (byval as SYSTEMTIME ptr, byval as DWORD, byval as LPSTR, byval as DWORD) as BOOL
 declare function InternetTimeToSystemTime alias "InternetTimeToSystemTime" (byval as LPCSTR, byval as SYSTEMTIME ptr, byval as DWORD) as BOOL
@@ -847,6 +886,7 @@ declare function InternetSetFilePointer alias "InternetSetFilePointer" (byval as
 declare function InternetWriteFile alias "InternetWriteFile" (byval as HINTERNET, byval as LPCVOID, byval as DWORD, byval as PDWORD) as BOOL
 declare function InternetQueryDataAvailable alias "InternetQueryDataAvailable" (byval as HINTERNET, byval as PDWORD, byval as DWORD, byval as DWORD) as BOOL
 declare function InternetSetStatusCallback alias "InternetSetStatusCallback" (byval as HINTERNET, byval as INTERNET_STATUS_CALLBACK) as INTERNET_STATUS_CALLBACK
+declare function FtpGetFileSize alias "FtpGetFileSize" (byval as HINTERNET, byval as LPDWORD) as DWORD
 declare function InternetAttemptConnect alias "InternetAttemptConnect" (byval as DWORD) as DWORD
 declare function InternetErrorDlg alias "InternetErrorDlg" (byval as HWND, byval as HINTERNET, byval as DWORD, byval as DWORD, byval as PVOID ptr) as DWORD
 declare function InternetConfirmZoneCrossing alias "InternetConfirmZoneCrossing" (byval as HWND, byval as LPSTR, byval as LPSTR, byval as BOOL) as DWORD
@@ -863,11 +903,27 @@ declare function InternetAutodial alias "InternetAutodial" (byval as DWORD, byva
 declare function InternetAutodialHangup alias "InternetAutodialHangup" (byval as DWORD) as BOOL
 declare function InternetGetConnectedState alias "InternetGetConnectedState" (byval as LPDWORD, byval as DWORD) as BOOL
 declare function InternetSetDialState alias "InternetSetDialState" (byval as LPCTSTR, byval as DWORD, byval as DWORD) as BOOL
+declare function CreateUrlCacheGroup alias "CreateUrlCacheGroup" (byval as DWORD, byval as LPVOID) as GROUPID
+declare function DeleteUrlCacheGroup alias "DeleteUrlCacheGroup" (byval as GROUPID, byval as DWORD, byval as LPVOID) as BOOL
+declare function FindFirstUrlCacheGroup alias "FindFirstUrlCacheGroup" (byval as DWORD, byval as DWORD, byval as LPVOID, byval as DWORD, byval as GROUPID ptr, byval as LPVOID) as HANDLE
+declare function FindNextUrlCacheGroup alias "FindNextUrlCacheGroup" (byval as HANDLE, byval as GROUPID ptr, byval as LPVOID) as BOOL
 
 #ifdef UNICODE
+type URL_COMPONENTS as URL_COMPONENTSW
+type LPURL_COMPONENTS as LPURL_COMPONENTSW
+type GOPHER_FIND_DATA as GOPHER_FIND_DATAW
+type LPGOPHER_FIND_DATA as LPGOPHER_FIND_DATAW
+type INTERNET_CACHE_ENTRY_INFO as INTERNET_CACHE_ENTRY_INFOW
+type LPINTERNET_CACHE_ENTRY_INFO as LPINTERNET_CACHE_ENTRY_INFOw
+type INTERNET_BUFFERS as INTERNET_BUFFERSW
+type LPINTERNET_BUFFERS as INTERNET_BUFFERSW ptr
+type INTERNET_CACHE_GROUP_INFO as INTERNET_CACHE_GROUP_INFOW
+type LPINTERNET_CACHE_GROUP_INFO as LPINTERNET_CACHE_GROUP_INFOW
+
 declare function InternetCrackUrl alias "InternetCrackUrlW" (byval as LPCWSTR, byval as DWORD, byval as DWORD, byval as LPURL_COMPONENTSW) as BOOL
 declare function InternetCreateUrl alias "InternetCreateUrlW" (byval as LPURL_COMPONENTSW, byval as DWORD, byval as LPWSTR, byval as PDWORD) as BOOL
 declare function InternetCanonicalizeUrl alias "InternetCanonicalizeUrlW" (byval as LPCWSTR, byval as LPWSTR, byval as PDWORD, byval as DWORD) as BOOL
+declare function InternetCheckConnection alias "InternetCheckConnectionW" (byval as LPCWSTR, byval as DWORD, byval as DWORD) as BOOL
 declare function InternetCombineUrl alias "InternetCombineUrlW" (byval as LPCWSTR, byval as LPCWSTR, byval as LPWSTR, byval as PDWORD, byval as DWORD) as BOOL
 declare function InternetOpen alias "InternetOpenW" (byval as LPCWSTR, byval as DWORD, byval as LPCWSTR, byval as LPCWSTR, byval as DWORD) as HINTERNET
 declare function InternetConnect alias "InternetConnectW" (byval as HINTERNET, byval as LPCWSTR, byval as INTERNET_PORT, byval as LPCWSTR, byval as LPCWSTR, byval as DWORD, byval as DWORD, byval as DWORD) as HINTERNET
@@ -887,7 +943,7 @@ declare function FtpCreateDirectory alias "FtpCreateDirectoryW" (byval as HINTER
 declare function FtpRemoveDirectory alias "FtpRemoveDirectoryW" (byval as HINTERNET, byval as LPCWSTR) as BOOL
 declare function FtpSetCurrentDirectory alias "FtpSetCurrentDirectoryW" (byval as HINTERNET, byval as LPCWSTR) as BOOL
 declare function FtpGetCurrentDirectory alias "FtpGetCurrentDirectoryW" (byval as HINTERNET, byval as LPWSTR, byval as PDWORD) as BOOL
-declare function FtpCommand alias "FtpCommandW" (byval as HINTERNET, byval as BOOL, byval as DWORD, byval as LPCWSTR, byval as DWORD) as BOOL
+declare function FtpCommand alias "FtpCommandW" (byval as HINTERNET, byval as BOOL, byval as DWORD, byval as LPCWSTR, byval as DWORD_PTR, byval as HINTERNET ptr) as BOOL
 declare function GopherCreateLocator alias "GopherCreateLocatorW" (byval as LPCWSTR, byval as INTERNET_PORT, byval as LPCWSTR, byval as LPCWSTR, byval as DWORD, byval as LPWSTR, byval as PDWORD) as BOOL
 declare function GopherGetLocatorType alias "GopherGetLocatorTypeW" (byval as LPCWSTR, byval as PDWORD) as BOOL
 declare function GopherFindFirstFile alias "GopherFindFirstFileW" (byval as HINTERNET, byval as LPCWSTR, byval as LPCWSTR, byval as LPGOPHER_FIND_DATAW, byval as DWORD, byval as DWORD) as HINTERNET
@@ -910,11 +966,25 @@ declare function FindNextUrlCacheEntry alias "FindNextUrlCacheEntryW" (byval as 
 declare function HttpSendRequestEx alias "HttpSendRequestExW" (byval as HINTERNET, byval as LPINTERNET_BUFFERSW, byval as LPINTERNET_BUFFERSW, byval as DWORD, byval as DWORD) as BOOL
 declare function HttpEndRequest alias "HttpEndRequestW" (byval as HINTERNET, byval as LPINTERNET_BUFFERSW, byval as DWORD, byval as DWORD) as BOOL
 declare function InternetReadFileEx alias "InternetReadFileExW" (byval as HINTERNET, byval as LPINTERNET_BUFFERSW, byval as DWORD, byval as DWORD_PTR) as BOOL
+declare function GetUrlCacheGroupAttribute alias "GetUrlCacheGroupAttributeW" (byval as GROUPID, byval as DWORD, byval as DWORD, byval as LPINTERNET_CACHE_GROUP_INFOW, byval as LPDWORD, byval as LPVOID) as BOOL
+declare function SetUrlCacheGroupAttribute alias "SetUrlCacheGroupAttributeW" (byval as GROUPID, byval as DWORD, byval as DWORD, byval as LPINTERNET_CACHE_GROUP_INFOW, byval as LPVOID) as BOOL
 
 #else ''UNICODE
+type URL_COMPONENTS as URL_COMPONENTSA
+type LPURL_COMPONENTS as LPURL_COMPONENTSA
+type GOPHER_FIND_DATA as GOPHER_FIND_DATAA
+type LPGOPHER_FIND_DATA as LPGOPHER_FIND_DATAA
+type INTERNET_CACHE_ENTRY_INFO as INTERNET_CACHE_ENTRY_INFOA
+type LPINTERNET_CACHE_ENTRY_INFO as LPINTERNET_CACHE_ENTRY_INFOA
+type INTERNET_BUFFERS as INTERNET_BUFFERSA
+type LPINTERNET_BUFFERS as INTERNET_BUFFERSA ptr
+type INTERNET_CACHE_GROUP_INFO as INTERNET_CACHE_GROUP_INFOA
+type LPINTERNET_CACHE_GROUP_INFO as LPINTERNET_CACHE_GROUP_INFOA
+
 declare function InternetCrackUrl alias "InternetCrackUrlA" (byval as LPCSTR, byval as DWORD, byval as DWORD, byval as LPURL_COMPONENTSA) as BOOL
 declare function InternetCreateUrl alias "InternetCreateUrlA" (byval as LPURL_COMPONENTSA, byval as DWORD, byval as LPSTR, byval as PDWORD) as BOOL
 declare function InternetCanonicalizeUrl alias "InternetCanonicalizeUrlA" (byval as LPCSTR, byval as LPSTR, byval as PDWORD, byval as DWORD) as BOOL
+declare function InternetCheckConnection alias "InternetCheckConnectionA" (byval as LPCSTR, byval as DWORD, byval as DWORD) as BOOL
 declare function InternetCombineUrl alias "InternetCombineUrlA" (byval as LPCSTR, byval as LPCSTR, byval as LPSTR, byval as PDWORD, byval as DWORD) as BOOL
 declare function InternetOpen alias "InternetOpenA" (byval as LPCSTR, byval as DWORD, byval as LPCSTR, byval as LPCSTR, byval as DWORD) as HINTERNET
 declare function InternetConnect alias "InternetConnectA" (byval as HINTERNET, byval as LPCSTR, byval as INTERNET_PORT, byval as LPCSTR, byval as LPCSTR, byval as DWORD, byval as DWORD, byval as DWORD) as HINTERNET
@@ -934,7 +1004,7 @@ declare function FtpCreateDirectory alias "FtpCreateDirectoryA" (byval as HINTER
 declare function FtpRemoveDirectory alias "FtpRemoveDirectoryA" (byval as HINTERNET, byval as LPCSTR) as BOOL
 declare function FtpSetCurrentDirectory alias "FtpSetCurrentDirectoryA" (byval as HINTERNET, byval as LPCSTR) as BOOL
 declare function FtpGetCurrentDirectory alias "FtpGetCurrentDirectoryA" (byval as HINTERNET, byval as LPSTR, byval as PDWORD) as BOOL
-declare function FtpCommand alias "FtpCommandA" (byval as HINTERNET, byval as BOOL, byval as DWORD, byval as LPCSTR, byval as DWORD) as BOOL
+declare function FtpCommand alias "FtpCommandA" (byval as HINTERNET, byval as BOOL, byval as DWORD, byval as LPCSTR, byval as DWORD_PTR, byval as HINTERNET ptr) as BOOL
 declare function GopherCreateLocator alias "GopherCreateLocatorA" (byval as LPCSTR, byval as INTERNET_PORT, byval as LPCSTR, byval as LPCSTR, byval as DWORD, byval as LPSTR, byval as PDWORD) as BOOL
 declare function GopherGetLocatorType alias "GopherGetLocatorTypeA" (byval as LPCSTR, byval as PDWORD) as BOOL
 declare function GopherFindFirstFile alias "GopherFindFirstFileA" (byval as HINTERNET, byval as LPCSTR, byval as LPCSTR, byval as LPGOPHER_FIND_DATAA, byval as DWORD, byval as DWORD) as HINTERNET
@@ -957,6 +1027,8 @@ declare function FindNextUrlCacheEntry alias "FindNextUrlCacheEntryA" (byval as 
 declare function HttpSendRequestEx alias "HttpSendRequestExA" (byval as HINTERNET, byval as LPINTERNET_BUFFERSA, byval as LPINTERNET_BUFFERSA, byval as DWORD, byval as DWORD) as BOOL
 declare function HttpEndRequest alias "HttpEndRequestA" (byval as HINTERNET, byval as LPINTERNET_BUFFERSA, byval as DWORD, byval as DWORD) as BOOL
 declare function InternetReadFileEx alias "InternetReadFileExA" (byval as HINTERNET, byval as LPINTERNET_BUFFERSA, byval as DWORD, byval as DWORD_PTR) as BOOL
+declare function GetUrlCacheGroupAttribute alias "GetUrlCacheGroupAttributeA" (byval as GROUPID, byval as DWORD, byval as DWORD, byval as LPINTERNET_CACHE_GROUP_INFOA, byval as LPDWORD, byval as LPVOID) as BOOL
+declare function SetUrlCacheGroupAttribute alias "SetUrlCacheGroupAttributeA" (byval as GROUPID, byval as DWORD, byval as DWORD, byval as LPINTERNET_CACHE_GROUP_INFOA, byval as LPVOID) as BOOL
 
 #endif ''UNICODE
 

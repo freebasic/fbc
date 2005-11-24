@@ -132,6 +132,17 @@
 #define BSM_INSTALLABLEDRIVERS 4
 #define BSM_NETDRIVER 2
 #define BSM_VXDS 1
+#define BSF_FLUSHDISK &h00000004
+#define BSF_FORCEIFHUNG &h00000020
+#define BSF_IGNORECURRENTTASK &h00000002
+#define BSF_NOHANG &h00000008
+#define BSF_NOTIMEOUTIFNOTHUNG &h00000040
+#define BSF_POSTMESSAGE &h00000010
+#define BSF_QUERY &h00000001
+#define BSF_ALLOWSFW &h00000080
+#define BSF_SENDNOTIFYMESSAGE &h00000100
+#define BSF_LUID &h00000400
+#define BSF_RETURNHDESK &h00000200
 #define BROADCAST_QUERY_DENY 1112363332
 #define ENUM_CURRENT_SETTINGS cuint(-1)
 #define ENUM_REGISTRY_SETTINGS cuint(-2)
@@ -380,11 +391,14 @@
 #define DDL_POSTMSGS 8192
 #define DDL_DRIVES 16384
 #define DDL_EXCLUSIVE 32768
-#define DC_ACTIVE 1
-#define DC_SMALLCAP 2
-#define DC_ICON 4
-#define DC_TEXT 8
-#define DC_INBUTTON 16
+#define DC_ACTIVE &h00000001
+#define DC_SMALLCAP &h00000002
+#define DC_ICON &h00000004
+#define DC_TEXT &h00000008
+#define DC_INBUTTON &h00000010
+#define DC_GRADIENT &h00000020
+#define DC_BUTTONS &h00001000
+#define DC_CAPTION (&h00000004 or &h00000008 or &h00001000)
 #define BDR_RAISEDOUTER 1
 #define BDR_SUNKENOUTER 2
 #define BDR_RAISEDINNER 4
@@ -539,6 +553,7 @@
 #define EWX_POWEROFF 8
 #define EWX_REBOOT 2
 #define EWX_SHUTDOWN 1
+#define EWX_FORCEIFHUNG 16
 #define CS_BYTEALIGNCLIENT 4096
 #define CS_BYTEALIGNWINDOW 8192
 #define CS_KEYCVTWINDOW 4
@@ -697,17 +712,18 @@
 #define DWLP_MSGRESULT 0
 #define DWL_USER 8
 #define DWLP_USER 8
-#define QS_ALLEVENTS 191
-#define QS_ALLINPUT 255
+#define QS_ALLEVENTS 1215
+#define QS_ALLINPUT 1279
 #define QS_ALLPOSTMESSAGE 256
 #define QS_HOTKEY 128
-#define QS_INPUT 7
+#define QS_INPUT 1031
 #define QS_KEY 1
 #define QS_MOUSE 6
 #define QS_MOUSEBUTTON 4
 #define QS_MOUSEMOVE 2
 #define QS_PAINT 32
 #define QS_POSTMESSAGE 8
+#define QS_RAWINPUT 1024
 #define QS_SENDMESSAGE 64
 #define QS_TIMER 16
 #define MWMO_WAITALL 1
@@ -744,6 +760,9 @@
 #define COLOR_WINDOW 5
 #define COLOR_WINDOWFRAME 6
 #define COLOR_WINDOWTEXT 8
+#define COLOR_HOTLIGHT 26
+#define COLOR_GRADIENTACTIVECAPTION 27
+#define COLOR_GRADIENTINACTIVECAPTION 28
 #define CTLCOLOR_MSGBOX 0
 #define CTLCOLOR_EDIT 1
 #define CTLCOLOR_LISTBOX 2
@@ -836,7 +855,13 @@
 #define SM_CYVIRTUALSCREEN 79
 #define SM_CMONITORS 80
 #define SM_SAMEDISPLAYFORMAT 81
-#define SM_CMETRICS 83
+#define SM_IMMENABLED 82
+#define SM_CXFOCUSBORDER 83
+#define SM_CYFOCUSBORDER 84
+#define SM_TABLETPC 86
+#define SM_MEDIACENTER 87
+#define SM_CMETRICS 88
+#define SM_REMOTESESSION 0X1000
 #define ARW_BOTTOMLEFT 0
 #define ARW_BOTTOMRIGHT 1
 #define ARW_HIDE 8
@@ -862,8 +887,10 @@
 #define LR_CREATEDIBSECTION 8192
 #define LR_COPYFROMRESOURCE &h4000
 #define LR_SHARED 32768
-#define KEYEVENTF_EXTENDEDKEY 1
-#define KEYEVENTF_KEYUP 2
+#define KEYEVENTF_EXTENDEDKEY &h00000001
+#define KEYEVENTF_KEYUP 00000002
+#define KEYEVENTF_UNICODE &h00000004
+#define KEYEVENTF_SCANCODE &h00000008
 #define OBM_BTNCORNERS 32758
 #define OBM_BTSIZE 32761
 #define OBM_CHECK 32760
@@ -999,6 +1026,8 @@
 #define HSHELL_WINDOWACTIVATED 4
 #define HSHELL_WINDOWCREATED 1
 #define HSHELL_WINDOWDESTROYED 2
+#define HSHELL_RUDEAPPACTIVATED 32772
+#define HSHELL_FLASH 32774
 #define SPI_GETACCESSTIMEOUT 60
 #define SPI_GETACTIVEWINDOWTRACKING 4096
 #define SPI_GETACTIVEWNDTRKTIMEOUT 8194
@@ -1202,6 +1231,11 @@
 #define WM_NCMBUTTONDBLCLK 169
 #define WM_NCMBUTTONDOWN 167
 #define WM_NCMBUTTONUP 168
+#define WM_NCXBUTTONDOWN 171
+#define WM_NCXBUTTONUP 172
+#define WM_NCXBUTTONDBLCLK 173
+#define WM_NCMOUSEHOVER &h02A0
+#define WM_NCMOUSELEAVE &h02A2
 #define WM_NCMOUSEMOVE 160
 #define WM_NCPAINT 133
 #define WM_NCRBUTTONDBLCLK 166
@@ -1255,6 +1289,7 @@
 #define WM_SYSKEYDOWN 260
 #define WM_SYSKEYUP 261
 #define WM_TCARD 82
+#define WM_THEMECHANGED 794
 #define WM_TIMECHANGE 30
 #define WM_TIMER 275
 #define WM_UNDO 772
@@ -1282,7 +1317,10 @@
 #define WM_MBUTTONDBLCLK 521
 #define WM_MOUSEWHEEL 522
 #define WM_MOUSEFIRST 512
-#define WM_MOUSELAST 522
+#define WM_XBUTTONDOWN 523
+#define WM_XBUTTONUP 524
+#define WM_XBUTTONDBLCLK 525
+#define WM_MOUSELAST 525
 #define WM_MOUSEHOVER &h2A1
 #define WM_MOUSELEAVE &h2A3
 #define WHEEL_DELTA 120
@@ -1339,6 +1377,8 @@
 #define CB_SETLOCALE 345
 #define CB_SETTOPINDEX 348
 #define CB_SHOWDROPDOWN 335
+#define CB_SETMINVISIBLE &h1701
+#define CB_GETMINVISIBLE &h1702
 #define CBN_CLOSEUP 8
 #define CBN_DBLCLK 2
 #define CBN_DROPDOWN 7
@@ -1478,6 +1518,7 @@
 #define DCX_CLIPSIBLINGS 16
 #define DCX_CLIPCHILDREN 8
 #define DCX_NORESETATTRS 4
+#define DCX_INTERSECTUPDATE &h200
 #define DCX_LOCKWINDOWUPDATE &h400
 #define DCX_EXCLUDERGN 64
 #define DCX_INTERSECTRGN 128
@@ -1544,6 +1585,8 @@
 #define VK_RBUTTON 2
 #define VK_CANCEL 3
 #define VK_MBUTTON 4
+#define VK_XBUTTON1 5
+#define VK_XBUTTON2 6
 #define VK_BACK 8
 #define VK_TAB 9
 #define VK_CLEAR 12
@@ -1633,7 +1676,29 @@
 #define VK_RCONTROL &hA3
 #define VK_LMENU &hA4
 #define VK_RMENU &hA5
+#define VK_BROWSER_BACK &hA6
+#define VK_BROWSER_FORWARD &hA7
+#define VK_BROWSER_REFRESH &hA8
+#define VK_BROWSER_STOP &hA9
+#define VK_BROWSER_SEARCH &hAA
+#define VK_BROWSER_FAVORITES &hAB
+#define VK_BROWSER_HOME &hAC
+#define VK_VOLUME_MUTE &hAD
+#define VK_VOLUME_DOWN &hAE
+#define VK_VOLUME_UP &hAF
+#define VK_MEDIA_NEXT_TRACK &hB0
+#define VK_MEDIA_PREV_TRACK &hB1
+#define VK_MEDIA_STOP &hB2
+#define VK_MEDIA_PLAY_PAUSE &hB3
+#define VK_LAUNCH_MAIL &hB4
+#define VK_LAUNCH_MEDIA_SELECT &hB5
+#define VK_LAUNCH_APP1 &hB6
+#define VK_LAUNCH_APP2 &hB7
 #define VK_OEM_1 &hBA
+#define VK_OEM_PLUS &hBB
+#define VK_OEM_COMMA &hBC
+#define VK_OEM_MINUS &hBD
+#define VK_OEM_PERIOD &hBE
 #define VK_OEM_2 &hBF
 #define VK_OEM_3 &hC0
 #define VK_OEM_4 &hDB
@@ -1641,7 +1706,9 @@
 #define VK_OEM_6 &hDD
 #define VK_OEM_7 &hDE
 #define VK_OEM_8 &hDF
+#define VK_OEM_102 &hE2
 #define VK_PROCESSKEY &hE5
+#define VK_PACKET &hE7
 #define VK_ATTN &hF6
 #define VK_CRSEL &hF7
 #define VK_EXSEL &hF8
@@ -1661,6 +1728,8 @@
 #define MK_SHIFT 4
 #define MK_CONTROL 8
 #define MK_MBUTTON 16
+#define MK_XBUTTON1 32
+#define MK_XBUTTON2 64
 #define TPM_CENTERALIGN 4
 #define TPM_LEFTALIGN 0
 #define TPM_RIGHTALIGN 8
@@ -1687,6 +1756,7 @@
 #define HELP_QUIT 2
 #define HELP_SETCONTENTS 5
 #define HELP_SETINDEX 5
+#define HELP_SETWINPOS &h203
 #define HELP_CONTEXTMENU &ha
 #define HELP_FINDER &hb
 #define HELP_WM_HELP &hc
@@ -1837,6 +1907,7 @@
 #define SW_SCROLLCHILDREN 1
 #define SW_INVALIDATE 2
 #define SW_ERASE 4
+#define SW_SMOOTHSCROLL &h0010
 #define SC_SIZE &hF000
 #define SC_MOVE &hF010
 #define SC_MINIMIZE &hF020
@@ -1880,6 +1951,7 @@
 #define WA_CLICKACTIVE 2
 #define ICON_SMALL 0
 #define ICON_BIG 1
+#define ICON_SMALL2 2
 #define HBMMENU_CALLBACK cptr(HBITMAP, -1)
 #define HBMMENU_SYSTEM cptr(HBITMAP, 1)
 #define HBMMENU_MBAR_RESTORE cptr(HBITMAP, 2)
@@ -1899,16 +1971,23 @@
 #define MOD_ON_KEYUP 2048
 #define MOD_RIGHT 16384
 #define MOD_LEFT 32768
-#define LLKHF_ALTDOWN &h00000020
-#define INPUT_MOUSE 0
-#define INPUT_KEYBOARD 1
-#define INPUT_HARDWARE 2
+#define LLKHF_EXTENDED (256 shr 8)
+#define LLKHF_INJECTED &h00000010
+#define LLKHF_ALTDOWN (8192 shr 8)
+#define LLKHF_UP (32768 shr 8)
 #define CURSOR_SHOWING &h00000001
+#define WS_ACTIVECAPTION &h00000001
+#define INPUT_MOUSE &h00000000
+#define INPUT_KEYBOARD &h00000001
+#define INPUT_HARDWARE &h00000002
 #define ENDSESSION_LOGOFF &h80000000
 #define LSFW_LOCK 1
 #define LSFW_UNLOCK 2
-#define LWA_COLORKEY 1
-#define LWA_ALPHA 2
+#define LWA_COLORKEY &h01
+#define LWA_ALPHA &h02
+#define ULW_COLORKEY &h01
+#define ULW_ALPHA &h02
+#define ULW_OPAQUE &h04
 #define GA_PARENT 1
 #define GA_ROOT 2
 #define GA_ROOTOWNER 3
@@ -1916,6 +1995,63 @@
 #define MONITOR_DEFAULTTOPRIMARY 1
 #define MONITOR_DEFAULTTONEAREST 2
 #define MONITORINFOF_PRIMARY 1
+#define EDS_RAWMODE &h00000002
+#define ISMEX_NOSEND &h00000000
+#define ISMEX_CALLBACK &h00000004
+#define ISMEX_NOTIFY &h00000002
+#define ISMEX_REPLIED &h00000008
+#define ISMEX_SEND &h00000001
+#define GR_GDIOBJECTS 0
+#define GR_USEROBJECTS 1
+#define GMMP_USE_DISPLAY_POINTS 1
+#define GMMP_USE_HIGH_RESOLUTION_POINTS 2
+#define PW_CLIENTONLY &h00000001
+#define RIM_INPUT &h00000000
+#define RIM_INPUTSINK &h00000001
+#define RIM_TYPEMOUSE &h00000000
+#define RIM_TYPEKEYBOARD &h00000001
+#define RIM_TYPEHID &h00000002
+#define MOUSE_MOVE_RELATIVE &h00000000
+#define MOUSE_MOVE_ABSOLUTE &h00000001
+#define MOUSE_VIRTUAL_DESKTOP &h00000002
+#define MOUSE_ATTRIBUTES_CHANGED &h00000004
+#define RI_MOUSE_LEFT_BUTTON_DOWN &h0001
+#define RI_MOUSE_LEFT_BUTTON_UP &h0002
+#define RI_MOUSE_RIGHT_BUTTON_DOWN &h0004
+#define RI_MOUSE_RIGHT_BUTTON_UP &h0008
+#define RI_MOUSE_MIDDLE_BUTTON_DOWN &h0010
+#define RI_MOUSE_MIDDLE_BUTTON_UP &h0020
+#define RI_MOUSE_BUTTON_1_DOWN &h0001
+#define RI_MOUSE_BUTTON_1_UP &h0002
+#define RI_MOUSE_BUTTON_2_DOWN &h0004
+#define RI_MOUSE_BUTTON_2_UP &h0008
+#define RI_MOUSE_BUTTON_3_DOWN &h0010
+#define RI_MOUSE_BUTTON_3_UP &h0020
+#define RI_MOUSE_BUTTON_4_DOWN &h0040
+#define RI_MOUSE_BUTTON_4_UP &h0080
+#define RI_MOUSE_BUTTON_5_DOWN &h0100
+#define RI_MOUSE_BUTTON_5_UP &h0200
+#define RI_MOUSE_WHEEL &h0400
+#define KEYBOARD_OVERRUN_MAKE_CODE &h00ff
+#define RI_KEY_MAKE &h0000
+#define RI_KEY_BREAK &h0001
+#define RI_KEY_E0 &h0002
+#define RI_KEY_E1 &h0004
+#define RI_KEY_TERMSRV_SET_LED &h0008
+#define RI_KEY_TERMSRV_SHADOW &h0010
+#define RID_INPUT &h10000003
+#define RID_HEADER &h10000005
+#define RIDI_PREPARSEDDATA &h20000005
+#define RIDI_DEVICENAME &h20000007
+#define RIDI_DEVICEINFO &h200000&b
+#define RIDEV_REMOVE &h00000001
+#define RIDEV_EXCLUDE &h00000010
+#define RIDEV_PAGEONLY &h00000020
+#define RIDEV_NOLEGACY &h00000030
+#define RIDEV_INPUTSINK &h00000100
+#define RIDEV_CAPTUREMOUSE &h00000200
+#define RIDEV_NOHOTKEYS &h00000200
+#define RIDEV_APPKEYS &h00000400
 
 type DLGPROC as function (byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as BOOL
 type TIMERPROC as sub (byval as HWND, byval as UINT, byval as UINT, byval as DWORD)
@@ -2662,6 +2798,13 @@ end type
 type PWINDOWPOS as WINDOWPOS ptr
 type LPWINDOWPOS as WINDOWPOS ptr
 
+type NCCALCSIZE_PARAMS
+	rgrc(0 to 3-1) as RECT
+	lppos as PWINDOWPOS
+end type
+
+type LPNCCALCSIZE_PARAMS as NCCALCSIZE_PARAMS ptr
+
 #ifndef UNICODE
 type MDICREATESTRUCTA
 	szClass as LPCSTR
@@ -2950,6 +3093,15 @@ end type
 
 type LPKBDLLHOOKSTRUCT as KBDLLHOOKSTRUCT ptr
 type PKBDLLHOOKSTRUCT as KBDLLHOOKSTRUCT ptr
+type FLASHWINFO
+	cbSize as UINT
+	hwnd as HWND
+	dwFlags as DWORD
+	uCount as UINT
+	dwTimeout as DWORD
+end type
+
+type PFLASHWINFO as FLASHWINFO ptr
 
 type MOUSEMOVEPOINT
 	x as integer
@@ -2959,6 +3111,7 @@ type MOUSEMOVEPOINT
 end type
 
 type PMOUSEMOVEPOINT as MOUSEMOVEPOINT ptr
+type LPMOUSEMOVEPOINT as MOUSEMOVEPOINT ptr
 
 type MOUSEINPUT
 	dx as LONG
@@ -3001,6 +3154,100 @@ end type
 type PINPUT as INPUT_ ptr
 type LPINPUT as INPUT_ ptr
 
+type BSMINFO
+	cbSize as UINT
+	hdesk as HDESK
+	hwnd as HWND
+	luid as LUID
+end type 
+type PBSMINFO as BSMINFO ptr
+
+type HRAWINPUT__
+	i as integer
+end type
+
+type HRAWINPUT as HRAWINPUT__ ptr
+
+type RAWINPUTHEADER
+	dwType as DWORD
+	dwSize as DWORD
+	hDevice as HANDLE
+	wParam as WPARAM
+end type
+
+type PRAWINPUTHEADER as RAWINPUTHEADER ptr
+
+type RAWMOUSE
+	usFlags as USHORT
+	union
+		ulButtons as ULONG 
+		type
+			usButtonFlags as USHORT 
+			usButtonData as USHORT
+		end type
+	end union
+	ulRawButtons as ULONG
+	lLastX as LONG
+	lLastY as LONG
+	ulExtraInformation as ULONG
+end type
+
+type PRAWMOUSE as RAWMOUSE ptr
+type LPRAWMOUSE as RAWMOUSE ptr
+
+type RAWKEYBOARD
+	MakeCode as USHORT
+	Flags as USHORT
+	Reserved as USHORT
+	VKey as USHORT
+	Message as UINT
+	ExtraInformation as ULONG
+end type
+
+type PRAWKEYBOARD as RAWKEYBOARD ptr
+type LPRAWKEYBOARD as RAWKEYBOARD ptr
+
+type RAWHID
+	dwSizeHid as DWORD
+	dwCount as DWORD
+	bRawData as BYTE
+end type
+
+type PRAWHID as RAWHID ptr
+type LPRAWHID as RAWHID ptr
+
+union RAWINPUT_data
+	mouse as RAWMOUSE
+	keyboard as RAWKEYBOARD
+	hid as RAWHID
+end union
+
+type RAWINPUT
+	header as RAWINPUTHEADER
+	data as RAWINPUT_data
+end type
+
+type PRAWINPUT as RAWINPUT ptr
+type LPRAWINPUT as RAWINPUT ptr
+
+type RAWINPUTDEVICE
+	usUsagePage as USHORT
+	usUsage as USHORT
+	dwFlags as DWORD
+	hwndTarget as HWND
+end type
+
+type PRAWINPUTDEVICE as RAWINPUTDEVICE ptr
+type LPRAWINPUTDEVICE as RAWINPUTDEVICE ptr
+type PCRAWINPUTDEVICE as RAWINPUTDEVICE ptr
+
+type RAWINPUTDEVICELIST
+	hDevice as HANDLE
+	dwType as DWORD
+end type
+
+type PRAWINPUTDEVICELIST as RAWINPUTDEVICELIST ptr
+
 type GUITHREADINFO
 	cbSize as DWORD
 	flags as DWORD
@@ -3034,6 +3281,7 @@ type PGUITHREADINFO as GUITHREADINFO ptr
 declare function ActivateKeyboardLayout alias "ActivateKeyboardLayout" (byval as HKL, byval as UINT) as HKL
 declare function AdjustWindowRect alias "AdjustWindowRect" (byval as LPRECT, byval as DWORD, byval as BOOL) as BOOL
 declare function AdjustWindowRectEx alias "AdjustWindowRectEx" (byval as LPRECT, byval as DWORD, byval as BOOL, byval as DWORD) as BOOL
+declare function AnimateWindow alias "AnimateWindow" (byval as HWND, byval as DWORD, byval as DWORD) as BOOL
 declare function AnyPopup alias "AnyPopup" () as BOOL
 declare function ArrangeIconicWindows alias "ArrangeIconicWindows" (byval as HWND) as UINT
 declare function AttachThreadInput alias "AttachThreadInput" (byval as DWORD, byval as DWORD, byval as BOOL) as BOOL
@@ -3041,7 +3289,6 @@ declare function BeginDeferWindowPos alias "BeginDeferWindowPos" (byval as integ
 declare function BeginPaint alias "BeginPaint" (byval as HWND, byval as LPPAINTSTRUCT) as HDC
 declare function BringWindowToTop alias "BringWindowToTop" (byval as HWND) as BOOL
 declare function BroadcastSystemMessage alias "BroadcastSystemMessage" (byval as DWORD, byval as LPDWORD, byval as UINT, byval as WPARAM, byval as LPARAM) as integer
-declare function CallMsgFilter alias "CallMsgFilter" (byval as PMSG, byval as integer) as BOOL
 declare function CallNextHookEx alias "CallNextHookEx" (byval as HHOOK, byval as integer, byval as WPARAM, byval as LPARAM) as LRESULT
 declare function CascadeWindows alias "CascadeWindows" (byval as HWND, byval as UINT, byval as LPCRECT, byval as UINT, byval as HWND ptr) as WORD
 declare function ChangeClipboardChain alias "ChangeClipboardChain" (byval as HWND, byval as HWND) as BOOL
@@ -3057,7 +3304,6 @@ declare function CloseClipboard alias "CloseClipboard" () as BOOL
 declare function CloseDesktop alias "CloseDesktop" (byval as HDESK) as BOOL
 declare function CloseWindow alias "CloseWindow" (byval as HWND) as BOOL
 declare function CloseWindowStation alias "CloseWindowStation" (byval as HWINSTA) as BOOL
-declare function CopyCursor alias "CopyCursor" (byval as HCURSOR) as HCURSOR
 declare function CopyIcon alias "CopyIcon" (byval as HICON) as HICON
 declare function CopyImage alias "CopyImage" (byval as HANDLE, byval as UINT, byval as integer, byval as integer, byval as UINT) as HANDLE
 declare function CopyRect alias "CopyRect" (byval as LPRECT, byval as LPCRECT) as BOOL
@@ -3071,7 +3317,9 @@ declare function CreateIconIndirect alias "CreateIconIndirect" (byval as PICONIN
 declare function CreateMenu alias "CreateMenu" () as HMENU
 declare function CreatePopupMenu alias "CreatePopupMenu" () as HMENU
 declare function DeferWindowPos alias "DeferWindowPos" (byval as HDWP, byval as HWND, byval as HWND, byval as integer, byval as integer, byval as integer, byval as integer, byval as UINT) as HDWP
+declare function DefRawInputProc alias "DefRawInputProc" (byval as PRAWINPUT ptr, byval as INT_, byval as UINT) as LRESULT
 declare function DeleteMenu alias "DeleteMenu" (byval as HMENU, byval as UINT, byval as UINT) as BOOL
+declare function DeregisterShellHookWindow alias "DeregisterShellHookWindow" (byval as HWND) as BOOL
 declare function DestroyAcceleratorTable alias "DestroyAcceleratorTable" (byval as HACCEL) as BOOL
 declare function DestroyCaret alias "DestroyCaret" () as BOOL
 declare function DestroyCursor alias "DestroyCursor" (byval as HCURSOR) as BOOL
@@ -3096,6 +3344,7 @@ declare function EndDeferWindowPos alias "EndDeferWindowPos" (byval as HDWP) as 
 declare function EndDialog alias "EndDialog" (byval as HWND, byval as integer) as BOOL
 declare function EndMenu alias "EndMenu" () as BOOL
 declare function EndPaint alias "EndPaint" (byval as HWND, byval as PAINTSTRUCT ptr) as BOOL
+declare function EndTask alias "EndTask" (byval as HWND, byval as BOOL, byval as BOOL) as BOOL
 declare function EnumChildWindows alias "EnumChildWindows" (byval as HWND, byval as ENUMWINDOWSPROC, byval as LPARAM) as BOOL
 declare function EnumClipboardFormats alias "EnumClipboardFormats" (byval as UINT) as UINT
 declare function EnumDesktopWindows alias "EnumDesktopWindows" (byval as HDESK, byval as ENUMWINDOWSPROC, byval as LPARAM) as BOOL
@@ -3105,10 +3354,11 @@ declare function EnumWindows alias "EnumWindows" (byval as WNDENUMPROC, byval as
 declare function EqualRect alias "EqualRect" (byval as LPCRECT, byval as LPCRECT) as BOOL
 declare function ExitWindowsEx alias "ExitWindowsEx" (byval as UINT, byval as DWORD) as BOOL
 declare function FlashWindow alias "FlashWindow" (byval as HWND, byval as BOOL) as BOOL
+declare function FlashWindowEx alias "FlashWindowEx" (byval as PFLASHWINFO) as BOOL
 declare function FrameRect alias "FrameRect" (byval as HDC, byval as LPCRECT, byval as HBRUSH) as integer
 declare function FrameRgn alias "FrameRgn" (byval as HDC, byval as HRGN, byval as HBRUSH, byval as integer, byval as integer) as BOOL
 declare function GetActiveWindow alias "GetActiveWindow" () as HWND
-declare function GetAncestor alias "GetAncestor" (byval hwnd as HWND, byval gaFlags as UINT) as HWND
+declare function GetAncestor alias "GetAncestor" (byval as HWND, byval as UINT) as HWND
 declare function GetAsyncKeyState alias "GetAsyncKeyState" (byval as integer) as SHORT
 declare function GetCapture alias "GetCapture" () as HWND
 declare function GetCaretBlinkTime alias "GetCaretBlinkTime" () as UINT
@@ -3117,6 +3367,7 @@ declare function GetClassWord alias "GetClassWord" (byval as HWND, byval as inte
 declare function GetClientRect alias "GetClientRect" (byval as HWND, byval as LPRECT) as BOOL
 declare function GetClipboardData alias "GetClipboardData" (byval as UINT) as HANDLE
 declare function GetClipboardOwner alias "GetClipboardOwner" () as HWND
+declare function GetClipboardSequenceNumber alias "GetClipboardSequenceNumber" () as DWORD
 declare function GetClipboardViewer alias "GetClipboardViewer" () as HWND
 declare function GetClipCursor alias "GetClipCursor" (byval as LPRECT) as BOOL
 declare function GetCursorPos alias "GetCursorPos" (byval as LPPOINT) as BOOL
@@ -3130,6 +3381,7 @@ declare function GetDlgItemInt alias "GetDlgItemInt" (byval as HWND, byval as in
 declare function GetDoubleClickTime alias "GetDoubleClickTime" () as UINT
 declare function GetFocus alias "GetFocus" () as HWND
 declare function GetForegroundWindow alias "GetForegroundWindow" () as HWND
+declare function GetGuiResources alias "GetGuiResources" (byval as HANDLE, byval as DWORD) as DWORD
 declare function GetIconInfo alias "GetIconInfo" (byval as HICON, byval as PICONINFO) as BOOL
 declare function GetInputState alias "GetInputState" () as BOOL
 declare function GetKBCodePage alias "GetKBCodePage" () as UINT
@@ -3139,7 +3391,6 @@ declare function GetKeyboardState alias "GetKeyboardState" (byval as PBYTE) as B
 declare function GetKeyboardType alias "GetKeyboardType" (byval as integer) as integer
 declare function GetKeyState alias "GetKeyState" (byval as integer) as SHORT
 declare function GetLastActivePopup alias "GetLastActivePopup" (byval as HWND) as HWND
-declare function GetLastError alias "GetLastError" () as DWORD
 declare function GetMenu alias "GetMenu" (byval as HWND) as HMENU
 declare function GetMenuCheckMarkDimensions alias "GetMenuCheckMarkDimensions" () as LONG
 declare function GetMenuContextHelpId alias "GetMenuContextHelpId" (byval as HMENU) as DWORD
@@ -3151,11 +3402,16 @@ declare function GetMenuState alias "GetMenuState" (byval as HMENU, byval as UIN
 declare function GetMessageExtraInfo alias "GetMessageExtraInfo" () as LONG
 declare function GetMessagePos alias "GetMessagePos" () as DWORD
 declare function GetMessageTime alias "GetMessageTime" () as LONG
+declare function GetMouseMovePointsEx alias "GetMouseMovePointsEx" (byval as UINT, byval as LPMOUSEMOVEPOINT, byval as LPMOUSEMOVEPOINT, byval as integer, byval as DWORD) as integer
 declare function GetNextDlgGroupItem alias "GetNextDlgGroupItem" (byval as HWND, byval as HWND, byval as BOOL) as HWND
 declare function GetNextDlgTabItem alias "GetNextDlgTabItem" (byval as HWND, byval as HWND, byval as BOOL) as HWND
 declare function GetOpenClipboardWindow alias "GetOpenClipboardWindow" () as HWND
 declare function GetParent alias "GetParent" (byval as HWND) as HWND
 declare function GetPriorityClipboardFormat alias "GetPriorityClipboardFormat" (byval as UINT ptr, byval as integer) as integer
+declare function GetRawInputBuffer alias "GetRawInputBuffer" (byval as PRAWINPUT, byval as PUINT, byval as UINT) as UINT
+declare function GetRawInputData alias "GetRawInputData" (byval as HRAWINPUT, byval as UINT, byval as LPVOID, byval as PUINT, byval as UINT) as UINT
+declare function GetRawInputDeviceList alias "GetRawInputDeviceList" (byval as PRAWINPUTDEVICELIST, byval as PUINT, byval as UINT) as UINT
+declare function GetRegisteredRawInputDevices alias "GetRegisteredRawInputDevices" (byval as PRAWINPUTDEVICE, byval as PUINT, byval as UINT) as UINT
 declare function GetQueueStatus alias "GetQueueStatus" (byval as UINT) as DWORD
 declare function GetScrollInfo alias "GetScrollInfo" (byval as HWND, byval as integer, byval as LPSCROLLINFO) as BOOL
 declare function GetScrollPos alias "GetScrollPos" (byval as HWND, byval as integer) as integer
@@ -3187,6 +3443,7 @@ declare function GetLastInputInfo alias "GetLastInputInfo" (byval as PLASTINPUTI
 declare function GetListBoxInfo alias "GetListBoxInfo" (byval as HWND) as DWORD
 declare function GetMenuBarInfo alias "GetMenuBarInfo" (byval as HWND, byval as LONG, byval as LONG, byval as PMENUBARINFO) as BOOL
 declare function GetMenuInfo alias "GetMenuInfo" (byval as HMENU, byval as LPMENUINFO) as BOOL
+declare function GetProcessDefaultLayout alias "GetProcessDefaultLayout" (byval as DWORD ptr) as BOOL
 declare function GetScrollBarInfo alias "GetScrollBarInfo" (byval as HWND, byval as LONG, byval as PSCROLLBARINFO) as BOOL
 declare function GetTitleBarInfo alias "GetTitleBarInfo" (byval as HWND, byval as PTITLEBARINFO) as BOOL
 declare function GetWindowInfo alias "GetWindowInfo" (byval as HWND, byval as PWINDOWINFO) as BOOL
@@ -3194,6 +3451,8 @@ declare function HideCaret alias "HideCaret" (byval as HWND) as BOOL
 declare function HiliteMenuItem alias "HiliteMenuItem" (byval as HWND, byval as HMENU, byval as UINT, byval as UINT) as BOOL
 declare function InflateRect alias "InflateRect" (byval as LPRECT, byval as integer, byval as integer) as BOOL
 declare function InSendMessage alias "InSendMessage" () as BOOL
+declare function InSendMessageEx alias "InSendMessageEx" (byval as LPVOID) as DWORD
+declare function InternalGetWindowText alias "InternalGetWindowText" (byval as HWND, byval as LPWSTR, byval as INT_) as INT_
 declare function IntersectRect alias "IntersectRect" (byval as LPRECT, byval as LPCRECT, byval as LPCRECT) as BOOL
 declare function InvalidateRect alias "InvalidateRect" (byval as HWND, byval as LPCRECT, byval as BOOL) as BOOL
 declare function InvalidateRgn alias "InvalidateRgn" (byval as HWND, byval as HRGN, byval as BOOL) as BOOL
@@ -3201,6 +3460,8 @@ declare function InvertRect alias "InvertRect" (byval as HDC, byval as LPCRECT) 
 declare function IsChild alias "IsChild" (byval as HWND, byval as HWND) as BOOL
 declare function IsClipboardFormatAvailable alias "IsClipboardFormatAvailable" (byval as UINT) as BOOL
 declare function IsDlgButtonChecked alias "IsDlgButtonChecked" (byval as HWND, byval as integer) as UINT
+declare function IsGUIThread alias "IsGUIThread" (byval as BOOL) as BOOL
+declare function IsHungAppWindow alias "IsHungAppWindow" (byval as HWND) as BOOL
 declare function IsIconic alias "IsIconic" (byval as HWND) as BOOL
 declare function IsMenu alias "IsMenu" (byval as HMENU) as BOOL
 declare function IsRectEmpty alias "IsRectEmpty" (byval as LPCRECT) as BOOL
@@ -3208,21 +3469,25 @@ declare function IsWindow alias "IsWindow" (byval as HWND) as BOOL
 declare function IsWindowEnabled alias "IsWindowEnabled" (byval as HWND) as BOOL
 declare function IsWindowUnicode alias "IsWindowUnicode" (byval as HWND) as BOOL
 declare function IsWindowVisible alias "IsWindowVisible" (byval as HWND) as BOOL
+declare function IsWinEventHookInstalled alias "IsWinEventHookInstalled" (byval as DWORD) as BOOL
 declare function IsZoomed alias "IsZoomed" (byval as HWND) as BOOL
 declare sub keybd_event alias "keybd_event" (byval as BYTE, byval as BYTE, byval as DWORD, byval as DWORD)
 declare function KillTimer alias "KillTimer" (byval as HWND, byval as UINT) as BOOL
 declare function LockWindowUpdate alias "LockWindowUpdate" (byval as HWND) as BOOL
+declare function LockWorkStation alias "LockWorkStation" () as BOOL
 declare function LookupIconIdFromDirectory alias "LookupIconIdFromDirectory" (byval as PBYTE, byval as BOOL) as integer
 declare function LookupIconIdFromDirectoryEx alias "LookupIconIdFromDirectoryEx" (byval as PBYTE, byval as BOOL, byval as integer, byval as integer, byval as UINT) as integer
 declare function MapDialogRect alias "MapDialogRect" (byval as HWND, byval as LPRECT) as BOOL
 declare function MapWindowPoints alias "MapWindowPoints" (byval as HWND, byval as HWND, byval as LPPOINT, byval as UINT) as integer
 declare function MenuItemFromPoint alias "MenuItemFromPoint" (byval as HWND, byval as HMENU, byval as POINT) as integer
 declare function MessageBeep alias "MessageBeep" (byval as UINT) as BOOL
+declare function MonitorFromPoint alias "MonitorFromPoint" (byval as POINT, byval as DWORD) as HMONITOR
+declare function MonitorFromRect alias "MonitorFromRect" (byval as LPCRECT, byval as DWORD) as HMONITOR
+declare function MonitorFromWindow alias "MonitorFromWindow" (byval as HWND, byval as DWORD) as HMONITOR
 declare sub mouse_event alias "mouse_event" (byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as ULONG_PTR)
 declare function MoveWindow alias "MoveWindow" (byval as HWND, byval as integer, byval as integer, byval as integer, byval as integer, byval as BOOL) as BOOL
 declare function MsgWaitForMultipleObjects alias "MsgWaitForMultipleObjects" (byval as DWORD, byval as HANDLE ptr, byval as BOOL, byval as DWORD, byval as DWORD) as DWORD
 declare function MsgWaitForMultipleObjectsEx alias "MsgWaitForMultipleObjectsEx" (byval as DWORD, byval as HANDLE ptr, byval as DWORD, byval as DWORD, byval as DWORD) as DWORD
-declare sub NotifyWinEvent alias "NotifyWinEvent" (byval as DWORD, byval as HWND, byval as LONG, byval as LONG)
 declare function OemKeyScan alias "OemKeyScan" (byval as WORD) as DWORD
 declare function OffsetRect alias "OffsetRect" (byval as LPRECT, byval as integer, byval as integer) as BOOL
 declare function OpenClipboard alias "OpenClipboard" (byval as HWND) as BOOL
@@ -3230,9 +3495,12 @@ declare function OpenIcon alias "OpenIcon" (byval as HWND) as BOOL
 declare function OpenInputDesktop alias "OpenInputDesktop" (byval as DWORD, byval as BOOL, byval as DWORD) as HDESK
 declare function PaintDesktop alias "PaintDesktop" (byval as HDC) as BOOL
 declare sub PostQuitMessage alias "PostQuitMessage" (byval as integer)
+declare function PrintWindow alias "PrintWindow" (byval as HWND, byval as HDC, byval as UINT) as BOOL
 declare function PtInRect alias "PtInRect" (byval as LPCRECT, byval as POINT) as BOOL
+declare function RealChildWindowFromPoint alias "RealChildWindowFromPoint" (byval as HWND, byval as POINT) as HWND
 declare function RedrawWindow alias "RedrawWindow" (byval as HWND, byval as LPCRECT, byval as HRGN, byval as UINT) as BOOL
 declare function RegisterHotKey alias "RegisterHotKey" (byval as HWND, byval as integer, byval as UINT, byval as UINT) as BOOL
+declare function RegisterRawInputDevices alias "RegisterRawInputDevices" (byval as PCRAWINPUTDEVICE, byval as UINT, byval as UINT) as BOOL
 declare function ReleaseCapture alias "ReleaseCapture" () as BOOL
 declare function ReleaseDC alias "ReleaseDC" (byval as HWND, byval as HDC) as integer
 declare function RemoveMenu alias "RemoveMenu" (byval as HMENU, byval as UINT, byval as UINT) as BOOL
@@ -3265,6 +3533,7 @@ declare function SetMenuItemBitmaps alias "SetMenuItemBitmaps" (byval as HMENU, 
 declare function SetMessageExtraInfo alias "SetMessageExtraInfo" (byval as LPARAM) as LPARAM
 declare function SetMessageQueue alias "SetMessageQueue" (byval as integer) as BOOL
 declare function SetParent alias "SetParent" (byval as HWND, byval as HWND) as HWND
+declare function SetProcessDefaultLayout alias "SetProcessDefaultLayout" (byval as DWORD) as BOOL
 declare function SetProcessWindowStation alias "SetProcessWindowStation" (byval as HWINSTA) as BOOL
 declare function SetRect alias "SetRect" (byval as LPRECT, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
 declare function SetRectEmpty alias "SetRectEmpty" (byval as LPRECT) as BOOL
@@ -3290,6 +3559,7 @@ declare function ShowWindowAsync alias "ShowWindowAsync" (byval as HWND, byval a
 declare function SubtractRect alias "SubtractRect" (byval as LPRECT, byval as LPCRECT, byval as LPCRECT) as BOOL
 declare function SwapMouseButton alias "SwapMouseButton" (byval as BOOL) as BOOL
 declare function SwitchDesktop alias "SwitchDesktop" (byval as HDESK) as BOOL
+declare sub SwitchToThisWindow alias "SwitchToThisWindow" (byval as HWND, byval as BOOL)
 declare function TileWindows alias "TileWindows" (byval as HWND, byval as UINT, byval as LPCRECT, byval as UINT, byval as HWND ptr) as WORD
 declare function ToAscii alias "ToAscii" (byval as UINT, byval as UINT, byval as PBYTE, byval as LPWORD, byval as UINT) as integer
 declare function ToAsciiEx alias "ToAsciiEx" (byval as UINT, byval as UINT, byval as PBYTE, byval as LPWORD, byval as UINT, byval as HKL) as integer
@@ -3304,8 +3574,10 @@ declare function UnhookWindowsHook alias "UnhookWindowsHook" (byval as integer, 
 declare function UnhookWindowsHookEx alias "UnhookWindowsHookEx" (byval as HHOOK) as BOOL
 declare function UnionRect alias "UnionRect" (byval as LPRECT, byval as LPCRECT, byval as LPCRECT) as BOOL
 declare function UnloadKeyboardLayout alias "UnloadKeyboardLayout" (byval as HKL) as BOOL
+declare function UnregisterDeviceNotification alias "UnregisterDeviceNotification" (byval as HANDLE) as BOOL
 declare function UnregisterHotKey alias "UnregisterHotKey" (byval as HWND, byval as integer) as BOOL
 declare function UpdateWindow alias "UpdateWindow" (byval as HWND) as BOOL
+declare function UserHandleGrantAccess alias "UserHandleGrantAccess" (byval as HANDLE, byval as HANDLE, byval as BOOL) as BOOL
 declare function ValidateRect alias "ValidateRect" (byval as HWND, byval as LPCRECT) as BOOL
 declare function ValidateRgn alias "ValidateRgn" (byval as HWND, byval as HRGN) as BOOL
 declare function WaitForInputIdle alias "WaitForInputIdle" (byval as HANDLE, byval as DWORD) as DWORD
@@ -3364,8 +3636,12 @@ type LPNONCLIENTMETRICS as NONCLIENTMETRICSW ptr
 #define MAKEINTRESOURCE MAKEINTRESOURCEW
 
 declare function AppendMenu alias "AppendMenuW" (byval as HMENU, byval as UINT, byval as UINT_PTR, byval as LPCWSTR) as BOOL
+declare function BroadcastSystemMessageW alias "BroadcastSystemMessageW" (byval as DWORD, byval as LPDWORD, byval as UINT, byval as WPARAM, byval as LPARAM) as integer
+declare function BroadcastSystemMessageEx alias "BroadcastSystemMessageExW" (byval as DWORD, byval as LPDWORD, byval as UINT, byval as WPARAM, byval as LPARAM, byval as PBSMINFO) as integer
+declare function CallMsgFilter alias "CallMsgFilterW" (byval as LPMSG, byval as INT_) as BOOL
 declare function CallWindowProc alias "CallWindowProcW" (byval as WNDPROC, byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as LRESULT
 declare function ChangeDisplaySettings alias "ChangeDisplaySettingsW" (byval as PDEVMODEW, byval as DWORD) as LONG
+declare function ChangeDisplaySettingsEx alias "ChangeDisplaySettingsExW" (byval as LPCWSTR, byval as LPDEVMODEW, byval as HWND, byval as DWORD, byval as LPVOID) as LONG
 declare function ChangeMenu alias "ChangeMenuW" (byval as HMENU, byval as UINT, byval as LPCWSTR, byval as UINT, byval as UINT) as BOOL
 declare function CharLower alias "CharLowerW" (byval as LPWSTR) as LPWSTR
 declare function CharLowerBuff alias "CharLowerBuffW" (byval as LPWSTR, byval as DWORD) as DWORD
@@ -3401,6 +3677,7 @@ declare function DrawText alias "DrawTextW" (byval as HDC, byval as LPCWSTR, byv
 declare function DrawTextEx alias "DrawTextExW" (byval as HDC, byval as LPWSTR, byval as integer, byval as LPRECT, byval as UINT, byval as LPDRAWTEXTPARAMS) as integer
 declare function EnumDesktops alias "EnumDesktopsW" (byval as HWINSTA, byval as DESKTOPENUMPROCW, byval as LPARAM) as BOOL
 declare function EnumDisplaySettings alias "EnumDisplaySettingsW" (byval as LPCWSTR, byval as DWORD, byval as PDEVMODEW) as BOOL
+declare function EnumDisplaySettingsEx alias "EnumDisplaySettingsExW" (byval as LPCWSTR, byval as DWORD, byval as LPDEVMODEW, byval as DWORD) as BOOL
 declare function EnumDisplayDevices alias "EnumDisplayDevicesW" (byval as LPCWSTR, byval as DWORD, byval as PDISPLAY_DEVICEW, byval as DWORD) as BOOL
 declare function EnumProps alias "EnumPropsW" (byval as HWND, byval as PROPENUMPROCW) as integer
 declare function EnumPropsEx alias "EnumPropsExW" (byval as HWND, byval as PROPENUMPROCEXW, byval as LPARAM) as integer
@@ -3419,6 +3696,7 @@ declare function GetMenuItemInfo alias "GetMenuItemInfoW" (byval as HMENU, byval
 declare function GetMenuString alias "GetMenuStringW" (byval as HMENU, byval as UINT, byval as LPWSTR, byval as integer, byval as UINT) as integer
 declare function GetMessage alias "GetMessageW" (byval as LPMSG, byval as HWND, byval as UINT, byval as UINT) as BOOL
 declare function GetProp alias "GetPropW" (byval as HWND, byval as LPCWSTR) as HANDLE
+declare function GetRawInputDeviceInfo alias "GetRawInputDeviceInfoW" (byval as HANDLE, byval as UINT, byval as LPVOID, byval as PUINT) as UINT
 declare function GetTabbedTextExtent alias "GetTabbedTextExtentW" (byval as HDC, byval as LPCWSTR, byval as integer, byval as integer, byval as LPINT) as DWORD
 declare function GetWindowLong alias "GetWindowLongW" (byval as HWND, byval as integer) as LONG
 declare function GetUserObjectInformation alias "GetUserObjectInformationW" (byval as HANDLE, byval as integer, byval as PVOID, byval as DWORD, byval as PDWORD) as BOOL
@@ -3458,6 +3736,7 @@ declare function OpenWindowStation alias "OpenWindowStationW" (byval as LPWSTR, 
 declare function PeekMessage alias "PeekMessageW" (byval as LPMSG, byval as HWND, byval as UINT, byval as UINT, byval as UINT) as BOOL
 declare function PostMessage alias "PostMessageW" (byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as BOOL
 declare function PostThreadMessage alias "PostThreadMessageW" (byval as DWORD, byval as UINT, byval as WPARAM, byval as LPARAM) as BOOL
+declare function RealGetWindowClass alias "RealGetWindowClassW" (byval as HWND, byval as LPWSTR, byval as UINT) as UINT
 declare function RegisterClass alias "RegisterClassW" (byval as WNDCLASSW ptr) as ATOM
 declare function RegisterClassEx alias "RegisterClassExW" (byval as WNDCLASSEXW ptr) as ATOM
 declare function RegisterClipboardFormat alias "RegisterClipboardFormatW" (byval as LPCWSTR) as UINT
@@ -3474,6 +3753,7 @@ declare function SetMenuItemInfo alias "SetMenuItemInfoW" (byval as HMENU, byval
 declare function SetProp alias "SetPropW" (byval as HWND, byval as LPCWSTR, byval as HANDLE) as BOOL
 declare function SetUserObjectInformation alias "SetUserObjectInformationW" (byval as HANDLE, byval as integer, byval as PVOID, byval as DWORD) as BOOL
 declare function SetWindowLong alias "SetWindowLongW" (byval as HWND, byval as integer, byval as LONG) as LONG
+declare function SetWindowsHook alias "SetWindowsHookW" (byval as integer, byval as HOOKPROC) as HHOOK
 declare function SetWindowsHookEx alias "SetWindowsHookExW" (byval as integer, byval as HOOKPROC, byval as HINSTANCE, byval as DWORD) as HHOOK
 declare function SetWindowText alias "SetWindowTextW" (byval as HWND, byval as LPCWSTR) as BOOL
 declare function SystemParametersInfo alias "SystemParametersInfoW" (byval as UINT, byval as UINT, byval as PVOID, byval as UINT) as BOOL
@@ -3483,8 +3763,8 @@ declare function UnregisterClass alias "UnregisterClassW" (byval as LPCWSTR, byv
 declare function VkKeyScanEx alias "VkKeyScanExW" (byval as WCHAR, byval as HKL) as SHORT
 declare function VkKeyScan alias "VkKeyScanW" (byval as WCHAR) as SHORT
 declare function WinHelp alias "WinHelpW" (byval as HWND, byval as LPCWSTR, byval as UINT, byval as DWORD) as BOOL
-''''''' declare function wvsprintf alias "wvsprintfW" (byval as LPWSTR, byval as LPCWSTR, byval arglist as va_list) as integer
 declare function wsprintf cdecl alias "wsprintfW" (byval as LPWSTR, byval as LPCWSTR, ...) as integer
+''''''''declare function wvsprintf cdecl alias "wvsprintfW" (byval as LPWSTR, byval as LPCWSTR, byval arglist as va_list) as integer
 
 #else ''UNICODE
 type WNDCLASS as WNDCLASSA
@@ -3531,8 +3811,12 @@ type LPNONCLIENTMETRICS as NONCLIENTMETRICSA ptr
 #define MAKEINTRESOURCE MAKEINTRESOURCEA
 
 declare function AppendMenu alias "AppendMenuA" (byval as HMENU, byval as UINT, byval as UINT_PTR, byval as LPCSTR) as BOOL
+declare function BroadcastSystemMessageA alias "BroadcastSystemMessageA" (byval as DWORD, byval as LPDWORD, byval as UINT, byval as WPARAM, byval as LPARAM) as integer
+declare function BroadcastSystemMessageEx alias "BroadcastSystemMessageExA" (byval as DWORD, byval as LPDWORD, byval as UINT, byval as WPARAM, byval as LPARAM, byval as PBSMINFO) as integer
+declare function CallMsgFilter alias "CallMsgFilterA" (byval as LPMSG, byval as INT_) as BOOL
 declare function CallWindowProc alias "CallWindowProcA" (byval as WNDPROC, byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as LRESULT
 declare function ChangeDisplaySettings alias "ChangeDisplaySettingsA" (byval as PDEVMODEA, byval as DWORD) as LONG
+declare function ChangeDisplaySettingsEx alias "ChangeDisplaySettingsExA" (byval as LPCSTR, byval as LPDEVMODEA, byval as HWND, byval as DWORD, byval as LPVOID) as LONG
 declare function ChangeMenu alias "ChangeMenuA" (byval as HMENU, byval as UINT, byval as LPCSTR, byval as UINT, byval as UINT) as BOOL
 declare function CharLower alias "CharLowerA" (byval as LPSTR) as LPSTR
 declare function CharLowerBuff alias "CharLowerBuffA" (byval as LPSTR, byval as DWORD) as DWORD
@@ -3568,6 +3852,7 @@ declare function DrawText alias "DrawTextA" (byval as HDC, byval as LPCSTR, byva
 declare function DrawTextEx alias "DrawTextExA" (byval as HDC, byval as LPSTR, byval as integer, byval as LPRECT, byval as UINT, byval as LPDRAWTEXTPARAMS) as integer
 declare function EnumDesktops alias "EnumDesktopsA" (byval as HWINSTA, byval as DESKTOPENUMPROCA, byval as LPARAM) as BOOL
 declare function EnumDisplaySettings alias "EnumDisplaySettingsA" (byval as LPCSTR, byval as DWORD, byval as PDEVMODEA) as BOOL
+declare function EnumDisplaySettingsEx alias "EnumDisplaySettingsExA" (byval as LPCSTR, byval as DWORD, byval as LPDEVMODEA, byval as DWORD) as BOOL
 declare function EnumDisplayDevices alias "EnumDisplayDevicesA" (byval as LPCSTR, byval as DWORD, byval as PDISPLAY_DEVICEA, byval as DWORD) as BOOL
 declare function EnumProps alias "EnumPropsA" (byval as HWND, byval as PROPENUMPROCA) as integer
 declare function EnumPropsEx alias "EnumPropsExA" (byval as HWND, byval as PROPENUMPROCEXA, byval as LPARAM) as integer
@@ -3586,6 +3871,7 @@ declare function GetMenuItemInfo alias "GetMenuItemInfoA" (byval as HMENU, byval
 declare function GetMenuString alias "GetMenuStringA" (byval as HMENU, byval as UINT, byval as LPSTR, byval as integer, byval as UINT) as integer
 declare function GetMessage alias "GetMessageA" (byval as LPMSG, byval as HWND, byval as UINT, byval as UINT) as BOOL
 declare function GetProp alias "GetPropA" (byval as HWND, byval as LPCSTR) as HANDLE
+declare function GetRawInputDeviceInfo alias "GetRawInputDeviceInfoA" (byval as HANDLE, byval as UINT, byval as LPVOID, byval as PUINT) as UINT
 declare function GetTabbedTextExtent alias "GetTabbedTextExtentA" (byval as HDC, byval as LPCSTR, byval as integer, byval as integer, byval as LPINT) as DWORD
 declare function GetWindowLong alias "GetWindowLongA" (byval as HWND, byval as integer) as LONG
 declare function GetUserObjectInformation alias "GetUserObjectInformationA" (byval as HANDLE, byval as integer, byval as PVOID, byval as DWORD, byval as PDWORD) as BOOL
@@ -3625,6 +3911,7 @@ declare function OpenWindowStation alias "OpenWindowStationA" (byval as LPSTR, b
 declare function PeekMessage alias "PeekMessageA" (byval as LPMSG, byval as HWND, byval as UINT, byval as UINT, byval as UINT) as BOOL
 declare function PostMessage alias "PostMessageA" (byval as HWND, byval as UINT, byval as WPARAM, byval as LPARAM) as BOOL
 declare function PostThreadMessage alias "PostThreadMessageA" (byval as DWORD, byval as UINT, byval as WPARAM, byval as LPARAM) as BOOL
+declare function RealGetWindowClass alias "RealGetWindowClassA" (byval as HWND, byval as LPSTR, byval as UINT) as UINT
 declare function RegisterClass alias "RegisterClassA" (byval as WNDCLASSA ptr) as ATOM
 declare function RegisterClassEx alias "RegisterClassExA" (byval as WNDCLASSEXA ptr) as ATOM
 declare function RegisterClipboardFormat alias "RegisterClipboardFormatA" (byval as LPCSTR) as UINT
@@ -3641,7 +3928,7 @@ declare function SetMenuItemInfo alias "SetMenuItemInfoA" (byval as HMENU, byval
 declare function SetProp alias "SetPropA" (byval as HWND, byval as LPCSTR, byval as HANDLE) as BOOL
 declare function SetUserObjectInformation alias "SetUserObjectInformationA" (byval as HANDLE, byval as integer, byval as PVOID, byval as DWORD) as BOOL
 declare function SetWindowLong alias "SetWindowLongA" (byval as HWND, byval as integer, byval as LONG) as LONG
-declare function SetWindowsHook alias "SetWindowsHookA" (byval as integer, byval as HOOKPROC) as HOOKPROC
+declare function SetWindowsHook alias "SetWindowsHookA" (byval as integer, byval as HOOKPROC) as HHOOK
 declare function SetWindowsHookEx alias "SetWindowsHookExA" (byval as integer, byval as HOOKPROC, byval as HINSTANCE, byval as DWORD) as HHOOK
 declare function SetWindowText alias "SetWindowTextA" (byval as HWND, byval as LPCSTR) as BOOL
 declare function SystemParametersInfo alias "SystemParametersInfoA" (byval as UINT, byval as UINT, byval as PVOID, byval as UINT) as BOOL
@@ -3651,8 +3938,8 @@ declare function UnregisterClass alias "UnregisterClassA" (byval as LPCSTR, byva
 declare function VkKeyScan alias "VkKeyScanA" (byval as CHAR) as SHORT
 declare function VkKeyScanEx alias "VkKeyScanExA" (byval as CHAR, byval as HKL) as SHORT
 declare function WinHelp alias "WinHelpA" (byval as HWND, byval as LPCSTR, byval as UINT, byval as DWORD) as BOOL
-''''''' declare function wvsprintf alias "wvsprintfA" (byval as LPSTR, byval as LPCSTR, byval arglist as va_list) as integer
 declare function wsprintf cdecl alias "wsprintfA" (byval as LPSTR, byval as LPCSTR, ...) as integer
+''''''''declare function wvsprintf cdecl alias "wvsprintfA" (byval as LPSTR, byval as LPCSTR, byval arglist as va_list) as integer
 
 #endif ''UNICODE
 

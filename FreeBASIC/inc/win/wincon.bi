@@ -17,6 +17,8 @@
 #define BACKGROUND_GREEN 32
 #define BACKGROUND_RED 64
 #define BACKGROUND_INTENSITY 128
+#define CONSOLE_FULLSCREEN_MODE 1
+#define CONSOLE_WINDOWED_MODE 2
 #define CTRL_C_EVENT 0
 #define CTRL_BREAK_EVENT 1
 #define CTRL_CLOSE_EVENT 2
@@ -154,6 +156,7 @@ end type
 type PINPUT_RECORD as INPUT_RECORD ptr
 
 declare function AllocConsole alias "AllocConsole" () as BOOL
+declare function AttachConsole alias "AttachConsole" (byval as DWORD) as BOOL
 declare function CreateConsoleScreenBuffer alias "CreateConsoleScreenBuffer" (byval as DWORD, byval as DWORD, byval as SECURITY_ATTRIBUTES ptr, byval as DWORD, byval as LPVOID) as HANDLE
 declare function FillConsoleOutputAttribute alias "FillConsoleOutputAttribute" (byval as HANDLE, byval as WORD, byval as DWORD, byval as COORD, byval as PDWORD) as BOOL
 declare function FlushConsoleInputBuffer alias "FlushConsoleInputBuffer" (byval as HANDLE) as BOOL
@@ -164,6 +167,8 @@ declare function GetConsoleCursorInfo alias "GetConsoleCursorInfo" (byval as HAN
 declare function GetConsoleMode alias "GetConsoleMode" (byval as HANDLE, byval as PDWORD) as BOOL
 declare function GetConsoleOutputCP alias "GetConsoleOutputCP" () as UINT
 declare function GetConsoleScreenBufferInfo alias "GetConsoleScreenBufferInfo" (byval as HANDLE, byval as PCONSOLE_SCREEN_BUFFER_INFO) as BOOL
+declare function GetConsoleDisplayMode alias "GetConsoleDisplayMode" (byval as LPDWORD) as BOOL
+declare function GetConsoleWindow alias "GetConsoleWindow" () as HWND
 declare function GetLargestConsoleWindowSize alias "GetLargestConsoleWindowSize" (byval as HANDLE) as COORD
 declare function GetNumberOfConsoleInputEvents alias "GetNumberOfConsoleInputEvents" (byval as HANDLE, byval as PDWORD) as BOOL
 declare function GetNumberOfConsoleMouseButtons alias "GetNumberOfConsoleMouseButtons" (byval as PDWORD) as BOOL
@@ -173,6 +178,7 @@ declare function SetConsoleCP alias "SetConsoleCP" (byval as UINT) as BOOL
 declare function SetConsoleCtrlHandler alias "SetConsoleCtrlHandler" (byval as PHANDLER_ROUTINE, byval as BOOL) as BOOL
 declare function SetConsoleCursorInfo alias "SetConsoleCursorInfo" (byval as HANDLE, byval as CONSOLE_CURSOR_INFO ptr) as BOOL
 declare function SetConsoleCursorPosition alias "SetConsoleCursorPosition" (byval as HANDLE, byval as COORD) as BOOL
+declare function SetConsoleDisplayMode alias "SetConsoleDisplayMode" (byval as HANDLE, byval as DWORD, byval as COORD ptr) as BOOL
 declare function SetConsoleMode alias "SetConsoleMode" (byval as HANDLE, byval as DWORD) as BOOL
 declare function SetConsoleOutputCP alias "SetConsoleOutputCP" (byval as UINT) as BOOL
 declare function SetConsoleScreenBufferSize alias "SetConsoleScreenBufferSize" (byval as HANDLE, byval as COORD) as BOOL

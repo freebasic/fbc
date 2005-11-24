@@ -17,9 +17,8 @@
 #define SNDMSG SendMessage
 #endif
 
-#define DRAGLISTMSGSTRING __TEXT("commctrl_DragListMsg")
+#define DRAGLISTMSGSTRING "commctrl_DragListMsg"
 
-#ifndef UNICODE
 #define HOTKEY_CLASS	"msctls_hotkey32"
 #define PROGRESS_CLASS	"msctls_progress32"
 #define STATUSCLASSNAME	"msctls_statusbar32"
@@ -45,33 +44,6 @@
 #define WC_LISTBOX	"ListBox"
 #define WC_COMBOBOX	"ComboBox"
 #define WC_SCROLLBAR	"ScrollBar"
-#else ''UNICODE
-#define HOTKEY_CLASS	wstr("msctls_hotkey32")
-#define PROGRESS_CLASS	wstr("msctls_progress32")
-#define STATUSCLASSNAME	wstr("msctls_statusbar32")
-#define TOOLBARCLASSNAME	wstr("ToolbarWindow32")
-#define TOOLTIPS_CLASS	wstr("tooltips_class32")
-#define TRACKBAR_CLASS	wstr("msctls_trackbar32")
-#define UPDOWN_CLASS	wstr("msctls_updown32")
-#define ANIMATE_CLASS	wstr("SysAnimate32")
-#define DATETIMEPICK_CLASS wstr("SysDateTimePick32")
-#define MONTHCAL_CLASS wstr("SysMonthCal32")
-#define REBARCLASSNAME wstr("ReBarWindow32")
-#define WC_COMBOBOXEX	wstr("ComboBoxEx32")
-#define WC_IPADDRESS	wstr("SysIPAddress32")
-#define WC_LISTVIEW	wstr("SysListView32")
-#define WC_TABCONTROL	wstr("SysTabControl32")
-#define WC_TREEVIEW	wstr("SysTreeView32")
-#define WC_HEADER 	wstr("SysHeader32")
-#define WC_PAGESCROLLER	wstr("SysPager")
-#define WC_NATIVEFONTCTL	wstr("NativeFontCtl")
-#define WC_BUTTON	wstr("Button")
-#define WC_STATIC	wstr("Static")
-#define WC_EDIT	wstr("Edit")
-#define WC_LISTBOX	wstr("ListBox")
-#define WC_COMBOBOX	wstr("ComboBox")
-#define WC_SCROLLBAR	wstr("ScrollBar")
-#endif ''UNICODE
 
 #define LVM_FIRST &h1000
 #define TV_FIRST &h1100
@@ -1292,9 +1264,6 @@
 #define RBHT_CAPTION 2
 #define RBHT_CLIENT 3
 #define RBHT_GRABBER 4
-#define SB_SETTIPTEXT 1040
-#define SB_GETTIPTEXT 1042
-#define RB_GETBANDINFO (1024+29)
 #define CBEM_INSERTITEMA (1024+1)
 #define CBEM_SETIMAGELIST (1024+2)
 #define CBEM_GETIMAGELIST (1024+3)

@@ -257,6 +257,7 @@
 #define CTRY_KAZAKSTAN 7
 #define CTRY_KENYA 254
 #define CTRY_KUWAIT 965
+#define CTRY_KYRGYZSTAN 996
 #define CTRY_LATVIA 371
 #define CTRY_LEBANON 961
 #define CTRY_LIBYA 218
@@ -266,8 +267,10 @@
 #define CTRY_MACAU 853
 #define CTRY_MACEDONIA 389
 #define CTRY_MALAYSIA 60
+#define CTRY_MALDIVES 960
 #define CTRY_MEXICO 52
 #define CTRY_MONACO 33
+#define CTRY_MONGOLIA 976
 #define CTRY_MOROCCO 212
 #define CTRY_NETHERLANDS 31
 #define CTRY_NEW_ZEALAND 64
@@ -398,6 +401,9 @@ type LCTYPE as DWORD
 type CALTYPE as DWORD
 type CALID as DWORD
 type LGRPID as DWORD
+type GEOID as DWORD
+type GEOTYPE as DWORD
+type GEOCLASS as DWORD
 type CALINFO_ENUMPROCA as function (byval as LPSTR) as BOOL
 type CALINFO_ENUMPROCW as function (byval as LPWSTR) as BOOL
 type CALINFO_ENUMPROCEXA as function (byval as LPSTR, byval as CALID) as BOOL
@@ -418,6 +424,30 @@ type DATEFMT_ENUMPROCEXA as function (byval as LPSTR, byval as CALID) as BOOL
 type DATEFMT_ENUMPROCEXW as function (byval as LPWSTR, byval as CALID) as BOOL
 type TIMEFMT_ENUMPROCA as function (byval as LPSTR) as BOOL
 type TIMEFMT_ENUMPROCW as function (byval as LPWSTR) as BOOL
+type GEO_ENUMPROC as function(byval as GEOID) as BOOL
+
+enum NLS_FUNCTION
+	COMPARE_STRING = &h0001
+end enum
+
+enum SYSGEOCLASS
+	GEOCLASS_NATION = 16
+	GEOCLASS_REGION = 14
+end enum
+
+enum SYSGEOTYPE
+	GEO_NATION = &h0001
+	GEO_LATITUDE = &h0002
+	GEO_LONGITUDE = &h0003
+	GEO_ISO2 = &h0004
+	GEO_ISO3 = &h0005
+	GEO_RFC1766 = &h0006
+	GEO_LCID = &h0007
+	GEO_FRIENDLYNAME = &h0008
+	GEO_OFFICIALNAME = &h0009
+	GEO_TIMEZONES = &h000a
+	GEO_OFFICIALLANGUAGES = &h000a
+end enum
 
 type CPINFO
 	MaxCharSize as UINT
@@ -506,7 +536,16 @@ end type
 type LPNUMBERFMTW as NUMBERFMTW ptr
 #endif ''UNICODE
 
+type NLSVERSIONINFO
+	dwNLSVersionInfoSize as DWORD
+	dwNLSVersion as DWORD
+	dwDefinedVersion as DWORD
+end type
+
+type LPNLSVERSIONINFO as NLSVERSIONINFO ptr
+
 declare function ConvertDefaultLocale alias "ConvertDefaultLocale" (byval as LCID) as LCID
+declare function EnumSystemGeoID alias "EnumSystemGeoID" (byval as GEOCLASS, byval as GEOID, byval as GEO_ENUMPROC) as BOOL
 declare function GetACP alias "GetACP" () as UINT
 declare function GetCPInfo alias "GetCPInfo" (byval as UINT, byval as LPCPINFO) as BOOL
 declare function GetOEMCP alias "GetOEMCP" () as UINT
@@ -515,12 +554,15 @@ declare function GetSystemDefaultLCID alias "GetSystemDefaultLCID" () as LCID
 declare function GetThreadLocale alias "GetThreadLocale" () as LCID
 declare function GetUserDefaultLangID alias "GetUserDefaultLangID" () as LANGID
 declare function GetUserDefaultLCID alias "GetUserDefaultLCID" () as LCID
+declare function GetUserGeoID alias "GetUserGeoID" (byval as GEOCLASS) as GEOID
 declare function IsDBCSLeadByte alias "IsDBCSLeadByte" (byval as BYTE) as BOOL
 declare function IsDBCSLeadByteEx alias "IsDBCSLeadByteEx" (byval as UINT, byval as BYTE) as BOOL
+declare function IsNLSDefinedString alias "IsNLSDefinedString" (byval as NLS_FUNCTION, byval as DWORD, byval as LPNLSVERSIONINFO, byval as LPCWSTR, byval as integer) as BOOL
 declare function IsValidCodePage alias "IsValidCodePage" (byval as UINT) as BOOL
 declare function IsValidLocale alias "IsValidLocale" (byval as LCID, byval as DWORD) as BOOL
 declare function MultiByteToWideChar alias "MultiByteToWideChar" (byval as UINT, byval as DWORD, byval as LPCSTR, byval as integer, byval as LPWSTR, byval as integer) as integer
 declare function SetThreadLocale alias "SetThreadLocale" (byval as LCID) as BOOL
+declare function SetUserGeoID alias "SetUserGeoID" (byval as GEOID) as BOOL
 declare function WideCharToMultiByte alias "WideCharToMultiByte" (byval as UINT, byval as DWORD, byval as LPCWSTR, byval as integer, byval as LPSTR, byval as integer, byval as LPCSTR, byval as LPBOOL) as integer
 
 #ifdef UNICODE

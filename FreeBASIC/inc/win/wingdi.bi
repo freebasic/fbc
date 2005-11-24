@@ -156,6 +156,8 @@
 #define EMR_PIXELFORMAT 104
 #define ENHMETA_SIGNATURE 1179469088
 #define EPS_SIGNATURE &h46535045
+#define FR_PRIVATE &h10
+#define FR_NOT_ENUM &h20
 #define META_SETBKCOLOR &h201
 #define META_SETBKMODE &h102
 #define META_SETMAPMODE &h103
@@ -794,9 +796,12 @@
 #define SYSTEM_FONT 13
 #define SYSTEM_FIXED_FONT 16
 #define DEFAULT_PALETTE 15
-#define SYSPAL_NOSTATIC 2
-#define SYSPAL_STATIC 1
+#define DC_BRUSH 18
+#define DC_PEN 19
 #define SYSPAL_ERROR 0
+#define SYSPAL_STATIC 1
+#define SYSPAL_NOSTATIC 2
+#define SYSPAL_NOSTATIC256 3
 #define TA_BASELINE 24
 #define TA_BOTTOM 8
 #define TA_TOP 0
@@ -1111,6 +1116,7 @@
 #define TT_POLYGON_TYPE 24
 #define TT_PRIM_LINE 1
 #define TT_PRIM_QSPLINE 2
+#define TT_PRIM_CSPLINE 3
 #define FONTMAPPER_MAX 10
 #define ENHMETA_STOCK_OBJECT &h80000000
 #define WGL_FONT_LINES 0
@@ -1158,9 +1164,22 @@
 #define WGL_SWAP_UNDERLAY13 &h10000000
 #define WGL_SWAP_UNDERLAY14 &h20000000
 #define WGL_SWAP_UNDERLAY15 &h40000000
-#define AC_SRC_OVER 0
+#define AC_SRC_OVER &h00
+#define AC_SRC_ALPHA &h01
+#define AC_SRC_NO_PREMULT_ALPHA &h01
+#define AC_SRC_NO_ALPHA &h02
+#define AC_DST_NO_PREMULT_ALPHA &h10
+#define AC_DST_NO_ALPHA &h20
 #define LAYOUT_RTL 1
 #define LAYOUT_BITMAPORIENTATIONPRESERVED 8
+#define DISPLAY_DEVICE_ATTACHED_TO_DESKTOP &h00000001
+#define DISPLAY_DEVICE_MULTI_DRIVER &h00000002
+#define DISPLAY_DEVICE_PRIMARY_DEVICE &h00000004
+#define DISPLAY_DEVICE_MIRRORING_DRIVER &h00000008
+#define DISPLAY_DEVICE_VGA_COMPATIBLE &h00000010
+#define DISPLAY_DEVICE_REMOVABLE &h00000020
+#define DISPLAY_DEVICE_MODESPRUNED &h08000000
+#define GGI_MARK_NONEXISTING_GLYPHS 1
 
 type ABC
 	abcA as integer
@@ -2512,6 +2531,25 @@ type GLYPHMETRICS
 end type
 
 type LPGLYPHMETRICS as GLYPHMETRICS ptr
+type WCRANGE
+	wcLow as WCHAR
+	cGlyphs as USHORT
+end type
+
+type PWCRANGE as WCRANGE ptr
+type LPWCRANGE as WCRANGE ptr
+
+type GLYPHSET
+	cbThis as DWORD
+	flAccel as DWORD
+	cGlyphsSupported as DWORD
+	cRanges as DWORD
+	ranges(0 to 1-1) as WCRANGE
+end type
+
+type PGLYPHSET as GLYPHSET ptr
+type LPGLYPHSET as GLYPHSET ptr
+
 
 type KERNINGPAIR
 	wFirst as WORD
@@ -2919,6 +2957,24 @@ end type
 
 type PDESIGNVECTOR as DESIGNVECTOR ptr
 type LPDESIGNVECTOR as DESIGNVECTOR ptr
+#ifndef UNICODE
+type ENUMLOGFONTEXDVA
+	elfEnumLogfontEx as ENUMLOGFONTEXA
+	elfDesignVector as DESIGNVECTOR
+end type
+
+type PENUMLOGFONTEXDVA as ENUMLOGFONTEXDVA ptr
+type LPENUMLOGFONTEXDVA as ENUMLOGFONTEXDVA ptr
+
+#else
+type ENUMLOGFONTEXDVW
+	elfEnumLogfontEx as ENUMLOGFONTEXW
+	elfDesignVector as DESIGNVECTOR
+end type
+
+type PENUMLOGFONTEXDVW as ENUMLOGFONTEXDVW ptr
+type LPENUMLOGFONTEXDVW as ENUMLOGFONTEXDVW ptr
+#endif
 type COLOR16 as USHORT
 
 type TRIVERTEX
@@ -3011,6 +3067,7 @@ type ICMENUMPROCW as function (byval as LPWSTR, byval as LPARAM) as integer
 
 declare function AbortDoc alias "AbortDoc" (byval as HDC) as integer
 declare function AbortPath alias "AbortPath" (byval as HDC) as BOOL
+declare function AddFontMemResourceEx alias "AddFontMemResourceEx" (byval as PVOID, byval as DWORD, byval as PVOID, byval as DWORD ptr) as HANDLE
 declare function AngleArc alias "AngleArc" (byval as HDC, byval as integer, byval as integer, byval as DWORD, byval as FLOAT, byval as FLOAT) as BOOL
 declare function AnimatePalette alias "AnimatePalette" (byval as HPALETTE, byval as UINT, byval as UINT, byval as PALETTEENTRY ptr) as BOOL
 declare function Arc alias "Arc" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
@@ -3179,6 +3236,7 @@ declare function RealizePalette alias "RealizePalette" (byval as HDC) as UINT
 declare function Rectangle alias "Rectangle" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
 declare function RectInRegion alias "RectInRegion" (byval as HRGN, byval as LPCRECT) as BOOL
 declare function RectVisible alias "RectVisible" (byval as HDC, byval as LPCRECT) as BOOL
+declare function RemoveFontMemResourceEx alias "RemoveFontMemResourceEx" (byval as HANDLE) as BOOL
 declare function ResizePalette alias "ResizePalette" (byval as HPALETTE, byval as UINT) as BOOL
 declare function RestoreDC alias "RestoreDC" (byval as HDC, byval as integer) as BOOL
 declare function RoundRect alias "RoundRect" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
@@ -3199,6 +3257,8 @@ declare function SetBoundsRect alias "SetBoundsRect" (byval as HDC, byval as LPC
 declare function SetBrushOrgEx alias "SetBrushOrgEx" (byval as HDC, byval as integer, byval as integer, byval as LPPOINT) as BOOL
 declare function SetColorAdjustment alias "SetColorAdjustment" (byval as HDC, byval as COLORADJUSTMENT ptr) as BOOL
 declare function SetColorSpace alias "SetColorSpace" (byval as HDC, byval as HCOLORSPACE) as BOOL
+declare function SetDCBrushColor alias "SetDCBrushColor" (byval as HDC, byval as COLORREF) as COLORREF
+declare function SetDCPenColor alias "SetDCPenColor" (byval as HDC, byval as COLORREF) as COLORREF
 declare function SetDeviceGammaRamp alias "SetDeviceGammaRamp" (byval as HDC, byval as PVOID) as BOOL
 declare function SetDIBColorTable alias "SetDIBColorTable" (byval as HDC, byval as UINT, byval as UINT, byval as RGBQUAD ptr) as UINT
 declare function SetDIBits alias "SetDIBits" (byval as HDC, byval as HBITMAP, byval as UINT, byval as UINT, byval as PCVOID, byval as BITMAPINFO ptr, byval as UINT) as integer
@@ -3254,6 +3314,7 @@ declare function wglRealizeLayerPalette alias "wglRealizeLayerPalette" (byval as
 declare function wglSetLayerPaletteEntries alias "wglSetLayerPaletteEntries" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as COLORREF ptr) as integer
 declare function wglShareLists alias "wglShareLists" (byval as HGLRC, byval as HGLRC) as BOOL
 declare function wglSwapLayerBuffers alias "wglSwapLayerBuffers" (byval as HDC, byval as UINT) as BOOL
+declare function GetFontUnicodeRanges alias "GetFontUnicodeRanges" (byval as HDC, byval as LPGLYPHSET) as DWORD
 
 #ifdef UNICODE
 type BCHAR as WCHAR
@@ -3268,6 +3329,9 @@ type LPTEXTMETRIC as TEXTMETRICW ptr
 type DEVMODE as DEVMODEW
 type PDEVMODE as DEVMODEW ptr
 type LPDEVMODE as DEVMODEW ptr
+type ENUMLOGFONTEXDV as ENUMLOGFONTEXDVW
+type PENUMLOGFONTEXDV as PENUMLOGFONTEXDVW
+type LPENUMLOGFONTEXDV as LPENUMLOGFONTEXDVW
 type EXTLOGFONT as EXTLOGFONTW
 type PEXTLOGFONT as EXTLOGFONTW ptr
 type LPEXTLOGFONT as EXTLOGFONTW ptr
@@ -3277,6 +3341,8 @@ type OUTLINETEXTMETRIC as OUTLINETEXTMETRICW
 type POUTLINETEXTMETRIC as OUTLINETEXTMETRICW ptr
 type LPOUTLINETEXTMETRIC as OUTLINETEXTMETRICW ptr
 type POLYTEXT as POLYTEXTW
+type PPOLYTEXT as POLYTEXTA ptr
+type LPPOLYTEXT as POLYTEXTA ptr
 type LOGCOLORSPACE as LOGCOLORSPACEW
 type LPLOGCOLORSPACE as LOGCOLORSPACEW ptr
 type NEWTEXTMETRIC as NEWTEXTMETRICW
@@ -3295,6 +3361,7 @@ type LPDISPLAY_DEVICE as DISPLAY_DEVICEW ptr
 #define FONTENUMPROC FONTENUMPROCW
 
 declare function AddFontResource alias "AddFontResourceW" (byval as LPCWSTR) as integer
+declare function AddFontResourceEx alias "AddFontResourceExW" (byval as LPCWSTR, byval as DWORD, byval as PVOID) as integer
 declare function CopyEnhMetaFile alias "CopyEnhMetaFileW" (byval as HENHMETAFILE, byval as LPCWSTR) as HENHMETAFILE
 declare function CopyMetaFile alias "CopyMetaFileW" (byval as HMETAFILE, byval as LPCWSTR) as HMETAFILE
 declare function CreateColorSpace alias "CreateColorSpaceW" (byval as LPLOGCOLORSPACEW) as HCOLORSPACE
@@ -3333,6 +3400,7 @@ declare function GetTextFace alias "GetTextFaceW" (byval as HDC, byval as intege
 declare function GetTextMetrics alias "GetTextMetricsW" (byval as HDC, byval as LPTEXTMETRICW) as BOOL
 declare function PolyTextOut alias "PolyTextOutW" (byval as HDC, byval as POLYTEXTW ptr, byval as integer) as BOOL
 declare function RemoveFontResource alias "RemoveFontResourceW" (byval as LPCWSTR) as BOOL
+declare function RemoveFontResourceEx alias "RemoveFontResourceExW" (byval as LPCWSTR, byval as DWORD, byval as PVOID) as BOOL
 declare function ResetDC alias "ResetDCW" (byval as HDC, byval as DEVMODEW ptr) as HDC
 declare function SetICMProfile alias "SetICMProfileW" (byval as HDC, byval as LPWSTR) as BOOL
 declare function StartDoc alias "StartDocW" (byval as HDC, byval as DOCINFOW ptr) as integer
@@ -3340,6 +3408,7 @@ declare function TextOut alias "TextOutW" (byval as HDC, byval as integer, byval
 declare function UpdateICMRegKey alias "UpdateICMRegKeyW" (byval as DWORD, byval as DWORD, byval as LPWSTR, byval as UINT) as BOOL
 declare function wglUseFontBitmaps alias "wglUseFontBitmapsW" (byval as HDC, byval as DWORD, byval as DWORD, byval as DWORD) as BOOL
 declare function wglUseFontOutlines alias "wglUseFontOutlinesW" (byval as HDC, byval as DWORD, byval as DWORD, byval as DWORD, byval as FLOAT, byval as FLOAT, byval as integer, byval as LPGLYPHMETRICSFLOAT) as BOOL
+declare function GetGlyphIndices alias "GetGlyphIndicesW" (byval as HDC, byval as LPCWSTR, byval as integer, byval as LPWORD, byval as DWORD) as DWORD
 
 #else ''UNICODE
 type BCHAR as BYTE
@@ -3354,6 +3423,9 @@ type LPTEXTMETRIC as TEXTMETRICA ptr
 type DEVMODE as DEVMODEA
 type PDEVMODE as DEVMODEA ptr
 type LPDEVMODE as DEVMODEA ptr
+type ENUMLOGFONTEXDV as ENUMLOGFONTEXDVA
+type PENUMLOGFONTEXDV as PENUMLOGFONTEXDVA
+type LPENUMLOGFONTEXDV as LPENUMLOGFONTEXDVA
 type EXTLOGFONT as EXTLOGFONTA
 type PEXTLOGFONT as EXTLOGFONTA ptr
 type LPEXTLOGFONT as EXTLOGFONTA ptr
@@ -3363,6 +3435,8 @@ type OUTLINETEXTMETRIC as OUTLINETEXTMETRICA
 type POUTLINETEXTMETRIC as OUTLINETEXTMETRICA ptr
 type LPOUTLINETEXTMETRIC as OUTLINETEXTMETRICA ptr
 type POLYTEXT as POLYTEXTA
+type PPOLYTEXT as POLYTEXTA ptr
+type LPPOLYTEXT as POLYTEXTA ptr
 type LOGCOLORSPACE as LOGCOLORSPACEA
 type LPLOGCOLORSPACE as LOGCOLORSPACEA ptr
 type NEWTEXTMETRIC as NEWTEXTMETRICA
@@ -3381,6 +3455,7 @@ type LPDISPLAY_DEVICE as DISPLAY_DEVICEA ptr
 #define FONTENUMPROC FONTENUMPROCA
 
 declare function AddFontResource alias "AddFontResourceA" (byval as LPCSTR) as integer
+declare function AddFontResourceEx alias "AddFontResourceExA" (byval as LPCSTR, byval as DWORD, byval as PVOID) as integer
 declare function CopyEnhMetaFile alias "CopyEnhMetaFileA" (byval as HENHMETAFILE, byval as LPCSTR) as HENHMETAFILE
 declare function CopyMetaFile alias "CopyMetaFileA" (byval as HMETAFILE, byval as LPCSTR) as HMETAFILE
 declare function CreateColorSpace alias "CreateColorSpaceA" (byval as LPLOGCOLORSPACEA) as HCOLORSPACE
@@ -3419,6 +3494,7 @@ declare function GetTextFace alias "GetTextFaceA" (byval as HDC, byval as intege
 declare function GetTextMetrics alias "GetTextMetricsA" (byval as HDC, byval as LPTEXTMETRICA) as BOOL
 declare function PolyTextOut alias "PolyTextOutA" (byval as HDC, byval as POLYTEXTA ptr, byval as integer) as BOOL
 declare function RemoveFontResource alias "RemoveFontResourceA" (byval as LPCSTR) as BOOL
+declare function RemoveFontResourceEx alias "RemoveFontResourceExA" (byval as LPCSTR, byval as DWORD, byval as PVOID) as BOOL
 declare function ResetDC alias "ResetDCA" (byval as HDC, byval as DEVMODEA ptr) as HDC
 declare function SetICMProfile alias "SetICMProfileA" (byval as HDC, byval as LPSTR) as BOOL
 declare function StartDoc alias "StartDocA" (byval as HDC, byval as DOCINFOA ptr) as integer
@@ -3426,6 +3502,7 @@ declare function TextOut alias "TextOutA" (byval as HDC, byval as integer, byval
 declare function UpdateICMRegKey alias "UpdateICMRegKeyA" (byval as DWORD, byval as DWORD, byval as LPSTR, byval as UINT) as BOOL
 declare function wglUseFontBitmaps alias "wglUseFontBitmapsA" (byval as HDC, byval as DWORD, byval as DWORD, byval as DWORD) as BOOL
 declare function wglUseFontOutlines alias "wglUseFontOutlinesA" (byval as HDC, byval as DWORD, byval as DWORD, byval as DWORD, byval as FLOAT, byval as FLOAT, byval as integer, byval as LPGLYPHMETRICSFLOAT) as BOOL
+declare function GetGlyphIndices alias "GetGlyphIndicesA" (byval as HDC, byval as LPCSTR, byval as integer, byval as LPWORD, byval as DWORD) as DWORD
 
 #endif '' UNICODE
 

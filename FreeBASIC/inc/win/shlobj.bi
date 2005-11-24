@@ -129,9 +129,9 @@
 #define SHDID_NET_RESTOFNET 16
 #define SHDID_NET_OTHER 17
 #ifndef REGSTR_PATH_EXPLORER
-#define REGSTR_PATH_EXPLORER __TEXT("Software\Microsoft\Windows\CurrentVersion\Explorer")
+#define REGSTR_PATH_EXPLORER "Software\Microsoft\Windows\CurrentVersion\Explorer"
 #endif
-#define REGSTR_PATH_SPECIAL_FOLDERS	REGSTR_PATH_EXPLORER __TEXT("\Shell Folders")
+#define REGSTR_PATH_SPECIAL_FOLDERS	REGSTR_PATH_EXPLORER "\Shell Folders"
 #define CSIDL_DESKTOP 0
 #define CSIDL_INTERNET 1
 #define CSIDL_PROGRAMS 2
@@ -186,19 +186,19 @@
 #define CSIDL_COMMON_OEM_LINKS 58
 #define CSIDL_CDBURN_AREA 59
 #define CSIDL_COMPUTERSNEARME 61
-#define CFSTR_SHELLIDLIST __TEXT("Shell IDList Array")
-#define CFSTR_SHELLIDLISTOFFSET	__TEXT("Shell Object Offsets")
-#define CFSTR_NETRESOURCES __TEXT("Net Resource")
-#define CFSTR_FILEDESCRIPTOR __TEXT("FileGroupDescriptor")
-#define CFSTR_FILECONTENTS __TEXT("FileContents")
-#define CFSTR_FILENAME __TEXT("FileName")
-#define CFSTR_PRINTERGROUP __TEXT("PrinterFriendlyName")
-#define CFSTR_FILENAMEMAP __TEXT("FileNameMap")
-#define CFSTR_INDRAGLOOP __TEXT("InShellDragLoop")
-#define CFSTR_PASTESUCCEEDED __TEXT("Paste Succeeded")
-#define CFSTR_PERFORMEDDROPEFFECT __TEXT("Performed DropEffect")
-#define CFSTR_PREFERREDDROPEFFECT __TEXT("Preferred DropEffect")
-#define CFSTR_SHELLURL __TEXT("UniformResourceLocator")
+#define CFSTR_SHELLIDLIST "Shell IDList Array"
+#define CFSTR_SHELLIDLISTOFFSET	"Shell Object Offsets"
+#define CFSTR_NETRESOURCES "Net Resource"
+#define CFSTR_FILEDESCRIPTOR "FileGroupDescriptor"
+#define CFSTR_FILECONTENTS "FileContents"
+#define CFSTR_FILENAME "FileName"
+#define CFSTR_PRINTERGROUP "PrinterFriendlyName"
+#define CFSTR_FILENAMEMAP "FileNameMap"
+#define CFSTR_INDRAGLOOP "InShellDragLoop"
+#define CFSTR_PASTESUCCEEDED "Paste Succeeded"
+#define CFSTR_PERFORMEDDROPEFFECT "Performed DropEffect"
+#define CFSTR_PREFERREDDROPEFFECT "Preferred DropEffect"
+#define CFSTR_SHELLURL "UniformResourceLocator"
 #define CMF_NORMAL 0
 #define CMF_DEFAULTONLY 1
 #define CMF_VERBSONLY 2
@@ -224,9 +224,9 @@
 #define GCS_HELPTEXT    GCS_HELPTEXTA
 #define GCS_VALIDATE    GCS_VALIDATEA
 #endif
-#define CMDSTR_NEWFOLDER __TEXT("NewFolder")
-#define CMDSTR_VIEWLIST	__TEXT("ViewList")
-#define CMDSTR_VIEWDETAILS __TEXT("ViewDetails")
+#define CMDSTR_NEWFOLDER "NewFolder"
+#define CMDSTR_VIEWLIST	"ViewList"
+#define CMDSTR_VIEWDETAILS "ViewDetails"
 #define CMIC_MASK_HOTKEY	SEE_MASK_HOTKEY
 #define CMIC_MASK_ICON	SEE_MASK_ICON
 #define CMIC_MASK_FLAG_NO_UI	SEE_MASK_FLAG_NO_UI
@@ -736,6 +736,9 @@ enum SHCOLSTATE
 	SHCOLSTATE_PREFER_VARCMP = &h00000200
 end enum
 
+type LPSHCOLUMNINIT as SHCOLUMNINIT ptr
+type LPCSHCOLUMNINIT as SHCOLUMNINIT ptr
+
 type IColumnProviderVtbl_ as IColumnProviderVtbl
 
 type IColumnProvider
@@ -764,9 +767,6 @@ type IQueryInfoVtbl
 	GetInfoTip as function(byval as IQueryInfo ptr, byval as DWORD, byval as WCHAR ptr ptr) as HRESULT
 	GetInfoFlags as function(byval as IQueryInfo ptr, byval as DWORD ptr) as HRESULT
 end type
-
-type LPSHCOLUMNINIT as SHCOLUMNINIT ptr
-type LPCSHCOLUMNINIT as SHCOLUMNINIT ptr
 
 type IShellExtInitVtbl_ as IShellExtInitVtbl
 
@@ -1554,7 +1554,7 @@ declare function SHGetDataFromIDList alias "SHGetDataFromIDListW" (byval as LPSH
 declare function SHGetPathFromIDList alias "SHGetPathFromIDListW" (byval as LPCITEMIDLIST, byval as LPWSTR) as BOOL
 declare function SHGetSpecialFolderPath alias "SHGetSpecialFolderPathW" (byval as HWND, byval as LPWSTR, byval as integer, byval as BOOL) as BOOL
 declare function SHGetFolderPath alias "SHGetFolderPathW" (byval as HWND, byval as integer, byval as HANDLE, byval as DWORD, byval as LPWSTR) as HRESULT
-declare function SHCreateDirectoryEx alias "SHCreateDirectoryExW" (byval as HWND, byval as LPCWSTR, byval as LPSECURITY_ATTRIBUTES) as INT
+declare function SHCreateDirectoryEx alias "SHCreateDirectoryExW" (byval as HWND, byval as LPCWSTR, byval as LPSECURITY_ATTRIBUTES) as INT_
 declare function SHGetFolderPathAndSubDir alias "SHGetFolderPathAndSubDirW" (byval as HWND, byval as integer, byval as HANDLE, byval as DWORD, byval as LPCWSTR, byval as LPWSTR) as HRESULT
 
 type IShellExecuteHook as IShellExecuteHookW
@@ -1569,7 +1569,7 @@ declare function SHGetDataFromIDList alias "SHGetDataFromIDListA" (byval as LPSH
 declare function SHGetPathFromIDList alias "SHGetPathFromIDListA" (byval as LPCITEMIDLIST, byval as LPSTR) as BOOL
 declare function SHGetSpecialFolderPath alias "SHGetSpecialFolderPathA" (byval as HWND, byval as LPSTR, byval as integer, byval as BOOL) as BOOL
 declare function SHGetFolderPath alias "SHGetFolderPathA" (byval as HWND, byval as integer, byval as HANDLE, byval as DWORD, byval as LPSTR) as HRESULT
-declare function SHCreateDirectoryEx alias "SHCreateDirectoryExA" (byval as HWND, byval as LPCSTR, byval as LPSECURITY_ATTRIBUTES) as INT
+declare function SHCreateDirectoryEx alias "SHCreateDirectoryExA" (byval as HWND, byval as LPCSTR, byval as LPSECURITY_ATTRIBUTES) as INT_
 declare function SHGetFolderPathAndSubDir alias "SHGetFolderPathAndSubDirA" (byval as HWND, byval as integer, byval as HANDLE, byval as DWORD, byval as LPCSTR, byval as LPSTR) as HRESULT
 
 type IShellExecuteHook as IShellExecuteHookA

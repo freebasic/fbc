@@ -28,8 +28,7 @@
 #define LSA_MODE_MANDATORY_ACCESS 3
 #define LSA_MODE_LOG_FULL 4
 #define LSA_SUCCESS(x) (cint(x)>=0)
-#define MICROSOFT_KERBEROS_NAME_A "Kerberos"
-#define MICROSOFT_KERBEROS_NAME_W wstr("Kerberos")
+#define MICROSOFT_KERBEROS_NAME "Kerberos"
 #define MSV1_0_ALLOW_SERVER_TRUST_ACCOUNT 32
 #define MSV1_0_ALLOW_WORKSTATION_TRUST_ACCOUNT 2048
 #define MSV1_0_CHALLENGE_LENGTH 8
@@ -107,10 +106,10 @@
 #define SAM_PASSWORD_CHANGE_NOTIFY_ROUTINE "PasswordChangeNotify"
 #define SAM_INIT_NOTIFICATION_ROUTINE "InitializeChangeNotify"
 #define SAM_PASSWORD_FILTER_ROUTINE "PasswordFilter"
-#define SE_INTERACTIVE_LOGON_NAME __TEXT("SeInteractiveLogonRight")
-#define SE_NETWORK_LOGON_NAME __TEXT("SeNetworkLogonRight")
-#define SE_BATCH_LOGON_NAME __TEXT("SeBatchLogonRight")
-#define SE_SERVICE_LOGON_NAME __TEXT("SeServiceLogonRight")
+#define SE_INTERACTIVE_LOGON_NAME "SeInteractiveLogonRight"
+#define SE_NETWORK_LOGON_NAME "SeNetworkLogonRight"
+#define SE_BATCH_LOGON_NAME "SeBatchLogonRight"
+#define SE_SERVICE_LOGON_NAME "SeServiceLogonRight"
 #define TRUST_ATTRIBUTE_NON_TRANSITIVE 1
 #define TRUST_ATTRIBUTE_UPLEVEL_ONLY 2
 #define TRUST_ATTRIBUTE_TREE_PARENT 4194304

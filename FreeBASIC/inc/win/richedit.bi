@@ -10,14 +10,14 @@
 #define __richedit_bi__
 
 #ifdef UNICODE 
-#define RICHEDIT_CLASS wstr("RichEdit20W")
+#define RICHEDIT_CLASS "RichEdit20W"
 #else
 #define RICHEDIT_CLASS "RichEdit20A"
 #endif
 #define RICHEDIT_CLASS10A "RICHEDIT"
-#define CF_RTF __TEXT("Rich Text Format")
-#define CF_RTFNOOBJS __TEXT("Rich Text Format Without Objects")
-#define CF_RETEXTOBJ __TEXT("RichEdit Text and Objects")
+#define CF_RTF "Rich Text Format"
+#define CF_RTFNOOBJS "Rich Text Format Without Objects"
+#define CF_RETEXTOBJ "RichEdit Text and Objects"
 #define CFM_BOLD 1
 #define CFM_ITALIC 2
 #define CFM_UNDERLINE 4

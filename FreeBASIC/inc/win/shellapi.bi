@@ -152,11 +152,10 @@ type NOTIFYICONDATAA field=2
 	union
 		uTimeout as UINT
 		uVersion as UINT
-	end
+	end union
 	szInfoTitle as zstring * 64
 	dwInfoFlags as DWORD
 	guidItem as GUID
-	szTip as zstring * 64
 end type
 
 type PNOTIFYICONDATAA as NOTIFYICONDATAA ptr
