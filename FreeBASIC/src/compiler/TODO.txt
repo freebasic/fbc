@@ -1,4 +1,12 @@
-[ ] PtrChk will duplicate the tree, causing side effects if functions are been called (it will be 
+[ ] windows api headers:
+    - add missing headers: win/__TODO__ and others not translated (DX, TAPI, etc)
+    - check all PSHPACK#.h inclusions and also #pragma push|pop
+    - convert the once-nameless unions (u as) and structs (s as) to inner nameless types
+    - add the #inclib's
+    - add the missing macros (MAKELONG etc) and complex #define's (ones with type casting)
+    - add UNICODE and ASCII support
+
+[ ] PtrChk will duplicate the tree, causing side effects if functions are been called (it will be
     called twice)
     - the same will happen with ArrayBoundsCheck if a function is used in the index expression
 
@@ -31,16 +39,6 @@
       constructor will be called, it would be way easier if STRING was actually
       a class.. nm..
     - error handlers should be restored too (or not allowed at all)
-
-[ ] windows api headers:
-    - update the current headers with the very latest Mingw ones - there are loads
-      of additions in some headers
-    - add missing headers: win/__TODO__ and others not translated (DX, TAPI, etc)
-    - check all PSHPACK#.h inclusions and also #pragma push|pop
-    - convert the once-nameless unions (u as) and structs (s as) to inner nameless types
-    - add the #inclib's
-    - add the missing macros (MAKELONG etc) and complex #define's (ones with type casting)
-    - add UNICODE and ASCII support
 
 [ ] add fix-len and zstring * support to array args passed by descriptor
 

@@ -1488,7 +1488,7 @@ reread:
 
 	loop
 
-	lex->lastfilepos = lex->filepos + lex->bufflen - 1
+	lex->lastfilepos = lex->filepos + (lex->buffptr - @lex->buff) - 1
 
 	select case as const char
 	'':::::
