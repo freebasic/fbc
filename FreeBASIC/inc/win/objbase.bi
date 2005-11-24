@@ -34,6 +34,7 @@
 #define STGM_NOSCRATCH &h100000
 #define STGM_CREATE &h1000
 #define STGM_CONVERT &h20000
+#define STGM_NOSNAPSHOT &h200000
 #define STGM_FAILIFTHERE 0
 #define CWCSTORAGENAME 32
 #define ASYNC_MODE_COMPATIBILITY 1
@@ -44,6 +45,22 @@
 #define STG_LAYOUT_INTERLEAVED 1
 #define COM_RIGHTS_EXECUTE 1
 #define COM_RIGHTS_SAFE_FOR_SCRIPTING 2
+#define STGOPTIONS_VERSION 2
+
+enum STGFMT
+	STGFMT_STORAGE = 0
+	STGFMT_FILE = 3
+	STGFMT_ANY = 4
+	STGFMT_DOCFILE = 5
+end enum
+
+type STGOPTIONS
+	usVersion as USHORT
+	reserved as USHORT
+	ulSectorSize as ULONG
+	pwcsTemplateFile as WCHAR ptr
+end type
+
 
 enum REGCLS
 	REGCLS_SINGLEUSE = 0
@@ -122,8 +139,8 @@ declare function CoRegisterMessageFilter alias "CoRegisterMessageFilter" (byval 
 declare function CoGetTreatAsClass alias "CoGetTreatAsClass" (byval as CLSID ptr, byval as LPCLSID) as HRESULT
 declare function CoTreatAsClass alias "CoTreatAsClass" (byval as CLSID ptr, byval as CLSID ptr) as HRESULT
 
-type LPFNGETCLASSOBJECT as function stdcall(byval as CLSID ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
-type LPFNCANUNLOADNOW as function stdcall() as HRESULT
+type LPFNGETCLASSOBJECT as function(byval as CLSID ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
+type LPFNCANUNLOADNOW as function() as HRESULT
 
 declare function DllGetClassObject alias "DllGetClassObject" (byval as CLSID ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
 declare function DllCanUnloadNow alias "DllCanUnloadNow" () as HRESULT
@@ -139,6 +156,8 @@ declare function StgOpenStorageOnILockBytes alias "StgOpenStorageOnILockBytes" (
 declare function StgIsStorageFile alias "StgIsStorageFile" (byval as OLECHAR ptr) as HRESULT
 declare function StgIsStorageILockBytes alias "StgIsStorageILockBytes" (byval as ILockBytes ptr) as HRESULT
 declare function StgSetTimes alias "StgSetTimes" (byval as OLECHAR ptr, byval as FILETIME ptr, byval as FILETIME ptr, byval as FILETIME ptr) as HRESULT
+declare function StgCreateStorageEx alias "StgCreateStorageEx" (byval as WCHAR ptr, byval as DWORD, byval as DWORD, byval as DWORD, byval as STGOPTIONS ptr, byval as any ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
+declare function StgOpenStorageEx alias "StgOpenStorageEx" (byval as WCHAR ptr, byval as DWORD, byval as DWORD, byval as DWORD, byval as STGOPTIONS ptr, byval as any ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
 declare function BindMoniker alias "BindMoniker" (byval as LPMONIKER, byval as DWORD, byval as IID ptr, byval as PVOID ptr) as HRESULT
 declare function CoGetObject alias "CoGetObject" (byval as LPCWSTR, byval as BIND_OPTS ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
 declare function MkParseDisplayName alias "MkParseDisplayName" (byval as LPBC, byval as LPCOLESTR, byval as ULONG ptr, byval as LPMONIKER ptr) as HRESULT
@@ -168,5 +187,7 @@ declare function CoAddRefServerProcess alias "CoAddRefServerProcess" () as ULONG
 declare function CoReleaseServerProcess alias "CoReleaseServerProcess" () as ULONG
 declare function CoResumeClassObjects alias "CoResumeClassObjects" () as HRESULT
 declare function CoSuspendClassObjects alias "CoSuspendClassObjects" () as HRESULT
+declare function CoGetPSClsid alias "CoGetPSClsid" (byval as IID ptr, byval as CLSID ptr) as HRESULT
+declare function CoRegisterPSClsid alias "CoRegisterPSClsid" (byval as IID ptr, byval as CLSID ptr) as HRESULT
 
 #endif

@@ -1338,6 +1338,23 @@ type ILayoutStorageVtbl
 	ReLayoutDocfile as function (byval as ILayoutStorage ptr, byval as OLECHAR ptr) as HRESULT
 end type
 
+extern IID_IGlobalInterfaceTable alias "IID_IGlobalInterfaceTable" as IID
+
+type IGlobalInterfaceTableVtbl_ as IGlobalInterfaceTableVtbl
+
+type IGlobalInterfaceTable
+	lpVtbl as IGlobalInterfaceTableVtbl_ ptr
+end type
+
+type IGlobalInterfaceTableVtbl
+	QueryInterface as function(byval as IGlobalInterfaceTable ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
+	AddRef as function(byval as IGlobalInterfaceTable ptr) as ULONG
+	Release as function(byval as IGlobalInterfaceTable ptr) as ULONG
+	RegisterInterfaceInGlobal as function(byval as IGlobalInterfaceTable ptr, byval as IUnknown ptr, byval as IID ptr, byval as DWORD ptr) as HRESULT
+	RevokeInterfaceFromGlobal as function(byval as IGlobalInterfaceTable ptr, byval as DWORD) as HRESULT
+	GetInterfaceFromGlobal as function(byval as IGlobalInterfaceTable ptr, byval as DWORD, byval as IID ptr, byval as any ptr ptr) as HRESULT
+end type
+
 declare function IMarshal_GetUnmarshalClass_Proxy alias "IMarshal_GetUnmarshalClass_Proxy" (byval as IMarshal ptr, byval as IID ptr, byval as any ptr, byval as DWORD, byval as any ptr, byval as DWORD, byval as CLSID ptr) as HRESULT
 declare sub IMarshal_GetUnmarshalClass_Stub alias "IMarshal_GetUnmarshalClass_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
 declare function IMarshal_GetMarshalSizeMax_Proxy alias "IMarshal_GetMarshalSizeMax_Proxy" (byval as IMarshal ptr, byval as IID ptr, byval as any ptr, byval as DWORD, byval as any ptr, byval as DWORD, byval as DWORD ptr) as HRESULT
@@ -2036,5 +2053,11 @@ declare function ILockBytes_WriteAt_Stub alias "ILockBytes_WriteAt_Stub" (byval 
 #define IPSFactoryBuffer_Release(This)	(This)->lpVtbl->Release(This)
 #define IPSFactoryBuffer_CreateProxy(T,U,r,P,p) (T)->lpVtbl->CreateProxy(T,U,r,P,p)
 #define IPSFactoryBuffer_CreateStub(T,r,U,p) (T)->lpVtbl->CreateStub(T,r,U,p)
+#define IGlobalInterfaceTable_QueryInterface(T,a,b) (T)->lpVtbl->QueryInterface(T,a,b)
+#define IGlobalInterfaceTable_AddRef(T) (T)->lpVtbl->AddRef(T)
+#define IGlobalInterfaceTable_Release(T) (T)->lpVtbl->Release(T)
+#define IGlobalInterfaceTable_RegisterInterfaceInGlobal(T,a,b,c) (T)->lpVtbl->RegisterInterfaceInGlobal(T,a,b,c)
+#define IGlobalInterfaceTable_RevokeInterfaceFromGlobal(T,a) (T)->lpVtbl->RevokeInterfaceFromGlobal(T,a)
+#define IGlobalInterfaceTable_GetInterfaceFromGlobal(T,a,b,c) (T)->lpVtbl->GetInterfaceFromGlobal(T,a,b,c)
 
 #endif

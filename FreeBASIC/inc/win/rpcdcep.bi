@@ -98,11 +98,12 @@ type RPC_TRANSFER_SYNTAX
 	VersMinor as ushort
 end type
 
-type RPC_FORWARD_FUNCTION as function (byval as GUID ptr, byval as RPC_VERSION ptr, byval as GUID ptr , byval as ubyte ptr, byval as any ptr ptr) as long
-type RPC_BLOCKING_FUNCTION as function (byval as any ptr, byval as any ptr) as integer
+type RPC_BLOCKING_FN as function(byval as any ptr, byval as any ptr, byval as any ptr) as RPC_STATUS
+type RPC_FORWARD_FUNCTION as function (byval as GUID ptr, byval as RPC_VERSION ptr, byval as GUID ptr, byval as ubyte ptr, byval as any ptr ptr) as long
 
 declare function I_RpcGetBuffer alias "I_RpcGetBuffer" (byval as RPC_MESSAGE ptr) as integer
 declare function I_RpcSendReceive alias "I_RpcSendReceive" (byval as RPC_MESSAGE ptr) as integer
+declare function I_RpcSend alias "I_RpcSend" (byval as RPC_MESSAGE ptr) as integer
 declare function I_RpcFreeBuffer alias "I_RpcFreeBuffer" (byval as RPC_MESSAGE ptr) as integer
 declare sub I_RpcRequestMutex alias "I_RpcRequestMutex" (byval as I_RPC_MUTEX ptr)
 declare sub I_RpcClearMutex alias "I_RpcClearMutex" (byval as I_RPC_MUTEX)
@@ -129,7 +130,7 @@ declare sub I_RpcSsDontSerializeContext alias "I_RpcSsDontSerializeContext" ()
 declare function I_RpcServerRegisterForwardFunction alias "I_RpcServerRegisterForwardFunction" (byval as RPC_FORWARD_FUNCTION) as integer
 declare function I_RpcConnectionInqSockBuffSize alias "I_RpcConnectionInqSockBuffSize" (byval as uinteger ptr, byval as uinteger ptr) as integer
 declare function I_RpcConnectionSetSockBuffSize alias "I_RpcConnectionSetSockBuffSize" (byval as uinteger, byval as uinteger) as integer
-declare function I_RpcBindingSetAsync alias "I_RpcBindingSetAsync" (byval as HANDLE, byval as RPC_BLOCKING_FUNCTION) as integer
+declare function I_RpcBindingSetAsync alias "I_RpcBindingSetAsync" (byval as HANDLE, byval as RPC_BLOCKING_FN) as integer
 declare function I_RpcAsyncSendReceive alias "I_RpcAsyncSendReceive" (byval as RPC_MESSAGE ptr, byval as any ptr) as integer
 declare function I_RpcGetThreadWindowHandle alias "I_RpcGetThreadWindowHandle" (byval as any ptr ptr) as integer
 declare function I_RpcServerThreadPauseListening alias "I_RpcServerThreadPauseListening" () as integer

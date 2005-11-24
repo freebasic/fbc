@@ -131,7 +131,7 @@ type MIDL_STUB_MESSAGE
 	SizePtrLengthArray as uinteger ptr
 	pArgQueue as any ptr
 	dwStubPhase as uinteger
-	Reserved(0 to 5-1) as uinteger
+	w2kReserved(0 to 5-1) as uinteger
 end type
 
 type PMIDL_STUB_MESSAGE as MIDL_STUB_MESSAGE ptr
@@ -181,6 +181,45 @@ union MIDL_STUB_DESC_IMPLICIT_HANDLE_INFO
 	pGenericBindingInfo as PGENERIC_BINDING_INFO
 end union
 
+type USER_MARSHAL_SIZING_ROUTINE as function(byval as uinteger ptr, byval as uinteger, byval as any ptr) as uinteger
+type USER_MARSHAL_MARSHALLING_ROUTINE as function(byval as uinteger ptr, byval as ubyte ptr, byval as any ptr) as ubyte ptr
+type USER_MARSHAL_UNMARSHALLING_ROUTINE as function(byval as uinteger ptr, byval as ubyte ptr, byval as any ptr) as ubyte ptr
+type USER_MARSHAL_FREEING_ROUTINE as sub(byval as uinteger ptr, byval as any ptr)
+
+type USER_MARSHAL_ROUTINE_QUADRUPLE
+	pfnBufferSize as USER_MARSHAL_SIZING_ROUTINE
+	pfnMarshall as USER_MARSHAL_MARSHALLING_ROUTINE
+	pfnUnmarshall as USER_MARSHAL_UNMARSHALLING_ROUTINE
+	pfnFree as USER_MARSHAL_FREEING_ROUTINE
+end type
+
+type NDR_NOTIFY_ROUTINE as sub()
+
+enum IDL_CS_CONVERT
+	IDL_CS_NO_CONVERT
+	IDL_CS_IN_PLACE_CONVERT
+	IDL_CS_NEW_BUFFER_CONVERT
+end enum
+
+type CS_TYPE_NET_SIZE_ROUTINE as sub(byval as RPC_BINDING_HANDLE, byval as uinteger, byval as uinteger, byval as IDL_CS_CONVERT ptr, byval as uinteger ptr, byval as error_status_t ptr)
+type CS_TYPE_LOCAL_SIZE_ROUTINE as sub(byval as RPC_BINDING_HANDLE, byval as uinteger, byval as uinteger, byval as IDL_CS_CONVERT ptr, byval as uinteger ptr, byval as error_status_t ptr)
+type CS_TYPE_TO_NETCS_ROUTINE as sub(byval as RPC_BINDING_HANDLE, byval as uinteger, byval as any ptr, byval as uinteger, byval as byte ptr, byval as uinteger ptr, byval as error_status_t ptr)
+type CS_TYPE_FROM_NETCS_ROUTINE as sub(byval as RPC_BINDING_HANDLE, byval as uinteger, byval as byte ptr, byval as uinteger, byval as uinteger, byval as any ptr, byval as uinteger ptr, byval as error_status_t ptr)
+type CS_TAG_GETTING_ROUTINE as sub(byval as RPC_BINDING_HANDLE, byval as integer, byval as uinteger ptr, byval as uinteger ptr, byval as uinteger ptr, byval as error_status_t ptr)
+
+type NDR_CS_SIZE_CONVERT_ROUTINES
+	pfnNetSize as CS_TYPE_NET_SIZE_ROUTINE
+	pfnToNetCs as CS_TYPE_TO_NETCS_ROUTINE
+	pfnLocalSize as CS_TYPE_LOCAL_SIZE_ROUTINE
+	pfnFromNetCs as CS_TYPE_FROM_NETCS_ROUTINE
+end type
+
+type NDR_CS_ROUTINES
+	pSizeConvertRoutines as NDR_CS_SIZE_CONVERT_ROUTINES ptr
+	pTagGettingRoutines as CS_TAG_GETTING_ROUTINE ptr
+end type
+
+
 type MIDL_STUB_DESC
 	RpcInterfaceInformation as any ptr
 	pfnAllocate as sub (byval as uinteger)
@@ -196,6 +235,12 @@ type MIDL_STUB_DESC
 	pMallocFreeStruct as MALLOC_FREE_STRUCT ptr
 	MIDLVersion as integer
 	CommFaultOffsets as COMM_FAULT_OFFSETS ptr
+	aUserMarshalQuadruple as USER_MARSHAL_ROUTINE_QUADRUPLE ptr
+	NotifyRoutineTable as NDR_NOTIFY_ROUTINE ptr
+	mFlags as ULONG_PTR
+	CsRoutineTables as NDR_CS_ROUTINES ptr
+	Reserved4 as any ptr
+	Reserved5 as ULONG_PTR
 end type
 
 type PMIDL_STUB_DESC as MIDL_STUB_DESC ptr
@@ -447,5 +492,10 @@ declare function NdrAllocate alias "NdrAllocate" (byval as PMIDL_STUB_MESSAGE, b
 declare sub NdrClearOutParameters alias "NdrClearOutParameters" (byval as PMIDL_STUB_MESSAGE, byval as PFORMAT_STRING, byval as any ptr)
 declare function NdrOleAllocate alias "NdrOleAllocate" (byval as uinteger) as any ptr
 declare sub NdrOleFree alias "NdrOleFree" (byval as any ptr)
+declare function NdrUserMarshalMarshall alias "NdrUserMarshalMarshall" (byval as PMIDL_STUB_MESSAGE, byval as ubyte ptr, byval as PFORMAT_STRING) as ubyte ptr
+declare function NdrUserMarshalUnmarshall alias "NdrUserMarshalUnmarshall" (byval as PMIDL_STUB_MESSAGE, byval as ubyte ptr ptr, byval as PFORMAT_STRING, byval as ubyte) as ubyte ptr
+declare sub NdrUserMarshalBufferSize alias "NdrUserMarshalBufferSize" (byval as PMIDL_STUB_MESSAGE, byval as ubyte ptr, byval as PFORMAT_STRING)
+declare function NdrUserMarshalMemorySize alias "NdrUserMarshalMemorySize" (byval as PMIDL_STUB_MESSAGE, byval as PFORMAT_STRING) as uinteger
+declare sub NdrUserMarshalFree alias "NdrUserMarshalFree" (byval as PMIDL_STUB_MESSAGE, byval as ubyte ptr, byval as PFORMAT_STRING)
 
 #endif

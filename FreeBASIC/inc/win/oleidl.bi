@@ -15,7 +15,7 @@
 
 #define MK_ALT 32
 
-type LPPARSEDISPLAYNAME as IParseDisplayname ptr
+type LPPARSEDISPLAYNAME as IParseDisplayName ptr
 type LPOLECONTAINER as IOleContainer ptr
 type LPOLECLIENTSITE as IOleClientSite ptr
 type LPOLEOBJECT as IOleObject ptr
@@ -30,6 +30,16 @@ type LPOLEINPLACEFRAME as IOleInPlaceFrame ptr
 type LPOLEADVISEHOLDER as IOleAdviseHolder ptr
 type LPVIEWOBJECT as IViewObject ptr
 type LPVIEWOBJECT2 as IViewObject2 ptr
+type LPOLECACHE as IOleCache ptr
+type LPOLECACHE2 as IOleCache2 ptr
+type LPOLECACHECONTROL as IOleCacheControl ptr
+
+enum BINDSPEED
+	BINDSPEED_INDEFINITE = 1
+	BINDSPEED_MODERATE
+	BINDSPEED_IMMEDIATE
+end enum
+
 
 enum OLEWHICHMK
 	OLEWHICHMK_CONTAINER = 1
@@ -424,6 +434,59 @@ type IViewObject2Vtbl
 	SetAdvise as function (byval as IViewObject2 ptr, byval as DWORD, byval as DWORD, byval as IAdviseSink ptr) as HRESULT
 	GetAdvise as function (byval as IViewObject2 ptr, byval as PDWORD, byval as PDWORD, byval as IAdviseSink ptr ptr) as HRESULT
 	GetExtent as function (byval as IViewObject2 ptr, byval as DWORD, byval as LONG, byval as DVTARGETDEVICE ptr, byval as LPSIZEL) as HRESULT
+end type
+extern IID_IOleCache alias "IID_IOleCache" as IID
+
+type IOleCacheVtbl_ as IOleCacheVtbl
+
+type IOleCache
+	lpVtbl as IOleCacheVtbl_ ptr
+end type
+
+type IOleCacheVtbl
+	QueryInterface as function(byval as IOleCache ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
+	AddRef as function(byval as IOleCache ptr) as ULONG
+	Release as function(byval as IOleCache ptr) as ULONG
+	Cache as function(byval as IOleCache ptr, byval as FORMATETC ptr, byval as DWORD, byval as DWORD ptr) as HRESULT
+	Uncache as function(byval as IOleCache ptr, byval as DWORD) as HRESULT
+	EnumCache as function(byval as IOleCache ptr, byval as IEnumSTATDATA ptr ptr) as HRESULT
+	InitCache as function(byval as IOleCache ptr, byval as LPDATAOBJECT) as HRESULT
+	SetData as function(byval as IOleCache ptr, byval as FORMATETC ptr, byval as STGMEDIUM ptr, byval as BOOL) as HRESULT
+end type
+extern IID_IOleCache2 alias "IID_IOleCache2" as IID
+
+type IOleCache2Vtbl_ as IOleCache2Vtbl
+
+type IOleCache2
+	lpVtbl as IOleCache2Vtbl_ ptr
+end type
+
+type IOleCache2Vtbl
+	QueryInterface as function(byval as IOleCache2 ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
+	AddRef as function(byval as IOleCache2 ptr) as ULONG
+	Release as function(byval as IOleCache2 ptr) as ULONG
+	Cache as function(byval as IOleCache2 ptr, byval as FORMATETC ptr, byval as DWORD, byval as DWORD ptr) as HRESULT
+	Uncache as function(byval as IOleCache2 ptr, byval as DWORD) as HRESULT
+	EnumCache as function(byval as IOleCache2 ptr, byval as IEnumSTATDATA ptr ptr) as HRESULT
+	InitCache as function(byval as IOleCache2 ptr, byval as LPDATAOBJECT) as HRESULT
+	SetData as function(byval as IOleCache2 ptr, byval as FORMATETC ptr, byval as STGMEDIUM ptr, byval as BOOL) as HRESULT
+	UpdateCache as function(byval as IOleCache2 ptr, byval as LPDATAOBJECT, byval as DWORD, byval as LPVOID) as HRESULT
+	DiscardCache as function(byval as IOleCache2 ptr, byval as DWORD) as HRESULT
+end type
+extern IID_IOleCacheControl alias "IID_IOleCacheControl" as IID
+
+type IOleCacheControlVtbl_ as IOleCacheControlVtbl
+
+type IOleCacheControl
+	lpVtbl as IOleCacheControlVtbl_ ptr
+end type
+
+type IOleCacheControlVtbl
+	QueryInterface as function(byval as IOleCacheControl ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
+	AddRef as function(byval as IOleCacheControl ptr) as ULONG
+	Release as function(byval as IOleCacheControl ptr) as ULONG
+	OnRun as function(byval as IOleCacheControl ptr, byval as LPDATAOBJECT) as HRESULT
+	OnStop as function(byval as IOleCacheControl ptr) as HRESULT
 end type
 
 #endif

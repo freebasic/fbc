@@ -15,18 +15,23 @@
 #define ABE_TOP 1
 #define ABE_RIGHT 2
 #define ABE_BOTTOM 3
+#define ABS_AUTOHIDE 1
+#define ABS_ALWAYSONTOP 2
 #define SEE_MASK_CLASSNAME 1
 #define SEE_MASK_CLASSKEY 3
 #define SEE_MASK_IDLIST 4
 #define SEE_MASK_INVOKEIDLIST 12
-#define SEE_MASK_ICON 16
-#define SEE_MASK_HOTKEY 32
-#define SEE_MASK_NOCLOSEPROCESS 64
-#define SEE_MASK_CONNECTNETDRV 128
-#define SEE_MASK_FLAG_DDEWAIT 256
-#define SEE_MASK_DOENVSUBST 512
-#define SEE_MASK_FLAG_NO_UI 1024
-#define SEE_MASK_UNICODE 65536
+#define SEE_MASK_ICON &h10
+#define SEE_MASK_HOTKEY &h20
+#define SEE_MASK_NOCLOSEPROCESS &h40
+#define SEE_MASK_CONNECTNETDRV &h80
+#define SEE_MASK_FLAG_DDEWAIT &h100
+#define SEE_MASK_DOENVSUBST &h200
+#define SEE_MASK_FLAG_NO_UI &h400
+#define SEE_MASK_NO_CONSOLE &h8000
+#define SEE_MASK_UNICODE &h10000
+#define SEE_MASK_ASYNCOK &h100000
+#define SEE_MASK_HMONITOR &h200000
 #define ABM_NEW 0
 #define ABM_REMOVE 1
 #define ABM_QUERYPOS 2
@@ -44,9 +49,23 @@
 #define NIM_ADD 0
 #define NIM_MODIFY 1
 #define NIM_DELETE 2
-#define NIF_MESSAGE 1
-#define NIF_ICON 2
-#define NIF_TIP 4
+#define NOTIFYICON_VERSION 3
+#define NIM_SETFOCUS 3
+#define NIM_SETVERSION 4
+#define NIF_MESSAGE &h00000001
+#define NIF_ICON &h00000002
+#define NIF_TIP &h00000004
+#define NIF_STATE &h00000008
+#define NIF_INFO &h00000010
+#define NIF_GUID &h00000020
+#define NIIF_NONE &h00000000
+#define NIIF_INFO &h00000001
+#define NIIF_WARNING &h00000002
+#define NIIF_ERROR &h00000003
+#define NIIF_ICON_MASK &h0000000F
+#define NIIF_NOSOUND &h00000010
+#define NIS_HIDDEN 1
+#define NIS_SHAREDICON 2
 #define SE_ERR_FNF 2
 #define SE_ERR_PNF 3
 #define SE_ERR_ACCESSDENIED 5
@@ -73,6 +92,7 @@
 #define FOF_SIMPLEPROGRESS 256
 #define FOF_NOCONFIRMMKDIR 512
 #define FOF_NOERRORUI 1024
+#define FOF_NOCOPYSECURITYATTRIBS 2048
 #define PO_DELETE 19
 #define PO_RENAME 20
 #define PO_PORTCHANGE 32
@@ -125,6 +145,17 @@ type NOTIFYICONDATAA field=2
 	uFlags as UINT
 	uCallbackMessage as UINT
 	hIcon as HICON
+	szTip as zstring * 128
+	dwState as DWORD
+	dwStateMask as DWORD
+	szInfo as zstring * 256
+	union
+		uTimeout as UINT
+		uVersion as UINT
+	end
+	szInfoTitle as zstring * 64
+	dwInfoFlags as DWORD
+	guidItem as GUID
 	szTip as zstring * 64
 end type
 
@@ -138,7 +169,17 @@ type NOTIFYICONDATAW field=2
 	uFlags as UINT
 	uCallbackMessage as UINT
 	hIcon as HICON
-	szTip as wstring * 64
+	szTip as wstring * 128
+	dwState as DWORD
+	dwStateMask as DWORD
+	szInfo as wstring * 256
+	union
+		uTimeout as UINT
+		uVersion as UINT
+	end union
+	szInfoTitle as wstring * 64
+	dwInfoFlags as DWORD
+	guidItem as GUID
 end type
 
 type PNOTIFYICONDATAW as NOTIFYICONDATAW ptr

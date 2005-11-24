@@ -25,7 +25,10 @@ extern IID_INewShortcutHookA alias "IID_INewShortcutHookA" as GUID
 extern IID_IShellBrowser alias "IID_IShellBrowser" as GUID
 extern IID_IShellView alias "IID_IShellView" as GUID
 extern IID_IContextMenu alias "IID_IContextMenu" as GUID
+extern IID_IColumnProvider alias "IID_IColumnProvider" as GUID
+extern IID_IQueryInfo alias "IID_IQueryInfo" as GUID
 extern IID_IShellIcon alias "IID_IShellIcon" as GUID
+extern IID_IShellIconOverlayIdentifier alias "IID_IShellIconOverlayIdentifier" as GUID
 extern IID_IShellFolder alias "IID_IShellFolder" as GUID
 extern IID_IShellExtInit alias "IID_IShellExtInit" as GUID
 extern IID_IShellPropSheetExt alias "IID_IShellPropSheetExt" as GUID
@@ -38,6 +41,7 @@ extern IID_ICommDlgBrowser alias "IID_ICommDlgBrowser" as GUID
 extern IID_IEnumIDList alias "IID_IEnumIDList" as GUID
 extern IID_IFileViewerSite alias "IID_IFileViewerSite" as GUID
 extern IID_IContextMenu2 alias "IID_IContextMenu2" as GUID
+extern IID_IContextMenu3 alias "IID_IContextMenu3" as GUID
 extern IID_IShellExecuteHookA alias "IID_IShellExecuteHookA" as GUID
 extern IID_IPropSheetPage alias "IID_IPropSheetPage" as GUID
 extern IID_INewShortcutHookW alias "IID_INewShortcutHookW" as GUID
@@ -65,6 +69,17 @@ extern IID_IUniformResourceLocator alias "IID_IUniformResourceLocator" as GUID
 extern CLSID_DragDropHelper alias "CLSID_DragDropHelper" as GUID
 extern IID_IDropTargetHelper alias "IID_IDropTargetHelper" as GUID
 extern IID_IDragSourceHelper alias "IID_IDragSourceHelper" as GUID
+extern CLSID_AutoComplete alias "CLSID_AutoComplete" as GUID
+extern IID_IAutoComplete alias "IID_IAutoComplete" as GUID
+extern IID_IAutoComplete2 alias "IID_IAutoComplete2" as GUID
+extern CLSID_ACLMulti alias "CLSID_ACLMulti" as GUID
+extern IID_IObjMgr alias "IID_IObjMgr" as GUID
+extern CLSID_ACListISF alias "CLSID_ACListISF" as GUID
+extern IID_IACList alias "IID_IACList" as GUID
+extern IID_IPersistFolder2 alias "IID_IPersistFolder2" as GUID
+extern IID_IPersistFolder3 alias "IID_IPersistFolder3" as GUID
+extern IID_IShellFolder2 alias "IID_IShellFolder2" as GUID
+extern IID_IFileSystemBindData alias "IID_IFileSystemBindData" as GUID
 
 #ifdef UNICODE
 #define IID_IFileViewer	IID_IFileViewerW

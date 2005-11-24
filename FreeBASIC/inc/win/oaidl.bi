@@ -26,11 +26,16 @@
 #define FADF_STATIC (2)
 #define FADF_EMBEDDED (4)
 #define FADF_FIXEDSIZE (16)
+#define FADF_RECORD (32)
+#define FADF_HAVEIID (64)
+#define FADF_HAVEVARTYPE (128)
 #define FADF_BSTR (256)
 #define FADF_UNKNOWN (512)
 #define FADF_DISPATCH (1024)
 #define FADF_VARIANT (2048)
 #define FADF_RESERVED (&hf0e8)
+#define FADF_DATADELETED (&h1000)
+#define FADF_CREATEVECTOR (&h2000)
 #define PARAMFLAG_NONE (0)
 #define PARAMFLAG_FIN (1)
 #define PARAMFLAG_FOUT (2)
@@ -49,12 +54,14 @@
 #define IMPLTYPEFLAG_FDEFAULTVTABLE 8
 
 type LPTYPELIB as ITypeLib ptr
+type LPTYPELIB2 as ITypeLib2 ptr
 type LPCREATETYPEINFO as ICreateTypeInfo ptr
 type LPCREATETYPEINFO2 as ICreateTypeInfo2 ptr
 type LPCREATETYPELIB as ICreateTypeLib ptr
 type LPCREATETYPELIB2 as ICreateTypeLib2 ptr
 type LPTYPECOMP as ITypeComp ptr
 type LPTYPEINFO as ITypeInfo ptr
+type LPTYPEINFO2 as ITypeInfo2 ptr
 type LPERRORINFO as IErrorInfo ptr
 type LPDISPATCH as IDispatch ptr
 type LPENUMVARIANT as IEnumVARIANT ptr
@@ -65,11 +72,13 @@ type LPRECORDINFO as IRecordInfo ptr
 #inclib "uuid"
 
 extern IID_ITypeLib alias "IID_ITypeLib" as IID
+extern IID_ITypeLib2 alias "IID_ITypeLib2" as IID
 extern IID_ICreateTypeInfo alias "IID_ICreateTypeInfo" as IID
 extern IID_ICreateTypeInfo2 alias "IID_ICreateTypeInfo2" as IID
 extern IID_ICreateTypeLib alias "IID_ICreateTypeLib" as IID
 extern IID_ICreateTypeLib2 alias "IID_ICreateTypeLib2" as IID
 extern IID_ITypeInfo alias "IID_ITypeInfo" as IID
+extern IID_ITypeInfo2 alias "IID_ITypeInfo2" as IID
 extern IID_IErrorInfo alias "IID_IErrorInfo" as IID
 extern IID_IDispatch alias "IID_IDispatch" as IID
 extern IID_IEnumVARIANT alias "IID_IEnumVARIANT" as IID
@@ -243,6 +252,7 @@ union VARIANT
 			cVal as CHAR
 			uiVal as USHORT
 			ulVal as ULONG
+			ullVal as ULONGLONG
 			intVal as INT_
 			uintVal as UINT
 			pdecVal as DECIMAL ptr
@@ -304,6 +314,7 @@ type wireVARIANT
 		cVal as CHAR
 		uiVal as USHORT
 		ulVal as ULONG
+		ullVal as ULONGLONG
 		intVal as INT_
 		uintVal as UINT
 		decVal as DECIMAL
@@ -654,6 +665,52 @@ type ITypeInfoVtbl
 	ReleaseVarDesc as sub (byval as ITypeInfo ptr, byval as LPVARDESC)
 end type
 
+type ITypeInfo2Vtbl_ as ITypeInfo2Vtbl
+
+type ITypeInfo2
+	lpVtbl as ITypeInfo2Vtbl_ ptr
+end type
+
+type ITypeInfo2Vtbl
+	QueryInterface as function(byval as ITypeInfo2 ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
+	AddRef as function(byval as ITypeInfo2 ptr) as ULONG
+	Release as function(byval as ITypeInfo2 ptr) as ULONG
+	GetTypeAttr as function(byval as ITypeInfo2 ptr, byval as LPTYPEATTR ptr) as HRESULT
+	GetTypeComp as function(byval as ITypeInfo2 ptr, byval as LPTYPECOMP ptr) as HRESULT
+	GetFuncDesc as function(byval as ITypeInfo2 ptr, byval as UINT, byval as LPFUNCDESC ptr) as HRESULT
+	GetVarDesc as function(byval as ITypeInfo2 ptr, byval as UINT, byval as LPVARDESC ptr) as HRESULT
+	GetNames as function(byval as ITypeInfo2 ptr, byval as MEMBERID, byval as BSTR ptr, byval as UINT, byval as UINT ptr) as HRESULT
+	GetRefTypeOfImplType as function(byval as ITypeInfo2 ptr, byval as UINT, byval as HREFTYPE ptr) as HRESULT
+	GetImplTypeFlags as function(byval as ITypeInfo2 ptr, byval as UINT, byval as INT_ ptr) as HRESULT
+	GetIDsOfNames as function(byval as ITypeInfo2 ptr, byval as LPOLESTR ptr, byval as UINT, byval as MEMBERID ptr) as HRESULT
+	Invoke as function(byval as ITypeInfo2 ptr, byval as PVOID, byval as MEMBERID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
+	GetDocumentation as function(byval as ITypeInfo2 ptr, byval as MEMBERID, byval as BSTR ptr, byval as BSTR ptr, byval as DWORD ptr, byval as BSTR ptr) as HRESULT
+	GetDllEntry as function(byval as ITypeInfo2 ptr, byval as MEMBERID, byval as INVOKEKIND, byval as BSTR ptr, byval as BSTR ptr, byval as WORD ptr) as HRESULT
+	GetRefTypeInfo as function(byval as ITypeInfo2 ptr, byval as HREFTYPE, byval as LPTYPEINFO ptr) as HRESULT
+	AddressOfMember as function(byval as ITypeInfo2 ptr, byval as MEMBERID, byval as INVOKEKIND, byval as PVOID ptr) as HRESULT
+	CreateInstance as function(byval as ITypeInfo2 ptr, byval as LPUNKNOWN, byval as IID ptr, byval as PVOID ptr) as HRESULT
+	GetMops as function(byval as ITypeInfo2 ptr, byval as MEMBERID, byval as BSTR ptr) as HRESULT
+	GetContainingTypeLib as function(byval as ITypeInfo2 ptr, byval as LPTYPELIB ptr, byval as UINT ptr) as HRESULT
+	ReleaseTypeAttr as sub(byval as ITypeInfo2 ptr, byval as LPTYPEATTR)
+	ReleaseFuncDesc as sub(byval as ITypeInfo2 ptr, byval as LPFUNCDESC)
+	ReleaseVarDesc as sub(byval as ITypeInfo2 ptr, byval as LPVARDESC)
+	GetTypeKind as function(byval as ITypeInfo2 ptr, byval as TYPEKIND ptr) as HRESULT
+	GetTypeFlags as function(byval as ITypeInfo2 ptr, byval as ULONG ptr) as HRESULT
+	GetFuncIndexOfMemId as function(byval as ITypeInfo2 ptr, byval as MEMBERID, byval as INVOKEKIND, byval as UINT ptr) as HRESULT
+	GetVarIndexOfMemId as function(byval as ITypeInfo2 ptr, byval as MEMBERID, byval as UINT ptr) as HRESULT
+	GetCustData as function(byval as ITypeInfo2 ptr, byval as GUID ptr, byval as VARIANT ptr) as HRESULT
+	GetFuncCustData as function(byval as ITypeInfo2 ptr, byval as UINT, byval as GUID ptr, byval as VARIANT ptr) as HRESULT
+	GetParamCustData as function(byval as ITypeInfo2 ptr, byval as UINT, byval as UINT, byval as GUID ptr, byval as VARIANT ptr) as HRESULT
+	GetVarCustData as function(byval as ITypeInfo2 ptr, byval as UINT, byval as GUID ptr, byval as VARIANT ptr) as HRESULT
+	GetImplTypeCustData as function(byval as ITypeInfo2 ptr, byval as UINT, byval as GUID ptr, byval as VARIANT ptr) as HRESULT
+	GetDocumentation2 as function(byval as ITypeInfo2 ptr, byval as MEMBERID, byval as LCID, byval as BSTR ptr, byval as DWORD ptr, byval as BSTR ptr) as HRESULT
+	GetAllCustData as function(byval as ITypeInfo2 ptr, byval as CUSTDATA ptr) as HRESULT
+	GetAllFuncCustData as function(byval as ITypeInfo2 ptr, byval as UINT, byval as CUSTDATA ptr) as HRESULT
+	GetAllParamCustData as function(byval as ITypeInfo2 ptr, byval as UINT, byval as UINT, byval as CUSTDATA ptr) as HRESULT
+	GetAllVarCustData as function(byval as ITypeInfo2 ptr, byval as UINT, byval as CUSTDATA ptr) as HRESULT
+	GetAllImplTypeCustData as function(byval as ITypeInfo2 ptr, byval as UINT, byval as CUSTDATA ptr) as HRESULT
+end type
+
 type ITypeLibVtbl_ as ITypeLibVtbl
 
 type ITypeLib
@@ -675,6 +732,33 @@ type ITypeLibVtbl
 	FindName as function (byval as ITypeLib ptr, byval as LPOLESTR, byval as ULONG, byval as ITypeInfo ptr ptr, byval as MEMBERID ptr, byval as USHORT ptr) as HRESULT
 	ReleaseTLibAttr as sub (byval as ITypeLib ptr, byval as TLIBATTR ptr)
 end type
+
+type ITypeLib2Vtbl_ as ITypeLib2Vtbl
+
+type ITypeLib2
+	lpVtbl as ITypeLib2Vtbl_ ptr
+end type
+
+type ITypeLib2Vtbl
+	QueryInterface as function(byval as ITypeLib2 ptr, byval as IID ptr, byval as PVOID ptr) as HRESULT
+	AddRef as function(byval as ITypeLib2 ptr) as ULONG
+	Release as function(byval as ITypeLib2 ptr) as ULONG
+	GetTypeInfoCount as function(byval as ITypeLib2 ptr) as UINT
+	GetTypeInfo as function(byval as ITypeLib2 ptr, byval as UINT, byval as ITypeInfo ptr ptr) as HRESULT
+	GetTypeInfoType as function(byval as ITypeLib2 ptr, byval as UINT, byval as TYPEKIND ptr) as HRESULT
+	GetTypeInfoOfGuid as function(byval as ITypeLib2 ptr, byval as GUID ptr, byval as ITypeInfo ptr ptr) as HRESULT
+	GetLibAttr as function(byval as ITypeLib2 ptr, byval as TLIBATTR ptr ptr) as HRESULT
+	GetTypeComp as function(byval as ITypeLib2 ptr, byval as ITypeComp ptr) as HRESULT
+	GetDocumentation as function(byval as ITypeLib2 ptr, byval as INT_, byval as BSTR ptr, byval as BSTR ptr, byval as DWORD ptr, byval as BSTR ptr) as HRESULT
+	IsName as function(byval as ITypeLib2 ptr, byval as LPOLESTR, byval as ULONG, byval as BOOL ptr) as HRESULT
+	FindName as function(byval as ITypeLib2 ptr, byval as LPOLESTR, byval as ULONG, byval as ITypeInfo ptr ptr, byval as MEMBERID ptr, byval as USHORT ptr) as HRESULT
+	ReleaseTLibAttr as sub(byval as ITypeLib2 ptr, byval as TLIBATTR ptr)
+	GetCustData as function(byval as ITypeLib2 ptr, byval as GUID ptr, byval as VARIANT ptr) as HRESULT
+	GetLibStatistics as function(byval as ITypeLib2 ptr, byval as ULONG ptr, byval as ULONG ptr) as HRESULT
+	GetDocumentation2 as function(byval as ITypeLib2 ptr, byval as INT_, byval as LCID, byval as BSTR ptr, byval as DWORD ptr, byval as BSTR ptr) as HRESULT
+	GetAllCustData as function(byval as ITypeLib2 ptr, byval as CUSTDATA ptr) as HRESULT
+end type
+
 extern IID_IErrorInfo alias "IID_IErrorInfo" as IID
 
 type IErrorInfoVtbl_ as IErrorInfoVtbl

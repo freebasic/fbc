@@ -79,6 +79,7 @@ extern CLSID_InProcFreeMarshaler alias "CLSID_InProcFreeMarshaler" as CLSID
 extern CLSID_Picture_Metafile alias "CLSID_Picture_Metafile" as CLSID
 extern CLSID_Picture_EnhMetafile alias "CLSID_Picture_EnhMetafile" as CLSID
 extern CLSID_Picture_Dib alias "CLSID_Picture_Dib" as CLSID
+extern CLSID_StdGlobalInterfaceTable alias "CLSID_StdGlobalInterfaceTable" as CLSID
 extern GUID_TRISTATE alias "GUID_TRISTATE" as GUID
 
 #endif

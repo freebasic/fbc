@@ -125,6 +125,7 @@
 #define ES_DISABLENOSCROLL 8192
 #define ES_EX_NOCALLOLEINIT 16777216
 #define ES_NOIME 524288
+#define ES_NOOLEDRAGDROP 8
 #define ES_SAVESEL 32768
 #define ES_SELFIME 262144
 #define ES_SUNKEN 16384
@@ -216,12 +217,18 @@
 #define ENM_NONE 0
 #define ENM_CHANGE 1
 #define ENM_CORRECTTEXT 4194304
+#define ENM_DRAGDROPDONE 16
 #define ENM_DROPFILES 1048576
+#define ENM_IMECHANGE 8388608
 #define ENM_KEYEVENTS 65536
+#define ENM_LANGCHANGE 16777216
+#define ENM_LINK 67108864
 #define ENM_MOUSEEVENTS 131072
+#define ENM_OBJECTPOSITIONS 33554432
 #define ENM_PROTECTED 2097152
 #define ENM_REQUESTRESIZE 262144
 #define ENM_SCROLL 4
+#define ENM_SCROLLEVENTS 8
 #define ENM_SELCHANGE 524288
 #define ENM_UPDATE 2
 #define ENM_LINK 67108864
@@ -506,8 +513,21 @@ type GETTEXTEX field=4
 	flags as DWORD
 	codepage as UINT
 	lpDefaultChar as LPCSTR
-	lpUsedDefaultChar as LPBOOL
+	lpUsedDefChar as LPBOOL
 end type
+
+#define GT_DEFAULT 0
+#define GT_USECRLF 1
+#define GT_SELECTION 2
+
+type SETTEXTEX
+	flags as DWORD
+	codepage as UINT
+end type
+
+#define ST_DEFAULT 0
+#define ST_KEEPUNDO 1
+#define ST_SELECTION 2
 
 type EDITWORDBREAKPROCEX as function (byval as zstring ptr, byval as LONG, byval as BYTE, byval as INT_) as LONG
 
