@@ -31,8 +31,17 @@ option escape
 #include once "inc\pp.bi"
 #include once "inc\ast.bi"
 
-const UINVALID as uinteger = cuint( INVALID )
+declare sub 		lexReadUTF8				( )
 
+declare sub 		lexReadUTF16LE			( )
+
+declare sub 		lexReadUTF16BE			( )
+
+declare sub 		lexReadUTF32LE			( )
+
+declare sub 		lexReadUTF32BE			( )
+
+const UINVALID as uinteger = cuint( INVALID )
 
 '' globals
 	dim shared as LEX_CTX ctxTB( 0 TO FB_MAXINCRECLEVEL-0 )
@@ -98,17 +107,13 @@ sub lexInit( byval isinclude as integer )
 	lex->bufflen	= 0
 	lex->deflen		= 0
 
-	select case as const env.inf.format
-	case FBFILE_FORMAT_ASCII
+	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
 		lex->buffptr	= NULL
 		lex->defptr		= NULL
-	case FBFILE_FORMAT_UTF16LE, FBFILE_FORMAT_UTF16BE
-		lex->buff16ptr	= NULL
+	else
+		lex->buffptrw	= NULL
 		lex->defptrw	= NULL
-	case FBFILE_FORMAT_UTF32LE, FBFILE_FORMAT_UTF32BE
-		lex->buff32ptr	= NULL
-		lex->defptrw	= NULL
-	end select
+	end if
 
 	''
 	lex->filepos	= 0
@@ -154,15 +159,11 @@ private function lexReadChar as uinteger static
 	'' any #define'd text?
 	elseif( lex->deflen > 0 ) then
 
-		select case as const env.inf.format
-		case FBFILE_FORMAT_ASCII
+		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
 			char = *lex->defptr
-
-		case FBFILE_FORMAT_UTF16LE, FBFILE_FORMAT_UTF16BE, _
-			 FBFILE_FORMAT_UTF32LE, FBFILE_FORMAT_UTF32BE
+		else
 			char = *lex->defptrw
-
-		end select
+		end if
 
 		if( env.clopt.debug ) then
 			if( env.reclevel = 0 ) then
@@ -186,22 +187,23 @@ private function lexReadChar as uinteger static
 					if( get( #env.inf.num, , lex->buff ) = 0 ) then
 						lex->bufflen = seek( env.inf.num ) - lex->filepos
 						lex->buffptr = @lex->buff
-						lex->filepos += lex->bufflen
 					end if
 
-				case FBFILE_FORMAT_UTF16LE, FBFILE_FORMAT_UTF16BE
-					if( get( #env.inf.num, , lex->buff16(0), 8192 ) = 0 ) then
-						lex->bufflen = seek( env.inf.num ) - lex->filepos
-						lex->buff16ptr = @lex->buff16(0)
-						lex->filepos += lex->bufflen * len( ushort )
-					end if
+				case FBFILE_FORMAT_UTF8
+					lexReadUTF8( )
 
-				case FBFILE_FORMAT_UTF32LE, FBFILE_FORMAT_UTF32BE
-					if( get( #env.inf.num, , lex->buff32(0), 8192 ) = 0 ) then
-						lex->bufflen = seek( env.inf.num ) - lex->filepos
-						lex->buff32ptr = @lex->buff32(0)
-						lex->filepos += lex->bufflen * len( uinteger )
-					end if
+				case FBFILE_FORMAT_UTF16LE
+				    lexReadUTF16LE( )
+
+				case FBFILE_FORMAT_UTF16BE
+					lexReadUTF16BE( )
+
+				case FBFILE_FORMAT_UTF32LE
+					lexReadUTF32LE( )
+
+				case FBFILE_FORMAT_UTF32BE
+					lexReadUTF32BE( )
+
 				end select
 
 			end if
@@ -209,24 +211,11 @@ private function lexReadChar as uinteger static
 
 		''
 		if( lex->bufflen > 0 ) then
-			select case as const env.inf.format
-			case FBFILE_FORMAT_ASCII
+			if( env.inf.format = FBFILE_FORMAT_ASCII ) then
 				char = *lex->buffptr
-
-			case FBFILE_FORMAT_UTF16LE
-				char = *lex->buff16ptr
-
-			case FBFILE_FORMAT_UTF16BE
-				char = *lex->buff16ptr
-				char = (char shr 8) or ((char shl 8) and &hFF00)
-
-			case FBFILE_FORMAT_UTF32LE
-				char = *lex->buff32ptr
-
-			case FBFILE_FORMAT_UTF32BE
-				char = *lex->buff32ptr
-				char = (char shr 16) or (char shl 16)
-			end select
+			else
+				char = *lex->buffptrw
+			end if
 
 		else
 			char = 0
@@ -274,31 +263,21 @@ function lexEatChar as uinteger static
 		elseif( lex->deflen > 0 ) then
 			lex->deflen -= 1
 
-			select case as const env.inf.format
-			case FBFILE_FORMAT_ASCII
+			if( env.inf.format = FBFILE_FORMAT_ASCII ) then
 				lex->defptr += 1
-
-			case FBFILE_FORMAT_UTF16LE, FBFILE_FORMAT_UTF16BE, _
-				 FBFILE_FORMAT_UTF32LE, FBFILE_FORMAT_UTF32BE
+			else
 				lex->defptrw += 1
-			end select
+			end if
 
 		'' input stream (not EOF?)
 		elseif( lex->currchar <> 0 ) then
 			lex->bufflen -= 1
 
-			select case as const env.inf.format
-			case FBFILE_FORMAT_ASCII
+			if( env.inf.format = FBFILE_FORMAT_ASCII ) then
 				lex->buffptr += 1
-
-			case FBFILE_FORMAT_UTF16LE, _
-				 FBFILE_FORMAT_UTF16BE
-				lex->buff16ptr += 1
-
-			case FBFILE_FORMAT_UTF32LE, _
-				 FBFILE_FORMAT_UTF32BE
-				lex->buff32ptr += 1
-			end select
+			else
+				lex->buffptrw += 1
+			end if
 
 		end if
 
@@ -323,31 +302,21 @@ private sub lexSkipChar static
 	elseif( lex->deflen > 0 ) then
 		lex->deflen -= 1
 
-		select case as const env.inf.format
-		case FBFILE_FORMAT_ASCII
+		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
 			lex->defptr += 1
-
-		case FBFILE_FORMAT_UTF16LE, FBFILE_FORMAT_UTF16BE, _
-			 FBFILE_FORMAT_UTF32LE, FBFILE_FORMAT_UTF32BE
+		else
 			lex->defptrw += 1
-		end select
+		end if
 
 	'' input stream (not EOF?)
 	elseif( lex->currchar <> 0 ) then
 		lex->bufflen -= 1
 
-		select case as const env.inf.format
-		case FBFILE_FORMAT_ASCII
+		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
 			lex->buffptr += 1
-
-		case FBFILE_FORMAT_UTF16LE, _
-			 FBFILE_FORMAT_UTF16BE
-			lex->buff16ptr += 1
-
-		case FBFILE_FORMAT_UTF32LE, _
-			 FBFILE_FORMAT_UTF32BE
-			lex->buff32ptr += 1
-		end select
+		else
+			lex->buffptrw += 1
+		end if
 
 	end if
 
@@ -1230,15 +1199,13 @@ end sub
 '':::::
 ''string          = '"' { ANY_CHAR_BUT_QUOTE } '"'.   # less quotes
 ''
-private sub lexReadWStr16 ( byval ps as wstring ptr, _
-							byref tlen as integer, _
-							byval flags as LEXCHECK_ENUM ) static
+private sub lexReadWStr ( byval ps as wstring ptr, _
+						  byref tlen as integer, _
+						  byval flags as LEXCHECK_ENUM ) static
 
 	static as zstring * FB_MAXNUMLEN+1 nval
 	dim as integer rlen, i, ntyp, nlen
 	dim as integer skipchar = FALSE
-
-	'' !!!WRITEME!!! convert utf16 to utf32 if needed !!!WRITEME!!!
 
 	*ps = 0
 	tlen = 0
@@ -1391,15 +1358,6 @@ private sub lexReadWStr16 ( byval ps as wstring ptr, _
 end sub
 
 '':::::
-''string          = '"' { ANY_CHAR_BUT_QUOTE } '"'.   # less quotes
-''
-private sub lexReadWStr32 ( byval ps as wstring ptr, _
-							byref tlen as integer, _
-							byval flags as LEXCHECK_ENUM ) static
-
-end sub
-
-'':::::
 private sub hLoadWith( byval t as FBTOKEN ptr, _
 					   byval flags as LEXCHECK_ENUM ) static
 
@@ -1530,7 +1488,7 @@ reread:
 
 	loop
 
-	lex->lastfilepos = lex->filepos - lex->bufflen - 1
+	lex->lastfilepos = lex->filepos + lex->bufflen - 1
 
 	select case as const char
 	'':::::
@@ -1623,20 +1581,15 @@ readid:
 		t->id		= FB_TK_STRLIT
 		t->class 	= FB_TKCLASS_STRLITERAL
 
-		select case as const env.inf.format
-		case FBFILE_FORMAT_ASCII
+		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
 			lexReadString( @t->text, t->tlen, flags )
 			t->typ = FB_SYMBTYPE_CHAR
 
-		case FBFILE_FORMAT_UTF16LE, FBFILE_FORMAT_UTF16BE
-			lexReadWstr16( @t->textw, t->tlen, flags )
+		else
+			lexReadWstr( @t->textw, t->tlen, flags )
 			t->typ = FB_SYMBTYPE_WCHAR
 
-		case FBFILE_FORMAT_UTF32LE, FBFILE_FORMAT_UTF32BE
-			lexReadWstr32( @t->textw, t->tlen, flags )
-			t->typ = FB_SYMBTYPE_WCHAR
-
-		end select
+		end if
 
 	'':::::
 	case else

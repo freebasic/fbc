@@ -49,6 +49,8 @@ end type
 
 const FB_LEX_MAXK	= 2
 
+const LEX_MAXBUFFCHARS = 8192
+
 type LEX_CTX
 	tokenTB(0 to FB_LEX_MAXK) as FBTOKEN
 	k				as integer					'' look ahead cnt (1..MAXK)
@@ -88,18 +90,13 @@ type LEX_CTX
 
 	union
 		type
-			buffptr				as ubyte ptr
-			buff				as zstring * 8192+1
+			buffptr				as zstring ptr
+			buff				as zstring * LEX_MAXBUFFCHARS+1
 		end type
 
 		type
-			buff16ptr			as ushort ptr
-			buff16(0 to 8192-1)	as ushort
-		end type
-
-		type
-			buff32ptr			as uinteger ptr
-			buff32(0 to 8192-1)	as uinteger
+			buffptrw			as wstring ptr
+			buffw				as wstring * LEX_MAXBUFFCHARS+1
 		end type
 	end union
 

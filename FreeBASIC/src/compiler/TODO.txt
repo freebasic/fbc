@@ -1,3 +1,6 @@
+[ ] PtrChk will duplicate the tree, causing side effects if functions are been called (it will be 
+    called twice)
+    - the same will happen with ArrayBoundsCheck if a function is used in the index expression
 
 [ ] add the wstring type:
     - auto-convert literal strings to w- or z- on assignments, depending on the l-hand side type

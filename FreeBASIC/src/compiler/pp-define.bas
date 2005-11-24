@@ -480,13 +480,11 @@ end function
 ''::::
 function ppDefineLoad( byval s as FBSYMBOL ptr ) as integer
 
-	select case as const env.inf.format
-	case FBFILE_FORMAT_ASCII
+	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
 		function = hLoadDefine( s )
-	case FBFILE_FORMAT_UTF16LE, FBFILE_FORMAT_UTF16BE, _
-		 FBFILE_FORMAT_UTF32LE, FBFILE_FORMAT_UTF32BE
+	else
 		function = hLoadDefineW( s )
-	end select
+	end if
 
 	if( lex->deflen > FB_MAXINTDEFINELEN ) then
 		lex->deflen = FB_MAXINTDEFINELEN

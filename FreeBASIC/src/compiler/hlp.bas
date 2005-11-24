@@ -694,6 +694,10 @@ function hCheckFileFormat( byval f as integer ) as integer
 		select case fmt
 		case FBFILE_FORMAT_ASCII
 			seek #f, 1
+
+		case FBFILE_FORMAT_UTF8
+			seek #f, 1+3
+
 		case FBFILE_FORMAT_UTF16LE, _
 			 FBFILE_FORMAT_UTF16BE
 			seek #f, 1+2
