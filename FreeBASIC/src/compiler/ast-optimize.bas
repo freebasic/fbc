@@ -914,9 +914,10 @@ private sub hOptToShift( byval n as ASTNODE ptr )
 		exit sub
 	end if
 
-	'' convert 'a * pow2 imm'   to 'a SHL pow2',
-	''         'a \ pow2 imm'   to 'a SHR pow2' and
-	''         'a MOD pow2 imm' to 'a AND pow2-1'
+	'' convert '     a  *  pow2 imm' to 'a SHL pow2',
+	''         'unsg(a) \  pow2 imm' to 'a SHR pow2',
+	''         'sign(a) \  pow2 imm' to '((a SHR 31) + a) SAR pow2',
+	''         '     a MOD pow2 imm' to 'a AND pow2-1'
 	if( n->class = AST_NODECLASS_BOP ) then
 		op = n->op.op
 		select case op
@@ -935,11 +936,40 @@ private sub hOptToShift( byval n as ASTNODE ptr )
 										n->op.op = IR_OP_SHL
 										r->con.val.int = v
 									end if
+
 								case IR_OP_INTDIV
 									if( v <= 32 ) then
-										n->op.op = IR_OP_SHR
-										r->con.val.int = v
+										l = n->l
+										if( not irIsSigned( l->dtype ) ) then
+											n->op.op = IR_OP_SHR
+											r->con.val.int = v
+										else
+											'' !!FIXME!!! while there's no common sub-expr
+											'' 	          elimination, only allow VAR nodes
+											if( l->class = AST_NODECLASS_VAR ) then
+												n->l = astNewCONV( IR_OP_TOSIGNED, _
+																   0, _
+																   NULL, _
+																   astNewBOP( IR_OP_ADD, _
+															       			  astCloneTree( l ), _
+															       			  astNewBOP( IR_OP_SHR, _
+																  			  			 astNewCONV( IR_OP_TOUNSIGNED, _
+																  			  			  			 0, _
+																  			  			  			 NULL, _
+																  			  			  			 l ), _
+																  			  			 astNewCONSTi( 31, _
+																  									   IR_DATATYPE_INTEGER ), _
+																					   ), _
+
+																   			) _
+																 )
+
+												n->op.op = IR_OP_SHR
+												r->con.val.int = v
+											end if
+										end if
 									end if
+
 								case IR_OP_MOD
 									n->op.op = IR_OP_AND
 									r->con.val.int -= 1
