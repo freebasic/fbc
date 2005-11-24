@@ -909,6 +909,7 @@ end sub
 private sub hOptToShift( byval n as ASTNODE ptr )
 	static as ASTNODE ptr l, r
 	static as integer v, op
+	static as integer bits
 
 	if( n = NULL ) then
 		exit sub
@@ -947,6 +948,12 @@ private sub hOptToShift( byval n as ASTNODE ptr )
 											'' !!FIXME!!! while there's no common sub-expr
 											'' 	          elimination, only allow VAR nodes
 											if( l->class = AST_NODECLASS_VAR ) then
+												bits = irGetDataBits( l->dtype ) - 1
+												'' bytes are converted to int's..
+												if( bits = 7 ) then
+													bits = irGetDataBits( IR_DATATYPE_INTEGER ) - 1
+												end if
+
 												n->l = astNewCONV( IR_OP_TOSIGNED, _
 																   0, _
 																   NULL, _
@@ -957,10 +964,9 @@ private sub hOptToShift( byval n as ASTNODE ptr )
 																  			  			  			 0, _
 																  			  			  			 NULL, _
 																  			  			  			 l ), _
-																  			  			 astNewCONSTi( 31, _
+																  			  			 astNewCONSTi( bits, _
 																  									   IR_DATATYPE_INTEGER ), _
 																					   ), _
-
 																   			) _
 																 )
 
