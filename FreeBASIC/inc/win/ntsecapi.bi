@@ -410,8 +410,8 @@ type MSV1_0_SUBAUTH_LOGON
 	UserName as UNICODE_STRING
 	Workstation as UNICODE_STRING
 	ChallengeToClient(0 to 8-1) as UCHAR
-	AuthenticationInfo1 as STRING
-	AuthenticationInfo2 as STRING
+	AuthenticationInfo1 as STRING_
+	AuthenticationInfo2 as STRING_
 	ParameterControl as ULONG
 	SubAuthPackageId as ULONG
 end type
