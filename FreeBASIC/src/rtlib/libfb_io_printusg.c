@@ -26,6 +26,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
@@ -268,6 +269,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	int c, nc, lc, d, i, j, len, intlgt;
 	int doexit, padchar, intdigs, decdigs, totdigs, expdigs;
 	int	adddolar, addcomma, endcomma, signatend, isexp, isneg;
+	int value_exp;
 
 	ctx = FB_TLSGETCTX( PRINTUSG );
 
@@ -372,6 +374,8 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 
 	/* ------------------------------------------------------ */
 
+	value_exp = 0;
+
 	/**/
 	if( isexp )
 	{
@@ -395,24 +399,29 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 		else if( totdigs > 15 )
 			totdigs = 15;
 
+		value_exp = (int)floor( log10( value ) );
+		if( abs( value_exp ) > intdigs )
+		{
+			value_exp -= (intdigs-1);
+			value /= pow( 10.0f, value_exp );
+		}
+		else
+			value_exp = 0;
+
 		fb_hFloat2Str( value, buffer, totdigs, FB_F2A_NOEXP );
 
 		len = strlen( buffer );
-		if( buffer[len-1] == '.' )
-		{
-			buffer[len-1] = '\0';
-			--len;
-		}
 
 		/* no integer digits? */
 		if( intdigs == 0 )
+		{
 			/* is it a 0? remove.. */
 			if( buffer[0] == '0' )
 			{
 				memmove( buffer, &buffer[1], len-1 + 1 );
 				--len;
 			}
-
+        }
 	}
 
 	/* negative? remove char.. */
@@ -555,6 +564,14 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 
 	if( endcomma )
 		strcat( buffer, "," );
+
+	/* too big? */
+	if( value_exp != 0 )
+	{
+		sprintf( expbuff, "%%e%+d", value_exp );
+		strcat( buffer, expbuff );
+	}
+
 
 	/**/
 	fb_PrintFixString( fnum, buffer, 0 );

@@ -28,6 +28,10 @@
 #include <stdio.h>
 #include "fb.h"
 
+#ifdef TARGET_WIN32
+# define snprintf _snprintf
+#endif
+
 /*:::::*/
 char *fb_hFloat2Str( double val, char *buffer, int digits, int mask )
 {
@@ -44,7 +48,8 @@ char *fb_hFloat2Str( double val, char *buffer, int digits, int mask )
 	if( (mask & FB_F2A_NOEXP) > 0 )
 	{
 		sprintf( fmtstr, "%%.%df", digits );
-		sprintf( p, fmtstr, val );
+		if( snprintf( p, digits+1+3+1+1+1, fmtstr, val ) <= 0 )
+			return NULL;
 	}
 	else
 	{
@@ -54,10 +59,10 @@ char *fb_hFloat2Str( double val, char *buffer, int digits, int mask )
 		_gcvt( val, digits, p );
 #else
 		sprintf( fmtstr, "%%.%dg", digits );
-		sprintf( p, fmtstr, val );
+		if( snprintf( p, digits+1+3+1+1+1, fmtstr, val ) <= 0 )
+			return NULL;
 #endif
 	}
-
 
 	len = strlen( p );
 
