@@ -961,7 +961,7 @@ type WSAPROTOCOL_INFOW
 	iSecurityScheme as integer
 	dwMessageSize as DWORD
 	dwProviderReserved as DWORD
-	szProtocol(0 to 255+1-1) as WCHAR
+	szProtocol as wstring * 255+1
 end type
 
 type LPWSAPROTOCOL_INFOW as WSAPROTOCOL_INFOW ptr

@@ -107,7 +107,7 @@ type MODULEENTRY32W
 	modBaseAddr as BYTE ptr
 	modBaseSize as DWORD
 	hModule as HMODULE
-	szModule(0 to 255+1-1) as WCHAR
+	szModule as wstring * 255+1
 	szExePath as wstring * 260
 end type
 

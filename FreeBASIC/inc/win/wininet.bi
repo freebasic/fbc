@@ -583,12 +583,12 @@ end type
 type LPURL_COMPONENTSW as URL_COMPONENTSW ptr
 
 type GOPHER_FIND_DATAW
-	DisplayString(0 to 128+1-1) as WCHAR
+	DisplayString as wstring * 128+1
 	GopherType as DWORD
 	SizeLow as DWORD
 	SizeHigh as DWORD
 	LastModificationTime as FILETIME
-	Locator(0 to MAX_GOPHER_LOCATOR_LENGTH +1-1) as WCHAR
+	Locator as wstring * MAX_GOPHER_LOCATOR_LENGTH+1
 end type
 
 type LPGOPHER_FIND_DATAW as GOPHER_FIND_DATAW ptr

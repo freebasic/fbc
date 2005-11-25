@@ -20,7 +20,7 @@
 type WSPDATA
 	wVersion as WORD
 	wHighVersion as WORD
-	szDescription(0 to 255+1-1) as WCHAR
+	szDescription as wstring * 255+1
 end type
 
 type LPWSPDATA as WSPDATA ptr
