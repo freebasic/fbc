@@ -374,54 +374,39 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 
 	/* ------------------------------------------------------ */
 
-	value_exp = 0;
-
 	/**/
-	if( isexp )
+	if( decdigs <= 0 )
+		totdigs = intdigs;
+	else
+		totdigs = intdigs+decdigs;
+
+	if( totdigs <= 0 )
+		totdigs = 1;
+	else if( totdigs > 15 )
+		totdigs = 15;
+
+	value_exp = (int)floor( log10( value ) );
+	if( abs( value_exp ) > intdigs )
 	{
-    	sprintf( buffer, "%e", value );
-
-        p = strchr( buffer, 'e' );
-        strcpy( expbuff, p );
-        *p = '\0';
-        len = strlen( buffer );
-
+		value_exp -= (intdigs-1);
+		value /= pow( 10.0f, value_exp );
 	}
 	else
+		value_exp = 0;
+
+	fb_hFloat2Str( value, buffer, totdigs, FB_F2A_NOEXP );
+
+	len = strlen( buffer );
+
+	/* no integer digits? */
+	if( intdigs == 0 )
 	{
-		if( decdigs <= 0 )
-			totdigs = intdigs;
-		else
-			totdigs = intdigs+decdigs;
-
-		if( totdigs <= 0 )
-			totdigs = 1;
-		else if( totdigs > 15 )
-			totdigs = 15;
-
-		value_exp = (int)floor( log10( value ) );
-		if( abs( value_exp ) > intdigs )
+		/* is it a 0? remove.. */
+		if( buffer[0] == '0' )
 		{
-			value_exp -= (intdigs-1);
-			value /= pow( 10.0f, value_exp );
+			memmove( buffer, &buffer[1], len-1 + 1 );
+			--len;
 		}
-		else
-			value_exp = 0;
-
-		fb_hFloat2Str( value, buffer, totdigs, FB_F2A_NOEXP );
-
-		len = strlen( buffer );
-
-		/* no integer digits? */
-		if( intdigs == 0 )
-		{
-			/* is it a 0? remove.. */
-			if( buffer[0] == '0' )
-			{
-				memmove( buffer, &buffer[1], len-1 + 1 );
-				--len;
-			}
-        }
 	}
 
 	/* negative? remove char.. */
@@ -533,9 +518,12 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 			*p = '\0';
 	}
 
-	/**/
+	/* add exponent? */
 	if( isexp )
 	{
+		sprintf( expbuff, "e%+d", value_exp );
+		value_exp = 0;
+
 		if( expdigs > 0 )
 		{
 			len = strlen( expbuff );
@@ -548,8 +536,9 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 			}
 			else if( len < expdigs )
 			{
-				memmove( &expbuff[(2+expdigs)-len], &expbuff[2], len-2+1 );
-				memset( &expbuff[2], '0', (expdigs-2) - len );
+				int diff = expdigs - len;
+				memmove( &expbuff[2+diff], &expbuff[2], diff+1 );
+				memset( &expbuff[2], '0', diff );
 			}
 		}
 
