@@ -604,8 +604,8 @@ type PSP_ORIGINAL_FILE_INFO_A as SP_ORIGINAL_FILE_INFO_A ptr
 #else
 type SP_ORIGINAL_FILE_INFO_W
 	cbSize as DWORD
-	OriginalInfName(0 to 260-1) as WCHAR
-	OriginalCatalogName(0 to 260-1) as WCHAR
+	OriginalInfName as wstring * 260
+	OriginalCatalogName as wstring * 260
 end type
 
 type PSP_ORIGINAL_FILE_INFO_W as SP_ORIGINAL_FILE_INFO_W ptr
@@ -701,7 +701,7 @@ type FILE_IN_CABINET_INFO_W
 	DosDate as WORD
 	DosTime as WORD
 	DosAttribs as WORD
-	FullTargetName(0 to 260-1) as WCHAR
+	FullTargetName as wstring * 260
 end type
 
 type PFILE_IN_CABINET_INFO_W as FILE_IN_CABINET_INFO_W ptr
@@ -773,7 +773,7 @@ type PSP_DEVICE_INTERFACE_DETAIL_DATA_A as SP_DEVICE_INTERFACE_DETAIL_DATA_A ptr
 #else
 type SP_DEVICE_INTERFACE_DETAIL_DATA_W
 	cbSize as DWORD
-	DevicePath(0 to 1-1) as WCHAR
+	DevicePath as wstring * 1
 end type
 
 type PSP_DEVICE_INTERFACE_DETAIL_DATA_W as SP_DEVICE_INTERFACE_DETAIL_DATA_W ptr
@@ -795,7 +795,7 @@ type SP_DEVINFO_LIST_DETAIL_DATA_W
 	cbSize as DWORD
 	ClassGuid as GUID
 	RemoteMachineHandle as HANDLE
-	RemoteMachineName(0 to (260+3)-1) as WCHAR
+	RemoteMachineName as wstring * 260+3
 end type
 
 type PSP_DEVINFO_LIST_DETAIL_DATA_W as SP_DEVINFO_LIST_DETAIL_DATA_W ptr
@@ -829,7 +829,7 @@ type SP_DEVINSTALL_PARAMS_W
 	FileQueue as HSPFILEQ
 	ClassInstallReserved as ULONG_PTR
 	Reserved as DWORD
-	DriverPath(0 to 260-1) as WCHAR
+	DriverPath as wstring * 260
 end type
 
 type PSP_DEVINSTALL_PARAMS_W as SP_DEVINSTALL_PARAMS_W ptr
@@ -897,10 +897,10 @@ type PSP_SELECTDEVICE_PARAMS_A as SP_SELECTDEVICE_PARAMS_A ptr
 #else
 type SP_SELECTDEVICE_PARAMS_W
 	ClassInstallHeader as SP_CLASSINSTALL_HEADER
-	Title(0 to 60-1) as WCHAR
-	Instructions(0 to 256-1) as WCHAR
-	ListLabel(0 to 30-1) as WCHAR
-	SubTitle(0 to 256-1) as WCHAR
+	Title as wstring * 60
+	Instructions as wstring * 256
+	ListLabel as wstring * 30
+	SubTitle as wstring * 256
 end type
 
 type PSP_SELECTDEVICE_PARAMS_W as SP_SELECTDEVICE_PARAMS_W ptr
@@ -953,8 +953,8 @@ type PSP_TROUBLESHOOTER_PARAMS_A as SP_TROUBLESHOOTER_PARAMS_A ptr
 #else
 type SP_TROUBLESHOOTER_PARAMS_W
 	ClassInstallHeader as SP_CLASSINSTALL_HEADER
-	ChmFile(0 to 260-1) as WCHAR
-	HtmlTroubleShooter(0 to 260-1) as WCHAR
+	ChmFile as wstring * 260
+	HtmlTroubleShooter as wstring * 260
 end type
 
 type PSP_TROUBLESHOOTER_PARAMS_W as SP_TROUBLESHOOTER_PARAMS_W ptr
@@ -971,7 +971,7 @@ type PSP_POWERMESSAGEWAKE_PARAMS_A as SP_POWERMESSAGEWAKE_PARAMS_A ptr
 #else
 type SP_POWERMESSAGEWAKE_PARAMS_W
 	ClassInstallHeader as SP_CLASSINSTALL_HEADER
-	PowerMessageWake(0 to 256*2-1) as WCHAR
+	PowerMessageWake as wstring * 256*2
 end type
 
 type PSP_POWERMESSAGEWAKE_PARAMS_W as SP_POWERMESSAGEWAKE_PARAMS_W ptr
@@ -996,9 +996,9 @@ type SP_DRVINFO_DATA_V2_W
 	cbSize as DWORD
 	DriverType as DWORD
 	Reserved as ULONG_PTR
-	Description(0 to 256-1) as WCHAR
-	MfgName(0 to 256-1) as WCHAR
-	ProviderName(0 to 256-1) as WCHAR
+	Description as wstring * 256
+	MfgName as wstring * 256
+	ProviderName as wstring * 256
 	DriverDate as FILETIME
 	DriverVersion_ as DWORDLONG
 end type
@@ -1025,9 +1025,9 @@ type SP_DRVINFO_DATA_V1_W
 	cbSize as DWORD
 	DriverType as DWORD
 	Reserved as ULONG_PTR
-	Description(0 to 256-1) as WCHAR
-	MfgName(0 to 256-1) as WCHAR
-	ProviderName(0 to 256-1) as WCHAR
+	Description as wstring * 256
+	MfgName as wstring * 256
+	ProviderName as wstring * 256
 end type
 
 type PSP_DRVINFO_DATA_V1_W as SP_DRVINFO_DATA_V1_W ptr
@@ -1068,10 +1068,10 @@ type SP_DRVINFO_DETAIL_DATA_W
 	CompatIDsOffset as DWORD
 	CompatIDsLength as DWORD
 	Reserved as ULONG_PTR
-	SectionName(0 to 256-1) as WCHAR
-	InfFileName(0 to 260-1) as WCHAR
-	DrvDescription(0 to 256-1) as WCHAR
-	HardwareID(0 to 1-1) as WCHAR
+	SectionName as wstring * 256
+	InfFileName as wstring * 260
+	DrvDescription as wstring * 256
+	HardwareID as wstring * 1
 end type
 
 type PSP_DRVINFO_DETAIL_DATA_W as SP_DRVINFO_DETAIL_DATA_W ptr
@@ -1124,7 +1124,7 @@ type PSP_BACKUP_QUEUE_PARAMS_A as SP_BACKUP_QUEUE_PARAMS_A ptr
 #else
 type SP_BACKUP_QUEUE_PARAMS_W
 	cbSize as DWORD
-	FullInfPath(0 to 260-1) as WCHAR
+	FullInfPath as wstring * 260
 	FilenameOffset as INT_
 end type
 
