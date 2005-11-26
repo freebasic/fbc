@@ -10,7 +10,7 @@
 #define __d3dx9_bi__
 
 #inclib "dxguid"
-#inclib "d3dx9"
+#inclib "d3dx9d"
 
 #define D3DX_DEFAULT cuint(-1)
 #define D3DX_DEFAULT_NONPOW2 cuint(-2)
