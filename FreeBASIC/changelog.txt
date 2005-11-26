@@ -37,6 +37,7 @@ Version 0.15 Beta:
 - LPRINT support (mjs)
 - LPOS(n) (mjs)
 - include files for DirectX library: DInput, DSound, DDraw, D3D9 and D3DX9 (v1c)
+- the missing macros in the Gtk headers (v1c)
 - VIEW PRINT() now returns the top and bottom row (mjs)
 - all WIDTH variations (with #filenum, LPRINT, and device$) (mjs)
 - VALUINT and VALULNG, unsigned versions of VALINT and VALLNG, respectively (v1c)
