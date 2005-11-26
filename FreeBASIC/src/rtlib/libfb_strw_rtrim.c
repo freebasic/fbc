@@ -29,7 +29,8 @@
 /*:::::*/
 FBCALL FB_WCHAR *fb_WstrRTrim ( const FB_WCHAR *src )
 {
-	FB_WCHAR *dst, *p;
+	FB_WCHAR *dst;
+	const FB_WCHAR *p;
 	int chars;
 
 	if( src == NULL )
@@ -39,7 +40,7 @@ FBCALL FB_WCHAR *fb_WstrRTrim ( const FB_WCHAR *src )
 	if( chars <= 0 )
 		return NULL;
 
-	p = fb_wstr_SkipCharRev( src, chars, 32 );
+	p = fb_wstr_SkipCharRev( src, chars, _LC(' ') );
 	chars = fb_wstr_CalcDiff( src, p ) + 1;
 	if( chars <= 0 )
 		return NULL;

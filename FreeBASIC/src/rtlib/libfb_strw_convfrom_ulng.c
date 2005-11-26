@@ -29,7 +29,7 @@
 /*:::::*/
 FBCALL unsigned long long fb_WstrToULongint( const FB_WCHAR *src, int len )
 {
-    FB_WCHAR *p, *r;
+    const FB_WCHAR *p, *r;
     int radix;
 
 	/* skip white spc */

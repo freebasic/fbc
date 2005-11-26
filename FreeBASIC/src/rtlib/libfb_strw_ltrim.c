@@ -29,14 +29,15 @@
 /*:::::*/
 FBCALL FB_WCHAR *fb_WstrLTrim ( const FB_WCHAR *src )
 {
-	FB_WCHAR *dst, *p;
+	FB_WCHAR *dst;
+	const FB_WCHAR *p;
 	int len;
 
 	if( src == NULL )
 		return NULL;
 
 	len = fb_wstr_Len( src );
-	p = fb_wstr_SkipChar( src, len, 32 );
+	p = fb_wstr_SkipChar( src, len, _LC(' ') );
 
 	len -= fb_wstr_CalcDiff( src, p );
 	if( len <= 0 )

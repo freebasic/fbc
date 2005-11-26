@@ -123,6 +123,8 @@ static __inline__ long long wcstoull( const wchar_t *nptr, wchar_t **endptr, int
 #define iswupper(c) isupper(c)
 #define towlower(c) tolower(c)
 #define towupper(c) toupper(c)
+#define wmemcmp(a,b,c) memcmp(a,b,c)
+#define wmemchr(a,b,c) memchr(a,b,c)
 
 /*:::::*/
 static __inline__ size_t __dos_mbstowcs(FB_WCHAR *wcstr, const char *mbstr, size_t count)

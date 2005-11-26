@@ -83,11 +83,12 @@ typedef unsigned char  UTF_8;
 
 #ifndef FB_WSTR_WCHARTOCHAR
 #define FB_WSTR_WCHARTOCHAR fb_wstr_WcharToChar
-static __inline__ void fb_wstr_WcharToChar( char *dst, const FB_WCHAR *src, int chars )
+static __inline__ void fb_wstr_WcharToChar( char *dst,
+											const FB_WCHAR *src, int chars )
 {
 	UTF_32 c;
 
-	while( chars-- )
+	while( chars )
 	{
 		c = *src++;
 
@@ -95,12 +96,14 @@ static __inline__ void fb_wstr_WcharToChar( char *dst, const FB_WCHAR *src, int 
     		c = '?';
 
 		*dst++ = c;
+		--chars;
 	}
 }
 #endif
 
 /*:::::*/
-static __inline__ int fb_wstr_CalcDiff( const FB_WCHAR *ini, const FB_WCHAR *end )
+static __inline__ int fb_wstr_CalcDiff( const FB_WCHAR *ini,
+										const FB_WCHAR *end )
 {
 	return ((int)end - (int)ini) / sizeof( FB_WCHAR );
 }
@@ -126,7 +129,8 @@ static __inline__ int fb_wstr_Len( const FB_WCHAR *s )
 }
 
 /*:::::*/
-static __inline__ void fb_wstr_ConvFromA( FB_WCHAR *dst, int dst_chars, const char *src )
+static __inline__ void fb_wstr_ConvFromA( FB_WCHAR *dst,
+										  int dst_chars, const char *src )
 {
 	int bytes;
 
@@ -149,7 +153,8 @@ static __inline__ void fb_wstr_ConvFromA( FB_WCHAR *dst, int dst_chars, const ch
 }
 
 /*:::::*/
-static __inline__ void fb_wstr_ConvToA( char *dst, const FB_WCHAR *src, int chars )
+static __inline__ void fb_wstr_ConvToA( char *dst,
+									 	const FB_WCHAR *src, int chars )
 {
 	/* !!!FIXME!!! wcstombs() will fail and not emit '?' or such if the
 				   characters are above 255 and can't be converted? not good.. */
@@ -200,7 +205,8 @@ static __inline__ FB_WCHAR fb_wstr_ToUpper( FB_WCHAR c )
 }
 
 /*:::::*/
-static __inline__ void fb_wstr_Copy( FB_WCHAR *dst, const FB_WCHAR *src, int chars )
+static __inline__ void fb_wstr_Copy( FB_WCHAR *dst,
+									 const FB_WCHAR *src, int chars )
 {
     if( (src != NULL) && (chars > 0) )
         dst = FB_MEMCPYX( dst, src, chars * sizeof( FB_WCHAR ) );
@@ -210,7 +216,8 @@ static __inline__ void fb_wstr_Copy( FB_WCHAR *dst, const FB_WCHAR *src, int cha
 }
 
 /*:::::*/
-static __inline__ FB_WCHAR *fb_wstr_Move( FB_WCHAR *dst, const FB_WCHAR *src, int chars )
+static __inline__ FB_WCHAR *fb_wstr_Move( FB_WCHAR *dst,
+										  const FB_WCHAR *src, int chars )
 {
 	return FB_MEMCPYX( dst, src, chars * sizeof( FB_WCHAR ) );
 }
@@ -228,19 +235,20 @@ static __inline__ void fb_wstr_Fill( FB_WCHAR *dst, FB_WCHAR c, int chars )
 }
 
 /*:::::*/
-static __inline__ FB_WCHAR *fb_wstr_SkipChar( const FB_WCHAR *s, int chars, FB_WCHAR c )
+static __inline__ const FB_WCHAR *fb_wstr_SkipChar( const FB_WCHAR *s,
+													int chars, FB_WCHAR c )
 {
-	FB_WCHAR *op, *p;
+	const FB_WCHAR *p;
 
 	if( s == NULL )
 		return NULL;
 
-	p = (FB_WCHAR *)s;
+	p = s;
 	while( chars > 0 )
 	{
-		op = p;
-		if( *p++ != c )
-			return op;
+		if( *p != c )
+			return p;
+		++p;
 		--chars;
 	}
 
@@ -248,35 +256,38 @@ static __inline__ FB_WCHAR *fb_wstr_SkipChar( const FB_WCHAR *s, int chars, FB_W
 }
 
 /*:::::*/
-static __inline__ FB_WCHAR *fb_wstr_SkipCharRev( const FB_WCHAR *s, int chars, FB_WCHAR c )
+static __inline__ const FB_WCHAR *fb_wstr_SkipCharRev( const FB_WCHAR *s,
+													   int chars, FB_WCHAR c )
 {
 	const FB_WCHAR *p;
 
 	if( (s == NULL) || (chars <= 0) )
-		return (FB_WCHAR *)s;
+		return s;
 
 	p = &s[chars-1];
 
     /* fixed-len's are filled with null's as in PB, strip them too */
     while( chars > 0 )
     {
-		if( (*p != 0) && (*p != c) )
-			return (FB_WCHAR *)p;
+		if( *p != c )
+			return p;
 		--p;
 		--chars;
 	}
 
-    return (FB_WCHAR *)p;
+    return p;
 }
 
 /*:::::*/
-static __inline__ FB_WCHAR *fb_wstr_Instr( const FB_WCHAR *s, const FB_WCHAR *patt )
+static __inline__ FB_WCHAR *fb_wstr_Instr( const FB_WCHAR *s,
+										   const FB_WCHAR *patt )
 {
 	return wcsstr( s, patt );
 }
 
 /*:::::*/
-static __inline__ int fb_wstr_Compare( const FB_WCHAR *str1, const FB_WCHAR *str2, int chars )
+static __inline__ int fb_wstr_Compare( const FB_WCHAR *str1,
+									   const FB_WCHAR *str2, int chars )
 {
 	return wcsncmp( str1, str2, chars );
 }
