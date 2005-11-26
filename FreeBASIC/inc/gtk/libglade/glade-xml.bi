@@ -15,6 +15,13 @@
 #include once "gtk/gtk/gtkwidget.bi"
 #include once "gtk/gtk/gtktooltips.bi"
 
+#define GLADE_TYPE_XML            (glade_xml_get_type())
+#define GLADE_XML(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GLADE_TYPE_XML, GladeXML))
+#define GLADE_XML_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GLADE_TYPE_XML, GladeXMLClass))
+#define GLADE_IS_XML(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GLADE_TYPE_XML))
+#define GLADE_IS_XML_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((obj), GLADE_TYPE_XML))
+#define GLADE_XML_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), GLADE_TYPE_XML, GladeXMLClass))
+
 type GladeXML as _GladeXML
 type GladeXMLClass as _GladeXMLClass
 type GladeXMLPrivate as _GladeXMLPrivate

@@ -152,7 +152,7 @@ end enum
 
 
 enum GdkGLDrawableType
-	GDK_GL_WINDOW = &h8022
+	GDK_GL_WINDOW_ = &h8022
 	GDK_GL_PBUFFER = &h8023
 end enum
 

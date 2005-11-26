@@ -13,6 +13,13 @@
 #include once "gtk/gtk/gtkenums.bi"
 #include once "gtk/pango.bi"
 
+#define GTK_TYPE_STYLE              (gtk_style_get_type ())
+#define GTK_STYLE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GTK_TYPE_STYLE, GtkStyle))
+#define GTK_STYLE_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_STYLE, GtkStyleClass))
+#define GTK_IS_STYLE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GTK_TYPE_STYLE))
+#define GTK_IS_STYLE_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_STYLE))
+#define GTK_STYLE_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_STYLE, GtkStyleClass))
+
 type GtkBorder as _GtkBorder
 type GtkStyle as _GtkStyle
 type GtkStyleClass as _GtkStyleClass

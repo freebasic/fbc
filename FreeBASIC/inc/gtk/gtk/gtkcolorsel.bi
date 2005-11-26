@@ -12,6 +12,13 @@
 #include once "gtk/gtk/gtkdialog.bi"
 #include once "gtk/gtk/gtkvbox.bi"
 
+#define GTK_TYPE_COLOR_SELECTION			(gtk_color_selection_get_type ())
+#define GTK_COLOR_SELECTION(obj)			(G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_COLOR_SELECTION, GtkColorSelection))
+#define GTK_COLOR_SELECTION_CLASS(klass)		(G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_COLOR_SELECTION, GtkColorSelectionClass))
+#define GTK_IS_COLOR_SELECTION(obj)			(G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_COLOR_SELECTION))
+#define GTK_IS_COLOR_SELECTION_CLASS(klass)		(G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_COLOR_SELECTION))
+#define GTK_COLOR_SELECTION_GET_CLASS(obj)              (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_COLOR_SELECTION, GtkColorSelectionClass))
+
 type GtkColorSelection as _GtkColorSelection
 type GtkColorSelectionClass as _GtkColorSelectionClass
 type GtkColorSelectionChangePaletteFunc as sub cdecl(byval as GdkColor ptr, byval as gint)

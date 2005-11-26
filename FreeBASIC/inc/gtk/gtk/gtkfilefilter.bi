@@ -11,6 +11,10 @@
 
 #include once "gtk/glib-object.bi"
 
+#define GTK_TYPE_FILE_FILTER              (gtk_file_filter_get_type ())
+#define GTK_FILE_FILTER(obj)              (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FILE_FILTER, GtkFileFilter))
+#define GTK_IS_FILE_FILTER(obj)           (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_FILE_FILTER))
+
 type GtkFileFilter as _GtkFileFilter
 type GtkFileFilterInfo as _GtkFileFilterInfo
 

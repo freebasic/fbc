@@ -11,6 +11,13 @@
 
 #include once "gtk/gtk/gtktoggleaction.bi"
 
+#define GTK_TYPE_RADIO_ACTION            (gtk_radio_action_get_type ())
+#define GTK_RADIO_ACTION(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_RADIO_ACTION, GtkRadioAction))
+#define GTK_RADIO_ACTION_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_RADIO_ACTION, GtkRadioActionClass))
+#define GTK_IS_RADIO_ACTION(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_RADIO_ACTION))
+#define GTK_IS_RADIO_ACTION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_RADIO_ACTION))
+#define GTK_RADIO_ACTION_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), GTK_TYPE_RADIO_ACTION, GtkRadioActionClass))
+
 type GtkRadioAction as _GtkRadioAction
 type GtkRadioActionPrivate as _GtkRadioActionPrivate
 type GtkRadioActionClass as _GtkRadioActionClass

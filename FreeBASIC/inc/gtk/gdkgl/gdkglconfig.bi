@@ -13,6 +13,14 @@
 #include once "gtk/gdkgl/gdkgltypes.bi"
 #include once "gtk/gdk/gdkwindow.bi"
 
+#define GDK_TYPE_GL_CONFIG              (gdk_gl_config_get_type ())
+#define GDK_GL_CONFIG(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_GL_CONFIG, GdkGLConfig))
+#define GDK_GL_CONFIG_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_GL_CONFIG, GdkGLConfigClass))
+#define GDK_IS_GL_CONFIG(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_GL_CONFIG))
+#define GDK_IS_GL_CONFIG_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_GL_CONFIG))
+#define GDK_GL_CONFIG_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_GL_CONFIG, GdkGLConfigClass))
+
+
 enum GdkGLConfigMode
 	GDK_GL_MODE_RGB = 0
 	GDK_GL_MODE_RGBA = 0

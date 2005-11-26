@@ -13,6 +13,13 @@
 #include once "gtk/gdkgl/gdkgltypes.bi"
 #include once "gtk/gdk/gdkwindow.bi"
 
+#define GDK_TYPE_GL_WINDOW              (gdk_gl_window_get_type ())
+#define GDK_GL_WINDOW(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_GL_WINDOW, GdkGLWindow))
+#define GDK_GL_WINDOW_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_GL_WINDOW, GdkGLWindowClass))
+#define GDK_IS_GL_WINDOW(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_GL_WINDOW))
+#define GDK_IS_GL_WINDOW_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_GL_WINDOW))
+#define GDK_GL_WINDOW_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_GL_WINDOW, GdkGLWindowClass))
+
 type GdkGLWindowClass as _GdkGLWindowClass
 
 type _GdkGLWindow

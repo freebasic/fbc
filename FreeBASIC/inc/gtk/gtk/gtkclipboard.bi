@@ -11,6 +11,10 @@
 
 #include once "gtk/gtk/gtkselection.bi"
 
+#define GTK_TYPE_CLIPBOARD            (gtk_clipboard_get_type ())
+#define GTK_CLIPBOARD(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CLIPBOARD, GtkClipboard))
+#define GTK_IS_CLIPBOARD(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_CLIPBOARD))
+
 type GtkClipboardReceivedFunc as sub cdecl(byval as GtkClipboard ptr, byval as GtkSelectionData ptr, byval as gpointer)
 type GtkClipboardTextReceivedFunc as sub cdecl(byval as GtkClipboard ptr, byval as zstring ptr, byval as gpointer)
 type GtkClipboardImageReceivedFunc as sub cdecl(byval as GtkClipboard ptr, byval as GdkPixbuf ptr, byval as gpointer)

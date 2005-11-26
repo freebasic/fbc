@@ -11,6 +11,13 @@
 
 #include once "gtk/gtk/gtkbin.bi"
 
+#define GTK_TYPE_EXPANDER            (gtk_expander_get_type ())
+#define GTK_EXPANDER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_EXPANDER, GtkExpander))
+#define GTK_EXPANDER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_EXPANDER, GtkExpanderClass))
+#define GTK_IS_EXPANDER(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_EXPANDER))
+#define GTK_IS_EXPANDER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_EXPANDER))
+#define GTK_EXPANDER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_EXPANDER, GtkExpanderClass))
+
 type GtkExpander as _GtkExpander
 type GtkExpanderClass as _GtkExpanderClass
 type GtkExpanderPrivate as _GtkExpanderPrivate

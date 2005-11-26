@@ -12,6 +12,13 @@
 #include once "gtk/glib-object.bi"
 #include once "gtk/gtk/gtktreeview.bi"
 
+#define GTK_TYPE_TREE_SELECTION			(gtk_tree_selection_get_type ())
+#define GTK_TREE_SELECTION(obj)			(G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TREE_SELECTION, GtkTreeSelection))
+#define GTK_TREE_SELECTION_CLASS(klass)		(G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TREE_SELECTION, GtkTreeSelectionClass))
+#define GTK_IS_TREE_SELECTION(obj)		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TREE_SELECTION))
+#define GTK_IS_TREE_SELECTION_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TREE_SELECTION))
+#define GTK_TREE_SELECTION_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TREE_SELECTION, GtkTreeSelectionClass))
+
 type GtkTreeSelectionFunc as function cdecl(byval as GtkTreeSelection ptr, byval as GtkTreeModel ptr, byval as GtkTreePath ptr, byval as gboolean, byval as gpointer) as gboolean
 type GtkTreeSelectionForeachFunc as sub cdecl(byval as GtkTreeModel ptr, byval as GtkTreePath ptr, byval as GtkTreeIter ptr, byval as gpointer)
 

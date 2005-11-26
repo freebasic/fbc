@@ -14,6 +14,13 @@
 #include once "gtk/gtk/gtkenums.bi"
 #include once "gtk/gtk/gtkobject.bi"
 
+#define GTK_TYPE_TEXT_TAG            (gtk_text_tag_get_type ())
+#define GTK_TEXT_TAG(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TEXT_TAG, GtkTextTag))
+#define GTK_TEXT_TAG_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TEXT_TAG, GtkTextTagClass))
+#define GTK_IS_TEXT_TAG(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TEXT_TAG))
+#define GTK_IS_TEXT_TAG_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TEXT_TAG))
+#define GTK_TEXT_TAG_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TEXT_TAG, GtkTextTagClass))
+
 type GtkTextIter as _GtkTextIter
 type GtkTextTagTable as _GtkTextTagTable
 type GtkTextAttributes as _GtkTextAttributes

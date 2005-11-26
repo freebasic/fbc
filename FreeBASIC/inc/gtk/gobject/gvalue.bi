@@ -11,6 +11,12 @@
 
 #include once "gtk/gobject/gtype.bi"
 
+#define	G_TYPE_IS_VALUE(type_)		(g_type_check_is_value_type (type_))
+#define	G_IS_VALUE(value)		(G_TYPE_CHECK_VALUE (value))
+#define	G_VALUE_TYPE(value)		(((GValue*) (value))->g_type)
+#define	G_VALUE_TYPE_NAME(value)	(g_type_name (G_VALUE_TYPE (value)))
+#define G_VALUE_HOLDS(value,type_)	(G_TYPE_CHECK_VALUE_TYPE ((value), (type_)))
+
 type GValueTransform as sub cdecl(byval as GValue ptr, byval as GValue ptr)
 
 union _GValue_data

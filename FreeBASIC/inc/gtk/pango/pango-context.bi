@@ -13,6 +13,14 @@
 #include once "gtk/pango/pango-fontmap.bi"
 #include once "gtk/pango/pango-attributes.bi"
 
+#define PANGO_TYPE_CONTEXT              (pango_context_get_type ())
+#define PANGO_CONTEXT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), PANGO_TYPE_CONTEXT, PangoContext))
+#define PANGO_CONTEXT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), PANGO_TYPE_CONTEXT, PangoContextClass))
+#define PANGO_IS_CONTEXT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), PANGO_TYPE_CONTEXT))
+#define PANGO_IS_CONTEXT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), PANGO_TYPE_CONTEXT))
+#define PANGO_CONTEXT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), PANGO_TYPE_CONTEXT, PangoContextClass))
+
+
 type PangoContextClass as _PangoContextClass
 
 declare function pango_context_get_type cdecl alias "pango_context_get_type" () as GType

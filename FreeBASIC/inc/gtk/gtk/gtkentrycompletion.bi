@@ -15,6 +15,13 @@
 #include once "gtk/gtk/gtktreeviewcolumn.bi"
 #include once "gtk/gtk/gtktreemodelfilter.bi"
 
+#define GTK_TYPE_ENTRY_COMPLETION            (gtk_entry_completion_get_type ())
+#define GTK_ENTRY_COMPLETION(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_ENTRY_COMPLETION, GtkEntryCompletion))
+#define GTK_ENTRY_COMPLETION_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_ENTRY_COMPLETION, GtkEntryCompletionClass))
+#define GTK_IS_ENTRY_COMPLETION(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_ENTRY_COMPLETION))
+#define GTK_IS_ENTRY_COMPLETION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_ENTRY_COMPLETION))
+#define GTK_ENTRY_COMPLETION_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_ENTRY_COMPLETION, GtkEntryCompletionClass))
+
 type GtkEntryCompletion as _GtkEntryCompletion
 type GtkEntryCompletionClass as _GtkEntryCompletionClass
 type GtkEntryCompletionPrivate as _GtkEntryCompletionPrivate

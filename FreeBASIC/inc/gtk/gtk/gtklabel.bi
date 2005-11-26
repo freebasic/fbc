@@ -14,6 +14,13 @@
 #include once "gtk/gtk/gtkwindow.bi"
 #include once "gtk/gtk/gtkmenu.bi"
 
+#define GTK_TYPE_LABEL		  (gtk_label_get_type ())
+#define GTK_LABEL(obj)		  (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_LABEL, GtkLabel))
+#define GTK_LABEL_CLASS(klass)	  (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_LABEL, GtkLabelClass))
+#define GTK_IS_LABEL(obj)	  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_LABEL))
+#define GTK_IS_LABEL_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_LABEL))
+#define GTK_LABEL_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_LABEL, GtkLabelClass))
+
 type GtkLabel as _GtkLabel
 type GtkLabelClass as _GtkLabelClass
 type GtkLabelSelectionInfo as _GtkLabelSelectionInfo

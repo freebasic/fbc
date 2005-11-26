@@ -11,6 +11,19 @@
 
 #include once "gtk/gobject/gtype.bi"
 
+#define G_TYPE_IS_ENUM(type_)	       (G_TYPE_FUNDAMENTAL (type_) == G_TYPE_ENUM)
+#define G_ENUM_CLASS(class_)	       (G_TYPE_CHECK_CLASS_CAST ((class_), G_TYPE_ENUM, GEnumClass))
+#define G_IS_ENUM_CLASS(class_)	       (G_TYPE_CHECK_CLASS_TYPE ((class_), G_TYPE_ENUM))
+#define G_ENUM_CLASS_TYPE(class_)       (G_TYPE_FROM_CLASS (class_))
+#define G_ENUM_CLASS_TYPE_NAME(class_)  (g_type_name (G_ENUM_CLASS_TYPE (class_)))
+#define G_TYPE_IS_FLAGS(type_)	       (G_TYPE_FUNDAMENTAL (type_) == G_TYPE_FLAGS)
+#define G_FLAGS_CLASS(class_)	       (G_TYPE_CHECK_CLASS_CAST ((class_), G_TYPE_FLAGS, GFlagsClass))
+#define G_IS_FLAGS_CLASS(class_)        (G_TYPE_CHECK_CLASS_TYPE ((class_), G_TYPE_FLAGS))
+#define G_FLAGS_CLASS_TYPE(class_)      (G_TYPE_FROM_CLASS (class_))
+#define G_FLAGS_CLASS_TYPE_NAME(class_) (g_type_name (G_FLAGS_TYPE (class_)))
+#define G_VALUE_HOLDS_ENUM(value)      (G_TYPE_CHECK_VALUE_TYPE ((value), G_TYPE_ENUM))
+#define G_VALUE_HOLDS_FLAGS(value)     (G_TYPE_CHECK_VALUE_TYPE ((value), G_TYPE_FLAGS))
+
 type GEnumClass as _GEnumClass
 type GFlagsClass as _GFlagsClass
 type GEnumValue as _GEnumValue

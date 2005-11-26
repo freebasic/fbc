@@ -14,6 +14,13 @@
 #include once "gtk/gdk/gdkrgb.bi"
 #include once "gtk/gdk-pixbuf.bi"
 
+#define GDK_TYPE_DRAWABLE              (gdk_drawable_get_type ())
+#define GDK_DRAWABLE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_DRAWABLE, GdkDrawable))
+#define GDK_DRAWABLE_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_DRAWABLE, GdkDrawableClass))
+#define GDK_IS_DRAWABLE(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_DRAWABLE))
+#define GDK_IS_DRAWABLE_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_DRAWABLE))
+#define GDK_DRAWABLE_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_DRAWABLE, GdkDrawableClass))
+
 type GdkDrawableClass as _GdkDrawableClass
 type GdkTrapezoid as _GdkTrapezoid
 

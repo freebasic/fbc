@@ -17,6 +17,13 @@
 #include once "gtk/gtk/gtkpixmap.bi"
 #include once "gtk/gtk/gtksignal.bi"
 
+#define GTK_TYPE_TOOLBAR            (gtk_toolbar_get_type ())
+#define GTK_TOOLBAR(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TOOLBAR, GtkToolbar))
+#define GTK_TOOLBAR_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TOOLBAR, GtkToolbarClass))
+#define GTK_IS_TOOLBAR(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TOOLBAR))
+#define GTK_IS_TOOLBAR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TOOLBAR))
+#define GTK_TOOLBAR_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TOOLBAR, GtkToolbarClass))
+
 enum GtkToolbarChildType
 	GTK_TOOLBAR_CHILD_SPACE
 	GTK_TOOLBAR_CHILD_BUTTON

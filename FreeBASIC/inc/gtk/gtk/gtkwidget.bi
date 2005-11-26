@@ -38,7 +38,7 @@ enum GtkWidgetFlags
 	GTK_CAN_DEFAULT = 1 shl 13
 	GTK_HAS_DEFAULT = 1 shl 14
 	GTK_HAS_GRAB = 1 shl 15
-	GTK_RC_STYLE = 1 shl 16
+	GTK_RC_STYLE_ = 1 shl 16
 	GTK_COMPOSITE_CHILD = 1 shl 17
 	GTK_NO_REPARENT = 1 shl 18
 	GTK_APP_PAINTABLE = 1 shl 19

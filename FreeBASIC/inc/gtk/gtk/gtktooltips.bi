@@ -12,6 +12,13 @@
 #include once "gtk/gtk/gtkwidget.bi"
 #include once "gtk/gtk/gtkwindow.bi"
 
+#define GTK_TYPE_TOOLTIPS                  (gtk_tooltips_get_type ())
+#define GTK_TOOLTIPS(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TOOLTIPS, GtkTooltips))
+#define GTK_TOOLTIPS_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TOOLTIPS, GtkTooltipsClass))
+#define GTK_IS_TOOLTIPS(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TOOLTIPS))
+#define GTK_IS_TOOLTIPS_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TOOLTIPS))
+#define GTK_TOOLTIPS_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TOOLTIPS, GtkTooltipsClass))
+
 type GtkTooltips as _GtkTooltips
 type GtkTooltipsClass as _GtkTooltipsClass
 type GtkTooltipsData as _GtkTooltipsData

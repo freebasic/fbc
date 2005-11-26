@@ -11,6 +11,13 @@
 
 #include once "gtk/gtk/gtkaccelgroup.bi"
 
+#define GTK_TYPE_ACCEL_MAP                (gtk_accel_map_get_type ())
+#define GTK_ACCEL_MAP(accel_map)	  (G_TYPE_CHECK_INSTANCE_CAST ((accel_map), GTK_TYPE_ACCEL_MAP, GtkAccelMap))
+#define GTK_ACCEL_MAP_CLASS(klass)	  (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_ACCEL_MAP, GtkAccelMapClass))
+#define GTK_IS_ACCEL_MAP(accel_map)	  (G_TYPE_CHECK_INSTANCE_TYPE ((accel_map), GTK_TYPE_ACCEL_MAP))
+#define GTK_IS_ACCEL_MAP_CLASS(klass)	  (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_ACCEL_MAP))
+#define GTK_ACCEL_MAP_GET_CLASS(obj)      (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_ACCEL_MAP, GtkAccelMapClass))
+
 type GtkAccelMap as _GtkAccelMap
 type GtkAccelMapClass as _GtkAccelMapClass
 type GtkAccelMapForeach as sub cdecl(byval as gpointer, byval as zstring ptr, byval as guint, byval as GdkModifierType, byval as gboolean)

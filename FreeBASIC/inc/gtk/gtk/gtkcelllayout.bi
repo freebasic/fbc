@@ -13,6 +13,11 @@
 #include once "gtk/gtk/gtkcellrenderer.bi"
 #include once "gtk/gtk/gtktreeviewcolumn.bi"
 
+#define GTK_TYPE_CELL_LAYOUT            (gtk_cell_layout_get_type ())
+#define GTK_CELL_LAYOUT(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CELL_LAYOUT, GtkCellLayout))
+#define GTK_IS_CELL_LAYOUT(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_CELL_LAYOUT))
+#define GTK_CELL_LAYOUT_GET_IFACE(obj)  (G_TYPE_INSTANCE_GET_INTERFACE ((obj), GTK_TYPE_CELL_LAYOUT, GtkCellLayoutIface))
+
 type GtkCellLayout as _GtkCellLayout
 type GtkCellLayoutIface as _GtkCellLayoutIface
 type GtkCellLayoutDataFunc as sub cdecl(byval as GtkCellLayout ptr, byval as GtkCellRenderer ptr, byval as GtkTreeModel ptr, byval as GtkTreeIter ptr, byval as gpointer)

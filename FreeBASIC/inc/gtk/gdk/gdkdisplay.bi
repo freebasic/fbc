@@ -13,6 +13,13 @@
 #include once "gtk/gdk/gdkevents.bi"
 #include once "gtk/glib-object.bi"
 
+#define GDK_TYPE_DISPLAY              (gdk_display_get_type ())
+#define GDK_DISPLAY_OBJECT(object)    (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_DISPLAY, GdkDisplay))
+#define GDK_DISPLAY_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_DISPLAY, GdkDisplayClass))
+#define GDK_IS_DISPLAY(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_DISPLAY))
+#define GDK_IS_DISPLAY_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_DISPLAY))
+#define GDK_DISPLAY_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_DISPLAY, GdkDisplayClass))
+
 type GdkDisplayClass as _GdkDisplayClass
 type GdkDisplayPointerHooks as _GdkDisplayPointerHooks
 

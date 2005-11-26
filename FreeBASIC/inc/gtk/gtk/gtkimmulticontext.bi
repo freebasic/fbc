@@ -12,6 +12,14 @@
 #include once "gtk/gtk/gtkimcontext.bi"
 #include once "gtk/gtk/gtkmenushell.bi"
 
+#define GTK_TYPE_IM_MULTICONTEXT              (gtk_im_multicontext_get_type ())
+#define GTK_IM_MULTICONTEXT(obj)              (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_IM_MULTICONTEXT, GtkIMMulticontext))
+#define GTK_IM_MULTICONTEXT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_IM_MULTICONTEXT, GtkIMMulticontextClass))
+#define GTK_IS_IM_MULTICONTEXT(obj)           (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_IM_MULTICONTEXT))
+#define GTK_IS_IM_MULTICONTEXT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_IM_MULTICONTEXT))
+#define GTK_IM_MULTICONTEXT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_IM_MULTICONTEXT, GtkIMMulticontextClass))
+
+
 type GtkIMMulticontext as _GtkIMMulticontext
 type GtkIMMulticontextClass as _GtkIMMulticontextClass
 type GtkIMMulticontextPrivate as _GtkIMMulticontextPrivate

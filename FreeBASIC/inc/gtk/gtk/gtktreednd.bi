@@ -12,6 +12,11 @@
 #include once "gtk/gtk/gtktreemodel.bi"
 #include once "gtk/gtk/gtkdnd.bi"
 
+#define GTK_TYPE_TREE_DRAG_SOURCE            (gtk_tree_drag_source_get_type ())
+#define GTK_TREE_DRAG_SOURCE(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TREE_DRAG_SOURCE, GtkTreeDragSource))
+#define GTK_IS_TREE_DRAG_SOURCE(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TREE_DRAG_SOURCE))
+#define GTK_TREE_DRAG_SOURCE_GET_IFACE(obj)  (G_TYPE_INSTANCE_GET_INTERFACE ((obj), GTK_TYPE_TREE_DRAG_SOURCE, GtkTreeDragSourceIface))
+
 type GtkTreeDragSource as _GtkTreeDragSource
 type GtkTreeDragSourceIface as _GtkTreeDragSourceIface
 

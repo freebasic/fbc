@@ -13,6 +13,13 @@
 #include once "gtk/gtk/gtkadjustment.bi"
 #include once "gtk/gtk/gtkwidget.bi"
 
+#define GTK_TYPE_RANGE            (gtk_range_get_type ())
+#define GTK_RANGE(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_RANGE, GtkRange))
+#define GTK_RANGE_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_RANGE, GtkRangeClass))
+#define GTK_IS_RANGE(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_RANGE))
+#define GTK_IS_RANGE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_RANGE))
+#define GTK_RANGE_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_RANGE, GtkRangeClass))
+
 type GtkRangeLayout as _GtkRangeLayout
 type GtkRangeStepTimer as _GtkRangeStepTimer
 type GtkRange as _GtkRange

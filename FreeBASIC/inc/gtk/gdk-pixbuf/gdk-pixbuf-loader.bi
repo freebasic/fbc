@@ -15,6 +15,13 @@
 #include once "gtk/gdk-pixbuf/gdk-pixbuf-animation.bi"
 #include once "gtk/gdk-pixbuf/gdk-pixbuf-io.bi"
 
+#define GDK_TYPE_PIXBUF_LOADER		   (gdk_pixbuf_loader_get_type ())
+#define GDK_PIXBUF_LOADER(obj)		   (G_TYPE_CHECK_INSTANCE_CAST ((obj), GDK_TYPE_PIXBUF_LOADER, GdkPixbufLoader))
+#define GDK_PIXBUF_LOADER_CLASS(klass)	   (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_PIXBUF_LOADER, GdkPixbufLoaderClass))
+#define GDK_IS_PIXBUF_LOADER(obj)	   (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GDK_TYPE_PIXBUF_LOADER))
+#define GDK_IS_PIXBUF_LOADER_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_PIXBUF_LOADER))
+#define GDK_PIXBUF_LOADER_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_PIXBUF_LOADER, GdkPixbufLoaderClass))
+
 type GdkPixbufLoader as _GdkPixbufLoader
 
 type _GdkPixbufLoader

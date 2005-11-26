@@ -12,6 +12,14 @@
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkenums.bi"
 
+#define GTK_TYPE_ACCEL_GROUP              (gtk_accel_group_get_type ())
+#define GTK_ACCEL_GROUP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GTK_TYPE_ACCEL_GROUP, GtkAccelGroup))
+#define GTK_ACCEL_GROUP_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_ACCEL_GROUP, GtkAccelGroupClass))
+#define GTK_IS_ACCEL_GROUP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GTK_TYPE_ACCEL_GROUP))
+#define GTK_IS_ACCEL_GROUP_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_ACCEL_GROUP))
+#define GTK_ACCEL_GROUP_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_ACCEL_GROUP, GtkAccelGroupClass))
+
+
 enum GtkAccelFlags
 	GTK_ACCEL_VISIBLE = 1 shl 0
 	GTK_ACCEL_LOCKED = 1 shl 1

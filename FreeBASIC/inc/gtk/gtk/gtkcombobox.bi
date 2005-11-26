@@ -13,6 +13,13 @@
 #include once "gtk/gtk/gtktreemodel.bi"
 #include once "gtk/gtk/gtktreeview.bi"
 
+#define GTK_TYPE_COMBO_BOX             (gtk_combo_box_get_type ())
+#define GTK_COMBO_BOX(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_COMBO_BOX, GtkComboBox))
+#define GTK_COMBO_BOX_CLASS(vtable)    (G_TYPE_CHECK_CLASS_CAST ((vtable), GTK_TYPE_COMBO_BOX, GtkComboBoxClass))
+#define GTK_IS_COMBO_BOX(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_COMBO_BOX))
+#define GTK_IS_COMBO_BOX_CLASS(vtable) (G_TYPE_CHECK_CLASS_TYPE ((vtable), GTK_TYPE_COMBO_BOX))
+#define GTK_COMBO_BOX_GET_CLASS(inst)  (G_TYPE_INSTANCE_GET_CLASS ((inst), GTK_TYPE_COMBO_BOX, GtkComboBoxClass))
+
 type GtkComboBox as _GtkComboBox
 type GtkComboBoxClass as _GtkComboBoxClass
 type GtkComboBoxPrivate as _GtkComboBoxPrivate

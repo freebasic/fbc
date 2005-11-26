@@ -12,6 +12,13 @@
 #include once "gtk/gtk/gtktreemodel.bi"
 #include once "gtk/gtk/gtktreesortable.bi"
 
+#define GTK_TYPE_TREE_STORE			(gtk_tree_store_get_type ())
+#define GTK_TREE_STORE(obj)			(G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TREE_STORE, GtkTreeStore))
+#define GTK_TREE_STORE_CLASS(klass)		(G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TREE_STORE, GtkTreeStoreClass))
+#define GTK_IS_TREE_STORE(obj)			(G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TREE_STORE))
+#define GTK_IS_TREE_STORE_CLASS(klass)		(G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TREE_STORE))
+#define GTK_TREE_STORE_GET_CLASS(obj)		(G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TREE_STORE, GtkTreeStoreClass))
+
 type GtkTreeStore as _GtkTreeStore
 type GtkTreeStoreClass as _GtkTreeStoreClass
 

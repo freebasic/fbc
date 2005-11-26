@@ -14,6 +14,13 @@
 #include once "gtk/gtk/gtktextbuffer.bi"
 #include once "gtk/gtk/gtkmenu.bi"
 
+#define GTK_TYPE_TEXT_VIEW             (gtk_text_view_get_type ())
+#define GTK_TEXT_VIEW(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TEXT_VIEW, GtkTextView))
+#define GTK_TEXT_VIEW_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TEXT_VIEW, GtkTextViewClass))
+#define GTK_IS_TEXT_VIEW(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TEXT_VIEW))
+#define GTK_IS_TEXT_VIEW_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TEXT_VIEW))
+#define GTK_TEXT_VIEW_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TEXT_VIEW, GtkTextViewClass))
+
 enum GtkTextWindowType
 	GTK_TEXT_WINDOW_PRIVATE
 	GTK_TEXT_WINDOW_WIDGET

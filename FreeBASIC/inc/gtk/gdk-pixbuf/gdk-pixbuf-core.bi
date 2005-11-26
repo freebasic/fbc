@@ -12,6 +12,10 @@
 #include once "gtk/glib.bi"
 #include once "gtk/glib-object.bi"
 
+#define GDK_TYPE_PIXBUF              (gdk_pixbuf_get_type ())
+#define GDK_PIXBUF(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_PIXBUF, GdkPixbuf))
+#define GDK_IS_PIXBUF(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_PIXBUF))
+
 enum GdkPixbufAlphaMode
 	GDK_PIXBUF_ALPHA_BILEVEL
 	GDK_PIXBUF_ALPHA_FULL

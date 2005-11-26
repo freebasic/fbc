@@ -12,6 +12,13 @@
 #include once "gtk/gtk/gtkaction.bi"
 #include once "gtk/gtk/gtkitemfactory.bi"
 
+#define GTK_TYPE_ACTION_GROUP              (gtk_action_group_get_type ())
+#define GTK_ACTION_GROUP(obj)              (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_ACTION_GROUP, GtkActionGroup))
+#define GTK_ACTION_GROUP_CLASS(vtable)     (G_TYPE_CHECK_CLASS_CAST ((vtable), GTK_TYPE_ACTION_GROUP, GtkActionGroupClass))
+#define GTK_IS_ACTION_GROUP(obj)           (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_ACTION_GROUP))
+#define GTK_IS_ACTION_GROUP_CLASS(vtable)  (G_TYPE_CHECK_CLASS_TYPE ((vtable), GTK_TYPE_ACTION_GROUP))
+#define GTK_ACTION_GROUP_GET_CLASS(inst)   (G_TYPE_INSTANCE_GET_CLASS ((inst), GTK_TYPE_ACTION_GROUP, GtkActionGroupClass))
+
 type GtkActionGroup as _GtkActionGroup
 type GtkActionGroupPrivate as _GtkActionGroupPrivate
 type GtkActionGroupClass as _GtkActionGroupClass
