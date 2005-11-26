@@ -1,17 +1,8 @@
-LIBRARY     D3D9.DLL
-
+LIBRARY d3d9.dll
 EXPORTS
-    CheckFullscreen                @1   
-    D3DPERF_BeginEvent             @5   
-    D3DPERF_EndEvent               @6   
-    D3DPERF_GetStatus              @7   
-    D3DPERF_QueryRepeatFrame       @8   
-    D3DPERF_SetMarker              @9   
-    D3DPERF_SetOptions             @10  
-    D3DPERF_SetRegion              @11  
-    DebugSetLevel                  @12  
-    DebugSetMute                   @13  
-    Direct3DCreate9                @14  
-    Direct3DShaderValidatorCreate9 @2   
-    PSGPError                      @3   
-    PSGPSampleTexture              @4   
+DebugSetLevel
+DebugSetMute
+Direct3DCreate9@4
+_Z30Direct3DShaderValidatorCreate9v=Direct3DShaderValidatorCreate9
+_Z9PSGPErrorP21D3DFE_PROCESSVERTICES11PSGPERRORIDj@12=PSGPError
+_Z17PSGPSampleTextureP21D3DFE_PROCESSVERTICESjPA4_fjS2_@20=PSGPSampleTexture
