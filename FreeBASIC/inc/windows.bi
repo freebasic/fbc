@@ -9,7 +9,7 @@
 #ifndef __windows_bi__
 #define __windows_bi__
 
-	option nokeyword POINT, RGB
+	option nokeyword POINT
 	
 #define _X86_
 

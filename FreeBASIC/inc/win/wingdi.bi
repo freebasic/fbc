@@ -3058,11 +3058,11 @@ type FONTENUMPROCW as OLDFONTENUMPROCW
 type ICMENUMPROCW as function (byval as LPWSTR, byval as LPARAM) as integer
 #endif ''UNICODE
 
-#define RGB(r,g,b) (cuint(r) or (cuint(g) shl 8) or (cuint(b) shl 16))
+#define RGB_(r,g,b) (cuint(r) or (cuint(g) shl 8) or (cuint(b) shl 16))
 #define MAKEPOINTS(l) *cptr( POINTS ptr, @(l) )
 #define MAKEROP4(f,b) cuint((((b) shl 8) and &hFF000000) or (f))
 #define PALETTEINDEX(i)	(&h01000000 or cuint(i))
-#define PALETTERGB(r,g,b) (&h02000000 or RGB(r,g,b))
+#define PALETTERGB(r,g,b) (&h02000000 or RGB_(r,g,b))
 
 
 declare function AbortDoc alias "AbortDoc" (byval as HDC) as integer
