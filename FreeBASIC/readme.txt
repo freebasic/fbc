@@ -657,6 +657,9 @@ Credits (in alphabetic order):
     - Ported most of the NeHe's OpenGL lessons at the examples/GL/NeHe dir.
     - Wrote the PDFlib demonstration, at examples/pdflib
 
+  o Hans L. Nemeschkal (Hans.Leo.Nemeschkal@univie.ac.at):
+    - Translated the DISLIN header (later replaced by the SWIG FB wrapper version).
+
   o Jofers (spam@betterwebber.com):
     - Wrote the examples in the examples/freetype directory.
 
