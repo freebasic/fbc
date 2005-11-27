@@ -82,24 +82,24 @@ endif
 ifeq ($(TARGET),dos)
     OSDEPPATH := dos
     EXE := .exe
-    FBLNKFLAGS += -d TARGET_DOS
-    FBCMPFLAGS += -d TARGET_DOS
+    FBLNKFLAGS += -d TARGET_DOS -d TARGET_X86
+    FBCMPFLAGS += -d TARGET_DOS -d TARGET_X86
     osdepsrcs := fbc_dos.bas
 endif
 
 ifeq ($(TARGET),linux)
     OSDEPPATH := linux
     EXE :=
-    FBLNKFLAGS += -d TARGET_LINUX
-    FBCMPFLAGS += -d TARGET_LINUX
+    FBLNKFLAGS += -d TARGET_LINUX -d TARGET_X86
+    FBCMPFLAGS += -d TARGET_LINUX -d TARGET_X86
     osdepsrcs := fbc_linux.bas
 endif
 
 ifeq ($(TARGET),win32)
     OSDEPPATH := win32
     EXE := .exe
-    FBLNKFLAGS += -d TARGET_WIN32 -t 2048 -l winspool
-    FBCMPFLAGS += -d TARGET_WIN32
+    FBLNKFLAGS += -d TARGET_WIN32 -d TARGET_X86 -t 2048 -l winspool
+    FBCMPFLAGS += -d TARGET_WIN32 -d TARGET_X86
     FBCMPFLAGS += -d CROSSCOMP_DOS -d CROSSCOMP_XBOX -d CROSSCOMP_LINUX -d CROSSCOMP_CYGWIN
     osdepsrcs := fbc_win32.bas fbc_dos.bas fbc_linux.bas fbc_xbox.bas fbc_cyg.bas
 endif
@@ -108,16 +108,16 @@ ifeq ($(TARGET),cygwin)
     OSDEPPATH := win32
     OSOBJPATH := cygwin
     EXE := .exe
-    FBLNKFLAGS += -d TARGET_CYGWIN
-    FBCMPFLAGS += -d TARGET_CYGWIN
+    FBLNKFLAGS += -d TARGET_CYGWIN -d TARGET_X86
+    FBCMPFLAGS += -d TARGET_CYGWIN -d TARGET_X86
     osdepsrcs := fbc_cyg.bas
 endif
 
 ifeq ($(TARGET),xbox)
     OSDEPPATH := xbox
     EXE := .exe
-    FBLNKFLAGS += -d TARGET_XBOX
-    FBCMPFLAGS += -d TARGET_XBOX
+    FBLNKFLAGS += -d TARGET_XBOX -d TARGET_X86
+    FBCMPFLAGS += -d TARGET_XBOX -d TARGET_X86
     osdepsrcs := fbc_xbox.bas
 endif
 
