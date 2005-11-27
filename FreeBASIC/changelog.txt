@@ -86,6 +86,8 @@ Version 0.15 Beta:
 - support for multiple typedef declarations and the inverse notation "TYPE AS DataType (Symbol ',')+" (v1c)
 - source-level debugging support for inline assembly blocks (v1c)
 - the CAST() intrinsic function: "CAST( DataType, Expression )" (v1c)
+- include file and import-lib for the Expat XML-parsing library (v1c)
+- include file for the DISLIN library (v1c)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)

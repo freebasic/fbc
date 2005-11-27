@@ -762,6 +762,10 @@ Links:
 
     - DevIL: http://openil.sourceforge.net/
 
+    - DISLIN: http://www.linmpi.mpg.de/dislin/
+
+    - Expat: http://expat.sourceforge.net/
+
     - FastCGI: http://www.fastcgi.com/
 
     - fmod: http://www.fmod.org/
