@@ -211,9 +211,9 @@ declare function    cFuncPtrOrDerefFields	( byval typ as integer, _
 					      					  byval isfuncptr as integer, _
 					      					  byval checkarray as integer ) as integer
 
-declare sub 		cUpdPointer				( byval op as integer, _
-					  						  byref p as ASTNODE ptr, _
-					  						  byref e as ASTNODE ptr )
+declare function	cUpdPointer				( byval op as integer, _
+					  						  byval p as ASTNODE ptr, _
+					  						  byval e as ASTNODE ptr ) as ASTNODE ptr
 
 declare function 	cAssignment				( byval assgexpr as ASTNODE ptr ) as integer
 

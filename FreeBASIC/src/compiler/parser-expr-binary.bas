@@ -34,43 +34,55 @@ declare function cLogOrExpression			( byref logexpr as ASTNODE ptr ) as integer
 declare function cLogAndExpression			( byref logexpr as ASTNODE ptr ) as integer
 
 '':::::
-sub cUpdPointer( byval op as integer, _
-				 byref p as ASTNODE ptr, _
-				 byref e as ASTNODE ptr ) static
+function cUpdPointer( byval op as integer, _
+				 	  byval p as ASTNODE ptr, _
+				 	  byval e as ASTNODE ptr _
+				 	) as ASTNODE ptr static
 
     dim as integer edtype
     dim as integer lgt
+
+    function = NULL
 
     edtype = astGetDataType( e )
 
     '' not integer class?
     if( irGetDataClass( edtype ) <> IR_DATACLASS_INTEGER ) then
-    	astDelTree( e )
-    	e = NULL
-    	exit sub
+    	exit function
 
     '' CHAR and WCHAR literals are also from the INTEGER class (to allow *p = 0 etc)
     else
     	select case edtype
     	case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
-    		astDelTree( e )
-    		e = NULL
-    		exit sub
+    		exit function
     	end select
     end if
 
+    '' calc len( *p )
+    lgt = symbCalcLen( astGetDataType( p ) - FB_SYMBTYPE_POINTER, astGetSubType( p ) )
+
     '' another pointer?
     if( edtype >= IR_DATATYPE_POINTER ) then
-    	'' if sub, convert both to uint
+    	'' only allow if it's a subtraction
     	if( op = IR_OP_SUB ) then
+    		'' types can't be different..
+    		if( (edtype <> astGetDataType( p )) or _
+    			(astGetSubType( e ) <> astGetSubType( p )) ) then
+    			exit function
+    		end if
+
+    		'' convert to uint or BOP will complain..
     		p = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, p )
     		e = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, e )
-    	else
-    		astDelTree( e )
-    		e = NULL
+
+ 			'' subtract..
+ 			e = astNewBOP( IR_OP_SUB, p, e )
+
+ 			'' and divide by length
+ 			function = astNewBOP( IR_OP_INTDIV, e, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ) )
     	end if
 
-    	exit sub
+    	exit function
     end if
 
     '' not integer? convert
@@ -81,28 +93,26 @@ sub cUpdPointer( byval op as integer, _
     '' any op but +|-?
     select case op
     case IR_OP_ADD, IR_OP_SUB
-    	'' multiple by pdtype - POINTER
-		lgt = symbCalcLen( astGetDataType( p ) - FB_SYMBTYPE_POINTER, astGetSubType( p ) )
 		'' incomplete type?
 		if( lgt = 0 ) then
-			'' void ptr? pretend it's a byte ptr
+			'' unless it's a void ptr.. pretend it's a byte ptr
 			if( astGetDataType( p ) <> FB_SYMBTYPE_POINTER + FB_SYMBTYPE_VOID ) then
-				astDelTree( e )
-				e = NULL
+				exit function
 			end if
-			exit sub
 		end if
 
+    	'' multiple by length
 		e = astNewBOP( IR_OP_MUL, e, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ) )
+
+		'' do op
+		function = astNewBOP( op, p, e )
 
     case else
     	'' allow AND and OR??
-    	astDelTree( e )
-    	e = NULL
-    	exit sub
+    	exit function
     end select
 
-end sub
+end function
 
 '':::::
 ''Expression      =   CatExpression .
@@ -418,22 +428,14 @@ function cAddExpression( byref addexpr as ASTNODE ptr ) as integer
 
     	'' check pointers
     	if( astGetDataType( addexpr ) >= IR_DATATYPE_POINTER ) then
-    		cUpdPointer( op, addexpr, expr )
-    		if( expr = NULL ) then
-    			hReportError( FB_ERRMSG_TYPEMISMATCH )
-    			exit function
-    		end if
+    		addexpr = cUpdPointer( op, addexpr, expr )
 
     	elseif( astGetDataType( expr ) >= IR_DATATYPE_POINTER ) then
-    		cUpdPointer( op, expr, addexpr )
-    		if( addexpr = NULL ) then
-    			hReportError( FB_ERRMSG_TYPEMISMATCH )
-    			exit function
-    		end if
-    	end if
+    		addexpr = cUpdPointer( op, expr, addexpr )
 
-    	'' do operation
-    	addexpr = astNewBOP( op, addexpr, expr )
+    	else
+    		addexpr = astNewBOP( op, addexpr, expr )
+    	end if
 
     	if( addexpr = NULL ) Then
     		hReportError( FB_ERRMSG_TYPEMISMATCH )

@@ -105,14 +105,11 @@ function cAssignment( byval assgexpr as ASTNODE ptr ) as integer
     if( op <> INVALID ) then
     	'' pointer?
     	if( astGetDataType( assgexpr ) >= IR_DATATYPE_POINTER ) then
-    		cUpdPointer( op, assgexpr, expr )
-    		if( expr = NULL ) then
-    			hReportError( FB_ERRMSG_TYPEMISMATCH )
-    			exit function
-    		end if
+    		expr = cUpdPointer( op, astCloneTree( assgexpr ), expr )
+    	else
+    		expr = astNewBOP( op, astCloneTree( assgexpr ), expr )
     	end if
 
-    	expr = astNewBOP( op, astCloneTree( assgexpr ), expr )
     	if( expr = NULL ) Then
     		hReportError( FB_ERRMSG_TYPEMISMATCH )
     		exit function
