@@ -166,11 +166,12 @@ static __inline__ int swprintf(FB_WCHAR *buffer, size_t n, const FB_WCHAR *forma
     return result;
 }
 
-#define wcstod strtod
-#define wcstol strtol
-#define wcstoll strtoll
-#define wcstoul strtoul
+#define wcstod   strtod
+#define wcstol   strtol
+#define wcstoll  strtoll
+#define wcstoul  strtoul
 #define wcstoull strtoull
+#define wcschr   strchr
 
 #define _LC(c) c
 

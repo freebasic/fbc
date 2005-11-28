@@ -101,7 +101,8 @@ static __inline__ void fb_wstr_WcharToChar( char *dst,
 }
 #endif
 
-/*:::::*/
+/** Calculate the number of characters between two pointers.
+ */
 static __inline__ int fb_wstr_CalcDiff( const FB_WCHAR *ini,
 										const FB_WCHAR *end )
 {
@@ -121,7 +122,8 @@ static __inline__ void fb_wstr_Del( FB_WCHAR *s )
 	free( (void *)s );
 }
 
-/*:::::*/
+/** Return the length of a WSTRING.
+ */
 static __inline__ int fb_wstr_Len( const FB_WCHAR *s )
 {
 	/* without the null-term */
@@ -204,7 +206,8 @@ static __inline__ FB_WCHAR fb_wstr_ToUpper( FB_WCHAR c )
 	return towupper( c );
 }
 
-/*:::::*/
+/** Copy n characters from A to B and terminate with NUL.
+ */
 static __inline__ void fb_wstr_Copy( FB_WCHAR *dst,
 									 const FB_WCHAR *src, int chars )
 {
@@ -215,7 +218,8 @@ static __inline__ void fb_wstr_Copy( FB_WCHAR *dst,
     *dst = _LC('\0');
 }
 
-/*:::::*/
+/** Copy n characters from A to B.
+ */
 static __inline__ FB_WCHAR *fb_wstr_Move( FB_WCHAR *dst,
 										  const FB_WCHAR *src, int chars )
 {
@@ -234,7 +238,8 @@ static __inline__ void fb_wstr_Fill( FB_WCHAR *dst, FB_WCHAR c, int chars )
 	*dst = _LC('\0');
 }
 
-/*:::::*/
+/** Skip all characters (c) from the beginning of the string, max 'n' chars.
+ */
 static __inline__ const FB_WCHAR *fb_wstr_SkipChar( const FB_WCHAR *s,
 													int chars, FB_WCHAR c )
 {
@@ -255,7 +260,8 @@ static __inline__ const FB_WCHAR *fb_wstr_SkipChar( const FB_WCHAR *s,
     return p;
 }
 
-/*:::::*/
+/** Skip all characters (c) from the end of the string, max 'n' chars.
+ */
 static __inline__ const FB_WCHAR *fb_wstr_SkipCharRev( const FB_WCHAR *s,
 													   int chars, FB_WCHAR c )
 {

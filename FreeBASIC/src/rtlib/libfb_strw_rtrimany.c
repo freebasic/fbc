@@ -1,26 +1,26 @@
 /*
- *	libfb - FreeBASIC's runtime library
+ *  libfb - FreeBASIC's runtime library
  *	Copyright (C) 2004-2005 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and others.
  *
- *	This library is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU Lesser General Public
- *	License as published by the Free Software Foundation; either
- *	version 2.1 of the License, or (at your option) any later version.
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
  *
- *	This library is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *	Lesser General Public License for more details.
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
  *
- *	You should have received a copy of the GNU Lesser General Public
- *	License along with this library; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /*
- * wstr_rtrimany.c -- rtrim$ ANY function for wstrings
+ * strw_rtrimany.c -- rtrimw$ ANY function
  *
- * chng: aug/2005 written [mjs]
+ * chng: nov/2005 written [mjs]
  *
  */
 
@@ -31,38 +31,48 @@
 /*:::::*/
 FBCALL FB_WCHAR *fb_WstrRTrimAny ( const FB_WCHAR *src, const FB_WCHAR *pattern )
 {
-	FB_WCHAR *dst;
-	size_t chars, chars_pattern;
+    const FB_WCHAR *pachText;
+	FB_WCHAR 	*dst;
+	size_t 		len;
 
-	if( src == NULL || pattern == NULL )
-		return NULL;
+    if( src == NULL ) {
+        return NULL;
+    }
 
-	chars_pattern = fb_wstr_Len( pattern );
-	chars = fb_wstr_Len( src );
-	while( chars != 0 )
-	{
-		size_t i;
-		--chars;
-		for( i = 0; i != chars_pattern; ++i )
-		{
-			if( wmemchr( pattern, src[chars], chars_pattern ) != NULL )
-				break;
-		}
-
-		if( i == chars_pattern )
-		{
-			++chars;
-			break;
+	len = fb_wstr_Len( src );
+    {
+        size_t len_pattern = fb_wstr_Len( pattern );
+        pachText = src;
+		while ( len != 0 )
+        {
+            size_t i;
+            --len;
+            for( i=0; i!=len_pattern; ++i ) {
+                if( wcschr( pattern, pachText[len] )!=NULL ) {
+                    break;
+                }
+            }
+            if( i==len_pattern ) {
+                ++len;
+                break;
+            }
 		}
 	}
 
-	if( chars == 0 )
-		return NULL;
-
-	/* alloc temp string */
-	dst = fb_wstr_AllocTemp( chars );
-	if( dst != NULL )
-		fb_wstr_Copy( dst, src, chars );
+	if( len > 0 )
+	{
+		/* alloc temp string */
+        dst = fb_wstr_AllocTemp( len );
+		if( dst != NULL )
+		{
+			/* simple copy */
+			fb_wstr_Copy( dst, src, len );
+		}
+		else
+			dst = NULL;
+    }
+	else
+		dst = NULL;
 
 	return dst;
 }

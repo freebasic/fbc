@@ -72,7 +72,7 @@ private function hUTF8ToChar( ) as integer static
     dim as ubyte ptr dst
     dim as integer chars, extbytes, i
 
-	dst = cast( ubyte ptr, @lex->buffw )
+	dst = cptr( ubyte ptr, @lex->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -127,7 +127,7 @@ private function hUTF8ToUTF16LE( ) as integer static
     dim as ushort ptr dst
     dim as integer chars, extbytes, i
 
-	dst = cast( ushort ptr, @lex->buffw )
+	dst = cptr( ushort ptr, @lex->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -189,7 +189,7 @@ private function hUTF8ToUTF32LE( ) as integer static
     dim as uinteger ptr dst
     dim as integer chars, extbytes, i
 
-	dst = cast( uinteger ptr, @lex->buffw )
+	dst = cptr( uinteger ptr, @lex->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -240,7 +240,7 @@ private function hUTF8ToUTF32BE( ) as integer static
 
 	chars = hUTF8ToUTF32LE( )
 
-	dst = cast( uinteger ptr, @lex->buffw )
+	dst = cptr( uinteger ptr, @lex->buffw )
 	for i = 1 to chars
 		c = *dst
 		*dst = U32_SWAP( c )
@@ -284,7 +284,7 @@ private function hUTF16LEToChar( ) as integer static
     dim as ubyte ptr dst
     dim as integer chars
 
-	dst = cast( ubyte ptr, @lex->buffw )
+	dst = cptr( ubyte ptr, @lex->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -336,7 +336,7 @@ private function hUTF16LEToUTF32LE( ) as integer static
     dim as uinteger ptr dst
     dim as integer chars
 
-	dst = cast( uinteger ptr, @lex->buffw )
+	dst = cptr( uinteger ptr, @lex->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -378,7 +378,7 @@ private function hUTF16LEToUTF32BE( ) as integer static
 
 	chars = hUTF16LEToUTF32LE( )
 
-	dst = cast( uinteger ptr, @lex->buffw )
+	dst = cptr( uinteger ptr, @lex->buffw )
 	for i = 1 to chars
 		c = *dst
 		*dst = U32_SWAP( c )
@@ -422,7 +422,7 @@ private function hUTF16BEToChar( ) as integer static
     dim as ubyte ptr dst
     dim as integer chars
 
-	dst = cast( ubyte ptr, @lex->buffw )
+	dst = cptr( ubyte ptr, @lex->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -466,7 +466,7 @@ private function hUTF16BEToUTF16LE( ) as integer static
 
 	chars = hUTF16LEToUTF16LE( )
 
-	dst = cast( ushort ptr, @lex->buffw )
+	dst = cptr( ushort ptr, @lex->buffw )
 	for i = 1 to chars
 		c = *dst
 		*dst = U16_SWAP( c )
@@ -484,7 +484,7 @@ private function hUTF16BEToUTF32LE( ) as integer static
     dim as uinteger ptr dst
     dim as integer chars
 
-	dst = cast( uinteger ptr, @lex->buffw )
+	dst = cptr( uinteger ptr, @lex->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -559,7 +559,7 @@ private function hUTF32LEToChar( ) as integer static
     dim as ubyte ptr dst
     dim as integer chars
 
-	dst = cast( ubyte ptr, @lex->buffw )
+	dst = cptr( ubyte ptr, @lex->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -590,7 +590,7 @@ private function hUTF32LEToUTF16LE( ) as integer static
     dim as ushort ptr dst
     dim as integer chars
 
-	dst = cast( ushort ptr, @lex->buffw )
+	dst = cptr( ushort ptr, @lex->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -641,7 +641,7 @@ private function hUTF32LEToUTF32BE( ) as integer static
 
 	chars = hUTF32LEToUTF32LE( )
 
-	dst = cast( uinteger ptr, @lex->buffw )
+	dst = cptr( uinteger ptr, @lex->buffw )
 	for i = 1 to chars
 		c = *dst
 		*dst = U32_SWAP( c )
@@ -685,7 +685,7 @@ private function hUTF32BEToChar( ) as integer static
     dim as ubyte ptr dst
     dim as integer chars
 
-	dst = cast( ubyte ptr, @lex->buffw )
+	dst = cptr( ubyte ptr, @lex->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -718,7 +718,7 @@ private function hUTF32BEToUTF16LE( ) as integer static
     dim as ushort ptr dst
     dim as integer chars
 
-	dst = cast( ushort ptr, @lex->buffw )
+	dst = cptr( ushort ptr, @lex->buffw )
 	chars = 0
 
 	do while( chars < LEX_MAXBUFFCHARS )
@@ -760,7 +760,7 @@ private function hUTF32BEToUTF32LE( ) as integer static
 
 	chars = hUTF32LEToUTF32LE( )
 
-	dst = cast( uinteger ptr, @lex->buffw )
+	dst = cptr( uinteger ptr, @lex->buffw )
 	for i = 1 to chars
 		c = *dst
 		*dst = U32_SWAP( c )
