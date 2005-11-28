@@ -45,7 +45,7 @@ int fb_hConsoleInputBufferChanged( void )
         _movedataw( _dos_ds, 0x41C, _my_ds(), (int) &usCircBufferStatus, 1 );
     }
 
-    _movedatal( _dos_ds, 0x41C, _my_ds(), (int) &usNewStatus, 1 );
+    _movedataw( _dos_ds, 0x41C, _my_ds(), (int) &usNewStatus, 1 );
     is_changed = usNewStatus!=usCircBufferStatus;
     if( is_changed )
         usCircBufferStatus = usNewStatus;
