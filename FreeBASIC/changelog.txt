@@ -149,6 +149,7 @@ Version 0.15 Beta:
 - GET and PUT for graphics now support field arrays too (v1c)
 - a division of a signed integer by a power of 2 constant would give a wrong result if the left-operand was negative (v1c)
 - exponent handling (including when too big to fit) in PRINT USING (v1c)
+- the subtraction of two pointer operands was not been divided by the operands' length (v1c)
 
 Version 0.14 Beta:
 
