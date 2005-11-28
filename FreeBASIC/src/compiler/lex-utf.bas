@@ -38,7 +38,7 @@ option escape
 #define	UTF16_HALFBASE 		 &h0010000UL
 #define	UTF16_HALFMASK 		 &h3FFUL
 
-#define U16_SWAP(c) (((c) shr 8) or ((c) shl 8))
+#define U16_SWAP(c) (((c) shr 8) or ((c) shl 8) and &hFF00)
 
 #define U32_SWAP(c) (((c) shr 24) or (((c) shl 8) and &h00FF0000) or _
 			 		(((c) shr 8) and &h0000FF00) or ((c) shl 24))
