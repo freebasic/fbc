@@ -34,12 +34,26 @@
 #include <go32.h>
 #include <pc.h>
 #include <sys/farptr.h>
+#include <stdarg.h>
 
 #ifdef FB_DOS_USE_CONIO
 # include <conio.h>
 #endif
 
 #define FB_NEWLINE "\r\n"
+
+/*:::::*/
+static __inline__ int snprintf (char *buffer, size_t n, const char *format, ...)
+{
+    int res;
+    va_list va;
+
+    va_start( va, format );
+	res = vsprintf( buffer, format, va );
+    va_end( va );
+
+    return res;
+}
 
 typedef int FB_DIRCTX; /* dummy to make fb.h happy */
 
