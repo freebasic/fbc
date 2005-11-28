@@ -737,7 +737,6 @@ void fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int fla
 /*:::::*/
 void fb_dos_exit(void)
 {
-	fb_dos_restore_video_mode();
 
 	if (!fb_dos.inited) return;
 
@@ -748,8 +747,6 @@ void fb_dos_exit(void)
     fb_dos_kb_exit();
 
     fb_dos_sti();
-
-
 
 	fb_dos.w = fb_dos.h = fb_dos.depth = fb_dos.refresh = 0;
 
@@ -773,6 +770,8 @@ void fb_dos_exit(void)
 	unlock_proc(fb_dos_draw_mouse_32);
     unlock_proc(fb_dos_undraw_mouse_32);
 	unlock_mem(fb_dos.update, fb_dos.update_len);
+	
+	fb_dos_restore_video_mode();
 
 	fb_dos.inited = FALSE;
 }
@@ -798,17 +797,22 @@ void fb_dos_set_window_title(char *title)
 /*:::::*/
 static void fb_dos_save_video_mode(void)
 {
-	fb_dos.old_rows = ScreenRows();
-	fb_dos.old_cols = ScreenCols();
+	int n = fb_ConsoleWidth(0, 0);
+	
+	fb_dos.old_rows = n >> 16;
+	fb_dos.old_cols = n & 0xFFFF;
 }
 
 /*:::::*/
 static void fb_dos_restore_video_mode(void)
 {
-	fb_dos.regs.x.ax = 3;
-	__dpmi_int(0x10, &fb_dos.regs);
-	_set_screen_lines(fb_dos.old_rows);
-	intensevideo();	/* no blink */
+	if (fb_dos.old_rows == 0)
+		return;
+	
+	fb_ConsoleWidth(fb_dos.old_rows, fb_dos.old_cols);
+	
+	fb_dos.old_rows = fb_dos.old_cols = 0;
+
 }
 
 /*:::::*/
