@@ -61,7 +61,7 @@ FBCALL FB_WCHAR *fb_WstrTrimEx ( const FB_WCHAR *src, const FB_WCHAR *pattern )
         }
         if( len >= len_pattern ) {
             if( len_pattern==1 ) {
-                FB_WCHAR *p_tmp =
+                const FB_WCHAR *p_tmp =
                     fb_wstr_SkipCharRev( p,
                                          len,
                                          *pattern );
