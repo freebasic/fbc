@@ -766,42 +766,6 @@ static __inline__ int FB_PRINT_CONVERT_BIN_NEWLINE(int mask)
 #define FB_WRITENUM(fnum, val, mask, type) 				    \
     FB_WRITENUM_EX(FB_FILE_TO_HANDLE(fnum), val, mask, type)
 
-#define FB_WRITESTR_EX(handle, val, mask, type) 			          \
-    do {                                                              \
-        char buffer[80*25+1];								          \
-        size_t len;             							          \
-                                                                      \
-        if( mask & FB_PRINT_BIN_NEWLINE )           		          \
-            len = sprintf( buffer, type FB_BINARY_NEWLINE, val );     \
-        else if( mask & FB_PRINT_NEWLINE )           			      \
-            len = sprintf( buffer, type FB_NEWLINE, val );            \
-        else												          \
-            len = sprintf( buffer, type ",", val );                   \
-                                                                      \
-        fb_hFilePrintBufferEx( handle, buffer, len );                 \
-    } while (0)
-
-#define FB_WRITESTR(fnum, val, mask, type) 				    \
-    FB_WRITESTR_EX(FB_FILE_TO_HANDLE(fnum), val, mask, type)
-
-#define FB_WRITEWSTR_EX(handle, val, mask, type) 			         			\
-    do {                                                              			\
-        FB_WCHAR buffer[80*25+1];								      			\
-        size_t len;             							          			\
-                                                                      			\
-        if( mask & FB_PRINT_BIN_NEWLINE )           		          			\
-            len = swprintf( buffer, 80*25+1, _LC(type FB_BINARY_NEWLINE), val );\
-        else if( mask & FB_PRINT_NEWLINE )           			      			\
-            len = swprintf( buffer, 80*25+1, _LC(type FB_NEWLINE), val );       \
-        else												          			\
-            len = swprintf( buffer, 80*25+1, _LC(type ","), val );              \
-                                                                      			\
-        fb_hFilePrintBufferWstrEx( handle, buffer, len );             			\
-    } while (0)
-
-#define FB_WRITEWSTR(fnum, val, mask, type) 				   \
-    FB_WRITEWSTR_EX(FB_FILE_TO_HANDLE(fnum), val, mask, type)
-
 struct _FB_FILE;
 
        int          fb_ConsoleWidth     ( int cols, int rows );
