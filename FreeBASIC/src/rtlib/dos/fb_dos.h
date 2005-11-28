@@ -34,6 +34,8 @@
 #include <go32.h>
 #include <pc.h>
 #include <sys/farptr.h>
+
+#include <stdio.h>
 #include <stdarg.h>
 
 #ifdef FB_DOS_USE_CONIO
