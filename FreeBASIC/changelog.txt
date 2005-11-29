@@ -88,6 +88,7 @@ Version 0.15 Beta:
 - the CAST() intrinsic function: "CAST( DataType, Expression )" (v1c)
 - include file and import-lib for the Expat XML-parsing library (v1c)
 - include file for the DISLIN library (v1c)
+- DOS VESA gfxlib driver (DrV)
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)
