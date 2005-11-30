@@ -33,7 +33,7 @@ option escape
 private sub hReportParamError( byval argnum as integer, _
 							   byval errnum as integer = FB_ERRMSG_PARAMTYPEMISMATCHAT )
 
-	hReportErrorEx( errnum, "at parameter: " + str$( argnum ) )
+	hReportErrorEx( errnum, "at parameter: " + str( argnum ) )
 
 end sub
 
@@ -131,7 +131,7 @@ private function hDeclareArgs( byval proc as FBSYMBOL ptr ) as integer static
 	end if
 
 	''
-	a = 0
+	a = 1
 	arg = symbGetProcHeadArg( proc )
 	do while( arg <> NULL )
 
