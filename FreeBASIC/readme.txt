@@ -763,6 +763,8 @@ Links:
     - DevIL: http://openil.sourceforge.net/
 
     - DISLIN: http://www.linmpi.mpg.de/dislin/
+    
+    - DispHelper: http://disphelper.sourceforge.net/
 
     - Expat: http://expat.sourceforge.net/
 
@@ -812,6 +814,8 @@ Links:
 
     - OpenGL: http://www.opengl.org/
 
+    - PCRE: http://www.pcre.org/
+    
     - PDCurses: http://pdcurses.sourceforge.net/
 
     - PDFlib: http://www.pdflib.com/ or http://gnuwin32.sourceforge.net/packages/pdflib.htm
