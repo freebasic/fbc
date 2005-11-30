@@ -207,7 +207,7 @@ private function HSBtoRGB( byval hue, byval saturation, byval brightness ) as lo
       blue  = red - (brightness - green) * domainOffset * 6.0
    ENd select
    
-   function = rgb( blue*255.0, green*255.0, red*255.0 )
+   function = rgb( red*255.0, green*255.0, blue*255.0 )
 
 end function
 
