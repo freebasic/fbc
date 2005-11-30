@@ -1,34 +1,21 @@
-[ ] windows api headers:
-    - add missing headers: win/__TODO__ and others not translated (DX, TAPI, etc)
-    - check all PSHPACK#.h inclusions and also #pragma push|pop
-    - convert the once-nameless unions (u as) and structs (s as) to inner nameless types
-    - add the #inclib's
-    - add the missing macros (MAKELONG etc) and complex #define's (ones with type casting)
-    - add UNICODE and ASCII support
-
-[ ] PtrChk will duplicate the tree, causing side effects if functions are been called (it will be
-    called twice)
-    - the same will happen with ArrayBoundsCheck if a function is used in the index expression
 
 [ ] add the wstring type:
-    - auto-convert literal strings to w- or z- on assignments, depending on the l-hand side type
-    - implement all missing rtlib wstring routines:
-      - [L|R]TRIM ANY
-    - add the missing internal functions in the Linux and DOS ports
+    - auto-convert literal strings to w- or z- on assignments, depending on the l-hand
+      side type
     - fix the !!!FIXME!!!'s and write the !!!WRITEME!!!'s in the rtlib
+
+[ ] PtrChk will duplicate the tree, causing side effects if functions are been called
+    (it will be called twice)
+    - the same will happen with ArrayBoundsCheck if a function is used in the index
+      expression
 
 [ ] swap of zstring's and var-len string's is not working?? or that's the behaviour..
 
 [ ] @static_array(const) won't become an OFFSET, not allowing initializations..
 
-[ ] passing a temporary string to a zstring ptr should not make
-    yet-another temporary assignament in hStrParamToPtrArg(),
-    just a pointer copy that later should be strDelete()'d
-
-
-[ ] add support for functions returning references (reuse "BYREF"), so those can
-    be automatically dereferenced - but *NOT* deleted, only non-local data can
-    be returned by reference in C++
+[ ] passing a temporary string to a zstring ptr should not make yet-another temporary
+    assignment in hStrParamToPtrArg(), just a pointer copy that later should be
+    strDelete()'d
 
 [ ] SCOPE..END SCOPE:
     - vars should be reused (that's is, the stack "rewinded") because it's only
@@ -40,15 +27,19 @@
       a class.. nm..
     - error handlers should be restored too (or not allowed at all)
 
+
+*** *** *** *** ***
+[ ] add support for functions returning references (reuse "BYREF"), so those can
+    be automatically dereferenced - but *NOT* deleted, only non-local data can
+    be returned by reference in C++
+
 [ ] add fix-len and zstring * support to array args passed by descriptor
 
 [ ] named field initializers: ( "foo" => bar, "udt" => ( 1, { 2, 3 }, 4 ) )
     - all fields initialized must be named as a special parser routine will have to be used,
-      that will keep track of what wasn't initialized to fill 'em with 0's - static only, locals
-      are already cleared
+      that will keep track of what wasn't initialized to fill 'em with 0's - static only,
+      locals are already cleared
 
-
-*** *** *** *** ***
 [ ] full debug support
     - add dynamic arrays - couldn't get GDB to use Fortran-like arrays
     - each overloaded function will show the locals of *ALL* functions

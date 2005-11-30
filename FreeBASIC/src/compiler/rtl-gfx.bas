@@ -632,7 +632,7 @@ function rtlGfxPoint( byval target as ASTNODE ptr, _
 
  	'' byval y as single
  	if( yexpr = NULL ) then
- 		yexpr = astNewCONSTf( -1, IR_DATATYPE_SINGLE )
+ 		yexpr = astNewCONSTf( -8388607, IR_DATATYPE_SINGLE )
  	end if
  	if( astNewPARAM( proc, yexpr ) = NULL ) then
  		exit function

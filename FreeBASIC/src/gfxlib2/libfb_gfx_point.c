@@ -36,14 +36,14 @@ FBCALL int fb_GfxPoint(void *target, float fx, float fy)
 	if (!fb_mode)
 		return -1;
 	
-	if (fy < 0)
+	if( fy == -8388607.0 )
 		return fb_GfxCursor(fx);
 	
 	fb_hPrepareTarget(target);
 	
 	fb_hTranslateCoord(fx, fy, &x, &y);
 	
-	if ((x < fb_mode->view_x) || (y < fb_mode->view_y) ||
+	if ((x <= fb_mode->view_x) || (y <= fb_mode->view_y) ||
 	    (x >= fb_mode->view_x + fb_mode->view_w) || (y >= fb_mode->view_y + fb_mode->view_h))
 		return -1;
 	
