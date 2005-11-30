@@ -15,7 +15,8 @@
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 !define PRODUCT_STARTMENU_REGVAL "NSIS:StartMenuDir"
 
-SetCompressor /SOLID lzma
+;SetCompressor /SOLID lzma
+SetCompressor zlib
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
@@ -75,27 +76,37 @@ InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
 
-LangString TEXT_SECTION_MAIN     ${LANG_ENGLISH} "Main group"
-LangString TEXT_SECTION_MAIN     ${LANG_GERMAN}  "Hauptgruppe"
-LangString TEXT_SECTION_MAIN     ${LANG_PORTUGUESE}  "Grupo Principal"
+LangString TEXT_SECTION_MAIN     ${LANG_ENGLISH} "Main"
+LangString TEXT_SECTION_MAIN     ${LANG_GERMAN}  "Haupt"
+LangString TEXT_SECTION_MAIN     ${LANG_PORTUGUESE} "Principal"
 
 LangString TEXT_SECTION_EXAMPLES ${LANG_ENGLISH} "Examples"
 LangString TEXT_SECTION_EXAMPLES ${LANG_GERMAN}  "Beispiele"
 LangString TEXT_SECTION_EXAMPLES ${LANG_PORTUGUESE} "Exemplos"
 
+LangString TEXT_SECTION_LIBS ${LANG_ENGLISH} "Libraries"
+LangString TEXT_SECTION_LIBS ${LANG_GERMAN}  "Bibliotheken"
+LangString TEXT_SECTION_LIBS ${LANG_PORTUGUESE} "Bibliotecas"
+
 ;;;ENABLE_SOURCES;;;LangString TEXT_SECTION_SOURCES  ${LANG_ENGLISH} "Sources"
 ;;;ENABLE_SOURCES;;;LangString TEXT_SECTION_SOURCES  ${LANG_GERMAN}  "Quelltexte"
+;;;ENABLE_SOURCES;;;LangString TEXT_SECTION_SOURCES  ${LANG_PORTUGUESE}  "Código-Fonte"
 
-LangString TEXT_SECT_DESCR_MAIN     ${LANG_ENGLISH} "Compiler, libraries and header files"
-LangString TEXT_SECT_DESCR_MAIN     ${LANG_GERMAN}  "Compiler, Bibliotheken und Include-Dateien"
-LangString TEXT_SECT_DESCR_MAIN     ${LANG_PORTUGUESE} "Compilador, bibliotecas e arquivos de cabeçalho"
+LangString TEXT_SECT_DESCR_MAIN     ${LANG_ENGLISH} "Compiler and obligatory libraries"
+LangString TEXT_SECT_DESCR_MAIN     ${LANG_GERMAN}  "Compiler und Bibliotheken"
+LangString TEXT_SECT_DESCR_MAIN     ${LANG_PORTUGUESE} "Compilador e bibliotecas obrigatórias"
 
 LangString TEXT_SECT_DESCR_EXAMPLES ${LANG_ENGLISH} "Example applications"
 LangString TEXT_SECT_DESCR_EXAMPLES ${LANG_GERMAN}  "Beispiel-Programme"
-LangString TEXT_SECT_DESCR_EXAMPLES ${LANG_PORTUGUESE} "Aplicativos de examplo"
+LangString TEXT_SECT_DESCR_EXAMPLES ${LANG_PORTUGUESE} "Aplicativos de exemplo"
+
+LangString TEXT_SECT_DESCR_LIBS ${LANG_ENGLISH} "External libraries and their include files"
+LangString TEXT_SECT_DESCR_LIBS ${LANG_GERMAN}  "Bibliotheken und Include-Dateien"
+LangString TEXT_SECT_DESCR_LIBS ${LANG_PORTUGUESE} "Bibliotecas externas e seus cabeçalhos"
 
 ;;;ENABLE_SOURCES;;;LangString TEXT_SECT_DESCR_SOURCES  ${LANG_ENGLISH} "Sources the compiler and its libraries were built from"
 ;;;ENABLE_SOURCES;;;LangString TEXT_SECT_DESCR_SOURCES  ${LANG_GERMAN}  "Quelltexte aus denen der Compiler und die Bibliotheken erstellt wurden"
+;;;ENABLE_SOURCES;;;LangString TEXT_SECT_DESCR_SOURCES  ${LANG_PORTUGUESE} "Código-fonte do compilador e suas bibliotecas"
 
 Function .onInit
   !insertmacro MUI_LANGDLL_DISPLAY
@@ -122,7 +133,11 @@ Section $(TEXT_SECTION_MAIN) SEC01
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
-Section $(TEXT_SECTION_EXAMPLES) SEC02
+SectionGroup $(TEXT_SECTION_LIBS) SEC02
+  ;;;FILES_LIBS;;;
+SectionGroupEnd
+
+Section $(TEXT_SECTION_EXAMPLES) SEC03
   ;;;FILES_EXAMPLES;;;
 
 ; Shortcuts
@@ -130,7 +145,7 @@ Section $(TEXT_SECTION_EXAMPLES) SEC02
   !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
-;;;ENABLE_SOURCES;;;Section /o $(TEXT_SECTION_SOURCES) SEC03
+;;;ENABLE_SOURCES;;;Section /o $(TEXT_SECTION_SOURCES) SEC04
   ;;;FILES_SOURCES;;;
 
 ; Shortcuts
@@ -164,8 +179,9 @@ SectionEnd
 ; Section descriptions
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "$(TEXT_SECT_DESCR_MAIN)"
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "$(TEXT_SECT_DESCR_EXAMPLES)"
-;;;ENABLE_SOURCES;;;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "$(TEXT_SECT_DESCR_SOURCES)"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "$(TEXT_SECT_DESCR_LIBS)"
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "$(TEXT_SECT_DESCR_EXAMPLES)"
+;;;ENABLE_SOURCES;;;  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "$(TEXT_SECT_DESCR_SOURCES)"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 Section Uninstall
@@ -176,11 +192,10 @@ Section Uninstall
   Delete "$INSTDIR\fblogo.ico"
   Delete "$INSTDIR\start_shell.exe"
   ;;;DELETE_SOURCES;;;
+  ;;;DELETE_LIBS;;;
   ;;;DELETE_EXAMPLES;;;
   ;;;DELETE_MAIN;;;
   ;;;DELETE_IMPORT_LIBS;;;
-;  Delete "$INSTDIR\examples\wx-c\wx-c_demo.bas"
-;  Delete "$INSTDIR\examples\wx-c\sizers.bas"
 
   IfFileExists "$INSTDIR\setvars.bat" 0 +2
   Delete "$INSTDIR\setvars.bat"
@@ -193,6 +208,9 @@ Section Uninstall
 
   RMDir "$SMPROGRAMS\$ICONS_GROUP"
   ;;;DELETE_FOLDERS;;;
+  RMDir "$INSTDIR\inc"
+  RMDir "$INSTDIR\lib\win32"
+  RMDir "$INSTDIR\lib"
   RMDir "$INSTDIR"
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
