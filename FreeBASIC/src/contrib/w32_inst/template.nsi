@@ -121,7 +121,7 @@ Section $(TEXT_SECTION_MAIN) SEC01
   File "fblogo.ico"
 
   ;;;FILES_MAIN;;;
-;;;ENABLE_IMPORT_LIBS;;;  SetOutPath "$INSTDIR\lib\win32"
+  ;;;ENABLE_IMPORT_LIBS;;;  SetOutPath "$INSTDIR\lib\win32"
   ;;;FILES_IMPORT_LIBS;;;
 
 ; Shortcuts
