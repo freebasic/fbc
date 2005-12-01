@@ -22,16 +22,9 @@ Installing:
 
   o Windows version:
 
-    - Unpack the zip archive to any folder of your preference -- C:\ is a good
-      idea if you are not going to use an IDE later. The directory structure
-      as used inside the archive must be preserved.
-
-    - Run the INSTALL.BAT file to generate the import libraries -- they are
-      needed to call any function on DLL's and to create the executables.
-
-    (Note: Do not install the Windows version over the old versions, unless the
-     whole /lib/win32 directory is deleted first.)
-
+    - Follow the installer instructions, don't forget to select which external 
+      libraries to install, all them are selected by default.
+      
   o Linux version:
 
     - Unpack the tar gzip archive to any folder.
@@ -61,20 +54,16 @@ Installing:
 
 Running:
 
-  o Windows and DOS versions:
+  o Windows version:
 
-    - Open the DOS/Command-Prompt/Console and change to the dir where the
-      FreeBASIC archive was unpacked. For example, type "cd C:\FreeBASIC"
-      (without quotes) and press Enter, if the archive was expanded to C:\.
-
+    - A desktop icon and start-menu links should be created by the installer, use
+      them to open the console directly into the directory where FreeBASIC was 
+      installed (or follow the DOS guide below if nothing works).
+  
     - Type "fbc" (without quotes) to see a list of options. To compile the hello
       example type: "fbc examples\hello.bas", the hello.exe file will be created
       at the "examples" dir.
-
-    - You can also add the FreeBASIC dir to your PATH environment variable, so
-      you will not have to switch to or type the FB's dir every time you want to
-      compile your project's files.
-
+  
   o Linux version:
 
     - If the install.sh script was successfully executed with enough priviledges,
@@ -87,6 +76,20 @@ Running:
     - Type "fbc" (without quotes) to see a list of options. To compile the hello
       example type: "fbc examples/hello.bas", the hello executable file will be
       created at the "examples" dir.
+
+  o DOS version:
+
+    - Open the Command-Prompt if in Windows and change to the dir where the
+      FreeBASIC archive was unpacked. For example, type "cd C:\FreeBASIC"
+      (without quotes) and press Enter, if the archive was expanded to C:\.
+
+    - Type "fbc" (without quotes) to see a list of options. To compile the hello
+      example type: "fbc examples\hello.bas", the hello.exe file will be created
+      at the "examples" dir.
+
+    - You can also add the FreeBASIC dir to your PATH environment variable, so
+      you will not have to switch to or type the FB's dir every time you want to
+      compile your project's files.
 
 
 Requirements:
@@ -109,8 +112,9 @@ Requirements:
     - Unicode wide-strings (WSTRING's) only work in Windows NT/2000/XP/2003/Vista or 
       above. Applications that depend on wide-strings will run in Windows 98/Me, but
       no input/output will work if the character set isn't latin-based, because those 
-      platforms don't support Unicode strings. Windows 95 has most Unicode API functions 
-      missing, applications using wide-strings won't even be loaded by that OS.
+      platforms don't support Unicode strings. Windows 95 has most Unicode API 
+      functions missing, applications using wide-strings won't even be loaded by 
+      this specific OS.
 
   o Linux version:
 
