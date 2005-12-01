@@ -244,7 +244,8 @@ private function ppSkip as integer
         		end if
 
     		case FB_TK_DEFINE, FB_TK_UNDEF, FB_TK_PRINT, FB_TK_LPRINT, _
-    			 FB_TK_ERROR, FB_TK_INCLUDE, FB_TK_INCLIB, FB_TK_LIBPATH
+    			 FB_TK_ERROR, FB_TK_INCLUDE, FB_TK_INCLIB, FB_TK_LIBPATH, _
+    			 FB_TK_PRAGMA
 
         	case else
         		hReportError( FB_ERRMSG_SYNTAXERROR )
