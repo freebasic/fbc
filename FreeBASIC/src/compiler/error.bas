@@ -86,7 +86,7 @@ end type
 		"Invalid data types", _
 		"Invalid character", _
 		"File access error", _
-		"Recursion level too depth", _
+		"Recursion level too deep", _
 		"Expected pointer", _
 		"Expected 'LOOP'", _
 		"Expected 'WEND'", _
