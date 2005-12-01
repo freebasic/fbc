@@ -22,15 +22,8 @@ Instalación:
 
   o Versión Windows:
 
-    - Descomprime el fichero zip en el directorio que prefieras -- El C:\ es una
-      buena idea, si no vas a utilizar un IDE mas adelante. Debe preservarse la 
-      estructura de directorios que viene con el archivo.
-
-    - Ejecuta el fichero INSTALL.BAT para generar las librerías de importación -- se 
-      necesitan para llamar a funciones en las DLL's y para generar los ejecutables.
-
-    (Nota: No instales la versión Windows sobre una instalación anterior sin borrar
-      antes todo el directorio /lib/win32.)
+    - Siga las instrucciones del instalador, no se olvide de seleccionar las librerías 
+      externas a instalar, algunas no son seleccionadas por defecto.
 
   o Versión Linux:
 
