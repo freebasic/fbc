@@ -47,6 +47,7 @@ type SectionInfo
 	root            as string
 	mask_file       as string
 	mask_folder     as string
+	is_optional		as integer
 
 	sort_descending as integer
 
@@ -485,10 +486,16 @@ sub OutputSectionGroup( byval f as integer, _
 						byref suffix as string )
 						
 	dim as SectionInfo ptr section
+	dim as string opt
 	
 	section = grp_section->sec_list
 	do until( section = NULL )
-		print #f, "Section """ + section->id + """"
+		if( section->is_optional ) then
+			opt = "/o """
+		else
+			opt = """"
+		end if
+		print #f, "Section " + opt + section->id + """"
 		OutputSection( f, section, prefix, suffix )
 		print #f, "SectionEnd"
 		section = section->next
@@ -504,7 +511,7 @@ function load_config( byval fname as string, _
 	dim as string l, key, value, section_id
 	dim as StringEntry ptr string_entry
 	dim as FileNameEntry ptr file_entry
-	dim as integer p
+	dim as integer p, lnum
 	dim as SectionInfo ptr section, sections_tail
 	
 	function = sections
@@ -520,8 +527,10 @@ function load_config( byval fname as string, _
 
 	open "I",1, fname
 	
+	lnum = 0
 	while not eof(1)
 		line input #1, l
+		lnum += 1
 		select case left(l,1)
 		case "["
 			' new section
@@ -552,6 +561,7 @@ function load_config( byval fname as string, _
 					end if
 					sections_tail = section
 					section->id = section_id
+					section->is_optional = FALSE
 				end if
 			end select
 		
@@ -616,6 +626,9 @@ function load_config( byval fname as string, _
 				case "MASKFILE","MASK_FILE"
 					section->mask_file = value
 				
+				case "OPTIONAL"
+					section->is_optional = TRUE
+				
 				case "SELECT"
 					string_entry = callocate( len(StringEntry) )
 					string_entry->value = value
@@ -642,7 +655,7 @@ function load_config( byval fname as string, _
 					section->replace_by = value
 				
 				case else
-					print "Error: unknown key '"; key;"'"
+					print fname; "(" & lnum & "): unknown key '"; key;"'"
 					exit function
 				end select
 			end select
@@ -816,11 +829,11 @@ function process_sections( byval sections as SectionInfo ptr, _
 					
 					tmp_section = section->sec_list
 					do until( tmp_section = NULL )
-						tmp_section->kind = SK_FileList
-						tmp_section->mask = section->mask
-						tmp_section->root = section->root
+						tmp_section->kind 		 = SK_FileList
+						tmp_section->mask 		 = section->mask
+						tmp_section->root 		 = section->root
 						tmp_section->mask_folder = section->mask_folder
-						tmp_section->mask_file = section->mask_file
+						tmp_section->mask_file 	 = section->mask_file
 						
 						LoadSectionFiles( tmp_section )
 
