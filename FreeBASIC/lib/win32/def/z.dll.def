@@ -1,71 +1,59 @@
 LIBRARY     ZLIB1.DLL
 
 EXPORTS
-    _dist_code                     @1   
-    _length_code                   @2   
-    _tr_align                      @3   
-    _tr_flush_block                @4   
-    _tr_init                       @5   
-    _tr_stored_block               @6   
-    _tr_tally                      @7   
-    adler32                        @8   
-    compress                       @9   
-    compress2                      @10  
-    crc32                          @11  
-    deflate                        @12  
-    deflateCopy                    @13  
-    deflateEnd                     @14  
-    deflateInit2_                  @15  
-    deflateInit_                   @16  
-    deflateParams                  @17  
-    deflateReset                   @18  
-    deflateSetDictionary           @19  
-    deflate_copyright              @20  
-    get_crc_table                  @21  
-    gzclose                        @22  
-    gzdopen                        @23  
-    gzeof                          @24  
-    gzerror                        @25  
-    gzflush                        @26  
-    gzgetc                         @27  
-    gzgets                         @28  
-    gzopen                         @29  
-    gzprintf                       @30  
-    gzputc                         @31  
-    gzputs                         @32  
-    gzread                         @33  
-    gzrewind                       @34  
-    gzseek                         @35  
-    gzsetparams                    @36  
-    gztell                         @37  
-    gzwrite                        @38  
-    inflate                        @39  
-    inflateEnd                     @40  
-    inflateInit2_                  @41  
-    inflateInit_                   @42  
-    inflateReset                   @43  
-    inflateSetDictionary           @44  
-    inflateSync                    @45  
-    inflateSyncPoint               @46  
-    inflate_blocks                 @47  
-    inflate_blocks_free            @48  
-    inflate_blocks_new             @49  
-    inflate_blocks_reset           @50  
-    inflate_blocks_sync_point      @51  
-    inflate_codes                  @52  
-    inflate_codes_free             @53  
-    inflate_codes_new              @54  
-    inflate_copyright              @55  
-    inflate_fast                   @56  
-    inflate_flush                  @57  
-    inflate_mask                   @58  
-    inflate_set_dictionary         @59  
-    inflate_trees_bits             @60  
-    inflate_trees_dynamic          @61  
-    inflate_trees_fixed            @62  
-    uncompress                     @63  
-    zError                         @64  
-    z_errmsg                       @65  
-    zcalloc                        @66  
-    zcfree                         @67  
-    zlibVersion                    @68  
+; basic functions
+    zlibVersion
+    deflate
+    deflateEnd
+    inflate
+    inflateEnd
+; advanced functions
+    deflateSetDictionary
+    deflateCopy
+    deflateReset
+    deflateParams
+    deflateBound
+    deflatePrime
+    inflateSetDictionary
+    inflateSync
+    inflateCopy
+    inflateReset
+    inflateBack
+    inflateBackEnd
+    zlibCompileFlags
+; utility functions
+    compress
+    compress2
+    compressBound
+    uncompress
+    gzopen
+    gzdopen
+    gzsetparams
+    gzread
+    gzwrite
+    gzprintf
+    gzputs
+    gzgets
+    gzputc
+    gzgetc
+    gzungetc
+    gzflush
+    gzseek
+    gzrewind
+    gztell
+    gzeof
+    gzclose
+    gzerror
+    gzclearerr
+; checksum functions
+    adler32
+    crc32
+; various hacks, don't look :)
+    deflateInit_
+    deflateInit2_
+    inflateInit_
+    inflateInit2_
+    inflateBackInit_
+    inflateSyncPoint
+    get_crc_table
+    zError
