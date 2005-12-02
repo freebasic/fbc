@@ -83,8 +83,8 @@ end function
 
 '':::::
 function astLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as ASTNODE ptr l, r, c, f
-    dim as FBSYMBOL ptr label
+    dim as ASTNODE ptr l, r, f, t
+    dim as FBSYMBOL ptr label, sym
     dim as IRVREG ptr vr
 
 	l = n->l
@@ -94,14 +94,27 @@ function astLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
 		return NULL
 	end if
 
-	'' make a copy, can't reuse the same vreg or registers could
+	'' assign to a temp, can't reuse the same vreg or registers could
 	'' be spilled as IR can't handle inter-blocks
-	c = astCloneTree( l )
+	sym = symbAddTempVar( l->dtype, l->subtype )
+	t = astNewASSIGN( astNewVAR( sym, _
+								 0, _
+								 symbGetType( sym ), _
+								 symbGetSubType( sym ) ), _
+					  l )
+	astLoad( t )
+	astDel( t )
 
     '' check must be done using a function because calling ErrorThrow
     '' would spill used regs only if it was called, causing wrong
     '' assumptions after the branches
-    f = rtlArrayBoundsCheck( l, r->l, r->r, n->bchk.linenum )
+    f = rtlArrayBoundsCheck( astNewVAR( sym, _
+    									0, _
+    									symbGetType( sym ), _
+    									symbGetSubType( sym ) ), _
+    						 r->l, _
+    						 r->r, _
+    						 n->bchk.linenum )
     vr = astLoad( f )
     astDel( f )
 
@@ -117,8 +130,9 @@ function astLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
 	astDel( r )
 
 	'' re-load, see above
-	function = astLoad( c )
-	astDel( c )
+	t = astNewVAR( sym, 0, symbGetType( sym ), symbGetSubType( sym ) )
+	function = astLoad( t )
+	astDel( t )
 
 end function
 
@@ -151,8 +165,8 @@ end function
 
 '':::::
 function astLoadPTRCHK( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as ASTNODE ptr l, c, f
-    dim as FBSYMBOL ptr label
+    dim as ASTNODE ptr l, t, f
+    dim as FBSYMBOL ptr label, sym
     dim as IRVREG ptr vr
 
 	l = n->l
@@ -161,12 +175,23 @@ function astLoadPTRCHK( byval n as ASTNODE ptr ) as IRVREG ptr
 		return NULL
 	end if
 
-	'' make a copy, can't reuse the same vreg or registers could
+	'' assign to a temp, can't reuse the same vreg or registers could
 	'' be spilled as IR can't handle inter-blocks
-	c = astCloneTree( l )
+	sym = symbAddTempVar( l->dtype, l->subtype )
+	t = astNewASSIGN( astNewVAR( sym, _
+								 0, _
+								 symbGetType( sym ), _
+								 symbGetSubType( sym ) ), _
+					  l )
+	astLoad( t )
+	astDel( t )
 
     '' check must be done using a function, see bounds checking
-    f = rtlNullPtrCheck( l, n->pchk.linenum )
+    f = rtlNullPtrCheck( astNewVAR( sym, _
+    								0, _
+    								symbGetType( sym ), _
+    								symbGetSubType( sym ) ), _
+    					 n->pchk.linenum )
     vr = astLoad( f )
     astDel( f )
 
@@ -179,8 +204,9 @@ function astLoadPTRCHK( byval n as ASTNODE ptr ) as IRVREG ptr
     end if
 
 	'' re-load, see above
-	function = astLoad( c )
-	astDel( c )
+	t = astNewVAR( sym, 0, symbGetType( sym ), symbGetSubType( sym ) )
+	function = astLoad( t )
+	astDel( t )
 
 end function
 

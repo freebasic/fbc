@@ -4,11 +4,6 @@
       side type
     - fix the !!!FIXME!!!'s and write the !!!WRITEME!!!'s in the rtlib
 
-[ ] PtrChk will duplicate the tree, causing side effects if functions are been called
-    (it will be called twice)
-    - the same will happen with ArrayBoundsCheck if a function is used in the index
-      expression
-
 [ ] swap of zstring's and var-len string's is not working?? or that's the behaviour..
 
 [ ] @static_array(const) won't become an OFFSET, not allowing initializations..
