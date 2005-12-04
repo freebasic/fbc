@@ -18,37 +18,20 @@
  */
 
 /*
- * file_input - input function
+ * io_isredir - console redirection check
  *
- * chng: nov/2004 written [v1ctor]
+ * chng: dec/2005 written [v1ctor]
  *
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include "fb.h"
-#include "fb_rterr.h"
-
-FBCALL int fb_FileInput( int fnum );
 
 /*:::::*/
-FBCALL int fb_ConsoleInput( FBSTRING *text, int addquestion, int addnewline )
+int fb_ConsoleIsRedirected( int is_input )
 {
-	FB_INPUTCTX *ctx;
-	int res;
-
-	fb_DevScrnInit_Read( );
-
-	if( fb_ConsoleIsRedirected( TRUE ) )
-		return fb_FileInput( 0 );
-
-    ctx = FB_TLSGETCTX( INPUT );
-
-	ctx->handle = 0;
-	ctx->status = 0;
-	ctx->index = 0;
-
-	res = fb_LineInput( text, &ctx->str, -1, 0, addquestion, addnewline );
-
-	return res;
+	return isatty( fileno( (is_input? stdin : stdout) ) ) == 0;
 }
+
+

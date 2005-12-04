@@ -76,10 +76,34 @@ int fb_DevScrnRead( struct _FB_FILE *handle, void* value, size_t *pLength )
 
 
 /*:::::*/
+static int hReadFromStdin( struct _FB_FILE *handle, void* dst, size_t *pLength )
+{
+    size_t rlen, length;
+
+    length = *pLength;
+
+    FB_LOCK();
+
+	/* do read */
+	rlen = fread( dst, 1, length, stdin );
+	/* fill with nulls if at eof */
+	if( rlen != length )
+        memset( ((char *)dst) + rlen, 0, length - rlen );
+
+    *pLength = rlen;
+
+	FB_UNLOCK();
+
+	return fb_ErrorSetNum( FB_RTERROR_OK );
+}
+/*:::::*/
 void fb_DevScrnInit_Read( void )
 {
 	fb_DevScrnInit_NoOpen( );
 
     if( FB_HANDLE_SCREEN->hooks->pfnRead == NULL )
-    	FB_HANDLE_SCREEN->hooks->pfnRead = fb_DevScrnRead;
+    {
+    	FB_HANDLE_SCREEN->hooks->pfnRead =
+    				(fb_ConsoleIsRedirected( TRUE )? hReadFromStdin : fb_DevScrnRead);
+    }
 }

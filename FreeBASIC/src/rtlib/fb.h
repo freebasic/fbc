@@ -851,6 +851,10 @@ FBCALL void         fb_WriteFixString   ( int fnum, char *s, int mask );
        int          fb_ConsoleGetBotRow ( void );
        void         fb_ConsoleSetTopBotRows( int top, int bot );
 
+       int 			fb_ConsoleIsRedirected( int is_input );
+
+
+
 /**************************************************************************************************
  * files
  **************************************************************************************************/

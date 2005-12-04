@@ -197,7 +197,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 	{
 		/* use cprintf() if STDOUT is the console;
        	   otherwise (with shell I/O redirection) use printf() */
-    	if( isatty(1) )
+    	if( isatty( fileno( stdout ) ) )
         	fn = fb_ConsolePrintBufferEx_SCRN;
     	else
         	fn = fb_ConsolePrintBufferEx_STDIO;
