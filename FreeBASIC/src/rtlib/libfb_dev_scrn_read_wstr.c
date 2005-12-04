@@ -80,6 +80,11 @@ int fb_DevScrnReadWstr( struct _FB_FILE *handle, FB_WCHAR *dst, size_t *pchars )
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
+/*:::::*/
+static int hReadFromStdin( struct _FB_FILE *handle, FB_WCHAR *dst, size_t *pchars )
+{
+    return fb_DevFileReadWstr( NULL, dst, pchars );
+}
 
 /*:::::*/
 void fb_DevScrnInit_ReadWstr( void )
@@ -87,5 +92,8 @@ void fb_DevScrnInit_ReadWstr( void )
 	fb_DevScrnInit_NoOpen( );
 
     if( FB_HANDLE_SCREEN->hooks->pfnReadWstr == NULL )
-    	FB_HANDLE_SCREEN->hooks->pfnReadWstr = fb_DevScrnReadWstr;
+    {
+    	FB_HANDLE_SCREEN->hooks->pfnReadWstr =
+    			(fb_ConsoleIsRedirected( TRUE )? hReadFromStdin : fb_DevScrnReadWstr);
+    }
 }
