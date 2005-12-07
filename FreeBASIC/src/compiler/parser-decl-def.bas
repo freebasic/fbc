@@ -71,9 +71,9 @@ function cDefDecl as integer static
 		'' (CHAR '-' CHAR ','?)*
 		do
 			'' CHAR
-			char = ucase$( *lexGetText( ) )
+			char = ucase( *lexGetText( ) )
 			if( len( char ) <> 1 ) then
-				hReportError FB_ERRMSG_EXPECTEDCOMMA
+				hReportError( FB_ERRMSG_EXPECTEDCOMMA )
 				exit do
 			end if
 			ichar = asc( char )
@@ -86,9 +86,9 @@ function cDefDecl as integer static
 			end if
 
 			'' CHAR
-			char = ucase$( *lexGetText( ) )
+			char = ucase( *lexGetText( ) )
 			if( len( char ) <> 1 ) then
-				hReportError FB_ERRMSG_EXPECTEDCOMMA
+				hReportError( FB_ERRMSG_EXPECTEDCOMMA )
 				exit do
 			end if
 			echar = asc( char )

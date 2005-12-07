@@ -37,7 +37,7 @@ end type
 ''globals
 	dim shared ctx as FBHLPCTX
 
-	dim shared deftypeTB( 0 to (90-65+1)-1 ) as integer
+	dim shared deftypeTB( 0 to (asc("_")-asc("A")+1)-1 ) as integer
 
 	dim shared suffixTB( 0 to FB_SYMBOLTYPES-1 ) as zstring * 1+1 => _
 	{ _
@@ -64,7 +64,7 @@ sub hlpInit
     dim i as integer
 
 	''
-	for i = 0 to (90-65+1)-1
+	for i = 0 to (asc("_")-asc("A")+1)-1
 		deftypeTB(i) = FB_SYMBTYPE_INTEGER
 	next
 
@@ -198,11 +198,11 @@ function hGetDefType( byval symbol as zstring ptr ) as integer static
 	c = symbol[0][0]
 
 	'' to upper
-	if( (c >= 97) and (c <= 122) ) then
-		c -= (97 - 65)
+	if( (c >= asc("a")) and (c <= asc("z")) ) then
+		c -= (asc("a") - asc("A"))
 	end if
 
-	function = deftypeTB(c - 65)
+	function = deftypeTB(c - asc("A"))
 
 end function
 
@@ -212,16 +212,16 @@ sub hSetDefType( byval ichar as integer, _
 				 byval typ as integer ) static
     dim i as integer
 
-	if( ichar < 65 ) then
-		ichar = 65
-	elseif( ichar > 90 ) then
-		ichar = 90
+	if( ichar < asc("A") ) then
+		ichar = asc("A")
+	elseif( ichar > asc("_") ) then
+		ichar = asc("_")
 	end if
 
-	if( echar < 65 ) then
-		echar = 65
-	elseif( echar > 90 ) then
-		echar = 90
+	if( echar < asc("A") ) then
+		echar = asc("A")
+	elseif( echar > asc("_") ) then
+		echar = asc("_")
 	end if
 
 	if( ichar > echar ) then
@@ -229,7 +229,7 @@ sub hSetDefType( byval ichar as integer, _
 	end if
 
 	for i = ichar to echar
-		deftypeTB(i-65) = typ
+		deftypeTB(i - asc("A")) = typ
 	next i
 
 end sub
