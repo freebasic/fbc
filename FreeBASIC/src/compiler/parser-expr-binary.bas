@@ -99,6 +99,7 @@ function cUpdPointer( byval op as integer, _
 			if( astGetDataType( p ) <> FB_SYMBTYPE_POINTER + FB_SYMBTYPE_VOID ) then
 				exit function
 			end if
+			lgt = 1
 		end if
 
     	'' multiple by length
