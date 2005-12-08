@@ -137,21 +137,23 @@ data @FB_RTL_ARRAYFREETMPDESC,"", _
 data @FB_RTL_ARRAYSNGBOUNDCHK,"", _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
-	 3, _
+	 4, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_ArrayBoundChk ( byval idx as integer, byval lbound as integer, byval ubound as integer, _
 ''						byval linenum as integer ) as any ptr
 data @FB_RTL_ARRAYBOUNDCHK,"", _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
-	 4, _
+	 5, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
 
 '' EOL
 data NULL
@@ -520,7 +522,8 @@ end function
 function rtlArrayBoundsCheck( byval idx as ASTNODE ptr, _
 							  byval lb as ASTNODE ptr, _
 							  byval rb as ASTNODE ptr, _
-							  byval linenum as integer _
+							  byval linenum as integer, _
+							  byval module as zstring ptr _
 							) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
@@ -538,7 +541,9 @@ function rtlArrayBoundsCheck( byval idx as ASTNODE ptr, _
    	proc = astNewFUNCT( f )
 
 	'' idx
-	if( astNewPARAM( proc, idx, IR_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewPARAM( proc, _
+					 astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, idx ), _
+					 IR_DATATYPE_INTEGER ) = NULL ) then
 		exit function
 	end if
 
@@ -556,6 +561,11 @@ function rtlArrayBoundsCheck( byval idx as ASTNODE ptr, _
 
 	'' linenum
 	if( astNewPARAM( proc, astNewCONSTi( linenum, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
+    	exit function
+    end if
+
+    '' module
+	if( astNewPARAM( proc, astNewCONSTstr( module ) ) = NULL ) then
     	exit function
     end if
 

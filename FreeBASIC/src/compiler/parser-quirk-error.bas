@@ -48,7 +48,7 @@ function cErrorStmt as integer
 		'' Expression
 		hMatchExpression( expr )
 
-		rtlErrorThrow( expr, lexLineNum( ) )
+		rtlErrorThrow( expr, lexLineNum( ), env.inf.name )
 
 		function = TRUE
 

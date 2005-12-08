@@ -53,7 +53,7 @@ static void gen_handler( int sig )
 	}
 
 	/* call user handler if any defined */
-	handler = fb_ErrorThrowEx( sigTb[sig].errnum, -1, NULL, NULL );
+	handler = fb_ErrorThrowEx( sigTb[sig].errnum, -1, NULL, NULL, NULL );
 	if( handler != NULL )
 		handler( );
 

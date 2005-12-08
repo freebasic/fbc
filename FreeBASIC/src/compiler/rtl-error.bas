@@ -36,25 +36,28 @@ option escape
 '' [arg typ,mode,optional[,value]]*args
 funcdata:
 
-'' fb_ErrorThrow cdecl ( byval linenum as integer, _
-''						 byval reslabel as any ptr, byval resnxtlabel as any ptr ) as integer
+'' fb_ErrorThrowAt cdecl ( byval linenum as integer, byval fname as zstring ptr, _
+''						   byval reslabel as any ptr, byval resnxtlabel as any ptr ) as integer
 data @FB_RTL_ERRORTHROW,"", _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
-	 3, _
+	 4, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE
 
 ''
 '' fb_ErrorThrowEx cdecl ( byval errnum as integer, byval linenum as integer, _
+''						   byval fname as zstring ptr, _
 ''						   byval reslabel as any ptr, byval resnxtlabel as any ptr ) as any ptr
 data @FB_RTL_ERRORTHROWEX,"", _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
-	 4, _
+	 5, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE
 
@@ -186,10 +189,15 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 
 	astAdd( resexpr )
 
-	'' else, fb_ErrorThrow( linenum, reslabel, resnxtlabel ); -- CDECL
+	'' else, fb_ErrorThrow( linenum, module, reslabel, resnxtlabel ); -- CDECL
 
     '' linenum
 	if( astNewPARAM( proc, astNewCONSTi( linenum, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
+    	exit function
+    end if
+
+    '' module
+	if( astNewPARAM( proc, astNewCONSTstr( env.inf.name ) ) = NULL ) then
     	exit function
     end if
 
@@ -230,7 +238,9 @@ end function
 
 '':::::
 sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
-				   byval linenum as integer ) static
+				   byval linenum as integer, _
+				   byval module as zstring ptr _
+				 ) static
 
 	dim as ASTNODE ptr proc, param, dst
 	dim as FBSYMBOL ptr nxtlabel, reslabel
@@ -244,7 +254,7 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
 
 	nxtlabel = symbAddLabel( NULL )
 
-	'' fb_ErrorThrowEx( errnum, linenum, reslabel, resnxtlabel );
+	'' fb_ErrorThrowEx( errnum, linenum, module, reslabel, resnxtlabel );
 
 	'' errnum
 	if( astNewPARAM( proc, errexpr ) = NULL ) then
@@ -254,6 +264,11 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
     '' linenum
 	if( astNewPARAM( proc, astNewCONSTi( linenum, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
     	exit sub
+    end if
+
+    '' module
+	if( astNewPARAM( proc, astNewCONSTstr( module ) ) = NULL ) then
+    	exit function
     end if
 
 	'' reslabel

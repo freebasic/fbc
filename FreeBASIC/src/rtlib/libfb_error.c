@@ -50,7 +50,7 @@ static const char *error_msg[] = {
 };
 
 /*:::::*/
-static void fb_Die( int errnum, int linenum )
+static void fb_Die( int errnum, int linenum, const char *fname )
 {
 	printf( FB_NEWLINE "Aborting due to runtime error %d", errnum );
 
@@ -58,7 +58,10 @@ static void fb_Die( int errnum, int linenum )
 		printf( " (%s)", error_msg[errnum] );
 
 	if( linenum > 0 )
-		printf( " at line: %d" FB_NEWLINE, linenum );
+		printf( " at line %d", linenum );
+
+	if( fname != NULL )
+	    printf( " of %s" FB_NEWLINE, fname );
 	else
 		printf( FB_NEWLINE );
 
@@ -66,32 +69,35 @@ static void fb_Die( int errnum, int linenum )
 }
 
 /*:::::*/
-FB_ERRHANDLER fb_ErrorThrowEx ( int errnum, int linenum, void *res_label, void *resnext_label )
+FB_ERRHANDLER fb_ErrorThrowEx ( int errnum, int linenum, const char *fname,
+								void *res_label, void *resnext_label )
 {
     FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
 
     if( ctx->handler )
     {
-    	ctx->num = errnum;
-    	ctx->linenum = linenum;
-    	ctx->reslbl = res_label;
-    	ctx->resnxtlbl = resnext_label;
+    	ctx->num 		= errnum;
+    	ctx->linenum 	= linenum;
+    	ctx->fname      = fname;
+    	ctx->reslbl 	= res_label;
+    	ctx->resnxtlbl 	= resnext_label;
 
     	return ctx->handler;
     }
 
 	/* if no user handler defined, die */
-	fb_Die( errnum, linenum );
+	fb_Die( errnum, linenum, fname );
 
 	return NULL;
 }
 
 /*:::::*/
-FB_ERRHANDLER fb_ErrorThrow ( int linenum, void *res_label, void *resnext_label )
+FB_ERRHANDLER fb_ErrorThrowAt ( int linenum, const char *fname,
+							  	void *res_label, void *resnext_label )
 {
 	FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
 
-	return fb_ErrorThrowEx( ctx->num, linenum, res_label, resnext_label );
+	return fb_ErrorThrowEx( ctx->num, linenum, fname, res_label, resnext_label );
 
 }
 
@@ -116,7 +122,7 @@ void *fb_ErrorResume ( void )
 
 	/* not defined? die */
 	if( label == NULL )
-		fb_Die( FB_RTERROR_ILLEGALRESUME, -1 );
+		fb_Die( FB_RTERROR_ILLEGALRESUME, -1, NULL );
 
 	/* don't loop forever */
 	ctx->reslbl = NULL;
@@ -133,7 +139,7 @@ void *fb_ErrorResumeNext ( void )
 
 	/* not defined? die */
 	if( label == NULL )
-		fb_Die( FB_RTERROR_ILLEGALRESUME, -1 );
+		fb_Die( FB_RTERROR_ILLEGALRESUME, -1, NULL );
 
 	/* don't loop forever */
 	ctx->reslbl = NULL;
@@ -141,4 +147,17 @@ void *fb_ErrorResumeNext ( void )
 
 	return label;
 }
+
+
+/* !!!FIXME!!! remove the function bellow when the chicken-egg is over */
+
+/*:::::*/
+FB_ERRHANDLER fb_ErrorThrow ( int linenum, void *res_label, void *resnext_label )
+{
+	FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
+
+	return fb_ErrorThrowEx( ctx->num, linenum, NULL, res_label, resnext_label );
+
+}
+
 

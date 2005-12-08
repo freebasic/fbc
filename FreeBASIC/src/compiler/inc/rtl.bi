@@ -272,7 +272,7 @@
 #define FB_RTL_WIDTHDEV 				"fb_WidthDev"
 #define FB_RTL_WIDTHFILE 				"fb_WidthFile"
 
-#define FB_RTL_ERRORTHROW 				"fb_ErrorThrow"
+#define FB_RTL_ERRORTHROW 				"fb_ErrorThrowAt"
 #define FB_RTL_ERRORTHROWEX 			"fb_ErrorThrowEx"
 #define FB_RTL_ERRORSETHANDLER 			"fb_ErrorSetHandler"
 #define FB_RTL_ERRORGETNUM 				"fb_ErrorGetNum"
@@ -717,10 +717,12 @@ declare function 	rtlArrayFreeTempDesc( byval pdesc as FBSYMBOL ptr ) as ASTNODE
 declare function 	rtlArrayBoundsCheck	( byval idx as ASTNODE ptr, _
 							  			  byval lb as ASTNODE ptr, _
 							  			  byval rb as ASTNODE ptr, _
-							  			  byval linenum as integer ) as ASTNODE ptr
+							  			  byval linenum as integer, _
+							  			  byval module as zstring ptr ) as ASTNODE ptr
 
 declare function 	rtlNullPtrCheck		( byval p as ASTNODE ptr, _
-							  			  byval linenum as integer ) as ASTNODE ptr
+							  			  byval linenum as integer, _
+							  			  byval module as zstring ptr ) as ASTNODE ptr
 
 declare function	rtlDataRestore		( byval label as FBSYMBOL ptr, _
 										  byval afternode as ASTNODE ptr = NULL, _
@@ -933,7 +935,8 @@ declare function	rtlErrorCheck		( byval resexpr as ASTNODE ptr, _
 										  byval linenum as integer ) as integer
 
 declare sub 		rtlErrorThrow		( byval errexpr as ASTNODE ptr, _
-										  byval linenum as integer )
+										  byval linenum as integer, _
+										  byval module as zstring ptr )
 
 declare sub 		rtlErrorSetHandler	( byval newhandler as ASTNODE ptr, _
 										  byval savecurrent as integer )
