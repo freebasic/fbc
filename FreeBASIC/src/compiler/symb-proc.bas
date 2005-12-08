@@ -1125,4 +1125,13 @@ function symbCalcArgLen( byval typ as integer, _
 
 end function
 
+'':::::
+function symbGetCurrentProcName( ) as zstring ptr
 
+	if( env.currproc = NULL ) then
+		function = @"(main)"
+	else
+		function = symbGetOrgName( env.currproc )
+	end if
+
+end function

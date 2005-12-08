@@ -66,6 +66,8 @@ type REGCLASS
 	getRealReg					as function ( byval this_ as REGCLASS ptr, _
 								  			  byval r as integer ) as integer
 
+	dump						as sub		( byval this_ as REGCLASS ptr )
+
 	'' private data
 	class 						as integer
 	isstack						as integer

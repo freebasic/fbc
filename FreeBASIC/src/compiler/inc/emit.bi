@@ -329,8 +329,7 @@ declare sub 		emitProcEnd			( byval proc as FBSYMBOL ptr )
 
 declare function 	emitGetVarName		( byval s as FBSYMBOL ptr ) as string
 
-declare function 	emitIsRegPreserved 	( byval dtype as integer, _
-										  byval dclass as integer, _
+declare function 	emitIsRegPreserved 	( byval dclass as integer, _
 										  byval reg as integer ) as integer
 
 declare sub			emitGetResultReg 	( byval dtype as integer, _
@@ -338,8 +337,7 @@ declare sub			emitGetResultReg 	( byval dtype as integer, _
 										  byref r1 as integer, _
 										  byref r2 as integer )
 
-declare function 	emitGetFreePreservedReg( byval dtype as integer, _
-											 byval dclass as integer ) as integer
+declare function 	emitGetFreePreservedReg( byval dclass as integer ) as integer
 
 declare function 	emitAllocLocal		( byval proc as FBSYMBOL ptr, _
 										  byval lgt as integer, _

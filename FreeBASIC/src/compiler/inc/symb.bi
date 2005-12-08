@@ -107,6 +107,8 @@ declare function 	symbCalcArgLen			( byval typ as integer, _
 											  byval subtype as FBSYMBOL ptr, _
 											  byval mode as integer ) as integer
 
+declare function 	symbGetCurrentProcName	( ) as zstring ptr
+
 declare function 	symbListLibs			( namelist() as string, _
 											  byval index as integer ) as integer
 

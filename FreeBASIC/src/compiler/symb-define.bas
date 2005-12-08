@@ -75,11 +75,7 @@ end function
 '':::::
 function hDefFunction_cb( ) as string static
 
-	if( env.currproc = NULL ) then
-		function = "(main)"
-	else
-		function = *symbGetOrgName( env.currproc )
-	end if
+	function = *symbGetCurrentProcName( )
 
 end function
 

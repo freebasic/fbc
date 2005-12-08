@@ -316,13 +316,8 @@ function emitGetVarName( byval s as FBSYMBOL ptr ) as string static
 end function
 
 '':::::
-function emitIsRegPreserved ( byval dtype as integer, _
-							  byval dclass as integer, _
+function emitIsRegPreserved ( byval dclass as integer, _
 							  byval reg as integer ) as integer static
-
-    if( dtype >= IR_DATATYPE_POINTER ) then
-    	dtype = IR_DATATYPE_UINT
-    end if
 
     '' fp? fpu stack *must* be cleared before calling any function
     if( dclass = IR_DATACLASS_FPOINT ) then
@@ -363,12 +358,7 @@ sub emitGetResultReg( byval dtype as integer, _
 end sub
 
 '':::::
-function emitGetFreePreservedReg( byval dtype as integer, _
-								  byval dclass as integer ) as integer static
-
-	if( dtype >= IR_DATATYPE_POINTER ) then
-		dtype = IR_DATATYPE_UINT
-	end if
+function emitGetFreePreservedReg( byval dclass as integer ) as integer static
 
 	function = INVALID
 

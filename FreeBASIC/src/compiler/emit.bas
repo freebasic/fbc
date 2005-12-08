@@ -538,6 +538,7 @@ private function hNewVR( byval v as IRVREG ptr ) as IRVREG ptr
 	if( v->typ = IR_VREGTYPE_REG ) then
 		dclass = irGetDataClass( v->dtype )
 		n->reg = emit.regTB(dclass)->getRealReg( emit.regTB(dclass), v->reg )
+		assert( n->reg <> INVALID )
 		EMIT_REGSETUSED( dclass, n->reg )
 	end if
 
