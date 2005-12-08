@@ -181,7 +181,7 @@ type IRTAC
 
 	pos			as integer
 
-	op			as integer						'' opcode
+	op			as IROPTYPE_ENUM				'' opcode
 
 	res			as IRTACVREG                    '' result
 	arg1		as IRTACVREG                    '' operand 1
@@ -194,8 +194,8 @@ end type
 type IRVREG
 	next		as IRVREG ptr					'' linked-list field
 
-	typ			as integer						'' VAR, IMM, IDX, etc
-	dtype		as integer						'' CHAR, INTEGER, ...
+	typ			as IRVREGTYPE_ENUM				'' VAR, IMM, IDX, etc
+	dtype		as IRDATATYPE_ENUM				'' CHAR, INTEGER, ...
 
 	reg			as integer						'' reg
 	value		as integer						'' imm value (high word of longint's at vaux->value)
@@ -213,11 +213,11 @@ type IRVREG
 end type
 
 type IRDATATYPE
-	class		as integer						'' INTEGER, FPOINT
+	class		as IRDATACLASS_ENUM				'' INTEGER, FPOINT
 	size		as integer						'' in bytes
 	bits		as integer						'' number of bits
 	signed		as integer						'' TRUE or FALSE
-	remaptype	as integer						'' remapped type for ENUM, POINTER, etc
+	remaptype	as IRDATATYPE_ENUM				'' remapped type for ENUM, POINTER, etc
 end type
 
 ''

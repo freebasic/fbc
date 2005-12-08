@@ -114,6 +114,8 @@ declare sub 		hFreeREG			( byval vreg as IRVREG ptr, _
 
 declare sub 		hCreateTMPVAR		( byval vreg as IRVREG ptr )
 
+declare sub 		hFreePreservedRegs	( )
+
 declare sub 		irDump				( byval op as integer, _
 										  byval v1 as IRVREG ptr, _
 										  byval v2 as IRVREG ptr, _
@@ -1459,6 +1461,9 @@ sub irFlush static
 	''
 	flistReset( @ir.vregTB )
 
+    ''
+    hFreePreservedRegs( )
+
 end sub
 
 '':::::
@@ -1482,6 +1487,34 @@ private sub hFlushBRANCH( byval op as integer, _
 	case else
 		emitBRANCH( op, label )
 	end select
+
+end sub
+
+'':::::
+private sub hFreePreservedRegs( ) static
+    dim as integer class, reg
+
+	'' for each reg class
+	for class = 0 to EMIT_REGCLASSES-1
+
+		'' for each register on that class
+		reg = regTB(class)->getFirst( regTB(class) )
+		do until( reg = INVALID )
+			'' if not free
+			if( not regTB(class)->isFree( regTB(class), reg ) ) then
+
+        		assert( emitIsRegPreserved( class, reg ) )
+
+        		'' free reg
+        		regTB(class)->free( regTB(class), reg )
+
+			end if
+
+        	'' next reg
+        	reg = regTB(class)->getNext( regTB(class), reg )
+		loop
+
+	next
 
 end sub
 
@@ -1527,13 +1560,14 @@ private sub hPreserveRegs( byval ptrvreg as IRVREG ptr = NULL ) static
 
 				'' get the attached vreg
 				vr = regTB(class)->getVreg( regTB(class), reg )
+                assert( vr <> NULL )
                 hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
 
         		'' if reg is not preserved between calls
-        		if( not emitIsRegPreserved( vr_dtype, vr_dclass, reg ) ) then
+        		if( not emitIsRegPreserved( vr_dclass, reg ) ) then
 
         			'' find a preserved reg to copy to
-        			freg = emitGetFreePreservedReg( vr_dtype, vr_dclass )
+        			freg = emitGetFreePreservedReg( vr_dclass )
 
         			'' if none free, spill reg
         			if( freg = INVALID ) then
