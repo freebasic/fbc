@@ -29,14 +29,16 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' Bounds checking (l = index; r = link(lb, ub))
+'' Bounds checking (l = index; r = call to checking func(lb, ub))
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
 function astNewBOUNDCHK( byval l as ASTNODE ptr, _
 					     byval lb as ASTNODE ptr, _
 					     byval ub as ASTNODE ptr, _
-					     byval linenum as integer ) as ASTNODE ptr static
+					     byval linenum as integer _
+					   ) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
 
 	'' lbound is a const?
@@ -75,16 +77,27 @@ function astNewBOUNDCHK( byval l as ASTNODE ptr, _
 		exit function
 	end if
 
-	n->l 			= l
-	n->r 			= astNewLINK( lb, ub )
-	n->bchk.linenum = linenum
+	n->l = l
+
+	n->chk.sym = symbAddTempVar( l->dtype, l->subtype )
+
+    '' check must be done using a function because calling ErrorThrow
+    '' would spill used regs only if it was called, causing wrong
+    '' assumptions after the branches
+	n->r = rtlArrayBoundsCheck( astNewVAR( n->chk.sym, _
+    									   0, _
+    									   IR_DATATYPE_INTEGER ), _
+    						 	lb, _
+    						 	ub, _
+    						 	linenum, _
+    						 	env.inf.name )
 
 end function
 
 '':::::
 function astLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as ASTNODE ptr l, r, f, t
-    dim as FBSYMBOL ptr label, sym
+    dim as ASTNODE ptr l, r, t
+    dim as FBSYMBOL ptr label
     dim as IRVREG ptr vr
 
 	l = n->l
@@ -96,27 +109,15 @@ function astLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	'' assign to a temp, can't reuse the same vreg or registers could
 	'' be spilled as IR can't handle inter-blocks
-	sym = symbAddTempVar( l->dtype, l->subtype )
-	t = astNewASSIGN( astNewVAR( sym, _
+	t = astNewASSIGN( astNewVAR( n->chk.sym, _
 								 0, _
-								 symbGetType( sym ), _
-								 symbGetSubType( sym ) ), _
+								 IR_DATATYPE_INTEGER ), _
 					  l )
 	astLoad( t )
 	astDel( t )
 
-    '' check must be done using a function because calling ErrorThrow
-    '' would spill used regs only if it was called, causing wrong
-    '' assumptions after the branches
-    f = rtlArrayBoundsCheck( astNewVAR( sym, _
-    									0, _
-    									symbGetType( sym ), _
-    									symbGetSubType( sym ) ), _
-    						 r->l, _
-    						 r->r, _
-    						 n->bchk.linenum )
-    vr = astLoad( f )
-    astDel( f )
+    vr = astLoad( r )
+    astDel( r )
 
     if( ast.doemit ) then
     	'' handler = boundchk( ... ): if handler <> NULL then handler( )
@@ -127,22 +128,22 @@ function astLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
     end if
 
 	''
-	astDel( r )
-
 	'' re-load, see above
-	t = astNewVAR( sym, 0, symbGetType( sym ), symbGetSubType( sym ) )
+	t = astNewVAR( n->chk.sym, 0, IR_DATATYPE_INTEGER )
 	function = astLoad( t )
 	astDel( t )
 
 end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' null pointer checking (l = index; r = NULL)
+'' null pointer checking (l = index; r = call to checking func)
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
 function astNewPTRCHK( byval l as ASTNODE ptr, _
-					   byval linenum as integer ) as ASTNODE ptr static
+					   byval linenum as integer _
+					 ) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
 
 	'' constant? don't break OffsetOf() when used with Const's..
@@ -158,42 +159,46 @@ function astNewPTRCHK( byval l as ASTNODE ptr, _
 		exit function
 	end if
 
-	n->l 			= l
-	n->pchk.linenum = linenum
+	n->l = l
+
+	n->chk.sym = symbAddTempVar( l->dtype, l->subtype )
+
+    '' check must be done using a function, see bounds checking
+    n->r = rtlNullPtrCheck( astNewVAR( n->chk.sym, _
+    								   0, _
+    								   l->dtype, _
+    								   l->subtype ), _
+    					 	linenum, _
+    					 	env.inf.name )
 
 end function
 
 '':::::
 function astLoadPTRCHK( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as ASTNODE ptr l, t, f
-    dim as FBSYMBOL ptr label, sym
+    dim as ASTNODE ptr l, r, t
+    dim as FBSYMBOL ptr label
     dim as IRVREG ptr vr
 
 	l = n->l
+	r = n->r
 
-	if( l = NULL ) then
+	if( (l = NULL) or (r = NULL) ) then
 		return NULL
 	end if
 
 	'' assign to a temp, can't reuse the same vreg or registers could
 	'' be spilled as IR can't handle inter-blocks
-	sym = symbAddTempVar( l->dtype, l->subtype )
-	t = astNewASSIGN( astNewVAR( sym, _
+	t = astNewASSIGN( astNewVAR( n->chk.sym, _
 								 0, _
-								 symbGetType( sym ), _
-								 symbGetSubType( sym ) ), _
+								 symbGetType( n->chk.sym ), _
+								 symbGetSubType( n->chk.sym ) ), _
 					  l )
 	astLoad( t )
 	astDel( t )
 
-    '' check must be done using a function, see bounds checking
-    f = rtlNullPtrCheck( astNewVAR( sym, _
-    								0, _
-    								symbGetType( sym ), _
-    								symbGetSubType( sym ) ), _
-    					 n->pchk.linenum )
-    vr = astLoad( f )
-    astDel( f )
+    ''
+    vr = astLoad( r )
+    astDel( r )
 
     if( ast.doemit ) then
     	'' handler = ptrchk( ... ): if handler <> NULL then handler( )
@@ -204,7 +209,7 @@ function astLoadPTRCHK( byval n as ASTNODE ptr ) as IRVREG ptr
     end if
 
 	'' re-load, see above
-	t = astNewVAR( sym, 0, symbGetType( sym ), symbGetSubType( sym ) )
+	t = astNewVAR( n->chk.sym, 0, symbGetType( n->chk.sym ), symbGetSubType( n->chk.sym ) )
 	function = astLoad( t )
 	astDel( t )
 

@@ -154,14 +154,9 @@ type AST_STK
 	op				as integer
 end type
 
-type AST_BOUNDCHK
-	linenum			as integer
+type AST_CHK
+	sym				as FBSYMBOL ptr
 end type
-
-type AST_PTRCHK
-	linenum			as integer
-end type
-
 
 ''
 type ASTNODE
@@ -193,8 +188,7 @@ type ASTNODE
 		dbg			as AST_DBG
 		mem			as AST_MEM
 		stk			as AST_STK
-		bchk		as AST_BOUNDCHK
-		pchk		as AST_PTRCHK
+		chk			as AST_CHK
 	end union
 
 	prev			as ASTNODE ptr					'' used by Add
