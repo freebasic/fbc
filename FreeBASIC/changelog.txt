@@ -6,6 +6,8 @@ Version 0.16 Beta:
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)
+- "any ptr"'s weren't been taken as "byte ptr"'s when pointer arithmetics were used (v1c) 
+- using the -exx option will too complex expressions in src files with too many functions would generate bad code (v1c)
 
 
 Version 0.15 Beta:
