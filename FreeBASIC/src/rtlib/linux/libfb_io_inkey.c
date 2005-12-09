@@ -57,14 +57,14 @@
 
 typedef struct NODE
 {
-	unsigned char key;
-	unsigned short code;
+	char key;
+	short code;
 	struct NODE *next, *child;
 } NODE;
 
 typedef struct KEY_DATA
 {
-	unsigned char *cap;
+	char *cap;
 	int code;
 } KEY_DATA;
 
@@ -82,7 +82,7 @@ static NODE *root_node = NULL;
 
 
 /*:::::*/
-static void add_key(NODE **node, unsigned char *key, short code)
+static void add_key(NODE **node, char *key, short code)
 {
 	NODE *n;
 	

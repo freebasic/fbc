@@ -60,7 +60,7 @@ void fb_ConsolePrintBufferEx( const void *buffer, size_t len, int mask )
 {
 	size_t avail, avail_len;
 	const unsigned char *c = (const unsigned char *) buffer;
-	const unsigned char *code;
+	const char *code;
 	int i;
 	
     if (!fb_con.inited) {
