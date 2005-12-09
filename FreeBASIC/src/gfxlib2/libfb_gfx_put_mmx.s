@@ -806,19 +806,20 @@ LABEL(alpha4_y_loop)
 	addl $4, %edi
 	lodsl
 	movl %eax, LOCAL3
+	movl -4(%edi), %ebx
 	movl %eax, %ecx
 	movl %ebx, %edx
 	andl $MASK_RB_32, %eax
 	andl $MASK_RB_32, %edx
 	shrl $24, LOCAL3
 	subl %edx, %eax
-	mull LOCAL3
+	imull LOCAL3
 	xchg %eax, %ecx
 	movl %ebx, %edx
 	andl $MASK_G_32, %eax
 	andl $MASK_G_32, %edx
 	subl %edx, %eax
-	mull LOCAL3
+	imull LOCAL3
 	shrl $8, %ecx
 	shrl $8, %eax
 	movl %ebx, %edx

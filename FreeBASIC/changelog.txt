@@ -8,6 +8,7 @@ Version 0.16 Beta:
 - INPUT from console when it's been redirected (v1c)
 - "any ptr"'s weren't been taken as "byte ptr"'s when pointer arithmetics were used (v1c) 
 - using the -exx option will too complex expressions in src files with too many functions would generate bad code (v1c)
+- PUT ALPHA had a problem with sprites having an odd width (lillo)
 
 
 Version 0.15 Beta:
@@ -40,16 +41,12 @@ Version 0.15 Beta:
 - the BASS and BASSMOD headers were exchanged by machine translated ones (v1c)
 
 [added]
-- the WSTRING type, for unicode strings - like ZSTRING's, they can't be variable-length (v1c)
-- UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE support for source and headers files 
-  (they can be freely mixed, also with ASCII files) (v1c)
+- the WSTRING type, for unicode strings - like ZSTRING's, they can't be variable-length
+  NOTE: I/O functions like PRINT, INPUT, etc does not support unicode strings yet, 
+       *all* ascii string routines like MID$, LEFT$, etc support wstrings already
 - OPEN CONS, OPEN LPT, OPEN ERR, OPEN PIPE (OPEN "PIPE:" won't work), OPEN SCRN (mjs)
-- the ENCODING "fmt" option to OPEN, when mode is INPUT, OUTPUT or APPEND, the "fmt" can be: 
-  "utf-8", "utf-16", "utf-32" or "ascii" (v1c)
 - LPRINT support (mjs)
 - LPOS(n) (mjs)
-- include files for the DirectX library: DInput, DSound, DDraw, D3D, D3DX, D3DRM, D3D9 and D3DX9 (v1c)
-- the missing macros in the Gtk headers (v1c)
 - VIEW PRINT() now returns the top and bottom row (mjs)
 - all WIDTH variations (with #filenum, LPRINT, and device$) (mjs)
 - VALUINT and VALULNG, unsigned versions of VALINT and VALLNG, respectively (v1c)
@@ -89,6 +86,8 @@ Version 0.15 Beta:
 - support for printing to GDI printers on Win32 (mjs)
 - C### (CINT, CDBL, etc) can now be used with strings, as in VB (v1c)
 - include file and import-lib for the FreeType2 library (v1c)
+<<<<<<< changelog.txt
+=======
 - WSTR() to convert any standard type (including ASCII strings) to wide-strings (the wstring type) (v1c)
 - WSTRING() function, same as STRING() but returns a wstring (v1c)
 - WCHR() function, same as CHR(), but returns a wstring (v1c)
@@ -101,6 +100,7 @@ Version 0.15 Beta:
 - include file and import-lib for the Expat XML-parsing library (v1c)
 - include file for the DISLIN library (v1c)
 - DOS VESA gfxlib driver (DrV)
+>>>>>>> 1.276
 
 [fixed]
 - main modules with periods (.) in their names would generate executables w/o the file extensions (v1c)
@@ -159,10 +159,13 @@ Version 0.15 Beta:
 - declarations for INP (without error check) and OUT (returns INT instead of VOID) are now correct (mjs)
 - Original timer ISR is now called at the rate of 0x10000 (mjs)
 - suffixed byval string args would be missed when looked up if a global suffixed string with the same name existed (v1c)
+<<<<<<< changelog.txt
+=======
 - GET and PUT for graphics now support field arrays too (v1c)
 - a division of a signed integer by a power of 2 constant would give a wrong result if the left-operand was negative (v1c)
 - exponent handling (including when too big to fit) in PRINT USING (v1c)
 - the subtraction of two pointer operands was not been divided by the operands' length (v1c)
+>>>>>>> 1.276
 
 Version 0.14 Beta:
 
