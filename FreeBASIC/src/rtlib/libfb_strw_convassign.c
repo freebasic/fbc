@@ -27,19 +27,24 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_WstrAssignFromA ( FB_WCHAR *dst, int dst_chars, void *src, int src_chars )
+FBCALL FB_WCHAR *fb_WstrAssignFromA ( FB_WCHAR *dst, int dst_chars, void *src, int src_size )
 {
 	char *src_ptr;
+	int src_chars;
 
 	if( dst != NULL )
 	{
-		FB_STRSETUP_FIX( src, src_chars, src_ptr, src_chars );
+		FB_STRSETUP_FIX( src, src_size, src_ptr, src_chars );
 
+		/* size unknown? assume it's big enough */
+		if( dst_chars == 0 )
+			dst_chars = src_chars;
+		
 		fb_wstr_ConvFromA( dst, dst_chars, src_ptr );
 	}
 
 	/* delete temp? */
-	if( src_chars == -1 )
+	if( src_size == -1 )
 		fb_hStrDelTemp( (FBSTRING *)src );
 
 	return dst;
