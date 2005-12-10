@@ -30,9 +30,10 @@ class FBDoc
 			$this->converter = new Wakka2Html( '', 1 );
 			$this->converter->setCssClass( WK_TOKEN_PRE, 'fb_pre' );
 			$this->converter->setCssClass( WK_TOKEN_HEADER, 'fb_header' );
-			$this->converter->setCssClass( WK_TOKEN_BOXLEFT, 'fb_boxleft' );
-			$this->converter->setCssClass( WK_TOKEN_BOXRIGHT, 'fb_boxright' );
+			$this->converter->setCssClass( WK_TOKEN_BOXLEFT, 'fb_box' );
+			$this->converter->setCssClass( WK_TOKEN_BOXRIGHT, 'fb_box' );
 			$this->converter->setCssClass( WK_TOKEN_ACTION_TB, 'fb_table' );
+			$this->converter->setCssClass( WK_TOKEN_ACTION_IMG, 'fb_img' );
 			$this->converter->setTagDoGen( WK_TOKEN_HORZLINE, false );
 			$this->converter->setTagDoGen( WK_TOKEN_SECT_ITEM, false );
 			break;
@@ -236,7 +237,7 @@ class FBDoc
 		return $resTb;
 	}
 
-	/*:::::*/
+/*
 	function _genCatKeyList( &$keysTb, $rows, $leftrows, $rightrows, &$tpl )
 	{
 		// left		
@@ -270,7 +271,6 @@ class FBDoc
 		$tpl->assignRef( 'pg_right', $rcol );
 	}
 
-	/*:::::*/
 	function _genCatAlphaKeyList( &$keysTb, $rows, $leftrows, $rightrows, &$tpl )
 	{
 		
@@ -323,7 +323,6 @@ class FBDoc
 		$tpl->assignRef( 'pg_right', $rcol );
 	}
 
-	/*:::::*/
 	function _genCatBody( &$page, &$title, &$tokensTb, &$tpl )
 	{
 		$tpl->assign( 'pg_name', $title );
@@ -342,13 +341,18 @@ class FBDoc
 			$rightrows = $rows - $leftrows;
 		}
 		
-		if( $page != 'CatPgFullIndex' )
-			$this->_genCatKeyList( $keysTb, $rows, $leftrows, $rightrows, $tpl );
-		else
+		switch( $page )
+		{
+		case 'CatPgFullIndex':
 			$this->_genCatAlphaKeyList( $keysTb, $rows, $leftrows, $rightrows, $tpl );
+			break;
+
+		default:
+			$this->_genCatKeyList( $keysTb, $rows, $leftrows, $rightrows, $tpl );
+		}
+			
 	}
 	
-	/*:::::*/
 	function _emitCatPage( &$page, &$title, &$tokensTb )
 	{
 		static $tpl = NULL;
@@ -367,6 +371,16 @@ class FBDoc
 					
 		fwrite( $fd, $body, strlen( $body ) );
 		fclose( $fd );
+	}
+*/
+
+	/*:::::*/
+	function _emitCatPage( &$page, &$title, &$tokensTb )
+	{
+		$this->catKeysTb[$page] =& $this->_findCatKeywords( $tokensTb );
+		asort( $this->catKeysTb[$page] );
+
+		return $this->_emitDefPage( $page, $title, $tokensTb );
 	}
 
 	/*:::::*/
@@ -394,7 +408,7 @@ class FBDoc
 	}
 
 	/*:::::*/
-	function _emitChmToc( )
+	function _emitChmToc( $defPage )
 	{
 		static $tpl = NULL;
 		
@@ -402,7 +416,11 @@ class FBDoc
 		
 		$fd = fopen( $this->dstPath . '/toc.hhc', 'wb' );
 		
-		$body = '';
+		$body = '<li><object type="text/sitemap">' .
+				'<param name="Name" value="Table of Contents">' .
+				'<param name="Local" value="' . $defPage . '.html">' .
+				"</object>\r\n";
+
 		// for each section..
 		foreach( $this->sectsTb as $section )
 		{
@@ -525,7 +543,7 @@ class FBDoc
 	{
 		$keyPagesTb =& $this->_createKeyPagesTb( );
 		
-		$this->_emitChmToc( );
+		$this->_emitChmToc( $defaultPage );
 		$this->_emitChmIndex( $keyPagesTb );
 		$this->_emitChmProject( $fileName, $defaultPage, $keyPagesTb );
 	}

@@ -27,7 +27,8 @@
 	define( 'WK_TOKEN_HORZLINE'		, 24 );
 	define( 'WK_TOKEN_SECT_ITEM'	, 25 );
 	define( 'WK_TOKEN_ACTION_TB'	, 26 );
-	define( 'WK_TOKENS'				, 27 );
+	define( 'WK_TOKEN_ACTION_IMG'	, 27 );
+	define( 'WK_TOKENS'				, 28 );
 
 	define( 'WK_PATTERN'			, '/(' .
 				  	  				  '%%.*?%%|' .
@@ -439,13 +440,16 @@ class Wakka2Html
 		if( $this->tagFlags[WK_TAG_BOXLEFT] & 1 )
 		{
 			--$this->tagFlags[WK_TAG_BOXLEFT];
-			$text .= '</div>';
+			$text .= '</td>';
+
+			if( !($this->tagFlags[WK_TAG_BOXRIGHT] & 1) )
+				$text .= '</tr></table>';	
 		}
 		
 		if( $this->tagFlags[WK_TAG_BOXRIGHT] & 1 )
 		{
 			--$this->tagFlags[WK_TAG_BOXRIGHT];
-			$text .= '</div>';
+			$text .= '</td></tr></table>';
 		}
 		
 		if( $this->tagFlags[WK_TAG_SECTION] != 0 )
@@ -485,7 +489,8 @@ class Wakka2Html
 					 			'ex' 		=> array( true , '{#fb_sect_ex}'    ), 
 					 			'diff' 		=> array( true , '{#fb_sect_diff}'  ),
 					 			'see' 		=> array( true , '{#fb_sect_see}'   ), 
-					 			'back' 		=> array( false, '{#fb_sect_back}'  ) 
+					 			'back' 		=> array( false, '{#fb_sect_back}'  ), 
+					 			'close'		=> array( false, '{#fb_sect_close}' ) 
 					 		  );
 		
 		if( isset( $paramsTb['item'] ) )
@@ -548,6 +553,17 @@ class Wakka2Html
 			else
 				return $res;
 	
+		case 'close':
+			if( $this->tagFlags[WK_TAG_SECTION] != 0  )
+			{
+				$this->tagFlags[WK_TAG_SECTION] = 0;
+				$res = '</div>';
+			}
+			else
+				$res = '';
+			
+			return $res;
+
 		default:			
 			$value =& $itemTB[$item][1];
 			return $res . '<div class="fb_sect_title">' . $value . 
@@ -592,6 +608,25 @@ class Wakka2Html
 	}
 
 	/*:::::*/
+	function &_actionGenImage( &$paramsTb )
+	{
+		/*if( isset( $paramsTb['class'] ) )
+			$class = $paramsTb['class'];
+		else*/
+			$class = $this->cssClassTb[WK_TOKEN_ACTION_IMG];
+			
+		$res = '<div class="' . $class . '"><img';
+						
+		if( isset( $paramsTb['alt'] ) )
+			$res .= ' alt="' . $paramsTb['alt'] . '"';
+
+		if( isset( $paramsTb['url'] ) )
+			$res .= ' src="' . $paramsTb['url'] . '"';
+			
+		return $res . ' /></div>';
+	}
+
+	/*:::::*/
 	function &_actionToHtml( &$name, &$paramsTb )
 	{
 		switch( $name )
@@ -602,6 +637,9 @@ class Wakka2Html
 		
 		case 'table':
 			return $this->_actionGenTable( $paramsTb );
+
+		case 'image':
+			return $this->_actionGenImage( $paramsTb );
 			
 		default:
 			return '';
@@ -775,15 +813,18 @@ class Wakka2Html
 
 		case WK_TOKEN_BOXLEFT:
 			if( ++$this->tagFlags[WK_TAG_BOXLEFT] & 1 )
-				return $res . '<div ' . $cssclass . '>';
+				return $res . '<table ' . $cssclass . '><tr><td>';
 			else
-				return $res .  '</div>';
+				return $res . '</td>';
 	
 		case WK_TOKEN_BOXRIGHT:
+			if( $this->tagFlags[WK_TAG_BOXLEFT] & 1 ) 
+				return $res . '</td></tr></table>';
+
 			if( ++$this->tagFlags[WK_TAG_BOXRIGHT] & 1 ) 
-				return $res . '<div ' . $cssclass . '>';
+				return $res . '<td>';
 			else
-				return $res .  '</div>';
+				return $res . '</td></tr></table>';
 			
 		case WK_TOKEN_CLEAR:
 			return $res . '<div style="clear:both">&nbsp;</div>';
