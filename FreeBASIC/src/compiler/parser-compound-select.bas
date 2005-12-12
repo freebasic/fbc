@@ -93,7 +93,7 @@ end sub
 function cSelectStatement as integer
     dim as ASTNODE ptr expr
     dim as integer lastcompstmt, dtype
-	dim as FBSYMBOL ptr symbol, elabel
+	dim as FBSYMBOL ptr symbol, elabel, subtype
 
 	function = FALSE
 
@@ -146,20 +146,27 @@ function cSelectStatement as integer
 	elabel = symbAddLabel( NULL )
 
 	'' store expression into a temp var
-	dtype = astGetDataType( expr )
+	dtype   = astGetDataType( expr )
+	subtype = astGetSubType( expr )
 	select case dtype
-	case FB_SYMBTYPE_FIXSTR, FB_SYMBTYPE_CHAR
-		dtype = FB_SYMBTYPE_STRING
+	'' fixed-len or zstring? temp will be a var-len string..
+	case IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR
+		dtype = IR_DATATYPE_STRING
+
+	'' bitfield? they are always converted to uint's..
+	case FB_SYMBTYPE_BITFIELD
+		dtype   = IR_DATATYPE_UINT
+	    subtype = NULL
 	end select
 
     '' not a wstring?
-	if( dtype <> FB_SYMBTYPE_WCHAR ) then
-		symbol = symbAddTempVar( dtype, astGetSubType( expr ) )
+	if( dtype <> IR_DATATYPE_WCHAR ) then
+		symbol = symbAddTempVar( dtype, subtype )
 		if( symbol = NULL ) then
 			exit function
 		end if
 
-		expr = astNewASSIGN( astNewVAR( symbol, 0, dtype, astGetSubType( expr ) ), expr )
+		expr = astNewASSIGN( astNewVAR( symbol, 0, dtype, subtype ), expr )
 		if( expr = NULL ) then
 			exit function
 		end if
@@ -178,15 +185,15 @@ function cSelectStatement as integer
 		'' tmp = WstrAlloc( len( expr ) )
 		astAdd( astNewASSIGN( astNewVAR( symbol, _
 										 0, _
-										 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR ), _
+										 IR_DATATYPE_POINTER+IR_DATATYPE_WCHAR ), _
 							  rtlWstrAlloc( rtlMathLen( astCloneTree( expr ), TRUE ) ) ) )
 
 		'' *tmp = expr
 		expr = astNewASSIGN( astNewPTR( 0, _
 								  		astNewVAR( symbol, _
 								  		 		   0, _
-								  		 		   FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR ), _
-								  	    FB_SYMBTYPE_WCHAR, _
+								  		 		   IR_DATATYPE_POINTER+IR_DATATYPE_WCHAR ), _
+								  	    IR_DATATYPE_WCHAR, _
 								  	    NULL ), _
 				      		 expr )
 
@@ -221,12 +228,12 @@ function cSelectStatement as integer
 
 	'' if a temp string was allocated, delete it
 	select case dtype
-	case FB_SYMBTYPE_STRING
+	case IR_DATATYPE_STRING
 		astAdd( rtlStrDelete( astNewVAR( symbol, 0, dtype ) ) )
-	case FB_SYMBTYPE_WCHAR
+	case IR_DATATYPE_WCHAR
 		astAdd( rtlStrDelete( astNewVAR( symbol, _
 										 0, _
-										 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR ) ) )
+										 IR_DATATYPE_POINTER+IR_DATATYPE_WCHAR ) ) )
 	end select
 
 	env.lastcompound = lastcompstmt
