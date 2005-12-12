@@ -1861,6 +1861,7 @@ function rtlToStr( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 		'' pointer..
 		case else
 			f = PROCLOOKUP( UINT2STR )
+			expr = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, expr )
 		end select
 
 	case IR_DATACLASS_FPOINT
@@ -1937,6 +1938,7 @@ function rtlToWstr( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 		'' pointer..
 		case else
 			f = PROCLOOKUP( UINT2WSTR )
+			expr = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, expr )
 		end select
 
 	case IR_DATACLASS_FPOINT
