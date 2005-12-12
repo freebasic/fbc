@@ -70,7 +70,7 @@ function astNewBOUNDCHK( byval l as ASTNODE ptr, _
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_BOUNDCHK, INVALID )
+	n = astNewNode( AST_NODECLASS_BOUNDCHK, IR_DATATYPE_INTEGER, NULL )
 	function = n
 
 	if( n = NULL ) then
@@ -86,7 +86,8 @@ function astNewBOUNDCHK( byval l as ASTNODE ptr, _
     '' assumptions after the branches
 	n->r = rtlArrayBoundsCheck( astNewVAR( n->chk.sym, _
     									   0, _
-    									   IR_DATATYPE_INTEGER ), _
+    									   IR_DATATYPE_INTEGER, _
+    									   NULL ), _
     						 	lb, _
     						 	ub, _
     						 	linenum, _
@@ -111,7 +112,8 @@ function astLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
 	'' be spilled as IR can't handle inter-blocks
 	t = astNewASSIGN( astNewVAR( n->chk.sym, _
 								 0, _
-								 IR_DATATYPE_INTEGER ), _
+								 IR_DATATYPE_INTEGER, _
+								 NULL ), _
 					  l )
 	astLoad( t )
 	astDel( t )
@@ -129,7 +131,7 @@ function astLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	''
 	'' re-load, see above
-	t = astNewVAR( n->chk.sym, 0, IR_DATATYPE_INTEGER )
+	t = astNewVAR( n->chk.sym, 0, IR_DATATYPE_INTEGER, NULL )
 	function = astLoad( t )
 	astDel( t )
 
@@ -145,6 +147,8 @@ function astNewPTRCHK( byval l as ASTNODE ptr, _
 					 ) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
+    dim as integer dtype
+    dim as FBSYMBOL ptr subtype
 
 	'' constant? don't break OffsetOf() when used with Const's..
 	if( l->class = AST_NODECLASS_CONST ) then
@@ -152,7 +156,9 @@ function astNewPTRCHK( byval l as ASTNODE ptr, _
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_PTRCHK, INVALID )
+	dtype = l->dtype
+	subtype = l->subtype
+	n = astNewNode( AST_NODECLASS_PTRCHK, dtype, subtype )
 	function = n
 
 	if( n = NULL ) then
@@ -161,13 +167,10 @@ function astNewPTRCHK( byval l as ASTNODE ptr, _
 
 	n->l = l
 
-	n->chk.sym = symbAddTempVar( l->dtype, l->subtype )
+	n->chk.sym = symbAddTempVar( dtype, subtype )
 
     '' check must be done using a function, see bounds checking
-    n->r = rtlNullPtrCheck( astNewVAR( n->chk.sym, _
-    								   0, _
-    								   l->dtype, _
-    								   l->subtype ), _
+    n->r = rtlNullPtrCheck( astNewVAR( n->chk.sym, 0, dtype, subtype ), _
     					 	linenum, _
     					 	env.inf.name )
 
