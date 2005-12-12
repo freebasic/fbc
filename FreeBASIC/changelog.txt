@@ -1,6 +1,7 @@
 Version 0.16 Beta:
 
 [changed]
+- when aborting because run-time errors, the name of the module that caused the error will be printed too (v1c)
 
 [added]
 
