@@ -10,6 +10,7 @@ Version 0.16 Beta:
 - using the -exx option will too complex expressions in src files with too many functions would generate bad code (v1c)
 - PUT ALPHA had a problem with sprites having an odd width (lillo)
 - if the size of the destine string was unknown when assigning an ASCII to a WSTRING string, nothing would be copied (v1c) 
+- bitfields couldn't be used in SELECT CASE (v1c)
 
 
 Version 0.15 Beta:

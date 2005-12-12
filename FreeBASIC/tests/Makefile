@@ -1,6 +1,6 @@
 
 DIRLIST := console data datetime dim file functions macros numbers 
-DIRLIST += optimizations overload pointers string swap threads wstring
+DIRLIST += optimizations overload pointers string structs swap threads wstring
 
 ###
 
