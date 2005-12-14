@@ -13,6 +13,7 @@ Version 0.16 Beta:
 - if the size of the destine string was unknown when assigning an ASCII to a WSTRING string, nothing would be copied (v1c) 
 - bitfields couldn't be used in SELECT CASE (v1c)
 - address of null pointers couldn't be taken if sources were compiled with null-pointer checking on (-exx) (v1c)
+- SETDATE string to integer conversion was incorrect, making it always fail (DrV)
 
 
 Version 0.15 Beta:
