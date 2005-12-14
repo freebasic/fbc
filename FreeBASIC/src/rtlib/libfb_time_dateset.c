@@ -21,6 +21,7 @@
  * time_dateset.c -- setdate function
  *
  * chng: jan/2005 written [DrV]
+ *       dec/2005 major string to int conversion bug fixed [DrV]
  *
  */
 
@@ -50,12 +51,12 @@ FBCALL int fb_SetDate( FBSTRING *date )
 	{
 
     	char *t, c, sep;
-    	int i, m, d, y;
+    	int m, d, y;
 
      	/* get month */
     	m = 0;
-    	for (i = 0, t = date->data; (c = *t) && isdigit(c); t++, i += 10)
-			m = m * i + c - '0';
+    	for (t = date->data; (c = *t) && isdigit(c); t++)
+			m = m * 10 + c - '0';
 
     	if (((c != '/') && (c != '-')) || (m < 1) || (m > 12)) {
 			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
@@ -64,8 +65,8 @@ FBCALL int fb_SetDate( FBSTRING *date )
 
     	/* get day */
     	d = 0;
-    	for (i = 0, t++; (c = *t) && isdigit(c); t++, i += 10)
-        	d = d * i + c - '0';
+    	for (t++; (c = *t) && isdigit(c); t++)
+        	d = d * 10 + c - '0';
 
     	if ((c != sep) || (d < 1) || (d > 31)) {
 			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
@@ -73,11 +74,10 @@ FBCALL int fb_SetDate( FBSTRING *date )
 
     	/* get year */
     	y = 0;
-    	for (i = 0, t++; (c = *t) && isdigit(c); t++, i += 10)
-        	y = y * i + c - '0';
+    	for (t++; (c = *t) && isdigit(c); t++)
+        	y = y * 10 + c - '0';
 
     	if (y < 100) y += 1900;
-
 
 		fb_hSetDate( y, m, d );
 
