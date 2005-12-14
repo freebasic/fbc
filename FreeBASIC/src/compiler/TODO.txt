@@ -1,5 +1,10 @@
+[ ] input$(n) is broken
 
 [ ] add the wstring type:
+    - fb_ConsoleInput() won't call fb_DevScrnInit_ReadWstr( ), so an input to a
+      wstring won't work.. to not bloat the fucker the compiler should have to
+      call fb_ConsoleInput(there_is_any_wstr_argument), not so simple..
+
     - auto-convert literal strings to w- or z- on assignments, depending on the l-hand
       side type
     - fix the !!!FIXME!!!'s and write the !!!WRITEME!!!'s in the rtlib

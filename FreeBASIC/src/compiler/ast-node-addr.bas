@@ -85,6 +85,44 @@ function astLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr static
 end function
 
 '':::::
+private sub removeNullPtrCheck( byval l as ASTNODE ptr ) static
+	dim as ASTNODE ptr n, t
+
+	'' ptr checks must be removed because a null pointer is ok
+	'' when taking the address-of an expression
+
+	n = l->l
+	select case n->class
+	case AST_NODECLASS_PTRCHK
+		l->l = n->l
+		'' del func call tree
+		astDelTree( n->r )
+		'' del the checking node
+		astDel( n )
+
+	'' remove null-ptr checks in ptr indexing
+	case AST_NODECLASS_BOP
+		do
+			t = n->l
+			select case t->class
+			case AST_NODECLASS_PTRCHK
+				n->l = t->l
+				astDelTree( t->r )
+				astDel( t )
+				exit do
+
+			case AST_NODECLASS_BOP
+				n = t
+
+			case else
+				exit do
+			end select
+		loop
+	end select
+
+end sub
+
+'':::::
 function astNewADDR( byval op as integer, _
 					 byval l as ASTNODE ptr _
 				   ) as ASTNODE ptr static
@@ -103,7 +141,7 @@ function astNewADDR( byval op as integer, _
 
 	if( op = IR_OP_ADDROF ) then
 
-		select case l->class
+		select case as const l->class
 		case AST_NODECLASS_ADDR
 			'' convert @* to nothing
 			if( l->op.op = IR_OP_DEREF ) then
@@ -112,8 +150,12 @@ function astNewADDR( byval op as integer, _
 			end if
 
 		case AST_NODECLASS_PTR
-			'' @*const to const
+			if( env.clopt.extraerrchk ) then
+            	removeNullPtrCheck( l )
+            end if
+
 			n = l->l
+			'' @*const to const
 			if( n->class = AST_NODECLASS_CONST ) then
 				astDel( l )
 				return n
@@ -128,6 +170,10 @@ function astNewADDR( byval op as integer, _
 			'' @0->field to const
 			n = l->l
 			if( n->class = AST_NODECLASS_PTR ) then
+				if( env.clopt.extraerrchk ) then
+            		removeNullPtrCheck( n )
+            	end if
+
 				n = n->l
 				'' abs address?
 				if( n->class = AST_NODECLASS_CONST ) then
@@ -142,7 +188,6 @@ function astNewADDR( byval op as integer, _
 			if( l->var.ofs = 0 ) then
 				return astNewOFFSET( l )
 			end if
-
 		end select
 
 		''
