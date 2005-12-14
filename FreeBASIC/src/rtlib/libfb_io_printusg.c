@@ -268,8 +268,8 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	char buffer[BUFFERLEN+1], expbuff[16+1+1+1], *p;
 	int c, nc, lc, d, i, j, len, intlgt;
 	int doexit, padchar, intdigs, decdigs, totdigs, expdigs;
-	int	adddolar, addcomma, endcomma, signatend, isexp, isneg;
-	int value_exp;
+	int	adddolar, addcomma, endcomma, signatend, signatini;
+	int isexp, isneg, value_exp;
 
 	ctx = FB_TLSGETCTX( PRINTUSG );
 
@@ -292,6 +292,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	addcomma	= 0;
 	endcomma 	= 0;
 	signatend 	= 0;
+	signatini	= 0;
 	isexp 		= 0;
 
 	lc = -1;
@@ -352,6 +353,8 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 		case '+':
 			if( intdigs > 0 )
 				signatend = 1;
+			else
+				signatini = 1;
 			break;
 
 		case '^':
@@ -471,13 +474,14 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 		buffer[0] = '$';
 	}
 
-	/* neg */
-	if( !signatend && isneg )
+	/* sign */
+	if( !signatend || signatini )
 	{
 		memmove( &buffer[1], buffer, strlen( buffer )+1 );
-		buffer[0] = '-';
+		buffer[0] = (isneg? '-' : '+');
 
 		++intlgt;
+		isneg = 0;						/* QB quirk */
 	}
 
 	/* padding */
@@ -545,10 +549,10 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 		strcat( buffer, expbuff );
 	}
 
-	/* neg */
-	if( signatend && isneg )
+	/* sign */
+	if( signatend )
 	{
-		strcat( buffer, "-" );
+		strcat( buffer, (isneg? "-" : "+") );
 	}
 
 	if( endcomma )
