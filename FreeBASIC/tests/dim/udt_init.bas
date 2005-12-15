@@ -10,8 +10,8 @@ end type
 function add( lhs as rational, rhs as rational ) as rational 
 	dim as rational res
 	
-	res.num = lhs.num * rhs.den + lhs.den * rhs.num
-	res.den = lhs.den * rhs.den
+	res.num = radd_num( lhs, rhs )
+	res.den = radd_den( lhs, rhs )
 	
 	function = res
 
