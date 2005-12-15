@@ -39,16 +39,17 @@ declare function 	cSymbUDTInit			( byval basesym as FBSYMBOL ptr, _
 function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 					   byval sym as FBSYMBOL ptr, _
 					   byref ofs as integer, _
-					   byval islocal as integer ) as integer static
+					   byval islocal as integer ) as integer
 
 	dim as integer dtype, sdtype
 	dim as ASTNODE ptr expr, assgexpr
-    dim as FBSYMBOL ptr litsym
+    dim as FBSYMBOL ptr litsym, oldsym
 
     sdtype = symbGetType( sym )
 
     '' set the context symbol to allow taking the address of overloaded procs
-    if( sdtype >= IR_DATATYPE_POINTER+IR_DATATYPE_FUNCTION ) then
+    oldsym = env.ctxsym
+    if( sdtype = IR_DATATYPE_POINTER+IR_DATATYPE_FUNCTION ) then
     	env.ctxsym = symbGetSubType( sym )
     end if
 
@@ -57,7 +58,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 		return 0
 	end if
 
-	env.ctxsym = NULL
+	env.ctxsym = oldsym
 
     dtype = astGetDataType( expr )
 
@@ -121,6 +122,12 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 									   sdtype, _
 									   symbGetSubtype( sym ), _
 									   expr )
+
+					if( expr = NULL ) then
+			    		hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+						return 0
+					end if
+
 				end if
 
 				select case as const sdtype
@@ -218,7 +225,8 @@ function cSymbArrayInit( byval basesym as FBSYMBOL ptr, _
 						 byval sym as FBSYMBOL ptr, _
 					     byref ofs as integer, _
 					     byval islocal as integer, _
-					     byval isarray as integer ) as integer
+					     byval isarray as integer _
+					   ) as integer
 
     dim as integer dimensions, dimcnt, elements, elmcnt
     dim as integer isopen, lgt, pad
@@ -339,8 +347,7 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 
 	'' '('
 	if( not hMatch( CHAR_LPRNT ) ) then
-		hReportError( FB_ERRMSG_EXPECTEDLPRNT )
-		exit function
+		return cSymbElmInit( basesym, sym, ofs, islocal )
 	end if
 
 	udt = symbGetSubtype( sym )

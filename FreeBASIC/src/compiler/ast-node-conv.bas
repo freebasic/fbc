@@ -206,6 +206,11 @@ function astNewCONV( byval op as integer, _
     	exit function
     end if
 
+	'' UDT? can't convert..
+	if( dtype = IR_DATATYPE_USERDEF ) then
+		exit function
+	end if
+
     '' pointer typecasting?
     if( op = IR_OP_TOPOINTER ) then
 

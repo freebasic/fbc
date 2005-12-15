@@ -28,6 +28,8 @@ option escape
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
 
+declare function 	cAnonUDT			( byref expr as ASTNODE ptr ) as integer
+
 '':::::
 ''NegNotExpression=   ('-'|'+'|) ExpExpression
 ''				  |   NOT RelExpression
@@ -137,6 +139,10 @@ function cHighestPrecExpr( byref highexpr as ASTNODE ptr ) as integer
 				exit function
 			end if
 
+		'' TYPE
+		case FB_TK_TYPE
+			return cAnonUDT( highexpr )
+
 		'' Atom
 		case else
 			return cAtom( highexpr )
@@ -161,6 +167,41 @@ function cHighestPrecExpr( byref highexpr as ASTNODE ptr ) as integer
 	end if
 
 	function = (hGetLastError() = FB_ERRMSG_OK)
+
+end function
+
+'':::::
+'' AnonUDT			=	TYPE '(' ... ')'
+function cAnonUDT( byref expr as ASTNODE ptr ) as integer
+    dim as FBSYMBOL ptr tmpsym
+
+	function = FALSE
+
+    if( env.ctxsym = NULL ) then
+		hReportError( FB_ERRMSG_SYNTAXERROR )
+		exit function
+    end if
+
+    if( not symbIsUDT( env.ctxsym ) ) then
+		hReportError( FB_ERRMSG_SYNTAXERROR )
+		exit function
+	end if
+
+	'' TYPE
+	lexSkipToken( )
+
+	'' create a temp var
+	tmpsym = symbAddTempVar( FB_SYMBTYPE_USERDEF, env.ctxsym )
+
+    '' let the initializer do the rest..
+    if( not cSymbolInit( tmpsym ) ) then
+    	exit function
+    end if
+
+    '' create a var expression
+    expr = astNewVAR( tmpsym, 0, FB_SYMBTYPE_USERDEF, env.ctxsym )
+
+    function = TRUE
 
 end function
 
