@@ -9,6 +9,8 @@
 #ifndef __winreg_bi__
 #define __winreg_bi__
 
+#inclib "advapi32"
+
 #define REG_OPTION_VOLATILE 1
 #define REG_OPTION_NON_VOLATILE 0
 #define REG_CREATED_NEW_KEY 1
