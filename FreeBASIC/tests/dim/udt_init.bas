@@ -19,7 +19,7 @@ end function
 
 '':::::
 sub test
-	dim as rational rat(0 to 1) = _
+	dim as rational rt(0 to 1) = _
 	{ _
 		add( type(1,2)   , type(3,4)   ), _
 		add( type(-1,-2) , type(-3,-4) ) _
@@ -32,10 +32,10 @@ sub test
 	l(1).num = -1: l(1).den = -2
 	r(1).num = -3: r(1).den = -4
 	
-	assert( rat(0).num = radd_num( l(0), r(0) ) )
-	assert( rat(0).den = radd_den( l(0), r(0) ) )
-	assert( rat(1).num = radd_num( l(1), r(1) ) )
-	assert( rat(1).den = radd_den( l(1), r(1) ) )
+	assert( rt(0).num = radd_num( l(0), r(0) ) )
+	assert( rt(0).den = radd_den( l(0), r(0) ) )
+	assert( rt(1).num = radd_num( l(1), r(1) ) )
+	assert( rt(1).den = radd_den( l(1), r(1) ) )
 	
 end sub
 

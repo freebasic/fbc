@@ -4,6 +4,8 @@ Version 0.16 Beta:
 - when aborting because run-time errors, the name of the module that caused the error will be printed too (v1c)
 
 [added]
+- anonymous UDT's that can be passed as parameters or used in assignments, like:
+  "foo TYPE(1,2)" where foo was declared as "foo([mode] p as bar)" (v1c)
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)
