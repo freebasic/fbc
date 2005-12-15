@@ -88,10 +88,9 @@ function cAssignment( byval assgexpr as ASTNODE ptr ) as integer
     	exit function
     end if
 
-    '' set the context symbol to allow taking the address of overloaded procs
-    if( astGetDataType( assgexpr ) >= IR_DATATYPE_POINTER+IR_DATATYPE_FUNCTION ) then
-    	env.ctxsym = astGetSubType( assgexpr )
-    end if
+    '' set the context symbol to allow taking the address of overloaded
+    '' procs and also to allow anonymous UDT's
+    env.ctxsym = astGetSubType( assgexpr )
 
     '' Expression
     if( not cExpression( expr ) ) then

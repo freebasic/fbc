@@ -47,11 +47,10 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 
     sdtype = symbGetType( sym )
 
-    '' set the context symbol to allow taking the address of overloaded procs
+    '' set the context symbol to allow taking the address of overloaded
+    '' procs and also to allow anonymous UDT's
     oldsym = env.ctxsym
-    if( sdtype = IR_DATATYPE_POINTER+IR_DATATYPE_FUNCTION ) then
-    	env.ctxsym = symbGetSubType( sym )
-    end if
+    env.ctxsym = symbGetSubType( sym )
 
 	if( not cExpression( expr ) ) then
 		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
@@ -347,6 +346,8 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 
 	'' '('
 	if( not hMatch( CHAR_LPRNT ) ) then
+		'' it can be a function returning an UDT or another UDT
+		'' variable for non-static symbols..
 		return cSymbElmInit( basesym, sym, ofs, islocal )
 	end if
 

@@ -376,9 +376,11 @@ private function hProcPtrBody( byval proc as FBSYMBOL ptr, _
 	'' resolve overloaded procs
 	if( symbIsOverloaded( proc ) ) then
         if( env.ctxsym <> NULL ) then
-        	sym = symbFindOverloadProc( proc, env.ctxsym )
-        	if( sym <> NULL ) then
-        		proc = sym
+        	if( symbIsProc( env.ctxsym ) ) then
+        		sym = symbFindOverloadProc( proc, env.ctxsym )
+        		if( sym <> NULL ) then
+        			proc = sym
+        		end if
         	end if
         end if
 	end if
