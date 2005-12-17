@@ -53,11 +53,13 @@ sub symbDelScope( byval scp as FBSYMBOL ptr )
     end if
 
     '' del all enum constants
-	s = scp->scp.loctb.head
-    do while( s <> NULL )
-        nxt = s->next
+    do
+		s = scp->scp.loctb.head
+		if( s = NULL ) then
+			exit do
+		end if
+
 		symbDelSymbol( s )
-		s = nxt
 	loop
 
 	'' del the scope node
@@ -67,7 +69,6 @@ end sub
 
 '':::::
 sub symbDelScopeTb( byval scp as FBSYMBOL ptr ) static
-
     dim as FBSYMBOL ptr s
 
 	'' for each symbol declared inside the SCOPE block..
@@ -75,7 +76,6 @@ sub symbDelScopeTb( byval scp as FBSYMBOL ptr ) static
     do while( s <> NULL )
     	'' remove from hash only
     	symbDelFromHash( s )
-
     	s = s->next
     loop
 
