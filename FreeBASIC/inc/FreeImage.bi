@@ -19,7 +19,7 @@
 #define FREEIMAGE_RELEASE_SERIAL  0
 
 
-#if not defined(__FB_WIN32__) or not defined(WINGDIAPI)
+#if not defined(__FB_WIN32__) or not defined(__windows_bi__)
 
 #ifndef FALSE
 #define FALSE 0
@@ -404,7 +404,7 @@ Declare Function FreeImage_FIFSupportsWriting Alias "FreeImage_FIFSupportsWritin
 Declare Function FreeImage_FIFSupportsExportBPP Alias "FreeImage_FIFSupportsExportBPP" (ByVal fif As FREE_IMAGE_FORMAT, ByVal bpp As Integer) As Integer
 Declare Function FreeImage_FIFSupportsExportType Alias "FreeImage_FIFSupportsExportType" (ByVal fif As FREE_IMAGE_FORMAT, ByVal type_ As FREE_IMAGE_TYPE) As Integer
 Declare Function FreeImage_FIFSupportsICCProfiles Alias "FreeImage_FIFSupportsICCProfiles" (ByVal fif As FREE_IMAGE_FORMAT) As Integer
-Declare Function FreeImage_OpenMultiBitmap Alias "FreeImage_OpenMultiBitmap" (ByVal fif As FREE_IMAGE_FORMAT, byval filename as zstring ptr, ByVal create_new As Integer, ByVal read_only As Integer, ByVal keep_cache_in_memory As Integer = 0) As FIMULTIBITMAP ptr
+Declare Function FreeImage_OpenMultiBitmap Alias "FreeImage_OpenMultiBitmap" (ByVal fif As FREE_IMAGE_FORMAT, byval filename as zstring ptr, ByVal create_new_ As Integer, ByVal read_only As Integer, ByVal keep_cache_in_memory As Integer = 0) As FIMULTIBITMAP ptr
 Declare Function FreeImage_CloseMultiBitmap Alias "FreeImage_CloseMultiBitmap" (byval bitmap as FIMULTIBITMAP ptr, ByVal flags As Integer = 0) As Integer
 Declare Function FreeImage_GetPageCount Alias "FreeImage_GetPageCount" (byval bitmap as FIMULTIBITMAP ptr) As Integer
 Declare Sub FreeImage_AppendPage Alias "FreeImage_AppendPage" (byval bitmap as FIMULTIBITMAP ptr, ByVal data As FIBITMAP ptr)
