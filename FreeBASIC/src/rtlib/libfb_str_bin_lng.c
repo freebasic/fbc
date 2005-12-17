@@ -28,52 +28,71 @@
 #include <stdlib.h>
 #include "fb.h"
 
-#ifndef TARGET_WIN32
 /*:::::*/
-static void hToBin( unsigned long long num, char *dst )
+FBCALL FBSTRING *fb_BINEx_l ( unsigned long long num, int digits )
 {
-	int i;
+	FBSTRING *dst;
+	char *buf;
+	int i, totdigs;
+
+	if( digits > 0 )
+	{
+		totdigs = (digits < sizeof( long long ) << 3? digits: sizeof( long long ) << 3);
+		if( digits > sizeof( long long ) << 3 )
+			digits = sizeof( long long ) << 3;
+	}
+	else
+		totdigs = sizeof( long long ) << 3;
+
+	/* alloc temp string */
+    dst = fb_hStrAllocTemp( NULL, totdigs );
+	if( dst == NULL )
+		return &fb_strNullDesc;
+
+	/* convert */
+	buf = dst->data;
 
 	if( num == 0ULL )
-		*dst++ = '0';
+	{
+		if( digits <= 0 )
+			digits = 1;
+
+		while( digits-- )
+			*buf++ = '0';
+	}
 	else
 	{
-		for( i = 0; i < sizeof( long long )*8; i++, num <<= 1 )
+		num <<= ((sizeof( long long ) << 3) - totdigs);
+
+		for( i = 0; i < totdigs; i++, num <<= 1 )
 			if( num & 0x8000000000000000ULL )
 				break;
 
-		for( ; i < sizeof( long long )*8; i++, num <<= 1 )
+		if( digits > 0 )
+		{
+			digits -= totdigs - i;
+			while( digits-- )
+				*buf++ = '0';
+		}
+
+		for( ; i < totdigs; i++, num <<= 1 )
 			if( num & 0x8000000000000000ULL )
-				*dst++ = '1';
+				*buf++ = '1';
 			else
-				*dst++ = '0';
+				*buf++ = '0';
 	}
 
 	/* add null-term */
-	*dst = '\0';
+	*buf = '\0';
 
+	fb_hStrSetLength( dst, buf - dst->data );
+
+	return dst;
 }
-#endif
 
 /*:::::*/
 FBCALL FBSTRING *fb_BIN_l ( unsigned long long num )
 {
-	FBSTRING 	*dst;
-
-	/* alloc temp string */
-    dst = fb_hStrAllocTemp( NULL, sizeof( long long ) * 8 );
-	if( dst != NULL )
-	{
-		/* convert */
-#ifdef TARGET_WIN32
-		_i64toa( num, dst->data, 2 );
-#else
-		hToBin( num, dst->data );
-#endif
-        fb_hStrSetLength( dst, strlen( dst->data ) );
-	}
-	else
-		dst = &fb_strNullDesc;
-
-	return dst;
+	return fb_BINEx_l( num, 0 );
 }
+

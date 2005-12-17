@@ -32,42 +32,70 @@
 static char hex_table[16] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
 /*:::::*/
-FBCALL FBSTRING *fb_HEX_l ( unsigned long long num )
+FBCALL FBSTRING *fb_HEXEx_l ( unsigned long long num, int digits )
 {
-	FBSTRING 	*dst;
-	char		*buf;
-	int			i;
+	FBSTRING *dst;
+	char *buf;
+	int i, totdigs;
 
-	/* alloc temp string */
-    dst = fb_hStrAllocTemp( NULL, sizeof( long long ) * 2 );
-	if( dst != NULL )
+	if( digits > 0 )
 	{
-		/* convert */
-		buf = dst->data;
-
-		if( num == 0ULL )
-			*buf++ = '0';
-		else
-		{
-			for( i = 0; i < sizeof( long long )*2; i++, num <<= 4 )
-				if( num > 0x0FFFFFFFFFFFFFFFULL )
-					break;
-
-			for( ; i < sizeof( long long )*2; i++, num <<= 4 )
-				if( num > 0x0FFFFFFFFFFFFFFFULL )
-					*buf++ = hex_table[(num & 0xF000000000000000ULL) >> 60];
-				else
-					*buf++ = '0';
-		}
-
-		/* add null-term */
-		*buf = '\0';
-
-        fb_hStrSetLength( dst, buf - dst->data );
+		totdigs = (digits < sizeof( long long ) << 1? digits: sizeof( long long ) << 1);
+		if( digits > sizeof( long long ) << 1 )
+			digits = sizeof( long long ) << 1;
 	}
 	else
-		dst = &fb_strNullDesc;
+		totdigs = sizeof( long long ) << 1;
+
+	/* alloc temp string */
+    dst = fb_hStrAllocTemp( NULL, totdigs );
+	if( dst == NULL )
+		return &fb_strNullDesc;
+
+	/* convert */
+	buf = dst->data;
+
+	if( num == 0ULL )
+	{
+		if( digits <= 0 )
+			digits = 1;
+
+		while( digits-- )
+			*buf++ = '0';
+	}
+	else
+	{
+		num <<= ((sizeof( long long ) << 3) - (totdigs << 2));
+
+		for( i = 0; i < totdigs; i++, num <<= 4 )
+			if( num > 0x0FFFFFFFFFFFFFFFULL )
+				break;
+
+		if( digits > 0 )
+		{
+			digits -= totdigs - i;
+			while( digits-- )
+				*buf++ = '0';
+		}
+
+		for( ; i < totdigs; i++, num <<= 4 )
+			if( num > 0x0FFFFFFFFFFFFFFFULL )
+				*buf++ = hex_table[(num & 0xF000000000000000ULL) >> 60];
+			else
+				*buf++ = '0';
+	}
+
+	/* add null-term */
+	*buf = '\0';
+
+	fb_hStrSetLength( dst, buf - dst->data );
 
 	return dst;
+}
+
+/*:::::*/
+FBCALL FBSTRING *fb_HEX_l ( unsigned long long num )
+{
+	return fb_HEXEx_l( num, 0 );
 }
 

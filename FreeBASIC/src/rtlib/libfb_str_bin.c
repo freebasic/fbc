@@ -24,57 +24,67 @@
  *
  */
 
-#include <malloc.h>
-#include <stdlib.h>
 #include "fb.h"
 
-#ifndef TARGET_WIN32
 /*:::::*/
-static void hToBin( unsigned int num, char *dst, int len )
+static FBSTRING *hBIN ( unsigned int num, int len, int digits )
 {
-	unsigned int mask = 1UL << ((len*8)-1);
-	int i;
+	FBSTRING *dst;
+	char *buf;
+	int	i, totdigs;
+	unsigned int mask;
+
+	if( digits > 0 )
+	{
+		totdigs = (digits < len << 3? digits: len << 3);
+		if( digits > len << 3 )
+			digits = len << 3;
+	}
+	else
+		totdigs = len << 3;
+
+	/* alloc temp string */
+    dst = fb_hStrAllocTemp( NULL, totdigs );
+	if( dst == NULL )
+		return &fb_strNullDesc;
+
+	/* convert */
+	buf = dst->data;
 
 	if( num == 0 )
-		*dst++ = '0';
+	{
+		if( digits <= 0 )
+			digits = 1;
+
+		while( digits-- )
+			*buf++ = '0';
+	}
 	else
 	{
-		for( i = 0; i < len*8; i++, num <<= 1 )
+		mask = 1UL << (totdigs-1);
+
+		for( i = 0; i < totdigs; i++, num <<= 1 )
 			if( num & mask )
 				break;
 
-		for( ; i < len*8; i++, num <<= 1 )
+		if( digits > 0 )
+		{
+			digits -= totdigs - i;
+			while( digits-- )
+				*buf++ = '0';
+		}
+
+		for( ; i < totdigs; i++, num <<= 1 )
 			if( num & mask )
-				*dst++ = '1';
+				*buf++ = '1';
 			else
-				*dst++ = '0';
+				*buf++ = '0';
 	}
 
 	/* add null-term */
-	*dst = '\0';
+	*buf = '\0';
 
-}
-#endif
-
-/*:::::*/
-static FBSTRING *hBIN ( unsigned int num, int len )
-{
-	FBSTRING 	*dst;
-
-	/* alloc temp string */
-    dst = fb_hStrAllocTemp( NULL, len * 8 );
-	if( dst != NULL )
-	{
-		/* convert */
-#ifdef TARGET_WIN32
-		_itoa( num, dst->data, 2 );
-#else
-		hToBin( num, dst->data, len );
-#endif
-        fb_hStrSetLength( dst, strlen( dst->data ) );
-	}
-	else
-		dst = &fb_strNullDesc;
+    fb_hStrSetLength( dst, buf - dst->data );
 
 	return dst;
 }
@@ -82,18 +92,24 @@ static FBSTRING *hBIN ( unsigned int num, int len )
 /*:::::*/
 FBCALL FBSTRING *fb_BIN_b ( unsigned char num )
 {
-	return hBIN( num, sizeof( char ) );
+	return hBIN( num, sizeof( char ), 0 );
 }
 
 /*:::::*/
 FBCALL FBSTRING *fb_BIN_s ( unsigned short num )
 {
-	return hBIN( num, sizeof( short ) );
+	return hBIN( num, sizeof( short ), 0 );
 }
 
 /*:::::*/
 FBCALL FBSTRING *fb_BIN_i ( unsigned int num )
 {
-	return hBIN( num, sizeof( int ) );
+	return hBIN( num, sizeof( int ), 0 );
+}
+
+/*:::::*/
+FBCALL FBSTRING *fb_BINEx_i ( unsigned int num, int digits )
+{
+	return hBIN( num, sizeof( int ), digits );
 }
 
