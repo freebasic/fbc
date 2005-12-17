@@ -754,12 +754,28 @@ data @"hex","fb_HEX_i", _
 	 1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
+'' fb_HEXEx_i ( byval number as integer, byval digits as integer ) as string
+data @"hex","fb_HEXEx_i", _
+	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 2, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
 '' fb_HEX_l ( byval number as longint ) as string
 data @"hex","fb_HEX_l", _
 	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
 	 1, _
 	 FB_SYMBTYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE
+
+'' fb_HEXEx_l ( byval number as longint, byval digits as integer ) as string
+data @"hex","fb_HEXEx_l", _
+	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 2, _
+	 FB_SYMBTYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_WstrHex_b ( byval number as byte ) as wstring
 data @"whex","fb_WstrHex_b", _
@@ -782,12 +798,28 @@ data @"whex","fb_WstrHex_i", _
 	 1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
+'' fb_WstrHexEx_i ( byval number as integer, byval digits as integer ) as wstring
+data @"whex","fb_WstrHexEx_i", _
+	 FB_SYMBTYPE_WCHAR,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 2, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
 '' fb_WstrHex_l ( byval number as longint ) as wstring
 data @"whex","fb_WstrHex_l", _
 	 FB_SYMBTYPE_WCHAR,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
 	 1, _
 	 FB_SYMBTYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE
+
+'' fb_WstrHexEx_l ( byval number as longint, byval digits as integer ) as wstring
+data @"whex","fb_WstrHexEx_l", _
+	 FB_SYMBTYPE_WCHAR,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 2, _
+	 FB_SYMBTYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_OCT_b ( byval number as byte ) as string
 data @"oct","fb_OCT_b", _
@@ -810,12 +842,28 @@ data @"oct","fb_OCT_i", _
 	 1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
+'' fb_OCTEx_i ( byval number as integer, byval digits as integer ) as string
+data @"oct","fb_OCTEx_i", _
+	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 2, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
 '' fb_OCT_l ( byval number as longint ) as string
 data @"oct","fb_OCT_l", _
 	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
 	 1, _
 	 FB_SYMBTYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE
+
+'' fb_OCTEx_l ( byval number as longint, byval digits as integer ) as string
+data @"oct","fb_OCTEx_l", _
+	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 2, _
+	 FB_SYMBTYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_WstrOct_b ( byval number as byte ) as wstring
 data @"woct","fb_WstrOct_b", _
@@ -838,12 +886,28 @@ data @"woct","fb_WstrOct_i", _
 	 1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
+'' fb_WstrOctEx_i ( byval number as integer, byval digits as integer ) as wstring
+data @"woct","fb_WstrOctEx_i", _
+	 FB_SYMBTYPE_WCHAR,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 2, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
 '' fb_WstrOct_l ( byval number as longint ) as wstring
 data @"woct","fb_WstrOct_l", _
 	 FB_SYMBTYPE_WCHAR,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
 	 1, _
 	 FB_SYMBTYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE
+
+'' fb_WstrOctEx_l ( byval number as longint, byval digits as integer ) as wstring
+data @"woct","fb_WstrOctEx_l", _
+	 FB_SYMBTYPE_WCHAR,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 2, _
+	 FB_SYMBTYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_BIN_b ( byval number as byte ) as string
 data @"bin","fb_BIN_b", _
@@ -866,12 +930,28 @@ data @"bin","fb_BIN_i", _
 	 1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
+'' fb_BINEx_i ( byval number as integer, byval digits as integer ) as string
+data @"bin","fb_BINEx_i", _
+	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 2, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
 '' fb_BIN_l ( byval number as longint ) as string
 data @"bin","fb_BIN_l", _
 	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
 	 1, _
 	 FB_SYMBTYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE
+
+'' fb_BINEx_l ( byval number as longint, byval digits as integer ) as string
+data @"bin","fb_BINEx_l", _
+	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 2, _
+	 FB_SYMBTYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_WstrBin_b ( byval number as byte ) as wstring
 data @"wbin","fb_WstrBin_b", _
@@ -894,12 +974,28 @@ data @"wbin","fb_WstrBin_i", _
 	 1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
+'' fb_WstrBinEx_i ( byval number as integer, byval digits as integer ) as wstring
+data @"wbin","fb_WstrBinEx_i", _
+	 FB_SYMBTYPE_WCHAR,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 2, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
 '' fb_WstrBin_l ( byval number as longint ) as wstring
 data @"wbin","fb_WstrBin_l", _
 	 FB_SYMBTYPE_WCHAR,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
 	 1, _
 	 FB_SYMBTYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE
+
+'' fb_WstrBinEx_l ( byval number as longint, byval digits as integer ) as wstring
+data @"wbin","fb_WstrBinEx_l", _
+	 FB_SYMBTYPE_WCHAR,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 2, _
+	 FB_SYMBTYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_MKD ( byval number as double ) as string
 data @"mkd","fb_MKD", _
