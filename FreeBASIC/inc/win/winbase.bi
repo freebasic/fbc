@@ -1287,6 +1287,7 @@ declare function GetFileTime alias "GetFileTime" (byval as HANDLE, byval as LPFI
 declare function GetFileType alias "GetFileType" (byval as HANDLE) as DWORD
 declare function GetHandleInformation alias "GetHandleInformation" (byval as HANDLE, byval as PDWORD) as BOOL
 declare function GetKernelObjectSecurity alias "GetKernelObjectSecurity" (byval as HANDLE, byval as SECURITY_INFORMATION, byval as PSECURITY_DESCRIPTOR, byval as DWORD, byval as PDWORD) as BOOL
+declare function GetLastError alias "GetLastError" () as DWORD
 declare function GetLengthSid alias "GetLengthSid" (byval as PSID) as DWORD
 declare sub GetLocalTime alias "GetLocalTime" (byval as LPSYSTEMTIME)
 declare function GetLogicalDrives alias "GetLogicalDrives" () as DWORD
