@@ -17,6 +17,7 @@ Version 0.16 Beta:
 - bitfields couldn't be used in SELECT CASE (v1c)
 - address of null pointers couldn't be taken if sources were compiled with null-pointer checking on (-exx) (v1c)
 - SETDATE string to integer conversion was incorrect, making it always fail (DrV)
+- the default type in PEEK and POKE should be unsigned byte, not signed (v1c)
 
 
 Version 0.15 Beta:
