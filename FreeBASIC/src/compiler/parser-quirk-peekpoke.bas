@@ -55,7 +55,7 @@ function cPokeStmt as integer
 		hMatchCOMMA( )
 
 	else
-		poketype = IR_DATATYPE_BYTE
+		poketype = IR_DATATYPE_UBYTE
 		subtype  = NULL
 	end if
 
@@ -119,7 +119,7 @@ function cPeekFunct( byref funcexpr as ASTNODE ptr ) as integer
 		hMatchCOMMA( )
 
 	else
-		peektype = IR_DATATYPE_BYTE
+		peektype = IR_DATATYPE_UBYTE
 		subtype = NULL
 	end if
 
@@ -144,11 +144,6 @@ function cPeekFunct( byref funcexpr as ASTNODE ptr ) as integer
 	end select
 
     funcexpr = astNewPTR( 0, expr, peektype, subtype )
-
-	'' hack! to handle loading to x86 regs DI and SI, as they don't have byte versions &%@#&
-    if( peektype = IR_DATATYPE_BYTE ) then
-    	funcexpr = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, funcexpr )
-	end if
 
     function = TRUE
 
