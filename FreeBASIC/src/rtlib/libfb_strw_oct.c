@@ -18,7 +18,7 @@
  */
 
 /*
- * strw_oct.c -- octw$ routines
+ * strw_oct.c -- woct$ routines
  *
  * chng: oct/2004 written [v1ctor]
  *
@@ -27,17 +27,102 @@
 #include "fb.h"
 
 /*:::::*/
-static FB_WCHAR *hOCT ( unsigned int num, int len )
+static FB_WCHAR *hFillDigits( FB_WCHAR *buf, int digits, int totdigs, int cnt )
 {
-	FB_WCHAR 	*dst;
+	if( digits > 0 )
+	{
+		digits -= totdigs - cnt;
+		while( digits > 0 )
+		{
+			*buf++ = _LC('0');
+			--digits;
+		}
+	}
+
+	return buf;
+}
+
+/*:::::*/
+static FB_WCHAR *hOCT ( unsigned int num, int len, int digits )
+{
+	FB_WCHAR *dst, *buf;
+	int	i, totdigs, rem;
+
+	totdigs = ((len * 8) / 3) + 1;
+
+	if( digits > 0 )
+	{
+		if( digits < totdigs )
+			totdigs = digits;
+		else if( digits > totdigs )
+			digits = totdigs;
+	}
 
 	/* alloc temp string */
-    dst = fb_wstr_AllocTemp( len * 4 );
-	if( dst != NULL )
+    dst = fb_wstr_AllocTemp( totdigs );
+	if( dst == NULL )
+		return NULL;
+
+	/* convert */
+	buf = dst;
+
+	if( num == 0 )
 	{
-        /* convert */
-        FB_WSTR_FROM_UINT_OCT( dst, num );
+		if( digits <= 0 )
+			digits = 1;
+
+		while( digits-- )
+			*buf++ = _LC('0');
 	}
+	else
+	{
+		/* too small? */
+		if( totdigs < 3 )
+		{
+			rem = 0;
+			num <<= ((sizeof(int)*8) - totdigs * 3);
+		}
+		else
+		{
+			rem = totdigs % 3;
+			num <<= ((sizeof(int)*8) - ((totdigs-(rem == 0?0:1)) * 3 + rem));
+		}
+
+		/* remainder? */
+		if( rem > 0 )
+		{
+			if( num > (0xFFFFFFFFUL >> rem) )
+			{
+				buf = hFillDigits( buf, digits, totdigs, 1 );
+				*buf++ = _LC('0') + ((num & ~(0xFFFFFFFFUL >> rem)) >> (sizeof(int)*8-rem));
+			}
+
+			num <<= rem;
+			i = 1;
+		}
+		else
+			i = 0;
+
+		/* check for 0's at msb? */
+		if( buf == dst )
+		{
+			for( ; i < totdigs; i++, num <<= 3 )
+				if( num > 0x1FFFFFFFUL )
+					break;
+
+			buf = hFillDigits( buf, digits, totdigs, i );
+		}
+
+		/* convert.. */
+		for( ; i < totdigs; i++, num <<= 3 )
+			if( num > 0x1FFFFFFFUL )
+				*buf++ = _LC('0') + ((num & 0xE0000000UL) >> (sizeof(int)*8-3));
+			else
+				*buf++ = _LC('0');
+	}
+
+	/* add null-term */
+	*buf = _LC('\0');
 
 	return dst;
 }
@@ -45,18 +130,24 @@ static FB_WCHAR *hOCT ( unsigned int num, int len )
 /*:::::*/
 FBCALL FB_WCHAR *fb_WstrOct_b ( unsigned char num )
 {
-	return hOCT( num, sizeof( char ) );
+	return hOCT( num, sizeof( char ), 0 );
 }
 
 /*:::::*/
 FBCALL FB_WCHAR *fb_WstrOct_s ( unsigned short num )
 {
-	return hOCT( num, sizeof( short ) );
+	return hOCT( num, sizeof( short ), 0 );
 }
 
 /*:::::*/
 FBCALL FB_WCHAR *fb_WstrOct_i ( unsigned int num )
 {
-	return hOCT( num, sizeof( int ) );
+	return hOCT( num, sizeof( int ), 0 );
+}
+
+/*:::::*/
+FBCALL FB_WCHAR *fb_WstrOctEx_i ( unsigned int num, int digits )
+{
+	return hOCT( num, sizeof( int ), digits );
 }
 

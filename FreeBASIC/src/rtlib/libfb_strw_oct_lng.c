@@ -27,18 +27,110 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL FB_WCHAR *fb_WstrOct_l ( unsigned long long num )
+static FB_WCHAR *hFillDigits( FB_WCHAR *buf, int digits, int totdigs, int cnt )
 {
-	FB_WCHAR *dst;
-
-	/* alloc temp string */
-    dst = fb_wstr_AllocTemp( sizeof( long long ) * 4 );
-	if( dst != NULL )
+	if( digits > 0 )
 	{
-        /* convert */
-        FB_WSTR_FROM_UINT64_OCT( dst, num );
+		digits -= totdigs - cnt;
+		while( digits > 0 )
+		{
+			*buf++ = _LC('0');
+			--digits;
+		}
 	}
 
+	return buf;
+}
+
+/*:::::*/
+FBCALL FB_WCHAR *fb_WstrOctEx_l ( unsigned long long num, int digits )
+{
+	FB_WCHAR *dst, *buf;
+	int	i, totdigs, rem;
+
+	totdigs = ((sizeof(long long)*8) / 3) + 1;
+
+	if( digits > 0 )
+	{
+		if( digits < totdigs )
+			totdigs = digits;
+		else if( digits > totdigs )
+			digits = totdigs;
+	}
+
+	/* alloc temp string */
+    dst = fb_wstr_AllocTemp( totdigs );
+	if( dst == NULL )
+		return NULL;
+
+	/* convert */
+	buf = dst;
+
+	if( num == 0 )
+	{
+		if( digits <= 0 )
+			digits = 1;
+
+		while( digits-- )
+			*buf++ = _LC('0');
+	}
+	else
+	{
+		/* too small? */
+		if( totdigs < 3 )
+		{
+			rem = 0;
+			num <<= ((sizeof(long long)*8) - totdigs * 3);
+		}
+		else
+		{
+			rem = totdigs % 3;
+			num <<= ((sizeof(long long)*8) - ((totdigs-(rem == 0?0:1)) * 3 + rem));
+		}
+
+		/* remainder? */
+		if( rem > 0 )
+		{
+			if( num > (0xFFFFFFFFFFFFFFFFULL >> rem) )
+			{
+				buf = hFillDigits( buf, digits, totdigs, 1 );
+				*buf++ = _LC('0') + ((num & ~(0xFFFFFFFFFFFFFFFFULL >> rem))
+								  >> (sizeof(long long)*8-rem));
+			}
+
+			num <<= rem;
+			i = 1;
+		}
+		else
+			i = 0;
+
+		/* check for 0's at msb? */
+		if( buf == dst )
+		{
+			for( ; i < totdigs; i++, num <<= 3 )
+				if( num > 0x1FFFFFFFFFFFFFFFULL )
+					break;
+
+			buf = hFillDigits( buf, digits, totdigs, i );
+		}
+
+		/* convert.. */
+		for( ; i < totdigs; i++, num <<= 3 )
+			if( num > 0x1FFFFFFFFFFFFFFFULL )
+				*buf++ = _LC('0') + ((num & 0xE000000000000000ULL) >> (sizeof(long long)*8-3));
+			else
+				*buf++ = _LC('0');
+	}
+
+	/* add null-term */
+	*buf = _LC('\0');
+
 	return dst;
+}
+
+/*:::::*/
+FBCALL FB_WCHAR *fb_WstrOct_l ( unsigned long long num )
+{
+	return fb_WstrOctEx_l( num, 0 );
 }
 
