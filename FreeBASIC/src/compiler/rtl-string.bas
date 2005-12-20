@@ -867,21 +867,21 @@ data @"oct","fb_OCTEx_l", _
 
 '' fb_WstrOct_b ( byval number as byte ) as wstring
 data @"woct","fb_WstrOct_b", _
-	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 FB_SYMBTYPE_WCHAR,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
 	 1, _
 	 FB_SYMBTYPE_BYTE,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_WstrOct_s ( byval number as short ) as wstring
 data @"woct","fb_WstrOct_s", _
-	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 FB_SYMBTYPE_WCHAR,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
 	 1, _
 	 FB_SYMBTYPE_SHORT,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_WstrOct_i ( byval number as integer ) as wstring
 data @"woct","fb_WstrOct_i", _
-	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 FB_SYMBTYPE_WCHAR,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
 	 1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
