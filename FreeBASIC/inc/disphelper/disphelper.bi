@@ -96,35 +96,35 @@ declare sub dhUninitialize cdecl alias "dhUninitialize" (byval bUninitializeCOM 
 
 
 #define FOR_EACH0(objName, pDisp, szMember) _
-	escope 																						:_
+	scope 																						:_
 		dim as IEnumVARIANT ptr xx_pEnum_xx = NULL    											:_
 		DISPATCH_OBJ(objName)                													:_
 		if (SUCCEEDED(dhEnumBegin(@xx_pEnum_xx, pDisp, szMember))) then 						:_
 			do while(dhEnumNextObject(xx_pEnum_xx, @objName) = NOERROR)
 
 #define FOR_EACH1(objName, pDisp, szMember, arg1) _
-	escope 																						:_
+	scope 																						:_
 		dim as IEnumVARIANT ptr xx_pEnum_xx = NULL          									:_
 		DISPATCH_OBJ(objName)                      												:_
 		if (SUCCEEDED(dhEnumBegin(@xx_pEnum_xx, pDisp, szMember, arg1))) then 					:_
 			do while(dhEnumNextObject(xx_pEnum_xx, @objName) = NOERROR)
 
 #define FOR_EACH2(objName, pDisp, szMember, arg1, arg2) _
-	escope 																						:_
+	scope 																						:_
 		dim as IEnumVARIANT ptr xx_pEnum_xx = NULL          									:_
 		DISPATCH_OBJ(objName)                      												:_
 		if (SUCCEEDED(dhEnumBegin(@xx_pEnum_xx, pDisp, szMember, arg1, arg2))) then 			:_
 			do while(dhEnumNextObject(xx_pEnum_xx, @objName) = NOERROR)
 
 #define FOR_EACH3(objName, pDisp, szMember, arg1, arg2, arg3) _
-	escope 																						:_
+	scope 																						:_
 		dim as IEnumVARIANT ptr xx_pEnum_xx = NULL          									:_
 		DISPATCH_OBJ(objName)                      												:_
 		if (SUCCEEDED(dhEnumBegin(@xx_pEnum_xx, pDisp, szMember, arg1, arg2, arg3))) then		:_
 			do while(dhEnumNextObject(xx_pEnum_xx, @objName) = NOERROR)
 
 #define FOR_EACH4(objName, pDisp, szMember, arg1, arg2, arg3, arg4) _
-	escope 																						:_
+	scope 																						:_
 		dim as IEnumVARIANT ptr xx_pEnum_xx = NULL          									:_
 		DISPATCH_OBJ(objName)                      												:_
 		if (SUCCEEDED(dhEnumBegin(@xx_pEnum_xx, pDisp, szMember, arg1, arg2, arg3, arg4))) then :_
