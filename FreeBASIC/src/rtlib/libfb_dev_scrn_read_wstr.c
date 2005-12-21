@@ -94,6 +94,6 @@ void fb_DevScrnInit_ReadWstr( void )
     if( FB_HANDLE_SCREEN->hooks->pfnReadWstr == NULL )
     {
     	FB_HANDLE_SCREEN->hooks->pfnReadWstr =
-    			(fb_ConsoleIsRedirected( TRUE )? hReadFromStdin : fb_DevScrnReadWstr);
+    			(fb_IsRedirected( TRUE )? hReadFromStdin : fb_DevScrnReadWstr);
     }
 }

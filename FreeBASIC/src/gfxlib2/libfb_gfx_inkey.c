@@ -147,3 +147,10 @@ FBSTRING *fb_GfxInkey(void)
 
 	return &fb_strNullDesc;
 }
+
+/*:::::*/
+int fb_GfxIsRedir(int is_input)
+{
+	return FALSE;
+}
+

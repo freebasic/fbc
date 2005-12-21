@@ -304,6 +304,7 @@ int fb_GfxLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem, int ad
 int fb_GfxLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars, int addquestion, int addnewline );
 int fb_GfxReadXY( int col, int row, int colorflag );
 void fb_GfxSleep( int msecs );
+int fb_GfxIsRedir( int is_input );
 
 /** Returns TRUE if application is in graphics mode.
  *

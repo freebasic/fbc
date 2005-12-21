@@ -219,6 +219,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         fb_hooks.lineinputwproc = fb_GfxLineInputWstr;
         fb_hooks.readxyproc = fb_GfxReadXY;
         fb_hooks.sleepproc = fb_GfxSleep;
+        fb_hooks.isredirproc = fb_GfxIsRedir;
         fb_mode = (MODE *)calloc(1, sizeof(MODE));
         break;
     }

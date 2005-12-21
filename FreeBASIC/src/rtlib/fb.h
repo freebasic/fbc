@@ -851,7 +851,6 @@ FBCALL void         fb_WriteFixString   ( int fnum, char *s, int mask );
        int          fb_ConsoleGetBotRow ( void );
        void         fb_ConsoleSetTopBotRows( int top, int bot );
 
-       int 			fb_ConsoleIsRedirected( int is_input );
 
 
 
@@ -1495,6 +1494,10 @@ FBCALL int          fb_SleepEx          ( int msecs, int kind );
        void         fb_ConsoleSleep     ( int msecs );
 typedef void        (*FB_SLEEPPROC)     ( int msecs );
 
+FBCALL int 			fb_IsRedirected		( int is_input );
+       int 			fb_ConsoleIsRedirected( int is_input );
+typedef int         (*FB_ISREDIRPROC)  	( int is_input );
+
 typedef struct _FB_HOOKSTB {
     FB_INKEYPROC    		inkeyproc;
     FB_GETKEYPROC   		getkeyproc;
@@ -1520,6 +1523,7 @@ typedef struct _FB_HOOKSTB {
     FB_LINEINPUTWPROC 		lineinputwproc;
     FB_READXYPROC   		readxyproc;
     FB_SLEEPPROC    		sleepproc;
+    FB_ISREDIRPROC			isredirproc;
 } FB_HOOKSTB;
 
 extern FB_HOOKSTB   fb_hooks;
