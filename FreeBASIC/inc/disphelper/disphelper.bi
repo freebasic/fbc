@@ -136,11 +136,12 @@ declare sub dhUninitialize cdecl alias "dhUninitialize" (byval bUninitializeCOM 
 		else 							:_
 			do while 0
 
-#define NEXT_(objName) SAFE_RELEASE(objName) _
-			loop					:_
-		end if 						:_
-		SAFE_RELEASE(objName) 		:_
-		SAFE_RELEASE(xx_pEnum_xx) 	:_
+#define NEXT_(objName) 					_
+				SAFE_RELEASE(objName) 	:_
+			loop						:_
+		end if 							:_
+		SAFE_RELEASE(objName) 			:_
+		SAFE_RELEASE(xx_pEnum_xx) 		:_
 	end scope
 
 
