@@ -545,9 +545,9 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 
 #define symbGetProcTailArg(f) f->proc.argtb.tail
 
-#define symbGetProcCallback(f) f->proc.rtlcallback
+#define symbGetProcCallback(f) f->proc.rtl.callback
 
-#define symbSetProcCallback(f,cb) f->proc.rtlcallback = cb
+#define symbSetProcCallback(f,cb) f->proc.rtl.callback = cb
 
 #define symbGetProcIsRTL(f) f->proc.isrtl
 

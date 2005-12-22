@@ -265,7 +265,7 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 
     dim as integer args, p, params, modeTB(0 to FB_MAXPROCARGS-1)
     dim as ASTNODE ptr procexpr, exprTB(0 to FB_MAXPROCARGS-1)
-    dim as FBSYMBOL ptr arg
+    dim as FBSYMBOL ptr arg, ovlproc
 
 	function = NULL
 
@@ -325,11 +325,13 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 	end if
 
 	'' try finding the closest overloaded proc
-	proc = symbFindClosestOvlProc( proc, params, exprTB(), modeTB() )
+	ovlproc = symbFindClosestOvlProc( proc, params, exprTB(), modeTB() )
 
-	if( proc = NULL ) then
-		hReportError( FB_ERRMSG_AMBIGUOUSCALLTOPROC )
+	if( ovlproc = NULL ) then
+		hReportParamError( proc, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
 		exit function
+	else
+		proc = ovlproc
 	end if
 
 	procexpr = astNewFUNCT( proc, ptrexpr )

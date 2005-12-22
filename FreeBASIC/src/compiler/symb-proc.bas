@@ -458,7 +458,7 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 	proc->proc.mode			= mode
 	proc->proc.realtype		= realtype
 
-	proc->proc.rtlcallback 	= NULL
+	proc->proc.rtl.callback = NULL
 
 	if( libname <> NULL ) then
 		if( len( *libname ) > 0 ) then
@@ -832,19 +832,40 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 			'' handle special cases..
 			select case as const pdtype
 			case IR_DATATYPE_CHAR
-				if( adtype = IR_DATATYPE_POINTER + IR_DATATYPE_CHAR ) then
+				select case adtype
+				case IR_DATATYPE_POINTER + IR_DATATYPE_CHAR
 					return FB_OVLPROC_FULLMATCH
-				end if
+				case IR_DATATYPE_POINTER + IR_DATATYPE_WCHAR
+					return FB_OVLPROC_HALFMATCH
+				end select
 
 			case IR_DATATYPE_WCHAR
-				if( adtype = IR_DATATYPE_POINTER + IR_DATATYPE_WCHAR ) then
+				select case adtype
+				case IR_DATATYPE_POINTER + IR_DATATYPE_WCHAR
 					return FB_OVLPROC_FULLMATCH
-				end if
+				case IR_DATATYPE_POINTER + IR_DATATYPE_CHAR
+					return FB_OVLPROC_HALFMATCH
+				end select
 
 			case IR_DATATYPE_BITFIELD, IR_DATATYPE_ENUM
 				pdtype = irRemapType( pdtype, psubtype )
 
 			end select
+
+			'' check pointers..
+			if( adtype >= IR_DATATYPE_POINTER ) then
+				'' not a pointer param?
+				if( pdtype < IR_DATATYPE_POINTER ) then
+					'' not a numeric constant?
+					if( not astIsCONST( pexpr ) ) then
+						return 0
+					end if
+					'' not 0 (NULL)?
+					if( astGetValInt( pexpr ) <> 0 ) then
+						return 0
+					end if
+				end if
+			end if
 
 			return FB_OVLPROC_HALFMATCH - abs( adtype - pdtype )
 
@@ -856,16 +877,16 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 
 			return FB_OVLPROC_HALFMATCH - abs( adtype - pdtype )
 
-		'' string? only if it's a zstring ptr arg
+		'' string? only if it's a w|zstring ptr arg
 		case IR_DATACLASS_STRING
-			'' note: no wstring auto-coercion as that would cause ambiguity
-			''		 with procs where the difference is only a string and a
-			''		 wstring ptr param
-			if( adtype = IR_DATATYPE_POINTER+IR_DATATYPE_CHAR ) then
+			select case adtype
+			case IR_DATATYPE_POINTER + IR_DATATYPE_CHAR
 				return FB_OVLPROC_FULLMATCH
-			else
+			case IR_DATATYPE_POINTER + IR_DATATYPE_WCHAR
+				return FB_OVLPROC_HALFMATCH
+			case else
 				return 0
-			end if
+			end select
 
 		'' refuse anything else
 		case else
@@ -904,20 +925,20 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 	case IR_DATACLASS_STRING
 
 		select case pdclass
-		'' okay if it's another var- or fixed-len string
+		'' okay if it's a fixed-len string
 		case IR_DATACLASS_STRING
-			return FB_OVLPROC_HALFMATCH - abs( adtype - pdtype )
+			return FB_OVLPROC_FULLMATCH
 
-		'' integer only if it's a zstring
+		'' integer only if it's a w|zstring
 		case IR_DATACLASS_INTEGER
-			'' note: no wstring auto-coercion as that would cause ambiguity
-			''		 if procs where the difference is only a string and a
-			''		 wstring ptr param
-			if( pdtype = IR_DATATYPE_CHAR ) then
+			select case pdtype
+			case IR_DATATYPE_CHAR
 				return FB_OVLPROC_FULLMATCH
-			else
+			case IR_DATATYPE_WCHAR
+				return FB_OVLPROC_HALFMATCH
+			case else
 				return 0
-			end if
+			end select
 
 		'' refuse anything else
 		case else

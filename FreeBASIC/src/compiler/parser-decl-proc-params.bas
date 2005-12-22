@@ -56,13 +56,11 @@ function cArguments( byval proc as FBSYMBOL ptr, _
 end function
 
 '':::::
-private sub hReportParamError( byval argnum as integer, _
-							   byval id as zstring ptr )
+private sub hParamError( byval proc as FBSYMBOL ptr, _
+						 byval argnum as integer, _
+						 byval argid as zstring ptr )
 
-	hReportErrorEx( FB_ERRMSG_ILLEGALPARAMSPECAT, "at parameter " + _
-												  str( argnum+1 ) + _
-												  ": " + _
-												  *id )
+	hReportParamError( proc, argnum+1, argid, FB_ERRMSG_ILLEGALPARAMSPECAT )
 
 end sub
 
@@ -89,7 +87,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 		'' not cdecl or is it the first arg?
 		if( (procmode <> FB_FUNCMODE_CDECL) or _
 			(symbGetProcArgs( proc ) = 0) ) then
-			hReportParamError( symbGetProcArgs( proc ), *lexGetText( ) )
+			hParamError( proc, symbGetProcArgs( proc ), *lexGetText( ) )
 			exit function
 		end if
 
@@ -119,14 +117,14 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 		if( not isproto ) then
 			'' anything but keywords will be catch by parser (could be a ')' too)
 			if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
-				hReportParamError( symbGetProcArgs( proc ), *lexGetText( ) )
+				hParamError( proc, symbGetProcArgs( proc ), *lexGetText( ) )
 				exit function
 			end if
 		end if
 
 		if(	lexGetClass( ) <> FB_TKCLASS_KEYWORD ) then
 			if( symbGetProcArgs( proc ) > 0 ) then
-				hReportParamError( symbGetProcArgs( proc ), *lexGetText( ) )
+				hParamError( proc, symbGetProcArgs( proc ), *lexGetText( ) )
 			end if
 			exit function
 		end if
@@ -157,7 +155,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 		'' ('('')')
 		if( hMatch( CHAR_LPRNT ) ) then
 			if( (mode <> INVALID) or (not hMatch( CHAR_RPRNT )) ) then
-				hReportParamError( symbGetProcArgs( proc ), *pid )
+				hParamError( proc, symbGetProcArgs( proc ), *pid )
 				exit function
 			end if
 
@@ -186,13 +184,13 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     '' (AS SymbolType)?
     if( hMatch( FB_TK_AS ) ) then
     	if( atype <> INVALID ) then
-    		hReportParamError( symbGetProcArgs( proc ), *pid )
+    		hParamError( proc, symbGetProcArgs( proc ), *pid )
     		exit function
     	end if
 
     	arglevel += 1
     	if( not cSymbolType( atype, subtype, alen, ptrcnt ) ) then
-    		hReportParamError( symbGetProcArgs( proc ), *pid )
+    		hParamError( proc, symbGetProcArgs( proc ), *pid )
     		arglevel -= 1
     		exit function
     	end if
@@ -202,7 +200,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 
     else
     	if( not readid ) then
-    		hReportParamError( symbGetProcArgs( proc ), "" )
+    		hParamError( proc, symbGetProcArgs( proc ), "" )
     		exit function
     	end if
 
@@ -221,13 +219,13 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     select case as const atype
     '' can't be a fixed-len string
     case FB_SYMBTYPE_FIXSTR, FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR
-    	hReportParamError( symbGetProcArgs( proc ), *pid )
+    	hParamError( proc, symbGetProcArgs( proc ), *pid )
     	exit function
 
 	'' can't be as ANY on non-prototypes
     case FB_SYMBTYPE_VOID
     	if( not isproto ) then
-    		hReportParamError( symbGetProcArgs( proc ), *pid )
+    		hParamError( proc, symbGetProcArgs( proc ), *pid )
     		exit function
     	end if
     end select
@@ -243,7 +241,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     	if( isproto ) then
     		select case atype
     		case FB_SYMBTYPE_VOID
-    			hReportParamError( symbGetProcArgs( proc ), *pid )
+    			hParamError( proc, symbGetProcArgs( proc ), *pid )
     			exit function
     		end select
     	end if
@@ -259,7 +257,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     	'' contains a period?
     	if( dotpos > 0 ) then
     		if( atype = FB_SYMBTYPE_USERDEF ) then
-    			hReportParamError( symbGetProcArgs( proc ), *pid )
+    			hParamError( proc, symbGetProcArgs( proc ), *pid )
     			exit function
     		end if
     	end if
@@ -270,7 +268,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 
     	'' not byval or byref?
     	if( (amode <> FB_ARGMODE_BYVAL) and (amode <> FB_ARGMODE_BYREF) ) then
- 	   		hReportParamError( symbGetProcArgs( proc ), *pid )
+ 	   		hParamError( proc, symbGetProcArgs( proc ), *pid )
     		exit function
     	end if
 
@@ -281,7 +279,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     	case IR_DATACLASS_INTEGER, IR_DATACLASS_FPOINT, IR_DATACLASS_STRING
 
     	case else
- 	   		hReportParamError( symbGetProcArgs( proc ), *pid )
+ 	   		hParamError( proc, symbGetProcArgs( proc ), *pid )
     		exit function
     	end select
 

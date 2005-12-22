@@ -770,6 +770,10 @@ type FB_PROCDBG
 	incfile			as integer
 end type
 
+type FB_PROCRTL
+	callback		as FBRTLCALLBACK
+end type
+
 type FBS_PROC
 	mode			as FBFUNCMODE_ENUM			'' calling convention (STDCALL, PASCAL, C)
 	realtype		as integer					'' used with STRING and UDT functions
@@ -782,7 +786,7 @@ type FBS_PROC
 	isrtl			as byte
 	doerrorcheck	as byte
 
-	rtlcallback		as FBRTLCALLBACK
+	rtl				as FB_PROCRTL
 	ovl				as FB_PROCOVL				'' overloading
 	stk				as FB_PROCSTK				'' to keep track of the stack frame
 

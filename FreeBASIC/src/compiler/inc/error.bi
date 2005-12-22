@@ -150,5 +150,13 @@ declare function 	hGetErrorCnt 			( ) as integer
 declare sub 		hReportWarning			( byval msgnum as integer, _
 											  byval msgex as string = "" )
 
+declare sub 		hReportParamError		( byval proc as any ptr, _
+					   						  byval pnum as integer, _
+					   						  byval pid as zstring ptr, _
+					   						  byval msgnum as integer )
 
+declare sub 		hReportParamWarning		( byval proc as any ptr, _
+					   						  byval pnum as integer, _
+					   						  byval pid as zstring ptr, _
+					   						  byval msgnum as integer )
 #endif ''__ERROR_BI__

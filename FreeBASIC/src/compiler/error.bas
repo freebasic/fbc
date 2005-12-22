@@ -281,3 +281,96 @@ sub hReportWarning( byval msgnum as integer, _
 
 end sub
 
+
+'':::::
+private function hReportMakeDesc( byval proc as FBSYMBOL ptr, _
+								  byval pnum as integer, _
+								  byval pid as zstring ptr _
+								) as zstring ptr
+
+    static as zstring * FB_MAXNAMELEN*2+32+1 desc
+
+	if( pnum > 0 ) then
+		desc = "at parameter " + str( pnum )
+		if( pid = NULL ) then
+			if( proc <> NULL ) then
+				dim as FBSYMBOL ptr arg = symbGetProcHeadArg( proc )
+				dim as integer cnt = 1
+
+				do while( arg <> NULL )
+					if( cnt = pnum ) then
+						exit do
+					end if
+					cnt += 1
+					arg = arg->next
+				loop
+
+				if( arg <> NULL ) then
+					pid = symbGetName( arg )
+				end if
+			end if
+		end if
+
+    	if( pid <> NULL ) then
+			desc += " ("
+			desc += *pid
+			desc += ")"
+		end if
+
+	else
+		desc = ""
+	end if
+
+	if( proc <> NULL ) then
+		dim as integer showname = TRUE
+
+		'' part of the rtlib?
+		if( symbGetProcIsRTL( proc ) ) then
+			'' any name set?
+			if( symbGetOrgName( proc ) <> NULL ) then
+				'' starts with "FB_"?
+				if( left( *symbGetOrgName( proc ), 3 ) = "FB_" ) then
+					showname = FALSE
+				end if
+			else
+				showname = FALSE
+			end if
+		end if
+
+		if( showname ) then
+			if( pnum > 0 ) then
+				desc += " of "
+			end if
+			if( len( *symbGetOrgName( proc ) ) > 0 ) then
+				desc += *symbGetOrgName( proc )
+			else
+				desc += *symbGetName( proc )
+			end if
+			desc += "()"
+		end if
+	end if
+
+	function = @desc
+
+end function
+
+'':::::
+sub hReportParamError( byval proc as any ptr, _
+					   byval pnum as integer, _
+					   byval pid as zstring ptr, _
+					   byval msgnum as integer )
+
+	hReportErrorEx( msgnum, *hReportMakeDesc( proc, pnum, pid ) )
+
+end sub
+
+'':::::
+sub hReportParamWarning( byval proc as any ptr, _
+					   	 byval pnum as integer, _
+					   	 byval pid as zstring ptr, _
+						 byval msgnum as integer )
+
+	hReportWarning( msgnum, *hReportMakeDesc( proc, pnum, pid ) )
+
+end sub
+

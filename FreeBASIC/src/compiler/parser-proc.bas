@@ -30,10 +30,11 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-private sub hReportParamError( byval argnum as integer, _
-							   byval errnum as integer = FB_ERRMSG_PARAMTYPEMISMATCHAT )
+private sub hParamError( byval proc as FBSYMBOL ptr, _
+						 byval argnum as integer, _
+						 byval errnum as integer = FB_ERRMSG_PARAMTYPEMISMATCHAT )
 
-	hReportErrorEx( errnum, "at parameter: " + str( argnum ) )
+	hReportParamError( proc, argnum, NULL, errnum )
 
 end sub
 
@@ -81,18 +82,18 @@ private function hCheckPrototype( byval proto as FBSYMBOL ptr, _
     	'' check if types don't conflit
     	else
     		if( proc_arg->typ <> typ ) then
-                hReportParamError( argc )
+                hParamError( proc, argc )
                 exit function
 
             elseif( proc_arg->subtype <> symbGetSubtype( proto_arg ) ) then
-                hReportParamError( argc )
+                hParamError( proc, argc )
                 exit function
     		end if
     	end if
 
     	'' and mode
     	if( proc_arg->arg.mode <> symbGetArgMode( proto_arg ) ) then
-			hReportParamError( argc )
+			hParamError( proc, argc )
             exit function
     	end if
 
@@ -137,7 +138,7 @@ private function hDeclareArgs( byval proc as FBSYMBOL ptr ) as integer static
 
 		if( arg->arg.mode <> FB_ARGMODE_VARARG ) then
 			if( symbAddArgAsVar( symbGetName( arg ), arg ) = NULL ) then
-				hReportParamError( a, FB_ERRMSG_DUPDEFINITION )
+				hParamError( proc, a, FB_ERRMSG_DUPDEFINITION )
 				exit function
 			end if
 		end if

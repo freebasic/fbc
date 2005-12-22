@@ -108,40 +108,18 @@ end function
 
 
 '':::::
-private function hReportMakeDesc( byval f as ASTNODE ptr ) as zstring ptr
-    static as zstring * FB_MAXINTNAMELEN+32+1 desc
+private sub hParamError( byval f as ASTNODE ptr, _
+					     byval msgnum as integer = FB_ERRMSG_PARAMTYPEMISMATCHAT )
 
-	desc = "at parameter " + str( f->proc.params+1 )
-	if( f->sym <> NULL ) then
-		'' not part of the rtlib?
-		if( not f->proc.isrtl ) then
-			desc += " of "
-			if( len( *symbGetOrgName( f->sym ) ) > 0 ) then
-				desc += *symbGetOrgName( f->sym )
-			else
-				desc += *symbGetName( f->sym )
-			end if
-			desc += "()"
-		end if
-	end if
-
-	function = @desc
-
-end function
-
-'':::::
-private sub hReportParamError( byval f as ASTNODE ptr, _
-							   byval msgnum as integer = FB_ERRMSG_PARAMTYPEMISMATCHAT )
-
-	hReportErrorEx( msgnum, *hReportMakeDesc( f ) )
+	hReportParamError( f->sym, f->proc.params+1, NULL, msgnum )
 
 end sub
 
 '':::::
-private sub hReportParamWarning( byval f as ASTNODE ptr, _
-								 byval msgnum as integer )
+private sub hParamWarning( byval f as ASTNODE ptr, _
+						   byval msgnum as integer )
 
-	hReportWarning( msgnum, *hReportMakeDesc( f ) )
+	hReportParamWarning( f->sym, f->proc.params+1, NULL, msgnum )
 
 end sub
 
@@ -458,7 +436,7 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 	s = astGetSymbol( p )
 
 	if( s = NULL ) then
-		hReportParamError( f )
+		hParamError( f )
 		return FALSE
 	end if
 
@@ -466,7 +444,7 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 	if( not f->proc.isrtl ) then
 		if( (adclass <> irGetDataClass( s->typ ) ) or _
 			(irGetDataSize( adtype ) <> irGetDataSize( s->typ )) ) then
-			hReportParamError( f )
+			hParamError( f )
 			return FALSE
 		end if
 	end if
@@ -474,13 +452,13 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 	if( s->class = FB_SYMBCLASS_UDTELM ) then
 		'' not an array?
 		if( symbGetArrayDimensions( s ) = 0 ) then
-			hReportParamError( f )
+			hParamError( f )
 			return FALSE
 		end if
 
 		'' address of?
 		''''''''if( astIsADDR( p ) ) then
-		''''''''	hReportParamError( f )
+		''''''''	hParamError( f )
 		''''''''	return FALSE
 		''''''''end if
 
@@ -501,7 +479,7 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 			'' not an array?
 			d = s->var.array.desc
 			if( d = NULL ) then
-				hReportParamError( f )
+				hParamError( f )
 				return FALSE
 			end if
 
@@ -685,7 +663,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 		    		if( (pdclass <> IR_DATACLASS_INTEGER) or _
 		    			(amode <> FB_ARGMODE_BYVAL) or _
 		    			(irGetDataSize( pdtype ) <> FB_POINTERSIZE) ) then
-						hReportParamError( f )
+						hParamError( f )
 						exit function
 		    		end if
 
@@ -694,20 +672,20 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 						'' const? only accept if it's NULL
 		    			if( p->defined ) then
 		    				if( p->con.val.int <> NULL ) then
-								hReportParamError( f )
+								hParamError( f )
 								exit function
 		    				end if
 
 		    			'' not a pointer?
 		    			elseif( pdtype < IR_DATATYPE_POINTER ) then
-							hReportParamError( f )
+							hParamError( f )
 							exit function
 
 		    			'' not a pointer to a zstring?
 		    			else
 							if( not astPtrCheck( IR_DATATYPE_POINTER + IR_DATATYPE_CHAR, _
 												 NULL, p ) ) then
-			        			hReportParamWarning( f, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
+			        			hParamWarning( f, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
 			    			end if
 
 		    			end if
@@ -773,7 +751,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 	if( (pmode = FB_ARGMODE_BYVAL) and (amode = FB_ARGMODE_BYREF) ) then
 		if( (pdclass <> IR_DATACLASS_INTEGER) or _
 			(irGetDataSize( pdtype ) <> FB_POINTERSIZE) ) then
-			hReportParamError( f )
+			hParamError( f )
 			exit function
 		end if
 
@@ -786,20 +764,20 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 		if( pdtype <> IR_DATATYPE_USERDEF ) then
 			'' not a proc? (can be an UDT been returned in registers)
 			if( pclass <> AST_NODECLASS_FUNCT ) then
-				hReportParamError( f )
+				hParamError( f )
 				exit function
 			end if
 
 			'' it's a proc, but was it originally returning an UDT?
 			s = p->sym
 			if( s->typ <> FB_SYMBTYPE_USERDEF ) then
-				hReportParamError( f )
+				hParamError( f )
 				exit function
 			end if
 
 			'' byref argument? can't create a tempory UDT..
 			if( amode = FB_ARGMODE_BYREF ) then
-				hReportParamError( f, FB_ERRMSG_CANTPASSUDTRESULTBYREF )
+				hParamError( f, FB_ERRMSG_CANTPASSUDTRESULTBYREF )
 				exit function
 			end if
 
@@ -817,7 +795,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 
         '' check for invalid UDT's (different subtypes)
 		if( symbGetSubtype( arg ) <> s ) then
-			hReportParamError( f )
+			hParamError( f )
 			exit function
 		end if
 
@@ -835,7 +813,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 
 	'' can't convert UDT's to other types
 	if( pdtype = IR_DATATYPE_USERDEF ) then
-		hReportParamError( f )
+		hParamError( f )
 		exit function
 	end if
 
@@ -860,7 +838,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 			end if
 
 		case else
-			hReportParamError( f )
+			hParamError( f )
 			exit function
 		end select
 
@@ -879,7 +857,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 		if( (adtype = IR_DATATYPE_ENUM) or _
 			(pdtype = IR_DATATYPE_ENUM) ) then
 			if( adclass <> pdclass ) then
-				hReportParamWarning( f, FB_WARNINGMSG_IMPLICITCONVERSION )
+				hParamWarning( f, FB_WARNINGMSG_IMPLICITCONVERSION )
 			end if
 		end if
 
@@ -888,7 +866,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 			select case as const pclass
 			case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
 			     AST_NODECLASS_FIELD, AST_NODECLASS_PTR
-				hReportParamError( f )
+				hParamError( f )
 				exit function
 			end select
 		end if
@@ -930,14 +908,14 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 
 		if( iswarning ) then
 			if( p->dtype < IR_DATATYPE_POINTER ) then
-				hReportParamWarning( f, FB_WARNINGMSG_PASSINGSCALARASPTR )
+				hParamWarning( f, FB_WARNINGMSG_PASSINGSCALARASPTR )
 			else
-				hReportParamWarning( f, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
+				hParamWarning( f, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
 			end if
 		end if
 
     elseif( p->dtype >= IR_DATATYPE_POINTER ) then
-    	hReportParamWarning( f, FB_WARNINGMSG_PASSINGPTRTOSCALAR )
+    	hParamWarning( f, FB_WARNINGMSG_PASSINGPTRTOSCALAR )
 	end if
 
     function = TRUE

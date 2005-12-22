@@ -2029,27 +2029,26 @@ function lexPeekCurrentLine( token_pos as string ) as string
 		start += p
 		p = 0
 	end if
+
 	get #env.inf.num, p + 1, buffer
 	seek #env.inf.num, old_p
 
 	'' find source line start
-	c = strptr(buffer) + start
+	c = @buffer[start]
 	token_len = 0
 	if( start > 0 ) then
-		c = c - 1
+		c -= 1
 		while( ( *c <> 10 ) and ( *c <> 13 ) and ( start > 0 ) )
 			token_len += 1
 			c -= 1
 			start -= 1
 		wend
+		c += 1
 	end if
 
 	'' build source line
 	res = ""
 	token_pos = ""
-	if( start > 0 ) then
-		c += 1
-	end if
 	while( ( *c <> 0 ) and ( *c <> 10 ) and ( *c <> 13 ) )
 		res += chr(*c)
 		if( token_len > 0 ) then
