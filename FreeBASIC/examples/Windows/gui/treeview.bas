@@ -60,7 +60,7 @@ function WndProc ( byval hWnd as HWND, _
                   			  0, 18, 160, rc.bottom-20,_ 
                   			  hWnd, 0, hInstance, 0 ) 
 
-        SendMessage( htv, TVM_SETBKCOLOR, 0, &hfff0e1 ) 
+        TreeView_SetBkColor( htv, &hfff0e1 )
 
         for i = 3 to 5 
             ico = STR( i ) 
@@ -69,7 +69,7 @@ function WndProc ( byval hWnd as HWND, _
             DestroyIcon( hico ) 
         next i 
 
-        SendMessage( htv, TVM_SETIMAGELIST, TVSIL_NORMAL, cuint( ilist ) ) 
+        TreeView_SetImageList( htv, ilist, TVSIL_NORMAL )
   
         clear tvis, 0, len(tvis)
         tvis.Item.Mask = TVIF_TEXT or TVIF_IMAGE or TVIF_SELECTEDIMAGE 
@@ -82,47 +82,47 @@ function WndProc ( byval hWnd as HWND, _
         tvis.item.iSelectedImage 	= 1 
         tvis.hInsertAfter        	= 0 
         tvis.hParent             	= TVI_ROOT 
-        hPrev                   	= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, cuint( @tvis )) )
+        hPrev                   	= TreeView_InsertItem( htv, @tvis )
 
         '-- tv.additem -> tv.item(1) | tv.children=0 
         text            	  		= "Inc" 
         tvis.item.pszText   		= strptr(text) 
         tvis.item.cchTextMax		= len(text) 
         tvis.hParent        		= hPrev 
-        hPrev            	  		= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, cuint( @tvis ) ) )
+        hPrev            	  		= TreeView_InsertItem( htv, @tvis )
 
         '-- tv.additem -> tv.item(2) | tv.children=1 
         text            			= "Win" 
         tvis.item.pszText   		= strptr(text) 
         tvis.item.cchTextMax		= len(text) 
         tvis.hParent      			= hPrev 
-        hPrev            			= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, cuint( @tvis ) ) )
+        hPrev            			= TreeView_InsertItem( htv, @tvis )
 
         '-- tv.additem -> tv.item(3) | tv.children=2 
         text            = "Gui" 
         tvis.item.pszText   		= strptr(text) 
         tvis.item.cchTextMax		= len(text) 
         tvis.hParent      			= hPrev 
-        hPrev            			= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, cuint( @tvis ) ) )
+        hPrev            			= TreeView_InsertItem( htv, @tvis )
 
         '-- tv.additem -> tv.item(4) | tv.children=0 
         text            			= "Assembler" 
         tvis.item.pszText   		= strptr(text) 
         tvis.item.cchTextMax		= len(text) 
         tvis.hParent      			= TVI_ROOT 
-        hPrev            			= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, cuint( @tvis ) ) )
+        hPrev            			= TreeView_InsertItem( htv, @tvis )
 
         '-- tv.additem -> tv.item(5) | tv.children=0 
         text            			= "Tutorials" 
         tvis.item.pszText   		= strptr(text) 
         tvis.item.cchTextMax		= len(text) 
-        hPrev            			= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, cuint( @tvis ) ) )
+        hPrev            			= TreeView_InsertItem( htv, @tvis )
 
         '-- tv.additem -> tv.item(6) | tv.children=0 
         text            			= "Object Oriented" 
         tvis.item.pszText   		= strptr(text) 
         tvis.item.cchTextMax		= len(text) 
-        hPrev            			= cptr( HTREEITEM, SendMessage( htv, TVM_INSERTITEM, 0, cuint( @tvis ) ) )
+        hPrev            			= TreeView_InsertItem( htv, @tvis )
       
 	case WM_SIZE 
         GetClientRect( hWnd, @rc )
