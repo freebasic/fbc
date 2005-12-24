@@ -33,6 +33,19 @@ sub test_intdiv
 	
 end sub
 
+sub test_shift
+	dim as longint v1
+	v1 = 2 ^ 34
+	v1 shr= 34
+	assert( v1 = 1 )
+
+	dim as ulongint v2
+	v2 = 2 ^ 34
+	v2 shr= 34
+	assert( v2 = 1 )
+end sub
+
 	test_div
 	test_intdiv
+	test_shift
 

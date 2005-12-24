@@ -18,7 +18,9 @@ Version 0.16 Beta:
 - address of null pointers couldn't be taken if sources were compiled with null-pointer checking on (-exx) (v1c)
 - SETDATE string to integer conversion was incorrect, making it always fail (DrV)
 - the default type in PEEK and POKE should be unsigned byte, not signed (v1c)
-
+- shifting 64-bit integer operands by constants above 32 were generating wrong code (v1c)
+- doing integer-only operations like \ mixing 64-bit integers and floating-point operands would generate bad code (v1c)
+- suffixes (%, #, etc) were not been preserved in argument-less #defines (v1c)
 
 Version 0.15 Beta:
 
