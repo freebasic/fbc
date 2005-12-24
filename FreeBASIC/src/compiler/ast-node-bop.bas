@@ -457,48 +457,6 @@ function astNewBOP( byval op as integer, _
     	end if
     end if
 
-	'' longints?
-	if( (ldtype = IR_DATATYPE_LONGINT) or _
-		(ldtype = IR_DATATYPE_ULONGINT) or _
-		(rdtype = IR_DATATYPE_LONGINT) or _
-		(rdtype = IR_DATATYPE_ULONGINT) ) then
-
-		'' same type?
-		if( ldtype = rdtype ) then
-			dtype = ldtype
-		else
-			dtype = irMaxDataType( ldtype, rdtype )
-			'' one of the operands is a float? it has more precedence..
-			if( dtype >= IR_DATATYPE_SINGLE ) then
-				dtype = INVALID
-
-			'' just the sign is different?
-			elseif( dtype = INVALID ) then
-				dtype = ldtype
-
-			'' is the left op the longint?
-			elseif( (ldtype = IR_DATATYPE_LONGINT) or _
-					(ldtype = IR_DATATYPE_ULONGINT) ) then
-				dtype = ldtype
-
-			'' then it's the right..
-			else
-				dtype = rdtype
-			end if
-		end if
-
-		if( dtype <> INVALID ) then
-			select case op
-			case IR_OP_INTDIV
-				return rtlMathLongintDIV( dtype, l, ldtype, r, rdtype )
-
-			case IR_OP_MOD
-				return rtlMathLongintMOD( dtype, l, ldtype, r, rdtype )
-
-			end select
-		end if
-    end if
-
     '' both zstrings? treat as string..
     if( (ldtype = IR_DATATYPE_CHAR) and _
     	(rdtype = IR_DATATYPE_CHAR) ) then
@@ -944,10 +902,27 @@ function astNewBOP( byval op as integer, _
 	end if
 
 	''::::::
-	'' handle pow
-	if( op = IR_OP_POW ) then
-		return rtlMathPow( l, r )
-	end if
+	'' handle special cases
+
+	select case op
+	case IR_OP_POW
+	    return rtlMathPow( l, r )
+
+	case IR_OP_INTDIV
+		'' longint?
+		if( (dtype = IR_DATATYPE_LONGINT) or _
+			(dtype = IR_DATATYPE_ULONGINT) ) then
+			return rtlMathLongintDIV( dtype, l, ldtype, r, rdtype )
+		end if
+
+	case IR_OP_MOD
+		'' longint?
+		if( (dtype = IR_DATATYPE_LONGINT) or _
+			(dtype = IR_DATATYPE_ULONGINT) ) then
+			return rtlMathLongintMOD( dtype, l, ldtype, r, rdtype )
+		end if
+
+	end select
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_BOP, dtype, subtype )

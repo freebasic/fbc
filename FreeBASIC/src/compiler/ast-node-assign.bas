@@ -255,18 +255,20 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 			'' constant?
 			if( r->defined ) then
 				r = astCheckConst( l->dtype, r )
-			else
-				'' x86 assumption: let the fpu do the convertion if any operand
-				''				   is a float (unless a special case must be handled)
-				if( (ldclass <> IR_DATACLASS_FPOINT) and _
-					(rdclass <> IR_DATACLASS_FPOINT) or _
-					(ldtype = IR_DATATYPE_ULONGINT) ) then
-					r = astNewCONV( INVALID, ldtype, l->subtype, r )
+				if( r = NULL ) then
+					exit function
 				end if
 			end if
 
-			if( r = NULL ) then
-				exit function
+			'' x86 assumption: let the fpu do the convertion if any operand
+			''				   is a float (unless a special case must be handled)
+			if( ((ldclass <> IR_DATACLASS_FPOINT) and _
+				 (rdclass <> IR_DATACLASS_FPOINT)) or _
+				(ldtype = IR_DATATYPE_ULONGINT) ) then
+				r = astNewCONV( INVALID, ldtype, l->subtype, r )
+				if( r = NULL ) then
+					exit function
+				end if
 			end if
 		end if
 	end if
