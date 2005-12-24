@@ -2495,20 +2495,20 @@ private sub _emitMULL( byval dvreg as IRVREG ptr, _
 	end if
 
 	'' res = low(dst) * low(src)
-	outp "mov eax, [esp+" + str$(0+ofs) + "]"
-	outp "mul dword ptr [esp+" + str$(8+ofs) + "]"
+	outp "mov eax, [esp+" + str( 0+ofs ) + "]"
+	outp "mul dword ptr [esp+" + str( 8+ofs ) + "]"
 
 	'' hres= low(dst) * high(src) + high(res)
-	outp "xchg eax, [esp+" + str$(0+ofs) + "]"
+	outp "xchg eax, [esp+" + str ( 0+ofs ) + "]"
 
-	outp "imul eax, [esp+" + str$(12+ofs) + "]"
+	outp "imul eax, [esp+" + str ( 12+ofs ) + "]"
 	outp "add eax, edx"
 
 	'' hres += high(dst) * low(src)
-	outp "mov edx, [esp+" + str$(4+ofs) + "]"
-	outp "imul edx, [esp+" + str$(8+ofs) + "]"
+	outp "mov edx, [esp+" + str( 4+ofs ) + "]"
+	outp "imul edx, [esp+" + str( 8+ofs ) + "]"
 	outp "add edx, eax"
-	outp "mov [esp+" + str$(4+ofs) + "], edx"
+	outp "mov [esp+" + str( 4+ofs ) + "], edx"
 
 	if( eaxindest ) then
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
@@ -2999,30 +2999,30 @@ private sub hSHIFTL( byval op as integer, _
 	'' load dst1 to eax
 	if( eaxindest ) then
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
-			outp "xchg eax, [esp+" + str$(ofs+0) + "]"
+			outp "xchg eax, [esp+" + str( ofs+0 ) + "]"
 		else
-			outp "mov eax, [esp+" + str$(ofs+0) + "]"
+			outp "mov eax, [esp+" + str( ofs+0 ) + "]"
 		end if
 	else
 		if( not iseaxfree ) then
-			outp "xchg eax, [esp+" + str$(ofs+0) + "]"
+			outp "xchg eax, [esp+" + str( ofs+0 ) + "]"
 		else
-			outp "mov eax, [esp+" + str$(ofs+0) + "]"
+			outp "mov eax, [esp+" + str( ofs+0 ) + "]"
 		end if
 	end if
 
 	'' load dst2 to edx
 	if( edxindest ) then
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
-			outp "xchg edx, [esp+" + str$(ofs+4) + "]"
+			outp "xchg edx, [esp+" + str( ofs+4 ) + "]"
 		else
-			outp "mov edx, [esp+" + str$(ofs+4) + "]"
+			outp "mov edx, [esp+" + str( ofs+4 ) + "]"
 		end if
 	else
 		if( not isedxfree ) then
-			outp "xchg edx, [esp+" + str$(ofs+4) + "]"
+			outp "xchg edx, [esp+" + str( ofs+4 ) + "]"
 		else
-			outp "mov edx, [esp+" + str$(ofs+4) + "]"
+			outp "mov edx, [esp+" + str( ofs+4 ) + "]"
 		end if
 	end if
 
@@ -3062,7 +3062,7 @@ private sub hSHIFTL( byval op as integer, _
 	'' immediate
 	else
 
-		if( valint( src ) <> 32 ) then
+		if( svreg->value < 32 ) then
 			if( op = IR_OP_SHL ) then
 				outp "shld edx, eax, " + src
 				outp mnemonic + " eax, " + src
@@ -3070,6 +3070,24 @@ private sub hSHIFTL( byval op as integer, _
 				outp "shrd eax, edx, " + src
 				outp mnemonic + " edx, " + src
 			end if
+
+		elseif( svreg->value > 32 ) then
+			src = str( svreg->value - 32 )
+			if( op = IR_OP_SHL ) then
+				outp "mov edx, eax"
+				outp "xor eax, eax"
+				outp "shl edx, " + src
+			else
+				outp "mov eax, edx"
+				if( irIsSigned( dvreg->dtype ) ) then
+					outp "sar edx, 31"
+					outp "sar eax, " + src
+				else
+					outp "xor edx, edx"
+					outp "shr eax, " + src
+				end if
+			end if
+
 		'' src = 32, just swap
 		else
 			if( op = IR_OP_SHL ) then
@@ -4542,7 +4560,7 @@ private sub _emitPOPF( byval dvreg as IRVREG ptr, _
 		ostr = "fld " + dtypeTB(dvreg->dtype).mname + " [esp]"
 		outp ostr
 
-		ostr = "add esp," + str$( dsize )
+		ostr = "add esp," + str( dsize )
 		outp ostr
 	end if
 
