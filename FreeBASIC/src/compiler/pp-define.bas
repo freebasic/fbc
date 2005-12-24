@@ -695,12 +695,12 @@ function ppDefine( ) as integer
     		hReportError( FB_ERRMSG_EXPECTEDRPRNT )
     		exit function
     	end if
-    	lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_NOQUOTES )
+    	lexSkipToken( LIT_FLAGS and not LEXCHECK_NOWHITESPC )
 
     else
     	if( lexGetToken( LIT_FLAGS ) = CHAR_SPACE ) then
     		'' skip white-spaces
-    		lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_NOQUOTES )
+    		lexSkipToken( LIT_FLAGS and not LEXCHECK_NOWHITESPC )
     	end if
     end if
 

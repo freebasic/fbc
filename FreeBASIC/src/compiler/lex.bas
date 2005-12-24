@@ -723,11 +723,16 @@ private sub lexReadFloatNumber( byref pnum as zstring ptr, _
 	select case as const lexCurrentChar( )
 	'' '!' | 'F' | 'f'
 	case FB_TK_SGNTYPECHAR, CHAR_FUPP, CHAR_FLOW
-		c = lexEatChar( )
+		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
+			c = lexEatChar( )
+		end if
 		typ = FB_SYMBTYPE_SINGLE
+
 	'' '#'
 	case FB_TK_DBLTYPECHAR
-		c = lexEatChar( )
+		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
+			c = lexEatChar( )
+		end if
 		typ = FB_SYMBTYPE_DOUBLE
 
 	case CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
