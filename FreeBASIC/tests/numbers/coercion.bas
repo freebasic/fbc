@@ -1,3 +1,5 @@
+option explicit
+
 #define TEST_SI &hFFFFFFFF
 #define TEST_UI &hFFFFFFFFU
 #define TEST_SL &hFFFFFFFFFFFFFFFFLL
@@ -15,8 +17,8 @@ sub test1
 	assert( v = TEST_SL )
 	v = TEST_UL
 	assert( v = TEST_UL )
-	v = TEST_F
-	assert( v = cast( longint, TEST_F ) )
+	v = TEST_S
+	assert( v = cast( longint, TEST_S ) )
 	v = TEST_D
 	assert( v = cast( longint, TEST_D ) )
 end sub
@@ -31,8 +33,8 @@ sub test2
 	assert( v = TEST_SL )
 	v = TEST_UL
 	assert( v = TEST_UL )
-	v = TEST_F
-	assert( v = cast( ulongint, TEST_F ) )
+	v = TEST_S
+	assert( v = cast( ulongint, TEST_S ) )
 	v = TEST_D
 	assert( v = cast( ulongint, TEST_D ) )
 end sub
@@ -44,11 +46,11 @@ sub test3
 	v = TEST_UI
 	assert( v = TEST_UI )
 	v = TEST_SL
-	assert( v = TEST_SL )
+	assert( v = cast( integer, TEST_SL ) )
 	v = TEST_UL
-	assert( v = TEST_UL )
-	v = TEST_F
-	assert( v = cast( integer, TEST_F ) )
+	assert( v = cast( integer, TEST_UL ) )
+	v = TEST_S
+	assert( v = cast( integer, TEST_S ) )
 	v = TEST_D
 	assert( v = cast( integer, TEST_D ) )
 end sub
@@ -60,11 +62,11 @@ sub test4
 	v = TEST_UI
 	assert( v = TEST_UI )
 	v = TEST_SL
-	assert( v = TEST_SL )
+	assert( v = cast( uinteger, TEST_SL ) )
 	v = TEST_UL
-	assert( v = TEST_UL )
-	v = TEST_F
-	assert( v = cast( uinteger, TEST_F ) )
+	assert( v = cast( uinteger, TEST_UL ) )
+	v = TEST_S
+	assert( v = cast( uinteger, TEST_S ) )
 	v = TEST_D
 	assert( v = cast( uinteger, TEST_D ) )
 end sub
