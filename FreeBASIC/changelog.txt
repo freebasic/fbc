@@ -22,6 +22,7 @@ Version 0.16 Beta:
 - doing integer-only operations like \ mixing 64-bit integers and floating-point operands would generate bad code (v1c)
 - suffixes (%, #, etc) were not been preserved in argument-less #defines (v1c)
 - NOT couldn't be used in pre-processor directives if ()'s were present (v1c)
+- w- and z-strings were been allowed in IIF() (v1c)
 
 Version 0.15 Beta:
 
