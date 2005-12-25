@@ -33,7 +33,7 @@ function astNewIIF( byval condexpr as ASTNODE ptr, _
 					byval truexpr as ASTNODE ptr, _
 					byval falsexpr as ASTNODE ptr ) as ASTNODE ptr static
     dim as ASTNODE ptr n
-    dim as integer truedtype, falsedtype
+    dim as integer true_dtype, false_dtype
     dim as FBSYMBOL ptr falselabel
 
 	function = NULL
@@ -42,26 +42,42 @@ function astNewIIF( byval condexpr as ASTNODE ptr, _
 		exit function
 	end if
 
-	truedtype = truexpr->dtype
-	falsedtype = falsexpr->dtype
+	true_dtype = truexpr->dtype
+	false_dtype = falsexpr->dtype
 
     '' string? invalid
-    if( irGetDataClass( truedtype ) = IR_DATACLASS_STRING ) then
+    select case irGetDataClass( true_dtype )
+    case IR_DATACLASS_STRING
     	exit function
-    elseif( irGetDataClass( falsedtype ) = IR_DATACLASS_STRING ) then
+    case IR_DATACLASS_INTEGER
+    	select case true_dtype
+    	case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    		exit function
+    	end select
+    end select
+
+    select case irGetDataClass( false_dtype )
+    case IR_DATACLASS_STRING
     	exit function
-    end if
+    case IR_DATACLASS_INTEGER
+    	select case false_dtype
+    	case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    		exit function
+    	end select
+    end select
 
 	'' UDT's? ditto
-	if( truedtype = IR_DATATYPE_USERDEF ) then
+	if( true_dtype = IR_DATATYPE_USERDEF ) then
 		exit function
-    elseif( falsedtype = IR_DATATYPE_USERDEF ) then
+    end if
+
+    if( false_dtype = IR_DATATYPE_USERDEF ) then
     	exit function
     end if
 
     '' are the data types different?
-    if( truedtype <> falsedtype ) then
-    	if( irMaxDataType( truedtype, falsedtype ) <> INVALID ) then
+    if( true_dtype <> false_dtype ) then
+    	if( irMaxDataType( true_dtype, false_dtype ) <> INVALID ) then
     		exit function
     	end if
     end if
@@ -74,13 +90,14 @@ function astNewIIF( byval condexpr as ASTNODE ptr, _
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_IIF, truedtype, truexpr->subtype )
+	n = astNewNode( AST_NODECLASS_IIF, true_dtype, truexpr->subtype )
 	function = n
 
 	if( n = NULL ) then
 		exit function
 	end if
 
+	n->iif.sym 		  = symbAddTempVar( true_dtype, truexpr->subtype )
 	n->l  			  = condexpr
 	n->r  			  = astNewLINK( truexpr, falsexpr )
 	n->iif.falselabel = falselabel
@@ -89,8 +106,7 @@ end function
 
 '':::::
 function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as ASTNODE ptr l, r
-    dim as IRVREG ptr vr
+    dim as ASTNODE ptr l, r, t
     dim as FBSYMBOL ptr exitlabel
 
 	l = n->l
@@ -100,27 +116,32 @@ function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 		return NULL
 	end if
 
-	''
-	if( ast.doemit ) then
-		'' IR can't handle inter-blocks and live vregs atm, so any
-		'' register used must be spilled now or that could happen in a
-		'' function call done in any child trees and also if complex
-		'' expressions were used
-		'''''if( astIsClassOnTree( AST_NODECLASS_FUNCT, n ) <> NULL ) then
-		irEmitSPILLREGS( )
-		'''''end if
-	end if
-
-	''
+	'' condition
 	astFLush( l )
 
 	''
 	exitlabel = symbAddLabel( NULL )
 
 	'' true expr
-	vr = astLoad( r->l )
 	if( ast.doemit ) then
-		irEmitPUSH( vr )
+		'' IR can't handle inter-blocks and live vregs atm, so any
+		'' register used must be spilled now or that could happen in a
+		'' function call done in any child trees and also if complex
+		'' expressions were used
+		'''''if( astIsClassOnTree( AST_NODECLASS_FUNCT, r->l ) <> NULL ) then
+		irEmitSPILLREGS( )
+		'''''end if
+	end if
+
+	t = astNewASSIGN( astNewVAR( n->iif.sym, _
+								 0, _
+								 symbGetType( n->iif.sym ), _
+								 symbGetSubType( n->iif.sym ) ), _
+					  r->l )
+	astLoad( t )
+	astDel( t )
+
+	if( ast.doemit ) then
 		irEmitBRANCH( IR_OP_JMP, exitlabel )
 	end if
 
@@ -129,21 +150,31 @@ function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 		irEmitLABELNF( n->iif.falselabel )
 	end if
 
-	vr = astLoad( r->r )
-    if( ast.doemit ) then
-		irEmitPUSH( vr )
-
-		'' exit
-		irEmitLABELNF( exitlabel )
-		vr = irAllocVREG( n->dtype )
-		irEmitPOP( vr )
+	if( ast.doemit ) then
+		'' see above
+		'''''if( astIsClassOnTree( AST_NODECLASS_FUNCT, r->r ) <> NULL ) then
+		irEmitSPILLREGS( )
+		'''''end if
 	end if
 
-	astDel( r->l )
-	astDel( r->r )
-	astDel( r )
+	t = astNewASSIGN( astNewVAR( n->iif.sym, _
+								 0, _
+								 symbGetType( n->iif.sym ), _
+								 symbGetSubType( n->iif.sym ) ), _
+					  r->r )
+	astLoad( t )
+	astDel( t )
 
-	function = vr
+    if( ast.doemit ) then
+		'' exit
+		irEmitLABELNF( exitlabel )
+	end if
+
+	t = astNewVAR( n->iif.sym, 0, symbGetType( n->iif.sym ), symbGetSubType( n->iif.sym ) )
+	function = astLoad( t )
+	astDel( t )
+
+	astDel( r )
 
 end function
 
