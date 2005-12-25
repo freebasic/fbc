@@ -21,6 +21,7 @@ Version 0.16 Beta:
 - shifting 64-bit integer operands by constants above 32 were generating wrong code (v1c)
 - doing integer-only operations like \ mixing 64-bit integers and floating-point operands would generate bad code (v1c)
 - suffixes (%, #, etc) were not been preserved in argument-less #defines (v1c)
+- NOT couldn't be used in pre-processor directives if ()'s were present (v1c)
 
 Version 0.15 Beta:
 
