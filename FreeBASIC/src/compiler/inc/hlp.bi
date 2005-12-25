@@ -88,6 +88,13 @@ declare function 	hRevertSlash			( byval s as zstring ptr ) as string
 
 declare function 	hToPow2					( byval value as uinteger ) as uinteger
 
+#ifdef FBVALUE
+declare sub 		hConvertValue			( byval src as FBVALUE ptr, _
+				   							  byval sdtype as integer, _
+				   							  byval dst as FBVALUE ptr, _
+				   							  byval ddtype as integer )
+#endif
+
 declare function 	hJumpTbAllocSym			( ) as any ptr
 
 declare function 	hFloatToStr				( byval value as double, _

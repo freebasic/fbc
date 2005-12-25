@@ -82,6 +82,123 @@ private function hWstrLiteralConcat( byval l as ASTNODE ptr, _
 end function
 
 '':::::
+private function hStrLiteralCompare( byval op as integer, _
+									 byval l as ASTNODE ptr, _
+									 byval r as ASTNODE ptr _
+								   ) as ASTNODE ptr static
+
+    dim as zstring ptr ltext, rtext
+    dim as integer res
+
+   	ltext = symbGetVarText( astGetSymbol( l ) )
+   	rtext = symbGetVarText( astGetSymbol( r ) )
+
+   	select case as const op
+   	case IR_OP_EQ
+   		res = (*ltext = *rtext)
+   	case IR_OP_GT
+   		res = (*ltext > *rtext)
+   	case IR_OP_LT
+   		res = (*ltext < *rtext)
+   	case IR_OP_NE
+   		res = (*ltext <> *rtext)
+   	case IR_OP_LE
+   		res = (*ltext <= *rtext)
+   	case IR_OP_GE
+   		res = (*ltext >= *rtext)
+   	end select
+
+	function = astNewCONSTi( res, IR_DATATYPE_INTEGER )
+
+	astDel( r )
+	astDel( l )
+
+end function
+
+'':::::
+private function hWStrLiteralCompare( byval op as integer, _
+									  byval l as ASTNODE ptr, _
+									  byval r as ASTNODE ptr _
+								    ) as ASTNODE ptr static
+
+    dim as FBSYMBOL ptr ls, rs
+    dim as zstring ptr textz
+    dim as wstring ptr ltextw, rtextw
+    dim as integer res
+
+	ls = astGetSymbol( l )
+	rs = astGetSymbol( r )
+
+	'' left operand not a wstring?
+	if( symbGetType( ls ) <> IR_DATATYPE_WCHAR ) then
+   		textz = symbGetVarText( ls )
+   		rtextw = symbGetVarTextW( rs )
+
+   		select case as const op
+   		case IR_OP_EQ
+   			res = (*textz = *rtextw)
+   		case IR_OP_GT
+   			res = (*textz > *rtextw)
+   		case IR_OP_LT
+   			res = (*textz < *rtextw)
+   		case IR_OP_NE
+   			res = (*textz <> *rtextw)
+   		case IR_OP_LE
+   			res = (*textz <= *rtextw)
+   		case IR_OP_GE
+   			res = (*textz >= *rtextw)
+   		end select
+
+   	'' right operand?
+   	elseif( symbGetType( rs ) <> IR_DATATYPE_WCHAR ) then
+   		ltextw = symbGetVarTextW( ls )
+   		textz = symbGetVarText( rs )
+
+   		select case as const op
+   		case IR_OP_EQ
+   			res = (*ltextw = *textz)
+   		case IR_OP_GT
+   			res = (*ltextw > *textz)
+   		case IR_OP_LT
+   			res = (*ltextw < *textz)
+   		case IR_OP_NE
+   			res = (*ltextw <> *textz)
+   		case IR_OP_LE
+   			res = (*ltextw <= *textz)
+   		case IR_OP_GE
+   			res = (*ltextw >= *textz)
+   		end select
+
+   	'' both wstrings..
+   	else
+   		ltextw = symbGetVarTextW( ls )
+   		rtextw = symbGetVarTextW( rs )
+
+   		select case as const op
+   		case IR_OP_EQ
+   			res = (*ltextw = *rtextw)
+   		case IR_OP_GT
+   			res = (*ltextw > *rtextw)
+   		case IR_OP_LT
+   			res = (*ltextw < *rtextw)
+   		case IR_OP_NE
+   			res = (*ltextw <> *rtextw)
+   		case IR_OP_LE
+   			res = (*ltextw <= *rtextw)
+   		case IR_OP_GE
+   			res = (*ltextw >= *rtextw)
+   		end select
+
+   	end if
+
+	function = astNewCONSTi( res, IR_DATATYPE_INTEGER )
+
+	astDel( r )
+	astDel( l )
+
+end function
+
+'':::::
 private sub hBOPConstFoldInt( byval op as integer, _
 							  byval l as ASTNODE ptr, _
 							  byval r as ASTNODE ptr _
@@ -482,28 +599,32 @@ function astNewBOP( byval op as integer, _
 		end if
 
 		if( is_str ) then
+
+			'' check for string literals
+			litsym = NULL
+			select case ldtype
+			case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+				litsym = astGetStrLitSymbol( l )
+				if( litsym <> NULL ) then
+					select case rdtype
+					case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+						litsym = astGetStrLitSymbol( r )
+					end select
+				end if
+			end select
+
 			select case as const op
 			'' concatenation?
 			case IR_OP_ADD
-				'' check for string literals
-				select case ldtype
-				case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
-					litsym = astGetStrLitSymbol( l )
-					if( litsym <> NULL ) then
 
-						select case rdtype
-						case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
-							litsym = astGetStrLitSymbol( r )
-							if( litsym <> NULL ) then
-								if( (ldtype = rdtype) or _
-									(env.target.wchar.doconv) ) then
-									return hWstrLiteralConcat( l, r )
-								end if
-							end if
-						end select
-
+				'' both literals?
+				if( litsym <> NULL ) then
+					'' ok to convert at compile-time?
+					if( (ldtype = rdtype) or _
+						(env.target.wchar.doconv) ) then
+						return hWstrLiteralConcat( l, r )
 					end if
-				end select
+				end if
 
 				'' both aren't wstrings?
 				if( ldtype <> rdtype ) then
@@ -522,6 +643,11 @@ function astNewBOP( byval op as integer, _
 
 			'' comparation?
 			case IR_OP_EQ, IR_OP_GT, IR_OP_LT, IR_OP_NE, IR_OP_LE, IR_OP_GE
+				'' both literals?
+				if( litsym <> NULL ) then
+					return hWstrLiteralCompare( op, l, r )
+				end if
+
 				'' convert to: wstrcmp(l,r) op 0
 				l = rtlWstrCompare( l, r )
 				r = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
@@ -575,20 +701,23 @@ function astNewBOP( byval op as integer, _
 			end if
 		end if
 
+		'' check for string literals
+		litsym = NULL
+		if( ldtype = IR_DATATYPE_CHAR ) then
+			if( rdtype = IR_DATATYPE_CHAR ) then
+				litsym = astGetStrLitSymbol( l )
+				if( litsym <> NULL ) then
+					litsym = astGetStrLitSymbol( r )
+				end if
+			end if
+		end if
+
 		select case as const op
 		'' concatenation?
 		case IR_OP_ADD
-			'' check for string literals
-			if( ldtype = IR_DATATYPE_CHAR ) then
-				if( rdtype = IR_DATATYPE_CHAR ) then
-					litsym = astGetStrLitSymbol( l )
-					if( litsym <> NULL ) then
-						litsym = astGetStrLitSymbol( r )
-						if( litsym <> NULL ) then
-							return hStrLiteralConcat( l, r )
-						end if
-					end if
-				end if
+			'' both literals?
+			if( litsym <> NULL ) then
+				return hStrLiteralConcat( l, r )
 			end if
 
 			'' result will be always an var-len string
@@ -603,6 +732,11 @@ function astNewBOP( byval op as integer, _
 
 		'' comparation?
 		case IR_OP_EQ, IR_OP_GT, IR_OP_LT, IR_OP_NE, IR_OP_LE, IR_OP_GE
+			'' both literals?
+			if( litsym <> NULL ) then
+				return hStrLiteralCompare( op, l, r )
+			end if
+
 			'' convert to: strcmp(l,r) op 0
 			l = rtlStrCompare( l, ldtype, r, rdtype )
 			r = astNewCONSTi( 0, IR_DATATYPE_INTEGER )

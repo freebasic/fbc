@@ -39,17 +39,29 @@ type LEXPP_REC
 	elsecnt		as integer
 end type
 
+enum PPEXPR_CLASS
+	PPEXPR_CLASS_NUM
+	PPEXPR_CLASS_STR
+end enum
+
+type PPEXPR
+	class		as PPEXPR_CLASS
+	dtype		as FBSYMBTYPE_ENUM
+	num			as FBVALUE
+	str			as string
+end type
+
+
 declare function ppSkip 					( ) as integer
 
-declare function ppLogExpression			( byref logexpr as integer ) as integer
+declare function ppExpression				( byref istrue as integer ) as integer
 
-declare function ppRelExpression			( byref relexpr as integer, _
-											  byref rellit as string, _
-											  byref relisnum as integer ) as integer
+declare function ppLogExpression			( byref logexpr as PPEXPR ) as integer
 
-declare function ppParentExpr				( byref parexpr as integer, _
-											  byref atom as string, _
-											  byref isnumber as integer ) as integer
+declare function ppRelExpression			( byref relexpr as PPEXPR ) as integer
+
+declare function ppParentExpr				( byref parexpr as PPEXPR ) as integer
+
 
 '' globals
 	dim shared ctx as LEXPP_CTX
@@ -103,7 +115,7 @@ function ppCondIf( ) as integer
 	case FB_TK_IF
         lexSkipToken( )
 
-		if( not ppLogExpression( istrue ) ) then
+		if( not ppExpression( istrue ) ) then
 			exit function
 		end if
 
@@ -149,7 +161,7 @@ function ppCondElse( ) as integer
 
         lexSkipToken( )
 
-		if( not ppLogExpression( istrue ) ) then
+		if( not ppExpression( istrue ) ) then
 			exit function
 		end if
 
@@ -266,32 +278,262 @@ private function ppSkip as integer
 end function
 
 '':::::
-''LogExpression      =   NOT? RelExpression ( (AND | OR) NOT? RelExpression )* .
+private sub hNumLogBOP( byval op as integer, _
+					 	byref l as PPEXPR, _
+					 	byref r as PPEXPR )
+
+    '' convert to highest precison (must be integer class)..
+  	select case as const l.dtype
+  	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  		select case as const r.dtype
+  		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  			'' do nothing
+  		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+			r.num.long = r.num.float
+  		case else
+			r.num.long = r.num.int
+  		end select
+
+  	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  		select case as const r.dtype
+  		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  			l.dtype = IR_DATATYPE_LONGINT
+  			l.num.long = l.num.float
+  		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+			l.dtype = IR_DATATYPE_INTEGER
+			l.num.int = l.num.float
+			r.num.int = r.num.float
+  		case else
+			l.dtype = IR_DATATYPE_INTEGER
+			l.num.int = l.num.float
+  		end select
+
+  	case else
+  		select case as const r.dtype
+  		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  			l.dtype = IR_DATATYPE_LONGINT
+  			l.num.long = l.num.int
+  		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+			r.num.int = r.num.float
+  		end select
+  	end select
+
+    '' do operation
+    select case op
+    case FB_TK_AND
+  		select case l.dtype
+  		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+			l.num.long and= r.num.long
+		case else
+			l.num.int and= r.num.int
+  		end select
+
+    case FB_TK_OR
+  		select case l.dtype
+  		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+			l.num.long or= r.num.long
+		case else
+			l.num.int or= r.num.int
+  		end select
+    end select
+
+end sub
+
+'':::::
+private sub hNumRelBOP( byval op as integer, _
+					 	byref l as PPEXPR, _
+					 	byref r as PPEXPR )
+
+    '' convert to highest precison..
+  	select case as const l.dtype
+  	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  		select case as const r.dtype
+  		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  			'' do nothing
+  		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+			r.num.long = r.num.float
+  		case else
+			r.num.long = r.num.int
+  		end select
+
+  	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  		select case as const r.dtype
+  		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  			l.dtype = IR_DATATYPE_LONGINT
+  			l.num.long = l.num.float
+  		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  			'' do nothing
+  		case else
+			r.dtype = IR_DATATYPE_DOUBLE
+			r.num.float = r.num.int
+  		end select
+
+  	case else
+  		select case as const r.dtype
+  		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  			l.dtype = IR_DATATYPE_LONGINT
+  			l.num.long = l.num.int
+  		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+			l.dtype = IR_DATATYPE_DOUBLE
+			l.num.float = l.num.int
+  		end select
+  	end select
+
+    '' do operation
+   	select case as const op
+   	case FB_TK_EQ
+  		select case as const l.dtype
+  		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  			l.num.int = l.num.long = r.num.long
+  		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  		    l.num.int = l.num.float = r.num.float
+  		case else
+  			l.num.int = l.num.int = r.num.int
+  		end select
+
+   	case FB_TK_GT
+  		select case as const l.dtype
+  		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  			l.num.int = l.num.long > r.num.long
+  		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  		    l.num.int = l.num.float > r.num.float
+  		case else
+  			l.num.int = l.num.int > r.num.int
+  		end select
+
+   	case FB_TK_LT
+  		select case as const l.dtype
+  		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  			l.num.int = l.num.long < r.num.long
+  		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  		    l.num.int = l.num.float < r.num.float
+  		case else
+  			l.num.int = l.num.int < r.num.int
+  		end select
+
+   	case FB_TK_NE
+  		select case as const l.dtype
+  		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  			l.num.int = l.num.long <> r.num.long
+  		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  		    l.num.int = l.num.float <> r.num.float
+  		case else
+  			l.num.int = l.num.int <> r.num.int
+  		end select
+
+   	case FB_TK_LE
+  		select case as const l.dtype
+  		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  			l.num.int = l.num.long <= r.num.long
+  		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  		    l.num.int = l.num.float <= r.num.float
+  		case else
+  			l.num.int = l.num.int <= r.num.int
+  		end select
+
+   	case FB_TK_GE
+  		select case as const l.dtype
+  		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  			l.num.int = l.num.long >= r.num.long
+  		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  		    l.num.int = l.num.float >= r.num.float
+  		case else
+  			l.num.int = l.num.int >= r.num.int
+  		end select
+
+   	end select
+
+   	l.dtype = IR_DATATYPE_INTEGER
+
+end sub
+
+'':::::
+private sub hNumNot( byref l as PPEXPR )
+
+  	'' convert float to integer
+  	select case l.dtype
+  	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  		l.num.int = l.num.float
+  		l.dtype = IR_DATATYPE_INTEGER
+  	end select
+
+  	select case l.dtype
+  	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		l.num.long = not l.num.long
+	case else
+		l.num.int = not l.num.int
+  	end select
+
+end sub
+
+'':::::
+private sub hNumNeg( byref l as PPEXPR )
+
+  	select case as const l.dtype
+  	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		l.num.long = -l.num.long
+	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		l.num.float = -l.num.float
+	case else
+		l.num.int = -l.num.int
+  	end select
+
+end sub
+
+'':::::
+private function hNumToBool( byval dtype as integer, _
+							 byref v as FBVALUE _
+						   ) as integer
+
+  	select case as const dtype
+  	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		function = v.long <> 0LL
+
+  	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		function = v.float <> 0.0
+
+	case else
+		function = v.int <> 0
+  	end select
+
+end function
+
+'':::::
+''Expression      =   LogExpression .
 ''
-private function ppLogExpression( logexpr as integer )
-    dim donot as integer, op as integer
-    dim loglit as string, logisnum
-    dim relexpr as integer, rellit as string, relisnum as integer
+private function ppExpression( byref istrue as integer ) as integer
+    dim as PPEXPR expr
 
-    logexpr = FALSE
+    function = FALSE
 
-    '' NOT?
-    donot = FALSE
-    if( hMatch( FB_TK_NOT ) ) then
-    	donot = TRUE
+    '' LogExpression
+    if( not ppLogExpression( expr ) ) then
+    	exit function
     end if
+
+    if( expr.class = PPEXPR_CLASS_NUM ) then
+    	istrue = hNumToBool( expr.dtype, expr.num )
+    else
+    	istrue = FALSE
+    end if
+
+    function = TRUE
+
+end function
+
+'':::::
+''LogExpression      =   RelExpression ( (AND | OR) RelExpression )* .
+''
+private function ppLogExpression( byref logexpr as PPEXPR ) as integer
+    dim as integer op
+    dim as PPEXPR relexpr
+
+    function = FALSE
 
     '' RelExpression
-    if( not ppRelExpression( logexpr, loglit, logisnum ) ) then
-    	return FALSE
+    if( not ppRelExpression( logexpr ) ) then
+    	exit function
     end if
-
-    '' exec not
-    if( donot ) then
-    	logexpr = not logexpr
-    end if
-
-	function = TRUE
 
     '' ( ... )*
     do
@@ -304,49 +546,42 @@ private function ppLogExpression( logexpr as integer )
       		exit do
     	end select
 
-    	'' NOT?
-    	donot = FALSE
-    	if( hMatch( FB_TK_NOT ) ) then
-    		donot = TRUE
+    	if( logexpr.class <> PPEXPR_CLASS_NUM ) then
+    		exit function
     	end if
 
     	'' RelExpression
-    	if( not ppRelExpression( relexpr, rellit, relisnum ) ) then
-    		return FALSE
+    	if( not ppRelExpression( relexpr ) ) then
+    		exit function
     	end if
 
-    	'' exec not
-    	if( donot ) then
-    		relexpr = not relexpr
+    	if( relexpr.class <> PPEXPR_CLASS_NUM ) then
+    		exit function
     	end if
 
     	'' do operation
-    	select case op
-    	case FB_TK_AND
-    		logexpr = logexpr and relexpr
-    	case FB_TK_OR
-    		logexpr = logexpr or relexpr
-    	end select
+    	hNumLogBOP( op, logexpr, relexpr )
     loop
+
+	function = TRUE
 
 end function
 
 '':::::
 ''RelExpression   =   ParentExpr ( (EQ | GT | LT | NE | LE | GE) ParentExpr )* .
 ''
-private function ppRelExpression( relexpr as integer, rellit as string, relisnum as integer )
-    dim op as integer, ops as integer
-    dim parexpr as integer, parlit as string, parisnum
+private function ppRelExpression( byref relexpr as PPEXPR ) as integer
+    dim as integer op
+    dim as PPEXPR parexpr
 
    	function = FALSE
 
     '' Atom
-    if( not ppParentExpr( relexpr, rellit, relisnum ) ) then
+    if( not ppParentExpr( relexpr ) ) then
     	exit function
     end if
 
     '' ( ... )*
-    ops = 0
     do
     	'' Relational operator
     	op = lexGetToken( )
@@ -357,61 +592,45 @@ private function ppRelExpression( relexpr as integer, rellit as string, relisnum
       		exit do
     	end select
 
-    	'' Atom
-    	if( not ppParentExpr( parexpr, parlit, parisnum ) ) then
+    	'' ParentExpr
+    	if( not ppParentExpr( parexpr ) ) then
     		exit function
     	end if
 
    		'' same type?
-   		if( (relisnum xor parisnum) = -1 ) then
+   		if( relexpr.class <> parexpr.class ) then
    			hReportError( FB_ERRMSG_SYNTAXERROR )
    			exit function
    		end if
 
-   		'' do operation
-   		if( relisnum ) then
-   			'' can't compare as strings if both are numbers, '"10" > "2"' is FALSE for QB/FB
-   			select case as const op
-   			case FB_TK_EQ
-   				relexpr = val( rellit ) = val( parlit )
-   			case FB_TK_GT
-   				relexpr = val( rellit ) > val( parlit )
-   			case FB_TK_LT
-   				relexpr = val( rellit ) < val( parlit )
-   			case FB_TK_NE
-   				relexpr = val( rellit ) <> val( parlit )
-   			case FB_TK_LE
-   				relexpr = val( rellit ) <= val( parlit )
-   			case FB_TK_GE
-   				relexpr = val( rellit ) >= val( parlit )
-   			end select
+   		'' can't compare as strings if both are numbers, '"10" > "2"' is FALSE for QB/FB
+   		if( relexpr.class = PPEXPR_CLASS_NUM ) then
+   			hNumRelBOP( op, relexpr, parexpr )
 
    		else
    			select case as const op
    			case FB_TK_EQ
-   				relexpr = rellit = parlit
+   				relexpr.num.int = relexpr.str = parexpr.str
    			case FB_TK_GT
-   				relexpr = rellit > parlit
+   				relexpr.num.int = relexpr.str > parexpr.str
    			case FB_TK_LT
-   				relexpr = rellit < parlit
+   				relexpr.num.int = relexpr.str < parexpr.str
    			case FB_TK_NE
-   				relexpr = rellit <> parlit
+   				relexpr.num.int = relexpr.str <> parexpr.str
    			case FB_TK_LE
-   				relexpr = rellit <= parlit
+   				relexpr.num.int = relexpr.str <= parexpr.str
    			case FB_TK_GE
-   				relexpr = rellit >= parlit
+   				relexpr.num.int = relexpr.str >= parexpr.str
    			end select
+
+   			relexpr.class = PPEXPR_CLASS_NUM
+   			relexpr.dtype = IR_DATATYPE_INTEGER
+
+   			relexpr.str = ""
+   			parexpr.str = ""
    		end if
 
-   		rellit = str( relexpr )
-   		relisnum = TRUE
-   		ops += 1
     loop
-
-    ''
-    if( (ops = 0) and (relexpr > 0) ) then
-    	relexpr = TRUE
-    end if
 
     function = TRUE
 
@@ -420,16 +639,13 @@ end function
 '':::::
 '' ParentExpr  =   '(' Expression ')'
 ''			   |   DEFINED'(' ID ')'
-''             |   LITERAL .
-private function ppParentExpr( parexpr as integer, _
-							   atom as string, _
-							   isnumber as integer ) as integer
-    dim d as FBSYMBOL ptr
+''             |   LITERAL
+''			   |   NOT RelExpression .
+private function ppParentExpr( byref parexpr as PPEXPR ) as integer
+
+    dim as FBSYMBOL ptr d
 
   	function = FALSE
-
-  	atom = ""
-  	isnumber = FALSE
 
   	'' '(' Expression ')'
   	select case lexGetToken( )
@@ -457,11 +673,14 @@ private function ppParentExpr( parexpr as integer, _
     		lexSkipToken( LEXCHECK_NODEFINE )
     	end if
 
+		parexpr.class = PPEXPR_CLASS_NUM
+		parexpr.dtype = IR_DATATYPE_INTEGER
+
 		d = lexGetSymbol( )
-		parexpr = FALSE
+		parexpr.num.int = FALSE
 		if( d <> NULL ) then
 			if( d->class = FB_SYMBCLASS_DEFINE ) then
-				parexpr = TRUE
+				parexpr.num.int = TRUE
 			end if
 		end if
 		lexSkipToken( )
@@ -475,32 +694,65 @@ private function ppParentExpr( parexpr as integer, _
 	case CHAR_MINUS
 		lexSkipToken( )
 
-  		if( not ppParentExpr( parexpr, atom, isnumber ) ) then
-  			exit function
-  		elseif( not isnumber ) then
-  			hReportError( FB_ERRMSG_SYNTAXERROR )
+  		if( not ppParentExpr( parexpr ) ) then
   			exit function
   		end if
 
-  		atom = "-" + atom
-  		parexpr = len( atom )
+  		if( parexpr.class <> PPEXPR_CLASS_NUM ) then
+  			hReportError( FB_ERRMSG_INVALIDDATATYPES )
+  			exit function
+  		end if
+
+  		hNumNeg( parexpr )
+
+    '' NOT RelExpression
+	case FB_TK_NOT
+		lexSkipToken( )
+
+  		if( not ppRelExpression( parexpr ) ) then
+  			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
+  			exit function
+  		end if
+
+  		if( parexpr.class <> PPEXPR_CLASS_NUM ) then
+  			hReportError( FB_ERRMSG_INVALIDDATATYPES )
+  			exit function
+  		end if
+
+  		hNumNot( parexpr )
 
   	'' LITERAL
   	case else
-  		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-  			isnumber = TRUE
+  		parexpr.dtype = lexGetType( )
+
+  		if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
+  			parexpr.class = PPEXPR_CLASS_NUM
+
+  			select case as const parexpr.dtype
+  			case IR_DATATYPE_LONGINT
+				parexpr.num.long = vallng( *lexGetText( ) )
+
+			case IR_DATATYPE_ULONGINT
+				parexpr.num.long = valulng( *lexGetText( ) )
+
+  			case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+				parexpr.num.float = val( *lexGetText( ) )
+
+			case IR_DATATYPE_UINT
+				parexpr.num.int = valuint( *lexGetText( ) )
+
+			case else
+				parexpr.num.int = valint( *lexGetText( ) )
+  			end select
+
+  		else
+  			parexpr.class = PPEXPR_CLASS_STR
+  			parexpr.str = *lexGetText( )
+
   		end if
 
-  		atom = *lexGetText( )
   		lexSkipToken( )
-  		if( len( atom ) = 0 ) then
-  			hReportError( FB_ERRMSG_SYNTAXERROR )
-  			exit function
-  		end if
 
-  		if( isnumber ) then
-  			parexpr = ( val( atom ) <> 0 )
-  		end if
   	end select
 
 	function = TRUE

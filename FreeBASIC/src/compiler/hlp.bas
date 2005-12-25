@@ -643,6 +643,46 @@ function hToPow2( byval value as uinteger ) as uinteger static
 end function
 
 '':::::
+sub hConvertValue( byval src as FBVALUE ptr, _
+				   byval sdtype as integer, _
+				   byval dst as FBVALUE ptr, _
+				   byval ddtype as integer ) static
+
+	select case as const sdtype
+	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		select case as const ddtype
+		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+			dst->long = src->long
+		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+			dst->float= src->long
+		case else
+			dst->int  = src->long
+		end select
+
+	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		select case as const ddtype
+		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+			dst->long = src->float
+		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+			dst->float= src->float
+		case else
+			dst->int  = src->float
+		end select
+
+	case else
+		select case as const ddtype
+		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+			dst->long = src->int
+		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+			dst->float= src->int
+		case else
+			dst->int  = src->int
+		end select
+	end select
+
+end sub
+
+'':::::
 function hJumpTbAllocSym( ) as any ptr static
 	static as zstring * FB_MAXNAMELEN+1 sname
 	dim as FBARRAYDIM dTB(0)

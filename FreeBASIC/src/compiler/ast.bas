@@ -1331,37 +1331,7 @@ sub astConvertValue( byval n as ASTNODE ptr, _
 					 byval v as FBVALUE ptr, _
 					 byval todtype as integer ) static
 
-	select case as const n->dtype
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-		select case as const todtype
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			v->long = n->con.val.long
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			v->float  = n->con.val.long
-		case else
-			v->int  = n->con.val.long
-		end select
-
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-		select case as const todtype
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			v->long = n->con.val.float
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			v->float  = n->con.val.float
-		case else
-			v->int  = n->con.val.float
-		end select
-
-	case else
-		select case as const todtype
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-			v->long = n->con.val.int
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-			v->float  = n->con.val.int
-		case else
-			v->int  = n->con.val.int
-		end select
-	end select
+	hConvertValue( @n->con.val, n->dtype, v, todtype )
 
 end sub
 
