@@ -1628,7 +1628,7 @@ declare function FindFirstFileEx alias "FindFirstFileExW" (byval as LPCWSTR, byv
 declare function FindNextFile alias "FindNextFileW" (byval as HANDLE, byval as LPWIN32_FIND_DATAW) as BOOL
 declare function FindResource alias "FindResourceW" (byval as HINSTANCE, byval as LPCWSTR, byval as LPCWSTR) as HRSRC
 declare function FindResourceEx alias "FindResourceExW" (byval as HINSTANCE, byval as LPCWSTR, byval as LPCWSTR, byval as WORD) as HRSRC
-''''''' declare function FormatMessage alias "FormatMessageW" (byval as DWORD, byval as PCVOID, byval as DWORD, byval as DWORD, byval as LPWSTR, byval as DWORD, byval as va_list ptr) as DWORD
+declare function FormatMessage alias "FormatMessageW" (byval as DWORD, byval as PCVOID, byval as DWORD, byval as DWORD, byval as LPWSTR, byval as DWORD, byval as any ptr) as DWORD
 declare function FreeEnvironmentStrings alias "FreeEnvironmentStringsW" (byval as LPWSTR) as BOOL
 declare function GetAtomName alias "GetAtomNameW" (byval as ATOM, byval as LPWSTR, byval as integer) as UINT
 declare function GetBinaryType alias "GetBinaryTypeW" (byval as LPCWSTR, byval as PDWORD) as BOOL
@@ -1799,7 +1799,7 @@ declare function FindFirstFileEx alias "FindFirstFileExA" (byval as LPCSTR, byva
 declare function FindNextFile alias "FindNextFileA" (byval as HANDLE, byval as LPWIN32_FIND_DATAA) as BOOL
 declare function FindResource alias "FindResourceA" (byval as HMODULE, byval as LPCSTR, byval as LPCSTR) as HRSRC
 declare function FindResourceEx alias "FindResourceExA" (byval as HINSTANCE, byval as LPCSTR, byval as LPCSTR, byval as WORD) as HRSRC
-''''''' declare function FormatMessage alias "FormatMessageA" (byval as DWORD, byval as PCVOID, byval as DWORD, byval as DWORD, byval as LPSTR, byval as DWORD, byval as va_list ptr) as DWORD
+declare function FormatMessage alias "FormatMessageA" (byval as DWORD, byval as PCVOID, byval as DWORD, byval as DWORD, byval as LPSTR, byval as DWORD, byval as any ptr) as DWORD
 declare function FreeEnvironmentStrings alias "FreeEnvironmentStringsA" (byval as LPSTR) as BOOL
 declare function GetAtomName alias "GetAtomNameA" (byval as ATOM, byval as LPSTR, byval as integer) as UINT
 declare function GetBinaryType alias "GetBinaryTypeA" (byval as LPCSTR, byval as PDWORD) as BOOL
@@ -1918,10 +1918,10 @@ declare function SetVolumeMountPoint alias "SetVolumeMountPointA" (byval as LPCS
 
 #endif ''UNICODE
 
+declare function RtlMoveMemory cdecl alias "memmove" (byval as any ptr, byval as any ptr, byval as integer) as any ptr
+declare function RtlCopyMemory cdecl alias "memcpy" (byval as any ptr, byval as any ptr, byval as integer) as any ptr
+declare function RtlFillMemory cdecl alias "memset" (byval as any ptr, byval as integer, byval as integer) as any ptr
 
-#define RtlMoveMemory memmove
-#define RtlCopyMemory memcpy
-#define RtlFillMemory(d,l,f) memset((d), (f), (l))
 #define RtlZeroMemory(d,l) RtlFillMemory((d),(l),0)
 #define MoveMemory RtlMoveMemory
 #define CopyMemory RtlCopyMemory
