@@ -475,7 +475,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	}
 
 	/* sign */
-	if( !signatend || signatini )
+	if( signatini )
 	{
 		memmove( &buffer[1], buffer, strlen( buffer )+1 );
 		buffer[0] = (isneg? '-' : '+');
