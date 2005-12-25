@@ -52,22 +52,24 @@ private function LoadBMP(Filename as string) as BITMAP_RGBImageRec ptr
   dim p as ubyte ptr
   dim r as ubyte, g as ubyte, b as ubyte
   dim pbmpdata as BITMAP_RGBImageRec ptr
-
-  if (open (Filename, for binary, as #1) = 0) then             '' Does The File Exist?
-
-    get #1, , bitmapfileheader
+  dim f as integer
+  f = freefile
+  
+  if (open (Filename, for binary, as #f) = 0) then             '' Does The File Exist?
+  
+    get #f, , bitmapfileheader
     if bitmapfileheader.bfType <> BITMAP_ID then
-      close #1
+      close #f
       return 0
     end if
 
-    get #1, , bitmapinfoheader
+    get #f, , bitmapinfoheader
 
     if bitmapinfoheader.biBitCount=8 or bitmapinfoheader.biBitCount=24 then
 
       if bitmapinfoheader.biBitCount = 8 then
         for index = 0 to 255
-          get #1, , bmpalette(index)
+          get #f, , bmpalette(index)
         next
       end if
 
@@ -77,7 +79,7 @@ private function LoadBMP(Filename as string) as BITMAP_RGBImageRec ptr
       pbmpdata = allocate(len(BITMAP_RGBImageRec))
       if pbmpdata = 0 then
         '' close the file
-        close #1
+        close #f
         return 0
       end if
       pbmpdata->sizeX  = bitmapinfoheader.biWidth
@@ -85,7 +87,7 @@ private function LoadBMP(Filename as string) as BITMAP_RGBImageRec ptr
       pbmpdata->buffer = allocate(noofpixels*3)
       if pbmpdata->buffer = 0 then
         '' close the file
-        close #1
+        close #f
         deallocate (pbmpdata)
         return 0
       end if
@@ -95,9 +97,9 @@ private function LoadBMP(Filename as string) as BITMAP_RGBImageRec ptr
       if bitmapinfoheader.biBitCount=24 then
         for index = 0 to noofpixels -1
           '' Change from BGR to RGB format
-          get #1, , b
-          get #1, , g
-          get #1, , r
+          get #f, , b
+          get #f, , g
+          get #f, , r
           *p = r : p += 1
           *p = g : p += 1
           *p = b : p += 1
@@ -105,18 +107,18 @@ private function LoadBMP(Filename as string) as BITMAP_RGBImageRec ptr
       else
         for index = 0 to noofpixels -1
           '' Change from BGR to RGB format while converting to 24 bit
-          get #1, , b
+          get #f, , b
           *p = bmpalette(b).peBlue  : p += 1
           *p = bmpalette(b).peGreen : p += 1
           *p = bmpalette(b).peRed   : p += 1
         next
       end if
     else
-      close #1
+      close #f
       return 0
     end if
     '' Success!
-    close #1
+    close #f
     return pbmpdata
   end if
 
