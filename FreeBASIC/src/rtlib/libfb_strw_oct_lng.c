@@ -46,7 +46,7 @@ static FB_WCHAR *hFillDigits( FB_WCHAR *buf, int digits, int totdigs, int cnt )
 FBCALL FB_WCHAR *fb_WstrOctEx_l ( unsigned long long num, int digits )
 {
 	FB_WCHAR *dst, *buf;
-	int	i, totdigs, rem;
+	int	i, totdigs;
 
 	totdigs = ((sizeof(long long)*8) / 3) + 1;
 
@@ -76,33 +76,25 @@ FBCALL FB_WCHAR *fb_WstrOctEx_l ( unsigned long long num, int digits )
 	}
 	else
 	{
-		/* too small? */
-		if( totdigs < 3 )
+		/* enough to fit? */
+		if( (totdigs * 3 < (sizeof(long long)*8)) )
 		{
-			rem = 0;
-			num <<= ((sizeof(long long)*8) - totdigs * 3);
-		}
+			num <<= (sizeof(long long)*8) - (totdigs*3);
+			i = 0;
+        }
+		/* too big.. */
 		else
 		{
-			rem = totdigs % 3;
-			num <<= ((sizeof(long long)*8) - ((totdigs-(rem == 0?0:1)) * 3 + rem));
-		}
-
-		/* remainder? */
-		if( rem > 0 )
-		{
-			if( num > (0xFFFFFFFFFFFFFFFFULL >> rem) )
+			if( num > (0xFFFFFFFFFFFFFFFFULL >> 1) )
 			{
-				buf = hFillDigits( buf, digits, totdigs, 1 );
-				*buf++ = _LC('0') + ((num & ~(0xFFFFFFFFFFFFFFFFULL >> rem))
-								  >> (sizeof(long long)*8-rem));
+				buf = hFillDigits( buf, digits, totdigs, 0 );
+				*buf++ = _LC('0') + ((num & ~(0xFFFFFFFFFFFFFFFFULL >> 1))
+									 >> (sizeof(long long)*8-1));
 			}
 
-			num <<= rem;
+			num <<= 1;
 			i = 1;
 		}
-		else
-			i = 0;
 
 		/* check for 0's at msb? */
 		if( buf == dst )
@@ -116,10 +108,7 @@ FBCALL FB_WCHAR *fb_WstrOctEx_l ( unsigned long long num, int digits )
 
 		/* convert.. */
 		for( ; i < totdigs; i++, num <<= 3 )
-			if( num > 0x1FFFFFFFFFFFFFFFULL )
-				*buf++ = _LC('0') + ((num & 0xE000000000000000ULL) >> (sizeof(long long)*8-3));
-			else
-				*buf++ = _LC('0');
+			*buf++ = _LC('0') + ((num & 0xE000000000000000ULL) >> (sizeof(long long)*8-3));
 	}
 
 	/* add null-term */
