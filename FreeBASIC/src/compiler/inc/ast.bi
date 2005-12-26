@@ -110,6 +110,7 @@ type AST_PTR
 end type
 
 type AST_IIF
+	sym				as FBSYMBOL ptr
 	falselabel 		as FBSYMBOL ptr
 end type
 
