@@ -79,10 +79,7 @@ static FB_WCHAR *hHEX ( unsigned int num, int len, int digits )
 		}
 
 		for( ; i < totdigs; i++, num <<= 4 )
-			if( num > 0x0FFFFFFF )
-				*buf++ = hex_table[(num & 0xF0000000) >> 28];
-			else
-				*buf++ = _LC('0');
+			*buf++ = hex_table[(num & 0xF0000000) >> 28];
 	}
 
 	/* add null-term */

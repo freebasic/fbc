@@ -79,10 +79,7 @@ FBCALL FB_WCHAR *fb_WstrHexEx_l ( unsigned long long num, int digits )
 		}
 
 		for( ; i < totdigs; i++, num <<= 4 )
-			if( num > 0x0FFFFFFFFFFFFFFFULL )
-				*buf++ = hex_table[(num & 0xF000000000000000ULL) >> 60];
-			else
-				*buf++ = _LC('0');
+			*buf++ = hex_table[(num & 0xF000000000000000ULL) >> 60];
 	}
 
 	/* add null-term */
