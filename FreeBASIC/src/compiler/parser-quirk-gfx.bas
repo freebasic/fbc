@@ -739,11 +739,12 @@ function cGfxPut as integer
 				mode = FBGFX_PUTMODE_XOR
 
 			case else
-				if (ucase$( *lexGetText( ) ) = "TRANS") then
+				select case ucase( *lexGetText( ) )
+				case "TRANS"
 					lexSkipToken( )
 					mode = FBGFX_PUTMODE_TRANS
 
-				elseif (ucase$( *lexGetText( ) ) = "ALPHA") then
+				case "ALPHA"
 					lexSkipToken( )
 					mode = FBGFX_PUTMODE_ALPHA
 
@@ -751,7 +752,7 @@ function cGfxPut as integer
 						hMatchExpression( alphaexpr )
 					end if
 
-				elseif (ucase$( *lexGetText( ) ) = "CUSTOM") then
+				case "CUSTOM"
 					lexSkipToken( )
 
 					mode = FBGFX_PUTMODE_CUSTOM
@@ -760,20 +761,20 @@ function cGfxPut as integer
 
 					hMatchExpression( funcexpr )
 
-					s = astGetSymbol( funcexpr )
+					s = astGetSubType( funcexpr )
 					if( s = NULL ) then
-						hReportError FB_ERRMSG_TYPEMISMATCH
+						hReportError( FB_ERRMSG_TYPEMISMATCH )
 						exit function
 					end if
 
 					if( not symbIsProc( s ) ) then
-						hReportError FB_ERRMSG_TYPEMISMATCH
+						hReportError( FB_ERRMSG_TYPEMISMATCH )
 						exit function
 					end if
 
 					if( ( symbGetType( s ) <> FB_SYMBTYPE_UINT ) or _
 						( symbGetProcArgs( s ) <> 2 ) ) then
-						hReportError FB_ERRMSG_TYPEMISMATCH
+						hReportError( FB_ERRMSG_TYPEMISMATCH )
 						exit function
 					end if
 
@@ -789,10 +790,10 @@ function cGfxPut as integer
 						exit function
 					end if
 
-				else
+				case else
 					hReportError( FB_ERRMSG_SYNTAXERROR )
 					exit function
-				end if
+				end select
 			end select
 		end if
 	end if
