@@ -29,13 +29,10 @@
 /*:::::*/
 int fb_ConsoleIsRedirected( int is_input )
 {
-	CONSOLE_SCREEN_BUFFER_INFO info;
+	DWORD mode;
 
-	if( GetConsoleScreenBufferInfo( (is_input? fb_in_handle : fb_out_handle), &info ) == 0 )
+	if( GetConsoleMode( (is_input? fb_in_handle : fb_out_handle), &mode ) == 0 )
 		return TRUE;
-
-    if( (info.dwSize.X == 0) || (info.srWindow.Top == info.srWindow.Bottom) )
-    	return TRUE;
-
-    return FALSE;
+	else
+    	return FALSE;
 }
