@@ -23,6 +23,9 @@ Version 0.16 Beta:
 - suffixes (%, #, etc) were not been preserved in argument-less #defines (v1c)
 - NOT couldn't be used in pre-processor directives if ()'s were present (v1c)
 - w- and z-strings were been allowed in IIF() (v1c)
+- GFX PUT's CUSTOM callback couldn't be a pointer (v1c)
+- INPUT in Win32 was not printing the message to console (v1c)
+
 
 Version 0.15 Beta:
 
