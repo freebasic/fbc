@@ -141,12 +141,13 @@ data @"stop","fb_End", _
 	 1, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0
 
-'' run ( exename as string ) as integer
-data @"run","fb_Run", _
+'' run ( byref exename as string, byref arguments as string = "" ) as integer
+data @"run","fb_RunEx", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
-	 1, _
-	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
+	 2, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, TRUE,""
 
 '' chain ( exename as string ) as integer
 data @"chain","fb_Chain", _
@@ -155,7 +156,7 @@ data @"chain","fb_Chain", _
 	 1, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
 
-'' exec ( exename as string, arguments as string ) as integer
+'' exec ( byref exename as string, byref arguments as string ) as integer
 data @"exec","fb_Exec", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
@@ -163,14 +164,14 @@ data @"exec","fb_Exec", _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
 
-'' environ ( varname as string ) as string
+'' environ ( byref varname as string ) as string
 data @"environ","fb_GetEnviron", _
 	 FB_SYMBTYPE_STRING,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
 
-'' setenviron ( varname as string ) as integer
+'' setenviron ( byref varname as string ) as integer
 data @"setenviron","fb_SetEnviron", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
@@ -200,14 +201,14 @@ data @"dir","fb_Dir", _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, TRUE,"", _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,&h33
 
-'' settime ( time as string ) as integer
+'' settime ( byref time as string ) as integer
 data @"settime","fb_SetTime", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
 
-'' setdate ( date as string ) as integer
+'' setdate ( byref date as string ) as integer
 data @"setdate","fb_SetDate", _
 	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
