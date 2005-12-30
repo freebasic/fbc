@@ -120,7 +120,7 @@ data "__FB_MIN_VERSION__", _
 	 FB_DEFTOK_TYPE_ARG, 0, _
 	 FB_DEFTOK_TYPE_TEX, ")) and ((__FB_VER_MINOR__ > (", _
 	 FB_DEFTOK_TYPE_ARG, 1, _
-	 FB_DEFTOK_TYPE_TEX, "!)) or (__FB_VER_MINOR__ = (", _
+	 FB_DEFTOK_TYPE_TEX, ")) or (__FB_VER_MINOR__ = (", _
 	 FB_DEFTOK_TYPE_ARG, 1, _
 	 FB_DEFTOK_TYPE_TEX, ") and __FB_VER_PATCH__ >= (", _
 	 FB_DEFTOK_TYPE_ARG, 2, _
