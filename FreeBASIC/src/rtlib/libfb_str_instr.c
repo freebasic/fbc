@@ -178,7 +178,8 @@ FBCALL int fb_StrInstr ( int start, FBSTRING *src, FBSTRING *patt )
 {
     int r;
 
-    if( (src == NULL) || (src->data == NULL) || (patt == NULL) || (patt->data == NULL) )
+    if( (src == NULL) || (src->data == NULL) ||
+    	(patt == NULL) || (patt->data == NULL) )
     {
         r = 0;
     }
@@ -186,7 +187,8 @@ FBCALL int fb_StrInstr ( int start, FBSTRING *src, FBSTRING *patt )
     {
         size_t size_src = FB_STRSIZE(src);
         size_t size_patt = FB_STRSIZE(patt);
-        if( ((start < 1) || (start > size_src)) || (size_patt > size_src) )
+        if( (size_src == 0) || (size_patt == 0) ||
+            ((start < 1) || (start > size_src)) || (size_patt > size_src) )
         {
             r = 0;
         }
