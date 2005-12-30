@@ -18,21 +18,25 @@
  */
 
 /*
- * sys_chain.c -- chain function for XBOX
+ * sys_run.c -- RUN function
  *
- * chng: jul/2005 written [DrV]
+ * chng: jan/2005 written [v1ctor]
  *
  */
 
-#include "../fb.h"
-#include "../fb_rterr.h"
-#include "fb_xbox.h"
+#include "fb.h"
 
 /*:::::*/
-FBCALL int fb_Chain ( FBSTRING *program )
+FBCALL int fb_RunEx ( FBSTRING *program, FBSTRING *args )
 {
-	XLaunchXBE(program->data);
+	if( fb_ExecEx( program, args, FALSE ) != -1 )
+		fb_End( 0 );
 
-	return fb_ErrorSetNum(FB_RTERROR_FILENOTFOUND);
+    return -1;
+}
 
+/*:::::*/
+FBCALL int fb_Run ( FBSTRING *program )
+{
+	return fb_RunEx( program, NULL );
 }

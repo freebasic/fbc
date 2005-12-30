@@ -30,10 +30,10 @@
 #include <stdlib.h>
 
 /*:::::*/
-FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
+FBCALL int fb_ExecEx ( FBSTRING *program, FBSTRING *args, int do_fork )
 {
-	char	buffer[MAX_PATH+1];
-	char	*argv[256], c, *startpos;
+	char buffer[MAX_PATH+1];
+	char *argv[256], c, *startpos;
 	int	res = 0;
 	int	i;
 	int	in_quotes = FALSE;
@@ -48,7 +48,7 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 			argsdata = args->data;
 
 		argv[0] = &buffer[0];
-		
+
 		for (i = 1, startpos = argsdata; (c = *argsdata) != '\0'; argsdata++) {
 			if (in_quotes) {
 				if (c == '"') {
@@ -75,7 +75,7 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 				}
 			} /* in_quotes */
 		}
-		
+
 		/* get last arg */
 		if (startpos < argsdata) {
 			argv[i] = (char*)malloc(argsdata - startpos + 1);
@@ -83,16 +83,21 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 			argv[i][argsdata - startpos] = '\0';
 			i++;
 		}
-		
+
 		argv[i] = NULL;
-		
-	
+
+
 		/* NOTE: DJGPP info on 3rd arg of spawnv* functions is inconsistent;
 		   in docs, defined as const char **;
 		   in process.h, defined as char *const _argv[]
 		*/
-		res = spawnv(P_WAIT, (const char*)fb_hGetShortPath(program->data, buffer, MAX_PATH), (char * const *)argv);
-		
+
+		fb_hGetShortPath( program->data, buffer, MAX_PATH );
+		if( do_fork )
+			res = spawnv( P_WAIT, (const char*)buffer, (char * const *)argv );
+		else
+			res = execv( (const char*)buffer, (char * const *)argv );
+
 		for (i = 1; argv[i] != NULL; i++) {
 			free(argv[i]);
 		}
@@ -103,5 +108,11 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 	fb_hStrDelTemp( program );
 
 	return res;
+}
+
+/*:::::*/
+FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
+{
+	return fb_ExecEx( program, args, TRUE );
 }
 

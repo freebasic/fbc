@@ -18,7 +18,7 @@
  */
 
 /*
- * sys_chain.c -- chain function for Windows
+ * sys_chain.c -- chain function
  *
  * chng: jan/2005 written [v1ctor]
  *
@@ -32,5 +32,5 @@
 /*:::::*/
 FBCALL int fb_Chain ( FBSTRING *program )
 {
-    return fb_hExec ( program, NULL, TRUE );
+    return fb_ExecEx( program, NULL, TRUE );
 }

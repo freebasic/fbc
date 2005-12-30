@@ -84,10 +84,6 @@ extern int ScrollWasOff;
             fb_ConsolePrintBufferEx( NULL, 0, FB_PRINT_FORCE_ADJUST ); \
     } while (0)
 
-FBCALL int fb_hExec                     ( struct _FBSTRING *program,
-                                          struct _FBSTRING *args,
-                                          int do_wait );
-
        int fb_hConsoleTranslateKey      ( char AsciiChar,
                                           WORD wVsCode,
                                           WORD wVkCode,

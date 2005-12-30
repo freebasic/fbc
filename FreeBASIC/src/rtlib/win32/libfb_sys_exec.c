@@ -31,16 +31,13 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL int fb_hExec ( FBSTRING *program, FBSTRING *args, int do_wait )
+FBCALL int fb_ExecEx ( FBSTRING *program, FBSTRING *args, int do_fork )
 {
-    char	buffer[MAX_PATH+1];
-    char   *application;
-    char   *arguments;
-    int		res = 0;
-    int     got_program;
-    size_t  len_arguments;
+    char buffer[MAX_PATH+1], *application, *arguments;
+    int	res = 0, got_program;
+    size_t len_arguments;
 #ifndef TARGET_WIN32
-    size_t  len_program;
+    size_t len_program;
 #endif
 
     got_program = (program != NULL) && (program->data != NULL);
@@ -94,7 +91,10 @@ FBCALL int fb_hExec ( FBSTRING *program, FBSTRING *args, int do_wait )
 
 	{
 #ifdef TARGET_WIN32
-        res = _spawnl( (do_wait ? _P_WAIT : _P_NOWAIT), buffer, buffer, arguments, NULL );
+        if( do_fork )
+        	res = _spawnl( _P_WAIT, buffer, buffer, arguments, NULL );
+        else
+        	res = _execl( buffer, buffer, arguments, NULL );
 #else
         STARTUPINFO StartupInfo;
         PROCESS_INFORMATION ProcessInfo;
@@ -115,7 +115,7 @@ FBCALL int fb_hExec ( FBSTRING *program, FBSTRING *args, int do_wait )
         } else {
             /* Release main thread handle - we're not interested in it */
             CloseHandle( ProcessInfo.hThread );
-            if( do_wait ) {
+            if( do_fork ) {
                 DWORD dwExitCode;
                 WaitForSingleObject( ProcessInfo.hProcess,
                                      INFINITE );
@@ -138,6 +138,6 @@ FBCALL int fb_hExec ( FBSTRING *program, FBSTRING *args, int do_wait )
 /*:::::*/
 FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 {
-    return fb_hExec( program, args, TRUE );
+    return fb_ExecEx( program, args, TRUE );
 }
 

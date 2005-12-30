@@ -37,18 +37,11 @@
 
 
 /*:::::*/
-FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
+FBCALL int fb_ExecEx ( FBSTRING *program, FBSTRING *args, int do_fork )
 {
-    char	buffer[MAX_PATH+1];
-    char	*argv[256];
-    int		res = 0;
-
-	char 	*argsdata;
-
-	char	*cmdline, *this_arg;
-   	int		i, argc = 1;
-	pid_t	pid;
-	int		status;
+    char buffer[MAX_PATH+1], *argv[256], *argsdata, *cmdline, *this_arg;
+   	int i, argc = 1, res = 0, status;
+	pid_t pid;
 
 	if( (program != NULL) && (program->data != NULL) )
 	{
@@ -81,18 +74,31 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 
 		/* Launch */
 		fb_hExitConsole();
-		if ((pid = fork()) == 0) {
-			fb_hConvertPath( program->data, strlen( program->data ) );
-			exit( execvp( fb_hGetShortPath( program->data, buffer, MAX_PATH ), argv ) );
-		}
-		else {
-			waitpid(pid, &status, 0);
-			if (WIFEXITED(status))
-				res = WEXITSTATUS(status);
+
+		fb_hConvertPath( program->data, strlen( program->data ) );
+
+		if( do_fork )
+		{
+			if ((pid = fork()) == 0)
+			{
+				exit( execvp( fb_hGetShortPath( program->data, buffer, MAX_PATH ), argv ) );
+			}
 			else
-				res = -1;
+			{
+				waitpid(pid, &status, 0);
+				if (WIFEXITED(status))
+					res = WEXITSTATUS(status);
+				else
+					res = -1;
+			}
 		}
+		else
+		{
+			res = execvp( fb_hGetShortPath( program->data, buffer, MAX_PATH ), argv );
+		}
+
 		fb_hInitConsole();
+
 		free(cmdline);
 		for (i = 1; i < argc; i++)
 			free(argv[i]);
@@ -108,5 +114,11 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 	FB_STRUNLOCK();
 
 	return res;
+}
+
+/*:::::*/
+FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
+{
+	return fb_ExecEx( program, args, TRUE );
 }
 

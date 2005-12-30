@@ -629,6 +629,7 @@ FBCALL int          fb_Shell            ( FBSTRING *program );
 FBCALL int          fb_Run              ( FBSTRING *program );
 FBCALL int          fb_Chain            ( FBSTRING *program );
 FBCALL int          fb_Exec             ( FBSTRING *program, FBSTRING *args );
+FBCALL int 			fb_ExecEx 			( FBSTRING *program, FBSTRING *args, int do_wait );
 FBCALL void        *fb_DylibLoad        ( FBSTRING *library );
 FBCALL void        *fb_DylibSymbol      ( void *library, FBSTRING *symbol );
 FBCALL void         fb_DylibFree        ( void *library );

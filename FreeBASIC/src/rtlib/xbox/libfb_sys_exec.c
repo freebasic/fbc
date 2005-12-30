@@ -29,7 +29,7 @@
 #include "fb_xbox.h"
 
 /*:::::*/
-FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
+FBCALL int fb_ExecEx ( FBSTRING *program, FBSTRING *args, int do_fork )
 {
 	XLaunchXBE(program->data);
 
@@ -37,3 +37,8 @@ FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
 
 }
 
+/*:::::*/
+FBCALL int fb_Exec ( FBSTRING *program, FBSTRING *args )
+{
+	return fb_ExecEx( program, args, FALSE );
+}
