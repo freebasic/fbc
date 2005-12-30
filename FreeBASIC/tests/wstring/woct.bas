@@ -6,14 +6,14 @@ sub test_long
 	dim as ulongint n = TEST_VAL, digmax = 8
 	dim as integer i
 		
-	assert( vallng( "&o" + woct( n ) ) = TEST_VAL )
+	assert( valulng( "&o" + woct( n ) ) = TEST_VAL )
 	
 	for i = 1 to ((len( n ) * 8) \ 3) + 0
-	    assert( vallng( "&o" + woct( n, i ) ) = TEST_VAL mod digmax )
+	    assert( valulng( "&o" + woct( n, i ) ) = TEST_VAL mod digmax )
 	    digmax *= 8
 	next
 	
-	assert( vallng( "&o" + woct( n, i ) ) = TEST_VAL )
+	assert( valulng( "&o" + woct( n, i ) ) = TEST_VAL )
 	
 end sub
 	
@@ -23,14 +23,14 @@ sub test_int
 	dim as uinteger n = TEST_VAL, digmax = 8
 	dim as integer i
 		
-	assert( vallng( "&o" + woct( n ) ) = TEST_VAL )
+	assert( valuint( "&o" + woct( n ) ) = TEST_VAL )
 	
 	for i = 1 to ((len( n ) * 8) \ 3) + 0
-	    assert( vallng( "&o" + woct( n, i ) ) = TEST_VAL mod digmax )
+	    assert( valuint( "&o" + woct( n, i ) ) = TEST_VAL mod digmax )
 	    digmax *= 8
 	next
 	
-	assert( vallng( "&o" + woct( n, i ) ) = TEST_VAL )
+	assert( valuint( "&o" + woct( n, i ) ) = TEST_VAL )
 	
 end sub
 
@@ -40,14 +40,14 @@ sub test_short
 	dim as ushort n = TEST_VAL, digmax = 8
 	dim as integer i
 		
-	assert( vallng( "&o" + woct( n ) ) = TEST_VAL )
+	assert( valuint( "&o" + woct( n ) ) = TEST_VAL )
 	
 	for i = 1 to ((len( n ) * 8) \ 3) + 0
-	    assert( vallng( "&o" + woct( n, i ) ) = TEST_VAL mod digmax )
+	    assert( valuint( "&o" + woct( n, i ) ) = TEST_VAL mod digmax )
 	    digmax *= 8
 	next
 	
-	assert( vallng( "&o" + woct( n, i ) ) = TEST_VAL )
+	assert( valuint( "&o" + woct( n, i ) ) = TEST_VAL )
 	
 end sub
 
@@ -57,14 +57,14 @@ sub test_byte
 	dim as ubyte n = TEST_VAL, digmax = 8
 	dim as integer i
 		
-	assert( vallng( "&o" + woct( n ) ) = TEST_VAL )
+	assert( valuint( "&o" + woct( n ) ) = TEST_VAL )
 	
 	for i = 1 to ((len( n ) * 8) \ 3) + 0
-	    assert( vallng( "&o" + woct( n, i ) ) = TEST_VAL mod digmax )
+	    assert( valuint( "&o" + woct( n, i ) ) = TEST_VAL mod digmax )
 	    digmax *= 8
 	next
 	
-	assert( vallng( "&o" + woct( n, i ) ) = TEST_VAL )
+	assert( valuint( "&o" + woct( n, i ) ) = TEST_VAL )
 	
 end sub
 
