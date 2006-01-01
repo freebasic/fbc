@@ -862,6 +862,8 @@ declare function DrawDibClose alias "DrawDibClose" (byval as HDRAWDIB) as BOOL
 declare function DrawDibProfileDisplay alias "DrawDibProfileDisplay" (byval as LPBITMAPINFOHEADER) as DWORD
 
 #ifdef UNICODE
+declare function capCreateCaptureWindow alias "capCreateCaptureWindowW" (byval as LPCWSTR, byval as DWORD, byval as integer, byval as integer, byval as integer, byval as integer, byval as HWND, byval as integer) as HWND
+declare function capGetDriverDescription alias "capGetDriverDescriptionW" (byval as UINT, byval as LPWSTR, byval as integer, byval as LPWSTR, byval as integer) as BOOL
 declare function AVIStreamOpenFromFile alias "AVIStreamOpenFromFileW" (byval as PAVISTREAM ptr, byval as LPCWSTR, byval as DWORD, byval as LONG, byval as UINT, byval as CLSID ptr) as HRESULT
 declare function AVIBuildFilter alias "AVIBuildFilterW" (byval as LPWSTR, byval as LONG, byval as BOOL) as HRESULT
 declare function AVISaveV alias "AVISaveVW" (byval as LPCWSTR, byval as CLSID ptr, byval as AVISAVECALLBACK, byval as INT_, byval as PAVISTREAM ptr, byval as LPAVICOMPRESSOPTIONS ptr) as HRESULT
@@ -898,6 +900,8 @@ type LPAVIFILEINFO as LPAVIFILEINFOW
 #define MCIWNDM_OPEN MCIWNDM_OPENW
 
 #else ''UNICODE
+declare function capCreateCaptureWindow alias "capCreateCaptureWindowA" (byval as LPCSTR , byval as DWORD, byval as integer, byval as integer, byval as integer, byval as integer, byval as HWND, byval as integer) as HWND 
+declare function capGetDriverDescription alias "capGetDriverDescriptionA" (byval as UINT, byval as LPSTR , byval as integer, byval as LPSTR , byval as integer) as BOOL
 declare function AVIStreamOpenFromFile alias "AVIStreamOpenFromFileA" (byval as PAVISTREAM ptr, byval as LPCSTR, byval as DWORD, byval as LONG, byval as UINT, byval as CLSID ptr) as HRESULT
 declare function AVIBuildFilter alias "AVIBuildFilterA" (byval as LPSTR, byval as LONG, byval as BOOL) as HRESULT
 declare function AVISaveV alias "AVISaveVA" (byval as LPCSTR, byval as CLSID ptr, byval as AVISAVECALLBACK, byval as INT_, byval as PAVISTREAM ptr, byval as LPAVICOMPRESSOPTIONS ptr) as HRESULT
