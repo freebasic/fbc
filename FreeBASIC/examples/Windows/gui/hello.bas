@@ -1,48 +1,27 @@
-''
-''
-''
-''
 option explicit
-option private
 
 #include once "windows.bi"
 
 declare function        WinMain     ( byval hInstance as HINSTANCE, _
                                       byval hPrevInstance as HINSTANCE, _
-                                      szCmdLine as string, _
+                                      byval szCmdLine as string, _
                                       byval iCmdShow as integer ) as integer
                                   
                                   
-    ''
-    '' Entry point    
-    ''
-	end WinMain( GetModuleHandle( null ), null, Command$, SW_NORMAL )
+	end WinMain( GetModuleHandle( null ), null, Command( ), SW_NORMAL )
 
-'' ::::::::
-'' name: WndProc
-'' desc: Processes windows messages
-''
-'' ::::::::
+'':::::
 function WndProc ( byval hWnd as HWND, _
-                   byval message as UINT, _
+                   byval wMsg as UINT, _
                    byval wParam as WPARAM, _
                    byval lParam as LPARAM ) as LRESULT
     
     function = 0
     
-    ''
-    '' Process messages
-    ''
-    select case( message )
-        ''
-        '' Window was created
-        ''        
+    select case( wMsg )
         case WM_CREATE            
             exit function
-        
-        ''
-        '' Windows is being repainted
-        ''
+
         case WM_PAINT
     		dim rct as RECT
     		dim pnt as PAINTSTRUCT
@@ -52,7 +31,7 @@ function WndProc ( byval hWnd as HWND, _
             GetClientRect( hWnd, @rct )
             
             DrawText( hDC, _
-            		  "Hello Windows from FreeBasic!", _
+            		  "Hello, World!", _
             		  -1, _
                       @rct, _
                       DT_SINGLELINE or DT_CENTER or DT_VCENTER )
@@ -61,51 +40,31 @@ function WndProc ( byval hWnd as HWND, _
             
             exit function            
         
-		''
-		'' Key pressed
-		''
 		case WM_KEYDOWN
 			if( lobyte( wParam ) = 27 ) then
 				PostMessage( hWnd, WM_CLOSE, 0, 0 )
 			end if
 
-        ''
-        '' Window was closed
-        ''
     	case WM_DESTROY
             PostQuitMessage( 0 )
             exit function
     end select
     
-    ''
-    '' Message doesn't concern us, send it to the default handler
-    '' and get result
-    ''
-    function = DefWindowProc( hWnd, message, wParam, lParam )    
+    function = DefWindowProc( hWnd, wMsg, wParam, lParam )    
     
 end function
 
-'' ::::::::
-'' name: WinMain
-'' desc: A win2 gui program entry point
-''
-'' ::::::::
+'':::::
 function WinMain ( byval hInstance as HINSTANCE, _
                    byval hPrevInstance as HINSTANCE, _
-                   szCmdLine as string, _
+                   byval szCmdLine as string, _
                    byval iCmdShow as integer ) as integer    
      
     dim wMsg as MSG
     dim wcls as WNDCLASS     
-    dim szAppName as string
     dim hWnd as HWND
      
     function = 0
-     
-    ''
-    '' Setup window class
-    ''
-    szAppName = "HelloWin"
      
     with wcls
     	.style         = CS_HREDRAW or CS_VREDRAW
@@ -117,22 +76,16 @@ function WinMain ( byval hInstance as HINSTANCE, _
     	.hCursor       = LoadCursor( NULL, IDC_ARROW )
     	.hbrBackground = GetStockObject( WHITE_BRUSH )
     	.lpszMenuName  = NULL
-    	.lpszClassName = strptr( szAppName )
+    	.lpszClassName = @"HelloWin"
     end with
           
-    ''
-    '' Register the window class     
-    ''     
     if( RegisterClass( @wcls ) = FALSE ) then
-       MessageBox( null, "Failed to register wcls!", szAppName, MB_ICONERROR )
+       MessageBox( null, "Failed to register wcls", "Error", MB_ICONERROR )
        exit function
     end if
     
-	''
-    '' Create the window and show it
-    ''
     hWnd = CreateWindowEx( 0, _
-    			 		   szAppName, _
+    			 		   @"HelloWin", _
                            "The Hello Program", _
                            WS_OVERLAPPEDWINDOW, _
                            CW_USEDEFAULT, _
@@ -148,18 +101,11 @@ function WinMain ( byval hInstance as HINSTANCE, _
     ShowWindow( hWnd, iCmdShow )
     UpdateWindow( hWnd )
      
-    ''
-    '' Process windows messages
-    ''
     while( GetMessage( @wMsg, NULL, 0, 0 ) <> FALSE )    
         TranslateMessage( @wMsg )
         DispatchMessage( @wMsg )
     wend
     
-    
-    ''
-    '' Program has ended
-    ''
     function = wMsg.wParam
 
 end function
