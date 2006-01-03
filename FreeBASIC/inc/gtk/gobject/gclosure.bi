@@ -11,6 +11,11 @@
 
 #include once "gtk/gobject/gtype.bi"
 
+#define	G_CLOSURE_NEEDS_MARSHAL(closure) (cast(GClosure ptr,closure)->marshal = NULL)
+#define	G_CLOSURE_N_NOTIFIERS(cl) ((cl)->meta_marshal + ((cl)->n_guards shl 1) + (cl)->n_fnotifiers + (cl)->n_inotifiers)
+#define	G_CCLOSURE_SWAP_DATA(cclosure) (cast(GClosure ptr,closure)->derivative_flag)
+#define	G_CALLBACK(f) (cast(GCallback,f))
+
 type GClosure as _GClosure
 type GClosureNotifyData as _GClosureNotifyData
 type GCallback as sub cdecl()
