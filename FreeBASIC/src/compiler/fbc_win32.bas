@@ -255,7 +255,7 @@ function _compileResFiles as integer
 	for i = 0 to rcs-1
 
 		'' windres options
-		rescmpcline = "/ni /nw /o /fo \"" + hStripExt(rclist(i)) + ".obj\" " + rclist(i)
+		rescmpcline = "/ni /nw /o /fo \"" + hStripExt(rclist(i)) + ".obj\" \"" + rclist(i) + "\""
 
 		'' invoke
 		if( fbc.verbose ) then
