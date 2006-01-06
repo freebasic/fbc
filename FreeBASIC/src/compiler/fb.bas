@@ -122,12 +122,12 @@ private function hAddIncFile( byval filename as zstring ptr ) as integer static
 end function
 
 '':::::
-function fbGetIncFile( byval index as integer ) as string static
+function fbGetIncFile( byval index as integer ) as zstring ptr static
 
 	if( (index >= 0) and (index <= ubound( incfileTB )) ) then
-		function = incfileTB( index )
+		function = @incfileTB( index )
 	else
-		function = ""
+		function = NULL
 	end if
 
 end function
@@ -402,9 +402,9 @@ sub fbSetPaths( byval target as integer ) static
 	end select
 
 #ifdef TARGET_LINUX
-	pathTB(FB_PATH_BIN) = hRevertSlash( pathTB(FB_PATH_BIN) )
-	pathTB(FB_PATH_INC) = hRevertSlash( pathTB(FB_PATH_INC) )
-	pathTB(FB_PATH_LIB) = hRevertSlash( pathTB(FB_PATH_LIB) )
+	hRevertSlash( pathTB(FB_PATH_BIN), FALSE )
+	hRevertSlash( pathTB(FB_PATH_INC), FALSE )
+	hRevertSlash( pathTB(FB_PATH_LIB), FALSE )
 #endif
 
 end sub
@@ -472,14 +472,16 @@ end sub
 '':::::
 function fbCompile( byval infname as zstring ptr, _
 				    byval outfname as zstring ptr, _
-				    byval ismain as integer ) as integer
+				    byval ismain as integer _
+				  ) as integer
+
     dim as integer res
 	dim as double tmr
 
 	function = FALSE
 
 	''
-	env.inf.name	= *infname
+	env.inf.name	= *hRevertSlash( infname, FALSE )
 	env.inf.incfile	= INVALID
 	env.inf.ismain	= ismain
 
@@ -641,6 +643,9 @@ function fbIncludeFile( byval filename as zstring ptr, _
 	else
 		incfile = *filename
 	end if
+
+	''
+	hRevertSlash( incfile, FALSE )
 
 	''
 	if( hFileExists( incfile ) = FALSE ) then

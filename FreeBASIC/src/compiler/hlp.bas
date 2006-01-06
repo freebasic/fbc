@@ -593,17 +593,24 @@ function hGetFileExt( byval fname as zstring ptr ) as string static
 end function
 
 '':::::
-function hRevertSlash( byval s as zstring ptr ) as string static
-    dim as integer i
-    dim as string res
+function hRevertSlash( byval s as zstring ptr, _
+					   byval allocnew as integer _
+					 ) as zstring ptr static
 
-	res = *s
+    dim as zstring ptr res
+    dim as integer i
+
+	if( allocnew ) then
+		res = allocate( len( *s ) )
+	else
+		res = s
+	end if
 
 	for i = 0 to len( *s )-1
 		if( res[i] = CHAR_RSLASH ) then
 			res[i] = CHAR_SLASH
 		end if
-	next i
+	next
 
 	function = res
 

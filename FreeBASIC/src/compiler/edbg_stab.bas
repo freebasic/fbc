@@ -203,7 +203,7 @@ end sub
 '':::::
 sub edbgEmitHeader( byval filename as zstring ptr ) static
     dim as integer i
-    dim as string fname, stab, lname
+    dim as string stab, lname
 
 	if( env.clopt.debug = FALSE ) then
 		exit sub
@@ -220,13 +220,15 @@ sub edbgEmitHeader( byval filename as zstring ptr ) static
 
 	'' emit source file
     lname = *hMakeTmpStr( )
-    fname = hRevertSlash( filename )
-    hWriteStr( TRUE, ".file \"" + fname + "\"" )
-    if( instr( fname, "/" ) = 0 ) then
-    	hEmitSTABS( STAB_TYPE_SO, hRevertSlash( curdir() + "/" ), 0, 0, lname )
+    hWriteStr( TRUE, ".file \"" + *filename + "\"" )
+    if( instr( *filename, "/" ) = 0 ) then
+    	dim as zstring ptr dirpath
+    	dirpath = hRevertSlash( curdir() + "/", TRUE )
+    	hEmitSTABS( STAB_TYPE_SO, dirpath, 0, 0, lname )
+    	deallocate( dirpath )
     end if
 
-    hEmitSTABS( STAB_TYPE_SO, fname, 0, 0, lname )
+    hEmitSTABS( STAB_TYPE_SO, filename, 0, 0, lname )
 
 	''
 	emitSECTION( EMIT_SECTYPE_CODE )
@@ -245,7 +247,7 @@ sub edbgEmitHeader( byval filename as zstring ptr ) static
 
 	hWriteStr( FALSE, "" )
 
-	hEmitSTABS( STAB_TYPE_BINCL, fname, 0, 0 )
+	hEmitSTABS( STAB_TYPE_BINCL, filename, 0, 0 )
 
 end sub
 
@@ -1045,9 +1047,10 @@ sub edbgEmitProcArg( byval sym as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub edbgIncludeBegin ( byval incname as zstring ptr, _
+sub edbgIncludeBegin ( byval filename as zstring ptr, _
 					   byval incfile as integer ) static
-	dim as string fname, lname
+
+	dim as string lname
 
 	if( env.clopt.debug = FALSE ) then
 		exit sub
@@ -1055,15 +1058,13 @@ sub edbgIncludeBegin ( byval incname as zstring ptr, _
 
 	ctx.incfile = incfile
 
-	fname = hRevertSlash( incname )
-
-	hEmitSTABS( STAB_TYPE_BINCL, fname, 0, 0 )
+	hEmitSTABS( STAB_TYPE_BINCL, filename, 0, 0 )
 
 	emitSECTION( EMIT_SECTYPE_CODE )
 
 	lname = *hMakeTmpStr( )
 
-	hEmitSTABS( STAB_TYPE_SOL, fname, 0, 0, lname )
+	hEmitSTABS( STAB_TYPE_SOL, filename, 0, 0, lname )
 
 	hLABEL( lname )
 

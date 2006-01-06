@@ -238,7 +238,7 @@ declare sub 		fbAddDefine		( byval dname as zstring ptr, _
 declare function 	fbIncludeFile	( byval filename as zstring ptr, _
 									  byval isonce as integer ) as integer
 
-declare function 	fbGetIncFile	( byval index as integer ) as string
+declare function 	fbGetIncFile	( byval index as integer ) as zstring ptr
 
 declare function    fbGetNaming     ( ) as integer
 

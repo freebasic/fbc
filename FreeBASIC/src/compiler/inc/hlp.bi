@@ -84,7 +84,8 @@ declare function 	hStripFilename 			( byval filename as zstring ptr ) as string
 
 declare function 	hGetFileExt				( byval fname as zstring ptr ) as string
 
-declare function 	hRevertSlash			( byval s as zstring ptr ) as string
+declare function 	hRevertSlash			( byval s as zstring ptr, _
+											  byval allocnew as integer ) as zstring ptr
 
 declare function 	hToPow2					( byval value as uinteger ) as uinteger
 
