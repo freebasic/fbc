@@ -30,5 +30,5 @@
 /*:::::*/
 int fb_ConsoleMultikey( int scancode )
 {
-	return FALSE;
+	return FB_FALSE;
 }

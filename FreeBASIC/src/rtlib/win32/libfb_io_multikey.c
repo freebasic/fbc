@@ -83,10 +83,10 @@ static HWND find_window()
 	TCHAR old_title[MAX_PATH];
 	TCHAR title[MAX_PATH];
 	static HWND hwnd = NULL;
-	
+
 	if (hwnd)
 		return hwnd;
-	
+
 	if (GetConsoleTitle(old_title, MAX_PATH)) {
 		sprintf(title, "_fb_console_title %f", fb_Timer());
 		SetConsoleTitle(title);
@@ -101,14 +101,14 @@ static HWND find_window()
 int fb_ConsoleMultikey( int scancode )
 {
 	int i;
-	
+
 	if ( find_window() != GetForegroundWindow() )
-		return FALSE;
-	
+		return FB_FALSE;
+
 	for( i = 0; fb_keytable[i][0]; i++ ) {
 		if( fb_keytable[i][0] == scancode ) {
-			return ((GetAsyncKeyState(fb_keytable[i][1]) | GetAsyncKeyState(fb_keytable[i][2])) & 0x8000) ? TRUE : FALSE;
+			return ((GetAsyncKeyState(fb_keytable[i][1]) | GetAsyncKeyState(fb_keytable[i][2])) & 0x8000) ? FB_TRUE : FB_FALSE;
 		}
 	}
-	return FALSE;
+	return FB_FALSE;
 }

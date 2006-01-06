@@ -30,13 +30,13 @@
 /*:::::*/
 int fb_GfxMultikey(int scancode)
 {
-	int result = 0;
-	
+	int result = FB_FALSE;
+
 	if ((fb_mode) && (scancode >= 0) && (scancode < 128)) {
 		DRIVER_LOCK();
-		result = fb_mode->key[scancode];
+		result = (fb_mode->key[scancode]? FB_TRUE : FB_FALSE);
 		DRIVER_UNLOCK();
 	}
-	
+
 	return result;
 }

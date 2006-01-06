@@ -124,7 +124,7 @@ static int fb_MultikeyHandler(unsigned irq_number)
             }
             if( code!=0 ) {
                 /* Remeber scancode status */
-                fb_force_input_buffer_changed = 
+                fb_force_input_buffer_changed =
                     key[code] = !release_code;
             }
         }
@@ -170,6 +170,10 @@ void fb_ConsoleMultikeyInit( void )
 /*:::::*/
 int fb_ConsoleMultikey( int scancode )
 {
+	if( scancode >= sizeof( key ) )
+		return FB_FALSE;
+
     fb_ConsoleMultikeyInit( );
-	return (scancode < sizeof(key) ? key[scancode] : FALSE);
+
+	return (key[scancode]? FB_TRUE: FB_FALSE);
 }

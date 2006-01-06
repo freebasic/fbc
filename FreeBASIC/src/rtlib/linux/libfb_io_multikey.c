@@ -142,16 +142,16 @@ const struct
 static int keyboard_console_getch(void)
 {
 	int key = -1;
-	
+
 	BG_LOCK();
-	
+
 	if (key_head != key_tail) {
 		key = key_buffer[key_head];
 		key_head = (key_head + 1) & (KEY_BUFFER_SIZE - 1);
 	}
-	
+
 	BG_UNLOCK();
-	
+
 	return key;
 }
 
@@ -162,7 +162,7 @@ static void keyboard_console_handler(void)
 	unsigned char buffer[128], scancode;
 	int num_bytes, i, ascii, extended = 0;
 	struct kbentry entry;
-	
+
 	num_bytes = read(key_fd, &buffer, sizeof(buffer));
 	if (num_bytes > 0) {
 		for (i = 0; i < num_bytes; i++) {
@@ -171,10 +171,10 @@ static void keyboard_console_handler(void)
 				key_state[scancode] = FALSE;
 			else {
 				key_state[scancode] = TRUE;
-				
+
 				/* Since we took over keyboard control, we have to map our keypresses to ascii
 				 * in order to report them in our own keyboard buffer */
-				
+
 				switch (scancode) {
 					case SC_CAPSLOCK:	key_leds ^= LED_CAP; break;
 					case SC_NUMLOCK:	key_leds ^= LED_NUM; break;
@@ -201,7 +201,7 @@ static void keyboard_console_handler(void)
 					case SC_F10:		extended = 'D'; break;
 					default:			extended = 0; break;
 				}
-				
+
 				entry.kb_table = 0;
                 if (key_state[SC_LSHIFT] || key_state[SC_RSHIFT])
                 	entry.kb_table |= 0x1;
@@ -272,7 +272,7 @@ static void keyboard_x11_handler(void)
 {
 	unsigned char keymap[32];
 	int i;
-	
+
 	if (!fb_hXTermHasFocus())
 		return;
 	fb_XQueryKeymap(display, keymap);
@@ -290,10 +290,10 @@ static int keyboard_init(void)
 	void *lib;
 	int keycode_min, keycode_max, i, j;
 	KeySym keysym;
-	
+
 	main_pid = getpid();
 	old_getch = fb_con.keyboard_getch;
-	
+
 	if(fb_con.inited == INIT_CONSOLE) {
 		key_fd = dup(fb_con.h_in);
 		if ((ioctl(key_fd, KDGKBMODE, &key_old_mode) < 0) || (ioctl(key_fd, KDSKBMODE, K_MEDIUMRAW) < 0)) {
@@ -331,7 +331,7 @@ static int keyboard_init(void)
 		fb_XDisplayKeycodes(display, &keycode_min, &keycode_max);
 		if (keycode_min < 0) keycode_min = 0;
 		if (keycode_max > 255) keycode_max = 255;
-		
+
 		for (i = keycode_min; i <= keycode_max; i++) {
 			keysym = fb_XKeycodeToKeysym(display, i, 0);
 			if (keysym != NoSymbol) {
@@ -340,12 +340,12 @@ static int keyboard_init(void)
 				scancode[i] = fb_keysym_to_scancode[j].scancode;
 			}
 		}
-		
+
 		fb_hXTermInitFocus();
-		
+
 		keyboard_handler = keyboard_x11_handler;
 	}
-	
+
 	return 0;
 }
 
@@ -371,10 +371,12 @@ static void keyboard_exit(void)
 int fb_ConsoleMultikey(int scancode)
 {
 	int res;
-	
+
 	if (!fb_con.inited)
-		return FALSE;
+		return FB_FALSE;
+
 	pthread_mutex_lock(&fb_con.bg_mutex);
+
 	if (!fb_con.keyboard_handler) {
 		if (!keyboard_init()) {
 			fb_con.keyboard_init = keyboard_init;
@@ -386,8 +388,10 @@ int fb_ConsoleMultikey(int scancode)
 			pthread_mutex_lock(&fb_con.bg_mutex);
 		}
 	}
-	res = key_state[scancode & 0x7F];
+
+	res = (key_state[scancode & 0x7F]? FB_TRUE : FB_FALSE);
+
 	pthread_mutex_unlock(&fb_con.bg_mutex);
-	
+
 	return res;
 }
