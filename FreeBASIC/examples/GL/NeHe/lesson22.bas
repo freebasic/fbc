@@ -181,7 +181,7 @@ dim shared filter as integer =1                                '' Which Filter T
 			ep = true
 			emboss = not emboss
 		end if
-		if not glfwGetKey(asc("E")) then ep = false      '' E Key Up
+		if glfwGetKey(asc("E")) = FALSE then ep = false      '' E Key Up
 
 		if glfwGetKey(asc("M")) and not mp then          '' M Key down
 			mp = true
@@ -189,20 +189,20 @@ dim shared filter as integer =1                                '' Which Filter T
 				useMultitexture = not useMultitexture
 			end if
 		end if
-		if not glfwGetKey(asc("M")) then mp = false      '' M key up
+		if glfwGetKey(asc("M")) = FALSE then mp = false      '' M key up
 
 		if glfwGetKey(asc("B")) and not bp then          '' B Key down
 			bp = true
 			bumps= not bumps
 		end if
-		if not glfwGetKey(asc("B")) then bp = false      '' B Key Up
+		if glfwGetKey(asc("B")) = FALSE then bp = false      '' B Key Up
 
 		if glfwGetKey(asc("F")) and not fp then          '' F Key down
 			fp = true
 			filter += 1                            '' Cycle filter 0 -> 1 -> 2
 			if (filter > 2) then filter = 0        '' 2 -> 0
 		end if
-		if not glfwGetKey(asc("F")) then fp = false      '' F Key Up
+		if glfwGetKey(asc("F")) = FALSE then fp = false      '' F Key Up
 
 		if glfwGetKey(GLFW_KEY_PAGEUP) then z-=0.02        '' If Page Up is Being Pressed, Move Into The Screen
 		if glfwGetKey(GLFW_KEY_PAGEDOWN) then z+=0.02      '' If Page Down is Being Pressed, Move Towards The Viewer
@@ -396,7 +396,7 @@ function LoadGLTextures() as integer
 		next
 
 		Image=LoadBMP(exepath + "/data/OpenGL.bmp")
-		if not (Image) then status=false
+		if (Image = NULL) then status=false
 		for a=0 to Image->sizeX*Image->sizeY - 1
 			alpha[4*a] = Image->buffer[a*3]                 '' R
 			alpha[4*a+1] = Image->buffer[a*3+1]             '' G
@@ -429,7 +429,7 @@ function LoadGLTextures() as integer
 			alpha[4*a+3] = Image->buffer[a*3]               '' Pick Only Red Value As Alpha!
 		next
 		Image=LoadBMP(exepath + "/data/Multi_On.bmp")
-		if not (Image) then status=false
+		if (Image = NULL) then status=false
 		for a=0 to Image->sizeX*Image->sizeY -1
 			alpha[4*a] = Image->buffer[a*3]                 '' R
 			alpha[4*a+1] = Image->buffer[a*3+1]             '' G

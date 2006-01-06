@@ -62,7 +62,7 @@ dim shared MilkShapeModel as MODEL             '' Holds The Model Data
 
 		flip
 		if inkey$ = chr$(255)+"k" then exit do              '' exit if close box is clicked
-	loop while not multikey(SC_ESCAPE)
+	loop while MULTIKEY(SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
 	while inkey <> "": wend

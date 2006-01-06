@@ -181,7 +181,7 @@ const true  = not false
 
 		flip                                       '' filp or crash
 		if inkey$ = chr$(255)+"X" then exit do     '' exit if close box is clicked
-	loop while not multikey(SC_ESCAPE)             '' exit if EXC is pressed
+	loop while MULTIKEY(SC_ESCAPE) = 0             '' exit if EXC is pressed
 	'' Empty keyboard buffer
 	while inkey$ <> "": wend
 	end

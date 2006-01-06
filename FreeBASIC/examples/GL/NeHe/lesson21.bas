@@ -423,7 +423,7 @@ dim shared texture(1) as uinteger                           '' Font Texture Stor
 		if not multikey(SC_A) then ap = false             '' A key up
 
 		flip  '' flip or crash
-	loop while not multikey(SC_ESCAPE)
+	loop while MULTIKEY(SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
 	while INKEY$ <> "": wend

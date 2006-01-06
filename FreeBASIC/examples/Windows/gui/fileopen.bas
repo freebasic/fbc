@@ -63,7 +63,7 @@ function file_getname( byval hWnd as HWND ) as string
 		.lpTemplateName		= NULL
 	end with
 	
-	if( not GetOpenFileName( @ofn ) ) then
+	if( GetOpenFileName( @ofn ) = FALSE ) then
 		return ""
 	else
 		return filename

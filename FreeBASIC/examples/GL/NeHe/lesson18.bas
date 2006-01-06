@@ -174,7 +174,7 @@ declare sub glDrawCube()
 		if multikey(SC_LEFT) then yspeed-=0.01  '' If Left Arrow Being Pressed, Decrease yspeed
 
 		flip  '' flip or crash
-	loop while not multikey(SC_ESCAPE)
+	loop while MULTIKEY(SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
 	while INKEY$ <> "": wend

@@ -75,8 +75,8 @@ declare sub glDrawCube()
 	texture(3) = CreateTexture(@buffer(0))                '' Linear Texture (default)
 	texture(5) = CreateTexture(@buffer(0),TEX_MIPMAP)     '' MipMapped Texture
 	'' Exit if error loading textures
-	if not(texture(0) or texture(1) or texture(2) or texture(3) _
-			or texture(4) or texture(5)) then end 1
+	if (texture(0) or texture(1) or texture(2) or texture(3) _
+			or texture(4) or texture(5)) = NULL then end 1
 
 	glEnable GL_TEXTURE_2D                                '' Enable Texture Mapping
 	glShadeModel GL_SMOOTH                                '' Enable Smooth Shading
@@ -154,21 +154,21 @@ declare sub glDrawCube()
 				glEnable(GL_LIGHTING)
 			end if
 		end if
-		if not multikey(SC_L) then lp = false      '' L Key Up
+		if multikey(SC_L) = FALSE then lp = false      '' L Key Up
 
 		if multikey(SC_F) and not fp then          '' F Key down
 			fp = true
 			filter += 1                            '' Cycle filter 0 -> 1 -> 2
 			if (filter > 2) then filter = 0        '' 2 -> 0
 		end if
-		if not multikey(SC_F) then fp = false      '' F Key Up
+		if multikey(SC_F) = FALSE then fp = false      '' F Key Up
 
 		if multikey(SC_SPACE) and not sp then      '' Space Key down
 			sp = true
 			object = object + 1                    '' Select next object
 			if object>3 then object = 0
 		end if
-		if not multikey(SC_SPACE) then sp = false  '' Space Key Up
+		if multikey(SC_SPACE) = FALSE then sp = false  '' Space Key Up
 
 		if multikey(SC_PAGEUP) then z-=0.02        '' If Page Up is Being Pressed, Move Into The Screen
 		if multikey(SC_PAGEDOWN) then z+=0.02      '' If Page Down is Being Pressed, Move Towards The Viewer
@@ -179,7 +179,7 @@ declare sub glDrawCube()
 
 		flip  '' flip or crash
 		if inkey$ = chr$(255)+"X" then exit do     '' exit if close box is clicked
-	loop while not multikey(SC_ESCAPE)
+	loop while MULTIKEY(SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
 	while INKEY$ <> "": wend

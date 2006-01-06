@@ -105,7 +105,7 @@ dim shared top as uinteger               '' Storage For The Top Display List
 
 		flip                                          '' filp or crash
 		if inkey$ = chr$(255)+"X" then exit do        '' exit if close box is clicked
-	loop while not multikey(SC_ESCAPE)                '' exit if EXC is pressed
+	loop while MULTIKEY(SC_ESCAPE) = 0                '' exit if EXC is pressed
 
 	while inkey$ <> "": wend
 	end

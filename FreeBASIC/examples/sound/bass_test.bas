@@ -9,7 +9,7 @@ const MusicFile = "dne_trtn.mod"
 		end 1
 	end if
 	
-	if( not BASS_Init( -1, 44100, 0, 0, 0 ) ) then
+	if( BASS_Init( -1, 44100, 0, 0, 0 ) = 0 ) then
 		print "Error: BASS_Init failed"
 		end 1
 	end if

@@ -143,7 +143,7 @@ declare function LoadGLTextures() as integer
 		if multikey(SC_SPACE) and not sp then scene = not scene : sp = true
 		if not multikey(SC_SPACE) then sp = false
 	
-	loop while not multikey(SC_ESCAPE)
+	loop while MULTIKEY(SC_ESCAPE) = 0
 	
 	'' Empty keyboard buffer
 	while inkey$ <> "": wend

@@ -89,7 +89,7 @@ dim shared texture(2) as structTexture         '' Storage For 2 Textures ( NEW )
 		next
         flip
 		if inkey$ = chr$(255)+"k" then exit do    '' exit if close box is clicked
-	loop while not multikey(SC_ESCAPE)
+	loop while MULTIKEY(SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
 	while inkey <> "": wend

@@ -9,12 +9,12 @@ const MusicFile = "dne_trtn.mod"
 		end 1
 	end if
 	
-	if( not BASSMOD_Init( -1, 44100, 0) ) then
+	if( BASSMOD_Init( -1, 44100, 0 ) = 0 ) then
 		print "Error: BASSMOD_Init failed"
 		end 1
 	end if
 	
-	if( not BASSMOD_MusicLoad( FALSE, MusicFile, 0, 0, BASS_MUSIC_LOOP ) ) then
+	if( BASSMOD_MusicLoad( FALSE, MusicFile, 0, 0, BASS_MUSIC_LOOP ) = 0 ) then
 		print "Error: BASS_MusicLoad failed"
 		BASSMOD_Free
 		end 1

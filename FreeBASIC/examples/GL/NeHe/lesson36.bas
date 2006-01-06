@@ -51,7 +51,7 @@ dim shared BlurTexture as unsigned integer            '' An Unsigned Int To Stor
 		drawscr()
 		flip
 		if inkey$ = chr$(255)+"k" then exit do        '' exit if close box is clicked
-	loop while not multikey(SC_ESCAPE)
+	loop while MULTIKEY(SC_ESCAPE) = 0
 
 	glDeleteTextures (1, @BlurTexture)                '' Delete The Blur Texture
 

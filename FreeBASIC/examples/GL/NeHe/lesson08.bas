@@ -176,7 +176,7 @@ declare function LoadGLTextures() as integer
 		if MULTIKEY(SC_LEFT) then yspeed-=0.01  '' If Left Arrow Being Pressed, Decrease yspeed
 	
 		flip  '' flip or crash
-	loop while not MULTIKEY(SC_ESCAPE)
+	loop while MULTIKEY(SC_ESCAPE) = 0
 	
 	'Empty keyboard buffer
 	while inkey$ <> "": wend

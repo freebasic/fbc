@@ -73,7 +73,7 @@ dim shared q as GLUquadricObj ptr                          '' Quadratic For Draw
 	texture(1) = CreateTexture(@buffer(0))       '' GL_LINEAR Texture
 	bload exepath + "/data/Envroll.bmp", @buffer(0)         '' BLOAD data from bitmap
 	texture(2) = CreateTexture(@buffer(0))       '' GL_LINEAR Texture
-	if not(texture(0) or texture(1) or texture(2)) then end 1  '' Exit if error loading data files
+	if (texture(0) or texture(1) or texture(2)) = 0 then end 1  '' Exit if error loading data files
 
 	glShadeModel (GL_SMOOTH)                     '' Enable Smooth Shading
 	glClearColor (0.2, 0.5, 1.0, 1.0)            '' Background
@@ -172,7 +172,7 @@ dim shared q as GLUquadricObj ptr                          '' Quadratic For Draw
 		end if
 		flip  '' flip or crash
 		if inkey$ = chr$(255)+"X" then exit do        '' exit if close box is clicked
-	loop while not multikey(SC_ESCAPE)
+	loop while MULTIKEY(SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
 	while INKEY$ <> "": wend
