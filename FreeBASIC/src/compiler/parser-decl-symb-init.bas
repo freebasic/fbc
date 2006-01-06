@@ -52,7 +52,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
     oldsym = env.ctxsym
     env.ctxsym = symbGetSubType( sym )
 
-	if( not cExpression( expr ) ) then
+	if( cExpression( expr ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 		return 0
 	end if
@@ -62,7 +62,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
     dtype = astGetDataType( expr )
 
 	'' if static or at module level, only constants can be used as initializers
-	if( not islocal ) then
+	if( islocal = FALSE ) then
 
 		'' check if it's a literal string
 		litsym = NULL
@@ -110,7 +110,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 
 			else
 				'' not a constant?
-				if( not astIsCONST( expr ) ) then
+				if( astIsCONST( expr ) = FALSE ) then
 					hReportError( FB_ERRMSG_EXPECTEDCONST, TRUE )
 					return 0
 				end if
@@ -143,7 +143,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 		else
 
 			'' not a string?
-			if( not hIsString( sdtype ) ) then
+			if( hIsString( sdtype ) = FALSE ) then
 				hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 				return 0
 			end if
@@ -292,7 +292,7 @@ function cSymbArrayInit( byval basesym as FBSYMBOL ptr, _
 		loop while( hMatch( CHAR_COMMA ) )
 
 		'' pad
-		if( not islocal ) then
+		if( islocal = FALSE ) then
 			if( elmcnt < elements ) then
 				irEmitVARINIPAD( (elements - elmcnt) * symbGetLen( sym ) )
 			end if
@@ -301,13 +301,13 @@ function cSymbArrayInit( byval basesym as FBSYMBOL ptr, _
 			lgt += elmcnt * symbGetLen( sym )
 		end if
 
-		if( not isopen ) then
+		if( isopen = FALSE ) then
 			exit do
 		end if
 
 		if( isarray ) then
 			'' '}'?
-			if( not hMatch( CHAR_RBRACE ) ) then
+			if( hMatch( CHAR_RBRACE ) = FALSE ) then
 				hReportError( FB_ERRMSG_EXPECTEDRBRACKET )
 				exit function
 			end if
@@ -322,7 +322,7 @@ function cSymbArrayInit( byval basesym as FBSYMBOL ptr, _
 	'' pad
 	pad = (symbGetLen( sym ) * symbCalcArrayElements( sym )) - lgt
 	if( pad > 0 ) then
-		if( not islocal ) then
+		if( islocal = FALSE ) then
 			irEmitVARINIPAD( pad )
 		else
 			ofs += pad
@@ -345,7 +345,7 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
     function = 0
 
 	'' '('
-	if( not hMatch( CHAR_LPRNT ) ) then
+	if( hMatch( CHAR_LPRNT ) = FALSE ) then
 		'' it can be a function returning an UDT or another UDT
 		'' variable for non-static symbols..
 		return cSymbElmInit( basesym, sym, ofs, islocal )
@@ -371,7 +371,7 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 		isarray = hMatch( CHAR_LBRACE )
 
 		elmofs = elm->var.elm.ofs
-		if( not islocal ) then
+		if( islocal = FALSE ) then
 			if( lgt > 0 ) then
 				pad = elmofs - lgt
 				if( pad > 0 ) then
@@ -392,7 +392,7 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 
         if( isarray ) then
 			'' '}'
-			if( not hMatch( CHAR_RBRACE ) ) then
+			if( hMatch( CHAR_RBRACE ) = FALSE ) then
 				hReportError( FB_ERRMSG_EXPECTEDRBRACKET )
 				exit function
 			end if
@@ -407,13 +407,13 @@ function cSymbUDTInit( byval basesym as FBSYMBOL ptr, _
 	ofs += symbGetLen( sym )
 
 	'' ')'
-	if( not hMatch( CHAR_RPRNT ) ) then
+	if( hMatch( CHAR_RPRNT ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDRPRNT )
 		exit function
 	end if
 
 	'' pad
-	if( not islocal ) then
+	if( islocal = FALSE ) then
 		pad = symbGetLen( sym ) - lgt
 		if( pad > 0 ) then
 			irEmitVARINIPAD( pad )
@@ -455,7 +455,7 @@ function cSymbolInit( byval sym as FBSYMBOL ptr ) as integer
 	islocal = (not symbIsStatic( sym )) and fbIsLocal( )
 
 	''
-	if( not islocal ) then
+	if( islocal = FALSE ) then
 		irEmitVARINIBEGIN( sym )
 	end if
 
@@ -470,14 +470,14 @@ function cSymbolInit( byval sym as FBSYMBOL ptr ) as integer
 
     if( isarray ) then
 		'' '}'
-		if( not hMatch( CHAR_RBRACE ) ) then
+		if( hMatch( CHAR_RBRACE ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDRBRACKET )
 			exit function
 		end if
 	end if
 
 	''
-	if( not islocal ) then
+	if( islocal = FALSE ) then
 		irEmitVARINIEND( sym )
 	end if
 

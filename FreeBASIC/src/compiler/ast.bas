@@ -254,7 +254,7 @@ private sub hProcFlush( byval p as ASTPROCNODE ptr, _
 	ast.curproc = p
 	ast.doemit 	= doemit
 
-	if( not p->ismain ) then
+	if( p->ismain = FALSE ) then
 		env.scope = 1
 		env.currproc = p->proc
 	else
@@ -349,7 +349,7 @@ private sub hProcFlushAll( ) static
 		'' private?
 		if( symbIsPrivate( p->proc ) ) then
 			'' never called? skip
-			if( not symbGetProcIsCalled( p->proc ) ) then
+			if( symbGetProcIsCalled( p->proc ) = FALSE ) then
 				doemit = FALSE
 
 			'' module-level?
@@ -440,9 +440,9 @@ sub astProcEnd( byval p as ASTPROCNODE ptr ) static
 	''
 	irProcEnd( p->proc )
 
-	if( not p->ismain ) then
+	if( p->ismain = FALSE ) then
 		'' not private or inline? flush it..
-		if( not symbIsPrivate( p->proc ) ) then
+		if( symbIsPrivate( p->proc ) = FALSE ) then
 			hProcFlush( p, TRUE )
 
 		'' remove from hash tb only
@@ -574,7 +574,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
     select case dtype
     case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
     	'' don't allow, unless it's a deref pointer
-    	if( not astIsPTR( n ) ) then
+    	if( astIsPTR( n ) = FALSE ) then
     		return NULL
     	end if
 
@@ -585,6 +585,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 
 	'' shortcut "exp logop exp" if it's at top of tree (used to optimize IF/ELSEIF/WHILE/UNTIL)
 	if( n->class <> AST_NODECLASS_BOP ) then
+#if 0
 		'' UOP? check if it's a NOT
 		if( n->class = AST_NODECLASS_UOP ) then
 			if( n->op.op = IR_OP_NOT ) then
@@ -593,10 +594,11 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 				return l
 			end if
 		end if
+#endif
 
 		'' CONST?
 		if( n->defined ) then
-			if( not isinverse ) then
+			if( isinverse = FALSE ) then
 				'' branch if false
 				select case as const dtype
 				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
@@ -636,7 +638,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 
 		else
 			'' otherwise, check if zero (ie= FALSE)
-			if( not isinverse ) then
+			if( isinverse = FALSE ) then
 				op = IR_OP_EQ
 			else
 				op = IR_OP_NE
@@ -678,7 +680,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 	case IR_OP_EQ, IR_OP_NE, IR_OP_GT, IR_OP_LT, IR_OP_GE, IR_OP_LE
 
 		'' invert it
-		if( not isinverse ) then
+		if( isinverse = FALSE ) then
 			n->op.op = irGetInverseLogOp( op )
 		end if
 
@@ -698,7 +700,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
             if( (dtype <> IR_DATATYPE_LONGINT) and (dtype <> IR_DATATYPE_ULONGINT) ) then
 
 				'' check if zero (ie= FALSE)
-				if( not isinverse ) then
+				if( isinverse = FALSE ) then
 					op = IR_OP_JEQ
 				else
 					op = IR_OP_JNE
@@ -711,7 +713,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 	end select
 
 	'' if no optimization could be done, check if zero (ie= FALSE)
-	if( not isinverse ) then
+	if( isinverse = FALSE ) then
 		op = IR_OP_EQ
 	else
 		op = IR_OP_NE
@@ -1066,11 +1068,11 @@ const DBL_EPSILON# = 2.2204460492503131e-016
 	end select
 
     '' check childs
-	if( not astIsTreeEqual( l->l, r->l ) ) then
+	if( astIsTreeEqual( l->l, r->l ) = FALSE ) then
 		exit function
 	end if
 
-	if( not astIsTreeEqual( l->r, r->r ) ) then
+	if( astIsTreeEqual( l->r, r->r ) = FALSE ) then
 		exit function
 	end if
 
@@ -1367,7 +1369,7 @@ function astCheckConst( byval dtype as integer, _
 	case IR_DATATYPE_LONGINT
 
 		'' unsigned constant?
-		if( not irIsSigned( astGetDataType( n ) ) ) then
+		if( irIsSigned( astGetDataType( n ) ) = FALSE ) then
 			'' too big?
 			if( astGetValueAsULongInt( n ) > 9223372036854775807ULL ) then
 				n = astNewCONV( INVALID, dtype, NULL, n )

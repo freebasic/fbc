@@ -163,7 +163,7 @@ function cQuirkFunction( byref funcexpr as ASTNODE ptr ) as integer
 		res = cScreenFunct( funcexpr )
 	end select
 
-	if( not res ) then
+	if( res = FALSE ) then
 		if( hGetLastError( ) = FB_ERRMSG_OK ) then
 			res = cGfxFunct( funcexpr )
 		end if

@@ -617,7 +617,7 @@ function rtlPrint( byval fileexpr as ASTNODE ptr, _
 	mask = 0
 	if( iscomma ) then
 		mask or= FB_PRINTMASK_PAD
-	elseif( not issemicolon ) then
+	elseif( issemicolon = FALSE ) then
 		mask or= FB_PRINTMASK_NEWLINE
 	end if
 
@@ -938,7 +938,7 @@ function rtlWidthDev ( byval device as ASTNODE ptr, _
     end if
 
     ''
-    if( not isfunc ) then
+    if( isfunc = FALSE ) then
     	dim reslabel as FBSYMBOL ptr
 
     	if( env.clopt.resumeerr ) then
@@ -959,7 +959,7 @@ end function
 function rtlPrinter_cb( byval sym as FBSYMBOL ptr ) as integer static
     static as integer libsAdded = FALSE
 
-	if( not libsadded ) then
+	if( libsadded = FALSE ) then
 
         libsAdded = TRUE
 

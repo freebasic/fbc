@@ -78,7 +78,7 @@ function cProcParam( byval proc as FBSYMBOL ptr, _
 	pmode = INVALID
 	expr = NULL
 
-	if( not optonly ) then
+	if( optonly = FALSE ) then
 		'' BYVAL?
 		if( hMatch( FB_TK_BYVAL ) ) then
 			pmode = FB_ARGMODE_BYVAL
@@ -88,7 +88,7 @@ function cProcParam( byval proc as FBSYMBOL ptr, _
 		env.ctxsym = symbGetSubType( arg )
 
 		'' Expression
-		if( not cExpression( expr ) ) then
+		if( cExpression( expr ) = FALSE ) then
 
 			'' error?
 			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
@@ -111,7 +111,7 @@ function cProcParam( byval proc as FBSYMBOL ptr, _
 					'' BYVAL?
 					if( hMatch( FB_TK_BYVAL ) ) then
 						pmode = FB_ARGMODE_BYVAL
-						if( not cExpression( expr ) ) then
+						if( cExpression( expr ) = FALSE ) then
 							expr = NULL
 						end if
 					end if
@@ -126,7 +126,7 @@ function cProcParam( byval proc as FBSYMBOL ptr, _
 	if( expr = NULL ) then
 
 		'' check if argument is optional
-		if( not symbGetArgOptional( arg ) ) then
+		if( symbGetArgOptional( arg ) = FALSE ) then
 			if( amode <> FB_ARGMODE_VARARG ) then
 				hReportError( FB_ERRMSG_ARGCNTMISMATCH )
 			end if
@@ -199,7 +199,7 @@ private function cOvlProcParam( byval param as integer, _
 	env.ctxsym = NULL
 
 	'' Expression
-	if( not cExpression( expr ) ) then
+	if( cExpression( expr ) = FALSE ) then
 
 		'' error?
 		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
@@ -223,7 +223,7 @@ private function cOvlProcParam( byval param as integer, _
 				'' BYVAL?
 				if( hMatch( FB_TK_BYVAL ) ) then
 					pmode = FB_ARGMODE_BYVAL
-					if( not cExpression( expr ) ) then
+					if( cExpression( expr ) = FALSE ) then
 						expr = NULL
 					end if
 				end if
@@ -275,11 +275,11 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 	'' no args? (could happen by mistake..)
 	if( args = 0 ) then
 		'' sub? check the optional parentheses
-		if( not isfunc ) then
+		if( isfunc = FALSE ) then
 			'' '('
 			if( hMatch( CHAR_LPRNT ) ) then
 				'' ')'
-				if( not hMatch( CHAR_RPRNT ) ) then
+				if( hMatch( CHAR_RPRNT ) = FALSE ) then
 					hReportError( FB_ERRMSG_EXPECTEDRPRNT )
 					exit function
 				end if
@@ -289,7 +289,7 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 		return astNewFUNCT( proc, ptrexpr )
 	end if
 
-	if( not optonly ) then
+	if( optonly = FALSE ) then
 		do
 			'' count mismatch?
 			if( params >= args ) then
@@ -303,7 +303,10 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 				exit function
 			end if
 
-			if( not cOvlProcParam( params, exprTB(params), modeTB(params), isfunc ) ) then
+			if( cOvlProcParam( params, _
+							   exprTB(params), _
+							   modeTB(params), _
+							   isfunc ) = FALSE ) then
 				'' not an error? (could be an optional)
 				if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 					exit function
@@ -311,7 +314,7 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 			end if
 
 			'' ','?
-			if( not hMatch( CHAR_COMMA ) ) then
+			if( hMatch( CHAR_COMMA ) = FALSE ) then
 				'' if last arg was optional, don't count it
 				if( exprTB(params) <> NULL ) then
 					params += 1
@@ -396,11 +399,11 @@ function cProcParamList( byval proc as FBSYMBOL ptr, _
 	args = symbGetProcArgs( proc )
 	if( args = 0 ) then
 		'' sub? check the optional parentheses
-		if( not isfunc ) then
+		if( isfunc = FALSE ) then
 			'' '('
 			if( hMatch( CHAR_LPRNT ) ) then
 				'' ')'
-				if( not hMatch( CHAR_RPRNT ) ) then
+				if( hMatch( CHAR_RPRNT ) = FALSE ) then
 					hReportError( FB_ERRMSG_EXPECTEDRPRNT )
 					exit function
 				end if
@@ -413,7 +416,7 @@ function cProcParamList( byval proc as FBSYMBOL ptr, _
 	params = 0
 	arg = symbGetProcLastArg( proc )
 
-	if( not optonly ) then
+	if( optonly = FALSE ) then
 		do
 			'' count mismatch?
 			if( params >= args ) then
@@ -429,9 +432,9 @@ function cProcParamList( byval proc as FBSYMBOL ptr, _
 				exit function
 			end if
 
-			if( not cProcParam( proc, arg, params, _
-								expr, mode, _
-								isfunc, FALSE ) ) then
+			if( cProcParam( proc, arg, params, _
+							expr, mode, _
+							isfunc, FALSE ) = FALSE ) then
 				'' not an error? (could be an optional)
 				if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 					exit function
@@ -469,9 +472,9 @@ function cProcParamList( byval proc as FBSYMBOL ptr, _
 		end if
 
 		'' not optional?
-		if( not cProcParam( proc, arg, params, _
-							expr, mode, _
-							isfunc, TRUE ) ) then
+		if( cProcParam( proc, arg, params, _
+						expr, mode, _
+						isfunc, TRUE ) = FALSE ) then
 			exit function
 		end if
 

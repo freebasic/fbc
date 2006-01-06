@@ -470,21 +470,21 @@ function rtlInitRt( byval argc as ASTNODE ptr, _
 
     '' if error checking is on, call initSignals
     if( env.clopt.errorcheck ) then
-    	if( not isdllmain ) then
+    	if( isdllmain = FALSE ) then
     		rtlInitSignals( )
     	end if
 	end if
 
     '' start profiling if requested
     if( env.clopt.profile ) then
-	    if( not isdllmain ) then
+	    if( isdllmain = FALSE ) then
 	    	rtlInitProfile( )
 	    end if
     end if
 
     '' if error checking is on, check the CPU type
     if( env.clopt.errorcheck ) then
-    	if( not isdllmain ) then
+    	if( isdllmain = FALSE ) then
     		rtlCpuCheck( )
     	end if
     end if

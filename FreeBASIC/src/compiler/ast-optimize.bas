@@ -748,7 +748,7 @@ private sub hOptConstIDX( byval n as ASTNODE ptr )
 								if( symbIsArg( s ) ) then
 									delnode = FALSE
 								elseif( symbIsLocal( s ) ) then
-									if( not symbIsStatic( s ) ) then
+									if( symbIsStatic( s ) = FALSE ) then
 										delnode = FALSE
 									end if
 								end if
@@ -941,7 +941,7 @@ private sub hOptToShift( byval n as ASTNODE ptr )
 								case IR_OP_INTDIV
 									if( v <= 32 ) then
 										l = n->l
-										if( not irIsSigned( l->dtype ) ) then
+										if( irIsSigned( l->dtype ) = FALSE ) then
 											n->op.op = IR_OP_SHR
 											r->con.val.int = v
 										else
@@ -1120,13 +1120,13 @@ private function hOptStrMultConcat( byval lnk as ASTNODE ptr, _
     	if( n->l <> NULL ) then
     	    '' first concatenation? do an assignment..
     	    if( lnk = NULL ) then
-    	    	if( not is_wstr ) then
+    	    	if( is_wstr = FALSE ) then
     	    		lnk = rtlStrAssign( astCloneTree( dst ), n->l )
     	    	else
     	    		lnk = rtlWstrAssign( astCloneTree( dst ), n->l )
     	    	end if
     	    else
-    	    	if( not is_wstr ) then
+    	    	if( is_wstr = FALSE ) then
     	    		lnk = astNewLINK( lnk, rtlStrConcatAssign( astCloneTree( dst ), n->l ) )
     	    	else
     	    		lnk = astNewLINK( lnk, rtlWstrConcatAssign( astCloneTree( dst ), n->l ) )
@@ -1135,7 +1135,7 @@ private function hOptStrMultConcat( byval lnk as ASTNODE ptr, _
     	end if
 
     	if( n->r <> NULL ) then
-    	    if( not is_wstr ) then
+    	    if( is_wstr = FALSE ) then
     	    	lnk = astNewLINK( lnk, rtlStrConcatAssign( astCloneTree( dst ), n->r ) )
     	    else
     	    	lnk = astNewLINK( lnk, rtlWstrConcatAssign( astCloneTree( dst ), n->r ) )
@@ -1147,13 +1147,13 @@ private function hOptStrMultConcat( byval lnk as ASTNODE ptr, _
     '' string..
     else
 		if( lnk = NULL ) then
-    		if( not is_wstr ) then
+    		if( is_wstr = FALSE ) then
     			lnk = rtlStrAssign( astCloneTree( dst ), n )
     		else
     			lnk = rtlWstrAssign( astCloneTree( dst ), n )
     		end if
 		else
-    		if( not is_wstr ) then
+    		if( is_wstr = FALSE ) then
     			lnk = astNewLINK( lnk, rtlStrConcatAssign( astCloneTree( dst ), n ) )
     		else
     			lnk = astNewLINK( lnk, rtlWstrConcatAssign( astCloneTree( dst ), n ) )
@@ -1183,7 +1183,7 @@ private function hIsMultStrConcat( byval l as ASTNODE ptr, _
 				if( (sym->alloctype and _
 					(FB_ALLOCTYPE_ARGUMENTBYDESC or FB_ALLOCTYPE_ARGUMENTBYREF)) = 0 ) then
 
-					if( not astIsSymbolOnTree( sym, r ) ) then
+					if( astIsSymbolOnTree( sym, r ) = FALSE ) then
 						function = TRUE
 					end if
 
@@ -1234,7 +1234,7 @@ private function hOptStrAssignment( byval n as ASTNODE ptr, _
 			''   / \
 			''  a   expr
 
-            if( not is_wstr ) then
+            if( is_wstr = FALSE ) then
 				function = rtlStrConcatAssign( l, astUpdStrConcat( r ) )
 			else
 				function = rtlWstrConcatAssign( l, astUpdStrConcat( r ) )
@@ -1255,7 +1255,7 @@ private function hOptStrAssignment( byval n as ASTNODE ptr, _
 			''   / \           / \
 			''  b   expr      b   expr
 
-			if( not is_wstr ) then
+			if( is_wstr = FALSE ) then
 				function = rtlStrAssign( l, astUpdStrConcat( r ) )
 			else
 				function = rtlWstrAssign( l, astUpdStrConcat( r ) )
@@ -1354,7 +1354,7 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr static
 	end if
 
 	'' is the left child the same?
-	if( not astIsTreeEqual( l, r->l ) ) then
+	if( astIsTreeEqual( l, r->l ) = FALSE ) then
 		exit function
 	end if
 

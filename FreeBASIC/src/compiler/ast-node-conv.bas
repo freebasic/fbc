@@ -241,7 +241,7 @@ function astNewCONV( byval op as integer, _
     		select case ldtype
     		case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
     			'' don't allow, unless it's a deref pointer
-    			if( not astIsPTR( l ) ) then
+    			if( astIsPTR( l ) = FALSE ) then
     				exit function
     			end if
     	    end select

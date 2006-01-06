@@ -51,7 +51,7 @@ function regNewClass( byval class as integer, _
 	reg->regs 	= regs
 	reg->isstack= isstack
 
-	if( not reg->isstack ) then
+	if( reg->isstack = FALSE ) then
 		regInitClass( reg )
 	else
 		sregInitClass( reg )

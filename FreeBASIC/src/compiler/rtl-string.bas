@@ -2359,7 +2359,7 @@ function rtlStrChr( byval args as integer, _
 
 	function = NULL
 
-    if( not is_wstr ) then
+    if( is_wstr = FALSE ) then
     	proc = astNewFUNCT( PROCLOOKUP( STRCHR ) )
     else
     	proc = astNewFUNCT( PROCLOOKUP( WSTRCHR ) )

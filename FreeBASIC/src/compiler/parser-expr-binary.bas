@@ -133,7 +133,7 @@ function cCatExpression( byref catexpr as ASTNODE ptr ) as integer
 	function = FALSE
 
 	'' LogExpression
-	if( not cLogExpression( catexpr ) ) then
+	if( cLogExpression( catexpr ) = FALSE ) then
 		exit function
 	end if
 
@@ -165,7 +165,7 @@ function cCatExpression( byref catexpr as ASTNODE ptr ) as integer
 		lexSkipToken( )
 
 		'' LogExpression
-    	if( not cLogExpression( expr ) ) then
+    	if( cLogExpression( expr ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit function
     	end if
@@ -214,7 +214,7 @@ function cLogExpression( byref logexpr as ASTNODE ptr ) as integer
 	function = FALSE
 
     '' LogOrExpression
-    if( not cLogOrExpression( logexpr ) ) then
+    if( cLogOrExpression( logexpr ) = FALSE ) then
 	   	exit function
     end if
 
@@ -235,7 +235,7 @@ function cLogExpression( byref logexpr as ASTNODE ptr ) as integer
     	lexSkipToken( )
 
     	'' LogOrExpression
-    	if( not cLogOrExpression( expr ) ) then
+    	if( cLogOrExpression( expr ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit function
     	end if
@@ -263,7 +263,7 @@ function cLogOrExpression( byref logexpr as ASTNODE ptr ) as integer
 	function = FALSE
 
     '' LogAndExpression
-    if( not cLogAndExpression( logexpr ) ) then
+    if( cLogAndExpression( logexpr ) = FALSE ) then
 	   	exit function
     end if
 
@@ -277,7 +277,7 @@ function cLogOrExpression( byref logexpr as ASTNODE ptr ) as integer
     	lexSkipToken( )
 
     	'' LogAndExpression
-    	if( not cLogAndExpression( expr ) ) then
+    	if( cLogAndExpression( expr ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit function
     	end if
@@ -305,7 +305,7 @@ function cLogAndExpression( byref logexpr as ASTNODE ptr ) as integer
 	function = FALSE
 
     '' RelExpression
-    if( not cRelExpression( logexpr ) ) then
+    if( cRelExpression( logexpr ) = FALSE ) then
 	   	exit function
     end if
 
@@ -319,7 +319,7 @@ function cLogAndExpression( byref logexpr as ASTNODE ptr ) as integer
     	lexSkipToken( )
 
     	'' RelExpression
-    	if( not cRelExpression( expr ) ) then
+    	if( cRelExpression( expr ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit function
     	end if
@@ -348,7 +348,7 @@ function cRelExpression( byref relexpr as ASTNODE ptr ) as integer
     function = FALSE
 
    	'' AddExpression
-   	if( not cAddExpression( relexpr ) ) then
+   	if( cAddExpression( relexpr ) = FALSE ) then
    		exit function
    	end if
 
@@ -375,7 +375,7 @@ function cRelExpression( byref relexpr as ASTNODE ptr ) as integer
     	lexSkipToken( )
 
     	'' AddExpression
-    	if( not cAddExpression( expr ) ) then
+    	if( cAddExpression( expr ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit function
     	end if
@@ -403,7 +403,7 @@ function cAddExpression( byref addexpr as ASTNODE ptr ) as integer
     function = FALSE
 
  	'' ShiftExpression
-   	if( not cShiftExpression( addexpr ) ) then
+   	if( cShiftExpression( addexpr ) = FALSE ) then
    		exit function
    	end if
 
@@ -422,7 +422,7 @@ function cAddExpression( byref addexpr as ASTNODE ptr ) as integer
     	lexSkipToken( )
 
     	'' ShiftExpression
-    	if( not cShiftExpression( expr ) ) then
+    	if( cShiftExpression( expr ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit do
     	end if
@@ -458,7 +458,7 @@ function cShiftExpression( byref shiftexpr as ASTNODE ptr ) as integer
     function = FALSE
 
    	'' ModExpression
-   	if( not cModExpression( shiftexpr ) ) then
+   	if( cModExpression( shiftexpr ) = FALSE ) then
    		exit function
    	end if
 
@@ -477,7 +477,7 @@ function cShiftExpression( byref shiftexpr as ASTNODE ptr ) as integer
     	lexSkipToken( )
 
     	'' ModExpression
-    	if( not cModExpression( expr ) ) then
+    	if( cModExpression( expr ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit do
     	end if
@@ -504,7 +504,7 @@ function cModExpression( byref modexpr as ASTNODE ptr ) as integer
     function = FALSE
 
    	'' IntDivExpression
-   	if( not cIntDivExpression( modexpr ) ) then
+   	if( cIntDivExpression( modexpr ) = FALSE ) then
    		exit function
    	end if
 
@@ -518,7 +518,7 @@ function cModExpression( byref modexpr as ASTNODE ptr ) as integer
     	end if
 
     	'' IntDivExpression
-    	if( not cIntDivExpression( expr ) ) then
+    	if( cIntDivExpression( expr ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit function
     	end if
@@ -545,7 +545,7 @@ function cIntDivExpression( byref idivexpr as ASTNODE ptr ) as integer
     function = FALSE
 
    	'' MultExpression
-   	if( not cMultExpression( idivexpr ) ) then
+   	if( cMultExpression( idivexpr ) = FALSE ) then
    		exit function
    	end if
 
@@ -559,7 +559,7 @@ function cIntDivExpression( byref idivexpr as ASTNODE ptr ) as integer
     	end if
 
     	'' MultExpression
-    	if( not cMultExpression( expr ) ) then
+    	if( cMultExpression( expr ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit function
     	end if
@@ -587,7 +587,7 @@ function cMultExpression( byref mulexpr as ASTNODE ptr ) as integer
     function = FALSE
 
    	'' ExpExpression
-   	if( not cExpExpression( mulexpr ) ) then
+   	if( cExpExpression( mulexpr ) = FALSE ) then
    		exit function
    	end if
 
@@ -606,7 +606,7 @@ function cMultExpression( byref mulexpr as ASTNODE ptr ) as integer
     	lexSkipToken( )
 
     	'' ExpExpression
-    	if( not cExpExpression( expr ) ) then
+    	if( cExpExpression( expr ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit do
     	end if
@@ -633,7 +633,7 @@ function cExpExpression( byref expexpr as ASTNODE ptr ) as integer
     function = FALSE
 
    	'' NegNotExpression
-   	if( not cNegNotExpression( expexpr ) ) then
+   	if( cNegNotExpression( expexpr ) = FALSE ) then
    		exit function
    	end if
 
@@ -646,7 +646,7 @@ function cExpExpression( byref expexpr as ASTNODE ptr ) as integer
     	end if
 
     	'' NegNotExpression
-    	if( not cNegNotExpression( expr ) ) then
+    	if( cNegNotExpression( expr ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit do
     	end if

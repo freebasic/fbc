@@ -71,7 +71,7 @@ declare sub 	 setCompOptions			( )
     end if
 
     ''
-    if( not processTargetOptions( ) ) then
+    if( processTargetOptions( ) = FALSE ) then
     	end 1
     end if
 
@@ -79,7 +79,7 @@ declare sub 	 setCompOptions			( )
     initTarget( )
 
     ''
-    if( not processOptions( ) ) then
+    if( processOptions( ) = FALSE ) then
     	end 1
     end if
 
@@ -87,13 +87,13 @@ declare sub 	 setCompOptions			( )
     setCompOptions( )
 
     '' list
-    if( not listFiles( ) ) then
+    if( listFiles( ) = FALSE ) then
     	printOptions( )
     	end 1
     end if
 
     ''
-    if( not fbc.showversion ) then
+    if( fbc.showversion = FALSE ) then
     	if( (fbc.inps = 0) and (fbc.objs = 0) and (fbc.libs = 0) ) then
     		printOptions( )
     		end 1
@@ -117,33 +117,33 @@ declare sub 	 setCompOptions			( )
     setMainModule( )
 
     '' compile
-    if( not compileFiles( ) ) then
+    if( compileFiles( ) = FALSE ) then
     	delFiles( )
     	end 1
     end if
 
     '' assemble
-   	if( not assembleFiles( ) ) then
+   	if( assembleFiles( ) = FALSE ) then
    		delFiles( )
    		end 1
    	end if
 
-	if( not fbc.compileonly ) then
+	if( fbc.compileonly = FALSE ) then
 
     	'' link
     	if( fbc.outtype <> FB_OUTTYPE_STATICLIB ) then
 			'' resource files..
-			if( not compileResFiles( ) ) then
+			if( compileResFiles( ) = FALSE ) then
 				delFiles( )
 				end 1
 			end if
 
-    		if( not linkFiles( ) ) then
+    		if( linkFiles( ) = FALSE ) then
     			delFiles( )
     			end 1
     		end if
     	else
-    		if( not archiveFiles( ) ) then
+    		if( archiveFiles( ) = FALSE ) then
     			delFiles( )
     			end 1
     		end if
@@ -151,7 +151,7 @@ declare sub 	 setCompOptions			( )
     end if
 
     '' del temps
-    if( not delFiles( ) ) then
+    if( delFiles( ) = FALSE ) then
     	end 1
     end if
 
@@ -232,7 +232,7 @@ function compileFiles as integer
     	end if
 
     	'' init the parser
-    	if( not fbInit( ismain ) ) then
+    	if( fbInit( ismain ) = FALSE ) then
     		exit function
     	end if
 
@@ -251,7 +251,7 @@ function compileFiles as integer
     		print "compiling: ", fbc.inplist(i); " -o "; fbc.asmlist(i)
     	end if
 
-    	if( not fbCompile( fbc.inplist(i), fbc.asmlist(i), ismain ) ) then
+    	if( fbCompile( fbc.inplist(i), fbc.asmlist(i), ismain ) = FALSE ) then
     		exit function
     	end if
 
@@ -296,7 +296,7 @@ function assembleFiles as integer
     end if
 
     ''
-    if( not hFileExists( aspath ) ) then
+    if( hFileExists( aspath ) = FALSE ) then
 		hReportErrorEx( FB_ERRMSG_EXEMISSING, aspath, -1 )
 		exit function
     end if
@@ -305,7 +305,7 @@ function assembleFiles as integer
     for i = 0 to fbc.inps-1
 
     	'' as' options
-    	if( not fbc.debug ) then
+    	if( fbc.debug = FALSE ) then
     		ascline = "--strip-local-absolute "
     	else
     		ascline = ""
@@ -385,10 +385,10 @@ function delFiles as integer
     function = FALSE
 
     for i = 0 to fbc.inps-1
-		if( not fbc.preserveasm ) then
+		if( fbc.preserveasm = FALSE ) then
 			safeKill( fbc.asmlist(i) )
 		end if
-		if( not fbc.compileonly ) then
+		if( fbc.compileonly = FALSE ) then
 			safeKill( fbc.outlist(i) )
 		end if
     next i
@@ -838,7 +838,7 @@ function processOptions( ) as integer
 
 			'' library paths
 			case "p"
-				if( not fbAddLibPath( argv(i+1) ) ) then
+				if( fbAddLibPath( argv(i+1) ) = FALSE ) then
 					printInvalidOpt( i )
 					exit function
 				end if
@@ -920,7 +920,7 @@ function processOptions( ) as integer
 
 			'' target-dependent options
 			case else
-				if( not fbc.processOptions( argv(i), argv(i+1) ) ) then
+				if( fbc.processOptions( argv(i), argv(i+1) ) = FALSE ) then
 					printInvalidOpt( i )
 					exit function
 				end if

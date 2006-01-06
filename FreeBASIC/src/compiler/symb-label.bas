@@ -70,7 +70,7 @@ function symbAddLabel( byval symbol as zstring ptr, _
     	end if
 
 		'' add the new label
-		if( not createalias ) then
+		if( createalias = FALSE ) then
     		aname = symbol
 		else
 			aname = hMakeTmpStr( TRUE )
@@ -121,7 +121,7 @@ function symbCheckLabels( ) as integer
     s = symb.globtb.head
     do while( s <> NULL )
     	if( s->class = FB_SYMBCLASS_LABEL ) then
-    		if( not s->lbl.declared ) then
+    		if( s->lbl.declared = FALSE ) then
     			hReportErrorEx( FB_ERRMSG_UNDEFINEDLABEL, *symbGetOrgName( s ), -1 )
     			cnt += 1
     		end if
@@ -145,7 +145,7 @@ function symbCheckLocalLabels(  ) as integer
     do while( s <> NULL )
 
     	if( s->class = FB_SYMBCLASS_LABEL ) then
-    		if( not s->lbl.declared ) then
+    		if( s->lbl.declared = FALSE ) then
     			hReportErrorEx( FB_ERRMSG_UNDEFINEDLABEL, *symbGetOrgName( s ), -1 )
     			cnt += 1
     		end if

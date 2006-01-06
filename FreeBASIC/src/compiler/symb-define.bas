@@ -125,7 +125,7 @@ sub symbInitDefines( byval ismain as integer ) static
 
     	value = defTb(i).value
     	if( value <> "" ) then
-            if( not bit( defTb(i).flags, 0 ) )then
+            if( bit( defTb(i).flags, 0 ) = 0 ) then
     			value = "\"" + value + "\""
             end if
     	end if

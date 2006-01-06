@@ -52,7 +52,7 @@ function cAsmCode as integer static
 		text = *lexGetText( )
 
 		if( lexGetClass( LEXCHECK_NOWHITESPC ) = FB_TKCLASS_IDENTIFIER ) then
-			if( not emitIsKeyword( text ) ) then
+			if( emitIsKeyword( text ) = FALSE ) then
 				'' function?
 				s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_PROC )
 				if( s <> NULL ) then
@@ -115,26 +115,26 @@ function cAsmBlock as integer
 	function = FALSE
 
 	'' ASM
-	if( not hMatch( FB_TK_ASM ) ) then
+	if( hMatch( FB_TK_ASM ) = FALSE ) then
 		exit function
 	end if
 
 	'' (Comment SttSeparator)?
 	issingleline = FALSE
 	if( cComment( ) ) then
-		if( not cStmtSeparator( ) ) then
+		if( cStmtSeparator( ) = FALSE ) then
     		hReportError FB_ERRMSG_EXPECTEDEOL
     		exit function
 		end if
 	else
-		if( not cStmtSeparator( ) ) then
+		if( cStmtSeparator( ) = FALSE ) then
 			issingleline = TRUE
         end if
 	end if
 
 	'' (AsmCode Comment? NewLine)+
 	do
-		if( not issingleline ) then
+		if( issingleline = FALSE ) then
 			astAdd( astNewDBG( IR_OP_DBG_LINEINI, lexLineNum( ) ) )
 		end if
 
@@ -160,17 +160,17 @@ function cAsmBlock as integer
     		exit function
 		end select
 
-		if( not issingleline ) then
+		if( issingleline = FALSE ) then
 			astAdd( astNewDBG( IR_OP_DBG_LINEEND ) )
 		end if
 	loop
 
-	if( not issingleline ) then
+	if( issingleline = FALSE ) then
 		'' END ASM
-		if( not hMatch( FB_TK_END ) ) then
+		if( hMatch( FB_TK_END ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDENDASM )
     		exit function
-		elseif( not hMatch( FB_TK_ASM ) ) then
+		elseif( hMatch( FB_TK_ASM ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDENDASM )
     		exit function
 		end if

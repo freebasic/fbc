@@ -91,7 +91,7 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 
 	if( checkprnts ) then
 		'' '('
-		if( not hMatch( CHAR_LPRNT ) ) then
+		if( hMatch( CHAR_LPRNT ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDLPRNT )
 			exit function
 		end if
@@ -113,7 +113,8 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 		'' --parent cnt
 		env.prntcnt -= 1
 
-		if( (not hMatch( CHAR_RPRNT )) or (env.prntcnt > 0) ) then
+		if( (hMatch( CHAR_RPRNT ) = FALSE) or _
+			(env.prntcnt > 0) ) then
 			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
 			exit function
 		end if
@@ -137,8 +138,9 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
    		end if
 
 		'' FuncPtrOrDerefFields?
-		if( not cFuncPtrOrDerefFields( typ, subtype, _
-									   procexpr, isfuncptr, TRUE ) ) then
+		if( cFuncPtrOrDerefFields( typ, subtype, _
+								   procexpr, isfuncptr, _
+								   TRUE ) = FALSE ) then
 			'' error?
 			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 				exit function
@@ -231,7 +233,7 @@ function cProcCallOrAssign as integer
 		end if
 
 		lexSkipToken( )
-		if( not cProcCall( s, procexpr, NULL, TRUE ) ) then
+		if( cProcCall( s, procexpr, NULL, TRUE ) = FALSE ) then
 			exit function
 		end if
 
@@ -251,8 +253,8 @@ function cProcCallOrAssign as integer
 			lexSkipToken( )
 
 			'' ID ProcParamList?
-			if( not hMatch( FB_TK_ASSIGN ) ) then
-				if( not cProcCall( s, procexpr, NULL ) ) then
+			if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+				if( cProcCall( s, procexpr, NULL ) = FALSE ) then
 					exit function
 				end if
 
@@ -266,12 +268,12 @@ function cProcCallOrAssign as integer
 			'' ID '=' Expression
 			else
                 '' check if name is valid (or if overloaded)
-				if( not symbIsProcOverloadOf( env.currproc, s ) ) then
+				if( symbIsProcOverloadOf( env.currproc, s ) = FALSE ) then
 					hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB, TRUE )
 					exit function
 				end if
 
-				if( not cExpression( expr ) ) then
+				if( cExpression( expr ) = FALSE ) then
 					hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 					exit function
 				end if
@@ -294,7 +296,7 @@ function cProcCallOrAssign as integer
 			lexSkipToken( )
 
 			'' Expression
-			if( not cExpression( expr ) ) then
+			if( cExpression( expr ) = FALSE ) then
 				hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 				exit function
 			end if

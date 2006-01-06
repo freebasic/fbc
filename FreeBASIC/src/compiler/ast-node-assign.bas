@@ -231,13 +231,13 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
     	if( ldtype >= IR_DATATYPE_POINTER ) then
 	    	'' function ptr?
     		if( ldtype = IR_DATATYPE_POINTER + IR_DATATYPE_FUNCTION ) then
-    			if( not astFuncPtrCheck( ldtype, l->subtype, r ) ) then
+    			if( astFuncPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
    					hReportWarning( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
     			end if
 
     		'' ordinary ptr..
     		else
-				if( not astPtrCheck( ldtype, l->subtype, r ) ) then
+				if( astPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
 					hReportWarning( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
 				end if
 			end if

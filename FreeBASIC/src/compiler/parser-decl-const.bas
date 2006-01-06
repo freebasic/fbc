@@ -36,13 +36,13 @@ function cConstDecl as integer
     function = FALSE
 
     '' CONST
-    if( not hMatch( FB_TK_CONST ) ) then
+    if( hMatch( FB_TK_CONST ) = FALSE ) then
     	exit function
     end if
 
 	do
 		'' ConstAssign
-		if( not cConstAssign( ) ) then
+		if( cConstAssign( ) = FALSE ) then
 			exit function
 		end if
 
@@ -86,7 +86,7 @@ function cConstAssign as integer static
 			exit function
 		end if
 
-		if( not cSymbolType( sdtype, subtype, lgt, ptrcnt ) ) then
+		if( cSymbolType( sdtype, subtype, lgt, ptrcnt ) = FALSE ) then
 			exit function
 		end if
 
@@ -106,13 +106,13 @@ function cConstAssign as integer static
 	end if
 
 	'' '='
-	if( not hMatch( FB_TK_ASSIGN ) ) then
+	if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDEQ )
 		exit function
 	end if
 
 	'' ConstExpression
-	if( not cExpression( expr ) ) then
+	if( cExpression( expr ) = FALSE ) then
 		hReportErrorEx( FB_ERRMSG_EXPECTEDCONST, id )
 		exit function
 	end if
@@ -146,7 +146,7 @@ function cConstAssign as integer static
 	else
 
 		'' not a constant?
-		if( not astIsCONST( expr ) ) then
+		if( astIsCONST( expr ) = FALSE ) then
 			hReportErrorEx( FB_ERRMSG_EXPECTEDCONST, id )
 			exit function
 		end if

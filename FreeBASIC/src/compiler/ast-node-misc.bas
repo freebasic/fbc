@@ -114,7 +114,7 @@ function astNewDBG( byval op as integer, _
 				    byval ex as integer ) as ASTNODE ptr static
     dim as ASTNODE ptr n
 
-	if( not env.clopt.debug ) then
+	if( env.clopt.debug = FALSE ) then
 		exit function
 	end if
 

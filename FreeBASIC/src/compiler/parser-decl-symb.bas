@@ -150,7 +150,7 @@ function cSymbolDecl as integer
 		end select
 
 		'' can't use STATIC outside a proc
-		if( not fbIsLocal( ) ) then
+		if( fbIsLocal( ) = FALSE ) then
    			hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB )
    			exit function
 		end if
@@ -175,9 +175,9 @@ private function hIsDynamic( byval dimensions as integer, _
 	end if
 
 	for i = 0 to dimensions-1
-		if( not astIsCONST( exprTB(i, 0) ) ) then
+		if( astIsCONST( exprTB(i, 0) ) = FALSE ) then
 			exit function
-		elseif( not astIsCONST( exprTB(i, 1) ) ) then
+		elseif( astIsCONST( exprTB(i, 1) ) = FALSE ) then
 			exit function
 		end if
 	next i
@@ -245,7 +245,7 @@ private function hDeclExternVar( byval id as zstring ptr, _
     if( s <> NULL ) then
 
     	'' no extern?
-    	if( not symbIsExtern( s ) ) then
+    	if( symbIsExtern( s ) = FALSE ) then
     		exit function
     	end if
 
@@ -365,7 +365,7 @@ private function hStaticSymbDef( byval id as zstring ptr, _
 	if( fbIsLocal( ) ) then
 		if( dimensions > 0 ) then
 			if( (alloctype and (FB_ALLOCTYPE_SHARED or FB_ALLOCTYPE_STATIC)) = 0 ) then
-				if( not rtlArraySetDesc( s, lgt, dimensions, dTB() ) ) then
+				if( rtlArraySetDesc( s, lgt, dimensions, dTB() ) = FALSE ) then
 					return NULL
 				end if
 			end if
@@ -441,7 +441,7 @@ private function hDynArrayDef( byval id as zstring ptr, _
 	'' check reallocation
 	if( isrealloc ) then
 		'' not dynamic?
-		if( not symbGetIsDynamic( s ) ) then
+		if( symbGetIsDynamic( s ) = FALSE ) then
 
    			'' could be an external..
    			s = hDeclExternVar( id, typ, subtype, atype, addsuffix, _
@@ -499,7 +499,7 @@ private function hDynArrayDef( byval id as zstring ptr, _
 
 	'' if dimensions not = -1 (COMMON or DIM|REDIM array()), redim it
 	if( dimensions > 0 ) then
-		if( not rtlArrayRedim( s, lgt, dimensions, exprTB(), dopreserve ) ) then
+		if( rtlArrayRedim( s, lgt, dimensions, exprTB(), dopreserve ) = FALSE ) then
 			exit function
 		end if
 	end if
@@ -542,7 +542,7 @@ function cSymbolDef( byval alloctype as integer, _
     if( lexGetToken( ) = FB_TK_AS ) then
     	lexSkipToken( )
 
-    	if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
+    	if( cSymbolType( typ, subtype, lgt, ptrcnt ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
     		exit function
     	end if
@@ -565,7 +565,7 @@ function cSymbolDef( byval alloctype as integer, _
     		exit function
     	end if
 
-    	if( not ismultdecl ) then
+    	if( ismultdecl = FALSE ) then
     		typ 		= lexGetType
     		subtype 	= NULL
     		lgt			= 0
@@ -597,14 +597,14 @@ function cSymbolDef( byval alloctype as integer, _
     		else
     			'' only allow indexes if not COMMON
     			if( (alloctype and FB_ALLOCTYPE_COMMON) = 0 ) then
-    				if( not cArrayDecl( dimensions, exprTB() ) ) then
+    				if( cArrayDecl( dimensions, exprTB() ) = FALSE ) then
     					exit function
     				end if
     			end if
     		end if
 
 			'' ')'
-    		if( not hMatch( CHAR_RPRNT ) ) then
+    		if( hMatch( CHAR_RPRNT ) = FALSE ) then
     			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
     			exit function
     		end if
@@ -651,7 +651,7 @@ function cSymbolDef( byval alloctype as integer, _
 			end if
 		end if
 
-    	if( not ismultdecl ) then
+    	if( ismultdecl = FALSE ) then
     		'' (AS SymbolType)?
     		if( lexGetToken( ) = FB_TK_AS ) then
 
@@ -662,7 +662,7 @@ function cSymbolDef( byval alloctype as integer, _
 
     			lexSkipToken( )
 
-    			if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
+    			if( cSymbolType( typ, subtype, lgt, ptrcnt ) = FALSE ) then
     				hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
     				exit function
     			end if
@@ -715,7 +715,7 @@ function cSymbolDef( byval alloctype as integer, _
 		select case lexGetToken( )
 		case FB_TK_DBLEQ, FB_TK_EQ
 			lexSkipToken( )
-        	if( not cSymbolInit( symbol ) ) then
+        	if( cSymbolInit( symbol ) = FALSE ) then
         		exit function
         	end if
 		end select
@@ -749,18 +749,18 @@ function cStaticArrayDecl( byref dimensions as integer, _
     dimensions = 0
 
     '' IDX_OPEN
-    if( not hMatch( CHAR_LPRNT ) ) then
+    if( hMatch( CHAR_LPRNT ) = FALSE ) then
     	exit function
     end if
 
     i = 0
     do
     	'' Expression
-		if( not cExpression( expr ) ) then
+		if( cExpression( expr ) = FALSE ) then
 			hReportError FB_ERRMSG_EXPECTEDCONST
 			exit function
 		else
-			if( not astIsCONST( expr ) ) then
+			if( astIsCONST( expr ) = FALSE ) then
 				hReportError FB_ERRMSG_EXPECTEDCONST
 				exit function
 			end if
@@ -782,11 +782,11 @@ function cStaticArrayDecl( byref dimensions as integer, _
     		lexSkipToken( )
 
     		'' Expression
-			if( not cExpression( expr ) ) then
+			if( cExpression( expr ) = FALSE ) then
 				hReportError FB_ERRMSG_EXPECTEDCONST
 				exit function
 			else
-				if( not astIsCONST( expr ) ) then
+				if( astIsCONST( expr ) = FALSE ) then
 					hReportError FB_ERRMSG_EXPECTEDCONST
 					exit function
 				end if
@@ -817,7 +817,7 @@ function cStaticArrayDecl( byref dimensions as integer, _
 	loop
 
 	'' IDX_CLOSE
-    if( not hMatch( CHAR_RPRNT ) ) then
+    if( hMatch( CHAR_RPRNT ) = FALSE ) then
     	hReportError FB_ERRMSG_EXPECTEDRPRNT
     	exit function
     end if
@@ -844,7 +844,7 @@ function cArrayDecl( byref dimensions as integer, _
     i = 0
     do
     	'' Expression
-		if( not cExpression( expr ) ) then
+		if( cExpression( expr ) = FALSE ) then
 			hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 			exit function
 		end if
@@ -862,7 +862,7 @@ function cArrayDecl( byref dimensions as integer, _
     		lexSkipToken( )
 
     		'' Expression
-			if( not cExpression( expr ) ) then
+			if( cExpression( expr ) = FALSE ) then
 				hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 				exit function
 			end if

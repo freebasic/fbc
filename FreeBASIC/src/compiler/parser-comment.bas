@@ -88,7 +88,7 @@ function cDirective as integer static
 		end if
 
 		'' ':'
-		if( not hMatch( CHAR_COLON ) ) then
+		if( hMatch( CHAR_COLON ) = FALSE ) then
 			hReportError( FB_ERRMSG_SYNTAXERROR )
 			exit function
 		end if
@@ -112,7 +112,7 @@ function cDirective as integer static
 			lexReadLine( CHAR_APOST, @incfile )
 
 			'' '\''
-			if( not hMatch( CHAR_APOST ) ) then
+			if( hMatch( CHAR_APOST ) = FALSE ) then
 				hReportError( FB_ERRMSG_SYNTAXERROR )
 				exit function
 			end if

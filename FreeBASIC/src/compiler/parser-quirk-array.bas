@@ -44,7 +44,7 @@ function cArrayStmt as integer
 		lexSkipToken( )
 
 		do
-			if( not cVarOrDeref( expr1, FALSE ) ) then
+			if( cVarOrDeref( expr1, FALSE ) = FALSE ) then
 				hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 				exit function
 			end if
@@ -56,17 +56,17 @@ function cArrayStmt as integer
     			exit function
     		end if
 
-    		if( not symbIsArray( s ) ) then
+    		if( symbIsArray( s ) = FALSE ) then
 				hReportError( FB_ERRMSG_EXPECTEDARRAY )
 				exit function
 			end if
 
 			if( symbGetIsDynamic( s ) ) then
-				if( not rtlArrayErase( expr1 ) ) then
+				if( rtlArrayErase( expr1 ) = FALSE ) then
 					exit function
 				end if
 			else
-				if( not rtlArrayClear( expr1 ) ) then
+				if( rtlArrayClear( expr1 ) = FALSE ) then
 					exit function
 				end if
 			end if
@@ -80,14 +80,14 @@ function cArrayStmt as integer
 	case FB_TK_SWAP
 		lexSkipToken( )
 
-		if( not cVarOrDeref( expr1 ) ) then
+		if( cVarOrDeref( expr1 ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			exit function
 		end if
 
 		hMatchCOMMA( )
 
-		if( not cVarOrDeref( expr2 ) ) then
+		if( cVarOrDeref( expr2 ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			exit function
 		end if
@@ -140,7 +140,7 @@ function cArrayFunct( byref funcexpr as ASTNODE ptr ) as integer
 		hMatchLPRNT( )
 
 		'' ID
-		if( not cVarOrDeref( sexpr, FALSE ) ) then
+		if( cVarOrDeref( sexpr, FALSE ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			exit function
 		end if
@@ -152,7 +152,7 @@ function cArrayFunct( byref funcexpr as ASTNODE ptr ) as integer
 			exit function
 		end if
 
-		if( not symbIsArray( s ) ) then
+		if( symbIsArray( s ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDARRAY, TRUE )
 			exit function
 		end if

@@ -75,7 +75,7 @@ function _linkFiles as integer
     '' set path
 	ldpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ld.exe"
 
-    if( not hFileExists( ldpath ) ) then
+    if( hFileExists( ldpath ) = FALSE ) then
 		hReportErrorEx( FB_ERRMSG_EXEMISSING, ldpath, -1 )
 		exit function
     end if
@@ -132,7 +132,7 @@ function _linkFiles as integer
         ldcline += " -Map " + fbc.mapfile
     end if
 
-	if( not fbc.debug ) then
+	if( fbc.debug = FALSE ) then
 		ldcline += " -s"
 	end if
 
@@ -332,7 +332,7 @@ function clearDefList( byval dllfile as zstring ptr ) as integer
 
 	function = FALSE
 
-    if( not hFileExists( *dllfile + ".def" ) ) then
+    if( hFileExists( *dllfile + ".def" ) = FALSE ) then
     	exit function
     end if
 
@@ -375,7 +375,7 @@ function makeImpLib( byval dllpath as zstring ptr, _
 	'' set path
 	dtpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "dlltool.exe"
 
-    if( not hFileExists( dtpath ) ) then
+    if( hFileExists( dtpath ) = FALSE ) then
 		hReportErrorEx( FB_ERRMSG_EXEMISSING, dtpath, -1 )
 		exit function
     end if

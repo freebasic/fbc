@@ -97,7 +97,7 @@ data ""
 '':::::
 sub	edbgInit( )
 
-    if( not env.clopt.debug ) then
+    if( env.clopt.debug = FALSE ) then
     	exit sub
     end if
 
@@ -109,7 +109,7 @@ end sub
 '':::::
 sub	edbgEnd( )
 
-    if( not env.clopt.debug ) then
+    if( env.clopt.debug = FALSE ) then
     	exit sub
     end if
 
@@ -205,7 +205,7 @@ sub edbgEmitHeader( byval filename as zstring ptr ) static
     dim as integer i
     dim as string fname, stab, lname
 
-	if( not env.clopt.debug ) then
+	if( env.clopt.debug = FALSE ) then
 		exit sub
 	end if
 
@@ -253,7 +253,7 @@ end sub
 sub edbgEmitFooter( ) static
 	dim as string lname
 
-	if( not env.clopt.debug ) then
+	if( env.clopt.debug = FALSE ) then
 		exit sub
 	end if
 
@@ -271,7 +271,7 @@ end sub
 sub edbgLineBegin( byval proc as FBSYMBOL ptr, _
 				   byval lnum as integer )
 
-    if( not env.clopt.debug ) then
+    if( env.clopt.debug = FALSE ) then
     	exit sub
     end if
 
@@ -297,7 +297,7 @@ end sub
 sub edbgLineEnd( byval proc as FBSYMBOL ptr, _
 				 byval unused as integer  )
 
-    if( not env.clopt.debug ) then
+    if( env.clopt.debug = FALSE ) then
     	exit sub
     end if
 
@@ -318,7 +318,7 @@ sub edbgEmitLine( byval proc as FBSYMBOL ptr, _
 			  	  byval label as FBSYMBOL ptr ) static
     dim as zstring ptr s
 
-	if( not env.clopt.debug ) then
+	if( env.clopt.debug = FALSE ) then
 		exit sub
 	end if
 
@@ -343,7 +343,7 @@ sub edbgEmitLineFlush( byval proc as FBSYMBOL ptr, _
 				  	   byval lnum as integer, _
 			  	  	   byval label as FBSYMBOL ptr ) static
 
-	if( not env.clopt.debug ) then
+	if( env.clopt.debug = FALSE ) then
 		exit sub
 	end if
 
@@ -359,7 +359,7 @@ sub edbgScopeBegin( byval s as FBSYMBOL ptr ) static
 
 	'' called by ir->ast
 
-    if( not env.clopt.debug ) then
+    if( env.clopt.debug = FALSE ) then
     	exit sub
     end if
 
@@ -373,7 +373,7 @@ sub edbgScopeEnd( byval s as FBSYMBOL ptr ) static
 
 	'' called by ir->ast
 
-    if( not env.clopt.debug ) then
+    if( env.clopt.debug = FALSE ) then
     	exit sub
     end if
 
@@ -385,7 +385,7 @@ end sub
 '':::::
 sub edbgEmitScopeINI( byval s as FBSYMBOL ptr ) static
 
-    if( not env.clopt.debug ) then
+    if( env.clopt.debug = FALSE ) then
     	exit sub
     end if
 
@@ -396,7 +396,7 @@ end sub
 '':::::
 sub edbgEmitScopeEND( byval s as FBSYMBOL ptr ) static
 
-    if( not env.clopt.debug ) then
+    if( env.clopt.debug = FALSE ) then
     	exit sub
     end if
 
@@ -459,7 +459,7 @@ sub edbgEmitProcHeader( byval proc as FBSYMBOL ptr ) static
     dim as string desc, procname
     dim as integer incfile
 
-	if( not env.clopt.debug ) then
+	if( env.clopt.debug = FALSE ) then
 		exit sub
 	end if
 
@@ -532,7 +532,7 @@ private sub hDeclLocalVars( byval proc as FBSYMBOL ptr, _
 	'' proc?
 	if( symbIsProc( blk ) ) then
 		'' not main?
-		if( not symbIsMainProc( blk ) ) then
+		if( symbIsMainProc( blk ) = FALSE ) then
 			shead = symbGetProcLocTbHead( blk )
 		'' main..
 		else
@@ -545,7 +545,7 @@ private sub hDeclLocalVars( byval proc as FBSYMBOL ptr, _
 	end if
 
 	'' not main?
-	if( not symbIsMainProc( proc ) ) then
+	if( symbIsMainProc( proc ) = FALSE ) then
 		'' not an argument or temporary?
 		mask = FB_ALLOCTYPE_ARGUMENTBYDESC or _
 			   FB_ALLOCTYPE_ARGUMENTBYVAL or _
@@ -619,7 +619,7 @@ sub edbgEmitProcFooter( byval proc as FBSYMBOL ptr, _
 
     dim as string procname, lname
 
-	if( not env.clopt.debug ) then
+	if( env.clopt.debug = FALSE ) then
 		exit sub
 	end if
 
@@ -922,7 +922,7 @@ sub edbgEmitGlobalVar( byval sym as FBSYMBOL ptr, _
 	dim as string desc
 	dim as zstring ptr sname
 
-	if( not env.clopt.debug ) then
+	if( env.clopt.debug = FALSE ) then
 		exit sub
 	end if
 
@@ -947,7 +947,7 @@ sub edbgEmitGlobalVar( byval sym as FBSYMBOL ptr, _
     alloctype = symbGetAllocType( sym )
     if( (alloctype and (FB_ALLOCTYPE_PUBLIC or FB_ALLOCTYPE_COMMON)) > 0 ) then
     	desc += ":G"
-    elseif( not symbIsLocal( sym ) or (alloctype and FB_ALLOCTYPE_STATIC) > 0 ) then
+    elseif( (symbIsLocal( sym ) = FALSE) or (alloctype and FB_ALLOCTYPE_STATIC) > 0 ) then
         desc += ":S"
     else
     	desc += ":"
@@ -974,7 +974,7 @@ sub edbgEmitLocalVar( byval sym as FBSYMBOL ptr, _
 	dim as integer t
 	dim as string desc, value
 
-	if( not env.clopt.debug ) then
+	if( env.clopt.debug = FALSE ) then
 		exit sub
 	end if
 
@@ -1020,7 +1020,7 @@ sub edbgEmitProcArg( byval sym as FBSYMBOL ptr ) static
 
 	dim as string desc
 
-	if( not env.clopt.debug ) then
+	if( env.clopt.debug = FALSE ) then
 		exit sub
 	end if
 
@@ -1049,7 +1049,7 @@ sub edbgIncludeBegin ( byval incname as zstring ptr, _
 					   byval incfile as integer ) static
 	dim as string fname, lname
 
-	if( not env.clopt.debug ) then
+	if( env.clopt.debug = FALSE ) then
 		exit sub
 	end if
 
@@ -1072,7 +1072,7 @@ end sub
 '':::::
 sub edbgIncludeEnd ( ) static
 
-	if( not env.clopt.debug ) then
+	if( env.clopt.debug = FALSE ) then
 		exit sub
 	end if
 

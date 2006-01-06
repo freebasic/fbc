@@ -79,23 +79,23 @@ data "VA_NEXT", _
 	 FB_DEFTOK_TYPE_TEX, ") + 1)", _
 	 -1
 
-''#define ASSERT(e) if not (e) then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e)
+''#define ASSERT(e) if (e) = FALSE then fb_Assert(__FILE__, __LINE__, __FUNCTION__, #e)
 data "ASSERT", _
 	 TRUE, _
 	 1, "E", _
-	 FB_DEFTOK_TYPE_TEX, "if not (", _
+	 FB_DEFTOK_TYPE_TEX, "if (", _
 	 FB_DEFTOK_TYPE_ARG, 0, _
-	 FB_DEFTOK_TYPE_TEX, ") then fb_Assert(__FILE__, __LINE__, __FUNCTION__, ", _
+	 FB_DEFTOK_TYPE_TEX, ") = 0 then fb_Assert(__FILE__, __LINE__, __FUNCTION__, ", _
 	 FB_DEFTOK_TYPE_ARGSTR, 0, _
 	 FB_DEFTOK_TYPE_TEX, ")", _
 	 -1
-''#define ASSERTWARN(e) if not (e) then fb_AssertWarn(__FILE__, __LINE__, __FUNCTION__, #e)
+''#define ASSERTWARN(e) if (e) = FALSE then fb_AssertWarn(__FILE__, __LINE__, __FUNCTION__, #e)
 data "ASSERTWARN", _
 	 TRUE, _
 	 1, "E", _
-	 FB_DEFTOK_TYPE_TEX, "if not (", _
+	 FB_DEFTOK_TYPE_TEX, "if (", _
 	 FB_DEFTOK_TYPE_ARG, 0, _
-	 FB_DEFTOK_TYPE_TEX, ") then fb_AssertWarn(__FILE__, __LINE__, __FUNCTION__, ", _
+	 FB_DEFTOK_TYPE_TEX, ") = 0 then fb_AssertWarn(__FILE__, __LINE__, __FUNCTION__, ", _
 	 FB_DEFTOK_TYPE_ARGSTR, 0, _
 	 FB_DEFTOK_TYPE_TEX, ")", _
 	 -1

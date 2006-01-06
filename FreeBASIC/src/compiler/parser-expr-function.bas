@@ -61,7 +61,7 @@ function cFunctionCall( byval sym as FBSYMBOL ptr, _
 		end if
 
 		'' ')'
-		if( not hMatch( CHAR_RPRNT ) ) then
+		if( hMatch( CHAR_RPRNT ) = FALSE ) then
     		hReportError FB_ERRMSG_EXPECTEDRPRNT
     		exit function
 		end if

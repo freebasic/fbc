@@ -77,7 +77,7 @@ end sub
 '':::::
 sub emitEnd static
 
-	if( not emit.inited ) then
+	if( emit.inited = FALSE ) then
 		exit sub
 	end if
 
@@ -207,7 +207,7 @@ private sub hMainBegin( byval isdllmain as integer )
 				FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
 
 	''
-	if( not isdllmain ) then
+	if( isdllmain = FALSE ) then
 		alloctype = FB_ALLOCTYPE_PUBLIC
 	else
 		alloctype = FB_ALLOCTYPE_PRIVATE
@@ -256,7 +256,7 @@ private sub hMainEnd( byval isdllmain as integer )
    	astAdd( astNewLABEL( emit.main.exitlabel ) )
 
     '' end( 0 )
-    if( not isdllmain ) then
+    if( isdllmain = FALSE ) then
     	rtlExitRt( NULL )
     end if
 

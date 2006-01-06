@@ -547,11 +547,11 @@ function astNewBOP( byval op as integer, _
 	''::::::
     '' pointers?
     if( ldtype >= IR_DATATYPE_POINTER ) then
-    	if( not hCheckPointer( op, rdtype, rdclass ) ) then
+    	if( hCheckPointer( op, rdtype, rdclass ) = FALSE ) then
     		exit function
     	end if
     elseif( rdtype >= IR_DATATYPE_POINTER ) then
-    	if( not hCheckPointer( op, ldtype, ldclass ) ) then
+    	if( hCheckPointer( op, ldtype, ldclass ) = FALSE ) then
     		exit function
     	end if
     end if
@@ -780,7 +780,7 @@ function astNewBOP( byval op as integer, _
 
 	'' convert byte to int
 	if( irGetDataSize( ldtype ) = 1 ) then
-		if( not is_str ) then
+		if( is_str = FALSE ) then
 			if( irIsSigned( ldtype ) ) then
 				ldtype = IR_DATATYPE_INTEGER
 			else
@@ -791,7 +791,7 @@ function astNewBOP( byval op as integer, _
 	end if
 
 	if( irGetDataSize( rdtype ) = 1 ) then
-		if( not is_str ) then
+		if( is_str = FALSE ) then
 			if( irIsSigned( rdtype ) ) then
 				rdtype = IR_DATATYPE_INTEGER
 			else

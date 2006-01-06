@@ -204,7 +204,7 @@ private function ppLibPath( ) as integer
 
 	lexEatToken( path )
 
-	if( not fbAddLibPath( hUnescapeStr( path ) ) ) then
+	if( fbAddLibPath( hUnescapeStr( path ) ) = FALSE ) then
 		hReportError( FB_ERRMSG_SYNTAXERROR, TRUE )
 		return FALSE
 	end if

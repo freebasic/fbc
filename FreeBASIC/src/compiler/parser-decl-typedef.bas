@@ -69,7 +69,7 @@ function cTypedefDecl( byval pid as zstring ptr ) as integer static
     end if
 
     do
-		if( not ismult ) then
+		if( ismult = FALSE ) then
     		isfwd = (cSymbolType( typ, subtype, lgt, ptrcnt ) = NULL)
     		if( isfwd ) then
     			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
@@ -109,7 +109,7 @@ function cTypedefDecl( byval pid as zstring ptr ) as integer static
 				end if
     		end if
 
-			if( not ismult ) then
+			if( ismult = FALSE ) then
     			lexSkipToken( )
 
 				if( ptrcnt = 0 ) then

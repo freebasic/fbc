@@ -83,7 +83,7 @@ function cOptDecl as integer
 			do
 				select case lexGetClass( LEXCHECK_NODEFINE )
 				case FB_TKCLASS_KEYWORD
-					if( not symbDelKeyword( lexGetSymbol ) ) then
+					if( symbDelKeyword( lexGetSymbol ) = FALSE ) then
 						hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 						exit function
 					end if
@@ -96,7 +96,7 @@ function cOptDecl as integer
 					if( s <> NULL ) then
 
 						'' is it from the rtlib (gfxlib will be listed as part of the rt too)?
-						if( not symbGetProcIsRTL( s ) ) then
+						if( symbGetProcIsRTL( s ) = FALSE ) then
 							hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 							exit function
 						end if

@@ -56,9 +56,9 @@ function cViewStmt(byval is_func as integer = FALSE, _
 	lexSkipToken( )
 
 	'' (Expression TO Expression)?
-	if( not is_func ) then
+	if( is_func = FALSE ) then
     	if( cExpression( expr1 ) ) then
-            if( not hMatch( FB_TK_TO ) ) then
+            if( hMatch( FB_TK_TO ) = FALSE ) then
                 hReportError FB_ERRMSG_SYNTAXERROR
                 exit function
             end if
@@ -81,7 +81,7 @@ function cViewStmt(byval is_func as integer = FALSE, _
 	funcexpr = rtlConsoleView( expr1, expr2 )
     function = funcexpr <> NULL
 
-    if( not is_func ) then
+    if( is_func = FALSE ) then
     	astAdd( funcexpr )
     end if
 
@@ -106,7 +106,7 @@ function cWidthStmt( byval isfunc as integer ) as ASTNODE ptr
 
     if( isfunc ) then
     	' Width Screen?
-    	if( (not checkrprnt) or _                   '' !!!FIXME!!! change to OrElse
+    	if( (checkrprnt = FALSE) or _                   '' !!!FIXME!!! change to OrElse
     		hMatch( CHAR_RPRNT ) ) then
     		return rtlWidthScreen( NULL, NULL, isfunc )
     	end if

@@ -165,7 +165,7 @@ function cSubOrFuncDecl( byval isSub as integer ) as integer static
     		exit function
     	end if
 
-    	if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
+    	if( cSymbolType( typ, subtype, lgt, ptrcnt ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
     		exit function
     	end if

@@ -123,7 +123,7 @@ function cEndStatement as integer
   	case FB_TK_STATSEPCHAR, FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
   		errlevel = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
   	case else
-  		if( not cExpression( errlevel ) ) then
+  		if( cExpression( errlevel ) = FALSE ) then
   			errlevel = NULL
   		end if
   	end select

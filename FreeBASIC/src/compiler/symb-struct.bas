@@ -241,7 +241,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 			'' bitfield?
 			if( bits > 0 ) then
 				'' not M$-way?
-				if( not env.clopt.msbitfields ) then
+				if( env.clopt.msbitfields = FALSE ) then
 					'' follow the GCC ABI..
 					if( bits <= pad * 8 ) then
 						lgt = pad
@@ -329,7 +329,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 
 	if( updateudt ) then
 		'' struct?
-		if( not t->udt.isunion ) then
+		if( t->udt.isunion = FALSE ) then
 			t->udt.ofs += lgt
 			t->lgt = t->udt.ofs
 
@@ -363,7 +363,7 @@ sub symbInsertInnerUDT( byval t as FBSYMBOL ptr, _
     dim as FBSYMBOLTB ptr symtb
     dim as integer pad
 
-	if( not t->udt.isunion ) then
+	if( t->udt.isunion = FALSE ) then
 		'' calc padding (should be aligned like if an UDT field were been added)
 		pad = hCalcALign( inner->udt.lfldlen, t->udt.ofs, t->udt.align, _
 						  FB_SYMBTYPE_VOID, NULL )
@@ -415,7 +415,7 @@ sub symbInsertInnerUDT( byval t as FBSYMBOL ptr, _
     t->udt.elements	+= inner->udt.elements
 
 	'' struct? update ofs + len
-	if( not t->udt.isunion ) then
+	if( t->udt.isunion = FALSE ) then
 		t->udt.ofs += inner->udt.unpadlgt
 		t->lgt = t->udt.ofs
 

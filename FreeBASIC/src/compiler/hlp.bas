@@ -338,7 +338,7 @@ function hCreateName( byval symbol as zstring ptr, _
 		sname = *symbol
 	end if
 
-	if( not preservecase ) then
+	if( preservecase = FALSE ) then
 		hUcase( sname, sname )
 	end if
 
@@ -468,7 +468,7 @@ function hStripUnderscore( byval symbol as zstring ptr ) as string static
 
 	select case as const fbGetNaming()
     case FB_COMPNAMING_WIN32, FB_COMPNAMING_CYGWIN
-	    if( not env.clopt.nostdcall ) then
+	    if( env.clopt.nostdcall = FALSE ) then
 			function = *(symbol + 1)
 		else
 			function = *symbol

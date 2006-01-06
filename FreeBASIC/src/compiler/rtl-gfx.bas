@@ -472,7 +472,7 @@ end sub
 private function hPorts_cb( byval sym as FBSYMBOL ptr ) as integer
     static as integer libsAdded = FALSE
 
-	if( not libsadded ) then
+	if( libsadded = FALSE ) then
 		libsAdded = TRUE
 
 		select case env.clopt.target
@@ -489,7 +489,7 @@ end function
 function rtlMultinput_cb( byval sym as FBSYMBOL ptr ) as integer static
     static as integer libsAdded = FALSE
 
-	if( not libsadded ) then
+	if( libsadded = FALSE ) then
 		libsAdded = TRUE
 
 		select case env.clopt.target
@@ -506,7 +506,7 @@ end function
 private function hGfxlib_cb( byval sym as FBSYMBOL ptr ) as integer static
     static as integer libsAdded = FALSE
 
-	if( not libsadded ) then
+	if( libsadded = FALSE ) then
 		libsAdded = TRUE
 
 		symbAddLib( "fbgfx" )
@@ -1360,7 +1360,7 @@ function rtlGfxGet( byval target as ASTNODE ptr, _
 	else
 		argmode = INVALID
 
-		if( not astIsFIELD( arrayexpr ) ) then
+		if( astIsFIELD( arrayexpr ) = FALSE ) then
 			descexpr = astNewVAR( symbol, 0, symbGetType( symbol ) )
 		else
 			descexpr = astCloneTree( arrayexpr )

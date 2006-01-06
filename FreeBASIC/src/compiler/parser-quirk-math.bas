@@ -173,9 +173,9 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 		hMatchLPRNT( )
 
 		expr = NULL
-		if( not cSymbolType( typ, subtype, lgt, ptrcnt, FALSE ) ) then
+		if( cSymbolType( typ, subtype, lgt, ptrcnt, FALSE ) = FALSE ) then
 			env.checkarray = FALSE
-			if( not cExpression( expr ) ) then
+			if( cExpression( expr ) = FALSE ) then
 				env.checkarray = TRUE
 				hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 				exit function
@@ -185,7 +185,7 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 		'' string expressions with SIZEOF() are not allowed
 		if( expr <> NULL ) then
-			if( not islen ) then
+			if( islen = FALSE ) then
 				if( astGetDataClass( expr ) = IR_DATACLASS_STRING ) then
 					if( (astGetSymbol( expr ) = NULL) or (astIsFUNCT( expr )) ) then
 						hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )

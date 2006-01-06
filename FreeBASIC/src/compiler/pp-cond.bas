@@ -115,7 +115,7 @@ function ppCondIf( ) as integer
 	case FB_TK_IF
         lexSkipToken( )
 
-		if( not ppExpression( istrue ) ) then
+		if( ppExpression( istrue ) = FALSE ) then
 			exit function
 		end if
 
@@ -130,7 +130,7 @@ function ppCondIf( ) as integer
 	pptb(ctx.level).istrue = istrue
 	pptb(ctx.level).elsecnt = 0
 
-    if( not istrue ) then
+    if( istrue = FALSE ) then
     	function = ppSkip( )
     else
 		function = TRUE
@@ -161,7 +161,7 @@ function ppCondElse( ) as integer
 
         lexSkipToken( )
 
-		if( not ppExpression( istrue ) ) then
+		if( ppExpression( istrue ) = FALSE ) then
 			exit function
 		end if
 
@@ -182,7 +182,7 @@ function ppCondElse( ) as integer
 
     end if
 
-   	if( not pptb(ctx.level).istrue ) then
+   	if( pptb(ctx.level).istrue = FALSE ) then
    		function = ppSkip( )
    	else
    		function = TRUE
@@ -218,7 +218,7 @@ private function ppSkip as integer
 	cComment( )
 
 	'' EOL
-	if( not hMatch( FB_TK_EOL ) ) then
+	if( hMatch( FB_TK_EOL ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDEOL )
 		exit function
 	end if
@@ -507,7 +507,7 @@ private function ppExpression( byref istrue as integer ) as integer
     function = FALSE
 
     '' LogExpression
-    if( not ppLogExpression( expr ) ) then
+    if( ppLogExpression( expr ) = FALSE ) then
     	exit function
     end if
 
@@ -531,7 +531,7 @@ private function ppLogExpression( byref logexpr as PPEXPR ) as integer
     function = FALSE
 
     '' RelExpression
-    if( not ppRelExpression( logexpr ) ) then
+    if( ppRelExpression( logexpr ) = FALSE ) then
     	exit function
     end if
 
@@ -551,7 +551,7 @@ private function ppLogExpression( byref logexpr as PPEXPR ) as integer
     	end if
 
     	'' RelExpression
-    	if( not ppRelExpression( relexpr ) ) then
+    	if( ppRelExpression( relexpr ) = FALSE ) then
     		exit function
     	end if
 
@@ -577,7 +577,7 @@ private function ppRelExpression( byref relexpr as PPEXPR ) as integer
    	function = FALSE
 
     '' Atom
-    if( not ppParentExpr( relexpr ) ) then
+    if( ppParentExpr( relexpr ) = FALSE ) then
     	exit function
     end if
 
@@ -593,7 +593,7 @@ private function ppRelExpression( byref relexpr as PPEXPR ) as integer
     	end select
 
     	'' ParentExpr
-    	if( not ppParentExpr( parexpr ) ) then
+    	if( ppParentExpr( parexpr ) = FALSE ) then
     		exit function
     	end if
 
@@ -652,12 +652,12 @@ private function ppParentExpr( byref parexpr as PPEXPR ) as integer
   	case CHAR_LPRNT
   		lexSkipToken( )
 
-  		if( not ppLogExpression( parexpr ) ) then
+  		if( ppLogExpression( parexpr ) = FALSE ) then
   			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
   			exit function
   		end if
 
-  		if( not hMatch( CHAR_RPRNT ) ) then
+  		if( hMatch( CHAR_RPRNT ) = FALSE ) then
   			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
   			exit function
   		end if
@@ -685,7 +685,7 @@ private function ppParentExpr( byref parexpr as PPEXPR ) as integer
 		end if
 		lexSkipToken( )
 
-  		if( not hMatch( CHAR_RPRNT ) ) then
+  		if( hMatch( CHAR_RPRNT ) = FALSE ) then
   			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
   			exit function
   		end if
@@ -694,7 +694,7 @@ private function ppParentExpr( byref parexpr as PPEXPR ) as integer
 	case CHAR_MINUS
 		lexSkipToken( )
 
-  		if( not ppParentExpr( parexpr ) ) then
+  		if( ppParentExpr( parexpr ) = FALSE ) then
   			exit function
   		end if
 
@@ -709,7 +709,7 @@ private function ppParentExpr( byref parexpr as PPEXPR ) as integer
 	case FB_TK_NOT
 		lexSkipToken( )
 
-  		if( not ppRelExpression( parexpr ) ) then
+  		if( ppRelExpression( parexpr ) = FALSE ) then
   			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
   			exit function
   		end if

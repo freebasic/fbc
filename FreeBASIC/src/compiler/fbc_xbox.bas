@@ -75,7 +75,7 @@ function _linkFiles as integer
     '' set path
 	ldpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ld.exe"
 
-    if( not hFileExists( ldpath ) ) then
+    if( hFileExists( ldpath ) = FALSE ) then
 		hReportErrorEx( FB_ERRMSG_EXEMISSING, ldpath, -1 )
 		exit function
     end if
@@ -95,7 +95,7 @@ function _linkFiles as integer
         ldcline += " -Map " + fbc.mapfile
     end if
 
-	if( not fbc.debug ) then
+	if( fbc.debug = FALSE ) then
 		ldcline += " --strip-all"
 	end if
 
@@ -164,7 +164,7 @@ function _linkFiles as integer
     cxbecline += "\"" + fbc.outname + "\""
 
     '' don't echo cxbe output
-    if not fbc.verbose then
+    if fbc.verbose = FALSE then
     	cxbecline += " >nul"
     end if
 
@@ -175,7 +175,7 @@ function _linkFiles as integer
 
     cxbepath = exepath() + *fbGetPath(FB_PATH_BIN) + "cxbe.exe"
 
-    if( not hFileExists( cxbepath ) ) then
+    if( hFileExists( cxbepath ) = FALSE ) then
 		hReportErrorEx( FB_ERRMSG_EXEMISSING, cxbepath, -1 )
 		exit function
     end if

@@ -85,7 +85,7 @@ function _linkFiles as integer
 	'' set path
 	ldpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ld.exe"
 
-    if( not hFileExists( ldpath ) ) then
+    if( hFileExists( ldpath ) = FALSE ) then
 		hReportErrorEx( FB_ERRMSG_EXEMISSING, ldpath, -1 )
 		exit function
     end if
@@ -110,7 +110,7 @@ function _linkFiles as integer
         ldcline += " -Map " + fbc.mapfile
     end if
 
-	if( not fbc.debug ) then
+	if( fbc.debug = FALSE ) then
 		ldcline += " -s "
 	else
 		ldcline += " "

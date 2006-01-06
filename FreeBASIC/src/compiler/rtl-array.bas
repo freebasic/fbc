@@ -189,7 +189,7 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, _
     function = FALSE
 
 	''
-	if( not dopreserve ) then
+	if( dopreserve = FALSE ) then
 		f = PROCLOOKUP( ARRAYREDIM )
 	else
 		f = PROCLOOKUP( ARRAYREDIMPRESV )

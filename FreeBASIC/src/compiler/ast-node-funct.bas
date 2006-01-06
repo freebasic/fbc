@@ -96,7 +96,7 @@ function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 	n->proc.profbegin = NULL
 	n->proc.profend   = NULL
 	if( env.clopt.profile ) then
-		if( not isprofiler ) then
+		if( isprofiler = FALSE ) then
 			n->proc.profbegin = rtlProfileBeginCall( sym )
 			if( n->proc.profbegin <> NULL ) then
 				n->proc.profend   = rtlProfileEndCall( )
@@ -346,7 +346,7 @@ private function hStrParamToPtrArg( byval proc as ASTNODE ptr, _
 	dim as ASTNODE ptr p
 	dim as integer pdtype
 
-	if( not checkrtl ) then
+	if( checkrtl = FALSE ) then
 		'' rtl? don't mess..
 		if( proc->proc.isrtl ) then
 			return TRUE
@@ -441,7 +441,7 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 	end if
 
 	'' same type? (don't check if it's a rtl proc)
-	if( not f->proc.isrtl ) then
+	if( f->proc.isrtl = FALSE ) then
 		if( (adclass <> irGetDataClass( s->typ ) ) or _
 			(irGetDataSize( adtype ) <> irGetDataSize( s->typ )) ) then
 			hParamError( f )
@@ -683,8 +683,8 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 
 		    			'' not a pointer to a zstring?
 		    			else
-							if( not astPtrCheck( IR_DATATYPE_POINTER + IR_DATATYPE_CHAR, _
-												 NULL, p ) ) then
+							if( astPtrCheck( IR_DATATYPE_POINTER + IR_DATATYPE_CHAR, _
+											 NULL, p ) = FALSE ) then
 			        			hParamWarning( f, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
 			    			end if
 
@@ -897,11 +897,11 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 	if( adtype >= IR_DATATYPE_POINTER ) then
     	iswarning = FALSE
     	if( adtype = IR_DATATYPE_POINTER + IR_DATATYPE_FUNCTION ) then
-    		if( not astFuncPtrCheck( adtype, symbGetSubtype( arg ), p ) ) then
+    		if( astFuncPtrCheck( adtype, symbGetSubtype( arg ), p ) = FALSE ) then
 	        	iswarning = TRUE
 	    	end if
 		else
-			if( not astPtrCheck( adtype, symbGetSubtype( arg ), p ) ) then
+			if( astPtrCheck( adtype, symbGetSubtype( arg ), p ) = FALSE ) then
 	        	iswarning = TRUE
 	    	end if
 		end if
@@ -970,7 +970,7 @@ function astNewPARAM( byval f as ASTNODE ptr, _
 	end if
 
 	''
-	if( not hCheckParam( f, n ) ) then
+	if( hCheckParam( f, n ) = FALSE ) then
 		return NULL
 	end if
 
@@ -1025,7 +1025,7 @@ private function hCallProc( byval n as ASTNODE ptr, _
 
 	if( mode <> FB_FUNCMODE_CDECL ) then
 		if( mode = FB_FUNCMODE_STDCALL ) then
-			if( not env.clopt.nostdcall ) then
+			if( env.clopt.nostdcall = FALSE ) then
 				bytestopop = 0
 			end if
 		else
@@ -1249,7 +1249,7 @@ function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 		astDel( l )
 
 		if( ast.doemit ) then
-			if( not irEmitPUSHPARAM( proc, arg, vr, p->param.mode, p->param.lgt ) ) then
+			if( irEmitPUSHPARAM( proc, arg, vr, p->param.mode, p->param.lgt ) = FALSE ) then
 				'''''return NULL
 			end if
 		end if

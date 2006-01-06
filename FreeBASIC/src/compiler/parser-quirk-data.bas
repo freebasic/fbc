@@ -68,12 +68,12 @@ function cDataStmt as integer static
 		lexSkipToken( )
 
 		do
-		    if( not cVarOrDeref( expr ) ) then
+		    if( cVarOrDeref( expr ) = FALSE ) then
 		    	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		    	exit function
 		    end if
 
-            if( not rtlDataRead( expr ) ) then
+            if( rtlDataRead( expr ) = FALSE ) then
             	exit function
             end if
 
@@ -110,17 +110,17 @@ function cDataStmt as integer static
 			if( litsym <> NULL ) then
                 '' not a wstring?
                 if( astGetDataType( expr ) <> IR_DATATYPE_WCHAR ) then
-            		if( not rtlDataStore( symbGetVarText( litsym ), _
-            							  symbGetStrLen( litsym ) - 1, _ '' less the null-char
-            							  IR_DATATYPE_CHAR ) ) then
+            		if( rtlDataStore( symbGetVarText( litsym ), _
+            						  symbGetStrLen( litsym ) - 1, _ '' less the null-char
+            						  IR_DATATYPE_CHAR ) = FALSE ) then
 	            		exit function
     	        	end if
 
     	        '' wstring..
     	        else
-            		if( not rtlDataStoreW( symbGetVarTextW( litsym ), _
-            							   symbGetWstrLen( litsym ) - 1, _ '' ditto
-            							   IR_DATATYPE_WCHAR ) ) then
+            		if( rtlDataStoreW( symbGetVarTextW( litsym ), _
+            						   symbGetWstrLen( litsym ) - 1, _ '' ditto
+            						   IR_DATATYPE_WCHAR ) = FALSE ) then
 	            		exit function
     	        	end if
 
@@ -130,21 +130,21 @@ function cDataStmt as integer static
 			else
 				'' address of?
 				if( astIsOFFSET( expr ) ) then
-            		if( not rtlDataStoreOFS( astGetSymbol( expr ) ) ) then
+            		if( rtlDataStoreOFS( astGetSymbol( expr ) ) = FALSE ) then
 	            		exit function
     	        	end if
 
 				else
 					'' not a constant?
-					if( not astIsCONST( expr ) ) then
+					if( astIsCONST( expr ) = FALSE ) then
 						hReportError( FB_ERRMSG_EXPECTEDCONST )
 						exit function
 					end if
 
             		littext = astGetValueAsStr( expr )
-            		if( not rtlDataStore( littext, _
-            							  len( littext ), _
-            							  IR_DATATYPE_CHAR ) ) then
+            		if( rtlDataStore( littext, _
+            						  len( littext ), _
+            						  IR_DATATYPE_CHAR ) = FALSE ) then
 	            		hReportError( FB_ERRMSG_INVALIDDATATYPES )
 	            		exit function
     	        	end if

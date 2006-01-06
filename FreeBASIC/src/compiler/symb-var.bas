@@ -81,7 +81,7 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 	end if
 
 	'' module-level or static? no alias
-	if( not fbIsLocal( ) or (isshared) or (isstatic) ) then
+	if( (fbIsLocal( ) = FALSE) or (isshared) or (isstatic) ) then
 		aname = sname
 		ofs = 0
 
@@ -93,7 +93,7 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 
 	d = symbNewSymbol( NULL, symb.symtb, FB_SYMBCLASS_VAR, FALSE, _
 					   NULL, aname, _
-					   fbIsLocal( ) and (not isshared), _
+					   fbIsLocal( ) and (isshared = FALSE), _
 					   FB_SYMBTYPE_USERDEF, cptr( FBSYMBOL ptr, FB_DESCTYPE_ARRAY ), 0 )
     if( d = NULL ) then
     	exit function
@@ -293,7 +293,7 @@ function symbAddVarEx( byval symbol as zstring ptr, _
 
 	else
 		'' static?
-		if( (not isshared) and (isstatic) ) then
+		if( (isshared = FALSE) and (isstatic) ) then
 			aname = hMakeTmpStr( FALSE )
 
 		else
@@ -301,7 +301,7 @@ function symbAddVarEx( byval symbol as zstring ptr, _
 			if( (ispublic) or _
 				(isextern) or _
 				(isshared) or _
-				not fbIsLocal( ) ) then
+				(fbIsLocal( ) = FALSE) ) then
 
 			    '' not inside a SCOPE block?
 			    if( env.scope = 0 ) then
@@ -334,7 +334,7 @@ function symbAddVarEx( byval symbol as zstring ptr, _
 	s = symbNewSymbol( NULL, iif( isshared, @symb.globtb, symb.symtb ), _
 					   FB_SYMBCLASS_VAR, TRUE, _
 					   symbol, aname, _
-					   fbIsLocal( ) and (not isshared), _
+					   fbIsLocal( ) and (isshared = FALSE), _
 					   typ, subtype, ptrcnt, suffix, preservecase )
 
 	if( s = NULL ) then
@@ -507,7 +507,7 @@ sub symbDelVar( byval s as FBSYMBOL ptr, _
     	end if
 	end if
 
-	if( not movetoglob ) then
+	if( movetoglob = FALSE ) then
     	if( s->var.array.dims > 0 ) then
     		hDelVarDims( s )
     		'' del the array descriptor, recursively

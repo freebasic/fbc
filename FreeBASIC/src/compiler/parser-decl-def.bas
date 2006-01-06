@@ -80,7 +80,7 @@ function cDefDecl as integer static
 			lexSkipToken( )
 
 			'' '-'
-			if( not hMatch( CHAR_MINUS ) ) then
+			if( hMatch( CHAR_MINUS ) = FALSE ) then
 				hReportError FB_ERRMSG_EXPECTEDMINUS
 				exit do
 			end if

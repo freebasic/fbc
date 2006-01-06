@@ -93,7 +93,7 @@ function astLoadPTR( byval n as ASTNODE ptr ) as IRVREG ptr
 	''
 	if( ast.doemit ) then
 		'' src is not a reg?
-		if( (not irIsREG( v1 )) or _
+		if( (irIsREG( v1 ) = FALSE) or _
 			(irGetVRDataClass( v1 ) <> IR_DATACLASS_INTEGER) or _
 			(irGetVRDataSize( v1 ) <> FB_POINTERSIZE) ) then
 

@@ -140,7 +140,7 @@ function astNewUOP( byval op as integer, _
     '' CHAR and WCHAR literals are also from the INTEGER class..
     case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
     	'' only if it's a deref pointer, to allow "NOT *p" etc
-    	if( not astIsPTR( o ) ) then
+    	if( astIsPTR( o ) = FALSE ) then
     		exit function
     	end if
 
@@ -196,7 +196,7 @@ function astNewUOP( byval op as integer, _
 
 		if( op = IR_OP_NEG ) then
 			if( astGetDataClass( o ) = IR_DATACLASS_INTEGER ) then
-				if( not irIsSigned( dtype ) ) then
+				if( irIsSigned( dtype ) = FALSE ) then
 					'' test overflow
 					select case dtype
 					case IR_DATATYPE_UINT

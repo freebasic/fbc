@@ -58,7 +58,7 @@ function cProgram as integer
     loop while( (res) and (lexGetToken( ) <> FB_TK_EOF) )
 
     if( res ) then
-    	if( not hMatch( FB_TK_EOF ) ) then
+    	if( hMatch( FB_TK_EOF ) = FALSE ) then
     		'hReportError FB_ERRMSG_EXPECTEDEOF
     		res = FALSE
     	else
@@ -87,7 +87,7 @@ function cLine as integer
 		return FALSE
 	end if
 
-	if( not hMatch( FB_TK_EOL ) ) then
+	if( hMatch( FB_TK_EOL ) = FALSE ) then
 		if( lexGetToken( ) <> FB_TK_EOF ) then
 			hReportError( FB_ERRMSG_EXPECTEDEOL )
 			return FALSE
@@ -119,7 +119,7 @@ function cSimpleLine as integer
 		return FALSE
 	end if
 
-	if( not hMatch( FB_TK_EOL ) ) then
+	if( hMatch( FB_TK_EOL ) = FALSE ) then
 		if( res ) then
 			return FALSE
 		else

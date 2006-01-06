@@ -279,7 +279,7 @@ declare function 	cConstExprValue			( byref value as integer ) as integer
 
 '':::::
 #define hMatchToken(token, errcode)							 _
-	if( not hMatch( token ) ) then							:_
+	if( hMatch( token ) = FALSE ) then							:_
 		hReportError errcode								:_
 		exit function										:_
 	end if
@@ -298,7 +298,7 @@ declare function 	cConstExprValue			( byref value as integer ) as integer
 
 '':::::
 #define hMatchExpression(e)										 _
-	if( not cExpression( e ) ) then                         	:_
+	if( cExpression( e ) = FALSE ) then                         	:_
 		hReportError FB_ERRMSG_EXPECTEDEXPRESSION				:_
 		exit function											:_
 	end if

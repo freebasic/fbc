@@ -57,7 +57,7 @@ function cErrorStmt as integer
 		lexSkipToken( )
 
 		'' '='
-		if( not hMatch( FB_TK_ASSIGN ) ) then
+		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDEQ )
 			exit function
 		end if

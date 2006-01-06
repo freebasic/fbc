@@ -328,7 +328,8 @@ sub rtlDataStoreBegin static
 	'' emit default label if not yet emited (also if DATA's are
 	'' been used inside procs, the label will get removed)
 	l = symbFindByNameAndClass( strptr( FB_DATALABELNAME ), FB_SYMBCLASS_LABEL )
-	if( (not ctx.datainited) or (l = NULL) ) then
+
+	if( (l = NULL) or (ctx.datainited = FALSE) ) then
 		ctx.datainited = TRUE
 
 		l = symbAddLabel( strptr( FB_DATALABELNAME ), TRUE, TRUE )

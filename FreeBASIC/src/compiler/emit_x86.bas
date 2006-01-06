@@ -383,7 +383,7 @@ end function
 '':::::
 function emitIsKeyword( byval text as zstring ptr ) as integer static
 
-	if( not emit.keyinited ) then
+	if( emit.keyinited = FALSE ) then
 		hInitKeywordsTB( )
 	end if
 
@@ -406,7 +406,7 @@ private function hIsRegFree( byval dclass as integer, _
 	if( dclass = IR_DATACLASS_INTEGER ) then
 		select case reg
 		case EMIT_REG_EBX, EMIT_REG_ESI, EMIT_REG_EDI
-			if( not EMIT_REGISUSED( IR_DATACLASS_INTEGER, reg ) ) then
+			if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, reg ) = FALSE ) then
 				return FALSE
 			end if
 		end select
@@ -456,7 +456,7 @@ private function hFindRegNotInVreg( byval vreg as IRVREG ptr, _
 	''
 	if( reg2 = INVALID ) then
 
-		if( not noSIDI ) then
+		if( noSIDI = FALSE ) then
 
 			for r = regs-1 to 0 step -1
 				if( r <> reg ) then
@@ -488,7 +488,7 @@ private function hFindRegNotInVreg( byval vreg as IRVREG ptr, _
 	'' longints..
 	else
 
-		if( not noSIDI ) then
+		if( noSIDI = FALSE ) then
 
 			for r = regs-1 to 0 step -1
 				if( (r <> reg) and (r <> reg2) ) then
@@ -690,14 +690,14 @@ private sub hPrepOperand( byval vreg as IRVREG ptr, _
 		operand += *symbGetName( vreg->sym )
 
 	case IR_VREGTYPE_REG
-		if( not isaux ) then
+		if( isaux = FALSE ) then
 			operand = *hGetRegName( dtype, vreg->reg )
 		else
 			operand = *hGetRegName( dtype, vreg->vaux->reg )
 		end if
 
 	case IR_VREGTYPE_IMM
-		if( not isaux ) then
+		if( isaux = FALSE ) then
 			operand = str( vreg->value )
 		else
 			operand = str( vreg->vaux->value )
@@ -1262,7 +1262,7 @@ storeSIDI:		reg = hFindRegNotInVreg( dvreg, TRUE )
 
 				isfree = hIsRegFree(IR_DATACLASS_INTEGER, reg )
 
-				if( not isfree ) then
+				if( isfree = FALSE ) then
 					hPUSH aux16
 				end if
 
@@ -1282,7 +1282,7 @@ storeSIDI:		reg = hFindRegNotInVreg( dvreg, TRUE )
 					hMOV dst, aux8
 				end if
 
-				if( not isfree ) then
+				if( isfree = FALSE ) then
 					hPOP aux16
 				end if
 
@@ -1352,7 +1352,7 @@ private sub _emitSTORF2I( byval dvreg as IRVREG ptr, _
 
 			isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
 
-			if( not isfree ) then
+			if( isfree = FALSE ) then
 				hXCHG aux, "dword ptr [esp]"
 			else
 				hMOV aux8, "byte ptr [esp]"
@@ -1360,7 +1360,7 @@ private sub _emitSTORF2I( byval dvreg as IRVREG ptr, _
 
 			hMOV dst, aux8
 
-			if( not isfree ) then
+			if( isfree = FALSE ) then
 				hPOP aux
 			else
 				outp "add esp, 4"
@@ -1474,7 +1474,7 @@ private sub _emitSTORI2F( byval dvreg as IRVREG ptr, _
 
 		isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
 
-		if( not isfree ) then
+		if( isfree = FALSE ) then
 			hPUSH aux
 		end if
 
@@ -1490,7 +1490,7 @@ private sub _emitSTORI2F( byval dvreg as IRVREG ptr, _
 		outp "fild dword ptr [esp]"
 		outp "add esp, 4"
 
-		if( not isfree ) then
+		if( isfree = FALSE ) then
 			hPOP aux
 		end if
 
@@ -1819,7 +1819,7 @@ loadSIDI:			reg = hFindRegNotInVreg( dvreg, TRUE )
 
 					isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
 
-					if( not isfree ) then
+					if( isfree = FALSE ) then
 						hPUSH aux16
 					end if
 
@@ -1841,7 +1841,7 @@ loadSIDI:			reg = hFindRegNotInVreg( dvreg, TRUE )
 					ostr += dst + COMMA + aux8
 					outp ostr
 
-					if( not isfree ) then
+					if( isfree = FALSE ) then
 						hPOP aux16
 					end if
 
@@ -1918,7 +1918,7 @@ private sub _emitLOADF2I( byval dvreg as IRVREG ptr, _
 
 			isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
 
-			if( not isfree ) then
+			if( isfree = FALSE ) then
 				hXCHG aux, "dword ptr [esp]"
 			else
 				hMOV aux8, "byte ptr [esp]"
@@ -1926,7 +1926,7 @@ private sub _emitLOADF2I( byval dvreg as IRVREG ptr, _
 
 			hMOV dst, aux8
 
-			if( not isfree ) then
+			if( isfree = FALSE ) then
 				hPOP aux
 			else
 				outp "add esp, 4"
@@ -2052,7 +2052,7 @@ private sub _emitLOADI2F( byval dvreg as IRVREG ptr, _
 
 		isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
 
-		if( not isfree ) then
+		if( isfree = FALSE ) then
 			hPUSH aux
 		end if
 
@@ -2068,7 +2068,7 @@ private sub _emitLOADI2F( byval dvreg as IRVREG ptr, _
 		outp "fild dword ptr [esp]"
 		outp "add esp, 4"
 
-		if( not isfree ) then
+		if( isfree = FALSE ) then
 			hPOP aux
 		end if
 
@@ -2391,7 +2391,7 @@ private sub _emitMULI( byval dvreg as IRVREG ptr, _
 				hPrepOperand( dvreg, ostr, IR_DATATYPE_INTEGER )
 				hPUSH( ostr )
 			end if
-		elseif( not edxfree ) then
+		elseif( edxfree = FALSE ) then
 			hPUSH( "edx" )
 		end if
 
@@ -2401,15 +2401,15 @@ private sub _emitMULI( byval dvreg as IRVREG ptr, _
 		edxtrashed = FALSE
 	end if
 
-	if( (not eaxindest) or (dvreg->typ <> IR_VREGTYPE_REG) ) then
+	if( (eaxindest = FALSE) or (dvreg->typ <> IR_VREGTYPE_REG) ) then
 		if( (edxindest) and (edxtrashed) ) then
-			if( not eaxfree ) then
+			if( eaxfree = FALSE ) then
 				outp "xchg eax, [esp]"
 			else
 				hPOP "eax"
 			end if
 		else
-			if( not eaxfree ) then
+			if( eaxfree = FALSE ) then
 				hPUSH "eax"
 			end if
 			hMOV eax, dst
@@ -2419,7 +2419,7 @@ private sub _emitMULI( byval dvreg as IRVREG ptr, _
 	ostr = "mul " + src
 	outp ostr
 
-	if( not eaxindest ) then
+	if( eaxindest = FALSE ) then
 		if( edxindest and dvreg->typ <> IR_VREGTYPE_REG ) then
 			hPOP "edx"					'' edx= tos (eax)
 			outp "xchg edx, [esp]"			'' tos= edx; edx= dst
@@ -2427,7 +2427,7 @@ private sub _emitMULI( byval dvreg as IRVREG ptr, _
 
 		hMOV dst, eax
 
-		if( not eaxfree ) then
+		if( eaxfree = FALSE ) then
 			hPOP "eax"
 		end if
 	else
@@ -2439,7 +2439,7 @@ private sub _emitMULI( byval dvreg as IRVREG ptr, _
 	end if
 
 	if( edxtrashed ) then
-		if( (not edxfree) and (not edxindest) ) then
+		if( (edxfree = FALSE) and (edxindest = FALSE) ) then
 			hPOP "edx"
 		end if
 	end if
@@ -2476,7 +2476,7 @@ private sub _emitMULL( byval dvreg as IRVREG ptr, _
 			hPUSH( "edx" )
 		end if
 	else
-		if( not isedxfree ) then
+		if( isedxfree = FALSE ) then
 			ofs += 4
 			hPUSH( "edx" )
 		end if
@@ -2488,7 +2488,7 @@ private sub _emitMULL( byval dvreg as IRVREG ptr, _
 			hPUSH "eax"
 		end if
 	else
-		if( not iseaxfree ) then
+		if( iseaxfree = FALSE ) then
 			ofs += 4
 			hPUSH "eax"
 		end if
@@ -2515,7 +2515,7 @@ private sub _emitMULL( byval dvreg as IRVREG ptr, _
 			hPOP "eax"
 		end if
 	else
-		if( not iseaxfree ) then
+		if( iseaxfree = FALSE ) then
 			hPOP "eax"
 		end if
 	end if
@@ -2525,7 +2525,7 @@ private sub _emitMULL( byval dvreg as IRVREG ptr, _
 			hPOP "edx"
 		end if
 	else
-		if( not isedxfree ) then
+		if( isedxfree = FALSE ) then
 			hPOP "edx"
 		end if
 	end if
@@ -2569,7 +2569,7 @@ private sub _emitSMULI( byval dvreg as IRVREG ptr, _
 
 		isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
 
-		if( not isfree ) then
+		if( isfree = FALSE ) then
 			hPUSH rname
 		end if
 
@@ -2578,7 +2578,7 @@ private sub _emitSMULI( byval dvreg as IRVREG ptr, _
 		outp ostr
 		hMOV dst, rname
 
-		if( not isfree ) then
+		if( isfree = FALSE ) then
 			hPOP rname
 		end if
 
@@ -2678,22 +2678,22 @@ private sub _emitDIVI( byval dvreg as IRVREG ptr, _
 				hPrepOperand( dvreg, ostr, IR_DATATYPE_INTEGER )
 				hPUSH( ostr )
 			end if
-		elseif( not ecxfree ) then
+		elseif( ecxfree = FALSE ) then
 			hPUSH( "ecx" )
 		end if
 		hMOV( ecx, src )
 		src = ecx
 	end if
 
-	if( not eaxindest ) then
+	if( eaxindest = FALSE ) then
 		if( (ecxindest) and (ecxtrashed) ) then
-			if( not eaxfree ) then
+			if( eaxfree = FALSE ) then
 				outp "xchg eax, [esp]"
 			else
 				hPOP "eax"
 			end if
 		else
-			if( not eaxfree ) then
+			if( eaxfree = FALSE ) then
 				hPUSH "eax"
 			end if
 			hMOV eax, dst
@@ -2710,7 +2710,7 @@ private sub _emitDIVI( byval dvreg as IRVREG ptr, _
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
 			hPUSH "edx"
 		end if
-	elseif( not edxfree ) then
+	elseif( edxfree = FALSE ) then
 		hPUSH "edx"
 	end if
 
@@ -2736,11 +2736,11 @@ private sub _emitDIVI( byval dvreg as IRVREG ptr, _
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
 			hPOP "edx"
 		end if
-	elseif( not edxfree ) then
+	elseif( edxfree = FALSE ) then
 		hPOP "edx"
 	end if
 
-	if( not eaxindest ) then
+	if( eaxindest = FALSE ) then
 		if( ecxindest ) then
 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
 				hPOP "ecx"					'' ecx= tos (eax)
@@ -2750,13 +2750,13 @@ private sub _emitDIVI( byval dvreg as IRVREG ptr, _
 
 		hMOV dst, eax
 
-		if( not eaxfree ) then
+		if( eaxfree = FALSE ) then
 			hPOP "eax"
 		end if
 
 	else
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
-			if( (not ecxfree) and (not ecxtrashed) ) then
+			if( (ecxfree = FALSE) and (ecxtrashed = FALSE) ) then
 				outp "xchg ecx, [esp]"			'' tos= ecx; ecx= dst
 				outp "xchg ecx, eax"			'' ecx= res; eax= dst
 			else
@@ -2766,14 +2766,14 @@ private sub _emitDIVI( byval dvreg as IRVREG ptr, _
 
 			hMOV dst, ecx					'' [eax+...] = ecx
 
-			if( (not ecxfree) and (not ecxtrashed) ) then
+			if( (ecxfree = FALSE) and (ecxtrashed = FALSE) ) then
 				hPOP "ecx"
 			end if
 		end if
 	end if
 
 	if( ecxtrashed ) then
-		if( (not ecxfree) and (not ecxindest) ) then
+		if( (ecxfree = FALSE) and (ecxindest = FALSE) ) then
 			hPOP "ecx"
 		end if
 	end if
@@ -2824,22 +2824,22 @@ private sub _emitMODI( byval dvreg as IRVREG ptr, _
 				hPrepOperand( dvreg, ostr, IR_DATATYPE_INTEGER )
 				hPUSH( ostr )
 			end if
-		elseif( not ecxfree ) then
+		elseif( ecxfree = FALSE ) then
 			hPUSH( "ecx" )
 		end if
 		hMOV( ecx, src )
 		src = ecx
 	end if
 
-	if( not eaxindest ) then
+	if( eaxindest = FALSE ) then
 		if( (ecxindest) and (ecxtrashed) ) then
-			if( not eaxfree ) then
+			if( eaxfree = FALSE ) then
 				outp "xchg eax, [esp]"
 			else
 				hPOP "eax"
 			end if
 		else
-			if( not eaxfree ) then
+			if( eaxfree = FALSE ) then
 				hPUSH "eax"
 			end if
 			hMOV eax, dst
@@ -2856,7 +2856,7 @@ private sub _emitMODI( byval dvreg as IRVREG ptr, _
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
 			hPUSH "edx"
 		end if
-	elseif( not edxfree ) then
+	elseif( edxfree = FALSE ) then
 		hPUSH "edx"
 	end if
 
@@ -2884,11 +2884,11 @@ private sub _emitMODI( byval dvreg as IRVREG ptr, _
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
 			hPOP "edx"
 		end if
-	elseif( not edxfree ) then
+	elseif( edxfree = FALSE ) then
 		hPOP "edx"
 	end if
 
-	if( not eaxindest ) then
+	if( eaxindest = FALSE ) then
 		if( ecxindest ) then
 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
 				hPOP "ecx"					'' ecx= tos (eax)
@@ -2898,13 +2898,13 @@ private sub _emitMODI( byval dvreg as IRVREG ptr, _
 
 		hMOV dst, eax
 
-		if( not eaxfree ) then
+		if( eaxfree = FALSE ) then
 			hPOP "eax"
 		end if
 
 	else
 		if( dvreg->typ <> IR_VREGTYPE_REG ) then
-			if( (not ecxfree) and (not ecxtrashed) ) then
+			if( (ecxfree = FALSE) and (ecxtrashed = FALSE) ) then
 				outp "xchg ecx, [esp]"			'' tos= ecx; ecx= dst
 				outp "xchg ecx, eax"			'' ecx= res; eax= dst
 			else
@@ -2914,14 +2914,14 @@ private sub _emitMODI( byval dvreg as IRVREG ptr, _
 
 			hMOV dst, ecx					'' [eax+...] = ecx
 
-			if( (not ecxfree) and (not ecxtrashed) ) then
+			if( (ecxfree = FALSE) and (ecxtrashed = FALSE) ) then
 				hPOP "ecx"
 			end if
 		end if
 	end if
 
 	if( ecxtrashed ) then
-		if( (not ecxfree) and (not ecxindest) ) then
+		if( (ecxfree = FALSE) and (ecxindest = FALSE) ) then
 			hPOP "ecx"
 		end if
 	end if
@@ -2979,7 +2979,7 @@ private sub hSHIFTL( byval op as integer, _
 				end if
 			end if
 
-			if( not isecxfree ) then
+			if( isecxfree = FALSE ) then
 				if( ecxindest and dvreg->typ = IR_VREGTYPE_REG ) then
 					hMOV( "ecx", src )
 					isecxfree = TRUE
@@ -3004,7 +3004,7 @@ private sub hSHIFTL( byval op as integer, _
 			outp "mov eax, [esp+" + str( ofs+0 ) + "]"
 		end if
 	else
-		if( not iseaxfree ) then
+		if( iseaxfree = FALSE ) then
 			outp "xchg eax, [esp+" + str( ofs+0 ) + "]"
 		else
 			outp "mov eax, [esp+" + str( ofs+0 ) + "]"
@@ -3019,7 +3019,7 @@ private sub hSHIFTL( byval op as integer, _
 			outp "mov edx, [esp+" + str( ofs+4 ) + "]"
 		end if
 	else
-		if( not isedxfree ) then
+		if( isedxfree = FALSE ) then
 			outp "xchg edx, [esp+" + str( ofs+4 ) + "]"
 		else
 			outp "mov edx, [esp+" + str( ofs+4 ) + "]"
@@ -3055,7 +3055,7 @@ private sub hSHIFTL( byval op as integer, _
 
 		hLABEL( label )
 
-		if( not isecxfree ) then
+		if( isecxfree = FALSE ) then
 			hPOP "ecx"
 		end if
 
@@ -3112,7 +3112,7 @@ private sub hSHIFTL( byval op as integer, _
 			outp "mov [esp+4], edx"
 		end if
 	else
-		if( not isedxfree ) then
+		if( isedxfree = FALSE ) then
 			outp "xchg edx, [esp+4]"
 		else
 			outp "mov [esp+4], edx"
@@ -3127,7 +3127,7 @@ private sub hSHIFTL( byval op as integer, _
 			outp "mov [esp+0], eax"
 		end if
 	else
-		if( not iseaxfree ) then
+		if( iseaxfree = FALSE ) then
 			outp "xchg eax, [esp+0]"
 		else
 			outp "mov [esp+0], eax"
@@ -3199,7 +3199,7 @@ private sub hSHIFTI( byval op as integer, _
 			end if
 
 		'' ecx not free?
-		elseif( (reg <> EMIT_REG_ECX) and (not ecxfree) ) then
+		elseif( (reg <> EMIT_REG_ECX) and (ecxfree = FALSE) ) then
 			ecxpreserved = TRUE
 			hPUSH "ecx"
 		end if
@@ -3218,7 +3218,7 @@ private sub hSHIFTI( byval op as integer, _
 		'' load ecx to a tmp?
 		if( ecxindest ) then
 			'' tmp not free?
-			if( not eaxfree ) then
+			if( eaxfree = FALSE ) then
 				eaxpreserved = TRUE
 				outp "xchg eax, [esp]"		'' eax= dst; push eax
 			else
@@ -3549,7 +3549,7 @@ private sub hCMPL( byval rvreg as IRVREG ptr, _
 	end if
 
 	ostr = "j" + *mnemonic
-	if( not isinverse ) then
+	if( isinverse = FALSE ) then
 		hBRANCH( ostr, lname )
 	else
 		hBRANCH( ostr, falselabel )
@@ -3631,7 +3631,7 @@ private sub hCMPI( byval rvreg as IRVREG ptr, _
 		if( (rvreg->reg = EMIT_REG_ESI) or (rvreg->reg = EMIT_REG_EDI) ) then
 
 			isedxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EDX )
-			if( not isedxfree ) then
+			if( isedxfree = FALSE ) then
 				ostr = "xchg edx, " + rname
 				outp ostr
 			end if
@@ -3639,7 +3639,7 @@ private sub hCMPI( byval rvreg as IRVREG ptr, _
 			ostr = "set" + *mnemonic + " dl"
 			outp ostr
 
-			if( not isedxfree ) then
+			if( isedxfree = FALSE ) then
 				ostr = "xchg edx, " + rname
 				outp ostr
 			else
@@ -3713,7 +3713,7 @@ private sub hCMPF( byval rvreg as IRVREG ptr, _
     if( rvreg <> NULL ) then
     	if( rvreg->reg <> EMIT_REG_EAX ) then
     		iseaxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EAX )
-    		if( not iseaxfree ) then
+    		if( iseaxfree = FALSE ) then
     			hPUSH( "eax" )
     		end if
     	end if
@@ -3728,7 +3728,7 @@ private sub hCMPF( byval rvreg as IRVREG ptr, _
 		outp "sahf"
 	end if
 
-	if( not iseaxfree ) then
+	if( iseaxfree = FALSE ) then
 		hPOP( "eax" )
 	end if
 
@@ -3749,7 +3749,7 @@ private sub hCMPF( byval rvreg as IRVREG ptr, _
 		if( (rvreg->reg = EMIT_REG_ESI) or (rvreg->reg = EMIT_REG_EDI) ) then
 
 			isedxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EDX )
-			if( not isedxfree ) then
+			if( isedxfree = FALSE ) then
 				ostr = "xchg edx, " + rname
 				outp ostr
 			end if
@@ -3757,7 +3757,7 @@ private sub hCMPF( byval rvreg as IRVREG ptr, _
 			ostr = "set" + *mnemonic + "\tdl"
 			outp ostr
 
-			if( not isedxfree ) then
+			if( isedxfree = FALSE ) then
 				ostr = "xchg edx, " + rname
 				outp ostr
 			else
@@ -4119,7 +4119,7 @@ private sub _emitABSL( byval dvreg as IRVREG ptr ) static
 
 	isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
 
-	if( not isfree ) then
+	if( isfree = FALSE ) then
 		hPUSH( rname )
 	end if
 
@@ -4140,7 +4140,7 @@ private sub _emitABSL( byval dvreg as IRVREG ptr ) static
 	ostr = "sbb " + dst2 + COMMA + rname
 	outp ostr
 
-	if( not isfree ) then
+	if( isfree = FALSE ) then
 		hPOP( rname )
 	end if
 
@@ -4159,7 +4159,7 @@ private sub _emitABSI( byval dvreg as IRVREG ptr ) static
 
 	isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
 
-	if( not isfree ) then
+	if( isfree = FALSE ) then
 		hPUSH( rname )
 	end if
 
@@ -4176,7 +4176,7 @@ private sub _emitABSI( byval dvreg as IRVREG ptr ) static
 	ostr = "sub " + dst + COMMA + rname
 	outp ostr
 
-	if( not isfree ) then
+	if( isfree = FALSE ) then
 		hPOP( rname )
 	end if
 
@@ -4341,7 +4341,7 @@ private sub _emitFLOOR( byval dvreg as IRVREG ptr ) static
 
 	isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
 
-	if( not isfree ) then
+	if( isfree = FALSE ) then
 		hPUSH( rname )
 	end if
 
@@ -4359,7 +4359,7 @@ private sub _emitFLOOR( byval dvreg as IRVREG ptr ) static
 	outp "fldcw [esp]"
 	outp "add esp, 4"
 
-	if( not isfree ) then
+	if( isfree = FALSE ) then
 		hPOP( rname )
 	end if
 
@@ -4522,7 +4522,7 @@ private sub _emitPOPI( byval dvreg as IRVREG ptr, _
 				hMOV dst, "ax"
 			end if
 
-			if( not hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EAX ) ) then
+			if( hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EAX ) = FALSE ) then
 				hPOP "eax"
 			else
 				outp "add esp, 4"
@@ -4624,17 +4624,17 @@ private sub hMemMoveRep( byval dvreg as IRVREG ptr, _
 	ediinsrc = hIsRegInVreg( svreg, EMIT_REG_EDI )
 	ecxinsrc = hIsRegInVreg( svreg, EMIT_REG_ECX )
 
-	if( not ecxfree ) then
+	if( ecxfree = FALSE ) then
 		hPUSH( "ecx" )
 	end if
-	if( not edifree ) then
+	if( edifree = FALSE ) then
 		hPUSH( "edi" )
 	end if
-	if( not esifree ) then
+	if( esifree = FALSE ) then
 		hPUSH( "esi" )
 	end if
 
-	if( not ediinsrc ) then
+	if( ediinsrc = FALSE ) then
 		ostr = "lea edi, " + dst
 		outp ostr
 	else
@@ -4652,7 +4652,7 @@ private sub hMemMoveRep( byval dvreg as IRVREG ptr, _
 	outp ostr
 
 	if( ediinsrc ) then
-		if( not ecxinsrc ) then
+		if( ecxinsrc = FALSE ) then
 			hMOV( "edi", "ecx" )
 		else
 			hPOP( "edi" )
@@ -4690,13 +4690,13 @@ private sub hMemMoveRep( byval dvreg as IRVREG ptr, _
 		end if
 	end if
 
-	if( not esifree ) then
+	if( esifree = FALSE ) then
 		hPOP( "esi" )
 	end if
-	if( not edifree ) then
+	if( edifree = FALSE ) then
 		hPOP( "edi" )
 	end if
-	if( not ecxfree ) then
+	if( ecxfree = FALSE ) then
 		hPOP( "ecx" )
 	end if
 
@@ -4721,7 +4721,7 @@ private sub hMemMoveBlk( byval dvreg as IRVREG ptr, _
 	aux = *hGetRegName( IR_DATATYPE_INTEGER, reg )
 
 	isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
-	if( not isfree ) then
+	if( isfree = FALSE ) then
 		hPUSH( aux )
 	end if
 
@@ -4754,7 +4754,7 @@ private sub hMemMoveBlk( byval dvreg as IRVREG ptr, _
 		hMOV( dst, aux )
 	end if
 
-	if( not isfree ) then
+	if( isfree = FALSE ) then
 		hPOP( aux )
 	end if
 
@@ -4834,7 +4834,7 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
 		if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
 			if( cunsg(bytestoalloc) \ 8 > 7 ) then
 
-		    	if( not EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
+		    	if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
     				hPUSH( "edi" )
     			end if
 
@@ -4849,7 +4849,7 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
 				outp( "jnz " + lname )
 				outp( "emms" )
 
-    			if( not EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
+    			if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
     				hPOP( "edi" )
     			end if
 
@@ -4868,7 +4868,7 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
 
 		else
 			if( cunsg(bytestoalloc) \ 4 > 6 ) then
-		    	if( not EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
+		    	if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
     				hPUSH( "edi" )
     			end if
 
@@ -4877,7 +4877,7 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
 				outp( "xor eax, eax" )
 				outp( "rep stosd" )
 
-    			if( not EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
+    			if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
     				hPOP( "edi" )
     			end if
 
@@ -5378,15 +5378,15 @@ sub emitWriteBss( byval s as FBSYMBOL ptr )
     	'' variable?
     	case FB_SYMBCLASS_VAR
 			'' not initialized?
-			if( not symbGetVarInitialized( s ) ) then
+			if( symbGetVarInitialized( s ) = FALSE ) then
 				'' not emited already?
-				if( not symbGetVarEmited( s ) ) then
+				if( symbGetVarEmited( s ) = FALSE ) then
     				'' not extern?
-    				if( not symbIsExtern( s ) ) then
+    				if( symbIsExtern( s ) = FALSE ) then
     	    			'' not a string or array descriptor?
     	    			if( symbGetLen( s ) > 0 ) then
     						'' not dynamic?
-    						if( not symbGetIsDynamic( s ) ) then
+    						if( symbGetIsDynamic( s ) = FALSE ) then
     							doemit = TRUE
     						end if
     					end if
@@ -5603,7 +5603,7 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
 	if( dims = -1 ) then dims = 1
 	hWriteStr( TRUE,  ".int\t" + str( dims ) )
 
-    if( not symbGetIsDynamic( s ) ) then
+    if( symbGetIsDynamic( s ) = FALSE ) then
     	d = symbGetArrayFirstDim( s )
     	do while( d <> NULL )
 			''	uint	elements

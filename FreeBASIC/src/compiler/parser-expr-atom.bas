@@ -36,16 +36,16 @@ function cParentExpression( byref parexpr as ASTNODE ptr ) as integer
   	function = FALSE
 
   	'' '('
-  	if( not hMatch( CHAR_LPRNT ) ) then
+  	if( hMatch( CHAR_LPRNT ) = FALSE ) then
   		exit function
   	end if
 
   	'' ++parent cnt
   	env.prntcnt += 1
 
-  	if( not cExpression( parexpr ) ) then
+  	if( cExpression( parexpr ) = FALSE ) then
   		'' calling a SUB? it can be a BYVAL or nothing due the optional ()'s
-  		if( not env.prntopt ) then
+  		if( env.prntopt = FALSE ) then
   			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
   			exit function
   		end if
@@ -57,7 +57,7 @@ function cParentExpression( byref parexpr as ASTNODE ptr ) as integer
   			env.prntcnt -= 1
   		else
   			'' not calling a SUB or parent cnt = 0?
-  			if( (not env.prntopt) or (env.prntcnt = 0) ) then
+  			if( (env.prntopt = FALSE) or (env.prntcnt = 0) ) then
   				hReportError( FB_ERRMSG_EXPECTEDRPRNT )
   				exit function
   			end if
@@ -82,9 +82,9 @@ function cAtom( byref atom as ASTNODE ptr ) as integer
 
   	case FB_TKCLASS_IDENTIFIER
   		res = cConstant( atom )
-  		if( not res ) then
+  		if( res = FALSE ) then
   			res = cFunction( atom )
-  			if( not res ) then
+  			if( res = FALSE ) then
   				res = cVariable( atom, env.checkarray )
   			end if
   		end if

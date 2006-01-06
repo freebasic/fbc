@@ -45,12 +45,12 @@ function cStatement as integer
 	end if
 
 	do
-		if( not cDeclaration( ) ) then
-			if( not cCompoundStmt( ) ) then
-				if( not cProcStatement( ) ) then
-					if( not cQuirkStmt( ) ) then
-						if( not cAsmBlock( ) ) then
-							if( not cProcCallOrAssign( ) ) then
+		if( cDeclaration( ) = FALSE ) then
+			if( cCompoundStmt( ) = FALSE ) then
+				if( cProcStatement( ) = FALSE ) then
+					if( cQuirkStmt( ) = FALSE ) then
+						if( cAsmBlock( ) = FALSE ) then
+							if( cProcCallOrAssign( ) = FALSE ) then
 								cAssignmentOrPtrCall( )
 							end if
 						end if
@@ -88,12 +88,12 @@ function cSimpleStatement as integer
 	end if
 
 	do
-		if( not cConstDecl( ) ) then
-			if( not cSymbolDecl( ) ) then
-				if( not cCompoundStmt( ) ) then
-					if( not cQuirkStmt( ) ) then
-						if( not cAsmBlock( ) ) then
-							if( not cProcCallOrAssign( ) ) then
+		if( cConstDecl( ) = FALSE ) then
+			if( cSymbolDecl( ) = FALSE ) then
+				if( cCompoundStmt( ) = FALSE ) then
+					if( cQuirkStmt( ) = FALSE ) then
+						if( cAsmBlock( ) = FALSE ) then
+							if( cProcCallOrAssign( ) = FALSE ) then
 								cAssignmentOrPtrCall( )
 							end if
 						end if

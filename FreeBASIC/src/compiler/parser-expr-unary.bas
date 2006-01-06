@@ -45,7 +45,7 @@ function cNegNotExpression( byref negexpr as ASTNODE ptr ) as integer
 		lexSkipToken( )
 
 		'' ExpExpression
-		if( not cExpExpression( negexpr ) ) then
+		if( cExpExpression( negexpr ) = FALSE ) then
 			exit function
 		end if
 
@@ -63,7 +63,7 @@ function cNegNotExpression( byref negexpr as ASTNODE ptr ) as integer
 		lexSkipToken( )
 
 		'' ExpExpression
-		if( not cExpExpression( negexpr ) ) then
+		if( cExpExpression( negexpr ) = FALSE ) then
 			exit function
 		end if
 
@@ -80,7 +80,7 @@ function cNegNotExpression( byref negexpr as ASTNODE ptr ) as integer
 		lexSkipToken( )
 
 		'' RelExpression
-		if( not cRelExpression( negexpr ) ) then
+		if( cRelExpression( negexpr ) = FALSE ) then
 			exit function
 		end if
 
@@ -116,13 +116,13 @@ function cHighestPrecExpr( byref highexpr as ASTNODE ptr ) as integer
 
 	'' DerefExpr
 	case FB_TK_DEREFCHAR
-		if( not cDerefExpression( highexpr ) ) then
+		if( cDerefExpression( highexpr ) = FALSE ) then
 			exit function
 		end if
 
 	'' ParentExpression
 	case CHAR_LPRNT
-		if( not cParentExpression( highexpr ) ) then
+		if( cParentExpression( highexpr ) = FALSE ) then
 			exit function
 		end if
 
@@ -135,7 +135,7 @@ function cHighestPrecExpr( byref highexpr as ASTNODE ptr ) as integer
 
 		'' PtrTypeCastingExpr
 		case FB_TK_CPTR
-			if( not cPtrTypeCastingExpr( highexpr ) ) then
+			if( cPtrTypeCastingExpr( highexpr ) = FALSE ) then
 				exit function
 			end if
 
@@ -182,7 +182,7 @@ function cAnonUDT( byref expr as ASTNODE ptr ) as integer
 		exit function
     end if
 
-    if( not symbIsUDT( env.ctxsym ) ) then
+    if( symbIsUDT( env.ctxsym ) = FALSE ) then
 		hReportError( FB_ERRMSG_SYNTAXERROR )
 		exit function
 	end if
@@ -194,7 +194,7 @@ function cAnonUDT( byref expr as ASTNODE ptr ) as integer
 	tmpsym = symbAddTempVar( FB_SYMBTYPE_USERDEF, env.ctxsym )
 
     '' let the initializer do the rest..
-    if( not cSymbolInit( tmpsym ) ) then
+    if( cSymbolInit( tmpsym ) = FALSE ) then
     	exit function
     end if
 
@@ -223,13 +223,13 @@ function cPtrTypeCastingExpr( byref castexpr as ASTNODE ptr ) as integer
 	lexSkipToken( )
 
 	'' '('
-	if( not hMatch( CHAR_LPRNT ) ) then
+	if( hMatch( CHAR_LPRNT ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDLPRNT )
 		exit function
 	end if
 
 	'' SymbolType
-	if( not cSymbolType( dtype, subtype, lgt, ptrcnt ) ) then
+	if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
 		hReportError( FB_ERRMSG_SYNTAXERROR )
 		exit function
 	end if
@@ -241,13 +241,13 @@ function cPtrTypeCastingExpr( byref castexpr as ASTNODE ptr ) as integer
 	end if
 
 	'' ','
-	if( not hMatch( CHAR_COMMA ) ) then
+	if( hMatch( CHAR_COMMA ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDCOMMA )
 		exit function
 	end if
 
 	'' Expression
-	if( not cExpression( expr ) ) then
+	if( cExpression( expr ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 		exit function
 	end if
@@ -261,7 +261,7 @@ function cPtrTypeCastingExpr( byref castexpr as ASTNODE ptr ) as integer
 	end select
 
 	'' ')'
-	if( not hMatch( CHAR_RPRNT ) ) then
+	if( hMatch( CHAR_RPRNT ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDRPRNT )
 		exit function
 	end if
@@ -338,7 +338,7 @@ function cDerefExpression( byref derefexpr as ASTNODE ptr ) as integer
 	loop while( lexGetToken( ) = FB_TK_DEREFCHAR )
 
 	'' HighestPresExpr
-	if( not cHighestPrecExpr( derefexpr ) ) then
+	if( cHighestPrecExpr( derefexpr ) = FALSE ) then
         hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
         exit function
 	end if
@@ -367,7 +367,7 @@ private function hProcPtrBody( byval proc as FBSYMBOL ptr, _
 
 	'' '('')'?
 	if( hMatch( CHAR_LPRNT ) ) then
-		if( not hMatch( CHAR_RPRNT ) ) then
+		if( hMatch( CHAR_RPRNT ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
 			exit function
 		end if
@@ -400,7 +400,7 @@ private function hVarPtrBody( byref addrofexpr as ASTNODE ptr) as integer
 
 	function = FALSE
 
-	if( not cHighestPrecExpr( addrofexpr ) ) then
+	if( cHighestPrecExpr( addrofexpr ) = FALSE ) then
 		exit function
 	end if
 
@@ -460,17 +460,17 @@ function cAddrOfExpression( byref addrofexpr as ASTNODE ptr ) as integer
 		lexSkipToken( )
 
 		'' '('
-		if( not hMatch( CHAR_LPRNT ) ) then
+		if( hMatch( CHAR_LPRNT ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDLPRNT )
 			exit function
 		end if
 
-		if( not hVarPtrBody( addrofexpr ) ) then
+		if( hVarPtrBody( addrofexpr ) = FALSE ) then
 			exit function
 		end if
 
 		'' ')'
-		if( not hMatch( CHAR_RPRNT ) ) then
+		if( hMatch( CHAR_RPRNT ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
 			exit function
 		end if
@@ -482,7 +482,7 @@ function cAddrOfExpression( byref addrofexpr as ASTNODE ptr ) as integer
 		lexSkipToken( )
 
 		'' '('
-		if( not hMatch( CHAR_LPRNT ) ) then
+		if( hMatch( CHAR_LPRNT ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDLPRNT )
 			exit function
 		end if
@@ -496,12 +496,12 @@ function cAddrOfExpression( byref addrofexpr as ASTNODE ptr ) as integer
 			lexSkipToken( )
 		end if
 
-		if( not hProcPtrBody( sym, addrofexpr ) ) then
+		if( hProcPtrBody( sym, addrofexpr ) = FALSE ) then
 			exit function
 		end if
 
 		'' ')'
-		if( not hMatch( CHAR_RPRNT ) ) then
+		if( hMatch( CHAR_RPRNT ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
 			exit function
 		end if
@@ -513,14 +513,14 @@ function cAddrOfExpression( byref addrofexpr as ASTNODE ptr ) as integer
 		lexSkipToken( )
 
 		'' '('
-		if( not hMatch( CHAR_LPRNT ) ) then
+		if( hMatch( CHAR_LPRNT ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDLPRNT )
 			exit function
 		end if
 
-		if( not cLiteral( expr ) ) then
-			if( not cConstant( expr ) ) then
-				if( not cVariable( expr ) ) then
+		if( cLiteral( expr ) = FALSE ) then
+			if( cConstant( expr ) = FALSE ) then
+				if( cVariable( expr ) = FALSE ) then
 					hReportError( FB_ERRMSG_INVALIDDATATYPES )
 					exit function
 				end if
@@ -528,13 +528,13 @@ function cAddrOfExpression( byref addrofexpr as ASTNODE ptr ) as integer
 		end if
 
 		dtype = astGetDataType( expr )
-		if( not hIsString( dtype ) ) then
+		if( hIsString( dtype ) = FALSE ) then
 			hReportError( FB_ERRMSG_INVALIDDATATYPES )
 			exit function
 		end if
 
 		'' ')'
-		if( not hMatch( CHAR_RPRNT ) ) then
+		if( hMatch( CHAR_RPRNT ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
 			exit function
 		end if

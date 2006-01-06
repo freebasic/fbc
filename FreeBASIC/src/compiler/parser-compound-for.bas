@@ -150,12 +150,12 @@ function cForStatement as integer
 	lexSkipToken( )
 
 	'' ID
-	if( not cVariable( idexpr ) ) then
+	if( cVariable( idexpr ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDVAR )
 		exit function
 	end if
 
-	if( not astIsVAR( idexpr ) ) then
+	if( astIsVAR( idexpr ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDSCALAR, TRUE )
 		exit function
 	end if
@@ -170,7 +170,7 @@ function cForStatement as integer
 	end if
 
 	'' =
-	if( not hMatch( FB_TK_ASSIGN ) ) then
+	if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDEQ )
 		exit function
 	end if
@@ -181,7 +181,7 @@ function cForStatement as integer
 	isconst = 0
 
     '' Expression
-    if( not cExpression( expr ) ) then
+    if( cExpression( expr ) = FALSE ) then
     	hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     	exit function
     end if
@@ -197,13 +197,13 @@ function cForStatement as integer
 	astAdd( expr )
 
 	'' TO
-	if( not hMatch( FB_TK_TO ) ) then
+	if( hMatch( FB_TK_TO ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDTO )
 		exit function
 	end if
 
 	'' end condition (Expression)
-	if( not cExpression( expr ) ) then
+	if( cExpression( expr ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 		exit function
 	end if
@@ -225,7 +225,7 @@ function cForStatement as integer
 	iscomplex 	= FALSE
 	if( lexGetToken( ) = FB_TK_STEP ) then
 		lexSkipToken( )
-		if( not cExpression( expr ) ) then
+		if( cExpression( expr ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
@@ -291,7 +291,7 @@ function cForStatement as integer
     	end if
 
     	expr = astNewBOP( op, astNewCONST( @ival, dtype ), astNewCONST( @eval, dtype ) )
-    	if( not astGetValInt( expr ) ) then
+    	if( astGetValInt( expr ) = FALSE ) then
     		astAdd( astNewBRANCH( IR_OP_JMP, el ) )
     	end if
     	astDel( expr )
@@ -318,20 +318,20 @@ function cForStatement as integer
 	cComment( )
 
 	'' separator
-	if( not cStmtSeparator( ) ) then
+	if( cStmtSeparator( ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDEOL )
 		exit function
 	end if
 
 	'' loop body
 	do
-		if( not cSimpleLine( ) ) then
+		if( cSimpleLine( ) = FALSE ) then
 			exit do
 		end if
 	loop while( lexGetToken( ) <> FB_TK_EOF )
 
 	'' NEXT
-	if( not hMatch( FB_TK_NEXT ) ) then
+	if( hMatch( FB_TK_NEXT ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDNEXT )
 		exit function
 	end if
@@ -356,7 +356,7 @@ function cForStatement as integer
 	'' test label
 	astAdd( astNewLABEL( tl ) )
 
-    if( not iscomplex ) then
+    if( iscomplex = FALSE ) then
 
 		if( ispositive ) then
 			op = IR_OP_LE

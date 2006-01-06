@@ -55,7 +55,7 @@ function cMidStmt as integer
 
 		hMatchRPRNT( )
 
-		if( not hMatch( FB_TK_ASSIGN ) ) then
+		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDEQ )
 			exit function
 		end if
@@ -80,7 +80,7 @@ function cLSetStmt( ) as integer
 	lexSkipToken( )
 
 	'' Expression
-	if( not cVarOrDeref( dstexpr ) ) then
+	if( cVarOrDeref( dstexpr ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		exit function
 	end if
@@ -96,8 +96,8 @@ function cLSetStmt( ) as integer
 	end select
 
 	'' ',' or '='
-	if( not hMatch( CHAR_COMMA ) ) then
-        if( not hMatch( CHAR_EQ ) ) then
+	if( hMatch( CHAR_COMMA ) = FALSE ) then
+        if( hMatch( CHAR_EQ ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDCOMMA )
 			exit function
         end if
@@ -166,14 +166,14 @@ private function cStrCHR( byref funcexpr as ASTNODE ptr, _
 	hMatchRPRNT( )
 
 	'' if wstring, check if compile-time conversion can be done
-	if( is_wstr and not env.target.wchar.doconv ) then
+	if( is_wstr and (env.target.wchar.doconv = FALSE) ) then
 		isconst = FALSE
 
 	else
 		'' constant? evaluate at compile-time
 		isconst = TRUE
 		for i = 0 to cnt-1
-			if( not astIsCONST( exprtb(i) ) ) then
+			if( astIsCONST( exprtb(i) ) = FALSE ) then
 				isconst = FALSE
 				exit for
         	end if
@@ -189,7 +189,7 @@ private function cStrCHR( byref funcexpr as ASTNODE ptr, _
 	end if
 
 	if( isconst ) then
-		if( not is_wstr ) then
+		if( is_wstr = FALSE ) then
 			s = ""
 		else
 			ws = ""
@@ -200,7 +200,7 @@ private function cStrCHR( byref funcexpr as ASTNODE ptr, _
   			v = astGetValueAsInt( expr )
   			astDel( expr )
 
-			if( not is_wstr ) then
+			if( is_wstr = FALSE ) then
 				v and= 255
 				if( (v < CHAR_SPACE) or (v > 127) ) then
 					s += "\27"
@@ -223,7 +223,7 @@ private function cStrCHR( byref funcexpr as ASTNODE ptr, _
 			end if
 		next
 
-		if( not is_wstr ) then
+		if( is_wstr = FALSE ) then
 			funcexpr = astNewVAR( symbAllocStrConst( s, cnt ), _
 								  0, _
 								  IR_DATATYPE_CHAR )
@@ -274,7 +274,7 @@ private function cStrASC( byref funcexpr as ASTNODE ptr ) as integer
 	if( litsym <> NULL ) then
 		'' if wstring, check if compile-time conversion can be done
         if( (astGetDataType( expr1 ) = IR_DATATYPE_WCHAR) and _
-			(not env.target.wchar.doconv) ) then
+			(env.target.wchar.doconv  = FALSE) ) then
 			p = -1
 
 		else
@@ -351,7 +351,7 @@ function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 		hMatchRPRNT( )
 
-		if( not is_wstr ) then
+		if( is_wstr = FALSE ) then
 			funcexpr = rtlToStr( expr1 )
 		else
 			funcexpr = rtlToWstr( expr1 )
@@ -399,7 +399,7 @@ function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 		hMatchRPRNT( )
 
-		if( not is_wstr ) then
+		if( is_wstr = FALSE ) then
 			funcexpr = rtlStrFill( expr1, expr2 )
 		else
 			funcexpr = rtlWstrFill( expr1, expr2 )
@@ -434,7 +434,7 @@ function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 		hMatchExpression( expr2 )
 
-        if( not is_any ) then
+        if( is_any = FALSE ) then
         	if( hMatch( CHAR_COMMA ) ) then
                 is_any = hMatch( FB_TK_ANY )
                 hMatchExpression( expr3 )

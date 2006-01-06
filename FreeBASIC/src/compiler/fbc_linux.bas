@@ -75,7 +75,7 @@ function _linkFiles as integer
 	ldpath = bindir + "ld.exe"
 #endif
 
-    if( not hFileExists( ldpath ) ) then
+    if( hFileExists( ldpath ) = FALSE ) then
 		hReportErrorEx( FB_ERRMSG_EXEMISSING, ldpath, -1 )
 		exit function
     end if
@@ -114,7 +114,7 @@ function _linkFiles as integer
     end if
 
 	''
-	if( not fbc.debug ) then
+	if( fbc.debug = FALSE ) then
 		ldcline += " -s "
 	else
 		ldcline += " "
@@ -241,7 +241,7 @@ function _compileResFiles as integer
 		end if
 
 		''
-		if( not hFileExists( xpmfile ) ) then
+		if( hFileExists( xpmfile ) = FALSE ) then
 			exit function
 		end if
 		iconsrc = hStripExt( hStripPath( xpmfile ) ) + ".asm"
@@ -255,7 +255,7 @@ function _compileResFiles as integer
 			exit function
 		end if
 		buffer = ""
-		while not eof( fi )
+		while eof( fi ) = FALSE
 			buffer_len = seek( fi )
 			get #1,, chunk
 			buffer_len = seek( fi ) - buffer_len

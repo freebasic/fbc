@@ -62,7 +62,7 @@ function cWhileStatement as integer
 	astAdd( astNewLABEL( il ) )
 
 	'' Expression
-	if( not cExpression( expr ) ) then
+	if( cExpression( expr ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 		exit function
 	end if
@@ -79,20 +79,20 @@ function cWhileStatement as integer
 	cComment( )
 
 	'' separator
-	if( not cStmtSeparator( ) ) then
+	if( cStmtSeparator( ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDEOL )
 		exit function
 	end if
 
 	'' loop body
 	do
-		if( not cSimpleLine( ) ) then
+		if( cSimpleLine( ) = FALSE ) then
 			exit do
 		end if
 	loop while( (lexGetToken( ) <> FB_TK_EOF) )
 
 	'' WEND
-	if( not hMatch( FB_TK_WEND ) ) then
+	if( hMatch( FB_TK_WEND ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDWEND )
 		exit function
 	end if

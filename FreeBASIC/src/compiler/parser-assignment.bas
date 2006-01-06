@@ -83,7 +83,7 @@ function cAssignment( byval assgexpr as ASTNODE ptr ) as integer
 	end if
 
 	'' '='
-    if( not hMatch( FB_TK_ASSIGN ) ) then
+    if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
     	hReportError( FB_ERRMSG_EXPECTEDEQ )
     	exit function
     end if
@@ -93,7 +93,7 @@ function cAssignment( byval assgexpr as ASTNODE ptr ) as integer
     env.ctxsym = astGetSubType( assgexpr )
 
     '' Expression
-    if( not cExpression( expr ) ) then
+    if( cExpression( expr ) = FALSE ) then
        	hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
        	exit function
     end if

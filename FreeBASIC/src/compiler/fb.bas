@@ -487,7 +487,7 @@ function fbCompile( byval infname as zstring ptr, _
 	env.outf.ismain = ismain
 
 	'' open source file
-	if( not hFileExists( *infname ) ) then
+	if( hFileExists( *infname ) = FALSE ) then
 		hReportErrorEx( FB_ERRMSG_FILENOTFOUND, infname, -1 )
 		exit function
 	end if
@@ -504,7 +504,7 @@ function fbCompile( byval infname as zstring ptr, _
 	lexInit( FALSE )
 
 	''
-	if( not emitOpen( ) ) then
+	if( emitOpen( ) = FALSE ) then
 		hReportErrorEx( FB_ERRMSG_FILEACCESSERROR, infname, -1 )
 		exit function
 	end if
@@ -621,11 +621,11 @@ function fbIncludeFile( byval filename as zstring ptr, _
 	end if
 
 	'' open include file
-	if( not hFileExists( filename ) ) then
+	if( hFileExists( filename ) = FALSE ) then
 
 		'' try finding it at same path as env.infile
 		incfile = hStripFilename( env.inf.name ) + *filename
-		if( not hFileExists( incfile ) ) then
+		if( hFileExists( incfile ) = FALSE ) then
 
 			'' try finding it at the inc paths
 			for i = env.incpaths-1 to 0 step -1
@@ -643,7 +643,7 @@ function fbIncludeFile( byval filename as zstring ptr, _
 	end if
 
 	''
-	if( not hFileExists( incfile ) ) then
+	if( hFileExists( incfile ) = FALSE ) then
 		hReportErrorEx( FB_ERRMSG_FILENOTFOUND, "\"" + *filename + "\"" )
 
 	else

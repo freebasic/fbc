@@ -43,7 +43,7 @@ function cFuncReturn( byval checkexpr as integer = TRUE ) as integer
 	if( checkexpr ) then
 		hMatchExpression( expr )
 
-		if( not hAssignFunctResult( env.currproc, expr ) ) then
+		if( hAssignFunctResult( env.currproc, expr ) = FALSE ) then
 			exit function
 		end if
 	end if
@@ -126,7 +126,7 @@ function cGotoStmt as integer
 				end if
 			end if
 
-			if( not fbIsLocal( ) or (l <> NULL) ) then
+			if( (fbIsLocal( ) = FALSE) or (l <> NULL) ) then
 				'' return 0
 				astAdd( astNewBRANCH( IR_OP_RET, NULL ) )
 			else
@@ -164,7 +164,7 @@ function cGotoStmt as integer
 	'' RESUME NEXT?
 	case FB_TK_RESUME
 
-		if( not env.clopt.resumeerr ) then
+		if( env.clopt.resumeerr = FALSE ) then
 			hReportError( FB_ERRMSG_ILLEGALRESUMEERROR )
 			exit function
 		end if

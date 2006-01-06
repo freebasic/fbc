@@ -220,7 +220,7 @@ function cSubOrFuncHeader( byval issub as integer, _
 
 		cArguments( proc, mode, FALSE )
 
-		if( not hMatch( CHAR_RPRNT ) or (hGetLastError( ) <> FB_ERRMSG_OK) ) then
+		if( (hMatch( CHAR_RPRNT ) = FALSE) or (hGetLastError( ) <> FB_ERRMSG_OK) ) then
 			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
 			exit function
 		end if
@@ -231,7 +231,7 @@ function cSubOrFuncHeader( byval issub as integer, _
     case FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR
 
         '' not a sub?
-        if( not isSub ) then
+        if( isSub = FALSE ) then
         	hReportError( FB_ERRMSG_SYNTAXERROR, TRUE )
         	exit function
         end if
@@ -260,7 +260,7 @@ function cSubOrFuncHeader( byval issub as integer, _
     		exit function
     	end if
 
-    	if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
+    	if( cSymbolType( typ, subtype, lgt, ptrcnt ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
     		exit function
     	end if
@@ -355,7 +355,7 @@ function cSubOrFuncHeader( byval issub as integer, _
 
     	'' there's already a prototype for this proc, check for
     	'' declaretion conflits and fix up the arguments
-    	if( not hCheckPrototype( sym, proc, typ, subtype ) ) then
+    	if( hCheckPrototype( sym, proc, typ, subtype ) = FALSE ) then
     		exit function
     	end if
 
@@ -508,12 +508,12 @@ function cProcStatement static
 	env.currproc = proc
 
     '' alloc args
-    if( not hDeclareArgs( proc ) ) then
+    if( hDeclareArgs( proc ) = FALSE ) then
     	exit function
     end if
 
 	'' alloc result local var
-	if( not issub ) then
+	if( issub = FALSE ) then
 		if( symbAddProcResult( proc ) = NULL ) then
 		end if
 	end if
@@ -522,7 +522,7 @@ function cProcStatement static
 	cComment( )
 
 	'' SttSeparator
-	if( not cStmtSeparator( ) ) then
+	if( cStmtSeparator( ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDEOL )
 		exit function
 	end if
@@ -532,13 +532,13 @@ function cProcStatement static
 
 	'' proc body
 	do
-		if( not cSimpleLine( ) ) then
+		if( cSimpleLine( ) = FALSE ) then
 			exit do
 		end if
 	loop while( lexGetToken( ) <> FB_TK_EOF )
 
 	'' END (SUB | FUNCTION)
-	if( not hMatch( FB_TK_END ) ) then
+	if( hMatch( FB_TK_END ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDENDSUBORFUNCT )
 		exit function
 	else
@@ -548,12 +548,12 @@ function cProcStatement static
 				res = TRUE
 			end if
 		elseif( hMatch( FB_TK_FUNCTION ) ) then
-			if( not issub ) then
+			if( issub = FALSE ) then
 				res = TRUE
 			end if
 		end if
 
-		if( not res ) then
+		if( res = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDENDSUBORFUNCT )
 			exit function
 		end if
@@ -572,7 +572,7 @@ function cProcStatement static
 	symbFreeLocalDynVars( proc, issub )
 
 	'' if it's a function, put the result var in the result register
-	if( not issub ) then
+	if( issub = FALSE ) then
         hLoadResult( proc )
 	end if
 

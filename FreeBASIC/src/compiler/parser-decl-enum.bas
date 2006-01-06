@@ -45,12 +45,12 @@ function cEnumConstDecl( byval id as zstring ptr, _
 		lexSkipToken( )
 
 		'' ConstExpression
-		if( not cExpression( expr ) ) then
+		if( cExpression( expr ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDCONST )
 			exit function
 		end if
 
-		if( not astIsCONST( expr ) ) then
+		if( astIsCONST( expr ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDCONST )
 			exit function
 		end if
@@ -104,7 +104,7 @@ function cEnumBody( byval s as FBSYMBOL ptr ) as integer
 				end if
 
 				'' ConstDecl
-				if( not cEnumConstDecl( @ename, value ) ) then
+				if( cEnumConstDecl( @ename, value ) = FALSE ) then
 					exit function
 				end if
 
@@ -125,7 +125,7 @@ function cEnumBody( byval s as FBSYMBOL ptr ) as integer
 			'' Comment? SttSeparator
 			cComment( )
 
-			if( not cStmtSeparator( ) ) then
+			if( cStmtSeparator( ) = FALSE ) then
     			hReportError( FB_ERRMSG_EXPECTEDEOL )
     			exit function
 			end if
@@ -172,22 +172,22 @@ function cEnumDecl as integer static
 	'' Comment? SttSeparator
 	cComment( )
 
-	if( not cStmtSeparator( ) ) then
+	if( cStmtSeparator( ) = FALSE ) then
     	hReportError( FB_ERRMSG_SYNTAXERROR )
     	exit function
 	end if
 
 	'' EnumBody
-	if( not cEnumBody( e ) ) then
+	if( cEnumBody( e ) = FALSE ) then
 		exit function
 	end if
 
 	'' END ENUM
-	if( not hMatch( FB_TK_END ) ) then
+	if( hMatch( FB_TK_END ) = FALSE ) then
     	hReportError( FB_ERRMSG_EXPECTEDENDENUM )
     	exit function
 	end if
-	if( not hMatch( FB_TK_ENUM ) ) then
+	if( hMatch( FB_TK_ENUM ) = FALSE ) then
     	hReportError( FB_ERRMSG_EXPECTEDENDENUM )
     	exit function
 	end if

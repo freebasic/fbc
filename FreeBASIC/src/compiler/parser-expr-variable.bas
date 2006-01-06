@@ -57,7 +57,7 @@ function cFieldArray( byval sym as FBSYMBOL ptr, _
     	end if
 
     	'' Expression
-		if( not cExpression( dimexpr ) ) then
+		if( cExpression( dimexpr ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
@@ -230,11 +230,11 @@ function cTypeField( byref sym as FBSYMBOL ptr, _
     		exit do
     	end if
 
-    	if( not cFieldArray( sym, typ, expr ) ) then
+    	if( cFieldArray( sym, typ, expr ) = FALSE ) then
     		exit function
     	end if
 
-    	if( not hMatch( CHAR_RPRNT ) ) then
+    	if( hMatch( CHAR_RPRNT ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDRPRNT )
    			return FALSE
     	end if
@@ -281,7 +281,7 @@ function cDerefFields( byref dtype as integer, _
 			lexSkipToken( )
 
 			'' Expression
-			if( not cExpression( idxexpr ) ) then
+			if( cExpression( idxexpr ) = FALSE ) then
 				hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 				exit function
 			end if
@@ -297,7 +297,7 @@ function cDerefFields( byref dtype as integer, _
 			end if
 
 			'' ']'
-			if( not hMatch( CHAR_RBRACKET ) ) then
+			if( hMatch( CHAR_RBRACKET ) = FALSE ) then
 				hReportError( FB_ERRMSG_SYNTAXERROR )
 				return FALSE
 			end if
@@ -374,7 +374,7 @@ function cDerefFields( byref dtype as integer, _
 		'' TypeField
 		expr = NULL
 		sym = astGetSymbol( varexpr )
-		if( not cTypeField( sym, dtype, subtype, expr, isfieldderef, checkarray ) ) then
+		if( cTypeField( sym, dtype, subtype, expr, isfieldderef, checkarray ) = FALSE ) then
 
 			if( idxexpr = NULL ) then
 				hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
@@ -454,7 +454,7 @@ function cFuncPtrOrDerefFields( byval typ as integer, _
 	function = FALSE
 
 	''
-	if( not isfuncptr ) then
+	if( isfuncptr = FALSE ) then
 		'' DerefFields?
 		cDerefFields( typ, subtype, varexpr, checkarray )
 
@@ -475,12 +475,12 @@ function cFuncPtrOrDerefFields( byval typ as integer, _
 
 		'' function?
 		if( symbGetType( subtype ) <> FB_SYMBTYPE_VOID ) then
-			if( not cFunctionCall( subtype, funcexpr, varexpr ) ) then
+			if( cFunctionCall( subtype, funcexpr, varexpr ) = FALSE ) then
 				exit function
 			end if
 		'' sub..
 		else
-			if( not cProcCall( subtype, funcexpr, varexpr ) ) then
+			if( cProcCall( subtype, funcexpr, varexpr ) = FALSE ) then
 				exit function
 			end if
 		end if
@@ -524,7 +524,7 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
     d = symbGetArrayDescriptor( sym )
     dims = 0
 
-    if( not symbIsCommon( sym ) ) then
+    if( symbIsCommon( sym ) = FALSE ) then
     	maxdims = symbGetArrayDimensions( sym )
     else
     	maxdims = INVALID
@@ -545,7 +545,7 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
     	end if
 
     	'' Expression
-		if( not cExpression( dimexpr ) ) then
+		if( cExpression( dimexpr ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
@@ -648,7 +648,7 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
     expr = NULL
     do
     	'' Expression
-		if( not cExpression( dimexpr ) ) then
+		if( cExpression( dimexpr ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
@@ -749,7 +749,7 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
     	end if
 
     	'' Expression
-		if( not cExpression( dimexpr ) ) then
+		if( cExpression( dimexpr ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
@@ -896,7 +896,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 			end if
 
 			'' add undeclared var
-			if( not env.opt.explicit ) then
+			if( env.opt.explicit = FALSE ) then
 				if( typ = INVALID ) then
 					typ = hGetDefType( id )
 				end if
@@ -944,7 +944,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
     			cArrayIdx( sym, idxexpr )
 
 				'' ')'
-    			if( not hMatch( CHAR_RPRNT ) ) then
+    			if( hMatch( CHAR_RPRNT ) = FALSE ) then
     				hReportError( FB_ERRMSG_EXPECTEDRPRNT )
     				exit function
     			end if
@@ -957,7 +957,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 
     			'' using (...) with scalars?
     			if( elm = NULL ) then
-    				if( not isarray and not isfuncptr ) then
+    				if( (isarray = FALSE) and (isfuncptr = FALSE) ) then
     					hReportError( FB_ERRMSG_ARRAYNOTALLOCATED, TRUE )
     					exit function
     				end if
@@ -971,7 +971,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
     end if
 
    	''
-   	if( not isfuncptr ) then
+   	if( isfuncptr = FALSE ) then
 
    		'' TypeField?
    		cTypeField( elm, typ, subtype, idxexpr, FALSE, checkarray )
@@ -1006,7 +1006,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 		end if
 	else
 		'' array and no index?
-		if( not isbydesc ) then
+		if( isbydesc = FALSE ) then
   			if( isarray ) then
   				if( checkarray ) then
    					hReportError( FB_ERRMSG_EXPECTEDINDEX, TRUE )
@@ -1054,7 +1054,7 @@ function cVarOrDeref( byref varexpr as ASTNODE ptr, _
 				 AST_NODECLASS_PTR, AST_NODECLASS_FUNCT
 
 			case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET
-				if( not checkaddrof ) then
+				if( checkaddrof = FALSE ) then
 					hReportError( FB_ERRMSG_INVALIDDATATYPES )
 					exit function
 				end if

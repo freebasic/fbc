@@ -574,7 +574,7 @@ function rtlFileOpen( byval filename as ASTNODE ptr, _
 	end if
 
     ''
-    if( not isfunc ) then
+    if( isfunc = FALSE ) then
     	if( env.clopt.resumeerr ) then
     		reslabel = symbAddLabel( NULL )
     		astAdd( astNewLABEL( reslabel ) )
@@ -639,7 +639,7 @@ function rtlFileOpenShort( byval filename as ASTNODE ptr, _
 	end if
 
     ''
-    if( not isfunc ) then
+    if( isfunc = FALSE ) then
     	if( env.clopt.resumeerr ) then
     		reslabel = symbAddLabel( NULL )
     		astAdd( astNewLABEL( reslabel ) )
@@ -674,7 +674,7 @@ function rtlFileClose( byval filenum as ASTNODE ptr, _
  	end if
 
     ''
-    if( not isfunc ) then
+    if( isfunc = FALSE ) then
     	if( env.clopt.resumeerr ) then
     		reslabel = symbAddLabel( NULL )
     		astAdd( astNewLABEL( reslabel ) )
@@ -807,7 +807,7 @@ function rtlFilePut( byval filenum as ASTNODE ptr, _
 	end if
 
     ''
-    if( not isfunc ) then
+    if( isfunc = FALSE ) then
     	if( env.clopt.resumeerr ) then
     		reslabel = symbAddLabel( NULL )
     		astAdd( astNewLABEL( reslabel ) )
@@ -857,7 +857,7 @@ function rtlFilePutArray( byval filenum as ASTNODE ptr, _
     end if
 
     ''
-    if( not isfunc ) then
+    if( isfunc = FALSE ) then
     	if( env.clopt.resumeerr ) then
     		reslabel = symbAddLabel( NULL )
     		astAdd( astNewLABEL( reslabel ) )
@@ -935,7 +935,7 @@ function rtlFileGet( byval filenum as ASTNODE ptr, _
  	end if
 
     ''
-    if( not isfunc ) then
+    if( isfunc = FALSE ) then
     	if( env.clopt.resumeerr ) then
     		reslabel = symbAddLabel( NULL )
     		astAdd( astNewLABEL( reslabel ) )
@@ -985,7 +985,7 @@ function rtlFileGetArray( byval filenum as ASTNODE ptr, _
     end if
 
     ''
-    if( not isfunc ) then
+    if( isfunc = FALSE ) then
     	if( env.clopt.resumeerr ) then
     		reslabel = symbAddLabel( NULL )
     		astAdd( astNewLABEL( reslabel ) )
@@ -1054,7 +1054,7 @@ function rtlFileLineInput( byval isfile as integer, _
     proc = astNewFUNCT( f )
 
     '' "byval filenum as integer" or "text as string "
-    if( (not isfile) and (expr = NULL) ) then
+    if( (isfile = FALSE) and (expr = NULL) ) then
 		expr = astNewVAR( symbAllocStrConst( "", 0 ), 0, IR_DATATYPE_CHAR )
 	end if
 
@@ -1125,7 +1125,7 @@ function rtlFileLineInputWstr( byval isfile as integer, _
     proc = astNewFUNCT( f )
 
     '' "byval filenum as integer" or "byval text as wstring ptr"
-    if( (not isfile) and (expr = NULL) ) then
+    if( (isfile = FALSE) and (expr = NULL) ) then
 		expr = astNewVAR( symbAllocWStrConst( "", 0 ), 0, IR_DATATYPE_WCHAR )
 	end if
 
@@ -1190,7 +1190,7 @@ function rtlFileInput( byval isfile as integer, _
     proc = astNewFUNCT( f )
 
     '' "byval filenum as integer" or "text as string "
-    if( (not isfile) and (expr = NULL) ) then
+    if( (isfile = FALSE) and (expr = NULL) ) then
 		expr = astNewVAR( symbAllocStrConst( "", 0 ), 0, IR_DATATYPE_CHAR )
 	end if
 
@@ -1362,7 +1362,7 @@ function rtlFileRename( byval filename_new as ASTNODE ptr, _
  	end if
 
     ''
-    if( not isfunc ) then
+    if( isfunc = FALSE ) then
     	if( env.clopt.resumeerr ) then
     		reslabel = symbAddLabel( NULL )
     		astAdd( astNewLABEL( reslabel ) )
@@ -1401,7 +1401,7 @@ function rtlWidthFile ( byval fnum as ASTNODE ptr, _
     	exit function
     end if
 
-    if( not isfunc ) then
+    if( isfunc = FALSE ) then
     	dim reslabel as FBSYMBOL ptr
 
     	if( env.clopt.resumeerr ) then

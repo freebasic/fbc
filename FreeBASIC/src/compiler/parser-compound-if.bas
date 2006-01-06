@@ -71,7 +71,7 @@ function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
 
 		astAdd( astNewBRANCH( IR_OP_JMP, l ) )
 
-	elseif( not cSimpleStatement( ) ) then
+	elseif( cSimpleStatement( ) = FALSE ) then
 		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
@@ -87,7 +87,7 @@ function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
 		astAdd( astNewLABEL( nl ) )
 
 		'' SimpleStatement|IF*
-		if( not cSimpleStatement ) then
+		if( cSimpleStatement = FALSE ) then
 			exit function
 		end if
 
@@ -135,7 +135,7 @@ function cIfStmtBody( byval expr as ASTNODE ptr, _
 		cComment( )
 
 		'' separator
-		if( not cStmtSeparator( ) ) then
+		if( cStmtSeparator( ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDEOL )
 			exit function
 		end if
@@ -143,7 +143,7 @@ function cIfStmtBody( byval expr as ASTNODE ptr, _
 
 	'' loop body
 	do
-		if( not cSimpleLine( ) ) then
+		if( cSimpleLine( ) = FALSE ) then
 			exit do
 		end if
 	loop while( lexGetToken( ) <> FB_TK_EOF )
@@ -187,7 +187,7 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 	lastcompstmt = env.lastcompound
 	env.lastcompound = FB_TK_IF
 
-	if( not cIfStmtBody( expr, nl, el ) ) then
+	if( cIfStmtBody( expr, nl, el ) = FALSE ) then
 		exit function
 	end if
 
@@ -204,18 +204,18 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 		nl = symbAddLabel( NULL )
 
 	    '' Expression
-    	if( not cExpression( expr ) ) then
+    	if( cExpression( expr ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit function
     	end if
 
 		'' THEN
-		if( not hMatch( FB_TK_THEN ) ) then
+		if( hMatch( FB_TK_THEN ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDTHEN )
 			exit function
 		end if
 
-		if( not cIfStmtBody( expr, nl, el, FALSE ) ) then
+		if( cIfStmtBody( expr, nl, el, FALSE ) = FALSE ) then
 			exit function
 		end if
 
@@ -232,7 +232,7 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 
 		'' loop body
 		do
-			if( not cSimpleLine( ) ) then
+			if( cSimpleLine( ) = FALSE ) then
 				exit do
 			end if
 		loop while( lexGetToken( ) <> FB_TK_EOF )
@@ -246,8 +246,9 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 	astAdd( astNewLABEL( el ) )
 
 	'' ENDIF or END IF
-    if( not hMatch( FB_TK_ENDIF ) ) then
-        if( (not hMatch( FB_TK_END )) or (not hMatch( FB_TK_IF )) ) then
+    if( hMatch( FB_TK_ENDIF ) = FALSE ) then
+        if( (hMatch( FB_TK_END ) = FALSE) or _
+        	(hMatch( FB_TK_IF ) = FALSE) ) then
             hReportError( FB_ERRMSG_EXPECTEDENDIF )
             exit function
         end if
@@ -272,7 +273,7 @@ function cIfStatement as integer
 	lexSkipToken( )
 
     '' Expression
-    if( not cExpression( expr ) ) then
+    if( cExpression( expr ) = FALSE ) then
     	hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     	exit function
     end if
@@ -281,9 +282,9 @@ function cIfStatement as integer
 	if( hMatch( FB_TK_THEN ) ) then
 
 		'' (BlockIfStatement | SingleIfStatement)
-		if( not cBlockIfStatement( expr ) ) then
+		if( cBlockIfStatement( expr ) = FALSE ) then
 			if( hGetLastError = FB_ERRMSG_OK ) then
-				if( not cSingleIfStatement( expr ) ) then
+				if( cSingleIfStatement( expr ) = FALSE ) then
 					hReportError( FB_ERRMSG_SYNTAXERROR )
 					exit function
 				end if
@@ -298,7 +299,7 @@ function cIfStatement as integer
 			exit function
 		end if
 
-		if( not cSingleIfStatement( expr ) ) then
+		if( cSingleIfStatement( expr ) = FALSE ) then
 			hReportError( FB_ERRMSG_SYNTAXERROR )
 			exit function
 		end if

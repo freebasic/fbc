@@ -213,7 +213,7 @@ private function hLoadDefine( byval s as FBSYMBOL ptr ) as integer
 		'' should we call a function to get definition text?
 		if( symbGetDefineCallback( s ) <> NULL ) then
 			'' call function
-            if( not bit( symbGetDefineFlags( s ), 0 ) ) then
+            if( bit( symbGetDefineFlags( s ), 0 ) = 0 ) then
 				text = "\"" + symbGetDefineCallback( s )( ) + "\""
             else
 				text = symbGetDefineCallback( s )( )
@@ -423,7 +423,7 @@ private function hLoadDefineW( byval s as FBSYMBOL ptr ) as integer
 		'' should we call a function to get definition text?
 		if( symbGetDefineCallback( s ) <> NULL ) then
 			'' call function
-            if( not bit( symbGetDefineFlags( s ), 0 ) ) then
+            if( bit( symbGetDefineFlags( s ), 0 ) = 0 ) then
 				DWstrAssignA( text, "\"" + symbGetDefineCallback( s )( ) + "\"" )
             else
 				DWstrAssignA( text, symbGetDefineCallback( s )( ) )
@@ -595,7 +595,7 @@ private function hReadMacroText( byval args as integer, _
     				'' same?
     				if( token = *symbGetDefArgName( arg ) ) then
 
-						if( not addquotes ) then
+						if( addquotes = FALSE ) then
 							symbSetDefTokType( tok, FB_DEFTOK_TYPE_ARG )
 						else
 							symbSetDefTokType( tok, FB_DEFTOK_TYPE_ARGSTR )
@@ -651,7 +651,7 @@ function ppDefine( ) as integer
     '' ID
     s = lexGetSymbol( )
     if( s <> NULL ) then
-    	if( not symbIsDefine( s ) ) then
+    	if( symbIsDefine( s ) = FALSE ) then
     		hReportError( FB_ERRMSG_DUPDEFINITION )
     		exit function
     	end if

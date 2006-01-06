@@ -1365,7 +1365,7 @@ private sub hReuse( byval t as IRTAC ptr ) static
 		end if
 
 		if( v1rename and v2rename ) then
-			if( not irIsREG( v1 ) ) then
+			if( irIsREG( v1 ) = FALSE ) then
            		v1rename = FALSE
 			end if
 		end if
@@ -1501,7 +1501,7 @@ private sub hFreePreservedRegs( ) static
 		reg = regTB(class)->getFirst( regTB(class) )
 		do until( reg = INVALID )
 			'' if not free
-			if( not regTB(class)->isFree( regTB(class), reg ) ) then
+			if( regTB(class)->isFree( regTB(class), reg ) = FALSE ) then
 
         		assert( emitIsRegPreserved( class, reg ) )
 
@@ -1556,7 +1556,7 @@ private sub hPreserveRegs( byval ptrvreg as IRVREG ptr = NULL ) static
 		reg = regTB(class)->getFirst( regTB(class) )
 		do until( reg = INVALID )
 			'' if not free
-			if( (not regTB(class)->isFree( regTB(class), reg )) and (reg <> npreg) ) then
+			if( (regTB(class)->isFree( regTB(class), reg ) = FALSE) and (reg <> npreg) ) then
 
 				'' get the attached vreg
 				vr = regTB(class)->getVreg( regTB(class), reg )
@@ -1564,7 +1564,7 @@ private sub hPreserveRegs( byval ptrvreg as IRVREG ptr = NULL ) static
                 hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
 
         		'' if reg is not preserved between calls
-        		if( not emitIsRegPreserved( vr_dclass, reg ) ) then
+        		if( emitIsRegPreserved( vr_dclass, reg ) = FALSE ) then
 
         			'' find a preserved reg to copy to
         			freg = emitGetFreePreservedReg( vr_dclass )
@@ -2033,7 +2033,7 @@ private sub hSpillRegs( ) static
 		reg = regTB(class)->getFirst( regTB(class) )
 		do until( reg = INVALID )
 			'' if not free
-			if( not regTB(class)->isFree( regTB(class), reg ) ) then
+			if( regTB(class)->isFree( regTB(class), reg ) = FALSE ) then
 
 				'' get the attached vreg
 				vr = regTB(class)->getVreg( regTB(class), reg )
@@ -2233,7 +2233,7 @@ private sub hFlushCONVERT( byval op as integer, _
 	emitLOAD( v1, v2 )
 
 	''
-	if( not reuse ) then
+	if( reuse = FALSE ) then
 		hFreeREG( v2 )
 	else
 		v2->reg = INVALID
@@ -2355,7 +2355,7 @@ private sub hFreeREG( byval vreg as IRVREG ptr, _
 
 	''
 	dist = IR_MAXDIST
-	if( not force ) then
+	if( force = FALSE ) then
 		dist = irGetDistance( vreg )
 	end if
 

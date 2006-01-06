@@ -125,7 +125,7 @@ sub lexInit( byval isinclude as integer )
 		insidemacro = FALSE
 	end if
 
-	if( not isinclude ) then
+	if( isinclude = FALSE ) then
 		ppInit( )
 	end if
 
@@ -167,7 +167,7 @@ private function lexReadChar as uinteger static
 
 		if( env.clopt.debug ) then
 			if( env.reclevel = 0 ) then
-				if( not insidemacro ) then
+				if( insidemacro = FALSE ) then
 					insidemacro = TRUE
 					curline += " [Macro Expansion: "
 				end if
@@ -179,7 +179,7 @@ private function lexReadChar as uinteger static
 
 		'' buffer empty?
 		if( lex->bufflen = 0 ) then
-			if( not eof( env.inf.num ) ) then
+			if( eof( env.inf.num ) = FALSE ) then
 				lex->filepos = seek( env.inf.num )
 
 				select case as const env.inf.format
@@ -418,7 +418,7 @@ private sub lexReadIdentifier( byval pid as zstring ptr, _
 			exit do
 		end select
 
-		if( not skipchar ) then
+		if( skipchar = FALSE ) then
 			tlen += 1
 			if( tlen > FB_MAXNAMELEN ) then
  				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
@@ -515,7 +515,7 @@ private function lexReadNonDecNumber( byref pnum as zstring ptr, _
                   	c -= (CHAR_ALOW - CHAR_AUPP)
                 end if
 
-				if( not skipchar ) then
+				if( skipchar = FALSE ) then
 					lgt += 1
 					if( lgt > 8 ) then
 						if( lgt = 9 ) then
@@ -557,7 +557,7 @@ private function lexReadNonDecNumber( byref pnum as zstring ptr, _
 			case CHAR_0 to CHAR_7
 				c = lexEatChar( ) - CHAR_0
 
-				if( not skipchar ) then
+				if( skipchar = FALSE ) then
 					lgt += 1
 					if( lgt > 10 ) then
 						select case as const lgt
@@ -570,7 +570,7 @@ private function lexReadNonDecNumber( byref pnum as zstring ptr, _
 							end if
 
 						case 12
-							if( not islong ) then
+							if( islong = FALSE ) then
 								islong = TRUE
 								value64 = culngint( value )
 							end if
@@ -619,7 +619,7 @@ private function lexReadNonDecNumber( byref pnum as zstring ptr, _
 			select case lexCurrentChar( )
 			case CHAR_0, CHAR_1
 				c = lexEatChar( ) - CHAR_0
-				if( not skipchar ) then
+				if( skipchar = FALSE ) then
 					lgt += 1
 					if( lgt > 32 ) then
 						if( lgt = 33 ) then
@@ -650,7 +650,7 @@ private function lexReadNonDecNumber( byref pnum as zstring ptr, _
 		exit sub
 	end select
 
-	if( not islong ) then
+	if( islong = FALSE ) then
 		if( value and &h80000000UL ) then
 			*pnum = str( csign( value ) )
         else
@@ -696,7 +696,7 @@ private sub lexReadFloatNumber( byref pnum as zstring ptr, _
 		c = lexCurrentChar( )
 		select case c
 		case CHAR_0 to CHAR_9
-			if( not skipchar ) then
+			if( skipchar = FALSE ) then
 				*pnum = lexEatChar( )
 				pnum += 1
 				tlen += 1
@@ -708,7 +708,7 @@ private sub lexReadFloatNumber( byref pnum as zstring ptr, _
 		end select
 
 		if( tlen > FB_MAXNUMLEN ) then
-			if( not skipchar ) then
+			if( skipchar = FALSE ) then
  				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
  					hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
 				end if
@@ -738,7 +738,7 @@ private sub lexReadFloatNumber( byref pnum as zstring ptr, _
 	case CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
 		'' EXPCHAR
 		c = lexEatChar( )
-		if( not skipchar ) then
+		if( skipchar = FALSE ) then
 			*pnum = CHAR_ELOW
 			pnum += 1
 			tlen += 1
@@ -747,7 +747,7 @@ private sub lexReadFloatNumber( byref pnum as zstring ptr, _
 		'' [opadd]
 		c = lexCurrentChar( )
 		if( (c = CHAR_PLUS) or (c = CHAR_MINUS) ) then
-			if( not skipchar ) then
+			if( skipchar = FALSE ) then
 				*pnum = lexEatChar( )
 				pnum += 1
 				tlen += 1
@@ -760,7 +760,7 @@ private sub lexReadFloatNumber( byref pnum as zstring ptr, _
 			c = lexCurrentChar( )
 			select case as const c
 			case CHAR_0 to CHAR_9
-				if( not skipchar ) then
+				if( skipchar = FALSE ) then
 					*pnum = lexEatChar( )
 					pnum += 1
 					tlen += 1
@@ -835,7 +835,7 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 			case CHAR_0
 				lexEatChar( )
 				if( tlen > 0 ) then
-					if( not skipchar ) then
+					if( skipchar = FALSE ) then
 						*pnum = CHAR_0
 						pnum += 1
 						tlen += 1
@@ -844,7 +844,7 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 				end if
 
 			case CHAR_1 to CHAR_9
-				if( not skipchar ) then
+				if( skipchar = FALSE ) then
 					*pnum = lexEatChar( )
 					pnum += 1
 					tlen += 1
@@ -857,7 +857,7 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 				isfloat = TRUE
 				if( c = CHAR_DOT ) then
 					c = lexEatChar( )
-					if( not skipchar ) then
+					if( skipchar = FALSE ) then
 						*pnum = CHAR_DOT
 						pnum += 1
 						tlen += 1
@@ -872,7 +872,7 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 			end select
 
 			if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
-				if( not skipchar ) then
+				if( skipchar = FALSE ) then
 					select case as const tlen
 					case 10
 						if( value > 2147483647ULL ) then
@@ -895,7 +895,7 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 					case 20
 						issigned = FALSE
 						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-							if( not (value and &h8000000000000000ULL) ) then
+							if( (value and &h8000000000000000ULL) = 0 ) then
 								hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
 								skipchar = TRUE
 							end if
@@ -949,7 +949,7 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 	*pnum = 0
 
 	'' check suffix type
-	if( not isfloat ) then
+	if( isfloat = FALSE ) then
 		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 
 			'' 'U' | 'u'
@@ -972,7 +972,7 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 					lexEatChar( )
 					islong = TRUE
 					'' restore sign if needed
-					if( not forcedsign ) then
+					if( forcedsign = FALSE ) then
 						if( value > 2147483647ULL ) then
 							if( value < 9223372036854775808ULL ) then
 								issigned = TRUE
@@ -981,7 +981,7 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 					end if
 				else
 					if( islong ) then
-						if( not skipchar ) then
+						if( skipchar = FALSE ) then
 							if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 								hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
 							end if
@@ -993,7 +993,7 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 			case FB_TK_INTTYPECHAR, FB_TK_LNGTYPECHAR
 				lexEatChar( )
 				if( islong ) then
-					if( not skipchar ) then
+					if( skipchar = FALSE ) then
 						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 							hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
 						end if
@@ -1019,7 +1019,7 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 	end if
 
 	if( typ = INVALID ) then
-		if( not isfloat ) then
+		if( isfloat = FALSE ) then
 			if( islong ) then
 				if( issigned ) then
 					typ = FB_SYMBTYPE_LONGINT
@@ -1078,7 +1078,7 @@ private sub lexReadString ( byval ps as zstring ptr, _
 
 				'' don't skip quotes?
 				if( (flags and LEXCHECK_NOQUOTES) <> 0 ) then
-					if( not skipchar ) then
+					if( skipchar = FALSE ) then
 						*ps = CHAR_QUOTE
 						ps += 1
 						tlen += 1
@@ -1094,7 +1094,7 @@ private sub lexReadString ( byval ps as zstring ptr, _
 
 				'' can't use '\', it will be escaped anyway because GAS
 				lexEatChar( )
-				if( not skipchar ) then
+				if( skipchar = FALSE ) then
 					*ps = FB_INTSCAPECHAR
 					ps += 1
 					rlen += 1
@@ -1105,7 +1105,7 @@ private sub lexReadString ( byval ps as zstring ptr, _
 				case CHAR_0 to CHAR_9, CHAR_AMP
 					lexReadNumber( @nval, ntyp, nlen, 0 )
 
-					if( not skipchar ) then
+					if( skipchar = FALSE ) then
 						i = valint( nval )
 						if( cuint( i ) > 255 ) then
 							hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
@@ -1133,7 +1133,7 @@ private sub lexReadString ( byval ps as zstring ptr, _
 
 				'' unicode 16-bit
 				case CHAR_ULOW
-					if( not skipchar ) then
+					if( skipchar = FALSE ) then
 						for i = 1 to 1+4
 							lexCurrentChar( )
 							*ps = lexEatChar( )
@@ -1153,7 +1153,7 @@ private sub lexReadString ( byval ps as zstring ptr, _
 
 				'' unicode 32-bit
 				case CHAR_UUPP
-					if( not skipchar ) then
+					if( skipchar = FALSE ) then
 						for i = 1 to 1+8
 							lexCurrentChar( )
 							*ps = lexEatChar( )
@@ -1176,7 +1176,7 @@ private sub lexReadString ( byval ps as zstring ptr, _
 			end if
 		end select
 
-		if( not skipchar ) then
+		if( skipchar = FALSE ) then
 			rlen += 1
 			if( rlen > FB_MAXLITLEN ) then
 				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
@@ -1239,7 +1239,7 @@ private sub lexReadWStr ( byval ps as wstring ptr, _
 
 				'' don't skip quotes?
 				if( (flags and LEXCHECK_NOQUOTES) <> 0 ) then
-					if( not skipchar ) then
+					if( skipchar = FALSE ) then
 						*ps = CHAR_QUOTE
 						ps += 1
 						tlen += 1
@@ -1255,7 +1255,7 @@ private sub lexReadWStr ( byval ps as wstring ptr, _
 
 				'' can't use '\', it will be escaped anyway because GAS
 				lexEatChar( )
-				if( not skipchar ) then
+				if( skipchar = FALSE ) then
 					*ps = FB_INTSCAPECHAR
 					ps += 1
 					rlen += 1
@@ -1266,7 +1266,7 @@ private sub lexReadWStr ( byval ps as wstring ptr, _
 				case CHAR_0 to CHAR_9, CHAR_AMP
 					lexReadNumber( @nval, ntyp, nlen, 0 )
 
-					if( not skipchar ) then
+					if( skipchar = FALSE ) then
 						i = valint( nval )
 						if( cuint( i ) > 255 ) then
 							hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
@@ -1294,7 +1294,7 @@ private sub lexReadWStr ( byval ps as wstring ptr, _
 
 				'' unicode 16-bit
 				case CHAR_ULOW
-					if( not skipchar ) then
+					if( skipchar = FALSE ) then
 						for i = 1 to 1+4
 							lexCurrentChar( )
 							*ps = lexEatChar( )
@@ -1314,7 +1314,7 @@ private sub lexReadWStr ( byval ps as wstring ptr, _
 
 				'' unicode 32-bit
 				case CHAR_UUPP
-					if( not skipchar ) then
+					if( skipchar = FALSE ) then
 						for i = 1 to 1+8
 							lexCurrentChar( )
 							*ps = lexEatChar( )
@@ -1337,7 +1337,7 @@ private sub lexReadWStr ( byval ps as wstring ptr, _
 			end if
 		end select
 
-		if( not skipchar ) then
+		if( skipchar = FALSE ) then
 			rlen += 1
 			if( rlen > FB_MAXLITLEN ) then
 				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
@@ -1462,7 +1462,7 @@ reread:
 				end if
 			end if
 
-			if( not islinecont ) then
+			if( islinecont = FALSE ) then
 				t->id    = FB_TK_EOL
 				t->class = FB_TKCLASS_DELIMITER
 				exit sub
@@ -1474,7 +1474,7 @@ reread:
 
 		'' white-space?
 		case CHAR_TAB, CHAR_SPACE
-			if( not islinecont ) then
+			if( islinecont = FALSE ) then
 				if( (flags and LEXCHECK_NOWHITESPC) <> 0 ) then
 					exit do
 				end if
@@ -1484,7 +1484,7 @@ reread:
 
 		''
 		case else
-			if( not islinecont ) then
+			if( islinecont = FALSE ) then
 				exit do
 			end if
 
@@ -1722,7 +1722,7 @@ private sub hCheckPP( )
        			end if
 
        			'' pp failed? exit
-       			if( not ppParse( ) ) then
+       			if( ppParse( ) = FALSE ) then
        				lex->reclevel -= 1
        				exit sub
        			end if
@@ -1853,7 +1853,7 @@ sub lexReadLine( byval endchar as uinteger = INVALID, _
 
     dim char as uinteger
 
-	if( not skipline ) then
+	if( skipline = FALSE ) then
 		*dst = ""
 	end if
 
@@ -1863,7 +1863,7 @@ sub lexReadLine( byval endchar as uinteger = INVALID, _
     	case FB_TK_EOF, FB_TK_EOL, endchar
     		exit sub
     	case else
-    		if( not skipline ) then
+    		if( skipline = FALSE ) then
    				*dst += lex->head->text
     		end if
     	end select
@@ -1876,7 +1876,7 @@ sub lexReadLine( byval endchar as uinteger = INVALID, _
     case FB_TK_EOF, FB_TK_EOL, endchar
    		exit sub
    	case else
-   		if( not skipline ) then
+   		if( skipline = FALSE ) then
     		*dst += lex->head->text
    		end if
    	end select
@@ -1925,7 +1925,7 @@ sub lexReadLine( byval endchar as uinteger = INVALID, _
 		end select
 
 		lexEatChar( )
-		if( not skipline ) then
+		if( skipline = FALSE ) then
 			*dst += chr( char )
 		end if
 	loop

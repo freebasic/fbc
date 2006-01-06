@@ -325,7 +325,7 @@ function symbIsProcOverloadOf( byval proc as FBSYMBOL ptr, _
 	end if
 
 	'' not overloaded?
-	if( not symbIsOverloaded( parent ) ) then
+	if( symbIsOverloaded( parent ) = FALSE ) then
 		return FALSE
 	end if
 
@@ -408,7 +408,7 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 		end if
 
 		'' proc was defined as overloadable?
-		if( not symbIsOverloaded( parent ) ) then
+		if( symbIsOverloaded( parent ) = FALSE ) then
 			exit function
 		end if
 
@@ -762,7 +762,7 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 	'' param optional?
 	if( pexpr = NULL ) then
 		'' but arg isn't?
-		if( not symbGetArgOptional( arg ) ) then
+		if( symbGetArgOptional( arg ) = FALSE ) then
 			return 0
 		end if
 
@@ -857,7 +857,7 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 				'' not a pointer param?
 				if( pdtype < IR_DATATYPE_POINTER ) then
 					'' not a numeric constant?
-					if( not astIsCONST( pexpr ) ) then
+					if( astIsCONST( pexpr ) = FALSE ) then
 						return 0
 					end if
 					'' not 0 (NULL)?
@@ -1031,7 +1031,7 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 				if( (matches > 0) or (params = 0) ) then
 					do while( arg <> NULL )
 			    		'' not optional? exit
-			    		if( not symbGetArgOptional( arg ) ) then
+			    		if( symbGetArgOptional( arg ) = FALSE ) then
 			    			matches = 0
 			    			exit do
 			    		else

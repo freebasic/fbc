@@ -96,7 +96,7 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
     expr = astNewIDX( astNewVAR( tbsym, -1*FB_INTEGERSIZE, IR_DATATYPE_UINT ), idxexpr, _
     				  IR_DATATYPE_UINT, NULL )
 
-    if( not isgoto ) then
+    if( isgoto = FALSE ) then
     	astAdd( astNewSTACK( IR_OP_PUSH, astNewADDR( IR_OP_ADDROF, astNewVAR( exitlabel ) ) ) )
     end if
 
@@ -128,13 +128,13 @@ function cOnStmt as integer
 	function = FALSE
 
 	'' ON
-	if( not hMatch( FB_TK_ON ) ) then
+	if( hMatch( FB_TK_ON ) = FALSE ) then
 		exit function
 	end if
 
 	'' LOCAL?
 	if( hMatch( FB_TK_LOCAL ) ) then
-		if( not fbIsLocal( ) ) then
+		if( fbIsLocal( ) = FALSE ) then
 			hReportError( FB_ERRMSG_SYNTAXERROR, TRUE )
 			exit function
 		end if
@@ -178,7 +178,7 @@ function cOnStmt as integer
 			end if
         end if
 
-		if( not isrestore ) then
+		if( isrestore = FALSE ) then
 			'' Label
 			label = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_LABEL )
 			if( label = NULL ) then

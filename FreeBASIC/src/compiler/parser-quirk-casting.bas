@@ -44,7 +44,7 @@ private function hCasting( byref expr as ASTNODE ptr ) as integer
 	hMatchLPRNT( )
 
     '' DataType
-    if( not cSymbolType( dtype, subtype, lgt, ptrcnt ) ) then
+    if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
     	hReportError( FB_ERRMSG_SYNTAXERROR )
     	exit function
     end if
@@ -60,7 +60,7 @@ private function hCasting( byref expr as ASTNODE ptr ) as integer
 	hMatchCOMMA( )
 
 	'' expression
-	if( not cExpression( expr ) ) then
+	if( cExpression( expr ) = FALSE ) then
 		exit function
 	end if
 
@@ -130,12 +130,12 @@ function cTypeConvExpr( byref expr as ASTNODE ptr ) as integer
 	end if
 
 	'' '('
-	if( not hMatch( CHAR_LPRNT ) ) then
+	if( hMatch( CHAR_LPRNT ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDLPRNT )
 		exit function
 	end if
 
-	if( not cExpression( expr ) ) then
+	if( cExpression( expr ) = FALSE ) then
 		exit function
 	end if
 
@@ -146,7 +146,7 @@ function cTypeConvExpr( byref expr as ASTNODE ptr ) as integer
     end if
 
 	'' ')'
-	if( not hMatch( CHAR_RPRNT ) ) then
+	if( hMatch( CHAR_RPRNT ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDRPRNT )
 		exit function
 	end if

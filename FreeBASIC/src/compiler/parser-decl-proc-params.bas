@@ -114,7 +114,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 	'' only allow keywords as arg names on prototypes
 	readid = TRUE
 	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
-		if( not isproto ) then
+		if( isproto = FALSE ) then
 			'' anything but keywords will be catch by parser (could be a ')' too)
 			if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
 				hParamError( proc, symbGetProcArgs( proc ), *lexGetText( ) )
@@ -154,7 +154,8 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 
 		'' ('('')')
 		if( hMatch( CHAR_LPRNT ) ) then
-			if( (mode <> INVALID) or (not hMatch( CHAR_RPRNT )) ) then
+			if( (mode <> INVALID) or _
+				(hMatch( CHAR_RPRNT ) = FALSE) ) then
 				hParamError( proc, symbGetProcArgs( proc ), *pid )
 				exit function
 			end if
@@ -189,7 +190,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     	end if
 
     	arglevel += 1
-    	if( not cSymbolType( atype, subtype, alen, ptrcnt ) ) then
+    	if( cSymbolType( atype, subtype, alen, ptrcnt ) = FALSE ) then
     		hParamError( proc, symbGetProcArgs( proc ), *pid )
     		arglevel -= 1
     		exit function
@@ -199,7 +200,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     	asuffix = INVALID
 
     else
-    	if( not readid ) then
+    	if( readid = FALSE ) then
     		hParamError( proc, symbGetProcArgs( proc ), "" )
     		exit function
     	end if
@@ -224,7 +225,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 
 	'' can't be as ANY on non-prototypes
     case FB_SYMBTYPE_VOID
-    	if( not isproto ) then
+    	if( isproto = FALSE ) then
     		hParamError( proc, symbGetProcArgs( proc ), *pid )
     		exit function
     	end if
@@ -253,7 +254,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     	end if
     end select
 
-    if( not isproto ) then
+    if( isproto = FALSE ) then
     	'' contains a period?
     	if( dotpos > 0 ) then
     		if( atype = FB_SYMBTYPE_USERDEF ) then
@@ -283,16 +284,17 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     		exit function
     	end select
 
-    	if( not cExpression( expr ) ) then
+    	if( cExpression( expr ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDCONST )
     		exit function
     	end if
 
     	dtype = astGetDataType( expr )
     	'' not a constant?
-    	if( not astIsCONST( expr ) ) then
+    	if( astIsCONST( expr ) = FALSE ) then
     		'' not a literal string?
-    		if( (not astIsVAR( expr )) or (dtype <> IR_DATATYPE_CHAR) ) then
+    		if( (astIsVAR( expr ) = FALSE) or _
+    			(dtype <> IR_DATATYPE_CHAR) ) then
 				hReportError( FB_ERRMSG_EXPECTEDCONST )
 				exit function
 			end if
@@ -300,7 +302,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 			sym = astGetSymbol( expr )
 			'' diff types or isn't it a literal string?
 			if( (dclass <> IR_DATACLASS_STRING) or _
-				(not symbGetVarInitialized( sym )) ) then
+				(symbGetVarInitialized( sym ) = FALSE) ) then
 				hReportError( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
 			end if

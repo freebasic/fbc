@@ -43,7 +43,7 @@ function cTypeMultElementDecl( byval s as FBSYMBOL ptr ) as integer static
     function = FALSE
 
     '' SymbolType
-    if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
+    if( cSymbolType( typ, subtype, lgt, ptrcnt ) = FALSE ) then
     	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
     	exit function
     end if
@@ -67,7 +67,7 @@ function cTypeMultElementDecl( byval s as FBSYMBOL ptr ) as integer static
 	    bits = 0
 
 		'' ArrayDecl?
-		if( not cStaticArrayDecl( dims, dTB() ) ) then
+		if( cStaticArrayDecl( dims, dTB() ) = FALSE ) then
 
     		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
     			exit function
@@ -81,7 +81,7 @@ function cTypeMultElementDecl( byval s as FBSYMBOL ptr ) as integer static
 					lexSkipToken( )
 				end if
 
-				if( not symbCheckBitField( s, typ, lgt, bits ) ) then
+				if( symbCheckBitField( s, typ, lgt, bits ) = FALSE ) then
     				hReportError( FB_ERRMSG_INVALIDBITFIELD, TRUE )
     				exit function
 				end if
@@ -137,7 +137,7 @@ function cTypeElementDecl( byval s as FBSYMBOL ptr ) as integer static
 	bits = 0
 
 	'' ArrayDecl?
-	if( not cStaticArrayDecl( dims, dTB() ) ) then
+	if( cStaticArrayDecl( dims, dTB() ) = FALSE ) then
 		'' ':' NUMLIT?
 		if( lexGetToken( ) = CHAR_COLON ) then
 			if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_NUMLITERAL ) then
@@ -153,20 +153,20 @@ function cTypeElementDecl( byval s as FBSYMBOL ptr ) as integer static
 	end if
 
     '' AS
-    if( not hMatch( FB_TK_AS ) or (typ <> INVALID) ) then
+    if( (hMatch( FB_TK_AS ) = FALSE) or (typ <> INVALID) ) then
     	hReportError( FB_ERRMSG_SYNTAXERROR )
     	exit function
     end if
 
     '' SymbolType
-    if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
+    if( cSymbolType( typ, subtype, lgt, ptrcnt ) = FALSE ) then
     	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
     	exit function
     end if
 
 	''
 	if( bits <> 0 ) then
-		if( not symbCheckBitField( s, typ, lgt, bits ) ) then
+		if( symbCheckBitField( s, typ, lgt, bits ) = FALSE ) then
     		hReportError( FB_ERRMSG_INVALIDBITFIELD, TRUE )
     		exit function
 		end if
@@ -210,13 +210,13 @@ private function hTypeAdd( byval parent as FBSYMBOL ptr, _
 	'' Comment? SttSeparator
 	cComment( )
 
-	if( not cStmtSeparator( ) ) then
+	if( cStmtSeparator( ) = FALSE ) then
     	hReportError( FB_ERRMSG_SYNTAXERROR )
     	exit function
 	end if
 
 	'' TypeBody
-	if( not cTypeBody( s ) ) then
+	if( cTypeBody( s ) = FALSE ) then
 		exit function
 	end if
 
@@ -228,12 +228,12 @@ private function hTypeAdd( byval parent as FBSYMBOL ptr, _
 	symbRoundUDTSize( s )
 
 	'' END TYPE|UNION
-	if( not hMatch( FB_TK_END ) ) then
+	if( hMatch( FB_TK_END ) = FALSE ) then
     	hReportError( FB_ERRMSG_EXPECTEDENDTYPE )
     	exit function
 	end if
 
-	if( not hMatch( iif( isunion, FB_TK_UNION, FB_TK_TYPE ) ) ) then
+	if( hMatch( iif( isunion, FB_TK_UNION, FB_TK_TYPE ) ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDENDTYPE )
 		exit function
 	end if
@@ -270,7 +270,7 @@ function cTypeBody( byval s as FBSYMBOL ptr ) as integer
 			'' isn't it a field called "end"?
 			select case lexGetLookAhead( 1 )
 			case FB_TK_AS, CHAR_LPRNT, CHAR_COLON
-				if( not cTypeElementDecl( s ) ) then
+				if( cTypeElementDecl( s ) = FALSE ) then
 					exit function
 				end if
 
@@ -289,7 +289,7 @@ function cTypeBody( byval s as FBSYMBOL ptr ) as integer
 declinner:		'' it's an anonymous inner UDT
 				istype = lexGetToken( ) = FB_TK_TYPE
 				if( istype ) then
-					if( not symbGetUDTIsUnion( s ) ) then
+					if( symbGetUDTIsUnion( s ) = FALSE ) then
 						hReportError( FB_ERRMSG_SYNTAXERROR )
 						exit function
 					end if
@@ -319,13 +319,13 @@ declinner:		'' it's an anonymous inner UDT
 				end if
 
 				'' bitfield..
-				if( not cTypeElementDecl( s ) ) then
+				if( cTypeElementDecl( s ) = FALSE ) then
 					exit function
 				end if
 
 			'' it's a field, parse it
 			case else
-				if( not cTypeElementDecl( s ) ) then
+				if( cTypeElementDecl( s ) = FALSE ) then
 					exit function
 				end if
 
@@ -336,7 +336,7 @@ declinner:		'' it's an anonymous inner UDT
 			'' isn't it a field called "as"?
 			select case lexGetLookAhead( 1 )
 			case FB_TK_AS, CHAR_LPRNT, CHAR_COLON
-				if( not cTypeElementDecl( s ) ) then
+				if( cTypeElementDecl( s ) = FALSE ) then
 					exit function
 				end if
 
@@ -344,14 +344,14 @@ declinner:		'' it's an anonymous inner UDT
 			case else
 				lexSkipToken( )
 
-				if( not cTypeMultElementDecl( s ) ) then
+				if( cTypeMultElementDecl( s ) = FALSE ) then
 					exit function
 				end if
 			end select
 
 		'' anything else, must be a field
 		case else
-			if( not cTypeElementDecl( s ) ) then
+			if( cTypeElementDecl( s ) = FALSE ) then
 				exit function
 			end if
 
@@ -360,7 +360,7 @@ declinner:		'' it's an anonymous inner UDT
 		'' Comment? SttSeparator
 		cComment( )
 
-	    if( not cStmtSeparator( ) ) then
+	    if( cStmtSeparator( ) = FALSE ) then
 	    	hReportError( FB_ERRMSG_SYNTAXERROR )
 	    	exit function
 		end if
@@ -403,7 +403,7 @@ function cTypeDecl as integer static
 
 	'' ID
 	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
-    	if( not isunion ) then
+    	if( isunion = FALSE ) then
     		'' AS?
     		if( lexGetToken( ) = FB_TK_AS ) then
     			lexSkipToken( )
@@ -434,17 +434,17 @@ function cTypeDecl as integer static
     case FB_TK_FIELD
 		lexSkipToken( )
 
-		if( not hMatch( FB_TK_ASSIGN ) ) then
+		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
 			hReportError( FB_ERRMSG_SYNTAXERROR )
 			exit function
 		end if
 
-    	if( not cExpression( expr ) ) then
+    	if( cExpression( expr ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     		exit function
     	end if
 
-		if( not astIsCONST( expr ) ) then
+		if( astIsCONST( expr ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDCONST )
 			exit function
 		end if

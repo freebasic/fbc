@@ -173,7 +173,7 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 
 	function = FALSE
 
-	if( not env.clopt.errorcheck ) then
+	if( env.clopt.errorcheck = FALSE ) then
 		astAdd( resexpr )
 		return TRUE
 	end if
@@ -371,7 +371,7 @@ sub rtlErrorResume( byval isnext as integer )
     dim as FBSYMBOL ptr f
 
 	''
-	if( not isnext ) then
+	if( isnext = FALSE ) then
 		f = PROCLOOKUP( ERRORRESUME )
 	else
 		f = PROCLOOKUP( ERRORRESUMENEXT )

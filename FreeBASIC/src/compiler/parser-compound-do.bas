@@ -66,7 +66,7 @@ function cDoStatement as integer
 		lexSkipToken( )
 
 		'' Expression
-		if( not cExpression( expr ) ) then
+		if( cExpression( expr ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
@@ -106,20 +106,20 @@ function cDoStatement as integer
 	cComment( )
 
 	'' separator
-	if( not cStmtSeparator( ) ) then
+	if( cStmtSeparator( ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDEOL )
 		exit function
 	end if
 
 	'' loop body
 	do
-		if( not cSimpleLine( ) ) then
+		if( cSimpleLine( ) = FALSE ) then
 			exit do
 		end if
 	loop while( lexGetToken( ) <> FB_TK_EOF )
 
 	'' LOOP
-	if( not hMatch( FB_TK_LOOP ) ) then
+	if( hMatch( FB_TK_LOOP ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDLOOP )
 		exit function
 	end if
@@ -149,7 +149,7 @@ function cDoStatement as integer
 		lexSkipToken( )
 
 		'' Expression
-		if( not cExpression( expr ) ) then
+		if( cExpression( expr ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if

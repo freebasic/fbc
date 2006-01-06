@@ -36,7 +36,7 @@ private function hAllocWithVar( ) as FBSYMBOL ptr
     dim as integer dtype
 
     '' Variable
-    if( not cVarOrDeref( expr ) ) then
+    if( cVarOrDeref( expr ) = FALSE ) then
     	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
     	return NULL
     end if
@@ -91,7 +91,7 @@ function cWithStatement as integer
 	cComment( )
 
 	'' separator
-	if( not cStmtSeparator( ) ) then
+	if( cStmtSeparator( ) = FALSE ) then
 		env.withvar = oldvar
 		hReportError( FB_ERRMSG_EXPECTEDEOL )
 		exit function
@@ -103,7 +103,7 @@ function cWithStatement as integer
 
 	'' loop body
 	do
-		if( not cSimpleLine( ) ) then
+		if( cSimpleLine( ) = FALSE ) then
 			exit do
 		end if
 	loop while( lexGetToken( ) <> FB_TK_EOF )
@@ -115,7 +115,8 @@ function cWithStatement as integer
 	env.lastcompound = lastcompstmt
 
 	'' END WITH
-	if( (not hMatch( FB_TK_END )) or (not hMatch( FB_TK_WITH )) ) then
+	if( (hMatch( FB_TK_END ) = FALSE) or _
+		(hMatch( FB_TK_WITH ) = FALSE) ) then
 		hReportError( FB_ERRMSG_EXPECTEDENDWITH )
 		exit function
 	end if

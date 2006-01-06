@@ -51,7 +51,7 @@ function cScopeStatement as integer
 	cComment( )
 
 	'' separator
-	if( not cStmtSeparator( ) ) then
+	if( cStmtSeparator( ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDEOL )
 		exit function
 	end if
@@ -68,7 +68,7 @@ function cScopeStatement as integer
 
 	'' loop body
 	do
-		if( not cSimpleLine( ) ) then
+		if( cSimpleLine( ) = FALSE ) then
 			exit do
 		end if
 	loop while( lexGetToken( ) <> FB_TK_EOF )
@@ -87,7 +87,8 @@ function cScopeStatement as integer
 	env.lastcompound = lastcompstmt
 
 	'' END SCOPE
-	if( (not hMatch( FB_TK_END )) or (not hMatch( FB_TK_SCOPE )) ) then
+	if( (hMatch( FB_TK_END ) = FALSE) or _
+		(hMatch( FB_TK_SCOPE ) = FALSE) ) then
 		hReportError( FB_ERRMSG_EXPECTEDENDSCOPE )
 		exit function
 	end if

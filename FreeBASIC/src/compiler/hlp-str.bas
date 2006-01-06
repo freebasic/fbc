@@ -457,7 +457,7 @@ function hUnescapeStr( byval text as zstring ptr ) as zstring ptr static
     dim as integer c, lgt
     dim as zstring ptr src, dst, src_len
 
-	if( not env.opt.escapestr ) then
+	if( env.opt.escapestr = FALSE ) then
     	return text
     end if
 
@@ -496,7 +496,7 @@ function hUnescapeWstr( byval text as wstring ptr ) as wstring ptr static
     dim as integer c, lgt
     dim as wstring ptr src, dst, src_len
 
-	if( not env.opt.escapestr ) then
+	if( env.opt.escapestr = FALSE ) then
     	return text
     end if
 
@@ -538,7 +538,7 @@ function hEscapeToChar( byval text as zstring ptr ) as zstring ptr static
     dim as integer char, lgt, i
     dim as zstring ptr src, dst, src_len
 
-	if( not env.opt.escapestr ) then
+	if( env.opt.escapestr = FALSE ) then
     	return text
     end if
 
@@ -622,7 +622,7 @@ function hEscapeToCharW( byval text as wstring ptr ) as wstring ptr static
     dim as integer char, lgt, i
     dim as wstring ptr src, dst, src_len
 
-	if( not env.opt.escapestr ) then
+	if( env.opt.escapestr = FALSE ) then
     	return text
     end if
 
@@ -708,7 +708,7 @@ function hGetWstrNull( ) as zstring ptr
     static as zstring * FB_INTEGERSIZE*3+1 nullseq
     dim as integer i
 
-    if( not isset ) then
+    if( isset = FALSE ) then
     	isset = TRUE
     	nullseq = ""
     	for i = 1 to irGetDataSize( IR_DATATYPE_WCHAR )

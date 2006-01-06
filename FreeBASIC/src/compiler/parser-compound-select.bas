@@ -101,7 +101,7 @@ function cSelectStatement as integer
 	lexSkipToken( )
 
 	'' CASE
-	if( not hMatch( FB_TK_CASE ) ) then
+	if( hMatch( FB_TK_CASE ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDCASE )
 		exit function
 	end if
@@ -118,7 +118,7 @@ function cSelectStatement as integer
 	end if
 
 	'' Expression
-	if( not cExpression( expr ) ) then
+	if( cExpression( expr ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 		exit function
 	end if
@@ -133,7 +133,7 @@ function cSelectStatement as integer
 	cComment( )
 
 	'' separator
-	if( not cStmtSeparator( ) ) then
+	if( cStmtSeparator( ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDEOL )
 		exit function
 	end if
@@ -211,7 +211,7 @@ function cSelectStatement as integer
     	loop
 
     	'' CaseStatement
-    	if( not cCaseStatement( symbol, dtype, elabel ) ) then
+    	if( cCaseStatement( symbol, dtype, elabel ) = FALSE ) then
 	    	exit do
     	end if
 
@@ -221,7 +221,8 @@ function cSelectStatement as integer
     astAdd( astNewLABEL( elabel ) )
 
 	'' END SELECT
-	if( (not hMatch( FB_TK_END )) or (not hMatch( FB_TK_SELECT )) ) then
+	if( (hMatch( FB_TK_END ) = FALSE) or _
+		(hMatch( FB_TK_SELECT ) = FALSE) ) then
 		hReportError( FB_ERRMSG_EXPECTEDENDSELECT )
 		exit function
 	end if
@@ -262,7 +263,7 @@ function cCaseExpression( byref casectx as FBCASECTX ) as integer
 	end if
 
 	'' Expression
-	if( not cExpression( casectx.expr1 ) ) then
+	if( cExpression( casectx.expr1 ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 		exit function
 	end if
@@ -274,7 +275,7 @@ function cCaseExpression( byref casectx as FBCASECTX ) as integer
 			exit function
 		end if
 
-		if( not cExpression( casectx.expr2 ) ) then
+		if( cExpression( casectx.expr2 ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
@@ -311,7 +312,7 @@ private function hExecCaseExpr( byref casectx as FBCASECTX, _
 	if( casectx.typ <> FB_CASETYPE_RANGE ) then
         expr = NEWCASEVAR( s, sdtype )
 
-		if( not inverselogic ) then
+		if( inverselogic = FALSE ) then
 			expr = astNewBOP( casectx.op, _
 							  expr, _
 							  casectx.expr1, _
@@ -337,7 +338,7 @@ private function hExecCaseExpr( byref casectx as FBCASECTX, _
 
 		expr = NEWCASEVAR( s, sdtype )
 
-		if( not inverselogic ) then
+		if( inverselogic = FALSE ) then
 			expr = astNewBOP( IR_OP_LE, expr, casectx.expr2, initlabel, FALSE )
 		else
 			expr = astNewBOP( IR_OP_GT, expr, casectx.expr2, nextlabel, FALSE )
@@ -365,7 +366,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 	function = FALSE
 
 	'' CASE
-	if( not hMatch( FB_TK_CASE ) ) then
+	if( hMatch( FB_TK_CASE ) = FALSE ) then
 		exit function
 	end if
 
@@ -385,7 +386,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 			end if
 		end if
 
-		if( not cCaseExpression( ctx.sel.caseTB(cntbase + cnt) ) ) then
+		if( cCaseExpression( ctx.sel.caseTB(cntbase + cnt) ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
@@ -398,7 +399,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 	cComment( )
 
 	'' SttSeparator
-	if( not cStmtSeparator( ) ) then
+	if( cStmtSeparator( ) = FALSE ) then
 		exit function
 	end if
 
@@ -415,7 +416,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 		nl = symbAddLabel( NULL )
 
 		if( ctx.sel.caseTB(i).typ <> FB_CASETYPE_ELSE ) then
-			if( not hExecCaseExpr( ctx.sel.caseTB(i), s, sdtype, il, nl, i = cntbase ) ) then
+			if( hExecCaseExpr( ctx.sel.caseTB(i), s, sdtype, il, nl, i = cntbase ) = FALSE ) then
 				hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 				exit function
 			end if
@@ -427,7 +428,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 
 			'' SimpleLine*
 			do
-				if( not cSimpleLine( ) ) then
+				if( cSimpleLine( ) = FALSE ) then
 					exit do
 				end if
 			loop while( lexGetToken( ) <> FB_TK_EOF )
@@ -513,7 +514,7 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 	function = FALSE
 
 	'' CASE
-	if( not hMatch( FB_TK_CASE ) ) then
+	if( hMatch( FB_TK_CASE ) = FALSE ) then
 		exit function
 	end if
 
@@ -529,12 +530,12 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 
 		'' ConstExpression (COMMA ConstExpression (TO ConstExpression)?)*
 		do
-			if( not cExpression( expr1 ) ) then
+			if( cExpression( expr1 ) = FALSE ) then
 				hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 				exit function
 			end if
 
-			if( not astIsCONST( expr1 ) ) then
+			if( astIsCONST( expr1 ) = FALSE ) then
 				hReportError( FB_ERRMSG_EXPECTEDCONST )
 				exit function
 			end if
@@ -544,12 +545,12 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 
 			'' TO?
 			if( hMatch( FB_TK_TO ) ) then
-				if( not cExpression( expr2 ) ) then
+				if( cExpression( expr2 ) = FALSE ) then
 					hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 					exit function
 				end if
 
-				if( not astIsCONST( expr2 ) ) then
+				if( astIsCONST( expr2 ) = FALSE ) then
 					hReportError FB_ERRMSG_EXPECTEDCONST
 					exit function
 				end if
@@ -573,7 +574,7 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 					 end if
 
 					'' add item
-					if( not hSelConstAddCase( swtbase, value, label ) ) then
+					if( hSelConstAddCase( swtbase, value, label ) = FALSE ) then
 						exit function
 					end if
 				next
@@ -594,7 +595,7 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 				end if
 
 				'' add item
-				if( not hSelConstAddCase( swtbase, value, label ) ) then
+				if( hSelConstAddCase( swtbase, value, label ) = FALSE ) then
 					exit function
 				end if
 
@@ -611,13 +612,13 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 	cComment( )
 
 	'' SttSeparator
-	if( not cStmtSeparator( ) ) then
+	if( cStmtSeparator( ) = FALSE ) then
 		exit function
 	end if
 
 	'' SimpleLine*
 	do
-		if( not cSimpleLine( ) ) then
+		if( cSimpleLine( ) = FALSE ) then
 			exit do
 		end if
 	loop while( lexGetToken( ) <> FB_TK_EOF )
@@ -648,7 +649,7 @@ function cSelectConstStmt as integer
 	function = FALSE
 
 	'' Expression
-	if( not cExpression( expr ) ) then
+	if( cExpression( expr ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 		exit function
 	end if
@@ -662,7 +663,7 @@ function cSelectConstStmt as integer
     	select case astGetDataType( expr )
     	case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
     		'' don't allow, unless it's a deref pointer
-    		if( not astIsPTR( expr ) ) then
+    		if( astIsPTR( expr ) = FALSE ) then
     			hReportError( FB_ERRMSG_INVALIDDATATYPES )
     			exit function
     		end if
@@ -677,7 +678,7 @@ function cSelectConstStmt as integer
 	cComment( )
 
 	'' separator
-	if( not cStmtSeparator( ) ) then
+	if( cStmtSeparator( ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDEOL )
 		exit function
 	end if
@@ -716,7 +717,12 @@ function cSelectConstStmt as integer
     	loop
 
     	'' SelConstCaseStmt
-    	if( not cSelConstCaseStmt( swtbase, sym, exitlabel, minval, maxval, deflabel ) ) then
+    	if( cSelConstCaseStmt( swtbase, _
+    						   sym, _
+    						   exitlabel, _
+    						   minval, _
+    						   maxval, _
+    						   deflabel ) = FALSE ) then
 	    	exit do
     	end if
 
@@ -785,7 +791,8 @@ function cSelectConstStmt as integer
     astAdd( astNewLABEL( exitlabel ) )
 
 	'' END SELECT
-	if( (not hMatch( FB_TK_END )) or (not hMatch( FB_TK_SELECT )) ) then
+	if( (hMatch( FB_TK_END ) = FALSE) or _
+		(hMatch( FB_TK_SELECT ) = FALSE) ) then
 		hReportError( FB_ERRMSG_EXPECTEDENDSELECT )
 		exit function
 	end if

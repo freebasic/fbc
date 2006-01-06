@@ -67,7 +67,7 @@ private function hEmitIDX( byval n as ASTNODE ptr, _
 	'' ofs * length + difference (non-base 0 indexes) + offset (UDT's offset)
     s = var->sym
     ofs = n->idx.ofs
-	if( not symbGetIsDynamic( s ) ) then
+	if( symbGetIsDynamic( s ) = FALSE ) then
 		ofs += symbGetArrayDiff( s ) + var->var.ofs
 	else
 		s = NULL

@@ -34,12 +34,12 @@ function cConstExprValue( byref value as integer ) as integer
 
     function = FALSE
 
-    if( not cExpression( expr ) ) then
+    if( cExpression( expr ) = FALSE ) then
     	hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     	exit function
     end if
 
-	if( not astIsCONST( expr ) ) then
+	if( astIsCONST( expr ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDCONST )
 		exit function
 	end if
@@ -113,7 +113,7 @@ function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
 			exit function
 		end if
 
-    	if( not hMatch( CHAR_RPRNT ) ) then
+    	if( hMatch( CHAR_RPRNT ) = FALSE ) then
 			hReportError( FB_ERRMSG_SYNTAXERROR )
 			exit function
 		end if
@@ -121,7 +121,7 @@ function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
 
 	'' (AS SymbolType)?
 	if( hMatch( FB_TK_AS ) ) then
-		if( not cSymbolType( typ, subtype, lgt, ptrcnt ) ) then
+		if( cSymbolType( typ, subtype, lgt, ptrcnt ) = FALSE ) then
 			exit function
 		end if
 
@@ -250,7 +250,7 @@ function cSymbolType( byref typ as integer, _
 			lexSkipToken( )
 			lexSkipToken( )
 			typ = FB_SYMBTYPE_FIXSTR
-			if( not cConstExprValue( lgt ) ) then
+			if( cConstExprValue( lgt ) = FALSE ) then
 				exit function
 			end if
 
@@ -284,7 +284,7 @@ function cSymbolType( byref typ as integer, _
 		'' fixed-len?
 		if( lexGetToken( ) = CHAR_STAR ) then
 			lexSkipToken( )
-			if( not cConstExprValue( lgt ) ) then
+			if( cConstExprValue( lgt ) = FALSE ) then
 				exit function
 			end if
 
@@ -380,7 +380,7 @@ function cSymbolType( byref typ as integer, _
 		loop
 
         if( ptrcnt > 0 ) then
-			if( not allowptr ) then
+			if( allowptr = FALSE ) then
 				hReportError( FB_ERRMSG_SYNTAXERROR )
 				exit function
 			end if

@@ -108,7 +108,7 @@ private function hGetTarget( byref expr as ASTNODE ptr, _
 
 	expr = NULL
 	if( lexGetToken( ) <> CHAR_LPRNT ) then
-		if( not cVarOrDeref( expr, FALSE, TRUE ) ) then
+		if( cVarOrDeref( expr, FALSE, TRUE ) = FALSE ) then
 			exit function
 		end if
 	else
@@ -137,12 +137,12 @@ private function hGetTarget( byref expr as ASTNODE ptr, _
 		'' array?
 		if( symbIsArray( s ) ) then
 			'' no index given?
-			if( not astIsIDX( expr ) ) then
+			if( astIsIDX( expr ) = FALSE ) then
 				expr = hMakeArrayIndex( s, expr )
 			end if
 
 		'' not a ptr? fail..
-		elseif( not isptr ) then
+		elseif( isptr = FALSE ) then
 			exit function
 		end if
 	end if
@@ -238,7 +238,7 @@ function cGfxLine as integer
 	end if
 
 	'' '-'
-	if( not hMatch( CHAR_MINUS ) ) then
+	if( hMatch( CHAR_MINUS ) = FALSE ) then
 		hReportError FB_ERRMSG_EXPECTEDMINUS
 		exit function
 	end if
@@ -274,7 +274,7 @@ function cGfxLine as integer
 
 	'' (',' Expr? (',' LIT_STRING? (',' Expr )?)?)?
 	if( hMatch( CHAR_COMMA ) ) then
-		if( not cExpression( cexpr ) ) then
+		if( cExpression( cexpr ) = FALSE ) then
 			cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR_DATATYPE_UINT )
 		end if
 
@@ -350,25 +350,25 @@ function cGfxCircle as integer
 
 	'' (',' Expr? )? - color
 	if( hMatch( CHAR_COMMA ) ) then
-		if( not cExpression( cexpr ) ) then
+		if( cExpression( cexpr ) = FALSE ) then
 			cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR_DATATYPE_UINT )
 		end if
 
         '' (',' Expr? )? - iniarc
         if( hMatch( CHAR_COMMA ) ) then
-        	if( not cExpression( iniexpr ) ) then
+        	if( cExpression( iniexpr ) = FALSE ) then
         		iniexpr = NULL
         	end if
 
         	'' (',' Expr? )? - endarc
         	if( hMatch( CHAR_COMMA ) ) then
-        		if( not cExpression( endexpr ) ) then
+        		if( cExpression( endexpr ) = FALSE ) then
         			endexpr = NULL
         		end if
 
             	'' (',' Expr )? - aspect
             	if( hMatch( CHAR_COMMA ) ) then
-            		if( not cExpression( aspexpr ) ) then
+            		if( cExpression( aspexpr ) = FALSE ) then
             			aspexpr = NULL
             		end if
 
@@ -434,7 +434,7 @@ function cGfxPaint as integer
 
 	'' color/pattern
 	if( hMatch( CHAR_COMMA ) ) then
-		if( not cExpression( pexpr ) ) then
+		if( cExpression( pexpr ) = FALSE ) then
 			pexpr = NULL
 		end if
 
@@ -470,7 +470,7 @@ function cGfxDraw as integer
 
 	if( lexGetLookAhead( 1 ) = CHAR_COMMA ) then
 		target = hGetTarget( texpr, tisptr )
-		if( (target = NULL) and (not tisptr) ) then
+		if( (target = NULL) and (tisptr = FALSE) ) then
 			hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 			exit function
 		end if
@@ -519,7 +519,7 @@ function cGfxView( byval isview as integer ) as integer
 		hMatchRPRNT( )
 
 		'' '-'
-		if( not hMatch( CHAR_MINUS ) ) then
+		if( hMatch( CHAR_MINUS ) = FALSE ) then
 			hReportError FB_ERRMSG_EXPECTEDMINUS
 			exit function
 		end if
@@ -538,7 +538,7 @@ function cGfxView( byval isview as integer ) as integer
 		if( isview ) then
 			'' (',' Expr? )? - color
 			if( hMatch( CHAR_COMMA ) ) then
-				if( not cExpression( fillexpr ) ) then
+				if( cExpression( fillexpr ) = FALSE ) then
 					fillexpr = NULL
 				end if
 
@@ -579,7 +579,7 @@ function cGfxPalette as integer
 	if( hMatch( FB_TK_USING ) ) then
 
 		s = hGetTarget( arrayexpr, isptr )
-		if( (s = NULL) and (not isptr) ) then
+		if( (s = NULL) and (isptr = FALSE) ) then
             hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
             exit function
         end if
@@ -597,8 +597,8 @@ function cGfxPalette as integer
 			hMatchCOMMA( )
 
 			if( isget ) then
-				if( not cVarOrDeref( rexpr, FALSE, TRUE ) ) then
-		            hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
+				if( cVarOrDeref( rexpr, FALSE, TRUE ) = FALSE ) then
+		            hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		            exit function
 		        end if
 	        else
@@ -607,8 +607,8 @@ function cGfxPalette as integer
 
 			if( hMatch( CHAR_COMMA ) ) then
 				if( isget ) then
-					if( not cVarOrDeref( gexpr, FALSE, TRUE ) ) then
-			            hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
+					if( cVarOrDeref( gexpr, FALSE, TRUE ) = FALSE ) then
+			            hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			            exit function
 			        end if
 				else
@@ -618,8 +618,8 @@ function cGfxPalette as integer
 				hMatchCOMMA( )
 
 				if( isget ) then
-					if( not cVarOrDeref( bexpr, FALSE, TRUE ) ) then
-			            hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
+					if( cVarOrDeref( bexpr, FALSE, TRUE ) = FALSE ) then
+			            hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			            exit function
 			        end if
 				else
@@ -681,7 +681,7 @@ function cGfxPut as integer
 	hMatchCOMMA( )
 
 	s = hGetTarget( arrayexpr, isptr )
-	if( (s = NULL) and (not isptr) ) then
+	if( (s = NULL) and (isptr = FALSE) ) then
 		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		exit function
 	end if
@@ -699,7 +699,7 @@ function cGfxPut as integer
 			hMatchExpression( y1expr )
 			hMatchRPRNT( )
 
-			if( not hMatch( CHAR_MINUS ) ) then
+			if( hMatch( CHAR_MINUS ) = FALSE ) then
 				hReportError FB_ERRMSG_EXPECTEDMINUS
 				exit function
 			end if
@@ -710,7 +710,7 @@ function cGfxPut as integer
 			hMatchExpression( y2expr )
 			hMatchRPRNT( )
 
-			if( not hMatch( CHAR_COMMA ) ) then
+			if( hMatch( CHAR_COMMA ) = FALSE ) then
 				expectmode = FALSE
 			end if
 		end if
@@ -767,7 +767,7 @@ function cGfxPut as integer
 						exit function
 					end if
 
-					if( not symbIsProc( s ) ) then
+					if( symbIsProc( s ) = FALSE ) then
 						hReportError( FB_ERRMSG_TYPEMISMATCH )
 						exit function
 					end if
@@ -840,7 +840,7 @@ function cGfxGet as integer
 	hMatchRPRNT( )
 
 	'' '-'
-	if( not hMatch( CHAR_MINUS ) ) then
+	if( hMatch( CHAR_MINUS ) = FALSE ) then
 		hReportError FB_ERRMSG_EXPECTEDMINUS
 		exit function
 	end if
@@ -875,7 +875,7 @@ function cGfxGet as integer
 	hMatchCOMMA( )
 
 	s = hGetTarget( arrayexpr, isptr )
-	if( (s = NULL) and (not isptr) ) then
+	if( (s = NULL) and (isptr = FALSE) ) then
 		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		exit function
 	end if
@@ -903,28 +903,28 @@ function cGfxScreen as integer
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
-		if( not cExpression( dexpr ) ) then
+		if( cExpression( dexpr ) = FALSE ) then
 			dexpr = NULL
 		end if
 	end if
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
-		if( not cExpression( pexpr ) ) then
+		if( cExpression( pexpr ) = FALSE ) then
 			pexpr = NULL
 		end if
 	end if
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
-		if( not cExpression( fexpr ) ) then
+		if( cExpression( fexpr ) = FALSE ) then
 			fexpr = NULL
 		end if
 	end if
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
-		if( not cExpression( rexpr ) ) then
+		if( cExpression( rexpr ) = FALSE ) then
 			rexpr = NULL
 		end if
 	end if
@@ -955,28 +955,28 @@ function cGfxScreenRes as integer
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
-		if( not cExpression( dexpr ) ) then
+		if( cExpression( dexpr ) = FALSE ) then
 			dexpr = NULL
 		end if
 	end if
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
-		if( not cExpression( pexpr ) ) then
+		if( cExpression( pexpr ) = FALSE ) then
 			pexpr = NULL
 		end if
 	end if
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
-		if( not cExpression( fexpr ) ) then
+		if( cExpression( fexpr ) = FALSE ) then
 			fexpr = NULL
 		end if
 	end if
 
 	'' (',' Expr )?
 	if( hMatch( CHAR_COMMA ) ) then
-		if( not cExpression( rexpr ) ) then
+		if( cExpression( rexpr ) = FALSE ) then
 			rexpr = NULL
 		end if
 	end if
@@ -1008,7 +1008,7 @@ function cGfxPoint( byref funcexpr as ASTNODE ptr ) as integer
 
 		if( hMatch( CHAR_COMMA ) ) then
 			target = hGetTarget( texpr, tisptr )
-			if( (target = NULL) and (not tisptr) ) then
+			if( (target = NULL) and (tisptr = FALSE) ) then
 				hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 				exit function
 			end if

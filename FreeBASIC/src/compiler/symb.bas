@@ -117,7 +117,7 @@ end sub
 '':::::
 sub symbEnd
 
-    if( not symb.inited ) then
+    if( symb.inited = FALSE ) then
     	exit sub
     end if
 
@@ -335,7 +335,7 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
     s->name = NULL
     slen = len( *symbol )
     if( slen > 0 ) then
-    	if( not preservecase ) then
+    	if( preservecase = FALSE ) then
     		s->name = ZstrAllocate( slen )
     		hUcase( symbol, s->name )
     	else
@@ -369,7 +369,7 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
 
 		else
 			'' can be duplicated?
-			if( not hCanDuplicate( n, s ) ) then
+			if( hCanDuplicate( n, s ) = FALSE ) then
 				ZstrFree( s->name )
 				ZstrFree( s->alias )
 				if( delok ) then
@@ -445,7 +445,7 @@ function symbLookup( byval symbol as zstring ptr, _
     static as zstring * FB_MAXNAMELEN+1 sname
     dim as FBSYMBOL ptr s
 
-    if( not preservecase ) then
+    if( preservecase = FALSE ) then
     	hUcase( *symbol, sname )
     	s = hashLookup( @symb.symhash, @sname )
     else
@@ -680,7 +680,7 @@ function symbCalcLen( byval typ as integer, _
 		function = FB_STRDESCLEN
 
 	case FB_SYMBTYPE_USERDEF
-		if( not realsize ) then
+		if( realsize = FALSE ) then
 			function = subtype->lgt
 		else
 			function = subtype->udt.unpadlgt
@@ -766,7 +766,7 @@ sub symbFreeSymbol( byval s as FBSYMBOL ptr, _
     end if
 
     '' remove from symbol list
-    if( not movetoglob ) then
+    if( movetoglob = FALSE ) then
     	s->prev  = NULL
     	s->next  = NULL
     	ZstrFree( s->name )

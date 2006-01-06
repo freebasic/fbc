@@ -156,7 +156,7 @@ function ppPragma( ) as integer
 	lexSkipToken( )
 
     if( ispop ) then
-    	if( not pragmaPop( pragmaOpt(i).opt, value ) ) then
+    	if( pragmaPop( pragmaOpt(i).opt, value ) = FALSE ) then
     		exit function
     	end if
 
@@ -164,7 +164,8 @@ function ppPragma( ) as integer
 		value = FALSE
 
 		if( ispush ) then
-        	if( not pragmaPush( pragmaOpt(i).opt, fbGetOption( pragmaOpt(i).opt ) ) ) then
+        	if( pragmaPush( pragmaOpt(i).opt, _
+        					fbGetOption( pragmaOpt(i).opt ) ) = FALSE ) then
         		exit function
         	end if
 
@@ -188,7 +189,7 @@ function ppPragma( ) as integer
 
         if( value = FALSE ) then
         	'' expr
-        	if( not cConstExprValue( value ) ) then
+        	if( cConstExprValue( value ) = FALSE ) then
         		exit function
         	end if
         end if

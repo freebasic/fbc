@@ -228,7 +228,7 @@ function rtlLocate ( byval row_arg as ASTNODE ptr, _
     	exit function
     end if
 
-    if( not isfunc ) then
+    if( isfunc = FALSE ) then
     	dim reslabel as FBSYMBOL ptr
     	if( env.clopt.resumeerr ) then
     		reslabel = symbAddLabel( NULL )
@@ -272,7 +272,7 @@ function rtlWidthScreen ( byval width_arg as ASTNODE ptr, _
     	exit function
     end if
 
-    if( not isfunc ) then
+    if( isfunc = FALSE ) then
     	dim reslabel as FBSYMBOL ptr
     	if( env.clopt.resumeerr ) then
     		reslabel = symbAddLabel( NULL )
