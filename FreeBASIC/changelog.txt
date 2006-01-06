@@ -30,6 +30,7 @@ Version 0.16 Beta:
 - GFX PUT's CUSTOM callback couldn't be a pointer (v1c)
 - INPUT in Win32 was not printing the message to console (v1c)
 - resource files were not been passed inside quotes to GoRC (v1c)
+- __FILE__ couldn't be used in anything but Linux if it had a path and OPTION ESCAPE was on due the \'s (v1c)
 
 
 Version 0.15 Beta:
