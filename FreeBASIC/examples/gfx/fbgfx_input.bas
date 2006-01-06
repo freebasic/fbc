@@ -71,7 +71,7 @@ sub keyboard_demo
 		next i
 		screencopy 1, 0
 		
-	loop while not multikey(1)
+	loop while multikey(1) = 0
 	
 	while multikey(1): wend
 	while inkey$ <> "": wend
@@ -108,7 +108,7 @@ sub mouse_demo
 			center 20, "Wheel is at " + str$(z), 4
 		end if
 		screencopy 1, 0
-	loop while not multikey(1)
+	loop while multikey(1) = 0
 	
 	setmouse ,,1
 	while multikey(1): wend
@@ -168,6 +168,6 @@ sub joystick_demo
 			palette 1, hue, hue, hue
 		end if
 		screencopy 1, 0
-	loop while not multikey(1)
+	loop while multikey(1) = 0
 	
 end sub

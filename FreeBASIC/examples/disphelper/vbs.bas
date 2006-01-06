@@ -20,7 +20,7 @@ sub RunScript ( byval szRetIdentifier as LPWSTR, _
 			dhPutValue(scrCtl, ".AllowUI = %b", TRUE)
 			dhPutValue(scrCtl, ".UseSafeSubset = %b", FALSE)
 	
-			if( not pResult ) then
+			if( pResult = FALSE ) then
 				dhCallMethod( scrCtl, ".Eval(%T)", szScript )
 			else
 				dhGetValue( szRetIdentifier, pResult, scrCtl, ".Eval(%T)", szScript )
