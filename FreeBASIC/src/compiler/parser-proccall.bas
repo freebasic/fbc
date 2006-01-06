@@ -30,10 +30,11 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function hAssignFunctResult( byval proc as FBSYMBOL ptr, _
-							 byval expr as ASTNODE ptr ) as integer static
-    dim s as FBSYMBOL ptr
-    dim assg as ASTNODE ptr
+function hAssignFunctResult( byval proc as FBSYMBOL ptr _
+						   ) as integer static
+
+    dim as FBSYMBOL ptr s
+    dim as ASTNODE ptr assg, expr
 
     function = FALSE
 
@@ -42,6 +43,18 @@ function hAssignFunctResult( byval proc as FBSYMBOL ptr, _
     	hReportError( FB_ERRMSG_SYNTAXERROR )
     	exit function
     end if
+
+    '' set the context symbol to allow taking the address of overloaded
+    '' procs and also to allow anonymous UDT's
+    env.ctxsym = symbGetSubType( proc )
+
+	'' Expression
+	if( cExpression( expr ) = FALSE ) then
+		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
+		exit function
+	end if
+
+	env.ctxsym = NULL
 
     assg = astNewVAR( s, 0, symbGetType( s ), symbGetSubtype( s ) )
 
@@ -215,7 +228,7 @@ end function
 ''
 function cProcCallOrAssign as integer
 	dim as FBSYMBOL ptr s
-	dim as ASTNODE ptr expr, procexpr
+	dim as ASTNODE ptr procexpr
 	dim as integer dtype
 
 	function = FALSE
@@ -273,12 +286,7 @@ function cProcCallOrAssign as integer
 					exit function
 				end if
 
-				if( cExpression( expr ) = FALSE ) then
-					hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-					exit function
-				end if
-
-        		return hAssignFunctResult( env.currproc, expr )
+        		return hAssignFunctResult( env.currproc )
 			end if
 
 		end if
@@ -295,13 +303,7 @@ function cProcCallOrAssign as integer
 			lexSkipToken( )
 			lexSkipToken( )
 
-			'' Expression
-			if( cExpression( expr ) = FALSE ) then
-				hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-				exit function
-			end if
-
-        	return hAssignFunctResult( env.currproc, expr )
+        	return hAssignFunctResult( env.currproc )
 		end if
 	end select
 

@@ -217,8 +217,7 @@ declare function	cUpdPointer				( byval op as integer, _
 
 declare function 	cAssignment				( byval assgexpr as ASTNODE ptr ) as integer
 
-declare function 	hAssignFunctResult		( byval proc as FBSYMBOL ptr, _
-											  byval expr as ASTNODE ptr ) as integer
+declare function 	hAssignFunctResult		( byval proc as FBSYMBOL ptr ) as integer
 
 declare function 	cGfxStmt 				( ) as integer
 

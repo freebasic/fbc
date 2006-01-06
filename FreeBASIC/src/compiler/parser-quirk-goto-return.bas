@@ -31,7 +31,6 @@ option escape
 
 '':::::
 function cFuncReturn( byval checkexpr as integer = TRUE ) as integer
-    dim as ASTNODE ptr expr
 
     function = FALSE
 
@@ -41,9 +40,7 @@ function cFuncReturn( byval checkexpr as integer = TRUE ) as integer
 	end if
 
 	if( checkexpr ) then
-		hMatchExpression( expr )
-
-		if( hAssignFunctResult( env.currproc, expr ) = FALSE ) then
+		if( hAssignFunctResult( env.currproc ) = FALSE ) then
 			exit function
 		end if
 	end if
