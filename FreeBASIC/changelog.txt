@@ -11,6 +11,7 @@ Version 0.16 Beta:
 - anonymous UDT's that can be passed as parameters or used in assignments, like:
   "foo TYPE(1,2)" where foo was declared as "foo([mode] p as bar)" (v1c)
 - support for the optional "digits" argument in HEX(), OCT() and BIN() (and their wide-char versions) (v1c)
+- TYPE<symbol>(...) to allow anonymous UDT's to be passed to overloaded functions (v1c)
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)
@@ -32,6 +33,7 @@ Version 0.16 Beta:
 - resource files were not been passed inside quotes to GoRC (v1c)
 - __FILE__ couldn't be used in anything but Linux if it had a path and OPTION ESCAPE was on due the \'s (v1c)
 - anonymous UDT's (TYPE(...)) couldn't be used when setting function results (v1c)
+- assignment of different UDT types were been allowed (v1c)
 
 
 Version 0.15 Beta:
