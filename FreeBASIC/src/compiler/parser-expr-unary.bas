@@ -171,27 +171,56 @@ function cHighestPrecExpr( byref highexpr as ASTNODE ptr ) as integer
 end function
 
 '':::::
-'' AnonUDT			=	TYPE '(' ... ')'
+'' AnonUDT			=	TYPE ('<' Symbol '>')? '(' ... ')'
 function cAnonUDT( byref expr as ASTNODE ptr ) as integer
-    dim as FBSYMBOL ptr tmpsym
+    dim as FBSYMBOL ptr tmpsym, subtype
 
 	function = FALSE
-
-    if( env.ctxsym = NULL ) then
-		hReportError( FB_ERRMSG_SYNTAXERROR )
-		exit function
-    end if
-
-    if( symbIsUDT( env.ctxsym ) = FALSE ) then
-		hReportError( FB_ERRMSG_SYNTAXERROR )
-		exit function
-	end if
 
 	'' TYPE
 	lexSkipToken( )
 
+    '' ('<' Symbol '>')?
+    if( lexGetToken( ) = FB_TK_LT ) then
+    	lexSkipToken( )
+    	tmpsym = lexGetSymbol( )
+    	if( tmpsym = NULL ) then
+			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			exit function
+    	end if
+
+    	if( symbIsUDT( tmpsym ) = FALSE ) then
+			hReportError( FB_ERRMSG_INVALIDDATATYPES )
+			exit function
+    	end if
+
+    	subtype = tmpsym
+
+    	lexSkipToken( )
+
+    	'' '>'
+    	if( lexGetToken( ) <> FB_TK_GT ) then
+			hReportError( FB_ERRMSG_SYNTAXERROR )
+			exit function
+    	end if
+    	lexSkipToken( )
+
+    else
+    	subtype = env.ctxsym
+
+    	if( subtype = NULL ) then
+			hReportError( FB_ERRMSG_SYNTAXERROR, TRUE )
+			exit function
+    	end if
+
+    	if( symbIsUDT( subtype ) = FALSE ) then
+			hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+			exit function
+		end if
+    end if
+
 	'' create a temp var
-	tmpsym = symbAddTempVar( FB_SYMBTYPE_USERDEF, env.ctxsym )
+	tmpsym = symbAddTempVar( FB_SYMBTYPE_USERDEF, subtype )
 
     '' let the initializer do the rest..
     if( cSymbolInit( tmpsym ) = FALSE ) then
@@ -199,7 +228,7 @@ function cAnonUDT( byref expr as ASTNODE ptr ) as integer
     end if
 
     '' create a var expression
-    expr = astNewVAR( tmpsym, 0, FB_SYMBTYPE_USERDEF, env.ctxsym )
+    expr = astNewVAR( tmpsym, 0, FB_SYMBTYPE_USERDEF, subtype )
 
     function = TRUE
 

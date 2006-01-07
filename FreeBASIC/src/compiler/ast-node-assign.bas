@@ -124,6 +124,11 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
             	exit function
             end if
 
+        	'' different subtypes?
+			if( l->subtype <> proc->subtype ) then
+				exit function
+			end if
+
             '' fake l's type
             ldtype   = proc->proc.realtype
             lsubtype = NULL
@@ -131,6 +136,12 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 
 		'' both are UDT's, do a mem copy..
 		else
+
+        	'' different subtypes?
+			if( l->subtype <> r->subtype ) then
+				exit function
+			end if
+
 			return astNewMEM( IR_OP_MEMMOVE, l, r, symbGetUDTLen( l->subtype ) )
 		end if
 
