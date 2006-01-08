@@ -370,6 +370,11 @@ function cSubOrFuncHeader( byval issub as integer, _
 
     	symbSetAllocType( sym, alloctype )
 
+		'' ctor or dtor? even if private it should be always emitted
+		if( (alloctype and (FB_ALLOCTYPE_CONSTRUCTOR or FB_ALLOCTYPE_DESTRUCTOR)) > 0 ) then
+    		symbSetProcIsCalled( sym, TRUE )
+    	end if
+
     	'' return the prototype
     	proc = sym
     end if

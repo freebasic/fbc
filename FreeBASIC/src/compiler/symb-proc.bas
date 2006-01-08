@@ -483,6 +483,10 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 			proc->proc.ovl.next		= NULL
 			proc->proc.ovl.maxargs	= symbGetProcArgs( proc )
 		end if
+
+	'' ctor or dtor? even if private it should be always emitted
+	elseif( (alloctype and (FB_ALLOCTYPE_CONSTRUCTOR or FB_ALLOCTYPE_DESTRUCTOR)) > 0 ) then
+		proc->proc.iscalled = TRUE
 	end if
 
 	function = proc
