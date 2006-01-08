@@ -12,6 +12,17 @@
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkcontainer.bi"
 
+#define GTK_TYPE_TREE (gtk_tree_get_type ())
+#define GTK_TREE(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_TREE, GtkTree))
+#define GTK_TREE_CLASS(klass)(GTK_CHECK_CLASS_CAST ((klass), GTK_TYPE_TREE, GtkTreeClass))
+#define GTK_IS_TREE(obj) (GTK_CHECK_TYPE ((obj), GTK_TYPE_TREE))
+#define GTK_IS_TREE_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TREE))
+#define GTK_TREE_GET_CLASS(obj) (GTK_CHECK_GET_CLASS ((obj), GTK_TYPE_TREE, GtkTreeClass))
+
+#define GTK_IS_ROOT_TREE(obj) cast(GtkObject ptr, GTK_TREE(obj)->root_tree = cast(GtkObject ptr,obj))
+#define GTK_TREE_ROOT_TREE(obj) iif(GTK_TREE(obj)->root_tree, GTK_TREE(obj)->root_tree, GTK_TREE(obj))
+#define GTK_TREE_SELECTION_OLD(obj) (GTK_TREE_ROOT_TREE(obj)->selection)
+
 enum GtkTreeViewMode
 	GTK_TREE_VIEW_LINE
 	GTK_TREE_VIEW_ITEM

@@ -13,6 +13,13 @@
 #include once "gtk/gtk/gtkadjustment.bi"
 #include once "gtk/gtk/gtkoldeditable.bi"
 
+#define GTK_TYPE_TEXT (gtk_text_get_type ())
+#define GTK_TEXT(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_TEXT, GtkText))
+#define GTK_TEXT_CLASS(klass) (GTK_CHECK_CLASS_CAST ((klass), GTK_TYPE_TEXT, GtkTextClass))
+#define GTK_IS_TEXT(obj) (GTK_CHECK_TYPE ((obj), GTK_TYPE_TEXT))
+#define GTK_IS_TEXT_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TEXT))
+#define GTK_TEXT_GET_CLASS(obj) (GTK_CHECK_GET_CLASS ((obj), GTK_TYPE_TEXT, GtkTextClass))
+
 type GtkTextFont as _GtkTextFont
 type GtkPropertyMark as _GtkPropertyMark
 type GtkText as _GtkText
@@ -97,5 +104,9 @@ declare sub gtk_text_thaw cdecl alias "gtk_text_thaw" (byval text as GtkText ptr
 declare sub gtk_text_insert cdecl alias "gtk_text_insert" (byval text as GtkText ptr, byval font as GdkFont ptr, byval fore as GdkColor ptr, byval back as GdkColor ptr, byval chars as zstring ptr, byval length as gint)
 declare function gtk_text_backward_delete cdecl alias "gtk_text_backward_delete" (byval text as GtkText ptr, byval nchars as guint) as gboolean
 declare function gtk_text_forward_delete cdecl alias "gtk_text_forward_delete" (byval text as GtkText ptr, byval nchars as guint) as gboolean
+
+#define GTK_TEXT_INDEX(t, index) iif( (t)->use_wchar, _
+									  iif( (index) < (t)->gap_position, (t)->text.wc[index], (t)->text.wc[(index)+(t)->gap_size] ), _
+									  iif( (index) < (t)->gap_position, (t)->text.ch[index], (t)->text.ch[(index)+(t)->gap_size] ) )
 
 #endif
