@@ -72,7 +72,7 @@ data "VA_ARG", _
 data "VA_NEXT", _
 	 FALSE, _
 	 2, "A", "T", _
-	 FB_DEFTOK_TYPE_TEX, "(cptr(", _
+	 FB_DEFTOK_TYPE_TEX, "(cast(", _
 	 FB_DEFTOK_TYPE_ARG, 1, _
 	 FB_DEFTOK_TYPE_TEX, " ptr,", _
 	 FB_DEFTOK_TYPE_ARG, 0, _
