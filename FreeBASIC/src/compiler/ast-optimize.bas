@@ -977,8 +977,11 @@ private sub hOptToShift( byval n as ASTNODE ptr )
 									end if
 
 								case IR_OP_MOD
-									n->op.op = IR_OP_AND
-									r->con.val.int -= 1
+									'' unsigned types only
+									if( irIsSigned( n->l->dtype ) = FALSE ) then
+										n->op.op = IR_OP_AND
+										r->con.val.int -= 1
+									end if
 								end select
 							end if
 						end if
