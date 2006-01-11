@@ -18,15 +18,17 @@ declare function realfunc( ) as funcudt ptr
 	
 	dim as udttype t
 	
-	dim as any ptr p, pptr
+	dim as any ptr p
+	dim as any ptr ptr pptr
+	
 	p = @t
 	pptr = @p
 	
-	t.fparray = callocate( 11 * len( functype ) )
+	t.fparray = cast( any ptr ptr, callocate( 11 * len( functype ) ) )
 	
 	t.fparray[10] = @realfunc
 	
-	assert( cptr(udttype ptr, *cptr(any ptr ptr, pptr))->fparray[10]()->field = TEST_VAL )
+	assert( cast(udttype ptr, *cast(any ptr ptr, pptr))->fparray[10]()->field = TEST_VAL )
 	
 
 '':::::
