@@ -153,7 +153,7 @@ function WinMain(byval hInstance as HINSTANCE, _
 		.cbWndExtra    = 0
 	end with
 
-	if( not RegisterClassEx( @winClass ) ) then
+	if( RegisterClassEx( @winClass ) = FALSE ) then
 		return E_FAIL
 	end if
 
