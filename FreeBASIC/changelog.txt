@@ -34,6 +34,7 @@ Version 0.16 Beta:
 - __FILE__ couldn't be used in anything but Linux if it had a path and OPTION ESCAPE was on due the \'s (v1c)
 - anonymous UDT's (TYPE(...)) couldn't be used when setting function results (v1c)
 - assignment of different UDT types were been allowed (v1c)
+- power-of-2 MOD to AND optimizations can't be done in signed types without checks at runtime (v1c)
 
 
 Version 0.15 Beta:
