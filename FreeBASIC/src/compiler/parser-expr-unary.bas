@@ -30,6 +30,8 @@ option escape
 
 declare function 	cAnonUDT			( byref expr as ASTNODE ptr ) as integer
 
+declare function 	cCastingExpr		( byref expr as ASTNODE ptr ) as integer
+
 '':::::
 ''NegNotExpression=   ('-'|'+'|) ExpExpression
 ''				  |   NOT RelExpression
@@ -100,9 +102,12 @@ end function
 
 ''::::
 '' HighestPrecExpr=   AddrOfExpression
-''				  |	  DerefExpr FuncPtrOrDerefFields?
-''				  |	  PtrTypeCastingExpr FuncPtrOrDerefFields?
-''				  |   ParentExpression FuncPtrOrDerefFields?
+''				  |	  ( DerefExpr
+''				  	  |	CastingExpr
+''					  | PtrTypeCastingExpr
+''				  	  | ParentExpression
+''					  ) FuncPtrOrDerefFields?
+''				  |	  AnonUDT
 ''				  |   Atom .
 ''
 function cHighestPrecExpr( byref highexpr as ASTNODE ptr ) as integer
@@ -132,6 +137,12 @@ function cHighestPrecExpr( byref highexpr as ASTNODE ptr ) as integer
 		'' AddrOfExpression
 		case FB_TK_VARPTR, FB_TK_PROCPTR, FB_TK_SADD, FB_TK_STRPTR
 			return cAddrOfExpression( highexpr )
+
+		'' CastingExpr
+		case FB_TK_CAST
+			if( cCastingExpr( highexpr ) = FALSE ) then
+				exit function
+			end if
 
 		'' PtrTypeCastingExpr
 		case FB_TK_CPTR
@@ -235,70 +246,97 @@ function cAnonUDT( byref expr as ASTNODE ptr ) as integer
 end function
 
 '':::::
-'' PtrTypeCastingExpr	=   CPTR '(' SymbolType ',' Expression{int|uint|ptr} ')'
-''
-function cPtrTypeCastingExpr( byref castexpr as ASTNODE ptr ) as integer
-	dim as integer dtype, lgt, ptrcnt
-	dim as FBSYMBOL ptr subtype
-	dim as ASTNODE ptr expr
+private function hCast( byref expr as ASTNODE ptr, _
+						byval ptronly as integer _
+			  		  ) as integer
+
+    dim as integer dtype, lgt, ptrcnt
+    dim as FBSYMBOL ptr subtype
 
 	function = FALSE
 
-	'' CPTR
-	if( lexGetToken( ) <> FB_TK_CPTR ) then
-		exit function
-	end if
-
-	lexSkipToken( )
-
 	'' '('
-	if( hMatch( CHAR_LPRNT ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDLPRNT )
-		exit function
-	end if
+	hMatchLPRNT( )
 
-	'' SymbolType
-	if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
-		hReportError( FB_ERRMSG_SYNTAXERROR )
-		exit function
-	end if
+    '' DataType
+    if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+    	hReportError( FB_ERRMSG_SYNTAXERROR )
+    	exit function
+    end if
 
-	'' check if it's a pointer
-	if( dtype < IR_DATATYPE_POINTER ) then
-		hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
-		exit function
-	end if
-
-	'' ','
-	if( hMatch( CHAR_COMMA ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDCOMMA )
-		exit function
-	end if
-
-	'' Expression
-	if( cExpression( expr ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-		exit function
-	end if
-
-	select case astGetDataType( expr )
-	case IR_DATATYPE_INTEGER, IR_DATATYPE_UINT, is >= IR_DATATYPE_POINTER
-
-	case else
-		hReportError( FB_ERRMSG_EXPECTEDPOINTER )
+	'' check for invalid types
+	select case dtype
+	case FB_SYMBTYPE_VOID, FB_SYMBTYPE_FIXSTR
+		hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 		exit function
 	end select
 
-	'' ')'
-	if( hMatch( CHAR_RPRNT ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDRPRNT )
+	if( ptronly ) then
+		'' check if it's a pointer
+		if( dtype < IR_DATATYPE_POINTER ) then
+			hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
+			exit function
+		end if
+
+	else
+		if( dtype >= IR_DATATYPE_POINTER ) then
+			ptronly = TRUE
+		end if
+	end if
+
+	'' ','
+	hMatchCOMMA( )
+
+	'' expression
+	if( cExpression( expr ) = FALSE ) then
 		exit function
 	end if
 
-	'' convert to new type
-	castexpr = astNewCONV( IR_OP_TOPOINTER, dtype, subtype, expr )
+	if( ptronly ) then
+		select case astGetDataType( expr )
+		case IR_DATATYPE_INTEGER, IR_DATATYPE_UINT, is >= IR_DATATYPE_POINTER
 
-	function = (castexpr <> NULL)
+		case else
+			hReportError( FB_ERRMSG_EXPECTEDPOINTER )
+			exit function
+		end select
+	end if
+
+	expr = astNewCONV( iif( ptronly, IR_OP_TOPOINTER, INVALID ), _
+					   dtype, subtype, expr, TRUE )
+    if( expr = NULL ) Then
+    	hReportError( FB_ERRMSG_TYPEMISMATCH, TRUE )
+    	exit function
+    end if
+
+	'' ')'
+	hMatchRPRNT( )
+
+	function = TRUE
+
+end function
+
+'':::::
+'' CastingExpr	=	CAST '(' DataType ',' Expression ')'
+''
+function cCastingExpr( byref expr as ASTNODE ptr ) as integer
+
+	'' CAST
+	lexSkipToken( )
+
+	function = hCast( expr, FALSE )
+
+end function
+
+'':::::
+'' PtrTypeCastingExpr	=   CPTR '(' DataType ',' Expression{int|uint|ptr} ')'
+''
+function cPtrTypeCastingExpr( byref expr as ASTNODE ptr ) as integer
+
+	'' CPTR
+	lexSkipToken( )
+
+	function = hCast( expr, TRUE )
 
 end function
 

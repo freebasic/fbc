@@ -16,7 +16,7 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-'' quirk casting functions (CBYRE, CSHORT, CINT, ...) parsing
+'' quirk casting functions (CBYTE, CSHORT, CINT, ...) parsing
 ''
 '' chng: sep/2004 written [v1ctor]
 
@@ -27,55 +27,6 @@ option escape
 #include once "inc\fbint.bi"
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
-
-'':::::
-'' Casting		=	CAST '(' DataType ',' Expression ')'
-''
-private function hCasting( byref expr as ASTNODE ptr ) as integer
-    dim as integer dtype, lgt, ptrcnt
-    dim as FBSYMBOL ptr subtype
-
-	function = FALSE
-
-	'' CAST
-	lexSkipToken( )
-
-	'' '('
-	hMatchLPRNT( )
-
-    '' DataType
-    if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
-    	hReportError( FB_ERRMSG_SYNTAXERROR )
-    	exit function
-    end if
-
-	'' check for invalid types
-	select case dtype
-	case FB_SYMBTYPE_VOID, FB_SYMBTYPE_FIXSTR
-		hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-		exit function
-	end select
-
-	'' ','
-	hMatchCOMMA( )
-
-	'' expression
-	if( cExpression( expr ) = FALSE ) then
-		exit function
-	end if
-
-	expr = astNewCONV( INVALID, dtype, subtype, expr, TRUE )
-    if( expr = NULL ) Then
-    	hReportError( FB_ERRMSG_TYPEMISMATCH, TRUE )
-    	exit function
-    end if
-
-	'' ')'
-	hMatchRPRNT( )
-
-	function = TRUE
-
-end function
 
 '':::::
 ''TypeConvExpr		=    (C### '(' expression ')') .
@@ -119,8 +70,6 @@ function cTypeConvExpr( byref expr as ASTNODE ptr ) as integer
 		dtype = IR_DATATYPE_VOID				'' hack! /
 		op = IR_OP_TOUNSIGNED
 
-	case FB_TK_CAST
-		return hCasting( expr )
 	end select
 
 	if( dtype = INVALID ) then

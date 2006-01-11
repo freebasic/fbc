@@ -148,8 +148,7 @@ function cQuirkFunction( byref funcexpr as ASTNODE ptr ) as integer
 	case FB_TK_CBYTE, FB_TK_CSHORT, FB_TK_CINT, FB_TK_CLNG, FB_TK_CLNGINT, _
 		 FB_TK_CUBYTE, FB_TK_CUSHORT, FB_TK_CUINT, FB_TK_CULNGINT, _
 		 FB_TK_CSNG, FB_TK_CDBL, _
-         FB_TK_CSIGN, FB_TK_CUNSG, _
-         FB_TK_CAST
+         FB_TK_CSIGN, FB_TK_CUNSG
 		res = cTypeConvExpr( funcexpr )
 
 	case FB_TK_VIEW
