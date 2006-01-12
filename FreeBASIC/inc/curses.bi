@@ -699,8 +699,8 @@ declare function nodelay cdecl alias "nodelay" (byval as WINDOW ptr, byval as in
 #define instr_(s)               winnstr(stdscr,s,stdscr->_maxx)
 #define isendwin()              iif( SP->alive, FALSE, TRUE )
 #define is_termresized()        SP->resized
-#define keypad(w,flag)          (w->_use_keypad  = flag, PDC_OK)
-#define leaveok(w,flag)         (w->_leaveit = flag, PDC_OK)
+#define keypad(w,flag)          w->_use_keypad = flag
+#define leaveok(w,flag)         w->_leaveit = flag
 #define move(y,x)               wmove( stdscr, y, x )
 #define mvaddch(y,x,c)          iif( move( y, x ) = PDC_ERR, PDC_ERR, addch( c ) )
 #define mvaddchstr(y,x,c)       iif( move( y, x ) = PDC_ERR, PDC_ERR, addchnstr( c, -1 ) )
