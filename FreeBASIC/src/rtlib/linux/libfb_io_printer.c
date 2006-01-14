@@ -62,6 +62,25 @@ int fb_PrinterWrite( void *pvHandle, const void *data, size_t length )
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
+int fb_PrinterWriteWstr( void *pvHandle, const FB_WCHAR *buffer, size_t chars )
+{
+    FILE *fp = (FILE *)pvHandle;
+
+	/* !!!FIXME!!! is this ok? */
+    int bytes;
+    char *temp = alloca( chars * 4 + 1 );
+
+    fb_WCharToUTF( FB_FILE_ENCOD_UTF8, buffer, chars, temp, &bytes );
+    /* add null-term */
+    temp[bytes] = '\0';
+
+    if( fwrite( temp, bytes, 1, fp ) != 1 )
+        return fb_ErrorSetNum( FB_RTERROR_FILEIO );
+
+    return fb_ErrorSetNum( FB_RTERROR_OK );
+}
+
+
 int fb_PrinterClose( void *pvHandle )
 {
     FILE *fp = (FILE*) pvHandle;

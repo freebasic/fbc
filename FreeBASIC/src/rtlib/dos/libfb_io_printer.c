@@ -62,6 +62,20 @@ int fb_PrinterWrite( void *pvHandle, const void *data, size_t length )
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
+int fb_PrinterWriteWstr( void *pvHandle, const FB_WCHAR *data, size_t length )
+{
+    /* !!!FIXME!!! no support for unicode output */
+
+    char *temp = alloca( length + 1 );
+
+    if( length > 0 )
+    	fb_wstr_ConvToA( temp, data, length );
+    else
+    	*temp = '\0';
+
+    return fb_PrinterWrite( pvHandle, (void *)temp, length );
+}
+
 int fb_PrinterClose( void *pvHandle )
 {
     FILE *fp = (FILE*) pvHandle;
