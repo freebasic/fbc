@@ -45,7 +45,7 @@ INCLUDES = -I$(srcdir) -I$(srcdir)/@FBRT_TARGET@ -I.
 
 ifdef MULTITHREADED
 	FBRT_LIB = libfbmt.a
-	CFLAGS += -DMULTITHREADED
+	DEFS += -DMULTITHREADED
 	FBRT_OBJDEST = mt
 else
 	FBRT_LIB = libfb.a
