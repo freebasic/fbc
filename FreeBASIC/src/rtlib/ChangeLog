@@ -1,0 +1,4 @@
+2006-01-15  Andre Victor  <av1ctor@yahoo.com.br>
+
+	* configure.ac: Initial port to GNU autotools
+

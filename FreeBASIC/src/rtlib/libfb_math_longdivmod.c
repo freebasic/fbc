@@ -29,6 +29,10 @@ along with GCC; see the file COPYING.  If not, write to the Free
 Software Foundation, 59 Temple Place - Suite 330, Boston, MA
 02111-1307, USA.  */
 
+#if HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #ifdef TARGET_X86
 #	define WORDS_BIG_ENDIAN 0
 #	define BITS_PER_UNIT 8
