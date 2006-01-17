@@ -1,0 +1,208 @@
+# @configure_input@
+# Makefile for the FreeBASIC Compiler.
+# Run 'configure' to generate Makefile from Makefile.in
+
+##################################################################
+
+@SET_MAKE@
+
+AR = ar
+ARFLAGS = cru
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOHEADER = @AUTOHEADER@
+CC = @CC@
+CFLAGS = @CFLAGS@
+DEFS = @DEFS@
+WARN_CFLAGS = @WARN_CFLAGS@ @WARN_PEDANTIC@ @WERROR@
+CPP = @CPP@
+CPPFLAGS = @CPPFLAGS@
+EXEEXT = @EXEEXT@
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+LDFLAGS = @LDFLAGS@
+LIBICONV = @LIBICONV@
+PACKAGE = @PACKAGE@
+RANLIB = @RANLIB@
+SHELL = @SHELL@
+VPATH = @srcdir@
+
+datadir = @datadir@
+exec_prefix = @prefix@
+libdir = @libdir@
+localedir = $(datadir)/locale
+prefix = @prefix@
+srcdir = @srcdir@
+top_builddir = .
+
+FBC = @FBC@
+
+# !!!FIXME!!! -arch can't be assumed, using target_cpu will give "686" for example, 
+#			  making fbc to fail in non mmx-cpu's
+FBC_CFLAGS = -e -c -i $(srcdir) -arch 486
+
+FBC_LFLAGS := -v
+
+ifdef DEBUG
+    FBC_CFLAGS += -g
+    FBC_LFLAGS += -g
+endif
+
+##################################################################
+
+# !!!FIXME!!! can't use $(DEFS) directly because FB doesn't accept cmd-line options in GCC's format
+
+ifeq (@FBC_TARGET@,dos)
+	FBC_OSDEPSRCS := fbc_dos.bas
+    DEFS := -d TARGET_DOS -d TARGET_X86
+endif
+
+ifeq (@FBC_TARGET@,linux)
+	FBC_OSDEPSRCS := fbc_linux.bas
+    DEFS := -d TARGET_LINUX -d TARGET_X86
+endif
+
+ifeq (@FBC_TARGET@,cygwin)
+	FBC_OSDEPSRCS := fbc_cyg.bas
+    DEFS := -d TARGET_CYGWIN -d TARGET_X86
+endif
+
+ifeq (@FBC_TARGET@,win32)
+	FBC_OSDEPSRCS := fbc_win32.bas fbc_dos.bas fbc_linux.bas fbc_xbox.bas fbc_cyg.bas
+    DEFS := -d TARGET_WIN32 -d TARGET_X86 -d CROSSCOMP_DOS -d CROSSCOMP_XBOX -d CROSSCOMP_LINUX -d CROSSCOMP_CYGWIN
+endif
+
+ifeq (@FBC_TARGET@,xbox)
+	FBC_OSDEPSRCS := fbc_xbox.bas
+	DEFS := -d TARGET_XBOX -d TARGET_X86
+endif
+
+##################################################################
+
+FBC_MAIN := fbc.bas
+
+FBC_COMP = $(subst .bas,_new$(EXEEXT),$(FBC_MAIN))
+
+FBC_SRCS := $(FBC_MAIN)
+
+FBC_SRCS += ast.bas ast-node-addr.bas ast-node-assign.bas ast-node-bop.bas
+FBC_SRCS += ast-node-branch.bas ast-node-check.bas ast-node-const.bas ast-node-conv.bas
+FBC_SRCS += ast-node-enum.bas ast-node-funct.bas ast-node-idx.bas ast-node-iif.bas
+FBC_SRCS += ast-node-link.bas ast-node-load.bas ast-node-misc.bas ast-node-ptr.bas
+FBC_SRCS += ast-node-stack.bas ast-node-uop.bas ast-node-var.bas ast-node-field.bas
+FBC_SRCS += ast-optimize.bas
+
+FBC_SRCS += dstr.bas edbg_stab.bas emit.bas emit_x86.bas fb.bas flist.bas hash.bas
+FBC_SRCS += error.bas hlp.bas hlp-str.bas ir.bas list.bas
+
+FBC_SRCS += lex.bas lex-utf.bas pp.bas pp-cond.bas pp-define.bas pp-pragma.bas
+
+FBC_SRCS += parser-assignment.bas parser-comment.bas parser-decl-const.bas parser-decl-def.bas
+FBC_SRCS += parser-decl-enum.bas parser-decl-option.bas parser-decl-proc-params.bas parser-decl-proc.bas
+FBC_SRCS += parser-decl-struct.bas parser-decl-symb-init.bas parser-decl-symb.bas parser-decl-symbtype.bas
+FBC_SRCS += parser-decl-typedef.bas parser-decl.bas parser-inlineasm.bas parser-label.bas
+FBC_SRCS += parser-proccall-args.bas parser-proccall.bas parser-statement.bas parser-toplevel.bas
+FBC_SRCS += parser-compound.bas parser-compound-do.bas parser-compound-for.bas
+FBC_SRCS += parser-compound-if.bas parser-compound-scope.bas parser-compound-select.bas
+FBC_SRCS += parser-compound-while.bas parser-compound-with.bas parser-proc.bas
+FBC_SRCS += parser-quirk-array.bas parser-quirk-casting.bas parser-quirk-console.bas
+FBC_SRCS += parser-quirk-data.bas parser-quirk-error.bas parser-quirk-file.bas
+FBC_SRCS += parser-quirk-goto-return.bas parser-quirk-iif.bas parser-quirk-math.bas
+FBC_SRCS += parser-quirk-on.bas parser-quirk-peekpoke.bas parser-quirk-string.bas
+FBC_SRCS += parser-quirk-vafirst.bas parser-quirk.bas parser-quirk-gfx.bas
+FBC_SRCS += parser-expr-atom.bas parser-expr-binary.bas parser-expr-constant.bas
+FBC_SRCS += parser-expr-function.bas parser-expr-unary.bas parser-expr-variable.bas
+
+FBC_SRCS += reg.bas
+
+FBC_SRCS += rtl.bas rtl-array.bas rtl-console.bas rtl-data.bas rtl-error.bas
+FBC_SRCS += rtl-file.bas rtl-gfx.bas rtl-macro.bas rtl-math.bas rtl-mem.bas
+FBC_SRCS += rtl-print.bas rtl-profile.bas rtl-string.bas rtl-system.bas
+
+FBC_SRCS += symb.bas symb-const.bas symb-define.bas symb-enum.bas symb-keyword.bas
+FBC_SRCS += symb-label.bas symb-lib.bas symb-proc.bas symb-scope.bas symb-struct.bas
+FBC_SRCS += symb-typedef.bas symb-var.bas symb-bitfield.bas
+
+FBC_SRCS += $(FBC_OSDEPSRCS)
+
+FBC_OBJS := $(patsubst %.bas,%.o,$(FBC_SRCS))
+FBC_HEADERS := $(wildcard @srcdir@/inc/*.bi)
+
+FBC_CFLAGS += -m $(subst .bas,,$(FBC_MAIN))
+
+##################################################################
+
+all: $(FBC_COMP)
+
+.SUFFIXES:
+.SUFFIXES: .bas $(EXEEXT)
+
+%.o : %.bas $(FBC_HEADERS)
+	$(FBC) $(FBC_CFLAGS) $(DEFS) $< -o $@
+	
+$(FBC_COMP) : $(FBC_OBJS)
+	$(FBC) $(FBC_LFLAGS) $(DEFS) $(FBC_OBJS) -x $@
+	
+
+##################################################################
+
+# Rules to rebuild the configuration
+
+Makefile: $(srcdir)/Makefile.in config.status
+	$(SHELL) ./config.status Makefile
+
+config.status: $(srcdir)/configure
+	$(SHELL) ./config.status --recheck
+
+$(srcdir)/configure: @MAINT@ $(srcdir)/aclocal.m4
+	cd $(srcdir) && $(AUTOCONF)
+
+$(srcdir)/aclocal.m4: @MAINT@ $(srcdir)/../config/acx.m4 \
+	$(srcdir)/../config/warnings.m4 \
+	$(srcdir)/configure.ac
+	cd $(srcdir) && $(ACLOCAL) -I ../config
+
+stamp-h1: config.status
+	-rm -f stamp-h1
+	$(SHELL) ./config.status
+
+# Other miscellaneous targets.
+
+mostlyclean:
+	-rm -rf $(FBC_OBJS)
+
+clean: mostlyclean
+	-rm -rf makedepend$(EXEEXT) $(FBC_COMP) $(srcdir)/autom4te.cache
+
+distclean: clean
+	-rm -f stamp-h1 config.status config.cache config.log \
+	  configure.lineno configure.status.lineno Makefile localedir.h \
+	  localedir.hs
+
+maintainer-clean: distclean
+	@echo "This command is intended for maintainers to use"
+	@echo "it deletes files that may require special tools to rebuild."
+	-rm -f $(srcdir)/configure $(srcdir)/aclocal.m4
+
+check:
+installcheck:
+dvi:
+html:
+info:
+install-info:
+install-man:
+install:
+
+.PHONY: installdirs install install-strip mostlyclean clean distclean \
+  maintainer-clean check installcheck dvi html info install-info \
+  install-man update-po
+
+COMPILE = $(CC) $(DEFS) $(ALL_CFLAGS) -c
+
+# Implicit rules
+
+.c.o:
+	$(COMPILE) $<
+
+.NOEXPORT:
