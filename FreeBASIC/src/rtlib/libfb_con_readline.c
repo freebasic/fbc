@@ -92,11 +92,8 @@ void fb_ConReadLineEx( FBSTRING *dst )
         size_t delete_char_count = 0, add_char = FALSE;
         FBSTRING *sTmp;
 
-        while( !fb_KeyHit() ) {
-            /* release time slice - does this work on other platforms the
-             * same way? */
-            fb_Delay(25);
-        }
+        while( fb_KeyHit( ) == 0 )
+           	fb_Delay( 25 );				/* release time slice */
 
         sTmp = fb_Inkey( );
         if( sTmp->data != NULL )

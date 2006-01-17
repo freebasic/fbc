@@ -44,15 +44,19 @@ int fb_DevScrnReadWstr( struct _FB_FILE *handle, FB_WCHAR *dst, size_t *pchars )
 
     info = (DEV_SCRN_INFO*) FB_HANDLE_DEREF(handle)->opaque;
 
-    while( chars != 0 )
+    while( chars > 0 )
     {
         int len = info->length / sizeof( FB_WCHAR );
         copy_chars = (chars > len) ? len : chars;
         if( copy_chars == 0 )
         {
+        	while( fb_KeyHit( ) == 0 )
+           		fb_Delay( 25 );				/* release time slice */
+
             fb_DevScrnFillInput( info );
             if( info->length != 0 )
                 continue;
+
             break;
         }
 

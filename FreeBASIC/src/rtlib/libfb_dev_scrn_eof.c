@@ -37,14 +37,18 @@ void fb_DevScrnFillInput( DEV_SCRN_INFO *info )
     size_t len;
 
     str = fb_Inkey( );
-    len = FB_STRSIZE( str );
+    if( str != NULL )
+    {
+    	len = FB_STRSIZE( str );
+	    if( (str->data != NULL) && (len > 0) )
+	    {
+	    	DBG_ASSERT(len < sizeof(info->buffer));
+    		/* copy null-term too */
+    		memcpy( info->buffer, str->data, len+1 );
+    	}
 
-    DBG_ASSERT(len < sizeof(info->buffer));
-
-    /* copy null-term too */
-    memcpy( info->buffer, str->data, len+1 );
-
-    fb_hStrDelTemp( str );
+    	fb_hStrDelTemp( str );
+    }
 
     info->length = len;
 }

@@ -45,12 +45,17 @@ int fb_DevScrnRead( struct _FB_FILE *handle, void* value, size_t *pLength )
 
     info = (DEV_SCRN_INFO*) FB_HANDLE_DEREF(handle)->opaque;
 
-    while( length!=0 ) {
+    while( length > 0 ) {
         copy_length = (length > info->length) ? info->length : length;
         if (copy_length==0) {
+
+        	while( fb_KeyHit( ) == 0 )
+           		fb_Delay( 25 );				/* release time slice */
+
             fb_DevScrnFillInput( info );
-            if( info->length!=0 )
+            if( info->length != 0 )
                 continue;
+
             break;
         }
         memcpy(pachBuffer, info->buffer, copy_length);
