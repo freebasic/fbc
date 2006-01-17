@@ -7,7 +7,9 @@ AC_PREREQ([2.59])
 AC_COPYRIGHT([Copyright (c) 2004-2006 Andre Victor T. Vicentini (av1ctor@yahoo.com.br) and others])
 
 AC_CONFIG_SRCDIR([fb.h])
+AC_CONFIG_AUX_DIR([../config])
 
+# Find target
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
