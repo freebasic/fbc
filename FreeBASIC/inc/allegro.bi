@@ -1154,7 +1154,7 @@ Extern Import three_finger_flag Alias "three_finger_flag" As Integer
 Extern Import key_led_flag Alias "key_led_flag" As Integer
 
 Extern Import num_joysticks Alias "num_joysticks" As Integer
-Extern Import joy Alias "joy" As JOYSTICK_INFO Ptr
+Extern Import joy(0 to MAX_JOYSTICKS-1) Alias "joy" As JOYSTICK_INFO
 
 Extern Import gfx_capabilities Alias "gfx_capabilities" As Integer
 
