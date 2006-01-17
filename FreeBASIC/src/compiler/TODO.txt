@@ -1,5 +1,3 @@
-[ ] input$(n) is broken
-
 [ ] add the wstring type:
     - fb_ConsoleInput() won't call fb_DevScrnInit_ReadWstr( ), so an input to a
       wstring won't work.. to not bloat the fucker the compiler should have to

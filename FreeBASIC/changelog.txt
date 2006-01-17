@@ -37,6 +37,7 @@ Version 0.16 Beta:
 - assignment of different UDT types were been allowed (v1c)
 - power-of-2 MOD to AND optimizations can't be done in signed types without checks at runtime (v1c)
 - field dereference couldn't be used with CAST( ... ptr, ... ) (v1c)
+- INPUT$(n) was crashing when reading from console (v1c)
 
 
 Version 0.15 Beta:
