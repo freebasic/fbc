@@ -1,0 +1,167 @@
+# @configure_input@
+# Makefile for the FB GFX Library. 
+# Run 'configure' to generate Makefile from Makefile.in
+
+##################################################################
+
+@SET_MAKE@
+
+AR = ar
+ARFLAGS = cru
+ACLOCAL = @ACLOCAL@
+AUTOCONF = @AUTOCONF@
+AUTOHEADER = @AUTOHEADER@
+CC = @CC@
+CFLAGS = @CFLAGS@
+DEFS = @DEFS@
+WARN_CFLAGS = @WARN_CFLAGS@ @WARN_PEDANTIC@ @WERROR@
+CPP = @CPP@
+CPPFLAGS = @CPPFLAGS@
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+LDFLAGS = @LDFLAGS@
+LIBICONV = @LIBICONV@
+PACKAGE = @PACKAGE@
+RANLIB = @RANLIB@
+SHELL = @SHELL@
+VPATH = @srcdir@ @srcdir@/@FBRT_TARGET@
+
+datadir = @datadir@
+exec_prefix = @prefix@
+libdir = @libdir@
+localedir = $(datadir)/locale
+prefix = @prefix@
+srcdir = @srcdir@
+top_builddir = .
+
+##################################################################
+
+ifdef DEBUG
+    DEFS += -DDEBUG
+endif
+
+INCLUDES = -I$(srcdir) -I$(srcdir)/@FBRT_TARGET@ -I.
+
+FBRT_LIB = libfbgfx.a
+FBRT_OBJDEST = .
+
+ifeq (@FBRT_TARGET@,xbox)
+    DEFS += -DENABLE_XBOX -DDISABLE_CDROM
+    CFLAGS += -std=gnu99 -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-exceptions -mno-cygwin -march=i386 
+    INCLUDES = -I$(OPENXDK)/i386-pc-xbox/include -I$(OPENXDK)/include -I$(OPENXDK)/include/SDL
+endif
+
+ALL_CFLAGS = $(CFLAGS) $(CPPFLAGS) $(INCLUDES) # $(WARN_CFLAGS) 
+
+##################################################################
+
+FBRT_OBJS := $(patsubst @srcdir@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/*.c))
+FBRT_OBJS += $(patsubst @srcdir@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/*.s))
+FBRT_OSDEPOBJS := $(patsubst @srcdir@(srcdir)/@FBRT_TARGET@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_TARGET@/*.c))
+FBRT_OSDEPOBJS += $(patsubst @srcdir@/@FBRT_TARGET@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_TARGET@/*.s))
+FBRT_HEADERS := $(wildcard @srcdir@/*.h)
+FBRT_HEADERS += $(wildcard @srcdir@/@FBRT_TARGET@/*.h)
+
+FBRT_TOOLSOBJS := $(patsubst @srcdir@/tools/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/tools/*.c))
+FBRT_TOOLS     := $(patsubst $(FBRT_OBJDEST)/%.o,$(FBRT_OBJDEST)/%$(EXEEXT),$(FBRT_TOOLSOBJS))
+FBRT_DATAFILES := $(wildcard @srcdir@/data/*.fnt) $(wildcard @srcdir@/data/*.pal)
+
+##################################################################
+
+all: $(FBRT_TOOLS) $(FBRT_LIB)
+
+.SUFFIXES:
+.SUFFIXES: .c .s .o $(EXEEXT)
+
+$(FBRT_OBJDEST)/%.o : %.c $(FBRT_HEADERS)
+	$(COMPILE) $< -o $@
+
+$(FBRT_OBJDEST)/%.o : %.s
+	$(CC) -x assembler-with-cpp -c $(CFLAGS) $< -o $@
+
+$(FBRT_LIB) : $(FBRT_OBJS) $(FBRT_OSDEPOBJS)
+	$(AR) $(ARFLAGS) $(FBRT_LIB) $(FBRT_OBJS) $(FBRT_OSDEPOBJS)
+	$(RANLIB) $(FBRT_LIB)
+
+@srcdir@/libfb_gfx_data.c: $(FBRT_OBJDEST)/mk_dat$(EXEEXT) @srcdir@/data/data.lst $(FBRT_DATAFILES)
+	$(FBRT_OBJDEST)/mk_dat$(EXEEXT) -o $@ -I @srcdir@/data
+
+$(FBRT_OBJDEST)/mk_dat$(EXEEXT): $(FBRT_OBJDEST)/mk_dat.o $(FBRT_OBJDEST)/libfb_gfx_lzw.o $(FBRT_OBJDEST)/libfb_gfx_vars.o
+
+$(FBRT_OBJDEST)/%$(EXEEXT): $(FBRT_OBJDEST)/%.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+$(FBRT_OBJDEST)/%.o: @srcdir@/tools/%.c
+	$(COMPILE) -o $@ $<
+
+
+##################################################################
+
+# Rules to rebuild the configuration
+
+Makefile: $(srcdir)/Makefile.in config.status
+	$(SHELL) ./config.status Makefile
+
+config.status: $(srcdir)/configure
+	$(SHELL) ./config.status --recheck
+
+$(srcdir)/configure: @MAINT@ $(srcdir)/aclocal.m4
+	cd $(srcdir) && $(AUTOCONF)
+
+$(srcdir)/aclocal.m4: @MAINT@ $(srcdir)/../config/acx.m4 \
+	$(srcdir)/../config/warnings.m4 \
+	$(srcdir)/configure.ac
+	cd $(srcdir) && $(ACLOCAL) -I ../config
+
+config.h: stamp-h1
+	test -f config.h || (rm -f stamp-h1 && $(MAKE) stamp-h1)
+
+stamp-h1: $(srcdir)/config.in config.status
+	-rm -f stamp-h1
+	$(SHELL) ./config.status config.h
+
+$(srcdir)/config.in: @MAINT@ $(srcdir)/configure
+	cd $(srcdir) && $(AUTOHEADER)
+	-rm -f stamp-h1
+
+# Other miscellaneous targets.
+
+mostlyclean:
+	-rm -rf $(FBRT_OBJS) $(FBRT_OSDEPOBJS)
+	-rm -f $(srcdir)/data/data.dat $(srcdir)/libfb_gfx_data.c
+
+clean: mostlyclean
+	-rm -rf makedepend$(EXEEXT) $(FBRT_LIB) $(srcdir)/autom4te.cache
+
+distclean: clean
+	-rm -f config.h stamp-h1 config.status config.cache config.log \
+	  configure.lineno configure.status.lineno Makefile localedir.h \
+	  localedir.hs
+
+maintainer-clean: distclean
+	@echo "This command is intended for maintainers to use"
+	@echo "it deletes files that may require special tools to rebuild."
+	-rm -f $(srcdir)/configure $(srcdir)/aclocal.m4
+
+check:
+installcheck:
+dvi:
+html:
+info:
+install-info:
+install-man:
+install:
+
+.PHONY: installdirs install install-strip mostlyclean clean distclean \
+  maintainer-clean check installcheck dvi html info install-info \
+  install-man update-po
+
+COMPILE = $(CC) $(DEFS) $(ALL_CFLAGS) -c
+
+# Implicit rules
+
+.c.o:
+	$(COMPILE) $<
+
+.NOEXPORT:

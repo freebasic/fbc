@@ -5,7 +5,7 @@ If the "configure" script is not present, generate it:
 
 If the "Makefile" file is not included, generate it:
 	$ cd obj/[target-platform]
-	$ ./configure
+	$ ../../configure
 
 After that, build and install the library:
 	$ cd obj/[target-platform]

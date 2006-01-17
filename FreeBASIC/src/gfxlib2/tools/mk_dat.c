@@ -30,14 +30,38 @@ char *GetColumnToken( const data_column *pColumns, size_t columns, size_t index 
 
 #define OUTPUT_DAT FALSE
 
+static char *make_fullpath( const char *path, const char *filename )
+{
+	int len = strlen( path );
+	int addslash;
+
+	if( len == 0 )
+		return strdup( filename );
+
+	addslash = (path[len - 1] == '/'? 0 : 1);
+	
+	char *fullpath = (char *)malloc( len + strlen( filename ) + 1 + addslash );
+	fullpath[0] = '\0';
+	
+	strcat( fullpath, path );
+	
+	if( addslash != 0 )
+    	strcat( fullpath, "/" );
+    	
+    strcat( fullpath, filename );
+    
+    return fullpath;
+}
+
 int main(int argc, char **argv)
 {
     const char *pszDataListPath = "data/";
-    const char *pszDataListFileName = "data/data.lst";
+    const char *pszDataListFileName = "data.lst";
 #if OUTPUT_DAT
-    const char *pszDataFileName = "data/data.dat";
+    const char *pszDataFileName = "data.dat";
 #endif
-    const char *pszDataSourceFileName = "data/data.c";
+    const char *pszDataSourceFileName = "data.c";
+    char *pszFullDataFilePath;
 
     int data_size_raw, data_size_compressed;
     unsigned char *data_raw;
@@ -59,17 +83,34 @@ int main(int argc, char **argv)
         const char *arg_prev = NULL;
         for( arg_index=1; arg_index!=argc; ++arg_index ) {
             const char *arg = argv[arg_index];
-            if( arg_prev!=NULL ) {
-                if( strcmp( arg_prev, "-o" )==0 ) {
+            if( arg_prev!=NULL ) 
+            {
+                if( strcmp( arg_prev, "-o" )==0 ) 
+                {
                     pszDataSourceFileName = arg;
-                } else {
+                }
+                else if( strcmp( arg_prev, "-I" )==0 ) 
+                {
+					pszDataListPath = arg;
+                } 
+                else 
+                {
                     assert( FALSE );
                 }
                 arg_prev = NULL;
-            } else {
-                if( strcmp( arg, "-o" )==0 ) {
+            } 
+            else 
+            {
+                if( strcmp( arg, "-o" )==0 ) 
+                {
                     arg_prev = arg;
-                } else {
+                }
+                else if( strcmp( arg, "-I" )==0 ) 
+                {
+                    arg_prev = arg;
+                } 
+                else 
+                {
                     fprintf( stderr, "Unknown argument '%s'\n", arg );
                     return 4;
                 }
@@ -77,11 +118,15 @@ int main(int argc, char **argv)
         }
     }
 
-    fpDataIn = fopen(pszDataListFileName, "r");
+    pszFullDataFilePath = make_fullpath( pszDataListPath, pszDataListFileName );
+    
+    fpDataIn = fopen( pszFullDataFilePath, "r");
     if ( fpDataIn==NULL ) {
-        fprintf( stderr, "Failed to open '%s'\n", pszDataListFileName );
+        fprintf( stderr, "Failed to open '%s'\n", pszFullDataFilePath );
         return 1;
     }
+    
+    free( pszFullDataFilePath );
 
 #if OUTPUT_DAT
     fpDataOut = fopen(pszDataFileName, "wb");
@@ -176,10 +221,7 @@ int main(int argc, char **argv)
             }
 
             {
-                char *pszFullDataFilePath = (char *) malloc( strlen( pszFileName ) + strlen( pszDataListPath ) + 1 );
-                pszFullDataFilePath[0] = 0;
-                strcat( pszFullDataFilePath, pszDataListPath );
-                strcat( pszFullDataFilePath, pszFileName );
+                pszFullDataFilePath = make_fullpath( pszDataListPath, pszFileName );
                 fpDataFile = fopen(pszFullDataFilePath, "rb");
                 if( fpDataFile==NULL ) {
                     fprintf( stderr, "Failed to open '%s'\n", pszFullDataFilePath );

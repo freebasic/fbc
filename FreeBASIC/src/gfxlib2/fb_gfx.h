@@ -36,9 +36,9 @@ extern "C" {
 #include <string.h>
 #include <math.h>
 
-#include "../rtlib/fb_scancodes.h"
 #include "../rtlib/fb.h"
 #include "../rtlib/fb_rterr.h"
+#include "../rtlib/fb_scancodes.h"
 
 #ifdef PI
 #undef PI
