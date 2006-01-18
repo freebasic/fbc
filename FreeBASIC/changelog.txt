@@ -13,6 +13,7 @@ Version 0.16 Beta:
   "foo TYPE(1,2)" where foo was declared as "foo([mode] p as bar)" (v1c)
 - support for the optional "digits" argument in HEX(), OCT() and BIN() (and their wide-char versions) (v1c)
 - TYPE<symbol>(...) to allow anonymous UDT's to be passed to overloaded functions (v1c)
+- the -include command-line option, to pre-include headers in every source file (.bas) that will be compiled (v1c)
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)
