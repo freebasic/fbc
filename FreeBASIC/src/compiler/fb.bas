@@ -470,9 +470,28 @@ sub fbEnd
 end sub
 
 '':::::
+function fbPreInclude( preincTb() as string, _
+				       byval preincfiles as integer _
+				     ) as integer
+
+	dim as integer i
+
+	for i = 0 to preincfiles-1
+		if( fbIncludeFile( preincTb(i), TRUE ) = FALSE ) then
+			return FALSE
+		end if
+	next
+
+	function = TRUE
+
+end function
+
+'':::::
 function fbCompile( byval infname as zstring ptr, _
 				    byval outfname as zstring ptr, _
-				    byval ismain as integer _
+				    byval ismain as integer, _
+				    preincTb() as string, _
+				    byval preincfiles as integer _
 				  ) as integer
 
     dim as integer res
@@ -515,8 +534,12 @@ function fbCompile( byval infname as zstring ptr, _
 
 	tmr = timer( )
 
-	'' parse
-	res = cProgram( )
+	res = fbPreInclude( preincTb(), preincfiles )
+
+	if( res = TRUE ) then
+		'' parse
+		res = cProgram( )
+	end if
 
 	tmr = timer( ) - tmr
 

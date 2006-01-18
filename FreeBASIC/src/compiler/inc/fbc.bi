@@ -51,6 +51,7 @@ type FBCCTX
     defs						as integer
     incs						as integer
     pths						as integer
+    preincs						as integer
 
 	inplist(0 to FB_MAXARGS-1) 	as string
 	asmlist(0 to FB_MAXARGS-1) 	as string
@@ -60,6 +61,7 @@ type FBCCTX
 	deflist(0 to FB_MAXARGS-1) 	as string
 	inclist(0 to FB_MAXARGS-1) 	as string
 	pthlist(0 to FB_MAXARGS-1) 	as string
+	preinclist(0 to FB_MAXARGS-1) as string
 
 	outname 					as zstring * FB_MAXPATHLEN+1
 	outaddext					as integer

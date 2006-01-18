@@ -218,7 +218,9 @@ declare function 	fbInit			( byval ismain as integer ) as integer
 declare sub 		fbEnd			( )
 declare function 	fbCompile		( byval infname as zstring ptr, _
 									  byval outfname as zstring ptr, _
-									  byval ismain as integer ) as integer
+									  byval ismain as integer, _
+				    				  preincTb() as string, _
+				    				  byval preincfiles as integer ) as integer
 
 declare sub 		fbSetPaths		( byval target as integer )
 declare function 	fbGetPath		( byval path as integer ) as zstring ptr

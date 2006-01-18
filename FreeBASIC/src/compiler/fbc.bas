@@ -251,7 +251,11 @@ function compileFiles as integer
     		print "compiling: ", fbc.inplist(i); " -o "; fbc.asmlist(i)
     	end if
 
-    	if( fbCompile( fbc.inplist(i), fbc.asmlist(i), ismain ) = FALSE ) then
+    	if( fbCompile( fbc.inplist(i), _
+    				   fbc.asmlist(i), _
+    				   ismain, _
+    				   fbc.preinclist(), _
+    				   fbc.preincs ) = FALSE ) then
     		exit function
     	end if
 
@@ -459,6 +463,7 @@ sub printOptions( )
 	printOption( "-export", "Export symbols for dynamic linkage" )
 	printOption( "-g", "Add debug info" )
 	printOption( "-i <name>", "Add a path to search for include files" )
+	print "-include <name>"; " Include a header file on each source compiled"
 	printOption( "-l <name>", "Add a library file to linker's list" )
 	printOption( "-lib", "Create a static library" )
 	printOption( "-m <name>", "Main file w/o ext, the entry point (def: 1st .bas on list)" )
@@ -535,6 +540,15 @@ sub setDefaultOptions( )
 	fbc.mainset 	= FALSE
 	fbc.outname		= ""
 	fbc.outaddext   = FALSE
+
+    fbc.libs		= 0
+    fbc.objs		= 0
+    fbc.inps		= 0
+    fbc.outs		= 0
+    fbc.defs		= 0
+    fbc.incs		= 0
+    fbc.pths		= 0
+    fbc.preincs		= 0
 
 end sub
 
@@ -914,6 +928,18 @@ function processOptions( ) as integer
 					exit function
 				end if
 				fbc.libs += 1
+
+				argv(i) = ""
+				argv(i+1) = ""
+
+			'' pre-include files
+			case "include"
+				fbc.preinclist(fbc.preincs) = argv(i+1)
+				if( len( fbc.preinclist(fbc.preincs) ) = 0 ) then
+					printInvalidOpt( i )
+					exit function
+				end if
+				fbc.preincs += 1
 
 				argv(i) = ""
 				argv(i+1) = ""
