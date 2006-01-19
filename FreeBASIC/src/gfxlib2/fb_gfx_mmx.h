@@ -27,7 +27,11 @@
 #ifndef __FB_GFX_MMX_H__
 #define __FB_GFX_MMX_H__
 
-#if defined TARGET_WIN32 || defined TARGET_DOS || TARGET_XBOX || TARGET_CYGWIN
+#if HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#if defined TARGET_WIN32 || defined TARGET_DOS || defined TARGET_XBOX || defined TARGET_CYGWIN
 #define FUNC(name)		.globl _##name ; .balign 8, 0x90 ; _##name:
 #define GLOBL(name)		_##name
 #else

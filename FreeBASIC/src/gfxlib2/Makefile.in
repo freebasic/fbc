@@ -59,6 +59,7 @@ ALL_CFLAGS = $(CFLAGS) $(CPPFLAGS) $(INCLUDES) # $(WARN_CFLAGS)
 
 FBRT_OBJS := $(patsubst @srcdir@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/*.c))
 FBRT_OBJS += $(patsubst @srcdir@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/*.s))
+FBRT_OBJS += $(FBRT_OBJDEST)/libfb_gfx_data.o
 FBRT_OSDEPOBJS := $(patsubst @srcdir@/@FBRT_TARGET@/%.c,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_TARGET@/*.c))
 FBRT_OSDEPOBJS += $(patsubst @srcdir@/@FBRT_TARGET@/%.s,$(FBRT_OBJDEST)/%.o,$(wildcard @srcdir@/@FBRT_TARGET@/*.s))
 FBRT_HEADERS := $(wildcard @srcdir@/*.h)
@@ -78,11 +79,11 @@ all: $(FBRT_TOOLS) $(FBRT_LIB)
 $(FBRT_OBJDEST)/%.o : %.c $(FBRT_HEADERS)
 	$(COMPILE) $< -o $@
 
-$(FBRT_OBJDEST)/%.o : %.s
-	$(CC) -x assembler-with-cpp -c $(CFLAGS) $< -o $@
+$(FBRT_OBJDEST)/%.o : %.s fb_gfx_mmx.h
+	$(CC) $(ALL_CFLAGS) $(DEFS) -x assembler-with-cpp -c $< -o $@
 
 $(FBRT_LIB) : $(FBRT_OBJS) $(FBRT_OSDEPOBJS)
-	$(AR) $(ARFLAGS) $(FBRT_LIB) $(FBRT_OBJS) $(FBRT_OSDEPOBJS)
+	$(AR) $(ARFLAGS) $(FBRT_LIB) $(FBRT_OBJS) $(FBRT_OSDEPOBJS) 
 	$(RANLIB) $(FBRT_LIB)
 
 @srcdir@/libfb_gfx_data.c: $(FBRT_OBJDEST)/mk_dat$(EXEEXT) @srcdir@/data/data.lst $(FBRT_DATAFILES)
