@@ -104,7 +104,7 @@ FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, un
 	if (fb_hGetPixel(x, y) == border_color)
 		return;
 
-	size = sizeof(SPAN *) * fb_mode->h;
+	size = sizeof(SPAN *) * fb_mode->view_h;
 	span = (SPAN **)malloc(size);
 	fb_hMemSet(span, 0, size);
 
