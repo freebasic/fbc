@@ -13,6 +13,13 @@
 #include once "gtk/gtk/gtkwidget.bi"
 #include once "gtk/gtk/gtkadjustment.bi"
 
+#define GTK_TYPE_PROGRESS (gtk_progress_get_type ())
+#define GTK_PROGRESS(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_PROGRESS, GtkProgress))
+#define GTK_PROGRESS_CLASS(klass) (GTK_CHECK_CLASS_CAST ((klass), GTK_TYPE_PROGRESS, GtkProgressClass))
+#define GTK_IS_PROGRESS(obj) (GTK_CHECK_TYPE ((obj), GTK_TYPE_PROGRESS))
+#define GTK_IS_PROGRESS_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_PROGRESS))
+#define GTK_PROGRESS_GET_CLASS(obj) (GTK_CHECK_GET_CLASS ((obj), GTK_TYPE_PROGRESS, GtkProgressClass))
+
 type GtkProgress as _GtkProgress
 type GtkProgressClass as _GtkProgressClass
 

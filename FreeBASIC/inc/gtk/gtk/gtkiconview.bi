@@ -12,6 +12,13 @@
 #include once "gtk/gtk/gtkcontainer.bi"
 #include once "gtk/gtk/gtktreemodel.bi"
 
+#define GTK_TYPE_ICON_VIEW (gtk_icon_view_get_type ())
+#define GTK_ICON_VIEW(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_ICON_VIEW, GtkIconView))
+#define GTK_ICON_VIEW_CLASS(klass) (GTK_CHECK_CLASS_CAST ((klass), GTK_TYPE_ICON_VIEW, GtkIconViewClass))
+#define GTK_IS_ICON_VIEW(obj) (GTK_CHECK_TYPE ((obj), GTK_TYPE_ICON_VIEW))
+#define GTK_IS_ICON_VIEW_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_ICON_VIEW))
+#define GTK_ICON_VIEW_GET_CLASS(obj) (GTK_CHECK_GET_CLASS ((obj), GTK_TYPE_ICON_VIEW, GtkIconViewClass))
+
 type GtkIconView as _GtkIconView
 type GtkIconViewClass as _GtkIconViewClass
 type GtkIconViewPrivate as _GtkIconViewPrivate

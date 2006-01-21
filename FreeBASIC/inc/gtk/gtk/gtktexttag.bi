@@ -21,6 +21,8 @@
 #define GTK_IS_TEXT_TAG_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TEXT_TAG))
 #define GTK_TEXT_TAG_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TEXT_TAG, GtkTextTagClass))
 
+#define GTK_TYPE_TEXT_ATTRIBUTES     (gtk_text_attributes_get_type ())
+
 type GtkTextIter as _GtkTextIter
 type GtkTextTagTable as _GtkTextTagTable
 type GtkTextAttributes as _GtkTextAttributes

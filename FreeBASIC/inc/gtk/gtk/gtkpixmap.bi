@@ -12,6 +12,13 @@
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkmisc.bi"
 
+#define GTK_TYPE_PIXMAP (gtk_pixmap_get_type ())
+#define GTK_PIXMAP(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_PIXMAP, GtkPixmap))
+#define GTK_PIXMAP_CLASS(klass) (GTK_CHECK_CLASS_CAST ((klass), GTK_TYPE_PIXMAP, GtkPixmapClass))
+#define GTK_IS_PIXMAP(obj) (GTK_CHECK_TYPE ((obj), GTK_TYPE_PIXMAP))
+#define GTK_IS_PIXMAP_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_PIXMAP))
+#define GTK_PIXMAP_GET_CLASS(obj) (GTK_CHECK_GET_CLASS ((obj), GTK_TYPE_PIXMAP, GtkPixmapClass))
+
 type GtkPixmap as _GtkPixmap
 type GtkPixmapClass as _GtkPixmapClass
 

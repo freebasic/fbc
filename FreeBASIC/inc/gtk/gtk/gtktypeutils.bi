@@ -11,18 +11,83 @@
 
 #include once "gtk/glib-object.bi"
 
+#define GTK_TYPE_INVALID G_TYPE_INVALID
+#define GTK_TYPE_NONE G_TYPE_NONE
+#define GTK_TYPE_ENUM G_TYPE_ENUM
+#define GTK_TYPE_FLAGS G_TYPE_FLAGS
+
+#define GTK_TYPE_CHAR G_TYPE_CHAR
+#define GTK_TYPE_UCHAR G_TYPE_UCHAR
+#define GTK_TYPE_BOOL G_TYPE_BOOLEAN
+#define GTK_TYPE_INT G_TYPE_INT
+#define GTK_TYPE_UINT G_TYPE_UINT
+#define GTK_TYPE_LONG G_TYPE_LONG
+#define GTK_TYPE_ULONG G_TYPE_ULONG
+#define GTK_TYPE_FLOAT G_TYPE_FLOAT
+#define GTK_TYPE_DOUBLE G_TYPE_DOUBLE
+#define GTK_TYPE_STRING G_TYPE_STRING
+#define GTK_TYPE_BOXED G_TYPE_BOXED
+#define GTK_TYPE_POINTER G_TYPE_POINTER
+
+#define GTK_CLASS_NAME(class_) (g_type_name (G_TYPE_FROM_CLASS (class_)))
+#define GTK_CLASS_TYPE(class_) (G_TYPE_FROM_CLASS (class_))
+#define GTK_TYPE_IS_OBJECT(type_) (g_type_is_a ((type_), GTK_TYPE_OBJECT))
+
+#define	GTK_TYPE_FUNDAMENTAL_LAST (G_TYPE_LAST_RESERVED_FUNDAMENTAL - 1)
+#define	GTK_TYPE_FUNDAMENTAL_MAX (G_TYPE_FUNDAMENTAL_MAX)
+
+#define	GTK_FUNDAMENTAL_TYPE G_TYPE_FUNDAMENTAL
+#define GTK_STRUCT_OFFSET G_STRUCT_OFFSET
+
+#define	GTK_CHECK_CAST G_TYPE_CHECK_INSTANCE_CAST
+#define	GTK_CHECK_CLASS_CAST G_TYPE_CHECK_CLASS_CAST
+#define GTK_CHECK_GET_CLASS	G_TYPE_INSTANCE_GET_CLASS
+#define	GTK_CHECK_TYPE G_TYPE_CHECK_INSTANCE_TYPE
+#define	GTK_CHECK_CLASS_TYPE G_TYPE_CHECK_CLASS_TYPE
+
+#define GTK_TYPE_IDENTIFIER (gtk_identifier_get_type ())
+
+#define GTK_VALUE_CHAR(a) ((a).d.char_data)
+#define GTK_VALUE_UCHAR(a) ((a).d.uchar_data)
+#define GTK_VALUE_BOOL(a) ((a).d.bool_data)
+#define GTK_VALUE_INT(a) ((a).d.int_data)
+#define GTK_VALUE_UINT(a) ((a).d.uint_data)
+#define GTK_VALUE_LONG(a) ((a).d.long_data)
+#define GTK_VALUE_ULONG(a) ((a).d.ulong_data)
+#define GTK_VALUE_FLOAT(a) ((a).d.float_data)
+#define GTK_VALUE_DOUBLE(a) ((a).d.double_data)
+#define GTK_VALUE_STRING(a) ((a).d.string_data)
+#define GTK_VALUE_ENUM(a) ((a).d.int_data)
+#define GTK_VALUE_FLAGS(a) ((a).d.uint_data)
+#define GTK_VALUE_BOXED(a) ((a).d.pointer_data)
+#define GTK_VALUE_OBJECT(a) ((a).d.object_data)
+#define GTK_VALUE_POINTER(a) ((a).d.pointer_data)
+#define GTK_VALUE_SIGNAL(a) ((a).d.signal_data)
+
+#define GTK_RETLOC_CHAR(a) cast(gchar ptr, (a).d.pointer_data)
+#define GTK_RETLOC_UCHAR(a) cast(guchar ptr, (a).d.pointer_data)
+#define GTK_RETLOC_BOOL(a) cast(gboolean ptr, (a).d.pointer_data)
+#define GTK_RETLOC_INT(a) cast(gint ptr, (a).d.pointer_data)
+#define GTK_RETLOC_UINT(a) cast(guint ptr, (a).d.pointer_data)
+#define GTK_RETLOC_LONG(a) cast(glong ptr, (a).d.pointer_data)
+#define GTK_RETLOC_ULONG(a) cast(gulong ptr, (a).d.pointer_data)
+#define GTK_RETLOC_FLOAT(a) cast(gfloat ptr, (a).d.pointer_data)
+#define GTK_RETLOC_DOUBLE(a) cast(gdouble ptr, (a).d.pointer_data)
+#define GTK_RETLOC_STRING(a) cast(gchar ptr ptr, (a).d.pointer_data)
+#define GTK_RETLOC_ENUM(a) cast(gint ptr, (a).d.pointer_data)
+#define GTK_RETLOC_FLAGS(a) cast(guint ptr, (a).d.pointer_data)
+#define GTK_RETLOC_BOXED(a) cast(gpointer ptr, (a).d.pointer_data)
+#define GTK_RETLOC_OBJECT(a) cast(GtkObject ptr ptr, (a).d.pointer_data)
+#define GTK_RETLOC_POINTER(a) cast(gpointer ptr, (a).d.pointer_data)
+
+#define GTK_SIGNAL_FUNC(f) cast(GtkSignalFunc, f)
+
 type GtkFundamentalType as GType
 type GtkType as GType
 type GtkTypeObject as GTypeInstance
 type GtkTypeClass as GTypeClass
 type GtkClassInitFunc as GBaseInitFunc
 type GtkObjectInitFunc as GInstanceInitFunc
-
-#define	GTK_CHECK_CAST(instance, g_type, c_type) _G_TYPE_CIC( instance, g_type, c_type )
-#define	GTK_CHECK_CLASS_CAST(g_class, g_type, c_type) _G_TYPE_CCC( g_class, g_type, c_type )
-#define GTK_CHECK_GET_CLASS(instance, g_type, c_type) _G_TYPE_IGC( instance, g_type, c_type )
-#define	GTK_CHECK_TYPE(instance, g_type) _G_TYPE_CIT( instance, g_type )
-#define	GTK_CHECK_CLASS_TYPE(g_class, g_type) _G_TYPE_CCT( g_class, g_type )
 
 #include once "gtk/gtk/gtktypebuiltins.bi"
 
@@ -36,8 +101,6 @@ type GtkCallbackMarshal as sub cdecl(byval as GtkObject ptr, byval as gpointer, 
 type GtkSignalFunc as sub cdecl()
 type GtkTypeInfo as _GtkTypeInfo
 type GtkSignalMarshaller as GSignalCMarshaller
-
-#define GTK_SIGNAL_FUNC(f) cptr(GtkSignalFunc, f)
 
 type _GtkArg_d_signal_data
 	f as GtkSignalFunc

@@ -12,6 +12,8 @@
 #include once "gtk/gtk/gtktexttag.bi"
 #include once "gtk/gtk/gtktextchild.bi"
 
+#define GTK_TYPE_TEXT_ITER     (gtk_text_iter_get_type ())
+
 enum GtkTextSearchFlags
 	GTK_TEXT_SEARCH_VISIBLE_ONLY = 1 shl 0
 	GTK_TEXT_SEARCH_TEXT_ONLY = 1 shl 1

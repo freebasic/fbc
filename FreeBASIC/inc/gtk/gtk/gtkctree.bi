@@ -11,6 +11,21 @@
 
 #include once "gtk/gtk/gtkclist.bi"
 
+#define GTK_TYPE_CTREE (gtk_ctree_get_type ())
+#define GTK_CTREE(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_CTREE, GtkCTree))
+#define GTK_CTREE_CLASS(klass) (GTK_CHECK_CLASS_CAST ((klass), GTK_TYPE_CTREE, GtkCTreeClass))
+#define GTK_IS_CTREE(obj) (GTK_CHECK_TYPE ((obj), GTK_TYPE_CTREE))
+#define GTK_IS_CTREE_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_CTREE))
+#define GTK_CTREE_GET_CLASS(obj) (GTK_CHECK_GET_CLASS ((obj), GTK_TYPE_CTREE, GtkCTreeClass))
+
+#define GTK_CTREE_ROW(_node_) cast(GtkCTreeRow ptr,cast(GList ptr,_node_)->data)
+#define GTK_CTREE_NODE(_node_) cast(GtkCTreeNode ptr,_node_)
+#define GTK_CTREE_NODE_NEXT(_nnode_) cast(GtkCTreeNode ptr,cast(GList ptr,_nnode_)->next)
+#define GTK_CTREE_NODE_PREV(_pnode_) cast(GtkCTreeNode ptr,cast(GList ptr,_pnode_)->prev)
+#define GTK_CTREE_FUNC(_func_) cast(GtkCTreeFunc,_func_)
+
+#define GTK_TYPE_CTREE_NODE (gtk_ctree_node_get_type ())
+
 enum GtkCTreePos
 	GTK_CTREE_POS_BEFORE
 	GTK_CTREE_POS_AS_CHILD

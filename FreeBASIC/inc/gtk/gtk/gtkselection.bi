@@ -13,6 +13,8 @@
 #include once "gtk/gtk/gtkenums.bi"
 #include once "gtk/gtk/gtkwidget.bi"
 
+#define GTK_TYPE_SELECTION_DATA (gtk_selection_data_get_type ())
+
 type GtkTargetList as _GtkTargetList
 type GtkTargetEntry as _GtkTargetEntry
 

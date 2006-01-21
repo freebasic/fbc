@@ -20,6 +20,8 @@
 #define GTK_IS_STYLE_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_STYLE))
 #define GTK_STYLE_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_STYLE, GtkStyleClass))
 
+#define GTK_TYPE_BORDER             (gtk_border_get_type ())
+
 type GtkBorder as _GtkBorder
 type GtkStyle as _GtkStyle
 type GtkStyleClass as _GtkStyleClass

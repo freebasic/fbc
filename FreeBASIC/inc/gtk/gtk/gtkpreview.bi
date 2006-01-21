@@ -11,6 +11,13 @@
 
 #include once "gtk/gtk/gtkwidget.bi"
 
+#define GTK_TYPE_PREVIEW (gtk_preview_get_type ())
+#define GTK_PREVIEW(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_PREVIEW, GtkPreview))
+#define GTK_PREVIEW_CLASS(klass) (GTK_CHECK_CLASS_CAST ((klass), GTK_TYPE_PREVIEW, GtkPreviewClass))
+#define GTK_IS_PREVIEW(obj) (GTK_CHECK_TYPE ((obj), GTK_TYPE_PREVIEW))
+#define GTK_IS_PREVIEW_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_PREVIEW))
+#define GTK_PREVIEW_GET_CLASS(obj) (GTK_CHECK_GET_CLASS ((obj), GTK_TYPE_PREVIEW, GtkPreviewClass))
+
 type GtkPreview as _GtkPreview
 type GtkPreviewInfo as _GtkPreviewInfo
 type GtkDitherInfo as _GtkDitherInfo

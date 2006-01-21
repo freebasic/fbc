@@ -13,6 +13,13 @@
 #include once "gtk/gtk/gtkeditable.bi"
 #include once "gtk/gtk/gtkwidget.bi"
 
+#define GTK_TYPE_OLD_EDITABLE            (gtk_old_editable_get_type ())
+#define GTK_OLD_EDITABLE(obj)            (GTK_CHECK_CAST ((obj), GTK_TYPE_OLD_EDITABLE, GtkOldEditable))
+#define GTK_OLD_EDITABLE_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), GTK_TYPE_OLD_EDITABLE, GtkOldEditableClass))
+#define GTK_IS_OLD_EDITABLE(obj)         (GTK_CHECK_TYPE ((obj), GTK_TYPE_OLD_EDITABLE))
+#define GTK_IS_OLD_EDITABLE_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_OLD_EDITABLE))
+#define GTK_OLD_EDITABLE_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), GTK_TYPE_OLD_EDITABLE, GtkOldEditableClass))
+
 type GtkOldEditable as _GtkOldEditable
 type GtkOldEditableClass as _GtkOldEditableClass
 type GtkTextFunction as sub cdecl(byval as GtkOldEditable ptr, byval as guint32)

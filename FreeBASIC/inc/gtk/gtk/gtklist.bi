@@ -14,6 +14,13 @@
 #include once "gtk/gtk/gtkcontainer.bi"
 #include once "gtk/gtk/gtklistitem.bi"
 
+#define GTK_TYPE_LIST (gtk_list_get_type ())
+#define GTK_LIST(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_LIST, GtkList))
+#define GTK_LIST_CLASS(klass) (GTK_CHECK_CLASS_CAST ((klass), GTK_TYPE_LIST, GtkListClass))
+#define GTK_IS_LIST(obj) (GTK_CHECK_TYPE ((obj), GTK_TYPE_LIST))
+#define GTK_IS_LIST_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_LIST))
+#define GTK_LIST_GET_CLASS(obj) (GTK_CHECK_GET_CLASS ((obj), GTK_TYPE_LIST, GtkListClass))
+
 type GtkList as _GtkList
 type GtkListClass as _GtkListClass
 

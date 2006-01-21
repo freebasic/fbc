@@ -18,25 +18,54 @@
 #include once "gtk/gtk/gtkvscrollbar.bi"
 #include once "gtk/gtk/gtkenums.bi"
 
+#define GTK_TYPE_CLIST (gtk_clist_get_type ())
+#define GTK_CLIST(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_CLIST, GtkCList))
+#define GTK_CLIST_CLASS(klass) (GTK_CHECK_CLASS_CAST ((klass), GTK_TYPE_CLIST, GtkCListClass))
+#define GTK_IS_CLIST(obj) (GTK_CHECK_TYPE ((obj), GTK_TYPE_CLIST))
+#define GTK_IS_CLIST_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_CLIST))
+#define GTK_CLIST_GET_CLASS(obj) (GTK_CHECK_GET_CLASS ((obj), GTK_TYPE_CLIST, GtkCListClass))
+
+#define GTK_CLIST_FLAGS(clist) (GTK_CLIST (clist)->flags)
+#define GTK_CLIST_SET_FLAG(clist,flag) GTK_CLIST_FLAGS (clist) or= (GTK_##flag)
+#define GTK_CLIST_UNSET_FLAG(clist,flag) GTK_CLIST_FLAGS (clist) and= not(GTK_##flag)
+
+#define GTK_CLIST_IN_DRAG(clist) (GTK_CLIST_FLAGS (clist) and GTK_CLIST_IN_DRAG)
+#define GTK_CLIST_ROW_HEIGHT_SET(clist) (GTK_CLIST_FLAGS (clist) and GTK_CLIST_ROW_HEIGHT_SET)
+#define GTK_CLIST_SHOW_TITLES(clist) (GTK_CLIST_FLAGS (clist) and GTK_CLIST_SHOW_TITLES)
+#define GTK_CLIST_ADD_MODE(clist) (GTK_CLIST_FLAGS (clist) and GTK_CLIST_ADD_MODE)
+#define GTK_CLIST_AUTO_SORT(clist) (GTK_CLIST_FLAGS (clist) and GTK_CLIST_AUTO_SORT)
+#define GTK_CLIST_AUTO_RESIZE_BLOCKED(clist) (GTK_CLIST_FLAGS (clist) and GTK_CLIST_AUTO_RESIZE_BLOCKED)
+#define GTK_CLIST_REORDERABLE(clist) (GTK_CLIST_FLAGS (clist) and GTK_CLIST_REORDERABLE)
+#define GTK_CLIST_USE_DRAG_ICONS(clist) (GTK_CLIST_FLAGS (clist) and GTK_CLIST_USE_DRAG_ICONS)
+#define GTK_CLIST_DRAW_DRAG_LINE(clist) (GTK_CLIST_FLAGS (clist) and GTK_CLIST_DRAW_DRAG_LINE)
+#define GTK_CLIST_DRAW_DRAG_RECT(clist) (GTK_CLIST_FLAGS (clist) and GTK_CLIST_DRAW_DRAG_RECT)
+
+#define GTK_CLIST_ROW(_glist_) cast(GtkCListRow ptr, (_glist_)->data))
+
+#define GTK_CELL_TEXT(cell) cast(GtkCellText ptr, @(cell))
+#define GTK_CELL_PIXMAP(cell) cast(GtkCellPixmap ptr, @(cell))
+#define GTK_CELL_PIXTEXT(cell) cast(GtkCellPixText ptr, @(cell))
+#define GTK_CELL_WIDGET(cell) cast(GtkCellWidget ptr, @(cell))
+
 enum 
-	GTK_CLIST_IN_DRAG = 1 shl 0
-	GTK_CLIST_ROW_HEIGHT_SET = 1 shl 1
-	GTK_CLIST_SHOW_TITLES = 1 shl 2
-	GTK_CLIST_ADD_MODE = 1 shl 4
-	GTK_CLIST_AUTO_SORT = 1 shl 5
-	GTK_CLIST_AUTO_RESIZE_BLOCKED = 1 shl 6
-	GTK_CLIST_REORDERABLE = 1 shl 7
-	GTK_CLIST_USE_DRAG_ICONS = 1 shl 8
-	GTK_CLIST_DRAW_DRAG_LINE = 1 shl 9
-	GTK_CLIST_DRAW_DRAG_RECT = 1 shl 10
+	GTK_CLIST_IN_DRAG_ = 1 shl 0
+	GTK_CLIST_ROW_HEIGHT_SET_ = 1 shl 1
+	GTK_CLIST_SHOW_TITLES_ = 1 shl 2
+	GTK_CLIST_ADD_MODE_ = 1 shl 4
+	GTK_CLIST_AUTO_SORT_ = 1 shl 5
+	GTK_CLIST_AUTO_RESIZE_BLOCKED_ = 1 shl 6
+	GTK_CLIST_REORDERABLE_ = 1 shl 7
+	GTK_CLIST_USE_DRAG_ICONS_ = 1 shl 8
+	GTK_CLIST_DRAW_DRAG_LINE_ = 1 shl 9
+	GTK_CLIST_DRAW_DRAG_RECT_ = 1 shl 10
 end enum
 
 enum GtkCellType
-	GTK_CELL_EMPTY
-	GTK_CELL_TEXT
-	GTK_CELL_PIXMAP
-	GTK_CELL_PIXTEXT
-	GTK_CELL_WIDGET
+	GTK_CELL_EMPTY_
+	GTK_CELL_TEXT_
+	GTK_CELL_PIXMAP_
+	GTK_CELL_PIXTEXT_
+	GTK_CELL_WIDGET_
 end enum
 
 
