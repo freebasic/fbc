@@ -1,6 +1,6 @@
 
   FreeBASIC - A multi-platform 32-bit BASIC Compiler
-  Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+  Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor[at]yahoo.com.br)
 
 
 License:
@@ -23,7 +23,7 @@ Installing:
   o Windows version:
 
     - Follow the installer instructions, don't forget to select which external 
-      libraries to install, all them are selected by default.
+      libraries to install, some are not selected by default.
       
   o Linux version:
 
@@ -610,7 +610,7 @@ Possible Additions to Next Versions:
 
 Credits (in alphabetic order):
 
-  o Angelo Mottola (a.mottola@libero.it) - Project Member:
+  o Angelo Mottola (a.mottola[at]libero.it) - Project Member:
     - Ported FreeBASIC to Linux; port maintainer.
     - Developer of GFXLib2.
     - Added profiling support.
@@ -618,15 +618,15 @@ Credits (in alphabetic order):
     - Made the rtlib thread-safe, besides many other runtime lib
       and compiler improvements.
 
-  o Bryan Stoeberl (b_stoeberl@yahoo.com):
+  o Bryan Stoeberl (b_stoeberl[at]yahoo.com):
     - Translated the OpenGL Extensions header.
     - Wrote the glext example at the examples/GL dir.
 
-  o Chris Davies (c.g.davies@gmail.com):
+  o Chris Davies (c.g.davies[at]gmail.com):
     - Translated the OpenAL headers (later replaced by the SWIG FB wrapper version).
     - Wrote the OpenAL demonstration in the examples/sound directory.
 
-  o Daniel R. Verkamp (i_am_drv@yahoo.com) - Project Member:
+  o Daniel R. Verkamp (i_am_drv[at]yahoo.com) - Project Member:
     - Ported FreeBASIC to DOS and Xbox; ports maintainer.
     - Translated the Allegro headers (W.I.P.).
     - Wrote the DLL and static library automation, plus resource scripts
@@ -636,45 +636,45 @@ Credits (in alphabetic order):
     - Ported the wx-c headers (later replaced by the SWIG FB wrapper version).
     - Wrote the wx demonstration in the examples/wx-c dir.
 
-  o Edmond Leung (leung.edmond@gmail.com):
+  o Edmond Leung (leung.edmond[at]gmail.com):
     - Translated the SDL headers, including SDL_mixer and SDL_image (later replaced 
       by the SWIG FB wrapper version).
     - Wrote/ported many of the examples in the examples/SDL dir.
 
-  o Eric Lope (vic_viperph@yahoo.com):
+  o Eric Lope (vic_viperph[at]yahoo.com):
     - Translated the OpenGL and GLU headers (later replaced by the SWIG FB 
       wrapper version).
     - Wrote the rel-* graphics demonstrations in the examples/gfx directory.
     - Wrote the examples/GL/fbgfx_texture.bas OpenGL example.
 
-  o Florent Heyworth (florent.heyworth@swissonline.ch):
+  o Florent Heyworth (florent.heyworth[at]swissonline.ch):
     - Translated the Win API sql/obdc headers (later replaced by the SWIG FB 
       wrapper version).
 
-  o fsw (fsw.fb@comcast.net):
+  o fsw (fsw.fb[at]comcast.net):
     - Translated most of the Windows API headers (later replaced by the SWIG FB 
       wrapper version).
     - Wrote the glade_gui demo at the examples/Gtk directory, besides the
       wx-c GUI examples (not included).
 
-  o Garvan O'Keeffe (sisophon2001@yahoo.com):
+  o Garvan O'Keeffe (sisophon2001[at]yahoo.com):
     - Ported most of the NeHe's OpenGL lessons at the examples/GL/NeHe dir.
     - Wrote the PDFlib demonstration, at examples/pdflib
 
-  o Hans L. Nemeschkal (Hans.Leo.Nemeschkal@univie.ac.at):
+  o Hans L. Nemeschkal (Hans.Leo.Nemeschkal[at]univie.ac.at):
     - Translated the DISLIN header (later replaced by the SWIG FB wrapper version).
 
-  o Jofers (spam@betterwebber.com):
+  o Jofers (spam[at]betterwebber.com):
     - Wrote the examples in the examples/freetype directory.
 
-  o Randy Keeling (randy@keeling.com):
+  o Randy Keeling (randy[at]keeling.com):
     - Wrote the GSL matrix test at the examples/GSL directory.
 
-  o Matthias Faust (matthias_faust@web.de):
+  o Matthias Faust (matthias_faust[at]web.de):
     - Translated the SDL_ttf header (later replaced by the SWIG FB wrapper version).
     - Wrote the SDL_ttf demonstration.
 
-  o Mark Junker (mjscod@gmx.de) - Project Member:
+  o Mark Junker (mjscod[at]gmx.de) - Project Member:
     - Added support for file systems like SCR, LPTx, COM, etc.
     - Added printer support.
     - Developer of the FB runtime-lib extended (libfbx).
@@ -687,7 +687,7 @@ Credits (in alphabetic order):
     - Translated the first SDL headers (replaced by new ones since version 0.11b).
     - Wrote the first file routines for the run-time library.
 
-  o Nek (dave@nodtveidt.net):
+  o Nek (dave[at]nodtveidt.net):
     - Translated the Windows API headers, integrating parts of fsw's work (later 
       replaced by the SWIG FB wrapper version).
 
@@ -695,11 +695,11 @@ Credits (in alphabetic order):
     - Translated the FMOD and BASS headers.
     - Wrote the fmod.bas test in the examples/sound directory.
 
-  o Sterling Christensen (sterling@engineer.com):
+  o Sterling Christensen (sterling[at]engineer.com):
     - Ex-project member, developer of the QB-like graphics library (later replaced by 
       GFXLib2 in 0.11b)
 
-  o Steven Hidy (subxero@phatcode.net):
+  o Steven Hidy (subxero[at]phatcode.net):
     - Rewrote this readme file, correcting v1ctor's mistakes (also re-edited by
       KrisKhaos for version 0.12).
 

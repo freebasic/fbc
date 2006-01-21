@@ -1,6 +1,6 @@
 
   FreeBASIC - Compilador de BASIC de 32 bit Multi-plataforma
-  Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+  Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor[at]yahoo.com.br)
  
 
 Licencia:
@@ -574,7 +574,7 @@ Probables adiciones en próximas versiones:
 
 Créditos (por orden alfabético):
 
-  o Angelo Mottola (a.mottola@libero.it) - Miembro del equipo de desarrollo:
+  o Angelo Mottola (a.mottola[at]libero.it) - Miembro del equipo de desarrollo:
     - Portó FreeBASIC a Linux; mantenedor de la versión.
     - Desarrollador de GFXLib2.
     - Añadió el profiler.
@@ -583,16 +583,16 @@ Créditos (por orden alfabético):
     - Hizo la rtlib compatible con la programacion multi-hilos, ademas de otras
       mejoras en la rtlib y el compilador.
 
-  o Bryan Stoeberl (b_stoeberl@yahoo.com):
+  o Bryan Stoeberl (b_stoeberl[at]yahoo.com):
     - Tradujo la cabecera de OpenGL Extensions.
     - Escribió el ejemplo de glext del directorio examples/GL.
 
-  o Chris Davies (c.g.davies@gmail.com):
+  o Chris Davies (c.g.davies[at]gmail.com):
     - Tradujo  las cabeceras OpenAL (que luego fueron reemplazadas por una versión
       SWIG FB).
     - Escribió el ejemplo de OpenAL en el directorio examples/sound.
 
-  o Daniel R. Verkamp (i_am_drv@yahoo.com) - Miembro del equipo de desarrollo:
+  o Daniel R. Verkamp (i_am_drv[at]yahoo.com) - Miembro del equipo de desarrollo:
     - Portó FreeBASIC a DOS y Xbox; mantendedor de los ports.
     - Tradujo las cabeceras de Allegro (en curso).
     - Escribió la automatización de librerias estáticas y DLL, y el soporte
@@ -603,40 +603,40 @@ Créditos (por orden alfabético):
       SWIG FB).
     - Escribió el ejemplo de wx en el directorio examples/wx-c.
 
-  o Edmond Leung (leung.edmond@gmail.com):
+  o Edmond Leung (leung.edmond[at]gmail.com):
 		- Tradujo  las cabeceras SDL (que luego fueron reemplazadas por una versión
       SWIG FB).
     - Escribió/tradujo muchos de los ejemplos del directorio examples/SDL.
    
-  o Eric Lope (vic_viperph@yahoo.com):
+  o Eric Lope (vic_viperph[at]yahoo.com):
 		- Tradujo  las cabeceras OpenGL y GLU (que luego fueron reemplazadas por una versión
       SWIG FB).
     - Escribió los ejemplos rel-* del directorio examples/gfx.
     - Escribió el ejemplo fbgfx_texture.bas del directorio examples/GL.   
    
-  o Florent Heyworth (florent.heyworth@swissonline.ch):
+  o Florent Heyworth (florent.heyworth[at]swissonline.ch):
 		- Tradujo  las cabeceras WIN API y sql/odbc (que luego fueron reemplazadas por una versión
       SWIG FB).
 
-  o fsw (fsw.fb@comcast.net):
+  o fsw (fsw.fb[at]comcast.net):
 		- Tradujo  las mayoria de las cabeceras Windows API (que luego fueron reemplazadas por una 
       versión SWIG FB).
     - Escribió el ejemplo glade_gui del directorio examples/Gtk, además de varios ejemplos wx-c
       (no incluidos)
 
-  o Garvan O'Keeffe (sisophon2001@yahoo.com):
+  o Garvan O'Keeffe (sisophon2001[at]yahoo.com):
     - Portó la mayoría de las lecciones sobre OpenGL de NeHe del directorio examples/GL/NeHe.
     - Escribió el ejemplo de uso de pdflib del directorio examples/pdflib.  
 
-  o Randy Keeling (randy@keeling.com):
+  o Randy Keeling (randy[at]keeling.com):
     - Escribió el ejemplo de cálculo matricial en GSL matrix del directorio examples/GSL.
 
-  o Matthias Faust (matthias_faust@web.de):
+  o Matthias Faust (matthias_faust[at]web.de):
 		- Tradujo  las cabeceras SDL_ttf (que luego fueron reemplazadas por una versión
       SWIG FB).
     - Escribió el ejemplo de SDL_ttf.
     
-  o Mark Junker (mjscod@gmx.de) - Miembro del equipo de desarrollo:
+  o Mark Junker (mjscod[at]gmx.de) - Miembro del equipo de desarrollo:
     - Añadió soporte para ficheros del sistema como SCR, LPTx, COM, etc.
     - Añadió soporte para impresora.
     - Creó los tests automatizados para el compilador y la librería de tiempo de ejecución.
@@ -647,7 +647,7 @@ Créditos (por orden alfabético):
     - Tradujo las primeras cabeceras SDL(que dejaron de usarse desde la version 0.11b).
     - Escribió las primeras rutinas de ficheros para la librería de tiempo de ejecución.
 
-  o Nek (dave@nodtveidt.net):
+  o Nek (dave[at]nodtveidt.net):
     - Tradujo las cabeceras para Windows API, integrando partes del trabajo de fsw. (más tarde
       fueron reemplazadas por una versión SWIG FB).
 
@@ -655,11 +655,11 @@ Créditos (por orden alfabético):
     - Tradujo las cabeceras para FMOD y BASS.
     - Escribió fmod.bas del directorio examples/sound.
 
-  o Sterling Christensen (sterling@engineer.com):
+  o Sterling Christensen (sterling[at]engineer.com):
     - Antiguo miembro del equipo de desarrollo, escribió la primera librería gráfica (que fué 
       reemplazada por la GFXLib2 en la versión 0.11b)
 
-  o Steven Hidy (subxero@phatcode.net):
+  o Steven Hidy (subxero[at]phatcode.net):
     - Reescribió este fichero leeme, corrigiendo los errore de v1ctor's (KrisKhaos lo reeditó 
       para la  version 0.12).
 
