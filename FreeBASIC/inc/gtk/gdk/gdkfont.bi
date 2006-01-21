@@ -12,6 +12,8 @@
 #include once "gtk/gdk/gdktypes.bi"
 #include once "gtk/pango/pango-font.bi"
 
+#define GDK_TYPE_FONT gdk_font_get_type ()
+
 enum GdkFontType
 	GDK_FONT_FONT
 	GDK_FONT_FONTSET

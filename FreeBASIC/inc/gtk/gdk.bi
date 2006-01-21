@@ -44,6 +44,8 @@
 #include once "gtk/gdk/gdkvisual.bi"
 #include once "gtk/gdk/gdkwindow.bi"
 
+#define GDK_TYPE_RECTANGLE (gdk_rectangle_get_type ())
+
 declare sub gdk_parse_args cdecl alias "gdk_parse_args" (byval argc as gint ptr, byval argv as zstring ptr ptr ptr)
 declare sub gdk_init cdecl alias "gdk_init" (byval argc as gint ptr, byval argv as zstring ptr ptr ptr)
 declare function gdk_init_check cdecl alias "gdk_init_check" (byval argc as gint ptr, byval argv as zstring ptr ptr ptr) as gboolean
