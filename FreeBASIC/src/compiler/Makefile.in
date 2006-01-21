@@ -40,9 +40,9 @@ FBC = @FBC@
 
 # !!!FIXME!!! -arch can't be assumed, using target_cpu will give "686" for example, 
 #			  making fbc to fail in non mmx-cpu's
-FBC_CFLAGS = -e -c -i $(srcdir) -arch 486
+FBC_CFLAGS = -e -c -i $(srcdir) -target @FBC_TARGET@ -arch 486
 
-FBC_LFLAGS := -v
+FBC_LFLAGS := -v -target @FBC_TARGET@
 
 ifdef DEBUG
     FBC_CFLAGS += -g
