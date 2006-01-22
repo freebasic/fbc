@@ -83,7 +83,7 @@ AC_TYPE_SIGNAL
 AC_FUNC_STAT
 AC_FUNC_STRTOD
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([atexit floor getcwd gettimeofday memchr memmove memset mkdir pow putenv rmdir select strcasecmp strchr strdup strncasecmp strrchr strstr strtoul strtoull])
+AC_CHECK_FUNCS([atexit floor getcwd gettimeofday memchr memmove memset mkdir pow putenv rmdir select strcasecmp strchr strdup strncasecmp strrchr strstr strtoul strtoull snprintf])
 
 AC_ARG_ENABLE([maintainer-mode],
 [  --enable-maintainer-mode enable rules only needed by maintainers],,

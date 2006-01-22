@@ -45,6 +45,7 @@
 #define FB_NEWLINE "\r\n"
 
 /*:::::*/
+#ifndef HAVE_SNPRINTF
 static __inline__ int snprintf (char *buffer, size_t n, const char *format, ...)
 {
     int res;
@@ -56,6 +57,7 @@ static __inline__ int snprintf (char *buffer, size_t n, const char *format, ...)
 
     return res;
 }
+#endif
 
 typedef int FB_DIRCTX; /* dummy to make fb.h happy */
 
