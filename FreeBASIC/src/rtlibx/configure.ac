@@ -67,7 +67,7 @@ AC_STRUCT_TM
 AC_OBJEXT
 
 # Checks for library functions.
-AC_CHECK_FUNCS([floor memmove memset modf nl_langinfo pow strdup strncasecmp strtol])
+AC_CHECK_FUNCS([floor memmove memset modf nl_langinfo pow strdup strncasecmp strtol snprintf])
 
 # Maintainer mode
 AC_ARG_ENABLE([maintainer-mode],

@@ -66,7 +66,7 @@ AC_FUNC_ALLOCA
 AC_PROG_GCC_TRADITIONAL
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([atexit floor memset sqrt strcasecmp strdup strrchr])
+AC_CHECK_FUNCS([atexit floor memset sqrt strcasecmp strdup strrchr snprintf])
 
 AC_ARG_ENABLE([maintainer-mode],
 [  --enable-maintainer-mode enable rules only needed by maintainers],,
