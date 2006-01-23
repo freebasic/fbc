@@ -27,6 +27,9 @@ case "$target" in
 	*-*-msdos* )
 		AC_DEFINE([TARGET_DOS],1,[Djgpp build])
 		FBC_TARGET=dos;;
+	*-*-xbox* )
+		AC_DEFINE([TARGET_XBOX],1,[Xbox build])
+		FBC_TARGET=xbox;;
 	*)
 		AC_MSG_ERROR([Unsupported target])
 		;;

@@ -780,6 +780,9 @@ EOF
     i*:MINGW*:*)
 	echo ${UNAME_MACHINE}-pc-mingw32
 	exit ;;
+    i*:xbox*:*)
+	echo $(UNAME_MACHINE}-pc-xbox
+	exit ;;
     i*:windows32*:*)
     	# uname -m includes "-pc" on this system.
     	echo ${UNAME_MACHINE}-mingw32

@@ -260,6 +260,9 @@
 /* x86 build */
 #undef TARGET_X86
 
+/* Xbox build */
+#undef TARGET_XBOX
+
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #undef TIME_WITH_SYS_TIME
 
