@@ -56,7 +56,7 @@ endif
 ifeq (@FBRT_TARGET@,xbox)
 	DEFS += -DENABLE_XBOX -DDISABLE_CDROM
 	CFLAGS += -std=gnu99 -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-exceptions -mno-cygwin -march=i386 
-	INCLUDES = -I$(OPENXDK)/i386-pc-xbox/include -I$(OPENXDK)/include -I$(OPENXDK)/include/SDL
+	INCLUDES += -I$(OPENXDK)/i386-pc-xbox/include -I$(OPENXDK)/include -I$(OPENXDK)/include/SDL
 endif
 
 ALL_CFLAGS = $(CFLAGS) $(CPPFLAGS) $(INCLUDES) # $(WARN_CFLAGS) 
