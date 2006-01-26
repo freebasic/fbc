@@ -116,13 +116,6 @@ function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 		return NULL
 	end if
 
-	'' condition
-	astFLush( l )
-
-	''
-	exitlabel = symbAddLabel( NULL )
-
-	'' true expr
 	if( ast.doemit ) then
 		'' IR can't handle inter-blocks and live vregs atm, so any
 		'' register used must be spilled now or that could happen in a
@@ -133,6 +126,13 @@ function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 		'''''end if
 	end if
 
+	'' condition
+	astFLush( l )
+
+	''
+	exitlabel = symbAddLabel( NULL )
+
+	'' true expr
 	t = astNewASSIGN( astNewVAR( n->iif.sym, _
 								 0, _
 								 symbGetType( n->iif.sym ), _
