@@ -40,6 +40,7 @@ Version 0.16 Beta:
 - field dereference couldn't be used with CAST( ... ptr, ... ) (v1c)
 - INPUT$(n) was crashing when reading from console (v1c)
 - PAINT was crashing if using a buffer as target with a height bigger than the screen mode used (v1c)
+- debugging UDT fields wasn't been possible, all offsets were passed as 0 to GDB (v1c)
 
 
 Version 0.15 Beta:
