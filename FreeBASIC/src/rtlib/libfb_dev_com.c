@@ -177,7 +177,15 @@ int fb_DevComOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
     if (!fb_DevComTestProtocolEx( handle, filename, filename_len, &port ))
         return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
-    i = sprintf( achDev, "COM%u:", port );
+    if( port > 0 )
+    {
+    	i = sprintf( achDev, "COM%u:", port );
+    }
+    else
+    {
+    	i = (int)(strchr( filename, ':' ) - filename);
+    	strncpy( achDev, filename, i );
+    }
     achDev[i] = 0;
 
     FB_LOCK();

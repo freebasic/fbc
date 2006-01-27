@@ -52,8 +52,9 @@ int fb_DevComTestProtocolEx( struct _FB_FILE *handle,
 
     if( filename_len < 5 )
         return FALSE;
-    if( strncasecmp(filename, "COM", 3)!=0 )
-        return FALSE;
+    
+    if( strncasecmp(filename, "COM", 3) != 0 )
+    	return strchr( filename, ':' ) != NULL;
 
     port = 0;
     i = 3;

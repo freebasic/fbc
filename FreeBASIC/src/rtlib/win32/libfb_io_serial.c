@@ -148,7 +148,7 @@ int fb_SerialOpen( struct _FB_FILE *handle,
 
     free( pszDev );
 
-    if( hDevice==NULL )
+    if( hDevice==INVALID_HANDLE_VALUE )
         return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 
     /* Set rx/tx buffer sizes */
