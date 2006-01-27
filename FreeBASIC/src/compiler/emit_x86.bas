@@ -5216,7 +5216,7 @@ sub emitVARINI64( byval dtype as integer, _
 				  byval value as longint ) static
 	dim ostr as string
 
-	ostr = hGetTypeString( dtype ) + " " + str( value ) + NEWLINE
+	ostr = hGetTypeString( dtype ) + " 0x" + hex( value ) + NEWLINE
 	outEx( ostr )
 
 end sub
