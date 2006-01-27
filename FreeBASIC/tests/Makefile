@@ -37,7 +37,7 @@ clean: exe_clean sub_clean
 	
 .PHONY : exe_clean
 exe_clean: 
-	rm -f $(EXELIST) $(patsubst %$(EXEEXT),%.o,$^)
+	rm -f $(EXELIST) $(patsubst %$(EXEEXT),%.o,$(EXELIST))
 
 .PHONY : sub_clean
 sub_clean : $(MAKLIST)
