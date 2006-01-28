@@ -6,7 +6,7 @@ option explicit
 declare function clientSend( byval s as SOCKET, byval id as integer, byval buffer as zstring ptr ) as integer
 
 
-	if( not hStart( ) ) then
+	if( hStart( ) = FALSE ) then
 		hPrintError( hStart )
 		end
 	end if
@@ -19,7 +19,7 @@ declare function clientSend( byval s as SOCKET, byval id as integer, byval buffe
 	end if
 	
 	print "Connecting to "; SERVER_ADDR
-	if( not hConnect( s, hResolve( SERVER_ADDR ), SERVER_PORT ) ) then
+	if( hConnect( s, hResolve( SERVER_ADDR ), SERVER_PORT ) = FALSE ) then
 		hPrintError( hConnect )
 		end
 	end if
@@ -27,7 +27,7 @@ declare function clientSend( byval s as SOCKET, byval id as integer, byval buffe
     dim buffer as zstring * SERVER_BUFFSIZE+1
     
     print "Sending HELLO to server"
-    if( not clientSend( s, SERVER_MSG_HELLO, @buffer ) ) then
+    if( clientSend( s, SERVER_MSG_HELLO, @buffer ) = FALSE ) then
     	end
 	end if
     
@@ -47,7 +47,7 @@ declare function clientSend( byval s as SOCKET, byval id as integer, byval buffe
 		select case SERVER_ID( @buffer )
 		case SERVER_MSG_SUP
     		
-    		if( not clientSend( s, SERVER_MSG_BYE, @buffer ) ) then
+    		if( clientSend( s, SERVER_MSG_BYE, @buffer ) = FALSE ) then
 			
 			end if
     		
@@ -67,7 +67,7 @@ function clientSend( byval s as SOCKET, byval id as integer, byval buffer as zst
     
     SERVER_ID( buffer ) = id
 
-    if( not hSend( s, buffer, len( integer ) ) ) then
+    if( hSend( s, buffer, len( integer ) ) = FALSE ) then
 		hPrintError( hSend )
 		return FALSE
 	end if

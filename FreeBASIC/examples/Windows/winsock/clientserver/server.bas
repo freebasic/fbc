@@ -32,7 +32,7 @@ declare sub serverSend( byval client as CLIENT ptr )
 	
 	dim shared ctx as SERVERCTX
 	
-	if( not serverIni( ) ) then
+	if( serverIni( ) = FALSE ) then
 		serverEnd( )
 		end 
 	end if
@@ -48,7 +48,7 @@ declare sub serverSend( byval client as CLIENT ptr )
 function serverIni( ) as integer
 
 	'' start winsock
-	if( not hStart( ) ) then
+	if( hStart( ) = FALSE ) then
 		hPrintError( hStart )
 		return FALSE
 	end if
@@ -61,7 +61,7 @@ function serverIni( ) as integer
 	end if
 	
 	'' bind it to the server port
-	if( not hBind( ctx.socket, SERVER_PORT ) ) then
+	if( hBind( ctx.socket, SERVER_PORT ) = FALSE ) then
 		hPrintError( hBind )
 		return FALSE
 	end if	
@@ -322,7 +322,7 @@ end sub
 '':::::
 function serverRun( ) as integer
 	
-	if( not hListen( ctx.socket ) ) then
+	if( hListen( ctx.socket ) = FALSE ) then
 		return FALSE
 	end if
 	
