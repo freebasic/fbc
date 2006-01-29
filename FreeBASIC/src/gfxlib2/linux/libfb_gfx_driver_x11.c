@@ -176,7 +176,7 @@ static void x11_update(void)
 {
 	int i, y, h;
 	
-	blitter(image->data, image->bytes_per_line);
+	blitter((unsigned char *)image->data, image->bytes_per_line);
 	for (i = 0; i < fb_linux.h; i++) {
 		if (fb_mode->dirty[i]) {
 			for (y = i, h = 0; (fb_mode->dirty[i]) && (i < fb_linux.h); h++, i++)
