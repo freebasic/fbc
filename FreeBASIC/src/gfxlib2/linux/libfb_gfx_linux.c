@@ -156,7 +156,7 @@ static void *window_thread(void *arg)
 							fb_hRestorePalette();
 							fb_hMemSet(fb_mode->key, FALSE, 128);
 						}
-						else if ((Xutf8LookupString(xic, &event.xkey, key, 8, NULL, NULL) == 1) && (key[0] != 0x7F))
+						else if ((Xutf8LookupString(xic, &event.xkey, (char *)key, 8, NULL, NULL) == 1) && (key[0] != 0x7F))
 							fb_hPostKey(key[0]);
 						else {
 							switch (XKeycodeToKeysym(fb_linux.display, event.xkey.keycode, 0)) {
