@@ -2171,8 +2171,8 @@ end sub
 '':::::
 private sub _emitMOVL( byval dvreg as IRVREG ptr, _
 			   		   byval svreg as IRVREG ptr ) static
-    dim dst1 as string, dst2 as string, src1 as string, src2 as string
-    dim ostr as string
+
+    dim as string dst1, dst2, src1, src2, ostr
 
 	hPrepOperand64( dvreg, dst1, dst2 )
 	hPrepOperand64( svreg, src1, src2 )
@@ -2188,11 +2188,18 @@ end sub
 '':::::
 private sub _emitMOVI( byval dvreg as IRVREG ptr, _
 			 		   byval svreg as IRVREG ptr ) static
-    dim dst as string, src as string
-    dim ostr as string
 
-	hPrepOperand( dvreg, dst )
-	hPrepOperand( svreg, src )
+    dim as string dst, src, ostr
+
+	'' byte? handle SI, DI used as bytes..
+	if( irGetDataSize( dvreg->dtype ) = 1 ) then
+		'' MOV is only used when both operands are registers
+		dst = *hGetRegName( IR_DATATYPE_INTEGER, dvreg->reg )
+		src = *hGetRegName( IR_DATATYPE_INTEGER, svreg->reg )
+	else
+		hPrepOperand( dvreg, dst )
+		hPrepOperand( svreg, src )
+	end if
 
 	ostr = "mov " + dst + COMMA + src
 	outp ostr
