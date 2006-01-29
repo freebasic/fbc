@@ -7,17 +7,19 @@ option explicit
 
 #define NULL 0
 
+'':::::
 sub enter_callback( byval widget as GtkWidget ptr, _
                     byval entry as GtkWidget ptr )
   
-  dim as gchar ptr entry_text
+  dim as zstring ptr entry_text
   
   entry_text = gtk_entry_get_text (GTK_ENTRY (entry))
   
-  print "Entry contents: "; *cast( zstring ptr, entry_text )
+  print "Entry contents: "; *entry_text
 
 end sub
 
+'':::::
 sub entry_toggle_editable( byval checkbutton as GtkWidget ptr, _
                            byval entry as GtkWidget ptr )
 
@@ -26,14 +28,16 @@ sub entry_toggle_editable( byval checkbutton as GtkWidget ptr, _
 
 end sub
 
+'':::::
 sub entry_toggle_visibility( byval checkbutton as GtkWidget ptr, _
                              byval entry as GtkWidget ptr )
 
   gtk_entry_set_visibility (GTK_ENTRY (entry), _
-			    GTK_TOGGLE_BUTTON (checkbutton)->active)
+			    			GTK_TOGGLE_BUTTON (checkbutton)->active)
 
 end sub
 
+'':::::
 '' main
     dim as GtkWidget ptr win
     dim as GtkWidget ptr vbox, hbox
