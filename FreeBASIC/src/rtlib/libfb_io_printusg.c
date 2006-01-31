@@ -548,6 +548,8 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 
 		strcat( buffer, expbuff );
 	}
+	else
+		value_exp = 0;
 
 	/* sign */
 	if( signatend )
