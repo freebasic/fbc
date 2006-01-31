@@ -378,6 +378,18 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	/* ------------------------------------------------------ */
 
 	/**/
+	isneg = value < 0.0f;
+	value = fabs( value );
+
+	/* forced sign? */
+	if( !signatend && isneg )
+	{
+		signatini = 1;
+		/* one digit less.. */
+		if( intdigs > 0 )
+			--intdigs;
+	}
+
 	if( decdigs <= 0 )
 		totdigs = intdigs;
 	else
@@ -389,7 +401,8 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 		totdigs = 15;
 
 	value_exp = (int)floor( log10( value ) );
-	if( value_exp > intdigs )
+	/* exponent too big? scale */
+	if( value_exp >= intdigs )
 	{
 		value_exp -= (intdigs-1);
 		value /= pow( 10.0f, value_exp );
@@ -397,6 +410,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	else
 		value_exp = 0;
 
+	/* convert to string */
 	fb_hFloat2Str( value, buffer, totdigs, FB_F2A_NOEXP );
 
 	len = strlen( buffer );
@@ -411,16 +425,6 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 			--len;
 		}
 	}
-
-	/* negative? remove char.. */
-	if( buffer[0] == '-' )
-	{
-      	memmove( buffer, &buffer[1], len-1 + 1 );
-		isneg = 1;
-		--len;
-	}
-	else
-		isneg = 0;
 
 	/* any decimal places? */
 	p = strchr( buffer, '.' );
