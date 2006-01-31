@@ -389,7 +389,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 		totdigs = 15;
 
 	value_exp = (int)floor( log10( value ) );
-	if( abs( value_exp ) > intdigs )
+	if( value_exp > intdigs )
 	{
 		value_exp -= (intdigs-1);
 		value /= pow( 10.0f, value_exp );
@@ -548,8 +548,6 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 
 		strcat( buffer, expbuff );
 	}
-	else
-		value_exp = 0;
 
 	/* sign */
 	if( signatend )
