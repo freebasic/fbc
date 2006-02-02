@@ -43,6 +43,7 @@ Version 0.16 Beta:
 - debugging UDT fields wasn't been possible, all offsets were passed as 0 to GDB (v1c)
 - spilling byte registers would cause wrong code to be emitted in some cases (v1c)
 - profiling functions were been called inside destructors (v1c)
+- another PRINT USING fixes (v1c)
 
 
 Version 0.15 Beta:
