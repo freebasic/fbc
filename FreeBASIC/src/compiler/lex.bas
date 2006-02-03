@@ -389,8 +389,7 @@ private sub lexReadIdentifier( byval pid as zstring ptr, _
 							 ) static
 
 	dim as uinteger c
-	dim as integer skipchar = FALSE
-
+	dim as integer skipchar
 
 	'' (ALPHA | '_' | '.' )
 	*pid = lexEatChar( )
@@ -402,6 +401,7 @@ private sub lexReadIdentifier( byval pid as zstring ptr, _
 	pid += 1
 
 	tlen = 1
+	skipchar = FALSE
 
 	'' { [ALPHADIGIT | '_' | '.'] }
 	do
@@ -418,22 +418,25 @@ private sub lexReadIdentifier( byval pid as zstring ptr, _
 			exit do
 		end select
 
+		lexEatChar( )
+
 		if( skipchar = FALSE ) then
-			tlen += 1
-			if( tlen > FB_MAXNAMELEN ) then
+			'' no more room?
+			if( tlen = FB_MAXNAMELEN ) then
+ 				'' show warning?
  				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+					'' just once..
+					flags or= LEXCHECK_NOLINECONT
 	 				hReportWarning( FB_WARNINGMSG_IDNAMETOOBIG )
  				end if
 
-				tlen -= 1
 				skipchar = TRUE
+
+			else
+				*pid = c
+				pid += 1
+				tlen += 1
 			end if
-
-			*pid = lexEatChar( )
-			pid += 1
-
-		else
-			lexEatChar( )
 		end if
 
 	loop
@@ -488,11 +491,12 @@ private function lexReadNonDecNumber( byref pnum as zstring ptr, _
 	dim as uinteger value, c, first_c
 	dim as ulongint value64
 	dim as integer lgt
-	dim as integer skipchar = FALSE
+	dim as integer skipchar
 
 	islong = FALSE
 	value = 0
 	lgt = 0
+	skipchar = FALSE
 
 	select case as const lexCurrentChar( )
 	'' hex
@@ -685,36 +689,39 @@ private sub lexReadFloatNumber( byref pnum as zstring ptr, _
 
     dim as uinteger c
     dim as integer llen
-    dim as integer skipchar = FALSE
+    dim as integer skipchar
 
 	typ = FB_SYMBTYPE_DOUBLE
-
 	llen = tlen
+	skipchar = FALSE
 
 	'' DIGIT { DIGIT }
 	do
 		c = lexCurrentChar( )
 		select case c
 		case CHAR_0 to CHAR_9
+			lexEatChar( )
 			if( skipchar = FALSE ) then
-				*pnum = lexEatChar( )
+				*pnum = c
 				pnum += 1
 				tlen += 1
-			else
-				lexEatChar( )
 			end if
 		case else
 			exit do
 		end select
 
-		if( tlen > FB_MAXNUMLEN ) then
+		'' no more room?
+		if( tlen = FB_MAXNUMLEN ) then
+			'' not set yet?
 			if( skipchar = FALSE ) then
+				skipchar = TRUE
+			else
+ 				'' show warning?
  				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+ 					'' just once..
+ 					flags or= LEXCHECK_NOLINECONT
  					hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
 				end if
-
-				tlen -= 1
-				skipchar = TRUE
 			end if
 		end if
 	loop
@@ -747,12 +754,11 @@ private sub lexReadFloatNumber( byref pnum as zstring ptr, _
 		'' [opadd]
 		c = lexCurrentChar( )
 		if( (c = CHAR_PLUS) or (c = CHAR_MINUS) ) then
+			lexEatChar( )
 			if( skipchar = FALSE ) then
-				*pnum = lexEatChar( )
+				*pnum = c
 				pnum += 1
 				tlen += 1
-			else
-				lexEatChar( )
 			end if
 		end if
 
@@ -760,16 +766,30 @@ private sub lexReadFloatNumber( byref pnum as zstring ptr, _
 			c = lexCurrentChar( )
 			select case as const c
 			case CHAR_0 to CHAR_9
+				lexEatChar( )
 				if( skipchar = FALSE ) then
-					*pnum = lexEatChar( )
+					*pnum = c
 					pnum += 1
 					tlen += 1
-				else
-					lexEatChar( )
 				end if
 			case else
 				exit do
 			end select
+
+			'' no more room?
+			if( tlen = FB_MAXNUMLEN ) then
+				'' not set yet?
+				if( skipchar = FALSE ) then
+					skipchar = TRUE
+				else
+ 					'' show warning?
+ 					if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+ 						'' just once..
+ 						flags or= LEXCHECK_NOLINECONT
+ 						hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+					end if
+				end if
+			end if
 		loop
 
 	end select
@@ -805,7 +825,7 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 	dim as uinteger c
 	dim as integer isfloat, issigned, islong, forcedsign
 	dim as ulongint value
-	dim as integer skipchar = FALSE
+	dim as integer skipchar
 
 	isfloat    = FALSE
 	issigned   = TRUE
@@ -815,6 +835,7 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 	typ 	   = INVALID
 	*pnum 	   = 0
 	tlen 	   = 0
+	skipchar   = FALSE
 
 	c = lexEatChar( )
 
@@ -844,13 +865,12 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 				end if
 
 			case CHAR_1 to CHAR_9
+				lexEatChar( )
 				if( skipchar = FALSE ) then
-					*pnum = lexEatChar( )
+					*pnum = c
 					pnum += 1
 					tlen += 1
 					value = (value shl 3) + (value shl 1) + (c - CHAR_0)
-				else
-					lexEatChar( )
 				end if
 
 			case CHAR_DOT, CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
@@ -908,13 +928,19 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 						end if
 					end select
 
-					if( tlen > FB_MAXNUMLEN ) then
- 						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
- 							hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+					'' no more room?
+					if( tlen = FB_MAXNUMLEN ) then
+ 						'' not set yet?
+ 						if( skipchar = FALSE ) then
+ 							skipchar = TRUE
+ 						else
+ 							'' show warning?
+ 							if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+ 								'' just once..
+ 								flags or= LEXCHECK_NOLINECONT
+ 								hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+							end if
 						end if
-
-						tlen -= 1
-						skipchar = TRUE
 					end if
 				end if
 			end if
@@ -1049,11 +1075,13 @@ private sub lexReadString ( byval ps as zstring ptr, _
 
 	static as zstring * FB_MAXNUMLEN+1 nval
 	dim as integer rlen, i, ntyp, nlen
-	dim as integer skipchar = FALSE
+	dim as integer skipchar
+	dim as uinteger c
 
 	*ps = 0
 	tlen = 0
 	rlen = 0
+	skipchar = FALSE
 
 	'' skip open quote?
 	if( (flags and LEXCHECK_NOQUOTES) = 0 ) then
@@ -1176,24 +1204,28 @@ private sub lexReadString ( byval ps as zstring ptr, _
 			end if
 		end select
 
+		c = lexEatChar( )
+
 		if( skipchar = FALSE ) then
-			rlen += 1
-			if( rlen > FB_MAXLITLEN ) then
+			'' no more room?
+			if( rlen = FB_MAXLITLEN ) then
+				'' show warning?
 				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+					'' just once..
+					flags or= LEXCHECK_NOLINECONT
 					hReportWarning( FB_WARNINGMSG_LITSTRINGTOOBIG )
 				end if
 
-				rlen -= 1
 				skipchar = TRUE
+
+			else
+				*ps = c
+				ps += 1
+				tlen += 1
+				rlen += 1
 			end if
-
-			*ps = lexEatChar( )
-			ps += 1
-			tlen += 1
-
-		else
-			lexEatChar( )
 		end if
+
 	loop
 
 	'' null-term
@@ -1210,11 +1242,13 @@ private sub lexReadWStr ( byval ps as wstring ptr, _
 
 	static as zstring * FB_MAXNUMLEN+1 nval
 	dim as integer rlen, i, ntyp, nlen
-	dim as integer skipchar = FALSE
+	dim as integer skipchar
+	dim as uinteger c
 
 	*ps = 0
 	tlen = 0
 	rlen = 0
+	skipchar = FALSE
 
 	'' skip open quote?
 	if( (flags and LEXCHECK_NOQUOTES) = 0 ) then
@@ -1337,23 +1371,26 @@ private sub lexReadWStr ( byval ps as wstring ptr, _
 			end if
 		end select
 
+		c = lexEatChar( )
+
 		if( skipchar = FALSE ) then
-			rlen += 1
-			if( rlen > FB_MAXLITLEN ) then
+			'' no more room?
+			if( rlen = FB_MAXLITLEN ) then
+				'' show warning?
 				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+					'' just once..
+					flags or= LEXCHECK_NOLINECONT
 					hReportWarning( FB_WARNINGMSG_LITSTRINGTOOBIG )
 				end if
 
-				rlen -= 1
 				skipchar = TRUE
+
+			else
+				*ps = c
+				ps += 1
+				tlen += 1
+				rlen += 1
 			end if
-
-			*ps = lexEatChar( )
-			ps += 1
-			tlen += 1
-
-		else
-			lexEatChar( )
 		end if
 	loop
 
