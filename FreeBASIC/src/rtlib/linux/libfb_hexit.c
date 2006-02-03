@@ -68,7 +68,7 @@ void fb_hExitConsole( void )
 }
 
 /*:::::*/
-void fb_hEnd ( int errlevel )
+void fb_hEnd ( int unused )
 {
 	fb_hExitConsole();
 	if (fb_con.inited) {

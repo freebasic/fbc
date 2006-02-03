@@ -18,23 +18,39 @@
  */
 
 /*
- * exit.c -- end helper for Windows
+ * io_gethnd - console handle getter
  *
- * chng: jan/2005 written [v1ctor]
+ * chng: dec/2005 written [v1ctor]
  *
  */
 
-#include <stdlib.h>
-#include "fb.h"
+#include "fb_con.h"
 
+static HANDLE in_handle, out_handle;
 
 /*:::::*/
-void fb_hEnd ( int unused )
+HANDLE fb_hConsoleGetHandle( int is_input )
 {
+	static int is_init = FALSE;
 
-#ifdef MULTITHREADED
-	DeleteCriticalSection(&fb_global_mutex);
-	DeleteCriticalSection(&fb_string_mutex);
-#endif
+	if( is_init == FALSE )
+	{
+		is_init = TRUE;
 
+		in_handle = GetStdHandle( STD_INPUT_HANDLE );
+		out_handle = GetStdHandle( STD_OUTPUT_HANDLE );
+
+    	if( in_handle != NULL )
+	    {
+    	    /* Initialize console mode to enable processed input */
+        	DWORD dwMode;
+        	if( GetConsoleMode( in_handle, &dwMode ) )
+        	{
+            	dwMode |= ENABLE_PROCESSED_INPUT;
+            	SetConsoleMode( in_handle, dwMode );
+        	}
+    	}
+    }
+
+	return (is_input? in_handle : out_handle);
 }

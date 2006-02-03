@@ -29,7 +29,7 @@
 
 
 /*:::::*/
-void fb_hEnd ( int errlevel )
+void fb_hEnd ( int unused )
 {
 
 	/* do nothing */

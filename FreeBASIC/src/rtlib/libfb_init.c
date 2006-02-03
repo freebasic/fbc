@@ -27,6 +27,8 @@
 #include <stdlib.h>
 #include "fb.h"
 
+void fb_Exit ( void );
+
 /* globals */
 int fb_argc;
 char **fb_argv;
@@ -65,6 +67,9 @@ FBCALL void fb_Init ( int argc, char **argv )
 	for( i = 0; i < FB_TLSKEYS; i++ )
 		FB_TLSALLOC( fb_tls_ctxtb[i] );
 #endif
+
+	/* add rtlib's exit() to queue */
+	atexit( &fb_Exit );
 }
 
 

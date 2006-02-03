@@ -33,6 +33,15 @@ void fb_CallDTORS(void);
 /*:::::*/
 FBCALL void fb_End ( int errlevel )
 {
+	/* do nothing, real job is done at fb_Exit(), invoked by atexit() */
+
+	exit( errlevel );
+}
+
+
+/*:::::*/
+void fb_Exit ( void )
+{
 #ifdef MULTITHREADED
     int i;
 #endif
@@ -40,7 +49,7 @@ FBCALL void fb_End ( int errlevel )
     fb_CallDTORS();
 
 	/* os-dep termination */
-	fb_hEnd( errlevel );
+	fb_hEnd( 0 );
 
 #ifdef MULTITHREADED
 	/* free thread local storage plus the keys */
@@ -52,9 +61,6 @@ FBCALL void fb_End ( int errlevel )
 		FB_TLSFREE( fb_tls_ctxtb[i] );
 	}
 #endif
-
-	exit( errlevel );
-
 }
 
 

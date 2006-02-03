@@ -34,7 +34,6 @@ CRITICAL_SECTION fb_global_mutex;
 CRITICAL_SECTION fb_string_mutex;
 #endif
 
-HANDLE fb_in_handle, fb_out_handle;
 int ConsoleSetByUser = FALSE;
 int ScrollWasOff = FALSE;
 
@@ -56,19 +55,6 @@ void fb_hInit ( int argc, char **argv )
         __asm__ __volatile__( "fldcw %0" : : "m" (control_word) );
     }
 #endif
-
-
-	fb_in_handle = GetStdHandle( STD_INPUT_HANDLE );
-	fb_out_handle = GetStdHandle( STD_OUTPUT_HANDLE );
-
-    if( fb_in_handle!=NULL ) {
-        /* Initialize console mode to enable processed input */
-        DWORD dwMode;
-        if( GetConsoleMode( fb_in_handle, &dwMode ) ) {
-            dwMode |= ENABLE_PROCESSED_INPUT;
-            SetConsoleMode( fb_in_handle, dwMode );
-        }
-    }
 
 #ifdef MULTITHREADED
 	InitializeCriticalSection(&fb_global_mutex);

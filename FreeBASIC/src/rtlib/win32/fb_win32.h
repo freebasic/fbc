@@ -71,7 +71,8 @@ extern CRITICAL_SECTION fb_string_mutex;
 struct _FBSTRING;
 typedef void (*fb_FnProcessMouseEvent)(const MOUSE_EVENT_RECORD *pEvent);
 
-extern HANDLE fb_in_handle, fb_out_handle;
+#define fb_in_handle fb_hConsoleGetHandle( TRUE )
+#define fb_out_handle fb_hConsoleGetHandle( FALSE )
 extern const unsigned char fb_keytable[][3];
 extern SMALL_RECT srConsoleWindow;
 extern fb_FnProcessMouseEvent MouseEventHook;
@@ -114,6 +115,8 @@ FBCALL void fb_ConsoleGetScreenSize     ( int *cols, int *rows );
        int  fb_hConsoleGetKey           ( int full );
        int  fb_hConsolePeekKey          ( int full );
        void fb_hConsolePutBackEvents    ( void );
+
+       HANDLE fb_hConsoleGetHandle		( int is_input );
 
 #define FB_CONSOLE_WINDOW_EMPTY() \
     ((srConsoleWindow.Left==srConsoleWindow.Right) \
