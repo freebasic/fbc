@@ -359,7 +359,8 @@ function hEscapeWstr( byval text as wstring ptr ) as zstring ptr static
 				i = char
 				char = 0
 
-				if( src + i >= src_end ) then exit do
+				if( src + i > src_end ) then exit do
+
 				do while( i > 0 )
 					char = (char * 8) + (*src - CHAR_0)
 					src += 1
@@ -395,7 +396,7 @@ function hEscapeWstr( byval text as wstring ptr ) as zstring ptr static
 			    case asc( "u" )
 			    	'' x86 little-endian assumption
 			    	char = 0
-			    	if( src + 4 >= src_end ) then exit do
+			    	if( src + 4 > src_end ) then exit do
 			    	for i = 1 to 4
 			    		c = (*src - CHAR_0)
 			    		src +=1
