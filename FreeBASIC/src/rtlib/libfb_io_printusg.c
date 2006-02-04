@@ -402,13 +402,26 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 
 	value_exp = (int)floor( log10( value ) );
 	/* exponent too big? scale */
-	if( value_exp >= intdigs )
+	if( value_exp >= 0 )
 	{
-		value_exp -= (intdigs-1);
-		value /= pow( 10.0f, value_exp );
+		if( value_exp >= intdigs )
+		{
+			value_exp -= (intdigs-1);
+			value /= pow( 10.0f, value_exp );
+		}
+		else
+			value_exp = 0;
 	}
 	else
-		value_exp = 0;
+	{
+		if( -value_exp >= decdigs )
+		{
+			value_exp -= (intdigs-1);
+			value *= pow( 10.0f, -value_exp );
+		}
+		else
+			value_exp = 0;
+	}
 
 	/* convert to string */
 	fb_hFloat2Str( value, buffer, totdigs, FB_F2A_NOEXP );
