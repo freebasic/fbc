@@ -544,7 +544,7 @@ function symbAddProc( byval proc as FBSYMBOL ptr, _
 end function
 
 '':::::
-function symbPreAddProc( ) as FBSYMBOL ptr static
+function symbPreAddProc( byval symbol as zstring ptr ) as FBSYMBOL ptr static
     dim as FBSYMBOL ptr proc
 
 	proc = listNewNode( @symb.symlist )
@@ -556,6 +556,7 @@ function symbPreAddProc( ) as FBSYMBOL ptr static
 	proc->proc.args 		= 0
 	proc->proc.argtb.head	= NULL
 	proc->proc.argtb.tail	= NULL
+	proc->name				= symbol
 
 	function = proc
 

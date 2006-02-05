@@ -239,7 +239,7 @@ declare function 	symbAddProc				( byval proc as FBSYMBOL ptr, _
 					  						  byval alloctype as integer, _
 					  						  byval mode as integer ) as FBSYMBOL ptr
 
-declare function 	symbPreAddProc			( ) as FBSYMBOL ptr
+declare function 	symbPreAddProc			( byval symbol as zstring ptr ) as FBSYMBOL ptr
 
 declare function 	symbAddProcResult		( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
 

@@ -100,7 +100,7 @@ private sub hDllMainBegin( )
     dim as integer argn
 
 	''
-	proc = symbPreAddProc( )
+	proc = symbPreAddProc( NULL )
 
 	'' instance
 	symbAddArg( proc, "{dllmain_instance}", _
@@ -194,7 +194,7 @@ private sub hMainBegin( byval isdllmain as integer )
     dim as integer alloctype
 
 	''
-	proc = symbPreAddProc( )
+	proc = symbPreAddProc( NULL )
 
 	'' argc
 	symbAddArg( proc, "{argc}", _
@@ -276,7 +276,7 @@ private sub hModLevelBegin( )
     dim as FBSYMBOL ptr proc
 
 	''
-	proc = symbAddProc( symbPreAddProc( ), _
+	proc = symbAddProc( symbPreAddProc( NULL ), _
 						strptr( "{main}" ), fbGetModuleEntry( ), NULL, _
 						FB_SYMBTYPE_VOID, NULL, 0, _
 						FB_ALLOCTYPE_PRIVATE or FB_ALLOCTYPE_CONSTRUCTOR or _

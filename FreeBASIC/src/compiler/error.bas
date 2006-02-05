@@ -289,6 +289,7 @@ private function hReportMakeDesc( byval proc as FBSYMBOL ptr, _
 								) as zstring ptr
 
     static as zstring * FB_MAXNAMELEN*2+32+1 desc
+    dim as zstring ptr pname
 
 	if( pnum > 0 ) then
 		desc = "at parameter " + str( pnum )
@@ -338,15 +339,24 @@ private function hReportMakeDesc( byval proc as FBSYMBOL ptr, _
 		end if
 
 		if( showname ) then
-			if( pnum > 0 ) then
-				desc += " of "
+			pname = symbGetOrgName( proc )
+			if( pname <> NULL ) then
+				if( len( *pname ) = 0 ) then
+					pname = symbGetName( proc )
+				end if
 			end if
-			if( len( *symbGetOrgName( proc ) ) > 0 ) then
-				desc += *symbGetOrgName( proc )
-			else
-				desc += *symbGetName( proc )
+
+			if( pname <> NULL ) then
+				if( pnum > 0 ) then
+					desc += " of "
+				end if
+				if( len( *symbGetOrgName( proc ) ) > 0 ) then
+					desc += *symbGetOrgName( proc )
+				else
+					desc += *symbGetName( proc )
+				end if
+				desc += "()"
 			end if
-			desc += "()"
 		end if
 	end if
 

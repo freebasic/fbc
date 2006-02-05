@@ -140,7 +140,7 @@ function cSubOrFuncDecl( byval isSub as integer ) as integer static
 		palias = NULL
 	end if
 
-	proc = symbPreAddProc( )
+	proc = symbPreAddProc( id )
 
 	'' ('(' Arguments? ')')?
 	if( lexGetToken( ) = CHAR_LPRNT ) then

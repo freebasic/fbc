@@ -142,7 +142,7 @@ sub rtlAddIntrinsicProcs( )
 
 		assert( ( errorcheck and ptype = FB_SYMBTYPE_INTEGER ) or not errorcheck )
 
-		proc = symbPreAddProc( )
+		proc = symbPreAddProc( NULL )
 
 		'' for each argument..
 		for a = 0 to pargs-1

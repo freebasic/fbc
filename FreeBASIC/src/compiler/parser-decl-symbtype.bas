@@ -103,7 +103,7 @@ function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
 	'' mode
 	mode = cFunctionMode( )
 
-	proc = symbPreAddProc( )
+	proc = symbPreAddProc( NULL )
 
 	'' ('(' Argument? ')')
 	if( hMatch( CHAR_LPRNT ) ) then

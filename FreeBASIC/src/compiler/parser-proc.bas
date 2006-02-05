@@ -212,7 +212,7 @@ function cSubOrFuncHeader( byval issub as integer, _
 		palias = NULL
 	end if
 
-	proc = symbPreAddProc( )
+	proc = symbPreAddProc( @id )
 
 	'' ('(' Arguments? ')')?
 	if( lexGetToken( ) = CHAR_LPRNT ) then
