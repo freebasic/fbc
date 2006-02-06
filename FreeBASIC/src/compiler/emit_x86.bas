@@ -1048,12 +1048,12 @@ sub emitSECTION( byval section as integer ) static
 	case EMIT_SECTYPE_DIRECTIVE
 		ostr += "drectve"
 	case EMIT_SECTYPE_CONSTRUCTOR
-		ostr += "fb_ctors"
+		ostr += "ctors"
 		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
 			ostr += ", \"aw\", @progbits"
 		end if
 	case EMIT_SECTYPE_DESTRUCTOR
-		ostr += "fb_dtors"
+		ostr += "dtors"
 		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
 			ostr += ", \"aw\", @progbits"
 		end if

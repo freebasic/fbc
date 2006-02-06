@@ -489,11 +489,6 @@ function rtlInitRt( byval argc as ASTNODE ptr, _
     	end if
     end if
 
-    '' call all freebasic constructor functions
-    '' CallCTORS()
-    proc = astNewFUNCT( PROCLOOKUP( INITCTOR ), NULL, TRUE )
-    astAdd( proc )
-
 end function
 
 '':::::
