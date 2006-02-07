@@ -10,6 +10,7 @@
 #define __shlguid_bi__
 
 #inclib "uuid"
+#inclib "shell32"
 
 #define DEFINE_SHLGUID(n,l,w1,w2) DEFINE_GUID(n,l,w1,w2,&hC0,0,0,0,0,0,0,&h46)
 #define SID_SShellBrowser IID_IShellBrowser
