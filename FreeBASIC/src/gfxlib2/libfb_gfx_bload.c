@@ -64,7 +64,7 @@ static void convert_8to16(unsigned char *src, unsigned char *dest, int w)
 {
 	int r, g, b;
 	unsigned short *d = (unsigned short *)dest;
-	
+
 	for (; w; w--) {
 		r = fb_mode->device_palette[*src] & 0xFF;
 		g = (fb_mode->device_palette[*src] >> 8) & 0xFF;
@@ -80,7 +80,7 @@ static void convert_8to32(unsigned char *src, unsigned char *dest, int w)
 {
 	int r, g, b;
 	unsigned int *d = (unsigned int *)dest;
-	
+
 	for (; w; w--) {
 		r = fb_mode->device_palette[*src] & 0xFF;
 		g = (fb_mode->device_palette[*src] >> 8) & 0xFF;
@@ -106,7 +106,7 @@ static void convert_24to16(unsigned char *src, unsigned char *dest, int w)
 static void convert_24to32(unsigned char *src, unsigned char *dest, int w)
 {
 	unsigned int *d = (unsigned int *)dest;
-	
+
 	for (; w; w--) {
 		*d++ = *(unsigned int *)src & 0xFFFFFF;
 		src += 3;
@@ -119,7 +119,7 @@ static void convert_32to16(unsigned char *src, unsigned char *dest, int w)
 {
 	unsigned short *d = (unsigned short *)dest;
 	unsigned int *s = (unsigned int *)src;
-	
+
 	for (; w; w--) {
 		*d++ = (unsigned short)(((*s & 0xFF) >> 3) | ((*s >> 5) & 0x07E0) | ((*s >> 8) & 0xF800));
 		s++;
@@ -142,14 +142,14 @@ static int load_bmp(FILE *f, void *dest)
 	int result = FB_RTERROR_OK;
 	int i, j, color, rgb[3], expand, size, padding, palette[256], palette_entries;
 	void (*convert)(unsigned char *, unsigned char *, int) = NULL;
-	
+
 	if (!fb_mode)
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
-	
+
 	/* This will need adjustment if/when we port to big-endian (like PPC) machines */
 	if ((!fread(&header, 54, 1, f)) || (header.bfType != 19778) || (header.biSize != 40))
 		return FB_RTERROR_FILEIO;
-	
+
 	if ((header.biBitCount == 15) || (header.biBitCount == 16))
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
 	palette_entries = (header.bfOffBits - 54) >> 2;
@@ -157,13 +157,13 @@ static int load_bmp(FILE *f, void *dest)
 		palette[i] = (fgetc(f) << 16) | (fgetc(f) << 8) | fgetc(f);
 		fgetc(f);
 	}
-	
+
 	if (dest) {
-		*(unsigned short *)dest = header.biWidth << 3;
+		*(unsigned short *)dest = (header.biWidth << 3) | fb_mode->bpp;
 		*(unsigned short *)(dest + 2) = header.biHeight;
 		d = (unsigned char *)dest + 4;
 	}
-	
+
 	expand = (header.biBitCount < 8) ? header.biBitCount : 0;
 	if (header.biCompression == BI_BITFIELDS) {
 		if ((!fread(rgb, 12, 1, f)) || (rgb[0] != 0x00FF0000))
@@ -235,9 +235,9 @@ static int load_bmp(FILE *f, void *dest)
 exit_error:
 	SET_DIRTY(0, fb_mode->h);
 	DRIVER_UNLOCK();
-	
+
 	free(buffer);
-	
+
 	return result;
 }
 
@@ -249,17 +249,17 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 	unsigned char id;
 	unsigned int size = 0;
 	int result = FB_RTERROR_OK;
-	
+
 	if ((!dest) && (!fb_mode))
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	
+
 	f = fopen(filename->data, "rb");
 
 	if (!f) {
 		fb_hStrDelTemp(filename);
 		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 	}
-	
+
 	fb_hPrepareTarget(NULL);
 
 	id = fgetc(f);
@@ -275,7 +275,7 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 			/* FB BSAVEd block */
 			size = fgetc(f) | (fgetc(f) << 8) | (fgetc(f) << 16) | (fgetc(f) << 24);
 			break;
-		
+
 		case 'B':
 			/* Can be a BMP */
 			rewind(f);
@@ -283,7 +283,7 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 			fclose(f);
 			fb_hStrDelTemp(filename);
 			return result;
-			
+
 		default:
 			result = FB_RTERROR_FILEIO;
 			break;
@@ -308,8 +308,8 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 		}
 	}
 	fclose(f);
-	
+
 	fb_hStrDelTemp(filename);
-	
+
 	return fb_ErrorSetNum( result );
 }
