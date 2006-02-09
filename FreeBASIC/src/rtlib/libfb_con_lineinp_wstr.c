@@ -97,11 +97,11 @@ int fb_ConsoleLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars,
     }
 
     {
-        FBSTRING *str_result = fb_StrAllocTempDescZ( NULL );
+        FBSTRING str_result = { 0 };
 
-        res = fb_DevFileReadLineDumb( stdin, str_result, hWrapper );
+        res = fb_DevFileReadLineDumb( stdin, &str_result, hWrapper );
 
-        len = FB_STRSIZE(str_result);
+        len = FB_STRSIZE(&str_result);
 
         if( !addnewline )
         {
@@ -119,7 +119,9 @@ int fb_ConsoleLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars,
             fb_Locate( old_y, old_x, -1 );
         }
 
-        fb_WstrAssignFromA( dst, max_chars, str_result, -1 );
+        fb_WstrAssignFromA( dst, max_chars, (void *)&str_result, -1 );
+
+        fb_StrDelete( &str_result );
     }
 
 	FB_UNLOCK();

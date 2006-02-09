@@ -107,12 +107,11 @@ int fb_ConsoleLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
 
     {
         /* create temporary string */
-        FBSTRING *str_result = fb_StrAllocTempDescZ( NULL );
-        DBG_ASSERT(str_result != NULL);
+        FBSTRING str_result = { 0 };
 
-        res = fb_DevFileReadLineDumb( stdin, str_result, hWrapper );
+        res = fb_DevFileReadLineDumb( stdin, &str_result, hWrapper );
 
-        len = FB_STRSIZE(str_result);
+        len = FB_STRSIZE(&str_result);
 
         /* We have to handle the NEWLINE stuff here because we *REQUIRE*
          * the *COMPLETE* temporary input string for the correct position
@@ -136,8 +135,10 @@ int fb_ConsoleLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
 
 
         /* add contents of tempporary string to result buffer */
-        fb_StrAssign( dst, dst_len, str_result, -1, fillrem );
-        /* INFO: temporary string will be deleted during assignment */
+        fb_StrAssign( dst, dst_len, (void *)&str_result, -1, fillrem );
+
+        fb_StrDelete( &str_result );
+
     }
 
 	FB_UNLOCK();

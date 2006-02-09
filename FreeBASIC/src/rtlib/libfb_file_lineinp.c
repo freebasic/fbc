@@ -43,7 +43,6 @@ static int fb_hFileLineInputEx( FB_FILE *handle,
 {
 	int			len, readlen;
 	char		buffer[BUFFER_LEN];
-    FBSTRING   *str_result;
     eInputMode  mode = eIM_Invalid;
 
     if( !FB_HANDLE_USED(handle) )
@@ -119,16 +118,26 @@ static int fb_hFileLineInputEx( FB_FILE *handle,
         /* The read line mode is the most comfortable ... but IMHO it's
          * only useful for special devices (like SCRN:) */
         {
-            /* create temporary string */
-            str_result = fb_StrAllocTempDescZ( NULL );
-            DBG_ASSERT(str_result != NULL);
+            /* destine is a var-len string? read directly */
+            if( dst_len == -1 )
+            {
+            	handle->hooks->pfnReadLine( handle, dst );
+            }
+            /* fixed-len or unknown size (ie: pointers)? use a temp var-len */
+            else
+            {
+            	FBSTRING str_result = { 0 };
 
-            /* read complete line (may include NULs) */
-            handle->hooks->pfnReadLine( handle, str_result );
+            	/* read complete line (may include NULs) */
+            	handle->hooks->pfnReadLine( handle, &str_result );
 
-            /* add contents of tempporary string to result buffer */
-            fb_StrAssign( dst, dst_len, str_result, -1, fillrem );
-            /* INFO: temporary string will be deleted during assignment */
+            	/* add contents of tempporary string to result buffer */
+            	fb_StrAssign( dst, dst_len, (void *)&str_result, -1, fillrem );
+
+            	/* delete result */
+            	fb_StrDelete( &str_result );
+            }
+
         }
         break;
     case eIM_Invalid:

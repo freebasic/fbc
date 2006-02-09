@@ -40,12 +40,15 @@ static char *hWrapper( char *buffer, size_t count, FILE *fp )
 int fb_DevFileReadLineDumb( FILE *fp, FBSTRING *dst, fb_FnDevReadString pfnReadString )
 {
     int res = fb_ErrorSetNum( FB_RTERROR_OK );
-    char buffer[512];
-    size_t buffer_len = sizeof(buffer);
-    int found;
+    size_t buffer_len;
+    int found, first_run;
     FBSTRING *src;
+    char buffer[512];
 
     DBG_ASSERT( dst!=NULL );
+
+    buffer_len = sizeof(buffer);
+    first_run = TRUE;
 
 	FB_LOCK();
 
@@ -53,7 +56,8 @@ int fb_DevFileReadLineDumb( FILE *fp, FBSTRING *dst, fb_FnDevReadString pfnReadS
 		pfnReadString = hWrapper;
 
     found = FALSE;
-    while (!found) {
+    while (!found)
+    {
         int tmp_buf_len;
 
         memset( buffer, 0, buffer_len );
@@ -62,6 +66,10 @@ int fb_DevFileReadLineDumb( FILE *fp, FBSTRING *dst, fb_FnDevReadString pfnReadS
         {
             /* EOF reached ... this is not an error !!! */
             res = FB_RTERROR_FILEIO; /* but we have to notify the caller */
+
+            if( first_run )
+            	fb_StrDelete( dst );
+
             break;
         }
 
@@ -113,10 +121,15 @@ int fb_DevFileReadLineDumb( FILE *fp, FBSTRING *dst, fb_FnDevReadString pfnReadS
 
         /* create temporary string to ensure that NUL's are preserved ...
          * this function wants the length WITH the NUL character!!! */
-        src = fb_StrAllocTempDescF( buffer, buffer_len + 1);
+        src = fb_StrAllocTempDescF( buffer, buffer_len + 1 );
 
-        /* concatenate */
-        fb_StrConcatAssign ( dst, -1, src, -1, FALSE );
+        /* assign or concatenate */
+        if( first_run )
+        	fb_StrAssign( dst, -1, src, -1, FALSE );
+        else
+        	fb_StrConcatAssign( dst, -1, src, -1, FALSE );
+
+        first_run = FALSE;
 
         /* the temporary string is already deleted by fb_StrConcatAssign */
 
