@@ -44,6 +44,7 @@ Version 0.16 Beta:
 - spilling byte registers would cause wrong code to be emitted in some cases (v1c)
 - profiling functions were been called inside destructors (v1c)
 - another PRINT USING fixes (v1c)
+- LINE INPUT # had a memory leak (v1c)
 
 
 Version 0.15 Beta:
