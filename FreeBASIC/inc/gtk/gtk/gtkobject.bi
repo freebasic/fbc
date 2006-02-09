@@ -20,6 +20,15 @@
 #define GTK_IS_OBJECT_CLASS(klass)	GTK_CHECK_CLASS_TYPE(klass, GTK_TYPE_OBJECT)
 #define	GTK_OBJECT_GET_CLASS(object)	GTK_CHECK_GET_CLASS(object, GTK_TYPE_OBJECT, GtkObjectClass)
 
+#define GTK_OBJECT_TYPE(object) (G_TYPE_FROM_INSTANCE (object))
+#define GTK_OBJECT_TYPE_NAME(object) (g_type_name (GTK_OBJECT_TYPE (object)))
+
+#define GTK_OBJECT_FLAGS(obj) (GTK_OBJECT (obj)->flags)
+#define GTK_OBJECT_FLOATING(obj) ((GTK_OBJECT_FLAGS (obj) & GTK_FLOATING) != 0)
+
+#define GTK_OBJECT_SET_FLAGS(obj,flag) GTK_OBJECT_FLAGS (obj) or= (flag)
+#define GTK_OBJECT_UNSET_FLAGS(obj,flag) GTK_OBJECT_FLAGS (obj) and= not (flag)
+
 enum GtkObjectFlags
 	GTK_IN_DESTRUCTION = 1 shl 0
 	GTK_FLOATING = 1 shl 1
