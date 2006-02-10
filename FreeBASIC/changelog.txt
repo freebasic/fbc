@@ -45,6 +45,7 @@ Version 0.16 Beta:
 - profiling functions were been called inside destructors (v1c)
 - another PRINT USING fixes (v1c)
 - LINE INPUT # had a memory leak (v1c)
+- precision when converting doubles to strings was one digit too low causing problem with 64-bit int consts assigned to floats (v1c)
 
 
 Version 0.15 Beta:
