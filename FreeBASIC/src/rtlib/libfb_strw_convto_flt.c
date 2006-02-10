@@ -33,7 +33,7 @@ FBCALL FB_WCHAR *fb_FloatToWstr ( float num )
     int len;
 
 	/* alloc temp string */
-    dst = fb_wstr_AllocTemp( 8+8 );
+    dst = fb_wstr_AllocTemp( 7+8 );
 	if( dst != NULL )
     {
 		/* convert */

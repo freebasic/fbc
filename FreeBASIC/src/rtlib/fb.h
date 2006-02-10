@@ -453,7 +453,6 @@ FBCALL FBSTRING    *fb_FloatToStr      	( float num );
 FBCALL FBSTRING    *fb_DoubleToStr     	( double num );
 
 #define FB_F2A_ADDBLANK     0x00000001
-#define FB_F2A_NOEXP     0x00000002
 
 FBCALL double       fb_hStr2Double      ( char *src, int len );
 FBCALL int          fb_hStr2Int         ( char *src, int len );

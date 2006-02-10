@@ -37,31 +37,12 @@ FB_WCHAR *fb_FloatExToWstr( double val, FB_WCHAR *buffer, int digits, int mask )
 	else
 		p = buffer;
 
-	/* no exponent? (if exp is too big, that won't matter) */
-	if( (mask & FB_F2A_NOEXP) > 0 )
-	{
-        swprintf( p, 16+8+1, _LC("%.*f"), digits, val );
-	}
-	else
-	{
-        swprintf( p, 16+8+1, _LC("%.*g"), digits, val );
-	}
+	swprintf( p, 16+8+1, _LC("%.*g"), digits, val );
 
 	len = fb_wstr_Len( p );
 
 	if( len > 0 )
 	{
-		if( (mask & FB_F2A_NOEXP) > 0 )
-		{
-			/* skip the zeros at end */
-			r = &p[len - 1];
-			while( *r == _LC('0') )
-			{
-				*r-- = _LC('\0');
-				--len;
-			}
-		}
-
 		/* skip the dot at end if any */
 		if( len > 0 )
 			if( p[len-1] == _LC('.') )

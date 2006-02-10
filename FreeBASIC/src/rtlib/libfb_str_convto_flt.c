@@ -39,7 +39,7 @@ FBCALL FBSTRING *fb_FloatToStr ( float num )
 	FBSTRING 	*dst;
 
 	/* alloc temp string */
-    dst = fb_hStrAllocTemp( NULL, 8+8 );
+    dst = fb_hStrAllocTemp( NULL, 7+8 );
 	if( dst != NULL )
     {
         size_t tmp_len;
@@ -83,9 +83,9 @@ FBCALL FBSTRING *fb_DoubleToStr ( double num )
 
 		/* convert */
 #ifdef TARGET_WIN32
-		_gcvt( num, 15, dst->data );
+		_gcvt( num, 16, dst->data );
 #else
-		sprintf( dst->data, "%.15g", num);
+		sprintf( dst->data, "%.16g", num );
 #endif
 
 		tmp_len = strlen( dst->data );				/* fake len */

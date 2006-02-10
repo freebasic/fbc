@@ -73,7 +73,7 @@ typedef unsigned char  UTF_8;
 
 #ifndef FB_WSTR_FROM_FLOAT
 #define FB_WSTR_FROM_FLOAT( buffer, num ) \
-    swprintf( buffer, 8+8 + 1, _LC("%.8g"), (double) (num) )
+    swprintf( buffer, 7+8 + 1, _LC("%.7g"), (double) (num) )
 #endif
 
 #ifndef FB_WSTR_FROM_DOUBLE

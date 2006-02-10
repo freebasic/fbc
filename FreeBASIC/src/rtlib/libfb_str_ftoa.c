@@ -37,42 +37,37 @@ char *fb_hFloat2Str( double val, char *buffer, int digits, int mask )
 {
 	int len;
 	char *p;
-	char fmtstr[16];
+	char fmtstr[16], *fstr;
 
 	if( mask & FB_F2A_ADDBLANK )
 		p = &buffer[1];
 	else
 		p = buffer;
 
-	/* no exponent? (if exp is too big, that won't matter) */
-	if( (mask & FB_F2A_NOEXP) > 0 )
-	{
-		sprintf( fmtstr, "%%.%df", digits );
-		if( snprintf( p, digits+1+3+1+1+1, fmtstr, val ) <= 0 )
-			return NULL;
-	}
-	else
-	{
-		/* why not use always %f? because it will print dizima's,
-		   123467.9 will become 123467.89999999999 for example */
 #ifdef TARGET_WIN32
-		_gcvt( val, digits, p );
+	_gcvt( val, digits, p );
 #else
+	switch( digits )
+	{
+	case 7:
+		fstr = (char *)&"%.7g";
+		break;
+	case 16:
+		fstr = (char *)&"%.16g";
+		break;
+	default:
 		sprintf( fmtstr, "%%.%dg", digits );
-		if( snprintf( p, digits+1+3+1+1+1, fmtstr, val ) <= 0 )
-			return NULL;
-#endif
+		fstr = &fmtstr[0];
 	}
+
+	if( snprintf( p, digits+1+3+1+1+1, fstr, val ) <= 0 )
+		return NULL;
+#endif
 
 	len = strlen( p );
 
 	if( len > 0 )
 	{
-		if( (mask & FB_F2A_NOEXP) > 0 )
-			/* skip the zeros at end */
-			while( p[len-1] == '0' )
-				p[--len] = '\0';
-
 		/* skip the dot at end if any */
 		if( len > 0 )
 			if( p[len-1] == '.' )

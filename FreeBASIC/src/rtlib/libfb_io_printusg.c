@@ -397,8 +397,8 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 
 	if( totdigs <= 0 )
 		totdigs = 1;
-	else if( totdigs > 15 )
-		totdigs = 15;
+	else if( totdigs > 16 )
+		totdigs = 16;
 
 	value_exp = (int)floor( log10( value ) );
 	/* exponent too big? scale */
@@ -424,7 +424,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	}
 
 	/* convert to string */
-	fb_hFloat2Str( value, buffer, totdigs, FB_F2A_NOEXP );
+	fb_hFloat2Str( value, buffer, totdigs, 0 );
 
 	len = strlen( buffer );
 

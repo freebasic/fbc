@@ -41,6 +41,6 @@ FBCALL void fb_WriteDouble ( int fnum, double val, int mask )
 {
 	char buffer[16+1+8+1];
 
-	fb_WriteFixString( fnum, fb_hFloat2Str( val, buffer, 15, FB_F2A_ADDBLANK ), mask );
+	fb_WriteFixString( fnum, fb_hFloat2Str( val, buffer, 16, FB_F2A_ADDBLANK ), mask );
 
 }
