@@ -27,6 +27,7 @@ option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\dstr.bi"
 #include once "inc\lex.bi"
 #include once "inc\pp.bi"
 #include once "inc\ast.bi"
@@ -58,6 +59,13 @@ end sub
 
 '':::::
 sub lexPopCtx( )
+
+	'' free dynamic strings used in macro expansions
+	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
+		DZstrAllocate( lex->deftext, 0 )
+	else
+		DWstrAllocate( lex->deftextw, 0 )
+	end if
 
 	lex -= 1
 
@@ -110,9 +118,11 @@ sub lexInit( byval isinclude as integer )
 	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
 		lex->buffptr	= NULL
 		lex->defptr		= NULL
+		DZstrAllocate( lex->deftext, 0 )
 	else
 		lex->buffptrw	= NULL
 		lex->defptrw	= NULL
+		DWstrAllocate( lex->deftextw, 0 )
 	end if
 
 	''

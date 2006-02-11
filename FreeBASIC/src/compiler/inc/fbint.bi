@@ -29,9 +29,6 @@ const FB_MAXINTNAMELEN		= FB_MAXNAMELEN + 1 + 1 + 2 + 1 + _
 
 const FB_MAXINTLITLEN		= FB_MAXLITLEN + 32
 
-const FB_MAXINTDEFINELEN	= FB_MAXDEFINELEN + _
-							  (FB_MAXPROCARGS * (len( short ) + 2))	'' arg pattern..
-
 const FB_MAXGOTBITEMS		= 64
 
 ''

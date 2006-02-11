@@ -20,6 +20,8 @@
 '' lex protos
 ''
 
+#include once "inc\dstr.bi"
+
 enum LEXCHECK_ENUM
 	LEXCHECK_EVERYTHING	= 0
 	LEXCHECK_NOLINECONT	= 1
@@ -73,12 +75,12 @@ type LEX_CTX
 	union
 		type
 			defptr 				as zstring ptr
-			deftext				as zstring * FB_MAXINTDEFINELEN+1
+			deftext				as DZSTRING
 		end type
 
 		type
 			defptrw				as wstring ptr
-			deftextw			as wstring * FB_MAXINTDEFINELEN+1
+			deftextw			as DWSTRING
 		end type
 	end union
 

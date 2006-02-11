@@ -202,9 +202,9 @@ private function hLoadDefine( byval s as FBSYMBOL ptr ) as integer
 
 		''
 		if( lex->deflen = 0 ) then
-			lex->deftext = text
+			DZstrAssign( lex->deftext, text )
 		else
-			lex->deftext = text + *lex->defptr
+			DZstrAssign( lex->deftext, text + *lex->defptr )
 		end if
 
 	'' no args
@@ -220,9 +220,9 @@ private function hLoadDefine( byval s as FBSYMBOL ptr ) as integer
             end if
 
 			if( lex->deflen = 0 ) then
-				lex->deftext = text
+				DZstrAssign( lex->deftext, text )
 			else
-				lex->deftext = text + *lex->defptr
+				DZstrAssign( lex->deftext, text + *lex->defptr )
 			end if
 
             lgt = len( text )
@@ -241,16 +241,18 @@ private function hLoadDefine( byval s as FBSYMBOL ptr ) as integer
 
 			if( symbGetType( s ) <> IR_DATATYPE_WCHAR ) then
 				if( lex->deflen = 0 ) then
-					lex->deftext = *symbGetDefineText( s )
+					DZstrAssign( lex->deftext, symbGetDefineText( s ) )
 				else
-					lex->deftext = *symbGetDefineText( s ) + *lex->defptr
+					DZstrAssign( lex->deftext, _
+								 *symbGetDefineText( s ) + *lex->defptr )
 				end if
 
 			else
 				if( lex->deflen = 0 ) then
-					lex->deftext = *symbGetDefineTextW( s )
+					DZstrAssignW( lex->deftext, symbGetDefineTextW( s ) )
 				else
-					lex->deftext = str( *symbGetDefineTextW( s ) ) + *lex->defptr
+					DZstrAssign( lex->deftext, _
+								 str( *symbGetDefineTextW( s ) ) + *lex->defptr )
 				end if
 			end if
 
@@ -260,14 +262,8 @@ private function hLoadDefine( byval s as FBSYMBOL ptr ) as integer
 	end if
 
     ''
-	lex->defptr = @lex->deftext
+	lex->defptr = lex->deftext.data
 	lex->deflen += lgt
-
-	if( lex->deflen > FB_MAXINTDEFINELEN ) then
-		lex->deflen = FB_MAXINTDEFINELEN
-		hReportError( FB_ERRMSG_MACROTEXTTOOLONG )
-		exit function
-	end if
 
 	'' force a re-read
 	lex->currchar = cuint( INVALID )
@@ -412,9 +408,9 @@ private function hLoadDefineW( byval s as FBSYMBOL ptr ) as integer
 
 		''
 		if( lex->deflen = 0 ) then
-			lex->deftextw = *text.data
+			DWstrAssign( lex->deftextw, text.data )
 		else
-			lex->deftextw = *text.data + *lex->defptrw
+			DWstrAssign( lex->deftextw, *text.data + *lex->defptrw )
 		end if
 
 	'' no args
@@ -430,9 +426,9 @@ private function hLoadDefineW( byval s as FBSYMBOL ptr ) as integer
             end if
 
 			if( lex->deflen = 0 ) then
-				lex->deftextw = *text.data
+				DWstrAssign( lex->deftextw, text.data )
 			else
-				lex->deftextw = *text.data + *lex->defptrw
+				DWstrAssign( lex->deftextw, *text.data + *lex->defptrw )
 			end if
 
             lgt = len( *text.data )
@@ -451,16 +447,18 @@ private function hLoadDefineW( byval s as FBSYMBOL ptr ) as integer
 
 			if( symbGetType( s ) <> IR_DATATYPE_WCHAR ) then
 				if( lex->deflen = 0 ) then
-					lex->deftextw = *symbGetDefineText( s )
+					DWstrAssignA( lex->deftextw, symbGetDefineText( s ) )
 				else
-					lex->deftextw = wstr( *symbGetDefineText( s ) ) + *lex->defptrw
+					DWstrAssign( lex->deftextw, _
+								 wstr( *symbGetDefineText( s ) ) + *lex->defptrw )
 				end if
 
 			else
 				if( lex->deflen = 0 ) then
-					lex->deftextw = *symbGetDefineTextW( s )
+					DWstrAssign( lex->deftextw, symbGetDefineTextW( s ) )
 				else
-					lex->deftextw = *symbGetDefineTextW( s ) + *lex->defptrw
+					DWstrAssign( lex->deftextw, _
+								 *symbGetDefineTextW( s ) + *lex->defptrw )
 				end if
 			end if
 
@@ -470,7 +468,7 @@ private function hLoadDefineW( byval s as FBSYMBOL ptr ) as integer
 	end if
 
     ''
-	lex->defptrw = @lex->deftextw
+	lex->defptrw = lex->deftextw.data
 	lex->deflen += lgt
 
 	function = TRUE
@@ -484,12 +482,6 @@ function ppDefineLoad( byval s as FBSYMBOL ptr ) as integer
 		function = hLoadDefine( s )
 	else
 		function = hLoadDefineW( s )
-	end if
-
-	if( lex->deflen > FB_MAXINTDEFINELEN ) then
-		lex->deflen = FB_MAXINTDEFINELEN
-		hReportError( FB_ERRMSG_MACROTEXTTOOLONG )
-		exit function
 	end if
 
 	'' force a re-read
@@ -641,7 +633,7 @@ function ppDefine( ) as integer
 	static as zstring * FB_MAXNAMELEN+1 defname, argname
 	dim as zstring ptr text
 	dim as wstring ptr textw
-	dim as integer args, isargless, textlen
+	dim as integer args, isargless
 	dim as FBDEFARG ptr arghead, lastarg
 	dim as FBSYMBOL ptr s
 	dim as FBDEFTOK ptr tokhead
@@ -711,13 +703,6 @@ function ppDefine( ) as integer
     		'' LITERAL*
     		text = ppReadLiteral( )
 
-    		'' check len, use the sentinel as "text" is a static zstring
-    		textlen = len( *text )
-    		if( textlen = FB_MAXINTDEFINELEN+1 ) then
-				hReportError( FB_ERRMSG_MACROTEXTTOOLONG )
-				exit function
-    		end if
-
     		'' already defined? if there are no differences, do nothing..
     		if( s <> NULL ) then
     			if( (symbGetDefineArgs( s ) > 0) or _
@@ -731,7 +716,7 @@ function ppDefine( ) as integer
     			end if
 
     		else
-    			symbAddDefine( @defname, text, textlen, isargless )
+    			symbAddDefine( @defname, text, len( *text ), isargless )
 
     		end if
 
@@ -739,13 +724,6 @@ function ppDefine( ) as integer
     	else
     		'' LITERAL*
     		textw = ppReadLiteralW( )
-
-    		'' check len, use the sentinel as "text" is a static wstring
-    		textlen = len( *textw )
-    		if( textlen = FB_MAXINTDEFINELEN+1 ) then
-				hReportError( FB_ERRMSG_MACROTEXTTOOLONG )
-				exit function
-    		end if
 
     		'' already defined? if there are no differences, do nothing..
     		if( s <> NULL ) then
@@ -760,7 +738,7 @@ function ppDefine( ) as integer
     			end if
 
     		else
-    			symbAddDefineW( @defname, textw, textlen, isargless )
+    			symbAddDefineW( @defname, textw, len( *textw ), isargless )
 
     		end if
 

@@ -25,6 +25,7 @@ option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\dstr.bi"
 #include once "inc\lex.bi"
 #include once "inc\parser.bi"
 #include once "inc\pp.bi"
@@ -216,9 +217,10 @@ end function
 
 '':::::
 function ppReadLiteral( ) as zstring ptr
-	static as zstring * FB_MAXINTDEFINELEN+1+1 text			'' +1 sentinel..
+	static as DZSTRING text
 
-    text = ""
+    DZstrAllocate( text, 0 )
+
     do
     	select case lexGetToken( LIT_FLAGS )
 		case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
@@ -230,16 +232,16 @@ function ppReadLiteral( ) as zstring ptr
     		(env.opt.escapestr) ) then
 
     		if( lexGetType() <> IR_DATATYPE_WCHAR ) then
-    			text += *hUnescapeStr( lexGetText( ) )
+    			DZstrConcatAssign( text, hUnescapeStr( lexGetText( ) ) )
     		else
-    			text += str( *hUnescapeWstr( lexGetTextW( ) ) )
+    			DZstrConcatAssignW( text, hUnescapeWstr( lexGetTextW( ) ) )
     		end if
 
     	else
     		if( lexGetType() <> IR_DATATYPE_WCHAR ) then
-    			text += *lexGetText( )
+    			DZstrConcatAssign( text, lexGetText( ) )
     		else
-    		    text += str( *lexGetTextW( ) )
+    		    DZstrConcatAssignW( text, lexGetTextW( ) )
     		end if
     	end if
 
@@ -247,15 +249,16 @@ function ppReadLiteral( ) as zstring ptr
 
     loop
 
-	function = @text
+	function = text.data
 
 end function
 
 '':::::
 function ppReadLiteralW( ) as wstring ptr
-	static as wstring * FB_MAXINTDEFINELEN+1+1 text			'' +1 sentinel..
+	static as DWSTRING text
 
-    text = ""
+    DWstrAllocate( text, 0 )
+
     do
     	select case lexGetToken( LIT_FLAGS )
 		case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
@@ -267,16 +270,16 @@ function ppReadLiteralW( ) as wstring ptr
     		(env.opt.escapestr) ) then
 
     		if( lexGetType() = IR_DATATYPE_WCHAR ) then
-    			text += *hUnescapeWstr( lexGetTextW( ) )
+    			DWstrConcatAssign( text, hUnescapeWstr( lexGetTextW( ) ) )
     		else
-    			text += *hUnescapeStr( lexGetText( ) )
+    			DWstrConcatAssignA( text, hUnescapeStr( lexGetText( ) ) )
     		end if
 
     	else
     		if( lexGetType() = IR_DATATYPE_WCHAR ) then
-    			text += *lexGetTextW( )
+    			DWstrConcatAssign( text, lexGetTextW( ) )
     		else
-    			text += *lexGetText( )
+    			DWstrConcatAssignA( text, lexGetText( ) )
     		end if
     	end if
 
@@ -284,7 +287,7 @@ function ppReadLiteralW( ) as wstring ptr
 
     loop
 
-	function = @text
+	function = text.data
 
 end function
 
