@@ -719,6 +719,8 @@ type FBS_UDT
 	lfldlen			as integer					'' largest field len
 	bitpos			as uinteger
 	unpadlgt		as integer					'' unpadded len
+	ptrcnt			as integer
+	dyncnt			as integer
 	dbg				as FB_TYPEDBG
 end type
 

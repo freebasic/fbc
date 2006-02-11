@@ -796,6 +796,13 @@ function rtlFilePut( byval filenum as ASTNODE ptr, _
     	bytes = astNewBOP( IR_OP_MUL, elements, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ) )
     end if
 
+    '' any pointer fields?
+    if( astGetDataType( src ) = FB_SYMBTYPE_USERDEF ) then
+    	if( symbGetUDTPtrCnt( astGetSubType( src ) ) <> 0 ) then
+            hReportParamWarning( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
+    	end if
+    end if
+
     '' value as any | s as string
     if( astNewPARAM( proc, src ) = NULL ) then
  		exit function
@@ -850,6 +857,13 @@ function rtlFilePutArray( byval filenum as ASTNODE ptr, _
     if( astNewPARAM( proc, offset ) = NULL ) then
  		exit function
  	end if
+
+    '' any pointer fields?
+    if( astGetDataType( src ) = FB_SYMBTYPE_USERDEF ) then
+    	if( symbGetUDTPtrCnt( astGetSubType( src ) ) <> 0 ) then
+            hReportParamWarning( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
+    	end if
+    end if
 
     '' array() as any
     if( astNewPARAM( proc, src ) = NULL ) then
@@ -924,6 +938,13 @@ function rtlFileGet( byval filenum as ASTNODE ptr, _
     	bytes = astNewBOP( IR_OP_MUL, elements, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ) )
     end if
 
+    '' any pointer fields?
+    if( astGetDataType( dst ) = FB_SYMBTYPE_USERDEF ) then
+    	if( symbGetUDTPtrCnt( astGetSubType( dst ) ) <> 0 ) then
+            hReportParamWarning( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
+    	end if
+    end if
+
     '' value as any
     if( astNewPARAM( proc, dst ) = NULL ) then
  		exit function
@@ -978,6 +999,13 @@ function rtlFileGetArray( byval filenum as ASTNODE ptr, _
     if( astNewPARAM( proc, offset ) = NULL ) then
  		exit function
  	end if
+
+    '' any pointer fields?
+    if( astGetDataType( dst ) = FB_SYMBTYPE_USERDEF ) then
+    	if( symbGetUDTPtrCnt( astGetSubType( dst ) ) <> 0 ) then
+            hReportParamWarning( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
+    	end if
+    end if
 
     '' array() as any
     if( astNewPARAM( proc, dst ) = NULL ) then

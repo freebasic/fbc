@@ -59,6 +59,8 @@ function symbAddUDT( byval parent as FBSYMBOL ptr, _
 	t->udt.lfldlen		= 0
 	t->udt.bitpos		= 0
 	t->udt.unpadlgt 	= 0
+	t->udt.ptrcnt		= 0
+	t->udt.dyncnt		= 0
 
 	t->udt.dbg.typenum	= INVALID
 
@@ -326,6 +328,22 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 
 	'' multiple len by all array elements (if any)
 	lgt *= e->var.array.elms
+
+	'' check ptr or var-len string fields
+	select case typ
+	case is >= FB_SYMBTYPE_POINTER
+		p = t
+		do
+			p->udt.ptrcnt += 1
+    		p = p->udt.parent
+    	loop while( p <> NULL )
+    case FB_SYMBTYPE_STRING
+		p = t
+		do
+			p->udt.dyncnt += 1
+    		p = p->udt.parent
+    	loop while( p <> NULL )
+	end select
 
 	if( updateudt ) then
 		'' struct?

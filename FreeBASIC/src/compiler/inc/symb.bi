@@ -517,6 +517,10 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 
 #define symbGetUDTElements(s) s->udt.elements
 
+#define symbGetUDTPtrCnt(s) (s->udt.ptrcnt + s->udt.dyncnt)
+
+#define symbGetUDTDynCnt(s) s->udt.dyncnt
+
 #define symbGetENUMFirstElm(s) s->enum.elmtb.head
 
 #define symbGetENUMNextElm(e) e->next

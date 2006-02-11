@@ -129,6 +129,11 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 				exit function
 			end if
 
+			'' any pointer fields?
+			if( symbGetUDTDynCnt( l->subtype ) <> 0 ) then
+				hReportWarning( FB_WARNINGMSG_DYNAMICFIELDS )
+			end if
+
             '' fake l's type
             ldtype   = proc->proc.realtype
             lsubtype = NULL
@@ -140,6 +145,11 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
         	'' different subtypes?
 			if( l->subtype <> r->subtype ) then
 				exit function
+			end if
+
+			'' any dynamic fields?
+			if( symbGetUDTDynCnt( l->subtype ) <> 0 ) then
+				hReportWarning( FB_WARNINGMSG_DYNAMICFIELDS )
 			end if
 
 			return astNewMEM( IR_OP_MEMMOVE, l, r, symbGetUDTLen( l->subtype ) )

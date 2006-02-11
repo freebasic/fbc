@@ -53,7 +53,9 @@ end type
 		( 0, "Cannot export symbol without -export option" ), _
 		( 0, "Identifier's name too big, truncated" ), _
 		( 0, "Literal number too big, truncated" ), _
-		( 0, "Literal string too big, truncated" ) _
+		( 0, "Literal string too big, truncated" ), _
+		( 0, "UDT with pointer or dynamic string fields" ), _
+		( 0, "UDT with dynamic string fields" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring * 128 => _
