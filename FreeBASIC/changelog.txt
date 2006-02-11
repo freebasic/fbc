@@ -7,6 +7,7 @@ Version 0.16 Beta:
   in most libraries, not "-1" as in BASIC, so any checks must be changed to: "IF SomeFunction( ) = FALSE THEN ..." (v1c)
 - when aborting because run-time errors, the name of the module that caused the error will be printed too (v1c)
 - runtime error checking removed from getmouse() and getjoystick() (v1c)
+- the size of argument-less #defines and macro expansions text can be now up to 2GB (v1c)
 
 [added]
 - anonymous UDT's that can be passed as parameters or used in assignments, like:
