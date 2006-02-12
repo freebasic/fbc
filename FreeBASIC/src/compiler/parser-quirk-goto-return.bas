@@ -107,9 +107,10 @@ function cGotoStmt as integer
 	case FB_TK_RETURN
 		lexSkipToken( )
 
-		'' Comment|StmtSep|EOF? just return
+		'' Comment|StmtSep|EOF|ELSE? just return
 		select case lexGetToken( )
-		case FB_TK_EOL, FB_TK_STATSEPCHAR, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
+		case FB_TK_EOL, FB_TK_STATSEPCHAR, FB_TK_EOF, FB_TK_COMMENTCHAR, _
+			 FB_TK_REM, FB_TK_ELSE
 
 			'' try to guess here.. if inside a proc currently and no user label was
 			'' emitted, it's probably a FUNCTION return, not a GOSUB return
@@ -136,7 +137,8 @@ function cGotoStmt as integer
 
 			'' Comment|StmtSep|EOF following? check if it's not an already defined label
 			select case lexGetLookAhead( 1 )
-			case FB_TK_EOL, FB_TK_STATSEPCHAR, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
+			case FB_TK_EOL, FB_TK_STATSEPCHAR, FB_TK_EOF, FB_TK_COMMENTCHAR, _
+				 FB_TK_REM, FB_TK_ELSE
 				if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
 					l = symbFindByNameAndClass( lexGetText( ), FB_SYMBCLASS_LABEL )
 				else
