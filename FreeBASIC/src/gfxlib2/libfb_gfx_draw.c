@@ -35,7 +35,7 @@
 #define SQRT_2		1.4142135623730950488016
 
 
-static float base_scale = 4.0, base_angle = 0.0;
+static float base_scale = 1.0, base_angle = 0.0;
 
 
 /*:::::*/
@@ -161,6 +161,8 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 			case 'M':
 				c++;
 				rel = FALSE;
+				while ((*c == ' ') || (*c == '\t'))
+					c++;
 				if (*c == '+')
 					rel = TRUE;
 				if ((value1 = parse_number(&c)) == NAN)
