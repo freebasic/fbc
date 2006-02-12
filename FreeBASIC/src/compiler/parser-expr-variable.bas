@@ -480,7 +480,12 @@ function cFuncPtrOrDerefFields( byval typ as integer, _
 			end if
 		'' sub..
 		else
-			if( cProcCall( subtype, funcexpr, varexpr ) = FALSE ) then
+			if( env.isexpr = FALSE ) then
+				if( cProcCall( subtype, funcexpr, varexpr ) = FALSE ) then
+					exit function
+				end if
+			else
+				hReportError( FB_ERRMSG_SYNTAXERROR )
 				exit function
 			end if
 		end if

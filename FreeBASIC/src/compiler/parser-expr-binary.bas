@@ -120,7 +120,11 @@ end function
 ''
 function cExpression( byref expr as ASTNODE ptr ) as integer
 
+	env.isexpr = TRUE
+
 	function = cCatExpression( expr )
+
+	env.isexpr = FALSE
 
 end function
 

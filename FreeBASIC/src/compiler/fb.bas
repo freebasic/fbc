@@ -156,6 +156,7 @@ private sub hSetCtx( )
 	env.prntopt				= FALSE
 	env.checkarray			= TRUE
 	env.ctxsym 				= NULL
+	env.isexpr 				= FALSE
 
 	''
 	env.forstmt.endlabel	= NULL
