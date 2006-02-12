@@ -244,7 +244,7 @@ static int directx_init(void)
 	if (IDirectDraw2_CreateSurface(lpDD, &desc, &lpDDS, NULL) != DD_OK)
 		return -1;
 
-	if (!fb_win32.flags & DRIVER_FULLSCREEN) {
+	if (!(fb_win32.flags & DRIVER_FULLSCREEN)) {
 		if (IDirectDrawSurface_SetClipper(lpDDS, lpDDC) != DD_OK)
 			return -1;
 		fb_hMemSet(&desc, 0, sizeof(DDSURFACEDESC));
