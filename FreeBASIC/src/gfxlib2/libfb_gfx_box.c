@@ -32,10 +32,10 @@
  * Also assumes color is already masked. */
 
 /*:::::*/
-void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full)
+void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full, unsigned int style)
 {
-	unsigned char *dest;
-	int clipped_x1, clipped_y1, clipped_x2, clipped_y2, w, h;
+	unsigned char *dest, rot;
+	int clipped_x1, clipped_y1, clipped_x2, clipped_y2, w, h, bit;
 	
 	if ((x2 < fb_mode->view_x) || (y2 < fb_mode->view_y) ||
 	    (x1 >= fb_mode->view_x + fb_mode->view_w) || (y1 >= fb_mode->view_y + fb_mode->view_h))
@@ -58,18 +58,72 @@ void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full)
 		}
 	}
 	else {
-		if (x1 >= fb_mode->view_x) {
-			for (h = clipped_y1; h < clipped_y2; h++)
-				fb_hPutPixel(x1, h, color);
+		bit = 0x8000;
+		if (style != 0xFFFF) {
+			rot = (clipped_x1 - x1) & 0xF;
+			__asm__ __volatile__("rorw %1, %0" : "=m"(bit) : "c"(rot) : "memory");
+		}
+		if (y2 < fb_mode->view_y + fb_mode->view_h) {
+			if (style == 0xFFFF)
+				fb_hPixelSet(fb_mode->line[y2] + (clipped_x1 * fb_mode->bpp), color, clipped_x2 - clipped_x1 + 1);
+			else {
+				for (w = clipped_x1; w <= clipped_x2; w++) {
+					if (style & bit)
+						fb_hPutPixel(w, y2, color);
+					__asm__ __volatile__("rorw $1, %0" : "=m"(bit) : : "memory");
+				}
+			}
+		}
+		else if (style != 0xFFFF) {
+			rot = (clipped_x2 - clipped_x1 + 1) & 0xF;
+			__asm__ __volatile__("rorw %1, %0" : "=m"(bit) : "c"(rot) : "memory");
+		}
+		if (style != 0xFFFF) {
+			rot = ((x2 - clipped_x2) + (clipped_x1 - x1)) & 0xF;
+			__asm__ __volatile__("rorw %1, %0" : "=m"(bit) : "c"(rot) : "memory");
+		}
+		
+		if (y1 >= fb_mode->view_y) {
+			if (style == 0xFFFF)
+				fb_hPixelSet(fb_mode->line[y1] + (clipped_x1 * fb_mode->bpp), color, clipped_x2 - clipped_x1 + 1);
+			else {
+				for (w = clipped_x1; w <= clipped_x2; w++) {
+					if (style & bit)
+						fb_hPutPixel(w, y1, color);
+					__asm__ __volatile__("rorw $1, %0" : "=m"(bit) : : "memory");
+				}
+			}
+		}
+		else if (style != 0xFFFF) {
+			rot = (clipped_x2 - clipped_x1 + 1) & 0xF;
+			__asm__ __volatile__("rorw %1, %0" : "=m"(bit) : "c"(rot) : "memory");
+		}
+		if (style != 0xFFFF) {
+			rot = ((x2 - clipped_x2) + (clipped_y1 - y1)) & 0xF;
+			__asm__ __volatile__("rorw %1, %0" : "=m"(bit) : "c"(rot) : "memory");
 		}
 		if (x2 < fb_mode->view_x + fb_mode->view_w) {
-			for (h = clipped_y1; h < clipped_y2; h++)
-				fb_hPutPixel(x2, h, color);
+			for (h = clipped_y1; h <= clipped_y2; h++) {
+				if (style & bit)
+					fb_hPutPixel(x2, h, color);
+				__asm__ __volatile__("rorw $1, %0" : "=m"(bit) : : "memory");
+			}
 		}
-		if (y1 >= fb_mode->view_y)
-			fb_hPixelSet(fb_mode->line[y1] + (clipped_x1 * fb_mode->bpp), color, clipped_x2 - clipped_x1 + 1);
-		if (y2 < fb_mode->view_y + fb_mode->view_h)
-			fb_hPixelSet(fb_mode->line[y2] + (clipped_x1 * fb_mode->bpp), color, clipped_x2 - clipped_x1 + 1);
+		else if (style != 0xFFFF) {
+			rot = (clipped_y2 - clipped_y1 + 1) & 0xF;
+			__asm__ __volatile__("rorw %1, %0" : "=m"(bit) : "c"(rot) : "memory");
+		}
+		if (style != 0xFFFF) {
+			rot = ((y2 - clipped_y2) + (clipped_y1 - y1)) & 0xF;
+			__asm__ __volatile__("rorw %1, %0" : "=m"(bit) : "c"(rot) : "memory");
+		}
+		if (x1 >= fb_mode->view_x) {
+			for (h = clipped_y1; h <= clipped_y2; h++) {
+				if (style & bit)
+					fb_hPutPixel(x1, h, color);
+				__asm__ __volatile__("rorw $1, %0" : "=m"(bit) : : "memory");
+			}
+		}
 	}
 	
 	SET_DIRTY(clipped_y1, clipped_y2 - clipped_y1 + 1);

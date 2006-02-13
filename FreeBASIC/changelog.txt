@@ -50,6 +50,7 @@ Version 0.16 Beta:
 - default drawing scale for DRAW statement is now as in QB 4.5; also fixed relative M command parsing (lillo)
 - calling void function pointers in expressions was been allowed (v1c)
 - passing GFX_NO_SWITCH to SCREEN resulted in a program freeze when using the DirectX gfx driver (lillo)
+- styled box drawing was mistakenly not implemented (lillo)
 
 
 Version 0.15 Beta:

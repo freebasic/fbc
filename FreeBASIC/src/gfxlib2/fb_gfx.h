@@ -239,7 +239,7 @@ extern void fb_hPrepareTarget(void *target);
 extern void fb_hTranslateCoord(float fx, float fy, int *x, int *y);
 extern void fb_hFixRelative(int coord_type, float *x1, float *y1, float *x2, float *y2);
 extern void fb_hFixCoordsOrder(int *x1, int *y1, int *x2, int *y2);
-extern void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full);
+extern void fb_hGfxBox(int x1, int y1, int x2, int y2, unsigned int color, int full, unsigned int style);
 extern void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh);
 extern void *fb_hMemCpyMMX(void *dest, const void *src, size_t size);
 extern void *fb_hMemSetMMX(void *dest, int value, size_t size);

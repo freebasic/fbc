@@ -55,7 +55,7 @@ FBCALL void fb_GfxView(int x1, int y1, int x2, int y2, unsigned int fill_color, 
 
         if (border_color != DEFAULT_COLOR) {
             border_color = fb_hFixColor(border_color);
-            fb_hGfxBox(x1 - 1, y1 - 1, x2 + 1, y2 + 1, border_color & fb_mode->color_mask, FALSE);
+            fb_hGfxBox(x1 - 1, y1 - 1, x2 + 1, y2 + 1, border_color & fb_mode->color_mask, FALSE, 0xFFFF);
         }
 
         if (fill_color != DEFAULT_COLOR) {
