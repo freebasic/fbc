@@ -66,9 +66,11 @@ static const MODEINFO mode_info[NUM_MODES] = {
  {1280,1024, 8, 1, &fb_palette_256, &fb_font_8x16, 160, 64 },		/* 21: 1280x1024 */
 };
 
-static char window_title_buff[WINDOW_TITLE_SIZE] = "";
+static char window_title_buff[WINDOW_TITLE_SIZE] = { 0 };
 static char *window_title = NULL;
 static int  exit_proc_set = FALSE;
+
+static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, int refresh_rate, int flags);
 
 
 static void release_gfx_mem(void)
@@ -109,7 +111,7 @@ static void release_gfx_mem(void)
 static void exit_proc(void)
 {
     if( fb_mode )
-        fb_GfxScreen(0, 0, 0, SCREEN_EXIT, 0);
+        set_mode(NULL, 0, 0, 0, 0, SCREEN_EXIT);
 }
 
 /* Dummy function to ensure that the CONSOLE "update" hook for a VIEW PRINT
@@ -393,7 +395,7 @@ FBCALL int fb_GfxScreenRes(int w, int h, int depth, int num_pages, int flags, in
 /*:::::*/
 FBCALL void fb_GfxSetWindowTitle(FBSTRING *title)
 {
-	strncpy(window_title_buff, title->data, WINDOW_TITLE_SIZE - 1);
+	strncpy(window_title_buff, title->data, MIN(WINDOW_TITLE_SIZE - 1, FB_STRSIZE(title)));
 	window_title = window_title_buff;
 
 	if ((fb_mode) && (fb_mode->driver->set_window_title))

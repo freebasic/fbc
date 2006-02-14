@@ -72,10 +72,10 @@ static int parse_number(char **str)
 FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 {
 	float x, y, dx, dy, ax, ay, x2, y2, scale = 1.0, angle = 0.0;
-	char *c = command->data;
+	char *c;
 	int draw = TRUE, move = TRUE, length = 0, value1, value2, flags, rel, ix, iy;
 
-	if (!fb_mode)
+	if ((!fb_mode) || (!command) || (!command->data))
 		return;
 	
 	fb_hPrepareTarget(target);
@@ -88,7 +88,7 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 	flags = fb_mode->flags;
 	fb_mode->flags |= VIEW_SCREEN;
 
-	while (*c) {
+	for (c = command->data; *c;) {
 		switch (toupper(*c)) {
 
 			case 'B':
