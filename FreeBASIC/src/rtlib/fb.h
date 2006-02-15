@@ -559,7 +559,7 @@ FBCALL int          fb_WstrInstr        ( int start, const FB_WCHAR *src,
 FBCALL int          fb_WstrInstrAny     ( int start, const FB_WCHAR *src,
 										  const FB_WCHAR *patt );
 FBCALL FB_WCHAR    *fb_WstrMid          ( const FB_WCHAR *src, int start, int len );
-FBCALL void         fb_WstrAssignMid    ( FB_WCHAR *dst, int start, int len,
+FBCALL void         fb_WstrAssignMid    ( FB_WCHAR *dst, int dst_len, int start, int len,
 										  const FB_WCHAR *src );
 
 /**************************************************************************************************
