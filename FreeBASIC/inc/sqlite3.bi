@@ -63,7 +63,7 @@ declare function sqlite3_total_changes cdecl alias "sqlite3_total_changes" (byva
 declare sub sqlite3_interrupt cdecl alias "sqlite3_interrupt" (byval as sqlite3 ptr)
 declare function sqlite3_complete cdecl alias "sqlite3_complete" (byval sql as zstring ptr) as integer
 declare function sqlite3_complete16 cdecl alias "sqlite3_complete16" (byval sql as any ptr) as integer
-declare function sqlite3_busy_handler cdecl alias "sqlite3_busy_handler" (byval as sqlite3 ptr, byval as function(byval as any ptr, byval as integer) as integer, byval as any ptr) as integer
+declare function sqlite3_busy_handler cdecl alias "sqlite3_busy_handler" (byval as sqlite3 ptr, byval as function cdecl(byval as any ptr, byval as integer) as integer, byval as any ptr) as integer
 declare function sqlite3_busy_timeout cdecl alias "sqlite3_busy_timeout" (byval as sqlite3 ptr, byval ms as integer) as integer
 declare function sqlite3_get_table cdecl alias "sqlite3_get_table" (byval as sqlite3 ptr, byval sql as zstring ptr, byval resultp as byte ptr ptr ptr, byval nrow as integer ptr, byval ncolumn as integer ptr, byval errmsg as byte ptr ptr) as integer
 declare sub sqlite3_free_table cdecl alias "sqlite3_free_table" (byval result as byte ptr ptr)
@@ -71,7 +71,7 @@ declare function sqlite3_mprintf cdecl alias "sqlite3_mprintf" (byval as zstring
 declare function sqlite3_vmprintf cdecl alias "sqlite3_vmprintf" (byval as zstring ptr, byval as any ptr) as zstring ptr
 declare sub sqlite3_free cdecl alias "sqlite3_free" (byval z as zstring ptr)
 declare function sqlite3_snprintf cdecl alias "sqlite3_snprintf" (byval as integer, byval as zstring ptr, byval as zstring ptr, ...) as zstring ptr
-declare function sqlite3_set_authorizer cdecl alias "sqlite3_set_authorizer" (byval as sqlite3 ptr, byval xAuth as function(byval as any ptr, byval as integer, byval as zstring ptr, byval as zstring ptr, byval as zstring ptr, byval as zstring ptr) as integer, byval pUserData as any ptr) as integer
+declare function sqlite3_set_authorizer cdecl alias "sqlite3_set_authorizer" (byval as sqlite3 ptr, byval xAuth as function cdecl(byval as any ptr, byval as integer, byval as zstring ptr, byval as zstring ptr, byval as zstring ptr, byval as zstring ptr) as integer, byval pUserData as any ptr) as integer
 
 #define SQLITE_COPY 0
 #define SQLITE_CREATE_INDEX 1
@@ -104,9 +104,9 @@ declare function sqlite3_set_authorizer cdecl alias "sqlite3_set_authorizer" (by
 #define SQLITE_DENY 1
 #define SQLITE_IGNORE 2
 
-declare function sqlite3_trace cdecl alias "sqlite3_trace" (byval as sqlite3 ptr, byval xTrace as sub(byval as any ptr, byval as zstring ptr), byval as any ptr) as any ptr
-declare sub sqlite3_progress_handler cdecl alias "sqlite3_progress_handler" (byval as sqlite3 ptr, byval as integer, byval as function(byval as any ptr) as integer, byval as any ptr)
-declare function sqlite3_commit_hook cdecl alias "sqlite3_commit_hook" (byval as sqlite3 ptr, byval as function(byval as any ptr) as integer, byval as any ptr) as any ptr
+declare function sqlite3_trace cdecl alias "sqlite3_trace" (byval as sqlite3 ptr, byval xTrace as sub cdecl(byval as any ptr, byval as zstring ptr), byval as any ptr) as any ptr
+declare sub sqlite3_progress_handler cdecl alias "sqlite3_progress_handler" (byval as sqlite3 ptr, byval as integer, byval as function cdecl(byval as any ptr) as integer, byval as any ptr)
+declare function sqlite3_commit_hook cdecl alias "sqlite3_commit_hook" (byval as sqlite3 ptr, byval as function cdecl(byval as any ptr) as integer, byval as any ptr) as any ptr
 declare function sqlite3_open cdecl alias "sqlite3_open" (byval filename as zstring ptr, byval ppDb as sqlite3 ptr ptr) as integer
 declare function sqlite3_open16 cdecl alias "sqlite3_open16" (byval filename as any ptr, byval ppDb as sqlite3 ptr ptr) as integer
 declare function sqlite3_errcode cdecl alias "sqlite3_errcode" (byval db as sqlite3 ptr) as integer
@@ -121,13 +121,13 @@ declare function sqlite3_prepare16 cdecl alias "sqlite3_prepare16" (byval db as 
 type sqlite3_context as any
 type sqlite3_value as any
 
-declare function sqlite3_bind_blob cdecl alias "sqlite3_bind_blob" (byval as sqlite3_stmt ptr, byval as integer, byval as any ptr, byval n as integer, byval as sub(byval as any ptr)) as integer
+declare function sqlite3_bind_blob cdecl alias "sqlite3_bind_blob" (byval as sqlite3_stmt ptr, byval as integer, byval as any ptr, byval n as integer, byval as sub cdecl(byval as any ptr)) as integer
 declare function sqlite3_bind_double cdecl alias "sqlite3_bind_double" (byval as sqlite3_stmt ptr, byval as integer, byval as double) as integer
 declare function sqlite3_bind_int cdecl alias "sqlite3_bind_int" (byval as sqlite3_stmt ptr, byval as integer, byval as integer) as integer
 declare function sqlite3_bind_int64 cdecl alias "sqlite3_bind_int64" (byval as sqlite3_stmt ptr, byval as integer, byval as sqlite_int64) as integer
 declare function sqlite3_bind_null cdecl alias "sqlite3_bind_null" (byval as sqlite3_stmt ptr, byval as integer) as integer
-declare function sqlite3_bind_text cdecl alias "sqlite3_bind_text" (byval as sqlite3_stmt ptr, byval as integer, byval as zstring ptr, byval n as integer, byval as sub(byval as any ptr)) as integer
-declare function sqlite3_bind_text16 cdecl alias "sqlite3_bind_text16" (byval as sqlite3_stmt ptr, byval as integer, byval as any ptr, byval as integer, byval as sub(byval as any ptr)) as integer
+declare function sqlite3_bind_text cdecl alias "sqlite3_bind_text" (byval as sqlite3_stmt ptr, byval as integer, byval as zstring ptr, byval n as integer, byval as sub cdecl(byval as any ptr)) as integer
+declare function sqlite3_bind_text16 cdecl alias "sqlite3_bind_text16" (byval as sqlite3_stmt ptr, byval as integer, byval as any ptr, byval as integer, byval as sub cdecl(byval as any ptr)) as integer
 declare function sqlite3_bind_value cdecl alias "sqlite3_bind_value" (byval as sqlite3_stmt ptr, byval as integer, byval as sqlite3_value ptr) as integer
 declare function sqlite3_bind_parameter_count cdecl alias "sqlite3_bind_parameter_count" (byval as sqlite3_stmt ptr) as integer
 declare function sqlite3_bind_parameter_name cdecl alias "sqlite3_bind_parameter_name" (byval as sqlite3_stmt ptr, byval as integer) as zstring ptr
@@ -159,8 +159,8 @@ declare function sqlite3_column_text16 cdecl alias "sqlite3_column_text16" (byva
 declare function sqlite3_column_type cdecl alias "sqlite3_column_type" (byval as sqlite3_stmt ptr, byval iCol as integer) as integer
 declare function sqlite3_finalize cdecl alias "sqlite3_finalize" (byval pStmt as sqlite3_stmt ptr) as integer
 declare function sqlite3_reset cdecl alias "sqlite3_reset" (byval pStmt as sqlite3_stmt ptr) as integer
-declare function sqlite3_create_function cdecl alias "sqlite3_create_function" (byval as sqlite3 ptr, byval zFunctionName as zstring ptr, byval nArg as integer, byval eTextRep as integer, byval as any ptr, byval xFunc as sub(byval as sqlite3_context ptr, byval as integer, byval as sqlite3_value ptr ptr), byval xStep as sub(byval as sqlite3_context ptr, byval as integer, byval as sqlite3_value ptr ptr), byval xFinal as sub(byval as sqlite3_context ptr)) as integer
-declare function sqlite3_create_function16 cdecl alias "sqlite3_create_function16" (byval as sqlite3 ptr, byval zFunctionName as any ptr, byval nArg as integer, byval eTextRep as integer, byval as any ptr, byval xFunc as sub(byval as sqlite3_context ptr, byval as integer, byval as sqlite3_value ptr ptr), byval xStep as sub(byval as sqlite3_context ptr, byval as integer, byval as sqlite3_value ptr ptr), byval xFinal as sub(byval as sqlite3_context ptr)) as integer
+declare function sqlite3_create_function cdecl alias "sqlite3_create_function" (byval as sqlite3 ptr, byval zFunctionName as zstring ptr, byval nArg as integer, byval eTextRep as integer, byval as any ptr, byval xFunc as sub cdecl(byval as sqlite3_context ptr, byval as integer, byval as sqlite3_value ptr ptr), byval xStep as sub cdecl(byval as sqlite3_context ptr, byval as integer, byval as sqlite3_value ptr ptr), byval xFinal as sub cdecl(byval as sqlite3_context ptr)) as integer
+declare function sqlite3_create_function16 cdecl alias "sqlite3_create_function16" (byval as sqlite3 ptr, byval zFunctionName as any ptr, byval nArg as integer, byval eTextRep as integer, byval as any ptr, byval xFunc as sub cdecl(byval as sqlite3_context ptr, byval as integer, byval as sqlite3_value ptr ptr), byval xStep as sub cdecl(byval as sqlite3_context ptr, byval as integer, byval as sqlite3_value ptr ptr), byval xFinal as sub cdecl(byval as sqlite3_context ptr)) as integer
 declare function sqlite3_aggregate_count cdecl alias "sqlite3_aggregate_count" (byval as sqlite3_context ptr) as integer
 declare function sqlite3_value_blob cdecl alias "sqlite3_value_blob" (byval as sqlite3_value ptr) as any ptr
 declare function sqlite3_value_bytes cdecl alias "sqlite3_value_bytes" (byval as sqlite3_value ptr) as integer
@@ -176,18 +176,18 @@ declare function sqlite3_value_type cdecl alias "sqlite3_value_type" (byval as s
 declare function sqlite3_aggregate_context cdecl alias "sqlite3_aggregate_context" (byval as sqlite3_context ptr, byval nBytes as integer) as any ptr
 declare function sqlite3_user_data cdecl alias "sqlite3_user_data" (byval as sqlite3_context ptr) as any ptr
 declare function sqlite3_get_auxdata cdecl alias "sqlite3_get_auxdata" (byval as sqlite3_context ptr, byval as integer) as any ptr
-declare sub sqlite3_set_auxdata cdecl alias "sqlite3_set_auxdata" (byval as sqlite3_context ptr, byval as integer, byval as any ptr, byval as sub(byval as any ptr))
-declare sub sqlite3_result_blob cdecl alias "sqlite3_result_blob" (byval as sqlite3_context ptr, byval as any ptr, byval as integer, byval as sub(byval as any ptr))
+declare sub sqlite3_set_auxdata cdecl alias "sqlite3_set_auxdata" (byval as sqlite3_context ptr, byval as integer, byval as any ptr, byval as sub cdecl(byval as any ptr))
+declare sub sqlite3_result_blob cdecl alias "sqlite3_result_blob" (byval as sqlite3_context ptr, byval as any ptr, byval as integer, byval as sub cdecl(byval as any ptr))
 declare sub sqlite3_result_double cdecl alias "sqlite3_result_double" (byval as sqlite3_context ptr, byval as double)
 declare sub sqlite3_result_error cdecl alias "sqlite3_result_error" (byval as sqlite3_context ptr, byval as zstring ptr, byval as integer)
 declare sub sqlite3_result_error16 cdecl alias "sqlite3_result_error16" (byval as sqlite3_context ptr, byval as any ptr, byval as integer)
 declare sub sqlite3_result_int cdecl alias "sqlite3_result_int" (byval as sqlite3_context ptr, byval as integer)
 declare sub sqlite3_result_int64 cdecl alias "sqlite3_result_int64" (byval as sqlite3_context ptr, byval as sqlite_int64)
 declare sub sqlite3_result_null cdecl alias "sqlite3_result_null" (byval as sqlite3_context ptr)
-declare sub sqlite3_result_text cdecl alias "sqlite3_result_text" (byval as sqlite3_context ptr, byval as zstring ptr, byval as integer, byval as sub(byval as any ptr))
-declare sub sqlite3_result_text16 cdecl alias "sqlite3_result_text16" (byval as sqlite3_context ptr, byval as any ptr, byval as integer, byval as sub(byval as any ptr))
-declare sub sqlite3_result_text16le cdecl alias "sqlite3_result_text16le" (byval as sqlite3_context ptr, byval as any ptr, byval as integer, byval as sub(byval as any ptr))
-declare sub sqlite3_result_text16be cdecl alias "sqlite3_result_text16be" (byval as sqlite3_context ptr, byval as any ptr, byval as integer, byval as sub(byval as any ptr))
+declare sub sqlite3_result_text cdecl alias "sqlite3_result_text" (byval as sqlite3_context ptr, byval as zstring ptr, byval as integer, byval as sub cdecl(byval as any ptr))
+declare sub sqlite3_result_text16 cdecl alias "sqlite3_result_text16" (byval as sqlite3_context ptr, byval as any ptr, byval as integer, byval as sub cdecl(byval as any ptr))
+declare sub sqlite3_result_text16le cdecl alias "sqlite3_result_text16le" (byval as sqlite3_context ptr, byval as any ptr, byval as integer, byval as sub cdecl(byval as any ptr))
+declare sub sqlite3_result_text16be cdecl alias "sqlite3_result_text16be" (byval as sqlite3_context ptr, byval as any ptr, byval as integer, byval as sub cdecl(byval as any ptr))
 declare sub sqlite3_result_value cdecl alias "sqlite3_result_value" (byval as sqlite3_context ptr, byval as sqlite3_value ptr)
 
 #define SQLITE_UTF8 1
@@ -196,10 +196,10 @@ declare sub sqlite3_result_value cdecl alias "sqlite3_result_value" (byval as sq
 #define SQLITE_UTF16 4
 #define SQLITE_ANY 5
 
-declare function sqlite3_create_collation cdecl alias "sqlite3_create_collation" (byval as sqlite3 ptr, byval zName as zstring ptr, byval eTextRep as integer, byval as any ptr, byval xCompare as function(byval as any ptr, byval as integer, byval as any ptr, byval as integer, byval as any ptr) as integer) as integer
-declare function sqlite3_create_collation16 cdecl alias "sqlite3_create_collation16" (byval as sqlite3 ptr, byval zName as zstring ptr, byval eTextRep as integer, byval as any ptr, byval xCompare as function(byval as any ptr, byval as integer, byval as any ptr, byval as integer, byval as any ptr) as integer) as integer
-declare function sqlite3_collation_needed cdecl alias "sqlite3_collation_needed" (byval as sqlite3 ptr, byval as any ptr, byval as sub(byval as any ptr, byval as sqlite3 ptr, byval as integer, byval as zstring ptr)) as integer
-declare function sqlite3_collation_needed16 cdecl alias "sqlite3_collation_needed16" (byval as sqlite3 ptr, byval as any ptr, byval as sub(byval as any ptr, byval as sqlite3 ptr, byval as integer, byval as any ptr)) as integer
+declare function sqlite3_create_collation cdecl alias "sqlite3_create_collation" (byval as sqlite3 ptr, byval zName as zstring ptr, byval eTextRep as integer, byval as any ptr, byval xCompare as function cdecl(byval as any ptr, byval as integer, byval as any ptr, byval as integer, byval as any ptr) as integer) as integer
+declare function sqlite3_create_collation16 cdecl alias "sqlite3_create_collation16" (byval as sqlite3 ptr, byval zName as zstring ptr, byval eTextRep as integer, byval as any ptr, byval xCompare as function cdecl(byval as any ptr, byval as integer, byval as any ptr, byval as integer, byval as any ptr) as integer) as integer
+declare function sqlite3_collation_needed cdecl alias "sqlite3_collation_needed" (byval as sqlite3 ptr, byval as any ptr, byval as sub cdecl(byval as any ptr, byval as sqlite3 ptr, byval as integer, byval as zstring ptr)) as integer
+declare function sqlite3_collation_needed16 cdecl alias "sqlite3_collation_needed16" (byval as sqlite3 ptr, byval as any ptr, byval as sub cdecl(byval as any ptr, byval as sqlite3 ptr, byval as integer, byval as any ptr)) as integer
 declare function sqlite3_key cdecl alias "sqlite3_key" (byval db as sqlite3 ptr, byval pKey as any ptr, byval nKey as integer) as integer
 declare function sqlite3_rekey cdecl alias "sqlite3_rekey" (byval db as sqlite3 ptr, byval pKey as any ptr, byval nKey as integer) as integer
 declare function sqlite3_sleep cdecl alias "sqlite3_sleep" (byval as integer) as integer
