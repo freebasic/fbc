@@ -318,6 +318,14 @@ function cDerefFields( byref dtype as integer, _
 					end if
 
 					'' add index
+					if( dtype = IR_DATATYPE_WCHAR ) then
+						'' times sizeof( wchar ) if it's wstring
+						idxexpr = astNewBOP( IR_OP_SHL, _
+								   			 idxexpr, _
+								   			 astNewCONSTi( hToPow2( irGetDataSize( IR_DATATYPE_WCHAR ) ), _
+								   				 		   IR_DATATYPE_INTEGER ) )
+					end if
+
 					varexpr = astNewBOP( IR_OP_ADD, varexpr, idxexpr )
 
 					'' not a wstring?
