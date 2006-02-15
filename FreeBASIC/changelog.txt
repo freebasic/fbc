@@ -53,6 +53,8 @@ Version 0.16 Beta:
 - styled box drawing was mistakenly not implemented (lillo)
 - DRAW and WINDOWTITLE crashed the application if called with an empty string variable (lillo)
 - specifying a border color to VIEW in gfx mode had no effect (lillo)
+- MID statement (not the function) for wide-strings was not passing the size of the destine string (v1c)
+- wide-string indexing was not multiplying the index expression by sizeof( wchar ) (v1c)
 
 
 Version 0.15 Beta:
