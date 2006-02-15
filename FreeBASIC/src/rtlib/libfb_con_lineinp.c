@@ -45,9 +45,15 @@ int fb_ConsoleLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
 
     if( text != NULL )
     {
-        if( text->data != NULL ) {
+        if( text->data != NULL )
+        {
             fb_PrintString( 0, text, 0 );
         }
+    	/* del if temp */
+    	else
+    	{
+    		fb_hStrDelTemp( text );
+    	}
 
         if( addquestion != FB_FALSE )
         {
@@ -95,9 +101,15 @@ int fb_ConsoleLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
 
     if( text != NULL )
     {
-        if( text->data != NULL ) {
+        if( text->data != NULL )
+        {
             fb_PrintString( 0, text, 0 );
         }
+    	/* del if temp */
+    	else
+    	{
+    		fb_hStrDelTemp( text );
+    	}
 
         if( addquestion != FB_FALSE )
         {

@@ -40,7 +40,12 @@ FBCALL int fb_ConsoleInput( FBSTRING *text, int addquestion, int addnewline )
 	fb_DevScrnInit_Read( );
 
 	if( fb_IsRedirected( TRUE ) )
+	{
+		/* del if temp */
+		fb_hStrDelTemp( text );
+
 		return fb_FileInput( 0 );
+	}
 
     ctx = FB_TLSGETCTX( INPUT );
 
