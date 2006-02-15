@@ -43,11 +43,6 @@ FBCALL void fb_GfxView(int x1, int y1, int x2, int y2, unsigned int fill_color, 
 
         fb_mode->flags |= VIEW_PORT_SET;
 
-		fb_mode->view_x = MID(0, x1, fb_mode->w);
-		fb_mode->view_y = MID(0, y1, fb_mode->h);
-		fb_mode->view_w = MIN(x2 - x1 + 1, fb_mode->w - x1);
-		fb_mode->view_h = MIN(y2 - y1 + 1, fb_mode->h - y1);
-
         if (screen)
             fb_mode->flags |= VIEW_SCREEN;
         else
@@ -55,9 +50,19 @@ FBCALL void fb_GfxView(int x1, int y1, int x2, int y2, unsigned int fill_color, 
 
         if (border_color != DEFAULT_COLOR) {
             border_color = fb_hFixColor(border_color);
+            /* Temporarily set full screen area clipping to draw view border */
+            fb_mode->view_x = 0;
+            fb_mode->view_y = 0;
+            fb_mode->view_w = fb_mode->w;
+            fb_mode->view_h = fb_mode->h;
             fb_hGfxBox(x1 - 1, y1 - 1, x2 + 1, y2 + 1, border_color & fb_mode->color_mask, FALSE, 0xFFFF);
         }
-
+        
+        fb_mode->view_x = MID(0, x1, fb_mode->w);
+        fb_mode->view_y = MID(0, y1, fb_mode->h);
+        fb_mode->view_w = MIN(x2 - x1 + 1, fb_mode->w - x1);
+        fb_mode->view_h = MIN(y2 - y1 + 1, fb_mode->h - y1);
+        
         if (fill_color != DEFAULT_COLOR) {
             old_bg_color = fb_mode->bg_color;
             fb_mode->bg_color = fb_hFixColor(fill_color);

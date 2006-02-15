@@ -51,6 +51,8 @@ Version 0.16 Beta:
 - calling void function pointers in expressions was been allowed (v1c)
 - passing GFX_NO_SWITCH to SCREEN resulted in a program freeze when using the DirectX gfx driver (lillo)
 - styled box drawing was mistakenly not implemented (lillo)
+- DRAW and WINDOWTITLE crashed the application if called with an empty string variable (lillo)
+- specifying a border color to VIEW in gfx mode had no effect (lillo)
 
 
 Version 0.15 Beta:
