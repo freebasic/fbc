@@ -336,8 +336,8 @@ data @FB_RTL_STRMID,"", _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
-'' fb_WstrMid ( byval str as wstring ptr, byval start as integer, _
-''			    byval len as integer ) as wstring
+'' fb_WstrMid ( byval dst as wstring ptr, byval start as integer, _
+''				byval len as integer ) as wstring
 data @FB_RTL_WSTRMID,"", _
 	 FB_SYMBTYPE_WCHAR,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
@@ -357,13 +357,15 @@ data @FB_RTL_STRASSIGNMID,"", _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_STRING,FB_ARGMODE_BYREF, FALSE
 
-'' fb_WstrAssignMid ( byval dst as wstring ptr, byval start as integer, _
-''					  byval len as integer, byval src as wstring ptr ) as void
+'' fb_WstrAssignMid ( byval dst as wstring ptr, byval dst_len as integer, _
+''					  byval start as integer, byval len as integer, _
+''					  byval src as wstring ptr ) as void
 data @FB_RTL_WSTRASSIGNMID,"", _
 	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
-	 4, _
+	 5, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE
@@ -2184,19 +2186,31 @@ function rtlStrAssignMid( byval expr1 as ASTNODE ptr, _
 						) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
+    dim as integer dst_len
 
     function = NULL
 
 	''
     if( astGetDataType( expr1 ) <> IR_DATATYPE_WCHAR ) then
     	proc = astNewFUNCT( PROCLOOKUP( STRASSIGNMID ) )
+    	dst_len = -1
     else
     	proc = astNewFUNCT( PROCLOOKUP( WSTRASSIGNMID ) )
+		'' always calc len before pushing the param
+		dst_len = rtlCalcStrLen( expr1, IR_DATATYPE_WCHAR )
     end if
 
     ''
     if( astNewPARAM( proc, expr1 ) = NULL ) then
     	exit function
+    end if
+
+    ''
+    if( dst_len <> -1 ) then
+    	if( astNewPARAM( proc, _
+    					 astNewCONSTi( dst_len, IR_DATATYPE_INTEGER ) ) = NULL ) then
+    		exit function
+    	end if
     end if
 
     if( astNewPARAM( proc, expr2 ) = NULL ) then
