@@ -63,10 +63,10 @@ private sub hFixForwardRef( byval f as FBSYMBOL ptr, _
 
 	select case as const class
 	case FB_SYMBCLASS_UDT
-		typ 	= FB_SYMBTYPE_USERDEF
+		typ 	= FB_DATATYPE_USERDEF
 		ptrcnt 	= 0
 	case FB_SYMBCLASS_ENUM
-		typ 	= FB_SYMBTYPE_ENUM
+		typ 	= FB_DATATYPE_ENUM
 		ptrcnt 	= 0
 	case FB_SYMBCLASS_TYPEDEF
 		typ 	= sym->typ
@@ -80,7 +80,7 @@ private sub hFixForwardRef( byval f as FBSYMBOL ptr, _
 
 		ref = n->ref
 
-		ref->typ     = typ + (ref->ptrcnt * FB_SYMBTYPE_POINTER)
+		ref->typ     = typ + (ref->ptrcnt * FB_DATATYPE_POINTER)
 		ref->subtype = sym
 		ref->ptrcnt  = ptrcnt
 		ref->lgt	 = symbCalcLen( ref->typ, sym )

@@ -42,7 +42,7 @@ function cLabel as integer
     '' NUM_LIT
     select case lexGetClass( )
     case FB_TKCLASS_NUMLITERAL
-		if( lexGetType( ) = FB_SYMBTYPE_INTEGER ) then
+		if( lexGetType( ) = FB_DATATYPE_INTEGER ) then
 			l = symbAddLabel( lexGetText( ), TRUE, TRUE )
 			if( l = NULL ) then
 				hReportError( FB_ERRMSG_DUPDEFINITION )

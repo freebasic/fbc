@@ -41,33 +41,33 @@ function cTypeConvExpr( byref expr as ASTNODE ptr ) as integer
 
 	select case as const lexGetToken( )
 	case FB_TK_CBYTE
-		dtype = IR_DATATYPE_BYTE
+		dtype = FB_DATATYPE_BYTE
 	case FB_TK_CSHORT
-		dtype = IR_DATATYPE_SHORT
+		dtype = FB_DATATYPE_SHORT
 	case FB_TK_CINT, FB_TK_CLNG
-		dtype = IR_DATATYPE_INTEGER
+		dtype = FB_DATATYPE_INTEGER
 	case FB_TK_CLNGINT
-		dtype = IR_DATATYPE_LONGINT
+		dtype = FB_DATATYPE_LONGINT
 
 	case FB_TK_CUBYTE
-		dtype = IR_DATATYPE_UBYTE
+		dtype = FB_DATATYPE_UBYTE
 	case FB_TK_CUSHORT
-		dtype = IR_DATATYPE_USHORT
+		dtype = FB_DATATYPE_USHORT
 	case FB_TK_CUINT
-		dtype = IR_DATATYPE_UINT
+		dtype = FB_DATATYPE_UINT
 	case FB_TK_CULNGINT
-		dtype = IR_DATATYPE_ULONGINT
+		dtype = FB_DATATYPE_ULONGINT
 
 	case FB_TK_CSNG
-		dtype = IR_DATATYPE_SINGLE
+		dtype = FB_DATATYPE_SINGLE
 	case FB_TK_CDBL
-		dtype = IR_DATATYPE_DOUBLE
+		dtype = FB_DATATYPE_DOUBLE
 
 	case FB_TK_CSIGN
-		dtype = IR_DATATYPE_VOID				'' hack! AST will handle that
+		dtype = FB_DATATYPE_VOID				'' hack! AST will handle that
 		op = IR_OP_TOSIGNED
 	case FB_TK_CUNSG
-		dtype = IR_DATATYPE_VOID				'' hack! /
+		dtype = FB_DATATYPE_VOID				'' hack! /
 		op = IR_OP_TOUNSIGNED
 
 	end select

@@ -38,7 +38,7 @@ function astNewCONSTstr( byval v as zstring ptr ) as ASTNODE ptr static
     	exit function
     end if
 
-	function = astNewVAR( tc, 0, IR_DATATYPE_CHAR )
+	function = astNewVAR( tc, 0, FB_DATATYPE_CHAR )
 
 end function
 
@@ -52,7 +52,7 @@ function astNewCONSTwstr( byval v as wstring ptr ) as ASTNODE ptr static
     	exit function
     end if
 
-	function = astNewVAR( tc, 0, IR_DATATYPE_WCHAR )
+	function = astNewVAR( tc, 0, FB_DATATYPE_WCHAR )
 
 end function
 
@@ -126,9 +126,9 @@ function astNewCONST( byval v as FBVALUE ptr, _
 	end if
 
 	select case as const dtype
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		n->con.val.long = v->long
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		n->con.val.float = v->float
 	case else
 		n->con.val.int = v->int
@@ -148,11 +148,11 @@ function astLoadCONST( byval n as ASTNODE ptr ) as IRVREG ptr static
 
 		select case dtype
 		'' longints?
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			return irAllocVRIMM64( dtype, n->con.val.long )
 
 		'' if node is a float, create a temp float var (x86 assumption)
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			s = symbAllocFloatConst( n->con.val.float, dtype )
 			return irAllocVRVAR( dtype, s, s->ofs )
 

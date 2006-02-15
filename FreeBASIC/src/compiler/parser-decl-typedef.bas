@@ -57,7 +57,7 @@ function cTypedefDecl( byval pid as zstring ptr ) as integer static
 					select case lexGetToken( )
 					case FB_TK_PTR, FB_TK_POINTER
 						lexSkipToken( )
-						typ += FB_SYMBTYPE_POINTER
+						typ += FB_DATATYPE_POINTER
 						ptrcnt += 1
 					case else
 						exit do
@@ -91,13 +91,13 @@ function cTypedefDecl( byval pid as zstring ptr ) as integer static
     	if( isfwd ) then
     		'' pointing to itself? then it's a void..
     		if( *ptname = *pid ) then
-    			typ 	= FB_SYMBTYPE_VOID
+    			typ 	= FB_DATATYPE_VOID
     			subtype = NULL
     			lgt 	= 0
 
     		'' else, create a forward reference (or lookup one)
     		else
-    			typ 	= FB_SYMBTYPE_FWDREF
+    			typ 	= FB_DATATYPE_FWDREF
     			subtype = symbAddFwdRef( ptname )
 				lgt 	= -1
 				if( subtype = NULL ) then
@@ -118,7 +118,7 @@ function cTypedefDecl( byval pid as zstring ptr ) as integer static
 						select case lexGetToken( )
 						case FB_TK_PTR, FB_TK_POINTER
 							lexSkipToken( )
-							typ += FB_SYMBTYPE_POINTER
+							typ += FB_DATATYPE_POINTER
 							ptrcnt += 1
 						case else
 							exit do
@@ -127,7 +127,7 @@ function cTypedefDecl( byval pid as zstring ptr ) as integer static
 				end if
 
 			else
-				typ += ptrcnt * FB_SYMBTYPE_POINTER
+				typ += ptrcnt * FB_DATATYPE_POINTER
 			end if
     	end if
 

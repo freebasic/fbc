@@ -50,7 +50,7 @@ function cPrintStmt as integer
 	end if
 
     if( islprint ) then
-    	filexpr = astNewCONSTi( -1, IR_DATATYPE_INTEGER )
+    	filexpr = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
     else
         '' ('#' Expression)?
         if( hMatch( CHAR_SHARP ) ) then
@@ -59,7 +59,7 @@ function cPrintStmt as integer
             hMatchCOMMA( )
 
         else
-            filexpr = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+            filexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
         end if
     end if
 
@@ -187,7 +187,7 @@ function cWriteStmt as integer
 		hMatchCOMMA( )
 
     else
-    	filexpr = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+    	filexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
     '' (Expression? "," )*
@@ -304,10 +304,10 @@ function cLineInputStmt as integer
     end if
 
     select case astGetDataType( dstexpr )
-    case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR
+    case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
     	function = rtlFileLineInput( isfile, expr, dstexpr, addquestion, addnewline )
 
-    case IR_DATATYPE_WCHAR
+    case FB_DATATYPE_WCHAR
     	function = rtlFileLineInputWstr( isfile, expr, dstexpr, addquestion, addnewline )
 
     '' not a string?
@@ -351,7 +351,7 @@ function cInputStmt as integer
     	if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
 			lgt = lexGetTextLen( )
 			filestrexpr = astNewVAR( symbAllocStrConst( *lexGetText( ), lgt ), _
-									 0, IR_DATATYPE_CHAR )
+									 0, FB_DATATYPE_CHAR )
 			lexSkipToken( )
     	else
     		filestrexpr = NULL
@@ -418,7 +418,7 @@ private function hFileClose( byval isfunc as integer ) as ASTNODE ptr
 
     	if( cExpression( filenum ) = FALSE ) then
 			if( cnt = 0 ) then
-				filenum = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+				filenum = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			else
 				hReportError FB_ERRMSG_EXPECTEDEXPRESSION
 				exit function
@@ -491,7 +491,7 @@ private function hFilePut( byval isfunc as integer ) as ASTNODE ptr
     			isarray = symbIsArray( s )
     			if( isarray ) then
     				'' don't allow var-len strings
-    				if( symbGetType( s ) = FB_SYMBTYPE_STRING ) then
+    				if( symbGetType( s ) = FB_DATATYPE_STRING ) then
 						hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 						exit function
     				end if
@@ -565,7 +565,7 @@ private function hFileGet( byval isfunc as integer ) as ASTNODE ptr
     			isarray = symbIsArray( s )
     			if( isarray ) then
     				'' don't allow var-len strings
-    				if( symbGetType( s ) = FB_SYMBTYPE_STRING ) then
+    				if( symbGetType( s ) = FB_DATATYPE_STRING ) then
 						hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 						exit function
     				end if
@@ -733,7 +733,7 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
         end if
 
         if( flen = NULL ) then
-        	flen = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+        	flen = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
         end if
 
         if( faccess = NULL ) then
@@ -778,7 +778,7 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 		file_mode = FB_FILE_MODE_RANDOM
 	end if
 
-	fmode = astNewCONSTi( file_mode, IR_DATATYPE_INTEGER )
+	fmode = astNewCONSTi( file_mode, FB_DATATYPE_INTEGER )
 
 	if( isfunc ) then
 		'' ','?
@@ -819,7 +819,7 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 		access_mode = FB_FILE_ACCESS_ANY
 	end if
 
-	faccess = astNewCONSTi( access_mode, IR_DATATYPE_INTEGER )
+	faccess = astNewCONSTi( access_mode, FB_DATATYPE_INTEGER )
 
 	if( isfunc ) then
 		'' ','?
@@ -848,7 +848,7 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 		lock_mode = FB_FILE_LOCK_SHARED
 	end if
 
-	flock = astNewCONSTi( lock_mode, IR_DATATYPE_INTEGER )
+	flock = astNewCONSTi( lock_mode, FB_DATATYPE_INTEGER )
 
 	if( isfunc ) then
 		'' ','?
@@ -878,7 +878,7 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 		end if
 		hMatchExpression( flen )
 	else
-		flen = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+		flen = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
     if( isfunc ) then
@@ -1010,7 +1010,7 @@ function cFileStmt as integer
 		if( hMatch( FB_TK_TO ) ) then
 			hMatchExpression( expr2 )
 		else
-			expr2 = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+			expr2 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		function = rtlFileLock( islock, filenum, expr1, expr2 )
@@ -1062,7 +1062,7 @@ function cFileFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 			hMatchExpression( filenum )
 		else
-			filenum = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+			filenum = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		hMatchRPRNT( )

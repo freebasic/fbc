@@ -41,7 +41,7 @@ function symbAddConst( byval symbol as zstring ptr, _
 
     function = NULL
 
-    c = symbNewSymbol( NULL, iif( typ = FB_SYMBTYPE_ENUM, @subtype->enum.elmtb, symb.symtb ), _
+    c = symbNewSymbol( NULL, iif( typ = FB_DATATYPE_ENUM, @subtype->enum.elmtb, symb.symtb ), _
     				   FB_SYMBCLASS_CONST, TRUE, _
     				   symbol, NULL, _
     				   fbIsLocal( ), typ, subtype )
@@ -133,7 +133,7 @@ function symbAllocStrConst( byval sname as zstring ptr, _
 	'' lgt += the null-char (rtlib wrappers will take it into account)
 
 	'' it must be declare as SHARED, see symbAllocFloatConst()
-	s = symbAddVarEx( @cname, @aname, FB_SYMBTYPE_CHAR, NULL, _
+	s = symbAddVarEx( @cname, @aname, FB_DATATYPE_CHAR, NULL, _
 					  0, lgt + 1, 0, dTB(), _
 					  FB_ALLOCTYPE_SHARED, FALSE, TRUE, FALSE )
 
@@ -184,7 +184,7 @@ function symbAllocWStrConst( byval sname as wstring ptr, _
 
 	'' lgt = (lgt + null-char) * sizeof( wstring ) (see parser-decl-symbinit.bas)
 	'' it must be declare as SHARED, see symbAllocFloatConst()
-	s = symbAddVarEx( @cname, @aname, FB_SYMBTYPE_WCHAR, NULL, _
+	s = symbAddVarEx( @cname, @aname, FB_DATATYPE_WCHAR, NULL, _
 					  0, (lgt+1) * len( wstring ), 0, dTB(), _
 					  FB_ALLOCTYPE_SHARED, FALSE, TRUE, FALSE )
 
@@ -220,19 +220,19 @@ end sub
 function symbGetConstValueAsStr( byval s as FBSYMBOL ptr ) as string
 
   	select case as const symbGetType( s )
-  	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR
+  	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
   		function = *symbGetConstValStr( s )->var.inittext
 
-  	case IR_DATATYPE_LONGINT
+  	case FB_DATATYPE_LONGINT
   		function = str( symbGetConstValLong( s ) )
 
-  	case IR_DATATYPE_ULONGINT
+  	case FB_DATATYPE_ULONGINT
   	    function = str( cunsg( symbGetConstValLong( s ) ) )
 
-  	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		function = str( symbGetConstValFloat( s ) )
 
-  	case IR_DATATYPE_UBYTE, IR_DATATYPE_USHORT, IR_DATATYPE_UINT
+  	case FB_DATATYPE_UBYTE, FB_DATATYPE_USHORT, FB_DATATYPE_UINT
   		function = str( cunsg( symbGetConstValInt( s ) ) )
 
   	case else

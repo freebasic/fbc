@@ -38,121 +38,121 @@ funcdata:
 
 '' fb_LongintDIV ( byval x as longint, byval y as longint ) as longint
 data @FB_RTL_LONGINTDIV,"", _
-	 FB_SYMBTYPE_LONGINT,FB_FUNCMODE_CDECL, _
+	 FB_DATATYPE_LONGINT,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_SYMBTYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_ULongintDIV ( byval x as ulongint, byval y as ulongint ) as ulongint
 data @FB_RTL_ULONGINTDIV,"", _
-	 FB_SYMBTYPE_ULONGINT,FB_FUNCMODE_CDECL, _
+	 FB_DATATYPE_ULONGINT,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_SYMBTYPE_ULONGINT,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_ULONGINT,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_ULONGINT,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_ULONGINT,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_LongintMOD ( byval x as longint, byval y as longint ) as longint
 data @FB_RTL_LONGINTMOD,"", _
-	 FB_SYMBTYPE_LONGINT,FB_FUNCMODE_CDECL, _
+	 FB_DATATYPE_LONGINT,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_SYMBTYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_ULongintMOD ( byval x as ulongint, byval y as ulongint ) as ulongint
 data @FB_RTL_ULONGINTMOD,"", _
-	 FB_SYMBTYPE_ULONGINT,FB_FUNCMODE_CDECL, _
+	 FB_DATATYPE_ULONGINT,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_SYMBTYPE_ULONGINT,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_ULONGINT,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_ULONGINT,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_ULONGINT,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_Dbl2ULongint ( byval x as double ) as ulongint
 data @FB_RTL_DBL2ULONGINT,"", _
-	 FB_SYMBTYPE_ULONGINT,FB_FUNCMODE_CDECL, _
+	 FB_DATATYPE_ULONGINT,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
 
 ''
 '' fb_Pow CDECL ( byval x as double, byval y as double ) as double
 data @FB_RTL_POW,"pow", _
-	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_CDECL, _
+	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_SGNSingle ( byval x as single ) as integer
 data @FB_RTL_SGNSINGLE,"", _
-	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_SINGLE,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_SINGLE,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_SGNDouble ( byval x as double ) as integer
 data @FB_RTL_SGNDOUBLE,"", _
-	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_FIXSingle ( byval x as single ) as single
 data @FB_RTL_FIXSINGLE,"", _
-	 FB_SYMBTYPE_SINGLE,FB_FUNCMODE_STDCALL, _
+	 FB_DATATYPE_SINGLE,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_SINGLE,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_SINGLE,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_FIXDouble ( byval x as double ) as double
 data @FB_RTL_FIXDOUBLE,"", _
-	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_STDCALL, _
+	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
 
 '' asin CDECL ( byval x as double ) as double
 data @FB_RTL_ASIN,"asin", _
-	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_CDECL, _
+	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
 
 '' acos CDECL ( byval x as double ) as double
 data @FB_RTL_ACOS,"acos", _
-	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_CDECL, _
+	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
 
 '' log CDECL ( byval x as double ) as double
 data @FB_RTL_LOG,"log", _
-	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_CDECL, _
+	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
 
 '' exp CDECL ( byval rad as double ) as double
 data @"exp","exp", _
-	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_CDECL, _
+	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
 
 '' randomize ( byval seed as double = -1.0 ) as void
 data @"randomize","fb_Randomize", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_DOUBLE,FB_ARGMODE_BYVAL, TRUE, -1.0
+	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYVAL, TRUE, -1.0
 
 '' rnd ( byval n as integer ) as double
 data @"rnd","fb_Rnd", _
-	 FB_SYMBTYPE_DOUBLE,FB_FUNCMODE_STDCALL, _
+	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,1
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,1
 
 '' EOL
 data NULL
@@ -207,7 +207,7 @@ function rtlMathFSGN ( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 	function = NULL
 
 	''
-	if( astGetDataType( expr ) = IR_DATATYPE_SINGLE ) then
+	if( astGetDataType( expr ) = FB_DATATYPE_SINGLE ) then
 		f = PROCLOOKUP( SGNSINGLE )
 	else
 		f = PROCLOOKUP( SGNDOUBLE )
@@ -266,14 +266,14 @@ function rtlMathFIX ( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 
 	''
 	select case astGetDataClass( expr )
-	case IR_DATACLASS_FPOINT
-		if( astGetDataType( expr ) = IR_DATATYPE_SINGLE ) then
+	case FB_DATACLASS_FPOINT
+		if( astGetDataType( expr ) = FB_DATATYPE_SINGLE ) then
 			f = PROCLOOKUP( FIXSINGLE )
 		else
 			f = PROCLOOKUP( FIXDOUBLE )
 		end if
 
-	case IR_DATACLASS_INTEGER
+	case FB_DATACLASS_INTEGER
 		return expr
 
 	case else
@@ -308,10 +308,10 @@ function rtlMathLen( byval expr as ASTNODE ptr, _
 	if( islen ) then
 		select case dtype
 		'' dyn-len or zstring?
-		case IR_DATATYPE_STRING, IR_DATATYPE_CHAR
+		case FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 
     		'' literal? evaluate at compile-time..
-    		if( dtype = IR_DATATYPE_CHAR ) then
+    		if( dtype = FB_DATATYPE_CHAR ) then
     			litsym = astGetStrLitSymbol( expr )
     			if( litsym <> NULL ) then
     				lgt = symbGetStrLen( litsym ) - 1
@@ -327,12 +327,12 @@ function rtlMathLen( byval expr as ASTNODE ptr, _
     			lgt = rtlCalcStrLen( expr, dtype )
 
     			'' str as any
-    			if( astNewPARAM( proc, expr, IR_DATATYPE_STRING ) = NULL ) then
+    			if( astNewPARAM( proc, expr, FB_DATATYPE_STRING ) = NULL ) then
  					exit function
  				end if
 
     			'' byval strlen as integer
-				if( astNewPARAM( proc, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
+				if( astNewPARAM( proc, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
  					exit function
  				end if
 
@@ -340,7 +340,7 @@ function rtlMathLen( byval expr as ASTNODE ptr, _
 			end if
 
 		'' wstring?
-		case IR_DATATYPE_WCHAR
+		case FB_DATATYPE_WCHAR
 
     		'' literal? evaluate at compile-time..
     		litsym = astGetStrLitSymbol( expr )
@@ -363,7 +363,7 @@ function rtlMathLen( byval expr as ASTNODE ptr, _
 			lgt = rtlCalcExprLen( expr, FALSE )
 
 			'' handle fix-len strings (evaluated at compile-time)
-			if( dtype = IR_DATATYPE_FIXSTR ) then
+			if( dtype = FB_DATATYPE_FIXSTR ) then
 				if( lgt > 0 ) then
 					lgt -= 1						'' less the null-term
 				end if
@@ -377,8 +377,8 @@ function rtlMathLen( byval expr as ASTNODE ptr, _
 
 		'' wstring? multiply by sizeof(wchar) to get the
 		'' number of bytes, not of chars
-		if( dtype = IR_DATATYPE_WCHAR ) then
-			lgt *= irGetDataSize( IR_DATATYPE_WCHAR )
+		if( dtype = FB_DATATYPE_WCHAR ) then
+			lgt *= symbGetDataSize( FB_DATATYPE_WCHAR )
 		end if
 
 	end if
@@ -386,7 +386,7 @@ function rtlMathLen( byval expr as ASTNODE ptr, _
 	''
 	astDelTree( expr )
 
-	function = astNewCONSTi( lgt, IR_DATATYPE_INTEGER )
+	function = astNewCONSTi( lgt, FB_DATATYPE_INTEGER )
 
 end function
 
@@ -402,7 +402,7 @@ function rtlMathLongintDIV( byval dtype as integer, _
 
 	function = NULL
 
-	if( dtype = IR_DATATYPE_LONGINT ) then
+	if( dtype = FB_DATATYPE_LONGINT ) then
 		f = PROCLOOKUP( LONGINTDIV )
 	else
 		f = PROCLOOKUP( ULONGINTDIV )
@@ -435,7 +435,7 @@ function rtlMathLongintMOD( byval dtype as integer, _
 
 	function = NULL
 
-	if( dtype = IR_DATATYPE_LONGINT ) then
+	if( dtype = FB_DATATYPE_LONGINT ) then
 		f = PROCLOOKUP( LONGINTMOD )
 	else
 		f = PROCLOOKUP( ULONGINTMOD )

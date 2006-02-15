@@ -108,7 +108,7 @@ declare function 	astLoadFIELD	( byval n as ASTNODE ptr ) as IRVREG ptr
         33554431, 67108863, 134217727, 268435455, 536870911, 1073741823, 2147483647, 4294967295 _
 	}
 
-	dim shared ast_minlimitTB( IR_DATATYPE_BYTE to IR_DATATYPE_ULONGINT ) as longint = _
+	dim shared ast_minlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) as longint = _
 	{ _
 		-128LL, _								'' byte
 		0LL, _                                  '' ubyte
@@ -124,7 +124,7 @@ declare function 	astLoadFIELD	( byval n as ASTNODE ptr ) as IRVREG ptr
 		0LL _                                   '' ulongint
 	}
 
-	dim shared ast_maxlimitTB( IR_DATATYPE_BYTE to IR_DATATYPE_ULONGINT ) as longint = _
+	dim shared ast_maxlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) as longint = _
 	{ _
 		127LL, _                                '' ubyte
 		255LL, _                                '' byte
@@ -172,8 +172,8 @@ sub astInit static
     ast.isopt  = FALSE
 
 	'' wchar len depends on the target platform
-	ast_minlimitTB(IR_DATATYPE_WCHAR) = ast_minlimitTB(env.target.wchar.type)
-	ast_maxlimitTB(IR_DATATYPE_WCHAR) = ast_maxlimitTB(env.target.wchar.type)
+	ast_minlimitTB(FB_DATATYPE_WCHAR) = ast_minlimitTB(env.target.wchar.type)
+	ast_maxlimitTB(FB_DATATYPE_WCHAR) = ast_maxlimitTB(env.target.wchar.type)
 
     ''
     hInitProcList( )
@@ -517,8 +517,8 @@ function astUpdStrConcat( byval n as ASTNODE ptr ) as ASTNODE ptr
 	'' with assignment -- assuming here that IIF won't
 	'' support strings
 	select case n->dtype
-	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
-		 IR_DATATYPE_WCHAR
+	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+		 FB_DATATYPE_WCHAR
 
 	case else
 		exit function
@@ -540,7 +540,7 @@ function astUpdStrConcat( byval n as ASTNODE ptr ) as ASTNODE ptr
 		if( n->op.op = IR_OP_ADD ) then
 			l = n->l
 			r = n->r
-			if( n->dtype <> IR_DATATYPE_WCHAR ) then
+			if( n->dtype <> FB_DATATYPE_WCHAR ) then
 				function = rtlStrConcat( l, l->dtype, r, r->dtype )
 			else
 				function = rtlWstrConcat( l, l->dtype, r, r->dtype )
@@ -566,20 +566,20 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 	dtype = n->dtype
 
 	'' string? invalid..
-	if( irGetDataClass( dtype ) = IR_DATACLASS_STRING ) then
+	if( symbGetDataClass( dtype ) = FB_DATACLASS_STRING ) then
 		return NULL
 	end if
 
     '' CHAR and WCHAR literals are also from the INTEGER class
     select case dtype
-    case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     	'' don't allow, unless it's a deref pointer
     	if( astIsPTR( n ) = FALSE ) then
     		return NULL
     	end if
 
 	'' UDT?
-	case IR_DATATYPE_USERDEF
+	case FB_DATATYPE_USERDEF
 		return NULL
 	end select
 
@@ -601,9 +601,9 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 			if( isinverse = FALSE ) then
 				'' branch if false
 				select case as const dtype
-				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					istrue = n->con.val.long = 0
-				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 					istrue = n->con.val.float = 0
 				case else
 					istrue = n->con.val.int = 0
@@ -619,9 +619,9 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 			else
 				'' branch if true
 				select case as const dtype
-				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					istrue = n->con.val.long <> 0
-				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 					istrue = n->con.val.float <> 0
 				case else
 					istrue = n->con.val.int <> 0
@@ -646,16 +646,16 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 
 			'' zstring? astNewBOP will think both are zstrings..
 			select case dtype
-			case IR_DATATYPE_CHAR
-				dtype = IR_DATATYPE_UINT
-			case IR_DATATYPE_WCHAR
+			case FB_DATATYPE_CHAR
+				dtype = FB_DATATYPE_UINT
+			case FB_DATATYPE_WCHAR
 				dtype = env.target.wchar.type
 			end select
 
 			select case as const dtype
-			case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 				expr = astNewCONST64( 0, dtype )
-			case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 				expr = astNewCONSTf( 0.0, dtype )
 			case else
 				expr = astNewCONSTi( 0, dtype )
@@ -695,9 +695,9 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 		 ', IR_OP_EQV -- NOT doesn't set any flags, so EQV can't be optimized (x86 assumption)
 
 		'' x86-quirk: only if integers, as FPU will set its own flags, that must copied back
-		if( irGetDataClass( dtype ) = IR_DATACLASS_INTEGER ) then
+		if( symbGetDataClass( dtype ) = FB_DATACLASS_INTEGER ) then
             '' can't be done with longints either, as flag is set twice
-            if( (dtype <> IR_DATATYPE_LONGINT) and (dtype <> IR_DATATYPE_ULONGINT) ) then
+            if( (dtype <> FB_DATATYPE_LONGINT) and (dtype <> FB_DATATYPE_ULONGINT) ) then
 
 				'' check if zero (ie= FALSE)
 				if( isinverse = FALSE ) then
@@ -720,9 +720,9 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 	end if
 
 	select case as const dtype
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		expr = astNewCONST64( 0, dtype )
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		expr = astNewCONSTf( 0.0, dtype )
 	case else
 		expr = astNewCONSTi( 0, dtype )
@@ -750,7 +750,7 @@ function astPtrCheck( byval pdtype as integer, _
 	select case astGetClass( expr )
 	case AST_NODECLASS_CONST, AST_NODECLASS_ENUM
     	'' expr not a pointer?
-    	if( edtype < IR_DATATYPE_POINTER ) then
+    	if( edtype < FB_DATATYPE_POINTER ) then
     		'' not NULL?
     		if( astGetValInt( expr ) <> NULL ) then
     			exit function
@@ -761,7 +761,7 @@ function astPtrCheck( byval pdtype as integer, _
 
 	case else
     	'' expr not a pointer?
-    	if( edtype < IR_DATATYPE_POINTER ) then
+    	if( edtype < FB_DATATYPE_POINTER ) then
     		exit function
     	end if
 	end select
@@ -770,26 +770,26 @@ function astPtrCheck( byval pdtype as integer, _
 	if( pdtype <> edtype ) then
 
     	'' remove the pointers
-    	pdtype_np = pdtype mod IR_DATATYPE_POINTER
-    	edtype_np = edtype mod IR_DATATYPE_POINTER
+    	pdtype_np = pdtype mod FB_DATATYPE_POINTER
+    	edtype_np = edtype mod FB_DATATYPE_POINTER
 
     	'' 1st) is one of them an ANY PTR?
-    	if( pdtype_np = IR_DATATYPE_VOID ) then
+    	if( pdtype_np = FB_DATATYPE_VOID ) then
     		return TRUE
-    	elseif( edtype_np = IR_DATATYPE_VOID ) then
+    	elseif( edtype_np = FB_DATATYPE_VOID ) then
     		return TRUE
     	end if
 
     	'' 2nd) same level of indirection?
-    	if( abs( pdtype - edtype ) >= IR_DATATYPE_POINTER ) then
+    	if( abs( pdtype - edtype ) >= FB_DATATYPE_POINTER ) then
     		exit function
     	end if
 
     	'' 3rd) same size and class?
-    	if( (pdtype_np <= IR_DATATYPE_DOUBLE) and _
-    		(edtype_np <= IR_DATATYPE_DOUBLE) ) then
-    		if( irGetDataSize( pdtype_np ) = irGetDataSize( edtype_np ) ) then
-    			if( irGetDataClass( pdtype_np ) = irGetDataClass( edtype_np ) ) then
+    	if( (pdtype_np <= FB_DATATYPE_DOUBLE) and _
+    		(edtype_np <= FB_DATATYPE_DOUBLE) ) then
+    		if( symbGetDataSize( pdtype_np ) = symbGetDataSize( edtype_np ) ) then
+    			if( symbGetDataClass( pdtype_np ) = symbGetDataClass( edtype_np ) ) then
     				return TRUE
     			end if
     		end if
@@ -823,7 +823,7 @@ function astFuncPtrCheck( byval pdtype as integer, _
 		 AST_NODECLASS_FUNCT, AST_NODECLASS_PTR
 
     	'' not a function pointer?
-    	if( astGetDataType( expr ) <> IR_DATATYPE_POINTER + IR_DATATYPE_FUNCTION ) then
+    	if( astGetDataType( expr ) <> FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
     		return astPtrCheck( pdtype, psubtype, expr )
     	end if
 
@@ -992,11 +992,11 @@ function astIsTreeEqual( byval l as ASTNODE ptr, _
 const DBL_EPSILON# = 2.2204460492503131e-016
 
 		select case as const l->dtype
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			if( l->con.val.long <> r->con.val.long ) then
 				exit function
 			end if
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			if( abs( l->con.val.float - r->con.val.float ) > DBL_EPSILON ) then
 				exit function
 			end if
@@ -1224,9 +1224,9 @@ end function
 function astGetValueAsInt( byval n as ASTNODE ptr ) as integer
 
   	select case as const astGetDataType( n )
-  	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   	    function = cint( astGetValLong( n ) )
-  	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		function = cint( astGetValFloat( n ) )
   	case else
   		function = astGetValInt( n )
@@ -1238,9 +1238,9 @@ end function
 function astGetValueAsStr( byval n as ASTNODE ptr ) as string
 
   	select case as const astGetDataType( n )
-  	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   	    function = str( astGetValLong( n ) )
-  	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		function = str( astGetValFloat( n ) )
   	case else
   		function = str( astGetValInt( n ) )
@@ -1253,9 +1253,9 @@ function astGetValueAsWstr( byval n as ASTNODE ptr ) as wstring ptr
     static as wstring * 64+1 res
 
   	select case as const astGetDataType( n )
-  	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		res = wstr( astGetValLong( n ) )
-  	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		res = wstr( astGetValFloat( n ) )
   	case else
 		res = wstr( astGetValInt( n ) )
@@ -1269,12 +1269,12 @@ end function
 function astGetValueAsLongInt( byval n as ASTNODE ptr ) as longint
 
   	select case as const astGetDataType( n )
-  	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   	    function = astGetValLong( n )
-  	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		function = clngint( astGetValFloat( n ) )
   	case else
-  		if( irIsSigned( astGetDataType( n ) ) ) then
+  		if( symbIsSigned( astGetDataType( n ) ) ) then
   			function = clngint( astGetValInt( n ) )
   		else
   			function = clngint( cuint( astGetValInt( n ) ) )
@@ -1287,9 +1287,9 @@ end function
 function astGetValueAsULongInt( byval n as ASTNODE ptr ) as ulongint
 
   	select case as const astGetDataType( n )
-  	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   	    function = astGetValLong( n )
-  	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		function = culngint( astGetValFloat( n ) )
   	case else
   		function = culngint( cuint( astGetValInt( n ) ) )
@@ -1301,9 +1301,9 @@ end function
 function astGetValueAsDouble( byval n as ASTNODE ptr ) as double
 
   	select case as const astGetDataType( n )
-  	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   	    function = cdbl( astGetValLong( n ) )
-  	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		function = astGetValFloat( n )
   	case else
   		function = cdbl( astGetValInt( n ) )
@@ -1348,9 +1348,9 @@ function astCheckConst( byval dtype as integer, _
 	'' x86 assumptions
 
     select case as const dtype
-    case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+    case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 
-		if( dtype = IR_DATATYPE_SINGLE ) then
+		if( dtype = FB_DATATYPE_SINGLE ) then
 			dmin = 1.175494351e-38
 			dmax = 3.402823466e+38
 		else
@@ -1366,10 +1366,10 @@ function astCheckConst( byval dtype as integer, _
 			end if
 		end if
 
-	case IR_DATATYPE_LONGINT
+	case FB_DATATYPE_LONGINT
 
 		'' unsigned constant?
-		if( irIsSigned( astGetDataType( n ) ) = FALSE ) then
+		if( symbIsSigned( astGetDataType( n ) ) = FALSE ) then
 			'' too big?
 			if( astGetValueAsULongInt( n ) > 9223372036854775807ULL ) then
 				n = astNewCONV( INVALID, dtype, NULL, n )
@@ -1377,10 +1377,10 @@ function astCheckConst( byval dtype as integer, _
 			end if
 		end if
 
-	case IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_ULONGINT
 
 		'' signed constant?
-		if( irIsSigned( astGetDataType( n ) ) ) then
+		if( symbIsSigned( astGetDataType( n ) ) ) then
 			'' too big?
 			if( astGetValueAsLongInt( n ) and &h8000000000000000 ) then
 				n = astNewCONV( INVALID, dtype, NULL, n )
@@ -1388,8 +1388,8 @@ function astCheckConst( byval dtype as integer, _
 			end if
 		end if
 
-    case IR_DATATYPE_BYTE, IR_DATATYPE_SHORT, _
-    	 IR_DATATYPE_INTEGER, IR_DATATYPE_ENUM
+    case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, _
+    	 FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
 
 		lval = astGetValueAsLongInt( n )
 		if( (lval < ast_minlimitTB( dtype )) or _
@@ -1398,9 +1398,9 @@ function astCheckConst( byval dtype as integer, _
 			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 		end if
 
-    case IR_DATATYPE_UBYTE, IR_DATATYPE_CHAR, _
-    	 IR_DATATYPE_USHORT, IR_DATATYPE_WCHAR, _
-    	 IR_DATATYPE_UINT
+    case FB_DATATYPE_UBYTE, FB_DATATYPE_CHAR, _
+    	 FB_DATATYPE_USHORT, FB_DATATYPE_WCHAR, _
+    	 FB_DATATYPE_UINT
 
 		ulval = astGetValueAsULongInt( n )
 		if( (ulval < culngint( ast_minlimitTB( dtype ) )) or _
@@ -1409,7 +1409,7 @@ function astCheckConst( byval dtype as integer, _
 			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 		end if
 
-	case IR_DATATYPE_BITFIELD
+	case FB_DATATYPE_BITFIELD
 		'' !!!WRITEME!!! use ->subtype's
 	end select
 

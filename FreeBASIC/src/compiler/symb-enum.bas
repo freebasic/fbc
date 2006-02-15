@@ -66,7 +66,7 @@ function symbAddEnumElement( byval parent as FBSYMBOL ptr, _
 	dim as FBVALUE value
 
 	value.int = intval
-	elm = symbAddConst( symbol, FB_SYMBTYPE_ENUM, parent, @value )
+	elm = symbAddConst( symbol, FB_DATATYPE_ENUM, parent, @value )
 
 	if( elm = NULL ) then
 		return NULL

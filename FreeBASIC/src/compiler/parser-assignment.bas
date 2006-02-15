@@ -103,7 +103,7 @@ function cAssignment( byval assgexpr as ASTNODE ptr ) as integer
     '' BOP?
     if( op <> INVALID ) then
     	'' pointer?
-    	if( astGetDataType( assgexpr ) >= IR_DATATYPE_POINTER ) then
+    	if( astGetDataType( assgexpr ) >= FB_DATATYPE_POINTER ) then
     		expr = cUpdPointer( op, astCloneTree( assgexpr ), expr )
     	else
     		expr = astNewBOP( op, astCloneTree( assgexpr ), expr )
@@ -156,14 +156,14 @@ function cAssignmentOrPtrCall as integer
     	'' calling a FUNCTION ptr?
     	if( astIsFUNCT( assgexpr ) ) then
 			'' can the result be skipped?
-			if( irGetDataClass( astGetDataType( assgexpr ) ) <> IR_DATACLASS_INTEGER ) then
+			if( symbGetDataClass( astGetDataType( assgexpr ) ) <> FB_DATACLASS_INTEGER ) then
 				hReportError( FB_ERRMSG_VARIABLEREQUIRED )
 				exit function
 
     		'' CHAR and WCHAR literals are also from the INTEGER class
     		else
     			select case astGetDataType( assgexpr )
-    			case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 					hReportError( FB_ERRMSG_VARIABLEREQUIRED )
 					exit function
 				end select

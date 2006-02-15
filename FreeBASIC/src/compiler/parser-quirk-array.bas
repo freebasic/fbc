@@ -93,15 +93,15 @@ function cArrayStmt as integer
 		end if
 
 		select case astGetDataType( expr1 )
-		case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR
-			if( astGetDataType( expr2 ) = IR_DATATYPE_WCHAR ) then
+		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+			if( astGetDataType( expr2 ) = FB_DATATYPE_WCHAR ) then
 				hReportError( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
 			end if
 			function = rtlStrSwap( expr1, expr2 )
 
-		case IR_DATATYPE_WCHAR
-			if( astGetDataType( expr2 ) <> IR_DATATYPE_WCHAR ) then
+		case FB_DATATYPE_WCHAR
+			if( astGetDataType( expr2 ) <> FB_DATATYPE_WCHAR ) then
 				hReportError( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
 			end if
@@ -161,7 +161,7 @@ function cArrayFunct( byref funcexpr as ASTNODE ptr ) as integer
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatchExpression( expr )
 		else
-			expr = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
 
 		'' ')'

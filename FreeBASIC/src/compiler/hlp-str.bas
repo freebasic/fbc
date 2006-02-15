@@ -328,7 +328,7 @@ function hEscapeWstr( byval text as wstring ptr ) as zstring ptr static
     dim as wstring ptr src, src_end
     dim as zstring ptr dst
 
-	wstrlen = irGetDataSize( IR_DATATYPE_WCHAR )
+	wstrlen = symbGetDataSize( FB_DATATYPE_WCHAR )
 
 	'' up to 4 ascii chars can be used p/ unicode char (\ooo)
 	lgt = len( *text )
@@ -712,7 +712,7 @@ function hGetWstrNull( ) as zstring ptr
     if( isset = FALSE ) then
     	isset = TRUE
     	nullseq = ""
-    	for i = 1 to irGetDataSize( IR_DATATYPE_WCHAR )
+    	for i = 1 to symbGetDataSize( FB_DATATYPE_WCHAR )
     		nullseq += "\\0"
     	next
 	end if

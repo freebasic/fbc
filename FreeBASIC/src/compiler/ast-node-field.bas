@@ -67,13 +67,13 @@ private function hGetBitField( byval n as ASTNODE ptr ) as ASTNODE ptr static
 
 	if( s->bitfld.bitpos > 0 ) then
 		n = astNewBOP( IR_OP_SHR, c, _
-				   	   astNewCONSTi( s->bitfld.bitpos, IR_DATATYPE_UINT ) )
+				   	   astNewCONSTi( s->bitfld.bitpos, FB_DATATYPE_UINT ) )
 	else
 		n = c
 	end if
 
 	n = astNewBOP( IR_OP_AND, n, _
-				   astNewCONSTi( ast_bitmaskTB(s->bitfld.bits), IR_DATATYPE_UINT ) )
+				   astNewCONSTi( ast_bitmaskTB(s->bitfld.bits), FB_DATATYPE_UINT ) )
 
 	function = n
 
@@ -83,7 +83,7 @@ end function
 function astLoadFIELD( byval n as ASTNODE ptr ) as IRVREG ptr static
 
 	'' handle bitfields..
-	if( n->dtype = IR_DATATYPE_BITFIELD ) then
+	if( n->dtype = FB_DATATYPE_BITFIELD ) then
 		n = hGetBitField( n->l )
 		function = astLoad( n )
 		astDel( n )

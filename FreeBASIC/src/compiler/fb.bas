@@ -177,13 +177,13 @@ private sub hSetCtx( )
 	''
 	select case env.clopt.target
 	case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-		env.target.wchar.type = IR_DATATYPE_USHORT
+		env.target.wchar.type = FB_DATATYPE_USHORT
 		env.target.wchar.size = 2
 	case FB_COMPTARGET_DOS
-		env.target.wchar.type = IR_DATATYPE_UBYTE
+		env.target.wchar.type = FB_DATATYPE_UBYTE
 		env.target.wchar.size = 1
 	case else
-		env.target.wchar.type = IR_DATATYPE_UINT
+		env.target.wchar.type = FB_DATATYPE_UINT
 		env.target.wchar.size = FB_INTEGERSIZE
 	end select
 

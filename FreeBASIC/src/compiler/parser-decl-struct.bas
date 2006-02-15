@@ -173,7 +173,7 @@ function cTypeElementDecl( byval s as FBSYMBOL ptr ) as integer static
 	end if
 
 	'' ref to self?
-	if( typ = FB_SYMBTYPE_USERDEF ) then
+	if( typ = FB_DATATYPE_USERDEF ) then
 		if( subtype = s ) then
 			hReportError( FB_ERRMSG_RECURSIVEUDT )
 			exit function

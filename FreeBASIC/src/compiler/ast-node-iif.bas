@@ -46,38 +46,38 @@ function astNewIIF( byval condexpr as ASTNODE ptr, _
 	false_dtype = falsexpr->dtype
 
     '' string? invalid
-    select case irGetDataClass( true_dtype )
-    case IR_DATACLASS_STRING
+    select case symbGetDataClass( true_dtype )
+    case FB_DATACLASS_STRING
     	exit function
-    case IR_DATACLASS_INTEGER
+    case FB_DATACLASS_INTEGER
     	select case true_dtype
-    	case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     		exit function
     	end select
     end select
 
-    select case irGetDataClass( false_dtype )
-    case IR_DATACLASS_STRING
+    select case symbGetDataClass( false_dtype )
+    case FB_DATACLASS_STRING
     	exit function
-    case IR_DATACLASS_INTEGER
+    case FB_DATACLASS_INTEGER
     	select case false_dtype
-    	case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     		exit function
     	end select
     end select
 
 	'' UDT's? ditto
-	if( true_dtype = IR_DATATYPE_USERDEF ) then
+	if( true_dtype = FB_DATATYPE_USERDEF ) then
 		exit function
     end if
 
-    if( false_dtype = IR_DATATYPE_USERDEF ) then
+    if( false_dtype = FB_DATATYPE_USERDEF ) then
     	exit function
     end if
 
     '' are the data types different?
     if( true_dtype <> false_dtype ) then
-    	if( irMaxDataType( true_dtype, false_dtype ) <> INVALID ) then
+    	if( symbMaxDataType( true_dtype, false_dtype ) <> INVALID ) then
     		exit function
     	end if
     end if

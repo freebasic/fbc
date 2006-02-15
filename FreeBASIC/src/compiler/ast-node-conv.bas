@@ -33,68 +33,68 @@ option escape
 private sub hCONVConstEvalInt( byval dtype as integer, _
 							   byval v as ASTNODE ptr ) static
 
-	if( dtype > IR_DATATYPE_POINTER ) then
-		dtype = IR_DATATYPE_POINTER
+	if( dtype > FB_DATATYPE_POINTER ) then
+		dtype = FB_DATATYPE_POINTER
 	end if
 
 	select case as const v->dtype
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		select case as const dtype
-		case IR_DATATYPE_BYTE
+		case FB_DATATYPE_BYTE
 			v->con.val.int = cbyte( v->con.val.long )
 
-		case IR_DATATYPE_UBYTE
+		case FB_DATATYPE_UBYTE
 			v->con.val.int = cubyte( culngint( v->con.val.long ) )
 
-		case IR_DATATYPE_SHORT
+		case FB_DATATYPE_SHORT
 			v->con.val.int = cshort( v->con.val.long )
 
-		case IR_DATATYPE_USHORT
+		case FB_DATATYPE_USHORT
 			v->con.val.int = cushort( culngint( v->con.val.long ) )
 
-		case IR_DATATYPE_INTEGER, IR_DATATYPE_ENUM
+		case FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
 			v->con.val.int = cint( v->con.val.long )
 
-		case IR_DATATYPE_UINT, IR_DATATYPE_POINTER
+		case FB_DATATYPE_UINT, FB_DATATYPE_POINTER
 			v->con.val.int = cuint( culngint( v->con.val.long ) )
 
 		end select
 
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 
 		select case as const dtype
-		case IR_DATATYPE_BYTE
+		case FB_DATATYPE_BYTE
 			v->con.val.int = cbyte( v->con.val.float )
 
-		case IR_DATATYPE_UBYTE
+		case FB_DATATYPE_UBYTE
 			v->con.val.int = cubyte( v->con.val.float )
 
-		case IR_DATATYPE_SHORT
+		case FB_DATATYPE_SHORT
 			v->con.val.int = cshort( v->con.val.float )
 
-		case IR_DATATYPE_USHORT
+		case FB_DATATYPE_USHORT
 			v->con.val.int = cushort( v->con.val.float )
 
-		case IR_DATATYPE_INTEGER, IR_DATATYPE_ENUM
+		case FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
 			v->con.val.int = cint( v->con.val.float )
 
-		case IR_DATATYPE_UINT, IR_DATATYPE_POINTER
+		case FB_DATATYPE_UINT, FB_DATATYPE_POINTER
 			v->con.val.int = cuint( v->con.val.float )
 
 		end select
 
 	case else
 		select case as const dtype
-		case IR_DATATYPE_BYTE
+		case FB_DATATYPE_BYTE
 			v->con.val.int = cbyte( v->con.val.int )
 
-		case IR_DATATYPE_UBYTE
+		case FB_DATATYPE_UBYTE
 			v->con.val.int = cubyte( cuint( v->con.val.int ) )
 
-		case IR_DATATYPE_SHORT
+		case FB_DATATYPE_SHORT
 			v->con.val.int = cshort( v->con.val.int )
 
-		case IR_DATATYPE_USHORT
+		case FB_DATATYPE_USHORT
 			v->con.val.int = cushort( cuint( v->con.val.int ) )
 		end select
 
@@ -109,33 +109,33 @@ private sub hCONVConstEvalFlt( byval dtype as integer, _
 	dim as integer vdtype
 
     vdtype = v->dtype
-	if( vdtype > IR_DATATYPE_POINTER ) then
-		vdtype = IR_DATATYPE_POINTER
+	if( vdtype > FB_DATATYPE_POINTER ) then
+		vdtype = FB_DATATYPE_POINTER
 	end if
 
 	select case as const vdtype
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		'' do nothing..
 
-	case IR_DATATYPE_LONGINT
+	case FB_DATATYPE_LONGINT
 
-		if( dtype = IR_DATATYPE_SINGLE ) then
+		if( dtype = FB_DATATYPE_SINGLE ) then
 			v->con.val.float = csng( v->con.val.long )
 		else
 			v->con.val.float = cdbl( v->con.val.long )
 		end if
 
-	case IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_ULONGINT
 
-		if( dtype = IR_DATATYPE_SINGLE ) then
+		if( dtype = FB_DATATYPE_SINGLE ) then
 			v->con.val.float = csng( cunsg( v->con.val.long ) )
 		else
 			v->con.val.float = cdbl( cunsg( v->con.val.long ) )
 		end if
 
-	case IR_DATATYPE_UINT, IR_DATATYPE_POINTER
+	case FB_DATATYPE_UINT, FB_DATATYPE_POINTER
 
-		if( dtype = IR_DATATYPE_SINGLE ) then
+		if( dtype = FB_DATATYPE_SINGLE ) then
 			v->con.val.float = csng( cunsg( v->con.val.int ) )
 		else
 			v->con.val.float = cdbl( cunsg( v->con.val.int ) )
@@ -143,7 +143,7 @@ private sub hCONVConstEvalFlt( byval dtype as integer, _
 
 	case else
 
-		if( dtype = IR_DATATYPE_SINGLE ) then
+		if( dtype = FB_DATATYPE_SINGLE ) then
 			v->con.val.float = csng( v->con.val.int )
 		else
 			v->con.val.float = cdbl( v->con.val.int )
@@ -158,11 +158,11 @@ private sub hCONVConstEval64( byval dtype as integer, _
 							  byval v as ASTNODE ptr ) static
 
 	select case as const v->dtype
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		'' do nothing
 
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-		if( dtype = IR_DATATYPE_LONGINT ) then
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+		if( dtype = FB_DATATYPE_LONGINT ) then
 			v->con.val.long = clngint( v->con.val.float )
 		else
 			v->con.val.long = culngint( v->con.val.float )
@@ -171,14 +171,14 @@ private sub hCONVConstEval64( byval dtype as integer, _
 	case else
 		'' when expanding to 64bit, we must take care of signedness of source operand
 
-		if( dtype = IR_DATATYPE_LONGINT ) then
-			if( irIsSigned( v->dtype ) ) then
+		if( dtype = FB_DATATYPE_LONGINT ) then
+			if( symbIsSigned( v->dtype ) ) then
 				v->con.val.long = clngint( v->con.val.int )
 			else
 				v->con.val.long = clngint( cuint( v->con.val.int ) )
 			end if
 		else
-			if( irIsSigned( v->dtype ) ) then
+			if( symbIsSigned( v->dtype ) ) then
 				v->con.val.long = culngint( v->con.val.int )
 			else
 				v->con.val.long = culngint( cuint( v->con.val.int ) )
@@ -207,7 +207,7 @@ function astNewCONV( byval op as integer, _
     end if
 
 	'' UDT? can't convert..
-	if( dtype = IR_DATATYPE_USERDEF ) then
+	if( dtype = FB_DATATYPE_USERDEF ) then
 		exit function
 	end if
 
@@ -222,24 +222,24 @@ function astNewCONV( byval op as integer, _
 
     ''
     ldtype = l->dtype
-    dclass = irGetDataClass( ldtype )
+    dclass = symbGetDataClass( ldtype )
 
     '' string?
 	if( check_str ) then
 		select case as const ldtype
-		case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
-			 IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     		return rtlStrToVal( l, dtype )
     	end select
 
     else
-    	if( dclass = IR_DATACLASS_STRING ) then
+    	if( dclass = FB_DATACLASS_STRING ) then
     		exit function
 
     	'' CHAR and WCHAR literals are also from the INTEGER class
     	else
     		select case ldtype
-    		case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     			'' don't allow, unless it's a deref pointer
     			if( astIsPTR( l ) = FALSE ) then
     				exit function
@@ -249,7 +249,7 @@ function astNewCONV( byval op as integer, _
     end if
 
 	'' UDT's? ditto
-	if( ldtype = IR_DATATYPE_USERDEF ) then
+	if( ldtype = FB_DATATYPE_USERDEF ) then
 		exit function
     end if
 
@@ -257,14 +257,14 @@ function astNewCONV( byval op as integer, _
 	if( op <> INVALID ) then
 
 		'' float? invalid
-		if( dclass <> IR_DATACLASS_INTEGER ) then
+		if( dclass <> FB_DATACLASS_INTEGER ) then
 			exit function
 		end if
 
 		if( op = IR_OP_TOSIGNED ) then
-			dtype = irGetSignedType( ldtype )
+			dtype = symbGetSignedType( ldtype )
 		else
-			dtype = irGetUnsignedType( ldtype )
+			dtype = symbGetUnsignedType( ldtype )
 		end if
 
 		astSetDataType( l, dtype )
@@ -276,16 +276,16 @@ function astNewCONV( byval op as integer, _
 	if( l->defined ) then
 
 		select case as const dtype
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			hCONVConstEval64( dtype, l )
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			hCONVConstEvalFlt( dtype, l )
 		case else
 			'' byte's, short's, int's and enum's
 			hCONVConstEvalInt( dtype, l )
 		end select
 
-		if( dtype <> IR_DATATYPE_ENUM ) then
+		if( dtype <> FB_DATATYPE_ENUM ) then
 			l->class = AST_NODECLASS_CONST
 		else
 			l->class = AST_NODECLASS_ENUM
@@ -298,8 +298,8 @@ function astNewCONV( byval op as integer, _
 
 	'' only convert if the classes are different (ie, floating<->integer) or
 	'' if sizes are different (ie, byte<->int)
-	if( (dclass = irGetDataClass( dtype )) and _
-		(irGetDataSize( ldtype ) = irGetDataSize( dtype )) ) then
+	if( (dclass = symbGetDataClass( dtype )) and _
+		(symbGetDataSize( ldtype ) = symbGetDataSize( dtype )) ) then
 
 		astSetType( l, dtype, subtype )
 
@@ -307,8 +307,8 @@ function astNewCONV( byval op as integer, _
 	end if
 
 	'' handle special cases..
-	if( dtype = IR_DATATYPE_ULONGINT ) then
-		if( dclass = IR_DATACLASS_FPOINT ) then
+	if( dtype = FB_DATATYPE_ULONGINT ) then
+		if( dclass = FB_DATACLASS_FPOINT ) then
 			return rtlMathFp2ULongint( l, ldtype )
 		end if
 	end if

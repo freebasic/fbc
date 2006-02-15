@@ -42,16 +42,16 @@ function cConstant( byref constexpr as ASTNODE ptr ) as integer static
 
   		dtype = symbGetType( s )
   		select case as const dtype
-  		case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+  		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
   			constexpr = astNewVAR( symbGetConstValStr( s ), 0, dtype )
 
-  		case IR_DATATYPE_ENUM
+  		case FB_DATATYPE_ENUM
   			constexpr = astNewENUM( symbGetConstValInt( s ), symbGetSubType( s ) )
 
-  		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+  		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   			constexpr = astNewCONST64( symbGetConstValLong( s ), dtype )
 
-  		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   			constexpr = astNewCONSTf( symbGetConstValFloat( s ), dtype )
 
   		case else
@@ -78,16 +78,16 @@ function cLiteral( byref litexpr as ASTNODE ptr ) as integer
 	case FB_TKCLASS_NUMLITERAL
   		typ = lexGetType( )
   		select case as const typ
-  		case IR_DATATYPE_LONGINT
+  		case FB_DATATYPE_LONGINT
 			litexpr = astNewCONST64( vallng( *lexGetText( ) ), typ )
 
-		case IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_ULONGINT
 			litexpr = astNewCONST64( valulng( *lexGetText( ) ), typ )
 
-  		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+  		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			litexpr = astNewCONSTf( val( *lexGetText( ) ), typ )
 
-		case IR_DATATYPE_UINT
+		case FB_DATATYPE_UINT
 			litexpr = astNewCONSTi( valuint( *lexGetText( ) ), typ )
 
 		case else
@@ -100,7 +100,7 @@ function cLiteral( byref litexpr as ASTNODE ptr ) as integer
   	case FB_TKCLASS_STRLITERAL
   		typ = lexGetType( )
 
-  		if( typ <> IR_DATATYPE_WCHAR ) then
+  		if( typ <> FB_DATATYPE_WCHAR ) then
 			s = symbAllocStrConst( *lexGetText( ), lexGetTextLen( ) )
   		else
 			s = symbAllocWstrConst( *lexGetTextW( ), lexGetTextLen( ) )

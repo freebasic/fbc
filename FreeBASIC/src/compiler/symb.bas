@@ -65,6 +65,8 @@ sub symbInitSymbols static
 	symb.symtb = @symb.globtb
 
 	symb.lastlbl = NULL
+	
+	symbDataInit( )
 
 end sub
 
@@ -76,6 +78,8 @@ sub symbInit( byval ismain as integer )
 		exit sub
 	end if
 
+	''
+	symbDataEnd( )
 
 	''
 	hashInit( )
@@ -407,8 +411,8 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
 	end if
 
 	''
-	typ -= ptrcnt * FB_SYMBTYPE_POINTER
-	if( typ = FB_SYMBTYPE_FWDREF ) then
+	typ -= ptrcnt * FB_DATATYPE_POINTER
+	if( typ = FB_DATATYPE_FWDREF ) then
 		symbAddToFwdRef( subtype, s )
 	end if
 
@@ -509,12 +513,12 @@ function symbFindBySuffix( byval s as FBSYMBOL ptr, _
     if( suffix <> INVALID ) then
 
     	'' QB quirk: fixed-len and zstrings referenced using '$' as suffix..
-    	if( suffix = FB_SYMBTYPE_STRING ) then
+    	if( suffix = FB_DATATYPE_STRING ) then
     		do while( s <> NULL )
     			if( s->class = FB_SYMBCLASS_VAR ) then
      				select case s->typ
-     				case FB_SYMBTYPE_STRING, FB_SYMBTYPE_FIXSTR, _
-     					 FB_SYMBTYPE_CHAR
+     				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+     					 FB_DATATYPE_CHAR
      					exit do
      				end select
      			end if
@@ -540,15 +544,15 @@ function symbFindBySuffix( byval s as FBSYMBOL ptr, _
     else
 
     	'' QB quirk: see above
-    	if( deftyp = FB_SYMBTYPE_STRING ) then
+    	if( deftyp = FB_DATATYPE_STRING ) then
     		do while( s <> NULL )
     			if( s->class = FB_SYMBCLASS_VAR ) then
      				if( s->var.suffix = INVALID ) then
      					exit do
      				end if
      				select case s->typ
-     				case FB_SYMBTYPE_STRING, FB_SYMBTYPE_FIXSTR, _
-     					 FB_SYMBTYPE_CHAR
+     				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+     					 FB_DATATYPE_CHAR
      					exit do
      				end select
      			end if
@@ -649,48 +653,48 @@ function symbCalcLen( byval typ as integer, _
 	function = 0
 
 	select case as const typ
-	case FB_SYMBTYPE_FWDREF
+	case FB_DATATYPE_FWDREF
 		function = 0
 
-	case FB_SYMBTYPE_BYTE, FB_SYMBTYPE_UBYTE, FB_SYMBTYPE_CHAR
+	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE, FB_DATATYPE_CHAR
 		function = 1
 
-	case FB_SYMBTYPE_SHORT, FB_SYMBTYPE_USHORT
+	case FB_DATATYPE_SHORT, FB_DATATYPE_USHORT
 		function = 2
 
-	case FB_SYMBTYPE_WCHAR
+	case FB_DATATYPE_WCHAR
 		function = env.target.wchar.size
 
-	case FB_SYMBTYPE_INTEGER, FB_SYMBTYPE_LONG, FB_SYMBTYPE_UINT, FB_SYMBTYPE_ENUM
+	case FB_DATATYPE_INTEGER, FB_DATATYPE_LONG, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
 		function = FB_INTEGERSIZE
 
-	case FB_SYMBTYPE_LONGINT, FB_SYMBTYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		function = FB_INTEGERSIZE*2
 
-	case FB_SYMBTYPE_SINGLE
+	case FB_DATATYPE_SINGLE
 		function = 4
 
-	case FB_SYMBTYPE_DOUBLE
+	case FB_DATATYPE_DOUBLE
     	function = 8
 
-	case FB_SYMBTYPE_FIXSTR
+	case FB_DATATYPE_FIXSTR
 		function = 0									'' 0-len literal-strings
 
-	case FB_SYMBTYPE_STRING
+	case FB_DATATYPE_STRING
 		function = FB_STRDESCLEN
 
-	case FB_SYMBTYPE_USERDEF
+	case FB_DATATYPE_USERDEF
 		if( realsize = FALSE ) then
 			function = subtype->lgt
 		else
 			function = subtype->udt.unpadlgt
 		end if
 
-	case FB_SYMBTYPE_BITFIELD
+	case FB_DATATYPE_BITFIELD
 		function = subtype->lgt
 
 	case else
-		if( typ >= FB_SYMBTYPE_POINTER ) then
+		if( typ >= FB_DATATYPE_POINTER ) then
 			function = FB_POINTERSIZE
 		end if
 	end select

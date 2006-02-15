@@ -45,7 +45,7 @@ function cFunctionCall( byval sym as FBSYMBOL ptr, _
     typ = symbGetType( sym )
 
 	'' is it really a function?
-	if( typ = FB_SYMBTYPE_VOID ) then
+	if( typ = FB_DATATYPE_VOID ) then
 		hReportError( FB_ERRMSG_SYNTAXERROR )
 		exit function
 	end if
@@ -75,12 +75,12 @@ function cFunctionCall( byval sym as FBSYMBOL ptr, _
 	end if
 
 	'' if function returns a pointer, check for field deref
-	if( typ >= FB_SYMBTYPE_POINTER ) then
+	if( typ >= FB_DATATYPE_POINTER ) then
     	subtype = symbGetSubType( sym )
 
 		isfuncptr = FALSE
    		if( lexGetToken( ) = CHAR_LPRNT ) then
-   			if( typ = FB_SYMBTYPE_POINTER + FB_SYMBTYPE_FUNCTION ) then
+   			if( typ = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
 				isfuncptr = TRUE
    			end if
    		end if

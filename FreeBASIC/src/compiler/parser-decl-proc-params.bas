@@ -219,12 +219,12 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     '' check for invalid args
     select case as const atype
     '' can't be a fixed-len string
-    case FB_SYMBTYPE_FIXSTR, FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR
+    case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     	hParamError( proc, symbGetProcArgs( proc ), *pid )
     	exit function
 
 	'' can't be as ANY on non-prototypes
-    case FB_SYMBTYPE_VOID
+    case FB_DATATYPE_VOID
     	if( isproto = FALSE ) then
     		hParamError( proc, symbGetProcArgs( proc ), *pid )
     		exit function
@@ -241,13 +241,13 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     	'' check for invalid args
     	if( isproto ) then
     		select case atype
-    		case FB_SYMBTYPE_VOID
+    		case FB_DATATYPE_VOID
     			hParamError( proc, symbGetProcArgs( proc ), *pid )
     			exit function
     		end select
     	end if
 
-    	if( atype = FB_SYMBTYPE_STRING ) then
+    	if( atype = FB_DATATYPE_STRING ) then
     		alen = FB_POINTERSIZE
     	else
     		alen = symbCalcLen( atype, subtype, TRUE )
@@ -257,7 +257,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     if( isproto = FALSE ) then
     	'' contains a period?
     	if( dotpos > 0 ) then
-    		if( atype = FB_SYMBTYPE_USERDEF ) then
+    		if( atype = FB_DATATYPE_USERDEF ) then
     			hParamError( proc, symbGetProcArgs( proc ), *pid )
     			exit function
     		end if
@@ -273,11 +273,11 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     		exit function
     	end if
 
-    	dclass = irGetDataClass( atype )
+    	dclass = symbGetDataClass( atype )
 
     	'' not int, float or string?
     	select case dclass
-    	case IR_DATACLASS_INTEGER, IR_DATACLASS_FPOINT, IR_DATACLASS_STRING
+    	case FB_DATACLASS_INTEGER, FB_DATACLASS_FPOINT, FB_DATACLASS_STRING
 
     	case else
  	   		hParamError( proc, symbGetProcArgs( proc ), *pid )
@@ -294,14 +294,14 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     	if( astIsCONST( expr ) = FALSE ) then
     		'' not a literal string?
     		if( (astIsVAR( expr ) = FALSE) or _
-    			(dtype <> IR_DATATYPE_CHAR) ) then
+    			(dtype <> FB_DATATYPE_CHAR) ) then
 				hReportError( FB_ERRMSG_EXPECTEDCONST )
 				exit function
 			end if
 
 			sym = astGetSymbol( expr )
 			'' diff types or isn't it a literal string?
-			if( (dclass <> IR_DATACLASS_STRING) or _
+			if( (dclass <> FB_DATACLASS_STRING) or _
 				(symbGetVarInitialized( sym ) = FALSE) ) then
 				hReportError( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
@@ -309,7 +309,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 
 		else
 			'' diff types?
-			if( dclass = IR_DATACLASS_STRING ) then
+			if( dclass = FB_DATACLASS_STRING ) then
 				hReportError( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
 			end if
@@ -318,8 +318,8 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     	optional = TRUE
     	'' string?
     	select case as const atype
-    	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
-    		 IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+    		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     		optval.str = sym
     	case else
     		astConvertValue( expr, @optval, atype )

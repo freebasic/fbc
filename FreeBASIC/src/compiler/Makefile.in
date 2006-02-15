@@ -121,9 +121,9 @@ FBC_SRCS += rtl.bas rtl-array.bas rtl-console.bas rtl-data.bas rtl-error.bas
 FBC_SRCS += rtl-file.bas rtl-gfx.bas rtl-macro.bas rtl-math.bas rtl-mem.bas
 FBC_SRCS += rtl-print.bas rtl-profile.bas rtl-string.bas rtl-system.bas
 
-FBC_SRCS += symb.bas symb-const.bas symb-define.bas symb-enum.bas symb-keyword.bas
-FBC_SRCS += symb-label.bas symb-lib.bas symb-proc.bas symb-scope.bas symb-struct.bas
-FBC_SRCS += symb-typedef.bas symb-var.bas symb-bitfield.bas
+FBC_SRCS += symb.bas symb-const.bas symb-data.bas symb-define.bas symb-enum.bas
+FBC_SRCS += symb-keyword.bas symb-label.bas symb-lib.bas symb-proc.bas symb-scope.bas
+FBC_SRCS += symb-struct.bas symb-typedef.bas symb-var.bas symb-bitfield.bas
 
 FBC_SRCS += $(FBC_OSDEPSRCS)
 

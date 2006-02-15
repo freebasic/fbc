@@ -43,13 +43,13 @@ private function hAllocWithVar( ) as FBSYMBOL ptr
 
 	'' not an UDT?
 	dtype = astGetDataType( expr )
-	if( dtype <> FB_SYMBTYPE_USERDEF ) then
+	if( dtype <> FB_DATATYPE_USERDEF ) then
 		hReportError( FB_ERRMSG_INVALIDDATATYPES )
 		return NULL
 	end if
 
     '' create a temporary pointer
-    dtype += FB_SYMBTYPE_POINTER
+    dtype += FB_DATATYPE_POINTER
     subtype = astGetSubType( expr )
 
     sym = symbAddTempVar( dtype, subtype )

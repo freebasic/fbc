@@ -79,62 +79,62 @@ private sub hConvDataType( byval v as FBVALUE ptr, _
 						   byval vdtype as integer, _
 						   byval dtype as integer ) static
 
-	if( dtype > IR_DATATYPE_POINTER ) then
-		dtype = IR_DATATYPE_POINTER
+	if( dtype > FB_DATATYPE_POINTER ) then
+		dtype = FB_DATATYPE_POINTER
 	end if
 
 	select case as const dtype
 	''
-	case IR_DATATYPE_LONGINT
+	case FB_DATATYPE_LONGINT
 
 		select case as const vdtype
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		    '' no conversion
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			v->long = clngint( v->float )
 		case else
 			v->long = clngint( v->int )
 		end select
 
 	''
-	case IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_ULONGINT
 
 		select case as const vdtype
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		    '' no conversion
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			v->long = culngint( v->float )
 		case else
 			v->long = culngint( v->int )
 		end select
 
 	''
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 
-		if( vdtype > IR_DATATYPE_POINTER ) then
-			vdtype = IR_DATATYPE_POINTER
+		if( vdtype > FB_DATATYPE_POINTER ) then
+			vdtype = FB_DATATYPE_POINTER
 		end if
 
 		select case as const vdtype
-		case IR_DATATYPE_LONGINT
+		case FB_DATATYPE_LONGINT
 		    v->float = cdbl( v->long )
-		case IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_ULONGINT
 			v->float = cdbl( cunsg( v->long ) )
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			'' do nothing
-		case IR_DATATYPE_UINT, IR_DATATYPE_POINTER
+		case FB_DATATYPE_UINT, FB_DATATYPE_POINTER
 			v->float = cdbl( cuint( v->int ) )
 		case else
 			v->float = cdbl( v->int )
 		end select
 
 	''
-	case IR_DATATYPE_UINT, IR_DATATYPE_POINTER
+	case FB_DATATYPE_UINT, FB_DATATYPE_POINTER
 
 	 	select case as const vdtype
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		    v->int = cuint( v->long )
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			v->int = cuint( v->float )
 		end select
 
@@ -142,9 +142,9 @@ private sub hConvDataType( byval v as FBVALUE ptr, _
 	case else
 
 		select case as const vdtype
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		    v->int = cint( v->long )
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			v->int = cint( v->float )
 		end select
 
@@ -161,9 +161,9 @@ private function hPrepConst( byval v as ASTVALUE ptr, _
 	if( v->dtype = INVALID ) then
 		v->dtype = r->dtype
 		select case as const v->dtype
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			v->val.long = r->con.val.long
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			v->val.float = r->con.val.float
 		case else
             v->val.int = r->con.val.int
@@ -173,12 +173,12 @@ private function hPrepConst( byval v as ASTVALUE ptr, _
 	end if
 
     ''
-	dtype = irMaxDataType( v->dtype, r->dtype )
+	dtype = symbMaxDataType( v->dtype, r->dtype )
 
 	'' same? don't convert..
 	if( dtype = INVALID ) then
 		'' an ENUM or POINTER always has the precedence
-		if( (r->dtype = IR_DATATYPE_ENUM) or (r->dtype >= IR_DATATYPE_POINTER) ) then
+		if( (r->dtype = FB_DATATYPE_ENUM) or (r->dtype >= FB_DATATYPE_POINTER) ) then
 			return r->dtype
 		else
 			return v->dtype
@@ -238,9 +238,9 @@ private function hConstAccumADDSUB( byval n as ASTNODE ptr, _
 				select case o
 				case IR_OP_ADD
 					select case as const dtype
-					case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 						v->val.long += r->con.val.long
-					case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 						v->val.float += r->con.val.float
 					case else
 				    	v->val.int += r->con.val.int
@@ -248,9 +248,9 @@ private function hConstAccumADDSUB( byval n as ASTNODE ptr, _
 
 				case IR_OP_SUB
 					select case as const dtype
-					case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 						v->val.long -= r->con.val.long
-					case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 						v->val.float -= r->con.val.float
 					case else
 						v->val.int -= r->con.val.int
@@ -305,9 +305,9 @@ private function hConstAccumMUL( byval n as ASTNODE ptr, _
 
 			if( dtype <> INVALID ) then
 				select case as const dtype
-				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					v->val.long *= r->con.val.long
-				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 					v->val.float *= r->con.val.float
 				case else
 					v->val.int *= r->con.val.int
@@ -354,9 +354,9 @@ private function hOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
 				n = hConstAccumADDSUB( n, @v, 1 )
 
 				select case as const v.dtype
-				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					nn = astNewCONST64( v.val.long, v.dtype )
-				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			    	nn = astNewCONSTf( v.val.float, v.dtype )
 				case else
 					nn = astNewCONSTi( v.val.int, v.dtype )
@@ -369,9 +369,9 @@ private function hOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
 				n = hConstAccumMUL( n, @v )
 
 				select case as const v.dtype
-				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					nn = astNewCONST64( v.val.long, v.dtype )
-				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 					nn = astNewCONSTf( v.val.float, v.dtype )
 				case else
 					nn = astNewCONSTi( v.val.int, v.dtype )
@@ -384,9 +384,9 @@ private function hOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
 				n = hConstAccumADDSUB( n, @v, -1 )
 
 				select case as const v.dtype
-				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					nn = astNewCONST64( v.val.long, v.dtype )
-				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 					nn = astNewCONSTf( v.val.float, v.dtype )
 				case else
 					nn = astNewCONSTi( v.val.int, v.dtype )
@@ -429,8 +429,8 @@ private sub hOptConstAccum2( byval n as ASTNODE ptr )
 		case IR_OP_ADD
 			'' don't mess with strings..
 			select case n->dtype
-			case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
-				 IR_DATATYPE_WCHAR
+			case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+				 FB_DATATYPE_WCHAR
 
 			case else
 				v.dtype = INVALID
@@ -440,9 +440,9 @@ private sub hOptConstAccum2( byval n as ASTNODE ptr )
 				if( v.dtype <> INVALID ) then
 					n->l = astNewBOP( IR_OP_ADD, n->l, n->r )
 					select case as const v.dtype
-					case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 						n->r = astNewCONST64( v.val.long, v.dtype )
-					case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 						n->r = astNewCONSTf( v.val.float, v.dtype )
 					case else
 						n->r = astNewCONSTi( v.val.int, v.dtype )
@@ -459,9 +459,9 @@ private sub hOptConstAccum2( byval n as ASTNODE ptr )
 			if( v.dtype <> INVALID ) then
 				n->l = astNewBOP( IR_OP_MUL, n->l, n->r )
 				select case as const v.dtype
-				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					n->r = astNewCONST64( v.val.long, v.dtype )
-				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 					n->r = astNewCONSTf( v.val.float, v.dtype )
 				case else
 					n->r = astNewCONSTi( v.val.int, v.dtype )
@@ -474,7 +474,7 @@ private sub hOptConstAccum2( byval n as ASTNODE ptr )
 			'' update the node data type
 			l = n->l
 			r = n->r
-			dtype = irMaxDataType( l->dtype, r->dtype )
+			dtype = symbMaxDataType( l->dtype, r->dtype )
 			if( dtype <> INVALID ) then
 				if( dtype <> l->dtype ) then
 					n->l = astNewCONV( INVALID, dtype, r->subtype, l )
@@ -484,7 +484,7 @@ private sub hOptConstAccum2( byval n as ASTNODE ptr )
 				n->dtype = dtype
 			else
 				'' an ENUM or POINTER always has the precedence
-				if( (r->dtype = IR_DATATYPE_ENUM) or (r->dtype >= IR_DATATYPE_POINTER) ) then
+				if( (r->dtype = FB_DATATYPE_ENUM) or (r->dtype >= FB_DATATYPE_POINTER) ) then
 					n->dtype = r->dtype
 				else
 					n->dtype = l->dtype
@@ -530,9 +530,9 @@ private function hConstDistMUL( byval n as ASTNODE ptr, _
 
 			if( dtype <> INVALID ) then
 				select case as const dtype
-				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					v->val.long += r->con.val.long
-				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 					v->val.float += r->con.val.float
 				case else
 					v->val.int += r->con.val.int
@@ -580,11 +580,11 @@ private function hOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
 				if( v.dtype <> INVALID ) then
 					select case as const v.dtype
 					''
-					case IR_DATATYPE_LONGINT
+					case FB_DATATYPE_LONGINT
 						select case as const r->dtype
-						case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+						case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 							v.val.long *= r->con.val.long
-						case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+						case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 							v.val.long *= clngint( r->con.val.float )
 						case else
 							v.val.long *= clngint( r->con.val.int )
@@ -593,11 +593,11 @@ private function hOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
 						r = astNewCONST64( v.val.long, v.dtype )
 
 					''
-					case IR_DATATYPE_ULONGINT
+					case FB_DATATYPE_ULONGINT
 						select case as const r->dtype
-						case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+						case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 							v.val.long *= cunsg( r->con.val.long )
-						case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+						case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 							v.val.long *= culngint( r->con.val.float )
 						case else
 							v.val.long *= culngint( r->con.val.int )
@@ -606,15 +606,15 @@ private function hOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
 						r = astNewCONST64( v.val.long, v.dtype )
 
 					''
-					case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 						select case as const r->dtype
-						case IR_DATATYPE_LONGINT
+						case FB_DATATYPE_LONGINT
 							v.val.float *= cdbl( r->con.val.long )
-						case IR_DATATYPE_ULONGINT
+						case FB_DATATYPE_ULONGINT
 							v.val.float *= cdbl( cunsg( r->con.val.long ) )
-						case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+						case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 							v.val.float *= r->con.val.float
-						case IR_DATATYPE_UINT
+						case FB_DATATYPE_UINT
 							v.val.float *= cdbl( cunsg( r->con.val.int ) )
 						case else
 							v.val.float *= cdbl( r->con.val.int )
@@ -625,9 +625,9 @@ private function hOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
 					''
 					case else
 						select case as const r->dtype
-						case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+						case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 							v.val.int *= cint( r->con.val.long )
-						case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+						case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 							v.val.int *= cint( r->con.val.float )
 						case else
 							v.val.int *= r->con.val.int
@@ -679,9 +679,9 @@ private sub hOptConstIDX( byval n as ASTNODE ptr )
 
         	if( v.dtype <> INVALID ) then
         		select case as const v.dtype
-        		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+        		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
         			c = cint( v.val.long )
-        		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+        		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
         			c = cint( v.val.float )
         		case else
         			c = v.val.int
@@ -698,9 +698,9 @@ private sub hOptConstIDX( byval n as ASTNODE ptr )
         	l = n->l
         	if( l->defined ) then
 				select case as const l->dtype
-				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					c = cint( l->con.val.long )
-				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 					c = cint( l->con.val.float )
 				case else
 					c = cint( l->con.val.int )
@@ -729,9 +729,9 @@ private sub hOptConstIDX( byval n as ASTNODE ptr )
 					if( lr->defined ) then
 
 						select case as const lr->dtype
-						case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+						case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 							c = cint( lr->con.val.long )
-						case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+						case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 							c = cint( lr->con.val.float )
 						case else
 							c = cint( lr->con.val.int )
@@ -774,9 +774,9 @@ private sub hOptConstIDX( byval n as ASTNODE ptr )
 			end if
 
 			'' convert to integer if needed
-			if( (irGetDataClass( l->dtype ) <> IR_DATACLASS_INTEGER) or _
-			    (irGetDataSize( l->dtype ) <> FB_POINTERSIZE) ) then
-				n->l = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, l )
+			if( (symbGetDataClass( l->dtype ) <> FB_DATACLASS_INTEGER) or _
+			    (symbGetDataSize( l->dtype ) <> FB_POINTERSIZE) ) then
+				n->l = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, l )
 			end if
 
         end if
@@ -814,8 +814,8 @@ private sub hOptAssocADD( byval n as ASTNODE ptr )
 		if( op = IR_OP_ADD or op = IR_OP_SUB ) then
 			'' don't mess with strings..
 			select case n->dtype
-			case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
-				 IR_DATATYPE_WCHAR
+			case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+				 FB_DATATYPE_WCHAR
 
 			case else
 				r = n->r
@@ -925,8 +925,8 @@ private sub hOptToShift( byval n as ASTNODE ptr )
 		case IR_OP_MUL, IR_OP_INTDIV, IR_OP_MOD
 			r = n->r
 			if( r->defined ) then
-				if( irGetDataClass( n->dtype ) = IR_DATACLASS_INTEGER ) then
-					if( irGetDataSize( r->dtype ) <= FB_INTEGERSIZE ) then
+				if( symbGetDataClass( n->dtype ) = FB_DATACLASS_INTEGER ) then
+					if( symbGetDataSize( r->dtype ) <= FB_INTEGERSIZE ) then
 						v = r->con.val.int
 						if( v > 0 ) then
 							v = hToPow2( v )
@@ -941,17 +941,17 @@ private sub hOptToShift( byval n as ASTNODE ptr )
 								case IR_OP_INTDIV
 									if( v <= 32 ) then
 										l = n->l
-										if( irIsSigned( l->dtype ) = FALSE ) then
+										if( symbIsSigned( l->dtype ) = FALSE ) then
 											n->op.op = IR_OP_SHR
 											r->con.val.int = v
 										else
 											'' !!FIXME!!! while there's no common sub-expr
 											'' 	          elimination, only allow VAR nodes
 											if( l->class = AST_NODECLASS_VAR ) then
-												bits = irGetDataBits( l->dtype ) - 1
+												bits = symbGetDataBits( l->dtype ) - 1
 												'' bytes are converted to int's..
 												if( bits = 7 ) then
-													bits = irGetDataBits( IR_DATATYPE_INTEGER ) - 1
+													bits = symbGetDataBits( FB_DATATYPE_INTEGER ) - 1
 												end if
 
 												n->l = astNewCONV( IR_OP_TOSIGNED, _
@@ -965,7 +965,7 @@ private sub hOptToShift( byval n as ASTNODE ptr )
 																  			  			  			 NULL, _
 																  			  			  			 l ), _
 																  			  			 astNewCONSTi( bits, _
-																  									   IR_DATATYPE_INTEGER ), _
+																  									   FB_DATATYPE_INTEGER ), _
 																					   ), _
 																   			) _
 																 )
@@ -978,7 +978,7 @@ private sub hOptToShift( byval n as ASTNODE ptr )
 
 								case IR_OP_MOD
 									'' unsigned types only
-									if( irIsSigned( n->l->dtype ) = FALSE ) then
+									if( symbIsSigned( n->l->dtype ) = FALSE ) then
 										n->op.op = IR_OP_AND
 										r->con.val.int -= 1
 									end if
@@ -1029,8 +1029,8 @@ private function hOptNullOp( byval n as ASTNODE ptr ) as ASTNODE ptr static
 		l = n->l
 		r = n->r
 		if( r->defined ) then
-			if( irGetDataClass( n->dtype ) = IR_DATACLASS_INTEGER ) then
-				if( irGetDataSize( r->dtype ) <= FB_INTEGERSIZE ) then
+			if( symbGetDataClass( n->dtype ) = FB_DATACLASS_INTEGER ) then
+				if( symbGetDataSize( r->dtype ) <= FB_INTEGERSIZE ) then
 					v = r->con.val.int
 					select case as const op
 					case IR_OP_MUL
@@ -1217,7 +1217,7 @@ private function hOptStrAssignment( byval n as ASTNODE ptr, _
 		end select
 	end if
 
-	is_wstr = ( n->dtype = IR_DATATYPE_WCHAR )
+	is_wstr = ( n->dtype = FB_DATATYPE_WCHAR )
 
 	if( optimize ) then
 		astDel( n )
@@ -1295,19 +1295,19 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr static
 
 	'' strings?
 	select case dtype
-	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
-		 IR_DATATYPE_WCHAR
+	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+		 FB_DATATYPE_WCHAR
 		return hOptStrAssignment( n, l, r )
 	end select
 
 	'' integer's only, no way to optimize with a FPU stack (x86 assumption)
-	dclass = irGetDataClass( dtype )
-	if( dclass <> IR_DATACLASS_INTEGER ) then
+	dclass = symbGetDataClass( dtype )
+	if( dclass <> FB_DATACLASS_INTEGER ) then
 
 		'' try to optimize if a constant is being assigned to a float var
   		if( r->defined ) then
-  			if( dclass = IR_DATACLASS_FPOINT ) then
-				if( irGetDataClass( r->dtype ) <> IR_DATACLASS_FPOINT ) then
+  			if( dclass = FB_DATACLASS_FPOINT ) then
+				if( symbGetDataClass( r->dtype ) <> FB_DATACLASS_FPOINT ) then
 					n->r = astNewCONV( INVALID, dtype, NULL, r )
 				end if
 			end if
@@ -1317,7 +1317,7 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr static
 	end if
 
 	'' can't be byte either, as BOP will do cint(byte) op cint(byte)
-	if( irGetDataSize( dtype ) = 1 ) then
+	if( symbGetDataSize( dtype ) = 1 ) then
 		exit function
 	end if
 
@@ -1327,7 +1327,7 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr static
 
 	case AST_NODECLASS_FIELD
 		'' isn't it a bitfield?
-		if( l->dtype = IR_DATATYPE_BITFIELD ) then
+		if( l->dtype = FB_DATATYPE_BITFIELD ) then
 			exit function
 		end if
 
@@ -1352,7 +1352,7 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr static
 	end select
 
 	'' node result is an integer too?
-	if( irGetDataClass( r->dtype ) <> IR_DATACLASS_INTEGER ) then
+	if( symbGetDataClass( r->dtype ) <> FB_DATACLASS_INTEGER ) then
 		exit function
 	end if
 

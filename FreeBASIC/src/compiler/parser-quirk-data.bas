@@ -102,17 +102,17 @@ function cDataStmt as integer static
 			'' check if it's an string
 			litsym = NULL
 			select case astGetDataType( expr )
-			case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 				litsym = astGetStrLitSymbol( expr )
 			end select
 
 			'' string?
 			if( litsym <> NULL ) then
                 '' not a wstring?
-                if( astGetDataType( expr ) <> IR_DATATYPE_WCHAR ) then
+                if( astGetDataType( expr ) <> FB_DATATYPE_WCHAR ) then
             		if( rtlDataStore( symbGetVarText( litsym ), _
             						  symbGetStrLen( litsym ) - 1, _ '' less the null-char
-            						  IR_DATATYPE_CHAR ) = FALSE ) then
+            						  FB_DATATYPE_CHAR ) = FALSE ) then
 	            		exit function
     	        	end if
 
@@ -120,7 +120,7 @@ function cDataStmt as integer static
     	        else
             		if( rtlDataStoreW( symbGetVarTextW( litsym ), _
             						   symbGetWstrLen( litsym ) - 1, _ '' ditto
-            						   IR_DATATYPE_WCHAR ) = FALSE ) then
+            						   FB_DATATYPE_WCHAR ) = FALSE ) then
 	            		exit function
     	        	end if
 
@@ -144,7 +144,7 @@ function cDataStmt as integer static
             		littext = astGetValueAsStr( expr )
             		if( rtlDataStore( littext, _
             						  len( littext ), _
-            						  IR_DATATYPE_CHAR ) = FALSE ) then
+            						  FB_DATATYPE_CHAR ) = FALSE ) then
 	            		hReportError( FB_ERRMSG_INVALIDDATATYPES )
 	            		exit function
     	        	end if

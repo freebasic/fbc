@@ -131,25 +131,25 @@ function astNewUOP( byval op as integer, _
 	dtype 	= o->dtype
 
     '' string? can't operate
-    dclass = irGetDataClass( dtype )
-    if( dclass = IR_DATACLASS_STRING ) then
+    dclass = symbGetDataClass( dtype )
+    if( dclass = FB_DATACLASS_STRING ) then
     	exit function
     end if
 
     select case dtype
     '' CHAR and WCHAR literals are also from the INTEGER class..
-    case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     	'' only if it's a deref pointer, to allow "NOT *p" etc
     	if( astIsPTR( o ) = FALSE ) then
     		exit function
     	end if
 
     '' UDT's?
-    case IR_DATATYPE_USERDEF
+    case FB_DATATYPE_USERDEF
     	exit function
 
 	'' pointer?
-	case IS >= IR_DATATYPE_POINTER
+	case IS >= FB_DATATYPE_POINTER
     	'' only NOT allowed
     	if( op <> IR_OP_NOT ) then
     		exit function
@@ -157,11 +157,11 @@ function astNewUOP( byval op as integer, _
     end select
 
 	'' convert byte to integer
-	if( irGetDataSize( dtype ) = 1 ) then
-		if( irIsSigned( dtype ) ) then
-			dtype = IR_DATATYPE_INTEGER
+	if( symbGetDataSize( dtype ) = 1 ) then
+		if( symbIsSigned( dtype ) ) then
+			dtype = FB_DATATYPE_INTEGER
 		else
-			dtype = IR_DATATYPE_UINT
+			dtype = FB_DATATYPE_UINT
 		end if
 		o = astNewCONV( INVALID, dtype, NULL, o )
 	end if
@@ -169,24 +169,24 @@ function astNewUOP( byval op as integer, _
 	select case as const op
 	'' NOT can only operate on integers
 	case IR_OP_NOT
-		if( dclass <> IR_DATACLASS_INTEGER ) then
-			dtype = IR_DATATYPE_INTEGER
+		if( dclass <> FB_DATACLASS_INTEGER ) then
+			dtype = FB_DATATYPE_INTEGER
 			o = astNewCONV( INVALID, dtype, NULL, o )
 		end if
 
 	'' with SGN the result is always signed integer
 	case IR_OP_SGN
-		if( dclass <> IR_DATACLASS_INTEGER ) then
-			dtype = IR_DATATYPE_INTEGER
+		if( dclass <> FB_DATACLASS_INTEGER ) then
+			dtype = FB_DATATYPE_INTEGER
 		else
-			dtype = irGetSignedType( dtype )
+			dtype = symbGetSignedType( dtype )
 		end if
 
 	'' transcendental can only operate on floats
 	case IR_OP_SIN, IR_OP_ASIN, IR_OP_COS, IR_OP_ACOS, _
 		 IR_OP_TAN, IR_OP_ATAN, IR_OP_SQRT, IR_OP_LOG, IR_OP_FLOOR
-		if( dclass <> IR_DATACLASS_FPOINT ) then
-			dtype = IR_DATATYPE_DOUBLE
+		if( dclass <> FB_DATACLASS_FPOINT ) then
+			dtype = FB_DATATYPE_DOUBLE
 			o = astNewCONV( INVALID, dtype, NULL, o )
 		end if
 	end select
@@ -195,18 +195,18 @@ function astNewUOP( byval op as integer, _
 	if( o->defined ) then
 
 		if( op = IR_OP_NEG ) then
-			if( astGetDataClass( o ) = IR_DATACLASS_INTEGER ) then
-				if( irIsSigned( dtype ) = FALSE ) then
+			if( astGetDataClass( o ) = FB_DATACLASS_INTEGER ) then
+				if( symbIsSigned( dtype ) = FALSE ) then
 					'' test overflow
 					select case dtype
-					case IR_DATATYPE_UINT
+					case FB_DATATYPE_UINT
 						if( astGetValInt( o ) and &h80000000 ) then
 							if( astGetValInt( o ) <> &h80000000 ) then
 								hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 							end if
 						end if
 
-					case IR_DATATYPE_ULONGINT
+					case FB_DATATYPE_ULONGINT
 						if( astGetValLong( o ) and &h8000000000000000 ) then
 							if( astGetValLong( o ) <> &h8000000000000000 ) then
 								hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
@@ -219,15 +219,15 @@ function astNewUOP( byval op as integer, _
 						end if
 					end select
 
-					dtype = irGetSignedType( dtype )
+					dtype = symbGetSignedType( dtype )
 				end if
 			end if
 		end if
 
 		select case as const o->dtype
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		    hUOPConstFold64( op, o )
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			hUOPConstFoldFlt( op, o )
 		case else
 			'' byte's, short's, int's and enum's
@@ -242,7 +242,7 @@ function astNewUOP( byval op as integer, _
 	select case as const op
 	case IR_OP_SGN
 		'' hack! SGN with floats is handled by a function
-		if( dclass = IR_DATACLASS_FPOINT ) then
+		if( dclass = FB_DATACLASS_FPOINT ) then
 			return rtlMathFSGN( o )
 		end if
 

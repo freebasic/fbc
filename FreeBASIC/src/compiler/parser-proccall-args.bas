@@ -34,19 +34,19 @@ private function hCreateOptArg( byval arg as FBSYMBOL ptr _
 
 	'' create an arg
 	select case as const symbGetType( arg )
-  	case IR_DATATYPE_ENUM
+  	case FB_DATATYPE_ENUM
   		function = astNewENUM( symbGetArgOptValInt( arg ), symbGetSubType( arg ) )
 
-	case IR_DATATYPE_FIXSTR, IR_DATATYPE_STRING, IR_DATATYPE_CHAR
-		function = astNewVAR( symbGetArgOptValStr( arg ), 0, IR_DATATYPE_CHAR )
+	case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
+		function = astNewVAR( symbGetArgOptValStr( arg ), 0, FB_DATATYPE_CHAR )
 
-	case IR_DATATYPE_WCHAR
-		function = astNewVAR( symbGetArgOptValStr( arg ), 0, IR_DATATYPE_WCHAR )
+	case FB_DATATYPE_WCHAR
+		function = astNewVAR( symbGetArgOptValStr( arg ), 0, FB_DATATYPE_WCHAR )
 
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		function = astNewCONST64( symbGetArgOptValLong( arg ), symbGetType( arg ) )
 
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		function = astNewCONSTf( symbGetArgOptValFloat( arg ), symbGetType( arg ) )
 
 	case else

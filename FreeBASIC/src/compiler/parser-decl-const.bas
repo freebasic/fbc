@@ -97,8 +97,8 @@ function cConstAssign as integer static
 		end if
 
 		select case as const sdtype
-		case FB_SYMBTYPE_VOID, FB_SYMBTYPE_FIXSTR, _
-			 FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR
+		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR, _
+			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 			hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 			exit function
 		end select
@@ -121,7 +121,7 @@ function cConstAssign as integer static
 	edtype = astGetDataType( expr )
 	litsym = NULL
 	select case edtype
-	case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		litsym = astGetStrLitSymbol( expr )
 	end select
 
@@ -130,7 +130,7 @@ function cConstAssign as integer static
 
 		if( sdtype <> INVALID ) then
 			'' not a string?
-			if( sdtype <> FB_SYMBTYPE_STRING ) then
+			if( sdtype <> FB_DATATYPE_STRING ) then
 				hReportErrorEx( FB_ERRMSG_INVALIDDATATYPES, id )
 			end if
 		end if
@@ -153,7 +153,7 @@ function cConstAssign as integer static
 
 		if( sdtype <> INVALID ) then
 			'' string?
-			if( sdtype = FB_SYMBTYPE_STRING ) then
+			if( sdtype = FB_DATATYPE_STRING ) then
 				hReportErrorEx( FB_ERRMSG_INVALIDDATATYPES, id )
 			end if
 		end if

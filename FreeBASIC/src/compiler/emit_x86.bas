@@ -70,30 +70,30 @@ declare function 	hGetTypeString		( byval typ as integer ) as string
 		{ "st(0)","st(1)","st(2)","st(3)","st(4)","st(5)","st(6)","st(7)" } _
 	}
 
-	'' same order as IRDATATYPE_ENUM
-	dim shared dtypeTB(0 to IR_MAXDATATYPES-1) as EMITDATATYPE => _
+	'' same order as FB_DATATYPE
+	dim shared dtypeTB(0 to FB_DATATYPES-1) as EMITDATATYPE => _
 	{ _
-		( IR_DATACLASS_INTEGER, 0 			    , 0, "void ptr"  ), _	'' void
-		( IR_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' byte
-		( IR_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' ubyte
-		( IR_DATACLASS_INTEGER, 1               , 0, "byte ptr"  ), _	'' char
-		( IR_DATACLASS_INTEGER, 2               , 1, "word ptr"  ), _	'' short
-		( IR_DATACLASS_INTEGER, 2               , 1, "word ptr"  ), _	'' ushort
-		( IR_DATACLASS_INTEGER, 2  				, 1, "word ptr" ), _	'' wchar
-		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' int
-		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _   '' uint
-		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' enum
-		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' bitfield
-		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2, 2, "qword ptr" ), _	'' longint
-		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2, 2, "qword ptr" ), _	'' ulongint
-		( IR_DATACLASS_FPOINT , 4			    , 3, "dword ptr" ), _	'' single
-		( IR_DATACLASS_FPOINT , 8			    , 3, "qword ptr" ), _	'' double
-		( IR_DATACLASS_STRING , FB_STRDESCLEN	, 0, ""          ), _	'' string
-		( IR_DATACLASS_STRING , 1               , 0, "byte ptr"  ), _	'' fix-len string
-		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' udt
-		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' function
-		( IR_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' fwd-ref
-		( IR_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ) _	'' pointer
+		( FB_DATACLASS_INTEGER, 0 			    , 0, "void ptr"  ), _	'' void
+		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' byte
+		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' ubyte
+		( FB_DATACLASS_INTEGER, 1               , 0, "byte ptr"  ), _	'' char
+		( FB_DATACLASS_INTEGER, 2               , 1, "word ptr"  ), _	'' short
+		( FB_DATACLASS_INTEGER, 2               , 1, "word ptr"  ), _	'' ushort
+		( FB_DATACLASS_INTEGER, 2  				, 1, "word ptr" ), _	'' wchar
+		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' int
+		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _   '' uint
+		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' enum
+		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' bitfield
+		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, 2, "qword ptr" ), _	'' longint
+		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE*2, 2, "qword ptr" ), _	'' ulongint
+		( FB_DATACLASS_FPOINT , 4			    , 3, "dword ptr" ), _	'' single
+		( FB_DATACLASS_FPOINT , 8			    , 3, "qword ptr" ), _	'' double
+		( FB_DATACLASS_STRING , FB_STRDESCLEN	, 0, ""          ), _	'' string
+		( FB_DATACLASS_STRING , 1               , 0, "byte ptr"  ), _	'' fix-len string
+		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' udt
+		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ), _	'' function
+		( FB_DATACLASS_INTEGER, 1			    , 0, "byte ptr"  ), _	'' fwd-ref
+		( FB_DATACLASS_INTEGER, FB_INTEGERSIZE  , 2, "dword ptr" ) _	'' pointer
 	}
 
 const EMIT_MAXKEYWORDS = 600
@@ -207,20 +207,20 @@ private sub hInitRegTB
 
 	static as integer regclass( 0 to (EMIT_REGCLASSES*EMIT_MAXRNAMES)-1 ) = _
 	{ _
-		IR_DATACLASS_INTEGER, _ '' edx
-		IR_DATACLASS_INTEGER, _ '' edi
-		IR_DATACLASS_INTEGER, _ '' esi
-		IR_DATACLASS_INTEGER, _ '' ecx
-		IR_DATACLASS_INTEGER, _ '' ebx
-		IR_DATACLASS_INTEGER, _ '' eax
+		FB_DATACLASS_INTEGER, _ '' edx
+		FB_DATACLASS_INTEGER, _ '' edi
+		FB_DATACLASS_INTEGER, _ '' esi
+		FB_DATACLASS_INTEGER, _ '' ecx
+		FB_DATACLASS_INTEGER, _ '' ebx
+		FB_DATACLASS_INTEGER, _ '' eax
 							  _ '' ebp and esp are reserved
-		IR_DATACLASS_FPOINT , _ '' st(0)
-		IR_DATACLASS_FPOINT , _ '' st(1)
-		IR_DATACLASS_FPOINT , _ '' st(2)
-		IR_DATACLASS_FPOINT , _ '' st(3)
-		IR_DATACLASS_FPOINT , _ '' st(4)
-		IR_DATACLASS_FPOINT , _ '' st(5)
-		IR_DATACLASS_FPOINT , _ '' st(6)
+		FB_DATACLASS_FPOINT , _ '' st(0)
+		FB_DATACLASS_FPOINT , _ '' st(1)
+		FB_DATACLASS_FPOINT , _ '' st(2)
+		FB_DATACLASS_FPOINT , _ '' st(3)
+		FB_DATACLASS_FPOINT , _ '' st(4)
+		FB_DATACLASS_FPOINT , _ '' st(5)
+		FB_DATACLASS_FPOINT , _ '' st(6)
 		INVALID 			  _ '' no st(7) as STORE/LOAD/POW/.. need a free reg to work
 	}
 
@@ -233,7 +233,7 @@ private sub hInitRegTB
 			if( lastclass <> INVALID ) then
 				emit.regTB(lastclass) = regNewClass( lastclass, _
 								 					 regs, _
-								 					 lastclass = IR_DATACLASS_FPOINT )
+								 					 lastclass = FB_DATACLASS_FPOINT )
 			end if
 			regs = 0
 			lastclass = regclass(i)
@@ -266,7 +266,7 @@ sub emitSubInit
 	hInitRegTB( )
 
 	'' wchar len depends on the target platform
-	dtypeTB(IR_DATATYPE_WCHAR) = dtypeTB(env.target.wchar.type)
+	dtypeTB(FB_DATATYPE_WCHAR) = dtypeTB(env.target.wchar.type)
 
 	''
 	emit.keyinited 	= FALSE
@@ -320,7 +320,7 @@ function emitIsRegPreserved ( byval dclass as integer, _
 							  byval reg as integer ) as integer static
 
     '' fp? fpu stack *must* be cleared before calling any function
-    if( dclass = IR_DATACLASS_FPOINT ) then
+    if( dclass = FB_DATACLASS_FPOINT ) then
     	return FALSE
     end if
 
@@ -339,11 +339,11 @@ sub emitGetResultReg( byval dtype as integer, _
 					  byref r1 as integer, _
 					  byref r2 as integer ) static
 
-	if( dtype >= IR_DATATYPE_POINTER ) then
-		dtype = IR_DATATYPE_UINT
+	if( dtype >= FB_DATATYPE_POINTER ) then
+		dtype = FB_DATATYPE_UINT
 	end if
 
-	if( dclass = IR_DATACLASS_INTEGER ) then
+	if( dclass = FB_DATACLASS_INTEGER ) then
 		r1 = EMIT_REG_EAX
 		if( ISLONGINT( dtype ) ) then
 			r2 = EMIT_REG_EDX
@@ -363,7 +363,7 @@ function emitGetFreePreservedReg( byval dclass as integer ) as integer static
 	function = INVALID
 
 	'' fp? no other regs can be used
-	if( dclass = IR_DATACLASS_FPOINT ) then
+	if( dclass = FB_DATACLASS_FPOINT ) then
 		exit function
 	end if
 
@@ -403,10 +403,10 @@ private function hIsRegFree( byval dclass as integer, _
 
 	'' if EBX, EDI or ESI and if they weren't ever used, return false,
 	'' because hCreateFrame didn't preserve them
-	if( dclass = IR_DATACLASS_INTEGER ) then
+	if( dclass = FB_DATACLASS_INTEGER ) then
 		select case reg
 		case EMIT_REG_EBX, EMIT_REG_ESI, EMIT_REG_EDI
-			if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, reg ) = FALSE ) then
+			if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, reg ) = FALSE ) then
 				return FALSE
 			end if
 		end select
@@ -451,7 +451,7 @@ private function hFindRegNotInVreg( byval vreg as IRVREG ptr, _
 		end if
 	end if
 
-	regs = emit.regTB(IR_DATACLASS_INTEGER)->getMaxRegs( emit.regTB(IR_DATACLASS_INTEGER) )
+	regs = emit.regTB(FB_DATACLASS_INTEGER)->getMaxRegs( emit.regTB(FB_DATACLASS_INTEGER) )
 
 	''
 	if( reg2 = INVALID ) then
@@ -461,7 +461,7 @@ private function hFindRegNotInVreg( byval vreg as IRVREG ptr, _
 			for r = regs-1 to 0 step -1
 				if( r <> reg ) then
 					function = r
-					if( hIsRegFree( IR_DATACLASS_INTEGER, r ) ) then
+					if( hIsRegFree( FB_DATACLASS_INTEGER, r ) ) then
 						exit function
 					end if
 				end if
@@ -475,7 +475,7 @@ private function hFindRegNotInVreg( byval vreg as IRVREG ptr, _
 					if( r <> EMIT_REG_ESI ) then
 						if( r <> EMIT_REG_EDI ) then
 							function = r
-							if( hIsRegFree( IR_DATACLASS_INTEGER, r ) ) then
+							if( hIsRegFree( FB_DATACLASS_INTEGER, r ) ) then
 								exit function
 							end if
 						end if
@@ -493,7 +493,7 @@ private function hFindRegNotInVreg( byval vreg as IRVREG ptr, _
 			for r = regs-1 to 0 step -1
 				if( (r <> reg) and (r <> reg2) ) then
 					function = r
-					if( hIsRegFree( IR_DATACLASS_INTEGER, r ) ) then
+					if( hIsRegFree( FB_DATACLASS_INTEGER, r ) ) then
 						exit function
 					end if
 				end if
@@ -507,7 +507,7 @@ private function hFindRegNotInVreg( byval vreg as IRVREG ptr, _
 					if( r <> EMIT_REG_ESI ) then
 						if( r <> EMIT_REG_EDI ) then
 							function = r
-							if( hIsRegFree( IR_DATACLASS_INTEGER, r ) ) then
+							if( hIsRegFree( FB_DATACLASS_INTEGER, r ) ) then
 								exit function
 							end if
 						end if
@@ -575,8 +575,8 @@ private function hGetRegName( byval dtype as integer, _
 
     dim as integer tb
 
-	if( dtype >= IR_DATATYPE_POINTER ) then
-		dtype = IR_DATATYPE_UINT
+	if( dtype >= FB_DATATYPE_POINTER ) then
+		dtype = FB_DATATYPE_UINT
 	end if
 
 	if( reg = INVALID ) then
@@ -641,7 +641,7 @@ end function
 '':::::
 private sub hPrepOperand( byval vreg as IRVREG ptr, _
 						  byref operand as string, _
-						  byval dtype as IRDATATYPE_ENUM = INVALID, _
+						  byval dtype as FB_DATATYPE = INVALID, _
 						  byval ofs as integer = 0, _
 						  byval isaux as integer = FALSE, _
 						  byval addprefix as integer = TRUE ) static
@@ -714,8 +714,8 @@ private sub hPrepOperand64( byval vreg as IRVREG ptr, _
 							byref operand1 as string, _
 							byref operand2 as string ) static
 
-	hPrepOperand( vreg, operand1, IR_DATATYPE_UINT   , 0, FALSE )
-	hPrepOperand( vreg, operand2, IR_DATATYPE_INTEGER, 0, TRUE )
+	hPrepOperand( vreg, operand1, FB_DATATYPE_UINT   , 0, FALSE )
+	hPrepOperand( vreg, operand2, FB_DATATYPE_INTEGER, 0, TRUE )
 
 end sub
 
@@ -1077,7 +1077,7 @@ private sub hULONG2DBL( byval svreg as IRVREG ptr ) static
 
 	label = *hMakeTmpStr( )
 
-	hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, 4 )
+	hPrepOperand( svreg, src, FB_DATATYPE_INTEGER, 4 )
 	ostr = "cmp " +  src + ", 0"
 
 	outp ostr
@@ -1115,7 +1115,7 @@ private sub _emitSTORI2L( byval dvreg as IRVREG ptr, _
     dim as string dst1, dst2, src1, ext, ostr
     dim sdsize as integer
 
-	sdsize = irGetDataSize( svreg->dtype )
+	sdsize = symbGetDataSize( svreg->dtype )
 
 	hPrepOperand64( dvreg, dst1, dst2 )
 
@@ -1126,7 +1126,7 @@ private sub _emitSTORI2L( byval dvreg as IRVREG ptr, _
 		hMOV dst1, src1
 
 		'' negative?
-		if( irIsSigned( svreg->dtype ) and (svreg->value and &h80000000) ) then
+		if( symbIsSigned( svreg->dtype ) and (svreg->value and &h80000000) ) then
 			hMOV dst2, "-1"
 		else
 			hMOV dst2, "0"
@@ -1137,9 +1137,9 @@ private sub _emitSTORI2L( byval dvreg as IRVREG ptr, _
 
 	''
 	if( sdsize < FB_INTEGERSIZE ) then
-		ext = *hGetRegName( IR_DATATYPE_INTEGER, svreg->reg )
+		ext = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
 
-		if( irIsSigned( svreg->dtype ) ) then
+		if( symbIsSigned( svreg->dtype ) ) then
 			ostr = "movsx "
 		else
 			ostr = "movzx "
@@ -1154,7 +1154,7 @@ private sub _emitSTORI2L( byval dvreg as IRVREG ptr, _
 	ostr = "mov " + dst1 + COMMA + ext
 	outp ostr
 
-	if( irIsSigned( svreg->dtype ) ) then
+	if( symbIsSigned( svreg->dtype ) ) then
 
 		hPUSH ext
 
@@ -1182,7 +1182,7 @@ private sub _emitSTORF2L( byval dvreg as IRVREG ptr, _
 	hPrepOperand( dvreg, dst )
 
 	'' signed?
-	if( irIsSigned( dvreg->dtype ) ) then
+	if( symbIsSigned( dvreg->dtype ) ) then
 		ostr = "fistp " + dst
 		outp ostr
 
@@ -1205,7 +1205,7 @@ private sub _emitSTORI2I( byval dvreg as IRVREG ptr, _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	ddsize = irGetDataSize( dvreg->dtype )
+	ddsize = symbGetDataSize( dvreg->dtype )
 
 	if( ddsize = 1 ) then
 		if( svreg->typ = IR_VREGTYPE_IMM ) then
@@ -1216,7 +1216,7 @@ private sub _emitSTORI2I( byval dvreg as IRVREG ptr, _
 	'' dst size = src size
 	if( (svreg->typ = IR_VREGTYPE_IMM) or _
 		(dvreg->dtype = svreg->dtype) or _
-		(irMaxDataType( dvreg->dtype, svreg->dtype ) = INVALID) ) then
+		(symbMaxDataType( dvreg->dtype, svreg->dtype ) = INVALID) ) then
 
 		'' handle SI/DI as byte
 		if( ddsize = 1 ) then
@@ -1238,7 +1238,7 @@ private sub _emitSTORI2I( byval dvreg as IRVREG ptr, _
 
 		'' dst size > src size
 		if( dvreg->dtype > svreg->dtype ) then
-			if( irIsSigned( svreg->dtype ) ) then
+			if( symbIsSigned( svreg->dtype ) ) then
 				ostr = "movsx "
 			else
 				ostr = "movzx "
@@ -1257,10 +1257,10 @@ private sub _emitSTORI2I( byval dvreg as IRVREG ptr, _
 
 storeSIDI:		reg = hFindRegNotInVreg( dvreg, TRUE )
 
-				aux8  = *hGetRegName( IR_DATATYPE_BYTE, reg )
-				aux16 = *hGetRegName( IR_DATATYPE_SHORT, reg )
+				aux8  = *hGetRegName( FB_DATATYPE_BYTE, reg )
+				aux16 = *hGetRegName( FB_DATATYPE_SHORT, reg )
 
-				isfree = hIsRegFree(IR_DATACLASS_INTEGER, reg )
+				isfree = hIsRegFree(FB_DATACLASS_INTEGER, reg )
 
 				if( isfree = FALSE ) then
 					hPUSH aux16
@@ -1271,7 +1271,7 @@ storeSIDI:		reg = hFindRegNotInVreg( dvreg, TRUE )
             	'' handle DI/SI as destine
             	if( (dvreg->typ = IR_VREGTYPE_REG) and _
             		((dvreg->reg = EMIT_REG_ESI) or (dvreg->reg = EMIT_REG_EDI)) ) then
-					if( irIsSigned( dvreg->dtype ) ) then
+					if( symbIsSigned( dvreg->dtype ) ) then
 						ostr = "movsx "
 					else
 						ostr = "movzx "
@@ -1314,7 +1314,7 @@ private sub _emitSTORF2I( byval dvreg as IRVREG ptr, _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	ddsize = irGetDataSize( dvreg->dtype )
+	ddsize = symbGetDataSize( dvreg->dtype )
 
 	'' byte destine? damn..
 	if( ddsize = 1 ) then
@@ -1328,7 +1328,7 @@ private sub _emitSTORF2I( byval dvreg as IRVREG ptr, _
            	'' handle DI/SI as destine
            	if( (dvreg->reg = EMIT_REG_ESI) or (dvreg->reg = EMIT_REG_EDI) ) then
 
-           		if( irIsSigned( dvreg->dtype ) ) then
+           		if( symbIsSigned( dvreg->dtype ) ) then
 	           		ostr = "movsx "
            		else
            			ostr = "movzx "
@@ -1347,10 +1347,10 @@ private sub _emitSTORF2I( byval dvreg as IRVREG ptr, _
 
 			reg = hFindRegNotInVreg( dvreg, TRUE )
 
-			aux8 = *hGetRegName( IR_DATATYPE_BYTE, reg )
-			aux  = *hGetRegName( IR_DATATYPE_INTEGER, reg )
+			aux8 = *hGetRegName( FB_DATATYPE_BYTE, reg )
+			aux  = *hGetRegName( FB_DATATYPE_INTEGER, reg )
 
-			isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
+			isfree = hIsRegFree( FB_DATACLASS_INTEGER, reg )
 
 			if( isfree = FALSE ) then
 				hXCHG aux, "dword ptr [esp]"
@@ -1370,7 +1370,7 @@ private sub _emitSTORF2I( byval dvreg as IRVREG ptr, _
 
 	else
 		'' signed?
-		if( irIsSigned( dvreg->dtype ) ) then
+		if( symbIsSigned( dvreg->dtype ) ) then
 			ostr = "fistp " + dst
 			outp ostr
 
@@ -1408,7 +1408,7 @@ private sub _emitSTORL2F( byval dvreg as IRVREG ptr, _
 	if( (svreg->typ = IR_VREGTYPE_REG) or (svreg->typ = IR_VREGTYPE_IMM) ) then
 
 		'' signed?
-		if( irIsSigned( svreg->dtype ) ) then
+		if( symbIsSigned( svreg->dtype ) ) then
 
 			hPrepOperand64( svreg, src, aux )
 
@@ -1434,7 +1434,7 @@ private sub _emitSTORL2F( byval dvreg as IRVREG ptr, _
 	'' not a reg or imm
 	else
 		'' signed?
-		if( irIsSigned( svreg->dtype ) ) then
+		if( symbIsSigned( svreg->dtype ) ) then
 			ostr = "fild " + src
 			outp ostr
 
@@ -1462,23 +1462,23 @@ private sub _emitSTORI2F( byval dvreg as IRVREG ptr, _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	ddsize = irGetDataSize( dvreg->dtype )
-	sdsize = irGetDataSize( svreg->dtype )
+	ddsize = symbGetDataSize( dvreg->dtype )
+	sdsize = symbGetDataSize( svreg->dtype )
 
 	'' byte source? damn..
 	if( sdsize = 1 ) then
 
 		reg = hFindRegNotInVreg( svreg )
 
-		aux = *hGetRegName( IR_DATATYPE_INTEGER, reg )
+		aux = *hGetRegName( FB_DATATYPE_INTEGER, reg )
 
-		isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
+		isfree = hIsRegFree( FB_DATACLASS_INTEGER, reg )
 
 		if( isfree = FALSE ) then
 			hPUSH aux
 		end if
 
-		if( irIsSigned( svreg->dtype ) ) then
+		if( symbIsSigned( svreg->dtype ) ) then
 			ostr = "movsx "
 		else
 			ostr = "movzx "
@@ -1504,11 +1504,11 @@ private sub _emitSTORI2F( byval dvreg as IRVREG ptr, _
 	if( (svreg->typ = IR_VREGTYPE_REG) or (svreg->typ = IR_VREGTYPE_IMM) ) then
 
 		'' signed?
-		if( irIsSigned( svreg->dtype ) ) then
+		if( symbIsSigned( svreg->dtype ) ) then
 
 			'' not an integer? make it
 			if( (svreg->typ = IR_VREGTYPE_REG) and (sdsize < FB_INTEGERSIZE) ) then
-				src = *hGetRegName( IR_DATATYPE_INTEGER, svreg->reg )
+				src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
 			end if
 
 			hPUSH src
@@ -1550,7 +1550,7 @@ private sub _emitSTORI2F( byval dvreg as IRVREG ptr, _
 	else
 
 		'' signed?
-		if( irIsSigned( svreg->dtype ) ) then
+		if( symbIsSigned( svreg->dtype ) ) then
 			ostr = "fild " + src
 			outp ostr
 
@@ -1589,8 +1589,8 @@ private sub _emitSTORF2F( byval dvreg as IRVREG ptr, _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	ddsize = irGetDataSize( dvreg->dtype )
-	sdsize = irGetDataSize( svreg->dtype )
+	ddsize = symbGetDataSize( dvreg->dtype )
+	sdsize = symbGetDataSize( svreg->dtype )
 
 	'' on fpu stack?
 	if( svreg->typ = IR_VREGTYPE_REG ) then
@@ -1601,21 +1601,21 @@ private sub _emitSTORF2F( byval dvreg as IRVREG ptr, _
 		'' same size? just copy..
 		if( sdsize = ddsize ) then
 
-			hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, 0 )
+			hPrepOperand( svreg, src, FB_DATATYPE_INTEGER, 0 )
 			ostr = "push " + src
 			outp ostr
 
 			if( sdsize > 4 ) then
-				hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, 4 )
+				hPrepOperand( svreg, src, FB_DATATYPE_INTEGER, 4 )
 				ostr = "push " + src
 				outp ostr
 
-				hPrepOperand( dvreg, dst, IR_DATATYPE_INTEGER, 4 )
+				hPrepOperand( dvreg, dst, FB_DATATYPE_INTEGER, 4 )
 				ostr = "pop " + dst
 				outp ostr
 			end if
 
-			hPrepOperand( dvreg, dst, IR_DATATYPE_INTEGER, 0 )
+			hPrepOperand( dvreg, dst, FB_DATATYPE_INTEGER, 0 )
 			ostr = "pop " + dst
 			outp ostr
 
@@ -1659,7 +1659,7 @@ private sub _emitLOADI2L( byval dvreg as IRVREG ptr, _
     dim sdsize as integer
     dim ostr as string
 
-	sdsize = irGetDataSize( svreg->dtype )
+	sdsize = symbGetDataSize( svreg->dtype )
 
 	hPrepOperand64( dvreg, dst1, dst2 )
 
@@ -1671,7 +1671,7 @@ private sub _emitLOADI2L( byval dvreg as IRVREG ptr, _
         hMOV dst1, src1
 
 		'' negative?
-		if( irIsSigned( svreg->dtype ) and (svreg->value and &h80000000) ) then
+		if( symbIsSigned( svreg->dtype ) and (svreg->value and &h80000000) ) then
 			hMOV dst2, "-1"
 		else
 			hMOV dst2, "0"
@@ -1681,7 +1681,7 @@ private sub _emitLOADI2L( byval dvreg as IRVREG ptr, _
 	end if
 
 	''
-	if( irIsSigned( svreg->dtype ) ) then
+	if( symbIsSigned( svreg->dtype ) ) then
 
 		if( sdsize < FB_INTEGERSIZE ) then
 			ostr = "movsx " + dst1 + COMMA + src1
@@ -1726,7 +1726,7 @@ private sub _emitLOADF2L( byval dvreg as IRVREG ptr, _
 	end if
 
 	'' signed?
-	if( irIsSigned( dvreg->dtype ) ) then
+	if( symbIsSigned( dvreg->dtype ) ) then
 
 		outp "sub esp, 8"
 
@@ -1759,7 +1759,7 @@ private sub _emitLOADI2I( byval dvreg as IRVREG ptr, _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	ddsize = irGetDataSize( dvreg->dtype )
+	ddsize = symbGetDataSize( dvreg->dtype )
 
 	if( ddsize = 1 ) then
 		if( svreg->typ = IR_VREGTYPE_IMM ) then
@@ -1769,7 +1769,7 @@ private sub _emitLOADI2I( byval dvreg as IRVREG ptr, _
 
 	'' dst size = src size
 	if( (dvreg->dtype = svreg->dtype) or _
-		(irMaxDataType( dvreg->dtype, svreg->dtype ) = INVALID) ) then
+		(symbMaxDataType( dvreg->dtype, svreg->dtype ) = INVALID) ) then
 
 		'' handle SI/DI as byte destine and source
 		if( ddsize = 1 ) then
@@ -1788,7 +1788,7 @@ private sub _emitLOADI2I( byval dvreg as IRVREG ptr, _
 	else
 		'' dst size > src size
 		if( dvreg->dtype > svreg->dtype ) then
-			if( irIsSigned( svreg->dtype ) ) then
+			if( symbIsSigned( svreg->dtype ) ) then
 				ostr = "movsx "
 			else
 				ostr = "movzx "
@@ -1814,10 +1814,10 @@ private sub _emitLOADI2I( byval dvreg as IRVREG ptr, _
 
 loadSIDI:			reg = hFindRegNotInVreg( dvreg, TRUE )
 
-					aux8  = *hGetRegName( IR_DATATYPE_BYTE, reg )
-					aux16 = *hGetRegName( IR_DATATYPE_SHORT, reg )
+					aux8  = *hGetRegName( FB_DATATYPE_BYTE, reg )
+					aux16 = *hGetRegName( FB_DATATYPE_SHORT, reg )
 
-					isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
+					isfree = hIsRegFree( FB_DATACLASS_INTEGER, reg )
 
 					if( isfree = FALSE ) then
 						hPUSH aux16
@@ -1833,7 +1833,7 @@ loadSIDI:			reg = hFindRegNotInVreg( dvreg, TRUE )
 						hMOV aux8, src
 					end if
 
-					if( irIsSigned( svreg->dtype ) ) then
+					if( symbIsSigned( svreg->dtype ) ) then
 						ostr = "movsx "
 					else
 						ostr = "movzx "
@@ -1877,7 +1877,7 @@ private sub _emitLOADF2I( byval dvreg as IRVREG ptr, _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	ddsize = irGetDataSize( dvreg->dtype )
+	ddsize = symbGetDataSize( dvreg->dtype )
 
 	if( svreg->typ <> IR_VREGTYPE_REG ) then
 		ostr = "fld " + src
@@ -1894,7 +1894,7 @@ private sub _emitLOADF2I( byval dvreg as IRVREG ptr, _
     	if( dvreg->typ = IR_VREGTYPE_REG ) then
     		'' handle DI/SI as destine
         	if( (dvreg->reg = EMIT_REG_ESI) or (dvreg->reg = EMIT_REG_EDI) ) then
-				if( irIsSigned( dvreg->dtype ) ) then
+				if( symbIsSigned( dvreg->dtype ) ) then
 					ostr = "movsx "
 				else
 					ostr = "movzx "
@@ -1913,10 +1913,10 @@ private sub _emitLOADF2I( byval dvreg as IRVREG ptr, _
 
 			reg = hFindRegNotInVreg( dvreg, TRUE )
 
-			aux8 = *hGetRegName( IR_DATATYPE_BYTE, reg )
-			aux  = *hGetRegName( IR_DATATYPE_INTEGER, reg )
+			aux8 = *hGetRegName( FB_DATATYPE_BYTE, reg )
+			aux  = *hGetRegName( FB_DATATYPE_INTEGER, reg )
 
-			isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
+			isfree = hIsRegFree( FB_DATACLASS_INTEGER, reg )
 
 			if( isfree = FALSE ) then
 				hXCHG aux, "dword ptr [esp]"
@@ -1937,7 +1937,7 @@ private sub _emitLOADF2I( byval dvreg as IRVREG ptr, _
 	else
 
 		'' signed?
-		if( irIsSigned( dvreg->dtype ) ) then
+		if( symbIsSigned( dvreg->dtype ) ) then
 
 			outp "sub esp, 4"
 
@@ -1946,7 +1946,7 @@ private sub _emitLOADF2I( byval dvreg as IRVREG ptr, _
 
 			'' not an integer? make it
 			if( ddsize < FB_INTEGERSIZE ) then
-				dst = *hGetRegName( IR_DATATYPE_INTEGER, dvreg->reg )
+				dst = *hGetRegName( FB_DATATYPE_INTEGER, dvreg->reg )
 			end if
 
 			hPOP dst
@@ -1987,7 +1987,7 @@ private sub _emitLOADL2F( byval dvreg as IRVREG ptr, _
 	if( (svreg->typ = IR_VREGTYPE_REG) or (svreg->typ = IR_VREGTYPE_IMM) ) then
 
 		'' signed?
-		if( irIsSigned( svreg->dtype ) ) then
+		if( symbIsSigned( svreg->dtype ) ) then
 
 			hPrepOperand64( svreg, src, aux )
 
@@ -2015,7 +2015,7 @@ private sub _emitLOADL2F( byval dvreg as IRVREG ptr, _
 	else
 
 		'' signed?
-		if( irIsSigned( svreg->dtype ) ) then
+		if( symbIsSigned( svreg->dtype ) ) then
 			ostr = "fild " + src
 			outp ostr
 
@@ -2041,22 +2041,22 @@ private sub _emitLOADI2F( byval dvreg as IRVREG ptr, _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-    sdsize = irGetDataSize( svreg->dtype )
+    sdsize = symbGetDataSize( svreg->dtype )
 
 	'' byte source? damn..
 	if( sdsize = 1 ) then
 
 		reg = hFindRegNotInVreg( svreg )
 
-		aux = *hGetRegName( IR_DATATYPE_INTEGER, reg )
+		aux = *hGetRegName( FB_DATATYPE_INTEGER, reg )
 
-		isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
+		isfree = hIsRegFree( FB_DATACLASS_INTEGER, reg )
 
 		if( isfree = FALSE ) then
 			hPUSH aux
 		end if
 
-		if( irIsSigned( svreg->dtype ) ) then
+		if( symbIsSigned( svreg->dtype ) ) then
 			ostr = "movsx " + aux + COMMA + src
 			outp ostr
 		else
@@ -2079,11 +2079,11 @@ private sub _emitLOADI2F( byval dvreg as IRVREG ptr, _
 	if( (svreg->typ = IR_VREGTYPE_REG) or (svreg->typ = IR_VREGTYPE_IMM) ) then
 
 		'' signed?
-		if( irIsSigned( svreg->dtype ) ) then
+		if( symbIsSigned( svreg->dtype ) ) then
 
 			'' not an integer? make it
 			if( (svreg->typ = IR_VREGTYPE_REG) and (sdsize < FB_INTEGERSIZE) ) then
-				src = *hGetRegName( IR_DATATYPE_INTEGER, svreg->reg )
+				src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
 			end if
 
 			hPUSH src
@@ -2125,7 +2125,7 @@ private sub _emitLOADI2F( byval dvreg as IRVREG ptr, _
 	else
 
 		'' signed?
-		if( irIsSigned( svreg->dtype ) ) then
+		if( symbIsSigned( svreg->dtype ) ) then
 			ostr = "fild " + src
 			outp ostr
 
@@ -2192,10 +2192,10 @@ private sub _emitMOVI( byval dvreg as IRVREG ptr, _
     dim as string dst, src, ostr
 
 	'' byte? handle SI, DI used as bytes..
-	if( irGetDataSize( dvreg->dtype ) = 1 ) then
+	if( symbGetDataSize( dvreg->dtype ) = 1 ) then
 		'' MOV is only used when both operands are registers
-		dst = *hGetRegName( IR_DATATYPE_INTEGER, dvreg->reg )
-		src = *hGetRegName( IR_DATATYPE_INTEGER, svreg->reg )
+		dst = *hGetRegName( FB_DATATYPE_INTEGER, dvreg->reg )
+		src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
 	else
 		hPrepOperand( dvreg, dst )
 		hPrepOperand( svreg, src )
@@ -2277,7 +2277,7 @@ private sub _emitADDF( byval dvreg as IRVREG ptr, _
 		ostr = "faddp"
 		outp ostr
 	else
-		if( irGetDataClass( svreg->dtype ) = IR_DATACLASS_FPOINT ) then
+		if( symbGetDataClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
 			ostr = "fadd " + src
 			outp ostr
 		else
@@ -2351,7 +2351,7 @@ private sub _emitSUBF( byval dvreg as IRVREG ptr, _
 	if( svreg->typ = IR_VREGTYPE_REG ) then
 		outp "fsubrp"
 	else
-		if( irGetDataClass( svreg->dtype ) = IR_DATACLASS_FPOINT ) then
+		if( symbGetDataClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
 			ostr = "fsub " + src
 			outp ostr
 		else
@@ -2375,8 +2375,8 @@ private sub _emitMULI( byval dvreg as IRVREG ptr, _
 	hPrepOperand( dvreg, dst )
 	hPrepOperand( svreg, src )
 
-	eaxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EAX )
-	edxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EDX )
+	eaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
+	edxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EDX )
 
 	eaxinsource = hIsRegInVreg( svreg, EMIT_REG_EAX )
 	eaxindest = hIsRegInVreg( dvreg, EMIT_REG_EAX )
@@ -2395,7 +2395,7 @@ private sub _emitMULI( byval dvreg as IRVREG ptr, _
 		if( edxindest ) then
 			hPUSH( "edx" )
 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
-				hPrepOperand( dvreg, ostr, IR_DATATYPE_INTEGER )
+				hPrepOperand( dvreg, ostr, FB_DATATYPE_INTEGER )
 				hPUSH( ostr )
 			end if
 		elseif( edxfree = FALSE ) then
@@ -2464,8 +2464,8 @@ private sub _emitMULL( byval dvreg as IRVREG ptr, _
 	hPrepOperand64( dvreg, dst1, dst2 )
 	hPrepOperand64( svreg, src1, src2 )
 
-	iseaxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EAX )
-	isedxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EDX )
+	iseaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
+	isedxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EDX )
 
 	eaxindest = hIsRegInVreg( dvreg, EMIT_REG_EAX )
 	edxindest = hIsRegInVreg( dvreg, EMIT_REG_EDX )
@@ -2574,7 +2574,7 @@ private sub _emitSMULI( byval dvreg as IRVREG ptr, _
 		reg = hFindRegNotInVreg( svreg )
 		rname = *hGetRegName( svreg->dtype, reg )
 
-		isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
+		isfree = hIsRegFree( FB_DATACLASS_INTEGER, reg )
 
 		if( isfree = FALSE ) then
 			hPUSH rname
@@ -2607,7 +2607,7 @@ private sub _emitMULF( byval dvreg as IRVREG ptr, _
 	if( svreg->typ = IR_VREGTYPE_REG ) then
 		outp "fmulp"
 	else
-		if( irGetDataClass( svreg->dtype ) = IR_DATACLASS_FPOINT ) then
+		if( symbGetDataClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
 			ostr = "fmul " + src
 			outp ostr
 		else
@@ -2630,7 +2630,7 @@ private sub _emitDIVF( byval dvreg as IRVREG ptr, _
 	if( svreg->typ = IR_VREGTYPE_REG ) then
 		outp "fdivrp"
 	else
-		if( irGetDataClass( svreg->dtype ) = IR_DATACLASS_FPOINT ) then
+		if( symbGetDataClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
 			ostr = "fdiv " + src
 			outp ostr
 		else
@@ -2667,9 +2667,9 @@ private sub _emitDIVI( byval dvreg as IRVREG ptr, _
 
 	ecxtrashed = FALSE
 
-	eaxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EAX )
-	ecxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_ECX )
-	edxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EDX )
+	eaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
+	ecxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ECX )
+	edxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EDX )
 
 	eaxinsource = hIsRegInVreg( svreg, EMIT_REG_EAX )
 	edxinsource = hIsRegInVreg( svreg, EMIT_REG_EDX )
@@ -2682,7 +2682,7 @@ private sub _emitDIVI( byval dvreg as IRVREG ptr, _
 		if( ecxindest ) then
 			hPUSH( "ecx" )
 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
-				hPrepOperand( dvreg, ostr, IR_DATATYPE_INTEGER )
+				hPrepOperand( dvreg, ostr, FB_DATATYPE_INTEGER )
 				hPUSH( ostr )
 			end if
 		elseif( ecxfree = FALSE ) then
@@ -2721,7 +2721,7 @@ private sub _emitDIVI( byval dvreg as IRVREG ptr, _
 		hPUSH "edx"
 	end if
 
-	if( irIsSigned( dvreg->dtype ) ) then
+	if( symbIsSigned( dvreg->dtype ) ) then
 		if( dtypeTB(dvreg->dtype).size = 4 ) then
 			outp "cdq"
 		else
@@ -2813,9 +2813,9 @@ private sub _emitMODI( byval dvreg as IRVREG ptr, _
 
 	ecxtrashed = FALSE
 
-	eaxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EAX )
-	ecxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_ECX )
-	edxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EDX )
+	eaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
+	ecxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ECX )
+	edxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EDX )
 
 	eaxinsource = hIsRegInVreg( svreg, EMIT_REG_EAX )
 	edxinsource = hIsRegInVreg( svreg, EMIT_REG_EDX )
@@ -2828,7 +2828,7 @@ private sub _emitMODI( byval dvreg as IRVREG ptr, _
 		if( ecxindest ) then
 			hPUSH( "ecx" )
 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
-				hPrepOperand( dvreg, ostr, IR_DATATYPE_INTEGER )
+				hPrepOperand( dvreg, ostr, FB_DATATYPE_INTEGER )
 				hPUSH( ostr )
 			end if
 		elseif( ecxfree = FALSE ) then
@@ -2867,7 +2867,7 @@ private sub _emitMODI( byval dvreg as IRVREG ptr, _
 		hPUSH "edx"
 	end if
 
-	if( irIsSigned( dvreg->dtype ) ) then
+	if( symbIsSigned( dvreg->dtype ) ) then
 		if( dtypeTB(dvreg->dtype).size = 4 ) then
 			outp "cdq"
 		else
@@ -2945,7 +2945,7 @@ private sub hSHIFTL( byval op as integer, _
     dim as integer ofs
 
 	''
-	if( irIsSigned( dvreg->dtype ) ) then
+	if( symbIsSigned( dvreg->dtype ) ) then
 		if( op = IR_OP_SHL ) then
 			mnemonic = "sal"
 		else
@@ -2961,11 +2961,11 @@ private sub hSHIFTL( byval op as integer, _
 
     ''
 	hPrepOperand64( dvreg, dst1, dst2 )
-	hPrepOperand( svreg, src, IR_DATATYPE_INTEGER )
+	hPrepOperand( svreg, src, FB_DATATYPE_INTEGER )
 
-	iseaxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EAX )
-	isedxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EDX )
-	isecxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_ECX )
+	iseaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
+	isedxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EDX )
+	isecxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ECX )
 
 	eaxindest = hIsRegInVreg( dvreg, EMIT_REG_EAX )
 	edxindest = hIsRegInVreg( dvreg, EMIT_REG_EDX )
@@ -2979,10 +2979,10 @@ private sub hSHIFTL( byval op as integer, _
 	if( svreg->typ <> IR_VREGTYPE_IMM ) then
 		if( (svreg->typ <> IR_VREGTYPE_REG) or (svreg->reg <> EMIT_REG_ECX) ) then
 			'' handle src < dword
-			if( irGetDataSize( svreg->dtype ) <> FB_INTEGERSIZE ) then
+			if( symbGetDataSize( svreg->dtype ) <> FB_INTEGERSIZE ) then
 				'' if it's not a reg, the right size was already set at the hPrepOperand() above
 				if( svreg->typ = IR_VREGTYPE_REG ) then
-					src = *hGetRegName( IR_DATATYPE_INTEGER, svreg->reg )
+					src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
 				end if
 			end if
 
@@ -3053,7 +3053,7 @@ private sub hSHIFTL( byval op as integer, _
 			outp "xor eax, eax"
 		else
 			outp "mov eax, edx"
-			if( irIsSigned( dvreg->dtype ) ) then
+			if( symbIsSigned( dvreg->dtype ) ) then
 				outp "sar edx, 31"
 			else
 				outp "xor edx, edx"
@@ -3086,7 +3086,7 @@ private sub hSHIFTL( byval op as integer, _
 				outp "shl edx, " + src
 			else
 				outp "mov eax, edx"
-				if( irIsSigned( dvreg->dtype ) ) then
+				if( symbIsSigned( dvreg->dtype ) ) then
 					outp "sar edx, 31"
 					outp "sar eax, " + src
 				else
@@ -3102,7 +3102,7 @@ private sub hSHIFTL( byval op as integer, _
 				outp "xor eax, eax"
 			else
 				outp "mov eax, edx"
-				if( irIsSigned( dvreg->dtype ) ) then
+				if( symbIsSigned( dvreg->dtype ) ) then
 					outp "sar edx, 31"
 				else
 					outp "xor edx, edx"
@@ -3158,7 +3158,7 @@ private sub hSHIFTI( byval op as integer, _
     dim as string ostr, dst, src, tmp, mnemonic
 
 	''
-	if( irIsSigned( dvreg->dtype ) ) then
+	if( symbIsSigned( dvreg->dtype ) ) then
 		if( op = IR_OP_SHL ) then
 			mnemonic = "sal"
 		else
@@ -3184,8 +3184,8 @@ private sub hSHIFTI( byval op as integer, _
 		tmp = dst
 
 	else
-		eaxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EAX )
-		ecxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_ECX )
+		eaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
+		ecxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ECX )
 
 		if( svreg->typ = IR_VREGTYPE_REG ) then
 			reg = svreg->reg
@@ -3201,7 +3201,7 @@ private sub hSHIFTI( byval op as integer, _
 			hPUSH "ecx"
 			'' not a reg?
 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
-				hPrepOperand( dvreg, ostr, IR_DATATYPE_INTEGER )
+				hPrepOperand( dvreg, ostr, FB_DATATYPE_INTEGER )
 				hPUSH ostr
 			end if
 
@@ -3213,12 +3213,12 @@ private sub hSHIFTI( byval op as integer, _
 
 		'' source not a reg?
 		if( svreg->typ <> IR_VREGTYPE_REG ) then
-			hPrepOperand( svreg, ostr, IR_DATATYPE_BYTE )
+			hPrepOperand( svreg, ostr, FB_DATATYPE_BYTE )
 			hMOV "cl", ostr
 		else
 			'' source not ecx?
 			if( reg <> EMIT_REG_ECX ) then
-				hMOV "ecx", rnameTB(dtypeTB(IR_DATATYPE_INTEGER).rnametb, reg)
+				hMOV "ecx", rnameTB(dtypeTB(FB_DATATYPE_INTEGER).rnametb, reg)
 			end if
 		end if
 
@@ -3632,12 +3632,12 @@ private sub hCMPI( byval rvreg as IRVREG ptr, _
 	'' can it be optimized?
 	if( (env.clopt.cputype >= FB_CPUTYPE_486) and (rvreg->typ = IR_VREGTYPE_REG) ) then
 
-		rname8 = *hGetRegName( IR_DATATYPE_BYTE, rvreg->reg )
+		rname8 = *hGetRegName( FB_DATATYPE_BYTE, rvreg->reg )
 
 		'' handle EDI and ESI
 		if( (rvreg->reg = EMIT_REG_ESI) or (rvreg->reg = EMIT_REG_EDI) ) then
 
-			isedxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EDX )
+			isedxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EDX )
 			if( isedxfree = FALSE ) then
 				ostr = "xchg edx, " + rname
 				outp ostr
@@ -3707,7 +3707,7 @@ private sub hCMPF( byval rvreg as IRVREG ptr, _
 		outp "fcompp"
 	else
 		'' can it be optimized to ftst?
-		if( irGetDataClass( svreg->dtype ) = IR_DATACLASS_FPOINT ) then
+		if( symbGetDataClass( svreg->dtype ) = FB_DATACLASS_FPOINT ) then
 			ostr = "fcomp " + src
 			outp ostr
 		else
@@ -3719,7 +3719,7 @@ private sub hCMPF( byval rvreg as IRVREG ptr, _
     iseaxfree = TRUE
     if( rvreg <> NULL ) then
     	if( rvreg->reg <> EMIT_REG_EAX ) then
-    		iseaxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EAX )
+    		iseaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
     		if( iseaxfree = FALSE ) then
     			hPUSH( "eax" )
     		end if
@@ -3750,12 +3750,12 @@ private sub hCMPF( byval rvreg as IRVREG ptr, _
 
 	'' can it be optimized?
 	if( env.clopt.cputype >= FB_CPUTYPE_486 ) then
-		rname8 = *hGetRegName( IR_DATATYPE_BYTE, rvreg->reg )
+		rname8 = *hGetRegName( FB_DATATYPE_BYTE, rvreg->reg )
 
 		'' handle EDI and ESI
 		if( (rvreg->reg = EMIT_REG_ESI) or (rvreg->reg = EMIT_REG_EDI) ) then
 
-			isedxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EDX )
+			isedxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EDX )
 			if( isedxfree = FALSE ) then
 				ostr = "xchg edx, " + rname
 				outp ostr
@@ -3805,7 +3805,7 @@ private sub _emitCGTL( byval rvreg as IRVREG ptr, _
 		      		   byval svreg as IRVREG ptr ) static
 	dim jmp as string, rjmp as string
 
-	if( irIsSigned( dvreg->dtype ) ) then
+	if( symbIsSigned( dvreg->dtype ) ) then
 		jmp = "g"
 		rjmp = "l"
 	else
@@ -3824,7 +3824,7 @@ private sub _emitCGTI( byval rvreg as IRVREG ptr, _
 		      		   byval svreg as IRVREG ptr ) static
 	dim jmp as string
 
-	if( irIsSigned( dvreg->dtype ) ) then
+	if( symbIsSigned( dvreg->dtype ) ) then
 		jmp = "g"
 	else
 		jmp = "a"
@@ -3851,7 +3851,7 @@ private sub _emitCLTL( byval rvreg as IRVREG ptr, _
 		      		   byval svreg as IRVREG ptr ) static
 	dim jmp as string, rjmp as string
 
-	if( irIsSigned( dvreg->dtype ) ) then
+	if( symbIsSigned( dvreg->dtype ) ) then
 		jmp = "l"
 		rjmp = "g"
 	else
@@ -3870,7 +3870,7 @@ private sub _emitCLTI( byval rvreg as IRVREG ptr, _
 		      		   byval svreg as IRVREG ptr ) static
 	dim jmp as string
 
-	if( irIsSigned( dvreg->dtype ) ) then
+	if( symbIsSigned( dvreg->dtype ) ) then
 		jmp = "l"
 	else
 		jmp = "b"
@@ -3957,7 +3957,7 @@ private sub _emitCLEL( byval rvreg as IRVREG ptr, _
 					   byval svreg as IRVREG ptr ) static
 	dim jmp as string, rjmp as string
 
-	if( irIsSigned( dvreg->dtype ) ) then
+	if( symbIsSigned( dvreg->dtype ) ) then
 		jmp = "l"
 		rjmp = "g"
 	else
@@ -3976,7 +3976,7 @@ private sub _emitCLEI( byval rvreg as IRVREG ptr, _
 					   byval svreg as IRVREG ptr ) static
 	dim jmp as string
 
-	if( irIsSigned( dvreg->dtype ) ) then
+	if( symbIsSigned( dvreg->dtype ) ) then
 		jmp = "le"
 	else
 		jmp = "be"
@@ -4005,7 +4005,7 @@ private sub _emitCGEL( byval rvreg as IRVREG ptr, _
 					   byval svreg as IRVREG ptr ) static
 	dim jmp as string, rjmp as string
 
-	if( irIsSigned( dvreg->dtype ) ) then
+	if( symbIsSigned( dvreg->dtype ) ) then
 		jmp = "g"
 		rjmp = "l"
 	else
@@ -4024,7 +4024,7 @@ private sub _emitCGEI( byval rvreg as IRVREG ptr, _
 					   byval svreg as IRVREG ptr ) static
 	dim jmp as string
 
-	if( irIsSigned( dvreg->dtype ) ) then
+	if( symbIsSigned( dvreg->dtype ) ) then
 		jmp = "ge"
 	else
 		jmp = "ae"
@@ -4122,9 +4122,9 @@ private sub _emitABSL( byval dvreg as IRVREG ptr ) static
 	hPrepOperand64( dvreg, dst1, dst2 )
 
 	reg = hFindRegNotInVreg( dvreg )
-	rname = *hGetRegName( IR_DATATYPE_INTEGER, reg )
+	rname = *hGetRegName( FB_DATATYPE_INTEGER, reg )
 
-	isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
+	isfree = hIsRegFree( FB_DATACLASS_INTEGER, reg )
 
 	if( isfree = FALSE ) then
 		hPUSH( rname )
@@ -4164,7 +4164,7 @@ private sub _emitABSI( byval dvreg as IRVREG ptr ) static
 	reg = hFindRegNotInVreg( dvreg )
 	rname = *hGetRegName( dvreg->dtype, reg )
 
-	isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
+	isfree = hIsRegFree( FB_DATACLASS_INTEGER, reg )
 
 	if( isfree = FALSE ) then
 		hPUSH( rname )
@@ -4343,10 +4343,10 @@ private sub _emitFLOOR( byval dvreg as IRVREG ptr ) static
 	dim as integer reg, isfree
 	dim as string rname, ostr
 
-	reg = hFindFreeReg( IR_DATACLASS_INTEGER )
-	rname = *hGetRegName( IR_DATATYPE_INTEGER, reg )
+	reg = hFindFreeReg( FB_DATACLASS_INTEGER )
+	rname = *hGetRegName( FB_DATATYPE_INTEGER, reg )
 
-	isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
+	isfree = hIsRegFree( FB_DATACLASS_INTEGER, reg )
 
 	if( isfree = FALSE ) then
 		hPUSH( rname )
@@ -4412,16 +4412,16 @@ private sub _emitPUSHI( byval svreg as IRVREG ptr, _
 
 	hPrepOperand( svreg, src )
 
-	sdsize = irGetDataSize( svreg->dtype )
+	sdsize = symbGetDataSize( svreg->dtype )
 
 	if( svreg->typ = IR_VREGTYPE_REG ) then
 		if( sdsize < FB_INTEGERSIZE ) then
-			src = *hGetRegName( IR_DATATYPE_INTEGER, svreg->reg )
+			src = *hGetRegName( FB_DATATYPE_INTEGER, svreg->reg )
 		end if
 	else
 		if( sdsize < FB_INTEGERSIZE ) then
 			'' !!!FIXME!!! assuming it's okay to push over the var if's not dword aligned
-			hPrepOperand( svreg, src, IR_DATATYPE_INTEGER )
+			hPrepOperand( svreg, src, FB_DATATYPE_INTEGER )
 		end if
 	end if
 
@@ -4438,18 +4438,18 @@ private sub _emitPUSHF( byval svreg as IRVREG ptr, _
 
 	hPrepOperand( svreg, src )
 
-	sdsize = irGetDataSize( svreg->dtype )
+	sdsize = symbGetDataSize( svreg->dtype )
 
 	if( svreg->typ <> IR_VREGTYPE_REG ) then
-		if( svreg->dtype = IR_DATATYPE_SINGLE ) then
+		if( svreg->dtype = FB_DATATYPE_SINGLE ) then
 			ostr = "push " + src
 			outp ostr
 		else
-			hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, 4 )
+			hPrepOperand( svreg, src, FB_DATATYPE_INTEGER, 4 )
 			ostr = "push " + src
 			outp ostr
 
-    		hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, 0 )
+    		hPrepOperand( svreg, src, FB_DATATYPE_INTEGER, 0 )
 			ostr = "push " + src
 			outp ostr
 		end if
@@ -4476,7 +4476,7 @@ private sub _emitPUSHUDT( byval svreg as IRVREG ptr, _
 
 	ofs = sdsize - FB_INTEGERSIZE
 	do while( ofs >= 0 )
-		hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, ofs )
+		hPrepOperand( svreg, src, FB_DATATYPE_INTEGER, ofs )
 		ostr = "push " + src
 		outp( ostr )
 		ofs -= FB_INTEGERSIZE
@@ -4508,7 +4508,7 @@ private sub _emitPOPI( byval dvreg as IRVREG ptr, _
 
 	hPrepOperand( dvreg, dst )
 
-	dsize = irGetDataSize( dvreg->dtype )
+	dsize = symbGetDataSize( dvreg->dtype )
 
 	if( dsize = FB_INTEGERSIZE ) then
 		ostr = "pop " + dst
@@ -4516,7 +4516,7 @@ private sub _emitPOPI( byval dvreg as IRVREG ptr, _
 
 	else
 		if( dvreg->typ = IR_VREGTYPE_REG ) then
-			dst = *hGetRegName( IR_DATATYPE_INTEGER, dvreg->reg )
+			dst = *hGetRegName( FB_DATATYPE_INTEGER, dvreg->reg )
 			ostr = "pop " + dst
 			outp ostr
 		else
@@ -4529,7 +4529,7 @@ private sub _emitPOPI( byval dvreg as IRVREG ptr, _
 				hMOV dst, "ax"
 			end if
 
-			if( hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EAX ) = FALSE ) then
+			if( hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX ) = FALSE ) then
 				hPOP "eax"
 			else
 				outp "add esp, 4"
@@ -4548,18 +4548,18 @@ private sub _emitPOPF( byval dvreg as IRVREG ptr, _
 
 	hPrepOperand( dvreg, dst )
 
-	dsize = irGetDataSize( dvreg->dtype )
+	dsize = symbGetDataSize( dvreg->dtype )
 
 	if( dvreg->typ <> IR_VREGTYPE_REG ) then
-		if( dvreg->dtype = IR_DATATYPE_SINGLE ) then
+		if( dvreg->dtype = FB_DATATYPE_SINGLE ) then
 			ostr = "pop " + dst
 			outp ostr
 		else
-			hPrepOperand( dvreg, dst, IR_DATATYPE_INTEGER, 0 )
+			hPrepOperand( dvreg, dst, FB_DATATYPE_INTEGER, 0 )
 			ostr = "pop " + dst
 			outp ostr
 
-			hPrepOperand( dvreg, dst, IR_DATATYPE_INTEGER, 4 )
+			hPrepOperand( dvreg, dst, FB_DATATYPE_INTEGER, 4 )
 			ostr = "pop " + dst
 			outp ostr
 		end if
@@ -4600,7 +4600,7 @@ private sub _emitDEREF( byval dvreg as IRVREG ptr, _
 	dim as string ostr
 
 	hPrepOperand( dvreg, dst )
-	hPrepOperand( svreg, src, IR_DATATYPE_UINT )
+	hPrepOperand( svreg, src, FB_DATATYPE_UINT )
 
 	ostr = "mov " + dst + COMMA + src
 	outp ostr
@@ -4624,9 +4624,9 @@ private sub hMemMoveRep( byval dvreg as IRVREG ptr, _
 	hPrepOperand( dvreg, dst, , , , FALSE )
 	hPrepOperand( svreg, src, , , , FALSE )
 
-	ecxfree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_ECX )
-	edifree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_ESI )
-	esifree = hIsRegFree( IR_DATACLASS_INTEGER, EMIT_REG_EDI )
+	ecxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ECX )
+	edifree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ESI )
+	esifree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EDI )
 
 	ediinsrc = hIsRegInVreg( svreg, EMIT_REG_EDI )
 	ecxinsrc = hIsRegInVreg( svreg, EMIT_REG_ECX )
@@ -4725,9 +4725,9 @@ private sub hMemMoveBlk( byval dvreg as IRVREG ptr, _
 		exit sub
 	end if
 
-	aux = *hGetRegName( IR_DATATYPE_INTEGER, reg )
+	aux = *hGetRegName( FB_DATATYPE_INTEGER, reg )
 
-	isfree = hIsRegFree( IR_DATACLASS_INTEGER, reg )
+	isfree = hIsRegFree( FB_DATACLASS_INTEGER, reg )
 	if( isfree = FALSE ) then
 		hPUSH( aux )
 	end if
@@ -4735,29 +4735,29 @@ private sub hMemMoveBlk( byval dvreg as IRVREG ptr, _
 	ofs = 0
 	'' move dwords
 	for i = 1 to cunsg(bytes) \ 4
-		hPrepOperand( svreg, src, IR_DATATYPE_INTEGER, ofs )
+		hPrepOperand( svreg, src, FB_DATATYPE_INTEGER, ofs )
 		hMOV( aux, src )
-		hPrepOperand( dvreg, dst, IR_DATATYPE_INTEGER, ofs )
+		hPrepOperand( dvreg, dst, FB_DATATYPE_INTEGER, ofs )
 		hMOV( dst, aux )
 		ofs += 4
 	next
 
 	'' a word left?
 	if( (bytes and 2) <> 0 ) then
-		aux = *hGetRegName( IR_DATATYPE_SHORT, reg )
-		hPrepOperand( svreg, src, IR_DATATYPE_SHORT, ofs )
+		aux = *hGetRegName( FB_DATATYPE_SHORT, reg )
+		hPrepOperand( svreg, src, FB_DATATYPE_SHORT, ofs )
 		hMOV( aux, src )
-		hPrepOperand( dvreg, dst, IR_DATATYPE_SHORT, ofs )
+		hPrepOperand( dvreg, dst, FB_DATATYPE_SHORT, ofs )
 		hMOV( dst, aux )
 		ofs += 2
 	end if
 
 	'' a byte left?
 	if( (bytes and 1) <> 0 ) then
-		aux = *hGetRegName( IR_DATATYPE_BYTE, reg )
-		hPrepOperand( svreg, src, IR_DATATYPE_BYTE, ofs )
+		aux = *hGetRegName( FB_DATATYPE_BYTE, reg )
+		hPrepOperand( svreg, src, FB_DATATYPE_BYTE, ofs )
 		hMOV( aux, src )
-		hPrepOperand( dvreg, dst, IR_DATATYPE_BYTE, ofs )
+		hPrepOperand( dvreg, dst, FB_DATATYPE_BYTE, ofs )
 		hMOV( dst, aux )
 	end if
 
@@ -4826,13 +4826,13 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
 	    end if
     end if
 
-    if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
+    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
     	hPUSH( "ebx" )
     end if
-    if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_ESI ) ) then
+    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_ESI ) ) then
     	hPUSH( "esi" )
     end if
-    if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
+    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
     	hPUSH( "edi" )
     end if
 
@@ -4841,7 +4841,7 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
 		if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
 			if( cunsg(bytestoalloc) \ 8 > 7 ) then
 
-		    	if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
+		    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
     				hPUSH( "edi" )
     			end if
 
@@ -4856,7 +4856,7 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
 				outp( "jnz " + lname )
 				outp( "emms" )
 
-    			if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
+    			if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
     				hPOP( "edi" )
     			end if
 
@@ -4875,7 +4875,7 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
 
 		else
 			if( cunsg(bytestoalloc) \ 4 > 6 ) then
-		    	if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
+		    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
     				hPUSH( "edi" )
     			end if
 
@@ -4884,7 +4884,7 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
 				outp( "xor eax, eax" )
 				outp( "rep stosd" )
 
-    			if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
+    			if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
     				hPOP( "edi" )
     			end if
 
@@ -4903,13 +4903,13 @@ end sub
 private sub hDestroyFrame( byval proc as FBSYMBOL ptr, _
 						   byval bytestopop as integer ) static
 
-    if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
+    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
     	hPOP( "edi" )
     end if
-    if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_ESI ) ) then
+    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_ESI ) ) then
     	hPOP( "esi" )
     end if
-    if( EMIT_REGISUSED( IR_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
+    if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
     	hPOP( "ebx" )
     end if
 
@@ -5173,7 +5173,7 @@ sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr ) static
    		edbgEmitGlobalVar( sym, EMIT_SECTYPE_DATA )
    	end if
 
-   	if( symbGetType( sym ) = FB_SYMBTYPE_DOUBLE ) then
+   	if( symbGetType( sym ) = FB_DATATYPE_DOUBLE ) then
     	hALIGN( 8 )
 	else
     	hALIGN( 4 )
@@ -5315,36 +5315,36 @@ end sub
 private function hGetTypeString( byval typ as integer ) as string static
 
 	select case as const typ
-    case FB_SYMBTYPE_UBYTE, FB_SYMBTYPE_BYTE
+    case FB_DATATYPE_UBYTE, FB_DATATYPE_BYTE
     	function = ".byte"
 
-    case FB_SYMBTYPE_USHORT, FB_SYMBTYPE_SHORT
+    case FB_DATATYPE_USHORT, FB_DATATYPE_SHORT
     	function = ".short"
 
-    case FB_SYMBTYPE_INTEGER, FB_SYMBTYPE_UINT, FB_SYMBTYPE_ENUM
+    case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
     	function = ".int"
 
-    case FB_SYMBTYPE_LONGINT, FB_SYMBTYPE_ULONGINT
+    case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
     	function = ".quad"
 
-    case FB_SYMBTYPE_SINGLE
+    case FB_DATATYPE_SINGLE
 		function = ".float"
 
-	case FB_SYMBTYPE_DOUBLE
+	case FB_DATATYPE_DOUBLE
     	function = ".double"
 
-	case FB_SYMBTYPE_FIXSTR, FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR
+	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		'' wchar stills the same as it is emitted as escape sequences
     	function = ".ascii"
 
-    case FB_SYMBTYPE_STRING
+    case FB_DATATYPE_STRING
     	function = ".int"
 
-	case FB_SYMBTYPE_USERDEF
+	case FB_DATATYPE_USERDEF
 		function = "INVALID"
 
     case else
-    	if( typ >= FB_SYMBTYPE_POINTER ) then
+    	if( typ >= FB_DATATYPE_POINTER ) then
     		function = ".int"
     	end if
 	end select
@@ -5424,7 +5424,7 @@ sub emitWriteBss( byval s as FBSYMBOL ptr )
     	    end if
 
     	    '' align
-    	    if( symbGetType( s ) = FB_SYMBTYPE_DOUBLE ) then
+    	    if( symbGetType( s ) = FB_DATATYPE_DOUBLE ) then
     	    	hALIGN( 8 )
     	    	hWriteStr( TRUE, ".balign 8" )
     	    else
@@ -5485,10 +5485,10 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
     	    	dtype = symbGetType( s )
     	    	select case dtype
     	    	'' udt? don't emit
-    	    	case FB_SYMBTYPE_USERDEF
+    	    	case FB_DATATYPE_USERDEF
 
     	    	'' string? check if ever referenced
-    	    	case FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR
+    	    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     	    		doemit = symbGetAccessCnt( s ) > 0
 
 				'' anything else, only if len > 0
@@ -5500,11 +5500,11 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
 
     	if( doemit ) then
     	    select case dtype
-    	    case FB_SYMBTYPE_CHAR
+    	    case FB_DATATYPE_CHAR
     	    	stext = "\""
     	    	stext += *hEscapeStr( symbGetVarText( s ) )
     	    	stext += "\\0\""
-    	    case FB_SYMBTYPE_WCHAR
+    	    case FB_DATATYPE_WCHAR
 				stext = "\""
 				stext += *hEscapeWstr( symbGetVarTextW( s ) )
 				stext += *hGetWstrNull( )
@@ -5515,7 +5515,7 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
 
     	    hEmitConstHeader( )
 
-    	    if( dtype = FB_SYMBTYPE_DOUBLE ) then
+    	    if( dtype = FB_DATATYPE_DOUBLE ) then
     	    	hALIGN( 8 )
     	    else
     	    	hALIGN( 4 )

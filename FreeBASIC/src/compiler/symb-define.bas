@@ -172,7 +172,7 @@ function symbAddDefine( byval symbol as zstring ptr, _
 
     '' allocate new node
     d = symbNewSymbol( NULL, symb.symtb, FB_SYMBCLASS_DEFINE, TRUE, _
-    				   symbol, NULL, fbIsLocal( ), IR_DATATYPE_CHAR, NULL )
+    				   symbol, NULL, fbIsLocal( ), FB_DATATYPE_CHAR, NULL )
     if( d = NULL ) then
     	exit function
     end if
@@ -207,7 +207,7 @@ function symbAddDefineW( byval symbol as zstring ptr, _
 
     '' allocate new node
     d = symbNewSymbol( NULL, symb.symtb, FB_SYMBCLASS_DEFINE, TRUE, _
-    				   symbol, NULL, fbIsLocal( ), IR_DATATYPE_WCHAR, NULL )
+    				   symbol, NULL, fbIsLocal( ), FB_DATATYPE_WCHAR, NULL )
     if( d = NULL ) then
     	exit function
     end if
@@ -370,7 +370,7 @@ function symbDelDefine( byval s as FBSYMBOL ptr, _
 
 	''
 	if( symbGetDefineArgs( s ) = 0 ) then
-		if( symbGetType( s ) <> IR_DATATYPE_WCHAR ) then
+		if( symbGetType( s ) <> FB_DATATYPE_WCHAR ) then
 			ZstrFree( s->def.text )
 		else
 			WstrFree( s->def.textw )

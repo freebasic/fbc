@@ -39,109 +39,109 @@ funcdata:
 '' fb_ErrorThrowAt cdecl ( byval linenum as integer, byval fname as zstring ptr, _
 ''						   byval reslabel as any ptr, byval resnxtlabel as any ptr ) as integer
 data @FB_RTL_ERRORTHROW,"", _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 4, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYVAL, FALSE
 
 ''
 '' fb_ErrorThrowEx cdecl ( byval errnum as integer, byval linenum as integer, _
 ''						   byval fname as zstring ptr, _
 ''						   byval reslabel as any ptr, byval resnxtlabel as any ptr ) as any ptr
 data @FB_RTL_ERRORTHROWEX,"", _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 5, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_ErrorSetHandler( byval newhandler as any ptr ) as any ptr
 data @FB_RTL_ERRORSETHANDLER,"", _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_ErrorGetNum( ) as integer
 data @FB_RTL_ERRORGETNUM, "", _
-	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 0
 
 '' fb_ErrorSetNum( byval errnum as integer ) as void
 data @FB_RTL_ERRORSETNUM, "", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_ErrorResume( ) as any ptr
 data @FB_RTL_ERRORRESUME, "", _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 0
 
 '' fb_ErrorResumeNext( ) as any ptr
 data @FB_RTL_ERRORRESUMENEXT, "", _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 0
 
 '' ERL ( ) as integer
 data @"erl", "fb_ErrorGetLineNum", _
-	 FB_SYMBTYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 0
 
 '' fb_Assert ( byval fname as zstring ptr, byval linenum as integer, _
 '''			   byval funcname as zstring ptr, byval expression as zstring ptr ) as void
 data @"fb_Assert","", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
 	 4, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_AssertW ( byval fname as zstring ptr, byval linenum as integer, _
 '''			    byval funcname as zstring ptr, byval expression as wstring ptr ) as void
 data @"fb_Assert","fb_AssertW", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
 	 4, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_AssertWarn ( byval fname as zstring ptr, byval linenum as integer, _
 ''				   byval funcname as zstring ptr, byval expression as zstring ptr ) as void
 data @"fb_AssertWarn","", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
 	 4, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_AssertWarnW ( byval fname as zstring ptr, byval linenum as integer, _
 ''				    byval funcname as zstring ptr, byval expression as wstring ptr ) as void
 data @"fb_AssertWarn","fb_AssertWarnW", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
 	 4, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE
 
 '' EOL
 data NULL
@@ -185,14 +185,14 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 	nxtlabel = symbAddLabel( NULL )
 
 	'' result >= FB_RTERROR_OK? skip..
-	resexpr = astNewBOP( IR_OP_EQ, resexpr, astNewCONSTi( 0, IR_DATATYPE_INTEGER ), nxtlabel, FALSE )
+	resexpr = astNewBOP( IR_OP_EQ, resexpr, astNewCONSTi( 0, FB_DATATYPE_INTEGER ), nxtlabel, FALSE )
 
 	astAdd( resexpr )
 
 	'' else, fb_ErrorThrow( linenum, module, reslabel, resnxtlabel ); -- CDECL
 
     '' linenum
-	if( astNewPARAM( proc, astNewCONSTi( linenum, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewPARAM( proc, astNewCONSTi( linenum, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
@@ -203,9 +203,9 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 
 	'' reslabel
 	if( reslabel <> NULL ) then
-		param = astNewADDR( IR_OP_ADDROF, astNewVAR( reslabel, 0, IR_DATATYPE_BYTE ) )
+		param = astNewADDR( IR_OP_ADDROF, astNewVAR( reslabel, 0, FB_DATATYPE_BYTE ) )
 	else
-		param = astNewCONSTi( NULL, IR_DATATYPE_UINT )
+		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
 	if( astNewPARAM( proc, param ) = NULL ) then
 		exit function
@@ -213,9 +213,9 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 
 	'' resnxtlabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDR( IR_OP_ADDROF, astNewVAR( nxtlabel, 0, IR_DATATYPE_BYTE ) )
+		param = astNewADDR( IR_OP_ADDROF, astNewVAR( nxtlabel, 0, FB_DATATYPE_BYTE ) )
 	else
-		param = astNewCONSTi( NULL, IR_DATATYPE_UINT )
+		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
 	if( astNewPARAM( proc, param ) = NULL ) then
 		exit function
@@ -262,7 +262,7 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
 	end if
 
     '' linenum
-	if( astNewPARAM( proc, astNewCONSTi( linenum, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewPARAM( proc, astNewCONSTi( linenum, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
     	exit sub
     end if
 
@@ -273,9 +273,9 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
 
 	'' reslabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDR( IR_OP_ADDROF, astNewVAR( reslabel, 0, IR_DATATYPE_BYTE ) )
+		param = astNewADDR( IR_OP_ADDROF, astNewVAR( reslabel, 0, FB_DATATYPE_BYTE ) )
 	else
-		param = astNewCONSTi( NULL, IR_DATATYPE_UINT )
+		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
 	if( astNewPARAM( proc, param ) = NULL ) then
 		exit function
@@ -283,9 +283,9 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
 
 	'' resnxtlabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDR( IR_OP_ADDROF, astNewVAR( nxtlabel, 0, IR_DATATYPE_BYTE ) )
+		param = astNewADDR( IR_OP_ADDROF, astNewVAR( nxtlabel, 0, FB_DATATYPE_BYTE ) )
 	else
-		param = astNewCONSTi( NULL, IR_DATATYPE_UINT )
+		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
 	if( astNewPARAM( proc, param ) = NULL ) then
 		exit function
@@ -323,8 +323,8 @@ sub rtlErrorSetHandler( byval newhandler as ASTNODE ptr, _
     if( savecurrent ) then
     	if( fbIsLocal( ) ) then
     		if( env.procerrorhnd = NULL ) then
-				env.procerrorhnd = symbAddTempVar( FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID )
-                expr = astNewVAR( env.procerrorhnd, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
+				env.procerrorhnd = symbAddTempVar( FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
+                expr = astNewVAR( env.procerrorhnd, 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
                 astAdd( astNewASSIGN( expr, proc ) )
     		end if
 		end if

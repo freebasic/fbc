@@ -50,7 +50,7 @@ function cMidStmt as integer
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatchExpression( expr3 )
 		else
-			expr3 = astNewCONSTi( -1, IR_DATATYPE_INTEGER )
+			expr3 = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
 		end if
 
 		hMatchRPRNT( )
@@ -87,9 +87,9 @@ function cLSetStmt( ) as integer
 
 	dtype1 = astGetDataType( dstexpr )
 	select case dtype1
-	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
-		 IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR, _
-		 IR_DATATYPE_USERDEF
+	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, _
+		 FB_DATATYPE_USERDEF
 	case else
 		hReportError( FB_ERRMSG_INVALIDDATATYPES )
 		exit function
@@ -108,16 +108,16 @@ function cLSetStmt( ) as integer
 
 	dtype2 = astGetDataType( srcexpr )
 	select case dtype2
-	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
-		 IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR, _
-		 IR_DATATYPE_USERDEF
+	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, _
+		 FB_DATATYPE_USERDEF
 	case else
 		hReportError( FB_ERRMSG_INVALIDDATATYPES )
 		exit function
 	end select
 
-	if( (dtype1 = IR_DATATYPE_USERDEF) or _
-		(dtype2 = IR_DATATYPE_USERDEF) ) then
+	if( (dtype1 = FB_DATATYPE_USERDEF) or _
+		(dtype2 = FB_DATATYPE_USERDEF) ) then
 
 		if( dtype1 <> dtype2 ) then
 			hReportError( FB_ERRMSG_INVALIDDATATYPES )
@@ -226,11 +226,11 @@ private function cStrCHR( byref funcexpr as ASTNODE ptr, _
 		if( is_wstr = FALSE ) then
 			funcexpr = astNewVAR( symbAllocStrConst( s, cnt ), _
 								  0, _
-								  IR_DATATYPE_CHAR )
+								  FB_DATATYPE_CHAR )
 		else
 			funcexpr = astNewVAR( symbAllocWstrConst( ws, cnt ), _
 								  0, _
-								  IR_DATATYPE_WCHAR )
+								  FB_DATATYPE_WCHAR )
 		end if
 
     else
@@ -267,13 +267,13 @@ private function cStrASC( byref funcexpr as ASTNODE ptr ) as integer
 	'' constant? evaluate at compile-time
 	litsym = NULL
 	select case astGetDataType( expr1 )
-	case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		litsym = astGetStrLitSymbol( expr1 )
 	end select
 
 	if( litsym <> NULL ) then
 		'' if wstring, check if compile-time conversion can be done
-        if( (astGetDataType( expr1 ) = IR_DATATYPE_WCHAR) and _
+        if( (astGetDataType( expr1 ) = FB_DATATYPE_WCHAR) and _
 			(env.target.wchar.doconv  = FALSE) ) then
 			p = -1
 
@@ -299,16 +299,16 @@ private function cStrASC( byref funcexpr as ASTNODE ptr ) as integer
 
 		if( p >= 0 ) then
 			'' zstring?
-			if( astGetDataType( expr1 ) <> IR_DATATYPE_WCHAR ) then
+			if( astGetDataType( expr1 ) <> FB_DATATYPE_WCHAR ) then
 				funcexpr = astNewCONSTi( asc( *hEscapeToChar( symbGetVarText( litsym ) ), _
 											  p ), _
-										 IR_DATATYPE_INTEGER )
+										 FB_DATATYPE_INTEGER )
 
 			'' wstring..
 	    	else
 				funcexpr = astNewCONSTi( asc( *hEscapeToCharW( symbGetVarTextW( litsym ) ), _
 											  p ), _
-										 IR_DATATYPE_INTEGER )
+										 FB_DATATYPE_INTEGER )
 
 			end if
 
@@ -374,7 +374,7 @@ function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatchExpression( expr3 )
 		else
-			expr3 = astNewCONSTi( -1, IR_DATATYPE_INTEGER )
+			expr3 = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
 		end if
 
 		hMatchRPRNT( )
@@ -444,7 +444,7 @@ function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
         if( expr3 = NULL ) then
             expr3 = expr2
             expr2 = expr1
-			expr1 = astNewCONSTi( 1, IR_DATATYPE_INTEGER )
+			expr1 = astNewCONSTi( 1, FB_DATATYPE_INTEGER )
         end if
 
 		hMatchRPRNT( )

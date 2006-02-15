@@ -110,8 +110,8 @@ end sub
 #define CNTPTR(typ,t,cnt)						_
 	t = typ                                     : _
 	cnt = 0                                     : _
-	do while( t >= IR_DATATYPE_POINTER )		: _
-		t -= IR_DATATYPE_POINTER				: _
+	do while( t >= FB_DATATYPE_POINTER )		: _
+		t -= FB_DATATYPE_POINTER				: _
 		cnt += 1								: _
 	loop
 
@@ -140,7 +140,7 @@ sub rtlAddIntrinsicProcs( )
 		read pcallback, errorcheck, overloaded
 		read pargs
 
-		assert( ( errorcheck and ptype = FB_SYMBTYPE_INTEGER ) or not errorcheck )
+		assert( ( errorcheck and ptype = FB_DATATYPE_INTEGER ) or not errorcheck )
 
 		proc = symbPreAddProc( NULL )
 
@@ -150,12 +150,12 @@ sub rtlAddIntrinsicProcs( )
 
 			if( optional ) then
 				select case as const atype
-				case IR_DATATYPE_STRING
+				case FB_DATATYPE_STRING
 					read optstr
 					optval.str = symbAllocStrConst( optstr, 0 )
-				case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					read optval.long
-				case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 					read optval.float
 				case else
 					read optval.int
@@ -243,10 +243,10 @@ function rtlCalcExprLen( byval expr as ASTNODE ptr, _
 
 	dtype = astGetDataType( expr )
 	select case as const dtype
-	case IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		function = rtlCalcStrLen( expr, dtype )
 
-	case IR_DATATYPE_USERDEF
+	case FB_DATATYPE_USERDEF
 		s = astGetSubtype( expr )
 		if( s <> NULL ) then
 			'' if it's a type field that's an udt, no padding is
@@ -277,10 +277,10 @@ function rtlCalcStrLen( byval expr as ASTNODE ptr, _
 	dim as FBSYMBOL ptr s
 
 	select case as const dtype
-	case IR_DATATYPE_BYTE, IR_DATATYPE_UBYTE
+	case FB_DATATYPE_BYTE, FB_DATATYPE_UBYTE
 		function = 0
 
-	case IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR
+	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 		s = astGetSymbol( expr )
 		'' pointer?
 		if( s = NULL ) then
@@ -289,7 +289,7 @@ function rtlCalcStrLen( byval expr as ASTNODE ptr, _
 			function = symbGetStrLen( s )
 		end if
 
-	case IR_DATATYPE_WCHAR
+	case FB_DATATYPE_WCHAR
 		s = astGetSymbol( expr )
 		'' pointer?
 		if( s = NULL ) then

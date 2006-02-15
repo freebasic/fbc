@@ -231,14 +231,14 @@ function ppReadLiteral( ) as zstring ptr
     	if( (lexGetClass( LIT_FLAGS ) = FB_TKCLASS_STRLITERAL) and _
     		(env.opt.escapestr) ) then
 
-    		if( lexGetType() <> IR_DATATYPE_WCHAR ) then
+    		if( lexGetType() <> FB_DATATYPE_WCHAR ) then
     			DZstrConcatAssign( text, hUnescapeStr( lexGetText( ) ) )
     		else
     			DZstrConcatAssignW( text, hUnescapeWstr( lexGetTextW( ) ) )
     		end if
 
     	else
-    		if( lexGetType() <> IR_DATATYPE_WCHAR ) then
+    		if( lexGetType() <> FB_DATATYPE_WCHAR ) then
     			DZstrConcatAssign( text, lexGetText( ) )
     		else
     		    DZstrConcatAssignW( text, lexGetTextW( ) )
@@ -269,14 +269,14 @@ function ppReadLiteralW( ) as wstring ptr
     	if( (lexGetClass( LIT_FLAGS ) = FB_TKCLASS_STRLITERAL) and _
     		(env.opt.escapestr) ) then
 
-    		if( lexGetType() = IR_DATATYPE_WCHAR ) then
+    		if( lexGetType() = FB_DATATYPE_WCHAR ) then
     			DWstrConcatAssign( text, hUnescapeWstr( lexGetTextW( ) ) )
     		else
     			DWstrConcatAssignA( text, hUnescapeStr( lexGetText( ) ) )
     		end if
 
     	else
-    		if( lexGetType() = IR_DATATYPE_WCHAR ) then
+    		if( lexGetType() = FB_DATATYPE_WCHAR ) then
     			DWstrConcatAssign( text, lexGetTextW( ) )
     		else
     			DWstrConcatAssignA( text, lexGetText( ) )

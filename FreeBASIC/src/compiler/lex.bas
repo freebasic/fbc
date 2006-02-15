@@ -461,22 +461,22 @@ private sub lexReadIdentifier( byval pid as zstring ptr, _
 		select case as const lexCurrentChar( )
 		'' '%' or '&'?
 		case FB_TK_INTTYPECHAR, FB_TK_LNGTYPECHAR
-			typ = FB_SYMBTYPE_INTEGER
+			typ = FB_DATATYPE_INTEGER
 
 		'' '!'?
 		case FB_TK_SGNTYPECHAR
-			typ = FB_SYMBTYPE_SINGLE
+			typ = FB_DATATYPE_SINGLE
 
 		'' '#'?
 		case FB_TK_DBLTYPECHAR
 			'' isn't it a '##'?
 			if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
-				typ = FB_SYMBTYPE_DOUBLE
+				typ = FB_DATATYPE_DOUBLE
 			end if
 
 		'' '$'?
 		case FB_TK_STRTYPECHAR
-			typ = FB_SYMBTYPE_STRING
+			typ = FB_DATATYPE_STRING
 		end select
 
 		if( typ <> INVALID ) then
@@ -701,7 +701,7 @@ private sub lexReadFloatNumber( byref pnum as zstring ptr, _
     dim as integer llen
     dim as integer skipchar
 
-	typ = FB_SYMBTYPE_DOUBLE
+	typ = FB_DATATYPE_DOUBLE
 	llen = tlen
 	skipchar = FALSE
 
@@ -743,14 +743,14 @@ private sub lexReadFloatNumber( byref pnum as zstring ptr, _
 		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 			c = lexEatChar( )
 		end if
-		typ = FB_SYMBTYPE_SINGLE
+		typ = FB_DATATYPE_SINGLE
 
 	'' '#'
 	case FB_TK_DBLTYPECHAR
 		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 			c = lexEatChar( )
 		end if
-		typ = FB_SYMBTYPE_DOUBLE
+		typ = FB_DATATYPE_DOUBLE
 
 	case CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
 		'' EXPCHAR
@@ -1039,14 +1039,14 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 			'' '!' | 'F' | 'f'
 			case FB_TK_SGNTYPECHAR, CHAR_FUPP, CHAR_FLOW
 				lexEatChar( )
-				typ = FB_SYMBTYPE_SINGLE
+				typ = FB_DATATYPE_SINGLE
 
 			'' '#' | 'D' | 'd'
 			case FB_TK_DBLTYPECHAR, CHAR_DUPP, CHAR_DLOW
 				'' isn't it a '##'?
 				if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
 					lexEatChar( )
-					typ = FB_SYMBTYPE_DOUBLE
+					typ = FB_DATATYPE_DOUBLE
 				end if
 
 			end select
@@ -1058,19 +1058,19 @@ private sub lexReadNumber( byval pnum as zstring ptr, _
 		if( isfloat = FALSE ) then
 			if( islong ) then
 				if( issigned ) then
-					typ = FB_SYMBTYPE_LONGINT
+					typ = FB_DATATYPE_LONGINT
 				else
-					typ = FB_SYMBTYPE_ULONGINT
+					typ = FB_DATATYPE_ULONGINT
 				end if
 			else
 				if( issigned ) then
-					typ = FB_SYMBTYPE_INTEGER
+					typ = FB_DATATYPE_INTEGER
 				else
-					typ = FB_SYMBTYPE_UINT
+					typ = FB_DATATYPE_UINT
 				end if
 			end if
 		else
-			typ = FB_SYMBTYPE_DOUBLE
+			typ = FB_DATATYPE_DOUBLE
 		end if
 	end if
 
@@ -1635,11 +1635,11 @@ readid:
 
 		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
 			lexReadString( @t->text, t->tlen, flags )
-			t->typ = FB_SYMBTYPE_CHAR
+			t->typ = FB_DATATYPE_CHAR
 
 		else
 			lexReadWstr( @t->textw, t->tlen, flags )
-			t->typ = FB_SYMBTYPE_WCHAR
+			t->typ = FB_DATATYPE_WCHAR
 
 		end if
 
@@ -1883,7 +1883,7 @@ sub lexEatToken( byval token as zstring ptr, _
 				 byval flags as LEXCHECK_ENUM ) static
 
     ''
-  	if( lex->head->typ <> IR_DATATYPE_WCHAR ) then
+  	if( lex->head->typ <> FB_DATATYPE_WCHAR ) then
     	*token = lex->head->text
     else
     	*token = str( lex->head->textw )
@@ -2005,7 +2005,7 @@ end function
 function lexGetText( ) as zstring ptr
     static as zstring * FB_MAXLITLEN+1 tmpstr
 
-  	if( lex->head->typ <> IR_DATATYPE_WCHAR ) then
+  	if( lex->head->typ <> FB_DATATYPE_WCHAR ) then
     	function = @lex->head->text
     else
     	tmpstr = str( lex->head->textw )

@@ -124,7 +124,7 @@ function cSelectStatement as integer
 	end if
 
 	'' can't be an UDT
-	if( astGetDataType( expr ) = IR_DATATYPE_USERDEF ) then
+	if( astGetDataType( expr ) = FB_DATATYPE_USERDEF ) then
 		hReportError( FB_ERRMSG_INVALIDDATATYPES )
 		exit function
 	end if
@@ -150,17 +150,17 @@ function cSelectStatement as integer
 	subtype = astGetSubType( expr )
 	select case dtype
 	'' fixed-len or zstring? temp will be a var-len string..
-	case IR_DATATYPE_FIXSTR, IR_DATATYPE_CHAR
-		dtype = IR_DATATYPE_STRING
+	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+		dtype = FB_DATATYPE_STRING
 
 	'' bitfield? they are always converted to uint's..
-	case FB_SYMBTYPE_BITFIELD
-		dtype   = IR_DATATYPE_UINT
+	case FB_DATATYPE_BITFIELD
+		dtype   = FB_DATATYPE_UINT
 	    subtype = NULL
 	end select
 
     '' not a wstring?
-	if( dtype <> IR_DATATYPE_WCHAR ) then
+	if( dtype <> FB_DATATYPE_WCHAR ) then
 		symbol = symbAddTempVar( dtype, subtype )
 		if( symbol = NULL ) then
 			exit function
@@ -177,7 +177,7 @@ function cSelectStatement as integer
 		'' is unknown at compilet-time, do:
 
 		''  dim wstring ptr tmp
-		symbol = symbAddTempVar( FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR, NULL )
+		symbol = symbAddTempVar( FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, NULL )
 		if( symbol = NULL ) then
 			exit function
 		end if
@@ -185,15 +185,15 @@ function cSelectStatement as integer
 		'' tmp = WstrAlloc( len( expr ) )
 		astAdd( astNewASSIGN( astNewVAR( symbol, _
 										 0, _
-										 IR_DATATYPE_POINTER+IR_DATATYPE_WCHAR ), _
+										 FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR ), _
 							  rtlWstrAlloc( rtlMathLen( astCloneTree( expr ), TRUE ) ) ) )
 
 		'' *tmp = expr
 		expr = astNewASSIGN( astNewPTR( 0, _
 								  		astNewVAR( symbol, _
 								  		 		   0, _
-								  		 		   IR_DATATYPE_POINTER+IR_DATATYPE_WCHAR ), _
-								  	    IR_DATATYPE_WCHAR, _
+								  		 		   FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR ), _
+								  	    FB_DATATYPE_WCHAR, _
 								  	    NULL ), _
 				      		 expr )
 
@@ -229,12 +229,12 @@ function cSelectStatement as integer
 
 	'' if a temp string was allocated, delete it
 	select case dtype
-	case IR_DATATYPE_STRING
+	case FB_DATATYPE_STRING
 		astAdd( rtlStrDelete( astNewVAR( symbol, 0, dtype ) ) )
-	case IR_DATATYPE_WCHAR
+	case FB_DATATYPE_WCHAR
 		astAdd( rtlStrDelete( astNewVAR( symbol, _
 										 0, _
-										 IR_DATATYPE_POINTER+IR_DATATYPE_WCHAR ) ) )
+										 FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR ) ) )
 	end select
 
 	env.lastcompound = lastcompstmt
@@ -290,11 +290,11 @@ end function
 '':::::
 '' if it's a wstring, do "if *tmp op expr"
 #define NEWCASEVAR(symbol,dtype) 				_
-	iif( dtype <> IR_DATATYPE_WCHAR, 			_
+	iif( dtype <> FB_DATATYPE_WCHAR, 			_
 		 astNewVAR( symbol, 0, dtype ), 		_
 		 astNewPTR( 0, 							_
-					astNewVAR( symbol, 0, IR_DATATYPE_POINTER+IR_DATATYPE_WCHAR ), _
-					IR_DATATYPE_WCHAR, 			_
+					astNewVAR( symbol, 0, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR ), _
+					FB_DATATYPE_WCHAR, 			_
 					NULL ) 						_
 	   )
 
@@ -654,14 +654,14 @@ function cSelectConstStmt as integer
 		exit function
 	end if
 
-	if( astGetDataClass( expr ) <> IR_DATACLASS_INTEGER ) then
+	if( astGetDataClass( expr ) <> FB_DATACLASS_INTEGER ) then
 		hReportError( FB_ERRMSG_INVALIDDATATYPES )
 		exit function
 
     '' CHAR and WCHAR literals are also from the INTEGER class
     else
     	select case astGetDataType( expr )
-    	case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     		'' don't allow, unless it's a deref pointer
     		if( astIsPTR( expr ) = FALSE ) then
     			hReportError( FB_ERRMSG_INVALIDDATATYPES )
@@ -670,8 +670,8 @@ function cSelectConstStmt as integer
     	end select
 	end if
 
-	if( astGetDataType( expr ) <> IR_DATATYPE_UINT ) then
-		expr = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, expr )
+	if( astGetDataType( expr ) <> FB_DATATYPE_UINT ) then
+		expr = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, expr )
 	end if
 
 	'' Comment?
@@ -692,12 +692,12 @@ function cSelectConstStmt as integer
 	complabel = symbAddLabel( NULL )
 
 	'' store expression into a temp var
-	sym = symbAddTempVar( FB_SYMBTYPE_UINT )
+	sym = symbAddTempVar( FB_DATATYPE_UINT )
 	if( sym = NULL ) then
 		exit function
 	end if
 
-	expr = astNewASSIGN( astNewVAR( sym, 0, IR_DATATYPE_UINT ), expr )
+	expr = astNewASSIGN( astNewVAR( sym, 0, FB_DATATYPE_UINT ), expr )
 	if( expr = NULL ) then
 		exit function
 	end if
@@ -746,16 +746,16 @@ function cSelectConstStmt as integer
 	'' check min val
 	if( minval > 0 ) then
 		expr = astNewBOP( IR_OP_LT, _
-						  astNewVAR( sym, 0, IR_DATATYPE_UINT ), _
-						  astNewCONSTi( minval, IR_DATATYPE_UINT ), _
+						  astNewVAR( sym, 0, FB_DATATYPE_UINT ), _
+						  astNewCONSTi( minval, FB_DATATYPE_UINT ), _
 						  deflabel, FALSE )
 		astAdd( expr )
 	end if
 
 	'' check max val
 	expr = astNewBOP( IR_OP_GT, _
-					  astNewVAR( sym, 0, IR_DATATYPE_UINT ), _
-					  astNewCONSTi( maxval, IR_DATATYPE_UINT ), _
+					  astNewVAR( sym, 0, FB_DATATYPE_UINT ), _
+					  astNewCONSTi( maxval, FB_DATATYPE_UINT ), _
 					  deflabel, FALSE )
 	astAdd( expr )
 
@@ -763,11 +763,11 @@ function cSelectConstStmt as integer
     tbsym = hJumpTbAllocSym( )
 
 	idxexpr = astNewBOP( IR_OP_MUL, _
-						 astNewVAR( sym, 0, IR_DATATYPE_UINT ), _
-    				  	 astNewCONSTi( FB_INTEGERSIZE, IR_DATATYPE_UINT ) )
+						 astNewVAR( sym, 0, FB_DATATYPE_UINT ), _
+    				  	 astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_UINT ) )
 
-    expr = astNewIDX( astNewVAR( tbsym, -minval*FB_INTEGERSIZE, IR_DATATYPE_UINT ), _
-    				  idxexpr, IR_DATATYPE_UINT, NULL )
+    expr = astNewIDX( astNewVAR( tbsym, -minval*FB_INTEGERSIZE, FB_DATATYPE_UINT ), _
+    				  idxexpr, FB_DATATYPE_UINT, NULL )
 
     astAdd( astNewBRANCH( IR_OP_JUMPPTR, NULL, expr ) )
 
@@ -778,10 +778,10 @@ function cSelectConstStmt as integer
     l = swtbase
     for value = minval to maxval
     	if( value = ctx.swt.caseTB(l).value ) then
-    		astAdd( astNewJMPTB( IR_DATATYPE_UINT, ctx.swt.caseTB(l).label ) )
+    		astAdd( astNewJMPTB( FB_DATATYPE_UINT, ctx.swt.caseTB(l).label ) )
     		l += 1
     	else
-    		astAdd( astNewJMPTB( IR_DATATYPE_UINT, deflabel ) )
+    		astAdd( astNewJMPTB( FB_DATATYPE_UINT, deflabel ) )
     	end if
     next
 

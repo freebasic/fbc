@@ -47,22 +47,22 @@ function cUpdPointer( byval op as integer, _
     edtype = astGetDataType( e )
 
     '' not integer class?
-    if( irGetDataClass( edtype ) <> IR_DATACLASS_INTEGER ) then
+    if( symbGetDataClass( edtype ) <> FB_DATACLASS_INTEGER ) then
     	exit function
 
     '' CHAR and WCHAR literals are also from the INTEGER class (to allow *p = 0 etc)
     else
     	select case edtype
-    	case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     		exit function
     	end select
     end if
 
     '' calc len( *p )
-    lgt = symbCalcLen( astGetDataType( p ) - FB_SYMBTYPE_POINTER, astGetSubType( p ) )
+    lgt = symbCalcLen( astGetDataType( p ) - FB_DATATYPE_POINTER, astGetSubType( p ) )
 
     '' another pointer?
-    if( edtype >= IR_DATATYPE_POINTER ) then
+    if( edtype >= FB_DATATYPE_POINTER ) then
     	'' only allow if it's a subtraction
     	if( op = IR_OP_SUB ) then
     		'' types can't be different..
@@ -72,22 +72,22 @@ function cUpdPointer( byval op as integer, _
     		end if
 
     		'' convert to uint or BOP will complain..
-    		p = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, p )
-    		e = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, e )
+    		p = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, p )
+    		e = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, e )
 
  			'' subtract..
  			e = astNewBOP( IR_OP_SUB, p, e )
 
  			'' and divide by length
- 			function = astNewBOP( IR_OP_INTDIV, e, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ) )
+ 			function = astNewBOP( IR_OP_INTDIV, e, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
     	end if
 
     	exit function
     end if
 
     '' not integer? convert
-    if( edtype <> IR_DATATYPE_INTEGER ) then
-    	e = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, e )
+    if( edtype <> FB_DATATYPE_INTEGER ) then
+    	e = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, e )
     end if
 
     '' any op but +|-?
@@ -96,14 +96,14 @@ function cUpdPointer( byval op as integer, _
 		'' incomplete type?
 		if( lgt = 0 ) then
 			'' unless it's a void ptr.. pretend it's a byte ptr
-			if( astGetDataType( p ) <> FB_SYMBTYPE_POINTER + FB_SYMBTYPE_VOID ) then
+			if( astGetDataType( p ) <> FB_DATATYPE_POINTER + FB_DATATYPE_VOID ) then
 				exit function
 			end if
 			lgt = 1
 		end if
 
     	'' multiple by length
-		e = astNewBOP( IR_OP_MUL, e, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ) )
+		e = astNewBOP( IR_OP_MUL, e, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
 
 		'' do op
 		function = astNewBOP( op, p, e )
@@ -146,8 +146,8 @@ function cCatExpression( byref catexpr as ASTNODE ptr ) as integer
 
     	'' convert operand to string if needed
     	select case as const astGetDataType( catexpr )
-    	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
-    		 IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+    		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
     	'' not a string..
     	case else
@@ -176,13 +176,13 @@ function cCatExpression( byref catexpr as ASTNODE ptr ) as integer
 
 		'' convert operand to string if needed
     	select case as const astGetDataType( expr )
-    	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
-    		 IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+    		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
     	'' not a string..
     	case else
 	   		'' expression is not a wstring?
-	   		if( astGetDataType( catexpr ) <> IR_DATATYPE_WCHAR ) then
+	   		if( astGetDataType( catexpr ) <> FB_DATATYPE_WCHAR ) then
 	   			expr = rtlToStr( expr )
 	   		else
 	   			expr = rtlToWstr( expr )
@@ -432,10 +432,10 @@ function cAddExpression( byref addexpr as ASTNODE ptr ) as integer
     	end if
 
     	'' check pointers
-    	if( astGetDataType( addexpr ) >= IR_DATATYPE_POINTER ) then
+    	if( astGetDataType( addexpr ) >= FB_DATATYPE_POINTER ) then
     		addexpr = cUpdPointer( op, addexpr, expr )
 
-    	elseif( astGetDataType( expr ) >= IR_DATATYPE_POINTER ) then
+    	elseif( astGetDataType( expr ) >= FB_DATATYPE_POINTER ) then
     		addexpr = cUpdPointer( op, expr, addexpr )
 
     	else

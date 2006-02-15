@@ -25,42 +25,6 @@ const IR_INITADDRNODES		= 2048
 
 const IR_MAXDIST			= 65536
 
-enum IRDATACLASS_ENUM
-	IR_DATACLASS_INTEGER                        '' must be the first
-	IR_DATACLASS_FPOINT
-	IR_DATACLASS_STRING
-	IR_DATACLASS_UDT
-	IR_DATACLASS_UNKNOWN
-end enum
-
-'' data types (must be in order of precision and in the signed/non-signed order!)
-enum IRDATATYPE_ENUM
-	IR_DATATYPE_VOID
-	IR_DATATYPE_BYTE
-	IR_DATATYPE_UBYTE
-	IR_DATATYPE_CHAR
-	IR_DATATYPE_SHORT
-	IR_DATATYPE_USHORT
-	IR_DATATYPE_WCHAR
-	IR_DATATYPE_INTEGER
-	IR_DATATYPE_LONG		= IR_DATATYPE_INTEGER
-	IR_DATATYPE_UINT
-	IR_DATATYPE_ENUM
-	IR_DATATYPE_BITFIELD
-	IR_DATATYPE_LONGINT
-	IR_DATATYPE_ULONGINT
-	IR_DATATYPE_SINGLE
-	IR_DATATYPE_DOUBLE
-	IR_DATATYPE_STRING
-	IR_DATATYPE_FIXSTR
-	IR_DATATYPE_USERDEF
-	IR_DATATYPE_FUNCTION
-	IR_DATATYPE_FWDREF
-	IR_DATATYPE_POINTER							'' ptr must be the last!
-
-	IR_MAXDATATYPES
-end enum
-
 ''
 enum IRVREGTYPE_ENUM
 	IR_VREGTYPE_OPER							'' used by DAG only
@@ -181,7 +145,7 @@ type IRTAC
 
 	pos			as integer
 
-	op			as IROPTYPE_ENUM				'' opcode
+	op			as IROP_ENUM					'' opcode
 
 	res			as IRTACVREG                    '' result
 	arg1		as IRTACVREG                    '' operand 1
@@ -195,7 +159,7 @@ type IRVREG
 	next		as IRVREG ptr					'' linked-list field
 
 	typ			as IRVREGTYPE_ENUM				'' VAR, IMM, IDX, etc
-	dtype		as IRDATATYPE_ENUM				'' CHAR, INTEGER, ...
+	dtype		as FB_DATATYPE					'' CHAR, INTEGER, ...
 
 	reg			as integer						'' reg
 	value		as integer						'' imm value (high word of longint's at vaux->value)
@@ -210,14 +174,6 @@ type IRVREG
 	tacvhead	as IRTACVREG ptr				'' back-link to tac table
 	tacvtail	as IRTACVREG ptr				'' /
 	taclast		as IRTAC ptr					'' /
-end type
-
-type IRDATATYPE
-	class		as IRDATACLASS_ENUM				'' INTEGER, FPOINT
-	size		as integer						'' in bytes
-	bits		as integer						'' number of bits
-	signed		as integer						'' TRUE or FALSE
-	remaptype	as IRDATATYPE_ENUM				'' remapped type for ENUM, POINTER, etc
 end type
 
 ''
@@ -338,24 +294,6 @@ declare function 	irGetVRDataClass	( byval vreg as IRVREG ptr ) as integer
 
 declare function 	irGetVRDataSize		( byval vreg as IRVREG ptr ) as integer
 
-declare function 	irMaxDataType		( byval dtype1 as integer, _
-										  byval dtype2 as integer ) as integer
-
-declare function 	irGetDataClass  	( byval dtype as integer ) as integer
-
-declare function 	irGetDataSize		( byval dtype as integer ) as integer
-
-declare function 	irGetDataBits		( byval dtype as integer ) as integer
-
-declare function 	irIsSigned			( byval dtype as integer ) as integer
-
-declare function 	irGetSignedType		( byval dtype as integer ) as integer
-
-declare function 	irGetUnsignedType	( byval dtype as integer ) as integer
-
-declare function 	irRemapType			( byval dtype as integer, _
-					  					  byval subtype as FBSYMBOL ptr ) as integer
-
 declare sub 		irFlush 			( )
 
 declare function 	irGetDistance		( byval vreg as IRVREG ptr ) as uinteger
@@ -425,7 +363,7 @@ declare sub 		irXchgTOS			( byval reg as integer )
 #define irEmitBRANCH(op,label) irEmit( op, NULL, NULL, NULL, label )
 
 
-#define ISLONGINT(t) ((t = IR_DATATYPE_LONGINT) or (t = IR_DATATYPE_ULONGINT))
+#define ISLONGINT(t) ((t = FB_DATATYPE_LONGINT) or (t = FB_DATATYPE_ULONGINT))
 
 
 #endif '' __IR_BI__

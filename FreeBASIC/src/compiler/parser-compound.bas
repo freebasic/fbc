@@ -121,7 +121,7 @@ function cEndStatement as integer
   	'' (Expression | )
   	select case lexGetToken( )
   	case FB_TK_STATSEPCHAR, FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
-  		errlevel = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+  		errlevel = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
   	case else
   		if( cExpression( errlevel ) = FALSE ) then
   			errlevel = NULL

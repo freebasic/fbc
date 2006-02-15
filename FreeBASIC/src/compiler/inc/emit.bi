@@ -30,7 +30,7 @@ const EMIT_INITNODES	= 1024
 const EMIT_INITVREGNODES= EMIT_INITNODES*4
 
 '#ifdef TARGET_X86
-const EMIT_REGCLASSES	= 2						'' assuming IR_DATACLASS_ will start at 0!
+const EMIT_REGCLASSES	= 2						'' assuming FB_DATACLASS_ will start at 0!
 const EMIT_LOCSTART 	= 0
 const EMIT_ARGSTART 	= FB_POINTERSIZE + FB_INTEGERSIZE '' skip return address + saved ebp
 

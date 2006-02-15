@@ -39,7 +39,7 @@ end type
 
 	dim shared deftypeTB( 0 to (asc("_")-asc("A")+1)-1 ) as integer
 
-	dim shared suffixTB( 0 to FB_SYMBOLTYPES-1 ) as zstring * 1+1 => _
+	dim shared suffixTB( 0 to FB_DATATYPES-1 ) as zstring * 1+1 => _
 	{ _
 				"v", _							'' void
 				"b", "a", _                     '' byte, ubyte
@@ -65,11 +65,11 @@ sub hlpInit
 
 	''
 	for i = 0 to (asc("_")-asc("A")+1)-1
-		deftypeTB(i) = FB_SYMBTYPE_INTEGER
+		deftypeTB(i) = FB_DATATYPE_INTEGER
 	next
 
 	''
-	for i = 0 to FB_SYMBOLTYPES-1
+	for i = 0 to FB_DATATYPES-1
 		if( len( suffixTB(i) ) = 0 ) then
 			suffixTB(i) = chr( CHAR_ALOW + i )
 		end if
@@ -159,15 +159,15 @@ function hFloatToStr( byval value as double, _
 	select case expval
 	'' -|+ infinite?
 	case &h7FF00000UL, &hFFF00000UL
-		if( typ = FB_SYMBTYPE_DOUBLE ) then
-			typ = FB_SYMBTYPE_LONGINT
+		if( typ = FB_DATATYPE_DOUBLE ) then
+			typ = FB_DATATYPE_LONGINT
 			if( expval >= 0 ) then
 				function = "0x7FF0000000000000"
 			else
 				function = "0xFFF0000000000000"
 			end if
 		else
-			typ = FB_SYMBTYPE_INTEGER
+			typ = FB_DATATYPE_INTEGER
 			if( expval >= 0 ) then
 				function = "0x7F800000"
 			else
@@ -177,11 +177,11 @@ function hFloatToStr( byval value as double, _
 
 	'' -|+ NaN? Quiet-NaN's only
 	case &h7FF80000UL, &hFFF80000UL
-		if( typ = FB_SYMBTYPE_DOUBLE ) then
-			typ = FB_SYMBTYPE_LONGINT
+		if( typ = FB_DATATYPE_DOUBLE ) then
+			typ = FB_DATATYPE_LONGINT
 			function = "0x7FF8000000000000"
 		else
-			typ = FB_SYMBTYPE_INTEGER
+			typ = FB_DATATYPE_INTEGER
 			function = "0x7FF00000"
 		end if
 
@@ -347,8 +347,8 @@ function hCreateName( byval symbol as zstring ptr, _
     end if
 
     if( typ <> INVALID ) then
-    	if( typ > FB_SYMBTYPE_POINTER ) then
-    		typ = FB_SYMBTYPE_POINTER
+    	if( typ > FB_DATATYPE_POINTER ) then
+    		typ = FB_DATATYPE_POINTER
     	end if
     	sname += suffixTB( typ )
     end if
@@ -421,14 +421,14 @@ function hCreateOvlProcAlias( byval symbol as zstring ptr, _
 		end if
 
     	typ = symbGetType( arg )
-    	do while( typ >= FB_SYMBTYPE_POINTER )
+    	do while( typ >= FB_DATATYPE_POINTER )
     		aname += "p"
-    		typ -= FB_SYMBTYPE_POINTER
+    		typ -= FB_DATATYPE_POINTER
     	loop
 
     	aname += suffixTB( typ )
-    	if( (typ = FB_SYMBTYPE_USERDEF) or _
-    		(typ = FB_SYMBTYPE_ENUM) ) then
+    	if( (typ = FB_DATATYPE_USERDEF) or _
+    		(typ = FB_DATATYPE_ENUM) ) then
     		aname += *symbGetOrgName( symbGetSubType( arg ) )
     	end if
 
@@ -668,21 +668,21 @@ sub hConvertValue( byval src as FBVALUE ptr, _
 				   byval ddtype as integer ) static
 
 	select case as const sdtype
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		select case as const ddtype
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			dst->long = src->long
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			dst->float= src->long
 		case else
 			dst->int  = src->long
 		end select
 
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		select case as const ddtype
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			dst->long = src->float
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			dst->float= src->float
 		case else
 			dst->int  = src->float
@@ -690,9 +690,9 @@ sub hConvertValue( byval src as FBVALUE ptr, _
 
 	case else
 		select case as const ddtype
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			dst->long = src->int
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			dst->float= src->int
 		case else
 			dst->int  = src->int
@@ -709,7 +709,7 @@ function hJumpTbAllocSym( ) as any ptr static
 
 	sname = *hMakeTmpStr( )
 
-	s = symbAddVarEx( @sname, NULL, FB_SYMBTYPE_UINT, NULL, 0, _
+	s = symbAddVarEx( @sname, NULL, FB_DATATYPE_UINT, NULL, 0, _
 					  FB_INTEGERSIZE, 1, dTB(), FB_ALLOCTYPE_SHARED+FB_ALLOCTYPE_JUMPTB, _
 					  FALSE, FALSE, FALSE )
 

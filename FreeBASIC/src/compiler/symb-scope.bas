@@ -100,13 +100,13 @@ sub symbFreeScopeDynVars( byval scp as FBSYMBOL ptr ) static
 					if( symbIsDynamic( s ) ) then
 						rtlArrayErase( astNewVAR( s, 0, s->typ ) )
 					'' array of dyn strings?
-					elseif( s->typ = FB_SYMBTYPE_STRING ) then
+					elseif( s->typ = FB_DATATYPE_STRING ) then
 						rtlArrayStrErase( s )
 					end if
 
 				'' dyn string?
-				elseif( s->typ = FB_SYMBTYPE_STRING ) then
-					strg = astNewVAR( s, 0, IR_DATATYPE_STRING )
+				elseif( s->typ = FB_DATATYPE_STRING ) then
+					strg = astNewVAR( s, 0, FB_DATATYPE_STRING )
 					astAdd( rtlStrDelete( strg ) )
 				end if
     		end if

@@ -126,32 +126,6 @@ declare sub 		irDump				( byval op as integer, _
 
 	dim shared regTB(0 to EMIT_REGCLASSES-1) as REGCLASS ptr
 
-	'' same order as IRDATATYPE_ENUM
-	dim shared dtypeTB( 0 to IR_MAXDATATYPES-1 ) as IRDATATYPE => _
-	{ _
-		(IR_DATACLASS_UNKNOWN, 0			 	, 0					, FALSE, IR_DATATYPE_VOID    ), _
-		(IR_DATACLASS_INTEGER, 1			 	, 8*1				, TRUE , IR_DATATYPE_BYTE    ), _
-		(IR_DATACLASS_INTEGER, 1			 	, 8*1				, FALSE, IR_DATATYPE_UBYTE   ), _
-		(IR_DATACLASS_INTEGER, 1			 	, 8*1				, FALSE, IR_DATATYPE_UBYTE	 ), _ '' zstring
-		(IR_DATACLASS_INTEGER, 2			 	, 8*2				, TRUE , IR_DATATYPE_SHORT 	 ), _
-		(IR_DATACLASS_INTEGER, 2			 	, 8*2				, FALSE, IR_DATATYPE_USHORT	 ), _
-		(IR_DATACLASS_INTEGER, 2			 	, 8*2				, FALSE, IR_DATATYPE_USHORT	 ), _ '' wstring
-		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, TRUE , IR_DATATYPE_INTEGER ), _
-		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, IR_DATATYPE_UINT 	 ), _
-		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, TRUE , IR_DATATYPE_INTEGER ), _ '' enum
-		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, IR_DATATYPE_UINT    ), _ '' bitfield
-		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2	, 8*FB_INTEGERSIZE*2, TRUE , IR_DATATYPE_LONGINT ), _
-		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE*2	, 8*FB_INTEGERSIZE*2, FALSE, IR_DATATYPE_ULONGINT), _
-		(IR_DATACLASS_FPOINT , 4             	, 8*4				, TRUE , IR_DATATYPE_SINGLE	 ), _
-		(IR_DATACLASS_FPOINT , 8			 	, 8*8				, TRUE , IR_DATATYPE_DOUBLE	 ), _
-		(IR_DATACLASS_STRING , FB_STRDESCLEN	, 0					, FALSE, IR_DATATYPE_STRING	 ), _
-		(IR_DATACLASS_STRING , 1			 	, 8*1				, FALSE, IR_DATATYPE_FIXSTR	 ), _
-		(IR_DATACLASS_UDT	 , 0			 	, 0					, FALSE, IR_DATATYPE_USERDEF ), _
-		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, IR_DATATYPE_UINT	 ), _ '' func
-		(IR_DATACLASS_UNKNOWN, 0			 	, 0					, FALSE, IR_DATATYPE_VOID	 ), _ '' fwdref
-		(IR_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, IR_DATATYPE_UINT	 )  _ '' ptr
-	}
-
 	'' same order as IROP_ENUM
 	dim shared opTB( 0 to IR_OPS-1 ) as IR_OPCODE => _
 	{ _
@@ -233,9 +207,6 @@ sub irInit
 	''
 	flistNew( @ir.vregTB, IR_INITVREGNODES, len( IRVREG ) )
 
-	'' wchar len depends on the target platform
-	dtypeTB(IR_DATATYPE_WCHAR) = dtypeTB(env.target.wchar.type)
-
 	''
 	emitInit( )
 
@@ -259,219 +230,6 @@ sub irEnd
 	ir.taccnt = 0
 
 end sub
-
-'':::::
-function irGetDataClass( byval dtype as integer ) as integer static
-
-	if( dtype > IR_DATATYPE_POINTER ) then
-		dtype = IR_DATATYPE_POINTER
-	end if
-
-	function = dtypeTB(dtype).class
-
-end function
-
-'':::::
-function irMaxDataType( byval ldtype as integer, _
-						byval rdtype as integer ) as integer static
-
-    dim as integer dtype1, dtype2
-
-    function = INVALID
-
-    if( ldtype > IR_DATATYPE_POINTER ) then
-    	dtype1 = IR_DATATYPE_UINT				'' can't be POINTER, due the -1 +1 hacks below
-    else
-    	dtype1 = dtypeTB(ldtype).remaptype
-    end if
-
-    if( rdtype > IR_DATATYPE_POINTER ) then
-    	dtype2 = IR_DATATYPE_UINT               '' ditto
-    else
-    	dtype2 = dtypeTB(rdtype).remaptype
-    end if
-
-    '' same?
-    if( dtype1 = dtype2 ) then
-    	exit function
-    end if
-
-    '' don't convert byte <-> char
-    select case as const dtype1
-    case IR_DATATYPE_BYTE, IR_DATATYPE_UBYTE
-    	select case dtype2
-    	case IR_DATATYPE_BYTE, IR_DATATYPE_UBYTE
-    		exit function
-    	end select
-
-    '' neither word <-> short
-    case IR_DATATYPE_SHORT, IR_DATATYPE_USHORT
-    	select case dtype2
-    	case IR_DATATYPE_SHORT, IR_DATATYPE_USHORT
-    		exit function
-    	end select
-
-	'' neither dword <-> integer
-	case IR_DATATYPE_INTEGER, IR_DATATYPE_UINT
-    	select case dtype2
-    	case IR_DATATYPE_INTEGER, IR_DATATYPE_UINT
-    		exit function
-    	end select
-
-    '' neither qword <-> longint
-    case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-    	select case dtype2
-    	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
-    		exit function
-    	end select
-
-    '' neither single <-> double
-    case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-    	select case dtype2
-    	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
-    		exit function
-    	end select
-
-    '' neither string, fixstring
-    case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR
-    	return IR_DATATYPE_STRING
-
-    case else
-    	hReportErrorEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
-    end select
-
-    '' assuming DATATYPE's are in order of precision
-    if( dtype1 > dtype2 ) then
-    	function = ldtype
-    else
-    	function = rdtype
-    end if
-
-end function
-
-'':::::
-function irIsSigned( byval dtype as integer ) as integer static
-
-	if( dtype > IR_DATATYPE_POINTER ) then
-		dtype = IR_DATATYPE_POINTER
-	end if
-
-	function = dtypeTB(dtype).signed
-
-end function
-
-'':::::
-function irGetDataSize( byval dtype as integer ) as integer static
-
-	if( dtype > IR_DATATYPE_POINTER ) then
-		dtype = IR_DATATYPE_POINTER
-	end if
-
-	function = dtypeTB(dtype).size
-
-end function
-
-'':::::
-function irGetDataBits( byval dtype as integer ) as integer static
-
-	if( dtype > IR_DATATYPE_POINTER ) then
-		dtype = IR_DATATYPE_POINTER
-	end if
-
-	function = dtypeTB(dtype).bits
-
-end function
-
-'':::::
-function irRemapType( byval dtype as integer, _
-					  byval subtype as FBSYMBOL ptr ) as integer static
-
-	if( dtype > IR_DATATYPE_POINTER ) then
-		function = IR_DATATYPE_UINT
-
-	elseif( dtype = IR_DATATYPE_BITFIELD ) then
-		function = subtype->typ
-
-	else
-		function = dtypeTB(dtype).remaptype
-
-	end if
-
-end function
-
-'':::::
-function irGetSignedType( byval dtype as integer ) as integer static
-	dim as integer dt
-
-	dt = dtype
-	if( dt > IR_DATATYPE_POINTER ) then
-		dt = IR_DATATYPE_POINTER
-	end if
-
-	if( dtypeTB(dt).class <> IR_DATACLASS_INTEGER ) then
-		return dtype
-	end if
-
-	select case as const dt
-	case IR_DATATYPE_UBYTE, IR_DATATYPE_CHAR
-		function = IR_DATATYPE_BYTE
-
-	case IR_DATATYPE_USHORT
-		function = IR_DATATYPE_SHORT
-
-	case IR_DATATYPE_UINT, IR_DATATYPE_POINTER
-		function = IR_DATATYPE_INTEGER
-
-	case IR_DATATYPE_WCHAR
-		select case env.target.wchar.type
-		case IR_DATATYPE_UBYTE
-			function = IR_DATATYPE_BYTE
-		case IR_DATATYPE_USHORT
-			function = IR_DATATYPE_SHORT
-		case else
-			function = IR_DATATYPE_INTEGER
-		end select
-
-	case IR_DATATYPE_ULONGINT
-		function = IR_DATATYPE_LONGINT
-
-	case else
-		function = dtype
-	end select
-
-end function
-
-'':::::
-function irGetUnsignedType( byval dtype as integer ) as integer static
-	dim as integer dt
-
-	dt = dtype
-	if( dt > IR_DATATYPE_POINTER ) then
-		dt = IR_DATATYPE_POINTER
-	end if
-
-	if( dtypeTB(dt).class <> IR_DATACLASS_INTEGER ) then
-		return dtype
-	end if
-
-	select case as const dt
-	case IR_DATATYPE_BYTE
-		function = IR_DATATYPE_UBYTE
-
-	case IR_DATATYPE_SHORT
-		function = IR_DATATYPE_USHORT
-
-	case IR_DATATYPE_INTEGER, IR_DATATYPE_ENUM, IR_DATATYPE_POINTER
-		function = IR_DATATYPE_UINT
-
-	case IR_DATATYPE_LONGINT
-		function = IR_DATATYPE_ULONGINT
-
-	case else
-		function = dtype
-	end select
-
-end function
 
 '':::::
 private sub hLoadIDX( byval vreg as IRVREG ptr )
@@ -498,7 +256,7 @@ private sub hLoadIDX( byval vreg as IRVREG ptr )
 		exit sub
 	end if
 
-	regTB(IR_DATACLASS_INTEGER)->ensure( regTB(IR_DATACLASS_INTEGER), vi )
+	regTB(FB_DATACLASS_INTEGER)->ensure( regTB(FB_DATACLASS_INTEGER), vi )
 
 end sub
 
@@ -508,11 +266,11 @@ end sub
 		t = vreg->typ 								: _
                                                 	: _
 		dt = vreg->dtype							: _
-		if( dt >= IR_DATATYPE_POINTER ) then		: _
-			dt = IR_DATATYPE_UINT					: _
-			dc = IR_DATACLASS_INTEGER				: _
+		if( dt >= FB_DATATYPE_POINTER ) then		: _
+			dt = FB_DATATYPE_UINT					: _
+			dc = FB_DATACLASS_INTEGER				: _
 		else										: _
-			dc = dtypeTB(dt).class					: _
+			dc = symb_dtypeTB(dt).class				: _
 		end if										: _
 													: _
 	else											: _
@@ -603,14 +361,14 @@ sub irEmitCONVERT( byval v1 as IRVREG ptr, _
 				   byval v2 as IRVREG ptr, _
 				   byval dtype2 as integer ) static
 
-	if( dtype1 > IR_DATATYPE_POINTER ) then
-		dtype1 = IR_DATATYPE_POINTER
+	if( dtype1 > FB_DATATYPE_POINTER ) then
+		dtype1 = FB_DATATYPE_POINTER
 	end if
 
-	select case dtypeTB(dtype1).class
-	case IR_DATACLASS_INTEGER
+	select case symb_dtypeTB(dtype1).class
+	case FB_DATACLASS_INTEGER
 		irEmit( IR_OP_TOINT, v1, v2, NULL )
-	case IR_DATACLASS_FPOINT
+	case FB_DATACLASS_FPOINT
 		irEmit( IR_OP_TOFLT, v1, v2, NULL )
 	end select
 
@@ -699,12 +457,12 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
 	amode  = symbGetArgMode( arg )
 	adtype = symbGetType( arg )
 	if( adtype <> INVALID ) then
-		adclass = irGetDataClass( adtype )
+		adclass = symbGetDataClass( adtype )
 	end if
 
 	''
 	pdtype  = irGetVRDataType( vr )
-	pdclass = irGetDataClass( pdtype )
+	pdclass = symbGetDataClass( pdtype )
 
     pclass = irGetVRType( vr )
 
@@ -717,9 +475,9 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
     elseif( amode = FB_ARGMODE_VARARG ) then
 
     	'' string argument?
-    	if( (pdclass = IR_DATACLASS_STRING) or _
-    		(pdtype = IR_DATATYPE_CHAR) or _
-    		(pdtype = IR_DATATYPE_WCHAR) ) then
+    	if( (pdclass = FB_DATACLASS_STRING) or _
+    		(pdtype = FB_DATATYPE_CHAR) or _
+    		(pdtype = FB_DATATYPE_WCHAR) ) then
 			'' not a pointer yet?
 			if( pclass = IR_VREGTYPE_PTR ) then
 				amode = FB_ARGMODE_BYREF
@@ -733,12 +491,12 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
     	end if
 
     '' as any?
-    elseif( adtype = IR_DATATYPE_VOID ) then
+    elseif( adtype = FB_DATATYPE_VOID ) then
 
 		if( pmode = FB_ARGMODE_BYVAL ) then
 
     		'' another quirk: BYVAL strings passed to BYREF ANY args..
-    		if( pdclass = IR_DATACLASS_STRING ) then
+    		if( pdclass = FB_DATACLASS_STRING ) then
     			'' not a pointer yet?
     			if( pclass <> IR_VREGTYPE_PTR ) then
     				amode = FB_ARGMODE_BYVAL
@@ -747,8 +505,8 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
     			end if
 
     		'' zstring?
-    		elseif( (pdtype = IR_DATATYPE_CHAR) or _
-    			    (pdtype = IR_DATATYPE_WCHAR) ) then
+    		elseif( (pdtype = FB_DATATYPE_CHAR) or _
+    			    (pdtype = FB_DATATYPE_WCHAR) ) then
     			'' not a pointer yet?
     			if( pclass <> IR_VREGTYPE_PTR ) then
     				amode = FB_ARGMODE_BYVAL
@@ -775,7 +533,7 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
     else
 
     	'' string argument?
-    	if( adclass = IR_DATACLASS_STRING ) then
+    	if( adclass = FB_DATACLASS_STRING ) then
 
 			if( pmode <> FB_ARGMODE_BYVAL ) then
 
@@ -837,7 +595,7 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
 				irEmitPUSH( vr->vidx )
 
 			else
-				vt = irAllocVREG( IR_DATATYPE_UINT )
+				vt = irAllocVREG( FB_DATATYPE_UINT )
 				irEmitADDR( IR_OP_ADDROF, vr, vt )
 				irEmitPUSH( vt )
 			end if
@@ -977,7 +735,7 @@ sub irEmitVARINISTR( byval totlgt as integer, _
 
 	'' zstring * 1?
 	if( totlgt = 0 ) then
-		emitVARINIi( IR_DATATYPE_BYTE, 0 )
+		emitVARINIi( FB_DATATYPE_BYTE, 0 )
 		exit sub
 	end if
 
@@ -1023,7 +781,7 @@ sub irEmitVARINIWSTR( byval totlgt as integer, _
 	end if
 
 	''
-	wclen = irGetDataSize( IR_DATATYPE_WCHAR )
+	wclen = symbGetDataSize( FB_DATATYPE_WCHAR )
 
 	emitVARINIWSTR( s )
 
@@ -1048,8 +806,8 @@ function irNewVR( byval dtype as integer, _
 				  byval vtype as integer ) as IRVREG ptr static
 	dim as IRVREG ptr v
 
-	if( dtype > IR_DATATYPE_POINTER ) then
-		dtype = IR_DATATYPE_POINTER
+	if( dtype > FB_DATATYPE_POINTER ) then
+		dtype = FB_DATATYPE_POINTER
 	end if
 
 	v = flistNewItem( @ir.vregTB )
@@ -1080,7 +838,7 @@ function irAllocVREG( byval dtype as integer ) as IRVREG ptr static
 
 	'' longint?
 	if( ISLONGINT( dtype ) ) then
-		 vr->vaux = irNewVR( IR_DATATYPE_INTEGER, IR_VREGTYPE_REG )
+		 vr->vaux = irNewVR( FB_DATATYPE_INTEGER, IR_VREGTYPE_REG )
 	end if
 
 end function
@@ -1098,7 +856,7 @@ function irAllocVRIMM( byval dtype as integer, _
 
 	'' longint?
 	if( ISLONGINT( dtype ) ) then
-		 vr->vaux = irNewVR( IR_DATATYPE_INTEGER, IR_VREGTYPE_IMM )
+		 vr->vaux = irNewVR( FB_DATATYPE_INTEGER, IR_VREGTYPE_IMM )
 		 vr->vaux->value = 0
 	end if
 
@@ -1116,7 +874,7 @@ function irAllocVRIMM64( byval dtype as integer, _
 	vr->value = cuint( value )
 
 	'' aux
-	vr->vaux = irNewVR( IR_DATATYPE_INTEGER, IR_VREGTYPE_IMM )
+	vr->vaux = irNewVR( FB_DATATYPE_INTEGER, IR_VREGTYPE_IMM )
 
 	vr->vaux->value = cint( value shr 32 )
 
@@ -1137,7 +895,7 @@ function irAllocVRVAR( byval dtype as integer, _
 
 	'' longint?
 	if( ISLONGINT( dtype ) ) then
-		va = irNewVR( IR_DATATYPE_INTEGER, IR_VREGTYPE_VAR )
+		va = irNewVR( FB_DATATYPE_INTEGER, IR_VREGTYPE_VAR )
 		vr->vaux = va
 		va->ofs = ofs + FB_INTEGERSIZE
 	end if
@@ -1163,7 +921,7 @@ function irAllocVRIDX( byval dtype as integer, _
 
 	'' longint?
 	if( ISLONGINT( dtype ) ) then
-		va = irNewVR( IR_DATATYPE_INTEGER, IR_VREGTYPE_IDX )
+		va = irNewVR( FB_DATATYPE_INTEGER, IR_VREGTYPE_IDX )
 		vr->vaux= va
 		va->ofs = ofs + FB_INTEGERSIZE
 	end if
@@ -1186,7 +944,7 @@ function irAllocVRPTR( byval dtype as integer, _
 
 	'' longint?
 	if( ISLONGINT( dtype ) ) then
-		va = irNewVR( IR_DATATYPE_INTEGER, IR_VREGTYPE_IDX )
+		va = irNewVR( FB_DATATYPE_INTEGER, IR_VREGTYPE_IDX )
 		vr->vaux= va
 		va->ofs = ofs + FB_INTEGERSIZE
 	end if
@@ -1238,11 +996,11 @@ function irGetVRDataClass( byval vreg as IRVREG ptr ) as integer static
 
 	dtype = vreg->dtype
 
-	if( dtype > IR_DATATYPE_POINTER ) then
-		dtype = IR_DATATYPE_POINTER
+	if( dtype > FB_DATATYPE_POINTER ) then
+		dtype = FB_DATATYPE_POINTER
 	end if
 
-	function = dtypeTB(dtype).class
+	function = symb_dtypeTB(dtype).class
 
 end function
 
@@ -1252,11 +1010,11 @@ function irGetVRDataSize( byval vreg as IRVREG ptr ) as integer static
 
 	dtype = vreg->dtype
 
-	if( dtype > IR_DATATYPE_POINTER ) then
-		dtype = IR_DATATYPE_POINTER
+	if( dtype > FB_DATATYPE_POINTER ) then
+		dtype = FB_DATATYPE_POINTER
 	end if
 
-	function = dtypeTB(dtype).size
+	function = symb_dtypeTB(dtype).size
 
 end function
 
@@ -1534,7 +1292,7 @@ private sub hPreserveRegs( byval ptrvreg as IRVREG ptr = NULL ) static
 
     	'' set the register that shouldn't be preserved (used for CALLPTR only)
     	npreg = INVALID
-    	if( class = IR_DATACLASS_INTEGER ) then
+    	if( class = FB_DATACLASS_INTEGER ) then
     		if( ptrvreg <> NULL ) then
 
     			select case ptrvreg->typ
@@ -1943,9 +1701,9 @@ private sub hFlushCOMP( byval op as integer, _
 	'' load source if it's a reg, or if result was not allocated
 	doload = FALSE
 	if( vr = NULL ) then							'' x86 assumption
-		if( v2_dclass = IR_DATACLASS_INTEGER ) then	'' /
+		if( v2_dclass = FB_DATACLASS_INTEGER ) then	'' /
 			if( v2_typ <> IR_VREGTYPE_IMM ) then	'' /
-				if( v1_dclass <> IR_DATACLASS_FPOINT ) then
+				if( v1_dclass <> FB_DATACLASS_FPOINT ) then
 					doload = TRUE
 				end if
 			end if
@@ -1967,7 +1725,7 @@ private sub hFlushCOMP( byval op as integer, _
 	doload = FALSE
 	if( (vr <> NULL) and (vr = v1) ) then			'' x86 assumption
 		doload = TRUE
-	elseif( v1_dclass = IR_DATACLASS_FPOINT ) then	'' /
+	elseif( v1_dclass = FB_DATACLASS_FPOINT ) then	'' /
 		doload = TRUE
 	elseif( v1_typ = IR_VREGTYPE_IMM) then          '' /
 		doload = TRUE
@@ -2077,7 +1835,7 @@ private sub hFlushSTORE( byval op as integer, _
 
     '' if dst is a fpoint, only load src if its a reg (x86 assumption)
 	if( (v2_typ = IR_VREGTYPE_REG) or _
-		((v2_typ <> IR_VREGTYPE_IMM) and (v1_dclass = IR_DATACLASS_INTEGER)) ) then
+		((v2_typ <> IR_VREGTYPE_IMM) and (v1_dclass = FB_DATACLASS_INTEGER)) ) then
 
 		'' handle longint
 		if( ISLONGINT( v2_dtype ) ) then
@@ -2184,7 +1942,7 @@ private sub hFlushCONVERT( byval op as integer, _
 	if( (v1_dclass = v2_dclass) and (v2_typ = IR_VREGTYPE_REG) ) then
 
 		'' fp to fp conversion with source already on stack? do nothing..
-		if( v2_dclass = IR_DATACLASS_FPOINT ) then
+		if( v2_dclass = FB_DATACLASS_FPOINT ) then
 			v1->reg 	= v2->reg
 			v2->reg 	= INVALID
 			v1->typ 	= IR_VREGTYPE_REG
@@ -2195,8 +1953,8 @@ private sub hFlushCONVERT( byval op as integer, _
 		'' it's an integer, check if used again
 		if( irGetDistance( v2 ) = IR_MAXDIST ) then
 			'' don't reuse if it's a longint
-			if( (irGetDataSize( v1_dtype ) <> FB_INTEGERSIZE*2) and _
-				(irGetDataSize( v2_dtype ) <> FB_INTEGERSIZE*2) ) then
+			if( (symbGetDataSize( v1_dtype ) <> FB_INTEGERSIZE*2) and _
+				(symbGetDataSize( v2_dtype ) <> FB_INTEGERSIZE*2) ) then
 				reuse = TRUE
 			end if
 		end if
@@ -2210,7 +1968,7 @@ private sub hFlushCONVERT( byval op as integer, _
 	else
 		if( v2_typ = IR_VREGTYPE_REG ) then			'' x86 assumption
 			'' handle longint
-			if( (v2_dtype = IR_DATATYPE_LONGINT) or (v2_dtype = IR_DATATYPE_ULONGINT) ) then
+			if( (v2_dtype = FB_DATATYPE_LONGINT) or (v2_dtype = FB_DATATYPE_ULONGINT) ) then
 				va = v2->vaux
 				regTB(v2_dclass)->ensure( regTB(v2_dclass), va, FALSE )
 			end if
@@ -2469,7 +2227,7 @@ sub irStoreVR( byval vreg as IRVREG ptr, _
 	if( ISLONGINT( vreg->dtype ) ) then
 		vareg = vreg->vaux
 		if( vareg->typ <> IR_VREGTYPE_VAR ) then
-			regTB(IR_DATACLASS_INTEGER)->free( regTB(IR_DATACLASS_INTEGER), vareg->reg )
+			regTB(FB_DATACLASS_INTEGER)->free( regTB(FB_DATACLASS_INTEGER), vareg->reg )
 			vareg->reg = INVALID
 			vareg->typ = IR_VREGTYPE_VAR
 			vareg->ofs = vreg->ofs + FB_INTEGERSIZE
@@ -2483,7 +2241,7 @@ sub irXchgTOS( byval reg as integer ) static
     dim as IRVREG rvreg
 
 	rvreg.typ 	= IR_VREGTYPE_REG
-	rvreg.dtype = IR_DATATYPE_DOUBLE
+	rvreg.dtype = FB_DATATYPE_DOUBLE
 	rvreg.reg	= reg
 
 	emitXchgTOS( @rvreg )

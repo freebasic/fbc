@@ -38,86 +38,86 @@ funcdata:
 
 '' fb_NullPtrChk ( byval p as any ptr, byval linenum as integer, byval fname as zstring ptr ) as any ptr
 data @FB_RTL_NULLPTRCHK,"", _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 3, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_MemCopy cdecl ( dst as any, src as any, byval bytes as integer ) as void
 data @FB_RTL_MEMCOPY,"memcpy", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
+	 FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 3, _
-	 FB_SYMBTYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
-	 FB_SYMBTYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
+	 FB_DATATYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_MemSwap ( dst as any, src as any, byval bytes as integer ) as void
 data @FB_RTL_MEMSWAP,"", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 3, _
-	 FB_SYMBTYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
-	 FB_SYMBTYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
+	 FB_DATATYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' fb_MemCopyClear ( dst as any, byval dstlen as integer, src as any, byval srclen as integer ) as void
 data @FB_RTL_MEMCOPYCLEAR,"", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 4, _
-	 FB_SYMBTYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' fre ( ) as uinteger
 data @"fre","fb_GetMemAvail", _
-	 FB_SYMBTYPE_UINT,FB_FUNCMODE_STDCALL, _
+	 FB_DATATYPE_UINT,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0
 
 '' allocate ( byval bytes as integer ) as any ptr
 data @"allocate","malloc", _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' callocate ( byval bytes as integer ) as any ptr
 data @"callocate","calloc", _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,1
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,1
 
 '' reallocate ( byval p as any ptr, byval bytes as integer ) as any ptr
 data @"reallocate","realloc", _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' deallocate ( byval p as any ptr ) as void
 data @"deallocate","free", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
+	 FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYVAL, FALSE
 
 '' clear ( dst as any, byval value as integer = 0, byval bytes as integer ) as void
 data @"clear","memset", _
-	 FB_SYMBTYPE_VOID,FB_FUNCMODE_CDECL, _
+	 FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 3, _
-	 FB_SYMBTYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
-	 FB_SYMBTYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
 '' EOL
 data NULL
@@ -152,13 +152,13 @@ function rtlNullPtrCheck( byval p as ASTNODE ptr, _
    	proc = astNewFUNCT( PROCLOOKUP( NULLPTRCHK ) )
 
 	'' ptr
-	p = astNewCONV( IR_OP_TOPOINTER, IR_DATATYPE_POINTER+IR_DATATYPE_VOID, NULL, p )
-	if( astNewPARAM( proc, p, IR_DATATYPE_POINTER+IR_DATATYPE_VOID ) = NULL ) then
+	p = astNewCONV( IR_OP_TOPOINTER, FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, p )
+	if( astNewPARAM( proc, p, FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) = NULL ) then
 		exit function
 	end if
 
 	'' linenum
-	if( astNewPARAM( proc, astNewCONSTi( linenum, IR_DATATYPE_INTEGER ), IR_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewPARAM( proc, astNewCONSTi( linenum, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
@@ -194,7 +194,7 @@ function rtlMemCopy( byval dst as ASTNODE ptr, _
     end if
 
     '' byval bytes as integer
-    if( astNewPARAM( proc, astNewCONSTi( bytes, IR_DATATYPE_INTEGER ) ) = NULL ) then
+    if( astNewPARAM( proc, astNewCONSTi( bytes, FB_DATATYPE_INTEGER ) ) = NULL ) then
     	exit function
     end if
 
@@ -214,7 +214,7 @@ function rtlMemSwap( byval dst as ASTNODE ptr, _
 
 	'' simple type?
 	'' !!!FIXME!!! other classes should be allowed too, but pointers??
-	if( (astGetDataType( dst ) <> IR_DATATYPE_USERDEF) and (astIsVAR( dst )) ) then
+	if( (astGetDataType( dst ) <> FB_DATATYPE_USERDEF) and (astIsVAR( dst )) ) then
 
 		'' push src
 		astAdd( astNewSTACK( IR_OP_PUSH, astCloneTree( src ) ) )
@@ -245,7 +245,7 @@ function rtlMemSwap( byval dst as ASTNODE ptr, _
     end if
 
     '' byval bytes as integer
-    if( astNewPARAM( proc, astNewCONSTi( bytes, IR_DATATYPE_INTEGER ) ) = NULL ) then
+    if( astNewPARAM( proc, astNewCONSTi( bytes, FB_DATATYPE_INTEGER ) ) = NULL ) then
     	exit function
     end if
 
@@ -275,7 +275,7 @@ function rtlMemCopyClear( byval dstexpr as ASTNODE ptr, _
     end if
 
     '' byval dstlen as integer
-    if( astNewPARAM( proc, astNewCONSTi( dstlen, IR_DATATYPE_INTEGER ) ) = NULL ) then
+    if( astNewPARAM( proc, astNewCONSTi( dstlen, FB_DATATYPE_INTEGER ) ) = NULL ) then
     	exit function
     end if
 
@@ -285,7 +285,7 @@ function rtlMemCopyClear( byval dstexpr as ASTNODE ptr, _
     end if
 
     '' byval srclen as integer
-    if( astNewPARAM( proc, astNewCONSTi( srclen, IR_DATATYPE_INTEGER ) ) = NULL ) then
+    if( astNewPARAM( proc, astNewCONSTi( srclen, FB_DATATYPE_INTEGER ) ) = NULL ) then
     	exit function
     end if
 

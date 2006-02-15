@@ -34,7 +34,7 @@ function astNewENUM( byval value as integer, _
     dim as ASTNODE ptr n
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_ENUM, IR_DATATYPE_ENUM, sym )
+	n = astNewNode( AST_NODECLASS_ENUM, FB_DATATYPE_ENUM, sym )
 	function = n
 
 	if( n = NULL ) then
@@ -50,7 +50,7 @@ end function
 function astLoadENUM( byval n as ASTNODE ptr ) as IRVREG ptr static
 
 	if( ast.doemit ) then
-		function = irAllocVRIMM( IR_DATATYPE_INTEGER, n->con.val.int )
+		function = irAllocVRIMM( FB_DATATYPE_INTEGER, n->con.val.int )
 	end if
 
 end function

@@ -46,12 +46,12 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 	ldtype   = l->dtype
 	lsubtype = l->subtype
 	rdtype   = r->dtype
-	ldclass  = irGetDataClass( ldtype )
-	rdclass	 = irGetDataClass( rdtype )
+	ldclass  = symbGetDataClass( ldtype )
+	rdclass	 = symbGetDataClass( rdtype )
 
     '' strings?
-    if( (ldclass = IR_DATACLASS_STRING) or _
-    	(rdclass = IR_DATACLASS_STRING) ) then
+    if( (ldclass = FB_DATACLASS_STRING) or _
+    	(rdclass = FB_DATACLASS_STRING) ) then
 
 		'' both strings?
 		if( ldclass = rdclass ) then
@@ -60,16 +60,16 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 		'' nope..
 		else
 			'' check if it's not a byte ptr
-			if( ldclass = IR_DATACLASS_STRING ) then
+			if( ldclass = FB_DATACLASS_STRING ) then
 				'' not a w|zstring?
 				select case rdtype
-				case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+				case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
 				case else
 					if( r->class <> AST_NODECLASS_PTR ) then
 						exit function
-					elseif( rdtype <> IR_DATATYPE_BYTE ) then
-						if( rdtype <> IR_DATATYPE_UBYTE ) then
+					elseif( rdtype <> FB_DATATYPE_BYTE ) then
+						if( rdtype <> FB_DATATYPE_UBYTE ) then
 							exit function
 						end if
 					end if
@@ -78,13 +78,13 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 			else
 				'' not a w|zstring?
 				select case ldtype
-				case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+				case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
 				case else
 					if( l->class <> AST_NODECLASS_PTR ) then
 						exit function
-					elseif( ldtype <> IR_DATATYPE_BYTE ) then
-						if( ldtype <> IR_DATATYPE_UBYTE ) then
+					elseif( ldtype <> FB_DATATYPE_BYTE ) then
+						if( ldtype <> FB_DATATYPE_UBYTE ) then
 							exit function
 						end if
 					end if
@@ -97,11 +97,11 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 
 
 	'' UDT's?
-	elseif( (ldtype = IR_DATATYPE_USERDEF) or _
-			(rdtype = IR_DATATYPE_USERDEF) ) then
+	elseif( (ldtype = FB_DATATYPE_USERDEF) or _
+			(rdtype = FB_DATATYPE_USERDEF) ) then
 
 		'' l node must be an UDT's,
-		if( ldtype <> IR_DATATYPE_USERDEF ) then
+		if( ldtype <> FB_DATATYPE_USERDEF ) then
 			exit function
 		else
 			'' "udtfunct() = udt" is not allowed, l node must be a variable
@@ -111,7 +111,7 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 		end if
 
         '' r is not an UDT?
-		if( rdtype <> IR_DATATYPE_USERDEF ) then
+		if( rdtype <> FB_DATATYPE_USERDEF ) then
 			'' not a function returning an UDT on regs?
 			if( r->class <> AST_NODECLASS_FUNCT ) then
 				exit function
@@ -120,7 +120,7 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
             '' handle functions returning UDT's when type isn't a pointer,
             '' but an integer or fpoint register
             proc = r->sym
-            if( proc->typ <> IR_DATATYPE_USERDEF ) then
+            if( proc->typ <> FB_DATATYPE_USERDEF ) then
             	exit function
             end if
 
@@ -156,8 +156,8 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 		end if
 
     '' wstrings?
-    elseif( (ldtype = IR_DATATYPE_WCHAR) or _
-    		(rdtype = IR_DATATYPE_WCHAR) ) then
+    elseif( (ldtype = FB_DATATYPE_WCHAR) or _
+    		(rdtype = FB_DATATYPE_WCHAR) ) then
 
 		'' both wstrings?
 		if( ldtype = rdtype ) then
@@ -165,15 +165,15 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 
 		else
 		    '' left?
-			if( ldtype = IR_DATATYPE_WCHAR ) then
+			if( ldtype = FB_DATATYPE_WCHAR ) then
 				'' is right a zstring? (fixed- or
 				'' var-len strings won't reach here)
-				is_str = ( rdtype = IR_DATATYPE_CHAR )
+				is_str = ( rdtype = FB_DATATYPE_CHAR )
 
 			'' right?
 			else
 				'' is left a zstring?
-				is_str = ( ldtype = IR_DATATYPE_CHAR )
+				is_str = ( ldtype = FB_DATATYPE_CHAR )
 			end if
 
 			if( is_str ) then
@@ -183,7 +183,7 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 			'' numeric type, let emit convert them if needed..
 			else
 
-				if( ldtype = IR_DATATYPE_WCHAR ) then
+				if( ldtype = FB_DATATYPE_WCHAR ) then
 					'' don't allow, unless it's a pointer
 					if( l->class <> AST_NODECLASS_PTR ) then
 						exit function
@@ -206,8 +206,8 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 		end if
 
     '' zstrings?
-    elseif( (ldtype = IR_DATATYPE_CHAR) or _
-    		(rdtype = IR_DATATYPE_CHAR) ) then
+    elseif( (ldtype = FB_DATATYPE_CHAR) or _
+    		(rdtype = FB_DATATYPE_CHAR) ) then
 
 		'' both the same? assign as string..
 		if( ldtype = rdtype ) then
@@ -215,13 +215,13 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 		end if
 
 		'' same as for wstring's..
-		if( ldtype = IR_DATATYPE_CHAR ) then
+		if( ldtype = FB_DATATYPE_CHAR ) then
 			'' don't allow, unless it's a pointer
 			if( l->class <> AST_NODECLASS_PTR ) then
 				exit function
 			end if
 
-			ldtype = IR_DATATYPE_UBYTE
+			ldtype = FB_DATATYPE_UBYTE
 
 		else
 			'' same as above..
@@ -229,17 +229,17 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 				exit function
 			end if
 
-			rdtype = IR_DATATYPE_UBYTE
+			rdtype = FB_DATATYPE_UBYTE
 		end if
 
     '' enums?
-    elseif( (ldtype = IR_DATATYPE_ENUM) or _
-    		(rdtype = IR_DATATYPE_ENUM) ) then
+    elseif( (ldtype = FB_DATATYPE_ENUM) or _
+    		(rdtype = FB_DATATYPE_ENUM) ) then
 
     	'' not the same?
     	if( ldtype <> rdtype ) then
-    		if( (ldclass <> IR_DATACLASS_INTEGER) or _
-    			(rdclass <> IR_DATACLASS_INTEGER) ) then
+    		if( (ldclass <> FB_DATACLASS_INTEGER) or _
+    			(rdclass <> FB_DATACLASS_INTEGER) ) then
     			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
     		end if
     	end if
@@ -249,9 +249,9 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 
     '' check pointers
     if( checktypes ) then
-    	if( ldtype >= IR_DATATYPE_POINTER ) then
+    	if( ldtype >= FB_DATATYPE_POINTER ) then
 	    	'' function ptr?
-    		if( ldtype = IR_DATATYPE_POINTER + IR_DATATYPE_FUNCTION ) then
+    		if( ldtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
     			if( astFuncPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
    					hReportWarning( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
     			end if
@@ -264,7 +264,7 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 			end if
 
     	'' r-side expr is a ptr?
-    	elseif( rdtype >= IR_DATATYPE_POINTER ) then
+    	elseif( rdtype >= FB_DATATYPE_POINTER ) then
     		hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
     	end if
     end if
@@ -272,7 +272,7 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 	'' convert types if needed
 	if( ldtype <> rdtype ) then
 		'' don't convert strings
-		if( rdclass <> IR_DATACLASS_STRING ) then
+		if( rdclass <> FB_DATACLASS_STRING ) then
 			'' constant?
 			if( r->defined ) then
 				r = astCheckConst( l->dtype, r )
@@ -283,9 +283,9 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 
 			'' x86 assumption: let the fpu do the convertion if any operand
 			''				   is a float (unless a special case must be handled)
-			if( ((ldclass <> IR_DATACLASS_FPOINT) and _
-				 (rdclass <> IR_DATACLASS_FPOINT)) or _
-				(ldtype = IR_DATATYPE_ULONGINT) ) then
+			if( ((ldclass <> FB_DATACLASS_FPOINT) and _
+				 (rdclass <> FB_DATACLASS_FPOINT)) or _
+				(ldtype = FB_DATATYPE_ULONGINT) ) then
 				r = astNewCONV( INVALID, ldtype, l->subtype, r )
 				if( r = NULL ) then
 					exit function
@@ -323,11 +323,11 @@ private function hSetBitField( byval l as ASTNODE ptr, _
 
 	l = astNewBOP( IR_OP_AND, astCloneTree( l ), _
 				   astNewCONSTi( not (ast_bitmaskTB(s->bitfld.bits) shl s->bitfld.bitpos), _
-				   				 IR_DATATYPE_UINT ) )
+				   				 FB_DATATYPE_UINT ) )
 
 	if( s->bitfld.bitpos > 0 ) then
 		r = astNewBOP( IR_OP_SHL, r, _
-				   	   astNewCONSTi( s->bitfld.bitpos, IR_DATATYPE_UINT ) )
+				   	   astNewCONSTi( s->bitfld.bitpos, FB_DATATYPE_UINT ) )
 	end if
 
 	function = astNewBOP( IR_OP_OR, l, r )
@@ -346,7 +346,7 @@ function astLoadASSIGN( byval n as ASTNODE ptr ) as IRVREG ptr
 	end if
 
 	'' handle bitfields..
-	if( l->dtype = IR_DATATYPE_BITFIELD ) then
+	if( l->dtype = FB_DATATYPE_BITFIELD ) then
 		'' l is a field node, use its left child instead
 		r = hSetBitField( l->l, r )
 		'' the field node can be removed

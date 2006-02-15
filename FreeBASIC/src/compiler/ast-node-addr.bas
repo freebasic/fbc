@@ -38,7 +38,7 @@ function astNewOFFSET( byval l as ASTNODE ptr ) as ASTNODE ptr static
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_OFFSET, IR_DATATYPE_POINTER + l->dtype, l->subtype )
+	n = astNewNode( AST_NODECLASS_OFFSET, FB_DATATYPE_POINTER + l->dtype, l->subtype )
 
 	if( n = NULL ) then
 		return NULL
@@ -146,7 +146,7 @@ function astNewADDR( byval op as integer, _
 			'' convert @* to nothing
 			if( l->op.op = IR_OP_DEREF ) then
 				delchild = TRUE
-				dtype -= IR_DATATYPE_POINTER
+				dtype -= FB_DATATYPE_POINTER
 			end if
 
 		case AST_NODECLASS_PTR
@@ -214,7 +214,7 @@ function astNewADDR( byval op as integer, _
 		''
 		if( delchild ) then
 			n = l->l
-			n->dtype   = dtype - IR_DATATYPE_POINTER
+			n->dtype   = dtype - FB_DATATYPE_POINTER
 			n->subtype = subtype
 			astDel( l )
 			return n
@@ -222,7 +222,7 @@ function astNewADDR( byval op as integer, _
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_ADDR, IR_DATATYPE_POINTER + dtype, subtype )
+	n = astNewNode( AST_NODECLASS_ADDR, FB_DATATYPE_POINTER + dtype, subtype )
 	if( n = NULL ) then
 		exit function
 	end if
@@ -249,10 +249,10 @@ function astLoadADDR( byval n as ASTNODE ptr ) as IRVREG ptr
 	if( ast.doemit ) then
 		'' src is not a reg?
 		if( (irIsREG( v1 ) = FALSE) or _
-			(irGetVRDataClass( v1 ) <> IR_DATACLASS_INTEGER) or _
+			(irGetVRDataClass( v1 ) <> FB_DATACLASS_INTEGER) or _
 			(irGetVRDataSize( v1 ) <> FB_POINTERSIZE) ) then
 
-			vr = irAllocVREG( IR_DATATYPE_POINTER )
+			vr = irAllocVREG( FB_DATATYPE_POINTER )
 			irEmitADDR( n->op.op, v1, vr )
 
 		else

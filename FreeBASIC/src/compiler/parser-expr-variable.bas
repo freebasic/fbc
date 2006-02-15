@@ -63,9 +63,9 @@ function cFieldArray( byval sym as FBSYMBOL ptr, _
 		end if
 
 		'' if index isn't an integer, convert
-		if( (astGetDataClass( dimexpr ) <> IR_DATACLASS_INTEGER) or _
+		if( (astGetDataClass( dimexpr ) <> FB_DATACLASS_INTEGER) or _
 			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
-			dimexpr = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, dimexpr )
+			dimexpr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
 				hReportError( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
@@ -75,8 +75,8 @@ function cFieldArray( byval sym as FBSYMBOL ptr, _
     	'' bounds checking
     	if( env.clopt.extraerrchk ) then
     		dimexpr = astNewBOUNDCHK( dimexpr, _
-    								  astNewCONSTi( d->lower, IR_DATATYPE_INTEGER ), _
-    								  astNewCONSTi( d->upper, IR_DATATYPE_INTEGER ), _
+    								  astNewCONSTi( d->lower, FB_DATATYPE_INTEGER ), _
+    								  astNewCONSTi( d->upper, FB_DATATYPE_INTEGER ), _
     								  lexLineNum( ) )
 
 			if( dimexpr = NULL ) then
@@ -106,7 +106,7 @@ function cFieldArray( byval sym as FBSYMBOL ptr, _
 			exit function
     	end if
 
-    	constexpr = astNewCONSTi( (d->upper - d->lower)+1, IR_DATATYPE_INTEGER )
+    	constexpr = astNewCONSTi( (d->upper - d->lower)+1, FB_DATATYPE_INTEGER )
     	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
 	loop
 
@@ -117,13 +117,13 @@ function cFieldArray( byval sym as FBSYMBOL ptr, _
     end if
 
 	'' times length
-	constexpr = astNewCONSTi( symbGetLen( sym ), IR_DATATYPE_INTEGER )
+	constexpr = astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_INTEGER )
 	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
 
     '' plus difference
     diff = symbGetArrayDiff( sym )
     if( diff <> 0 ) then
-    	constexpr = astNewCONSTi( diff, IR_DATATYPE_INTEGER )
+    	constexpr = astNewCONSTi( diff, FB_DATATYPE_INTEGER )
     	expr = astNewBOP( IR_OP_ADD, expr, constexpr )
     end if
 
@@ -158,7 +158,7 @@ function cTypeField( byref sym as FBSYMBOL ptr, _
 	do
 		if( lexGetToken( ) <> CHAR_LPRNT ) then
 
-			if( typ <> FB_SYMBTYPE_USERDEF ) then
+			if( typ <> FB_DATATYPE_USERDEF ) then
 				exit function
 			end if
 
@@ -188,7 +188,7 @@ function cTypeField( byref sym as FBSYMBOL ptr, _
     		end if
 
     		if( ofs <> 0 ) then
-    			constexpr = astNewCONSTi( ofs, IR_DATATYPE_INTEGER )
+    			constexpr = astNewCONSTi( ofs, FB_DATATYPE_INTEGER )
     			if( expr = NULL ) then
     				expr = constexpr
     			else
@@ -287,9 +287,9 @@ function cDerefFields( byref dtype as integer, _
 			end if
 
 			'' if index isn't an integer, convert
-			if( (astGetDataClass( idxexpr ) <> IR_DATACLASS_INTEGER) or _
+			if( (astGetDataClass( idxexpr ) <> FB_DATACLASS_INTEGER) or _
 				(astGetDataSize( idxexpr ) <> FB_POINTERSIZE) ) then
-				idxexpr = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, idxexpr )
+				idxexpr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, idxexpr )
 				if( idxexpr = NULL ) then
 					hReportError( FB_ERRMSG_INVALIDDATATYPES )
 					exit function
@@ -303,13 +303,13 @@ function cDerefFields( byref dtype as integer, _
 			end if
 
 			'' string, fixstr, w|zstring?
-			if( dtype < FB_SYMBTYPE_POINTER ) then
+			if( dtype < FB_DATATYPE_POINTER ) then
 
 				select case dtype
-				case FB_SYMBTYPE_STRING, FB_SYMBTYPE_FIXSTR, _
-					 FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR
+				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+					 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
-					if( dtype = FB_SYMBTYPE_STRING ) then
+					if( dtype = FB_DATATYPE_STRING ) then
 						'' deref
 						varexpr = astNewADDR( IR_OP_DEREF, varexpr )
 					else
@@ -318,19 +318,19 @@ function cDerefFields( byref dtype as integer, _
 					end if
 
 					'' add index
-					if( dtype = IR_DATATYPE_WCHAR ) then
+					if( dtype = FB_DATATYPE_WCHAR ) then
 						'' times sizeof( wchar ) if it's wstring
 						idxexpr = astNewBOP( IR_OP_SHL, _
 								   			 idxexpr, _
-								   			 astNewCONSTi( hToPow2( irGetDataSize( IR_DATATYPE_WCHAR ) ), _
-								   				 		   IR_DATATYPE_INTEGER ) )
+								   			 astNewCONSTi( hToPow2( symbGetDataSize( FB_DATATYPE_WCHAR ) ), _
+								   				 		   FB_DATATYPE_INTEGER ) )
 					end if
 
 					varexpr = astNewBOP( IR_OP_ADD, varexpr, idxexpr )
 
 					'' not a wstring?
-					if( dtype <> FB_SYMBTYPE_WCHAR ) then
-						dtype = IR_DATATYPE_UBYTE
+					if( dtype <> FB_DATATYPE_WCHAR ) then
+						dtype = FB_DATATYPE_UBYTE
 					else
 						dtype = env.target.wchar.type
 					end if
@@ -351,14 +351,14 @@ function cDerefFields( byref dtype as integer, _
 			end if
 
 			'' times length
-			lgt = symbCalcLen( dtype - FB_SYMBTYPE_POINTER, subtype )
+			lgt = symbCalcLen( dtype - FB_DATATYPE_POINTER, subtype )
 
 			if( lgt = 0 ) then
 				hReportError( FB_ERRMSG_INCOMPLETETYPE, TRUE )
 				exit function
 			end if
 
-			idxexpr = astNewBOP( IR_OP_MUL, idxexpr, astNewCONSTi( lgt, IR_DATATYPE_INTEGER ) )
+			idxexpr = astNewBOP( IR_OP_MUL, idxexpr, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
 
 		case else
 
@@ -366,15 +366,15 @@ function cDerefFields( byref dtype as integer, _
 
 		end select
 
-		if( dtype < FB_SYMBTYPE_POINTER ) then
+		if( dtype < FB_DATATYPE_POINTER ) then
 			hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
 			return FALSE
 		end if
 
-		dtype -= FB_SYMBTYPE_POINTER
+		dtype -= FB_DATATYPE_POINTER
 
 		'' incomplete type?
-		if( (dtype = FB_SYMBTYPE_VOID) or (dtype = FB_SYMBTYPE_FWDREF) ) then
+		if( (dtype = FB_DATATYPE_VOID) or (dtype = FB_DATATYPE_FWDREF) ) then
 			hReportError( FB_ERRMSG_INCOMPLETETYPE, TRUE )
 			return FALSE
 		end if
@@ -419,15 +419,15 @@ function cDerefFields( byref dtype as integer, _
 
 		''
 		do while( cnt > 0 )
-			if( dtype < FB_SYMBTYPE_POINTER ) then
+			if( dtype < FB_DATATYPE_POINTER ) then
 				hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
 				return FALSE
 			end if
 
-			dtype -= FB_SYMBTYPE_POINTER
+			dtype -= FB_DATATYPE_POINTER
 
 			'' incomplete type?
-			if( (dtype = FB_SYMBTYPE_VOID) or (dtype = FB_SYMBTYPE_FWDREF) ) then
+			if( (dtype = FB_DATATYPE_VOID) or (dtype = FB_DATATYPE_FWDREF) ) then
 				hReportError( FB_ERRMSG_INCOMPLETETYPE, TRUE )
 				return FALSE
 			end if
@@ -472,7 +472,7 @@ function cFuncPtrOrDerefFields( byval typ as integer, _
 
    		'' check for functions called through pointers
    		if( lexGetToken( ) = CHAR_LPRNT ) then
-   			if( typ = FB_SYMBTYPE_POINTER + FB_SYMBTYPE_FUNCTION ) then
+   			if( typ = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
 				isfuncptr = TRUE
    			end if
    		end if
@@ -482,7 +482,7 @@ function cFuncPtrOrDerefFields( byval typ as integer, _
 	if( isfuncptr ) then
 
 		'' function?
-		if( symbGetType( subtype ) <> FB_SYMBTYPE_VOID ) then
+		if( symbGetType( subtype ) <> FB_DATATYPE_VOID ) then
 			if( cFunctionCall( subtype, funcexpr, varexpr ) = FALSE ) then
 				exit function
 			end if
@@ -514,10 +514,10 @@ private function hDynArrayBoundChk( byval expr as ASTNODE ptr, _
     function = astNewBOUNDCHK( expr, _
     						   astNewVAR( desc, _
     								  	  FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS, _
-    								  	  IR_DATATYPE_INTEGER ), _
+    								  	  FB_DATATYPE_INTEGER ), _
     						   astNewVAR( desc, _
     								  	  FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS, _
-    								  	  IR_DATATYPE_INTEGER ), _
+    								  	  FB_DATATYPE_INTEGER ), _
     						   lexLineNum( ) )
 
 end function
@@ -564,9 +564,9 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
 		end if
 
 		'' if index isn't an integer, convert
-		if( (astGetDataClass( dimexpr ) <> IR_DATACLASS_INTEGER) or _
+		if( (astGetDataClass( dimexpr ) <> FB_DATACLASS_INTEGER) or _
 			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
-			dimexpr = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, dimexpr )
+			dimexpr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
 				hReportError( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
@@ -599,12 +599,12 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
     	'' times desc(i).elements
     	varexpr = astNewVAR( d, _
     						 FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN, _
-    						 IR_DATATYPE_INTEGER )
+    						 FB_DATATYPE_INTEGER )
     	expr = astNewBOP( IR_OP_MUL, expr, varexpr )
 	loop
 
 	'' times length
-	constexpr = astNewCONSTi( symbGetLen( sym ), IR_DATATYPE_INTEGER )
+	constexpr = astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_INTEGER )
 	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
 
     '' check dimensions, if not common
@@ -616,7 +616,7 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
     end if
 
    	'' plus dsc->data (= ptr + diff)
-    varexpr = astNewVAR( d, FB_ARRAYDESC_DATAOFFS, IR_DATATYPE_INTEGER )
+    varexpr = astNewVAR( d, FB_ARRAYDESC_DATAOFFS, FB_DATATYPE_INTEGER )
     expr = astNewBOP( IR_OP_ADD, expr, varexpr )
 
     idxexpr = expr
@@ -633,12 +633,12 @@ private function hArgArrayBoundChk( byval expr as ASTNODE ptr, _
 
     function = astNewBOUNDCHK( expr, _
     						   astNewPTR( FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_LBOUNDOFS, _
-    								  	  astNewVAR( desc, 0, IR_DATATYPE_INTEGER ), _
-    								  	  IR_DATATYPE_INTEGER, _
+    								  	  astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
+    								  	  FB_DATATYPE_INTEGER, _
     								  	  NULL ), _
     						   astNewPTR( FB_ARRAYDESCLEN + idx*FB_ARRAYDESC_DIMLEN + FB_ARRAYDESC_UBOUNDOFS, _
-    								  	  astNewVAR( desc, 0, IR_DATATYPE_INTEGER ), _
-    								  	  IR_DATATYPE_INTEGER, _
+    								  	  astNewVAR( desc, 0, FB_DATATYPE_INTEGER ), _
+    								  	  FB_DATATYPE_INTEGER, _
     								  	  NULL ), _
     						   lexLineNum( ) )
 
@@ -667,9 +667,9 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
 		end if
 
 		'' if index isn't an integer, convert
-		if( (astGetDataClass( dimexpr ) <> IR_DATACLASS_INTEGER) or _
+		if( (astGetDataClass( dimexpr ) <> FB_DATACLASS_INTEGER) or _
 			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
-			dimexpr = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, dimexpr )
+			dimexpr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
 				hReportError( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
@@ -700,22 +700,22 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
     	i += 1
 
     	'' it's a descriptor pointer, dereference (only with DAG this will be optimized)
-    	t = astNewVAR( sym, 0, IR_DATATYPE_INTEGER )
+    	t = astNewVAR( sym, 0, FB_DATATYPE_INTEGER )
     	'' times desc[i].elements
     	varexpr = astNewPTR( FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN, _
     						 t, _
-    						 IR_DATATYPE_INTEGER, _
+    						 FB_DATATYPE_INTEGER, _
     						 NULL )
     	expr = astNewBOP( IR_OP_MUL, expr, varexpr )
 	loop
 
 	'' times length
-	constexpr = astNewCONSTi( symbGetLen( sym ), IR_DATATYPE_INTEGER )
+	constexpr = astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_INTEGER )
 	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
 
    	'' plus desc->data (= ptr + diff)
-    t = astNewVAR( sym, 0, IR_DATATYPE_INTEGER )
-    varexpr = astNewPTR( FB_ARRAYDESC_DATAOFFS, t, IR_DATATYPE_INTEGER, NULL )
+    t = astNewVAR( sym, 0, FB_DATATYPE_INTEGER )
+    varexpr = astNewPTR( FB_ARRAYDESC_DATAOFFS, t, FB_DATATYPE_INTEGER, NULL )
     expr = astNewBOP( IR_OP_ADD, expr, varexpr )
 
     idxexpr = expr
@@ -768,9 +768,9 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
 		end if
 
 		'' if index isn't an integer, convert
-		if( (astGetDataClass( dimexpr ) <> IR_DATACLASS_INTEGER) or _
+		if( (astGetDataClass( dimexpr ) <> FB_DATACLASS_INTEGER) or _
 			(astGetDataSize( dimexpr ) <> FB_INTEGERSIZE) ) then
-			dimexpr = astNewCONV( INVALID, IR_DATATYPE_INTEGER, NULL, dimexpr )
+			dimexpr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
 				hReportError( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
@@ -780,8 +780,8 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
     	'' bounds checking
     	if( env.clopt.extraerrchk ) then
     		dimexpr = astNewBOUNDCHK( dimexpr, _
-    								  astNewCONSTi( d->lower, IR_DATATYPE_INTEGER ), _
-    								  astNewCONSTi( d->upper, IR_DATATYPE_INTEGER ), _
+    								  astNewCONSTi( d->lower, FB_DATATYPE_INTEGER ), _
+    								  astNewCONSTi( d->upper, FB_DATATYPE_INTEGER ), _
     								  lexLineNum( ) )
 
 			if( dimexpr = NULL ) then
@@ -811,7 +811,7 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
 			exit function
     	end if
 
-    	constexpr = astNewCONSTi( (d->upper - d->lower) + 1, IR_DATATYPE_INTEGER )
+    	constexpr = astNewCONSTi( (d->upper - d->lower) + 1, FB_DATATYPE_INTEGER )
     	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
 	loop
 
@@ -823,7 +823,7 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
 
 	'' times length (this will be optimized if len < 10 and there's
 	'' no arrays on following fields)
-	constexpr = astNewCONSTi( symbGetLen( s ), IR_DATATYPE_INTEGER )
+	constexpr = astNewCONSTi( symbGetLen( s ), FB_DATATYPE_INTEGER )
 	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
 
 	idxexpr = expr
@@ -964,7 +964,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 
     		else
    				'' check if calling functions through pointers
-   				if( typ = FB_SYMBTYPE_POINTER + FB_SYMBTYPE_FUNCTION ) then
+   				if( typ = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
 	   				isfuncptr = TRUE
     			end if
 
@@ -995,7 +995,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 
    		'' check for calling functions through pointers
    		if( lexGetToken( ) = CHAR_LPRNT ) then
-   			if( typ = FB_SYMBTYPE_POINTER + FB_SYMBTYPE_FUNCTION ) then
+   			if( typ = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
 	   			isfuncptr = TRUE
    			end if
    		end if
@@ -1004,7 +1004,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 	'' AST will handle descriptor pointers
 	if( isbyref or isimport ) then
 		'' byref or import? by now it's a pointer var, the real type will be set bellow
-		varexpr = astNewVAR( sym, 0, IR_DATATYPE_POINTER, NULL )
+		varexpr = astNewVAR( sym, 0, FB_DATATYPE_POINTER, NULL )
 	else
 		varexpr = astNewVAR( sym, ofs, typ, subtype )
 	end if

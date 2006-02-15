@@ -330,7 +330,7 @@ declare function 	astNewCONST64		( byval value as longint, _
 
 declare function 	astNewVAR			( byval sym as FBSYMBOL ptr, _
 										  byval ofs as integer = 0, _
-										  byval dtype as integer = IR_DATATYPE_INTEGER, _
+										  byval dtype as integer = FB_DATATYPE_INTEGER, _
 										  byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr
 
 declare function 	astNewIDX			( byval v as ASTNODE ptr, _
@@ -340,7 +340,7 @@ declare function 	astNewIDX			( byval v as ASTNODE ptr, _
 
 declare function 	astNewFIELD			( byval p as ASTNODE ptr, _
 										  byval sym as FBSYMBOL ptr, _
-										  byval dtype as integer = IR_DATATYPE_INTEGER, _
+										  byval dtype as integer = FB_DATATYPE_INTEGER, _
 										  byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr
 
 declare function 	astNewPTR			( byval ofs as integer, _
@@ -478,9 +478,9 @@ declare function 	astGetStrLitSymbol	( byval n as ASTNODE ptr ) as FBSYMBOL ptr
 
 #define astGetSubtype(n) n->subtype
 
-#define astGetDataClass(n) irGetDataClass( n->dtype )
+#define astGetDataClass(n) symbGetDataClass( n->dtype )
 
-#define astGetDataSize(n) irGetDataSize( n->dtype )
+#define astGetDataSize(n) symbGetDataSize( n->dtype )
 
 #define astGetSymbol(n)	n->sym
 
@@ -507,6 +507,6 @@ extern ast as ASTCTX
 
 extern ast_bitmaskTB( 0 to 32 ) as uinteger
 
-extern ast_minlimitTB( IR_DATATYPE_BYTE to IR_DATATYPE_ULONGINT ) as longint
+extern ast_minlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) as longint
 
 #endif '' __AST_BI__

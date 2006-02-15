@@ -45,9 +45,9 @@ function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 	if( sym <> NULL ) then
 		dtype   = symbGetType( sym )
 		subtype = symbGetSubType( sym )
-		if( dtype = FB_SYMBTYPE_USERDEF ) then
+		if( dtype = FB_DATATYPE_USERDEF ) then
 			'' only if it's not a pointer, but a reg (integer or fpoint)
-			if( sym->proc.realtype < FB_SYMBTYPE_POINTER ) then
+			if( sym->proc.realtype < FB_DATATYPE_POINTER ) then
 				dtype   = sym->proc.realtype
 				subtype = NULL
 			end if
@@ -135,7 +135,7 @@ private function hAllocTmpArrayDesc( byval f as ASTNODE ptr, _
 	f->proc.arraytail = t
 
 	'' create a pointer
-	s = symbAddTempVar( FB_SYMBTYPE_UINT )
+	s = symbAddTempVar( FB_DATATYPE_UINT )
 
 	t->pdesc = s
 
@@ -180,10 +180,10 @@ private function hAllocTmpString( byval proc as ASTNODE ptr, _
 	dim as ASTTEMPSTR ptr t
 
 	'' create temp string to pass as paramenter
-	t = hAllocTmpStrNode( proc, n, FB_SYMBTYPE_STRING, copyback )
+	t = hAllocTmpStrNode( proc, n, FB_DATATYPE_STRING, copyback )
 
 	'' temp string = src string
-	return rtlStrAssign( astNewVAR( t->tmpsym, 0, FB_SYMBTYPE_STRING ), n )
+	return rtlStrAssign( astNewVAR( t->tmpsym, 0, FB_DATATYPE_STRING ), n )
 
 end function
 
@@ -195,12 +195,12 @@ private function hAllocTmpWstrPtr( byval proc as ASTNODE ptr, _
 	dim as ASTTEMPSTR ptr t
 
 	'' create temp wstring ptr to pass as paramenter
-	t = hAllocTmpStrNode( proc, NULL, FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR, FALSE )
+	t = hAllocTmpStrNode( proc, NULL, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FALSE )
 
-	n = astNewCONV( IR_OP_TOPOINTER, FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR, NULL, n )
+	n = astNewCONV( IR_OP_TOPOINTER, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, NULL, n )
 
 	'' temp string = src string
-	return astNewASSIGN( astNewVAR( t->tmpsym, 0, FB_SYMBTYPE_POINTER+FB_SYMBTYPE_WCHAR ), n )
+	return astNewASSIGN( astNewVAR( t->tmpsym, 0, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR ), n )
 
 end function
 
@@ -225,12 +225,12 @@ private function hCheckStringArg( byval proc as ASTNODE ptr, _
 			select case pdtype
 			'' var-len param: all rtlib procs will free the
 			'' temporary strings and descriptors automatically
-			case IR_DATATYPE_STRING
+			case FB_DATATYPE_STRING
 				exit function
 
 			'' wstring? convert and let rtl to free the temp
 			'' var-len result..
-			case IR_DATATYPE_WCHAR
+			case FB_DATATYPE_WCHAR
 				return rtlToStr( p )
 
 			'' anything else, just alloc a temp descriptor (assuming
@@ -245,7 +245,7 @@ private function hCheckStringArg( byval proc as ASTNODE ptr, _
 
 			'' var-len?
 			select case pdtype
-			case IR_DATATYPE_STRING
+			case FB_DATATYPE_STRING
 				'' not a temp var-len returned by functions? skip..
 				if( p->class <> AST_NODECLASS_FUNCT ) then
 					exit function
@@ -253,7 +253,7 @@ private function hCheckStringArg( byval proc as ASTNODE ptr, _
 
 			'' wstring? convert and add it delete list or the
 			'' temp var-len result would leak
-			case IR_DATATYPE_WCHAR
+			case FB_DATATYPE_WCHAR
 				'' let hAllocTmpString() do it..
 
 			'' anything else, do nothing..
@@ -279,7 +279,7 @@ private function hCheckStringArg( byval proc as ASTNODE ptr, _
 
     	select case pdtype
     	'' fixed-length?
-    	case IR_DATATYPE_FIXSTR
+    	case FB_DATATYPE_FIXSTR
     		'' byref arg and fixed-len param: alloc a temp string, copy
     		'' fixed to temp and pass temp
 			'' (ast will have to copy temp back to fixed when function
@@ -291,7 +291,7 @@ private function hCheckStringArg( byval proc as ASTNODE ptr, _
 			end if
 
     	'' var-len?
-    	case IR_DATATYPE_STRING
+    	case FB_DATATYPE_STRING
     		'' if not a function's result, skip..
     		if( p->class <> AST_NODECLASS_FUNCT ) then
     			exit function
@@ -299,7 +299,7 @@ private function hCheckStringArg( byval proc as ASTNODE ptr, _
 
 		'' wstring? it must be converted and the temp var-len result
 		'' have to be deleted when the function return
-		case IR_DATATYPE_WCHAR
+		case FB_DATATYPE_WCHAR
 			'' let hAllocTmpString() do it..
 
     	'' anything else..
@@ -314,7 +314,7 @@ private function hCheckStringArg( byval proc as ASTNODE ptr, _
 
 		select case pdtype
 		'' var-len?
-		case IR_DATATYPE_STRING
+		case FB_DATATYPE_STRING
 
 			'' not a temp var-len function result? do nothing..
 			if( p->class <> AST_NODECLASS_FUNCT ) then
@@ -323,7 +323,7 @@ private function hCheckStringArg( byval proc as ASTNODE ptr, _
 
 		'' wstring? it must be converted and the temp var-len result
 		'' have to be deleted when the function return
-		case IR_DATATYPE_WCHAR
+		case FB_DATATYPE_WCHAR
 			'' let hAllocTmpString() do it..
 
 		'' anything else, do nothing..
@@ -358,7 +358,7 @@ private function hStrParamToPtrArg( byval proc as ASTNODE ptr, _
 	pdtype = p->dtype
 
 	'' var- or fixed-len string param?
-	if( irGetDataClass( pdtype ) = IR_DATACLASS_STRING ) then
+	if( symbGetDataClass( pdtype ) = FB_DATACLASS_STRING ) then
 
 		'' if it's a function returning a STRING, it will have to be
 		'' deleted automagically when the proc been called return
@@ -366,13 +366,13 @@ private function hStrParamToPtrArg( byval proc as ASTNODE ptr, _
 			'' create a temp string to pass as parameter (no copy is
 			'' done at rtlib, as the returned string is a temp too)
 			n->l = hAllocTmpString( proc, p, FALSE )
-			pdtype = IR_DATATYPE_STRING
+			pdtype = FB_DATATYPE_STRING
         end if
 
 		'' not fixed-len? deref var-len (ptr at offset 0)
-		if( pdtype <> IR_DATATYPE_FIXSTR ) then
+		if( pdtype <> FB_DATATYPE_FIXSTR ) then
     		n->l = astNewCONV( IR_OP_TOPOINTER, _
-    						   IR_DATATYPE_POINTER + IR_DATATYPE_CHAR, _
+    						   FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
     						   NULL, _
     						   astNewADDR( IR_OP_DEREF, n->l ) )
 
@@ -381,7 +381,7 @@ private function hStrParamToPtrArg( byval proc as ASTNODE ptr, _
             '' get the address of
         	if( p->class <> AST_NODECLASS_PTR ) then
 				n->l = astNewCONV( IR_OP_TOPOINTER, _
-    						   	   IR_DATATYPE_POINTER + IR_DATATYPE_CHAR, _
+    						   	   FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
     						   	   NULL, _
 							   	   astNewADDR( IR_OP_ADDROF, n->l ) )
 			end if
@@ -393,12 +393,12 @@ private function hStrParamToPtrArg( byval proc as ASTNODE ptr, _
 	else
     	select case pdtype
     	'' zstring? take the address of
-    	case IR_DATATYPE_CHAR
+    	case FB_DATATYPE_CHAR
 			n->l = astNewADDR( IR_OP_ADDROF, p )
 			n->dtype = n->l->dtype
 
 		'' wstring?
-		case IR_DATATYPE_WCHAR
+		case FB_DATATYPE_WCHAR
 
 			'' if it's a function returning a WSTRING, it will have to be
 			'' deleted automatically when the proc been called return
@@ -442,8 +442,8 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 
 	'' same type? (don't check if it's a rtl proc)
 	if( f->proc.isrtl = FALSE ) then
-		if( (adclass <> irGetDataClass( s->typ ) ) or _
-			(irGetDataSize( adtype ) <> irGetDataSize( s->typ )) ) then
+		if( (adclass <> symbGetDataClass( s->typ ) ) or _
+			(symbGetDataSize( adtype ) <> symbGetDataSize( s->typ )) ) then
 			hParamError( f )
 			return FALSE
 		end if
@@ -464,7 +464,7 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 
 		'' create a temp array descriptor
 		n->l     = hAllocTmpArrayDesc( f, p )
-		n->dtype = IR_DATATYPE_POINTER + IR_DATATYPE_VOID
+		n->dtype = FB_DATATYPE_POINTER + FB_DATATYPE_VOID
 
 	else
 
@@ -472,8 +472,8 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 		if( symbIsArgByDesc( s ) ) then
         	'' it's a pointer, but could be seen as anything else
         	'' (ie: if it were "s() as string"), so, create an alias
-        	n->l     = astNewVAR( s, 0, IR_DATATYPE_UINT )
-        	n->dtype = IR_DATATYPE_POINTER + IR_DATATYPE_VOID
+        	n->l     = astNewVAR( s, 0, FB_DATATYPE_UINT )
+        	n->dtype = FB_DATATYPE_POINTER + FB_DATATYPE_VOID
 
     	else
 			'' not an array?
@@ -485,8 +485,8 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 
         	''
         	n->l     = astNewADDR( IR_OP_ADDROF, _
-        						   astNewVAR( d, 0, IR_DATATYPE_UINT ) )
-        	n->dtype = IR_DATATYPE_POINTER + IR_DATATYPE_VOID
+        						   astNewVAR( d, 0, FB_DATATYPE_UINT ) )
+        	n->dtype = FB_DATATYPE_POINTER + FB_DATATYPE_VOID
 
     	end if
 
@@ -513,12 +513,12 @@ private function hCheckByRefArg( byval dtype as integer, _
 	case else
 		'' string? do nothing (ie: functions returning var-len string's)
 		select case as const dtype
-		case FB_SYMBTYPE_STRING, FB_SYMBTYPE_FIXSTR, _
-			 FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR
+		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 			return p
 
 		'' UDT? do nothing, just take the addr of
-		case FB_SYMBTYPE_USERDEF
+		case FB_DATATYPE_USERDEF
 
 		case else
 			'' scalars: store param to a temp var and pass it
@@ -568,7 +568,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 	amode   = symbGetArgMode( arg )
 	adtype  = symbGetType( arg )
 	if( adtype <> INVALID ) then
-		adclass = irGetDataClass( adtype )
+		adclass = symbGetDataClass( adtype )
 	end if
 
 	'' string concatenation is delayed for optimization reasons..
@@ -578,7 +578,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 	p 		 = n->l
 	pmode    = n->param.mode
 	pdtype   = p->dtype
-	pdclass  = irGetDataClass( pdtype )
+	pdclass  = symbGetDataClass( pdtype )
 	pclass	 = p->class
 
 	'' by descriptor?
@@ -599,15 +599,15 @@ private function hCheckParam( byval f as ASTNODE ptr, _
     if( amode = FB_ARGMODE_VARARG ) then
 
 		'' string? check..
-		if( (pdclass = IR_DATACLASS_STRING) or _
-			(pdtype = IR_DATATYPE_CHAR) or _
-			(pdtype = IR_DATATYPE_WCHAR) ) then
+		if( (pdclass = FB_DATACLASS_STRING) or _
+			(pdtype = FB_DATATYPE_CHAR) or _
+			(pdtype = FB_DATATYPE_WCHAR) ) then
 			return hStrParamToPtrArg( f, n, FALSE )
 
 		'' float? follow C ABI and convert it to double
-		elseif( pdtype = IR_DATATYPE_SINGLE ) then
+		elseif( pdtype = FB_DATATYPE_SINGLE ) then
 
-			p = astNewCONV( INVALID, IR_DATATYPE_DOUBLE, NULL, p )
+			p = astNewCONV( INVALID, FB_DATATYPE_DOUBLE, NULL, p )
 			if( p = NULL ) then
 				return FALSE
 			end if
@@ -622,7 +622,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 	end if
 
 	'' as any?
-    if( adtype = IR_DATATYPE_VOID ) then
+    if( adtype = FB_DATATYPE_VOID ) then
 
 		if( pmode = FB_ARGMODE_BYVAL ) then
 			'' another quirk: BYVAL strings passed to BYREF ANY args..
@@ -638,31 +638,31 @@ private function hCheckParam( byval f as ASTNODE ptr, _
     '' byval or byref (but as any)..
 
     '' string argument?
-    if( adclass = IR_DATACLASS_STRING ) then
+    if( adclass = FB_DATACLASS_STRING ) then
 
 		'' if it's a function returning a STRING, it's actually a pointer
 		if( pclass = AST_NODECLASS_FUNCT ) then
 			select case pdtype
-			case IR_DATATYPE_STRING, IR_DATATYPE_WCHAR
+			case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
 				pclass = AST_NODECLASS_PTR
 			end select
 		end if
 
 		'' param not an string?
-		if( pdclass <> IR_DATACLASS_STRING ) then
+		if( pdclass <> FB_DATACLASS_STRING ) then
 			'' not a zstring?
 			select case pdtype
-			case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
 			case else
 				'' check if not a byte ptr
 				if( (pclass <> AST_NODECLASS_PTR) or _
-					((pdtype <> IR_DATATYPE_BYTE) and (pdtype <> IR_DATATYPE_UBYTE)) ) then
+					((pdtype <> FB_DATATYPE_BYTE) and (pdtype <> FB_DATATYPE_UBYTE)) ) then
 
 					'' or if passing a ptr as byval to a byval string arg
-		    		if( (pdclass <> IR_DATACLASS_INTEGER) or _
+		    		if( (pdclass <> FB_DATACLASS_INTEGER) or _
 		    			(amode <> FB_ARGMODE_BYVAL) or _
-		    			(irGetDataSize( pdtype ) <> FB_POINTERSIZE) ) then
+		    			(symbGetDataSize( pdtype ) <> FB_POINTERSIZE) ) then
 						hParamError( f )
 						exit function
 		    		end if
@@ -677,13 +677,13 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 		    				end if
 
 		    			'' not a pointer?
-		    			elseif( pdtype < IR_DATATYPE_POINTER ) then
+		    			elseif( pdtype < FB_DATATYPE_POINTER ) then
 							hParamError( f )
 							exit function
 
 		    			'' not a pointer to a zstring?
 		    			else
-							if( astPtrCheck( IR_DATATYPE_POINTER + IR_DATATYPE_CHAR, _
+							if( astPtrCheck( FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
 											 NULL, p ) = FALSE ) then
 			        			hParamWarning( f, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
 			    			end if
@@ -714,8 +714,8 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 		p = hCheckStringArg( f, arg, p )
 		if( p <> n->l ) then
 			'' node will be a function returning a PTR to a string descriptor
-			pdtype  = IR_DATATYPE_STRING
-			pdclass = IR_DATACLASS_STRING
+			pdtype  = FB_DATATYPE_STRING
+			pdclass = FB_DATACLASS_STRING
 			pclass	= AST_NODECLASS_PTR
 
 			n->l     = p
@@ -725,9 +725,9 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 		''
 		if( amode = FB_ARGMODE_BYVAL ) then
 			'' deref var-len (ptr at offset 0)
-			if( pdtype = IR_DATATYPE_STRING ) then
-				pdclass = IR_DATACLASS_INTEGER
-				pdtype  = IR_DATATYPE_POINTER + IR_DATATYPE_CHAR
+			if( pdtype = FB_DATATYPE_STRING ) then
+				pdclass = FB_DATACLASS_INTEGER
+				pdtype  = FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
 				n->l     = astNewADDR( IR_OP_DEREF, p )
 				n->dtype = pdtype
 			end if
@@ -736,9 +736,9 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 		'' not a pointer yet?
 		if( pclass <> AST_NODECLASS_PTR ) then
 			'' descriptor or fixed-len? get the address of
-			if( (pdclass = IR_DATACLASS_STRING) or (pdtype = IR_DATATYPE_CHAR) ) then
+			if( (pdclass = FB_DATACLASS_STRING) or (pdtype = FB_DATATYPE_CHAR) ) then
 				n->l     = astNewADDR( IR_OP_ADDROF, p )
-				n->dtype = IR_DATATYPE_POINTER + IR_DATATYPE_CHAR
+				n->dtype = FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
 			end if
 		end if
 
@@ -749,8 +749,8 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 
 	'' passing a BYVAL ptr to an BYREF arg?
 	if( (pmode = FB_ARGMODE_BYVAL) and (amode = FB_ARGMODE_BYREF) ) then
-		if( (pdclass <> IR_DATACLASS_INTEGER) or _
-			(irGetDataSize( pdtype ) <> FB_POINTERSIZE) ) then
+		if( (pdclass <> FB_DATACLASS_INTEGER) or _
+			(symbGetDataSize( pdtype ) <> FB_POINTERSIZE) ) then
 			hParamError( f )
 			exit function
 		end if
@@ -759,9 +759,9 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 	end if
 
 	'' UDT arg? check if the same, can't convert
-	if( adtype = IR_DATATYPE_USERDEF ) then
+	if( adtype = FB_DATATYPE_USERDEF ) then
 		'' not another UDT?
-		if( pdtype <> IR_DATATYPE_USERDEF ) then
+		if( pdtype <> FB_DATATYPE_USERDEF ) then
 			'' not a proc? (can be an UDT been returned in registers)
 			if( pclass <> AST_NODECLASS_FUNCT ) then
 				hParamError( f )
@@ -770,7 +770,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 
 			'' it's a proc, but was it originally returning an UDT?
 			s = p->sym
-			if( s->typ <> FB_SYMBTYPE_USERDEF ) then
+			if( s->typ <> FB_DATATYPE_USERDEF ) then
 				hParamError( f )
 				exit function
 			end if
@@ -801,7 +801,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 
 		'' set the length if it's been passed by value
 		if( amode = FB_ARGMODE_BYVAL ) then
-			if( pdtype = IR_DATATYPE_USERDEF ) then
+			if( pdtype = FB_DATATYPE_USERDEF ) then
 				n->param.lgt = symbGetUDTLen( s )
 			end if
 		end if
@@ -812,28 +812,28 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 	'' anything else..
 
 	'' can't convert UDT's to other types
-	if( pdtype = IR_DATATYPE_USERDEF ) then
+	if( pdtype = FB_DATATYPE_USERDEF ) then
 		hParamError( f )
 		exit function
 	end if
 
 	'' string param? handle z- and w-string ptr arguments
 	select case pdtype
-	case IR_DATATYPE_STRING, IR_DATATYPE_FIXSTR, _
-		 IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
 		select case adtype
 		'' zstring ptr arg?
-		case IR_DATATYPE_POINTER + IR_DATATYPE_CHAR
+		case FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
 			'' if it's a wstring param, convert..
-			if( pdtype = IR_DATATYPE_WCHAR ) then
+			if( pdtype = FB_DATATYPE_WCHAR ) then
 				n->l = rtlToStr( p )
 			end if
 
 		'' wstring ptr arg?
-		case IR_DATATYPE_POINTER + IR_DATATYPE_WCHAR
+		case FB_DATATYPE_POINTER + FB_DATATYPE_WCHAR
 			'' if it's not a wstring param, convert..
-			if( pdtype <> IR_DATATYPE_WCHAR ) then
+			if( pdtype <> FB_DATATYPE_WCHAR ) then
 				n->l = rtlToWstr( p )
 			end if
 
@@ -845,17 +845,17 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 		hStrParamToPtrArg( f, n, TRUE )
 		p 		= n->l
 		pdtype  = p->dtype
-		pdclass = irGetDataClass( pdtype )
+		pdclass = symbGetDataClass( pdtype )
 
 	end select
 
 	'' different types? convert..
 	if( (adclass <> pdclass) or _
-		(irGetDataSize( adtype ) <> irGetDataSize( pdtype )) ) then
+		(symbGetDataSize( adtype ) <> symbGetDataSize( pdtype )) ) then
 
 		'' enum args are only allowed to be passed enum or int params
-		if( (adtype = IR_DATATYPE_ENUM) or _
-			(pdtype = IR_DATATYPE_ENUM) ) then
+		if( (adtype = FB_DATATYPE_ENUM) or _
+			(pdtype = FB_DATATYPE_ENUM) ) then
 			if( adclass <> pdclass ) then
 				hParamWarning( f, FB_WARNINGMSG_IMPLICITCONVERSION )
 			end if
@@ -890,13 +890,13 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 	if( amode = FB_ARGMODE_BYREF ) then
 		p = hCheckByRefArg( adtype, symbGetSubtype( arg ), n )
         '' it's an implicit pointer
-		adtype += IR_DATATYPE_POINTER
+		adtype += FB_DATATYPE_POINTER
 	end if
 
 	'' pointer checking
-	if( adtype >= IR_DATATYPE_POINTER ) then
+	if( adtype >= FB_DATATYPE_POINTER ) then
     	iswarning = FALSE
-    	if( adtype = IR_DATATYPE_POINTER + IR_DATATYPE_FUNCTION ) then
+    	if( adtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
     		if( astFuncPtrCheck( adtype, symbGetSubtype( arg ), p ) = FALSE ) then
 	        	iswarning = TRUE
 	    	end if
@@ -907,14 +907,14 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 		end if
 
 		if( iswarning ) then
-			if( p->dtype < IR_DATATYPE_POINTER ) then
+			if( p->dtype < FB_DATATYPE_POINTER ) then
 				hParamWarning( f, FB_WARNINGMSG_PASSINGSCALARASPTR )
 			else
 				hParamWarning( f, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
 			end if
 		end if
 
-    elseif( p->dtype >= IR_DATATYPE_POINTER ) then
+    elseif( p->dtype >= FB_DATATYPE_POINTER ) then
     	hParamWarning( f, FB_WARNINGMSG_PASSINGPTRTOSCALAR )
 	end if
 
@@ -1010,15 +1010,15 @@ private function hCallProc( byval n as ASTNODE ptr, _
 	'' function returns as string? it's actually a pointer to a string descriptor..
 	'' same with UDT's..
 	select case dtype
-	case IR_DATATYPE_STRING, _
-		 IR_DATATYPE_USERDEF, _
-		 IR_DATATYPE_WCHAR
-		dtype += IR_DATATYPE_POINTER
+	case FB_DATATYPE_STRING, _
+		 FB_DATATYPE_USERDEF, _
+		 FB_DATATYPE_WCHAR
+		dtype += FB_DATATYPE_POINTER
 	end select
 
 	if( ast.doemit ) then
 		vreg = NULL
-		if( dtype <> IR_DATATYPE_VOID ) then
+		if( dtype <> FB_DATATYPE_VOID ) then
 			vreg = irAllocVREG( dtype )
 		end if
 	end if
@@ -1060,9 +1060,9 @@ private function hCallProc( byval n as ASTNODE ptr, _
 		'' handle strings and UDT's returned by functions that are actually pointers to
 		'' string descriptors or the hidden pointer passed as the 1st argument
 		select case n->dtype
-		case IR_DATATYPE_STRING, _
-			 IR_DATATYPE_USERDEF, _
-			 IR_DATATYPE_WCHAR
+		case FB_DATATYPE_STRING, _
+			 FB_DATATYPE_USERDEF, _
+			 FB_DATATYPE_WCHAR
 			vreg = irAllocVRPTR( n->dtype, 0, vreg )
 		end select
 	end if
@@ -1084,7 +1084,7 @@ private sub hCheckTmpStrings( byval f as ASTNODE ptr )
 
 		'' copy back if needed
 		if( n->srctree <> NULL ) then
-			t = rtlStrAssign( n->srctree, astNewVAR( n->tmpsym, 0, IR_DATATYPE_STRING ) )
+			t = rtlStrAssign( n->srctree, astNewVAR( n->tmpsym, 0, FB_DATATYPE_STRING ) )
 			astLoad( t )
 			astDel( t )
 		end if
@@ -1131,14 +1131,14 @@ private sub hAllocTempStruct( byval n as ASTNODE ptr, _
 	dim as FBSYMBOL a
 
 	'' follow GCC 3.x's ABI
-	if( proc->typ = FB_SYMBTYPE_USERDEF ) then
-		if( proc->proc.realtype = FB_SYMBTYPE_POINTER + FB_SYMBTYPE_USERDEF ) then
+	if( proc->typ = FB_DATATYPE_USERDEF ) then
+		if( proc->proc.realtype = FB_DATATYPE_POINTER + FB_DATATYPE_USERDEF ) then
 			'' create a temp struct and pass its address
-			v = symbAddTempVar( FB_SYMBTYPE_USERDEF, proc->subtype )
-        	p = astNewVar( v, 0, IR_DATATYPE_USERDEF, proc->subtype )
+			v = symbAddTempVar( FB_DATATYPE_USERDEF, proc->subtype )
+        	p = astNewVar( v, 0, FB_DATATYPE_USERDEF, proc->subtype )
         	vr = astLoad( p )
 
-        	a.typ = IR_DATATYPE_VOID
+        	a.typ = FB_DATATYPE_VOID
         	a.arg.mode = FB_ARGMODE_BYREF
         	if( ast.doemit ) then
         		irEmitPUSHPARAM( proc, @a, vr, INVALID, FB_POINTERSIZE )

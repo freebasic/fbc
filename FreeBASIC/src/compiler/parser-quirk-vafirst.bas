@@ -76,7 +76,7 @@ function cVAFunct( byref funcexpr as ASTNODE ptr ) as integer
 						  astNewCONSTi( symbCalcArgLen( arg->typ, _
 						  								arg->subtype, _
 						  								arg->arg.mode ), _
-						  				IR_DATATYPE_UINT ) )
+						  				FB_DATATYPE_UINT ) )
 
 
 

@@ -56,7 +56,7 @@ function cEnumConstDecl( byval id as zstring ptr, _
 		end if
 
 		'' not an integer? (CHAR or WCHAR will fail in astIsCONST())
-		if( astGetDataClass( expr ) <> IR_DATACLASS_INTEGER ) then
+		if( astGetDataClass( expr ) <> FB_DATACLASS_INTEGER ) then
 			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION, id )
 		end if
 

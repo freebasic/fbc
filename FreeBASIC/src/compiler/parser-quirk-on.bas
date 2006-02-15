@@ -39,17 +39,17 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
 	function = FALSE
 
 	'' convert to uinteger if needed
-	if( astGetDataType( expr ) <> IR_DATATYPE_UINT ) then
-		expr = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, expr )
+	if( astGetDataType( expr ) <> FB_DATATYPE_UINT ) then
+		expr = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, expr )
 	end if
 
 	'' store expression into a temp var
-	sym = symbAddTempVar( FB_SYMBTYPE_UINT )
+	sym = symbAddTempVar( FB_DATATYPE_UINT )
 	if( sym = NULL ) then
 		exit function
 	end if
 
-	expr = astNewASSIGN( astNewVAR( sym, 0, IR_DATATYPE_UINT ), expr )
+	expr = astNewASSIGN( astNewVAR( sym, 0, FB_DATATYPE_UINT ), expr )
 	if( expr = NULL ) then
 		exit function
 	end if
@@ -78,23 +78,23 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
 	exitlabel = symbAddLabel( NULL )
 
 	'' < 1?
-	expr = astNewBOP( IR_OP_LT, astNewVAR( sym, 0, IR_DATATYPE_UINT ), _
-					  astNewCONSTi( 1, IR_DATATYPE_UINT ), exitlabel, FALSE )
+	expr = astNewBOP( IR_OP_LT, astNewVAR( sym, 0, FB_DATATYPE_UINT ), _
+					  astNewCONSTi( 1, FB_DATATYPE_UINT ), exitlabel, FALSE )
 	astAdd( expr )
 
 	'' > labels?
-	expr = astNewBOP( IR_OP_GT, astNewVAR( sym, 0, IR_DATATYPE_UINT ), _
-					  astNewCONSTi( l, IR_DATATYPE_UINT ), exitlabel, FALSE )
+	expr = astNewBOP( IR_OP_GT, astNewVAR( sym, 0, FB_DATATYPE_UINT ), _
+					  astNewCONSTi( l, FB_DATATYPE_UINT ), exitlabel, FALSE )
 	astAdd( expr )
 
     '' jump to table[idx]
     tbsym = hJumpTbAllocSym( )
 
-	idxexpr = astNewBOP( IR_OP_MUL, astNewVAR( sym, 0, IR_DATATYPE_UINT ), _
-    				  			    astNewCONSTi( FB_INTEGERSIZE, IR_DATATYPE_UINT ) )
+	idxexpr = astNewBOP( IR_OP_MUL, astNewVAR( sym, 0, FB_DATATYPE_UINT ), _
+    				  			    astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_UINT ) )
 
-    expr = astNewIDX( astNewVAR( tbsym, -1*FB_INTEGERSIZE, IR_DATATYPE_UINT ), idxexpr, _
-    				  IR_DATATYPE_UINT, NULL )
+    expr = astNewIDX( astNewVAR( tbsym, -1*FB_INTEGERSIZE, FB_DATATYPE_UINT ), idxexpr, _
+    				  FB_DATATYPE_UINT, NULL )
 
     if( isgoto = FALSE ) then
     	astAdd( astNewSTACK( IR_OP_PUSH, astNewADDR( IR_OP_ADDROF, astNewVAR( exitlabel ) ) ) )
@@ -107,7 +107,7 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
 
     ''
     for i = 0 to l-1
-    	astAdd( astNewJMPTB( IR_DATATYPE_UINT, labelTB(i) ) )
+    	astAdd( astNewJMPTB( FB_DATATYPE_UINT, labelTB(i) ) )
     next
 
     '' emit exit label
@@ -186,12 +186,12 @@ function cOnStmt as integer
 			end if
 			lexSkipToken( )
 
-			expr = astNewVAR( label, 0, IR_DATATYPE_UINT )
+			expr = astNewVAR( label, 0, FB_DATATYPE_UINT )
 			expr = astNewADDR( IR_OP_ADDROF, expr )
 			rtlErrorSetHandler( expr, (islocal = TRUE) )
 
 		else
-        	rtlErrorSetHandler( astNewCONSTi( NULL, IR_DATATYPE_UINT ), (islocal = TRUE) )
+        	rtlErrorSetHandler( astNewCONSTi( NULL, FB_DATATYPE_UINT ), (islocal = TRUE) )
 		end if
 
 		function = TRUE

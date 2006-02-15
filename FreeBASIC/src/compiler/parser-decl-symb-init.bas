@@ -67,7 +67,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 		'' check if it's a literal string
 		litsym = NULL
 		select case dtype
-		case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 			litsym = astGetStrLitSymbol( expr )
 		end select
 
@@ -90,7 +90,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 
 			'' bit field?
 			if( symbIsUDTElm( sym ) ) then
-			    if( symbGetType( sym ) = FB_SYMBTYPE_BITFIELD ) then
+			    if( symbGetType( sym ) = FB_DATATYPE_BITFIELD ) then
 			    	hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 					return 0
 				end if
@@ -100,8 +100,8 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 			if( astIsOFFSET( expr ) ) then
 
 				'' different types?
-				if( (irGetDataClass( sdtype ) <> IR_DATACLASS_INTEGER) or _
-					(irGetDataSize( sdtype ) <> FB_POINTERSIZE) ) then
+				if( (symbGetDataClass( sdtype ) <> FB_DATACLASS_INTEGER) or _
+					(symbGetDataSize( sdtype ) <> FB_POINTERSIZE) ) then
 					hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 					return 0
 				end if
@@ -130,9 +130,9 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 				end if
 
 				select case as const sdtype
-				case FB_SYMBTYPE_LONGINT, FB_SYMBTYPE_ULONGINT
+				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					irEmitVARINI64( sdtype, astGetValLong( expr ) )
-				case FB_SYMBTYPE_SINGLE, FB_SYMBTYPE_DOUBLE
+				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 					irEmitVARINIf( sdtype, astGetValFloat( expr ) )
 				case else
 					irEmitVARINIi( sdtype, astGetValInt( expr ) )
@@ -149,16 +149,16 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 			end if
 
 			'' can't be a variable-len string
-			if( sdtype = FB_SYMBTYPE_STRING ) then
+			if( sdtype = FB_DATATYPE_STRING ) then
 				hReportError( FB_ERRMSG_CANTINITDYNAMICSTRINGS, TRUE )
 				return 0
 			end if
 
 			'' not a wstring?
-			if( sdtype <> FB_SYMBTYPE_WCHAR ) then
+			if( sdtype <> FB_DATATYPE_WCHAR ) then
 
 				'' convert?
-				if( dtype <> IR_DATATYPE_WCHAR ) then
+				if( dtype <> FB_DATATYPE_WCHAR ) then
 					'' less the null-char
 					irEmitVARINISTR( symbGetStrLen( sym ) - 1, _
 							 	 	 symbGetVarText( litsym ), _
@@ -175,7 +175,7 @@ function cSymbElmInit( byval basesym as FBSYMBOL ptr, _
 			else
 
 				'' convert?
-				if( dtype <> IR_DATATYPE_WCHAR ) then
+				if( dtype <> FB_DATATYPE_WCHAR ) then
 					'' less the null-char
 					irEmitVARINIWSTR( symbGetWstrLen( sym ) - 1, _
 							 	  	  wstr( *symbGetVarText( litsym ) ), _
@@ -273,7 +273,7 @@ function cSymbArrayInit( byval basesym as FBSYMBOL ptr, _
 		elmcnt = 0
 		do
 
-			if( symbGetType( sym ) <> FB_SYMBTYPE_USERDEF ) then
+			if( symbGetType( sym ) <> FB_DATATYPE_USERDEF ) then
 				if( cSymbElmInit( basesym, sym, ofs, islocal ) = 0 ) then
 					exit function
 				end if

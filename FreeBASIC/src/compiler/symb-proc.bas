@@ -104,26 +104,26 @@ private function hGetProcRealType( byval typ as integer, _
 
     select case typ
     '' string? it's actually a pointer to a string descriptor
-    case FB_SYMBTYPE_STRING
-    	 return FB_SYMBTYPE_POINTER + FB_SYMBTYPE_STRING
+    case FB_DATATYPE_STRING
+    	 return FB_DATATYPE_POINTER + FB_DATATYPE_STRING
 
     '' UDT? follow GCC 3.x's ABI
-    case FB_SYMBTYPE_USERDEF
+    case FB_DATATYPE_USERDEF
 
 		'' use the un-padded UDT len
 		select case as const symbGetUDTLen( subtype )
 		case 1
-			return FB_SYMBTYPE_BYTE
+			return FB_DATATYPE_BYTE
 
 		case 2
-			return FB_SYMBTYPE_SHORT
+			return FB_DATATYPE_SHORT
 
 		case 3
 			'' return as int only if first is a short
 			if( subtype->udt.fldtb.head->lgt = 2 ) then
 				'' and if the struct is not packed
 				if( subtype->lgt >= FB_INTEGERSIZE ) then
-					return FB_SYMBTYPE_INTEGER
+					return FB_DATATYPE_INTEGER
 				end if
 			end if
 
@@ -132,11 +132,11 @@ private function hGetProcRealType( byval typ as integer, _
 			'' return in ST(0) if there's only one element and it's a SINGLE
 			if( subtype->udt.elements = 1 ) then
 				do
-					if( subtype->udt.fldtb.head->typ = FB_SYMBTYPE_SINGLE ) then
-						return FB_SYMBTYPE_SINGLE
+					if( subtype->udt.fldtb.head->typ = FB_DATATYPE_SINGLE ) then
+						return FB_DATATYPE_SINGLE
 					end if
 
-					if( subtype->udt.fldtb.head->typ <> FB_SYMBTYPE_USERDEF ) then
+					if( subtype->udt.fldtb.head->typ <> FB_DATATYPE_USERDEF ) then
 						exit do
 					end if
 
@@ -148,7 +148,7 @@ private function hGetProcRealType( byval typ as integer, _
 				loop
 			end if
 
-			return FB_SYMBTYPE_INTEGER
+			return FB_DATATYPE_INTEGER
 
 		case FB_INTEGERSIZE + 1, FB_INTEGERSIZE + 2, FB_INTEGERSIZE + 3
 
@@ -156,7 +156,7 @@ private function hGetProcRealType( byval typ as integer, _
 			if( subtype->udt.fldtb.head->lgt = FB_INTEGERSIZE ) then
 				'' and if the struct is not packed
 				if( subtype->lgt >= FB_INTEGERSIZE*2 ) then
-					return FB_SYMBTYPE_LONGINT
+					return FB_DATATYPE_LONGINT
 				end if
 			end if
 
@@ -165,11 +165,11 @@ private function hGetProcRealType( byval typ as integer, _
 			'' return in ST(0) if there's only one element and it's a DOUBLE
 			if( subtype->udt.elements = 1 ) then
 				do
-					if( subtype->udt.fldtb.head->typ = FB_SYMBTYPE_DOUBLE ) then
-						return FB_SYMBTYPE_DOUBLE
+					if( subtype->udt.fldtb.head->typ = FB_DATATYPE_DOUBLE ) then
+						return FB_DATATYPE_DOUBLE
 					end if
 
-					if( subtype->udt.fldtb.head->typ <> FB_SYMBTYPE_USERDEF ) then
+					if( subtype->udt.fldtb.head->typ <> FB_DATATYPE_USERDEF ) then
 						exit do
 					end if
 
@@ -181,12 +181,12 @@ private function hGetProcRealType( byval typ as integer, _
 				loop
 			end if
 
-			return FB_SYMBTYPE_LONGINT
+			return FB_DATATYPE_LONGINT
 
 		end select
 
 		'' if nothing matched, it's the pointer that was passed as the 1st arg
-		return FB_SYMBTYPE_POINTER + FB_SYMBTYPE_USERDEF
+		return FB_DATATYPE_POINTER + FB_DATATYPE_USERDEF
 
 	'' type is the same
 	case else
@@ -253,13 +253,13 @@ private function hAddOvlProc( byval proc as FBSYMBOL ptr, _
 				if( parg->typ <> farg->typ ) then
 					'' handle special cases: zstring ptr and string args
 					select case parg->typ
-					case FB_SYMBTYPE_POINTER + FB_SYMBTYPE_CHAR
-						if( farg->typ <> FB_SYMBTYPE_STRING ) then
+					case FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
+						if( farg->typ <> FB_DATATYPE_STRING ) then
 							exit do
 						end if
 
-					case FB_SYMBTYPE_STRING
-						if( farg->typ <> FB_SYMBTYPE_POINTER + FB_SYMBTYPE_CHAR ) then
+					case FB_DATATYPE_STRING
+						if( farg->typ <> FB_DATATYPE_POINTER + FB_DATATYPE_CHAR ) then
 							exit do
 						end if
 
@@ -442,8 +442,8 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 	proc->alloctype			= alloctype or FB_ALLOCTYPE_SHARED
 
     '' if proc returns an UDT, add the hidden pointer passed as the 1st arg
-    if( typ = FB_SYMBTYPE_USERDEF ) then
-    	if( realtype = FB_SYMBTYPE_POINTER + FB_SYMBTYPE_USERDEF ) then
+    if( typ = FB_DATATYPE_USERDEF ) then
+    	if( realtype = FB_DATATYPE_POINTER + FB_DATATYPE_USERDEF ) then
     		lgt += FB_POINTERSIZE
     	end if
     end if
@@ -577,9 +577,9 @@ function symbAddArgAsVar( byval symbol as zstring ptr, _
 	select case as const arg->arg.mode
     case FB_ARGMODE_BYVAL
     	'' byval string? it's actually an pointer to a zstring
-    	if( typ = FB_SYMBTYPE_STRING ) then
+    	if( typ = FB_DATATYPE_STRING ) then
     		alloctype = FB_ALLOCTYPE_ARGUMENTBYREF
-    		typ = FB_SYMBTYPE_CHAR
+    		typ = FB_DATATYPE_CHAR
     	else
     		alloctype = FB_ALLOCTYPE_ARGUMENTBYVAL
     	end if
@@ -613,12 +613,12 @@ function symbAddProcResArg( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
     dim as FBSYMBOL ptr s
 
 	'' UDT?
-	if( proc->typ <> FB_SYMBTYPE_USERDEF ) then
+	if( proc->typ <> FB_DATATYPE_USERDEF ) then
 		return NULL
 	end if
 
 	'' returning a ptr?
-	if( proc->proc.realtype <> FB_SYMBTYPE_POINTER+FB_SYMBTYPE_USERDEF ) then
+	if( proc->proc.realtype <> FB_DATATYPE_POINTER+FB_DATATYPE_USERDEF ) then
 		return NULL
 	end if
 
@@ -626,7 +626,7 @@ function symbAddProcResArg( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
 	symbol += *symbGetOrgName( proc )
 
     s = symbAddVarEx( @symbol, NULL, _
-    				  FB_SYMBTYPE_POINTER+FB_SYMBTYPE_USERDEF, proc->subtype, 0, 0, _
+    				  FB_DATATYPE_POINTER+FB_DATATYPE_USERDEF, proc->subtype, 0, 0, _
     				  0, dTB(), FB_ALLOCTYPE_ARGUMENTBYVAL, _
     				  TRUE, TRUE, FALSE )
 
@@ -642,9 +642,9 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
 	dim as integer dtype
 
 	'' UDT?
-	if( proc->typ = FB_SYMBTYPE_USERDEF ) then
+	if( proc->typ = FB_DATATYPE_USERDEF ) then
 		'' returning a ptr? result is at the hidden arg
-		if( proc->proc.realtype = FB_SYMBTYPE_POINTER+FB_SYMBTYPE_USERDEF ) then
+		if( proc->proc.realtype = FB_DATATYPE_POINTER+FB_DATATYPE_USERDEF ) then
 			return symbLookupProcResult( proc )
 		end if
 	end if
@@ -809,9 +809,9 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 		if( symbGetSubType( arg ) <> psubtype ) then
 
 			'' check classes
-			select case irGetDataClass( adtype )
+			select case symbGetDataClass( adtype )
 			'' UDT? can't be different..
-			case IR_DATACLASS_UDT
+			case FB_DATACLASS_UDT
 				return 0
 			end select
 
@@ -823,44 +823,44 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 	end if
 
 	'' different types..
-	pdclass = irGetDataClass( pdtype )
+	pdclass = symbGetDataClass( pdtype )
 
 	'' check classes
-	select case as const irGetDataClass( adtype )
+	select case as const symbGetDataClass( adtype )
 	'' integer?
-	case IR_DATACLASS_INTEGER
+	case FB_DATACLASS_INTEGER
 
 		select case as const pdclass
 		'' another integer..
-		case IR_DATACLASS_INTEGER
+		case FB_DATACLASS_INTEGER
 
 			'' handle special cases..
 			select case as const pdtype
-			case IR_DATATYPE_CHAR
+			case FB_DATATYPE_CHAR
 				select case adtype
-				case IR_DATATYPE_POINTER + IR_DATATYPE_CHAR
+				case FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
 					return FB_OVLPROC_FULLMATCH
-				case IR_DATATYPE_POINTER + IR_DATATYPE_WCHAR
+				case FB_DATATYPE_POINTER + FB_DATATYPE_WCHAR
 					return FB_OVLPROC_HALFMATCH
 				end select
 
-			case IR_DATATYPE_WCHAR
+			case FB_DATATYPE_WCHAR
 				select case adtype
-				case IR_DATATYPE_POINTER + IR_DATATYPE_WCHAR
+				case FB_DATATYPE_POINTER + FB_DATATYPE_WCHAR
 					return FB_OVLPROC_FULLMATCH
-				case IR_DATATYPE_POINTER + IR_DATATYPE_CHAR
+				case FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
 					return FB_OVLPROC_HALFMATCH
 				end select
 
-			case IR_DATATYPE_BITFIELD, IR_DATATYPE_ENUM
-				pdtype = irRemapType( pdtype, psubtype )
+			case FB_DATATYPE_BITFIELD, FB_DATATYPE_ENUM
+				pdtype = symbRemapType( pdtype, psubtype )
 
 			end select
 
 			'' check pointers..
-			if( adtype >= IR_DATATYPE_POINTER ) then
+			if( adtype >= FB_DATATYPE_POINTER ) then
 				'' not a pointer param?
-				if( pdtype < IR_DATATYPE_POINTER ) then
+				if( pdtype < FB_DATATYPE_POINTER ) then
 					'' not a numeric constant?
 					if( astIsCONST( pexpr ) = FALSE ) then
 						return 0
@@ -875,19 +875,19 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 			return FB_OVLPROC_HALFMATCH - abs( adtype - pdtype )
 
 		'' float? (ok due the auto-coercion, unless it's a pointer)
-		case IR_DATACLASS_FPOINT
-			if( adtype >= IR_DATATYPE_POINTER ) then
+		case FB_DATACLASS_FPOINT
+			if( adtype >= FB_DATATYPE_POINTER ) then
 				return 0
 			end if
 
 			return FB_OVLPROC_HALFMATCH - abs( adtype - pdtype )
 
 		'' string? only if it's a w|zstring ptr arg
-		case IR_DATACLASS_STRING
+		case FB_DATACLASS_STRING
 			select case adtype
-			case IR_DATATYPE_POINTER + IR_DATATYPE_CHAR
+			case FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
 				return FB_OVLPROC_FULLMATCH
-			case IR_DATATYPE_POINTER + IR_DATATYPE_WCHAR
+			case FB_DATATYPE_POINTER + FB_DATATYPE_WCHAR
 				return FB_OVLPROC_HALFMATCH
 			case else
 				return 0
@@ -899,25 +899,25 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 		end select
 
 	'' floating-point?
-	case IR_DATACLASS_FPOINT
+	case FB_DATACLASS_FPOINT
 
 		select case as const pdclass
 		'' only accept if it's an integer (but pointers)
-		case IR_DATACLASS_INTEGER
-			if( pdtype >= IR_DATATYPE_POINTER ) then
+		case FB_DATACLASS_INTEGER
+			if( pdtype >= FB_DATATYPE_POINTER ) then
 				return 0
 			end if
 
 			'' remap to real type if it's a bitfield..
 			select case pdtype
-			case IR_DATATYPE_BITFIELD, IR_DATATYPE_ENUM
-				pdtype = irRemapType( pdtype, psubtype )
+			case FB_DATATYPE_BITFIELD, FB_DATATYPE_ENUM
+				pdtype = symbRemapType( pdtype, psubtype )
 			end select
 
 			return FB_OVLPROC_HALFMATCH - abs( adtype - pdtype )
 
 		'' or if another float..
-		case IR_DATACLASS_FPOINT
+		case FB_DATACLASS_FPOINT
 			return FB_OVLPROC_HALFMATCH - abs( adtype - pdtype )
 
 		'' refuse anything else
@@ -927,19 +927,19 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 		end select
 
 	'' string?
-	case IR_DATACLASS_STRING
+	case FB_DATACLASS_STRING
 
 		select case pdclass
 		'' okay if it's a fixed-len string
-		case IR_DATACLASS_STRING
+		case FB_DATACLASS_STRING
 			return FB_OVLPROC_FULLMATCH
 
 		'' integer only if it's a w|zstring
-		case IR_DATACLASS_INTEGER
+		case FB_DATACLASS_INTEGER
 			select case pdtype
-			case IR_DATATYPE_CHAR
+			case FB_DATATYPE_CHAR
 				return FB_OVLPROC_FULLMATCH
-			case IR_DATATYPE_WCHAR
+			case FB_DATATYPE_WCHAR
 				return FB_OVLPROC_HALFMATCH
 			case else
 				return 0
@@ -951,10 +951,10 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 		end select
 
 	'' user-defined..
-	case IR_DATACLASS_UDT
+	case FB_DATACLASS_UDT
 
 		'' not another udt?
-		if( pdclass <> IR_DATACLASS_UDT ) then
+		if( pdclass <> FB_DATACLASS_UDT ) then
 			'' not a proc? (can be an UDT been returned in registers)
 			if( astGetClass( pexpr ) <> AST_NODECLASS_FUNCT ) then
 				return 0
@@ -962,7 +962,7 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 
 			'' it's a proc, but was it originally returning an UDT?
 			s = astGetSymbol( pexpr )
-			if( symbGetType( s ) <> FB_SYMBTYPE_USERDEF ) then
+			if( symbGetType( s ) <> FB_DATATYPE_USERDEF ) then
 				return 0
 			end if
 
@@ -1140,7 +1140,7 @@ function symbCalcArgLen( byval typ as integer, _
 	case FB_ARGMODE_BYREF, FB_ARGMODE_BYDESC
 		lgt = FB_POINTERSIZE
 	case else
-		if( typ = FB_SYMBTYPE_STRING ) then
+		if( typ = FB_DATATYPE_STRING ) then
 			lgt = FB_POINTERSIZE
 		else
 			lgt = symbCalcLen( typ, subtype )

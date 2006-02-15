@@ -202,9 +202,9 @@ private sub hMakeArrayDimTB( byval dimensions as integer, _
 		expr = exprTB(i, 0)
 
 		select case as const astGetDataType( expr )
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			dTB(i).lower = astGetValLong( expr )
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			dTB(i).lower = astGetValFloat( expr )
 		case else
 			dTB(i).lower = astGetValInt( expr )
@@ -216,9 +216,9 @@ private sub hMakeArrayDimTB( byval dimensions as integer, _
 		expr = exprTB(i, 1)
 
 		select case as const astGetDataType( expr )
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			dTB(i).upper = astGetValLong( expr )
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			dTB(i).upper = astGetValFloat( expr )
 		case else
 			dTB(i).upper = astGetValInt( expr )
@@ -548,7 +548,7 @@ function cSymbolDef( byval alloctype as integer, _
     	end if
 
     	'' ANY?
-    	if( typ = FB_SYMBTYPE_VOID ) then
+    	if( typ = FB_DATATYPE_VOID ) then
     		hReportError( FB_ERRMSG_INVALIDDATATYPES )
     		exit function
     	end if
@@ -668,7 +668,7 @@ function cSymbolDef( byval alloctype as integer, _
     			end if
 
     			'' ANY?
-    			if( typ = FB_SYMBTYPE_VOID ) then
+    			if( typ = FB_DATATYPE_VOID ) then
     				hReportError( FB_ERRMSG_INVALIDDATATYPES )
     				exit function
     			end if
@@ -688,7 +688,7 @@ function cSymbolDef( byval alloctype as integer, _
 
     	'' contains a period?
     	if( dotpos > 0 ) then
-    		if( typ = FB_SYMBTYPE_USERDEF ) then
+    		if( typ = FB_DATATYPE_USERDEF ) then
     			hReportErrorEx( FB_ERRMSG_CANTINCLUDEPERIODS, id )
     			exit function
     		end if
@@ -767,9 +767,9 @@ function cStaticArrayDecl( byref dimensions as integer, _
 		end if
 
 		select case as const astGetDataType( expr )
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			dTB(i).lower = astGetValLong( expr )
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			dTB(i).lower = astGetValFloat( expr )
 		case else
 			dTB(i).lower = astGetValInt( expr )
@@ -850,7 +850,7 @@ function cArrayDecl( byref dimensions as integer, _
 		end if
 
     	'' check if non-numeric
-    	if( astGetDataClass( expr ) >= IR_DATACLASS_STRING ) then
+    	if( astGetDataClass( expr ) >= FB_DATACLASS_STRING ) then
     		hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
     		exit function
     	end if
@@ -868,7 +868,7 @@ function cArrayDecl( byref dimensions as integer, _
 			end if
 
     		'' check if non-numeric
-    		if( astGetDataClass( expr ) >= IR_DATACLASS_STRING ) then
+    		if( astGetDataClass( expr ) >= FB_DATACLASS_STRING ) then
     			hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
     			exit function
     		end if
@@ -877,7 +877,7 @@ function cArrayDecl( byref dimensions as integer, _
 
     	else
     	    exprTB(i,1) = exprTB(i,0)
-    		exprTB(i,0) = astNewCONSTi( env.opt.base, IR_DATATYPE_INTEGER )
+    		exprTB(i,0) = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
     	end if
 
     	dimensions += 1

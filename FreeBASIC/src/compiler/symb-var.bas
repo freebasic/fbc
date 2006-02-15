@@ -94,7 +94,7 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 	d = symbNewSymbol( NULL, symb.symtb, FB_SYMBCLASS_VAR, FALSE, _
 					   NULL, aname, _
 					   fbIsLocal( ) and (isshared = FALSE), _
-					   FB_SYMBTYPE_USERDEF, cptr( FBSYMBOL ptr, FB_DESCTYPE_ARRAY ), 0 )
+					   FB_DATATYPE_USERDEF, cptr( FBSYMBOL ptr, FB_DESCTYPE_ARRAY ), 0 )
     if( d = NULL ) then
     	exit function
     end if
@@ -518,7 +518,7 @@ sub symbDelVar( byval s as FBSYMBOL ptr, _
     if( s->var.initialized ) then
     	s->var.initialized = FALSE
     	'' not a wchar literal?
-    	if( s->typ <> IR_DATATYPE_WCHAR ) then
+    	if( s->typ <> FB_DATATYPE_WCHAR ) then
     		if( s->var.inittext <> NULL ) then
     			ZstrFree( s->var.inittext )
     		end if
@@ -566,15 +566,15 @@ sub symbFreeLocalDynVars( byval proc as FBSYMBOL ptr, _
 						if( symbIsDynamic( s ) ) then
 							rtlArrayErase( astNewVAR( s, 0, s->typ ) )
 						'' array of dyn strings?
-						elseif( s->typ = FB_SYMBTYPE_STRING ) then
+						elseif( s->typ = FB_DATATYPE_STRING ) then
 							rtlArrayStrErase( s )
 						end if
 
 					'' dyn string?
-					elseif( s->typ = FB_SYMBTYPE_STRING ) then
+					elseif( s->typ = FB_DATATYPE_STRING ) then
 						'' not funct's result?
 						if( s <> fres ) then
-							strg = astNewVAR( s, 0, IR_DATATYPE_STRING )
+							strg = astNewVAR( s, 0, FB_DATATYPE_STRING )
 							astAdd( rtlStrDelete( strg ) )
 						end if
 					end if

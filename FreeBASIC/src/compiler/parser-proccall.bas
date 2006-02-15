@@ -59,10 +59,10 @@ function hAssignFunctResult( byval proc as FBSYMBOL ptr _
     assg = astNewVAR( s, 0, symbGetType( s ), symbGetSubtype( s ) )
 
 	'' proc returns an UDT?
-	if( symbGetType( proc ) = FB_SYMBTYPE_USERDEF ) then
+	if( symbGetType( proc ) = FB_DATATYPE_USERDEF ) then
 		'' pointer? deref
-		if( symbGetProcRealType( proc ) = FB_SYMBTYPE_POINTER + FB_SYMBTYPE_USERDEF ) then
-			assg = astNewPTR( 0, assg, FB_SYMBTYPE_USERDEF, symbGetSubType( proc ) )
+		if( symbGetProcRealType( proc ) = FB_DATATYPE_POINTER + FB_DATATYPE_USERDEF ) then
+			assg = astNewPTR( 0, assg, FB_DATATYPE_USERDEF, symbGetSubType( proc ) )
 		end if
 	end if
 
@@ -140,12 +140,12 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 
 	'' if function returns a pointer, check for field deref
 	doflush = TRUE
-	if( typ >= FB_SYMBTYPE_POINTER ) then
+	if( typ >= FB_DATATYPE_POINTER ) then
     	subtype = symbGetSubType( sym )
 
 		isfuncptr = FALSE
    		if( lexGetToken( ) = CHAR_LPRNT ) then
-   			if( typ = FB_SYMBTYPE_POINTER + FB_SYMBTYPE_FUNCTION ) then
+   			if( typ = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
 				isfuncptr = TRUE
    			end if
    		end if
@@ -167,7 +167,7 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 			'' if it stills a function, unless type = string (ie: implicit pointer),
 			'' flush it, as the assignment would be invalid
 			if( astIsFUNCT( procexpr ) ) then
-				if( typ <> IR_DATATYPE_STRING ) then
+				if( typ <> FB_DATATYPE_STRING ) then
 					doflush = TRUE
 				end if
 			end if
@@ -181,15 +181,15 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 	''
 	if( doflush ) then
 		'' can proc's result be skipped?
-		if( typ <> FB_SYMBTYPE_VOID ) then
-			if( irGetDataClass( typ ) <> IR_DATACLASS_INTEGER ) then
+		if( typ <> FB_DATATYPE_VOID ) then
+			if( symbGetDataClass( typ ) <> FB_DATACLASS_INTEGER ) then
 				hReportError( FB_ERRMSG_VARIABLEREQUIRED )
 				exit function
 
     		'' CHAR and WCHAR literals are also from the INTEGER class
     		else
     			select case typ
-    			case IR_DATATYPE_CHAR, IR_DATATYPE_WCHAR
+    			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 					hReportError( FB_ERRMSG_VARIABLEREQUIRED )
 					exit function
 				end select
@@ -212,7 +212,7 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 			end if
 		end if
 
-		astSetDataType( procexpr, IR_DATATYPE_VOID )
+		astSetDataType( procexpr, FB_DATATYPE_VOID )
 		astAdd( procexpr )
 		procexpr = NULL
 	end if

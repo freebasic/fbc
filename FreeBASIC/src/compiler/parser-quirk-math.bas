@@ -186,7 +186,7 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 		'' string expressions with SIZEOF() are not allowed
 		if( expr <> NULL ) then
 			if( islen = FALSE ) then
-				if( astGetDataClass( expr ) = IR_DATACLASS_STRING ) then
+				if( astGetDataClass( expr ) = FB_DATACLASS_STRING ) then
 					if( (astGetSymbol( expr ) = NULL) or (astIsFUNCT( expr )) ) then
 						hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
 						exit function
@@ -200,7 +200,7 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 		if( expr <> NULL ) then
 			funcexpr = rtlMathLen( expr, islen )
 		else
-			funcexpr = astNewCONSTi( lgt, IR_DATATYPE_INTEGER )
+			funcexpr = astNewCONSTi( lgt, FB_DATATYPE_INTEGER )
 		end if
 
 		function = TRUE

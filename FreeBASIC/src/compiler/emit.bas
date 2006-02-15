@@ -104,22 +104,22 @@ private sub hDllMainBegin( )
 
 	'' instance
 	symbAddArg( proc, "{dllmain_instance}", _
-				FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID, NULL, 1, _
+				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, 1, _
 				FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
 
 	'' reason
 	symbAddArg( proc, "{dllmain_reason}", _
-				FB_SYMBTYPE_UINT, NULL, 0, _
+				FB_DATATYPE_UINT, NULL, 0, _
 				FB_INTEGERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
 
 	'' reserved
 	symbAddArg( proc, "{dllmain_reserved}", _
-				FB_SYMBTYPE_POINTER+FB_SYMBTYPE_VOID, NULL, 1, _
+				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, 1, _
 				FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
 
 	''
 	proc = symbAddProc( proc, NULL, strptr( "DllMain" ), NULL, _
-						FB_SYMBTYPE_INTEGER, NULL, 0, FB_ALLOCTYPE_PUBLIC, _
+						FB_DATATYPE_INTEGER, NULL, 0, FB_ALLOCTYPE_PUBLIC, _
 						FB_FUNCMODE_STDCALL )
 
     symbSetProcIncFile( proc, INVALID )
@@ -161,12 +161,12 @@ private sub hDllMainBegin( )
 	'' if( reason = DLL_PROCESS_ATTACH ) then
 	reason = astNewVAR( argreason, 0, symbGetType( argreason ) )
 	label = symbAddLabel( NULL )
-	astAdd( astNewBOP( IR_OP_NE, reason, astNewCONSTi( 1, IR_DATATYPE_UINT ), label, FALSE ) )
+	astAdd( astNewBOP( IR_OP_NE, reason, astNewCONSTi( 1, FB_DATATYPE_UINT ), label, FALSE ) )
 
 	''	main( 0, NULL )
     main = astNewFUNCT( emit.main.proc )
-    astNewPARAM( main, astNewCONSTi( 0, IR_DATATYPE_INTEGER ) )
-    astNewPARAM( main, astNewCONSTi( NULL, IR_DATATYPE_POINTER+IR_DATATYPE_VOID ) )
+    astNewPARAM( main, astNewCONSTi( 0, FB_DATATYPE_INTEGER ) )
+    astNewPARAM( main, astNewCONSTi( NULL, FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) )
     astAdd( main )
 
 	'' end if
@@ -198,12 +198,12 @@ private sub hMainBegin( byval isdllmain as integer )
 
 	'' argc
 	symbAddArg( proc, "{argc}", _
-				FB_SYMBTYPE_INTEGER, NULL, 0, _
+				FB_DATATYPE_INTEGER, NULL, 0, _
 				FB_INTEGERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
 
 	'' argv
 	symbAddArg( proc, "{argv}", _
-				FB_SYMBTYPE_POINTER+FB_SYMBTYPE_POINTER+FB_SYMBTYPE_CHAR, NULL, 2, _
+				FB_DATATYPE_POINTER+FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, NULL, 2, _
 				FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
 
 	''
@@ -214,7 +214,7 @@ private sub hMainBegin( byval isdllmain as integer )
 	end if
 
 	emit.main.proc = symbAddProc( proc, NULL, fbGetEntryPoint( ), NULL, _
-								  FB_SYMBTYPE_VOID, NULL, 0, _
+								  FB_DATATYPE_VOID, NULL, 0, _
 								  alloctype or FB_ALLOCTYPE_MAINPROC, _
 								  FB_FUNCMODE_CDECL )
 
@@ -278,7 +278,7 @@ private sub hModLevelBegin( )
 	''
 	proc = symbAddProc( symbPreAddProc( NULL ), _
 						strptr( "{main}" ), fbGetModuleEntry( ), NULL, _
-						FB_SYMBTYPE_VOID, NULL, 0, _
+						FB_DATATYPE_VOID, NULL, 0, _
 						FB_ALLOCTYPE_PRIVATE or FB_ALLOCTYPE_CONSTRUCTOR or _
 						FB_ALLOCTYPE_MODLEVELPROC, _
 						FB_FUNCMODE_CDECL )
@@ -536,7 +536,7 @@ private function hNewVR( byval v as IRVREG ptr ) as IRVREG ptr
 	n->value = v->value
 
 	if( v->typ = IR_VREGTYPE_REG ) then
-		dclass = irGetDataClass( v->dtype )
+		dclass = symbGetDataClass( v->dtype )
 		n->reg = emit.regTB(dclass)->getRealReg( emit.regTB(dclass), v->reg )
 		assert( n->reg <> INVALID )
 		EMIT_REGSETUSED( dclass, n->reg )
@@ -737,15 +737,15 @@ sub emitLOAD( byval dvreg as IRVREG ptr, _
 
 	select case as const dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 
 		select case as const svreg->dtype
 		'' longint?
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			hNewBOP( EMIT_OP_LOADL2L, dvreg, svreg )
 
 		'' float?
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			hNewBOP( EMIT_OP_LOADF2L, dvreg, svreg )
 
 		case else
@@ -753,15 +753,15 @@ sub emitLOAD( byval dvreg as IRVREG ptr, _
 		end select
 
 	'' float?
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 
 		select case as const svreg->dtype
 		'' longint?
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			hNewBOP( EMIT_OP_LOADL2F, dvreg, svreg )
 
 		'' float?
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			hNewBOP( EMIT_OP_LOADF2F, dvreg, svreg )
 
 		case else
@@ -772,11 +772,11 @@ sub emitLOAD( byval dvreg as IRVREG ptr, _
 
 		select case as const svreg->dtype
 		'' longint?
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			hNewBOP( EMIT_OP_LOADL2I, dvreg, svreg )
 
 		'' float?
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			hNewBOP( EMIT_OP_LOADF2I, dvreg, svreg )
 
 		case else
@@ -793,15 +793,15 @@ sub emitSTORE( byval dvreg as IRVREG ptr, _
 
 	select case as const dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 
 		select case as const svreg->dtype
 		'' longint?
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			hNewBOP( EMIT_OP_STORL2L, dvreg, svreg )
 
 		'' float?
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			hNewBOP( EMIT_OP_STORF2L, dvreg, svreg )
 
 		case else
@@ -809,15 +809,15 @@ sub emitSTORE( byval dvreg as IRVREG ptr, _
 		end select
 
 	'' float?
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 
 		select case as const svreg->dtype
 		'' longint?
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			hNewBOP( EMIT_OP_STORL2F, dvreg, svreg )
 
 		'' float?
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			hNewBOP( EMIT_OP_STORF2F, dvreg, svreg )
 
 		case else
@@ -828,11 +828,11 @@ sub emitSTORE( byval dvreg as IRVREG ptr, _
 
 		select case as const svreg->dtype
 		'' longint?
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			hNewBOP( EMIT_OP_STORL2I, dvreg, svreg )
 
 		'' float?
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			hNewBOP( EMIT_OP_STORF2I, dvreg, svreg )
 
 		case else
@@ -853,11 +853,11 @@ sub emitMOV( byval dvreg as IRVREG ptr, _
 
 	select case as const dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewBOP( EMIT_OP_MOVL, dvreg, svreg )
 
 	'' float?
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		hNewBOP( EMIT_OP_MOVF, dvreg, svreg )
 
 	case else
@@ -872,11 +872,11 @@ sub emitADD( byval dvreg as IRVREG ptr, _
 
 	select case as const dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewBOP( EMIT_OP_ADDL, dvreg, svreg )
 
 	'' float?
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		hNewBOP( EMIT_OP_ADDF, dvreg, svreg )
 
 	case else
@@ -891,11 +891,11 @@ sub emitSUB( byval dvreg as IRVREG ptr, _
 
 	select case as const dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewBOP( EMIT_OP_SUBL, dvreg, svreg )
 
 	'' float?
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		hNewBOP( EMIT_OP_SUBF, dvreg, svreg )
 
 	case else
@@ -910,15 +910,15 @@ sub emitMUL( byval dvreg as IRVREG ptr, _
 
 	select case as const dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewBOP( EMIT_OP_MULL, dvreg, svreg )
 
 	'' float?
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		hNewBOP( EMIT_OP_MULF, dvreg, svreg )
 
 	case else
-		if( irIsSigned( dvreg->dtype ) ) then
+		if( symbIsSigned( dvreg->dtype ) ) then
 			hNewBOP( EMIT_OP_SMULI, dvreg, svreg )
 		else
 			hNewBOP( EMIT_OP_MULI, dvreg, svreg )
@@ -957,7 +957,7 @@ sub emitSHL( byval dvreg as IRVREG ptr, _
 
 	select case dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewBOP( EMIT_OP_SHLL, dvreg, svreg )
 
 	case else
@@ -972,7 +972,7 @@ sub emitSHR( byval dvreg as IRVREG ptr, _
 
 	select case dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewBOP( EMIT_OP_SHRL, dvreg, svreg )
 
 	case else
@@ -987,7 +987,7 @@ sub emitAND( byval dvreg as IRVREG ptr, _
 
 	select case dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewBOP( EMIT_OP_ANDL, dvreg, svreg )
 
 	case else
@@ -1002,7 +1002,7 @@ sub emitOR( byval dvreg as IRVREG ptr, _
 
 	select case dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewBOP( EMIT_OP_ORL, dvreg, svreg )
 
 	case else
@@ -1017,7 +1017,7 @@ sub emitXOR( byval dvreg as IRVREG ptr, _
 
 	select case dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewBOP( EMIT_OP_XORL, dvreg, svreg )
 
 	case else
@@ -1032,7 +1032,7 @@ sub emitEQV( byval dvreg as IRVREG ptr, _
 
 	select case dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewBOP( EMIT_OP_EQVL, dvreg, svreg )
 
 	case else
@@ -1047,7 +1047,7 @@ sub emitIMP( byval dvreg as IRVREG ptr, _
 
 	select case dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewBOP( EMIT_OP_IMPL, dvreg, svreg )
 
 	case else
@@ -1100,11 +1100,11 @@ sub emitGT( byval rvreg as IRVREG ptr, _
 
 	select case as const dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewREL( EMIT_OP_CGTL, rvreg, label, dvreg, svreg )
 
 	'' float?
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		hNewREL( EMIT_OP_CGTF, rvreg, label, dvreg, svreg )
 
 	case else
@@ -1121,11 +1121,11 @@ sub emitLT( byval rvreg as IRVREG ptr, _
 
 	select case as const dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewREL( EMIT_OP_CLTL, rvreg, label, dvreg, svreg )
 
 	'' float?
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		hNewREL( EMIT_OP_CLTF, rvreg, label, dvreg, svreg )
 
 	case else
@@ -1142,11 +1142,11 @@ sub emitEQ( byval rvreg as IRVREG ptr, _
 
 	select case as const dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewREL( EMIT_OP_CEQL, rvreg, label, dvreg, svreg )
 
 	'' float?
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		hNewREL( EMIT_OP_CEQF, rvreg, label, dvreg, svreg )
 
 	case else
@@ -1163,11 +1163,11 @@ sub emitNE( byval rvreg as IRVREG ptr, _
 
 	select case as const dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewREL( EMIT_OP_CNEL, rvreg, label, dvreg, svreg )
 
 	'' float?
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		hNewREL( EMIT_OP_CNEF, rvreg, label, dvreg, svreg )
 
 	case else
@@ -1184,11 +1184,11 @@ sub emitGE( byval rvreg as IRVREG ptr, _
 
 	select case as const dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewREL( EMIT_OP_CGEL, rvreg, label, dvreg, svreg )
 
 	'' float?
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		hNewREL( EMIT_OP_CGEF, rvreg, label, dvreg, svreg )
 
 	case else
@@ -1205,11 +1205,11 @@ sub emitLE( byval rvreg as IRVREG ptr, _
 
 	select case as const dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewREL( EMIT_OP_CLEL, rvreg, label, dvreg, svreg )
 
 	'' float?
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		hNewREL( EMIT_OP_CLEF, rvreg, label, dvreg, svreg )
 
 	case else
@@ -1227,11 +1227,11 @@ sub emitNEG( byval dvreg as IRVREG ptr ) static
 
 	select case as const dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewUOP( EMIT_OP_NEGL, dvreg )
 
 	'' float?
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		hNewUOP( EMIT_OP_NEGF, dvreg )
 
 	case else
@@ -1245,7 +1245,7 @@ sub emitNOT( byval dvreg as IRVREG ptr ) static
 
 	select case dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewUOP( EMIT_OP_NOTL, dvreg )
 
 	case else
@@ -1259,11 +1259,11 @@ sub emitABS( byval dvreg as IRVREG ptr ) static
 
 	select case as const dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewUOP( EMIT_OP_ABSL, dvreg )
 
 	'' float?
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		hNewUOP( EMIT_OP_ABSF, dvreg )
 
 	case else
@@ -1277,11 +1277,11 @@ sub emitSGN( byval dvreg as IRVREG ptr ) static
 
 	select case as const dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewUOP( EMIT_OP_SGNL, dvreg )
 
 	'' float?
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		hNewUOP( EMIT_OP_SGNF, dvreg )
 
 	case else
@@ -1369,11 +1369,11 @@ sub emitPUSH( byval svreg as IRVREG ptr ) static
 
 	select case as const svreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewSTK( EMIT_OP_PUSHL, svreg )
 
 	'' float?
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		hNewSTK( EMIT_OP_PUSHF, svreg )
 
 	case else
@@ -1387,11 +1387,11 @@ sub emitPOP( byval dvreg as IRVREG ptr ) static
 
 	select case as const dvreg->dtype
 	'' longint?
-	case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 		hNewSTK( EMIT_OP_POPL, dvreg )
 
 	'' float?
-	case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		hNewSTK( EMIT_OP_POPF, dvreg )
 
 	case else

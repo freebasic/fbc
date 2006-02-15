@@ -133,7 +133,7 @@ function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
 		end if
 
 		subtype = NULL
-		typ = FB_SYMBTYPE_VOID
+		typ = FB_DATATYPE_VOID
 		ptrcnt = 0
 	end if
 
@@ -192,56 +192,56 @@ function cSymbolType( byref typ as integer, _
 	select case as const lexGetToken( )
 	case FB_TK_ANY
 		lexSkipToken( )
-		typ = FB_SYMBTYPE_VOID
+		typ = FB_DATATYPE_VOID
 		lgt = 0
 
 	case FB_TK_BYTE
 		lexSkipToken( )
-		typ = FB_SYMBTYPE_BYTE
+		typ = FB_DATATYPE_BYTE
 		lgt = 1
 	case FB_TK_UBYTE
 		lexSkipToken( )
-		typ = FB_SYMBTYPE_UBYTE
+		typ = FB_DATATYPE_UBYTE
 		lgt = 1
 
 	case FB_TK_SHORT
 		lexSkipToken( )
-		typ = FB_SYMBTYPE_SHORT
+		typ = FB_DATATYPE_SHORT
 		lgt = 2
 
 	case FB_TK_USHORT
 		lexSkipToken( )
-		typ = FB_SYMBTYPE_USHORT
+		typ = FB_DATATYPE_USHORT
 		lgt = 2
 
 	case FB_TK_INTEGER, FB_TK_LONG
 		lexSkipToken( )
-		typ = FB_SYMBTYPE_INTEGER
+		typ = FB_DATATYPE_INTEGER
 		lgt = FB_INTEGERSIZE
 
 	case FB_TK_UINT
 		lexSkipToken( )
-		typ = FB_SYMBTYPE_UINT
+		typ = FB_DATATYPE_UINT
 		lgt = FB_INTEGERSIZE
 
 	case FB_TK_LONGINT
 		lexSkipToken( )
-		typ = FB_SYMBTYPE_LONGINT
+		typ = FB_DATATYPE_LONGINT
 		lgt = FB_INTEGERSIZE*2
 
 	case FB_TK_ULONGINT
 		lexSkipToken( )
-		typ = FB_SYMBTYPE_ULONGINT
+		typ = FB_DATATYPE_ULONGINT
 		lgt = FB_INTEGERSIZE*2
 
 	case FB_TK_SINGLE
 		lexSkipToken( )
-		typ = FB_SYMBTYPE_SINGLE
+		typ = FB_DATATYPE_SINGLE
 		lgt = 4
 
 	case FB_TK_DOUBLE
 		lexSkipToken( )
-		typ = FB_SYMBTYPE_DOUBLE
+		typ = FB_DATATYPE_DOUBLE
 		lgt = 8
 
 	case FB_TK_STRING
@@ -249,7 +249,7 @@ function cSymbolType( byref typ as integer, _
 		if( lexGetLookAhead(1) = CHAR_STAR ) then
 			lexSkipToken( )
 			lexSkipToken( )
-			typ = FB_SYMBTYPE_FIXSTR
+			typ = FB_DATATYPE_FIXSTR
 			if( cConstExprValue( lgt ) = FALSE ) then
 				exit function
 			end if
@@ -266,7 +266,7 @@ function cSymbolType( byref typ as integer, _
 
 		'' var-len string..
 		else
-			typ = FB_SYMBTYPE_STRING
+			typ = FB_DATATYPE_STRING
 			lgt = FB_STRDESCLEN
 			lexSkipToken( )
 		end if
@@ -274,9 +274,9 @@ function cSymbolType( byref typ as integer, _
 	case FB_TK_ZSTRING, FB_TK_WSTRING
 
 		if( lexGetToken( ) = FB_TK_ZSTRING ) then
-			typ = FB_SYMBTYPE_CHAR
+			typ = FB_DATATYPE_CHAR
 		else
-			typ = FB_SYMBTYPE_WCHAR
+			typ = FB_DATATYPE_WCHAR
 		end if
 
 		lexSkipToken( )
@@ -299,8 +299,8 @@ function cSymbolType( byref typ as integer, _
 			''       the number of chars times sizeof(wstring), so
 			''		 always use symbGetWstrLen( ) to retrieve the
 			''       len in characters, not the bytes
-			if( typ = FB_SYMBTYPE_WCHAR ) then
-				lgt *= irGetDataSize( IR_DATATYPE_WCHAR )
+			if( typ = FB_DATATYPE_WCHAR ) then
+				lgt *= symbGetDataSize( FB_DATATYPE_WCHAR )
 			end if
 
 		'' pointer..
@@ -312,7 +312,7 @@ function cSymbolType( byref typ as integer, _
 	    isfunction = (lexGetToken( ) = FB_TK_FUNCTION)
 	    lexSkipToken( )
 
-		typ = FB_SYMBTYPE_POINTER + FB_SYMBTYPE_FUNCTION
+		typ = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION
 		lgt = FB_POINTERSIZE
 		ptrcnt = 1
 
@@ -325,14 +325,14 @@ function cSymbolType( byref typ as integer, _
 		s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_UDT )
 		if( s <> NULL ) then
 			lexSkipToken( )
-			typ 	= FB_SYMBTYPE_USERDEF
+			typ 	= FB_DATATYPE_USERDEF
 			subtype = s
 			lgt 	= symbGetLen( s )
 		else
 			s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_ENUM )
 			if( s <> NULL ) then
 				lexSkipToken( )
-				typ 	= FB_SYMBTYPE_ENUM
+				typ 	= FB_DATATYPE_ENUM
 				subtype = s
 				lgt 	= FB_INTEGERSIZE
 			else
@@ -353,14 +353,14 @@ function cSymbolType( byref typ as integer, _
 
 		if( isunsigned ) then
 			select case as const typ
-			case FB_SYMBTYPE_BYTE
-				typ = FB_SYMBTYPE_UBYTE
-			case FB_SYMBTYPE_SHORT
-				typ = FB_SYMBTYPE_USHORT
-			case FB_SYMBTYPE_INTEGER
-				typ = FB_SYMBTYPE_UINT
-			case FB_SYMBTYPE_LONGINT
-				typ = FB_SYMBTYPE_ULONGINT
+			case FB_DATATYPE_BYTE
+				typ = FB_DATATYPE_UBYTE
+			case FB_DATATYPE_SHORT
+				typ = FB_DATATYPE_USHORT
+			case FB_DATATYPE_INTEGER
+				typ = FB_DATATYPE_UINT
+			case FB_DATATYPE_LONGINT
+				typ = FB_DATATYPE_ULONGINT
 			case else
 				hReportError( FB_ERRMSG_SYNTAXERROR )
 				exit function
@@ -372,7 +372,7 @@ function cSymbolType( byref typ as integer, _
 			select case lexGetToken( )
 			case FB_TK_PTR, FB_TK_POINTER
 				lexSkipToken( )
-				typ += FB_SYMBTYPE_POINTER
+				typ += FB_DATATYPE_POINTER
 				ptrcnt += 1
 			case else
 				exit do
@@ -389,19 +389,19 @@ function cSymbolType( byref typ as integer, _
 
 		else
 			'' can't have forward typedef's if they aren't pointers
-			if( typ = FB_SYMBTYPE_FWDREF ) then
+			if( typ = FB_DATATYPE_FWDREF ) then
 				hReportError( FB_ERRMSG_INCOMPLETETYPE )
 				exit function
 
 			elseif( lgt <= 0 ) then
 				select case typ
-				case FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR
+				case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 					'' LEN() and SIZEOF() allow Z|WSTRING to be used w/o PTR
 					if( checkptr ) then
 						hReportError( FB_ERRMSG_EXPECTEDPOINTER )
 						exit function
 					else
-						lgt = irGetDataSize( typ )
+						lgt = symbGetDataSize( typ )
 					end if
 				end select
 			end if

@@ -46,7 +46,7 @@ function cPokeStmt as integer
 
 		'' check for invalid types
 		select case poketype
-		case FB_SYMBTYPE_VOID, FB_SYMBTYPE_FIXSTR
+		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR
 			hReportError FB_ERRMSG_INVALIDDATATYPES, TRUE
 			exit function
 		end select
@@ -55,7 +55,7 @@ function cPokeStmt as integer
 		hMatchCOMMA( )
 
 	else
-		poketype = IR_DATATYPE_UBYTE
+		poketype = FB_DATATYPE_UBYTE
 		subtype  = NULL
 	end if
 
@@ -67,11 +67,11 @@ function cPokeStmt as integer
 	hMatchExpression( expr2 )
 
     select case astGetDataClass( expr1 )
-    case IR_DATACLASS_STRING
+    case FB_DATACLASS_STRING
     	hReportError FB_ERRMSG_INVALIDDATATYPES
         exit function
-	case IR_DATACLASS_FPOINT
-    	expr1 = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, expr1 )
+	case FB_DATACLASS_FPOINT
+    	expr1 = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, expr1 )
 	case else
         if( astGetDataSize( expr1 ) <> FB_POINTERSIZE ) then
         	hReportError FB_ERRMSG_INVALIDDATATYPES
@@ -110,7 +110,7 @@ function cPeekFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 		'' check for invalid types
 		select case peektype
-		case FB_SYMBTYPE_VOID, FB_SYMBTYPE_FIXSTR
+		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR
 			hReportError FB_ERRMSG_INVALIDDATATYPES
 			exit function
 		end select
@@ -119,7 +119,7 @@ function cPeekFunct( byref funcexpr as ASTNODE ptr ) as integer
 		hMatchCOMMA( )
 
 	else
-		peektype = IR_DATATYPE_UBYTE
+		peektype = FB_DATATYPE_UBYTE
 		subtype = NULL
 	end if
 
@@ -131,11 +131,11 @@ function cPeekFunct( byref funcexpr as ASTNODE ptr ) as integer
 
     ''
     select case astGetDataClass( expr )
-    case IR_DATACLASS_STRING
+    case FB_DATACLASS_STRING
     	hReportError FB_ERRMSG_INVALIDDATATYPES
 		exit function
-	case IR_DATACLASS_FPOINT
-		expr = astNewCONV( INVALID, IR_DATATYPE_UINT, NULL, expr )
+	case FB_DATACLASS_FPOINT
+		expr = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, expr )
 	case else
 		if( astGetDataSize( expr ) <> FB_POINTERSIZE ) then
         	hReportError FB_ERRMSG_INVALIDDATATYPES

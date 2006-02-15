@@ -45,9 +45,22 @@ type SYMBCTX
 	defargcnt		as integer
 end type
 
+type SYMB_DATATYPE
+	class		as FB_DATACLASS					'' INTEGER, FPOINT
+	size		as integer						'' in bytes
+	bits		as integer						'' number of bits
+	signed		as integer						'' TRUE or FALSE
+	remaptype	as FB_DATATYPE					'' remapped type for ENUM, POINTER, etc
+end type
+
+
 declare sub 		symbInit				( byval ismain as integer )
 
 declare sub 		symbEnd					( )
+
+declare sub 		symbDataInit			( )
+
+declare sub 		symbDataEnd				( )
 
 declare function 	symbLookup				( byval symbol as zstring ptr, _
 											  byref id as integer, _
@@ -372,6 +385,25 @@ declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
 
 declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 							   				  byval parent as FBSYMBOL ptr ) as integer
+
+declare function 	symbMaxDataType			( byval dtype1 as integer, _
+										  	  byval dtype2 as integer ) as integer
+
+declare function 	symbGetDataClass  		( byval dtype as integer ) as integer
+
+declare function 	symbGetDataSize			( byval dtype as integer ) as integer
+
+declare function 	symbGetDataBits			( byval dtype as integer ) as integer
+
+declare function 	symbIsSigned			( byval dtype as integer ) as integer
+
+declare function 	symbGetSignedType		( byval dtype as integer ) as integer
+
+declare function 	symbGetUnsignedType		( byval dtype as integer ) as integer
+
+declare function 	symbRemapType			( byval dtype as integer, _
+					  					  	  byval subtype as FBSYMBOL ptr ) as integer
+
 ''
 '' getters and setters as macros
 ''
@@ -384,7 +416,7 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 
 #define symbGetStrLen(s) symbGetLen(s)
 
-#define symbGetWstrLen(s) (cunsg(s->lgt) \ irGetDataSize( IR_DATATYPE_WCHAR ))
+#define symbGetWstrLen(s) (cunsg(s->lgt) \ symbGetDataSize( FB_DATATYPE_WCHAR ))
 
 #define symbGetType(s) s->typ
 
@@ -503,11 +535,11 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 #define symbGetUDTNextElm(e) e->next
 
 #define symbGetUDTElmBitOfs(e) ( e->var.elm.ofs * 8 + _
-								 iif( e->typ = FB_SYMBTYPE_BITFIELD, _
+								 iif( e->typ = FB_DATATYPE_BITFIELD, _
 									  e->subtype->bitfld.bitpos, _
 									  0) )
 
-#define symbGetUDTElmBitLen(e) iif( e->typ = FB_SYMBTYPE_BITFIELD, _
+#define symbGetUDTElmBitLen(e) iif( e->typ = FB_DATATYPE_BITFIELD, _
 									e->subtype->bitfld.bits, _
 									e->lgt * e->var.array.elms * 8 )
 
@@ -647,10 +679,12 @@ declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 #define symbIsDescriptor( s ) ((s->allocatype and FB_ALLOCTYPE_DESCRIPTOR) <> 0)
 
 
-#define hIsString(t) ((t = IR_DATATYPE_STRING) or (t = IR_DATATYPE_FIXSTR) or (t = IR_DATATYPE_CHAR) or (t = IR_DATATYPE_WCHAR))
+#define hIsString(t) ((t = FB_DATATYPE_STRING) or (t = FB_DATATYPE_FIXSTR) or (t = FB_DATATYPE_CHAR) or (t = FB_DATATYPE_WCHAR))
 
 
 ''
 '' inter-module globals
 ''
 extern symb as SYMBCTX
+
+extern symb_dtypeTB( 0 to FB_DATATYPES-1 ) as SYMB_DATATYPE

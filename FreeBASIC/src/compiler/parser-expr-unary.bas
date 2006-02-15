@@ -70,7 +70,7 @@ function cNegNotExpression( byref negexpr as ASTNODE ptr ) as integer
 		end if
 
     	'' not numeric? can't operate..
-    	if( astGetDataClass( negexpr ) >= IR_DATACLASS_STRING ) then
+    	if( astGetDataClass( negexpr ) >= FB_DATACLASS_STRING ) then
     		hReportError( FB_ERRMSG_TYPEMISMATCH )
     		exit function
     	end if
@@ -164,9 +164,9 @@ function cHighestPrecExpr( byref highexpr as ASTNODE ptr ) as integer
 
     '' FuncPtrOrDerefFields?
 	dtype = astGetDataType( highexpr )
-	if( dtype >= IR_DATATYPE_POINTER ) then
+	if( dtype >= FB_DATATYPE_POINTER ) then
 		isfuncptr = FALSE
-		if( dtype = IR_DATATYPE_POINTER+IR_DATATYPE_FUNCTION ) then
+		if( dtype = FB_DATATYPE_POINTER+FB_DATATYPE_FUNCTION ) then
 			if( lexGetToken( ) = CHAR_LPRNT ) then
 				isfuncptr = TRUE
 			end if
@@ -231,7 +231,7 @@ function cAnonUDT( byref expr as ASTNODE ptr ) as integer
     end if
 
 	'' create a temp var
-	tmpsym = symbAddTempVar( FB_SYMBTYPE_USERDEF, subtype )
+	tmpsym = symbAddTempVar( FB_DATATYPE_USERDEF, subtype )
 
     '' let the initializer do the rest..
     if( cSymbolInit( tmpsym ) = FALSE ) then
@@ -239,7 +239,7 @@ function cAnonUDT( byref expr as ASTNODE ptr ) as integer
     end if
 
     '' create a var expression
-    expr = astNewVAR( tmpsym, 0, FB_SYMBTYPE_USERDEF, subtype )
+    expr = astNewVAR( tmpsym, 0, FB_DATATYPE_USERDEF, subtype )
 
     function = TRUE
 
@@ -266,20 +266,20 @@ private function hCast( byref expr as ASTNODE ptr, _
 
 	'' check for invalid types
 	select case dtype
-	case FB_SYMBTYPE_VOID, FB_SYMBTYPE_FIXSTR
+	case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR
 		hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 		exit function
 	end select
 
 	if( ptronly ) then
 		'' check if it's a pointer
-		if( dtype < IR_DATATYPE_POINTER ) then
+		if( dtype < FB_DATATYPE_POINTER ) then
 			hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
 			exit function
 		end if
 
 	else
-		if( dtype >= IR_DATATYPE_POINTER ) then
+		if( dtype >= FB_DATATYPE_POINTER ) then
 			ptronly = TRUE
 		end if
 	end if
@@ -294,7 +294,7 @@ private function hCast( byref expr as ASTNODE ptr, _
 
 	if( ptronly ) then
 		select case astGetDataType( expr )
-		case IR_DATATYPE_INTEGER, IR_DATATYPE_UINT, is >= IR_DATATYPE_POINTER
+		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, is >= FB_DATATYPE_POINTER
 
 		case else
 			hReportError( FB_ERRMSG_EXPECTEDPOINTER )
@@ -355,15 +355,15 @@ private function hDoDeref( byval cnt as integer, _
 
 	do while( cnt > 0 )
 		'' not a pointer?
-		if( dtype < IR_DATATYPE_POINTER ) then
+		if( dtype < FB_DATATYPE_POINTER ) then
 			hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
 			exit function
 		end if
 
-		dtype -= IR_DATATYPE_POINTER
+		dtype -= FB_DATATYPE_POINTER
 
 		'' incomplete type?
-		if( (dtype = FB_SYMBTYPE_VOID) or (dtype = FB_SYMBTYPE_FWDREF) ) then
+		if( (dtype = FB_DATATYPE_VOID) or (dtype = FB_DATATYPE_FWDREF) ) then
 			hReportError( FB_ERRMSG_INCOMPLETETYPE, TRUE )
 			exit function
 		end if
@@ -452,7 +452,7 @@ private function hProcPtrBody( byval proc as FBSYMBOL ptr, _
         end if
 	end if
 
-	expr = astNewVAR( proc, 0, IR_DATATYPE_FUNCTION, proc )
+	expr = astNewVAR( proc, 0, FB_DATATYPE_FUNCTION, proc )
 	addrofexpr = astNewADDR( IR_OP_ADDROF, expr )
 
 	''
@@ -476,7 +476,7 @@ private function hVarPtrBody( byref addrofexpr as ASTNODE ptr) as integer
 
 	case AST_NODECLASS_FIELD
 		'' can't take address of bitfields..
-		if( astGetDataType( addrofexpr ) = IR_DATATYPE_BITFIELD ) then
+		if( astGetDataType( addrofexpr ) = FB_DATATYPE_BITFIELD ) then
 			hReportError( FB_ERRMSG_INVALIDDATATYPES )
 			exit function
 		end if
@@ -606,18 +606,18 @@ function cAddrOfExpression( byref addrofexpr as ASTNODE ptr ) as integer
 			exit function
 		end if
 
-		if( dtype = IR_DATATYPE_STRING ) then
+		if( dtype = FB_DATATYPE_STRING ) then
 			expr = astNewADDR( IR_OP_DEREF, expr )
 		else
 			expr = astNewADDR( IR_OP_ADDROF, expr )
 		end if
 
-		if( dtype <> IR_DATATYPE_WCHAR ) then
-			dtype = IR_DATATYPE_CHAR
+		if( dtype <> FB_DATATYPE_WCHAR ) then
+			dtype = FB_DATATYPE_CHAR
 		end if
 
 		addrofexpr = astNewCONV( IR_OP_TOPOINTER, _
-								 IR_DATATYPE_POINTER+dtype, NULL, _
+								 FB_DATATYPE_POINTER+dtype, NULL, _
 								 expr )
 
 		return (addrofexpr <> NULL)

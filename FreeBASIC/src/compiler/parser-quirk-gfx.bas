@@ -68,25 +68,25 @@ private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, _
     ''  argument passed by descriptor?
     if( symbIsArgByDesc( sym ) ) then
 
-    	temp	  = astNewVAR( sym, 0, IR_DATATYPE_INTEGER )
-    	idxexpr   = astNewPTR( FB_ARRAYDESC_DATAOFFS, temp, IR_DATATYPE_INTEGER, NULL )
-    	idxexpr   = astNewLOAD( idxexpr, IR_DATATYPE_INTEGER )
+    	temp	  = astNewVAR( sym, 0, FB_DATATYPE_INTEGER )
+    	idxexpr   = astNewPTR( FB_ARRAYDESC_DATAOFFS, temp, FB_DATATYPE_INTEGER, NULL )
+    	idxexpr   = astNewLOAD( idxexpr, FB_DATATYPE_INTEGER )
 
     	astDelTree( expr )
-    	expr 	  = astNewVAR( sym, 0, IR_DATATYPE_INTEGER )
+    	expr 	  = astNewVAR( sym, 0, FB_DATATYPE_INTEGER )
 
     '' dynamic array? (this will handle common's too)
     elseif( symbGetIsDynamic( sym ) ) then
 
     	idxexpr = astNewVAR( symbGetArrayDescriptor( sym ), _
     						 FB_ARRAYDESC_DATAOFFS, _
-    						 IR_DATATYPE_INTEGER )
-    	idxexpr = astNewLOAD( idxexpr, IR_DATATYPE_INTEGER )
+    						 FB_DATATYPE_INTEGER )
+    	idxexpr = astNewLOAD( idxexpr, FB_DATATYPE_INTEGER )
 
     '' static array
     else
 
-    	idxexpr = astNewCONSTi( 0, IR_DATATYPE_INTEGER )
+    	idxexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 
     end if
 
@@ -123,7 +123,7 @@ private function hGetTarget( byref expr as ASTNODE ptr, _
 		s = astGetSymbol( expr )
 		if( s = NULL ) then
 			'' pointer?
-			if( astGetDataType( expr ) >= IR_DATATYPE_POINTER ) then
+			if( astGetDataType( expr ) >= FB_DATATYPE_POINTER ) then
 				isptr = TRUE
 				return NULL
 			else
@@ -132,7 +132,7 @@ private function hGetTarget( byref expr as ASTNODE ptr, _
 		end if
 
 		'' ptr?
-		isptr = ( symbGetType( s ) >= IR_DATATYPE_POINTER )
+		isptr = ( symbGetType( s ) >= FB_DATATYPE_POINTER )
 
 		'' array?
 		if( symbIsArray( s ) ) then
@@ -189,7 +189,7 @@ function cGfxPset( byval ispreset as integer ) as integer
 	if( hMatch( CHAR_COMMA ) ) then
 		hMatchExpression( cexpr )
 	else
-		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR_DATATYPE_UINT )
+		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, FB_DATATYPE_UINT )
 	end if
 
 	''
@@ -233,8 +233,8 @@ function cGfxLine as integer
 
 	else
 		coordtype = FBGFX_COORDTYPE_R
-		x1expr = astNewCONSTf( 0, IR_DATATYPE_SINGLE )
-		y1expr = astNewCONSTf( 0, IR_DATATYPE_SINGLE )
+		x1expr = astNewCONSTf( 0, FB_DATATYPE_SINGLE )
+		y1expr = astNewCONSTf( 0, FB_DATATYPE_SINGLE )
 	end if
 
 	'' '-'
@@ -275,7 +275,7 @@ function cGfxLine as integer
 	'' (',' Expr? (',' LIT_STRING? (',' Expr )?)?)?
 	if( hMatch( CHAR_COMMA ) ) then
 		if( cExpression( cexpr ) = FALSE ) then
-			cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR_DATATYPE_UINT )
+			cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, FB_DATATYPE_UINT )
 		end if
 
 		'' ',' LIT_STRING? - linetype
@@ -295,7 +295,7 @@ function cGfxLine as integer
 			end if
 		end if
 	else
-		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR_DATATYPE_UINT )
+		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, FB_DATATYPE_UINT )
 	end if
 
 	''
@@ -351,7 +351,7 @@ function cGfxCircle as integer
 	'' (',' Expr? )? - color
 	if( hMatch( CHAR_COMMA ) ) then
 		if( cExpression( cexpr ) = FALSE ) then
-			cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR_DATATYPE_UINT )
+			cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, FB_DATATYPE_UINT )
 		end if
 
         '' (',' Expr? )? - iniarc
@@ -386,7 +386,7 @@ function cGfxCircle as integer
         end if
 
 	else
-		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR_DATATYPE_UINT )
+		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, FB_DATATYPE_UINT )
 	end if
 
 	''
@@ -445,11 +445,11 @@ function cGfxPaint as integer
 	end if
 
 	if( pexpr = NULL ) then
-		pexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR_DATATYPE_UINT )
+		pexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, FB_DATATYPE_UINT )
 	end if
 
 	if( bexpr = NULL ) then
-		bexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, IR_DATATYPE_UINT )
+		bexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, FB_DATATYPE_UINT )
 	end if
 
 	function = rtlGfxPaint( texpr, tisptr, xexpr, yexpr, pexpr, bexpr, coord_type )
@@ -772,7 +772,7 @@ function cGfxPut as integer
 						exit function
 					end if
 
-					if( ( symbGetType( s ) <> FB_SYMBTYPE_UINT ) or _
+					if( ( symbGetType( s ) <> FB_DATATYPE_UINT ) or _
 						( symbGetProcArgs( s ) <> 2 ) ) then
 						hReportError( FB_ERRMSG_TYPEMISMATCH )
 						exit function
@@ -782,8 +782,8 @@ function cGfxPut as integer
 
 					arg2 = symbGetArgNext( arg1 )
 
-					if( ( symbGetType( arg1 ) <> FB_SYMBTYPE_UINT ) or _
-						( symbGetType( arg2 ) <> FB_SYMBTYPE_UINT ) or _
+					if( ( symbGetType( arg1 ) <> FB_DATATYPE_UINT ) or _
+						( symbGetType( arg2 ) <> FB_DATATYPE_UINT ) or _
 						( arg1->arg.mode <> FB_ARGMODE_BYVAL ) or _
 						( arg2->arg.mode <> FB_ARGMODE_BYVAL ) ) then
 						hReportError( FB_ERRMSG_TYPEMISMATCH )

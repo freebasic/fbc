@@ -64,9 +64,9 @@ private sub cFlushBOP( byval op as integer, _
 		expr1 = astNewVAR( v1, 0, dtype )
 	else
 		select case as const dtype
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			expr1 = astNewCONST64( val1->long, dtype )
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			expr1 = astNewCONSTf( val1->float, dtype )
 		case else
 			expr1 = astNewCONSTi( val1->int, dtype )
@@ -77,9 +77,9 @@ private sub cFlushBOP( byval op as integer, _
 		expr2 = astNewVAR( v2, 0, dtype )
 	else
 		select case as const dtype
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			expr2 = astNewCONST64( val2->long, dtype )
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			expr2 = astNewCONSTf( val2->float, dtype )
 		case else
 			expr2 = astNewCONSTi( val2->int, dtype )
@@ -109,9 +109,9 @@ private sub cFlushSelfBOP( byval op as integer, _
 		expr2 = astNewVAR( v2, 0, dtype )
 	else
 		select case as const dtype
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			expr2 = astNewCONST64( val2->long, dtype )
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			expr2 = astNewCONSTf( val2->float, dtype )
 		case else
 			expr2 = astNewCONSTi( val2->int, dtype )
@@ -164,7 +164,7 @@ function cForStatement as integer
 
 	typ = symbGetType( cnt )
 
-	if( (typ < FB_SYMBTYPE_BYTE) or (typ > FB_SYMBTYPE_DOUBLE) ) then
+	if( (typ < FB_DATATYPE_BYTE) or (typ > FB_DATATYPE_DOUBLE) ) then
 		hReportError( FB_ERRMSG_EXPECTEDSCALAR, TRUE )
 		exit function
 	end if
@@ -177,7 +177,7 @@ function cForStatement as integer
 
 	'' get counter type (endc and step must be the same type)
 	dtype  = typ
-	dclass = irGetDataClass( dtype )
+	dclass = symbGetDataClass( dtype )
 	isconst = 0
 
     '' Expression
@@ -233,9 +233,9 @@ function cForStatement as integer
 		'' store step into a temp var
 		if( astIsCONST( expr ) ) then
 			select case as const astGetDataType( expr )
-			case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 				ispositive = (astGetValLong( expr ) >= 0)
-			case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 				ispositive = (astGetValFloat( expr ) >= 0)
 			case else
 				ispositive = (astGetValInt( expr ) >= 0)
@@ -263,9 +263,9 @@ function cForStatement as integer
 
 	else
 		select case as const dtype
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			sval.long = 1
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			sval.float = 1.0
 		case else
 			sval.int = 1
@@ -373,9 +373,9 @@ function cForStatement as integer
 
     	'' test step sign and branch
 		select case as const dtype
-		case IR_DATATYPE_LONGINT, IR_DATATYPE_ULONGINT
+		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 			ival.long = 0
-		case IR_DATATYPE_SINGLE, IR_DATATYPE_DOUBLE
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			ival.float = 0.0
 		case else
 			ival.int = 0

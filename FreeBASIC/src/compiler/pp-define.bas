@@ -129,7 +129,7 @@ private function hLoadDefine( byval s as FBSYMBOL ptr ) as integer
 				end select
 
                 if( argtb <> NULL ) then
-    				if( t.typ <> IR_DATATYPE_WCHAR ) then
+    				if( t.typ <> FB_DATATYPE_WCHAR ) then
     					DZstrConcatAssign( argtb->tb(num).text, t.text )
     				else
     					DZstrConcatAssignW( argtb->tb(num).text, t.textw )
@@ -239,7 +239,7 @@ private function hLoadDefine( byval s as FBSYMBOL ptr ) as integer
 				end if
 			end if
 
-			if( symbGetType( s ) <> IR_DATATYPE_WCHAR ) then
+			if( symbGetType( s ) <> FB_DATATYPE_WCHAR ) then
 				if( lex->deflen = 0 ) then
 					DZstrAssign( lex->deftext, symbGetDefineText( s ) )
 				else
@@ -334,7 +334,7 @@ private function hLoadDefineW( byval s as FBSYMBOL ptr ) as integer
 				end select
 
                 if( argtb <> NULL ) then
-    				if( t.typ <> IR_DATATYPE_WCHAR ) then
+    				if( t.typ <> FB_DATATYPE_WCHAR ) then
     					DWstrConcatAssignA( argtb->tb(num).textw, t.text )
     				else
     					DWstrConcatAssign( argtb->tb(num).textw, t.textw )
@@ -445,7 +445,7 @@ private function hLoadDefineW( byval s as FBSYMBOL ptr ) as integer
 				end if
 			end if
 
-			if( symbGetType( s ) <> IR_DATATYPE_WCHAR ) then
+			if( symbGetType( s ) <> FB_DATATYPE_WCHAR ) then
 				if( lex->deflen = 0 ) then
 					DWstrAssignA( lex->deftextw, symbGetDefineText( s ) )
 				else
@@ -706,7 +706,7 @@ function ppDefine( ) as integer
     		'' already defined? if there are no differences, do nothing..
     		if( s <> NULL ) then
     			if( (symbGetDefineArgs( s ) > 0) or _
-    				(symbGetType( s ) <> IR_DATATYPE_CHAR) ) then
+    				(symbGetType( s ) <> FB_DATATYPE_CHAR) ) then
     				hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname )
     				exit function
 
@@ -728,7 +728,7 @@ function ppDefine( ) as integer
     		'' already defined? if there are no differences, do nothing..
     		if( s <> NULL ) then
     			if( (symbGetDefineArgs( s ) > 0) or _
-    				(symbGetType( s ) <> IR_DATATYPE_WCHAR) ) then
+    				(symbGetType( s ) <> FB_DATATYPE_WCHAR) ) then
     				hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname )
     				exit function
 

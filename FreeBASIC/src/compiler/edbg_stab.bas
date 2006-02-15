@@ -54,7 +54,7 @@ declare function hGetDataType			( byval sym as FBSYMBOL ptr ) as string
 '' globals
 	dim shared ctx as EDBGCTX
 
-	dim shared remapTB(0 to FB_SYMBOLTYPES-1) as integer = _
+	dim shared remapTB(0 to FB_DATATYPES-1) as integer = _
 	{ _
 		 7, _									'' void
 		 2, _                                   '' byte
@@ -102,7 +102,7 @@ sub	edbgInit( )
     end if
 
 	'' wchar len depends on the target platform
-	remapTB(FB_SYMBTYPE_WCHAR) = remapTB(env.target.wchar.type)
+	remapTB(FB_DATATYPE_WCHAR) = remapTB(env.target.wchar.type)
 
 end sub
 
@@ -656,7 +656,7 @@ private function hDeclUDTField( byval sname as zstring ptr, _
     desc = *sname
     desc += ":"
 
-    if( stype >= FB_SYMBTYPE_POINTER ) then
+    if( stype >= FB_DATATYPE_POINTER ) then
     	desc += hDeclPointer( stype )
     end if
 
@@ -687,7 +687,7 @@ private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
 
 	dtype = symbGetType( sym )
 	'' pointer?
-    if( dtype >= FB_SYMBTYPE_POINTER ) then
+    if( dtype >= FB_DATATYPE_POINTER ) then
     	dimdesc += hDeclPointer( dtype )
     end if
 
@@ -695,29 +695,29 @@ private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
 
 	'' data	as any ptr
 	desc += hDeclUDTField( "data", _
-		    			   IR_DATATYPE_POINTER, _
+		    			   FB_DATATYPE_POINTER, _
 		                   offsetof( FB_ARRAYDESC, data ), _
 		                   FB_POINTERSIZE, _
 		                   strptr( dimdesc ) )
 	'' ptr as any ptr
 	desc += hDeclUDTField( "ptr", _
-						   IR_DATATYPE_POINTER, _
+						   FB_DATATYPE_POINTER, _
 		                   offsetof( FB_ARRAYDESC, ptr ), _
 		                   FB_POINTERSIZE, _
 		                   strptr( dimdesc ) )
     '' size	as integer
 	desc += hDeclUDTField( "size", _
-						   IR_DATATYPE_INTEGER, _
+						   FB_DATATYPE_INTEGER, _
 						   offsetof( FB_ARRAYDESC, size ), _
 						   FB_INTEGERSIZE )
     '' element_len as integer
     desc += hDeclUDTField( "elen", _
-    					   IR_DATATYPE_INTEGER, _
+    					   FB_DATATYPE_INTEGER, _
     					   offsetof( FB_ARRAYDESC, element_len ), _
     					   FB_INTEGERSIZE )
     '' dimensions as integer
     desc += hDeclUDTField( "dims", _
-    					   IR_DATATYPE_INTEGER, _
+    					   FB_DATATYPE_INTEGER, _
     					   offsetof( FB_ARRAYDESC, dimensions ), _
     					   FB_INTEGERSIZE )
 
@@ -730,17 +730,17 @@ private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
 
     	'' elements as integer
     	desc += hDeclUDTField( dimdesc + "_elemns", _
-    						   IR_DATATYPE_INTEGER, _
+    						   FB_DATATYPE_INTEGER, _
     						   ofs + offsetof( FB_ARRAYDESCDIM, elements ), _
     						   FB_INTEGERSIZE )
     	'' lbound as integer
     	desc += hDeclUDTField( dimdesc + "_lbound", _
-    						   IR_DATATYPE_INTEGER, _
+    						   FB_DATATYPE_INTEGER, _
     						   ofs + offsetof( FB_ARRAYDESCDIM, lbound ), _
     						   FB_INTEGERSIZE )
     	'' ubound as integer
     	desc += hDeclUDTField( dimdesc + "_ubound", _
-    						   IR_DATATYPE_INTEGER, _
+    						   FB_DATATYPE_INTEGER, _
     						   ofs + offsetof( FB_ARRAYDESCDIM, ubound ), _
     						   FB_INTEGERSIZE )
 
@@ -759,8 +759,8 @@ private function hDeclPointer( byref dtype as integer ) as string static
     dim as string desc
 
     desc = ""
-    do while( dtype >= FB_SYMBTYPE_POINTER )
-    	dtype -= FB_SYMBTYPE_POINTER
+    do while( dtype >= FB_DATATYPE_POINTER )
+    	dtype -= FB_DATATYPE_POINTER
     	desc += str( ctx.typecnt ) + "=*"
     	ctx.typecnt += 1
     loop
@@ -796,7 +796,7 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
 	dim as string desc
 
     if( sym = NULL ) then
-    	return str( remapTB(FB_SYMBTYPE_VOID) )
+    	return str( remapTB(FB_DATATYPE_VOID) )
     end if
 
     '' array?
@@ -814,13 +814,13 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
     dtype = symbGetType( sym )
 
     '' pointer?
-    if( dtype >= FB_SYMBTYPE_POINTER ) then
+    if( dtype >= FB_DATATYPE_POINTER ) then
     	desc += hDeclPointer( dtype )
     end if
 
     select case dtype
     '' UDT?
-    case FB_SYMBTYPE_USERDEF
+    case FB_DATATYPE_USERDEF
     	subtype = symbGetSubType( sym )
     	if( subtype <> FB_DESCTYPE_ARRAY ) then
     		if( subtype->udt.dbg.typenum = INVALID ) then
@@ -831,7 +831,7 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
     	end if
 
     '' ENUM?
-    case FB_SYMBTYPE_ENUM
+    case FB_DATATYPE_ENUM
     	subtype = symbGetSubType( sym )
     	if( subtype->enum.dbg.typenum = INVALID ) then
     		hDeclENUM( subtype )
@@ -840,17 +840,17 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
     	desc += str( subtype->enum.dbg.typenum )
 
     '' function pointer?
-    case FB_SYMBTYPE_FUNCTION
+    case FB_DATATYPE_FUNCTION
     	desc += str( ctx.typecnt ) + "=f"
     	ctx.typecnt += 1
     	desc += hGetDataType( symbGetSubType( sym ) )
 
     '' forward reference?
-    case FB_SYMBTYPE_FWDREF
-    	desc += str( remapTB(FB_SYMBTYPE_VOID) )
+    case FB_DATATYPE_FWDREF
+    	desc += str( remapTB(FB_DATATYPE_VOID) )
 
     '' bitfield?
-    case FB_SYMBTYPE_BITFIELD
+    case FB_DATATYPE_BITFIELD
     	desc += hGetDataType( symbGetSubType( sym ) )
 
     '' ordinary type..

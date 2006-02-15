@@ -172,17 +172,17 @@ function cSubOrFuncDecl( byval isSub as integer ) as integer static
 
     	'' check for invalid types
     	select case as const typ
-    	case FB_SYMBTYPE_FIXSTR, FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR
+    	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     		hReportError( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS )
     		exit function
-    	case FB_SYMBTYPE_VOID
+    	case FB_DATATYPE_VOID
     		hReportError( FB_ERRMSG_INVALIDDATATYPES )
     		exit function
     	end select
     end if
 
     if( issub ) then
-    	typ = FB_SYMBTYPE_VOID
+    	typ = FB_DATATYPE_VOID
     	subtype = NULL
     end if
 

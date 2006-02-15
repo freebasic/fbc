@@ -94,10 +94,10 @@ function astLoadPTR( byval n as ASTNODE ptr ) as IRVREG ptr
 	if( ast.doemit ) then
 		'' src is not a reg?
 		if( (irIsREG( v1 ) = FALSE) or _
-			(irGetVRDataClass( v1 ) <> IR_DATACLASS_INTEGER) or _
+			(irGetVRDataClass( v1 ) <> FB_DATACLASS_INTEGER) or _
 			(irGetVRDataSize( v1 ) <> FB_POINTERSIZE) ) then
 
-			vp = irAllocVREG( IR_DATATYPE_POINTER )
+			vp = irAllocVREG( FB_DATATYPE_POINTER )
 			irEmitADDR( IR_OP_DEREF, v1, vp )
 		else
 			vp = v1

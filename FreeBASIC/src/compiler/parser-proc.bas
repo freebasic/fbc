@@ -75,7 +75,7 @@ private function hCheckPrototype( byval proto as FBSYMBOL ptr, _
         typ = symbGetType( proto_arg )
 
     	'' convert any AS ANY arg to the final one
-    	if( typ = FB_SYMBTYPE_VOID ) then
+    	if( typ = FB_DATATYPE_VOID ) then
     		proto_arg->typ = proc_arg->typ
     		proto_arg->subtype = proc_arg->subtype
 
@@ -126,7 +126,7 @@ private function hDeclareArgs( byval proc as FBSYMBOL ptr ) as integer static
 	function = FALSE
 
 	'' proc returns an UDT?
-	if( symbGetType( proc ) = FB_SYMBTYPE_USERDEF ) then
+	if( symbGetType( proc ) = FB_DATATYPE_USERDEF ) then
 		'' create an hidden arg if needed
 		symbAddProcResArg( proc )
 	end if
@@ -267,17 +267,17 @@ function cSubOrFuncHeader( byval issub as integer, _
 
     	'' check for invalid types
     	select case typ
-    	case FB_SYMBTYPE_FIXSTR, FB_SYMBTYPE_CHAR, FB_SYMBTYPE_WCHAR
+    	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     		hReportError( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS )
     		exit function
-    	case FB_SYMBTYPE_VOID
+    	case FB_DATATYPE_VOID
     		hReportError( FB_ERRMSG_INVALIDDATATYPES )
     		exit function
     	end select
     end if
 
     if( issub ) then
-    	typ = FB_SYMBTYPE_VOID
+    	typ = FB_DATATYPE_VOID
     	subtype = NULL
     end if
 
@@ -402,12 +402,12 @@ private sub hLoadResult ( byval proc as FBSYMBOL ptr ) static
 	'' will be trashed when the function returns (also, the string returned will be
 	'' set as temp, so any assignment or when passed as parameter to another proc
 	'' will deallocate this string)
-	case FB_SYMBTYPE_STRING
-		t = astNewVAR( s, 0, IR_DATATYPE_STRING )
+	case FB_DATATYPE_STRING
+		t = astNewVAR( s, 0, FB_DATATYPE_STRING )
 		n = rtlStrAllocTmpResult( t )
 
 	'' UDT? use the real type
-	case FB_SYMBTYPE_USERDEF
+	case FB_DATATYPE_USERDEF
 		dtype = symbGetProcRealType( proc )
 	end select
 
@@ -569,7 +569,7 @@ function cProcStatement static
 
 	'' restore old error handler if any was set
 	if( env.procerrorhnd <> NULL ) then
-        expr = astNewVAR( env.procerrorhnd, 0, IR_DATATYPE_POINTER+IR_DATATYPE_VOID )
+        expr = astNewVAR( env.procerrorhnd, 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
         rtlErrorSetHandler( expr, FALSE )
 	end if
 

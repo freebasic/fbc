@@ -76,19 +76,19 @@ private function hGetRealLen( byval orglen as integer, _
 
 	select case as const dtype
 	'' UDT? return its largest field len
-	case FB_SYMBTYPE_USERDEF
+	case FB_DATATYPE_USERDEF
 		function = subtype->udt.lfldlen
 
 	'' zstring or fixed-len? size is actually sizeof(byte)
-	case FB_SYMBTYPE_CHAR, FB_SYMBTYPE_FIXSTR
+	case FB_DATATYPE_CHAR, FB_DATATYPE_FIXSTR
 		function = 1
 
 	'' wstring?
-	case FB_SYMBTYPE_WCHAR
+	case FB_DATATYPE_WCHAR
 		function = env.target.wchar.size
 
 	'' var-len string: first field is a pointer
-	case FB_SYMBTYPE_STRING
+	case FB_DATATYPE_STRING
 		function = FB_POINTERSIZE
 
 	case else
@@ -152,7 +152,7 @@ function symbCheckBitField( byval udt as FBSYMBOL ptr, _
 	'' <= 0 or > sizeof(type) or not an integer type?
 	if( (bits <= 0) or _
 		(bits > lgt*8) or _
-		(typ >= FB_SYMBTYPE_ENUM) ) then
+		(typ >= FB_DATATYPE_ENUM) ) then
 		return FALSE
 	end if
 
@@ -202,7 +202,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 
 	'' or use the non-padded len if it's a non-array UDT field (for array
 	'' of UDT's fields the padded len will be used, to follow the GCC ABI)
-	elseif( typ = FB_SYMBTYPE_USERDEF ) then
+	elseif( typ = FB_DATATYPE_USERDEF ) then
 		if( dimensions = 0 ) then
 			lgt = subtype->udt.unpadlgt
 		end if
@@ -252,16 +252,16 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 						'' remap type
 						select case lgt
 						case 1
-							if( irIsSigned( typ ) ) then
-								typ = FB_SYMBTYPE_BYTE
+							if( symbIsSigned( typ ) ) then
+								typ = FB_DATATYPE_BYTE
 							else
-								typ = FB_SYMBTYPE_UBYTE
+								typ = FB_DATATYPE_UBYTE
 							end if
 						case 2
-							if( irIsSigned( typ ) ) then
-								typ = FB_SYMBTYPE_SHORT
+							if( symbIsSigned( typ ) ) then
+								typ = FB_DATATYPE_SHORT
 							else
-								typ = FB_SYMBTYPE_USHORT
+								typ = FB_DATATYPE_USHORT
 							end if
 
 						'' padding won't be >= sizeof(int) because only
@@ -288,7 +288,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 	'' bitfield?
 	if( bits > 0 ) then
 		subtype = symbAddBitField( t->udt.bitpos, bits, typ, lgt )
-		typ = FB_SYMBTYPE_BITFIELD
+		typ = FB_DATATYPE_BITFIELD
 	end if
 
 	''
@@ -331,13 +331,13 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 
 	'' check ptr or var-len string fields
 	select case typ
-	case is >= FB_SYMBTYPE_POINTER
+	case is >= FB_DATATYPE_POINTER
 		p = t
 		do
 			p->udt.ptrcnt += 1
     		p = p->udt.parent
     	loop while( p <> NULL )
-    case FB_SYMBTYPE_STRING
+    case FB_DATATYPE_STRING
 		p = t
 		do
 			p->udt.dyncnt += 1
@@ -363,7 +363,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 	'' update the bit position, wrapping around
 	if( bits > 0 ) then
 		t->udt.bitpos += bits
-		t->udt.bitpos and= (irGetDataBits( typ ) - 1)
+		t->udt.bitpos and= (symbGetDataBits( typ ) - 1)
 	end if
 
 	''
@@ -384,7 +384,7 @@ sub symbInsertInnerUDT( byval t as FBSYMBOL ptr, _
 	if( t->udt.isunion = FALSE ) then
 		'' calc padding (should be aligned like if an UDT field were been added)
 		pad = hCalcALign( inner->udt.lfldlen, t->udt.ofs, t->udt.align, _
-						  FB_SYMBTYPE_VOID, NULL )
+						  FB_DATATYPE_VOID, NULL )
 		if( pad > 0 ) then
 			t->udt.ofs += pad
 		end if
@@ -482,7 +482,7 @@ sub symbRoundUDTSize( byval t as FBSYMBOL ptr ) static
 		end if
 
 		'' plus the largest scalar field size (GCC 3.x ABI)
-		pad = hCalcALign( t->udt.lfldlen, t->lgt, t->udt.align, FB_SYMBTYPE_VOID, NULL )
+		pad = hCalcALign( t->udt.lfldlen, t->lgt, t->udt.align, FB_DATATYPE_VOID, NULL )
 		if( pad > 0 ) then
 			t->lgt += pad
 		end if
@@ -545,7 +545,7 @@ function symbGetUDTElmOffset( byref elm as FBSYMBOL ptr, _
         	typ 		= e->typ
         	subtype 	= e->subtype
 
-        	if( typ <> FB_SYMBTYPE_USERDEF ) then
+        	if( typ <> FB_DATATYPE_USERDEF ) then
 				if( p < flen ) then
         			return -1
         		else
@@ -607,7 +607,7 @@ function symbLookupUDTVar( byval symbol as zstring ptr, _
 		exit function
 	end if
 
-	if( s->typ <> FB_SYMBTYPE_USERDEF ) then
+	if( s->typ <> FB_DATATYPE_USERDEF ) then
 		exit function
 	end if
 

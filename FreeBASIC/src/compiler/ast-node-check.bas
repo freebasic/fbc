@@ -70,7 +70,7 @@ function astNewBOUNDCHK( byval l as ASTNODE ptr, _
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_BOUNDCHK, IR_DATATYPE_INTEGER, NULL )
+	n = astNewNode( AST_NODECLASS_BOUNDCHK, FB_DATATYPE_INTEGER, NULL )
 	function = n
 
 	if( n = NULL ) then
@@ -86,7 +86,7 @@ function astNewBOUNDCHK( byval l as ASTNODE ptr, _
     '' assumptions after the branches
 	n->r = rtlArrayBoundsCheck( astNewVAR( n->chk.sym, _
     									   0, _
-    									   IR_DATATYPE_INTEGER, _
+    									   FB_DATATYPE_INTEGER, _
     									   NULL ), _
     						 	lb, _
     						 	ub, _
@@ -112,7 +112,7 @@ function astLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
 	'' be spilled as IR can't handle inter-blocks
 	t = astNewASSIGN( astNewVAR( n->chk.sym, _
 								 0, _
-								 IR_DATATYPE_INTEGER, _
+								 FB_DATATYPE_INTEGER, _
 								 NULL ), _
 					  l )
 	astLoad( t )
@@ -124,14 +124,14 @@ function astLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
     if( ast.doemit ) then
     	'' handler = boundchk( ... ): if handler <> NULL then handler( )
     	label = symbAddLabel( NULL )
-    	irEmitBOPEx( IR_OP_EQ, vr, irAllocVRIMM( IR_DATATYPE_INTEGER, 0 ), NULL, label )
+    	irEmitBOPEx( IR_OP_EQ, vr, irAllocVRIMM( FB_DATATYPE_INTEGER, 0 ), NULL, label )
     	irEmitJUMPPTR( vr )
     	irEmitLABELNF( label )
     end if
 
 	''
 	'' re-load, see above
-	t = astNewVAR( n->chk.sym, 0, IR_DATATYPE_INTEGER, NULL )
+	t = astNewVAR( n->chk.sym, 0, FB_DATATYPE_INTEGER, NULL )
 	function = astLoad( t )
 	astDel( t )
 
@@ -206,7 +206,7 @@ function astLoadPTRCHK( byval n as ASTNODE ptr ) as IRVREG ptr
     if( ast.doemit ) then
     	'' handler = ptrchk( ... ): if handler <> NULL then handler( )
     	label = symbAddLabel( NULL )
-    	irEmitBOPEx( IR_OP_EQ, vr, irAllocVRIMM( IR_DATATYPE_INTEGER, 0 ), NULL, label )
+    	irEmitBOPEx( IR_OP_EQ, vr, irAllocVRIMM( FB_DATATYPE_INTEGER, 0 ), NULL, label )
     	irEmitJUMPPTR( vr )
     	irEmitLABELNF( label )
     end if
