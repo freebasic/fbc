@@ -68,7 +68,9 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
                     break;
                 }
                 read_count += len;
-                dst->data[read_count] = 0;
+
+                /* add the null-term */
+                dst->data[read_count] = '\0';
             }
         }
         else
@@ -84,9 +86,12 @@ FBCALL FBSTRING *fb_FileStrInput( int bytes, int fnum )
                 read_count += len;
             }
         }
+
+        /* add the null-term */
+        dst->data[read_count] = '\0';
+
         if( read_count != bytes )
         {
-            dst->data[read_count] = '\0';
             fb_hStrSetLength( dst, read_count );
         }
     }
