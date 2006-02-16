@@ -55,6 +55,7 @@ Version 0.16 Beta:
 - specifying a border color to VIEW in gfx mode had no effect (lillo)
 - MID statement (not the function) for wide-strings was not passing the size of the destine string (v1c)
 - wide-string indexing was not multiplying the index expression by sizeof( wchar ) (v1c)
+- bitfields declared inside unions had wrong offsets (v1c)
 
 
 Version 0.15 Beta:
