@@ -303,19 +303,20 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
     e->var.elm.parent = t
     t->udt.elements	+= 1
 
-	e->lgt 				= lgt
-	if( updateudt ) then
-		e->var.elm.ofs	= t->udt.ofs
+	e->lgt = lgt
+
+	if( updateudt or t->udt.isunion ) then
+		e->var.elm.ofs = t->udt.ofs
 	else
-		e->var.elm.ofs	= t->udt.ofs - lgt
+		e->var.elm.ofs = t->udt.ofs - lgt
 	end if
 
 	'' array fields
-	e->var.array.dif	= symbCalcArrayDiff( dimensions, dTB(), lgt )
-	e->var.array.dimhead= NULL
-	e->var.array.dimtail= NULL
+	e->var.array.dif = symbCalcArrayDiff( dimensions, dTB(), lgt )
+	e->var.array.dimhead = NULL
+	e->var.array.dimtail = NULL
 
-	e->var.array.dims	= dimensions
+	e->var.array.dims = dimensions
 	if( dimensions > 0 ) then
 		for i = 0 to dimensions-1
 			if( symbNewArrayDim( e->var.array.dimhead, e->var.array.dimtail, _
@@ -324,7 +325,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 		next
 	end if
 
-	e->var.array.elms 	= symbCalcArrayElements( e )
+	e->var.array.elms = symbCalcArrayElements( e )
 
 	'' multiple len by all array elements (if any)
 	lgt *= e->var.array.elms
@@ -337,6 +338,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 			p->udt.ptrcnt += 1
     		p = p->udt.parent
     	loop while( p <> NULL )
+
     case FB_DATATYPE_STRING
 		p = t
 		do
@@ -345,18 +347,19 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
     	loop while( p <> NULL )
 	end select
 
-	if( updateudt ) then
-		'' struct?
-		if( t->udt.isunion = FALSE ) then
+	'' struct?
+	if( t->udt.isunion = FALSE ) then
+		if( updateudt ) then
 			t->udt.ofs += lgt
 			t->lgt = t->udt.ofs
+		end if
 
-		'' union..
-		else
-			t->udt.ofs = 0
-			if( lgt > t->lgt ) then
-				t->lgt = lgt
-			end if
+	'' union..
+	else
+		'' always update, been it a bitfield or not
+		t->udt.ofs = 0
+		if( lgt > t->lgt ) then
+			t->lgt = lgt
 		end if
 	end if
 
