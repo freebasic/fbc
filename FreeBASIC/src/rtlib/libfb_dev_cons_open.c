@@ -36,33 +36,40 @@ static FB_FILE_HOOKS fb_hooks_dev_cons = {
     fb_DevStdIoClose,
     NULL,
     NULL,
-    fb_DevFileRead,
-    fb_DevFileReadWstr,
+    NULL,
+    NULL,
     fb_DevFileWrite,
     fb_DevFileWriteWstr,
     NULL,
     NULL,
-    fb_DevFileReadLine,
-    fb_DevFileReadLineWstr
+    NULL,
+    NULL
 };
 
 int fb_DevConsOpen( struct _FB_FILE *handle, const char *filename, size_t filename_len )
 {
-    int res = fb_ErrorSetNum( FB_RTERROR_OK );
+    /* only output or append modes allowed (as in QB) */
+    switch ( handle->mode )
+    {
+	case FB_FILE_MODE_OUTPUT:
+	case FB_FILE_MODE_APPEND:
+		break;
+
+	default:
+		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+    }
 
     FB_LOCK();
 
     handle->hooks = &fb_hooks_dev_cons;
 
     if ( handle->access == FB_FILE_ACCESS_ANY)
-        handle->access = FB_FILE_ACCESS_READWRITE;
+        handle->access = FB_FILE_ACCESS_WRITE;
 
-    if( res == FB_RTERROR_OK ) {
-        handle->opaque = stdout;
-        handle->type = FB_FILE_TYPE_PIPE;
-    }
+	handle->opaque = stdout;
+    handle->type = FB_FILE_TYPE_PIPE;
 
     FB_UNLOCK();
 
-	return res;
+	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
