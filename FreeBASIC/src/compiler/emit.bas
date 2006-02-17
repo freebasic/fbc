@@ -257,7 +257,7 @@ private sub hMainEnd( byval isdllmain as integer )
 
     '' end( 0 )
     if( isdllmain = FALSE ) then
-    	rtlExitRt( NULL )
+    	rtlExitApp( NULL )
     end if
 
     '' set default data label (def label isn't global as it could clash with other

@@ -5307,7 +5307,7 @@ sub emitWriteRtInit( byval isdllmain as integer ) static
 	argv = astNewVAR( emit.main.argv, 0, symbGetType( emit.main.argv ) )
 
     '' init( argc, argv )
-    emit.main.initnode = rtlInitRt( argc, argv, isdllmain )
+    emit.main.initnode = rtlInitApp( argc, argv, isdllmain )
 
 end sub
 

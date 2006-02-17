@@ -95,6 +95,9 @@ declare function 	astLoadPTRCHK	( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astLoadFIELD	( byval n as ASTNODE ptr ) as IRVREG ptr
 
+declare function 	hModLevelIsEmpty( byval p as ASTPROCNODE ptr ) as integer
+
+declare sub 		hModLevelAddRtInit( byval p as ASTPROCNODE ptr )
 
 '' globals
 	dim shared ast as ASTCTX
@@ -265,6 +268,14 @@ private sub hProcFlush( byval p as ASTPROCNODE ptr, _
 	env.currproc = p->proc
 	oldtb = symbSetSymbolTb( @p->proc->proc.loctb )
 
+	'' add a call to fb_init if it's a static constructor
+	'' (note: must be done here or ModLevelIsEmpty() will fail)
+	if( doemit ) then
+		if( symbIsConstructor( p->proc ) ) then
+           	hModLevelAddRtInit( p )
+		end if
+	end if
+
 	''
 	if( ast.doemit ) then
 		irEmitPROCBEGIN( p->proc, p->initlabel )
@@ -300,42 +311,10 @@ private sub hProcFlush( byval p as ASTPROCNODE ptr, _
 end sub
 
 ''::::
-private function hModLevelIsEmpty( byval p as ASTPROCNODE ptr ) as integer
-    dim as ASTNODE ptr n, nxt
-
-	'' an empty module-level proc will have just the
-	'' initial and final labels as nodes and nothing else
-	'' (note: when debugging it will be emmited even if empty)
-
-	n = p->head
-	if( n = NULL ) then
-		return TRUE
-	end if
-	if( n->class <> AST_NODECLASS_LABEL ) then
-		return FALSE
-	end if
-
-	n = n->next
-	if( n = NULL ) then
-		return TRUE
-	end if
-	if( n->class <> AST_NODECLASS_LABEL ) then
-		return FALSE
-	end if
-
-	n = n->next
-	if( n = NULL ) then
-		return TRUE
-	end if
-
-	return FALSE
-
-end function
-
-''::::
 private sub hProcFlushAll( ) static
     dim as ASTPROCNODE ptr p
     dim as integer doemit
+    dim as FBSYMBOL ptr proc
 
 	'' procs should be sorted by include file
 
@@ -345,15 +324,17 @@ private sub hProcFlushAll( ) static
         	exit do
         end if
 
+		proc = p->proc
+
 		doemit = TRUE
 		'' private?
-		if( symbIsPrivate( p->proc ) ) then
+		if( symbIsPrivate( proc ) ) then
 			'' never called? skip
-			if( symbGetProcIsCalled( p->proc ) = FALSE ) then
+			if( symbGetProcIsCalled( proc ) = FALSE ) then
 				doemit = FALSE
 
 			'' module-level?
-			elseif( symbIsModLevelProc( p->proc ) ) then
+			elseif( symbIsModLevelProc( proc ) ) then
 				doemit = (hModLevelIsEmpty( p ) = FALSE)
 			end if
 		end if
@@ -461,6 +442,56 @@ sub astProcEnd( byval p as ASTPROCNODE ptr ) static
 
 	'' back to main (or NULL)
 	ast.curproc = listGetHead( @ast.proclist )
+
+end sub
+
+''::::
+private function hModLevelIsEmpty( byval p as ASTPROCNODE ptr ) as integer
+    dim as ASTNODE ptr n, nxt
+
+	'' an empty module-level proc will have just the
+	'' initial and final labels as nodes and nothing else
+	'' (note: when debugging it will be emmited even if empty)
+
+	n = p->head
+	if( n = NULL ) then
+		return TRUE
+	end if
+	if( n->class <> AST_NODECLASS_LABEL ) then
+		return FALSE
+	end if
+
+	n = n->next
+	if( n = NULL ) then
+		return TRUE
+	end if
+	if( n->class <> AST_NODECLASS_LABEL ) then
+		return FALSE
+	end if
+
+	n = n->next
+	if( n = NULL ) then
+		return TRUE
+	end if
+
+	return FALSE
+
+end function
+
+''::::
+private sub hModLevelAddRtInit( byval p as ASTPROCNODE ptr )
+    dim as ASTNODE ptr n
+
+    n = p->head
+    if( n = NULL ) then
+    	exit sub
+    end if
+
+	'' fb rt must be initialized before any static constructor
+	'' is called but in any platform (but Windows) the .ctors
+	'' list will be processed before main() is called by crt
+
+	astAddAfter( rtlInitRt( ), n )
 
 end sub
 

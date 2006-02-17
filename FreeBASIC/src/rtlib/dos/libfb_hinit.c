@@ -39,7 +39,7 @@ int fb_force_input_buffer_changed = FALSE;
 
 
 /*:::::*/
-void fb_hInit ( int argc, char **argv )
+void fb_hInit ( void )
 {
 	/* set FPU precision to 64-bit and round to nearest (as in QB) */
 	_control87(PC_64|RC_NEAR, MCW_PC|MCW_RC);

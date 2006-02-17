@@ -39,7 +39,7 @@ int ScrollWasOff = FALSE;
 
 
 /*:::::*/
-void fb_hInit ( int argc, char **argv )
+void fb_hInit ( void )
 {
 #ifdef TARGET_WIN32
     /* set FPU precision to 64-bit and round to nearest (as in QB) */

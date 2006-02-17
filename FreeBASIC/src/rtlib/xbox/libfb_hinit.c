@@ -58,7 +58,7 @@ void drawScreen(int width, int height, int bpp)
 }
 
 /*:::::*/
-void fb_hInit ( int argc, char **argv )
+void fb_hInit ( void )
 {
 	unsigned int control_word;
 

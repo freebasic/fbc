@@ -27,11 +27,9 @@
 #include <stdlib.h>
 #include "fb.h"
 
-void fb_Exit ( void );
-
 /* globals */
-int fb_argc;
-char **fb_argv;
+int fb_argc = 0;
+char **fb_argv = NULL;
 
 FB_HOOKSTB fb_hooks = { NULL };
 FB_FILE fb_fileTB[FB_MAX_FILES];
@@ -45,22 +43,26 @@ FBSTRING fb_strNullDesc = { NULL, 0 };
 FnDevOpenHook fb_pfnDevOpenHook = NULL;
 
 /*:::::*/
-FBCALL void fb_Init ( int argc, char **argv )
+FBCALL void fb_RtInit ( void )
 {
 #ifdef MULTITHREADED
 	int i;
 #endif
 
-    /* save argc and argv */
-	fb_argc = argc;
-	fb_argv = argv;
+	static int inited = FALSE;
+
+	/* already initialized? */
+	if( inited )
+		return;
+
+	inited = TRUE;
 
 	/* initialize files table */
     memset( fb_fileTB, 0, sizeof( fb_fileTB ) );
     __fb_file_handles_cleared = TRUE;
 
 	/* os-dep initialization */
-    fb_hInit( argc, argv );
+    fb_hInit( );
 
 #ifdef MULTITHREADED
 	/* allocate thread local storage keys */
@@ -69,7 +71,15 @@ FBCALL void fb_Init ( int argc, char **argv )
 #endif
 
 	/* add rtlib's exit() to queue */
-	atexit( &fb_Exit );
+	atexit( &fb_RtExit );
 }
 
+/*:::::*/
+FBCALL void fb_Init ( int argc, char **argv )
+{
+	fb_argc = argc;
+	fb_argv = argv;
+
+	fb_RtInit( );
+}
 

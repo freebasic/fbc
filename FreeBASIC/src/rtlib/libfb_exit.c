@@ -27,26 +27,21 @@
 #include <stdlib.h>
 #include "fb.h"
 
-/* defined in libfb_init.c */
-void fb_CallDTORS(void);
-
 /*:::::*/
 FBCALL void fb_End ( int errlevel )
 {
-	/* do nothing, real job is done at fb_Exit(), invoked by atexit() */
+	/* do nothing, real job is done at fb_RtExit(), invoked by atexit() */
 
 	exit( errlevel );
 }
 
 
 /*:::::*/
-void fb_Exit ( void )
+void fb_RtExit ( void )
 {
 #ifdef MULTITHREADED
     int i;
 #endif
-
-    fb_CallDTORS();
 
 	/* os-dep termination */
 	fb_hEnd( 0 );

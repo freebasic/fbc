@@ -225,7 +225,7 @@ int fb_hInitConsole ( )
 
 
 /*:::::*/
-void fb_hInit ( int argc, char **argv )
+void fb_hInit ( void )
 {
 	const int sigs[] = { SIGABRT, SIGFPE, SIGILL, SIGSEGV, SIGTERM, SIGINT, SIGQUIT, -1 };
 	char buffer[2048], *p, *term;

@@ -52,6 +52,12 @@ data @FB_RTL_INIT,"", _
 	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
 
+'' fb_RtInit ( ) as void
+data @FB_RTL_RTINIT,"", _
+	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 0
+
 '' fb_InitSignals ( ) as void
 data @FB_RTL_INITSIGNALS,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
@@ -430,9 +436,10 @@ function rtlInitProfile( ) as integer static
 end function
 
 '':::::
-function rtlInitRt( byval argc as ASTNODE ptr, _
-					byval argv as ASTNODE ptr, _
-					byval isdllmain as integer ) as ASTNODE ptr static
+function rtlInitApp( byval argc as ASTNODE ptr, _
+					 byval argv as ASTNODE ptr, _
+					 byval isdllmain as integer _
+				   ) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
 
@@ -492,7 +499,21 @@ function rtlInitRt( byval argc as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlExitRt( byval errlevel as ASTNODE ptr ) as integer static
+function rtlInitRt( ) as ASTNODE ptr static
+
+    dim as ASTNODE ptr proc
+
+	function = NULL
+
+	'' RtInit( )
+    proc = astNewFUNCT( PROCLOOKUP( RTINIT ), NULL, TRUE )
+
+    function = proc
+
+end function
+
+'':::::
+function rtlExitApp( byval errlevel as ASTNODE ptr ) as integer static
     dim as ASTNODE ptr proc
 
 	function = FALSE

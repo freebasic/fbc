@@ -131,6 +131,7 @@
 
 #define FB_RTL_CPUDETECT 				"fb_CpuDetect"
 #define FB_RTL_INIT 					"fb_Init"
+#define FB_RTL_RTINIT 					"fb_RtInit"
 #define FB_RTL_INITSIGNALS 				"fb_InitSignals"
 #define FB_RTL_INITPROFILE 				"fb_InitProfile"
 #define FB_RTL_INITCTOR 				"fb_CallCTORS"
@@ -413,6 +414,7 @@ enum FB_RTL_IDX
 
 	FB_RTL_IDX_CPUDETECT
 	FB_RTL_IDX_INIT
+	FB_RTL_IDX_RTINIT
 	FB_RTL_IDX_INITSIGNALS
 	FB_RTL_IDX_INITPROFILE
 	FB_RTL_IDX_INITCTOR
@@ -787,11 +789,13 @@ declare function 	rtlMathFp2ULongint	( byval expr as ASTNODE ptr, _
 
 declare function    rtlInitMain         ( ) as integer
 
-declare function 	rtlInitRt			( byval argc as ASTNODE ptr, _
+declare function 	rtlInitApp			( byval argc as ASTNODE ptr, _
 										  byval argv as ASTNODE ptr, _
 										  byval isdllmain as integer ) as ASTNODE ptr
 
-declare function	rtlExitRt			( byval errlevel as ASTNODE ptr ) as integer
+declare function 	rtlInitRt			( ) as ASTNODE ptr
+
+declare function	rtlExitApp			( byval errlevel as ASTNODE ptr ) as integer
 
 declare function 	rtlMemCopy			( byval dst as ASTNODE ptr, _
 										  byval src as ASTNODE ptr, _

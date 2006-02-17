@@ -129,7 +129,7 @@ function cEndStatement as integer
   	end select
 
     ''
-	function = rtlExitRt( errlevel )
+	function = rtlExitApp( errlevel )
 
 end function
 
