@@ -89,6 +89,7 @@ extern pthread_mutex_t fb_string_mutex;
 #define SEQ_QUERY_WINDOW	103			/* xxxx - query terminal window size (not in termcap) */
 #define SEQ_INIT_XMOUSE		104			/* xxxx - enable X11 mouse */
 #define SEQ_EXIT_XMOUSE		105			/* xxxx - disable X11 mouse */
+#define SEQ_EXIT_GFX_MODE	106			/* xxxx - cleanup after console gfx mode */
 
 
 typedef struct _FB_DIRCTX
@@ -123,6 +124,7 @@ typedef struct FBCONSOLE
 	void (*mouse_exit)(void);
 	void (*mouse_handler)(void);
 	void (*mouse_update)(int cb, int cx, int cy);
+	void (*gfx_exit)(void);
 } FBCONSOLE;
 
 extern FBCONSOLE fb_con;
@@ -135,5 +137,8 @@ extern void fb_hExitConsole(void);
 extern int fb_hXTermInitFocus(void);
 extern void fb_hXTermExitFocus(void);
 extern int fb_hXTermHasFocus(void);
+extern int fb_hConsoleGfxMode(void (*gfx_exit)(void), void (*save)(void), void (*restore)(void));
+extern void *fb_hDynLoad(const char *libname, const char **funcname, void **funcptr);
+extern void fb_hDynUnload(void **lib);
 
 #endif

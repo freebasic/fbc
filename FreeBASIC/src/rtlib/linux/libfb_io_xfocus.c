@@ -32,42 +32,39 @@ typedef Display *(*XOPENDISPLAY)(char *);
 typedef int (*XCLOSEDISPLAY)(Display *);
 typedef int (*XGETINPUTFOCUS)(Display *, Window *, int *);
 
+typedef struct {
+    XOPENDISPLAY OpenDisplay;
+    XCLOSEDISPLAY CloseDisplay;
+    XGETINPUTFOCUS GetInputFocus;
+} X_FUNCS;
+
 static int ref_count = 0;
 static void *xlib;
+static X_FUNCS X = { NULL };
 static Display *display;
 static Window xterm_window;
-static XOPENDISPLAY fb_XOpenDisplay;
-static XCLOSEDISPLAY fb_XCloseDisplay;
-static XGETINPUTFOCUS fb_XGetInputFocus;
+
 
 
 /*:::::*/
 int fb_hXTermInitFocus(void)
 {
+    const char *funcs[] = { "XOpenDisplay", "XCloseDisplay", "XGetInputFocus", NULL };
 	int dummy;
 	
 	ref_count++;
 	if (ref_count > 1)
 		return 0;
 	
-	if (!(xlib = dlopen(NULL, RTLD_LAZY)))
-		return -1;
-	if (!dlsym(xlib, "XOpenDisplay")) {
-		dlclose(xlib);
-		if (!(xlib = dlopen("libX11.so", RTLD_LAZY)))
-			return -1;
-	}
-	fb_XOpenDisplay = (XOPENDISPLAY)dlsym(xlib, "XOpenDisplay");
-	fb_XCloseDisplay = (XCLOSEDISPLAY)dlsym(xlib, "XCloseDisplay");
-	fb_XGetInputFocus = (XGETINPUTFOCUS)dlsym(xlib, "XGetInputFocus");
-	if ((!fb_XOpenDisplay) || (!fb_XCloseDisplay) || (!fb_XGetInputFocus))
+	xlib = fb_hDynLoad("libX11.so", funcs, (void **)&X);
+    if (!xlib)
 		return -1;
 	
-	display = fb_XOpenDisplay(NULL);
+	display = X.OpenDisplay(NULL);
 	if (!display)
 		return -1;
 	
-	fb_XGetInputFocus(display, &xterm_window, &dummy);
+	X.GetInputFocus(display, &xterm_window, &dummy);
 	
 	return 0;
 }
@@ -79,8 +76,8 @@ void fb_hXTermExitFocus(void)
 	ref_count--;
 	if (ref_count > 0)
 		return;
-	fb_XCloseDisplay(display);
-	dlclose(xlib);
+	X.CloseDisplay(display);
+	fb_hDynUnload(&xlib);
 }
 
 
@@ -90,7 +87,7 @@ int fb_hXTermHasFocus(void)
 	Window focus_window;
 	int dummy;
 	
-	fb_XGetInputFocus(display, &focus_window, &dummy);
+	X.GetInputFocus(display, &focus_window, &dummy);
 	
 	return (focus_window == xterm_window);
 }

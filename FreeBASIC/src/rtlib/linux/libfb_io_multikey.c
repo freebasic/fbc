@@ -36,6 +36,8 @@
 #define KEY_BUFFER_SIZE		16
 #define NUM_PAD_KEYS		17
 
+static int keyboard_init(void);
+static void keyboard_exit(void);
 
 typedef Display *(*XOPENDISPLAY)(char *);
 typedef int (*XCLOSEDISPLAY)(Display *);
@@ -43,19 +45,25 @@ typedef void (*XQUERYKEYMAP)(Display *, unsigned char *);
 typedef int (*XDISPLAYKEYCODES)(Display *, int *, int *);
 typedef KeySym (*XKEYCODETOKEYSYM)(Display *, KeyCode, int);
 
+typedef struct {
+    XOPENDISPLAY OpenDisplay;
+    XCLOSEDISPLAY CloseDisplay;
+    XQUERYKEYMAP QueryKeymap;
+    XDISPLAYKEYCODES DisplayKeycodes;
+    XKEYCODETOKEYSYM KeycodeToKeysym;
+} X_FUNCS;
+
 static pid_t main_pid;
 static Display *display;
-static XOPENDISPLAY fb_XOpenDisplay = NULL;
-static XCLOSEDISPLAY fb_XCloseDisplay;
-static XQUERYKEYMAP fb_XQueryKeymap;
-static XDISPLAYKEYCODES fb_XDisplayKeycodes;
-static XKEYCODETOKEYSYM fb_XKeycodeToKeysym;
+static void *xlib = NULL;
+static X_FUNCS X = { NULL };
 static int key_fd, key_old_mode, key_leds;
 
 static unsigned char key_state[128], scancode[256];
 static unsigned short key_buffer[KEY_BUFFER_SIZE], key_head, key_tail;
-static void (*keyboard_handler)(void);
 static int (*old_getch)(void);
+static void (*gfx_save)(void);
+static void (*gfx_restore)(void);
 
 static const char pad_numlock_ascii[NUM_PAD_KEYS] = "0123456789+-*/\r,.";
 static const char pad_ascii[NUM_PAD_KEYS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '+', '-', '*', '/', '\r', 0, 0 };
@@ -161,7 +169,9 @@ static void keyboard_console_handler(void)
 {
 	unsigned char buffer[128], scancode;
 	int num_bytes, i, ascii, extended = 0;
+	int vt, orig_vt;
 	struct kbentry entry;
+	struct vt_stat vt_state;
 
 	num_bytes = read(key_fd, &buffer, sizeof(buffer));
 	if (num_bytes > 0) {
@@ -243,8 +253,25 @@ static void keyboard_console_handler(void)
 								ascii = '\r';
 							break;
 						case KT_CONS:
-							ioctl(key_fd, VT_ACTIVATE, ascii + 1);
-							memset(key_state, FALSE, 128);
+							vt = ascii + 1;
+							if (ioctl(key_fd, VT_GETSTATE, &vt_state) >= 0) {
+								orig_vt = vt_state.v_active;
+								if (vt != orig_vt) {
+									if (fb_con.gfx_exit) {
+										gfx_save();
+										ioctl(key_fd, KDSETMODE, KD_TEXT);
+									}
+									ioctl(key_fd, VT_ACTIVATE, vt);
+									ioctl(key_fd, VT_WAITACTIVE, vt);
+									while (ioctl(key_fd, VT_WAITACTIVE, orig_vt) < 0)
+									    usleep(50000);
+									if (fb_con.gfx_exit) {
+										ioctl(key_fd, KDSETMODE, KD_GRAPHICS);
+										gfx_restore();
+									}
+									memset(key_state, FALSE, 128);
+								}
+							}
 							/* fallthrough */
  						default:
 							ascii = 0;
@@ -275,7 +302,7 @@ static void keyboard_x11_handler(void)
 
 	if (!fb_hXTermHasFocus())
 		return;
-	fb_XQueryKeymap(display, keymap);
+	X.QueryKeymap(display, keymap);
 	memset(key_state, FALSE, 128);
 	for (i = 0; i < 256; i++) {
 		if (keymap[i / 8] & (1 << (i & 0x7)))
@@ -287,53 +314,51 @@ static void keyboard_x11_handler(void)
 /*:::::*/
 static int keyboard_init(void)
 {
-	void *lib;
+    const char *funcs[] = {
+        "XOpenDisplay", "XCloseDisplay", "XQueryKeymap", "XDisplayKeycodes", "XKeycodeToKeysym", NULL
+    };
 	int keycode_min, keycode_max, i, j;
 	KeySym keysym;
+	struct termios term;
 
 	main_pid = getpid();
 	old_getch = fb_con.keyboard_getch;
 
 	if(fb_con.inited == INIT_CONSOLE) {
 		key_fd = dup(fb_con.h_in);
-		if ((ioctl(key_fd, KDGKBMODE, &key_old_mode) < 0) || (ioctl(key_fd, KDSKBMODE, K_MEDIUMRAW) < 0)) {
+		
+		term.c_iflag = 0;
+		term.c_cflag = CS8;
+		term.c_lflag = 0;
+		term.c_cc[VMIN] = 0;
+		term.c_cc[VTIME] = 0;
+		
+		if ((ioctl(key_fd, KDGKBMODE, &key_old_mode) < 0) ||
+		    (tcsetattr(key_fd, TCSANOW, &term) < 0) ||
+		    (ioctl(key_fd, KDSKBMODE, K_MEDIUMRAW) < 0)) {
 			close(key_fd);
 			return -1;
 		}
-		keyboard_handler = keyboard_console_handler;
+		fb_con.keyboard_handler = keyboard_console_handler;
 		fb_con.keyboard_getch = keyboard_console_getch;
 		key_head = key_tail = 0;
 		ioctl(key_fd, KDGETLED, &key_leds);
 	}
 	else {
-		if (!fb_XOpenDisplay) {
-			if (!(lib = dlopen(NULL, RTLD_LAZY)))
-				return -1;
-			if (!dlsym(lib, "XOpenDisplay")) {
-				dlclose(lib);
-				if (!(lib = dlopen("libX11.so", RTLD_LAZY)))
-					return -1;
-			}
-			fb_XOpenDisplay = (XOPENDISPLAY)dlsym(lib, "XOpenDisplay");
-			fb_XCloseDisplay = (XCLOSEDISPLAY)dlsym(lib, "XCloseDisplay");
-			fb_XQueryKeymap = (XQUERYKEYMAP)dlsym(lib, "XQueryKeymap");
-			fb_XDisplayKeycodes = (XDISPLAYKEYCODES)dlsym(lib, "XDisplayKeycodes");
-			fb_XKeycodeToKeysym = (XKEYCODETOKEYSYM)dlsym(lib, "XKeycodeToKeysym");
-			if ((!fb_XOpenDisplay) || (!fb_XCloseDisplay) || (!fb_XQueryKeymap) || (!fb_XDisplayKeycodes) || (!fb_XKeycodeToKeysym)) {
-				fb_XOpenDisplay = NULL;
-				return -1;
-			}
-		}
-		display = fb_XOpenDisplay(NULL);
+	    xlib = fb_hDynLoad("libX11.so", funcs, (void **)&X);
+	    if (!xlib)
+	        return -1;
+	    
+		display = X.OpenDisplay(NULL);
 		if (!display)
 			return -1;
 
-		fb_XDisplayKeycodes(display, &keycode_min, &keycode_max);
+		X.DisplayKeycodes(display, &keycode_min, &keycode_max);
 		if (keycode_min < 0) keycode_min = 0;
 		if (keycode_max > 255) keycode_max = 255;
 
 		for (i = keycode_min; i <= keycode_max; i++) {
-			keysym = fb_XKeycodeToKeysym(display, i, 0);
+			keysym = X.KeycodeToKeysym(display, i, 0);
 			if (keysym != NoSymbol) {
 				for (j = 0; (fb_keysym_to_scancode[j].scancode) && (fb_keysym_to_scancode[j].keysym != keysym); j++)
 					;
@@ -342,10 +367,12 @@ static int keyboard_init(void)
 		}
 
 		fb_hXTermInitFocus();
-
-		keyboard_handler = keyboard_x11_handler;
+		fb_con.keyboard_handler = keyboard_x11_handler;
 	}
 
+	fb_con.keyboard_init = keyboard_init;
+	fb_con.keyboard_exit = keyboard_exit;
+	
 	return 0;
 }
 
@@ -356,13 +383,16 @@ static void keyboard_exit(void)
 	if (fb_con.inited == INIT_CONSOLE) {
 		ioctl(key_fd, KDSKBMODE, key_old_mode);
 		close(key_fd);
+		key_fd = -1;
 	}
-	else {
-		fb_XCloseDisplay(display);
+	else if (fb_con.inited == INIT_X11) {
+		X.CloseDisplay(display);
+		fb_hDynUnload(&xlib);
 		fb_hXTermExitFocus();
 	}
 	fb_con.keyboard_getch = old_getch;
 	fb_con.keyboard_handler = NULL;
+	fb_con.keyboard_exit = NULL;
 }
 
 
@@ -377,16 +407,11 @@ int fb_ConsoleMultikey(int scancode)
 
 	pthread_mutex_lock(&fb_con.bg_mutex);
 
-	if (!fb_con.keyboard_handler) {
-		if (!keyboard_init()) {
-			fb_con.keyboard_init = keyboard_init;
-			fb_con.keyboard_exit = keyboard_exit;
-			fb_con.keyboard_handler = keyboard_handler;
-			/* Let the handler execute at least once to fill in states */
-			pthread_mutex_unlock(&fb_con.bg_mutex);
-			usleep(50000);
-			pthread_mutex_lock(&fb_con.bg_mutex);
-		}
+	if ((!fb_con.keyboard_handler) && (!keyboard_init())) {
+		/* Let the handler execute at least once to fill in states */
+		pthread_mutex_unlock(&fb_con.bg_mutex);
+		usleep(50000);
+		pthread_mutex_lock(&fb_con.bg_mutex);
 	}
 
 	res = (key_state[scancode & 0x7F]? FB_TRUE : FB_FALSE);
@@ -394,4 +419,36 @@ int fb_ConsoleMultikey(int scancode)
 	pthread_mutex_unlock(&fb_con.bg_mutex);
 
 	return res;
+}
+
+
+/*:::::*/
+int fb_hConsoleGfxMode(void (*gfx_exit)(void), void (*save)(void), void (*restore)(void))
+{
+	BG_LOCK();
+	fb_con.gfx_exit = gfx_exit;
+	if (gfx_exit) {
+		fb_hooks.multikeyproc = NULL;
+		fb_hooks.inkeyproc = NULL;
+		fb_hooks.getkeyproc = NULL;
+		fb_hooks.keyhitproc = NULL;
+		fb_hooks.sleepproc = NULL;
+		gfx_save = save;
+		gfx_restore = restore;
+		if (keyboard_init()) {
+			BG_UNLOCK();
+			return -1;
+		}
+		ioctl(key_fd, KDSETMODE, KD_GRAPHICS);
+	}
+	else {
+		if (key_fd >= 0) {
+			ioctl(key_fd, KDSETMODE, KD_TEXT);
+			keyboard_exit();
+			fb_hTermOut(SEQ_EXIT_GFX_MODE, 0, 0);
+		}
+	}
+	BG_UNLOCK();
+	
+	return 0;
 }

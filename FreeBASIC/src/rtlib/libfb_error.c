@@ -30,6 +30,7 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
+static char error_buffer[FB_ERROR_MESSAGE_SIZE];
 static const char *error_msg[] = {
 	"",									/* FB_RTERROR_OK */
 	"illegal function call",			/* FB_RTERROR_ILLEGALFUNCTIONCALL */
@@ -52,18 +53,29 @@ static const char *error_msg[] = {
 /*:::::*/
 static void fb_Die( int errnum, int linenum, const char *fname )
 {
-	printf( FB_NEWLINE "Aborting due to runtime error %d", errnum );
+	int pos = 0;
+	
+	pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
+					 FB_NEWLINE "Aborting due to runtime error %d", errnum );
 
 	if( (errnum >= 0) && (errnum < FB_RTERROR_MAX) )
-		printf( " (%s)", error_msg[errnum] );
+		pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
+						 " (%s)", error_msg[errnum] );
 
 	if( linenum > 0 )
-		printf( " at line %d", linenum );
+		pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
+						 " at line %d", linenum );
 
 	if( fname != NULL )
-	    printf( " of %s" FB_NEWLINE, fname );
+	    pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
+	    				 " of %s" FB_NEWLINE FB_NEWLINE, fname );
 	else
-		printf( FB_NEWLINE );
+		pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos, FB_NEWLINE FB_NEWLINE );
+	
+	error_buffer[FB_ERROR_MESSAGE_SIZE-1] = '\0';
+	
+	/* save buffer so we can show message after console is cleaned up */
+	fb_error_message = error_buffer;
 
 	fb_End( errnum );
 }

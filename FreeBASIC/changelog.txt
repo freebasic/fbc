@@ -15,6 +15,7 @@ Version 0.16 Beta:
 - support for the optional "digits" argument in HEX(), OCT() and BIN() (and their wide-char versions) (v1c)
 - TYPE<symbol>(...) to allow anonymous UDT's to be passed to overloaded functions (v1c)
 - the -include command-line option, to pre-include headers in every source file (.bas) that will be compiled (v1c)
+- Linux framebuffer console gfx driver (lillo)
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)

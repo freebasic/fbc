@@ -244,7 +244,13 @@ extern void fb_hScreenInfo(int *width, int *height, int *depth, int *refresh);
 extern void *fb_hMemCpyMMX(void *dest, const void *src, size_t size);
 extern void *fb_hMemSetMMX(void *dest, int value, size_t size);
 extern void fb_hResetCharCells(int do_alloc);
-extern void fb_hClearCharCells( int x1, int y1, int x2, int y2, int page, FB_WCHAR ch, unsigned fg, unsigned bg );
+extern void fb_hClearCharCells(int x1, int y1, int x2, int y2, int page, FB_WCHAR ch, unsigned fg, unsigned bg);
+extern void fb_hSoftCursorInit(void);
+extern void fb_hSoftCursorExit(void);
+extern void fb_hSoftCursorPut(int x, int y);
+extern void fb_hSoftCursorUnput(int x, int y);
+extern void fb_hSoftCursorPaletteChanged(void);
+
 
 /* Public API */
 extern FBCALL int fb_GfxScreen(int mode, int depth, int num_pages, int flags, int refresh_rate);

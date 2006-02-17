@@ -27,6 +27,7 @@
 
 #include "fb.h"
 #include "fb_linux.h"
+#include <linux/kd.h>
 
 /*:::::*/
 void fb_hExitConsole( void )
@@ -34,9 +35,12 @@ void fb_hExitConsole( void )
 	int bottom;
 
 	if (fb_con.inited) {
-
+		
 		fb_hResize();
 
+		if (fb_con.gfx_exit)
+			fb_con.gfx_exit();
+		
 		BG_LOCK();
 		if (fb_con.keyboard_exit)
 			fb_con.keyboard_exit();
@@ -58,12 +62,11 @@ void fb_hExitConsole( void )
 		fb_hTermOut(SEQ_RESET_COLOR, 0, 0);
 		fb_hTermOut(SEQ_SHOW_CURSOR, 0, 0);
 		fb_hTermOut(SEQ_EXIT_KEYPAD, 0, 0);
-		tcsetattr(fb_con.h_out, TCSAFLUSH, &fb_con.old_term_out);
+		tcsetattr(fb_con.h_out, TCSANOW, &fb_con.old_term_out);
 
 		/* Restore old console keyboard state */
-		fflush(fb_con.f_in);
 		fcntl(fb_con.h_in, F_SETFL, fb_con.old_in_flags);
-		tcsetattr(fb_con.h_in, TCSAFLUSH, &fb_con.old_term_in);
+		tcsetattr(fb_con.h_in, TCSANOW, &fb_con.old_term_in);
 	}
 }
 

@@ -22,16 +22,12 @@ install()
 	link="/usr/bin"
 	
 	mkdir -p -m 0755 "$dest"/bin/linux
-	mkdir -p -m 0755 "$dest"/bin/win32
 	mkdir -p -m 0755 "$dest"/inc
 	mkdir -p -m 0755 "$dest"/lib/linux
-	mkdir -p -m 0755 "$dest"/lib/win32
 
 	cp lib/linux/* "$dest"/lib/linux
-	cp lib/win32/* "$dest"/lib/win32
 	cp -r inc/* "$dest"/inc
 	cp bin/linux/* "$dest"/bin/linux
-	cp bin/win32/* "$dest"/bin/win32
 	cp fbc "$dest"
 
 	if [ -w $link ]; then

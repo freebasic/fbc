@@ -58,6 +58,7 @@ typedef struct LINUXDRIVER
 extern LINUXDRIVER fb_linux;
 extern GFXDRIVER fb_gfxDriverX11;
 extern GFXDRIVER fb_gfxDriverOpenGL;
+extern GFXDRIVER fb_gfxDriverFBDev;
 
 extern void *fb_program_icon;
 extern const struct { KeySym keysym; int scancode; } fb_keysym_to_scancode[];

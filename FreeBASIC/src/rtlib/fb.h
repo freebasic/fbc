@@ -1343,6 +1343,9 @@ FBCALL int          fb_SetDate          ( FBSTRING *date );
  * error
  **************************************************************************************************/
 
+#define FB_ERROR_MESSAGE_SIZE		1024
+extern char *fb_error_message;
+
 typedef void (*FB_ERRHANDLER) (void);
 
 typedef struct _FB_ERRORCTX {

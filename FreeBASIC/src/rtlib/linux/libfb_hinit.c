@@ -139,7 +139,8 @@ void fb_hResize()
 /*:::::*/
 int fb_hTermOut( int code, int param1, int param2 )
 {
-	const char *extra_seq[] = { "\e(U", "\e(B", "\e[6n", "\e[18t", "\e[?1000h\e[?1003h", "\e[?1003l\e[?1000l" };
+	const char *extra_seq[] = { "\e(U", "\e(B", "\e[6n", "\e[18t",
+		"\e[?1000h\e[?1003h", "\e[?1003l\e[?1000l", "\e[H\e[J\e[0m" };
 	char *str;
 
 	if (!fb_con.inited)
@@ -184,7 +185,7 @@ int fb_hInitConsole ( )
 		return -1;
 	memcpy(&term_out, &fb_con.old_term_out, sizeof(term_out));
 	term_out.c_oflag |= OPOST;
-	if (tcsetattr(fb_con.h_out, TCSAFLUSH, &term_out))
+	if (tcsetattr(fb_con.h_out, TCSANOW, &term_out))
 		return -1;
 
 	/* Input setup */
@@ -201,7 +202,7 @@ int fb_hInitConsole ( )
 	term_in.c_cc[VMIN] = 1;
 	term_in.c_cc[VTIME] = 0;
 
-	if (tcsetattr(fb_con.h_in, TCSAFLUSH, &term_in))
+	if (tcsetattr(fb_con.h_in, TCSANOW, &term_in))
 		return -1;
 	/* Don't block */
 	fb_con.old_in_flags = fcntl(fb_con.h_in, F_GETFL, 0);

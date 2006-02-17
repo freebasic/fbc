@@ -28,7 +28,6 @@
 
 #include "fb_gfx_linux.h"
 #include <GL/glx.h>
-#include <dlfcn.h>
 
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 static void driver_exit(void);
@@ -57,38 +56,18 @@ typedef void (*GLXDESTROYCONTEXT)(Display *, GLXContext);
 typedef int (*GLXMAKECURRENT)(Display *, GLXDrawable, GLXContext);
 typedef void (*GLXSWAPBUFFERS)(Display *, GLXDrawable);
 
-static GLXCHOOSEVISUAL fb_glXChooseVisual = NULL;
-static GLXCREATECONTEXT fb_glXCreateContext;
-static GLXDESTROYCONTEXT fb_glXDestroyContext;
-static GLXMAKECURRENT fb_glXMakeCurrent;
-static GLXSWAPBUFFERS fb_glXSwapBuffers;
+typedef struct {
+	GLXCHOOSEVISUAL ChooseVisual;
+	GLXCREATECONTEXT CreateContext;
+	GLXDESTROYCONTEXT DestroyContext;
+	GLXMAKECURRENT MakeCurrent;
+	GLXSWAPBUFFERS SwapBuffers;
+} GLXFUNCS;
 
+static void *gl_lib = NULL;
+static GLXFUNCS fb_glX = { NULL };
 static int gl_options;
 static GLXContext context;
-
-
-/*:::::*/
-static int load_library(void)
-{
-	void *lib;
-	
-	if (!(lib = dlopen(NULL, RTLD_LAZY)))
-		return -1;
-	if (!dlsym(lib, "glXChooseVisual")) {
-		dlclose(lib);
-		if (!(lib = dlopen("libGL.so.1", RTLD_LAZY)))
-			return -1;
-	}
-	fb_glXChooseVisual = (GLXCHOOSEVISUAL)dlsym(lib, "glXChooseVisual");
-	fb_glXCreateContext = (GLXCREATECONTEXT)dlsym(lib, "glXCreateContext");
-	fb_glXDestroyContext = (GLXDESTROYCONTEXT)dlsym(lib, "glXDestroyContext");
-	fb_glXMakeCurrent = (GLXMAKECURRENT)dlsym(lib, "glXMakeCurrent");
-	fb_glXSwapBuffers = (GLXSWAPBUFFERS)dlsym(lib, "glXSwapBuffers");
-	if ((!fb_glXChooseVisual) || (!fb_glXCreateContext) || (!fb_glXDestroyContext) ||
-	    (!fb_glXMakeCurrent) || (!fb_glXSwapBuffers))
-		return -1;
-	return 0;
-}
 
 
 /*:::::*/
@@ -145,7 +124,11 @@ static void opengl_window_update(void)
 /*:::::*/
 static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rate, int flags)
 {
-    int depth = MAX(8, depth_arg);
+	const char *funcs[] = {
+		"glXChooseVisual", "glXCreateContext", "glXDestroyContext",
+		"glXMakeCurrent", "glXSwapBuffers", NULL
+	};
+	int depth = MAX(8, depth_arg);
 	XVisualInfo *info;
 	int gl_attrs[21] = { GLX_RGBA, GLX_DOUBLEBUFFER,
 			     GLX_RED_SIZE, 4, GLX_GREEN_SIZE, 4, GLX_BLUE_SIZE, 4,
@@ -190,19 +173,19 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 		return -1;
 	fb_linux.screen = XDefaultScreen(fb_linux.display);
 	
-	if (!fb_glXChooseVisual)
-		if (load_library())
-			return -1;
+	gl_lib = fb_hDynLoad("libGL.so.1", funcs, (void **)&fb_glX);
+	if (!gl_lib)
+		return -1;
 	
 	for (try_count = 0; try_count < 3; ++try_count) {
-		if ((info = fb_glXChooseVisual(fb_linux.display, fb_linux.screen, gl_attrs))) {
+		if ((info = fb_glX.ChooseVisual(fb_linux.display, fb_linux.screen, gl_attrs))) {
 			fb_linux.visual = info->visual;
-			context = fb_glXCreateContext(fb_linux.display, info, NULL, True);
+			context = fb_glX.CreateContext(fb_linux.display, info, NULL, True);
 			XFree(info);
 			if ((int)context > 0)
 				break;
 			else
-				fb_glXDestroyContext(fb_linux.display, context);
+				fb_glX.DestroyContext(fb_linux.display, context);
 		}
 		switch (try_count) {
 			case 0:
@@ -224,7 +207,7 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	if (result)
 		return result;
 	
-	fb_glXMakeCurrent(fb_linux.display, fb_linux.window, context);
+	fb_glX.MakeCurrent(fb_linux.display, fb_linux.window, context);
 	
 	return 0;
 }
@@ -234,10 +217,11 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 static void driver_exit(void)
 {
 	if (context > 0) {
-		fb_glXMakeCurrent(fb_linux.display, None, NULL);
-		fb_glXDestroyContext(fb_linux.display, context);
+		fb_glX.MakeCurrent(fb_linux.display, None, NULL);
+		fb_glX.DestroyContext(fb_linux.display, context);
 	}
 	fb_hX11Exit();
+    fb_hDynUnload(&gl_lib);
 }
 
 
@@ -245,6 +229,6 @@ static void driver_exit(void)
 static void driver_flip(void)
 {
 	fb_hX11Lock();
-	fb_glXSwapBuffers(fb_linux.display, fb_linux.window);
+	fb_glX.SwapBuffers(fb_linux.display, fb_linux.window);
 	fb_hX11Unlock();
 }

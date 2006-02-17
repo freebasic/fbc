@@ -114,8 +114,8 @@ static void init_keys()
 	
 	for (data = (KEY_DATA *)key_data; data->cap; data++) {
 		key = tgetstr(data->cap, NULL);
-		if (key)
-			add_key(&root_node, key + 1, data->code);
+		if (key) {
+			add_key(&root_node, key + 1, data->code); }
 	}
 	add_key(&root_node, "[M", KEY_MOUSE);
 }

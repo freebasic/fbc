@@ -18,51 +18,49 @@
  */
 
 /*
- * exit.c -- end and system routines
+ * dynload.c -- Dynamic library functions loading
  *
- * chng: oct/2004 written [v1ctor]
+ * chng: feb/2006 written [lillo]
  *
  */
 
 #include <stdlib.h>
-#include "fb.h"
-
-char *fb_error_message = NULL;
+#include <dlfcn.h>
 
 
 /*:::::*/
-FBCALL void fb_End ( int errlevel )
+void *fb_hDynLoad(const char *libname, const char **funcname, void **funcptr)
 {
-	/* do nothing, real job is done at fb_RtExit(), invoked by atexit() */
-
-	exit( errlevel );
-}
-
-
-/*:::::*/
-void fb_RtExit ( void )
-{
-#ifdef MULTITHREADED
-    int i;
-#endif
-
-	/* os-dep termination */
-	fb_hEnd( 0 );
-
-#ifdef MULTITHREADED
-	/* free thread local storage plus the keys */
-	for( i = 0; i < FB_TLSKEYS; i++ )
-	{
-     	fb_TlsDelCtx( i );
-
-		/* del key/index */
-		FB_TLSFREE( fb_tls_ctxtb[i] );
+	void *lib;
+	int i;
+	
+	/* First look if library was already statically linked with current executable */
+	if (!(lib = dlopen(NULL, RTLD_LAZY)))
+		return NULL;
+	if (!dlsym(lib, funcname[0])) {
+		dlclose(lib);
+		if (!(lib = dlopen(libname, RTLD_LAZY)))
+			return NULL;
 	}
-#endif
-
-	/* if an error has to be displayed, do it now */
-	if( fb_error_message )
-		fprintf( stderr, fb_error_message );
+	
+	/* Load functions */
+	for (i = 0; funcname[i]; i++) {
+		funcptr[i] = dlsym(lib, funcname[i]);
+		if (!funcptr[i]) {
+			dlclose(lib);
+			return NULL;
+		}
+	}
+	
+	return lib;
 }
 
 
+/*:::::*/
+void fb_hDynUnload(void **lib)
+{
+    if (*lib) {
+    	dlclose(*lib);
+	    *lib = NULL;
+	}
+}
