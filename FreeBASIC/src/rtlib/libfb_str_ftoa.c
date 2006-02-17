@@ -28,10 +28,6 @@
 #include <stdio.h>
 #include "fb.h"
 
-#ifdef TARGET_WIN32
-# define snprintf _snprintf
-#endif
-
 /*:::::*/
 char *fb_hFloat2Str( double val, char *buffer, int digits, int mask )
 {

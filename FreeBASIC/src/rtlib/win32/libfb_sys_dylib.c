@@ -27,10 +27,6 @@
 #include <stdio.h>
 #include "fb.h"
 
-#ifdef TARGET_CYGWIN
-#define _snprintf snprintf
-#endif
-
 /*:::::*/
 FBCALL void *fb_DylibLoad( FBSTRING *library )
 {
@@ -61,7 +57,7 @@ FBCALL void *fb_DylibSymbol( void *library, FBSTRING *symbol )
 		if( (!proc) && (!strchr( symbol->data, '@' )) ) {
 			procname[1023] = '\0';
 			for( i = 0; i < 256; i += 4 ) {
-				_snprintf( procname, 1023, "%s@%d", symbol->data, i );
+				snprintf( procname, 1023, "%s@%d", symbol->data, i );
 				proc = (void*) GetProcAddress( (HINSTANCE) library, procname );
 				if( proc )
 					break;

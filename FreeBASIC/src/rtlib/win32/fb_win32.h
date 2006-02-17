@@ -39,6 +39,16 @@
 
 #define FB_NEWLINE "\r\n"
 
+#ifdef TARGET_CYGWIN
+#define FB_LL_FMTMOD "ll"
+#else
+#define FB_LL_FMTMOD "I64"
+#endif
+
+#ifndef HAVE_SNPRINTF
+#define snprintf _snprintf
+#endif
+
 typedef struct _FB_DIRCTX
 {
 	int in_use;
@@ -126,11 +136,5 @@ FBCALL void fb_ConsoleGetScreenSize     ( int *cols, int *rows );
                                           char *pszBuffer, size_t uiSize );
        struct _FBSTRING *fb_hIntlConvertString  ( struct _FBSTRING *source,
                                           int source_cp, int dest_cp );
-
-#ifdef TARGET_CYGWIN
-#define FB_LL_FMTMOD "ll"
-#else
-#define FB_LL_FMTMOD "I64"
-#endif
 
 #endif
