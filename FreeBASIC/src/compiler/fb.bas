@@ -23,7 +23,6 @@
 option explicit
 option escape
 
-defint a-z
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\parser.bi"
@@ -248,7 +247,6 @@ sub fbSetDefaultOptions( )
 	env.clopt.multithreaded	= FALSE
 	env.clopt.profile       = FALSE
 	env.clopt.target		= FB_DEFAULTTARGET
-	env.clopt.naming		= FB_COMPNAMING_DEFAULT
 	env.clopt.extraerrchk	= FALSE
 	env.clopt.msbitfields	= FALSE
 
@@ -287,8 +285,6 @@ sub fbSetOption ( byval opt as integer, _
 		env.clopt.profile = value
 	case FB_COMPOPT_TARGET
 		env.clopt.target = value
-	case FB_COMPOPT_NAMING
-		env.clopt.naming = value
 	case FB_COMPOPT_EXTRAERRCHECK
 		env.clopt.extraerrchk = value
 	case FB_COMPOPT_MSBITFIELDS
@@ -329,8 +325,6 @@ function fbGetOption ( byval opt as integer ) as integer
 		function = env.clopt.profile
 	case FB_COMPOPT_TARGET
 		function = env.clopt.target
-	case FB_COMPOPT_NAMING
-		function = env.clopt.naming
 	case FB_COMPOPT_EXTRAERRCHECK
 		function = env.clopt.extraerrchk
 	case FB_COMPOPT_MSBITFIELDS
@@ -338,37 +332,6 @@ function fbGetOption ( byval opt as integer ) as integer
 	case else
 		function = FALSE
 	end select
-
-end function
-
-'':::::
-function fbGetNaming ( ) as integer
-    static as integer target = INVALID
-
-    if( target = INVALID ) then
-	    if env.clopt.naming <> FB_COMPNAMING_DEFAULT then
-	    	target = env.clopt.naming
-	    else
-		    select case as const env.clopt.target
-		    case FB_COMPTARGET_WIN32
-		    	target = FB_COMPNAMING_WIN32
-
-		    case FB_COMPTARGET_CYGWIN
-		    	target = FB_COMPNAMING_CYGWIN
-
-			case FB_COMPTARGET_LINUX
-		    	target = FB_COMPNAMING_LINUX
-
-			case FB_COMPTARGET_DOS
-		        target = FB_COMPNAMING_DOS
-
-		    case FB_COMPTARGET_XBOX
-		    	target = FB_COMPNAMING_XBOX
-		    end select
-		end if
-	end if
-
-    function = target
 
 end function
 

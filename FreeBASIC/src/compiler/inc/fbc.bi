@@ -42,7 +42,6 @@ type FBCCTX
 	outtype						as integer
 	showversion					as integer
 	target						as integer
-	naming						as integer
 
     libs						as integer
     objs						as integer

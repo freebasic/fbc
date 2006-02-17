@@ -365,8 +365,8 @@ function hCreateProcAlias( byval symbol as zstring ptr, _
     static sname as zstring * FB_MAXINTNAMELEN+1
 
 
-	select case as const fbGetNaming()
-    case FB_COMPNAMING_WIN32, FB_COMPNAMING_CYGWIN
+	select case as const env.clopt.target
+    case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
         dim addat as integer
 
         if( env.clopt.nounderprefix ) then
@@ -389,10 +389,10 @@ function hCreateProcAlias( byval symbol as zstring ptr, _
             end if
         end if
 
-	case FB_COMPNAMING_LINUX
+	case FB_COMPTARGET_LINUX
 		sname = *symbol
 
-	case FB_COMPNAMING_DOS, FB_COMPNAMING_XBOX
+	case FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
         sname = "_"
         sname += *symbol
 
@@ -445,18 +445,18 @@ end function
 function hCreateDataAlias( byval symbol as zstring ptr, _
 						   byval isimport as integer ) as string static
 
-	select case as const fbGetNaming()
-    case FB_COMPNAMING_WIN32, FB_COMPNAMING_CYGWIN
+	select case as const env.clopt.target
+    case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
         if( isimport ) then
             function = "__imp__" + *symbol
         else
             function = "_" + *symbol
         end if
 
-    case FB_COMPNAMING_DOS, FB_COMPNAMING_XBOX
+    case FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
 		function = "_" + *symbol
 
-    case FB_COMPNAMING_LINUX
+    case FB_COMPTARGET_LINUX
 		function = *symbol
 
     end select
@@ -466,18 +466,18 @@ end function
 '':::::
 function hStripUnderscore( byval symbol as zstring ptr ) as string static
 
-	select case as const fbGetNaming()
-    case FB_COMPNAMING_WIN32, FB_COMPNAMING_CYGWIN
+	select case as const env.clopt.target
+    case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
 	    if( env.clopt.nostdcall = FALSE ) then
 			function = *(symbol + 1)
 		else
 			function = *symbol
 		end if
 
-    case FB_COMPNAMING_DOS, FB_COMPNAMING_XBOX
+    case FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
     	function = *(symbol + 1)
 
-    case FB_COMPNAMING_LINUX
+    case FB_COMPTARGET_LINUX
     	function = *symbol
 
     end select

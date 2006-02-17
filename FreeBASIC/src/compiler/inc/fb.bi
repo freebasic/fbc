@@ -120,7 +120,6 @@ enum FBCOMPOPT_ENUM
 	FB_COMPOPT_MULTITHREADED
 	FB_COMPOPT_PROFILE
 	FB_COMPOPT_TARGET
-	FB_COMPOPT_NAMING
 	FB_COMPOPT_EXTRAERRCHECK
 	FB_COMPOPT_MSBITFIELDS
 
@@ -142,7 +141,6 @@ type FBCMMLINEOPT
 	multithreaded	as integer					'' link against thread-safe runtime library (def= false)
 	profile			as integer					'' build profiling code (def= false)
 	target			as integer					'' target platform
-	naming			as integer					'' target naming
 	extraerrchk		as integer					'' add bounds plus null pointer checking
 	msbitfields		as integer					'' use M$'s bitfields packing
 end type
@@ -173,16 +171,6 @@ enum FB_COMPTARGET_ENUM
 	FB_COMPTARGET_LINUX
 	FB_COMPTARGET_DOS
 	FB_COMPTARGET_XBOX
-end enum
-
-'' target naming
-enum FB_COMPNAMING_ENUM
-    FB_COMPNAMING_DEFAULT
-	FB_COMPNAMING_WIN32
-	FB_COMPNAMING_CYGWIN
-	FB_COMPNAMING_LINUX
-	FB_COMPNAMING_DOS
-	FB_COMPNAMING_XBOX
 end enum
 
 #if defined(TARGET_WIN32)
@@ -248,8 +236,6 @@ declare function 	fbIncludeFile	( byval filename as zstring ptr, _
 									  byval isonce as integer ) as integer
 
 declare function 	fbGetIncFile	( byval index as integer ) as zstring ptr
-
-declare function    fbGetNaming     ( ) as integer
 
 declare function 	fbGetEntryPoint ( ) as string
 

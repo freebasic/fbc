@@ -193,7 +193,6 @@ end sub
 sub setCompOptions( )
 
 	fbSetOption( FB_COMPOPT_TARGET, fbc.target )
-	fbSetOption( FB_COMPOPT_NAMING, fbc.naming )
 
 	fbSetOption( FB_COMPOPT_DEBUG, fbc.debug )
 	fbSetOption( FB_COMPOPT_OUTTYPE, fbc.outtype )
@@ -532,7 +531,6 @@ sub setDefaultOptions( )
 	fbc.stacksize	= FB_DEFSTACKSIZE
 	fbc.outtype 	= FB_OUTTYPE_EXECUTABLE
 	fbc.target		= fbGetOption( FB_COMPOPT_TARGET )
-	fbc.naming		= fbGetOption( FB_COMPOPT_NAMING )
 
 	fbc.mainfile	= ""
 	fbc.mainpath	= ""
@@ -610,32 +608,6 @@ function processTargetOptions( ) as integer
 				case "xbox"
 					fbc.target = FB_COMPTARGET_XBOX
 #endif
-
-				case else
-					printInvalidOpt( i )
-					return FALSE
-				end select
-
-				argv(i) = ""
-				argv(i+1) = ""
-
-			''
-			case "naming"
-				select case argv(i+1)
-				case "dos"
-					fbc.naming = FB_COMPNAMING_DOS
-
-				case "cygwin"
-					fbc.naming = FB_COMPNAMING_CYGWIN
-
-				case "linux"
-					fbc.naming = FB_COMPNAMING_LINUX
-
-				case "win32"
-					fbc.naming = FB_COMPNAMING_WIN32
-
-				case "xbox"
-					fbc.naming = FB_COMPNAMING_XBOX
 
 				case else
 					printInvalidOpt( i )

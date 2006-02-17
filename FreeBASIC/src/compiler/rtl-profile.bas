@@ -88,8 +88,8 @@ private function hGetProcName( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
 	else
 		procname = *symbGetName( proc )
 
-		select case fbGetNaming( )
-        case FB_COMPNAMING_WIN32, FB_COMPNAMING_CYGWIN
+		select case env.clopt.target
+        case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
 			procname = mid( procname, 2)
 			at = instr( procname, "@" )
 			if( at ) then
