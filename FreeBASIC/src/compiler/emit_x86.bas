@@ -5299,19 +5299,6 @@ sub emitWriteFooter( byval tottime as double ) static
 end sub
 
 '':::::
-sub emitWriteRtInit( byval isdllmain as integer ) static
-    dim as ASTNODE ptr argc, argv
-
-	'' call fb_Init
-	argc = astNewVAR( emit.main.argc, 0, symbGetType( emit.main.argc ) )
-	argv = astNewVAR( emit.main.argv, 0, symbGetType( emit.main.argv ) )
-
-    '' init( argc, argv )
-    emit.main.initnode = rtlInitApp( argc, argv, isdllmain )
-
-end sub
-
-'':::::
 private function hGetTypeString( byval typ as integer ) as string static
 
 	select case as const typ

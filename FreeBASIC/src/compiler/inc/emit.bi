@@ -264,16 +264,6 @@ type EMIT_MEMCB as sub( byval dvreg as IRVREG ptr, _
 						byval bytes as integer )
 
 
-type EMITMAIN
-	node			as ASTPROCNODE ptr
-	proc			as FBSYMBOL ptr
-	argc			as FBSYMBOL ptr
-	argv			as FBSYMBOL ptr
-	initlabel		as FBSYMBOL ptr
-	exitlabel		as FBSYMBOL ptr
-	initnode		as ASTNODE ptr
-end type
-
 type EMITCTX
 	inited								as integer
 
@@ -287,9 +277,6 @@ type EMITCTX
 	curnode								as EMIT_NODE ptr
 
 	regUsedTB(EMIT_REGCLASSES-1) 		as REG_FREETB       '' keep track of register usage
-
-	''
-	main								as EMITMAIN
 
 	'' platform-dependent
 	dataend								as integer

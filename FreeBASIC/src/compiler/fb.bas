@@ -531,6 +531,8 @@ function fbCompile( byval infname as zstring ptr, _
 		exit function
 	end if
 
+	fbMainBegin( )
+
 	parserInit( )
 
 	tmr = timer( )
@@ -547,6 +549,8 @@ function fbCompile( byval infname as zstring ptr, _
 	parserEnd( )
 
 	lexEnd( )
+
+	fbMainEnd( )
 
 	'' save
 	emitClose( tmr )
