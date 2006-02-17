@@ -93,7 +93,7 @@ static LPDIRECTDRAWPALETTE lpDDP;
 static LPDIRECTINPUT lpDI;
 static LPDIRECTINPUTDEVICE lpDID;
 static RECT rect;
-static int display_offset;
+static int display_offset, wait_vsync = FALSE;
 static HANDLE vsync_event = NULL;
 
 
@@ -364,15 +364,14 @@ static void directx_thread(HANDLE running_event)
 
 	while (fb_win32.is_running)
 	{
-		/* Wait 8 milliseconds before entering the vsync busy-wait. With a refresh rate
-		 * of 85 Hz, a retrace happens every 11.76 milliseconds; we waste the first 8
-		 * with a Sleep() to relinquish CPU cycles to play nice with multitasking.
-		 */
-		Sleep(8);
+		Sleep(10);
 		
 		fb_hWin32Lock();
-
-		IDirectDraw2_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, 0);
+		
+		if (wait_vsync) {
+			WaitForSingleObject(vsync_event, 20);
+			wait_vsync = FALSE;
+		}
 		
 		if ((fb_win32.is_active) || (!(fb_win32.flags & DRIVER_FULLSCREEN))) {
 			IDirectDrawSurface_Restore(lpDDS);
@@ -392,9 +391,6 @@ static void directx_thread(HANDLE running_event)
 
 			directx_paint();
 		}
-		
-		/* Signal vsync */
-		SetEvent(vsync_event);
 
         if( fb_win32.is_active ) {
             result = IDirectInputDevice_GetDeviceState(lpDID, 256, keystate);
@@ -437,7 +433,12 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 static void driver_wait_vsync(void)
 {
 	ResetEvent(vsync_event);
-	WaitForSingleObject(vsync_event, 20);
+	fb_hWin32Lock();
+	wait_vsync = TRUE;
+	fb_hWin32Unlock();
+	IDirectDraw2_WaitForVerticalBlank(lpDD, DDWAITVB_BLOCKBEGIN, 0);
+	/* Signal vsync to updater thread */
+	SetEvent(vsync_event);
 }
 
 
