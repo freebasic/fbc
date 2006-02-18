@@ -118,19 +118,6 @@ SECTIONS
     KEEP (*(.dtors))
   }
 
-  .fb_ctors :
-  {
-    ___FB_CTOR_BEGIN__ = . ; __FB_CTOR_BEGIN__ = . ;
-    *(.fb_ctors)
-    ___FB_CTOR_END__ = . ; __FB_CTOR_END__ = . ;
-  }
-  .fb_dtors :
-  {
-    ___FB_DTOR_BEGIN__ = . ; __FB_DTOR_BEGIN__ = . ;
-    *(.fb_dtors)
-    ___FB_DTOR_END__ = . ; __FB_DTOR_END__ = . ;
-  }
-
   .jcr            : { KEEP (*(.jcr)) }
   .got            : { *(.got.plt) *(.got) }
   _edata = .;

@@ -20,13 +20,6 @@ SECTIONS
      ___DTOR_LIST__ = .; __DTOR_LIST__ = . ;
 			LONG (-1); *(.dtors); *(.dtor); *(SORT(.dtors.*));  LONG (0);
 
-    ___FB_CTOR_BEGIN__ = . ; __FB_CTOR_BEGIN__ = . ;
-    *(.fb_ctors);
-    ___FB_CTOR_END__ = . ; __FB_CTOR_END__ = . ;
-    ___FB_DTOR_BEGIN__ = . ; __FB_DTOR_BEGIN__ = . ;
-    *(.fb_dtors);
-    ___FB_DTOR_END__ = . ; __FB_DTOR_END__ = . ;
-
      *(.fini)
     /* ??? Why is .gcc_exc here?  */
      *(.gcc_exc)
