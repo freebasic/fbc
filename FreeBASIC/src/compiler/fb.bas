@@ -583,9 +583,11 @@ sub fbAddDefaultLibs( ) static
 		symbAddLib( "ncurses" )
 
 	case FB_COMPTARGET_DOS
+		symbAddLib( "gcc" )
 		symbAddLib( "c" )
 
 	case FB_COMPTARGET_XBOX
+		symbAddLib( "gcc" )
 		symbAddLib( "fbgfx" )
 		symbAddLib( "SDL" )
 		symbAddLib( "openxdk" )
