@@ -87,7 +87,7 @@ function symbAllocFloatConst( byval value as double, _
 					  FB_ALLOCTYPE_SHARED, TRUE, FALSE, FALSE )
 
 	''
-	s->var.initialized = TRUE
+	symbSetIsInitialized( s )
 
 	s->var.inittext = ZstrAllocate( len( svalue ) )
 	*s->var.inittext = svalue
@@ -138,7 +138,7 @@ function symbAllocStrConst( byval sname as zstring ptr, _
 					  FB_ALLOCTYPE_SHARED, FALSE, TRUE, FALSE )
 
 	''
-	s->var.initialized = TRUE
+	symbSetIsInitialized( s )
 
 	s->var.inittext = ZstrAllocate( strlen )
 	*s->var.inittext = *sname
@@ -189,7 +189,7 @@ function symbAllocWStrConst( byval sname as wstring ptr, _
 					  FB_ALLOCTYPE_SHARED, FALSE, TRUE, FALSE )
 
 	''
-	s->var.initialized = TRUE
+	symbSetIsInitialized( s )
 
 	s->var.inittextw = WstrAllocate( strlen )
 	*s->var.inittextw = *sname

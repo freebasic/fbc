@@ -33,7 +33,8 @@ option escape
 ''
 function cArguments( byval proc as FBSYMBOL ptr, _
 					 byval procmode as integer, _
-					 byval isproto as integer ) as FBSYMBOL ptr
+					 byval isproto as integer _
+				   ) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr arg
 
@@ -69,7 +70,8 @@ end sub
 ''
 function cArgDecl( byval proc as FBSYMBOL ptr, _
 				   byval procmode as integer, _
-				   byval isproto as integer ) as FBSYMBOL ptr
+				   byval isproto as integer _
+				 ) as FBSYMBOL ptr
 
 	static as zstring * FB_MAXNAMELEN+1 idTB(0 to FB_MAXARGRECLEVEL-1)
 	static as integer arglevel = 0
@@ -93,10 +95,10 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 
 		lexSkipToken( )
 
-		return symbAddArg( proc, NULL, _
-						   INVALID, NULL, 0, _
-						   0, FB_ARGMODE_VARARG, INVALID, _
-						   FALSE, NULL )
+		return symbAddProcArg( proc, NULL, _
+						   	   INVALID, NULL, 0, _
+						   	   0, FB_ARGMODE_VARARG, INVALID, _
+						   	   FALSE, NULL )
 	end if
 
 	'' (BYVAL|BYREF)?
@@ -302,7 +304,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 			sym = astGetSymbol( expr )
 			'' diff types or isn't it a literal string?
 			if( (dclass <> FB_DATACLASS_STRING) or _
-				(symbGetVarInitialized( sym ) = FALSE) ) then
+				(symbGetIsInitialized( sym ) = FALSE) ) then
 				hReportError( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
 			end if
@@ -335,10 +337,10 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     	pid = NULL
     end if
 
-    function = symbAddArg( proc, pid, _
-    					   atype, subtype, ptrcnt, _
-    					   alen, amode, asuffix, _
-    					   optional, @optval )
+    function = symbAddProcArg( proc, pid, _
+    					       atype, subtype, ptrcnt, _
+    					   	   alen, amode, asuffix, _
+    					   	   optional, @optval )
 
 end function
 

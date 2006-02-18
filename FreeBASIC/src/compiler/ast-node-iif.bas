@@ -127,7 +127,8 @@ function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 	end if
 
 	'' condition
-	astFLush( l )
+	astLoad( l )
+	astDel( l )
 
 	''
 	exitlabel = symbAddLabel( NULL )

@@ -96,7 +96,7 @@ function cOptDecl as integer
 					if( s <> NULL ) then
 
 						'' is it from the rtlib (gfxlib will be listed as part of the rt too)?
-						if( symbGetProcIsRTL( s ) = FALSE ) then
+						if( symbGetIsRTL( s ) = FALSE ) then
 							hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 							exit function
 						end if

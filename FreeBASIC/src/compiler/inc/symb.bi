@@ -20,6 +20,315 @@
 '' symbol table protos
 ''
 
+''
+enum FB_SYMBCLASS
+	FB_SYMBCLASS_VAR			= 1
+	FB_SYMBCLASS_CONST
+	FB_SYMBCLASS_PROC
+	FB_SYMBCLASS_PROCARG
+	FB_SYMBCLASS_DEFINE
+	FB_SYMBCLASS_KEYWORD
+	FB_SYMBCLASS_LABEL
+	FB_SYMBCLASS_ENUM
+	FB_SYMBCLASS_BITFIELD
+	FB_SYMBCLASS_UDT
+	FB_SYMBCLASS_UDTELM
+	FB_SYMBCLASS_TYPEDEF
+	FB_SYMBCLASS_FWDREF
+	FB_SYMBCLASS_SCOPE
+end enum
+
+enum FB_SYMBSTATS
+	FB_SYMBSTATS_ALLOCATED		= &h000001
+	FB_SYMBSTATS_ACCESSED		= &h000002
+	FB_SYMBSTATS_EMITTED		= &h000004
+	FB_SYMBSTATS_INITIALIZED	= &h000008
+	FB_SYMBSTATS_DECLARED		= &h000010
+	FB_SYMBSTATS_CALLED			= &h000020
+	FB_SYMBSTATS_RTL			= &h000040
+	FB_SYMBSTATS_THROWABLE		= &h000080
+end enum
+
+type FBSYMBOL_ as FBSYMBOL
+
+''
+type FBARRAYDIM
+	lower			as integer
+	upper			as integer
+end type
+
+type FBVARDIM
+	ll_prv			as FBVARDIM ptr				'' linked-list nodes
+	ll_nxt			as FBVARDIM ptr				'' /
+
+	lower			as integer
+	upper			as integer
+
+	next			as FBVARDIM ptr
+end type
+
+''
+type FBLIBRARY
+	ll_prv			as FBLIBRARY ptr			'' linked-list nodes
+	ll_nxt			as FBLIBRARY ptr			'' /
+
+	name			as zstring ptr
+
+	hashitem		as HASHITEM ptr
+	hashindex		as uinteger
+end type
+
+''
+type FBSYMBOLTB
+    head			as FBSYMBOL_ ptr			'' first node
+    tail			as FBSYMBOL_ ptr			'' last node
+end type
+
+union FBVALUE
+	str				as FBSYMBOL_ ptr
+	int				as integer
+	float			as double
+	long			as longint
+end union
+
+''
+type FBS_KEYWORD
+	id				as integer
+	class			as integer
+end type
+
+''
+type FBDEFARG
+	ll_prv			as FBDEFARG ptr				'' linked-list nodes
+	ll_nxt			as FBDEFARG ptr				'' /
+
+	name			as zstring ptr
+	id				as short					'' unique id
+	next			as FBDEFARG ptr
+end type
+
+enum FB_DEFTOK_TYPE
+	FB_DEFTOK_TYPE_ARG
+	FB_DEFTOK_TYPE_ARGSTR
+	FB_DEFTOK_TYPE_TEX
+	FB_DEFTOK_TYPE_TEXW
+end enum
+
+type FBDEFTOK
+	ll_prv			as FBDEFTOK ptr				'' linked-list nodes
+	ll_nxt			as FBDEFTOK ptr				'' /
+
+	type			as FB_DEFTOK_TYPE
+
+	union
+		text		as zstring ptr
+		textw		as wstring ptr
+		argnum		as integer
+	end union
+
+	next			as FBDEFTOK ptr
+end type
+
+type FBS_DEFINE
+	args			as integer
+	arghead 		as FBDEFARG ptr
+
+	union
+		tokhead			as FBDEFTOK ptr			'' only if args > 0
+		text			as zstring ptr			'' //           = 0
+		textw			as wstring ptr
+	end union
+
+	isargless		as integer
+    flags           as integer          		'' flags:
+                                        		'' bit    meaning
+                                        		'' 0      1=numeric, 0=string
+	proc			as function( ) as string
+end type
+
+''
+type FBFWDREF
+	ll_prv			as FBFWDREF ptr				'' linked-list nodes
+	ll_nxt			as FBFWDREF ptr				'' /
+
+	ref				as FBSYMBOL_ ptr
+	prev			as FBFWDREF ptr
+end type
+
+type FBS_FWDREF
+	refs			as integer
+	reftail			as FBFWDREF ptr
+end type
+
+''
+type FBS_LABEL
+	declared		as integer
+end type
+
+''
+type FBS_ARRAY
+	dims			as integer
+	dimhead 		as FBVARDIM ptr
+	dimtail			as FBVARDIM ptr
+	dif				as integer
+	elms			as integer
+	desc			as FBSYMBOL_ ptr
+end type
+
+''
+type FB_TYPEDBG
+	typenum			as integer
+end type
+
+type FBS_UDT
+	parent			as FBSYMBOL_ ptr
+	isunion			as integer
+	elements		as integer
+	fldtb			as FBSYMBOLTB				'' fields symbol tb
+	ofs				as integer
+	align			as integer
+	lfldlen			as integer					'' largest field len
+	bitpos			as uinteger
+	unpadlgt		as integer					'' unpadded len
+	ptrcnt			as integer
+	dyncnt			as integer
+	dbg				as FB_TYPEDBG
+end type
+
+type FBS_UDTELM
+	ofs				as integer
+	parent			as FBSYMBOL_ ptr
+end type
+
+type FBS_BITFLD
+	bitpos			as integer
+	bits			as integer
+end type
+
+''
+type FBS_ENUM
+	elements		as integer
+	elmtb			as FBSYMBOLTB				'' elements symbol tb
+	dbg				as FB_TYPEDBG
+end type
+
+''
+type FBS_CONST
+	val				as FBVALUE
+end type
+
+''
+type FBS_PROCARG
+	mode			as FBARGMODE_ENUM
+	suffix			as integer					'' QB quirk..
+	optional		as integer					'' true or false
+	optval			as FBVALUE                  '' default value
+end type
+
+type FBRTLCALLBACK as function( byval sym as FBSYMBOL_ ptr ) as integer
+
+type FB_PROCOVL
+	maxargs			as integer
+	next			as FBSYMBOL_ ptr
+end type
+
+type FB_PROCSTK
+	localptr		as integer
+	argptr			as integer					'' /
+end type
+
+type FB_PROCDBG
+	iniline			as integer					'' sub|function
+	endline			as integer					'' end sub|function
+	incfile			as integer
+end type
+
+type FB_PROCRTL
+	callback		as FBRTLCALLBACK
+end type
+
+type FBS_PROC
+	mode			as FBFUNCMODE_ENUM			'' calling convention (STDCALL, PASCAL, C)
+	realtype		as integer					'' used with STRING and UDT functions
+	lib				as FBLIBRARY ptr
+	args			as integer
+	argtb			as FBSYMBOLTB				'' arguments symbol tb
+
+	rtl				as FB_PROCRTL
+	ovl				as FB_PROCOVL				'' overloading
+	stk				as FB_PROCSTK				'' to keep track of the stack frame
+
+	loctb			as FBSYMBOLTB				'' local symbols table
+
+	dbg				as FB_PROCDBG				'' debugging
+end type
+
+type FB_SCOPEDBG
+	iniline			as integer					'' scope
+	endline			as integer					'' end scope
+	inilabel		as FBSYMBOL_ ptr
+	endlabel		as FBSYMBOL_ ptr
+end type
+
+type FBS_SCOPE
+	loctb			as FBSYMBOLTB
+	dbg				as FB_SCOPEDBG
+end type
+
+type FBS_VAR
+	suffix			as integer					'' QB quirk..
+	union
+		inittext	as zstring ptr
+		inittextw	as wstring ptr
+	end union
+	array			as FBS_ARRAY
+	elm				as FBS_UDTELM
+end type
+
+''
+type FBSYMBOL
+	ll_prv			as FBSYMBOL ptr				'' linked-list nodes
+	ll_nxt			as FBSYMBOL ptr				'' /
+
+	class			as FB_SYMBCLASS				'' VAR, CONST, PROC, ..
+	typ				as integer					'' integer, float, string, pointer, ..
+	subtype			as FBSYMBOL ptr				'' used by UDT's
+	ptrcnt 			as integer
+	alloctype		as FBALLOCTYPE_ENUM			'' STATIC, DYNAMIC, SHARED, ARG, ..
+
+	name			as zstring ptr				'' original name, shared by hash tb
+	alias			as zstring ptr
+	hashitem		as HASHITEM ptr
+	hashindex		as uinteger
+
+	scope			as uinteger
+	lgt				as integer
+	ofs				as integer					'' used with local vars and args
+	stats			as FB_SYMBSTATS
+
+	union
+		var			as FBS_VAR
+		con			as FBS_CONST
+		udt			as FBS_UDT
+		bitfld		as FBS_BITFLD
+		enum		as FBS_ENUM
+		proc		as FBS_PROC
+		arg			as FBS_PROCARG
+		lbl			as FBS_LABEL
+		def			as FBS_DEFINE
+		key			as FBS_KEYWORD
+		fwd			as FBS_FWDREF
+		scp			as FBS_SCOPE
+	end union
+
+	left			as FBSYMBOL ptr 			'' same name symbols list
+	right			as FBSYMBOL ptr				'' /
+
+	symtb			as FBSYMBOLTB ptr			'' symbol tb it's part of
+	prev			as FBSYMBOL ptr				'' symbol tb list
+	next			as FBSYMBOL ptr             '' /
+end type
+
 #include once "inc\ast.bi"
 
 type SYMBCTX
@@ -188,7 +497,8 @@ declare function 	symbAddVarEx			( byval symbol as zstring ptr, _
 				       						  byval clearname as integer ) as FBSYMBOL ptr
 
 declare function 	symbAddTempVar			( byval typ as integer, _
-											  byval subtype as FBSYMBOL ptr = NULL ) as FBSYMBOL ptr
+											  byval subtype as FBSYMBOL ptr = NULL, _
+											  byval doalloc as integer = FALSE ) as FBSYMBOL ptr
 
 declare function 	symbAddConst			( byval symbol as zstring ptr, _
 											  byval typ as integer, _
@@ -219,7 +529,7 @@ declare function 	symbAddEnumElement		( byval parent as FBSYMBOL ptr, _
 											  byval symbol as zstring ptr, _
 					         				  byval value as integer ) as FBSYMBOL ptr
 
-declare function 	symbAddArg				( byval proc as FBSYMBOL ptr, _
+declare function 	symbAddProcArg			( byval proc as FBSYMBOL ptr, _
 											  byval symbol as zstring ptr, _
 											  byval typ as integer, _
 					 						  byval subtype as FBSYMBOL ptr, _
@@ -229,6 +539,8 @@ declare function 	symbAddArg				( byval proc as FBSYMBOL ptr, _
 					 						  byval suffix as integer, _
 					 						  byval optional as integer, _
 					 						  byval optval as FBVALUE ptr ) as FBSYMBOL ptr
+
+declare function 	symbAddProcResArg		( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function 	symbAddPrototype		( byval proc as FBSYMBOL ptr, _
 											  byval symbol as zstring ptr, _
@@ -256,11 +568,9 @@ declare function 	symbPreAddProc			( byval symbol as zstring ptr ) as FBSYMBOL p
 
 declare function 	symbAddProcResult		( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
 
-declare function 	symbAddProcResArg		( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
-
 declare function 	symbAddLib				( byval libname as zstring ptr ) as FBLIBRARY ptr
 
-declare function 	symbAddArgAsVar			( byval symbol as zstring ptr, _
+declare function 	symbAddArg				( byval symbol as zstring ptr, _
 											  byval arg as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function 	symbAddScope			( ) as FBSYMBOL ptr
@@ -327,7 +637,7 @@ declare sub 		symbDelScope			( byval scp as FBSYMBOL ptr )
 
 declare function 	symbNewSymbol			( byval s as FBSYMBOL ptr, _
 					 						  byval symtb as FBSYMBOLTB ptr, _
-					 						  byval class as SYMBCLASS_ENUM, _
+					 						  byval class as FB_SYMBCLASS, _
 					 						  byval dohash as integer = TRUE, _
 					 						  byval symbol as zstring ptr, _
 					 						  byval aliasname as zstring ptr, _
@@ -404,13 +714,45 @@ declare function 	symbGetUnsignedType		( byval dtype as integer ) as integer
 declare function 	symbRemapType			( byval dtype as integer, _
 					  					  	  byval subtype as FBSYMBOL ptr ) as integer
 
+declare function 	symbAllocLocalVars		( byval proc as FBSYMBOL ptr ) as integer
+
 ''
 '' getters and setters as macros
 ''
 
-#define symbGetAccessCnt(s) s->acccnt
+#define symbGetSymbolTb() symb.symtb
 
-#define symbIncAccessCnt(s) s->acccnt += 1
+#define symbGetIsAccessed(s) ((s->stats and FB_SYMBSTATS_ACCESSED) <> 0)
+
+#define symbSetIsAccessed(s) s->stats or= FB_SYMBSTATS_ACCESSED
+
+#define symbGetIsAllocated(s) ((s->stats and FB_SYMBSTATS_ALLOCATED) <> 0)
+
+#define symbSetIsAllocated(s) s->stats or= FB_SYMBSTATS_ALLOCATED
+
+#define symbGetIsEmitted(s) ((s->stats and FB_SYMBSTATS_EMITTED) <> 0)
+
+#define symbSetIsEmitted(s) s->stats or= FB_SYMBSTATS_EMITTED
+
+#define symbGetIsInitialized(s) ((s->stats and FB_SYMBSTATS_INITIALIZED) <> 0)
+
+#define symbSetIsInitialized(s) s->stats or= FB_SYMBSTATS_INITIALIZED
+
+#define symbGetIsDeclared(s) ((s->stats and FB_SYMBSTATS_DECLARED) <> 0)
+
+#define symbSetIsDeclared(s) s->stats or= FB_SYMBSTATS_DECLARED
+
+#define symbGetIsCalled(s) ((s->stats and FB_SYMBSTATS_CALLED) <> 0)
+
+#define symbSetIsCalled(s) s->stats or= FB_SYMBSTATS_CALLED
+
+#define symbGetIsRTL(s) ((s->stats and FB_SYMBSTATS_RTL) <> 0)
+
+#define symbSetIsRTL(s) s->stats or= FB_SYMBSTATS_RTL
+
+#define symbGetIsThrowable(s) ((s->stats and FB_SYMBSTATS_THROWABLE) <> 0)
+
+#define symbSetIsThrowable(s) s->stats or= FB_SYMBSTATS_THROWABLE
 
 #define symbGetLen(s) iif( s <> NULL, s->lgt, 0 )
 
@@ -496,12 +838,6 @@ declare function 	symbRemapType			( byval dtype as integer, _
 
 #define symbGetDefineFlags(d) d->def.flags
 
-#define symbGetVarInitialized(s) s->var.initialized
-
-#define symbGetVarEmited(s) s->var.emited
-
-#define symbSetVarEmited(s,v) s->var.emited = v
-
 #define symbGetVarText(s) s->var.inittext
 
 #define symbGetVarTextW(s) s->var.inittextw
@@ -565,10 +901,6 @@ declare function 	symbRemapType			( byval dtype as integer, _
 
 #define symbGetLabelIsDeclared(l) l->lbl.declared
 
-#define symbGetProcIsDeclared(f) f->proc.isdeclared
-
-#define symbSetProcIsDeclared(f,d) f->proc.isdeclared = d
-
 #define symbGetProcFirstArg(f) iif( f->proc.mode = FB_FUNCMODE_PASCAL, f->proc.argtb.head, f->proc.argtb.tail )
 
 #define symbGetProcLastArg(f) iif( f->proc.mode = FB_FUNCMODE_PASCAL, f->proc.argtb.tail, f->proc.argtb.head )
@@ -585,21 +917,9 @@ declare function 	symbRemapType			( byval dtype as integer, _
 
 #define symbSetProcCallback(f,cb) f->proc.rtl.callback = cb
 
-#define symbGetProcIsRTL(f) f->proc.isrtl
-
-#define symbSetProcIsRTL(f,v) f->proc.isrtl = v
-
-#define symbGetProcErrorCheck(f) f->proc.doerrorcheck
-
-#define symbSetProcErrorCheck(f,v) f->proc.doerrorcheck = v
-
 #define symbGetProcIsOverloaded(f) ((f->alloctype and FB_ALLOCTYPE_OVERLOADED) > 0)
 
 #define symGetProcOvlMaxArgs(f) f->proc.ovl.maxargs
-
-#define symbGetProcIsCalled(f) f->proc.iscalled
-
-#define symbSetProcIsCalled(f,v) f->proc.iscalled = v
 
 #define symbGetProcIncFile(f) f->proc.dbg.incfile
 

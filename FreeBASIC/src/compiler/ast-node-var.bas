@@ -32,7 +32,9 @@ option escape
 function astNewVAR( byval sym as FBSYMBOL ptr, _
 					byval ofs as integer, _
 					byval dtype as integer, _
-					byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr static
+					byval subtype as FBSYMBOL ptr = NULL _
+				  ) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
 
 	'' alloc new node
@@ -44,24 +46,24 @@ function astNewVAR( byval sym as FBSYMBOL ptr, _
 	end if
 
 	n->sym = sym
-	if( sym <> NULL ) then
-		ofs += sym->ofs
-	end if
-	n->var.ofs	= ofs
+	n->var.ofs = ofs
 
 end function
 
 '':::::
 function astLoadVAR( byval n as ASTNODE ptr ) as IRVREG ptr static
     dim as FBSYMBOL ptr s
+    dim as integer ofs
 
 	s = n->sym
+	ofs = n->var.ofs
 	if( s <> NULL ) then
-		symbIncAccessCnt( s )
+		symbSetIsAccessed( s )
+		ofs += symbGetVarOfs( s )
 	end if
 
 	if( ast.doemit ) then
-		function = irAllocVRVAR( n->dtype, s, n->var.ofs )
+		function = irAllocVRVAR( n->dtype, s, ofs )
 	end if
 
 end function

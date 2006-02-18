@@ -121,7 +121,7 @@ sub rtlAddIntrinsicProcs( )
 	dim as integer typ
 	dim as string aname, optstr
 	dim as integer p, pargs, ptype, pmode, palloctype
-	dim as integer a, atype, alen, amode, optional, ptrcnt, errorcheck, overloaded
+	dim as integer a, atype, alen, amode, optional, ptrcnt, checkerror, overloaded
 	dim as FBSYMBOL ptr proc
 	dim as FBRTLCALLBACK pcallback
 	dim as FBVALUE optval
@@ -137,10 +137,10 @@ sub rtlAddIntrinsicProcs( )
 
 		read aname
 		read ptype, pmode
-		read pcallback, errorcheck, overloaded
+		read pcallback, checkerror, overloaded
 		read pargs
 
-		assert( ( errorcheck and ptype = FB_DATATYPE_INTEGER ) or not errorcheck )
+		assert( ( checkerror and ptype = FB_DATATYPE_INTEGER ) or not checkerror )
 
 		proc = symbPreAddProc( NULL )
 
@@ -170,10 +170,10 @@ sub rtlAddIntrinsicProcs( )
 
 			CNTPTR( atype, typ, ptrcnt )
 
-			symbAddArg( proc, NULL, _
-						atype, NULL, ptrcnt, _
-						alen, amode, INVALID, _
-						optional, @optval )
+			symbAddProcArg( proc, NULL, _
+							atype, NULL, ptrcnt, _
+							alen, amode, INVALID, _
+							optional, @optval )
 		next
 
 		''
@@ -199,9 +199,11 @@ sub rtlAddIntrinsicProcs( )
 
 		''
 		if( proc <> NULL ) then
-			symbSetProcIsRTL( proc, TRUE )
+			symbSetIsRTL( proc )
 			symbSetProcCallback( proc, pcallback )
-			symbSetProcErrorCheck( proc, errorcheck )
+			if( checkerror ) then
+				symbSetIsThrowable( proc )
+			end if
 		else
 			hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *pname )
 		end if

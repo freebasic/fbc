@@ -369,9 +369,6 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 		t->udt.bitpos and= (symbGetDataBits( typ ) - 1)
 	end if
 
-	''
-    e->var.initialized 	= FALSE
-
     function = e
 
 end function

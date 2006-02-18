@@ -54,7 +54,7 @@ function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 		end if
 
 		''
-		symbSetProcIsCalled( sym, TRUE )
+		symbSetIsCalled( sym )
 
 	else
 		if( ptrexpr = NULL ) then
@@ -78,7 +78,7 @@ function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 
 	if( sym <> NULL ) then
 		n->proc.arg	= symbGetProcHeadArg( sym )
-		n->proc.isrtl = symbGetProcIsRTL( sym )
+		n->proc.isrtl = symbGetIsRTL( sym )
 
 		callback = symbGetProcCallback( sym )
 		if( callback <> NULL ) then
@@ -1134,7 +1134,7 @@ private sub hAllocTempStruct( byval n as ASTNODE ptr, _
 	if( proc->typ = FB_DATATYPE_USERDEF ) then
 		if( proc->proc.realtype = FB_DATATYPE_POINTER + FB_DATATYPE_USERDEF ) then
 			'' create a temp struct and pass its address
-			v = symbAddTempVar( FB_DATATYPE_USERDEF, proc->subtype )
+			v = symbAddTempVar( FB_DATATYPE_USERDEF, proc->subtype, TRUE )
         	p = astNewVar( v, 0, FB_DATATYPE_USERDEF, proc->subtype )
         	vr = astLoad( p )
 

@@ -445,12 +445,12 @@ function cSymbolInit( byval sym as FBSYMBOL ptr ) as integer
 	end if
 
 	'' already emited?? impossible but..
-	if( symbGetVarEmited( sym ) ) then
+	if( symbGetIsEmitted( sym ) ) then
 		hReportError( FB_ERRMSG_SYNTAXERROR, TRUE )
 		exit function
 	end if
 
-	symbSetVarEmited( sym, TRUE )
+	symbSetIsEmitted( sym )
 
 	islocal = (not symbIsStatic( sym )) and fbIsLocal( )
 

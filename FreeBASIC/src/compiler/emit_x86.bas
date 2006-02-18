@@ -301,10 +301,10 @@ function emitGetVarName( byval s as FBSYMBOL ptr ) as string static
 	if( s <> NULL ) then
 		sname = *symbGetName( s )
 
-		if( s->ofs > 0 ) then
-			sname += "+" + str( s->ofs )
-		elseif( s->ofs < 0 ) then
-			sname += str( s->ofs )
+		if( symbGetVarOfs( s ) > 0 ) then
+			sname += "+" + str( symbGetVarOfs( s ) )
+		elseif( symbGetVarOfs( s ) < 0 ) then
+			sname += str( symbGetVarOfs( s ) )
 		end if
 
 		function = sname
@@ -5372,9 +5372,9 @@ sub emitWriteBss( byval s as FBSYMBOL ptr )
     	'' variable?
     	case FB_SYMBCLASS_VAR
 			'' not initialized?
-			if( symbGetVarInitialized( s ) = FALSE ) then
+			if( symbGetIsInitialized( s ) = FALSE ) then
 				'' not emited already?
-				if( symbGetVarEmited( s ) = FALSE ) then
+				if( symbGetIsEmitted( s ) = FALSE ) then
     				'' not extern?
     				if( symbIsExtern( s ) = FALSE ) then
     	    			'' not a string or array descriptor?
@@ -5468,7 +5468,7 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
     	'' variable?
     	case FB_SYMBCLASS_VAR
     		'' initialized?
-    		if( symbGetVarInitialized( s ) ) then
+    		if( symbGetIsInitialized( s ) ) then
     	    	dtype = symbGetType( s )
     	    	select case dtype
     	    	'' udt? don't emit
@@ -5476,7 +5476,7 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
 
     	    	'' string? check if ever referenced
     	    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    	    		doemit = symbGetAccessCnt( s ) > 0
+    	    		doemit = symbGetIsAccessed( s )
 
 				'' anything else, only if len > 0
 				case else
@@ -5710,7 +5710,7 @@ sub emitWriteExport( ) static
     do while( s <> NULL )
 
     	if( symbIsPROC( s ) ) then
-    		if( symbGetProcIsDeclared( s ) ) then
+    		if( symbGetIsDeclared( s ) ) then
     			if( symbIsExport( s ) ) then
     				hEmitExportHeader( )
     				sname = hStripUnderscore( symbGetName( s ) )

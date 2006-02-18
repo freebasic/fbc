@@ -250,52 +250,75 @@ private sub hProcFlush( byval p as ASTPROCNODE ptr, _
 						byval doemit as integer _
 					  ) static
 
-    dim as ASTNODE ptr n, nxt
+    dim as ASTNODE ptr n, nxt, prv
+    dim as ASTNODE tmp
     dim as FBSYMBOLTB ptr oldtb
+    dim as FBSYMBOL ptr proc
 
 	''
 	ast.curproc = p
 	ast.doemit 	= doemit
 
+	proc = p->proc
+
 	if( p->ismain = FALSE ) then
 		env.scope = 1
-		env.currproc = p->proc
+		env.currproc = proc
 	else
 		env.scope = 0
 		env.currproc = NULL
 	end if
 
-	env.currproc = p->proc
-	oldtb = symbSetSymbolTb( @p->proc->proc.loctb )
+	env.currproc = proc
+	oldtb = symbSetSymbolTb( @proc->proc.loctb )
+
+	''
+	prv = @tmp
+	n = p->head
+	do while( n <> NULL )
+		nxt = n->next
+
+		n = astOptimize( n )
+		'' needed even when not optimizing
+		n = astOptAssignment( n )
+		n = astUpdStrConcat( n )
+
+		prv->next = n
+		prv = n
+		n = nxt
+	loop
+
+	symbAllocLocalVars( symbGetProcLocTbHead( proc ) )
 
 	'' add a call to fb_init if it's a static constructor
 	'' (note: must be done here or ModLevelIsEmpty() will fail)
 	if( doemit ) then
-		if( symbIsConstructor( p->proc ) ) then
+		if( symbIsConstructor( proc ) ) then
            	hModLevelAddRtInit( p )
 		end if
 	end if
 
 	''
 	if( ast.doemit ) then
-		irEmitPROCBEGIN( p->proc, p->initlabel )
+		irEmitPROCBEGIN( proc, p->initlabel )
 	end if
 
 	''
 	n = p->head
 	do while( n <> NULL )
 		nxt = n->next
-		astFlush( n )
+		astLoad( n )
+		astDel( n )
 		n = nxt
 	loop
 
     ''
     if( ast.doemit ) then
-    	irEmitPROCEND( p->proc, p->initlabel, p->exitlabel )
+    	irEmitPROCEND( proc, p->initlabel, p->exitlabel )
     end if
 
     '' del symbols from hash and symbol tb's
-    symbDelSymbolTb( @p->proc->proc.loctb, FALSE )
+    symbDelSymbolTb( @proc->proc.loctb, FALSE )
 
     '' back to global/module-level/main
     symbSetSymbolTb( NULL )
@@ -330,7 +353,7 @@ private sub hProcFlushAll( ) static
 		'' private?
 		if( symbIsPrivate( proc ) ) then
 			'' never called? skip
-			if( symbGetProcIsCalled( proc ) = FALSE ) then
+			if( symbGetIsCalled( proc ) = FALSE ) then
 				doemit = FALSE
 
 			'' module-level?
@@ -1351,7 +1374,7 @@ function astGetStrLitSymbol( byval n as ASTNODE ptr ) as FBSYMBOL ptr static
    	if( astIsVAR( n ) ) then
 		s = astGetSymbol( n )
 		if( s <> NULL ) then
-			if( symbGetVarInitialized( s ) ) then
+			if( symbGetIsInitialized( s ) ) then
 				function = s
 			end if
 		end if
@@ -1535,28 +1558,5 @@ function astLoad( byval n as ASTNODE ptr ) as IRVREG ptr
 
 end function
 
-
-''::::
-sub astFlush( byval n as ASTNODE ptr )
-
-	''
-	if( n = NULL ) then
-		exit sub
-	end if
-
-	''
-	n = astOptimize( n )
-
-	'' needed even when not optimizing
-	n = astOptAssignment( n )
-
-	n = astUpdStrConcat( n )
-
-    ''
-	astLoad( n )
-
-	astDel( n )
-
-end sub
 
 

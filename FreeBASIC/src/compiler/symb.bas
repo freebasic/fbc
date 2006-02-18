@@ -65,7 +65,7 @@ sub symbInitSymbols static
 	symb.symtb = @symb.globtb
 
 	symb.lastlbl = NULL
-	
+
 	symbDataInit( )
 
 end sub
@@ -293,7 +293,7 @@ end function
 '':::::
 function symbNewSymbol( byval s as FBSYMBOL ptr, _
 					 	byval symtb as FBSYMBOLTB ptr, _
-					 	byval class as SYMBCLASS_ENUM, _
+					 	byval class as FB_SYMBCLASS, _
 					 	byval dohash as integer = TRUE, _
 					 	byval symbol as zstring ptr, _
 					 	byval aliasname as zstring ptr, _
@@ -330,9 +330,10 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
     s->lgt			= 0
     s->ofs			= 0
 
+	s->stats 		= 0
+
     if( class = FB_SYMBCLASS_VAR ) then
     	s->var.suffix = suffix
-    	s->var.emited = FALSE
     end if
 
     ''
@@ -353,10 +354,9 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
     if( aliasname <> NULL ) then
     	ZstrAssign( @s->alias, aliasname )
     else
-		select case class
-		case FB_SYMBCLASS_VAR, FB_SYMBCLASS_PROC
+		if( class = FB_SYMBCLASS_PROC ) then
 			ZstrAssign( @s->alias, s->name )
-		end select
+		end if
     end if
 
 	s->left  = NULL

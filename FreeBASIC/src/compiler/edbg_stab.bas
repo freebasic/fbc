@@ -984,7 +984,7 @@ sub edbgEmitLocalVar( byval sym as FBSYMBOL ptr, _
 
     ''
     if( isstatic ) then
-		if( symbGetVarEmited( sym ) ) then
+		if( symbGetIsEmitted( sym ) ) then
 			t = STAB_TYPE_STSYM
 		else
 			t = STAB_TYPE_LCSYM

@@ -29,6 +29,7 @@ option escape
 #include once "inc\hash.bi"
 #include once "inc\list.bi"
 #include once "inc\ast.bi"
+#include once "inc\emit.bi"
 
 const FBPREFIX_PROCRES = "{fbpr}"
 
@@ -38,8 +39,10 @@ const FBPREFIX_PROCRES = "{fbpr}"
 
 '':::::
 private function hCalcProcArgsLen( byval args as integer, _
-						   		   byval argtail as FBSYMBOL ptr ) as integer
-	dim i as integer, lgt as integer
+						   		   byval argtail as FBSYMBOL ptr _
+						   		 ) as integer
+
+	dim as integer i, lgt
 
 	lgt	= 0
 	do while( argtail <> NULL )
@@ -60,16 +63,17 @@ private function hCalcProcArgsLen( byval args as integer, _
 end function
 
 '':::::
-function symbAddArg( byval proc as FBSYMBOL ptr, _
-					 byval symbol as zstring ptr, _
-					 byval typ as integer, _
-					 byval subtype as FBSYMBOL ptr, _
-					 byval ptrcnt as integer, _
-					 byval lgt as integer, _
-					 byval mode as integer, _
-					 byval suffix as integer, _
-					 byval optional as integer, _
-					 byval optval as FBVALUE ptr ) as FBSYMBOL ptr static
+function symbAddProcArg( byval proc as FBSYMBOL ptr, _
+					 	 byval symbol as zstring ptr, _
+					 	 byval typ as integer, _
+					 	 byval subtype as FBSYMBOL ptr, _
+					 	 byval ptrcnt as integer, _
+					 	 byval lgt as integer, _
+					 	 byval mode as integer, _
+					 	 byval suffix as integer, _
+					 	 byval optional as integer, _
+					 	 byval optval as FBVALUE ptr _
+					   ) as FBSYMBOL ptr static
 
     dim a as FBSYMBOL ptr
 
@@ -85,10 +89,10 @@ function symbAddArg( byval proc as FBSYMBOL ptr, _
 	proc->proc.args += 1
 
 	''
-	a->lgt			= lgt
-	a->arg.mode		= mode
-	a->arg.suffix	= suffix
-	a->arg.optional	= optional
+	a->lgt = lgt
+	a->arg.mode	= mode
+	a->arg.suffix = suffix
+	a->arg.optional = optional
 
 	if( optional ) then
 		a->arg.optval = *optval
@@ -100,7 +104,8 @@ end function
 
 '':::::
 private function hGetProcRealType( byval typ as integer, _
-								   byval subtype as FBSYMBOL ptr ) as integer static
+								   byval subtype as FBSYMBOL ptr _
+								 ) as integer static
 
     select case typ
     '' string? it's actually a pointer to a string descriptor
@@ -204,7 +209,8 @@ private function hAddOvlProc( byval proc as FBSYMBOL ptr, _
 							  byval typ as integer, _
 							  byval subtype as FBSYMBOL ptr, _
 							  byval ptrcnt as integer, _
-				              byval preservecase as integer ) as FBSYMBOL ptr static
+				              byval preservecase as integer _
+				            ) as FBSYMBOL ptr static
 
 	dim as FBSYMBOL ptr f, farg, parg
 	dim as integer argc
@@ -297,10 +303,10 @@ private function hAddOvlProc( byval proc as FBSYMBOL ptr, _
 	end if
 
 	'' add to linked-list or getOrgName will fail
-	parent->right	= proc
-	proc->left      = parent
+	parent->right = proc
+	proc->left = parent
 
-	proc->hashitem  = parent->hashitem
+	proc->hashitem = parent->hashitem
 	proc->hashindex	= parent->hashindex
 
     ''
@@ -310,7 +316,8 @@ end function
 
 '':::::
 function symbIsProcOverloadOf( byval proc as FBSYMBOL ptr, _
-							   byval parent as FBSYMBOL ptr ) as integer static
+							   byval parent as FBSYMBOL ptr _
+							 ) as integer static
 
 	dim as FBSYMBOL ptr f
 
@@ -357,7 +364,8 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 				             byval alloctype as integer, _
 				             byval mode as integer, _
 			                 byval declaring as integer, _
-			                 byval preservecase as integer ) as FBSYMBOL ptr static
+			                 byval preservecase as integer _
+			               ) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXINTNAMELEN+1 aname
     dim as integer lgt, realtype
@@ -439,7 +447,7 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 	end if
 
     ''
-	proc->alloctype			= alloctype or FB_ALLOCTYPE_SHARED
+	proc->alloctype	= alloctype or FB_ALLOCTYPE_SHARED or FB_ALLOCTYPE_STATIC
 
     '' if proc returns an UDT, add the hidden pointer passed as the 1st arg
     if( typ = FB_DATATYPE_USERDEF ) then
@@ -448,26 +456,25 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
     	end if
     end if
 
-	proc->lgt				= lgt
+	proc->lgt = lgt
 
-	proc->proc.isdeclared 	= declaring
-	proc->proc.iscalled		= FALSE
-	proc->proc.isrtl		= FALSE
-	proc->proc.doerrorcheck	= FALSE
+	if( declaring ) then
+		symbSetIsDeclared( proc )
+	end if
 
-	proc->proc.mode			= mode
-	proc->proc.realtype		= realtype
+	proc->proc.mode	= mode
+	proc->proc.realtype	= realtype
 
 	proc->proc.rtl.callback = NULL
 
 	if( libname <> NULL ) then
 		if( len( *libname ) > 0 ) then
-			proc->proc.lib 	= symbAddLib( libname )
+			proc->proc.lib = symbAddLib( libname )
 		else
-			proc->proc.lib 	= NULL
+			proc->proc.lib = NULL
 		end if
 	else
-		proc->proc.lib 		= NULL
+		proc->proc.lib = NULL
 	end if
 
 	'' if overloading, update the linked-list
@@ -480,13 +487,13 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 				parent->proc.ovl.maxargs = symbGetProcArgs( proc )
 			end if
 		else
-			proc->proc.ovl.next		= NULL
-			proc->proc.ovl.maxargs	= symbGetProcArgs( proc )
+			proc->proc.ovl.next = NULL
+			proc->proc.ovl.maxargs = symbGetProcArgs( proc )
 		end if
 
 	'' ctor or dtor? even if private it should be always emitted
 	elseif( (alloctype and (FB_ALLOCTYPE_CONSTRUCTOR or FB_ALLOCTYPE_DESTRUCTOR)) > 0 ) then
-		proc->proc.iscalled = TRUE
+		symbSetIsCalled( proc )
 	end if
 
 	function = proc
@@ -504,7 +511,8 @@ function symbAddPrototype( byval proc as FBSYMBOL ptr, _
 						   byval alloctype as integer, _
 						   byval mode as integer, _
 						   byval isexternal as integer, _
-						   byval preservecase as integer = FALSE ) as FBSYMBOL ptr static
+						   byval preservecase as integer = FALSE _
+						 ) as FBSYMBOL ptr static
 
     function = NULL
 
@@ -528,7 +536,8 @@ function symbAddProc( byval proc as FBSYMBOL ptr, _
 					  byval subtype as FBSYMBOL ptr, _
 					  byval ptrcnt as integer, _
 					  byval alloctype as integer, _
-					  byval mode as integer ) as FBSYMBOL ptr static
+					  byval mode as integer _
+					) as FBSYMBOL ptr static
 
     function = NULL
 
@@ -552,19 +561,20 @@ function symbPreAddProc( byval symbol as zstring ptr ) as FBSYMBOL ptr static
 		exit function
 	end if
 
-	proc->class				= FB_SYMBCLASS_PROC
-	proc->proc.args 		= 0
-	proc->proc.argtb.head	= NULL
-	proc->proc.argtb.tail	= NULL
-	proc->name				= symbol
+	proc->class = FB_SYMBCLASS_PROC
+	proc->proc.args	= 0
+	proc->proc.argtb.head = NULL
+	proc->proc.argtb.tail = NULL
+	proc->name = symbol
 
 	function = proc
 
 end function
 
 '':::::
-function symbAddArgAsVar( byval symbol as zstring ptr, _
-						  byval arg as FBSYMBOL ptr ) as FBSYMBOL ptr static
+function symbAddArg( byval symbol as zstring ptr, _
+					 byval arg as FBSYMBOL ptr _
+				   ) as FBSYMBOL ptr static
 
     dim as FBARRAYDIM dTB(0)
     dim as FBSYMBOL ptr s
@@ -656,6 +666,61 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
 					  dTB(), 0, TRUE, TRUE, FALSE )
 
 	function = s
+
+end function
+
+'':::::
+function symbAllocLocalVars( byval s as FBSYMBOL ptr ) as integer
+    dim as integer lgt
+
+    function = FALSE
+
+    '' main's loctb.head is always NULL, checking if symbols are local is not needed
+
+    do while( s <> NULL )
+    	select case s->class
+		'' scope? recurse..
+		case FB_SYMBCLASS_SCOPE
+			symbAllocLocalVars( symbGetScopeTbHead( s ) )
+
+    	'' variable?
+    	case FB_SYMBCLASS_VAR
+    		'' not shared or static?
+    		if( (s->alloctype and (FB_ALLOCTYPE_SHARED or _
+    			 				   	   FB_ALLOCTYPE_STATIC)) = 0 ) then
+
+    			'' not allocted already?
+    			if( symbGetIsAllocated( s ) = FALSE ) then
+
+					'' not an argument?
+    				if( (s->alloctype and (FB_ALLOCTYPE_ARGUMENTBYDESC or _
+    				  				   	   FB_ALLOCTYPE_ARGUMENTBYVAL or _
+    				  				   	   FB_ALLOCTYPE_ARGUMENTBYREF)) = 0 ) then
+
+						lgt = s->lgt * symbCalcArrayElements( s )
+						ZstrAssign( @s->alias, emitAllocLocal( env.currproc, lgt, s->ofs ) )
+
+					'' argument..
+					else
+						lgt = iif( (s->alloctype and FB_ALLOCTYPE_ARGUMENTBYVAL), _
+							   	   s->lgt, _
+							   	   FB_POINTERSIZE )
+						ZstrAssign( @s->alias, emitAllocArg( env.currproc, lgt, s->ofs ) )
+
+					end if
+
+					symbSetIsAllocated( s )
+
+				end if
+
+			end if
+
+		end select
+
+    	s = s->next
+    loop
+
+    function = TRUE
 
 end function
 

@@ -456,7 +456,7 @@ private function hProcPtrBody( byval proc as FBSYMBOL ptr, _
 	addrofexpr = astNewADDR( IR_OP_ADDROF, expr )
 
 	''
-	symbSetProcIsCalled( proc, TRUE )
+	symbSetIsCalled( proc )
 
 	function = (addrofexpr <> NULL)
 

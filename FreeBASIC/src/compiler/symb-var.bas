@@ -29,8 +29,8 @@ option escape
 #include once "inc\hash.bi"
 #include once "inc\list.bi"
 #include once "inc\ast.bi"
-#include once "inc\emit.bi"
 #include once "inc\rtl.bi"
+#include once "inc\emit.bi"
 
 declare function 	hCalcArrayElements	( byval dimensions as integer, _
 									  	  dTB() as FBARRAYDIM ) as integer
@@ -50,11 +50,13 @@ end sub
 
 '':::::
 function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
-						   byval dimensions as integer ) as FBSYMBOL ptr static
+						   byval dimensions as integer _
+						 ) as FBSYMBOL ptr static
 
-    static as zstring * FB_MAXINTNAMELEN+1 sname, aname
+    static as zstring * FB_MAXINTNAMELEN+1 sname
+    dim as zstring ptr aname
     dim as FBSYMBOL ptr d
-    dim as integer lgt, ofs
+    dim as integer lgt
     dim as integer isshared, isstatic, isdynamic, iscommon, ispubext
 
 	function = NULL
@@ -64,11 +66,11 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
     	exit function
     end if
 
-	isshared 	= symbIsShared( s )
-	isstatic 	= symbIsStatic( s )
-	isdynamic	= symbIsDynamic( s )
-	iscommon 	= symbIsCommon( s )
-	ispubext 	= (s->alloctype and (FB_ALLOCTYPE_PUBLIC or FB_ALLOCTYPE_EXTERN)) > 0
+	isshared  = symbIsShared( s )
+	isstatic  = symbIsStatic( s )
+	isdynamic = symbIsDynamic( s )
+	iscommon  = symbIsCommon( s )
+	ispubext  = (s->alloctype and (FB_ALLOCTYPE_PUBLIC or FB_ALLOCTYPE_EXTERN)) > 0
 
 	'' COMMON, public or dynamic? use the array name for the descriptor,
 	'' as only it will be allocated or seen by other modules
@@ -82,13 +84,13 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 
 	'' module-level or static? no alias
 	if( (fbIsLocal( ) = FALSE) or (isshared) or (isstatic) ) then
-		aname = sname
-		ofs = 0
+		aname = @sname
+		lgt = 0
 
-	'' local.. let emit do it
+	'' local..
 	else
+		aname = NULL
 		lgt = FB_ARRAYDESCLEN + dimensions * FB_ARRAYDESC_DIMLEN
-		aname = *emitAllocLocal( env.currproc, lgt, ofs )
 	end if
 
 	d = symbNewSymbol( NULL, symb.symtb, FB_SYMBCLASS_VAR, FALSE, _
@@ -101,20 +103,20 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 
 	''
 	if( isshared ) then
-		d->alloctype  or= FB_ALLOCTYPE_SHARED
+		d->alloctype or= FB_ALLOCTYPE_SHARED
 	elseif( isstatic ) then
-		d->alloctype  or= FB_ALLOCTYPE_STATIC
+		d->alloctype or= FB_ALLOCTYPE_STATIC
 	end if
 
-	d->alloctype  or= FB_ALLOCTYPE_DESCRIPTOR
+	d->alloctype or= FB_ALLOCTYPE_DESCRIPTOR
 
-	d->ofs				= ofs
-	d->var.array.desc 	= NULL
-	d->var.array.dif  	= 0
-	d->var.array.dims 	= 0
+	d->lgt = lgt
+	d->ofs = 0
+	d->var.array.desc = NULL
+	d->var.array.dif = 0
+	d->var.array.dims = 0
 
-    d->var.suffix 		= INVALID
-    d->var.initialized 	= FALSE
+    d->var.suffix = INVALID
 
 	''
 	function = d
@@ -202,21 +204,20 @@ private sub hSetupVar( byval s as FBSYMBOL ptr, _
 			   		   byval typ as integer, _
 			   		   byval subtype as FBSYMBOL ptr, _
 			   		   byval lgt as integer, _
-			   		   byval ofs as integer, _
 			   		   byval dimensions as integer, _
 			   		   dTB() as FBARRAYDIM, _
-			   		   byval alloctype as integer ) static
+			   		   byval alloctype as integer _
+			   		 ) static
 
 	if( typ = INVALID ) then
 		typ = hGetDefType( symbol )
 	end if
 
 	''
-	s->alloctype  or= alloctype
-	s->acccnt		= 0
+	s->alloctype or= alloctype
 
-	s->lgt			= lgt
-	s->ofs			= ofs
+	s->lgt = lgt
+	s->ofs = 0
 
 	'' array fields
 	s->var.array.dimhead = NULL
@@ -228,11 +229,8 @@ private sub hSetupVar( byval s as FBSYMBOL ptr, _
 		symbSetArrayDims( s, dimensions, dTB() )
 	else
 		s->var.array.dims = 0
-		s->var.array.dif  = 0
+		s->var.array.dif = 0
 	end if
-
-	''
-    s->var.initialized 	= FALSE
 
 end sub
 
@@ -248,23 +246,20 @@ function symbAddVarEx( byval symbol as zstring ptr, _
 				       byval alloctype as integer, _
 				       byval addsuffix as integer, _
 				       byval preservecase as integer, _
-				       byval clearname as integer ) as FBSYMBOL ptr static
+				       byval clearname as integer _
+				     ) as FBSYMBOL ptr static
 
     dim as zstring ptr aname
     dim as FBSYMBOL ptr s
-    dim as integer isshared, isstatic, ispublic, isextern, isarg, islocal
-    dim as integer suffix, locofs, loclen
+    dim as integer isshared, isstatic
+    dim as integer suffix
 
     function = NULL
 
     ''
     isshared = (alloctype and FB_ALLOCTYPE_SHARED) > 0
     isstatic = (alloctype and FB_ALLOCTYPE_STATIC) > 0
-    ispublic = (alloctype and FB_ALLOCTYPE_PUBLIC) > 0
-    isextern = (alloctype and FB_ALLOCTYPE_EXTERN) > 0
-    isarg    = (alloctype and (FB_ALLOCTYPE_ARGUMENTBYDESC or _
-    						   FB_ALLOCTYPE_ARGUMENTBYVAL or _
-    						   FB_ALLOCTYPE_ARGUMENTBYREF)) > 0
+
     ''
     if( lgt <= 0 ) then
 		if( typ = INVALID ) then
@@ -283,10 +278,7 @@ function symbAddVarEx( byval symbol as zstring ptr, _
     end if
 
     ''
-    locofs = 0
-
 	'' create an alias name (the real one that will be emited)
-	islocal  = FALSE
 	if( aliasname <> NULL ) then
 		'' if alias was given, it can't be a local var
 		aname = aliasname
@@ -298,9 +290,10 @@ function symbAddVarEx( byval symbol as zstring ptr, _
 
 		else
 			'' global/shared or module-level?
-			if( (ispublic) or _
-				(isextern) or _
-				(isshared) or _
+			if( (alloctype and _
+				 (FB_ALLOCTYPE_PUBLIC or _
+				  FB_ALLOCTYPE_EXTERN or _
+				  FB_ALLOCTYPE_SHARED) <> 0) or _
 				(fbIsLocal( ) = FALSE) ) then
 
 			    '' not inside a SCOPE block?
@@ -315,17 +308,7 @@ function symbAddVarEx( byval symbol as zstring ptr, _
 
 			'' local..
 			else
-				islocal = TRUE
-				'' an argument?
-				if( isarg ) then
-					loclen = iif( alloctype = FB_ALLOCTYPE_ARGUMENTBYVAL, lgt, FB_POINTERSIZE )
-					aname = emitAllocArg( env.currproc, loclen, locofs )
-
-				'' local..
-				else
-					loclen = lgt * hCalcArrayElements( dimensions, dTB() )
-					aname = emitAllocLocal( env.currproc, loclen, locofs )
-				end if
+				aname = NULL
 			end if
 		end if
 	end if
@@ -338,21 +321,11 @@ function symbAddVarEx( byval symbol as zstring ptr, _
 					   typ, subtype, ptrcnt, suffix, preservecase )
 
 	if( s = NULL ) then
-		'' remove a local or arg or else emit will reserve unused space for it..
-		if( islocal ) then
-			if( isarg ) then
-				emitFreeArg( env.currproc, loclen )
-			else
-				emitFreeLocal( env.currproc, loclen )
-			end if
-		end if
-
 		exit function
 	end if
 
 	''
-	hSetupVar( s, symbol, typ, subtype, lgt, _
-			   locofs, dimensions, dTB(), alloctype )
+	hSetupVar( s, symbol, typ, subtype, lgt, dimensions, dTB(), alloctype )
 
 	function = s
 
@@ -365,7 +338,8 @@ function symbAddVar( byval symbol as zstring ptr, _
 				     byval ptrcnt as integer, _
 				     byval dimensions as integer, _
 				     dTB() as FBARRAYDIM, _
-				     byval alloctype as integer ) as FBSYMBOL ptr static
+				     byval alloctype as integer _
+				   ) as FBSYMBOL ptr static
 
     function = symbAddVarEx( symbol, NULL, typ, subtype, ptrcnt, _
     		  			     0, dimensions, dTB(), _
@@ -375,10 +349,13 @@ end function
 
 '':::::
 function symbAddTempVar( byval typ as integer, _
-						 byval subtype as FBSYMBOL ptr = NULL ) as FBSYMBOL ptr static
+						 byval subtype as FBSYMBOL ptr = NULL, _
+						 byval doalloc as integer = FALSE _
+					   ) as FBSYMBOL ptr static
 
 	static as zstring * FB_MAXINTNAMELEN+1 sname
 	dim as integer alloctype
+    dim as FBSYMBOL ptr s
     dim as FBARRAYDIM dTB(0)
 
 	sname = *hMakeTmpStr( FALSE )
@@ -390,10 +367,32 @@ function symbAddTempVar( byval typ as integer, _
 		end if
 	end if
 
-	function = symbAddVarEx( sname, NULL, typ, subtype, 0, _
-							 0, 0, dTB(), _
-							 alloctype, _
-							 FALSE, FALSE, FALSE )
+	s = symbAddVarEx( sname, NULL, typ, subtype, 0, _
+					  0, 0, dTB(), _
+					  alloctype, _
+					  FALSE, FALSE, FALSE )
+    if( s = NULL ) then
+    	return NULL
+    end if
+
+	'' alloc? (should be used only by IR)
+	if( doalloc ) then
+    	'' local?
+    	if( fbIsLocal( ) ) then
+    		'' not shared, static or an argument?
+    		if( (s->alloctype and (FB_ALLOCTYPE_SHARED or _
+    			 			   	   FB_ALLOCTYPE_STATIC or _
+								   FB_ALLOCTYPE_ARGUMENTBYDESC or _
+    				  			   FB_ALLOCTYPE_ARGUMENTBYVAL or _
+    				  			   FB_ALLOCTYPE_ARGUMENTBYREF)) = 0 ) then
+
+				ZstrAssign( @s->alias, emitAllocLocal( env.currproc, s->lgt, s->ofs ) )
+
+			end if
+		end if
+	end if
+
+    function = s
 
 end function
 
@@ -404,9 +403,10 @@ end function
 '':::::
 function symbCalcArrayDiff( byval dimensions as integer, _
 							dTB() as FBARRAYDIM, _
-							byval lgt as integer ) as integer
+							byval lgt as integer _
+						  ) as integer
 
-    dim d as integer, diff as integer, elms as integer, mult as integer
+    dim as integer d, diff, elms, mult
 
 	if( dimensions <= 0 ) then
 		return 0
@@ -428,8 +428,10 @@ end function
 
 '':::::
 function symbCalcArrayElements( byval s as FBSYMBOL ptr, _
-								byval n as FBVARDIM ptr = NULL ) as integer static
-    dim e as integer, d as integer
+								byval n as FBVARDIM ptr = NULL _
+							  ) as integer static
+
+    dim as integer e, d
 
 	if( n = NULL ) then
 		n = s->var.array.dimhead
@@ -448,7 +450,8 @@ end function
 
 '':::::
 private function hCalcArrayElements( byval dimensions as integer, _
-						 		 	 dTB() as FBARRAYDIM ) as integer static
+						 		 	 dTB() as FBARRAYDIM _
+						 		   ) as integer static
     dim e as integer, i as integer, d as integer
 
 	e = 1
@@ -515,8 +518,9 @@ sub symbDelVar( byval s as FBSYMBOL ptr, _
     	end if
     end if
 
-    if( s->var.initialized ) then
-    	s->var.initialized = FALSE
+    if( symbGetIsInitialized( s ) ) then
+    	s->stats and= not FB_SYMBSTATS_INITIALIZED
+
     	'' not a wchar literal?
     	if( s->typ <> FB_DATATYPE_WCHAR ) then
     		if( s->var.inittext <> NULL ) then
@@ -588,4 +592,5 @@ sub symbFreeLocalDynVars( byval proc as FBSYMBOL ptr, _
     loop
 
 end sub
+
 

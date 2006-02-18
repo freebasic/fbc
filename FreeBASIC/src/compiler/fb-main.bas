@@ -55,19 +55,19 @@ private sub hDllMainBegin( )
 	proc = symbPreAddProc( NULL )
 
 	'' instance
-	symbAddArg( proc, "{dllmain_instance}", _
-				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, 1, _
-				FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+	symbAddProcArg( proc, "{dllmain_instance}", _
+					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, 1, _
+					FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
 
 	'' reason
-	symbAddArg( proc, "{dllmain_reason}", _
-				FB_DATATYPE_UINT, NULL, 0, _
-				FB_INTEGERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+	symbAddProcArg( proc, "{dllmain_reason}", _
+					FB_DATATYPE_UINT, NULL, 0, _
+					FB_INTEGERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
 
 	'' reserved
-	symbAddArg( proc, "{dllmain_reserved}", _
-				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, 1, _
-				FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+	symbAddProcArg( proc, "{dllmain_reserved}", _
+					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, 1, _
+					FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
 
 	''
 	proc = symbAddProc( proc, NULL, strptr( "DllMain" ), NULL, _
@@ -91,7 +91,7 @@ private sub hDllMainBegin( )
 	argn = 1
 	do while( arg <> NULL )
 
-		s = symbAddArgAsVar( symbGetName( arg ), arg )
+		s = symbAddArg( symbGetName( arg ), arg )
 		if( argn = 2 ) then
 			argreason = s
 		end if
@@ -149,14 +149,14 @@ private sub hMainBegin( byval isdllmain as integer )
 	proc = symbPreAddProc( NULL )
 
 	'' argc
-	symbAddArg( proc, "{argc}", _
-				FB_DATATYPE_INTEGER, NULL, 0, _
-				FB_INTEGERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+	symbAddProcArg( proc, "__FB_ARGC__", _
+					FB_DATATYPE_INTEGER, NULL, 0, _
+					FB_INTEGERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
 
 	'' argv
-	symbAddArg( proc, "{argv}", _
-				FB_DATATYPE_POINTER+FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, NULL, 2, _
-				FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+	symbAddProcArg( proc, "__FB_ARGV__", _
+					FB_DATATYPE_POINTER+FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, NULL, 2, _
+					FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
 
 	''
 	if( isdllmain = FALSE ) then
@@ -187,9 +187,9 @@ private sub hMainBegin( byval isdllmain as integer )
 	env.currproc = ctx.proc
 
 	arg = symbGetProcHeadArg( ctx.proc )
-	ctx.argc = symbAddArgAsVar( symbGetName( arg ), arg )
+	ctx.argc = symbAddArg( symbGetName( arg ), arg )
 	arg = symbGetProcTailArg( ctx.proc )
-	ctx.argv = symbAddArgAsVar( symbGetName( arg ), arg )
+	ctx.argv = symbAddArg( symbGetName( arg ), arg )
 
 	'' symbols declared in main() must go to the global tables, as main() has
 	'' no beginning or end, all include files are parsed "inside" it, pure hack..
@@ -224,7 +224,7 @@ private sub hModLevelBegin( )
 						FB_FUNCMODE_CDECL )
 
     symbSetProcIncFile( proc, INVALID )
-    symbSetProcIsCalled( proc, TRUE )
+    symbSetIsCalled( proc )
 
     ''
 	ctx.initlabel = symbAddLabel( NULL )

@@ -2196,8 +2196,8 @@ private sub hCreateTMPVAR( byval vreg as IRVREG ptr ) static
 
 	if( vreg->typ <> IR_VREGTYPE_VAR ) then
 		vreg->typ = IR_VREGTYPE_VAR
-		vreg->sym = symbAddTempVar( vreg->dtype )
-		vreg->ofs = vreg->sym->ofs
+		vreg->sym = symbAddTempVar( vreg->dtype, NULL, TRUE )
+		vreg->ofs = symbGetVarOfs( vreg->sym )
 		vreg->reg = INVALID
 	end if
 

@@ -137,7 +137,7 @@ private function hDeclareArgs( byval proc as FBSYMBOL ptr ) as integer static
 	do while( arg <> NULL )
 
 		if( arg->arg.mode <> FB_ARGMODE_VARARG ) then
-			if( symbAddArgAsVar( symbGetName( arg ), arg ) = NULL ) then
+			if( symbAddArg( symbGetName( arg ), arg ) = NULL ) then
 				hParamError( proc, a, FB_ERRMSG_DUPDEFINITION )
 				exit function
 			end if
@@ -348,7 +348,7 @@ function cSubOrFuncHeader( byval issub as integer, _
     	end if
 
     	'' already parsed?
-    	if( symbGetProcIsDeclared( sym ) ) then
+    	if( symbGetIsDeclared( sym ) ) then
     		hReportError( FB_ERRMSG_DUPDEFINITION, TRUE )
     		exit function
     	end if
@@ -366,13 +366,13 @@ function cSubOrFuncHeader( byval issub as integer, _
     	end if
 
     	''
-    	symbSetProcIsDeclared( sym, TRUE )
+    	symbSetIsDeclared( sym )
 
     	symbSetAllocType( sym, alloctype )
 
 		'' ctor or dtor? even if private it should be always emitted
 		if( (alloctype and (FB_ALLOCTYPE_CONSTRUCTOR or FB_ALLOCTYPE_DESTRUCTOR)) > 0 ) then
-    		symbSetProcIsCalled( sym, TRUE )
+    		symbSetIsCalled( sym )
     	end if
 
     	'' return the prototype

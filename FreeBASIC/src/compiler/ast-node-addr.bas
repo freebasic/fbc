@@ -51,7 +51,7 @@ function astNewOFFSET( byval l as ASTNODE ptr ) as ASTNODE ptr static
 	'' access counter must be updated here too
 	'' because the var initializers used with static strings
 	if( l->sym <> NULL ) then
-		symbIncAccessCnt( l->sym )
+		symbSetIsAccessed( l->sym )
 	end if
 
 	function = n
@@ -71,7 +71,7 @@ function astLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr static
 
 	sym = v->sym
 	if( sym <> NULL ) then
-		symbIncAccessCnt( sym )
+		symbSetIsAccessed( sym )
 	end if
 
 	if( ast.doemit ) then
@@ -129,7 +129,7 @@ function astNewADDR( byval op as integer, _
 
     dim as ASTNODE ptr n
     dim as integer delchild, dtype
-    dim as FBSYMBOL ptr subtype
+    dim as FBSYMBOL ptr subtype, s
 
 	if( l = NULL ) then
 		return NULL
@@ -184,9 +184,14 @@ function astNewADDR( byval op as integer, _
 			end if
 
 		case AST_NODECLASS_VAR
-			'' static scalar? use offset instead
-			if( l->var.ofs = 0 ) then
-				return astNewOFFSET( l )
+			'' module-level or local static scalar? use offset instead
+			s = l->sym
+			if( s <> NULL ) then
+				if( (symbIsLocal( s ) = FALSE) or _
+					 ((symbGetAllocType( s ) and (FB_ALLOCTYPE_SHARED or _
+					 							  FB_ALLOCTYPE_STATIC)) <> 0) ) then
+					return astNewOFFSET( l )
+				end if
 			end if
 		end select
 

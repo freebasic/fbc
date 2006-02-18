@@ -198,7 +198,7 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 
 		'' check error?
 		if( sym <> NULL ) then
-			if( symbGetProcErrorCheck( sym ) ) then
+			if( symbGetIsThrowable( sym ) ) then
     			if( env.clopt.resumeerr ) then
 					reslabel = symbAddLabel( NULL )
     				astAdd( astNewLABEL( reslabel ) )

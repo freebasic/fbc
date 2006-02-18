@@ -328,7 +328,7 @@ private function hReportMakeDesc( byval proc as FBSYMBOL ptr, _
 		dim as integer showname = TRUE
 
 		'' part of the rtlib?
-		if( symbGetProcIsRTL( proc ) ) then
+		if( symbGetIsRTL( proc ) ) then
 			'' any name set?
 			if( symbGetOrgName( proc ) <> NULL ) then
 				'' starts with "FB_"?

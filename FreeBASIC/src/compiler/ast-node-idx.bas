@@ -32,7 +32,9 @@ option escape
 function astNewIDX( byval var as ASTNODE ptr, _
 					byval idx as ASTNODE ptr, _
 					byval dtype as integer, _
-					byval subtype as FBSYMBOL ptr ) as ASTNODE ptr static
+					byval subtype as FBSYMBOL ptr _
+				  ) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
 
 	if( dtype = INVALID ) then
@@ -59,7 +61,9 @@ end function
 '':::::
 private function hEmitIDX( byval n as ASTNODE ptr, _
 						   byval var as ASTNODE ptr, _
-					  	   byval vidx as IRVREG ptr ) as IRVREG ptr static
+					  	   byval vidx as IRVREG ptr _
+					  	 ) as IRVREG ptr static
+
     dim as FBSYMBOL ptr s
     dim as IRVREG ptr vd
     dim as integer ofs
@@ -68,7 +72,7 @@ private function hEmitIDX( byval n as ASTNODE ptr, _
     s = var->sym
     ofs = n->idx.ofs
 	if( symbGetIsDynamic( s ) = FALSE ) then
-		ofs += symbGetArrayDiff( s ) + var->var.ofs
+		ofs += symbGetArrayDiff( s ) + symbGetVarOfs( s ) + var->var.ofs
 	else
 		s = NULL
 	end if
