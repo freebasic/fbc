@@ -43,8 +43,6 @@ static pthread_t thread;
 static pthread_mutex_t mutex;
 static pthread_cond_t cond;
 
-static XIC xic;
-static XIM xim;
 static Drawable root_window;
 static Atom wm_delete_window;
 static Colormap color_map;
@@ -157,7 +155,7 @@ static void *window_thread(void *arg)
 							fb_hRestorePalette();
 							fb_hMemSet(fb_mode->key, FALSE, 128);
 						}
-						else if ((Xutf8LookupString(xic, &event.xkey, (char *)key, 8, NULL, NULL) == 1) && (key[0] != 0x7F))
+						else if (XLookupString(&event.xkey, (char *)key, 8, NULL, NULL) == 1)
 							fb_hPostKey(key[0]);
 						else {
 							switch (XKeycodeToKeysym(fb_linux.display, event.xkey.keycode, 0)) {
@@ -299,8 +297,6 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	
 	color_map = None;
 	arrow_cursor = None;
-	xim = NULL;
-	xic = NULL;
 	
 	if (fb_linux.visual) {
 		fb_linux.depth = depth;
@@ -364,10 +360,6 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	
 	wm_delete_window = XInternAtom(fb_linux.display, "WM_DELETE_WINDOW", False);
 	XSetWMProtocols(fb_linux.display, fb_linux.window, &wm_delete_window, 1);
-	if (!(xim = XOpenIM(fb_linux.display, NULL, NULL, NULL)))
-		return -1;
-	if (!(xic = XCreateIC(xim, XNInputStyle, XIMPreeditNothing | XIMStatusNothing, XNClientWindow, fb_linux.window, NULL)))
-		return -1;
 	
 	if (fb_linux.visual->class == PseudoColor) {
 		color_map = XCreateColormap(fb_linux.display, root_window, fb_linux.visual, AllocAll);
@@ -477,10 +469,6 @@ void fb_hX11Exit(void)
 			XFreeColormap(fb_linux.display, color_map);
 		if (fb_linux.window != None)
 			XDestroyWindow(fb_linux.display, fb_linux.window);
-		if (xic)
-			XDestroyIC(xic);
-		if (xim)
-			XCloseIM(xim);
 		if (fb_linux.config) {
 			if ((target_size >= 0) && (current_size != orig_size))
 				XRRSetScreenConfig(fb_linux.display, fb_linux.config, root_window, orig_size, orig_rotation, CurrentTime);

@@ -57,6 +57,7 @@ Version 0.16 Beta:
 - MID statement (not the function) for wide-strings was not passing the size of the destine string (v1c)
 - wide-string indexing was not multiplying the index expression by sizeof( wchar ) (v1c)
 - bitfields declared inside unions had wrong offsets (v1c)
+- INKEY did not report extended ascii characters under Linux X11 gfx mode (lillo)
 
 
 Version 0.15 Beta:
