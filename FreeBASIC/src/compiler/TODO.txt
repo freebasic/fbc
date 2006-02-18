@@ -1,8 +1,7 @@
 [ ] add the wstring type:
     - fb_ConsoleInput() won't call fb_DevScrnInit_ReadWstr( ), so an input to a
-      wstring won't work.. to not bloat the fucker the compiler should have to
+      wstring won't work.. to not add more bloat, the compiler should have to
       call fb_ConsoleInput(there_is_any_wstr_argument), not so simple..
-
     - auto-convert literal strings to w- or z- on assignments, depending on the l-hand
       side type
     - fix the !!!FIXME!!!'s and write the !!!WRITEME!!!'s in the rtlib
@@ -25,6 +24,26 @@
       a class.. nm..
     - error handlers should be restored too (or not allowed at all)
 
+*** *** *** *** ***
+[ ] all functions returning STRING should actually return the FBSTRING
+    structure (not a pointer to one):
+    - compiler has to allocate the descriptor as it does now folling the gcc ABI
+    - any function in the run-time library retuning strings will have to be
+      modified (chicken-egg problem)
+    - no more run-time allocation of temp descriptors (better with threads)
+    - no more STR_LOCK's (ditto)
+    - str_delete won't check for temp descriptors anymore
+
+[ ] fixed-len strings compatible with QB:
+    - no null-term, temporaries always created when passing to functions
+    - probably will need their own assign and concat functions
+
+[ ] "byval as string" arguments should make a temp copy (including descriptor)
+    of the param passed:
+    - must pass (?) the address of the temp descriptor, not the string data, what
+      will break *all* functions assuming the latter - they would have to be
+      declared as zstring ptr, what will need more changes in usersc code, because
+      the non-implicit pointer deref
 
 *** *** *** *** ***
 [ ] add support for functions returning references (reuse "BYREF"), so those can
