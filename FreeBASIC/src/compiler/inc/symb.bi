@@ -49,6 +49,31 @@ enum FB_SYMBSTATS
 	FB_SYMBSTATS_THROWABLE		= &h000080
 end enum
 
+'' allocation types mask
+enum FB_ALLOCTYPE
+	FB_ALLOCTYPE_SHARED			= &h000001
+	FB_ALLOCTYPE_STATIC			= &h000002
+	FB_ALLOCTYPE_DYNAMIC		= &h000004
+	FB_ALLOCTYPE_COMMON			= &h000008
+	FB_ALLOCTYPE_TEMP			= &h000010
+	FB_ALLOCTYPE_ARGUMENTBYDESC	= &h000020
+	FB_ALLOCTYPE_ARGUMENTBYVAL	= &h000040
+	FB_ALLOCTYPE_ARGUMENTBYREF 	= &h000080
+	FB_ALLOCTYPE_PUBLIC 		= &h000100
+	FB_ALLOCTYPE_PRIVATE 		= &h000200
+	FB_ALLOCTYPE_EXTERN			= &h000400		'' extern's become public when DIM'ed
+	FB_ALLOCTYPE_EXPORT			= &h000800
+	FB_ALLOCTYPE_IMPORT			= &h001000
+	FB_ALLOCTYPE_OVERLOADED		= &h002000		'' functions only
+	FB_ALLOCTYPE_JUMPTB			= &h004000
+	FB_ALLOCTYPE_MAINPROC		= &H008000
+	FB_ALLOCTYPE_MODLEVELPROC	= &h010000
+    FB_ALLOCTYPE_CONSTRUCTOR    = &h020000      '' it can be either constructor
+    FB_ALLOCTYPE_DESTRUCTOR     = &h040000      '' or destructor, but not both ...
+    FB_ALLOCTYPE_LOCAL			= &h080000
+    FB_ALLOCTYPE_DESCRIPTOR		= &h100000
+end enum
+
 type FBSYMBOL_ as FBSYMBOL
 
 ''
@@ -290,11 +315,11 @@ type FBSYMBOL
 	ll_prv			as FBSYMBOL ptr				'' linked-list nodes
 	ll_nxt			as FBSYMBOL ptr				'' /
 
-	class			as FB_SYMBCLASS				'' VAR, CONST, PROC, ..
-	typ				as integer					'' integer, float, string, pointer, ..
-	subtype			as FBSYMBOL ptr				'' used by UDT's
+	class			as FB_SYMBCLASS
+	typ				as FB_DATATYPE
+	subtype			as FBSYMBOL ptr
 	ptrcnt 			as integer
-	alloctype		as FBALLOCTYPE_ENUM			'' STATIC, DYNAMIC, SHARED, ARG, ..
+	alloctype		as FB_ALLOCTYPE
 
 	name			as zstring ptr				'' original name, shared by hash tb
 	alias			as zstring ptr
