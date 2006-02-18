@@ -260,6 +260,32 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
+static void hFtoA( double val, char *buffer, int decdigs )
+{
+	int len;
+	char fmtstr[16];
+
+	sprintf( fmtstr, "%%.%df", decdigs );
+	sprintf( buffer, fmtstr, val );
+
+	len = strlen( buffer ) - 1;
+
+	if( len >= 0 )
+	{
+        /* skip the zeros at end */
+        while( buffer[len] == '0' )
+        {
+        	buffer[len] = '\0';
+        	--len;
+        }
+
+		/* skip the dot at end if any */
+		if( len >= 0 )
+    		if( buffer[len] == '.' )
+    			buffer[len] = '\0';
+	}
+
+}
 
 /*:::::*/
 FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
@@ -393,7 +419,15 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	if( decdigs <= 0 )
 		totdigs = intdigs;
 	else
+	{
+		if( decdigs > 16 )
+			decdigs = 16;
+
+		/* fix dizima */
+		value += (1.0f / pow( 10.0f, decdigs+1 ));
+
 		totdigs = intdigs+decdigs;
+	}
 
 	if( totdigs <= 0 )
 		totdigs = 1;
@@ -414,7 +448,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	}
 	else
 	{
-		if( -value_exp >= decdigs )
+		if( -value_exp > decdigs )
 		{
 			value_exp -= (intdigs-1);
 			value *= pow( 10.0f, -value_exp );
@@ -424,7 +458,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	}
 
 	/* convert to string */
-	fb_hFloat2Str( value, buffer, totdigs, 0 );
+	hFtoA( value, buffer, (decdigs >= 0? decdigs : 0) );
 
 	len = strlen( buffer );
 
