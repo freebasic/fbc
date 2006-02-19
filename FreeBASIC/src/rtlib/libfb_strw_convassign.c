@@ -38,8 +38,15 @@ FBCALL FB_WCHAR *fb_WstrAssignFromA ( FB_WCHAR *dst, int dst_chars, void *src, i
 
 		/* size unknown? assume it's big enough */
 		if( dst_chars == 0 )
+		{
 			dst_chars = src_chars;
-		
+		}
+		else
+		{
+			/* less the null-term */
+			--dst_chars;
+		}
+
 		fb_wstr_ConvFromA( dst, dst_chars, src_ptr );
 	}
 

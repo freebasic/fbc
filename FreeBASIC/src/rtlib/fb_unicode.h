@@ -134,22 +134,25 @@ static __inline__ int fb_wstr_Len( const FB_WCHAR *s )
 static __inline__ void fb_wstr_ConvFromA( FB_WCHAR *dst,
 										  int dst_chars, const char *src )
 {
-	int bytes;
+	int chars;
 
 	/* NULL? */
 	if( src == NULL )
-		bytes = -1;
-
-	/* plus the null-term */
+	{
+		chars = -1;
+	}
 	else
-		bytes = mbstowcs( dst, src, (dst_chars + 1) * sizeof( FB_WCHAR ) );
+	{
+		/* plus the null-term (note: "n" in chars, not bytes!) */
+		chars = mbstowcs( dst, src, dst_chars + 1 );
+	}
 
 	/* error? */
-	if( bytes == -1 )
+	if( chars == -1 )
 		*dst = _LC('\0');
 
 	/* if there's no enough space in dst the null-term won't be added? */
-	else if( bytes == (dst_chars + 1) * sizeof( FB_WCHAR ) )
+	else if( chars == (dst_chars + 1) )
 		dst[dst_chars] = _LC('\0');
 
 }
