@@ -1,4 +1,5 @@
 option explicit
+option escape
 
 const TEST_1 = "A\u0022\u0023B\u0024\u0025C\u0026"
 const TEST_2 = "\t\u0022\u0023\r\u0024\u0025C\u0026\n"
