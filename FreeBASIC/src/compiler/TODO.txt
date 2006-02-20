@@ -1,3 +1,19 @@
+[ ] inline asm lines shouldn't save only text, but tokens (text or symbols) so
+    stack isn't allocated and vars can be sorted later to fill with zero only the
+    non-temp (take care with temp descriptors for strings and arrays) and non-scoped
+    variables
+
+[ ] check for GOSUB's when finishing functions if RETURN w/o expressions was used
+
+[ ] every compound statement should start new scope:
+    - there will be a problem with locals if stack is reused (ie: gcc), scope vars
+      must be zeroed because they will have garbage values after the first scoped
+      block is executed (what would break string descs also)
+    - that's needed for gcc, scope is very important
+    - will allow "FOR iterator AS datatype = ..."
+    - will break some old or buggy apps that declare implicit vars inside compounds
+      and use them after leaving the stmts, better now than later..
+
 [ ] add the wstring type:
     - fb_ConsoleInput() won't call fb_DevScrnInit_ReadWstr( ), so an input to a
       wstring won't work.. to not add more bloat, the compiler should have to

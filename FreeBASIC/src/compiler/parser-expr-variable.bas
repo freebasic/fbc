@@ -838,17 +838,17 @@ function hVarAddUndecl( byval id as zstring ptr, _
 						byval typ as integer ) as FBSYMBOL ptr
 	dim as FBSYMBOL ptr s
 	dim as FBARRAYDIM dTB(0)
-	dim as integer alloctype
+	dim as integer attrib
 
 	function = NULL
 
 	if( env.isprocstatic ) then
-		alloctype = FB_ALLOCTYPE_STATIC
+		attrib = FB_SYMBATTRIB_STATIC
 	else
-		alloctype = 0
+		attrib = 0
 	end if
 
-    s = symbAddVar( id, typ, NULL, 0, 0, dTB(), alloctype )
+    s = symbAddVar( id, typ, NULL, 0, 0, dTB(), attrib )
     if( s = NULL ) then
 		exit function
 	end if
@@ -919,6 +919,12 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 					hReportError( FB_ERRMSG_DUPDEFINITION )
 					exit function
 				end if
+
+				'' show warning if inside an expression (ie: var was never set)
+				if( env.isexpr ) then
+					hReportWarning( FB_WARNINGMSG_IMPLICITALLOCATION, id )
+				end if
+
 				subtype = symbGetSubtype( sym )
 			else
 				hReportError( FB_ERRMSG_VARIABLENOTDECLARED )

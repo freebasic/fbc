@@ -120,7 +120,7 @@ end sub
 sub rtlAddIntrinsicProcs( )
 	dim as integer typ
 	dim as string aname, optstr
-	dim as integer p, pargs, ptype, pmode, palloctype
+	dim as integer p, pargs, ptype, pmode, pattrib
 	dim as integer a, atype, alen, amode, optional, ptrcnt, checkerror, overloaded
 	dim as FBSYMBOL ptr proc
 	dim as FBRTLCALLBACK pcallback
@@ -178,9 +178,9 @@ sub rtlAddIntrinsicProcs( )
 
 		''
 		if( overloaded ) then
-			palloctype = FB_ALLOCTYPE_OVERLOADED
+			pattrib = FB_SYMBATTRIB_OVERLOADED
 		else
-			palloctype = 0
+			pattrib = 0
 		end if
 
 		''
@@ -195,7 +195,7 @@ sub rtlAddIntrinsicProcs( )
 		proc = symbAddPrototype( proc, _
 								 pname, palias, strptr( "fb" ), _
 								 ptype, NULL, ptrcnt, _
-								 palloctype, pmode, TRUE )
+								 pattrib, pmode, TRUE )
 
 		''
 		if( proc <> NULL ) then

@@ -34,7 +34,7 @@ function cFuncReturn( byval checkexpr as integer = TRUE ) as integer
 
     function = FALSE
 
-	if( (env.currproc = NULL) or (env.procstmt.endlabel = NULL) ) then
+	if( fbIsModLevel( ) or (env.procstmt.endlabel = NULL) ) then
 		hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB )
 		exit function
 	end if
@@ -115,7 +115,7 @@ function cGotoStmt as integer
 			'' try to guess here.. if inside a proc currently and no user label was
 			'' emitted, it's probably a FUNCTION return, not a GOSUB return
 			l = NULL
-			if( fbIsLocal( ) ) then
+			if( fbIsModLevel( ) = FALSE ) then
 				l = symbGetLastLabel( )
 				if( l <> NULL ) then
 					if( l->scope <> env.scope ) then
@@ -124,7 +124,7 @@ function cGotoStmt as integer
 				end if
 			end if
 
-			if( (fbIsLocal( ) = FALSE) or (l <> NULL) ) then
+			if( fbIsModLevel( ) or (l <> NULL) ) then
 				'' return 0
 				astAdd( astNewBRANCH( IR_OP_RET, NULL ) )
 			else

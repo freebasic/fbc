@@ -321,7 +321,7 @@ sub rtlErrorSetHandler( byval newhandler as ASTNODE ptr, _
     ''
     expr = NULL
     if( savecurrent ) then
-    	if( fbIsLocal( ) ) then
+    	if( fbIsModLevel( ) = FALSE ) then
     		if( env.procerrorhnd = NULL ) then
 				env.procerrorhnd = symbAddTempVar( FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
                 expr = astNewVAR( env.procerrorhnd, 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID )

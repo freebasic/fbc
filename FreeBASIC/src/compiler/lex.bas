@@ -1079,19 +1079,21 @@ end sub
 '':::::
 ''string          = '"' { ANY_CHAR_BUT_QUOTE } '"'.   # less quotes
 ''
-private sub lexReadString ( byval ps as zstring ptr, _
-							byref tlen as integer, _
-							byval flags as LEXCHECK_ENUM ) static
+private function lexReadString ( byval ps as zstring ptr, _
+								 byref tlen as integer, _
+								 byval flags as LEXCHECK_ENUM _
+							   ) as integer static
 
 	static as zstring * FB_MAXNUMLEN+1 nval
 	dim as integer rlen, i, ntyp, nlen
-	dim as integer skipchar
+	dim as integer skipchar, isunicode
 	dim as uinteger c
 
 	*ps = 0
 	tlen = 0
 	rlen = 0
 	skipchar = FALSE
+	isunicode = FALSE
 
 	'' skip open quote?
 	if( (flags and LEXCHECK_NOQUOTES) = 0 ) then
@@ -1172,6 +1174,7 @@ private sub lexReadString ( byval ps as zstring ptr, _
 				'' unicode 16-bit
 				case CHAR_ULOW
 					if( skipchar = FALSE ) then
+						isunicode = TRUE
 						for i = 1 to 1+4
 							lexCurrentChar( )
 							*ps = lexEatChar( )
@@ -1192,6 +1195,7 @@ private sub lexReadString ( byval ps as zstring ptr, _
 				'' unicode 32-bit
 				case CHAR_UUPP
 					if( skipchar = FALSE ) then
+						isunicode = TRUE
 						for i = 1 to 1+8
 							lexCurrentChar( )
 							*ps = lexEatChar( )
@@ -1241,7 +1245,9 @@ private sub lexReadString ( byval ps as zstring ptr, _
 	'' null-term
 	*ps = 0
 
-end sub
+	function = isunicode
+
+end function
 
 '':::::
 ''string          = '"' { ANY_CHAR_BUT_QUOTE } '"'.   # less quotes
@@ -1634,8 +1640,15 @@ readid:
 		t->class 	= FB_TKCLASS_STRLITERAL
 
 		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-			lexReadString( @t->text, t->tlen, flags )
-			t->typ = FB_DATATYPE_CHAR
+			'' no unicode sequences?
+			if( lexReadString( @t->text, t->tlen, flags ) = FALSE ) then
+				t->typ = FB_DATATYPE_CHAR
+
+			'' convert to unicode..
+			else
+				t->textw = wstr( t->text )
+				t->typ = FB_DATATYPE_WCHAR
+			end if
 
 		else
 			lexReadWstr( @t->textw, t->tlen, flags )

@@ -35,7 +35,7 @@ option escape
 function symbAddScope( ) as FBSYMBOL ptr
     dim as FBSYMBOL ptr s
 
-    s = symbNewSymbol( NULL, symb.symtb, FB_SYMBCLASS_SCOPE, FALSE, NULL, NULL )
+    s = symbNewSymbol( NULL, symb.loctb, TRUE, FB_SYMBCLASS_SCOPE, FALSE, NULL, NULL )
 
     s->scp.loctb.head = NULL
     s->scp.loctb.tail = NULL
@@ -52,7 +52,7 @@ sub symbDelScope( byval scp as FBSYMBOL ptr )
     	exit sub
     end if
 
-    '' del all enum constants
+    '' del all symbols inside the scope block
     do
 		s = scp->scp.loctb.head
 		if( s = NULL ) then
@@ -93,7 +93,7 @@ sub symbFreeScopeDynVars( byval scp as FBSYMBOL ptr ) static
     	'' variable?
     	if( s->class = FB_SYMBCLASS_VAR ) then
     		'' not shared or static (for locals)
-    		if( (s->alloctype and (FB_ALLOCTYPE_SHARED or FB_ALLOCTYPE_STATIC)) = 0 ) then
+    		if( (s->attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0 ) then
                 '' array?
 				if( s->var.array.dims > 0 ) then
 					'' dynamic?

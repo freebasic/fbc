@@ -83,7 +83,7 @@ end function
 function cSubOrFuncDecl( byval isSub as integer ) as integer static
     static as zstring * FB_MAXNAMELEN+1 id, libname, aliasname
     dim as zstring ptr plib, palias
-    dim as integer typ, mode, lgt, ptrcnt, alloctype
+    dim as integer typ, mode, lgt, ptrcnt, attrib
     dim as FBSYMBOL ptr subtype, proc
 
 	function = FALSE
@@ -108,10 +108,10 @@ function cSubOrFuncDecl( byval isSub as integer ) as integer static
 	mode = cFunctionMode( )
 
 	'' OVERLOAD?
-	alloctype = 0
+	attrib = 0
 	if( lexGetToken( ) = FB_TK_OVERLOAD ) then
 		lexSkipToken( )
-		alloctype = FB_ALLOCTYPE_OVERLOADED
+		attrib = FB_SYMBATTRIB_OVERLOADED
 	end if
 
 	'' (LIB STR_LIT)?
@@ -194,7 +194,7 @@ function cSubOrFuncDecl( byval isSub as integer ) as integer static
     ''
     proc = symbAddPrototype( proc, @id, palias, plib, _
     						 typ, subtype, ptrcnt, _
-    					     alloctype, mode, FALSE )
+    					     attrib, mode, FALSE )
     if( proc = NULL ) then
     	hReportError( FB_ERRMSG_DUPDEFINITION )
     	exit function

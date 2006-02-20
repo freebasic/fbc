@@ -134,7 +134,7 @@ function cOnStmt as integer
 
 	'' LOCAL?
 	if( hMatch( FB_TK_LOCAL ) ) then
-		if( fbIsLocal( ) = FALSE ) then
+		if( fbIsModLevel( ) ) then
 			hReportError( FB_ERRMSG_SYNTAXERROR, TRUE )
 			exit function
 		end if

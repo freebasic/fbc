@@ -166,26 +166,34 @@ function symbAddDefine( byval symbol as zstring ptr, _
                         byval flags as integer = 0 _
                       ) as FBSYMBOL ptr static
 
-    dim d as FBSYMBOL ptr
+    dim as FBSYMBOL ptr d
+    dim as FBSYMBOLTB ptr symtb
 
     function = NULL
 
+    '' if parsing main, all #defines must go to the global table
+    if( fbIsModLevel( ) ) then
+    	symtb = @symb.globtb
+    else
+    	symtb = symb.loctb
+    end if
+
     '' allocate new node
-    d = symbNewSymbol( NULL, symb.symtb, FB_SYMBCLASS_DEFINE, TRUE, _
-    				   symbol, NULL, fbIsLocal( ), FB_DATATYPE_CHAR, NULL )
+    d = symbNewSymbol( NULL, symtb, fbIsModLevel( ), FB_SYMBCLASS_DEFINE, _
+    				   TRUE, symbol, NULL, FB_DATATYPE_CHAR, NULL )
     if( d = NULL ) then
     	exit function
     end if
 
 	''
-	d->def.text 	= ZstrAllocate( lgt )
-	*d->def.text 	= *text
-	d->lgt			= lgt
-	d->def.args		= 0
-	d->def.arghead	= NULL
-	d->def.isargless= isargless
-	d->def.proc     = proc
-    d->def.flags    = flags
+	d->def.text	= ZstrAllocate( lgt )
+	*d->def.text = *text
+	d->lgt = lgt
+	d->def.args	= 0
+	d->def.arghead = NULL
+	d->def.isargless = isargless
+	d->def.proc = proc
+    d->def.flags = flags
 
 	''
 	function = d
@@ -201,26 +209,34 @@ function symbAddDefineW( byval symbol as zstring ptr, _
                          byval flags as integer = 0 _
                        ) as FBSYMBOL ptr static
 
-    dim d as FBSYMBOL ptr
+    dim as FBSYMBOL ptr d
+    dim as FBSYMBOLTB ptr symtb
 
     function = NULL
 
+    '' if parsing main, all #defines must go to the global table
+    if( fbIsModLevel( ) ) then
+    	symtb = @symb.globtb
+    else
+    	symtb = symb.loctb
+    end if
+
     '' allocate new node
-    d = symbNewSymbol( NULL, symb.symtb, FB_SYMBCLASS_DEFINE, TRUE, _
-    				   symbol, NULL, fbIsLocal( ), FB_DATATYPE_WCHAR, NULL )
+    d = symbNewSymbol( NULL, symtb, fbIsModLevel( ), FB_SYMBCLASS_DEFINE, _
+    				   TRUE, symbol, NULL, FB_DATATYPE_WCHAR, NULL )
     if( d = NULL ) then
     	exit function
     end if
 
 	''
-	d->def.textw 	= WstrAllocate( lgt )
-	*d->def.textw 	= *text
-	d->lgt			= lgt
-	d->def.args		= 0
-	d->def.arghead	= NULL
-	d->def.isargless= isargless
-	d->def.proc     = proc
-    d->def.flags    = flags
+	d->def.textw = WstrAllocate( lgt )
+	*d->def.textw = *text
+	d->lgt = lgt
+	d->def.args	= 0
+	d->def.arghead = NULL
+	d->def.isargless = isargless
+	d->def.proc = proc
+    d->def.flags = flags
 
 	''
 	function = d
@@ -234,24 +250,32 @@ function symbAddDefineMacro( byval symbol as zstring ptr, _
 						 	 byval arghead as FBDEFARG ptr _
 						   ) as FBSYMBOL ptr static
 
-    dim d as FBSYMBOL ptr
+    dim as FBSYMBOL ptr d
+    dim as FBSYMBOLTB ptr symtb
 
     function = NULL
 
+    '' if parsing main, all #defines must go to the global table
+    if( fbIsModLevel( ) ) then
+    	symtb = @symb.globtb
+    else
+    	symtb = symb.loctb
+    end if
+
     '' allocate new node
-    d = symbNewSymbol( NULL, symb.symtb, FB_SYMBCLASS_DEFINE, TRUE, _
-    				   symbol, NULL, fbIsLocal( ) )
+    d = symbNewSymbol( NULL, symtb, fbIsModLevel( ), FB_SYMBCLASS_DEFINE, _
+    				   TRUE, symbol, NULL,  )
     if( d = NULL ) then
     	exit function
     end if
 
 	''
-	d->def.tokhead  = tokhead
-	d->def.args		= args
-	d->def.arghead	= arghead
-	d->def.isargless= FALSE
-	d->def.proc     = NULL
-    d->def.flags    = 0
+	d->def.tokhead = tokhead
+	d->def.args	= args
+	d->def.arghead = arghead
+	d->def.isargless = FALSE
+	d->def.proc = NULL
+    d->def.flags = 0
 
 	''
 	function = d
@@ -276,10 +300,10 @@ function symbAddDefineArg( byval lastarg as FBDEFARG ptr, _
 	end if
 
 	''
-    a->name		= ZstrAllocate( len( *symbol ) )
+    a->name	= ZstrAllocate( len( *symbol ) )
     hUcase( *symbol, *a->name )
-    a->next		= NULL
-    a->id		= symb.defargcnt
+    a->next	= NULL
+    a->id = symb.defargcnt
     symb.defargcnt += 1
 
     function = a

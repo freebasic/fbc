@@ -46,10 +46,12 @@ end sub
 '':::::
 function symbAddLabel( byval symbol as zstring ptr, _
 					   byval declaring as integer = TRUE, _
-					   byval createalias as integer = FALSE ) as FBSYMBOL ptr static
+					   byval createalias as integer = FALSE _
+					 ) as FBSYMBOL ptr static
 
     dim as zstring ptr lname, aname
     dim as FBSYMBOL ptr l
+    dim as FBSYMBOLTB ptr symtb
 
     function = NULL
 
@@ -79,12 +81,19 @@ function symbAddLabel( byval symbol as zstring ptr, _
 		lname = symbol
 
 	else
-		lname = hMakeTmpStr( TRUE )
-		aname = lname
+		lname = NULL
+		aname = hMakeTmpStr( TRUE )
 	end if
 
-    l = symbNewSymbol( NULL, symb.symtb, FB_SYMBCLASS_LABEL, TRUE, _
-    				   lname, aname, fbIsLocal( ) )
+    '' if parsing main, all labels must go to the global table
+    if( fbIsModLevel( ) ) then
+    	symtb = @symb.globtb
+    else
+    	symtb = symb.loctb
+    end if
+
+    l = symbNewSymbol( NULL, symtb, fbIsModLevel( ), FB_SYMBCLASS_LABEL, _
+    				   symbol <> NULL, lname, aname )
     if( l = NULL ) then
     	exit function
     end if
@@ -141,7 +150,7 @@ function symbCheckLocalLabels(  ) as integer
 
     cnt = 0
 
-    s = symb.symtb->head
+    s = symb.loctb->head
     do while( s <> NULL )
 
     	if( s->class = FB_SYMBCLASS_LABEL ) then

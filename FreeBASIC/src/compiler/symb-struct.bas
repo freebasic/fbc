@@ -40,29 +40,37 @@ function symbAddUDT( byval parent as FBSYMBOL ptr, _
 					 byval isunion as integer, _
 					 byval align as integer ) as FBSYMBOL ptr static
     dim t as FBSYMBOL ptr
+    dim as FBSYMBOLTB ptr symtb
 
     function = NULL
 
-    t = symbNewSymbol( NULL, symb.symtb, FB_SYMBCLASS_UDT, TRUE, _
-    				   symbol, NULL, fbIsLocal( ) )
+    '' if parsing main, all UDT's must go to the global table
+    if( fbIsModLevel( ) ) then
+    	symtb = @symb.globtb
+    else
+    	symtb = symb.loctb
+    end if
+
+    t = symbNewSymbol( NULL, symtb, fbIsModLevel( ), FB_SYMBCLASS_UDT, _
+    				   TRUE, symbol, NULL )
 	if( t = NULL ) then
 		exit function
 	end if
 
-	t->udt.parent		= parent
-	t->udt.isunion		= isunion
-	t->udt.elements		= 0
-	t->udt.fldtb.head	= NULL
-	t->udt.fldtb.tail	= NULL
-	t->udt.ofs			= 0
-	t->udt.align		= align
-	t->udt.lfldlen		= 0
-	t->udt.bitpos		= 0
-	t->udt.unpadlgt 	= 0
-	t->udt.ptrcnt		= 0
-	t->udt.dyncnt		= 0
+	t->udt.parent = parent
+	t->udt.isunion = isunion
+	t->udt.elements = 0
+	t->udt.fldtb.head = NULL
+	t->udt.fldtb.tail = NULL
+	t->udt.ofs = 0
+	t->udt.align = align
+	t->udt.lfldlen = 0
+	t->udt.bitpos = 0
+	t->udt.unpadlgt	= 0
+	t->udt.ptrcnt = 0
+	t->udt.dyncnt = 0
 
-	t->udt.dbg.typenum	= INVALID
+	t->udt.dbg.typenum = INVALID
 
 	function = t
 
@@ -292,9 +300,8 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 	end if
 
 	''
-    e = symbNewSymbol( NULL, @t->udt.fldtb, FB_SYMBCLASS_UDTELM, FALSE, _
-    				   @ename, NULL, _
-    				   FALSE, typ, subtype, ptrcnt )
+    e = symbNewSymbol( NULL, @t->udt.fldtb, TRUE, FB_SYMBCLASS_UDTELM, _
+    				   FALSE, @ename, NULL, typ, subtype, ptrcnt )
     if( e = NULL ) then
     	exit function
     end if

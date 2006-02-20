@@ -38,13 +38,26 @@ function symbAddConst( byval symbol as zstring ptr, _
 					 ) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr c
+    dim as FBSYMBOLTB ptr symtb
+    dim as integer isglobal
 
     function = NULL
 
-    c = symbNewSymbol( NULL, iif( typ = FB_DATATYPE_ENUM, @subtype->enum.elmtb, symb.symtb ), _
-    				   FB_SYMBCLASS_CONST, TRUE, _
-    				   symbol, NULL, _
-    				   fbIsLocal( ), typ, subtype )
+    isglobal = TRUE
+    if( typ = FB_DATATYPE_ENUM ) then
+    	symtb = @subtype->enum.elmtb
+    else
+    	'' if parsing main, all consts must go to the global table
+    	if( fbIsModLevel( ) ) then
+    		symtb = @symb.globtb
+    	else
+    		symtb = symb.loctb
+    		isglobal = FALSE
+    	end if
+    end if
+
+    c = symbNewSymbol( NULL, symtb, isglobal, FB_SYMBCLASS_CONST, _
+    				   TRUE, symbol, NULL, typ, subtype )
 	if( c = NULL ) then
 		exit function
 	end if
@@ -84,7 +97,7 @@ function symbAllocFloatConst( byval value as double, _
 	'' proc, the global symbol tb should be used, so just one constant
 	'' will be ever allocated over the module
 	s = symbAddVarEx( @cname, @aname, typ, NULL, 0, 0, 0, dTB(), _
-					  FB_ALLOCTYPE_SHARED, TRUE, FALSE, FALSE )
+					  FB_SYMBATTRIB_SHARED, TRUE, FALSE, FALSE )
 
 	''
 	symbSetIsInitialized( s )
@@ -135,7 +148,7 @@ function symbAllocStrConst( byval sname as zstring ptr, _
 	'' it must be declare as SHARED, see symbAllocFloatConst()
 	s = symbAddVarEx( @cname, @aname, FB_DATATYPE_CHAR, NULL, _
 					  0, lgt + 1, 0, dTB(), _
-					  FB_ALLOCTYPE_SHARED, FALSE, TRUE, FALSE )
+					  FB_SYMBATTRIB_SHARED, FALSE, TRUE, FALSE )
 
 	''
 	symbSetIsInitialized( s )
@@ -186,7 +199,7 @@ function symbAllocWStrConst( byval sname as wstring ptr, _
 	'' it must be declare as SHARED, see symbAllocFloatConst()
 	s = symbAddVarEx( @cname, @aname, FB_DATATYPE_WCHAR, NULL, _
 					  0, (lgt+1) * len( wstring ), 0, dTB(), _
-					  FB_ALLOCTYPE_SHARED, FALSE, TRUE, FALSE )
+					  FB_SYMBATTRIB_SHARED, FALSE, TRUE, FALSE )
 
 	''
 	symbSetIsInitialized( s )

@@ -219,6 +219,7 @@ type ASTCTX
 
 	proclist		as TLIST
 	curproc			as ASTPROCNODE ptr
+	oldsymtb		as FBSYMBOLTB ptr
 
 	doemit			as integer
 	isopt			as integer
@@ -265,11 +266,10 @@ declare function 	astGetValueAsStr	( byval n as ASTNODE ptr ) as string
 declare function 	astGetValueAsWstr	( byval n as ASTNODE ptr ) as wstring ptr
 
 declare function 	astProcBegin		( byval proc as FBSYMBOL ptr, _
-					   					  byval initlabel as FBSYMBOL ptr, _
-					   					  byval exitlabel as FBSYMBOL ptr, _
 					   					  byval ismain as integer = FALSE ) as ASTPROCNODE ptr
 
-declare sub 		astProcEnd			( byval p as ASTPROCNODE ptr )
+declare sub 		astProcEnd			( byval p as ASTPROCNODE ptr, _
+										  byval callrtexit as integer = FALSE )
 
 declare sub 		astScopeBegin		( byval s as FBSYMBOL ptr )
 

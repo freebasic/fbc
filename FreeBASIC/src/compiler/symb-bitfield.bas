@@ -39,12 +39,14 @@ function symbAddBitField( byval bitpos as integer, _
 
     dim as FBSYMBOL ptr s
 
-    s = symbNewSymbol( NULL, symb.symtb, FB_SYMBCLASS_BITFIELD, FALSE, NULL, NULL, _
-    				   FALSE, typ, NULL )
+    '' the symbol table doesn't matter
+
+    s = symbNewSymbol( NULL, symb.loctb, TRUE, FB_SYMBCLASS_BITFIELD, _
+    				   FALSE, NULL, NULL, typ, NULL )
 
     s->bitfld.bitpos = bitpos
-    s->bitfld.bits   = bits
-    s->lgt			 = lgt
+    s->bitfld.bits = bits
+    s->lgt = lgt
 
 	function = s
 

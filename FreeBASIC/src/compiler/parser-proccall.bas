@@ -295,7 +295,7 @@ function cProcCallOrAssign as integer
 	case FB_TK_FUNCTION
 		'' '='?
 		if( lexGetLookAhead(1) = FB_TK_ASSIGN ) then
-			if( env.currproc = NULL ) then
+			if( fbIsModLevel( ) ) then
 				hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB )
 				exit function
 			end if

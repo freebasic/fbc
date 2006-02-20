@@ -85,11 +85,9 @@ function cDataStmt as integer static
 	case FB_TK_DATA
 
 		'' not allowed if inside an scope block
-		if( env.scope > 0 ) then
-			if( env.lastcompound = FB_TK_SCOPE ) then
-				hReportError( FB_ERRMSG_ILLEGALINSIDEASCOPE )
-				exit function
-			end if
+		if( env.scope > iif( fbIsModLevel( ), FB_MAINSCOPE, FB_MAINSCOPE+1 ) ) then
+			hReportError( FB_ERRMSG_ILLEGALINSIDEASCOPE )
+			exit function
 		end if
 
 		lexSkipToken( )

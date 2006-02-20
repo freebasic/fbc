@@ -188,8 +188,8 @@ function astNewADDR( byval op as integer, _
 			s = l->sym
 			if( s <> NULL ) then
 				if( (symbIsLocal( s ) = FALSE) or _
-					 ((symbGetAllocType( s ) and (FB_ALLOCTYPE_SHARED or _
-					 							  FB_ALLOCTYPE_STATIC)) <> 0) ) then
+					 ((symbGetAttrib( s ) and (FB_SYMBATTRIB_SHARED or _
+					 							  FB_SYMBATTRIB_STATIC)) <> 0) ) then
 					return astNewOFFSET( l )
 				end if
 			end if

@@ -4817,13 +4817,13 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
     	hPUSH( "ebp" )
     	outp( "mov ebp, esp" )
 
-    	if( bytestoalloc > 0 ) then
-    		outp( "sub esp, " + str( bytestoalloc ) )
-    	end if
-
         if( symbIsMainProc( proc ) ) then
 			outp( "and esp, 0xFFFFFFF0" )
 	    end if
+
+    	if( bytestoalloc > 0 ) then
+    		outp( "sub esp, " + str( bytestoalloc ) )
+    	end if
     end if
 
     if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EBX ) ) then
@@ -5169,7 +5169,7 @@ sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr ) static
 	emitSECTION( EMIT_SECTYPE_DATA )
 
 	'' add dbg info, if public or shared
-    if( (symbGetAlloctype( sym ) and (FB_ALLOCTYPE_SHARED or FB_ALLOCTYPE_PUBLIC)) > 0 ) then
+    if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_PUBLIC)) > 0 ) then
    		edbgEmitGlobalVar( sym, EMIT_SECTYPE_DATA )
    	end if
 
@@ -5357,7 +5357,7 @@ end sub
 '':::::
 sub emitWriteBss( byval s as FBSYMBOL ptr )
     static as string alloc, ostr
-    static as integer alloctype, elements
+    static as integer attrib, elements
     dim as integer doemit
 
     do while( s <> NULL )
@@ -5390,7 +5390,7 @@ sub emitWriteBss( byval s as FBSYMBOL ptr )
     	end select
 
     	if( doemit ) then
-    	    alloctype = symbGetAllocType( s )
+    	    attrib = symbGetAttrib( s )
 
 	    	elements = 1
     	    if( symbGetArrayDimensions( s ) > 0 ) then
@@ -5400,8 +5400,8 @@ sub emitWriteBss( byval s as FBSYMBOL ptr )
     	    hEmitBssHeader( )
 
     	    '' allocation modifier
-    	    if( (alloctype and FB_ALLOCTYPE_COMMON) = 0 ) then
-    	    	if( (alloctype and FB_ALLOCTYPE_PUBLIC) > 0 ) then
+    	    if( (attrib and FB_SYMBATTRIB_COMMON) = 0 ) then
+    	    	if( (attrib and FB_SYMBATTRIB_PUBLIC) > 0 ) then
     	    		hPUBLIC( *symbGetName( s ) )
 				end if
     	    	alloc = ".lcomm"
@@ -5425,7 +5425,7 @@ sub emitWriteBss( byval s as FBSYMBOL ptr )
     	    hWriteStr( TRUE, ostr )
 
     	    '' add dbg info, if public or shared
-    	    if( (alloctype and (FB_ALLOCTYPE_SHARED or FB_ALLOCTYPE_PUBLIC)) > 0 ) then
+    	    if( (attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_PUBLIC)) > 0 ) then
     	    	edbgEmitGlobalVar( s, EMIT_SECTYPE_BSS )
     	    end if
     	end if
@@ -5553,13 +5553,13 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
 	dname = symbGetArrayDescName( s )
 
    	'' add dbg info, if public or shared
-    if( (symbGetAllocType( s ) and (FB_ALLOCTYPE_SHARED or FB_ALLOCTYPE_PUBLIC)) > 0 ) then
+    if( (symbGetAttrib( s ) and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_PUBLIC)) > 0 ) then
     	edbgEmitGlobalVar( s, EMIT_SECTYPE_DATA )
     end if
 
     '' COMMON?
     if( symbIsCommon( s ) ) then
-    	if( dims = -1 ) then
+    	if( dims = INVALID ) then
     		dims = 1
     	end if
 
@@ -5585,6 +5585,11 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
     hALIGN( 4 )
     hWriteStr( FALSE, *dname + ":" )
 
+	'' DIM|REDIM|STATIC array()? assume max dimensions
+	if( dims = INVALID ) then
+		dims = FB_MAXARRAYDIMS
+	end if
+
 	''	void		*data 	// ptr + diff
 	hWriteStr( TRUE,  ".int\t" + sname + " +" + str( diff ) )
 	''	void		*ptr
@@ -5594,7 +5599,6 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
 	''	uint		element_len
     hWriteStr( TRUE,  ".int\t" + str( symbGetLen( s ) ) )
 	''	uint		dimensions
-	if( dims = -1 ) then dims = 1
 	hWriteStr( TRUE,  ".int\t" + str( dims ) )
 
     if( symbGetIsDynamic( s ) = FALSE ) then

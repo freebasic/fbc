@@ -37,17 +37,25 @@ function cVAFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 	function = FALSE
 
-	proc = env.currproc
-
-	if( proc = NULL ) then
+	if( fbIsModLevel( ) ) then
 		exit function
 	end if
+
+	proc = env.currproc
 
 	if( proc->proc.mode <> FB_FUNCMODE_CDECL ) then
 		exit function
 	end if
 
 	arg = symbGetProcTailArg( proc )
+	if( arg = NULL ) then
+		exit function
+	end if
+
+	if( symbGetArgMode( arg ) <> FB_ARGMODE_VARARG ) then
+		exit function
+	end if
+
 	arg = symbGetProcNextArg( proc, arg )
 	if( arg = NULL ) then
 		exit function

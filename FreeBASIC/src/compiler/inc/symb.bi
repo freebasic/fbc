@@ -15,12 +15,11 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-
 ''
 '' symbol table protos
 ''
 
-''
+'' symbol classes
 enum FB_SYMBCLASS
 	FB_SYMBCLASS_VAR			= 1
 	FB_SYMBCLASS_CONST
@@ -38,6 +37,7 @@ enum FB_SYMBCLASS
 	FB_SYMBCLASS_SCOPE
 end enum
 
+'' symbol status mask
 enum FB_SYMBSTATS
 	FB_SYMBSTATS_ALLOCATED		= &h000001
 	FB_SYMBSTATS_ACCESSED		= &h000002
@@ -49,29 +49,29 @@ enum FB_SYMBSTATS
 	FB_SYMBSTATS_THROWABLE		= &h000080
 end enum
 
-'' allocation types mask
-enum FB_ALLOCTYPE
-	FB_ALLOCTYPE_SHARED			= &h000001
-	FB_ALLOCTYPE_STATIC			= &h000002
-	FB_ALLOCTYPE_DYNAMIC		= &h000004
-	FB_ALLOCTYPE_COMMON			= &h000008
-	FB_ALLOCTYPE_TEMP			= &h000010
-	FB_ALLOCTYPE_ARGUMENTBYDESC	= &h000020
-	FB_ALLOCTYPE_ARGUMENTBYVAL	= &h000040
-	FB_ALLOCTYPE_ARGUMENTBYREF 	= &h000080
-	FB_ALLOCTYPE_PUBLIC 		= &h000100
-	FB_ALLOCTYPE_PRIVATE 		= &h000200
-	FB_ALLOCTYPE_EXTERN			= &h000400		'' extern's become public when DIM'ed
-	FB_ALLOCTYPE_EXPORT			= &h000800
-	FB_ALLOCTYPE_IMPORT			= &h001000
-	FB_ALLOCTYPE_OVERLOADED		= &h002000		'' functions only
-	FB_ALLOCTYPE_JUMPTB			= &h004000
-	FB_ALLOCTYPE_MAINPROC		= &H008000
-	FB_ALLOCTYPE_MODLEVELPROC	= &h010000
-    FB_ALLOCTYPE_CONSTRUCTOR    = &h020000      '' it can be either constructor
-    FB_ALLOCTYPE_DESTRUCTOR     = &h040000      '' or destructor, but not both ...
-    FB_ALLOCTYPE_LOCAL			= &h080000
-    FB_ALLOCTYPE_DESCRIPTOR		= &h100000
+'' symbol attributes mask
+enum FB_SYMBATTRIB
+	FB_SYMBATTRIB_SHARED		= &h000001
+	FB_SYMBATTRIB_STATIC		= &h000002
+	FB_SYMBATTRIB_DYNAMIC		= &h000004
+	FB_SYMBATTRIB_COMMON		= &h000008
+	FB_SYMBATTRIB_TEMP			= &h000010
+	FB_SYMBATTRIB_ARGUMENTBYDESC= &h000020
+	FB_SYMBATTRIB_ARGUMENTBYVAL	= &h000040
+	FB_SYMBATTRIB_ARGUMENTBYREF = &h000080
+	FB_SYMBATTRIB_PUBLIC 		= &h000100
+	FB_SYMBATTRIB_PRIVATE 		= &h000200
+	FB_SYMBATTRIB_EXTERN		= &h000400		'' extern's become public when DIM'ed
+	FB_SYMBATTRIB_EXPORT		= &h000800
+	FB_SYMBATTRIB_IMPORT		= &h001000
+	FB_SYMBATTRIB_OVERLOADED	= &h002000		'' functions only
+	FB_SYMBATTRIB_JUMPTB		= &h004000
+	FB_SYMBATTRIB_MAINPROC		= &H008000
+	FB_SYMBATTRIB_MODLEVELPROC	= &h010000
+    FB_SYMBATTRIB_CONSTRUCTOR   = &h020000      '' it can be either constructor
+    FB_SYMBATTRIB_DESTRUCTOR    = &h040000      '' or destructor, but not both ...
+    FB_SYMBATTRIB_LOCAL			= &h080000
+    FB_SYMBATTRIB_DESCRIPTOR	= &h100000
 end enum
 
 type FBSYMBOL_ as FBSYMBOL
@@ -319,7 +319,7 @@ type FBSYMBOL
 	typ				as FB_DATATYPE
 	subtype			as FBSYMBOL ptr
 	ptrcnt 			as integer
-	alloctype		as FB_ALLOCTYPE
+	attrib			as FB_SYMBATTRIB
 
 	name			as zstring ptr				'' original name, shared by hash tb
 	alias			as zstring ptr
@@ -359,11 +359,11 @@ end type
 type SYMBCTX
 	inited			as integer
 
-	symlist			as TLIST					'' symbols (VAR, CONST, FUNCTION, UDT, ENUM, LABEL, etc)
+	symlist			as TLIST					'' symbols (VAR, CONST, FUNCTION, UDT, etc)
 	symhash			as THASH
 
-	globtb			as FBSYMBOLTB
-	symtb			as FBSYMBOLTB ptr			'' current table
+	globtb			as FBSYMBOLTB               '' global tb (for shared vars, functions, etc)
+	loctb			as FBSYMBOLTB ptr			'' local tb
 
 	liblist 		as TLIST					'' libraries
 	libhash			as THASH
@@ -436,8 +436,6 @@ declare function 	symbLookupUDTElm		( byval symbol as zstring ptr, _
 
 declare function 	symbLookupProcResult	( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
 
-declare	function 	symbGetGlobalTbHead		( ) as FBSYMBOL ptr
-
 declare	function 	symbGetSymbolTbHead 	( ) as FBSYMBOL ptr
 
 declare function 	symbGetUDTElmOffset		( byref elm as FBSYMBOL ptr, _
@@ -453,8 +451,6 @@ declare function 	symbGetConstValueAsStr	( byval s as FBSYMBOL ptr ) as string
 declare function 	symbCalcArgLen			( byval typ as integer, _
 											  byval subtype as FBSYMBOL ptr, _
 											  byval mode as integer ) as integer
-
-declare function 	symbGetCurrentProcName	( ) as zstring ptr
 
 declare function 	symbListLibs			( namelist() as string, _
 											  byval index as integer ) as integer
@@ -506,7 +502,7 @@ declare function 	symbAddVar				( byval symbol as zstring ptr, _
 					  						  byval ptrcnt as integer, _
 					  						  byval dimensions as integer, _
 					  						  dTB() as FBARRAYDIM, _
-				      						  byval alloctype as integer ) as FBSYMBOL ptr
+				      						  byval attrib as integer ) as FBSYMBOL ptr
 
 declare function 	symbAddVarEx			( byval symbol as zstring ptr, _
 											  byval aliasname as zstring ptr, _
@@ -516,7 +512,7 @@ declare function 	symbAddVarEx			( byval symbol as zstring ptr, _
 											  byval lgt as integer, _
 											  byval dimensions as integer, _
 											  dTB() as FBARRAYDIM, _
-				       						  byval alloctype as integer, _
+				       						  byval attrib as integer, _
 				       						  byval addsuffix as integer, _
 				       						  byval preservecase as integer, _
 				       						  byval clearname as integer ) as FBSYMBOL ptr
@@ -574,7 +570,7 @@ declare function 	symbAddPrototype		( byval proc as FBSYMBOL ptr, _
 											  byval typ as integer, _
 											  byval subtype as FBSYMBOL ptr, _
 											  byval ptrcnt as integer, _
-											  byval alloctype as integer, _
+											  byval attrib as integer, _
 											  byval mode as integer, _
 											  byval isexternal as integer, _
 											  byval preservecase as integer = FALSE ) as FBSYMBOL ptr
@@ -586,7 +582,7 @@ declare function 	symbAddProc				( byval proc as FBSYMBOL ptr, _
 					  						  byval typ as integer, _
 					  						  byval subtype as FBSYMBOL ptr, _
 					  						  byval ptrcnt as integer, _
-					  						  byval alloctype as integer, _
+					  						  byval attrib as integer, _
 					  						  byval mode as integer ) as FBSYMBOL ptr
 
 declare function 	symbPreAddProc			( byval symbol as zstring ptr ) as FBSYMBOL ptr
@@ -616,8 +612,6 @@ declare sub 		symbSetLastLabel		( byval l as FBSYMBOL ptr )
 declare sub 		symbSetArrayDims		( byval s as FBSYMBOL ptr, _
 					  						  byval dimensions as integer, _
 					  						  dTB() as FBARRAYDIM )
-
-declare function 	symbSetSymbolTb			( byval tb as FBSYMBOLTB ptr ) as FBSYMBOLTB ptr
 
 declare sub 		symbFreeLocalDynVars	( byval proc as FBSYMBOL ptr, _
 											  byval issub as integer )
@@ -662,11 +656,11 @@ declare sub 		symbDelScope			( byval scp as FBSYMBOL ptr )
 
 declare function 	symbNewSymbol			( byval s as FBSYMBOL ptr, _
 					 						  byval symtb as FBSYMBOLTB ptr, _
+					 						  byval isglobal as integer, _
 					 						  byval class as FB_SYMBCLASS, _
 					 						  byval dohash as integer = TRUE, _
 					 						  byval symbol as zstring ptr, _
 					 						  byval aliasname as zstring ptr, _
-					 						  byval islocal as integer = FALSE, _
 					 						  byval typ as integer = INVALID, _
 					 						  byval subtype as FBSYMBOL ptr = NULL, _
 					 						  byval ptrcnt as integer = 0, _
@@ -745,7 +739,11 @@ declare function 	symbAllocLocalVars		( byval proc as FBSYMBOL ptr ) as integer
 '' getters and setters as macros
 ''
 
-#define symbGetSymbolTb() symb.symtb
+#define symbGetGlobalTbHead( ) symb.globtb.head
+
+#define symbGetLocalTb( ) symb.loctb
+
+#define symbSetLocalTb(tb) symb.loctb = tb
 
 #define symbGetIsAccessed(s) ((s->stats and FB_SYMBSTATS_ACCESSED) <> 0)
 
@@ -817,9 +815,9 @@ declare function 	symbAllocLocalVars		( byval proc as FBSYMBOL ptr ) as integer
 
 #define symbIsScope(s) (s->class = FB_SYMBCLASS_SCOPE)
 
-#define symbGetAllocType(s) s->alloctype
+#define symbGetAttrib(s) s->attrib
 
-#define symbSetAllocType(s,t) s->alloctype = t
+#define symbSetAttrib(s,t) s->attrib = t
 
 #define symbGetConstValStr(s) s->con.val.str
 
@@ -942,7 +940,7 @@ declare function 	symbAllocLocalVars		( byval proc as FBSYMBOL ptr ) as integer
 
 #define symbSetProcCallback(f,cb) f->proc.rtl.callback = cb
 
-#define symbGetProcIsOverloaded(f) ((f->alloctype and FB_ALLOCTYPE_OVERLOADED) > 0)
+#define symbGetProcIsOverloaded(f) ((f->attrib and FB_SYMBATTRIB_OVERLOADED) > 0)
 
 #define symGetProcOvlMaxArgs(f) f->proc.ovl.maxargs
 
@@ -972,57 +970,58 @@ declare function 	symbAllocLocalVars		( byval proc as FBSYMBOL ptr ) as integer
 
 #define symbGetArgNext(a) a->next
 
-#define symbGetIsDynamic(s) iif( s->class = FB_SYMBCLASS_UDTELM, FALSE, (s->alloctype and (FB_ALLOCTYPE_DYNAMIC or FB_ALLOCTYPE_ARGUMENTBYDESC)) <> 0 )
+#define symbGetIsDynamic(s) iif( s->class = FB_SYMBCLASS_UDTELM, FALSE, (s->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_ARGUMENTBYDESC)) <> 0 )
 
 #define symbIsArray(s) iif( (s->class = FB_SYMBCLASS_VAR) or (s->class = FB_SYMBCLASS_UDTELM), _
-							iif( (s->alloctype and (FB_ALLOCTYPE_DYNAMIC or FB_ALLOCTYPE_ARGUMENTBYDESC)) > 0, _
+							iif( (s->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_ARGUMENTBYDESC)) > 0, _
 								 TRUE, s->var.array.dims > 0 ), _
 							FALSE )
 
-#define symbIsShared(s) ((s->alloctype and FB_ALLOCTYPE_SHARED) <> 0)
+#define symbIsShared(s) ((s->attrib and FB_SYMBATTRIB_SHARED) <> 0)
 
-#define symbIsStatic(s) ((s->alloctype and FB_ALLOCTYPE_STATIC) <> 0)
+#define symbIsStatic(s) ((s->attrib and FB_SYMBATTRIB_STATIC) <> 0)
 
-#define symbIsDynamic(s) ((s->alloctype and FB_ALLOCTYPE_DYNAMIC) <> 0)
+#define symbIsDynamic(s) ((s->attrib and FB_SYMBATTRIB_DYNAMIC) <> 0)
 
-#define symbIsCommon(s) ((s->alloctype and FB_ALLOCTYPE_COMMON) <> 0)
+#define symbIsCommon(s) ((s->attrib and FB_SYMBATTRIB_COMMON) <> 0)
 
-#define symbIsTemp(s) ((s->alloctype and FB_ALLOCTYPE_TEMP) <> 0)
+#define symbIsTemp(s) ((s->attrib and FB_SYMBATTRIB_TEMP) <> 0)
 
-#define symbIsArgByDesc(s) ((s->alloctype and FB_ALLOCTYPE_ARGUMENTBYDESC) <> 0)
+#define symbIsArgByDesc(s) ((s->attrib and FB_SYMBATTRIB_ARGUMENTBYDESC) <> 0)
 
-#define symbIsArgByVal(s) ((s->alloctype and FB_ALLOCTYPE_ARGUMENTBYVAL) <> 0)
+#define symbIsArgByVal(s) ((s->attrib and FB_SYMBATTRIB_ARGUMENTBYVAL) <> 0)
 
-#define symbIsArgByRef(s) ((s->alloctype and FB_ALLOCTYPE_ARGUMENTBYREF) <> 0)
+#define symbIsArgByRef(s) ((s->attrib and FB_SYMBATTRIB_ARGUMENTBYREF) <> 0)
 
-#define symbIsArg(s) ((s->alloctype and (FB_ALLOCTYPE_ARGUMENTBYREF or FB_ALLOCTYPE_ARGUMENTBYVAL or FB_ALLOCTYPE_ARGUMENTBYDESC)) <> 0)
+#define symbIsArg(s) ((s->attrib and (FB_SYMBATTRIB_ARGUMENTBYREF or FB_SYMBATTRIB_ARGUMENTBYVAL or FB_SYMBATTRIB_ARGUMENTBYDESC)) <> 0)
 
-#define symbIsLocal(s) ((s->alloctype and FB_ALLOCTYPE_LOCAL) <> 0)
+#define symbIsLocal(s) ((s->attrib and FB_SYMBATTRIB_LOCAL) <> 0)
 
-#define symbIsPublic(s) ((s->alloctype and FB_ALLOCTYPE_PUBLIC) <> 0)
+#define symbIsPublic(s) ((s->attrib and FB_SYMBATTRIB_PUBLIC) <> 0)
 
-#define symbIsPrivate(s) ((s->alloctype and FB_ALLOCTYPE_PRIVATE) <> 0)
+#define symbIsPrivate(s) ((s->attrib and FB_SYMBATTRIB_PRIVATE) <> 0)
 
-#define symbIsExtern(s) ((s->alloctype and FB_ALLOCTYPE_EXTERN) <> 0)
+#define symbIsExtern(s) ((s->attrib and FB_SYMBATTRIB_EXTERN) <> 0)
 
-#define symbIsExport(s) ((s->alloctype and FB_ALLOCTYPE_EXPORT) <> 0)
+#define symbIsExport(s) ((s->attrib and FB_SYMBATTRIB_EXPORT) <> 0)
 
-#define symbIsImport(s) ((s->alloctype and FB_ALLOCTYPE_IMPORT) <> 0)
+#define symbIsImport(s) ((s->attrib and FB_SYMBATTRIB_IMPORT) <> 0)
 
-#define symbIsOverloaded(s) ((s->alloctype and FB_ALLOCTYPE_OVERLOADED) <> 0)
+#define symbIsOverloaded(s) ((s->attrib and FB_SYMBATTRIB_OVERLOADED) <> 0)
 
-#define symbIsJumpTb(s) ((s->alloctype and FB_ALLOCTYPE_JUMPTB) <> 0)
+#define symbIsJumpTb(s) ((s->attrib and FB_SYMBATTRIB_JUMPTB) <> 0)
 
-#define symbIsMainProc(s) ((s->alloctype and FB_ALLOCTYPE_MAINPROC) <> 0)
+#define symbIsMainProc(s) ((s->attrib and FB_SYMBATTRIB_MAINPROC) <> 0)
 
-#define symbIsModLevelProc(s) ((s->alloctype and FB_ALLOCTYPE_MODLEVELPROC) <> 0)
+#define symbIsModLevelProc(s) ((s->attrib and FB_SYMBATTRIB_MODLEVELPROC) <> 0)
 
-#define symbIsConstructor(s) ((s->alloctype and FB_ALLOCTYPE_CONSTRUCTOR) <> 0)
+#define symbIsConstructor(s) ((s->attrib and FB_SYMBATTRIB_CONSTRUCTOR) <> 0)
 
-#define symbIsDestructor(s) ((s->alloctype and FB_ALLOCTYPE_DESTRUCTOR) <> 0)
+#define symbIsDestructor(s) ((s->attrib and FB_SYMBATTRIB_DESTRUCTOR) <> 0)
 
-#define symbIsDescriptor( s ) ((s->allocatype and FB_ALLOCTYPE_DESCRIPTOR) <> 0)
+#define symbIsDescriptor( s ) ((s->allocatype and FB_SYMBATTRIB_DESCRIPTOR) <> 0)
 
+#define symbGetCurrentProcName( ) symbGetOrgName( env.currproc )
 
 #define hIsString(t) ((t = FB_DATATYPE_STRING) or (t = FB_DATATYPE_FIXSTR) or (t = FB_DATATYPE_CHAR) or (t = FB_DATATYPE_WCHAR))
 

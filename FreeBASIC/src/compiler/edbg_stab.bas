@@ -443,9 +443,9 @@ private sub hDeclArgs( byval proc as FBSYMBOL ptr ) static
 
     	if( symbIsVar( s ) ) then
 			'' an argument?
-    		if( (s->alloctype and (FB_ALLOCTYPE_ARGUMENTBYDESC or _
-    			  				   FB_ALLOCTYPE_ARGUMENTBYVAL or _
-    			  				   FB_ALLOCTYPE_ARGUMENTBYREF)) <> 0 ) then
+    		if( (s->attrib and (FB_SYMBATTRIB_ARGUMENTBYDESC or _
+    			  				   FB_SYMBATTRIB_ARGUMENTBYVAL or _
+    			  				   FB_SYMBATTRIB_ARGUMENTBYREF)) <> 0 ) then
 
 				edbgEmitProcArg( s )
 			end if
@@ -529,43 +529,15 @@ private sub hDeclLocalVars( byval proc as FBSYMBOL ptr, _
 			      			byval endlabel as FBSYMBOL ptr )
 
 	dim as FBSYMBOL ptr shead, s
-	static as integer scopecnt, mask, forcestatic
+	static as integer scopecnt
 
 	'' proc?
 	if( symbIsProc( blk ) ) then
-		'' not main?
-		if( symbIsMainProc( blk ) = FALSE ) then
-			shead = symbGetProcLocTbHead( blk )
-		'' main..
-		else
-			shead = symbGetGlobalTbHead( )
-		end if
+		shead = symbGetProcLocTbHead( blk )
 
 	'' scope block..
 	else
 		shead = symbGetScopeTbHead( blk )
-	end if
-
-	'' not main?
-	if( symbIsMainProc( proc ) = FALSE ) then
-		'' not an argument or temporary?
-		mask = FB_ALLOCTYPE_ARGUMENTBYDESC or _
-			   FB_ALLOCTYPE_ARGUMENTBYVAL or _
-			   FB_ALLOCTYPE_ARGUMENTBYREF or _
-    		   FB_ALLOCTYPE_TEMP or _
-    		   FB_ALLOCTYPE_DESCRIPTOR
-
-    	forcestatic = FALSE
-
-	else
-		'' not public, shared, static (locals moved) or temp?
-		mask = FB_ALLOCTYPE_SHARED or _
-			   FB_ALLOCTYPE_PUBLIC or _
-    		   FB_ALLOCTYPE_STATIC or _
-    		   FB_ALLOCTYPE_TEMP or _
-    		   FB_ALLOCTYPE_DESCRIPTOR
-
-		forcestatic = TRUE
 	end if
 
 	'' for each symbol..
@@ -577,8 +549,14 @@ private sub hDeclLocalVars( byval proc as FBSYMBOL ptr, _
     	'' variable?
     	case FB_SYMBCLASS_VAR
 
-    		if( (symbGetAllocType( s ) and mask) = 0 ) then
-				edbgEmitLocalVar( s, symbIsStatic( s ) or forcestatic )
+		'' not an argument, temporary or descriptor?
+    		if( (symbGetAttrib( s ) and _
+    			 (FB_SYMBATTRIB_ARGUMENTBYDESC or _
+			   	  FB_SYMBATTRIB_ARGUMENTBYVAL or _
+			   	  FB_SYMBATTRIB_ARGUMENTBYREF or _
+    		   	  FB_SYMBATTRIB_TEMP or _
+    		   	  FB_SYMBATTRIB_DESCRIPTOR)) = 0 ) then
+				edbgEmitLocalVar( s, symbIsStatic( s ) )
 			end if
 
 		'' scope? must be emitted later, due the GDB quirks
@@ -920,7 +898,7 @@ end sub
 sub edbgEmitGlobalVar( byval sym as FBSYMBOL ptr, _
 				   	   byval section as integer ) static
 
-	dim as integer t, alloctype
+	dim as integer t, attrib
 	dim as string desc
 	dim as zstring ptr sname
 
@@ -946,10 +924,10 @@ sub edbgEmitGlobalVar( byval sym as FBSYMBOL ptr, _
     '' allocation type (static, global, etc)
     desc = *symbGetOrgName( sym )
 
-    alloctype = symbGetAllocType( sym )
-    if( (alloctype and (FB_ALLOCTYPE_PUBLIC or FB_ALLOCTYPE_COMMON)) > 0 ) then
+    attrib = symbGetAttrib( sym )
+    if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_COMMON)) > 0 ) then
     	desc += ":G"
-    elseif( (symbIsLocal( sym ) = FALSE) or (alloctype and FB_ALLOCTYPE_STATIC) > 0 ) then
+    elseif( (symbIsLocal( sym ) = FALSE) or (attrib and FB_SYMBATTRIB_STATIC) > 0 ) then
         desc += ":S"
     else
     	desc += ":"

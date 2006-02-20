@@ -38,12 +38,9 @@ option escape
 #include once "inc\ast.bi"
 
 
+declare sub 		astProcListInit	( )
 
-declare function 	hNewProcNode	( byval proc as FBSYMBOL ptr ) as ASTPROCNODE ptr
-
-declare sub 		hInitProcList	( )
-
-declare sub 		hEndProcList	( )
+declare sub 		astProcListEnd	( )
 
 declare function 	astLoadASSIGN	( byval n as ASTNODE ptr ) as IRVREG ptr
 
@@ -94,10 +91,6 @@ declare function 	astLoadBOUNDCHK	( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function 	astLoadPTRCHK	( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astLoadFIELD	( byval n as ASTNODE ptr ) as IRVREG ptr
-
-declare function 	hModLevelIsEmpty( byval p as ASTPROCNODE ptr ) as integer
-
-declare sub 		hModLevelAddRtInit( byval p as ASTPROCNODE ptr )
 
 '' globals
 	dim shared ast as ASTCTX
@@ -179,7 +172,7 @@ sub astInit static
 	ast_maxlimitTB(FB_DATATYPE_WCHAR) = ast_maxlimitTB(env.target.wchar.type)
 
     ''
-    hInitProcList( )
+    astProcListInit( )
 
 end sub
 
@@ -190,366 +183,10 @@ sub astEnd static
 	hEndTempLists( )
 
 	''
-	hEndProcList( )
+	astProcListEnd( )
 
 	''
 	listFree( @ast.astTB )
-
-end sub
-
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' proc handling
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-''::::
-private sub hInitProcList( )
-
-	''
-    listNew( @ast.proclist, AST_INITPROCNODES, len( ASTPROCNODE ), FALSE )
-
-    ast.curproc = NULL
-
-end sub
-
-''::::
-private sub hEndProcList( )
-
-	listFree( @ast.proclist )
-
-	ast.curproc = NULL
-
-end sub
-
-'':::::
-private function hNewProcNode( byval proc as FBSYMBOL ptr ) as ASTPROCNODE ptr static
-	dim as ASTPROCNODE ptr n
-
-	n = listNewNode( @ast.proclist )
-
-	''
-	n->proc = proc
-	n->head = NULL
-	n->tail = NULL
-
-	function = n
-
-end function
-
-'':::::
-private sub hDelProcNode( byval n as ASTPROCNODE ptr ) static
-
-	n->head = NULL
-	n->tail = NULL
-
-	listDelNode( @ast.proclist, cptr(TLISTNODE ptr, n) )
-
-end sub
-
-''::::
-private sub hProcFlush( byval p as ASTPROCNODE ptr, _
-						byval doemit as integer _
-					  ) static
-
-    dim as ASTNODE ptr n, nxt, prv
-    dim as ASTNODE tmp
-    dim as FBSYMBOLTB ptr oldtb
-    dim as FBSYMBOL ptr proc
-
-	''
-	ast.curproc = p
-	ast.doemit 	= doemit
-
-	proc = p->proc
-
-	if( p->ismain = FALSE ) then
-		env.scope = 1
-		env.currproc = proc
-	else
-		env.scope = 0
-		env.currproc = NULL
-	end if
-
-	env.currproc = proc
-	oldtb = symbSetSymbolTb( @proc->proc.loctb )
-
-	''
-	prv = @tmp
-	n = p->head
-	do while( n <> NULL )
-		nxt = n->next
-
-		n = astOptimize( n )
-		'' needed even when not optimizing
-		n = astOptAssignment( n )
-		n = astUpdStrConcat( n )
-
-		prv->next = n
-		prv = n
-		n = nxt
-	loop
-
-	symbAllocLocalVars( symbGetProcLocTbHead( proc ) )
-
-	'' add a call to fb_init if it's a static constructor
-	'' (note: must be done here or ModLevelIsEmpty() will fail)
-	if( doemit ) then
-		if( symbIsConstructor( proc ) ) then
-           	hModLevelAddRtInit( p )
-		end if
-	end if
-
-	''
-	if( ast.doemit ) then
-		irEmitPROCBEGIN( proc, p->initlabel )
-	end if
-
-	''
-	n = p->head
-	do while( n <> NULL )
-		nxt = n->next
-		astLoad( n )
-		astDel( n )
-		n = nxt
-	loop
-
-    ''
-    if( ast.doemit ) then
-    	irEmitPROCEND( proc, p->initlabel, p->exitlabel )
-    end if
-
-    '' del symbols from hash and symbol tb's
-    symbDelSymbolTb( @proc->proc.loctb, FALSE )
-
-    '' back to global/module-level/main
-    symbSetSymbolTb( NULL )
-    env.currproc = NULL
-    env.scope = 0
-
-	ast.doemit  = TRUE
-	ast.curproc = NULL
-
-	''
-	hDelProcNode( p )
-
-end sub
-
-''::::
-private sub hProcFlushAll( ) static
-    dim as ASTPROCNODE ptr p
-    dim as integer doemit
-    dim as FBSYMBOL ptr proc
-
-	'' procs should be sorted by include file
-
-	do
-        p = listGetHead( @ast.proclist )
-        if( p = NULL ) then
-        	exit do
-        end if
-
-		proc = p->proc
-
-		doemit = TRUE
-		'' private?
-		if( symbIsPrivate( proc ) ) then
-			'' never called? skip
-			if( symbGetIsCalled( proc ) = FALSE ) then
-				doemit = FALSE
-
-			'' module-level?
-			elseif( symbIsModLevelProc( proc ) ) then
-				doemit = (hModLevelIsEmpty( p ) = FALSE)
-			end if
-		end if
-
-		hProcFlush( p, doemit )
-	loop
-
-end sub
-
-''::::
-sub astAdd( byval n as ASTNODE ptr ) static
-
-	if( n = NULL ) then
-		exit sub
-	end if
-
-	''
-	if( ast.curproc->tail <> NULL ) then
-		ast.curproc->tail->next = n
-	else
-		ast.curproc->head = n
-	end if
-
-	n->prev = ast.curproc->tail
-	n->next = NULL
-	ast.curproc->tail = n
-
-end sub
-
-''::::
-sub astAddAfter( byval n as ASTNODE ptr, _
-				 byval p as ASTNODE ptr ) static
-
-	if( (p = NULL) or (n = NULL) ) then
-		exit sub
-	end if
-
-	''
-	if( p->next = NULL ) then
-		ast.curproc->tail = n
-	end if
-
-	n->prev = p
-	n->next = p->next
-	p->next = n
-
-end sub
-
-'':::::
-function astProcBegin( byval proc as FBSYMBOL ptr, _
-					   byval initlabel as FBSYMBOL ptr, _
-					   byval exitlabel as FBSYMBOL ptr, _
-					   byval ismain as integer ) as ASTPROCNODE ptr static
-
-    dim as ASTPROCNODE ptr p
-
-	'' alloc new node
-	p = hNewProcNode( proc )
-	if( p = NULL ) then
-		return NULL
-	end if
-
-	p->initlabel = initlabel
-	p->exitlabel = exitlabel
-	p->ismain	 = ismain
-
-	''
-	proc->proc.loctb.head = NULL
-	proc->proc.loctb.tail = NULL
-	symbSetSymbolTb( @proc->proc.loctb )
-
-	ast.curproc = p
-
-	''
-	irProcBegin( proc )
-
-	function = p
-
-end function
-
-'':::::
-sub astProcEnd( byval p as ASTPROCNODE ptr ) static
-
-	''
-	irProcEnd( p->proc )
-
-	if( p->ismain = FALSE ) then
-		'' not private or inline? flush it..
-		if( symbIsPrivate( p->proc ) = FALSE ) then
-			hProcFlush( p, TRUE )
-
-		'' remove from hash tb only
-		else
-			symbDelSymbolTb( @p->proc->proc.loctb, TRUE )
-		end if
-
-	'' main? flush all remaining, it's the latest
-	else
-		hProcFlushAll( )
-
-	end if
-
-	'' back to global table
-	symbSetSymbolTb( NULL )
-
-	'' back to main (or NULL)
-	ast.curproc = listGetHead( @ast.proclist )
-
-end sub
-
-''::::
-private function hModLevelIsEmpty( byval p as ASTPROCNODE ptr ) as integer
-    dim as ASTNODE ptr n, nxt
-
-	'' an empty module-level proc will have just the
-	'' initial and final labels as nodes and nothing else
-	'' (note: when debugging it will be emmited even if empty)
-
-	n = p->head
-	if( n = NULL ) then
-		return TRUE
-	end if
-	if( n->class <> AST_NODECLASS_LABEL ) then
-		return FALSE
-	end if
-
-	n = n->next
-	if( n = NULL ) then
-		return TRUE
-	end if
-	if( n->class <> AST_NODECLASS_LABEL ) then
-		return FALSE
-	end if
-
-	n = n->next
-	if( n = NULL ) then
-		return TRUE
-	end if
-
-	return FALSE
-
-end function
-
-''::::
-private sub hModLevelAddRtInit( byval p as ASTPROCNODE ptr )
-    dim as ASTNODE ptr n
-
-    n = p->head
-    if( n = NULL ) then
-    	exit sub
-    end if
-
-	'' fb rt must be initialized before any static constructor
-	'' is called but in any platform (but Windows) the .ctors
-	'' list will be processed before main() is called by crt
-
-	astAddAfter( rtlInitRt( ), n )
-
-end sub
-
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' scope handling
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'':::::
-sub astScopeBegin( byval s as FBSYMBOL ptr ) static
-
-    '' change to scope's symbol tb
-    s->scp.loctb.head = NULL
-    s->scp.loctb.tail = NULL
-
-	symbSetSymbolTb( @s->scp.loctb )
-
-	''
-	irScopeBegin( s )
-
-	''
-	astAdd( astNewDBG( IR_OP_DBG_SCOPEINI, cint( s ) ) )
-
-end sub
-
-'':::::
-sub astScopeEnd( byval s as FBSYMBOL ptr ) static
-
-	''
-	astAdd( astNewDBG( IR_OP_DBG_SCOPEEND, cint( s ) ) )
-
-	''
-	irScopeEnd( s )
-
-	'' back to preview symbol tb
-	symbSetSymbolTb( s->symtb )
 
 end sub
 
@@ -1195,8 +832,8 @@ function astIsSymbolOnTree( byval sym as FBSYMBOL ptr, _
 
 		'' passed by ref or by desc? can't do any assumption..
 		if( s <> NULL ) then
-			if( (s->alloctype and _
-				(FB_ALLOCTYPE_ARGUMENTBYDESC or FB_ALLOCTYPE_ARGUMENTBYREF)) > 0 ) then
+			if( (s->attrib and _
+				(FB_SYMBATTRIB_ARGUMENTBYDESC or FB_SYMBATTRIB_ARGUMENTBYREF)) > 0 ) then
 				return TRUE
 			end if
 		end if

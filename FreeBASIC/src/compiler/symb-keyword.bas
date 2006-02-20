@@ -273,15 +273,15 @@ function symbAddKeyword( byval symbol as zstring ptr, _
 						 byval class as integer ) as FBSYMBOL ptr
     dim k as FBSYMBOL ptr
 
-    k = symbNewSymbol( NULL, @symb.globtb, FB_SYMBCLASS_KEYWORD, TRUE, _
-    				   symbol, NULL )
+    k = symbNewSymbol( NULL, @symb.globtb, TRUE, FB_SYMBCLASS_KEYWORD, _
+    				   TRUE, symbol, NULL )
     if( k = NULL ) then
     	return NULL
     end if
 
     ''
-    k->key.id		= id
-    k->key.class	= class
+    k->key.id = id
+    k->key.class = class
 
     function = k
 

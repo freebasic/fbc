@@ -31,21 +31,28 @@ option escape
 
 '':::::
 function symbAddEnum( byval symbol as zstring ptr ) as FBSYMBOL ptr static
-    dim as integer i
     dim as FBSYMBOL ptr e
+    dim as FBSYMBOLTB ptr symtb
 
     function = NULL
 
+    '' if parsing main, all enums must go to the global table
+    if( fbIsModLevel( ) ) then
+    	symtb = @symb.globtb
+    else
+    	symtb = symb.loctb
+    end if
+
     ''
-    e = symbNewSymbol( NULL, symb.symtb, FB_SYMBCLASS_ENUM, TRUE, _
-    				   symbol, NULL, fbIsLocal( ) )
+    e = symbNewSymbol( NULL, symtb, fbIsModLevel( ), FB_SYMBCLASS_ENUM, _
+    				   TRUE, symbol, NULL )
 	if( e = NULL ) then
 		exit function
 	end if
 
-	e->enum.elements	= 0
-	e->enum.elmtb.head 	= NULL
-	e->enum.elmtb.tail	= NULL
+	e->enum.elements = 0
+	e->enum.elmtb.head = NULL
+	e->enum.elmtb.tail = NULL
 	e->enum.dbg.typenum = INVALID
 
 	'' check for forward references

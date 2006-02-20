@@ -111,6 +111,7 @@ enum FBWARNINGMSG_ENUM
 	FB_WARNINGMSG_LITSTRINGTOOBIG
 	FB_WARNINGMSG_POINTERFIELDS
 	FB_WARNINGMSG_DYNAMICFIELDS
+	FB_WARNINGMSG_IMPLICITALLOCATION
 
 	FB_WARNINGMSGS
 end enum
@@ -150,7 +151,7 @@ declare function 	hGetLastError 			( ) as integer
 declare function 	hGetErrorCnt 			( ) as integer
 
 declare sub 		hReportWarning			( byval msgnum as integer, _
-											  byval msgex as string = "" )
+											  byval msgex as zstring ptr = NULL )
 
 declare sub 		hReportParamError		( byval proc as any ptr, _
 					   						  byval pnum as integer, _

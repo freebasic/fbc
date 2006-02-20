@@ -129,6 +129,9 @@ enum FBOPENKIND
 end enum
 
 ''
+const FB_MAINSCOPE = 0
+
+''
 ''
 ''
 
@@ -581,6 +584,16 @@ type FBOPTION
 	dynamic			as integer					'' def    = false
 end type
 
+type FBMAIN
+	node			as ASTPROCNODE ptr
+	proc			as FBSYMBOL ptr
+	argc			as FBSYMBOL ptr
+	argv			as FBSYMBOL ptr
+	initlabel		as FBSYMBOL ptr
+	exitlabel		as FBSYMBOL ptr
+	initnode		as ASTNODE ptr
+end type
+
 type FBENV
 	inf				as FBFILE					'' source file
 	outf			as FBFILE					'' destine file
@@ -600,6 +613,8 @@ type FBENV
 	reclevel		as integer					'' >0 if parsing an include file
 	currproc 		as FBSYMBOL ptr				'' current proc (def= NULL)
 	withvar			as FBSYMBOL ptr				'' current WITH var
+
+	main			as FBMAIN
 
 	compoundcnt		as integer					'' checked when parsing EXIT
 	lastcompound	as integer					'' last compound stmt (token), def= INVALID
@@ -625,7 +640,7 @@ end type
 ''
 '' macros
 ''
-#define fbIsLocal( ) (env.currproc <> NULL)
+#define fbIsModLevel( ) (env.currproc = env.main.proc)
 
 ''
 '' super globals

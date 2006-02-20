@@ -1183,8 +1183,8 @@ private function hIsMultStrConcat( byval l as ASTNODE ptr, _
 			 AST_NODECLASS_FIELD	'' !!!FIXME!!! check if this is okay w/ pointers
 			sym = astGetSymbol( l )
 			if( sym <> NULL ) then
-				if( (sym->alloctype and _
-					(FB_ALLOCTYPE_ARGUMENTBYDESC or FB_ALLOCTYPE_ARGUMENTBYREF)) = 0 ) then
+				if( (sym->attrib and _
+					(FB_SYMBATTRIB_ARGUMENTBYDESC or FB_SYMBATTRIB_ARGUMENTBYREF)) = 0 ) then
 
 					if( astIsSymbolOnTree( sym, r ) = FALSE ) then
 						function = TRUE

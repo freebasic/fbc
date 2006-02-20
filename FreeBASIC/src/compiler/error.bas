@@ -55,7 +55,8 @@ end type
 		( 0, "Literal number too big, truncated" ), _
 		( 0, "Literal string too big, truncated" ), _
 		( 0, "UDT with pointer or dynamic string fields" ), _
-		( 0, "UDT with dynamic string fields" ) _
+		( 0, "UDT with dynamic string fields" ), _
+		( 0, "Implicit variable allocation" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring * 128 => _
@@ -259,7 +260,7 @@ end function
 
 '':::::
 sub hReportWarning( byval msgnum as integer, _
-				 	byval msgex as string = "" )
+				 	byval msgex as zstring ptr )
 
 	if( (msgnum < 1) or (msgnum >= FB_WARNINGMSGS) ) then
 		exit sub
@@ -271,12 +272,13 @@ sub hReportWarning( byval msgnum as integer, _
 
 	print env.inf.name; "(";
 	if( lexLineNum( ) > 0 ) then
-		print str$( lexLineNum( ) );
+		print str( lexLineNum( ) );
 	end if
 	print ") : warning level"; warningMsgs(msgnum).level;
 	print ": "; warningMsgs(msgnum).text;
-	if( len( msgex ) > 0 ) then
-		print ", "; msgex
+
+	if( msgex <> NULL ) then
+		print ", "; *msgex
 	else
 		print
 	end if

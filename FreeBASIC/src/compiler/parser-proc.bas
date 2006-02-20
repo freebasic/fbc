@@ -119,44 +119,12 @@ private function hCheckPrototype( byval proto as FBSYMBOL ptr, _
 end function
 
 '':::::
-private function hDeclareArgs( byval proc as FBSYMBOL ptr ) as integer static
-    dim a as integer
-    dim arg as FBSYMBOL ptr
-
-	function = FALSE
-
-	'' proc returns an UDT?
-	if( symbGetType( proc ) = FB_DATATYPE_USERDEF ) then
-		'' create an hidden arg if needed
-		symbAddProcResArg( proc )
-	end if
-
-	''
-	a = 1
-	arg = symbGetProcHeadArg( proc )
-	do while( arg <> NULL )
-
-		if( arg->arg.mode <> FB_ARGMODE_VARARG ) then
-			if( symbAddArg( symbGetName( arg ), arg ) = NULL ) then
-				hParamError( proc, a, FB_ERRMSG_DUPDEFINITION )
-				exit function
-			end if
-		end if
-
-		arg = symbGetArgNext( arg )
-		a += 1
-	loop
-
-	function = TRUE
-
-end function
-
-'':::::
 ''SubOrFuncHeader   =  ID (STDCALL|CDECL|PASCAL) OVERLOAD? (ALIAS LIT_STRING)?
 ''                     ('(' Arguments? ')')? (AS SymbolType)? (CONSTRUCTOR|DESTRUCTOR)? STATIC? EXPORT?
 ''
 function cSubOrFuncHeader( byval issub as integer, _
-						   byref alloctype as integer ) as FBSYMBOL ptr static
+						   byref attrib as integer _
+						 ) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXNAMELEN+1 id, aliasid
     dim as integer typ, mode, lgt, ptrcnt
@@ -200,7 +168,7 @@ function cSubOrFuncHeader( byval issub as integer, _
 	'' OVERLOAD?
 	if( lexGetToken( ) = FB_TK_OVERLOAD ) then
 		lexSkipToken( )
-		alloctype or= FB_ALLOCTYPE_OVERLOADED
+		attrib or= FB_SYMBATTRIB_OVERLOADED
 	end if
 
 	'' (ALIAS LIT_STRING)?
@@ -243,9 +211,9 @@ function cSubOrFuncHeader( byval issub as integer, _
         end if
 
 		if( lexGetToken( ) = FB_TK_CONSTRUCTOR ) then
-			alloctype or= FB_ALLOCTYPE_CONSTRUCTOR
+			attrib or= FB_SYMBATTRIB_CONSTRUCTOR
 		else
-			alloctype or= FB_ALLOCTYPE_DESTRUCTOR
+			attrib or= FB_SYMBATTRIB_DESTRUCTOR
 		end if
 
 		lexSkipToken( )
@@ -281,17 +249,17 @@ function cSubOrFuncHeader( byval issub as integer, _
     	subtype = NULL
     end if
 
-    if( (alloctype and FB_ALLOCTYPE_STATIC) = 0 ) then
+    if( (attrib and FB_SYMBATTRIB_STATIC) = 0 ) then
     	'' STATIC?
     	if( hMatch( FB_TK_STATIC ) ) then
-    		alloctype or= FB_ALLOCTYPE_STATIC
+    		attrib or= FB_SYMBATTRIB_STATIC
     	end if
     end if
 
     '' EXPORT?
     if( hMatch( FB_TK_EXPORT ) ) then
     	'' private?
-    	if( (alloctype and FB_ALLOCTYPE_PRIVATE) > 0 ) then
+    	if( (attrib and FB_SYMBATTRIB_PRIVATE) > 0 ) then
     		hReportError( FB_ERRMSG_SYNTAXERROR )
     		exit function
     	end if
@@ -300,7 +268,7 @@ function cSubOrFuncHeader( byval issub as integer, _
     	'''''if( fbGetOption( FB_COMPOPT_EXPORT ) = FALSE ) then
     	'''''	hReportWarning( FB_WARNINGMSG_CANNOTEXPORT )
     	'''''end if
-    	alloctype or= FB_ALLOCTYPE_EXPORT or FB_ALLOCTYPE_PUBLIC
+    	attrib or= FB_SYMBATTRIB_EXPORT or FB_SYMBATTRIB_PUBLIC
     end if
 
 	''
@@ -317,7 +285,7 @@ function cSubOrFuncHeader( byval issub as integer, _
     if( sym = NULL ) then
     	proc = symbAddProc( proc, @id, palias, NULL, _
     						typ, subtype, ptrcnt, _
-    						alloctype, mode )
+    						attrib, mode )
     	if( proc = NULL ) then
     		hReportError( FB_ERRMSG_DUPDEFINITION, TRUE )
     		exit function
@@ -334,7 +302,7 @@ function cSubOrFuncHeader( byval issub as integer, _
     		if( sym = NULL ) then
     			proc = symbAddProc( proc, @id, palias, NULL, _
     								typ, subtype, ptrcnt, _
-    								alloctype, mode )
+    								attrib, mode )
     			'' dup def?
     			if( proc = NULL ) then
     				hReportError( FB_ERRMSG_DUPDEFINITION, TRUE )
@@ -344,7 +312,7 @@ function cSubOrFuncHeader( byval issub as integer, _
     			end if
     		end if
 
-    		alloctype or= FB_ALLOCTYPE_OVERLOADED
+    		attrib or= FB_SYMBATTRIB_OVERLOADED
     	end if
 
     	'' already parsed?
@@ -368,10 +336,10 @@ function cSubOrFuncHeader( byval issub as integer, _
     	''
     	symbSetIsDeclared( sym )
 
-    	symbSetAllocType( sym, alloctype )
+    	symbSetAttrib( sym, attrib )
 
 		'' ctor or dtor? even if private it should be always emitted
-		if( (alloctype and (FB_ALLOCTYPE_CONSTRUCTOR or FB_ALLOCTYPE_DESTRUCTOR)) > 0 ) then
+		if( (attrib and (FB_SYMBATTRIB_CONSTRUCTOR or FB_SYMBATTRIB_DESTRUCTOR)) > 0 ) then
     		symbSetIsCalled( sym )
     	end if
 
@@ -387,47 +355,14 @@ function cSubOrFuncHeader( byval issub as integer, _
 end function
 
 '':::::
-private sub hLoadResult ( byval proc as FBSYMBOL ptr ) static
-    dim as FBSYMBOL ptr s
-    dim as ASTNODE ptr n, t
-    dim as integer dtype
-
-	s = symbLookupProcResult( proc )
-	dtype = symbGetType( proc )
-    n = NULL
-
-	select case dtype
-
-	'' if result is a string, a temp descriptor is needed, as the current one (on stack)
-	'' will be trashed when the function returns (also, the string returned will be
-	'' set as temp, so any assignment or when passed as parameter to another proc
-	'' will deallocate this string)
-	case FB_DATATYPE_STRING
-		t = astNewVAR( s, 0, FB_DATATYPE_STRING )
-		n = rtlStrAllocTmpResult( t )
-
-	'' UDT? use the real type
-	case FB_DATATYPE_USERDEF
-		dtype = symbGetProcRealType( proc )
-	end select
-
-	if( n = NULL ) then
-		n = astNewLOAD( astNewVAR( s, 0, dtype, NULL ), dtype, TRUE )
-	end if
-
-	astAdd( n )
-
-end sub
-
-'':::::
 ''ProcStatement	  =	  (PRIVATE|PUBLIC)? STATIC? ((SUB SubDecl) | (FUNCTION FuncDecl)) Comment? SttSeparator
 ''					  SimpleLine*
 ''				      END (SUB | FUNCTION)
 ''
 function cProcStatement static
-	dim as integer res, issub, alloctype
+	dim as integer res, issub, attrib
     dim as FBCMPSTMT oldprocstmt
-    dim as FBSYMBOL ptr proc, exitlabel, initlabel
+    dim as FBSYMBOL ptr proc
     dim as ASTNODE ptr expr
     dim as ASTPROCNODE ptr procnode
 
@@ -437,21 +372,21 @@ function cProcStatement static
 	select case lexGetToken( )
 	case FB_TK_PRIVATE
 		lexSkipToken( )
-		alloctype = FB_ALLOCTYPE_PRIVATE
+		attrib = FB_SYMBATTRIB_PRIVATE
 	case FB_TK_PUBLIC
 		lexSkipToken( )
-		alloctype = FB_ALLOCTYPE_PUBLIC
+		attrib = FB_SYMBATTRIB_PUBLIC
 	case else
 		if( env.opt.procpublic ) then
-			alloctype = FB_ALLOCTYPE_PUBLIC
+			attrib = FB_SYMBATTRIB_PUBLIC
 		else
-			alloctype = FB_ALLOCTYPE_PRIVATE
+			attrib = FB_SYMBATTRIB_PRIVATE
 		end if
 	end select
 
     '' STATIC?
     if( hMatch( FB_TK_STATIC ) ) then
-    	alloctype = alloctype or FB_ALLOCTYPE_STATIC
+    	attrib = attrib or FB_SYMBATTRIB_STATIC
     end if
 
 	'' SUB | FUNCTION
@@ -467,17 +402,17 @@ function cProcStatement static
 	lexSkipToken( )
 
 	''
-	if( env.scope > 0 ) then
-		if( fbIsLocal( ) ) then
+	if( env.scope > FB_MAINSCOPE ) then
+		if( fbIsModLevel( ) = FALSE ) then
         	hReportError( FB_ERRMSG_INNERPROCNOTALLOWED )
-        else
+		else
         	hReportError( FB_ERRMSG_ILLEGALINSIDEASCOPE )
         end if
         exit function
 	end if
 
 	'' SubDecl | FuncDecl
-	proc = cSubOrFuncHeader( issub, alloctype )
+	proc = cSubOrFuncHeader( issub, attrib )
 	if( proc = NULL  ) then
 		exit function
 	end if
@@ -485,43 +420,27 @@ function cProcStatement static
 	''
 	env.compoundcnt += 1
 
-	if( (alloctype and FB_ALLOCTYPE_STATIC) > 0 ) then
+	if( (attrib and FB_SYMBATTRIB_STATIC) > 0 ) then
 		env.isprocstatic = TRUE
 	else
 		env.isprocstatic = FALSE
 	end if
 
-	'' add end and exit labels (will be used by any EXIT SUB/FUNCTION)
-	exitlabel = symbAddLabel( NULL )
-	initlabel = symbAddLabel( NULL )
+	'' emit proc setup
+	procnode = astProcBegin( proc, FALSE )
+	if( procnode = NULL ) then
+		exit function
+	end if
 
 	'' save old proc stmt info
 	oldprocstmt = env.procstmt
 
 	env.procstmt.cmplabel = NULL
-	env.procstmt.endlabel = exitlabel
+	env.procstmt.endlabel = procnode->exitlabel
 
 	'' restore error old handle if any was set
-	env.procerrorhnd 	  = NULL
+	env.procerrorhnd = NULL
 
-	'' emit proc setup
-	procnode = astProcBegin( proc, initlabel, exitlabel, FALSE )
-
-	'' scope can only change after the IR is flushed because
-	'' the temporary vars that can be created by IR
-	env.scope = 1
-	env.currproc = proc
-
-    '' alloc args
-    if( hDeclareArgs( proc ) = FALSE ) then
-    	exit function
-    end if
-
-	'' alloc result local var
-	if( issub = FALSE ) then
-		if( symbAddProcResult( proc ) = NULL ) then
-		end if
-	end if
 
 	'' Comment?
 	cComment( )
@@ -533,7 +452,7 @@ function cProcStatement static
 	end if
 
 	'' init
-	astAdd( astNewLABEL( initlabel ) )
+	astAdd( astNewLABEL( procnode->initlabel ) )
 
 	'' proc body
 	do
@@ -565,7 +484,7 @@ function cProcStatement static
 	end if
 
 	'' exit
-	astAdd( astNewLABEL( exitlabel ) )
+	astAdd( astNewLABEL( procnode->exitlabel ) )
 
 	'' restore old error handler if any was set
 	if( env.procerrorhnd <> NULL ) then
@@ -573,28 +492,18 @@ function cProcStatement static
         rtlErrorSetHandler( expr, FALSE )
 	end if
 
-	'' del dyn arrays and all var-len strings (less the result one if its a string func!)
-	symbFreeLocalDynVars( proc, issub )
-
-	'' if it's a function, put the result var in the result register
-	if( issub = FALSE ) then
-        hLoadResult( proc )
-	end if
-
 	'' check undefined local labels
 	function = (symbCheckLocalLabels( ) = 0)
 
 	'' end
-	astProcEnd( procnode )
+	astProcEnd( procnode, FALSE )
 
 	'' back to old state
-	env.currproc 			= NULL
-	env.scope 				= 0
-	env.procerrorhnd 		= NULL
-	env.compoundcnt 		-= 1
-	env.isprocstatic 	 	= FALSE
-	env.procstmt.cmplabel 	= NULL
-	env.procstmt.endlabel 	= NULL
+	env.procerrorhnd = NULL
+	env.compoundcnt -= 1
+	env.isprocstatic = FALSE
+	env.procstmt.cmplabel = NULL
+	env.procstmt.endlabel = NULL
 
 end function
 

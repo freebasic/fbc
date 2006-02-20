@@ -116,12 +116,10 @@ function rtlProfileBeginCall( byval symbol as FBSYMBOL ptr ) as ASTNODE ptr
 
 	function = NULL
 
-	if( env.currproc <> NULL ) then
-		'' don't add profiling inside a ctor or dtor
-		if( (symbGetAllocType( env.currproc ) and _
-			(FB_ALLOCTYPE_CONSTRUCTOR or FB_ALLOCTYPE_DESTRUCTOR)) <> 0 ) then
-			exit function
-		end if
+	'' don't add profiling inside a ctor or dtor
+	if( (symbGetAttrib( env.currproc ) and _
+		(FB_SYMBATTRIB_CONSTRUCTOR or FB_SYMBATTRIB_DESTRUCTOR)) <> 0 ) then
+		exit function
 	end if
 
 	proc = astNewFUNCT( PROCLOOKUP( PROFILEBEGINCALL ), NULL, TRUE )

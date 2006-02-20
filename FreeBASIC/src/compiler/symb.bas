@@ -62,7 +62,7 @@ sub symbInitSymbols static
 	symb.globtb.head = NULL
 	symb.globtb.tail = NULL
 
-	symb.symtb = @symb.globtb
+	symb.loctb = @symb.globtb
 
 	symb.lastlbl = NULL
 
@@ -130,7 +130,7 @@ sub symbEnd
 
 	symb.globtb.head = NULL
 	symb.globtb.tail = NULL
-	symb.symtb = NULL
+	symb.loctb = NULL
 
     ''
 	hashFree( @symb.libhash )
@@ -154,33 +154,6 @@ sub symbEnd
 	symb.inited = FALSE
 
 end sub
-
-'':::::
-function symbSetSymbolTb( byval tb as FBSYMBOLTB ptr ) as FBSYMBOLTB ptr
-
-	function = symb.symtb
-
-	if( tb = NULL ) then
-		symb.symtb = @symb.globtb
-	else
-		symb.symtb = tb
-	end if
-
-end function
-
-'':::::
-function symbGetSymbolTbHead( ) as FBSYMBOL ptr static
-
-	function = symb.symtb->head
-
-end function
-
-'':::::
-function symbGetGlobalTbHead( ) as FBSYMBOL ptr static
-
-	function = symb.globtb.head
-
-end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' add
@@ -293,11 +266,11 @@ end function
 '':::::
 function symbNewSymbol( byval s as FBSYMBOL ptr, _
 					 	byval symtb as FBSYMBOLTB ptr, _
+					 	byval isglobal as integer, _
 					 	byval class as FB_SYMBCLASS, _
-					 	byval dohash as integer = TRUE, _
+					 	byval dohash as integer, _
 					 	byval symbol as zstring ptr, _
 					 	byval aliasname as zstring ptr, _
-					 	byval islocal as integer, _
 					 	byval typ as integer, _
 					 	byval subtype as FBSYMBOL ptr, _
 					 	byval ptrcnt as integer, _
@@ -320,17 +293,17 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
     end if
 
     ''
-    s->class		= class
-    s->scope		= env.scope
-    s->typ			= typ
-    s->subtype		= subtype
-    s->ptrcnt		= ptrcnt
+    s->class = class
+    s->scope = env.scope
+    s->typ = typ
+    s->subtype = subtype
+    s->ptrcnt = ptrcnt
 
-	s->alloctype	= iif( islocal, FB_ALLOCTYPE_LOCAL, 0 )
-    s->lgt			= 0
-    s->ofs			= 0
+	s->attrib = iif( isglobal, 0, FB_SYMBATTRIB_LOCAL )
+    s->lgt = 0
+    s->ofs = 0
 
-	s->stats 		= 0
+	s->stats = 0
 
     if( class = FB_SYMBCLASS_VAR ) then
     	s->var.suffix = suffix
@@ -382,31 +355,31 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
 				exit function
 			end if
 
-			s->hashitem  = n->hashitem
+			s->hashitem = n->hashitem
 			s->hashindex = n->hashindex
 
 			'' module-level scope?
-			if( s->scope = 0 ) then
+			if( isglobal ) then
 				'' add to tail
 				do while( n->right <> NULL )
 					n = n->right
 				loop
 
 				n->right = s
-				s->left  = n
+				s->left = n
 
 			else
 				'' add to head
-				n->hashitem->idx  = s
+				n->hashitem->idx = s
 				n->hashitem->name = s->name
-			    n->left	 = s
+			    n->left = s
 			    s->right = n
 
 			end if
 		end if
 
 	else
-		s->hashitem  = NULL
+		s->hashitem = NULL
 		s->hashindex = 0
 	end if
 
@@ -423,8 +396,8 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
 		symtb->head = s
 	end if
 
-	s->prev  = symtb->tail
-	s->next  = NULL
+	s->prev = symtb->tail
+	s->next = NULL
 
 	symtb->tail = s
 
@@ -490,10 +463,17 @@ function symbFindByClass( byval s as FBSYMBOL ptr, _
 	end if
 
 	'' check if symbol isn't a non-shared module level one
-
 	if( class = FB_SYMBCLASS_VAR ) then
-		if( fbIsLocal( ) ) then
-			if( (s->alloctype and (FB_ALLOCTYPE_LOCAL or FB_ALLOCTYPE_SHARED)) = 0 ) then
+		'' inside a proc? (but main())
+		if( fbIsModLevel( ) = FALSE ) then
+			'' local?
+			if( symbIsLocal( s ) ) then
+				'' not a main()'s local?
+				if( s->scope = FB_MAINSCOPE ) then
+					return NULL
+			    end if
+			'' not shared?
+			elseif( symbIsShared( s ) = FALSE ) then
 				return NULL
 			end if
 		end if
@@ -581,8 +561,15 @@ function symbFindBySuffix( byval s as FBSYMBOL ptr, _
 	end if
 
 	'' check if symbol isn't a non-shared module level one
-	if( fbIsLocal( ) ) then
-		if( (s->alloctype and (FB_ALLOCTYPE_LOCAL or FB_ALLOCTYPE_SHARED)) = 0 ) then
+	if( fbIsModLevel( ) = FALSE ) then
+		'' local?
+		if( symbIsLocal( s ) ) then
+			'' not a main()'s local?
+			if( s->scope = FB_MAINSCOPE ) then
+				return NULL
+		    end if
+		'' not shared?
+		elseif( symbIsShared( s ) = FALSE ) then
 			return NULL
 		end if
 	end if

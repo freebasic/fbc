@@ -134,7 +134,7 @@ end function
 '':::::
 private sub hSetCtx( )
 
-	env.scope				= 0
+	env.scope				= FB_MAINSCOPE
 	env.reclevel			= 0
 	env.currproc 			= NULL
 

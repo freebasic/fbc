@@ -119,21 +119,30 @@ function symbAddTypedef( byval symbol as zstring ptr, _
 						 byval typ as integer, _
 						 byval subtype as FBSYMBOL ptr, _
 						 byval ptrcnt as integer, _
-						 byval lgt as integer ) as FBSYMBOL ptr static
+						 byval lgt as integer _
+					   ) as FBSYMBOL ptr static
+
     dim as FBSYMBOL ptr t
+    dim as FBSYMBOLTB ptr symtb
 
     function = NULL
 
+    '' if parsing main, all type defs must go to the global table
+    if( fbIsModLevel( ) ) then
+    	symtb = @symb.globtb
+    else
+    	symtb = symb.loctb
+    end if
+
     '' allocate new node
-    t = symbNewSymbol( NULL, symb.symtb, FB_SYMBCLASS_TYPEDEF, TRUE, _
-    				   symbol, NULL, _
-    				   fbIsLocal( ), typ, subtype, ptrcnt )
+    t = symbNewSymbol( NULL, symtb, fbIsModLevel( ), FB_SYMBCLASS_TYPEDEF, _
+    				   TRUE, symbol, NULL, typ, subtype, ptrcnt )
     if( t = NULL ) then
     	exit function
     end if
 
 	''
-	t->lgt 	= lgt
+	t->lgt = lgt
 
 	'' check for forward references
 	if( symb.fwdrefcnt > 0 ) then
@@ -147,13 +156,21 @@ end function
 
 '':::::
 function symbAddFwdRef( byval symbol as zstring ptr ) as FBSYMBOL ptr static
-    dim f as FBSYMBOL ptr
+    dim as FBSYMBOL ptr f
+    dim as FBSYMBOLTB ptr symtb
 
     function = NULL
 
+    '' if parsing main, all type defs must go to the global table
+    if( fbIsModLevel( ) ) then
+    	symtb = @symb.globtb
+    else
+    	symtb = symb.loctb
+    end if
+
     '' allocate new node
-    f = symbNewSymbol( NULL, symb.symtb, FB_SYMBCLASS_FWDREF, TRUE, _
-    				   symbol, NULL, fbIsLocal( ) )
+    f = symbNewSymbol( NULL, symtb, fbIsModLevel( ), FB_SYMBCLASS_FWDREF, _
+    				   TRUE, symbol, NULL )
     if( f = NULL ) then
     	exit function
     end if

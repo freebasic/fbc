@@ -70,12 +70,6 @@ data @FB_RTL_INITPROFILE,"", _
 	 NULL, FALSE, FALSE, _
 	 0
 
-'' fb_CallCTORS CDECL ( ) as void
-data @FB_RTL_INITCTOR,"", _
-	 FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
-	 0
-
 '' __main CDECL ( ) as void
 data @FB_RTL_INITCRTCTOR,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _

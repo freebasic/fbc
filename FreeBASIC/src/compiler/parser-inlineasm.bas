@@ -133,9 +133,7 @@ function cAsmBlock as integer
 	end if
 
 	''
-	if( env.currproc <> NULL ) then
-		symbAllocLocalVars( symbGetProcLocTbHead( env.currproc ) )
-	end if
+	symbAllocLocalVars( symbGetProcLocTbHead( env.currproc ) )
 
 	'' (AsmCode Comment? NewLine)+
 	do
