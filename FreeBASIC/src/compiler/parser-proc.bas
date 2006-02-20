@@ -441,45 +441,45 @@ function cProcStatement static
 	'' restore error old handle if any was set
 	env.procerrorhnd = NULL
 
-
 	'' Comment?
 	cComment( )
 
 	'' SttSeparator
-	if( cStmtSeparator( ) = FALSE ) then
+	res = cStmtSeparator( )
+	if( res = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDEOL )
-		exit function
 	end if
 
 	'' init
 	astAdd( astNewLABEL( procnode->initlabel ) )
 
 	'' proc body
-	do
-		if( cSimpleLine( ) = FALSE ) then
-			exit do
-		end if
-	loop while( lexGetToken( ) <> FB_TK_EOF )
-
-	'' END (SUB | FUNCTION)
-	if( hMatch( FB_TK_END ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDENDSUBORFUNCT )
-		exit function
-	else
-		res = FALSE
-		if( hMatch( FB_TK_SUB ) ) then
-			if( issub ) then
-				res = TRUE
+	if( res = TRUE ) then
+		do
+			if( cSimpleLine( ) = FALSE ) then
+				exit do
 			end if
-		elseif( hMatch( FB_TK_FUNCTION ) ) then
-			if( issub = FALSE ) then
-				res = TRUE
-			end if
-		end if
+		loop while( lexGetToken( ) <> FB_TK_EOF )
 
-		if( res = FALSE ) then
+		'' END (SUB | FUNCTION)
+		if( hMatch( FB_TK_END ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDENDSUBORFUNCT )
-			exit function
+			res = FALSE
+		else
+			res = FALSE
+			if( hMatch( FB_TK_SUB ) ) then
+				if( issub ) then
+					res = TRUE
+				end if
+			elseif( hMatch( FB_TK_FUNCTION ) ) then
+				if( issub = FALSE ) then
+					res = TRUE
+				end if
+			end if
+
+			if( res = FALSE ) then
+				hReportError( FB_ERRMSG_EXPECTEDENDSUBORFUNCT )
+			end if
 		end if
 	end if
 
@@ -493,7 +493,9 @@ function cProcStatement static
 	end if
 
 	'' check undefined local labels
-	function = (symbCheckLocalLabels( ) = 0)
+	if( res = TRUE ) then
+		function = (symbCheckLocalLabels( ) = 0)
+	end if
 
 	'' end
 	astProcEnd( procnode, FALSE )
