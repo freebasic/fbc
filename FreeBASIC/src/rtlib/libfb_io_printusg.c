@@ -448,13 +448,15 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	}
 	else
 	{
+		/*
 		if( -value_exp > decdigs )
 		{
 			value_exp -= (intdigs-1);
 			value *= pow( 10.0f, -value_exp );
 		}
-		else
-			value_exp = 0;
+		*/
+
+		value_exp = 0;
 	}
 
 	/* convert to string */
