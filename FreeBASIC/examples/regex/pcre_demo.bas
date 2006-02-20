@@ -27,7 +27,7 @@ const NULL = 0
 	
 	'' compilation failed: print the error message and exit 
 	if re = NULL then 
-		print "pcre compilation failed at offset "; str(erroroffset); ": "; *error_ 
+		print "pcre compilation failed at offset "; str(erroffset); ": "; *error_ 
 		end 
 	end if 
 	
