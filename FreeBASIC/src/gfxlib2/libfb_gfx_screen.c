@@ -395,7 +395,8 @@ FBCALL int fb_GfxScreenRes(int w, int h, int depth, int num_pages, int flags, in
 /*:::::*/
 FBCALL void fb_GfxSetWindowTitle(FBSTRING *title)
 {
-	strncpy(window_title_buff, title->data, MIN(WINDOW_TITLE_SIZE - 1, FB_STRSIZE(title)));
+	fb_hMemSet(window_title_buff, 0, WINDOW_TITLE_SIZE);
+	fb_hMemCpy(window_title_buff, title->data, MIN(WINDOW_TITLE_SIZE - 1, FB_STRSIZE(title)));
 	window_title = window_title_buff;
 
 	if ((fb_mode) && (fb_mode->driver->set_window_title))
