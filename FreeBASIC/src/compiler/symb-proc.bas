@@ -687,29 +687,24 @@ function symbAllocLocalVars( byval s as FBSYMBOL ptr ) as integer
     		if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
     			 				   	   FB_SYMBATTRIB_STATIC)) = 0 ) then
 
-    			'' not allocted already?
-    			if( symbGetIsAllocated( s ) = FALSE ) then
+				'' not an argument?
+    			if( (s->attrib and (FB_SYMBATTRIB_ARGUMENTBYDESC or _
+    						   	    FB_SYMBATTRIB_ARGUMENTBYVAL or _
+    			  				   	FB_SYMBATTRIB_ARGUMENTBYREF)) = 0 ) then
 
-					'' not an argument?
-    				if( (s->attrib and (FB_SYMBATTRIB_ARGUMENTBYDESC or _
-    				  				   	   FB_SYMBATTRIB_ARGUMENTBYVAL or _
-    				  				   	   FB_SYMBATTRIB_ARGUMENTBYREF)) = 0 ) then
+					lgt = s->lgt * symbCalcArrayElements( s )
+					ZstrAssign( @s->alias, emitAllocLocal( env.currproc, lgt, s->ofs ) )
 
-						lgt = s->lgt * symbCalcArrayElements( s )
-						ZstrAssign( @s->alias, emitAllocLocal( env.currproc, lgt, s->ofs ) )
-
-					'' argument..
-					else
-						lgt = iif( (s->attrib and FB_SYMBATTRIB_ARGUMENTBYVAL), _
-							   	   s->lgt, _
-							   	   FB_POINTERSIZE )
-						ZstrAssign( @s->alias, emitAllocArg( env.currproc, lgt, s->ofs ) )
-
-					end if
-
-					symbSetIsAllocated( s )
+				'' argument..
+				else
+					lgt = iif( (s->attrib and FB_SYMBATTRIB_ARGUMENTBYVAL), _
+						   	   s->lgt, _
+						   	   FB_POINTERSIZE )
+					ZstrAssign( @s->alias, emitAllocArg( env.currproc, lgt, s->ofs ) )
 
 				end if
+
+				symbSetIsAllocated( s )
 
 			end if
 

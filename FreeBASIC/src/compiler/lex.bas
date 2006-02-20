@@ -1461,7 +1461,7 @@ reread:
 		if( env.clopt.debug ) then
 			if( env.reclevel = 0 ) then
 				if( (char = CHAR_CR) or (char = CHAR_LF) or (char = 0) ) then
-					astAdd( astNewLIT( curline, FALSE ) )
+					astAdd( astNewLIT( curline ) )
 					curline = ""
 				end if
 			end if
@@ -1950,7 +1950,7 @@ sub lexReadLine( byval endchar as uinteger = INVALID, _
 		if( env.clopt.debug ) then
 			if( env.reclevel = 0 ) then
 				if( (char = CHAR_CR) or (char = CHAR_LF) or (char = 0) ) then
-					astAdd( astNewLIT( curline, FALSE ) )
+					astAdd( astNewLIT( curline ) )
 					curline = ""
 				end if
 			end if

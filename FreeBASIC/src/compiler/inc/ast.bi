@@ -50,6 +50,7 @@ enum ASTNODECLASS_ENUM
 	AST_NODECLASS_STACK
 	AST_NODECLASS_LABEL
 	AST_NODECLASS_LIT
+	AST_NODECLASS_ASM
 	AST_NODECLASS_JMPTB
 	AST_NODECLASS_DBG
 	AST_NODECLASS_MEM
@@ -124,7 +125,12 @@ end type
 
 type AST_LIT
 	text			as zstring ptr
-	isasm			as integer
+end type
+
+type FB_ASMTOK_ as FB_ASMTOK
+
+type AST_ASM
+	head			as FB_ASMTOK_ ptr
 end type
 
 type AST_OP                                        	'' used by: bop, uop, conv & addr
@@ -185,6 +191,7 @@ type ASTNODE
 		lod			as AST_LOAD
 		lbl			as AST_LABEL
 		lit			as AST_LIT
+		asm			as AST_ASM
 		jtb			as AST_JMPTB
 		dbg			as AST_DBG
 		mem			as AST_MEM
@@ -386,8 +393,9 @@ declare function 	astNewENUM			( byval value as integer, _
 declare function 	astNewLABEL			( byval sym as FBSYMBOL ptr, _
 					  					  byval doflush as integer = TRUE ) as ASTNODE ptr
 
-declare function 	astNewLIT			( byval text as zstring ptr, _
-										  byval isasm as integer ) as ASTNODE ptr
+declare function 	astNewLIT			( byval text as zstring ptr ) as ASTNODE ptr
+
+declare function 	astNewASM			( byval listhead as FB_ASMTOK_ ptr ) as ASTNODE ptr
 
 declare function 	astNewJMPTB			( byval dtype as integer, _
 					   					  byval label as FBSYMBOL ptr ) as ASTNODE ptr
@@ -421,8 +429,6 @@ declare function 	astNewNode			( byval class as integer, _
 									  	  byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr
 
 declare function 	astLoad				( byval n as ASTNODE ptr ) as IRVREG ptr
-
-declare sub 		astFlush			( byval n as ASTNODE ptr )
 
 declare function 	astOptimize			( byval n as ASTNODE ptr ) as ASTNODE ptr
 

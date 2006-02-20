@@ -120,6 +120,7 @@ private sub hProcFlush( byval p as ASTPROCNODE ptr, _
 		n = nxt
 	loop
 
+	''
 	symbAllocLocalVars( symbGetProcLocTbHead( proc ) )
 
 	'' add a call to fb_init if it's a static constructor

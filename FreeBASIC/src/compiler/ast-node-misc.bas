@@ -26,6 +26,7 @@ option escape
 #include once "inc\fbint.bi"
 #include once "inc\ir.bi"
 #include once "inc\ast.bi"
+#include once "inc\emit.bi"
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' labels (l = NULL; r = NULL)
@@ -69,8 +70,7 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewLIT( byval text as zstring ptr, _
-					byval isasm as integer ) as ASTNODE ptr static
+function astNewLIT( byval text as zstring ptr ) as ASTNODE ptr static
     dim as ASTNODE ptr n
 
 	'' alloc new node
@@ -81,7 +81,6 @@ function astNewLIT( byval text as zstring ptr, _
 
 	n->lit.text = ZstrAllocate( len( *text ) )
 	*n->lit.text  = *text
-	n->lit.isasm = isasm
 
 	function = n
 
@@ -91,11 +90,7 @@ end function
 function astLoadLIT( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	if( ast.doemit ) then
-		if( n->lit.isasm ) then
-			irEmitASM( n->lit.text )
-		else
-			irEmitCOMMENT( n->lit.text )
-		end if
+		irEmitCOMMENT( n->lit.text )
 	end if
 
 	ZstrFree( n->lit.text )
@@ -104,6 +99,63 @@ function astLoadLIT( byval n as ASTNODE ptr ) as IRVREG ptr
 
 end function
 
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' ASM (l = NULL; r = NULL)
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function astNewASM( byval listhead as FB_ASMTOK_ ptr ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
+
+	'' alloc new node
+	n = astNewNode( AST_NODECLASS_ASM, INVALID )
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	n->asm.head = listhead
+
+	function = n
+
+end function
+
+'':::::
+function astLoadASM( byval n as ASTNODE ptr ) as IRVREG ptr
+    dim as FB_ASMTOK ptr node, nxt
+    dim as string asmline
+
+	asmline = ""
+
+	node = n->asm.head
+	do while( node <> NULL )
+		nxt = node->next
+
+		if( ast.doemit ) then
+			select case node->type
+			case FB_ASMTOK_SYMB
+				asmline += emitGetVarName( node->sym )
+			case FB_ASMTOK_TEXT
+				asmline += *node->text
+			end select
+		end if
+
+		if( node->type = FB_ASMTOK_TEXT ) then
+			ZstrFree( node->text )
+		end if
+
+		listDelNode( @env.asmtoklist, cast( any ptr, node ) )
+		node = nxt
+	loop
+
+	if( ast.doemit ) then
+		if( len( asmline ) > 0 ) then
+			irEmitASM( asmline )
+		end if
+	end if
+
+	function = NULL
+
+end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' DBG (l = NULL; r = NULL)

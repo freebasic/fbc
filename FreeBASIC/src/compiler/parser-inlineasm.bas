@@ -25,23 +25,38 @@ option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\list.bi"
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
 #include once "inc\emit.bi"
+
+
+'':::::
+sub parserAsmInit static
+
+	listNew( @env.asmtoklist, 16, len( FB_ASMTOK ) )
+
+end sub
+
+'':::::
+sub parserAsmEnd static
+
+	listFree( @env.asmtoklist )
+
+end sub
 
 '':::::
 ''AsmCode         =   (Text !(END|Comment|NEWLINE))*
 ''
 function cAsmCode as integer static
 	static as zstring * FB_MAXLITLEN+1 text
-	dim as FBSYMBOL ptr elm, subtype, s
-	dim as string asmline
-	dim as integer ofs
+	dim as FBSYMBOL ptr sym, s
+	dim as FB_ASMTOK ptr head, tail, node
 
 	function = FALSE
 
-	asmline = ""
-
+	head = NULL
+	tail = NULL
 	do
 		'' !(END|Comment|NEWLINE)
 		select case lexGetToken( LEXCHECK_NOWHITESPC )
@@ -50,55 +65,74 @@ function cAsmCode as integer static
 		end select
 
 		text = *lexGetText( )
+		sym = NULL
 
 		if( lexGetClass( LEXCHECK_NOWHITESPC ) = FB_TKCLASS_IDENTIFIER ) then
 			if( emitIsKeyword( text ) = FALSE ) then
-				'' function?
-				s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_PROC )
+				s = lexGetSymbol( )
 				if( s <> NULL ) then
-					text = *symbGetName( s )
-				else
-					'' const?
-					s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_CONST )
-				    if( s <> NULL ) then
-						text = symbGetConstValueAsStr( s )
+					'' function?
+					sym = symbFindByClass( s, FB_SYMBCLASS_PROC )
+					if( sym <> NULL ) then
+						text = *symbGetName( sym )
+						sym = NULL
 					else
-						'' var?
-						s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_VAR )
-						if( s <> NULL ) then
-							text = emitGetVarName( s )
+						'' const?
+						sym = symbFindByClass( s, FB_SYMBCLASS_CONST )
+				    	if( sym <> NULL ) then
+							text = symbGetConstValueAsStr( sym )
+							sym = NULL
 						else
 							'' label?
-							s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_LABEL )
-							if( s <> NULL ) then
-								text = *symbGetName( s )
+							sym = symbFindByClass( s, FB_SYMBCLASS_LABEL )
+							if( sym <> NULL ) then
+								text = *symbGetName( sym )
+								sym = NULL
+							else
+								'' var?
+								sym = symbFindByClass( s, FB_SYMBCLASS_VAR )
 							end if
 						end if
 					end if
 				end if
-			end if
 
-		else
-			'' FUNCTION?
-			if( lexGetToken( LEXCHECK_NOWHITESPC ) = FB_TK_FUNCTION ) then
-    			s = symbLookupProcResult( env.currproc )
-    			if( s = NULL ) then
-    				hReportError( FB_ERRMSG_SYNTAXERROR )
-    				exit function
-    			end if
-    			text = emitGetVarName( s )
+			else
+				'' FUNCTION?
+				if( lexGetToken( LEXCHECK_NOWHITESPC ) = FB_TK_FUNCTION ) then
+    				sym = symbLookupProcResult( env.currproc )
+    				if( sym = NULL ) then
+    					hReportError( FB_ERRMSG_SYNTAXERROR )
+    					exit function
+    				end if
+				end if
 			end if
 		end if
 
-		asmline += text
+		''
+		node = listNewNode( @env.asmtoklist )
+		if( tail <> NULL ) then
+			tail->next = node
+		else
+			head = node
+		end if
+		tail = node
+
+		if( sym <> NULL ) then
+            node->type = FB_ASMTOK_SYMB
+            node->sym = sym
+		else
+			node->type = FB_ASMTOK_TEXT
+			node->text = ZstrAllocate( len( text ) )
+			*node->text = text
+		end if
+		node->next = NULL
 
 		lexSkipToken( LEXCHECK_NOWHITESPC )
-
 	loop
 
 	''
-	if( len( asmline ) > 0 ) then
-		astAdd( astNewLIT( asmline, TRUE ) )
+	if( head <> NULL ) then
+		astAdd( astNewASM( head ) )
 	end if
 
 	function = TRUE
@@ -123,7 +157,7 @@ function cAsmBlock as integer
 	issingleline = FALSE
 	if( cComment( ) ) then
 		if( cStmtSeparator( ) = FALSE ) then
-    		hReportError FB_ERRMSG_EXPECTEDEOL
+    		hReportError( FB_ERRMSG_EXPECTEDEOL )
     		exit function
 		end if
 	else
@@ -131,9 +165,6 @@ function cAsmBlock as integer
 			issingleline = TRUE
         end if
 	end if
-
-	''
-	symbAllocLocalVars( symbGetProcLocTbHead( env.currproc ) )
 
 	'' (AsmCode Comment? NewLine)+
 	do

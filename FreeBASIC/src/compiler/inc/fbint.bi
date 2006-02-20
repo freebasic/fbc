@@ -542,6 +542,27 @@ end enum
 #include once "inc\symb.bi"
 
 ''
+enum FB_ASMTOK_TYPE
+	FB_ASMTOK_SYMB
+	FB_ASMTOK_TEXT
+end enum
+
+type FB_ASMTOK
+	ll_prv			as FB_ASMTOK ptr			'' linked-list nodes
+	ll_nxt			as FB_ASMTOK ptr			'' /
+
+	type			as FB_ASMTOK_TYPE
+
+	union
+		sym			as FBSYMBOL ptr
+		text		as zstring ptr
+	end union
+
+	next			as FB_ASMTOK ptr
+end type
+
+
+''
 type FBCMPSTMT
 	cmplabel		as FBSYMBOL ptr				'' or inilabel
     endlabel		as FBSYMBOL ptr
@@ -620,6 +641,8 @@ type FBENV
 	lastcompound	as integer					'' last compound stmt (token), def= INVALID
 	isprocstatic	as integer					'' TRUE with SUB/FUNCTION (...) STATIC
 	procerrorhnd	as FBSYMBOL ptr				'' var holding the old error handler inside a proc
+
+	asmtoklist		as TLIST
 
 	'' hacks
 	prntcnt			as integer					'' ()'s count, to allow optional ()'s on SUB's

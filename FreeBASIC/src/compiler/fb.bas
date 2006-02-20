@@ -33,7 +33,12 @@ option escape
 #include once "inc\emitdbg.bi"
 
 declare sub		 parserInit				( )
+
 declare sub		 parserEnd				( )
+
+declare sub		 parserAsmInit			( )
+
+declare sub		 parserAsmEnd           ( )
 
 '' globals
 	dim shared infileTb( ) as FBFILE
@@ -220,6 +225,8 @@ function fbInit( byval ismain as integer ) as integer static
 	rtlInit( )
 
 	emitInit( )
+
+	parserAsmInit( )
 
 	''
 	function = TRUE
@@ -417,6 +424,8 @@ sub fbEnd
 	erase infileTb
 
 	''
+	parserAsmEnd( )
+
 	emitEnd( )
 
 	rtlEnd( )

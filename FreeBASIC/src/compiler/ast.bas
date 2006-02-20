@@ -80,6 +80,8 @@ declare function 	astLoadLABEL	( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astLoadLIT		( byval n as ASTNODE ptr ) as IRVREG ptr
 
+declare function 	astLoadASM		( byval n as ASTNODE ptr ) as IRVREG ptr
+
 declare function 	astLoadJMPTB	( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astLoadDBG		( byval n as ASTNODE ptr ) as IRVREG ptr
@@ -1175,6 +1177,9 @@ function astLoad( byval n as ASTNODE ptr ) as IRVREG ptr
 
     case AST_NODECLASS_LIT
     	return astLoadLIT( n )
+
+    case AST_NODECLASS_ASM
+    	return astLoadASM( n )
 
     case AST_NODECLASS_JMPTB
     	return astLoadJMPTB( n )
