@@ -5,6 +5,11 @@ Version 0.16 Beta:
   (ie: always bitwise, never logical), and because of that, checking for FALSE boolean results returned by C libraries 
   or the Windows API cannot anymore been done as "IF NOT SomeFunction( ) THEN ReportError...", "TRUE" is defined as "1" 
   in most libraries, not "-1" as in BASIC, so any checks must be changed to: "IF SomeFunction( ) = FALSE THEN ..." (v1c)
+- any non-SHARED, COMMON or EXTERN variable and array declared in the module-level (ie, outside any function) will be 
+  allocated on stack now (that was changed to allow non-constant expressions to be used with variable initializers in 
+  the module-level), to declare static symbols, see the next item (v1c)
+- STATIC can be used in the module-level too (v1c)
+- local arrays with unknown dimensions (ie: DIM array()) can now be declared inside functions too (v1c)
 - when aborting because run-time errors, the name of the module that caused the error will be printed too (v1c)
 - runtime error checking removed from getmouse() and getjoystick() (v1c)
 - the size of argument-less #defines and macro expansions text can be now up to 2GB (v1c)
@@ -16,6 +21,7 @@ Version 0.16 Beta:
 - TYPE<symbol>(...) to allow anonymous UDT's to be passed to overloaded functions (v1c)
 - the -include command-line option, to pre-include headers in every source file (.bas) that will be compiled (v1c)
 - Linux framebuffer console gfx driver (lillo)
+- warning message when allocating implicitly a variable inside an expression (v1c)
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)
@@ -58,6 +64,7 @@ Version 0.16 Beta:
 - wide-string indexing was not multiplying the index expression by sizeof( wchar ) (v1c)
 - bitfields declared inside unions had wrong offsets (v1c)
 - INKEY did not report extended ascii characters under Linux X11 gfx mode (lillo)
+- overflow could happen if assigning an asc string to a too small fixed-len wide string (v1c)
 
 
 Version 0.15 Beta:
