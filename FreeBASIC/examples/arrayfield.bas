@@ -9,7 +9,7 @@ type t
 end type
 
 redim x(10) as t
-redim y as t
+dim y as t
 
 declare sub foo( array() as integer )
 declare sub bar( array() as t )
