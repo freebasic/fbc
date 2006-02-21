@@ -133,7 +133,7 @@ end function
 
 '':::::
 function hMakeTmpStr( byval islabel as integer ) as zstring ptr static
-	static as zstring * 8 + 3 + 1 res
+	static as zstring * 4 + 8 + 1 res
 
 	if( islabel ) then
 		res = ".Lt_" + *hHexUInt( ctx.tmpcnt )
