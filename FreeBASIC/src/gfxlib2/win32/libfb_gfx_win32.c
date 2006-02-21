@@ -421,7 +421,11 @@ void fb_hWin32SetMouse(int x, int y, int cursor)
 /*:::::*/
 void fb_hWin32SetWindowTitle(char *title)
 {
+	if (fb_mode->flags & SCREEN_LOCKED)
+		LeaveCriticalSection(&update_lock);
 	SetWindowText(fb_win32.wnd, title);
+	if (fb_mode->flags & SCREEN_LOCKED)
+		EnterCriticalSection(&update_lock);
 }
 
 
