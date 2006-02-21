@@ -104,7 +104,7 @@ FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, un
 	if (fb_hGetPixel(x, y) == border_color)
 		return;
 
-	size = sizeof(SPAN *) * fb_mode->view_h;
+	size = sizeof(SPAN *) * (fb_mode->view_y + fb_mode->view_h);
 	span = (SPAN **)malloc(size);
 	fb_hMemSet(span, 0, size);
 
@@ -140,7 +140,7 @@ FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, un
 	DRIVER_LOCK();
 
 	/* Fill spans */
-	for (y = 0; y < fb_mode->h; y++) {
+	for (y = fb_mode->view_y; y < fb_mode->view_y + fb_mode->view_h; y++) {
 		for (s = tail = span[y]; s; s = s->row_next, free(tail), tail = s) {
 
 			dest = fb_mode->line[s->y] + (s->x1 * fb_mode->bpp);
@@ -167,7 +167,7 @@ FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, un
 			}
 
 			if (fb_mode->framebuffer == fb_mode->line[0])
-				fb_mode->dirty[y] = TRUE;
+				fb_mode->dirty[fb_mode->view_y + y] = TRUE;
 		}
 	}
 	free(span);
