@@ -34,9 +34,10 @@
  *
  *	offset	|	description
  *	--------+--------------------------------------------------------------
- *	0		|	First ascii character supported
- *	1		|	Last ascii character supported
- *	2-(2+n)	|	n-th supported character width
+ *	0		|	Font header version (currently must be 0)
+ *	1		|	First ascii character supported
+ *	2		|	Last ascii character supported
+ *	3-(3+n)	|	n-th supported character width
  *
  *	The font height is computed as the height of the buffer minus 1, and the
  *	actual glyph shapes start on the second buffer line, one after another in
@@ -91,13 +92,13 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 			goto exit_error;
 		
 		bpp &= 0x7;
-		if (((bpp) && (bpp != fb_mode->bpp)) || (pitch < 3) || (font_height <= 0)) {
+		if (((bpp) && (bpp != fb_mode->bpp)) || (pitch < 4) || (font_height <= 0) || (*((unsigned char *)font + 4) != 0)) {
 			res = FB_RTERROR_ILLEGALFUNCTIONCALL;
 			goto exit_error;
 		}
 		
-		first = (int)*(unsigned char *)(font + 4);
-		last = (int)*(unsigned char *)(font + 5);
+		first = (int)*(unsigned char *)(font + 5);
+		last = (int)*(unsigned char *)(font + 6);
 		if (first > last)
 			SWAP(first, last);
 		fb_hMemSet(char_data, 0, sizeof(CHAR) * 256);
@@ -111,7 +112,7 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 			font_height -= ((y + font_height) - (fb_mode->view_y + fb_mode->view_h));
 		
 		for (w = 0, i = first; i <= last; i++) {
-			char_data[i].width = (int)*(unsigned char *)(font + 6 + i - first);
+			char_data[i].width = (int)*(unsigned char *)(font + 7 + i - first);
 			char_data[i].data = data;
 			data += (char_data[i].width * fb_mode->bpp);
 			w += char_data[i].width;
