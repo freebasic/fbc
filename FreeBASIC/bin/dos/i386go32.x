@@ -17,12 +17,16 @@ SECTIONS
     djgpp_first_ctor = . ;
     *(SORT(.ctors.*))
     *(.ctor)
+    *(.ctors)
     djgpp_last_ctor = . ;
     djgpp_first_dtor = . ;
     *(SORT(.dtors.*))
     *(.dtor)
+    *(.dtors)
     djgpp_last_dtor = . ;
-
+    __environ = . ;
+    PROVIDE(_environ = .) ;
+    LONG(0) ;
     *(.data)
     *(.data.*)
     *(.gcc_exc*)
@@ -34,7 +38,6 @@ SECTIONS
     edata  =  . ; PROVIDE(_edata = .) ;
     . = ALIGN(0x200);
   }
-
   .bss  SIZEOF(.data) + ADDR(.data) :
   {
     *(.bss .bss.* .gnu.linkonce.b.*)
