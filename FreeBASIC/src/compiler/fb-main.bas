@@ -165,21 +165,20 @@ end sub
 
 ':::::
 private sub hModLevelBegin( )
-    dim as FBSYMBOL ptr proc
 
 	'' sub modlevel cdecl( ) constructor
-	proc = symbAddProc( symbPreAddProc( NULL ), _
-						"{modlevel}", fbGetModuleEntry( ), NULL, _
-						FB_DATATYPE_VOID, NULL, 0, _
-						FB_SYMBATTRIB_PRIVATE or FB_SYMBATTRIB_CONSTRUCTOR or _
-						FB_SYMBATTRIB_MODLEVELPROC, _
-						FB_FUNCMODE_CDECL )
+	env.main.proc = symbAddProc( symbPreAddProc( NULL ), _
+								 "{modlevel}", fbGetModuleEntry( ), NULL, _
+								 FB_DATATYPE_VOID, NULL, 0, _
+								 FB_SYMBATTRIB_PRIVATE or FB_SYMBATTRIB_CONSTRUCTOR or _
+								 FB_SYMBATTRIB_MODLEVELPROC, _
+								 FB_FUNCMODE_CDECL )
 
-    symbSetProcIncFile( proc, INVALID )
-    symbSetIsCalled( proc )
+    symbSetProcIncFile( env.main.proc, INVALID )
+    symbSetIsCalled( env.main.proc )
 
     ''
-	env.main.node = astProcBegin( proc, TRUE )
+	env.main.node = astProcBegin( env.main.proc, TRUE )
 
 	env.main.initlabel = env.main.node->initlabel
 	env.main.exitlabel = env.main.node->exitlabel
