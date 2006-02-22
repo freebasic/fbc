@@ -40,7 +40,6 @@ option escape
 #include once "inc\emitdbg.bi"
 #include once "inc\flist.bi"
 #include once "inc\ir.bi"
-#include once "inc\dag.bi"
 
 
 type IR_OPCODE

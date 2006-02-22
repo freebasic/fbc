@@ -1,5 +1,15 @@
 [ ] check for GOSUB's when finishing functions if RETURN w/o expressions was used
 
+[ ] SCOPE..END SCOPE:
+    - vars should be reused (that's is, the stack "rewinded") because it's only
+      assured that the vars will be initialized to 0 when the scope block is
+      entered by the first time, so reusing would be more efficient - that will
+      screw up var-len strings, the descriptor MUST be zeroed or an assignment
+      will fail, same care must be taken with object instances, but then the
+      constructor will be called, it would be way easier if STRING was actually
+      a class.. nm..
+    - error handlers should be restored too (or not allowed at all)
+
 [ ] every compound statement should start new scope:
     - there will be a problem with locals if stack is reused (ie: gcc), scope vars
       must be zeroed because they will have garbage values after the first scoped
@@ -25,21 +35,11 @@
     assignment in hStrParamToPtrArg(), just a pointer copy that later should be
     strDelete()'d
 
-[ ] SCOPE..END SCOPE:
-    - vars should be reused (that's is, the stack "rewinded") because it's only
-      assured that the vars will be initialized to 0 when the scope block is
-      entered by the first time, so reusing would be more efficient - that will
-      screw up var-len strings, the descriptor MUST be zeroed or an assignment
-      will fail, same care must be taken with object instances, but then the
-      constructor will be called, it would be way easier if STRING was actually
-      a class.. nm..
-    - error handlers should be restored too (or not allowed at all)
-
 *** *** *** *** ***
 [ ] all functions returning STRING should actually return the FBSTRING
     structure (not a pointer to one):
-    - compiler has to allocate the descriptor as it does now folling the gcc ABI
-    - any function in the run-time library retuning strings will have to be
+    - compiler has to allocate the descriptor as it does now following the gcc ABI
+    - any function in the run-time library returning strings will have to be
       modified (chicken-egg problem)
     - no more run-time allocation of temp descriptors (better with threads)
     - no more STR_LOCK's (ditto)
@@ -53,7 +53,7 @@
     of the param passed:
     - must pass (?) the address of the temp descriptor, not the string data, what
       will break *all* functions assuming the latter - they would have to be
-      declared as zstring ptr, what will need more changes in usersc code, because
+      declared as zstring ptr, what will need more changes in users' code, because
       the non-implicit pointer deref
 
 *** *** *** *** ***

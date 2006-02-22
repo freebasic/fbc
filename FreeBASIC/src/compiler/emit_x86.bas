@@ -4807,10 +4807,10 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
     dim as string lname
     dim as integer i, bytestoalloc
 
-    bytestoalloc = (-proc->proc.stk.localptr + 3) and (not 3)
+    bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
 
-    if( (proc->proc.stk.localptr <> EMIT_LOCSTART) or _
-    	(proc->proc.stk.argptr <> EMIT_ARGSTART) or _
+    if( (bytestoalloc <> 0) or _
+    	(proc->proc.ext->stk.argptr <> EMIT_ARGSTART) or _
         symbIsMainProc( proc ) or _
         env.clopt.debug ) then
 
@@ -4913,8 +4913,8 @@ private sub hDestroyFrame( byval proc as FBSYMBOL ptr, _
     	hPOP( "ebx" )
     end if
 
-    if( (proc->proc.stk.localptr <> EMIT_LOCSTART) or _
-    	(proc->proc.stk.argptr <> EMIT_ARGSTART) or _
+    if( (proc->proc.ext->stk.localptr <> EMIT_LOCSTART) or _
+    	(proc->proc.ext->stk.argptr <> EMIT_ARGSTART) or _
         symbIsMainProc( proc ) or _
         env.clopt.debug ) then
     	outp( "mov esp, ebp" )
@@ -4976,7 +4976,7 @@ sub emitPROCFOOTER( byval proc as FBSYMBOL ptr, _
 	'' frame
 	hCreateFrame( proc )
 
-    edbgEmitLineFlush( proc, proc->proc.dbg.iniline, proc )
+    edbgEmitLineFlush( proc, proc->proc.ext->dbg.iniline, proc )
 
     ''
     emitFlush( )
@@ -4984,7 +4984,7 @@ sub emitPROCFOOTER( byval proc as FBSYMBOL ptr, _
 	''
 	hDestroyFrame( proc, bytestopop )
 
-    edbgEmitLineFlush( proc, proc->proc.dbg.endline, exitlabel )
+    edbgEmitLineFlush( proc, proc->proc.ext->dbg.endline, exitlabel )
 
     edbgEmitProcFooter( proc, initlabel, exitlabel )
 
@@ -5010,21 +5010,17 @@ function emitAllocLocal( byval proc as FBSYMBOL ptr, _
 
     static as zstring * 3+1 sname = "ebp"
 
-    proc->proc.stk.localptr -= ((lgt + 3) and not 3)
+    proc->proc.ext->stk.localptr -= ((lgt + 3) and not 3)
 
-	ofs = proc->proc.stk.localptr
+	ofs = proc->proc.ext->stk.localptr
+
+    if( -ofs > proc->proc.ext->stk.localmax ) then
+    	proc->proc.ext->stk.localmax = -ofs
+    end if
 
 	function = @sname
 
 end function
-
-'':::::
-sub emitFreeLocal( byval proc as FBSYMBOL ptr, _
-				   byval lgt as integer ) static
-
-    proc->proc.stk.localptr += ((lgt + 3) and not 3)
-
-end sub
 
 '':::::
 function emitAllocArg( byval proc as FBSYMBOL ptr, _
@@ -5033,21 +5029,13 @@ function emitAllocArg( byval proc as FBSYMBOL ptr, _
 
     static as zstring * 3+1 sname = "ebp"
 
-	ofs = proc->proc.stk.argptr
+	ofs = proc->proc.ext->stk.argptr
 
-    proc->proc.stk.argptr += ((lgt + 3) and not 3)
+    proc->proc.ext->stk.argptr += ((lgt + 3) and not 3)
 
 	function = @sname
 
 end function
-
-'':::::
-sub emitFreeArg( byval proc as FBSYMBOL ptr, _
-				 byval lgt as integer ) static
-
-    proc->proc.stk.argptr -= ((lgt + 3) and not 3)
-
-end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' data

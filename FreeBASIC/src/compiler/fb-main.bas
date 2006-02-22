@@ -64,10 +64,10 @@ const fbdllreason = "__FB_DLLREASON__"
 						FB_DATATYPE_INTEGER, NULL, 0, FB_SYMBATTRIB_PUBLIC, _
 						FB_FUNCMODE_STDCALL )
 
-    symbSetProcIncFile( proc, INVALID )
-
     ''
 	procnode = astProcBegin( proc, FALSE )
+
+    symbSetProcIncFile( proc, INVALID )
 
 	initlabel = procnode->initlabel
 	exitlabel = procnode->exitlabel
@@ -138,10 +138,10 @@ const fbargv = "__FB_ARGV__"
 								 attrib or FB_SYMBATTRIB_MAINPROC, _
 								 FB_FUNCMODE_CDECL )
 
-    symbSetProcIncFile( env.main.proc, INVALID )
-
     ''
 	env.main.node = astProcBegin( env.main.proc, TRUE )
+
+    symbSetProcIncFile( env.main.proc, INVALID )
 
 	env.main.initlabel = env.main.node->initlabel
 	env.main.exitlabel = env.main.node->exitlabel
@@ -174,11 +174,11 @@ private sub hModLevelBegin( )
 								 FB_SYMBATTRIB_MODLEVELPROC, _
 								 FB_FUNCMODE_CDECL )
 
-    symbSetProcIncFile( env.main.proc, INVALID )
-    symbSetIsCalled( env.main.proc )
-
     ''
 	env.main.node = astProcBegin( env.main.proc, TRUE )
+
+    symbSetProcIncFile( env.main.proc, INVALID )
+    symbSetIsCalled( env.main.proc )
 
 	env.main.initlabel = env.main.node->initlabel
 	env.main.exitlabel = env.main.node->exitlabel

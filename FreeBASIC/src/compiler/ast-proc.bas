@@ -257,6 +257,11 @@ function astProcBegin( byval proc as FBSYMBOL ptr, _
 	proc->proc.loctb.tail = NULL
 
 	''
+	if( proc->proc.ext = NULL ) then
+		proc->proc.ext = allocate( len( FB_PROCEXT ) )
+	end if
+
+	''
 	env.scope = iif( ismain, FB_MAINSCOPE, FB_MAINSCOPE+1 )
 	env.currproc = proc
 	ast.oldsymtb = symbGetLocalTb( )

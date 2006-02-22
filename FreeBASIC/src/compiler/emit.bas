@@ -245,8 +245,9 @@ end function
 '':::::
 sub emitProcBegin( byval proc as FBSYMBOL ptr ) static
 
-    proc->proc.stk.localptr = EMIT_LOCSTART
-	proc->proc.stk.argptr = EMIT_ARGSTART
+    proc->proc.ext->stk.localptr = EMIT_LOCSTART
+    proc->proc.ext->stk.localmax = EMIT_LOCSTART
+	proc->proc.ext->stk.argptr = EMIT_ARGSTART
 
 end sub
 

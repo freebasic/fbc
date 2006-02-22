@@ -411,7 +411,7 @@ sub edbgProcBegin( byval proc as FBSYMBOL ptr ) static
 
 	'' called by ir->ast
 
-	proc->proc.dbg.iniline = lexLineNum( )
+	proc->proc.ext->dbg.iniline = lexLineNum( )
 
 end sub
 
@@ -420,7 +420,7 @@ sub edbgProcEnd( byval proc as FBSYMBOL ptr ) static
 
 	'' called by ir->ast
 
-	proc->proc.dbg.endline = lexLineNum( )
+	proc->proc.ext->dbg.endline = lexLineNum( )
 
 end sub
 
@@ -492,8 +492,8 @@ sub edbgEmitProcHeader( byval proc as FBSYMBOL ptr ) static
     	hEmitSTABD( STAB_TYPE_SLINE, 0, ctx.firstline )
 
     	'' also correct the end and start lines
-    	proc->proc.dbg.iniline = ctx.firstline
-    	proc->proc.dbg.endline = ctx.lastline
+    	proc->proc.ext->dbg.iniline = ctx.firstline
+    	proc->proc.ext->dbg.endline = ctx.lastline
 
     	desc = fbGetEntryPoint( )
     else
@@ -511,7 +511,7 @@ sub edbgEmitProcHeader( byval proc as FBSYMBOL ptr ) static
 
 	desc += hGetDataType( proc )
 
-	hEmitSTABS( STAB_TYPE_FUN, desc, 0, proc->proc.dbg.iniline, procname )
+	hEmitSTABS( STAB_TYPE_FUN, desc, 0, proc->proc.ext->dbg.iniline, procname )
 
 	hDeclArgs( proc )
 

@@ -447,7 +447,7 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 	end if
 
     ''
-	proc->attrib	= attrib or FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
+	proc->attrib = attrib or FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
 
     '' if proc returns an UDT, add the hidden pointer passed as the 1st arg
     if( typ = FB_DATATYPE_USERDEF ) then
@@ -495,6 +495,9 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 	elseif( (attrib and (FB_SYMBATTRIB_CONSTRUCTOR or FB_SYMBATTRIB_DESTRUCTOR)) > 0 ) then
 		symbSetIsCalled( proc )
 	end if
+
+	''
+	proc->proc.ext = NULL
 
 	function = proc
 
@@ -1153,6 +1156,7 @@ end sub
 '':::::
 sub symbDelPrototype( byval s as FBSYMBOL ptr, _
 				      byval dolookup as integer )
+
 	dim as FBSYMBOL ptr n
 
     if( dolookup ) then
@@ -1175,6 +1179,12 @@ sub symbDelPrototype( byval s as FBSYMBOL ptr, _
 		if( s->proc.args > 0 ) then
 			hDelArgs( s )
 		end if
+
+    	''
+    	if( s->proc.ext <> NULL ) then
+    		deallocate( s->proc.ext )
+    		s->proc.ext = NULL
+    	end if
 
     	symbFreeSymbol( s )
 
@@ -1208,5 +1218,17 @@ function symbCalcArgLen( byval typ as integer, _
 	function = lgt
 
 end function
+
+'':::::
+sub symbSetProcIncFile( byval p as FBSYMBOL ptr, _
+						byval incf as integer )
+
+	if( p->proc.ext = NULL ) then
+		p->proc.ext = allocate( len( FB_PROCEXT ) )
+	end if
+
+	p->proc.ext->dbg.incfile = incf
+
+end sub
 
 

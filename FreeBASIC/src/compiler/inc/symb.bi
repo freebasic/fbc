@@ -258,14 +258,20 @@ type FB_PROCOVL
 end type
 
 type FB_PROCSTK
+	argptr			as integer
 	localptr		as integer
-	argptr			as integer					'' /
+	localmax		as integer
 end type
 
 type FB_PROCDBG
 	iniline			as integer					'' sub|function
 	endline			as integer					'' end sub|function
 	incfile			as integer
+end type
+
+type FB_PROCEXT
+	stk				as FB_PROCSTK 				'' to keep track of the stack frame
+	dbg				as FB_PROCDBG 				'' debugging
 end type
 
 type FB_PROCRTL
@@ -278,14 +284,10 @@ type FBS_PROC
 	lib				as FBLIBRARY ptr
 	args			as integer
 	argtb			as FBSYMBOLTB				'' arguments symbol tb
-
 	rtl				as FB_PROCRTL
 	ovl				as FB_PROCOVL				'' overloading
-	stk				as FB_PROCSTK				'' to keep track of the stack frame
-
 	loctb			as FBSYMBOLTB				'' local symbols table
-
-	dbg				as FB_PROCDBG				'' debugging
+	ext				as FB_PROCEXT ptr           '' extra stuff, not used with prototypes
 end type
 
 type FB_SCOPEDBG
@@ -612,6 +614,9 @@ declare sub 		symbSetLastLabel		( byval l as FBSYMBOL ptr )
 declare sub 		symbSetArrayDims		( byval s as FBSYMBOL ptr, _
 					  						  byval dimensions as integer, _
 					  						  dTB() as FBARRAYDIM )
+
+declare sub 		symbSetProcIncFile		( byval p as FBSYMBOL ptr, _
+											  byval incf as integer )
 
 declare sub 		symbFreeLocalDynVars	( byval proc as FBSYMBOL ptr, _
 											  byval issub as integer )
@@ -944,9 +949,7 @@ declare function 	symbAllocLocalVars		( byval proc as FBSYMBOL ptr ) as integer
 
 #define symGetProcOvlMaxArgs(f) f->proc.ovl.maxargs
 
-#define symbGetProcIncFile(f) f->proc.dbg.incfile
-
-#define symbSetProcIncFile(f,v) f->proc.dbg.incfile = v
+#define symbGetProcIncFile(f) f->proc.ext->dbg.incfile
 
 #define symbGetProcRealType(f) f->proc.realtype
 
