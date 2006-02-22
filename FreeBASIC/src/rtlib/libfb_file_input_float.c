@@ -31,12 +31,14 @@
 
 void fb_hGetNextToken( char *buffer, int maxlen, int isstring );
 
+#define FB_DOUBLE_MAXLEN (16 + 1 + 1 + 1 + 3)
+
 /*:::::*/
 FBCALL int fb_InputSingle( float *dst )
 {
-    char buffer[15+1];
+    char buffer[FB_DOUBLE_MAXLEN+1];
 
-	fb_hGetNextToken( buffer, 15, FB_FALSE );
+	fb_hGetNextToken( buffer, FB_DOUBLE_MAXLEN, FB_FALSE );
 
 	*dst = (float)atof( buffer );
 
@@ -46,9 +48,9 @@ FBCALL int fb_InputSingle( float *dst )
 /*:::::*/
 FBCALL int fb_InputDouble( double *dst )
 {
-    char buffer[21+1];
+    char buffer[FB_DOUBLE_MAXLEN+1];
 
-	fb_hGetNextToken( buffer, 21, FB_FALSE );
+	fb_hGetNextToken( buffer, FB_DOUBLE_MAXLEN, FB_FALSE );
 
 	*dst = (double)atof( buffer );
 

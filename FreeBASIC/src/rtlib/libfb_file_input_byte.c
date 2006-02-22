@@ -31,12 +31,14 @@
 
 void fb_hGetNextToken( char *buffer, int maxlen, int isstring );
 
+#define FB_INT_MAXLEN 11
+
 /*:::::*/
 FBCALL int fb_InputByte( char *dst )
 {
-    char buffer[4+1];
+    char buffer[FB_INT_MAXLEN+1];
 
-	fb_hGetNextToken( buffer, 4, FB_FALSE );
+	fb_hGetNextToken( buffer, FB_INT_MAXLEN, FB_FALSE );
 
 	*dst = (char)atoi( buffer );
 
