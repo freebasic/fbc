@@ -58,7 +58,8 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 {
 	CHAR char_data[256], *ch;
 	PUTTER *put;
-	int font_height, x, y, px, py, i, w, h, pitch, bpp, first, last, offset, bytes_count;
+	int font_height, x, y, px, py, i, w, h, pitch, bpp, first, last;
+	int offset, bytes_count, res = FB_RTERROR_OK;
 	unsigned char *data;
 	
 	if ((!fb_mode) || (!string) || (!string->data))
@@ -86,15 +87,13 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 		pitch = (bpp >> 3) * fb_mode->bpp;
 		font_height = (int)*(unsigned short *)(font + 2) - 1;
 
-		if ((y + font_height <= fb_mode->view_y) || (y >= fb_mode->view_y + fb_mode->view_h)) {
-			DRIVER_UNLOCK();
-			return FB_RTERROR_OK;
-		}
+		if ((y + font_height <= fb_mode->view_y) || (y >= fb_mode->view_y + fb_mode->view_h))
+			goto exit_error;
 		
 		bpp &= 0x7;
 		if (((bpp) && (bpp != fb_mode->bpp)) || (pitch < 3) || (font_height <= 0)) {
-			DRIVER_UNLOCK();
-			return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
+			res = FB_RTERROR_ILLEGALFUNCTIONCALL;
+			goto exit_error;
 		}
 		
 		first = (int)*(unsigned char *)(font + 4);
@@ -111,10 +110,15 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 		if (y + font_height > fb_mode->view_y + fb_mode->view_h)
 			font_height -= ((y + font_height) - (fb_mode->view_y + fb_mode->view_h));
 		
-		for (i = first; i <= last; i++) {
+		for (w = 0, i = first; i <= last; i++) {
 			char_data[i].width = (int)*(unsigned char *)(font + 6 + i - first);
 			char_data[i].data = data;
 			data += (char_data[i].width * fb_mode->bpp);
+			w += char_data[i].width;
+		}
+		if (w > ((int)*(unsigned short *)font >> 3)) {
+			res = FB_RTERROR_ILLEGALFUNCTIONCALL;
+			goto exit_error;
 		}
 		
 		for (i = 0; i < FB_STRSIZE(string); i++) {
@@ -157,8 +161,10 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 		offset = 0;
 		
 		if ((x + (w * FB_STRSIZE(string)) <= fb_mode->view_x) || (x >= fb_mode->view_x + fb_mode->view_w) ||
-		    (y + font_height <= fb_mode->view_y) || (y >= fb_mode->view_y + fb_mode->view_h))
-			return FB_RTERROR_OK;
+		    (y + font_height <= fb_mode->view_y) || (y >= fb_mode->view_y + fb_mode->view_h)) {
+			res = FB_RTERROR_ILLEGALFUNCTIONCALL;
+			goto exit_error;
+		}
 		
 		if (y < fb_mode->view_y) {
 			offset = (bytes_count * (fb_mode->view_y - y));
@@ -199,10 +205,14 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 	
 	SET_DIRTY(y, font_height);
 	
+exit_error:
 	DRIVER_UNLOCK();
 	
 	fb_hStrDelTemp(string);
 	
-	return FB_RTERROR_OK;
+	if (res != FB_RTERROR_OK)
+		return fb_ErrorSetNum(res);
+	else
+		return res;
 }
 
