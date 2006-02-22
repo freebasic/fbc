@@ -287,6 +287,7 @@
 #define FB_RTL_GFXCIRCLE 				"fb_GfxEllipse"
 #define FB_RTL_GFXPAINT 				"fb_GfxPaint"
 #define FB_RTL_GFXDRAW 					"fb_GfxDraw"
+#define FB_RTL_GFXDRAWSTRING			"fb_GfxDrawString"
 #define FB_RTL_GFXVIEW 					"fb_GfxView"
 #define FB_RTL_GFXWINDOW 				"fb_GfxWindow"
 #define FB_RTL_GFXPALETTE 				"fb_GfxPalette"
@@ -570,6 +571,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_GFXCIRCLE
 	FB_RTL_IDX_GFXPAINT
 	FB_RTL_IDX_GFXDRAW
+	FB_RTL_IDX_GFXDRAWSTRING
 	FB_RTL_IDX_GFXVIEW
 	FB_RTL_IDX_GFXWINDOW
 	FB_RTL_IDX_GFXPALETTE
@@ -1010,6 +1012,16 @@ declare function	rtlGfxPaint			( byval target as ASTNODE ptr, _
 declare function	rtlGfxDraw			( byval target as ASTNODE ptr, _
 										  byval targetisptr as integer, _
 										  byval cexpr as ASTNODE ptr )
+
+declare function	rtlGfxDrawString	( byval target as ASTNODE ptr, _
+										  byval targetisptr as integer, _
+										  byval xexpr as ASTNODE ptr, _
+										  byval texpr as ASTNODE ptr, _
+										  byval sexpr as ASTNODE ptr, _
+										  byval cexpr as ASTNODE ptr, _
+										  byval fexpr as ASTNODE ptr, _
+										  byval fisptr as integer, _
+										  byval coord_type as integer ) as integer
 
 declare function	rtlGfxView			( byval x1expr as ASTNODE ptr, _
 										  byval y1expr as ASTNODE ptr, _

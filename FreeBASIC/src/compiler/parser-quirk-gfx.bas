@@ -457,6 +457,74 @@ function cGfxPaint as integer
 end function
 
 '':::::
+'' GfxDrawString   =   DRAW STRING ( Expr ',' )? STEP? '(' Expr ',' Expr ')' ',' Expr ( ',' Expr ( ',' Expr )? )?
+''
+function cGfxDrawString as integer
+	dim as ASTNODE ptr texpr, xexpr, yexpr, sexpr, cexpr, fexpr
+	dim as integer tisptr, fisptr, coord_type
+    dim as FBSYMBOL ptr target
+
+	function = FALSE
+	
+	texpr = NULL
+	
+	'' ( Expr ',' )?
+	target = hGetTarget( texpr, tisptr )
+	if( (target <> NULL) or (tisptr) ) then
+		hMatchCOMMA( )
+	end if
+	
+	'' STEP?
+	if( hMatch( FB_TK_STEP ) ) then
+		coord_type = FBGFX_COORDTYPE_R
+	else
+		coord_type = FBGFX_COORDTYPE_A
+	end if
+
+	'' '(' Expr ',' Expr ')' - x and y
+	hMatchLPRNT( )
+
+	hMatchExpression( xexpr )
+
+	hMatchCOMMA( )
+
+	hMatchExpression( yexpr )
+
+	hMatchRPRNT( )
+	
+	'' ',' Expr
+	hMatchCOMMA( )
+	
+	hMatchExpression( sexpr )
+	
+	cexpr = NULL
+	fexpr = NULL
+	
+	'' color/font
+	if( hMatch( CHAR_COMMA ) ) then
+		if( cExpression( cexpr ) = FALSE ) then
+			cexpr = NULL
+		end if
+
+		'' custom user font
+		if( hMatch( CHAR_COMMA ) ) then
+			target = hGetTarget( fexpr, fisptr )
+			if( (target = NULL) and (fisptr = FALSE) ) then
+				hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+				exit function
+			end if
+		end if
+	end if
+
+	if( cexpr = NULL ) then
+		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, FB_DATATYPE_UINT )
+	end if
+
+	function = rtlGfxDrawString( texpr, tisptr, xexpr, yexpr, sexpr, cexpr, fexpr, fisptr, coord_type )
+	
+end function
+
+'':::::
 '' GfxDraw    =   DRAW ( Expr ',' )? Expr
 ''
 function cGfxDraw as integer
@@ -468,7 +536,10 @@ function cGfxDraw as integer
 
 	texpr = NULL
 
-	if( lexGetLookAhead( 1 ) = CHAR_COMMA ) then
+	if( hMatch( FB_TK_STRING ) ) then
+		function = cGfxDrawString
+		exit function
+	elseif( lexGetLookAhead( 1 ) = CHAR_COMMA ) then
 		target = hGetTarget( texpr, tisptr )
 		if( (target = NULL) and (tisptr = FALSE) ) then
 			hReportError FB_ERRMSG_EXPECTEDEXPRESSION

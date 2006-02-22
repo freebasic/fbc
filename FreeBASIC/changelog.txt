@@ -22,6 +22,7 @@ Version 0.16 Beta:
 - the -include command-line option, to pre-include headers in every source file (.bas) that will be compiled (v1c)
 - Linux framebuffer console gfx driver (lillo)
 - warning message when allocating implicitly a variable inside an expression (v1c)
+- DRAW STRING statement, to draw text in gfx mode at pixel perfect positions; supports default as well as custom fonts (lillo)
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)

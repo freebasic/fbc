@@ -502,10 +502,47 @@ static void init_put(void)
 
 
 /*:::::*/
+PUTTER *fb_hGetPutter(int mode, int alpha, BLENDER *func)
+{
+	PUTTER *put;
+	
+	if (put_initialized_depth != fb_mode->depth)
+		init_put();
+	
+	switch (mode) {
+		case PUT_MODE_TRANS:	put = fb_hPutTrans;	break;
+		case PUT_MODE_PRESET:	put = fb_hPutPReset;	break;
+		case PUT_MODE_AND:	put = fb_hPutAnd;	break;
+		case PUT_MODE_OR:	put = fb_hPutOr;	break;
+		case PUT_MODE_XOR:	put = fb_hPutXor;	break;
+		case PUT_MODE_ALPHA:	if (alpha < 0)
+						put = fb_hPutAlpha;
+					else if (alpha == 0)
+						return FB_RTERROR_OK;
+					else {
+						alpha &= 0xFF;
+						if (alpha == 0xFF)
+							put = fb_hPutTrans;
+						else
+							put = fb_hPutBlend;
+					}
+					break;
+		case PUT_MODE_CUSTOM:	blender = func;
+					put = fb_hPutCustom;
+					break;
+		case PUT_MODE_PSET:
+		default:		put = fb_hPutPSet;	break;
+	}
+	
+	return put;
+}
+
+
+/*:::::*/
 FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x1, int y1, int x2, int y2, int coord_type, int mode, int alpha, BLENDER *func)
 {
 	int x, y, w, h, pitch, bpp;
-	void (*put)(unsigned char *, unsigned char *, int, int, int, int);
+	PUTTER *put;
 	
 	if (!fb_mode)
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
@@ -518,18 +555,13 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 	
 	bpp = (int)*(unsigned short *)src;
 	w = pitch = bpp >> 3;
+	pitch *= fb_mode->bpp;
 	h = (int)*(unsigned short *)(src + 2);
 	src += 4;
 
 	bpp &= 0x7;
 	if ((bpp) && (bpp != fb_mode->bpp))
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
-	
-	if (fb_mode->depth > 8) {
-		pitch <<= 1;
-		if (fb_mode->depth > 16)
-			pitch <<= 1;
-	}
 	
 	if (x1 != 0xFFFF0000) {
 		fb_hFixCoordsOrder(&x1, &y1, &x2, &y2);
@@ -564,33 +596,7 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 	if (x + w > fb_mode->view_x + fb_mode->view_w)
 		w -= ((x + w) - (fb_mode->view_x + fb_mode->view_w));
 	
-	if (put_initialized_depth != fb_mode->depth)
-		init_put();
-	
-	switch (mode) {
-		case PUT_MODE_TRANS:	put = fb_hPutTrans;	break;
-		case PUT_MODE_PRESET:	put = fb_hPutPReset;	break;
-		case PUT_MODE_AND:	put = fb_hPutAnd;	break;
-		case PUT_MODE_OR:	put = fb_hPutOr;	break;
-		case PUT_MODE_XOR:	put = fb_hPutXor;	break;
-		case PUT_MODE_ALPHA:	if (alpha < 0)
-						put = fb_hPutAlpha;
-					else if (alpha == 0)
-						return FB_RTERROR_OK;
-					else {
-						alpha &= 0xFF;
-						if (alpha == 0xFF)
-							put = fb_hPutTrans;
-						else
-							put = fb_hPutBlend;
-					}
-					break;
-		case PUT_MODE_CUSTOM:	blender = func;
-					put = fb_hPutCustom;
-					break;
-		case PUT_MODE_PSET:
-		default:		put = fb_hPutPSet;	break;
-	}
+	put = fb_hGetPutter(mode, alpha, func);
 	
 	DRIVER_LOCK();
 	put(src, fb_mode->line[y] + (x * fb_mode->bpp), w, h, pitch, alpha);

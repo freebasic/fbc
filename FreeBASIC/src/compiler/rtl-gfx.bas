@@ -123,6 +123,21 @@ data @FB_RTL_GFXDRAW, "", _
 	 FB_DATATYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
 	 FB_DATATYPE_STRING,FB_ARGMODE_BYREF, FALSE
 
+'' fb_GfxDrawString ( byval target as any, byval x as single, byval y as single, _
+''                    byval byval coord_type as integer = COORD_TYPE_A, text as string, _
+''                    byval col as uinteger = DEFAULT_COLOR, byval font as any = NULL )
+data @FB_RTL_GFXDRAWSTRING, "", _
+	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 @hGfxlib_cb, TRUE, FALSE, _
+	 7, _
+	 FB_DATATYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
+	 FB_DATATYPE_SINGLE,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_SINGLE,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
+	 FB_DATATYPE_UINT,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_VOID,FB_ARGMODE_BYREF, FALSE
+
 '' fb_GfxView ( byval x1 as integer = -32768, byval y1 as integer = -32768, _
 ''              byval x1 as integer = -32768, byval y1 as integer = -32768, _
 ''				byval fillcol as uinteger = DEFAULT_COLOR, byval bordercol as uinteger = DEFAULT_COLOR, _
@@ -194,7 +209,7 @@ data @FB_RTL_GFXPALETTEGETUSING, "", _
 ''			   byval func as function( src as uinteger, dest as uinteger ) as uinteger = 0 ) as integer
 data @FB_RTL_GFXPUT, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, TRUE, FALSE, _
 	 12, _
 	 FB_DATATYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
 	 FB_DATATYPE_SINGLE,FB_ARGMODE_BYVAL, FALSE, _
@@ -213,7 +228,7 @@ data @FB_RTL_GFXPUT, "", _
 ''			   byref array as any, byval coordType as integer, array() as any ) as integer
 data @FB_RTL_GFXGET, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, TRUE, FALSE, _
 	 8, _
 	 FB_DATATYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
 	 FB_DATATYPE_SINGLE,FB_ARGMODE_BYVAL, FALSE, _
@@ -947,6 +962,91 @@ function rtlGfxDraw( byval target as ASTNODE ptr, _
  	astAdd( proc )
 
 	function = TRUE
+
+end function
+
+'':::::
+function rtlGfxDrawString( byval target as ASTNODE ptr, _
+						   byval targetisptr as integer, _
+						   byval xexpr as ASTNODE ptr, _
+						   byval yexpr as ASTNODE ptr, _
+						   byval sexpr as ASTNODE ptr, _
+						   byval cexpr as ASTNODE ptr, _
+						   byval fexpr as ASTNODE ptr, _
+						   byval fisptr as integer, _
+						   byval coord_type as integer ) as integer
+    dim as ASTNODE ptr proc
+    dim as integer targetmode
+    dim as FBSYMBOL ptr reslabel
+
+    function = FALSE
+
+	proc = astNewFUNCT( PROCLOOKUP( GFXDRAWSTRING ) )
+
+ 	'' byref target as any
+ 	if( target = NULL ) then
+ 		target = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+ 		targetmode = FB_ARGMODE_BYVAL
+ 	else
+		if( targetisptr ) then
+			targetmode = FB_ARGMODE_BYVAL
+		else
+			targetmode = INVALID
+		end if
+	end if
+	if( astNewPARAM( proc, target, INVALID, targetmode ) = NULL ) then
+ 		exit function
+ 	end if
+
+ 	'' byval x as single
+ 	if( astNewPARAM( proc, xexpr ) = NULL ) then
+ 		exit function
+ 	end if
+
+ 	'' byval y as single
+ 	if( astNewPARAM( proc, yexpr ) = NULL ) then
+ 		exit function
+ 	end if
+
+	'' byval coord_type as integer
+	if( astNewPARAM( proc, astNewCONSTi( coord_type, FB_DATATYPE_INTEGER ) ) = NULL ) then
+ 		exit function
+ 	end if
+
+ 	'' text as string
+ 	if( astNewPARAM( proc, sexpr ) = NULL ) then
+ 		exit function
+ 	end if
+
+ 	'' byval color as uinteger
+ 	if( astNewPARAM( proc, cexpr ) = NULL ) then
+ 		exit function
+ 	end if
+
+ 	'' byref font as any
+ 	if( fexpr = NULL ) then
+ 		fexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+ 		targetmode = FB_ARGMODE_BYVAL
+ 	else
+		if( fisptr ) then
+			targetmode = FB_ARGMODE_BYVAL
+		else
+			targetmode = INVALID
+		end if
+	end if
+	if( astNewPARAM( proc, fexpr, INVALID, targetmode ) = NULL ) then
+ 		exit function
+ 	end if
+
+    ''
+    if( env.clopt.resumeerr ) then
+    	reslabel = symbAddLabel( NULL )
+    	astAdd( astNewLABEL( reslabel ) )
+    else
+    	reslabel = NULL
+    end if
+
+	function = rtlErrorCheck( proc, reslabel, lexLineNum( ) )
 
 end function
 
