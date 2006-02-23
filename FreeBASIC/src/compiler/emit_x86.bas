@@ -4802,10 +4802,80 @@ end sub
 '' procs
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+private sub hClearLocals( byval bytestoclear as integer, _
+						  byval baseoffset as integer ) static
+
+	dim as integer i
+    dim as string lname
+
+	if( bytestoclear = 0 ) then
+		exit sub
+	end if
+
+	if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
+		if( cunsg(bytestoclear) \ 8 > 7 ) then
+
+	    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
+    			hPUSH( "edi" )
+    		end if
+
+			outp( "lea edi, [ebp-" & baseoffset + bytestoclear & "]" )
+			outp( "mov ecx," & cunsg(bytestoclear) \ 8 )
+			outp( "pxor mm0, mm0" )
+		    lname = *hMakeTmpStr( )
+		    hLABEL( lname )
+			outp( "movq [edi], mm0" )
+			outp( "add edi, 8" )
+			outp( "dec ecx" )
+			outp( "jnz " + lname )
+			outp( "emms" )
+
+    		if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
+    			hPOP( "edi" )
+    		end if
+
+		elseif( cunsg(bytestoclear) \ 8 > 0 ) then
+			outp( "pxor mm0, mm0" )
+			for i = cunsg(bytestoclear) \ 8 to 1 step -1
+				outp( "movq [ebp-" & ( i*8 ) & "], mm0" )
+			next
+			outp( "emms" )
+
+		end if
+
+		if( bytestoclear and 4 ) then
+			outp( "mov dword ptr [ebp-" & baseoffset + bytestoclear & "], 0" )
+		end if
+
+		exit sub
+	end if
+
+	if( cunsg(bytestoclear) \ 4 > 6 ) then
+
+    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
+   			hPUSH( "edi" )
+   		end if
+
+		outp( "lea edi, [ebp-" & baseoffset + bytestoclear & "]" )
+		outp( "mov ecx," & cunsg(bytestoclear) \ 4 )
+		outp( "xor eax, eax" )
+		outp( "rep stosd" )
+
+   		if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
+   			hPOP( "edi" )
+   		end if
+
+	else
+		for i = cunsg(bytestoclear) \ 4 to 1 step -1
+			 outp( "mov dword ptr [ebp-" & baseoffset + ( i*4 ) & "], 0" )
+		next
+	end if
+
+end sub
+
 '':::::
 private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
-    dim as string lname
-    dim as integer i, bytestoalloc
+    dim as integer bytestoalloc, bytestoclear
 
     bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
 
@@ -4837,65 +4907,9 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
     end if
 
 	''
-	if( bytestoalloc > 0 ) then
-		if( env.clopt.cputype >= FB_CPUTYPE_686 ) then
-			if( cunsg(bytestoalloc) \ 8 > 7 ) then
+	bytestoclear = ((-proc->proc.ext->stk.localptr - EMIT_LOCSTART) + 3) and (not 3)
 
-		    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
-    				hPUSH( "edi" )
-    			end if
-
-				outp( "lea edi, [ebp-" + str( bytestoalloc ) + "]" )
-				outp( "mov ecx," + str( cunsg(bytestoalloc) \ 8 ) )
-				outp( "pxor mm0, mm0" )
-			    lname = *hMakeTmpStr( )
-			    hLABEL( lname )
-				outp( "movq [edi], mm0" )
-				outp( "add edi, 8" )
-				outp( "dec ecx" )
-				outp( "jnz " + lname )
-				outp( "emms" )
-
-    			if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
-    				hPOP( "edi" )
-    			end if
-
-			elseif( cunsg(bytestoalloc) \ 8 > 0 ) then
-				outp( "pxor mm0, mm0" )
-				for i = cunsg(bytestoalloc) \ 8 to 1 step -1
-					outp( "movq [ebp-" + str( i*8 ) + "], mm0" )
-				next
-				outp( "emms" )
-
-			end if
-
-			if( bytestoalloc and 4 ) then
-				outp( "mov dword ptr [ebp-" + str( bytestoalloc ) + "], 0" )
-			end if
-
-		else
-			if( cunsg(bytestoalloc) \ 4 > 6 ) then
-		    	if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
-    				hPUSH( "edi" )
-    			end if
-
-				outp( "lea edi, [ebp-" + str( bytestoalloc ) + "]" )
-				outp( "mov ecx," + str( cunsg(bytestoalloc) \ 4 ) )
-				outp( "xor eax, eax" )
-				outp( "rep stosd" )
-
-    			if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) = FALSE ) then
-    				hPOP( "edi" )
-    			end if
-
-			else
-				for i = cunsg(bytestoalloc) \ 4 to 1 step -1
-					 outp( "mov dword ptr [ebp-" + str( i*4 ) + "], 0" )
-				next
-			end if
-		end if
-
-	end if
+	hClearLocals( bytestoclear, 0 )
 
 end sub
 
