@@ -211,7 +211,7 @@ typedef struct FONT
 
 typedef void (BLITTER)(unsigned char *, int);
 typedef FBCALL unsigned int (BLENDER)(unsigned int, unsigned int);
-typedef FBCALL void (PUTTER)(unsigned char *, unsigned char *, int, int, int, int);
+typedef void (PUTTER)(unsigned char *, unsigned char *, int, int, int, int);
 
 /* Global variables */
 extern MODE *fb_mode;

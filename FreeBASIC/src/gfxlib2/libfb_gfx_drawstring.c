@@ -46,18 +46,18 @@
  *
  */
 
-typedef struct CHAR
+typedef struct FBGFX_CHAR
 {
 	int width;
 	unsigned char *data;
-} CHAR;
+} FBGFX_CHAR;
 
 
 
 /*:::::*/
 FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FBSTRING *string, unsigned int color, void *font)
 {
-	CHAR char_data[256], *ch;
+	FBGFX_CHAR char_data[256], *ch;
 	PUTTER *put;
 	int font_height, x, y, px, py, i, w, h, pitch, bpp, first, last;
 	int offset, bytes_count, res = FB_RTERROR_OK;
@@ -101,7 +101,7 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 		last = (int)*(unsigned char *)(font + 6);
 		if (first > last)
 			SWAP(first, last);
-		fb_hMemSet(char_data, 0, sizeof(CHAR) * 256);
+		fb_hMemSet(char_data, 0, sizeof(FBGFX_CHAR) * 256);
 		data = font + 4 + pitch;
 		if (y < fb_mode->view_y) {
 			data += (pitch * (fb_mode->view_y - y));
