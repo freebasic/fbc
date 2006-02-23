@@ -56,11 +56,11 @@ end sub
     	end 1
 	end if
     	
-    LIBXML_TEST_VERSION
+    LIBXML_TEST_VERSION( )
     	
     streamFile( filename )
 
     xmlCleanupParser( )
     
-    xmlMemoryDump()
+    xmlMemoryDump( )
     

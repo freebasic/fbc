@@ -315,7 +315,7 @@ end sub
    dim buf as string
    dim i as integer
 
-   allegro_init
+   allegro_init()
    install_keyboard()
    install_timer()
    if (set_gfx_mode(GFX_AUTODETECT, SCR_WIDTH, SCR_HEIGHT, 0, 0) <> 0) then

@@ -14,9 +14,9 @@ option explicit
    	dim custom_cursor as BITMAP ptr
    	dim c as integer
 
-   	allegro_init
-   	install_keyboard
-   	install_timer
+   	allegro_init()
+   	install_keyboard()
+   	install_timer()
 	if (set_gfx_mode(GFX_SAFE, 320, 240, 0, 0) <> 0) then
 		end 1 
 	end if

@@ -31,7 +31,7 @@ sub inc_z cdecl ()
 end sub
 
 
-   	allegro_init
+   	allegro_init()
    	install_keyboard()
    	install_timer()
    
