@@ -66,14 +66,151 @@ sub ppDefineEnd( )
 
 end sub
 
-
-''::::
-private function hLoadDefine( byval s as FBSYMBOL ptr ) as integer
+'':::::
+private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
     dim as FBDEFARG ptr arg
     dim as FBDEFTOK ptr dt
     dim as FBTOKEN t
     dim as LEXPP_ARGTB ptr argtb
-    dim as integer prntcnt, lgt, num
+    dim as integer prntcnt, num
+    static as string text
+
+	function = -1
+
+	'' '('?
+	if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
+		'' not an error, macro can be passed as param to other macros
+		exit function
+	end if
+
+	lexEatChar( )
+
+	prntcnt = 1
+
+	'' allocate a new arg list (support recursion)
+	if( symbGetDefineHeadToken( s ) ) then
+		argtb = cptr( LEXPP_ARGTB ptr, listNewNode( @ctx.argtblist ) )
+	else
+		argtb = NULL
+	end if
+
+	'' for each arg
+	arg = symbGetDefineHeadArg( s )
+	num = 0
+	do
+		if( argtb <> NULL ) then
+			DZstrZero( argtb->tb(num).text )
+		end if
+
+		'' read text until a comma or right-parentheses is found
+		do
+			lexNextToken( @t, LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX or LEXCHECK_NOQUOTES )
+
+			select case t.id
+			'' (
+			case CHAR_LPRNT
+				prntcnt += 1
+			'' )
+			case CHAR_RPRNT
+				prntcnt -= 1
+				if( prntcnt = 0 ) then
+					exit do
+				end if
+			'' ,
+			case CHAR_COMMA
+				if( prntcnt = 1 ) then
+					exit do
+				end if
+			''
+			case FB_TK_EOL, FB_TK_EOF
+				hReportError( FB_ERRMSG_EXPECTEDRPRNT )
+				exit function
+			end select
+
+			if( argtb <> NULL ) then
+	   			if( t.typ <> FB_DATATYPE_WCHAR ) then
+	   				DZstrConcatAssign( argtb->tb(num).text, t.text )
+	    		else
+	    			DZstrConcatAssignW( argtb->tb(num).text, t.textw )
+	    		end if
+	    	end if
+		loop
+
+		if( argtb <> NULL ) then
+			'' trim
+			with argtb->tb(num)
+				if( (.text.data[0][0] = CHAR_SPACE) or _
+					(.text.data[0][len( *.text.data )-1] = CHAR_SPACE) ) then
+					DZstrAssign( .text, trim( *.text.data ) )
+				end if
+			end with
+		end if
+
+		'' closing parentheses?
+		if( prntcnt = 0 ) then
+			exit do
+		end if
+
+		'' next
+		arg = symbGetDefArgNext( arg )
+		num += 1
+	loop while( arg <> NULL )
+
+	''
+	text = ""
+
+	if( argtb <> NULL ) then
+		dt = symbGetDefineHeadToken( s )
+		do while( dt <> NULL )
+			select case as const symbGetDefTokType( dt )
+			'' argument?
+			case FB_DEFTOK_TYPE_ARG
+				text += *argtb->tb( symbGetDefTokArgNum( dt ) ).text.data
+
+			'' stringize argument?
+			case FB_DEFTOK_TYPE_ARGSTR
+				text += "\""
+				text += hReplace( argtb->tb( symbGetDefTokArgNum( dt ) ).text.data, _
+								  "\"", _
+								  "\"\"" )
+				text += "\""
+
+			'' ordinary text..
+			case FB_DEFTOK_TYPE_TEX
+				text += *symbGetDefTokText( dt )
+
+			'' unicode text?
+			case FB_DEFTOK_TYPE_TEXW
+				text += str( *symbGetDefTokTextW( dt ) )
+			end select
+
+			'' next
+			dt = symbGetDefTokNext( dt )
+		loop
+
+		'' free args text
+		do while( num > 0 )
+			num -= 1
+			DZstrAssign( argtb->tb(num).text, NULL )
+		loop
+
+		listDelNode( @ctx.argtblist, cptr( TLISTNODE ptr, argtb ) )
+	end if
+
+	''
+	if( lex->deflen = 0 ) then
+		DZstrAssign( lex->deftext, text )
+	else
+		DZstrAssign( lex->deftext, text + *lex->defptr )
+	end if
+
+	function = len( text )
+
+end function
+
+''::::
+private function hLoadDefine( byval s as FBSYMBOL ptr ) as integer
+    dim as integer lgt
     static as string text
 
     function = FALSE
@@ -81,130 +218,9 @@ private function hLoadDefine( byval s as FBSYMBOL ptr ) as integer
 	'' define has args?
 	if( symbGetDefineArgs( s ) > 0 ) then
 
-		'' '('
-		lexNextToken( @t, LEXCHECK_NOSUFFIX )
-		if( t.id <> CHAR_LPRNT ) then
-			hReportError( FB_ERRMSG_EXPECTEDLPRNT )
+		lgt = hLoadMacro( s )
+		if( lgt = -1 ) then
 			exit function
-		end if
-
-		prntcnt = 1
-		'' allocate a new arg list (because recursivity)
-		if( symbGetDefineHeadToken( s ) ) then
-			argtb = cptr( LEXPP_ARGTB ptr, listNewNode( @ctx.argtblist ) )
-		else
-			argtb = NULL
-		end if
-
-		'' for each arg
-		arg = symbGetDefineHeadArg( s )
-		num = 0
-		do
-			if( argtb <> NULL ) then
-				DZstrZero( argtb->tb(num).text )
-			end if
-
-			'' read text until a comma or right-parentheses is found
-			do
-				lexNextToken( @t, LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX or LEXCHECK_NOQUOTES )
-				select case t.id
-				'' (
-				case CHAR_LPRNT
-					prntcnt += 1
-				'' )
-				case CHAR_RPRNT
-					prntcnt -= 1
-					if( prntcnt = 0 ) then
-						exit do
-					end if
-				'' ,
-				case CHAR_COMMA
-					if( prntcnt = 1 ) then
-						exit do
-					end if
-				''
-				case FB_TK_EOL, FB_TK_EOF
-					hReportError( FB_ERRMSG_EXPECTEDRPRNT )
-					exit function
-				end select
-
-                if( argtb <> NULL ) then
-    				if( t.typ <> FB_DATATYPE_WCHAR ) then
-    					DZstrConcatAssign( argtb->tb(num).text, t.text )
-    				else
-    					DZstrConcatAssignW( argtb->tb(num).text, t.textw )
-    				end if
-    			end if
-            loop
-
-			if( argtb <> NULL ) then
-				'' trim
-				with argtb->tb(num)
-					if( (.text.data[0][0] = CHAR_SPACE) or _
-						(.text.data[0][len( *.text.data )-1] = CHAR_SPACE) ) then
-						DZstrAssign( .text, trim( *.text.data ) )
-					end if
-				end with
-			end if
-
-			'' closing parentheses?
-			if( prntcnt = 0 ) then
-				exit do
-			end if
-
-			'' next
-			arg = symbGetDefArgNext( arg )
-			num += 1
-		loop while( arg <> NULL )
-
-		''
-		text = ""
-
-		if( argtb <> NULL ) then
-			dt = symbGetDefineHeadToken( s )
-			do while( dt <> NULL )
-				select case as const symbGetDefTokType( dt )
-				'' argument?
-				case FB_DEFTOK_TYPE_ARG
-					text += *argtb->tb( symbGetDefTokArgNum( dt ) ).text.data
-
-				'' stringize argument?
-				case FB_DEFTOK_TYPE_ARGSTR
-					text += "\""
-					text += hReplace( argtb->tb( symbGetDefTokArgNum( dt ) ).text.data, _
-									  "\"", _
-									  "\"\"" )
-					text += "\""
-
-				'' ordinary text..
-				case FB_DEFTOK_TYPE_TEX
-					text += *symbGetDefTokText( dt )
-
-				'' unicode text?
-				case FB_DEFTOK_TYPE_TEXW
-                	text += str( *symbGetDefTokTextW( dt ) )
-				end select
-
-				'' next
-				dt = symbGetDefTokNext( dt )
-			loop
-
-			'' free args text
-			do while( num > 0 )
-				num -= 1
-				DZstrAssign( argtb->tb(num).text, NULL )
-			loop
-
-			listDelNode( @ctx.argtblist, cptr( TLISTNODE ptr, argtb ) )
-		end if
-
-		lgt = len( text )
-
-		''
-		if( lex->deflen = 0 ) then
-			DZstrAssign( lex->deftext, text )
-		else
-			DZstrAssign( lex->deftext, text + *lex->defptr )
 		end if
 
 	'' no args
@@ -229,14 +245,22 @@ private function hLoadDefine( byval s as FBSYMBOL ptr ) as integer
 
 		'' just load text as-is
 		else
+
+			'' arg-less macro?
 			if( symbGetDefineIsArgless( s ) ) then
-				'' '(' ')'?
-				if( lexCurrentChar( ) = CHAR_LPRNT ) then
-					if( lexGetLookAheadChar( TRUE ) = CHAR_RPRNT ) then
-						lexEatChar( )
-						lexEatChar( )
-					end if
+				'' '('?
+				if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
+					'' not an error, macro can be passed as param to other macros
+					exit function
 				end if
+				lexEatChar( )
+
+				'' ')'
+				if( lexCurrentChar( TRUE ) <> CHAR_RPRNT ) then
+					hReportError( FB_ERRMSG_EXPECTEDRPRNT )
+					exit function
+				end if
+				lexEatChar( )
 			end if
 
 			if( symbGetType( s ) <> FB_DATATYPE_WCHAR ) then
@@ -272,8 +296,7 @@ private function hLoadDefine( byval s as FBSYMBOL ptr ) as integer
 
 end function
 
-''::::
-private function hLoadDefineW( byval s as FBSYMBOL ptr ) as integer
+private function hLoadMacroW( byval s as FBSYMBOL ptr ) as integer
     dim as FBDEFARG ptr arg
     dim as FBDEFTOK ptr dt
     dim as FBTOKEN t
@@ -281,136 +304,151 @@ private function hLoadDefineW( byval s as FBSYMBOL ptr ) as integer
     dim as integer prntcnt, lgt, num
     static as DWSTRING text
 
+	function = -1
+
+	'' '('?
+	if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
+		'' not an error, macro can be passed as param to other macros
+		exit function
+	end if
+
+	lexEatChar( )
+
+	prntcnt = 1
+	'' allocate a new arg list (because the recursivity)
+	if( symbGetDefineHeadToken( s ) ) then
+		argtb = cptr( LEXPP_ARGTB ptr, listNewNode( @ctx.argtblist ) )
+	else
+		argtb = NULL
+	end if
+
+	'' for each arg
+	arg = symbGetDefineHeadArg( s )
+	num = 0
+	do
+		if( argtb <> NULL ) then
+			DWstrZero( argtb->tb(num).textw )
+		end if
+
+		'' read text until a comma or right-parentheses is found
+		do
+			lexNextToken( @t, LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX or LEXCHECK_NOQUOTES )
+			select case t.id
+			'' (
+			case CHAR_LPRNT
+				prntcnt += 1
+			'' )
+			case CHAR_RPRNT
+				prntcnt -= 1
+				if( prntcnt = 0 ) then
+					exit do
+				end if
+			'' ,
+			case CHAR_COMMA
+				if( prntcnt = 1 ) then
+					exit do
+				end if
+			''
+			case FB_TK_EOL, FB_TK_EOF
+				hReportError( FB_ERRMSG_EXPECTEDRPRNT )
+				exit function
+			end select
+
+			if( argtb <> NULL ) then
+    			if( t.typ <> FB_DATATYPE_WCHAR ) then
+    				DWstrConcatAssignA( argtb->tb(num).textw, t.text )
+    			else
+    				DWstrConcatAssign( argtb->tb(num).textw, t.textw )
+    			end if
+    		end if
+		loop
+
+		if( argtb <> NULL ) then
+			'' trim
+			with argtb->tb(num)
+				if( (.textw.data[0][0] = CHAR_SPACE) or _
+					(.textw.data[0][len( *.textw.data )-1] = CHAR_SPACE) ) then
+					DWstrAssign( .textw, trim( *.textw.data ) )
+				end if
+			end with
+		end if
+
+		'' closing parentheses?
+		if( prntcnt = 0 ) then
+			exit do
+		end if
+
+		'' next
+		arg = symbGetDefArgNext( arg )
+		num += 1
+	loop while( arg <> NULL )
+
+	'' text = ""
+	DWstrAssign( text, NULL )
+
+	if( argtb <> NULL ) then
+		dt = symbGetDefineHeadToken( s )
+		do while( dt <> NULL )
+			select case as const symbGetDefTokType( dt )
+			'' argument?
+			case FB_DEFTOK_TYPE_ARG
+				DWstrConcatAssign( text, _
+								   argtb->tb( symbGetDefTokArgNum( dt ) ).textw.data )
+
+			'' stringize argument?
+			case FB_DEFTOK_TYPE_ARGSTR
+				DWstrConcatAssign( text, "\"" )
+				DWstrConcatAssign( text, *hReplaceW( argtb->tb( symbGetDefTokArgNum( dt ) ).textw.data, _
+										 	  		"\"", _
+										 	  		"\"\"" ) )
+				DWstrConcatAssign( text, "\"" )
+
+			'' ordinary text..
+			case FB_DEFTOK_TYPE_TEX
+				DWstrConcatAssignA( text, symbGetDefTokText( dt ) )
+
+			'' unicode text?
+			case FB_DEFTOK_TYPE_TEXW
+               	DWstrConcatAssign( text, symbGetDefTokTextW( dt ) )
+			end select
+
+			'' next
+			dt = symbGetDefTokNext( dt )
+		loop
+
+		'' free args text
+		do while( num > 0 )
+			num -= 1
+			DWstrAssign( argtb->tb(num).textw, NULL )
+		loop
+
+		listDelNode( @ctx.argtblist, cptr( TLISTNODE ptr, argtb ) )
+	end if
+
+	''
+	if( lex->deflen = 0 ) then
+		DWstrAssign( lex->deftextw, text.data )
+	else
+		DWstrAssign( lex->deftextw, *text.data + *lex->defptrw )
+	end if
+
+	function = len( *text.data )
+
+end function
+
+''::::
+private function hLoadDefineW( byval s as FBSYMBOL ptr ) as integer
+    dim as integer lgt
+    static as DWSTRING text
+
     function = FALSE
 
 	'' define has args?
 	if( symbGetDefineArgs( s ) > 0 ) then
 
-		'' '('
-		lexNextToken( @t, LEXCHECK_NOSUFFIX )
-		if( t.id <> CHAR_LPRNT ) then
-			hReportError( FB_ERRMSG_EXPECTEDLPRNT )
+		lgt = hLoadMacroW( s )
+		if( lgt = -1 ) then
 			exit function
-		end if
-
-		prntcnt = 1
-		'' allocate a new arg list (because the recursivity)
-		if( symbGetDefineHeadToken( s ) ) then
-			argtb = cptr( LEXPP_ARGTB ptr, listNewNode( @ctx.argtblist ) )
-		else
-			argtb = NULL
-		end if
-
-		'' for each arg
-		arg = symbGetDefineHeadArg( s )
-		num = 0
-		do
-			if( argtb <> NULL ) then
-				DWstrZero( argtb->tb(num).textw )
-			end if
-
-			'' read text until a comma or right-parentheses is found
-			do
-				lexNextToken( @t, LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX or LEXCHECK_NOQUOTES )
-				select case t.id
-				'' (
-				case CHAR_LPRNT
-					prntcnt += 1
-				'' )
-				case CHAR_RPRNT
-					prntcnt -= 1
-					if( prntcnt = 0 ) then
-						exit do
-					end if
-				'' ,
-				case CHAR_COMMA
-					if( prntcnt = 1 ) then
-						exit do
-					end if
-				''
-				case FB_TK_EOL, FB_TK_EOF
-					hReportError( FB_ERRMSG_EXPECTEDRPRNT )
-					exit function
-				end select
-
-                if( argtb <> NULL ) then
-    				if( t.typ <> FB_DATATYPE_WCHAR ) then
-    					DWstrConcatAssignA( argtb->tb(num).textw, t.text )
-    				else
-    					DWstrConcatAssign( argtb->tb(num).textw, t.textw )
-    				end if
-    			end if
-            loop
-
-			if( argtb <> NULL ) then
-				'' trim
-				with argtb->tb(num)
-					if( (.textw.data[0][0] = CHAR_SPACE) or _
-						(.textw.data[0][len( *.textw.data )-1] = CHAR_SPACE) ) then
-						DWstrAssign( .textw, trim( *.textw.data ) )
-					end if
-				end with
-			end if
-
-			'' closing parentheses?
-			if( prntcnt = 0 ) then
-				exit do
-			end if
-
-			'' next
-			arg = symbGetDefArgNext( arg )
-			num += 1
-		loop while( arg <> NULL )
-
-		'' text = ""
-		DWstrAssign( text, NULL )
-
-		if( argtb <> NULL ) then
-			dt = symbGetDefineHeadToken( s )
-			do while( dt <> NULL )
-				select case as const symbGetDefTokType( dt )
-				'' argument?
-				case FB_DEFTOK_TYPE_ARG
-					DWstrConcatAssign( text, _
-									   argtb->tb( symbGetDefTokArgNum( dt ) ).textw.data )
-
-				'' stringize argument?
-				case FB_DEFTOK_TYPE_ARGSTR
-					DWstrConcatAssign( text, "\"" )
-					DWstrConcatAssign( text, *hReplaceW( argtb->tb( symbGetDefTokArgNum( dt ) ).textw.data, _
-											 	  		"\"", _
-											 	  		"\"\"" ) )
-					DWstrConcatAssign( text, "\"" )
-
-				'' ordinary text..
-				case FB_DEFTOK_TYPE_TEX
-					DWstrConcatAssignA( text, symbGetDefTokText( dt ) )
-
-				'' unicode text?
-				case FB_DEFTOK_TYPE_TEXW
-                	DWstrConcatAssign( text, symbGetDefTokTextW( dt ) )
-				end select
-
-				'' next
-				dt = symbGetDefTokNext( dt )
-			loop
-
-			'' free args text
-			do while( num > 0 )
-				num -= 1
-				DWstrAssign( argtb->tb(num).textw, NULL )
-			loop
-
-			listDelNode( @ctx.argtblist, cptr( TLISTNODE ptr, argtb ) )
-		end if
-
-		lgt = len( *text.data )
-
-		''
-		if( lex->deflen = 0 ) then
-			DWstrAssign( lex->deftextw, text.data )
-		else
-			DWstrAssign( lex->deftextw, *text.data + *lex->defptrw )
 		end if
 
 	'' no args
@@ -435,14 +473,21 @@ private function hLoadDefineW( byval s as FBSYMBOL ptr ) as integer
 
 		'' just load text as-is
 		else
+			'' arg-less macro?
 			if( symbGetDefineIsArgless( s ) ) then
-				'' '(' ')'?
-				if( lexCurrentChar( ) = CHAR_LPRNT ) then
-					if( lexGetLookAheadChar( TRUE ) = CHAR_RPRNT ) then
-						lexEatChar( )
-						lexEatChar( )
-					end if
+				'' '('?
+				if( lexCurrentChar( TRUE ) <> CHAR_LPRNT ) then
+					'' not an error, macro can be passed as param to other macros
+					exit function
 				end if
+				lexEatChar( )
+
+				'' ')'
+				if( lexCurrentChar( TRUE ) <> CHAR_RPRNT ) then
+					hReportError( FB_ERRMSG_EXPECTEDRPRNT )
+					exit function
+				end if
+				lexEatChar( )
 			end if
 
 			if( symbGetType( s ) <> FB_DATATYPE_WCHAR ) then
