@@ -10,29 +10,34 @@ declare sub foo
 	dim shared c = TEST_C
 	dim shared d = TEST_D
 	
-	scope
-		dim a = TEST_A
-		scope 
-			dim b = TEST_B
-			assert( a = TEST_A )
-			scope
-				assert( b = TEST_B )
-			end scope
-		end scope
-
-	end scope
+	dim i
+	for i = 1 to 2
 	
-	scope
-		dim a = 1234
-		assert( a = 1234 )
 		scope
-			assert( c = TEST_C )
+			dim a = TEST_A
+			scope 
+				dim b = TEST_B
+				assert( a = TEST_A )
+				scope
+					assert( b = TEST_B )
+				end scope
+			end scope
+	
+		end scope
+		
+		scope
+			dim a = 1234
+			assert( a = 1234 )
 			scope
-				dim d = 5678
-				assert( d = 5678 )
+				assert( c = TEST_C )
+				scope
+					dim d = 5678
+					assert( d = 5678 )
+				end scope
 			end scope
 		end scope
-	end scope
+	
+	next
 	
 	foo
 	
@@ -42,30 +47,35 @@ declare sub foo
 ''::::
 sub foo
 
-	scope
-		dim a = TEST_A
-		scope 
-			dim b = TEST_B
-			assert( a = TEST_A )
-			scope
-				assert( b = TEST_B )
-			end scope
-		end scope
-	end scope
-	
-	scope
-		dim a = 1234
-		assert( a = 1234 )
+	dim i
+	for i = 1 to 2
+
 		scope
-			assert( c = TEST_C )
-			scope
-				dim d = 5678
-				assert( d = 5678 )
+			dim a = TEST_A
+			scope 
+				dim b = TEST_B
+				assert( a = TEST_A )
+				scope
+					assert( b = TEST_B )
+				end scope
 			end scope
 		end scope
-	end scope
-	
-	assert( c = TEST_C )
-	assert( d = TEST_D )
+		
+		scope
+			dim a = 1234
+			assert( a = 1234 )
+			scope
+				assert( c = TEST_C )
+				scope
+					dim d = 5678
+					assert( d = 5678 )
+				end scope
+			end scope
+		end scope
+		
+		assert( c = TEST_C )
+		assert( d = TEST_D )
+		
+	next
 
 end sub	
