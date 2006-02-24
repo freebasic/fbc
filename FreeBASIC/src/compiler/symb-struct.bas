@@ -673,6 +673,7 @@ sub symbDelUDT( byval s as FBSYMBOL ptr, _
 				byval dolookup as integer )
 
     dim as FBSYMBOL ptr e, nxt
+    dim as FBVARDIM ptr dimn, dimnxt
 
     if( dolookup ) then
     	s = symbFindByClass( s, FB_SYMBCLASS_UDT )
@@ -686,6 +687,17 @@ sub symbDelUDT( byval s as FBSYMBOL ptr, _
     e = s->udt.fldtb.head
     do while( e <> NULL )
         nxt = e->next
+
+    	'' del array dims if not a scalar type
+    	dimn = s->var.array.dimhead
+    	do while( dimn <> NULL )
+    		dimnxt = dimn->next
+
+    		listDelNode( @symb.dimlist, cptr( TLISTNODE ptr, dimn ) )
+
+    		dimn = dimnxt
+    	loop
+
     	symbFreeSymbol( e )
     	e = nxt
     loop

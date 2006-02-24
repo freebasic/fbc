@@ -103,7 +103,8 @@ declare sub 		hFlushADDR			( byval op as integer, _
 declare sub 		hFlushMEM			( byval op as integer, _
 										  byval v1 as IRVREG ptr, _
 										  byval v2 as IRVREG ptr, _
-										  byval bytes as integer )
+										  byval bytes as integer, _
+										  byval extra as any ptr )
 
 declare sub 		hFreeIDX			( byval vreg as IRVREG ptr, _
 										  byval force as integer = FALSE )
@@ -190,7 +191,8 @@ declare sub 		irDump				( byval op as integer, _
 		( IR_OPTYPE_CALL	, FALSE, "jm@" ), _	'' IR_OP_JUMPPTR
 		( IR_OPTYPE_MEM		, FALSE, "mmv" ), _	'' IR_OP_MEMMOVE
 		( IR_OPTYPE_MEM		, FALSE, "msp" ), _	'' IR_OP_MEMSWAP
-		( IR_OPTYPE_MEM		, FALSE, "mcl" )  _	'' IR_OP_MEMCLEAR
+		( IR_OPTYPE_MEM		, FALSE, "mcl" ), _	'' IR_OP_MEMCLEAR
+		( IR_OPTYPE_MEM		, FALSE, "scl" )  _	'' IR_OP_STKCLEAR
 	}
 
 '':::::
@@ -334,9 +336,9 @@ sub irEmit( byval op as integer, _
 
     t = flistNewItem( @ir.tacTB )
 
-    t->pos		 = ir.taccnt
+    t->pos = ir.taccnt
 
-    t->op  		 = op
+    t->op = op
 
     t->arg1.vreg = arg1
     hRelinkVreg( arg1, t )
@@ -344,11 +346,11 @@ sub irEmit( byval op as integer, _
     t->arg2.vreg = arg2
     hRelinkVreg( arg2, t )
 
-    t->res.vreg  = res
+    t->res.vreg = res
     hRelinkVreg( res, t )
 
-    t->ex1 		 = ex1
-    t->ex2 		 = ex2
+    t->ex1 = ex1
+    t->ex2 = ex2
 
     ir.taccnt += 1
 
@@ -669,16 +671,6 @@ sub irEmitDBG( byval proc as FBSYMBOL ptr, _
 end sub
 
 '':::::
-sub irEmitMEM( byval op as integer, _
-			   byval v1 as IRVREG ptr, _
-			   byval v2 as IRVREG ptr, _
-			   byval bytes as integer ) static
-
-	irEmit( op, v1, v2, NULL, 0, bytes )
-
-end sub
-
-'':::::
 sub irEmitVARINIBEGIN( byval sym as FBSYMBOL ptr ) static
 
 	'' no flush, all var-ini go to data sections
@@ -796,7 +788,6 @@ sub irEmitVARINIPAD( byval bytes as integer ) static
 	emitVARINIPAD( bytes )
 
 end sub
-
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -1201,7 +1192,7 @@ sub irFlush static
 			hFlushADDR( op, t->arg1.vreg, t->res.vreg )
 
 		case IR_OPTYPE_MEM
-			hFlushMEM( op, t->arg1.vreg, t->arg2.vreg, t->ex2 )
+			hFlushMEM( op, t->arg1.vreg, t->arg2.vreg, t->ex2, t->ex1 )
 		end select
 
 		''
@@ -2043,7 +2034,8 @@ end sub
 private sub hFlushMEM( byval op as integer, _
 					   byval v1 as IRVREG ptr, _
 					   byval v2 as IRVREG ptr, _
-					   byval bytes as integer ) static
+					   byval bytes as integer, _
+					   byval extra as any ptr ) static
 
 	''
 	hLoadIDX( v1 )
@@ -2057,6 +2049,8 @@ private sub hFlushMEM( byval op as integer, _
 		emitMEMSWAP( v1, v2, bytes )
 	case IR_OP_MEMCLEAR
 		emitMEMCLEAR( v1, v2, bytes )
+	case IR_OP_STKCLEAR
+		emitSTKCLEAR( bytes, cint( extra ) )
 	end select
 
     ''

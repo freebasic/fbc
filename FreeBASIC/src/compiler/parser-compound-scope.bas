@@ -35,14 +35,9 @@ option escape
 ''
 function cScopeStatement as integer
     dim as integer lastcompstmt
-    dim as FBSYMBOL ptr s
+    dim as ASTNODE ptr n
 
 	function = FALSE
-
-	if( env.scope >= FB_MAXSCOPEDEPTH ) then
-		hReportError( FB_ERRMSG_RECLEVELTOODEPTH )
-		exit function
-	end if
 
 	'' SCOPE
 	lexSkipToken( )
@@ -56,15 +51,15 @@ function cScopeStatement as integer
 		exit function
 	end if
 
+	n = astScopeBegin( )
+	if( n = NULL ) then
+		hReportError( FB_ERRMSG_RECLEVELTOODEPTH )
+		exit function
+	end if
+
 	''
 	lastcompstmt     = env.lastcompound
 	env.lastcompound = FB_TK_SCOPE
-	env.scope += 1
-
-	''
-	s = symbAddScope( )
-
-	astScopeBegin( s )
 
 	'' loop body
 	do
@@ -73,17 +68,9 @@ function cScopeStatement as integer
 		end if
 	loop while( lexGetToken( ) <> FB_TK_EOF )
 
-	'' free dynamic vars
-	symbFreeScopeDynVars( s )
-
-	'' remove symbols from hash table
-	symbDelScopeTb( s )
-
 	''
-	astScopeEnd( s )
+	astScopeEnd( n )
 
-	''
-	env.scope -= 1
 	env.lastcompound = lastcompstmt
 
 	'' END SCOPE

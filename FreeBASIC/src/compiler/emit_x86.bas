@@ -4770,7 +4770,8 @@ end sub
 '':::::
 private sub _emitMEMMOVE( byval dvreg as IRVREG ptr, _
 			   			  byval svreg as IRVREG ptr, _
-			   			  byval bytes as integer ) static
+			   			  byval bytes as integer, _
+			   			  byval extra as integer ) static
 
 	if( bytes > 16 ) then
 		hMemMoveRep( dvreg, svreg, bytes )
@@ -4783,7 +4784,8 @@ end sub
 '':::::
 private sub _emitMEMSWAP( byval dvreg as IRVREG ptr, _
 			   			  byval svreg as IRVREG ptr, _
-			   			  byval bytes as integer ) static
+			   			  byval bytes as integer, _
+			   			  byval extra as integer ) static
 
 	'' implemented as function
 
@@ -4792,9 +4794,22 @@ end sub
 '':::::
 private sub _emitMEMCLEAR( byval dvreg as IRVREG ptr, _
 			   			   byval svreg as IRVREG ptr, _
-			   			   byval bytes as integer ) static
+			   			   byval bytes as integer, _
+			   			   byval extra as integer ) static
 
 	'' implemented as function
+
+end sub
+
+declare sub hClearLocals( byval bytestoclear as integer, byval baseoffset as integer )
+
+'':::::
+private sub _emitSTKCLEAR( byval dvreg as IRVREG ptr, _
+			   			   byval svreg as IRVREG ptr, _
+			   			   byval bytes as integer, _
+			   			   byval baseofs as integer ) static
+
+	hClearLocals( bytes, baseofs )
 
 end sub
 
@@ -4880,7 +4895,7 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
     bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
 
     if( (bytestoalloc <> 0) or _
-    	(proc->proc.ext->stk.argptr <> EMIT_ARGSTART) or _
+    	(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
         symbIsMainProc( proc ) or _
         env.clopt.debug ) then
 
@@ -4907,7 +4922,7 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
     end if
 
 	''
-	bytestoclear = ((-proc->proc.ext->stk.localptr - EMIT_LOCSTART) + 3) and (not 3)
+	bytestoclear = ((proc->proc.ext->stk.localofs - EMIT_LOCSTART) + 3) and (not 3)
 
 	hClearLocals( bytestoclear, 0 )
 
@@ -4927,8 +4942,8 @@ private sub hDestroyFrame( byval proc as FBSYMBOL ptr, _
     	hPOP( "ebx" )
     end if
 
-    if( (proc->proc.ext->stk.localptr <> EMIT_LOCSTART) or _
-    	(proc->proc.ext->stk.argptr <> EMIT_ARGSTART) or _
+    if( (proc->proc.ext->stk.localofs <> EMIT_LOCSTART) or _
+    	(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
         symbIsMainProc( proc ) or _
         env.clopt.debug ) then
     	outp( "mov esp, ebp" )
@@ -5020,13 +5035,13 @@ end sub
 '':::::
 function emitAllocLocal( byval proc as FBSYMBOL ptr, _
 						 byval lgt as integer, _
-						 ofs as integer ) as zstring ptr static
+						 byref ofs as integer ) as zstring ptr static
 
     static as zstring * 3+1 sname = "ebp"
 
-    proc->proc.ext->stk.localptr -= ((lgt + 3) and not 3)
+    proc->proc.ext->stk.localofs += ((lgt + 3) and not 3)
 
-	ofs = proc->proc.ext->stk.localptr
+	ofs = -proc->proc.ext->stk.localofs
 
     if( -ofs > proc->proc.ext->stk.localmax ) then
     	proc->proc.ext->stk.localmax = -ofs
@@ -5043,9 +5058,9 @@ function emitAllocArg( byval proc as FBSYMBOL ptr, _
 
     static as zstring * 3+1 sname = "ebp"
 
-	ofs = proc->proc.ext->stk.argptr
+	ofs = proc->proc.ext->stk.argofs
 
-    proc->proc.ext->stk.argptr += ((lgt + 3) and not 3)
+    proc->proc.ext->stk.argofs += ((lgt + 3) and not 3)
 
 	function = @sname
 
@@ -5807,6 +5822,7 @@ end sub
         _
 		EMIT_CBENTRY(MEMMOVE), _
 		EMIT_CBENTRY(MEMSWAP), _
-		EMIT_CBENTRY(MEMCLEAR) _
+		EMIT_CBENTRY(MEMCLEAR), _
+		EMIT_CBENTRY(STKCLEAR) _
 	}
 

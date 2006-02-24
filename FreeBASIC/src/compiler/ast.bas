@@ -94,6 +94,8 @@ declare function 	astLoadPTRCHK	( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astLoadFIELD	( byval n as ASTNODE ptr ) as IRVREG ptr
 
+declare function 	astLoadSCOPE	( byval n as ASTNODE ptr ) as IRVREG ptr
+
 '' globals
 	dim shared ast as ASTCTX
 
@@ -1195,6 +1197,9 @@ function astLoad( byval n as ASTNODE ptr ) as IRVREG ptr
 
     case AST_NODECLASS_PTRCHK
     	return astLoadPTRCHK( n )
+
+    case AST_NODECLASS_SCOPE
+    	return astLoadSCOPE( n )
 
     end select
 

@@ -116,6 +116,7 @@ enum IROP_ENUM									'' if order is changed, update the opTB array
 	IR_OP_MEMMOVE
 	IR_OP_MEMSWAP
 	IR_OP_MEMCLEAR
+	IR_OP_STKCLEAR
 
 	IR_OPS										'' total
 end enum
@@ -281,11 +282,6 @@ declare sub 		irEmitDBG			( byval proc as FBSYMBOL ptr, _
 										  byval op as integer, _
 			   							  byval ex as integer )
 
-declare sub 		irEmitMEM			( byval op as integer, _
-			   							  byval v1 as IRVREG ptr, _
-			   							  byval v2 as IRVREG ptr, _
-			   							  byval bytes as integer )
-
 declare function 	irIsVAR				( byval vreg as IRVREG ptr ) as integer
 
 declare function 	irIsIDX				( byval vreg as IRVREG ptr ) as integer
@@ -361,6 +357,10 @@ declare sub 		irXchgTOS			( byval reg as integer )
 #define irEmitJUMPPTR(v1) irEmit( IR_OP_JUMPPTR, v1, NULL, NULL, NULL )
 
 #define irEmitBRANCH(op,label) irEmit( op, NULL, NULL, NULL, label )
+
+#define irEmitMEM(op,v1,v2,bytes) irEmit( op, v1, v2, NULL, 0, bytes )
+
+#define irEmitSTKCLEAR(bytes,baseofs) irEmit( IR_OP_STKCLEAR, NULL, NULL, NULL, cast( any ptr, baseofs ), bytes )
 
 
 #define ISLONGINT(t) ((t = FB_DATATYPE_LONGINT) or (t = FB_DATATYPE_ULONGINT))

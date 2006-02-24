@@ -673,22 +673,19 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
 end function
 
 '':::::
-function symbAllocLocalVars( byval s as FBSYMBOL ptr ) as integer
+function symbProcAllocLocals( byval proc as FBSYMBOL ptr ) as integer static
+    dim as FBSYMBOL ptr s
     dim as integer lgt
 
     function = FALSE
 
+    s = symbGetProcLocTbHead( proc )
     do while( s <> NULL )
-    	select case s->class
-		'' scope? recurse..
-		case FB_SYMBCLASS_SCOPE
-			symbAllocLocalVars( symbGetScopeTbHead( s ) )
-
     	'' variable?
-    	case FB_SYMBCLASS_VAR
+    	if( s->class = FB_SYMBCLASS_VAR ) then
     		'' not shared or static?
     		if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
-    			 				   	   FB_SYMBATTRIB_STATIC)) = 0 ) then
+    			 				FB_SYMBATTRIB_STATIC)) = 0 ) then
 
 				'' not an argument?
     			if( (s->attrib and (FB_SYMBATTRIB_ARGUMENTBYDESC or _
@@ -711,9 +708,27 @@ function symbAllocLocalVars( byval s as FBSYMBOL ptr ) as integer
 
 			end if
 
-		end select
+		end if
 
     	s = s->next
+    loop
+
+    function = TRUE
+
+end function
+
+'':::::
+function symbProcAllocScopes( byval proc as FBSYMBOL ptr ) as integer static
+    dim as FBSYMBOL ptr s
+
+    function = FALSE
+
+    s = proc->proc.ext->scptb.head
+    do while( s <> NULL )
+
+    	symbScopeAllocLocals( s )
+
+    	s = s->scp.next
     loop
 
     function = TRUE
@@ -1224,7 +1239,7 @@ sub symbSetProcIncFile( byval p as FBSYMBOL ptr, _
 						byval incf as integer )
 
 	if( p->proc.ext = NULL ) then
-		p->proc.ext = allocate( len( FB_PROCEXT ) )
+		p->proc.ext = callocate( len( FB_PROCEXT ) )
 	end if
 
 	p->proc.ext->dbg.incfile = incf

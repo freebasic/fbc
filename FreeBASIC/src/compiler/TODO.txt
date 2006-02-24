@@ -1,19 +1,9 @@
 [ ] check for GOSUB's when finishing functions if RETURN w/o expressions was used
 
 [ ] SCOPE..END SCOPE:
-    - vars should be reused (that's is, the stack "rewinded") because it's only
-      assured that the vars will be initialized to 0 when the scope block is
-      entered by the first time, so reusing would be more efficient - that will
-      screw up var-len strings, the descriptor MUST be zeroed or an assignment
-      will fail, same care must be taken with object instances, but then the
-      constructor will be called, it would be way easier if STRING was actually
-      a class.. nm..
     - error handlers should be restored too (or not allowed at all)
 
 [ ] every compound statement should start new scope:
-    - there will be a problem with locals if stack is reused (ie: gcc), scope vars
-      must be zeroed because they will have garbage values after the first scoped
-      block is executed (what would break string descs also)
     - that's needed for gcc, scope is very important
     - will allow "FOR iterator AS datatype = ..."
     - will break some old or buggy apps that declare implicit vars inside compounds

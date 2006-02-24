@@ -121,7 +121,9 @@ private sub hProcFlush( byval p as ASTPROCNODE ptr, _
 	loop
 
 	''
-	symbAllocLocalVars( symbGetProcLocTbHead( proc ) )
+	symbProcAllocLocals( proc )
+
+	symbProcAllocScopes( proc )
 
 	'' add a call to fb_init if it's a static constructor
 	'' (note: must be done here or ModLevelIsEmpty() will fail)
@@ -258,7 +260,7 @@ function astProcBegin( byval proc as FBSYMBOL ptr, _
 
 	''
 	if( proc->proc.ext = NULL ) then
-		proc->proc.ext = allocate( len( FB_PROCEXT ) )
+		proc->proc.ext = callocate( len( FB_PROCEXT ) )
 	end if
 
 	''
@@ -459,41 +461,6 @@ private sub hModLevelAddRtInit( byval p as ASTPROCNODE ptr )
 	'' list will be processed before main() is called by crt
 
 	astAddAfter( rtlInitRt( ), n )
-
-end sub
-
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' scope handling
-'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'':::::
-sub astScopeBegin( byval s as FBSYMBOL ptr ) static
-
-    '' change to scope's symbol tb
-    s->scp.loctb.head = NULL
-    s->scp.loctb.tail = NULL
-
-	symbSetLocalTb( @s->scp.loctb )
-
-	''
-	irScopeBegin( s )
-
-	''
-	astAdd( astNewDBG( IR_OP_DBG_SCOPEINI, cint( s ) ) )
-
-end sub
-
-'':::::
-sub astScopeEnd( byval s as FBSYMBOL ptr ) static
-
-	''
-	astAdd( astNewDBG( IR_OP_DBG_SCOPEEND, cint( s ) ) )
-
-	''
-	irScopeEnd( s )
-
-	'' back to preview symbol tb
-	symbSetLocalTb( s->symtb )
 
 end sub
 

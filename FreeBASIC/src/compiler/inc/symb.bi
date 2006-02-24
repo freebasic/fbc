@@ -258,8 +258,8 @@ type FB_PROCOVL
 end type
 
 type FB_PROCSTK
-	argptr			as integer
-	localptr		as integer
+	argofs			as integer
+	localofs		as integer
 	localmax		as integer
 end type
 
@@ -269,9 +269,15 @@ type FB_PROCDBG
 	incfile			as integer
 end type
 
+type FB_PROCSCPTB
+	head			as FBSYMBOL_ ptr
+	tail			as FBSYMBOL_ ptr
+end type
+
 type FB_PROCEXT
 	stk				as FB_PROCSTK 				'' to keep track of the stack frame
 	dbg				as FB_PROCDBG 				'' debugging
+	scptb			as FB_PROCSCPTB
 end type
 
 type FB_PROCRTL
@@ -299,7 +305,10 @@ end type
 
 type FBS_SCOPE
 	loctb			as FBSYMBOLTB
+	baseofs			as integer
+	bytes			as integer
 	dbg				as FB_SCOPEDBG
+	next			as FBSYMBOL_ ptr			'' next in FB_PROCSCPTB's list
 end type
 
 type FBS_VAR
@@ -738,7 +747,12 @@ declare function 	symbGetUnsignedType		( byval dtype as integer ) as integer
 declare function 	symbRemapType			( byval dtype as integer, _
 					  					  	  byval subtype as FBSYMBOL ptr ) as integer
 
-declare function 	symbAllocLocalVars		( byval proc as FBSYMBOL ptr ) as integer
+declare function 	symbProcAllocLocals		( byval proc as FBSYMBOL ptr ) as integer
+
+declare function 	symbProcAllocScopes		( byval proc as FBSYMBOL ptr ) as integer
+
+declare function 	symbScopeAllocLocals	( byval sym as FBSYMBOL ptr ) as integer
+
 
 ''
 '' getters and setters as macros

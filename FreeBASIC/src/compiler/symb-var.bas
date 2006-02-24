@@ -35,6 +35,7 @@ option escape
 declare function 	hCalcArrayElements	( byval dimensions as integer, _
 									  	  dTB() as FBARRAYDIM ) as integer
 
+declare sub 		hDelVarDims			( byval s as FBSYMBOL ptr )
 
 '':::::
 sub symbInitDims( ) static
@@ -117,6 +118,8 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 	d->var.array.desc = NULL
 	d->var.array.dif = 0
 	d->var.array.dims = 0
+	d->var.array.dimhead = NULL
+	d->var.array.dimtail = NULL
 
     d->var.suffix = INVALID
 
@@ -165,17 +168,20 @@ sub symbSetArrayDims( byval s as FBSYMBOL ptr, _
     dim as integer i
     dim as FBVARDIM ptr d
 
-	s->var.array.dims = dimensions
-
 	if( dimensions > 0 ) then
 		s->var.array.dif = symbCalcArrayDiff( dimensions, dTB(), s->lgt )
 
-		if( s->var.array.dimhead = NULL ) then
+		if( (s->var.array.dimhead = NULL) or _
+			(s->var.array.dims <> dimensions) ) then
+
+            hDelVarDims( s )
+
 			for i = 0 to dimensions-1
 				if( symbNewArrayDim( s->var.array.dimhead, s->var.array.dimtail, _
 							 		 dTB(i).lower, dTB(i).upper ) = NULL ) then
 				end if
 			next i
+
 		else
 			d = s->var.array.dimhead
 			for i = 0 to dimensions-1
@@ -188,6 +194,8 @@ sub symbSetArrayDims( byval s as FBSYMBOL ptr, _
 	else
 		s->var.array.dif = 0
 	end if
+
+	s->var.array.dims = dimensions
 
 	'' dims can be -1 with COMMON arrays..
 	if( dimensions <> 0 ) then

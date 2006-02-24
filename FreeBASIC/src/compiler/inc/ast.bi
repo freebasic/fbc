@@ -56,6 +56,7 @@ enum ASTNODECLASS_ENUM
 	AST_NODECLASS_MEM
 	AST_NODECLASS_BOUNDCHK
 	AST_NODECLASS_PTRCHK
+	AST_NODECLASS_SCOPE
 end enum
 
 type ASTNODE_ as ASTNODE
@@ -165,6 +166,10 @@ type AST_CHK
 	sym				as FBSYMBOL ptr
 end type
 
+type AST_SCOPE
+	sym				as FBSYMBOL ptr
+end type
+
 ''
 type ASTNODE
 	ll_prv			as ASTNODE ptr					'' linked-list nodes
@@ -197,6 +202,7 @@ type ASTNODE
 		mem			as AST_MEM
 		stk			as AST_STK
 		chk			as AST_CHK
+		scp			as AST_SCOPE
 	end union
 
 	prev			as ASTNODE ptr					'' used by Add
@@ -278,9 +284,9 @@ declare function 	astProcBegin		( byval proc as FBSYMBOL ptr, _
 declare sub 		astProcEnd			( byval p as ASTPROCNODE ptr, _
 										  byval callrtexit as integer = FALSE )
 
-declare sub 		astScopeBegin		( byval s as FBSYMBOL ptr )
+declare function	astScopeBegin		( ) as ASTNODE ptr
 
-declare sub 		astScopeEnd			( byval s as FBSYMBOL ptr )
+declare sub 		astScopeEnd			( byval s as ASTNODE ptr )
 
 declare sub			astAdd				( byval n as ASTNODE ptr )
 

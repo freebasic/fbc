@@ -187,35 +187,46 @@ sub emitFlush( ) static
 		select case as const n->class
 
 		case EMIT_NODECLASS_BOP
-			cptr( EMIT_BOPCB, emit_opfTB(n->bop.op) )( n->bop.dvreg, n->bop.svreg )
+			cast( EMIT_BOPCB, emit_opfTB(n->bop.op) )( n->bop.dvreg, _
+													   n->bop.svreg )
 
 		case EMIT_NODECLASS_UOP
-			cptr( EMIT_UOPCB, emit_opfTB(n->uop.op ) )( n->uop.dvreg )
+			cast( EMIT_UOPCB, emit_opfTB(n->uop.op ) )( n->uop.dvreg )
 
 		case EMIT_NODECLASS_REL
-			cptr( EMIT_RELCB, emit_opfTB(n->rel.op) )( n->rel.rvreg, n->rel.label, n->rel.dvreg, n->rel.svreg )
+			cast( EMIT_RELCB, emit_opfTB(n->rel.op) )( n->rel.rvreg, _
+													   n->rel.label, _
+													   n->rel.dvreg, _
+													   n->rel.svreg )
 
 		case EMIT_NODECLASS_STK
-			cptr( EMIT_STKCB, emit_opfTB(n->stk.op) )( n->stk.vreg, n->stk.extra )
+			cast( EMIT_STKCB, emit_opfTB(n->stk.op) )( n->stk.vreg, _
+													   n->stk.extra )
 
 		case EMIT_NODECLASS_BRC
-			cptr( EMIT_BRCCB, emit_opfTB(n->brc.op) )( n->brc.vreg, n->brc.sym, n->brc.extra )
+			cast( EMIT_BRCCB, emit_opfTB(n->brc.op) )( n->brc.vreg, _
+													   n->brc.sym, _
+													   n->brc.extra )
 
 		case EMIT_NODECLASS_SOP
-			cptr( EMIT_SOPCB, emit_opfTB(n->sop.op) )( n->sop.sym )
+			cast( EMIT_SOPCB, emit_opfTB(n->sop.op) )( n->sop.sym )
 
 		case EMIT_NODECLASS_LIT
-			cptr( EMIT_LITCB, emit_opfTB(EMIT_OP_LIT) )( n->lit.text )
+			cast( EMIT_LITCB, emit_opfTB(EMIT_OP_LIT) )( n->lit.text )
 
 			ZstrFree( n->lit.text )
 
 		case EMIT_NODECLASS_JTB
-			cptr( EMIT_JTBCB, emit_opfTB(EMIT_OP_JMPTB) )( n->jtb.dtype, n->jtb.text )
+			cast( EMIT_JTBCB, emit_opfTB(EMIT_OP_JMPTB) )( n->jtb.dtype, _
+														   n->jtb.text )
 
 			ZstrFree( n->jtb.text )
 
 		case EMIT_NODECLASS_MEM
-			cptr( EMIT_MEMCB, emit_opfTB(n->mem.op) )( n->mem.dvreg, n->mem.svreg, n->mem.bytes )
+			cast( EMIT_MEMCB, emit_opfTB(n->mem.op) )( n->mem.dvreg, _
+													   n->mem.svreg, _
+													   n->mem.bytes, _
+													   n->mem.extra )
 
 		end select
 
@@ -245,9 +256,9 @@ end function
 '':::::
 sub emitProcBegin( byval proc as FBSYMBOL ptr ) static
 
-    proc->proc.ext->stk.localptr = EMIT_LOCSTART
+    proc->proc.ext->stk.localofs = EMIT_LOCSTART
     proc->proc.ext->stk.localmax = EMIT_LOCSTART
-	proc->proc.ext->stk.argptr = EMIT_ARGSTART
+	proc->proc.ext->stk.argofs = EMIT_ARGSTART
 
 end sub
 
@@ -457,7 +468,8 @@ end function
 private function hNewMEM( byval op as integer, _
 					 	  byval dvreg as IRVREG ptr, _
 			 		 	  byval svreg as IRVREG ptr, _
-			 		 	  byval bytes as integer ) as EMIT_NODE ptr static
+			 		 	  byval bytes as integer, _
+			 		 	  byval extra as integer = 0 ) as EMIT_NODE ptr static
 
 	dim as EMIT_NODE ptr n
 
@@ -467,6 +479,7 @@ private function hNewMEM( byval op as integer, _
 	n->mem.dvreg = hNewVR( dvreg )
 	n->mem.svreg = hNewVR( svreg )
 	n->mem.bytes = bytes
+	n->mem.extra = extra
 
 	function = n
 
@@ -1305,6 +1318,17 @@ sub emitMEMCLEAR( byval dvreg as IRVREG ptr, _
 	hNewMEM( EMIT_OP_MEMCLEAR, dvreg, svreg, bytes )
 
 end sub
+
+'':::::
+sub emitSTKCLEAR( byval bytes as integer, _
+				  byval baseofs as integer ) static
+
+	hNewMEM( EMIT_OP_STKCLEAR, NULL, NULL, bytes, baseofs )
+
+end sub
+
+
+
 
 
 

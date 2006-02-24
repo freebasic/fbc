@@ -145,6 +145,7 @@ enum EMIT_NODEOP_ENUM
 	EMIT_OP_MEMMOVE
 	EMIT_OP_MEMSWAP
 	EMIT_OP_MEMCLEAR
+	EMIT_OP_STKCLEAR
 
 	EMIT_MAXOPS
 end enum
@@ -212,6 +213,7 @@ type EMIT_MEMNODE
 	dvreg		as IRVREG ptr
 	svreg		as IRVREG ptr
 	bytes		as integer
+	extra		as integer
 end type
 
 type EMIT_NODE
@@ -261,7 +263,8 @@ type EMIT_JTBCB as sub( byval dtype as integer, _
 
 type EMIT_MEMCB as sub( byval dvreg as IRVREG ptr, _
 						byval svreg as IRVREG ptr, _
-						byval bytes as integer )
+						byval bytes as integer, _
+						byval extra as integer )
 
 
 type EMITCTX
@@ -517,6 +520,9 @@ declare sub 		emitMEMCLEAR		( byval dvreg as IRVREG ptr, _
 			 					  		  byval svreg as IRVREG ptr, _
 			 					  		  byval bytes as integer )
 
+declare sub 		emitSTKCLEAR		( byval bytes as integer, _
+				  						  byval baseofs as integer )
+
 declare sub 		emitSECTION			( byval section as integer )
 
 declare sub 		emitDATALABEL		( byval label as zstring ptr )
@@ -562,6 +568,10 @@ declare sub 		hWriteStr			( byval addtab as integer, _
 declare sub 		emitReset			( )
 
 declare sub 		emitFlush			( )
+
+#define emitGetLocalOfs(p) p->proc.ext->stk.localofs
+
+#define emitSetLocalOfs(p,ofs) p->proc.ext->stk.localofs = ofs
 
 ''::::
 #define EMIT_REGSETUSED(c,r) emit.regUsedTB(c) or= (1 shl r)
