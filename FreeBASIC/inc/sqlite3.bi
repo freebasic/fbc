@@ -177,6 +177,10 @@ declare function sqlite3_aggregate_context cdecl alias "sqlite3_aggregate_contex
 declare function sqlite3_user_data cdecl alias "sqlite3_user_data" (byval as sqlite3_context ptr) as any ptr
 declare function sqlite3_get_auxdata cdecl alias "sqlite3_get_auxdata" (byval as sqlite3_context ptr, byval as integer) as any ptr
 declare sub sqlite3_set_auxdata cdecl alias "sqlite3_set_auxdata" (byval as sqlite3_context ptr, byval as integer, byval as any ptr, byval as sub cdecl(byval as any ptr))
+
+#define SQLITE_STATIC cast(sub cdecl(byval as any ptr),0)
+#define SQLITE_TRANSIENT cast(sub cdecl(byval as any ptr),-1)
+
 declare sub sqlite3_result_blob cdecl alias "sqlite3_result_blob" (byval as sqlite3_context ptr, byval as any ptr, byval as integer, byval as sub cdecl(byval as any ptr))
 declare sub sqlite3_result_double cdecl alias "sqlite3_result_double" (byval as sqlite3_context ptr, byval as double)
 declare sub sqlite3_result_error cdecl alias "sqlite3_result_error" (byval as sqlite3_context ptr, byval as zstring ptr, byval as integer)
