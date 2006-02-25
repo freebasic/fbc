@@ -79,18 +79,33 @@ FBCALL int fb_ExecEx ( FBSTRING *program, FBSTRING *args, int do_fork )
 
 		if( do_fork )
 		{
-			if ((pid = fork()) == 0)
+			pid = fork();
+			if( pid != -1 )
 			{
-				exit( execvp( fb_hGetShortPath( program->data, buffer, MAX_PATH ), argv ) );
+				if (pid == 0)
+				{
+					exit( execvp( fb_hGetShortPath( program->data, buffer, MAX_PATH ), argv ) );
+				}
+				else
+				{
+					if( waitpid(pid, &status, 0) > 0 )
+					{
+						if (WIFEXITED(status))
+						{
+							/* only the LSB is returned */
+							res = WEXITSTATUS(status);
+							if( res == 255 )
+								res = -1;
+						}
+						else
+							res = -1;
+					}
+					else
+						res = -1;
+				}
 			}
 			else
-			{
-				waitpid(pid, &status, 0);
-				if (WIFEXITED(status))
-					res = WEXITSTATUS(status);
-				else
-					res = -1;
-			}
+				res = -1;
 		}
 		else
 		{
