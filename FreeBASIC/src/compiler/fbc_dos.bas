@@ -111,26 +111,8 @@ function _linkFiles as integer
     end if
 
 	if( fbc.debug = FALSE ) then
-		ldcline += " -s "
-	else
-		ldcline += " "
+		ldcline += " -s"
 	end if
-
-    '' add objects from output list
-    for i = 0 to fbc.inps-1
-    	ldcline += QUOTE + fbc.outlist(i) + "\" "
-    next i
-
-    '' add objects from cmm-line
-    for i = 0 to fbc.objs-1
-    	ldcline += QUOTE + fbc.objlist(i) + "\" "
-    next i
-
-	'' link with crt0.o (C runtime init)
-	ldcline += QUOTE + exepath( ) + *fbGetPath( FB_PATH_LIB ) + "\\crt0.o\" "
-
-    '' set executable name
-    ldcline += "-o \"" + fbc.outname + QUOTE
 
     '' default lib path
     ldcline += " -L \"" + exepath( ) + *fbGetPath( FB_PATH_LIB ) + QUOTE
@@ -140,7 +122,23 @@ function _linkFiles as integer
     '' add additional user-specified library search paths
     for i = 0 to fbc.pths-1
     	ldcline += " -L \"" + fbc.pthlist(i) + QUOTE
-    next i
+    next
+
+	'' link with crt0.o (C runtime init)
+	ldcline += " \"" + exepath( ) + *fbGetPath( FB_PATH_LIB ) + "\\crt0.o\" "
+
+    '' add objects from output list
+    for i = 0 to fbc.inps-1
+    	ldcline += QUOTE + fbc.outlist(i) + "\" "
+    next
+
+    '' add objects from cmm-line
+    for i = 0 to fbc.objs-1
+    	ldcline += QUOTE + fbc.objlist(i) + "\" "
+    next
+
+    '' set executable name
+    ldcline += "-o \"" + fbc.outname + QUOTE
 
     '' init lib group
     ldcline += " -( "
@@ -150,7 +148,7 @@ function _linkFiles as integer
 		if fbc.outtype = FB_OUTTYPE_EXECUTABLE then
 			ldcline += "-l" + fbc.liblist(i) + " "
 		end if
-    next i
+    next
 
     '' end lib group
     ldcline += "-) "
