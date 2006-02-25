@@ -468,11 +468,16 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	if( intdigs == 0 )
 	{
 		/* is it a 0? remove.. */
-		if( buffer[0] == '0' )
+		if( (len > 0) && (buffer[0] == '0') )
 		{
 			memmove( buffer, &buffer[1], len-1 + 1 );
 			--len;
 		}
+	}
+	else if( len == 0 )
+	{
+		strcpy( buffer, "0" );
+		len = 1;
 	}
 
 	/* any decimal places? */
