@@ -115,23 +115,8 @@ function _linkFiles as integer
 
 	''
 	if( fbc.debug = FALSE ) then
-		ldcline += " -s "
-	else
-		ldcline += " "
+		ldcline += " -s"
 	end if
-
-    '' add objects from output list
-    for i = 0 to fbc.inps-1
-    	ldcline += QUOTE + fbc.outlist(i) + "\" "
-    next i
-
-    '' add objects from cmm-line
-    for i = 0 to fbc.objs-1
-    	ldcline += QUOTE + fbc.objlist(i) + "\" "
-    next i
-
-    '' set executable name
-    ldcline += "-o \"" + fbc.outname + QUOTE
 
     '' default lib path
 	libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
@@ -150,7 +135,20 @@ function _linkFiles as integer
 		ldcline += " \"" + libdir + "/crt1.o\""
 	end if
 	ldcline += " \"" + libdir + "/crti.o\""
-	ldcline += " \"" + libdir + "/crtbegin.o\""
+	ldcline += " \"" + libdir + "/crtbegin.o\" "
+
+    '' add objects from output list
+    for i = 0 to fbc.inps-1
+    	ldcline += QUOTE + fbc.outlist(i) + "\" "
+    next i
+
+    '' add objects from cmm-line
+    for i = 0 to fbc.objs-1
+    	ldcline += QUOTE + fbc.objlist(i) + "\" "
+    next i
+
+    '' set executable name
+    ldcline += "-o \"" + fbc.outname + QUOTE
 
     '' init lib group
     ldcline += " -( "
