@@ -24,6 +24,7 @@
  *
  */
 
+#include <float.h>
 #include <math.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -112,11 +113,11 @@ void fb_hGetNumberParts( double number,
     pachFracPart[len_frac] = 0;
 
     /* Store fix part of the number into buffer */
-    if( llFix==0 && number < 0.0l ) {
+    if( llFix==0 && number < 0.0 ) {
         pachFixPart[0] = 0;
         len_fix = 0;
         chSign = '-';
-    } else if( llFix==0 && number > 0.0l ) {
+    } else if( llFix==0 && number > 0.0 ) {
         pachFixPart[0] = 0;
         len_fix = 0;
         chSign = '+';
@@ -183,6 +184,49 @@ FBSTRING *fb_hBuildDouble ( double num,
 	return dst;
 }
 
+static double hRound( double value, const FormatMaskInfo *pInfo )
+{
+	double fix, frac = modf( value, &fix );	
+			
+    if( pInfo->num_digits_frac == 0 )
+    {
+    	/* round it here, because modf() at GetNumParts won't */
+    	
+    	/* convert to fixed-point because the impression and the optimizations
+    	   that can be done by gcc, keeping values on fpu stack as twords */
+    	long long int intfrac = (long long int)(frac * 1.E+15);	
+    	if( intfrac > (long long int)(5.E+14) )
+        	value = ceil( value );
+		else if( intfrac < -(long long int)(5.E+14) )
+        	value = floor( value );
+	}
+	else 
+    {   
+		/* remove the fraction of the fraction to be compatible with 
+		   VBDOS (ie: 2.55 -> 2.5, not 2.6 as in VB6) */
+		if( frac != 0.0 )
+		{
+	    	double p10 = pow( 10.0, pInfo->num_digits_frac );
+
+	        double fracfrac = modf( frac * p10, &frac );
+	        	        
+	        /* convert to fixed-point, see above */
+	        long long int intfrac = (long long int)(fracfrac * (1.E+15 / p10) );	
+	        										
+	        if( intfrac > (long long int)(5.E+14 / p10) )
+	        	frac += 1.0;
+	        else if( intfrac < -(long long int)(5.E+14 / p10) )
+	        	frac += -1.0;
+	        
+	        frac /= p10;
+	        
+	        value = fix + frac;
+		}
+	}
+		
+	return value;
+}
+
 /** Processes a FORMAT mask.
  *
  * This function is used for two passes:
@@ -226,89 +270,100 @@ int fb_hProcessMask( FBSTRING *dst,
     } else {
         if( pInfo->mask_type==eMT_Number ) {
             if( pInfo->has_percent )
-                value *= 100.0l;
-            value /= pow( 10.0l, pInfo->num_digits_omit );
+                value *= 100.0;
+            value /= pow( 10.0, pInfo->num_digits_omit );
         }
         pszOut = dst->data;
         LenOut = FB_STRSIZE( dst );
     }
 
-    if( do_output ) {
-        if( pInfo->mask_type==eMT_Number ) {
-            int test_again;
-            do {
-                test_again = FALSE;
+    if( do_output ) 
+    {
+        if( pInfo->mask_type==eMT_Number ) 
+        {
+            int MoveDigits = 0;
 
-                fb_hGetNumberParts( value,
-                                    FixPart, &LenFix,
-                                    FracPart, &LenFrac,
-                                    &chSign,
-                                    '.',
-                                    16 );
+            /* When output of exponent is required, shift value to the
+             * left (* 10^n) as far as possible. "As far as possible" depends
+             * on the number of digits required by the number as a textual
+             * representation. */
+				
+			double fix, frac = modf( value, &fix );
+                
+            if( fix != 0.0 )
+            	LenFix = abs( (int)floor( log10( fabs( fix ) ) ) ) + 1;
+			else                
+            	LenFix = 0;
 
-                if( pInfo->has_exponent ) {
-                    /* When output of exponent is required, shift value to the
-                     * left (* 10^n) as far as possible. "As far as possible" depends
-                     * on the number of digits required by the number as a textual
-                     * representation. */
-                    size_t SignificantDigits = LenFix + LenFrac;
-                    int MoveDigits = 0;
-                    if( LenFix==0 ) {
-                        MoveDigits = 1;
-                        while( MoveDigits!=LenFrac && FracPart[MoveDigits-1]=='0' )
-                            ++MoveDigits;
-                    } else {
-                        MoveDigits = -LenFix + 1;
-                    }
-                    if( SignificantDigits > pInfo->num_digits_fix ) {
-                        MoveDigits += (int) pInfo->num_digits_fix - 1;
-                    } else {
-                        MoveDigits += (int) SignificantDigits - 1;
-                    }
-                    value *= pow( 10.0l, MoveDigits );
+			if( frac != 0.0 )
+            	LenFrac = abs( (int)floor( log10( fabs( frac ) ) ) ) + 1;
+			else                
+            	LenFrac = 0;
 
-                    fb_hGetNumberParts( value,
-                                        FixPart, &LenFix,
-                                        FracPart, &LenFrac,
-                                        &chSign,
-                                        '.',
-                                        16 );
+			size_t SignificantDigits = LenFix + LenFrac;
+			
+			if( (LenFix > 15) || pInfo->has_exponent )
+			{
+                    
+            	if( LenFix==0 ) 
+            	{
+            		MoveDigits = 1;                    
+                	int dig;
+                	while( MoveDigits < LenFrac )
+                	{
+                   		frac *= 10.0;
+                   		dig = (int)frac;
+                   		if( dig != 0 )
+                   			break;
+                   		frac -= (double)dig;
+                   		++MoveDigits;
+                	}
+				} 
+				else 
+				{
+	            	MoveDigits = -LenFix + 1;
+				}
 
-                    ExpValue = -MoveDigits;
+				int digits_fix = ( pInfo->has_exponent? pInfo->num_digits_fix : 15 );
+	
+				if( SignificantDigits > digits_fix )
+	            	MoveDigits += digits_fix - 1;
+				else
+	            	MoveDigits += SignificantDigits - 1;
+	                    
+	            value *= pow( 10.0, MoveDigits );
+	                
+				if( pInfo->has_exponent ) 
+				{
+	                ExpValue = -MoveDigits;
+	
+	                LenExp = sprintf( ExpPart, "%d", ExpValue );
+	                if( ExpValue < 0 )
+						IndexExp = ExpAdjust = 1;
+					else
+	                	IndexExp = ExpAdjust = 0;
+	
+	                NumSkipExp = pInfo->exp_digits - ( LenExp - ExpAdjust );
+				}
+			}
 
-                    LenExp = sprintf( ExpPart, "%d", ExpValue );
-                    if( ExpValue < 0 ) {
-                        IndexExp = ExpAdjust = 1;
-                    } else {
-                        IndexExp = ExpAdjust = 0;
-                    }
-                    NumSkipExp = pInfo->exp_digits - ( LenExp - ExpAdjust );
-                }
+			value = hRound( value, pInfo );
+
+			fb_hGetNumberParts( value,
+            					FixPart, &LenFix,
+                                FracPart, &LenFrac,
+                                &chSign,
+                                '.',
+                                pInfo->num_digits_frac );
+
 
                 /* Number of digits to skip on output */
                 NumSkipFix = pInfo->num_digits_fix - LenFix;
 
-                /* Test if we have to do rounding of the value */
-                if( pInfo->num_digits_frac < LenFrac ) {
-                    int iDigitTest = pInfo->num_digits_frac;
-                    int iStartDigit = FracPart[iDigitTest] - '0';
-                    double dblDigit = iStartDigit;
-                    double dblTestValue = 5;
-                    int iIndex;
-                    for( iIndex = 1; (iDigitTest+iIndex) < LenFrac; ++iIndex ) {
-                        dblDigit = dblDigit * 10.0l + FracPart[iDigitTest+iIndex] - '0';
-                        dblTestValue *= 10.0l;
-                    }
-                    if( dblDigit > dblTestValue ) {
-                        /* rounding required */
-                        value += pow( 10.0l, -iDigitTest - 1 + ExpValue) * (double) (10 - iStartDigit) * fb_hSign(value);
-                        value /= pow( 10.0l, -ExpValue );
-                        test_again = TRUE;
-                    }
-                }
-            } while ( test_again );
         }
-    } else {
+    } 
+    else 
+    {
         fb_hGetNumberParts( value,
                             FixPart, &LenFix,
                             FracPart, &LenFrac,
