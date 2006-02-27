@@ -194,8 +194,8 @@ static double hRound( double value, const FormatMaskInfo *pInfo )
     {
     	/* round it here, because modf() at GetNumParts won't */
     	
-    	/* convert to fixed-point because the impression and the optimizations
-    	   that can be done by gcc, keeping values on fpu stack as twords */
+    	/* convert to fixed-point because the imprecision and the optimizations
+    	   that can be done by gcc (ie: keeping values on fpu stack as twords) */
     	long long int intfrac = (long long int)(frac * 1.E+15);	
     	if( intfrac > (long long int)(5.E+14) )
         	value = ceil( value );
