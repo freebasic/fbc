@@ -57,6 +57,8 @@ typedef struct _FormatMaskInfo {
     size_t length_opt;
 } FormatMaskInfo;
 
+#define FB_MAXFIXLEN 31
+
 FBCALL FBSTRING *fb_hStrFormat ( double value,
                                  const char *mask, size_t mask_length );
 
@@ -302,7 +304,7 @@ int fb_hProcessMask( FBSTRING *dst,
 
 			size_t SignificantDigits = LenFix + LenFrac;
 			
-			if( (LenFix > 15) || pInfo->has_exponent )
+			if( (LenFix > 16) || pInfo->has_exponent )
 			{
                     
             	if( LenFix==0 ) 
@@ -324,7 +326,7 @@ int fb_hProcessMask( FBSTRING *dst,
 	            	MoveDigits = -LenFix + 1;
 				}
 
-				int digits_fix = ( pInfo->has_exponent? pInfo->num_digits_fix : 15 );
+				int digits_fix = ( pInfo->has_exponent? pInfo->num_digits_fix : 16 );
 	
 				if( SignificantDigits > digits_fix )
 	            	MoveDigits += digits_fix - 1;
@@ -357,19 +359,36 @@ int fb_hProcessMask( FBSTRING *dst,
                                 pInfo->num_digits_frac );
 
 
-                /* Number of digits to skip on output */
-                NumSkipFix = pInfo->num_digits_fix - LenFix;
+			/* handle too big numbers */
+			if( MoveDigits != 0 )
+				if( !pInfo->has_exponent )
+				{
+					MoveDigits = -MoveDigits;
+					if( LenFix + MoveDigits > FB_MAXFIXLEN )
+						MoveDigits = FB_MAXFIXLEN - LenFix;
+					
+					if( MoveDigits > 0 )
+					{
+						int i;
+						for( i = 0; i < MoveDigits; i++ )
+							FixPart[LenFix+i] = '0';
+					
+						LenFix += MoveDigits;
+
+						FixPart[LenFix] = '\0';
+					}
+				}
+			
+			/* Number of digits to skip on output */
+            NumSkipFix = pInfo->num_digits_fix - LenFix;
 
         }
     } 
     else 
     {
-        fb_hGetNumberParts( value,
-                            FixPart, &LenFix,
-                            FracPart, &LenFrac,
-                            &chSign,
-                            '.',
-                            16 );
+		/* just assume the max possible */
+		LenFix = FB_MAXFIXLEN;
+		LenFrac = 0;
     }
 
     IndexFix = IndexFrac = 0;
@@ -468,6 +487,7 @@ int fb_hProcessMask( FBSTRING *dst,
                 if( do_add )
                     --i;
             }
+            
             if( !do_add ) {
                 switch( chCurrent ) {
                 case '%':
