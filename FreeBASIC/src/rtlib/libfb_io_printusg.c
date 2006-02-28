@@ -260,39 +260,79 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-static void hFtoA( double val, char *buffer, int decdigs )
+static void hFtoA( double value, 
+				   char *fix_buf, int *fix_len,
+				   char *frac_buf, int *frac_len, 
+				   int intdigs,
+				   int decdigs )
 {
-	int len;
-	char fmtstr[16];
+	double fix, frac = modf( value, &fix );
 
-	sprintf( fmtstr, "%%.%df", decdigs );
-	sprintf( buffer, fmtstr, val );
-
-	len = strlen( buffer ) - 1;
-
-	if( len >= 0 )
+	if( decdigs == 0 )
 	{
-        /* skip the zeros at end */
-        while( buffer[len] == '0' )
-        {
-        	buffer[len] = '\0';
-        	--len;
-        }
+    	/* convert to fixed-point because the imprecision and the optimizations
+    	   that can be done by gcc (ie: keeping values on fpu stack as twords) */
+    	long long int intfrac = (long long int)(frac * 1.E+15);	
+    	if( intfrac > (long long int)(5.E+14) )
+        	fix = ceil( value );
+		else if( intfrac < -(long long int)(5.E+14) )
+        	fix = floor( value );
+        	
+        frac = 0.0;
+	}
+	else
+	{
+		/* remove the fraction of the fraction to be compatible with 
+		   VBDOS (ie: 2.55 -> 2.5, not 2.6 as in VB6) */
+		if( frac != 0.0 )
+		{
+	    	double p10 = pow( 10.0, decdigs );
 
-		/* skip the dot at end if any */
-		if( len >= 0 )
-    		if( buffer[len] == '.' )
-    			buffer[len] = '\0';
+	        double fracfrac = modf( frac * p10, &frac );
+	        	        
+	        /* convert to fixed-point, see above */
+	        long long int intfrac = (long long int)(fracfrac * (1.E+15 / p10) );	
+	        										
+	        if( intfrac > (long long int)(5.E+14 / p10) )
+	        	frac += 1.0;
+	        else if( intfrac < -(long long int)(5.E+14 / p10) )
+	        	frac += -1.0;
+	        
+	        frac /= p10;
+		}
+	}
+	
+	if( decdigs > 0 )
+	{
+		*frac_len = sprintf( frac_buf, "%.*f", decdigs, fabs( frac ) ) - 1;
+		/* remove the "0" in the fix-part */
+		memmove( frac_buf, &frac_buf[1], *frac_len + 1 );
+	}
+	else
+	{
+        *frac_len = 0;
+        frac_buf[0] = '\0';
+	}
+	
+	if( intdigs > 0 )
+	{
+		*fix_len = sprintf( fix_buf, "%" FB_LL_FMTMOD "d", (long long int)fix );
+	}
+	else
+	{
+        *fix_len = 0;
+        fix_buf[0] = '\0';
 	}
 
 }
 
 /*:::::*/
-FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
+FBCALL int fb_PrintUsingDouble( int fnum, double value, int mask )
 {
 	FB_PRINTUSGCTX *ctx;
-	char buffer[BUFFERLEN+1], expbuff[16+1+1+1], *p;
-	int c, nc, lc, d, i, j, len, intlgt;
+	char fix_buf[BUFFERLEN+1], frac_buf[16+1+1], expbuff[16+1+1+1];
+	int fix_len, frac_len;
+	int c, nc, lc;
 	int doexit, padchar, intdigs, decdigs, totdigs, expdigs;
 	int	adddolar, addcomma, endcomma, signatend, signatini;
 	int isexp, isneg, value_exp;
@@ -328,7 +368,6 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 
 	while( ctx->chars > 0 )
 	{
-
 		c = *ctx->ptr;
 
 		if( ctx->chars > 1 )
@@ -404,7 +443,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	/* ------------------------------------------------------ */
 
 	/**/
-	isneg = value < 0.0f;
+	isneg = value < 0.0;
 	value = fabs( value );
 
 	/* forced sign? */
@@ -423,10 +462,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 		if( decdigs > 16 )
 			decdigs = 16;
 
-		/* fix dizima */
-		value += (1.0f / pow( 10.0f, decdigs+1 ));
-
-		totdigs = intdigs+decdigs;
+		totdigs = intdigs + decdigs;
 	}
 
 	if( totdigs <= 0 )
@@ -434,91 +470,41 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	else if( totdigs > 16 )
 		totdigs = 16;
 
-	value_exp = (int)floor( log10( value ) );
-	/* exponent too big? scale */
-	if( value_exp >= 0 )
+	if( value != 0.0 )
+		value_exp = (int)floor( log10( value ) ) + 1;
+	else
+		value_exp = 0;
+	
+	if( value_exp != 0 )
 	{
-		if( value_exp >= intdigs )
+		/* exponent too big? scale (up or down) */
+		if( abs(value_exp) > (value_exp > 0? intdigs : decdigs-1) )
 		{
-			value_exp -= (intdigs-1);
-			value /= pow( 10.0f, value_exp );
+			value_exp -= intdigs;
+			value *= pow( 10.0, -value_exp );
 		}
 		else
 			value_exp = 0;
 	}
-	else
-	{
-		/*
-		if( -value_exp > decdigs )
-		{
-			value_exp -= (intdigs-1);
-			value *= pow( 10.0f, -value_exp );
-		}
-		*/
-
-		value_exp = 0;
-	}
 
 	/* convert to string */
-	hFtoA( value, buffer, (decdigs >= 0? decdigs : 0) );
-
-	len = strlen( buffer );
-
-	/* no integer digits? */
-	if( intdigs == 0 )
-	{
-		/* is it a 0? remove.. */
-		if( (len > 0) && (buffer[0] == '0') )
-		{
-			memmove( buffer, &buffer[1], len-1 + 1 );
-			--len;
-		}
-	}
-	else if( len == 0 )
-	{
-		strcpy( buffer, "0" );
-		len = 1;
-	}
-
-	/* any decimal places? */
-	p = strchr( buffer, '.' );
-	if( p == NULL )
-		d = 0;
-	else
-		d = (int)(p - buffer) + 1;
-
-	/* no decimal digits? */
-	if( d == 0 )
-		/* but stills need to print some? */
-		if( decdigs > 0 )
-		{
-			/* create a dec digit in the end */
-			strcat( buffer, "." );
-			++len;
-			d = len;
-		}
-
-	if( d == 0 )
-		intlgt = len;
-	else
-		intlgt = d - 1;
-
+	hFtoA( value, fix_buf, &fix_len, frac_buf, &frac_len, intdigs, (decdigs >= 0? decdigs : 0) );
+	
 	/* separate with commas? */
 	if( addcomma )
 	{
-		len = strlen( buffer );
-		p = &buffer[intlgt-1];
-		for( i = intlgt, j = 0; i > 0; i--, p-- )
+		int i, j;
+		char *p = &fix_buf[fix_len-1];
+		for( i = fix_len, j = 0; i > 0; i--, p-- )
 		{
 			++j;
 			if( j == 3 )
 			{
 				if( i > 1 )
 				{
-					memmove( p+1, p, len-i+1+1 );
+					memmove( p+1, p, fix_len-i+1+1 );
 					*p = ',';
-					++len;
-					++intlgt;
+					++fix_len;
 				}
 				j = 0;
 			}
@@ -528,56 +514,45 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	/* prefix with a dollar sign? */
 	if( adddolar )
 	{
-		memmove( &buffer[1], buffer, strlen( buffer )+1 );
-		buffer[0] = '$';
+		memmove( &fix_buf[1], fix_buf, fix_len+1 );
+		fix_buf[0] = '$';
+		++fix_len;
 	}
 
 	/* sign */
 	if( signatini )
 	{
-		memmove( &buffer[1], buffer, strlen( buffer )+1 );
-		buffer[0] = (isneg? '-' : '+');
-
-		++intlgt;
+		memmove( &fix_buf[1], fix_buf, fix_len+1 );
+		fix_buf[0] = (isneg? '-' : '+');
+		++fix_len;
 		isneg = 0;						/* QB quirk */
 	}
 
 	/* padding */
 	if( intdigs > 0 )
 	{
-		intdigs -= intlgt;
+		intdigs -= fix_len;
 
 		if( intdigs > 0 )
 		{
-			memmove( &buffer[intdigs], buffer, strlen( buffer )+1 );
-			memset( buffer, padchar, intdigs );
+			memmove( &fix_buf[intdigs], fix_buf, fix_len+1 );
+			memset( fix_buf, padchar, intdigs );
+			fix_len += intdigs;
 		}
 	}
 
 	/**/
 	if( decdigs > 0 )
 	{
-		p = strchr( buffer, '.' );
-		if( p == NULL )
-			d = 0;
-		else
-			d = (int)(p - buffer) + 1;
+		strcat( fix_buf, frac_buf );
+		fix_len += frac_len;
 
-		len = strlen( buffer );
-		decdigs -= (len - d);
+		decdigs -= frac_len;
 		if( decdigs > 0 )
 		{
-			memset( &buffer[len], '0', decdigs );
-			buffer[len+decdigs] = '\0';
+			memset( &fix_buf[fix_len], '0', decdigs );
+			frac_buf[fix_len+decdigs] = '\0';
 		}
-		else if( decdigs < 0 )
-			buffer[len+decdigs] = '\0';
-	}
-	else
-	{
-		p = strchr( buffer, '.' );
-		if( p != NULL )
-			*p = '\0';
 	}
 
 	/* add exponent? */
@@ -588,7 +563,7 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 
 		if( expdigs > 0 )
 		{
-			len = strlen( expbuff );
+			int len = strlen( expbuff );
 			if( len > expdigs )
 			{
 				if( expdigs > 2 )
@@ -604,28 +579,28 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 			}
 		}
 
-		strcat( buffer, expbuff );
+		strcat( fix_buf, expbuff );
 	}
 
 	/* sign */
 	if( signatend )
 	{
-		strcat( buffer, (isneg? "-" : "+") );
+		strcat( fix_buf, (isneg? "-" : "+") );
 	}
 
 	if( endcomma )
-		strcat( buffer, "," );
+		strcat( fix_buf, "," );
 
 	/* too big? */
 	if( value_exp != 0 )
 	{
 		sprintf( expbuff, "%%e%+d", value_exp );
-		strcat( buffer, expbuff );
+		strcat( fix_buf, expbuff );
 	}
 
 
 	/**/
-	fb_PrintFixString( fnum, buffer, 0 );
+	fb_PrintFixString( fnum, fix_buf, 0 );
 
 	/* ------------------------------------------------------ */
 
@@ -642,5 +617,33 @@ FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
 	}
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
+}
+
+
+/*:::::*/
+FBCALL int fb_PrintUsingSingle( int fnum, float value_f, int mask )
+{
+	double value = value_f;
+	int value_exp;
+
+	if( value != 0.0 )
+	{
+		value_exp = (int)floor( log10( fabs( value ) ) ) + 1;
+
+		/* fix dizima */
+		if( value_exp <= 0 )
+			value += pow( 10.0, value_exp - 7 );
+		else
+			value += pow( 10.0, -(value_exp + 7) );
+	}
+	
+	return fb_PrintUsingDouble( fnum, value, mask );
+}
+
+/* !!!FIXME!! remove this function when the chicken-egg is over */
+
+FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
+{
+	return fb_PrintUsingDouble( fnum, value, mask );
 }
 
