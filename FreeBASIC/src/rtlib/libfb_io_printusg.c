@@ -574,7 +574,7 @@ FBCALL int fb_PrintUsingDouble( int fnum, double value, int mask )
 			else if( len < expdigs )
 			{
 				int diff = expdigs - len;
-				memmove( &expbuff[2+diff], &expbuff[2], diff+1 );
+				memmove( &expbuff[2+diff], &expbuff[2], len-2+1 );
 				memset( &expbuff[2], '0', diff );
 			}
 		}
