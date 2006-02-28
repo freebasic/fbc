@@ -429,8 +429,19 @@ data @FB_RTL_PRINTUSGWSTR,"", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
 
-'' fb_PrintUsingVal ( byval filenum as integer, byval v as double, byval mask as integer ) as integer
-data @FB_RTL_PRINTUSGVAL,"", _
+'' fb_PrintUsingSingle ( byval filenum as integer, byval v as single, _
+''  					 byval mask as integer ) as integer
+data @FB_RTL_PRINTUSG_SNG,"", _
+	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_SINGLE,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
+'' fb_PrintUsingDouble ( byval filenum as integer, byval v as double, _
+''  					 byval mask as integer ) as integer
+data @FB_RTL_PRINTUSG_DBL,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 3, _
@@ -878,8 +889,11 @@ function rtlPrintUsing( byval fileexpr as ASTNODE ptr, _
 	case FB_DATATYPE_WCHAR
 		f = PROCLOOKUP( PRINTUSGWSTR )
 
+	case FB_DATATYPE_SINGLE
+		f = PROCLOOKUP( PRINTUSG_SNG )
+
 	case else
-		f = PROCLOOKUP( PRINTUSGVAL )
+		f = PROCLOOKUP( PRINTUSG_DBL )
 	end select
 
 	proc = astNewFUNCT( f )
