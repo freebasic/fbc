@@ -30,14 +30,23 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function cFuncReturn( byval checkexpr as integer = TRUE ) as integer
+private function hFuncReturn( ) as integer
+    dim as integer checkexpr
 
     function = FALSE
 
-	if( fbIsModLevel( ) or (env.procstmt.endlabel = NULL) ) then
+	if( env.procstmt.endlabel = NULL ) then
 		hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB )
 		exit function
 	end if
+
+	'' Comment|StmtSep|EOF? just exit
+	select case lexGetToken( )
+	case FB_TK_EOL, FB_TK_STATSEPCHAR, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
+		checkexpr = FALSE
+	case else
+		checkexpr = TRUE
+	end select
 
 	if( checkexpr ) then
 		if( hAssignFunctResult( env.currproc ) = FALSE ) then
@@ -86,9 +95,15 @@ function cGotoStmt as integer
 
 	'' GOSUB LABEL
 	case FB_TK_GOSUB
+		'' difference from QB: not allowed inside procs
+		if( fbIsModLevel() = FALSE ) then
+			hReportError( FB_ERRMSG_ILLEGALINSIDEASUB )
+			exit function
+		end if
+
 		lexSkipToken( )
 
-		if( lexGetClass = FB_TKCLASS_NUMLITERAL ) then
+		if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
 			l = symbFindByNameAndClass( lexGetText( ), FB_SYMBCLASS_LABEL )
 		else
 			l = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_LABEL )
@@ -107,58 +122,37 @@ function cGotoStmt as integer
 	case FB_TK_RETURN
 		lexSkipToken( )
 
-		'' Comment|StmtSep|EOF|ELSE? just return
-		select case lexGetToken( )
-		case FB_TK_EOL, FB_TK_STATSEPCHAR, FB_TK_EOF, FB_TK_COMMENTCHAR, _
-			 FB_TK_REM, FB_TK_ELSE
+		'' inside a proc? GOSUB not allowed, see aboev
+		if( fbIsModLevel() = FALSE ) then
+			function = hFuncReturn( )
 
-			'' try to guess here.. if inside a proc currently and no user label was
-			'' emitted, it's probably a FUNCTION return, not a GOSUB return
-			l = NULL
-			if( fbIsModLevel( ) = FALSE ) then
-				l = symbGetLastLabel( )
-				if( l <> NULL ) then
-					if( l->scope <> env.scope ) then
-						l = NULL
-					end if
-				end if
-			end if
-
-			if( fbIsModLevel( ) or (l <> NULL) ) then
-				'' return 0
-				astAdd( astNewBRANCH( IR_OP_RET, NULL ) )
-			else
-				function = cFuncReturn( FALSE )
-			end if
-
-		case else
-
-			l = NULL
-
-			'' Comment|StmtSep|EOF following? check if it's not an already defined label
-			select case lexGetLookAhead( 1 )
+		'' module level, it's a GOSUB's RETURN
+		else
+			'' Comment|StmtSep|EOF|ELSE? just return
+			select case lexGetToken( )
 			case FB_TK_EOL, FB_TK_STATSEPCHAR, FB_TK_EOF, FB_TK_COMMENTCHAR, _
 				 FB_TK_REM, FB_TK_ELSE
+
+				'' return 0
+				astAdd( astNewBRANCH( IR_OP_RET, NULL ) )
+				function = TRUE
+
+			case else
 				if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
 					l = symbFindByNameAndClass( lexGetText( ), FB_SYMBCLASS_LABEL )
 				else
 					l = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_LABEL )
 				end if
+
+				'' label?
+				if( l <> NULL ) then
+					lexSkipToken( )
+					astAdd( astNewBRANCH( IR_OP_JMP, l ) )
+					function = TRUE
+				end if
 			end select
 
-			'' label?
-			if( l <> NULL ) then
-				lexSkipToken( )
-				astAdd( astNewBRANCH( IR_OP_JMP, l ) )
-				function = TRUE
-
-			'' must be a function return then
-			else
-				function = cFuncReturn( )
-			end if
-
-		end select
-
+		end if
 
 	'' RESUME NEXT?
 	case FB_TK_RESUME

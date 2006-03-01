@@ -58,9 +58,9 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
 	'' read labels
 	l = 0
 	do
-		if( (lexGetClass <> FB_TKCLASS_NUMLITERAL) and _
-			(lexGetClass <> FB_TKCLASS_IDENTIFIER) ) then
-			hReportError FB_ERRMSG_EXPECTEDIDENTIFIER
+		if( (lexGetClass( ) <> FB_TKCLASS_NUMLITERAL) and _
+			(lexGetClass( ) <> FB_TKCLASS_IDENTIFIER) ) then
+			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			exit function
 		end if
 
@@ -153,25 +153,37 @@ function cOnStmt as integer
 	end select
 
 	'' GOTO|GOSUB
-	if( hMatch( FB_TK_GOTO ) ) then
+	select case lexGetToken( )
+	case FB_TK_GOTO
+		lexSkipToken( )
 		isgoto = TRUE
-	elseif( hMatch( FB_TK_GOSUB ) ) then
+
+	case FB_TK_GOSUB
 	    '' can't do GOSUB with ON ERROR
 	    if( expr = NULL ) then
-	    	hReportError FB_ERRMSG_SYNTAXERROR
+	    	hReportError( FB_ERRMSG_SYNTAXERROR )
 	    	exit function
 	    end if
+
+	    '' difference from QB: GOSUB not allowed inside procs
+		if( fbIsModLevel() = FALSE ) then
+			hReportError( FB_ERRMSG_ILLEGALINSIDEASUB )
+			exit function
+		end if
+
+	    lexSkipToken( )
 	    isgoto = FALSE
-	else
-		hReportError FB_ERRMSG_SYNTAXERROR
+
+	case else
+		hReportError( FB_ERRMSG_SYNTAXERROR )
 		exit function
-	end if
+	end select
 
     '' on error?
 	if( expr = NULL ) then
 		isrestore = FALSE
 		'' ON ERROR GOTO 0?
-		if( lexGetClass = FB_TKCLASS_NUMLITERAL ) then
+		if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
 			if( *lexGetText( ) = "0" ) then
 				lexSkipToken( )
 				isrestore = TRUE

@@ -1,5 +1,3 @@
-[ ] check for GOSUB's when finishing functions if RETURN w/o expressions was used
-
 [ ] SCOPE..END SCOPE:
     - error handlers should be restored too (or not allowed at all)
 
