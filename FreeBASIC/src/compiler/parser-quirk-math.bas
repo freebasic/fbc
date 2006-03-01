@@ -55,7 +55,7 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 		hMatchRPRNT( )
 
 		'' hack! implemented as Unary OP for better speed on x86's
-		funcexpr = astNewUOP( IR_OP_ABS, expr )
+		funcexpr = astNewUOP( AST_OP_ABS, expr )
 		if( funcexpr = NULL ) then
 			hReportError( FB_ERRMSG_INVALIDDATATYPES )
 			exit function
@@ -74,7 +74,7 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 		hMatchRPRNT( )
 
 		'' hack! implemented as Unary OP for better speed on x86's
-		funcexpr = astNewUOP( IR_OP_SGN, expr )
+		funcexpr = astNewUOP( AST_OP_SGN, expr )
 		if( funcexpr = NULL ) then
 			hReportError( FB_ERRMSG_INVALIDDATATYPES )
 			exit function
@@ -106,23 +106,23 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 		select case as const lexGetToken( )
 		case FB_TK_SIN
-			op = IR_OP_SIN
+			op = AST_OP_SIN
 		case FB_TK_ASIN
-			op = IR_OP_ASIN
+			op = AST_OP_ASIN
 		case FB_TK_COS
-			op = IR_OP_COS
+			op = AST_OP_COS
 		case FB_TK_ACOS
-			op = IR_OP_ACOS
+			op = AST_OP_ACOS
 		case FB_TK_TAN
-			op = IR_OP_TAN
+			op = AST_OP_TAN
 		case FB_TK_ATN
-			op = IR_OP_ATAN
+			op = AST_OP_ATAN
 		case FB_TK_SQR
-			op = IR_OP_SQRT
+			op = AST_OP_SQRT
 		case FB_TK_LOG
-			op = IR_OP_LOG
+			op = AST_OP_LOG
 		case FB_TK_INT
-			op = IR_OP_FLOOR
+			op = AST_OP_FLOOR
 		end select
 
 		lexSkipToken( )
@@ -157,7 +157,7 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 		hMatchRPRNT( )
 
 		'' hack! implemented as Binary OP for better speed on x86's
-		funcexpr = astNewBOP( IR_OP_ATAN2, expr, expr2 )
+		funcexpr = astNewBOP( AST_OP_ATAN2, expr, expr2 )
 		if( funcexpr = NULL ) then
 			hReportError( FB_ERRMSG_INVALIDDATATYPES )
 			exit function

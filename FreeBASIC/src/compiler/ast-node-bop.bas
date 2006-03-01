@@ -94,17 +94,17 @@ private function hStrLiteralCompare( byval op as integer, _
    	rtext = symbGetVarText( astGetSymbol( r ) )
 
    	select case as const op
-   	case IR_OP_EQ
+   	case AST_OP_EQ
    		res = (*ltext = *rtext)
-   	case IR_OP_GT
+   	case AST_OP_GT
    		res = (*ltext > *rtext)
-   	case IR_OP_LT
+   	case AST_OP_LT
    		res = (*ltext < *rtext)
-   	case IR_OP_NE
+   	case AST_OP_NE
    		res = (*ltext <> *rtext)
-   	case IR_OP_LE
+   	case AST_OP_LE
    		res = (*ltext <= *rtext)
-   	case IR_OP_GE
+   	case AST_OP_GE
    		res = (*ltext >= *rtext)
    	end select
 
@@ -135,17 +135,17 @@ private function hWStrLiteralCompare( byval op as integer, _
    		rtextw = symbGetVarTextW( rs )
 
    		select case as const op
-   		case IR_OP_EQ
+   		case AST_OP_EQ
    			res = (*textz = *rtextw)
-   		case IR_OP_GT
+   		case AST_OP_GT
    			res = (*textz > *rtextw)
-   		case IR_OP_LT
+   		case AST_OP_LT
    			res = (*textz < *rtextw)
-   		case IR_OP_NE
+   		case AST_OP_NE
    			res = (*textz <> *rtextw)
-   		case IR_OP_LE
+   		case AST_OP_LE
    			res = (*textz <= *rtextw)
-   		case IR_OP_GE
+   		case AST_OP_GE
    			res = (*textz >= *rtextw)
    		end select
 
@@ -155,17 +155,17 @@ private function hWStrLiteralCompare( byval op as integer, _
    		textz = symbGetVarText( rs )
 
    		select case as const op
-   		case IR_OP_EQ
+   		case AST_OP_EQ
    			res = (*ltextw = *textz)
-   		case IR_OP_GT
+   		case AST_OP_GT
    			res = (*ltextw > *textz)
-   		case IR_OP_LT
+   		case AST_OP_LT
    			res = (*ltextw < *textz)
-   		case IR_OP_NE
+   		case AST_OP_NE
    			res = (*ltextw <> *textz)
-   		case IR_OP_LE
+   		case AST_OP_LE
    			res = (*ltextw <= *textz)
-   		case IR_OP_GE
+   		case AST_OP_GE
    			res = (*ltextw >= *textz)
    		end select
 
@@ -175,17 +175,17 @@ private function hWStrLiteralCompare( byval op as integer, _
    		rtextw = symbGetVarTextW( rs )
 
    		select case as const op
-   		case IR_OP_EQ
+   		case AST_OP_EQ
    			res = (*ltextw = *rtextw)
-   		case IR_OP_GT
+   		case AST_OP_GT
    			res = (*ltextw > *rtextw)
-   		case IR_OP_LT
+   		case AST_OP_LT
    			res = (*ltextw < *rtextw)
-   		case IR_OP_NE
+   		case AST_OP_NE
    			res = (*ltextw <> *rtextw)
-   		case IR_OP_LE
+   		case AST_OP_LE
    			res = (*ltextw <= *rtextw)
-   		case IR_OP_GE
+   		case AST_OP_GE
    			res = (*ltextw >= *rtextw)
    		end select
 
@@ -214,20 +214,20 @@ private sub hBOPConstFoldInt( byval op as integer, _
 	end select
 
 	select case as const op
-	case IR_OP_ADD
+	case AST_OP_ADD
 		l->con.val.int = l->con.val.int + r->con.val.int
 
-	case IR_OP_SUB
+	case AST_OP_SUB
 		l->con.val.int = l->con.val.int - r->con.val.int
 
-	case IR_OP_MUL
+	case AST_OP_MUL
 		if( issigned ) then
 			l->con.val.int = l->con.val.int * r->con.val.int
 		else
 			l->con.val.int = cunsg(l->con.val.int) * cunsg(r->con.val.int)
 		end if
 
-	case IR_OP_INTDIV
+	case AST_OP_INTDIV
 		if( r->con.val.int <> 0 ) then
 			if( issigned ) then
 				l->con.val.int = l->con.val.int \ r->con.val.int
@@ -239,7 +239,7 @@ private sub hBOPConstFoldInt( byval op as integer, _
 			hReportError( FB_ERRMSG_DIVBYZERO )
 		end if
 
-	case IR_OP_MOD
+	case AST_OP_MOD
 		if( r->con.val.int <> 0 ) then
 			if( issigned ) then
 				l->con.val.int = l->con.val.int mod r->con.val.int
@@ -251,63 +251,63 @@ private sub hBOPConstFoldInt( byval op as integer, _
 			hReportError( FB_ERRMSG_DIVBYZERO )
 		end if
 
-	case IR_OP_SHL
+	case AST_OP_SHL
 		if( issigned ) then
 			l->con.val.int = l->con.val.int shl r->con.val.int
 		else
 			l->con.val.int = cunsg( l->con.val.int ) shl r->con.val.int
 		end if
 
-	case IR_OP_SHR
+	case AST_OP_SHR
 		if( issigned ) then
 			l->con.val.int = l->con.val.int shr r->con.val.int
 		else
 			l->con.val.int = cunsg( l->con.val.int ) shr r->con.val.int
 		end if
 
-	case IR_OP_AND
+	case AST_OP_AND
 		l->con.val.int = l->con.val.int and r->con.val.int
 
-	case IR_OP_OR
+	case AST_OP_OR
 		l->con.val.int = l->con.val.int or r->con.val.int
 
-	case IR_OP_XOR
+	case AST_OP_XOR
 		l->con.val.int = l->con.val.int xor r->con.val.int
 
-	case IR_OP_EQV
+	case AST_OP_EQV
 		l->con.val.int = l->con.val.int eqv r->con.val.int
 
-	case IR_OP_IMP
+	case AST_OP_IMP
 		l->con.val.int = l->con.val.int imp r->con.val.int
 
-	case IR_OP_NE
+	case AST_OP_NE
 		l->con.val.int = l->con.val.int <> r->con.val.int
 
-	case IR_OP_EQ
+	case AST_OP_EQ
 		l->con.val.int = l->con.val.int = r->con.val.int
 
-	case IR_OP_GT
+	case AST_OP_GT
 		if( issigned ) then
 			l->con.val.int = l->con.val.int > r->con.val.int
 		else
 			l->con.val.int = cunsg( l->con.val.int ) > cunsg( r->con.val.int )
 		end if
 
-	case IR_OP_LT
+	case AST_OP_LT
 		if( issigned ) then
 			l->con.val.int = l->con.val.int < r->con.val.int
 		else
 			l->con.val.int = cunsg( l->con.val.int ) < cunsg( r->con.val.int )
 		end if
 
-	case IR_OP_LE
+	case AST_OP_LE
 		if( issigned ) then
 			l->con.val.int = l->con.val.int <= r->con.val.int
 		else
 			l->con.val.int = cunsg( l->con.val.int ) <= cunsg( r->con.val.int )
 		end if
 
-	case IR_OP_GE
+	case AST_OP_GE
 		if( issigned ) then
 			l->con.val.int = l->con.val.int >= r->con.val.int
 		else
@@ -324,40 +324,40 @@ private sub hBOPConstFoldFlt( byval op as integer, _
 						    ) static
 
 	select case as const op
-	case IR_OP_ADD
+	case AST_OP_ADD
 		l->con.val.float = l->con.val.float + r->con.val.float
 
-	case IR_OP_SUB
+	case AST_OP_SUB
 		l->con.val.float = l->con.val.float - r->con.val.float
 
-	case IR_OP_MUL
+	case AST_OP_MUL
 		l->con.val.float = l->con.val.float * r->con.val.float
 
-	case IR_OP_DIV
+	case AST_OP_DIV
 		l->con.val.float = l->con.val.float / r->con.val.float
 
-    case IR_OP_POW
+    case AST_OP_POW
 		l->con.val.float = l->con.val.float ^ r->con.val.float
 
-	case IR_OP_NE
+	case AST_OP_NE
 		l->con.val.int = l->con.val.float <> r->con.val.float
 
-	case IR_OP_EQ
+	case AST_OP_EQ
 		l->con.val.int = l->con.val.float = r->con.val.float
 
-	case IR_OP_GT
+	case AST_OP_GT
 		l->con.val.int = l->con.val.float > r->con.val.float
 
-	case IR_OP_LT
+	case AST_OP_LT
 		l->con.val.int = l->con.val.float < r->con.val.float
 
-	case IR_OP_LE
+	case AST_OP_LE
 		l->con.val.int = l->con.val.float <= r->con.val.float
 
-	case IR_OP_GE
+	case AST_OP_GE
 		l->con.val.int = l->con.val.float >= r->con.val.float
 
-    case IR_OP_ATAN2
+    case AST_OP_ATAN2
 		l->con.val.float = atan2( l->con.val.float, r->con.val.float )
 	end select
 
@@ -374,20 +374,20 @@ private sub hBOPConstFold64( byval op as integer, _
 	issigned = (l->dtype = FB_DATATYPE_LONGINT)
 
 	select case as const op
-	case IR_OP_ADD
+	case AST_OP_ADD
 		l->con.val.long = l->con.val.long + r->con.val.long
 
-	case IR_OP_SUB
+	case AST_OP_SUB
 		l->con.val.long = l->con.val.long - r->con.val.long
 
-	case IR_OP_MUL
+	case AST_OP_MUL
 		if( issigned ) then
 			l->con.val.long = l->con.val.long * r->con.val.long
 		else
 			l->con.val.long = cunsg(l->con.val.long) * cunsg(r->con.val.long)
 		end if
 
-	case IR_OP_INTDIV
+	case AST_OP_INTDIV
 		if( r->con.val.long <> 0 ) then
 			if( issigned ) then
 				l->con.val.long = l->con.val.long \ r->con.val.long
@@ -399,7 +399,7 @@ private sub hBOPConstFold64( byval op as integer, _
 			hReportError( FB_ERRMSG_DIVBYZERO )
 		end if
 
-	case IR_OP_MOD
+	case AST_OP_MOD
 		if( r->con.val.long <> 0 ) then
 			if( issigned ) then
 				l->con.val.long = l->con.val.long mod r->con.val.long
@@ -411,63 +411,63 @@ private sub hBOPConstFold64( byval op as integer, _
 			hReportError( FB_ERRMSG_DIVBYZERO )
 		end if
 
-	case IR_OP_SHL
+	case AST_OP_SHL
 		if( issigned ) then
 			l->con.val.long = l->con.val.long shl r->con.val.int
 		else
 			l->con.val.long = cunsg( l->con.val.long ) shl r->con.val.int
 		end if
 
-	case IR_OP_SHR
+	case AST_OP_SHR
 		if( issigned ) then
 			l->con.val.long = l->con.val.long shr r->con.val.int
 		else
 			l->con.val.long = cunsg( l->con.val.long ) shr r->con.val.int
 		end if
 
-	case IR_OP_AND
+	case AST_OP_AND
 		l->con.val.long = l->con.val.long and r->con.val.long
 
-	case IR_OP_OR
+	case AST_OP_OR
 		l->con.val.long = l->con.val.long or r->con.val.long
 
-	case IR_OP_XOR
+	case AST_OP_XOR
 		l->con.val.long = l->con.val.long xor r->con.val.long
 
-	case IR_OP_EQV
+	case AST_OP_EQV
 		l->con.val.long = l->con.val.long eqv r->con.val.long
 
-	case IR_OP_IMP
+	case AST_OP_IMP
 		l->con.val.long = l->con.val.long imp r->con.val.long
 
-	case IR_OP_NE
+	case AST_OP_NE
 		l->con.val.int = l->con.val.long <> r->con.val.long
 
-	case IR_OP_EQ
+	case AST_OP_EQ
 		l->con.val.int = l->con.val.long = r->con.val.long
 
-	case IR_OP_GT
+	case AST_OP_GT
 		if( issigned ) then
 			l->con.val.int = l->con.val.long > r->con.val.long
 		else
 			l->con.val.int = cunsg( l->con.val.long ) > cunsg( r->con.val.long )
 		end if
 
-	case IR_OP_LT
+	case AST_OP_LT
 		if( issigned ) then
 			l->con.val.int = l->con.val.long < r->con.val.long
 		else
 			l->con.val.int = cunsg( l->con.val.long ) < cunsg( r->con.val.long )
 		end if
 
-	case IR_OP_LE
+	case AST_OP_LE
 		if( issigned ) then
 			l->con.val.int = l->con.val.long <= r->con.val.long
 		else
 			l->con.val.int = cunsg( l->con.val.long ) <= cunsg( r->con.val.long )
 		end if
 
-	case IR_OP_GE
+	case AST_OP_GE
 		if( issigned ) then
 			l->con.val.int = l->con.val.long >= r->con.val.long
 		else
@@ -497,7 +497,7 @@ private function hCheckPointer( byval op as integer, _
 
     select case op
     '' add op?
-    case IR_OP_ADD, IR_OP_SUB
+    case AST_OP_ADD, AST_OP_SUB
 
     	'' another pointer?
     	if( dtype >= FB_DATATYPE_POINTER ) then
@@ -507,7 +507,7 @@ private function hCheckPointer( byval op as integer, _
     	return TRUE
 
 	'' relational op?
-	case IR_OP_EQ, IR_OP_GT, IR_OP_LT, IR_OP_NE, IR_OP_LE, IR_OP_GE
+	case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
 
     	return TRUE
 
@@ -615,7 +615,7 @@ function astNewBOP( byval op as integer, _
 
 			select case as const op
 			'' concatenation?
-			case IR_OP_ADD
+			case AST_OP_ADD
 
 				'' both literals?
 				if( litsym <> NULL ) then
@@ -642,7 +642,7 @@ function astNewBOP( byval op as integer, _
 				'' to allow optimizations..
 
 			'' comparation?
-			case IR_OP_EQ, IR_OP_GT, IR_OP_LT, IR_OP_NE, IR_OP_LE, IR_OP_GE
+			case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
 				'' both literals?
 				if( litsym <> NULL ) then
 					return hWstrLiteralCompare( op, l, r )
@@ -714,7 +714,7 @@ function astNewBOP( byval op as integer, _
 
 		select case as const op
 		'' concatenation?
-		case IR_OP_ADD
+		case AST_OP_ADD
 			'' both literals?
 			if( litsym <> NULL ) then
 				return hStrLiteralConcat( l, r )
@@ -731,7 +731,7 @@ function astNewBOP( byval op as integer, _
 			'' to allow optimizations..
 
 		'' comparation?
-		case IR_OP_EQ, IR_OP_GT, IR_OP_LT, IR_OP_NE, IR_OP_LE, IR_OP_GE
+		case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
 			'' both literals?
 			if( litsym <> NULL ) then
 				return hStrLiteralCompare( op, l, r )
@@ -804,7 +804,7 @@ function astNewBOP( byval op as integer, _
     '' convert types
 	select case as const op
 	'' flt div (/) can only operate on floats
-	case IR_OP_DIV
+	case AST_OP_DIV
 
 		if( ldclass <> FB_DATACLASS_FPOINT ) then
 			ldtype = FB_DATATYPE_DOUBLE
@@ -824,8 +824,8 @@ function astNewBOP( byval op as integer, _
 		end if
 
 	'' bitwise ops, int div (\), modulus and shift can only operate on integers
-	case IR_OP_AND, IR_OP_OR, IR_OP_XOR, IR_OP_EQV, IR_OP_IMP, _
-		 IR_OP_INTDIV, IR_OP_MOD, IR_OP_SHL, IR_OP_SHR
+	case AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_EQV, AST_OP_IMP, _
+		 AST_OP_INTDIV, AST_OP_MOD, AST_OP_SHL, AST_OP_SHR
 
 		if( ldclass <> FB_DATACLASS_INTEGER ) then
 			ldtype = FB_DATATYPE_INTEGER
@@ -840,7 +840,7 @@ function astNewBOP( byval op as integer, _
 		end if
 
 	'' atan2 can only operate on floats
-	case IR_OP_ATAN2, IR_OP_POW
+	case AST_OP_ATAN2, AST_OP_POW
 
 		if( ldclass <> FB_DATACLASS_FPOINT ) then
 			ldtype = FB_DATATYPE_DOUBLE
@@ -899,7 +899,7 @@ function astNewBOP( byval op as integer, _
 
 				'' if it's the src-operand of a shift operation, do nothing
 				select case op
-				case IR_OP_SHL, IR_OP_SHR
+				case AST_OP_SHL, AST_OP_SHR
 					'' it's already an integer
 
 				case else
@@ -940,12 +940,12 @@ function astNewBOP( byval op as integer, _
 	'' post check
 	select case as const op
 	'' relative ops, the result is always an integer
-	case IR_OP_EQ, IR_OP_GT, IR_OP_LT, IR_OP_NE, IR_OP_LE, IR_OP_GE
+	case AST_OP_EQ, AST_OP_GT, AST_OP_LT, AST_OP_NE, AST_OP_LE, AST_OP_GE
 		dtype = FB_DATATYPE_INTEGER
 		subtype = NULL
 
 	'' right-operand must be an integer, so pow2 opts can be done on longint's
-	case IR_OP_SHL, IR_OP_SHR
+	case AST_OP_SHL, AST_OP_SHR
 		if( rdtype <> FB_DATATYPE_INTEGER ) then
 			if( rdtype <> FB_DATATYPE_UINT ) then
 				rdtype = FB_DATATYPE_INTEGER
@@ -978,23 +978,23 @@ function astNewBOP( byval op as integer, _
 
 	elseif( l->defined ) then
 		select case op
-		case IR_OP_ADD, IR_OP_MUL
+		case AST_OP_ADD, AST_OP_MUL
 			'' ? + c = c + ?  |  ? * c = ? * c
 			astSwap( r, l )
 
-		case IR_OP_SUB
+		case AST_OP_SUB
 			'' c - ? = -? + c (this will removed later if no const folding can be done)
-			r = astNewUOP( IR_OP_NEG, r )
+			r = astNewUOP( AST_OP_NEG, r )
 			if( r = NULL ) then
 				return NULL
 			end if
 			astSwap( r, l )
-			op = IR_OP_ADD
+			op = AST_OP_ADD
 		end select
 
 	elseif( r->defined ) then
 		select case op
-		case IR_OP_SUB
+		case AST_OP_SUB
 			'' ? - c = ? + -c
 			select case as const rdtype
 			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
@@ -1004,9 +1004,9 @@ function astNewBOP( byval op as integer, _
 			case else
 				r->con.val.int = -r->con.val.int
 			end select
-			op = IR_OP_ADD
+			op = AST_OP_ADD
 
-		case IR_OP_POW
+		case AST_OP_POW
 
 			'' convert var ^ 2 to var * var
 			if( r->con.val.float = 2.0 ) then
@@ -1028,7 +1028,7 @@ function astNewBOP( byval op as integer, _
 					 AST_NODECLASS_FIELD, AST_NODECLASS_PTR
 					astDel( r )
 					r = astCloneTree( l )
-					op = IR_OP_MUL
+					op = AST_OP_MUL
 					dtype = ldtype
 				end select
 			end if
@@ -1039,17 +1039,17 @@ function astNewBOP( byval op as integer, _
 	'' handle special cases
 
 	select case op
-	case IR_OP_POW
+	case AST_OP_POW
 	    return rtlMathPow( l, r )
 
-	case IR_OP_INTDIV
+	case AST_OP_INTDIV
 		'' longint?
 		if( (dtype = FB_DATATYPE_LONGINT) or _
 			(dtype = FB_DATATYPE_ULONGINT) ) then
 			return rtlMathLongintDIV( dtype, l, ldtype, r, rdtype )
 		end if
 
-	case IR_OP_MOD
+	case AST_OP_MOD
 		'' longint?
 		if( (dtype = FB_DATATYPE_LONGINT) or _
 			(dtype = FB_DATATYPE_ULONGINT) ) then

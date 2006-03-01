@@ -64,7 +64,7 @@ function cUpdPointer( byval op as integer, _
     '' another pointer?
     if( edtype >= FB_DATATYPE_POINTER ) then
     	'' only allow if it's a subtraction
-    	if( op = IR_OP_SUB ) then
+    	if( op = AST_OP_SUB ) then
     		'' types can't be different..
     		if( (edtype <> astGetDataType( p )) or _
     			(astGetSubType( e ) <> astGetSubType( p )) ) then
@@ -76,10 +76,10 @@ function cUpdPointer( byval op as integer, _
     		e = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, e )
 
  			'' subtract..
- 			e = astNewBOP( IR_OP_SUB, p, e )
+ 			e = astNewBOP( AST_OP_SUB, p, e )
 
  			'' and divide by length
- 			function = astNewBOP( IR_OP_INTDIV, e, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
+ 			function = astNewBOP( AST_OP_INTDIV, e, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
     	end if
 
     	exit function
@@ -92,7 +92,7 @@ function cUpdPointer( byval op as integer, _
 
     '' any op but +|-?
     select case op
-    case IR_OP_ADD, IR_OP_SUB
+    case AST_OP_ADD, AST_OP_SUB
 		'' incomplete type?
 		if( lgt = 0 ) then
 			'' unless it's a void ptr.. pretend it's a byte ptr
@@ -103,7 +103,7 @@ function cUpdPointer( byval op as integer, _
 		end if
 
     	'' multiple by length
-		e = astNewBOP( IR_OP_MUL, e, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
+		e = astNewBOP( AST_OP_MUL, e, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
 
 		'' do op
 		function = astNewBOP( op, p, e )
@@ -195,7 +195,7 @@ function cCatExpression( byref catexpr as ASTNODE ptr ) as integer
     	end select
 
     	'' concatenate
-    	catexpr = astNewBOP( IR_OP_ADD, catexpr, expr )
+    	catexpr = astNewBOP( AST_OP_ADD, catexpr, expr )
 
         if( catexpr = NULL ) then
 			hReportError( FB_ERRMSG_TYPEMISMATCH )
@@ -227,11 +227,11 @@ function cLogExpression( byref logexpr as ASTNODE ptr ) as integer
     	'' Logical operator
     	select case as const lexGetToken( )
     	case FB_TK_XOR
-    		op = IR_OP_XOR
+    		op = AST_OP_XOR
     	case FB_TK_EQV
-    		op = IR_OP_EQV
+    		op = AST_OP_EQV
     	case FB_TK_IMP
- 			op = IR_OP_IMP
+ 			op = AST_OP_IMP
     	case else
       		exit do
     	end select
@@ -287,7 +287,7 @@ function cLogOrExpression( byref logexpr as ASTNODE ptr ) as integer
     	end if
 
     	'' do operation
-    	logexpr = astNewBOP( IR_OP_OR, logexpr, expr )
+    	logexpr = astNewBOP( AST_OP_OR, logexpr, expr )
 
         if( logexpr = NULL ) then
 			hReportError( FB_ERRMSG_TYPEMISMATCH )
@@ -329,7 +329,7 @@ function cLogAndExpression( byref logexpr as ASTNODE ptr ) as integer
     	end if
 
     	'' do operation
-    	logexpr = astNewBOP( IR_OP_AND, logexpr, expr )
+    	logexpr = astNewBOP( AST_OP_AND, logexpr, expr )
 
         if( logexpr = NULL ) then
 			hReportError( FB_ERRMSG_TYPEMISMATCH )
@@ -361,17 +361,17 @@ function cRelExpression( byref relexpr as ASTNODE ptr ) as integer
     	'' Relational operator
     	select case as const lexGetToken( )
     	case FB_TK_EQ
-    		op = IR_OP_EQ
+    		op = AST_OP_EQ
     	case FB_TK_GT
-    		op = IR_OP_GT
+    		op = AST_OP_GT
     	case FB_TK_LT
-    		op = IR_OP_LT
+    		op = AST_OP_LT
     	case FB_TK_NE
-    		op = IR_OP_NE
+    		op = AST_OP_NE
     	case FB_TK_LE
-    		op = IR_OP_LE
+    		op = AST_OP_LE
     	case FB_TK_GE
- 			op = IR_OP_GE
+ 			op = AST_OP_GE
     	case else
       		exit do
     	end select
@@ -416,9 +416,9 @@ function cAddExpression( byref addexpr as ASTNODE ptr ) as integer
     	'' Add operator
     	select case lexGetToken( )
     	case CHAR_PLUS
-    		op = IR_OP_ADD
+    		op = AST_OP_ADD
     	case CHAR_MINUS
- 			op = IR_OP_SUB
+ 			op = AST_OP_SUB
     	case else
       		exit do
     	end select
@@ -471,9 +471,9 @@ function cShiftExpression( byref shiftexpr as ASTNODE ptr ) as integer
     	'' Shift operator
     	select case lexGetToken( )
     	case FB_TK_SHL
-    		op = IR_OP_SHL
+    		op = AST_OP_SHL
     	case FB_TK_SHR
- 			op = IR_OP_SHR
+ 			op = AST_OP_SHR
     	case else
       		exit do
     	end select
@@ -528,7 +528,7 @@ function cModExpression( byref modexpr as ASTNODE ptr ) as integer
     	end if
 
     	'' do operation
-    	modexpr = astNewBOP( IR_OP_MOD, modexpr, expr )
+    	modexpr = astNewBOP( AST_OP_MOD, modexpr, expr )
 
     	if( modexpr = NULL ) Then
     		hReportError( FB_ERRMSG_TYPEMISMATCH )
@@ -569,7 +569,7 @@ function cIntDivExpression( byref idivexpr as ASTNODE ptr ) as integer
     	end if
 
     	'' do operation
-    	idivexpr = astNewBOP( IR_OP_INTDIV, idivexpr, expr )
+    	idivexpr = astNewBOP( AST_OP_INTDIV, idivexpr, expr )
 
     	if( idivexpr = NULL ) Then
     		hReportError( FB_ERRMSG_TYPEMISMATCH )
@@ -600,9 +600,9 @@ function cMultExpression( byref mulexpr as ASTNODE ptr ) as integer
     	'' Mult operator
     	select case lexGetToken( )
     	case CHAR_CARET
-    		op = IR_OP_MUL
+    		op = AST_OP_MUL
     	case CHAR_SLASH
- 			op = IR_OP_DIV
+ 			op = AST_OP_DIV
     	case else
       		exit do
     	end select
@@ -656,7 +656,7 @@ function cExpExpression( byref expexpr as ASTNODE ptr ) as integer
     	end if
 
     	'' do operation
-    	expexpr = astNewBOP( IR_OP_POW, expexpr, expr )
+    	expexpr = astNewBOP( AST_OP_POW, expexpr, expr )
 
     	if( expexpr = NULL ) Then
     		hReportError( FB_ERRMSG_TYPEMISMATCH )

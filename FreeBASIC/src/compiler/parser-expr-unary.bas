@@ -51,7 +51,7 @@ function cNegNotExpression( byref negexpr as ASTNODE ptr ) as integer
 			exit function
 		end if
 
-		negexpr = astNewUOP( IR_OP_NEG, negexpr )
+		negexpr = astNewUOP( AST_OP_NEG, negexpr )
 
     	if( negexpr = NULL ) Then
     		hReportError( FB_ERRMSG_TYPEMISMATCH )
@@ -86,7 +86,7 @@ function cNegNotExpression( byref negexpr as ASTNODE ptr ) as integer
 			exit function
 		end if
 
-		negexpr = astNewUOP( IR_OP_NOT, negexpr )
+		negexpr = astNewUOP( AST_OP_NOT, negexpr )
 
     	if( negexpr = NULL ) Then
     		hReportError( FB_ERRMSG_TYPEMISMATCH )
@@ -302,7 +302,7 @@ private function hCast( byref expr as ASTNODE ptr, _
 		end select
 	end if
 
-	expr = astNewCONV( iif( ptronly, IR_OP_TOPOINTER, INVALID ), _
+	expr = astNewCONV( iif( ptronly, AST_OP_TOPOINTER, INVALID ), _
 					   dtype, subtype, expr, TRUE )
     if( expr = NULL ) Then
     	hReportError( FB_ERRMSG_TYPEMISMATCH, TRUE )
@@ -453,7 +453,7 @@ private function hProcPtrBody( byval proc as FBSYMBOL ptr, _
 	end if
 
 	expr = astNewVAR( proc, 0, FB_DATATYPE_FUNCTION, proc )
-	addrofexpr = astNewADDR( IR_OP_ADDROF, expr )
+	addrofexpr = astNewADDR( AST_OP_ADDROF, expr )
 
 	''
 	symbSetIsCalled( proc )
@@ -486,7 +486,7 @@ private function hVarPtrBody( byref addrofexpr as ASTNODE ptr) as integer
 		exit function
 	end select
 
-	addrofexpr = astNewADDR( IR_OP_ADDROF, addrofexpr )
+	addrofexpr = astNewADDR( AST_OP_ADDROF, addrofexpr )
 
     function = (addrofexpr <> NULL)
 
@@ -607,16 +607,16 @@ function cAddrOfExpression( byref addrofexpr as ASTNODE ptr ) as integer
 		end if
 
 		if( dtype = FB_DATATYPE_STRING ) then
-			expr = astNewADDR( IR_OP_DEREF, expr )
+			expr = astNewADDR( AST_OP_DEREF, expr )
 		else
-			expr = astNewADDR( IR_OP_ADDROF, expr )
+			expr = astNewADDR( AST_OP_ADDROF, expr )
 		end if
 
 		if( dtype <> FB_DATATYPE_WCHAR ) then
 			dtype = FB_DATATYPE_CHAR
 		end if
 
-		addrofexpr = astNewCONV( IR_OP_TOPOINTER, _
+		addrofexpr = astNewCONV( AST_OP_TOPOINTER, _
 								 FB_DATATYPE_POINTER+dtype, NULL, _
 								 expr )
 

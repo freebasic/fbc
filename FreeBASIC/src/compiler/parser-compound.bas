@@ -177,7 +177,7 @@ function cExitStatement as integer
 	lexSkipToken( )
 
 	''
-	astAdd( astNewBRANCH( IR_OP_JMP, label ) )
+	astAdd( astNewBRANCH( AST_OP_JMP, label ) )
 
 	function = TRUE
 
@@ -218,7 +218,7 @@ function cContinueStatement as integer
 	lexSkipToken( )
 
 	''
-	astAdd( astNewBRANCH( IR_OP_JMP, label ) )
+	astAdd( astNewBRANCH( AST_OP_JMP, label ) )
 
 	function = TRUE
 

@@ -76,7 +76,7 @@ end function
 function cLine as integer
 
 	''
-	astAdd( astNewDBG( IR_OP_DBG_LINEINI, lexLineNum( ) ) )
+	astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ) ) )
 
     '' Label? Statement? Comment?
     cLabel( )
@@ -95,7 +95,7 @@ function cLine as integer
     end if
 
 	''
-	astAdd( astNewDBG( IR_OP_DBG_LINEEND ) )
+	astAdd( astNewDBG( AST_OP_DBG_LINEEND ) )
 
     function = TRUE
 
@@ -108,7 +108,7 @@ function cSimpleLine as integer
     dim res as integer
 
 	''
-	astAdd( astNewDBG( IR_OP_DBG_LINEINI, lexLineNum( ) ) )
+	astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ) ) )
 
     '' Label? SimpleStatement? Comment?
     cLabel( )
@@ -131,7 +131,7 @@ function cSimpleLine as integer
 	end if
 
 	''
-	astAdd( astNewDBG( IR_OP_DBG_LINEEND ) )
+	astAdd( astNewDBG( AST_OP_DBG_LINEEND ) )
 
     function = TRUE
 

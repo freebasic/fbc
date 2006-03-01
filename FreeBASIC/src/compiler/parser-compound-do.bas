@@ -169,7 +169,7 @@ function cDoStatement as integer
 		astAdd( expr )
 
 	else
-		astAdd( astNewBRANCH( IR_OP_JMP, il ) )
+		astAdd( astNewBRANCH( AST_OP_JMP, il ) )
 	end if
 
     '' end label (loop exit)

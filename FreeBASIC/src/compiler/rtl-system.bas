@@ -372,11 +372,11 @@ function rtlCpuCheck( ) as integer static
 	proc = astNewFUNCT( PROCLOOKUP( CPUDETECT ), NULL, TRUE )
 
 	'' cpu = fb_CpuDetect shr 24
-	cpu = astNewBOP( IR_OP_SHR, proc, astNewCONSTi( 24, FB_DATATYPE_UINT ) )
+	cpu = astNewBOP( AST_OP_SHR, proc, astNewCONSTi( 24, FB_DATATYPE_UINT ) )
 
 	'' if( cpu < env.clopt.cputype ) then
 	label = symbAddLabel( NULL )
-	astAdd( astNewBOP( IR_OP_GE, cpu, astNewCONSTi( env.clopt.cputype, FB_DATATYPE_UINT ), label, FALSE ) )
+	astAdd( astNewBOP( AST_OP_GE, cpu, astNewCONSTi( env.clopt.cputype, FB_DATATYPE_UINT ), label, FALSE ) )
 
 	'' print "This program requires at least a <cpu> to run."
 	s = symbAllocStrConst( "This program requires at least a " & env.clopt.cputype & "86 to run.", -1 )

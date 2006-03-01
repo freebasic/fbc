@@ -143,7 +143,7 @@ function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 	astDel( t )
 
 	if( ast.doemit ) then
-		irEmitBRANCH( IR_OP_JMP, exitlabel )
+		irEmitBRANCH( AST_OP_JMP, exitlabel )
 	end if
 
 	'' false expr

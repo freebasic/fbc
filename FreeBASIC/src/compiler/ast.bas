@@ -232,7 +232,7 @@ function astUpdStrConcat( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	'' convert "string + string" to "StrConcat( string, string )"
 	if( n->class = AST_NODECLASS_BOP ) then
-		if( n->op.op = IR_OP_ADD ) then
+		if( n->op.op = AST_OP_ADD ) then
 			l = n->l
 			r = n->r
 			if( n->dtype <> FB_DATATYPE_WCHAR ) then
@@ -283,7 +283,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 #if 0
 		'' UOP? check if it's a NOT
 		if( n->class = AST_NODECLASS_UOP ) then
-			if( n->op.op = IR_OP_NOT ) then
+			if( n->op.op = AST_OP_NOT ) then
 				l = astUpdComp2Branch( n->l, label, isinverse = FALSE )
 				astDel( n )
 				return l
@@ -306,7 +306,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 
 				if( istrue ) then
 					astDel( n )
-					n = astNewBRANCH( IR_OP_JMP, label, NULL )
+					n = astNewBRANCH( AST_OP_JMP, label, NULL )
 					if( n = NULL ) then
 						return NULL
 					end if
@@ -324,7 +324,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 
 				if( istrue ) then
 					astDel( n )
-					n = astNewBRANCH( IR_OP_JMP, label, NULL )
+					n = astNewBRANCH( AST_OP_JMP, label, NULL )
 					if( n = NULL ) then
 						return NULL
 					end if
@@ -334,9 +334,9 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 		else
 			'' otherwise, check if zero (ie= FALSE)
 			if( isinverse = FALSE ) then
-				op = IR_OP_EQ
+				op = AST_OP_EQ
 			else
-				op = IR_OP_NE
+				op = AST_OP_NE
 			end if
 
 			'' zstring? astNewBOP will think both are zstrings..
@@ -372,7 +372,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 
 	'' relational operator?
 	select case as const op
-	case IR_OP_EQ, IR_OP_NE, IR_OP_GT, IR_OP_LT, IR_OP_GE, IR_OP_LE
+	case AST_OP_EQ, AST_OP_NE, AST_OP_GT, AST_OP_LT, AST_OP_GE, AST_OP_LE
 
 		'' invert it
 		if( isinverse = FALSE ) then
@@ -385,9 +385,9 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 		return n
 
 	'' binary op that sets the flags? (x86 opt, may work on some RISC cpu's)
-	case IR_OP_ADD, IR_OP_SUB, IR_OP_SHL, IR_OP_SHR, _
-		 IR_OP_AND, IR_OP_OR, IR_OP_XOR, IR_OP_IMP
-		 ', IR_OP_EQV -- NOT doesn't set any flags, so EQV can't be optimized (x86 assumption)
+	case AST_OP_ADD, AST_OP_SUB, AST_OP_SHL, AST_OP_SHR, _
+		 AST_OP_AND, AST_OP_OR, AST_OP_XOR, AST_OP_IMP
+		 ', AST_OP_EQV -- NOT doesn't set any flags, so EQV can't be optimized (x86 assumption)
 
 		'' x86-quirk: only if integers, as FPU will set its own flags, that must copied back
 		if( symbGetDataClass( dtype ) = FB_DATACLASS_INTEGER ) then
@@ -396,9 +396,9 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 
 				'' check if zero (ie= FALSE)
 				if( isinverse = FALSE ) then
-					op = IR_OP_JEQ
+					op = AST_OP_JEQ
 				else
-					op = IR_OP_JNE
+					op = AST_OP_JNE
 				end if
 
 				return astNewBRANCH( op, label, n )
@@ -409,9 +409,9 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 
 	'' if no optimization could be done, check if zero (ie= FALSE)
 	if( isinverse = FALSE ) then
-		op = IR_OP_EQ
+		op = AST_OP_EQ
 	else
-		op = IR_OP_NE
+		op = AST_OP_NE
 	end if
 
 	select case as const dtype

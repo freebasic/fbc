@@ -171,7 +171,7 @@ function cAsmBlock as integer
 	'' (AsmCode Comment? NewLine)+
 	do
 		if( issingleline = FALSE ) then
-			astAdd( astNewDBG( IR_OP_DBG_LINEINI, lexLineNum( ) ) )
+			astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ) ) )
 		end if
 
 		cAsmCode( )
@@ -197,7 +197,7 @@ function cAsmBlock as integer
 		end select
 
 		if( issingleline = FALSE ) then
-			astAdd( astNewDBG( IR_OP_DBG_LINEEND ) )
+			astAdd( astNewDBG( AST_OP_DBG_LINEEND ) )
 		end if
 	loop
 

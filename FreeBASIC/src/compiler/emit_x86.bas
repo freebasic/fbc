@@ -951,17 +951,17 @@ private sub _emitBRANCH( byval unused as IRVREG ptr, _
     dim ostr as string
 
 	select case as const op
-	case IR_OP_JLE
+	case AST_OP_JLE
 		ostr = "jle "
-	case IR_OP_JGE
+	case AST_OP_JGE
 		ostr = "jge "
-	case IR_OP_JLT
+	case AST_OP_JLT
 		ostr = "jl "
-	case IR_OP_JGT
+	case AST_OP_JGT
 		ostr = "jg "
-	case IR_OP_JEQ
+	case AST_OP_JEQ
 		ostr = "je "
-	case IR_OP_JNE
+	case AST_OP_JNE
 		ostr = "jne "
 	end select
 
@@ -2946,13 +2946,13 @@ private sub hSHIFTL( byval op as integer, _
 
 	''
 	if( symbIsSigned( dvreg->dtype ) ) then
-		if( op = IR_OP_SHL ) then
+		if( op = AST_OP_SHL ) then
 			mnemonic = "sal"
 		else
 			mnemonic = "sar"
 		end if
 	else
-		if( op = IR_OP_SHL ) then
+		if( op = AST_OP_SHL ) then
 			mnemonic = "shl"
 		else
 			mnemonic = "shr"
@@ -3037,7 +3037,7 @@ private sub hSHIFTL( byval op as integer, _
 	if( svreg->typ <> IR_VREGTYPE_IMM ) then
 		label = *hMakeTmpStr( )
 
-		if( op = IR_OP_SHL ) then
+		if( op = AST_OP_SHL ) then
 			outp "shld edx, eax, cl"
 			outp mnemonic + " eax, cl"
 		else
@@ -3048,7 +3048,7 @@ private sub hSHIFTL( byval op as integer, _
 		outp "test cl, 32"
 		hBRANCH( "jz", label )
 
-		if( op = IR_OP_SHL ) then
+		if( op = AST_OP_SHL ) then
 			outp "mov edx, eax"
 			outp "xor eax, eax"
 		else
@@ -3070,7 +3070,7 @@ private sub hSHIFTL( byval op as integer, _
 	else
 
 		if( svreg->value < 32 ) then
-			if( op = IR_OP_SHL ) then
+			if( op = AST_OP_SHL ) then
 				outp "shld edx, eax, " + src
 				outp mnemonic + " eax, " + src
 			else
@@ -3080,7 +3080,7 @@ private sub hSHIFTL( byval op as integer, _
 
 		elseif( svreg->value > 32 ) then
 			src = str( svreg->value - 32 )
-			if( op = IR_OP_SHL ) then
+			if( op = AST_OP_SHL ) then
 				outp "mov edx, eax"
 				outp "xor eax, eax"
 				outp "shl edx, " + src
@@ -3097,7 +3097,7 @@ private sub hSHIFTL( byval op as integer, _
 
 		'' src = 32, just swap
 		else
-			if( op = IR_OP_SHL ) then
+			if( op = AST_OP_SHL ) then
 				outp "mov edx, eax"
 				outp "xor eax, eax"
 			else
@@ -3159,13 +3159,13 @@ private sub hSHIFTI( byval op as integer, _
 
 	''
 	if( symbIsSigned( dvreg->dtype ) ) then
-		if( op = IR_OP_SHL ) then
+		if( op = AST_OP_SHL ) then
 			mnemonic = "sal"
 		else
 			mnemonic = "sar"
 		end if
 	else
-		if( op = IR_OP_SHL ) then
+		if( op = AST_OP_SHL ) then
 			mnemonic = "shl"
 		else
 			mnemonic = "shr"
@@ -3269,7 +3269,7 @@ end sub
 private sub _emitSHLL( byval dvreg as IRVREG ptr, _
 		       		   byval svreg as IRVREG ptr ) static
 
-	hSHIFTL( IR_OP_SHL, dvreg, svreg )
+	hSHIFTL( AST_OP_SHL, dvreg, svreg )
 
 end sub
 
@@ -3277,7 +3277,7 @@ end sub
 private sub _emitSHLI( byval dvreg as IRVREG ptr, _
 		       		   byval svreg as IRVREG ptr ) static
 
-	hSHIFTI( IR_OP_SHL, dvreg, svreg )
+	hSHIFTI( AST_OP_SHL, dvreg, svreg )
 
 end sub
 
@@ -3285,7 +3285,7 @@ end sub
 private sub _emitSHRL( byval dvreg as IRVREG ptr, _
 		       		   byval svreg as IRVREG ptr ) static
 
-	hSHIFTL( IR_OP_SHR, dvreg, svreg )
+	hSHIFTL( AST_OP_SHR, dvreg, svreg )
 
 end sub
 
@@ -3293,7 +3293,7 @@ end sub
 private sub _emitSHRI( byval dvreg as IRVREG ptr, _
 		       		   byval svreg as IRVREG ptr ) static
 
-	hSHIFTI( IR_OP_SHR, dvreg, svreg )
+	hSHIFTI( AST_OP_SHR, dvreg, svreg )
 
 end sub
 

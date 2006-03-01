@@ -63,7 +63,7 @@ function astScopeBegin( ) as ASTNODE ptr static
 	irScopeBegin( s )
 
 	''
-	astAdd( astNewDBG( IR_OP_DBG_SCOPEINI, cint( s ) ) )
+	astAdd( astNewDBG( AST_OP_DBG_SCOPEINI, cint( s ) ) )
 
 	function = n
 
@@ -82,7 +82,7 @@ sub astScopeEnd( byval n as ASTNODE ptr ) static
 	symbDelScopeTb( s )
 
 	''
-	astAdd( astNewDBG( IR_OP_DBG_SCOPEEND, cint( s ) ) )
+	astAdd( astNewDBG( AST_OP_DBG_SCOPEEND, cint( s ) ) )
 
 	''
 	irScopeEnd( s )

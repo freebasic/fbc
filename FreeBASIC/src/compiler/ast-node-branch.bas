@@ -78,13 +78,13 @@ function astLoadBRANCH( byval n as ASTNODE ptr ) as IRVREG ptr
 		if( n->op.ex = NULL ) then
 			'' jump or call?
 			select case n->op.op
-			case IR_OP_JUMPPTR
+			case AST_OP_JUMPPTR
 				irEmitJUMPPTR( vr )
 
-			case IR_OP_CALLPTR
+			case AST_OP_CALLPTR
 				irEmitCALLPTR( vr, NULL, 0 )
 
-			case IR_OP_RET
+			case AST_OP_RET
 				irEmitRETURN( 0 )
 			end select
 

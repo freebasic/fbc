@@ -85,7 +85,7 @@ const fbdllreason = "__FB_DLLREASON__"
 	arg = symbFindByNameAndClass( fbdllreason, FB_SYMBCLASS_VAR )
 	reason = astNewVAR( arg, 0, symbGetType( arg ) )
 	label = symbAddLabel( NULL )
-	astAdd( astNewBOP( IR_OP_NE, reason, astNewCONSTi( 1, FB_DATATYPE_UINT ), label, FALSE ) )
+	astAdd( astNewBOP( AST_OP_NE, reason, astNewCONSTi( 1, FB_DATATYPE_UINT ), label, FALSE ) )
 
 	''	main( 0, NULL )
     main = astNewFUNCT( env.main.proc )

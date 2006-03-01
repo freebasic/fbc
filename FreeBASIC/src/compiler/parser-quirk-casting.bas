@@ -65,10 +65,10 @@ function cTypeConvExpr( byref expr as ASTNODE ptr ) as integer
 
 	case FB_TK_CSIGN
 		dtype = FB_DATATYPE_VOID				'' hack! AST will handle that
-		op = IR_OP_TOSIGNED
+		op = AST_OP_TOSIGNED
 	case FB_TK_CUNSG
 		dtype = FB_DATATYPE_VOID				'' hack! /
-		op = IR_OP_TOUNSIGNED
+		op = AST_OP_TOUNSIGNED
 
 	end select
 

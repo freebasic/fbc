@@ -89,7 +89,7 @@ function cFieldArray( byval sym as FBSYMBOL ptr, _
     	if( expr = NULL ) then
     		expr = dimexpr
     	else
-    		expr = astNewBOP( IR_OP_ADD, expr, dimexpr )
+    		expr = astNewBOP( AST_OP_ADD, expr, dimexpr )
     	end if
 
     	'' separator
@@ -107,7 +107,7 @@ function cFieldArray( byval sym as FBSYMBOL ptr, _
     	end if
 
     	constexpr = astNewCONSTi( (d->upper - d->lower)+1, FB_DATATYPE_INTEGER )
-    	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
+    	expr = astNewBOP( AST_OP_MUL, expr, constexpr )
 	loop
 
     ''
@@ -118,20 +118,20 @@ function cFieldArray( byval sym as FBSYMBOL ptr, _
 
 	'' times length
 	constexpr = astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_INTEGER )
-	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
+	expr = astNewBOP( AST_OP_MUL, expr, constexpr )
 
     '' plus difference
     diff = symbGetArrayDiff( sym )
     if( diff <> 0 ) then
     	constexpr = astNewCONSTi( diff, FB_DATATYPE_INTEGER )
-    	expr = astNewBOP( IR_OP_ADD, expr, constexpr )
+    	expr = astNewBOP( AST_OP_ADD, expr, constexpr )
     end if
 
     '' plus initial expression
     if( idxexpr = NULL ) then
     	idxexpr = expr
     else
-    	idxexpr = astNewBOP( IR_OP_ADD, idxexpr, expr )
+    	idxexpr = astNewBOP( AST_OP_ADD, idxexpr, expr )
     end if
 
     ''
@@ -192,7 +192,7 @@ function cTypeField( byref sym as FBSYMBOL ptr, _
     			if( expr = NULL ) then
     				expr = constexpr
     			else
-	    			expr = astNewBOP( IR_OP_ADD, expr, constexpr )
+	    			expr = astNewBOP( AST_OP_ADD, expr, constexpr )
     			end if
     		end if
 
@@ -311,22 +311,22 @@ function cDerefFields( byref dtype as integer, _
 
 					if( dtype = FB_DATATYPE_STRING ) then
 						'' deref
-						varexpr = astNewADDR( IR_OP_DEREF, varexpr )
+						varexpr = astNewADDR( AST_OP_DEREF, varexpr )
 					else
 						'' address of
-						varexpr = astNewADDR( IR_OP_ADDROF, varexpr )
+						varexpr = astNewADDR( AST_OP_ADDROF, varexpr )
 					end if
 
 					'' add index
 					if( dtype = FB_DATATYPE_WCHAR ) then
 						'' times sizeof( wchar ) if it's wstring
-						idxexpr = astNewBOP( IR_OP_SHL, _
+						idxexpr = astNewBOP( AST_OP_SHL, _
 								   			 idxexpr, _
 								   			 astNewCONSTi( hToPow2( symbGetDataSize( FB_DATATYPE_WCHAR ) ), _
 								   				 		   FB_DATATYPE_INTEGER ) )
 					end if
 
-					varexpr = astNewBOP( IR_OP_ADD, varexpr, idxexpr )
+					varexpr = astNewBOP( AST_OP_ADD, varexpr, idxexpr )
 
 					'' not a wstring?
 					if( dtype <> FB_DATATYPE_WCHAR ) then
@@ -358,7 +358,7 @@ function cDerefFields( byref dtype as integer, _
 				exit function
 			end if
 
-			idxexpr = astNewBOP( IR_OP_MUL, idxexpr, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
+			idxexpr = astNewBOP( AST_OP_MUL, idxexpr, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
 
 		case else
 
@@ -401,12 +401,12 @@ function cDerefFields( byref dtype as integer, _
 		if( expr <> NULL ) then
 			'' this should be optimized by AST, when expr is a constant and
 			'' varexpr is a scalar var
-			varexpr = astNewBOP( IR_OP_ADD, varexpr, expr )
+			varexpr = astNewBOP( AST_OP_ADD, varexpr, expr )
 		end if
 
 		''
 		if( idxexpr <> NULL ) then
-			varexpr = astNewBOP( IR_OP_ADD, varexpr, idxexpr )
+			varexpr = astNewBOP( AST_OP_ADD, varexpr, idxexpr )
 		end if
 
 		''
@@ -584,7 +584,7 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
     	if( expr = NULL ) then
     		expr = dimexpr
     	else
-    		expr = astNewBOP( IR_OP_ADD, expr, dimexpr )
+    		expr = astNewBOP( AST_OP_ADD, expr, dimexpr )
     	end if
 
     	'' separator
@@ -600,12 +600,12 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
     	varexpr = astNewVAR( d, _
     						 FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN, _
     						 FB_DATATYPE_INTEGER )
-    	expr = astNewBOP( IR_OP_MUL, expr, varexpr )
+    	expr = astNewBOP( AST_OP_MUL, expr, varexpr )
 	loop
 
 	'' times length
 	constexpr = astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_INTEGER )
-	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
+	expr = astNewBOP( AST_OP_MUL, expr, constexpr )
 
     '' check dimensions, if not common
     if( maxdims <> INVALID ) then
@@ -617,7 +617,7 @@ function cDynArrayIdx( byval sym as FBSYMBOL ptr, _
 
    	'' plus dsc->data (= ptr + diff)
     varexpr = astNewVAR( d, FB_ARRAYDESC_DATAOFFS, FB_DATATYPE_INTEGER )
-    expr = astNewBOP( IR_OP_ADD, expr, varexpr )
+    expr = astNewBOP( AST_OP_ADD, expr, varexpr )
 
     idxexpr = expr
 
@@ -687,7 +687,7 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
     	if( expr = NULL ) then
     		expr = dimexpr
     	else
-    		expr = astNewBOP( IR_OP_ADD, expr, dimexpr )
+    		expr = astNewBOP( AST_OP_ADD, expr, dimexpr )
     	end if
 
     	'' separator
@@ -706,17 +706,17 @@ function cArgArrayIdx( byval sym as FBSYMBOL ptr, _
     						 t, _
     						 FB_DATATYPE_INTEGER, _
     						 NULL )
-    	expr = astNewBOP( IR_OP_MUL, expr, varexpr )
+    	expr = astNewBOP( AST_OP_MUL, expr, varexpr )
 	loop
 
 	'' times length
 	constexpr = astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_INTEGER )
-	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
+	expr = astNewBOP( AST_OP_MUL, expr, constexpr )
 
    	'' plus desc->data (= ptr + diff)
     t = astNewVAR( sym, 0, FB_DATATYPE_INTEGER )
     varexpr = astNewPTR( FB_ARRAYDESC_DATAOFFS, t, FB_DATATYPE_INTEGER, NULL )
-    expr = astNewBOP( IR_OP_ADD, expr, varexpr )
+    expr = astNewBOP( AST_OP_ADD, expr, varexpr )
 
     idxexpr = expr
 
@@ -794,7 +794,7 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
     	if( expr = NULL ) then
     		expr = dimexpr
     	else
-    		expr = astNewBOP( IR_OP_ADD, expr, dimexpr )
+    		expr = astNewBOP( AST_OP_ADD, expr, dimexpr )
     	end if
 
     	'' separator
@@ -812,7 +812,7 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
     	end if
 
     	constexpr = astNewCONSTi( (d->upper - d->lower) + 1, FB_DATATYPE_INTEGER )
-    	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
+    	expr = astNewBOP( AST_OP_MUL, expr, constexpr )
 	loop
 
     ''
@@ -824,7 +824,7 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
 	'' times length (this will be optimized if len < 10 and there's
 	'' no arrays on following fields)
 	constexpr = astNewCONSTi( symbGetLen( s ), FB_DATATYPE_INTEGER )
-	expr = astNewBOP( IR_OP_MUL, expr, constexpr )
+	expr = astNewBOP( AST_OP_MUL, expr, constexpr )
 
 	idxexpr = expr
 
@@ -1019,7 +1019,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 	if( idxexpr <> NULL ) then
 		'' byref or import's are already pointers
 		if( isbyref or isimport ) then
-			varexpr = astNewBOP( IR_OP_ADD, varexpr, idxexpr )
+			varexpr = astNewBOP( AST_OP_ADD, varexpr, idxexpr )
 		else
 			varexpr = astNewIDX( varexpr, idxexpr, typ, subtype )
 		end if

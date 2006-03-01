@@ -34,16 +34,16 @@ private sub hUOPConstFoldInt( byval op as integer, _
 						      byval v as ASTNODE ptr ) static
 
 	select case as const op
-	case IR_OP_NOT
+	case AST_OP_NOT
 		v->con.val.int = not v->con.val.int
 
-	case IR_OP_NEG
+	case AST_OP_NEG
 		v->con.val.int = -v->con.val.int
 
-	case IR_OP_ABS
+	case AST_OP_ABS
 		v->con.val.int = abs( v->con.val.int )
 
-	case IR_OP_SGN
+	case AST_OP_SGN
 		v->con.val.int = sgn( v->con.val.int )
 	end select
 
@@ -54,43 +54,43 @@ private sub hUOPConstFoldFlt( byval op as integer, _
 						      byval v as ASTNODE ptr ) static
 
 	select case as const op
-	case IR_OP_NOT
+	case AST_OP_NOT
 		v->con.val.int = not cint( v->con.val.float )
 
-	case IR_OP_NEG
+	case AST_OP_NEG
 		v->con.val.float = -v->con.val.float
 
-	case IR_OP_ABS
+	case AST_OP_ABS
 		v->con.val.float = abs( v->con.val.float )
 
-	case IR_OP_SGN
+	case AST_OP_SGN
 		v->con.val.int = sgn( v->con.val.float )
 
-	case IR_OP_SIN
+	case AST_OP_SIN
 		v->con.val.float = sin( v->con.val.float )
 
-	case IR_OP_ASIN
+	case AST_OP_ASIN
 		v->con.val.float = asin( v->con.val.float )
 
-	case IR_OP_COS
+	case AST_OP_COS
 		v->con.val.float = cos( v->con.val.float )
 
-	case IR_OP_ACOS
+	case AST_OP_ACOS
 		v->con.val.float = acos( v->con.val.float )
 
-	case IR_OP_TAN
+	case AST_OP_TAN
 		v->con.val.float = tan( v->con.val.float )
 
-	case IR_OP_ATAN
+	case AST_OP_ATAN
 		v->con.val.float = atn( v->con.val.float )
 
-	case IR_OP_SQRT
+	case AST_OP_SQRT
 		v->con.val.float = sqr( v->con.val.float )
 
-	case IR_OP_LOG
+	case AST_OP_LOG
 		v->con.val.float = log( v->con.val.float )
 
-	case IR_OP_FLOOR
+	case AST_OP_FLOOR
 		v->con.val.float = int( v->con.val.float )
 	end select
 
@@ -101,16 +101,16 @@ private sub hUOPConstFold64( byval op as integer, _
 							 byval v as ASTNODE ptr ) static
 
 	select case as const op
-	case IR_OP_NOT
+	case AST_OP_NOT
 		v->con.val.long = not v->con.val.long
 
-	case IR_OP_NEG
+	case AST_OP_NEG
 		v->con.val.long = -v->con.val.long
 
-	case IR_OP_ABS
+	case AST_OP_ABS
 		v->con.val.long = abs( v->con.val.long )
 
-	case IR_OP_SGN
+	case AST_OP_SGN
 		v->con.val.int = sgn( v->con.val.long )
 	end select
 
@@ -151,7 +151,7 @@ function astNewUOP( byval op as integer, _
 	'' pointer?
 	case IS >= FB_DATATYPE_POINTER
     	'' only NOT allowed
-    	if( op <> IR_OP_NOT ) then
+    	if( op <> AST_OP_NOT ) then
     		exit function
     	end if
     end select
@@ -168,14 +168,14 @@ function astNewUOP( byval op as integer, _
 
 	select case as const op
 	'' NOT can only operate on integers
-	case IR_OP_NOT
+	case AST_OP_NOT
 		if( dclass <> FB_DATACLASS_INTEGER ) then
 			dtype = FB_DATATYPE_INTEGER
 			o = astNewCONV( INVALID, dtype, NULL, o )
 		end if
 
 	'' with SGN the result is always signed integer
-	case IR_OP_SGN
+	case AST_OP_SGN
 		if( dclass <> FB_DATACLASS_INTEGER ) then
 			dtype = FB_DATATYPE_INTEGER
 		else
@@ -183,8 +183,8 @@ function astNewUOP( byval op as integer, _
 		end if
 
 	'' transcendental can only operate on floats
-	case IR_OP_SIN, IR_OP_ASIN, IR_OP_COS, IR_OP_ACOS, _
-		 IR_OP_TAN, IR_OP_ATAN, IR_OP_SQRT, IR_OP_LOG, IR_OP_FLOOR
+	case AST_OP_SIN, AST_OP_ASIN, AST_OP_COS, AST_OP_ACOS, _
+		 AST_OP_TAN, AST_OP_ATAN, AST_OP_SQRT, AST_OP_LOG, AST_OP_FLOOR
 		if( dclass <> FB_DATACLASS_FPOINT ) then
 			dtype = FB_DATATYPE_DOUBLE
 			o = astNewCONV( INVALID, dtype, NULL, o )
@@ -194,7 +194,7 @@ function astNewUOP( byval op as integer, _
 	'' constant folding
 	if( o->defined ) then
 
-		if( op = IR_OP_NEG ) then
+		if( op = AST_OP_NEG ) then
 			if( astGetDataClass( o ) = FB_DATACLASS_INTEGER ) then
 				if( symbIsSigned( dtype ) = FALSE ) then
 					'' test overflow
@@ -240,13 +240,13 @@ function astNewUOP( byval op as integer, _
 	end if
 
 	select case as const op
-	case IR_OP_SGN
+	case AST_OP_SGN
 		'' hack! SGN with floats is handled by a function
 		if( dclass = FB_DATACLASS_FPOINT ) then
 			return rtlMathFSGN( o )
 		end if
 
-	case IR_OP_ASIN, IR_OP_ACOS, IR_OP_LOG
+	case AST_OP_ASIN, AST_OP_ACOS, AST_OP_LOG
 		return rtlMathTRANS( op, o )
 	end select
 

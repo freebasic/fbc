@@ -793,7 +793,7 @@ function rtlFilePut( byval filenum as ASTNODE ptr, _
     if( elements = NULL ) then
     	bytes = astNewCONSTi( lgt, FB_DATATYPE_INTEGER )
     else
-    	bytes = astNewBOP( IR_OP_MUL, elements, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
+    	bytes = astNewBOP( AST_OP_MUL, elements, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
     end if
 
     '' any pointer fields?
@@ -935,7 +935,7 @@ function rtlFileGet( byval filenum as ASTNODE ptr, _
     if( elements = NULL ) then
     	bytes = astNewCONSTi( lgt, FB_DATATYPE_INTEGER )
     else
-    	bytes = astNewBOP( IR_OP_MUL, elements, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
+    	bytes = astNewBOP( AST_OP_MUL, elements, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
     end if
 
     '' any pointer fields?

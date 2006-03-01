@@ -239,17 +239,17 @@ function hFBrelop2IRrelop( byval op as integer ) as integer static
 
     select case as const op
     case FB_TK_EQ
-    	op = IR_OP_EQ
+    	op = AST_OP_EQ
     case FB_TK_GT
-    	op = IR_OP_GT
+    	op = AST_OP_GT
     case FB_TK_LT
-    	op = IR_OP_LT
+    	op = AST_OP_LT
     case FB_TK_NE
-    	op = IR_OP_NE
+    	op = AST_OP_NE
     case FB_TK_LE
-    	op = IR_OP_LE
+    	op = AST_OP_LE
     case FB_TK_GE
-    	op = IR_OP_GE
+    	op = AST_OP_GE
     end select
 
     function = op

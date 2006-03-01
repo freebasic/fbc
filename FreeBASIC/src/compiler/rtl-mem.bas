@@ -152,7 +152,7 @@ function rtlNullPtrCheck( byval p as ASTNODE ptr, _
    	proc = astNewFUNCT( PROCLOOKUP( NULLPTRCHK ) )
 
 	'' ptr
-	p = astNewCONV( IR_OP_TOPOINTER, FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, p )
+	p = astNewCONV( AST_OP_TOPOINTER, FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, p )
 	if( astNewPARAM( proc, p, FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) = NULL ) then
 		exit function
 	end if
@@ -217,13 +217,13 @@ function rtlMemSwap( byval dst as ASTNODE ptr, _
 	if( (astGetDataType( dst ) <> FB_DATATYPE_USERDEF) and (astIsVAR( dst )) ) then
 
 		'' push src
-		astAdd( astNewSTACK( IR_OP_PUSH, astCloneTree( src ) ) )
+		astAdd( astNewSTACK( AST_OP_PUSH, astCloneTree( src ) ) )
 
 		'' src = dst
 		astAdd( astNewASSIGN( src, astCloneTree( dst ) ) )
 
 		'' pop dst
-		astAdd( astNewSTACK( IR_OP_POP, dst ) )
+		astAdd( astNewSTACK( AST_OP_POP, dst ) )
 
 		exit sub
 	end if

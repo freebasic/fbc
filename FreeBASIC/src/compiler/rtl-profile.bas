@@ -104,7 +104,7 @@ private function hGetProcName( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
 		s = symbAllocStrConst( procname, -1 )
 	end if
 
-	expr = astNewADDR( IR_OP_ADDROF, astNewVAR( s, 0, FB_DATATYPE_CHAR ) )
+	expr = astNewADDR( AST_OP_ADDROF, astNewVAR( s, 0, FB_DATATYPE_CHAR ) )
 
 	function = expr
 

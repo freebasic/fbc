@@ -52,85 +52,6 @@ enum IROPTYPE_ENUM
 end enum
 
 ''
-enum IROP_ENUM									'' if order is changed, update the opTB array
-	IR_OP_LOAD				= 0
-	IR_OP_LOADRESULT
-	IR_OP_STORE
-	IR_OP_SPILLREGS
-	IR_OP_ADD
-	IR_OP_SUB
-	IR_OP_MUL
-	IR_OP_DIV
-	IR_OP_INTDIV
-	IR_OP_MOD
-	IR_OP_AND
-	IR_OP_OR
-	IR_OP_XOR
-	IR_OP_EQV
-	IR_OP_IMP
-	IR_OP_SHL
-	IR_OP_SHR
-	IR_OP_POW
-	IR_OP_MOV
-	IR_OP_ATAN2
-	IR_OP_EQ
-	IR_OP_GT
-	IR_OP_LT
-	IR_OP_NE
-	IR_OP_GE
-	IR_OP_LE
-	IR_OP_NOT
-	IR_OP_NEG
-	IR_OP_ABS
-	IR_OP_SGN
-	IR_OP_SIN
-	IR_OP_ASIN
-	IR_OP_COS
-	IR_OP_ACOS
-	IR_OP_TAN
-	IR_OP_ATAN
-	IR_OP_SQRT
-	IR_OP_LOG
-	IR_OP_FLOOR
-	IR_OP_ADDROF
-	IR_OP_DEREF
-	IR_OP_TOINT
-	IR_OP_TOFLT
-	IR_OP_PUSH
-	IR_OP_POP
-	IR_OP_PUSHUDT
-	IR_OP_STACKALIGN
-	IR_OP_JEQ
-	IR_OP_JGT
-	IR_OP_JLT
-	IR_OP_JNE
-	IR_OP_JGE
-	IR_OP_JLE
-	IR_OP_JMP
-	IR_OP_CALL
-	IR_OP_LABEL
-	IR_OP_RET
-	IR_OP_CALLFUNCT
-	IR_OP_CALLPTR
-	IR_OP_JUMPPTR
-	IR_OP_MEMMOVE
-	IR_OP_MEMSWAP
-	IR_OP_MEMCLEAR
-	IR_OP_STKCLEAR
-
-	IR_OPS										'' total
-end enum
-
-'' operations below won't reach IR, used by AST
-enum
-	IR_OP_DBG_LINEINI		= 200
-	IR_OP_DBG_LINEEND
-	IR_OP_DBG_SCOPEINI
-	IR_OP_DBG_SCOPEEND
-	IR_OP_TOPOINTER
-	IR_OP_TOSIGNED
-	IR_OP_TOUNSIGNED
-end enum
 
 ''
 type IRVREG_ as IRVREG
@@ -146,7 +67,7 @@ type IRTAC
 
 	pos			as integer
 
-	op			as IROP_ENUM					'' opcode
+	op			as AST_OPCODE					'' opcode
 
 	res			as IRTACVREG                    '' result
 	arg1		as IRTACVREG                    '' operand 1
@@ -328,39 +249,39 @@ declare sub 		irXchgTOS			( byval reg as integer )
 
 #define irEmitUOP(op,v1,vr) irEmit( op, v1, NULL, vr )
 
-#define irEmitSTORE(v1,v2) irEmit( IR_OP_STORE, v1, v2, NULL )
+#define irEmitSTORE(v1,v2) irEmit( AST_OP_STORE, v1, v2, NULL )
 
-#define irEmitSPILLREGS() irEmit( IR_OP_SPILLREGS, NULL, NULL, NULL )
+#define irEmitSPILLREGS() irEmit( AST_OP_SPILLREGS, NULL, NULL, NULL )
 
-#define irEmitLOAD(v1) irEmit( IR_OP_LOAD, v1, NULL, NULL )
+#define irEmitLOAD(v1) irEmit( AST_OP_LOAD, v1, NULL, NULL )
 
-#define irEmitLOADRES(v1,vr) irEmit( IR_OP_LOADRESULT, v1, NULL, vr )
+#define irEmitLOADRES(v1,vr) irEmit( AST_OP_LOADRESULT, v1, NULL, vr )
 
 #define irEmitSTACK(op,v1) irEmit( op, v1, NULL, NULL )
 
-#define irEmitPUSH(v1) irEmitSTACK( IR_OP_PUSH, v1 )
+#define irEmitPUSH(v1) irEmitSTACK( AST_OP_PUSH, v1 )
 
-#define irEmitPOP(v1) irEmitSTACK( IR_OP_POP, v1 )
+#define irEmitPOP(v1) irEmitSTACK( AST_OP_POP, v1 )
 
-#define irEmitPUSHUDT(v1,lgt) irEmit( IR_OP_PUSHUDT, v1, NULL, NULL, NULL, lgt )
+#define irEmitPUSHUDT(v1,lgt) irEmit( AST_OP_PUSHUDT, v1, NULL, NULL, NULL, lgt )
 
 #define irEmitADDR(op,v1,vr) irEmit( op, v1, NULL, vr )
 
-#define irEmitLABELNF(l) irEmit( IR_OP_LABEL, NULL, NULL, NULL, l )
+#define irEmitLABELNF(l) irEmit( AST_OP_LABEL, NULL, NULL, NULL, l )
 
-#define irEmitCALLFUNCT(proc,bytestopop,vr) irEmit( IR_OP_CALLFUNCT, NULL, NULL, vr, proc, bytestopop )
+#define irEmitCALLFUNCT(proc,bytestopop,vr) irEmit( AST_OP_CALLFUNCT, NULL, NULL, vr, proc, bytestopop )
 
-#define irEmitCALLPTR(v1,vr,bytestopop) irEmit( IR_OP_CALLPTR, v1, NULL, vr, NULL, bytestopop )
+#define irEmitCALLPTR(v1,vr,bytestopop) irEmit( AST_OP_CALLPTR, v1, NULL, vr, NULL, bytestopop )
 
-#define irEmitSTACKALIGN(bytes) irEmit( IR_OP_STACKALIGN, NULL, NULL, NULL, NULL, bytes )
+#define irEmitSTACKALIGN(bytes) irEmit( AST_OP_STACKALIGN, NULL, NULL, NULL, NULL, bytes )
 
-#define irEmitJUMPPTR(v1) irEmit( IR_OP_JUMPPTR, v1, NULL, NULL, NULL )
+#define irEmitJUMPPTR(v1) irEmit( AST_OP_JUMPPTR, v1, NULL, NULL, NULL )
 
 #define irEmitBRANCH(op,label) irEmit( op, NULL, NULL, NULL, label )
 
 #define irEmitMEM(op,v1,v2,bytes) irEmit( op, v1, v2, NULL, 0, bytes )
 
-#define irEmitSTKCLEAR(bytes,baseofs) irEmit( IR_OP_STKCLEAR, NULL, NULL, NULL, cast( any ptr, baseofs ), bytes )
+#define irEmitSTKCLEAR(bytes,baseofs) irEmit( AST_OP_STKCLEAR, NULL, NULL, NULL, cast( any ptr, baseofs ), bytes )
 
 
 #define ISLONGINT(t) ((t = FB_DATATYPE_LONGINT) or (t = FB_DATATYPE_ULONGINT))

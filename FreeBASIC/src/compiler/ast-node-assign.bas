@@ -152,7 +152,7 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 				hReportWarning( FB_WARNINGMSG_DYNAMICFIELDS )
 			end if
 
-			return astNewMEM( IR_OP_MEMMOVE, l, r, symbGetUDTLen( l->subtype ) )
+			return astNewMEM( AST_OP_MEMMOVE, l, r, symbGetUDTLen( l->subtype ) )
 		end if
 
     '' wstrings?
@@ -321,16 +321,16 @@ private function hSetBitField( byval l as ASTNODE ptr, _
 	l->dtype = s->typ
 	l->subtype = NULL
 
-	l = astNewBOP( IR_OP_AND, astCloneTree( l ), _
+	l = astNewBOP( AST_OP_AND, astCloneTree( l ), _
 				   astNewCONSTi( not (ast_bitmaskTB(s->bitfld.bits) shl s->bitfld.bitpos), _
 				   				 FB_DATATYPE_UINT ) )
 
 	if( s->bitfld.bitpos > 0 ) then
-		r = astNewBOP( IR_OP_SHL, r, _
+		r = astNewBOP( AST_OP_SHL, r, _
 				   	   astNewCONSTi( s->bitfld.bitpos, FB_DATATYPE_UINT ) )
 	end if
 
-	function = astNewBOP( IR_OP_OR, l, r )
+	function = astNewBOP( AST_OP_OR, l, r )
 
 end function
 

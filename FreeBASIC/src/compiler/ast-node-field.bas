@@ -66,13 +66,13 @@ private function hGetBitField( byval n as ASTNODE ptr ) as ASTNODE ptr static
 	astCopy( c, n )
 
 	if( s->bitfld.bitpos > 0 ) then
-		n = astNewBOP( IR_OP_SHR, c, _
+		n = astNewBOP( AST_OP_SHR, c, _
 				   	   astNewCONSTi( s->bitfld.bitpos, FB_DATATYPE_UINT ) )
 	else
 		n = c
 	end if
 
-	n = astNewBOP( IR_OP_AND, n, _
+	n = astNewBOP( AST_OP_AND, n, _
 				   astNewCONSTi( ast_bitmaskTB(s->bitfld.bits), FB_DATATYPE_UINT ) )
 
 	function = n

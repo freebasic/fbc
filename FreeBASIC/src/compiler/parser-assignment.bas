@@ -42,37 +42,37 @@ function cAssignment( byval assgexpr as ASTNODE ptr ) as integer
 
         	select case as const lexGetToken( )
         	case FB_TK_AND
-        		op = IR_OP_AND
+        		op = AST_OP_AND
         	case FB_TK_OR
-        		op = IR_OP_OR
+        		op = AST_OP_OR
         	case FB_TK_XOR
-        		op = IR_OP_XOR
+        		op = AST_OP_XOR
 			case FB_TK_EQV
-				op = IR_OP_EQV
+				op = AST_OP_EQV
 			case FB_TK_IMP
-				op = IR_OP_IMP
+				op = AST_OP_IMP
         	case FB_TK_SHL
-        		op = IR_OP_SHL
+        		op = AST_OP_SHL
         	case FB_TK_SHR
-        		op = IR_OP_SHR
+        		op = AST_OP_SHR
         	case FB_TK_MOD
-        		op = IR_OP_MOD
+        		op = AST_OP_MOD
         	end select
 
         	if( op = INVALID ) then
         		select case as const lexGetToken( )
         		case CHAR_PLUS
-        			op = IR_OP_ADD
+        			op = AST_OP_ADD
         		case CHAR_MINUS
-        			op = IR_OP_SUB
+        			op = AST_OP_SUB
         		case CHAR_RSLASH
-        			op = IR_OP_INTDIV
+        			op = AST_OP_INTDIV
         		case CHAR_CARET
-        			op = IR_OP_MUL
+        			op = AST_OP_MUL
         		case CHAR_SLASH
-        			op = IR_OP_DIV
+        			op = AST_OP_DIV
         		case CHAR_CART
-        			op = IR_OP_POW
+        			op = AST_OP_POW
         		end select
         	end if
 

@@ -212,7 +212,7 @@ function astNewCONV( byval op as integer, _
 	end if
 
     '' pointer typecasting?
-    if( op = IR_OP_TOPOINTER ) then
+    if( op = AST_OP_TOPOINTER ) then
 
 		'' assuming all type-checking was done already
     	astSetType( l, dtype, subtype )
@@ -261,7 +261,7 @@ function astNewCONV( byval op as integer, _
 			exit function
 		end if
 
-		if( op = IR_OP_TOSIGNED ) then
+		if( op = AST_OP_TOSIGNED ) then
 			dtype = symbGetSignedType( ldtype )
 		else
 			dtype = symbGetUnsignedType( ldtype )

@@ -139,12 +139,12 @@ function astNewADDR( byval op as integer, _
 	subtype  = l->subtype
 	delchild = FALSE
 
-	if( op = IR_OP_ADDROF ) then
+	if( op = AST_OP_ADDROF ) then
 
 		select case as const l->class
 		case AST_NODECLASS_ADDR
 			'' convert @* to nothing
-			if( l->op.op = IR_OP_DEREF ) then
+			if( l->op.op = AST_OP_DEREF ) then
 				delchild = TRUE
 				dtype -= FB_DATATYPE_POINTER
 			end if
@@ -200,7 +200,7 @@ function astNewADDR( byval op as integer, _
 			n = l->l
 			astDel( l )
 			l = n
-			op = IR_OP_DEREF
+			op = AST_OP_DEREF
 		end if
 
 	'' DEREF
@@ -208,7 +208,7 @@ function astNewADDR( byval op as integer, _
 		'' convert *@ to nothing
 		select case l->class
 		case AST_NODECLASS_ADDR
-			if( l->op.op = IR_OP_ADDROF ) then
+			if( l->op.op = AST_OP_ADDROF ) then
 				delchild = TRUE
 			end if
 

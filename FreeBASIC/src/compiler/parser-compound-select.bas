@@ -251,7 +251,7 @@ function cCaseExpression( byref casectx as FBCASECTX ) as integer
 
 	function = FALSE
 
-	casectx.op 	= IR_OP_EQ
+	casectx.op 	= AST_OP_EQ
 
 	'' IS REL_OP Expression
 	if( hMatch( FB_TK_IS ) ) then
@@ -329,7 +329,7 @@ private function hExecCaseExpr( byref casectx as FBCASECTX, _
 	else
 		expr = NEWCASEVAR( s, sdtype )
 
-		expr = astNewBOP( IR_OP_LT, expr, casectx.expr1, nextlabel, FALSE )
+		expr = astNewBOP( AST_OP_LT, expr, casectx.expr1, nextlabel, FALSE )
 		astAdd( expr )
 
 		if( expr = NULL ) then
@@ -339,9 +339,9 @@ private function hExecCaseExpr( byref casectx as FBCASECTX, _
 		expr = NEWCASEVAR( s, sdtype )
 
 		if( inverselogic = FALSE ) then
-			expr = astNewBOP( IR_OP_LE, expr, casectx.expr2, initlabel, FALSE )
+			expr = astNewBOP( AST_OP_LE, expr, casectx.expr2, initlabel, FALSE )
 		else
-			expr = astNewBOP( IR_OP_GT, expr, casectx.expr2, nextlabel, FALSE )
+			expr = astNewBOP( AST_OP_GT, expr, casectx.expr2, nextlabel, FALSE )
 		end if
 	end if
 
@@ -438,7 +438,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 			end if
 
 			'' break from block
-			astAdd( astNewBRANCH( IR_OP_JMP, exitlabel ) )
+			astAdd( astNewBRANCH( AST_OP_JMP, exitlabel ) )
 
 		end if
 
@@ -628,7 +628,7 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 	end if
 
 	'' break from block
-	astAdd( astNewBRANCH( IR_OP_JMP, exitlabel ) )
+	astAdd( astNewBRANCH( AST_OP_JMP, exitlabel ) )
 
 	function = TRUE
 
@@ -704,7 +704,7 @@ function cSelectConstStmt as integer
 	astAdd( expr )
 
 	'' skip the statements
-	astAdd( astNewBRANCH( IR_OP_JMP, complabel ) )
+	astAdd( astNewBRANCH( AST_OP_JMP, complabel ) )
 
 	'' SwitchLine*
 	swtbase = ctx.swt.base
@@ -745,7 +745,7 @@ function cSelectConstStmt as integer
 
 	'' check min val
 	if( minval > 0 ) then
-		expr = astNewBOP( IR_OP_LT, _
+		expr = astNewBOP( AST_OP_LT, _
 						  astNewVAR( sym, 0, FB_DATATYPE_UINT ), _
 						  astNewCONSTi( minval, FB_DATATYPE_UINT ), _
 						  deflabel, FALSE )
@@ -753,7 +753,7 @@ function cSelectConstStmt as integer
 	end if
 
 	'' check max val
-	expr = astNewBOP( IR_OP_GT, _
+	expr = astNewBOP( AST_OP_GT, _
 					  astNewVAR( sym, 0, FB_DATATYPE_UINT ), _
 					  astNewCONSTi( maxval, FB_DATATYPE_UINT ), _
 					  deflabel, FALSE )
@@ -762,14 +762,14 @@ function cSelectConstStmt as integer
     '' jump to table[idx]
     tbsym = hJumpTbAllocSym( )
 
-	idxexpr = astNewBOP( IR_OP_MUL, _
+	idxexpr = astNewBOP( AST_OP_MUL, _
 						 astNewVAR( sym, 0, FB_DATATYPE_UINT ), _
     				  	 astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_UINT ) )
 
     expr = astNewIDX( astNewVAR( tbsym, -minval*FB_INTEGERSIZE, FB_DATATYPE_UINT ), _
     				  idxexpr, FB_DATATYPE_UINT, NULL )
 
-    astAdd( astNewBRANCH( IR_OP_JUMPPTR, NULL, expr ) )
+    astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
 
     '' emit table
     astAdd( astNewLABEL( tbsym ) )

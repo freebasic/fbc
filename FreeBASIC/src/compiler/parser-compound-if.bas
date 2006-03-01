@@ -69,7 +69,7 @@ function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
 		end if
 		lexSkipToken( )
 
-		astAdd( astNewBRANCH( IR_OP_JMP, l ) )
+		astAdd( astNewBRANCH( AST_OP_JMP, l ) )
 
 	elseif( cSimpleStatement( ) = FALSE ) then
 		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
@@ -81,7 +81,7 @@ function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
 	if( hMatch( FB_TK_ELSE ) ) then
 
 		'' exit if stmt
-		astAdd( astNewBRANCH( IR_OP_JMP, el ) )
+		astAdd( astNewBRANCH( AST_OP_JMP, el ) )
 
 		'' emit next label
 		astAdd( astNewLABEL( nl ) )
@@ -195,7 +195,7 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
     do while( hMatch( FB_TK_ELSEIF ) )
 
 		'' exit last if stmt
-		astAdd( astNewBRANCH( IR_OP_JMP, el ) )
+		astAdd( astNewBRANCH( AST_OP_JMP, el ) )
 
 		'' emit next label
 		astAdd( astNewLABEL( nl ) )
@@ -225,7 +225,7 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 	if( hMatch( FB_TK_ELSE ) ) then
 
 		'' exit last if stmt
-		astAdd( astNewBRANCH( IR_OP_JMP, el ) )
+		astAdd( astNewBRANCH( AST_OP_JMP, el ) )
 
 		'' emit next label
 		astAdd( astNewLABEL( nl ) )

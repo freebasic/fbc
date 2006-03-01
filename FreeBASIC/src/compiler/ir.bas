@@ -126,73 +126,73 @@ declare sub 		irDump				( byval op as integer, _
 
 	dim shared regTB(0 to EMIT_REGCLASSES-1) as REGCLASS ptr
 
-	'' same order as IROP_ENUM
-	dim shared opTB( 0 to IR_OPS-1 ) as IR_OPCODE => _
+	'' same order as AST_OPCODE
+	dim shared opTB( 0 to AST_OPCODES-1 ) as IR_OPCODE => _
 	{ _
-		( IR_OPTYPE_LOAD	, FALSE, "ld"  ), _ '' IR_OP_LOAD
-		( IR_OPTYPE_LOAD	, FALSE, "ldr" ), _ '' IR_OP_LOADRESULT
-		( IR_OPTYPE_STORE	, FALSE, ":="  ), _	'' IR_OP_STORE
-		( IR_OPTYPE_STORE	, FALSE, ":P"  ), _	'' IR_OP_SPILLREGS
-		( IR_OPTYPE_BINARY	, TRUE , "+"   ), _	'' IR_OP_ADD
-		( IR_OPTYPE_BINARY	, FALSE, "-"   ), _	'' IR_OP_SUB
-		( IR_OPTYPE_BINARY	, TRUE , "*"   ), _	'' IR_OP_MUL
-		( IR_OPTYPE_BINARY	, FALSE, "/"   ), _	'' IR_OP_DIV
-		( IR_OPTYPE_BINARY	, FALSE, "\\"  ), _	'' IR_OP_INTDIV
-		( IR_OPTYPE_BINARY	, FALSE, "%"   ), _	'' IR_OP_MOD
-		( IR_OPTYPE_BINARY	, TRUE , "&"   ), _	'' IR_OP_AND
-		( IR_OPTYPE_BINARY	, TRUE , "|"   ), _	'' IR_OP_OR
-		( IR_OPTYPE_BINARY	, TRUE , "~"   ), _	'' IR_OP_XOR
-		( IR_OPTYPE_BINARY	, FALSE, "eqv" ), _	'' IR_OP_EQV
-		( IR_OPTYPE_BINARY	, FALSE, "imp" ), _	'' IR_OP_IMP
-		( IR_OPTYPE_BINARY	, FALSE, "<<"  ), _	'' IR_OP_SHL
-		( IR_OPTYPE_BINARY	, FALSE, ">>"  ), _	'' IR_OP_SHR
-		( IR_OPTYPE_BINARY	, FALSE, "^"   ), _	'' IR_OP_POW
-		( IR_OPTYPE_BINARY	, FALSE, "mov" ), _	'' IR_OP_MOV
-		( IR_OPTYPE_BINARY	, FALSE, "at2" ), _	'' IR_OP_ATN2
-		( IR_OPTYPE_COMP	, TRUE , "=="  ), _	'' IR_OP_EQ
-		( IR_OPTYPE_COMP	, FALSE, ">"   ), _	'' IR_OP_GT
-		( IR_OPTYPE_COMP	, FALSE, "<"   ), _	'' IR_OP_LT
-		( IR_OPTYPE_COMP	, TRUE , "<>"  ), _	'' IR_OP_NE
-		( IR_OPTYPE_COMP	, FALSE, ">="  ), _	'' IR_OP_GE
-		( IR_OPTYPE_COMP	, FALSE, "<="  ), _	'' IR_OP_LE
-		( IR_OPTYPE_UNARY 	, FALSE, "!"   ), _	'' IR_OP_NOT
-		( IR_OPTYPE_UNARY	, FALSE, "-"   ), _	'' IR_OP_NEG
-		( IR_OPTYPE_UNARY	, FALSE, "abs" ), _	'' IR_OP_ABS
-		( IR_OPTYPE_UNARY	, FALSE, "sgn" ), _	'' IR_OP_SGN
-		( IR_OPTYPE_UNARY	, FALSE, "sin" ), _	'' IR_OP_SIN
-		( IR_OPTYPE_UNARY	, FALSE, "asn" ), _	'' IR_OP_ASIN
-		( IR_OPTYPE_UNARY	, FALSE, "cos" ), _	'' IR_OP_COS
-		( IR_OPTYPE_UNARY	, FALSE, "acs" ), _	'' IR_OP_ACOS
-		( IR_OPTYPE_UNARY	, FALSE, "tan" ), _	'' IR_OP_TAN
-		( IR_OPTYPE_UNARY	, FALSE, "atn" ), _	'' IR_OP_ATAN
-		( IR_OPTYPE_UNARY	, FALSE, "sqr" ), _	'' IR_OP_SQRT
-		( IR_OPTYPE_UNARY	, FALSE, "log" ), _	'' IR_OP_LOG
-		( IR_OPTYPE_UNARY	, FALSE, "flo" ), _	'' IR_OP_FLOOR
-		( IR_OPTYPE_ADDRESS , FALSE, "@"   ), _	'' IR_OP_ADDROF
-		( IR_OPTYPE_ADDRESS , FALSE, "*"   ), _	'' IR_OP_DEREF
-		( IR_OPTYPE_CONVERT	, FALSE, "2i"  ), _	'' IR_OP_TOINT
-		( IR_OPTYPE_CONVERT	, FALSE, "2f"  ), _	'' IR_OP_TOFLT
-		( IR_OPTYPE_STACK	, FALSE, "psh" ), _	'' IR_OP_PUSH
-		( IR_OPTYPE_STACK	, FALSE, "pop" ), _	'' IR_OP_POP
-		( IR_OPTYPE_STACK	, FALSE, "psh" ), _	'' IR_OP_PUSHUDT
-		( IR_OPTYPE_STACK	, FALSE, "alg" ), _	'' IR_OP_STACKALIGN
-		( IR_OPTYPE_BRANCH	, FALSE, "jeq" ), _	'' IR_OP_JEQ
-		( IR_OPTYPE_BRANCH	, FALSE, "jgt" ), _	'' IR_OP_JGT
-		( IR_OPTYPE_BRANCH	, FALSE, "jlt" ), _	'' IR_OP_JLT
-		( IR_OPTYPE_BRANCH	, FALSE, "jne" ), _	'' IR_OP_JNE
-		( IR_OPTYPE_BRANCH	, FALSE, "jge" ), _	'' IR_OP_JGE
-		( IR_OPTYPE_BRANCH	, FALSE, "jle" ), _	'' IR_OP_JLE
-		( IR_OPTYPE_BRANCH	, FALSE, "jmp" ), _	'' IR_OP_JMP
-		( IR_OPTYPE_BRANCH	, FALSE, "cal" ), _	'' IR_OP_CALL
-		( IR_OPTYPE_BRANCH	, FALSE, "lbl" ), _	'' IR_OP_LABEL
-		( IR_OPTYPE_BRANCH	, FALSE, "ret" ), _	'' IR_OP_RET
-		( IR_OPTYPE_CALL	, FALSE, "caf" ), _	'' IR_OP_CALLFUNC
-		( IR_OPTYPE_CALL	, FALSE, "ca@" ), _	'' IR_OP_CALLPTR
-		( IR_OPTYPE_CALL	, FALSE, "jm@" ), _	'' IR_OP_JUMPPTR
-		( IR_OPTYPE_MEM		, FALSE, "mmv" ), _	'' IR_OP_MEMMOVE
-		( IR_OPTYPE_MEM		, FALSE, "msp" ), _	'' IR_OP_MEMSWAP
-		( IR_OPTYPE_MEM		, FALSE, "mcl" ), _	'' IR_OP_MEMCLEAR
-		( IR_OPTYPE_MEM		, FALSE, "scl" )  _	'' IR_OP_STKCLEAR
+		( IR_OPTYPE_LOAD	, FALSE, "ld"  ), _ '' AST_OP_LOAD
+		( IR_OPTYPE_LOAD	, FALSE, "ldr" ), _ '' AST_OP_LOADRESULT
+		( IR_OPTYPE_STORE	, FALSE, ":="  ), _	'' AST_OP_STORE
+		( IR_OPTYPE_STORE	, FALSE, ":P"  ), _	'' AST_OP_SPILLREGS
+		( IR_OPTYPE_BINARY	, TRUE , "+"   ), _	'' AST_OP_ADD
+		( IR_OPTYPE_BINARY	, FALSE, "-"   ), _	'' AST_OP_SUB
+		( IR_OPTYPE_BINARY	, TRUE , "*"   ), _	'' AST_OP_MUL
+		( IR_OPTYPE_BINARY	, FALSE, "/"   ), _	'' AST_OP_DIV
+		( IR_OPTYPE_BINARY	, FALSE, "\\"  ), _	'' AST_OP_INTDIV
+		( IR_OPTYPE_BINARY	, FALSE, "%"   ), _	'' AST_OP_MOD
+		( IR_OPTYPE_BINARY	, TRUE , "&"   ), _	'' AST_OP_AND
+		( IR_OPTYPE_BINARY	, TRUE , "|"   ), _	'' AST_OP_OR
+		( IR_OPTYPE_BINARY	, TRUE , "~"   ), _	'' AST_OP_XOR
+		( IR_OPTYPE_BINARY	, FALSE, "eqv" ), _	'' AST_OP_EQV
+		( IR_OPTYPE_BINARY	, FALSE, "imp" ), _	'' AST_OP_IMP
+		( IR_OPTYPE_BINARY	, FALSE, "<<"  ), _	'' AST_OP_SHL
+		( IR_OPTYPE_BINARY	, FALSE, ">>"  ), _	'' AST_OP_SHR
+		( IR_OPTYPE_BINARY	, FALSE, "^"   ), _	'' AST_OP_POW
+		( IR_OPTYPE_BINARY	, FALSE, "mov" ), _	'' AST_OP_MOV
+		( IR_OPTYPE_BINARY	, FALSE, "at2" ), _	'' AST_OP_ATN2
+		( IR_OPTYPE_COMP	, TRUE , "=="  ), _	'' AST_OP_EQ
+		( IR_OPTYPE_COMP	, FALSE, ">"   ), _	'' AST_OP_GT
+		( IR_OPTYPE_COMP	, FALSE, "<"   ), _	'' AST_OP_LT
+		( IR_OPTYPE_COMP	, TRUE , "<>"  ), _	'' AST_OP_NE
+		( IR_OPTYPE_COMP	, FALSE, ">="  ), _	'' AST_OP_GE
+		( IR_OPTYPE_COMP	, FALSE, "<="  ), _	'' AST_OP_LE
+		( IR_OPTYPE_UNARY 	, FALSE, "!"   ), _	'' AST_OP_NOT
+		( IR_OPTYPE_UNARY	, FALSE, "-"   ), _	'' AST_OP_NEG
+		( IR_OPTYPE_UNARY	, FALSE, "abs" ), _	'' AST_OP_ABS
+		( IR_OPTYPE_UNARY	, FALSE, "sgn" ), _	'' AST_OP_SGN
+		( IR_OPTYPE_UNARY	, FALSE, "sin" ), _	'' AST_OP_SIN
+		( IR_OPTYPE_UNARY	, FALSE, "asn" ), _	'' AST_OP_ASIN
+		( IR_OPTYPE_UNARY	, FALSE, "cos" ), _	'' AST_OP_COS
+		( IR_OPTYPE_UNARY	, FALSE, "acs" ), _	'' AST_OP_ACOS
+		( IR_OPTYPE_UNARY	, FALSE, "tan" ), _	'' AST_OP_TAN
+		( IR_OPTYPE_UNARY	, FALSE, "atn" ), _	'' AST_OP_ATAN
+		( IR_OPTYPE_UNARY	, FALSE, "sqr" ), _	'' AST_OP_SQRT
+		( IR_OPTYPE_UNARY	, FALSE, "log" ), _	'' AST_OP_LOG
+		( IR_OPTYPE_UNARY	, FALSE, "flo" ), _	'' AST_OP_FLOOR
+		( IR_OPTYPE_ADDRESS , FALSE, "@"   ), _	'' AST_OP_ADDROF
+		( IR_OPTYPE_ADDRESS , FALSE, "*"   ), _	'' AST_OP_DEREF
+		( IR_OPTYPE_CONVERT	, FALSE, "2i"  ), _	'' AST_OP_TOINT
+		( IR_OPTYPE_CONVERT	, FALSE, "2f"  ), _	'' AST_OP_TOFLT
+		( IR_OPTYPE_STACK	, FALSE, "psh" ), _	'' AST_OP_PUSH
+		( IR_OPTYPE_STACK	, FALSE, "pop" ), _	'' AST_OP_POP
+		( IR_OPTYPE_STACK	, FALSE, "psh" ), _	'' AST_OP_PUSHUDT
+		( IR_OPTYPE_STACK	, FALSE, "alg" ), _	'' AST_OP_STACKALIGN
+		( IR_OPTYPE_BRANCH	, FALSE, "jeq" ), _	'' AST_OP_JEQ
+		( IR_OPTYPE_BRANCH	, FALSE, "jgt" ), _	'' AST_OP_JGT
+		( IR_OPTYPE_BRANCH	, FALSE, "jlt" ), _	'' AST_OP_JLT
+		( IR_OPTYPE_BRANCH	, FALSE, "jne" ), _	'' AST_OP_JNE
+		( IR_OPTYPE_BRANCH	, FALSE, "jge" ), _	'' AST_OP_JGE
+		( IR_OPTYPE_BRANCH	, FALSE, "jle" ), _	'' AST_OP_JLE
+		( IR_OPTYPE_BRANCH	, FALSE, "jmp" ), _	'' AST_OP_JMP
+		( IR_OPTYPE_BRANCH	, FALSE, "cal" ), _	'' AST_OP_CALL
+		( IR_OPTYPE_BRANCH	, FALSE, "lbl" ), _	'' AST_OP_LABEL
+		( IR_OPTYPE_BRANCH	, FALSE, "ret" ), _	'' AST_OP_RET
+		( IR_OPTYPE_CALL	, FALSE, "caf" ), _	'' AST_OP_CALLFUNC
+		( IR_OPTYPE_CALL	, FALSE, "ca@" ), _	'' AST_OP_CALLPTR
+		( IR_OPTYPE_CALL	, FALSE, "jm@" ), _	'' AST_OP_JUMPPTR
+		( IR_OPTYPE_MEM		, FALSE, "mmv" ), _	'' AST_OP_MEMMOVE
+		( IR_OPTYPE_MEM		, FALSE, "msp" ), _	'' AST_OP_MEMSWAP
+		( IR_OPTYPE_MEM		, FALSE, "mcl" ), _	'' AST_OP_MEMCLEAR
+		( IR_OPTYPE_MEM		, FALSE, "scl" )  _	'' AST_OP_STKCLEAR
 	}
 
 '':::::
@@ -284,18 +284,18 @@ end sub
 function irGetInverseLogOp( byval op as integer ) as integer static
 
 	select case as const op
-	case IR_OP_EQ
-		op = IR_OP_NE
-	case IR_OP_NE
-		op = IR_OP_EQ
-	case IR_OP_GT
-		op = IR_OP_LE
-	case IR_OP_LT
-		op = IR_OP_GE
-	case IR_OP_GE
-		op = IR_OP_LT
-	case IR_OP_LE
-		op = IR_OP_GT
+	case AST_OP_EQ
+		op = AST_OP_NE
+	case AST_OP_NE
+		op = AST_OP_EQ
+	case AST_OP_GT
+		op = AST_OP_LE
+	case AST_OP_LT
+		op = AST_OP_GE
+	case AST_OP_GE
+		op = AST_OP_LT
+	case AST_OP_LE
+		op = AST_OP_GT
 	end select
 
 	function = op
@@ -368,9 +368,9 @@ sub irEmitCONVERT( byval v1 as IRVREG ptr, _
 
 	select case symb_dtypeTB(dtype1).class
 	case FB_DATACLASS_INTEGER
-		irEmit( IR_OP_TOINT, v1, v2, NULL )
+		irEmit( AST_OP_TOINT, v1, v2, NULL )
 	case FB_DATACLASS_FPOINT
-		irEmit( IR_OP_TOFLT, v1, v2, NULL )
+		irEmit( AST_OP_TOFLT, v1, v2, NULL )
 	end select
 
 end sub
@@ -597,7 +597,7 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
 
 			else
 				vt = irAllocVREG( FB_DATATYPE_UINT )
-				irEmitADDR( IR_OP_ADDROF, vr, vt )
+				irEmitADDR( AST_OP_ADDROF, vr, vt )
 				irEmitPUSH( vt )
 			end if
 
@@ -657,14 +657,14 @@ sub irEmitDBG( byval proc as FBSYMBOL ptr, _
 	irFlush( )
 
 	select case as const op
-	case IR_OP_DBG_LINEINI
+	case AST_OP_DBG_LINEINI
 		edbgLineBegin( proc, ex )
-	case IR_OP_DBG_LINEEND
+	case AST_OP_DBG_LINEEND
 		edbgLineEnd( proc, ex )
 
-	case IR_OP_DBG_SCOPEINI
+	case AST_OP_DBG_SCOPEINI
 		edbgEmitScopeINI( cptr( FBSYMBOL ptr, ex ) )
-	case IR_OP_DBG_SCOPEEND
+	case AST_OP_DBG_SCOPEEND
 		edbgEmitScopeEND( cptr( FBSYMBOL ptr, ex ) )
 	end select
 
@@ -1220,16 +1220,16 @@ private sub hFlushBRANCH( byval op as integer, _
 
 	''
 	select case as const op
-	case IR_OP_LABEL
+	case AST_OP_LABEL
 		emitLABEL( label )
 
-	case IR_OP_JMP
+	case AST_OP_JMP
 		emitJUMP( label )
 
-	case IR_OP_CALL
+	case AST_OP_CALL
 		emitCALL( label, 0 )
 
-	case IR_OP_RET
+	case AST_OP_RET
 		emitRET( 0 )
 
 	case else
@@ -1374,7 +1374,7 @@ private sub hFlushCALL( byval op as integer, _
 	else
 
     	'' if it's a CALL, save used registers and free the FPU stack
-    	if( op = IR_OP_CALLPTR ) then
+    	if( op = AST_OP_CALLPTR ) then
     		hPreserveRegs( v1 )
     	end if
 
@@ -1386,7 +1386,7 @@ private sub hFlushCALL( byval op as integer, _
 		end if
 
 		'' CALLPTR
-		if( op = IR_OP_CALLPTR ) then
+		if( op = AST_OP_CALLPTR ) then
 			emitCALLPTR( v1, bytes2pop )
 		'' JUMPPTR
 		else
@@ -1428,7 +1428,7 @@ private sub hFlushSTACK( byval op as integer, _
 	dim as IRVREG ptr va
 
 	''
-	if( op = IR_OP_STACKALIGN ) then
+	if( op = AST_OP_STACKALIGN ) then
 		emitSTACKALIGN( ex )
 		exit sub
 	end if
@@ -1451,11 +1451,11 @@ private sub hFlushSTACK( byval op as integer, _
 
 	''
 	select case op
-	case IR_OP_PUSH
+	case AST_OP_PUSH
 		emitPUSH( v1 )
-	case IR_OP_PUSHUDT
+	case AST_OP_PUSHUDT
 		emitPUSHUDT( v1, ex )
-	case IR_OP_POP
+	case AST_OP_POP
 		emitPOP( v1 )
 	end select
 
@@ -1506,33 +1506,33 @@ private sub hFlushUOP( byval op as integer, _
 
 	''
 	select case as const op
-	case IR_OP_NEG
+	case AST_OP_NEG
 		emitNEG( v1 )
-	case IR_OP_NOT
+	case AST_OP_NOT
 		emitNOT( v1 )
 
-	case IR_OP_ABS
+	case AST_OP_ABS
 		emitABS( v1 )
-	case IR_OP_SGN
+	case AST_OP_SGN
 		emitSGN( v1 )
 
-	case IR_OP_SIN
+	case AST_OP_SIN
 		emitSIN( v1 )
-	case IR_OP_ASIN
+	case AST_OP_ASIN
 		emitASIN( v1 )
-	case IR_OP_COS
+	case AST_OP_COS
 		emitCOS( v1 )
-	case IR_OP_ACOS
+	case AST_OP_ACOS
 		emitACOS( v1 )
-	case IR_OP_TAN
+	case AST_OP_TAN
 		emitTAN( v1 )
-	case IR_OP_ATAN
+	case AST_OP_ATAN
 		emitATAN( v1 )
-	case IR_OP_SQRT
+	case AST_OP_SQRT
 		emitSQRT( v1 )
-	case IR_OP_LOG
+	case AST_OP_LOG
 		emitLOG( v1 )
-	case IR_OP_FLOOR
+	case AST_OP_FLOOR
 		emitFLOOR( v1 )
 	end select
 
@@ -1604,41 +1604,41 @@ private sub hFlushBOP( byval op as integer, _
 
     ''
 	select case as const op
-	case IR_OP_ADD
+	case AST_OP_ADD
 		emitADD( v1, v2 )
-	case IR_OP_SUB
+	case AST_OP_SUB
 		emitSUB( v1, v2 )
-	case IR_OP_MUL
+	case AST_OP_MUL
 		emitMUL( v1, v2 )
-	case IR_OP_DIV
+	case AST_OP_DIV
         emitDIV( v1, v2 )
-	case IR_OP_INTDIV
+	case AST_OP_INTDIV
         emitINTDIV( v1, v2 )
-	case IR_OP_MOD
+	case AST_OP_MOD
 		emitMOD( v1, v2 )
 
-	case IR_OP_SHL
+	case AST_OP_SHL
 		emitSHL( v1, v2 )
-	case IR_OP_SHR
+	case AST_OP_SHR
 		emitSHR( v1, v2 )
 
-	case IR_OP_AND
+	case AST_OP_AND
 		emitAND( v1, v2 )
-	case IR_OP_OR
+	case AST_OP_OR
 		emitOR( v1, v2 )
-	case IR_OP_XOR
+	case AST_OP_XOR
 		emitXOR( v1, v2 )
-	case IR_OP_EQV
+	case AST_OP_EQV
 		emitEQV( v1, v2 )
-	case IR_OP_IMP
+	case AST_OP_IMP
 		emitIMP( v1, v2 )
 
-	case IR_OP_MOV
+	case AST_OP_MOV
 		emitMOV( v1, v2 )
 
-	case IR_OP_ATAN2
+	case AST_OP_ATAN2
         emitATN2( v1, v2 )
-    case IR_OP_POW
+    case AST_OP_POW
     	emitPOW( v1, v2 )
 	end select
 
@@ -1745,17 +1745,17 @@ private sub hFlushCOMP( byval op as integer, _
 
 	''
 	select case as const op
-	case IR_OP_EQ
+	case AST_OP_EQ
 		emitEQ( vr, label, v1, v2 )
-	case IR_OP_NE
+	case AST_OP_NE
 		emitNE( vr, label, v1, v2 )
-	case IR_OP_GT
+	case AST_OP_GT
 		emitGT( vr, label, v1, v2 )
-	case IR_OP_LT
+	case AST_OP_LT
 		emitLT( vr, label, v1, v2 )
-	case IR_OP_LE
+	case AST_OP_LE
 		emitLE( vr, label, v1, v2 )
-	case IR_OP_GE
+	case AST_OP_GE
 		emitGE( vr, label, v1, v2 )
 	end select
 
@@ -1811,7 +1811,7 @@ private sub hFlushSTORE( byval op as integer, _
 	dim as IRVREG ptr va
 
 	''
-	if( op = IR_OP_SPILLREGS ) then
+	if( op = AST_OP_SPILLREGS ) then
 		hSpillRegs( )
 		exit function
 	end if
@@ -1861,7 +1861,7 @@ private sub hFlushLOAD( byval op as integer, _
 
 	''
 	select case op
-	case IR_OP_LOAD
+	case AST_OP_LOAD
 		'' handle longint
 		if( ISLONGINT( v1_dtype ) ) then
 			va = v1->vaux
@@ -1870,7 +1870,7 @@ private sub hFlushLOAD( byval op as integer, _
 
 		regTB(v1_dclass)->ensure( regTB(v1_dclass), v1 )
 
-	case IR_OP_LOADRESULT
+	case AST_OP_LOADRESULT
 		if( v1_typ = IR_VREGTYPE_REG ) then
 			'' handle longint
 			if( ISLONGINT( v1_dtype ) ) then
@@ -2018,9 +2018,9 @@ private sub hFlushADDR( byval op as integer, _
 
 	''
 	select case op
-	case IR_OP_ADDROF
+	case AST_OP_ADDROF
 		emitADDROF( vr, v1 )
-	case IR_OP_DEREF
+	case AST_OP_DEREF
 		emitDEREF( vr, v1 )
 	end select
 
@@ -2043,13 +2043,13 @@ private sub hFlushMEM( byval op as integer, _
 
 	''
 	select case op
-	case IR_OP_MEMMOVE
+	case AST_OP_MEMMOVE
 		emitMEMMOVE( v1, v2, bytes )
-	case IR_OP_MEMSWAP
+	case AST_OP_MEMSWAP
 		emitMEMSWAP( v1, v2, bytes )
-	case IR_OP_MEMCLEAR
+	case AST_OP_MEMCLEAR
 		emitMEMCLEAR( v1, v2, bytes )
-	case IR_OP_STKCLEAR
+	case AST_OP_STKCLEAR
 		emitSTKCLEAR( bytes, cint( extra ) )
 	end select
 

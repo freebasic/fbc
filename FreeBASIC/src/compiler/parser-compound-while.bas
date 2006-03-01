@@ -97,7 +97,7 @@ function cWhileStatement as integer
 		exit function
 	end if
 
-    astAdd( astNewBRANCH( IR_OP_JMP, il ) )
+    astAdd( astNewBRANCH( AST_OP_JMP, il ) )
 
     '' end label (loop exit)
     astAdd( astNewLABEL( el ) )

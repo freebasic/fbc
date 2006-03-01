@@ -285,19 +285,19 @@ function cForStatement as integer
     if( isconst = 3 ) then
 
 		if( ispositive ) then
-			op = IR_OP_LE
+			op = AST_OP_LE
     	else
-			op = IR_OP_GE
+			op = AST_OP_GE
     	end if
 
     	expr = astNewBOP( op, astNewCONST( @ival, dtype ), astNewCONST( @eval, dtype ) )
     	if( astGetValInt( expr ) = FALSE ) then
-    		astAdd( astNewBRANCH( IR_OP_JMP, el ) )
+    		astAdd( astNewBRANCH( AST_OP_JMP, el ) )
     	end if
     	astDel( expr )
 
     else
-    	astAdd( astNewBRANCH( IR_OP_JMP, tl ) )
+    	astAdd( astNewBRANCH( AST_OP_JMP, tl ) )
     end if
 
 	'' add start label
@@ -351,7 +351,7 @@ function cForStatement as integer
 	astAdd( astNewLABEL( cl ) )
 
 	'' counter += step
-	cFlushSelfBOP( IR_OP_ADD, dtype, cnt, stp, @sval )
+	cFlushSelfBOP( AST_OP_ADD, dtype, cnt, stp, @sval )
 
 	'' test label
 	astAdd( astNewLABEL( tl ) )
@@ -359,9 +359,9 @@ function cForStatement as integer
     if( iscomplex = FALSE ) then
 
 		if( ispositive ) then
-			op = IR_OP_LE
+			op = AST_OP_LE
     	else
-			op = IR_OP_GE
+			op = AST_OP_GE
     	end if
 
     	'' counter <= or >= end cond?
@@ -381,16 +381,16 @@ function cForStatement as integer
 			ival.int = 0
 		end select
 
-		cFlushBOP( IR_OP_GE, dtype, stp, @sval, NULL, @ival, c2l )
+		cFlushBOP( AST_OP_GE, dtype, stp, @sval, NULL, @ival, c2l )
 
     	'' negative, loop if >=
-		cFlushBOP( IR_OP_GE, dtype, cnt, NULL, endc, @eval, il )
+		cFlushBOP( AST_OP_GE, dtype, cnt, NULL, endc, @eval, il )
 		'' exit loop
-		astAdd( astNewBRANCH( IR_OP_JMP, el ) )
+		astAdd( astNewBRANCH( AST_OP_JMP, el ) )
     	'' control label
     	astAdd( astNewLABEL( c2l, FALSE ) )
     	'' positive, loop if <=
-		cFlushBOP( IR_OP_LE, dtype, cnt, NULL, endc, @eval, il )
+		cFlushBOP( AST_OP_LE, dtype, cnt, NULL, endc, @eval, il )
     end if
 
     '' end label (loop exit)

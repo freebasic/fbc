@@ -55,7 +55,7 @@ private function hFuncReturn( ) as integer
 	end if
 
 	'' do an implicit exit function
-	astAdd( astNewBRANCH( IR_OP_JMP, env.procstmt.endlabel ) )
+	astAdd( astNewBRANCH( AST_OP_JMP, env.procstmt.endlabel ) )
 
 	function = TRUE
 
@@ -89,7 +89,7 @@ function cGotoStmt as integer
 		end if
 		lexSkipToken( )
 
-		astAdd( astNewBRANCH( IR_OP_JMP, l ) )
+		astAdd( astNewBRANCH( AST_OP_JMP, l ) )
 
 		function = TRUE
 
@@ -114,7 +114,7 @@ function cGotoStmt as integer
 		end if
 		lexSkipToken( )
 
-		astAdd( astNewBRANCH( IR_OP_CALL, l ) )
+		astAdd( astNewBRANCH( AST_OP_CALL, l ) )
 
 		function = TRUE
 
@@ -134,7 +134,7 @@ function cGotoStmt as integer
 				 FB_TK_REM, FB_TK_ELSE
 
 				'' return 0
-				astAdd( astNewBRANCH( IR_OP_RET, NULL ) )
+				astAdd( astNewBRANCH( AST_OP_RET, NULL ) )
 				function = TRUE
 
 			case else
@@ -147,7 +147,7 @@ function cGotoStmt as integer
 				'' label?
 				if( l <> NULL ) then
 					lexSkipToken( )
-					astAdd( astNewBRANCH( IR_OP_JMP, l ) )
+					astAdd( astNewBRANCH( AST_OP_JMP, l ) )
 					function = TRUE
 				end if
 			end select

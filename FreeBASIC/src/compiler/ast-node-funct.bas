@@ -197,7 +197,7 @@ private function hAllocTmpWstrPtr( byval proc as ASTNODE ptr, _
 	'' create temp wstring ptr to pass as paramenter
 	t = hAllocTmpStrNode( proc, NULL, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FALSE )
 
-	n = astNewCONV( IR_OP_TOPOINTER, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, NULL, n )
+	n = astNewCONV( AST_OP_TOPOINTER, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, NULL, n )
 
 	'' temp string = src string
 	return astNewASSIGN( astNewVAR( t->tmpsym, 0, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR ), n )
@@ -371,19 +371,19 @@ private function hStrParamToPtrArg( byval proc as ASTNODE ptr, _
 
 		'' not fixed-len? deref var-len (ptr at offset 0)
 		if( pdtype <> FB_DATATYPE_FIXSTR ) then
-    		n->l = astNewCONV( IR_OP_TOPOINTER, _
+    		n->l = astNewCONV( AST_OP_TOPOINTER, _
     						   FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
     						   NULL, _
-    						   astNewADDR( IR_OP_DEREF, n->l ) )
+    						   astNewADDR( AST_OP_DEREF, n->l ) )
 
         '' fixed-len..
         else
             '' get the address of
         	if( p->class <> AST_NODECLASS_PTR ) then
-				n->l = astNewCONV( IR_OP_TOPOINTER, _
+				n->l = astNewCONV( AST_OP_TOPOINTER, _
     						   	   FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
     						   	   NULL, _
-							   	   astNewADDR( IR_OP_ADDROF, n->l ) )
+							   	   astNewADDR( AST_OP_ADDROF, n->l ) )
 			end if
 		end if
 
@@ -394,7 +394,7 @@ private function hStrParamToPtrArg( byval proc as ASTNODE ptr, _
     	select case pdtype
     	'' zstring? take the address of
     	case FB_DATATYPE_CHAR
-			n->l = astNewADDR( IR_OP_ADDROF, p )
+			n->l = astNewADDR( AST_OP_ADDROF, p )
 			n->dtype = n->l->dtype
 
 		'' wstring?
@@ -408,7 +408,7 @@ private function hStrParamToPtrArg( byval proc as ASTNODE ptr, _
 			'' not a temporary..
 			else
 				'' take the address of
-				n->l = astNewADDR( IR_OP_ADDROF, p )
+				n->l = astNewADDR( AST_OP_ADDROF, p )
 			end if
 
 			n->dtype = n->l->dtype
@@ -484,7 +484,7 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 			end if
 
         	''
-        	n->l     = astNewADDR( IR_OP_ADDROF, _
+        	n->l     = astNewADDR( AST_OP_ADDROF, _
         						   astNewVAR( d, 0, FB_DATATYPE_UINT ) )
         	n->dtype = FB_DATATYPE_POINTER + FB_DATATYPE_VOID
 
@@ -533,7 +533,7 @@ private function hCheckByRefArg( byval dtype as integer, _
 	end select
 
 	'' take the address of
-	p = astNewADDR( IR_OP_ADDROF, p )
+	p = astNewADDR( AST_OP_ADDROF, p )
 
 	n->l 		  = p
 	n->dtype 	  = p->dtype
@@ -728,7 +728,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 			if( pdtype = FB_DATATYPE_STRING ) then
 				pdclass = FB_DATACLASS_INTEGER
 				pdtype  = FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
-				n->l     = astNewADDR( IR_OP_DEREF, p )
+				n->l     = astNewADDR( AST_OP_DEREF, p )
 				n->dtype = pdtype
 			end if
 		end if
@@ -737,7 +737,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 		if( pclass <> AST_NODECLASS_PTR ) then
 			'' descriptor or fixed-len? get the address of
 			if( (pdclass = FB_DATACLASS_STRING) or (pdtype = FB_DATATYPE_CHAR) ) then
-				n->l     = astNewADDR( IR_OP_ADDROF, p )
+				n->l     = astNewADDR( AST_OP_ADDROF, p )
 				n->dtype = FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
 			end if
 		end if

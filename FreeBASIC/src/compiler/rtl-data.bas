@@ -301,7 +301,7 @@ function rtlDataRestore( byval label as FBSYMBOL ptr, _
     end if
 
     '' byval labeladdrs as void ptr
-    expr = astNewADDR( IR_OP_ADDROF, astNewVAR( s, 0, FB_DATATYPE_BYTE ) )
+    expr = astNewADDR( AST_OP_ADDROF, astNewVAR( s, 0, FB_DATATYPE_BYTE ) )
     if( astNewPARAM( proc, expr ) = NULL ) then
  		exit function
  	end if

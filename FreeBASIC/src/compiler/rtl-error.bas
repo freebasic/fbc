@@ -185,7 +185,7 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 	nxtlabel = symbAddLabel( NULL )
 
 	'' result >= FB_RTERROR_OK? skip..
-	resexpr = astNewBOP( IR_OP_EQ, resexpr, astNewCONSTi( 0, FB_DATATYPE_INTEGER ), nxtlabel, FALSE )
+	resexpr = astNewBOP( AST_OP_EQ, resexpr, astNewCONSTi( 0, FB_DATATYPE_INTEGER ), nxtlabel, FALSE )
 
 	astAdd( resexpr )
 
@@ -203,7 +203,7 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 
 	'' reslabel
 	if( reslabel <> NULL ) then
-		param = astNewADDR( IR_OP_ADDROF, astNewVAR( reslabel, 0, FB_DATATYPE_BYTE ) )
+		param = astNewADDR( AST_OP_ADDROF, astNewVAR( reslabel, 0, FB_DATATYPE_BYTE ) )
 	else
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
@@ -213,7 +213,7 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 
 	'' resnxtlabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDR( IR_OP_ADDROF, astNewVAR( nxtlabel, 0, FB_DATATYPE_BYTE ) )
+		param = astNewADDR( AST_OP_ADDROF, astNewVAR( nxtlabel, 0, FB_DATATYPE_BYTE ) )
 	else
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
@@ -222,7 +222,7 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 	end if
 
     '' dst
-    dst = astNewBRANCH( IR_OP_JUMPPTR, NULL, proc )
+    dst = astNewBRANCH( AST_OP_JUMPPTR, NULL, proc )
 
     astAdd( dst )
 
@@ -273,7 +273,7 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
 
 	'' reslabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDR( IR_OP_ADDROF, astNewVAR( reslabel, 0, FB_DATATYPE_BYTE ) )
+		param = astNewADDR( AST_OP_ADDROF, astNewVAR( reslabel, 0, FB_DATATYPE_BYTE ) )
 	else
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
@@ -283,7 +283,7 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
 
 	'' resnxtlabel
 	if( env.clopt.resumeerr ) then
-		param = astNewADDR( IR_OP_ADDROF, astNewVAR( nxtlabel, 0, FB_DATATYPE_BYTE ) )
+		param = astNewADDR( AST_OP_ADDROF, astNewVAR( nxtlabel, 0, FB_DATATYPE_BYTE ) )
 	else
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
@@ -292,7 +292,7 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
 	end if
 
     '' dst
-    dst = astNewBRANCH( IR_OP_JUMPPTR, NULL, proc )
+    dst = astNewBRANCH( AST_OP_JUMPPTR, NULL, proc )
 
     astAdd( dst )
 
@@ -380,7 +380,7 @@ sub rtlErrorResume( byval isnext as integer )
 	proc = astNewFUNCT( f )
 
     ''
-    dst = astNewBRANCH( IR_OP_JUMPPTR, NULL, proc )
+    dst = astNewBRANCH( AST_OP_JUMPPTR, NULL, proc )
 
     astAdd( dst )
 

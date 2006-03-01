@@ -52,7 +52,7 @@ function astNewPTR( byval ofs as integer, _
 		'' convert *@ to nothing
 		select case l->class
 		case AST_NODECLASS_ADDR
-			if( l->op.op = IR_OP_ADDROF ) then
+			if( l->op.op = AST_OP_ADDROF ) then
 				delchild = TRUE
 			end if
 		case AST_NODECLASS_OFFSET
@@ -98,7 +98,7 @@ function astLoadPTR( byval n as ASTNODE ptr ) as IRVREG ptr
 			(irGetVRDataSize( v1 ) <> FB_POINTERSIZE) ) then
 
 			vp = irAllocVREG( FB_DATATYPE_POINTER )
-			irEmitADDR( IR_OP_DEREF, v1, vp )
+			irEmitADDR( AST_OP_DEREF, v1, vp )
 		else
 			vp = v1
 		end if

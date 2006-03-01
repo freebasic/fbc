@@ -56,7 +56,7 @@ private function hAllocWithVar( ) as FBSYMBOL ptr
 
     '' load with the address of expr (sym = @expr)
     astAdd( astNewASSIGN( astNewVAR( sym, 0, dtype, subtype ), _
-    			  		  astNewADDR( IR_OP_ADDROF, expr ) ) )
+    			  		  astNewADDR( AST_OP_ADDROF, expr ) ) )
 
 
 	function = sym

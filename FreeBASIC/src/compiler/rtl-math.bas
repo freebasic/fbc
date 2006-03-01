@@ -236,11 +236,11 @@ function rtlMathTRANS( byval op as integer, _
 
 	''
 	select case op
-	case IR_OP_ASIN
+	case AST_OP_ASIN
 		f = PROCLOOKUP( ASIN )
-	case IR_OP_ACOS
+	case AST_OP_ACOS
 		f = PROCLOOKUP( ACOS )
-	case IR_OP_LOG
+	case AST_OP_LOG
 		f = PROCLOOKUP( LOG )
 	end select
 
