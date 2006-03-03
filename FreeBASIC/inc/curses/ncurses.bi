@@ -192,58 +192,58 @@ declare function resizeterm cdecl alias "resizeterm" (byval as integer, byval as
 declare function use_default_colors cdecl alias "use_default_colors" () as integer
 declare function use_extended_names cdecl alias "use_extended_names" (byval as integer) as integer
 declare function wresize cdecl alias "wresize" (byval as WINDOW ptr, byval as integer, byval as integer) as integer
-declare function addch cdecl alias "addch" (byval as chtype) as integer
-declare function addchnstr cdecl alias "addchnstr" (byval as chtype ptr, byval as integer) as integer
-declare function addchstr cdecl alias "addchstr" (byval as chtype ptr) as integer
-declare function addnstr cdecl alias "addnstr" (byval as zstring ptr, byval as integer) as integer
-declare function addstr cdecl alias "addstr" (byval as zstring ptr) as integer
-declare function attroff cdecl alias "attroff" (byval as integer) as integer
-declare function attron cdecl alias "attron" (byval as integer) as integer
-declare function attrset cdecl alias "attrset" (byval as integer) as integer
-declare function attr_get cdecl alias "attr_get" (byval as attr_t ptr, byval as short ptr, byval as any ptr) as integer
-declare function attr_off cdecl alias "attr_off" (byval as attr_t, byval as any ptr) as integer
-declare function attr_on cdecl alias "attr_on" (byval as attr_t, byval as any ptr) as integer
-declare function attr_set cdecl alias "attr_set" (byval as attr_t, byval as short, byval as any ptr) as integer
+''''''' declare function addch cdecl alias "addch" (byval as chtype) as integer
+''''''' declare function addchnstr cdecl alias "addchnstr" (byval as chtype ptr, byval as integer) as integer
+''''''' declare function addchstr cdecl alias "addchstr" (byval as chtype ptr) as integer
+''''''' declare function addnstr cdecl alias "addnstr" (byval as zstring ptr, byval as integer) as integer
+''''''' declare function addstr cdecl alias "addstr" (byval as zstring ptr) as integer
+''''''' declare function attroff cdecl alias "attroff" (byval as integer) as integer
+''''''' declare function attron cdecl alias "attron" (byval as integer) as integer
+''''''' declare function attrset cdecl alias "attrset" (byval as integer) as integer
+''''''' declare function attr_get cdecl alias "attr_get" (byval as attr_t ptr, byval as short ptr, byval as any ptr) as integer
+''''''' declare function attr_off cdecl alias "attr_off" (byval as attr_t, byval as any ptr) as integer
+''''''' declare function attr_on cdecl alias "attr_on" (byval as attr_t, byval as any ptr) as integer
+''''''' declare function attr_set cdecl alias "attr_set" (byval as attr_t, byval as short, byval as any ptr) as integer
 declare function baudrate cdecl alias "baudrate" () as integer
 declare function beep cdecl alias "beep" () as integer
-declare function bkgd cdecl alias "bkgd" (byval as chtype) as integer
-declare sub bkgdset cdecl alias "bkgdset" (byval as chtype)
+''''''' declare function bkgd cdecl alias "bkgd" (byval as chtype) as integer
+''''''' declare sub bkgdset cdecl alias "bkgdset" (byval as chtype)
 ''''''' declare function border cdecl alias "border" (byval as chtype, byval as chtype, byval as chtype, byval as chtype, byval as chtype, byval as chtype, byval as chtype, byval as chtype) as integer
 ''''''' declare function box cdecl alias "box" (byval as WINDOW ptr, byval as chtype, byval as chtype) as integer
 declare function can_change_color cdecl alias "can_change_color" () as integer
 declare function cbreak cdecl alias "cbreak" () as integer
-declare function chgat cdecl alias "chgat" (byval as integer, byval as attr_t, byval as short, byval as any ptr) as integer
-declare function clear_ cdecl alias "clear" () as integer
-declare function clearok cdecl alias "clearok" (byval as WINDOW ptr, byval as integer) as integer
-declare function clrtobot cdecl alias "clrtobot" () as integer
-declare function clrtoeol cdecl alias "clrtoeol" () as integer
+''''''' declare function chgat cdecl alias "chgat" (byval as integer, byval as attr_t, byval as short, byval as any ptr) as integer
+''''''' declare function clear_ cdecl alias "clear" () as integer
+''''''' declare function clearok cdecl alias "clearok" (byval as WINDOW ptr, byval as integer) as integer
+''''''' declare function clrtobot cdecl alias "clrtobot" () as integer
+''''''' declare function clrtoeol cdecl alias "clrtoeol" () as integer
 declare function color_content cdecl alias "color_content" (byval as short, byval as short ptr, byval as short ptr, byval as short ptr) as integer
-declare function color_set cdecl alias "color_set" (byval as short, byval as any ptr) as integer
+''''''' declare function color_set cdecl alias "color_set" (byval as short, byval as any ptr) as integer
 ''''''' declare function COLOR_PAIR cdecl alias "COLOR_PAIR" (byval as integer) as integer
 declare function copywin cdecl alias "copywin" (byval as WINDOW ptr, byval as WINDOW ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as integer
 declare function curs_set cdecl alias "curs_set" (byval as integer) as integer
 declare function def_prog_mode cdecl alias "def_prog_mode" () as integer
 declare function def_shell_mode cdecl alias "def_shell_mode" () as integer
 declare function delay_output cdecl alias "delay_output" (byval as integer) as integer
-declare function delch cdecl alias "delch" () as integer
+''''''' declare function delch cdecl alias "delch" () as integer
 declare sub delscreen cdecl alias "delscreen" (byval as SCREEN ptr)
 declare function delwin cdecl alias "delwin" (byval as WINDOW ptr) as integer
-declare function deleteln cdecl alias "deleteln" () as integer
+''''''' declare function deleteln cdecl alias "deleteln" () as integer
 declare function derwin cdecl alias "derwin" (byval as WINDOW ptr, byval as integer, byval as integer, byval as integer, byval as integer) as WINDOW ptr
 declare function doupdate cdecl alias "doupdate" () as integer
 declare function dupwin cdecl alias "dupwin" (byval as WINDOW ptr) as WINDOW ptr
 declare function echo cdecl alias "echo" () as integer
-declare function echochar cdecl alias "echochar" (byval as chtype) as integer
-declare function erase_ cdecl alias "erase" () as integer
+''''''' declare function echochar cdecl alias "echochar" (byval as chtype) as integer
+''''''' declare function erase_ cdecl alias "erase" () as integer
 declare function endwin cdecl alias "endwin" () as integer
 declare function erasechar cdecl alias "erasechar" () as byte
 declare sub filter cdecl alias "filter" ()
 declare function flash cdecl alias "flash" () as integer
 declare function flushinp cdecl alias "flushinp" () as integer
 declare function getbkgd cdecl alias "getbkgd" (byval as WINDOW ptr) as chtype
-declare function getch cdecl alias "getch" () as integer
+''''''' declare function getch cdecl alias "getch" () as integer
 ''''''' declare function getnstr cdecl alias "getnstr" (byval as zstring ptr, byval as integer) as integer
-declare function getstr cdecl alias "getstr" (byval as zstring ptr) as integer
+''''''' declare function getstr cdecl alias "getstr" (byval as zstring ptr) as integer
 declare function getwin cdecl alias "getwin" (byval as FILE_ ptr) as WINDOW ptr
 declare function halfdelay cdecl alias "halfdelay" (byval as integer) as integer
 declare function has_colors cdecl alias "has_colors" () as integer
@@ -253,19 +253,19 @@ declare function has_il cdecl alias "has_il" () as integer
 declare sub idcok cdecl alias "idcok" (byval as WINDOW ptr, byval as integer)
 declare function idlok cdecl alias "idlok" (byval as WINDOW ptr, byval as integer) as integer
 declare sub immedok cdecl alias "immedok" (byval as WINDOW ptr, byval as integer)
-declare function inch cdecl alias "inch" () as chtype
-declare function inchnstr cdecl alias "inchnstr" (byval as chtype ptr, byval as integer) as integer
-declare function inchstr cdecl alias "inchstr" (byval as chtype ptr) as integer
+''''''' declare function inch cdecl alias "inch" () as chtype
+''''''' declare function inchnstr cdecl alias "inchnstr" (byval as chtype ptr, byval as integer) as integer
+''''''' declare function inchstr cdecl alias "inchstr" (byval as chtype ptr) as integer
 declare function initscr cdecl alias "initscr" () as WINDOW ptr
 declare function init_color cdecl alias "init_color" (byval as short, byval as short, byval as short, byval as short) as integer
 declare function init_pair cdecl alias "init_pair" (byval as short, byval as short, byval as short) as integer
-declare function innstr cdecl alias "innstr" (byval as zstring ptr, byval as integer) as integer
-declare function insch cdecl alias "insch" (byval as chtype) as integer
-declare function insdelln cdecl alias "insdelln" (byval as integer) as integer
-declare function insertln cdecl alias "insertln" () as integer
-declare function insnstr cdecl alias "insnstr" (byval as zstring ptr, byval as integer) as integer
-declare function insstr cdecl alias "insstr" (byval as zstring ptr) as integer
-declare function instr_ cdecl alias "instr" (byval as zstring ptr) as integer
+''''''' declare function innstr cdecl alias "innstr" (byval as zstring ptr, byval as integer) as integer
+''''''' declare function insch cdecl alias "insch" (byval as chtype) as integer
+''''''' declare function insdelln cdecl alias "insdelln" (byval as integer) as integer
+''''''' declare function insertln cdecl alias "insertln" () as integer
+''''''' declare function insnstr cdecl alias "insnstr" (byval as zstring ptr, byval as integer) as integer
+''''''' declare function insstr cdecl alias "insstr" (byval as zstring ptr) as integer
+''''''' declare function instr_ cdecl alias "instr" (byval as zstring ptr) as integer
 declare function intrflush cdecl alias "intrflush" (byval as WINDOW ptr, byval as integer) as integer
 declare function isendwin cdecl alias "isendwin" () as integer
 declare function is_linetouched cdecl alias "is_linetouched" (byval as WINDOW ptr, byval as integer) as integer
@@ -276,7 +276,7 @@ declare function killchar cdecl alias "killchar" () as byte
 declare function leaveok cdecl alias "leaveok" (byval as WINDOW ptr, byval as integer) as integer
 declare function longname cdecl alias "longname" () as zstring ptr
 declare function meta cdecl alias "meta" (byval as WINDOW ptr, byval as integer) as integer
-declare function move cdecl alias "move" (byval as integer, byval as integer) as integer
+''''''' declare function move cdecl alias "move" (byval as integer, byval as integer) as integer
 declare function mvaddch cdecl alias "mvaddch" (byval as integer, byval as integer, byval as chtype) as integer
 declare function mvaddchnstr cdecl alias "mvaddchnstr" (byval as integer, byval as integer, byval as chtype ptr, byval as integer) as integer
 declare function mvaddchstr cdecl alias "mvaddchstr" (byval as integer, byval as integer, byval as chtype ptr) as integer
@@ -349,7 +349,7 @@ declare function putwin cdecl alias "putwin" (byval as WINDOW ptr, byval as FILE
 declare sub qiflush cdecl alias "qiflush" ()
 declare function raw cdecl alias "raw" () as integer
 declare function redrawwin cdecl alias "redrawwin" (byval as WINDOW ptr) as integer
-declare function refresh cdecl alias "refresh" () as integer
+''''''' declare function refresh cdecl alias "refresh" () as integer
 declare function resetty cdecl alias "resetty" () as integer
 declare function reset_prog_mode cdecl alias "reset_prog_mode" () as integer
 declare function reset_shell_mode cdecl alias "reset_shell_mode" () as integer
@@ -358,12 +358,12 @@ declare function savetty cdecl alias "savetty" () as integer
 declare function scanw cdecl alias "scanw" (byval as zstring ptr, ...) as integer
 declare function scr_dump cdecl alias "scr_dump" (byval as zstring ptr) as integer
 declare function scr_init cdecl alias "scr_init" (byval as zstring ptr) as integer
-declare function scrl cdecl alias "scrl" (byval as integer) as integer
+''''''' declare function scrl cdecl alias "scrl" (byval as integer) as integer
 ''''''' declare function scroll cdecl alias "scroll" (byval as WINDOW ptr) as integer
 declare function scrollok cdecl alias "scrollok" (byval as WINDOW ptr, byval as integer) as integer
 declare function scr_restore cdecl alias "scr_restore" (byval as zstring ptr) as integer
 declare function scr_set cdecl alias "scr_set" (byval as zstring ptr) as integer
-declare function setscrreg cdecl alias "setscrreg" (byval as integer, byval as integer) as integer
+''''''' declare function setscrreg cdecl alias "setscrreg" (byval as integer, byval as integer) as integer
 declare function set_term cdecl alias "set_term" (byval as SCREEN ptr) as SCREEN ptr
 declare function slk_attroff cdecl alias "slk_attroff" (byval as chtype) as integer
 declare function slk_attr_off cdecl alias "slk_attr_off" (byval as attr_t, byval as any ptr) as integer
@@ -381,8 +381,8 @@ declare function slk_refresh cdecl alias "slk_refresh" () as integer
 declare function slk_restore cdecl alias "slk_restore" () as integer
 declare function slk_set cdecl alias "slk_set" (byval as integer, byval as zstring ptr, byval as integer) as integer
 declare function slk_touch cdecl alias "slk_touch" () as integer
-declare function standout cdecl alias "standout" () as integer
-declare function standend cdecl alias "standend" () as integer
+''''''' declare function standout cdecl alias "standout" () as integer
+''''''' declare function standend cdecl alias "standend" () as integer
 declare function start_color cdecl alias "start_color" () as integer
 declare function subpad cdecl alias "subpad" (byval as WINDOW ptr, byval as integer, byval as integer, byval as integer, byval as integer) as WINDOW ptr
 declare function subwin cdecl alias "subwin" (byval as WINDOW ptr, byval as integer, byval as integer, byval as integer, byval as integer) as WINDOW ptr
@@ -392,13 +392,13 @@ declare function termname cdecl alias "termname" () as zstring ptr
 declare function tigetflag cdecl alias "tigetflag" (byval as zstring ptr) as integer
 declare function tigetnum cdecl alias "tigetnum" (byval as zstring ptr) as integer
 declare function tigetstr cdecl alias "tigetstr" (byval as zstring ptr) as zstring ptr
-declare sub timeout cdecl alias "timeout" (byval as integer)
-''''''' declare function touchline cdecl alias "touchline" (byval as WINDOW ptr, byval as integer, byval as integer) as integer
-''''''' declare function touchwin cdecl alias "touchwin" (byval as WINDOW ptr) as integer
+''''''' declare sub timeout cdecl alias "timeout" (byval as integer)
+declare function touchline cdecl alias "touchline" (byval as WINDOW ptr, byval as integer, byval as integer) as integer
+declare function touchwin cdecl alias "touchwin" (byval as WINDOW ptr) as integer
 declare function tparm cdecl alias "tparm" (byval as zstring ptr, ...) as zstring ptr
 declare function typeahead cdecl alias "typeahead" (byval as integer) as integer
 declare function ungetch cdecl alias "ungetch" (byval as integer) as integer
-''''''' declare function untouchwin cdecl alias "untouchwin" (byval as WINDOW ptr) as integer
+declare function untouchwin cdecl alias "untouchwin" (byval as WINDOW ptr) as integer
 declare sub use_env cdecl alias "use_env" (byval as integer)
 declare function vidattr cdecl alias "vidattr" (byval as chtype) as integer
 declare function vidputs cdecl alias "vidputs" (byval as chtype, byval as function cdecl(byval as integer) as integer) as integer
@@ -409,9 +409,9 @@ declare function vwscanw cdecl alias "vwscanw" (byval as WINDOW ptr, byval as zs
 declare function vw_scanw cdecl alias "vw_scanw" (byval as WINDOW ptr, byval as zstring ptr, byval as any ptr) as integer
 declare function waddch cdecl alias "waddch" (byval as WINDOW ptr, byval as chtype) as integer
 declare function waddchnstr cdecl alias "waddchnstr" (byval as WINDOW ptr, byval as chtype ptr, byval as integer) as integer
-declare function waddchstr cdecl alias "waddchstr" (byval as WINDOW ptr, byval as chtype ptr) as integer
+''''''' declare function waddchstr cdecl alias "waddchstr" (byval as WINDOW ptr, byval as chtype ptr) as integer
 declare function waddnstr cdecl alias "waddnstr" (byval as WINDOW ptr, byval as zstring ptr, byval as integer) as integer
-declare function waddstr cdecl alias "waddstr" (byval as WINDOW ptr, byval as zstring ptr) as integer
+''''''' declare function waddstr cdecl alias "waddstr" (byval as WINDOW ptr, byval as zstring ptr) as integer
 ''''''' declare function wattron cdecl alias "wattron" (byval as WINDOW ptr, byval as integer) as integer
 ''''''' declare function wattroff cdecl alias "wattroff" (byval as WINDOW ptr, byval as integer) as integer
 ''''''' declare function wattrset cdecl alias "wattrset" (byval as WINDOW ptr, byval as integer) as integer
@@ -429,7 +429,7 @@ declare function wclrtoeol cdecl alias "wclrtoeol" (byval as WINDOW ptr) as inte
 declare function wcolor_set cdecl alias "wcolor_set" (byval as WINDOW ptr, byval as short, byval as any ptr) as integer
 declare sub wcursyncup cdecl alias "wcursyncup" (byval as WINDOW ptr)
 declare function wdelch cdecl alias "wdelch" (byval as WINDOW ptr) as integer
-declare function wdeleteln cdecl alias "wdeleteln" (byval as WINDOW ptr) as integer
+''''''' declare function wdeleteln cdecl alias "wdeleteln" (byval as WINDOW ptr) as integer
 declare function wechochar cdecl alias "wechochar" (byval as WINDOW ptr, byval as chtype) as integer
 declare function werase cdecl alias "werase" (byval as WINDOW ptr) as integer
 declare function wgetch cdecl alias "wgetch" (byval as WINDOW ptr) as integer
@@ -442,7 +442,7 @@ declare function winchnstr cdecl alias "winchnstr" (byval as WINDOW ptr, byval a
 declare function winnstr cdecl alias "winnstr" (byval as WINDOW ptr, byval as zstring ptr, byval as integer) as integer
 declare function winsch cdecl alias "winsch" (byval as WINDOW ptr, byval as chtype) as integer
 declare function winsdelln cdecl alias "winsdelln" (byval as WINDOW ptr, byval as integer) as integer
-declare function winsertln cdecl alias "winsertln" (byval as WINDOW ptr) as integer
+''''''' declare function winsertln cdecl alias "winsertln" (byval as WINDOW ptr) as integer
 declare function winsnstr cdecl alias "winsnstr" (byval as WINDOW ptr, byval as zstring ptr, byval as integer) as integer
 ''''''' declare function winsstr cdecl alias "winsstr" (byval as WINDOW ptr, byval as zstring ptr) as integer
 ''''''' declare function winstr cdecl alias "winstr" (byval as WINDOW ptr, byval as zstring ptr) as integer
@@ -528,9 +528,9 @@ declare function wvline cdecl alias "wvline" (byval as WINDOW ptr, byval as chty
 
 #define scroll(win) wscrl(win,1)
 
-#define touchwin(win) wtouchln((win), 0, getmaxy(win), 1)
-#define touchline(win, s, c) wtouchln((win), s, c, 1)
-#define untouchwin(win) wtouchln((win), 0, getmaxy(win), 0)
+''''''' #define touchwin(win) wtouchln((win), 0, getmaxy(win), 1)
+''''''' #define touchline(win, s, c) wtouchln((win), s, c, 1)
+''''''' #define untouchwin(win) wtouchln((win), 0, getmaxy(win), 0)
 
 #define box(win, v, h) wborder(win, v, v, h, h, 0, 0, 0, 0)
 #define border(ls, rs, ts, bs, tl, tr, bl, br) wborder(stdscr, ls, rs, ts, bs, tl, tr, bl, br)
@@ -541,7 +541,7 @@ declare function wvline cdecl alias "wvline" (byval as WINDOW ptr, byval as chty
 #define winchstr(w, s) winchnstr(w, s, -1)
 #define winsstr(w, s) winsnstr(w, s, -1)
 
-#define redrawwin(win) wredrawln(win, 0, (win)->_maxy+1)
+''''''' #define redrawwin(win) wredrawln(win, 0, (win)->_maxy+1)
 #define waddstr(win,str_) waddnstr(win,str_,-1)
 #define waddchstr(win,str_)	waddchnstr(win,str_,-1)
 
@@ -590,6 +590,7 @@ declare function wvline cdecl alias "wvline" (byval as WINDOW ptr, byval as chty
 #define wdeleteln(win) winsdelln(win,-1)
 #define winsertln(win) winsdelln(win,1)
 
+#if 0
 #define mvwaddch(win,y,x,ch) iif(wmove(win,y,x) = NCURSES_ERR, NCURSES_ERR, waddch(win,ch))
 #define mvwaddchnstr(win,y,x,str_,n) iif(wmove(win,y,x) = NCURSES_ERR, NCURSES_ERR, waddchnstr(win,str_,n))
 #define mvwaddchstr(win,y,x,str_) iif(wmove(win,y,x) = NCURSES_ERR, NCURSES_ERR, waddchnstr(win,str_,-1))
@@ -638,140 +639,140 @@ declare function wvline cdecl alias "wvline" (byval as WINDOW ptr, byval as chty
 #define slk_attr_on(a,v) iif(v,NCURSES_ERR,slk_attron(a))
 
 #define wattr_set(win,a,p,opts)	(win)->_attrs = (((a) and not A_COLOR) or COLOR_PAIR(p))
-#define wattr_get(win,a,p,opts)	if (a) <> 0 then : (*(a) = (win)->_attrs)) : end if :_
-					 			if (p) <> 0 then : (*(p) = PAIR_NUMBER((win)->_attrs)) : end if
+#define wattr_get(win,a,p,opts)	if (a) <> 0 then : (*(a) = (win)->_attrs)) : end if : if (p) <> 0 then : (*(p) = PAIR_NUMBER((win)->_attrs)) : end if
 #define vw_printw vwprintw
 #define vw_scanw vwscanw
+#endif
 
-#define KEY_CODE_YES 0400
-#define KEY_MIN 0401
-#define KEY_BREAK 0401
-#define KEY_SRESET 0530
-#define KEY_RESET 0531
-#define KEY_DOWN 0402
-#define KEY_UP 0403
-#define KEY_LEFT 0404
-#define KEY_RIGHT 0405
-#define KEY_HOME 0406
-#define KEY_BACKSPACE 0407
-#define KEY_F0 0410
-#define KEY_DL 0510
-#define KEY_IL 0511
-#define KEY_DC 0512
-#define KEY_IC 0513
-#define KEY_EIC 0514
-#define KEY_CLEAR 0515
-#define KEY_EOS 0516
-#define KEY_EOL 0517
-#define KEY_SF 0520
-#define KEY_SR 0521
-#define KEY_NPAGE 0522
-#define KEY_PPAGE 0523
-#define KEY_STAB 0524
-#define KEY_CTAB 0525
-#define KEY_CATAB 0526
-#define KEY_ENTER 0527
-#define KEY_PRINT 0532
-#define KEY_LL 0533
-#define KEY_A1 0534
-#define KEY_A3 0535
-#define KEY_B2 0536
-#define KEY_C1 0537
-#define KEY_C3 0540
-#define KEY_BTAB 0541
-#define KEY_BEG 0542
-#define KEY_CANCEL 0543
-#define KEY_CLOSE 0544
-#define KEY_COMMAND 0545
-#define KEY_COPY 0546
-#define KEY_CREATE 0547
-#define KEY_END 0550
-#define KEY_EXIT 0551
-#define KEY_FIND 0552
-#define KEY_HELP 0553
-#define KEY_MARK 0554
-#define KEY_MESSAGE 0555
-#define KEY_MOVE 0556
-#define KEY_NEXT 0557
-#define KEY_OPEN 0560
-#define KEY_OPTIONS 0561
-#define KEY_PREVIOUS 0562
-#define KEY_REDO 0563
-#define KEY_REFERENCE 0564
-#define KEY_REFRESH 0565
-#define KEY_REPLACE 0566
-#define KEY_RESTART 0567
-#define KEY_RESUME 0570
-#define KEY_SAVE 0571
-#define KEY_SBEG 0572
-#define KEY_SCANCEL 0573
-#define KEY_SCOMMAND 0574
-#define KEY_SCOPY 0575
-#define KEY_SCREATE 0576
-#define KEY_SDC 0577
-#define KEY_SDL 0600
-#define KEY_SELECT 0601
-#define KEY_SEND 0602
-#define KEY_SEOL 0603
-#define KEY_SEXIT 0604
-#define KEY_SFIND 0605
-#define KEY_SHELP 0606
-#define KEY_SHOME 0607
-#define KEY_SIC 0610
-#define KEY_SLEFT 0611
-#define KEY_SMESSAGE 0612
-#define KEY_SMOVE 0613
-#define KEY_SNEXT 0614
-#define KEY_SOPTIONS 0615
-#define KEY_SPREVIOUS 0616
-#define KEY_SPRINT 0617
-#define KEY_SREDO 0620
-#define KEY_SREPLACE 0621
-#define KEY_SRIGHT 0622
-#define KEY_SRSUME 0623
-#define KEY_SSAVE 0624
-#define KEY_SSUSPEND 0625
-#define KEY_SUNDO 0626
-#define KEY_SUSPEND 0627
-#define KEY_UNDO 0630
-#define KEY_MOUSE 0631
-#define KEY_RESIZE 0632
-#define KEY_EVENT 0633
-#define KEY_MAX 0777
-#define NCURSES_BUTTON_RELEASED 001L
-#define NCURSES_BUTTON_PRESSED 002L
-#define NCURSES_BUTTON_CLICKED 004L
-#define NCURSES_DOUBLE_CLICKED 010L
-#define NCURSES_TRIPLE_CLICKED 020L
-#define NCURSES_RESERVED_EVENT 040L
-#define BUTTON1_RELEASED ((001L) shl (((1) -1)*6))
-#define BUTTON1_PRESSED ((002L) shl (((1) -1)*6))
-#define BUTTON1_CLICKED ((004L) shl (((1) -1)*6))
-#define BUTTON1_DOUBLE_CLICKED ((010L) shl (((1) -1)*6))
-#define BUTTON1_TRIPLE_CLICKED ((020L) shl (((1) -1)*6))
-#define BUTTON2_RELEASED ((001L) shl (((2) -1)*6))
-#define BUTTON2_PRESSED ((002L) shl (((2) -1)*6))
-#define BUTTON2_CLICKED ((004L) shl (((2) -1)*6))
-#define BUTTON2_DOUBLE_CLICKED ((010L) shl (((2) -1)*6))
-#define BUTTON2_TRIPLE_CLICKED ((020L) shl (((2) -1)*6))
-#define BUTTON3_RELEASED ((001L) shl (((3) -1)*6))
-#define BUTTON3_PRESSED ((002L) shl (((3) -1)*6))
-#define BUTTON3_CLICKED ((004L) shl (((3) -1)*6))
-#define BUTTON3_DOUBLE_CLICKED ((010L) shl (((3) -1)*6))
-#define BUTTON3_TRIPLE_CLICKED ((020L) shl (((3) -1)*6))
-#define BUTTON4_RELEASED ((001L) shl (((4) -1)*6))
-#define BUTTON4_PRESSED ((002L) shl (((4) -1)*6))
-#define BUTTON4_CLICKED ((004L) shl (((4) -1)*6))
-#define BUTTON4_DOUBLE_CLICKED ((010L) shl (((4) -1)*6))
-#define BUTTON4_TRIPLE_CLICKED ((020L) shl (((4) -1)*6))
-#define BUTTON1_RESERVED_EVENT ((040L) shl (((1) -1)*6))
-#define BUTTON2_RESERVED_EVENT ((040L) shl (((2) -1)*6))
-#define BUTTON3_RESERVED_EVENT ((040L) shl (((3) -1)*6))
-#define BUTTON4_RESERVED_EVENT ((040L) shl (((4) -1)*6))
-#define BUTTON_CTRL ((0001L) shl (((5) -1)*6))
-#define BUTTON_SHIFT ((0002L) shl (((5) -1)*6))
-#define BUTTON_ALT ((0004L) shl (((5) -1)*6))
-#define REPORT_MOUSE_POSITION ((0010L) shl (((5) -1)*6))
+#define KEY_CODE_YES &o400
+#define KEY_MIN &o401
+#define KEY_BREAK &o401
+#define KEY_SRESET &o530
+#define KEY_RESET &o531
+#define KEY_DOWN &o402
+#define KEY_UP &o403
+#define KEY_LEFT &o404
+#define KEY_RIGHT &o405
+#define KEY_HOME &o406
+#define KEY_BACKSPACE &o407
+#define KEY_F0 &o410
+#define KEY_DL &o510
+#define KEY_IL &o511
+#define KEY_DC &o512
+#define KEY_IC &o513
+#define KEY_EIC &o514
+#define KEY_CLEAR &o515
+#define KEY_EOS &o516
+#define KEY_EOL &o517
+#define KEY_SF &o520
+#define KEY_SR &o521
+#define KEY_NPAGE &o522
+#define KEY_PPAGE &o523
+#define KEY_STAB &o524
+#define KEY_CTAB &o525
+#define KEY_CATAB &o526
+#define KEY_ENTER &o527
+#define KEY_PRINT &o532
+#define KEY_LL &o533
+#define KEY_A1 &o534
+#define KEY_A3 &o535
+#define KEY_B2 &o536
+#define KEY_C1 &o537
+#define KEY_C3 &o540
+#define KEY_BTAB &o541
+#define KEY_BEG &o542
+#define KEY_CANCEL &o543
+#define KEY_CLOSE &o544
+#define KEY_COMMAND &o545
+#define KEY_COPY &o546
+#define KEY_CREATE &o547
+#define KEY_END &o550
+#define KEY_EXIT &o551
+#define KEY_FIND &o552
+#define KEY_HELP &o553
+#define KEY_MARK &o554
+#define KEY_MESSAGE &o555
+#define KEY_MOVE &o556
+#define KEY_NEXT &o557
+#define KEY_OPEN &o560
+#define KEY_OPTIONS &o561
+#define KEY_PREVIOUS &o562
+#define KEY_REDO &o563
+#define KEY_REFERENCE &o564
+#define KEY_REFRESH &o565
+#define KEY_REPLACE &o566
+#define KEY_RESTART &o567
+#define KEY_RESUME &o570
+#define KEY_SAVE &o571
+#define KEY_SBEG &o572
+#define KEY_SCANCEL &o573
+#define KEY_SCOMMAND &o574
+#define KEY_SCOPY &o575
+#define KEY_SCREATE &o576
+#define KEY_SDC &o577
+#define KEY_SDL &o600
+#define KEY_SELECT &o601
+#define KEY_SEND &o602
+#define KEY_SEOL &o603
+#define KEY_SEXIT &o604
+#define KEY_SFIND &o605
+#define KEY_SHELP &o606
+#define KEY_SHOME &o607
+#define KEY_SIC &o610
+#define KEY_SLEFT &o611
+#define KEY_SMESSAGE &o612
+#define KEY_SMOVE &o613
+#define KEY_SNEXT &o614
+#define KEY_SOPTIONS &o615
+#define KEY_SPREVIOUS &o616
+#define KEY_SPRINT &o617
+#define KEY_SREDO &o620
+#define KEY_SREPLACE &o621
+#define KEY_SRIGHT &o622
+#define KEY_SRSUME &o623
+#define KEY_SSAVE &o624
+#define KEY_SSUSPEND &o625
+#define KEY_SUNDO &o626
+#define KEY_SUSPEND &o627
+#define KEY_UNDO &o630
+#define KEY_MOUSE &o631
+#define KEY_RESIZE &o632
+#define KEY_EVENT &o633
+#define KEY_MAX &o777
+#define NCURSES_BUTTON_RELEASED &o01
+#define NCURSES_BUTTON_PRESSED &o02
+#define NCURSES_BUTTON_CLICKED &o04
+#define NCURSES_DOUBLE_CLICKED &o10
+#define NCURSES_TRIPLE_CLICKED &o20
+#define NCURSES_RESERVED_EVENT &o40
+#define BUTTON1_RELEASED ((&o01) shl (((1) -1)*6))
+#define BUTTON1_PRESSED ((&o02) shl (((1) -1)*6))
+#define BUTTON1_CLICKED ((&o04) shl (((1) -1)*6))
+#define BUTTON1_DOUBLE_CLICKED ((&o10) shl (((1) -1)*6))
+#define BUTTON1_TRIPLE_CLICKED ((&o20) shl (((1) -1)*6))
+#define BUTTON2_RELEASED ((&o01) shl (((2) -1)*6))
+#define BUTTON2_PRESSED ((&o02) shl (((2) -1)*6))
+#define BUTTON2_CLICKED ((&o04) shl (((2) -1)*6))
+#define BUTTON2_DOUBLE_CLICKED ((&o10) shl (((2) -1)*6))
+#define BUTTON2_TRIPLE_CLICKED ((&o20) shl (((2) -1)*6))
+#define BUTTON3_RELEASED ((&o01) shl (((3) -1)*6))
+#define BUTTON3_PRESSED ((&o02) shl (((3) -1)*6))
+#define BUTTON3_CLICKED ((&o04) shl (((3) -1)*6))
+#define BUTTON3_DOUBLE_CLICKED ((&o10) shl (((3) -1)*6))
+#define BUTTON3_TRIPLE_CLICKED ((&o20) shl (((3) -1)*6))
+#define BUTTON4_RELEASED ((&o01) shl (((4) -1)*6))
+#define BUTTON4_PRESSED ((&o02) shl (((4) -1)*6))
+#define BUTTON4_CLICKED ((&o04) shl (((4) -1)*6))
+#define BUTTON4_DOUBLE_CLICKED ((&o10) shl (((4) -1)*6))
+#define BUTTON4_TRIPLE_CLICKED ((&o20) shl (((4) -1)*6))
+#define BUTTON1_RESERVED_EVENT ((&o40) shl (((1) -1)*6))
+#define BUTTON2_RESERVED_EVENT ((&o40) shl (((2) -1)*6))
+#define BUTTON3_RESERVED_EVENT ((&o40) shl (((3) -1)*6))
+#define BUTTON4_RESERVED_EVENT ((&o40) shl (((4) -1)*6))
+#define BUTTON_CTRL ((&o001) shl (((5) -1)*6))
+#define BUTTON_SHIFT ((&o002) shl (((5) -1)*6))
+#define BUTTON_ALT ((&o004) shl (((5) -1)*6))
+#define REPORT_MOUSE_POSITION ((&o010) shl (((5) -1)*6))
 #define	ALL_MOUSE_EVENTS	(REPORT_MOUSE_POSITION - 1)
 
 type MEVENT
