@@ -184,7 +184,7 @@ static FB_WCHAR *hUTF8ToUTF32( const UTF_8 *src, FB_WCHAR *dst, int *chars )
 	
 			c -= fb_utf8_offsetsTb[extbytes];
 	
-			if( charsleft == 1 )
+			if( charsleft <= 1 )
 			{
 				charsleft = 8;
 				dst_size += charsleft;
