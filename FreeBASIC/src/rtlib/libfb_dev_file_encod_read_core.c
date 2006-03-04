@@ -30,23 +30,8 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-static const char utf8_trailingTb[256] =
-	{
-		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-		1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-		2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5
-	};
-
-static const UTF_32 utf8_offsetsTb[6] =
-	{
-		0x00000000UL, 0x00003080UL, 0x000E2080UL, 0x03C82080UL, 0xFA082080UL, 0x82082080UL
-	};
-
+extern const char fb_utf8_trailingTb[256];
+extern const UTF_32 fb_utf8_offsetsTb[6];
 
 /*::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*
  * to char                                                                              *
@@ -56,7 +41,7 @@ static const UTF_32 utf8_offsetsTb[6] =
 static int hReadUTF8ToChar( FILE *fp, char *dst, int max_chars )
 {
 	UTF_32 wc;
-	char c[7], *p;
+	unsigned char c[7], *p;
 	int chars, extbytes;
 
 	chars = max_chars;
@@ -65,7 +50,7 @@ static int hReadUTF8ToChar( FILE *fp, char *dst, int max_chars )
 		if( fread( &c[0], 1, 1, fp ) != 1 )
 			break;
 
-		extbytes = utf8_trailingTb[(int)c[0]];
+		extbytes = fb_utf8_trailingTb[(unsigned int)c[0]];
 
 		if( extbytes > 0 )
 			if( fread( &c[1], extbytes, 1, fp ) != 1 )
@@ -94,7 +79,7 @@ static int hReadUTF8ToChar( FILE *fp, char *dst, int max_chars )
 				wc += *p++;
 		}
 
-		wc -= utf8_offsetsTb[extbytes];
+		wc -= fb_utf8_offsetsTb[extbytes];
 
 		if( wc > 255 )
 			wc = '?';
@@ -185,7 +170,7 @@ int fb_hFileRead_UTFToChar( FILE *fp, FB_FILE_ENCOD encod, char *dst, int max_ch
 static int hUTF8ToUTF16( FILE *fp, FB_WCHAR *dst, int max_chars )
 {
 	UTF_32 wc;
-	char c[7], *p;
+	unsigned char c[7], *p;
 	int chars, extbytes;
 
 	chars = max_chars;
@@ -194,7 +179,7 @@ static int hUTF8ToUTF16( FILE *fp, FB_WCHAR *dst, int max_chars )
 		if( fread( &c[0], 1, 1, fp ) != 1 )
 			break;
 
-		extbytes = utf8_trailingTb[(int)c[0]];
+		extbytes = fb_utf8_trailingTb[(unsigned int)c[0]];
 
 		if( extbytes > 0 )
 			if( fread( &c[1], extbytes, 1, fp ) != 1 )
@@ -223,7 +208,7 @@ static int hUTF8ToUTF16( FILE *fp, FB_WCHAR *dst, int max_chars )
 				wc += *p++;
 		}
 
-		wc -= utf8_offsetsTb[extbytes];
+		wc -= fb_utf8_offsetsTb[extbytes];
 
 		if( wc <= UTF16_MAX_BMP )
 		{
@@ -250,7 +235,7 @@ static int hUTF8ToUTF16( FILE *fp, FB_WCHAR *dst, int max_chars )
 static int hUTF8ToUTF32( FILE *fp, FB_WCHAR *dst, int max_chars )
 {
 	UTF_32 wc;
-	char c[7], *p;
+	unsigned char c[7], *p;
 	int chars, extbytes;
 
 	chars = max_chars;
@@ -259,7 +244,7 @@ static int hUTF8ToUTF32( FILE *fp, FB_WCHAR *dst, int max_chars )
 		if( fread( &c[0], 1, 1, fp ) != 1 )
 			break;
 
-		extbytes = utf8_trailingTb[(int)c[0]];
+		extbytes = fb_utf8_trailingTb[(unsigned int)c[0]];
 
 		if( extbytes > 0 )
 			if( fread( &c[1], extbytes, 1, fp ) != 1 )
@@ -288,7 +273,7 @@ static int hUTF8ToUTF32( FILE *fp, FB_WCHAR *dst, int max_chars )
 				wc += *p++;
 		}
 
-		wc -= utf8_offsetsTb[extbytes];
+		wc -= fb_utf8_offsetsTb[extbytes];
 
 		*dst++ = wc;
 		--chars;

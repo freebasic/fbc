@@ -59,18 +59,19 @@ static void hUTF16ToUTF8( const FB_WCHAR *src, int chars, UTF_8 *dst, int *total
 		switch( bytes )
 		{
 		case 4:
-			dst[-4] = ((c | UTF8_BYTEMARK) & UTF8_BYTEMASK);
+			*--dst = ((c | UTF8_BYTEMARK) & UTF8_BYTEMASK);
 			c >>= 6;
 		case 3:
-			dst[-3] = ((c | UTF8_BYTEMARK) & UTF8_BYTEMASK);
+			*--dst = ((c | UTF8_BYTEMARK) & UTF8_BYTEMASK);
 			c >>= 6;
 		case 2:
-			dst[-2] = ((c | UTF8_BYTEMARK) & UTF8_BYTEMASK);
+			*--dst = ((c | UTF8_BYTEMARK) & UTF8_BYTEMASK);
 			c >>= 6;
 		case 1:
-			dst[-1] = (c | fb_utf8_bmarkTb[bytes]);
+			*--dst = (c | fb_utf8_bmarkTb[bytes]);
 		}
 
+		dst += bytes;
 		--chars;
 		*total_bytes += bytes;
 	}
@@ -100,18 +101,19 @@ static void hUTF32ToUTF8( const FB_WCHAR *src, int chars, UTF_8 *dst, int *total
 		switch( bytes )
 		{
 		case 4:
-			dst[-4] = ((c | UTF8_BYTEMARK) & UTF8_BYTEMASK);
+			*--dst = ((c | UTF8_BYTEMARK) & UTF8_BYTEMASK);
 			c >>= 6;
 		case 3:
-			dst[-3] = ((c | UTF8_BYTEMARK) & UTF8_BYTEMASK);
+			*--dst = ((c | UTF8_BYTEMARK) & UTF8_BYTEMASK);
 			c >>= 6;
 		case 2:
-			dst[-2] = ((c | UTF8_BYTEMARK) & UTF8_BYTEMASK);
+			*--dst = ((c | UTF8_BYTEMARK) & UTF8_BYTEMASK);
 			c >>= 6;
 		case 1:
-			dst[-1] = (c | fb_utf8_bmarkTb[bytes]);
+			*--dst = (c | fb_utf8_bmarkTb[bytes]);
 		}
 
+		dst += bytes;
 		--chars;
 		*total_bytes += bytes;
 	}
