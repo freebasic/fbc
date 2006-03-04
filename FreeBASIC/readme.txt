@@ -622,6 +622,9 @@ Credits (in alphabetic order):
     - Translated the OpenGL Extensions header.
     - Wrote the glext example at the examples/GL dir.
 
+  o Claudio Tinivella (tinycla[at]yahoo.it):
+    - Translated from C all the Gtk tutorials at the examples/Gtk/Tutorials dir.
+
   o Chris Davies (c.g.davies[at]gmail.com):
     - Translated the OpenAL headers (later replaced by the SWIG FB wrapper version).
     - Wrote the OpenAL demonstration in the examples/sound directory.
@@ -658,7 +661,7 @@ Credits (in alphabetic order):
       wx-c GUI examples (not included).
 
   o Garvan O'Keeffe (sisophon2001[at]yahoo.com):
-    - Ported most of the NeHe's OpenGL lessons at the examples/GL/NeHe dir.
+    - Translated most of the NeHe's OpenGL lessons at the examples/GL/NeHe dir.
     - Wrote the PDFlib demonstration, at examples/pdflib
 
   o Hans L. Nemeschkal (Hans.Leo.Nemeschkal[at]univie.ac.at):
