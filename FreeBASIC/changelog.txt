@@ -71,6 +71,7 @@ Version 0.16 Beta:
 - overflow could happen if assigning an asc string to a too small fixed-len wide string (v1c)
 - PAINT crashed when used against target buffers smaller than the screen (lillo)
 - FORMAT: infinite loop when rounding; too big (over 2^63) or too small numbers weren't converted correctly (v1c)
+- PRINTing wide-strings in Linux with characters above 127 was given incorrect results (v1c)
 
 
 Version 0.15 Beta:
