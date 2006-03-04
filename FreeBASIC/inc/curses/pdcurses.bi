@@ -48,40 +48,48 @@ type MOUSE_STATUS
 	changes as integer
 end type
 
-#define BUTTON_RELEASED 0000
-#define BUTTON_PRESSED 0001
-#define BUTTON_CLICKED 0002
-#define BUTTON_DOUBLE_CLICKED 0003
-#define BUTTON_TRIPLE_CLICKED 0004
-#define BUTTON_MOVED 0005
-#define BUTTON_ACTION_MASK 0007
-#define BUTTON_SHIFT 0010
-#define BUTTON_CONTROL 0020
-#define BUTTON_ALT 0040
-#define BUTTON_MODIFIER_MASK 0070
-#define BUTTON1_RELEASED 000000000001
-#define BUTTON1_PRESSED 000000000002
-#define BUTTON1_CLICKED 000000000004
-#define BUTTON1_DOUBLE_CLICKED 000000000010
-#define BUTTON1_TRIPLE_CLICKED 000000000020
-#define BUTTON1_MOVED 000000000020
-#define BUTTON2_RELEASED 000000000040
-#define BUTTON2_PRESSED 000000000100
-#define BUTTON2_CLICKED 000000000200
-#define BUTTON2_DOUBLE_CLICKED 000000000400
-#define BUTTON2_TRIPLE_CLICKED 000000001000
-#define BUTTON2_MOVED 000000001000
-#define BUTTON3_RELEASED 000000002000
-#define BUTTON3_PRESSED 000000004000
-#define BUTTON3_CLICKED 000000010000
-#define BUTTON3_DOUBLE_CLICKED 000000020000
-#define BUTTON3_TRIPLE_CLICKED 000000040000
-#define BUTTON3_MOVED 000000040000
-#define BUTTON_MODIFIER_SHIFT 000000100000
-#define BUTTON_MODIFIER_CONTROL 000000200000
-#define BUTTON_MODIFIER_ALT 000000400000
-#define ALL_MOUSE_EVENTS 000000777777
-#define REPORT_MOUSE_POSITION 000001000000
+#define MOUSE_X_POS (Mouse_status_.x)
+#define MOUSE_Y_POS (Mouse_status_.y)
+#define A_BUTTON_CHANGED ((Mouse_status_.changes and 7) <> 0)
+#define MOUSE_MOVED ((Mouse_status_.changes and 8) <> 0)
+#define MOUSE_POS_REPORT ((Mouse_status_.changes and 16) <> 0)
+#define BUTTON_CHANGED(x) ((Mouse_status_.changes and (1 shl ((x) - 1))) <> 0)
+#define BUTTON_STATUS(x) (Mouse_status_.button((x)-1))
+
+#define BUTTON_RELEASED &o000
+#define BUTTON_PRESSED &o001
+#define BUTTON_CLICKED &o002
+#define BUTTON_DOUBLE_CLICKED &o003
+#define BUTTON_TRIPLE_CLICKED &o004
+#define BUTTON_MOVED &o005
+#define BUTTON_ACTION_MASK &o007
+#define BUTTON_SHIFT &o010
+#define BUTTON_CONTROL &o020
+#define BUTTON_ALT &o040
+#define BUTTON_MODIFIER_MASK &o070
+#define BUTTON1_RELEASED &o00000000001
+#define BUTTON1_PRESSED &o00000000002
+#define BUTTON1_CLICKED &o00000000004
+#define BUTTON1_DOUBLE_CLICKED &o00000000010
+#define BUTTON1_TRIPLE_CLICKED &o00000000020
+#define BUTTON1_MOVED &o00000000020
+#define BUTTON2_RELEASED &o00000000040
+#define BUTTON2_PRESSED &o00000000100
+#define BUTTON2_CLICKED &o00000000200
+#define BUTTON2_DOUBLE_CLICKED &o00000000400
+#define BUTTON2_TRIPLE_CLICKED &o00000001000
+#define BUTTON2_MOVED &o00000001000
+#define BUTTON3_RELEASED &o00000002000
+#define BUTTON3_PRESSED &o00000004000
+#define BUTTON3_CLICKED &o00000010000
+#define BUTTON3_DOUBLE_CLICKED &o00000020000
+#define BUTTON3_TRIPLE_CLICKED &o00000040000
+#define BUTTON3_MOVED &o00000040000
+#define BUTTON_MODIFIER_SHIFT &o00000100000
+#define BUTTON_MODIFIER_CONTROL &o00000200000
+#define BUTTON_MODIFIER_ALT &o00000400000
+#define ALL_MOUSE_EVENTS &o00000777777
+#define REPORT_MOUSE_POSITION &o00001000000
 
 type WINDOW as _win
 
@@ -206,16 +214,42 @@ extern COLOR_PAIRS alias "COLOR_PAIRS" as integer
 #define A_STANDOUT (&h00800000 or &h00200000)
 #define A_PROTECT (&h00100000 or &h00020000 or &h00010000)
 
-# define COLOR_BLACK		0
-# define COLOR_BLUE		1
-# define COLOR_GREEN		2
-# define COLOR_CYAN		3
-# define COLOR_RED		4
-# define COLOR_MAGENTA		5
-# define COLOR_YELLOW		6
-# define COLOR_WHITE		7
+#define ACS_ULCORNER cast(chtype,&hda)
+#define ACS_LLCORNER cast(chtype,&hc0)
+#define ACS_URCORNER cast(chtype,&hbf)
+#define ACS_LRCORNER cast(chtype,&hd9)
+#define ACS_RTEE cast(chtype,&hb4)
+#define ACS_LTEE cast(chtype,&hc3)
+#define ACS_BTEE cast(chtype,&hc1)
+#define ACS_TTEE cast(chtype,&hc2)
+#define ACS_HLINE cast(chtype,&hc4)
+#define ACS_VLINE cast(chtype,&hb3)
+#define ACS_PLUS cast(chtype,&hc5)
+#define ACS_S1	cast(chtype,&h2d)
+#define ACS_S9	cast(chtype,&h5f)
+#define ACS_DIAMOND cast(chtype,&hc5)
+#define ACS_CKBOARD cast(chtype,&hb2)
+#define ACS_DEGREE	cast(chtype,&hf8)
+#define ACS_PLMINUS cast(chtype,&hf1)
+#define ACS_BULLET	cast(chtype,&hf9)
+#define ACS_LARROW	cast(chtype,&h3c)
+#define ACS_RARROW	cast(chtype,&h3e)
+#define ACS_DARROW	cast(chtype,&h76)
+#define ACS_UARROW	cast(chtype,&h5e)
+#define ACS_BOARD cast(chtype,&h23)
+#define ACS_LANTERN cast(chtype,&h23)
+#define ACS_BLOCK cast(chtype,&h23)
 
-#define COLOR_PAIR(n)  ((n) shl 24)
+#define COLOR_BLACK 0
+#define COLOR_BLUE 1
+#define COLOR_GREEN 2
+#define COLOR_CYAN 3
+#define COLOR_RED 4
+#define COLOR_MAGENTA 5
+#define COLOR_YELLOW 6
+#define COLOR_WHITE 7
+
+#define COLOR_PAIR(n) ((n) shl 24)
 #define PAIR_NUMBER(n) (((n) and A_COLOR) shr 24)
 
 #define CHR_MSK &h0000FFFF
@@ -230,7 +264,7 @@ extern COLOR_PAIRS alias "COLOR_PAIRS" as integer
 #define KEY_HOME &h106
 #define KEY_BACKSPACE &h107
 #define KEY_F0 &h108
-#define KEY_F(n)    (KEY_F0+(n))
+#define KEY_F(n) (KEY_F0+(n))
 #define KEY_DL &h148
 #define KEY_IL &h149
 #define KEY_DC &h14a
@@ -637,121 +671,121 @@ declare function nodelay cdecl alias "nodelay" (byval as WINDOW ptr, byval as in
 #define PDC_KEY_MODIFIER_ALT (1 shl 2)
 #define PDC_KEY_MODIFIER_NUMLOCK (1 shl 3)
 
-#define addch( c )              waddch( stdscr, c )
-#define addchstr( c )           addchnstr( c, -1 )
-#define addstr(s)             	waddstr( stdscr, s )
-#define addnstr(s, n)         	waddnstr( stdscr, s, n )
-#define attroff(attr)           wattroff( stdscr, attr )
-#define attron(attr)            wattron( stdscr, attr )
-#define attrset(attr)           wattrset( stdscr, attr )
-#define bkgd(c)                 wbkgd(stdscr,c)
-#define bkgdset(c)              wbkgdset(stdscr,c)
-''''''' #define border(ls,rs,ts,bs,tl,tr,bl,br)  wborder(stdscr,ls,rs,ts,bs,tl,tr,bl,br)
-#define box( w, v, h )          wborder( w, v, v, h, h, 0, 0, 0, 0 )
-#define clear_()                wclear( stdscr )
-#define clrtobot()              wclrtobot( stdscr )
-#define clrtoeol()              wclrtoeol( stdscr )
-#define delch()                 wdelch( stdscr )
-#define deleteln()              wdeleteln( stdscr )
-''''''' #define derwin(w,nl,nc,by,bx)   subwin(w,nl,nc,by+w->_begy,bx+w->_begx)
-#define draino(ms)              delay_output(ms)
-#define echochar(c)             addch(iif(c = PDC_ERR, PDC_ERR, refresh()) )
-''''''' #define erase_()                werase( stdscr )
-#define fixterm()               reset_prog_mode()
-#define getbegx(w)              w->_begx
-#define getbegy(w)              w->_begy
-#define getbegyx(w,y,x)         y = w->_begy: x = w->_begx
-#define getbkgd(w)              w->_bkgd
-#define getch()                 wgetch(stdscr)
-#define getmaxx(w)              w->_maxx
-#define getmaxy(w)              w->_maxy
-#define getmaxyx(w,y,x)         y = w->_maxy: x = w->_maxx
-#define getparx(w)              w->_parx
-#define getpary(w)              w->_pary
-#define getparyx(w,y,x)         y = w->_pary: x = w->_parx
-#define getstr(s)             	wgetstr( stdscr, s )
-#define getnstr(s,num)        	wgetnstr( stdscr, s, num )
-''''''' #define getsyx(y,x)             if( curscr->_leaveit ) then y= -1: x= -1 else getyx(curscr,y,x) end if
-#define getyx(w,y,x)            y = w->_cury: x = w->_curx
-''''''' #define has_colors()            iif( SP->mono, FALSE, TRUE )
-#define idcok(w,flag)           PDC_OK
-#define idlok(w,flag)           PDC_OK
-#define inch()                  stdscr->_y[stdscr->_cury][stdscr->_curx]
-#define inchstr( c )            inchnstr( c, stdscr->_maxx-stdscr->_curx )
-#define innstr(s,n)           	winnstr(stdscr,s,n)
-#define insch( c )              winsch( stdscr, c )
-#define insdelln(n)             winsdelln(stdscr,n)
-#define insertln()              winsertln( stdscr )
-#define insnstr(s,n)            winsnstr(stdscr,s,n)
-#define insstr(s)               winsnstr(stdscr,s,(-1))
-#define instr_(s)               winnstr(stdscr,s,stdscr->_maxx)
-#define isendwin()              iif( SP->alive, FALSE, TRUE )
-#define is_termresized()        SP->resized
-#define keypad(w,flag)          w->_use_keypad = flag
-#define leaveok(w,flag)         w->_leaveit = flag
-#define move(y,x)               wmove( stdscr, y, x )
-#define mvaddch(y,x,c)          iif( move( y, x ) = PDC_ERR, PDC_ERR, addch( c ) )
-#define mvaddchstr(y,x,c)       iif( move( y, x ) = PDC_ERR, PDC_ERR, addchnstr( c, -1 ) )
-#define mvaddchnstr(y,x,c,n)    iif( move( y, x ) = PDC_ERR, PDC_ERR, addchnstr( c, n ) )
-#define mvaddstr(y,x,s)       	iif( move( y, x ) = PDC_ERR, PDC_ERR, addstr( s ) )
-#define mvaddnstr(y,x,s,n)    	iif( move( y, x ) = PDC_ERR, PDC_ERR, addnstr( s, n ) )
-#define mvdelch(y,x)            iif( move( y, x ) = PDC_ERR, PDC_ERR, wdelch( stdscr ) )
-#define mvgetch(y,x)            iif( move( y, x ) = PDC_ERR, PDC_ERR, wgetch(stdscr) )
-#define mvgetstr(y,x,s)       	iif( move( y, x ) = PDC_ERR, PDC_ERR, wgetstr( stdscr, s ) )
-#define mvinch(y,x)             iif( move( y, x ) = PDC_ERR, PDC_ERR, (stdscr->_y[y][x]) )
-#define mvinchstr(y,x,c)        iif( move( y, x ) = PDC_ERR, PDC_ERR, inchnstr( c, stdscr->_maxx-stdscr->_curx ) )
-#define mvinchnstr(y,x,c,n)    	iif( move( y, x ) = PDC_ERR, PDC_ERR, inchnstr( c, n ) )
-#define mvinsch(y,x,c)          iif( move( y, x ) = PDC_ERR, PDC_ERR, winsch( stdscr, c ) )
-#define mvinsnstr(y,x,s,n)      iif( move( y, x ) = PDC_ERR, PDC_ERR, winsnstr(stdscr,s,n) )
-#define mvinsstr(y,x,s)         iif( move( y, x ) = PDC_ERR, PDC_ERR, winsnstr(stdscr,s,-1) )
-#define mvinstr(y,x,s)        	iif( move( y, x ) = PDC_ERR, PDC_ERR, winnstr(stdscr,s,stdscr->_maxx) )
-#define mvinnstr(y,x,s,n)     	iif( move( y, x ) = PDC_ERR, PDC_ERR, winnstr(stdscr,s,n) )
-#define mvwaddch(w,y,x,c)       iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, waddch( w, c ) )
-#define mvwaddchstr(w,y,x,c)    iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, waddchnstr( w, c, -1 ) )
+#define addch( c ) waddch( stdscr, c )
+#define addchstr( c ) addchnstr( c, -1 )
+#define addstr(s) waddstr( stdscr, s )
+#define addnstr(s, n) waddnstr( stdscr, s, n )
+#define attroff(attr) wattroff( stdscr, attr )
+#define attron(attr) wattron( stdscr, attr )
+#define attrset(attr) wattrset( stdscr, attr )
+#define bkgd(c) wbkgd(stdscr,c)
+#define bkgdset(c) wbkgdset(stdscr,c)
+''''''' #define border(ls,rs,ts,bs,tl,tr,bl,br) wborder(stdscr,ls,rs,ts,bs,tl,tr,bl,br)
+#define box( w, v, h ) wborder( w, v, v, h, h, 0, 0, 0, 0 )
+#define clear_() wclear( stdscr )
+#define clrtobot() wclrtobot( stdscr )
+#define clrtoeol() wclrtoeol( stdscr )
+#define delch() wdelch( stdscr )
+#define deleteln() wdeleteln( stdscr )
+''''''' #define derwin(w,nl,nc,by,bx) subwin(w,nl,nc,by+w->_begy,bx+w->_begx)
+#define draino(ms) delay_output(ms)
+#define echochar(c) addch(iif(c = PDC_ERR, PDC_ERR, refresh()) )
+''''''' #define erase_() werase( stdscr )
+#define fixterm() reset_prog_mode()
+#define getbegx(w) w->_begx
+#define getbegy(w) w->_begy
+#define getbegyx(w,y,x) y = w->_begy: x = w->_begx
+#define getbkgd(w) w->_bkgd
+#define getch() wgetch(stdscr)
+#define getmaxx(w) w->_maxx
+#define getmaxy(w) w->_maxy
+#define getmaxyx(w,y,x) y = w->_maxy: x = w->_maxx
+#define getparx(w) w->_parx
+#define getpary(w) w->_pary
+#define getparyx(w,y,x) y = w->_pary: x = w->_parx
+#define getstr(s) wgetstr( stdscr, s )
+#define getnstr(s,num) wgetnstr( stdscr, s, num )
+''''''' #define getsyx(y,x) if( curscr->_leaveit ) then y= -1: x= -1 else getyx(curscr,y,x) end if
+#define getyx(w,y,x) y = w->_cury: x = w->_curx
+''''''' #define has_colors() iif( SP->mono, FALSE, TRUE )
+#define idcok(w,flag) PDC_OK
+#define idlok(w,flag) PDC_OK
+#define inch() stdscr->_y[stdscr->_cury][stdscr->_curx]
+#define inchstr( c ) inchnstr( c, stdscr->_maxx-stdscr->_curx )
+#define innstr(s,n) winnstr(stdscr,s,n)
+#define insch( c ) winsch( stdscr, c )
+#define insdelln(n) winsdelln(stdscr,n)
+#define insertln() winsertln( stdscr )
+#define insnstr(s,n) winsnstr(stdscr,s,n)
+#define insstr(s) winsnstr(stdscr,s,(-1))
+#define instr_(s) winnstr(stdscr,s,stdscr->_maxx)
+#define isendwin() iif( SP->alive, FALSE, TRUE )
+#define is_termresized() SP->resized
+#define keypad(w,flag) w->_use_keypad = flag
+#define leaveok(w,flag) w->_leaveit = flag
+#define move(y,x) wmove( stdscr, y, x )
+#define mvaddch(y,x,c) iif( move( y, x ) = PDC_ERR, PDC_ERR, addch( c ) )
+#define mvaddchstr(y,x,c) iif( move( y, x ) = PDC_ERR, PDC_ERR, addchnstr( c, -1 ) )
+#define mvaddchnstr(y,x,c,n) iif( move( y, x ) = PDC_ERR, PDC_ERR, addchnstr( c, n ) )
+#define mvaddstr(y,x,s) iif( move( y, x ) = PDC_ERR, PDC_ERR, addstr( s ) )
+#define mvaddnstr(y,x,s,n) iif( move( y, x ) = PDC_ERR, PDC_ERR, addnstr( s, n ) )
+#define mvdelch(y,x) iif( move( y, x ) = PDC_ERR, PDC_ERR, wdelch( stdscr ) )
+#define mvgetch(y,x) iif( move( y, x ) = PDC_ERR, PDC_ERR, wgetch(stdscr) )
+#define mvgetstr(y,x,s) iif( move( y, x ) = PDC_ERR, PDC_ERR, wgetstr( stdscr, s ) )
+#define mvinch(y,x) iif( move( y, x ) = PDC_ERR, PDC_ERR, (stdscr->_y[y][x]) )
+#define mvinchstr(y,x,c) iif( move( y, x ) = PDC_ERR, PDC_ERR, inchnstr( c, stdscr->_maxx-stdscr->_curx ) )
+#define mvinchnstr(y,x,c,n) iif( move( y, x ) = PDC_ERR, PDC_ERR, inchnstr( c, n ) )
+#define mvinsch(y,x,c) iif( move( y, x ) = PDC_ERR, PDC_ERR, winsch( stdscr, c ) )
+#define mvinsnstr(y,x,s,n) iif( move( y, x ) = PDC_ERR, PDC_ERR, winsnstr(stdscr,s,n) )
+#define mvinsstr(y,x,s) iif( move( y, x ) = PDC_ERR, PDC_ERR, winsnstr(stdscr,s,-1) )
+#define mvinstr(y,x,s) iif( move( y, x ) = PDC_ERR, PDC_ERR, winnstr(stdscr,s,stdscr->_maxx) )
+#define mvinnstr(y,x,s,n) iif( move( y, x ) = PDC_ERR, PDC_ERR, winnstr(stdscr,s,n) )
+#define mvwaddch(w,y,x,c) iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, waddch( w, c ) )
+#define mvwaddchstr(w,y,x,c) iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, waddchnstr( w, c, -1 ) )
 #define mvwaddchnstr(w,y,x,c,n) iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, waddchnstr( w, c, n ) )
-#define mvwaddrawch(w,y,x,c)    iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, waddrawch( w, c ) )
-#define mvwaddrawstr(w,y,x,s) 	iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, waddrawstr( w, s ) )
-#define mvwaddstr(w,y,x,s)    	iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, waddstr( w, s ) )
-#define mvwdelch(w,y,x)         iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, wdelch( w ) )
-#define mvwgetch(w,y,x)         iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, wgetch( w ) )
-#define mvwgetstr(w,y,x,s)    	iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, wgetstr( w, s ) )
-#define mvwinch(w,y,x)          iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, (w->_y[y][x]) )
-#define mvwinchstr(w,y,x,c)     iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, winchnstr( w, c, w->_maxx-w->_curx ) )
-#define mvwinchnstr(w,y,x,c,n)  iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, winchnstr( w, c, n ) )
-#define mvwinsch(w,y,x,c)       iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, winsch( w, c ) )
-#define mvwinstr(w,y,x,s)     	iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, winnstr(w,s,w->_maxx) )
-#define mvwinnstr(w,y,x,s,n)  	iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, winnstr(w,s,n) )
-#define mvwinsnstr(w,y,x,s,n)   iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, winsnstr(w,s,n) )
-#define mvwinsstr(w,y,x,s)      iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, winsnstr(w,s,-1) )
-#define napms(ms)               delay_output(ms)
-#define nl()                    SP->autocr = TRUE
-#define nonl()                  SP->autocr = FALSE
-#define redrawwin(w)            wredrawln(w,0,w->_maxy)
-''''''' #define refresh()               wrefresh( stdscr )
-#define resetterm()             reset_shell_mode()
-#define saveterm()              def_prog_mode()
-#define scrl(n)                 wscrl(stdscr,n)
-''''''' #define scroll(w)               wscrl(w,1)
-#define scrollok(w,flag)        w->_scroll  = flag
-#define setscrreg(top, bot)     wsetscrreg( stdscr, top, bot )
-''''''' #define setsyx(y,x)             if( (y)=-1 and (x)=-1) then curscr->_leaveit=TRUE else curscr->_leaveit=FALSE : wmove(curscr,y,x) end if
-#define standend()              wattrset(stdscr, A_NORMAL)
-#define standout()              wattrset(stdscr, A_STANDOUT)
-#define timeout(n)              wtimeout( stdscr, n )
-''''''' #define touchline(w,y,n)        wtouchln(w,y,n,TRUE)
-''''''' #define touchwin(w)             wtouchln(w,0,w->_maxy,TRUE)
-#define ungetch(ch)             PDC_ungetch(ch)
-#define untouchwin(w)           wtouchln(w,0,w->_maxy,FALSE)
-#define waddch(w, c)            PDC_chadd( w, c, not SP->raw_out, TRUE )
-#define waddchstr(w, c)         waddchnstr( w, c, -1 )
-''''''' #define werase(w)               wmove((w),0,0): wclrtobot(w))
-''''''' #define wclear(w)               w->_clear = TRUE: werase(w)
-#define wechochar(w,c)          iif( waddch(w,c) = PDC_ERR, PDC_ERR, wrefresh(w) )
-#define winch(w)                w->_y[w->_cury][w->_curx]
-#define winchstr(w, c)          winchnstr( w, c, w->_maxx-w->_curx )
-#define winsstr(w,s)          	winsnstr(w,s,-1)
-#define winstr(w,s)           	winnstr(w,s,w->_maxx)
-#define wstandend(w)            wattrset(w, A_NORMAL)
-#define wstandout(w)            wattrset(w, A_STANDOUT)
+#define mvwaddrawch(w,y,x,c) iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, waddrawch( w, c ) )
+#define mvwaddrawstr(w,y,x,s) iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, waddrawstr( w, s ) )
+#define mvwaddstr(w,y,x,s) iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, waddstr( w, s ) )
+#define mvwdelch(w,y,x) iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, wdelch( w ) )
+#define mvwgetch(w,y,x) iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, wgetch( w ) )
+#define mvwgetstr(w,y,x,s) iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, wgetstr( w, s ) )
+#define mvwinch(w,y,x) iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, (w->_y[y][x]) )
+#define mvwinchstr(w,y,x,c) iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, winchnstr( w, c, w->_maxx-w->_curx ) )
+#define mvwinchnstr(w,y,x,c,n) iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, winchnstr( w, c, n ) )
+#define mvwinsch(w,y,x,c) iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, winsch( w, c ) )
+#define mvwinstr(w,y,x,s) iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, winnstr(w,s,w->_maxx) )
+#define mvwinnstr(w,y,x,s,n) iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, winnstr(w,s,n) )
+#define mvwinsnstr(w,y,x,s,n) iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, winsnstr(w,s,n) )
+#define mvwinsstr(w,y,x,s) iif( wmove( w, y, x ) = PDC_ERR, PDC_ERR, winsnstr(w,s,-1) )
+#define napms(ms) delay_output(ms)
+#define nl() SP->autocr = TRUE
+#define nonl() SP->autocr = FALSE
+#define redrawwin(w) wredrawln(w,0,w->_maxy)
+''''''' #define refresh() wrefresh( stdscr )
+#define resetterm() reset_shell_mode()
+#define saveterm() def_prog_mode()
+#define scrl(n) wscrl(stdscr,n)
+''''''' #define scroll(w) wscrl(w,1)
+#define scrollok(w,flag) w->_scroll = flag
+#define setscrreg(top, bot) wsetscrreg( stdscr, top, bot )
+''''''' #define setsyx(y,x) if( (y)=-1 and (x)=-1) then curscr->_leaveit=TRUE else curscr->_leaveit=FALSE : wmove(curscr,y,x) end if
+#define standend() wattrset(stdscr, A_NORMAL)
+#define standout() wattrset(stdscr, A_STANDOUT)
+#define timeout(n) wtimeout( stdscr, n )
+''''''' #define touchline(w,y,n) wtouchln(w,y,n,TRUE)
+''''''' #define touchwin(w) wtouchln(w,0,w->_maxy,TRUE)
+#define ungetch(ch) PDC_ungetch(ch)
+#define untouchwin(w) wtouchln(w,0,w->_maxy,FALSE)
+#define waddch(w, c) PDC_chadd( w, c, not SP->raw_out, TRUE )
+#define waddchstr(w, c) waddchnstr( w, c, -1 )
+''''''' #define werase(w) wmove((w),0,0): wclrtobot(w))
+''''''' #define wclear(w) w->_clear = TRUE: werase(w)
+#define wechochar(w,c) iif( waddch(w,c) = PDC_ERR, PDC_ERR, wrefresh(w) )
+#define winch(w) w->_y[w->_cury][w->_curx]
+#define winchstr(w, c) winchnstr( w, c, w->_maxx-w->_curx )
+#define winsstr(w,s) winsnstr(w,s,-1)
+#define winstr(w,s) winnstr(w,s,w->_maxx)
+#define wstandend(w) wattrset(w, A_NORMAL)
+#define wstandout(w) wattrset(w, A_STANDOUT)
 
 #endif
