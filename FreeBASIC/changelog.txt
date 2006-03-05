@@ -28,6 +28,7 @@ Version 0.16 Beta:
 - DRAW STRING statement, to draw text in gfx mode at pixel perfect positions; supports default as well as custom fonts (lillo)
 - the curses.bi header compatible with ncurses (v1c)
 - over 30 Gtk tutorials translated from C by Claudio Tinivella (v1c)
+- AVI-capture missing symbols to the vfw.bi Windows API header (v1c)
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)
