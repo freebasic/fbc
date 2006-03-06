@@ -509,14 +509,14 @@ declare function wvline cdecl alias "wvline" (byval as WINDOW ptr, byval as chty
 #define setsyx(y,x) if( (y = -1) and (x = -1) ) then : newscr->_leaveok = TRUE : else : newscr->_leaveok = FALSE : wmove(newscr, y, x) : end if
 
 #define getattrs(win) iif(win,(win)->_attrs,A_NORMAL)
-#define getcurx(win) iif(win,(win)->_curx,NCURSES_ERR)
-#define getcury(win) iif(win,(win)->_cury,NCURSES_ERR)
-#define getbegx(win) iif(win,(win)->_begx,NCURSES_ERR)
-#define getbegy(win) iif(win,(win)->_begy,NCURSES_ERR)
-#define getmaxx(win) iif(win,((win)->_maxx + 1),NCURSES_ERR)
-#define getmaxy(win) iif(win,((win)->_maxy + 1),NCURSES_ERR)
-#define getparx(win) iif(win,(win)->_parx,NCURSES_ERR)
-#define getpary(win) iif(win,(win)->_pary,NCURSES_ERR)
+#define getcurx(win) iif(win,cint((win)->_curx),NCURSES_ERR)
+#define getcury(win) iif(win,cint((win)->_cury),NCURSES_ERR)
+#define getbegx(win) iif(win,cint((win)->_begx),NCURSES_ERR)
+#define getbegy(win) iif(win,cint((win)->_begy),NCURSES_ERR)
+#define getmaxx(win) iif(win,cint((win)->_maxx + 1),NCURSES_ERR)
+#define getmaxy(win) iif(win,cint((win)->_maxy + 1),NCURSES_ERR)
+#define getparx(win) iif(win,cint((win)->_parx,NCURSES_ERR)
+#define getpary(win) iif(win,cint((win)->_pary),NCURSES_ERR)
 
 #define wstandout(win) wattrset(win,A_STANDOUT)
 #define wstandend(win) wattrset(win,A_NORMAL)
