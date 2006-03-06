@@ -500,7 +500,7 @@ declare function wvline cdecl alias "wvline" (byval as WINDOW ptr, byval as chty
 #define nocrmode() nocbreak()
 #define gettmode()
 
-#define getyx(win,y,x) y = getcury(win)L x = getcurx(win)
+#define getyx(win,y,x) y = getcury(win): x = getcurx(win)
 #define getbegyx(win,y,x) y = getbegy(win): x = getbegx(win)
 #define getmaxyx(win,y,x) y = getmaxy(win): x = getmaxx(win)
 #define getparyx(win,y,x) y = getpary(win): x = getparx(win)
