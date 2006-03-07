@@ -4932,6 +4932,10 @@ end sub
 private sub hDestroyFrame( byval proc as FBSYMBOL ptr, _
 						   byval bytestopop as integer ) static
 
+    dim as integer bytestoalloc
+
+    bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
+
     if( EMIT_REGISUSED( FB_DATACLASS_INTEGER, EMIT_REG_EDI ) ) then
     	hPOP( "edi" )
     end if
@@ -4942,7 +4946,7 @@ private sub hDestroyFrame( byval proc as FBSYMBOL ptr, _
     	hPOP( "ebx" )
     end if
 
-    if( (proc->proc.ext->stk.localofs <> EMIT_LOCSTART) or _
+    if( (bytestoalloc <> 0) or _
     	(proc->proc.ext->stk.argofs <> EMIT_ARGSTART) or _
         symbIsMainProc( proc ) or _
         env.clopt.debug ) then
