@@ -162,20 +162,30 @@ function cHighestPrecExpr( byref highexpr as ASTNODE ptr ) as integer
 
 	end select
 
-    '' FuncPtrOrDerefFields?
 	dtype = astGetDataType( highexpr )
-	if( dtype >= FB_DATATYPE_POINTER ) then
-		isfuncptr = FALSE
-		if( dtype = FB_DATATYPE_POINTER+FB_DATATYPE_FUNCTION ) then
-			if( lexGetToken( ) = CHAR_LPRNT ) then
-				isfuncptr = TRUE
-			end if
+	subtype = astGetSubType( highexpr )
+
+	select case as const dtype
+	'' zstring indexing?
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
+		'' '['?
+		if( lexGetToken( ) = CHAR_LBRACKET ) then
+			cDerefFields( dtype, subtype, highexpr, TRUE )
 		end if
 
-		subtype = astGetSubType( highexpr )
+	case else
+		'' FuncPtrOrDerefFields?
+		if( dtype >= FB_DATATYPE_POINTER ) then
+			isfuncptr = FALSE
+			if( dtype = FB_DATATYPE_POINTER+FB_DATATYPE_FUNCTION ) then
+				if( lexGetToken( ) = CHAR_LPRNT ) then
+					isfuncptr = TRUE
+				end if
+			end if
 
-		cFuncPtrOrDerefFields( dtype, subtype, highexpr, isfuncptr, TRUE )
-	end if
+			cFuncPtrOrDerefFields( dtype, subtype, highexpr, isfuncptr, TRUE )
+		end if
+	end select
 
 	function = (hGetLastError() = FB_ERRMSG_OK)
 
@@ -234,8 +244,18 @@ function cAnonUDT( byref expr as ASTNODE ptr ) as integer
 	tmpsym = symbAddTempVar( FB_DATATYPE_USERDEF, subtype )
 
     '' let the initializer do the rest..
-    if( cSymbolInit( tmpsym ) = FALSE ) then
+    dim as FB_SYMBINI_TREE ptr tree = cSymbolInit( tmpsym )
+    if( tree = NULL ) then
     	exit function
+    end if
+
+    '' and shared???
+    if( symbIsStatic( tmpsym ) = FALSE ) then
+    	symbVarIniFlush( tree, FALSE )
+
+    '' static, let emit flush it..
+    else
+    	symbSetVarIniTree( tmpsym, tree )
     end if
 
     '' create a var expression
