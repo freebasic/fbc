@@ -244,18 +244,8 @@ function cAnonUDT( byref expr as ASTNODE ptr ) as integer
 	tmpsym = symbAddTempVar( FB_DATATYPE_USERDEF, subtype )
 
     '' let the initializer do the rest..
-    dim as FB_SYMBINI_TREE ptr tree = cSymbolInit( tmpsym )
-    if( tree = NULL ) then
+    if( cSymbolInit( tmpsym ) = FALSE ) then
     	exit function
-    end if
-
-    '' and shared???
-    if( symbIsStatic( tmpsym ) = FALSE ) then
-    	symbVarIniFlush( tree, FALSE )
-
-    '' static, let emit flush it..
-    else
-    	symbSetVarIniTree( tmpsym, tree )
     end if
 
     '' create a var expression
