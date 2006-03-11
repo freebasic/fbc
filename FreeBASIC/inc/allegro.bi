@@ -918,7 +918,7 @@ Type QUAT
 End Type
 
 Type DIALOG
-	proc as sub cdecl(msg As Integer, d As DIALOG Ptr, c As Integer)
+	proc as function cdecl(byval msg As Integer, byval d As DIALOG Ptr, byval c As Integer) as integer
 	x As Integer				' position and size of the object
 	y As Integer
 	w As Integer
@@ -929,9 +929,9 @@ Type DIALOG
 	flags As Integer			' flags about the object state
 	d1 As Integer				' any data the object might require
 	d2 As Integer
-	dp As UByte Ptr				' pointers to more object data
-	dp2 As UByte Ptr
-	dp3 As UByte Ptr
+	dp As any Ptr				' pointers to more object data
+	dp2 As any Ptr
+	dp3 As any Ptr
 End Type
 
 Type MENU					' a popup menu
@@ -939,7 +939,7 @@ Type MENU					' a popup menu
 	proc as sub cdecl()			' callback function
 	child As MENU Ptr			' to allow nested menus
 	flags As Integer			' flags about the menu state
-	dp As UByte Ptr				' any data the menu might require
+	dp As any Ptr				' any data the menu might require
 End Type
 
 Type DIALOG_PLAYER				' stored information about the state of an active GUI dialog
