@@ -16,6 +16,8 @@ Version 0.16 Beta:
 - parentheses ()'s aren't anymore optional with arg-less macros, to allow them to be passed as parameters to other macros (v1c)
 - GOSUB and ON expr GOSUB cannot be used inside SUB's/FUNCTION's anymore (GOTO will be always allowed), RETURN without 
   expression can now be used as a shortcut to EXIT SUB|FUNCTION (v1c)
+- UDT parameters (TYPE's) can now be optional too (v1c)
+- any complex expression can be defined in optional parameters, not constants only (v1c)
 
 [added]
 - anonymous UDT's that can be passed as parameters or used in assignments, like:
