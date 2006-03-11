@@ -17,7 +17,7 @@ Version 0.16 Beta:
 - GOSUB and ON expr GOSUB cannot be used inside SUB's/FUNCTION's anymore (GOTO will be always allowed), RETURN without 
   expression can now be used as a shortcut to EXIT SUB|FUNCTION (v1c)
 - UDT parameters (TYPE's) can now be optional too (v1c)
-- any complex expression can be defined in optional parameters, not constants only (v1c)
+- any complex expression can be used in optional parameters, not only constants (v1c)
 
 [added]
 - anonymous UDT's that can be passed as parameters or used in assignments, like:
@@ -78,6 +78,7 @@ Version 0.16 Beta:
 - FORMAT: infinite loop when rounding; too big (over 2^63) or too small numbers weren't converted correctly (v1c)
 - PRINTing wide-strings in Linux with characters above 127 was given incorrect results (v1c)
 - text-mode's (SCREEN 0) width wasn't been restored when SCREEN was previously in a GFX mode, causing problems with PRINT (v1c)
+
 
 Version 0.15 Beta:
 
