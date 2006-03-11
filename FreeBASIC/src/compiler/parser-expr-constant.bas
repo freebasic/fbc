@@ -49,7 +49,7 @@ function cConstant( byref constexpr as ASTNODE ptr ) as integer static
   			constexpr = astNewENUM( symbGetConstValInt( s ), symbGetSubType( s ) )
 
   		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  			constexpr = astNewCONST64( symbGetConstValLong( s ), dtype )
+  			constexpr = astNewCONSTl( symbGetConstValLong( s ), dtype )
 
   		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   			constexpr = astNewCONSTf( symbGetConstValFloat( s ), dtype )
@@ -79,10 +79,10 @@ function cLiteral( byref litexpr as ASTNODE ptr ) as integer
   		typ = lexGetType( )
   		select case as const typ
   		case FB_DATATYPE_LONGINT
-			litexpr = astNewCONST64( vallng( *lexGetText( ) ), typ )
+			litexpr = astNewCONSTl( vallng( *lexGetText( ) ), typ )
 
 		case FB_DATATYPE_ULONGINT
-			litexpr = astNewCONST64( valulng( *lexGetText( ) ), typ )
+			litexpr = astNewCONSTl( valulng( *lexGetText( ) ), typ )
 
   		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			litexpr = astNewCONSTf( val( *lexGetText( ) ), typ )

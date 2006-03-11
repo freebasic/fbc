@@ -5694,7 +5694,7 @@ sub emitWriteData( byval s as FBSYMBOL ptr )
     	    if( symbGetIsInitialized( s ) ) then
     	    	'' not a jump tb?
     	    	if( symbIsJumpTb( s ) = FALSE ) then
-    	    		astTypeIniFlush( s->var.initree, s, FALSE, TRUE, TRUE )
+    	    		astTypeIniFlush( s->var.initree, s, TRUE, TRUE )
     	    	end if
     	    end if
 

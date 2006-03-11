@@ -350,7 +350,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 
 			select case as const dtype
 			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-				expr = astNewCONST64( 0, dtype )
+				expr = astNewCONSTl( 0, dtype )
 			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 				expr = astNewCONSTf( 0.0, dtype )
 			case else
@@ -417,7 +417,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 
 	select case as const dtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		expr = astNewCONST64( 0, dtype )
+		expr = astNewCONSTl( 0, dtype )
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		expr = astNewCONSTf( 0.0, dtype )
 	case else

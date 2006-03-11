@@ -252,8 +252,8 @@ end type
 type FBS_PROCARG
 	mode			as FBARGMODE_ENUM
 	suffix			as integer					'' QB quirk..
-	optional		as integer					'' true or false
-	optval			as FBVALUE                  '' default value
+	optional		as integer
+	optexpr			as ASTNODE_ ptr				'' default value
 end type
 
 type FBRTLCALLBACK as function( byval sym as FBSYMBOL_ ptr ) as integer
@@ -579,7 +579,7 @@ declare function 	symbAddProcArg			( byval proc as FBSYMBOL ptr, _
 					 						  byval mode as integer, _
 					 						  byval suffix as integer, _
 					 						  byval optional as integer, _
-					 						  byval optval as FBVALUE ptr ) as FBSYMBOL ptr
+					 						  byval optexpr as ASTNODE ptr ) as FBSYMBOL ptr
 
 declare function 	symbAddProcResArg		( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 
@@ -984,13 +984,7 @@ declare function 	symbScopeAllocLocals	( byval sym as FBSYMBOL ptr ) as integer
 
 #define symbGetArgOptional(a) a->arg.optional
 
-#define symbGetArgOptValInt(a) a->arg.optval.int
-
-#define symbGetArgOptValFloat(a) a->arg.optval.float
-
-#define symbGetArgOptValLong(a) a->arg.optval.long
-
-#define symbGetArgOptValStr(a) a->arg.optval.str
+#define symbGetArgOptExpr(a) a->arg.optexpr
 
 #define symbGetArgPrev(a) a->prev
 

@@ -72,7 +72,7 @@ function symbAddProcArg( byval proc as FBSYMBOL ptr, _
 					 	 byval mode as integer, _
 					 	 byval suffix as integer, _
 					 	 byval optional as integer, _
-					 	 byval optval as FBVALUE ptr _
+					 	 byval optexpr as ASTNODE ptr _
 					   ) as FBSYMBOL ptr static
 
     dim a as FBSYMBOL ptr
@@ -93,10 +93,7 @@ function symbAddProcArg( byval proc as FBSYMBOL ptr, _
 	a->arg.mode	= mode
 	a->arg.suffix = suffix
 	a->arg.optional = optional
-
-	if( optional ) then
-		a->arg.optval = *optval
-	end if
+	a->arg.optexpr = optexpr
 
     function = a
 

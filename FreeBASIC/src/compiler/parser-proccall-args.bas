@@ -32,27 +32,18 @@ option escape
 private function hCreateOptArg( byval arg as FBSYMBOL ptr _
 							  ) as ASTNODE ptr
 
-	'' create an arg
-	select case as const symbGetType( arg )
-  	case FB_DATATYPE_ENUM
-  		function = astNewENUM( symbGetArgOptValInt( arg ), symbGetSubType( arg ) )
+	dim as ASTNODE ptr tree
 
-	case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
-		function = astNewVAR( symbGetArgOptValStr( arg ), 0, FB_DATATYPE_CHAR )
+	'' make a clone
+	tree = astCloneTree( symbGetArgOptExpr( arg ) )
 
-	case FB_DATATYPE_WCHAR
-		function = astNewVAR( symbGetArgOptValStr( arg ), 0, FB_DATATYPE_WCHAR )
+	'' UDT?
+	if( symbGetType( arg ) = FB_DATATYPE_USERDEF ) then
+		'' update the counters
+		astTypeIniUpdCnt( tree )
+	end if
 
-	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		function = astNewCONST64( symbGetArgOptValLong( arg ), symbGetType( arg ) )
-
-	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		function = astNewCONSTf( symbGetArgOptValFloat( arg ), symbGetType( arg ) )
-
-	case else
-		function = astNewCONSTi( symbGetArgOptValInt( arg ), _
-								 symbGetType( arg ), symbGetSubType( arg ) )
-	end select
+	function = tree
 
 end function
 
@@ -66,7 +57,8 @@ function cProcParam( byval proc as FBSYMBOL ptr, _
 					 byref expr as ASTNODE ptr, _
 					 byref pmode as integer, _
 					 byval isfunc as integer, _
-					 byval optonly as integer ) as integer
+					 byval optonly as integer _
+				   ) as integer
 
 	dim as integer amode
 	dim as FBSYMBOL ptr oldsym
@@ -261,7 +253,8 @@ end function
 private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 									byval ptrexpr as ASTNODE ptr, _
 									byval isfunc as integer, _
-									byval optonly as integer ) as ASTNODE ptr
+									byval optonly as integer _
+								  ) as ASTNODE ptr
 
     dim as integer args, p, params, modeTB(0 to FB_MAXPROCARGS-1)
     dim as ASTNODE ptr procexpr, exprTB(0 to FB_MAXPROCARGS-1)
@@ -380,7 +373,8 @@ end function
 function cProcParamList( byval proc as FBSYMBOL ptr, _
 						 byval ptrexpr as ASTNODE ptr, _
 						 byval isfunc as integer, _
-						 byval optonly as integer ) as ASTNODE ptr
+						 byval optonly as integer _
+					   ) as ASTNODE ptr
 
     dim as integer args, params, mode
     dim as FBSYMBOL ptr arg

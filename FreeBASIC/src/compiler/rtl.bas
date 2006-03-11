@@ -124,7 +124,8 @@ sub rtlAddIntrinsicProcs( )
 	dim as integer a, atype, alen, amode, optional, ptrcnt, checkerror, overloaded
 	dim as FBSYMBOL ptr proc
 	dim as FBRTLCALLBACK pcallback
-	dim as FBVALUE optval
+	dim as ASTNODE ptr optval
+	dim as FBVALUE value
 	dim as zstring ptr pname, palias
 
 	''
@@ -152,14 +153,23 @@ sub rtlAddIntrinsicProcs( )
 				select case as const atype
 				case FB_DATATYPE_STRING
 					read optstr
-					optval.str = symbAllocStrConst( optstr, 0 )
+					optval = astNewCONSTstr( optstr )
+
 				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-					read optval.long
+					read value.long
+					optval = astNewCONSTl( value.long, atype )
+
 				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-					read optval.float
+					read value.float
+					optval = astNewCONSTf( value.float, atype )
+
 				case else
-					read optval.int
+					read value.int
+					optval = astNewCONSTi( value.int, atype )
 				end select
+
+			else
+				optval = NULL
 			end if
 
 			if( atype <> INVALID ) then
@@ -173,7 +183,7 @@ sub rtlAddIntrinsicProcs( )
 			symbAddProcArg( proc, NULL, _
 							atype, NULL, ptrcnt, _
 							alen, amode, INVALID, _
-							optional, @optval )
+							optional, optval )
 		next
 
 		''
@@ -193,7 +203,7 @@ sub rtlAddIntrinsicProcs( )
 		end if
 
 		proc = symbAddPrototype( proc, _
-								 pname, palias, strptr( "fb" ), _
+								 pname, palias, "fb", _
 								 ptype, NULL, ptrcnt, _
 								 pattrib, pmode, TRUE )
 

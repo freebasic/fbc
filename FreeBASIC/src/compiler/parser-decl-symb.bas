@@ -721,7 +721,7 @@ function cSymbolDef( byval attrib as integer, _
         	if( (symbGetAttrib( symbol ) and _
         		 (FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED)) = 0 ) then
 
-        		astTypeIniFlush( tree, symbol, FALSE, FALSE, TRUE )
+        		astTypeIniFlush( tree, symbol, FALSE, TRUE )
 
         	'' static or shared (includes extern/public), let emit flush it..
         	else

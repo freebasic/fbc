@@ -95,8 +95,8 @@ function astNewCONSTf( byval value as double, _
 end function
 
 '':::::
-function astNewCONST64( byval value as longint, _
-					    byval dtype as integer ) as ASTNODE ptr static
+function astNewCONSTl( byval value as longint, _
+					   byval dtype as integer ) as ASTNODE ptr static
     dim as ASTNODE ptr n
 
 	'' alloc new node

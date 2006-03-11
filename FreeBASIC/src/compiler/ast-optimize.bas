@@ -355,7 +355,7 @@ private function hOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 				select case as const v.dtype
 				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-					nn = astNewCONST64( v.val.long, v.dtype )
+					nn = astNewCONSTl( v.val.long, v.dtype )
 				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			    	nn = astNewCONSTf( v.val.float, v.dtype )
 				case else
@@ -370,7 +370,7 @@ private function hOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 				select case as const v.dtype
 				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-					nn = astNewCONST64( v.val.long, v.dtype )
+					nn = astNewCONSTl( v.val.long, v.dtype )
 				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 					nn = astNewCONSTf( v.val.float, v.dtype )
 				case else
@@ -385,7 +385,7 @@ private function hOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 				select case as const v.dtype
 				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-					nn = astNewCONST64( v.val.long, v.dtype )
+					nn = astNewCONSTl( v.val.long, v.dtype )
 				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 					nn = astNewCONSTf( v.val.float, v.dtype )
 				case else
@@ -441,7 +441,7 @@ private sub hOptConstAccum2( byval n as ASTNODE ptr )
 					n->l = astNewBOP( AST_OP_ADD, n->l, n->r )
 					select case as const v.dtype
 					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-						n->r = astNewCONST64( v.val.long, v.dtype )
+						n->r = astNewCONSTl( v.val.long, v.dtype )
 					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 						n->r = astNewCONSTf( v.val.float, v.dtype )
 					case else
@@ -460,7 +460,7 @@ private sub hOptConstAccum2( byval n as ASTNODE ptr )
 				n->l = astNewBOP( AST_OP_MUL, n->l, n->r )
 				select case as const v.dtype
 				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-					n->r = astNewCONST64( v.val.long, v.dtype )
+					n->r = astNewCONSTl( v.val.long, v.dtype )
 				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 					n->r = astNewCONSTf( v.val.float, v.dtype )
 				case else
@@ -590,7 +590,7 @@ private function hOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
 							v.val.long *= clngint( r->con.val.int )
 						end select
 
-						r = astNewCONST64( v.val.long, v.dtype )
+						r = astNewCONSTl( v.val.long, v.dtype )
 
 					''
 					case FB_DATATYPE_ULONGINT
@@ -603,7 +603,7 @@ private function hOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
 							v.val.long *= culngint( r->con.val.int )
 						end select
 
-						r = astNewCONST64( v.val.long, v.dtype )
+						r = astNewCONSTl( v.val.long, v.dtype )
 
 					''
 					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE

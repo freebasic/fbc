@@ -66,6 +66,53 @@ private sub hParamError( byval proc as FBSYMBOL ptr, _
 end sub
 
 '':::::
+private function cOptionalExpr( byval mode as  FBARGMODE_ENUM, _
+								byval dtype as FB_DATATYPE, _
+								byval subtype as FBSYMBOL ptr _
+					   		  ) as ASTNODE ptr
+
+    dim as ASTNODE ptr expr
+    dim as FBSYMBOL ptr sym
+
+    function = NULL
+
+    '' not byval or byref?
+    if( (mode <> FB_ARGMODE_BYVAL) and (mode <> FB_ARGMODE_BYREF) ) then
+    	exit function
+    end if
+
+    '' anything but an UDT?
+    if( dtype <> FB_DATATYPE_USERDEF ) then
+    	if( cExpression( expr ) = FALSE ) then
+    		exit function
+    	end if
+
+    	'' check for invalid types..
+    	static as ASTNODE lside
+
+    	astBuildVAR( @lside, NULL, 0, dtype, subtype )
+
+    	if( astCheckASSIGN( @lside, expr ) = FALSE ) then
+        	exit function
+		end if
+
+    '' UDT, let SymbolInit() build a tree..
+    else
+    	sym = symbAddTempVar( dtype, subtype, FALSE, FALSE )
+
+    	expr = cSymbolInit( sym, TRUE )
+    	if( expr = NULL ) then
+    		exit function
+    	end if
+
+    	symbDelVar( sym, FALSE )
+    end if
+
+	function = expr
+
+end function
+
+'':::::
 ''ArgDecl         =   (BYVAL|BYREF)? ID (('(' ')')? (AS SymbolType)?)? ('=" (NUM_LIT|STR_LIT))? .
 ''
 function cArgDecl( byval proc as FBSYMBOL ptr, _
@@ -76,11 +123,9 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 	static as zstring * FB_MAXNAMELEN+1 idTB(0 to FB_MAXARGRECLEVEL-1)
 	static as integer arglevel = 0
 	dim as zstring ptr pid
-	dim as ASTNODE ptr expr
-	dim as integer dclass, dtype, readid, mode, dotpos
-	dim as integer atype, amode, alen, asuffix, optional, ptrcnt
-	dim as FBVALUE optval
-	dim as FBSYMBOL ptr subtype, sym
+	dim as ASTNODE ptr optval
+	dim as integer atype, amode, alen, asuffix, optional, ptrcnt, readid, mode, dotpos
+	dim as FBSYMBOL ptr subtype
 
 	function = NULL
 
@@ -268,83 +313,16 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 
     '' ('=' (NUM_LIT|STR_LIT))?
     if( hMatch( FB_TK_ASSIGN ) ) then
+        optional = TRUE
 
-    	'' not byval or byref?
-    	if( (amode <> FB_ARGMODE_BYVAL) and (amode <> FB_ARGMODE_BYREF) ) then
+		optval = cOptionalExpr( amode, atype, subtype )
+		if( optval = NULL ) then
  	   		hParamError( proc, symbGetProcArgs( proc ), *pid )
-    		exit function
-    	end if
-
-    	dclass = symbGetDataClass( atype )
-
-    	'' not int, float or string?
-    	select case dclass
-    	case FB_DATACLASS_INTEGER, FB_DATACLASS_FPOINT, _
-    		 FB_DATACLASS_STRING, FB_DATACLASS_UDT
-
-    	case else
- 	   		hParamError( proc, symbGetProcArgs( proc ), *pid )
-    		exit function
-    	end select
-
-    	'' set the context symbol to allow anonymous UDT's
-    	dim as FBSYMBOL ptr oldsym = env.ctxsym
-    	env.ctxsym = subtype
-
-    	if( cExpression( expr ) = FALSE ) then
-    		hReportError( FB_ERRMSG_EXPECTEDCONST )
-    		exit function
-    	end if
-
-    	env.ctxsym = oldsym
-
-    	dtype = astGetDataType( expr )
-    	if( dtype = FB_DATATYPE_USERDEF ) then
-    		if( atype <> FB_DATATYPE_USERDEF ) then
-				hReportError( FB_ERRMSG_INVALIDDATATYPES )
-				exit function
-			end if
-
-
-    	'' not a constant?
-    	elseif( astIsCONST( expr ) = FALSE ) then
-    		'' not a literal string?
-    		if( (astIsVAR( expr ) = FALSE) or _
-    			(dtype <> FB_DATATYPE_CHAR) ) then
-				hReportError( FB_ERRMSG_EXPECTEDCONST )
-				exit function
-			end if
-
-			sym = astGetSymbol( expr )
-			'' diff types or isn't it a literal string?
-			if( (dclass <> FB_DATACLASS_STRING) or _
-				(symbGetIsLiteral( sym ) = FALSE) ) then
-				hReportError( FB_ERRMSG_INVALIDDATATYPES )
-				exit function
-			end if
-
-		else
-			'' diff types?
-			if( dclass = FB_DATACLASS_STRING ) then
-				hReportError( FB_ERRMSG_INVALIDDATATYPES )
-				exit function
-			end if
-		end if
-
-    	optional = TRUE
-    	'' string?
-    	select case as const atype
-    	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-    		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    		optval.str = sym
-    	case else
-    		astConvertValue( expr, @optval, atype )
-    	end select
-
-    	astDel( expr )
+ 	   	end if
 
     else
     	optional = FALSE
+    	optval = NULL
     end if
 
     if( isproto ) then
@@ -354,7 +332,8 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     function = symbAddProcArg( proc, pid, _
     					       atype, subtype, ptrcnt, _
     					   	   alen, amode, asuffix, _
-    					   	   optional, @optval )
+    					   	   optional, optval )
 
 end function
+
 

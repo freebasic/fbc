@@ -434,7 +434,7 @@ declare function 	astNewCONSTi		( byval value as integer, _
 declare function 	astNewCONSTf		( byval value as double, _
 										  byval dtype as integer ) as ASTNODE ptr
 
-declare function 	astNewCONST64		( byval value as longint, _
+declare function 	astNewCONSTl		( byval value as longint, _
 										  byval dtype as integer ) as ASTNODE ptr
 
 declare function 	astNewVAR			( byval sym as FBSYMBOL ptr, _
@@ -584,13 +584,17 @@ declare function 	astTypeIniAddExpr	( byval tree as ASTNODE ptr, _
 
 declare function 	astTypeIniFlush		( byval tree as ASTNODE ptr, _
 						  				  byval basesym as FBSYMBOL ptr, _
-										  byval doclone as integer, _
 						  				  byval isstatic as integer, _
 						  				  byval isinitializer as integer ) as integer
 
 declare function 	astTypeIniIsConst	( byval tree as ASTNODE ptr ) as integer
 
 declare function 	astTypeIniUpdate	( byval tree as ASTNODE ptr ) as ASTNODE ptr
+
+declare sub 		astTypeIniUpdCnt	( byval tree as ASTNODE ptr )
+
+declare function 	astTypeIniGetHead	( byval tree as ASTNODE ptr ) as ASTNODE ptr
+
 
 ''
 '' macros

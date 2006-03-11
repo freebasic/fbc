@@ -58,15 +58,14 @@ private function hElmInit( byval tree as ASTNODE ptr, _
 	env.ctxsym = oldsym
 
     ''
-    static as ASTNODE assgexpr
+    static as ASTNODE lside
 
-    astBuildVAR( @assgexpr, sym, astTypeIniGetOfs( tree ), _
-    		     symbGetType( sym ), symbGetSubtype( sym ) )
+    astBuildVAR( @lside, NULL, 0, symbGetType( sym ), symbGetSubtype( sym ) )
 
     '' don't build a FIELD node if it's an UDTElm symbol,
     '' that doesn't matter with checkASSIGN
 
-    if( astCheckASSIGN( @assgexpr, expr ) = NULL ) then
+    if( astCheckASSIGN( @lside, expr ) = FALSE ) then
 		hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
         exit function
 	end if

@@ -65,7 +65,7 @@ private sub cFlushBOP( byval op as integer, _
 	else
 		select case as const dtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			expr1 = astNewCONST64( val1->long, dtype )
+			expr1 = astNewCONSTl( val1->long, dtype )
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			expr1 = astNewCONSTf( val1->float, dtype )
 		case else
@@ -78,7 +78,7 @@ private sub cFlushBOP( byval op as integer, _
 	else
 		select case as const dtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			expr2 = astNewCONST64( val2->long, dtype )
+			expr2 = astNewCONSTl( val2->long, dtype )
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			expr2 = astNewCONSTf( val2->float, dtype )
 		case else
@@ -110,7 +110,7 @@ private sub cFlushSelfBOP( byval op as integer, _
 	else
 		select case as const dtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			expr2 = astNewCONST64( val2->long, dtype )
+			expr2 = astNewCONSTl( val2->long, dtype )
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			expr2 = astNewCONSTf( val2->float, dtype )
 		case else

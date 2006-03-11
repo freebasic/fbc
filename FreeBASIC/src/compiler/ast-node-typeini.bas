@@ -161,46 +161,42 @@ end function
 
 '':::::
 private function hFlushTree( byval tree as ASTNODE ptr, _
-					   	     byval basesym as FBSYMBOL ptr, _
-					   	     byval doclone as integer _
-					 	   ) as integer static
+					   	     byval basesym as FBSYMBOL ptr _
+					 	   ) as integer
 
-    dim as ASTNODE ptr n, assgexpr, expr
-    dim as FBSYMBOL ptr sym
+    dim as ASTNODE ptr n, nxt
+    static as ASTNODE ptr lside
+    static as FBSYMBOL ptr sym
 
 	function = FALSE
 
     n = tree->l
     do while( n <> NULL )
+        nxt = n->r
 
     	if( n->class <> AST_NODECLASS_TYPEINI_PAD ) then
-			if( doclone ) then
-				expr = astCloneTree( n->l )
-			else
-				expr = n->l
-			end if
-
         	sym = n->sym
 
-        	assgexpr = astNewVAR( basesym, _
-        						  n->typeini.ofs, _
-        						  symbGetType( sym ), _
-        						  symbGetSubtype(  sym ) )
+        	lside = astNewVAR( basesym, _
+        					   n->typeini.ofs, _
+        					   symbGetType( sym ), _
+        					   symbGetSubtype( sym ) )
 
         	'' field?
         	if( symbIsUDTElm( sym ) ) then
-        		assgexpr = astNewFIELD( assgexpr, _
-        								sym, _
-        								symbGetType( sym ), _
-        								symbGetSubtype( sym ) )
+        		lside = astNewFIELD( lside, _
+        							 sym, _
+        							 symbGetType( sym ), _
+        							 symbGetSubtype( sym ) )
         	end if
 
-        	expr = astNewASSIGN( assgexpr, expr, FALSE )
+			astAdd( astNewASSIGN( lside, n->l, FALSE ) )
 
-			astAdd( expr )
+    	else
+    		astDel( n )
     	end if
 
-    	n = n->r
+    	n = nxt
     loop
 
 	function = TRUE
@@ -209,8 +205,7 @@ end function
 
 '':::::
 private function hFlushExprStatic( byval n as ASTNODE ptr, _
-					   	   		   byval basesym as FBSYMBOL ptr, _
-					   	   		   byval doclone as integer _
+					   	   		   byval basesym as FBSYMBOL ptr _
 					 	 		 ) as integer static
 
 	dim as ASTNODE ptr expr
@@ -301,10 +296,8 @@ private function hFlushExprStatic( byval n as ASTNODE ptr, _
 
 	end if
 
-	if( doclone = FALSE ) then
-		astDelTree( n->l )
-		n->l = NULL
-	end if
+	astDelTree( n->l )
+	n->l = NULL
 
 	function = TRUE
 
@@ -312,11 +305,10 @@ end function
 
 '':::::
 private function hFlushTreeStatic( byval tree as ASTNODE ptr, _
-					   	   		   byval basesym as FBSYMBOL ptr, _
-					   	   		   byval doclone as integer _
+					   	   		   byval basesym as FBSYMBOL ptr _
 					 	 		 ) as integer static
 
-    dim as ASTNODE ptr n
+    dim as ASTNODE ptr n, nxt
 
 	function = FALSE
 
@@ -324,14 +316,16 @@ private function hFlushTreeStatic( byval tree as ASTNODE ptr, _
 
     n = tree->l
     do while( n <> NULL )
+        nxt = n->r
 
     	if( n->class = AST_NODECLASS_TYPEINI_PAD ) then
     		irEmitVARINIPAD( n->typeini.bytes )
     	else
-			hFlushExprStatic( n, basesym, doclone )
+			hFlushExprStatic( n, basesym )
     	end if
 
-    	n = n->r
+        astDel( n )
+    	n = nxt
     loop
 
 	irEmitVARINIEND( basesym )
@@ -343,7 +337,6 @@ end function
 '':::::
 function astTypeIniFlush( byval tree as ASTNODE ptr, _
 						  byval basesym as FBSYMBOL ptr, _
-						  byval doclone as integer, _
 						  byval isstatic as integer, _
 						  byval isinitializer as integer _
 						) as integer static
@@ -353,10 +346,12 @@ function astTypeIniFlush( byval tree as ASTNODE ptr, _
 	end if
 
 	if( isstatic ) then
-		function = hFlushTreeStatic( tree, basesym, doclone )
+		function = hFlushTreeStatic( tree, basesym )
 	else
-		function = hFlushTree( tree, basesym, doclone )
+		function = hFlushTree( tree, basesym )
 	end if
+
+	astDel( tree )
 
 end function
 
@@ -469,76 +464,40 @@ end function
 private sub hWalk( byval node as ASTNODE ptr, _
 				   byval parent as ASTNODE ptr )
 
-    dim as ASTNODE ptr child, nxt, expr
-    dim as FBSYMBOL ptr basesym, sym
+    dim as ASTNODE ptr expr
+    dim as FBSYMBOL ptr sym
 
 	if( node->class = AST_NODECLASS_TYPEINI ) then
+		sym = symbAddTempVar( node->dtype, node->subtype, FALSE, FALSE )
 
-    	ast.typeinicnt -= 1
-
-		basesym = symbAddTempVar( node->dtype, node->subtype, FALSE, FALSE )
-
-    	child = node->l
-    	do while( child <> NULL )
-    		nxt = child->r
-
-    		if( child->class <> AST_NODECLASS_TYPEINI_PAD ) then
-        		sym = child->sym
-
-        		expr = astNewVAR( basesym, _
-        					  	  child->typeini.ofs, _
-        					  	  child->dtype, _
-        					  	  child->subtype )
-
-        		'' field?
-        		if( symbIsUDTElm( sym ) ) then
-        			expr = astNewFIELD( expr, _
-        								sym, _
-        								child->dtype, _
-        								child->subtype )
-        		end if
-
-        		astAdd( astNewASSIGN( expr, child->l, FALSE ) )
-
-    		'' padding..
-    		else
-    			astDel( child->l )
-    			child->l = NULL
-    		end if
-
-    		astDel( child )
-    		child = nxt
-    	loop
-
-		'' create a base var
-		expr = astNewVAR( basesym, 0, node->dtype, node->subtype )
-
+		expr = astNewVAR( sym, 0, node->dtype, node->subtype )
 		if( parent->l = node ) then
 			parent->l = expr
 		else
 			parent->r = expr
 		end if
 
-    	astDel( node )
+		astTypeIniFlush( node, sym, FALSE, FALSE )
+
     	exit sub
     end if
 
 	'' walk
-	child = node->l
-	if( child <> NULL ) then
-		hWalk( child, node )
+	expr = node->l
+	if( expr <> NULL ) then
+		hWalk( expr, node )
 	end if
 
-	child = node->r
-	if( child <> NULL ) then
-		hWalk( child, node )
+	expr = node->r
+	if( expr <> NULL ) then
+		hWalk( expr, node )
 	end if
 
 end sub
 
 '':::::
 function astTypeIniUpdate( byval tree as ASTNODE ptr ) as ASTNODE ptr
-    dim as ASTNODE ptr child
+    dim as ASTNODE ptr expr
 
 	function = tree
 
@@ -547,15 +506,40 @@ function astTypeIniUpdate( byval tree as ASTNODE ptr ) as ASTNODE ptr
     end if
 
 	'' walk
-	child = tree->l
-	if( child <> NULL ) then
-		hWalk( child, tree )
+	expr = tree->l
+	if( expr <> NULL ) then
+		hWalk( expr, tree )
 	end if
 
-	child = tree->r
-	if( child <> NULL ) then
-		hWalk( child, tree )
+	expr = tree->r
+	if( expr <> NULL ) then
+		hWalk( expr, tree )
 	end if
 
 end function
 
+'':::::
+sub astTypeIniUpdCnt( byval tree as ASTNODE ptr )
+
+	if( tree->class = AST_NODECLASS_TYPEINI ) then
+		ast.typeinicnt += 1
+	end if
+
+	'' walk
+	if( tree->l <> NULL ) then
+		astTypeIniUpdCnt( tree->l )
+	end if
+
+	if( tree->r <> NULL ) then
+		astTypeIniUpdCnt( tree->r )
+	end if
+
+end sub
+
+'':::::
+function astTypeIniGetHead( byval tree as ASTNODE ptr ) as ASTNODE ptr
+
+	'' head node will be always an EXPR
+	function = tree->l->l
+
+end function

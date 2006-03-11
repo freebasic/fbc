@@ -1,11 +1,10 @@
-[ ] in C++ *anything* can be part of the optional arg expression, *even*
-    variables that were declared already and pointer expressions.. change it so
-    the expressions (not the values) are stored, and clone the tree when creating
-    the default args
-    - just let cSymbInit parse the optional expression, store it and flush
-      the tree when creating the parameter
+[ ] dup definitions of type aliasing with exactly the same target type
+    shouldn't result in errors
 
 [ ] pointers passed byref should be checked for different types
+
+[ ] add the ... subscript when initializing array so
+    "dim array(0 to ...) = {1, 2, 3, 4}" could be allowed
 
 [ ] SCOPE..END SCOPE:
     - EXIT, GOTO, RETURN and any branch's must deallocate any dynamic data
