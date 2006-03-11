@@ -150,7 +150,8 @@ end type
 		"Cannot pass an UDT result by reference", _
 		"Ambiguous call to overloaded function", _
 		"Division by zero", _
-		"Cannot pop stack, underflow" _
+		"Cannot pop stack, underflow", _
+		"Cannot initialize UDT's containing dynamic string fields" _
 	}
 
 

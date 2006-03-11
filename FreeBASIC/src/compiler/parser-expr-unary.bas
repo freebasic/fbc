@@ -194,7 +194,7 @@ end function
 '':::::
 '' AnonUDT			=	TYPE ('<' Symbol '>')? '(' ... ')'
 function cAnonUDT( byref expr as ASTNODE ptr ) as integer
-    dim as FBSYMBOL ptr tmpsym, subtype
+    dim as FBSYMBOL ptr sym, subtype
 
 	function = FALSE
 
@@ -204,18 +204,16 @@ function cAnonUDT( byref expr as ASTNODE ptr ) as integer
     '' ('<' Symbol '>')?
     if( lexGetToken( ) = FB_TK_LT ) then
     	lexSkipToken( )
-    	tmpsym = lexGetSymbol( )
-    	if( tmpsym = NULL ) then
+    	subtype  = lexGetSymbol( )
+    	if( subtype = NULL ) then
 			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			exit function
     	end if
 
-    	if( symbIsUDT( tmpsym ) = FALSE ) then
+    	if( symbIsUDT( subtype ) = FALSE ) then
 			hReportError( FB_ERRMSG_INVALIDDATATYPES )
 			exit function
     	end if
-
-    	subtype = tmpsym
 
     	lexSkipToken( )
 
@@ -240,18 +238,14 @@ function cAnonUDT( byref expr as ASTNODE ptr ) as integer
 		end if
     end if
 
-	'' create a temp var
-	tmpsym = symbAddTempVar( FB_DATATYPE_USERDEF, subtype )
+    sym = symbAddTempVar( FB_DATATYPE_USERDEF, subtype, FALSE, FALSE )
 
     '' let the initializer do the rest..
-    if( cSymbolInit( tmpsym ) = FALSE ) then
-    	exit function
-    end if
+    expr = cSymbolInit( sym, FALSE )
 
-    '' create a var expression
-    expr = astNewVAR( tmpsym, 0, FB_DATATYPE_USERDEF, subtype )
+    symbDelVar( sym, FALSE )
 
-    function = TRUE
+    function = (expr <> NULL)
 
 end function
 
@@ -482,7 +476,7 @@ private function hVarPtrBody( byref addrofexpr as ASTNODE ptr) as integer
 	end if
 
 	select case as const astGetClass( addrofexpr )
-	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_PTR
+	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_PTR, AST_NODECLASS_TYPEINI
 
 	case AST_NODECLASS_FIELD
 		'' can't take address of bitfields..

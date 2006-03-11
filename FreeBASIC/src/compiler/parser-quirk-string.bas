@@ -300,13 +300,13 @@ private function cStrASC( byref funcexpr as ASTNODE ptr ) as integer
 		if( p >= 0 ) then
 			'' zstring?
 			if( astGetDataType( expr1 ) <> FB_DATATYPE_WCHAR ) then
-				funcexpr = astNewCONSTi( asc( *hEscapeToChar( symbGetVarText( litsym ) ), _
+				funcexpr = astNewCONSTi( asc( *hEscapeToChar( symbGetVarLitText( litsym ) ), _
 											  p ), _
 										 FB_DATATYPE_INTEGER )
 
 			'' wstring..
 	    	else
-				funcexpr = astNewCONSTi( asc( *hEscapeToCharW( symbGetVarTextW( litsym ) ), _
+				funcexpr = astNewCONSTi( asc( *hEscapeToCharW( symbGetVarLitTextW( litsym ) ), _
 											  p ), _
 										 FB_DATATYPE_INTEGER )
 

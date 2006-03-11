@@ -190,15 +190,50 @@ private sub hCONVConstEval64( byval dtype as integer, _
 end sub
 
 '':::::
+function astCheckCONV( byval to_dtype as integer, _
+					   byval to_subtype as FBSYMBOL ptr, _
+					   byval l as ASTNODE ptr _
+				     ) as integer static
+
+	function = FALSE
+
+	'' UDT? can't convert..
+	if( to_dtype = FB_DATATYPE_USERDEF ) then
+		exit function
+	end if
+
+    '' string? neither
+    if( symbGetDataClass( l->dtype ) = FB_DATACLASS_STRING ) then
+    	exit function
+	end if
+
+	select case l->dtype
+	'' CHAR and WCHAR literals are also from the INTEGER class
+    case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+    	'' don't allow, unless it's a deref pointer
+    	if( astIsPTR( l ) = FALSE ) then
+    		exit function
+    	end if
+
+    '' UDT's? ditto
+    case FB_DATATYPE_USERDEF
+    	exit function
+    end select
+
+	function = TRUE
+
+end function
+
+'':::::
 function astNewCONV( byval op as integer, _
-					 byval dtype as integer, _
-					 byval subtype as FBSYMBOL ptr, _
+					 byval to_dtype as integer, _
+					 byval to_subtype as FBSYMBOL ptr, _
 					 byval l as ASTNODE ptr, _
 					 byval check_str as integer _
 				   ) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
-    dim as integer dclass, ldtype
+    dim as integer ldclass, ldtype
 
 	function = NULL
 
@@ -207,7 +242,7 @@ function astNewCONV( byval op as integer, _
     end if
 
 	'' UDT? can't convert..
-	if( dtype = FB_DATATYPE_USERDEF ) then
+	if( to_dtype = FB_DATATYPE_USERDEF ) then
 		exit function
 	end if
 
@@ -215,25 +250,25 @@ function astNewCONV( byval op as integer, _
     if( op = AST_OP_TOPOINTER ) then
 
 		'' assuming all type-checking was done already
-    	astSetType( l, dtype, subtype )
+    	astSetType( l, to_dtype, to_subtype )
 
     	return l
     end if
 
     ''
     ldtype = l->dtype
-    dclass = symbGetDataClass( ldtype )
+    ldclass = symbGetDataClass( ldtype )
 
     '' string?
 	if( check_str ) then
 		select case as const ldtype
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    		return rtlStrToVal( l, dtype )
+    		return rtlStrToVal( l, to_dtype )
     	end select
 
     else
-    	if( dclass = FB_DATACLASS_STRING ) then
+    	if( ldclass = FB_DATACLASS_STRING ) then
     		exit function
 
     	'' CHAR and WCHAR literals are also from the INTEGER class
@@ -257,17 +292,17 @@ function astNewCONV( byval op as integer, _
 	if( op <> INVALID ) then
 
 		'' float? invalid
-		if( dclass <> FB_DATACLASS_INTEGER ) then
+		if( ldclass <> FB_DATACLASS_INTEGER ) then
 			exit function
 		end if
 
 		if( op = AST_OP_TOSIGNED ) then
-			dtype = symbGetSignedType( ldtype )
+			to_dtype = symbGetSignedType( ldtype )
 		else
-			dtype = symbGetUnsignedType( ldtype )
+			to_dtype = symbGetUnsignedType( ldtype )
 		end if
 
-		astSetDataType( l, dtype )
+		astSetDataType( l, to_dtype )
 
 		return l
 	end if
@@ -275,46 +310,46 @@ function astNewCONV( byval op as integer, _
 	'' constant? evaluate at compile-time
 	if( l->defined ) then
 
-		select case as const dtype
+		select case as const to_dtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			hCONVConstEval64( dtype, l )
+			hCONVConstEval64( to_dtype, l )
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			hCONVConstEvalFlt( dtype, l )
+			hCONVConstEvalFlt( to_dtype, l )
 		case else
 			'' byte's, short's, int's and enum's
-			hCONVConstEvalInt( dtype, l )
+			hCONVConstEvalInt( to_dtype, l )
 		end select
 
-		if( dtype <> FB_DATATYPE_ENUM ) then
+		if( to_dtype <> FB_DATATYPE_ENUM ) then
 			l->class = AST_NODECLASS_CONST
 		else
 			l->class = AST_NODECLASS_ENUM
 		end if
 
-		astSetType( l, dtype, subtype )
+		astSetType( l, to_dtype, to_subtype )
 
 		return l
 	end if
 
 	'' only convert if the classes are different (ie, floating<->integer) or
 	'' if sizes are different (ie, byte<->int)
-	if( (dclass = symbGetDataClass( dtype )) and _
-		(symbGetDataSize( ldtype ) = symbGetDataSize( dtype )) ) then
+	if( (ldclass = symbGetDataClass( to_dtype )) and _
+		(symbGetDataSize( ldtype ) = symbGetDataSize( to_dtype )) ) then
 
-		astSetType( l, dtype, subtype )
+		astSetType( l, to_dtype, to_subtype )
 
 		return l
 	end if
 
 	'' handle special cases..
-	if( dtype = FB_DATATYPE_ULONGINT ) then
-		if( dclass = FB_DATACLASS_FPOINT ) then
+	if( to_dtype = FB_DATATYPE_ULONGINT ) then
+		if( ldclass = FB_DATACLASS_FPOINT ) then
 			return rtlMathFp2ULongint( l, ldtype )
 		end if
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_CONV, dtype, subtype )
+	n = astNewNode( AST_NODECLASS_CONV, to_dtype, to_subtype )
 	if( n = NULL ) then
 		exit function
 	end if

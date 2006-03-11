@@ -1,4 +1,17 @@
+[ ] in C++ *anything* can be part of the optional arg expression, *even*
+    variables that were declared already and pointer expressions.. change it so
+    the expressions (not the values) are stored, and clone the tree when creating
+    the default args
+    - just let cSymbInit parse the optional expression, store it and flush
+      the tree when creating the parameter
+
+[ ] pointers passed byref should be checked for different types
+
 [ ] SCOPE..END SCOPE:
+    - EXIT, GOTO, RETURN and any branch's must deallocate any dynamic data
+      until the target label is found in parent blocks - GOTO will only be
+      safe is a CFG is added at AST level, function nodes wouldn't be put
+      into a linked-list, but into a DAG
     - error handlers should be restored too (or not allowed at all)
 
 [ ] every compound statement should start new scope:

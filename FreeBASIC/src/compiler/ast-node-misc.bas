@@ -245,3 +245,21 @@ function astLoadMEM( byval n as ASTNODE ptr ) as IRVREG ptr
 
 end function
 
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' No Operation (l = NULL; r = NULL)
+'':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function astNewNOP( ) as ASTNODE ptr static
+    dim as ASTNODE ptr n
+
+	'' alloc new node
+	n = astNewNode( AST_NODECLASS_NOP, INVALID )
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	function = n
+
+end function
+

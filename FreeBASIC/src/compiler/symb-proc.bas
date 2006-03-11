@@ -692,7 +692,7 @@ function symbProcAllocLocals( byval proc as FBSYMBOL ptr ) as integer static
     						   	    FB_SYMBATTRIB_ARGUMENTBYVAL or _
     			  				   	FB_SYMBATTRIB_ARGUMENTBYREF)) = 0 ) then
 
-					lgt = s->lgt * symbCalcArrayElements( s )
+					lgt = s->lgt * symbGetArrayElements( s )
 					ZstrAssign( @s->alias, emitAllocLocal( env.currproc, lgt, s->ofs ) )
 
 				'' argument..

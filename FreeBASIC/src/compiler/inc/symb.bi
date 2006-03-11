@@ -19,6 +19,8 @@
 '' symbol table protos
 ''
 
+#include once "inc\list.bi"
+
 '' symbol classes
 enum FB_SYMBCLASS
 	FB_SYMBCLASS_VAR			= 1
@@ -41,12 +43,11 @@ end enum
 enum FB_SYMBSTATS
 	FB_SYMBSTATS_ALLOCATED		= &h000001
 	FB_SYMBSTATS_ACCESSED		= &h000002
-	FB_SYMBSTATS_EMITTED		= &h000004
-	FB_SYMBSTATS_INITIALIZED	= &h000008
-	FB_SYMBSTATS_DECLARED		= &h000010
-	FB_SYMBSTATS_CALLED			= &h000020
-	FB_SYMBSTATS_RTL			= &h000040
-	FB_SYMBSTATS_THROWABLE		= &h000080
+	FB_SYMBSTATS_INITIALIZED	= &h000004
+	FB_SYMBSTATS_DECLARED		= &h000008
+	FB_SYMBSTATS_CALLED			= &h000010
+	FB_SYMBSTATS_RTL			= &h000020
+	FB_SYMBSTATS_THROWABLE		= &h000040
 end enum
 
 '' symbol attributes mask
@@ -72,9 +73,14 @@ enum FB_SYMBATTRIB
     FB_SYMBATTRIB_DESTRUCTOR    = &h040000      '' or destructor, but not both ...
     FB_SYMBATTRIB_LOCAL			= &h080000
     FB_SYMBATTRIB_DESCRIPTOR	= &h100000
+	FB_SYMBATTRIB_LITERAL		= &h200000
 end enum
 
 type FBSYMBOL_ as FBSYMBOL
+
+#ifndef ASTNODE_
+type ASTNODE_ as ASTNODE
+#endif
 
 ''
 type FBARRAYDIM
@@ -314,8 +320,9 @@ end type
 type FBS_VAR
 	suffix			as integer					'' QB quirk..
 	union
-		inittext	as zstring ptr
-		inittextw	as wstring ptr
+		littext		as zstring ptr
+		littextw	as wstring ptr
+		initree		as ASTNODE_ ptr
 	end union
 	array			as FBS_ARRAY
 	elm				as FBS_UDTELM
@@ -365,8 +372,6 @@ type FBSYMBOL
 	next			as FBSYMBOL ptr             '' /
 end type
 
-#include once "inc\ast.bi"
-
 type SYMBCTX
 	inited			as integer
 
@@ -397,6 +402,9 @@ type SYMB_DATATYPE
 	signed		as integer						'' TRUE or FALSE
 	remaptype	as FB_DATATYPE					'' remapped type for ENUM, POINTER, etc
 end type
+
+
+#include once "inc\ast.bi"
 
 
 declare sub 		symbInit				( byval ismain as integer )
@@ -530,7 +538,8 @@ declare function 	symbAddVarEx			( byval symbol as zstring ptr, _
 
 declare function 	symbAddTempVar			( byval typ as integer, _
 											  byval subtype as FBSYMBOL ptr = NULL, _
-											  byval doalloc as integer = FALSE ) as FBSYMBOL ptr
+											  byval doalloc as integer = FALSE, _
+											  byval checkstatic as integer = TRUE ) as FBSYMBOL ptr
 
 declare function 	symbAddConst			( byval symbol as zstring ptr, _
 											  byval typ as integer, _
@@ -686,8 +695,7 @@ declare sub 		symbFreeSymbol			( byval s as FBSYMBOL ptr, _
 
 declare sub 		symbDelFromHash			( byval s as FBSYMBOL ptr )
 
-declare function 	symbNewArrayDim			( byref head as FBVARDIM ptr, _
-				  		  					  byref tail as FBVARDIM ptr, _
+declare function 	symbNewArrayDim			( byval s as FBSYMBOL ptr, _
 				  		  					  byval lower as integer, _
 				  		  					  byval upper as integer ) as FBVARDIM ptr
 
@@ -753,7 +761,6 @@ declare function 	symbProcAllocScopes		( byval proc as FBSYMBOL ptr ) as integer
 
 declare function 	symbScopeAllocLocals	( byval sym as FBSYMBOL ptr ) as integer
 
-
 ''
 '' getters and setters as macros
 ''
@@ -771,10 +778,6 @@ declare function 	symbScopeAllocLocals	( byval sym as FBSYMBOL ptr ) as integer
 #define symbGetIsAllocated(s) ((s->stats and FB_SYMBSTATS_ALLOCATED) <> 0)
 
 #define symbSetIsAllocated(s) s->stats or= FB_SYMBSTATS_ALLOCATED
-
-#define symbGetIsEmitted(s) ((s->stats and FB_SYMBSTATS_EMITTED) <> 0)
-
-#define symbSetIsEmitted(s) s->stats or= FB_SYMBSTATS_EMITTED
 
 #define symbGetIsInitialized(s) ((s->stats and FB_SYMBSTATS_INITIALIZED) <> 0)
 
@@ -880,9 +883,13 @@ declare function 	symbScopeAllocLocals	( byval sym as FBSYMBOL ptr ) as integer
 
 #define symbGetDefineFlags(d) d->def.flags
 
-#define symbGetVarText(s) s->var.inittext
+#define symbGetVarLitText(s) s->var.littext
 
-#define symbGetVarTextW(s) s->var.inittextw
+#define symbGetVarLitTextW(s) s->var.littextw
+
+#define symbSetTypeIniTree(s, t) s->var.initree = t
+
+#define symbGetTypeIniTree(s) s->var.initree
 
 #define symbGetArrayDiff(s) s->var.array.dif
 
@@ -897,6 +904,8 @@ declare function 	symbScopeAllocLocals	( byval sym as FBSYMBOL ptr ) as integer
 #define symbGetArrayFirstDim(s) s->var.array.dimhead
 
 #define symbGetArrayDescName(s) symbGetName( s->var.array.desc )
+
+#define symbGetArrayElements(s) s->var.array.elms
 
 #define symbGetProcArgs(f) f->proc.args
 
@@ -1036,7 +1045,11 @@ declare function 	symbScopeAllocLocals	( byval sym as FBSYMBOL ptr ) as integer
 
 #define symbIsDestructor(s) ((s->attrib and FB_SYMBATTRIB_DESTRUCTOR) <> 0)
 
-#define symbIsDescriptor( s ) ((s->allocatype and FB_SYMBATTRIB_DESCRIPTOR) <> 0)
+#define symbIsDescriptor( s ) ((s->attrib and FB_SYMBATTRIB_DESCRIPTOR) <> 0)
+
+#define symbGetIsLiteral(s) ((s->attrib and FB_SYMBATTRIB_LITERAL) <> 0)
+
+#define symbSetIsLiteral(s) s->attrib or= FB_SYMBATTRIB_LITERAL
 
 #define symbGetCurrentProcName( ) symbGetOrgName( env.currproc )
 

@@ -710,8 +710,26 @@ function cSymbolDef( byval attrib as integer, _
 		select case lexGetToken( )
 		case FB_TK_DBLEQ, FB_TK_EQ
 			lexSkipToken( )
-        	if( cSymbolInit( symbol ) = FALSE ) then
+
+        	dim as ASTNODE ptr tree
+        	tree = cSymbolInit( symbol, TRUE )
+        	if( tree = NULL ) then
         		exit function
+        	end if
+
+        	'' not static or shared?
+        	if( (symbGetAttrib( symbol ) and _
+        		 (FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED)) = 0 ) then
+
+        		astTypeIniFlush( tree, symbol, FALSE, FALSE, TRUE )
+
+        	'' static or shared (includes extern/public), let emit flush it..
+        	else
+        		if( astTypeIniIsConst( tree ) = FALSE ) then
+        			exit function
+        		end if
+
+        		symbSetTypeIniTree( symbol, tree )
         	end if
 		end select
 

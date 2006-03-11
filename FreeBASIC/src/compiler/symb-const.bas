@@ -100,10 +100,10 @@ function symbAllocFloatConst( byval value as double, _
 					  FB_SYMBATTRIB_SHARED, TRUE, FALSE, FALSE )
 
 	''
-	symbSetIsInitialized( s )
+	symbSetIsLiteral( s )
 
-	s->var.inittext = ZstrAllocate( len( svalue ) )
-	*s->var.inittext = svalue
+	s->var.littext = ZstrAllocate( len( svalue ) )
+	*s->var.littext = svalue
 
 	function = s
 
@@ -151,10 +151,10 @@ function symbAllocStrConst( byval sname as zstring ptr, _
 					  FB_SYMBATTRIB_SHARED, FALSE, TRUE, FALSE )
 
 	''
-	symbSetIsInitialized( s )
+	symbSetIsLiteral( s )
 
-	s->var.inittext = ZstrAllocate( strlen )
-	*s->var.inittext = *sname
+	s->var.littext = ZstrAllocate( strlen )
+	*s->var.littext = *sname
 
 	function = s
 
@@ -202,10 +202,10 @@ function symbAllocWStrConst( byval sname as wstring ptr, _
 					  FB_SYMBATTRIB_SHARED, FALSE, TRUE, FALSE )
 
 	''
-	symbSetIsInitialized( s )
+	symbSetIsLiteral( s )
 
-	s->var.inittextw = WstrAllocate( strlen )
-	*s->var.inittextw = *sname
+	s->var.littextw = WstrAllocate( strlen )
+	*s->var.littextw = *sname
 
 	function = s
 
@@ -234,7 +234,7 @@ function symbGetConstValueAsStr( byval s as FBSYMBOL ptr ) as string
 
   	select case as const symbGetType( s )
   	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
-  		function = *symbGetConstValStr( s )->var.inittext
+  		function = *symbGetConstValStr( s )->var.littext
 
   	case FB_DATATYPE_LONGINT
   		function = str( symbGetConstValLong( s ) )

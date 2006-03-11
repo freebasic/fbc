@@ -40,7 +40,7 @@ private function hStrLiteralConcat( byval l as ASTNODE ptr, _
 	rs = astGetSymbol( r )
 
 	'' new len = both strings' len less the 2 null-chars
-	s = symbAllocStrConst( *symbGetVarText( ls ) + *symbGetVarText( rs ), _
+	s = symbAllocStrConst( *symbGetVarLitText( ls ) + *symbGetVarLitText( rs ), _
 						   symbGetStrLen( ls ) - 1 + symbGetStrLen( rs ) - 1 )
 
 	function = astNewVAR( s, 0, FB_DATATYPE_CHAR )
@@ -62,15 +62,15 @@ private function hWstrLiteralConcat( byval l as ASTNODE ptr, _
 
 	if( symbGetType( ls ) <> FB_DATATYPE_WCHAR ) then
 		'' new len = both strings' len less the 2 null-chars
-		s = symbAllocWstrConst( wstr( *symbGetVarText( ls ) ) + *symbGetVarTextW( rs ), _
+		s = symbAllocWstrConst( wstr( *symbGetVarLitText( ls ) ) + *symbGetVarLitTextW( rs ), _
 						    	symbGetStrLen( ls ) - 1 + symbGetWstrLen( rs ) - 1 )
 
 	elseif( symbGetType( rs ) <> FB_DATATYPE_WCHAR ) then
-		s = symbAllocWstrConst( *symbGetVarTextW( ls ) + wstr( *symbGetVarText( rs ) ), _
+		s = symbAllocWstrConst( *symbGetVarLitTextW( ls ) + wstr( *symbGetVarLitText( rs ) ), _
 						    	symbGetWstrLen( ls ) - 1 + symbGetStrLen( rs ) - 1 )
 
 	else
-		s = symbAllocWstrConst( *symbGetVarTextW( ls ) + *symbGetVarTextW( rs ), _
+		s = symbAllocWstrConst( *symbGetVarLitTextW( ls ) + *symbGetVarLitTextW( rs ), _
 						    	symbGetWstrLen( ls ) - 1 + symbGetWstrLen( rs ) - 1 )
     end if
 
@@ -90,8 +90,8 @@ private function hStrLiteralCompare( byval op as integer, _
     dim as zstring ptr ltext, rtext
     dim as integer res
 
-   	ltext = symbGetVarText( astGetSymbol( l ) )
-   	rtext = symbGetVarText( astGetSymbol( r ) )
+   	ltext = symbGetVarLitText( astGetSymbol( l ) )
+   	rtext = symbGetVarLitText( astGetSymbol( r ) )
 
    	select case as const op
    	case AST_OP_EQ
@@ -131,8 +131,8 @@ private function hWStrLiteralCompare( byval op as integer, _
 
 	'' left operand not a wstring?
 	if( symbGetType( ls ) <> FB_DATATYPE_WCHAR ) then
-   		textz = symbGetVarText( ls )
-   		rtextw = symbGetVarTextW( rs )
+   		textz = symbGetVarLitText( ls )
+   		rtextw = symbGetVarLitTextW( rs )
 
    		select case as const op
    		case AST_OP_EQ
@@ -151,8 +151,8 @@ private function hWStrLiteralCompare( byval op as integer, _
 
    	'' right operand?
    	elseif( symbGetType( rs ) <> FB_DATATYPE_WCHAR ) then
-   		ltextw = symbGetVarTextW( ls )
-   		textz = symbGetVarText( rs )
+   		ltextw = symbGetVarLitTextW( ls )
+   		textz = symbGetVarLitText( rs )
 
    		select case as const op
    		case AST_OP_EQ
@@ -171,8 +171,8 @@ private function hWStrLiteralCompare( byval op as integer, _
 
    	'' both wstrings..
    	else
-   		ltextw = symbGetVarTextW( ls )
-   		rtextw = symbGetVarTextW( rs )
+   		ltextw = symbGetVarLitTextW( ls )
+   		rtextw = symbGetVarLitTextW( rs )
 
    		select case as const op
    		case AST_OP_EQ

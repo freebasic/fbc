@@ -65,7 +65,8 @@ declare function 	cStaticArrayDecl 		( byref dimensions as integer, _
 declare function 	cArrayDecl				( byref dimensions as integer, _
 											  exprTB() as ASTNODE ptr ) as integer
 
-declare function 	cSymbolInit				( byval s as FBSYMBOL ptr ) as integer
+declare function 	cSymbolInit				( byval s as FBSYMBOL ptr, _
+											  byval isinitializer as integer ) as ASTNODE ptr
 
 declare function 	cSymbolType 			( byref typ as integer, _
 											  byref subtype as FBSYMBOL ptr, _

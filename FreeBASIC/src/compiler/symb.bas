@@ -79,38 +79,27 @@ sub symbInit( byval ismain as integer )
 	end if
 
 	''
-	symbDataEnd( )
-
-	''
 	hashInit( )
 
-	''
 	'' vars, arrays, procs & consts
-	''
 	symbInitSymbols( )
 
 	''
+	symbDataInit( )
+
 	'' keywords
 	symbInitKeywords( )
 
-	''
 	'' defines
-	''
 	symbInitDefines( ismain )
 
-	''
 	'' forward refs
-	''
 	symbInitFwdRef( )
 
-	''
 	'' arrays dim tb
-	''
 	symbInitDims( )
 
-	''
 	'' libraries
-	''
 	symbInitLibs( )
 
     ''
@@ -131,6 +120,9 @@ sub symbEnd
 	symb.globtb.head = NULL
 	symb.globtb.tail = NULL
 	symb.loctb = NULL
+
+	''
+	symbDataEnd( )
 
     ''
 	hashFree( @symb.libhash )
@@ -994,5 +986,6 @@ function symbIsEqual( byval sym1 as FBSYMBOL ptr, _
     end if
 
 end function
+
 
 

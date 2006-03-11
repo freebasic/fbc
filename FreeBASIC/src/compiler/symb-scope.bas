@@ -125,7 +125,7 @@ function symbScopeAllocLocals( byval scp as FBSYMBOL ptr ) as integer
     		if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
     			 				FB_SYMBATTRIB_STATIC)) = 0 ) then
 
-					lgt = s->lgt * symbCalcArrayElements( s )
+					lgt = s->lgt * symbGetArrayElements( s )
 					ZstrAssign( @s->alias, emitAllocLocal( env.currproc, lgt, s->ofs ) )
 
 				symbSetIsAllocated( s )

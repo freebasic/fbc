@@ -1961,7 +1961,7 @@ function rtlToStr( byval expr as ASTNODE ptr ) as ASTNODE ptr static
     	litsym = astGetStrLitSymbol( expr )
     	if( litsym <> NULL ) then
 			if( env.target.wchar.doconv ) then
-				litsym = symbAllocStrConst( str( *symbGetVarTextW( litsym ) ), _
+				litsym = symbAllocStrConst( str( *symbGetVarLitTextW( litsym ) ), _
 							   	   	   		symbGetWstrLen( litsym ) - 1 )
 
 				return astNewVAR( litsym, 0, FB_DATATYPE_CHAR )
@@ -2039,7 +2039,7 @@ function rtlToWstr( byval expr as ASTNODE ptr ) as ASTNODE ptr static
     	litsym = astGetStrLitSymbol( expr )
     	if( litsym <> NULL ) then
 			if( env.target.wchar.doconv ) then
-				litsym = symbAllocWstrConst( wstr( *symbGetVarText( litsym ) ), _
+				litsym = symbAllocWstrConst( wstr( *symbGetVarLitText( litsym ) ), _
 							 			     symbGetStrLen( litsym ) - 1 )
     			return astNewVAR( litsym, 0, FB_DATATYPE_WCHAR )
     		end if

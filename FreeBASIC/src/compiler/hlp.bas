@@ -713,7 +713,7 @@ function hJumpTbAllocSym( ) as any ptr static
 					  FB_INTEGERSIZE, 1, dTB(), FB_SYMBATTRIB_SHARED+FB_SYMBATTRIB_JUMPTB, _
 					  FALSE, FALSE, FALSE )
 
-	symbSetIsEmitted( s )
+	symbSetIsInitialized( s )
 
 	function = s
 

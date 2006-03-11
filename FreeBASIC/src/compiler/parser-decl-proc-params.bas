@@ -279,21 +279,35 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 
     	'' not int, float or string?
     	select case dclass
-    	case FB_DATACLASS_INTEGER, FB_DATACLASS_FPOINT, FB_DATACLASS_STRING
+    	case FB_DATACLASS_INTEGER, FB_DATACLASS_FPOINT, _
+    		 FB_DATACLASS_STRING, FB_DATACLASS_UDT
 
     	case else
  	   		hParamError( proc, symbGetProcArgs( proc ), *pid )
     		exit function
     	end select
 
+    	'' set the context symbol to allow anonymous UDT's
+    	dim as FBSYMBOL ptr oldsym = env.ctxsym
+    	env.ctxsym = subtype
+
     	if( cExpression( expr ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDCONST )
     		exit function
     	end if
 
+    	env.ctxsym = oldsym
+
     	dtype = astGetDataType( expr )
+    	if( dtype = FB_DATATYPE_USERDEF ) then
+    		if( atype <> FB_DATATYPE_USERDEF ) then
+				hReportError( FB_ERRMSG_INVALIDDATATYPES )
+				exit function
+			end if
+
+
     	'' not a constant?
-    	if( astIsCONST( expr ) = FALSE ) then
+    	elseif( astIsCONST( expr ) = FALSE ) then
     		'' not a literal string?
     		if( (astIsVAR( expr ) = FALSE) or _
     			(dtype <> FB_DATATYPE_CHAR) ) then
@@ -304,7 +318,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 			sym = astGetSymbol( expr )
 			'' diff types or isn't it a literal string?
 			if( (dclass <> FB_DATACLASS_STRING) or _
-				(symbGetIsInitialized( sym ) = FALSE) ) then
+				(symbGetIsLiteral( sym ) = FALSE) ) then
 				hReportError( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
 			end if

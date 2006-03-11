@@ -105,7 +105,8 @@ enum AST_OPCODE
 	AST_OPCODES									'' total
 end enum
 
-enum ASTNODECLASS_ENUM
+enum AST_NODECLASS
+	AST_NODECLASS_NOP
 	AST_NODECLASS_LINK
 	AST_NODECLASS_CONST
 	AST_NODECLASS_VAR
@@ -134,9 +135,14 @@ enum ASTNODECLASS_ENUM
 	AST_NODECLASS_BOUNDCHK
 	AST_NODECLASS_PTRCHK
 	AST_NODECLASS_SCOPE
+	AST_NODECLASS_TYPEINI
+	AST_NODECLASS_TYPEINI_PAD
+	AST_NODECLASS_TYPEINI_EXPR
 end enum
 
+#ifndef ASTNODE_
 type ASTNODE_ as ASTNODE
+#endif
 
 type ASTTEMPSTR
 	ll_prv			as ASTTEMPSTR ptr				'' linked-list nodes
@@ -247,6 +253,11 @@ type AST_SCOPE
 	sym				as FBSYMBOL ptr
 end type
 
+type AST_TYPEINI
+	ofs				as integer
+    bytes			as integer
+end type
+
 ''
 type ASTNODE
 	ll_prv			as ASTNODE ptr					'' linked-list nodes
@@ -280,6 +291,7 @@ type ASTNODE
 		stk			as AST_STK
 		chk			as AST_CHK
 		scp			as AST_SCOPE
+		typeini		as AST_TYPEINI
 	end union
 
 	prev			as ASTNODE ptr					'' used by Add
@@ -316,6 +328,8 @@ type ASTCTX
 
 	tempstr			as TLIST
 	temparray		as TLIST
+
+	typeinicnt		as integer
 end Type
 
 type ASTVALUE
@@ -385,13 +399,15 @@ declare function 	astFuncPtrCheck		( byval pdtype as integer, _
 					      				  byval psubtype as FBSYMBOL ptr, _
 					      				  byval expr as ASTNODE ptr ) as integer
 
+declare function 	astNewNOP			( ) as ASTNODE ptr
+
 declare function 	astNewASSIGN		( byval l as ASTNODE ptr, _
 										  byval r as ASTNODE ptr, _
 										  byval checktypes as integer = TRUE ) as ASTNODE ptr
 
 declare function 	astNewCONV			( byval op as integer, _
-										  byval dtype as integer, _
-										  byval subtype as FBSYMBOL ptr, _
+										  byval to_dtype as integer, _
+										  byval to_subtype as FBSYMBOL ptr, _
 										  byval l as ASTNODE ptr, _
 										  byval check_str as integer = FALSE ) as ASTNODE ptr
 
@@ -510,7 +526,7 @@ declare sub 		astDump 			( byval p as ASTNODE ptr, _
 										  byval ln as integer, _
 										  byval cn as integer )
 
-declare function 	astNewNode			( byval class as integer, _
+declare function 	astNewNode			( byval class_ as integer, _
 									  	  byval dtype as integer, _
 									  	  byval subtype as FBSYMBOL ptr = NULL ) as ASTNODE ptr
 
@@ -522,6 +538,13 @@ declare function 	astOptAssignment	( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 declare function 	astCheckConst		( byval dtype as integer, _
 					   		    		  byval n as ASTNODE ptr ) as ASTNODE ptr
+
+declare function 	astCheckASSIGN		( byval l as ASTNODE ptr, _
+					   	 				  byval r as ASTNODE ptr ) as integer
+
+declare function 	astCheckCONV		( byval to_dtype as integer, _
+					   					  byval to_subtype as FBSYMBOL ptr, _
+					   					  byval l as ASTNODE ptr ) as integer
 
 declare function	astUpdStrConcat		( byval n as ASTNODE ptr ) as ASTNODE ptr
 
@@ -539,9 +562,48 @@ declare function 	astIsSymbolOnTree	( byval sym as FBSYMBOL ptr, _
 
 declare function 	astGetStrLitSymbol	( byval n as ASTNODE ptr ) as FBSYMBOL ptr
 
+declare sub 		astBuildVAR			( byval n as ASTNODE ptr, _
+				 						  byval sym as FBSYMBOL ptr, _
+				 						  byval ofs as integer, _
+				 						  byval dtype as integer, _
+				 						  byval subtype as FBSYMBOL ptr = NULL )
+
+declare function 	astTypeIniBegin		( byval dtype as integer, _
+						  				  byval subtype as FBSYMBOL ptr ) as ASTNODE ptr
+
+declare sub 		astTypeIniEnd		( byval tree as ASTNODE ptr, _
+										  byval isinitializer as integer )
+
+declare function 	astTypeIniAddPad	( byval tree as ASTNODE ptr, _
+						   				  byval bytes as integer ) as ASTNODE ptr
+
+declare function 	astTypeIniAddExpr	( byval tree as ASTNODE ptr, _
+						 				  byval expr as ASTNODE ptr, _
+						 				  byval sym as FBSYMBOL ptr, _
+						 				  byval ofs as integer ) as ASTNODE ptr
+
+declare function 	astTypeIniFlush		( byval tree as ASTNODE ptr, _
+						  				  byval basesym as FBSYMBOL ptr, _
+										  byval doclone as integer, _
+						  				  byval isstatic as integer, _
+						  				  byval isinitializer as integer ) as integer
+
+declare function 	astTypeIniIsConst	( byval tree as ASTNODE ptr ) as integer
+
+declare function 	astTypeIniUpdate	( byval tree as ASTNODE ptr ) as ASTNODE ptr
+
 ''
 '' macros
 ''
+#define astInitNode( n, class_, dtype, subtype)		:_
+	n->class 		= class_						:_
+	n->dtype 		= dtype							:_
+	n->subtype		= subtype						:_
+	n->defined		= FALSE							:_
+	n->l    		= NULL							:_
+	n->r    		= NULL							:_
+	n->sym			= NULL
+
 #define astGetClass(n) n->class
 
 #define astIsCONST(n) n->defined
@@ -590,7 +652,7 @@ declare function 	astGetStrLitSymbol	( byval n as ASTNODE ptr ) as FBSYMBOL ptr
 		n->l->subtype = _subtype                            :_
 	end if
 
-
+#define astTypeIniGetOfs( n ) n->typeini.ofs
 
 ''
 '' inter-module globals

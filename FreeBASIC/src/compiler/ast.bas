@@ -169,7 +169,8 @@ sub astInit static
     hInitTempLists( )
 
     ast.doemit = TRUE
-    ast.isopt  = FALSE
+    ast.isopt = FALSE
+    ast.typeinicnt = 0
 
 	'' wchar len depends on the target platform
 	ast_minlimitTB(FB_DATATYPE_WCHAR) = ast_minlimitTB(env.target.wchar.type)
@@ -870,7 +871,7 @@ end function
 
 
 '':::::
-function astNewNode( byval class as integer, _
+function astNewNode( byval class_ as integer, _
 				 	 byval dtype as integer, _
 				 	 byval subtype as FBSYMBOL ptr _
 				   ) as ASTNODE ptr static
@@ -879,14 +880,7 @@ function astNewNode( byval class as integer, _
 
 	n = listNewNode( @ast.astTB )
 
-	''
-	n->class 		= class
-	n->dtype 		= dtype
-	n->subtype		= subtype
-	n->defined		= FALSE
-	n->l    		= NULL
-	n->r    		= NULL
-	n->sym			= NULL
+	astInitNode( n, class_, dtype, subtype )
 
 	function = n
 
@@ -1015,7 +1009,7 @@ function astGetStrLitSymbol( byval n as ASTNODE ptr ) as FBSYMBOL ptr static
    	if( astIsVAR( n ) ) then
 		s = astGetSymbol( n )
 		if( s <> NULL ) then
-			if( symbGetIsInitialized( s ) ) then
+			if( symbGetIsLiteral( s ) ) then
 				function = s
 			end if
 		end if
@@ -1120,6 +1114,9 @@ function astLoad( byval n as ASTNODE ptr ) as IRVREG ptr
 	end if
 
 	select case as const n->class
+	case AST_NODECLASS_NOP
+		return NULL
+
 	case AST_NODECLASS_LINK
 		return astLoadLINK( n )
 

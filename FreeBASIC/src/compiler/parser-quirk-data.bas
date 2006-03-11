@@ -108,7 +108,7 @@ function cDataStmt as integer static
 			if( litsym <> NULL ) then
                 '' not a wstring?
                 if( astGetDataType( expr ) <> FB_DATATYPE_WCHAR ) then
-            		if( rtlDataStore( symbGetVarText( litsym ), _
+            		if( rtlDataStore( symbGetVarLitText( litsym ), _
             						  symbGetStrLen( litsym ) - 1, _ '' less the null-char
             						  FB_DATATYPE_CHAR ) = FALSE ) then
 	            		exit function
@@ -116,7 +116,7 @@ function cDataStmt as integer static
 
     	        '' wstring..
     	        else
-            		if( rtlDataStoreW( symbGetVarTextW( litsym ), _
+            		if( rtlDataStoreW( symbGetVarLitTextW( litsym ), _
             						   symbGetWstrLen( litsym ) - 1, _ '' ditto
             						   FB_DATATYPE_WCHAR ) = FALSE ) then
 	            		exit function

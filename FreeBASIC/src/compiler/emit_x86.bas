@@ -5392,19 +5392,15 @@ sub emitWriteBss( byval s as FBSYMBOL ptr )
 
     	'' variable?
     	case FB_SYMBCLASS_VAR
-			'' not initialized?
+			'' not initialized already?
 			if( symbGetIsInitialized( s ) = FALSE ) then
-				'' not emited already?
-				if( symbGetIsEmitted( s ) = FALSE ) then
-    				'' not extern?
-    				if( symbIsExtern( s ) = FALSE ) then
-    	    			'' not a string or array descriptor?
-    	    			if( symbGetLen( s ) > 0 ) then
-    						'' not dynamic?
-    						if( symbGetIsDynamic( s ) = FALSE ) then
-    							doemit = TRUE
-    						end if
-    					end if
+    			'' not extern, literal or dynamic?
+				if( (s->attrib and (FB_SYMBATTRIB_EXTERN or _
+							   		FB_SYMBATTRIB_LITERAL or _
+							   		FB_SYMBATTRIB_DYNAMIC)) = 0 ) then
+    	    		'' not a string or array descriptor?
+    	    		if( symbGetLen( s ) > 0 ) then
+    					doemit = TRUE
     				end if
     			end if
     		end if
@@ -5415,7 +5411,7 @@ sub emitWriteBss( byval s as FBSYMBOL ptr )
 
 	    	elements = 1
     	    if( symbGetArrayDimensions( s ) > 0 ) then
-    	    	elements = symbCalcArrayElements( s )
+    	    	elements = symbGetArrayElements( s )
     	    end if
 
     	    hEmitBssHeader( )
@@ -5488,8 +5484,8 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
 
     	'' variable?
     	case FB_SYMBCLASS_VAR
-    		'' initialized?
-    		if( symbGetIsInitialized( s ) ) then
+    		'' literal?
+    		if( symbGetIsLiteral( s ) ) then
     	    	dtype = symbGetType( s )
     	    	select case dtype
     	    	'' udt? don't emit
@@ -5510,15 +5506,15 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
     	    select case dtype
     	    case FB_DATATYPE_CHAR
     	    	stext = "\""
-    	    	stext += *hEscapeStr( symbGetVarText( s ) )
+    	    	stext += *hEscapeStr( symbGetVarLitText( s ) )
     	    	stext += "\\0\""
     	    case FB_DATATYPE_WCHAR
 				stext = "\""
-				stext += *hEscapeWstr( symbGetVarTextW( s ) )
+				stext += *hEscapeWstr( symbGetVarLitTextW( s ) )
 				stext += *hGetWstrNull( )
 				stext += "\""
     	    case else
-    	    	stext = *symbGetVarText( s )
+    	    	stext = *symbGetVarLitText( s )
     	    end select
 
     	    hEmitConstHeader( )
@@ -5616,7 +5612,7 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
 	''	void		*ptr
 	hWriteStr( TRUE,  ".int\t" + sname )
 	''	uint		size
-	hWriteStr( TRUE,  ".int\t" + str( symbGetLen( s ) * symbCalcArrayElements( s ) ) )
+	hWriteStr( TRUE,  ".int\t" + str( symbGetLen( s ) * symbGetArrayElements( s ) ) )
 	''	uint		element_len
     hWriteStr( TRUE,  ".int\t" + str( symbGetLen( s ) ) )
 	''	uint		dimensions
@@ -5694,6 +5690,14 @@ sub emitWriteData( byval s as FBSYMBOL ptr )
 
     	'' variable?
     	case FB_SYMBCLASS_VAR
+    	    '' initialized?
+    	    if( symbGetIsInitialized( s ) ) then
+    	    	'' not a jump tb?
+    	    	if( symbIsJumpTb( s ) = FALSE ) then
+    	    		astTypeIniFlush( s->var.initree, s, FALSE, TRUE, TRUE )
+    	    	end if
+    	    end if
+
     	    '' with descriptor?
     	    d = symbGetArrayDescriptor( s )
     	    if( d <> NULL ) then

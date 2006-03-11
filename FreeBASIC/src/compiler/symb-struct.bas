@@ -326,8 +326,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 	e->var.array.dims = dimensions
 	if( dimensions > 0 ) then
 		for i = 0 to dimensions-1
-			if( symbNewArrayDim( e->var.array.dimhead, e->var.array.dimtail, _
-						 		 dTB(i).lower, dTB(i).upper ) = NULL ) then
+			if( symbNewArrayDim( e, dTB(i).lower, dTB(i).upper ) = NULL ) then
 			end if
 		next
 	end if

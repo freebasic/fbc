@@ -92,7 +92,7 @@ FBC_SRCS += ast-node-branch.bas ast-node-check.bas ast-node-const.bas ast-node-c
 FBC_SRCS += ast-node-enum.bas ast-node-funct.bas ast-node-idx.bas ast-node-iif.bas
 FBC_SRCS += ast-node-link.bas ast-node-load.bas ast-node-misc.bas ast-node-ptr.bas
 FBC_SRCS += ast-node-scope.bas ast-node-stack.bas ast-node-uop.bas ast-node-var.bas
-FBC_SRCS += ast-node-field.bas ast-optimize.bas ast-proc.bas
+FBC_SRCS += ast-node-field.bas ast-node-typeini.bas ast-optimize.bas ast-proc.bas
 
 FBC_SRCS += dstr.bas edbg_stab.bas emit.bas emit_x86.bas fb.bas fb-main.bas flist.bas
 FBC_SRCS += hash.bas error.bas hlp.bas hlp-str.bas ir.bas list.bas

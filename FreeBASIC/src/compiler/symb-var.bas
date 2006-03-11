@@ -120,6 +120,7 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 	d->var.array.dims = 0
 	d->var.array.dimhead = NULL
 	d->var.array.dimtail = NULL
+	d->var.array.elms = 1
 
     d->var.suffix = INVALID
 
@@ -129,8 +130,7 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 end function
 
 '':::::
-function symbNewArrayDim( byref head as FBVARDIM ptr, _
-				  		  byref tail as FBVARDIM ptr, _
+function symbNewArrayDim( byval s as FBSYMBOL ptr, _
 				  		  byval lower as integer, _
 				  		  byval upper as integer _
 				  		) as FBVARDIM ptr static
@@ -147,14 +147,15 @@ function symbNewArrayDim( byref head as FBVARDIM ptr, _
     d->lower = lower
     d->upper = upper
 
-	n = tail
-	d->next = NULL
-	tail = d
+	n = s->var.array.dimtail
 	if( n <> NULL ) then
 		n->next = d
 	else
-		head = d
+		s->var.array.dimhead = d
 	end if
+
+	d->next = NULL
+	s->var.array.dimtail = d
 
     function = d
 
@@ -177,10 +178,9 @@ sub symbSetArrayDims( byval s as FBSYMBOL ptr, _
             hDelVarDims( s )
 
 			for i = 0 to dimensions-1
-				if( symbNewArrayDim( s->var.array.dimhead, s->var.array.dimtail, _
-							 		 dTB(i).lower, dTB(i).upper ) = NULL ) then
+				if( symbNewArrayDim( s, dTB(i).lower, dTB(i).upper ) = NULL ) then
 				end if
-			next i
+			next
 
 		else
 			d = s->var.array.dimhead
@@ -188,11 +188,14 @@ sub symbSetArrayDims( byval s as FBSYMBOL ptr, _
 				d->lower = dTB(i).lower
 				d->upper = dTB(i).upper
 				d = d->next
-			next i
+			next
 		end if
+
+		s->var.array.elms = symbCalcArrayElements( s )
 
 	else
 		s->var.array.dif = 0
+		s->var.array.elms = 1
 	end if
 
 	s->var.array.dims = dimensions
@@ -232,15 +235,17 @@ private sub hSetupVar( byval s as FBSYMBOL ptr, _
 	'' array fields
 	s->var.array.dimhead = NULL
 	s->var.array.dimtail = NULL
-
-	s->var.array.elms = 0						'' real value doesn't matter
 	s->var.array.desc = NULL
+
 	if( dimensions <> 0 ) then
 		symbSetArrayDims( s, dimensions, dTB() )
 	else
 		s->var.array.dims = 0
 		s->var.array.dif = 0
+		s->var.array.elms = 1
 	end if
+
+	s->var.initree = NULL
 
 end sub
 
@@ -356,7 +361,8 @@ end function
 '':::::
 function symbAddTempVar( byval typ as integer, _
 						 byval subtype as FBSYMBOL ptr = NULL, _
-						 byval doalloc as integer = FALSE _
+						 byval doalloc as integer = FALSE, _
+						 byval checkstatic as integer = TRUE _
 					   ) as FBSYMBOL ptr static
 
 	static as zstring * FB_MAXINTNAMELEN+1 sname
@@ -367,9 +373,11 @@ function symbAddTempVar( byval typ as integer, _
 	sname = *hMakeTmpStr( FALSE )
 
 	attrib = FB_SYMBATTRIB_TEMP
-	if( fbIsModLevel( ) = FALSE ) then
-		if( env.isprocstatic ) then
-			attrib or= FB_SYMBATTRIB_STATIC
+	if( checkstatic ) then
+		if( fbIsModLevel( ) = FALSE ) then
+			if( env.isprocstatic ) then
+				attrib or= FB_SYMBATTRIB_STATIC
+			end if
 		end if
 	end if
 
@@ -519,21 +527,27 @@ sub symbDelVar( byval s as FBSYMBOL ptr, _
     		'' del the array descriptor, recursively
     		symbDelVar( s->var.array.desc )
     	end if
-    end if
 
-    if( symbGetIsInitialized( s ) ) then
-    	s->stats and= not FB_SYMBSTATS_INITIALIZED
+    	if( symbGetIsLiteral( s ) ) then
+    		s->attrib and= not FB_SYMBATTRIB_LITERAL
 
-    	'' not a wchar literal?
-    	if( s->typ <> FB_DATATYPE_WCHAR ) then
-    		if( s->var.inittext <> NULL ) then
-    			ZstrFree( s->var.inittext )
+    		'' not a wchar literal?
+    		if( s->typ <> FB_DATATYPE_WCHAR ) then
+    			if( s->var.littext <> NULL ) then
+    				ZstrFree( s->var.littext )
+    			end if
+    		else
+    			if( s->var.littextw <> NULL ) then
+    				WstrFree( s->var.littextw )
+    			end if
     		end if
-    	else
-    		if( s->var.inittextw <> NULL ) then
-    			WstrFree( s->var.inittextw )
-    		end if
+
+    	''
+    	elseif( symbGetIsInitialized( s ) ) then
+    		s->stats and= not FB_SYMBSTATS_INITIALIZED
+    		'' astEnd will free the nodes..
     	end if
+
     end if
 
     symbFreeSymbol( s, movetoglob )

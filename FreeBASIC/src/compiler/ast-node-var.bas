@@ -29,6 +29,21 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
+sub astBuildVAR( byval n as ASTNODE ptr, _
+				 byval sym as FBSYMBOL ptr, _
+				 byval ofs as integer, _
+				 byval dtype as integer, _
+				 byval subtype as FBSYMBOL ptr = NULL _
+			   ) static
+
+	astInitNode( n, AST_NODECLASS_VAR, dtype, subtype )
+
+	n->sym = sym
+	n->var.ofs = ofs
+
+end sub
+
+'':::::
 function astNewVAR( byval sym as FBSYMBOL ptr, _
 					byval ofs as integer, _
 					byval dtype as integer, _

@@ -104,7 +104,7 @@ private sub hProcFlush( byval p as ASTPROCNODE ptr, _
 	env.currproc = proc
 	symbSetLocalTb( @proc->proc.loctb )
 
-	''
+	'' do pre-loading, before allocating variables on stack
 	prv = @tmp
 	n = p->head
 	do while( n <> NULL )
@@ -138,7 +138,7 @@ private sub hProcFlush( byval p as ASTPROCNODE ptr, _
 		irEmitPROCBEGIN( proc, p->initlabel )
 	end if
 
-	''
+	'' flush nodes
 	n = p->head
 	do while( n <> NULL )
 		nxt = n->next
@@ -204,6 +204,9 @@ sub astAdd( byval n as ASTNODE ptr ) static
 		exit sub
 	end if
 
+	'' if node contains any type ini trees, they must be expanded first
+	n = astTypeIniUpdate( n )
+
 	''
 	if( ast.curproc->tail <> NULL ) then
 		ast.curproc->tail->next = n
@@ -225,6 +228,8 @@ sub astAddAfter( byval n as ASTNODE ptr, _
 	if( (p = NULL) or (n = NULL) ) then
 		exit sub
 	end if
+
+	'' assuming no tree will type ini will be passed
 
 	''
 	if( p->next = NULL ) then
