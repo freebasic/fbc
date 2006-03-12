@@ -34,7 +34,7 @@ option escape
 function cTypedefDecl( byval pid as zstring ptr ) as integer static
     static as zstring * FB_MAXNAMELEN+1 id, tname
     dim as zstring ptr ptname
-    dim as integer typ, lgt, ptrcnt, isfwd, ismult
+    dim as integer dtype, lgt, ptrcnt, isfwd, ismult
     dim as FBSYMBOL ptr subtype
 
     function = FALSE
@@ -42,7 +42,7 @@ function cTypedefDecl( byval pid as zstring ptr ) as integer static
     ismult = (pid = NULL)
 
     if( ismult ) then
-    	isfwd = (cSymbolType( typ, subtype, lgt, ptrcnt ) = NULL)
+    	isfwd = (cSymbolType( dtype, subtype, lgt, ptrcnt ) = NULL)
     	if( isfwd ) then
     		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
     			exit function
@@ -57,7 +57,7 @@ function cTypedefDecl( byval pid as zstring ptr ) as integer static
 					select case lexGetToken( )
 					case FB_TK_PTR, FB_TK_POINTER
 						lexSkipToken( )
-						typ += FB_DATATYPE_POINTER
+						dtype += FB_DATATYPE_POINTER
 						ptrcnt += 1
 					case else
 						exit do
@@ -70,7 +70,7 @@ function cTypedefDecl( byval pid as zstring ptr ) as integer static
 
     do
 		if( ismult = FALSE ) then
-    		isfwd = (cSymbolType( typ, subtype, lgt, ptrcnt ) = NULL)
+    		isfwd = (cSymbolType( dtype, subtype, lgt, ptrcnt ) = NULL)
     		if( isfwd ) then
     			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
     				exit function
@@ -91,15 +91,15 @@ function cTypedefDecl( byval pid as zstring ptr ) as integer static
     	if( isfwd ) then
     		'' pointing to itself? then it's a void..
     		if( *ptname = *pid ) then
-    			typ 	= FB_DATATYPE_VOID
+    			dtype = FB_DATATYPE_VOID
     			subtype = NULL
-    			lgt 	= 0
+    			lgt = 0
 
     		'' else, create a forward reference (or lookup one)
     		else
-    			typ 	= FB_DATATYPE_FWDREF
+    			dtype = FB_DATATYPE_FWDREF
     			subtype = symbAddFwdRef( ptname )
-				lgt 	= -1
+				lgt = -1
 				if( subtype = NULL ) then
 					subtype = symbFindByNameAndClass( ptname, FB_SYMBCLASS_FWDREF )
 					if( subtype = NULL ) then
@@ -118,7 +118,7 @@ function cTypedefDecl( byval pid as zstring ptr ) as integer static
 						select case lexGetToken( )
 						case FB_TK_PTR, FB_TK_POINTER
 							lexSkipToken( )
-							typ += FB_DATATYPE_POINTER
+							dtype += FB_DATATYPE_POINTER
 							ptrcnt += 1
 						case else
 							exit do
@@ -127,14 +127,32 @@ function cTypedefDecl( byval pid as zstring ptr ) as integer static
 				end if
 
 			else
-				typ += ptrcnt * FB_DATATYPE_POINTER
+				dtype += ptrcnt * FB_DATATYPE_POINTER
 			end if
     	end if
 
         ''
-    	if( symbAddTypedef( pid, typ, subtype, ptrcnt, lgt ) = NULL ) then
-			hReportError( FB_ERRMSG_DUPDEFINITION, TRUE )
-			exit function
+    	if( symbAddTypedef( pid, dtype, subtype, ptrcnt, lgt ) = NULL ) then
+
+			'' check if the dup definition is different
+			dim as integer isdup
+			isdup = TRUE
+
+			dim as FBSYMBOL ptr sym
+			sym = symbFindByNameAndClass( pid, FB_SYMBCLASS_TYPEDEF )
+
+			if( sym <> NULL ) then
+				if( symbGetType( sym ) = dtype ) then
+					if( symbGetSubType( sym ) = subtype ) then
+						isdup = FALSE
+					end if
+				end if
+			end if
+
+			if( isdup ) then
+				hReportError( FB_ERRMSG_DUPDEFINITION, TRUE )
+				exit function
+			end if
     	end if
 
     '' ','?
