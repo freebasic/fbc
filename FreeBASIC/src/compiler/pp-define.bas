@@ -67,6 +67,14 @@ sub ppDefineEnd( )
 end sub
 
 '':::::
+private sub hReportMacroError( byval s as FBSYMBOL ptr, _
+							   byval errnum as integer )
+
+	hReportErrorEx( errnum, "expanding: " + *symbGetOrgName( s ) )
+
+end sub
+
+'':::::
 private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
     dim as FBDEFARG ptr arg
     dim as FBDEFTOK ptr dt
@@ -123,7 +131,7 @@ private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
 				end if
 			''
 			case FB_TK_EOL, FB_TK_EOF
-				hReportError( FB_ERRMSG_EXPECTEDRPRNT )
+				hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT )
 				exit function
 			end select
 
@@ -139,6 +147,11 @@ private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
 		if( argtb <> NULL ) then
 			'' trim
 			with argtb->tb(num)
+				if( .text.data = NULL ) then
+					hReportMacroError( s, FB_ERRMSG_EXPECTEDEXPRESSION )
+					exit function
+				end if
+
 				if( (.text.data[0][0] = CHAR_SPACE) or _
 					(.text.data[0][len( *.text.data )-1] = CHAR_SPACE) ) then
 					DZstrAssign( .text, trim( *.text.data ) )
@@ -154,7 +167,19 @@ private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
 		'' next
 		arg = symbGetDefArgNext( arg )
 		num += 1
-	loop while( arg <> NULL )
+
+		'' too many args?
+		if( arg = NULL ) then
+			hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
+			exit function
+		end if
+	loop
+
+	'' too few args?
+	if( symbGetDefArgNext( arg ) <> NULL ) then
+		hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
+		exit function
+	end if
 
 	''
 	text = ""
@@ -350,7 +375,7 @@ private function hLoadMacroW( byval s as FBSYMBOL ptr ) as integer
 				end if
 			''
 			case FB_TK_EOL, FB_TK_EOF
-				hReportError( FB_ERRMSG_EXPECTEDRPRNT )
+				hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT )
 				exit function
 			end select
 
@@ -366,6 +391,11 @@ private function hLoadMacroW( byval s as FBSYMBOL ptr ) as integer
 		if( argtb <> NULL ) then
 			'' trim
 			with argtb->tb(num)
+				if( .textw.data = NULL ) then
+					hReportMacroError( s, FB_ERRMSG_EXPECTEDEXPRESSION )
+					exit function
+				end if
+
 				if( (.textw.data[0][0] = CHAR_SPACE) or _
 					(.textw.data[0][len( *.textw.data )-1] = CHAR_SPACE) ) then
 					DWstrAssign( .textw, trim( *.textw.data ) )
@@ -381,7 +411,19 @@ private function hLoadMacroW( byval s as FBSYMBOL ptr ) as integer
 		'' next
 		arg = symbGetDefArgNext( arg )
 		num += 1
-	loop while( arg <> NULL )
+
+		'' too many args?
+		if( arg = NULL ) then
+			hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
+			exit function
+		end if
+	loop
+
+	'' too few args?
+	if( symbGetDefArgNext( arg ) <> NULL ) then
+		hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
+		exit function
+	end if
 
 	'' text = ""
 	DWstrAssign( text, NULL )
