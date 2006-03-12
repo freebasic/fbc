@@ -33,6 +33,7 @@ Version 0.16 Beta:
 - over 30 Gtk tutorials translated from C by Claudio Tinivella (v1c)
 - AVI-capture missing symbols to the vfw.bi Windows API header (v1c)
 - new prototypes to the Newton header (v1c)
+- duplicated definition check for functions that return UDT's when allocating variables implicitly, if their names contain periods (v1c)
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)
