@@ -11,7 +11,7 @@
 
 #inclib "Newton"
 
-#ifdef _NEWTON_DOUBLE_PRECISION__
+#ifdef __USE_DOUBLE_PRECISION__
 type dFloat as double
 #else
 type dFloat as single
@@ -80,7 +80,7 @@ type NewtonApplyForceAndTorque as sub cdecl(byval as NewtonBody ptr)
 type NewtonBodyActivationState as sub cdecl(byval as NewtonBody ptr, byval as uinteger)
 type NewtonSetTransform as sub cdecl(byval as NewtonBody ptr, byval as dFloat ptr)
 type NewtonSetRagDollTransform as sub cdecl(byval as NewtonRagDollBone ptr)
-type NewtonGetBuoyancyPlane as sub cdecl(byval as any ptr, byval as dFloat ptr, byval as dFloat ptr)
+type NewtonGetBuoyancyPlane as function cdecl(byval as integer, byval as any ptr, byval as dFloat ptr, byval as dFloat ptr) as integer
 type NewtonVehicleTireUpdate as sub cdecl(byval as NewtonJoint ptr)
 type NewtonWorldRayFilterCallback as function cdecl(byval as NewtonBody ptr, byval as dFloat ptr, byval as integer, byval as any ptr, byval as dFloat) as dFloat
 type NewtonBodyLeaveWorld as sub cdecl(byval as NewtonBody ptr)
@@ -101,6 +101,7 @@ declare function NewtonCreate cdecl alias "NewtonCreate" (byval malloc as Newton
 declare sub NewtonDestroy cdecl alias "NewtonDestroy" (byval newtonWorld as NewtonWorld ptr)
 declare sub NewtonDestroyAllBodies cdecl alias "NewtonDestroyAllBodies" (byval newtonWorld as NewtonWorld ptr)
 declare sub NewtonUpdate cdecl alias "NewtonUpdate" (byval newtonWorld as NewtonWorld ptr, byval timestep as dFloat)
+declare sub NewtonSetPlatformArchitecture cdecl alias "NewtonSetPlatformArchitecture" (byval newtonWorld as NewtonWorld ptr, byval mode as integer)
 declare sub NewtonSetSolverModel cdecl alias "NewtonSetSolverModel" (byval newtonWorld as NewtonWorld ptr, byval model as integer)
 declare sub NewtonSetFrictionModel cdecl alias "NewtonSetFrictionModel" (byval newtonWorld as NewtonWorld ptr, byval model as integer)
 declare function NewtonGetTimeStep cdecl alias "NewtonGetTimeStep" (byval newtonWorld as NewtonWorld ptr) as dFloat
@@ -110,17 +111,18 @@ declare sub NewtonSetWorldSize cdecl alias "NewtonSetWorldSize" (byval newtonWor
 declare sub NewtonWorldFreezeBody cdecl alias "NewtonWorldFreezeBody" (byval newtonWorld as NewtonWorld ptr, byval body as NewtonBody ptr)
 declare sub NewtonWorldUnfreezeBody cdecl alias "NewtonWorldUnfreezeBody" (byval newtonWorld as NewtonWorld ptr, byval body as NewtonBody ptr)
 declare sub NewtonWorldForEachBodyDo cdecl alias "NewtonWorldForEachBodyDo" (byval newtonWorld as NewtonWorld ptr, byval callback as NewtonBodyIterator)
+declare sub NewtonWorldForEachBodyInAABBDo cdecl alias "NewtonWorldForEachBodyInAABBDo" (byval newtonWorld as NewtonWorld ptr, byval p0 as dFloat ptr, byval p1 as dFloat ptr, byval callback as NewtonBodyIterator)
 declare sub NewtonWorldSetUserData cdecl alias "NewtonWorldSetUserData" (byval newtonWorld as NewtonWorld ptr, byval userData as any ptr)
 declare function NewtonWorldGetUserData cdecl alias "NewtonWorldGetUserData" (byval newtonWorld as NewtonWorld ptr) as any ptr
 declare function NewtonWorldGetVersion cdecl alias "NewtonWorldGetVersion" (byval newtonWorld as NewtonWorld ptr) as integer
 declare sub NewtonWorldRayCast cdecl alias "NewtonWorldRayCast" (byval newtonWorld as NewtonWorld ptr, byval p0 as dFloat ptr, byval p1 as dFloat ptr, byval filter as NewtonWorldRayFilterCallback, byval userData as any ptr)
-declare function NewtonWorldCollide cdecl alias "NewtonWorldCollide" (byval newtonWorld as NewtonWorld ptr, byval maxSize as integer, byval collsionA as NewtonCollision ptr, byval matrixA as dFloat ptr, byval collsionB as NewtonCollision ptr, byval matrixB as dFloat ptr, byval contacts as dFloat ptr, byval normals as dFloat ptr, byval penetration as dFloat ptr) as integer
 declare function NewtonMaterialGetDefaultGroupID cdecl alias "NewtonMaterialGetDefaultGroupID" (byval newtonWorld as NewtonWorld ptr) as integer
 declare function NewtonMaterialCreateGroupID cdecl alias "NewtonMaterialCreateGroupID" (byval newtonWorld as NewtonWorld ptr) as integer
 declare sub NewtonMaterialDestroyAllGroupID cdecl alias "NewtonMaterialDestroyAllGroupID" (byval newtonWorld as NewtonWorld ptr)
 declare sub NewtonMaterialSetDefaultSoftness cdecl alias "NewtonMaterialSetDefaultSoftness" (byval newtonWorld as NewtonWorld ptr, byval id0 as integer, byval id1 as integer, byval value as dFloat)
 declare sub NewtonMaterialSetDefaultElasticity cdecl alias "NewtonMaterialSetDefaultElasticity" (byval newtonWorld as NewtonWorld ptr, byval id0 as integer, byval id1 as integer, byval elasticCoef as dFloat)
 declare sub NewtonMaterialSetDefaultCollidable cdecl alias "NewtonMaterialSetDefaultCollidable" (byval newtonWorld as NewtonWorld ptr, byval id0 as integer, byval id1 as integer, byval state as integer)
+declare sub NewtonMaterialSetContinuousCollisionMode cdecl alias "NewtonMaterialSetContinuousCollisionMode" (byval newtonWorld as NewtonWorld ptr, byval id0 as integer, byval id1 as integer, byval state as integer)
 declare sub NewtonMaterialSetDefaultFriction cdecl alias "NewtonMaterialSetDefaultFriction" (byval newtonWorld as NewtonWorld ptr, byval id0 as integer, byval id1 as integer, byval staticFriction as dFloat, byval kineticFriction as dFloat)
 declare sub NewtonMaterialSetCollisionCallback cdecl alias "NewtonMaterialSetCollisionCallback" (byval newtonWorld as NewtonWorld ptr, byval id0 as integer, byval id1 as integer, byval userData as any ptr, byval begin as NewtonContactBegin, byval process as NewtonContactProcess, byval end as NewtonContactEnd)
 declare function NewtonMaterialGetUserData cdecl alias "NewtonMaterialGetUserData" (byval newtonWorld as NewtonWorld ptr, byval id0 as integer, byval id1 as integer) as any ptr
@@ -139,6 +141,8 @@ declare sub NewtonMaterialSetContactElasticity cdecl alias "NewtonMaterialSetCon
 declare sub NewtonMaterialSetContactFrictionState cdecl alias "NewtonMaterialSetContactFrictionState" (byval material as NewtonMaterial ptr, byval state as integer, byval index as integer)
 declare sub NewtonMaterialSetContactStaticFrictionCoef cdecl alias "NewtonMaterialSetContactStaticFrictionCoef" (byval material as NewtonMaterial ptr, byval coef as dFloat, byval index as integer)
 declare sub NewtonMaterialSetContactKineticFrictionCoef cdecl alias "NewtonMaterialSetContactKineticFrictionCoef" (byval material as NewtonMaterial ptr, byval coef as dFloat, byval index as integer)
+declare sub NewtonMaterialSetContactNormalAcceleration cdecl alias "NewtonMaterialSetContactNormalAcceleration" (byval material as NewtonMaterial ptr, byval accel as dFloat)
+declare sub NewtonMaterialSetContactNormalDirection cdecl alias "NewtonMaterialSetContactNormalDirection" (byval material as NewtonMaterial ptr, byval directionVector as dFloat ptr)
 declare sub NewtonMaterialSetContactTangentAcceleration cdecl alias "NewtonMaterialSetContactTangentAcceleration" (byval material as NewtonMaterial ptr, byval accel as dFloat, byval index as integer)
 declare sub NewtonMaterialContactRotateTangentDirections cdecl alias "NewtonMaterialContactRotateTangentDirections" (byval material as NewtonMaterial ptr, byval directionVector as dFloat ptr)
 declare function NewtonCreateNull cdecl alias "NewtonCreateNull" (byval newtonWorld as NewtonWorld ptr) as NewtonCollision ptr
@@ -154,6 +158,10 @@ declare sub NewtonConvexHullModifierGetMatrix cdecl alias "NewtonConvexHullModif
 declare sub NewtonConvexHullModifierSetMatrix cdecl alias "NewtonConvexHullModifierSetMatrix" (byval convexHullCollision as NewtonCollision ptr, byval matrix as dFloat ptr)
 declare sub NewtonConvexCollisionSetUserID cdecl alias "NewtonConvexCollisionSetUserID" (byval convexCollision as NewtonCollision ptr, byval id as uinteger)
 declare function NewtonConvexCollisionGetUserID cdecl alias "NewtonConvexCollisionGetUserID" (byval convexCollision as NewtonCollision ptr) as uinteger
+declare function NewtonConvexCollisionCalculateVolume cdecl alias "NewtonConvexCollisionCalculateVolume" (byval convexCollision as NewtonCollision ptr) as dFloat
+declare sub NewtonConvexCollisionCalculateInertialMatrix cdecl alias "NewtonConvexCollisionCalculateInertialMatrix" (byval convexCollision as NewtonCollision ptr, byval inertia as dFloat ptr, byval origin as dFloat ptr)
+declare sub NewtonCollisionMakeUnique cdecl alias "NewtonCollisionMakeUnique" (byval newtonWorld as NewtonWorld ptr, byval collision as NewtonCollision ptr)
+declare sub NewtonReleaseCollision cdecl alias "NewtonReleaseCollision" (byval newtonWorld as NewtonWorld ptr, byval collision as NewtonCollision ptr)
 declare function NewtonCreateCompoundCollision cdecl alias "NewtonCreateCompoundCollision" (byval newtonWorld as NewtonWorld ptr, byval count as integer, byval collisionPrimitiveArray as NewtonCollision ptr ptr) as NewtonCollision ptr
 declare function NewtonCreateUserMeshCollision cdecl alias "NewtonCreateUserMeshCollision" (byval newtonWorld as NewtonWorld ptr, byval minBox as dFloat ptr, byval maxBox as dFloat ptr, byval userData as any ptr, byval collideCallback as NewtonUserMeshCollisionCollideCallback, byval rayHitCallback as NewtonUserMeshCollisionRayHitCallback, byval destroyCallback as NewtonUserMeshCollisionDestroyCallback) as NewtonCollision ptr
 declare function NewtonCreateTreeCollision cdecl alias "NewtonCreateTreeCollision" (byval newtonWorld as NewtonWorld ptr, byval userCallback as NewtonTreeCollisionCallback) as NewtonCollision ptr
@@ -164,9 +172,12 @@ declare sub NewtonTreeCollisionSerialize cdecl alias "NewtonTreeCollisionSeriali
 declare function NewtonCreateTreeCollisionFromSerialization cdecl alias "NewtonCreateTreeCollisionFromSerialization" (byval newtonWorld as NewtonWorld ptr, byval userCallback as NewtonTreeCollisionCallback, byval deserializeFunction as NewtonDeserialize, byval serializeHandle as any ptr) as NewtonCollision ptr
 declare function NewtonTreeCollisionGetFaceAtribute cdecl alias "NewtonTreeCollisionGetFaceAtribute" (byval treeCollision as NewtonCollision ptr, byval faceIndexArray as integer ptr) as integer
 declare sub NewtonTreeCollisionSetFaceAtribute cdecl alias "NewtonTreeCollisionSetFaceAtribute" (byval treeCollision as NewtonCollision ptr, byval faceIndexArray as integer ptr, byval attribute as integer)
-declare sub NewtonReleaseCollision cdecl alias "NewtonReleaseCollision" (byval newtonWorld as NewtonWorld ptr, byval collision as NewtonCollision ptr)
-declare sub NewtonCollisionCalculateAABB cdecl alias "NewtonCollisionCalculateAABB" (byval collision as NewtonCollision ptr, byval matrix as dFloat ptr, byval p0 as dFloat ptr, byval p1 as dFloat ptr)
+declare function NewtonCollisionPointDistance cdecl alias "NewtonCollisionPointDistance" (byval newtonWorld as NewtonWorld ptr, byval point as dFloat ptr, byval collsion as NewtonCollision ptr, byval matrix as dFloat ptr, byval contact as dFloat ptr, byval normal as dFloat ptr) as integer
+declare function NewtonCollisionClosestPoint cdecl alias "NewtonCollisionClosestPoint" (byval newtonWorld as NewtonWorld ptr, byval collsionA as NewtonCollision ptr, byval matrixA as dFloat ptr, byval collsionB as NewtonCollision ptr, byval matrixB as dFloat ptr, byval contactA as dFloat ptr, byval contactB as dFloat ptr, byval normalAB as dFloat ptr) as integer
+declare function NewtonCollisionCollide cdecl alias "NewtonCollisionCollide" (byval newtonWorld as NewtonWorld ptr, byval maxSize as integer, byval collsionA as NewtonCollision ptr, byval matrixA as dFloat ptr, byval collsionB as NewtonCollision ptr, byval matrixB as dFloat ptr, byval contacts as dFloat ptr, byval normals as dFloat ptr, byval penetration as dFloat ptr) as integer
+declare function NewtonCollisionCollideContinue cdecl alias "NewtonCollisionCollideContinue" (byval newtonWorld as NewtonWorld ptr, byval maxSize as integer, byval timestap as dFloat, byval collsionA as NewtonCollision ptr, byval matrixA as dFloat ptr, byval velocA as dFloat ptr, byval omegaA as dFloat ptr, byval collsionB as NewtonCollision ptr, byval matrixB as dFloat ptr, byval velocB as dFloat ptr, byval omegaB as dFloat ptr, byval timeOfImpact as dFloat ptr, byval contacts as dFloat ptr, byval normals as dFloat ptr, byval penetration as dFloat ptr) as integer
 declare function NewtonCollisionRayCast cdecl alias "NewtonCollisionRayCast" (byval collision as NewtonCollision ptr, byval p0 as dFloat ptr, byval p1 as dFloat ptr, byval normals as dFloat ptr, byval attribute as integer ptr) as dFloat
+declare sub NewtonCollisionCalculateAABB cdecl alias "NewtonCollisionCalculateAABB" (byval collision as NewtonCollision ptr, byval matrix as dFloat ptr, byval p0 as dFloat ptr, byval p1 as dFloat ptr)
 declare sub NewtonGetEulerAngle cdecl alias "NewtonGetEulerAngle" (byval matrix as dFloat ptr, byval eulersAngles as dFloat ptr)
 declare sub NewtonSetEulerAngle cdecl alias "NewtonSetEulerAngle" (byval eulersAngles as dFloat ptr, byval matrix as dFloat ptr)
 declare function NewtonCreateBody cdecl alias "NewtonCreateBody" (byval newtonWorld as NewtonWorld ptr, byval collision as NewtonCollision ptr) as NewtonBody ptr
@@ -183,6 +194,7 @@ declare sub NewtonBodySetOmega cdecl alias "NewtonBodySetOmega" (byval body as N
 declare sub NewtonBodySetVelocity cdecl alias "NewtonBodySetVelocity" (byval body as NewtonBody ptr, byval velocity as dFloat ptr)
 declare sub NewtonBodySetForce cdecl alias "NewtonBodySetForce" (byval body as NewtonBody ptr, byval force as dFloat ptr)
 declare sub NewtonBodySetTorque cdecl alias "NewtonBodySetTorque" (byval body as NewtonBody ptr, byval torque as dFloat ptr)
+declare sub NewtonBodySetCentreOfMass cdecl alias "NewtonBodySetCentreOfMass" (byval body as NewtonBody ptr, byval com as dFloat ptr)
 declare sub NewtonBodySetLinearDamping cdecl alias "NewtonBodySetLinearDamping" (byval body as NewtonBody ptr, byval linearDamp as dFloat)
 declare sub NewtonBodySetAngularDamping cdecl alias "NewtonBodySetAngularDamping" (byval body as NewtonBody ptr, byval angularDamp as dFloat ptr)
 declare sub NewtonBodySetUserData cdecl alias "NewtonBodySetUserData" (byval body as NewtonBody ptr, byval userData as any ptr)
@@ -194,8 +206,9 @@ declare sub NewtonBodySetTransformCallback cdecl alias "NewtonBodySetTransformCa
 declare sub NewtonBodySetDestructorCallback cdecl alias "NewtonBodySetDestructorCallback" (byval body as NewtonBody ptr, byval callback as NewtonBodyDestructor)
 declare sub NewtonBodySetAutoactiveCallback cdecl alias "NewtonBodySetAutoactiveCallback" (byval body as NewtonBody ptr, byval callback as NewtonBodyActivationState)
 declare sub NewtonBodySetForceAndTorqueCallback cdecl alias "NewtonBodySetForceAndTorqueCallback" (byval body as NewtonBody ptr, byval callback as NewtonApplyForceAndTorque)
-declare function NewtonBodyGetWorld cdecl alias "NewtonBodyGetWorld" (byval body as NewtonBody ptr) as NewtonWorld ptr
+declare function NewtonBodyGetForceAndTorqueCallback cdecl alias "NewtonBodyGetForceAndTorqueCallback" (byval body as NewtonBody ptr) as NewtonApplyForceAndTorque
 declare function NewtonBodyGetUserData cdecl alias "NewtonBodyGetUserData" (byval body as NewtonBody ptr) as any ptr
+declare function NewtonBodyGetWorld cdecl alias "NewtonBodyGetWorld" (byval body as NewtonBody ptr) as NewtonWorld ptr
 declare function NewtonBodyGetCollision cdecl alias "NewtonBodyGetCollision" (byval body as NewtonBody ptr) as NewtonCollision ptr
 declare function NewtonBodyGetMaterialGroupID cdecl alias "NewtonBodyGetMaterialGroupID" (byval body as NewtonBody ptr) as integer
 declare function NewtonBodyGetContinuousCollisionMode cdecl alias "NewtonBodyGetContinuousCollisionMode" (byval body as NewtonBody ptr) as integer
@@ -207,13 +220,13 @@ declare sub NewtonBodyGetOmega cdecl alias "NewtonBodyGetOmega" (byval body as N
 declare sub NewtonBodyGetVelocity cdecl alias "NewtonBodyGetVelocity" (byval body as NewtonBody ptr, byval vector as dFloat ptr)
 declare sub NewtonBodyGetForce cdecl alias "NewtonBodyGetForce" (byval body as NewtonBody ptr, byval vector as dFloat ptr)
 declare sub NewtonBodyGetTorque cdecl alias "NewtonBodyGetTorque" (byval body as NewtonBody ptr, byval vector as dFloat ptr)
+declare sub NewtonBodyGetCentreOfMass cdecl alias "NewtonBodyGetCentreOfMass" (byval body as NewtonBody ptr, byval com as dFloat ptr)
 declare function NewtonBodyGetSleepingState cdecl alias "NewtonBodyGetSleepingState" (byval body as NewtonBody ptr) as integer
 declare function NewtonBodyGetAutoFreeze cdecl alias "NewtonBodyGetAutoFreeze" (byval body as NewtonBody ptr) as integer
 declare function NewtonBodyGetLinearDamping cdecl alias "NewtonBodyGetLinearDamping" (byval body as NewtonBody ptr) as dFloat
 declare sub NewtonBodyGetAngularDamping cdecl alias "NewtonBodyGetAngularDamping" (byval body as NewtonBody ptr, byval vector as dFloat ptr)
 declare sub NewtonBodyGetAABB cdecl alias "NewtonBodyGetAABB" (byval body as NewtonBody ptr, byval p0 as dFloat ptr, byval p1 as dFloat ptr)
 declare sub NewtonBodyGetFreezeTreshold cdecl alias "NewtonBodyGetFreezeTreshold" (byval body as NewtonBody ptr, byval freezeSpeed2 as dFloat ptr, byval freezeOmega2 as dFloat ptr)
-declare function NewtonBodyGetTotalVolume cdecl alias "NewtonBodyGetTotalVolume" (byval body as NewtonBody ptr) as dFloat
 declare sub NewtonBodyAddBuoyancyForce cdecl alias "NewtonBodyAddBuoyancyForce" (byval body as NewtonBody ptr, byval fluidDensity as dFloat, byval fluidLinearViscosity as dFloat, byval fluidAngularViscosity as dFloat, byval gravityVector as dFloat ptr, byval buoyancyPlane as NewtonGetBuoyancyPlane, byval context as any ptr)
 declare sub NewtonBodyForEachPolygonDo cdecl alias "NewtonBodyForEachPolygonDo" (byval body as NewtonBody ptr, byval callback as NewtonCollisionIterator)
 declare sub NewtonAddBodyImpulse cdecl alias "NewtonAddBodyImpulse" (byval body as NewtonBody ptr, byval pointDeltaVeloc as dFloat ptr, byval pointPosit as dFloat ptr)
@@ -267,9 +280,11 @@ declare sub NewtonUpVectorSetPin cdecl alias "NewtonUpVectorSetPin" (byval upVec
 declare function NewtonConstraintCreateUserJoint cdecl alias "NewtonConstraintCreateUserJoint" (byval newtonWorld as NewtonWorld ptr, byval maxDOF as integer, byval callback as NewtonUserBilateralCallBack, byval childBody as NewtonBody ptr, byval parentBody as NewtonBody ptr) as NewtonJoint ptr
 declare sub NewtonUserJointAddLinearRow cdecl alias "NewtonUserJointAddLinearRow" (byval joint as NewtonJoint ptr, byval pivot0 as dFloat ptr, byval pivot1 as dFloat ptr, byval dir as dFloat ptr)
 declare sub NewtonUserJointAddAngularRow cdecl alias "NewtonUserJointAddAngularRow" (byval joint as NewtonJoint ptr, byval relativeAngle as dFloat, byval dir as dFloat ptr)
-declare sub NewtonUserJointSetRowMinimunFriction cdecl alias "NewtonUserJointSetRowMinimunFriction" (byval joint as NewtonJoint ptr, byval friction as dFloat)
-declare sub NewtonUserJointSetRowMaximunFriction cdecl alias "NewtonUserJointSetRowMaximunFriction" (byval joint as NewtonJoint ptr, byval friction as dFloat)
+declare sub NewtonUserJointAddGeneralRow cdecl alias "NewtonUserJointAddGeneralRow" (byval joint as NewtonJoint ptr, byval jacobian0 as dFloat ptr, byval jacobian1 as dFloat ptr)
+declare sub NewtonUserJointSetRowMinimumFriction cdecl alias "NewtonUserJointSetRowMinimumFriction" (byval joint as NewtonJoint ptr, byval friction as dFloat)
+declare sub NewtonUserJointSetRowMaximumFriction cdecl alias "NewtonUserJointSetRowMaximumFriction" (byval joint as NewtonJoint ptr, byval friction as dFloat)
 declare sub NewtonUserJointSetRowAcceleration cdecl alias "NewtonUserJointSetRowAcceleration" (byval joint as NewtonJoint ptr, byval acceleration as dFloat)
+declare sub NewtonUserJointSetRowSpringDamperAcceleration cdecl alias "NewtonUserJointSetRowSpringDamperAcceleration" (byval joint as NewtonJoint ptr, byval springK as dFloat, byval springD as dFloat)
 declare sub NewtonUserJointSetRowStiffness cdecl alias "NewtonUserJointSetRowStiffness" (byval joint as NewtonJoint ptr, byval stiffness as dFloat)
 declare function NewtonUserJointGetRowForce cdecl alias "NewtonUserJointGetRowForce" (byval joint as NewtonJoint ptr, byval row as integer) as dFloat
 declare function NewtonCreateRagDoll cdecl alias "NewtonCreateRagDoll" (byval newtonWorld as NewtonWorld ptr) as NewtonRagDoll ptr
@@ -277,7 +292,6 @@ declare sub NewtonDestroyRagDoll cdecl alias "NewtonDestroyRagDoll" (byval newto
 declare sub NewtonRagDollBegin cdecl alias "NewtonRagDollBegin" (byval ragDoll as NewtonRagDoll ptr)
 declare sub NewtonRagDollEnd cdecl alias "NewtonRagDollEnd" (byval ragDoll as NewtonRagDoll ptr)
 declare function NewtonRagDollFindBone cdecl alias "NewtonRagDollFindBone" (byval ragDoll as NewtonRagDoll ptr, byval id as integer) as NewtonRagDollBone ptr
-declare function NewtonRagDollGetRootBone cdecl alias "NewtonRagDollGetRootBone" (byval ragDoll as NewtonRagDoll ptr) as NewtonRagDollBone ptr
 declare sub NewtonRagDollSetForceAndTorqueCallback cdecl alias "NewtonRagDollSetForceAndTorqueCallback" (byval ragDoll as NewtonRagDoll ptr, byval callback as NewtonApplyForceAndTorque)
 declare sub NewtonRagDollSetTransformCallback cdecl alias "NewtonRagDollSetTransformCallback" (byval ragDoll as NewtonRagDoll ptr, byval callback as NewtonSetRagDollTransform)
 declare function NewtonRagDollAddBone cdecl alias "NewtonRagDollAddBone" (byval ragDoll as NewtonRagDoll ptr, byval parent as NewtonRagDollBone ptr, byval userData as any ptr, byval mass as dFloat, byval matrix as dFloat ptr, byval boneCollision as NewtonCollision ptr, byval size as dFloat ptr) as NewtonRagDollBone ptr
@@ -290,28 +304,27 @@ declare sub NewtonRagDollBoneGetGlobalMatrix cdecl alias "NewtonRagDollBoneGetGl
 declare function NewtonConstraintCreateVehicle cdecl alias "NewtonConstraintCreateVehicle" (byval newtonWorld as NewtonWorld ptr, byval upDir as dFloat ptr, byval body as NewtonBody ptr) as NewtonJoint ptr
 declare sub NewtonVehicleReset cdecl alias "NewtonVehicleReset" (byval vehicle as NewtonJoint ptr)
 declare sub NewtonVehicleSetTireCallback cdecl alias "NewtonVehicleSetTireCallback" (byval vehicle as NewtonJoint ptr, byval update as NewtonVehicleTireUpdate)
-declare function NewtonVehicleAddTire cdecl alias "NewtonVehicleAddTire" (byval vehicle as NewtonJoint ptr, byval localMatrix as dFloat ptr, byval pin as dFloat ptr, byval mass as dFloat, byval width as dFloat, byval radius as dFloat, byval suspesionShock as dFloat, byval suspesionSpring as dFloat, byval suspesionLength as dFloat, byval userData as any ptr, byval collisionID as integer) as integer
-declare sub NewtonVehicleRemoveTire cdecl alias "NewtonVehicleRemoveTire" (byval vehicle as NewtonJoint ptr, byval tireIndex as integer)
-declare sub NewtonVehicleBalanceTires cdecl alias "NewtonVehicleBalanceTires" (byval vehicle as NewtonJoint ptr, byval gravityMag as dFloat)
-declare function NewtonVehicleGetFirstTireID cdecl alias "NewtonVehicleGetFirstTireID" (byval vehicle as NewtonJoint ptr) as integer
-declare function NewtonVehicleGetNextTireID cdecl alias "NewtonVehicleGetNextTireID" (byval vehicle as NewtonJoint ptr, byval tireId as integer) as integer
-declare function NewtonVehicleTireIsAirBorne cdecl alias "NewtonVehicleTireIsAirBorne" (byval vehicle as NewtonJoint ptr, byval tireId as integer) as integer
-declare function NewtonVehicleTireLostSideGrip cdecl alias "NewtonVehicleTireLostSideGrip" (byval vehicle as NewtonJoint ptr, byval tireId as integer) as integer
-declare function NewtonVehicleTireLostTraction cdecl alias "NewtonVehicleTireLostTraction" (byval vehicle as NewtonJoint ptr, byval tireId as integer) as integer
-declare function NewtonVehicleGetTireUserData cdecl alias "NewtonVehicleGetTireUserData" (byval vehicle as NewtonJoint ptr, byval tireId as integer) as any ptr
-declare function NewtonVehicleGetTireOmega cdecl alias "NewtonVehicleGetTireOmega" (byval vehicle as NewtonJoint ptr, byval tireId as integer) as dFloat
-declare function NewtonVehicleGetTireNormalLoad cdecl alias "NewtonVehicleGetTireNormalLoad" (byval vehicle as NewtonJoint ptr, byval tireId as integer) as dFloat
-declare function NewtonVehicleGetTireSteerAngle cdecl alias "NewtonVehicleGetTireSteerAngle" (byval vehicle as NewtonJoint ptr, byval tireId as integer) as dFloat
-declare function NewtonVehicleGetTireLateralSpeed cdecl alias "NewtonVehicleGetTireLateralSpeed" (byval vehicle as NewtonJoint ptr, byval tireId as integer) as dFloat
-declare function NewtonVehicleGetTireLongitudinalSpeed cdecl alias "NewtonVehicleGetTireLongitudinalSpeed" (byval vehicle as NewtonJoint ptr, byval tireId as integer) as dFloat
-declare sub NewtonVehicleGetTireMatrix cdecl alias "NewtonVehicleGetTireMatrix" (byval vehicle as NewtonJoint ptr, byval tireId as integer, byval matrix as dFloat ptr)
-declare sub NewtonVehicleSetTireTorque cdecl alias "NewtonVehicleSetTireTorque" (byval vehicle as NewtonJoint ptr, byval tireId as integer, byval torque as dFloat)
-declare sub NewtonVehicleSetTireSteerAngle cdecl alias "NewtonVehicleSetTireSteerAngle" (byval vehicle as NewtonJoint ptr, byval tireId as integer, byval angle as dFloat)
-declare sub NewtonVehicleSetTireMaxSideSleepSpeed cdecl alias "NewtonVehicleSetTireMaxSideSleepSpeed" (byval vehicle as NewtonJoint ptr, byval tireId as integer, byval speed as dFloat)
-declare sub NewtonVehicleSetTireSideSleepCoeficient cdecl alias "NewtonVehicleSetTireSideSleepCoeficient" (byval vehicle as NewtonJoint ptr, byval tireId as integer, byval coeficient as dFloat)
-declare sub NewtonVehicleSetTireMaxLongitudinalSlideSpeed cdecl alias "NewtonVehicleSetTireMaxLongitudinalSlideSpeed" (byval vehicle as NewtonJoint ptr, byval tireId as integer, byval speed as dFloat)
-declare sub NewtonVehicleSetTireLongitudinalSlideCoeficient cdecl alias "NewtonVehicleSetTireLongitudinalSlideCoeficient" (byval vehicle as NewtonJoint ptr, byval tireId as integer, byval coeficient as dFloat)
-declare function NewtonVehicleTireCalculateMaxBrakeAcceleration cdecl alias "NewtonVehicleTireCalculateMaxBrakeAcceleration" (byval vehicle as NewtonJoint ptr, byval tireId as integer) as dFloat
-declare sub NewtonVehicleTireSetBrakeAcceleration cdecl alias "NewtonVehicleTireSetBrakeAcceleration" (byval vehicle as NewtonJoint ptr, byval tireId as integer, byval accelaration as dFloat, byval torqueLimit as dFloat)
+declare function NewtonVehicleAddTire cdecl alias "NewtonVehicleAddTire" (byval vehicle as NewtonJoint ptr, byval localMatrix as dFloat ptr, byval pin as dFloat ptr, byval mass as dFloat, byval width as dFloat, byval radius as dFloat, byval suspesionShock as dFloat, byval suspesionSpring as dFloat, byval suspesionLength as dFloat, byval userData as any ptr, byval collisionID as integer) as any ptr
+declare sub NewtonVehicleRemoveTire cdecl alias "NewtonVehicleRemoveTire" (byval vehicle as NewtonJoint ptr, byval tireId as any ptr)
+declare function NewtonVehicleGetFirstTireID cdecl alias "NewtonVehicleGetFirstTireID" (byval vehicle as NewtonJoint ptr) as any ptr
+declare function NewtonVehicleGetNextTireID cdecl alias "NewtonVehicleGetNextTireID" (byval vehicle as NewtonJoint ptr, byval tireId as any ptr) as any ptr
+declare function NewtonVehicleTireIsAirBorne cdecl alias "NewtonVehicleTireIsAirBorne" (byval vehicle as NewtonJoint ptr, byval tireId as any ptr) as integer
+declare function NewtonVehicleTireLostSideGrip cdecl alias "NewtonVehicleTireLostSideGrip" (byval vehicle as NewtonJoint ptr, byval tireId as any ptr) as integer
+declare function NewtonVehicleTireLostTraction cdecl alias "NewtonVehicleTireLostTraction" (byval vehicle as NewtonJoint ptr, byval tireId as any ptr) as integer
+declare function NewtonVehicleGetTireUserData cdecl alias "NewtonVehicleGetTireUserData" (byval vehicle as NewtonJoint ptr, byval tireId as any ptr) as any ptr
+declare function NewtonVehicleGetTireOmega cdecl alias "NewtonVehicleGetTireOmega" (byval vehicle as NewtonJoint ptr, byval tireId as any ptr) as dFloat
+declare function NewtonVehicleGetTireNormalLoad cdecl alias "NewtonVehicleGetTireNormalLoad" (byval vehicle as NewtonJoint ptr, byval tireId as any ptr) as dFloat
+declare function NewtonVehicleGetTireSteerAngle cdecl alias "NewtonVehicleGetTireSteerAngle" (byval vehicle as NewtonJoint ptr, byval tireId as any ptr) as dFloat
+declare function NewtonVehicleGetTireLateralSpeed cdecl alias "NewtonVehicleGetTireLateralSpeed" (byval vehicle as NewtonJoint ptr, byval tireId as any ptr) as dFloat
+declare function NewtonVehicleGetTireLongitudinalSpeed cdecl alias "NewtonVehicleGetTireLongitudinalSpeed" (byval vehicle as NewtonJoint ptr, byval tireId as any ptr) as dFloat
+declare sub NewtonVehicleGetTireMatrix cdecl alias "NewtonVehicleGetTireMatrix" (byval vehicle as NewtonJoint ptr, byval tireId as any ptr, byval matrix as dFloat ptr)
+declare sub NewtonVehicleSetTireTorque cdecl alias "NewtonVehicleSetTireTorque" (byval vehicle as NewtonJoint ptr, byval tireId as any ptr, byval torque as dFloat)
+declare sub NewtonVehicleSetTireSteerAngle cdecl alias "NewtonVehicleSetTireSteerAngle" (byval vehicle as NewtonJoint ptr, byval tireId as any ptr, byval angle as dFloat)
+declare sub NewtonVehicleSetTireMaxSideSleepSpeed cdecl alias "NewtonVehicleSetTireMaxSideSleepSpeed" (byval vehicle as NewtonJoint ptr, byval tireId as any ptr, byval speed as dFloat)
+declare sub NewtonVehicleSetTireSideSleepCoeficient cdecl alias "NewtonVehicleSetTireSideSleepCoeficient" (byval vehicle as NewtonJoint ptr, byval tireId as any ptr, byval coeficient as dFloat)
+declare sub NewtonVehicleSetTireMaxLongitudinalSlideSpeed cdecl alias "NewtonVehicleSetTireMaxLongitudinalSlideSpeed" (byval vehicle as NewtonJoint ptr, byval tireId as any ptr, byval speed as dFloat)
+declare sub NewtonVehicleSetTireLongitudinalSlideCoeficient cdecl alias "NewtonVehicleSetTireLongitudinalSlideCoeficient" (byval vehicle as NewtonJoint ptr, byval tireId as any ptr, byval coeficient as dFloat)
+declare function NewtonVehicleTireCalculateMaxBrakeAcceleration cdecl alias "NewtonVehicleTireCalculateMaxBrakeAcceleration" (byval vehicle as NewtonJoint ptr, byval tireId as any ptr) as dFloat
+declare sub NewtonVehicleTireSetBrakeAcceleration cdecl alias "NewtonVehicleTireSetBrakeAcceleration" (byval vehicle as NewtonJoint ptr, byval tireId as any ptr, byval accelaration as dFloat, byval torqueLimit as dFloat)
 
 #endif
