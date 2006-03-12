@@ -1,10 +1,4 @@
-[ ] dup definitions of type aliasing with exactly the same target type
-    shouldn't result in errors
-
 [ ] pointers passed byref should be checked for different types
-
-[ ] add the ... subscript when initializing array so
-    "dim array(0 to ...) = {1, 2, 3, 4}" could be allowed
 
 [ ] SCOPE..END SCOPE:
     - EXIT, GOTO, RETURN and any branch's must deallocate any dynamic data
@@ -12,6 +6,14 @@
       safe is a CFG is added at AST level, function nodes wouldn't be put
       into a linked-list, but into a DAG
     - error handlers should be restored too (or not allowed at all)
+
+[ ] add the ... subscript when initializing array so
+    "dim array(0 to ...) = {1, 2, 3, 4}" could be allowed
+
+[ ] forward type defs used in arguments of function ptr type defs shouldn't be an error
+    - the prototype mangling must be updated when that occurs, but how to do that fast
+      enough? the args would have to be linked to parent (the prototype), but updating
+      the mangled alias on every argument can be slow..
 
 [ ] every compound statement should start new scope:
     - that's needed for gcc, scope is very important
@@ -85,7 +87,7 @@
     - *MUST* follow the GCC 3.x ABI to make it easier to reuse C++ libs compiled by GCC
     - Java/Php5-ish syntax: CLASS INTERFACE EXTENDS IMPLEMENTS THROWS ABSTRACT
     - single inheritance, plus interfaces
-    - exceptions - with unwind support
+    - exceptions - with stack unwind support
     - operator overloading
     - properties
     - pure virtual methods

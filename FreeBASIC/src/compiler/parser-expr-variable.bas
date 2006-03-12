@@ -35,7 +35,8 @@ option escape
 ''
 function cFieldArray( byval sym as FBSYMBOL ptr, _
 					  byval typ as integer, _
-					  byref idxexpr as ASTNODE ptr ) as integer
+					  byref idxexpr as ASTNODE ptr _
+					) as integer
 
     dim as FBVARDIM ptr d
     dim as integer maxdims, dims
@@ -143,11 +144,12 @@ end function
 ''TypeField       =   ArrayIdx? ('.' ID ArrayIdx?)*
 ''
 function cTypeField( byref sym as FBSYMBOL ptr, _
-					 byref typ as integer, _
+					 byref dtype as integer, _
 					 byref subtype as FBSYMBOL ptr, _
 					 byref expr as ASTNODE ptr, _
 					 byval isderef as integer, _
-					 byval checkarray as integer ) as integer
+					 byval checkarray as integer _
+				   ) as integer
 
     dim as zstring ptr fields
     dim as ASTNODE ptr constexpr
@@ -158,7 +160,7 @@ function cTypeField( byref sym as FBSYMBOL ptr, _
 	do
 		if( lexGetToken( ) <> CHAR_LPRNT ) then
 
-			if( typ <> FB_DATATYPE_USERDEF ) then
+			if( dtype <> FB_DATATYPE_USERDEF ) then
 				exit function
 			end if
 
@@ -179,7 +181,7 @@ function cTypeField( byref sym as FBSYMBOL ptr, _
 				isderef = FALSE
 			end if
 
-    		ofs = symbGetUDTElmOffset( sym, typ, subtype, fields )
+    		ofs = symbGetUDTElmOffset( sym, dtype, subtype, fields )
     		if( ofs < 0 ) then
     			hReportError( FB_ERRMSG_ELEMENTNOTDEFINED )
     			return FALSE
@@ -230,7 +232,7 @@ function cTypeField( byref sym as FBSYMBOL ptr, _
     		exit do
     	end if
 
-    	if( cFieldArray( sym, typ, expr ) = FALSE ) then
+    	if( cFieldArray( sym, dtype, expr ) = FALSE ) then
     		exit function
     	end if
 
@@ -249,7 +251,8 @@ end function
 function cDerefFields( byref dtype as integer, _
 					   byref subtype as FBSYMBOL ptr, _
 					   byref varexpr as ASTNODE ptr, _
-					   byval checkarray as integer ) as integer
+					   byval checkarray as integer _
+					 ) as integer
 
 	dim as integer cnt, lgt
 	dim as ASTNODE ptr expr, idxexpr
@@ -451,11 +454,12 @@ end function
 ''FuncPtrOrDeref	=   FuncPtr '(' Args? ')'
 ''					|   DerefFields .
 ''
-function cFuncPtrOrDerefFields( byval typ as integer, _
+function cFuncPtrOrDerefFields( byval dtype as integer, _
 					      		byval subtype as FBSYMBOL ptr, _
 					      		byref varexpr as ASTNODE ptr, _
 					      		byval isfuncptr as integer, _
-					      		byval checkarray as integer ) as integer
+					      		byval checkarray as integer _
+					      	  ) as integer
 
 	dim as ASTNODE ptr funcexpr
 
@@ -464,7 +468,7 @@ function cFuncPtrOrDerefFields( byval typ as integer, _
 	''
 	if( isfuncptr = FALSE ) then
 		'' DerefFields?
-		cDerefFields( typ, subtype, varexpr, checkarray )
+		cDerefFields( dtype, subtype, varexpr, checkarray )
 
 		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 			exit function
@@ -472,7 +476,7 @@ function cFuncPtrOrDerefFields( byval typ as integer, _
 
    		'' check for functions called through pointers
    		if( lexGetToken( ) = CHAR_LPRNT ) then
-   			if( typ = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
+   			if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
 				isfuncptr = TRUE
    			end if
    		end if
@@ -834,13 +838,45 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
 end function
 
 '':::::
-function hVarAddUndecl( byval id as zstring ptr, _
-						byval typ as integer ) as FBSYMBOL ptr
+private function hCheckProcRes( byval id as zstring ptr ) as integer static
+    static as zstring * FB_MAXNAMELEN+1 sname
+
+    function = FALSE
+
+    sname = *id
+    sname[lexGetPeriodPos( )-1] = 0 		'' left( *id, dotpos-1 )
+
+    hUcase( sname, sname )
+
+    if( *symbGetOrgName( env.currproc ) = sname ) then
+	  	exit function
+    end if
+
+    function = TRUE
+
+end function
+
+'':::::
+private function hVarAddUndecl( byval id as zstring ptr, _
+								byval dtype as integer _
+					  		  ) as FBSYMBOL ptr
+
 	dim as FBSYMBOL ptr s
 	dim as FBARRAYDIM dTB(0)
 	dim as integer attrib
 
 	function = NULL
+
+    '' symbol with periods? double-check..
+    if( lexGetPeriodPos( ) > 1 ) then
+    	if( env.currproc <> NULL ) then
+    		if( symbGetType( env.currproc ) = FB_DATATYPE_USERDEF ) then
+    			if( hCheckProcRes( id ) = FALSE ) then
+    				exit function
+    			end if
+    		end if
+    	end if
+    end if
 
 	if( env.isprocstatic ) then
 		attrib = FB_SYMBATTRIB_STATIC
@@ -848,7 +884,7 @@ function hVarAddUndecl( byval id as zstring ptr, _
 		attrib = 0
 	end if
 
-    s = symbAddVar( id, typ, NULL, 0, 0, dTB(), attrib )
+    s = symbAddVar( id, dtype, NULL, 0, 0, dTB(), attrib )
     if( s = NULL ) then
 		exit function
 	end if
@@ -865,7 +901,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 				  ) as integer
 
 	dim as zstring ptr id
-	dim as integer typ, deftyp, ofs
+	dim as integer dtype, deftyp, ofs
 	dim as ASTNODE ptr idxexpr
 	dim as FBSYMBOL ptr sym, elm, subtype
 	dim as integer isbyref, isfuncptr, isbydesc, isimport, isarray
@@ -878,30 +914,30 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 	end if
 
 	''
-	isfuncptr 	= FALSE
-	ofs 		= 0
-	elm			= NULL
-	subtype 	= NULL
-	typ			= lexGetType( )
-	id			= lexGetText( )
+	isfuncptr = FALSE
+	ofs = 0
+	elm	= NULL
+	dtype = lexGetType( )
+	subtype = NULL
+	id = lexGetText( )
 
     '' no suffix? lookup the default type (last DEF###) in the
     '' case symbol could not be found..
-    if( typ = INVALID ) then
+    if( dtype = INVALID ) then
     	deftyp = hGetDefType( id )
     else
     	deftyp = INVALID
     end if
 
-    sym = symbFindBySuffix( lexGetSymbol( ), typ, deftyp )
+    sym = symbFindBySuffix( lexGetSymbol( ), dtype, deftyp )
 	if( sym <> NULL ) then
-		typ 	= sym->typ
+		dtype = sym->typ
 		subtype = sym->subtype
 
 	else
 
 		'' it can be also an UDT, as periods can be part of symbol names..
-		sym = symbLookupUDTElm( id, lexGetPeriodPos( ), typ, subtype, ofs, elm )
+		sym = symbLookupUDTElm( id, lexGetPeriodPos( ), dtype, subtype, ofs, elm )
 		if( sym = NULL ) then
 			'' add undeclared variable
 			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
@@ -910,13 +946,13 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 
 			'' add undeclared var
 			if( env.opt.explicit = FALSE ) then
-				if( typ = INVALID ) then
-					typ = hGetDefType( id )
+				if( dtype = INVALID ) then
+					dtype = hGetDefType( id )
 				end if
 
-				sym = hVarAddUndecl( id, typ )
+				sym = hVarAddUndecl( id, dtype )
 				if( sym = NULL ) then
-					hReportError( FB_ERRMSG_DUPDEFINITION )
+					hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
 					exit function
 				end if
 
@@ -936,8 +972,8 @@ function cVariable( byref varexpr as ASTNODE ptr, _
     ''
 	lexSkipToken( )
 
-	if( typ = INVALID ) then
-		typ = symbGetType( sym )
+	if( dtype = INVALID ) then
+		dtype = symbGetType( sym )
 	end if
 
     ''
@@ -947,9 +983,9 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 	isimport = symbIsImport( sym )
 
     ''
-    idxexpr  = NULL
+    idxexpr = NULL
     isbydesc = FALSE
-    isarray  = symbIsArray( sym )
+    isarray = symbIsArray( sym )
 
     '' check for '('')', it's not an array, just passing by desc
     if( lexGetToken( ) = CHAR_LPRNT ) then
@@ -970,7 +1006,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 
     		else
    				'' check if calling functions through pointers
-   				if( typ = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
+   				if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
 	   				isfuncptr = TRUE
     			end if
 
@@ -993,7 +1029,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
    	if( isfuncptr = FALSE ) then
 
    		'' TypeField?
-   		cTypeField( elm, typ, subtype, idxexpr, FALSE, checkarray )
+   		cTypeField( elm, dtype, subtype, idxexpr, FALSE, checkarray )
 
 		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 			exit function
@@ -1001,7 +1037,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 
    		'' check for calling functions through pointers
    		if( lexGetToken( ) = CHAR_LPRNT ) then
-   			if( typ = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
+   			if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
 	   			isfuncptr = TRUE
    			end if
    		end if
@@ -1012,7 +1048,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 		'' byref or import? by now it's a pointer var, the real type will be set bellow
 		varexpr = astNewVAR( sym, 0, FB_DATATYPE_POINTER, NULL )
 	else
-		varexpr = astNewVAR( sym, ofs, typ, subtype )
+		varexpr = astNewVAR( sym, ofs, dtype, subtype )
 	end if
 
 	'' has index?
@@ -1021,7 +1057,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 		if( isbyref or isimport ) then
 			varexpr = astNewBOP( AST_OP_ADD, varexpr, idxexpr )
 		else
-			varexpr = astNewIDX( varexpr, idxexpr, typ, subtype )
+			varexpr = astNewIDX( varexpr, idxexpr, dtype, subtype )
 		end if
 	else
 		'' array and no index?
@@ -1037,15 +1073,15 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 
 	'' check arguments passed by reference (implicity pointer's)
 	if( isbyref or isimport ) then
-   		varexpr = astNewPTR( ofs, varexpr, typ, subtype )
+   		varexpr = astNewPTR( ofs, varexpr, dtype, subtype )
 	end if
 
     if( elm <> NULL ) then
-    	varexpr = astNewFIELD( varexpr, elm, typ, subtype )
+    	varexpr = astNewFIELD( varexpr, elm, dtype, subtype )
     end if
 
     '' FuncPtrOrDerefFields?
-	cFuncPtrOrDerefFields( typ, subtype, varexpr, isfuncptr, checkarray )
+	cFuncPtrOrDerefFields( dtype, subtype, varexpr, isfuncptr, checkarray )
 
 	function = (hGetLastError( ) = FB_ERRMSG_OK)
 
