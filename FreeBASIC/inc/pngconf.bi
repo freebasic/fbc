@@ -53,4 +53,10 @@ type png_zcharp as charf ptr
 type png_zcharpp as charf ptr ptr
 type png_zstreamp as z_stream ptr
 
+#ifndef PNG_ABORT
+# define PNG_ABORT() abort()
+#endif
+
+#define png_jmpbuf(png) @(png)->jmpbuf(0)
+
 #endif

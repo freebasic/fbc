@@ -36,6 +36,7 @@ Version 0.16 Beta:
 - new prototypes to the Newton header (v1c)
 - better duplicated definition check when implicitly allocating variables whose names contain periods, inside functions that return UDT's (v1c)
 - libPNG import library and headers (v1c)
+- ImageConvertRow, to convert between different color depths
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)

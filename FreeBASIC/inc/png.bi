@@ -317,7 +317,7 @@ type png_malloc_ptr as function cdecl(byval as png_structp, byval as png_size_t)
 type png_free_ptr as sub cdecl(byval as png_structp, byval as png_voidp)
 
 type png_struct_def
-	jmpbuf as jmp_buf
+	jmpbuf(0 to _JBLEN-1) as jmp_buf
 	error_fn as png_error_ptr
 	warning_fn as png_error_ptr
 	error_ptr as png_voidp
