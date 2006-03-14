@@ -315,17 +315,21 @@ int fb_GfxReadXY( int col, int row, int colorflag );
 void fb_GfxSleep( int msecs );
 int fb_GfxIsRedir( int is_input );
 
-typedef void (*FBGFX_IMAGE_CONVERT)(unsigned char *, unsigned char *, int);
+typedef void (*FBGFX_IMAGE_CONVERT)(const unsigned char *, unsigned char *, int);
 
-void fb_image_convert_8to8(unsigned char *src, unsigned char *dest, int w);
-void fb_image_convert_8to16(unsigned char *src, unsigned char *dest, int w);
-void fb_image_convert_8to32(unsigned char *src, unsigned char *dest, int w);
-void fb_image_convert_24to16(unsigned char *src, unsigned char *dest, int w);
-void fb_image_convert_24to32(unsigned char *src, unsigned char *dest, int w);
-void fb_image_convert_32to16(unsigned char *src, unsigned char *dest, int w);
-void fb_image_convert_32to32(unsigned char *src, unsigned char *dest, int w);
+void fb_image_convert_8to8(const unsigned char *src, unsigned char *dest, int w);
+void fb_image_convert_8to16(const unsigned char *src, unsigned char *dest, int w);
+void fb_image_convert_8to32(const unsigned char *src, unsigned char *dest, int w);
+void fb_image_convert_24to16(const unsigned char *src, unsigned char *dest, int w);
+void fb_image_convert_24to32(const unsigned char *src, unsigned char *dest, int w);
+void fb_image_convert_32to16(const unsigned char *src, unsigned char *dest, int w);
+void fb_image_convert_32to32(const unsigned char *src, unsigned char *dest, int w);
+void fb_image_convert_24bgrto16(const unsigned char *src, unsigned char *dest, int w);
+void fb_image_convert_24bgrto32(const unsigned char *src, unsigned char *dest, int w);
+void fb_image_convert_32bgrto16(const unsigned char *src, unsigned char *dest, int w);
+void fb_image_convert_32bgrto32(const unsigned char *src, unsigned char *dest, int w);
 
-FBCALL void fb_GfxImageConvertRow( unsigned char *src, int src_bpp, unsigned char *dest, int dst_bpp, int width );
+FBCALL void fb_GfxImageConvertRow( const unsigned char *src, int src_bpp, unsigned char *dest, int dst_bpp, int width, int isrgb );
 
 /** Returns TRUE if application is in graphics mode.
  *

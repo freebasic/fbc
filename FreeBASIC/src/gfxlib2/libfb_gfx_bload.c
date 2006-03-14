@@ -100,17 +100,17 @@ static int load_bmp(FILE *f, void *dest)
 	else if (header.biBitCount == 24) {
 		switch (BYTES_PER_PIXEL(fb_mode->depth)) {
 			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
-			case 2: convert = fb_image_convert_24to16; break;
+			case 2: convert = fb_image_convert_24bgrto16; break;
 			case 3:
-			case 4: convert = fb_image_convert_24to32; break;
+			case 4: convert = fb_image_convert_24bgrto32; break;
 		}
 	}
 	else {
 		switch (BYTES_PER_PIXEL(fb_mode->depth)) {
 			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
-			case 2: convert = fb_image_convert_32to16; break;
+			case 2: convert = fb_image_convert_32bgrto16; break;
 			case 3:
-			case 4: convert = fb_image_convert_32to32; break;
+			case 4: convert = fb_image_convert_32bgrto32; break;
 		}
 	}
 
