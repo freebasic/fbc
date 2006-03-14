@@ -209,6 +209,11 @@ function cTypeField( byref sym as FBSYMBOL ptr, _
 
     	'' ArrayIdx?
     	if( lexGetToken( ) = CHAR_LPRNT ) then
+    		'' function pointer?
+    		if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
+    			exit do
+    		end if
+
     		'' '('')'?
     		if( lexGetLookAhead(1) = CHAR_RPRNT ) then
     			exit do
