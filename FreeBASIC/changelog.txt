@@ -19,6 +19,7 @@ Version 0.16 Beta:
 - UDT parameters (TYPE's) can now be optional too (v1c)
 - any complex expression can be used in optional parameters, not constants only (v1c)
 - duplicated definitions of type aliases with exactly the same target types are now allowed (v1c)
+- the OpenGL extensions header was replaced by a machine translated one (v1c)
 
 [added]
 - anonymous UDT's that can be passed as parameters or used in assignments, like:
@@ -33,7 +34,7 @@ Version 0.16 Beta:
 - over 30 Gtk tutorials translated from C by Claudio Tinivella (v1c)
 - AVI-capture missing symbols to the vfw.bi Windows API header (v1c)
 - new prototypes to the Newton header (v1c)
-- duplicated definition check for functions that return UDT's when allocating variables implicitly, if their names contain periods (v1c)
+- better duplicated definition check when implicitly allocating variables whose names contain periods, inside functions that return UDT's (v1c)
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)

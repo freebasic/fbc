@@ -619,7 +619,7 @@ Credits (in alphabetic order):
       and compiler improvements.
 
   o Bryan Stoeberl (b_stoeberl[at]yahoo.com):
-    - Translated the OpenGL Extensions header.
+    - Translated the OpenGL Extensions header (later replaced by the SWIG FB wrapper version).
     - Wrote the glext example at the examples/GL dir.
 
   o Claudio Tinivella (tinycla[at]yahoo.it):
