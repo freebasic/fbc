@@ -1,3 +1,0 @@
-#define SC_INDEX	0x3C4
-#define CRTC_INDEX	0x3D4
-#define MISC_OUTPUT	0x3C2
