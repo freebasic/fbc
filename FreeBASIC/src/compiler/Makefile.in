@@ -89,10 +89,11 @@ FBC_SRCS := $(FBC_MAIN)
 
 FBC_SRCS += ast.bas ast-node-addr.bas ast-node-assign.bas ast-node-bop.bas
 FBC_SRCS += ast-node-branch.bas ast-node-check.bas ast-node-const.bas ast-node-conv.bas
-FBC_SRCS += ast-node-enum.bas ast-node-funct.bas ast-node-idx.bas ast-node-iif.bas
-FBC_SRCS += ast-node-link.bas ast-node-load.bas ast-node-misc.bas ast-node-ptr.bas
-FBC_SRCS += ast-node-scope.bas ast-node-stack.bas ast-node-uop.bas ast-node-var.bas
-FBC_SRCS += ast-node-field.bas ast-node-typeini.bas ast-optimize.bas ast-proc.bas
+FBC_SRCS += ast-node-enum.bas ast-node-funct.bas ast-node-funct-args.bas
+FBC_SRCS += ast-node-idx.bas ast-node-iif.bas ast-node-link.bas ast-node-load.bas
+FBC_SRCS += ast-node-misc.bas ast-node-ptr.bas ast-node-scope.bas ast-node-stack.bas
+FBC_SRCS += ast-node-uop.bas ast-node-var.bas ast-node-field.bas ast-node-typeini.bas
+FBC_SRCS += ast-optimize.bas ast-proc.bas
 
 FBC_SRCS += dstr.bas edbg_stab.bas emit.bas emit_x86.bas fb.bas fb-main.bas flist.bas
 FBC_SRCS += hash.bas error.bas hlp.bas hlp-str.bas ir.bas list.bas
@@ -100,20 +101,21 @@ FBC_SRCS += hash.bas error.bas hlp.bas hlp-str.bas ir.bas list.bas
 FBC_SRCS += lex.bas lex-utf.bas pp.bas pp-cond.bas pp-define.bas pp-pragma.bas
 
 FBC_SRCS += parser-assignment.bas parser-comment.bas parser-decl-const.bas parser-decl-def.bas
-FBC_SRCS += parser-decl-enum.bas parser-decl-option.bas parser-decl-proc-params.bas parser-decl-proc.bas
-FBC_SRCS += parser-decl-struct.bas parser-decl-symb-init.bas parser-decl-symb.bas parser-decl-symbtype.bas
-FBC_SRCS += parser-decl-typedef.bas parser-decl.bas parser-inlineasm.bas parser-label.bas
-FBC_SRCS += parser-proccall-args.bas parser-proccall.bas parser-statement.bas parser-toplevel.bas
-FBC_SRCS += parser-compound.bas parser-compound-do.bas parser-compound-for.bas
-FBC_SRCS += parser-compound-if.bas parser-compound-scope.bas parser-compound-select.bas
-FBC_SRCS += parser-compound-while.bas parser-compound-with.bas parser-proc.bas
-FBC_SRCS += parser-quirk-array.bas parser-quirk-casting.bas parser-quirk-console.bas
-FBC_SRCS += parser-quirk-data.bas parser-quirk-error.bas parser-quirk-file.bas
-FBC_SRCS += parser-quirk-goto-return.bas parser-quirk-iif.bas parser-quirk-math.bas
-FBC_SRCS += parser-quirk-on.bas parser-quirk-peekpoke.bas parser-quirk-string.bas
-FBC_SRCS += parser-quirk-vafirst.bas parser-quirk.bas parser-quirk-gfx.bas
-FBC_SRCS += parser-expr-atom.bas parser-expr-binary.bas parser-expr-constant.bas
-FBC_SRCS += parser-expr-function.bas parser-expr-unary.bas parser-expr-variable.bas
+FBC_SRCS += parser-decl-enum.bas parser-decl-option.bas parser-decl-proc-params.bas
+FBC_SRCS += parser-decl-proc.bas parser-decl-struct.bas parser-decl-symb-init.bas
+FBC_SRCS += parser-decl-symb.bas parser-decl-symbtype.bas parser-decl-typedef.bas
+FBC_SRCS += parser-decl.bas parser-inlineasm.bas parser-label.bas parser-proccall-args.bas
+FBC_SRCS += parser-proccall.bas parser-statement.bas parser-toplevel.bas parser-compound.bas
+FBC_SRCS += parser-compound-do.bas parser-compound-for.bas parser-compound-if.bas
+FBC_SRCS += parser-compound-scope.bas parser-compound-select.bas parser-compound-while.bas
+FBC_SRCS += parser-compound-with.bas parser-proc.bas parser-quirk-array.bas
+FBC_SRCS += parser-quirk-casting.bas parser-quirk-console.bas parser-quirk-data.bas
+FBC_SRCS += parser-quirk-error.bas parser-quirk-file.bas parser-quirk-goto-return.bas
+FBC_SRCS += parser-quirk-iif.bas parser-quirk-math.bas parser-quirk-on.bas
+FBC_SRCS += parser-quirk-peekpoke.bas parser-quirk-string.bas parser-quirk-vafirst.bas
+FBC_SRCS += parser-quirk.bas parser-quirk-gfx.bas parser-expr-atom.bas
+FBC_SRCS += parser-expr-binary.bas parser-expr-constant.bas parser-expr-function.bas
+FBC_SRCS += parser-expr-unary.bas parser-expr-variable.bas
 
 FBC_SRCS += reg.bas
 

@@ -1,3 +1,5 @@
+[ ] Extern array descriptors shoudn't be emitted, unless accessed
+
 [ ] pointers passed byref should be checked for different types
 
 [ ] SCOPE..END SCOPE:
