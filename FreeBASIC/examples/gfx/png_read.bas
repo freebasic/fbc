@@ -45,7 +45,7 @@ function imageread_png( byval filename as zstring ptr, _
 		return NULL
 	end if
 
-	dim as png_structp png = png_create_read_struct( @PNG_LIBPNG_VER_STRING, NULL, NULL, NULL )
+	dim as png_structp png = png_create_read_struct( PNG_LIBPNG_VER_STRING, NULL, NULL, NULL )
 	if( png = NULL ) then
 		fclose( fp )
 		return NULL
@@ -53,7 +53,6 @@ function imageread_png( byval filename as zstring ptr, _
 
 	dim as png_infop info = png_create_info_struct( png )
 	if( info = NULL ) then
-		'png_destroy_read_struct( png )
 		fclose( fp )
 		return NULL
 	end if
@@ -84,8 +83,8 @@ function imageread_png( byval filename as zstring ptr, _
 	
 	deallocate( row )
 
-    'png_destroy_info_struct( info )
-    'png_destroy_read_struct( png )
+    png_read_end( png, info )
+    png_read_destroy( png, info, 0 )
     fclose( fp )
 
 	function = img
