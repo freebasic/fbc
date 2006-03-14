@@ -24,7 +24,6 @@
  *
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include "fb.h"
 #include "fb_rterr.h"
@@ -40,7 +39,7 @@ FBCALL int fb_InputSingle( float *dst )
 
 	fb_hGetNextToken( buffer, FB_DOUBLE_MAXLEN, FB_FALSE );
 
-	*dst = (float)atof( buffer );
+	*dst = strtof( buffer, NULL );
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
@@ -52,7 +51,7 @@ FBCALL int fb_InputDouble( double *dst )
 
 	fb_hGetNextToken( buffer, FB_DOUBLE_MAXLEN, FB_FALSE );
 
-	*dst = (double)atof( buffer );
+	*dst = strtod( buffer, NULL );
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

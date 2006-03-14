@@ -24,7 +24,6 @@
  *
  */
 
-#include <malloc.h>
 #include <stdlib.h>
 #include "fb.h"
 
@@ -63,7 +62,7 @@ FBCALL double fb_hStr2Double( char *src, int len )
 		if( radix != 0 )
 			return (double)fb_hStrRadix2Int( &p[2], len-2, radix );
 	}
-	return atof( p );
+	return strtod( p, NULL );
 }
 
 /*:::::*/
