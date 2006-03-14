@@ -34,8 +34,8 @@ type png_uint_32p as png_uint_32 ptr
 type png_int_32p as png_int_32 ptr
 type png_uint_16p as png_uint_16 ptr
 type png_int_16p as png_int_16 ptr
-type png_const_charp as byte ptr
-type png_charp as byte ptr
+type png_const_charp as zstring ptr
+type png_charp as zstring ptr
 type png_fixed_point_p as png_fixed_point ptr
 type png_FILE_p as FILE ptr
 type png_doublep as double ptr
@@ -44,11 +44,11 @@ type png_uint_32pp as png_uint_32 ptr ptr
 type png_int_32pp as png_int_32 ptr ptr
 type png_uint_16pp as png_uint_16 ptr ptr
 type png_int_16pp as png_int_16 ptr ptr
-type png_const_charpp as byte ptr ptr
-type png_charpp as byte ptr ptr
+type png_const_charpp as zstring ptr ptr
+type png_charpp as zstring ptr ptr
 type png_fixed_point_pp as png_fixed_point ptr ptr
 type png_doublepp as double ptr ptr
-type png_charppp as byte ptr ptr ptr
+type png_charppp as zstring ptr ptr ptr
 type png_zcharp as charf ptr
 type png_zcharpp as charf ptr ptr
 type png_zstreamp as z_stream ptr
