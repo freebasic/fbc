@@ -51,87 +51,6 @@ typedef struct BMP_HEADER
 } BMP_HEADER;
 
 
-/*:::::*/
-static void convert_8to8(unsigned char *src, unsigned char *dest, int w)
-{
-	for (; w; w--)
-		*dest++ = *src++ & fb_mode->color_mask;
-}
-
-
-/*:::::*/
-static void convert_8to16(unsigned char *src, unsigned char *dest, int w)
-{
-	int r, g, b;
-	unsigned short *d = (unsigned short *)dest;
-
-	for (; w; w--) {
-		r = fb_mode->device_palette[*src] & 0xFF;
-		g = (fb_mode->device_palette[*src] >> 8) & 0xFF;
-		b = (fb_mode->device_palette[*src] >> 16) & 0xFF;
-		*d++ = (b >> 3) | ((g << 3) & 0x07E0) | ((r << 8) & 0xF800);
-		src++;
-	}
-}
-
-
-/*:::::*/
-static void convert_8to32(unsigned char *src, unsigned char *dest, int w)
-{
-	int r, g, b;
-	unsigned int *d = (unsigned int *)dest;
-
-	for (; w; w--) {
-		r = fb_mode->device_palette[*src] & 0xFF;
-		g = (fb_mode->device_palette[*src] >> 8) & 0xFF;
-		b = (fb_mode->device_palette[*src] >> 16) & 0xFF;
-		*d++ = b | (g << 8) | (r << 16);
-		src++;
-	}
-}
-
-
-/*:::::*/
-static void convert_24to16(unsigned char *src, unsigned char *dest, int w)
-{
-	unsigned short *d = (unsigned short *)dest;
-	for (; w; w--) {
-		*d++ = ((unsigned short)src[0] >> 3) | (((unsigned short)src[1] << 3) & 0x07E0) | (((unsigned short)src[2] << 8) & 0xF800);
-		src += 3;
-	}
-}
-
-
-/*:::::*/
-static void convert_24to32(unsigned char *src, unsigned char *dest, int w)
-{
-	unsigned int *d = (unsigned int *)dest;
-
-	for (; w; w--) {
-		*d++ = *(unsigned int *)src & 0xFFFFFF;
-		src += 3;
-	}
-}
-
-
-/*:::::*/
-static void convert_32to16(unsigned char *src, unsigned char *dest, int w)
-{
-	unsigned short *d = (unsigned short *)dest;
-	unsigned int *s = (unsigned int *)src;
-
-	for (; w; w--) {
-		*d++ = (unsigned short)(((*s & 0xFF) >> 3) | ((*s >> 5) & 0x07E0) | ((*s >> 8) & 0xF800));
-		s++;
-	}
-}
-
-
-/*:::::*/
-static void convert_32to32(unsigned char *src, unsigned char *dest, int w)
-{
-	fb_hMemCpy(dest, src, w << 2);
-}
 
 
 /*:::::*/
@@ -141,7 +60,7 @@ static int load_bmp(FILE *f, void *dest)
 	unsigned char *buffer, *d = NULL;
 	int result = FB_RTERROR_OK;
 	int i, j, color, rgb[3], expand, size, padding, palette[256], palette_entries;
-	void (*convert)(unsigned char *, unsigned char *, int) = NULL;
+	FBGFX_IMAGE_CONVERT convert = NULL;
 
 	if (!fb_mode)
 		return FB_RTERROR_ILLEGALFUNCTIONCALL;
@@ -172,26 +91,26 @@ static int load_bmp(FILE *f, void *dest)
 	}
 	if (header.biBitCount <= 8) {
 		switch (BYTES_PER_PIXEL(fb_mode->depth)) {
-			case 1: convert = convert_8to8;  break;
-			case 2: convert = convert_8to16; break;
+			case 1: convert = fb_image_convert_8to8;  break;
+			case 2: convert = fb_image_convert_8to16; break;
 			case 3:
-			case 4: convert = convert_8to32; break;
+			case 4: convert = fb_image_convert_8to32; break;
 		}
 	}
 	else if (header.biBitCount == 24) {
 		switch (BYTES_PER_PIXEL(fb_mode->depth)) {
 			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
-			case 2: convert = convert_24to16; break;
+			case 2: convert = fb_image_convert_24to16; break;
 			case 3:
-			case 4: convert = convert_24to32; break;
+			case 4: convert = fb_image_convert_24to32; break;
 		}
 	}
 	else {
 		switch (BYTES_PER_PIXEL(fb_mode->depth)) {
 			case 1: return FB_RTERROR_ILLEGALFUNCTIONCALL;
-			case 2: convert = convert_32to16; break;
+			case 2: convert = fb_image_convert_32to16; break;
 			case 3:
-			case 4: convert = convert_32to32; break;
+			case 4: convert = fb_image_convert_32to32; break;
 		}
 	}
 

@@ -464,6 +464,19 @@ data @"imagedestroy", "fb_GfxImageDestroy", _
 	 1, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYVAL, FALSE
 
+'' fb_GfxImageConvertRow( byval src as any ptr, byval src_bpp as integer, _
+''						  byval dst as any ptr, byval dst_bpp as integer, _
+''						  byval width as integer ) as void
+data @"imageconvertrow", "fb_GfxImageConvertRow", _
+	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 @hGfxlib_cb, FALSE, FALSE, _
+	 5, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+
 '' EOL
 data NULL
 
