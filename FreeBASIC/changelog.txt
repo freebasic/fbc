@@ -35,6 +35,7 @@ Version 0.16 Beta:
 - AVI-capture missing symbols to the vfw.bi Windows API header (v1c)
 - new prototypes to the Newton header (v1c)
 - better duplicated definition check when implicitly allocating variables whose names contain periods, inside functions that return UDT's (v1c)
+- libPNG import library and headers (v1c)
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)
