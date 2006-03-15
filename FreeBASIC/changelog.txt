@@ -35,7 +35,8 @@ Version 0.16 Beta:
 - AVI-capture missing symbols to the vfw.bi Windows API header (v1c)
 - new prototypes to the Newton header (v1c)
 - better duplicated definition check when implicitly allocating variables whose names contain periods, inside functions that return UDT's (v1c)
-- libPNG import library and headers (v1c)
+- libPNG import library and header (v1c)
+- libJPEG import library and header (v1c)
 - ImageConvertRow, to convert between different color depths
 
 [fixed]
