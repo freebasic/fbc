@@ -43,4 +43,8 @@ declare function __p__daylight cdecl alias "__p__daylight" () as integer ptr
 declare function __p__timezone cdecl alias "__p__timezone" () as integer ptr
 declare function __p__tzname cdecl alias "__p__tzname" () as byte ptr ptr
 
+extern import _daylight alias "_daylight" as integer
+extern import _timezone alias "_timezone" as integer
+extern import _tzname alias "_tzname" as zstring * 2
+
 #endif

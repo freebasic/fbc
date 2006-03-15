@@ -70,8 +70,7 @@ end sub
 #define FD_ISSET(fd, set) __WSAFDIsSet( cuint(fd), cptr(fd_set ptr, set) )
 #endif
 
-#ifndef _TIMEVAL_DEFINED
-#define _TIMEVAL_DEFINED
+#ifndef timeval
 type timeval
 	tv_sec as integer
 	tv_usec as integer
