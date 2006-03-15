@@ -78,7 +78,8 @@ function imageread_png( byval filename as zstring ptr, _
 	dim as integer h	
 	for h = 0 to info->height-1
 		png_read_row( png, row, NULL )
-		imageconvertrow( row, info->pixel_depth, dst + h * dst_pitch, bpp, info->width )
+		imageconvertrow( row, info->pixel_depth, dst, bpp, info->width )
+		dst += dst_pitch
 	next
 	
 	deallocate( row )
