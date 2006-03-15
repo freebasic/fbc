@@ -767,6 +767,8 @@ Links:
 
     - cryptlib: http://www.cs.auckland.ac.nz/~pgut001/cryptlib/
 
+    - Curl: http://curl.haxx.se/
+
     - DevIL: http://openil.sourceforge.net/
 
     - DISLIN: http://www.linmpi.mpg.de/dislin/
@@ -804,6 +806,10 @@ Links:
     - JAPI: http://www.japi.de/
 
     - libcaca: http://sam.zoy.org/libcaca/
+
+    - libJPEG: http://www.ijg.org/ or http://gnuwin32.sourceforge.net/packages/jpeg.htm
+
+    - libPNG: http://www.libpng.org/pub/png/libpng.html or http://gnuwin32.sourceforge.net/packages/libpng.htm
 
     - LibXML: http://xmlsoft.org/
 
