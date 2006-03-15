@@ -62,16 +62,15 @@ end type
 #define HTTPPOST_BUFFER (1 shl 4)
 #define HTTPPOST_PTRBUFFER (1 shl 5)
 
-type curl_progress_callback as function cdecl(byval as any ptr, byval as double, byval as double, byval as double, byval as double) as integer
+type curl_progress_callback as function cdecl(byval clientp as any ptr, byval dltotal as double, byval dlnow as double, byval ultotal as double, byval ulnow as double) as integer
 
 #define CURL_MAX_WRITE_SIZE 16384
-
-type curl_write_callback as function cdecl(byval as zstring ptr, byval as size_t, byval as size_t, byval as any ptr) as size_t
+type curl_write_callback as function cdecl(byval buffer as byte ptr, byval size as integer, byval nitems as integer, byval outstream as any ptr) as integer
 
 #define CURL_READFUNC_ABORT &h10000000
+type curl_read_callback as function cdecl(byval buffer as byte ptr, byval size as integer, byval nitems as integer, byval instream as any ptr) as integer
 
-type curl_read_callback as function cdecl(byval as zstring ptr, byval as size_t, byval as size_t, byval as any ptr) as size_t
-type curl_passwd_callback as function cdecl(byval as any ptr, byval as zstring ptr, byval as zstring ptr, byval as integer) as integer
+type curl_passwd_callback as function cdecl(byval clientp as any ptr, byval prompt as zstring ptr, byval buffer as zstring ptr, byval buflen as integer) as integer
 
 enum curlioerr
 	CURLIOE_OK
@@ -87,12 +86,12 @@ enum curliocmd
 	CURLIOCMD_LAST
 end enum
 
-type curl_ioctl_callback as function cdecl(byval as CURL ptr, byval as integer, byval as any ptr) as curlioerr
-type curl_malloc_callback as sub cdecl(byval as size_t)
-type curl_free_callback as sub cdecl(byval as any ptr)
-type curl_realloc_callback as sub cdecl(byval as any ptr, byval as size_t)
-type curl_strdup_callback as function cdecl(byval as zstring ptr) as byte ptr
-type curl_calloc_callback as sub cdecl(byval as size_t, byval as size_t)
+type curl_ioctl_callback as function cdecl(byval handle as CURL ptr, byval cmd as integer, byval clientp as any ptr) as curlioerr
+type curl_malloc_callback as sub cdecl(byval size as integer)
+type curl_free_callback as sub cdecl(byval p as any ptr)
+type curl_realloc_callback as sub cdecl(byval p as any ptr, byval size as integer)
+type curl_strdup_callback as function cdecl(byval s as zstring ptr) as byte ptr
+type curl_calloc_callback as sub cdecl(byval nitems as integer, byval size as integer)
 
 enum curl_infotype
 	CURLINFO_TEXT = 0
@@ -105,7 +104,7 @@ enum curl_infotype
 	CURLINFO_END
 end enum
 
-type curl_debug_callback as function cdecl(byval as CURL ptr, byval as curl_infotype, byval as zstring ptr, byval as size_t, byval as any ptr) as integer
+type curl_debug_callback as function cdecl(byval as CURL ptr, byval as curl_infotype, byval as zstring ptr, byval as integer, byval as any ptr) as integer
 
 enum CURLcode
 	CURLE_OK = 0
@@ -391,7 +390,7 @@ end enum
 
 
 declare function curl_strequal cdecl alias "curl_strequal" (byval s1 as zstring ptr, byval s2 as zstring ptr) as integer
-declare function curl_strnequal cdecl alias "curl_strnequal" (byval s1 as zstring ptr, byval s2 as zstring ptr, byval n as size_t) as integer
+declare function curl_strnequal cdecl alias "curl_strnequal" (byval s1 as zstring ptr, byval s2 as zstring ptr, byval n as integer) as integer
 
 enum CURLformoption
 	CURLFORM_NOTHING
