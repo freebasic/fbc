@@ -33,7 +33,7 @@ option escape
 
 ':::::
 private sub hDllMainBegin( )
-    dim as FBSYMBOL ptr proc, label, exitlabel, initlabel, arg
+    dim as FBSYMBOL ptr proc, label, exitlabel, initlabel, param
    	dim as ASTNODE ptr reason, main
    	dim as ASTPROCNODE ptr procnode
     dim as integer argn
@@ -44,19 +44,19 @@ const fbdllreason = "__FB_DLLREASON__"
 	proc = symbPreAddProc( NULL )
 
 	'' instance
-	symbAddProcArg( proc, "__FB_DLLINSTANCE__", _
-					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, 1, _
-					FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+	symbAddProcParam( proc, "__FB_DLLINSTANCE__", _
+					  FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, 1, _
+					  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, INVALID, FALSE, NULL )
 
 	'' reason
-	symbAddProcArg( proc, fbdllreason, _
-					FB_DATATYPE_UINT, NULL, 0, _
-					FB_INTEGERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+	symbAddProcParam( proc, fbdllreason, _
+					  FB_DATATYPE_UINT, NULL, 0, _
+					  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, INVALID, FALSE, NULL )
 
 	'' reserved
-	symbAddProcArg( proc, "__FB_DLLRESERVED__", _
-					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, 1, _
-					FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+	symbAddProcParam( proc, "__FB_DLLRESERVED__", _
+					  FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, 1, _
+					  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, INVALID, FALSE, NULL )
 
 	'' function DllMain( byval instance as any ptr, byval reason as uinteger, _
 	''                   byval reserved as any ptr ) as integer
@@ -82,15 +82,15 @@ const fbdllreason = "__FB_DLLREASON__"
 
 	'' if( reason = DLL_PROCESS_ATTACH ) then
 
-	arg = symbFindByNameAndClass( fbdllreason, FB_SYMBCLASS_VAR )
-	reason = astNewVAR( arg, 0, symbGetType( arg ) )
+	param = symbFindByNameAndClass( fbdllreason, FB_SYMBCLASS_VAR )
+	reason = astNewVAR( param, 0, symbGetType( param ) )
 	label = symbAddLabel( NULL )
 	astAdd( astNewBOP( AST_OP_NE, reason, astNewCONSTi( 1, FB_DATATYPE_UINT ), label, FALSE ) )
 
 	''	main( 0, NULL )
-    main = astNewFUNCT( env.main.proc )
-    astNewPARAM( main, astNewCONSTi( 0, FB_DATATYPE_INTEGER ) )
-    astNewPARAM( main, astNewCONSTi( NULL, FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) )
+    main = astNewCALL( env.main.proc )
+    astNewARG( main, astNewCONSTi( 0, FB_DATATYPE_INTEGER ) )
+    astNewARG( main, astNewCONSTi( NULL, FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) )
     astAdd( main )
 
 	'' end if
@@ -116,14 +116,14 @@ const fbargv = "__FB_ARGV__"
 	proc = symbPreAddProc( NULL )
 
 	'' argc
-	symbAddProcArg( proc, fbargc, _
-					FB_DATATYPE_INTEGER, NULL, 0, _
-					FB_INTEGERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+	symbAddProcParam( proc, fbargc, _
+					  FB_DATATYPE_INTEGER, NULL, 0, _
+					  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, INVALID, FALSE, NULL )
 
 	'' argv
-	symbAddProcArg( proc, fbargv, _
-					FB_DATATYPE_POINTER+FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, NULL, 2, _
-					FB_POINTERSIZE, FB_ARGMODE_BYVAL, INVALID, FALSE, NULL )
+	symbAddProcParam( proc, fbargv, _
+					  FB_DATATYPE_POINTER+FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, NULL, 2, _
+					  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, INVALID, FALSE, NULL )
 
 	''
 	if( isdllmain = FALSE ) then

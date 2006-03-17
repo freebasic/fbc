@@ -46,7 +46,7 @@ declare sub 	hRealloc			( byval s as DSTRING ptr, _
 	end if                                                      :_
                                                                 :_
 	if( dst.len <> chars ) then                               	:_
-		hRealloc( cptr( DSTRING ptr, @dst ), 					_
+		hRealloc( cast( DSTRING ptr, @dst ), 					_
 				  chars, 										_
 				  len( _type ), 								_
 				  FALSE )    									:_
@@ -58,7 +58,7 @@ declare sub 	hRealloc			( byval s as DSTRING ptr, _
 		exit sub                                                :_
 	end if                                                      :_
                                                                 :_
-	hRealloc( cptr( DSTRING ptr, @dst ), 						_
+	hRealloc( cast( DSTRING ptr, @dst ), 						_
 			  dst.len + chars, 									_
 			  len( _type ), 									_
 			  TRUE )

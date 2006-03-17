@@ -76,7 +76,7 @@ sub symbDelLib( byval l as FBLIBRARY ptr ) static
 
 	ZstrFree( l->name )
 
-    listDelNode( @symb.liblist, cptr( TLISTNODE ptr, l ) )
+    listDelNode( @symb.liblist, cast( TLISTNODE ptr, l ) )
 
 end sub
 

@@ -692,7 +692,7 @@ sub symbDelUDT( byval s as FBSYMBOL ptr, _
     	do while( dimn <> NULL )
     		dimnxt = dimn->next
 
-    		listDelNode( @symb.dimlist, cptr( TLISTNODE ptr, dimn ) )
+    		listDelNode( @symb.dimlist, cast( TLISTNODE ptr, dimn ) )
 
     		dimn = dimnxt
     	loop

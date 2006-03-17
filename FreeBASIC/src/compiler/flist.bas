@@ -82,7 +82,7 @@ function flistNewItem( byval flist as TFLIST ptr ) as any ptr static
 	end if
 
 	''
-	item = cptr(TFLISTITEM ptr, cptr(byte ptr, flist->itemtb) + (flist->index * flist->list.nodelen))
+	item = cast(TFLISTITEM ptr, cast(byte ptr, flist->itemtb) + (flist->index * flist->list.nodelen))
 	flist->index += 1
 	flist->items -= 1
 

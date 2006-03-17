@@ -54,7 +54,7 @@ function cOptDecl as integer
 
 	case FB_TK_BYVAL
 		lexSkipToken( )
-		env.opt.argmode = FB_ARGMODE_BYVAL
+		env.opt.parammode = FB_PARAMMODE_BYVAL
 
 	case FB_TK_PRIVATE
 		lexSkipToken( )

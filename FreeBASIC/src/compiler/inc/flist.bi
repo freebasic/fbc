@@ -48,6 +48,6 @@ declare function flistGetHead	( byval flist as TFLIST ptr ) as any ptr
 
 declare sub 	 flistReset		( byval flist as TFLIST ptr )
 
-#define flistGetNext(n) cptr(any ptr, cptr(TFLISTITEM ptr, n)->next)
+#define flistGetNext(n) cast(any ptr, cast(TFLISTITEM ptr, n)->next)
 
 #endif '' __FLIST_BI__

@@ -142,11 +142,11 @@ function cSubOrFuncDecl( byval isSub as integer ) as integer static
 
 	proc = symbPreAddProc( id )
 
-	'' ('(' Arguments? ')')?
+	'' ('(' Parameters? ')')?
 	if( lexGetToken( ) = CHAR_LPRNT ) then
 		lexSkipToken( )
 
-		cArguments( proc, mode, TRUE )
+		cParameters( proc, mode, TRUE )
 
 		if( lexGetToken( ) <> CHAR_RPRNT ) then
 			hReportError( FB_ERRMSG_EXPECTEDRPRNT )

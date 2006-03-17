@@ -66,7 +66,7 @@ private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, _
     end if
 
     ''  argument passed by descriptor?
-    if( symbIsArgByDesc( sym ) ) then
+    if( symbIsParamByDesc( sym ) ) then
 
     	temp	  = astNewVAR( sym, 0, FB_DATATYPE_INTEGER )
     	idxexpr   = astNewPTR( FB_ARRAYDESC_DATAOFFS, temp, FB_DATATYPE_INTEGER, NULL )
@@ -465,15 +465,15 @@ function cGfxDrawString as integer
     dim as FBSYMBOL ptr target
 
 	function = FALSE
-	
+
 	texpr = NULL
-	
+
 	'' ( Expr ',' )?
 	target = hGetTarget( texpr, tisptr )
 	if( (target <> NULL) or (tisptr) ) then
 		hMatchCOMMA( )
 	end if
-	
+
 	'' STEP?
 	if( hMatch( FB_TK_STEP ) ) then
 		coord_type = FBGFX_COORDTYPE_R
@@ -491,15 +491,15 @@ function cGfxDrawString as integer
 	hMatchExpression( yexpr )
 
 	hMatchRPRNT( )
-	
+
 	'' ',' Expr
 	hMatchCOMMA( )
-	
+
 	hMatchExpression( sexpr )
-	
+
 	cexpr = NULL
 	fexpr = NULL
-	
+
 	'' color/font
 	if( hMatch( CHAR_COMMA ) ) then
 		if( cExpression( cexpr ) = FALSE ) then
@@ -521,7 +521,7 @@ function cGfxDrawString as integer
 	end if
 
 	function = rtlGfxDrawString( texpr, tisptr, xexpr, yexpr, sexpr, cexpr, fexpr, fisptr, coord_type )
-	
+
 end function
 
 '':::::
@@ -844,19 +844,19 @@ function cGfxPut as integer
 					end if
 
 					if( ( symbGetType( s ) <> FB_DATATYPE_UINT ) or _
-						( symbGetProcArgs( s ) <> 2 ) ) then
+						( symbGetProcParams( s ) <> 2 ) ) then
 						hReportError( FB_ERRMSG_TYPEMISMATCH )
 						exit function
 					end if
 
-					arg1 = symbGetProcHeadArg( s )
+					arg1 = symbGetProcHeadParam( s )
 
-					arg2 = symbGetArgNext( arg1 )
+					arg2 = symbGetParamNext( arg1 )
 
 					if( ( symbGetType( arg1 ) <> FB_DATATYPE_UINT ) or _
 						( symbGetType( arg2 ) <> FB_DATATYPE_UINT ) or _
-						( arg1->arg.mode <> FB_ARGMODE_BYVAL ) or _
-						( arg2->arg.mode <> FB_ARGMODE_BYVAL ) ) then
+						( arg1->param.mode <> FB_PARAMMODE_BYVAL ) or _
+						( arg2->param.mode <> FB_PARAMMODE_BYVAL ) ) then
 						hReportError( FB_ERRMSG_TYPEMISMATCH )
 						exit function
 					end if

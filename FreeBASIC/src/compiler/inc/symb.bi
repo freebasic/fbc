@@ -26,7 +26,7 @@ enum FB_SYMBCLASS
 	FB_SYMBCLASS_VAR			= 1
 	FB_SYMBCLASS_CONST
 	FB_SYMBCLASS_PROC
-	FB_SYMBCLASS_PROCARG
+	FB_SYMBCLASS_PARAM
 	FB_SYMBCLASS_DEFINE
 	FB_SYMBCLASS_KEYWORD
 	FB_SYMBCLASS_LABEL
@@ -57,9 +57,9 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_DYNAMIC		= &h000004
 	FB_SYMBATTRIB_COMMON		= &h000008
 	FB_SYMBATTRIB_TEMP			= &h000010
-	FB_SYMBATTRIB_ARGUMENTBYDESC= &h000020
-	FB_SYMBATTRIB_ARGUMENTBYVAL	= &h000040
-	FB_SYMBATTRIB_ARGUMENTBYREF = &h000080
+	FB_SYMBATTRIB_PARAMBYDESC= &h000020
+	FB_SYMBATTRIB_PARAMBYVAL	= &h000040
+	FB_SYMBATTRIB_PARAMBYREF = &h000080
 	FB_SYMBATTRIB_PUBLIC 		= &h000100
 	FB_SYMBATTRIB_PRIVATE 		= &h000200
 	FB_SYMBATTRIB_EXTERN		= &h000400		'' extern's become public when DIM'ed
@@ -129,45 +129,44 @@ type FBS_KEYWORD
 end type
 
 ''
-type FBDEFARG
-	ll_prv			as FBDEFARG ptr				'' linked-list nodes
-	ll_nxt			as FBDEFARG ptr				'' /
+type FB_DEFPARAM
+	ll_prv			as FB_DEFPARAM ptr				'' linked-list nodes
+	ll_nxt			as FB_DEFPARAM ptr				'' /
 
 	name			as zstring ptr
-	id				as short					'' unique id
-	next			as FBDEFARG ptr
+	next			as FB_DEFPARAM ptr
 end type
 
 enum FB_DEFTOK_TYPE
-	FB_DEFTOK_TYPE_ARG
-	FB_DEFTOK_TYPE_ARGSTR
+	FB_DEFTOK_TYPE_PARAM
+	FB_DEFTOK_TYPE_PARAMSTR
 	FB_DEFTOK_TYPE_TEX
 	FB_DEFTOK_TYPE_TEXW
 end enum
 
-type FBDEFTOK
-	ll_prv			as FBDEFTOK ptr				'' linked-list nodes
-	ll_nxt			as FBDEFTOK ptr				'' /
+type FB_DEFTOK
+	ll_prv			as FB_DEFTOK ptr				'' linked-list nodes
+	ll_nxt			as FB_DEFTOK ptr				'' /
 
 	type			as FB_DEFTOK_TYPE
 
 	union
 		text		as zstring ptr
 		textw		as wstring ptr
-		argnum		as integer
+		paramnum	as integer
 	end union
 
-	next			as FBDEFTOK ptr
+	next			as FB_DEFTOK ptr
 end type
 
 type FBS_DEFINE
-	args			as integer
-	arghead 		as FBDEFARG ptr
+	params			as integer
+	paramhead 		as FB_DEFPARAM ptr
 
 	union
-		tokhead			as FBDEFTOK ptr			'' only if args > 0
-		text			as zstring ptr			'' //           = 0
-		textw			as wstring ptr
+		tokhead		as FB_DEFTOK ptr			'' only if args > 0
+		text		as zstring ptr				'' //           = 0
+		textw		as wstring ptr
 	end union
 
 	isargless		as integer
@@ -249,8 +248,8 @@ type FBS_CONST
 end type
 
 ''
-type FBS_PROCARG
-	mode			as FBARGMODE_ENUM
+type FBS_PARAM
+	mode			as FB_PARAMMODE
 	suffix			as integer					'' QB quirk..
 	optional		as integer
 	optexpr			as ASTNODE_ ptr				'' default value
@@ -259,7 +258,7 @@ end type
 type FBRTLCALLBACK as function( byval sym as FBSYMBOL_ ptr ) as integer
 
 type FB_PROCOVL
-	maxargs			as integer
+	maxparams		as integer
 	next			as FBSYMBOL_ ptr
 end type
 
@@ -294,8 +293,8 @@ type FBS_PROC
 	mode			as FBFUNCMODE_ENUM			'' calling convention (STDCALL, PASCAL, C)
 	realtype		as integer					'' used with STRING and UDT functions
 	lib				as FBLIBRARY ptr
-	args			as integer
-	argtb			as FBSYMBOLTB				'' arguments symbol tb
+	params			as integer
+	paramtb			as FBSYMBOLTB				'' parameters symbol tb
 	rtl				as FB_PROCRTL
 	ovl				as FB_PROCOVL				'' overloading
 	loctb			as FBSYMBOLTB				'' local symbols table
@@ -356,7 +355,7 @@ type FBSYMBOL
 		bitfld		as FBS_BITFLD
 		enum		as FBS_ENUM
 		proc		as FBS_PROC
-		arg			as FBS_PROCARG
+		param		as FBS_PARAM
 		lbl			as FBS_LABEL
 		def			as FBS_DEFINE
 		key			as FBS_KEYWORD
@@ -385,14 +384,13 @@ type SYMBCTX
 	libhash			as THASH
 
 	dimlist			as TLIST					'' array dimensions
-	defarglist		as TLIST					'' define arguments
+	defparamlist	as TLIST					'' define parameters
 	deftoklist		as TLIST					'' define tokens
 	fwdlist			as TLIST					'' forward typedef refs
 
 	lastlbl			as FBSYMBOL ptr
 
 	fwdrefcnt 		as integer
-	defargcnt		as integer
 end type
 
 type SYMB_DATATYPE
@@ -467,7 +465,7 @@ declare function 	symbGetUDTLen			( byval udt as FBSYMBOL ptr, _
 
 declare function 	symbGetConstValueAsStr	( byval s as FBSYMBOL ptr ) as string
 
-declare function 	symbCalcArgLen			( byval typ as integer, _
+declare function 	symbCalcParamLen		( byval typ as integer, _
 											  byval subtype as FBSYMBOL ptr, _
 											  byval mode as integer ) as integer
 
@@ -493,15 +491,15 @@ declare function 	symbAddDefineW			( byval symbol as zstring ptr, _
                          					  byval flags as integer = 0 ) as FBSYMBOL ptr
 
 declare function 	symbAddDefineMacro		( byval symbol as zstring ptr, _
-							 				  byval tokhead as FBDEFTOK ptr, _
-							 				  byval args as integer, _
-						 	 				  byval arghead as FBDEFARG ptr ) as FBSYMBOL ptr
+							 				  byval tokhead as FB_DEFTOK ptr, _
+							 				  byval params as integer, _
+						 	 				  byval paramhead as FB_DEFPARAM ptr ) as FBSYMBOL ptr
 
-declare function 	symbAddDefineArg		( byval lastarg as FBDEFARG ptr, _
-											  byval symbol as zstring ptr ) as FBDEFARG ptr
+declare function 	symbAddDefineParam		( byval lastparam as FB_DEFPARAM ptr, _
+											  byval symbol as zstring ptr ) as FB_DEFPARAM ptr
 
-declare function 	symbAddDefineTok		( byval lasttok as FBDEFTOK ptr, _
-						     				  byval typ as FB_DEFTOK_TYPE ) as FBDEFTOK ptr
+declare function 	symbAddDefineTok		( byval lasttok as FB_DEFTOK ptr, _
+						     				  byval typ as FB_DEFTOK_TYPE ) as FB_DEFTOK ptr
 
 declare function 	symbAddFwdRef			( byval symbol as zstring ptr ) as FBSYMBOL ptr
 
@@ -570,7 +568,7 @@ declare function 	symbAddEnumElement		( byval parent as FBSYMBOL ptr, _
 											  byval symbol as zstring ptr, _
 					         				  byval value as integer ) as FBSYMBOL ptr
 
-declare function 	symbAddProcArg			( byval proc as FBSYMBOL ptr, _
+declare function 	symbAddProcParam		( byval proc as FBSYMBOL ptr, _
 											  byval symbol as zstring ptr, _
 											  byval typ as integer, _
 					 						  byval subtype as FBSYMBOL ptr, _
@@ -581,7 +579,7 @@ declare function 	symbAddProcArg			( byval proc as FBSYMBOL ptr, _
 					 						  byval optional as integer, _
 					 						  byval optexpr as ASTNODE ptr ) as FBSYMBOL ptr
 
-declare function 	symbAddProcResArg		( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function 	symbAddProcResultParam	( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function 	symbAddPrototype		( byval proc as FBSYMBOL ptr, _
 											  byval symbol as zstring ptr, _
@@ -611,8 +609,8 @@ declare function 	symbAddProcResult		( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function 	symbAddLib				( byval libname as zstring ptr ) as FBLIBRARY ptr
 
-declare function 	symbAddArg				( byval symbol as zstring ptr, _
-											  byval arg as FBSYMBOL ptr ) as FBSYMBOL ptr
+declare function 	symbAddParam			( byval symbol as zstring ptr, _
+											  byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
 
 declare function 	symbAddScope			( ) as FBSYMBOL ptr
 
@@ -817,7 +815,7 @@ declare function 	symbScopeAllocLocals	( byval sym as FBSYMBOL ptr ) as integer
 
 #define symbIsProc(s) (s->class = FB_SYMBCLASS_PROC)
 
-#define symbIsProcArg(s) (s->class = FB_SYMBCLASS_PROCARG)
+#define symbIsProcArg(s) (s->class = FB_SYMBCLASS_PARAM)
 
 #define symbIsDefine(s) (s->class = FB_SYMBCLASS_DEFINE)
 
@@ -865,17 +863,17 @@ declare function 	symbScopeAllocLocals	( byval sym as FBSYMBOL ptr ) as integer
 
 #define symbGetDefTokTextW(t) t->textw
 
-#define symbGetDefTokArgNum(t) t->argnum
+#define symbGetDefTokParamNum(t) t->paramnum
 
-#define symbSetDefTokArgNum(t,n) t->argnum = n
+#define symbSetDefTokParamNum(t,n) t->paramnum = n
 
-#define symbGetDefineArgs(d) d->def.args
+#define symbGetDefineParams(d) d->def.params
 
-#define symbGetDefineHeadArg(d) d->def.arghead
+#define symbGetDefineHeadParam(d) d->def.paramhead
 
-#define symbGetDefArgNext(a) a->next
+#define symbGetDefParamNext(a) a->next
 
-#define symbGetDefArgName(a) a->name
+#define symbGetDefParamName(a) a->name
 
 #define symbGetDefineCallback(d) d->def.proc
 
@@ -907,7 +905,7 @@ declare function 	symbScopeAllocLocals	( byval sym as FBSYMBOL ptr ) as integer
 
 #define symbGetArrayElements(s) s->var.array.elms
 
-#define symbGetProcArgs(f) f->proc.args
+#define symbGetProcParams(f) f->proc.params
 
 #define symbGetFuncMode(f) f->proc.mode
 
@@ -952,17 +950,17 @@ declare function 	symbScopeAllocLocals	( byval sym as FBSYMBOL ptr ) as integer
 
 #define symbGetLabelIsDeclared(l) l->lbl.declared
 
-#define symbGetProcFirstArg(f) iif( f->proc.mode = FB_FUNCMODE_PASCAL, f->proc.argtb.head, f->proc.argtb.tail )
+#define symbGetProcFirstParam(f) iif( f->proc.mode = FB_FUNCMODE_PASCAL, f->proc.paramtb.head, f->proc.paramtb.tail )
 
-#define symbGetProcLastArg(f) iif( f->proc.mode = FB_FUNCMODE_PASCAL, f->proc.argtb.tail, f->proc.argtb.head )
+#define symbGetProcLastParam(f) iif( f->proc.mode = FB_FUNCMODE_PASCAL, f->proc.paramtb.tail, f->proc.paramtb.head )
 
-#define symbGetProcPrevArg(f,a) iif( f->proc.mode = FB_FUNCMODE_PASCAL, a->prev, a->next )
+#define symbGetProcPrevParam(f,a) iif( f->proc.mode = FB_FUNCMODE_PASCAL, a->prev, a->next )
 
-#define symbGetProcNextArg(f,a) iif( f->proc.mode = FB_FUNCMODE_PASCAL, a->next, a->prev )
+#define symbGetProcNextParam(f,a) iif( f->proc.mode = FB_FUNCMODE_PASCAL, a->next, a->prev )
 
-#define symbGetProcHeadArg(f) f->proc.argtb.head
+#define symbGetProcHeadParam(f) f->proc.paramtb.head
 
-#define symbGetProcTailArg(f) f->proc.argtb.tail
+#define symbGetProcTailParam(f) f->proc.paramtb.tail
 
 #define symbGetProcCallback(f) f->proc.rtl.callback
 
@@ -970,7 +968,7 @@ declare function 	symbScopeAllocLocals	( byval sym as FBSYMBOL ptr ) as integer
 
 #define symbGetProcIsOverloaded(f) ((f->attrib and FB_SYMBATTRIB_OVERLOADED) > 0)
 
-#define symGetProcOvlMaxArgs(f) f->proc.ovl.maxargs
+#define symGetProcOvlMaxParams(f) f->proc.ovl.maxparams
 
 #define symbGetProcIncFile(f) f->proc.ext->dbg.incfile
 
@@ -980,20 +978,20 @@ declare function 	symbScopeAllocLocals	( byval sym as FBSYMBOL ptr ) as integer
 
 #define symbGetProcLocTbHead(f) f->proc.loctb.head
 
-#define symbGetArgMode(a) a->arg.mode
+#define symbGetParamMode(a) a->param.mode
 
-#define symbGetArgOptional(a) a->arg.optional
+#define symbGetParamOptional(a) a->param.optional
 
-#define symbGetArgOptExpr(a) a->arg.optexpr
+#define symbGetParamOptExpr(a) a->param.optexpr
 
-#define symbGetArgPrev(a) a->prev
+#define symbGetParamPrev(a) a->prev
 
-#define symbGetArgNext(a) a->next
+#define symbGetParamNext(a) a->next
 
-#define symbGetIsDynamic(s) iif( s->class = FB_SYMBCLASS_UDTELM, FALSE, (s->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_ARGUMENTBYDESC)) <> 0 )
+#define symbGetIsDynamic(s) iif( s->class = FB_SYMBCLASS_UDTELM, FALSE, (s->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_PARAMBYDESC)) <> 0 )
 
 #define symbIsArray(s) iif( (s->class = FB_SYMBCLASS_VAR) or (s->class = FB_SYMBCLASS_UDTELM), _
-							iif( (s->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_ARGUMENTBYDESC)) > 0, _
+							iif( (s->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_PARAMBYDESC)) > 0, _
 								 TRUE, s->var.array.dims > 0 ), _
 							FALSE )
 
@@ -1007,13 +1005,13 @@ declare function 	symbScopeAllocLocals	( byval sym as FBSYMBOL ptr ) as integer
 
 #define symbIsTemp(s) ((s->attrib and FB_SYMBATTRIB_TEMP) <> 0)
 
-#define symbIsArgByDesc(s) ((s->attrib and FB_SYMBATTRIB_ARGUMENTBYDESC) <> 0)
+#define symbIsParamByDesc(s) ((s->attrib and FB_SYMBATTRIB_PARAMBYDESC) <> 0)
 
-#define symbIsArgByVal(s) ((s->attrib and FB_SYMBATTRIB_ARGUMENTBYVAL) <> 0)
+#define symbIsParamByVal(s) ((s->attrib and FB_SYMBATTRIB_PARAMBYVAL) <> 0)
 
-#define symbIsArgByRef(s) ((s->attrib and FB_SYMBATTRIB_ARGUMENTBYREF) <> 0)
+#define symbIsParamByRef(s) ((s->attrib and FB_SYMBATTRIB_PARAMBYREF) <> 0)
 
-#define symbIsArg(s) ((s->attrib and (FB_SYMBATTRIB_ARGUMENTBYREF or FB_SYMBATTRIB_ARGUMENTBYVAL or FB_SYMBATTRIB_ARGUMENTBYDESC)) <> 0)
+#define symbIsParam(s) ((s->attrib and (FB_SYMBATTRIB_PARAMBYREF or FB_SYMBATTRIB_PARAMBYVAL or FB_SYMBATTRIB_PARAMBYDESC)) <> 0)
 
 #define symbIsLocal(s) ((s->attrib and FB_SYMBATTRIB_LOCAL) <> 0)
 

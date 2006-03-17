@@ -41,59 +41,59 @@ data @FB_RTL_LOCATE_FN, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 3, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,-1
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1
 
 '' locate( byval row as integer = 0, byval col as integer = 0, byval cursor as integer = -1 ) as integer
 data @FB_RTL_LOCATE_SUB, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 3, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,-1
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1
 
 '' fb_ConsoleView ( byval toprow as integer = 0, byval botrow as integer = 0 ) as void
 data @FB_RTL_CONSOLEVIEW,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0
 
 '' fb_ReadXY ( byval x as integer, byval y as integer, byval colorflag as integer ) as integer
 data @FB_RTL_CONSOLEREADXY,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 3, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,0
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0
 
 '' width( byval cols as integer = -1, byval width_arg as integer = -1 ) as integer
 data @FB_RTL_WIDTH, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,-1, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,-1
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1
 
 '' width( dev as string, byval width_arg as integer = -1 ) as integer
 data @FB_RTL_WIDTHDEV, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_DATATYPE_STRING,FB_ARGMODE_BYREF, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE, -1
+	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE, -1
 
 '' width( byval fnum as integer, byval width_arg as integer = -1 ) as integer
 data @FB_RTL_WIDTHFILE, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE, -1
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE, -1
 
 '' pos( ) as integer
 data @"pos", "fb_GetX", _
@@ -106,7 +106,7 @@ data @"pos", "fb_Pos", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
      1, _
-     FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+     FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' csrlin( ) as integer
 data @"csrlin", "fb_GetY", _
@@ -119,15 +119,15 @@ data @"cls", "fb_Cls", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,&hFFFF0000
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,&hFFFF0000
 
 '' color( byval fc as integer = -1, byval bc as integer = -1 ) as integer
 data @"color", "fb_Color", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,-1, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,-1
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1
 
 '' inkey ( ) as string
 data @"inkey","fb_Inkey", _
@@ -169,15 +169,15 @@ function rtlConsoleView ( byval topexpr as ASTNODE ptr, _
 	function = NULL
 
 	''
-    proc = astNewFUNCT( PROCLOOKUP( CONSOLEVIEW ) )
+    proc = astNewCALL( PROCLOOKUP( CONSOLEVIEW ) )
 
     '' byval toprow as integer
-    if( astNewPARAM( proc, topexpr ) = NULL ) then
+    if( astNewARG( proc, topexpr ) = NULL ) then
     	exit function
     end if
 
     '' byval botrow as integer
-    if( astNewPARAM( proc, botexpr ) = NULL ) then
+    if( astNewARG( proc, botexpr ) = NULL ) then
     	exit function
     end if
 
@@ -202,13 +202,13 @@ function rtlLocate ( byval row_arg as ASTNODE ptr, _
     else
 		f = PROCLOOKUP( LOCATE_SUB )
     end if
-    proc = astNewFUNCT( f )
+    proc = astNewCALL( f )
 
     '' byval row_arg as integer
     if( row_arg = NULL ) then
     	row_arg = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     end if
-    if( astNewPARAM( proc, row_arg ) = NULL ) then
+    if( astNewARG( proc, row_arg ) = NULL ) then
     	exit function
     end if
 
@@ -216,7 +216,7 @@ function rtlLocate ( byval row_arg as ASTNODE ptr, _
     if( col_arg = NULL ) then
         col_arg = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     end if
-    if( astNewPARAM( proc, col_arg ) = NULL ) then
+    if( astNewARG( proc, col_arg ) = NULL ) then
     	exit function
     end if
 
@@ -224,7 +224,7 @@ function rtlLocate ( byval row_arg as ASTNODE ptr, _
     if( cursor_vis_arg = NULL ) then
         cursor_vis_arg = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
     end if
-    if( astNewPARAM( proc, cursor_vis_arg ) = NULL ) then
+    if( astNewARG( proc, cursor_vis_arg ) = NULL ) then
     	exit function
     end if
 
@@ -254,13 +254,13 @@ function rtlWidthScreen ( byval width_arg as ASTNODE ptr, _
 	function = NULL
 
 	''
-    proc = astNewFUNCT( PROCLOOKUP( WIDTH ) )
+    proc = astNewCALL( PROCLOOKUP( WIDTH ) )
 
     '' byval width_arg as integer
     if( width_arg = NULL ) then
     	width_arg = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
     end if
-    if( astNewPARAM( proc, width_arg ) = NULL ) then
+    if( astNewARG( proc, width_arg ) = NULL ) then
     	exit function
     end if
 
@@ -268,7 +268,7 @@ function rtlWidthScreen ( byval width_arg as ASTNODE ptr, _
     if( height_arg = NULL ) then
         height_arg = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
     end if
-    if( astNewPARAM( proc, height_arg ) = NULL ) then
+    if( astNewARG( proc, height_arg ) = NULL ) then
     	exit function
     end if
 
@@ -298,15 +298,15 @@ function rtlConsoleReadXY ( byval rowexpr as ASTNODE ptr, _
 	function = NULL
 
 	''
-	proc = astNewFUNCT( PROCLOOKUP( CONSOLEREADXY ) )
+	proc = astNewCALL( PROCLOOKUP( CONSOLEREADXY ) )
 
 	'' byval column as integer
-	if( astNewPARAM( proc, columnexpr ) = NULL ) then
+	if( astNewARG( proc, columnexpr ) = NULL ) then
     	exit function
     end if
 
 	'' byval row as integer
-	if( astNewPARAM( proc, rowexpr ) = NULL ) then
+	if( astNewARG( proc, rowexpr ) = NULL ) then
     	exit function
     end if
 
@@ -314,7 +314,7 @@ function rtlConsoleReadXY ( byval rowexpr as ASTNODE ptr, _
 	if( colorflagexpr = NULL ) then
 		colorflagexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
-	if( astNewPARAM( proc, colorflagexpr ) = NULL ) then
+	if( astNewARG( proc, colorflagexpr ) = NULL ) then
     	exit function
     end if
 

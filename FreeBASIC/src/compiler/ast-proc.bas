@@ -37,7 +37,7 @@ declare sub 		hModLevelAddRtInit( byval p as ASTPROCNODE ptr )
 
 declare sub 		hLoadProcResult ( byval proc as FBSYMBOL ptr )
 
-declare function 	hDeclProcArgs	( byval proc as FBSYMBOL ptr ) as integer
+declare function 	hDeclProcParams	( byval proc as FBSYMBOL ptr ) as integer
 
 ''::::
 sub astProcListInit( )
@@ -81,7 +81,7 @@ private sub hDelProcNode( byval n as ASTPROCNODE ptr ) static
 	n->head = NULL
 	n->tail = NULL
 
-	listDelNode( @ast.proclist, cptr(TLISTNODE ptr, n) )
+	listDelNode( @ast.proclist, cast(TLISTNODE ptr, n) )
 
 end sub
 
@@ -92,17 +92,17 @@ private sub hProcFlush( byval p as ASTPROCNODE ptr, _
 
     dim as ASTNODE ptr n, nxt, prv
     dim as ASTNODE tmp
-    dim as FBSYMBOL ptr proc, oldproc
+    dim as FBSYMBOL ptr sym
 
 	''
 	ast.curproc = p
 	ast.doemit 	= doemit
 
-	proc = p->proc
+	sym = p->proc
 
 	env.scope = iif( p->ismain, FB_MAINSCOPE, FB_MAINSCOPE+1 )
-	env.currproc = proc
-	symbSetLocalTb( @proc->proc.loctb )
+	env.currproc = sym
+	symbSetLocalTb( @sym->proc.loctb )
 
 	'' do pre-loading, before allocating variables on stack
 	prv = @tmp
@@ -121,21 +121,21 @@ private sub hProcFlush( byval p as ASTPROCNODE ptr, _
 	loop
 
 	''
-	symbProcAllocLocals( proc )
+	symbProcAllocLocals( sym )
 
-	symbProcAllocScopes( proc )
+	symbProcAllocScopes( sym )
 
 	'' add a call to fb_init if it's a static constructor
 	'' (note: must be done here or ModLevelIsEmpty() will fail)
 	if( doemit ) then
-		if( symbIsConstructor( proc ) ) then
+		if( symbIsConstructor( sym ) ) then
            	hModLevelAddRtInit( p )
 		end if
 	end if
 
 	''
 	if( ast.doemit ) then
-		irEmitPROCBEGIN( proc, p->initlabel )
+		irEmitPROCBEGIN( sym, p->initlabel )
 	end if
 
 	'' flush nodes
@@ -149,11 +149,11 @@ private sub hProcFlush( byval p as ASTPROCNODE ptr, _
 
     ''
     if( ast.doemit ) then
-    	irEmitPROCEND( proc, p->initlabel, p->exitlabel )
+    	irEmitPROCEND( sym, p->initlabel, p->exitlabel )
     end if
 
     '' del symbols from hash and symbol tb's
-    symbDelSymbolTb( @proc->proc.loctb, FALSE )
+    symbDelSymbolTb( @sym->proc.loctb, FALSE )
 
 	''
 	hDelProcNode( p )
@@ -243,7 +243,7 @@ sub astAddAfter( byval n as ASTNODE ptr, _
 end sub
 
 '':::::
-function astProcBegin( byval proc as FBSYMBOL ptr, _
+function astProcBegin( byval sym as FBSYMBOL ptr, _
 					   byval ismain as integer _
 					 ) as ASTPROCNODE ptr static
 
@@ -252,7 +252,7 @@ function astProcBegin( byval proc as FBSYMBOL ptr, _
 	function = NULL
 
 	'' alloc new node
-	p = hNewProcNode( proc )
+	p = hNewProcNode( sym )
 	if( p = NULL ) then
 		exit function
 	end if
@@ -260,32 +260,32 @@ function astProcBegin( byval proc as FBSYMBOL ptr, _
 	p->ismain = ismain
 
 	''
-	proc->proc.loctb.head = NULL
-	proc->proc.loctb.tail = NULL
+	sym->proc.loctb.head = NULL
+	sym->proc.loctb.tail = NULL
 
 	''
-	if( proc->proc.ext = NULL ) then
-		proc->proc.ext = callocate( len( FB_PROCEXT ) )
+	if( sym->proc.ext = NULL ) then
+		sym->proc.ext = callocate( len( FB_PROCEXT ) )
 	end if
 
 	''
 	env.scope = iif( ismain, FB_MAINSCOPE, FB_MAINSCOPE+1 )
-	env.currproc = proc
+	env.currproc = sym
 	ast.oldsymtb = symbGetLocalTb( )
-	symbSetLocalTb( @proc->proc.loctb )
+	symbSetLocalTb( @sym->proc.loctb )
 
 	ast.curproc = p
 
-	irProcBegin( proc )
+	irProcBegin( sym )
 
-    '' alloc args
-    if( hDeclProcArgs( proc ) = FALSE ) then
+    '' alloc parameters
+    if( hDeclProcParams( sym ) = FALSE ) then
     	exit function
     end if
 
 	'' alloc result local var
-	if( symbGetType( proc ) <> FB_DATATYPE_VOID ) then
-		if( symbAddProcResult( proc ) = NULL ) then
+	if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
+		if( symbAddProcResult( sym ) = NULL ) then
 			exit function
 		end if
 	end if
@@ -302,15 +302,15 @@ end function
 sub astProcEnd( byval p as ASTPROCNODE ptr, _
 			    byval callrtexit as integer ) static
 
-    dim as FBSYMBOL ptr proc
+    dim as FBSYMBOL ptr sym
     dim as integer issub
 
-	proc = p->proc
+	sym = p->proc
 
-	issub = (symbGetType( proc ) = FB_DATATYPE_VOID)
+	issub = (symbGetType( sym ) = FB_DATATYPE_VOID)
 
 	'' del dyn arrays and all var-len strings (but the result if it returns a string)
-	symbFreeLocalDynVars( proc, issub )
+	symbFreeLocalDynVars( sym, issub )
 
 	'' if main(), END 0 must be called because it's not safe to return to crt if
 	'' an ON ERROR module-level handler was called while inside some proc
@@ -322,20 +322,20 @@ sub astProcEnd( byval p as ASTPROCNODE ptr, _
 
 	'' if it's a function, load result
 	if( issub = FALSE ) then
-        hLoadProcResult( proc )
+        hLoadProcResult( sym )
 	end if
 
 	''
-	irProcEnd( proc )
+	irProcEnd( sym )
 
 	if( p->ismain = FALSE ) then
 		'' not private or inline? flush it..
-		if( symbIsPrivate( proc ) = FALSE ) then
+		if( symbIsPrivate( sym ) = FALSE ) then
 			hProcFlush( p, TRUE )
 
 		'' remove from hash tb only
 		else
-			symbDelSymbolTb( @proc->proc.loctb, TRUE )
+			symbDelSymbolTb( @sym->proc.loctb, TRUE )
 		end if
 
 	'' main? flush all remaining, it's the latest
@@ -354,31 +354,31 @@ sub astProcEnd( byval p as ASTPROCNODE ptr, _
 end sub
 
 '':::::
-private function hDeclProcArgs( byval proc as FBSYMBOL ptr ) as integer static
+private function hDeclProcParams( byval proc as FBSYMBOL ptr ) as integer static
     dim as integer i
-    dim as FBSYMBOL ptr arg
+    dim as FBSYMBOL ptr p
 
 	function = FALSE
 
 	'' proc returns an UDT?
 	if( symbGetType( proc ) = FB_DATATYPE_USERDEF ) then
 		'' create an hidden arg if needed
-		symbAddProcResArg( proc )
+		symbAddProcResultParam( proc )
 	end if
 
 	''
 	i = 1
-	arg = symbGetProcHeadArg( proc )
-	do while( arg <> NULL )
+	p = symbGetProcHeadParam( proc )
+	do while( p <> NULL )
 
-		if( arg->arg.mode <> FB_ARGMODE_VARARG ) then
-			if( symbAddArg( symbGetName( arg ), arg ) = NULL ) then
+		if( p->param.mode <> FB_PARAMMODE_VARARG ) then
+			if( symbAddParam( symbGetName( p ), p ) = NULL ) then
 				hReportParamError( proc, i, NULL, FB_ERRMSG_DUPDEFINITION )
 				exit function
 			end if
 		end if
 
-		arg = symbGetArgNext( arg )
+		p = symbGetParamNext( p )
 		i += 1
 	loop
 

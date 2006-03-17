@@ -144,7 +144,7 @@ private sub hSetCtx( )
 	env.currproc 			= NULL
 
 	env.opt.base			= 0
-	env.opt.argmode			= FB_ARGMODE_BYREF
+	env.opt.parammode		= FB_PARAMMODE_BYREF
 	env.opt.explicit		= FALSE
 	env.opt.procpublic		= TRUE
 	env.opt.escapestr		= FALSE

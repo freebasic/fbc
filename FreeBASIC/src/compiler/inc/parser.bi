@@ -78,13 +78,9 @@ declare function 	cProcDecl               ( ) as integer
 
 declare function 	cSubOrFuncDecl 			( byval isSub as integer ) as integer
 
-declare function 	cArguments              ( byval proc as FBSYMBOL ptr, _
+declare function 	cParameters             ( byval proc as FBSYMBOL ptr, _
 											  byval procmode as integer, _
 											  byval isproto as integer ) as FBSYMBOL ptr
-
-declare function 	cArgDecl				( byval proc as FBSYMBOL ptr, _
-											  byval procmode as integer, _
-				   							  byval isproto as integer ) as FBSYMBOL ptr
 
 declare function 	cDefDecl				( ) as integer
 
@@ -183,7 +179,7 @@ declare function 	cConstant				( byref constexpr as ASTNODE ptr ) as integer
 
 declare function 	cLiteral 				( byref litexpr as ASTNODE ptr ) as integer
 
-declare function 	cProcParamList			( byval proc as FBSYMBOL ptr, _
+declare function 	cProcArgList			( byval proc as FBSYMBOL ptr, _
 						 					  byval ptrexpr as ASTNODE ptr, _
 						 					  byval isfunc as integer, _
 						 					  byval optonly as integer ) as ASTNODE ptr

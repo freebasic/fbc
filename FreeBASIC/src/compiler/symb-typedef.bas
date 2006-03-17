@@ -85,7 +85,7 @@ private sub hFixForwardRef( byval f as FBSYMBOL ptr, _
 		ref->ptrcnt  = ptrcnt
 		ref->lgt	 = symbCalcLen( ref->typ, sym )
 
-		listDelNode( @symb.fwdlist, cptr( TLISTNODE ptr, n ) )
+		listDelNode( @symb.fwdlist, cast( TLISTNODE ptr, n ) )
 
 		n = p
 	loop

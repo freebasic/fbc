@@ -37,24 +37,24 @@ data "RGB", _
 	 FALSE, _
 	 3, "R", "G", "B", _
 	 FB_DEFTOK_TYPE_TEX, "((cuint(", _
-	 FB_DEFTOK_TYPE_ARG, 0, _
+	 FB_DEFTOK_TYPE_PARAM, 0, _
 	 FB_DEFTOK_TYPE_TEX, ") shl 16) or (cuint(", _
-	 FB_DEFTOK_TYPE_ARG, 1, _
+	 FB_DEFTOK_TYPE_PARAM, 1, _
 	 FB_DEFTOK_TYPE_TEX, ") shl 8) or cuint(", _
-	 FB_DEFTOK_TYPE_ARG, 2, _
+	 FB_DEFTOK_TYPE_PARAM, 2, _
 	 FB_DEFTOK_TYPE_TEX, "))", _
 	 -1
 ''#define RGBA(r,g,b,a) ((cuint(r) shl 16) or (cuint(g) shl 8) or cuint(b) or (cuint(a) shl 24))
 data "RGBA", FALSE, _
 	 4, "R", "G", "B", "A", _
 	 FB_DEFTOK_TYPE_TEX, "((cuint(", _
-	 FB_DEFTOK_TYPE_ARG, 0, _
+	 FB_DEFTOK_TYPE_PARAM, 0, _
 	 FB_DEFTOK_TYPE_TEX, ") shl 16) or (cuint(", _
-	 FB_DEFTOK_TYPE_ARG, 1, _
+	 FB_DEFTOK_TYPE_PARAM, 1, _
 	 FB_DEFTOK_TYPE_TEX, ") shl 8) or cuint(", _
-	 FB_DEFTOK_TYPE_ARG, 2, _
+	 FB_DEFTOK_TYPE_PARAM, 2, _
 	 FB_DEFTOK_TYPE_TEX, ") or (cuint(", _
-	 FB_DEFTOK_TYPE_ARG, 3, _
+	 FB_DEFTOK_TYPE_PARAM, 3, _
 	 FB_DEFTOK_TYPE_TEX, ") shl 24))", _
 	 -1
 
@@ -63,9 +63,9 @@ data "VA_ARG", _
 	 FALSE, _
 	 2, "A", "T", _
 	 FB_DEFTOK_TYPE_TEX, "peek(", _
-	 FB_DEFTOK_TYPE_ARG, 1, _
+	 FB_DEFTOK_TYPE_PARAM, 1, _
 	 FB_DEFTOK_TYPE_TEX, ",", _
-	 FB_DEFTOK_TYPE_ARG, 0, _
+	 FB_DEFTOK_TYPE_PARAM, 0, _
 	 FB_DEFTOK_TYPE_TEX, ")", _
 	 -1
 ''#define va_next(a,t) (a + len( t ))
@@ -73,9 +73,9 @@ data "VA_NEXT", _
 	 FALSE, _
 	 2, "A", "T", _
 	 FB_DEFTOK_TYPE_TEX, "(cast(", _
-	 FB_DEFTOK_TYPE_ARG, 1, _
+	 FB_DEFTOK_TYPE_PARAM, 1, _
 	 FB_DEFTOK_TYPE_TEX, " ptr,", _
-	 FB_DEFTOK_TYPE_ARG, 0, _
+	 FB_DEFTOK_TYPE_PARAM, 0, _
 	 FB_DEFTOK_TYPE_TEX, ") + 1)", _
 	 -1
 
@@ -84,9 +84,9 @@ data "ASSERT", _
 	 TRUE, _
 	 1, "E", _
 	 FB_DEFTOK_TYPE_TEX, "if (", _
-	 FB_DEFTOK_TYPE_ARG, 0, _
+	 FB_DEFTOK_TYPE_PARAM, 0, _
 	 FB_DEFTOK_TYPE_TEX, ") = 0 then fb_Assert(__FILE__, __LINE__, __FUNCTION__, ", _
-	 FB_DEFTOK_TYPE_ARGSTR, 0, _
+	 FB_DEFTOK_TYPE_PARAMSTR, 0, _
 	 FB_DEFTOK_TYPE_TEX, ")", _
 	 -1
 ''#define ASSERTWARN(e) if (e) = FALSE then fb_AssertWarn(__FILE__, __LINE__, __FUNCTION__, #e)
@@ -94,20 +94,20 @@ data "ASSERTWARN", _
 	 TRUE, _
 	 1, "E", _
 	 FB_DEFTOK_TYPE_TEX, "if (", _
-	 FB_DEFTOK_TYPE_ARG, 0, _
+	 FB_DEFTOK_TYPE_PARAM, 0, _
 	 FB_DEFTOK_TYPE_TEX, ") = 0 then fb_AssertWarn(__FILE__, __LINE__, __FUNCTION__, ", _
-	 FB_DEFTOK_TYPE_ARGSTR, 0, _
+	 FB_DEFTOK_TYPE_PARAMSTR, 0, _
 	 FB_DEFTOK_TYPE_TEX, ")", _
 	 -1
 
-''#define OFFSETOF(type_,field_) cint( @cptr( type_ ptr, 0 )->field_ )
+''#define OFFSETOF(type_,field_) cint( @cast( type_ ptr, 0 )->field_ )
 data "OFFSETOF", _
 	 FALSE, _
 	 2, "T", "F", _
-	 FB_DEFTOK_TYPE_TEX, "cint( @cptr( ", _
-	 FB_DEFTOK_TYPE_ARG, 0, _
+	 FB_DEFTOK_TYPE_TEX, "cint( @cast( ", _
+	 FB_DEFTOK_TYPE_PARAM, 0, _
 	 FB_DEFTOK_TYPE_TEX, " ptr, 0 )->", _
-	 FB_DEFTOK_TYPE_ARG, 1, _
+	 FB_DEFTOK_TYPE_PARAM, 1, _
 	 FB_DEFTOK_TYPE_TEX, " )", _
 	 -1
 
@@ -115,15 +115,15 @@ data "__FB_MIN_VERSION__", _
      FALSE, _
      3, "MAJOR", "MINOR", "PATCH_LEVEL", _
 	 FB_DEFTOK_TYPE_TEX, "((__FB_VER_MAJOR__ > (", _
-	 FB_DEFTOK_TYPE_ARG, 0, _
+	 FB_DEFTOK_TYPE_PARAM, 0, _
 	 FB_DEFTOK_TYPE_TEX, ")) or ((__FB_VER_MAJOR__ = (", _
-	 FB_DEFTOK_TYPE_ARG, 0, _
+	 FB_DEFTOK_TYPE_PARAM, 0, _
 	 FB_DEFTOK_TYPE_TEX, ")) and ((__FB_VER_MINOR__ > (", _
-	 FB_DEFTOK_TYPE_ARG, 1, _
+	 FB_DEFTOK_TYPE_PARAM, 1, _
 	 FB_DEFTOK_TYPE_TEX, ")) or (__FB_VER_MINOR__ = (", _
-	 FB_DEFTOK_TYPE_ARG, 1, _
+	 FB_DEFTOK_TYPE_PARAM, 1, _
 	 FB_DEFTOK_TYPE_TEX, ") and __FB_VER_PATCH__ >= (", _
-	 FB_DEFTOK_TYPE_ARG, 2, _
+	 FB_DEFTOK_TYPE_PARAM, 2, _
 	 FB_DEFTOK_TYPE_TEX, ")))))", _
 	 -1
 
@@ -133,7 +133,7 @@ data "LOWORD", _
 	 FALSE, _
 	 1, "X", _
 	 FB_DEFTOK_TYPE_TEX, "(cuint(", _
-	 FB_DEFTOK_TYPE_ARG, 0, _
+	 FB_DEFTOK_TYPE_PARAM, 0, _
 	 FB_DEFTOK_TYPE_TEX, ") and &h0000FFFF)", _
 	 -1
 ''#define HIWORD(x) (cyint(x) shr 16)
@@ -141,7 +141,7 @@ data "HIWORD", _
 	 FALSE, _
 	 1, "X", _
 	 FB_DEFTOK_TYPE_TEX, "(cuint(", _
-	 FB_DEFTOK_TYPE_ARG, 0, _
+	 FB_DEFTOK_TYPE_PARAM, 0, _
 	 FB_DEFTOK_TYPE_TEX, ") shr 16)", _
 	 -1
 ''#define LOBYTE(x) (cuint(x) and &h000000FF)
@@ -149,7 +149,7 @@ data "LOBYTE", _
 	 FALSE, _
 	 1, "X", _
 	 FB_DEFTOK_TYPE_TEX, "(cuint(", _
-	 FB_DEFTOK_TYPE_ARG, 0, _
+	 FB_DEFTOK_TYPE_PARAM, 0, _
 	 FB_DEFTOK_TYPE_TEX, ") and &h000000FF)", _
 	 -1
 ''#define HIBYTE(x) ((cuint(x) and &h0000FF00) shr 8)
@@ -157,7 +157,7 @@ data "HIBYTE", _
 	 FALSE, _
 	 1, "X", _
 	 FB_DEFTOK_TYPE_TEX, "((cuint(", _
-	 FB_DEFTOK_TYPE_ARG, 0, _
+	 FB_DEFTOK_TYPE_PARAM, 0, _
 	 FB_DEFTOK_TYPE_TEX, ") and &h0000FF00) shr 8)", _
 	 -1
 ''#define BIT(x,y) (((x) and (1 shl (y))) > 0)
@@ -165,9 +165,9 @@ data "BIT", _
 	 FALSE, _
 	 2, "X", "Y", _
 	 FB_DEFTOK_TYPE_TEX, "(((", _
-	 FB_DEFTOK_TYPE_ARG, 0, _
+	 FB_DEFTOK_TYPE_PARAM, 0, _
 	 FB_DEFTOK_TYPE_TEX, ") and (1 shl (", _
-	 FB_DEFTOK_TYPE_ARG, 1, _
+	 FB_DEFTOK_TYPE_PARAM, 1, _
 	 FB_DEFTOK_TYPE_TEX, "))) <> 0)", _
 	 -1
 ''#define BITSET(x,y) ((x) or (1 shl (y)))
@@ -175,9 +175,9 @@ data "BITSET", _
 	 FALSE, _
 	 2, "X", "Y", _
 	 FB_DEFTOK_TYPE_TEX, "((", _
-	 FB_DEFTOK_TYPE_ARG, 0, _
+	 FB_DEFTOK_TYPE_PARAM, 0, _
 	 FB_DEFTOK_TYPE_TEX, ") or (1 shl (", _
-	 FB_DEFTOK_TYPE_ARG, 1, _
+	 FB_DEFTOK_TYPE_PARAM, 1, _
 	 FB_DEFTOK_TYPE_TEX, ")))", _
 	 -1
 ''#define BITRESET(x,y) ((x) and not (y))
@@ -185,9 +185,9 @@ data "BITRESET", _
 	 FALSE, _
 	 2, "X", "Y", _
 	 FB_DEFTOK_TYPE_TEX, "((", _
-	 FB_DEFTOK_TYPE_ARG, 0, _
+	 FB_DEFTOK_TYPE_PARAM, 0, _
 	 FB_DEFTOK_TYPE_TEX, ") and not (1 shl (", _
-	 FB_DEFTOK_TYPE_ARG, 1, _
+	 FB_DEFTOK_TYPE_PARAM, 1, _
 	 FB_DEFTOK_TYPE_TEX, ")))", _
 	 -1
 '#endif
@@ -197,9 +197,9 @@ data ""
 
 '':::::
 private sub hAddIntrinsicMacros( )
-	dim as integer i, args, dbgonly, typ, argnum
-	dim as FBDEFARG ptr arghead, lastarg, arg
-	dim as FBDEFTOK ptr tok, tokhead
+	dim as integer i, params, dbgonly, typ, argnum
+	dim as FB_DEFPARAM ptr paramhead, lastparam
+	dim as FB_DEFTOK ptr tok, tokhead
 	dim as string mname, aname, text
 
 	restore macrodata
@@ -211,18 +211,18 @@ private sub hAddIntrinsicMacros( )
 
 		read dbgonly
 
-		arghead = NULL
-		lastarg = NULL
+		paramhead = NULL
+		lastparam = NULL
 
-		'' for each argument, add it
-		read args
-		for i = 0 to args-1
+		'' for each parameter..
+		read params
+		for i = 0 to params-1
 			read aname
 
-			lastarg = symbAddDefineArg( lastarg, strptr( aname ) )
+			lastparam = symbAddDefineParam( lastparam, aname )
 
-			if( arghead = NULL ) then
-				arghead = lastarg
+			if( paramhead = NULL ) then
+				paramhead = lastparam
 			end if
 		next
 
@@ -238,8 +238,8 @@ private sub hAddIntrinsicMacros( )
 			tok = symbAddDefineTok( tok, typ )
 
     		select case typ
-    		case FB_DEFTOK_TYPE_ARG, FB_DEFTOK_TYPE_ARGSTR
-    			read symbGetDefTokArgNum( tok )
+    		case FB_DEFTOK_TYPE_PARAM, FB_DEFTOK_TYPE_PARAMSTR
+    			read symbGetDefTokParamNum( tok )
 
     		case FB_DEFTOK_TYPE_TEX
     			read text
@@ -257,7 +257,7 @@ private sub hAddIntrinsicMacros( )
     		tokhead = NULL
     	end if
 
-        symbAddDefineMacro( strptr( mname ), tokhead, args, arghead )
+        symbAddDefineMacro( mname, tokhead, params, paramhead )
 
 	loop
 

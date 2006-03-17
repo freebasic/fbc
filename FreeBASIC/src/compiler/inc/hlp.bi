@@ -61,8 +61,8 @@ declare function 	hCreateProcAlias		( byval symbol as zstring ptr, _
 
 #ifdef FBSYMBOL
 declare function 	hCreateOvlProcAlias		( byval symbol as zstring ptr, _
-					    	  				  byval argc as integer, _
-					    	  				  byval arg as FBSYMBOL ptr ) as zstring ptr
+					    	  				  byval params as integer, _
+					    	  				  byval param as FBSYMBOL ptr ) as zstring ptr
 #endif
 
 declare function 	hCreateDataAlias		( byval symbol as zstring ptr, _

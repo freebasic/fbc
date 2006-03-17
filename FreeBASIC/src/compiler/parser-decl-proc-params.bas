@@ -28,31 +28,35 @@ option escape
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
 
-'':::::
-''Arguments       =   ArgDecl (',' ArgDecl)* .
-''
-function cArguments( byval proc as FBSYMBOL ptr, _
-					 byval procmode as integer, _
-					 byval isproto as integer _
-				   ) as FBSYMBOL ptr
+declare function 	hParamDecl			( byval proc as FBSYMBOL ptr, _
+				   			 			  byval procmode as integer, _
+				   			 			  byval isproto as integer ) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr arg
+'':::::
+''Parameters=   ParamDecl (',' ParamDecl)* .
+''
+function cParameters( byval proc as FBSYMBOL ptr, _
+					  byval procmode as integer, _
+					  byval isproto as integer _
+				    ) as FBSYMBOL ptr
+
+	dim as FBSYMBOL ptr n
 
 	do
-		arg = cArgDecl( proc, procmode, isproto )
-		if( arg = NULL ) then
+		n = hParamDecl( proc, procmode, isproto )
+		if( n = NULL ) then
 			return NULL
 		end if
 
 		'' vararg?
-		if( arg->arg.mode = FB_ARGMODE_VARARG ) then
+		if( n->param.mode = FB_PARAMMODE_VARARG ) then
 			exit do
 		end if
 
 	'' ','
 	loop while( hMatch( CHAR_COMMA ) )
 
-	function = arg
+	function = n
 
 end function
 
@@ -66,7 +70,7 @@ private sub hParamError( byval proc as FBSYMBOL ptr, _
 end sub
 
 '':::::
-private function cOptionalExpr( byval mode as  FBARGMODE_ENUM, _
+private function cOptionalExpr( byval mode as FB_PARAMMODE, _
 								byval dtype as FB_DATATYPE, _
 								byval subtype as FBSYMBOL ptr _
 					   		  ) as ASTNODE ptr
@@ -77,7 +81,7 @@ private function cOptionalExpr( byval mode as  FBARGMODE_ENUM, _
     function = NULL
 
     '' not byval or byref?
-    if( (mode <> FB_ARGMODE_BYVAL) and (mode <> FB_ARGMODE_BYREF) ) then
+    if( (mode <> FB_PARAMMODE_BYVAL) and (mode <> FB_PARAMMODE_BYREF) ) then
     	exit function
     end if
 
@@ -113,18 +117,18 @@ private function cOptionalExpr( byval mode as  FBARGMODE_ENUM, _
 end function
 
 '':::::
-''ArgDecl         =   (BYVAL|BYREF)? ID (('(' ')')? (AS SymbolType)?)? ('=" (NUM_LIT|STR_LIT))? .
+'' ParamDecl      =   (BYVAL|BYREF)? ID (('(' ')')? (AS SymbolType)?)? ('=" (NUM_LIT|STR_LIT))? .
 ''
-function cArgDecl( byval proc as FBSYMBOL ptr, _
-				   byval procmode as integer, _
-				   byval isproto as integer _
-				 ) as FBSYMBOL ptr
+private function hParamDecl( byval proc as FBSYMBOL ptr, _
+				   			 byval procmode as integer, _
+				   			 byval isproto as integer _
+				 		   ) as FBSYMBOL ptr
 
 	static as zstring * FB_MAXNAMELEN+1 idTB(0 to FB_MAXARGRECLEVEL-1)
 	static as integer arglevel = 0
 	dim as zstring ptr pid
 	dim as ASTNODE ptr optval
-	dim as integer atype, amode, alen, asuffix, optional, ptrcnt, readid, mode, dotpos
+	dim as integer ptype, pmode, plen, psuffix, optional, ptrcnt, readid, mode, dotpos
 	dim as FBSYMBOL ptr subtype
 
 	function = NULL
@@ -133,26 +137,26 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 	if( lexGetToken( ) = FB_TK_VARARG ) then
 		'' not cdecl or is it the first arg?
 		if( (procmode <> FB_FUNCMODE_CDECL) or _
-			(symbGetProcArgs( proc ) = 0) ) then
-			hParamError( proc, symbGetProcArgs( proc ), *lexGetText( ) )
+			(symbGetProcParams( proc ) = 0) ) then
+			hParamError( proc, symbGetProcParams( proc ), *lexGetText( ) )
 			exit function
 		end if
 
 		lexSkipToken( )
 
-		return symbAddProcArg( proc, NULL, _
-						   	   INVALID, NULL, 0, _
-						   	   0, FB_ARGMODE_VARARG, INVALID, _
-						   	   FALSE, NULL )
+		return symbAddProcParam( proc, NULL, _
+						   	     INVALID, NULL, 0, _
+						   	     0, FB_PARAMMODE_VARARG, INVALID, _
+						   	     FALSE, NULL )
 	end if
 
 	'' (BYVAL|BYREF)?
 	select case lexGetToken( )
 	case FB_TK_BYVAL
-		mode = FB_ARGMODE_BYVAL
+		mode = FB_PARAMMODE_BYVAL
 		lexSkipToken( )
 	case FB_TK_BYREF
-		mode = FB_ARGMODE_BYREF
+		mode = FB_PARAMMODE_BYREF
 		lexSkipToken( )
 	case else
 		mode = INVALID
@@ -164,14 +168,14 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 		if( isproto = FALSE ) then
 			'' anything but keywords will be catch by parser (could be a ')' too)
 			if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
-				hParamError( proc, symbGetProcArgs( proc ), *lexGetText( ) )
+				hParamError( proc, symbGetProcParams( proc ), *lexGetText( ) )
 				exit function
 			end if
 		end if
 
 		if(	lexGetClass( ) <> FB_TKCLASS_KEYWORD ) then
-			if( symbGetProcArgs( proc ) > 0 ) then
-				hParamError( proc, symbGetProcArgs( proc ), *lexGetText( ) )
+			if( symbGetProcParams( proc ) > 0 ) then
+				hParamError( proc, symbGetProcParams( proc ), *lexGetText( ) )
 			end if
 			exit function
 		end if
@@ -195,7 +199,7 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 	''
 	if( readid ) then
 		'' ID
-		atype  = lexGetType( )
+		ptype  = lexGetType( )
 		dotpos = lexGetPeriodPos( )
 		lexEatToken( pid )
 
@@ -203,109 +207,109 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
 		if( hMatch( CHAR_LPRNT ) ) then
 			if( (mode <> INVALID) or _
 				(hMatch( CHAR_RPRNT ) = FALSE) ) then
-				hParamError( proc, symbGetProcArgs( proc ), *pid )
+				hParamError( proc, symbGetProcParams( proc ), *pid )
 				exit function
 			end if
 
-			amode = FB_ARGMODE_BYDESC
+			pmode = FB_PARAMMODE_BYDESC
 
 		else
 			if( mode = INVALID ) then
-				amode = env.opt.argmode
+				pmode = env.opt.parammode
 			else
-				amode = mode
+				pmode = mode
 			end if
 		end if
 
 	'' no id
 	else
-		atype  = INVALID
+		ptype  = INVALID
 		dotpos = 0
 
 		if( mode = INVALID ) then
-			amode = env.opt.argmode
+			pmode = env.opt.parammode
 		else
-			amode = mode
+			pmode = mode
 		end if
 	end if
 
     '' (AS SymbolType)?
     if( hMatch( FB_TK_AS ) ) then
-    	if( atype <> INVALID ) then
-    		hParamError( proc, symbGetProcArgs( proc ), *pid )
+    	if( ptype <> INVALID ) then
+    		hParamError( proc, symbGetProcParams( proc ), *pid )
     		exit function
     	end if
 
     	arglevel += 1
-    	if( cSymbolType( atype, subtype, alen, ptrcnt ) = FALSE ) then
-    		hParamError( proc, symbGetProcArgs( proc ), *pid )
+    	if( cSymbolType( ptype, subtype, plen, ptrcnt ) = FALSE ) then
+    		hParamError( proc, symbGetProcParams( proc ), *pid )
     		arglevel -= 1
     		exit function
     	end if
     	arglevel -= 1
 
-    	asuffix = INVALID
+    	psuffix = INVALID
 
     else
     	if( readid = FALSE ) then
-    		hParamError( proc, symbGetProcArgs( proc ), "" )
+    		hParamError( proc, symbGetProcParams( proc ), "" )
     		exit function
     	end if
 
     	subtype = NULL
-    	asuffix = atype
+    	psuffix = ptype
     	ptrcnt = 0
     end if
 
     ''
-    if( atype = INVALID ) then
-        atype = hGetDefType( pid )
-        asuffix = atype
+    if( ptype = INVALID ) then
+        ptype = hGetDefType( pid )
+        psuffix = ptype
     end if
 
     '' check for invalid args
-    select case as const atype
+    select case as const ptype
     '' can't be a fixed-len string
     case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    	hParamError( proc, symbGetProcArgs( proc ), *pid )
+    	hParamError( proc, symbGetProcParams( proc ), *pid )
     	exit function
 
 	'' can't be as ANY on non-prototypes
     case FB_DATATYPE_VOID
     	if( isproto = FALSE ) then
-    		hParamError( proc, symbGetProcArgs( proc ), *pid )
+    		hParamError( proc, symbGetProcParams( proc ), *pid )
     		exit function
     	end if
     end select
 
     ''
-    select case amode
-    case FB_ARGMODE_BYREF, FB_ARGMODE_BYDESC
-    	alen = FB_POINTERSIZE
+    select case pmode
+    case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
+    	plen = FB_POINTERSIZE
 
-    case FB_ARGMODE_BYVAL
+    case FB_PARAMMODE_BYVAL
 
     	'' check for invalid args
     	if( isproto ) then
-    		select case atype
+    		select case ptype
     		case FB_DATATYPE_VOID
-    			hParamError( proc, symbGetProcArgs( proc ), *pid )
+    			hParamError( proc, symbGetProcParams( proc ), *pid )
     			exit function
     		end select
     	end if
 
-    	if( atype = FB_DATATYPE_STRING ) then
-    		alen = FB_POINTERSIZE
+    	if( ptype = FB_DATATYPE_STRING ) then
+    		plen = FB_POINTERSIZE
     	else
-    		alen = symbCalcLen( atype, subtype, TRUE )
+    		plen = symbCalcLen( ptype, subtype, TRUE )
     	end if
     end select
 
     if( isproto = FALSE ) then
     	'' contains a period?
     	if( dotpos > 0 ) then
-    		if( atype = FB_DATATYPE_USERDEF ) then
-    			hParamError( proc, symbGetProcArgs( proc ), *pid )
+    		if( ptype = FB_DATATYPE_USERDEF ) then
+    			hParamError( proc, symbGetProcParams( proc ), *pid )
     			exit function
     		end if
     	end if
@@ -315,9 +319,9 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     if( hMatch( FB_TK_ASSIGN ) ) then
         optional = TRUE
 
-		optval = cOptionalExpr( amode, atype, subtype )
+		optval = cOptionalExpr( pmode, ptype, subtype )
 		if( optval = NULL ) then
- 	   		hParamError( proc, symbGetProcArgs( proc ), *pid )
+ 	   		hParamError( proc, symbGetProcParams( proc ), *pid )
  	   	end if
 
     else
@@ -329,10 +333,10 @@ function cArgDecl( byval proc as FBSYMBOL ptr, _
     	pid = NULL
     end if
 
-    function = symbAddProcArg( proc, pid, _
-    					       atype, subtype, ptrcnt, _
-    					   	   alen, amode, asuffix, _
-    					   	   optional, optval )
+    function = symbAddProcParam( proc, pid, _
+    					         ptype, subtype, ptrcnt, _
+    					   	     plen, pmode, psuffix, _
+    					   	     optional, optval )
 
 end function
 

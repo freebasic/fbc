@@ -58,7 +58,7 @@ declare function 	astLoadIDX		( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astLoadPTR		( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadFUNCT	( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadCALL		( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astLoadADDR		( byval n as ASTNODE ptr ) as IRVREG ptr
 
@@ -516,7 +516,7 @@ function astFuncPtrCheck( byval pdtype as integer, _
 	'' address, func, var, ..
 	case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET, _
 		 AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FIELD, _
-		 AST_NODECLASS_FUNCT, AST_NODECLASS_PTR
+		 AST_NODECLASS_CALL, AST_NODECLASS_PTR
 
     	'' not a function pointer?
     	if( astGetDataType( expr ) <> FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
@@ -603,11 +603,11 @@ function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 	end if
 
 	'' profiled function have sub nodes
-	if( n->class = AST_NODECLASS_FUNCT ) then
-		p = n->proc.profbegin
+	if( n->class = AST_NODECLASS_CALL ) then
+		p = n->call.profbegin
 		if( p <> NULL ) then
-			nn->proc.profbegin = astCloneTree( p )
-			nn->proc.profend   = astCloneTree( n->proc.profend )
+			nn->call.profbegin = astCloneTree( p )
+			nn->call.profend   = astCloneTree( n->call.profend )
 		end if
 	end if
 
@@ -636,11 +636,11 @@ sub astDelTree ( byval n as ASTNODE ptr )
 	end if
 
 	'' profiled function have sub nodes
-	if( n->class = AST_NODECLASS_FUNCT ) then
-		p = n->proc.profbegin
+	if( n->class = AST_NODECLASS_CALL ) then
+		p = n->call.profbegin
 		if( p <> NULL ) then
 			astDelTree( p )
-			astDelTree( n->proc.profend )
+			astDelTree( n->call.profend )
 		end if
 	end if
 
@@ -755,7 +755,7 @@ const DBL_EPSILON# = 2.2204460492503131e-016
 	case AST_NODECLASS_CONV
 		'' do nothing, the l child will be checked below
 
-	case AST_NODECLASS_FUNCT, AST_NODECLASS_BRANCH, _
+	case AST_NODECLASS_CALL, AST_NODECLASS_BRANCH, _
 		 AST_NODECLASS_LOAD, AST_NODECLASS_ASSIGN, _
 		 AST_NODECLASS_LINK
 		'' unpredictable nodes
@@ -803,8 +803,8 @@ function astIsClassOnTree( byval class as integer, _
 	end if
 
 	'' profiled function have sub nodes
-	if( n->class = AST_NODECLASS_FUNCT ) then
-		m = astIsClassOnTree( class, n->proc.profbegin )
+	if( n->class = AST_NODECLASS_CALL ) then
+		m = astIsClassOnTree( class, n->call.profbegin )
 		if( m <> NULL ) then
 			return m
 		end if
@@ -838,7 +838,7 @@ function astIsSymbolOnTree( byval sym as FBSYMBOL ptr, _
 		'' passed by ref or by desc? can't do any assumption..
 		if( s <> NULL ) then
 			if( (s->attrib and _
-				(FB_SYMBATTRIB_ARGUMENTBYDESC or FB_SYMBATTRIB_ARGUMENTBYREF)) > 0 ) then
+				(FB_SYMBATTRIB_PARAMBYDESC or FB_SYMBATTRIB_PARAMBYREF)) > 0 ) then
 				return TRUE
 			end if
 		end if
@@ -893,7 +893,7 @@ sub astDel( byval n as ASTNODE ptr ) static
 		exit sub
 	end if
 
-	listDelNode( @ast.astTB, cptr( TLISTNODE ptr, n ) )
+	listDelNode( @ast.astTB, cast( TLISTNODE ptr, n ) )
 
 end sub
 
@@ -1147,8 +1147,8 @@ function astLoad( byval n as ASTNODE ptr ) as IRVREG ptr
 	case AST_NODECLASS_UOP
 		return astLoadUOP( n )
 
-	case AST_NODECLASS_FUNCT
-		return astLoadFUNCT( n )
+	case AST_NODECLASS_CALL
+		return astLoadCALL( n )
 
 	case AST_NODECLASS_PTR
 		return astLoadPTR( n )

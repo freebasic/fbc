@@ -300,19 +300,19 @@ private function hReportMakeDesc( byval proc as FBSYMBOL ptr, _
 		desc = "at parameter " + str( pnum )
 		if( pid = NULL ) then
 			if( proc <> NULL ) then
-				dim as FBSYMBOL ptr arg = symbGetProcHeadArg( proc )
+				dim as FBSYMBOL ptr param = symbGetProcHeadParam( proc )
 				dim as integer cnt = 1
 
-				do while( arg <> NULL )
+				do while( param <> NULL )
 					if( cnt = pnum ) then
 						exit do
 					end if
 					cnt += 1
-					arg = arg->next
+					param = param->next
 				loop
 
-				if( arg <> NULL ) then
-					pid = symbGetName( arg )
+				if( param <> NULL ) then
+					pid = symbGetName( param )
 				end if
 			end if
 		end if

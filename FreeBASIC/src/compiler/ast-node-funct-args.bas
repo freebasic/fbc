@@ -34,7 +34,7 @@ option escape
 private sub hParamError( byval f as ASTNODE ptr, _
 					     byval msgnum as integer = FB_ERRMSG_PARAMTYPEMISMATCHAT )
 
-	hReportParamError( f->sym, f->proc.params+1, NULL, msgnum )
+	hReportParamError( f->sym, f->call.args+1, NULL, msgnum )
 
 end sub
 
@@ -42,7 +42,7 @@ end sub
 private sub hParamWarning( byval f as ASTNODE ptr, _
 						   byval msgnum as integer )
 
-	hReportParamWarning( f->sym, f->proc.params+1, NULL, msgnum )
+	hReportParamWarning( f->sym, f->call.args+1, NULL, msgnum )
 
 end sub
 
@@ -54,8 +54,8 @@ private function hAllocTmpArrayDesc( byval f as ASTNODE ptr, _
 
 	'' alloc a node
 	t = listNewNode( @ast.temparray )
-	t->prev = f->proc.arraytail
-	f->proc.arraytail = t
+	t->prev = f->call.arraytail
+	f->call.arraytail = t
 
 	'' create a pointer
 	s = symbAddTempVar( FB_DATATYPE_UINT )
@@ -79,8 +79,8 @@ private function hAllocTmpStrNode( byval proc as ASTNODE ptr, _
 
 	'' alloc a node
 	t = listNewNode( @ast.tempstr )
-	t->prev = proc->proc.strtail
-	proc->proc.strtail = t
+	t->prev = proc->call.strtail
+	proc->call.strtail = t
 
 	s = symbAddTempVar( dtype )
 
@@ -140,10 +140,10 @@ private function hCheckStringArg( byval proc as ASTNODE ptr, _
 	pdtype = p->dtype
 
 	'' calling the runtime lib?
-	if( proc->proc.isrtl ) then
+	if( proc->call.isrtl ) then
 
 		'' passed byref?
-		if( symbGetArgMode( arg ) = FB_ARGMODE_BYREF ) then
+		if( symbGetParamMode( arg ) = FB_PARAMMODE_BYREF ) then
 
 			select case pdtype
 			'' var-len param: all rtlib procs will free the
@@ -170,7 +170,7 @@ private function hCheckStringArg( byval proc as ASTNODE ptr, _
 			select case pdtype
 			case FB_DATATYPE_STRING
 				'' not a temp var-len returned by functions? skip..
-				if( p->class <> AST_NODECLASS_FUNCT ) then
+				if( p->class <> AST_NODECLASS_CALL ) then
 					exit function
 				end if
 
@@ -196,9 +196,9 @@ private function hCheckStringArg( byval proc as ASTNODE ptr, _
 	'' params as they can be modified inside the callee function..
 	copyback = FALSE
 
-	select case symbGetArgMode( arg )
+	select case symbGetParamMode( arg )
 	'' passed by reference?
-	case FB_ARGMODE_BYREF
+	case FB_PARAMMODE_BYREF
 
     	select case pdtype
     	'' fixed-length?
@@ -209,14 +209,14 @@ private function hCheckStringArg( byval proc as ASTNODE ptr, _
 			'' returns and delete temp)
 
 			'' don't copy back if it's a function returning a fixed-len
-			if( p->class <> AST_NODECLASS_FUNCT ) then
+			if( p->class <> AST_NODECLASS_CALL ) then
 				copyback = TRUE
 			end if
 
     	'' var-len?
     	case FB_DATATYPE_STRING
     		'' if not a function's result, skip..
-    		if( p->class <> AST_NODECLASS_FUNCT ) then
+    		if( p->class <> AST_NODECLASS_CALL ) then
     			exit function
             end if
 
@@ -233,14 +233,14 @@ private function hCheckStringArg( byval proc as ASTNODE ptr, _
     	end select
 
     '' passed by value?
-    case FB_ARGMODE_BYVAL
+    case FB_PARAMMODE_BYVAL
 
 		select case pdtype
 		'' var-len?
 		case FB_DATATYPE_STRING
 
 			'' not a temp var-len function result? do nothing..
-			if( p->class <> AST_NODECLASS_FUNCT ) then
+			if( p->class <> AST_NODECLASS_CALL ) then
 				exit function
 			end if
 
@@ -264,14 +264,15 @@ end function
 '':::::
 private function hStrParamToPtrArg( byval proc as ASTNODE ptr, _
 									byval n as ASTNODE ptr, _
-					   				byval checkrtl as integer ) as integer
+					   				byval checkrtl as integer _
+					   			  ) as integer
 
 	dim as ASTNODE ptr p
 	dim as integer pdtype
 
 	if( checkrtl = FALSE ) then
 		'' rtl? don't mess..
-		if( proc->proc.isrtl ) then
+		if( proc->call.isrtl ) then
 			return TRUE
 		end if
 	end if
@@ -285,7 +286,7 @@ private function hStrParamToPtrArg( byval proc as ASTNODE ptr, _
 
 		'' if it's a function returning a STRING, it will have to be
 		'' deleted automagically when the proc been called return
-		if( p->class = AST_NODECLASS_FUNCT ) then
+		if( p->class = AST_NODECLASS_CALL ) then
 			'' create a temp string to pass as parameter (no copy is
 			'' done at rtlib, as the returned string is a temp too)
 			n->l = hAllocTmpString( proc, p, FALSE )
@@ -325,7 +326,7 @@ private function hStrParamToPtrArg( byval proc as ASTNODE ptr, _
 
 			'' if it's a function returning a WSTRING, it will have to be
 			'' deleted automatically when the proc been called return
-			if( p->class = AST_NODECLASS_FUNCT ) then
+			if( p->class = AST_NODECLASS_CALL ) then
             	n->l = hAllocTmpWstrPtr( proc, p )
 
 			'' not a temporary..
@@ -348,7 +349,8 @@ end function
 private function hCheckArrayParam( byval f as ASTNODE ptr, _
 								   byval n as ASTNODE ptr, _
 					   	   		   byval adtype as integer, _
-					   	   		   byval adclass as integer ) as integer
+					   	   		   byval adclass as integer _
+					   	   		 ) as integer
 
 	dim as FBSYMBOL ptr s, d
     dim as ASTNODE ptr p
@@ -364,7 +366,7 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 	end if
 
 	'' same type? (don't check if it's a rtl proc)
-	if( f->proc.isrtl = FALSE ) then
+	if( f->call.isrtl = FALSE ) then
 		if( (adclass <> symbGetDataClass( s->typ ) ) or _
 			(symbGetDataSize( adtype ) <> symbGetDataSize( s->typ )) ) then
 			hParamError( f )
@@ -392,7 +394,7 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 	else
 
 		'' an argument passed by descriptor?
-		if( symbIsArgByDesc( s ) ) then
+		if( symbIsParamByDesc( s ) ) then
         	'' it's a pointer, but could be seen as anything else
         	'' (ie: if it were "s() as string"), so, create an alias
         	n->l     = astNewVAR( s, 0, FB_DATATYPE_UINT )
@@ -422,7 +424,8 @@ end function
 '':::::
 private function hCheckByRefArg( byval dtype as integer, _
 								 byval subtype as FBSYMBOL ptr, _
-								 byval n as ASTNODE ptr ) as ASTNODE ptr static
+								 byval n as ASTNODE ptr _
+							   ) as ASTNODE ptr static
 
     dim as ASTNODE ptr p
 
@@ -458,10 +461,10 @@ private function hCheckByRefArg( byval dtype as integer, _
 	'' take the address of
 	p = astNewADDR( AST_OP_ADDROF, p )
 
-	n->l 		  = p
-	n->dtype 	  = p->dtype
-	n->subtype 	  = p->subtype
-	n->param.mode = FB_ARGMODE_BYVAL
+	n->l = p
+	n->dtype = p->dtype
+	n->subtype = p->subtype
+	n->arg.mode = FB_PARAMMODE_BYVAL
 
 	function = p
 
@@ -469,9 +472,10 @@ end function
 
 '':::::
 private function hCheckParam( byval f as ASTNODE ptr, _
-							  byval n as ASTNODE ptr ) as integer
+							  byval n as ASTNODE ptr _
+							) as integer
 
-    dim as FBSYMBOL ptr proc, arg, s
+    dim as FBSYMBOL ptr sym, arg, s
     dim as integer adtype, adclass, amode, iswarning
     dim as ASTNODE ptr p
     dim as integer pdtype, pdclass, pmode, pclass
@@ -479,17 +483,17 @@ private function hCheckParam( byval f as ASTNODE ptr, _
     function = FALSE
 
 	''
-	proc = f->sym
+	sym = f->sym
 
-	if( f->proc.params >= proc->proc.args ) then
-		arg = symbGetProcTailArg( proc )
+	if( f->call.args >= sym->proc.params ) then
+		arg = symbGetProcTailParam( sym )
 	else
-		arg = f->proc.arg
+		arg = f->call.currarg
 	end if
 
 	'' argument
-	amode   = symbGetArgMode( arg )
-	adtype  = symbGetType( arg )
+	amode = symbGetParamMode( arg )
+	adtype = symbGetType( arg )
 	if( adtype <> INVALID ) then
 		adclass = symbGetDataClass( adtype )
 	end if
@@ -498,17 +502,17 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 	n->l = astUpdStrConcat( n->l )
 
     '' parameter
-	p 		 = n->l
-	pmode    = n->param.mode
-	pdtype   = p->dtype
-	pdclass  = symbGetDataClass( pdtype )
-	pclass	 = p->class
+	p = n->l
+	pmode = n->arg.mode
+	pdtype = p->dtype
+	pdclass = symbGetDataClass( pdtype )
+	pclass = p->class
 
 	'' by descriptor?
-	if( amode = FB_ARGMODE_BYDESC ) then
+	if( amode = FB_PARAMMODE_BYDESC ) then
 
         '' param is not an pointer
-        if( pmode <> FB_ARGMODE_BYVAL ) then
+        if( pmode <> FB_PARAMMODE_BYVAL ) then
 
         	return hCheckArrayParam( f, n, adtype, adclass )
 
@@ -519,7 +523,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
     end if
 
     '' vararg?
-    if( amode = FB_ARGMODE_VARARG ) then
+    if( amode = FB_PARAMMODE_VARARG ) then
 
 		'' string? check..
 		if( (pdclass = FB_DATACLASS_STRING) or _
@@ -547,7 +551,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 	'' as any?
     if( adtype = FB_DATATYPE_VOID ) then
 
-		if( pmode = FB_ARGMODE_BYVAL ) then
+		if( pmode = FB_PARAMMODE_BYVAL ) then
 			'' another quirk: BYVAL strings passed to BYREF ANY args..
 			return hStrParamToPtrArg( f, n, FALSE )
 		end if
@@ -564,7 +568,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
     if( adclass = FB_DATACLASS_STRING ) then
 
 		'' if it's a function returning a STRING, it's actually a pointer
-		if( pclass = AST_NODECLASS_FUNCT ) then
+		if( pclass = AST_NODECLASS_CALL ) then
 			select case pdtype
 			case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
 				pclass = AST_NODECLASS_PTR
@@ -584,14 +588,14 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 
 					'' or if passing a ptr as byval to a byval string arg
 		    		if( (pdclass <> FB_DATACLASS_INTEGER) or _
-		    			(amode <> FB_ARGMODE_BYVAL) or _
+		    			(amode <> FB_PARAMMODE_BYVAL) or _
 		    			(symbGetDataSize( pdtype ) <> FB_POINTERSIZE) ) then
 						hParamError( f )
 						exit function
 		    		end if
 
 		    		'' the BYVAL modifier was not used?
-		    		if( pmode <> FB_ARGMODE_BYVAL ) then
+		    		if( pmode <> FB_PARAMMODE_BYVAL ) then
 						'' const? only accept if it's NULL
 		    			if( p->defined ) then
 		    				if( p->con.val.int <> NULL ) then
@@ -646,7 +650,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 		end if
 
 		''
-		if( amode = FB_ARGMODE_BYVAL ) then
+		if( amode = FB_PARAMMODE_BYVAL ) then
 			'' deref var-len (ptr at offset 0)
 			if( pdtype = FB_DATATYPE_STRING ) then
 				pdclass = FB_DATACLASS_INTEGER
@@ -671,7 +675,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 	'' anything but strings..
 
 	'' passing a BYVAL ptr to an BYREF arg?
-	if( (pmode = FB_ARGMODE_BYVAL) and (amode = FB_ARGMODE_BYREF) ) then
+	if( (pmode = FB_PARAMMODE_BYVAL) and (amode = FB_PARAMMODE_BYREF) ) then
 		if( (pdclass <> FB_DATACLASS_INTEGER) or _
 			(symbGetDataSize( pdtype ) <> FB_POINTERSIZE) ) then
 			hParamError( f )
@@ -686,7 +690,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 		'' not another UDT?
 		if( pdtype <> FB_DATATYPE_USERDEF ) then
 			'' not a proc? (can be an UDT been returned in registers)
-			if( pclass <> AST_NODECLASS_FUNCT ) then
+			if( pclass <> AST_NODECLASS_CALL ) then
 				hParamError( f )
 				exit function
 			end if
@@ -699,7 +703,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 			end if
 
 			'' byref argument? can't create a tempory UDT..
-			if( amode = FB_ARGMODE_BYREF ) then
+			if( amode = FB_PARAMMODE_BYREF ) then
 				hParamError( f, FB_ERRMSG_CANTPASSUDTRESULTBYREF )
 				exit function
 			end if
@@ -709,7 +713,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 			s = s->subtype
 
 		else
-			if( pclass <> AST_NODECLASS_FUNCT ) then
+			if( pclass <> AST_NODECLASS_CALL ) then
 				s = p->subtype
 			else
 				s = p->sym->subtype
@@ -723,9 +727,9 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 		end if
 
 		'' set the length if it's been passed by value
-		if( amode = FB_ARGMODE_BYVAL ) then
+		if( amode = FB_PARAMMODE_BYVAL ) then
 			if( pdtype = FB_DATATYPE_USERDEF ) then
-				n->param.lgt = symbGetUDTLen( s )
+				n->arg.lgt = symbGetUDTLen( s )
 			end if
 		end if
 
@@ -784,7 +788,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 			end if
 		end if
 
-		if( amode = FB_ARGMODE_BYREF ) then
+		if( amode = FB_PARAMMODE_BYREF ) then
 			'' param diff than arg can't passed by ref if it's a var/array/ptr
 			select case as const pclass
 			case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
@@ -810,7 +814,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 	end if
 
 	'' byref arg? check if a temp param isn't needed
-	if( amode = FB_ARGMODE_BYREF ) then
+	if( amode = FB_PARAMMODE_BYREF ) then
 		p = hCheckByRefArg( adtype, symbGetSubtype( arg ), n )
         '' it's an implicit pointer
 		adtype += FB_DATATYPE_POINTER
@@ -846,44 +850,46 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 end function
 
 '':::::
-function astNewPARAM( byval f as ASTNODE ptr, _
+function astNewARG( byval f as ASTNODE ptr, _
 					  byval p as ASTNODE ptr, _
 					  byval dtype as integer = INVALID, _
-					  byval mode as integer = INVALID ) as ASTNODE ptr
+					  byval mode as integer = INVALID _
+					) as ASTNODE ptr
+
     dim as ASTNODE ptr n, t
-    dim proc as FBSYMBOL ptr
+    dim as FBSYMBOL ptr sym
 
 	if( dtype = INVALID ) then
 		dtype = astGetDataType( p )
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_PARAM, dtype )
+	n = astNewNode( AST_NODECLASS_ARG, dtype )
 	function = n
 
 	if( n = NULL ) then
 		exit function
 	end if
 
-	n->l 		  = p
-	n->param.mode = mode
-	n->param.lgt  = 0
+	n->l = p
+	n->arg.mode = mode
+	n->arg.lgt = 0
 
 	'' add param node to function's list
-	proc = f->sym
+	sym = f->sym
 
 	t = f->r
 
 	'' pascal mode, first param added will be the first pushed
-	if( proc->proc.mode = FB_FUNCMODE_PASCAL ) then
+	if( sym->proc.mode = FB_FUNCMODE_PASCAL ) then
 		if( t = NULL ) then
 			f->r = n
 		else
-			t = f->proc.lastparam
+			t = f->call.lastarg
 			t->r = n
 		end if
 
-		f->proc.lastparam = n
+		f->call.lastarg = n
 		n->r = NULL
 
 	else
@@ -898,10 +904,10 @@ function astNewPARAM( byval f as ASTNODE ptr, _
 	end if
 
 	''
-	f->proc.params += 1
+	f->call.args += 1
 
-	if( f->proc.params < proc->proc.args ) then
-		f->proc.arg = symbGetArgNext( f->proc.arg )
+	if( f->call.args < sym->proc.params ) then
+		f->call.currarg = symbGetParamNext( f->call.currarg )
 	end if
 
 end function

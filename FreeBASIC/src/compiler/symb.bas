@@ -138,7 +138,7 @@ sub symbEnd
 
 	listFree( @symb.deftoklist )
 
-	listFree( @symb.defarglist )
+	listFree( @symb.defparamlist )
 
 	listFree( @symb.symlist )
 
@@ -162,7 +162,7 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, _
 		return FALSE
 
 	'' adding a type field? anything is allowed (udt elms are not added to a hash tb)
-	case FB_SYMBCLASS_UDTELM, FB_SYMBCLASS_PROCARG
+	case FB_SYMBCLASS_UDTELM, FB_SYMBCLASS_PARAM
 
 	'' adding a label or forward ref? anything but a define and keyword is allowed,
 	'' if the same class doesn't exist yet
@@ -342,7 +342,7 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
 				ZstrFree( s->name )
 				ZstrFree( s->alias )
 				if( delok ) then
-					listDelNode( @symb.symlist, cptr( TLISTNODE ptr, s ) )
+					listDelNode( @symb.symlist, cast( TLISTNODE ptr, s ) )
 				end if
 				exit function
 			end if
@@ -755,7 +755,7 @@ sub symbFreeSymbol( byval s as FBSYMBOL ptr, _
     	ZstrFree( s->name )
     	ZstrFree( s->alias )
 
-    	listDelNode( @symb.symlist, cptr( TLISTNODE ptr, s ) )
+    	listDelNode( @symb.symlist, cast( TLISTNODE ptr, s ) )
 
     '' move from local to global table
     else
@@ -876,7 +876,7 @@ end sub
 function symbIsEqual( byval sym1 as FBSYMBOL ptr, _
 					  byval sym2 as FBSYMBOL ptr ) as integer
 
-	dim as FBSYMBOL ptr argl, argr
+	dim as FBSYMBOL ptr paraml, paramr
 
 	function = FALSE
 
@@ -929,52 +929,52 @@ function symbIsEqual( byval sym1 as FBSYMBOL ptr, _
     	end if
 
     	'' not the same number of args?
-    	if( symbGetProcArgs( sym1 ) <> symbGetProcArgs( sym2 ) ) then
+    	if( symbGetProcParams( sym1 ) <> symbGetProcParams( sym2 ) ) then
 
     		'' no args?
-    		if( symbGetProcArgs( sym1 ) = 0 ) then
+    		if( symbGetProcParams( sym1 ) = 0 ) then
     			exit function
     		end if
 
     		'' not vararg?
-    		if( symbGetProcTailArg( sym1 )->arg.mode <> FB_ARGMODE_VARARG ) then
+    		if( symbGetProcTailParam( sym1 )->param.mode <> FB_PARAMMODE_VARARG ) then
     			exit function
     		end if
 
     		'' not enough args?
-    		if( (symbGetProcArgs( sym2 ) - symbGetProcArgs( sym1 )) < -1 ) then
+    		if( (symbGetProcParams( sym2 ) - symbGetProcParams( sym1 )) < -1 ) then
     			exit function
     		end if
     	end if
 
-    	'' check each arg
-    	argl = symbGetProcHeadArg( sym1 )
-    	argr = symbGetProcHeadArg( sym2 )
+    	'' check each param
+    	paraml = symbGetProcHeadParam( sym1 )
+    	paramr = symbGetProcHeadParam( sym2 )
 
-    	do while( argl <> NULL )
+    	do while( paraml <> NULL )
             '' vararg?
-            if( argl->arg.mode = FB_ARGMODE_VARARG ) then
+            if( paraml->param.mode = FB_PARAMMODE_VARARG ) then
             	exit do
             end if
 
     		'' mode?
-    		if( argl->arg.mode <> argr->arg.mode ) then
+    		if( paraml->param.mode <> paramr->param.mode ) then
             	exit function
     		end if
 
     		'' different types?
-    		if( argl->typ <> argr->typ ) then
+    		if( paraml->typ <> paramr->typ ) then
          		exit function
         	end if
 
         	'' sub-types?
-        	if( argl->subtype <> argr->subtype ) then
+        	if( paraml->subtype <> paramr->subtype ) then
             	exit function
 			end if
 
     		'' next arg..
-    		argl = argl->next
-    		argr = argr->next
+    		paraml = paraml->next
+    		paramr = paramr->next
     	loop
     end select
 

@@ -43,11 +43,11 @@ data @FB_RTL_ARRAYREDIM,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 5, _
-	 FB_DATATYPE_VOID,FB_ARGMODE_BYDESC, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 INVALID,FB_ARGMODE_VARARG, FALSE
+	 FB_DATATYPE_VOID,FB_PARAMMODE_BYDESC, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 INVALID,FB_PARAMMODE_VARARG, FALSE
 
 '' fb_ArrayRedimPresv CDECL ( array() as ANY, byval elementlen as integer, _
 ''					          byval isvarlen as integer, _
@@ -56,43 +56,43 @@ data @FB_RTL_ARRAYREDIMPRESV,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 5, _
-	 FB_DATATYPE_VOID,FB_ARGMODE_BYDESC, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 INVALID,FB_ARGMODE_VARARG, FALSE
+	 FB_DATATYPE_VOID,FB_PARAMMODE_BYDESC, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 INVALID,FB_PARAMMODE_VARARG, FALSE
 
 '' fb_ArrayErase ( array() as ANY, byval isvarlen as integer ) as integer
 data @FB_RTL_ARRAYERASE,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_DATATYPE_VOID,FB_ARGMODE_BYDESC, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_VOID,FB_PARAMMODE_BYDESC, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_ArrayClear ( array() as ANY, byval isvarlen as integer ) as integer
 data @FB_RTL_ARRAYCLEAR,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_DATATYPE_VOID,FB_ARGMODE_BYDESC, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_VOID,FB_PARAMMODE_BYDESC, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_ArrayLBound ( array() as ANY, byval dimension as integer ) as integer
 data @FB_RTL_ARRAYLBOUND,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_DATATYPE_VOID,FB_ARGMODE_BYDESC, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_VOID,FB_PARAMMODE_BYDESC, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_ArrayUBound ( array() as ANY, byval dimension as integer ) as integer
 data @FB_RTL_ARRAYUBOUND,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_DATATYPE_VOID,FB_ARGMODE_BYDESC, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_VOID,FB_PARAMMODE_BYDESC, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_ArraySetDesc CDECL ( array() as ANY, byref arraydata as any, byval elementlen as integer, _
 ''						   byval dimensions as integer, ... ) as void
@@ -100,18 +100,18 @@ data @FB_RTL_ARRAYSETDESC,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 5, _
-	 FB_DATATYPE_VOID,FB_ARGMODE_BYDESC, FALSE, _
-	 FB_DATATYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 INVALID,FB_ARGMODE_VARARG, FALSE
+	 FB_DATATYPE_VOID,FB_PARAMMODE_BYDESC, FALSE, _
+	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 INVALID,FB_PARAMMODE_VARARG, FALSE
 
 '' fb_ArrayStrErase ( array() as any ) as void
 data @FB_RTL_ARRAYSTRERASE,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_VOID,FB_ARGMODE_BYDESC, FALSE
+	 FB_DATATYPE_VOID,FB_PARAMMODE_BYDESC, FALSE
 
 '' fb_ArrayAllocTempDesc CDECL ( byref pdesc as any ptr, arraydata as any, byval elementlen as integer, _
 ''						         byval dimensions as integer, ... ) as void ptr
@@ -119,18 +119,18 @@ data @FB_RTL_ARRAYALLOCTMPDESC,"", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 5, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
-	 FB_DATATYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 INVALID,FB_ARGMODE_VARARG, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
+	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 INVALID,FB_PARAMMODE_VARARG, FALSE
 
 '' fb_ArrayFreeTempDesc ( byval pdesc as any ptr) as void
 data @FB_RTL_ARRAYFREETMPDESC,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_ArraySngBoundChk ( byval idx as integer, byval ubound as integer, _
 ''						 byval linenum as integer ) as any ptr
@@ -138,10 +138,10 @@ data @FB_RTL_ARRAYSNGBOUNDCHK,"", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 4, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_ArrayBoundChk ( byval idx as integer, byval lbound as integer, byval ubound as integer, _
 ''						byval linenum as integer ) as any ptr
@@ -149,11 +149,11 @@ data @FB_RTL_ARRAYBOUNDCHK,"", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 5, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE
 
 '' EOL
 data NULL
@@ -194,29 +194,29 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, _
 	else
 		f = PROCLOOKUP( ARRAYREDIMPRESV )
 	end if
-    proc = astNewFUNCT( f )
+    proc = astNewCALL( f )
 
     '' array() as ANY
     dtype =  symbGetType( s )
 	expr = astNewVAR( s, 0, dtype )
-    if( astNewPARAM( proc, expr, dtype ) = NULL ) then
+    if( astNewARG( proc, expr, dtype ) = NULL ) then
     	exit function
     end if
 
 	'' byval element_len as integer
 	expr = astNewCONSTi( elementlen, FB_DATATYPE_INTEGER )
-	if( astNewPARAM( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
 	'' byval isvarlen as integer
 	isvarlen = (dtype = FB_DATATYPE_STRING)
-	if( astNewPARAM( proc, astNewCONSTi( isvarlen, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( isvarlen, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
 	'' byval dimensions as integer
-	if( astNewPARAM( proc, astNewCONSTi( dimensions, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( dimensions, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
@@ -231,7 +231,7 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, _
     		expr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, expr )
     	end if
 
-		if( astNewPARAM( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
+		if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
     		exit function
     	end if
 
@@ -243,7 +243,7 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, _
     		expr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, expr )
     	end if
 
-		if( astNewPARAM( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
+		if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
     		exit function
     	end if
 	next
@@ -269,17 +269,17 @@ function rtlArrayErase( byval arrayexpr as ASTNODE ptr ) as integer static
 	function = FALSE
 
 	''
-    proc = astNewFUNCT( PROCLOOKUP( ARRAYERASE ) )
+    proc = astNewCALL( PROCLOOKUP( ARRAYERASE ) )
 
 	dtype = astGetDataType( arrayexpr )
 
     '' array() as ANY
-    if( astNewPARAM( proc, arrayexpr, dtype ) = NULL ) then
+    if( astNewARG( proc, arrayexpr, dtype ) = NULL ) then
     	exit function
     end if
 
 	'' byval isvarlen as integer
-	if( astNewPARAM( proc, astNewCONSTi( dtype = FB_DATATYPE_STRING, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( dtype = FB_DATATYPE_STRING, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
@@ -298,17 +298,17 @@ function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as integer static
     function = FALSE
 
 	''
-    proc = astNewFUNCT( PROCLOOKUP( ARRAYCLEAR ) )
+    proc = astNewCALL( PROCLOOKUP( ARRAYCLEAR ) )
 
     dtype = astGetDataType( arrayexpr )
 
     '' array() as ANY
-    if( astNewPARAM( proc, arrayexpr, dtype ) = NULL ) then
+    if( astNewARG( proc, arrayexpr, dtype ) = NULL ) then
     	exit function
     end if
 
 	'' byval isvarlen as integer
-	if( astNewPARAM( proc, astNewCONSTi( (dtype = FB_DATATYPE_STRING), FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( (dtype = FB_DATATYPE_STRING), FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
@@ -327,11 +327,11 @@ function rtlArrayStrErase( byval s as FBSYMBOL ptr ) as integer static
 	function = FALSE
 
 	''
-    proc = astNewFUNCT( PROCLOOKUP( ARRAYSTRERASE ) )
+    proc = astNewCALL( PROCLOOKUP( ARRAYSTRERASE ) )
 
     '' array() as ANY
     dtype = symbGetType( s )
-    if( astNewPARAM( proc, astNewVAR( s, 0, dtype ), dtype ) = NULL ) then
+    if( astNewARG( proc, astNewVAR( s, 0, dtype ), dtype ) = NULL ) then
     	exit function
     end if
 
@@ -359,15 +359,15 @@ function rtlArrayBound( byval sexpr as ASTNODE ptr, _
 	else
 		f = PROCLOOKUP( ARRAYUBOUND)
 	end if
-    proc = astNewFUNCT( f )
+    proc = astNewCALL( f )
 
     '' array() as ANY
-    if( astNewPARAM( proc, sexpr ) = NULL ) then
+    if( astNewARG( proc, sexpr ) = NULL ) then
     	exit function
     end if
 
 	'' byval dimension as integer
-	if( astNewPARAM( proc, dimexpr ) = NULL ) then
+	if( astNewARG( proc, dimexpr ) = NULL ) then
 		exit function
 	end if
 
@@ -387,30 +387,30 @@ function rtlArraySetDesc( byval s as FBSYMBOL ptr, _
 
     function = FALSE
 
-    proc = astNewFUNCT( PROCLOOKUP( ARRAYSETDESC ) )
+    proc = astNewCALL( PROCLOOKUP( ARRAYSETDESC ) )
 
     '' array() as ANY
     dtype =  symbGetType( s )
 	expr = astNewVAR( s, 0, dtype )
-    if( astNewPARAM( proc, expr, dtype ) = NULL ) then
+    if( astNewARG( proc, expr, dtype ) = NULL ) then
 		exit function
 	end if
 
 	'' arraydata as any
 	expr = astNewVAR( s, 0, dtype )
-    if( astNewPARAM( proc, expr, dtype ) = NULL ) then
+    if( astNewARG( proc, expr, dtype ) = NULL ) then
 		exit function
 	end if
 
 	'' byval element_len as integer
 	expr = astNewCONSTi( elementlen, FB_DATATYPE_INTEGER )
-	if( astNewPARAM( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
 		exit function
 	end if
 
 	'' byval dimensions as integer
 	expr = astNewCONSTi( dimensions, FB_DATATYPE_INTEGER )
-	if( astNewPARAM( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
 		exit function
 	end if
 
@@ -418,13 +418,13 @@ function rtlArraySetDesc( byval s as FBSYMBOL ptr, _
 	for i = 0 to dimensions-1
 		'' lbound
 		expr = astNewCONSTi( dTB(i).lower, FB_DATATYPE_INTEGER )
-		if( astNewPARAM( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
+		if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
 			exit function
 		end if
 
 		'' ubound
 		expr = astNewCONSTi( dTB(i).upper, FB_DATATYPE_INTEGER )
-		if( astNewPARAM( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
+		if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
 			exit function
 		end if
 	next
@@ -452,28 +452,28 @@ function rtlArrayAllocTmpDesc( byval arrayexpr as ASTNODE ptr, _
 
 	dimensions = symbGetArrayDimensions( s )
 
-    proc = astNewFUNCT( PROCLOOKUP( ARRAYALLOCTMPDESC ) )
+    proc = astNewCALL( PROCLOOKUP( ARRAYALLOCTMPDESC ) )
 
     '' byref pdesc as any ptr
 	expr = astNewVAR( pdesc, 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
-    if( astNewPARAM( proc, expr, FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) = NULL ) then
+    if( astNewARG( proc, expr, FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) = NULL ) then
     	exit function
     end if
 
     '' byref arraydata as any
-    if( astNewPARAM( proc, arrayexpr, FB_DATATYPE_VOID ) = NULL ) then
+    if( astNewARG( proc, arrayexpr, FB_DATATYPE_VOID ) = NULL ) then
     	exit function
     end if
 
 	'' byval element_len as integer
 	expr = astNewCONSTi( symbGetLen( s ), FB_DATATYPE_INTEGER )
-	if( astNewPARAM( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
 	'' byval dimensions as integer
 	expr = astNewCONSTi( dimensions, FB_DATATYPE_INTEGER )
-	if( astNewPARAM( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
@@ -482,13 +482,13 @@ function rtlArrayAllocTmpDesc( byval arrayexpr as ASTNODE ptr, _
     do while( d <> NULL )
 		'' lbound
 		expr = astNewCONSTi( d->lower, FB_DATATYPE_INTEGER )
-		if( astNewPARAM( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
+		if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
     		exit function
     	end if
 
 		'' ubound
 		expr = astNewCONSTi( d->upper, FB_DATATYPE_INTEGER )
-		if( astNewPARAM( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
+		if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
     		exit function
     	end if
 
@@ -506,11 +506,11 @@ function rtlArrayFreeTempDesc( byval pdesc as FBSYMBOL ptr ) as ASTNODE ptr
 
 	function = NULL
 
-    proc = astNewFUNCT( PROCLOOKUP( ARRAYFREETMPDESC ) )
+    proc = astNewCALL( PROCLOOKUP( ARRAYFREETMPDESC ) )
 
     '' byval pdesc as any ptr
 	expr = astNewVAR( pdesc, 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
-    if( astNewPARAM( proc, expr, FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) = NULL ) then
+    if( astNewARG( proc, expr, FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) = NULL ) then
     	exit function
     end if
 
@@ -538,10 +538,10 @@ function rtlArrayBoundsCheck( byval idx as ASTNODE ptr, _
     	f = PROCLOOKUP( ARRAYBOUNDCHK )
 	end if
 
-   	proc = astNewFUNCT( f )
+   	proc = astNewCALL( f )
 
 	'' idx
-	if( astNewPARAM( proc, _
+	if( astNewARG( proc, _
 					 astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, idx ), _
 					 FB_DATATYPE_INTEGER ) = NULL ) then
 		exit function
@@ -549,23 +549,23 @@ function rtlArrayBoundsCheck( byval idx as ASTNODE ptr, _
 
 	'' lbound
 	if( lb <> NULL ) then
-		if( astNewPARAM( proc, lb, FB_DATATYPE_INTEGER ) = NULL ) then
+		if( astNewARG( proc, lb, FB_DATATYPE_INTEGER ) = NULL ) then
 			exit function
 		end if
 	end if
 
 	'' rbound
-	if( astNewPARAM( proc, rb, FB_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewARG( proc, rb, FB_DATATYPE_INTEGER ) = NULL ) then
 		exit function
 	end if
 
 	'' linenum
-	if( astNewPARAM( proc, astNewCONSTi( linenum, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( linenum, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
     '' module
-	if( astNewPARAM( proc, astNewCONSTstr( module ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTstr( module ) ) = NULL ) then
     	exit function
     end if
 

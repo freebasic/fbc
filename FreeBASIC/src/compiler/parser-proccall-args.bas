@@ -29,16 +29,15 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-private function hCreateOptArg( byval arg as FBSYMBOL ptr _
-							  ) as ASTNODE ptr
+private function hCreateOptArg( byval param as FBSYMBOL ptr ) as ASTNODE ptr
 
 	dim as ASTNODE ptr tree
 
 	'' make a clone
-	tree = astCloneTree( symbGetArgOptExpr( arg ) )
+	tree = astCloneTree( symbGetParamOptExpr( param ) )
 
 	'' UDT?
-	if( symbGetType( arg ) = FB_DATATYPE_USERDEF ) then
+	if( symbGetType( param ) = FB_DATATYPE_USERDEF ) then
 		'' update the counters
 		astTypeIniUpdCnt( tree )
 	end if
@@ -47,99 +46,94 @@ private function hCreateOptArg( byval arg as FBSYMBOL ptr _
 
 end function
 
-
 '':::::
-''ProcParam         =   BYVAL? (ID(('(' ')')? | Expression) .
+''ProcArg        =   BYVAL? (ID(('(' ')')? | Expression) .
 ''
-function cProcParam( byval proc as FBSYMBOL ptr, _
-					 byval arg as FBSYMBOL ptr, _
-					 byval param as integer, _
-					 byref expr as ASTNODE ptr, _
-					 byref pmode as integer, _
-					 byval isfunc as integer, _
-					 byval optonly as integer _
-				   ) as integer
+private function hProcArg( byval proc as FBSYMBOL ptr, _
+					 	   byval param as FBSYMBOL ptr, _
+					 	   byval argnum as integer, _
+					 	   byref expr as ASTNODE ptr, _
+					 	   byref amode as integer, _
+					 	   byval isfunc as integer _
+				   		 ) as integer
 
-	dim as integer amode
+	dim as integer pmode
 	dim as FBSYMBOL ptr oldsym
 
 	function = FALSE
 
-	amode = symbGetArgMode( arg )
-
-	pmode = INVALID
+	pmode = symbGetParamMode( param )
+	amode = INVALID
 	expr = NULL
 
-	if( optonly = FALSE ) then
-		'' BYVAL?
-		if( hMatch( FB_TK_BYVAL ) ) then
-			pmode = FB_ARGMODE_BYVAL
+	'' BYVAL?
+	if( hMatch( FB_TK_BYVAL ) ) then
+		amode = FB_PARAMMODE_BYVAL
+	end if
+
+	oldsym = env.ctxsym
+	env.ctxsym = symbGetSubType( param )
+
+	'' Expression
+	if( cExpression( expr ) = FALSE ) then
+
+		'' error?
+		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+			env.ctxsym = oldsym
+			exit function
 		end if
 
-		oldsym = env.ctxsym
-		env.ctxsym = symbGetSubType( arg )
+		if( isfunc ) then
+			expr = NULL
 
-		'' Expression
-		if( cExpression( expr ) = FALSE ) then
-
-			'' error?
-			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+		else
+			'' failed and expr not null?
+			if( expr <> NULL ) then
 				env.ctxsym = oldsym
 				exit function
 			end if
 
-			if( isfunc ) then
-				expr = NULL
-
-			else
-				'' failed and expr not null?
-				if( expr <> NULL ) then
-					env.ctxsym = oldsym
-					exit function
-				end if
-
-				'' check for BYVAL if it's the first param, due the optional ()'s
-				if( (param = 0) and (pmode = INVALID) ) then
-					'' BYVAL?
-					if( hMatch( FB_TK_BYVAL ) ) then
-						pmode = FB_ARGMODE_BYVAL
-						if( cExpression( expr ) = FALSE ) then
-							expr = NULL
-						end if
+			'' check for BYVAL if it's the first param, due the optional ()'s
+			if( (argnum = 0) and (amode = INVALID) ) then
+				'' BYVAL?
+				if( hMatch( FB_TK_BYVAL ) ) then
+					amode = FB_PARAMMODE_BYVAL
+					if( cExpression( expr ) = FALSE ) then
+						expr = NULL
 					end if
 				end if
 			end if
-
 		end if
 
-		env.ctxsym = oldsym
 	end if
+
+	env.ctxsym = oldsym
 
 	if( expr = NULL ) then
 
 		'' check if argument is optional
-		if( symbGetArgOptional( arg ) = FALSE ) then
-			if( amode <> FB_ARGMODE_VARARG ) then
+		if( symbGetParamOptional( param ) = FALSE ) then
+			if( pmode <> FB_PARAMMODE_VARARG ) then
 				hReportError( FB_ERRMSG_ARGCNTMISMATCH )
 			end if
 			exit function
 		end if
 
-		expr = hCreateOptArg( arg )
+		expr = hCreateOptArg( param )
 
 	else
 
 		'' '('')'?
-		if( amode = FB_ARGMODE_BYDESC ) then
+		if( pmode = FB_PARAMMODE_BYDESC ) then
 			if( lexGetToken( ) = CHAR_LPRNT ) then
 				if( lexGetLookAhead(1) = CHAR_RPRNT ) then
-					if( pmode <> INVALID ) then
+					if( amode <> INVALID ) then
 						hReportError( FB_ERRMSG_PARAMTYPEMISMATCH )
 						exit function
 					end if
 					lexSkipToken( )
 					lexSkipToken( )
-					pmode = FB_ARGMODE_BYDESC
+					amode = FB_PARAMMODE_BYDESC
 				end if
 			end if
     	end if
@@ -147,12 +141,12 @@ function cProcParam( byval proc as FBSYMBOL ptr, _
     end if
 
 	''
-	if( pmode <> INVALID ) then
+	if( amode <> INVALID ) then
 		if( amode <> pmode ) then
-            if( amode <> FB_ARGMODE_VARARG ) then
+            if( pmode <> FB_PARAMMODE_VARARG ) then
             	'' allow BYVAL params passed to BYREF/BYDESC args
             	'' (to pass NULL to pointers and so on)
-            	if( pmode <> FB_ARGMODE_BYVAL ) then
+            	if( amode <> FB_PARAMMODE_BYVAL ) then
 					if( amode <> pmode ) then
 						hReportError( FB_ERRMSG_PARAMTYPEMISMATCH )
 						exit function
@@ -169,9 +163,9 @@ end function
 '':::::
 ''ProcParam         =   BYVAL? (ID(('(' ')')? | Expression) .
 ''
-private function cOvlProcParam( byval param as integer, _
+private function cOvlProcParam( byval argnum as integer, _
 					    		byref expr as ASTNODE ptr, _
-					    		byref pmode as integer, _
+					    		byref amode as integer, _
 					    		byval isfunc as integer _
 					  		  ) as integer
 
@@ -179,12 +173,12 @@ private function cOvlProcParam( byval param as integer, _
 
 	function = FALSE
 
-	pmode = INVALID
+	amode = INVALID
 	expr = NULL
 
 	'' BYVAL?
 	if( hMatch( FB_TK_BYVAL ) ) then
-		pmode = FB_ARGMODE_BYVAL
+		amode = FB_PARAMMODE_BYVAL
 	end if
 
 	oldsym = env.ctxsym
@@ -211,10 +205,10 @@ private function cOvlProcParam( byval param as integer, _
 			end if
 
 			'' check for BYVAL if it's the first param, due the optional ()'s
-			if( (param = 0) and (pmode = INVALID) ) then
+			if( (argnum = 0) and (amode = INVALID) ) then
 				'' BYVAL?
 				if( hMatch( FB_TK_BYVAL ) ) then
-					pmode = FB_ARGMODE_BYVAL
+					amode = FB_PARAMMODE_BYVAL
 					if( cExpression( expr ) = FALSE ) then
 						expr = NULL
 					end if
@@ -231,13 +225,13 @@ private function cOvlProcParam( byval param as integer, _
 		'' '('')'?
 		if( lexGetToken( ) = CHAR_LPRNT ) then
 			if( lexGetLookAhead(1) = CHAR_RPRNT ) then
-				if( pmode <> INVALID ) then
+				if( amode <> INVALID ) then
 					hReportError( FB_ERRMSG_PARAMTYPEMISMATCH )
 					exit function
 				end if
 				lexSkipToken( )
 				lexSkipToken( )
-				pmode = FB_ARGMODE_BYDESC
+				amode = FB_PARAMMODE_BYDESC
 			end if
 		end if
 
@@ -248,25 +242,25 @@ private function cOvlProcParam( byval param as integer, _
 end function
 
 '':::::
-''ProcParamList     =    ProcParam (DECL_SEPARATOR ProcParam)* .
+''ProcArgList     =    ProcArg (DECL_SEPARATOR ProcArg)* .
 ''
-private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
-									byval ptrexpr as ASTNODE ptr, _
-									byval isfunc as integer, _
-									byval optonly as integer _
-								  ) as ASTNODE ptr
+private function hOvlProcArgList( byval proc as FBSYMBOL ptr, _
+								  byval ptrexpr as ASTNODE ptr, _
+								  byval isfunc as integer, _
+								  byval optonly as integer _
+								) as ASTNODE ptr
 
     dim as integer args, p, params, modeTB(0 to FB_MAXPROCARGS-1)
     dim as ASTNODE ptr procexpr, exprTB(0 to FB_MAXPROCARGS-1)
-    dim as FBSYMBOL ptr arg, ovlproc
+    dim as FBSYMBOL ptr param, ovlproc
 
 	function = NULL
 
-	params = 0
-	args = symGetProcOvlMaxArgs( proc )
+	args = 0
+	params = symGetProcOvlMaxParams( proc )
 
-	'' no args? (could happen by mistake..)
-	if( args = 0 ) then
+	'' no parms? (could happen by mistake..)
+	if( params = 0 ) then
 		'' sub? check the optional parentheses
 		if( isfunc = FALSE ) then
 			'' '('
@@ -279,27 +273,24 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 			end if
 		end if
 
-		return astNewFUNCT( proc, ptrexpr )
+		return astNewCALL( proc, ptrexpr )
 	end if
 
 	if( optonly = FALSE ) then
 		do
 			'' count mismatch?
-			if( params >= args ) then
+			if( args >= params ) then
 				hReportError( FB_ERRMSG_ARGCNTMISMATCH )
 				exit function
 			end if
 
 			'' too many?
-			if( params >= FB_MAXPROCARGS ) then
+			if( args >= FB_MAXPROCARGS ) then
 				hReportError( FB_ERRMSG_TOOMANYPARAMS )
 				exit function
 			end if
 
-			if( cOvlProcParam( params, _
-							   exprTB(params), _
-							   modeTB(params), _
-							   isfunc ) = FALSE ) then
+			if( cOvlProcParam( args, exprTB(args), modeTB(args), isfunc ) = FALSE ) then
 				'' not an error? (could be an optional)
 				if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 					exit function
@@ -309,19 +300,19 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 			'' ','?
 			if( hMatch( CHAR_COMMA ) = FALSE ) then
 				'' if last arg was optional, don't count it
-				if( exprTB(params) <> NULL ) then
-					params += 1
+				if( exprTB(args) <> NULL ) then
+					args += 1
 				end if
 				exit do
 			end if
 
 			'' next
-			params += 1
+			args += 1
 		loop
 	end if
 
 	'' try finding the closest overloaded proc
-	ovlproc = symbFindClosestOvlProc( proc, params, exprTB(), modeTB() )
+	ovlproc = symbFindClosestOvlProc( proc, args, exprTB(), modeTB() )
 
 	if( ovlproc = NULL ) then
 		hReportParamError( proc, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
@@ -330,68 +321,66 @@ private function hOvlProcParamList( byval proc as FBSYMBOL ptr, _
 		proc = ovlproc
 	end if
 
-	procexpr = astNewFUNCT( proc, ptrexpr )
+	procexpr = astNewCALL( proc, ptrexpr )
 
     '' add to tree
-	arg = symbGetProcLastArg( proc )
-	for p = 0 to params-1
+	param = symbGetProcLastParam( proc )
+	for p = 0 to args-1
 
 		'' optional arg not at end of list? fill it..
 		if( exprTB(p) = NULL ) then
-			exprTB(p) = hCreateOptArg( arg )
+			exprTB(p) = hCreateOptArg( param )
 			modeTB(p) = INVALID
 		end if
 
-		if( astNewPARAM( procexpr, exprTB(p), INVALID, modeTB(p) ) = NULL ) then
+		if( astNewARG( procexpr, exprTB(p), INVALID, modeTB(p) ) = NULL ) then
 			hReportError( FB_ERRMSG_PARAMTYPEMISMATCH )
 			exit function
 		end if
 
 		'' next
-		arg = symbGetProcPrevArg( proc, arg )
+		param = symbGetProcPrevParam( proc, param )
 	next
 
 	'' add the end-of-list optional args, if any
-	args = symbGetProcArgs( proc )
-	if( params < args ) then
-        do while( params < args )
-			astNewPARAM( procexpr, hCreateOptArg( arg ), INVALID, INVALID )
+	params = symbGetProcParams( proc )
+    do while( args < params )
+		astNewARG( procexpr, hCreateOptArg( param ), INVALID, INVALID )
 
-			'' next
-			params += 1
-			arg = symbGetProcPrevArg( proc, arg )
-		loop
-	end if
+		'' next
+		args += 1
+		param = symbGetProcPrevParam( proc, param )
+	loop
 
 	function = procexpr
 
 end function
 
 '':::::
-''ProcParamList     =    ProcParam (DECL_SEPARATOR ProcParam)* .
+''ProcArgList     =    ProcArg (DECL_SEPARATOR ProcArg)* .
 ''
-function cProcParamList( byval proc as FBSYMBOL ptr, _
-						 byval ptrexpr as ASTNODE ptr, _
-						 byval isfunc as integer, _
-						 byval optonly as integer _
-					   ) as ASTNODE ptr
+function cProcArgList( byval proc as FBSYMBOL ptr, _
+					   byval ptrexpr as ASTNODE ptr, _
+					   byval isfunc as integer, _
+					   byval optonly as integer _
+					 ) as ASTNODE ptr
 
     dim as integer args, params, mode
-    dim as FBSYMBOL ptr arg
+    dim as FBSYMBOL ptr param
     dim as ASTNODE ptr procexpr, expr
 
 	'' overloaded?
 	if( symbGetProcIsOverloaded( proc ) ) then
-		return hOvlProcParamList( proc, ptrexpr, isfunc, optonly )
+		return hOvlProcArgList( proc, ptrexpr, isfunc, optonly )
 	end if
 
 	function = NULL
 
-    procexpr = astNewFUNCT( proc, ptrexpr )
+    procexpr = astNewCALL( proc, ptrexpr )
 
 	'' proc has no args?
-	args = symbGetProcArgs( proc )
-	if( args = 0 ) then
+	params = symbGetProcParams( proc )
+	if( params = 0 ) then
 		'' sub? check the optional parentheses
 		if( isfunc = FALSE ) then
 			'' '('
@@ -407,28 +396,26 @@ function cProcParamList( byval proc as FBSYMBOL ptr, _
 		return procexpr
 	end if
 
-	params = 0
-	arg = symbGetProcLastArg( proc )
+	args = 0
+	param = symbGetProcLastParam( proc )
 
 	if( optonly = FALSE ) then
 		do
 			'' count mismatch?
-			if( params >= args ) then
-				if( arg->arg.mode <> FB_ARGMODE_VARARG ) then
+			if( args >= params ) then
+				if( param->param.mode <> FB_PARAMMODE_VARARG ) then
 					hReportError( FB_ERRMSG_ARGCNTMISMATCH )
 					exit function
 				end if
 			end if
 
 			'' too many?
-			if( params >= FB_MAXPROCARGS ) then
+			if( args >= FB_MAXPROCARGS ) then
 				hReportError( FB_ERRMSG_TOOMANYPARAMS )
 				exit function
 			end if
 
-			if( cProcParam( proc, arg, params, _
-							expr, mode, _
-							isfunc, FALSE ) = FALSE ) then
+			if( hProcArg( proc, param, args, expr, mode, isfunc ) = FALSE ) then
 				'' not an error? (could be an optional)
 				if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 					exit function
@@ -438,48 +425,47 @@ function cProcParamList( byval proc as FBSYMBOL ptr, _
 			end if
 
 			'' add to tree
-			if( astNewPARAM( procexpr, expr, INVALID, mode ) = NULL ) then
+			if( astNewARG( procexpr, expr, INVALID, mode ) = NULL ) then
 				exit function
 			end if
 
 			'' next
-			params += 1
-			if( params < args ) then
-				arg = symbGetProcPrevArg( proc, arg )
+			args += 1
+			if( args < params ) then
+				param = symbGetProcPrevParam( proc, param )
 			end if
 
 		'' ','?
 		loop while( hMatch( CHAR_COMMA ) )
 	end if
 
-	'' if not all params were given, check for the optional ones
-	do while( params < args )
+	'' if not all args were given, check for the optional ones
+	do while( args < params )
 		'' var-arg? can't be optional..
-		if( arg->arg.mode = FB_ARGMODE_VARARG ) then
+		if( param->param.mode = FB_PARAMMODE_VARARG ) then
 			exit do
 		end if
 
 		'' too many?
-		if( params >= FB_MAXPROCARGS ) then
+		if( args >= FB_MAXPROCARGS ) then
 			hReportError( FB_ERRMSG_TOOMANYPARAMS )
 			exit function
 		end if
 
 		'' not optional?
-		if( cProcParam( proc, arg, params, _
-						expr, mode, _
-						isfunc, TRUE ) = FALSE ) then
+		if( symbGetParamOptional( param ) = FALSE ) then
+			hReportError( FB_ERRMSG_ARGCNTMISMATCH )
 			exit function
 		end if
 
 		'' add to tree
-		if( astNewPARAM( procexpr, expr, INVALID, mode ) = NULL ) then
+		if( astNewARG( procexpr, hCreateOptArg( param ), INVALID, INVALID ) = NULL ) then
 			exit function
 		end if
 
 		'' next
-		params += 1
-		arg = symbGetProcPrevArg( proc, arg )
+		args += 1
+		param = symbGetProcPrevParam( proc, param )
 	loop
 
 	function = procexpr

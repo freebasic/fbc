@@ -15,8 +15,8 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-'' AST function nodes
-'' l = pointer node if any; r = first param to be pushed
+'' AST function call nodes
+'' l = pointer node if any; r = first arg to be pushed
 ''
 '' chng: sep/2004 written [v1ctor]
 
@@ -33,9 +33,11 @@ option escape
 '''''#define DO_STACK_ALIGN
 
 '':::::
-function astNewFUNCT( byval sym as FBSYMBOL ptr, _
-					  byval ptrexpr as ASTNODE ptr = NULL, _
-					  byval isprofiler as integer = FALSE ) as ASTNODE ptr
+function astNewCALL( byval sym as FBSYMBOL ptr, _
+					 byval ptrexpr as ASTNODE ptr = NULL, _
+					 byval isprofiler as integer = FALSE _
+				   ) as ASTNODE ptr
+
     dim as ASTNODE ptr n
     dim as FBRTLCALLBACK callback
     dim as integer dtype
@@ -65,41 +67,41 @@ function astNewFUNCT( byval sym as FBSYMBOL ptr, _
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_FUNCT, dtype, subtype )
+	n = astNewNode( AST_NODECLASS_CALL, dtype, subtype )
 	function = n
 
 	if( n = NULL ) then
 		exit function
 	end if
 
-	n->sym 			= sym
-	n->l 			= ptrexpr
-	n->proc.params 	= 0
+	n->sym = sym
+	n->l = ptrexpr
+	n->call.args = 0
 
 	if( sym <> NULL ) then
-		n->proc.arg	= symbGetProcHeadArg( sym )
-		n->proc.isrtl = symbGetIsRTL( sym )
+		n->call.currarg	= symbGetProcHeadParam( sym )
+		n->call.isrtl = symbGetIsRTL( sym )
 
 		callback = symbGetProcCallback( sym )
 		if( callback <> NULL ) then
 			callback( sym )
 		end if
 	else
-		n->proc.arg	= NULL
-		n->proc.isrtl = FALSE
+		n->call.currarg	= NULL
+		n->call.isrtl = FALSE
 	end if
 
-	n->proc.arraytail = NULL
-	n->proc.strtail = NULL
+	n->call.arraytail = NULL
+	n->call.strtail = NULL
 
 	'' function profiling
-	n->proc.profbegin = NULL
-	n->proc.profend   = NULL
+	n->call.profbegin = NULL
+	n->call.profend = NULL
 	if( env.clopt.profile ) then
 		if( isprofiler = FALSE ) then
-			n->proc.profbegin = rtlProfileBeginCall( sym )
-			if( n->proc.profbegin <> NULL ) then
-				n->proc.profend   = rtlProfileEndCall( )
+			n->call.profbegin = rtlProfileBeginCall( sym )
+			if( n->call.profbegin <> NULL ) then
+				n->call.profend = rtlProfileEndCall( )
 			end if
 		end if
 	end if
@@ -110,16 +112,18 @@ end function
 
 '':::::
 private function hCallProc( byval n as ASTNODE ptr, _
-					   		byval proc as FBSYMBOL ptr, _
+					   		byval sym as FBSYMBOL ptr, _
 					   		byval mode as integer, _
 					   		byval bytestopop as integer, _
-					   		byval bytesaligned as integer ) as IRVREG ptr static
+					   		byval bytesaligned as integer _
+					   	  ) as IRVREG ptr static
+
     dim as IRVREG ptr vreg, vr
     dim as ASTNODE ptr p
     dim as integer dtype
 
 	'' ordinary pointer?
-	if( proc = NULL ) then
+	if( sym = NULL ) then
 		p = n->l
 		vr = astLoad( p )
 		astDel( p )
@@ -165,7 +169,7 @@ private function hCallProc( byval n as ASTNODE ptr, _
 	p = n->l
 	if( p = NULL ) then
 		if( ast.doemit ) then
-			irEmitCALLFUNCT( proc, bytestopop, vreg )
+			irEmitCALLFUNCT( sym, bytestopop, vreg )
 		end if
 	else
 		vr = astLoad( p )
@@ -200,11 +204,10 @@ end function
 private sub hCheckTmpStrings( byval f as ASTNODE ptr )
     dim as ASTNODE ptr t
     dim as ASTTEMPSTR ptr n, p
-    dim as FBSYMBOL ptr s
 
 	'' copy-back any fix-len string passed as parameter and
 	'' delete all temp strings used as parameters
-	n = f->proc.strtail
+	n = f->call.strtail
 	do while( n <> NULL )
 
 		'' copy back if needed
@@ -220,7 +223,7 @@ private sub hCheckTmpStrings( byval f as ASTNODE ptr )
 		astDel( t )
 
 		p = n->prev
-		listDelNode( @ast.tempstr, cptr( TLISTNODE ptr, n ) )
+		listDelNode( @ast.tempstr, cast( TLISTNODE ptr, n ) )
 		n = p
 	loop
 
@@ -231,7 +234,7 @@ private sub hFreeTempArrayDescs( byval f as ASTNODE ptr )
     dim as ASTNODE ptr t
     dim as ASTTEMPARRAY ptr n, p
 
-	n = f->proc.arraytail
+	n = f->call.arraytail
 	do while( n <> NULL )
 
 		t = rtlArrayFreeTempDesc( n->pdesc )
@@ -241,7 +244,7 @@ private sub hFreeTempArrayDescs( byval f as ASTNODE ptr )
 		end if
 
 		p = n->prev
-		listDelNode( @ast.temparray, cptr( TLISTNODE ptr, n ) )
+		listDelNode( @ast.temparray, cast( TLISTNODE ptr, n ) )
 		n = p
 	loop
 
@@ -249,24 +252,26 @@ end sub
 
 '':::::
 private sub hAllocTempStruct( byval n as ASTNODE ptr, _
-							  byval proc as FBSYMBOL ptr ) static
+							  byval sym as FBSYMBOL ptr _
+							) static
+
 	dim as FBSYMBOL ptr v
 	dim as ASTNODE ptr p
 	dim as IRVREG ptr vr
 	dim as FBSYMBOL a
 
 	'' follow GCC 3.x's ABI
-	if( proc->typ = FB_DATATYPE_USERDEF ) then
-		if( proc->proc.realtype = FB_DATATYPE_POINTER + FB_DATATYPE_USERDEF ) then
+	if( sym->typ = FB_DATATYPE_USERDEF ) then
+		if( sym->proc.realtype = FB_DATATYPE_POINTER + FB_DATATYPE_USERDEF ) then
 			'' create a temp struct and pass its address
-			v = symbAddTempVar( FB_DATATYPE_USERDEF, proc->subtype, TRUE )
-        	p = astNewVar( v, 0, FB_DATATYPE_USERDEF, proc->subtype )
+			v = symbAddTempVar( FB_DATATYPE_USERDEF, sym->subtype, TRUE )
+        	p = astNewVar( v, 0, FB_DATATYPE_USERDEF, sym->subtype )
         	vr = astLoad( p )
 
         	a.typ = FB_DATATYPE_VOID
-        	a.arg.mode = FB_ARGMODE_BYREF
+        	a.param.mode = FB_PARAMMODE_BYREF
         	if( ast.doemit ) then
-        		irEmitPUSHPARAM( proc, @a, vr, INVALID, FB_POINTERSIZE )
+        		irEmitPUSHARG( sym, @a, vr, INVALID, FB_POINTERSIZE )
         	end if
 		end if
 	end if
@@ -274,23 +279,21 @@ private sub hAllocTempStruct( byval n as ASTNODE ptr, _
 end sub
 
 '':::::
-function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as ASTNODE ptr p, np, l, pstart, pend
-    dim as FBSYMBOL ptr proc, arg, lastarg
-    dim as integer mode, bytestopop, toalign
-    dim as integer params, inc
-    dim as integer args
+function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
+    dim as ASTNODE ptr arg, nextarg, l, pstart, pend
+    dim as FBSYMBOL ptr sym, param, lastparam
+    dim as integer mode, bytestopop, toalign, params, inc, args
     dim as IRVREG ptr vr, pcvr
 
 	''
-	proc = n->sym
+	sym = n->sym
 
     ''
-	pstart = n->proc.profbegin
-	pend   = n->proc.profend
+	pstart = n->call.profbegin
+	pend = n->call.profend
 
 	'' ordinary pointer?
-	if( proc = NULL ) then
+	if( sym = NULL ) then
 
 		'' signal function start for profiling
 		if( pstart <> NULL ) then
@@ -305,8 +308,8 @@ function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 			if( ast.doemit ) then
 				irEmitPUSH( pcvr )
 			end if
-			proc = pend->sym
-			hCallProc( pend, proc, proc->proc.mode, 0, 0 )
+			sym = pend->sym
+			hCallProc( pend, sym, sym->proc.mode, 0, 0 )
 			astDel( pend )
 		end if
 
@@ -314,27 +317,28 @@ function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 	end if
 
     ''
-    mode = proc->proc.mode
+    mode = sym->proc.mode
 	if( mode = FB_FUNCMODE_PASCAL ) then
-		params = 0
+		args = 0
 		inc = 1
 	else
-		params = n->proc.params
+		args = n->call.args
 		inc = -1
 	end if
 
-	bytestopop = symbGetLen( proc )
+	bytestopop = symbGetLen( sym )
 	toalign = 0
 
 	''
-	args 	= symbGetProcArgs( proc )
-	lastarg = symbGetProcTailArg( proc )
-	if( params <= args ) then
-		arg = symbGetProcFirstArg( proc )
+	params = symbGetProcParams( sym )
+	lastparam = symbGetProcTailParam( sym )
+
+	if( args <= params ) then
+		param = symbGetProcFirstParam( sym )
 		'' vararg and param not passed?
-		if( params < args ) then
+		if( args < params ) then
 			if( mode <> FB_FUNCMODE_PASCAL ) then
-				arg = symbGetProcNextArg( proc, arg )
+				param = symbGetProcNextParam( sym, param )
 			end if
 
 		else
@@ -350,48 +354,48 @@ function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 		end if
 	'' vararg
 	else
-		arg = lastarg
+		param = lastparam
 	end if
 
-	'' for each param..
-	p = n->r
-	do while( p <> NULL )
-		np = p->r
+	'' for each argument..
+	arg = n->r
+	do while( arg <> NULL )
+		nextarg = arg->r
 
-		l = p->l
+		l = arg->l
 
 		''
-		if( arg = lastarg ) then
-			if( symbGetArgMode( arg ) = FB_ARGMODE_VARARG ) then
+		if( param = lastparam ) then
+			if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
 				bytestopop += (symbCalcLen( l->dtype, NULL ) + _
 					 		  (FB_INTEGERSIZE-1)) and _
 					 		  not (FB_INTEGERSIZE-1) 		'' x86 assumption!
 			end if
 		end if
 
-		'' flush the param expression
+		'' flush the arg expression
 		vr = astLoad( l )
 		astDel( l )
 
 		if( ast.doemit ) then
-			if( irEmitPUSHPARAM( proc, arg, vr, p->param.mode, p->param.lgt ) = FALSE ) then
+			if( irEmitPUSHARG( sym, param, vr, arg->arg.mode, arg->arg.lgt ) = FALSE ) then
 				'''''return NULL
 			end if
 		end if
 
-		astDel( p )
+		astDel( arg )
 
-		params += inc
+		args += inc
 
-		if( params < args ) then
-			arg = symbGetProcNextArg( proc, arg )
+		if( args < params ) then
+			param = symbGetProcNextParam( sym, param )
 		end if
 
-		p = np
+		arg = nextarg
 	loop
 
 	'' handle functions returning structs
-	hAllocTempStruct( n, proc )
+	hAllocTempStruct( n, sym )
 
 	'' signal function start for profiling
 	if( pstart <> NULL ) then
@@ -400,15 +404,15 @@ function astLoadFUNCT( byval n as ASTNODE ptr ) as IRVREG ptr
 	end if
 
 	'' return the result (same type as function ones)
-	vr = hCallProc( n, proc, mode, bytestopop, toalign )
+	vr = hCallProc( n, sym, mode, bytestopop, toalign )
 
 	'' signal function end for profiling
 	if( pend <> NULL ) then
 		if( ast.doemit ) then
 			irEmitPUSH( pcvr )
 		end if
-		proc = pend->sym
-		hCallProc( pend, proc, proc->proc.mode, 0, 0 )
+		sym = pend->sym
+		hCallProc( pend, sym, sym->proc.mode, 0, 0 )
 		astDel( pend )
 	end if
 

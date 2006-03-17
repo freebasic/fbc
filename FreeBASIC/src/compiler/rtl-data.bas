@@ -53,7 +53,7 @@ data @FB_RTL_DATARESTORE,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_DataReadStr ( byref dst as any, byval dst_size as integer, _
 ''                  byval fillrem as integer = 1 ) as void
@@ -61,94 +61,94 @@ data @FB_RTL_DATAREADSTR,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 3, _
-	 FB_DATATYPE_VOID,FB_ARGMODE_BYREF, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,1
+	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,1
 
 '' fb_DataReadWstr ( byval dst as wstring ptr, byval dst_size as integer ) as void
 data @FB_RTL_DATAREADWSTR,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_DataReadByte ( byref dst as byte ) as void
 data @FB_RTL_DATAREADBYTE,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_BYTE,FB_ARGMODE_BYREF, FALSE
+	 FB_DATATYPE_BYTE,FB_PARAMMODE_BYREF, FALSE
 
 '' fb_DataReadShort ( byref dst as short ) as void
 data @FB_RTL_DATAREADSHORT,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_SHORT,FB_ARGMODE_BYREF, FALSE
+	 FB_DATATYPE_SHORT,FB_PARAMMODE_BYREF, FALSE
 
 '' fb_DataReadInt ( byref dst as integer ) as void
 data @FB_RTL_DATAREADINT,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYREF, FALSE
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYREF, FALSE
 
 '' fb_DataReadLongint ( byref dst as longint ) as void
 data @FB_RTL_DATAREADLONGINT,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_LONGINT,FB_ARGMODE_BYREF, FALSE
+	 FB_DATATYPE_LONGINT,FB_PARAMMODE_BYREF, FALSE
 
 '' fb_DataReadUByte ( byref dst as ubyte ) as void
 data @FB_RTL_DATAREADUBYTE,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_UBYTE,FB_ARGMODE_BYREF, FALSE
+	 FB_DATATYPE_UBYTE,FB_PARAMMODE_BYREF, FALSE
 
 '' fb_DataReadUShort ( byref dst as ushort ) as void
 data @FB_RTL_DATAREADUSHORT,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_USHORT,FB_ARGMODE_BYREF, FALSE
+	 FB_DATATYPE_USHORT,FB_PARAMMODE_BYREF, FALSE
 
 '' fb_DataReadUInt ( byref dst as uinteger ) as void
 data @FB_RTL_DATAREADUINT,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_UINT,FB_ARGMODE_BYREF, FALSE
+	 FB_DATATYPE_UINT,FB_PARAMMODE_BYREF, FALSE
 
 '' fb_DataReadUInt ( byref dst as uinteger ) as void
 data @FB_RTL_DATAREADPTR,FB_RTL_DATAREADUINT, _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYREF, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE
 
 '' fb_DataReadULongint ( byref dst as ulongint ) as void
 data @FB_RTL_DATAREADULONGINT,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_ULONGINT,FB_ARGMODE_BYREF, FALSE
+	 FB_DATATYPE_ULONGINT,FB_PARAMMODE_BYREF, FALSE
 
 '' fb_DataReadSingle ( byref dst as single ) as void
 data @FB_RTL_DATAREADSINGLE,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_SINGLE,FB_ARGMODE_BYREF, FALSE
+	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYREF, FALSE
 
 '' fb_DataReadDouble ( byref dst as single ) as void
 data @FB_RTL_DATAREADDOUBLE,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYREF, FALSE
+	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYREF, FALSE
 
 '' EOL
 data NULL
@@ -240,7 +240,7 @@ function rtlDataRead( byval varexpr as ASTNODE ptr ) as integer static
     	exit function
     end if
 
-    proc = astNewFUNCT( f )
+    proc = astNewCALL( f )
 
     if( args > 1 ) then
     	'' always calc len before pushing the param
@@ -248,19 +248,19 @@ function rtlDataRead( byval varexpr as ASTNODE ptr ) as integer static
 	end if
 
     '' byref var as any
-    if( astNewPARAM( proc, varexpr ) = NULL ) then
+    if( astNewARG( proc, varexpr ) = NULL ) then
  		exit function
  	end if
 
     if( args > 1 ) then
 		'' byval dst_size as integer
-		if( astNewPARAM( proc, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+		if( astNewARG( proc, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
  			exit function
  		end if
 
 		if( args > 2 ) then
 			'' byval fillrem as integer
-			if( astNewPARAM( proc, astNewCONSTi( dtype = FB_DATATYPE_FIXSTR, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+			if( astNewARG( proc, astNewCONSTi( dtype = FB_DATATYPE_FIXSTR, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
     			exit function
     		end if
     	end if
@@ -285,7 +285,7 @@ function rtlDataRestore( byval label as FBSYMBOL ptr, _
 
     function = FALSE
 
-    proc = astNewFUNCT( PROCLOOKUP( DATARESTORE ), NULL, isprofiler )
+    proc = astNewCALL( PROCLOOKUP( DATARESTORE ), NULL, isprofiler )
 
     '' begin of data or start from label?
     if( label <> NULL ) then
@@ -302,7 +302,7 @@ function rtlDataRestore( byval label as FBSYMBOL ptr, _
 
     '' byval labeladdrs as void ptr
     expr = astNewADDR( AST_OP_ADDROF, astNewVAR( s, 0, FB_DATATYPE_BYTE ) )
-    if( astNewPARAM( proc, expr ) = NULL ) then
+    if( astNewARG( proc, expr ) = NULL ) then
  		exit function
  	end if
 

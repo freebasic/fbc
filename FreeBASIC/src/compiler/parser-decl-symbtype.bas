@@ -58,22 +58,22 @@ function hMangleFuncPtrName( byval proc as FBSYMBOL ptr, _
 					    	 byval mode as integer ) as zstring ptr static
 
     static as zstring * FB_MAXINTNAMELEN+1 mname
-    dim as FBSYMBOL ptr arg
+    dim as FBSYMBOL ptr p
     dim as integer i
 
     mname = "{fbfp}"
 
-    arg = symbGetProcHeadArg( proc )
-    for i = 0 to symbGetProcArgs( proc )-1
+    p = symbGetProcHeadParam( proc )
+    for i = 0 to symbGetProcParams( proc )-1
     	mname += "_"
 
-    	if( arg->subtype = NULL ) then
-    		mname += hex( arg->typ * cint(arg->arg.mode) )
+    	if( p->subtype = NULL ) then
+    		mname += hex( p->typ * cint(p->param.mode) )
     	else
-    		mname += hex( arg->subtype )
+    		mname += hex( p->subtype )
     	end if
 
-    	arg = symbGetArgNext( arg )
+    	p = symbGetParamNext( p )
     next
 
     mname += "@"
@@ -105,10 +105,10 @@ function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
 
 	proc = symbPreAddProc( NULL )
 
-	'' ('(' Argument? ')')
+	'' ('(' Parameters? ')')
 	if( hMatch( CHAR_LPRNT ) ) then
 
-		cArguments( proc, mode, TRUE )
+		cParameters( proc, mode, TRUE )
 		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if

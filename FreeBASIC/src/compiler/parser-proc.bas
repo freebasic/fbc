@@ -42,16 +42,17 @@ end sub
 private function hCheckPrototype( byval proto as FBSYMBOL ptr, _
 								  byval proc as FBSYMBOL ptr, _
 								  byval proc_typ as integer, _
-								  byval proc_subtype as FBSYMBOL ptr ) as integer static
+								  byval proc_subtype as FBSYMBOL ptr _
+								) as integer static
 
-    dim as FBSYMBOL ptr proc_arg, proto_arg
-    dim as integer argc, typ
+    dim as FBSYMBOL ptr proc_param, proto_param
+    dim as integer paramc, typ
 
 	function = FALSE
 
 	'' check arg count
-	argc = symbGetProcArgs( proc )
-	if( symbGetProcArgs( proto ) <> argc ) then
+	paramc = symbGetProcParams( proc )
+	if( symbGetProcParams( proto ) <> paramc ) then
 		hReportError( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
 		exit function
 	end if
@@ -69,48 +70,48 @@ private function hCheckPrototype( byval proto as FBSYMBOL ptr, _
     end if
 
 	'' check each arg
-	proto_arg = symbGetProcTailArg( proto )
-	proc_arg = symbGetProcTailArg( proc )
-	do while( proc_arg <> NULL )
-        typ = symbGetType( proto_arg )
+	proto_param = symbGetProcTailParam( proto )
+	proc_param = symbGetProcTailParam( proc )
+	do while( proc_param <> NULL )
+        typ = symbGetType( proto_param )
 
     	'' convert any AS ANY arg to the final one
     	if( typ = FB_DATATYPE_VOID ) then
-    		proto_arg->typ = proc_arg->typ
-    		proto_arg->subtype = proc_arg->subtype
+    		proto_param->typ = proc_param->typ
+    		proto_param->subtype = proc_param->subtype
 
     	'' check if types don't conflit
     	else
-    		if( proc_arg->typ <> typ ) then
-                hParamError( proc, argc )
+    		if( proc_param->typ <> typ ) then
+                hParamError( proc, paramc )
                 exit function
 
-            elseif( proc_arg->subtype <> symbGetSubtype( proto_arg ) ) then
-                hParamError( proc, argc )
+            elseif( proc_param->subtype <> symbGetSubtype( proto_param ) ) then
+                hParamError( proc, paramc )
                 exit function
     		end if
     	end if
 
     	'' and mode
-    	if( proc_arg->arg.mode <> symbGetArgMode( proto_arg ) ) then
-			hParamError( proc, argc )
+    	if( proc_param->param.mode <> symbGetParamMode( proto_param ) ) then
+			hParamError( proc, paramc )
             exit function
     	end if
 
     	'' check names and change to the new one if needed
-    	if( proc_arg->arg.mode <> FB_ARGMODE_VARARG ) then
-    		ZstrAssign( @symbGetName( proto_arg ),  symbGetName( proc_arg ) )
+    	if( proc_param->param.mode <> FB_PARAMMODE_VARARG ) then
+    		ZstrAssign( @symbGetName( proto_param ),  symbGetName( proc_param ) )
 
     		'' as both have the same type, re-set the suffix, because for example
     		'' "a as integer" on the prototype and "a%" or just "a" on the proc
     		'' declaration when in a defint context is allowed in QB
-    		proto_arg->arg.suffix = proc_arg->arg.suffix
+    		proto_param->param.suffix = proc_param->param.suffix
     	end if
 
     	'' prev arg
-    	proto_arg = proto_arg->prev
-    	proc_arg = proc_arg->prev
-    	argc -= 1
+    	proto_param = proto_param->prev
+    	proc_param = proc_param->prev
+    	paramc -= 1
     loop
 
     ''
@@ -139,11 +140,11 @@ function cSubOrFuncHeader( byval issub as integer, _
 		exit function
 	end if
 
-	typ 	= lexGetType( )
-	sym     = lexGetSymbol( )
+	typ = lexGetType( )
+	sym = lexGetSymbol( )
 	lexEatToken( id )
 	subtype = NULL
-	ptrcnt  = 0
+	ptrcnt = 0
 
 	if( (isSub) and (typ <> INVALID) ) then
     	hReportError( FB_ERRMSG_INVALIDCHARACTER )
@@ -182,11 +183,11 @@ function cSubOrFuncHeader( byval issub as integer, _
 
 	proc = symbPreAddProc( @id )
 
-	'' ('(' Arguments? ')')?
+	'' ('(' Parameters? ')')?
 	if( lexGetToken( ) = CHAR_LPRNT ) then
 		lexSkipToken( )
 
-		cArguments( proc, mode, FALSE )
+		cParameters( proc, mode, FALSE )
 
 		if( (hMatch( CHAR_RPRNT ) = FALSE) or (hGetLastError( ) <> FB_ERRMSG_OK) ) then
 			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
@@ -205,7 +206,7 @@ function cSubOrFuncHeader( byval issub as integer, _
         end if
 
         '' not argless?
-        if( symbGetProcArgs( proc ) <> 0 ) then
+        if( symbGetProcParams( proc ) <> 0 ) then
         	hReportError( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
         	exit function
         end if

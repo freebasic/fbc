@@ -485,12 +485,12 @@ enum FBTKCLASS_ENUM
 end enum
 
 
-'' argument modes
-enum FBARGMODE_ENUM
-	FB_ARGMODE_BYVAL 			= 1				'' must start at 1! used for mangling
-	FB_ARGMODE_BYREF
-	FB_ARGMODE_BYDESC
-	FB_ARGMODE_VARARG
+'' parameter modes
+enum FB_PARAMMODE
+	FB_PARAMMODE_BYVAL 			= 1				'' must start at 1! used for mangling
+	FB_PARAMMODE_BYREF
+	FB_PARAMMODE_BYDESC
+	FB_PARAMMODE_VARARG
 end enum
 
 '' call conventions
@@ -600,7 +600,7 @@ end type
 
 type FBOPTION
 	base			as integer					'' default= 0
-	argmode			as integer					'' def    = byref
+	parammode		as integer					'' def    = byref
 	explicit		as integer					'' def    = false
 	procpublic		as integer					'' def    = true
 	escapestr		as integer					'' def    = false

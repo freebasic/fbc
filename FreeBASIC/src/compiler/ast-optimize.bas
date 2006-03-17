@@ -745,7 +745,7 @@ private sub hOptConstIDX( byval n as ASTNODE ptr )
 								delnode = TRUE
 								'' not possible if there's already an index (EBP)
 								s = astGetSymbol( n->r )
-								if( symbIsArg( s ) ) then
+								if( symbIsParam( s ) ) then
 									delnode = FALSE
 								elseif( symbIsLocal( s ) ) then
 									if( symbIsStatic( s ) = FALSE ) then
@@ -1184,7 +1184,7 @@ private function hIsMultStrConcat( byval l as ASTNODE ptr, _
 			sym = astGetSymbol( l )
 			if( sym <> NULL ) then
 				if( (sym->attrib and _
-					(FB_SYMBATTRIB_ARGUMENTBYDESC or FB_SYMBATTRIB_ARGUMENTBYREF)) = 0 ) then
+					(FB_SYMBATTRIB_PARAMBYDESC or FB_SYMBATTRIB_PARAMBYREF)) = 0 ) then
 
 					if( astIsSymbolOnTree( sym, r ) = FALSE ) then
 						function = TRUE

@@ -413,7 +413,8 @@ end sub
 
 '':::::
 sub irEmitPROCBEGIN( byval proc as FBSYMBOL ptr, _
-					 byval initlabel as FBSYMBOL ptr ) static
+					 byval initlabel as FBSYMBOL ptr _
+				   ) static
 
     irFlush( )
 
@@ -424,7 +425,9 @@ end sub
 '':::::
 sub irEmitPROCEND( byval proc as FBSYMBOL ptr, _
 				   byval initlabel as FBSYMBOL ptr, _
-				   byval exitlabel as FBSYMBOL ptr ) static
+				   byval exitlabel as FBSYMBOL ptr _
+				 ) static
+
     dim as integer bytestopop, mode
 
     irFlush( )
@@ -442,11 +445,13 @@ sub irEmitPROCEND( byval proc as FBSYMBOL ptr, _
 end sub
 
 '':::::
-function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
-						  byval arg as FBSYMBOL ptr, _
-						  byval vr as IRVREG ptr, _
-						  byval pmode as integer, _
-						  byval plen as integer ) as integer static
+function irEmitPUSHARG( byval proc as FBSYMBOL ptr, _
+						byval param as FBSYMBOL ptr, _
+						byval vr as IRVREG ptr, _
+						byval pmode as integer, _
+						byval plen as integer _
+					  ) as integer static
+
     dim as IRVREG ptr vt
     dim as integer isptr
     dim as integer adtype, adclass, amode
@@ -455,8 +460,8 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
 	function = FALSE
 
 	''
-	amode  = symbGetArgMode( arg )
-	adtype = symbGetType( arg )
+	amode  = symbGetParamMode( param )
+	adtype = symbGetType( param )
 	if( adtype <> INVALID ) then
 		adclass = symbGetDataClass( adtype )
 	end if
@@ -468,12 +473,12 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
     pclass = irGetVRType( vr )
 
 	'' by descriptor?
-	if( amode = FB_ARGMODE_BYDESC ) then
+	if( amode = FB_PARAMMODE_BYDESC ) then
 
-		amode = FB_ARGMODE_BYVAL
+		amode = FB_PARAMMODE_BYVAL
 
     '' var args?
-    elseif( amode = FB_ARGMODE_VARARG ) then
+    elseif( amode = FB_PARAMMODE_VARARG ) then
 
     	'' string argument?
     	if( (pdclass = FB_DATACLASS_STRING) or _
@@ -481,28 +486,28 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
     		(pdtype = FB_DATATYPE_WCHAR) ) then
 			'' not a pointer yet?
 			if( pclass = IR_VREGTYPE_PTR ) then
-				amode = FB_ARGMODE_BYREF
+				amode = FB_PARAMMODE_BYREF
 			else
-				amode = FB_ARGMODE_BYVAL
+				amode = FB_PARAMMODE_BYVAL
 			end if
 
     	'' otherwise, pass as-is
     	else
-    		amode = FB_ARGMODE_BYVAL
+    		amode = FB_PARAMMODE_BYVAL
     	end if
 
     '' as any?
     elseif( adtype = FB_DATATYPE_VOID ) then
 
-		if( pmode = FB_ARGMODE_BYVAL ) then
+		if( pmode = FB_PARAMMODE_BYVAL ) then
 
     		'' another quirk: BYVAL strings passed to BYREF ANY args..
     		if( pdclass = FB_DATACLASS_STRING ) then
     			'' not a pointer yet?
     			if( pclass <> IR_VREGTYPE_PTR ) then
-    				amode = FB_ARGMODE_BYVAL
+    				amode = FB_PARAMMODE_BYVAL
     			else
-    				amode = FB_ARGMODE_BYREF
+    				amode = FB_PARAMMODE_BYREF
     			end if
 
     		'' zstring?
@@ -510,20 +515,20 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
     			    (pdtype = FB_DATATYPE_WCHAR) ) then
     			'' not a pointer yet?
     			if( pclass <> IR_VREGTYPE_PTR ) then
-    				amode = FB_ARGMODE_BYVAL
+    				amode = FB_PARAMMODE_BYVAL
     			else
     				pmode = INVALID
-    				amode = FB_ARGMODE_BYREF
+    				amode = FB_PARAMMODE_BYREF
     			end if
 
     		'' otherwise, pass as-is
     		else
-    			amode = FB_ARGMODE_BYVAL
+    			amode = FB_PARAMMODE_BYVAL
     		end if
 
     	'' passing an immediate?
     	elseif( irIsIMM( vr ) or (vr->typ = IR_VREGTYPE_OFS) ) then
-        	amode = FB_ARGMODE_BYVAL
+        	amode = FB_PARAMMODE_BYVAL
 
     	'' anything else, use the param type to create a temp var if needed
     	else
@@ -536,19 +541,19 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
     	'' string argument?
     	if( adclass = FB_DATACLASS_STRING ) then
 
-			if( pmode <> FB_ARGMODE_BYVAL ) then
+			if( pmode <> FB_PARAMMODE_BYVAL ) then
 
 				'' not a pointer yet?
 				if( pclass = IR_VREGTYPE_PTR ) then
 					'' BYVAL or not the mode has to be changed to byref, as
 					'' BYVAL AS STRING is actually BYREF AS ZSTRING
-					amode = FB_ARGMODE_BYREF
+					amode = FB_PARAMMODE_BYREF
 				else
-					amode = FB_ARGMODE_BYVAL
+					amode = FB_PARAMMODE_BYVAL
 				end if
 
 			else
-				amode = FB_ARGMODE_BYVAL
+				amode = FB_PARAMMODE_BYVAL
 			end if
 
 		end if
@@ -557,7 +562,7 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
 
 	'' push to stack, depending on arg mode
 	select case amode
-	case FB_ARGMODE_BYVAL
+	case FB_PARAMMODE_BYVAL
 
 		if( plen = 0 ) then
 			irEmitPUSH( vr )
@@ -565,9 +570,9 @@ function irEmitPUSHPARAM( byval proc as FBSYMBOL ptr, _
 			irEmitPUSHUDT( vr, plen )
 		end if
 
-	case FB_ARGMODE_BYREF
+	case FB_PARAMMODE_BYREF
 		'' BYVAL param? pass as-is
-		if( pmode = FB_ARGMODE_BYVAL ) then
+		if( pmode = FB_PARAMMODE_BYVAL ) then
 			irEmitPUSH( vr )
 
 		else
@@ -663,9 +668,9 @@ sub irEmitDBG( byval proc as FBSYMBOL ptr, _
 		edbgLineEnd( proc, ex )
 
 	case AST_OP_DBG_SCOPEINI
-		edbgEmitScopeINI( cptr( FBSYMBOL ptr, ex ) )
+		edbgEmitScopeINI( cast( FBSYMBOL ptr, ex ) )
 	case AST_OP_DBG_SCOPEEND
-		edbgEmitScopeEND( cptr( FBSYMBOL ptr, ex ) )
+		edbgEmitScopeEND( cast( FBSYMBOL ptr, ex ) )
 	end select
 
 end sub

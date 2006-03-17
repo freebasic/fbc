@@ -154,7 +154,7 @@ function hFloatToStr( byval value as double, _
     dim as integer expval
 
 	'' x86 little-endian assumption
-	expval = cptr( integer ptr, @value )[1]
+	expval = cast( integer ptr, @value )[1]
 
 	select case expval
 	'' -|+ infinite?
@@ -404,39 +404,41 @@ end function
 
 '':::::
 function hCreateOvlProcAlias( byval symbol as zstring ptr, _
-					    	  byval argc as integer, _
-					    	  byval arg as FBSYMBOL ptr ) as zstring ptr static
+					    	  byval params as integer, _
+					    	  byval param as FBSYMBOL ptr _
+					    	) as zstring ptr static
+
     dim as integer i, typ
-    static as zstring * FB_MAXINTNAMELEN+1 aname
+    static as zstring * FB_MAXINTNAMELEN+1 pname
 
-    aname = *symbol
-    aname += "__ovl_"
+    pname = *symbol
+    pname += "__ovl_"
 
-    for i = 0 to argc-1
-    	aname += "_"
+    for i = 0 to params-1
+    	pname += "_"
 
 		'' by descriptor?
-		if( symbGetArgMode( arg ) = FB_ARGMODE_BYDESC ) then
-			aname += "d"
+		if( symbGetParamMode( param ) = FB_PARAMMODE_BYDESC ) then
+			pname += "d"
 		end if
 
-    	typ = symbGetType( arg )
+    	typ = symbGetType( param )
     	do while( typ >= FB_DATATYPE_POINTER )
-    		aname += "p"
+    		pname += "p"
     		typ -= FB_DATATYPE_POINTER
     	loop
 
-    	aname += suffixTB( typ )
+    	pname += suffixTB( typ )
     	if( (typ = FB_DATATYPE_USERDEF) or _
     		(typ = FB_DATATYPE_ENUM) ) then
-    		aname += *symbGetOrgName( symbGetSubType( arg ) )
+    		pname += *symbGetOrgName( symbGetSubType( param ) )
     	end if
 
     	'' next
-    	arg = symbGetArgNext( arg )
+    	param = symbGetParamNext( param )
     next
 
-	function = @aname
+	function = @pname
 
 end function
 

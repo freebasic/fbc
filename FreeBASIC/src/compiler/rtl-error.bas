@@ -42,10 +42,10 @@ data @FB_RTL_ERRORTHROW,"", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 4, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
 
 ''
 '' fb_ErrorThrowEx cdecl ( byval errnum as integer, byval linenum as integer, _
@@ -55,18 +55,18 @@ data @FB_RTL_ERRORTHROWEX,"", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 5, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_ErrorSetHandler( byval newhandler as any ptr ) as any ptr
 data @FB_RTL_ERRORSETHANDLER,"", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_ErrorGetNum( ) as integer
 data @FB_RTL_ERRORGETNUM, "", _
@@ -79,7 +79,7 @@ data @FB_RTL_ERRORSETNUM, "", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_ErrorResume( ) as any ptr
 data @FB_RTL_ERRORRESUME, "", _
@@ -105,10 +105,10 @@ data @"fb_Assert","", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
 	 4, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_AssertW ( byval fname as zstring ptr, byval linenum as integer, _
 '''			    byval funcname as zstring ptr, byval expression as wstring ptr ) as void
@@ -116,10 +116,10 @@ data @"fb_Assert","fb_AssertW", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
 	 4, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_AssertWarn ( byval fname as zstring ptr, byval linenum as integer, _
 ''				   byval funcname as zstring ptr, byval expression as zstring ptr ) as void
@@ -127,10 +127,10 @@ data @"fb_AssertWarn","", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
 	 4, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_AssertWarnW ( byval fname as zstring ptr, byval linenum as integer, _
 ''				    byval funcname as zstring ptr, byval expression as wstring ptr ) as void
@@ -138,10 +138,10 @@ data @"fb_AssertWarn","fb_AssertWarnW", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
 	 4, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR,FB_PARAMMODE_BYVAL, FALSE
 
 '' EOL
 data NULL
@@ -179,7 +179,7 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 	end if
 
 	''
-	proc = astNewFUNCT( PROCLOOKUP( ERRORTHROW ) )
+	proc = astNewCALL( PROCLOOKUP( ERRORTHROW ) )
 
 	''
 	nxtlabel = symbAddLabel( NULL )
@@ -192,12 +192,12 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 	'' else, fb_ErrorThrow( linenum, module, reslabel, resnxtlabel ); -- CDECL
 
     '' linenum
-	if( astNewPARAM( proc, astNewCONSTi( linenum, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( linenum, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
     '' module
-	if( astNewPARAM( proc, astNewCONSTstr( env.inf.name ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTstr( env.inf.name ) ) = NULL ) then
     	exit function
     end if
 
@@ -207,7 +207,7 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 	else
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
-	if( astNewPARAM( proc, param ) = NULL ) then
+	if( astNewARG( proc, param ) = NULL ) then
 		exit function
 	end if
 
@@ -217,7 +217,7 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 	else
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
-	if( astNewPARAM( proc, param ) = NULL ) then
+	if( astNewARG( proc, param ) = NULL ) then
 		exit function
 	end if
 
@@ -246,7 +246,7 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
 	dim as FBSYMBOL ptr nxtlabel, reslabel
 
 	''
-	proc = astNewFUNCT( PROCLOOKUP( ERRORTHROWEX ) )
+	proc = astNewCALL( PROCLOOKUP( ERRORTHROWEX ) )
 
 	''
     reslabel = symbAddLabel( NULL )
@@ -257,17 +257,17 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
 	'' fb_ErrorThrowEx( errnum, linenum, module, reslabel, resnxtlabel );
 
 	'' errnum
-	if( astNewPARAM( proc, errexpr ) = NULL ) then
+	if( astNewARG( proc, errexpr ) = NULL ) then
 		exit sub
 	end if
 
     '' linenum
-	if( astNewPARAM( proc, astNewCONSTi( linenum, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTi( linenum, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
     	exit sub
     end if
 
     '' module
-	if( astNewPARAM( proc, astNewCONSTstr( module ) ) = NULL ) then
+	if( astNewARG( proc, astNewCONSTstr( module ) ) = NULL ) then
     	exit function
     end if
 
@@ -277,7 +277,7 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
 	else
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
-	if( astNewPARAM( proc, param ) = NULL ) then
+	if( astNewARG( proc, param ) = NULL ) then
 		exit function
 	end if
 
@@ -287,7 +287,7 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
 	else
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
-	if( astNewPARAM( proc, param ) = NULL ) then
+	if( astNewARG( proc, param ) = NULL ) then
 		exit function
 	end if
 
@@ -311,10 +311,10 @@ sub rtlErrorSetHandler( byval newhandler as ASTNODE ptr, _
     dim as ASTNODE ptr proc, expr
 
 	''
-    proc = astNewFUNCT( PROCLOOKUP( ERRORSETHANDLER ) )
+    proc = astNewCALL( PROCLOOKUP( ERRORSETHANDLER ) )
 
     '' byval newhandler as uint
-    if( astNewPARAM( proc, newhandler ) = NULL ) then
+    if( astNewARG( proc, newhandler ) = NULL ) then
     	exit sub
     end if
 
@@ -341,7 +341,7 @@ function rtlErrorGetNum as ASTNODE ptr static
     dim as ASTNODE ptr proc
 
 	''
-    proc = astNewFUNCT( PROCLOOKUP( ERRORGETNUM ) )
+    proc = astNewCALL( PROCLOOKUP( ERRORGETNUM ) )
 
     ''
     function = proc
@@ -353,10 +353,10 @@ sub rtlErrorSetNum( byval errexpr as ASTNODE ptr ) static
     dim as ASTNODE ptr proc
 
 	''
-    proc = astNewFUNCT( PROCLOOKUP( ERRORSETNUM ) )
+    proc = astNewCALL( PROCLOOKUP( ERRORSETNUM ) )
 
     '' byval errnum as integer
-    if( astNewPARAM( proc, errexpr ) = NULL ) then
+    if( astNewARG( proc, errexpr ) = NULL ) then
     	exit sub
     end if
 
@@ -377,7 +377,7 @@ sub rtlErrorResume( byval isnext as integer )
 		f = PROCLOOKUP( ERRORRESUMENEXT )
 	end if
 
-	proc = astNewFUNCT( f )
+	proc = astNewCALL( f )
 
     ''
     dst = astNewBRANCH( AST_OP_JUMPPTR, NULL, proc )

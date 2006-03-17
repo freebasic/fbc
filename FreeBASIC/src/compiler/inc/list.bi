@@ -65,13 +65,13 @@ declare function listAllocTB	( byval list as TLIST ptr, _
 					  			  byval relink as integer = TRUE ) as integer
 
 '':::::
-#define listGetHead(l) cptr(TLIST ptr, l)->head
+#define listGetHead(l) cast(TLIST ptr, l)->head
 
-#define listGetTail(l) cptr(TLIST ptr, l)->tail
+#define listGetTail(l) cast(TLIST ptr, l)->tail
 
-#define listGetPrev(n) cptr(any ptr, cptr(TLISTNODE ptr, n)->prev)
+#define listGetPrev(n) cast(any ptr, cast(TLISTNODE ptr, n)->prev)
 
-#define listGetNext(n) cptr(any ptr, cptr(TLISTNODE ptr, n)->next)
+#define listGetNext(n) cast(any ptr, cast(TLISTNODE ptr, n)->next)
 
 
 #endif '' __LIST_BI__

@@ -115,8 +115,8 @@ enum AST_NODECLASS
 	AST_NODECLASS_ENUM
 	AST_NODECLASS_BOP
 	AST_NODECLASS_UOP
-	AST_NODECLASS_FUNCT
-	AST_NODECLASS_PARAM
+	AST_NODECLASS_CALL
+	AST_NODECLASS_ARG
 	AST_NODECLASS_PTR
 	AST_NODECLASS_ADDR
 	AST_NODECLASS_ASSIGN
@@ -162,12 +162,12 @@ type ASTTEMPARRAY
 end type
 
 ''
-type AST_FUNCT
+type AST_CALL
 	isrtl			as integer
 
-	params			as integer
-	arg				as FBSYMBOL ptr
-	lastparam		as ASTNODE_ ptr					'' used to speed up PASCAL calling conv. only
+	args			as integer
+	currarg			as FBSYMBOL ptr
+	lastarg			as ASTNODE_ ptr					'' used to speed up PASCAL conv. only
 
 	arraytail 		as ASTTEMPARRAY ptr
 	strtail 		as ASTTEMPSTR ptr
@@ -176,7 +176,7 @@ type AST_FUNCT
 	profend			as ASTNODE_ ptr
 end type
 
-type AST_PARAM
+type AST_ARG
 	mode			as integer						'' to pass NULL's to byref args, etc
 	lgt				as integer						'' length, used to push UDT's by value
 end type
@@ -277,8 +277,8 @@ type ASTNODE
 		var			as AST_VAR
 		idx			as AST_IDX
 		ptr			as AST_PTR
-		proc		as AST_FUNCT
-		param		as AST_PARAM
+		call		as AST_CALL
+		arg			as AST_ARG
 		iif			as AST_IIF
 		op			as AST_OP
 		lod			as AST_LOAD
@@ -290,7 +290,7 @@ type ASTNODE
 		mem			as AST_MEM
 		stk			as AST_STK
 		chk			as AST_CHK
-		scp			as AST_SCOPE
+		scope		as AST_SCOPE
 		typeini		as AST_TYPEINI
 	end union
 
@@ -457,11 +457,11 @@ declare function 	astNewPTR			( byval ofs as integer, _
 										  byval dtype as integer, _
 										  byval subtype as FBSYMBOL ptr ) as ASTNODE ptr
 
-declare function 	astNewFUNCT			( byval sym as FBSYMBOL ptr, _
+declare function 	astNewCALL			( byval sym as FBSYMBOL ptr, _
 										  byval ptrexpr as ASTNODE ptr = NULL, _
 										  byval isprofiler as integer = FALSE ) as ASTNODE ptr
 
-declare function 	astNewPARAM			( byval f as ASTNODE ptr, _
+declare function 	astNewARG			( byval f as ASTNODE ptr, _
 										  byval p as ASTNODE ptr, _
 										  byval dtype as integer = INVALID, _
 										  byval mode as integer = INVALID ) as ASTNODE ptr
@@ -616,7 +616,7 @@ declare function 	astTypeIniGetHead	( byval tree as ASTNODE ptr ) as ASTNODE ptr
 
 #define astIsIDX(n) (n->class = AST_NODECLASS_IDX)
 
-#define astIsFUNCT(n) (n->class = AST_NODECLASS_FUNCT)
+#define astIsFUNCT(n) (n->class = AST_NODECLASS_CALL)
 
 #define astIsPTR(n) (n->class = AST_NODECLASS_PTR)
 

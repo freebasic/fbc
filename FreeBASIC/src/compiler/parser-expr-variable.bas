@@ -747,7 +747,7 @@ function cArrayIdx( byval s as FBSYMBOL ptr, _
     function = FALSE
 
     ''  argument passed by descriptor?
-    if( symbIsArgByDesc( s ) ) then
+    if( symbIsParamByDesc( s ) ) then
     	return cArgArrayIdx( s, idxexpr )
 
     '' dynamic array? (will handle common's too)
@@ -982,7 +982,7 @@ function cVariable( byref varexpr as ASTNODE ptr, _
 	end if
 
     ''
-    isbyref = symbIsArgByRef( sym )
+    isbyref = symbIsParamByRef( sym )
 
 	'' check if it's an import (only set if target is Windows)
 	isimport = symbIsImport( sym )
@@ -1111,7 +1111,7 @@ function cVarOrDeref( byref varexpr as ASTNODE ptr, _
 		if( varexpr <> NULL ) then
 			select case as const astGetClass( varexpr )
 			case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FIELD, _
-				 AST_NODECLASS_PTR, AST_NODECLASS_FUNCT
+				 AST_NODECLASS_PTR, AST_NODECLASS_CALL
 
 			case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET
 				if( checkaddrof = FALSE ) then

@@ -92,7 +92,7 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 
 	if( checkprnts = TRUE ) then
 		'' if the sub has no args, prnts are optional
-		if( symbGetProcArgs( sym ) = 0 ) then
+		if( symbGetProcParams( sym ) = 0 ) then
 			checkprnts = FALSE
 		end if
 
@@ -114,8 +114,8 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 	env.prntcnt = 0
 	env.prntopt	= not checkprnts
 
-	'' ProcParamList
-	procexpr = cProcParamList( sym, ptrexpr, FALSE, FALSE )
+	'' ProcArgList
+	procexpr = cProcArgList( sym, ptrexpr, FALSE, FALSE )
 	if( procexpr = NULL ) then
 		exit function
 	end if

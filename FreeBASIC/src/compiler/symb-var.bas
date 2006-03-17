@@ -391,12 +391,12 @@ function symbAddTempVar( byval typ as integer, _
 
 	'' alloc? (should be used only by IR)
 	if( doalloc ) then
-    	'' not shared, static or an argument?
+    	'' not shared, static or a parameter?
     	if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
-    		 			   	   FB_SYMBATTRIB_STATIC or _
-							   FB_SYMBATTRIB_ARGUMENTBYDESC or _
-    			  			   FB_SYMBATTRIB_ARGUMENTBYVAL or _
-    			  			   FB_SYMBATTRIB_ARGUMENTBYREF)) = 0 ) then
+    		 			   	FB_SYMBATTRIB_STATIC or _
+							FB_SYMBATTRIB_PARAMBYDESC or _
+    			  			FB_SYMBATTRIB_PARAMBYVAL or _
+    			  			FB_SYMBATTRIB_PARAMBYREF)) = 0 ) then
 
 			ZstrAssign( @s->alias, emitAllocLocal( env.currproc, s->lgt, s->ofs ) )
 
@@ -487,7 +487,7 @@ private sub hDelVarDims( byval s as FBSYMBOL ptr ) static
     do while( n <> NULL )
     	nxt = n->next
 
-    	listDelNode( @symb.dimlist, cptr( TLISTNODE ptr, n ) )
+    	listDelNode( @symb.dimlist, cast( TLISTNODE ptr, n ) )
 
     	n = nxt
     loop
@@ -575,11 +575,11 @@ sub symbFreeLocalDynVars( byval proc as FBSYMBOL ptr, _
     		'' not shared or static?
     		if( (s->attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0 ) then
 
-				'' not an argument?
-    			if( (s->attrib and (FB_SYMBATTRIB_ARGUMENTBYDESC or _
-    				  				   FB_SYMBATTRIB_ARGUMENTBYVAL or _
-    				  				   FB_SYMBATTRIB_ARGUMENTBYREF or _
-    				  				   FB_SYMBATTRIB_TEMP)) = 0 ) then
+				'' not a parameter?
+    			if( (s->attrib and (FB_SYMBATTRIB_PARAMBYDESC or _
+    				  			    FB_SYMBATTRIB_PARAMBYVAL or _
+    				  			    FB_SYMBATTRIB_PARAMBYREF or _
+    				  			    FB_SYMBATTRIB_TEMP)) = 0 ) then
 
 					'' array?
 					if( s->var.array.dims > 0 ) then

@@ -40,21 +40,21 @@ data @FB_RTL_PROFILEBEGINCALL, "", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_ProfileEndCall ( byval call as any ptr ) as void
 data @FB_RTL_PROFILEENDCALL, "", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_EndProfile ( byval errlevel as integer ) as integer
 data @FB_RTL_PROFILEEND, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' EOL
 data NULL
@@ -122,10 +122,10 @@ function rtlProfileBeginCall( byval symbol as FBSYMBOL ptr ) as ASTNODE ptr
 		exit function
 	end if
 
-	proc = astNewFUNCT( PROCLOOKUP( PROFILEBEGINCALL ), NULL, TRUE )
+	proc = astNewCALL( PROCLOOKUP( PROFILEBEGINCALL ), NULL, TRUE )
 
 	expr = hGetProcName( symbol )
-	if( astNewPARAM( proc, expr, INVALID, FB_ARGMODE_BYVAL ) = NULL ) then
+	if( astNewARG( proc, expr, INVALID, FB_PARAMMODE_BYVAL ) = NULL ) then
 		exit function
 	end if
 
@@ -139,7 +139,7 @@ function rtlProfileEndCall( ) as ASTNODE ptr
 
 	function = NULL
 
-    proc = astNewFUNCT( PROCLOOKUP( PROFILEENDCALL ), NULL, TRUE )
+    proc = astNewCALL( PROCLOOKUP( PROFILEENDCALL ), NULL, TRUE )
 
   	function = proc
 

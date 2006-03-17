@@ -186,8 +186,8 @@ declare sub 		irEmitLABEL			( byval label as FBSYMBOL ptr )
 
 declare sub 		irEmitRETURN		( byval bytestopop as integer )
 
-declare function	irEmitPUSHPARAM		( byval proc as FBSYMBOL ptr, _
-										  byval arg as FBSYMBOL ptr, _
+declare function	irEmitPUSHARG		( byval proc as FBSYMBOL ptr, _
+										  byval param as FBSYMBOL ptr, _
 										  byval vr as IRVREG ptr, _
 										  byval pmode as integer, _
 										  byval plen as integer ) as integer

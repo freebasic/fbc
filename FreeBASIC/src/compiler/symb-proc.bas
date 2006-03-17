@@ -38,24 +38,24 @@ const FBPREFIX_PROCRES = "{fbpr}"
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private function hCalcProcArgsLen( byval args as integer, _
-						   		   byval argtail as FBSYMBOL ptr _
-						   		 ) as integer
+private function hCalcProcParamsLen( byval params as integer, _
+						   		     byval paramtail as FBSYMBOL ptr _
+						   		   ) as integer
 
 	dim as integer i, lgt
 
 	lgt	= 0
-	do while( argtail <> NULL )
-		select case argtail->arg.mode
-		case FB_ARGMODE_BYVAL
-			lgt	+= ((argtail->lgt + (FB_INTEGERSIZE-1)) and _
+	do while( paramtail <> NULL )
+		select case paramtail->param.mode
+		case FB_PARAMMODE_BYVAL
+			lgt	+= ((paramtail->lgt + (FB_INTEGERSIZE-1)) and _
 				   not (FB_INTEGERSIZE-1))						'' x86 assumption!
 
-		case FB_ARGMODE_BYREF, FB_ARGMODE_BYDESC
+		case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
 			lgt	+= FB_POINTERSIZE
 		end select
 
-		argtail = argtail->prev
+		paramtail = paramtail->prev
 	loop
 
 	function = lgt
@@ -63,39 +63,39 @@ private function hCalcProcArgsLen( byval args as integer, _
 end function
 
 '':::::
-function symbAddProcArg( byval proc as FBSYMBOL ptr, _
-					 	 byval symbol as zstring ptr, _
-					 	 byval typ as integer, _
-					 	 byval subtype as FBSYMBOL ptr, _
-					 	 byval ptrcnt as integer, _
-					 	 byval lgt as integer, _
-					 	 byval mode as integer, _
-					 	 byval suffix as integer, _
-					 	 byval optional as integer, _
-					 	 byval optexpr as ASTNODE ptr _
-					   ) as FBSYMBOL ptr static
+function symbAddProcParam( byval proc as FBSYMBOL ptr, _
+					 	   byval symbol as zstring ptr, _
+					 	   byval typ as integer, _
+					 	   byval subtype as FBSYMBOL ptr, _
+					 	   byval ptrcnt as integer, _
+					 	   byval lgt as integer, _
+					 	   byval mode as integer, _
+					 	   byval suffix as integer, _
+					 	   byval optional as integer, _
+					 	   byval optexpr as ASTNODE ptr _
+					     ) as FBSYMBOL ptr static
 
-    dim a as FBSYMBOL ptr
+    dim as FBSYMBOL ptr param
 
     function = NULL
 
-    a = symbNewSymbol( NULL, @proc->proc.argtb, TRUE, FB_SYMBCLASS_PROCARG, _
-    				   FALSE, NULL, symbol, _
-    				   typ, subtype, ptrcnt, INVALID, TRUE )
-    if( a = NULL ) then
+    param = symbNewSymbol( NULL, @proc->proc.paramtb, TRUE, FB_SYMBCLASS_PARAM, _
+    				   	   FALSE, NULL, symbol, _
+    				   	   typ, subtype, ptrcnt, INVALID, TRUE )
+    if( param = NULL ) then
     	exit function
     end if
 
-	proc->proc.args += 1
+	proc->proc.params += 1
 
 	''
-	a->lgt = lgt
-	a->arg.mode	= mode
-	a->arg.suffix = suffix
-	a->arg.optional = optional
-	a->arg.optexpr = optexpr
+	param->lgt = lgt
+	param->param.mode = mode
+	param->param.suffix = suffix
+	param->param.optional = optional
+	param->param.optexpr = optexpr
 
-    function = a
+    function = param
 
 end function
 
@@ -209,17 +209,17 @@ private function hAddOvlProc( byval proc as FBSYMBOL ptr, _
 				              byval preservecase as integer _
 				            ) as FBSYMBOL ptr static
 
-	dim as FBSYMBOL ptr f, farg, parg
-	dim as integer argc
+	dim as FBSYMBOL ptr f, fparam, pparam
+	dim as integer params
 
 	function = NULL
 
 	'' not arg-less?
-	argc = symbGetProcArgs( proc )
-	if( argc > 0 ) then
+	params = symbGetProcParams( proc )
+	if( params > 0 ) then
 		'' can't be vararg..
-		parg = symbGetProcTailArg( proc )
-		if( parg->arg.mode = FB_ARGMODE_VARARG ) then
+		pparam = symbGetProcTailParam( proc )
+		if( pparam->param.mode = FB_PARAMMODE_VARARG ) then
 			exit function
 		end if
 	end if
@@ -228,41 +228,41 @@ private function hAddOvlProc( byval proc as FBSYMBOL ptr, _
 	f = parent
 	do while( f <> NULL )
 
-		'' same number of args?
-		if( f->proc.args = argc ) then
+		'' same number of params?
+		if( f->proc.params = params ) then
 
 			'' both arg-less?
-			if( argc = 0 ) then
+			if( params = 0 ) then
 				exit function
 			end if
 
 			'' for each arg..
-			parg = symbGetProcTailArg( proc )
-			farg = symbGetProcTailArg( f )
+			pparam = symbGetProcTailParam( proc )
+			fparam = symbGetProcTailParam( f )
 
-			do while( parg <> NULL )
+			do while( pparam <> NULL )
 				'' different modes?
-				if( parg->arg.mode <> farg->arg.mode ) then
+				if( pparam->param.mode <> fparam->param.mode ) then
 					'' one is by desc? allow byref and byval args
 					'' with the same type or subtype
-					if( parg->arg.mode = FB_ARGMODE_BYDESC ) then
+					if( pparam->param.mode = FB_PARAMMODE_BYDESC ) then
 						exit do
-					elseif( farg->arg.mode = FB_ARGMODE_BYDESC ) then
+					elseif( fparam->param.mode = FB_PARAMMODE_BYDESC ) then
 						exit do
 					end if
 				end if
 
 				'' not the same type? check next proc..
-				if( parg->typ <> farg->typ ) then
+				if( pparam->typ <> fparam->typ ) then
 					'' handle special cases: zstring ptr and string args
-					select case parg->typ
+					select case pparam->typ
 					case FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
-						if( farg->typ <> FB_DATATYPE_STRING ) then
+						if( fparam->typ <> FB_DATATYPE_STRING ) then
 							exit do
 						end if
 
 					case FB_DATATYPE_STRING
-						if( farg->typ <> FB_DATATYPE_POINTER + FB_DATATYPE_CHAR ) then
+						if( fparam->typ <> FB_DATATYPE_POINTER + FB_DATATYPE_CHAR ) then
 							exit do
 						end if
 
@@ -271,16 +271,16 @@ private function hAddOvlProc( byval proc as FBSYMBOL ptr, _
 					end select
 				end if
 
-				if( parg->subtype <> farg->subtype ) then
+				if( pparam->subtype <> fparam->subtype ) then
 					exit do
 				end if
 
-				parg = parg->prev
-				farg = farg->prev
+				pparam = pparam->prev
+				fparam = fparam->prev
 			loop
 
-			'' all args equal? can't overload..
-			if( parg = NULL ) then
+			'' all params equal? can't overload..
+			if( pparam = NULL ) then
 				exit function
 			end if
 
@@ -378,7 +378,7 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 
     realtype = hGetProcRealType( typ, subtype )
 
-    lgt = hCalcProcArgsLen( symbGetProcArgs( sym ), symbGetProcTailArg( sym ) )
+    lgt = hCalcProcParamsLen( symbGetProcParams( sym ), symbGetProcTailParam( sym ) )
 
     '' no alias? make one..
     if( aliasname = NULL ) then
@@ -388,8 +388,8 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
     	'' overloaded?
 		if( (attrib and FB_SYMBATTRIB_OVERLOADED) > 0 ) then
 			aname = *hCreateOvlProcAlias( aname, _
-										  symbGetProcArgs( sym ), _
-										  symbGetProcHeadArg( sym ) )
+										  symbGetProcParams( sym ), _
+										  symbGetProcHeadParam( sym ) )
 		end if
 
 		aname = *hCreateProcAlias( aname, lgt, mode )
@@ -424,8 +424,8 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
     			hUcase( *id, aname )
 
 				aname = *hCreateOvlProcAlias( aname, _
-											  symbGetProcArgs( sym ), _
-											  symbGetProcHeadArg( sym ) )
+											  symbGetProcParams( sym ), _
+											  symbGetProcHeadParam( sym ) )
 
 				aname = *hCreateProcAlias( aname, lgt, mode )
 			end if
@@ -480,12 +480,12 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 			proc->proc.ovl.next = parent->proc.ovl.next
 			parent->proc.ovl.next = proc
 
-			if( symbGetProcArgs( proc ) > parent->proc.ovl.maxargs ) then
-				parent->proc.ovl.maxargs = symbGetProcArgs( proc )
+			if( symbGetProcParams( proc ) > parent->proc.ovl.maxparams ) then
+				parent->proc.ovl.maxparams = symbGetProcParams( proc )
 			end if
 		else
 			proc->proc.ovl.next = NULL
-			proc->proc.ovl.maxargs = symbGetProcArgs( proc )
+			proc->proc.ovl.maxparams = symbGetProcParams( proc )
 		end if
 
 	'' ctor or dtor? even if private it should be always emitted
@@ -562,9 +562,9 @@ function symbPreAddProc( byval symbol as zstring ptr ) as FBSYMBOL ptr static
 	end if
 
 	proc->class = FB_SYMBCLASS_PROC
-	proc->proc.args	= 0
-	proc->proc.argtb.head = NULL
-	proc->proc.argtb.tail = NULL
+	proc->proc.params	= 0
+	proc->proc.paramtb.head = NULL
+	proc->proc.paramtb.tail = NULL
 	proc->name = symbol
 
 	function = proc
@@ -572,41 +572,41 @@ function symbPreAddProc( byval symbol as zstring ptr ) as FBSYMBOL ptr static
 end function
 
 '':::::
-function symbAddArg( byval symbol as zstring ptr, _
-					 byval arg as FBSYMBOL ptr _
-				   ) as FBSYMBOL ptr static
+function symbAddParam( byval symbol as zstring ptr, _
+					   byval param as FBSYMBOL ptr _
+				     ) as FBSYMBOL ptr static
 
     dim as FBARRAYDIM dTB(0)
     dim as FBSYMBOL ptr s
-    dim as integer attrib, typ
+    dim as integer attrib, dtype
 
 	function = NULL
 
-	typ = arg->typ
+	dtype = param->typ
 
-	select case as const arg->arg.mode
-    case FB_ARGMODE_BYVAL
+	select case as const param->param.mode
+    case FB_PARAMMODE_BYVAL
     	'' byval string? it's actually an pointer to a zstring
-    	if( typ = FB_DATATYPE_STRING ) then
-    		attrib = FB_SYMBATTRIB_ARGUMENTBYREF
-    		typ = FB_DATATYPE_CHAR
+    	if( dtype = FB_DATATYPE_STRING ) then
+    		attrib = FB_SYMBATTRIB_PARAMBYREF
+    		dtype = FB_DATATYPE_CHAR
     	else
-    		attrib = FB_SYMBATTRIB_ARGUMENTBYVAL
+    		attrib = FB_SYMBATTRIB_PARAMBYVAL
     	end if
 
-	case FB_ARGMODE_BYREF
-	    attrib = FB_SYMBATTRIB_ARGUMENTBYREF
+	case FB_PARAMMODE_BYREF
+	    attrib = FB_SYMBATTRIB_PARAMBYREF
 
-	case FB_ARGMODE_BYDESC
-    	attrib = FB_SYMBATTRIB_ARGUMENTBYDESC
+	case FB_PARAMMODE_BYDESC
+    	attrib = FB_SYMBATTRIB_PARAMBYDESC
 
 	case else
     	exit function
 	end select
 
-    s = symbAddVarEx( symbol, NULL, typ, arg->subtype, 0, 0, _
+    s = symbAddVarEx( symbol, NULL, dtype, param->subtype, 0, 0, _
     				  0, dTB(), attrib, _
-    				  arg->arg.suffix <> INVALID, FALSE, TRUE )
+    				  param->param.suffix <> INVALID, FALSE, TRUE )
 
     if( s = NULL ) then
     	exit function
@@ -617,7 +617,7 @@ function symbAddArg( byval symbol as zstring ptr, _
 end function
 
 '':::::
-function symbAddProcResArg( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
+function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
     static as zstring * FB_MAXINTNAMELEN+1 symbol
     dim as FBARRAYDIM dTB(0)
     dim as FBSYMBOL ptr s
@@ -637,7 +637,7 @@ function symbAddProcResArg( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
 
     s = symbAddVarEx( @symbol, NULL, _
     				  FB_DATATYPE_POINTER+FB_DATATYPE_USERDEF, proc->subtype, 0, 0, _
-    				  0, dTB(), FB_SYMBATTRIB_ARGUMENTBYVAL, _
+    				  0, dTB(), FB_SYMBATTRIB_PARAMBYVAL, _
     				  TRUE, TRUE, FALSE )
 
 	function = s
@@ -684,17 +684,17 @@ function symbProcAllocLocals( byval proc as FBSYMBOL ptr ) as integer static
     		if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
     			 				FB_SYMBATTRIB_STATIC)) = 0 ) then
 
-				'' not an argument?
-    			if( (s->attrib and (FB_SYMBATTRIB_ARGUMENTBYDESC or _
-    						   	    FB_SYMBATTRIB_ARGUMENTBYVAL or _
-    			  				   	FB_SYMBATTRIB_ARGUMENTBYREF)) = 0 ) then
+				'' not a parameter?
+    			if( (s->attrib and (FB_SYMBATTRIB_PARAMBYDESC or _
+    						   	    FB_SYMBATTRIB_PARAMBYVAL or _
+    			  				   	FB_SYMBATTRIB_PARAMBYREF)) = 0 ) then
 
 					lgt = s->lgt * symbGetArrayElements( s )
 					ZstrAssign( @s->alias, emitAllocLocal( env.currproc, lgt, s->ofs ) )
 
-				'' argument..
+				'' parameter..
 				else
-					lgt = iif( (s->attrib and FB_SYMBATTRIB_ARGUMENTBYVAL), _
+					lgt = iif( (s->attrib and FB_SYMBATTRIB_PARAMBYVAL), _
 						   	   s->lgt, _
 						   	   FB_POINTERSIZE )
 					ZstrAssign( @s->alias, emitAllocArg( env.currproc, lgt, s->ofs ) )
@@ -753,10 +753,11 @@ end function
 
 '':::::
 function symbFindOverloadProc( byval parent as FBSYMBOL ptr, _
-							   byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
+							   byval proc as FBSYMBOL ptr _
+							 ) as FBSYMBOL ptr static
 
-	dim as FBSYMBOL ptr f, farg, parg, fsubtype, psubtype
-	dim as integer argc
+	dim as FBSYMBOL ptr f, fparam, pparam, fsubtype, psubtype
+	dim as integer params
 
 	''
 	if( (parent = NULL) or (proc = NULL) ) then
@@ -769,49 +770,49 @@ function symbFindOverloadProc( byval parent as FBSYMBOL ptr, _
 		return NULL
 	end if
 
-	argc = symbGetProcArgs( proc )
+	params = symbGetProcParams( proc )
 
 	'' for each proc starting from parent..
 	f = parent
 	do while( f <> NULL )
 
-		if( argc = f->proc.args ) then
+		if( params = f->proc.params ) then
 
 			'' arg-less?
-			if( argc = 0 ) then
+			if( params = 0 ) then
 				return f
 			end if
 
 			'' for each arg..
-			farg = symbGetProcTailArg( f )
-			parg = symbGetProcTailArg( proc )
-			do while( parg <> NULL )
+			fparam = symbGetProcTailParam( f )
+			pparam = symbGetProcTailParam( proc )
+			do while( pparam <> NULL )
 
 				'' different modes?
-				if( parg->arg.mode <> farg->arg.mode ) then
+				if( pparam->param.mode <> fparam->param.mode ) then
 					'' one is by desc? can't be the same..
-					if( parg->arg.mode = FB_ARGMODE_BYDESC ) then
+					if( pparam->param.mode = FB_PARAMMODE_BYDESC ) then
 						exit do
-					elseif( farg->arg.mode = FB_ARGMODE_BYDESC ) then
+					elseif( fparam->param.mode = FB_PARAMMODE_BYDESC ) then
 						exit do
 					end if
 				end if
 
 				'' not the same type? check next proc..
-				if( parg->typ <> farg->typ ) then
+				if( pparam->typ <> fparam->typ ) then
 					exit do
 				end if
 
-				if( parg->subtype <> farg->subtype ) then
+				if( pparam->subtype <> fparam->subtype ) then
 					exit do
 				end if
 
-				parg = parg->prev
-				farg = farg->prev
+				pparam = pparam->prev
+				fparam = fparam->prev
 			loop
 
 			'' all args equal?
-			if( parg = NULL ) then
+			if( pparam = NULL ) then
 				return f
 			end if
 
@@ -829,33 +830,33 @@ const FB_OVLPROC_FULLMATCH = 1073741824 \ FB_MAXPROCARGS
 const FB_OVLPROC_HALFMATCH = FB_OVLPROC_FULLMATCH \ 2
 
 '':::::
-private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
-							   byval pexpr as ASTNODE ptr, _
-							   byval pmode as integer _
-							 ) as integer static
+private function hCheckOvlParam( byval param as FBSYMBOL ptr, _
+	  						     byval pexpr as ASTNODE ptr, _
+							     byval pmode as integer _
+							   ) as integer static
 
 	dim as integer pdtype, pdclass, adtype
 	dim as FBSYMBOL ptr s, psubtype
 
-	'' param optional?
+	'' arg not passed?
 	if( pexpr = NULL ) then
-		'' but arg isn't?
-		if( symbGetArgOptional( arg ) = FALSE ) then
+		'' but param isn't optional?
+		if( symbGetParamOptional( param ) = FALSE ) then
 			return 0
 		end if
 
 		return FB_OVLPROC_FULLMATCH
     end if
 
-	adtype = symbGetType( arg )
+	adtype = symbGetType( param )
 
 	pdtype = astGetDataType( pexpr )
 	psubtype = astGetSubType( pexpr )
 
 	'' by descriptor arg?
-	if( symbGetArgMode( arg ) = FB_ARGMODE_BYDESC ) then
+	if( symbGetParamMode( param ) = FB_PARAMMODE_BYDESC ) then
 		'' but param isn't?
-		if( pmode <> FB_ARGMODE_BYDESC ) then
+		if( pmode <> FB_PARAMMODE_BYDESC ) then
 			return 0
 		end if
 
@@ -864,14 +865,14 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
         	return 0
         end if
 
-        if( symbGetSubType( arg ) <> psubtype ) then
+        if( symbGetSubType( param ) <> psubtype ) then
         	return 0
         end if
 
 		return FB_OVLPROC_FULLMATCH
 
 	'' by descriptor param?
-	elseif( pmode = FB_ARGMODE_BYDESC ) then
+	elseif( pmode = FB_PARAMMODE_BYDESC ) then
 		'' refuse
 		return 0
 	end if
@@ -879,7 +880,7 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 	'' same types?
 	if( adtype = pdtype ) then
 		'' check the subtype
-		if( symbGetSubType( arg ) <> psubtype ) then
+		if( symbGetSubType( param ) <> psubtype ) then
 
 			'' check classes
 			select case symbGetDataClass( adtype )
@@ -1029,7 +1030,7 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 		'' not another udt?
 		if( pdclass <> FB_DATACLASS_UDT ) then
 			'' not a proc? (can be an UDT been returned in registers)
-			if( astGetClass( pexpr ) <> AST_NODECLASS_FUNCT ) then
+			if( astGetClass( pexpr ) <> AST_NODECLASS_CALL ) then
 				return 0
 			end if
 
@@ -1048,7 +1049,7 @@ private function hCheckOvlArg( byval arg as FBSYMBOL ptr, _
 		end if
 
         '' can't be different
-		if( symbGetSubType( arg ) <> s ) then
+		if( symbGetSubType( param ) <> s ) then
 			return 0
 		end if
 
@@ -1065,13 +1066,13 @@ end function
 
 '':::::
 function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
-					   		     byval params as integer, _
+					   		     byval args as integer, _
 					   		     exprTB() as ASTNODE ptr, _
 					   		     modeTB() as integer _
 					   		   ) as FBSYMBOL ptr static
 
-	dim as FBSYMBOL ptr ovlproc, arg
-	dim as integer p, argmatches, matches, maxmatches, ambcnt
+	dim as FBSYMBOL ptr ovlproc, param
+	dim as integer i, argmatches, matches, maxmatches, ambcnt
 
 	ovlproc = NULL
 	maxmatches = 0
@@ -1080,44 +1081,44 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 	'' for each proc..
 	do while( proc <> NULL )
 
-		if( params <= symbGetProcArgs( proc ) ) then
+		if( args <= symbGetProcParams( proc ) ) then
 
 			'' arg-less? exit..
-			if( symbGetProcArgs( proc ) = 0 ) then
+			if( symbGetProcParams( proc ) = 0 ) then
 				return proc
 			end if
 
-			arg = symbGetProcLastArg( proc )
+			param = symbGetProcLastParam( proc )
 			matches = 0
 
 			'' for each arg..
-			for p = 0 to params-1
+			for i = 0 to args-1
 
-				argmatches = hCheckOvlArg( arg, exprTB(p), modeTB(p) )
+				argmatches = hCheckOvlParam( param, exprTB(i), modeTB(i) )
 				if( argmatches = 0 ) then
 					matches = 0
 					exit for
 				end if
 				matches += argmatches
 
-               	'' next arg
-				arg = symbGetProcPrevArg( proc, arg )
+               	'' next param
+				param = symbGetProcPrevParam( proc, param )
 			next
 
 			'' fewer params? check if the ones missing are optional
-			if( params < symbGetProcArgs( proc ) ) then
-				if( (matches > 0) or (params = 0) ) then
-					do while( arg <> NULL )
+			if( args < symbGetProcParams( proc ) ) then
+				if( (matches > 0) or (args = 0) ) then
+					do while( param <> NULL )
 			    		'' not optional? exit
-			    		if( symbGetArgOptional( arg ) = FALSE ) then
+			    		if( symbGetParamOptional( param ) = FALSE ) then
 			    			matches = 0
 			    			exit do
 			    		else
 			    			matches += FB_OVLPROC_FULLMATCH
 			    		end if
 
-						'' next arg
-						arg = symbGetProcPrevArg( proc, arg )
+						'' next param
+						param = symbGetProcPrevParam( proc, param )
 					loop
 				end if
 			end if
@@ -1153,14 +1154,14 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private sub hDelArgs( byval f as FBSYMBOL ptr )
-	dim as FBSYMBOL ptr a, n
+private sub hDelParams( byval f as FBSYMBOL ptr )
+	dim as FBSYMBOL ptr param, nxt
 
-    a = f->proc.argtb.head
-    do while( a <> NULL )
-    	n = a->next
-    	symbFreeSymbol( a )
-    	a = n
+    param = f->proc.paramtb.head
+    do while( param <> NULL )
+    	nxt = param->next
+    	symbFreeSymbol( param )
+    	param = nxt
     loop
 
 end sub
@@ -1188,8 +1189,8 @@ sub symbDelPrototype( byval s as FBSYMBOL ptr, _
 		end if
 
 		'' del args..
-		if( s->proc.args > 0 ) then
-			hDelArgs( s )
+		if( s->proc.params > 0 ) then
+			hDelParams( s )
 		end if
 
     	''
@@ -1211,13 +1212,14 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbCalcArgLen( byval typ as integer, _
-						 byval subtype as FBSYMBOL ptr, _
-						 byval mode as integer ) as integer static
+function symbCalcParamLen( byval typ as integer, _
+						   byval subtype as FBSYMBOL ptr, _
+						   byval mode as integer _
+						 ) as integer static
     dim lgt as integer
 
 	select case mode
-	case FB_ARGMODE_BYREF, FB_ARGMODE_BYDESC
+	case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
 		lgt = FB_POINTERSIZE
 	case else
 		if( typ = FB_DATATYPE_STRING ) then

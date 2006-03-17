@@ -145,7 +145,7 @@ sub rtlAddIntrinsicProcs( )
 
 		proc = symbPreAddProc( NULL )
 
-		'' for each argument..
+		'' for each parameter..
 		for a = 0 to pargs-1
 			read atype, amode, optional
 
@@ -173,17 +173,17 @@ sub rtlAddIntrinsicProcs( )
 			end if
 
 			if( atype <> INVALID ) then
-				alen = symbCalcArgLen( atype, NULL, amode )
+				alen = symbCalcParamLen( atype, NULL, amode )
 			else
 				alen = FB_POINTERSIZE
 			end if
 
 			CNTPTR( atype, typ, ptrcnt )
 
-			symbAddProcArg( proc, NULL, _
-							atype, NULL, ptrcnt, _
-							alen, amode, INVALID, _
-							optional, optval )
+			symbAddProcParam( proc, NULL, _
+							  atype, NULL, ptrcnt, _
+							  alen, amode, INVALID, _
+							  optional, optval )
 		next
 
 		''
@@ -242,7 +242,7 @@ function rtlProcLookup( byval pname as zstring ptr, _
 end function
 
 '':::::
-'' note: this function must be called *before* astNewPARAM(e) because the
+'' note: this function must be called *before* astNewARG(e) because the
 ''       expression 'e' can be changed inside the former (address-of string's etc)
 function rtlCalcExprLen( byval expr as ASTNODE ptr, _
 						 byval unpadlen as integer = TRUE _
@@ -280,7 +280,7 @@ function rtlCalcExprLen( byval expr as ASTNODE ptr, _
 end function
 
 '':::::
-'' note: this function must be called *before* astNewPARAM(e) because the
+'' note: this function must be called *before* astNewARG(e) because the
 ''		 expression 'e' can be changed inside the former (address-of string's etc)
 function rtlCalcStrLen( byval expr as ASTNODE ptr, _
 						byval dtype as integer _

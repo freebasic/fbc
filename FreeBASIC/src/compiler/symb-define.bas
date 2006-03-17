@@ -112,11 +112,9 @@ sub symbInitDefines( byval ismain as integer ) static
 	dim as string def, value
 	dim as integer i
 
-    listNew( @symb.defarglist, FB_INITDEFARGNODES, len( FBDEFARG ), FALSE )
+    listNew( @symb.defparamlist, FB_INITDEFARGNODES, len( FB_DEFPARAM ), FALSE )
 
-    listNew( @symb.deftoklist, FB_INITDEFTOKNODES, len( FBDEFTOK ), FALSE )
-
-    symb.defargcnt = 0
+    listNew( @symb.deftoklist, FB_INITDEFTOKNODES, len( FB_DEFTOK ), FALSE )
 
     for i = 0 to SYMB_MAXDEFINES-1
     	if( len( defTb(i).name ) = 0 ) then
@@ -189,8 +187,8 @@ function symbAddDefine( byval symbol as zstring ptr, _
 	d->def.text	= ZstrAllocate( lgt )
 	*d->def.text = *text
 	d->lgt = lgt
-	d->def.args	= 0
-	d->def.arghead = NULL
+	d->def.params	= 0
+	d->def.paramhead = NULL
 	d->def.isargless = isargless
 	d->def.proc = proc
     d->def.flags = flags
@@ -232,8 +230,8 @@ function symbAddDefineW( byval symbol as zstring ptr, _
 	d->def.textw = WstrAllocate( lgt )
 	*d->def.textw = *text
 	d->lgt = lgt
-	d->def.args	= 0
-	d->def.arghead = NULL
+	d->def.params = 0
+	d->def.paramhead = NULL
 	d->def.isargless = isargless
 	d->def.proc = proc
     d->def.flags = flags
@@ -245,9 +243,9 @@ end function
 
 '':::::
 function symbAddDefineMacro( byval symbol as zstring ptr, _
-							 byval tokhead as FBDEFTOK ptr, _
-							 byval args as integer, _
-						 	 byval arghead as FBDEFARG ptr _
+							 byval tokhead as FB_DEFTOK ptr, _
+							 byval params as integer, _
+						 	 byval paramhead as FB_DEFPARAM ptr _
 						   ) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr d
@@ -271,8 +269,8 @@ function symbAddDefineMacro( byval symbol as zstring ptr, _
 
 	''
 	d->def.tokhead = tokhead
-	d->def.args	= args
-	d->def.arghead = arghead
+	d->def.params = params
+	d->def.paramhead = paramhead
 	d->def.isargless = FALSE
 	d->def.proc = NULL
     d->def.flags = 0
@@ -283,39 +281,38 @@ function symbAddDefineMacro( byval symbol as zstring ptr, _
 end function
 
 '':::::
-function symbAddDefineArg( byval lastarg as FBDEFARG ptr, _
-						   byval symbol as zstring ptr _
-						 ) as FBDEFARG ptr static
-    dim a as FBDEFARG ptr
+function symbAddDefineParam( byval lastparam as FB_DEFPARAM ptr, _
+						     byval symbol as zstring ptr _
+						   ) as FB_DEFPARAM ptr static
+
+    dim as FB_DEFPARAM ptr param
 
     function = NULL
 
-    a = listNewNode( @symb.defarglist )
-    if( a = NULL ) then
+    param = listNewNode( @symb.defparamlist )
+    if( param = NULL ) then
     	exit function
     end if
 
-	if( lastarg <> NULL ) then
-		lastarg->next = a
+	if( lastparam <> NULL ) then
+		lastparam->next = param
 	end if
 
 	''
-    a->name	= ZstrAllocate( len( *symbol ) )
-    hUcase( *symbol, *a->name )
-    a->next	= NULL
-    a->id = symb.defargcnt
-    symb.defargcnt += 1
+    param->name	= ZstrAllocate( len( *symbol ) )
+    hUcase( *symbol, *param->name )
+    param->next	= NULL
 
-    function = a
+    function = param
 
 end function
 
 '':::::
-function symbAddDefineTok( byval lasttok as FBDEFTOK ptr, _
+function symbAddDefineTok( byval lasttok as FB_DEFTOK ptr, _
 						   byval typ as FB_DEFTOK_TYPE _
-						 ) as FBDEFTOK ptr static
+						 ) as FB_DEFTOK ptr static
 
-    dim t as FBDEFTOK ptr
+    dim t as FB_DEFTOK ptr
 
     function = NULL
 
@@ -343,22 +340,22 @@ function symbAddDefineTok( byval lasttok as FBDEFTOK ptr, _
 end function
 
 '':::::
-private sub hDelDefineArgs( byval s as FBSYMBOL ptr )
-	dim as FBDEFARG ptr arg, nxt
+private sub hDelDefineParams( byval s as FBSYMBOL ptr )
+	dim as FB_DEFPARAM ptr param, nxt
 
-    arg = s->def.arghead
-    do while( arg <> NULL )
-    	nxt = arg->next
-    	ZstrFree( arg->name )
-    	listDelNode( @symb.defarglist, cptr( TLISTNODE ptr, arg ) )
-    	arg = nxt
+    param = s->def.paramhead
+    do while( param <> NULL )
+    	nxt = param->next
+    	ZstrFree( param->name )
+    	listDelNode( @symb.defparamlist, cast( TLISTNODE ptr, param ) )
+    	param = nxt
     loop
 
 end sub
 
 '':::::
 private sub hDelDefineTokens( byval s as FBSYMBOL ptr )
-	dim as FBDEFTOK ptr tok, nxt
+	dim as FB_DEFTOK ptr tok, nxt
 
     tok = s->def.tokhead
     do while( tok <> NULL )
@@ -371,7 +368,7 @@ private sub hDelDefineTokens( byval s as FBSYMBOL ptr )
     		WstrFree( tok->textw )
     	end select
 
-    	listDelNode( @symb.deftoklist, cptr( TLISTNODE ptr, tok ) )
+    	listDelNode( @symb.deftoklist, cast( TLISTNODE ptr, tok ) )
     	tok = nxt
     loop
 
@@ -379,8 +376,8 @@ end sub
 
 '':::::
 function symbDelDefine( byval s as FBSYMBOL ptr, _
-				        byval dolookup as integer ) as integer static
-    dim arg as FBDEFARG ptr, narg as FBDEFARG ptr
+				        byval dolookup as integer _
+				      ) as integer static
 
     function = FALSE
 
@@ -393,7 +390,7 @@ function symbDelDefine( byval s as FBSYMBOL ptr, _
     end if
 
 	''
-	if( symbGetDefineArgs( s ) = 0 ) then
+	if( symbGetDefineParams( s ) = 0 ) then
 		if( symbGetType( s ) <> FB_DATATYPE_WCHAR ) then
 			ZstrFree( s->def.text )
 		else
@@ -403,7 +400,8 @@ function symbDelDefine( byval s as FBSYMBOL ptr, _
 		hDelDefineTokens( s )
 	end if
 
-	hDelDefineArgs( s )
+	''
+	hDelDefineParams( s )
 
     '' del the define node
     symbFreeSymbol( s )

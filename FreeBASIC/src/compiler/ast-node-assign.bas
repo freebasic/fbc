@@ -90,7 +90,7 @@ private function hCheckUDTOps( byval l as ASTNODE ptr, _
 		exit function
 	else
 		'' "udtfunct() = udt" is not allowed, l node must be a variable
-		if( l->class = AST_NODECLASS_FUNCT ) then
+		if( l->class = AST_NODECLASS_CALL ) then
 			exit function
 		end if
 	end if
@@ -111,7 +111,7 @@ private function hCheckUDTOps( byval l as ASTNODE ptr, _
 	'' r isn't an UDT
 	else
 		'' not a function returning an UDT on regs?
-		if( r->class <> AST_NODECLASS_FUNCT ) then
+		if( r->class <> AST_NODECLASS_CALL ) then
 			exit function
 		end if
 

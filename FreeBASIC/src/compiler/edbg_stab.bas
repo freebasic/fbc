@@ -443,9 +443,9 @@ private sub hDeclArgs( byval proc as FBSYMBOL ptr ) static
 
     	if( symbIsVar( s ) ) then
 			'' an argument?
-    		if( (s->attrib and (FB_SYMBATTRIB_ARGUMENTBYDESC or _
-    			  				   FB_SYMBATTRIB_ARGUMENTBYVAL or _
-    			  				   FB_SYMBATTRIB_ARGUMENTBYREF)) <> 0 ) then
+    		if( (s->attrib and (FB_SYMBATTRIB_PARAMBYDESC or _
+    			  				   FB_SYMBATTRIB_PARAMBYVAL or _
+    			  				   FB_SYMBATTRIB_PARAMBYREF)) <> 0 ) then
 
 				edbgEmitProcArg( s )
 			end if
@@ -551,9 +551,9 @@ private sub hDeclLocalVars( byval proc as FBSYMBOL ptr, _
 
 		'' not an argument, temporary or descriptor?
     		if( (symbGetAttrib( s ) and _
-    			 (FB_SYMBATTRIB_ARGUMENTBYDESC or _
-			   	  FB_SYMBATTRIB_ARGUMENTBYVAL or _
-			   	  FB_SYMBATTRIB_ARGUMENTBYREF or _
+    			 (FB_SYMBATTRIB_PARAMBYDESC or _
+			   	  FB_SYMBATTRIB_PARAMBYVAL or _
+			   	  FB_SYMBATTRIB_PARAMBYREF or _
     		   	  FB_SYMBATTRIB_TEMP or _
     		   	  FB_SYMBATTRIB_DESCRIPTOR)) = 0 ) then
 				edbgEmitLocalVar( s, symbIsStatic( s ) )
@@ -780,7 +780,7 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
     '' array?
     if( symbIsArray( sym ) ) then
     	'' dynamic?
-    	if( symbIsDynamic( sym ) or symbIsArgByDesc( sym ) ) then
+    	if( symbIsDynamic( sym ) or symbIsParamByDesc( sym ) ) then
     		desc = hDeclDynArray( sym )
     	else
     		desc = hDeclArrayDims( sym )
@@ -1006,13 +1006,13 @@ sub edbgEmitProcArg( byval sym as FBSYMBOL ptr ) static
 
     desc = *symbGetOrgName( sym ) + ":"
 
-    if( symbIsArgByVal( sym ) ) then
+    if( symbIsParamByVal( sym ) ) then
 	    desc += "p"
 
-	elseif( symbIsArgByRef( sym ) ) then
+	elseif( symbIsParamByRef( sym ) ) then
 		desc += "v"
 
-	elseif( symbIsArgByDesc( sym ) ) then
+	elseif( symbIsParamByDesc( sym ) ) then
     	desc += "v"
 	end if
 

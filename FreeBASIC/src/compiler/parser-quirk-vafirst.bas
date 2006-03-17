@@ -33,7 +33,7 @@ option escape
 ''
 function cVAFunct( byref funcexpr as ASTNODE ptr ) as integer
     dim as ASTNODE ptr expr
-    dim as FBSYMBOL ptr arg, proc, sym
+    dim as FBSYMBOL ptr param, proc, sym
 
 	function = FALSE
 
@@ -47,21 +47,21 @@ function cVAFunct( byref funcexpr as ASTNODE ptr ) as integer
 		exit function
 	end if
 
-	arg = symbGetProcTailArg( proc )
-	if( arg = NULL ) then
+	param = symbGetProcTailParam( proc )
+	if( param = NULL ) then
 		exit function
 	end if
 
-	if( symbGetArgMode( arg ) <> FB_ARGMODE_VARARG ) then
+	if( symbGetParamMode( param ) <> FB_PARAMMODE_VARARG ) then
 		exit function
 	end if
 
-	arg = symbGetProcNextArg( proc, arg )
-	if( arg = NULL ) then
+	param = symbGetProcNextParam( proc, param )
+	if( param = NULL ) then
 		exit function
 	end if
 
-	sym = symbFindByNameAndClass( symbGetName( arg ), FB_SYMBCLASS_VAR )
+	sym = symbFindByNameAndClass( symbGetName( param ), FB_SYMBCLASS_VAR )
 	if( sym = NULL ) then
 		exit function
 	end if
@@ -74,16 +74,16 @@ function cVAFunct( byref funcexpr as ASTNODE ptr ) as integer
 		hMatchRPRNT( )
 	end if
 
-	'' @arg
+	'' @param
 	expr = astNewVAR( sym, 0, symbGetType( sym ), NULL )
 	expr = astNewADDR( AST_OP_ADDROF, expr )
 
-	'' + arglen( arg )
+	'' + paramlen( param )
 	funcexpr = astNewBOP( AST_OP_ADD, _
 						  expr, _
-						  astNewCONSTi( symbCalcArgLen( arg->typ, _
-						  								arg->subtype, _
-						  								arg->arg.mode ), _
+						  astNewCONSTi( symbCalcparamLen( param->typ, _
+						  								  param->subtype, _
+						  								  param->param.mode ), _
 						  				FB_DATATYPE_UINT ) )
 
 

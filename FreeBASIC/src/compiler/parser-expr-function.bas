@@ -54,8 +54,8 @@ function cFunctionCall( byval sym as FBSYMBOL ptr, _
 	if( lexGetToken( ) = CHAR_LPRNT ) then
 		lexSkipToken( )
 
-		'' ProcParamList
-		funcexpr = cProcParamList( sym, ptrexpr, TRUE, FALSE )
+		'' ProcArgList
+		funcexpr = cProcArgList( sym, ptrexpr, TRUE, FALSE )
 		if( funcexpr = NULL ) then
 			exit function
 		end if
@@ -67,8 +67,8 @@ function cFunctionCall( byval sym as FBSYMBOL ptr, _
 		end if
 
 	else
-		'' ProcParamList (function can have optional args)
-		funcexpr = cProcParamList( sym, ptrexpr, TRUE, TRUE )
+		'' ProcArgList (function can have optional params)
+		funcexpr = cProcArgList( sym, ptrexpr, TRUE, TRUE )
 		if( funcexpr = NULL ) then
 			exit function
 		end if

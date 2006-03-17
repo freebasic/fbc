@@ -41,39 +41,39 @@ data @FB_RTL_LONGINTDIV,"", _
 	 FB_DATATYPE_LONGINT,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_DATATYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_LONGINT,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_LONGINT,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_ULongintDIV ( byval x as ulongint, byval y as ulongint ) as ulongint
 data @FB_RTL_ULONGINTDIV,"", _
 	 FB_DATATYPE_ULONGINT,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_DATATYPE_ULONGINT,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_ULONGINT,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_ULONGINT,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_ULONGINT,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_LongintMOD ( byval x as longint, byval y as longint ) as longint
 data @FB_RTL_LONGINTMOD,"", _
 	 FB_DATATYPE_LONGINT,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_DATATYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_LONGINT,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_LONGINT,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_LONGINT,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_ULongintMOD ( byval x as ulongint, byval y as ulongint ) as ulongint
 data @FB_RTL_ULONGINTMOD,"", _
 	 FB_DATATYPE_ULONGINT,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_DATATYPE_ULONGINT,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_ULONGINT,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_ULONGINT,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_ULONGINT,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_Dbl2ULongint ( byval x as double ) as ulongint
 data @FB_RTL_DBL2ULONGINT,"", _
 	 FB_DATATYPE_ULONGINT,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
 
 ''
 '' fb_Pow CDECL ( byval x as double, byval y as double ) as double
@@ -81,78 +81,78 @@ data @FB_RTL_POW,"pow", _
 	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 2, _
-	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_SGNSingle ( byval x as single ) as integer
 data @FB_RTL_SGNSINGLE,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_SINGLE,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_SGNDouble ( byval x as double ) as integer
 data @FB_RTL_SGNDOUBLE,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_FIXSingle ( byval x as single ) as single
 data @FB_RTL_FIXSINGLE,"", _
 	 FB_DATATYPE_SINGLE,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_SINGLE,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_FIXDouble ( byval x as double ) as double
 data @FB_RTL_FIXDOUBLE,"", _
 	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
 
 '' asin CDECL ( byval x as double ) as double
 data @FB_RTL_ASIN,"asin", _
 	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
 
 '' acos CDECL ( byval x as double ) as double
 data @FB_RTL_ACOS,"acos", _
 	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
 
 '' log CDECL ( byval x as double ) as double
 data @FB_RTL_LOG,"log", _
 	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
 
 '' exp CDECL ( byval rad as double ) as double
 data @"exp","exp", _
 	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYVAL, FALSE
+	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
 
 '' randomize ( byval seed as double = -1.0 ) as void
 data @"randomize","fb_Randomize", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_DOUBLE,FB_ARGMODE_BYVAL, TRUE, -1.0
+	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, TRUE, -1.0
 
 '' rnd ( byval n as integer ) as double
 data @"rnd","fb_Rnd", _
 	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 1, _
-	 FB_DATATYPE_INTEGER,FB_ARGMODE_BYVAL, TRUE,1
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,1
 
 '' EOL
 data NULL
@@ -182,15 +182,15 @@ function rtlMathPow	( byval xexpr as ASTNODE ptr, _
 	function = NULL
 
 	''
-    proc = astNewFUNCT( PROCLOOKUP( POW ) )
+    proc = astNewCALL( PROCLOOKUP( POW ) )
 
     '' byval x as double
-    if( astNewPARAM( proc, xexpr ) = NULL ) then
+    if( astNewARG( proc, xexpr ) = NULL ) then
  		exit function
  	end if
 
     '' byval y as double
-    if( astNewPARAM( proc, yexpr ) = NULL ) then
+    if( astNewARG( proc, yexpr ) = NULL ) then
  		exit function
  	end if
 
@@ -213,10 +213,10 @@ function rtlMathFSGN ( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 		f = PROCLOOKUP( SGNDOUBLE )
 	end if
 
-    proc = astNewFUNCT( f )
+    proc = astNewCALL( f )
 
     '' byval x as single|double
-    if( astNewPARAM( proc, expr ) = NULL ) then
+    if( astNewARG( proc, expr ) = NULL ) then
  		exit function
  	end if
 
@@ -244,10 +244,10 @@ function rtlMathTRANS( byval op as integer, _
 		f = PROCLOOKUP( LOG )
 	end select
 
-    proc = astNewFUNCT( f )
+    proc = astNewCALL( f )
 
     '' byval x as double
-    if( astNewPARAM( proc, expr ) = NULL ) then
+    if( astNewARG( proc, expr ) = NULL ) then
  		exit function
  	end if
 
@@ -280,10 +280,10 @@ function rtlMathFIX ( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 		exit function
 	end select
 
-    proc = astNewFUNCT( f )
+    proc = astNewCALL( f )
 
     '' byval x as single|double
-    if( astNewPARAM( proc, expr ) = NULL ) then
+    if( astNewARG( proc, expr ) = NULL ) then
  		exit function
  	end if
 
@@ -321,18 +321,18 @@ function rtlMathLen( byval expr as ASTNODE ptr, _
     		end if
 
     		if( litsym = NULL ) then
-    			proc = astNewFUNCT( PROCLOOKUP( STRLEN ) )
+    			proc = astNewCALL( PROCLOOKUP( STRLEN ) )
 
     			'' always calc len before pushing the param
     			lgt = rtlCalcStrLen( expr, dtype )
 
     			'' str as any
-    			if( astNewPARAM( proc, expr, FB_DATATYPE_STRING ) = NULL ) then
+    			if( astNewARG( proc, expr, FB_DATATYPE_STRING ) = NULL ) then
  					exit function
  				end if
 
     			'' byval strlen as integer
-				if( astNewPARAM( proc, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+				if( astNewARG( proc, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
  					exit function
  				end if
 
@@ -348,10 +348,10 @@ function rtlMathLen( byval expr as ASTNODE ptr, _
     			lgt = symbGetWstrLen( litsym ) - 1
 
     		else
-    			proc = astNewFUNCT( PROCLOOKUP( WSTRLEN ) )
+    			proc = astNewCALL( PROCLOOKUP( WSTRLEN ) )
 
     			'' byval str as wchar ptr
-    			if( astNewPARAM( proc, expr ) = NULL ) then
+    			if( astNewARG( proc, expr ) = NULL ) then
  					exit function
  				end if
 
@@ -408,14 +408,14 @@ function rtlMathLongintDIV( byval dtype as integer, _
 		f = PROCLOOKUP( ULONGINTDIV )
 	end if
 
-    proc = astNewFUNCT( f )
+    proc = astNewCALL( f )
 
     ''
-    if( astNewPARAM( proc, lexpr, ldtype ) = NULL ) then
+    if( astNewARG( proc, lexpr, ldtype ) = NULL ) then
     	exit function
     end if
 
-    if( astNewPARAM( proc, rexpr, rdtype ) = NULL ) then
+    if( astNewARG( proc, rexpr, rdtype ) = NULL ) then
     	exit function
     end if
 
@@ -441,14 +441,14 @@ function rtlMathLongintMOD( byval dtype as integer, _
 		f = PROCLOOKUP( ULONGINTMOD )
 	end if
 
-    proc = astNewFUNCT( f )
+    proc = astNewCALL( f )
 
     ''
-    if( astNewPARAM( proc, lexpr, ldtype ) = NULL ) then
+    if( astNewARG( proc, lexpr, ldtype ) = NULL ) then
     	exit function
     end if
 
-    if( astNewPARAM( proc, rexpr, rdtype ) = NULL ) then
+    if( astNewARG( proc, rexpr, rdtype ) = NULL ) then
     	exit function
     end if
 
@@ -464,10 +464,10 @@ function rtlMathFp2ULongint( byval expr as ASTNODE ptr, _
 
 	function = NULL
 
-    proc = astNewFUNCT( PROCLOOKUP( DBL2ULONGINT)  )
+    proc = astNewCALL( PROCLOOKUP( DBL2ULONGINT)  )
 
     ''
-    if( astNewPARAM( proc, expr, dtype ) = NULL ) then
+    if( astNewARG( proc, expr, dtype ) = NULL ) then
     	exit function
     end if
 

@@ -464,7 +464,7 @@ private function hDynArrayDef( byval id as zstring ptr, _
 	end if
 
 	'' not an argument passed by descriptor or a common array?
-	if( (attrib and (FB_SYMBATTRIB_ARGUMENTBYDESC or FB_SYMBATTRIB_COMMON)) = 0 ) then
+	if( (attrib and (FB_SYMBATTRIB_PARAMBYDESC or FB_SYMBATTRIB_COMMON)) = 0 ) then
 
 		if( (typ <> symbGetType( s )) or (subtype <> symbGetSubType( s )) ) then
     		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *id )

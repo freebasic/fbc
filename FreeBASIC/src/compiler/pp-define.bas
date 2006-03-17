@@ -76,8 +76,8 @@ end sub
 
 '':::::
 private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
-    dim as FBDEFARG ptr arg
-    dim as FBDEFTOK ptr dt
+    dim as FB_DEFPARAM ptr param
+    dim as FB_DEFTOK ptr dt
     dim as FBTOKEN t
     dim as LEXPP_ARGTB ptr argtb
     dim as integer prntcnt, num
@@ -97,13 +97,13 @@ private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
 
 	'' allocate a new arg list (support recursion)
 	if( symbGetDefineHeadToken( s ) ) then
-		argtb = cptr( LEXPP_ARGTB ptr, listNewNode( @ctx.argtblist ) )
+		argtb = cast( LEXPP_ARGTB ptr, listNewNode( @ctx.argtblist ) )
 	else
 		argtb = NULL
 	end if
 
 	'' for each arg
-	arg = symbGetDefineHeadArg( s )
+	param = symbGetDefineHeadParam( s )
 	num = 0
 	do
 		if( argtb <> NULL ) then
@@ -165,18 +165,18 @@ private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
 		end if
 
 		'' next
-		arg = symbGetDefArgNext( arg )
+		param = symbGetDefParamNext( param )
 		num += 1
 
 		'' too many args?
-		if( arg = NULL ) then
+		if( param = NULL ) then
 			hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
 			exit function
 		end if
 	loop
 
 	'' too few args?
-	if( symbGetDefArgNext( arg ) <> NULL ) then
+	if( symbGetDefParamNext( param ) <> NULL ) then
 		hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
 		exit function
 	end if
@@ -188,14 +188,14 @@ private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
 		dt = symbGetDefineHeadToken( s )
 		do while( dt <> NULL )
 			select case as const symbGetDefTokType( dt )
-			'' argument?
-			case FB_DEFTOK_TYPE_ARG
-				text += *argtb->tb( symbGetDefTokArgNum( dt ) ).text.data
+			'' parameter?
+			case FB_DEFTOK_TYPE_PARAM
+				text += *argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
 
-			'' stringize argument?
-			case FB_DEFTOK_TYPE_ARGSTR
+			'' stringize parameter?
+			case FB_DEFTOK_TYPE_PARAMSTR
 				text += "\""
-				text += hReplace( argtb->tb( symbGetDefTokArgNum( dt ) ).text.data, _
+				text += hReplace( argtb->tb( symbGetDefTokParamNum( dt ) ).text.data, _
 								  "\"", _
 								  "\"\"" )
 				text += "\""
@@ -219,7 +219,7 @@ private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
 			DZstrAssign( argtb->tb(num).text, NULL )
 		loop
 
-		listDelNode( @ctx.argtblist, cptr( TLISTNODE ptr, argtb ) )
+		listDelNode( @ctx.argtblist, cast( TLISTNODE ptr, argtb ) )
 	end if
 
 	''
@@ -241,7 +241,7 @@ private function hLoadDefine( byval s as FBSYMBOL ptr ) as integer
     function = FALSE
 
 	'' define has args?
-	if( symbGetDefineArgs( s ) > 0 ) then
+	if( symbGetDefineParams( s ) > 0 ) then
 
 		lgt = hLoadMacro( s )
 		if( lgt = -1 ) then
@@ -322,8 +322,8 @@ private function hLoadDefine( byval s as FBSYMBOL ptr ) as integer
 end function
 
 private function hLoadMacroW( byval s as FBSYMBOL ptr ) as integer
-    dim as FBDEFARG ptr arg
-    dim as FBDEFTOK ptr dt
+    dim as FB_DEFPARAM ptr param
+    dim as FB_DEFTOK ptr dt
     dim as FBTOKEN t
     dim as LEXPP_ARGTB ptr argtb
     dim as integer prntcnt, lgt, num
@@ -342,13 +342,13 @@ private function hLoadMacroW( byval s as FBSYMBOL ptr ) as integer
 	prntcnt = 1
 	'' allocate a new arg list (because the recursivity)
 	if( symbGetDefineHeadToken( s ) ) then
-		argtb = cptr( LEXPP_ARGTB ptr, listNewNode( @ctx.argtblist ) )
+		argtb = cast( LEXPP_ARGTB ptr, listNewNode( @ctx.argtblist ) )
 	else
 		argtb = NULL
 	end if
 
 	'' for each arg
-	arg = symbGetDefineHeadArg( s )
+	param = symbGetDefineHeadParam( s )
 	num = 0
 	do
 		if( argtb <> NULL ) then
@@ -409,18 +409,18 @@ private function hLoadMacroW( byval s as FBSYMBOL ptr ) as integer
 		end if
 
 		'' next
-		arg = symbGetDefArgNext( arg )
+		param = symbGetDefParamNext( param )
 		num += 1
 
 		'' too many args?
-		if( arg = NULL ) then
+		if( param = NULL ) then
 			hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
 			exit function
 		end if
 	loop
 
 	'' too few args?
-	if( symbGetDefArgNext( arg ) <> NULL ) then
+	if( symbGetDefParamNext( param ) <> NULL ) then
 		hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
 		exit function
 	end if
@@ -432,15 +432,15 @@ private function hLoadMacroW( byval s as FBSYMBOL ptr ) as integer
 		dt = symbGetDefineHeadToken( s )
 		do while( dt <> NULL )
 			select case as const symbGetDefTokType( dt )
-			'' argument?
-			case FB_DEFTOK_TYPE_ARG
+			'' parameter?
+			case FB_DEFTOK_TYPE_PARAM
 				DWstrConcatAssign( text, _
-								   argtb->tb( symbGetDefTokArgNum( dt ) ).textw.data )
+								   argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data )
 
-			'' stringize argument?
-			case FB_DEFTOK_TYPE_ARGSTR
+			'' stringize parameter?
+			case FB_DEFTOK_TYPE_PARAMSTR
 				DWstrConcatAssign( text, "\"" )
-				DWstrConcatAssign( text, *hReplaceW( argtb->tb( symbGetDefTokArgNum( dt ) ).textw.data, _
+				DWstrConcatAssign( text, *hReplaceW( argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data, _
 										 	  		"\"", _
 										 	  		"\"\"" ) )
 				DWstrConcatAssign( text, "\"" )
@@ -464,7 +464,7 @@ private function hLoadMacroW( byval s as FBSYMBOL ptr ) as integer
 			DWstrAssign( argtb->tb(num).textw, NULL )
 		loop
 
-		listDelNode( @ctx.argtblist, cptr( TLISTNODE ptr, argtb ) )
+		listDelNode( @ctx.argtblist, cast( TLISTNODE ptr, argtb ) )
 	end if
 
 	''
@@ -486,7 +486,7 @@ private function hLoadDefineW( byval s as FBSYMBOL ptr ) as integer
     function = FALSE
 
 	'' define has args?
-	if( symbGetDefineArgs( s ) > 0 ) then
+	if( symbGetDefineParams( s ) > 0 ) then
 
 		lgt = hLoadMacroW( s )
 		if( lgt = -1 ) then
@@ -578,12 +578,13 @@ end function
 
 '':::::
 private function hReadMacroText( byval args as integer, _
-						   		 byval arghead as FBDEFARG ptr ) as FBDEFTOK ptr
+						   		 byval paramhead as FB_DEFPARAM ptr _
+						   	   ) as FB_DEFTOK ptr
 
 	static as zstring * FB_MAXNAMELEN+1 token
     dim as integer dpos, num, addquotes
-    dim as FBDEFARG ptr arg
-    dim as FBDEFTOK ptr tok, tokhead
+    dim as FB_DEFPARAM ptr param
+    dim as FB_DEFTOK ptr tok, tokhead
 
     tok = NULL
     tokhead = NULL
@@ -658,7 +659,7 @@ private function hReadMacroText( byval args as integer, _
     			ZstrAssign( @tok->text, lexGetText( ) )
     			lexSkipToken( LIT_FLAGS )
 
-    		'' otherwise, check if it's an argument
+    		'' otherwise, check if it's a parameter
     		else
     			token = ucase( *lexGetText( ) )
     			'' contains a period? assume it's an udt access
@@ -667,27 +668,27 @@ private function hReadMacroText( byval args as integer, _
     				token[dpos-1] = 0 			'' token = left( token, dpos-1 )
     			end if
 
-    			'' for each define arg..
-    			arg = arghead
+    			'' for each define param..
+    			param = paramhead
     			num = 0
     			do
     				'' same?
-    				if( token = *symbGetDefArgName( arg ) ) then
+    				if( token = *symbGetDefParamName( param ) ) then
 
 						if( addquotes = FALSE ) then
-							symbSetDefTokType( tok, FB_DEFTOK_TYPE_ARG )
+							symbSetDefTokType( tok, FB_DEFTOK_TYPE_PARAM )
 						else
-							symbSetDefTokType( tok, FB_DEFTOK_TYPE_ARGSTR )
+							symbSetDefTokType( tok, FB_DEFTOK_TYPE_PARAMSTR )
 						end if
 
-						symbSetDefTokArgNum( tok, num )
+						symbSetDefTokParamNum( tok, num )
 
     					'' add the remainder if it's an udt access
     					if( dpos > 1 ) then
     						tok = symbAddDefineTok( tok, FB_DEFTOK_TYPE_TEX )
     						lexEatToken( token, LIT_FLAGS )
     						ZstrAssign( @tok->text, _
-    								    cptr( zstring ptr, @token[dpos-1] ) ) ''mid( token, dpos )
+    								    cast( zstring ptr, @token[dpos-1] ) ) ''mid( token, dpos )
     					else
     						lexSkipToken( LIT_FLAGS )
     					end if
@@ -696,12 +697,12 @@ private function hReadMacroText( byval args as integer, _
     				end if
 
     				'' next arg
-    				arg = symbGetDefArgNext( arg )
+    				param = symbGetDefParamNext( param )
     				num += 1
-    			loop while( arg <> NULL )
+    			loop while( param <> NULL )
 
     			'' if none matched, read as-is
-    			if( arg = NULL ) then
+    			if( param = NULL ) then
     				ZstrAssign( @tok->text, lexGetText( ) )
     				lexSkipToken( LIT_FLAGS )
     			end if
@@ -717,13 +718,13 @@ end function
 
 '':::::
 function ppDefine( ) as integer
-	static as zstring * FB_MAXNAMELEN+1 defname, argname
+	static as zstring * FB_MAXNAMELEN+1 defname, paramname
 	dim as zstring ptr text
 	dim as wstring ptr textw
-	dim as integer args, isargless
-	dim as FBDEFARG ptr arghead, lastarg
+	dim as integer params, isargless
+	dim as FB_DEFPARAM ptr paramhead, lastparam
 	dim as FBSYMBOL ptr s
-	dim as FBDEFTOK ptr tokhead
+	dim as FB_DEFTOK ptr tokhead
 
 	function = FALSE
 
@@ -738,8 +739,8 @@ function ppDefine( ) as integer
 
     lexEatToken( defname, LIT_FLAGS )
 
-    args = 0
-    arghead = NULL
+    params = 0
+    paramhead = NULL
     isargless = FALSE
 
     '' '('?
@@ -748,14 +749,14 @@ function ppDefine( ) as integer
 
 		'' not arg-less?
 		if( lexGetToken( LEXCHECK_NODEFINE ) <> CHAR_RPRNT ) then
-			lastarg = NULL
+			lastparam = NULL
 			do
-		    	lexEatToken( argname, LEXCHECK_NODEFINE )
-		    	lastarg = symbAddDefineArg( lastarg, @argname )
-		    	args += 1
+		    	lexEatToken( paramname, LEXCHECK_NODEFINE )
+		    	lastparam = symbAddDefineParam( lastparam, @paramname )
+		    	params += 1
 
-		    	if( arghead = NULL ) then
-		    		arghead = lastarg
+		    	if( paramhead = NULL ) then
+		    		paramhead = lastparam
 		    	end if
 
 				'' ','?
@@ -785,14 +786,14 @@ function ppDefine( ) as integer
 
 
    	'' not a macro?
-   	if( args = 0 ) then
+   	if( params = 0 ) then
     	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
     		'' LITERAL*
     		text = ppReadLiteral( )
 
     		'' already defined? if there are no differences, do nothing..
     		if( s <> NULL ) then
-    			if( (symbGetDefineArgs( s ) > 0) or _
+    			if( (symbGetDefineParams( s ) > 0) or _
     				(symbGetType( s ) <> FB_DATATYPE_CHAR) ) then
     				hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname )
     				exit function
@@ -814,7 +815,7 @@ function ppDefine( ) as integer
 
     		'' already defined? if there are no differences, do nothing..
     		if( s <> NULL ) then
-    			if( (symbGetDefineArgs( s ) > 0) or _
+    			if( (symbGetDefineParams( s ) > 0) or _
     				(symbGetType( s ) <> FB_DATATYPE_WCHAR) ) then
     				hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname )
     				exit function
@@ -839,9 +840,9 @@ function ppDefine( ) as integer
     		exit function
     	end if
 
-       	tokhead = hReadMacroText( args, arghead )
+       	tokhead = hReadMacroText( params, paramhead )
 
-    	symbAddDefineMacro( @defname, tokhead, args, arghead )
+    	symbAddDefineMacro( @defname, tokhead, params, paramhead )
 
     end if
 
