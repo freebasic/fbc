@@ -55,7 +55,7 @@ typedef struct FBGFX_CHAR
 
 
 /*:::::*/
-FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FBSTRING *string, unsigned int color, void *font)
+FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FBSTRING *string, unsigned int color, void *font, int mode, BLENDER *func)
 {
 	FBGFX_CHAR char_data[256], *ch;
 	PUTTER *put;
@@ -66,10 +66,12 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 	if ((!fb_mode) || (!string) || (!string->data))
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	
-	if (color == DEFAULT_COLOR)
-		color = fb_mode->fg_color;
-	else
-		color = fb_hFixColor(color);
+	if (mode != PUT_MODE_ALPHA) {
+		if (color == DEFAULT_COLOR)
+			color = fb_mode->fg_color;
+		else
+			color = fb_hFixColor(color);
+	}
 	
 	fb_hPrepareTarget(target);
 	
@@ -81,9 +83,11 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 	
 	if (font) {
 		/* user passed a custom font */
-		
-		put = fb_hGetPutter(PUT_MODE_TRANS, 0, NULL);
-		
+
+		put = fb_hGetPutter(mode, color, func);
+		if (!put)
+			goto exit_error;
+
 		bpp = (int)*(unsigned short *)font;
 		pitch = (bpp >> 3) * fb_mode->bpp;
 		font_height = (int)*(unsigned short *)(font + 2) - 1;
@@ -147,7 +151,7 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 				}
 				if (x + w > fb_mode->view_x + fb_mode->view_w)
 					w -= ((x + w) - (fb_mode->view_x + fb_mode->view_w));
-				put(data, fb_mode->line[y] + (px * fb_mode->bpp), w, h, pitch, 0);
+				put(data, fb_mode->line[y] + (px * fb_mode->bpp), w, h, pitch, color);
 				
 			}
 			x += ch->width;

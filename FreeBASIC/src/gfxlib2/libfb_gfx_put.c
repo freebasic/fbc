@@ -518,7 +518,7 @@ PUTTER *fb_hGetPutter(int mode, int alpha, BLENDER *func)
 		case PUT_MODE_ALPHA:	if (alpha < 0)
 						put = fb_hPutAlpha;
 					else if (alpha == 0)
-						return FB_RTERROR_OK;
+						return NULL;
 					else {
 						alpha &= 0xFF;
 						if (alpha == 0xFF)
@@ -598,10 +598,12 @@ FBCALL int fb_GfxPut(void *target, float fx, float fy, unsigned char *src, int x
 	
 	put = fb_hGetPutter(mode, alpha, func);
 	
-	DRIVER_LOCK();
-	put(src, fb_mode->line[y] + (x * fb_mode->bpp), w, h, pitch, alpha);
-	SET_DIRTY(y, h);
-	DRIVER_UNLOCK();
+	if (put) {
+		DRIVER_LOCK();
+		put(src, fb_mode->line[y] + (x * fb_mode->bpp), w, h, pitch, alpha);
+		SET_DIRTY(y, h);
+		DRIVER_UNLOCK();
+	}
 	
 	return FB_RTERROR_OK;
 }
