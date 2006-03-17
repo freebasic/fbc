@@ -169,7 +169,7 @@ function cConstAssign as integer static
     end if
 
 	''
-	astDel( expr )
+	astDelNode( expr )
 
 	function = TRUE
 

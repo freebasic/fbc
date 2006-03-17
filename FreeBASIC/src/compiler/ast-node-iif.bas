@@ -31,7 +31,9 @@ option escape
 '':::::
 function astNewIIF( byval condexpr as ASTNODE ptr, _
 					byval truexpr as ASTNODE ptr, _
-					byval falsexpr as ASTNODE ptr ) as ASTNODE ptr static
+					byval falsexpr as ASTNODE ptr _
+				  ) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
     dim as integer true_dtype, false_dtype
     dim as FBSYMBOL ptr falselabel
@@ -97,9 +99,9 @@ function astNewIIF( byval condexpr as ASTNODE ptr, _
 		exit function
 	end if
 
-	n->iif.sym 		  = symbAddTempVar( true_dtype, truexpr->subtype )
-	n->l  			  = condexpr
-	n->r  			  = astNewLINK( truexpr, falsexpr )
+	n->sym = symbAddTempVar( true_dtype, truexpr->subtype )
+	n->l = condexpr
+	n->r = astNewLINK( truexpr, falsexpr )
 	n->iif.falselabel = falselabel
 
 end function
@@ -128,19 +130,19 @@ function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	'' condition
 	astLoad( l )
-	astDel( l )
+	astDelNode( l )
 
 	''
 	exitlabel = symbAddLabel( NULL )
 
 	'' true expr
-	t = astNewASSIGN( astNewVAR( n->iif.sym, _
+	t = astNewASSIGN( astNewVAR( n->sym, _
 								 0, _
-								 symbGetType( n->iif.sym ), _
-								 symbGetSubType( n->iif.sym ) ), _
+								 symbGetType( n->sym ), _
+								 symbGetSubType( n->sym ) ), _
 					  r->l )
 	astLoad( t )
-	astDel( t )
+	astDelNode( t )
 
 	if( ast.doemit ) then
 		irEmitBRANCH( AST_OP_JMP, exitlabel )
@@ -158,24 +160,24 @@ function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
 		'''''end if
 	end if
 
-	t = astNewASSIGN( astNewVAR( n->iif.sym, _
+	t = astNewASSIGN( astNewVAR( n->sym, _
 								 0, _
-								 symbGetType( n->iif.sym ), _
-								 symbGetSubType( n->iif.sym ) ), _
+								 symbGetType( n->sym ), _
+								 symbGetSubType( n->sym ) ), _
 					  r->r )
 	astLoad( t )
-	astDel( t )
+	astDelNode( t )
 
     if( ast.doemit ) then
 		'' exit
 		irEmitLABELNF( exitlabel )
 	end if
 
-	t = astNewVAR( n->iif.sym, 0, symbGetType( n->iif.sym ), symbGetSubType( n->iif.sym ) )
+	t = astNewVAR( n->sym, 0, symbGetType( n->sym ), symbGetSubType( n->sym ) )
 	function = astLoad( t )
-	astDel( t )
+	astDelNode( t )
 
-	astDel( r )
+	astDelNode( r )
 
 end function
 

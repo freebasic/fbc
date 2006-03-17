@@ -61,7 +61,7 @@ function cEnumConstDecl( byval id as zstring ptr, _
 		end if
 
 		value = astGetValueAsInt( expr )
-		astDel( expr )
+		astDelNode( expr )
 
     end if
 

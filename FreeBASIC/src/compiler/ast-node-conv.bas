@@ -378,7 +378,7 @@ function astLoadCONV( byval n as ASTNODE ptr ) as IRVREG ptr
 		irEmitCONVERT( vr, n->dtype, vs, INVALID )
 	end if
 
-	astDel( l )
+	astDelNode( l )
 
 	function = vr
 

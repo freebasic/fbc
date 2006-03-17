@@ -34,8 +34,7 @@ option escape
 ':::::
 private sub hDllMainBegin( )
     dim as FBSYMBOL ptr proc, label, exitlabel, initlabel, param
-   	dim as ASTNODE ptr reason, main
-   	dim as ASTPROCNODE ptr procnode
+   	dim as ASTNODE ptr reason, main, procnode
     dim as integer argn
 
 const fbdllreason = "__FB_DLLREASON__"
@@ -69,8 +68,8 @@ const fbdllreason = "__FB_DLLREASON__"
 
     symbSetProcIncFile( proc, INVALID )
 
-	initlabel = procnode->initlabel
-	exitlabel = procnode->exitlabel
+	initlabel = procnode->proc.initlabel
+	exitlabel = procnode->proc.exitlabel
 
 	''
    	astAdd( astNewLABEL( initlabel ) )
@@ -143,8 +142,8 @@ const fbargv = "__FB_ARGV__"
 
     symbSetProcIncFile( env.main.proc, INVALID )
 
-	env.main.initlabel = env.main.node->initlabel
-	env.main.exitlabel = env.main.node->exitlabel
+	env.main.initlabel = env.main.node->proc.initlabel
+	env.main.exitlabel = env.main.node->proc.exitlabel
 
 	env.main.argc = symbFindByNameAndClass( fbargc, FB_SYMBCLASS_VAR )
 	env.main.argv = symbFindByNameAndClass( fbargv, FB_SYMBCLASS_VAR )
@@ -180,8 +179,8 @@ private sub hModLevelBegin( )
     symbSetProcIncFile( env.main.proc, INVALID )
     symbSetIsCalled( env.main.proc )
 
-	env.main.initlabel = env.main.node->initlabel
-	env.main.exitlabel = env.main.node->exitlabel
+	env.main.initlabel = env.main.node->proc.initlabel
+	env.main.exitlabel = env.main.node->proc.exitlabel
 
    	astAdd( astNewLABEL( env.main.initlabel ) )
 

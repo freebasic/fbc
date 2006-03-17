@@ -29,11 +29,11 @@ option escape
 #include once "inc\rtl.bi"
 #include once "inc\ast.bi"
 
-declare function 	hNewProcNode	( byval proc as FBSYMBOL ptr ) as ASTPROCNODE ptr
+declare function 	hNewProcNode	( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
 
-declare function 	hModLevelIsEmpty( byval p as ASTPROCNODE ptr ) as integer
+declare function 	hModLevelIsEmpty( byval p as ASTNODE ptr ) as integer
 
-declare sub 		hModLevelAddRtInit( byval p as ASTPROCNODE ptr )
+declare sub 		hModLevelAddRtInit( byval p as ASTNODE ptr )
 
 declare sub 		hLoadProcResult ( byval proc as FBSYMBOL ptr )
 
@@ -42,51 +42,73 @@ declare function 	hDeclProcParams	( byval proc as FBSYMBOL ptr ) as integer
 ''::::
 sub astProcListInit( )
 
-	''
-    listNew( @ast.proclist, AST_INITPROCNODES, len( ASTPROCNODE ), FALSE )
-
-    ast.curproc = NULL
-    ast.oldsymtb = NULL
+	ast.proc.head = NULL
+	ast.proc.tail = NULL
+	ast.proc.curr = NULL
+    ast.proc.oldsymtb = NULL
 
 end sub
 
 ''::::
 sub astProcListEnd( )
 
-	listFree( @ast.proclist )
-
-	ast.curproc = NULL
-	ast.oldsymtb = NULL
+	ast.proc.head = NULL
+	ast.proc.tail = NULL
+	ast.proc.curr = NULL
+	ast.proc.oldsymtb = NULL
 
 end sub
 
 '':::::
-private function hNewProcNode( byval proc as FBSYMBOL ptr ) as ASTPROCNODE ptr static
-	dim as ASTPROCNODE ptr n
+private function hNewProcNode( byval proc as FBSYMBOL ptr ) as ASTNODE ptr static
+	dim as ASTNODE ptr n
 
-	n = listNewNode( @ast.proclist )
+	n = astNewNode( AST_NODECLASS_PROC, INVALID, NULL )
 
-	''
-	n->proc = proc
-	n->head = NULL
-	n->tail = NULL
+	n->sym = proc
+	n->proc.head = NULL
+	n->proc.tail = NULL
+
+	'' add to list
+	if( ast.proc.tail <> NULL ) then
+		ast.proc.tail->next = n
+	else
+		ast.proc.head = n
+	end if
+
+	n->prev = ast.proc.tail
+	n->next = NULL
+	ast.proc.tail = n
 
 	function = n
 
 end function
 
 '':::::
-private sub hDelProcNode( byval n as ASTPROCNODE ptr ) static
+private sub hDelProcNode( byval n as ASTNODE ptr ) static
 
-	n->head = NULL
-	n->tail = NULL
+	n->proc.head = NULL
+	n->proc.tail = NULL
 
-	listDelNode( @ast.proclist, cast(TLISTNODE ptr, n) )
+	'' remove from list
+	if( n->prev <> NULL ) then
+		n->prev->next = n->next
+	else
+		ast.proc.head = n->next
+	end If
+
+	if( n->next <> NULL ) then
+		n->next->prev = n->prev
+	else
+		ast.proc.tail = n->prev
+	end If
+
+	astDelNode( n )
 
 end sub
 
 ''::::
-private sub hProcFlush( byval p as ASTPROCNODE ptr, _
+private sub hProcFlush( byval p as ASTNODE ptr, _
 						byval doemit as integer _
 					  ) static
 
@@ -95,18 +117,18 @@ private sub hProcFlush( byval p as ASTPROCNODE ptr, _
     dim as FBSYMBOL ptr sym
 
 	''
-	ast.curproc = p
-	ast.doemit 	= doemit
+	ast.proc.curr = p
+	ast.doemit = doemit
 
-	sym = p->proc
+	sym = p->sym
 
-	env.scope = iif( p->ismain, FB_MAINSCOPE, FB_MAINSCOPE+1 )
+	env.scope = iif( p->proc.ismain, FB_MAINSCOPE, FB_MAINSCOPE+1 )
 	env.currproc = sym
 	symbSetLocalTb( @sym->proc.loctb )
 
 	'' do pre-loading, before allocating variables on stack
 	prv = @tmp
-	n = p->head
+	n = p->proc.head
 	do while( n <> NULL )
 		nxt = n->next
 
@@ -135,21 +157,21 @@ private sub hProcFlush( byval p as ASTPROCNODE ptr, _
 
 	''
 	if( ast.doemit ) then
-		irEmitPROCBEGIN( sym, p->initlabel )
+		irEmitPROCBEGIN( sym, p->proc.initlabel )
 	end if
 
 	'' flush nodes
-	n = p->head
+	n = p->proc.head
 	do while( n <> NULL )
 		nxt = n->next
 		astLoad( n )
-		astDel( n )
+		astDelNode( n )
 		n = nxt
 	loop
 
     ''
     if( ast.doemit ) then
-    	irEmitPROCEND( sym, p->initlabel, p->exitlabel )
+    	irEmitPROCEND( sym, p->proc.initlabel, p->proc.exitlabel )
     end if
 
     '' del symbols from hash and symbol tb's
@@ -159,40 +181,40 @@ private sub hProcFlush( byval p as ASTPROCNODE ptr, _
 	hDelProcNode( p )
 
 	''
-	ast.doemit  = TRUE
+	ast.doemit = TRUE
 
 end sub
 
 ''::::
 private sub hProcFlushAll( ) static
-    dim as ASTPROCNODE ptr p
+    dim as ASTNODE ptr n
     dim as integer doemit
-    dim as FBSYMBOL ptr proc
+    dim as FBSYMBOL ptr sym
 
 	'' procs should be sorted by include file
 
 	do
-        p = listGetHead( @ast.proclist )
-        if( p = NULL ) then
+        n = ast.proc.head
+        if( n = NULL ) then
         	exit do
         end if
 
-		proc = p->proc
+		sym = n->sym
 
 		doemit = TRUE
 		'' private?
-		if( symbIsPrivate( proc ) ) then
+		if( symbIsPrivate( sym ) ) then
 			'' never called? skip
-			if( symbGetIsCalled( proc ) = FALSE ) then
+			if( symbGetIsCalled( sym ) = FALSE ) then
 				doemit = FALSE
 
 			'' module-level?
-			elseif( symbIsModLevelProc( proc ) ) then
-				doemit = (hModLevelIsEmpty( p ) = FALSE)
+			elseif( symbIsModLevelProc( sym ) ) then
+				doemit = (hModLevelIsEmpty( n ) = FALSE)
 			end if
 		end if
 
-		hProcFlush( p, doemit )
+		hProcFlush( n, doemit )
 	loop
 
 end sub
@@ -208,15 +230,15 @@ sub astAdd( byval n as ASTNODE ptr ) static
 	n = astTypeIniUpdate( n )
 
 	''
-	if( ast.curproc->tail <> NULL ) then
-		ast.curproc->tail->next = n
+	if( ast.proc.curr->proc.tail <> NULL ) then
+		ast.proc.curr->proc.tail->next = n
 	else
-		ast.curproc->head = n
+		ast.proc.curr->proc.head = n
 	end if
 
-	n->prev = ast.curproc->tail
+	n->prev = ast.proc.curr->proc.tail
 	n->next = NULL
-	ast.curproc->tail = n
+	ast.proc.curr->proc.tail = n
 
 end sub
 
@@ -233,7 +255,7 @@ sub astAddAfter( byval n as ASTNODE ptr, _
 
 	''
 	if( p->next = NULL ) then
-		ast.curproc->tail = n
+		ast.proc.curr->proc.tail = n
 	end if
 
 	n->prev = p
@@ -245,19 +267,19 @@ end sub
 '':::::
 function astProcBegin( byval sym as FBSYMBOL ptr, _
 					   byval ismain as integer _
-					 ) as ASTPROCNODE ptr static
+					 ) as ASTNODE ptr static
 
-    dim as ASTPROCNODE ptr p
+    dim as ASTNODE ptr n
 
 	function = NULL
 
 	'' alloc new node
-	p = hNewProcNode( sym )
-	if( p = NULL ) then
+	n = hNewProcNode( sym )
+	if( n = NULL ) then
 		exit function
 	end if
 
-	p->ismain = ismain
+	n->proc.ismain = ismain
 
 	''
 	sym->proc.loctb.head = NULL
@@ -271,10 +293,10 @@ function astProcBegin( byval sym as FBSYMBOL ptr, _
 	''
 	env.scope = iif( ismain, FB_MAINSCOPE, FB_MAINSCOPE+1 )
 	env.currproc = sym
-	ast.oldsymtb = symbGetLocalTb( )
+	ast.proc.oldsymtb = symbGetLocalTb( )
 	symbSetLocalTb( @sym->proc.loctb )
 
-	ast.curproc = p
+	ast.proc.curr = n
 
 	irProcBegin( sym )
 
@@ -291,21 +313,21 @@ function astProcBegin( byval sym as FBSYMBOL ptr, _
 	end if
 
 	'' add init and exit labels
-	p->initlabel = symbAddLabel( NULL )
-	p->exitlabel = symbAddLabel( NULL )
+	n->proc.initlabel = symbAddLabel( NULL )
+	n->proc.exitlabel = symbAddLabel( NULL )
 
-	function = p
+	function = n
 
 end function
 
 '':::::
-sub astProcEnd( byval p as ASTPROCNODE ptr, _
+sub astProcEnd( byval n as ASTNODE ptr, _
 			    byval callrtexit as integer ) static
 
     dim as FBSYMBOL ptr sym
     dim as integer issub
 
-	sym = p->proc
+	sym = n->sym
 
 	issub = (symbGetType( sym ) = FB_DATATYPE_VOID)
 
@@ -315,7 +337,7 @@ sub astProcEnd( byval p as ASTPROCNODE ptr, _
 	'' if main(), END 0 must be called because it's not safe to return to crt if
 	'' an ON ERROR module-level handler was called while inside some proc
 	if( callrtexit ) then
-		if( p->ismain ) then
+		if( n->proc.ismain ) then
 			rtlExitApp( NULL )
 		end if
 	end if
@@ -328,10 +350,10 @@ sub astProcEnd( byval p as ASTPROCNODE ptr, _
 	''
 	irProcEnd( sym )
 
-	if( p->ismain = FALSE ) then
+	if( n->proc.ismain = FALSE ) then
 		'' not private or inline? flush it..
 		if( symbIsPrivate( sym ) = FALSE ) then
-			hProcFlush( p, TRUE )
+			hProcFlush( n, TRUE )
 
 		'' remove from hash tb only
 		else
@@ -347,9 +369,9 @@ sub astProcEnd( byval p as ASTPROCNODE ptr, _
 	'' back to main
     env.scope = FB_MAINSCOPE
     env.currproc = env.main.proc
-	symbSetLocalTb( ast.oldsymtb )
+	symbSetLocalTb( ast.proc.oldsymtb )
 
-	ast.curproc = listGetHead( @ast.proclist )
+	ast.proc.curr = ast.proc.head
 
 end sub
 
@@ -420,14 +442,14 @@ private sub hLoadProcResult ( byval proc as FBSYMBOL ptr ) static
 end sub
 
 ''::::
-private function hModLevelIsEmpty( byval p as ASTPROCNODE ptr ) as integer
+private function hModLevelIsEmpty( byval p as ASTNODE ptr ) as integer
     dim as ASTNODE ptr n, nxt
 
 	'' an empty module-level proc will have just the
 	'' initial and final labels as nodes and nothing else
 	'' (note: when debugging it will be emmited even if empty)
 
-	n = p->head
+	n = p->proc.head
 	if( n = NULL ) then
 		return TRUE
 	end if
@@ -453,10 +475,10 @@ private function hModLevelIsEmpty( byval p as ASTPROCNODE ptr ) as integer
 end function
 
 ''::::
-private sub hModLevelAddRtInit( byval p as ASTPROCNODE ptr )
+private sub hModLevelAddRtInit( byval p as ASTNODE ptr )
     dim as ASTNODE ptr n
 
-    n = p->head
+    n = p->proc.head
     if( n = NULL ) then
     	exit sub
     end if

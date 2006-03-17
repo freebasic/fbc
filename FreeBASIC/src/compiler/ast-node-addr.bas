@@ -78,7 +78,7 @@ function astLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr static
 		vr = irAllocVROFS( n->dtype, sym )
 	end if
 
-	astDel( v )
+	astDelNode( v )
 
 	function = vr
 
@@ -98,7 +98,7 @@ private sub removeNullPtrCheck( byval l as ASTNODE ptr ) static
 		'' del func call tree
 		astDelTree( n->r )
 		'' del the checking node
-		astDel( n )
+		astDelNode( n )
 
 	'' remove null-ptr checks in ptr indexing
 	case AST_NODECLASS_BOP
@@ -108,7 +108,7 @@ private sub removeNullPtrCheck( byval l as ASTNODE ptr ) static
 			case AST_NODECLASS_PTRCHK
 				n->l = t->l
 				astDelTree( t->r )
-				astDel( t )
+				astDelNode( t )
 				exit do
 
 			case AST_NODECLASS_BOP
@@ -157,7 +157,7 @@ function astNewADDR( byval op as integer, _
 			n = l->l
 			'' @*const to const
 			if( n->class = AST_NODECLASS_CONST ) then
-				astDel( l )
+				astDelNode( l )
 				return n
 			end if
 
@@ -177,8 +177,8 @@ function astNewADDR( byval op as integer, _
 				n = n->l
 				'' abs address?
 				if( n->class = AST_NODECLASS_CONST ) then
-					astDel( l->l )
-					astDel( l )
+					astDelNode( l->l )
+					astDelNode( l )
 					return n
 				end if
 			end if
@@ -198,7 +198,7 @@ function astNewADDR( byval op as integer, _
 		''
 		if( delchild ) then
 			n = l->l
-			astDel( l )
+			astDelNode( l )
 			l = n
 			op = AST_OP_DEREF
 		end if
@@ -221,7 +221,7 @@ function astNewADDR( byval op as integer, _
 			n = l->l
 			n->dtype   = dtype - FB_DATATYPE_POINTER
 			n->subtype = subtype
-			astDel( l )
+			astDelNode( l )
 			return n
 		end if
 	end if
@@ -265,7 +265,7 @@ function astLoadADDR( byval n as ASTNODE ptr ) as IRVREG ptr
 		end if
 	end if
 
-	astDel( p )
+	astDelNode( p )
 
 	function = vr
 

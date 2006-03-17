@@ -115,8 +115,8 @@ function astLoadIDX( byval n as ASTNODE ptr ) as IRVREG ptr
     	vr = hEmitIDX( n, var, vidx )
     end if
 
-	astDel( idx )
-	astDel( var )
+	astDelNode( idx )
+	astDelNode( var )
 
 	function = vr
 

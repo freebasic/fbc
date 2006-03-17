@@ -451,7 +451,7 @@ function cTypeDecl as integer static
 
   		'' follow the GCC 3.x ABI
   		align = astGetValueAsInt( expr )
-  		astDel( expr )
+  		astDelNode( expr )
   		if( align < 0 ) then
   			align = 0
   		elseif( align > FB_INTEGERSIZE ) then

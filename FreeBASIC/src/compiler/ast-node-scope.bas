@@ -50,7 +50,7 @@ function astScopeBegin( ) as ASTNODE ptr static
     s->scp.loctb.tail = NULL
     s->scp.bytes = 0
 
-    n->scope.sym = s
+    n->sym = s
 
     astAdd( n )
 
@@ -73,7 +73,7 @@ end function
 sub astScopeEnd( byval n as ASTNODE ptr ) static
 	dim as FBSYMBOL ptr s
 
-	s = n->scope.sym
+	s = n->sym
 
 	'' free dynamic vars
 	symbFreeScopeDynVars( s )
@@ -99,7 +99,7 @@ function astLoadSCOPE( byval n as ASTNODE ptr ) as IRVREG ptr static
     dim as FBSYMBOL ptr s
 
 	if( ast.doemit ) then
-		s = n->scope.sym
+		s = n->sym
 		if( s->scp.bytes > 0 ) then
 			irEmitSTKCLEAR( s->scp.bytes, s->scp.baseofs )
 		end if

@@ -45,7 +45,7 @@ function cConstExprValue( byref value as integer ) as integer
 	end if
 
 	value = astGetValueAsInt( expr )
-  	astDel( expr )
+  	astDelNode( expr )
 
   	function = TRUE
 

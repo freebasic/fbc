@@ -56,15 +56,15 @@ function astNewBOUNDCHK( byval l as ASTNODE ptr, _
 					return NULL
 				end if
 
-				astDel( lb )
-				astDel( ub )
+				astDelNode( lb )
+				astDelNode( ub )
 				return l
 			end if
 		end if
 
 		'' 0? del it
 		if( lb->con.val.int = 0 ) then
-			astDel( lb )
+			astDelNode( lb )
 			lb = NULL
 		end if
 	end if
@@ -79,12 +79,12 @@ function astNewBOUNDCHK( byval l as ASTNODE ptr, _
 
 	n->l = l
 
-	n->chk.sym = symbAddTempVar( l->dtype, l->subtype )
+	n->sym = symbAddTempVar( l->dtype, l->subtype )
 
     '' check must be done using a function because calling ErrorThrow
     '' would spill used regs only if it was called, causing wrong
     '' assumptions after the branches
-	n->r = rtlArrayBoundsCheck( astNewVAR( n->chk.sym, _
+	n->r = rtlArrayBoundsCheck( astNewVAR( n->sym, _
     									   0, _
     									   FB_DATATYPE_INTEGER, _
     									   NULL ), _
@@ -110,16 +110,16 @@ function astLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	'' assign to a temp, can't reuse the same vreg or registers could
 	'' be spilled as IR can't handle inter-blocks
-	t = astNewASSIGN( astNewVAR( n->chk.sym, _
+	t = astNewASSIGN( astNewVAR( n->sym, _
 								 0, _
 								 FB_DATATYPE_INTEGER, _
 								 NULL ), _
 					  l )
 	astLoad( t )
-	astDel( t )
+	astDelNode( t )
 
     vr = astLoad( r )
-    astDel( r )
+    astDelNode( r )
 
     if( ast.doemit ) then
     	'' handler = boundchk( ... ): if handler <> NULL then handler( )
@@ -131,9 +131,9 @@ function astLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	''
 	'' re-load, see above
-	t = astNewVAR( n->chk.sym, 0, FB_DATATYPE_INTEGER, NULL )
+	t = astNewVAR( n->sym, 0, FB_DATATYPE_INTEGER, NULL )
 	function = astLoad( t )
-	astDel( t )
+	astDelNode( t )
 
 end function
 
@@ -167,10 +167,10 @@ function astNewPTRCHK( byval l as ASTNODE ptr, _
 
 	n->l = l
 
-	n->chk.sym = symbAddTempVar( dtype, subtype )
+	n->sym = symbAddTempVar( dtype, subtype )
 
     '' check must be done using a function, see bounds checking
-    n->r = rtlNullPtrCheck( astNewVAR( n->chk.sym, 0, dtype, subtype ), _
+    n->r = rtlNullPtrCheck( astNewVAR( n->sym, 0, dtype, subtype ), _
     					 	linenum, _
     					 	env.inf.name )
 
@@ -191,17 +191,17 @@ function astLoadPTRCHK( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	'' assign to a temp, can't reuse the same vreg or registers could
 	'' be spilled as IR can't handle inter-blocks
-	t = astNewASSIGN( astNewVAR( n->chk.sym, _
+	t = astNewASSIGN( astNewVAR( n->sym, _
 								 0, _
-								 symbGetType( n->chk.sym ), _
-								 symbGetSubType( n->chk.sym ) ), _
+								 symbGetType( n->sym ), _
+								 symbGetSubType( n->sym ) ), _
 					  l )
 	astLoad( t )
-	astDel( t )
+	astDelNode( t )
 
     ''
     vr = astLoad( r )
-    astDel( r )
+    astDelNode( r )
 
     if( ast.doemit ) then
     	'' handler = ptrchk( ... ): if handler <> NULL then handler( )
@@ -212,9 +212,9 @@ function astLoadPTRCHK( byval n as ASTNODE ptr ) as IRVREG ptr
     end if
 
 	'' re-load, see above
-	t = astNewVAR( n->chk.sym, 0, symbGetType( n->chk.sym ), symbGetSubType( n->chk.sym ) )
+	t = astNewVAR( n->sym, 0, symbGetType( n->sym ), symbGetSubType( n->sym ) )
 	function = astLoad( t )
-	astDel( t )
+	astDelNode( t )
 
 end function
 

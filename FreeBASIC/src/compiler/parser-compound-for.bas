@@ -211,7 +211,7 @@ function cForStatement as integer
 	''
 	if( astIsCONST( expr ) ) then
 		astConvertValue( expr, @eval, dtype )
-		astDel( expr )
+		astDelNode( expr )
 		endc = NULL
 		isconst += 1
 
@@ -256,7 +256,7 @@ function cForStatement as integer
 		else
             '' get constant step
             astConvertValue( expr, @sval, dtype )
-			astDel( expr )
+			astDelNode( expr )
 			stp = NULL
 			isconst += 1
 		end if
@@ -294,7 +294,7 @@ function cForStatement as integer
     	if( astGetValInt( expr ) = FALSE ) then
     		astAdd( astNewBRANCH( AST_OP_JMP, el ) )
     	end if
-    	astDel( expr )
+    	astDelNode( expr )
 
     else
     	astAdd( astNewBRANCH( AST_OP_JMP, tl ) )

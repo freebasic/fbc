@@ -68,7 +68,7 @@ function astLoadBRANCH( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	if( l <> NULL ) then
 		vr = astLoad( l )
-		astDel( l )
+		astDelNode( l )
 	else
 		vr = NULL
 	end if
@@ -112,7 +112,7 @@ function astNewJMPTB( byval dtype as integer, _
 		return NULL
 	end if
 
-	n->jtb.label = label
+	n->jmptb.label = label
 
 	function = n
 
@@ -122,7 +122,7 @@ end function
 function astLoadJMPTB( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	if( ast.doemit ) then
-		irEmitJMPTB( n->dtype, n->jtb.label )
+		irEmitJMPTB( n->dtype, n->jmptb.label )
 	end if
 
 	function = NULL

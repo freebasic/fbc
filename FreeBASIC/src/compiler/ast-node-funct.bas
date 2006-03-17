@@ -126,7 +126,7 @@ private function hCallProc( byval n as ASTNODE ptr, _
 	if( sym = NULL ) then
 		p = n->l
 		vr = astLoad( p )
-		astDel( p )
+		astDelNode( p )
 		if( ast.doemit ) then
 			irEmitCALLPTR( vr, NULL, 0 )
 		end if
@@ -173,7 +173,7 @@ private function hCallProc( byval n as ASTNODE ptr, _
 		end if
 	else
 		vr = astLoad( p )
-		astDel( p )
+		astDelNode( p )
 		if( ast.doemit ) then
 			irEmitCALLPTR( vr, vreg, bytestopop )
 		end if
@@ -214,13 +214,13 @@ private sub hCheckTmpStrings( byval f as ASTNODE ptr )
 		if( n->srctree <> NULL ) then
 			t = rtlStrAssign( n->srctree, astNewVAR( n->tmpsym, 0, FB_DATATYPE_STRING ) )
 			astLoad( t )
-			astDel( t )
+			astDelNode( t )
 		end if
 
 		'' delete the temp string (or wstring)
 		t = rtlStrDelete( astNewVAR( n->tmpsym, 0, symbGetType( n->tmpsym ) ) )
 		astLoad( t )
-		astDel( t )
+		astDelNode( t )
 
 		p = n->prev
 		listDelNode( @ast.tempstr, cast( TLISTNODE ptr, n ) )
@@ -240,7 +240,7 @@ private sub hFreeTempArrayDescs( byval f as ASTNODE ptr )
 		t = rtlArrayFreeTempDesc( n->pdesc )
 		if( t <> NULL ) then
 			astLoad( t )
-			astDel( t )
+			astDelNode( t )
 		end if
 
 		p = n->prev
@@ -298,7 +298,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		'' signal function start for profiling
 		if( pstart <> NULL ) then
 			pcvr = astLoad( pstart )
-			astDel( pstart )
+			astDelNode( pstart )
 		end if
 
 		vr = hCallProc( n, NULL, INVALID, 0, 0 )
@@ -310,7 +310,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 			end if
 			sym = pend->sym
 			hCallProc( pend, sym, sym->proc.mode, 0, 0 )
-			astDel( pend )
+			astDelNode( pend )
 		end if
 
 		return vr
@@ -375,7 +375,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 
 		'' flush the arg expression
 		vr = astLoad( l )
-		astDel( l )
+		astDelNode( l )
 
 		if( ast.doemit ) then
 			if( irEmitPUSHARG( sym, param, vr, arg->arg.mode, arg->arg.lgt ) = FALSE ) then
@@ -383,7 +383,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 			end if
 		end if
 
-		astDel( arg )
+		astDelNode( arg )
 
 		args += inc
 
@@ -400,7 +400,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 	'' signal function start for profiling
 	if( pstart <> NULL ) then
 		pcvr = astLoad( pstart )
-		astDel( pstart )
+		astDelNode( pstart )
 	end if
 
 	'' return the result (same type as function ones)
@@ -413,7 +413,7 @@ function astLoadCALL( byval n as ASTNODE ptr ) as IRVREG ptr
 		end if
 		sym = pend->sym
 		hCallProc( pend, sym, sym->proc.mode, 0, 0 )
-		astDel( pend )
+		astDelNode( pend )
 	end if
 
 	'' del temp strings and copy back if needed

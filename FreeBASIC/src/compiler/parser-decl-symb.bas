@@ -203,7 +203,7 @@ private sub hMakeArrayDimTB( byval dimensions as integer, _
 			dTB(i).lower = astGetValInt( expr )
 		end select
 
-		astDel( expr )
+		astDelNode( expr )
 
 		'' upper bound
 		expr = exprTB(i, 1)
@@ -217,7 +217,7 @@ private sub hMakeArrayDimTB( byval dimensions as integer, _
 			dTB(i).upper = astGetValInt( expr )
 		end select
 
-		astDel( expr )
+		astDelNode( expr )
 	next i
 
 end sub
@@ -788,7 +788,7 @@ function cStaticArrayDecl( byref dimensions as integer, _
 			dTB(i).lower = astGetValInt( expr )
 		end select
 
-		astDel( expr )
+		astDelNode( expr )
 
         '' TO
     	if( lexGetToken( ) = FB_TK_TO ) then
@@ -806,7 +806,7 @@ function cStaticArrayDecl( byref dimensions as integer, _
 			end if
 
 			dTB(i).upper = astGetValueAsInt( expr )
-			astDel( expr )
+			astDelNode( expr )
 
     	else
     	    dTB(i).upper = dTB(i).lower

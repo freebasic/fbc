@@ -151,7 +151,7 @@ function cDataStmt as integer static
 
 		    end if
 
-			astDel( expr )
+			astDelNode( expr )
 
 		loop while( hMatch( CHAR_COMMA ) )
 

@@ -138,6 +138,7 @@ enum AST_NODECLASS
 	AST_NODECLASS_TYPEINI
 	AST_NODECLASS_TYPEINI_PAD
 	AST_NODECLASS_TYPEINI_EXPR
+	AST_NODECLASS_PROC
 end enum
 
 #ifndef ASTNODE_
@@ -195,7 +196,6 @@ type AST_PTR
 end type
 
 type AST_IIF
-	sym				as FBSYMBOL ptr
 	falselabel 		as FBSYMBOL ptr
 end type
 
@@ -241,21 +241,23 @@ type AST_MEM
 	op				as integer
 end type
 
-type AST_STK
+type AST_STACK
 	op				as integer
-end type
-
-type AST_CHK
-	sym				as FBSYMBOL ptr
-end type
-
-type AST_SCOPE
-	sym				as FBSYMBOL ptr
 end type
 
 type AST_TYPEINI
 	ofs				as integer
     bytes			as integer
+end type
+
+type AST_PROC
+	ismain			as integer
+
+	initlabel		as FBSYMBOL ptr
+	exitlabel		as FBSYMBOL ptr
+
+	head			as ASTNODE_ ptr					'' first node
+	tail			as ASTNODE_ ptr					'' last node
 end type
 
 ''
@@ -285,13 +287,12 @@ type ASTNODE
 		lbl			as AST_LABEL
 		lit			as AST_LIT
 		asm			as AST_ASM
-		jtb			as AST_JMPTB
+		jmptb		as AST_JMPTB
 		dbg			as AST_DBG
 		mem			as AST_MEM
-		stk			as AST_STK
-		chk			as AST_CHK
-		scope		as AST_SCOPE
+		stack		as AST_STACK
 		typeini		as AST_TYPEINI
+		proc		as AST_PROC
 	end union
 
 	prev			as ASTNODE ptr					'' used by Add
@@ -301,27 +302,17 @@ type ASTNODE
 	r				as ASTNODE ptr					'' right /     /
 end type
 
-''
-type ASTPROCNODE
-	ll_prv			as ASTPROCNODE ptr				'' linked-list nodes
-	ll_nxt			as ASTPROCNODE ptr				'' /
-
-	proc			as FBSYMBOL ptr
-	ismain			as integer
-
-	initlabel		as FBSYMBOL ptr
-	exitlabel		as FBSYMBOL ptr
-
-	head			as ASTNODE ptr					'' first node
-	tail			as ASTNODE ptr					'' last node
+type AST_PROCCTX
+	head			as ASTNODE ptr
+	tail			as ASTNODE ptr
+	curr			as ASTNODE ptr
+	oldsymtb		as FBSYMBOLTB ptr
 end type
 
 type ASTCTX
 	astTB			as TLIST
 
-	proclist		as TLIST
-	curproc			as ASTPROCNODE ptr
-	oldsymtb		as FBSYMBOLTB ptr
+	proc			as AST_PROCCTX
 
 	doemit			as integer
 	isopt			as integer
@@ -345,7 +336,7 @@ declare sub 		astInit				( )
 
 declare sub 		astEnd				( )
 
-declare sub 		astDel				( byval n as ASTNODE ptr )
+declare sub 		astDelNode			( byval n as ASTNODE ptr )
 
 declare function 	astCloneTree		( byval n as ASTNODE ptr ) as ASTNODE ptr
 
@@ -373,9 +364,9 @@ declare function 	astGetValueAsStr	( byval n as ASTNODE ptr ) as string
 declare function 	astGetValueAsWstr	( byval n as ASTNODE ptr ) as wstring ptr
 
 declare function 	astProcBegin		( byval proc as FBSYMBOL ptr, _
-					   					  byval ismain as integer = FALSE ) as ASTPROCNODE ptr
+					   					  byval ismain as integer = FALSE ) as ASTNODE ptr
 
-declare sub 		astProcEnd			( byval p as ASTPROCNODE ptr, _
+declare sub 		astProcEnd			( byval p as ASTNODE ptr, _
 										  byval callrtexit as integer = FALSE )
 
 declare function	astScopeBegin		( ) as ASTNODE ptr

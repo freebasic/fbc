@@ -241,7 +241,7 @@ function astUpdStrConcat( byval n as ASTNODE ptr ) as ASTNODE ptr
 			else
 				function = rtlWstrConcat( l, l->dtype, r, r->dtype )
 			end if
-			astDel( n )
+			astDelNode( n )
 		end if
 	end if
 
@@ -286,7 +286,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 		if( n->class = AST_NODECLASS_UOP ) then
 			if( n->op.op = AST_OP_NOT ) then
 				l = astUpdComp2Branch( n->l, label, isinverse = FALSE )
-				astDel( n )
+				astDelNode( n )
 				return l
 			end if
 		end if
@@ -306,7 +306,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 				end select
 
 				if( istrue ) then
-					astDel( n )
+					astDelNode( n )
 					n = astNewBRANCH( AST_OP_JMP, label, NULL )
 					if( n = NULL ) then
 						return NULL
@@ -324,7 +324,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 				end select
 
 				if( istrue ) then
-					astDel( n )
+					astDelNode( n )
 					n = astNewBRANCH( AST_OP_JMP, label, NULL )
 					if( n = NULL ) then
 						return NULL
@@ -645,7 +645,7 @@ sub astDelTree ( byval n as ASTNODE ptr )
 	end if
 
 	''
-	astDel( n )
+	astDelNode( n )
 
 End Sub
 
@@ -887,7 +887,7 @@ function astNewNode( byval class_ as integer, _
 end function
 
 '':::::
-sub astDel( byval n as ASTNODE ptr ) static
+sub astDelNode( byval n as ASTNODE ptr ) static
 
 	if( n = NULL ) then
 		exit sub

@@ -68,7 +68,7 @@ function astLoadLOAD( byval n as ASTNODE ptr ) as IRVREG ptr
 		end if
 	end if
 
-	astDel( l )
+	astDelNode( l )
 
 	function = v1
 

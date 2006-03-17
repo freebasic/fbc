@@ -541,7 +541,7 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 			end if
 
 			value = astGetValueAsInt( expr1 )
-			astDel( expr1 )
+			astDelNode( expr1 )
 
 			'' TO?
 			if( hMatch( FB_TK_TO ) ) then
@@ -556,7 +556,7 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 				end if
 
 				tovalue = astGetValueAsInt( expr2 )
-				astDel( expr2 )
+				astDelNode( expr2 )
 
 				for value = value to tovalue
 					if( value < minval ) then

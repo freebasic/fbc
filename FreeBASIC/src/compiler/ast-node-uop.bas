@@ -296,7 +296,7 @@ function astLoadUOP( byval n as ASTNODE ptr ) as IRVREG ptr
 		end if
 	end if
 
-	astDel( o )
+	astDelNode( o )
 
 	function = vr
 

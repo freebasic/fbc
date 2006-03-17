@@ -51,7 +51,7 @@ private sub hOptConstRmNeg( byval n as ASTNODE ptr, _
 								p->op.op = AST_OP_SUB
 								p->l = p->r
 								p->r = n->l
-								astDel( n )
+								astDelNode( n )
 								exit sub
 							end if
 						end if
@@ -259,8 +259,8 @@ private function hConstAccumADDSUB( byval n as ASTNODE ptr, _
 			end if
 
 			'' del BOP and const node
-			astDel( r )
-			astDel( n )
+			astDelNode( r )
+			astDelNode( n )
 
 			'' top node is now the left one
 			n = hConstAccumADDSUB( l, v, op )
@@ -315,8 +315,8 @@ private function hConstAccumMUL( byval n as ASTNODE ptr, _
 			end if
 
 			'' del BOP and const node
-			astDel( r )
-			astDel( n )
+			astDelNode( r )
+			astDelNode( n )
 
 			'' top node is now the left one
 			n = hConstAccumMUL( l, v )
@@ -540,8 +540,8 @@ private function hConstDistMUL( byval n as ASTNODE ptr, _
 			end if
 
 			'' del BOP and const node
-			astDel( r )
-			astDel( n )
+			astDelNode( r )
+			astDelNode( n )
 
 			'' top node is now the left one
 			n = hConstDistMUL( l, v )
@@ -712,7 +712,7 @@ private sub hOptConstIDX( byval n as ASTNODE ptr )
 					n->ptr.ofs += c
 				end if
 
-				astDel( l )
+				astDelNode( l )
 				n->l = NULL
 			end if
 		end if
@@ -763,8 +763,8 @@ private sub hOptConstIDX( byval n as ASTNODE ptr )
 								n->l = l->l
 
 				    			'' del const node and the BOP itself
-				    			astDel( lr )
-								astDel( l )
+				    			astDelNode( lr )
+								astDelNode( l )
 
 								l = n->l
 							end if
@@ -1036,11 +1036,11 @@ private function hOptNullOp( byval n as ASTNODE ptr ) as ASTNODE ptr static
 					case AST_OP_MUL
 						if( v = 0 ) then
 							astDelTree( l )
-							astDel( n )
+							astDelNode( n )
 							return r
 						elseif( v = 1 ) then
-							astDel( r )
-							astDel( n )
+							astDelNode( r )
+							astDelNode( n )
 							return hOptNullOp( l )
 						end if
 
@@ -1048,28 +1048,28 @@ private function hOptNullOp( byval n as ASTNODE ptr ) as ASTNODE ptr static
 						if( v = 1 ) then
 							r->con.val.int = 0
 							astDelTree( l )
-							astDel( n )
+							astDelNode( n )
 							return r
 						end if
 
 					case AST_OP_INTDIV
 						if( v = 1 ) then
-							astDel( r )
-							astDel( n )
+							astDelNode( r )
+							astDelNode( n )
 							return hOptNullOp( l )
 						end if
 
 					case AST_OP_ADD, AST_OP_SUB, AST_OP_SHR, AST_OP_SHL, AST_OP_OR, AST_OP_XOR
 						if( v = 0 ) then
-							astDel( r )
-							astDel( n )
+							astDelNode( r )
+							astDelNode( n )
 							return hOptNullOp( l )
 						end if
 
 					case AST_OP_AND
 						if( v = -1 ) then
-							astDel( r )
-							astDel( n )
+							astDelNode( r )
+							astDelNode( n )
 							return hOptNullOp( l )
 						end if
 					end select
@@ -1145,7 +1145,7 @@ private function hOptStrMultConcat( byval lnk as ASTNODE ptr, _
     	    end if
     	end if
 
-    	astDel( n )
+    	astDelNode( n )
 
     '' string..
     else
@@ -1220,7 +1220,7 @@ private function hOptStrAssignment( byval n as ASTNODE ptr, _
 	is_wstr = ( n->dtype = FB_DATATYPE_WCHAR )
 
 	if( optimize ) then
-		astDel( n )
+		astDelNode( n )
 		n = r
 		astDelTree( l )
 		l = n->l
@@ -1266,7 +1266,7 @@ private function hOptStrAssignment( byval n as ASTNODE ptr, _
 		end if
 	end if
 
-	astDel( n )
+	astDelNode( n )
 
 end function
 
@@ -1371,7 +1371,7 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr static
 	''   / \
 	''  d   expr
 
-    astDel( n )
+    astDelNode( n )
 	astDelTree( l )
 
     function = r

@@ -573,7 +573,7 @@ function astLoadASSIGN( byval n as ASTNODE ptr ) as IRVREG ptr
 		'' l is a field node, use its left child instead
 		r = hSetBitField( l->l, r )
 		'' the field node can be removed
-		astDel( l )
+		astDelNode( l )
 		l = l->l
 	end if
 
@@ -584,8 +584,8 @@ function astLoadASSIGN( byval n as ASTNODE ptr ) as IRVREG ptr
 		irEmitSTORE( vr, vs )
 	end if
 
-	astDel( l )
-	astDel( r )
+	astDelNode( l )
+	astDelNode( r )
 
 	function = vr
 

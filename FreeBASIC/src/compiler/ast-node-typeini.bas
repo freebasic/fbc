@@ -76,9 +76,9 @@ sub astTypeIniEnd( byval tree as ASTNODE ptr, _
 				ast.typeinicnt -= 1
 
     			r = n->r
-    			astDel( n )
+    			astDelNode( n )
     			n = l->l
-    			astDel( l )
+    			astDelNode( l )
 
     			'' relink
     			if( p <> NULL ) then
@@ -193,7 +193,7 @@ private function hFlushTree( byval tree as ASTNODE ptr, _
 			astAdd( astNewASSIGN( lside, n->l, FALSE ) )
 
     	else
-    		astDel( n )
+    		astDelNode( n )
     	end if
 
     	n = nxt
@@ -324,7 +324,7 @@ private function hFlushTreeStatic( byval tree as ASTNODE ptr, _
 			hFlushExprStatic( n, basesym )
     	end if
 
-        astDel( n )
+        astDelNode( n )
     	n = nxt
     loop
 
@@ -351,7 +351,7 @@ function astTypeIniFlush( byval tree as ASTNODE ptr, _
 		function = hFlushTree( tree, basesym )
 	end if
 
-	astDel( tree )
+	astDelNode( tree )
 
 end function
 

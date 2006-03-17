@@ -86,13 +86,13 @@ function astLoadFIELD( byval n as ASTNODE ptr ) as IRVREG ptr static
 	if( n->dtype = FB_DATATYPE_BITFIELD ) then
 		n = hGetBitField( n->l )
 		function = astLoad( n )
-		astDel( n )
+		astDelNode( n )
 		exit function
 	end if
 
 	function = astLoad( n->l )
 
-	astDel( n->l )
+	astDelNode( n->l )
 
 end function
 

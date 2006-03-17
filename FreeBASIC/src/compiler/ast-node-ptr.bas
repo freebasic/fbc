@@ -64,7 +64,7 @@ function astNewPTR( byval ofs as integer, _
 			n = l->l
 			n->dtype   = dtype
 			n->subtype = subtype
-			astDel( l )
+			astDelNode( l )
 			return n
 		end if
 	end if
@@ -106,7 +106,7 @@ function astLoadPTR( byval n as ASTNODE ptr ) as IRVREG ptr
 		vr = irAllocVRPTR( n->dtype, n->ptr.ofs, vp )
 	end if
 
-	astDel( l )
+	astDelNode( l )
 
 	function = vr
 

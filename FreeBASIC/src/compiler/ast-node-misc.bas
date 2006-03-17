@@ -187,7 +187,7 @@ end function
 function astLoadDBG( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	if( ast.doemit ) then
-		irEmitDBG( ast.curproc->proc, n->dbg.op, n->dbg.ex )
+		irEmitDBG( ast.proc.curr->sym, n->dbg.op, n->dbg.ex )
 	end if
 
 end function
@@ -238,8 +238,8 @@ function astLoadMEM( byval n as ASTNODE ptr ) as IRVREG ptr
 		irEmitMEM( n->mem.op, v1, v2, n->mem.bytes )
 	end if
 
-	astDel( l )
-	astDel( r )
+	astDelNode( l )
+	astDelNode( r )
 
 	function = NULL
 

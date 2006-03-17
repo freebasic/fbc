@@ -198,7 +198,7 @@ private function cStrCHR( byref funcexpr as ASTNODE ptr, _
 		for i = 0 to cnt-1
   			expr = exprtb(i)
   			v = astGetValueAsInt( expr )
-  			astDel( expr )
+  			astDelNode( expr )
 
 			if( is_wstr = FALSE ) then
 				v and= 255
@@ -282,7 +282,7 @@ private function cStrASC( byref funcexpr as ASTNODE ptr ) as integer
 			if( posexpr <> NULL ) then
 				if( astIsCONST( posexpr ) ) then
 					p = astGetValueAsInt( posexpr )
-					astDel( posexpr )
+					astDelNode( posexpr )
 
 					if( p < 0 ) then
 						p = 0
@@ -312,7 +312,7 @@ private function cStrASC( byref funcexpr as ASTNODE ptr ) as integer
 
 			end if
 
-	    	astDel( expr1 )
+	    	astDelNode( expr1 )
 	    	expr1 = NULL
 	    end if
 

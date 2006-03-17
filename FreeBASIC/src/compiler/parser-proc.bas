@@ -364,8 +364,7 @@ function cProcStatement static
 	dim as integer res, issub, attrib
     dim as FBCMPSTMT oldprocstmt
     dim as FBSYMBOL ptr proc
-    dim as ASTNODE ptr expr
-    dim as ASTPROCNODE ptr procnode
+    dim as ASTNODE ptr expr, procnode
 
 	function = FALSE
 
@@ -437,7 +436,7 @@ function cProcStatement static
 	oldprocstmt = env.procstmt
 
 	env.procstmt.cmplabel = NULL
-	env.procstmt.endlabel = procnode->exitlabel
+	env.procstmt.endlabel = procnode->proc.exitlabel
 
 	'' restore error old handle if any was set
 	env.procerrorhnd = NULL
@@ -452,7 +451,7 @@ function cProcStatement static
 	end if
 
 	'' init
-	astAdd( astNewLABEL( procnode->initlabel ) )
+	astAdd( astNewLABEL( procnode->proc.initlabel ) )
 
 	'' proc body
 	if( res = TRUE ) then
@@ -485,7 +484,7 @@ function cProcStatement static
 	end if
 
 	'' exit
-	astAdd( astNewLABEL( procnode->exitlabel ) )
+	astAdd( astNewLABEL( procnode->proc.exitlabel ) )
 
 	'' restore old error handler if any was set
 	if( env.procerrorhnd <> NULL ) then

@@ -30,7 +30,9 @@ option escape
 
 '':::::
 function astNewSTACK( byval op as integer, _
-					  byval l as ASTNODE ptr ) as ASTNODE ptr static
+					  byval l as ASTNODE ptr _
+					) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
 
     if( l = NULL ) then
@@ -43,8 +45,8 @@ function astNewSTACK( byval op as integer, _
 		return NULL
 	end if
 
-	n->stk.op = op
-	n->l  = l
+	n->stack.op = op
+	n->l = l
 
 	function = n
 
@@ -63,10 +65,10 @@ function astLoadSTACK( byval n as ASTNODE ptr ) as IRVREG ptr
 	vr = astLoad( l )
 
 	if( ast.doemit ) then
-		irEmitSTACK( n->stk.op, vr )
+		irEmitSTACK( n->stack.op, vr )
 	end if
 
-	astDel( l )
+	astDelNode( l )
 
 	function = vr
 

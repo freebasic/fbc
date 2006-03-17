@@ -66,10 +66,10 @@ function astLoadLINK( byval n as ASTNODE ptr ) as IRVREG ptr
 	end if
 
 	astLoad( n->l )
-	astDel( n->l )
+	astDelNode( n->l )
 
 	astLoad( n->r )
-	astDel( n->r )
+	astDelNode( n->r )
 
 	function = NULL
 

@@ -45,8 +45,8 @@ private function hStrLiteralConcat( byval l as ASTNODE ptr, _
 
 	function = astNewVAR( s, 0, FB_DATATYPE_CHAR )
 
-	astDel( r )
-	astDel( l )
+	astDelNode( r )
+	astDelNode( l )
 
 end function
 
@@ -76,8 +76,8 @@ private function hWstrLiteralConcat( byval l as ASTNODE ptr, _
 
 	function = astNewVAR( s, 0, FB_DATATYPE_WCHAR )
 
-	astDel( r )
-	astDel( l )
+	astDelNode( r )
+	astDelNode( l )
 
 end function
 
@@ -110,8 +110,8 @@ private function hStrLiteralCompare( byval op as integer, _
 
 	function = astNewCONSTi( res, FB_DATATYPE_INTEGER )
 
-	astDel( r )
-	astDel( l )
+	astDelNode( r )
+	astDelNode( l )
 
 end function
 
@@ -193,8 +193,8 @@ private function hWStrLiteralCompare( byval op as integer, _
 
 	function = astNewCONSTi( res, FB_DATATYPE_INTEGER )
 
-	astDel( r )
-	astDel( l )
+	astDelNode( r )
+	astDelNode( l )
 
 end function
 
@@ -972,7 +972,7 @@ function astNewBOP( byval op as integer, _
 
 		astSetType( l, dtype, subtype )
 
-		astDel( r )
+		astDelNode( r )
 
 		return l
 
@@ -1018,7 +1018,7 @@ function astNewBOP( byval op as integer, _
 						 AST_NODECLASS_FIELD, AST_NODECLASS_PTR
 						n = l
 						l = l->l
-						astDel( n )
+						astDelNode( n )
 						ldtype = l->dtype
 					end select
 				end if
@@ -1026,7 +1026,7 @@ function astNewBOP( byval op as integer, _
 				select case l->class
 				case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
 					 AST_NODECLASS_FIELD, AST_NODECLASS_PTR
-					astDel( r )
+					astDelNode( r )
 					r = astCloneTree( l )
 					op = AST_OP_MUL
 					dtype = ldtype
@@ -1118,8 +1118,8 @@ function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
 	end if
 
 	'' nodes not needed anymore
-	astDel( l )
-	astDel( r )
+	astDelNode( l )
+	astDelNode( r )
 
 	function = vr
 
