@@ -37,7 +37,7 @@ Version 0.16 Beta:
 - better duplicated definition check when implicitly allocating variables whose names contain periods, inside functions that return UDT's (v1c)
 - libPNG import library and include file (v1c)
 - libJPEG import library and include file (v1c)
-- ImageConvertRow, to convert between different color depths
+- ImageConvertRow, to convert between different color depths (v1c)
 - import library and include file for the Curl library (v1c)
 
 [fixed]
