@@ -43,6 +43,8 @@ int fb_ConsoleWidth( int cols, int rows )
 		fb_hTermOut(SEQ_WINDOW_SIZE, rows, cols);
 
 		BG_UNLOCK();
+		
+		fb_ConsoleClear( 0 );
 	}
 
 	return cur;
