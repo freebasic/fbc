@@ -252,12 +252,8 @@ end type
 
 type AST_PROC
 	ismain			as integer
-
 	initlabel		as FBSYMBOL ptr
 	exitlabel		as FBSYMBOL ptr
-
-	head			as ASTNODE_ ptr					'' first node
-	tail			as ASTNODE_ ptr					'' last node
 end type
 
 ''

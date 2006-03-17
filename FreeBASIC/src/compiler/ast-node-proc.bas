@@ -16,7 +16,8 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 ''
-'' procedure and scope trees handling
+'' AST proc body nodes
+'' l = head node; r = tail node
 ''
 
 option explicit
@@ -66,8 +67,6 @@ private function hNewProcNode( byval proc as FBSYMBOL ptr ) as ASTNODE ptr stati
 	n = astNewNode( AST_NODECLASS_PROC, INVALID, NULL )
 
 	n->sym = proc
-	n->proc.head = NULL
-	n->proc.tail = NULL
 
 	'' add to list
 	if( ast.proc.tail <> NULL ) then
@@ -87,8 +86,8 @@ end function
 '':::::
 private sub hDelProcNode( byval n as ASTNODE ptr ) static
 
-	n->proc.head = NULL
-	n->proc.tail = NULL
+	n->l = NULL
+	n->r = NULL
 
 	'' remove from list
 	if( n->prev <> NULL ) then
@@ -128,7 +127,7 @@ private sub hProcFlush( byval p as ASTNODE ptr, _
 
 	'' do pre-loading, before allocating variables on stack
 	prv = @tmp
-	n = p->proc.head
+	n = p->l
 	do while( n <> NULL )
 		nxt = n->next
 
@@ -161,7 +160,7 @@ private sub hProcFlush( byval p as ASTNODE ptr, _
 	end if
 
 	'' flush nodes
-	n = p->proc.head
+	n = p->l
 	do while( n <> NULL )
 		nxt = n->next
 		astLoad( n )
@@ -230,15 +229,15 @@ sub astAdd( byval n as ASTNODE ptr ) static
 	n = astTypeIniUpdate( n )
 
 	''
-	if( ast.proc.curr->proc.tail <> NULL ) then
-		ast.proc.curr->proc.tail->next = n
+	if( ast.proc.curr->r <> NULL ) then
+		ast.proc.curr->r->next = n
 	else
-		ast.proc.curr->proc.head = n
+		ast.proc.curr->l = n
 	end if
 
-	n->prev = ast.proc.curr->proc.tail
+	n->prev = ast.proc.curr->r
 	n->next = NULL
-	ast.proc.curr->proc.tail = n
+	ast.proc.curr->r = n
 
 end sub
 
@@ -255,7 +254,7 @@ sub astAddAfter( byval n as ASTNODE ptr, _
 
 	''
 	if( p->next = NULL ) then
-		ast.proc.curr->proc.tail = n
+		ast.proc.curr->r = n
 	end if
 
 	n->prev = p
@@ -449,7 +448,7 @@ private function hModLevelIsEmpty( byval p as ASTNODE ptr ) as integer
 	'' initial and final labels as nodes and nothing else
 	'' (note: when debugging it will be emmited even if empty)
 
-	n = p->proc.head
+	n = p->l
 	if( n = NULL ) then
 		return TRUE
 	end if
@@ -478,7 +477,7 @@ end function
 private sub hModLevelAddRtInit( byval p as ASTNODE ptr )
     dim as ASTNODE ptr n
 
-    n = p->proc.head
+    n = p->l
     if( n = NULL ) then
     	exit sub
     end if
