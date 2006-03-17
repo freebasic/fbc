@@ -1023,7 +1023,10 @@ declare function	rtlGfxDrawString	( byval target as ASTNODE ptr, _
 										  byval cexpr as ASTNODE ptr, _
 										  byval fexpr as ASTNODE ptr, _
 										  byval fisptr as integer, _
-										  byval coord_type as integer ) as integer
+										  byval coord_type as integer, _
+										  byval mode as integer, _
+										  byval alphaexpr as ASTNODE ptr, _
+										  byval funcexpr as ASTNODE ptr ) as integer
 
 declare function	rtlGfxView			( byval x1expr as ASTNODE ptr, _
 										  byval y1expr as ASTNODE ptr, _

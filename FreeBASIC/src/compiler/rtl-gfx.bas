@@ -125,18 +125,21 @@ data @FB_RTL_GFXDRAW, "", _
 
 '' fb_GfxDrawString ( byval target as any, byval x as single, byval y as single, _
 ''                    byval byval coord_type as integer = COORD_TYPE_A, text as string, _
-''                    byval col as uinteger = DEFAULT_COLOR, byval font as any = NULL )
+''                    byval col as uinteger = DEFAULT_COLOR, byval font as any = NULL, byval mode as integer, _
+''                    byval func as function( src as uinteger, dest as uinteger ) as uinteger = 0 )
 data @FB_RTL_GFXDRAWSTRING, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 @hGfxlib_cb, TRUE, FALSE, _
-	 7, _
+	 9, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE
+	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_GfxView ( byval x1 as integer = -32768, byval y1 as integer = -32768, _
 ''              byval x1 as integer = -32768, byval y1 as integer = -32768, _
@@ -988,7 +991,10 @@ function rtlGfxDrawString( byval target as ASTNODE ptr, _
 						   byval cexpr as ASTNODE ptr, _
 						   byval fexpr as ASTNODE ptr, _
 						   byval fisptr as integer, _
-						   byval coord_type as integer ) as integer
+						   byval coord_type as integer, _
+						   byval mode as integer, _
+						   byval alphaexpr as ASTNODE ptr, _
+						   byval funcexpr as ASTNODE ptr ) as integer
     dim as ASTNODE ptr proc
     dim as integer targetmode
     dim as FBSYMBOL ptr reslabel
@@ -1033,6 +1039,9 @@ function rtlGfxDrawString( byval target as ASTNODE ptr, _
  	end if
 
  	'' byval color as uinteger
+ 	if( alphaexpr <> NULL ) then
+ 		cexpr = alphaexpr
+ 	end if
  	if( astNewARG( proc, cexpr ) = NULL ) then
  		exit function
  	end if
@@ -1049,6 +1058,19 @@ function rtlGfxDrawString( byval target as ASTNODE ptr, _
 		end if
 	end if
 	if( astNewARG( proc, fexpr, INVALID, targetmode ) = NULL ) then
+ 		exit function
+ 	end if
+ 	
+ 	'' byval mode as integer
+ 	if( astNewARG( proc, astNewCONSTi( mode, FB_DATATYPE_INTEGER ) ) = NULL ) then
+ 		exit function
+ 	end if
+ 	
+ 	'' byval func as function( src as uinteger, dest as uinteger ) as uinteger
+ 	if( funcexpr = NULL ) then
+ 		funcexpr = astNewCONSTi(0, FB_DATATYPE_INTEGER )
+ 	end if
+ 	if( astNewARG( proc, funcexpr ) = NULL ) then
  		exit function
  	end if
 
