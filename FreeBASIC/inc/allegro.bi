@@ -1842,7 +1842,7 @@ declare sub register_trace_handler cdecl alias "register_trace_handler" ( byval 
 
 ' -- misc --
 
-#define allegro_init() install_allegro(SYSTEM_AUTODETECT, @errno, @atexit)
+#define allegro_init() install_allegro(SYSTEM_AUTODETECT, 0, @atexit)
 
 #define SCREEN_W gfx_driver->w
 
