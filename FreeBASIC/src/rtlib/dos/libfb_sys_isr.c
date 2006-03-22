@@ -28,7 +28,6 @@
 #include "fb_rterr.h"
 #include "fb_dos.h"
 
-#include <assert.h>
 
 #include <dpmi.h>
 #include <go32.h>
@@ -272,7 +271,7 @@ int fb_isr_set( unsigned irq_number,
                 size_t stack_size )
 {
     void *pStack;
-    assert( irq_number < 16 );
+    DBG_ASSERT( irq_number < 16 );
 
     if( !fb_isr_init() )
         return FALSE;
@@ -313,7 +312,7 @@ int fb_isr_set( unsigned irq_number,
 
 int fb_isr_reset( unsigned irq_number )
 {
-    assert( irq_number < 16 );
+    DBG_ASSERT( irq_number < 16 );
 
     if( !fb_isr_init() )
         return FALSE;
@@ -347,6 +346,6 @@ int fb_isr_reset( unsigned irq_number )
 
 FnIntHandler fb_isr_get( unsigned irq_number )
 {
-    assert( irq_number < 16 );
+    DBG_ASSERT( irq_number < 16 );
     return fb_hDrvIntHandler[irq_number];
 }

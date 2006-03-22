@@ -27,7 +27,6 @@
 #include <float.h>
 #include <math.h>
 #include <stdlib.h>
-#include <assert.h>
 #include "fbext.h"
 
 typedef enum _eMaskType {
@@ -263,7 +262,7 @@ int fb_hProcessMask( FBSTRING *dst,
     char *pszOut;
     int i;
 
-    assert( pInfo!=NULL );
+    DBG_ASSERT( pInfo!=NULL );
 
     if( !do_output ) {
         memset( pInfo, 0, sizeof(FormatMaskInfo) );
@@ -458,7 +457,7 @@ int fb_hProcessMask( FBSTRING *dst,
                             continue;
                         }
                     } else if( NumSkipFix < 0 ) {
-                        assert( IndexFix!=LenFix );
+                        DBG_ASSERT( IndexFix!=LenFix );
                         pszAdd = FixPart + IndexFix;
                         if( pInfo->has_thousand_sep ) {
                             int remaining = LenFix - IndexFix;
@@ -640,7 +639,7 @@ int fb_hProcessMask( FBSTRING *dst,
                                     }
                                     do_add = TRUE;
                                 } else {
-                                    assert( FALSE );
+                                    DBG_ASSERT( FALSE );
                                 }
 
                             } else {
@@ -1078,13 +1077,13 @@ int fb_hProcessMask( FBSTRING *dst,
         }
         if( do_add ) {
             do_add = FALSE;
-            assert(do_output);
-            assert(pszOut!=NULL);
+            DBG_ASSERT(do_output);
+            DBG_ASSERT(pszOut!=NULL);
             if( pszAddFree!=NULL )
                 pszAdd = pszAddFree;
             if( LenAdd==0 )
                 LenAdd = strlen( pszAdd );
-            assert(LenOut>=LenAdd);
+            DBG_ASSERT(LenOut>=LenAdd);
             FB_MEMCPY( pszOut, pszAdd, LenAdd );
             pszOut += LenAdd;
             LenOut -= LenAdd;
@@ -1110,7 +1109,7 @@ int fb_hProcessMask( FBSTRING *dst,
         if( !pInfo->has_sign )
             pInfo->length_min += 1;
     } else {
-        assert( LenOut>=0 );
+        DBG_ASSERT( LenOut>=0 );
         *pszOut = 0;
         fb_hStrSetLength( dst, pszOut - dst->data );
     }

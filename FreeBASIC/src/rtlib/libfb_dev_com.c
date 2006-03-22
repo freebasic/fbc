@@ -24,7 +24,6 @@
  *
  */
 
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -114,7 +113,7 @@ static int fb_DevComTell( struct _FB_FILE *handle, long *pOffset )
     int res;
     DEV_COM_INFO *pInfo;
 
-    assert( pOffset!=NULL );
+    DBG_ASSERT( pOffset!=NULL );
 
     FB_LOCK();
 
@@ -208,7 +207,7 @@ int fb_DevComOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
     info->Options.DurationDSR = 1000;
 
     pchPos = strchr( filename, ':' );
-    assert( pchPos!=NULL );
+    DBG_ASSERT( pchPos!=NULL );
     ++pchPos;
 
     /* Process all passed options */

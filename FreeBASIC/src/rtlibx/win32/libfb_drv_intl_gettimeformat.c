@@ -26,7 +26,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 #include "fbext.h"
 
 
@@ -40,7 +39,7 @@ int fb_DrvIntlGetTimeFormat( char *buffer, size_t len )
     int use_timemark, timemark_prefix;
     size_t i;
 
-    assert(buffer!=NULL);
+    DBG_ASSERT(buffer!=NULL);
 
     /* Can I use this? The problem is that it returns the date format
      * with localized separators. */

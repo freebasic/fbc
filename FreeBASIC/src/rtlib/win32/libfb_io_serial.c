@@ -25,7 +25,6 @@
  */
 
 #include <windows.h>
-#include <assert.h>
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -61,7 +60,7 @@ static int fb_hSerialWaitSignal( HANDLE hDevice, DWORD dwMask, DWORD dwResult, D
 static
 int fb_hSerialCheckLines( HANDLE hDevice, FB_SERIAL_OPTIONS *pOptions )
 {
-    assert( pOptions!=NULL );
+    DBG_ASSERT( pOptions!=NULL );
     if( pOptions->DurationCD!=0 ) {
         if( !fb_hSerialWaitSignal( hDevice,
                                    MS_RLSD_ON, MS_RLSD_ON,
@@ -265,7 +264,7 @@ int fb_SerialOpen( struct _FB_FILE *handle,
         CloseHandle( hDevice );
     } else {
         W32_SERIAL_INFO *pInfo = calloc( 1, sizeof(W32_SERIAL_INFO) );
-        assert( ppvHandle!=NULL );
+        DBG_ASSERT( ppvHandle!=NULL );
         *ppvHandle = pInfo;
         pInfo->hDevice = hDevice;
         pInfo->iPort = iPort;
@@ -316,7 +315,7 @@ int fb_SerialRead( struct _FB_FILE *handle,
 {
     W32_SERIAL_INFO *pInfo = (W32_SERIAL_INFO*) pvHandle;
     DWORD dwReadCount;
-    assert( pLength!=NULL );
+    DBG_ASSERT( pLength!=NULL );
 
     if( !fb_hSerialCheckLines( pInfo->hDevice, pInfo->pOptions ) ) {
         return fb_ErrorSetNum( FB_RTERROR_FILEIO );

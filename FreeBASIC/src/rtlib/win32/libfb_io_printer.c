@@ -26,7 +26,6 @@
 
 #include <windows.h>
 #include <stdio.h>
-#include <assert.h>
 #include <ctype.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -648,7 +647,7 @@ int fb_PrinterOpen( int iPort, const char *pszDeviceRaw, void **ppvHandle )
                 /* Should never fail - except when some default fonts were
                  * removed by hand (which is very unlikely) */
                 pInfo->Emu.hFont = CreateFontIndirect( &lf );
-                assert( pInfo->Emu.hFont!=NULL );
+                DBG_ASSERT( pInfo->Emu.hFont!=NULL );
 
                 /* Register PRINT function */
                 pInfo->Emu.pfnPrint = pFoundEmu->pfnPrint;

@@ -26,7 +26,6 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 #include "fbext.h"
 
 
@@ -41,7 +40,7 @@ int fb_DrvIntlGetDateFormat( char *buffer, size_t len )
     char achDate[2], *pszDate;
     size_t i;
 
-    assert(buffer!=NULL);
+    DBG_ASSERT(buffer!=NULL);
 
     /* Can I use this? The problem is that it returns the date format
      * with localized separators. */

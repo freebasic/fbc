@@ -27,7 +27,6 @@
 #include "fbext.h"
 #include <stddef.h>
 #include <string.h>
-#include <assert.h>
 #include <langinfo.h>
 
 /*:::::*/

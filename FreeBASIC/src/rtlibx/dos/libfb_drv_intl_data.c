@@ -25,7 +25,6 @@
  */
 
 #include <stddef.h>
-#include <assert.h>
 #include "fbext_dos.h"
 
 const FB_LOCALE_INFOS fb_locale_infos[] = {

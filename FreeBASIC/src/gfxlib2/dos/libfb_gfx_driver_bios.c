@@ -25,7 +25,6 @@
  */
 
 #include "fb_gfx_dos.h"
-#include <assert.h>
 #include <go32.h>
 #include <pc.h>
 #include <dpmi.h>
@@ -428,7 +427,7 @@ static int *driver_fetch_modes(int depth, int *size)
     iModeCount = 0;
     while( depth_modes->modes[ iModeCount ]!=0 )
         ++iModeCount;
-    assert( iModeCount==iResCount );
+    DBG_ASSERT( iModeCount==iResCount );
 #endif
 
 	*size = iResCount;

@@ -24,7 +24,6 @@
  *
  */
 
-#include <assert.h>
 #include "fbext.h"
 
 /*:::::*/
@@ -42,7 +41,7 @@ int fb_hTimeDaysInMonth( int month, int year )
 {
     static const int days[] =
     { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-    assert(month >= 1 && month <= 12 );
+    DBG_ASSERT(month >= 1 && month <= 12 );
     if( month==2 )
         return days[month-1] + fb_hTimeLeap( year );
     return days[month-1];
@@ -51,9 +50,9 @@ int fb_hTimeDaysInMonth( int month, int year )
 /*:::::*/
 void fb_hNormalizeDate( int *pDay, int *pMonth, int *pYear )
 {
-    assert( pDay!=NULL );
-    assert( pMonth!=NULL );
-    assert( pYear!=NULL );
+    DBG_ASSERT( pDay!=NULL );
+    DBG_ASSERT( pMonth!=NULL );
+    DBG_ASSERT( pYear!=NULL );
     {
         int day = *pDay;
         int month = *pMonth;

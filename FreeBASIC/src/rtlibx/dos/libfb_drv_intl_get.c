@@ -25,7 +25,6 @@
  */
 
 #include <stddef.h>
-#include <assert.h>
 #include "fbext_dos.h"
 
 /*:::::*/

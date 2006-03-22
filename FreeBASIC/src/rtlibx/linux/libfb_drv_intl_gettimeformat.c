@@ -27,7 +27,6 @@
 #include "fbext.h"
 #include <stddef.h>
 #include <string.h>
-#include <assert.h>
 #include <langinfo.h>
 
 
@@ -41,7 +40,7 @@ int fb_DrvIntlGetTimeFormat( char *buffer, size_t len )
     size_t remaining = len - 1, add_len = 0;
     const char *pszCurrent = nl_langinfo( T_FMT );
 
-    assert(buffer!=NULL);
+    DBG_ASSERT(buffer!=NULL);
 
     while ( *pszCurrent!=0 ) {
         char ch = *pszCurrent;

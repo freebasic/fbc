@@ -28,7 +28,6 @@
 #include "fb_gfx_win32.h"
 #include <process.h>
 #include <stdio.h>
-#include <assert.h>
 
 
 WIN32DRIVER fb_win32;
@@ -297,7 +296,7 @@ int fb_hWin32Init(char *title, int w, int h, int depth, int refresh_rate, int fl
                                       events[0],
                                       0,
                                       &dwThreadId );
-            assert( events[1]!=INVALID_HANDLE_VALUE );
+            DBG_ASSERT( events[1]!=INVALID_HANDLE_VALUE );
         }
 #endif
 		result = WaitForMultipleObjects(2, events, FALSE, INFINITE);

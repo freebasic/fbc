@@ -24,7 +24,6 @@
  *
  */
 
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -159,7 +158,7 @@ int fb_DevLptOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
             if( strcmp(tmp_info->pszDevice, info->pszDevice)==0 ) {
                 free(info);
                 /* bugcheck */
-                assert( tmp_handle!=FB_HANDLE_PRINTER
+                DBG_ASSERT( tmp_handle!=FB_HANDLE_PRINTER
                         && handle!=FB_HANDLE_PRINTER );
                 redir_handle = tmp_handle;
                 info = tmp_info;

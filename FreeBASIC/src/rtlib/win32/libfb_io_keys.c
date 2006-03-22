@@ -25,7 +25,6 @@
  *
  */
 
-#include <assert.h>
 #include <ctype.h>
 #include "fb.h"
 #include "fb_rterr.h"

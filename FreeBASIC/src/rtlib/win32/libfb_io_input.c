@@ -25,7 +25,6 @@
  *
  */
 
-#include <assert.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
@@ -190,7 +189,7 @@ void fb_hConsolePostKey(int key, const KEY_EVENT_RECORD *key_event)
 
     key_buffer[key_tail] = key;
 
-    assert( key_event!=NULL );
+    DBG_ASSERT( key_event!=NULL );
 
     record = input_events + key_tail;
     memcpy( &record->Event.KeyEvent,

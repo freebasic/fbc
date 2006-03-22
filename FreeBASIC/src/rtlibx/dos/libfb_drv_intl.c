@@ -25,7 +25,6 @@
  */
 
 #include <stddef.h>
-#include <assert.h>
 #include "fbext_dos.h"
 
 int fb_hIntlGetInfo( DOS_COUNTRY_INFO_GENERAL *pInfo )
@@ -34,7 +33,7 @@ int fb_hIntlGetInfo( DOS_COUNTRY_INFO_GENERAL *pInfo )
     int arg_seg, arg_sel;
     __dpmi_regs r;
 
-    assert( pInfo!=NULL );
+    DBG_ASSERT( pInfo!=NULL );
     memset( pInfo, 0, sizeof(DOS_COUNTRY_INFO_GENERAL) );
 
     pInfo->info_id = 0x01;
