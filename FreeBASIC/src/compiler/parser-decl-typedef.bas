@@ -79,10 +79,13 @@ function cTypedefDecl( byval pid as zstring ptr ) as integer static
     		end if
 
     	else
-    		if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
+    		select case lexGetClass( )
+    		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD
+
+    		case else
     			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
     			exit function
-		    end if
+		    end select
 
 			lexEatToken( id )
 			pid = @id

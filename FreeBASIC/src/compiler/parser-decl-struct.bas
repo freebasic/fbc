@@ -50,12 +50,13 @@ function cTypeMultElementDecl( byval s as FBSYMBOL ptr ) as integer static
 
 	do
 		'' allow keywords as field names
-		if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
-			if( lexGetClass( ) <> FB_TKCLASS_KEYWORD ) then
-    			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-    			exit function
-    		end if
-    	end if
+		select case lexGetClass( )
+		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD
+
+		case else
+    		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+    		exit function
+    	end select
 
     	'' contains a period?
     	if( lexGetPeriodPos( ) > 0 ) then
@@ -117,12 +118,13 @@ function cTypeElementDecl( byval s as FBSYMBOL ptr ) as integer static
 	function = FALSE
 
 	'' allow keywords as field names
-	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
-		if( lexGetClass( ) <> FB_TKCLASS_KEYWORD ) then
-    		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-    		exit function
-    	end if
-    end if
+	select case lexGetClass( )
+	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD
+
+    case else
+    	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+    	exit function
+    end select
 
     '' contains a period?
     if( lexGetPeriodPos( ) > 0 ) then
@@ -402,7 +404,10 @@ function cTypeDecl as integer static
 	end select
 
 	'' ID
-	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
+	select case lexGetClass( )
+	case FB_TKCLASS_IDENTIFIER
+
+	case FB_TKCLASS_KEYWORD
     	if( isunion = FALSE ) then
     		'' AS?
     		if( lexGetToken( ) = FB_TK_AS ) then
@@ -411,9 +416,10 @@ function cTypeDecl as integer static
     		end if
     	end if
 
+    case else
     	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
     	exit function
-    end if
+    end select
 
 	lexEatToken( id )
 

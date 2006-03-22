@@ -165,27 +165,35 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, _
 	'' adding a type field? anything is allowed (udt elms are not added to a hash tb)
 	case FB_SYMBCLASS_UDTELM, FB_SYMBCLASS_PARAM
 
-	'' adding a label or forward ref? anything but a define and keyword is allowed,
-	'' if the same class doesn't exist yet
-	case FB_SYMBCLASS_LABEL, FB_SYMBCLASS_FWDREF
+	'' adding a label? anything but a define, keyword or another label is allowed
+	case FB_SYMBCLASS_LABEL
 
 		function = FALSE
 
 		do
-			select case as const n->class
-			case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_KEYWORD
+			select case n->class
+			case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_KEYWORD, FB_SYMBCLASS_LABEL
 				exit function
-
-			case else
-				if( n->class = s->class ) then
-					exit function
-				end if
 			end select
 
 			n = n->right
 		loop while( n <> NULL )
 
-	'' adding an udt, enum or typedef? anything but a define, keyword or
+	'' adding a forward ref? anything but a define or another forward ref is allowed
+	case FB_SYMBCLASS_FWDREF
+
+		function = FALSE
+
+		do
+			select case n->class
+			case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_FWDREF
+				exit function
+			end select
+
+			n = n->right
+		loop while( n <> NULL )
+
+	'' adding an udt, enum or typedef? anything but a define or
 	'' themselves is allowed
 	case FB_SYMBCLASS_UDT, FB_SYMBCLASS_ENUM, FB_SYMBCLASS_TYPEDEF
 
@@ -193,7 +201,7 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, _
 
 		do
 			select case as const n->class
-			case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_KEYWORD, _
+			case FB_SYMBCLASS_DEFINE, _
 				 FB_SYMBCLASS_UDT, FB_SYMBCLASS_ENUM, FB_SYMBCLASS_TYPEDEF
 				exit function
 			end select

@@ -1,5 +1,3 @@
-[ ] allow dups of UDT's and keywords, so POINT in Win32 won't clash
-
 [ ] Extern array descriptors shoudn't be emitted, unless accessed
 
 [ ] pointers passed byref should be checked for different types
