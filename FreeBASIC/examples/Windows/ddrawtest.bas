@@ -95,7 +95,7 @@ sub doRendering
 	
 	'' lock the back buffer before start drawing on it
 	if( IDirectDrawSurface7_Lock( pDDSBack, NULL, @ddsd, DDLOCK_WAIT, NULL ) <> DD_OK ) then
-		exit function
+		exit sub
 	end if
 	
 	'' get the pointer to back-buffer
