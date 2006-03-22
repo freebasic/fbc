@@ -163,6 +163,14 @@ function cExitStatement as integer
 			exit function
 		end if
 
+		'' useless check
+		if( lexGetToken( ) <> iif( symbGetType( env.currproc ) = FB_DATATYPE_VOID, _
+								   FB_TK_SUB, _
+								   FB_TK_FUNCTION ) ) then
+			hReportError( FB_ERRMSG_SYNTAXERROR )
+			exit function
+		end if
+
 	case else
 		hReportError( FB_ERRMSG_ILLEGALOUTSIDEASTMT )
 		exit function
