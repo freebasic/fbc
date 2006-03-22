@@ -9,8 +9,6 @@
 #ifndef __windows_bi__
 #define __windows_bi__
 
-	option nokeyword POINT
-	
 #define _X86_
 
 #include once "win/windef.bi"
