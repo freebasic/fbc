@@ -187,7 +187,7 @@ private sub hMakeArrayDimTB( byval dimensions as integer, _
     static as ASTNODE ptr expr
 
 	if( dimensions = -1 ) then
-		exit function
+		exit sub
 	end if
 
 	for i = 0 to dimensions-1

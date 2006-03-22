@@ -268,7 +268,7 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
 
     '' module
 	if( astNewARG( proc, astNewCONSTstr( module ) ) = NULL ) then
-    	exit function
+    	exit sub
     end if
 
 	'' reslabel
@@ -278,7 +278,7 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
 	if( astNewARG( proc, param ) = NULL ) then
-		exit function
+		exit sub
 	end if
 
 	'' resnxtlabel
@@ -288,7 +288,7 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
 		param = astNewCONSTi( NULL, FB_DATATYPE_UINT )
 	end if
 	if( astNewARG( proc, param ) = NULL ) then
-		exit function
+		exit sub
 	end if
 
     '' dst

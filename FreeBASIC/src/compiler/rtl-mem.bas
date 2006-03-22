@@ -225,7 +225,7 @@ function rtlMemSwap( byval dst as ASTNODE ptr, _
 		'' pop dst
 		astAdd( astNewSTACK( AST_OP_POP, dst ) )
 
-		exit sub
+		exit function
 	end if
 
 	''

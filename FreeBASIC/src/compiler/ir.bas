@@ -1818,7 +1818,7 @@ private sub hFlushSTORE( byval op as integer, _
 	''
 	if( op = AST_OP_SPILLREGS ) then
 		hSpillRegs( )
-		exit function
+		exit sub
 	end if
 
 	''

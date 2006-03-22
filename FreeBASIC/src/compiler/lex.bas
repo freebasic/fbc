@@ -659,7 +659,7 @@ private function lexReadNonDecNumber( byref pnum as zstring ptr, _
 		loop
 
 	case else
-		exit sub
+		exit function
 	end select
 
 	if( islong = FALSE ) then
