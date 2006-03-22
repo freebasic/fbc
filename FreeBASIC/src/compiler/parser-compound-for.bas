@@ -275,10 +275,10 @@ function cForStatement as integer
 	end if
 
 	'' labels
-    tl = symbAddLabel( NULL )
+    tl = symbAddLabel( NULL, FALSE )
 	'' add comp and end label (will be used by any CONTINUE/EXIT FOR)
-	cl = symbAddLabel( NULL )
-	el = symbAddLabel( NULL )
+	cl = symbAddLabel( NULL, FALSE )
+	el = symbAddLabel( NULL, FALSE )
 
     '' if inic, endc and stepc are all constants,
     '' check if this branch is needed
@@ -301,7 +301,7 @@ function cForStatement as integer
     end if
 
 	'' add start label
-	il = symbAddLabel( NULL )
+	il = symbAddLabel( NULL, TRUE )
 	astAdd( astNewLABEL( il ) )
 
 	'' save old for stmt info
@@ -369,7 +369,7 @@ function cForStatement as integer
 
 		c2l = NULL
     else
-		c2l = symbAddLabel( NULL )
+		c2l = symbAddLabel( NULL, TRUE )
 
     	'' test step sign and branch
 		select case as const dtype

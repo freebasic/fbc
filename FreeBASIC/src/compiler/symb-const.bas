@@ -44,12 +44,22 @@ function symbAddConst( byval symbol as zstring ptr, _
     function = NULL
 
     isglobal = TRUE
+    '' enum?
     if( typ = FB_DATATYPE_ENUM ) then
     	symtb = @subtype->enum.elmtb
+
     else
     	'' if parsing main, all consts must go to the global table
     	if( fbIsModLevel( ) ) then
-    		symtb = @symb.globtb
+    		'' unless it's inside a scope block..
+    		if( env.scope > FB_MAINSCOPE ) then
+    			symtb = symb.loctb
+    			isglobal = FALSE
+
+    		else
+    			symtb = @symb.globtb
+    		end if
+
     	else
     		symtb = symb.loctb
     		isglobal = FALSE

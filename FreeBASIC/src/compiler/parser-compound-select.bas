@@ -143,7 +143,7 @@ function cSelectStatement as integer
 	env.lastcompound = FB_TK_SELECT
 
 	'' add exit label
-	elabel = symbAddLabel( NULL )
+	elabel = symbAddLabel( NULL, FALSE )
 
 	'' store expression into a temp var
 	dtype   = astGetDataType( expr )
@@ -255,7 +255,7 @@ function cCaseExpression( byref casectx as FBCASECTX ) as integer
 
 	'' IS REL_OP Expression
 	if( hMatch( FB_TK_IS ) ) then
-		casectx.op = hFBrelop2IRrelop( lexGetToken )
+		casectx.op = hFBrelop2IRrelop( lexGetToken( ) )
 		lexSkipToken( )
 		casectx.typ = FB_CASETYPE_IS
 	else
@@ -371,7 +371,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 	end if
 
 	'' add labels
-	il = symbAddLabel( NULL )
+	il = symbAddLabel( NULL, TRUE )
 
 	'' CaseExpression (COMMA CaseExpression)*
 	cnt = 0
@@ -413,7 +413,7 @@ function cCaseStatement( byval s as FBSYMBOL ptr, _
 	for i = cntbase to cntbase + cnt-1
 
 		'' add next label
-		nl = symbAddLabel( NULL )
+		nl = symbAddLabel( NULL, FALSE )
 
 		if( ctx.sel.caseTB(i).typ <> FB_CASETYPE_ELSE ) then
 			if( hExecCaseExpr( ctx.sel.caseTB(i), s, sdtype, il, nl, i = cntbase ) = FALSE ) then
@@ -520,13 +520,13 @@ function cSelConstCaseStmt( byval swtbase as integer, _
 
 	'' ELSE
 	if( hMatch( FB_TK_ELSE ) ) then
-		deflabel = symbAddLabel( NULL )
+		deflabel = symbAddLabel( NULL, TRUE )
 		astAdd( astNewLABEL( deflabel ) )
 
 	else
 
 		'' add label
-		label = symbAddLabel( NULL )
+		label = symbAddLabel( NULL, FALSE )
 
 		'' ConstExpression (COMMA ConstExpression (TO ConstExpression)?)*
 		do
@@ -688,8 +688,8 @@ function cSelectConstStmt as integer
 	env.lastcompound = FB_TK_SELECT
 
 	'' add labels
-	exitlabel = symbAddLabel( NULL )
-	complabel = symbAddLabel( NULL )
+	exitlabel = symbAddLabel( NULL, FALSE )
+	complabel = symbAddLabel( NULL, FALSE )
 
 	'' store expression into a temp var
 	sym = symbAddTempVar( FB_DATATYPE_UINT )

@@ -24,6 +24,7 @@ option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\lex.bi"
 #include once "inc\ir.bi"
 #include once "inc\ast.bi"
 #include once "inc\emit.bi"
@@ -43,8 +44,16 @@ function astNewLABEL( byval sym as FBSYMBOL ptr, _
 		return NULL
 	end if
 
-	n->sym	 	 = sym
+	n->sym	= sym
 	n->lbl.flush = doflush
+
+	if( symbIsLabel( sym ) ) then
+		if( symbGetLabelIsDeclared( sym ) = FALSE ) then
+			symbSetLabelIsDeclared( sym )
+			symbGetLabelStmt( sym ) = env.stmtcnt
+			symbGetLabelParent( sym ) = env.currblock
+		end if
+	end if
 
 	function = n
 

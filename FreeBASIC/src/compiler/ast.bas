@@ -171,6 +171,7 @@ sub astInit static
     ast.doemit = TRUE
     ast.isopt = FALSE
     ast.typeinicnt = 0
+    ast.currblock = NULL
 
 	'' wchar len depends on the target platform
 	ast_minlimitTB(FB_DATATYPE_WCHAR) = ast_minlimitTB(env.target.wchar.type)

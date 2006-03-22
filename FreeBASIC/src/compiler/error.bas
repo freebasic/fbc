@@ -151,7 +151,10 @@ end type
 		"Ambiguous call to overloaded function", _
 		"Division by zero", _
 		"Cannot pop stack, underflow", _
-		"Cannot initialize UDT's containing dynamic string fields" _
+		"Cannot initialize UDT's containing dynamic string fields", _
+		"Branching to scope blocks containing local variables", _
+		"Branching to other SUB's/FUNCTION's or to module-level", _
+		"Branch crossing local array or object definition" _
 	}
 
 

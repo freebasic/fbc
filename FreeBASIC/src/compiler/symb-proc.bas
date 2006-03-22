@@ -563,6 +563,7 @@ function symbPreAddProc( byval symbol as zstring ptr ) as FBSYMBOL ptr static
 
 	proc->class = FB_SYMBCLASS_PROC
 	proc->proc.params	= 0
+	proc->proc.paramtb.owner = proc
 	proc->proc.paramtb.head = NULL
 	proc->proc.paramtb.tail = NULL
 	proc->name = symbol
@@ -663,7 +664,7 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
 	rname += *symbGetOrgName( proc )
 
 	s = symbAddVarEx( @rname, NULL, proc->typ, proc->subtype, 0, 0, 0, _
-					  dTB(), 0, TRUE, TRUE, FALSE )
+					  dTB(), FB_SYMBATTRIB_FUNCRESULT, TRUE, TRUE, FALSE )
 
 	function = s
 

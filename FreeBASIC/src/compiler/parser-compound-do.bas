@@ -45,8 +45,8 @@ function cDoStatement as integer
 	lexSkipToken( )
 
 	'' add ini and end labels (will be used by any EXIT DO)
-	il = symbAddLabel( NULL )
-	el = symbAddLabel( NULL )
+	il = symbAddLabel( NULL, TRUE )
+	el = symbAddLabel( NULL, FALSE )
 
 	'' emit ini label
 	astAdd( astNewLABEL( il ) )
@@ -89,7 +89,7 @@ function cDoStatement as integer
 
 	else
 		expr = NULL
-		cl = symbAddLabel( NULL )
+		cl = symbAddLabel( NULL, FALSE )
 	end if
 
 	'' save old do stmt info

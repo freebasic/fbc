@@ -64,7 +64,6 @@ type LEX_CTX
 	lahdchar		as uinteger					'' look ahead char
 
 	linenum 		as integer
-	colnum 			as integer
 	lasttoken 		as integer
 
 	reclevel 		as integer					'' PP recursion
@@ -142,10 +141,6 @@ declare function 	lexGetLookAheadClass 	( byval k as integer, _
 declare function 	lexGetLookAhead 		( byval k as integer, _
 											  byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
 
-declare function 	lexLineNum 				( ) as integer
-
-declare function 	lexColNum 				( ) as integer
-
 declare sub 		lexReadLine				( byval endchar as uinteger = INVALID, _
 											  byval dst as zstring ptr, _
 											  byval skipline as integer = FALSE )
@@ -166,6 +161,11 @@ declare function 	lexEatChar              ( ) as uinteger
 
 declare function	lexPeekCurrentLine		( byref token_pos as string ) as string
 
+''
+'' macros
+''
+
+#define lexLineNum( ) lex->linenum
 
 ''
 '' inter-module globals

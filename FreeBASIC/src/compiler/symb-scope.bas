@@ -49,13 +49,16 @@ private sub hAddScopeToProcList( byval s as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-function symbAddScope( ) as FBSYMBOL ptr
+function symbAddScope( byval backnode as ASTNODE ptr ) as FBSYMBOL ptr
     dim as FBSYMBOL ptr s
 
     s = symbNewSymbol( NULL, symb.loctb, TRUE, FB_SYMBCLASS_SCOPE, FALSE, NULL, NULL )
 
+	s->scp.loctb.owner = s
     s->scp.loctb.head = NULL
     s->scp.loctb.tail = NULL
+    s->scp.bytes = 0
+    s->scp.backnode = backnode
 
     ''
     if( env.scope = iif( fbIsModLevel( ), FB_MAINSCOPE, FB_MAINSCOPE+1 ) ) then
@@ -125,8 +128,8 @@ function symbScopeAllocLocals( byval scp as FBSYMBOL ptr ) as integer
     		if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
     			 				FB_SYMBATTRIB_STATIC)) = 0 ) then
 
-					lgt = s->lgt * symbGetArrayElements( s )
-					ZstrAssign( @s->alias, emitAllocLocal( env.currproc, lgt, s->ofs ) )
+				lgt = s->lgt * symbGetArrayElements( s )
+				ZstrAssign( @s->alias, emitAllocLocal( env.currproc, lgt, s->ofs ) )
 
 				symbSetIsAllocated( s )
 
@@ -149,7 +152,6 @@ end function
 sub symbFreeScopeDynVars( byval scp as FBSYMBOL ptr ) static
 
     dim as FBSYMBOL ptr s
-    dim as ASTNODE ptr strg
 
 	'' for each symbol declared inside the SCOPE block..
 	s = scp->scp.loctb.head
@@ -157,22 +159,11 @@ sub symbFreeScopeDynVars( byval scp as FBSYMBOL ptr ) static
     	'' variable?
     	if( s->class = FB_SYMBCLASS_VAR ) then
     		'' not shared or static (for locals)
-    		if( (s->attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0 ) then
-                '' array?
-				if( s->var.array.dims > 0 ) then
-					'' dynamic?
-					if( symbIsDynamic( s ) ) then
-						rtlArrayErase( astNewVAR( s, 0, s->typ ) )
-					'' array of dyn strings?
-					elseif( s->typ = FB_DATATYPE_STRING ) then
-						rtlArrayStrErase( s )
-					end if
+    		if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
+    							FB_SYMBATTRIB_STATIC)) = 0 ) then
 
-				'' dyn string?
-				elseif( s->typ = FB_DATATYPE_STRING ) then
-					strg = astNewVAR( s, 0, FB_DATATYPE_STRING )
-					astAdd( rtlStrDelete( strg ) )
-				end if
+    			astAdd( symbFreeDynVar( s ) )
+
     		end if
     	end if
 

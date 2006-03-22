@@ -52,6 +52,9 @@ function cLabel as integer
 			end if
 		end if
 
+		'' fake a ':'
+		env.stmtcnt += 1
+
 	'' ID
 	case FB_TKCLASS_IDENTIFIER
 		'' ':'

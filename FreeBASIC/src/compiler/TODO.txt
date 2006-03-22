@@ -1,12 +1,10 @@
+[ ] allow dups of UDT's and keywords, so POINT in Win32 won't clash
+
 [ ] Extern array descriptors shoudn't be emitted, unless accessed
 
 [ ] pointers passed byref should be checked for different types
 
 [ ] SCOPE..END SCOPE:
-    - EXIT, GOTO, RETURN and any branch's must deallocate any dynamic data
-      until the target label is found in parent blocks - GOTO will only be
-      safe is a CFG is added at AST level, function nodes wouldn't be put
-      into a linked-list, but into a DAG
     - error handlers should be restored too (or not allowed at all)
 
 [ ] add the ... subscript when initializing array so
@@ -95,6 +93,6 @@
     - pure virtual methods
     - down casting
     - name space
-    - static constructors and destructors
+    - static constructors and destructors (including with non-constant args inside scope blocks)
     - some support for RTTI
 

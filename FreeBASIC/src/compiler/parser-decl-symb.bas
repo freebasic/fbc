@@ -491,10 +491,23 @@ private function hDynArrayDef( byval id as zstring ptr, _
 		if( rtlArrayRedim( s, lgt, dimensions, exprTB(), dopreserve ) = FALSE ) then
 			exit function
 		end if
+
+	else
+		'' otherwise if it's a local array, the descriptor must be
+		'' initialized, or passing it to another proc by desc will
+		'' cause errors if the called proc tries to redim the array
+		if( (attrib and (FB_SYMBATTRIB_SHARED or _
+						 FB_SYMBATTRIB_COMMON or _
+						 FB_SYMBATTRIB_STATIC or _
+						 FB_SYMBATTRIB_PARAMBYDESC)) = 0 ) then
+
+			rtlArraySetDesc( s, symbGetLen( s ), 0, dTB() )
+
+		end if
 	end if
 
 	'' if COMMON, check for max dimensions used
-	if( (attrib and FB_SYMBATTRIB_COMMON) > 0 ) then
+	if( (attrib and FB_SYMBATTRIB_COMMON) <> 0 ) then
 		if( dimensions > symbGetArrayDimensions( s ) ) then
 			symbSetArrayDimensions( s, dimensions )
 		end if
@@ -502,9 +515,6 @@ private function hDynArrayDef( byval id as zstring ptr, _
 	'' or if dims = -1 (cause of "DIM|REDIM array()")
 	elseif( symbGetArrayDimensions( s ) = -1 ) then
 		symbSetArrayDimensions( s, dimensions )
-
-		''!!!WRITEME!!! fix descriptor's len if it is local non-static and
-		''			  wasn't allocated yet on stack
 
 	end if
 

@@ -62,9 +62,11 @@ function cArrayStmt as integer
 			end if
 
 			if( symbGetIsDynamic( s ) ) then
-				if( rtlArrayErase( expr1 ) = FALSE ) then
+				expr1 = rtlArrayErase( expr1 )
+				if( expr1 = NULL ) then
 					exit function
 				end if
+				astAdd( expr1 )
 			else
 				if( rtlArrayClear( expr1 ) = FALSE ) then
 					exit function

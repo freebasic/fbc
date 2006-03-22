@@ -700,7 +700,7 @@ declare function	rtlArrayRedim		( byval s as FBSYMBOL ptr, _
 									  	  exprTB() as ASTNODE ptr, _
 									  	  byval dopreserve as integer ) as integer
 
-declare function	rtlArrayErase		( byval arrayexpr as ASTNODE ptr ) as integer
+declare function	rtlArrayErase		( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
 
 declare function	rtlArrayClear		( byval arrayexpr as ASTNODE ptr ) as integer
 
@@ -713,7 +713,7 @@ declare function	rtlArraySetDesc		( byval s as FBSYMBOL ptr, _
 										  byval dimensions as integer, _
 										  dTB() as FBARRAYDIM ) as integer
 
-declare function 	rtlArrayStrErase	( byval s as FBSYMBOL ptr ) as integer
+declare function 	rtlArrayStrErase	( byval s as FBSYMBOL ptr ) as ASTNODE ptr
 
 declare function 	rtlArrayAllocTmpDesc( byval arrayexpr as ASTNODE ptr, _
 										  byval pdesc as FBSYMBOL ptr ) as ASTNODE ptr

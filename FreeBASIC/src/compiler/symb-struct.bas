@@ -38,7 +38,9 @@ option escape
 function symbAddUDT( byval parent as FBSYMBOL ptr, _
 					 byval symbol as zstring ptr, _
 					 byval isunion as integer, _
-					 byval align as integer ) as FBSYMBOL ptr static
+					 byval align as integer _
+				   ) as FBSYMBOL ptr static
+
     dim t as FBSYMBOL ptr
     dim as FBSYMBOLTB ptr symtb
 
@@ -60,6 +62,7 @@ function symbAddUDT( byval parent as FBSYMBOL ptr, _
 	t->udt.parent = parent
 	t->udt.isunion = isunion
 	t->udt.elements = 0
+	t->udt.fldtb.owner = t
 	t->udt.fldtb.head = NULL
 	t->udt.fldtb.tail = NULL
 	t->udt.ofs = 0

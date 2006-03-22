@@ -57,9 +57,9 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_DYNAMIC		= &h000004
 	FB_SYMBATTRIB_COMMON		= &h000008
 	FB_SYMBATTRIB_TEMP			= &h000010
-	FB_SYMBATTRIB_PARAMBYDESC= &h000020
+	FB_SYMBATTRIB_PARAMBYDESC	= &h000020
 	FB_SYMBATTRIB_PARAMBYVAL	= &h000040
-	FB_SYMBATTRIB_PARAMBYREF = &h000080
+	FB_SYMBATTRIB_PARAMBYREF 	= &h000080
 	FB_SYMBATTRIB_PUBLIC 		= &h000100
 	FB_SYMBATTRIB_PRIVATE 		= &h000200
 	FB_SYMBATTRIB_EXTERN		= &h000400		'' extern's become public when DIM'ed
@@ -74,6 +74,7 @@ enum FB_SYMBATTRIB
     FB_SYMBATTRIB_LOCAL			= &h080000
     FB_SYMBATTRIB_DESCRIPTOR	= &h100000
 	FB_SYMBATTRIB_LITERAL		= &h200000
+	FB_SYMBATTRIB_FUNCRESULT	= &h400000
 end enum
 
 type FBSYMBOL_ as FBSYMBOL
@@ -111,6 +112,7 @@ end type
 
 ''
 type FBSYMBOLTB
+    owner			as FBSYMBOL_ ptr			'' back link
     head			as FBSYMBOL_ ptr			'' first node
     tail			as FBSYMBOL_ ptr			'' last node
 end type
@@ -192,7 +194,9 @@ end type
 
 ''
 type FBS_LABEL
+	parent			as FBSYMBOL_ ptr			'' parent block, not always a proc
 	declared		as integer
+	stmtnum			as integer					'' can't use colnum as it's unreliable
 end type
 
 ''
@@ -290,7 +294,7 @@ type FB_PROCRTL
 end type
 
 type FBS_PROC
-	mode			as FBFUNCMODE_ENUM			'' calling convention (STDCALL, PASCAL, C)
+	mode			as FB_FUNCMODE				'' calling convention
 	realtype		as integer					'' used with STRING and UDT functions
 	lib				as FBLIBRARY ptr
 	params			as integer
@@ -309,6 +313,7 @@ type FB_SCOPEDBG
 end type
 
 type FBS_SCOPE
+	backnode		as ASTNODE_ ptr
 	loctb			as FBSYMBOLTB
 	baseofs			as integer
 	bytes			as integer
@@ -325,6 +330,7 @@ type FBS_VAR
 	end union
 	array			as FBS_ARRAY
 	elm				as FBS_UDTELM
+	stmtnum			as integer					'' can't use colnum as it's unreliable
 end type
 
 ''
@@ -344,6 +350,7 @@ type FBSYMBOL
 	hashindex		as uinteger
 
 	scope			as uinteger
+
 	lgt				as integer
 	ofs				as integer					'' used with local vars and args
 	stats			as FB_SYMBSTATS
@@ -363,12 +370,13 @@ type FBSYMBOL
 		scp			as FBS_SCOPE
 	end union
 
-	left			as FBSYMBOL ptr 			'' same name symbols list
-	right			as FBSYMBOL ptr				'' /
+	left			as FBSYMBOL ptr 			'' prev in symbols with the same name
+	right			as FBSYMBOL ptr				'' next /
 
 	symtb			as FBSYMBOLTB ptr			'' symbol tb it's part of
-	prev			as FBSYMBOL ptr				'' symbol tb list
-	next			as FBSYMBOL ptr             '' /
+
+	prev			as FBSYMBOL ptr				'' next in symbol tb list
+	next			as FBSYMBOL ptr             '' prev /
 end type
 
 type SYMBCTX
@@ -612,7 +620,7 @@ declare function 	symbAddLib				( byval libname as zstring ptr ) as FBLIBRARY pt
 declare function 	symbAddParam			( byval symbol as zstring ptr, _
 											  byval param as FBSYMBOL ptr ) as FBSYMBOL ptr
 
-declare function 	symbAddScope			( ) as FBSYMBOL ptr
+declare function 	symbAddScope			( byval backnode as ASTNODE ptr ) as FBSYMBOL ptr
 
 declare function	symbAddBitField			( byval bitpos as integer, _
 					      					  byval bits as integer, _
@@ -634,9 +642,7 @@ declare sub 		symbSetArrayDims		( byval s as FBSYMBOL ptr, _
 declare sub 		symbSetProcIncFile		( byval p as FBSYMBOL ptr, _
 											  byval incf as integer )
 
-declare sub 		symbFreeLocalDynVars	( byval proc as FBSYMBOL ptr, _
-											  byval issub as integer )
-
+declare sub 		symbFreeLocalDynVars	( byval proc as FBSYMBOL ptr )
 
 declare sub 		symbFreeScopeDynVars 	( byval scp as FBSYMBOL ptr )
 
@@ -735,6 +741,10 @@ declare function 	symbIsEqual				( byval sym1 as FBSYMBOL ptr, _
 declare function 	symbIsProcOverloadOf	( byval proc as FBSYMBOL ptr, _
 							   				  byval parent as FBSYMBOL ptr ) as integer
 
+declare function 	symbVarIsLocalDyn		( byval s as FBSYMBOL ptr ) as integer
+
+declare function 	symbVarIsLocalObj		( byval s as FBSYMBOL ptr ) as integer
+
 declare function 	symbMaxDataType			( byval dtype1 as integer, _
 										  	  byval dtype2 as integer ) as integer
 
@@ -758,6 +768,8 @@ declare function 	symbProcAllocLocals		( byval proc as FBSYMBOL ptr ) as integer
 declare function 	symbProcAllocScopes		( byval proc as FBSYMBOL ptr ) as integer
 
 declare function 	symbScopeAllocLocals	( byval sym as FBSYMBOL ptr ) as integer
+
+declare function 	symbFreeDynVar			( byval s as FBSYMBOL ptr ) as ASTNODE ptr
 
 ''
 '' getters and setters as macros
@@ -808,6 +820,10 @@ declare function 	symbScopeAllocLocals	( byval sym as FBSYMBOL ptr ) as integer
 #define symbGetSubType(s) s->subtype
 
 #define symbGetClass(s) s->class
+
+#define symbGetSymtb(s) s->symtb
+
+#define symbGetParent(s) symbGetSymtb(s)->owner
 
 #define symbIsVar(s) (s->class = FB_SYMBCLASS_VAR)
 
@@ -885,6 +901,8 @@ declare function 	symbScopeAllocLocals	( byval sym as FBSYMBOL ptr ) as integer
 
 #define symbGetVarLitTextW(s) s->var.littextw
 
+#define symbGetVarStmt(s) s->var.stmtnum
+
 #define symbSetTypeIniTree(s, t) s->var.initree = t
 
 #define symbGetTypeIniTree(s) s->var.initree
@@ -944,11 +962,21 @@ declare function 	symbScopeAllocLocals	( byval sym as FBSYMBOL ptr ) as integer
 
 #define symbGetEnumElements(s) s->enum.elements
 
+#define symbGetScope(s) s->scope
+
 #define symbGetScopeTb(s) s->scp.loctb
+
+#define symbGetScopeAllocSize(s) s->scp.bytes
 
 #define symbGetScopeTbHead(s) s->scp.loctb.head
 
 #define symbGetLabelIsDeclared(l) l->lbl.declared
+
+#define symbSetLabelIsDeclared(l) l->lbl.declared = TRUE
+
+#define symbGetLabelParent(l) l->lbl.parent
+
+#define symbGetLabelStmt(s) s->lbl.stmtnum
 
 #define symbGetProcFirstParam(f) iif( f->proc.mode = FB_FUNCMODE_PASCAL, f->proc.paramtb.head, f->proc.paramtb.tail )
 

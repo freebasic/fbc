@@ -45,8 +45,8 @@ function cWhileStatement as integer
 	lexSkipToken( )
 
 	'' add ini and end labels
-	il = symbAddLabel( NULL )
-	el = symbAddLabel( NULL )
+	il = symbAddLabel( NULL, TRUE )
+	el = symbAddLabel( NULL, FALSE )
 
 	'' save old while stmt info
 	oldwhilestmt = env.whilestmt

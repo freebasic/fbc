@@ -45,8 +45,8 @@ function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
 	end select
 
 	'' add end and next label (at ELSE/ELSEIF)
-	nl = symbAddLabel( NULL )
-	el = symbAddLabel( NULL )
+	nl = symbAddLabel( NULL, FALSE )
+	el = symbAddLabel( NULL, FALSE )
 
 	''
 	lastcompstmt = env.lastcompound
@@ -87,7 +87,7 @@ function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
 		astAdd( astNewLABEL( nl ) )
 
 		'' SimpleStatement|IF*
-		if( cSimpleStatement = FALSE ) then
+		if( cSimpleStatement( ) = FALSE ) then
 			exit function
 		end if
 
@@ -118,7 +118,8 @@ end function
 function cIfStmtBody( byval expr as ASTNODE ptr, _
 					  byval nl as FBSYMBOL ptr, _
 					  byval el as FBSYMBOL ptr, _
-					  byval checkstmtsep as integer = TRUE ) as integer
+					  byval checkstmtsep as integer = TRUE _
+					) as integer
 
 	function = FALSE
 
@@ -178,10 +179,10 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 	end select
 
 	'' add end label (at ENDIF)
-	el = symbAddLabel( NULL )
+	el = symbAddLabel( NULL, FALSE )
 
 	'' add next label (at ELSE/ELSEIF)
-	nl = symbAddLabel( NULL )
+	nl = symbAddLabel( NULL, FALSE )
 
 	''
 	lastcompstmt = env.lastcompound
@@ -201,7 +202,7 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 		astAdd( astNewLABEL( nl ) )
 
 		'' add next label (at ELSE/ELSEIF)
-		nl = symbAddLabel( NULL )
+		nl = symbAddLabel( NULL, FALSE )
 
 	    '' Expression
     	if( cExpression( expr ) = FALSE ) then

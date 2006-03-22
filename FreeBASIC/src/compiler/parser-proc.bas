@@ -436,10 +436,7 @@ function cProcStatement static
 	oldprocstmt = env.procstmt
 
 	env.procstmt.cmplabel = NULL
-	env.procstmt.endlabel = procnode->proc.exitlabel
-
-	'' restore error old handle if any was set
-	env.procerrorhnd = NULL
+	env.procstmt.endlabel = astGetProcExitlabel( procnode )
 
 	'' Comment?
 	cComment( )
@@ -451,7 +448,7 @@ function cProcStatement static
 	end if
 
 	'' init
-	astAdd( astNewLABEL( procnode->proc.initlabel ) )
+	astAdd( astNewLABEL( astGetProcInitlabel( procnode ) ) )
 
 	'' proc body
 	if( res = TRUE ) then
@@ -483,25 +480,14 @@ function cProcStatement static
 		end if
 	end if
 
-	'' exit
-	astAdd( astNewLABEL( procnode->proc.exitlabel ) )
+	'' always finish
+	function = astProcEnd( procnode, FALSE )
 
-	'' restore old error handler if any was set
-	if( env.procerrorhnd <> NULL ) then
-        expr = astNewVAR( env.procerrorhnd, 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
-        rtlErrorSetHandler( expr, FALSE )
+	if( res = FALSE ) then
+		function = FALSE
 	end if
-
-	'' check undefined local labels
-	if( res = TRUE ) then
-		function = (symbCheckLocalLabels( ) = 0)
-	end if
-
-	'' end
-	astProcEnd( procnode, FALSE )
 
 	'' back to old state
-	env.procerrorhnd = NULL
 	env.compoundcnt -= 1
 	env.isprocstatic = FALSE
 	env.procstmt.cmplabel = NULL

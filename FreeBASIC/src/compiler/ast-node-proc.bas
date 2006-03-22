@@ -19,6 +19,10 @@
 '' AST proc body nodes
 '' l = head node; r = tail node
 ''
+'' note: an implicit scope block isn't created, because the
+''		 implicit main() function (inside scope blocks only
+''		 non-decl statements are allowed)
+''
 
 option explicit
 option escape
@@ -26,19 +30,22 @@ option escape
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\list.bi"
+#include once "inc\lex.bi"
 #include once "inc\ir.bi"
 #include once "inc\rtl.bi"
 #include once "inc\ast.bi"
 
-declare function 	hNewProcNode	( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
+declare function 	hNewProcNode		( ) as ASTNODE ptr
 
-declare function 	hModLevelIsEmpty( byval p as ASTNODE ptr ) as integer
+declare function 	hModLevelIsEmpty	( byval p as ASTNODE ptr ) as integer
 
-declare sub 		hModLevelAddRtInit( byval p as ASTNODE ptr )
+declare sub 		hModLevelAddRtInit	( byval p as ASTNODE ptr )
 
-declare sub 		hLoadProcResult ( byval proc as FBSYMBOL ptr )
+declare sub 		hLoadProcResult 	( byval proc as FBSYMBOL ptr )
 
-declare function 	hDeclProcParams	( byval proc as FBSYMBOL ptr ) as integer
+declare function 	hDeclProcParams		( byval proc as FBSYMBOL ptr ) as integer
+
+declare function 	hUpdScopeBreakList	( byval n as ASTNODE ptr ) as integer
 
 ''::::
 sub astProcListInit( )
@@ -61,12 +68,10 @@ sub astProcListEnd( )
 end sub
 
 '':::::
-private function hNewProcNode( byval proc as FBSYMBOL ptr ) as ASTNODE ptr static
+private function hNewProcNode(  ) as ASTNODE ptr static
 	dim as ASTNODE ptr n
 
 	n = astNewNode( AST_NODECLASS_PROC, INVALID, NULL )
-
-	n->sym = proc
 
 	'' add to list
 	if( ast.proc.tail <> NULL ) then
@@ -117,12 +122,14 @@ private sub hProcFlush( byval p as ASTNODE ptr, _
 
 	''
 	ast.proc.curr = p
+	ast.currblock = p
 	ast.doemit = doemit
 
 	sym = p->sym
 
-	env.scope = iif( p->proc.ismain, FB_MAINSCOPE, FB_MAINSCOPE+1 )
+	env.scope = iif( p->block.ismain, FB_MAINSCOPE, FB_MAINSCOPE+1 )
 	env.currproc = sym
+	env.currblock = sym
 	symbSetLocalTb( @sym->proc.loctb )
 
 	'' do pre-loading, before allocating variables on stack
@@ -156,7 +163,7 @@ private sub hProcFlush( byval p as ASTNODE ptr, _
 
 	''
 	if( ast.doemit ) then
-		irEmitPROCBEGIN( sym, p->proc.initlabel )
+		irEmitPROCBEGIN( sym, p->block.initlabel )
 	end if
 
 	'' flush nodes
@@ -170,7 +177,7 @@ private sub hProcFlush( byval p as ASTNODE ptr, _
 
     ''
     if( ast.doemit ) then
-    	irEmitPROCEND( sym, p->proc.initlabel, p->proc.exitlabel )
+    	irEmitPROCEND( sym, p->block.initlabel, p->block.exitlabel )
     end if
 
     '' del symbols from hash and symbol tb's
@@ -255,11 +262,37 @@ sub astAddAfter( byval n as ASTNODE ptr, _
 	''
 	if( p->next = NULL ) then
 		ast.proc.curr->r = n
+	else
+		p->next->prev = n
 	end if
 
 	n->prev = p
 	n->next = p->next
 	p->next = n
+
+end sub
+
+''::::
+sub astAddBefore( byval n as ASTNODE ptr, _
+				  byval p as ASTNODE ptr _
+			  	) static
+
+	if( (p = NULL) or (n = NULL) ) then
+		exit sub
+	end if
+
+	'' assuming no tree will type ini will be passed
+
+	''
+	if( p->prev = NULL ) then
+		ast.proc.curr->l = n
+	else
+		p->prev->next = n
+	end if
+
+	n->next = p
+	n->prev = p->prev
+	p->prev = n
 
 end sub
 
@@ -273,14 +306,13 @@ function astProcBegin( byval sym as FBSYMBOL ptr, _
 	function = NULL
 
 	'' alloc new node
-	n = hNewProcNode( sym )
+	n = hNewProcNode( )
 	if( n = NULL ) then
 		exit function
 	end if
 
-	n->proc.ismain = ismain
-
 	''
+	sym->proc.loctb.owner = sym
 	sym->proc.loctb.head = NULL
 	sym->proc.loctb.tail = NULL
 
@@ -290,12 +322,30 @@ function astProcBegin( byval sym as FBSYMBOL ptr, _
 	end if
 
 	''
+	ast.proc.curr = n
+	ast.currblock = n
+
 	env.scope = iif( ismain, FB_MAINSCOPE, FB_MAINSCOPE+1 )
 	env.currproc = sym
+	env.currblock = sym
 	ast.proc.oldsymtb = symbGetLocalTb( )
 	symbSetLocalTb( @sym->proc.loctb )
 
-	ast.proc.curr = n
+	'' add init and exit labels (see the note in the top,
+	'' procs don't create an implicit scope block)
+	n->block.initlabel = symbAddLabel( NULL, TRUE )
+	n->block.exitlabel = symbAddLabel( NULL, FALSE )
+
+	''
+	n->sym = sym
+
+	n->block.ismain = ismain
+	n->block.parent = NULL
+	n->block.inistmt = env.stmtcnt
+
+	'' break list
+	n->block.breaklist.head = NULL
+	n->block.breaklist.tail = NULL
 
 	irProcBegin( sym )
 
@@ -311,68 +361,97 @@ function astProcBegin( byval sym as FBSYMBOL ptr, _
 		end if
 	end if
 
-	'' add init and exit labels
-	n->proc.initlabel = symbAddLabel( NULL )
-	n->proc.exitlabel = symbAddLabel( NULL )
+	'' local error handler
+	env.procerrorhnd = NULL
 
 	function = n
 
 end function
 
 '':::::
-sub astProcEnd( byval n as ASTNODE ptr, _
-			    byval callrtexit as integer ) static
+function astProcEnd( byval n as ASTNODE ptr, _
+			    	 byval callrtexit as integer _
+			       ) as integer static
 
+    dim as integer res
     dim as FBSYMBOL ptr sym
-    dim as integer issub
 
 	sym = n->sym
 
-	issub = (symbGetType( sym ) = FB_DATATYPE_VOID)
+	n->block.endstmt = env.stmtcnt
 
-	'' del dyn arrays and all var-len strings (but the result if it returns a string)
-	symbFreeLocalDynVars( sym, issub )
+	'' del dynamic arrays and all var-len strings (see the note in
+	'' the top, procs don't create an implicit scope block)
+	symbFreeLocalDynVars( sym )
 
-	'' if main(), END 0 must be called because it's not safe to return to crt if
-	'' an ON ERROR module-level handler was called while inside some proc
-	if( callrtexit ) then
-		if( n->proc.ismain ) then
-			rtlExitApp( NULL )
+   	''
+   	astAdd( astNewLABEL( n->block.exitlabel ) )
+
+	'' check undefined local labels
+	res = (symbCheckLocalLabels( ) = 0)
+
+	if( res = TRUE ) then
+		'' update proc's breaks list, adding calls to destructors
+		'' when needed
+		if( n->block.breaklist.head <> NULL ) then
+			res = astScopeUpdBreakList( n )
 		end if
-	end if
 
-	'' if it's a function, load result
-	if( issub = FALSE ) then
-        hLoadProcResult( sym )
+		'' restore the old error handler if any was set
+		if( env.procerrorhnd <> NULL ) then
+        	dim as ASTNODE ptr expr
+        	expr = astNewVAR( env.procerrorhnd, 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
+        	rtlErrorSetHandler( expr, FALSE )
+			env.procerrorhnd = NULL
+		end if
+
+		'' if main(), END 0 must be called because it's not safe to return to crt if
+		'' an ON ERROR module-level handler was called while inside some proc
+		if( callrtexit ) then
+			if( n->block.ismain ) then
+				rtlExitApp( NULL )
+			end if
+		end if
+
+		'' if it's a function, load result
+		if( symbGetType( sym ) <> FB_DATATYPE_VOID ) then
+        	hLoadProcResult( sym )
+		end if
 	end if
 
 	''
 	irProcEnd( sym )
 
-	if( n->proc.ismain = FALSE ) then
-		'' not private or inline? flush it..
-		if( symbIsPrivate( sym ) = FALSE ) then
-			hProcFlush( n, TRUE )
+	if( res = TRUE ) then
+		if( n->block.ismain = FALSE ) then
+			'' not private or inline? flush it..
+			if( symbIsPrivate( sym ) = FALSE ) then
+				hProcFlush( n, TRUE )
 
-		'' remove from hash tb only
+			'' remove from hash tb only
+			else
+				symbDelSymbolTb( @sym->proc.loctb, TRUE )
+			end if
+
+		'' main? flush all remaining, it's the latest
 		else
-			symbDelSymbolTb( @sym->proc.loctb, TRUE )
+			hProcFlushAll( )
+
 		end if
-
-	'' main? flush all remaining, it's the latest
-	else
-		hProcFlushAll( )
-
 	end if
 
-	'' back to main
+	'' back to main (or NULL if main was emitted already)
+	ast.proc.curr = ast.proc.head
+	ast.currblock = ast.proc.head
+
     env.scope = FB_MAINSCOPE
     env.currproc = env.main.proc
+    env.currblock = env.main.proc
 	symbSetLocalTb( ast.proc.oldsymtb )
 
-	ast.proc.curr = ast.proc.head
+	function = res
 
-end sub
+end function
 
 '':::::
 private function hDeclProcParams( byval proc as FBSYMBOL ptr ) as integer static

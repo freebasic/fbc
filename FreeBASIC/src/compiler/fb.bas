@@ -16,7 +16,7 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-'' fb - main inteface
+'' fb - main interface
 ''
 '' chng: sep/2004 written [v1ctor]
 
@@ -142,6 +142,9 @@ private sub hSetCtx( )
 	env.scope				= FB_MAINSCOPE
 	env.reclevel			= 0
 	env.currproc 			= NULL
+	env.currblock 			= NULL
+
+	env.main.proc			= NULL
 
 	env.opt.base			= 0
 	env.opt.parammode		= FB_PARAMMODE_BYREF
@@ -155,6 +158,7 @@ private sub hSetCtx( )
 	env.isprocstatic		= FALSE
 	env.procerrorhnd 		= NULL
 	env.withvar				= NULL
+	env.stmtcnt				= 0
 
 	env.prntcnt				= 0
 	env.prntopt				= FALSE

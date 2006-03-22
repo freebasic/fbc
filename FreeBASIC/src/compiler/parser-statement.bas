@@ -117,16 +117,16 @@ end function
 ''SttSeparator    =   (STT_SEPARATOR | EOL)+ .
 ''
 function cStmtSeparator( byval lexflags as LEXCHECK_ENUM ) as integer
-    dim token as integer
 
 	function = FALSE
 
 	do
-		token = lexGetToken( lexflags )
-		if( (token <> FB_TK_STATSEPCHAR) and (token <> FB_TK_EOL) ) then
+		select case lexGetToken( lexflags )
+		case FB_TK_STATSEPCHAR, FB_TK_EOL
+        	lexSkipToken( lexflags )
+		case else
 			exit do
-		end if
-		lexSkipToken( lexflags )
+		end select
 
 		function = TRUE
 	loop

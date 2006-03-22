@@ -135,6 +135,7 @@ enum AST_NODECLASS
 	AST_NODECLASS_BOUNDCHK
 	AST_NODECLASS_PTRCHK
 	AST_NODECLASS_SCOPE
+	AST_NODECLASS_SCOPE_BREAK
 	AST_NODECLASS_TYPEINI
 	AST_NODECLASS_TYPEINI_PAD
 	AST_NODECLASS_TYPEINI_EXPR
@@ -250,10 +251,26 @@ type AST_TYPEINI
     bytes			as integer
 end type
 
-type AST_PROC
+type AST_BREAK
+	parent			as ASTNODE_ ptr
+	scope			as integer
+	linenum			as integer
+	stmtnum			as integer						'' can't use colnum as it's unreliable
+end type
+
+type AST_BREAKLIST
+	head			as ASTNODE_ ptr
+	tail			as ASTNODE_ ptr
+end type
+
+type AST_BLOCK
+	parent			as ASTNODE_ ptr
+	inistmt			as integer
+	endstmt			as integer
 	ismain			as integer
 	initlabel		as FBSYMBOL ptr
 	exitlabel		as FBSYMBOL ptr
+	breaklist		as AST_BREAKLIST
 end type
 
 ''
@@ -288,7 +305,8 @@ type ASTNODE
 		mem			as AST_MEM
 		stack		as AST_STACK
 		typeini		as AST_TYPEINI
-		proc		as AST_PROC
+		block		as AST_BLOCK					'' shared by PROC and SCOPE nodes
+		break		as AST_BREAK
 	end union
 
 	prev			as ASTNODE ptr					'' used by Add
@@ -309,6 +327,8 @@ type ASTCTX
 	astTB			as TLIST
 
 	proc			as AST_PROCCTX
+
+	currblock		as ASTNODE ptr					'' current scope block (PROC or SCOPE)
 
 	doemit			as integer
 	isopt			as integer
@@ -362,16 +382,23 @@ declare function 	astGetValueAsWstr	( byval n as ASTNODE ptr ) as wstring ptr
 declare function 	astProcBegin		( byval proc as FBSYMBOL ptr, _
 					   					  byval ismain as integer = FALSE ) as ASTNODE ptr
 
-declare sub 		astProcEnd			( byval p as ASTNODE ptr, _
-										  byval callrtexit as integer = FALSE )
+declare function	astProcEnd			( byval p as ASTNODE ptr, _
+										  byval callrtexit as integer = FALSE ) as integer
 
 declare function	astScopeBegin		( ) as ASTNODE ptr
 
 declare sub 		astScopeEnd			( byval s as ASTNODE ptr )
 
+declare function 	astScopeBreak		( byval tolabel as FBSYMBOL ptr ) as integer
+
+declare function 	astScopeUpdBreakList( byval proc as ASTNODE ptr ) as integer
+
 declare sub			astAdd				( byval n as ASTNODE ptr )
 
 declare sub 		astAddAfter			( byval n as ASTNODE ptr, _
+										  byval p as ASTNODE ptr )
+
+declare sub 		astAddBefore		( byval n as ASTNODE ptr, _
 										  byval p as ASTNODE ptr )
 
 declare function	astUpdComp2Branch	( byval n as ASTNODE ptr, _
@@ -505,8 +532,6 @@ declare function 	astNewBOUNDCHK		( byval l as ASTNODE ptr, _
 declare function 	astNewPTRCHK		( byval l as ASTNODE ptr, _
 					   					  byval linenum as integer ) as ASTNODE ptr
 
-
-
 declare sub 		astDump 			( byval p as ASTNODE ptr, _
 										  byval n as ASTNODE ptr, _
 										  byval isleft as integer, _
@@ -628,6 +653,10 @@ declare function 	astTypeIniGetHead	( byval tree as ASTNODE ptr ) as ASTNODE ptr
 #define astGetDataSize(n) symbGetDataSize( n->dtype )
 
 #define astGetSymbol(n)	n->sym
+
+#define astGetProcInitlabel(n) n->block.initlabel
+
+#define astGetProcExitlabel(n) n->block.exitlabel
 
 #define astSetDataType(n, _dtype) 							_
     n->dtype = _dtype                                       :_

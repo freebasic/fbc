@@ -28,6 +28,7 @@ option escape
 #include once "inc\fbint.bi"
 #include once "inc\hash.bi"
 #include once "inc\list.bi"
+#include once "inc\lex.bi"
 
 '':::::
 function symbGetLastLabel( ) as FBSYMBOL ptr static
@@ -60,12 +61,17 @@ function symbAddLabel( byval symbol as zstring ptr, _
     	l = symbFindByNameAndClass( symbol, FB_SYMBCLASS_LABEL )
     	if( l <> NULL ) then
     		if( declaring ) then
+    			'' dup definition?
     			if( l->lbl.declared ) then
 	    			exit function
-    			else
-    				l->lbl.declared = TRUE
-    				return l
     			end if
+
+    			'' set the right values
+    			l->lbl.declared = TRUE
+    			l->lbl.parent = env.currblock
+    			l->lbl.stmtnum = env.stmtcnt
+    			return l
+
     		else
     			return l
     		end if
@@ -88,8 +94,12 @@ function symbAddLabel( byval symbol as zstring ptr, _
     '' if parsing main, all labels must go to the global table
     if( fbIsModLevel( ) ) then
     	symtb = @symb.globtb
+
+    '' otherside the current proc sym table must be used, not the
+    '' current scope because labels inside scopes are unique,
+    '' and branching to them from other scopes must be allowed
     else
-    	symtb = symb.loctb
+    	symtb = @env.currproc->proc.loctb
     end if
 
     l = symbNewSymbol( NULL, symtb, fbIsModLevel( ), FB_SYMBCLASS_LABEL, _
@@ -99,6 +109,13 @@ function symbAddLabel( byval symbol as zstring ptr, _
     end if
 
 	l->lbl.declared = declaring
+
+	if( declaring ) then
+		'' label parent won't be the current proc block is
+		'' it's been defined inside a scope block
+		l->lbl.parent = env.currblock
+		l->lbl.stmtnum = env.stmtcnt
+	end if
 
 	function = l
 
@@ -131,8 +148,10 @@ function symbCheckLabels( ) as integer
     do while( s <> NULL )
     	if( s->class = FB_SYMBCLASS_LABEL ) then
     		if( s->lbl.declared = FALSE ) then
-    			hReportErrorEx( FB_ERRMSG_UNDEFINEDLABEL, *symbGetOrgName( s ), -1 )
-    			cnt += 1
+    			if( symbGetOrgName( s ) <> NULL ) then
+    				hReportErrorEx( FB_ERRMSG_UNDEFINEDLABEL, *symbGetOrgName( s ), -1 )
+    				cnt += 1
+    			end if
     		end if
     	end if
 
@@ -150,13 +169,15 @@ function symbCheckLocalLabels(  ) as integer
 
     cnt = 0
 
-    s = symb.loctb->head
+    s = env.currproc->proc.loctb.head
     do while( s <> NULL )
 
     	if( s->class = FB_SYMBCLASS_LABEL ) then
     		if( s->lbl.declared = FALSE ) then
-    			hReportErrorEx( FB_ERRMSG_UNDEFINEDLABEL, *symbGetOrgName( s ), -1 )
-    			cnt += 1
+    			if( symbGetOrgName( s ) <> NULL ) then
+    				hReportErrorEx( FB_ERRMSG_UNDEFINEDLABEL, *symbGetOrgName( s ), -1 )
+    				cnt += 1
+    			end if
     		end if
     	end if
 

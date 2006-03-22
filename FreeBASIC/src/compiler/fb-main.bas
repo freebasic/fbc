@@ -33,7 +33,7 @@ option escape
 
 ':::::
 private sub hDllMainBegin( )
-    dim as FBSYMBOL ptr proc, label, exitlabel, initlabel, param
+    dim as FBSYMBOL ptr proc, label, param
    	dim as ASTNODE ptr reason, main, procnode
     dim as integer argn
 
@@ -68,11 +68,8 @@ const fbdllreason = "__FB_DLLREASON__"
 
     symbSetProcIncFile( proc, INVALID )
 
-	initlabel = procnode->proc.initlabel
-	exitlabel = procnode->proc.exitlabel
-
 	''
-   	astAdd( astNewLABEL( initlabel ) )
+   	astAdd( astNewLABEL( astGetProcInitlabel( procnode ) ) )
 
    	'' function = TRUE
    	astAdd( astNewASSIGN( astNewVAR( symbLookupProcResult( proc ), _
@@ -94,9 +91,6 @@ const fbdllreason = "__FB_DLLREASON__"
 
 	'' end if
     astAdd( astNewLABEL( label ) )
-
-   	''
-   	astAdd( astNewLABEL( exitlabel ) )
 
    	''
    	astProcEnd( procnode, FALSE )
@@ -142,9 +136,6 @@ const fbargv = "__FB_ARGV__"
 
     symbSetProcIncFile( env.main.proc, INVALID )
 
-	env.main.initlabel = env.main.node->proc.initlabel
-	env.main.exitlabel = env.main.node->proc.exitlabel
-
 	env.main.argc = symbFindByNameAndClass( fbargc, FB_SYMBCLASS_VAR )
 	env.main.argv = symbFindByNameAndClass( fbargv, FB_SYMBCLASS_VAR )
 
@@ -158,7 +149,7 @@ const fbargv = "__FB_ARGV__"
     '' init( argc, argv )
     env.main.initnode = rtlInitApp( argc, argv, isdllmain )
 
-   	astAdd( astNewLABEL( env.main.initlabel ) )
+   	astAdd( astNewLABEL( astGetProcInitlabel( env.main.node ) ) )
 
 end sub
 
@@ -179,10 +170,7 @@ private sub hModLevelBegin( )
     symbSetProcIncFile( env.main.proc, INVALID )
     symbSetIsCalled( env.main.proc )
 
-	env.main.initlabel = env.main.node->proc.initlabel
-	env.main.exitlabel = env.main.node->proc.exitlabel
-
-   	astAdd( astNewLABEL( env.main.initlabel ) )
+   	astAdd( astNewLABEL( astGetProcInitlabel( env.main.node ) ) )
 
 end sub
 
@@ -213,8 +201,6 @@ end sub
 '':::::
 private sub hMainEnd( byval isdllmain as integer )
 
-   	astAdd( astNewLABEL( env.main.exitlabel ) )
-
     '' set default data label (def label isn't global as it could clash with other
     '' modules, so DataRestore alone can't figure out where to start)
     if( symbFindByNameAndClass( FB_DATALABELNAME, FB_SYMBCLASS_LABEL ) <> NULL ) then
@@ -229,8 +215,6 @@ end sub
 
 '':::::
 private sub hModLevelEnd( )
-
-   	astAdd( astNewLABEL( env.main.exitlabel ) )
 
 	''
 	astProcEnd( env.main.node, FALSE )

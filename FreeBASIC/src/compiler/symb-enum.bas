@@ -51,6 +51,7 @@ function symbAddEnum( byval symbol as zstring ptr ) as FBSYMBOL ptr static
 	end if
 
 	e->enum.elements = 0
+	e->enum.elmtb.owner = e
 	e->enum.elmtb.head = NULL
 	e->enum.elmtb.tail = NULL
 	e->enum.dbg.typenum = INVALID
@@ -67,7 +68,8 @@ end function
 '':::::
 function symbAddEnumElement( byval parent as FBSYMBOL ptr, _
 							 byval symbol as zstring ptr, _
-					         byval intval as integer ) as FBSYMBOL ptr static
+					         byval intval as integer _
+					       ) as FBSYMBOL ptr static
 
 	dim as FBSYMBOL ptr elm, tail
 	dim as FBVALUE value

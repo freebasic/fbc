@@ -93,7 +93,9 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 		aname = NULL
 		'' dimensions will be unknown if it's a DIM|REDIM array()
 		lgt = FB_ARRAYDESCLEN + _
-			  iif( dimensions <> INVALID, dimensions, FB_MAXARRAYDIMS ) * FB_ARRAYDESC_DIMLEN
+			  iif( dimensions <> INVALID, _
+			  	   dimensions, _
+			  	   FB_MAXARRAYDIMS ) * FB_ARRAYDESC_DIMLEN
 	end if
 
 	d = symbNewSymbol( NULL, s->symtb, s->symtb = @symb.globtb, FB_SYMBCLASS_VAR, _
@@ -247,6 +249,8 @@ private sub hSetupVar( byval s as FBSYMBOL ptr, _
 
 	s->var.initree = NULL
 
+	s->var.stmtnum = env.stmtcnt
+
 end sub
 
 '':::::
@@ -394,6 +398,7 @@ function symbAddTempVar( byval typ as integer, _
     	'' not shared, static or a parameter?
     	if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
     		 			   	FB_SYMBATTRIB_STATIC or _
+    		 			   	FB_SYMBATTRIB_COMMON or _
 							FB_SYMBATTRIB_PARAMBYDESC or _
     			  			FB_SYMBATTRIB_PARAMBYVAL or _
     			  			FB_SYMBATTRIB_PARAMBYREF)) = 0 ) then
@@ -472,6 +477,64 @@ private function hCalcArrayElements( byval dimensions as integer, _
 	next i
 
 	function = e
+
+end function
+
+'':::::
+function symbVarIsLocalDyn( byval s as FBSYMBOL ptr ) as integer static
+
+    function = FALSE
+
+    '' shared, static, param or temp?
+    if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
+    					FB_SYMBATTRIB_STATIC or _
+    					FB_SYMBATTRIB_COMMON or _
+    					FB_SYMBATTRIB_PARAMBYDESC or _
+    		  			FB_SYMBATTRIB_PARAMBYVAL or _
+    		  			FB_SYMBATTRIB_PARAMBYREF or _
+    		  			FB_SYMBATTRIB_TEMP or _
+    		  			FB_SYMBATTRIB_FUNCRESULT)) <> 0 ) then
+		exit function
+	end if
+
+	'' dyn string?
+	if( s->typ = FB_DATATYPE_STRING ) then
+		function = TRUE
+
+	'' array? dims can be -1 with "DIM foo()" arrays..
+	elseif( s->var.array.dims <> 0 ) then
+		'' dynamic?
+		function = symbIsDynamic( s )
+	end if
+
+end function
+
+'':::::
+function symbVarIsLocalObj( byval s as FBSYMBOL ptr ) as integer static
+
+    '' shared, static, param or temp?
+    if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
+    					FB_SYMBATTRIB_STATIC or _
+    					FB_SYMBATTRIB_COMMON or _
+    					FB_SYMBATTRIB_PARAMBYDESC or _
+    		  			FB_SYMBATTRIB_PARAMBYVAL or _
+    		  			FB_SYMBATTRIB_PARAMBYREF or _
+    		  			FB_SYMBATTRIB_TEMP or _
+    		  			FB_SYMBATTRIB_FUNCRESULT)) <> 0 ) then
+
+		return FALSE
+	end if
+
+	'' notes:
+	'' 1) it doesn't matter if it's dynamic array or not, local non-dynamic
+	''	  array allocations will do calls to ArraySetDesc, so arrays can't
+	''	  be accessed before that
+	''
+	'' 2) dynamic strings aren't taken as objects, descriptors are always
+	''    cleared when entering scopes (including procs)
+
+	'' array? dims can be -1 with "DIM foo()" arrays..
+	function = (s->var.array.dims <> 0)
 
 end function
 
@@ -555,59 +618,55 @@ sub symbDelVar( byval s as FBSYMBOL ptr, _
 end sub
 
 '':::::
-sub symbFreeLocalDynVars( byval proc as FBSYMBOL ptr, _
-						  byval issub as integer ) static
+function symbFreeDynVar( byval s as FBSYMBOL ptr ) as ASTNODE ptr
 
-    dim as FBSYMBOL ptr s, fres
-    dim as ASTNODE ptr strg
+	'' assuming conditions were checked already
 
-    '' can't free function's result, that's will be done by the rtlib
-    if( issub ) then
-    	fres = NULL
-    else
-    	fres = symbLookupProcResult( proc )
+	'' array? dims can be -1 with "DIM foo()" arrays..
+	if( s->var.array.dims <> 0 ) then
+		'' dynamic?
+		if( symbIsDynamic( s ) ) then
+			function = rtlArrayErase( astNewVAR( s, 0, s->typ ) )
+
+		'' array of dyn strings?
+		elseif( s->typ = FB_DATATYPE_STRING ) then
+			function = rtlArrayStrErase( s )
+		end if
+
+	'' dyn string?
+	elseif( s->typ = FB_DATATYPE_STRING ) then
+		function = rtlStrDelete( astNewVAR( s, 0, FB_DATATYPE_STRING ) )
 	end if
+
+end function
+'':::::
+sub symbFreeLocalDynVars( byval proc as FBSYMBOL ptr ) static
+
+    dim as FBSYMBOL ptr s
 
 	s = symb.loctb->head
     do while( s <> NULL )
     	'' variable?
     	if( s->class = FB_SYMBCLASS_VAR ) then
-    		'' not shared or static?
-    		if( (s->attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0 ) then
+    		'' not shared, static, param or temp?
+    		if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
+    							FB_SYMBATTRIB_STATIC or _
+    							FB_SYMBATTRIB_COMMON or _
+    							FB_SYMBATTRIB_PARAMBYDESC or _
+    				  			FB_SYMBATTRIB_PARAMBYVAL or _
+    				  			FB_SYMBATTRIB_PARAMBYREF or _
+    				  			FB_SYMBATTRIB_TEMP or _
+    				  			FB_SYMBATTRIB_FUNCRESULT)) = 0 ) then
 
-				'' not a parameter?
-    			if( (s->attrib and (FB_SYMBATTRIB_PARAMBYDESC or _
-    				  			    FB_SYMBATTRIB_PARAMBYVAL or _
-    				  			    FB_SYMBATTRIB_PARAMBYREF or _
-    				  			    FB_SYMBATTRIB_TEMP)) = 0 ) then
+				astAdd( symbFreeDynVar( s ) )
 
-					'' array?
-					if( s->var.array.dims > 0 ) then
-						'' dynamic?
-						if( symbIsDynamic( s ) ) then
-							rtlArrayErase( astNewVAR( s, 0, s->typ ) )
-						'' array of dyn strings?
-						elseif( s->typ = FB_DATATYPE_STRING ) then
-							rtlArrayStrErase( s )
-						end if
-
-					'' dyn string?
-					elseif( s->typ = FB_DATATYPE_STRING ) then
-						'' not funct's result?
-						if( s <> fres ) then
-							strg = astNewVAR( s, 0, FB_DATATYPE_STRING )
-							astAdd( rtlStrDelete( strg ) )
-						end if
-					end if
-
-				end if
-
-    		end if
+			end if
     	end if
 
     	s = s->next
     loop
 
 end sub
+
 
 

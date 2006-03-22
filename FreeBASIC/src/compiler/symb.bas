@@ -59,6 +59,7 @@ sub symbInitSymbols static
 
 	hashNew( @symb.symhash, FB_INITSYMBOLNODES )
 
+	symb.globtb.owner = NULL
 	symb.globtb.head = NULL
 	symb.globtb.tail = NULL
 
@@ -286,6 +287,7 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
 
     ''
     s->class = class
+
     s->scope = env.scope
     s->typ = typ
     s->subtype = subtype

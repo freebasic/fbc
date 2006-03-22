@@ -104,7 +104,6 @@ sub lexInit( byval isinclude as integer )
 	lex->lahdchar	= UINVALID
 
 	lex->linenum	= 1
-	lex->colnum		= 1
 	lex->lasttoken	= INVALID
 
 	lex->reclevel	= 0
@@ -256,8 +255,6 @@ end function
 
 '':::::
 function lexEatChar as uinteger static
-
-	lex->colnum += 1
 
     ''
     function = lex->currchar
@@ -1521,6 +1518,7 @@ reread:
 				exit sub
 			else
 				lex->linenum += 1
+				env.stmtcnt += 1
 				islinecont = FALSE
 				continue do
 			end if
@@ -1873,10 +1871,13 @@ end sub
 '':::::
 sub lexSkipToken( byval flags as LEXCHECK_ENUM ) static
 
-    if( lex->head->id = FB_TK_EOL ) then
+    select case lex->head->id
+    case FB_TK_EOL
     	lex->linenum += 1
-    	lex->colnum  = 1
-    end if
+    	env.stmtcnt += 1
+    case FB_TK_STATSEPCHAR
+    	env.stmtcnt += 1
+    end select
 
     lex->lasttoken = lex->head->id
 
@@ -1998,21 +1999,6 @@ sub lexSkipLine( ) static
 	lexReadLine( , NULL, TRUE )
 
 end sub
-
-
-''::::
-function lexLineNum( ) as integer
-
-	function = lex->linenum
-
-end function
-
-''::::
-function lexColNum( ) as integer
-
-	function = lex->colnum - lex->head->tlen + 1
-
-end function
 
 ''::::
 function lexGetText( ) as zstring ptr

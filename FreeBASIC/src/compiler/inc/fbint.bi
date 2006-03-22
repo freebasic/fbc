@@ -214,7 +214,7 @@ const FB_INTSCAPECHAR		= CHAR_ESC			'' assuming it won't ever be used inside lit
 
 
 '' tokens
-enum FBTK_ENUM
+enum FB_TOKEN
 	FB_TK_EOF					= 256
 	FB_TK_EOL
 	FB_TK_NUMLIT
@@ -474,7 +474,7 @@ const FB_TK_STRTYPECHAR			= CHAR_DOLAR
 
 
 '' token classes
-enum FBTKCLASS_ENUM
+enum FB_TKCLASS
 	FB_TKCLASS_UNKNOWN
 	FB_TKCLASS_KEYWORD
 	FB_TKCLASS_IDENTIFIER
@@ -494,7 +494,7 @@ enum FB_PARAMMODE
 end enum
 
 '' call conventions
-enum FBFUNCMODE_ENUM
+enum FB_FUNCMODE
 	FB_FUNCMODE_STDCALL			= 1             '' ditto
 	FB_FUNCMODE_CDECL
 	FB_FUNCMODE_PASCAL
@@ -612,8 +612,6 @@ type FBMAIN
 	proc			as FBSYMBOL ptr
 	argc			as FBSYMBOL ptr
 	argv			as FBSYMBOL ptr
-	initlabel		as FBSYMBOL ptr
-	exitlabel		as FBSYMBOL ptr
 	initnode		as ASTNODE ptr
 end type
 
@@ -634,7 +632,8 @@ type FBENV
 	'' globals
 	scope			as uinteger					'' current scope (0=main module)
 	reclevel		as integer					'' >0 if parsing an include file
-	currproc 		as FBSYMBOL ptr				'' current proc (def= NULL)
+	currproc 		as FBSYMBOL ptr				'' current proc
+	currblock 		as FBSYMBOL ptr				'' current scope block (= proc if outside any block)
 	withvar			as FBSYMBOL ptr				'' current WITH var
 
 	main			as FBMAIN
@@ -643,6 +642,7 @@ type FBENV
 	lastcompound	as integer					'' last compound stmt (token), def= INVALID
 	isprocstatic	as integer					'' TRUE with SUB/FUNCTION (...) STATIC
 	procerrorhnd	as FBSYMBOL ptr				'' var holding the old error handler inside a proc
+	stmtcnt			as integer					'' keep track of :'s to help scope break's
 
 	asmtoklist		as TLIST
 

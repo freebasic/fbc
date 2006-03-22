@@ -55,9 +55,7 @@ private function hFuncReturn( ) as integer
 	end if
 
 	'' do an implicit exit function
-	astAdd( astNewBRANCH( AST_OP_JMP, env.procstmt.endlabel ) )
-
-	function = TRUE
+	function = astScopeBreak( env.procstmt.endlabel )
 
 end function
 
@@ -87,11 +85,10 @@ function cGotoStmt as integer
 		if( l = NULL ) then
 			l = symbAddLabel( lexGetText( ), FALSE, TRUE )
 		end if
+
 		lexSkipToken( )
 
-		astAdd( astNewBRANCH( AST_OP_JMP, l ) )
-
-		function = TRUE
+		function = astScopeBreak( l )
 
 	'' GOSUB LABEL
 	case FB_TK_GOSUB
@@ -112,6 +109,7 @@ function cGotoStmt as integer
 		if( l = NULL ) then
 			l = symbAddLabel( lexGetText( ), FALSE, TRUE )
 		end if
+
 		lexSkipToken( )
 
 		astAdd( astNewBRANCH( AST_OP_CALL, l ) )
@@ -122,7 +120,7 @@ function cGotoStmt as integer
 	case FB_TK_RETURN
 		lexSkipToken( )
 
-		'' inside a proc? GOSUB not allowed, see aboev
+		'' inside a proc? GOSUB not allowed, see above
 		if( fbIsModLevel() = FALSE ) then
 			function = hFuncReturn( )
 

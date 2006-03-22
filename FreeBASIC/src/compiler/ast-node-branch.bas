@@ -15,7 +15,7 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-'' AST branch nodes (include jump tables)
+'' AST branch nodes (including jump tables)
 ''
 '' chng: sep/2004 written [v1ctor]
 
@@ -34,7 +34,9 @@ option escape
 '':::::
 function astNewBRANCH( byval op as integer, _
 					   byval label as FBSYMBOL ptr, _
-					   byval l as ASTNODE ptr ) as ASTNODE ptr static
+					   byval l as ASTNODE ptr _
+					 ) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
     dim as integer dtype
 
@@ -52,9 +54,9 @@ function astNewBRANCH( byval op as integer, _
 		exit function
 	end if
 
-	n->l  	  = l
-	n->op.op  = op
-	n->op.ex  = label
+	n->l = l
+	n->op.op = op
+	n->op.ex = label
 	n->op.allocres = TRUE
 
 end function
@@ -103,7 +105,9 @@ end function
 
 '':::::
 function astNewJMPTB( byval dtype as integer, _
-					  byval label as FBSYMBOL ptr ) as ASTNODE ptr static
+					  byval label as FBSYMBOL ptr _
+					) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
 
 	'' alloc new node

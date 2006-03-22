@@ -262,11 +262,11 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, _
 end function
 
 '':::::
-function rtlArrayErase( byval arrayexpr as ASTNODE ptr ) as integer static
+function rtlArrayErase( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr static
     dim as ASTNODE ptr proc
     dim as integer dtype
 
-	function = FALSE
+	function = NULL
 
 	''
     proc = astNewCALL( PROCLOOKUP( ARRAYERASE ) )
@@ -283,10 +283,7 @@ function rtlArrayErase( byval arrayexpr as ASTNODE ptr ) as integer static
     	exit function
     end if
 
-    ''
-	astAdd( proc )
-
-	function = TRUE
+	function = proc
 
 end function
 
@@ -320,11 +317,11 @@ function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as integer static
 end function
 
 '':::::
-function rtlArrayStrErase( byval s as FBSYMBOL ptr ) as integer static
+function rtlArrayStrErase( byval s as FBSYMBOL ptr ) as ASTNODE ptr static
     dim as ASTNODE ptr proc
     dim as integer dtype
 
-	function = FALSE
+	function = NULL
 
 	''
     proc = astNewCALL( PROCLOOKUP( ARRAYSTRERASE ) )
@@ -335,10 +332,7 @@ function rtlArrayStrErase( byval s as FBSYMBOL ptr ) as integer static
     	exit function
     end if
 
-    ''
-	astAdd( proc )
-
-	function = TRUE
+	function = proc
 
 end function
 
