@@ -67,6 +67,7 @@ type LEX_CTX
 	lasttoken 		as integer
 
 	reclevel 		as integer					'' PP recursion
+	currmacro		as FBSYMBOL ptr
 
 	'' last #define's text
 	deflen 			as integer

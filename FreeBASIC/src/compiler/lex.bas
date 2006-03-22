@@ -107,6 +107,7 @@ sub lexInit( byval isinclude as integer )
 	lex->lasttoken	= INVALID
 
 	lex->reclevel	= 0
+	lex->currmacro	= NULL
 
 	''
 	lex->withcnt	= 0
@@ -1439,6 +1440,7 @@ end sub
 '':::::
 sub lexNextToken ( byval t as FBTOKEN ptr, _
 				   byval flags as LEXCHECK_ENUM ) static
+
 	dim as uinteger char
 	dim as integer islinecont, isnumber, lgt
 	dim as FBSYMBOL ptr s
@@ -1871,6 +1873,7 @@ end sub
 '':::::
 sub lexSkipToken( byval flags as LEXCHECK_ENUM ) static
 
+    '' update stats
     select case lex->head->id
     case FB_TK_EOL
     	lex->linenum += 1
@@ -1878,6 +1881,11 @@ sub lexSkipToken( byval flags as LEXCHECK_ENUM ) static
     case FB_TK_STATSEPCHAR
     	env.stmtcnt += 1
     end select
+
+	'' if no macro text been read, reset
+	if( lex->deflen = 0 ) then
+		lex->currmacro = NULL
+	end if
 
     lex->lasttoken = lex->head->id
 

@@ -138,6 +138,7 @@ end type
 		"Invalid command-line option", _
 		"Cannot initialize dynamic strings", _
 		"Recursive TYPE or UNION not allowed", _
+		"Recursive DEFINE not allowed", _
 		"Array fields cannot be redimensioned", _
 		"Identifier cannot include periods", _
 		"Executable not found", _

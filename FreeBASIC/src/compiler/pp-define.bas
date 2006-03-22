@@ -565,6 +565,17 @@ end function
 ''::::
 function ppDefineLoad( byval s as FBSYMBOL ptr ) as integer
 
+	'' recursion?
+	if( s = lex->currmacro ) then
+		hReportError( FB_ERRMSG_RECURSIVEMACRO )
+		return FALSE
+	end if
+
+	'' only one level
+	if( lex->currmacro = NULL ) then
+		lex->currmacro = s
+	end if
+
 	if( env.inf.format = FBFILE_FORMAT_ASCII ) then
 		function = hLoadDefine( s )
 	else
