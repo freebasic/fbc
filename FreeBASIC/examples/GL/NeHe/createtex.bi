@@ -16,8 +16,8 @@ private function CreateTexture( byval buffer as any ptr, byval flags as integer 
 
 	function = 0
 
-	w = cptr(short ptr, buffer)[0] SHR 3
-	h = cptr(short ptr, buffer)[1]
+	w = cast(short ptr, buffer)[0] SHR 3
+	h = cast(short ptr, buffer)[1]
 
 	if( (w < 64) or (h < 64) ) then
 		exit function

@@ -19,7 +19,7 @@ declare function DlgProc (byval hwnd as HWND, byval umsg as UINT, byval wparam a
     '' 
     '' Create the Dialog 
     '' 
-    DialogBoxParam( GetModuleHandle( NULL ), cptr( LPCSTR, IDD_DLG1 ), NULL, @DlgProc, NULL ) 
+    DialogBoxParam( GetModuleHandle( NULL ), cast( LPCSTR, IDD_DLG1 ), NULL, @DlgProc, NULL ) 
     
     
     '' 

@@ -44,8 +44,8 @@ end if
 
 old_isr = fb_isr_get( 0 )
 
-dim as byte ptr ptr_end = cptr( byte ptr, @isr_timer_end )
-dim as byte ptr ptr_start = cptr( byte ptr, @isr_timer )
+dim as byte ptr ptr_end = cast( byte ptr, @isr_timer_end )
+dim as byte ptr ptr_start = cast( byte ptr, @isr_timer )
 if not fb_isr_set( 0, @isr_timer, ptr_end - ptr_start, 16384 ) then
     print "Failed to lock ISR"
     end 1

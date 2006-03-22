@@ -248,12 +248,12 @@ function initMultitexture() as integer
 		glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB,@maxTexelUnits)
 		
 		'' Set addresses of functions we will use
-		glMultiTexCoord1fARB = cptr( PFNGLMULTITEXCOORD1FARBPROC, glfwGetProcAddress( "glMultiTexCoord1fARB" ) )
-		glMultiTexCoord2fARB = cptr( PFNGLMULTITEXCOORD2FARBPROC, glfwGetProcAddress( "glMultiTexCoord2fARB" ) )
-		glMultiTexCoord3fARB = cptr( PFNGLMULTITEXCOORD3FARBPROC, glfwGetProcAddress( "glMultiTexCoord3fARB" ) )
-		glMultiTexCoord4fARB = cptr( PFNGLMULTITEXCOORD4FARBPROC, glfwGetProcAddress( "glMultiTexCoord4fARB" ) )
-		glActiveTextureARB   = cptr( PFNGLACTIVETEXTUREARBPROC, glfwGetProcAddress( "glActiveTextureARB" ) )
-		glClientActiveTextureARB = cptr( PFNGLCLIENTACTIVETEXTUREARBPROC, glfwGetProcAddress( "glClientActiveTextureARB" ) )
+		glMultiTexCoord1fARB = cast( PFNGLMULTITEXCOORD1FARBPROC, glfwGetProcAddress( "glMultiTexCoord1fARB" ) )
+		glMultiTexCoord2fARB = cast( PFNGLMULTITEXCOORD2FARBPROC, glfwGetProcAddress( "glMultiTexCoord2fARB" ) )
+		glMultiTexCoord3fARB = cast( PFNGLMULTITEXCOORD3FARBPROC, glfwGetProcAddress( "glMultiTexCoord3fARB" ) )
+		glMultiTexCoord4fARB = cast( PFNGLMULTITEXCOORD4FARBPROC, glfwGetProcAddress( "glMultiTexCoord4fARB" ) )
+		glActiveTextureARB   = cast( PFNGLACTIVETEXTUREARBPROC, glfwGetProcAddress( "glActiveTextureARB" ) )
+		glClientActiveTextureARB = cast( PFNGLCLIENTACTIVETEXTUREARBPROC, glfwGetProcAddress( "glClientActiveTextureARB" ) )
 		
 		#if EXT_INFO
 		MessageBox(0,"The GL_ARB_multitexture extension will be used.","feature supported!",MB_OK or MB_ICONINFORMATION)

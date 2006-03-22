@@ -74,7 +74,7 @@ end function
 		.hInstance     = hInstance 
 		.hIcon         = LoadIcon( null, IDI_APPLICATION ) 
 		.hCursor       = LoadCursor( null, IDC_ARROW ) 
-		.hbrBackground = cptr( HGDIOBJ, 6 )  ' default color 
+		.hbrBackground = cast( HGDIOBJ, 6 )  ' default color 
 		.lpszMenuName  = null 
 		.lpszClassName = strptr( appName ) 
 	end with

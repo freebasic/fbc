@@ -177,7 +177,7 @@ function Model_LoadModelData(byval pM as MODEL ptr, filename as string) as integ
 	close (ffile)
 
 	pPtr = pBuffer
-	pHeader = cptr(MS3DHEADER ptr,pPtr)
+	pHeader = cast(MS3DHEADER ptr,pPtr)
 	pPtr = pPtr + len(MS3DHEADER)
 
 	if strncmp(varptr(pHeader->m_ID(0)),"MS3D000000", 10) <> 0 then  '' Not a valid Milkshape3D model file.
@@ -195,7 +195,7 @@ function Model_LoadModelData(byval pM as MODEL ptr, filename as string) as integ
 	pPtr = pPtr + len(short)
 
 	for i = 0 to nVertices - 1
-		pVertex = cptr(MS3DVERTEX ptr,pPtr)
+		pVertex = cast(MS3DVERTEX ptr,pPtr)
 		pM->m_pVertices[i].m_boneID = pVertex->m_boneID
 		memcpy (varptr(pM->m_pVertices[i].m_location(0)), varptr(pVertex->m_vertex(0)), len(single)*3)
 		pPtr = pPtr + len(MS3DVERTEX)
@@ -207,7 +207,7 @@ function Model_LoadModelData(byval pM as MODEL ptr, filename as string) as integ
 	pPtr = pPtr + len(short)
 
 	for i = 0 to nTriangles - 1
-		pTriangle = cptr(MS3DTRIANGLE ptr,pPtr)
+		pTriangle = cast(MS3DTRIANGLE ptr,pPtr)
 		vertexIndices(0) = pTriangle->m_vertexIndices(0)
 		vertexIndices(1) = pTriangle->m_vertexIndices(1)
 		vertexIndices(2) = pTriangle->m_vertexIndices(2)
@@ -253,7 +253,7 @@ function Model_LoadModelData(byval pM as MODEL ptr, filename as string) as integ
 	pPtr = pPtr + len(short)
 	dim ptemp as ubyte ptr
 	for i = 0 to nMaterials - 1
-		pMaterial = cptr(MS3DMATERIAL ptr,pPtr)
+		pMaterial = cast(MS3DMATERIAL ptr,pPtr)
 		memcpy (varptr(pM->m_pMaterials[i].m_ambient(0)), varptr(pMaterial->m_ambient(0)), len(single)*4)
 		memcpy (varptr(pM->m_pMaterials[i].m_diffuse(0)), varptr(pMaterial->m_diffuse(0)), len(single)*4)
 		memcpy (varptr(pM->m_pMaterials[i].m_specular(0)), varptr(pMaterial->m_specular(0)), len(single)*4)

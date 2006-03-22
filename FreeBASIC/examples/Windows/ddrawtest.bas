@@ -112,7 +112,7 @@ sub doRendering
 			dst += 1
 		next x
 		'' advance to next scanline
-		cptr(byte ptr, dst) += ddsd.lPitch - (SCR_WIDTH * len( SCR_TYPE ))
+		cast(byte ptr, dst) += ddsd.lPitch - (SCR_WIDTH * len( SCR_TYPE ))
    	next y
 	
 	'' unlock it, no more needed

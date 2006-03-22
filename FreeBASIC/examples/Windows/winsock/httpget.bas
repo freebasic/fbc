@@ -60,7 +60,7 @@ declare function resolveHost	( hostname as string ) as integer
 	sa.sin_family		= AF_INET
 	sa.sin_addr.S_addr	= ip
 	
-	if ( connect( s, cptr( PSOCKADDR, @sa ), len( sa )) = SOCKET_ERROR ) then
+	if ( connect( s, cast( PSOCKADDR, @sa ), len( sa )) = SOCKET_ERROR ) then
 		print "Error:"; WSAGetLastError; " Calling: connect()"
 		closesocket( s )
 		end 1
@@ -136,7 +136,7 @@ function resolveHost( hostname as string ) as integer
 			exit function
 		end if
 		
-		function = *cptr( integer ptr, *hostentry->h_addr_list )
+		function = *cast( integer ptr, *hostentry->h_addr_list )
 		
 	else
 	

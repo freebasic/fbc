@@ -324,7 +324,7 @@ sub InitObject (byval num as integer)                '' Initialize An Object
 	''                      Number Of Elements To Sort
 	''                      Size Of Each Element
 	''                      Pointer To Our Compare Function
-	QSORT (@object(0), level, sizeof (objects),  cptr(any ptr,@Compare))
+	QSORT (@object(0), level, sizeof (objects),  cast(any ptr,@Compare))
 end sub
 
 '------------------------------------------------------------------------

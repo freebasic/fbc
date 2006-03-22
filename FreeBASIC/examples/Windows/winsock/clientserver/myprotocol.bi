@@ -12,7 +12,7 @@ const SERVER_MSG_SUP	= MAKEMSG( "S", "U", "P", "!" )
 const SERVER_MSG_BYE	= MAKEMSG( "B", "Y", "E", "!" )
 const SERVER_MSG_CYA	= MAKEMSG( "C", "Y", "A", "!" )
 
-#define SERVER_ID(buff) *cptr( integer ptr, buff )
+#define SERVER_ID(buff) *cast( integer ptr, buff )
 
 type BUFFER
 	buff			as zstring * SERVER_BUFFSIZE+1

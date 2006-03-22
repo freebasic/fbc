@@ -359,8 +359,8 @@ End Sub
 		
 		CreateTexture = 0
 		
-		w = cptr(short ptr, buffer)[0] SHR 3
-		h = cptr(short ptr, buffer)[1]
+		w = cast(short ptr, buffer)[0] SHR 3
+		h = cast(short ptr, buffer)[1]
 		
 		IF( (w < 64) OR (h < 64) ) THEN
 			EXIT FUNCTION

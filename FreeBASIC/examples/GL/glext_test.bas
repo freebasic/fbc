@@ -83,8 +83,8 @@ sub initGL
 		shutdown		
 	end if
 
-	glActiveTextureARB = cptr(PFNGLACTIVETEXTUREARBPROC, glfwGetProcAddress( "glActiveTextureARB" ))
-	glMultiTexCoord2iARB = cptr(PFNGLMULTITEXCOORD2IARBPROC, glfwGetProcAddress( "glMultiTexCoord2iARB" ))
+	glActiveTextureARB = cast(PFNGLACTIVETEXTUREARBPROC, glfwGetProcAddress( "glActiveTextureARB" ))
+	glMultiTexCoord2iARB = cast(PFNGLMULTITEXCOORD2IARBPROC, glfwGetProcAddress( "glMultiTexCoord2iARB" ))
 
 	'shouldn't be necessary, but can't be too careful
 	if (glActiveTextureARB = NULL) or (glMultiTexCoord2iARB = NULL) then 

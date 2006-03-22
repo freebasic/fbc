@@ -187,7 +187,7 @@ function WinMain ( byval hInstance as HINSTANCE, _
      	.hIcon         = LoadIcon( null, IDI_APPLICATION )
      	.hCursor       = LoadCursor( null, IDC_ARROW )
      	.hbrBackground = GetStockObject( WHITE_BRUSH )
-     	.lpszMenuName  = cptr(zstring ptr, IDC_MAINMENU)
+     	.lpszMenuName  = cast(zstring ptr, IDC_MAINMENU)
      	.lpszClassName = strptr( appName )
     end with
      
@@ -221,7 +221,7 @@ function WinMain ( byval hInstance as HINSTANCE, _
      
 	dim hAccelTable as HACCEL
 	
-	hAccelTable = LoadAccelerators( hInstance, cptr( LPCSTR, IDC_MAINMENU ) )
+	hAccelTable = LoadAccelerators( hInstance, cast( LPCSTR, IDC_MAINMENU ) )
 
     ''
     '' Process windows messages

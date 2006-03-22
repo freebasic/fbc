@@ -40,7 +40,7 @@ function hResolve( byval hostname as string ) as integer
 			exit function
 		end if
 		
-		function = *cptr( integer ptr, *hostentry->h_addr_list )
+		function = *cast( integer ptr, *hostentry->h_addr_list )
 		
 	else
 	
@@ -72,7 +72,7 @@ function hConnect( byval s as SOCKET, byval ip as integer, byval port as integer
 	sa.sin_family		= AF_INET
 	sa.sin_addr.S_addr	= ip
 	
-	function = connect( s, cptr( PSOCKADDR, @sa ), len( sa ) ) <> SOCKET_ERROR
+	function = connect( s, cast( PSOCKADDR, @sa ), len( sa ) ) <> SOCKET_ERROR
 	
 end function
 
@@ -84,7 +84,7 @@ function hBind( byval s as SOCKET, byval port as integer ) as integer
 	sa.sin_family		= AF_INET
 	sa.sin_addr.S_addr	= INADDR_ANY 
 	
-	function = bind( s, cptr( PSOCKADDR, @sa ), len( sa ) ) <> SOCKET_ERROR
+	function = bind( s, cast( PSOCKADDR, @sa ), len( sa ) ) <> SOCKET_ERROR
 	
 end function
 
@@ -100,7 +100,7 @@ function hAccept( byval s as SOCKET, byval sa as sockaddr_in ptr ) as SOCKET
 	dim salen as integer 
 	
 	salen = len( sockaddr_in )
-	function = accept( s, cptr( PSOCKADDR, sa ), @salen )
+	function = accept( s, cast( PSOCKADDR, sa ), @salen )
 
 end function	
 
