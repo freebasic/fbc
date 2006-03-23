@@ -426,11 +426,14 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 
 			'' type ini tree?
 			if( r->class = AST_NODECLASS_TYPEINI ) then
-				'' no double assign, just flush the tree
-				astTypeIniFlush( r, l->sym, FALSE, FALSE )
+				'' !!FIXME!! can't be used with complex l-hand side expressions
+				if( l->class = AST_NODECLASS_VAR ) then
+					'' no double assign, just flush the tree
+					astTypeIniFlush( r, l->sym, FALSE, FALSE )
 
-				'' must return something..
-				return astNewNOP(  )
+					'' must return something..
+					return astNewNOP(  )
+				end if
 			end if
 
 			'' do a mem copy..

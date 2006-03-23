@@ -177,6 +177,7 @@ private function hFlushTree( byval tree as ASTNODE ptr, _
     	if( n->class <> AST_NODECLASS_TYPEINI_PAD ) then
         	sym = n->sym
 
+        	'' !!FIXME!! can't be used with complex l-hand side expressions
         	lside = astNewVAR( basesym, _
         					   n->typeini.ofs, _
         					   symbGetType( sym ), _
