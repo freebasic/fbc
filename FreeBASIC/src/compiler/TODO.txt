@@ -1,7 +1,11 @@
-[ ] Extern array descriptors shoudn't be emitted, unless accessed
-
 [ ] SCOPE..END SCOPE:
     - error handlers should be restored too (or not allowed at all)
+
+[ ] every compound statement should start new scope:
+    - that's needed for gcc, scope is very important
+    - will allow "FOR iterator AS datatype = ..."
+    - will break some old or buggy apps that declare implicit vars inside compounds
+      and use them after leaving the stmts, better now than later..
 
 [ ] add the ... subscript when initializing array so
     "dim array(0 to ...) = {1, 2, 3, 4}" could be allowed
@@ -10,12 +14,6 @@
     - the prototype mangling must be updated when that occurs, but how to do that fast
       enough? the args would have to be linked to parent (the prototype), but updating
       the mangled alias on every argument can be slow..
-
-[ ] every compound statement should start new scope:
-    - that's needed for gcc, scope is very important
-    - will allow "FOR iterator AS datatype = ..."
-    - will break some old or buggy apps that declare implicit vars inside compounds
-      and use them after leaving the stmts, better now than later..
 
 [ ] add the wstring type:
     - fb_ConsoleInput() won't call fb_DevScrnInit_ReadWstr( ), so an input to a

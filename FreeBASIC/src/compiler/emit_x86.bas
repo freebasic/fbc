@@ -5551,6 +5551,11 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
     	if( symbGetIsDynamic( s ) ) then
     		exit sub
     	end if
+
+    	'' the descriptor was never accessed? don't emit
+    	if( symbGetIsAccessed( symbGetArrayDescriptor( s ) ) = FALSE ) then
+    		exit sub
+    	end if
     end if
 
     dims = symbGetArrayDimensions( s )
@@ -5565,8 +5570,6 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
     	sname = *symbGetName( s )
 	end if
 
-	dim as Fbsymbol ptr fuck
-	fuck = s->var.array.desc
 	dname = symbGetArrayDescName( s )
 
    	'' add dbg info, if public or shared
