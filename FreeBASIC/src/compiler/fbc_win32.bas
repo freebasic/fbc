@@ -179,17 +179,16 @@ function _linkFiles as integer
     '' add libraries from cmm-line and found when parsing
     for i = 0 to fbc.libs-1
     	libname = fbc.liblist(i)
-    	if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
+    	
+		if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
     		'' check if the lib isn't the dll's import library itself
             if( libname = dllname ) then
-            	libname = ""
+            	continue for
             end if
     	end if
 
-    	if( len( libname ) > 0 ) then
-    		ldcline += "-l" + libname + " "
-    	end if
-    next i
+    	ldcline += "-l" + libname + " "
+    next
 
     '' end lib group
     ldcline += "-) "

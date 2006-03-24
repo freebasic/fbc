@@ -63,7 +63,7 @@ end function
 '':::::
 function _linkFiles as integer
 	dim as integer i
-	dim as string ldpath, ldcline, libdir, bindir
+	dim as string ldpath, ldcline, libdir, bindir, libname, dllname
 
 	function = FALSE
 
@@ -79,6 +79,10 @@ function _linkFiles as integer
 		hReportErrorEx( FB_ERRMSG_EXEMISSING, ldpath, -1 )
 		exit function
     end if
+
+	if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
+		dllname = hStripPath( hStripExt( fbc.outname ) )
+	end if
 
 	'' add extension
 	if( fbc.outaddext ) then
@@ -150,15 +154,22 @@ function _linkFiles as integer
     '' set executable name
     ldcline += "-o \"" + fbc.outname + QUOTE
 
-    '' init lib group
+	'' init lib group
     ldcline += " -( "
 
     '' add libraries from cmm-line and found when parsing
-    for i = 0 to fbc.libs-1
-		if fbc.outtype = FB_OUTTYPE_EXECUTABLE then
-			ldcline += "-l" + fbc.liblist(i) + " "
-		end if
-    next i
+   	for i = 0 to fbc.libs-1
+		libname = fbc.liblist(i)
+
+    	if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
+   			'' check if the lib isn't the dll's import library itself
+   	        if( libname = dllname ) then
+   	        	continue for
+   	        end if
+   		end if
+	
+		ldcline += "-l" + libname + " "
+	next
 
     '' end lib group
     ldcline += "-) "
