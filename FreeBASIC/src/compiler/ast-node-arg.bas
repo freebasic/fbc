@@ -813,13 +813,6 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 
 	end if
 
-	'' byref arg? check if a temp param isn't needed
-	if( amode = FB_PARAMMODE_BYREF ) then
-		p = hCheckByRefArg( adtype, symbGetSubtype( arg ), n )
-        '' it's an implicit pointer
-		adtype += FB_DATATYPE_POINTER
-	end if
-
 	'' pointer checking
 	if( adtype >= FB_DATATYPE_POINTER ) then
     	iswarning = FALSE
@@ -843,6 +836,12 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 
     elseif( p->dtype >= FB_DATATYPE_POINTER ) then
     	hParamWarning( f, FB_WARNINGMSG_PASSINGPTRTOSCALAR )
+	end if
+
+	'' byref arg? check if a temp param isn't needed
+	if( amode = FB_PARAMMODE_BYREF ) then
+		p = hCheckByRefArg( adtype, symbGetSubtype( arg ), n )
+        '' it's an implicit pointer
 	end if
 
     function = TRUE
