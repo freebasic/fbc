@@ -298,10 +298,11 @@ private function hCast( byref expr as ASTNODE ptr, _
 
 	if( ptronly ) then
 		select case astGetDataType( expr )
-		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, is >= FB_DATATYPE_POINTER
+		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM, _
+			 is >= FB_DATATYPE_POINTER
 
 		case else
-			hReportError( FB_ERRMSG_EXPECTEDPOINTER )
+			hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
 			exit function
 		end select
 	end if
