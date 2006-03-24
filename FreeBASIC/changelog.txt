@@ -88,6 +88,8 @@ Version 0.16 Beta:
 - PRINTing wide-strings in Linux with characters above 127 was given incorrect results (v1c)
 - text-mode's (SCREEN 0) width wasn't been restored when SCREEN was previously in a GFX mode, causing problems with PRINT (v1c)
 - the number of arguments passed to macros wasn't been checked (v1c)
+- enum's were not been allowed in CAST( DataType PTR, ... ) (v1c)
+- external libraries were not been passed to LD when linking shared libraries in Linux (v1c)
 
 
 Version 0.15 Beta:
