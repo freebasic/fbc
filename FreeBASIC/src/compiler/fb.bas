@@ -577,10 +577,11 @@ sub fbAddDefaultLibs( ) static
 	select case as const env.clopt.target
 	case FB_COMPTARGET_WIN32
 		symbAddLib( "gcc" )
-		symbAddLib( "mingw32" )
-		symbAddLib( "moldname" )
 		symbAddLib( "msvcrt" )
 		symbAddLib( "kernel32" )
+		symbAddLib( "mingw32" )
+		symbAddLib( "mingwex" )
+		symbAddLib( "moldname" )
 
 	case FB_COMPTARGET_CYGWIN
 		symbAddLib( "gcc" )

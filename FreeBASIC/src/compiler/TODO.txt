@@ -1,3 +1,11 @@
+[ ] fbmain - explicit main function
+    - must check if anything but the init/end labels were defined already inside
+      the implicit main() or the mod-level constructor
+    - must delete proto and all ast nodes
+    - must create as CDECL but it doesn't have to be obligatory
+    - must support RETURN or FUNCTION = to set the result
+    - must check the params if passed byval and if they have the right types
+
 [ ] SCOPE..END SCOPE:
     - error handlers should be restored too (or not allowed at all)
 
@@ -51,6 +59,11 @@
       will break *all* functions assuming the latter - they would have to be
       declared as zstring ptr, what will need more changes in users' code, because
       the non-implicit pointer deref
+
+[ ] remove fb_init:
+    - remove all globals
+    - use getters and setters that should do the initializing when needed
+    - FPU won't be set to 64-bit internally in x86..
 
 *** *** *** *** ***
 [ ] add support for functions returning references (reuse "BYREF"), so those can
