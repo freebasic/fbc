@@ -110,7 +110,7 @@ static int match_spec( char *name )
 }
 
 /*:::::*/
-static char *find_next ( void )
+static char *find_next ( int *attrib )
 {
 	FB_DIRCTX *ctx = FB_TLSGETCTX( DIR );
 	char *name = NULL;
@@ -131,21 +131,26 @@ static char *find_next ( void )
 		strcpy( buffer, ctx->dirname );
 		strncat( buffer, name, MAX_PATH );
 		buffer[MAX_PATH-1] = '\0';
+		
+		*attrib = get_attrib( name, &info );
 	}
-	while( ( stat( buffer, &info ) ) || ( get_attrib( name, &info ) & ~ctx->attrib ) || ( !match_spec( name ) ) );
+	while( ( stat( buffer, &info ) ) || ( *attrib & ~ctx->attrib ) || ( !match_spec( name ) ) );
 
 	return name;
 }
 
 
 /*:::::*/
-FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
+FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib, int *out_attrib )
 {
 	FB_DIRCTX *ctx;
 	FBSTRING *res;
-	int len;
+	int len, tmp_attrib;
 	char *name, *p;
 	struct stat	info;
+	
+	if( out_attrib == NULL ) 
+		out_attrib = &tmp_attrib;
 
 	len = FB_STRSIZE( filespec );
 	name = NULL;
@@ -193,7 +198,7 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 			ctx->dir = opendir( ctx->dirname );
 			if( ctx->dir )
 			{
-				name = find_next( );
+				name = find_next( out_attrib );
 				if( name )
 					ctx->in_use = TRUE;
 			}
@@ -202,13 +207,15 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 		{
 			/* no pattern, use stat on single file */
 
-			if( !stat( filespec->data, &info ) && ( ( get_attrib( filespec->data, &info ) & ~attrib ) == 0 ) )
+			tmp_attrib = get_attrib( filespec->data, &info );
+			if( !stat( filespec->data, &info ) && ( (tmp_attrib  & ~attrib ) == 0 ) )
 			{
 				name = strrchr( filespec->data, '/' );
 				if( !name )
 					name = filespec->data;
 				else
 					name++;
+				*out_attrib = tmp_attrib;
 			}
 		}
 	}
@@ -217,7 +224,7 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 		/* findnext */
 
 		if( ctx->in_use )
-			name = find_next( );
+			name = find_next( out_attrib );
 	}
 
 	FB_STRLOCK();
@@ -236,11 +243,21 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 			res = &fb_strNullDesc;
 	}
 	else
+	{
 		res = &fb_strNullDesc;
+		*out_attrib = 0;
+	}
 
 	fb_hStrDelTemp_NoLock( filespec );
 
 	FB_STRUNLOCK();
 
 	return res;
+}
+
+/*:::::*/
+FBCALL FBSTRING *fb_DirNext ( int *attrib )
+{
+	static FBSTRING fname = { 0 };
+	return fb_Dir( &fname, 0, attrib );
 }

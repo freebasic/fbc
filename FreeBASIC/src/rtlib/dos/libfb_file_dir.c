@@ -47,11 +47,14 @@ static void close_dir ( void )
 
 
 /*:::::*/
-static char *find_next ( void )
+static char *find_next ( int *attrib )
 {
 
 	if (findnext(&dir_data.f) == 0)
+	{
+		*attrib = dir_data.f.ff_attrib;
 		return dir_data.f.ff_name;
+	}
 		
 	close_dir();
 	
@@ -60,11 +63,14 @@ static char *find_next ( void )
 
 
 /*:::::*/
-FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
+FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib, int *out_attrib )
 {
-	FBSTRING	*res;
-	int		len;
-	char		*name;
+	FBSTRING *res;
+	int	len, tmp_attrib;
+	char *name;
+
+	if( out_attrib == NULL ) 
+		out_attrib = &tmp_attrib;
 
 	len = FB_STRSIZE( filespec );
 	name = NULL;
@@ -78,17 +84,15 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 		
 		if (findfirst(filespec->data, &dir_data.f, attrib) == 0) {
 			name = dir_data.f.ff_name;
+			*out_attrib = dir_data.f.ff_attrib;
 			dir_data.in_use = TRUE;
 		}
 	}
 	else {
 
 		/* findnext */
-
-		if( !dir_data.in_use )
-			res = &fb_strNullDesc;
-		else
-			name = find_next( );
+		if( dir_data.in_use )
+			name = find_next( out_attrib );
 	}
 
 	/* store filename if found */
@@ -105,9 +109,19 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib )
 			res = &fb_strNullDesc;
 	}
 	else
+	{
 		res = &fb_strNullDesc;
+		*out_attrib = 0;
+	}
 
 	fb_hStrDelTemp( filespec );
 
 	return res;
+}
+
+/*:::::*/
+FBCALL FBSTRING *fb_DirNext ( int *attrib )
+{
+	static FBSTRING fname = { 0 };
+	return fb_Dir( &fname, 0, attrib );
 }
