@@ -193,13 +193,21 @@ data @"sleep","fb_SleepEx", _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
-'' dir ( mask as string, byval v as integer = &h33 ) as string
+'' dir overload ( byval out_attrib as integer ptr = NULL ) as string
+data @"dir","fb_DirNext", _
+	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 1, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,NULL
+
+'' dir overload ( mask as string, byval attrib_mask as integer = &h21, byval out_attrib as integer ptr = NULL ) as string
 data @"dir","fb_Dir", _
 	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
-	 2, _
-	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, TRUE,"", _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,&h33
+	 NULL, FALSE, TRUE, _
+	 3, _
+	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,&h21,_
+	 FB_DATATYPE_POINTER+FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,NULL
 
 '' settime ( byref time as string ) as integer
 data @"settime","fb_SetTime", _
