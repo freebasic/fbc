@@ -297,7 +297,7 @@ private sub hDelBackwardLocals( byval n as ASTNODE ptr )
     '' free any dyn var allocated between the block's
     '' beginning and the branch
     hDelBlockLocals( n->break.parent->sym, _
-    				 0, _			'' real value doesn't matter, loctb will be used
+    				 symbGetLabelStmt( n->sym ), _
     				 n->break.stmtnum, _
     				 n->l )
 
