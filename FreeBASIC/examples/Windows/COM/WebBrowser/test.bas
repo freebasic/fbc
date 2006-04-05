@@ -126,15 +126,13 @@ end function
 private function toolbar_editbox_oncreate _
 	( _
 		byval parent as HWND, _
-		byval toolbar as HWND, _
 		byval tbsize as SIZE ptr, _
-		byval hInstance as HINSTANCE _
 	) as HWND
 
-	dim as integer pad = SendMessage( toolbar, TB_GETPADDING, 0, 0 )
+	dim as integer pad = SendMessage( parent, TB_GETPADDING, 0, 0 )
 	
 	dim as TEXTMETRIC tm
-	GetTextMetrics( GetDC( toolbar ), @tm )
+	GetTextMetrics( GetDC( parent ), @tm )
 	dim as integer h = tm.tmHeight + 4
 	dim as integer x = tbsize->cx + LOWORD( pad ), y = HIWORD( pad )
 
@@ -147,12 +145,12 @@ private function toolbar_editbox_oncreate _
    						   y, _
    						   400, _
    						   h, _
-   						   parent, _
+   						   cast( GetWindowLong( parent, GWL_HWNDPARENT ) ), _
    						   cast( HMENU, WIN_TOOLBAR_EDIT ), _
-   						   hInstance, _
+   						   cast( HINSTANCE, GetWindowLong( parent, GWL_HINSTANCE ) ), _
    						   NULL )
    
-	SetParent( hwnd, toolbar )
+	SetParent( hwnd, parent )
 	
 	function = hwnd
 	
@@ -162,8 +160,7 @@ end function
 ''::::
 private function toolbar_oncreate _
 	( _
-		byval parent as HWND, _
-		byval hInstance as HINSTANCE _
+		byval parent as HWND _
 	) as HWND
 	
 	dim as HWND hwnd
@@ -182,7 +179,7 @@ private function toolbar_oncreate _
                        	   CW_USEDEFAULT, _ 
                        	   parent, _
                        	   NULL, _ 
-                       	   hInstance, _
+                       	   cast( HINSTANCE, GetWindowLong( parent, GWL_HINSTANCE ) ), _
                        	   NULL ) 
               
 	if( hwnd = NULL ) then
@@ -221,7 +218,7 @@ private function toolbar_oncreate _
 	WIN_TOOLBAR_HEIGHT = tbsize.cy + HIWORD( SendMessage( hwnd, TB_GETPADDING, 0, 0 ) ) + 2
 
 #if 0	
-	toolbar_editbox_oncreate( parent, hwnd, @tbsize, hInstance )
+	toolbar_editbox_oncreate( hwnd, @tbsize )
 #endif
 	
 	function = hwnd
@@ -270,27 +267,27 @@ end function
 ''::::
 private function browser_oncreate _
 	( _
-		byval parent as HWND, _
-		byval hInstance as HINSTANCE _
-	) as BOOL
+		byval parent as HWND _
+	) as webctrl ptr
+	
+	dim as webctrl ptr ctrl
 	
 	function = FALSE
 
-	browser = webctrl_Create( hInstance, _
-							  parent, _
-							  0, _
-							  WIN_TOOLBAR_HEIGHT, _
-							  WIN_WIDTH, _
-							  WIN_HEIGHT-WIN_TOOLBAR_HEIGHT, _
-							  WIN_BROWSER )
+	ctrl = webctrl_Create( parent, _
+						   0, _
+						   WIN_TOOLBAR_HEIGHT, _
+						   WIN_WIDTH, _
+						   WIN_HEIGHT-WIN_TOOLBAR_HEIGHT, _
+						   WIN_BROWSER )
 
-	if( browser = NULL ) then
+	if( ctrl = NULL ) then
 		exit function
 	end if
 	
-	webctrl_Navigate( browser, "file://" + curdir + "/frameset.html" )
+	webctrl_Navigate( ctrl, "file://" + curdir + "/frameset.html" )
 	
-	function = TRUE
+	function = ctrl
 
 end function
 
@@ -314,9 +311,9 @@ private function WinMain _
 	''
 	win = window_oncreate( hInstance )
 	
-	toolbar = toolbar_oncreate( win, hInstance )
+	toolbar = toolbar_oncreate( win )
 
-	browser_oncreate( win, hInstance )
+	browser = browser_oncreate( win )
 	
 	''
 	ShowWindow( win, nCmdShow )

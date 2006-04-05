@@ -17,7 +17,7 @@ type webctrl_
 end type
 	
 ''::::
-private function wincb _
+private function win_cb _
 	( _
 		byval hwnd as HWND, _
 		byval uMsg as UINT, _
@@ -64,7 +64,7 @@ private function webctrl_GetRegClass _
 	
 	with wc
 		.cbSize 		= len( WNDCLASSEX )
-		.lpfnWndProc 	= @wincb
+		.lpfnWndProc 	= @win_cb
 		.hInstance 		= instance
 		.lpszClassName 	= @webctrl_name
 		''''''.style	= CS_HREDRAW or CS_VREDRAW  (not needed, the control takes the whole client area)
@@ -79,7 +79,6 @@ end function
 ''::::
 function webctrl_Create _
 	( _
-		byval instance as HINSTANCE, _
 		byval parent as HWND, _
 		byval x as integer, _
 		byval y as integer, _
@@ -88,12 +87,15 @@ function webctrl_Create _
 		byval flags as WEBCTRL_FLAGS _
 	) as webctrl ptr
 	
-	dim as WNDCLASSEX ptr wc
 	dim as webctrl ptr _this
+	dim as WNDCLASSEX ptr wc
+	dim as HINSTANCE hInstance
 	
 	_this = allocate( len( webctrl ) )
 	
-	wc = webctrl_GetRegClass( instance )
+	hInstance = cast( HINSTANCE, GetWindowLong( parent, GWL_HINSTANCE ) )
+	
+	wc = webctrl_GetRegClass( hInstance )
 	
 	_this->hwnd = CreateWindowEx( 0, _
 						   		  @webctrl_name, _
@@ -105,7 +107,7 @@ function webctrl_Create _
 						   		  height, _
 						   		  parent, _
 						   		  NULL, _
-						   		  instance, _
+						   		  hInstance, _
 						   		  NULL )
 	
 	SetWindowLong( _this->hwnd, GWL_USERDATA, cast( LONG, _this ) )

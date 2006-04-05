@@ -10,8 +10,7 @@ enum WEBCTRL_FLAGS
 	WEBCTRL_MOZILLA		= &h00001
 end enum
 
-declare function 	webctrl_Create 			( byval instance as HINSTANCE, _
-											  byval parent as HWND, _
+declare function 	webctrl_Create 			( byval parent as HWND, _
 											  byval x as integer, _
 											  byval y as integer, _
 											  byval width_ as integer, _
