@@ -29,7 +29,7 @@ type LPHTMLSCREEN as IHTMLScreen ptr
 type LPHTMLOPTIONELEMENTFACTORY as IHTMLOptionElementFactory ptr
 type LPOMHISTORY as IOmHistory ptr
 type LPOMNAVIGATOR as IOmNavigator ptr
-extern import IID_IHTMLLinkElement alias "IID_IHTMLLinkElement" as IID
+extern IID_IHTMLLinkElement alias "IID_IHTMLLinkElement" as IID
 
 type IHTMLLinkElementVtbl_ as IHTMLLinkElementVtbl
 
@@ -66,7 +66,7 @@ type IHTMLLinkElementVtbl
 	put_media as function(byval as IHTMLLinkElement ptr, byval as BSTR) as HRESULT
 	get_media as function(byval as IHTMLLinkElement ptr, byval as BSTR ptr) as HRESULT
 end type
-extern import IID_IHTMLImgElement alias "IID_IHTMLImgElement" as IID
+extern IID_IHTMLImgElement alias "IID_IHTMLImgElement" as IID
 
 type IHTMLImgElementVtbl_ as IHTMLImgElementVtbl
 
@@ -131,7 +131,7 @@ type IHTMLImgElementVtbl
 	put_start as function(byval as IHTMLImgElement ptr, byval as BSTR) as HRESULT
 	get_start as function(byval as IHTMLImgElement ptr, byval as BSTR ptr) as HRESULT
 end type
-extern import IID_IHTMLElementCollection alias "IID_IHTMLElementCollection" as IID
+extern IID_IHTMLElementCollection alias "IID_IHTMLElementCollection" as IID
 
 type IHTMLElementCollectionVtbl_ as IHTMLElementCollectionVtbl
 
@@ -154,7 +154,7 @@ type IHTMLElementCollectionVtbl
 	item as function(byval as IHTMLElementCollection ptr, byval as VARIANT, byval as VARIANT, byval as IDispatch ptr ptr) as HRESULT
 	tags as function(byval as IHTMLElementCollection ptr, byval as VARIANT, byval as IDispatch ptr ptr) as HRESULT
 end type
-extern import IID_IHTMLDocument alias "IID_IHTMLDocument" as IID
+extern IID_IHTMLDocument alias "IID_IHTMLDocument" as IID
 
 type IHTMLDocumentVtbl_ as IHTMLDocumentVtbl
 
@@ -172,7 +172,7 @@ type IHTMLDocumentVtbl
 	Invoke as function(byval as IHTMLDocument ptr, byval as DISPID, byval as IID ptr, byval as LCID, byval as WORD, byval as DISPPARAMS ptr, byval as VARIANT ptr, byval as EXCEPINFO ptr, byval as UINT ptr) as HRESULT
 	get_Script as function(byval as IHTMLDocument ptr, byval as IDispatch ptr ptr) as HRESULT
 end type
-extern import IID_IHTMLDocument2 alias "IID_IHTMLDocument2" as IID
+extern IID_IHTMLDocument2 alias "IID_IHTMLDocument2" as IID
 
 type IHTMLDocument2Vtbl_ as IHTMLDocument2Vtbl
 
@@ -298,7 +298,7 @@ type IHTMLDocument2Vtbl
 	toString as function(byval as IHTMLDocument2 ptr, byval as BSTR ptr) as HRESULT
 	createStyleSheet as function(byval as IHTMLDocument2 ptr, byval as BSTR, byval as integer, byval as LPHTMLSTYLESHEET ptr) as HRESULT
 end type
-extern import IID_IHTMLSelectionObject alias "IID_IHTMLSelectionObject" as IID
+extern IID_IHTMLSelectionObject alias "IID_IHTMLSelectionObject" as IID
 
 type IHTMLSelectionObjectVtbl_ as IHTMLSelectionObjectVtbl
 
@@ -319,7 +319,7 @@ type IHTMLSelectionObjectVtbl
 	clear as function(byval as IHTMLSelectionObject ptr) as HRESULT
 	get_type as function(byval as IHTMLSelectionObject ptr, byval as BSTR ptr) as HRESULT
 end type
-extern import IID_IHTMLTxtRange alias "IID_IHTMLTxtRange" as IID
+extern IID_IHTMLTxtRange alias "IID_IHTMLTxtRange" as IID
 
 type IHTMLTxtRangeVtbl_ as IHTMLTxtRangeVtbl
 
@@ -366,7 +366,7 @@ type IHTMLTxtRangeVtbl
 	execCommand as function(byval as IHTMLTxtRange ptr, byval as BSTR, byval as VARIANT_BOOL, byval as VARIANT, byval as VARIANT_BOOL ptr) as HRESULT
 	execCommandShowHelp as function(byval as IHTMLTxtRange ptr, byval as BSTR, byval as VARIANT_BOOL ptr) as HRESULT
 end type
-extern import IID_IHTMLElement alias "IID_IHTMLElement" as IID
+extern IID_IHTMLElement alias "IID_IHTMLElement" as IID
 
 type IHTMLElementVtbl_ as IHTMLElementVtbl
 
@@ -470,7 +470,7 @@ type IHTMLElementVtbl
 	get_children as function(byval as IHTMLElement ptr, byval as IDispatch ptr ptr) as HRESULT
 	get_all as function(byval as IHTMLElement ptr, byval as IDispatch ptr ptr) as HRESULT
 end type
-extern import IID_IHTMLFramesCollection2 alias "IID_IHTMLFramesCollection2" as IID
+extern IID_IHTMLFramesCollection2 alias "IID_IHTMLFramesCollection2" as IID
 
 type IHTMLFramesCollection2Vtbl_ as IHTMLFramesCollection2Vtbl
 
@@ -489,7 +489,7 @@ type IHTMLFramesCollection2Vtbl
 	item as function(byval as IHTMLFramesCollection2 ptr, byval as VARIANT ptr, byval as VARIANT ptr) as HRESULT
 	get_length as function(byval as IHTMLFramesCollection2 ptr, byval as integer ptr) as HRESULT
 end type
-extern import IID_IHTMLWindow2 alias "IID_IHTMLWindow2" as IID
+extern IID_IHTMLWindow2 alias "IID_IHTMLWindow2" as IID
 
 type IHTMLWindow2Vtbl_ as IHTMLWindow2Vtbl
 
@@ -576,7 +576,7 @@ type IHTMLWindow2Vtbl
 	resizeBy as function(byval as IHTMLWindow2 ptr, byval as integer, byval as integer) as HRESULT
 	get_external as function(byval as IHTMLWindow2 ptr, byval as IDispatch ptr ptr) as HRESULT
 end type
-extern import IID_IHTMLFrameBase alias "IID_IHTMLFrameBase" as IID
+extern IID_IHTMLFrameBase alias "IID_IHTMLFrameBase" as IID
 
 type IHTMLFrameBaseVtbl_ as IHTMLFrameBaseVtbl
 
@@ -611,7 +611,7 @@ type IHTMLFrameBaseVtbl
 	put_scrolling as function(byval as IHTMLFrameBase ptr, byval as BSTR) as HRESULT
 	get_scrolling as function(byval as IHTMLFrameBase ptr, byval as BSTR ptr) as HRESULT
 end type
-extern import IID_IHTMLFrameBase2 alias "IID_IHTMLFrameBase2" as IID
+extern IID_IHTMLFrameBase2 alias "IID_IHTMLFrameBase2" as IID
 
 type IHTMLFrameBase2Vtbl_ as IHTMLFrameBase2Vtbl
 
@@ -636,7 +636,7 @@ type IHTMLFrameBase2Vtbl
 	put_allowTransparency as function(byval as IHTMLFrameBase2 ptr, byval as VARIANT_BOOL) as HRESULT
 	get_allowTransparency as function(byval as IHTMLFrameBase2 ptr, byval as VARIANT_BOOL ptr) as HRESULT
 end type
-extern import IID_IHTMLFrameBase3 alias "IID_IHTMLFrameBase3" as IID
+extern IID_IHTMLFrameBase3 alias "IID_IHTMLFrameBase3" as IID
 
 type IHTMLFrameBase3Vtbl_ as IHTMLFrameBase3Vtbl
 
@@ -655,7 +655,7 @@ type IHTMLFrameBase3Vtbl
 	put_longDesc as function(byval as IHTMLFrameBase3 ptr, byval as BSTR) as HRESULT
 	get_longDesc as function(byval as IHTMLFrameBase3 ptr, byval as BSTR ptr) as HRESULT
 end type
-extern import IID_IHTMLBodyElement alias "IID_IHTMLBodyElement" as IID
+extern IID_IHTMLBodyElement alias "IID_IHTMLBodyElement" as IID
 
 type IHTMLBodyElementVtbl_ as IHTMLBodyElementVtbl
 
@@ -707,7 +707,7 @@ type IHTMLBodyElementVtbl
 	get_onbeforeunload as function(byval as IHTMLBodyElement ptr, byval as VARIANT ptr) as HRESULT
 	createTextRange as function(byval as IHTMLBodyElement ptr, byval as IHTMLTxtRange ptr ptr) as HRESULT
 end type
-extern import IID_IHTMLBodyElement2 alias "IID_IHTMLBodyElement2" as IID
+extern IID_IHTMLBodyElement2 alias "IID_IHTMLBodyElement2" as IID
 
 type IHTMLBodyElement2Vtbl_ as IHTMLBodyElement2Vtbl
 

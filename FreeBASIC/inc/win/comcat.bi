@@ -14,7 +14,7 @@
 #include once "windows.bi"
 #include once "win/ole2.bi"
 
-extern import IID_IEnumGUID alias "IID_IEnumGUID" as IID
+extern IID_IEnumGUID alias "IID_IEnumGUID" as IID
 
 type IEnumGUIDVtbl_ as IEnumGUIDVtbl
 
@@ -45,24 +45,24 @@ end type
 
 type LPCATEGORYINFO as CATEGORYINFO ptr
 
-extern import CATID_Insertable alias "CATID_Insertable" as CATID
-extern import CATID_Control alias "CATID_Control" as CATID
-extern import CATID_Programmable alias "CATID_Programmable" as CATID
-extern import CATID_IsShortcut alias "CATID_IsShortcut" as CATID
-extern import CATID_NeverShowExt alias "CATID_NeverShowExt" as CATID
-extern import CATID_DocObject alias "CATID_DocObject" as CATID
-extern import CATID_Printable alias "CATID_Printable" as CATID
-extern import CATID_RequiresDataPathHost alias "CATID_RequiresDataPathHost" as CATID
-extern import CATID_PersistsToMoniker alias "CATID_PersistsToMoniker" as CATID
-extern import CATID_PersistsToStorage alias "CATID_PersistsToStorage" as CATID
-extern import CATID_PersistsToStreamInit alias "CATID_PersistsToStreamInit" as CATID
-extern import CATID_PersistsToStream alias "CATID_PersistsToStream" as CATID
-extern import CATID_PersistsToMemory alias "CATID_PersistsToMemory" as CATID
-extern import CATID_PersistsToFile alias "CATID_PersistsToFile" as CATID
-extern import CATID_PersistsToPropertyBag alias "CATID_PersistsToPropertyBag" as CATID
-extern import CATID_InternetAware alias "CATID_InternetAware" as CATID
-extern import CATID_DesignTimeUIActivatableControl alias "CATID_DesignTimeUIActivatableControl" as CATID
-extern import IID_ICatInformation alias "IID_ICatInformation" as IID
+extern CATID_Insertable alias "CATID_Insertable" as CATID
+extern CATID_Control alias "CATID_Control" as CATID
+extern CATID_Programmable alias "CATID_Programmable" as CATID
+extern CATID_IsShortcut alias "CATID_IsShortcut" as CATID
+extern CATID_NeverShowExt alias "CATID_NeverShowExt" as CATID
+extern CATID_DocObject alias "CATID_DocObject" as CATID
+extern CATID_Printable alias "CATID_Printable" as CATID
+extern CATID_RequiresDataPathHost alias "CATID_RequiresDataPathHost" as CATID
+extern CATID_PersistsToMoniker alias "CATID_PersistsToMoniker" as CATID
+extern CATID_PersistsToStorage alias "CATID_PersistsToStorage" as CATID
+extern CATID_PersistsToStreamInit alias "CATID_PersistsToStreamInit" as CATID
+extern CATID_PersistsToStream alias "CATID_PersistsToStream" as CATID
+extern CATID_PersistsToMemory alias "CATID_PersistsToMemory" as CATID
+extern CATID_PersistsToFile alias "CATID_PersistsToFile" as CATID
+extern CATID_PersistsToPropertyBag alias "CATID_PersistsToPropertyBag" as CATID
+extern CATID_InternetAware alias "CATID_InternetAware" as CATID
+extern CATID_DesignTimeUIActivatableControl alias "CATID_DesignTimeUIActivatableControl" as CATID
+extern IID_ICatInformation alias "IID_ICatInformation" as IID
 
 #define IEnumCATID IEnumGUID
 #define LPENUMCATID LPENUMGUID
@@ -73,13 +73,13 @@ extern import IID_ICatInformation alias "IID_ICatInformation" as IID
 #define IID_IEnumCLSID IID_IEnumGUID
 
 type LPCATINFORMATION as ICatInformation ptr
-extern import IID_ICatRegister alias "IID_ICatRegister" as IID
+extern IID_ICatRegister alias "IID_ICatRegister" as IID
 
 type LPCATREGISTER as ICatRegister ptr
-extern import IID_IEnumCATEGORYINFO alias "IID_IEnumCATEGORYINFO" as IID
+extern IID_IEnumCATEGORYINFO alias "IID_IEnumCATEGORYINFO" as IID
 
 type LPENUMCATEGORYINFO as IEnumCATEGORYINFO ptr
-extern import CLSID_StdComponentCategoriesMgr alias "CLSID_StdComponentCategoriesMgr" as CLSID
+extern CLSID_StdComponentCategoriesMgr alias "CLSID_StdComponentCategoriesMgr" as CLSID
 
 type ICatInformationVtbl_ as ICatInformationVtbl
 
@@ -126,7 +126,7 @@ type ICatRegisterVtbl
 	RegisterClassReqCategories as function(byval as ICatRegister ptr, byval as CLSID ptr, byval as ULONG, byval as CATID ptr) as HRESULT
 	UnRegisterClassReqCategories as function(byval as ICatRegister ptr, byval as CLSID ptr, byval as ULONG, byval as CATID ptr) as HRESULT
 end type
-extern import IID_IEnumCATEGORYINFO alias "IID_IEnumCATEGORYINFO" as IID
+extern IID_IEnumCATEGORYINFO alias "IID_IEnumCATEGORYINFO" as IID
 
 #define ICatRegister_QueryInterface(p,a,b) (p)->lpVtbl->QueryInterface(p,a,b)
 #define ICatRegister_AddRef(p)             (p)->lpVtbl->AddRef(p)

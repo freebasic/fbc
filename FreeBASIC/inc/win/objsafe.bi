@@ -12,7 +12,7 @@
 #define INTERFACESAFE_FOR_UNTRUSTED_CALLER &h00000001
 #define INTERFACESAFE_FOR_UNTRUSTED_DATA &h00000002
 
-extern import IID_IObjectSafety alias "IID_IObjectSafety" as IID
+extern IID_IObjectSafety alias "IID_IObjectSafety" as IID
 
 type IObjectSafetyVtbl_ as IObjectSafetyVtbl
 

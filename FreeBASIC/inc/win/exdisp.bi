@@ -11,6 +11,7 @@
 
 #inclib "uuid"
 
+#include once "win/objbase.bi"
 #include once "win/oaidl.bi"
 #include once "win/ocidl.bi"
 #include once "win/docobj.bi"

@@ -103,7 +103,7 @@ end type
 
 type LPSECURITYINFO as ISecurityInformation ptr
 
-extern import IID_ISecurityInformation alias "IID_ISecurityInformation" as IID
+extern IID_ISecurityInformation alias "IID_ISecurityInformation" as IID
 
 declare function CreateSecurityPage alias "CreateSecurityPage" (byval psi as LPSECURITYINFO) as HPROPSHEETPAGE
 declare function EditSecurity alias "EditSecurity" (byval hwndOwner as HWND, byval psi as LPSECURITYINFO) as BOOL
