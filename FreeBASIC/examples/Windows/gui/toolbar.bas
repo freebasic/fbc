@@ -27,17 +27,12 @@ function WndProc ( byval hWnd as HWND, _
     
     select case ( uMsg ) 
 	case WM_CREATE 
-		dim i as LONG 
-              
         '' Toolbar object handle    
         dim hTools as HWND
               
-        '' Toolbar class string 
-        dim TBClass as STRING = TOOLBARCLASSNAME
-
         '' Toolbar button constructors 
         dim tbAddBmp as TBADDBITMAP 
-        dim tbb as TBBUTTON 
+        dim tbb as TBBUTTON
 
         '' setting common control mode 
         dim iccx as INITCOMMONCONTROLSEX 
@@ -45,24 +40,18 @@ function WndProc ( byval hWnd as HWND, _
         iccx.dwICC  = ICC_BAR_CLASSES 
 
         '' bitmap for each button 
-        dim tbBmp(7) as BYTE 
-        tbBmp(0) = STD_FILENEW 
-        tbBmp(1) = STD_FILEOPEN 
-        tbBmp(2) = STD_FILESAVE 
-        tbBmp(4) = STD_CUT 
-        tbBmp(5) = STD_COPY 
-        tbBmp(6) = STD_PASTE 
+        static tbBmp(0 to 6) as BYTE = {STD_FILENEW, STD_FILEOPEN, STD_FILESAVE, STD_CUT, STD_COPY, STD_PASTE }
 
         '' initialize common controls 32 
         InitCommonControlsEx( @iccx )
 
         '' Lets build a new toolbar 
         hTools = CreateWindowEx( WS_EX_DLGMODALFRAME, _ 
-        						 TBClass, "", _ 
+        						 TOOLBARCLASSNAME, NULL, _ 
                        			 WS_CHILD or WS_VISIBLE or TBSTYLES, _ 
                        			 0, 0, 0, 0, _ 
-                       			 hWnd, null, _ 
-                       			 hInstance, null ) 
+                       			 hWnd, NULL, _ 
+                       			 hInstance, NULL ) 
               
 		'' paint toolbar buttons now 
     	if ( hTools <> NULL ) then                 
@@ -73,18 +62,17 @@ function WndProc ( byval hWnd as HWND, _
             SendMessage( hTools, TB_ADDBITMAP, 0, cint( @tbAddBmp ) ) 
 
             '' apply bitmap to toolbar buttons 
-            for i = 0 to 6 
-				tbb.iBitmap   = tbBmp(i) 
-                tbb.fsState   = TBSTATE_ENABLED 
-                if ( i = 3 ) then 
-                	tbb.fsStyle   = TBSTYLE_SEP 
-                else 
-                	tbb.fsStyle   = TBSTYLE_BUTTON 
-                end if 
-                tbb.idCommand = -1 
-                tbb.dwData    = 0 
-                SendMessage( hTools, TB_ADDBUTTONS, 1, cint( @tbb ) ) 
-			next 
+            with tbb
+            	dim i as LONG 
+				for i = 0 to 6 
+					.iBitmap   = tbBmp(i)
+                	.fsState   = TBSTATE_ENABLED 
+                	.fsStyle   = iif( i = 3, TBSTYLE_SEP, TBSTYLE_BUTTON )
+                	.idCommand = -1 
+                	.dwData    = 0 
+                	SendMessage( hTools, TB_ADDBUTTONS, 1, cint( @tbb ) ) 
+				next 
+			end with
 		end if 
         
 	case WM_KEYDOWN 
