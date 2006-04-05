@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __types_bi__
-#define __types_bi__
+#ifndef __crt_sys_types_bi__
+#define __crt_sys_types_bi__
 
 #include once "crt/stddef.bi"
 

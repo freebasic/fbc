@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __setjmp_bi__
-#define __setjmp_bi__
+#ifndef __crt_setjmp_bi__
+#define __crt_setjmp_bi__
 
 #define _JBLEN 16
 type jmp_buf as integer

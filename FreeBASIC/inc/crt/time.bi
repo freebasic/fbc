@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __time_bi__
-#define __time_bi__
+#ifndef __crt_time_bi__
+#define __crt_time_bi__
 
 #include once "crt/stddef.bi"
 #include once "crt/sys/types.bi"

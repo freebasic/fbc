@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __errno_bi__
-#define __errno_bi__
+#ifndef __crt_errno_bi__
+#define __crt_errno_bi__
 
 #define EPERM 1
 #define ENOFILE 2

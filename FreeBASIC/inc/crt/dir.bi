@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dir_bi__
-#define __dir_bi__
+#ifndef __crt_dir_bi__
+#define __crt_dir_bi__
 
 #include once "crt/io.bi"
 

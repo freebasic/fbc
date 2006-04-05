@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __stddef_bi__
-#define __stddef_bi__
+#ifndef __crt_stddef_bi__
+#define __crt_stddef_bi__
 
 #ifndef size_t
 type size_t as uinteger

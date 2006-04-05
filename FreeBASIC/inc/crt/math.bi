@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __math_bi__
-#define __math_bi__
+#ifndef __crt_math_bi__
+#define __crt_math_bi__
 
 #define _DOMAIN 1
 #define _SING 2

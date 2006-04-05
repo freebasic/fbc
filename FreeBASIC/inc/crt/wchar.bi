@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __wchar_bi__
-#define __wchar_bi__
+#ifndef __crt_wchar_bi__
+#define __crt_wchar_bi__
 
 #include once "crt/ctype.bi"
 #include once "crt/stdio.bi"

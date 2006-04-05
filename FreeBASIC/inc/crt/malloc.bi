@@ -6,7 +6,7 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __malloc_bi__
-#define __malloc_bi__
+#ifndef __crt_malloc_bi__
+#define __crt_malloc_bi__
 
 #endif

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __limits_bi__
-#define __limits_bi__
+#ifndef __crt_limits_bi__
+#define __crt_limits_bi__
 
 #define PATH_MAX (259)
 #define CHAR_BIT 8

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __stdarg_bi__
-#define __stdarg_bi__
+#ifndef __crt_stdarg_bi__
+#define __crt_stdarg_bi__
 
 type va_list as any ptr
 
