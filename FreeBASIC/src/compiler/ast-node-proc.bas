@@ -428,7 +428,7 @@ function astProcEnd( byval n as ASTNODE ptr, _
 	''
 	irProcEnd( sym )
 
-	if( res = TRUE ) then
+	if( (res = TRUE) and (hGetLastError( ) = FB_ERRMSG_OK) ) then
 		symbSetIsParsed( sym )
 
 		if( n->block.ismain = FALSE ) then
