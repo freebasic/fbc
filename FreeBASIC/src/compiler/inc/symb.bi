@@ -48,6 +48,7 @@ enum FB_SYMBSTATS
 	FB_SYMBSTATS_CALLED			= &h000010
 	FB_SYMBSTATS_RTL			= &h000020
 	FB_SYMBSTATS_THROWABLE		= &h000040
+	FB_SYMBSTATS_PARSED			= &h000080
 end enum
 
 '' symbol attributes mask
@@ -808,6 +809,12 @@ declare function 	symbFreeDynVar			( byval s as FBSYMBOL ptr ) as ASTNODE ptr
 #define symbGetIsThrowable(s) ((s->stats and FB_SYMBSTATS_THROWABLE) <> 0)
 
 #define symbSetIsThrowable(s) s->stats or= FB_SYMBSTATS_THROWABLE
+
+#define symbGetIsParsed(s) ((s->stats and FB_SYMBSTATS_PARSED) <> 0)
+
+#define symbSetIsParsed(s) s->stats or= FB_SYMBSTATS_PARSED
+
+#define symbGetStats(s) s->stats
 
 #define symbGetLen(s) iif( s <> NULL, s->lgt, 0 )
 

@@ -207,17 +207,23 @@ private sub hProcFlushAll( ) static
 
 		sym = n->sym
 
-		doemit = TRUE
-		'' private?
-		if( symbIsPrivate( sym ) ) then
-			'' never called? skip
-			if( symbGetIsCalled( sym ) = FALSE ) then
-				doemit = FALSE
+		'' fully parsed?
+		if( symbGetIsParsed( sym ) ) then
+			doemit = TRUE
+			'' private?
+			if( symbIsPrivate( sym ) ) then
+				'' never called? skip
+				if( symbGetIsCalled( sym ) = FALSE ) then
+					doemit = FALSE
 
-			'' module-level?
-			elseif( symbIsModLevelProc( sym ) ) then
-				doemit = (hModLevelIsEmpty( n ) = FALSE)
+				'' module-level?
+				elseif( symbIsModLevelProc( sym ) ) then
+					doemit = (hModLevelIsEmpty( n ) = FALSE)
+				end if
 			end if
+
+		else
+			doemit = FALSE
 		end if
 
 		hProcFlush( n, doemit )
@@ -423,6 +429,8 @@ function astProcEnd( byval n as ASTNODE ptr, _
 	irProcEnd( sym )
 
 	if( res = TRUE ) then
+		symbSetIsParsed( sym )
+
 		if( n->block.ismain = FALSE ) then
 			'' not private or inline? flush it..
 			if( symbIsPrivate( sym ) = FALSE ) then
