@@ -304,31 +304,50 @@ end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+''::::
+private sub hRelink( byval vreg as IRVREG ptr, _
+					 byval tvreg as IRTACVREG ptr ) static
+
+	if( vreg->tacvhead = NULL ) then
+		vreg->tacvhead = tvreg
+	else
+		vreg->tacvtail->next = tvreg
+	end if
+
+	vreg->tacvtail = tvreg
+
+end sub
+
 #define hRelinkVreg(v,t)										_
-    t->v.next = NULL											:_
+    t->v.reg.pParent = NULL										:_
+    t->v.reg.next = NULL										:_
 																:_
     if( v <> NULL ) then										:_
-    	if( v->tacvhead = NULL ) then							:_
-    		v->tacvhead = @t->v									:_
-    	else													:_
-    		v->tacvtail->next = @t->v							:_
-    	end if													:_
-    	v->tacvtail = @t->v										:_
-                                                                :_
+    	hRelink( v, @t->v.reg )                                 :_
     	v->taclast = t                                          :_
+    															:_
     	if( v->vidx <> NULL ) then                              :_
+    		t->v.idx.vreg = v->vidx								:_
+    		t->v.idx.pParent = @v->vidx							:_
+    		t->v.idx.next = NULL								:_
+    		hRelink( v->vidx, @t->v.idx )						:_
     		v->vidx->taclast = t                                :_
     	end if                                                  :_
+    															:_
     	if( v->vaux <> NULL ) then                              :_
+    		t->v.aux.vreg = v->vaux								:_
+    		t->v.aux.pParent = @v->vaux							:_
+    		t->v.aux.next = NULL								:_
+    		hRelink( v->vaux, @t->v.aux )						:_
     		v->vaux->taclast = t                                :_
     	end if													:_
     end if
 
 '':::::
 sub irEmit( byval op as integer, _
-			byval arg1 as IRVREG ptr, _
-			byval arg2 as IRVREG ptr, _
-			byval res as IRVREG ptr, _
+			byval v1 as IRVREG ptr, _
+			byval v2 as IRVREG ptr, _
+			byval vr as IRVREG ptr, _
 			byval ex1 as FBSYMBOL ptr = NULL, _
 			byval ex2 as integer = 0 ) static
 
@@ -340,14 +359,14 @@ sub irEmit( byval op as integer, _
 
     t->op = op
 
-    t->arg1.vreg = arg1
-    hRelinkVreg( arg1, t )
+    t->v1.reg.vreg = v1
+    hRelinkVreg( v1, t )
 
-    t->arg2.vreg = arg2
-    hRelinkVreg( arg2, t )
+    t->v2.reg.vreg = v2
+    hRelinkVreg( v2, t )
 
-    t->res.vreg = res
-    hRelinkVreg( res, t )
+    t->vr.reg.vreg = vr
+    hRelinkVreg( vr, t )
 
     t->ex1 = ex1
     t->ex2 = ex2
@@ -1023,33 +1042,19 @@ private sub hRename( byval vold as IRVREG ptr, _
     dim as IRVREG ptr v
 
 	'' reassign tac table vregs
-	'' (assuming res, arg1 and arg2 will never point to the same vreg!)
+	'' (assuming res, v1 and v2 will never point to the same vreg!)
 	t = vold->tacvhead
 	do
+		'' if it's an index or auxiliary vreg, update parent
+		if( t->pParent <> NULL ) then
+			*t->pParent = vnew
+		end if
 		t->vreg = vnew
 		t = t->next
 	loop while( t <> NULL )
 
 	vnew->tacvhead = vold->tacvhead
 	vnew->tacvtail = vold->tacvtail
-
-	'' index and auxiliar regs must be checked one by one..
-	v = flistGetHead( @ir.vregTB )
-	do while( v <> NULL )
-		select case v->typ
-		case IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
-			if( v->vidx = vold ) then
-				v->vidx = vnew
-			end if
-		end select
-
-		if( v->vaux = vold ) then
-			v->vaux = vnew
-		end if
-
-		v = flistGetNext( v )
-	loop
-
 	vnew->taclast = vold->taclast
 
 end sub
@@ -1066,9 +1071,9 @@ private sub hReuse( byval t as IRTAC ptr ) static
     dim as IRTACVREG ptr tmp
 
 	op	 = t->op
-	v1   = t->arg1.vreg
-	v2   = t->arg2.vreg
-	vr   = t->res.vreg
+	v1   = t->v1.reg.vreg
+	v2   = t->v2.reg.vreg
+	vr   = t->vr.reg.vreg
 
 	hGetVREG( v1, v1_dtype, v1_dclass, v1_typ )
 	hGetVREG( v2, v2_dtype, v2_dclass, v2_typ )
@@ -1127,13 +1132,7 @@ private sub hReuse( byval t as IRTAC ptr ) static
            	hRename( vr, v1 )
 
 		elseif( v2rename ) then
-			'' swap t->arg1, t->arg2
-			t->arg2.vreg = v1
-			t->arg1.vreg = v2
-
-			tmp = t->arg2.next
-			t->arg2.next = t->arg1.next
-			t->arg1.next = tmp
+		 	swap t->v1, t->v2
 
 			hRename( vr, v2 )
 		end if
@@ -1146,6 +1145,7 @@ end sub
 sub irFlush static
     dim as integer op
     dim as IRTAC ptr t
+    dim as IRVREG ptr v1, v2, vr
 
 	if( ir.taccnt = 0 ) then
 		exit sub
@@ -1160,48 +1160,51 @@ sub irFlush static
 		hReuse( t )
 
 		op = t->op
+		v1 = t->v1.reg.vreg
+		v2 = t->v2.reg.vreg
+		vr = t->vr.reg.vreg
 
 		''
-		''irDump( op, t->arg1.vreg, t->arg2.vreg, t->res.vreg )
+		'irDump( op, v1, v2, vr )
 
         ''
 		select case as const opTB(op).typ
 		case IR_OPTYPE_UNARY
-			hFlushUOP( op, t->arg1.vreg, t->res.vreg )
+			hFlushUOP( op, v1, vr )
 
 		case IR_OPTYPE_BINARY
-			hFlushBOP( op, t->arg1.vreg, t->arg2.vreg, t->res.vreg )
+			hFlushBOP( op, v1, v2, vr )
 
 		case IR_OPTYPE_COMP
-			hFlushCOMP( op, t->arg1.vreg, t->arg2.vreg, t->res.vreg, t->ex1 )
+			hFlushCOMP( op, v1, v2, vr, t->ex1 )
 
 		case IR_OPTYPE_STORE
-			hFlushSTORE( op, t->arg1.vreg, t->arg2.vreg )
+			hFlushSTORE( op, v1, v2 )
 
 		case IR_OPTYPE_LOAD
-			hFlushLOAD( op, t->arg1.vreg, t->res.vreg )
+			hFlushLOAD( op, v1, vr )
 
 		case IR_OPTYPE_CONVERT
-			hFlushCONVERT( op, t->arg1.vreg, t->arg2.vreg )
+			hFlushCONVERT( op, v1, v2 )
 
 		case IR_OPTYPE_STACK
-			hFlushSTACK( op, t->arg1.vreg, t->ex2 )
+			hFlushSTACK( op, v1, t->ex2 )
 
 		case IR_OPTYPE_CALL
-			hFlushCALL( op, t->ex1, t->ex2, t->arg1.vreg, t->res.vreg )
+			hFlushCALL( op, t->ex1, t->ex2, v1, vr )
 
 		case IR_OPTYPE_BRANCH
 			hFlushBRANCH( op, t->ex1 )
 
 		case IR_OPTYPE_ADDRESS
-			hFlushADDR( op, t->arg1.vreg, t->res.vreg )
+			hFlushADDR( op, v1, vr )
 
 		case IR_OPTYPE_MEM
-			hFlushMEM( op, t->arg1.vreg, t->arg2.vreg, t->ex2, t->ex1 )
+			hFlushMEM( op, v1, v2, t->ex2, t->ex1 )
 		end select
 
 		''
-		'irDump( op, t->arg1.vreg, t->arg2.vreg, t->res.vreg )
+		'irDump( op, v1, v2, vr )
 
 		t = flistGetNext( t )
 	loop while( t <> NULL )
@@ -2142,7 +2145,7 @@ function irGetDistance( byval vreg as IRVREG ptr ) as uinteger
 	end if
 
 	'' skip the current tac
-	t = ir.tacidx->next
+	t = ir.tacidx->ll_nxt
 
 	'' eol?
 	if( t = NULL ) then
@@ -2255,12 +2258,10 @@ sub irDump( byval op as integer, _
 	dim as string vname
 
 	if( vr <> NULL ) then
-		irGetVRName( vr, vname )
 		print "v";str$(vr);"(";vname;":";str$(irGetVRType( vr ));":";str$(irGetVRDataType( vr ));")";chr$( 9 );"= ";
 	end if
 
 	if( v1 <> NULL ) then
-		irGetVRName( v1, vname )
 		print "v";str$(v1);"(";vname;":";str$(irGetVRType( v1 ));":";str$(irGetVRDataType( v1 ));")";
 	end if
 
@@ -2268,7 +2269,6 @@ sub irDump( byval op as integer, _
 	print opTB(op).name;
 
 	if( v2 <> NULL ) then
-		irGetVRName( v2, vname )
 		print " v";str$(v2);"(";vname;":";str$(irGetVRType( v2 ));":";str$(irGetVRType( v2 ));")"
 	else
 		print

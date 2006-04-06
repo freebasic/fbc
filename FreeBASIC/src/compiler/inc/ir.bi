@@ -23,7 +23,7 @@ const IR_INITVREGNODES		= 1024
 
 const IR_INITADDRNODES		= 2048
 
-const IR_MAXDIST			= 65536
+const IR_MAXDIST			= 2147483647
 
 ''
 enum IRVREGTYPE_ENUM
@@ -59,32 +59,39 @@ type IRTAC_ as IRTAC
 
 type IRTACVREG
 	vreg		as IRVREG_ ptr
-	next		as IRTACVREG ptr
+	pParent		as IRVREG_ ptr ptr              '' pointer to parent if idx or aux
+	next		as IRTACVREG ptr				'' next in tac (-> vr, v1 or v2)
+end type
+
+type IRTACVREG_GRP
+	reg			as IRTACVREG
+	idx			as IRTACVREG					'' index
+	aux			as IRTACVREG                    '' auxiliary
 end type
 
 type IRTAC
-	next		as IRTAC ptr					'' linked-list field
+	ll_nxt		as IRTAC ptr					'' linked-list field
 
 	pos			as integer
 
 	op			as AST_OPCODE					'' opcode
 
-	res			as IRTACVREG                    '' result
-	arg1		as IRTACVREG                    '' operand 1
-	arg2		as IRTACVREG					'' operand 2
+	vr			as IRTACVREG_GRP                   '' result
+	v1			as IRTACVREG_GRP                   '' operand 1
+	v2			as IRTACVREG_GRP				'' operand 2
 
 	ex1			as FBSYMBOL ptr					'' extra field, used by call/jmp
 	ex2			as integer						'' /
 end type
 
 type IRVREG
-	next		as IRVREG ptr					'' linked-list field
+	ll_nxt		as IRVREG ptr					'' linked-list field
 
 	typ			as IRVREGTYPE_ENUM				'' VAR, IMM, IDX, etc
 	dtype		as FB_DATATYPE					'' CHAR, INTEGER, ...
 
 	reg			as integer						'' reg
-	value		as integer						'' imm value (high word of longint's at vaux->value)
+	value		as integer						'' imm value (hi-word of longint's at vaux->value)
 
 	sym			as FBSYMBOL ptr					'' symbol
 	ofs			as integer						'' +offset
