@@ -22,7 +22,6 @@ Version 0.16 Beta:
 - the OpenGL extensions header was replaced by a machine translated one (v1c)
 - UDT's (TYPE's and UNION's) can have the same name as keywords (v1c)
 - Dir()'s "attribute" parameter by default shouldn't include directories, hidden or system files (v1c)
-- OPEN CONS can now be opened for INPUT access too (v1c)
 
 [added]
 - anonymous UDT's that can be passed as parameters or used in assignments, like:
