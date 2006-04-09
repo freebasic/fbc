@@ -36,8 +36,8 @@ static FB_FILE_HOOKS fb_hooks_dev_cons = {
     fb_DevStdIoClose,
     NULL,
     NULL,
-    NULL,
-    NULL,
+    fb_DevFileRead,
+    fb_DevFileReadWstr,
     fb_DevFileWrite,
     fb_DevFileWriteWstr,
     NULL,
@@ -48,9 +48,9 @@ static FB_FILE_HOOKS fb_hooks_dev_cons = {
 
 int fb_DevConsOpen( struct _FB_FILE *handle, const char *filename, size_t filename_len )
 {
-    /* only output or append modes allowed (as in QB) */
     switch ( handle->mode )
     {
+	case FB_FILE_MODE_INPUT:
 	case FB_FILE_MODE_OUTPUT:
 	case FB_FILE_MODE_APPEND:
 		break;
@@ -66,7 +66,7 @@ int fb_DevConsOpen( struct _FB_FILE *handle, const char *filename, size_t filena
     if ( handle->access == FB_FILE_ACCESS_ANY)
         handle->access = FB_FILE_ACCESS_WRITE;
 
-	handle->opaque = stdout;
+	handle->opaque = (handle->mode == FB_FILE_MODE_INPUT? stdin : stdout);
     handle->type = FB_FILE_TYPE_PIPE;
 
     FB_UNLOCK();
