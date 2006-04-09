@@ -62,7 +62,7 @@ static char *find_next ( int *attrib )
 	while( ctx->data.attrib & ~ctx->attrib );
 
 	*attrib = ctx->data.attrib & ~0xFFFFFF00;
-	
+
 #else
     do {
         if( !FindNextFile( ctx->handle, &ctx->data ) ) {
@@ -72,7 +72,7 @@ static char *find_next ( int *attrib )
         }
         name = ctx->data.cFileName;
     } while( ctx->data.dwFileAttributes & ~ctx->attrib );
-    
+
     *attrib = ctx->data.dwFileAttributes & ~0xFFFFFF00;
 #endif
 
@@ -89,7 +89,7 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib, int *out_attrib )
     char *name;
     int handle_ok;
 
-	if( out_attrib == NULL ) 
+	if( out_attrib == NULL )
 		out_attrib = &tmp_attrib;
 
 	len = FB_STRSIZE( filespec );
@@ -118,7 +118,7 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib, int *out_attrib )
 			/* archive bit not set? set the dir bit at least.. */
 			if( (attrib & 0x10) == 0 )
 				ctx->attrib |= 0x20;
-				
+
 #ifdef TARGET_WIN32
 			if( ctx->data.attrib & ~ctx->attrib )
 				name = find_next( out_attrib );
@@ -133,7 +133,7 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib, int *out_attrib )
 			else
 			{
                 name = ctx->data.cFileName;
-                *out-attrib = ctx->data.dwFileAttributes & ~0xFFFFFF00;
+                *out_attrib = ctx->data.dwFileAttributes & ~0xFFFFFF00;
             }
 #endif
 			if( name )
