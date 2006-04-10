@@ -14,7 +14,14 @@
 
 #define EFFICIENT_ALIGNMENT 16
 
+#if defined(dSINGLE)
 type dReal as single
+#elseif defined(dDOUBLE)
+type dReal as double
+#else
+#error You must #define dSINGLE or dDOUBLE
+#endif
+
 type dVector3 as dReal ptr
 type dVector4 as dReal ptr
 type dMatrix3 as dReal ptr

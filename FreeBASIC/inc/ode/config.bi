@@ -21,7 +21,10 @@ type intP as uinteger
 type FILE as any
 #endif
 
+#ifndef dDOUBLE
+#ifndef dSINGLE
 #define dSINGLE 1
+#endif
 
 #define dInfinity 3.402823466e+38
 
