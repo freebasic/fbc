@@ -9,7 +9,7 @@
 #ifndef __ddraw_bi__
 #define __ddraw_bi__
 
-#define COM_NO_WINDOWS_H
+#define COM_NO_WINDOWS_H 1
 #include once "win/objbase.bi"
 
 #inclib "ddraw"

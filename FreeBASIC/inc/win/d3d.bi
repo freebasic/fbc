@@ -11,7 +11,7 @@
 
 #inclib "dxguid"
 
-#define COM_NO_WINDOWS
+#define COM_NO_WINDOWS_H 1
 #include once "win/objbase.bi"
 
 extern IID_IDirect3D alias "IID_IDirect3D" as GUID

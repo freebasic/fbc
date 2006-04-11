@@ -42,6 +42,10 @@ Version 0.16 Beta:
 - ImageConvertRow, to convert between different color depths (v1c)
 - import library and include file for the Curl library (v1c)
 - the optional out_attrib parameter to Dir(), that returns the attributes of the file matched (v1c)
+- the __FB_OPTION_EXPLICIT__, __FB_OPTION_ESCAPE__, __FB_OPTION_DYNAMIC__, __FB_OPTION_PRIVATE__, __FB_OPTION_BYVAL__ defines,
+  that are set to TRUE (-1) if the respective OPTION was used, FALSE (0) otherwise (v1c)
+- the DirectPlay headers from the DirectX SDK (v1c)
+- the DirectMusic headers from the DirectX SDK (v1c)
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)
