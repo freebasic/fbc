@@ -33,8 +33,8 @@ option escape
 type DEFCALLBACK as function() as string
 
 type SYMBDEF
-	name			as zstring * 16+1
-	value			as zstring * 16+1
+	name			as zstring ptr
+	value			as zstring ptr
 	flags			as integer
 	proc			as DEFCALLBACK
 end type
@@ -45,71 +45,117 @@ declare function	hDefLine_cb			( ) as string
 declare function	hDefDate_cb			( ) as string
 declare function	hDefTime_cb			( ) as string
 declare function    hDefMultithread_cb	( ) as string
+declare function    hDefOptByval_cb		( ) as string
+declare function    hDefOptDynamic_cb	( ) as string
+declare function    hDefOptEscape_cb	( ) as string
+declare function    hDefOptExplicit_cb	( ) as string
+declare function    hDefOptPrivate_cb	( ) as string
 
 '' predefined #defines: name, value, flags, proc (for description flags, see FBS_DEFINE)
-const SYMB_MAXDEFINES = 16
+const SYMB_MAXDEFINES = 24
 
 	dim shared defTb( 0 to SYMB_MAXDEFINES-1 ) as SYMBDEF => _
 	{ _
-		("__FB_VERSION__",			FB_VERSION,		  0, NULL				), _
-		("__FB_VER_MAJOR__",		FB_VER_STR_MAJOR, 1, NULL               ), _
-		("__FB_VER_MINOR__",		FB_VER_STR_MINOR, 1, NULL               ), _
-		("__FB_VER_PATCH__",		FB_VER_STR_PATCH, 1, NULL               ), _
-		("__FB_SIGNATURE__",		FB_SIGN,		  0, NULL               ), _
-		("__FB_MT__",				"",				  1, @hDefMultithread_cb), _
-		("__FILE__",				"",				  0, @hDefFile_cb       ), _
-		("__FUNCTION__",			"",				  0, @hDefFunction_cb   ), _
-		("__LINE__",				"",				  1, @hDefLine_cb       ), _
-		("__DATE__",				"",				  0, @hDefDate_cb       ), _
-		("__TIME__",				"",				  0, @hDefTime_cb       ), _
-		("") _
+		(@"__FB_VERSION__",			@FB_VERSION,	   0, NULL				 ), _
+		(@"__FB_VER_MAJOR__",		@FB_VER_STR_MAJOR, 1, NULL               ), _
+		(@"__FB_VER_MINOR__",		@FB_VER_STR_MINOR, 1, NULL               ), _
+		(@"__FB_VER_PATCH__",		@FB_VER_STR_PATCH, 1, NULL               ), _
+		(@"__FB_SIGNATURE__",		@FB_SIGN,		   0, NULL               ), _
+		(@"__FB_MT__",				NULL,			   1, @hDefMultithread_cb), _
+		(@"__FILE__",				NULL,			   0, @hDefFile_cb       ), _
+		(@"__FUNCTION__",			NULL,			   0, @hDefFunction_cb   ), _
+		(@"__LINE__",				NULL,			   1, @hDefLine_cb       ), _
+		(@"__DATE__",				NULL,			   0, @hDefDate_cb       ), _
+		(@"__TIME__",				NULL,			   0, @hDefTime_cb       ), _
+		(@"__FB_OPTION_BYVAL__",	NULL,		  	   1, @hDefOptByval_cb   ), _
+		(@"__FB_OPTION_DYNAMIC__",	NULL,		  	   1, @hDefOptDynamic_cb ), _
+		(@"__FB_OPTION_ESCAPE__",	NULL,		  	   1, @hDefOptEscape_cb  ), _
+		(@"__FB_OPTION_EXPLICIT__",	NULL,		  	   1, @hDefOptExplicit_cb), _
+		(@"__FB_OPTION_PRIVATE__",	NULL,		  	   1, @hDefOptPrivate_cb ), _
+		(NULL) _
 	}
 
 '':::::
-function hDefFile_cb( ) as string static
+private function hDefFile_cb( ) as string static
 
 	function = env.inf.name
 
 end function
 
 '':::::
-function hDefFunction_cb( ) as string static
+private function hDefFunction_cb( ) as string static
 
 	function = *symbGetCurrentProcName( )
 
 end function
 
 '':::::
-function hDefLine_cb( ) as string static
+private function hDefLine_cb( ) as string static
 
 	function = str( lexLineNum( ) )
 
 end function
 
 '':::::
-function hDefDate_cb( ) as string static
+private function hDefDate_cb( ) as string static
 
 	function = date
 
 end function
 
 '':::::
-function hDefTime_cb( ) as string static
+private function hDefTime_cb( ) as string static
 
 	function = time
 
 end function
 
 '':::::
-function hDefMultithread_cb( ) as string static
+private function hDefMultithread_cb( ) as string static
 
 	function = str( env.clopt.multithreaded )
 
 end function
 
 '':::::
+private function hDefOptByval_cb ( ) as string
+
+	function = str( env.opt.parammode = FB_PARAMMODE_BYVAL )
+
+end function
+
+'':::::
+private function hDefOptDynamic_cb ( ) as string
+
+	function = str( env.opt.dynamic = TRUE )
+
+end function
+
+'':::::
+private function hDefOptEscape_cb ( ) as string
+
+	function = str( env.opt.escapestr = TRUE )
+
+end function
+
+'':::::
+private function hDefOptExplicit_cb ( ) as string
+
+	function = str( env.opt.explicit = TRUE )
+
+end function
+
+'':::::
+private function hDefOptPrivate_cb ( ) as string
+
+	function = str( env.opt.procpublic = FALSE )
+
+end function
+
+'':::::
 sub symbInitDefines( byval ismain as integer ) static
-	dim as string def, value
+	dim as string value
+	dim as zstring ptr def
 	dim as integer i
 
     listNew( @symb.defparamlist, FB_INITDEFARGNODES, len( FB_DEFPARAM ), FALSE )
@@ -117,40 +163,40 @@ sub symbInitDefines( byval ismain as integer ) static
     listNew( @symb.deftoklist, FB_INITDEFTOKNODES, len( FB_DEFTOK ), FALSE )
 
     for i = 0 to SYMB_MAXDEFINES-1
-    	if( len( defTb(i).name ) = 0 ) then
+    	if( defTb(i).name = NULL ) then
     		exit for
     	end if
 
-    	value = defTb(i).value
-    	if( value <> "" ) then
+    	value = *defTb(i).value
+    	if( defTb(i).value <> NULL ) then
             if( bit( defTb(i).flags, 0 ) = 0 ) then
     			value = "\"" + value + "\""
             end if
     	end if
 
-    	symbAddDefine( @defTb(i).name, strptr( value ), len( value ), _
+    	symbAddDefine( defTb(i).name, value, len( value ), _
     				   FALSE, defTb(i).proc, defTb(i).flags )
     next
 
 	'' target
 	select case as const env.clopt.target
 	case FB_COMPTARGET_WIN32
-		def = "__FB_WIN32__"
+		def = @"__FB_WIN32__"
 	case FB_COMPTARGET_CYGWIN
-		def = "__FB_CYGWIN__"
+		def = @"__FB_CYGWIN__"
 	case FB_COMPTARGET_LINUX
-		def = "__FB_LINUX__"
+		def = @"__FB_LINUX__"
 	case FB_COMPTARGET_DOS
-		def = "__FB_DOS__"
+		def = @"__FB_DOS__"
 	case FB_COMPTARGET_XBOX
-		def = "__FB_XBOX__"
+		def = @"__FB_XBOX__"
 	end select
 
-	symbAddDefine( strptr( def ), NULL, 0 )
+	symbAddDefine( def, NULL, 0 )
 
 	'' main
 	if( ismain ) then
-		symbAddDefine( strptr( "__FB_MAIN__" ), NULL, 0 )
+		symbAddDefine( "__FB_MAIN__", NULL, 0 )
 	end if
 
 end sub
