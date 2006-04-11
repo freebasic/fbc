@@ -30,6 +30,7 @@
 #define FOURCC_DXT4 MAKEFOURCC(asc("D"),asc("X"),asc("T"),asc("4"))
 #define FOURCC_DXT5 MAKEFOURCC(asc("D"),asc("X"),asc("T"),asc("5"))
 
+#ifndef CLSID_DirectDraw
 DEFINE_GUID(CLSID_DirectDraw,&hD7B70EE0,&h4340,&h11CF,&hB0,&h63,&h00,&h20,&hAF,&hC2,&hCD,&h35)
 DEFINE_GUID(CLSID_DirectDraw7,&h3c305196,&h50db,&h11d3,&h9c,&hfe,&h00,&hc0,&h4f,&hd9,&h30,&hc5)
 DEFINE_GUID(CLSID_DirectDrawClipper,&h593817A0,&h7DB3,&h11CF,&hA2,&hDE,&h00,&hAA,&h00,&hb9,&h33,&h56)
@@ -46,6 +47,7 @@ DEFINE_GUID(IID_IDirectDrawPalette,&h6C14DB84,&hA733,&h11CE,&hA5,&h21,&h00,&h20,
 DEFINE_GUID(IID_IDirectDrawClipper,&h6C14DB85,&hA733,&h11CE,&hA5,&h21,&h00,&h20,&hAF,&h0B,&hE5,&h60)
 DEFINE_GUID(IID_IDirectDrawColorControl,&h4B9F0EE0,&h0D7E,&h11D0,&h9B,&h06,&h00,&hA0,&hC9,&h03,&hA3,&hB8)
 DEFINE_GUID(IID_IDirectDrawGammaControl,&h69C11C3E,&hB46B,&h11D1,&hAD,&h7A,&h00,&hC0,&h4F,&hC2,&h9B,&h4E)
+#endif
 
 type LPDIRECTDRAW as IDirectDraw ptr
 type LPDIRECTDRAW2 as IDirectDraw2 ptr
