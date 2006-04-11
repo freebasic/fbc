@@ -20,7 +20,9 @@
 #define TIME_SMPTE 8
 #define TIME_MIDI 16
 #define TIME_TICKS 32
+#ifndef MAKEFOURCC
 #define MAKEFOURCC(c0,c1,c2,c3) (cuint(c0) or (cuint(c1) shl 8) or (cuint(c2) shl 16) or (cuint(c3) shl 24))
+#endif
 #ifndef mmioFOURCC
 #define mmioFOURCC(c0,c1,c2,c3) MAKEFOURCC(c0,c1,c2,c3)
 #endif

@@ -129,9 +129,19 @@
 #define SHDID_NET_RESTOFNET 16
 #define SHDID_NET_OTHER 17
 #ifndef REGSTR_PATH_EXPLORER
+#if __FB_OPTION_ESCAPE__
+#define REGSTR_PATH_EXPLORER "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer"
+#else
 #define REGSTR_PATH_EXPLORER "Software\Microsoft\Windows\CurrentVersion\Explorer"
 #endif
+#endif
+
+#if __FB_OPTION_ESCAPE__
+#define REGSTR_PATH_SPECIAL_FOLDERS	REGSTR_PATH_EXPLORER "\\Shell Folders"
+#else
 #define REGSTR_PATH_SPECIAL_FOLDERS	REGSTR_PATH_EXPLORER "\Shell Folders"
+#endif
+
 #define CSIDL_DESKTOP 0
 #define CSIDL_INTERNET 1
 #define CSIDL_PROGRAMS 2

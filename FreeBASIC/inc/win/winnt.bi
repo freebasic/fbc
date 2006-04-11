@@ -101,8 +101,8 @@ type USN as LONGLONG
 #define Int64ShraMod32(a,b) (clngint(a) shr (b))
 #define Int64ShrlMod32(a,b) (culngint(a) shr (b))
 
-#define ANSI_NULL asc( "\0" )
-#define UNICODE_NULL asc( wstr( "\0" ) )
+#define ANSI_NULL 0
+#define UNICODE_NULL 0
 
 type BOOLEAN as BYTE
 type PBOOLEAN as BYTE ptr
@@ -942,8 +942,13 @@ type FLONG as DWORD
 #define IMAGE_REL_BASED_MIPS_JMPADDR 5
 #define IMAGE_ARCHIVE_START_SIZE 8
 #define IMAGE_ARCHIVE_START "!<arch>"
+#if __FB_OPTION_ESCAPE__
 #define IMAGE_ARCHIVE_END "`\n"
 #define IMAGE_ARCHIVE_PAD "\n"
+#else
+#define IMAGE_ARCHIVE_END "`" + chr( 10 )
+#define IMAGE_ARCHIVE_PAD chr( 10 )
+#endif
 #define IMAGE_ARCHIVE_LINKER_MEMBER "/               "
 #define IMAGE_ARCHIVE_LONGNAMES_MEMBER "//              "
 #define IMAGE_ORDINAL_FLAG32 &h80000000
