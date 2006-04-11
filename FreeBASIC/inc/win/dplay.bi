@@ -9,8 +9,8 @@
 #ifndef __dplay_bi__
 #define __dplay_bi__
 
-#inclib "uuid"
 #inclib "dplayx"
+#inclib "dxguid"
 
 #include once "win/ole2.bi"
 
