@@ -1,3 +1,5 @@
+[ ] "type foo as foo" when deleted is screwing up the linked-lists
+
 [ ] .stabn can't have args > 65535 (ie: line numbers)
 
 [ ] fbmain - explicit main function
