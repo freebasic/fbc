@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __memory_manager_bi__
-#define __memory_manager_bi__
+#ifndef __bigint_memory_manager_bi__
+#define __bigint_memory_manager_bi__
 
 #define bi_malloc allocate
 #define bi_realloc reallocate

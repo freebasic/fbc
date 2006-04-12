@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __str_types_bi__
-#define __str_types_bi__
+#ifndef __bigint_str_types_bi__
+#define __bigint_str_types_bi__
 
 type big_int_str
 	str as zstring ptr

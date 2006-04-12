@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __alctypes_bi__
-#define __alctypes_bi__
+#ifndef __al_alctypes_bi__
+#define __al_alctypes_bi__
 
 type ALCdevice as any
 type ALCcontext as any

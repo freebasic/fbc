@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __big_int_full_bi__
-#define __big_int_full_bi__
+#ifndef __bigint_big_int_full_bi__
+#define __bigint_big_int_full_bi__
 
 #inclib "big_int"
 

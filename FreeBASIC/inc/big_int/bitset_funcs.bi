@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __bitset_funcs_bi__
-#define __bitset_funcs_bi__
+#ifndef __bigint_bitset_funcs_bi__
+#define __bigint_bitset_funcs_bi__
 
 #include once "big_int/big_int.bi"
 

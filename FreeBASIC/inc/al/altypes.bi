@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __altypes_bi__
-#define __altypes_bi__
+#ifndef __al_altypes_bi__
+#define __al_altypes_bi__
 
 type ALboolean as byte
 type ALbyte as byte

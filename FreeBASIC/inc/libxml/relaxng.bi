@@ -6,7 +6,7 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#define __xml_relaxng_bi__
+#ifndef __xml_relaxng_bi__
 #define __xml_relaxng_bi__
 
 #include once "libxml/xmlversion.bi"

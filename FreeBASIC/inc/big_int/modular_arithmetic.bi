@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __modular_arithmetic_bi__
-#define __modular_arithmetic_bi__
+#ifndef __bigint_modular_arithmetic_bi__
+#define __bigint_modular_arithmetic_bi__
 
 #include once "big_int/big_int.bi"
 

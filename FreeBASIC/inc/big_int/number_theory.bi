@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __number_theory_bi__
-#define __number_theory_bi__
+#ifndef __bigint_number_theory_bi__
+#define __bigint_number_theory_bi__
 
 #include once "big_int/big_int.bi"
 #include once "big_int/modular_arithmetic.bi"

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __alu_bi__
-#define __alu_bi__
+#ifndef __al_alu_bi__
+#define __al_alu_bi__
 
 #ifdef __FB_WIN32__
 # inclib "OpenAL32"

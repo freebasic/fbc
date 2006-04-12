@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __get_bit_length_bi__
-#define __get_bit_length_bi__
+#ifndef __bigint_get_bit_length_bi__
+#define __bigint_get_bit_length_bi__
 
 #include once "big_int/big_int.bi"
 

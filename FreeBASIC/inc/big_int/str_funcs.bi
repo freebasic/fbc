@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __str_funcs_bi__
-#define __str_funcs_bi__
+#ifndef __bigint_str_funcs_bi__
+#define __bigint_str_funcs_bi__
 
 #include once "big_int/big_int.bi"
 #include once "big_int/str_types.bi"

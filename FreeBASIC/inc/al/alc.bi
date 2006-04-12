@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __alc_bi__
-#define __alc_bi__
+#ifndef __al_alc_bi__
+#define __al_alc_bi__
 
 #include once "al/altypes.bi"
 #include once "al/alctypes.bi"

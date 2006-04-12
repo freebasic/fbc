@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __basic_funcs_bi__
-#define __basic_funcs_bi__
+#ifndef __bigint_basic_funcs_bi__
+#define __bigint_basic_funcs_bi__
 
 #include once "big_int/big_int.bi"
 #include once "big_int/service_funcs.bi"
