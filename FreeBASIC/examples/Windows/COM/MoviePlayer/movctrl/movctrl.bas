@@ -135,19 +135,17 @@ function movctrl_Destroy _
 		exit function
 	end if
 	
-	if( _this->hwnd = NULL ) then
-		exit function
+	if( _this->hwnd <> NULL ) then
+		SetWindowLong( _this->hwnd, GWL_USERDATA, cast( LONG, NULL ) )
+		DestroyWindow( _this->hwnd )
+		_this->hwnd = NULL
 	end if
-
-	SetWindowLong( _this->hwnd, GWL_USERDATA, cast( LONG, NULL ) )
 	
 	if( _this->movie <> NULL ) then
 		CMovie_Remove( _this->movie )
 		CMovie_Delete( _this->movie, FALSE )
 		_this->movie = NULL
 	end if
-	
-	DestroyWindow( _this->hwnd )
 	
 	deallocate( _this )
 
