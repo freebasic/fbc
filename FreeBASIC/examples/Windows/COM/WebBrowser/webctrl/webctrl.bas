@@ -37,9 +37,11 @@ private function win_cb _
 				return 0
 		
 			case WM_DESTROY
-				CBrowser_Remove( _this->browser )
-				CBrowser_Delete( _this->browser, FALSE )
-				_this->browser = NULL
+				if( _this->browser <> NULL ) then
+					CBrowser_Remove( _this->browser )
+					CBrowser_Delete( _this->browser, FALSE )
+					_this->browser = NULL
+				end if
 				return 0
 			
 			end select
@@ -124,6 +126,36 @@ function webctrl_Create _
 	end if
 	
 	function = _this
+	
+end function
+
+''::::
+function webctrl_Destroy _
+	( _
+		byval _this as webctrl ptr _
+	) as BOOL
+
+	function = FALSE
+	
+	if( _this = NULL ) then
+		exit function
+	end if
+	
+	if( _this->hwnd <> NULL ) then
+		SetWindowLong( _this->hwnd, GWL_USERDATA, cast( LONG, NULL ) )
+		DestroyWindow( _this->hwnd )
+		_this->hwnd = NULL
+	end if
+	
+	if( _this->browser <> NULL ) then
+		CBrowser_Remove( _this->browser )
+		CBrowser_Delete( _this->browser, FALSE )
+		_this->browser = NULL
+	end if
+	
+	deallocate( _this )
+
+	function = TRUE
 	
 end function
 

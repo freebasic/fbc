@@ -16,6 +16,8 @@ declare function 	webctrl_Create 			( byval parent as HWND, _
 											  byval width_ as integer, _
 											  byval height as integer, _
 											  byval flags as WEBCTRL_FLAGS = 0 ) as webctrl ptr
+											  
+declare function 	webctrl_Destroy			( byval _this as webctrl ptr ) as BOOL											  
 
 declare function 	webctrl_Navigate 		( byval _this as webctrl ptr, _
 											  byval url as wstring ptr, _
