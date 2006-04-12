@@ -46,6 +46,7 @@ Version 0.16 Beta:
   that are set to TRUE (-1) if the respective OPTION was used, FALSE (0) otherwise (v1c)
 - the DirectPlay headers from the DirectX SDK (v1c)
 - the DirectMusic headers from the DirectX SDK (v1c)
+- the DirectShow headers from the DirectX SDK (v1c)
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)

@@ -251,8 +251,11 @@ Most Important Features:
 
     - cgi-util and FastCGI: web development
 
-    - DirectX and the Windows API - the most complete headers set between the BASIC
+    - Windows API - the most complete headers set between the BASIC
       compilers available, including support for the Unicode functions
+
+    - DirectX - Direct3D, DirectDraw, DirectSound, DirectMusic, DirectInput, DirectPlay 
+                and DirectShow, with interfaces up to version 9
 
     - DispHelper - COM IDispatch interfaces made easy
 
