@@ -715,24 +715,6 @@ function symbProcAllocLocals( byval proc as FBSYMBOL ptr ) as integer static
 
 end function
 
-'':::::
-function symbProcAllocScopes( byval proc as FBSYMBOL ptr ) as integer static
-    dim as FBSYMBOL ptr s
-
-    function = FALSE
-
-    s = proc->proc.ext->scptb.head
-    do while( s <> NULL )
-
-    	symbScopeAllocLocals( s )
-
-    	s = s->scp.next
-    loop
-
-    function = TRUE
-
-end function
-
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' lookup
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

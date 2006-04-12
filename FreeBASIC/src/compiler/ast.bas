@@ -38,63 +38,65 @@ option escape
 #include once "inc\ast.bi"
 
 
-declare sub 		astProcListInit	( )
+declare sub 		astProcListInit		( )
 
-declare sub 		astProcListEnd	( )
+declare sub 		astProcListEnd		( )
 
-declare function 	astLoadASSIGN	( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadASSIGN		( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadCONV		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadCONV			( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadBOP		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadBOP			( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadUOP		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadUOP			( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadCONST	( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadCONST		( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadVAR		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadVAR			( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadIDX		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadIDX			( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadPTR		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadPTR			( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadCALL		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadCALL			( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadADDR		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadADDR			( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadLOAD		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadLOAD			( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadBRANCH	( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadBRANCH		( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadIIF		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadIIF			( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadOFFSET	( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadOFFSET		( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadLINK		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadLINK			( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadSTACK	( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadSTACK		( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadENUM		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadENUM			( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadLABEL	( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadLABEL		( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadLIT		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadLIT			( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadASM		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadASM			( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadJMPTB	( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadJMPTB		( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadDBG		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadDBG			( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadMEM		( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadMEM			( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadBOUNDCHK	( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadBOUNDCHK		( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadPTRCHK	( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadPTRCHK		( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadFIELD	( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadFIELD		( byval n as ASTNODE ptr ) as IRVREG ptr
 
-declare function 	astLoadSCOPE	( byval n as ASTNODE ptr ) as IRVREG ptr
+declare function 	astLoadSCOPEBEGIN	( byval n as ASTNODE ptr ) as IRVREG ptr
+
+declare function 	astLoadSCOPEEND		( byval n as ASTNODE ptr ) as IRVREG ptr
 
 '' globals
 	dim shared ast as ASTCTX
@@ -1204,8 +1206,11 @@ function astLoad( byval n as ASTNODE ptr ) as IRVREG ptr
     case AST_NODECLASS_PTRCHK
     	return astLoadPTRCHK( n )
 
-    case AST_NODECLASS_SCOPE
-    	return astLoadSCOPE( n )
+    case AST_NODECLASS_SCOPEBEGIN
+    	return astLoadSCOPEBEGIN( n )
+
+    case AST_NODECLASS_SCOPEEND
+    	return astLoadSCOPEEND( n )
 
     end select
 

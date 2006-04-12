@@ -27,8 +27,9 @@ option escape
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\lex.bi"
-#include once "inc\ir.bi"
 #include once "inc\ast.bi"
+#include once "inc\ir.bi"
+#include once "inc\emit.bi"
 
 declare function hCheckBranch			( byval proc as ASTNODE ptr, _
 										  byval n as ASTNODE ptr ) as integer
@@ -46,7 +47,7 @@ function astScopeBegin( ) as ASTNODE ptr static
 	end if
 
 	''
-	n = astNewNode( AST_NODECLASS_SCOPE, INVALID )
+	n = astNewNode( AST_NODECLASS_SCOPEBEGIN, INVALID )
 	if( n = NULL ) then
 		return NULL
 	end if
@@ -136,9 +137,6 @@ sub astScopeEnd( byval n as ASTNODE ptr ) static
 	symbDelScopeTb( s )
 
 	''
-	astAdd( astNewDBG( AST_OP_DBG_SCOPEEND, cint( s ) ) )
-
-	''
 	irScopeEnd( s )
 
 	'' back to preview symbol tb
@@ -147,6 +145,14 @@ sub astScopeEnd( byval n as ASTNODE ptr ) static
 	ast.currblock = n->block.parent
 	env.currblock = ast.currblock->sym
 	env.scope -= 1
+
+	''
+	astAdd( astNewDBG( AST_OP_DBG_SCOPEEND, cint( s ) ) )
+
+	n = astNewNode( AST_NODECLASS_SCOPEEND, INVALID )
+    n->sym = s
+
+    astAdd( n )
 
 end sub
 
@@ -509,14 +515,33 @@ private function hCheckBranch( byval proc as ASTNODE ptr, _
 end function
 
 '':::::
-function astLoadSCOPE( byval n as ASTNODE ptr ) as IRVREG ptr static
+function astLoadSCOPEBEGIN( byval n as ASTNODE ptr ) as IRVREG ptr static
     dim as FBSYMBOL ptr s
 
+	s = n->sym
+
+	s->scp.emit.baseofs = emitGetLocalOfs( env.currproc )
+
+	symbScopeAllocLocals( s )
+
 	if( ast.doemit ) then
-		s = n->sym
-		if( symbGetScopeAllocSize( s ) > 0 ) then
-			irEmitSTKCLEAR( symbGetScopeAllocSize( s ), s->scp.baseofs )
-		end if
+		irEmitSCOPEBEGIN( s )
+	end if
+
+end function
+
+'':::::
+function astLoadSCOPEEND( byval n as ASTNODE ptr ) as IRVREG ptr static
+    dim as FBSYMBOL ptr s
+
+    s = n->sym
+
+    s->scp.emit.bytes = emitGetLocalOfs( env.currproc ) - s->scp.emit.baseofs
+
+    emitSetLocalOfs( env.currproc, s->scp.emit.baseofs )
+
+	if( ast.doemit ) then
+		irEmitSCOPEEND( s )
 	end if
 
 end function

@@ -464,6 +464,34 @@ sub irEmitPROCEND( byval proc as FBSYMBOL ptr, _
 end sub
 
 '':::::
+sub irScopeBegin( byval s as FBSYMBOL ptr ) static
+
+	edbgScopeBegin( s )
+
+end sub
+
+'':::::
+sub irScopeEnd( byval s as FBSYMBOL ptr ) static
+
+	edbgScopeEnd( s )
+
+end sub
+
+'':::::
+sub irEmitSCOPEBEGIN( byval s as FBSYMBOL ptr ) static
+
+	emitSCOPEHEADER( s )
+
+end sub
+
+'':::::
+sub irEmitSCOPEEND( byval s as FBSYMBOL ptr ) static
+
+	emitSCOPEFOOTER( s )
+
+end sub
+
+'':::::
 function irEmitPUSHARG( byval proc as FBSYMBOL ptr, _
 						byval param as FBSYMBOL ptr, _
 						byval vr as IRVREG ptr, _
@@ -632,20 +660,6 @@ function irEmitPUSHARG( byval proc as FBSYMBOL ptr, _
 	function = TRUE
 
 end function
-
-'':::::
-sub irScopeBegin( byval s as FBSYMBOL ptr ) static
-
-	edbgScopeBegin( s )
-
-end sub
-
-'':::::
-sub irScopeEnd( byval s as FBSYMBOL ptr ) static
-
-	edbgScopeEnd( s )
-
-end sub
 
 '':::::
 sub irEmitASM( byval text as zstring ptr ) static

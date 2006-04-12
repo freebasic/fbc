@@ -490,8 +490,8 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitLOAD( byval dvreg as IRVREG ptr, _
-			  byval svreg as IRVREG ptr ) static
+function emitLOAD( byval dvreg as IRVREG ptr, _
+			  	   byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
@@ -500,14 +500,14 @@ sub emitLOAD( byval dvreg as IRVREG ptr, _
 		select case as const svreg->dtype
 		'' longint?
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			hNewBOP( EMIT_OP_LOADL2L, dvreg, svreg )
+			function = hNewBOP( EMIT_OP_LOADL2L, dvreg, svreg )
 
 		'' float?
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			hNewBOP( EMIT_OP_LOADF2L, dvreg, svreg )
+			function = hNewBOP( EMIT_OP_LOADF2L, dvreg, svreg )
 
 		case else
-			hNewBOP( EMIT_OP_LOADI2L, dvreg, svreg )
+			function = hNewBOP( EMIT_OP_LOADI2L, dvreg, svreg )
 		end select
 
 	'' float?
@@ -516,14 +516,14 @@ sub emitLOAD( byval dvreg as IRVREG ptr, _
 		select case as const svreg->dtype
 		'' longint?
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			hNewBOP( EMIT_OP_LOADL2F, dvreg, svreg )
+			function = hNewBOP( EMIT_OP_LOADL2F, dvreg, svreg )
 
 		'' float?
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			hNewBOP( EMIT_OP_LOADF2F, dvreg, svreg )
+			function = hNewBOP( EMIT_OP_LOADF2F, dvreg, svreg )
 
 		case else
-			hNewBOP( EMIT_OP_LOADI2F, dvreg, svreg )
+			function = hNewBOP( EMIT_OP_LOADI2F, dvreg, svreg )
 		end select
 
 	case else
@@ -531,23 +531,23 @@ sub emitLOAD( byval dvreg as IRVREG ptr, _
 		select case as const svreg->dtype
 		'' longint?
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			hNewBOP( EMIT_OP_LOADL2I, dvreg, svreg )
+			function = hNewBOP( EMIT_OP_LOADL2I, dvreg, svreg )
 
 		'' float?
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			hNewBOP( EMIT_OP_LOADF2I, dvreg, svreg )
+			function = hNewBOP( EMIT_OP_LOADF2I, dvreg, svreg )
 
 		case else
-			hNewBOP( EMIT_OP_LOADI2I, dvreg, svreg )
+			function = hNewBOP( EMIT_OP_LOADI2I, dvreg, svreg )
 		end select
 
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitSTORE( byval dvreg as IRVREG ptr, _
-			   byval svreg as IRVREG ptr ) static
+function emitSTORE( byval dvreg as IRVREG ptr, _
+			   		byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
@@ -556,14 +556,14 @@ sub emitSTORE( byval dvreg as IRVREG ptr, _
 		select case as const svreg->dtype
 		'' longint?
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			hNewBOP( EMIT_OP_STORL2L, dvreg, svreg )
+			function = hNewBOP( EMIT_OP_STORL2L, dvreg, svreg )
 
 		'' float?
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			hNewBOP( EMIT_OP_STORF2L, dvreg, svreg )
+			function = hNewBOP( EMIT_OP_STORF2L, dvreg, svreg )
 
 		case else
-			hNewBOP( EMIT_OP_STORI2L, dvreg, svreg )
+			function = hNewBOP( EMIT_OP_STORI2L, dvreg, svreg )
 		end select
 
 	'' float?
@@ -572,14 +572,14 @@ sub emitSTORE( byval dvreg as IRVREG ptr, _
 		select case as const svreg->dtype
 		'' longint?
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			hNewBOP( EMIT_OP_STORL2F, dvreg, svreg )
+			function = hNewBOP( EMIT_OP_STORL2F, dvreg, svreg )
 
 		'' float?
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			hNewBOP( EMIT_OP_STORF2F, dvreg, svreg )
+			function = hNewBOP( EMIT_OP_STORF2F, dvreg, svreg )
 
 		case else
-			hNewBOP( EMIT_OP_STORI2F, dvreg, svreg )
+			function = hNewBOP( EMIT_OP_STORI2F, dvreg, svreg )
 		end select
 
 	case else
@@ -587,705 +587,705 @@ sub emitSTORE( byval dvreg as IRVREG ptr, _
 		select case as const svreg->dtype
 		'' longint?
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			hNewBOP( EMIT_OP_STORL2I, dvreg, svreg )
+			function = hNewBOP( EMIT_OP_STORL2I, dvreg, svreg )
 
 		'' float?
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			hNewBOP( EMIT_OP_STORF2I, dvreg, svreg )
+			function = hNewBOP( EMIT_OP_STORF2I, dvreg, svreg )
 
 		case else
-			hNewBOP( EMIT_OP_STORI2I, dvreg, svreg )
+			function = hNewBOP( EMIT_OP_STORI2I, dvreg, svreg )
 		end select
 
 	end select
 
-end sub
+end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' BOP
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitMOV( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
+function emitMOV( byval dvreg as IRVREG ptr, _
+			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewBOP( EMIT_OP_MOVL, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_MOVL, dvreg, svreg )
 
 	'' float?
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		hNewBOP( EMIT_OP_MOVF, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_MOVF, dvreg, svreg )
 
 	case else
-		hNewBOP( EMIT_OP_MOVI, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_MOVI, dvreg, svreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitADD( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
+function emitADD( byval dvreg as IRVREG ptr, _
+			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewBOP( EMIT_OP_ADDL, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_ADDL, dvreg, svreg )
 
 	'' float?
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		hNewBOP( EMIT_OP_ADDF, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_ADDF, dvreg, svreg )
 
 	case else
-		hNewBOP( EMIT_OP_ADDI, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_ADDI, dvreg, svreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitSUB( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
+function emitSUB( byval dvreg as IRVREG ptr, _
+			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewBOP( EMIT_OP_SUBL, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_SUBL, dvreg, svreg )
 
 	'' float?
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		hNewBOP( EMIT_OP_SUBF, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_SUBF, dvreg, svreg )
 
 	case else
-		hNewBOP( EMIT_OP_SUBI, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_SUBI, dvreg, svreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitMUL( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
+function emitMUL( byval dvreg as IRVREG ptr, _
+			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewBOP( EMIT_OP_MULL, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_MULL, dvreg, svreg )
 
 	'' float?
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		hNewBOP( EMIT_OP_MULF, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_MULF, dvreg, svreg )
 
 	case else
 		if( symbIsSigned( dvreg->dtype ) ) then
-			hNewBOP( EMIT_OP_SMULI, dvreg, svreg )
+			function = hNewBOP( EMIT_OP_SMULI, dvreg, svreg )
 		else
-			hNewBOP( EMIT_OP_MULI, dvreg, svreg )
+			function = hNewBOP( EMIT_OP_MULI, dvreg, svreg )
 		end if
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitDIV( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
+function emitDIV( byval dvreg as IRVREG ptr, _
+			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
-	hNewBOP( EMIT_OP_DIVF, dvreg, svreg )
+	function = hNewBOP( EMIT_OP_DIVF, dvreg, svreg )
 
-end sub
-
-'':::::
-sub emitINTDIV( byval dvreg as IRVREG ptr, _
-			    byval svreg as IRVREG ptr ) static
-
-	hNewBOP( EMIT_OP_DIVI, dvreg, svreg )
-
-end sub
+end function
 
 '':::::
-sub emitMOD( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
+function emitINTDIV( byval dvreg as IRVREG ptr, _
+			    	 byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
-	hNewBOP( EMIT_OP_MODI, dvreg, svreg )
+	function = hNewBOP( EMIT_OP_DIVI, dvreg, svreg )
 
-end sub
+end function
 
 '':::::
-sub emitSHL( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
+function emitMOD( byval dvreg as IRVREG ptr, _
+			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+
+	function = hNewBOP( EMIT_OP_MODI, dvreg, svreg )
+
+end function
+
+'':::::
+function emitSHL( byval dvreg as IRVREG ptr, _
+			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewBOP( EMIT_OP_SHLL, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_SHLL, dvreg, svreg )
 
 	case else
-		hNewBOP( EMIT_OP_SHLI, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_SHLI, dvreg, svreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitSHR( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
+function emitSHR( byval dvreg as IRVREG ptr, _
+			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewBOP( EMIT_OP_SHRL, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_SHRL, dvreg, svreg )
 
 	case else
-		hNewBOP( EMIT_OP_SHRI, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_SHRI, dvreg, svreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitAND( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
+function emitAND( byval dvreg as IRVREG ptr, _
+			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewBOP( EMIT_OP_ANDL, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_ANDL, dvreg, svreg )
 
 	case else
-		hNewBOP( EMIT_OP_ANDI, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_ANDI, dvreg, svreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitOR( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
+function emitOR( byval dvreg as IRVREG ptr, _
+			 	 byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewBOP( EMIT_OP_ORL, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_ORL, dvreg, svreg )
 
 	case else
-		hNewBOP( EMIT_OP_ORI, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_ORI, dvreg, svreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitXOR( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
+function emitXOR( byval dvreg as IRVREG ptr, _
+			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewBOP( EMIT_OP_XORL, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_XORL, dvreg, svreg )
 
 	case else
-		hNewBOP( EMIT_OP_XORI, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_XORI, dvreg, svreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitEQV( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
+function emitEQV( byval dvreg as IRVREG ptr, _
+			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewBOP( EMIT_OP_EQVL, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_EQVL, dvreg, svreg )
 
 	case else
-		hNewBOP( EMIT_OP_EQVI, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_EQVI, dvreg, svreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitIMP( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
+function emitIMP( byval dvreg as IRVREG ptr, _
+			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewBOP( EMIT_OP_IMPL, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_IMPL, dvreg, svreg )
 
 	case else
-		hNewBOP( EMIT_OP_IMPI, dvreg, svreg )
+		function = hNewBOP( EMIT_OP_IMPI, dvreg, svreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitATN2( byval dvreg as IRVREG ptr, _
-			  byval svreg as IRVREG ptr ) static
+function emitATN2( byval dvreg as IRVREG ptr, _
+			  	   byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
-	hNewBOP( EMIT_OP_ATN2, dvreg, svreg )
+	function = hNewBOP( EMIT_OP_ATN2, dvreg, svreg )
 
-end sub
-
-'':::::
-sub emitPOW( byval dvreg as IRVREG ptr, _
-			 byval svreg as IRVREG ptr ) static
-
-	hNewBOP( EMIT_OP_POW, dvreg, svreg )
-
-end sub
+end function
 
 '':::::
-sub emitADDROF( byval dvreg as IRVREG ptr, _
-			    byval svreg as IRVREG ptr ) static
+function emitPOW( byval dvreg as IRVREG ptr, _
+			 	  byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
-	hNewBOP( EMIT_OP_ADDROF, dvreg, svreg )
+	function = hNewBOP( EMIT_OP_POW, dvreg, svreg )
 
-end sub
+end function
 
 '':::::
-sub emitDEREF( byval dvreg as IRVREG ptr, _
-			   byval svreg as IRVREG ptr ) static
+function emitADDROF( byval dvreg as IRVREG ptr, _
+			    	 byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
-	hNewBOP( EMIT_OP_DEREF, dvreg, svreg )
+	function = hNewBOP( EMIT_OP_ADDROF, dvreg, svreg )
 
-end sub
+end function
+
+'':::::
+function emitDEREF( byval dvreg as IRVREG ptr, _
+			   		byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+
+	function = hNewBOP( EMIT_OP_DEREF, dvreg, svreg )
+
+end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' REL
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitGT( byval rvreg as IRVREG ptr, _
-		    byval label as FBSYMBOL ptr, _
-		    byval dvreg as IRVREG ptr, _
-		    byval svreg as IRVREG ptr ) static
+function emitGT( byval rvreg as IRVREG ptr, _
+		    	 byval label as FBSYMBOL ptr, _
+		    	 byval dvreg as IRVREG ptr, _
+		    	 byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewREL( EMIT_OP_CGTL, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CGTL, rvreg, label, dvreg, svreg )
 
 	'' float?
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		hNewREL( EMIT_OP_CGTF, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CGTF, rvreg, label, dvreg, svreg )
 
 	case else
-		hNewREL( EMIT_OP_CGTI, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CGTI, rvreg, label, dvreg, svreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitLT( byval rvreg as IRVREG ptr, _
-		    byval label as FBSYMBOL ptr, _
-		    byval dvreg as IRVREG ptr, _
-		    byval svreg as IRVREG ptr ) static
+function emitLT( byval rvreg as IRVREG ptr, _
+		    	 byval label as FBSYMBOL ptr, _
+		    	 byval dvreg as IRVREG ptr, _
+		    	 byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewREL( EMIT_OP_CLTL, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CLTL, rvreg, label, dvreg, svreg )
 
 	'' float?
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		hNewREL( EMIT_OP_CLTF, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CLTF, rvreg, label, dvreg, svreg )
 
 	case else
-		hNewREL( EMIT_OP_CLTI, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CLTI, rvreg, label, dvreg, svreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitEQ( byval rvreg as IRVREG ptr, _
-		    byval label as FBSYMBOL ptr, _
-		    byval dvreg as IRVREG ptr, _
-		    byval svreg as IRVREG ptr ) static
+function emitEQ( byval rvreg as IRVREG ptr, _
+		    	 byval label as FBSYMBOL ptr, _
+		    	 byval dvreg as IRVREG ptr, _
+		    	 byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewREL( EMIT_OP_CEQL, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CEQL, rvreg, label, dvreg, svreg )
 
 	'' float?
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		hNewREL( EMIT_OP_CEQF, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CEQF, rvreg, label, dvreg, svreg )
 
 	case else
-		hNewREL( EMIT_OP_CEQI, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CEQI, rvreg, label, dvreg, svreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitNE( byval rvreg as IRVREG ptr, _
-		    byval label as FBSYMBOL ptr, _
-		    byval dvreg as IRVREG ptr, _
-		    byval svreg as IRVREG ptr ) static
+function emitNE( byval rvreg as IRVREG ptr, _
+		    	 byval label as FBSYMBOL ptr, _
+		    	 byval dvreg as IRVREG ptr, _
+		    	 byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewREL( EMIT_OP_CNEL, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CNEL, rvreg, label, dvreg, svreg )
 
 	'' float?
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		hNewREL( EMIT_OP_CNEF, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CNEF, rvreg, label, dvreg, svreg )
 
 	case else
-		hNewREL( EMIT_OP_CNEI, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CNEI, rvreg, label, dvreg, svreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitGE( byval rvreg as IRVREG ptr, _
-		    byval label as FBSYMBOL ptr, _
-		    byval dvreg as IRVREG ptr, _
-		    byval svreg as IRVREG ptr ) static
+function emitGE( byval rvreg as IRVREG ptr, _
+		    	 byval label as FBSYMBOL ptr, _
+		    	 byval dvreg as IRVREG ptr, _
+		    	 byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewREL( EMIT_OP_CGEL, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CGEL, rvreg, label, dvreg, svreg )
 
 	'' float?
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		hNewREL( EMIT_OP_CGEF, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CGEF, rvreg, label, dvreg, svreg )
 
 	case else
-		hNewREL( EMIT_OP_CGEI, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CGEI, rvreg, label, dvreg, svreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitLE( byval rvreg as IRVREG ptr, _
-		    byval label as FBSYMBOL ptr, _
-		    byval dvreg as IRVREG ptr, _
-		    byval svreg as IRVREG ptr ) static
+function emitLE( byval rvreg as IRVREG ptr, _
+		    	 byval label as FBSYMBOL ptr, _
+		    	 byval dvreg as IRVREG ptr, _
+		    	 byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewREL( EMIT_OP_CLEL, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CLEL, rvreg, label, dvreg, svreg )
 
 	'' float?
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		hNewREL( EMIT_OP_CLEF, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CLEF, rvreg, label, dvreg, svreg )
 
 	case else
-		hNewREL( EMIT_OP_CLEI, rvreg, label, dvreg, svreg )
+		function = hNewREL( EMIT_OP_CLEI, rvreg, label, dvreg, svreg )
 	end select
 
-end sub
+end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' UOP
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitNEG( byval dvreg as IRVREG ptr ) static
+function emitNEG( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewUOP( EMIT_OP_NEGL, dvreg )
+		function = hNewUOP( EMIT_OP_NEGL, dvreg )
 
 	'' float?
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		hNewUOP( EMIT_OP_NEGF, dvreg )
+		function = hNewUOP( EMIT_OP_NEGF, dvreg )
 
 	case else
-		hNewUOP( EMIT_OP_NEGI, dvreg )
+		function = hNewUOP( EMIT_OP_NEGI, dvreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitNOT( byval dvreg as IRVREG ptr ) static
+function emitNOT( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewUOP( EMIT_OP_NOTL, dvreg )
+		function = hNewUOP( EMIT_OP_NOTL, dvreg )
 
 	case else
-		hNewUOP( EMIT_OP_NOTI, dvreg )
+		function = hNewUOP( EMIT_OP_NOTI, dvreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitABS( byval dvreg as IRVREG ptr ) static
+function emitABS( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewUOP( EMIT_OP_ABSL, dvreg )
+		function = hNewUOP( EMIT_OP_ABSL, dvreg )
 
 	'' float?
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		hNewUOP( EMIT_OP_ABSF, dvreg )
+		function = hNewUOP( EMIT_OP_ABSF, dvreg )
 
 	case else
-		hNewUOP( EMIT_OP_ABSI, dvreg )
+		function = hNewUOP( EMIT_OP_ABSI, dvreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitSGN( byval dvreg as IRVREG ptr ) static
+function emitSGN( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewUOP( EMIT_OP_SGNL, dvreg )
+		function = hNewUOP( EMIT_OP_SGNL, dvreg )
 
 	'' float?
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		hNewUOP( EMIT_OP_SGNF, dvreg )
+		function = hNewUOP( EMIT_OP_SGNF, dvreg )
 
 	case else
-		hNewUOP( EMIT_OP_SGNI, dvreg )
+		function = hNewUOP( EMIT_OP_SGNI, dvreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitSIN( byval dvreg as IRVREG ptr ) static
+function emitSIN( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
 
-	hNewUOP( EMIT_OP_SIN, dvreg )
+	function = hNewUOP( EMIT_OP_SIN, dvreg )
 
-end sub
-
-'':::::
-sub emitASIN( byval dvreg as IRVREG ptr ) static
-
-	hNewUOP( EMIT_OP_ASIN, dvreg )
-
-end sub
+end function
 
 '':::::
-sub emitCOS( byval dvreg as IRVREG ptr ) static
+function emitASIN( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
 
-	hNewUOP( EMIT_OP_COS, dvreg )
+	function = hNewUOP( EMIT_OP_ASIN, dvreg )
 
-end sub
-
-'':::::
-sub emitACOS( byval dvreg as IRVREG ptr ) static
-
-	hNewUOP( EMIT_OP_ACOS, dvreg )
-
-end sub
+end function
 
 '':::::
-sub emitTAN( byval dvreg as IRVREG ptr ) static
+function emitCOS( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
 
-	hNewUOP( EMIT_OP_TAN, dvreg )
+	function = hNewUOP( EMIT_OP_COS, dvreg )
 
-end sub
-
-'':::::
-sub emitATAN( byval dvreg as IRVREG ptr ) static
-
-	hNewUOP( EMIT_OP_ATAN, dvreg )
-
-end sub
+end function
 
 '':::::
-sub emitSQRT( byval dvreg as IRVREG ptr ) static
+function emitACOS( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
 
-	hNewUOP( EMIT_OP_SQRT, dvreg )
+	function = hNewUOP( EMIT_OP_ACOS, dvreg )
 
-end sub
-
-'':::::
-sub emitLOG( byval dvreg as IRVREG ptr ) static
-
-	hNewUOP( EMIT_OP_LOG, dvreg )
-
-end sub
+end function
 
 '':::::
-sub emitFLOOR( byval dvreg as IRVREG ptr ) static
+function emitTAN( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
 
-	hNewUOP( EMIT_OP_FLOOR, dvreg )
+	function = hNewUOP( EMIT_OP_TAN, dvreg )
 
-end sub
+end function
 
 '':::::
-sub emitXchgTOS( byval svreg as IRVREG ptr ) static
+function emitATAN( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
 
-	hNewUOP( EMIT_OP_XCHGTOS, svreg )
+	function = hNewUOP( EMIT_OP_ATAN, dvreg )
 
-end sub
+end function
+
+'':::::
+function emitSQRT( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
+
+	function = hNewUOP( EMIT_OP_SQRT, dvreg )
+
+end function
+
+'':::::
+function emitLOG( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
+
+	function = hNewUOP( EMIT_OP_LOG, dvreg )
+
+end function
+
+'':::::
+function emitFLOOR( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
+
+	function = hNewUOP( EMIT_OP_FLOOR, dvreg )
+
+end function
+
+'':::::
+function emitXchgTOS( byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+
+	function = hNewUOP( EMIT_OP_XCHGTOS, svreg )
+
+end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' STK
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitPUSH( byval svreg as IRVREG ptr ) static
+function emitPUSH( byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case as const svreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewSTK( EMIT_OP_PUSHL, svreg )
+		function = hNewSTK( EMIT_OP_PUSHL, svreg )
 
 	'' float?
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		hNewSTK( EMIT_OP_PUSHF, svreg )
+		function = hNewSTK( EMIT_OP_PUSHF, svreg )
 
 	case else
-		hNewSTK( EMIT_OP_PUSHI, svreg )
+		function = hNewSTK( EMIT_OP_PUSHI, svreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitPOP( byval dvreg as IRVREG ptr ) static
+function emitPOP( byval dvreg as IRVREG ptr ) as EMIT_NODE ptr static
 
 	select case as const dvreg->dtype
 	'' longint?
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		hNewSTK( EMIT_OP_POPL, dvreg )
+		function = hNewSTK( EMIT_OP_POPL, dvreg )
 
 	'' float?
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		hNewSTK( EMIT_OP_POPF, dvreg )
+		function = hNewSTK( EMIT_OP_POPF, dvreg )
 
 	case else
-		hNewSTK( EMIT_OP_POPI, dvreg )
+		function = hNewSTK( EMIT_OP_POPI, dvreg )
 	end select
 
-end sub
+end function
 
 '':::::
-sub emitPUSHUDT( byval svreg as IRVREG ptr, _
-				 byval sdsize as integer ) static
+function emitPUSHUDT( byval svreg as IRVREG ptr, _
+				 byval sdsize as integer ) as EMIT_NODE ptr static
 
-	hNewSTK( EMIT_OP_PUSHUDT, svreg, sdsize )
+	function = hNewSTK( EMIT_OP_PUSHUDT, svreg, sdsize )
 
-end sub
+end function
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' MISC
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitCOMMENT( byval text as zstring ptr ) static
+function emitCOMMENT( byval text as zstring ptr ) as EMIT_NODE ptr static
 
-	hNewLIT( "##" + *text, FALSE )
+	function = hNewLIT( "##" + *text, FALSE )
 
-end sub
+end function
 
 '':::::
-sub emitASM( byval text as zstring ptr ) static
+function emitASM( byval text as zstring ptr ) as EMIT_NODE ptr static
     dim as integer c
 
-    hNewLIT( text, TRUE )
+    function = hNewLIT( text, TRUE )
 
 	'' reset reg usage
 	for c = 0 to EMIT_REGCLASSES-1
 		EMIT_REGTRASHALL( c )						'' can't check the reg usage
 	next
 
-end sub
+end function
 
 '':::::
-sub emitLIT( byval text as zstring ptr ) static
+function emitLIT( byval text as zstring ptr ) as EMIT_NODE ptr static
 
-	hNewLIT( text, FALSE )
+	function = hNewLIT( text, FALSE )
 
-end sub
+end function
 
 '':::::
-sub emitALIGN( byval bytes as integer ) static
+function emitALIGN( byval bytes as integer ) as EMIT_NODE ptr static
     static as IRVREG vr
 
 	vr.typ   = IR_VREGTYPE_IMM
 	vr.value = bytes
-	hNewUOP( EMIT_OP_ALIGN, @vr )
+	function = hNewUOP( EMIT_OP_ALIGN, @vr )
 
-end sub
+end function
 
 '':::::
-sub emitSTACKALIGN( byval bytes as integer ) static
+function emitSTACKALIGN( byval bytes as integer ) as EMIT_NODE ptr static
     static as IRVREG vr
 
 	vr.typ   = IR_VREGTYPE_IMM
 	vr.value = bytes
-	hNewUOP( EMIT_OP_STKALIGN, @vr )
+	function = hNewUOP( EMIT_OP_STKALIGN, @vr )
 
-end sub
-
-'':::::
-sub emitJMPTB( byval dtype as integer, _
-			   byval text as zstring ptr ) static
-
-	hNewJMPTB( dtype, text )
-
-end sub
+end function
 
 '':::::
-sub emitCALL( byval label as FBSYMBOL ptr, _
-			  byval bytestopop as integer ) static
+function emitJMPTB( byval dtype as integer, _
+			   		byval text as zstring ptr ) as EMIT_NODE ptr static
 
-	hNewBRANCH( EMIT_OP_CALL, NULL, label, bytestopop )
+	function = hNewJMPTB( dtype, text )
 
-end sub
-
-'':::::
-sub emitCALLPTR( byval svreg as IRVREG ptr, _
-				 byval bytestopop as integer ) static
-
-	hNewBRANCH( EMIT_OP_CALLPTR, svreg, NULL, bytestopop )
-
-end sub
+end function
 
 '':::::
-sub emitBRANCH( byval op as integer, _
-		 		byval label as FBSYMBOL ptr ) static
+function emitCALL( byval label as FBSYMBOL ptr, _
+			  	   byval bytestopop as integer ) as EMIT_NODE ptr static
 
-	hNewBRANCH( EMIT_OP_BRANCH, NULL, label, op )
+	function = hNewBRANCH( EMIT_OP_CALL, NULL, label, bytestopop )
 
-end sub
-
-'':::::
-sub emitJUMP( byval label as FBSYMBOL ptr ) static
-
-	hNewBRANCH( EMIT_OP_JUMP, NULL, label )
-
-end sub
+end function
 
 '':::::
-sub emitJUMPPTR( byval svreg as IRVREG ptr ) static
+function emitCALLPTR( byval svreg as IRVREG ptr, _
+				 	  byval bytestopop as integer ) as EMIT_NODE ptr static
 
-	hNewBRANCH( EMIT_OP_JUMPPTR, svreg, NULL )
+	function = hNewBRANCH( EMIT_OP_CALLPTR, svreg, NULL, bytestopop )
 
-end sub
+end function
 
 '':::::
-sub emitRET( byval bytestopop as integer ) static
+function emitBRANCH( byval op as integer, _
+		 			 byval label as FBSYMBOL ptr ) as EMIT_NODE ptr static
+
+	function = hNewBRANCH( EMIT_OP_BRANCH, NULL, label, op )
+
+end function
+
+'':::::
+function emitJUMP( byval label as FBSYMBOL ptr ) as EMIT_NODE ptr static
+
+	function = hNewBRANCH( EMIT_OP_JUMP, NULL, label )
+
+end function
+
+'':::::
+function emitJUMPPTR( byval svreg as IRVREG ptr ) as EMIT_NODE ptr static
+
+	function = hNewBRANCH( EMIT_OP_JUMPPTR, svreg, NULL )
+
+end function
+
+'':::::
+function emitRET( byval bytestopop as integer ) as EMIT_NODE ptr static
     static as IRVREG vr
 
 	vr.typ   = IR_VREGTYPE_IMM
 	vr.value = bytestopop
-	hNewUOP( EMIT_OP_RET, @vr )
+	function = hNewUOP( EMIT_OP_RET, @vr )
 
-end sub
-
-'':::::
-sub emitLABEL( byval label as FBSYMBOL ptr ) static
-
-	hNewSYMOP( EMIT_OP_LABEL, label )
-
-end sub
+end function
 
 '':::::
-sub emitPUBLIC( byval label as FBSYMBOL ptr ) static
+function emitLABEL( byval label as FBSYMBOL ptr ) as EMIT_NODE ptr static
 
-	hNewSYMOP( EMIT_OP_PUBLIC, label )
+	function = hNewSYMOP( EMIT_OP_LABEL, label )
 
-end sub
+end function
+
+'':::::
+function emitPUBLIC( byval label as FBSYMBOL ptr ) as EMIT_NODE ptr static
+
+	function = hNewSYMOP( EMIT_OP_PUBLIC, label )
+
+end function
 
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -1293,44 +1293,59 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub emitMEMMOVE( byval dvreg as IRVREG ptr, _
-			     byval svreg as IRVREG ptr, _
-			     byval bytes as integer ) static
+function emitMEMMOVE( byval dvreg as IRVREG ptr, _
+			    	  byval svreg as IRVREG ptr, _
+			     	  byval bytes as integer ) as EMIT_NODE ptr static
 
-	hNewMEM( EMIT_OP_MEMMOVE, dvreg, svreg, bytes )
+	function = hNewMEM( EMIT_OP_MEMMOVE, dvreg, svreg, bytes )
 
-end sub
-
-'':::::
-sub emitMEMSWAP( byval dvreg as IRVREG ptr, _
-			     byval svreg as IRVREG ptr, _
-			     byval bytes as integer ) static
-
-	hNewMEM( EMIT_OP_MEMSWAP, dvreg, svreg, bytes )
-
-end sub
+end function
 
 '':::::
-sub emitMEMCLEAR( byval dvreg as IRVREG ptr, _
-			      byval svreg as IRVREG ptr, _
-			      byval bytes as integer ) static
+function emitMEMSWAP( byval dvreg as IRVREG ptr, _
+			     	  byval svreg as IRVREG ptr, _
+			     	  byval bytes as integer ) as EMIT_NODE ptr static
 
-	hNewMEM( EMIT_OP_MEMCLEAR, dvreg, svreg, bytes )
+	function = hNewMEM( EMIT_OP_MEMSWAP, dvreg, svreg, bytes )
 
-end sub
+end function
 
 '':::::
-sub emitSTKCLEAR( byval bytes as integer, _
-				  byval baseofs as integer ) static
+function emitMEMCLEAR( byval dvreg as IRVREG ptr, _
+			      	   byval svreg as IRVREG ptr, _
+			      	   byval bytes as integer ) as EMIT_NODE ptr static
 
-	hNewMEM( EMIT_OP_STKCLEAR, NULL, NULL, bytes, baseofs )
+	function = hNewMEM( EMIT_OP_MEMCLEAR, dvreg, svreg, bytes )
 
-end sub
+end function
 
+'':::::
+function emitSTKCLEAR( byval bytes as integer, _
+				  	   byval baseofs as integer ) as EMIT_NODE ptr static
 
+	function = hNewMEM( EMIT_OP_STKCLEAR, NULL, NULL, bytes, baseofs )
 
+end function
 
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+'' SCOPE
+''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+'':::::
+function emitSCOPEHEADER( byval s as FBSYMBOl ptr ) as EMIT_NODE ptr static
 
+	s->scp.emit.clrnode = emitSTKCLEAR( 0, s->scp.emit.baseofs )
 
+	function = s->scp.emit.clrnode
+
+end function
+
+'':::::
+function emitSCOPEFOOTER( byval s as FBSYMBOl ptr ) as EMIT_NODE ptr static
+
+	s->scp.emit.clrnode->mem.bytes = s->scp.emit.bytes
+
+	function = s->scp.emit.clrnode
+
+end function
 

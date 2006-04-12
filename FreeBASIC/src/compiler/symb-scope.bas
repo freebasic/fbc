@@ -32,23 +32,6 @@ option escape
 #include once "inc\rtl.bi"
 
 '':::::
-private sub hAddScopeToProcList( byval s as FBSYMBOL ptr ) static
-    dim as FB_PROCEXT ptr ext
-
-	ext = env.currproc->proc.ext
-
-	if( ext->scptb.head = NULL ) then
-		ext->scptb.head = s
-	else
-		ext->scptb.tail->scp.next = s
-	end if
-
-	ext->scptb.tail = s
-	s->scp.next = NULL
-
-end sub
-
-'':::::
 function symbAddScope( byval backnode as ASTNODE ptr ) as FBSYMBOL ptr
     dim as FBSYMBOL ptr s
 
@@ -57,13 +40,7 @@ function symbAddScope( byval backnode as ASTNODE ptr ) as FBSYMBOL ptr
 	s->scp.loctb.owner = s
     s->scp.loctb.head = NULL
     s->scp.loctb.tail = NULL
-    s->scp.bytes = 0
     s->scp.backnode = backnode
-
-    ''
-    if( env.scope = iif( fbIsModLevel( ), FB_MAINSCOPE, FB_MAINSCOPE+1 ) ) then
-    	hAddScopeToProcList( s )
-    end if
 
 	function = s
 
@@ -113,17 +90,10 @@ function symbScopeAllocLocals( byval scp as FBSYMBOL ptr ) as integer
 
     function = FALSE
 
-    scp->scp.baseofs = emitGetLocalOfs( env.currproc )
-
     s = symbGetScopeTbHead( scp )
     do while( s <> NULL )
-    	select case s->class
-		'' scope? recurse..
-		case FB_SYMBCLASS_SCOPE
-			symbScopeAllocLocals( s )
-
-    	'' variable?
-    	case FB_SYMBCLASS_VAR
+		'' variable?
+		if( s->class = FB_SYMBCLASS_VAR ) then
     		'' not shared, static?
     		if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
     			 				FB_SYMBATTRIB_STATIC)) = 0 ) then
@@ -135,14 +105,10 @@ function symbScopeAllocLocals( byval scp as FBSYMBOL ptr ) as integer
 
 			end if
 
-		end select
+		end if
 
     	s = s->next
     loop
-
-    scp->scp.bytes = emitGetLocalOfs( env.currproc ) - scp->scp.baseofs
-
-    emitSetLocalOfs( env.currproc, scp->scp.baseofs )
 
     function = TRUE
 

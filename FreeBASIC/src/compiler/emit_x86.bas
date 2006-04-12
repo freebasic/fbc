@@ -4970,7 +4970,7 @@ end sub
 sub emitPROCHEADER( byval proc as FBSYMBOL ptr, _
 				   	byval initlabel as FBSYMBOL ptr ) static
 
-	'' do nothing, proc will be only emitted at PROCEND
+	'' do nothing, proc will be only emitted at PROCFOOTER
 
 	emitReset( )
 

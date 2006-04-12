@@ -151,8 +151,6 @@ private sub hProcFlush( byval p as ASTNODE ptr, _
 	''
 	symbProcAllocLocals( sym )
 
-	symbProcAllocScopes( sym )
-
 	'' add a call to fb_init if it's a static constructor
 	'' (note: must be done here or ModLevelIsEmpty() will fail)
 	if( doemit ) then

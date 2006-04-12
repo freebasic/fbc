@@ -84,6 +84,10 @@ type FBSYMBOL_ as FBSYMBOL
 type ASTNODE_ as ASTNODE
 #endif
 
+#ifndef EMIT_NODE_
+type EMIT_NODE_ as EMIT_NODE
+#endif
+
 ''
 type FBARRAYDIM
 	lower			as integer
@@ -279,15 +283,9 @@ type FB_PROCDBG
 	incfile			as integer
 end type
 
-type FB_PROCSCPTB
-	head			as FBSYMBOL_ ptr
-	tail			as FBSYMBOL_ ptr
-end type
-
 type FB_PROCEXT
 	stk				as FB_PROCSTK 				'' to keep track of the stack frame
 	dbg				as FB_PROCDBG 				'' debugging
-	scptb			as FB_PROCSCPTB
 end type
 
 type FB_PROCRTL
@@ -313,13 +311,17 @@ type FB_SCOPEDBG
 	endlabel		as FBSYMBOL_ ptr
 end type
 
+type FB_SCOPEEMIT
+	baseofs			as integer
+	bytes			as integer
+	clrnode			as EMIT_NODE_ ptr			'' back track node
+end type
+
 type FBS_SCOPE
 	backnode		as ASTNODE_ ptr
 	loctb			as FBSYMBOLTB
-	baseofs			as integer
-	bytes			as integer
 	dbg				as FB_SCOPEDBG
-	next			as FBSYMBOL_ ptr			'' next in FB_PROCSCPTB's list
+	emit			as FB_SCOPEEMIT
 end type
 
 type FBS_VAR
@@ -766,8 +768,6 @@ declare function 	symbRemapType			( byval dtype as integer, _
 
 declare function 	symbProcAllocLocals		( byval proc as FBSYMBOL ptr ) as integer
 
-declare function 	symbProcAllocScopes		( byval proc as FBSYMBOL ptr ) as integer
-
 declare function 	symbScopeAllocLocals	( byval sym as FBSYMBOL ptr ) as integer
 
 declare function 	symbFreeDynVar			( byval s as FBSYMBOL ptr ) as ASTNODE ptr
@@ -972,8 +972,6 @@ declare function 	symbFreeDynVar			( byval s as FBSYMBOL ptr ) as ASTNODE ptr
 #define symbGetScope(s) s->scope
 
 #define symbGetScopeTb(s) s->scp.loctb
-
-#define symbGetScopeAllocSize(s) s->scp.bytes
 
 #define symbGetScopeTbHead(s) s->scp.loctb.head
 

@@ -159,6 +159,10 @@ declare sub 		irEmitPROCEND		( byval proc as FBSYMBOL ptr, _
 										  byval initlabel as FBSYMBOL ptr, _
 										  byval exitlabel as FBSYMBOL ptr )
 
+declare sub 		irEmitSCOPEBEGIN	( byval s as FBSYMBOL ptr )
+
+declare sub 		irEmitSCOPEEND		( byval s as FBSYMBOL ptr )
+
 declare sub 		irEmitVARINIBEGIN	( byval sym as FBSYMBOL ptr )
 
 declare sub 		irEmitVARINIEND		( byval sym as FBSYMBOL ptr )
