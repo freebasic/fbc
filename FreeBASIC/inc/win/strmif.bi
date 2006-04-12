@@ -9,6 +9,8 @@
 #ifndef __win_strmif_bi__
 #define __win_strmif_bi__
 
+#inclib "strmiids"
+
 #include once "win/rpc.bi"
 #include once "win/rpcndr.bi"
 
@@ -1421,6 +1423,25 @@ type IGraphBuilderVtbl
 	Abort as function(byval as IGraphBuilder ptr) as HRESULT
 	ShouldOperationContinue as function(byval as IGraphBuilder ptr) as HRESULT
 end type
+
+#define IGraphBuilder_QueryInterface(This,riid,ppvObject) (This)->lpVtbl -> QueryInterface(This,riid,ppvObject)
+#define IGraphBuilder_AddRef(This) (This)->lpVtbl -> AddRef(This)
+#define IGraphBuilder_Release(This) (This)->lpVtbl -> Release(This)
+#define IGraphBuilder_AddFilter(This,pFilter,pName) (This)->lpVtbl -> AddFilter(This,pFilter,pName)
+#define IGraphBuilder_RemoveFilter(This,pFilter) (This)->lpVtbl -> RemoveFilter(This,pFilter)
+#define IGraphBuilder_EnumFilters(This,ppEnum) (This)->lpVtbl -> EnumFilters(This,ppEnum)
+#define IGraphBuilder_FindFilterByName(This,pName,ppFilter) (This)->lpVtbl -> FindFilterByName(This,pName,ppFilter)
+#define IGraphBuilder_ConnectDirect(This,ppinOut,ppinIn,pmt) (This)->lpVtbl -> ConnectDirect(This,ppinOut,ppinIn,pmt)
+#define IGraphBuilder_Reconnect(This,ppin) (This)->lpVtbl -> Reconnect(This,ppin)
+#define IGraphBuilder_Disconnect(This,ppin) (This)->lpVtbl -> Disconnect(This,ppin)
+#define IGraphBuilder_SetDefaultSyncSource(This) (This)->lpVtbl -> SetDefaultSyncSource(This)
+#define IGraphBuilder_Connect(This,ppinOut,ppinIn) (This)->lpVtbl -> Connect(This,ppinOut,ppinIn)
+#define IGraphBuilder_Render(This,ppinOut) (This)->lpVtbl -> Render(This,ppinOut)
+#define IGraphBuilder_RenderFile(This,lpcwstrFile,lpcwstrPlayList) (This)->lpVtbl -> RenderFile(This,lpcwstrFile,lpcwstrPlayList)
+#define IGraphBuilder_AddSourceFilter(This,lpcwstrFileName,lpcwstrFilterName,ppFilter) (This)->lpVtbl -> AddSourceFilter(This,lpcwstrFileName,lpcwstrFilterName,ppFilter)
+#define IGraphBuilder_SetLogFile(This,hFile) (This)->lpVtbl -> SetLogFile(This,hFile)
+#define IGraphBuilder_Abort(This) (This)->lpVtbl -> Abort(This)
+#define IGraphBuilder_ShouldOperationContinue(This) (This)->lpVtbl -> ShouldOperationContinue(This)
 
 #ifdef WIN_INCLUDEPROXY
 declare function IGraphBuilder_Connect_Proxy alias "IGraphBuilder_Connect_Proxy" (byval This as IGraphBuilder ptr, byval ppinOut as IPin ptr, byval ppinIn as IPin ptr) as HRESULT
