@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __winsock2_bi__
-#define __winsock2_bi__
+#ifndef __win_winsock2_bi__
+#define __win_winsock2_bi__
 
 #include once "windows.bi"
 
@@ -670,7 +670,7 @@ type WSANETWORKEVENTS
 	iErrorCode(0 to 10-1) as integer
 end type
 
-type LPWSANETWORKEVENTS as _WSANETWORKEVENTS ptr
+type LPWSANETWORKEVENTS as WSANETWORKEVENTS ptr
 
 #define MAX_PROTOCOL_CHAIN 7
 #define BASE_PROTOCOL 1

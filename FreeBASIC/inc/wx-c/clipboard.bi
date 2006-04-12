@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __clipboard_bi__
-#define __clipboard_bi__
+#ifndef __wxc_clipboard_bi__
+#define __wxc_clipboard_bi__
 
 #include once "wx-c/wx.bi"
 

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __shlobj_bi__
-#define __shlobj_bi__
+#ifndef __win_shlobj_bi__
+#define __win_shlobj_bi__
 
 #include once "win/ole2.bi"
 #include once "win/shlguid.bi"

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __objsafe_bi__
-#define __objsafe_bi__
+#ifndef __win_objsafe_bi__
+#define __win_objsafe_bi__
 
 #define INTERFACESAFE_FOR_UNTRUSTED_CALLER &h00000001
 #define INTERFACESAFE_FOR_UNTRUSTED_DATA &h00000002

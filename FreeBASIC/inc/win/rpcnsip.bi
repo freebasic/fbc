@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __rpcnsip_bi__
-#define __rpcnsip_bi__
+#ifndef __win_rpcnsip_bi__
+#define __win_rpcnsip_bi__
 
 type RPC_IMPORT_CONTEXT_P
 	LookupContext as RPC_NS_HANDLE

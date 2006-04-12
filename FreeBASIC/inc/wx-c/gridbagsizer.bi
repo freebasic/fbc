@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __gridbagsizer_bi__
-#define __gridbagsizer_bi__
+#ifndef __wxc_gridbagsizer_bi__
+#define __wxc_gridbagsizer_bi__
 
 #include once "wx-c/wx.bi"
 

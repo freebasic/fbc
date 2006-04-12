@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __sspi_bi__
-#define __sspi_bi__
+#ifndef __win_sspi_bi__
+#define __win_sspi_bi__
 
 #define SECPKG_CRED_INBOUND 1
 #define SECPKG_CRED_OUTBOUND 2

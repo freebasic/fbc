@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __mmsystem_bi__
-#define __mmsystem_bi__
+#ifndef __win_mmsystem_bi__
+#define __win_mmsystem_bi__
 
 #inclib "winmm"
 

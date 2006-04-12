@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __exdisp_bi__
-#define __exdisp_bi__
+#ifndef __win_exdisp_bi__
+#define __win_exdisp_bi__
 
 #inclib "uuid"
 

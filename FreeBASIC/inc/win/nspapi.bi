@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __nspapi_bi__
-#define __nspapi_bi__
+#ifndef __win_nspapi_bi__
+#define __win_nspapi_bi__
 
 #inclib "wsock32"
 

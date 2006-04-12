@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __wizardpagesimple_bi__
-#define __wizardpagesimple_bi__
+#ifndef __wxc_wizardpagesimple_bi__
+#define __wxc_wizardpagesimple_bi__
 
 #include once "wx-c/wx.bi"
 #include once "wx-c/wizard.bi"

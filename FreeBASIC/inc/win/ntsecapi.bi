@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __ntsecapi_bi__
-#define __ntsecapi_bi__
+#ifndef __win_ntsecapi_bi__
+#define __win_ntsecapi_bi__
 
 #inclib "advapi32"
 
@@ -130,7 +130,7 @@
 #define TRUST_TYPE_MIT 3
 #define TRUST_TYPE_DCE 4
 
-#ifndef __ntdef_bi__
+#ifndef __win_ntdef_bi__
 type NTSTATUS as LONG
 type PNTSTATUS as LONG ptr
 
@@ -320,7 +320,7 @@ type PLSA_ENUMERATION_INFORMATION as LSA_ENUMERATION_INFORMATION ptr
 type LSA_OPERATIONAL_MODE as ULONG
 type PLSA_OPERATIONAL_MODE as ULONG ptr
 
-#ifndef __ntdef_bi__
+#ifndef __win_ntdef_bi__
 type LSA_OBJECT_ATTRIBUTES
 	Length as ULONG
 	RootDirectory as HANDLE

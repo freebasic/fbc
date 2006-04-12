@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __lzexpand_bi__
-#define __lzexpand_bi__
+#ifndef __win_lzexpand_bi__
+#define __win_lzexpand_bi__
 
 #define LZERROR_BADINHANDLE (-1)
 #define LZERROR_BADOUTHANDLE (-2)

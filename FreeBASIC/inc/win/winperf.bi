@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __winperf_bi__
-#define __winperf_bi__
+#ifndef __win_winperf_bi__
+#define __win_winperf_bi__
 
 #define PERF_DATA_VERSION 1
 #define PERF_DATA_REVISION 1

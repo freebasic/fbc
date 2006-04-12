@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __shlwapi_bi__
-#define __shlwapi_bi__
+#ifndef __win_shlwapi_bi__
+#define __win_shlwapi_bi__
 
 #include once "win/objbase.bi"
 #include once "win/shlobj.bi"

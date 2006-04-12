@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dmusici_bi__
-#define __dmusici_bi__
+#ifndef __win_dmusici_bi__
+#define __win_dmusici_bi__
 
 #include once "windows.bi"
 #include once "win/ole2.bi"

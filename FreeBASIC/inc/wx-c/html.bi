@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __html_bi__
-#define __html_bi__
+#ifndef __wxc_html_bi__
+#define __wxc_html_bi__
 
 #include once "wx-c/wx.bi"
 

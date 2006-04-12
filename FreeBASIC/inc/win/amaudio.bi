@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __amaudio_bi__
-#define __amaudio_bi__
+#ifndef __win_amaudio_bi__
+#define __win_amaudio_bi__
 
 #include once "win/mmsystem.bi"
 #include once "win/dsound.bi"

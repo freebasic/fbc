@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __ipexport_bi__
-#define __ipexport_bi__
+#ifndef __win_ipexport_bi__
+#define __win_ipexport_bi__
 
 #ifndef ANY_SIZE
 #define ANY_SIZE 1

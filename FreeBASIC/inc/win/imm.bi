@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __imm_bi__
-#define __imm_bi__
+#ifndef __win_imm_bi__
+#define __win_imm_bi__
 
 #inclib "imm32"
 

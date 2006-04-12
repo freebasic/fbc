@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __pen_bi__
-#define __pen_bi__
+#ifndef __wxc_pen_bi__
+#define __wxc_pen_bi__
 
 #include once "wx-c/wx.bi"
 

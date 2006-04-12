@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __basetyps_bi__
-#define __basetyps_bi__
+#ifndef __win_basetyps_bi__
+#define __win_basetyps_bi__
 
 #define STDMETHOD(m) m as as function
 #define PURE

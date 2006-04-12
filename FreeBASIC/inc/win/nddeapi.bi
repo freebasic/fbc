@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __nddeapi_bi__
-#define __nddeapi_bi__
+#ifndef __win_nddeapi_bi__
+#define __win_nddeapi_bi__
 
 #inclib "nddeapi"
 

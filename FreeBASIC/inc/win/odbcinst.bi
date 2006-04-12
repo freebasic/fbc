@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __odbcinst_bi__
-#define __odbcinst_bi__
+#ifndef __win_odbcinst_bi__
+#define __win_odbcinst_bi__
 
 #include once "win/sql.bi"
 

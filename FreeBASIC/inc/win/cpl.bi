@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __cpl_bi__
-#define __cpl_bi__
+#ifndef __win_cpl_bi__
+#define __win_cpl_bi__
 
 #define WM_CPL_LAUNCH (1024+1000)
 #define WM_CPL_LAUNCHED (1024+1001)

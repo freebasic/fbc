@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __evthandler_bi__
-#define __evthandler_bi__
+#ifndef __wxc_evthandler_bi__
+#define __wxc_evthandler_bi__
 
 #include once "wx-c/wx.bi"
 

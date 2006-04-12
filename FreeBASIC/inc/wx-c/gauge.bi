@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __gauge_bi__
-#define __gauge_bi__
+#ifndef __wxc_gauge_bi__
+#define __wxc_gauge_bi__
 
 #include once "wx-c/wx.bi"
 

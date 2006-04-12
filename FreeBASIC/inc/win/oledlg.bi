@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __oledlg_bi__
-#define __oledlg_bi__
+#ifndef __win_oledlg_bi__
+#define __win_oledlg_bi__
 
 #inclib "oledlg"
 

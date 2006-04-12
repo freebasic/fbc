@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __commctrl_bi__
-#define __commctrl_bi__
+#ifndef __win_commctrl_bi__
+#define __win_commctrl_bi__
 
 #inclib "comctl32"
 
@@ -2051,15 +2051,14 @@ end type
 
 type LPNMUPDOWN as NM_UPDOWN ptr
 
-type _LVHITTESTINFO
+type LVHITTESTINFO
 	pt as POINT
 	flags as UINT
 	iItem as integer
 	iSubItem as integer
 end type
 
-type LVHITTESTINFO as _LVHITTESTINFO
-type LPLVHITTESTINFO as _LVHITTESTINFO ptr
+type LPLVHITTESTINFO as LVHITTESTINFO ptr
 
 #ifndef UNICODE
 type LVITEMA

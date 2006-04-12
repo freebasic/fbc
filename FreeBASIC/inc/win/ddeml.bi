@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __ddeml_bi__
-#define __ddeml_bi__
+#ifndef __win_ddeml_bi__
+#define __win_ddeml_bi__
 
 #define CP_WINANSI 1004
 #define CP_WINUNICODE 1200

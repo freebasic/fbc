@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dataformat_bi__
-#define __dataformat_bi__
+#ifndef __wxc_dataformat_bi__
+#define __wxc_dataformat_bi__
 
 #include once "wx-c/wx.bi"
 

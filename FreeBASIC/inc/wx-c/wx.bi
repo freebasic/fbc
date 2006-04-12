@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __wx_bi__
-#define __wx_bi__
+#ifndef __wxc_wx_bi__
+#define __wxc_wx_bi__
 
 #inclib "wx-c"
 

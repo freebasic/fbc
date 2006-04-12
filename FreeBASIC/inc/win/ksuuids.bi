@@ -9,8 +9,8 @@
 #ifndef __win_ksuuids_bi__
 #define __win_ksuuids_bi__
 
-#include "uuid"
-#include "dxguid"
+#inclib "uuid"
+#inclib "dxguid"
 
 extern MEDIATYPE_MPEG2_PACK alias "MEDIATYPE_MPEG2_PACK" as GUID
 extern MEDIATYPE_MPEG2_PES alias "MEDIATYPE_MPEG2_PES" as GUID

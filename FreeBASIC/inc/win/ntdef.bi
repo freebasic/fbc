@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __ntdef_bi__
-#define __ntdef_bi__
+#ifndef __win_ntdef_bi__
+#define __win_ntdef_bi__
 
 #define OBJ_INHERIT 2L
 #define OBJ_PERMANENT 16L

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __listbook_bi__
-#define __listbook_bi__
+#ifndef __wxc_listbook_bi__
+#define __wxc_listbook_bi__
 
 #include once "wx-c/wx.bi"
 

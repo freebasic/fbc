@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dpaddr_bi__
-#define __dpaddr_bi__
+#ifndef __win_dpaddr_bi__
+#define __win_dpaddr_bi__
 
 #include once "win/ole2.bi"
 #include once "win/dplay8.bi"

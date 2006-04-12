@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dmusbuff_bi__
-#define __dmusbuff_bi__
+#ifndef __win_dmusbuff_bi__
+#define __win_dmusbuff_bi__
 
 type DMUS_EVENTHEADER field=4
 	cbEvent as DWORD

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __styledtextctrl_bi__
-#define __styledtextctrl_bi__
+#ifndef __wxc_styledtextctrl_bi__
+#define __wxc_styledtextctrl_bi__
 
 #include once "wx-c/wx.bi"
 

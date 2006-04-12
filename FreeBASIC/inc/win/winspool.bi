@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __winspool_bi__
-#define __winspool_bi__
+#ifndef __win_winspool_bi__
+#define __win_winspool_bi__
 
 #inclib "winspool"
 

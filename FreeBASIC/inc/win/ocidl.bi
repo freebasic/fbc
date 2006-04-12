@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __ocidl_bi__
-#define __ocidl_bi__
+#ifndef __win_ocidl_bi__
+#define __win_ocidl_bi__
 
 #include once "win/ole2.bi"
 

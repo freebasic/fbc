@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __security_bi__
-#define __security_bi__
+#ifndef __win_security_bi__
+#define __win_security_bi__
 
 #inclib "secur32"
 

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __imghandler_bi__
-#define __imghandler_bi__
+#ifndef __wxc_imghandler_bi__
+#define __wxc_imghandler_bi__
 
 #include once "wx-c/wx.bi"
 #include once "wx-c/image.bi"

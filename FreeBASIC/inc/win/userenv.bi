@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __userenv_bi__
-#define __userenv_bi__
+#ifndef __win_userenv_bi__
+#define __win_userenv_bi__
 
 #inclib "userenv"
 

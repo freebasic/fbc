@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __d3d9types_bi__
-#define __d3d9types_bi__
+#ifndef __win_d3d9types_bi__
+#define __win_d3d9types_bi__
 
 #ifndef DIRECT3D_VERSION
 #define DIRECT3D_VERSION &h0900

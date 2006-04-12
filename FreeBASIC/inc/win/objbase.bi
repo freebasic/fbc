@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __objbase_bi__
-#define __objbase_bi__
+#ifndef __win_objbase_bi__
+#define __win_objbase_bi__
 
 #include once "win/rpc.bi"
 #include once "win/rpcndr.bi"

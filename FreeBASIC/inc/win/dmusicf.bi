@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dmusicf_bi__
-#define __dmusicf_bi__
+#ifndef __win_dmusicf_bi__
+#define __win_dmusicf_bi__
 
 #include once "windows.bi"
 #define COM_NO_WINDOWS_H 1

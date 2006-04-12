@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __memory_bi__
-#define __memory_bi__
+#ifndef __ode_memory_bi__
+#define __ode_memory_bi__
 
 #include once "ode/config.bi"
 

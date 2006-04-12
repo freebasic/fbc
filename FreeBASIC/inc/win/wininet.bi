@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __wininet_bi__
-#define __wininet_bi__
+#ifndef __win_wininet_bi__
+#define __win_wininet_bi__
 
 #include once "windows.bi"
 

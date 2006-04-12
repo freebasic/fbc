@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __comcat_bi__
-#define __comcat_bi__
+#ifndef __win_comcat_bi__
+#define __win_comcat_bi__
 
 #inclib "uuid"
 

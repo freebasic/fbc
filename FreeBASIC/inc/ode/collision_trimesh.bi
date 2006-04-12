@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __collision_trimesh_bi__
-#define __collision_trimesh_bi__
+#ifndef __ode_collision_trimesh_bi__
+#define __ode_collision_trimesh_bi__
 
 type dTriMeshDataID as dxTriMeshData ptr
 

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dde_bi__
-#define __dde_bi__
+#ifndef __win_dde_bi__
+#define __win_dde_bi__
 
 #define WM_DDE_FIRST &h03E0
 #define WM_DDE_INITIATE (&h03E0)

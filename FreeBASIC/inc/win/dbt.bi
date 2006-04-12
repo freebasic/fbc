@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dbt_bi__
-#define __dbt_bi__
+#ifndef __win_dbt_bi__
+#define __win_dbt_bi__
 
 #define DBT_NO_DISK_SPACE &h47
 #define DBT_CONFIGMGPRIVATE &h7FFF

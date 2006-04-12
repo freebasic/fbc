@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dmdls_bi__
-#define __dmdls_bi__
+#ifndef __win_dmdls_bi__
+#define __win_dmdls_bi__
 
 #include once "win/dls1.bi"
 
@@ -162,6 +162,6 @@ type DMUS_WAVEDL
 	cbWaveData as ULONG
 end type
 
-type LPDMUS_WAVEDL as _DMUS_WAVEDL ptr
+type LPDMUS_WAVEDL as DMUS_WAVEDL ptr
 
 #endif

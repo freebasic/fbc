@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __vscroll_bi__
-#define __vscroll_bi__
+#ifndef __wxc_vscroll_bi__
+#define __wxc_vscroll_bi__
 
 #include once "wx-c/wx.bi"
 

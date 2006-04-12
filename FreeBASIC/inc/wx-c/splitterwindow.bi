@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __splitterwindow_bi__
-#define __splitterwindow_bi__
+#ifndef __wxc_splitterwindow_bi__
+#define __wxc_splitterwindow_bi__
 
 #include once "wx-c/wx.bi"
 

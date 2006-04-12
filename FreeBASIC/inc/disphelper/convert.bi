@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __convert_bi__
-#define __convert_bi__
+#ifndef __disphelper_convert_bi__
+#define __disphelper_convert_bi__
 
 #include once "win/objbase.bi"
 

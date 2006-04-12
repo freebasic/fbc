@@ -222,7 +222,7 @@ type ALLOCATOR_PROPERTIES
 end type
 
 type PIN_INFO
-	pFilter as IBaseFilter ptr
+	pFilter as IBaseFilter_ ptr
 	dir as PIN_DIRECTION
 	achName(0 to 128-1) as WCHAR
 end type
@@ -248,7 +248,7 @@ type IPinVtbl
 	QueryDirection as function(byval as IPin ptr, byval as PIN_DIRECTION ptr) as HRESULT
 	QueryId as function(byval as IPin ptr, byval as LPWSTR ptr) as HRESULT
 	QueryAccept as function(byval as IPin ptr, byval as AM_MEDIA_TYPE ptr) as HRESULT
-	EnumMediaTypes as function(byval as IPin ptr, byval as IEnumMediaTypes ptr ptr) as HRESULT
+	EnumMediaTypes as function(byval as IPin ptr, byval as IEnumMediaTypes_ ptr ptr) as HRESULT
 	QueryInternalConnections as function(byval as IPin ptr, byval as IPin ptr ptr, byval as ULONG ptr) as HRESULT
 	EndOfStream as function(byval as IPin ptr) as HRESULT
 	BeginFlush as function(byval as IPin ptr) as HRESULT
@@ -365,10 +365,10 @@ type IFilterGraphVtbl
 	QueryInterface as function(byval as IFilterGraph ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
 	AddRef as function(byval as IFilterGraph ptr) as ULONG
 	Release as function(byval as IFilterGraph ptr) as ULONG
-	AddFilter as function(byval as IFilterGraph ptr, byval as IBaseFilter ptr, byval as LPCWSTR) as HRESULT
-	RemoveFilter as function(byval as IFilterGraph ptr, byval as IBaseFilter ptr) as HRESULT
-	EnumFilters as function(byval as IFilterGraph ptr, byval as IEnumFilters ptr ptr) as HRESULT
-	FindFilterByName as function(byval as IFilterGraph ptr, byval as LPCWSTR, byval as IBaseFilter ptr ptr) as HRESULT
+	AddFilter as function(byval as IFilterGraph ptr, byval as IBaseFilter_ ptr, byval as LPCWSTR) as HRESULT
+	RemoveFilter as function(byval as IFilterGraph ptr, byval as IBaseFilter_ ptr) as HRESULT
+	EnumFilters as function(byval as IFilterGraph ptr, byval as IEnumFilters_ ptr ptr) as HRESULT
+	FindFilterByName as function(byval as IFilterGraph ptr, byval as LPCWSTR, byval as IBaseFilter_ ptr ptr) as HRESULT
 	ConnectDirect as function(byval as IFilterGraph ptr, byval as IPin ptr, byval as IPin ptr, byval as AM_MEDIA_TYPE ptr) as HRESULT
 	Reconnect as function(byval as IFilterGraph ptr, byval as IPin ptr) as HRESULT
 	Disconnect as function(byval as IFilterGraph ptr, byval as IPin ptr) as HRESULT
@@ -408,7 +408,7 @@ type IEnumFiltersVtbl
 	QueryInterface as function(byval as IEnumFilters ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
 	AddRef as function(byval as IEnumFilters ptr) as ULONG
 	Release as function(byval as IEnumFilters ptr) as ULONG
-	Next as function(byval as IEnumFilters ptr, byval as ULONG, byval as IBaseFilter ptr ptr, byval as ULONG ptr) as HRESULT
+	Next as function(byval as IEnumFilters ptr, byval as ULONG, byval as IBaseFilter_ ptr ptr, byval as ULONG ptr) as HRESULT
 	Skip as function(byval as IEnumFilters ptr, byval as ULONG) as HRESULT
 	Reset as function(byval as IEnumFilters ptr) as HRESULT
 	Clone as function(byval as IEnumFilters ptr, byval as IEnumFilters ptr ptr) as HRESULT
@@ -450,8 +450,8 @@ type IMediaFilterVtbl
 	Pause as function(byval as IMediaFilter ptr) as HRESULT
 	Run as function(byval as IMediaFilter ptr, byval as REFERENCE_TIME) as HRESULT
 	GetState as function(byval as IMediaFilter ptr, byval as DWORD, byval as FILTER_STATE ptr) as HRESULT
-	SetSyncSource as function(byval as IMediaFilter ptr, byval as IReferenceClock ptr) as HRESULT
-	GetSyncSource as function(byval as IMediaFilter ptr, byval as IReferenceClock ptr ptr) as HRESULT
+	SetSyncSource as function(byval as IMediaFilter ptr, byval as IReferenceClock_ ptr) as HRESULT
+	GetSyncSource as function(byval as IMediaFilter ptr, byval as IReferenceClock_ ptr ptr) as HRESULT
 end type
 
 #ifdef WIN_INCLUDEPROXY
@@ -493,8 +493,8 @@ type IBaseFilterVtbl
 	Pause as function(byval as IBaseFilter ptr) as HRESULT
 	Run as function(byval as IBaseFilter ptr, byval as REFERENCE_TIME) as HRESULT
 	GetState as function(byval as IBaseFilter ptr, byval as DWORD, byval as FILTER_STATE ptr) as HRESULT
-	SetSyncSource as function(byval as IBaseFilter ptr, byval as IReferenceClock ptr) as HRESULT
-	GetSyncSource as function(byval as IBaseFilter ptr, byval as IReferenceClock ptr ptr) as HRESULT
+	SetSyncSource as function(byval as IBaseFilter ptr, byval as IReferenceClock_ ptr) as HRESULT
+	GetSyncSource as function(byval as IBaseFilter ptr, byval as IReferenceClock_ ptr ptr) as HRESULT
 	EnumPins as function(byval as IBaseFilter ptr, byval as IEnumPins ptr ptr) as HRESULT
 	FindPin as function(byval as IBaseFilter ptr, byval as LPCWSTR, byval as IPin ptr ptr) as HRESULT
 	QueryFilterInfo as function(byval as IBaseFilter ptr, byval as FILTER_INFO ptr) as HRESULT
@@ -517,6 +517,7 @@ declare sub IBaseFilter_QueryVendorInfo_Stub alias "IBaseFilter_QueryVendorInfo_
 
 type PFILTER as IBaseFilter ptr
 
+#ifndef __win_dsound_bi__
 extern IID_IReferenceClock alias "IID_IReferenceClock" as IID
 
 type IReferenceClockVtbl_ as IReferenceClockVtbl
@@ -534,6 +535,7 @@ type IReferenceClockVtbl
 	AdvisePeriodic as function(byval as IReferenceClock ptr, byval as REFERENCE_TIME, byval as REFERENCE_TIME, byval as HSEMAPHORE, byval as DWORD_PTR ptr) as HRESULT
 	Unadvise as function(byval as IReferenceClock ptr, byval as DWORD_PTR) as HRESULT
 end type
+#endif
 
 #ifdef WIN_INCLUDEPROXY
 declare function IReferenceClock_GetTime_Proxy alias "IReferenceClock_GetTime_Proxy" (byval This as IReferenceClock ptr, byval pTime as REFERENCE_TIME ptr) as HRESULT
@@ -567,6 +569,7 @@ type IReferenceClock2Vtbl
 end type
 
 type PREFERENCECLOCK2 as IReferenceClock2 ptr
+
 extern IID_IMediaSample alias "IID_IMediaSample" as IID
 
 type IMediaSampleVtbl_ as IMediaSampleVtbl
@@ -760,7 +763,7 @@ type IMemAllocatorCallbackTempVtbl
 	Decommit as function(byval as IMemAllocatorCallbackTemp ptr) as HRESULT
 	GetBuffer as function(byval as IMemAllocatorCallbackTemp ptr, byval as IMediaSample ptr ptr, byval as REFERENCE_TIME ptr, byval as REFERENCE_TIME ptr, byval as DWORD) as HRESULT
 	ReleaseBuffer as function(byval as IMemAllocatorCallbackTemp ptr, byval as IMediaSample ptr) as HRESULT
-	SetNotify as function(byval as IMemAllocatorCallbackTemp ptr, byval as IMemAllocatorNotifyCallbackTemp ptr) as HRESULT
+	SetNotify as function(byval as IMemAllocatorCallbackTemp ptr, byval as IMemAllocatorNotifyCallbackTemp_ ptr) as HRESULT
 	GetFreeCount as function(byval as IMemAllocatorCallbackTemp ptr, byval as LONG ptr) as HRESULT
 end type
 
@@ -1454,7 +1457,7 @@ type ICaptureGraphBuilderVtbl
 	RenderStream as function(byval as ICaptureGraphBuilder ptr, byval as GUID ptr, byval as IUnknown ptr, byval as IBaseFilter ptr, byval as IBaseFilter ptr) as HRESULT
 	ControlStream as function(byval as ICaptureGraphBuilder ptr, byval as GUID ptr, byval as IBaseFilter ptr, byval as REFERENCE_TIME ptr, byval as REFERENCE_TIME ptr, byval as WORD, byval as WORD) as HRESULT
 	AllocCapFile as function(byval as ICaptureGraphBuilder ptr, byval as LPCOLESTR, byval as DWORDLONG) as HRESULT
-	CopyCaptureFile as function(byval as ICaptureGraphBuilder ptr, byval as LPOLESTR, byval as LPOLESTR, byval as integer, byval as IAMCopyCaptureFileProgress ptr) as HRESULT
+	CopyCaptureFile as function(byval as ICaptureGraphBuilder ptr, byval as LPOLESTR, byval as LPOLESTR, byval as integer, byval as IAMCopyCaptureFileProgress_ ptr) as HRESULT
 end type
 
 #ifdef WIN_INCLUDEPROXY
@@ -2504,8 +2507,8 @@ type IAMTunerVtbl
 	put_Mode as function(byval as IAMTuner ptr, byval as AMTunerModeType) as HRESULT
 	get_Mode as function(byval as IAMTuner ptr, byval as AMTunerModeType ptr) as HRESULT
 	GetAvailableModes as function(byval as IAMTuner ptr, byval as integer ptr) as HRESULT
-	RegisterNotificationCallBack as function(byval as IAMTuner ptr, byval as IAMTunerNotification ptr, byval as integer) as HRESULT
-	UnRegisterNotificationCallBack as function(byval as IAMTuner ptr, byval as IAMTunerNotification ptr) as HRESULT
+	RegisterNotificationCallBack as function(byval as IAMTuner ptr, byval as IAMTunerNotification_ ptr, byval as integer) as HRESULT
+	UnRegisterNotificationCallBack as function(byval as IAMTuner ptr, byval as IAMTunerNotification_ ptr) as HRESULT
 end type
 
 #ifdef WIN_INCLUDEPROXY
@@ -4383,7 +4386,7 @@ enum DVD_TITLE_APPMODE
 	DVD_AppMode_Other = 3
 end enum
 
-type DVD_TitleMainAttributes
+type DVD_TitleAttributes
 	AppMode as DVD_TITLE_APPMODE
 	VideoAttributes as DVD_VideoAttributes
 	ulNumberOfAudioStreams as ULONG
@@ -5061,7 +5064,7 @@ type IDDrawExclModeVideoVtbl
 	GetDDrawSurface as function(byval as IDDrawExclModeVideo ptr, byval as IDirectDrawSurface ptr ptr, byval as BOOL ptr) as HRESULT
 	SetDrawParameters as function(byval as IDDrawExclModeVideo ptr, byval as RECT ptr, byval as RECT ptr) as HRESULT
 	GetNativeVideoProps as function(byval as IDDrawExclModeVideo ptr, byval as DWORD ptr, byval as DWORD ptr, byval as DWORD ptr, byval as DWORD ptr) as HRESULT
-	SetCallbackInterface as function(byval as IDDrawExclModeVideo ptr, byval as IDDrawExclModeVideoCallback ptr, byval as DWORD) as HRESULT
+	SetCallbackInterface as function(byval as IDDrawExclModeVideo ptr, byval as IDDrawExclModeVideoCallback_ ptr, byval as DWORD) as HRESULT
 end type
 
 #ifdef WIN_INCLUDEPROXY
@@ -5190,7 +5193,7 @@ type IGraphConfigVtbl
 	AddRef as function(byval as IGraphConfig ptr) as ULONG
 	Release as function(byval as IGraphConfig ptr) as ULONG
 	Reconnect as function(byval as IGraphConfig ptr, byval as IPin ptr, byval as IPin ptr, byval as AM_MEDIA_TYPE ptr, byval as IBaseFilter ptr, byval as HANDLE, byval as DWORD) as HRESULT
-	Reconfigure as function(byval as IGraphConfig ptr, byval as IGraphConfigCallback ptr, byval as PVOID, byval as DWORD, byval as HANDLE) as HRESULT
+	Reconfigure as function(byval as IGraphConfig ptr, byval as IGraphConfigCallback_ ptr, byval as PVOID, byval as DWORD, byval as HANDLE) as HRESULT
 	AddFilterToCache as function(byval as IGraphConfig ptr, byval as IBaseFilter ptr) as HRESULT
 	EnumCacheFilter as function(byval as IGraphConfig ptr, byval as IEnumFilters ptr ptr) as HRESULT
 	RemoveFilterFromCache as function(byval as IGraphConfig ptr, byval as IBaseFilter ptr) as HRESULT
@@ -5353,7 +5356,7 @@ type IVMRSurfaceAllocatorVtbl
 	AllocateSurface as function(byval as IVMRSurfaceAllocator ptr, byval as DWORD_PTR, byval as VMRALLOCATIONINFO ptr, byval as DWORD ptr, byval as LPDIRECTDRAWSURFACE7 ptr) as HRESULT
 	FreeSurface as function(byval as IVMRSurfaceAllocator ptr, byval as DWORD_PTR) as HRESULT
 	PrepareSurface as function(byval as IVMRSurfaceAllocator ptr, byval as DWORD_PTR, byval as LPDIRECTDRAWSURFACE7, byval as DWORD) as HRESULT
-	AdviseNotify as function(byval as IVMRSurfaceAllocator ptr, byval as IVMRSurfaceAllocatorNotify ptr) as HRESULT
+	AdviseNotify as function(byval as IVMRSurfaceAllocator ptr, byval as IVMRSurfaceAllocatorNotify_ ptr) as HRESULT
 end type
 
 #ifdef WIN_INCLUDEPROXY
@@ -5539,8 +5542,8 @@ declare sub IVMRMixerControl_GetMixingPrefs_Stub alias "IVMRMixerControl_GetMixi
 #endif
 
 type VMRGUID
-	pGUID as _GUID ptr
-	GUID as _GUID
+	pGUID as GUID ptr
+	GUID as GUID
 end type
 
 type VMRMONITORINFO
@@ -5612,11 +5615,17 @@ end enum
 
 extern IID_IVMRFilterConfig alias "IID_IVMRFilterConfig" as IID
 
+type IVMRFilterConfigVtbl_ as IVMRFilterConfigVtbl
+
+type IVMRFilterConfig
+	lpVtbl as IVMRFilterConfigVtbl_ ptr
+end type
+
 type IVMRFilterConfigVtbl
 	QueryInterface as function(byval as IVMRFilterConfig ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
 	AddRef as function(byval as IVMRFilterConfig ptr) as ULONG
 	Release as function(byval as IVMRFilterConfig ptr) as ULONG
-	SetImageCompositor as function(byval as IVMRFilterConfig ptr, byval as IVMRImageCompositor ptr) as HRESULT
+	SetImageCompositor as function(byval as IVMRFilterConfig ptr, byval as IVMRImageCompositor_ ptr) as HRESULT
 	SetNumberOfStreams as function(byval as IVMRFilterConfig ptr, byval as DWORD) as HRESULT
 	GetNumberOfStreams as function(byval as IVMRFilterConfig ptr, byval as DWORD ptr) as HRESULT
 	SetRenderingPrefs as function(byval as IVMRFilterConfig ptr, byval as DWORD) as HRESULT
@@ -5624,12 +5633,6 @@ type IVMRFilterConfigVtbl
 	SetRenderingMode as function(byval as IVMRFilterConfig ptr, byval as DWORD) as HRESULT
 	GetRenderingMode as function(byval as IVMRFilterConfig ptr, byval as DWORD ptr) as HRESULT
 end type
-
-type IVMRFilterConfig
-	lpVtbl as IVMRFilterConfigVtbl_ ptr
-end type
-
-type IVMRFilterConfigVtbl_ as IVMRFilterConfigVtbl
 
 #ifdef WIN_INCLUDEPROXY
 declare function IVMRFilterConfig_SetImageCompositor_Proxy alias "IVMRFilterConfig_SetImageCompositor_Proxy" (byval This as IVMRFilterConfig ptr, byval lpVMRImgCompositor as IVMRImageCompositor ptr) as HRESULT

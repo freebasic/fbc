@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __wsahelp_bi__
-#define __wsahelp_bi__
+#ifndef __win_wsahelp_bi__
+#define __win_wsahelp_bi__
 
 #ifndef UNICODE
 #error UNICODE only
@@ -64,7 +64,7 @@ type WINSOCK_MAPPING
 	Mapping as WINSOCK_MAPPING_Mapping ptr
 end type
 
-type PWINSOCK_MAPPING as _WINSOCK_MAPPING ptr
+type PWINSOCK_MAPPING as WINSOCK_MAPPING ptr
 
 type SOCKADDR_INFO
 	AddressInfo as SOCKADDR_ADDRESS_INFO

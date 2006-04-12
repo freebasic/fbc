@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dxerr8_bi__
-#define __dxerr8_bi__
+#ifndef __win_dxerr8_bi__
+#define __win_dxerr8_bi__
 
 #inclib "dxerr8"
 

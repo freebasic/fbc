@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __winerror_bi__
-#define __winerror_bi__
+#ifndef __win_winerror_bi__
+#define __win_winerror_bi__
 
 #define ERROR_SUCCESS 0L
 #define NO_ERROR 0L

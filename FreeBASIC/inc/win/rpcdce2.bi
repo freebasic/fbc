@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __rpcdce2_bi__
-#define __rpcdce2_bi__
+#ifndef __win_rpcdce2_bi__
+#define __win_rpcdce2_bi__
 
 #include once "win/rpcdce.bi"
 

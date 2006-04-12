@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __aclapi_bi__
-#define __aclapi_bi__
+#ifndef __win_aclapi_bi__
+#define __win_aclapi_bi__
 
 #include once "windows.bi"
 #include once "win/accctrl.bi"

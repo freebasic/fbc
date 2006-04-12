@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __spinctrl_bi__
-#define __spinctrl_bi__
+#ifndef __wxc_spinctrl_bi__
+#define __wxc_spinctrl_bi__
 
 #include once "wx-c/wx.bi"
 

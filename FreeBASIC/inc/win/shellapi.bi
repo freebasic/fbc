@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __shellapi_bi__
-#define __shellapi_bi__
+#ifndef __win_shellapi_bi__
+#define __win_shellapi_bi__
 
 #inclib "shell32"
 

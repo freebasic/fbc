@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __oaidl_bi__
-#define __oaidl_bi__
+#ifndef __win_oaidl_bi__
+#define __win_oaidl_bi__
 
 #define __VARIANT_NAME_1
 #define __VARIANT_NAME_2
@@ -134,11 +134,11 @@ type SAFEARR_DISPATCH
 	apDispatch as LPDISPATCH ptr
 end type
 
-type _wireVARIANT as VARIANT
+type VARIANT_ as VARIANT
 
 type SAFEARR_VARIANT
 	Size as ULONG
-	aVariant as _wireVARIANT ptr
+	aVariant as VARIANT_ ptr
 end type
 
 enum SF_TYPE

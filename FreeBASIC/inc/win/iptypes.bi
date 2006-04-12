@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __iptypes_bi__
-#define __iptypes_bi__
+#ifndef __win_iptypes_bi__
+#define __win_iptypes_bi__
 
 #ifndef time_t
 type time_t as integer

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __intshcut_bi__
-#define __intshcut_bi__
+#ifndef __win_intshcut_bi__
+#define __win_intshcut_bi__
 
 #inclib "url"
 

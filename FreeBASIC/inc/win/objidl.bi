@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __objidl_bi__
-#define __objidl_bi__
+#ifndef __win_objidl_bi__
+#define __win_objidl_bi__
 
 #include once "win/objfwd.bi"
 

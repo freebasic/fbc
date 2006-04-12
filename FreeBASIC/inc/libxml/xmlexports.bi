@@ -6,7 +6,7 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __xmlexports_bi__
-#define __xmlexports_bi__
+#define __xml_xmlexports_bi__
+#define __xml_xmlexports_bi__
 
 #endif

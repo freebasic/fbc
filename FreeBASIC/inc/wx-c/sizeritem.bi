@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __sizeritem_bi__
-#define __sizeritem_bi__
+#ifndef __wxc_sizeritem_bi__
+#define __wxc_sizeritem_bi__
 
 #include once "wx-c/wx.bi"
 

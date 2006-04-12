@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __xmlresource_bi__
-#define __xmlresource_bi__
+#ifndef __wxc_xmlresource_bi__
+#define __wxc_xmlresource_bi__
 
 #include once "wx-c/wx.bi"
 

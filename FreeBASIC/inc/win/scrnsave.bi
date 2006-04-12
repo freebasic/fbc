@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __scrnsave_bi__
-#define __scrnsave_bi__
+#ifndef __win_scrnsave_bi__
+#define __win_scrnsave_bi__
 
 #define DLG_SCRNSAVECONFIGURE 2003
 #define idsIsPassword 1000

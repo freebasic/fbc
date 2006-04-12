@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __richedit_bi__
-#define __richedit_bi__
+#ifndef __win_richedit_bi__
+#define __win_richedit_bi__
 
 #ifdef UNICODE 
 #define RICHEDIT_CLASS "RichEdit20W"

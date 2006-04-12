@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __msacm_bi__
-#define __msacm_bi__
+#ifndef __win_msacm_bi__
+#define __win_msacm_bi__
 
 #inclib "msacm32"
 

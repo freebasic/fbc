@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __d3dtypes_bi__
-#define __d3dtypes_bi__
+#ifndef __win_d3dtypes_bi__
+#define __win_d3dtypes_bi__
 
 #include once "windows.bi"
 #include once "win/ddraw.bi"

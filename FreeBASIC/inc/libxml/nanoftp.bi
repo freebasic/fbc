@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __nanoftp_bi__
-#define __nanoftp_bi__
+#define __xml_nanoftp_bi__
+#define __xml_nanoftp_bi__
 
 #include once "libxml/xmlversion.bi"
 

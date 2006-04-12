@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __windef_bi__
-#define __windef_bi__
+#ifndef __win_windef_bi__
+#define __win_windef_bi__
 
 #ifndef WINVER
 #define WINVER &h0400

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __custcntl_bi__
-#define __custcntl_bi__
+#ifndef __win_custcntl_bi__
+#define __win_custcntl_bi__
 
 #define CCF_NOTEXT 1
 #define CCHCCCLASS 32

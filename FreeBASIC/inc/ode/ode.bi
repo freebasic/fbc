@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __ode_bi__
-#define __ode_bi__
+#ifndef __ode_ode_bi__
+#define __ode_ode_bi__
 
 #inclib "ode"
 

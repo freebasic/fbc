@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __statusbar_bi__
-#define __statusbar_bi__
+#ifndef __wxc_statusbar_bi__
+#define __wxc_statusbar_bi__
 
 #include once "wx-c/wx.bi"
 

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __treectrl_bi__
-#define __treectrl_bi__
+#ifndef __wxc_treectrl_bi__
+#define __wxc_treectrl_bi__
 
 #include once "wx-c/wx.bi"
 

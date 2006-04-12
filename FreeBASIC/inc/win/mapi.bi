@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __mapi_bi__
-#define __mapi_bi__
+#ifndef __win_mapi_bi__
+#define __win_mapi_bi__
 
 #inclib "mapi32"
 

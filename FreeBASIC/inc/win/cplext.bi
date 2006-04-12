@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __cplext_bi__
-#define __cplext_bi__
+#ifndef __win_cplext_bi__
+#define __win_cplext_bi__
 
 #define CPLPAGE_MOUSE_BUTTONS 1
 #define CPLPAGE_MOUSE_PTRMOTION 2

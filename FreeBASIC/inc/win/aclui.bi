@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __aclui_bi__
-#define __aclui_bi__
+#ifndef __win_aclui_bi__
+#define __win_aclui_bi__
 
 #inclib "aclui"
 

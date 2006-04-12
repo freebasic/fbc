@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __syscolourchangedevent_bi__
-#define __syscolourchangedevent_bi__
+#ifndef __wxc_syscolourchangedevent_bi__
+#define __wxc_syscolourchangedevent_bi__
 
 #include once "wx-c/wx.bi"
 

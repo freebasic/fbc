@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __xmlerror_bi__
-#define __xmlerror_bi__
+#define __xml_xmlerror_bi__
+#define __xml_xmlerror_bi__
 
 #include once "libxml/parser.bi"
 

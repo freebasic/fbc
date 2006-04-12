@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __reason_bi__
-#define __reason_bi__
+#ifndef __win_reason_bi__
+#define __win_reason_bi__
 
 #define SHTDN_REASON_MAJOR_APPLICATION &h00040000
 #define SHTDN_REASON_MAJOR_HARDWARE &h00010000

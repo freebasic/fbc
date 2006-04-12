@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __ole_bi__
-#define __ole_bi__
+#ifndef __win_ole_bi__
+#define __win_ole_bi__
 
 #inclib "ole32"
 
@@ -157,9 +157,9 @@ type HOBJECT as HANDLE
 type LHSERVER as LONG
 type LHCLIENTDOC as LONG
 type LHSERVERDOC as LONG
-type LPOLEOBJECT as _OLEOBJECT ptr
-type LPOLESTREAM as _OLESTREAM ptr
-type LPOLECLIENT as _OLECLIENT ptr
+type LPOLEOBJECT as OLEOBJECT ptr
+type LPOLESTREAM as OLESTREAM ptr
+type LPOLECLIENT as OLECLIENT ptr
 
 type OLEOBJECTVTBL
 	QueryProtocol as sub (byval as LPOLEOBJECT, byval as LPCSTR)

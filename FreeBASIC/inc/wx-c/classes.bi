@@ -1,5 +1,5 @@
-#ifndef __WXCLASSES_BI__
-#define __WXCLASSES_BI__
+#ifndef __wxc_WXCLASSES_bi__
+#define __wxc_WXCLASSES_bi__
 
 type Virtual_Dispose as sub ()
 

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __windowdestroyevent_bi__
-#define __windowdestroyevent_bi__
+#ifndef __wxc_windowdestroyevent_bi__
+#define __wxc_windowdestroyevent_bi__
 
 #include once "wx-c/wx.bi"
 

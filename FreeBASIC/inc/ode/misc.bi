@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __misc_bi__
-#define __misc_bi__
+#ifndef __ode_misc_bi__
+#define __ode_misc_bi__
 
 #include once "ode/common.bi"
 

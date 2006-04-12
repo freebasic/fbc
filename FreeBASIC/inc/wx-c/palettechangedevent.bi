@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __palettechangedevent_bi__
-#define __palettechangedevent_bi__
+#ifndef __wxc_palettechangedevent_bi__
+#define __wxc_palettechangedevent_bi__
 
 #include once "wx-c/wx.bi"
 

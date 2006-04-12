@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __defs_bi__
-#define __defs_bi__
+#ifndef __wxc_defs_bi__
+#define __wxc_defs_bi__
 
 enum 
 	wxUNKNOWN_PLATFORM

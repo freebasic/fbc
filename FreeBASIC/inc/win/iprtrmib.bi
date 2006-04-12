@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __iprtrmib_bi__
-#define __iprtrmib_bi__
+#ifndef __win_iprtrmib_bi__
+#define __win_iprtrmib_bi__
 
 #include once "win/ipifcons.bi"
 

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __xmlversion_bi__
-#define __xmlversion_bi__
+#define __xml_xmlversion_bi__
+#define __xml_xmlversion_bi__
 
 #inclib "xml2"
 

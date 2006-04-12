@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __rpcndr_bi__
-#define __rpcndr_bi__
+#ifndef __win_rpcndr_bi__
+#define __win_rpcndr_bi__
 
 #define __RPCNDR_H_VERSION__ (450)
 
@@ -16,16 +16,15 @@
 
 #define cbNDRContext 20
 
-type _MIDL_STUB_MESSAGE as MIDL_STUB_MESSAGE
+type MIDL_STUB_MESSAGE_ as MIDL_STUB_MESSAGE
 
 type NDR_CCONTEXT as any ptr
 
-type _NDR_SCONTEXT
+type NDR_SCONTEXT
 	pad(0 to 2-1) as any ptr
 	userContext as any ptr
 end type
 
-type NDR_SCONTEXT as _NDR_SCONTEXT ptr
 type NDR_RUNDOWN as sub (byval as any ptr)
 
 type SCONTEXT_QUEUE
@@ -36,7 +35,7 @@ end type
 type PSCONTEXT_QUEUE as SCONTEXT_QUEUE ptr
 type RPC_BUFPTR as ubyte ptr
 type RPC_LENGTH as uinteger
-type EXPR_EVAL as sub (byval as _MIDL_STUB_MESSAGE ptr)
+type EXPR_EVAL as sub (byval as MIDL_STUB_MESSAGE_ ptr)
 type PFORMAT_STRING as ubyte ptr
 
 type ARRAY_INFO
@@ -83,8 +82,8 @@ declare sub tree_size_ndr alias "tree_size_ndr" (byval as any ptr, byval as PRPC
 declare sub tree_peek_ndr alias "tree_peek_ndr" (byval as PRPC_MESSAGE, byval as ubyte ptr ptr, byval as zstring ptr, byval as ubyte)
 declare function midl_allocate alias "midl_allocate" (byval as integer) as any ptr
 
-type _MIDL_STUB_DESC as MIDL_STUB_DESC
-type _FULL_PTR_XLAT_TABLES as FULL_PTR_XLAT_TABLES
+type MIDL_STUB_DESC_ as MIDL_STUB_DESC
+type FULL_PTR_XLAT_TABLES_ as FULL_PTR_XLAT_TABLES
 
 type MIDL_STUB_MESSAGE
 	RpcMsg as PRPC_MESSAGE
@@ -112,8 +111,8 @@ type MIDL_STUB_MESSAGE
 	pPresentedType as ubyte ptr
 	pTransmitType as ubyte ptr
 	SavedHandle as handle_t
-	StubDesc as _MIDL_STUB_DESC ptr
-	FullPtrXlatTables as _FULL_PTR_XLAT_TABLES ptr
+	StubDesc as MIDL_STUB_DESC_ ptr
+	FullPtrXlatTables as FULL_PTR_XLAT_TABLES_ ptr
 	FullPtrRefId as uinteger
 	fCheckBounds as integer
 	fInDontFree:1 as integer
@@ -138,13 +137,12 @@ type PMIDL_STUB_MESSAGE as MIDL_STUB_MESSAGE ptr
 type GENERIC_BINDING_ROUTINE as sub (byval as any ptr)
 type GENERIC_UNBIND_ROUTINE as sub (byval as any ptr, byval as ubyte ptr)
 
-type _GENERIC_BINDING_ROUTINE_PAIR
+type GENERIC_BINDING_ROUTINE_PAIR
 	pfnBind as GENERIC_BINDING_ROUTINE
 	pfnUnbind as GENERIC_UNBIND_ROUTINE
 end type
 
-type GENERIC_BINDING_ROUTINE_PAIR as _GENERIC_BINDING_ROUTINE_PAIR
-type PGENERIC_BINDING_ROUTINE_PAIR as _GENERIC_BINDING_ROUTINE_PAIR ptr
+type PGENERIC_BINDING_ROUTINE_PAIR as GENERIC_BINDING_ROUTINE_PAIR ptr
 
 type GENERIC_BINDING_INFO
 	pObj as any ptr

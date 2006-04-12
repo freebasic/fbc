@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __winnt_bi__
-#define __winnt_bi__
+#ifndef __win_winnt_bi__
+#define __win_winnt_bi__
 
 #include once "win/winerror.bi"
 

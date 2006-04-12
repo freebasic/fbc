@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __xmlstring_bi__
-#define __xmlstring_bi__
+#define __xml_xmlstring_bi__
+#define __xml_xmlstring_bi__
 
 #include once "libxml/xmlversion.bi"
 

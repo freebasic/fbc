@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __matrix_bi__
-#define __matrix_bi__
+#ifndef __ode_matrix_bi__
+#define __ode_matrix_bi__
 
 #include once "ode/common.bi"
 

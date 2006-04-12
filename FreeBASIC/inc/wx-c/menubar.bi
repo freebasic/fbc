@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __menubar_bi__
-#define __menubar_bi__
+#ifndef __wxc_menubar_bi__
+#define __wxc_menubar_bi__
 
 #include once "wx-c/wx.bi"
 

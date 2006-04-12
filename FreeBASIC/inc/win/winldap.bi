@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __winldap_bi__
-#define __winldap_bi__
+#ifndef __win_winldap_bi__
+#define __win_winldap_bi__
 
 #inclib "wldap32"
 

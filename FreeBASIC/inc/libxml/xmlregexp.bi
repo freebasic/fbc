@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __xmlregexp_bi__
-#define __xmlregexp_bi__
+#define __xml_xmlregexp_bi__
+#define __xml_xmlregexp_bi__
 
 #include once "libxml/xmlversion.bi"
 

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __tooltip_bi__
-#define __tooltip_bi__
+#ifndef __wxc_tooltip_bi__
+#define __wxc_tooltip_bi__
 
 #include once "wx-c/wx.bi"
 

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __valid_bi__
-#define __valid_bi__
+#define __xml_valid_bi__
+#define __xml_valid_bi__
 
 #include once "libxml/xmlversion.bi"
 #include once "libxml/xmlerror.bi"

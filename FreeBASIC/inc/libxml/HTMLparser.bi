@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __HTMLparser_bi__
-#define __HTMLparser_bi__
+#define __xml_HTMLparser_bi__
+#define __xml_HTMLparser_bi__
 
 #include once "libxml/xmlversion.bi"
 #include once "libxml/parser.bi"

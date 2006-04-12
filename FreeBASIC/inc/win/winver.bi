@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __winver_bi__
-#define __winver_bi__
+#ifndef __win_winver_bi__
+#define __win_winver_bi__
 
 #inclib "version"
 

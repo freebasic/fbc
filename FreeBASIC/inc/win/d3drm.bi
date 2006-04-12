@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __d3drm_bi__
-#define __d3drm_bi__
+#ifndef __win_d3drm_bi__
+#define __win_d3drm_bi__
 
 #inclib "d3drm"
 

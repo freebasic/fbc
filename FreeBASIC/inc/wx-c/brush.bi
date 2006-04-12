@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __brush_bi__
-#define __brush_bi__
+#ifndef __wxc_brush_bi__
+#define __wxc_brush_bi__
 
 #include once "wx-c/wx.bi"
 

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __globals_bi__
-#define __globals_bi__
+#define __xml_globals_bi__
+#define __xml_globals_bi__
 
 #include once "libxml/xmlversion.bi"
 #include once "libxml/parser.bi"

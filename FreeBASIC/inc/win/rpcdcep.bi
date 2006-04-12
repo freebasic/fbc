@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __rpcdcep_bi__
-#define __rpcdcep_bi__
+#ifndef __win_rpcdcep_bi__
+#define __win_rpcdcep_bi__
 
 #define RPC_NCA_FLAGS_DEFAULT 0
 #define RPC_NCA_FLAGS_IDEMPOTENT 1
@@ -76,7 +76,7 @@ type RPC_SERVER_INTERFACE
 	InterpreterInfo as any ptr
 end type
 
-type PRPC_SERVER_INTERFACE as _RPC_SERVER_INTERFACE ptr
+type PRPC_SERVER_INTERFACE as RPC_SERVER_INTERFACE ptr
 
 type RPC_CLIENT_INTERFACE
 	Length as uinteger

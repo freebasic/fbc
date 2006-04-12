@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dxerr9_bi__
-#define __dxerr9_bi__
+#ifndef __win_dxerr9_bi__
+#define __win_dxerr9_bi__
 
 #inclib "dxerr9"
 

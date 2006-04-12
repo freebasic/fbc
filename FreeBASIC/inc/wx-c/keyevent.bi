@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __keyevent_bi__
-#define __keyevent_bi__
+#ifndef __wxc_keyevent_bi__
+#define __wxc_keyevent_bi__
 
 #include once "wx-c/wx.bi"
 

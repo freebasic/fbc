@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dlgs_bi__
-#define __dlgs_bi__
+#ifndef __win_dlgs_bi__
+#define __win_dlgs_bi__
 
 #define FILEOPENORD 1536
 #define MULTIFILEOPENORD 1537

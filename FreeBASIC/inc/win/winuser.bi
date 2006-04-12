@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __winuser_bi__
-#define __winuser_bi__
+#ifndef __win_winuser_bi__
+#define __win_winuser_bi__
 
 #inclib "user32"
 

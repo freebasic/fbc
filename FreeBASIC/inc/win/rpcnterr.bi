@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __rpcnterr_bi__
-#define __rpcnterr_bi__
+#ifndef __win_rpcnterr_bi__
+#define __win_rpcnterr_bi__
 
 #define RPC_S_OK 0L
 #define RPC_S_INVALID_ARG 87L

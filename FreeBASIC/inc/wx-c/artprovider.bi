@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __artprovider_bi__
-#define __artprovider_bi__
+#ifndef __wxc_artprovider_bi__
+#define __wxc_artprovider_bi__
 
 #include once "wx-c/wx.bi"
 

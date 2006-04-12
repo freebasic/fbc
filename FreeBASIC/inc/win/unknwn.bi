@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __unknwn_bi__
-#define __unknwn_bi__
+#ifndef __win_unknwn_bi__
+#define __win_unknwn_bi__
 
 #ifndef COM_NO_WINDOWS_H
 #include once "windows.bi"

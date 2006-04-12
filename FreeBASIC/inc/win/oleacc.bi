@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __oleacc_bi__
-#define __oleacc_bi__
+#ifndef __win_oleacc_bi__
+#define __win_oleacc_bi__
 
 #inclib "oleacc"
 

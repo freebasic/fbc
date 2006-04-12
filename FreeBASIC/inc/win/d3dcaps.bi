@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __d3dcaps_bi__
-#define __d3dcaps_bi__
+#ifndef __win_d3dcaps_bi__
+#define __win_d3dcaps_bi__
 
 #include once "win/ddraw.bi"
 

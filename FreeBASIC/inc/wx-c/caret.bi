@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __caret_bi__
-#define __caret_bi__
+#ifndef __wxc_caret_bi__
+#define __wxc_caret_bi__
 
 #include once "wx-c/wx.bi"
 

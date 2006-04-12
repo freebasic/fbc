@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __splashscreen_bi__
-#define __splashscreen_bi__
+#ifndef __wxc_splashscreen_bi__
+#define __wxc_splashscreen_bi__
 
 #include once "wx-c/wx.bi"
 

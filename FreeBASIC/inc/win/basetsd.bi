@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __basetsd_bi__
-#define __basetsd_bi__
+#ifndef __win_basetsd_bi__
+#define __win_basetsd_bi__
 
 #define ADDRESS_TAG_BIT &h80000000UL
 

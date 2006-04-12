@@ -30,9 +30,6 @@ type IMediaTypeInfo_ as IMediaTypeInfo
 type IPinInfo_ as IPinInfo
 type IAMStats_ as IAMStats
 
-declare function MIDL_user_allocate alias "MIDL_user_allocate" (byval as size_t) as any ptr
-declare sub MIDL_user_free alias "MIDL_user_free" (byval as any ptr)
-
 type REFTIME as double
 type OAEVENT as LONG_PTR
 type OAHWND as LONG_PTR
@@ -71,7 +68,7 @@ end type
 #define IAMCollection_Item(This,lItem,ppUnk) (This)->lpVtbl -> Item(This,lItem,ppUnk)
 #define IAMCollection_get__NewEnum(This,ppUnk) (This)->lpVtbl -> get__NewEnum(This,ppUnk)
 
-#ifdef WIN_INCLUDE_ALL
+#ifdef WIN_INCLUDEPROXY
 declare function IAMCollection_get_Count_Proxy alias "IAMCollection_get_Count_Proxy" (byval This as IAMCollection ptr, byval plCount as LONG ptr) as HRESULT
 declare sub IAMCollection_get_Count_Stub alias "IAMCollection_get_Count_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IAMCollection_Item_Proxy alias "IAMCollection_Item_Proxy" (byval This as IAMCollection ptr, byval lItem as integer, byval ppUnk as IUnknown ptr ptr) as HRESULT
@@ -124,7 +121,7 @@ end type
 #define IMediaControl_get_RegFilterCollection(This,ppUnk) (This)->lpVtbl -> get_RegFilterCollection(This,ppUnk)
 #define IMediaControl_StopWhenReady(This) (This)->lpVtbl -> StopWhenReady(This)
 
-#ifdef WIN_INCLUDE_ALL
+#ifdef WIN_INCLUDEPROXY
 declare function IMediaControl_Run_Proxy alias "IMediaControl_Run_Proxy" (byval This as IMediaControl ptr) as HRESULT
 declare sub IMediaControl_Run_Stub alias "IMediaControl_Run_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMediaControl_Pause_Proxy alias "IMediaControl_Pause_Proxy" (byval This as IMediaControl ptr) as HRESULT
@@ -183,7 +180,7 @@ end type
 #define IMediaEvent_RestoreDefaultHandling(This,lEvCode) (This)->lpVtbl -> RestoreDefaultHandling(This,lEvCode)
 #define IMediaEvent_FreeEventParams(This,lEvCode,lParam1,lParam2) (This)->lpVtbl -> FreeEventParams(This,lEvCode,lParam1,lParam2)
 
-#ifdef WIN_INCLUDE_ALL
+#ifdef WIN_INCLUDEPROXY
 declare function IMediaEvent_GetEventHandle_Proxy alias "IMediaEvent_GetEventHandle_Proxy" (byval This as IMediaEvent ptr, byval hEvent as OAEVENT ptr) as HRESULT
 declare sub IMediaEvent_GetEventHandle_Stub alias "IMediaEvent_GetEventHandle_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMediaEvent_GetEvent_Proxy alias "IMediaEvent_GetEvent_Proxy" (byval This as IMediaEvent ptr, byval lEventCode as integer ptr, byval lParam1 as LONG_PTR ptr, byval lParam2 as LONG_PTR ptr, byval msTimeout as integer) as HRESULT
@@ -242,7 +239,7 @@ end type
 #define IMediaEventEx_SetNotifyFlags(This,lNoNotifyFlags) (This)->lpVtbl -> SetNotifyFlags(This,lNoNotifyFlags)
 #define IMediaEventEx_GetNotifyFlags(This,lplNoNotifyFlags) (This)->lpVtbl -> GetNotifyFlags(This,lplNoNotifyFlags)
 
-#ifdef WIN_INCLUDE_ALL
+#ifdef WIN_INCLUDEPROXY
 declare function IMediaEventEx_SetNotifyWindow_Proxy alias "IMediaEventEx_SetNotifyWindow_Proxy" (byval This as IMediaEventEx ptr, byval hwnd as OAHWND, byval lMsg as integer, byval lInstanceData as LONG_PTR) as HRESULT
 declare sub IMediaEventEx_SetNotifyWindow_Stub alias "IMediaEventEx_SetNotifyWindow_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMediaEventEx_SetNotifyFlags_Proxy alias "IMediaEventEx_SetNotifyFlags_Proxy" (byval This as IMediaEventEx ptr, byval lNoNotifyFlags as integer) as HRESULT
@@ -299,7 +296,7 @@ end type
 #define IMediaPosition_CanSeekForward(This,pCanSeekForward) (This)->lpVtbl -> CanSeekForward(This,pCanSeekForward)
 #define IMediaPosition_CanSeekBackward(This,pCanSeekBackward) (This)->lpVtbl -> CanSeekBackward(This,pCanSeekBackward)
 
-#ifdef WIN_INCLUDE_ALL
+#ifdef WIN_INCLUDEPROXY
 declare function IMediaPosition_get_Duration_Proxy alias "IMediaPosition_get_Duration_Proxy" (byval This as IMediaPosition ptr, byval plength as REFTIME ptr) as HRESULT
 declare sub IMediaPosition_get_Duration_Stub alias "IMediaPosition_get_Duration_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMediaPosition_put_CurrentPosition_Proxy alias "IMediaPosition_put_CurrentPosition_Proxy" (byval This as IMediaPosition ptr, byval llTime as REFTIME) as HRESULT
@@ -358,7 +355,7 @@ end type
 #define IBasicAudio_put_Balance(This,lBalance) (This)->lpVtbl -> put_Balance(This,lBalance)
 #define IBasicAudio_get_Balance(This,plBalance) (This)->lpVtbl -> get_Balance(This,plBalance)
 
-#ifdef WIN_INCLUDE_ALL
+#ifdef WIN_INCLUDEPROXY
 declare function IBasicAudio_put_Volume_Proxy alias "IBasicAudio_put_Volume_Proxy" (byval This as IBasicAudio ptr, byval lVolume as integer) as HRESULT
 declare sub IBasicAudio_put_Volume_Stub alias "IBasicAudio_put_Volume_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IBasicAudio_get_Volume_Proxy alias "IBasicAudio_get_Volume_Proxy" (byval This as IBasicAudio ptr, byval plVolume as integer ptr) as HRESULT
@@ -473,7 +470,7 @@ end type
 #define IVideoWindow_HideCursor(This,HideCursor) (This)->lpVtbl -> HideCursor(This,HideCursor)
 #define IVideoWindow_IsCursorHidden(This,CursorHidden) (This)->lpVtbl -> IsCursorHidden(This,CursorHidden)
 
-#ifdef WIN_INCLUDE_ALL
+#ifdef WIN_INCLUDEPROXY
 declare function IVideoWindow_put_Caption_Proxy alias "IVideoWindow_put_Caption_Proxy" (byval This as IVideoWindow ptr, byval strCaption as BSTR) as HRESULT
 declare sub IVideoWindow_put_Caption_Stub alias "IVideoWindow_put_Caption_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IVideoWindow_get_Caption_Proxy alias "IVideoWindow_get_Caption_Proxy" (byval This as IVideoWindow ptr, byval strCaption as BSTR ptr) as HRESULT
@@ -644,7 +641,7 @@ end type
 #define IBasicVideo_IsUsingDefaultSource(This) (This)->lpVtbl -> IsUsingDefaultSource(This)
 #define IBasicVideo_IsUsingDefaultDestination(This) (This)->lpVtbl -> IsUsingDefaultDestination(This)
 
-#ifdef WIN_INCLUDE_ALL
+#ifdef WIN_INCLUDEPROXY
 declare function IBasicVideo_get_AvgTimePerFrame_Proxy alias "IBasicVideo_get_AvgTimePerFrame_Proxy" (byval This as IBasicVideo ptr, byval pAvgTimePerFrame as REFTIME ptr) as HRESULT
 declare sub IBasicVideo_get_AvgTimePerFrame_Stub alias "IBasicVideo_get_AvgTimePerFrame_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IBasicVideo_get_BitRate_Proxy alias "IBasicVideo_get_BitRate_Proxy" (byval This as IBasicVideo ptr, byval pBitRate as integer ptr) as HRESULT
@@ -803,7 +800,7 @@ end type
 #define IBasicVideo2_IsUsingDefaultDestination(This) (This)->lpVtbl -> IsUsingDefaultDestination(This)
 #define IBasicVideo2_GetPreferredAspectRatio(This,plAspectX,plAspectY) (This)->lpVtbl -> GetPreferredAspectRatio(This,plAspectX,plAspectY)
 
-#ifdef WIN_INCLUDE_ALL
+#ifdef WIN_INCLUDEPROXY
 declare function IBasicVideo2_GetPreferredAspectRatio_Proxy alias "IBasicVideo2_GetPreferredAspectRatio_Proxy" (byval This as IBasicVideo2 ptr, byval plAspectX as integer ptr, byval plAspectY as integer ptr) as HRESULT
 declare sub IBasicVideo2_GetPreferredAspectRatio_Stub alias "IBasicVideo2_GetPreferredAspectRatio_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 #endif
@@ -834,7 +831,7 @@ end type
 #define IDeferredCommand_Postpone(This,newtime) (This)->lpVtbl -> Postpone(This,newtime)
 #define IDeferredCommand_GetHResult(This,phrResult) (This)->lpVtbl -> GetHResult(This,phrResult)
 
-#ifdef WIN_INCLUDE_ALL
+#ifdef WIN_INCLUDEPROXY
 declare function IDeferredCommand_Cancel_Proxy alias "IDeferredCommand_Cancel_Proxy" (byval This as IDeferredCommand ptr) as HRESULT
 declare sub IDeferredCommand_Cancel_Stub alias "IDeferredCommand_Cancel_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IDeferredCommand_Confidence_Proxy alias "IDeferredCommand_Confidence_Proxy" (byval This as IDeferredCommand ptr, byval pConfidence as LONG ptr) as HRESULT
@@ -867,7 +864,7 @@ end type
 #define IQueueCommand_InvokeAtStreamTime(This,pCmd,time,iid,dispidMethod,wFlags,cArgs,pDispParams,pvarResult,puArgErr) (This)->lpVtbl -> InvokeAtStreamTime(This,pCmd,time,iid,dispidMethod,wFlags,cArgs,pDispParams,pvarResult,puArgErr)
 #define IQueueCommand_InvokeAtPresentationTime(This,pCmd,time,iid,dispidMethod,wFlags,cArgs,pDispParams,pvarResult,puArgErr) (This)->lpVtbl -> InvokeAtPresentationTime(This,pCmd,time,iid,dispidMethod,wFlags,cArgs,pDispParams,pvarResult,puArgErr)
 
-#ifdef WIN_INCLUDE_ALL
+#ifdef WIN_INCLUDEPROXY
 declare function IQueueCommand_InvokeAtStreamTime_Proxy alias "IQueueCommand_InvokeAtStreamTime_Proxy" (byval This as IQueueCommand ptr, byval pCmd as IDeferredCommand ptr ptr, byval time as REFTIME, byval iid as GUID ptr, byval dispidMethod as integer, byval wFlags as short, byval cArgs as integer, byval pDispParams as VARIANT ptr, byval pvarResult as VARIANT ptr, byval puArgErr as short ptr) as HRESULT
 declare sub IQueueCommand_InvokeAtStreamTime_Stub alias "IQueueCommand_InvokeAtStreamTime_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IQueueCommand_InvokeAtPresentationTime_Proxy alias "IQueueCommand_InvokeAtPresentationTime_Proxy" (byval This as IQueueCommand ptr, byval pCmd as IDeferredCommand ptr ptr, byval time as REFTIME, byval iid as GUID ptr, byval dispidMethod as integer, byval wFlags as short, byval cArgs as integer, byval pDispParams as VARIANT ptr, byval pvarResult as VARIANT ptr, byval puArgErr as short ptr) as HRESULT
@@ -917,7 +914,7 @@ end type
 #define IFilterInfo_get_Filename(This,pstrFilename) (This)->lpVtbl -> get_Filename(This,pstrFilename)
 #define IFilterInfo_put_Filename(This,strFilename) (This)->lpVtbl -> put_Filename(This,strFilename)
 
-#ifdef WIN_INCLUDE_ALL
+#ifdef WIN_INCLUDEPROXY
 declare function IFilterInfo_FindPin_Proxy alias "IFilterInfo_FindPin_Proxy" (byval This as IFilterInfo ptr, byval strPinID as BSTR, byval ppUnk as IDispatch ptr ptr) as HRESULT
 declare sub IFilterInfo_FindPin_Stub alias "IFilterInfo_FindPin_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IFilterInfo_get_Name_Proxy alias "IFilterInfo_get_Name_Proxy" (byval This as IFilterInfo ptr, byval strName as BSTR ptr) as HRESULT
@@ -966,7 +963,7 @@ end type
 #define IRegFilterInfo_get_Name(This,strName) (This)->lpVtbl -> get_Name(This,strName)
 #define IRegFilterInfo_Filter(This,ppUnk) (This)->lpVtbl -> Filter(This,ppUnk)
 
-#ifdef WIN_INCLUDE_ALL
+#ifdef WIN_INCLUDEPROXY
 declare function IRegFilterInfo_get_Name_Proxy alias "IRegFilterInfo_get_Name_Proxy" (byval This as IRegFilterInfo ptr, byval strName as BSTR ptr) as HRESULT
 declare sub IRegFilterInfo_get_Name_Stub alias "IRegFilterInfo_get_Name_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IRegFilterInfo_Filter_Proxy alias "IRegFilterInfo_Filter_Proxy" (byval This as IRegFilterInfo ptr, byval ppUnk as IDispatch ptr ptr) as HRESULT
@@ -1003,7 +1000,7 @@ end type
 #define IMediaTypeInfo_get_Type(This,strType) (This)->lpVtbl -> get_Type(This,strType)
 #define IMediaTypeInfo_get_Subtype(This,strType) (This)->lpVtbl -> get_Subtype(This,strType)
 
-#ifdef WIN_INCLUDE_ALL
+#ifdef WIN_INCLUDEPROXY
 declare function IMediaTypeInfo_get_Type_Proxy alias "IMediaTypeInfo_get_Type_Proxy" (byval This as IMediaTypeInfo ptr, byval strType as BSTR ptr) as HRESULT
 declare sub IMediaTypeInfo_get_Type_Stub alias "IMediaTypeInfo_get_Type_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IMediaTypeInfo_get_Subtype_Proxy alias "IMediaTypeInfo_get_Subtype_Proxy" (byval This as IMediaTypeInfo ptr, byval strType as BSTR ptr) as HRESULT
@@ -1062,7 +1059,7 @@ end type
 #define IPinInfo_Disconnect(This) (This)->lpVtbl -> Disconnect(This)
 #define IPinInfo_Render(This) (This)->lpVtbl -> Render(This)
 
-#ifdef WIN_INCLUDE_ALL
+#ifdef WIN_INCLUDEPROXY
 declare function IPinInfo_get_Pin_Proxy alias "IPinInfo_get_Pin_Proxy" (byval This as IPinInfo ptr, byval ppUnk as IUnknown ptr ptr) as HRESULT
 declare sub IPinInfo_get_Pin_Stub alias "IPinInfo_get_Pin_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IPinInfo_get_ConnectedTo_Proxy alias "IPinInfo_get_ConnectedTo_Proxy" (byval This as IPinInfo ptr, byval ppUnk as IDispatch ptr ptr) as HRESULT
@@ -1129,7 +1126,7 @@ end type
 #define IAMStats_GetIndex(This,szName,lCreate,plIndex) (This)->lpVtbl -> GetIndex(This,szName,lCreate,plIndex)
 #define IAMStats_AddValue(This,lIndex,dValue) (This)->lpVtbl -> AddValue(This,lIndex,dValue)
 
-#ifdef WIN_INCLUDE_ALL
+#ifdef WIN_INCLUDEPROXY
 declare function IAMStats_Reset_Proxy alias "IAMStats_Reset_Proxy" (byval This as IAMStats ptr) as HRESULT
 declare sub IAMStats_Reset_Stub alias "IAMStats_Reset_Stub" (byval This as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval _pRpcMessage as PRPC_MESSAGE, byval _pdwStubPhase as DWORD ptr)
 declare function IAMStats_get_Count_Proxy alias "IAMStats_get_Count_Proxy" (byval This as IAMStats ptr, byval plCount as LONG ptr) as HRESULT

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dls1_bi__
-#define __dls1_bi__
+#ifndef __win_dls1_bi__
+#define __win_dls1_bi__
 
 #define FOURCC_DLS   mmioFOURCCasc("D"),asc("L"),asc("S"),asc(" "))
 #define FOURCC_DLID  mmioFOURCCasc("d"),asc("l"),asc("i"),asc("d"))

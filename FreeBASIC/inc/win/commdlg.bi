@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __commdlg_bi__
-#define __commdlg_bi__
+#ifndef __win_commdlg_bi__
+#define __win_commdlg_bi__
 
 #inclib "comdlg32"
 

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __error_bi__
-#define __error_bi__
+#ifndef __ode_error_bi__
+#define __ode_error_bi__
 
 #include once "ode/config.bi"
 

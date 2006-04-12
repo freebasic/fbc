@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __ws2spi_bi__
-#define __ws2spi_bi__
+#ifndef __win_ws2spi_bi__
+#define __win_ws2spi_bi__
 
 #ifndef UNICODE
 #error UNICODE only

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __rpcdce_bi__
-#define __rpcdce_bi__
+#ifndef __win_rpcdce_bi__
+#define __win_rpcdce_bi__
 
 #include once "win/basetyps.bi"
 

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __snmp_bi__
-#define __snmp_bi__
+#ifndef __win_snmp_bi__
+#define __win_snmp_bi__
 
 #inclib "snmpapi"
 #inclib "igmpagnt"

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __HTMLtree_bi__
-#define __HTMLtree_bi__
+#define __xml_HTMLtree_bi__
+#define __xml_HTMLtree_bi__
 
 #include once "libxml/xmlversion.bi"
 #include once "libxml/parser.bi"

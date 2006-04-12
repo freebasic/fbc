@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dplay8_bi__
-#define __dplay8_bi__
+#ifndef __win_dplay8_bi__
+#define __win_dplay8_bi__
 
 #inclib "dxguid"
 

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __mswsock_bi__
-#define __mswsock_bi__
+#ifndef __win_mswsock_bi__
+#define __win_mswsock_bi__
 
 #define SO_CONNDATA &h7000
 #define SO_CONNOPT &h7001

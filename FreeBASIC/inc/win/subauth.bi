@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __subauth_bi__
-#define __subauth_bi__
+#ifndef __win_subauth_bi__
+#define __win_subauth_bi__
 
 #define STATUS_SUCCESS 0
 #define CYPHER_BLOCK_LENGTH 8

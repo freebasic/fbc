@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __mshtml_bi__
-#define __mshtml_bi__
+#ifndef __win_mshtml_bi__
+#define __win_mshtml_bi__
 
 #inclib "uuid"
 

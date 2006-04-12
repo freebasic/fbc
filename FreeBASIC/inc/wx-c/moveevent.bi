@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __moveevent_bi__
-#define __moveevent_bi__
+#ifndef __wxc_moveevent_bi__
+#define __wxc_moveevent_bi__
 
 #include once "wx-c/wx.bi"
 

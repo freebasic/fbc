@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __xpath_bi__
-#define __xpath_bi__
+#define __xml_xpath_bi__
+#define __xml_xpath_bi__
 
 #include once "libxml/xmlversion.bi"
 #include once "libxml/xmlerror.bi"

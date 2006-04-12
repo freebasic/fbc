@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __xmlmemory_bi__
-#define __xmlmemory_bi__
+#define __xml_xmlmemory_bi__
+#define __xml_xmlmemory_bi__
 
 #include once "libxml/xmlversion.bi"
 

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __sqltypes_bi__
-#define __sqltypes_bi__
+#ifndef __win_sqltypes_bi__
+#define __win_sqltypes_bi__
 
 type SCHAR as byte
 type SDWORD as integer

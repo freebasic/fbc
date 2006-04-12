@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __objfwd_bi__
-#define __objfwd_bi__
+#ifndef __win_objfwd_bi__
+#define __win_objfwd_bi__
 
 #include once "win/basetyps.bi"
 

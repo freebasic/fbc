@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __locale_bi__
-#define __locale_bi__
+#ifndef __wxc_locale_bi__
+#define __wxc_locale_bi__
 
 #include once "wx-c/wx.bi"
 

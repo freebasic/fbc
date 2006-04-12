@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __olectl_bi__
-#define __olectl_bi__
+#ifndef __win_olectl_bi__
+#define __win_olectl_bi__
 
 #inclib "oleaut32"
 

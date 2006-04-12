@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __colourdialog_bi__
-#define __colourdialog_bi__
+#ifndef __wxc_colourdialog_bi__
+#define __wxc_colourdialog_bi__
 
 #include once "wx-c/wx.bi"
 

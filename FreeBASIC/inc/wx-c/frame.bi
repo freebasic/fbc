@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __frame_bi__
-#define __frame_bi__
+#ifndef __wxc_frame_bi__
+#define __wxc_frame_bi__
 
 #include once "wx-c/wx.bi"
 

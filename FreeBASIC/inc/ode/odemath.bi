@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __odemath_bi__
-#define __odemath_bi__
+#ifndef __ode_odemath_bi__
+#define __ode_odemath_bi__
 
 #include once "ode/common.bi"
 

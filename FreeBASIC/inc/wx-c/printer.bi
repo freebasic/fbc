@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __printer_bi__
-#define __printer_bi__
+#ifndef __wxc_printer_bi__
+#define __wxc_printer_bi__
 
 #include once "wx-c/wx.bi"
 

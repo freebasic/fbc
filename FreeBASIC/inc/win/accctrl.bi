@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __accctrl_bi__
-#define __accctrl_bi__
+#ifndef __win_accctrl_bi__
+#define __win_accctrl_bi__
 
 #define AccFree LocalFree
 #define ACTRL_RESERVED &h00000000

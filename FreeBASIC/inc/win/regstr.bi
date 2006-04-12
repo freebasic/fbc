@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __regstr_bi__
-#define __regstr_bi__
+#ifndef __win_regstr_bi__
+#define __win_regstr_bi__
 
 #define REGSTR_KEY_CLASS "Class"
 #define REGSTR_KEY_CONFIG "Config"

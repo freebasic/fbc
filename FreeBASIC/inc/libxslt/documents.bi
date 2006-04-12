@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __documents_bi__
-#define __documents_bi__
+#ifndef __xslt_documents_bi__
+#define __xslt_documents_bi__
 
 #include once "libxslt/xsltexports.bi"
 #include once "libxslt/xsltInternals.bi"

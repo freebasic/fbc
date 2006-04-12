@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __rasdlg_bi__
-#define __rasdlg_bi__
+#ifndef __win_rasdlg_bi__
+#define __win_rasdlg_bi__
 
 #inclib "rasdlg"
 

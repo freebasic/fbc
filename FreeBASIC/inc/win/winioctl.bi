@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __winioctl_bi__
-#define __winioctl_bi__
+#ifndef __win_winioctl_bi__
+#define __win_winioctl_bi__
 
 #define HIST_NO_OF_BUCKETS 24
 #define HISTOGRAM_BUCKET_SIZE sizeof(HISTOGRAM_BUCKET)

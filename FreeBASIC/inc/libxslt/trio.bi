@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __trio_bi__
-#define __trio_bi__
+#ifndef __xslt_trio_bi__
+#define __xslt_trio_bi__
 
 #include once "libxslt/triodef.bi"
 

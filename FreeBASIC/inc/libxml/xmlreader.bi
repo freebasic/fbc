@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __xmlreader_bi__
-#define __xmlreader_bi__
+#define __xml_xmlreader_bi__
+#define __xml_xmlreader_bi__
 
 #include once "libxml/xmlversion.bi"
 #include once "libxml/tree.bi"

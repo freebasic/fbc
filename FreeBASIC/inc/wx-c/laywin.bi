@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __laywin_bi__
-#define __laywin_bi__
+#ifndef __wxc_laywin_bi__
+#define __wxc_laywin_bi__
 
 #include once "wx-c/wx.bi"
 

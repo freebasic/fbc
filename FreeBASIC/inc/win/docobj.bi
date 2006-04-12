@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __docobj_bi__
-#define __docobj_bi__
+#ifndef __win_docobj_bi__
+#define __win_docobj_bi__
 
 #inclib "uuid"
 

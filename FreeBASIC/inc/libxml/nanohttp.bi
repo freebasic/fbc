@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __nanohttp_bi__
-#define __nanohttp_bi__
+#define __xml_nanohttp_bi__
+#define __xml_nanohttp_bi__
 
 #include once "libxml/xmlversion.bi"
 

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __winreg_bi__
-#define __winreg_bi__
+#ifndef __win_winreg_bi__
+#define __win_winreg_bi__
 
 #inclib "advapi32"
 

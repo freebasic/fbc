@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __prsht_bi__
-#define __prsht_bi__
+#ifndef __win_prsht_bi__
+#define __win_prsht_bi__
 
 #define MAXPROPPAGES 100
 #define PSP_DEFAULT 0
@@ -212,13 +212,12 @@ type LPCPROPSHEETHEADERW as PROPSHEETHEADERW ptr
 type LPFNADDPROPSHEETPAGE as function (byval as HPROPSHEETPAGE, byval as LPARAM) as BOOL
 type LPFNADDPROPSHEETPAGES as function (byval as LPVOID, byval as LPFNADDPROPSHEETPAGE, byval as LPARAM) as BOOL
 
-type _PSHNOTIFY field=8
+type PSHNOTIFY field=8
 	hdr as NMHDR
 	lParam as LPARAM
 end type
 
-type PSHNOTIFY as _PSHNOTIFY
-type LPPSHNOTIFY as _PSHNOTIFY ptr
+type LPPSHNOTIFY as PSHNOTIFY ptr
 
 declare function DestroyPropertySheetPage alias "DestroyPropertySheetPage" (byval as HPROPSHEETPAGE) as BOOL
 

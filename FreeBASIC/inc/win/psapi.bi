@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __psapi_bi__
-#define __psapi_bi__
+#ifndef __win_psapi_bi__
+#define __win_psapi_bi__
 
 #inclib "psapi"
 
@@ -17,7 +17,7 @@ type MODULEINFO
 	EntryPoint as LPVOID
 end type
 
-type LPMODULEINFO as _MODULEINFO ptr
+type LPMODULEINFO as MODULEINFO ptr
 
 type PSAPI_WS_WATCH_INFORMATION
 	FaultingPc as LPVOID

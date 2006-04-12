@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __iphlpapi_bi__
-#define __iphlpapi_bi__
+#ifndef __win_iphlpapi_bi__
+#define __win_iphlpapi_bi__
 
 #include once "win/iprtrmib.bi"
 #include once "win/ipexport.bi"

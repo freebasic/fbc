@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __wxdatetime_bi__
-#define __wxdatetime_bi__
+#ifndef __wxc_wxdatetime_bi__
+#define __wxc_wxdatetime_bi__
 
 #include once "wx-c/wx.bi"
 

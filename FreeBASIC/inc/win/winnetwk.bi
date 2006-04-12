@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __winnetwk_bi__
-#define __winnetwk_bi__
+#ifndef __win_winnetwk_bi__
+#define __win_winnetwk_bi__
 
 #define WNNC_NET_MSNET &h00010000
 #define WNNC_NET_LANMAN &h00020000

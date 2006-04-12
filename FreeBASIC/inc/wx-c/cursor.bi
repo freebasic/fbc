@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __cursor_bi__
-#define __cursor_bi__
+#ifndef __wxc_cursor_bi__
+#define __wxc_cursor_bi__
 
 #include once "wx-c/wx.bi"
 

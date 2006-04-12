@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __ole2_bi__
-#define __ole2_bi__
+#ifndef __win_ole2_bi__
+#define __win_ole2_bi__
 
 #inclib "ole32"
 

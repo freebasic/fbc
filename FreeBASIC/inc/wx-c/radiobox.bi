@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __radiobox_bi__
-#define __radiobox_bi__
+#ifndef __wxc_radiobox_bi__
+#define __wxc_radiobox_bi__
 
 #include once "wx-c/wx.bi"
 

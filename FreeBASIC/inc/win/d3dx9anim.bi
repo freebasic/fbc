@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __d3dx9anim_bi__
-#define __d3dx9anim_bi__
+#ifndef __win_d3dx9anim_bi__
+#define __win_d3dx9anim_bi__
 
 extern IID_ID3DXAnimationSet alias "IID_ID3DXAnimationSet" as GUID
 extern IID_ID3DXKeyframedAnimationSet alias "IID_ID3DXKeyframedAnimationSet" as GUID

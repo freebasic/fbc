@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __oleidl_bi__
-#define __oleidl_bi__
+#ifndef __win_oleidl_bi__
+#define __win_oleidl_bi__
 
 #include once "win/objfwd.bi"
 

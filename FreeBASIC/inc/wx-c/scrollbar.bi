@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __scrollbar_bi__
-#define __scrollbar_bi__
+#ifndef __wxc_scrollbar_bi__
+#define __wxc_scrollbar_bi__
 
 #include once "wx-c/wx.bi"
 

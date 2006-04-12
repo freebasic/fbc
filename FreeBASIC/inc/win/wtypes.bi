@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __wtypes_bi__
-#define __wtypes_bi__
+#ifndef __win_wtypes_bi__
+#define __win_wtypes_bi__
 
 #include once "win/rpc.bi"
 #include once "win/rpcndr.bi"

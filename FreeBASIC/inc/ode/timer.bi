@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __timer_bi__
-#define __timer_bi__
+#ifndef __ode_timer_bi__
+#define __ode_timer_bi__
 
 #include once "ode/config.bi"
 

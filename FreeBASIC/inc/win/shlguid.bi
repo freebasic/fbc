@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __shlguid_bi__
-#define __shlguid_bi__
+#ifndef __win_shlguid_bi__
+#define __win_shlguid_bi__
 
 #inclib "uuid"
 #inclib "shell32"

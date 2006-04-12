@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __d3d_bi__
-#define __d3d_bi__
+#ifndef __win_d3d_bi__
+#define __win_d3d_bi__
 
 #inclib "dxguid"
 

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __staticbox_bi__
-#define __staticbox_bi__
+#ifndef __wxc_staticbox_bi__
+#define __wxc_staticbox_bi__
 
 #include once "wx-c/wx.bi"
 

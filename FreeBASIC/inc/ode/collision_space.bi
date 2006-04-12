@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __collision_space_bi__
-#define __collision_space_bi__
+#ifndef __ode_collision_space_bi__
+#define __ode_collision_space_bi__
 
 #include once "ode/common.bi"
 

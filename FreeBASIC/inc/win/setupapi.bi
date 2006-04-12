@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __setupapi_bi__
-#define __setupapi_bi__
+#ifndef __win_setupapi_bi__
+#define __win_setupapi_bi__
 
 #inclib "setupapi"
 

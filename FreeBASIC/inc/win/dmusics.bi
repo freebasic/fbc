@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dmusics_bi__
-#define __dmusics_bi__
+#ifndef __win_dmusics_bi__
+#define __win_dmusics_bi__
 
 #include once "win/dmusicc.bi"
 

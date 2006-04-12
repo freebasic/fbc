@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __validator_bi__
-#define __validator_bi__
+#ifndef __wxc_validator_bi__
+#define __wxc_validator_bi__
 
 #include once "wx-c/wx.bi"
 

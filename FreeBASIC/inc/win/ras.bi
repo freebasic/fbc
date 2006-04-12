@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __ras_bi__
-#define __ras_bi__
+#ifndef __win_ras_bi__
+#define __win_ras_bi__
 
 #inclib "rasapi32"
 

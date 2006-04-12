@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __ipifcons_bi__
-#define __ipifcons_bi__
+#ifndef __win_ipifcons_bi__
+#define __win_ipifcons_bi__
 
 #define MIB_IF_ADMIN_STATUS_UP 1
 #define MIB_IF_ADMIN_STATUS_DOWN 2

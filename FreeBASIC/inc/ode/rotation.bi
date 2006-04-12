@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __rotation_bi__
-#define __rotation_bi__
+#ifndef __ode_rotation_bi__
+#define __ode_rotation_bi__
 
 #include once "ode/common.bi"
 #include once "ode/compatibility.bi"

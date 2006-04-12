@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __rassapi_bi__
-#define __rassapi_bi__
+#ifndef __win_rassapi_bi__
+#define __win_rassapi_bi__
 
 #inclib "mprapi"
 

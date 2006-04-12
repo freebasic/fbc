@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __uxtheme_bi__
-#define __uxtheme_bi__
+#ifndef __win_uxtheme_bi__
+#define __win_uxtheme_bi__
 
 #inclib "uxtheme"
 

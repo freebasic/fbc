@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __winsock_bi__
-#define __winsock_bi__
+#ifndef __win_winsock_bi__
+#define __win_winsock_bi__
 
 #include once "windows.bi"
 

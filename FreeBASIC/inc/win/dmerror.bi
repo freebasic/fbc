@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dmerror_bi__
-#define __dmerror_bi__
+#ifndef __win_dmerror_bi__
+#define __win_dmerror_bi__
 
 #define FACILITY_DIRECTMUSIC &h878
 #define DMUS_ERRBASE &h1000      

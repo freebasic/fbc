@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __xsltconfig_bi__
-#define __xsltconfig_bi__
+#ifndef __xslt_xsltconfig_bi__
+#define __xslt_xsltconfig_bi__
 
 #define LIBXSLT_DOTTED_VERSION "1.1.13"
 #define LIBXSLT_VERSION 10113

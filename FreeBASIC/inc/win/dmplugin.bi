@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dmplugin_bi__
-#define __dmplugin_bi__
+#ifndef __win_dmplugin_bi__
+#define __win_dmplugin_bi__
 
 #inclib "dxguid"
 

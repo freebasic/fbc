@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __d3dxmath_bi__
-#define __d3dxmath_bi__
+#ifndef __win_d3dxmath_bi__
+#define __win_d3dxmath_bi__
 
 #include once "win/d3d.bi"
 #include once "win/d3dxerr.bi"

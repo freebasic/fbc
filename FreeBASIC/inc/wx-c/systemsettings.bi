@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __systemsettings_bi__
-#define __systemsettings_bi__
+#ifndef __wxc_systemsettings_bi__
+#define __wxc_systemsettings_bi__
 
 #include once "wx-c/wx.bi"
 

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __clientdata_bi__
-#define __clientdata_bi__
+#ifndef __wxc_clientdata_bi__
+#define __wxc_clientdata_bi__
 
 #include once "wx-c/wx.bi"
 

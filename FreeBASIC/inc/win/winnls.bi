@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __winnls_bi__
-#define __winnls_bi__
+#ifndef __win_winnls_bi__
+#define __win_winnls_bi__
 
 #define MAX_LEADBYTES 12
 #define MAX_DEFAULTCHAR 2

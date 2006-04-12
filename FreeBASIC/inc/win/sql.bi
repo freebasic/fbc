@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __sql_bi__
-#define __sql_bi__
+#ifndef __win_sql_bi__
+#define __win_sql_bi__
 
 #inclib "odbc32"
 

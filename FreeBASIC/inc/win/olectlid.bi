@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __olectlid_bi__
-#define __olectlid_bi__
+#ifndef __win_olectlid_bi__
+#define __win_olectlid_bi__
 
 #inclib "uuid"
 

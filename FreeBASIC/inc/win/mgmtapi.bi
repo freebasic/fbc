@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __mgmtapi_bi__
-#define __mgmtapi_bi__
+#ifndef __win_mgmtapi_bi__
+#define __win_mgmtapi_bi__
 
 #include once "win/snmp.bi"
 

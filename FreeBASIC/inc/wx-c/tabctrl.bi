@@ -6,7 +6,7 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __tabctrl_bi__
-#define __tabctrl_bi__
+#ifndef __wxc_tabctrl_bi__
+#define __wxc_tabctrl_bi__
 
 #endif

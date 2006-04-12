@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __wsipx_bi__
-#define __wsipx_bi__
+#ifndef __win_wsipx_bi__
+#define __win_wsipx_bi__
 
 #define NSPROTO_IPX 1000
 #define NSPROTO_SPX 1256

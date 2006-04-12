@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __rpc_bi__
-#define __rpc_bi__
+#ifndef __win_rpc_bi__
+#define __win_rpc_bi__
 
 #include once "windows.bi"
 

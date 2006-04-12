@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __memorydc_bi__
-#define __memorydc_bi__
+#ifndef __wxc_memorydc_bi__
+#define __wxc_memorydc_bi__
 
 #include once "wx-c/wx.bi"
 

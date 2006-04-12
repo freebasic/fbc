@@ -6,7 +6,7 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __compatibility_bi__
-#define __compatibility_bi__
+#ifndef __ode_compatibility_bi__
+#define __ode_compatibility_bi__
 
 #endif

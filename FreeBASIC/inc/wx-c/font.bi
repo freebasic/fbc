@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __font_bi__
-#define __font_bi__
+#ifndef __wxc_font_bi__
+#define __wxc_font_bi__
 
 #include once "wx-c/wx.bi"
 

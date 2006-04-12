@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __wincrypt_bi__
-#define __wincrypt_bi__
+#ifndef __win_wincrypt_bi__
+#define __win_wincrypt_bi__
 
 #define MS_DEF_PROV "Microsoft Base Cryptographic Provider v1.0"
 #define MS_ENHANCED_PROV "Microsoft Enhanced Cryptographic Provider v1.0"

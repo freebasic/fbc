@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __winsnmp_bi__
-#define __winsnmp_bi__
+#ifndef __win_winsnmp_bi__
+#define __win_winsnmp_bi__
 
 #inclib "wsnmp32"
 

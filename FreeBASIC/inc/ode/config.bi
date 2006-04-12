@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __config_bi__
-#define __config_bi__
+#ifndef __ode_config_bi__
+#define __ode_config_bi__
 
 type int8 as byte
 type uint8 as ubyte

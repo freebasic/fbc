@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __wincon_bi__
-#define __wincon_bi__
+#ifndef __win_wincon_bi__
+#define __win_wincon_bi__
 
 #define FOREGROUND_BLUE 1
 #define FOREGROUND_GREEN 2

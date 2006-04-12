@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __powrprof_bi__
-#define __powrprof_bi__
+#ifndef __win_powrprof_bi__
+#define __win_powrprof_bi__
 
 #inclib "powrprof"
 

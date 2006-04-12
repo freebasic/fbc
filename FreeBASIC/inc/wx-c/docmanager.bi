@@ -6,7 +6,7 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __docmanager_bi__
-#define __docmanager_bi__
+#ifndef __wxc_docmanager_bi__
+#define __wxc_docmanager_bi__
 
 #endif

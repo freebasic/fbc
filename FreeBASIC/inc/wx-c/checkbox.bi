@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __checkbox_bi__
-#define __checkbox_bi__
+#ifndef __wxc_checkbox_bi__
+#define __wxc_checkbox_bi__
 
 #include once "wx-c/wx.bi"
 

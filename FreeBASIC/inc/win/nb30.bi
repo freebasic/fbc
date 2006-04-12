@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __nb30_bi__
-#define __nb30_bi__
+#ifndef __win_nb30_bi__
+#define __win_nb30_bi__
 
 #define NCBNAMSZ 16
 #define MAX_LANA 254
@@ -100,7 +100,7 @@ type ACTION_HEADER
 	reserved as USHORT
 end type
 
-type PACTION_HEADER as _ACTION_HEADER ptr
+type PACTION_HEADER as ACTION_HEADER ptr
 
 type ADAPTER_STATUS
 	adapter_address(0 to 6-1) as UCHAR

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dsound_bi__
-#define __dsound_bi__
+#ifndef __win_dsound_bi__
+#define __win_dsound_bi__
 
 #define COM_NO_WINDOWS_H 1
 #include once "win/objbase.bi"
@@ -339,7 +339,7 @@ type DSBPOSITIONNOTIFY
 	hEventNotify as HANDLE
 end type
 
-type LPDSBPOSITIONNOTIFY as _DSBPOSITIONNOTIFY ptr
+type LPDSBPOSITIONNOTIFY as DSBPOSITIONNOTIFY ptr
 type LPCDSBPOSITIONNOTIFY as DSBPOSITIONNOTIFY ptr
 
 #ifndef UNICODE
@@ -371,6 +371,7 @@ declare function GetDeviceID alias "GetDeviceID" (byval pGuidSrc as LPCGUID, byv
 type REFERENCE_TIME as LONGLONG
 type LPREFERENCE_TIME as REFERENCE_TIME ptr
 
+#ifndef IReferenceClock
 extern IID_IReferenceClock alias "IID_IReferenceClock" as GUID
 
 type IReferenceClockVtbl_ as IReferenceClockVtbl
@@ -397,6 +398,7 @@ end type
 #define IReferenceClock_AdviseTime(p,a,b,c,d)      (p)->lpVtbl->AdviseTime(p,a,b,c,d)
 #define IReferenceClock_AdvisePeriodic(p,a,b,c,d)  (p)->lpVtbl->AdvisePeriodic(p,a,b,c,d)
 #define IReferenceClock_Unadvise(p,a)              (p)->lpVtbl->Unadvise(p,a)
+#endif
 #endif
 
 extern IID_IDirectSound alias "IID_IDirectSound" as GUID

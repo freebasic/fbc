@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dplobby8_bi__
-#define __dplobby8_bi__
+#ifndef __win_dplobby8_bi__
+#define __win_dplobby8_bi__
 
 #include once "win/ole2.bi"
 #include once "win/dplay8.bi"

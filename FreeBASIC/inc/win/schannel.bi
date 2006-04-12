@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __schannel_bi__
-#define __schannel_bi__
+#ifndef __win_schannel_bi__
+#define __win_schannel_bi__
 
 #include once "win/wincrypt.bi"
 

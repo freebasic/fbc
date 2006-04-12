@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __notebook_bi__
-#define __notebook_bi__
+#ifndef __wxc_notebook_bi__
+#define __wxc_notebook_bi__
 
 #include once "wx-c/wx.bi"
 

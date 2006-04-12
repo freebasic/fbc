@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __gdicmn_bi__
-#define __gdicmn_bi__
+#ifndef __wxc_gdicmn_bi__
+#define __wxc_gdicmn_bi__
 
 #include once "wx-c/wx.bi"
 

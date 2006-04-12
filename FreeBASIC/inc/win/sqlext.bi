@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __sqlext_bi__
-#define __sqlext_bi__
+#ifndef __win_sqlext_bi__
+#define __win_sqlext_bi__
 
 #include once "win/sql.bi"
 

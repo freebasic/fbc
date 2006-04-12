@@ -6,7 +6,7 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __doctemplate_bi__
-#define __doctemplate_bi__
+#ifndef __wxc_doctemplate_bi__
+#define __wxc_doctemplate_bi__
 
 #endif

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dmusicc_bi__
-#define __dmusicc_bi__
+#ifndef __win_dmusicc_bi__
+#define __win_dmusicc_bi__
 
 #inclib "dxguid"
 
@@ -27,7 +27,7 @@ type LPSAMPLE_TIME as SAMPLE_TIME ptr
 #define DMUS_MAX_DESCRIPTION 128
 #define DMUS_MAX_DRIVER 128
 
-type LPDMUS_BUFFERDESC as _DMUS_BUFFERDESC ptr
+type LPDMUS_BUFFERDESC as DMUS_BUFFERDESC ptr
 
 type DMUS_BUFFERDESC
 	dwSize as DWORD
@@ -83,7 +83,7 @@ type LPDMUS_PORTCAPS as DMUS_PORTCAPS ptr
 #define DMUS_PORTPARAMS_SHARE &h00000040
 #define DMUS_PORTPARAMS_FEATURES &h00000080
 
-type _DMUS_PORTPARAMS
+type DMUS_PORTPARAMS7
 	dwSize as DWORD
 	dwValidParams as DWORD
 	dwVoices as DWORD
@@ -93,8 +93,6 @@ type _DMUS_PORTPARAMS
 	dwEffectFlags as DWORD
 	fShare as BOOL
 end type
-
-type DMUS_PORTPARAMS7 as _DMUS_PORTPARAMS
 
 type DMUS_PORTPARAMS8
 	dwSize as DWORD

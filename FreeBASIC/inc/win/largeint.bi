@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __largeint_bi__
-#define __largeint_bi__
+#ifndef __win_largeint_bi__
+#define __win_largeint_bi__
 
 #inclib "ntdll"
 

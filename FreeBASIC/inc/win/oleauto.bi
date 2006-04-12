@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __oleauto_bi__
-#define __oleauto_bi__
+#ifndef __win_oleauto_bi__
+#define __win_oleauto_bi__
 
 #inclib "oleaut32"
 

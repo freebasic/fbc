@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __imagehlp_bi__
-#define __imagehlp_bi__
+#ifndef __win_imagehlp_bi__
+#define __win_imagehlp_bi__
 
 #inclib "imagehlp"
 

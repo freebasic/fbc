@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __cderr_bi__
-#define __cderr_bi__
+#ifndef __win_cderr_bi__
+#define __win_cderr_bi__
 
 #define CDERR_DIALOGFAILURE &hFFFF
 #define CDERR_GENERALCODES &h0000

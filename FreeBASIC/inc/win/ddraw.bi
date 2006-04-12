@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __ddraw_bi__
-#define __ddraw_bi__
+#ifndef __win_ddraw_bi__
+#define __win_ddraw_bi__
 
 #define COM_NO_WINDOWS_H 1
 #include once "win/objbase.bi"
@@ -196,7 +196,7 @@ type DDSCAPSEX
 	end union
 end type
 
-type LPDDSCAPSEX as _DDSCAPSEX ptr
+type LPDDSCAPSEX as DDSCAPSEX ptr
 
 type DDSCAPS2
 	dwCaps as DWORD

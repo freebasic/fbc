@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __progdlg_bi__
-#define __progdlg_bi__
+#ifndef __wxc_progdlg_bi__
+#define __wxc_progdlg_bi__
 
 #include once "wx-c/wx.bi"
 

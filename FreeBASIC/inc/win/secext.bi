@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __secext_bi__
-#define __secext_bi__
+#ifndef __win_secext_bi__
+#define __win_secext_bi__
 
 enum EXTENDED_NAME_FORMAT
 	NameUnknown = 0

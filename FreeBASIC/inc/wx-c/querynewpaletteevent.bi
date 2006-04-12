@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __querynewpaletteevent_bi__
-#define __querynewpaletteevent_bi__
+#ifndef __wxc_querynewpaletteevent_bi__
+#define __wxc_querynewpaletteevent_bi__
 
 #include once "wx-c/wx.bi"
 

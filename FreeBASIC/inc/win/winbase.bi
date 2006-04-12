@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __winbase_bi__
-#define __winbase_bi__
+#ifndef __win_winbase_bi__
+#define __win_winbase_bi__
 
 #inclib "kernel32"
 

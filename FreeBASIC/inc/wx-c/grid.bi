@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __grid_bi__
-#define __grid_bi__
+#ifndef __wxc_grid_bi__
+#define __wxc_grid_bi__
 
 #include once "wx-c/wx.bi"
 

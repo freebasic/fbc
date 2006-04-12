@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __app_bi__
-#define __app_bi__
+#ifndef __wxc_app_bi__
+#define __wxc_app_bi__
 
 #include once "wx-c/wx.bi"
 

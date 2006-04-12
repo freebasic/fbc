@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __d3dxerr_bi__
-#define __d3dxerr_bi__
+#ifndef __win_d3dxerr_bi__
+#define __win_d3dxerr_bi__
 
 #define FACILITY_D3DX &h877
 

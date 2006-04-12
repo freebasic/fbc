@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __childfocusevent_bi__
-#define __childfocusevent_bi__
+#ifndef __wxc_childfocusevent_bi__
+#define __wxc_childfocusevent_bi__
 
 #include once "wx-c/wx.bi"
 

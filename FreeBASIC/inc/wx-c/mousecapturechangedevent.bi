@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __mousecapturechangedevent_bi__
-#define __mousecapturechangedevent_bi__
+#ifndef __wxc_mousecapturechangedevent_bi__
+#define __wxc_mousecapturechangedevent_bi__
 
 #include once "wx-c/wx.bi"
 

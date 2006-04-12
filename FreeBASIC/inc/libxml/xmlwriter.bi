@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __xmlwriter_bi__
-#define __xmlwriter_bi__
+#define __xml_xmlwriter_bi__
+#define __xml_xmlwriter_bi__
 
 #include once "libxml/xmlversion.bi"
 #include once "libxml/xmlIO.bi"

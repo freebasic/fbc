@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __wingdi_bi__
-#define __wingdi_bi__
+#ifndef __win_wingdi_bi__
+#define __win_wingdi_bi__
 
 #inclib "gdi32"
 

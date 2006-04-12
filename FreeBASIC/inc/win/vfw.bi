@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __vfw_bi__
-#define __vfw_bi__
+#ifndef __win_vfw_bi__
+#define __win_vfw_bi__
 
 #include once "windows.bi"
 #include once "win/mmsystem.bi"

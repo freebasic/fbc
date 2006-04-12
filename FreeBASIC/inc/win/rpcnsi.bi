@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __rpcnsi_bi__
-#define __rpcnsi_bi__
+#ifndef __win_rpcnsi_bi__
+#define __win_rpcnsi_bi__
 
 type RPC_NS_HANDLE as any ptr
 

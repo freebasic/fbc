@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __tlhelp32_bi__
-#define __tlhelp32_bi__
+#ifndef __win_tlhelp32_bi__
+#define __win_tlhelp32_bi__
 
 #inclib "kernel32"
 

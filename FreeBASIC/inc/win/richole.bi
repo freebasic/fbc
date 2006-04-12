@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __richole_bi__
-#define __richole_bi__
+#ifndef __win_richole_bi__
+#define __win_richole_bi__
 
 #inclib "uuid"
 

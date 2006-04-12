@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __ntsecpkg_bi__
-#define __ntsecpkg_bi__
+#ifndef __win_ntsecpkg_bi__
+#define __win_ntsecpkg_bi__
 
 #define ISC_REQ_DELEGATE 1
 #define ISC_REQ_MUTUAL_AUTH 2

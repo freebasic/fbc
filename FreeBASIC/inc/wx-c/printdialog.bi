@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __printdialog_bi__
-#define __printdialog_bi__
+#ifndef __wxc_printdialog_bi__
+#define __wxc_printdialog_bi__
 
 #include once "wx-c/wx.bi"
 

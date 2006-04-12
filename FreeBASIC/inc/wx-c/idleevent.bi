@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __idleevent_bi__
-#define __idleevent_bi__
+#ifndef __wxc_idleevent_bi__
+#define __wxc_idleevent_bi__
 
 #include once "wx-c/wx.bi"
 

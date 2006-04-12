@@ -6,7 +6,7 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __display_bi__
-#define __display_bi__
+#ifndef __wxc_display_bi__
+#define __wxc_display_bi__
 
 #endif

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __winsvc_bi__
-#define __winsvc_bi__
+#ifndef __win_winsvc_bi__
+#define __win_winsvc_bi__
 
 #define SERVICES_ACTIVE_DATABASE "ServicesActive"
 #define SERVICES_FAILED_DATABASE "ServicesFailed"

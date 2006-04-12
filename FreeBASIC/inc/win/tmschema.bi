@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __tmschema_bi__
-#define __tmschema_bi__
+#ifndef __win_tmschema_bi__
+#define __win_tmschema_bi__
 
 enum 
 	BP_PUSHBUTTON = 1

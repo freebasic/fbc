@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __threads_bi__
-#define __threads_bi__
+#define __xml_threads_bi__
+#define __xml_threads_bi__
 
 #include once "libxml/xmlversion.bi"
 

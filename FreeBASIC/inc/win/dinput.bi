@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __dinput_bi__
-#define __dinput_bi__
+#ifndef __win_dinput_bi__
+#define __win_dinput_bi__
 
 #define COM_NO_WINDOWS_H 1
 #include once "win/objbase.bi"
@@ -615,7 +615,7 @@ type DICOLORSET
 	cAreaFill as D3DCOLOR
 end type
 
-type LPDICOLORSET as _DICOLORSET ptr
+type LPDICOLORSET as DICOLORSET ptr
 type LPCDICOLORSET as DICOLORSET ptr
 
 #ifndef UNICODE

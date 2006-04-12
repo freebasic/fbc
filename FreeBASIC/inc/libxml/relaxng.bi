@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __relaxng_bi__
-#define __relaxng_bi__
+#define __xml_relaxng_bi__
+#define __xml_relaxng_bi__
 
 #include once "libxml/xmlversion.bi"
 #include once "libxml/hash.bi"

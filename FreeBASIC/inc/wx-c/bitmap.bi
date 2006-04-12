@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __bitmap_bi__
-#define __bitmap_bi__
+#ifndef __wxc_bitmap_bi__
+#define __wxc_bitmap_bi__
 
 #include once "wx-c/wx.bi"
 

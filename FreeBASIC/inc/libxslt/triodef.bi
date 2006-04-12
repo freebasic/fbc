@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __triodef_bi__
-#define __triodef_bi__
+#ifndef __xslt_triodef_bi__
+#define __xslt_triodef_bi__
 
 type trio_long_double_t as double
 type trio_pointer_t as any ptr

@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __xsltexports_bi__
-#define __xsltexports_bi__
+#ifndef __xslt_xsltexports_bi__
+#define __xslt_xsltexports_bi__
 
 #inclib "xslt"
 

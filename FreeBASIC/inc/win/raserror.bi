@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __raserror_bi__
-#define __raserror_bi__
+#ifndef __win_raserror_bi__
+#define __win_raserror_bi__
 
 #define RASBASE 600
 #define SUCCESS 0

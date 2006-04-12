@@ -6,8 +6,8 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __mcx_bi__
-#define __mcx_bi__
+#ifndef __win_mcx_bi__
+#define __win_mcx_bi__
 
 #define DIALOPTION_BILLING 64
 #define DIALOPTION_QUIET 128
