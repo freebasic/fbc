@@ -928,12 +928,16 @@ end function
 function astGetValueAsStr( byval n as ASTNODE ptr ) as string
 
   	select case as const astGetDataType( n )
-  	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-  	    function = str( astGetValLong( n ) )
+  	case FB_DATATYPE_LONGINT
+  		function = str( astGetValLong( n ) )
+  	case FB_DATATYPE_ULONGINT
+  		function = str( cast( ulongint, astGetValLong( n ) ) )
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		function = str( astGetValFloat( n ) )
-  	case else
+  	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
   		function = str( astGetValInt( n ) )
+  	case else
+  		function = str( cast( uinteger, astGetValInt( n ) ) )
   	end select
 
 end function
@@ -943,12 +947,16 @@ function astGetValueAsWstr( byval n as ASTNODE ptr ) as wstring ptr
     static as wstring * 64+1 res
 
   	select case as const astGetDataType( n )
-  	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+  	case FB_DATATYPE_LONGINT
 		res = wstr( astGetValLong( n ) )
+	case FB_DATATYPE_ULONGINT
+		res = wstr( cast( ulongint, astGetValLong( n ) ) )
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		res = wstr( astGetValFloat( n ) )
+  	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
+  		res = wstr( astGetValInt( n ) )
   	case else
-		res = wstr( astGetValInt( n ) )
+		res = wstr( cast( uinteger, astGetValInt( n ) ) )
   	end select
 
   	function = @res
