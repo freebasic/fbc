@@ -9,6 +9,8 @@
 #ifndef __win_winsvc_bi__
 #define __win_winsvc_bi__
 
+#inclib "advapi32"
+
 #define SERVICES_ACTIVE_DATABASE "ServicesActive"
 #define SERVICES_FAILED_DATABASE "ServicesFailed"
 #define SC_GROUP_IDENTIFIERA asc("+")
