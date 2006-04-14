@@ -42,7 +42,7 @@ function cTypedefDecl( byval pid as zstring ptr ) as integer static
     ismult = (pid = NULL)
 
     if( ismult ) then
-    	isfwd = (cSymbolType( dtype, subtype, lgt, ptrcnt ) = NULL)
+    	isfwd = (cSymbolType( dtype, subtype, lgt, ptrcnt, FALSE ) = NULL)
     	if( isfwd ) then
     		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
     			exit function
@@ -70,7 +70,7 @@ function cTypedefDecl( byval pid as zstring ptr ) as integer static
 
     do
 		if( ismult = FALSE ) then
-    		isfwd = (cSymbolType( dtype, subtype, lgt, ptrcnt ) = NULL)
+    		isfwd = (cSymbolType( dtype, subtype, lgt, ptrcnt, FALSE ) = NULL)
     		if( isfwd ) then
     			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
     				exit function
