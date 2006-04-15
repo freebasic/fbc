@@ -1,6 +1,9 @@
-[ ] "type foo as foo" when deleted is screwing up the linked-lists
-
 [ ] .stabn can't have args > 65535 (ie: line numbers)
+
+[ ] when creating static libraries, emit a LD script file with the #inclib's found,
+    when linking, check for the scripts (libfoo_a.libs.x or such) and include the files
+    listed (will have to check the same dirs as LD does, including LD_LIBRARY_PATH and
+    the ones defined in the .x scripts)
 
 [ ] fbmain - explicit main function
     - must check if anything but the init/end labels were defined already inside

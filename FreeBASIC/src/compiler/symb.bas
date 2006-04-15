@@ -849,8 +849,13 @@ sub symbDelSymbolTb( byval tb as FBSYMBOLTB ptr, _
     	do while( s <> NULL )
 
 	    	select case as const s->class
-    		case FB_SYMBCLASS_VAR, FB_SYMBCLASS_CONST, FB_SYMBCLASS_UDT, _
-    			 FB_SYMBCLASS_ENUM, FB_SYMBCLASS_LABEL
+    		case FB_SYMBCLASS_VAR, _
+    			 FB_SYMBCLASS_CONST, _
+    			 FB_SYMBCLASS_UDT, _
+    			 FB_SYMBCLASS_ENUM, _
+    			 FB_SYMBCLASS_LABEL
+    			 '''''FB_SYMBCLASS_DEFINE, _  can't be declared inside procs
+    			 '''''FB_SYMBCLASS_TYPEDEF, _ ditto
 
     			symbDelFromHash( s )
 

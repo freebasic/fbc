@@ -31,7 +31,11 @@ option escape
 '' Typedef		= TYPE ((symbol AS DataType (',')?)+
 ''					   AS DataType (symbol (',')?)+
 ''
-function cTypedefDecl( byval pid as zstring ptr ) as integer static
+function cTypedefDecl _
+	( _
+		byval pid as zstring ptr _				'' can be changed if not a NULL
+	) as integer static
+
     static as zstring * FB_MAXNAMELEN+1 id, tname
     dim as zstring ptr ptname
     dim as integer dtype, lgt, ptrcnt, isfwd, ismult
@@ -65,7 +69,6 @@ function cTypedefDecl( byval pid as zstring ptr ) as integer static
 				loop
 			end if
     	end if
-
     end if
 
     do
@@ -75,7 +78,8 @@ function cTypedefDecl( byval pid as zstring ptr ) as integer static
     			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
     				exit function
     			end if
-    			ptname = lexGetText( )
+    			tname = *lexGetText( )
+    			ptname = @tname
     		end if
 
     	else
@@ -93,6 +97,8 @@ function cTypedefDecl( byval pid as zstring ptr ) as integer static
 
     	if( isfwd ) then
     		'' pointing to itself? then it's a void..
+   			hUcase( ptname, ptname )
+			hUcase( pid, pid )
     		if( *ptname = *pid ) then
     			dtype = FB_DATATYPE_VOID
     			subtype = NULL
