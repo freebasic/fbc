@@ -87,7 +87,7 @@ data "ASSERT", _
 	 FB_DEFTOK_TYPE_PARAM, 0, _
 	 FB_DEFTOK_TYPE_TEX, ") = 0 then fb_Assert(__FILE__, __LINE__, __FUNCTION__, ", _
 	 FB_DEFTOK_TYPE_PARAMSTR, 0, _
-	 FB_DEFTOK_TYPE_TEX, ")", _
+	 FB_DEFTOK_TYPE_TEX, ") end if", _
 	 -1
 ''#define ASSERTWARN(e) if (e) = FALSE then fb_AssertWarn(__FILE__, __LINE__, __FUNCTION__, #e)
 data "ASSERTWARN", _
@@ -97,7 +97,7 @@ data "ASSERTWARN", _
 	 FB_DEFTOK_TYPE_PARAM, 0, _
 	 FB_DEFTOK_TYPE_TEX, ") = 0 then fb_AssertWarn(__FILE__, __LINE__, __FUNCTION__, ", _
 	 FB_DEFTOK_TYPE_PARAMSTR, 0, _
-	 FB_DEFTOK_TYPE_TEX, ")", _
+	 FB_DEFTOK_TYPE_TEX, ") end if", _
 	 -1
 
 ''#define OFFSETOF(type_,field_) cint( @cast( type_ ptr, 0 )->field_ )
