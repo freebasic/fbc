@@ -97,6 +97,8 @@ Version 0.16 Beta:
 - the number of arguments passed to macros wasn't been checked (v1c)
 - enum's were not been allowed in CAST( DataType PTR, ... ) (v1c)
 - external libraries were not been passed to LD when linking shared libraries in Linux (v1c)
+- "end if" was missing in ASSERT and ASSERTWARN, they couldn't be used before statement separators :'s (v1c)
+- converting unsigned constants to strings at compile-time was returning the numbers in signed form (v1c)
 
 
 Version 0.15 Beta:
