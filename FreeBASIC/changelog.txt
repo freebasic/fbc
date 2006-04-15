@@ -100,6 +100,7 @@ Version 0.16 Beta:
 - external libraries were not been passed to LD when linking shared libraries in Linux (v1c)
 - "end if" was missing in ASSERT and ASSERTWARN, they couldn't be used before statement separators :'s (v1c)
 - converting unsigned constants to strings at compile-time was returning the numbers in signed form (v1c)
+- type aliases to themselves were case sensitive, causing forward symbols to be created if cases were different (v1c)
 
 
 Version 0.15 Beta:
