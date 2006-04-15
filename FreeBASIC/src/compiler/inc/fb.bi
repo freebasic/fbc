@@ -2,7 +2,7 @@
 #define __FB_BI__
 
 ''	FreeBASIC - 32-bit BASIC Compiler.
-''	Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+''	Copyright (C) 2004-2006 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
 ''
 ''	This program is free software; you can redistribute it and/or modify
 ''	it under the terms of the GNU General Public License as published by
