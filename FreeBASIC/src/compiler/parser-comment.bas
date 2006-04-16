@@ -27,6 +27,8 @@ option escape
 #include once "inc\fbint.bi"
 #include once "inc\parser.bi"
 
+#define LEX_FLAGS (LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE or LEXCHECK_NOSUFFIX)
+
 '':::::
 ''Comment         =   (COMMENT_CHAR | REM) ((DIRECTIVE_CHAR Directive)
 ''				                              |   (any_char_but_EOL*)) .
@@ -35,10 +37,10 @@ function cComment( byval lexflags as LEXCHECK_ENUM ) as integer
 
 	select case lexGetToken( lexflags )
 	case FB_TK_COMMENTCHAR, FB_TK_REM
-    	lexSkipToken( LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE )
+    	lexSkipToken( LEX_FLAGS )
 
-    	if( lexGetToken( LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE ) = FB_TK_DIRECTIVECHAR ) then
-    		lexSkipToken( LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE )
+    	if( lexGetToken( LEX_FLAGS ) = FB_TK_DIRECTIVECHAR ) then
+    		lexSkipToken( LEX_FLAGS )
     		function = cDirective( )
     	else
     		lexSkipLine( )
@@ -102,11 +104,11 @@ function cDirective as integer static
 
 		else
 			'' '\''
-			if( lexGetToken( LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE or LEXCHECK_NOWHITESPC ) <> CHAR_APOST ) then
+			if( lexGetToken( LEX_FLAGS or LEXCHECK_NOWHITESPC ) <> CHAR_APOST ) then
 				hReportError( FB_ERRMSG_SYNTAXERROR )
 				exit function
 			else
-				lexSkipToken( LEXCHECK_NOLINECONT or LEXCHECK_NODEFINE or LEXCHECK_NOWHITESPC )
+				lexSkipToken( LEX_FLAGS or LEXCHECK_NOWHITESPC )
 			end if
 
 			lexReadLine( CHAR_APOST, @incfile )

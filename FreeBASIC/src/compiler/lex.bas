@@ -1445,7 +1445,7 @@ sub lexNextToken ( byval t as FBTOKEN ptr, _
 	dim as integer islinecont, isnumber, lgt
 	dim as FBSYMBOL ptr s
 
-reread:
+re_read:
 	t->text[0] = 0									'' t.text = ""
 	t->tlen    = 0
 	t->sym 	   = NULL
@@ -1489,7 +1489,7 @@ reread:
 				select case as const lexGetLookAheadChar( )
 				case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW, _
 					 CHAR_0 to CHAR_9, CHAR_UNDER
-                	goto readid
+                	goto read_id
 
 				'' otherwise, skip until new-line is found
 				case else
@@ -1503,7 +1503,7 @@ reread:
 				exit do
 			end if
 
-		'' EOL
+		'' EOL?
 		case CHAR_CR, CHAR_LF
 			lexEatChar( )
 
@@ -1549,7 +1549,7 @@ reread:
 	lex->lastfilepos = lex->filepos + (lex->buffptr - @lex->buff) - 1
 
 	select case as const char
-	'':::::
+	'' '.'?
 	case CHAR_DOT
 
 	    isnumber = FALSE
@@ -1591,17 +1591,18 @@ reread:
 		end if
 
 		if( isnumber ) then
-			goto readnumber
+			goto read_number
 		else
-			goto readid
+			goto read_id
 		end if
 
-	'':::::
+	'' '&'?
 	case CHAR_AMP
 		select case lexGetLookAheadChar( )
 		case CHAR_HUPP, CHAR_HLOW, CHAR_OUPP, CHAR_OLOW, CHAR_BUPP, CHAR_BLOW
-			goto readnumber
+			goto read_number
 		end select
+
 		t->class    = FB_TKCLASS_OPERATOR
 		t->id		= lexEatChar( )
 		t->tlen		= 1
@@ -1609,16 +1610,16 @@ reread:
 		t->text[0]	= char                      	'' t.text = chr$( char )
 		t->text[1]  = 0                             '' /
 
-	'':::::
+	'' '0' .. '9'?
 	case CHAR_0 to CHAR_9
-readnumber:
+read_number:
 		lexReadNumber( @t->text, t->id, t->tlen, flags )
 		t->class 	= FB_TKCLASS_NUMLITERAL
 		t->typ		= t->id
 
-	'':::::
+	'' 'A' .. 'Z', 'a' .. 'z'?
 	case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW
-readid:
+read_id:
 		lexReadIdentifier( @t->text, t->tlen, t->typ, t->dotpos, flags )
 
 		t->sym = symbLookup( @t->text, t->id, t->class )
@@ -1629,13 +1630,33 @@ readid:
 			if( s <> NULL ) then
 				'' no error? restart..
 				if( ppDefineLoad( s ) ) then
-					goto reread
+					goto re_read
 				end if
         	end if
         end if
 
-	'':::::
-	case CHAR_QUOTE
+	'' '"', '$' '"'?
+	case CHAR_QUOTE, CHAR_DOLAR
+		dim as integer doescape
+
+		'' '$'?
+		if( char = CHAR_DOLAR ) then
+			if( (flags and LEXCHECK_NOSUFFIX) <> 0 ) then
+				goto read_char
+			end if
+
+			'' '"'?
+			if( lexGetLookAheadChar( ) <> CHAR_QUOTE ) then
+				goto read_char
+			end if
+
+			lexEatChar( )
+
+			'' don't process escape seqs
+			doescape = env.opt.escapestr
+			env.opt.escapestr = FALSE
+		end if
+
 		t->id		= FB_TK_STRLIT
 		t->class 	= FB_TKCLASS_STRLITERAL
 
@@ -1656,8 +1677,13 @@ readid:
 
 		end if
 
+		if( char = CHAR_DOLAR ) then
+			env.opt.escapestr = doescape
+		end if
+
 	'':::::
 	case else
+read_char:
 		t->id		= lexEatChar( )
 		t->tlen		= 1
 		t->typ		= t->id
@@ -1666,7 +1692,7 @@ readid:
 		t->text[1] = 0                               '' /
 
 		select case as const char
-		'':::
+		'' '<', '>', '='?
 		case CHAR_LT, CHAR_GT, CHAR_EQ
 			t->class = FB_TKCLASS_OPERATOR
 
@@ -1718,7 +1744,7 @@ readid:
 				end if
 			end select
 
-		'':::
+		'' '+', '-', '*', '\', '/'?
 		case CHAR_PLUS, CHAR_MINUS, CHAR_TIMES, CHAR_SLASH, CHAR_RSLASH
 			t->class = FB_TKCLASS_OPERATOR
 
@@ -1733,11 +1759,11 @@ readid:
 				end if
 			end if
 
-		'':::
+		'' '(', ')', ',', ':', ';', '@'?
 		case CHAR_LPRNT, CHAR_RPRNT, CHAR_COMMA, CHAR_COLON, CHAR_SEMICOLON, CHAR_AT
 			t->class	= FB_TKCLASS_DELIMITER
 
-		'':::
+		'' ' ', '\t'?
 		case CHAR_SPACE, CHAR_TAB
 			t->class	= FB_TKCLASS_DELIMITER
 			t->id		= CHAR_SPACE
@@ -1754,7 +1780,7 @@ readid:
 				end select
 			loop
 
-		'':::
+		'' anything else..
 		case else
 			t->class = FB_TKCLASS_UNKNOWN
 		end select

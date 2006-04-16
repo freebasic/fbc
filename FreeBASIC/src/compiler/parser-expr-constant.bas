@@ -66,7 +66,8 @@ function cConstant( byref constexpr as ASTNODE ptr ) as integer static
 end function
 
 '':::::
-''Literal		  = NUM_LITERAL | STR_LITERAL .
+''Literal		  = NUM_LITERAL
+''				  | STR_LITERAL STR_LITERAL* .
 ''
 function cLiteral( byref litexpr as ASTNODE ptr ) as integer
 	dim as FBSYMBOL ptr s
@@ -75,6 +76,7 @@ function cLiteral( byref litexpr as ASTNODE ptr ) as integer
 	function = FALSE
 
 	select case lexGetClass( )
+	'' NUM_LITERAL?
 	case FB_TKCLASS_NUMLITERAL
   		typ = lexGetType( )
   		select case as const typ
@@ -97,18 +99,27 @@ function cLiteral( byref litexpr as ASTNODE ptr ) as integer
   		lexSkipToken( )
   		function = TRUE
 
+  	'' (STR_LITERAL STR_LITERAL*)?
   	case FB_TKCLASS_STRLITERAL
-  		typ = lexGetType( )
 
-  		if( typ <> FB_DATATYPE_WCHAR ) then
-			s = symbAllocStrConst( *lexGetText( ), lexGetTextLen( ) )
-  		else
-			s = symbAllocWstrConst( *lexGetTextW( ), lexGetTextLen( ) )
-		end if
+        litexpr = NULL
+  		do
+  			typ = lexGetType( )
+  			if( typ <> FB_DATATYPE_WCHAR ) then
+				s = symbAllocStrConst( *lexGetText( ), lexGetTextLen( ) )
+  			else
+				s = symbAllocWstrConst( *lexGetTextW( ), lexGetTextLen( ) )
+			end if
 
-		litexpr = astNewVAR( s, 0, typ )
+			if( litexpr = NULL ) then
+				litexpr = astNewVAR( s, 0, typ )
+			else
+				litexpr = astNewBOP( AST_OP_ADD, litexpr, astNewVAR( s, 0, typ ) )
+			end if
 
-		lexSkipToken( )
+			lexSkipToken( )
+		loop while lexGetClass( ) = FB_TKCLASS_STRLITERAL
+
         function = TRUE
   	end select
 
