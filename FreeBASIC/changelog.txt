@@ -48,6 +48,8 @@ Version 0.16 Beta:
 - DirectMusic headers from the DirectX SDK (v1c)
 - DirectShow headers from the DirectX SDK (v1c)
 - the ZSTRING and WSTRING types without PTR's can now be used in TYPE aliases (v1c)
+- the $ prefix for literal strings, to not process escape sequencies when Option Escape is been used (v1c)
+- literal strings can be concatenated just by grouping them, without using + or & (v1c)
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)
