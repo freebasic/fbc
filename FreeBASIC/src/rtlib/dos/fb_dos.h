@@ -99,7 +99,7 @@ extern int fb_force_input_buffer_changed;
 
 int fb_ConsoleLocate_BIOS( int row, int col, int cursor );
 void fb_ConsoleGetXY_BIOS( int *col, int *row );
-int fb_ConsoleReadXY_BIOS( int col, int row, int colorflag );
+unsigned int fb_ConsoleReadXY_BIOS( int col, int row, int colorflag );
 
 void fb_ConsoleScroll_BIOS( int x1, int y1, int x2, int y2, int nrows );
 void fb_ConsoleScrollEx( int x1, int y1, int x2, int y2, int nrows );

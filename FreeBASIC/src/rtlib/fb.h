@@ -794,7 +794,7 @@ struct _FB_FILE;
 FBCALL void         fb_ConsoleGetSize   ( int *cols, int *rows );
 FBCALL void         fb_ConsoleGetXY     ( int *col, int *row );
 
-FBCALL int          fb_ConsoleReadXY    ( int col, int row, int colorflag );
+FBCALL unsigned int fb_ConsoleReadXY    ( int col, int row, int colorflag );
        int          fb_ConsoleColor     ( int fc, int bc );
        int          fb_ConsoleGetColorAtt( void );
 
@@ -1475,8 +1475,8 @@ FBCALL int          fb_GetY             ( void );
 FBCALL void         fb_GetXY            ( int *col, int *row );
 FBCALL void         fb_GetSize          ( int *cols, int *rows );
 
-typedef int         (*FB_READXYPROC)    ( int col, int row, int colorflag );
-FBCALL int          fb_ReadXY           ( int col, int row, int colorflag );
+typedef unsigned int (*FB_READXYPROC)   ( int col, int row, int colorflag );
+FBCALL unsigned int fb_ReadXY           ( int col, int row, int colorflag );
 
 typedef void        (*FB_PRINTBUFFPROC) ( const void *buffer, size_t len, int mask );
 typedef void        (*FB_PRINTBUFFWPROC)( const FB_WCHAR *buffer, size_t len, int mask );

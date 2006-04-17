@@ -71,7 +71,7 @@ FBCALL void fb_ConsoleGetXY( int *col, int *row )
 }
 
 /*:::::*/
-FBCALL int fb_ConsoleReadXY( int col, int row, int colorflag )
+FBCALL unsigned int fb_ConsoleReadXY( int col, int row, int colorflag )
 {
 	return(0);
 }

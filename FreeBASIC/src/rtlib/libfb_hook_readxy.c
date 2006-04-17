@@ -41,9 +41,9 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-FBCALL int fb_ReadXY( int col, int row, int colorflag )
+FBCALL unsigned int fb_ReadXY( int col, int row, int colorflag )
 {
-    int res;
+    unsigned int res;
 
     FB_LOCK();
 

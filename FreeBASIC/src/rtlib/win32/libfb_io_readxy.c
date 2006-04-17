@@ -41,7 +41,7 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL int fb_ConsoleReadXY( int col, int row, int colorflag )
+FBCALL unsigned int fb_ConsoleReadXY( int col, int row, int colorflag )
 {
     TCHAR character;
     WORD attribute;
@@ -55,10 +55,10 @@ FBCALL int fb_ConsoleReadXY( int col, int row, int colorflag )
 
     if( colorflag ) {
         ReadConsoleOutputAttribute( fb_out_handle, &attribute, 1, coord, &res);
-        return attribute;
+        return ((unsigned int)attribute) & 0xfffful;
     }
     else {
     	ReadConsoleOutputCharacter( fb_out_handle, &character, 1, coord, &res);
-    	return character;
+    	return ((unsigned int)character) & (sizeof(TCHAR) == 1? 0xfful : 0xfffful);
     }
 }

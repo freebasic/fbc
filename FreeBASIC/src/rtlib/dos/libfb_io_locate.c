@@ -147,7 +147,7 @@ FBCALL void fb_ConsoleGetXY( int *col, int *row )
 }
 
 /*:::::*/
-int fb_ConsoleReadXY_BIOS( int col, int row, int colorflag )
+unsigned int fb_ConsoleReadXY_BIOS( int col, int row, int colorflag )
 {
     unsigned short usPosOld;
     unsigned short usPos = (unsigned short) ((row << 8) + col);
@@ -161,12 +161,13 @@ int fb_ConsoleReadXY_BIOS( int col, int row, int colorflag )
     _movedataw( _my_ds(), (int) &usPosOld, _dos_ds, 0x450, 1 );
 
     if( colorflag )
-        return regs.h.ah;
-    return regs.h.al;
+        return (unsigned int)regs.h.ah;
+    else
+    	return (unsigned int)regs.h.al;
 }
 
 /*:::::*/
-FBCALL int fb_ConsoleReadXY( int col, int row, int colorflag )
+FBCALL unsigned int fb_ConsoleReadXY( int col, int row, int colorflag )
 {
     return fb_ConsoleReadXY_BIOS( col - 1, row - 1, colorflag );
 }
