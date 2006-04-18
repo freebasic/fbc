@@ -10,6 +10,9 @@ Version 0.16 Beta:
   the module-level), to declare static symbols, see the next item (v1c)
 - STATIC can now be used in the module-level too (v1c)
 - local arrays with unknown dimensions (ie: DIM array()) can now be declared inside functions too (v1c)
+- floating-point literal numbers in scientific notation without an integer and fractional part cannot be written as
+  ".E###" anymore, they must be changed to "0.E###" due ambiguities with macro substituions and .'s been used in WITH 
+  and (later) to access objects' member fields (v1c)
 - when aborting because run-time errors, the name of the module that caused the error will be printed too (v1c)
 - runtime error checking removed from getmouse() and getjoystick() (v1c)
 - the size of argument-less #defines and macro expansion texts can be now up to 2GB (v1c)
@@ -50,6 +53,7 @@ Version 0.16 Beta:
 - the ZSTRING and WSTRING types without PTR's can now be used in TYPE aliases (v1c)
 - the $ prefix for literal strings, to not process escape sequencies when Option Escape is been used (v1c)
 - literal strings can be concatenated just by grouping them, without using + or & (v1c)
+- EXIT SELECT, to exit CASE blocks without resorting to GOTO's (v1c)
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)
