@@ -19,11 +19,7 @@
 
 type MUSIC_TIME as integer
 
-#if __FB_OPTION_ESCAPE__
-#define DMUS_REGSTR_PATH_TOOLS "Software\\Microsoft\\DirectMusic\\Tools"
-#else
-#define DMUS_REGSTR_PATH_TOOLS "Software\Microsoft\DirectMusic\Tools"
-#endif
+#define DMUS_REGSTR_PATH_TOOLS $"Software\Microsoft\DirectMusic\Tools"
 
 type IDirectMusicToolVtbl_ as IDirectMusicToolVtbl
 

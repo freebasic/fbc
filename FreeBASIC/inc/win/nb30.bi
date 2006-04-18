@@ -25,7 +25,11 @@
 #define HANGUP_PENDING &h04
 #define HANGUP_COMPLETE &h05
 #define SESSION_ABORTED &h06
+#ifdef __FB_OPTION_ESCAPE__
 #define ALL_TRANSPORTS "M\0\0\0"
+#else
+#define ALL_TRANSPORTS "M" + chr( 0, 0, 0 )
+#endif
 #define MS_NBF "MNBF"
 #define NCBCALL &h10
 #define NCBLISTEN &h11

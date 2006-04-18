@@ -22,7 +22,7 @@
 #define FILENAME_MAX (260)
 #define FOPEN_MAX (20)
 #define TMP_MAX 32767
-#define _P_tmpdir "\"
+#define _P_tmpdir $"\"
 #define L_tmpnam (16)
 #define _IOFBF &h0000
 #define _IOLBF &h0040

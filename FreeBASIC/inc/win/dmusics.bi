@@ -11,11 +11,7 @@
 
 #include once "win/dmusicc.bi"
 
-#if __FB_OPTION_ESCAPE__
-#define REGSTR_PATH_SOFTWARESYNTHS "Software\\Microsoft\\DirectMusic\\SoftwareSynths"
-#else
-#define REGSTR_PATH_SOFTWARESYNTHS "Software\Microsoft\DirectMusic\SoftwareSynths"
-#endif
+#define REGSTR_PATH_SOFTWARESYNTHS $"Software\Microsoft\DirectMusic\SoftwareSynths"
 
 type DMUS_VOICE_STATE
 	bExists as BOOL

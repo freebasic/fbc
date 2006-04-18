@@ -11,8 +11,8 @@
 
 #include once "gtk/glib/gtypes.bi"
 
-#define G_DIR_SEPARATOR asc("\")
-#define G_DIR_SEPARATOR_S "\"
+#define G_DIR_SEPARATOR asc($"\")
+#define G_DIR_SEPARATOR_S $"\"
 #define G_SEARCHPATH_SEPARATOR asc(";")
 #define G_SEARCHPATH_SEPARATOR_S ";"
 

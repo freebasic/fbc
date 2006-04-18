@@ -19,11 +19,7 @@
 #include once "win/prsht.bi"
 
 #define PS_MAXLINKTYPES 8
-#if __FB_OPTION_ESCAPE__
-#define OLESTDDELIM "\\"
-#else
-#define OLESTDDELIM "\"
-#endif
+#define OLESTDDELIM $"\"
 #define SZOLEUI_MSG_HELP "OLEUI_MSG_HELP"
 #define SZOLEUI_MSG_ENDDIALOG "OLEUI_MSG_ENDDIALOG"
 #define SZOLEUI_MSG_BROWSE "OLEUI_MSG_BROWSE"

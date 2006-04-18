@@ -68,7 +68,7 @@
 #define K_Y asc("Y")
 #define K_Z asc("Z")
 #define K_bracketleft asc("[")
-#define K_backslash asc("\")
+#define K_backslash asc($"\")
 #define K_bracketright asc("]")
 #define K_circum asc("^")
 #define K_underscore asc("_")

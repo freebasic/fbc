@@ -91,11 +91,7 @@ declare function DirectDrawCreateClipper alias "DirectDrawCreateClipper" (byval 
 #define DDENUM_NONDISPLAYDEVICES &h00000004L
 #define REGSTR_KEY_DDHW_DESCRIPTION "Description"
 #define REGSTR_KEY_DDHW_DRIVERNAME "DriverName"
-#if __FB_OPTION_ESCAPE__
-#define REGSTR_PATH_DDHW "Hardware\\DirectDrawDrivers"
-#else
-#define REGSTR_PATH_DDHW "Hardware\DirectDrawDrivers"
-#endif
+#define REGSTR_PATH_DDHW $"Hardware\DirectDrawDrivers"
 #define DDCREATE_HARDWAREONLY &h00000001l
 #define DDCREATE_EMULATIONONLY &h00000002l
 

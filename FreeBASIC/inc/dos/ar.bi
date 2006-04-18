@@ -3,11 +3,14 @@
 #ifndef _AR_H_
 #define _AR_H_
 
-option escape
-
+#ifdef __FB_OPTION_ESCAPE__
 #define ARMAG "!<arch>\n"
-#define SARMAG 8
 #define ARFMAG "`\n"
+#else
+#define ARMAG "!<arch>" + chr( 10 )
+#define ARFMAG "`" + chr( 10 )
+#endif
+#define SARMAG 8
 
 type ar_hdr
 	ar_name(15) as byte
