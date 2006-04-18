@@ -134,7 +134,7 @@ function cEndStatement as integer
 end function
 
 '':::::
-''ExitStatement	  =	  EXIT (FOR | DO | WHILE | SUB | FUNCTION)
+''ExitStatement	  =	  EXIT (FOR | DO | WHILE | SELECT | SUB | FUNCTION)
 ''
 function cExitStatement as integer
     dim as FBSYMBOL ptr label
@@ -144,7 +144,7 @@ function cExitStatement as integer
 	'' EXIT
 	lexSkipToken( )
 
-	'' (FOR | DO | WHILE | SUB | FUNCTION)
+	'' (FOR | DO | WHILE | SELECT | SUB | FUNCTION)
 	select case as const lexGetToken( )
 	case FB_TK_FOR
 		label = env.forstmt.endlabel
@@ -154,6 +154,9 @@ function cExitStatement as integer
 
 	case FB_TK_WHILE
 		label = env.whilestmt.endlabel
+
+	case FB_TK_SELECT
+		label = env.selectstmt.endlabel
 
 	case FB_TK_SUB, FB_TK_FUNCTION
 		label = env.procstmt.endlabel

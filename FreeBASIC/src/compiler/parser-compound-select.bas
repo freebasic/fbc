@@ -93,7 +93,8 @@ end sub
 function cSelectStatement as integer
     dim as ASTNODE ptr expr
     dim as integer lastcompstmt, dtype
-	dim as FBSYMBOL ptr symbol, elabel, subtype
+	dim as FBSYMBOL ptr symbol, exitlabel, subtype
+	dim as FBCMPSTMT oldselectstmt
 
 	function = FALSE
 
@@ -138,12 +139,8 @@ function cSelectStatement as integer
 		exit function
 	end if
 
-	'' save current context
-	lastcompstmt = env.lastcompound
-	env.lastcompound = FB_TK_SELECT
-
 	'' add exit label
-	elabel = symbAddLabel( NULL, FALSE )
+	exitlabel = symbAddLabel( NULL, FALSE )
 
 	'' store expression into a temp var
 	dtype   = astGetDataType( expr )
@@ -203,6 +200,16 @@ function cSelectStatement as integer
 		astAdd( expr )
 	end if
 
+	'' save current context
+	lastcompstmt = env.lastcompound
+	env.lastcompound = FB_TK_SELECT
+
+	'' save old select stmt info
+	oldselectstmt = env.selectstmt
+
+	env.selectstmt.cmplabel = NULL
+	env.selectstmt.endlabel = exitlabel
+
 	'' SelectLine*
 	do
 
@@ -211,14 +218,19 @@ function cSelectStatement as integer
     	loop
 
     	'' CaseStatement
-    	if( cCaseStatement( symbol, dtype, elabel ) = FALSE ) then
+    	if( cCaseStatement( symbol, dtype, exitlabel ) = FALSE ) then
 	    	exit do
     	end if
 
 	loop while( lexGetToken( ) <> FB_TK_EOF )
 
+	'' restore old select stmt info
+	env.selectstmt = oldselectstmt
+
+	env.lastcompound = lastcompstmt
+
     '' emit exit label
-    astAdd( astNewLABEL( elabel ) )
+    astAdd( astNewLABEL( exitlabel ) )
 
 	'' END SELECT
 	if( (hMatch( FB_TK_END ) = FALSE) or _
@@ -236,8 +248,6 @@ function cSelectStatement as integer
 										 0, _
 										 FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR ) ) )
 	end select
-
-	env.lastcompound = lastcompstmt
 
 	function = TRUE
 
@@ -645,6 +655,7 @@ function cSelectConstStmt as integer
 	dim as FBSYMBOL ptr sym, exitlabel, complabel, deflabel, tbsym
 	dim as uinteger minval, maxval, value
 	dim as integer l, swtbase
+	dim as FBCMPSTMT oldselectstmt
 
 	function = FALSE
 
@@ -683,10 +694,6 @@ function cSelectConstStmt as integer
 		exit function
 	end if
 
-	'' save current context
-	lastcompstmt = env.lastcompound
-	env.lastcompound = FB_TK_SELECT
-
 	'' add labels
 	exitlabel = symbAddLabel( NULL, FALSE )
 	complabel = symbAddLabel( NULL, FALSE )
@@ -705,6 +712,16 @@ function cSelectConstStmt as integer
 
 	'' skip the statements
 	astAdd( astNewBRANCH( AST_OP_JMP, complabel ) )
+
+	'' save current context
+	lastcompstmt = env.lastcompound
+	env.lastcompound = FB_TK_SELECT
+
+	'' save old select stmt info
+	oldselectstmt = env.selectstmt
+
+	env.selectstmt.cmplabel = NULL
+	env.selectstmt.endlabel = exitlabel
 
 	'' SwitchLine*
 	swtbase = ctx.swt.base
@@ -727,6 +744,11 @@ function cSelectConstStmt as integer
     	end if
 
 	loop while( lexGetToken <> FB_TK_EOF )
+
+	'' restore old select stmt info
+	env.selectstmt = oldselectstmt
+
+	env.lastcompound = lastcompstmt
 
     '' too large?
     if( (minval > maxval) or _
@@ -796,8 +818,6 @@ function cSelectConstStmt as integer
 		hReportError( FB_ERRMSG_EXPECTEDENDSELECT )
 		exit function
 	end if
-
-	env.lastcompound = lastcompstmt
 
 	function = TRUE
 

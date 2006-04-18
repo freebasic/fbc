@@ -627,6 +627,7 @@ type FBENV
 	forstmt			as FBCMPSTMT
 	dostmt			as FBCMPSTMT
 	whilestmt		as FBCMPSTMT
+	selectstmt		as FBCMPSTMT
 	procstmt		as FBCMPSTMT
 
 	'' globals
