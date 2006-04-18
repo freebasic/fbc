@@ -54,6 +54,8 @@ Version 0.16 Beta:
 - the $ prefix for literal strings, to not process escape sequencies when Option Escape is been used (v1c)
 - literal strings can be concatenated just by grouping them, without using + or & (v1c)
 - EXIT SELECT, to exit CASE blocks without resorting to GOTO's (v1c)
+- the __FB_OUT_EXE__, __FB_OUT_DLL__, __FB_OUT_LIB__, __FB_OUT_OBJ__ defines, that are set to TRUE (-1) depending on the
+  output format (Executable, Shared library, Static library or Object file) select when compiling (v1c)
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)
