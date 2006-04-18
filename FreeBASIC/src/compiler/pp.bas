@@ -30,7 +30,7 @@ option escape
 #include once "inc\parser.bi"
 #include once "inc\pp.bi"
 
-#define LIT_FLAGS LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX or LEXCHECK_NODEFINE or LEXCHECK_NOQUOTES
+#define LEX_FLAGS LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX or LEXCHECK_NODEFINE or LEXCHECK_NOQUOTES
 
 declare function ppInclude					( ) as integer
 
@@ -185,7 +185,7 @@ private function ppInclude( ) as integer
 
 	lexEatToken( incfile )
 
-	function = fbIncludeFile( hUnescapeStr( incfile ), isonce )
+	function = fbIncludeFile( incfile, isonce )
 
 end function
 
@@ -195,7 +195,7 @@ private function ppIncLib( ) as integer
 
 	lexEatToken( libfile )
 
-	function = symbAddLib( hUnescapeStr( libfile ) ) <> NULL
+	function = symbAddLib( libfile ) <> NULL
 
 end function
 
@@ -205,7 +205,7 @@ private function ppLibPath( ) as integer
 
 	lexEatToken( path )
 
-	if( fbAddLibPath( hUnescapeStr( path ) ) = FALSE ) then
+	if( fbAddLibPath( path ) = FALSE ) then
 		hReportError( FB_ERRMSG_SYNTAXERROR, TRUE )
 		return FALSE
 	end if
@@ -222,30 +222,18 @@ function ppReadLiteral( ) as zstring ptr
     DZstrAllocate( text, 0 )
 
     do
-    	select case lexGetToken( LIT_FLAGS )
+    	select case lexGetToken( LEX_FLAGS )
 		case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
 			exit do
 		end select
 
-    	'' literal string? un-escape it if option escape is on
-    	if( (lexGetClass( LIT_FLAGS ) = FB_TKCLASS_STRLITERAL) and _
-    		(env.opt.escapestr) ) then
-
-    		if( lexGetType() <> FB_DATATYPE_WCHAR ) then
-    			DZstrConcatAssign( text, hUnescapeStr( lexGetText( ) ) )
-    		else
-    			DZstrConcatAssignW( text, hUnescapeWstr( lexGetTextW( ) ) )
-    		end if
-
+    	if( lexGetType() <> FB_DATATYPE_WCHAR ) then
+    		DZstrConcatAssign( text, lexGetText( ) )
     	else
-    		if( lexGetType() <> FB_DATATYPE_WCHAR ) then
-    			DZstrConcatAssign( text, lexGetText( ) )
-    		else
-    		    DZstrConcatAssignW( text, lexGetTextW( ) )
-    		end if
+    	    DZstrConcatAssignW( text, lexGetTextW( ) )
     	end if
 
-    	lexSkipToken( LIT_FLAGS )
+    	lexSkipToken( LEX_FLAGS )
 
     loop
 
@@ -260,30 +248,18 @@ function ppReadLiteralW( ) as wstring ptr
     DWstrAllocate( text, 0 )
 
     do
-    	select case lexGetToken( LIT_FLAGS )
+    	select case lexGetToken( LEX_FLAGS )
 		case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
 			exit do
 		end select
 
-    	'' literal string? un-escape it if option escape is on
-    	if( (lexGetClass( LIT_FLAGS ) = FB_TKCLASS_STRLITERAL) and _
-    		(env.opt.escapestr) ) then
-
-    		if( lexGetType() = FB_DATATYPE_WCHAR ) then
-    			DWstrConcatAssign( text, hUnescapeWstr( lexGetTextW( ) ) )
-    		else
-    			DWstrConcatAssignA( text, hUnescapeStr( lexGetText( ) ) )
-    		end if
-
+    	if( lexGetType() = FB_DATATYPE_WCHAR ) then
+    		DWstrConcatAssign( text, lexGetTextW( ) )
     	else
-    		if( lexGetType() = FB_DATATYPE_WCHAR ) then
-    			DWstrConcatAssign( text, lexGetTextW( ) )
-    		else
-    			DWstrConcatAssignA( text, lexGetText( ) )
-    		end if
+    		DWstrConcatAssignA( text, lexGetText( ) )
     	end if
 
-    	lexSkipToken( LIT_FLAGS )
+    	lexSkipToken( LEX_FLAGS )
 
     loop
 

@@ -772,9 +772,9 @@ sub irEmitVARINISTR( byval totlgt as integer, _
 	if( litlgt > totlgt ) then
 		hReportWarning( FB_WARNINGMSG_LITSTRINGTOOBIG )
 		'' !!!FIXME!!! truncate will fail if it lies on an escape seq
-		s = hEscapeStr( left( *litstr, totlgt ) )
+		s = hEscape( left( *litstr, totlgt ) )
 	else
-		s = hEscapeStr( litstr )
+		s = hEscape( litstr )
 	end if
 
 	''
@@ -804,9 +804,9 @@ sub irEmitVARINIWSTR( byval totlgt as integer, _
 	if( litlgt > totlgt ) then
 		hReportWarning( FB_WARNINGMSG_LITSTRINGTOOBIG )
 		'' !!!FIXME!!! truncate will fail if it lies on an escape seq
-		s = hEscapeWstr( left( *litstr, totlgt ) )
+		s = hEscapeW( left( *litstr, totlgt ) )
 	else
-		s = hEscapeWstr( litstr )
+		s = hEscapeW( litstr )
 	end if
 
 	''

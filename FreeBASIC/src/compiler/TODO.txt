@@ -1,9 +1,20 @@
-[ ] .stabn can't have args > 65535 (ie: line numbers)
-
 [ ] when creating static libraries, emit a LD script file with the #inclib's found,
     when linking, check for the scripts (libfoo_a.libs.x or such) and include the files
     listed (will have to check the same dirs as LD does, including LD_LIBRARY_PATH and
     the ones defined in the .x scripts)
+    - can't modify LD because adding new libraries found on .drectiv or such sections
+      would put them outside the GROUP, causing circular reference errors
+    - for the same reason, the list file can't be a LD script to be passed directly,
+      the libs must be passed in the cmd-line, between -( and -)
+    - libbfd could be used to load add our own sections to object files
+      - but then the libraries would have to be opened twice (by fbc and later by LD),
+      slowing down linking
+      - libbfd is over 600k, fbc will become twice as big just to add an ordinary feature
+    - that won't work with object files or when passing more than a single bas file if
+      the other ones #include different libraries
+      - a foo.o.liblist or such will be needed then, should be created only when
+        #inclib's are found
+    - a libfoo.a.liblist will be
 
 [ ] fbmain - explicit main function
     - must check if anything but the init/end labels were defined already inside
@@ -45,6 +56,9 @@
 [ ] passing a temporary string to a zstring ptr should not make yet-another temporary
     assignment in hStrParamToPtrArg(), just a pointer copy that later should be
     strDelete()'d
+
+[ ] .stabn can't have args > 65535 (ie: line numbers)
+    - only switching to DWARF2 (ie: too complex) would fix that, let GCC do it..
 
 *** *** *** *** ***
 [ ] all functions returning STRING should actually return the FBSTRING

@@ -44,17 +44,21 @@ declare sub 		WstrConcatAssignW 		( byval dst as wstring ptr ptr, _
 											  byval src as zstring ptr )
 
 
-declare function 	hEscapeStr				( byval text as zstring ptr ) as zstring ptr
+declare function 	hReEscape				( byval text as zstring ptr, _
+											  byref textlen as integer, _
+											  byref isunicode as integer ) as zstring ptr
 
-declare function 	hEscapeWstr				( byval text as wstring ptr ) as zstring ptr
+declare function 	hReEscapeW				( byval text as wstring ptr, _
+											  byref textlen as integer _
+											) as wstring ptr
 
-declare function 	hUnescapeStr			( byval text as zstring ptr ) as zstring ptr
+declare function 	hEscape					( byval text as zstring ptr ) as zstring ptr
 
-declare function 	hUnescapeWstr			( byval text as wstring ptr ) as wstring ptr
+declare function 	hEscapeW				( byval text as wstring ptr ) as zstring ptr
 
-declare function 	hEscapeToChar			( byval text as zstring ptr ) as zstring ptr
+declare function 	hUnescape				( byval text as zstring ptr ) as zstring ptr
 
-declare function 	hEscapeToCharW			( byval text as wstring ptr ) as wstring ptr
+declare function 	hUnescapeW				( byval text as wstring ptr ) as wstring ptr
 
 declare function	hReplace				( byval text as zstring ptr, _
 											  byval oldtext as zstring ptr, _

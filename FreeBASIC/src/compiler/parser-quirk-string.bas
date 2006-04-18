@@ -144,7 +144,7 @@ private function cStrCHR( byref funcexpr as ASTNODE ptr, _
 						  byval is_wstr as integer _
 						) as integer
 
-	static as zstring * 32*6+1 s
+	static as zstring * 32*6+1 zs
 	static as wstring * 32*6+1 ws
 	static as zstring * 8+1 o
 	dim as integer v, i, cnt, isconst
@@ -190,7 +190,7 @@ private function cStrCHR( byref funcexpr as ASTNODE ptr, _
 
 	if( isconst ) then
 		if( is_wstr = FALSE ) then
-			s = ""
+			zs = ""
 		else
 			ws = ""
 		end if
@@ -201,14 +201,16 @@ private function cStrCHR( byref funcexpr as ASTNODE ptr, _
   			astDelNode( expr )
 
 			if( is_wstr = FALSE ) then
-				v and= 255
+				if( cuint( v ) > 255 ) then
+					v = 255
+				end if
 				if( (v < CHAR_SPACE) or (v > 127) ) then
-					s += "\27"
+					zs += "\27"
 					o = oct( v )
-					s += chr( len( o ) )
-					s += o
+					zs += chr( len( o ) )
+					zs += o
 				else
-					s += chr( v )
+					zs += chr( v )
 				end if
 
 			else
@@ -224,7 +226,7 @@ private function cStrCHR( byref funcexpr as ASTNODE ptr, _
 		next
 
 		if( is_wstr = FALSE ) then
-			funcexpr = astNewVAR( symbAllocStrConst( s, cnt ), _
+			funcexpr = astNewVAR( symbAllocStrConst( zs, cnt ), _
 								  0, _
 								  FB_DATATYPE_CHAR )
 		else
@@ -300,16 +302,15 @@ private function cStrASC( byref funcexpr as ASTNODE ptr ) as integer
 		if( p >= 0 ) then
 			'' zstring?
 			if( astGetDataType( expr1 ) <> FB_DATATYPE_WCHAR ) then
-				funcexpr = astNewCONSTi( asc( *hEscapeToChar( symbGetVarLitText( litsym ) ), _
-											  p ), _
-										 FB_DATATYPE_INTEGER )
+				'' remove internal escape format
+				dim as zstring ptr zs = hUnescape( symbGetVarLitText( litsym ) )
+				funcexpr = astNewCONSTi( asc( *zs, p ), FB_DATATYPE_INTEGER )
 
 			'' wstring..
 	    	else
-				funcexpr = astNewCONSTi( asc( *hEscapeToCharW( symbGetVarLitTextW( litsym ) ), _
-											  p ), _
-										 FB_DATATYPE_INTEGER )
-
+				'' ditto
+				dim as wstring ptr ws = hUnescapeW( symbGetVarLitTextW( litsym ) )
+				funcexpr = astNewCONSTi( asc( *ws, p ), FB_DATATYPE_INTEGER )
 			end if
 
 	    	astDelNode( expr1 )

@@ -236,10 +236,454 @@ function hReplaceW( byval orgtext as wstring ptr, _
 end function
 
 '':::::
-function hEscapeStr( byval text as zstring ptr ) as zstring ptr static
+function hReEscape( byval text as zstring ptr, _
+				    byref textlen as integer, _
+				    byref isunicode as integer _
+				  ) as zstring ptr static
+
+    static as DZSTRING res
+    dim as integer char, lgt, i, value, isnumber
+    dim as zstring ptr src, dst, src_end
+
+    '' convert escape sequences to internal format
+
+	isunicode = FALSE
+	textlen = 0
+
+	lgt = len( *text )
+	if( lgt = 0 ) then
+		return text
+	end if
+
+	DZstrAllocate( res, lgt * 2 )
+
+	src = text
+	dst = res.data
+
+	src_end = src + lgt
+    do while( src < src_end )
+		char = *src
+		src += 1
+
+		'' '\'?
+		if( char = CHAR_RSLASH ) then
+			'' change to internal
+			*dst = FB_INTSCAPECHAR
+			dst += 1
+
+			if( src >= src_end ) then exit do
+
+			isnumber = FALSE
+
+			char = *src
+			src += 1
+
+			'' if it's a literal number, convert to octagonal
+			select case char
+			case CHAR_0 to CHAR_9
+				isnumber = TRUE
+
+				value = 0
+				'' max 3 digits
+				for i = 1 to 3
+					value = (value * 10) + (char - CHAR_0)
+
+					if( src >= src_end ) then exit for
+
+					char = *src
+					if( (char < CHAR_0) or (char > CHAR_9) ) then
+						exit for
+					end if
+					src += 1
+				next
+
+			case CHAR_AMP
+				if( src >= src_end ) then exit do
+
+				value = 0
+
+				char = *src
+				src += 1
+
+				select case as const char
+				'' hex?
+				case CHAR_HUPP, CHAR_HLOW
+					isnumber = TRUE
+
+					'' max 2 digits
+					for i = 1 to 2
+						if( src >= src_end ) then exit for
+
+						char = *src
+						select case char
+						case CHAR_ALOW to CHAR_FLOW, _
+							 CHAR_AUPP to CHAR_FUPP, _
+							 CHAR_0 to CHAR_9
+							char -= CHAR_0
+                			if( char > 9 ) then
+								char -= (CHAR_AUPP - CHAR_9 - 1)
+                			end if
+                			if( char > 16 ) then
+                  				char -= (CHAR_ALOW - CHAR_AUPP)
+                			end if
+
+                			value = (value * 16) + char
+
+                		case else
+                			exit for
+                		end select
+						src += 1
+                	next
+
+				'' oct?
+				case CHAR_OUPP, CHAR_OLOW
+					isnumber = TRUE
+
+					'' max 3 digits
+					for i = 1 to 3
+						if( src >= src_end ) then exit for
+
+						char = *src
+						if( (char < CHAR_0) or (char > CHAR_7) ) then
+							exit for
+						end if
+						value = (value * 8) + (char - CHAR_0)
+						src += 1
+                	next
+
+				'' bin?
+				case CHAR_BUPP, CHAR_BLOW
+					isnumber = TRUE
+
+					'' max 8 digits
+					for i = 1 to 8
+						if( src >= src_end ) then exit for
+
+						char = *src
+						if( (char < CHAR_0) or (char > CHAR_1) ) then
+							exit for
+						end if
+						value = (value * 2) + (char - CHAR_0)
+						src += 1
+                	next
+
+				end select
+
+			'' 16-bit unicode?
+			case CHAR_ULOW
+            	isunicode = TRUE
+
+				'' 'u'
+				*dst = char
+				dst += 1
+
+				for i = 1 to 4
+					*dst = *src
+					dst += 1
+					src += 1
+				next
+
+				textlen += 2
+
+				continue do
+
+			'' 32-bit unicode?
+			case CHAR_UUPP
+            	isunicode = TRUE
+
+				'' break in two 16-bit..
+
+				'' 'u'
+				*dst = CHAR_UUPP
+				dst += 1
+
+				for i = 1 to 4
+					*dst = *src
+					dst += 1
+					src += 1
+				next
+
+				'' '\u'
+				dst[0] = FB_INTSCAPECHAR
+				dst[1] = CHAR_UUPP
+				dst += 2
+
+				for i = 1 to 4
+					*dst = *src
+					dst += 1
+					src += 1
+				next
+
+				textlen += 4
+
+				continue do
+
+			end select
+
+    		if( isnumber ) then
+				if( cuint( value ) > 255 ) then
+					hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+					value = 255
+				end if
+
+				'' save the oct len, or concatenation would fail
+				'' if other numeric characters follow
+				if( value < 8 ) then
+					lgt = 1
+				elseif( value < 64 ) then
+					lgt = 2
+				else
+					lgt = 3
+				end if
+
+				*dst = lgt
+				dst += 1
+
+				*dst = oct( value )
+				dst += lgt
+
+				textlen += 1
+
+				continue do
+			end if
+
+		end if
+
+		*dst = char
+		dst += 1
+		textlen += 1
+	loop
+
+	'' null-term
+	*dst = 0
+
+	function = res.data
+
+end function
+
+'':::::
+function hReEscapeW( byval text as wstring ptr, _
+				     byref textlen as integer _
+				   ) as wstring ptr static
+
+    static as DWSTRING res
+    dim as integer char, lgt, i, isnumber
+    dim as uinteger value
+    dim as wstring ptr src, dst, src_end
+
+	'' convert escape sequences to internal format
+
+	textlen = 0
+
+	lgt = len( *text )
+	if( lgt = 0 ) then
+		return text
+	end if
+
+	DWstrAllocate( res, lgt * 2 )
+
+	src_end = src + lgt
+    do while( src < src_end )
+		char = *src
+		src += 1
+
+		'' '\'?
+		if( char = CHAR_RSLASH ) then
+			'' change to internal
+			*dst = FB_INTSCAPECHAR
+			dst += 1
+
+			if( src >= src_end ) then exit do
+
+			isnumber = FALSE
+
+			char = *src
+			src += 1
+
+			'' if it's a literal number, convert to octagonal
+			select case char
+			case CHAR_0 to CHAR_9
+				isnumber = TRUE
+
+				value = 0
+				'' max 5 digits
+				for i = 1 to 5
+					value = (value * 10) + (char - CHAR_0)
+
+					if( src >= src_end ) then exit for
+
+					char = *src
+					if( (char < CHAR_0) or (char > CHAR_9) ) then
+						exit for
+					end if
+					src += 1
+				next
+
+			case CHAR_AMP
+				if( src >= src_end ) then exit do
+
+				value = 0
+
+				char = *src
+				src += 1
+
+				select case as const char
+				'' hex?
+				case CHAR_HUPP, CHAR_HLOW
+					isnumber = TRUE
+
+					'' max 4 digits
+					for i = 1 to 4
+						if( src >= src_end ) then exit for
+
+						char = *src
+						select case char
+						case CHAR_ALOW to CHAR_FLOW, _
+							 CHAR_AUPP to CHAR_FUPP, _
+							 CHAR_0 to CHAR_9
+							char -= CHAR_0
+                			if( char > 9 ) then
+								char -= (CHAR_AUPP - CHAR_9 - 1)
+                			end if
+                			if( char > 16 ) then
+                  				char -= (CHAR_ALOW - CHAR_AUPP)
+                			end if
+
+                			value = (value * 16) + char
+
+                		case else
+                			exit for
+                		end select
+						src += 1
+                	next
+
+				'' oct?
+				case CHAR_OUPP, CHAR_OLOW
+					isnumber = TRUE
+
+					'' max 6 digits
+					for i = 1 to 6
+						if( src >= src_end ) then exit for
+
+						char = *src
+						if( (char < CHAR_0) or (char > CHAR_7) ) then
+							exit for
+						end if
+						value = (value * 8) + (char - CHAR_0)
+						src += 1
+                	next
+
+				'' bin?
+				case CHAR_BUPP, CHAR_BLOW
+					isnumber = TRUE
+
+					'' max 16 digits
+					for i = 1 to 16
+						if( src >= src_end ) then exit for
+
+						char = *src
+						if( (char < CHAR_0) or (char > CHAR_1) ) then
+							exit for
+						end if
+						value = (value * 2) + (char - CHAR_0)
+						src += 1
+                	next
+
+				end select
+
+			'' 16-bit unicode?
+			case CHAR_ULOW
+				'' 'u'
+				*dst = char
+				dst += 1
+
+				for i = 1 to 4
+					*dst = *src
+					dst += 1
+					src += 1
+				next
+
+				textlen += 2
+
+				continue do
+
+			'' 32-bit unicode?
+			case CHAR_UUPP
+				'' break in two 16-bit..
+
+				'' 'u'
+				*dst = CHAR_UUPP
+				dst += 1
+
+				for i = 1 to 4
+					*dst = *src
+					dst += 1
+					src += 1
+				next
+
+				'' '\u'
+				dst[0] = FB_INTSCAPECHAR
+				dst[1] = CHAR_UUPP
+				dst += 2
+
+				for i = 1 to 4
+					*dst = *src
+					dst += 1
+					src += 1
+				next
+
+				textlen += 4
+
+				continue do
+
+			end select
+
+    		if( isnumber ) then
+				if( cuint( value ) > 65535 ) then
+					hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+					value = 65535
+				end if
+
+				'' save the oct len, or concatenation would fail
+				'' if other numeric characters follow
+				lgt = 1
+				do while( value > 7 )
+					value shr= 3
+					lgt += 1
+				loop
+
+				*dst = lgt
+				dst += 1
+
+				*dst = woct( value )
+				dst += lgt
+
+				textlen += 1
+
+				continue do
+			end if
+
+		end if
+
+		*dst = char
+		dst += 1
+		textlen += 1
+	loop
+
+	'' null-term
+	*dst = 0
+
+	function = res.data
+
+end function
+
+'':::::
+function hEscape( byval text as zstring ptr ) as zstring ptr static
     static as DZSTRING res
     dim as integer c, octlen, lgt
     dim as zstring ptr src, dst, src_end
+
+    '' convert the internal escape sequences to GAS format
 
 	octlen = 0
 
@@ -322,11 +766,71 @@ function hEscapeStr( byval text as zstring ptr ) as zstring ptr static
 end function
 
 '':::::
-function hEscapeWstr( byval text as wstring ptr ) as zstring ptr static
+private function hRemapChar( byval char as integer ) as integer static
+
+	select case as const char
+	case asc( "r" )
+		function = CHAR_CR
+
+	case asc( "l" ), asc( "n" )
+		function = CHAR_LF
+
+	case asc( "t" )
+		function = CHAR_TAB
+
+	case asc( "b" )
+		function = CHAR_BKSPC
+
+	case asc( "a" )
+		function = CHAR_BELL
+
+	case asc( "f" )
+		function = CHAR_FORMFEED
+
+	case asc( "v" )
+		function = CHAR_VTAB
+
+	case else
+		function = char
+	end select
+
+end function
+
+''::::
+private function hU16ToWchar( byval src as wstring ptr ) as uinteger static
+	dim as uinteger char, c
+	dim as integer i
+
+	'' x86 little-endian assumption
+	char = 0
+
+	for i = 1 to 4
+		c = *src - CHAR_0
+		src += 1
+
+		if( c > 9 ) then
+			c -= (CHAR_AUPP - CHAR_9 - 1)
+        end if
+        if( c > 16 ) then
+        	c -= (CHAR_ALOW - CHAR_AUPP)
+        end if
+
+		char = (char * 16) or c
+	next
+
+	function = char
+
+end function
+
+'':::::
+function hEscapeW( byval text as wstring ptr ) as zstring ptr static
     static as DZSTRING res
-    dim as integer char, c, lgt, i, wstrlen
+    dim as uinteger char, c
+    dim as integer lgt, i, wstrlen
     dim as wstring ptr src, src_end
     dim as zstring ptr dst
+
+	'' convert the internal escape sequences to GAS format
 
 	wstrlen = symbGetDataSize( FB_DATATYPE_WCHAR )
 
@@ -368,50 +872,16 @@ function hEscapeWstr( byval text as wstring ptr ) as zstring ptr static
 				loop
 
 			else
-
-			    '' remap char as they will become a octagonal seq
-			    select case as const char
-			    case asc( "r" )
-			    	char = CHAR_CR
-
-			    case asc( "l" ), asc( "n" )
-			    	char = CHAR_LF
-
-			    case asc( "t" )
-			    	char = CHAR_TAB
-
-			    case asc( "b" )
-			    	char = CHAR_BKSPC
-
-			    case asc( "a" )
-			    	char = CHAR_BELL
-
-			    case asc( "f" )
-			    	char = CHAR_FORMFEED
-
-			    case asc( "v" )
-			    	char = CHAR_VTAB
-
-			    '' unicode 16-bit
-			    case asc( "u" )
-			    	'' x86 little-endian assumption
-			    	char = 0
+			    '' unicode 16-bit?
+			    if( char = asc( "u" ) ) then
 			    	if( src + 4 > src_end ) then exit do
-			    	for i = 1 to 4
-			    		c = (*src - CHAR_0)
-			    		src +=1
+			    	char = hU16ToWchar( src )
+			    	src += 4
 
-                		if( c > 9 ) then
-							c -= (CHAR_AUPP - CHAR_9 - 1)
-                		end if
-                		if( c > 16 ) then
-                  			c -= (CHAR_ALOW - CHAR_AUPP)
-                		end if
-
-						char = (char shl 4) or c
-                    next
-
-                end select
+                '' remap char as they will become a octagonal seq
+                else
+			    	char = hRemapChar( char )
+                end if
 			end if
 
 		end if
@@ -453,95 +923,10 @@ function hEscapeWstr( byval text as wstring ptr ) as zstring ptr static
 end function
 
 '':::::
-function hUnescapeStr( byval text as zstring ptr ) as zstring ptr static
-    static as DZSTRING res
-    dim as integer c, lgt
-    dim as zstring ptr src, dst, src_len
-
-	if( env.opt.escapestr = FALSE ) then
-    	return text
-    end if
-
-	lgt = len( *text )
-	if( lgt = 0 ) then
-		return text
-	end if
-
-	DZstrAllocate( res, lgt )
-
-	*res.data = *text
-
-	src = text
-	dst = res.data
-
-	src_len = src + lgt
-	do while( src < src_len )
-
-		c = *src
-		src += 1
-
-		if( c = FB_INTSCAPECHAR ) then
-			*dst = CHAR_RSLASH
-		end if
-
-		dst += 1
-	loop
-
-	function = res.data
-
-end function
-
-'':::::
-function hUnescapeWstr( byval text as wstring ptr ) as wstring ptr static
-    static as DWSTRING res
-    dim as integer c, lgt
-    dim as wstring ptr src, dst, src_len
-
-	if( env.opt.escapestr = FALSE ) then
-    	return text
-    end if
-
-	lgt = len( *text )
-	if( lgt = 0 ) then
-		return text
-	end if
-
-	DWstrAllocate( res, lgt )
-
-	*res.data = *text
-
-	src = text
-	dst = res.data
-
-	src_len = src + lgt
-    do while( src < src_len )
-
-		c = *src
-		src += 1
-
-		if( c = FB_INTSCAPECHAR ) then
-			*dst = CHAR_RSLASH
-		end if
-
-		dst += 1
-	loop
-
-    '' null-term
-    *dst = 0
-
-	function = res.data
-
-end function
-
-'':::::
-function hEscapeToChar( byval text as zstring ptr ) as zstring ptr static
+function hUnescape( byval text as zstring ptr ) as zstring ptr static
     static as DZSTRING res
     dim as integer char, lgt, i
-    dim as zstring ptr src, dst, src_len
-
-	if( env.opt.escapestr = FALSE ) then
-    	return text
-    end if
+    dim as zstring ptr src, dst, src_end
 
 	lgt = len( *text )
 	if( lgt = 0 ) then
@@ -553,14 +938,14 @@ function hEscapeToChar( byval text as zstring ptr ) as zstring ptr static
 	src = text
 	dst = res.data
 
-	src_len = src + lgt
-	do while( src < src_len )
+	src_end = src + lgt
+	do while( src < src_end )
 		char = *src
 		src += 1
 
 		if( char = FB_INTSCAPECHAR ) then
 
-			if( src >= src_len ) then exit do
+			if( src >= src_end ) then exit do
 			char = *src
 			src += 1
 
@@ -576,30 +961,9 @@ function hEscapeToChar( byval text as zstring ptr ) as zstring ptr static
 
 			else
 			    '' remap char
-			    select case as const char
-			    case asc( "r" )
-			    	char = CHAR_CR
+			    char = hRemapChar( char )
 
-			    case asc( "l" ), asc( "n" )
-			    	char = CHAR_LF
-
-			    case asc( "t" )
-			    	char = CHAR_TAB
-
-			    case asc( "b" )
-			    	char = CHAR_BKSPC
-
-			    case asc( "a" )
-			    	char = CHAR_BELL
-
-			    case asc( "f" )
-			    	char = CHAR_FORMFEED
-
-			    case asc( "v" )
-			    	char = CHAR_VTAB
-
-			    end select
-
+			    '' note: zstring's won't contain \u seqs
 			end if
 
 		end if
@@ -616,16 +980,11 @@ function hEscapeToChar( byval text as zstring ptr ) as zstring ptr static
 
 end function
 
-
 '':::::
-function hEscapeToCharW( byval text as wstring ptr ) as wstring ptr static
+function hUnescapeW( byval text as wstring ptr ) as wstring ptr static
     static as DWSTRING res
     dim as integer char, lgt, i
-    dim as wstring ptr src, dst, src_len
-
-	if( env.opt.escapestr = FALSE ) then
-    	return text
-    end if
+    dim as wstring ptr src, dst, src_end
 
 	lgt = len( *text )
 	if( lgt = 0 ) then
@@ -634,19 +993,17 @@ function hEscapeToCharW( byval text as wstring ptr ) as wstring ptr static
 
 	DWstrAllocate( res, lgt )
 
-	*res.data = *text
-
 	src = text
 	dst = res.data
 
-	src_len = src + lgt
-    do while( src < src_len )
+	src_end = src + lgt
+    do while( src < src_end )
     	char = *src
     	src += 1
 
     	if( char = FB_INTSCAPECHAR ) then
 
-			if( src >= src_len ) then exit do
+			if( src >= src_end ) then exit do
 			char = *src
 			src += 1
 
@@ -663,30 +1020,16 @@ function hEscapeToCharW( byval text as wstring ptr ) as wstring ptr static
 				loop
 
 			else
-			    '' remap char
-			    select case as const char
-			    case asc( "r" )
-			    	char = CHAR_CR
+			    '' unicode 16-bit?
+			    if( char = asc( "u" ) ) then
+			    	if( src + 4 > src_end ) then exit do
+			    	char = hU16ToWchar( src )
+			    	src += 4
 
-			    case asc( "l" ), asc( "n" )
-			    	char = CHAR_LF
-
-			    case asc( "t" )
-			    	char = CHAR_TAB
-
-			    case asc( "b" )
-			    	char = CHAR_BKSPC
-
-			    case asc( "a" )
-			    	char = CHAR_BELL
-
-			    case asc( "f" )
-			    	char = CHAR_FORMFEED
-
-			    case asc( "v" )
-			    	char = CHAR_VTAB
-
-			    end select
+                '' remap char as they will become a octagonal seq
+                else
+			    	char = hRemapChar( char )
+                end if
 			end if
 
 		end if

@@ -29,7 +29,7 @@ option escape
 #include once "inc\list.bi"
 #include once "inc\dstr.bi"
 
-#define LIT_FLAGS LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX or LEXCHECK_NODEFINE or LEXCHECK_NOQUOTES
+#define LEX_FLAGS LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX or LEXCHECK_NODEFINE or LEXCHECK_NOQUOTES
 
 type LEXPP_CTX
 	argtblist	as TLIST
@@ -137,7 +137,7 @@ private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
 
 			if( argtb <> NULL ) then
 	   			if( t.typ <> FB_DATATYPE_WCHAR ) then
-	   				DZstrConcatAssign( argtb->tb(num).text, t.text )
+	    			DZstrConcatAssign( argtb->tb(num).text, t.text )
 	    		else
 	    			DZstrConcatAssignW( argtb->tb(num).text, t.textw )
 	    		end if
@@ -194,6 +194,7 @@ private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
 
 			'' stringize parameter?
 			case FB_DEFTOK_TYPE_PARAMSTR
+				'' !!!FIXME!!! $'s won't turn off escaping
 				text += "\""
 				text += hReplace( argtb->tb( symbGetDefTokParamNum( dt ) ).text.data, _
 								  "\"", _
@@ -439,6 +440,7 @@ private function hLoadMacroW( byval s as FBSYMBOL ptr ) as integer
 
 			'' stringize parameter?
 			case FB_DEFTOK_TYPE_PARAMSTR
+				'' !!!FIXME!!! $'s won't turn off escaping
 				DWstrConcatAssign( text, "\"" )
 				DWstrConcatAssign( text, *hReplaceW( argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data, _
 										 	  		"\"", _
@@ -601,13 +603,13 @@ private function hReadMacroText( byval args as integer, _
     tokhead = NULL
 
     do
-    	select case lexGetToken( LIT_FLAGS )
+    	select case lexGetToken( LEX_FLAGS )
 		case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
 			exit do
 		end select
 
     	'' preserve quotes if it's a string literal
-    	if( lexGetClass( LIT_FLAGS ) = FB_TKCLASS_STRLITERAL ) then
+    	if( lexGetClass( LEX_FLAGS ) = FB_TKCLASS_STRLITERAL ) then
 
     		'' ascii?
     		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
@@ -616,12 +618,7 @@ private function hReadMacroText( byval args as integer, _
 					tokhead = tok
 				end if
 
-    			'' un-espace it if option escape is on
-    			if( env.opt.escapestr ) then
-    				ZstrAssign( @tok->text, hUnescapeStr( lexGetText( ) ) )
-    			else
-	    			ZstrAssign( @tok->text, lexGetText( ) )
-    			end if
+	    		ZstrAssign( @tok->text, lexGetText( ) )
 
     		'' unicode..
     		else
@@ -630,14 +627,10 @@ private function hReadMacroText( byval args as integer, _
 					tokhead = tok
 				end if
 
-    			if( env.opt.escapestr ) then
-    				WstrAssign( @tok->textw, hUnescapeWstr( lexGetTextW( ) ) )
-    			else
-    				WstrAssign( @tok->textw, lexGetTextW( ) )
-    			end if
+    			WstrAssign( @tok->textw, lexGetTextW( ) )
     		end if
 
-    		lexSkipToken( LIT_FLAGS )
+    		lexSkipToken( LEX_FLAGS )
 
     	'' anything but a literal string..
     	else
@@ -650,25 +643,25 @@ private function hReadMacroText( byval args as integer, _
     		addquotes = FALSE
 
     		'' '#'?
-    		if( lexGetToken( LIT_FLAGS ) = CHAR_SHARP ) then
-    			select case lexGetLookAhead( 1, LIT_FLAGS )
+    		if( lexGetToken( LEX_FLAGS ) = CHAR_SHARP ) then
+    			select case lexGetLookAhead( 1, LEX_FLAGS )
     			'' '##'?
     			case CHAR_SHARP
-    				lexSkipToken( LIT_FLAGS )
-    				lexSkipToken( LIT_FLAGS )
+    				lexSkipToken( LEX_FLAGS )
+    				lexSkipToken( LEX_FLAGS )
     				continue do
 
     			'' '#' id?
     			case FB_TK_ID
-    			    lexSkipToken( LIT_FLAGS )
+    			    lexSkipToken( LEX_FLAGS )
     			    addquotes = TRUE
     			end select
     		end if
 
     		'' not and identifier? read as-is
-    		if( lexGetToken( LIT_FLAGS ) <> FB_TK_ID ) then
+    		if( lexGetToken( LEX_FLAGS ) <> FB_TK_ID ) then
     			ZstrAssign( @tok->text, lexGetText( ) )
-    			lexSkipToken( LIT_FLAGS )
+    			lexSkipToken( LEX_FLAGS )
 
     		'' otherwise, check if it's a parameter
     		else
@@ -697,11 +690,11 @@ private function hReadMacroText( byval args as integer, _
     					'' add the remainder if it's an udt access
     					if( dpos > 1 ) then
     						tok = symbAddDefineTok( tok, FB_DEFTOK_TYPE_TEX )
-    						lexEatToken( token, LIT_FLAGS )
+    						lexEatToken( token, LEX_FLAGS )
     						ZstrAssign( @tok->text, _
     								    cast( zstring ptr, @token[dpos-1] ) ) ''mid( token, dpos )
     					else
-    						lexSkipToken( LIT_FLAGS )
+    						lexSkipToken( LEX_FLAGS )
     					end if
 
     					exit do
@@ -715,7 +708,7 @@ private function hReadMacroText( byval args as integer, _
     			'' if none matched, read as-is
     			if( param = NULL ) then
     				ZstrAssign( @tok->text, lexGetText( ) )
-    				lexSkipToken( LIT_FLAGS )
+    				lexSkipToken( LEX_FLAGS )
     			end if
     		end if
 
@@ -748,14 +741,14 @@ function ppDefine( ) as integer
     	end if
     end if
 
-    lexEatToken( defname, LIT_FLAGS )
+    lexEatToken( defname, LEX_FLAGS )
 
     params = 0
     paramhead = NULL
     isargless = FALSE
 
     '' '('?
-    if( lexGetToken( LIT_FLAGS ) = CHAR_LPRNT ) then
+    if( lexGetToken( LEX_FLAGS ) = CHAR_LPRNT ) then
     	lexSkipToken( LEXCHECK_NODEFINE )
 
 		'' not arg-less?
@@ -782,16 +775,16 @@ function ppDefine( ) as integer
 		end if
 
     	'' ')'
-    	if( lexGetToken( LIT_FLAGS ) <> CHAR_RPRNT ) then
+    	if( lexGetToken( LEX_FLAGS ) <> CHAR_RPRNT ) then
     		hReportError( FB_ERRMSG_EXPECTEDRPRNT )
     		exit function
     	end if
-    	lexSkipToken( LIT_FLAGS and not LEXCHECK_NOWHITESPC )
+    	lexSkipToken( LEX_FLAGS and not LEXCHECK_NOWHITESPC )
 
     else
-    	if( lexGetToken( LIT_FLAGS ) = CHAR_SPACE ) then
+    	if( lexGetToken( LEX_FLAGS ) = CHAR_SPACE ) then
     		'' skip white-spaces
-    		lexSkipToken( LIT_FLAGS and not LEXCHECK_NOWHITESPC )
+    		lexSkipToken( LEX_FLAGS and not LEXCHECK_NOWHITESPC )
     	end if
     end if
 

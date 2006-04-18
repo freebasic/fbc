@@ -65,7 +65,7 @@ sub fbAddIncPath( byval path as zstring ptr )
         ' under Win32 and DOS using DJGPP. However, the (back)slashes
         ' will always be converted to the OS' preferred type of slash.
 		select case right( *path, 1 )
-        case "/","\\"
+        case "/", "\\"
         case else
 			*path += PATHDIV
 		end select
@@ -173,6 +173,8 @@ private sub hSetCtx( )
 	env.dostmt.cmplabel		= NULL
 	env.whilestmt.endlabel	= NULL
 	env.whilestmt.cmplabel	= NULL
+	env.selectstmt.endlabel	= NULL
+	env.selectstmt.cmplabel	= NULL
 	env.procstmt.endlabel	= NULL
 	env.procstmt.cmplabel	= NULL
 
@@ -548,7 +550,7 @@ end function
 
 '':::::
 function fbListLibs( namelist() as string, byval index as integer ) as integer
-	dim i as integer
+	dim as integer i
 
 	index += symbListLibs( namelist(), index )
 
@@ -558,7 +560,7 @@ function fbListLibs( namelist() as string, byval index as integer ) as integer
 				namelist(i) = "fbmt"
 				exit for
 			end if
-		next i
+		next
 	end if
 
 	function = index

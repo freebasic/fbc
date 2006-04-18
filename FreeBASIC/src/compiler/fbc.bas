@@ -128,10 +128,16 @@ declare sub 	 setCompOptions			( )
    		end 1
    	end if
 
-	if( fbc.compileonly = FALSE ) then
+	if( fbc.compileonly ) then
 
+	else
     	'' link
-    	if( fbc.outtype <> FB_OUTTYPE_STATICLIB ) then
+    	if( fbc.outtype = FB_OUTTYPE_STATICLIB ) then
+    		if( archiveFiles( ) = FALSE ) then
+    			delFiles( )
+    			end 1
+    		end if
+    	else
 			'' resource files..
 			if( compileResFiles( ) = FALSE ) then
 				delFiles( )
@@ -139,11 +145,6 @@ declare sub 	 setCompOptions			( )
 			end if
 
     		if( linkFiles( ) = FALSE ) then
-    			delFiles( )
-    			end 1
-    		end if
-    	else
-    		if( archiveFiles( ) = FALSE ) then
     			delFiles( )
     			end 1
     		end if
@@ -264,14 +265,14 @@ function compileFiles as integer
 		'' shutdown the parser
 		fbEnd( )
 
-	next i
+	next
 
     '' no default libs would be added if no inp files were given
     if( fbc.inps = 0 ) then
    		fbInit( FALSE )
    		fbAddDefaultLibs( )
    		getLibList( )
-   		fbend( )
+   		fbEnd( )
     end if
 
 	function = TRUE
@@ -286,8 +287,8 @@ function assembleFiles as integer
 	function = FALSE
 
     '' get path to assembler
-    aspath = environ$("AS") '' check the environment variable first
-    if len(aspath)=0 then
+    aspath = environ( "AS" ) '' check the environment variable first
+    if( len( aspath ) = 0 ) then
         '' when not set, then simply use some default value
         binpath = exepath( ) + *fbGetPath( FB_PATH_BIN )
 
@@ -324,7 +325,7 @@ function assembleFiles as integer
     	if( exec( aspath, ascline ) <> 0 ) then
     		exit function
     	end if
-    next i
+    next
 
     function = TRUE
 
@@ -332,8 +333,8 @@ end function
 
 '':::::
 function archiveFiles as integer
-    dim i as integer
-    dim arcline as string
+    dim as integer i
+    dim as string arcline
 
 	function = FALSE
 
@@ -349,12 +350,12 @@ function archiveFiles as integer
     '' add objects from output list
     for i = 0 to fbc.inps-1
     	arcline += QUOTE + fbc.outlist(i) + "\" "
-    next i
+    next
 
     '' add objects from cmm-line
     for i = 0 to fbc.objs-1
     	arcline += QUOTE + fbc.objlist(i) + "\" "
-    next i
+    next
 
     '' invoke ar
     if( fbc.verbose ) then
@@ -383,7 +384,7 @@ end function
 
 '':::::
 function delFiles as integer
-	dim i as integer
+	dim as integer i
 
     function = FALSE
 
@@ -394,7 +395,7 @@ function delFiles as integer
 		if( fbc.compileonly = FALSE ) then
 			safeKill( fbc.outlist(i) )
 		end if
-    next i
+    next
 
     function = fbc.delFiles( )
 
@@ -563,7 +564,7 @@ end sub
 
 '':::::
 function processTargetOptions( ) as integer
-    dim i as integer
+    dim as integer i
 
 	function = FALSE
 
@@ -936,8 +937,8 @@ end function
 
 '':::::
 function processCompLists( ) as integer
-    dim i as integer, p as integer
-    dim dname as string, dtext as string
+    dim as integer i, p
+    dim as string dname, dtext
 
 	function = FALSE
 
@@ -962,7 +963,7 @@ function processCompLists( ) as integer
     	end if
 
     	fbAddDefine( dname, dtext )
-    next i
+    next
 
     function = FALSE
 
@@ -970,7 +971,7 @@ end function
 
 '':::::
 function listFiles( ) as integer
-    dim i as integer
+    dim as integer i
 
 	function = FALSE
 
@@ -999,7 +1000,7 @@ function listFiles( ) as integer
 				argv(i) = ""
 			end if
 		end select
-	next i
+	next
 
 	function = TRUE
 
@@ -1028,7 +1029,7 @@ end sub
 
 '':::::
 public function fbAddLibPath ( byval path as zstring ptr ) as integer
-	dim i as integer
+	dim as integer i
 
 	function = FALSE
 
@@ -1042,7 +1043,7 @@ public function fbAddLibPath ( byval path as zstring ptr ) as integer
 		if( fbc.pthlist(i) = *path ) then
 			exit function
 		end if
-	next i
+	next
 
 	fbc.pthlist(fbc.pths) = *path
 	fbc.pths += 1

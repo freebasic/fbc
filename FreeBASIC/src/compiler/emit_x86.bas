@@ -5127,7 +5127,7 @@ sub emitDATA ( byval litext as zstring ptr, _
     static as zstring ptr esctext
     dim as string ostr
 
-    esctext = hEscapeStr( litext )
+    esctext = hEscape( litext )
 
 	'' len + asciiz
 	if( typ <> INVALID ) then
@@ -5152,7 +5152,7 @@ sub emitDATAW( byval litext as wstring ptr, _
     static as zstring ptr esctext
     dim as string ostr
 
-    esctext = hEscapeWstr( litext )
+    esctext = hEscapeW( litext )
 
 	'' (0x8000 or len) + unicode
 	if( typ <> INVALID ) then
@@ -5506,11 +5506,11 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
     	    select case dtype
     	    case FB_DATATYPE_CHAR
     	    	stext = "\""
-    	    	stext += *hEscapeStr( symbGetVarLitText( s ) )
+    	    	stext += *hEscape( symbGetVarLitText( s ) )
     	    	stext += "\\0\""
     	    case FB_DATATYPE_WCHAR
 				stext = "\""
-				stext += *hEscapeWstr( symbGetVarLitTextW( s ) )
+				stext += *hEscapeW( symbGetVarLitTextW( s ) )
 				stext += *hGetWstrNull( )
 				stext += "\""
     	    case else

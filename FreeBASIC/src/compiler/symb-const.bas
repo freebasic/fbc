@@ -189,10 +189,10 @@ function symbAllocWStrConst( byval sname as wstring ptr, _
 		lgt = strlen
 	end if
 
-	'' hEscapeWstr() can use up to 4 chars p/ unicode char (\ooo)
+	'' hEscapeW() can use up to 4 chars p/ unicode char (\ooo)
 	if( strlen * (3+1) <= FB_MAXNAMELEN-6 ) then
 		cname = "{fbwc}"
-		cname += *hEscapeWstr( sname )
+		cname += *hEscapeW( sname )
 	else
 		cname = *hMakeTmpStr( FALSE )
 	end if

@@ -98,9 +98,6 @@ function cDirective as integer static
 		'' "STR_LIT"
 		if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
 			lexEatToken( incfile )
-			if( env.opt.escapestr ) then
-				incfile = *hUnescapeStr( incfile )
-			end if
 
 		else
 			'' '\''

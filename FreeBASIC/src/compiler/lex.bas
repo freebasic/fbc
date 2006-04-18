@@ -1078,20 +1078,16 @@ end sub
 ''string          = '"' { ANY_CHAR_BUT_QUOTE } '"'.   # less quotes
 ''
 private function lexReadString ( byval ps as zstring ptr, _
-								 byref tlen as integer, _
-								 byval flags as LEXCHECK_ENUM _
-							   ) as integer static
+			 			    	 byval flags as LEXCHECK_ENUM _
+						  	   ) as integer static
 
-	static as zstring * FB_MAXNUMLEN+1 nval
-	dim as integer rlen, i, ntyp, nlen
-	dim as integer skipchar, isunicode
-	dim as uinteger c
+	dim as integer tlen
+	dim as integer skipchar
+	dim as uinteger char
 
 	*ps = 0
 	tlen = 0
-	rlen = 0
 	skipchar = FALSE
-	isunicode = FALSE
 
 	'' skip open quote?
 	if( (flags and LEXCHECK_NOQUOTES) = 0 ) then
@@ -1111,9 +1107,9 @@ private function lexReadString ( byval ps as zstring ptr, _
 
 		case CHAR_QUOTE
 			lexEatChar( )
+
 			'' check for double-quotes
 			if( lexCurrentChar( ) <> CHAR_QUOTE ) then
-
 				'' don't skip quotes?
 				if( (flags and LEXCHECK_NOQUOTES) <> 0 ) then
 					if( skipchar = FALSE ) then
@@ -1126,101 +1122,28 @@ private function lexReadString ( byval ps as zstring ptr, _
 				exit do
 			end if
 
+		'' '\'?
 		case CHAR_RSLASH
-			'' process the scape sequence
+			'' escaping on? needed or "\\" would fail..
 			if( env.opt.escapestr ) then
-
-				'' can't use '\', it will be escaped anyway because GAS
 				lexEatChar( )
+
 				if( skipchar = FALSE ) then
-					*ps = FB_INTSCAPECHAR
+					*ps = CHAR_RSLASH
 					ps += 1
-					rlen += 1
+					tlen += 1
 				end if
 
-				select case lexCurrentChar( )
-				'' if it's a literal number, convert to octagonal
-				case CHAR_0 to CHAR_9, CHAR_AMP
-					lexReadNumber( @nval, ntyp, nlen, 0 )
-
-					if( skipchar = FALSE ) then
-						i = valint( nval )
-						if( cuint( i ) > 255 ) then
-							hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
-							i and= 255
-						end if
-
-						nval = oct( i )
-						'' save the oct len, or concatenation would fail
-						'' if other numeric characters follow
-						*ps = len( nval )
-						ps += 1
-						rlen += 1
-
-						i = 0
-						do until( nval[i] = 0 )
-							*ps = nval[i]
-							ps += 1
-							rlen += 1
-							i += 1
-						loop
-						tlen += 1
-					end if
-
-					continue do
-
-				'' unicode 16-bit
-				case CHAR_ULOW
-					if( skipchar = FALSE ) then
-						isunicode = TRUE
-						for i = 1 to 1+4
-							lexCurrentChar( )
-							*ps = lexEatChar( )
-							ps += 1
-						next
-
-						tlen += 2
-						rlen += 1+4
-					else
-						for i = 1 to 1+4
-							lexCurrentChar( )
-							lexEatChar( )
-						next
-					end if
-
-					continue do
-
-				'' unicode 32-bit
-				case CHAR_UUPP
-					if( skipchar = FALSE ) then
-						isunicode = TRUE
-						for i = 1 to 1+8
-							lexCurrentChar( )
-							*ps = lexEatChar( )
-							ps += 1
-						next
-
-						tlen += 4
-						rlen += 1+8
-					else
-						for i = 1 to 1+8
-							lexCurrentChar( )
-							lexEatChar( )
-						next
-					end if
-
-					continue do
-
-				end select
-
+				lexCurrentChar( )
 			end if
+
 		end select
 
-		c = lexEatChar( )
+		char = lexEatChar( )
 
 		if( skipchar = FALSE ) then
 			'' no more room?
-			if( rlen = FB_MAXLITLEN ) then
+			if( tlen = FB_MAXLITLEN ) then
 				'' show warning?
 				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 					'' just once..
@@ -1231,10 +1154,9 @@ private function lexReadString ( byval ps as zstring ptr, _
 				skipchar = TRUE
 
 			else
-				*ps = c
+				*ps = char
 				ps += 1
 				tlen += 1
-				rlen += 1
 			end if
 		end if
 
@@ -1243,25 +1165,23 @@ private function lexReadString ( byval ps as zstring ptr, _
 	'' null-term
 	*ps = 0
 
-	function = isunicode
+	function = tlen
 
 end function
 
 '':::::
 ''string          = '"' { ANY_CHAR_BUT_QUOTE } '"'.   # less quotes
 ''
-private sub lexReadWStr ( byval ps as wstring ptr, _
-						  byref tlen as integer, _
-						  byval flags as LEXCHECK_ENUM ) static
+private function lexReadWStr ( byval ps as wstring ptr, _
+						  	   byval flags as LEXCHECK_ENUM _
+						  	 ) as integer static
 
-	static as zstring * FB_MAXNUMLEN+1 nval
-	dim as integer rlen, i, ntyp, nlen
+	dim as integer tlen
 	dim as integer skipchar
-	dim as uinteger c
+	dim as uinteger char
 
 	*ps = 0
 	tlen = 0
-	rlen = 0
 	skipchar = FALSE
 
 	'' skip open quote?
@@ -1277,14 +1197,16 @@ private sub lexReadWStr ( byval ps as wstring ptr, _
 
 	do
 		select case as const lexCurrentChar( )
+		'' EOF or EOL?
 		case 0, CHAR_CR, CHAR_LF
 			exit do
 
+		'' '"'?
 		case CHAR_QUOTE
 			lexEatChar( )
+
 			'' check for double-quotes
 			if( lexCurrentChar( ) <> CHAR_QUOTE ) then
-
 				'' don't skip quotes?
 				if( (flags and LEXCHECK_NOQUOTES) <> 0 ) then
 					if( skipchar = FALSE ) then
@@ -1297,99 +1219,28 @@ private sub lexReadWStr ( byval ps as wstring ptr, _
 				exit do
 			end if
 
+		'' '\'?
 		case CHAR_RSLASH
-			'' process the scape sequence
+			'' escaping on? needed or "\\" would fail..
 			if( env.opt.escapestr ) then
-
-				'' can't use '\', it will be escaped anyway because GAS
 				lexEatChar( )
+
 				if( skipchar = FALSE ) then
-					*ps = FB_INTSCAPECHAR
+					*ps = CHAR_RSLASH
 					ps += 1
-					rlen += 1
+					tlen += 1
 				end if
 
-				select case lexCurrentChar( )
-				'' if it's a literal number, convert to octagonal
-				case CHAR_0 to CHAR_9, CHAR_AMP
-					lexReadNumber( @nval, ntyp, nlen, 0 )
-
-					if( skipchar = FALSE ) then
-						i = valint( nval )
-						if( cuint( i ) > 255 ) then
-							hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
-							i and= 255
-						end if
-
-						nval = oct( i )
-						'' save the oct len, or concatenation would fail
-						'' if other numeric characters follow
-						*ps = len( nval )
-						ps += 1
-						rlen += 1
-
-						i = 0
-						do until( nval[i] = 0 )
-							*ps = nval[i]
-							ps += 1
-							rlen += 1
-							i += 1
-						loop
-						tlen += 1
-					end if
-
-					continue do
-
-				'' unicode 16-bit
-				case CHAR_ULOW
-					if( skipchar = FALSE ) then
-						for i = 1 to 1+4
-							lexCurrentChar( )
-							*ps = lexEatChar( )
-							ps += 1
-						next
-
-						tlen += 2
-						rlen += 1+4
-					else
-						for i = 1 to 1+4
-							lexCurrentChar( )
-							lexEatChar( )
-						next
-					end if
-
-					continue do
-
-				'' unicode 32-bit
-				case CHAR_UUPP
-					if( skipchar = FALSE ) then
-						for i = 1 to 1+8
-							lexCurrentChar( )
-							*ps = lexEatChar( )
-							ps += 1
-						next
-
-						tlen += 4
-						rlen += 1+8
-					else
-						for i = 1 to 1+8
-							lexCurrentChar( )
-							lexEatChar( )
-						next
-					end if
-
-					continue do
-
-				end select
-
+				lexCurrentChar( )
 			end if
+
 		end select
 
-		c = lexEatChar( )
+		char = lexEatChar( )
 
 		if( skipchar = FALSE ) then
 			'' no more room?
-			if( rlen = FB_MAXLITLEN ) then
+			if( tlen = FB_MAXLITLEN ) then
 				'' show warning?
 				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 					'' just once..
@@ -1400,10 +1251,9 @@ private sub lexReadWStr ( byval ps as wstring ptr, _
 				skipchar = TRUE
 
 			else
-				*ps = c
+				*ps = char
 				ps += 1
 				tlen += 1
-				rlen += 1
 			end if
 		end if
 	loop
@@ -1411,7 +1261,9 @@ private sub lexReadWStr ( byval ps as wstring ptr, _
 	'' null-term
 	*ps = 0
 
-end sub
+	function = tlen
+
+end function
 
 '':::::
 private sub hLoadWith( byval t as FBTOKEN ptr, _
@@ -1442,7 +1294,7 @@ sub lexNextToken ( byval t as FBTOKEN ptr, _
 				   byval flags as LEXCHECK_ENUM ) static
 
 	dim as uinteger char
-	dim as integer islinecont, isnumber, lgt
+	dim as integer islinecont, lgt
 	dim as FBSYMBOL ptr s
 
 re_read:
@@ -1552,32 +1404,18 @@ re_read:
 	'' '.'?
 	case CHAR_DOT
 
-	    isnumber = FALSE
-
 	    '' only check for fpoint literals if not inside a comment or parsing an $include
 	    if( (flags and (LEXCHECK_NOLINECONT or LEXCHECK_NOSUFFIX)) = 0 ) then
 
-	    	select case as const lexGetLookAheadChar( TRUE )
-	    	'' 0 .. 9
-	    	case CHAR_0 to CHAR_9
-				isnumber = TRUE
+	    	dim as uinteger lachar
+	    	lachar = lexGetLookAheadChar( TRUE )
 
-			'' E | D
-			case CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
-				if( lex->lasttoken <> CHAR_RPRNT ) then
-					if( lex->lasttoken <> CHAR_RBRACKET ) then
-						'' not WITH?
-						if( env.withvar = NULL ) then
-							isnumber = TRUE
-						else
-							hLoadWith( t, flags )
-							exit sub
-						end if
-					end if
-				end if
+	    	'' '0' .. '9'?
+	    	if( (lachar >= CHAR_0) and (lachar <= CHAR_9) ) then
+				goto read_number
 
-			'' anything else
-			case else
+			else
+				'' last token not ')' or ']'?
 				if( (lex->lasttoken <> CHAR_RPRNT) and _
 					(lex->lasttoken <> CHAR_RBRACKET) ) then
 					'' WITH?
@@ -1586,15 +1424,11 @@ re_read:
 						exit sub
 					end if
 				end if
-			end select
+			end if
 
 		end if
 
-		if( isnumber ) then
-			goto read_number
-		else
-			goto read_id
-		end if
+		goto read_id
 
 	'' '&'?
 	case CHAR_AMP
@@ -1635,55 +1469,21 @@ read_id:
         	end if
         end if
 
-	'' '"', '$' '"'?
-	case CHAR_QUOTE, CHAR_DOLAR
-		dim as integer doescape
-
-		'' '$'?
-		if( char = CHAR_DOLAR ) then
-			if( (flags and LEXCHECK_NOSUFFIX) <> 0 ) then
-				goto read_char
-			end if
-
-			'' '"'?
-			if( lexGetLookAheadChar( ) <> CHAR_QUOTE ) then
-				goto read_char
-			end if
-
-			lexEatChar( )
-
-			'' don't process escape seqs
-			doescape = env.opt.escapestr
-			env.opt.escapestr = FALSE
-		end if
-
-		t->id		= FB_TK_STRLIT
-		t->class 	= FB_TKCLASS_STRLITERAL
+	'' '"'?
+	case CHAR_QUOTE
+		t->id = FB_TK_STRLIT
+		t->class = FB_TKCLASS_STRLITERAL
 
 		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-			'' no unicode sequences?
-			if( lexReadString( @t->text, t->tlen, flags ) = FALSE ) then
-				t->typ = FB_DATATYPE_CHAR
-
-			'' convert to unicode..
-			else
-				t->textw = wstr( t->text )
-				t->typ = FB_DATATYPE_WCHAR
-			end if
-
+			t->tlen = lexReadString( @t->text, flags )
+			t->typ = FB_DATATYPE_CHAR
 		else
-			lexReadWstr( @t->textw, t->tlen, flags )
+			t->tlen = lexReadWstr( @t->textw, flags )
 			t->typ = FB_DATATYPE_WCHAR
-
-		end if
-
-		if( char = CHAR_DOLAR ) then
-			env.opt.escapestr = doescape
 		end if
 
 	'':::::
 	case else
-read_char:
 		t->id		= lexEatChar( )
 		t->tlen		= 1
 		t->typ		= t->id

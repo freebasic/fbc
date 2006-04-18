@@ -66,34 +66,109 @@ function cConstant( byref constexpr as ASTNODE ptr ) as integer static
 end function
 
 '':::::
+'' LitString	= 	STR_LITERAL STR_LITERAL* .
+''
+private function hLiteralString( byval checkescape as integer ) as ASTNODE ptr static
+    dim as ASTNODE ptr expr
+    dim as integer dtype
+	dim as FBSYMBOL ptr sym
+    dim as integer lgt, isunicode
+    dim as zstring ptr zs
+	dim as wstring ptr ws
+
+    expr = NULL
+
+	do
+  		dtype = lexGetType( )
+		lgt = lexGetTextLen( )
+
+  		if( dtype <> FB_DATATYPE_WCHAR ) then
+			'' opt escape on? convert to internal format..
+			if( checkescape ) then
+				zs = hReEscape( lexGetText( ), lgt, isunicode )
+			else
+				zs = lexGetText( )
+				isunicode = FALSE
+			end if
+
+			if( isunicode = FALSE ) then
+               	sym = symbAllocStrConst( zs, lgt )
+			'' convert to unicode..
+			else
+				sym = symbAllocWstrConst( wstr( *zs ), lgt )
+				dtype = FB_DATATYPE_WCHAR
+			end if
+
+  		else
+			if( checkescape ) then
+				ws = hReEscapeW( lexGetTextW( ), lgt )
+			else
+				ws = lexGetTextW( )
+			end if
+
+			sym = symbAllocWstrConst( ws, lgt )
+		end if
+
+		if( expr = NULL ) then
+			expr = astNewVAR( sym, 0, dtype )
+		else
+			expr = astNewBOP( AST_OP_ADD, expr, astNewVAR( sym, 0, dtype ) )
+		end if
+
+		lexSkipToken( )
+
+  		'' another literal string? concat..
+  		if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
+			checkescape = env.opt.escapestr
+
+  		else
+  			'' not a '$'?
+  			if( lexGetToken( ) <> CHAR_DOLAR ) then
+  				exit do
+  			end if
+
+  			'' not a literal string?
+  			if( lexGetLookAheadClass( 1 ) <> FB_TKCLASS_STRLITERAL ) then
+  				exit do
+  			end if
+
+  			lexSkipToken( )
+  			checkescape = FALSE
+  		end if
+	loop
+
+	function = expr
+
+end function
+
+'':::::
 ''Literal		  = NUM_LITERAL
 ''				  | STR_LITERAL STR_LITERAL* .
 ''
 function cLiteral( byref litexpr as ASTNODE ptr ) as integer
-	dim as FBSYMBOL ptr s
-	dim as integer typ
+	dim as integer dtype
 
 	function = FALSE
 
 	select case lexGetClass( )
 	'' NUM_LITERAL?
 	case FB_TKCLASS_NUMLITERAL
-  		typ = lexGetType( )
-  		select case as const typ
+  		dtype = lexGetType( )
+  		select case as const dtype
   		case FB_DATATYPE_LONGINT
-			litexpr = astNewCONSTl( vallng( *lexGetText( ) ), typ )
+			litexpr = astNewCONSTl( vallng( *lexGetText( ) ), dtype )
 
 		case FB_DATATYPE_ULONGINT
-			litexpr = astNewCONSTl( valulng( *lexGetText( ) ), typ )
+			litexpr = astNewCONSTl( valulng( *lexGetText( ) ), dtype )
 
   		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			litexpr = astNewCONSTf( val( *lexGetText( ) ), typ )
+			litexpr = astNewCONSTf( val( *lexGetText( ) ), dtype )
 
 		case FB_DATATYPE_UINT
-			litexpr = astNewCONSTi( valuint( *lexGetText( ) ), typ )
+			litexpr = astNewCONSTi( valuint( *lexGetText( ) ), dtype )
 
 		case else
-			litexpr = astNewCONSTi( valint( *lexGetText( ) ), typ )
+			litexpr = astNewCONSTi( valint( *lexGetText( ) ), dtype )
   		end select
 
   		lexSkipToken( )
@@ -101,26 +176,19 @@ function cLiteral( byref litexpr as ASTNODE ptr ) as integer
 
   	'' (STR_LITERAL STR_LITERAL*)?
   	case FB_TKCLASS_STRLITERAL
-
-        litexpr = NULL
-  		do
-  			typ = lexGetType( )
-  			if( typ <> FB_DATATYPE_WCHAR ) then
-				s = symbAllocStrConst( *lexGetText( ), lexGetTextLen( ) )
-  			else
-				s = symbAllocWstrConst( *lexGetTextW( ), lexGetTextLen( ) )
-			end if
-
-			if( litexpr = NULL ) then
-				litexpr = astNewVAR( s, 0, typ )
-			else
-				litexpr = astNewBOP( AST_OP_ADD, litexpr, astNewVAR( s, 0, typ ) )
-			end if
-
-			lexSkipToken( )
-		loop while lexGetClass( ) = FB_TKCLASS_STRLITERAL
-
+        litexpr = hLiteralString( env.opt.escapestr )
         function = TRUE
+
+  	case else
+  		'' '$'?
+  		if( lexGetToken( ) = CHAR_DOLAR ) then
+  			'' literal string?
+  			if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_STRLITERAL ) then
+  				lexSkipToken( )
+  				litexpr = hLiteralString( FALSE )
+  				function = TRUE
+  			end if
+  		end if
   	end select
 
 end function

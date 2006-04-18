@@ -25,6 +25,7 @@ option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
+#include once "inc\dstr.bi"
 #include once "inc\ir.bi"
 #include once "inc\rtl.bi"
 #include once "inc\ast.bi"
@@ -87,25 +88,25 @@ private function hStrLiteralCompare( byval op as integer, _
 									 byval r as ASTNODE ptr _
 								   ) as ASTNODE ptr static
 
-    dim as zstring ptr ltext, rtext
+    static as DZSTRING ltext, rtext
     dim as integer res
 
-   	ltext = symbGetVarLitText( astGetSymbol( l ) )
-   	rtext = symbGetVarLitText( astGetSymbol( r ) )
+   	DZstrAssign( ltext, hUnescape( symbGetVarLitText( astGetSymbol( l ) ) ) )
+   	DZstrAssign( rtext, hUnescape( symbGetVarLitText( astGetSymbol( r ) ) ) )
 
    	select case as const op
    	case AST_OP_EQ
-   		res = (*ltext = *rtext)
+   		res = (*ltext.data = *rtext.data)
    	case AST_OP_GT
-   		res = (*ltext > *rtext)
+   		res = (*ltext.data > *rtext.data)
    	case AST_OP_LT
-   		res = (*ltext < *rtext)
+   		res = (*ltext.data < *rtext.data)
    	case AST_OP_NE
-   		res = (*ltext <> *rtext)
+   		res = (*ltext.data <> *rtext.data)
    	case AST_OP_LE
-   		res = (*ltext <= *rtext)
+   		res = (*ltext.data <= *rtext.data)
    	case AST_OP_GE
-   		res = (*ltext >= *rtext)
+   		res = (*ltext.data >= *rtext.data)
    	end select
 
 	function = astNewCONSTi( res, FB_DATATYPE_INTEGER )
@@ -122,8 +123,8 @@ private function hWStrLiteralCompare( byval op as integer, _
 								    ) as ASTNODE ptr static
 
     dim as FBSYMBOL ptr ls, rs
-    dim as zstring ptr textz
-    dim as wstring ptr ltextw, rtextw
+    static as DZSTRING textz
+    static as DWSTRING ltextw, rtextw
     dim as integer res
 
 	ls = astGetSymbol( l )
@@ -131,62 +132,62 @@ private function hWStrLiteralCompare( byval op as integer, _
 
 	'' left operand not a wstring?
 	if( symbGetType( ls ) <> FB_DATATYPE_WCHAR ) then
-   		textz = symbGetVarLitText( ls )
-   		rtextw = symbGetVarLitTextW( rs )
+   		DZstrAssign( textz, hUnescape( symbGetVarLitText( ls ) ) )
+   		DWstrAssign( rtextw, hUnescapeW( symbGetVarLitTextW( rs ) ) )
 
    		select case as const op
    		case AST_OP_EQ
-   			res = (*textz = *rtextw)
+   			res = (*textz.data = *rtextw.data)
    		case AST_OP_GT
-   			res = (*textz > *rtextw)
+   			res = (*textz.data > *rtextw.data)
    		case AST_OP_LT
-   			res = (*textz < *rtextw)
+   			res = (*textz.data < *rtextw.data)
    		case AST_OP_NE
-   			res = (*textz <> *rtextw)
+   			res = (*textz.data <> *rtextw.data)
    		case AST_OP_LE
-   			res = (*textz <= *rtextw)
+   			res = (*textz.data <= *rtextw.data)
    		case AST_OP_GE
-   			res = (*textz >= *rtextw)
+   			res = (*textz.data >= *rtextw.data)
    		end select
 
    	'' right operand?
    	elseif( symbGetType( rs ) <> FB_DATATYPE_WCHAR ) then
-   		ltextw = symbGetVarLitTextW( ls )
-   		textz = symbGetVarLitText( rs )
+   		DWstrAssign( ltextw, hUnescapeW( symbGetVarLitTextW( ls ) ) )
+   		DZstrAssign( textz, hUnescape( symbGetVarLitText( rs ) ) )
 
    		select case as const op
    		case AST_OP_EQ
-   			res = (*ltextw = *textz)
+   			res = (*ltextw.data = *textz.data)
    		case AST_OP_GT
-   			res = (*ltextw > *textz)
+   			res = (*ltextw.data > *textz.data)
    		case AST_OP_LT
-   			res = (*ltextw < *textz)
+   			res = (*ltextw.data < *textz.data)
    		case AST_OP_NE
-   			res = (*ltextw <> *textz)
+   			res = (*ltextw.data <> *textz.data)
    		case AST_OP_LE
-   			res = (*ltextw <= *textz)
+   			res = (*ltextw.data <= *textz.data)
    		case AST_OP_GE
-   			res = (*ltextw >= *textz)
+   			res = (*ltextw.data >= *textz.data)
    		end select
 
    	'' both wstrings..
    	else
-   		ltextw = symbGetVarLitTextW( ls )
-   		rtextw = symbGetVarLitTextW( rs )
+   		DWstrAssign( ltextw, hUnescapeW( symbGetVarLitTextW( ls ) ) )
+   		DWstrAssign( rtextw, hUnescapeW( symbGetVarLitTextW( rs ) ) )
 
    		select case as const op
    		case AST_OP_EQ
-   			res = (*ltextw = *rtextw)
+   			res = (*ltextw.data = *rtextw.data)
    		case AST_OP_GT
-   			res = (*ltextw > *rtextw)
+   			res = (*ltextw.data > *rtextw.data)
    		case AST_OP_LT
-   			res = (*ltextw < *rtextw)
+   			res = (*ltextw.data < *rtextw.data)
    		case AST_OP_NE
-   			res = (*ltextw <> *rtextw)
+   			res = (*ltextw.data <> *rtextw.data)
    		case AST_OP_LE
-   			res = (*ltextw <= *rtextw)
+   			res = (*ltextw.data <= *rtextw.data)
    		case AST_OP_GE
-   			res = (*ltextw >= *rtextw)
+   			res = (*ltextw.data >= *rtextw.data)
    		end select
 
    	end if
