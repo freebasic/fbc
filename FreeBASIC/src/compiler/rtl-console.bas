@@ -62,9 +62,9 @@ data @FB_RTL_CONSOLEVIEW,"", _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0
 
-'' fb_ReadXY ( byval x as integer, byval y as integer, byval colorflag as integer ) as integer
+'' fb_ReadXY ( byval x as integer, byval y as integer, byval colorflag as integer ) as uinteger
 data @FB_RTL_CONSOLEREADXY,"", _
-	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 FB_DATATYPE_UINT,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 3, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
