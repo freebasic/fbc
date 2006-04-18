@@ -50,6 +50,10 @@ declare function    hDefOptDynamic_cb	( ) as string
 declare function    hDefOptEscape_cb	( ) as string
 declare function    hDefOptExplicit_cb	( ) as string
 declare function    hDefOptPrivate_cb	( ) as string
+declare function 	hDefOutExe_cb 		( ) as string
+declare function 	hDefOutLib_cb 		( ) as string
+declare function 	hDefOutDll_cb 		( ) as string
+declare function 	hDefOutObj_cb 		( ) as string
 
 '' predefined #defines: name, value, flags, proc (for description flags, see FBS_DEFINE)
 const SYMB_MAXDEFINES = 24
@@ -72,6 +76,10 @@ const SYMB_MAXDEFINES = 24
 		(@"__FB_OPTION_ESCAPE__",	NULL,		  	   1, @hDefOptEscape_cb  ), _
 		(@"__FB_OPTION_EXPLICIT__",	NULL,		  	   1, @hDefOptExplicit_cb), _
 		(@"__FB_OPTION_PRIVATE__",	NULL,		  	   1, @hDefOptPrivate_cb ), _
+		(@"__FB_OUT_EXE__",				NULL,		   1, @hDefOutExe_cb 	 ), _
+		(@"__FB_OUT_LIB__",				NULL,		   1, @hDefOutLib_cb 	 ), _
+		(@"__FB_OUT_DLL__",				NULL,		   1, @hDefOutDll_cb 	 ), _
+		(@"__FB_OUT_OBJ__",				NULL,		   1, @hDefOutObj_cb 	 ), _
 		(NULL) _
 	}
 
@@ -149,6 +157,34 @@ end function
 private function hDefOptPrivate_cb ( ) as string
 
 	function = str( env.opt.procpublic = FALSE )
+
+end function
+
+'':::::
+private function hDefOutExe_cb ( ) as string
+
+	function = str( env.clopt.outtype = FB_OUTTYPE_EXECUTABLE )
+
+end function
+
+'':::::
+private function hDefOutLib_cb ( ) as string
+
+	function = str( env.clopt.outtype = FB_OUTTYPE_STATICLIB )
+
+end function
+
+'':::::
+private function hDefOutDll_cb ( ) as string
+
+	function = str( env.clopt.outtype = FB_OUTTYPE_DYNAMICLIB )
+
+end function
+
+'':::::
+private function hDefOutObj_cb ( ) as string
+
+	function = str( env.clopt.outtype = FB_OUTTYPE_OBJECT )
 
 end function
 
