@@ -177,6 +177,10 @@ extern "C" {
 #include "xbox/fb_xbox.h"
 #endif
 
+/**
+ * Implementation of the missing lib C functions
+ */
+#include "fb_config.h"
 
 /**
  * CPU-dependent macros and inline functions
@@ -869,8 +873,6 @@ FBCALL void         fb_WriteFixString   ( int fnum, char *s, int mask );
        void         fb_ConsoleSetTopBotRows( int top, int bot );
 
 
-
-
 /**************************************************************************************************
  * files
  **************************************************************************************************/
@@ -1148,6 +1150,13 @@ FBCALL int          fb_FileLineInput    ( int fnum, void *dst, int dst_len, int 
 	  FB_FILE_ENCOD fb_hFileStrToEncoding( const char *encoding );
 
 FBCALL int          fb_SetPos           ( FB_FILE *handle, int line_length );
+
+	   int 			fb_FileInputNextToken	( char *buffer, int maxlen, int isstring, int *isfp );
+
+#define FB_INPUT_MAXINTLEN 11
+#define FB_INPUT_MAXDBLLEN (16 + 1 + 1 + 1 + 3)
+#define FB_INPUT_MAXLONGLEN 22
+#define FB_INPUT_MAXNUMERICLEN FB_INPUT_MAXLONGLEN
 
 /**************************************************************************************************
  * devices

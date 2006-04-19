@@ -46,11 +46,6 @@
 
 #ifndef TARGET_XBOX
 
-#if defined(TARGET_WIN32)
-#undef popen
-#define popen(c,m) _popen(c,m)
-#endif
-
 static FB_FILE_HOOKS fb_hooks_dev_pipe = {
     fb_DevFileEof,
     fb_DevPipeClose,

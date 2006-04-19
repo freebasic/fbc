@@ -56,21 +56,6 @@
 
 #define FB_NEWLINE "\r\n"
 
-/*:::::*/
-#ifndef HAVE_SNPRINTF
-static __inline__ int snprintf (char *buffer, size_t n, const char *format, ...)
-{
-    int res;
-    va_list va;
-
-    va_start( va, format );
-	res = vsprintf( buffer, format, va );
-    va_end( va );
-
-    return res;
-}
-#endif
-
 typedef int FB_DIRCTX; /* dummy to make fb.h happy */
 
 typedef struct {

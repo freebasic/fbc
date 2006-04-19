@@ -49,11 +49,7 @@ FBCALL int fb_RmDir( FBSTRING *path )
 {
 	int res;
 
-#ifdef TARGET_WIN32
-	res = _rmdir( path->data );
-#else
 	res = rmdir( path->data );
-#endif
 
 	/* del if temp */
 	fb_hStrDelTemp( path );

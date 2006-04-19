@@ -82,12 +82,7 @@ FBCALL unsigned long long fb_hStr2ULongint( char *src, int len )
 		}
 	}
 
-#ifdef TARGET_WIN32
-	/* atoll will not saturate the unsigned values in Windows */
-	return atoll( p );
-#else
 	return strtoull( p, NULL, radix );
-#endif
 }
 
 /*:::::*/

@@ -46,11 +46,6 @@
 
 #ifndef TARGET_XBOX
 
-#ifdef TARGET_WIN32
-#undef pclose
-#define pclose(f) _pclose(f)
-#endif
-
 /*:::::*/
 int fb_DevPipeClose( struct _FB_FILE *handle )
 {

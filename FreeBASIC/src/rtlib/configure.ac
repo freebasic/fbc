@@ -4,7 +4,7 @@
 AC_INIT([fbrtlib],[0.16],[http://sourceforge.net/projects/fbc])
 AC_PREREQ([2.59])
 
-AC_COPYRIGHT([Copyright (c) 2004-2006 Andre Victor T. Vicentini (av1ctor@yahoo.com.br) and others])
+AC_COPYRIGHT([Copyright (c) 2004-2006 Andre Victor T. Vicentini (av1ctor@yahoo.com.br) and the FreeBASIC development team])
 
 AC_CONFIG_SRCDIR([fb.h])
 AC_CONFIG_AUX_DIR([../config])
@@ -46,6 +46,7 @@ esac
 # Checks for programs.
 AC_PROG_MAKE_SET
 AC_PROG_CC
+AC_PROG_GCC_TRADITIONAL
 AC_PROG_RANLIB
 
 MISSING=`cd $ac_aux_dir && ${PWDCMD-pwd}`/missing
@@ -60,7 +61,7 @@ AC_PATH_X
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([fcntl.h float.h malloc.h stddef.h stdlib.h string.h sys/file.h sys/ioctl.h sys/time.h termios.h unistd.h wchar.h wctype.h])
+AC_CHECK_HEADERS([fcntl.h float.h malloc.h math.h stddef.h stdlib.h stdio.h string.h sys/file.h sys/ioctl.h sys/time.h termios.h unistd.h wchar.h wctype.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
@@ -71,22 +72,21 @@ AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_STRUCT_TM
 AC_OBJEXT
+AC_TYPE_SIGNAL
 
 # Checks for library functions.
 AC_FUNC_ALLOCA
 AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_FORK
-AC_PROG_GCC_TRADITIONAL
 AC_FUNC_MALLOC
 AC_FUNC_MEMCMP
 AC_FUNC_REALLOC
 AC_FUNC_SELECT_ARGTYPES
 AC_FUNC_SETVBUF_REVERSED
-AC_TYPE_SIGNAL
 AC_FUNC_STAT
 AC_FUNC_STRTOD
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([atexit floor getcwd gettimeofday memchr memmove memset mkdir pow putenv rmdir select strcasecmp strchr strdup strncasecmp strrchr strstr strtoul strtoull snprintf])
+AC_CHECK_FUNCS([atexit chdir floor getcwd gettimeofday memchr memmove memset mkdir pow pclose popen putenv rint rmdir select strcasecmp strchr strdup strncasecmp strrchr strstr strtoul strtoull snprintf])
 
 AC_ARG_ENABLE([maintainer-mode],
 [  --enable-maintainer-mode enable rules only needed by maintainers],,

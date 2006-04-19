@@ -82,11 +82,7 @@ FBCALL long long fb_WstrToLongint( const FB_WCHAR *src, int len )
 		}
 	}
 
-#ifdef TARGET_WIN32
-	return wtoll( p );
-#else
 	return wcstoll( p, NULL, radix );
-#endif
 }
 
 /*:::::*/

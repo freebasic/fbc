@@ -46,6 +46,12 @@
 # define FBCALL __stdcall
 #endif
 
+#ifdef TARGET_WIN32
+/* don't include libmingex */
+#define _NO_OLDNAMES 1
+#define __NO_ISOCEXT 1
+#endif
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <io.h>
@@ -56,10 +62,6 @@
 #define FB_LL_FMTMOD "ll"
 #else
 #define FB_LL_FMTMOD "I64"
-#endif
-
-#ifndef HAVE_SNPRINTF
-#define snprintf _snprintf
 #endif
 
 typedef struct _FB_DIRCTX

@@ -1,6 +1,6 @@
 /*
  *  libfb - FreeBASIC's runtime library
- *	Copyright (C) 2004-2006 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and
+ *  Copyright (C) 2004-2006 Andre V. T. Vicentini (av1ctor@yahoo.com.br) and
  *  the FreeBASIC development team.
  *
  *  This library is free software; you can redistribute it and/or
@@ -30,66 +30,56 @@
  *  this exception statement from your version.
  */
 
-/*
- * sys_environ.c -- environ$ function and setenviron stmt
- *
- * chng: nov/2004 written [v1ctor]
- *
- */
+#ifndef __FB_CONFIG_H__
+#define __FB_CONFIG_H__
 
-#include "fb.h"
-#include <stdlib.h>
+#if !defined(HAVE_POPEN) || defined(_NO_OLDNAMES)
+#undef popen
+#define popen(c,m) _popen(c, m)
+#endif
 
-/*:::::*/
-FBCALL FBSTRING *fb_GetEnviron ( FBSTRING *varname )
+#if !defined(HAVE_PCLOSE) || defined(_NO_OLDNAMES)
+#undef pclose
+#define pclose(f) _pclose(f)
+#endif
+
+#if !defined(HAVE_PUTENV) || defined(_NO_OLDNAMES)
+#undef putenv
+#define putenv(x) _putenv(x)
+#endif
+
+#if !defined(HAVE_CHDIR) || defined(_NO_OLDNAMES)
+#undef chdir
+#define chdir(x) _chdir(x)
+#endif
+
+#if !defined(HAVE_MKDIR) || defined(_NO_OLDNAMES)
+#undef mkdir
+#define mkdir(x,y) _mkdir(x)
+#endif
+
+#if !defined(HAVE_RMDIR) || defined(_NO_OLDNAMES)
+#undef rmdir
+#define rmdir(x) _rmdir(x)
+#endif
+
+#if !defined(HAVE_SNPRINTF) || defined(_NO_OLDNAMES)
+#ifdef TARGET_WIN32
+#undef snprintf
+#define snprintf _snprintf
+#else
+static __inline__ int snprintf (char *buffer, size_t n, const char *format, ...)
 {
-	FBSTRING 	*dst;
-	char 		*tmp;
-	int			len;
+    int res;
+    va_list va;
 
-	if( (varname != NULL) && (varname->data != NULL) )
-		tmp = getenv( varname->data );
-	else
-		tmp = NULL;
+    va_start( va, format );
+	res = vsprintf( buffer, format, va );
+    va_end( va );
 
-	FB_STRLOCK();
-
-	if( tmp != NULL )
-	{
-        len = strlen( tmp );
-        dst = fb_hStrAllocTemp_NoLock( NULL, len );
-		if( dst != NULL )
-		{
-			fb_hStrCopy( dst->data, tmp, len );
-		}
-		else
-			dst = &fb_strNullDesc;
-	}
-	else
-		dst = &fb_strNullDesc;
-
-	/* del if temp */
-	fb_hStrDelTemp_NoLock( varname );
-
-	FB_STRUNLOCK();
-
-	return dst;
+    return res;
 }
+#endif /* TARGET_WIN32 */
+#endif /* HAVE_SNPRINTF */
 
-
-/*:::::*/
-FBCALL int fb_SetEnviron ( FBSTRING *str )
-{
-	int res = 0;
-
-	if( (str != NULL) && (str->data != NULL) )
-	{
-		res = putenv( str->data );
-	}
-
-	/* del if temp */
-	fb_hStrDelTemp( str );
-
-	return res;
-}
-
+#endif /* __FB_CONFIG_H__ */

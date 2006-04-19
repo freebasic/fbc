@@ -82,12 +82,7 @@ FBCALL unsigned long long fb_WstrToULongint( const FB_WCHAR *src, int len )
 		}
 	}
 
-#ifdef TARGET_WIN32
-	/* wtoll will not saturate the unsigned values in Windows */
-	return wtoll( p );
-#else
 	return wcstoull( p, NULL, radix );
-#endif
 }
 
 /*:::::*/

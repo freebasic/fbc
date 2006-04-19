@@ -82,11 +82,7 @@ FBCALL long long fb_hStr2Longint( char *src, int len )
 		}
 	}
 
-#ifdef TARGET_WIN32
-	return atoll( p );
-#else
 	return strtoll( p, NULL, radix );
-#endif
 }
 
 /*:::::*/
