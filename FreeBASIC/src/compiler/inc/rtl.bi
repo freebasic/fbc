@@ -258,9 +258,13 @@
 #define FB_RTL_FILEINPUT 				"fb_FileInput"
 #define FB_RTL_CONSOLEINPUT 			"fb_ConsoleInput"
 #define FB_RTL_INPUTBYTE 				"fb_InputByte"
+#define FB_RTL_INPUTUBYTE 				"fb_InputUbyte"
 #define FB_RTL_INPUTSHORT 				"fb_InputShort"
+#define FB_RTL_INPUTUSHORT 				"fb_InputUshort"
 #define FB_RTL_INPUTINT 				"fb_InputInt"
+#define FB_RTL_INPUTUINT 				"fb_InputUint"
 #define FB_RTL_INPUTLONGINT 			"fb_InputLongint"
+#define FB_RTL_INPUTULONGINT 			"fb_InputUlongint"
 #define FB_RTL_INPUTSINGLE 				"fb_InputSingle"
 #define FB_RTL_INPUTDOUBLE 				"fb_InputDouble"
 #define FB_RTL_INPUTSTR 				"fb_InputString"
@@ -543,9 +547,13 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_FILEINPUT
 	FB_RTL_IDX_CONSOLEINPUT
 	FB_RTL_IDX_INPUTBYTE
+	FB_RTL_IDX_INPUTUBYTE
 	FB_RTL_IDX_INPUTSHORT
+	FB_RTL_IDX_INPUTUSHORT
 	FB_RTL_IDX_INPUTINT
+	FB_RTL_IDX_INPUTUINT
 	FB_RTL_IDX_INPUTLONGINT
+	FB_RTL_IDX_INPUTULONGINT
 	FB_RTL_IDX_INPUTSINGLE
 	FB_RTL_IDX_INPUTDOUBLE
 	FB_RTL_IDX_INPUTSTR
