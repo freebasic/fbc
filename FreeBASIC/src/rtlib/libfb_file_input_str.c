@@ -42,14 +42,13 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-void fb_hGetNextToken( char *buffer, int maxlen, int isstring );
-
 /*:::::*/
 FBCALL int fb_InputString( void *dst, int strlen, int fillrem )
 {
     char buffer[4096+1];
+    int len, isfp;
 
-	fb_hGetNextToken( buffer, 4096, TRUE );
+	len = fb_FileInputNextToken( buffer, 4096, TRUE, &isfp );
 
 	fb_StrAssign( dst, strlen, buffer, 0, fillrem );
 

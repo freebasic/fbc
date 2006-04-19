@@ -31,7 +31,7 @@
  */
 
 /*
- * file_input - input function
+ * file_input - input function for signed bytes
  *
  * chng: nov/2004 written [v1ctor]
  *
@@ -42,18 +42,23 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-void fb_hGetNextToken( char *buffer, int maxlen, int isstring );
-
-#define FB_INT_MAXLEN 11
-
 /*:::::*/
 FBCALL int fb_InputByte( char *dst )
 {
-    char buffer[FB_INT_MAXLEN+1];
+    char buffer[FB_INPUT_MAXNUMERICLEN+1];
+    int len, isfp;
 
-	fb_hGetNextToken( buffer, FB_INT_MAXLEN, FB_FALSE );
+	len = fb_FileInputNextToken( buffer, FB_INPUT_MAXNUMERICLEN, FB_FALSE, &isfp );
 
-	*dst = (char)atoi( buffer );
+	if( isfp == FALSE )
+	{
+		if( len <= FB_INPUT_MAXINTLEN )
+			*dst = (char)atoi( buffer );
+		else
+			*dst = (char)strtoll( buffer, NULL, 10 );
+	}
+	else
+		*dst = (char)rint( strtod( buffer, NULL ) );
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

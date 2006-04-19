@@ -31,7 +31,7 @@
  */
 
 /*
- * file_input - input function
+ * file_input - input function for float's and double's
  *
  * chng: nov/2004 written [v1ctor]
  *
@@ -41,18 +41,23 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-void fb_hGetNextToken( char *buffer, int maxlen, int isstring );
-
-#define FB_DOUBLE_MAXLEN (16 + 1 + 1 + 1 + 3)
-
 /*:::::*/
 FBCALL int fb_InputSingle( float *dst )
 {
-    char buffer[FB_DOUBLE_MAXLEN+1];
+    char buffer[FB_INPUT_MAXNUMERICLEN+1];
+    int len, isfp;
 
-	fb_hGetNextToken( buffer, FB_DOUBLE_MAXLEN, FB_FALSE );
+	len = fb_FileInputNextToken( buffer, FB_INPUT_MAXNUMERICLEN, FB_FALSE, &isfp );
 
-	*dst = strtof( buffer, NULL );
+	if( isfp == FALSE )
+	{
+		if( len <= FB_INPUT_MAXINTLEN )
+			*dst = (float)atoi( buffer );
+		else
+			*dst = (float)strtoll( buffer, NULL, 10 );
+	}
+	else
+		*dst = strtof( buffer, NULL );
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
@@ -60,11 +65,20 @@ FBCALL int fb_InputSingle( float *dst )
 /*:::::*/
 FBCALL int fb_InputDouble( double *dst )
 {
-    char buffer[FB_DOUBLE_MAXLEN+1];
+    char buffer[FB_INPUT_MAXNUMERICLEN+1];
+    int len, isfp;
 
-	fb_hGetNextToken( buffer, FB_DOUBLE_MAXLEN, FB_FALSE );
+	len = fb_FileInputNextToken( buffer, FB_INPUT_MAXNUMERICLEN, FB_FALSE, &isfp );
 
-	*dst = strtod( buffer, NULL );
+	if( isfp == FALSE )
+	{
+		if( len <= FB_INPUT_MAXINTLEN )
+			*dst = (double)atoi( buffer );
+		else
+			*dst = (double)strtoll( buffer, NULL, 10 );
+	}
+	else
+		*dst = strtod( buffer, NULL );
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

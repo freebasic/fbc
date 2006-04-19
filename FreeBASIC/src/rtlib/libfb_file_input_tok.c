@@ -135,10 +135,12 @@ static void hSkipComma( FB_INPUTCTX *ctx, int c )
 }
 
 /*:::::*/
-void fb_hGetNextToken( char *buffer, int max_chars, int is_string )
+int fb_FileInputNextToken( char *buffer, int max_chars, int is_string, int *isfp )
 {
     int c, len, isquote, skipcomma;
 	FB_INPUTCTX *ctx = FB_TLSGETCTX( INPUT );
+
+	*isfp = FALSE;
 
 	c = hSkipWhiteSpc( ctx );
 
@@ -192,6 +194,10 @@ void fb_hGetNextToken( char *buffer, int max_chars, int is_string )
 
 			goto savechar;
 
+		case '.':
+			*isfp = TRUE;
+			goto savechar;
+
 		case '\t':
 		case ' ':
 			if( len == 0 )
@@ -224,5 +230,7 @@ savechar:
 	/* skip comma or newline */
 	if( skipcomma )
 		hSkipComma( ctx, c );
+
+	return len;
 }
 

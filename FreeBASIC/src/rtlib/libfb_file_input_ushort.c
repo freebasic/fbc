@@ -31,7 +31,7 @@
  */
 
 /*
- * file_input - input function for signed long long's
+ * file_input - input function for usigned shorts
  *
  * chng: nov/2004 written [v1ctor]
  *
@@ -43,7 +43,7 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-FBCALL int fb_InputLongint( long long *dst )
+FBCALL int fb_InputUshort( unsigned short *dst )
 {
     char buffer[FB_INPUT_MAXNUMERICLEN+1];
     int len, isfp;
@@ -51,9 +51,14 @@ FBCALL int fb_InputLongint( long long *dst )
 	len = fb_FileInputNextToken( buffer, FB_INPUT_MAXNUMERICLEN, FB_FALSE, &isfp );
 
 	if( isfp == FALSE )
-		*dst = strtoll( buffer, NULL, 10 );
+	{
+		if( len <= FB_INPUT_MAXINTLEN )
+			*dst = (unsigned short)strtoul( buffer, NULL, 10 );
+		else
+			*dst = (unsigned short)strtoull( buffer, NULL, 10 );
+	}
 	else
-		*dst = (long long)rint( strtod( buffer, NULL ) );
+		*dst = (unsigned short)rint( strtod( buffer, NULL ) );
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

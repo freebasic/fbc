@@ -135,7 +135,7 @@ static void hSkipComma( FB_INPUTCTX *ctx, FB_WCHAR c )
 }
 
 /*:::::*/
-void fb_hGetNextTokenWstr( FB_WCHAR *buffer, int max_chars, int is_string )
+void fb_FileInputNextTokenWstr( FB_WCHAR *buffer, int max_chars, int is_string )
 {
     int len, isquote, skipcomma;
     FB_WCHAR c;

@@ -43,7 +43,7 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-FBCALL int fb_InputLongint( long long *dst )
+FBCALL int fb_InputUlongint( unsigned long long *dst )
 {
     char buffer[FB_INPUT_MAXNUMERICLEN+1];
     int len, isfp;
@@ -51,9 +51,9 @@ FBCALL int fb_InputLongint( long long *dst )
 	len = fb_FileInputNextToken( buffer, FB_INPUT_MAXNUMERICLEN, FB_FALSE, &isfp );
 
 	if( isfp == FALSE )
-		*dst = strtoll( buffer, NULL, 10 );
+		*dst = strtoull( buffer, NULL, 10 );
 	else
-		*dst = (long long)rint( strtod( buffer, NULL ) );
+		*dst = (unsigned long long)rint( strtod( buffer, NULL ) );
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
