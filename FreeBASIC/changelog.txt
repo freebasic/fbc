@@ -25,6 +25,7 @@ Version 0.16 Beta:
 - the OpenGL extensions header was replaced by a machine translated one (v1c)
 - UDT's (TYPE's and UNION's) can have the same name as keywords (v1c)
 - Dir()'s "attribute" parameter by default shouldn't include directories, hidden or system files (v1c)
+- INPUT will now accept floating-point numbers loaded to integer types, rounding them as in QB (v1c)
 
 [added]
 - anonymous UDT's that can be passed as parameters or used in assignments, like:
@@ -56,6 +57,7 @@ Version 0.16 Beta:
 - EXIT SELECT, to exit CASE blocks without resorting to GOTO's (v1c)
 - the __FB_OUT_EXE__, __FB_OUT_DLL__, __FB_OUT_LIB__, __FB_OUT_OBJ__ defines, that are set to TRUE (-1) depending on the
   output format (Executable, Shared library, Static library or Object file) select when compiling (v1c)
+- overloaded unsigned versions (ubyte, ushort, uinteger and ulongint) of INPUT (v1c)
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)
