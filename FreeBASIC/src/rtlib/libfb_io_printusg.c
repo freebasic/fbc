@@ -273,48 +273,59 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-static void hFtoA( double value, 
-				   char *fix_buf, int *fix_len,
-				   char *frac_buf, int *frac_len, 
-				   int intdigs,
-				   int decdigs )
+/*::::*/
+static double hRound( double value, int intdigs, int decdigs )
 {
 	double fix, frac = modf( value, &fix );
 
-	if( decdigs == 0 )
-	{
+    if( decdigs == 0 )
+    {
     	/* convert to fixed-point because the imprecision and the optimizations
-    	   that can be done by gcc (ie: keeping values on fpu stack as twords) */
-    	long long int intfrac = (long long int)(frac * 1.E+15);	
+       	   that can be done by gcc (ie: keeping values on fpu stack as twords) */
+    	long long int intfrac = (long long int)(frac * 1.E+15);
     	if( intfrac > (long long int)(5.E+14) )
-        	fix = ceil( value );
+       		fix = ceil( value );
 		else if( intfrac < -(long long int)(5.E+14) )
-        	fix = floor( value );
-        	
-        frac = 0.0;
+       		fix = floor( value );
+
+       	value = fix;
 	}
 	else
 	{
-		/* remove the fraction of the fraction to be compatible with 
+		/* remove the fraction of the fraction to be compatible with
 		   VBDOS (ie: 2.55 -> 2.5, not 2.6 as in VB6) */
 		if( frac != 0.0 )
 		{
 	    	double p10 = pow( 10.0, decdigs );
 
 	        double fracfrac = modf( frac * p10, &frac );
-	        	        
+
 	        /* convert to fixed-point, see above */
-	        long long int intfrac = (long long int)(fracfrac * (1.E+15 / p10) );	
-	        										
+	        long long int intfrac = (long long int)(fracfrac * (1.E+15 / p10) );
+
 	        if( intfrac > (long long int)(5.E+14 / p10) )
 	        	frac += 1.0;
 	        else if( intfrac < -(long long int)(5.E+14 / p10) )
 	        	frac += -1.0;
-	        
+
 	        frac /= p10;
+
+	        value = fix + frac;
 		}
 	}
-	
+
+	return value;
+}
+
+/*::::*/
+static void hToString( double value,
+					   char *fix_buf, int *fix_len,
+				   	   char *frac_buf, int *frac_len,
+				   	   int intdigs,
+				   	   int decdigs )
+{
+	double fix, frac = modf( value, &fix );
+
 	if( decdigs > 0 )
 	{
 		*frac_len = sprintf( frac_buf, "%.*f", decdigs, fabs( frac ) ) - 1;
@@ -326,7 +337,7 @@ static void hFtoA( double value,
         *frac_len = 0;
         frac_buf[0] = '\0';
 	}
-	
+
 	if( intdigs > 0 )
 	{
 		*fix_len = sprintf( fix_buf, "%" FB_LL_FMTMOD "d", (long long int)fix );
@@ -336,17 +347,16 @@ static void hFtoA( double value,
         *fix_len = 0;
         fix_buf[0] = '\0';
 	}
-
 }
 
 /*:::::*/
-FBCALL int fb_PrintUsingDouble( int fnum, double value, int mask )
+static int hPrintDouble( int fnum, double value, int mask, int maxdigits )
 {
 	FB_PRINTUSGCTX *ctx;
 	char fix_buf[BUFFERLEN+1], frac_buf[16+1+1], expbuff[16+1+1+1];
 	int fix_len, frac_len;
 	int c, nc, lc;
-	int doexit, padchar, intdigs, decdigs, totdigs, expdigs;
+	int doexit, padchar, intdigs, decdigs, totdigs, expdigs, doscale;
 	int	adddolar, addcomma, endcomma, signatend, signatini;
 	int isexp, isneg, value_exp;
 
@@ -468,41 +478,64 @@ FBCALL int fb_PrintUsingDouble( int fnum, double value, int mask )
 			--intdigs;
 	}
 
+	/* check digits */
 	if( decdigs <= 0 )
 		totdigs = intdigs;
 	else
 	{
-		if( decdigs > 16 )
-			decdigs = 16;
+		if( decdigs > maxdigits )
+			decdigs = maxdigits;
 
 		totdigs = intdigs + decdigs;
 	}
 
 	if( totdigs <= 0 )
 		totdigs = 1;
-	else if( totdigs > 16 )
-		totdigs = 16;
+	else if( totdigs > maxdigits )
+		totdigs = maxdigits;
 
+	/* calc exponent */
 	if( value != 0.0 )
 		value_exp = (int)floor( log10( value ) ) + 1;
 	else
 		value_exp = 0;
-	
-	if( value_exp != 0 )
+
+	/* scale up if too small, hRound() will chop the fractional part */
+	doscale = TRUE;
+	if( value_exp < 0 )
 	{
-		/* exponent too big? scale (up or down) */
-		if( abs(value_exp) > (value_exp > 0? intdigs : decdigs-1) )
+		if( abs( value_exp ) > decdigs-1 )
 		{
 			value_exp -= intdigs;
 			value *= pow( 10.0, -value_exp );
+			doscale = FALSE;
 		}
 		else
 			value_exp = 0;
 	}
 
+	/* round & chop */
+	value = hRound( value, intdigs, (decdigs >= 0? decdigs : 0) );
+
+	if( doscale )
+	{
+		/* scall down if it's big - must done after hRound() */
+		if( value_exp > 0 )
+		{
+			if( value_exp > intdigs )
+			{
+				value_exp -= intdigs;
+				value *= pow( 10.0, -value_exp );
+			}
+			else
+				value_exp = 0;
+		}
+	}
+
 	/* convert to string */
-	hFtoA( value, fix_buf, &fix_len, frac_buf, &frac_len, intdigs, (decdigs >= 0? decdigs : 0) );
-	
+	hToString( value, fix_buf, &fix_len, frac_buf, &frac_len, intdigs,
+			   (decdigs >= 0? decdigs : 0) );
+
 	/* separate with commas? */
 	if( addcomma )
 	{
@@ -634,6 +667,12 @@ FBCALL int fb_PrintUsingDouble( int fnum, double value, int mask )
 
 
 /*:::::*/
+FBCALL int fb_PrintUsingDouble( int fnum, double value, int mask )
+{
+	return hPrintDouble( fnum, value, mask, 16 );
+}
+
+/*:::::*/
 FBCALL int fb_PrintUsingSingle( int fnum, float value_f, int mask )
 {
 	double value = value_f;
@@ -649,8 +688,8 @@ FBCALL int fb_PrintUsingSingle( int fnum, float value_f, int mask )
 		else
 			value += pow( 10.0, -(value_exp + 7) );
 	}
-	
-	return fb_PrintUsingDouble( fnum, value, mask );
+
+	return hPrintDouble( fnum, value, mask, 7 );
 }
 
 /* !!!FIXME!! remove this function when the chicken-egg is over */
