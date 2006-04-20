@@ -1355,6 +1355,7 @@ type IGlobalInterfaceTableVtbl
 	GetInterfaceFromGlobal as function(byval as IGlobalInterfaceTable ptr, byval as DWORD, byval as IID ptr, byval as any ptr ptr) as HRESULT
 end type
 
+#ifdef WIN_INCLUDEPROXY
 declare function IMarshal_GetUnmarshalClass_Proxy alias "IMarshal_GetUnmarshalClass_Proxy" (byval as IMarshal ptr, byval as IID ptr, byval as any ptr, byval as DWORD, byval as any ptr, byval as DWORD, byval as CLSID ptr) as HRESULT
 declare sub IMarshal_GetUnmarshalClass_Stub alias "IMarshal_GetUnmarshalClass_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
 declare function IMarshal_GetMarshalSizeMax_Proxy alias "IMarshal_GetMarshalSizeMax_Proxy" (byval as IMarshal ptr, byval as IID ptr, byval as any ptr, byval as DWORD, byval as any ptr, byval as DWORD, byval as DWORD ptr) as HRESULT
@@ -1731,10 +1732,6 @@ declare function IPSFactoryBuffer_CreateProxy_Proxy alias "IPSFactoryBuffer_Crea
 declare sub IPSFactoryBuffer_CreateProxy_Stub alias "IPSFactoryBuffer_CreateProxy_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
 declare function IPSFactoryBuffer_CreateStub_Proxy alias "IPSFactoryBuffer_CreateStub_Proxy" (byval as IPSFactoryBuffer ptr, byval as IID ptr, byval as IUnknown ptr, byval as IRpcStubBuffer ptr ptr) as HRESULT
 declare sub IPSFactoryBuffer_CreateStub_Stub alias "IPSFactoryBuffer_CreateStub_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare sub SNB_to_xmit alias "SNB_to_xmit" (byval as SNB ptr, byval as RemSNB ptr ptr)
-declare sub SNB_from_xmit alias "SNB_from_xmit" (byval as RemSNB ptr, byval as SNB ptr)
-declare sub SNB_free_inst alias "SNB_free_inst" (byval as SNB ptr)
-declare sub SNB_free_xmit alias "SNB_free_xmit" (byval as RemSNB ptr)
 declare function IEnumUnknown_Next_Proxy alias "IEnumUnknown_Next_Proxy" (byval as IEnumUnknown ptr, byval as ULONG, byval as IUnknown ptr ptr, byval as ULONG ptr) as HRESULT
 declare function IEnumUnknown_Next_Stub alias "IEnumUnknown_Next_Stub" (byval as IEnumUnknown ptr, byval as ULONG, byval as IUnknown ptr ptr, byval as ULONG ptr) as HRESULT
 declare function IEnumMoniker_Next_Proxy alias "IEnumMoniker_Next_Proxy" (byval as IEnumMoniker ptr, byval as ULONG, byval as IMoniker ptr ptr, byval as ULONG ptr) as HRESULT
@@ -1763,6 +1760,12 @@ declare function ILockBytes_ReadAt_Proxy alias "ILockBytes_ReadAt_Proxy" (byval 
 declare function ILockBytes_ReadAt_Stub alias "ILockBytes_ReadAt_Stub" (byval as ILockBytes ptr, byval as ULARGE_INTEGER, byval as BYTE ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
 declare function ILockBytes_WriteAt_Proxy alias "ILockBytes_WriteAt_Proxy" (byval as ILockBytes ptr, byval as ULARGE_INTEGER, byval as any ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
 declare function ILockBytes_WriteAt_Stub alias "ILockBytes_WriteAt_Stub" (byval as ILockBytes ptr, byval as ULARGE_INTEGER, byval as BYTE ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
+#endif
+
+declare sub SNB_to_xmit alias "SNB_to_xmit" (byval as SNB ptr, byval as RemSNB ptr ptr)
+declare sub SNB_from_xmit alias "SNB_from_xmit" (byval as RemSNB ptr, byval as SNB ptr)
+declare sub SNB_free_inst alias "SNB_free_inst" (byval as SNB ptr)
+declare sub SNB_free_xmit alias "SNB_free_xmit" (byval as RemSNB ptr)
 
 #define IMarshal_QueryInterface(T,r,p) (T)->lpVtbl->QueryInterface(T,r,p)
 #define IMarshal_AddRef(This) (This)->lpVtbl->AddRef(This)
