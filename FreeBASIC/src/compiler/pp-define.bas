@@ -757,7 +757,12 @@ function ppDefine( ) as integer
 			do
 		    	lexEatToken( paramname, LEXCHECK_NODEFINE )
 		    	lastparam = symbAddDefineParam( lastparam, @paramname )
+
 		    	params += 1
+				if( params >= FB_MAXDEFINEARGS ) then
+					hReportError( FB_ERRMSG_TOOMANYPARAMS )
+					exit function
+				end if
 
 		    	if( paramhead = NULL ) then
 		    		paramhead = lastparam
@@ -767,6 +772,7 @@ function ppDefine( ) as integer
 				if( lexGetToken( LEXCHECK_NODEFINE ) <> CHAR_COMMA ) then
 					exit do
 				end if
+
 		    	lexSkipToken( LEXCHECK_NODEFINE )
 			loop
 
