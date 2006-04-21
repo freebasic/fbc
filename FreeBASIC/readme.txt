@@ -336,7 +336,7 @@ Most Important Features:
          C AS DOUBLE
       END UNION
 
-    - Array fields utilizing up to four dimensions can be used. For example,
+    - Array fields utilizing up to eight dimensions can be used. For example,
 
       TYPE MyList
          ListData(0 TO MAXITEMS - 1) AS MyItem
@@ -385,9 +385,9 @@ Most Important Features:
 
     - Dynamic and static arrays are supported, up to 2 GB in size.
 
-    - Unlimited number of array dimensions.
+    - Up to eight dimensions, including arrays with unknown dimensions.
 
-    - Any lower and upper boundaries.
+    - Any lower and upper boundaries, including negative values.
 
     - REDIM PRESERVE statement is supported to resize any dynamic array and
       keep its contents intact.
