@@ -1322,13 +1322,15 @@ function rtlFileInputGet( byval dstexpr as ASTNODE ptr ) as integer
 	case FB_DATATYPE_DOUBLE
 		f = PROCLOOKUP( INPUTDOUBLE )
 
-	case FB_DATATYPE_USERDEF
-		exit function							'' illegal
-
 	case else
 		if( dtype >= FB_DATATYPE_POINTER ) then	'' non-sense but..
 			f = PROCLOOKUP( INPUTINT )
 			dstexpr = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, dstexpr )
+
+		'' UDT, bit-fields..
+		else
+			hReportError( FB_ERRMSG_INVALIDDATATYPES )
+			exit function
 		end if
 	end select
 

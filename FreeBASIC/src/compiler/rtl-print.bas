@@ -555,7 +555,7 @@ function rtlPrint( byval fileexpr as ASTNODE ptr, _
 				f = PROCLOOKUP( PRINTINT )
 			end if
 
-		case FB_DATATYPE_UINT
+		case FB_DATATYPE_UINT, FB_DATATYPE_BITFIELD
 			if( islprint ) then
 				f = PROCLOOKUP( LPRINTUINT )
 			else
@@ -590,9 +590,6 @@ function rtlPrint( byval fileexpr as ASTNODE ptr, _
 				f = PROCLOOKUP( PRINTDOUBLE )
 			end if
 
-		case FB_DATATYPE_USERDEF
-			exit function						'' illegal
-
 		case else
 			if( dtype >= FB_DATATYPE_POINTER ) then
 				if( islprint ) then
@@ -601,6 +598,8 @@ function rtlPrint( byval fileexpr as ASTNODE ptr, _
 					f = PROCLOOKUP( PRINTUINT )
 				end if
 				expr = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, expr )
+
+			'' UDT's or anything else..
 			else
 				exit function
 			end if
@@ -720,7 +719,7 @@ function rtlWrite( byval fileexpr as ASTNODE ptr, _
 	function = FALSE
 
 	if( expr = NULL ) then
-		f = PROCLOOKUP( WRITEVOID)
+		f = PROCLOOKUP( WRITEVOID )
 		args = 2
 	else
 
@@ -747,7 +746,7 @@ function rtlWrite( byval fileexpr as ASTNODE ptr, _
 		case FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
 			f = PROCLOOKUP( WRITEINT )
 
-		case FB_DATATYPE_UINT
+		case FB_DATATYPE_UINT, FB_DATATYPE_BITFIELD
 			f = PROCLOOKUP( WRITEUINT )
 
 		case FB_DATATYPE_LONGINT
@@ -762,13 +761,12 @@ function rtlWrite( byval fileexpr as ASTNODE ptr, _
 		case FB_DATATYPE_DOUBLE
 			f = PROCLOOKUP( WRITEDOUBLE )
 
-		case FB_DATATYPE_USERDEF
-			exit function						'' illegal
-
 		case else
 			if( dtype >= FB_DATATYPE_POINTER ) then
 				f = PROCLOOKUP( WRITEUINT )
 				expr = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, expr )
+
+			'' UDT's or anything else..
 			else
 				exit function
 			end if
