@@ -200,44 +200,44 @@ FBSTRING *fb_hBuildDouble ( double num,
 
 static double hRound( double value, const FormatMaskInfo *pInfo )
 {
-	double fix, frac = modf( value, &fix );	
-			
+	double fix, frac = modf( value, &fix );
+
     if( pInfo->num_digits_frac == 0 )
     {
     	/* round it here, because modf() at GetNumParts won't */
-    	
+
     	/* convert to fixed-point because the imprecision and the optimizations
     	   that can be done by gcc (ie: keeping values on fpu stack as twords) */
-    	long long int intfrac = (long long int)(frac * 1.E+15);	
+    	long long int intfrac = (long long int)(frac * 1.E+15);
     	if( intfrac > (long long int)(5.E+14) )
         	value = ceil( value );
 		else if( intfrac < -(long long int)(5.E+14) )
         	value = floor( value );
 	}
-	else 
-    {   
-		/* remove the fraction of the fraction to be compatible with 
+	else
+    {
+		/* remove the fraction of the fraction to be compatible with
 		   VBDOS (ie: 2.55 -> 2.5, not 2.6 as in VB6) */
 		if( frac != 0.0 )
 		{
 	    	double p10 = pow( 10.0, pInfo->num_digits_frac );
 
 	        double fracfrac = modf( frac * p10, &frac );
-	        	        
+
 	        /* convert to fixed-point, see above */
-	        long long int intfrac = (long long int)(fracfrac * (1.E+15 / p10) );	
-	        										
+	        long long int intfrac = (long long int)(fracfrac * (1.E+15 / p10) );
+
 	        if( intfrac > (long long int)(5.E+14 / p10) )
 	        	frac += 1.0;
 	        else if( intfrac < -(long long int)(5.E+14 / p10) )
 	        	frac += -1.0;
-	        
+
 	        frac /= p10;
-	        
+
 	        value = fix + frac;
 		}
 	}
-		
+
 	return value;
 }
 
@@ -296,15 +296,15 @@ int fb_hProcessMask( FBSTRING *dst,
 	else
 		ExpValue = 0;
 
-    if( do_output ) 
+    if( do_output )
     {
-        if( pInfo->mask_type==eMT_Number ) 
+        if( pInfo->mask_type==eMT_Number )
         {
             /* When output of exponent is required, shift value to the
              * left (* 10^n) as far as possible. "As far as possible" depends
              * on the number of digits required by the number as a textual
              * representation. */
-	
+
 			if( pInfo->has_exponent )
 			{
 				/* exponent too big? scale (up or down) */
@@ -329,17 +329,17 @@ int fb_hProcessMask( FBSTRING *dst,
 							ExpValue = 0;
 					}
 				}
-				
+
 				if( ExpValue != 0 )
 					value *= pow( 10.0, -ExpValue );
 
 				LenExp = sprintf( ExpPart, "%d", ExpValue );
-				
+
 	            if( ExpValue < 0 )
 					IndexExp = ExpAdjust = 1;
 				else
 					IndexExp = ExpAdjust = 0;
-	
+
 				NumSkipExp = pInfo->exp_digits - ( LenExp - ExpAdjust );
 			}
 			/* value between (+|-)0.0..1.0 */
@@ -349,13 +349,13 @@ int fb_hProcessMask( FBSTRING *dst,
 				if( -ExpValue >= pInfo->num_digits_frac )
 				{
 					/* can't scale? */
-					if( (pInfo->num_digits_frac == 0 ) || 
+					if( (pInfo->num_digits_frac == 0 ) ||
 						(-ExpValue > pInfo->num_digits_fix+pInfo->num_digits_frac-pInfo->num_digits_omit) )
 						value = 0.0;
 					else
 						value *= pow( 10.0, -ExpValue + pInfo->num_digits_fix );
 				}
-					
+
 			}
 			/* value is 0.0 or (+|-)1.0... */
 			else
@@ -386,18 +386,18 @@ int fb_hProcessMask( FBSTRING *dst,
 				int i;
 				for( i = 0; i < ExpValue; i++ )
 					FixPart[LenFix+i] = '0';
-					
+
 				LenFix += ExpValue;
 
 				FixPart[LenFix] = '\0';
 			}
-			
+
 			/* Number of digits to skip on output */
             NumSkipFix = pInfo->num_digits_fix - LenFix;
 
         }
-    } 
-    else 
+    }
+    else
     {
 		/* just assume the max possible */
 		LenFix = (ExpValue > FB_MAXFIXLEN? ExpValue : FB_MAXFIXLEN);
@@ -500,7 +500,7 @@ int fb_hProcessMask( FBSTRING *dst,
                 if( do_add )
                     --i;
             }
-            
+
             if( !do_add ) {
                 switch( chCurrent ) {
                 case '%':
@@ -530,6 +530,7 @@ int fb_hProcessMask( FBSTRING *dst,
                 case 'M':
                 case 'y':
                 case 'h':
+                case 'H':
                 case 's':
                 case 't':
                 case ':':
@@ -762,6 +763,7 @@ int fb_hProcessMask( FBSTRING *dst,
                 case 'y':
                     /* year */
                 case 'h':
+                case 'H':
                     /* hour */
                 case 's':
                     /* second */
