@@ -501,7 +501,7 @@ private function hDynArrayDef( byval id as zstring ptr, _
 						 FB_SYMBATTRIB_STATIC or _
 						 FB_SYMBATTRIB_PARAMBYDESC)) = 0 ) then
 
-			rtlArraySetDesc( s, symbGetLen( s ), 0, dTB() )
+			rtlArrayResetDesc( s, symbGetLen( s ), FB_MAXARRAYDIMS )
 
 		end if
 	end if

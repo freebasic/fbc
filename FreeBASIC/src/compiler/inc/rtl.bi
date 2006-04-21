@@ -121,6 +121,7 @@
 #define FB_RTL_ARRAYLBOUND				"fb_ArrayLBound"
 #define FB_RTL_ARRAYUBOUND				"fb_ArrayUBound"
 #define FB_RTL_ARRAYSETDESC				"fb_ArraySetDesc"
+#define FB_RTL_ARRAYRESETDESC			"fb_ArrayResetDesc"
 #define FB_RTL_ARRAYSTRERASE			"fb_ArrayStrErase"
 #define FB_RTL_ARRAYALLOCTMPDESC		"fb_ArrayAllocTempDesc"
 #define FB_RTL_ARRAYFREETMPDESC			"fb_ArrayFreeTempDesc"
@@ -410,6 +411,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_ARRAYLBOUND
 	FB_RTL_IDX_ARRAYUBOUND
 	FB_RTL_IDX_ARRAYSETDESC
+	FB_RTL_IDX_ARRAYRESETDESC
 	FB_RTL_IDX_ARRAYSTRERASE
 	FB_RTL_IDX_ARRAYALLOCTMPDESC
 	FB_RTL_IDX_ARRAYFREETMPDESC
@@ -716,10 +718,14 @@ declare function 	rtlArrayBound		( byval sexpr as ASTNODE ptr, _
 										  byval dimexpr as ASTNODE ptr, _
 										  byval islbound as integer ) as ASTNODE ptr
 
-declare function	rtlArraySetDesc		( byval s as FBSYMBOL ptr, _
+declare function	rtlArraySetDesc		( byval sym as FBSYMBOL ptr, _
 										  byval elementlen as integer, _
 										  byval dimensions as integer, _
 										  dTB() as FBARRAYDIM ) as integer
+
+declare function	rtlArrayResetDesc	( byval sym as FBSYMBOL ptr, _
+										  byval elementlen as integer, _
+										  byval dimensions as integer ) as integer
 
 declare function 	rtlArrayStrErase	( byval s as FBSYMBOL ptr ) as ASTNODE ptr
 

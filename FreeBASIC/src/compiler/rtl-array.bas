@@ -106,6 +106,16 @@ data @FB_RTL_ARRAYSETDESC,"", _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 INVALID,FB_PARAMMODE_VARARG, FALSE
 
+'' fb_ArrayResetDesc ( array() as ANY, byval elementlen as integer, _
+''					   byval maxdimensions as integer ) as void
+data @FB_RTL_ARRAYRESETDESC,"", _
+	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_DATATYPE_VOID,FB_PARAMMODE_BYDESC, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
+
 '' fb_ArrayStrErase ( array() as any ) as void
 data @FB_RTL_ARRAYSTRERASE,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
@@ -371,7 +381,7 @@ function rtlArrayBound( byval sexpr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlArraySetDesc( byval s as FBSYMBOL ptr, _
+function rtlArraySetDesc( byval sym as FBSYMBOL ptr, _
 						  byval elementlen as integer, _
 					      byval dimensions as integer, _
 					      dTB() as FBARRAYDIM ) as integer static
@@ -384,27 +394,27 @@ function rtlArraySetDesc( byval s as FBSYMBOL ptr, _
     proc = astNewCALL( PROCLOOKUP( ARRAYSETDESC ) )
 
     '' array() as ANY
-    dtype =  symbGetType( s )
-	expr = astNewVAR( s, 0, dtype )
-    if( astNewARG( proc, expr, dtype ) = NULL ) then
+    dtype =  symbGetType( sym )
+    if( astNewARG( proc, astNewVAR( sym, 0, dtype ), dtype ) = NULL ) then
 		exit function
 	end if
 
-	'' arraydata as any
-	expr = astNewVAR( s, 0, dtype )
-    if( astNewARG( proc, expr, dtype ) = NULL ) then
+	'' byref arraydata as any
+    if( astNewARG( proc, astNewVAR( sym, 0, dtype ), dtype ) = NULL ) then
 		exit function
 	end if
 
 	'' byval element_len as integer
-	expr = astNewCONSTi( elementlen, FB_DATATYPE_INTEGER )
-	if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewARG( proc, _
+				   astNewCONSTi( elementlen, FB_DATATYPE_INTEGER ), _
+				   FB_DATATYPE_INTEGER ) = NULL ) then
 		exit function
 	end if
 
 	'' byval dimensions as integer
-	expr = astNewCONSTi( dimensions, FB_DATATYPE_INTEGER )
-	if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
+	if( astNewARG( proc, _
+				   astNewCONSTi( dimensions, FB_DATATYPE_INTEGER ), _
+				   FB_DATATYPE_INTEGER ) = NULL ) then
 		exit function
 	end if
 
@@ -422,6 +432,46 @@ function rtlArraySetDesc( byval s as FBSYMBOL ptr, _
 			exit function
 		end if
 	next
+
+    ''
+	astAdd( proc )
+
+	function = TRUE
+
+end function
+
+'':::::
+function rtlArrayResetDesc( byval sym as FBSYMBOL ptr, _
+						  	byval elementlen as integer, _
+					      	byval dimensions as integer _
+						  ) as integer static
+
+    dim as ASTNODE ptr proc
+    dim as integer dtype
+
+    function = FALSE
+
+    proc = astNewCALL( PROCLOOKUP( ARRAYRESETDESC ) )
+
+    '' array() as ANY
+    dtype =  symbGetType( sym )
+    if( astNewARG( proc, astNewVAR( sym, 0, dtype ), dtype ) = NULL ) then
+		exit function
+	end if
+
+	'' byval element_len as integer
+	if( astNewARG( proc, _
+				   astNewCONSTi( elementlen, FB_DATATYPE_INTEGER ), _
+				   FB_DATATYPE_INTEGER ) = NULL ) then
+		exit function
+	end if
+
+	'' byval dimensions as integer
+	if( astNewARG( proc, _
+				   astNewCONSTi( dimensions, FB_DATATYPE_INTEGER ), _
+				   FB_DATATYPE_INTEGER ) = NULL ) then
+		exit function
+	end if
 
     ''
 	astAdd( proc )
