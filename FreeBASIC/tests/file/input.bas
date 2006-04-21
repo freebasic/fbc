@@ -1,5 +1,7 @@
 option explicit
 
+const filename = ".\file\input.csv"
+
 	dim shared as string g_field1(1 to 3)
 	dim shared as double g_field2(1 to 3), g_field3(1 to 3), g_field4(1 to 3), g_field5(1 to 3)
 
@@ -8,7 +10,7 @@ sub test_int
 	dim as integer field2(1 to 3), field3(1 to 3), field4(1 to 3), field5(1 to 3)
 	dim as integer i
 
-	open "input.csv" for input as #1 
+	open filename for input as #1 
 
 	for i = 1 to 3 
    		input #1, field1(i), field2(i), field3(i), field4(i), field5(i)
@@ -28,7 +30,7 @@ sub test_dbl
 	dim as double field2(1 to 3), field3(1 to 3), field4(1 to 3), field5(1 to 3)
 	dim as integer i
 
-	open "input.csv" for input as #1 
+	open filename for input as #1 
 
 	for i = 1 to 3 
    		input #1, field1(i), field2(i), field3(i), field4(i), field5(i)
@@ -44,7 +46,7 @@ sub test_dbl
 end sub
 
 sub load_data
-	open "input.csv" for input as #1 
+	open filename for input as #1 
 	dim as integer i
 
 	for i = 1 to 3 
