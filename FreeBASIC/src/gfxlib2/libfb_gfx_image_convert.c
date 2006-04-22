@@ -97,7 +97,7 @@ void fb_image_convert_32to16(const unsigned char *src, unsigned char *dest, int 
 
 	for (; w; w--)
 	{
-		c = (unsigned int)*src & 0x00FFFFFF;
+		c = *(unsigned int *)src & 0x00FFFFFF;
 		*d++ = (unsigned short)((c >> (16+3)) | ((c >> 5) & 0x07E0) | ((c << 8) & 0xF800));
 		src += sizeof( unsigned int );
 	}
@@ -111,7 +111,7 @@ void fb_image_convert_32to32(const unsigned char *src, unsigned char *dest, int 
 
 	for (; w; w--)
 	{
-		c = (unsigned int)*src & 0x00FFFFFF;
+		c = *(unsigned int *)src & 0x00FFFFFF;
 		*d++ = (c >> 16) | (c & 0x00FF00) | (c << 16);
 		src += sizeof( unsigned int );
 	}
