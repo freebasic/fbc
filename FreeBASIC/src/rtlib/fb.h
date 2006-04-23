@@ -1395,9 +1395,10 @@ typedef void (FBCALL *FB_THREADPROC)( int param );
 
 typedef struct _FBTHREAD
 {
-	FB_THREADID		id;
-	FB_THREADPROC	proc;
-	int 			param;
+	FB_THREADID   id;
+	FB_THREADPROC proc;
+	int           param;
+	void         *opaque;
 } FBTHREAD;
 
 struct _FBMUTEX;
