@@ -177,6 +177,13 @@ enum CURLcode
 	CURL_LAST
 end enum
 
+#define CURLE_OPERATION_TIMEDOUT CURLE_OPERATION_TIMEOUTED
+#define CURLE_HTTP_NOT_FOUND CURLE_HTTP_RETURNED_ERROR
+#define CURLE_HTTP_PORT_FAILED CURLE_INTERFACE_FAILED
+#define CURLE_FTP_PARTIAL_FILE CURLE_PARTIAL_FILE
+#define CURLE_FTP_BAD_DOWNLOAD_RESUME CURLE_BAD_DOWNLOAD_RESUME
+#define CURLE_ALREADY_COMPLETE 99999
+
 type curl_ssl_ctx_callback as function cdecl(byval as CURL ptr, byval as any ptr, byval as any ptr) as CURLcode
 
 enum curl_proxytype
@@ -193,7 +200,6 @@ end enum
 #define CURLAUTH_NTLM (1 shl 3)
 #define CURLAUTH_ANY  not 0
 #define CURLAUTH_ANYSAFE ( not (1 shl 0))
-#define CURLE_ALREADY_COMPLETE 99999
 #define CURL_ERROR_SIZE 256
 
 enum curl_ftpssl
@@ -348,6 +354,9 @@ end enum
 #define CURL_IPRESOLVE_WHATEVER 0
 #define CURL_IPRESOLVE_V4 1
 #define CURL_IPRESOLVE_V6 2
+#define CURLOPT_WRITEDATA CURLOPT_FILE
+#define CURLOPT_READDATA CURLOPT_INFILE
+#define CURLOPT_HEADERDATA CURLOPT_WRITEHEADER
 #define CURLOPT_HTTPREQUEST -1
 #define CURLOPT_MUTE -2
 #define CURLOPT_PASSWDFUNCTION -3
@@ -565,6 +574,7 @@ enum CURLversion
 	CURLVERSION_LAST
 end enum
 
+#define CURLVERSION_NOW CURLVERSION_THIRD
 
 type curl_version_info_data
 	age as CURLversion
