@@ -46,12 +46,6 @@ type curl_httppost
 	contentheader as curl_slist_ ptr
 	more as curl_httppost ptr
 	flags as integer
-	HTTPPOST_FILENAME as integer
-	HTTPPOST_READFILE as integer
-	HTTPPOST_PTRNAME as integer
-	HTTPPOST_PTRCONTENTS as integer
-	HTTPPOST_BUFFER as integer
-	HTTPPOST_PTRBUFFER as integer
 	showfilename as zstring ptr
 end type
 
@@ -78,7 +72,6 @@ enum curlioerr
 	CURLIOE_FAILRESTART
 	CURLIOE_LAST
 end enum
-
 
 enum curliocmd
 	CURLIOCMD_NOP
@@ -174,6 +167,14 @@ enum CURLcode
 	CURLE_FTP_SSL_FAILED
 	CURLE_SEND_FAIL_REWIND
 	CURLE_SSL_ENGINE_INITFAILED
+  	CURLE_LOGIN_DENIED
+  	CURLE_TFTP_NOTFOUND
+  	CURLE_TFTP_PERM
+  	CURLE_TFTP_DISKFULL
+  	CURLE_TFTP_ILLEGAL
+  	CURLE_TFTP_UNKNOWNID
+  	CURLE_TFTP_EXISTS
+  	CURLE_TFTP_NOSUCHUSER
 	CURL_LAST
 end enum
 
@@ -192,14 +193,13 @@ enum curl_proxytype
 	CURLPROXY_SOCKS5 = 5
 end enum
 
-
 #define CURLAUTH_NONE 0
 #define CURLAUTH_BASIC (1 shl 0)
 #define CURLAUTH_DIGEST (1 shl 1)
 #define CURLAUTH_GSSNEGOTIATE (1 shl 2)
 #define CURLAUTH_NTLM (1 shl 3)
-#define CURLAUTH_ANY  not 0
-#define CURLAUTH_ANYSAFE ( not (1 shl 0))
+#define CURLAUTH_ANY (not 0)
+#define CURLAUTH_ANYSAFE (not (1 shl 0))
 #define CURL_ERROR_SIZE 256
 
 enum curl_ftpssl
@@ -210,7 +210,6 @@ enum curl_ftpssl
 	CURLFTPSSL_LAST
 end enum
 
-
 enum curl_ftpauth
 	CURLFTPAUTH_DEFAULT
 	CURLFTPAUTH_SSL
@@ -218,6 +217,13 @@ enum curl_ftpauth
 	CURLFTPAUTH_LAST
 end enum
 
+enum curl_ftpmethod
+  CURLFTPMETHOD_DEFAULT
+  CURLFTPMETHOD_MULTICWD
+  CURLFTPMETHOD_NOCWD
+  CURLFTPMETHOD_SINGLECWD
+  CURLFTPMETHOD_LAST
+end enum
 
 #define CURLOPTTYPE_LONG 0
 #define CURLOPTTYPE_OBJECTPOINT 10000
@@ -347,9 +353,15 @@ enum CURLoption
 	CURLOPT_SOURCE_URL = 10000+132
 	CURLOPT_SOURCE_QUOTE = 10000+133
 	CURLOPT_FTP_ACCOUNT = 10000+134
+  	COOKIELIST = 10000+135
+  	IGNORE_CONTENT_LENGTH = 0+136
+	FTP_SKIP_PASV_IP = 0+137
+  	FTP_FILEMETHOD = 0+138
+  	LOCALPORT = 0+139
+  	LOCALPORTRANGE = 0+140
+  	CONNECT_ONLY = 0+141
 	CURLOPT_LASTENTRY
 end enum
-
 
 #define CURL_IPRESOLVE_WHATEVER 0
 #define CURL_IPRESOLVE_V4 1
@@ -499,7 +511,9 @@ enum CURLINFO
 	CURLINFO_OS_ERRNO = &h200000+25
 	CURLINFO_NUM_CONNECTS = &h200000+26
 	CURLINFO_SSL_ENGINES = &h400000+27
-	CURLINFO_LASTONE = 28
+    CURLINFO_COOKIELIST = &h400000+28
+    CURLINFO_LASTSOCKET = &h200000+29
+	CURLINFO_LASTONE = 29
 end enum
 
 
@@ -512,7 +526,6 @@ enum curl_closepolicy
 	CURLCLOSEPOLICY_CALLBACK
 	CURLCLOSEPOLICY_LAST
 end enum
-
 
 #define CURL_GLOBAL_SSL (1 shl 0)
 #define CURL_GLOBAL_WIN32 (1 shl 1)
@@ -602,6 +615,7 @@ end type
 #define CURL_VERSION_SPNEGO (1 shl 8)
 #define CURL_VERSION_LARGEFILE (1 shl 9)
 #define CURL_VERSION_IDN (1 shl 10)
+#define CURL_VERSION_SSPI (1 shl 11)
 
 declare function curl_version_info cdecl alias "curl_version_info" (byval as CURLversion) as curl_version_info_data ptr
 declare function curl_easy_strerror cdecl alias "curl_easy_strerror" (byval as CURLcode) as zstring ptr
