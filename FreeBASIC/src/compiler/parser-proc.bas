@@ -323,13 +323,13 @@ function cSubOrFuncHeader( byval issub as integer, _
     	end if
 
     	'' there's already a prototype for this proc, check for
-    	'' declaretion conflits and fix up the arguments
+    	'' declaration conflits and fix up the arguments
     	if( hCheckPrototype( sym, proc, typ, subtype ) = FALSE ) then
     		exit function
     	end if
 
     	'' check calling convention
-    	if( symbGetFuncMode( sym ) <> mode ) then
+    	if( symbGetProcMode( sym ) <> mode ) then
     		hReportError( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE )
     		exit function
     	end if

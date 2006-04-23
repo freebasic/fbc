@@ -451,12 +451,12 @@ sub irEmitPROCEND( byval proc as FBSYMBOL ptr, _
 
     irFlush( )
 
-    mode = symbGetFuncMode( proc )
+    mode = symbGetProcMode( proc )
     if( (mode = FB_FUNCMODE_CDECL) or _
     	((mode = FB_FUNCMODE_STDCALL) and (env.clopt.nostdcall)) ) then
 		bytestopop = 0
 	else
-		bytestopop = symbGetLen( proc )
+		bytestopop = symbGetProcParamsLen( proc )
 	end if
 
 	emitPROCFOOTER( proc, bytestopop, initlabel, exitlabel )
@@ -1367,7 +1367,7 @@ end sub
 '':::::
 private sub hFlushCALL( byval op as integer, _
 				 		byval proc as FBSYMBOL ptr, _
-				 		byval bytes2pop as integer, _
+				 		byval bytestopop as integer, _
 				 		byval v1 as IRVREG ptr, _
 				 		byval vr as IRVREG ptr ) static
 
@@ -1377,20 +1377,20 @@ private sub hFlushCALL( byval op as integer, _
 
 	'' call function
     if( proc <> NULL ) then
-    	mode = symbGetFuncMode( proc )
+    	mode = symbGetProcMode( proc )
     	if( (mode = FB_FUNCMODE_CDECL) or _
     		((mode = FB_FUNCMODE_STDCALL) and (env.clopt.nostdcall)) ) then
-			if( bytes2pop = 0 ) then
-				bytes2pop = symbGetLen( proc )
+			if( bytestopop = 0 ) then
+				bytestopop = symbGetProcParamsLen( proc )
 			end if
 		else
-			bytes2pop = 0
+			bytestopop = 0
 		end if
 
     	'' save used registers and free the FPU stack
     	hPreserveRegs( )
 
-		emitCALL( proc, bytes2pop )
+		emitCALL( proc, bytestopop )
 
 	'' call or jump to pointer
 	else
@@ -1409,7 +1409,7 @@ private sub hFlushCALL( byval op as integer, _
 
 		'' CALLPTR
 		if( op = AST_OP_CALLPTR ) then
-			emitCALLPTR( v1, bytes2pop )
+			emitCALLPTR( v1, bytestopop )
 		'' JUMPPTR
 		else
 			emitJUMPPTR( v1 )

@@ -939,7 +939,7 @@ function symbIsEqual( byval sym1 as FBSYMBOL ptr, _
 
     case FB_SYMBCLASS_PROC
     	'' check calling convention
-    	if( symbGetFuncMode( sym1 ) <> symbGetFuncMode( sym2 ) ) then
+    	if( symbGetProcMode( sym1 ) <> symbGetProcMode( sym2 ) ) then
     		exit function
     	end if
 

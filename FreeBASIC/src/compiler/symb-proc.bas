@@ -453,7 +453,7 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
     	end if
     end if
 
-	proc->lgt = lgt
+	proc->proc.lgt = lgt
 
 	if( declaring ) then
 		symbSetIsDeclared( proc )

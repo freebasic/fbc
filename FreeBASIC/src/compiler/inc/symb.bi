@@ -298,6 +298,7 @@ type FBS_PROC
 	lib				as FBLIBRARY ptr
 	params			as integer
 	paramtb			as FBSYMBOLTB				'' parameters symbol tb
+	lgt				as integer					'' 	   //	  lenght (in bytes)
 	rtl				as FB_PROCRTL
 	ovl				as FB_PROCOVL				'' overloading
 	loctb			as FBSYMBOLTB				'' local symbols table
@@ -930,10 +931,6 @@ declare function 	symbFreeDynVar			( byval s as FBSYMBOL ptr ) as ASTNODE ptr
 
 #define symbGetArrayElements(s) s->var.array.elms
 
-#define symbGetProcParams(f) f->proc.params
-
-#define symbGetFuncMode(f) f->proc.mode
-
 #define symbGetOrgName(s) s->name
 
 #define symbGetName(s) s->alias
@@ -982,6 +979,12 @@ declare function 	symbFreeDynVar			( byval s as FBSYMBOL ptr ) as ASTNODE ptr
 #define symbGetLabelParent(l) l->lbl.parent
 
 #define symbGetLabelStmt(s) s->lbl.stmtnum
+
+#define symbGetProcParams(f) f->proc.params
+
+#define symbGetProcParamsLen(f) f->proc.lgt
+
+#define symbGetProcMode(f) f->proc.mode
 
 #define symbGetProcFirstParam(f) iif( f->proc.mode = FB_FUNCMODE_PASCAL, f->proc.paramtb.head, f->proc.paramtb.tail )
 
