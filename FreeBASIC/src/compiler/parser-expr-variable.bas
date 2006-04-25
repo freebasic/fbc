@@ -334,6 +334,11 @@ function cDerefFields( byref dtype as integer, _
 								   				 		   FB_DATATYPE_INTEGER ) )
 					end if
 
+					'' null pointer checking
+					if( env.clopt.extraerrchk ) then
+						varexpr = astNewPTRCHK( varexpr, lexLineNum( ) )
+					end if
+
 					varexpr = astNewBOP( AST_OP_ADD, varexpr, idxexpr )
 
 					'' not a wstring?
