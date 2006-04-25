@@ -44,21 +44,19 @@ declare function 	load_textfile			( filename as string ) as string
 		do 
 			match = *CRegex_GetStr( reg, 0 )
 			
-			print "Found a ";
-			
 			'' naive check..
 			select case match[0]
 			case asc( "0" ) to asc( "9" )
-				print "number  : ";
+				print "Number";
 			
 			case asc( "a" ) to asc( "z" ), asc( "A" ) to asc( "Z" ), asc( "_" )
-				print "symbol  : ";
+				print "Symbol";
 			
 			case else
-				print "operator: ";
+				print "Operator";
 			end select
 			
-			print """"; match; """"
+			print " found: """; match; """"
 		
 		'' find next match..
 		loop while( CRegex_SearchNext( reg ) )	
