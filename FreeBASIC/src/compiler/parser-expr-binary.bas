@@ -61,6 +61,15 @@ function cUpdPointer( byval op as integer, _
     '' calc len( *p )
     lgt = symbCalcLen( astGetDataType( p ) - FB_DATATYPE_POINTER, astGetSubType( p ) )
 
+	'' incomplete type?
+	if( lgt = 0 ) then
+		'' unless it's a void ptr.. pretend it's a byte ptr
+		if( astGetDataType( p ) <> FB_DATATYPE_POINTER + FB_DATATYPE_VOID ) then
+			exit function
+		end if
+		lgt = 1
+	end if
+
     '' another pointer?
     if( edtype >= FB_DATATYPE_POINTER ) then
     	'' only allow if it's a subtraction
@@ -93,15 +102,6 @@ function cUpdPointer( byval op as integer, _
     '' any op but +|-?
     select case op
     case AST_OP_ADD, AST_OP_SUB
-		'' incomplete type?
-		if( lgt = 0 ) then
-			'' unless it's a void ptr.. pretend it's a byte ptr
-			if( astGetDataType( p ) <> FB_DATATYPE_POINTER + FB_DATATYPE_VOID ) then
-				exit function
-			end if
-			lgt = 1
-		end if
-
     	'' multiple by length
 		e = astNewBOP( AST_OP_MUL, e, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
 
