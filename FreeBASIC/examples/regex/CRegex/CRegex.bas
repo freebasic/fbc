@@ -1,7 +1,7 @@
 ''
 '' CRegex - a pseudo-class wrapper for PCRE (based on the PCRE C++ wrapper)
 ''
-'' to build: fbc -lib CRegex.bi
+'' to build: fbc -lib CRegex.bas
 ''
 
 option explicit
