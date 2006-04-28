@@ -19,6 +19,7 @@
 
 #define WCHAR_MIN 0
 
+#ifdef __FB_WIN32__
 type _fsize_t as uinteger
 
 type _wfinddata_t
@@ -56,6 +57,7 @@ declare function _wgetdcwd cdecl alias "_wgetdcwd" (byval as integer, byval as w
 declare function _wmkdir cdecl alias "_wmkdir" (byval as wchar_t ptr) as integer
 declare function _wrmdir cdecl alias "_wrmdir" (byval as wchar_t ptr) as integer
 
+#ifndef stat
 type _stat
 	st_dev as _dev_t
 	st_ino as _ino_t
@@ -70,19 +72,7 @@ type _stat
 	st_ctime as time_t
 end type
 
-type stat
-	st_dev as _dev_t
-	st_ino as _ino_t
-	st_mode as _mode_t
-	st_nlink as short
-	st_uid as short
-	st_gid as short
-	st_rdev as _dev_t
-	st_size as _off_t
-	st_atime as time_t
-	st_mtime as time_t
-	st_ctime as time_t
-end type
+type stat as _stat
 
 type _stati64
 	st_dev as _dev_t
@@ -97,6 +87,7 @@ type _stati64
 	st_mtime as time_t
 	st_ctime as time_t
 end type
+#endif
 
 declare function _wstat cdecl alias "_wstat" (byval as wchar_t ptr, byval as _stat ptr) as integer
 declare function _wstati64 cdecl alias "_wstati64" (byval as wchar_t ptr, byval as _stati64 ptr) as integer
@@ -105,6 +96,9 @@ declare function _wctime cdecl alias "_wctime" (byval as time_t ptr) as wchar_t 
 declare function _wstrdate cdecl alias "_wstrdate" (byval as wchar_t ptr) as wchar_t ptr
 declare function _wstrtime cdecl alias "_wstrtime" (byval as wchar_t ptr) as wchar_t ptr
 declare function _wsetlocale cdecl alias "_wsetlocale" (byval as integer, byval as wchar_t ptr) as wchar_t ptr
+#else '' __FB_WIN32__
+'' !!!WRITEME!!!
+#endif
 
 type mbstate_t as integer
 type _Wint_t as wchar_t

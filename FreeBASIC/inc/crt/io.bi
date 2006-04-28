@@ -12,6 +12,8 @@
 #include once "crt/stdio.bi"
 #include once "crt/sys/types.bi"
 
+#ifdef __FB_WIN32__
+
 #define _A_NORMAL &h00000000
 #define _A_RDONLY &h00000001
 #define _A_HIDDEN &h00000002
@@ -82,5 +84,10 @@ declare function _tell cdecl alias "_tell" (byval as integer) as integer
 declare function _umask cdecl alias "_umask" (byval as integer) as integer
 declare function _unlink cdecl alias "_unlink" (byval as zstring ptr) as integer
 declare function _write cdecl alias "_write" (byval as integer, byval as any ptr, byval as uinteger) as integer
+
+#else '' __FB_WIN32__
+'' !!!WRITEME!!!
+# error Unsupported platform
+#endif
 
 #endif

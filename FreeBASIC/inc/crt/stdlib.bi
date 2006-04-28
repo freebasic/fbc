@@ -25,28 +25,9 @@
 extern import _argc alias "_argc" as integer
 extern import _argv alias "_argv" as byte ptr ptr
 
-declare function __p___argc cdecl alias "__p___argc" () as integer ptr
-declare function __p___argv cdecl alias "__p___argv" () as byte ptr ptr ptr
-declare function __p___wargv cdecl alias "__p___wargv" () as wchar_t ptr ptr ptr
-extern import _imp____mbcur_max alias "_imp____mbcur_max" as integer ptr
-declare function __doserrno cdecl alias "__doserrno" () as integer ptr
-#define	_doserrno (*__doserrno)
-declare function __p__environ cdecl alias "__p__environ" () as byte ptr ptr ptr
-declare function __p__wenviron cdecl alias "__p__wenviron" () as wchar_t ptr ptr ptr
-extern import _imp___sys_nerr alias "_imp___sys_nerr" as integer ptr
-extern import _imp__sys_errlist alias "_imp__sys_errlist" as byte ptr ptr ptr
-declare function __p__osver cdecl alias "__p__osver" () as uinteger ptr
-declare function __p__winver cdecl alias "__p__winver" () as uinteger ptr
-declare function __p__winmajor cdecl alias "__p__winmajor" () as uinteger ptr
-declare function __p__winminor cdecl alias "__p__winminor" () as uinteger ptr
-declare function __p__pgmptr cdecl alias "__p__pgmptr" () as byte ptr ptr
-declare function __p__wpgmptr cdecl alias "__p__wpgmptr" () as wchar_t ptr ptr
-extern import _imp___fmode alias "_imp___fmode" as integer ptr
 declare function atof cdecl alias "atof" (byval as zstring ptr) as double
 declare function atoi cdecl alias "atoi" (byval as zstring ptr) as integer
 declare function atol cdecl alias "atol" (byval as zstring ptr) as integer
-declare function _wtoi cdecl alias "_wtoi" (byval as wchar_t ptr) as integer
-declare function _wtol cdecl alias "_wtol" (byval as wchar_t ptr) as integer
 declare function strtod cdecl alias "strtod" (byval as zstring ptr, byval as byte ptr ptr) as double
 declare function strtof cdecl alias "strtof" (byval nptr as zstring ptr, byval endptr as byte ptr ptr) as single
 declare function strtold cdecl alias "strtold" (byval __restrict__ as zstring ptr, byval __restrict__ as byte ptr ptr) as double
@@ -90,6 +71,43 @@ end type
 
 declare function div cdecl alias "div" (byval as integer, byval as integer) as div_t
 declare function ldiv cdecl alias "ldiv" (byval as integer, byval as integer) as ldiv_t
+
+type lldiv_t
+	quot as longint
+	rem as longint
+end type
+
+declare function lldiv cdecl alias "lldiv" (byval as longint, byval as longint) as lldiv_t
+declare function llabs cdecl alias "llabs" (byval _j as longint) as longint
+declare function strtoll cdecl alias "strtoll" (byval __restrict__ as zstring ptr, byval __restrict as byte ptr ptr, byval as integer) as longint
+declare function strtoull cdecl alias "strtoull" (byval __restrict__ as zstring ptr, byval __restrict__ as byte ptr ptr, byval as integer) as ulongint
+declare function atoll cdecl alias "atoll" (byval as zstring ptr) as longint
+declare function wtoll cdecl alias "wtoll" (byval as wchar_t ptr) as longint
+declare function lltoa cdecl alias "lltoa" (byval as longint, byval as zstring ptr, byval as integer) as zstring ptr
+declare function ulltoa cdecl alias "ulltoa" (byval as ulongint, byval as zstring ptr, byval as integer) as zstring ptr
+declare function lltow cdecl alias "lltow" (byval as longint, byval as wchar_t ptr, byval as integer) as wchar_t ptr
+declare function ulltow cdecl alias "ulltow" (byval as ulongint, byval as wchar_t ptr, byval as integer) as wchar_t ptr
+
+#ifdef __FB_WIN32__
+declare function __p___argc cdecl alias "__p___argc" () as integer ptr
+declare function __p___argv cdecl alias "__p___argv" () as byte ptr ptr ptr
+declare function __p___wargv cdecl alias "__p___wargv" () as wchar_t ptr ptr ptr
+extern import __mbcur_max alias "__mbcur_max" as integer ptr
+declare function __doserrno cdecl alias "__doserrno" () as integer ptr
+#define	_doserrno (*__doserrno)
+declare function __p__environ cdecl alias "__p__environ" () as byte ptr ptr ptr
+declare function __p__wenviron cdecl alias "__p__wenviron" () as wchar_t ptr ptr ptr
+extern import __sys_nerr alias "_sys_nerr" as integer ptr
+extern import sys_errlist alias "sys_errlist" as byte ptr ptr ptr
+declare function __p__osver cdecl alias "__p__osver" () as uinteger ptr
+declare function __p__winver cdecl alias "__p__winver" () as uinteger ptr
+declare function __p__winmajor cdecl alias "__p__winmajor" () as uinteger ptr
+declare function __p__winminor cdecl alias "__p__winminor" () as uinteger ptr
+declare function __p__pgmptr cdecl alias "__p__pgmptr" () as byte ptr ptr
+declare function __p__wpgmptr cdecl alias "__p__wpgmptr" () as wchar_t ptr ptr
+extern import _fmode alias "_fmode" as integer ptr
+declare function _wtoi cdecl alias "_wtoi" (byval as wchar_t ptr) as integer
+declare function _wtol cdecl alias "_wtol" (byval as wchar_t ptr) as integer
 declare sub _beep cdecl alias "_beep" (byval as uinteger, byval as uinteger)
 declare sub _seterrormode cdecl alias "_seterrormode" (byval as integer)
 declare sub _sleep cdecl alias "_sleep" (byval as uinteger)
@@ -128,21 +146,8 @@ declare function _rotl cdecl alias "_rotl" (byval as uinteger, byval as integer)
 declare function _rotr cdecl alias "_rotr" (byval as uinteger, byval as integer) as uinteger
 declare function _lrotl cdecl alias "_lrotl" (byval as uinteger, byval as integer) as uinteger
 declare function _lrotr cdecl alias "_lrotr" (byval as uinteger, byval as integer) as uinteger
-
-type lldiv_t
-	quot as longint
-	rem as longint
-end type
-
-declare function lldiv cdecl alias "lldiv" (byval as longint, byval as longint) as lldiv_t
-declare function llabs cdecl alias "llabs" (byval _j as longint) as longint
-declare function strtoll cdecl alias "strtoll" (byval __restrict__ as zstring ptr, byval __restrict as byte ptr ptr, byval as integer) as longint
-declare function strtoull cdecl alias "strtoull" (byval __restrict__ as zstring ptr, byval __restrict__ as byte ptr ptr, byval as integer) as ulongint
-declare function atoll cdecl alias "atoll" (byval as zstring ptr) as longint
-declare function wtoll cdecl alias "wtoll" (byval as wchar_t ptr) as longint
-declare function lltoa cdecl alias "lltoa" (byval as longint, byval as zstring ptr, byval as integer) as zstring ptr
-declare function ulltoa cdecl alias "ulltoa" (byval as ulongint, byval as zstring ptr, byval as integer) as zstring ptr
-declare function lltow cdecl alias "lltow" (byval as longint, byval as wchar_t ptr, byval as integer) as wchar_t ptr
-declare function ulltow cdecl alias "ulltow" (byval as ulongint, byval as wchar_t ptr, byval as integer) as wchar_t ptr
+#else '' __FB_WIN32__
+'' !!!WRITEME!!!
+#endif
 
 #endif

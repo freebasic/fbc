@@ -11,7 +11,7 @@
 #include once "crt/wchar.bi"
 #include once "crt/stdlib.bi"
 #include once "crt/stdio.bi"
-#include once "crt/io.bi"
+#include once "crt/dir.bi"
 #include once "crt/errno.bi"
 
 #endif ' __CRT_BI__

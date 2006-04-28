@@ -39,15 +39,6 @@
 #define _FPCLASS_PD &h0080
 #define _FPCLASS_PN &h0100
 #define _FPCLASS_PINF &h0200
-extern import _imp___HUGE alias "_imp___HUGE" as double ptr
-
-type _exception
-	type as integer
-	name as zstring ptr
-	arg1 as double
-	arg2 as double
-	retval as double
-end type
 
 declare function sin_ cdecl alias "sin" (byval as double) as double
 declare function cos_ cdecl alias "cos" (byval as double) as double
@@ -72,29 +63,6 @@ declare function frexp cdecl alias "frexp" (byval as double, byval as integer pt
 declare function modf cdecl alias "modf" (byval as double, byval as double ptr) as double
 declare function fmod cdecl alias "fmod" (byval as double, byval as double) as double
 
-type _complex
-	x as double
-	y as double
-end type
-
-declare function _cabs cdecl alias "_cabs" (byval as _complex) as double
-declare function _hypot cdecl alias "_hypot" (byval as double, byval as double) as double
-declare function _j0 cdecl alias "_j0" (byval as double) as double
-declare function _j1 cdecl alias "_j1" (byval as double) as double
-declare function _jn cdecl alias "_jn" (byval as integer, byval as double) as double
-declare function _y0 cdecl alias "_y0" (byval as double) as double
-declare function _y1 cdecl alias "_y1" (byval as double) as double
-declare function _yn cdecl alias "_yn" (byval as integer, byval as double) as double
-declare function _matherr cdecl alias "_matherr" (byval as _exception ptr) as integer
-declare function _chgsign cdecl alias "_chgsign" (byval as double) as double
-declare function _copysign cdecl alias "_copysign" (byval as double, byval as double) as double
-declare function _logb cdecl alias "_logb" (byval as double) as double
-declare function _nextafter cdecl alias "_nextafter" (byval as double, byval as double) as double
-declare function _scalb cdecl alias "_scalb" (byval as double, byval as integer) as double
-declare function _finite cdecl alias "_finite" (byval as double) as integer
-declare function _fpclass cdecl alias "_fpclass" (byval as double) as integer
-declare function _isnan cdecl alias "_isnan" (byval as double) as integer
-
 #define NAN_ (0.0F/0.0F)
 #define HUGE_VALF (1.0F/0.0F)
 #define HUGE_VALL (1.0L/0.0L)
@@ -105,15 +73,6 @@ declare function _isnan cdecl alias "_isnan" (byval as double) as integer
 #define FP_ZERO &h4000
 #define FP_SUBNORMAL (&h0400 or &h4000)
 
-declare function __fpclassifyf cdecl alias "__fpclassifyf" (byval as single) as integer
-declare function __fpclassify cdecl alias "__fpclassify" (byval as double) as integer
-declare function __fpclassifyl cdecl alias "__fpclassifyl" (byval x as double) as integer
-declare function __isnan cdecl alias "__isnan" (byval _x as double) as integer
-declare function __isnanf cdecl alias "__isnanf" (byval _x as single) as integer
-declare function __isnanl cdecl alias "__isnanl" (byval _x as double) as integer
-declare function __signbit cdecl alias "__signbit" (byval x as double) as integer
-declare function __signbitf cdecl alias "__signbitf" (byval x as single) as integer
-declare function __signbitl cdecl alias "__signbitl" (byval x as double) as integer
 declare function sinf cdecl alias "sinf" (byval as single) as single
 declare function sinl cdecl alias "sinl" (byval as double) as double
 declare function cosf cdecl alias "cosf" (byval as single) as single
@@ -245,5 +204,52 @@ declare function fminl cdecl alias "fminl" (byval as double, byval as double) as
 declare function fma cdecl alias "fma" (byval as double, byval as double, byval as double) as double
 declare function fmaf cdecl alias "fmaf" (byval as single, byval as single, byval as single) as single
 declare function fmal cdecl alias "fmal" (byval as double, byval as double, byval as double) as double
+
+
+#ifdef __FB_WIN32__
+extern import _HUGE alias "_HUGE" as double ptr
+
+type _exception
+	type as integer
+	name as zstring ptr
+	arg1 as double
+	arg2 as double
+	retval as double
+end type
+
+type _complex
+	x as double
+	y as double
+end type
+
+declare function _cabs cdecl alias "_cabs" (byval as _complex) as double
+declare function _hypot cdecl alias "_hypot" (byval as double, byval as double) as double
+declare function _j0 cdecl alias "_j0" (byval as double) as double
+declare function _j1 cdecl alias "_j1" (byval as double) as double
+declare function _jn cdecl alias "_jn" (byval as integer, byval as double) as double
+declare function _y0 cdecl alias "_y0" (byval as double) as double
+declare function _y1 cdecl alias "_y1" (byval as double) as double
+declare function _yn cdecl alias "_yn" (byval as integer, byval as double) as double
+declare function _matherr cdecl alias "_matherr" (byval as _exception ptr) as integer
+declare function _chgsign cdecl alias "_chgsign" (byval as double) as double
+declare function _copysign cdecl alias "_copysign" (byval as double, byval as double) as double
+declare function _logb cdecl alias "_logb" (byval as double) as double
+declare function _nextafter cdecl alias "_nextafter" (byval as double, byval as double) as double
+declare function _scalb cdecl alias "_scalb" (byval as double, byval as integer) as double
+declare function _finite cdecl alias "_finite" (byval as double) as integer
+declare function _fpclass cdecl alias "_fpclass" (byval as double) as integer
+declare function _isnan cdecl alias "_isnan" (byval as double) as integer
+declare function __fpclassifyf cdecl alias "__fpclassifyf" (byval as single) as integer
+declare function __fpclassify cdecl alias "__fpclassify" (byval as double) as integer
+declare function __fpclassifyl cdecl alias "__fpclassifyl" (byval x as double) as integer
+declare function __isnan cdecl alias "__isnan" (byval _x as double) as integer
+declare function __isnanf cdecl alias "__isnanf" (byval _x as single) as integer
+declare function __isnanl cdecl alias "__isnanl" (byval _x as double) as integer
+declare function __signbit cdecl alias "__signbit" (byval x as double) as integer
+declare function __signbitf cdecl alias "__signbitf" (byval x as single) as integer
+declare function __signbitl cdecl alias "__signbitl" (byval x as double) as integer
+#else '' __FB_WIN32__
+'' !!!WRITEME!!!
+#endif
 
 #endif

@@ -33,22 +33,6 @@ declare function strspn cdecl alias "strspn" (byval as zstring ptr, byval as zst
 declare function strstr cdecl alias "strstr" (byval as zstring ptr, byval as zstring ptr) as zstring ptr
 declare function strtok cdecl alias "strtok" (byval as zstring ptr, byval as zstring ptr) as zstring ptr
 declare function strxfrm cdecl alias "strxfrm" (byval as zstring ptr, byval as zstring ptr, byval as size_t) as size_t
-declare function _strerror cdecl alias "_strerror" (byval as zstring ptr) as zstring ptr
-declare function _memccpy cdecl alias "_memccpy" (byval as any ptr, byval as any ptr, byval as integer, byval as size_t) as any ptr
-declare function _memicmp cdecl alias "_memicmp" (byval as any ptr, byval as any ptr, byval as size_t) as integer
-declare function _strdup cdecl alias "_strdup" (byval as zstring ptr) as zstring ptr
-declare function _strcmpi cdecl alias "_strcmpi" (byval as zstring ptr, byval as zstring ptr) as integer
-declare function _stricmp cdecl alias "_stricmp" (byval as zstring ptr, byval as zstring ptr) as integer
-declare function _stricoll cdecl alias "_stricoll" (byval as zstring ptr, byval as zstring ptr) as integer
-declare function _strlwr cdecl alias "_strlwr" (byval as zstring ptr) as zstring ptr
-declare function _strnicmp cdecl alias "_strnicmp" (byval as zstring ptr, byval as zstring ptr, byval as size_t) as integer
-declare function _strnset cdecl alias "_strnset" (byval as zstring ptr, byval as integer, byval as size_t) as zstring ptr
-declare function _strrev cdecl alias "_strrev" (byval as zstring ptr) as zstring ptr
-declare function _strset cdecl alias "_strset" (byval as zstring ptr, byval as integer) as zstring ptr
-declare function _strupr cdecl alias "_strupr" (byval as zstring ptr) as zstring ptr
-declare sub _swab cdecl alias "_swab" (byval as zstring ptr, byval as zstring ptr, byval as size_t)
-declare function _strncoll cdecl alias "_strncoll" (byval as zstring ptr, byval as zstring ptr, byval as size_t) as integer
-declare function _strnicoll cdecl alias "_strnicoll" (byval as zstring ptr, byval as zstring ptr, byval as size_t) as integer
 declare function wcscat cdecl alias "wcscat" (byval as wchar_t ptr, byval as wchar_t ptr) as wchar_t ptr
 declare function wcschr cdecl alias "wcschr" (byval as wchar_t ptr, byval as wchar_t) as wchar_t ptr
 declare function wcscmp cdecl alias "wcscmp" (byval as wchar_t ptr, byval as wchar_t ptr) as integer
@@ -65,6 +49,24 @@ declare function wcsspn cdecl alias "wcsspn" (byval as wchar_t ptr, byval as wch
 declare function wcsstr cdecl alias "wcsstr" (byval as wchar_t ptr, byval as wchar_t ptr) as wchar_t ptr
 declare function wcstok cdecl alias "wcstok" (byval as wchar_t ptr, byval as wchar_t ptr) as wchar_t ptr
 declare function wcsxfrm cdecl alias "wcsxfrm" (byval as wchar_t ptr, byval as wchar_t ptr, byval as size_t) as size_t
+
+#ifdef __FB_WIN32__
+declare function _strerror cdecl alias "_strerror" (byval as zstring ptr) as zstring ptr
+declare function _memccpy cdecl alias "_memccpy" (byval as any ptr, byval as any ptr, byval as integer, byval as size_t) as any ptr
+declare function _memicmp cdecl alias "_memicmp" (byval as any ptr, byval as any ptr, byval as size_t) as integer
+declare function _strdup cdecl alias "_strdup" (byval as zstring ptr) as zstring ptr
+declare function _strcmpi cdecl alias "_strcmpi" (byval as zstring ptr, byval as zstring ptr) as integer
+declare function _stricmp cdecl alias "_stricmp" (byval as zstring ptr, byval as zstring ptr) as integer
+declare function _stricoll cdecl alias "_stricoll" (byval as zstring ptr, byval as zstring ptr) as integer
+declare function _strlwr cdecl alias "_strlwr" (byval as zstring ptr) as zstring ptr
+declare function _strnicmp cdecl alias "_strnicmp" (byval as zstring ptr, byval as zstring ptr, byval as size_t) as integer
+declare function _strnset cdecl alias "_strnset" (byval as zstring ptr, byval as integer, byval as size_t) as zstring ptr
+declare function _strrev cdecl alias "_strrev" (byval as zstring ptr) as zstring ptr
+declare function _strset cdecl alias "_strset" (byval as zstring ptr, byval as integer) as zstring ptr
+declare function _strupr cdecl alias "_strupr" (byval as zstring ptr) as zstring ptr
+declare sub _swab cdecl alias "_swab" (byval as zstring ptr, byval as zstring ptr, byval as size_t)
+declare function _strncoll cdecl alias "_strncoll" (byval as zstring ptr, byval as zstring ptr, byval as size_t) as integer
+declare function _strnicoll cdecl alias "_strnicoll" (byval as zstring ptr, byval as zstring ptr, byval as size_t) as integer
 declare function _wcsdup cdecl alias "_wcsdup" (byval as wchar_t ptr) as wchar_t ptr
 declare function _wcsicmp cdecl alias "_wcsicmp" (byval as wchar_t ptr, byval as wchar_t ptr) as integer
 declare function _wcsicoll cdecl alias "_wcsicoll" (byval as wchar_t ptr, byval as wchar_t ptr) as integer
@@ -76,5 +78,8 @@ declare function _wcsset cdecl alias "_wcsset" (byval as wchar_t ptr, byval as w
 declare function _wcsupr cdecl alias "_wcsupr" (byval as wchar_t ptr) as wchar_t ptr
 declare function _wcsncoll cdecl alias "_wcsncoll" (byval as wchar_t ptr, byval as wchar_t ptr, byval as size_t) as integer
 declare function _wcsnicoll cdecl alias "_wcsnicoll" (byval as wchar_t ptr, byval as wchar_t ptr, byval as size_t) as integer
+#else '' __FB_WIN32__
+'' !!!WRITEME!!!
+#endif
 
 #endif

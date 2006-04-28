@@ -36,15 +36,19 @@ declare function gmtime cdecl alias "gmtime" (byval as time_t ptr) as tm ptr
 declare function localtime cdecl alias "localtime" (byval as time_t ptr) as tm ptr
 declare function strftime cdecl alias "strftime" (byval as zstring ptr, byval as size_t, byval as zstring ptr, byval as tm ptr) as size_t
 declare function wcsftime cdecl alias "wcsftime" (byval as wchar_t ptr, byval as size_t, byval as wchar_t ptr, byval as tm ptr) as size_t
+
+#ifdef __FB_WIN32__
 declare sub _tzset cdecl alias "_tzset" ()
 declare function _strdate cdecl alias "_strdate" (byval as zstring ptr) as zstring ptr
 declare function _strtime cdecl alias "_strtime" (byval as zstring ptr) as zstring ptr
 declare function __p__daylight cdecl alias "__p__daylight" () as integer ptr
 declare function __p__timezone cdecl alias "__p__timezone" () as integer ptr
 declare function __p__tzname cdecl alias "__p__tzname" () as byte ptr ptr
-
 extern import _daylight alias "_daylight" as integer
 extern import _timezone alias "_timezone" as integer
 extern import _tzname alias "_tzname" as zstring * 2
+#else '' __FB_WIN32__
+'' !!!WRITEME!!!
+#endif
 
 #endif

@@ -33,13 +33,8 @@ declare function ispunct cdecl alias "ispunct" (byval as integer) as integer
 declare function isspace cdecl alias "isspace" (byval as integer) as integer
 declare function isupper cdecl alias "isupper" (byval as integer) as integer
 declare function isxdigit cdecl alias "isxdigit" (byval as integer) as integer
-declare function _isctype cdecl alias "_isctype" (byval as integer, byval as integer) as integer
 declare function tolower cdecl alias "tolower" (byval as integer) as integer
 declare function toupper cdecl alias "toupper" (byval as integer) as integer
-declare function _tolower cdecl alias "_tolower" (byval as integer) as integer
-declare function _toupper cdecl alias "_toupper" (byval as integer) as integer
-extern import _imp___ctype alias "_imp___ctype" as ushort ptr ptr
-extern import _imp___pctype alias "_imp___pctype" as ushort ptr ptr
 
 type wctype_t as wchar_t
 
@@ -60,9 +55,19 @@ declare function iswxdigit cdecl alias "iswxdigit" (byval as wint_t) as integer
 declare function towlower cdecl alias "towlower" (byval as wchar_t) as wchar_t
 declare function towupper cdecl alias "towupper" (byval as wchar_t) as wchar_t
 declare function isleadbyte cdecl alias "isleadbyte" (byval as integer) as integer
+
+#ifdef __FB_WIN32__
+extern import _ctype alias "_ctype" as ushort ptr ptr
+extern import _pctype alias "_pctype" as ushort ptr ptr
+declare function _isctype cdecl alias "_isctype" (byval as integer, byval as integer) as integer
+declare function _tolower cdecl alias "_tolower" (byval as integer) as integer
+declare function _toupper cdecl alias "_toupper" (byval as integer) as integer
 declare function __isascii cdecl alias "__isascii" (byval as integer) as integer
 declare function __toascii cdecl alias "__toascii" (byval as integer) as integer
 declare function __iscsymf cdecl alias "__iscsymf" (byval as integer) as integer
 declare function __iscsym cdecl alias "__iscsym" (byval as integer) as integer
+#else '' __FB_WIN32__
+'' !!!WRITEME!!!
+#endif
 
 #endif

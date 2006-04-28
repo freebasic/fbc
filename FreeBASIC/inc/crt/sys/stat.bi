@@ -32,6 +32,7 @@
 #define	_S_ISBLK(m) (((m) and _S_IFMT) = _S_IFBLK)
 #define	_S_ISREG(m) (((m) and _S_IFMT) = _S_IFREG)
 
+#ifndef stat
 type _stat
 	st_dev as _dev_t
 	st_ino as _ino_t
@@ -47,6 +48,7 @@ type _stat
 end type
 
 type stat as _stat
+#endif
 
 #ifdef __FB_WIN32__
 type _stati64
