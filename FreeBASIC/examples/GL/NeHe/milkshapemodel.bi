@@ -357,7 +357,7 @@ sub Model_Draw(byval pM as MODEL ptr)
 			glMaterialfv (GL_FRONT, GL_DIFFUSE, varptr(pM->m_pMaterials[materialIndex].m_diffuse(0)))
 			glMaterialfv (GL_FRONT, GL_SPECULAR, varptr(pM->m_pMaterials[materialIndex].m_specular(0)))
 			glMaterialfv (GL_FRONT, GL_EMISSION, varptr(pM->m_pMaterials[materialIndex].m_emissive(0)))
-			glMaterialf (GL_FRONT, GL_SHININESS, varptr(pM->m_pMaterials[materialIndex].m_shininess))
+			glMaterialf (GL_FRONT, GL_SHININESS, pM->m_pMaterials[materialIndex].m_shininess)
 			if pM->m_pMaterials[materialIndex].m_texture > 0 then
 				glBindTexture (GL_TEXTURE_2D, pM->m_pMaterials[materialIndex].m_texture)
 				glEnable (GL_TEXTURE_2D)
