@@ -20,7 +20,9 @@
 #define WCHAR_MIN 0
 
 #ifdef __FB_WIN32__
+#ifndef _fsize_t
 type _fsize_t as uinteger
+#endif
 
 type _wfinddata_t
 	attrib as uinteger

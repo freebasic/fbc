@@ -22,6 +22,10 @@
 #define _A_SUBDIR &h00000010
 #define _A_ARCH &h00000020
 
+#ifndef _fsize_t
+type _fsize_t as uinteger
+#endif
+
 type _finddata_t
 	attrib as uinteger
 	time_create as time_t
