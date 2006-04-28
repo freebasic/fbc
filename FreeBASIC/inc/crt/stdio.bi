@@ -85,6 +85,30 @@ extern as FILE __dj_stdin alias "__dj_stdin", __dj_stdout alias "__dj_stdout", _
 #define stdin (@__dj_stdin)
 #define stdout (@__dj_stdout)
 #define stderr (@__dj_stderr)
+
+#elseif defined(__FB_LINUX__)
+#define _IOFBF 0
+#define _IOLBF 1
+#define _IONBF 2
+#define BUFSIZ 8192
+#define FILENAME_MAX 4096
+#define FOPEN_MAX 16
+#define P_tmpdir "/tmp"
+#define L_tmpnam 20
+#define TMP_MAX 238328
+
+type _IO_FILE
+	_flags as integer
+	'' incomplete, shouldn't be used by user apps anyways..
+end type
+type FILE as _IO_FILE
+
+extern stdin alias "stdin" as _IO_FILE ptr
+extern stdout alias "stdout" as _IO_FILE ptr
+extern stderr alias "stderr" as _IO_FILE ptr
+
+#else
+'' !!!WRITEME!!!
 #endif
 
 declare function fopen cdecl alias "fopen" (byval as zstring ptr, byval as zstring ptr) as FILE ptr
@@ -193,14 +217,14 @@ declare sub _wperror cdecl alias "_wperror" (byval as wchar_t ptr)
 declare function _wpopen cdecl alias "_wpopen" (byval as wchar_t ptr, byval as wchar_t ptr) as FILE ptr
 declare function _fgetwchar cdecl alias "_fgetwchar" () as wint_t
 declare function _fputwchar cdecl alias "_fputwchar" (byval as wint_t) as wint_t
-declare function _getw cdecl alias "_getw" (byval as FILE ptr) as integer
-declare function _putw cdecl alias "_putw" (byval as integer, byval as FILE ptr) as integer
 declare function _tempnam cdecl alias "_tempnam" (byval as zstring ptr, byval as zstring ptr) as zstring ptr
 #else '' __FB_WIN32__
 declare function snprintf cdecl alias "snprintf" (byval s as zstring ptr, byval n as size_t, byval format as zstring ptr, ...) as integer
 declare function vsnprintf cdecl alias "vsnprintf" (byval s as zstring ptr, byval n as size_t, byval format as zstring ptr, byval arg as va_list) as integer
 declare function popen cdecl alias "popen" (byval as zstring ptr, byval as zstring ptr) as FILE ptr
 declare function pclose cdecl alias "pclose" (byval as FILE ptr) as integer
+declare function getw cdecl alias "getw" (byval as FILE ptr) as integer
+declare function putw cdecl alias "putw" (byval as integer, byval as FILE ptr) as integer
 '' !!!WRITEME!!!
 #endif
 

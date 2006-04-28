@@ -11,7 +11,10 @@
 #include once "crt/wchar.bi"
 #include once "crt/stdlib.bi"
 #include once "crt/stdio.bi"
-#include once "crt/dir.bi"
 #include once "crt/errno.bi"
+
+#if defined(__FB_WIN32__) or defined(__FB_DOS__)
+# include once "crt/dir.bi"
+#endif
 
 #endif ' __CRT_BI__
