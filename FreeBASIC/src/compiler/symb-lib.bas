@@ -59,6 +59,7 @@ function symbAddLib( byval libname as zstring ptr ) as FBLIBRARY ptr static
 	l->name		= ZstrAllocate( len( *libname ) )
 	*l->name	= *libname
 
+	l->hashindex = INVALID
 	l->hashitem = hashAdd( @symb.libhash, l->name, l, l->hashindex )
 
 	function = l

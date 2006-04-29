@@ -67,7 +67,7 @@ declare sub 		edbgEmitLocalVar	( byval sym as FBSYMBOL ptr, _
 										  byval isstatic as integer )
 
 declare sub 		edbgIncludeBegin 	( byval incname as zstring ptr, _
-					   					  byval incfile as integer )
+					   					  byval incfile as zstring ptr )
 
 declare sub 		edbgIncludeEnd 		( )
 

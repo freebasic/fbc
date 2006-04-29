@@ -143,6 +143,8 @@ sub symbEnd
 
 	listFree( @symb.symlist )
 
+	hashEnd( )
+
 	''
 	symb.inited = FALSE
 
@@ -341,7 +343,8 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
 	if( dohash ) then
 
 		'' doesn't exist yet?
-		n = hashLookup( @symb.symhash, s->name )
+		s->hashindex = hashHash( s->name )
+		n = hashLookupEx( @symb.symhash, s->name, s->hashindex )
 		if( n = NULL ) then
 			'' add to hash table
 			s->hashitem = hashAdd( @symb.symhash, s->name, s, s->hashindex )

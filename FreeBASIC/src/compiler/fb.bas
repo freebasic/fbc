@@ -43,7 +43,6 @@ declare sub		 parserAsmEnd           ( )
 '' globals
 	dim shared infileTb( ) as FBFILE
 	dim shared incpathTB( ) as zstring * FB_MAXPATHLEN+1
-	dim shared incfileTB( ) as zstring * FB_MAXPATHLEN+1
 	dim shared pathTB(0 to FB_MAXPATHS-1) as zstring * FB_MAXPATHLEN+1
 
 '' const
@@ -86,53 +85,33 @@ sub fbAddDefine( byval dname as zstring ptr, _
 end sub
 
 '':::::
-private function hFindIncFile( byval filename as zstring ptr ) as integer static
-	static as zstring * FB_MAXPATHLEN+1 fname
-	dim as integer i
+private function hFindIncFile( byval filename as zstring ptr ) as zstring ptr static
+	dim as string fname
 
 	fname = ucase( *filename )
 
-	for i = 0 to env.incfiles-1
-		if( incfileTB( i ) = fname ) then
-			return i
-		end if
-	next
-
-	function = -1
+	function = hashLookup( @env.incfilehash, fname )
 
 end function
 
 '':::::
-private function hAddIncFile( byval filename as zstring ptr ) as integer static
-    static as zstring * FB_MAXPATHLEN+1 fname
-    dim as integer i
+private function hAddIncFile( byval filename as zstring ptr ) as zstring ptr static
+    dim as zstring ptr fname, res
+    dim as uinteger index
 
-	fname = ucase( *filename )
+	fname = allocate( len( *filename ) + 1 )
+	hUcase( filename, fname )
 
-	if( env.incfiles >= ubound( incfileTB ) ) then
-		i = ubound( incfileTB )
-		redim preserve incfileTB(0 to (i + (cunsg(i) \ 2))-1)
-	end if
-
-	i = hFindIncFile( fname )
-	if( i = -1 ) then
-		i = env.incfiles
-		incfileTB( i ) = fname
-		env.incfiles += 1
-	end if
-
-	function = i
-
-end function
-
-'':::::
-function fbGetIncFile( byval index as integer ) as zstring ptr static
-
-	if( (index >= 0) and (index <= ubound( incfileTB )) ) then
-		function = @incfileTB( index )
+	index = hashHash( fname )
+	res = hashLookupEx( @env.incfilehash, fname, index )
+	if( res = NULL ) then
+		hashAdd( @env.incfilehash, fname, fname, index )
 	else
-		function = NULL
+		deallocate( fname )
+		fname = res
 	end if
+
+	function = fname
 
 end function
 
@@ -180,7 +159,6 @@ private sub hSetCtx( )
 
 	''
 	env.incpaths			= 0
-	env.incfiles			= 0
 
 	fbAddIncPath( exepath( ) + *fbGetPath( FB_PATH_INC ) )
 
@@ -202,6 +180,24 @@ private sub hSetCtx( )
 end sub
 
 '':::::
+private sub incTbInit( )
+
+	hashInit( )
+
+	hashNew( @env.incfilehash, FB_INITINCFILES, TRUE )
+
+end sub
+
+'':::::
+private sub incTbEnd( )
+
+	hashFree( @env.incfilehash )
+
+	hashEnd( )
+
+end sub
+
+'':::::
 function fbInit( byval ismain as integer ) as integer static
 
 	''
@@ -211,8 +207,6 @@ function fbInit( byval ismain as integer ) as integer static
 	redim infileTb( 0 to FB_MAXINCRECLEVEL-1 )
 
 	redim incpathTB( 0 to FB_MAXINCPATHS-1 )
-
-	redim incfileTB( 0 to FB_INITINCFILES-1 )
 
 	''
 	hSetCtx( )
@@ -232,12 +226,43 @@ function fbInit( byval ismain as integer ) as integer static
 
 	emitInit( )
 
+	inctbInit( )
+
 	parserAsmInit( )
 
 	''
 	function = TRUE
 
 end function
+
+'':::::
+sub fbEnd
+
+	''
+	erase incpathTB
+
+	erase infileTb
+
+	''
+	parserAsmEnd( )
+
+	incTbEnd( )
+
+	emitEnd( )
+
+	rtlEnd( )
+
+	irEnd( )
+
+	astEnd( )
+
+	errEnd( )
+
+	hlpEnd( )
+
+	symbEnd( )
+
+end sub
 
 '':::::
 sub fbSetDefaultOptions( )
@@ -420,35 +445,6 @@ function fbGetModuleEntry( ) as string static
 end function
 
 '':::::
-sub fbEnd
-
-	''
-	erase incpathTB
-
-	erase incfileTB
-
-	erase infileTb
-
-	''
-	parserAsmEnd( )
-
-	emitEnd( )
-
-	rtlEnd( )
-
-	irEnd( )
-
-	astEnd( )
-
-	errEnd( )
-
-	hlpEnd( )
-
-	symbEnd( )
-
-end sub
-
-'':::::
 function fbPreInclude( preincTb() as string, _
 				       byval preincfiles as integer _
 				     ) as integer
@@ -480,7 +476,7 @@ function fbCompile( byval infname as zstring ptr, _
 
 	''
 	env.inf.name	= *hRevertSlash( infname, FALSE )
-	env.inf.incfile	= INVALID
+	env.inf.incfile	= NULL
 	env.inf.ismain	= ismain
 
 	env.outf.name	= *outfname
@@ -622,7 +618,8 @@ function fbIncludeFile( byval filename as zstring ptr, _
 						byval isonce as integer ) as integer
 
     static as zstring * FB_MAXPATHLEN incfile
-    dim as integer i, fileidx
+    dim as zstring ptr fileidx
+    dim as integer i
 
 	function = FALSE
 
@@ -664,22 +661,21 @@ function fbIncludeFile( byval filename as zstring ptr, _
 
 		''
 		if( isonce ) then
-            ' We should respect the path
-        	if( hFindIncFile( incfile ) <> -1 ) then
+            '' we should respect the path
+        	if( hFindIncFile( incfile ) <> NULL ) then
         		return TRUE
         	end if
 		end if
 
-		''
-        ' We should respect the path here too
+        '' we should respect the path here too
 		fileidx = hAddIncFile( incfile )
 
 		''
 		infileTb(env.reclevel) = env.inf
     	env.reclevel += 1
 
-        ' We must remember the path - otherwise we'd be unable to
-        ' find header files in the same path ...
+        '' we must remember the path - otherwise we'd be unable to
+        '' find header files in the same path
 		env.inf.name 	= incfile
 		env.inf.incfile = fileidx
 

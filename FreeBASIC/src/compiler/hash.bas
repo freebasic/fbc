@@ -21,17 +21,19 @@
 '' chng: sep/2004 written [v1ctor]
 ''       jan/2005 updated to use real linked-lists [v1ctor]
 
-defint a-z
 option explicit
 option escape
 
 const NULL = 0
+const FALSE = 0
+const TRUE = not FALSE
 
 #include once "inc\hash.bi"
 #include once "inc\list.bi"
 #include once "inc\hlp.bi"
 
 type HASHCTX
+	refcnt		as integer
 	itemlist    as TLIST
 end type
 
@@ -47,20 +49,40 @@ declare sub 		hashDelItem	( byval list as HASHLIST ptr, _
 '':::::
 sub hashInit static
 
+	ctx.refcnt += 1
+	if( ctx.refcnt > 1 ) then
+		exit sub
+	end if
+
 	'' allocate the initial item list pool
 	listNew( @ctx.itemlist, HASH_INITITEMNODES, len( HASHITEM ), FALSE )
 
 end sub
 
 '':::::
+sub hashEnd static
+
+	ctx.refcnt -= 1
+	if( ctx.refcnt > 0 ) then
+		exit sub
+	end if
+
+	listFree( @ctx.itemlist )
+
+end sub
+
+'':::::
 sub hashNew( byval hash as THASH ptr, _
-			 byval nodes as integer ) static
+			 byval nodes as integer, _
+			 byval delstr as integer ) static
+
     dim as integer i
     dim as HASHLIST ptr list
 
 	'' allocate a fixed list of internal linked-lists
 	hash->list = callocate( nodes * len( HASHLIST ) )
 	hash->nodes = nodes
+	hash->delstr = delstr
 
 	'' initialize the list
 	list = hash->list
@@ -68,7 +90,7 @@ sub hashNew( byval hash as THASH ptr, _
 		list->head = NULL
 		list->tail = NULL
 		list += 1
-	next i
+	next
 
 end sub
 
@@ -80,18 +102,39 @@ sub hashFree( byval hash as THASH ptr ) static
 
     '' for each item on each list, deallocate it and the name string
     list = hash->list
-    for i = 0 to hash->nodes-1
-		item = list->head
-		do while( item <> NULL )
-			nxt = item->next
 
-			item->name = NULL
-			hashDelItem( list, item )
+	if( hash->delstr ) then
+    	for i = 0 to hash->nodes-1
+			item = list->head
+			do while( item <> NULL )
+				nxt = item->next
 
-			item = nxt
-		loop
-		list += 1
-	next i
+				deallocate( item->name )
+				item->name = NULL
+				hashDelItem( list, item )
+
+				item = nxt
+			loop
+
+			list += 1
+		next
+
+	else
+    	for i = 0 to hash->nodes-1
+			item = list->head
+			do while( item <> NULL )
+				nxt = item->next
+
+				item->name = NULL
+				hashDelItem( list, item )
+
+				item = nxt
+			loop
+
+			list += 1
+		next
+
+	end if
 
 	deallocate( hash->list )
 
@@ -115,7 +158,9 @@ end function
 ''::::::
 function hashLookupEx( byval hash as THASH ptr, _
 					   byval symbol as zstring ptr, _
-					   byval index as uinteger ) as any ptr static
+					   byval index as uinteger _
+					 ) as any ptr static
+
     dim as HASHITEM ptr item
     dim as HASHLIST ptr list
 
@@ -142,7 +187,8 @@ end function
 
 ''::::::
 function hashLookup( byval hash as THASH ptr, _
-					 byval symbol as zstring ptr ) as any ptr static
+					 byval symbol as zstring ptr _
+				   ) as any ptr static
 
     function = hashLookupEx( hash, symbol, hashHash( symbol ) )
 
@@ -174,6 +220,7 @@ end function
 ''::::::
 private sub hashDelItem( byval list as HASHLIST ptr, _
 						 byval item as HASHITEM ptr ) static
+
 	dim as HASHITEM ptr prv, nxt
 
 	''
@@ -205,11 +252,17 @@ end sub
 function hashAdd( byval hash as THASH ptr, _
 				  byval symbol as zstring ptr, _
 				  byval idx as any ptr, _
-			 	  index as uinteger ) as HASHITEM ptr static
+			 	  byref index as uinteger _
+			 	) as HASHITEM ptr static
+
     dim as HASHITEM ptr item
 
-    '' calc hash
-    index = hashHash( symbol ) mod hash->nodes
+    '' calc hash?
+    if( index = INVALID ) then
+    	index = hashHash( symbol ) mod hash->nodes
+    else
+    	index mod= hash->nodes
+    end if
 
     '' allocate a new node
     item = hashNewItem( @hash->list[index] )
@@ -228,7 +281,9 @@ end function
 ''::::::
 sub hashDel( byval hash as THASH ptr, _
 			 byval item as HASHITEM ptr, _
-			 byval index as uinteger ) static
+			 byval index as uinteger _
+		   ) static
+
     dim as HASHLIST ptr list
 
 	if( item = NULL ) then
@@ -239,8 +294,12 @@ sub hashDel( byval hash as THASH ptr, _
 	list = @hash->list[index]
 
 	''
+	if( hash->delstr ) then
+		deallocate( item->name )
+	end if
 	item->name = NULL
-	item->idx  = NULL
+
+	item->idx = NULL
 
 	hashDelItem( list, item )
 

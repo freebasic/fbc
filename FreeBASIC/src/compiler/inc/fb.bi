@@ -27,7 +27,6 @@ const FB_MAXARGRECLEVEL		= 8
 const FB_MAXPRAGMARECLEVEL	= 8
 
 const FB_MAXINCPATHS		= 16
-const FB_INITINCFILES		= 256
 
 const FB_MAXPROCARGS		= 64
 const FB_MAXARRAYDIMS		= 8
@@ -234,8 +233,6 @@ declare sub 		fbAddDefine		( byval dname as zstring ptr, _
 
 declare function 	fbIncludeFile	( byval filename as zstring ptr, _
 									  byval isonce as integer ) as integer
-
-declare function 	fbGetIncFile	( byval index as integer ) as zstring ptr
 
 declare function 	fbGetEntryPoint ( ) as string
 

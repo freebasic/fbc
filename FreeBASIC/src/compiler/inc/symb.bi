@@ -280,7 +280,7 @@ end type
 type FB_PROCDBG
 	iniline			as integer					'' sub|function
 	endline			as integer					'' end sub|function
-	incfile			as integer
+	incfile			as zstring ptr
 end type
 
 type FB_PROCEXT
@@ -644,7 +644,7 @@ declare sub 		symbSetArrayDims		( byval s as FBSYMBOL ptr, _
 					  						  dTB() as FBARRAYDIM )
 
 declare sub 		symbSetProcIncFile		( byval p as FBSYMBOL ptr, _
-											  byval incf as integer )
+											  byval incf as zstring ptr )
 
 declare sub 		symbFreeLocalDynVars	( byval proc as FBSYMBOL ptr )
 

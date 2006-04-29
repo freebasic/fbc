@@ -45,6 +45,7 @@ const FB_INITFWDREFNODES	= 500
 
 const FB_INITVARININODES	= 1000
 
+const FB_INITINCFILES		= 256
 
 ''
 const FB_POINTERSIZE		= 4
@@ -583,7 +584,7 @@ end enum
 type FBFILE
 	num				as integer
 	name			as zstring * FB_MAXPATHLEN+1
-	incfile			as integer
+	incfile			as zstring ptr
 	ismain			as integer
 	format			as FBFILE_FORMAT
 end type
@@ -621,7 +622,7 @@ type FBENV
 
 	'' include files
 	incpaths		as integer
-	incfiles 		as integer
+	incfilehash		as THASH
 
 	'' stmt recursion
 	forstmt			as FBCMPSTMT

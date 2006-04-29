@@ -40,12 +40,16 @@ end type
 type THASH
 	list		as HASHLIST ptr
 	nodes		as integer
+	delstr		as integer
 end type
 
 declare sub 		hashInit		( )
 
+declare sub 		hashEnd			( )
+
 declare sub 		hashNew			( byval hash as THASH ptr, _
-								  	  byval nodes as integer )
+								  	  byval nodes as integer, _
+								  	  byval delstr as integer = FALSE )
 
 declare sub 		hashFree		( byval hash as THASH ptr )
 
@@ -61,7 +65,7 @@ declare function 	hashLookupEx	( byval hash as THASH ptr, _
 declare function	hashAdd			( byval hash as THASH ptr, _
 									  byval symbol as zstring ptr, _
 									  byval idx as any ptr, _
-									  index as uinteger ) as HASHITEM ptr
+									  byref index as uinteger ) as HASHITEM ptr
 
 declare sub 		hashDel			( byval hash as THASH ptr, _
 									  byval item as HASHITEM ptr, _

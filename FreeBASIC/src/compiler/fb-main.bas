@@ -66,7 +66,7 @@ const fbdllreason = "__FB_DLLREASON__"
     ''
 	procnode = astProcBegin( proc, FALSE )
 
-    symbSetProcIncFile( proc, INVALID )
+    symbSetProcIncFile( proc, NULL )
 
 	''
    	astAdd( astNewLABEL( astGetProcInitlabel( procnode ) ) )
@@ -134,7 +134,7 @@ const fbargv = "__FB_ARGV__"
     ''
 	env.main.node = astProcBegin( env.main.proc, TRUE )
 
-    symbSetProcIncFile( env.main.proc, INVALID )
+    symbSetProcIncFile( env.main.proc, NULL )
 
 	env.main.argc = symbFindByNameAndClass( fbargc, FB_SYMBCLASS_VAR )
 	env.main.argv = symbFindByNameAndClass( fbargv, FB_SYMBCLASS_VAR )
@@ -167,7 +167,7 @@ private sub hModLevelBegin( )
     ''
 	env.main.node = astProcBegin( env.main.proc, TRUE )
 
-    symbSetProcIncFile( env.main.proc, INVALID )
+    symbSetProcIncFile( env.main.proc, NULL )
     symbSetIsCalled( env.main.proc )
 
    	astAdd( astNewLABEL( astGetProcInitlabel( env.main.node ) ) )

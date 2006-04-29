@@ -41,7 +41,7 @@ type EDBGCTX
 	firstline		as integer					'' first non-decl line
 	lastline		as integer					'' last  /
 
-	incfile			as integer
+	incfile			as zstring ptr
 end type
 
 declare sub 	 hDeclUDT				( byval sym as FBSYMBOL ptr )
@@ -216,7 +216,7 @@ sub edbgEmitHeader( byval filename as zstring ptr ) static
 	ctx.lnum 		= 0
 	ctx.isnewline 	= TRUE
 
-	ctx.incfile 	= INVALID
+	ctx.incfile 	= NULL
 
 	'' emit source file
     lname = *hMakeTmpStr( )
@@ -459,7 +459,7 @@ end sub
 '':::::
 sub edbgEmitProcHeader( byval proc as FBSYMBOL ptr ) static
     dim as string desc, procname
-    dim as integer incfile
+    dim as zstring ptr incfile
 
 	if( env.clopt.debug = FALSE ) then
 		exit sub
@@ -471,8 +471,8 @@ sub edbgEmitProcHeader( byval proc as FBSYMBOL ptr ) static
 
         edbgIncludeEnd( )
 
-		if( incfile <> INVALID ) then
-			edbgIncludeBegin( fbGetIncFile( incfile ), incfile )
+		if( incfile <> NULL ) then
+			edbgIncludeBegin( incfile, incfile )
 		end if
 
 		ctx.incfile = incfile
@@ -1026,7 +1026,7 @@ end sub
 
 '':::::
 sub edbgIncludeBegin ( byval filename as zstring ptr, _
-					   byval incfile as integer ) static
+					   byval incfile as zstring ptr ) static
 
 	dim as string lname
 
@@ -1055,13 +1055,13 @@ sub edbgIncludeEnd ( ) static
 		exit sub
 	end if
 
-	if( ctx.incfile = INVALID ) then
+	if( ctx.incfile = NULL ) then
 		exit sub
 	end if
 
 	hEmitSTABS( STAB_TYPE_EINCL, "", 0, 0 )
 
-	ctx.incfile = INVALID
+	ctx.incfile = NULL
 
 end sub
 

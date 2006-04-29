@@ -163,8 +163,9 @@ const EMIT_MAXKEYWORDS = 600
 
 '':::::
 private sub hInitKeywordsTB
-    dim t as integer, i as integer, idx as uinteger
-    dim keyword as string
+    dim as integer t, i
+
+	hashInit( )
 
 	hashNew( @emit.keyhash, EMIT_MAXKEYWORDS )
 
@@ -172,10 +173,10 @@ private sub hInitKeywordsTB
 	for t = 0 to EMIT_MAXRTABLES-1
 		for i = 0 to EMIT_MAXRNAMES-1
 			if( len( rnameTB(t,i) ) > 0 ) then
-				hashAdd( @emit.keyhash, @rnameTB(t,i), @idx, idx )
+				hashAdd( @emit.keyhash, @rnameTB(t,i), cast( any ptr, INVALID ), INVALID )
 			end if
-		next i
-	next t
+		next
+	next
 
 	'' add asm keywords
 	for i = 0 to EMIT_MAXKEYWORDS-1
@@ -183,7 +184,7 @@ private sub hInitKeywordsTB
 			exit for
 		end if
 
-		hashAdd( @emit.keyhash, keywordTb(i), @idx, idx )
+		hashAdd( @emit.keyhash, keywordTb(i), cast( any ptr, INVALID ), INVALID )
 	next
 
 	emit.keyinited = TRUE
@@ -195,6 +196,8 @@ private sub hEndKeywordsTB
 
 	if( emit.keyinited ) then
 		hashFree( @emit.keyhash )
+
+		hashEnd( )
 	end if
 
 	emit.keyinited = FALSE

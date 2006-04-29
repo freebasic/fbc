@@ -1255,7 +1255,7 @@ end function
 
 '':::::
 sub symbSetProcIncFile( byval p as FBSYMBOL ptr, _
-						byval incf as integer )
+						byval incf as zstring ptr )
 
 	if( p->proc.ext = NULL ) then
 		p->proc.ext = callocate( len( FB_PROCEXT ) )
