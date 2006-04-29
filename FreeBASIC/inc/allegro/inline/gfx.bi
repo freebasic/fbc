@@ -12,7 +12,7 @@
 #include once "allegro/debug.bi"
 
 #define ALLEGRO_IMPORT_GFX_ASM
-#include "asm.inl"
+#include "asm.bi"
 #undef ALLEGRO_IMPORT_GFX_ASM
 
 declare sub clear_to_color cdecl alias "clear_to_color" (byval bitmap as BITMAP ptr, byval color as integer)
