@@ -28,7 +28,7 @@
 
 
 /*:::::*/
-int fb_GfxReadXY( int col, int row, int colorflag )
+unsigned int fb_GfxReadXY( int col, int row, int colorflag )
 {
     GFX_CHAR_CELL *cell;
 

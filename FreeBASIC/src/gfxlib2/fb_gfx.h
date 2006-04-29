@@ -311,7 +311,7 @@ int fb_GfxOut(unsigned short port, unsigned char value);
 int fb_GfxIn(unsigned short port);
 int fb_GfxLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem, int addquestion, int addnewline );
 int fb_GfxLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars, int addquestion, int addnewline );
-int fb_GfxReadXY( int col, int row, int colorflag );
+unsigned int fb_GfxReadXY( int col, int row, int colorflag );
 void fb_GfxSleep( int msecs );
 int fb_GfxIsRedir( int is_input );
 
