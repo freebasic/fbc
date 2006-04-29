@@ -52,7 +52,7 @@ extern _AL_DLL os_multitasking alias "os_multitasking" as integer
 #define SYSTEM_NONE AL_ID((asc("N"),asc("O"),asc("N"),asc("E"))
 
 declare function install_allegro cdecl alias "install_allegro" (byval system_id as integer, byval errno_ptr as integer ptr, byval atexit_ptr as function cdecl(byval as sub cdecl()) as integer) as integer
-#define allegro_init() install_allegro(SYSTEM_AUTODETECT, @errno, @atexit)
+#define allegro_init() install_allegro(SYSTEM_AUTODETECT, 0, @atexit)
 declare sub allegro_exit cdecl alias "allegro_exit" ()
 declare sub get_executable_name cdecl alias "get_executable_name" (byval output as zstring ptr, byval size as integer)
 declare sub allegro_message cdecl alias "allegro_message" (byval msg as zstring ptr, ...)

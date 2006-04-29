@@ -13,10 +13,10 @@
 ''#include once "crt/unistd.bi"
 
 #define ALLEGRO_PLATFORM_STR "Unix"
-#libpath "/usr/local/lib"
-#libpath "/usr/X11R6/lib"
-#inclib "alleg-4.0.3"
-#inclib "alleg_unsharable"
+#inclib "alleg"
+#inclib "X11"
+#inclib "Xext"
+#inclib "Xpm"
 
 #ifndef __FB_BIGENDIAN__
 #define ALLEGRO_I386
