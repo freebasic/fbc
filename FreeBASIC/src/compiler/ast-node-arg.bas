@@ -807,6 +807,10 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 		end if
 
 		p = astNewCONV( INVALID, adtype, symbGetSubtype( arg ), p )
+		if( p = NULL ) then
+			hParamError( f, FB_ERRMSG_INVALIDDATATYPES )
+			exit function
+		end if
 		n->dtype   = adtype
 		n->subtype = symbGetSubtype( arg )
 		n->l       = p

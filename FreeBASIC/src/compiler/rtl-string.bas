@@ -756,12 +756,27 @@ data @"hex","fb_HEX_i", _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
+'' fb_HEX_i ( byval number as any ptr ) as string
+data @"hex","fb_HEX_i", _
+	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 1, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
+
 '' fb_HEXEx_i ( byval number as integer, byval digits as integer ) as string
 data @"hex","fb_HEXEx_i", _
 	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
 	 2, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
+
+'' fb_HEXEx_i ( byval number as any ptr, byval digits as integer ) as string
+data @"hex","fb_HEXEx_i", _
+	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 2, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_HEX_l ( byval number as longint ) as string
@@ -800,12 +815,27 @@ data @"whex","fb_WstrHex_i", _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
+'' fb_WstrHex_i ( byval number as any ptr ) as wstring
+data @"whex","fb_WstrHex_i", _
+	 FB_DATATYPE_WCHAR,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 1, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
+
 '' fb_WstrHexEx_i ( byval number as integer, byval digits as integer ) as wstring
 data @"whex","fb_WstrHexEx_i", _
 	 FB_DATATYPE_WCHAR,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
 	 2, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
+
+'' fb_WstrHexEx_i ( byval number as any ptr, byval digits as integer ) as wstring
+data @"whex","fb_WstrHexEx_i", _
+	 FB_DATATYPE_WCHAR,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 2, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_WstrHex_l ( byval number as longint ) as wstring
@@ -860,12 +890,27 @@ data @"oct","fb_OCT_i", _
 	 1, _
 	 FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE
 
+'' fb_OCT_i ( byval number as any ptr ) as string
+data @"oct","fb_OCT_i", _
+	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 1, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
+
 '' fb_OCTEx_i ( byval number as integer, byval digits as integer ) as string
 data @"oct","fb_OCTEx_i", _
 	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
 	 2, _
 	 FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
+
+'' fb_OCTEx_i ( byval number as any ptr, byval digits as integer ) as string
+data @"oct","fb_OCTEx_i", _
+	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 2, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_OCT_l ( byval number as longint ) as string
@@ -920,6 +965,13 @@ data @"woct","fb_WstrOct_i", _
 	 1, _
 	 FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE
 
+'' fb_WstrOct_i ( byval number as any ptr ) as wstring
+data @"woct","fb_WstrOct_i", _
+	 FB_DATATYPE_WCHAR,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 1, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
+
 '' fb_WstrOctEx_i ( byval number as integer, byval digits as integer ) as wstring
 data @"woct","fb_WstrOctEx_i", _
 	 FB_DATATYPE_WCHAR,FB_FUNCMODE_STDCALL, _
@@ -927,6 +979,14 @@ data @"woct","fb_WstrOctEx_i", _
 	 2, _
 	 FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
+
+'' fb_WstrOctEx_i ( byval number as any ptr, byval digits as integer ) as wstring
+data @"woct","fb_WstrOctEx_i", _
+	 FB_DATATYPE_WCHAR,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 2, _
+	 FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_WstrOct_l ( byval number as longint ) as wstring
 data @"woct","fb_WstrOct_l", _
@@ -964,6 +1024,13 @@ data @"bin","fb_BIN_i", _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
+'' fb_BIN_i ( byval number as any ptr ) as string
+data @"bin","fb_BIN_i", _
+	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 1, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
+
 '' fb_BINEx_i ( byval number as integer, byval digits as integer ) as string
 data @"bin","fb_BINEx_i", _
 	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
@@ -971,6 +1038,14 @@ data @"bin","fb_BINEx_i", _
 	 2, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
+
+'' fb_BINEx_i ( byval number as any ptr, byval digits as integer ) as string
+data @"bin","fb_BINEx_i", _
+	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 2, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_BIN_l ( byval number as longint ) as string
 data @"bin","fb_BIN_l", _
@@ -1008,6 +1083,13 @@ data @"wbin","fb_WstrBin_i", _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
+'' fb_WstrBin_i ( byval number as any ptr ) as wstring
+data @"wbin","fb_WstrBin_i", _
+	 FB_DATATYPE_WCHAR,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 1, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
+
 '' fb_WstrBinEx_i ( byval number as integer, byval digits as integer ) as wstring
 data @"wbin","fb_WstrBinEx_i", _
 	 FB_DATATYPE_WCHAR,FB_FUNCMODE_STDCALL, _
@@ -1015,6 +1097,14 @@ data @"wbin","fb_WstrBinEx_i", _
 	 2, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
+
+'' fb_WstrBinEx_i ( byval number as any ptr, byval digits as integer ) as wstring
+data @"wbin","fb_WstrBinEx_i", _
+	 FB_DATATYPE_WCHAR,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, TRUE, _
+	 2, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_WstrBin_l ( byval number as longint ) as wstring
 data @"wbin","fb_WstrBin_l", _
@@ -2124,11 +2214,19 @@ function rtlStrToVal( byval expr as ASTNODE ptr, _
 	case FB_DATATYPE_ULONGINT
 		f = PROCLOOKUP( STR2ULNG )
 
-	case else
+	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		f = PROCLOOKUP( STR2DBL )
+
+	case else
+		if( to_dtype >= FB_DATATYPE_POINTER ) then
+			f = PROCLOOKUP( STR2UINT )
+		'' UDT's or anything else..
+		else
+			exit function
+		end if
 	end select
 
-	''
+	'' resolve zstring or wstring
 	exprTB(0) = expr
 	modeTB(0) = INVALID
 	f = symbFindClosestOvlProc( f, 1, exprTB(), modeTB() )

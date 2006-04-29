@@ -808,21 +808,20 @@ function symbFindOverloadProc( byval parent as FBSYMBOL ptr, _
 
 end function
 
-'' enough to an impossible-to-reach level of indirection
-const FB_OVLPROC_FULLMATCH = 1073741824 \ FB_MAXPROCARGS
-const FB_OVLPROC_HALFMATCH = FB_OVLPROC_FULLMATCH \ 2
+const FB_OVLPROC_HALFMATCH = FB_DATATYPES
+const FB_OVLPROC_FULLMATCH = FB_OVLPROC_HALFMATCH * 2
 
 '':::::
 private function hCheckOvlParam( byval param as FBSYMBOL ptr, _
-	  						     byval pexpr as ASTNODE ptr, _
-							     byval pmode as integer _
+	  						     byval arg_expr as ASTNODE ptr, _
+							     byval arg_mode as integer _
 							   ) as integer static
 
-	dim as integer pdtype, pdclass, adtype
-	dim as FBSYMBOL ptr s, psubtype
+	dim as integer adtype, adclass, pdtype
+	dim as FBSYMBOL ptr s, asubtype
 
 	'' arg not passed?
-	if( pexpr = NULL ) then
+	if( arg_expr = NULL ) then
 		'' but param isn't optional?
 		if( symbGetParamOptional( param ) = FALSE ) then
 			return 0
@@ -831,42 +830,47 @@ private function hCheckOvlParam( byval param as FBSYMBOL ptr, _
 		return FB_OVLPROC_FULLMATCH
     end if
 
-	adtype = symbGetType( param )
+	pdtype = symbGetType( param )
 
-	pdtype = astGetDataType( pexpr )
-	psubtype = astGetSubType( pexpr )
+	adtype = astGetDataType( arg_expr )
+	asubtype = astGetSubType( arg_expr )
 
-	'' by descriptor arg?
+	'' by descriptor param?
 	if( symbGetParamMode( param ) = FB_PARAMMODE_BYDESC ) then
-		'' but param isn't?
-		if( pmode <> FB_PARAMMODE_BYDESC ) then
+		'' but arg isn't?
+		if( arg_mode <> FB_PARAMMODE_BYDESC ) then
 			return 0
 		end if
 
 		'' not a full match?
-        if( adtype <> pdtype ) then
+        if( pdtype <> adtype ) then
         	return 0
         end if
 
-        if( symbGetSubType( param ) <> psubtype ) then
+        if( symbGetSubType( param ) <> asubtype ) then
         	return 0
         end if
 
 		return FB_OVLPROC_FULLMATCH
 
-	'' by descriptor param?
-	elseif( pmode = FB_PARAMMODE_BYDESC ) then
+	'' by descriptor arg?
+	elseif( arg_mode = FB_PARAMMODE_BYDESC ) then
 		'' refuse
 		return 0
 	end if
 
 	'' same types?
-	if( adtype = pdtype ) then
+	if( pdtype = adtype ) then
 		'' check the subtype
-		if( symbGetSubType( param ) <> psubtype ) then
+		if( symbGetSubType( param ) <> asubtype ) then
+
+			'' pointer? subtypes can't be different
+			if( pdtype >= FB_DATATYPE_POINTER ) then
+				return 0
+			end if
 
 			'' check classes
-			select case symbGetDataClass( adtype )
+			select case symbGetDataClass( pdtype )
 			'' UDT? can't be different..
 			case FB_DATACLASS_UDT
 				return 0
@@ -880,21 +884,21 @@ private function hCheckOvlParam( byval param as FBSYMBOL ptr, _
 	end if
 
 	'' different types..
-	pdclass = symbGetDataClass( pdtype )
+	adclass = symbGetDataClass( adtype )
 
 	'' check classes
-	select case as const symbGetDataClass( adtype )
+	select case as const symbGetDataClass( pdtype )
 	'' integer?
 	case FB_DATACLASS_INTEGER
 
-		select case as const pdclass
+		select case as const adclass
 		'' another integer..
 		case FB_DATACLASS_INTEGER
 
 			'' handle special cases..
-			select case as const pdtype
+			select case as const adtype
 			case FB_DATATYPE_CHAR
-				select case adtype
+				select case pdtype
 				case FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
 					return FB_OVLPROC_FULLMATCH
 				case FB_DATATYPE_POINTER + FB_DATATYPE_WCHAR
@@ -902,7 +906,7 @@ private function hCheckOvlParam( byval param as FBSYMBOL ptr, _
 				end select
 
 			case FB_DATATYPE_WCHAR
-				select case adtype
+				select case pdtype
 				case FB_DATATYPE_POINTER + FB_DATATYPE_WCHAR
 					return FB_OVLPROC_FULLMATCH
 				case FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
@@ -910,38 +914,64 @@ private function hCheckOvlParam( byval param as FBSYMBOL ptr, _
 				end select
 
 			case FB_DATATYPE_BITFIELD, FB_DATATYPE_ENUM
-				pdtype = symbRemapType( pdtype, psubtype )
+				adtype = symbRemapType( adtype, asubtype )
 
 			end select
 
 			'' check pointers..
-			if( adtype >= FB_DATATYPE_POINTER ) then
-				'' not a pointer param?
-				if( pdtype < FB_DATATYPE_POINTER ) then
+			if( pdtype >= FB_DATATYPE_POINTER ) then
+				'' isn't arg a pointer too?
+				if( adtype < FB_DATATYPE_POINTER ) then
 					'' not a numeric constant?
-					if( astIsCONST( pexpr ) = FALSE ) then
+					if( astIsCONST( arg_expr ) = FALSE ) then
 						return 0
 					end if
 					'' not 0 (NULL)?
-					if( astGetValInt( pexpr ) <> 0 ) then
+					if( astGetValInt( arg_expr ) <> 0 ) then
 						return 0
 					end if
+
+					return FB_OVLPROC_FULLMATCH
 				end if
+
+				'' param isn't an any ptr?
+				if( pdtype <> FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) then
+					'' arg neither?
+					if( adtype <> FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) then
+						return 0
+					end if
+
+					'' not the same level of indirection?
+					if( (pdtype mod FB_DATATYPE_POINTER) > 1 ) then
+						return 0
+					end if
+
+					return FB_OVLPROC_FULLMATCH
+
+				else
+					'' as in g++, the arg indirection level shouldn't matter..
+					return FB_OVLPROC_FULLMATCH
+				end if
+
+			'' param not a pointer, but is arg?
+			elseif( adtype >= FB_DATATYPE_POINTER ) then
+				'' use an UINT instead or LONGINT will match if any..
+				adtype = FB_DATATYPE_UINT
 			end if
 
-			return FB_OVLPROC_HALFMATCH - abs( adtype - pdtype )
+			return FB_OVLPROC_HALFMATCH - abs( pdtype - adtype )
 
 		'' float? (ok due the auto-coercion, unless it's a pointer)
 		case FB_DATACLASS_FPOINT
-			if( adtype >= FB_DATATYPE_POINTER ) then
+			if( pdtype >= FB_DATATYPE_POINTER ) then
 				return 0
 			end if
 
-			return FB_OVLPROC_HALFMATCH - abs( adtype - pdtype )
+			return FB_OVLPROC_HALFMATCH - abs( pdtype - adtype )
 
 		'' string? only if it's a w|zstring ptr arg
 		case FB_DATACLASS_STRING
-			select case adtype
+			select case pdtype
 			case FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
 				return FB_OVLPROC_FULLMATCH
 			case FB_DATATYPE_POINTER + FB_DATATYPE_WCHAR
@@ -958,24 +988,24 @@ private function hCheckOvlParam( byval param as FBSYMBOL ptr, _
 	'' floating-point?
 	case FB_DATACLASS_FPOINT
 
-		select case as const pdclass
+		select case as const adclass
 		'' only accept if it's an integer (but pointers)
 		case FB_DATACLASS_INTEGER
-			if( pdtype >= FB_DATATYPE_POINTER ) then
+			if( adtype >= FB_DATATYPE_POINTER ) then
 				return 0
 			end if
 
 			'' remap to real type if it's a bitfield..
-			select case pdtype
+			select case adtype
 			case FB_DATATYPE_BITFIELD, FB_DATATYPE_ENUM
-				pdtype = symbRemapType( pdtype, psubtype )
+				adtype = symbRemapType( adtype, asubtype )
 			end select
 
-			return FB_OVLPROC_HALFMATCH - abs( adtype - pdtype )
+			return FB_OVLPROC_HALFMATCH - abs( pdtype - adtype )
 
 		'' or if another float..
 		case FB_DATACLASS_FPOINT
-			return FB_OVLPROC_HALFMATCH - abs( adtype - pdtype )
+			return FB_OVLPROC_HALFMATCH - abs( pdtype - adtype )
 
 		'' refuse anything else
 		case else
@@ -986,14 +1016,14 @@ private function hCheckOvlParam( byval param as FBSYMBOL ptr, _
 	'' string?
 	case FB_DATACLASS_STRING
 
-		select case pdclass
+		select case adclass
 		'' okay if it's a fixed-len string
 		case FB_DATACLASS_STRING
 			return FB_OVLPROC_FULLMATCH
 
 		'' integer only if it's a w|zstring
 		case FB_DATACLASS_INTEGER
-			select case pdtype
+			select case adtype
 			case FB_DATATYPE_CHAR
 				return FB_OVLPROC_FULLMATCH
 			case FB_DATATYPE_WCHAR
@@ -1011,14 +1041,14 @@ private function hCheckOvlParam( byval param as FBSYMBOL ptr, _
 	case FB_DATACLASS_UDT
 
 		'' not another udt?
-		if( pdclass <> FB_DATACLASS_UDT ) then
+		if( adclass <> FB_DATACLASS_UDT ) then
 			'' not a proc? (can be an UDT been returned in registers)
-			if( astGetClass( pexpr ) <> AST_NODECLASS_CALL ) then
+			if( astGetClass( arg_expr ) <> AST_NODECLASS_CALL ) then
 				return 0
 			end if
 
 			'' it's a proc, but was it originally returning an UDT?
-			s = astGetSymbol( pexpr )
+			s = astGetSymbol( arg_expr )
 			if( symbGetType( s ) <> FB_DATATYPE_USERDEF ) then
 				return 0
 			end if
@@ -1028,7 +1058,7 @@ private function hCheckOvlParam( byval param as FBSYMBOL ptr, _
 
 		'' udt..
 		else
-           	s = psubtype
+           	s = asubtype
 		end if
 
         '' can't be different
@@ -1046,15 +1076,14 @@ private function hCheckOvlParam( byval param as FBSYMBOL ptr, _
 
 end function
 
-
 '':::::
-function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
+function symbFindClosestOvlProc( byval prochead as FBSYMBOL ptr, _
 					   		     byval args as integer, _
 					   		     exprTB() as ASTNODE ptr, _
 					   		     modeTB() as integer _
 					   		   ) as FBSYMBOL ptr static
 
-	dim as FBSYMBOL ptr ovlproc, param
+	dim as FBSYMBOL ptr proc, ovlproc, param
 	dim as integer i, argmatches, matches, maxmatches, ambcnt
 
 	ovlproc = NULL
@@ -1062,6 +1091,7 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 	ambcnt = 0
 
 	'' for each proc..
+	proc = prochead
 	do while( proc <> NULL )
 
 		if( args <= symbGetProcParams( proc ) ) then
@@ -1114,7 +1144,9 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 
 			'' same? ambiguity..
 			elseif( matches = maxmatches ) then
-				ambcnt += 1
+				if( maxmatches > 0 ) then
+					ambcnt += 1
+				end if
 			end if
 
 		end if
@@ -1125,8 +1157,13 @@ function symbFindClosestOvlProc( byval proc as FBSYMBOL ptr, _
 
 	'' more than one possibility?
 	if( ambcnt > 0 ) then
+		hReportParamError( prochead, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
 		function = NULL
 	else
+		'' no matches?
+		if( ovlproc = NULL ) then
+			hReportParamError( prochead, 0, NULL, FB_ERRMSG_NOMATCHINGPROC )
+		end if
 		function = ovlproc
 	end if
 

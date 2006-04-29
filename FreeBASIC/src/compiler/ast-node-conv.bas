@@ -246,17 +246,37 @@ function astNewCONV( byval op as integer, _
 		exit function
 	end if
 
+    ldtype = l->dtype
+
     '' pointer typecasting?
     if( op = AST_OP_TOPOINTER ) then
-
 		'' assuming all type-checking was done already
     	astSetType( l, to_dtype, to_subtype )
 
     	return l
+
+    '' else, to pointer? only allow integers..
+    elseif( to_dtype >= FB_DATATYPE_POINTER ) then
+		select case as const ldtype
+		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
+		case else
+			if( ldtype < FB_DATATYPE_POINTER ) then
+				exit function
+			end if
+		end select
+
+    '' from pointer? only allow integers..
+    elseif( ldtype >= FB_DATATYPE_POINTER ) then
+		select case as const to_dtype
+		case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT, FB_DATATYPE_ENUM
+		case else
+			if( to_dtype < FB_DATATYPE_POINTER ) then
+				exit function
+			end if
+		end select
     end if
 
     ''
-    ldtype = l->dtype
     ldclass = symbGetDataClass( ldtype )
 
     '' string?

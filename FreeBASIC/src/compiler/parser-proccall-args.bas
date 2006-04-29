@@ -313,13 +313,11 @@ private function hOvlProcArgList( byval proc as FBSYMBOL ptr, _
 
 	'' try finding the closest overloaded proc
 	ovlproc = symbFindClosestOvlProc( proc, args, exprTB(), modeTB() )
-
 	if( ovlproc = NULL ) then
-		hReportParamError( proc, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
 		exit function
-	else
-		proc = ovlproc
 	end if
+
+	proc = ovlproc
 
 	procexpr = astNewCALL( proc, ptrexpr )
 

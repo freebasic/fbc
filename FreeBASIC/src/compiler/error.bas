@@ -150,6 +150,7 @@ end type
 		@"Illegal inside a SCOPE block", _
 		@"Cannot pass an UDT result by reference", _
 		@"Ambiguous call to overloaded function", _
+		@"No matching overloaded function", _
 		@"Division by zero", _
 		@"Cannot pop stack, underflow", _
 		@"Cannot initialize UDT's containing dynamic string fields", _
