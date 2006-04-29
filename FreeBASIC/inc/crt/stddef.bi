@@ -9,21 +9,18 @@
 #ifndef __crt_stddef_bi__
 #define __crt_stddef_bi__
 
-#ifndef size_t
+type ptrdiff_t as integer
 type size_t as uinteger
-#endif
 
-#ifndef wchar_t
-# ifdef __FB_LINUX__
-type wchar_t as uinteger
-# else
+#if defined(__FB_WIN32__)
 type wchar_t as ushort
-# endif
+#elseif defined(__FB_DOS__)
+type wchar_t as ushort
+#elseif defined(__FB_LINUX__)
+type wchar_t as ushort
 #endif
 
-#ifndef wint_t
 type wint_t as wchar_t
-#endif
 
 #ifndef NULL
 #define NULL 0

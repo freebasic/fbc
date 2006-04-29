@@ -11,18 +11,14 @@
 
 #include once "crt/stddef.bi"
 
-type time_t as integer
-
-#ifdef __FB_WIN32__
-type _off_t as integer
-type _dev_t as uinteger
-type _ino_t as short
-type _pid_t as integer
-type _mode_t as ushort
-type _sigset_t as integer
-type _ssize_t as integer
+#if defined(__FB_WIN32__)
+#include once "crt/sys/win32/types.bi"
+#elseif defined(__FB_DOS__)
+#include once "crt/sys/dos/types.bi"
+#elseif defined(__FB_LINUX__)
+#include once "crt/sys/linux/types.bi"
 #else
-'' !!!WRITEME!!!
+#error Platform unsupported
 #endif
 
 #endif
