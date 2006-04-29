@@ -1,51 +1,44 @@
-'         ______   ___    ___
-'        /\  _  \ /\_ \  /\_ \
-'        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
-'         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
-'          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
-'           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
-'            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
-'                                           /\____/
-'                                           \_/__/
-'
-'      Text output routines.
-'
-'      By Shawn Hargreaves.
-'
-'      See readme.txt for copyright information.
-'
+''
+''
+'' allegro\text -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __allegro_text_bi__
+#define __allegro_text_bi__
 
+#include once "allegro/base.bi"
 
-#ifndef ALLEGRO_TEXT_H
-#define ALLEGRO_TEXT_H
-
-#include "allegro/base.bi"
-
-type FONT_GLYPH					' a single monochrome font character
+type FONT_GLYPH
 	w as short
 	h as short
-	dat as ubyte ptr
+	dat(0 to 0) as ubyte
 end type
 
-Type FONT
-	data As UByte Ptr
-	height As Integer
-	vtable As Any Ptr
-End Type
+type FONT_VTABLE_ as FONT_VTABLE
 
-Extern Import font Alias "font" As FONT Ptr
-Extern Import allegro_404_char Alias "allegro_404_char" As Integer
-Declare Function text_mode CDecl Alias "text_mode" (ByVal mode As Integer) As Integer
-Declare Sub textout CDecl Alias "textout" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, byval s as zstring ptr, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer)
-Declare Sub textout_centre CDecl Alias "textout_centre" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, byval s as zstring ptr, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer)
-Declare Sub textout_right CDecl Alias "textout_right" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, byval s as zstring ptr, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer)
-Declare Sub textout_justify CDecl Alias "textout_justify" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, byval s as zstring ptr, ByVal x1 As Integer, ByVal x2 As Integer, ByVal y As Integer, ByVal diff As Integer, ByVal c As Integer)
-Declare Sub textprintf CDecl Alias "textprintf" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer, byval s as zstring ptr, ...)
-Declare Sub textprintf_centre CDecl Alias "textprintf_centre" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, ByVal x As Integer, ByVal y As Integer, ByVal _color As Integer, byval format as zstring ptr, ...)
-Declare Sub textprintf_right CDecl Alias "textprintf_right" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, ByVal x As Integer, ByVal y As Integer, ByVal _color As Integer, byval format as zstring ptr, ...)
-Declare Sub textprintf_justify CDecl Alias "textprintf_justify" (ByVal bmp As BITMAP Ptr, ByVal f As FONT Ptr, Byval x1 As Integer, ByVal x2 As Integer, ByVal y As Integer, ByVal diff As Integer, ByVal _color As Integer, byval format as zstring ptr, ...)
-Declare Function text_length CDecl Alias "text_length" (ByVal f As FONT Ptr, byval s as zstring ptr) As Integer
-Declare Function text_height CDecl Alias "text_height" (ByVal f As FONT Ptr) As Integer
-Declare Sub destroy_font CDecl Alias "destroy_font" (ByVal f As FONT Ptr)
+type FONT
+	data as any ptr
+	height as integer
+	vtable as FONT_VTABLE_ ptr
+end type
+
+extern _AL_DLL font alias "font" as FONT ptr
+extern _AL_DLL allegro_404_char alias "allegro_404_char" as integer
+
+declare function text_mode cdecl alias "text_mode" (byval mode as integer) as integer
+declare sub textout cdecl alias "textout" (byval bmp as BITMAP ptr, byval f as FONT ptr, byval str as zstring ptr, byval x as integer, byval y as integer, byval color as integer)
+declare sub textout_centre cdecl alias "textout_centre" (byval bmp as BITMAP ptr, byval f as FONT ptr, byval str as zstring ptr, byval x as integer, byval y as integer, byval color as integer)
+declare sub textout_right cdecl alias "textout_right" (byval bmp as BITMAP ptr, byval f as FONT ptr, byval str as zstring ptr, byval x as integer, byval y as integer, byval color as integer)
+declare sub textout_justify cdecl alias "textout_justify" (byval bmp as BITMAP ptr, byval f as FONT ptr, byval str as zstring ptr, byval x1 as integer, byval x2 as integer, byval y as integer, byval diff as integer, byval color as integer)
+declare sub textprintf cdecl alias "textprintf" (byval bmp as BITMAP ptr, byval f as FONT ptr, byval x as integer, byval y as integer, byval color as integer, byval format as zstring ptr, ...)
+declare sub textprintf_centre cdecl alias "textprintf_centre" (byval bmp as BITMAP ptr, byval f as FONT ptr, byval x as integer, byval y as integer, byval color as integer, byval format as zstring ptr, ...)
+declare sub textprintf_right cdecl alias "textprintf_right" (byval bmp as BITMAP ptr, byval f as FONT ptr, byval x as integer, byval y as integer, byval color as integer, byval format as zstring ptr, ...)
+declare sub textprintf_justify cdecl alias "textprintf_justify" (byval bmp as BITMAP ptr, byval f as FONT ptr, byval x1 as integer, byval x2 as integer, byval y as integer, byval diff as integer, byval color as integer, byval format as zstring ptr, ...)
+declare function text_length cdecl alias "text_length" (byval f as FONT ptr, byval str as zstring ptr) as integer
+declare function text_height cdecl alias "text_height" (byval f as FONT ptr) as integer
+declare sub destroy_font cdecl alias "destroy_font" (byval f as FONT ptr)
 
 #endif

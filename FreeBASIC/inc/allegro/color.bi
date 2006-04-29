@@ -1,142 +1,119 @@
-'         ______   ___    ___
-'        /\  _  \ /\_ \  /\_ \
-'        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
-'         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
-'          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
-'           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
-'            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
-'                                           /\____/
-'                                           \_/__/
-'
-'      Color manipulation routines.
-'
-'      By Shawn Hargreaves.
-'
-'      See readme.txt for copyright information.
-'
+''
+''
+'' allegro\color -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __allegro_color_bi__
+#define __allegro_color_bi__
 
-#ifndef ALLEGRO_COLOR_H
-#define ALLEGRO_COLOR_H
+#include once "allegro/base.bi"
+#include once "allegro/palette.bi"
 
-#include "allegro/base.bi"
-#include "allegro/palette.bi"
+extern _AL_DLL black_palette(0 to PAL_SIZE-1) alias "black_palette" as PALETTE
+extern _AL_DLL desktop_palette(0 to PAL_SIZE-1) alias "desktop_palette" as PALETTE
+extern _AL_DLL default_palette(0 to PAL_SIZE-1) alias "default_palette" as PALETTE
 
-Extern Import black_palette Alias "black_palette" As PALETTE
-Extern Import desktop_palette Alias "desktop_palette" As PALETTE
-Extern Import default_palette Alias "default_palette" As PALETTE
+type RGB_MAP
+	data(0 to 32-1, 0 to 32-1, 0 to 32-1) as ubyte
+end type
 
-Type RGB_MAP
-	data(31, 31, 31) As UByte
-End Type
+type COLOR_MAP
+	data(0 to PAL_SIZE-1, 0 to PAL_SIZE-1) as ubyte
+end type
 
-Type COLOR_MAP
-	data(PAL_SIZE - 1, PAL_SIZE - 1) As UByte
-End Type
+extern _AL_DLL rgb_map alias "rgb_map" as RGB_MAP ptr
+extern _AL_DLL color_map alias "color_map" as COLOR_MAP ptr
+extern _AL_DLL _current_palette(0 to PAL_SIZE-1) alias "_current_palette" as PALETTE
+extern _AL_DLL _rgb_r_shift_15 alias "_rgb_r_shift_15" as integer
+extern _AL_DLL _rgb_g_shift_15 alias "_rgb_g_shift_15" as integer
+extern _AL_DLL _rgb_b_shift_15 alias "_rgb_b_shift_15" as integer
+extern _AL_DLL _rgb_r_shift_16 alias "_rgb_r_shift_16" as integer
+extern _AL_DLL _rgb_g_shift_16 alias "_rgb_g_shift_16" as integer
+extern _AL_DLL _rgb_b_shift_16 alias "_rgb_b_shift_16" as integer
+extern _AL_DLL _rgb_r_shift_24 alias "_rgb_r_shift_24" as integer
+extern _AL_DLL _rgb_g_shift_24 alias "_rgb_g_shift_24" as integer
+extern _AL_DLL _rgb_b_shift_24 alias "_rgb_b_shift_24" as integer
+extern _AL_DLL _rgb_r_shift_32 alias "_rgb_r_shift_32" as integer
+extern _AL_DLL _rgb_g_shift_32 alias "_rgb_g_shift_32" as integer
+extern _AL_DLL _rgb_b_shift_32 alias "_rgb_b_shift_32" as integer
+extern _AL_DLL _rgb_a_shift_32 alias "_rgb_a_shift_32" as integer
+extern _AL_DLL ___rgb_scale_5 alias "_rgb_scale_5" as integer
+#define _rgb_scale_5(x) *(@___rgb_scale_5 + (x))
+extern _AL_DLL ___rgb_scale_6 alias "_rgb_scale_6" as integer
+#define _rgb_scale_6(x) *(@___rgb_scale_6 + (x))
 
-Extern Import rgb_map Alias "rgb_map" As RGB_MAP Ptr
-Extern Import color_map Alias "color_map" As COLOR_MAP Ptr
+#define MASK_COLOR_8 0
+#define MASK_COLOR_15 &h7C1F
+#define MASK_COLOR_16 &hF81F
+#define MASK_COLOR_24 &hFF00FF
+#define MASK_COLOR_32 &hFF00FF
 
-Extern Import _current_palette Alias "_current_palette" As PALETTE
+extern _AL_DLL palette_color alias "palette_color" as integer ptr
 
-extern import _rgb_r_shift_15 alias "_rgb_r_shift_15" as integer
-extern import _rgb_g_shift_15 alias "_rgb_g_shift_15" as integer
-extern import _rgb_b_shift_15 alias "_rgb_b_shift_15" as integer
-extern import _rgb_r_shift_16 alias "_rgb_r_shift_16" as integer
-extern import _rgb_g_shift_16 alias "_rgb_g_shift_16" as integer
-extern import _rgb_b_shift_16 alias "_rgb_b_shift_16" as integer
-extern import _rgb_r_shift_24 alias "_rgb_r_shift_24" as integer
-extern import _rgb_g_shift_24 alias "_rgb_g_shift_24" as integer
-extern import _rgb_b_shift_24 alias "_rgb_b_shift_24" as integer
-extern import _rgb_r_shift_32 alias "_rgb_r_shift_32" as integer
-extern import _rgb_g_shift_32 alias "_rgb_g_shift_32" as integer
-extern import _rgb_b_shift_32 alias "_rgb_b_shift_32" as integer
-extern import _rgb_a_shift_32 alias "_rgb_a_shift_32" as integer
+declare sub set_color cdecl alias "set_color" (byval index as integer, byval p as RGB ptr)
+declare sub set_palette cdecl alias "set_palette" (byval p as PALETTE ptr)
+declare sub set_palette_range cdecl alias "set_palette_range" (byval p as PALETTE ptr, byval from as integer, byval to as integer, byval retracesync as integer)
+declare sub get_color cdecl alias "get_color" (byval index as integer, byval p as RGB ptr)
+declare sub get_palette cdecl alias "get_palette" (byval p as PALETTE ptr)
+declare sub get_palette_range cdecl alias "get_palette_range" (byval p as PALETTE ptr, byval from as integer, byval to as integer)
+declare sub fade_interpolate cdecl alias "fade_interpolate" (byval source as PALETTE ptr, byval dest as PALETTE ptr, byval output as PALETTE ptr, byval pos as integer, byval from as integer, byval to as integer)
+declare sub fade_from_range cdecl alias "fade_from_range" (byval source as PALETTE ptr, byval dest as PALETTE ptr, byval speed as integer, byval from as integer, byval to as integer)
+declare sub fade_in_range cdecl alias "fade_in_range" (byval p as PALETTE ptr, byval speed as integer, byval from as integer, byval to as integer)
+declare sub fade_out_range cdecl alias "fade_out_range" (byval speed as integer, byval from as integer, byval to as integer)
+declare sub fade_from cdecl alias "fade_from" (byval source as PALETTE ptr, byval dest as PALETTE ptr, byval speed as integer)
+declare sub fade_in cdecl alias "fade_in" (byval p as PALETTE ptr, byval speed as integer)
+declare sub fade_out cdecl alias "fade_out" (byval speed as integer)
+declare sub select_palette cdecl alias "select_palette" (byval p as PALETTE ptr)
+declare sub unselect_palette cdecl alias "unselect_palette" ()
+declare sub generate_332_palette cdecl alias "generate_332_palette" (byval pal as PALETTE ptr)
+declare function generate_optimized_palette cdecl alias "generate_optimized_palette" (byval image as BITMAP ptr, byval pal as PALETTE ptr, byval rsvdcols as zstring ptr) as integer
+declare sub create_rgb_table cdecl alias "create_rgb_table" (byval table as RGB_MAP ptr, byval pal as PALETTE ptr, byval callback as sub cdecl(byval as integer))
+declare sub create_light_table cdecl alias "create_light_table" (byval table as COLOR_MAP ptr, byval pal as PALETTE ptr, byval r as integer, byval g as integer, byval b as integer, byval callback as sub cdecl(byval as integer))
+declare sub create_trans_table cdecl alias "create_trans_table" (byval table as COLOR_MAP ptr, byval pal as PALETTE ptr, byval r as integer, byval g as integer, byval b as integer, byval callback as sub cdecl(byval as integer))
+declare sub create_color_table cdecl alias "create_color_table" (byval table as COLOR_MAP ptr, byval pal as PALETTE ptr, byval blend as sub cdecl(byval as PALETTE ptr, byval as integer, byval as integer, byval as RGB ptr), byval callback as sub cdecl(byval as integer))
+declare sub create_blender_table cdecl alias "create_blender_table" (byval table as COLOR_MAP ptr, byval pal as PALETTE ptr, byval callback as sub cdecl(byval as integer))
 
-extern import _rgb_scale_5 alias "_rgb_scale_5" as integer
-extern import _rgb_scale_6 alias "_rgb_scale_6" as integer
+type BLENDER_FUNC as function cdecl(byval as uinteger, byval as uinteger, byval as uinteger) as uinteger
 
-#define MASK_COLOR_8	0
-#define MASK_COLOR_15	&H7C1F
-#define MASK_COLOR_16	&HF81F
-#define MASK_COLOR_24	&HFF00FF
-#define MASK_COLOR_32	&HFF00FF
+declare sub set_blender_mode cdecl alias "set_blender_mode" (byval b15 as BLENDER_FUNC, byval b16 as BLENDER_FUNC, byval b24 as BLENDER_FUNC, byval r as integer, byval g as integer, byval b as integer, byval a as integer)
+declare sub set_blender_mode_ex cdecl alias "set_blender_mode_ex" (byval b15 as BLENDER_FUNC, byval b16 as BLENDER_FUNC, byval b24 as BLENDER_FUNC, byval b32 as BLENDER_FUNC, byval b15x as BLENDER_FUNC, byval b16x as BLENDER_FUNC, byval b24x as BLENDER_FUNC, byval r as integer, byval g as integer, byval b as integer, byval a as integer)
+declare sub set_alpha_blender cdecl alias "set_alpha_blender" ()
+declare sub set_write_alpha_blender cdecl alias "set_write_alpha_blender" ()
+declare sub set_trans_blender cdecl alias "set_trans_blender" (byval r as integer, byval g as integer, byval b as integer, byval a as integer)
+declare sub set_add_blender cdecl alias "set_add_blender" (byval r as integer, byval g as integer, byval b as integer, byval a as integer)
+declare sub set_burn_blender cdecl alias "set_burn_blender" (byval r as integer, byval g as integer, byval b as integer, byval a as integer)
+declare sub set_color_blender cdecl alias "set_color_blender" (byval r as integer, byval g as integer, byval b as integer, byval a as integer)
+declare sub set_difference_blender cdecl alias "set_difference_blender" (byval r as integer, byval g as integer, byval b as integer, byval a as integer)
+declare sub set_dissolve_blender cdecl alias "set_dissolve_blender" (byval r as integer, byval g as integer, byval b as integer, byval a as integer)
+declare sub set_dodge_blender cdecl alias "set_dodge_blender" (byval r as integer, byval g as integer, byval b as integer, byval a as integer)
+declare sub set_hue_blender cdecl alias "set_hue_blender" (byval r as integer, byval g as integer, byval b as integer, byval a as integer)
+declare sub set_invert_blender cdecl alias "set_invert_blender" (byval r as integer, byval g as integer, byval b as integer, byval a as integer)
+declare sub set_luminance_blender cdecl alias "set_luminance_blender" (byval r as integer, byval g as integer, byval b as integer, byval a as integer)
+declare sub set_multiply_blender cdecl alias "set_multiply_blender" (byval r as integer, byval g as integer, byval b as integer, byval a as integer)
+declare sub set_saturation_blender cdecl alias "set_saturation_blender" (byval r as integer, byval g as integer, byval b as integer, byval a as integer)
+declare sub set_screen_blender cdecl alias "set_screen_blender" (byval r as integer, byval g as integer, byval b as integer, byval a as integer)
+declare sub hsv_to_rgb cdecl alias "hsv_to_rgb" (byval h as single, byval s as single, byval v as single, byval r as integer ptr, byval g as integer ptr, byval b as integer ptr)
+declare sub rgb_to_hsv cdecl alias "rgb_to_hsv" (byval r as integer, byval g as integer, byval b as integer, byval h as single ptr, byval s as single ptr, byval v as single ptr)
+declare function bestfit_color cdecl alias "bestfit_color" (byval pal as PALETTE ptr, byval r as integer, byval g as integer, byval b as integer) as integer
+declare function makecol cdecl alias "makecol" (byval r as integer, byval g as integer, byval b as integer) as integer
+declare function makecol8 cdecl alias "makecol8" (byval r as integer, byval g as integer, byval b as integer) as integer
+declare function makecol_depth cdecl alias "makecol_depth" (byval color_depth as integer, byval r as integer, byval g as integer, byval b as integer) as integer
+declare function makeacol cdecl alias "makeacol" (byval r as integer, byval g as integer, byval b as integer, byval a as integer) as integer
+declare function makeacol_depth cdecl alias "makeacol_depth" (byval color_depth as integer, byval r as integer, byval g as integer, byval b as integer, byval a as integer) as integer
+declare function makecol15_dither cdecl alias "makecol15_dither" (byval r as integer, byval g as integer, byval b as integer, byval x as integer, byval y as integer) as integer
+declare function makecol16_dither cdecl alias "makecol16_dither" (byval r as integer, byval g as integer, byval b as integer, byval x as integer, byval y as integer) as integer
+declare function getr cdecl alias "getr" (byval c as integer) as integer
+declare function getg cdecl alias "getg" (byval c as integer) as integer
+declare function getb cdecl alias "getb" (byval c as integer) as integer
+declare function geta cdecl alias "geta" (byval c as integer) as integer
+declare function getr_depth cdecl alias "getr_depth" (byval color_depth as integer, byval c as integer) as integer
+declare function getg_depth cdecl alias "getg_depth" (byval color_depth as integer, byval c as integer) as integer
+declare function getb_depth cdecl alias "getb_depth" (byval color_depth as integer, byval c as integer) as integer
+declare function geta_depth cdecl alias "geta_depth" (byval color_depth as integer, byval c as integer) as integer
 
-Extern Import palette_color Alias "palette_color" As Integer Ptr
-
-Declare Sub set_color CDecl Alias "set_color" (ByVal index As Integer, ByVal p As RGB Ptr)
-Declare Sub set_palette CDecl Alias "set_palette" (ByVal p As PALETTE)
-Declare Sub set_palette_range CDecl Alias "set_palette_range" (ByVal p As PALETTE, ByVal from As Integer, ByVal _to As Integer, ByVal retracesync As Integer)
-
-Declare Sub get_color CDecl Alias "get_color" (ByVal index As Integer, ByVal p As RGB Ptr)
-Declare Sub get_palette CDecl Alias "get_palette" (ByVal p As PALETTE)
-Declare Sub get_palette_range CDecl Alias "get_palette_range" (ByVal p As PALETTE, ByVal from As Integer, ByVal iTo As Integer)
-
-Declare Sub fade_interpolate CDecl Alias "fade_interpolate" (ByVal source As RGB Ptr, ByVal dest As RGB Ptr, ByVal poutput As RGB Ptr, ByVal pos As Integer, ByVal from As Integer, ByVal iTo As Integer)
-Declare Sub fade_from_range CDecl Alias "fade_from_range" (ByVal source As RGB Ptr, ByVal dest As RGB Ptr, ByVal speed As Integer, ByVal from As Integer, ByVal iTo As Integer)
-Declare Sub fade_in_range CDecl Alias "fade_in_range" (ByVal p As RGB Ptr, ByVal speed As Integer, ByVal from As Integer, ByVal iTo As Integer)
-Declare Sub fade_out_range CDecl Alias "fade_out_range" (ByVal speed As Integer, ByVal from As Integer, ByVal iTo As Integer)
-Declare Sub fade_from CDecl Alias "fade_from" (ByVal source As RGB Ptr, ByVal dest As RGB Ptr, ByVal speed As Integer)
-Declare Sub fade_in CDecl Alias "fade_in" (ByVal p As RGB Ptr, ByVal speed As Integer)
-Declare Sub fade_out CDecl Alias "fade_out" (ByVal speed As Integer)
-
-Declare Sub select_palette CDecl Alias "select_palette" (ByVal p As RGB Ptr)
-Declare Sub unselect_palette CDecl Alias "unselect_palette" ()
-
-Declare Sub generate_332_palette CDecl Alias "generate_332_palette" (ByVal pal As RGB ptr)
-Declare Function generate_optimized_palette CDecl Alias "generate_optimized_palette" (ByVal bmp As BITMAP Ptr, ByVal pal As RGB ptr, byval rsvd as zstring ptr) As Integer
-
-Declare Sub create_rgb_table CDecl Alias "create_rgb_table" (ByVal table As RGB_MAP Ptr, ByVal pal As RGB Ptr, ByVal callback As Sub(ByVal ipos As Integer))
-Declare Sub create_light_table CDecl Alias "create_light_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As PALETTE, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal callback As Sub CDecl(ByVal _pos As Integer))
-Declare sub create_trans_table CDecl Alias "create_trans_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As PALETTE, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal callback As Sub CDecl(ByVal _pos As Integer))
-Declare Sub create_color_table CDecl Alias "create_color_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As PALETTE, ByVal blend As Sub CDecl(ByVal pal As PALETTE, ByVal x As Integer, ByVal y As Integer, ByVal _rgb As RGB Ptr), ByVal callback As Sub CDecl(ByVal _pos As Integer))
-Declare Sub create_blender_table CDecl Alias "create_blender_table" (ByVal table As COLOR_MAP Ptr, ByVal pal As PALETTE, ByVal callback As Sub CDecl(ByVal _pos As Integer))
-
-Type BLENDER_FUNC As Function CDecl(ByVal x As UInteger, ByVal y As UInteger, ByVal n As UInteger) As UInteger
-
-Declare Sub set_blender_mode CDecl Alias "set_blender_mode" (ByVal b15 As BLENDER_FUNC, ByVal b16 as BLENDER_FUNC, ByVal b24 as BLENDER_FUNC, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
-Declare Sub set_blender_mode_ex CDecl Alias "set_blender_mode_ex" (ByVal b15 as BLENDER_FUNC, ByVal b16 as BLENDER_FUNC, ByVal b24 as BLENDER_FUNC, ByVal b32 as BLENDER_FUNC, ByVal b15x as BLENDER_FUNC, ByVal b16x as BLENDER_FUNC, ByVal b24x as BLENDER_FUNC, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
-
-Declare Sub set_alpha_blender CDecl Alias "set_alpha_blender" ()
-Declare Sub set_write_alpha_blender CDecl Alias "set_write_alpha_blender" ()
-Declare Sub set_trans_blender CDecl Alias "set_trans_blender" (ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
-Declare Sub set_add_blender CDecl Alias "set_add_blender" (ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
-Declare Sub set_burn_blender CDecl Alias "set_burn_blender" (byVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
-Declare Sub set_color_blender CDecl Alias "set_color_blender" (byVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
-Declare Sub set_difference_blender CDecl Alias "set_difference_blender" (byVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
-Declare Sub set_dissolve_blender CDecl Alias "set_dissolve_blender" (byVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
-Declare Sub set_dodge_blender CDecl Alias "set_dodge_blender" (byVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
-Declare Sub set_hue_blender CDecl Alias "set_hue_blender" (byVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
-Declare Sub set_invert_blender CDecl Alias "set_invert_blender" (byVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
-Declare Sub set_luminance_blender CDecl Alias "set_luminance_blender" (byVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
-Declare Sub set_multiply_blender CDecl Alias "set_multiply_blender" (byVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
-Declare Sub set_saturation_blender CDecl Alias "set_saturation_blender" (byVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
-Declare Sub set_screen_blender CDecl Alias "set_screen_blender" (byVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer)
-
-Declare Sub hsv_to_rgb CDecl Alias "hsv_to_rgb" (ByVal h As Single, ByVal s As Single, ByVal v As Single, ByRef r As Integer, ByRef g As Integer, ByRef b As Integer)
-Declare Sub rgb_to_hsv CDecl Alias "rgb_to_hsv" (ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByRef h As Single, ByRef s As Single, ByRef v As Single)
-
-Declare Function bestfit_color CDecl Alias "bestfit_color" (ByVal pal As RGB ptr, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer) As Integer
-
-Declare Function makecol CDecl Alias "makecol" (ByVal r As Integer, ByVal g As Integer, ByVal b As Integer) As Integer
-Declare Function makecol8 CDecl Alias "makecol8" (ByVal r As Integer, ByVal g As Integer, ByVal b As Integer) As Integer
-Declare Function makecol_depth CDecl Alias "makecol_depth" (ByVal color_depth As Integer, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer) As Integer
-
-Declare Function makeacol CDecl Alias "makeacol" (ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer) As Integer
-Declare Function makeacol_depth CDecl Alias "makeacol" (ByVal color_depth As Integer, ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal a As Integer) As Integer
-
-Declare Function makecol15_dither CDecl Alias "makecol15_dither" (ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal x As Integer, ByVal y As Integer) As Integer
-Declare Function makecol16_dither CDecl Alias "makecol16_dither" (ByVal r As Integer, ByVal g As Integer, ByVal b As Integer, ByVal x As Integer, ByVal y As Integer) As Integer
-
-Declare Function getr CDecl Alias "getr" (ByVal c As Integer) As Integer
-Declare Function getg CDecl Alias "getg" (ByVal c As Integer) As Integer
-Declare Function getb CDecl Alias "getb" (ByVal c As Integer) As Integer
-Declare Function geta CDecl Alias "geta" (ByVal c As Integer) As Integer
-
-Declare Function getr_depth CDecl Alias "getr_depth" (ByVal color_depth As Integer, ByVal c As Integer) As Integer
-Declare Function getg_depth CDecl Alias "getg_depth" (ByVal color_depth As Integer, ByVal c As Integer) As Integer
-Declare Function getb_depth CDecl Alias "getb_depth" (ByVal color_depth As Integer, ByVal c As Integer) As Integer
-Declare Function geta_depth CDecl Alias "geta_depth" (ByVal color_depth As Integer, ByVal c As Integer) As Integer
-
-#include "allegro/inline/color.inl"
+#include once "allegro/inline/color.bi"
 
 #endif

@@ -1,113 +1,97 @@
-'         ______   ___    ___
-'        /\  _  \ /\_ \  /\_ \
-'        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
-'         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
-'          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
-'           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
-'            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
-'                                           /\____/
-'                                           \_/__/
-'
-'      File I/O and compression routines.
-'
-'      By Shawn Hargreaves.
-'
-'      See readme.txt for copyright information.
-'
+''
+''
+'' allegro\file -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __allegro_file_bi__
+#define __allegro_file_bi__
 
-#ifndef ALLEGRO_FILE_H
-#define ALLEGRO_FILE_H
+#include once "allegro/base.bi"
 
-#include "allegro/base.bi"
+declare function fix_filename_case cdecl alias "fix_filename_case" (byval path as zstring ptr) as zstring ptr
+declare function fix_filename_slashes cdecl alias "fix_filename_slashes" (byval path as zstring ptr) as zstring ptr
+declare function fix_filename_path cdecl alias "fix_filename_path" (byval dest as zstring ptr, byval path as zstring ptr, byval size as integer) as zstring ptr
+declare function replace_filename cdecl alias "replace_filename" (byval dest as zstring ptr, byval path as zstring ptr, byval filename as zstring ptr, byval size as integer) as zstring ptr
+declare function replace_extension cdecl alias "replace_extension" (byval dest as zstring ptr, byval filename as zstring ptr, byval ext as zstring ptr, byval size as integer) as zstring ptr
+declare function append_filename cdecl alias "append_filename" (byval dest as zstring ptr, byval path as zstring ptr, byval filename as zstring ptr, byval size as integer) as zstring ptr
+declare function get_filename cdecl alias "get_filename" (byval path as zstring ptr) as zstring ptr
+declare function get_extension cdecl alias "get_extension" (byval filename as zstring ptr) as zstring ptr
+declare sub put_backslash cdecl alias "put_backslash" (byval filename as zstring ptr)
+declare function file_exists cdecl alias "file_exists" (byval filename as zstring ptr, byval attrib as integer, byval aret as integer ptr) as integer
+declare function exists cdecl alias "exists" (byval filename as zstring ptr) as integer
+declare function file_size cdecl alias "file_size" (byval filename as zstring ptr) as integer
+declare function file_time cdecl alias "file_time" (byval filename as zstring ptr) as time_t
+declare function delete_file cdecl alias "delete_file" (byval filename as zstring ptr) as integer
+declare function for_each_file cdecl alias "for_each_file" (byval name as zstring ptr, byval attrib as integer, byval callback as sub cdecl(byval as zstring ptr, byval as integer, byval as integer), byval param as integer) as integer
+declare function find_allegro_resource cdecl alias "find_allegro_resource" (byval dest as zstring ptr, byval resource as zstring ptr, byval ext as zstring ptr, byval datafile as zstring ptr, byval objectname as zstring ptr, byval envvar as zstring ptr, byval subdir as zstring ptr, byval size as integer) as integer
 
-Declare Function fix_filename_case CDecl Alias "fix_filename_case" (byval path as zstring ptr) As ZString Ptr
-Declare Function fix_filename_slashes CDecl Alias "fix_filename_slashes" (byval path as zstring ptr) As ZString Ptr
-Declare Function fix_filename_path CDecl Alias "fix_filename_path" (ByVal dest As ZString Ptr, byval path as zstring ptr, ByVal size As Integer) As ZString Ptr
-Declare Function replace_filename CDecl Alias "replace_filename" (ByVal dest As ZString Ptr, byval path as zstring ptr, byval filename as zstring ptr, ByVal size As Integer) As ZString Ptr
-Declare Function replace_extension CDecl Alias "replace_extension" (ByVal dest As ZString Ptr, byval filename as zstring ptr, byval ext as zstring ptr, ByVal size As Integer) As ZString Ptr
-Declare Function append_filename CDecl Alias "append_filename" (ByVal dest As ZString Ptr, byval path as zstring ptr, byval filename as zstring ptr, ByVal size As Integer) As ZString Ptr
-Declare Function get_filename CDecl Alias "get_filename" (byval path as zstring ptr) As ZString Ptr
-Declare Function get_extension CDecl Alias "get_extension" (byval filename as zstring ptr) As ZString Ptr
-Declare Sub put_backslash CDecl Alias "put_backslash" (ByVal filename As ZString Ptr)
-Declare Function file_exists CDecl Alias "file_exists" (byval filename as zstring ptr, ByVal attrib As Integer, ByVal aret As Integer Ptr) As Integer
-Declare Function exists CDecl Alias "exists" (byval filename as zstring ptr) As Integer
-Declare Function file_size CDecl Alias "file_size" (byval filename as zstring ptr) As Long
-Declare Function file_time CDecl Alias "file_time" (byval filename as zstring ptr) As time_t
-Declare Function delete_file CDecl Alias "delete_file" (byval filename as zstring ptr) As Integer
-Declare Function for_each_file CDecl Alias "for_each_file" (byval name as zstring ptr, ByVal attrib As Integer, ByVal callback As Sub(ByVal filename As ZString Ptr, ByVal attrib As Integer, ByVal param As Integer), ByVal _param As Integer) As Integer
-Declare Function find_allegro_resource CDecl Alias "find_allegro_resource" (ByVal dest As ZString Ptr, byval resource as zstring ptr, byval ext as zstring ptr, byval datafile as zstring ptr, byval objectname as zstring ptr, byval envvar as zstring ptr, byval subdir as zstring ptr, ByVal size As Integer) As Integer
+type al_ffblk
+	attrib as integer
+	time as time_t
+	size as integer
+	name as zstring * 512
+	ff_data as any ptr
+end type
 
-Type al_ffblk					' file info block for the al_find*() routines
-	attrib As Integer			' actual attributes of the file found
-   	time As Integer				' modification time of file
-	size As Long				' size of file
-	name As String * 512			' name of file
-	ff_data As UByte Ptr			' private hook
-End Type
+declare function al_findfirst cdecl alias "al_findfirst" (byval pattern as zstring ptr, byval info as al_ffblk ptr, byval attrib as integer) as integer
+declare function al_findnext cdecl alias "al_findnext" (byval info as al_ffblk ptr) as integer
+declare sub al_findclose cdecl alias "al_findclose" (byval info as al_ffblk ptr)
 
-Declare Function al_findfirst CDecl Alias "al_findfirst" (byval pattern as zstring ptr, ByVal info As al_ffblk Ptr, ByVal attrib As Integer) As Integer
-Declare Function al_findnext CDecl Alias "al_findnext" (ByVal info As al_ffblk Ptr) As Integer
-Declare Sub al_findclose CDecl Alias "al_findclose" (ByVal info As al_ffblk Ptr)
+#define F_READ "r"
+#define F_WRITE "w"
+#define F_READ_PACKED "rp"
+#define F_WRITE_PACKED "wp"
+#define F_WRITE_NOPACK "w!"
+#define F_BUF_SIZE 4096
+#define F_PACK_MAGIC &h736C6821L
+#define F_NOPACK_MAGIC &h736C682EL
+#define F_EXE_MAGIC &h736C682BL
+#define PACKFILE_FLAG_WRITE 1
+#define PACKFILE_FLAG_PACK 2
+#define PACKFILE_FLAG_CHUNK 4
+#define PACKFILE_FLAG_EOF 8
+#define PACKFILE_FLAG_ERROR 16
+#define PACKFILE_FLAG_OLD_CRYPT 32
+#define PACKFILE_FLAG_EXEDAT 64
 
-#ifndef AL_EOF
-   #define AL_EOF    (-1)
-#endif
+type PACKFILE
+	hndl as integer
+	flags as integer
+	buf_pos as ubyte ptr
+	buf_size as integer
+	todo as integer
+	parent as PACKFILE ptr
+	pack_data as any ptr
+	filename as zstring ptr
+	passdata as zstring ptr
+	passpos as zstring ptr
+	buf(0 to 4096-1) as ubyte
+end type
 
-#define F_READ          "r"
-#define F_WRITE         "w"
-#define F_READ_PACKED   "rp"
-#define F_WRITE_PACKED  "wp"
-#define F_WRITE_NOPACK  "w!"
+declare sub packfile_password cdecl alias "packfile_password" (byval password as zstring ptr)
+declare function pack_fopen cdecl alias "pack_fopen" (byval filename as zstring ptr, byval mode as zstring ptr) as PACKFILE ptr
+declare function pack_fclose cdecl alias "pack_fclose" (byval f as PACKFILE ptr) as integer
+declare function pack_fseek cdecl alias "pack_fseek" (byval f as PACKFILE ptr, byval offset as integer) as integer
+declare function pack_fopen_chunk cdecl alias "pack_fopen_chunk" (byval f as PACKFILE ptr, byval pack as integer) as PACKFILE ptr
+declare function pack_fclose_chunk cdecl alias "pack_fclose_chunk" (byval f as PACKFILE ptr) as PACKFILE ptr
+declare function pack_igetw cdecl alias "pack_igetw" (byval f as PACKFILE ptr) as integer
+declare function pack_igetl cdecl alias "pack_igetl" (byval f as PACKFILE ptr) as integer
+declare function pack_iputw cdecl alias "pack_iputw" (byval w as integer, byval f as PACKFILE ptr) as integer
+declare function pack_iputl cdecl alias "pack_iputl" (byval l as integer, byval f as PACKFILE ptr) as integer
+declare function pack_mgetw cdecl alias "pack_mgetw" (byval f as PACKFILE ptr) as integer
+declare function pack_mgetl cdecl alias "pack_mgetl" (byval f as PACKFILE ptr) as integer
+declare function pack_mputw cdecl alias "pack_mputw" (byval w as integer, byval f as PACKFILE ptr) as integer
+declare function pack_mputl cdecl alias "pack_mputl" (byval l as integer, byval f as PACKFILE ptr) as integer
+declare function pack_fread cdecl alias "pack_fread" (byval p as any ptr, byval n as integer, byval f as PACKFILE ptr) as integer
+declare function pack_fwrite cdecl alias "pack_fwrite" (byval p as any ptr, byval n as integer, byval f as PACKFILE ptr) as integer
+declare function pack_fgets cdecl alias "pack_fgets" (byval p as zstring ptr, byval max as integer, byval f as PACKFILE ptr) as zstring ptr
+declare function pack_fputs cdecl alias "pack_fputs" (byval p as zstring ptr, byval f as PACKFILE ptr) as integer
+declare function _sort_out_getc cdecl alias "_sort_out_getc" (byval f as PACKFILE ptr) as integer
+declare function _sort_out_putc cdecl alias "_sort_out_putc" (byval c as integer, byval f as PACKFILE ptr) as integer
 
-#define F_BUF_SIZE      4096           '/* 4K buffer for caching data */
-#define F_PACK_MAGIC    &H736C6821L    '/* magic number for packed files */
-#define F_NOPACK_MAGIC  &H736C682EL    '/* magic number for autodetect */
-#define F_EXE_MAGIC     &H736C682BL    '/* magic number for appended data */
-
-#define PACKFILE_FLAG_WRITE      1     '/* the file is being written */
-#define PACKFILE_FLAG_PACK       2     '/* data is compressed */
-#define PACKFILE_FLAG_CHUNK      4     '/* file is a sub-chunk */
-#define PACKFILE_FLAG_EOF        8     '/* reached the end-of-file */
-#define PACKFILE_FLAG_ERROR      16    '/* an error has occurred */
-#define PACKFILE_FLAG_OLD_CRYPT  32    '/* backward compatibility mode */
-#define PACKFILE_FLAG_EXEDAT     64    '/* reading from our executable */
-
-Type PACKFILE					' our very own FILE structure...
-	hndl As Integer				' DOS file handle
-	flags As Integer			' PACKFILE_FLAG_* constants
-	buf_pos As UByte Ptr			' position in buffer
-	buf_size As Integer			' number of bytes in the buffer
-	todo As Long				' number of bytes still on the disk
-	parent As PACKFILE Ptr			' nested, parent file
-	pack_data As UByte Ptr			' for LZSS compression
-	filename As UByte Ptr			' name of the file
-	passdata As UByte Ptr			' encryption key data
-	passpos As UByte Ptr			' current key position
-	buf(F_BUF_SIZE - 1) As UByte		' the actual data buffer
-End Type
-
-Declare Sub packfile_password CDecl Alias "packfile_password" (byval password as zstring ptr)
-Declare Function pack_fopen CDecl Alias "pack_fopen" (byval filename as zstring ptr, byval mode as zstring ptr) As PACKFILE Ptr
-Declare Function pack_fclose CDecl Alias "pack_fclose" (ByVal f As PACKFILE Ptr) As Integer
-Declare Function pack_fseek CDecl Alias "pack_fseek" (ByVal f As PACKFILE Ptr, ByVal offset As Integer) As Integer
-Declare Function pack_fopen_chunk CDecl Alias "pack_fopen_chunk" (ByVal f As PACKFILE Ptr, ByVal pack As Integer) As PACKFILE Ptr
-Declare Function pack_fclose_chunk CDecl Alias "pack_fclose_chunk" (ByVal f As PACKFILE Ptr) As PACKFILE Ptr
-Declare Function pack_igetw CDecl Alias "pack_igetw" (ByVal f As PACKFILE Ptr) As Integer
-Declare Function pack_igetl CDecl Alias "pack_igetl" (ByVal f As PACKFILE Ptr) As Integer
-Declare Function pack_iputw CDecl Alias "pack_iputw" (ByVal w As Integer, ByVal f As PACKFILE Ptr) As Integer
-Declare Function pack_iputl CDecl Alias "pack_iputl" (ByVal l As Integer, ByVal f As PACKFILE Ptr) As Integer
-Declare Function pack_mgetw CDecl Alias "pack_mgetw" (ByVal f As PACKFILE Ptr) As Integer
-Declare Function pack_mgetl CDecl Alias "pack_mgetl" (ByVal f As PACKFILE Ptr) As Integer
-Declare Function pack_mputw CDecl Alias "pack_mputw" (ByVal w As Integer, ByVal f As PACKFILE Ptr) As Integer
-Declare Function pack_mputl CDecl Alias "pack_mputl" (ByVal l As Integer, ByVal f As PACKFILE Ptr) As Integer
-Declare Function pack_fread CDecl Alias "pack_fread" (ByVal p As Any Ptr, ByVal n As Integer, ByVal f As PACKFILE Ptr) As Integer
-Declare Function pack_fwrite CDecl Alias "pack_fwrite" (ByVal p As Any Ptr, ByVal n As Integer, ByVal f As PACKFILE Ptr) As Integer
-Declare Function pack_fgets CDecl Alias "pack_fgets" (ByVal p As ZString Ptr, ByVal _max As Integer, ByVal f As PACKFILE Ptr) As ZString Ptr
-Declare Function pack_fputs CDecl Alias "pack_fputs" (byval p as zstring ptr, ByVal f As PACKFILE Ptr) As Integer
-
-Declare Function _sort_out_getc CDecl Alias "_sort_out_getc" (ByVal f As PACKFILE Ptr) As Integer
-Declare Function _sort_out_putc CDecl Alias "_sort_out_putc" (ByVal c As Integer, ByVal f As PACKFILE Ptr) As Integer
-
-#include "allegro/inline/file.inl"
+#include "allegro/inline/file.bi"
 
 #endif

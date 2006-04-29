@@ -1,102 +1,91 @@
-'         ______   ___    ___
-'        /\  _  \ /\_ \  /\_ \
-'        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
-'         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
-'          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
-'           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
-'            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
-'                                           /\____/
-'                                           \_/__/
-'
-'      Unicode support routines.
-'
-'      By Shawn Hargreaves.
-'
-'      See readme.txt for copyright information.
-'
+''
+''
+'' allegro\unicode -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __allegro_unicode_bi__
+#define __allegro_unicode_bi__
 
+#include once "allegro/base.bi"
 
-#ifndef ALLEGRO_UNICODE__H
-#define ALLEGRO_UNICODE__H
+#define U_ASCII AL_ID(asc("A"),asc("S"),asc("C"),asc("8"))
+#define U_ASCII_CP AL_ID(asc("A"),asc("S"),asc("C"),asc("P"))
+#define U_UNICODE AL_ID(asc("U"),asc("N"),asc("I"),asc("C"))
+#define U_UTF8 AL_ID(asc("U"),asc("T"),asc("F"),asc("8"))
+#define U_CURRENT AL_ID(asc("c"),asc("u"),asc("r"),asc("."))
 
-#include "allegro/base.bi"
+declare sub set_uformat cdecl alias "set_uformat" (byval type as integer)
+declare function get_uformat cdecl alias "get_uformat" () as integer
+declare sub register_uformat cdecl alias "register_uformat" (byval type as integer, byval u_getc as function cdecl(byval as zstring ptr) as integer, byval u_getx as function cdecl(byval as byte ptr ptr) as integer, byval u_setc as function cdecl(byval as zstring ptr, byval as integer) as integer, byval u_width as function cdecl(byval as zstring ptr) as integer, byval u_cwidth as function cdecl(byval as integer) as integer, byval u_isok as function cdecl(byval as integer) as integer, byval u_width_max as integer)
+declare sub set_ucodepage cdecl alias "set_ucodepage" (byval table as ushort ptr, byval extras as ushort ptr)
+declare function need_uconvert cdecl alias "need_uconvert" (byval s as zstring ptr, byval type as integer, byval newtype as integer) as integer
+declare function uconvert_size cdecl alias "uconvert_size" (byval s as zstring ptr, byval type as integer, byval newtype as integer) as integer
+declare sub do_uconvert cdecl alias "do_uconvert" (byval s as zstring ptr, byval type as integer, byval buf as zstring ptr, byval newtype as integer, byval size as integer)
+declare function uconvert cdecl alias "uconvert" (byval s as zstring ptr, byval type as integer, byval buf as zstring ptr, byval newtype as integer, byval size as integer) as zstring ptr
+declare function uwidth_max cdecl alias "uwidth_max" (byval type as integer) as integer
 
-#define U_ASCII         AL_ID(asc("A"),ASC("S"),ASC("C"),ASC("8"))
-#define U_ASCII_CP      AL_ID(ASC("A"),ASC("S"),ASC("C"),ASC("P"))
-#define U_UNICODE       AL_ID(ASC("U"),ASC("N"),ASC("I"),ASC("C"))
-#define U_UTF8          AL_ID(ASC("U"),ASC("T"),ASC("F"),ASC("8"))
-#define U_CURRENT       AL_ID(ASC("c"),ASC("u"),ASC("r"),ASC("."))
+#define uconvert_ascii(s, buf) uconvert(s, U_ASCII, buf, U_CURRENT, sizeof(buf))
+#define uconvert_toascii(s, buf) uconvert(s, U_CURRENT, buf, U_ASCII, sizeof(buf))
 
-Declare Sub set_uformat CDEcl alias "set_uformat" (ByVal _type As Integer)
-Declare Function get_uformat CDecl alias "get_uformat" () As Integer
-Declare Sub register_uformat CDecl alias "register_uformat" (ByVal _type As Integer, ByVal u_getc As Function(ByVal s As Byte Ptr) As Integer, ByVal u_getx As Function(ByVal s As Byte Ptr Ptr) As Integer, ByVal u_setc As Function(ByVal s As Byte Ptr, ByVal c As Integer) As Integer, ByVal u_width As Function(ByVal s As Byte Ptr) As Integer, ByVal u_cwidth As Function(ByVal c As Integer) As Integer, ByVal u_isok As Function(ByVal c As Integer) As Integer, ByVal u_width_max As Integer)
-Declare Sub set_ucodepage CDecl Alias "set_ucodepage" (ByVal table As UShort Ptr, ByVal extras As UShort Ptr)
+#define EMPTY_STRING_ chr(0,0,0,0)
 
-Declare Function need_uconvert CDecl Alias "need_uconvert" (ByVal s As Byte Ptr, ByVal _type As Integer, ByVal newtype As Integer) As Integer
-Declare Function uconvert_size CDecl Alias "uconvert_size" (ByVal s As Byte Ptr, ByVAl _type As Integer, ByVal newtype As INteger) As Integer
-Declare Sub do_uconvert CDecl Alias "do_uconvert" (ByVal s As Byte Ptr, ByVal _type As Integer, ByVal buf As Byte Ptr, ByVal newtype As Integer, ByVal size As Integer)
-Declare Function uconvert CDecl Alias "uconvert" (ByVal s As Byte Ptr, ByVal _type As Integer, ByVal buf As Byte Ptr, ByVal newtype As Integer, ByVal size As Integer) AS Byte Ptr
-Declare Function uwidth_max CDecl Alias "uwidth_max" (ByVal _type As Integer) As Integer
+extern _AL_DLL __empty_string alias "empty_string" as byte
+#define empty_string *cast( zstring ptr, @__empty_string )
+extern _AL_DLL ugetc alias "ugetc" as function cdecl(byval as zstring ptr) as integer
+extern _AL_DLL ugetx alias "ugetx" as function cdecl(byval as byte ptr ptr) as integer
+extern _AL_DLL ugetxc alias "ugetxc" as function cdecl(byval as byte ptr ptr) as integer
+extern _AL_DLL usetc alias "usetc" as function cdecl(byval as zstring ptr, byval as integer) as integer
+extern _AL_DLL uwidth alias "uwidth" as function cdecl(byval as zstring ptr) as integer
+extern _AL_DLL ucwidth alias "ucwidth" as function cdecl(byval as integer) as integer
+extern _AL_DLL uisok alias "uisok" as function cdecl(byval as integer) as integer
 
-#define uconvert_ascii(s, buf)      uconvert(s, U_ASCII, buf, U_CURRENT, sizeof(buf))
-#define uconvert_toascii(s, buf)    uconvert(s, U_CURRENT, buf, U_ASCII, sizeof(buf))
-
-''#define EMPTY_STRING    "\0\0\0"
-
-Extern Import al_empty_string Alias "empty_string" As Byte ''Ptr
-#define empty_string @(al_empty_string)
-
-Extern Import ugetc Alias "ugetc" As Function CDecl(ByVal s As Byte Ptr) As Integer
-Extern Import ugetx Alias "ugetx" As Function CDecl(ByVal s As Byte Ptr Ptr) As Integer
-Extern Import ugetxc Alias "ugetxc" As Function CDecl(ByVal s As Byte Ptr Ptr) As Integer
-Extern Import usetc Alias "usetc" As Function CDecl(ByVal s As Byte Ptr, ByVal c As Integer) As Integer
-Extern Import uwidth Alias "uwidth" As Function CDecl(ByVal s As Byte Ptr) As Integer
-Extern Import ucwidth Alias "ucwidth" As Function CDecl(ByVal c As Integer) As Integer
-Extern Import uisok Alias "uisok" As Function CDecl(ByVal c As Integer) As Integer
-Declare Function uoffset CDecl Alias "uoffset" (ByVal s As Byte Ptr, ByVal index As INteger) As INteger
-Declare Function ugetat CDecl Alias "ugetat" (ByVal s As Byte Ptr, ByVal index As Integer) As Integer
-Declare Function usetat CDecl Alias "usetat" (ByVal s As Byte Ptr, ByVal index As Integer, ByVal c As Integer) As Integer
-Declare Function uinsert CDecl Alias "uinsert" (ByVal s As Byte Ptr, ByVal index As Integer, BYVal c As Integer) As Integer
-Declare Function uremove CDecl ALias "uremove" (ByVal s As Byte Ptr, ByVal index As Integer) As Integer
-Declare Function utolower CDecl Alias "utolower" (ByVal c As Integer) As Integer
-Declare Function utoupper CDecl Alias "utoupper" (ByVal c As Integer) As Integer
-Declare Function uisspace CDecl Alias "uisspace" (ByVal c As Integer) As Integer
-Declare Function uisdigit CDecl Alias "uisdigit" (ByVal c As Integer) As Integer
-Declare Function ustrsize CDecl Alias "ustrsize" (ByVal s As Byte Ptr) As Integer
-Declare Function ustrsizez CDecl Alias "ustrsizez" (ByVal s As Byte Ptr) As Integer
-Declare Function _ustrdup CDecl Alias "_ustrdup" (ByVal src As Byte Ptr, ByVal malloc_func As Function CDecl(ByVal l As size_t) As Any Ptr) As Byte Ptr
-Declare Function ustrzcpy CDecl Alias "ustrzcpy" (ByVal dest As Byte Ptr, ByVal size As Integer, ByVal src As Byte Ptr) As Byte Ptr
-Declare Function ustrzcat CDecl Alias "ustrzcat" (ByVal dest As Byte Ptr, ByVal size As Integer, ByVal src As Byte Ptr) As Byte Ptr
-Declare FUnction ustrlen CDecl Alias "ustrlen" (ByVal s As Byte Ptr) As Integer
-Declare Function ustrcmp CDecl Alias "ustrcmp" (ByVal s1 As Byte Ptr, ByVal s2 As Byte Ptr) As Integer
-Declare Function ustrzncpy CDecl Alias "ustrzncpy" (ByVal dest As Byte Ptr, ByVal size AS Integer, ByVal src As Byte Ptr, ByVal n As Integer) As Byte Ptr
-Declare Function ustrzncat CDecl Alias "ustrzncat" (ByVal dest As Byte Ptr, ByVal size As Integer, ByVal src As Byte Ptr, ByVal n As Integer) As Byte Ptr
-Declare Function ustrncmp CDecl Alias "ustrncmp" (ByVal s1 As Byte Ptr, ByVal s2 As Byte Ptr, ByVal n As Integer) As Integer
-Declare Function ustricmp CDecl Alias "ustricmp" (ByVal s1 As Byte Ptr, ByVal s2 As Byte Ptr) As Integer
-Declare Function ustrlwr CDecl Alias "ustrlwr" (ByVal s As Byte Ptr) As Byte Ptr
-Declare Function ustrupr CDecl Alias "ustrupr" (ByVal s As Byte Ptr) As Byte Ptr
-Declare Function ustrchr CDecl Alias "ustrchr" (ByVal s As Byte Ptr, ByVal c As Integer) As Byte Ptr
-Declare Function ustrrchr CDecl Alias "ustrrchr" (ByVal s As Byte Ptr, ByVal c As Integer) As Byte Ptr
-Declare Function ustrstr CDecl Alias "ustrstr" (ByVal s1 As Byte Ptr, ByVal s2 As Byte Ptr) As Byte PTr
-Declare Function ustrpbrk CDecl Alias "ustrpbrk" (ByVal s As Byte Ptr, ByVal _set As Byte Ptr) As Byte Ptr
-Declare Function ustrtok CDecl Alias "ustrtok" (ByVal s As Byte Ptr, ByVal _set As Byte Ptr) As Byte Ptr
-Declare Function ustrtok_r CDecl Alias "ustrtok_r" (ByVal s As Byte Ptr, ByVal _set As Byte Ptr, ByVal _last As Byte Ptr Ptr) As Byte Ptr
-Declare Function uatof CDecl Alias "uatof" (ByVal s As Byte Ptr) As Double
-Declare Function ustrtol CDecl Alias "ustrtol" (ByVal s As Byte Ptr, ByVal endp As Byte Ptr Ptr, Byval base As Integer) As Integer
-Declare Function ustrtod CDecl Alias "ustrtod" (ByVal s As Byte Ptr, ByVal endp As Byte Ptr Ptr) As Double
-Declare Function ustrerror CDecl Alias "ustrerror" (ByVal _err As Integer) As Byte Ptr
-Declare Function uszprintf CDecl Alias "uszprintf" (ByVal buf As Byte Ptr, ByVal size As Integer, ByVal format As Byte Ptr, ...) As Integer
-''AL_FUNC(int, uvszprintf, (char *buf, int size, AL_CONST char *format, va_list args));
-Declare Function usprintf CDecl Alias "usprintf" (ByVal buf As Byte Ptr, ByVal format As Byte Ptr, ...) As Integer
+declare function uoffset cdecl alias "uoffset" (byval s as zstring ptr, byval index as integer) as integer
+declare function ugetat cdecl alias "ugetat" (byval s as zstring ptr, byval index as integer) as integer
+declare function usetat cdecl alias "usetat" (byval s as zstring ptr, byval index as integer, byval c as integer) as integer
+declare function uinsert cdecl alias "uinsert" (byval s as zstring ptr, byval index as integer, byval c as integer) as integer
+declare function uremove cdecl alias "uremove" (byval s as zstring ptr, byval index as integer) as integer
+declare function utolower cdecl alias "utolower" (byval c as integer) as integer
+declare function utoupper cdecl alias "utoupper" (byval c as integer) as integer
+declare function uisspace cdecl alias "uisspace" (byval c as integer) as integer
+declare function uisdigit cdecl alias "uisdigit" (byval c as integer) as integer
+declare function ustrsize cdecl alias "ustrsize" (byval s as zstring ptr) as integer
+declare function ustrsizez cdecl alias "ustrsizez" (byval s as zstring ptr) as integer
+declare function _ustrdup cdecl alias "_ustrdup" (byval src as zstring ptr, byval malloc_func as sub cdecl(byval as size_t)) as zstring ptr
+declare function ustrzcpy cdecl alias "ustrzcpy" (byval dest as zstring ptr, byval size as integer, byval src as zstring ptr) as zstring ptr
+declare function ustrzcat cdecl alias "ustrzcat" (byval dest as zstring ptr, byval size as integer, byval src as zstring ptr) as zstring ptr
+declare function ustrlen cdecl alias "ustrlen" (byval s as zstring ptr) as integer
+declare function ustrcmp cdecl alias "ustrcmp" (byval s1 as zstring ptr, byval s2 as zstring ptr) as integer
+declare function ustrzncpy cdecl alias "ustrzncpy" (byval dest as zstring ptr, byval size as integer, byval src as zstring ptr, byval n as integer) as zstring ptr
+declare function ustrzncat cdecl alias "ustrzncat" (byval dest as zstring ptr, byval size as integer, byval src as zstring ptr, byval n as integer) as zstring ptr
+declare function ustrncmp cdecl alias "ustrncmp" (byval s1 as zstring ptr, byval s2 as zstring ptr, byval n as integer) as integer
+declare function ustricmp cdecl alias "ustricmp" (byval s1 as zstring ptr, byval s2 as zstring ptr) as integer
+declare function ustrlwr cdecl alias "ustrlwr" (byval s as zstring ptr) as zstring ptr
+declare function ustrupr cdecl alias "ustrupr" (byval s as zstring ptr) as zstring ptr
+declare function ustrchr cdecl alias "ustrchr" (byval s as zstring ptr, byval c as integer) as zstring ptr
+declare function ustrrchr cdecl alias "ustrrchr" (byval s as zstring ptr, byval c as integer) as zstring ptr
+declare function ustrstr cdecl alias "ustrstr" (byval s1 as zstring ptr, byval s2 as zstring ptr) as zstring ptr
+declare function ustrpbrk cdecl alias "ustrpbrk" (byval s as zstring ptr, byval set as zstring ptr) as zstring ptr
+declare function ustrtok cdecl alias "ustrtok" (byval s as zstring ptr, byval set as zstring ptr) as zstring ptr
+declare function ustrtok_r cdecl alias "ustrtok_r" (byval s as zstring ptr, byval set as zstring ptr, byval last as byte ptr ptr) as zstring ptr
+declare function uatof cdecl alias "uatof" (byval s as zstring ptr) as double
+declare function ustrtol cdecl alias "ustrtol" (byval s as zstring ptr, byval endp as byte ptr ptr, byval base as integer) as integer
+declare function ustrtod cdecl alias "ustrtod" (byval s as zstring ptr, byval endp as byte ptr ptr) as double
+declare function ustrerror cdecl alias "ustrerror" (byval err as integer) as zstring ptr
+declare function uszprintf cdecl alias "uszprintf" (byval buf as zstring ptr, byval size as integer, byval format as zstring ptr, ...) as integer
+declare function uvszprintf cdecl alias "uvszprintf" (byval buf as zstring ptr, byval size as integer, byval format as zstring ptr, byval args as va_list) as integer
+declare function usprintf cdecl alias "usprintf" (byval buf as zstring ptr, byval format as zstring ptr, ...) as integer
 
 #ifndef ustrdup
-	#define ustrdup(src)		_ustrdup(src, malloc)
+#define ustrdup(src) _ustrdup(src, malloc)
 #endif
 
-#define ustrcpy(dest, src)		ustrzcpy(dest, INT_MAX, src)
-#define ustrcat(dest, src)		ustrzcat(dest, INT_MAX, src)
-#define ustrncpy(dest, src, n)		ustrzncpy(dest, INT_MAX, src, n)
-#define ustrncat(dest, src, n)		ustrzncat(dest, INT_MAX, src, n)
-#define uvsprintf(buf, format, args)	uvszprintf(buf, INT_MAX, format, args)
+#define ustrcpy(dest, src) ustrzcpy(dest, INT_MAX, src)
+#define ustrcat(dest, src) ustrzcat(dest, INT_MAX, src)
+#define ustrncpy(dest, src, n) ustrzncpy(dest, INT_MAX, src, n)
+#define ustrncat(dest, src, n) ustrzncat(dest, INT_MAX, src, n)
+#define uvsprintf(buf, format_, args) uvszprintf(buf, INT_MAX, format_, args)
 
 #endif

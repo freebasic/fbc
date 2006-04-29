@@ -1,51 +1,40 @@
-'         ______   ___    ___
-'        /\  _  \ /\_ \  /\_ \
-'        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
-'         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
-'          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
-'           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
-'            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
-'                                           /\____/
-'                                           \_/__/
-'
-'      Quaternion routines.
-'
-'      By Shawn Hargreaves.
-'
-'      See readme.txt for copyright information.
-'
+''
+''
+'' allegro\quat -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __allegro_quat_bi__
+#define __allegro_quat_bi__
 
+#include once "allegro/base.bi"
 
-#ifndef ALLEGRO_QUAT_H
-#define ALLEGRO_QUAT_H
+type QUAT
+	w as single
+	x as single
+	y as single
+	z as single
+end type
 
-#include "allegro/base.bi"
+extern _AL_DLL identity_quat alias "identity_quat" as QUAT
 
-Type QUAT
-	w As Single
-	x As Single
-	y As Single
-	z As Single
-End Type
+declare sub quat_mul cdecl alias "quat_mul" (byval p as QUAT ptr, byval q as QUAT ptr, byval out as QUAT ptr)
+declare sub get_x_rotate_quat cdecl alias "get_x_rotate_quat" (byval q as QUAT ptr, byval r as single)
+declare sub get_y_rotate_quat cdecl alias "get_y_rotate_quat" (byval q as QUAT ptr, byval r as single)
+declare sub get_z_rotate_quat cdecl alias "get_z_rotate_quat" (byval q as QUAT ptr, byval r as single)
+declare sub get_rotation_quat cdecl alias "get_rotation_quat" (byval q as QUAT ptr, byval x as single, byval y as single, byval z as single)
+declare sub get_vector_rotation_quat cdecl alias "get_vector_rotation_quat" (byval q as QUAT ptr, byval x as single, byval y as single, byval z as single, byval a as single)
+declare sub apply_quat cdecl alias "apply_quat" (byval q as QUAT ptr, byval x as single, byval y as single, byval z as single, byval xout as single ptr, byval yout as single ptr, byval zout as single ptr)
+declare sub quat_slerp cdecl alias "quat_slerp" (byval from as QUAT ptr, byval to as QUAT ptr, byval t as single, byval out as QUAT ptr, byval how as integer)
 
-Extern import identity_quat alias "identity_quat" As QUAT
+#define QUAT_SHORT 0
+#define QUAT_LONG 1
+#define QUAT_CW 2
+#define QUAT_CCW 3
+#define QUAT_USER 4
 
-Declare Sub quat_mul CDecl Alias "quat_mul" (byval p as QUAT ptr, byval q as QUAT ptr, byval outp as QUAT ptr)
-Declare sub get_x_rotate_quat cdecl alias "get_x_rotate_quat" ( byval q as QUAT ptr, byval r as single)
-Declare sub get_y_rotate_quat cdecl alias "get_y_rotate_quat" ( byval q as QUAT ptr, byval r as single)
-Declare sub get_z_rotate_quat cdecl alias "get_z_rotate_quat" ( byval q as QUAT ptr, byval r as single)
-declare sub get_rotation_quat cdecl alias "get_rotation_quat" ( byval q as QUAT ptr, byval x as single, byval y as single, byval z as single )
-declare sub get_vector_rotation_quat cdecl alias "get_vector_rotation_quat" ( byval q as QUAT ptr, byval x as single, byval y as single, byval z as single, byval a as single )
-
-declare sub apply_quat cdecl alias "apply_quat" ( byval q as QUAT ptr, byval x as single, byval y as single, byval z as single, byval xout as single ptr, byval yout as single ptr, byval zout as single ptr )
-declare sub quat_slerp cdecl alias "quat_slerp" ( byval pfrom as QUAT ptr, byval pto as QUAT ptr, byval t as single, byval outp as QUAT ptr, byval how as integer )
-
-#define QUAT_SHORT   0
-#define QUAT_LONG    1
-#define QUAT_CW      2
-#define QUAT_CCW     3
-#define QUAT_USER    4
-
-#define quat_interpolate(pfrom, pto, t, pout)   quat_slerp (pfrom), (pto), (t), (pout), QUAT_SHORT
+#define quat_interpolate(from, to_, t, out_) quat_slerp(from, to_, t, out_, QUAT_SHORT)
 
 #endif

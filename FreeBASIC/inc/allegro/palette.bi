@@ -1,34 +1,23 @@
-'         ______   ___    ___
-'        /\  _  \ /\_ \  /\_ \
-'        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
-'         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
-'          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
-'           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
-'            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
-'                                           /\____/
-'                                           \_/__/
-'
-'      Palette type.
-'
-'      By Shawn Hargreaves.
-'
-'      See readme.txt for copyright information.
-'
+''
+''
+'' allegro\palette -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __allegro_palette_bi__
+#define __allegro_palette_bi__
 
+type RGB
+	r as ubyte
+	g as ubyte
+	b as ubyte
+	filler as ubyte
+end type
 
-#ifndef ALLEGRO_PALETTE_H
-#define ALLEGRO_PALETTE_H
+#define PAL_SIZE 256
 
-Type RGB
-	r As UByte
-	g As UByte
-	b As UByte
-	filler As UByte
-End Type
-
-Const PAL_SIZE%				= 256
-
-Type PALETTE As RGB Ptr	' this is wrong for variable declarations but right for parameters;
-			' instead of declaring a variable of type PALETTE, use 'Dim pal(255) As RGB'.
+type PALETTE as RGB
 
 #endif

@@ -1,71 +1,58 @@
-'         ______   ___    ___
-'        /\  _  \ /\_ \  /\_ \
-'        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
-'         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
-'          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
-'           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
-'            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
-'                                           /\____/
-'                                           \_/__/
-'
-'      Timer routines.
-'
-'      By Shawn Hargreaves.
-'
-'      See readme.txt for copyright information.
-'
+''
+''
+'' allegro\timer -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __allegro_timer_bi__
+#define __allegro_timer_bi__
 
+#include once "allegro/base.bi"
 
-#ifndef ALLEGRO_TIMER_H
-#define ALLEGRO_TIMER_H
-
-#include "allegro/base.bi"
-
-Const TIMERS_PER_SECOND%		= 1193181
-
-#define SECS_TO_TIMER(secs) ((secs) * TIMERS_PER_SECOND)
-#define MSEC_TO_TIMER(msec) ((msec) * (TIMERS_PER_SECOND / 1000))
-#define BPS_TO_TIMER(bps) (TIMERS_PER_SECOND / (bps))
-#define BPM_TO_TIMER(bpm) ((60 * TIMERS_PER_SECOND) / (bpm))
+#define TIMERS_PER_SECOND 1193181L
+#define SECS_TO_TIMER(x) (cint(x) * TIMERS_PER_SECOND)
+#define MSEC_TO_TIMER(x) (cint(x) * (TIMERS_PER_SECOND \ 1000))
+#define BPS_TO_TIMER(x) (TIMERS_PER_SECOND \ cint(x))
+#define BPM_TO_TIMER(x) ((60 * TIMERS_PER_SECOND) \ cint(x))
 
 type TIMER_DRIVER
 	id as integer
-	name as byte ptr
-	desc as byte ptr
-	ascii_name as byte ptr
-	init as function() as integer
-	exit as sub()
-	install_int as function(byval proc as sub(), byval speed as integer) as integer
-	remove_int as sub(byval proc as sub())
-	install_param_int as function(byval proc as sub(byval param as any ptr), byval _param as any ptr, byval speed as integer) as integer
-	remove_param_int as sub(byval proc as sub(byval param as any ptr), byval _param as any ptr)
-	can_simulate_retrace as function() as integer
-	simulate_retrace as sub(byval enable as integer)
-	rest as sub(byval time_ as integer, byval callback as sub())
+	name as zstring ptr
+	desc as zstring ptr
+	ascii_name as zstring ptr
+	init as function cdecl() as integer
+	exit as sub cdecl()
+	install_int as function cdecl(byval as sub cdecl(), byval as integer) as integer
+	remove_int as sub cdecl(byval as sub cdecl())
+	install_param_int as function cdecl(byval as sub cdecl(byval as any ptr), byval as any ptr, byval as integer) as integer
+	remove_param_int as sub cdecl(byval as sub cdecl(byval as any ptr), byval as any ptr)
+	can_simulate_retrace as function cdecl() as integer
+	simulate_retrace as sub cdecl(byval as integer)
+	rest as sub cdecl(byval as integer, byval as sub cdecl())
 end type
 
-extern import timer_driver as TIMER_DRIVER ptr
-extern import _timer_driver_list as _DRIVER_INFO Ptr
+extern _AL_DLL timer_driver alias "timer_driver" as TIMER_DRIVER ptr
+extern _AL_DLL ___timer_driver_list alias "_timer_driver_list" as _DRIVER_INFO
+#define _timer_driver_list(x) *(@___timer_driver_list + (x))
 
-Declare Function install_timer CDecl Alias "install_timer" () As Integer
-Declare Sub remove_timer CDecl Alias "remove_timer" ()
+declare function install_timer cdecl alias "install_timer" () as integer
+declare sub remove_timer cdecl alias "remove_timer" ()
+declare function install_int_ex cdecl alias "install_int_ex" (byval proc as sub cdecl(), byval speed as integer) as integer
+declare function install_int cdecl alias "install_int" (byval proc as sub cdecl(), byval speed as integer) as integer
+declare sub remove_int cdecl alias "remove_int" (byval proc as sub cdecl())
+declare function install_param_int_ex cdecl alias "install_param_int_ex" (byval proc as sub cdecl(byval as any ptr), byval param as any ptr, byval speed as integer) as integer
+declare function install_param_int cdecl alias "install_param_int" (byval proc as sub cdecl(byval as any ptr), byval param as any ptr, byval speed as integer) as integer
+declare sub remove_param_int cdecl alias "remove_param_int" (byval proc as sub cdecl(byval as any ptr), byval param as any ptr)
 
-Declare Function install_int_ex CDecl Alias "install_int_ex" (ByVal proc As Sub(), ByVal speed As Integer) As Integer
-Declare Function install_int CDecl Alias "install_int" (ByVal proc As Sub(), ByVal speed As Integer) As Integer
-Declare Sub remove_int CDecl Alias "remove_int" (ByVal proc As Sub())
+extern _AL_DLL retrace_count alias "retrace_count" as integer
+extern _AL_DLL retrace_proc alias "retrace_proc" as sub cdecl()
 
-Declare Function install_param_int_ex CDecl Alias "install_param_int_ex" (ByVal proc As Sub(ByVal p As Integer), ByVal param As Integer, ByVal speed As Integer) As Integer
-Declare Function install_param_int CDecl Alias "install_param_int" (ByVal proc As Sub(ByVal p As Integer), ByVal param As Integer, ByVal speed As Integer) As Integer
-Declare Sub remove_param_int CDecl Alias "remove_param_int" (ByVal proc As Sub(ByVal p As Integer), ByVal param As Integer)
-
-Extern Import retrace_count Alias "retrace_count" As Integer
-Extern Import retrace_proc Alias "retrace_proc" As Sub()
-
-Declare Function timer_can_simulate_retrace CDecl Alias "timer_can_simulate_retrace" () As Integer
-Declare Sub timer_simulate_retrace CDecl Alias "timer_simulate_retrace" (ByVal enable As Integer)
-Declare Function timer_is_using_retrace CDecl Alias "timer_is_using_retrace" () As Integer
-
-Declare Sub rest CDecl Alias "rest" (ByVal time As Long)
-Declare Sub rest_callback CDecl Alias "rest_callback" (ByVal time As Long, ByVal callback As Sub())
+declare function timer_can_simulate_retrace cdecl alias "timer_can_simulate_retrace" () as integer
+declare sub timer_simulate_retrace cdecl alias "timer_simulate_retrace" (byval enable as integer)
+declare function timer_is_using_retrace cdecl alias "timer_is_using_retrace" () as integer
+declare sub rest cdecl alias "rest" (byval time as integer)
+declare sub rest_callback cdecl alias "rest_callback" (byval time as integer, byval callback as sub cdecl())
 
 #endif

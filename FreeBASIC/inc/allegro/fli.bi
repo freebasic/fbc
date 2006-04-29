@@ -1,51 +1,37 @@
-'         ______   ___    ___
-'        /\  _  \ /\_ \  /\_ \
-'        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
-'         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
-'          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
-'           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
-'            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
-'                                           /\____/
-'                                           \_/__/
-'
-'      FLI/FLC routines.
-'
-'      By Shawn Hargreaves.
-'
-'      See readme.txt for copyright information.
-'
+''
+''
+'' allegro\fli -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __allegro_fli_bi__
+#define __allegro_fli_bi__
 
+#include once "allegro/base.bi"
+#include once "allegro/palette.bi"
 
-#ifndef ALLEGRO_FLI_H
-#define ALLEGRO_FLI_H
+#define FLI_OK 0
+#define FLI_EOF -1
+#define FLI_ERROR -2
+#define FLI_NOT_OPEN -3
 
-#include "allegro/base.bi"
-#include "allegro/palette.bi"
+declare function play_fli cdecl alias "play_fli" (byval filename as zstring ptr, byval bmp as BITMAP ptr, byval loop as integer, byval callback as function cdecl() as integer) as integer
+declare function play_memory_fli cdecl alias "play_memory_fli" (byval fli_data as any ptr, byval bmp as BITMAP ptr, byval loop as integer, byval callback as function cdecl() as integer) as integer
+declare function open_fli cdecl alias "open_fli" (byval filename as zstring ptr) as integer
+declare function open_memory_fli cdecl alias "open_memory_fli" (byval fli_data as any ptr) as integer
+declare sub close_fli cdecl alias "close_fli" ()
+declare function next_fli_frame cdecl alias "next_fli_frame" (byval loop as integer) as integer
+declare sub reset_fli_variables cdecl alias "reset_fli_variables" ()
 
-#define FLI_OK          0              ' FLI player return values
-#define FLI_EOF         -1
-#define FLI_ERROR       -2
-#define FLI_NOT_OPEN    -3
-
-Declare Function play_fli CDecl Alias "play_fli" (byval filename as zstring ptr, ByVal bmp As BITMAP Ptr, ByVal iloop As Integer, ByVal callback As Function() As Integer) As Integer
-Declare Function play_memory_fli CDecl Alias "play_memory_fli" (ByVal fli_data As Integer, ByVal bmp As BITMAP Ptr, ByVal iloop As Integer, ByVal callback As Function() As Integer) As Integer
-
-Declare Function open_fli CDecl Alias "open_fli" (byval filename as zstring ptr) As Integer
-Declare Function open_memory_fli CDecl Alias "open_memory_fli" (ByVal fli_data As Integer) As Integer
-Declare Sub close_fli CDecl Alias "close_fli" ()
-Declare Function next_fli_frame CDecl Alias "next_fli_frame" (ByVal iloop As Integer) As Integer
-Declare Sub reset_fli_variables CDecl Alias "reset_fli_variables" ()
-
-Extern Import fli_bitmap Alias "fli_bitmap" As BITMAP Ptr
-Extern Import fli_palette Alias "fli_palette" As RGB Ptr
-
-Extern Import fli_bmp_dirty_from Alias "fli_bmp_dirty_from" As Integer
-Extern Import fli_bmp_dirty_to Alias "fli_bmp_dirty_to" As Integer
-extern import fli_pal_dirty_from alias "fli_pal_dirty_from" as integer
-extern import fli_pal_dirty_to alias "fli_pal_dirty_to" as integer
-
-Extern Import fli_frame alias "fli_frame" as integer
-
-Extern Import fli_timer Alias "fli_timer" As Integer
+extern _AL_DLL fli_bitmap alias "fli_bitmap" as BITMAP ptr
+extern _AL_DLL fli_palette(0 to PAL_SIZE-1) alias "fli_palette" as PALETTE
+extern _AL_DLL fli_bmp_dirty_from alias "fli_bmp_dirty_from" as integer
+extern _AL_DLL fli_bmp_dirty_to alias "fli_bmp_dirty_to" as integer
+extern _AL_DLL fli_pal_dirty_from alias "fli_pal_dirty_from" as integer
+extern _AL_DLL fli_pal_dirty_to alias "fli_pal_dirty_to" as integer
+extern _AL_DLL fli_frame alias "fli_frame" as integer
+extern _AL_DLL fli_timer alias "fli_timer" as integer
 
 #endif

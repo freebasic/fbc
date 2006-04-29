@@ -1,88 +1,78 @@
-'         ______   ___    ___
-'        /\  _  \ /\_ \  /\_ \
-'        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
-'         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
-'          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
-'           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
-'            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
-'                                           /\____/
-'                                           \_/__/
-'
-'      Mouse routines.
-'
-'      By Shawn Hargreaves.
-'
-'      See readme.txt for copyright information.
-'
+''
+''
+'' allegro\mouse -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __allegro_mouse_bi__
+#define __allegro_mouse_bi__
 
+#include once "allegro/base.bi"
 
-#ifndef ALLEGRO_MOUSE_H
-#define ALLEGRO_MOUSE_H
+type BITMAP_ as BITMAP
 
-#include "allegro/base.bi"
+#define MOUSEDRV_AUTODETECT -1
+#define MOUSEDRV_NONE 0
 
-#define MOUSEDRV_AUTODETECT  -1
-#define MOUSEDRV_NONE         0
+type MOUSE_DRIVER
+	id as integer
+	name as zstring ptr
+	desc as zstring ptr
+	ascii_name as zstring ptr
+	init as function cdecl() as integer
+	exit as sub cdecl()
+	poll as sub cdecl()
+	timer_poll as sub cdecl()
+	position as sub cdecl(byval as integer, byval as integer)
+	set_range as sub cdecl(byval as integer, byval as integer, byval as integer, byval as integer)
+	set_speed as sub cdecl(byval as integer, byval as integer)
+	get_mickeys as sub cdecl(byval as integer ptr, byval as integer ptr)
+	analyse_data as function cdecl(byval as zstring ptr, byval as integer) as integer
+end type
 
-Type MOUSE_DRIVER
-	id As Integer
-	name As ZString Ptr
-	desc As ZString Ptr
-	ascii_name As ZString Ptr
-	init As Function CDecl() As Integer
-	exit As Sub CDecl()
-	poll As Sub CDecl()
-	timer_poll As Sub CDecl()
-	position As Sub CDecl(ByVal x As Integer, ByVal y As Integer)
-	set_range As Sub CDecl(ByVal x1 As INteger, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer)
-	set_speed As Sub CDecl(ByVal xspeed As Integer, ByVal yspeed As Integer)
-	get_mickeys As Sub CDecl(ByVal mickeyx As Integer Ptr, ByVal mickeyy As Integer Ptr)
-	analyse_data As Sub CDecl(ByVal buffer As Byte Ptr, ByVal size As Integer)
-End Type
+extern _AL_DLL mousedrv_none_ alias "mousedrv_none" as MOUSE_DRIVER
+extern _AL_DLL mouse_driver alias "mouse_driver" as MOUSE_DRIVER ptr
+extern _AL_DLL ___mouse_driver_list alias "_mouse_driver_list" as _DRIVER_INFO
+#define _mouse_driver_list(x) *(@___mouse_driver_list + (x))
 
-Extern Import _mousedrv_none Alias "mousedrv_none" As MOUSE_DRIVER
-Extern Import mouse_driver Alias "mouse_driver" As mouSE_DRIVER Ptr
-Extern Import _mouse_driver_list Alias "_mouse_driver_list" As _DRIVER_INFO Ptr
+declare function install_mouse cdecl alias "install_mouse" () as integer
+declare sub remove_mouse cdecl alias "remove_mouse" ()
+declare function poll_mouse cdecl alias "poll_mouse" () as integer
+declare function mouse_needs_poll cdecl alias "mouse_needs_poll" () as integer
 
-Declare Function install_mouse CDecl Alias "install_mouse" () As Integer
-Declare Sub remove_mouse CDecl Alias "remove_mouse" ()
+extern _AL_DLL mouse_sprite alias "mouse_sprite" as BITMAP_ ptr
+extern _AL_DLL mouse_x_focus alias "mouse_x_focus" as integer
+extern _AL_DLL mouse_y_focus alias "mouse_y_focus" as integer
+extern _AL_DLL mouse_x alias "mouse_x" as integer
+extern _AL_DLL mouse_y alias "mouse_y" as integer
+extern _AL_DLL mouse_z alias "mouse_z" as integer
+extern _AL_DLL mouse_b alias "mouse_b" as integer
+extern _AL_DLL mouse_pos alias "mouse_pos" as integer
+extern _AL_DLL freeze_mouse_flag alias "freeze_mouse_flag" as integer
 
-Declare Function poll_mouse CDecl Alias "poll_mouse" () As Integer
-Declare Function mouse_needs_poll CDecl Alias "mouse_needs_poll" () As Integer
+#define MOUSE_FLAG_MOVE 1
+#define MOUSE_FLAG_LEFT_DOWN 2
+#define MOUSE_FLAG_LEFT_UP 4
+#define MOUSE_FLAG_RIGHT_DOWN 8
+#define MOUSE_FLAG_RIGHT_UP 16
+#define MOUSE_FLAG_MIDDLE_DOWN 32
+#define MOUSE_FLAG_MIDDLE_UP 64
+#define MOUSE_FLAG_MOVE_Z 128
 
-Extern Import mouse_sprite  Alias "mouse_sprite" As BITMAP Ptr
-Extern Import mouse_x_focus Alias "mouse_x_focus" As Integer
-Extern Import mouse_y_focus Alias "mouse_y_focus" As Integer
+extern _AL_DLL mouse_callback alias "mouse_callback" as sub cdecl(byval as integer)
 
-Extern Import mouse_x Alias "mouse_x" As Integer
-Extern Import mouse_y Alias "mouse_y" As Integer
-Extern Import mouse_z Alias "mouse_z" As Integer
-Extern Import mouse_b Alias "mouse_b" As Integer
-Extern Import mouse_pos Alias "mouse_pos" As Integer
-
-Extern Import freeze_mouse_flag Alias "freeze_mouse_flag" As Integer
-
-#define MOUSE_FLAG_MOVE             1
-#define MOUSE_FLAG_LEFT_DOWN        2
-#define MOUSE_FLAG_LEFT_UP          4
-#define MOUSE_FLAG_RIGHT_DOWN       8
-#define MOUSE_FLAG_RIGHT_UP         16
-#define MOUSE_FLAG_MIDDLE_DOWN      32
-#define MOUSE_FLAG_MIDDLE_UP        64
-#define MOUSE_FLAG_MOVE_Z           128
-
-Extern Import mouse_callback Alias "mouse_callback" As Sub(ByVal flags As Integer)
-
-Declare Sub show_mouse CDecl Alias "show_mouse" (ByVal bmp As BITMAP Ptr)
-Declare Sub scare_mouse CDecl Alias "scare_mouse" ()
-Declare Sub scare_mouse_area CDecl Alias "scare_mouse_area" (ByVal x As Integer, ByVal y As Integer, ByVal w As Integer, ByVal h As Integer)
-Declare Sub unscare_mouse CDecl Alias "unscare_mouse" ()
-Declare Sub position_mouse CDecl Alias "position_mouse" (ByVal x As Integer, ByVal y As Integer)
-Declare Sub position_mouse_z CDecl Alias "position_mouse_z" (ByVal z As Integer)
-Declare Sub set_mouse_range CDecl Alias "set_mouse_range" (ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer)
-Declare Sub set_mouse_speed CDecl Alias "set_mouse_speed" (ByVal xspeed As Integer, ByVal yspeed As Integer)
-Declare Sub set_mouse_sprite CDecl Alias "set_mouse_sprite" (ByVal sprite As BITMAP Ptr)
-Declare Sub set_mouse_sprite_focus CDecl Alias "set_mouse_sprite_focus" (ByVal x As Integer, ByVal y As Integer)
-Declare Sub get_mouse_mickeys CDecl Alias "get_mouse_mickeys" (ByRef mickeyx As Integer, ByRef mickeyy As Integer)
+declare sub show_mouse cdecl alias "show_mouse" (byval bmp as BITMAP_ ptr)
+declare sub scare_mouse cdecl alias "scare_mouse" ()
+declare sub scare_mouse_area cdecl alias "scare_mouse_area" (byval x as integer, byval y as integer, byval w as integer, byval h as integer)
+declare sub unscare_mouse cdecl alias "unscare_mouse" ()
+declare sub position_mouse cdecl alias "position_mouse" (byval x as integer, byval y as integer)
+declare sub position_mouse_z cdecl alias "position_mouse_z" (byval z as integer)
+declare sub set_mouse_range cdecl alias "set_mouse_range" (byval x1 as integer, byval y1 as integer, byval x2 as integer, byval y2 as integer)
+declare sub set_mouse_speed cdecl alias "set_mouse_speed" (byval xspeed as integer, byval yspeed as integer)
+declare sub set_mouse_sprite cdecl alias "set_mouse_sprite" (byval sprite as BITMAP_ ptr)
+declare sub set_mouse_sprite_focus cdecl alias "set_mouse_sprite_focus" (byval x as integer, byval y as integer)
+declare sub get_mouse_mickeys cdecl alias "get_mouse_mickeys" (byval mickeyx as integer ptr, byval mickeyy as integer ptr)
 
 #endif

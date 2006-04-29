@@ -1,82 +1,59 @@
-'         ______   ___    ___
-'        /\  _  \ /\_ \  /\_ \
-'        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
-'         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
-'          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
-'           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
-'            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
-'                                           /\____/
-'                                           \_/__/
-'
-'      Matrix math routines.
-'
-'      By Shawn Hargreaves.
-'
-'      See readme.txt for copyright information.
-'
+''
+''
+'' allegro\matrix -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __allegro_matrix_bi__
+#define __allegro_matrix_bi__
 
+#include once "allegro/base.bi"
+#include once "allegro/fixed.bi"
+#include once "allegro/fmaths.bi"
 
-#ifndef ALLEGRO_MATRIX_H
-#define ALLEGRO_MATRIX_H
+type MATRIX
+	v(0 to 3-1, 0 to 3-1) as fixed
+	t(0 to 3-1) as fixed
+end type
 
-#include "allegro/base.bi"
-#include "allegro/fixed.bi"
-#include "allegro/fmaths.bi"
+type MATRIX_f
+	v(0 to 3-1, 0 to 3-1) as single
+	t(0 to 3-1) as single
+end type
 
-Type MATRIX					' transformation matrix (fixed point)
-	v(2, 2) As fixed			' scaling and rotation
-	t(2) As fixed				' translation
-End Type
+extern _AL_DLL identity_matrix alias "identity_matrix" as MATRIX
+extern _AL_DLL identity_matrix_f alias "identity_matrix_f" as MATRIX_f
 
-Type MATRIX_f					' transformation matrix (floating point)
-	v(2, 2) As Single			' scaling and rotation
-	t(2) As Single				' translation
-End Type
+declare sub get_translation_matrix cdecl alias "get_translation_matrix" (byval m as MATRIX ptr, byval x as fixed, byval y as fixed, byval z as fixed)
+declare sub get_translation_matrix_f cdecl alias "get_translation_matrix_f" (byval m as MATRIX_f ptr, byval x as single, byval y as single, byval z as single)
+declare sub get_scaling_matrix cdecl alias "get_scaling_matrix" (byval m as MATRIX ptr, byval x as fixed, byval y as fixed, byval z as fixed)
+declare sub get_scaling_matrix_f cdecl alias "get_scaling_matrix_f" (byval m as MATRIX_f ptr, byval x as single, byval y as single, byval z as single)
+declare sub get_x_rotate_matrix cdecl alias "get_x_rotate_matrix" (byval m as MATRIX ptr, byval r as fixed)
+declare sub get_x_rotate_matrix_f cdecl alias "get_x_rotate_matrix_f" (byval m as MATRIX_f ptr, byval r as single)
+declare sub get_y_rotate_matrix cdecl alias "get_y_rotate_matrix" (byval m as MATRIX ptr, byval r as fixed)
+declare sub get_y_rotate_matrix_f cdecl alias "get_y_rotate_matrix_f" (byval m as MATRIX_f ptr, byval r as single)
+declare sub get_z_rotate_matrix cdecl alias "get_z_rotate_matrix" (byval m as MATRIX ptr, byval r as fixed)
+declare sub get_z_rotate_matrix_f cdecl alias "get_z_rotate_matrix_f" (byval m as MATRIX_f ptr, byval r as single)
+declare sub get_rotation_matrix cdecl alias "get_rotation_matrix" (byval m as MATRIX ptr, byval x as fixed, byval y as fixed, byval z as fixed)
+declare sub get_rotation_matrix_f cdecl alias "get_rotation_matrix_f" (byval m as MATRIX_f ptr, byval x as single, byval y as single, byval z as single)
+declare sub get_align_matrix cdecl alias "get_align_matrix" (byval m as MATRIX ptr, byval xfront as fixed, byval yfront as fixed, byval zfront as fixed, byval xup as fixed, byval yup as fixed, byval zup as fixed)
+declare sub get_align_matrix_f cdecl alias "get_align_matrix_f" (byval m as MATRIX_f ptr, byval xfront as single, byval yfront as single, byval zfront as single, byval xup as single, byval yup as single, byval zup as single)
+declare sub get_vector_rotation_matrix cdecl alias "get_vector_rotation_matrix" (byval m as MATRIX ptr, byval x as fixed, byval y as fixed, byval z as fixed, byval a as fixed)
+declare sub get_vector_rotation_matrix_f cdecl alias "get_vector_rotation_matrix_f" (byval m as MATRIX_f ptr, byval x as single, byval y as single, byval z as single, byval a as single)
+declare sub get_transformation_matrix cdecl alias "get_transformation_matrix" (byval m as MATRIX ptr, byval scale as fixed, byval xrot as fixed, byval yrot as fixed, byval zrot as fixed, byval x as fixed, byval y as fixed, byval z as fixed)
+declare sub get_transformation_matrix_f cdecl alias "get_transformation_matrix_f" (byval m as MATRIX_f ptr, byval scale as single, byval xrot as single, byval yrot as single, byval zrot as single, byval x as single, byval y as single, byval z as single)
+declare sub get_camera_matrix cdecl alias "get_camera_matrix" (byval m as MATRIX ptr, byval x as fixed, byval y as fixed, byval z as fixed, byval xfront as fixed, byval yfront as fixed, byval zfront as fixed, byval xup as fixed, byval yup as fixed, byval zup as fixed, byval fov as fixed, byval aspect as fixed)
+declare sub get_camera_matrix_f cdecl alias "get_camera_matrix_f" (byval m as MATRIX_f ptr, byval x as single, byval y as single, byval z as single, byval xfront as single, byval yfront as single, byval zfront as single, byval xup as single, byval yup as single, byval zup as single, byval fov as single, byval aspect as single)
+declare sub qtranslate_matrix cdecl alias "qtranslate_matrix" (byval m as MATRIX ptr, byval x as fixed, byval y as fixed, byval z as fixed)
+declare sub qtranslate_matrix_f cdecl alias "qtranslate_matrix_f" (byval m as MATRIX_f ptr, byval x as single, byval y as single, byval z as single)
+declare sub qscale_matrix cdecl alias "qscale_matrix" (byval m as MATRIX ptr, byval scale as fixed)
+declare sub qscale_matrix_f cdecl alias "qscale_matrix_f" (byval m as MATRIX_f ptr, byval scale as single)
+declare sub matrix_mul cdecl alias "matrix_mul" (byval m1 as MATRIX ptr, byval m2 as MATRIX ptr, byval out as MATRIX ptr)
+declare sub matrix_mul_f cdecl alias "matrix_mul_f" (byval m1 as MATRIX_f ptr, byval m2 as MATRIX_f ptr, byval out as MATRIX_f ptr)
+declare sub apply_matrix_f cdecl alias "apply_matrix_f" (byval m as MATRIX_f ptr, byval x as single, byval y as single, byval z as single, byval xout as single ptr, byval yout as single ptr, byval zout as single ptr)
 
-extern import identity_matrix alias "identity_matrix" as MATRIX
-extern import identity_matrix_f alias "identity_matrix_f" as MATRIX_f
-
-Declare Sub get_translation_matrix CDecl Alias "get_translation_matrix" (ByVal m As MATRIX Ptr, ByVal x As fixed, ByVal y As fixed, ByVal z As fixed)
-Declare Sub get_translation_matrix_f CDecl Alias "get_translation_matrix_f" (ByVal m As MATRIX_f Ptr, ByVal x As Single, ByVal y As Single, ByVal z As Single)
-
-Declare Sub get_scaling_matrix CDecl Alias "get_scaling_matrix" (ByVal m As MATRIX Ptr, Byval x As fixed, ByVal y As fixed, ByVal z As fixed)
-Declare Sub get_scaling_matrix_f CDecl Alias "get_scaling_matrix_f" (ByVal m As MATRIX_f Ptr, ByVal x As Single, ByVal y As Single, ByVal z As Single)
-
-Declare Sub get_x_rotate_matrix CDecl Alias "get_x_rotate_matrix" (ByVal m As MATRIX Ptr, ByVal r As fixed)
-Declare Sub get_x_rotate_matrix_f CDecl Alias "get_x_rotate_matrix_f" (ByVal m As MATRIX_f Ptr, ByVal r As Single)
-
-Declare Sub get_y_rotate_matrix CDecl Alias "get_y_rotate_matrix" (ByVal m As MATRIX Ptr, ByVal r As fixed)
-Declare Sub get_y_rotate_matrix_f CDecl Alias "get_y_rotate_matrix_f" (ByVal m As MATRIX_f Ptr, ByVal r As Single)
-
-Declare Sub get_z_rotate_matrix CDecl Alias "get_z_rotate_matrix" (ByVal m As MATRIX Ptr, ByVal r As fixed)
-Declare Sub get_z_rotate_matrix_f CDecl Alias "get_z_rotate_matrix_f" (ByVal m As MATRIX_f Ptr, ByVal r As Single)
-
-Declare Sub get_rotation_matrix CDecl Alias "get_rotation_matrix" (ByVal m As MATRIX Ptr, ByVal x As fixed, BYVal y As fixed, ByVal z As fixed)
-Declare Sub get_rotation_matrix_f CDecl Alias "get_rotation_matrix_f" (ByVal m As MATRIX_f Ptr, ByVal x As Single, ByVal y As Single, ByVal z As Single)
-
-Declare Sub get_align_matrix CDecl Alias "get_align_matrix" (ByVal m As MATRIX Ptr, ByVal xfront As fixed, ByVal yfront As fixed, ByVal zfront As fixed, ByVal xup As fixed, ByVal yup As fixed, ByVal zup As fixed)
-Declare Sub get_align_matrix_f CDecl Alias "get_align_matrix_f" (ByVal m As MATRIX_f Ptr, ByVal xfront As Single, ByVal yfront As Single, ByVal zfront As Single, ByVal xup As Single, ByVal yup As Single, ByVal zup As Single)
-
-Declare Sub get_vector_rotation_matrix CDecl Alias "get_vector_rotation_matrix" (ByVal m As MATRIX Ptr, ByVal x As fixed, ByVal y As fixed, BYVal z AS fixed, ByVal a As fixed)
-Declare Sub get_vector_rotation_matrix_f CDecl Alias "get_vector_rotation_matrix_f" (ByVal m As MATRIX_f Ptr, ByVal x As Single, ByVal y As Single, ByVal z As Single, ByVal a As Single)
-
-Declare Sub get_transformation_matrix CDecl Alias "get_transformation_matrix" (ByVal m As MATRIX Ptr, ByVal scale As fixed, ByVal xrot As fixed, ByVal yrot As fixed, ByVal zrot As fixed, ByVal x As fixed, ByVal y As fixed, byVal z As fixed)
-Declare Sub get_transformation_matrix_f CDecl Alias "get_transformation_matrix_f" (ByVal m As MATRIX_f Ptr, ByVal scale As Single, ByVal xrot As Single, BYVal yrot As Single, ByVal zrot As Single, ByVal x As Single, BYVal y As Single, ByVal z As Single)
-
-Declare Sub get_camera_matrix CDecl Alias "get_camera_matrix" (ByVal m As MATRIX Ptr, ByVal x As fixed, ByVal y As fixed, ByVal z As fixed, ByVal xfront As fixed, ByVal yfront As fixed, BYval zfront As fixed, ByVal xup As fixed, ByVal yup As fixed, ByVal zup As fixed, ByVal fov As fixed, ByVal aspect As fixed)
-Declare Sub get_camera_matrix_f CDecl Alias "get_camera_matrix_f" (ByVal m As MATRIX_f Ptr, ByVal x As Single, ByVal y As Single, ByVal z As Single, ByVal xfront As Single, ByVal yfront As Single, ByVal zfront As Single, ByVal xup As Single, BYVal yup As Single, ByVal zup As Single, ByVal fov As Single, Byval aspect As Single)
-
-Declare Sub qtranslate_matrix CDecl Alias "qtranslate_matrix" (ByVal m As MATRIX Ptr, ByVal x As fixed, BYVal y As fixed, ByVal z As fixed)
-Declare Sub qtrnslate_matrix_f CDecl Alias "qtranslate_matrix_f" (ByVal m As MATRIX_f Ptr, ByVal x As Single, ByVal y As Single, ByVal z As Single)
-
-Declare Sub qscale_matrix CDecl Alias "qscale_matrix" (ByVal m As MATRIX Ptr, ByVal scale As fixed)
-Declare Sub qscale_matrix_f CDecl Alias "qscale_matrix_f" (ByVal m As MATRIX_f Ptr, ByVal scale As Single)
-
-Declare Sub matrix_mul CDecl Alias "matrix_mul" (ByVal m1 As MATRIX Ptr, ByVal m2 As MATRIX Ptr, ByVal mout As MATRIX Ptr)
-Declare Sub matrix_mul_f CDecl Alias "matrix_mul_f" (ByVal m1 As MATRIX_f Ptr, ByVal m2 As MATRIX_f Ptr, ByVal mout As MATRIX_f Ptr)
-
-Declare Sub apply_matrix_f CDecl Alias "apply_matrix_f" (ByVal m As MATRIX_f Ptr, ByVal x As Single, ByVal y As SIngle, byVal z As Single, ByRef xout As Single, ByRef yout As Single, Byref zout As Single)
-
-#include "allegro/inline/matrix.inl"
+#include once "allegro/inline/matrix.bi"
 
 #endif

@@ -1,37 +1,25 @@
-'         ______   ___    ___
-'        /\  _  \ /\_ \  /\_ \
-'        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
-'         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
-'          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
-'           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
-'            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
-'                                           /\____/
-'                                           \_/__/
-'
-'      Sound support routines.
-'
-'      By Shawn Hargreaves.
-'
-'      See readme.txt for copyright information.
-'
+''
+''
+'' allegro\sound -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __allegro_sound_bi__
+#define __allegro_sound_bi__
 
+#include once "allegro/base.bi"
+#include once "allegro/digi.bi"
+#include once "allegro/stream.bi"
+#include once "allegro/midi.bi"
 
-#ifndef ALLEGRO_SOUND_H
-#define ALLEGRO_SOUND_H
-
-
-#include "allegro/base.bi"
-
-#include "allegro/digi.bi"
-#include "allegro/stream.bi"
-#include "allegro/midi.bi"
-
-Declare Sub reserve_voices CDecl Alias "reserve_voices" (ByVal _digi_voices As Integer, ByVal _midi_voices As Integer)
-Declare Sub set_volume_per_voice CDecl Alias "set_volume_per_voice" (ByVal scale As Integer)
-
-Declare Function install_sound CDecl Alias "install_sound" (ByVal digi As Integer, ByVal midi As Integer, byval cfg_path as zstring ptr) As Integer
-Declare Sub remove_sound CDecl Alias "remove_sound"
-
-Declare Sub set_volume CDecl Alias "set_volume" (ByVal digi_volume As Integer, ByVal midi_volume As Integer)
+declare sub reserve_voices cdecl alias "reserve_voices" (byval digi_voices_ as integer, byval midi_voices_ as integer)
+declare sub set_volume_per_voice cdecl alias "set_volume_per_voice" (byval scale as integer)
+declare function install_sound cdecl alias "install_sound" (byval digi as integer, byval midi as integer, byval cfg_path as zstring ptr) as integer
+declare sub remove_sound cdecl alias "remove_sound" ()
+declare function install_sound_input cdecl alias "install_sound_input" (byval digi as integer, byval midi as integer) as integer
+declare sub remove_sound_input cdecl alias "remove_sound_input" ()
+declare sub set_volume cdecl alias "set_volume" (byval digi_volume as integer, byval midi_volume as integer)
 
 #endif

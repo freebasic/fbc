@@ -1,303 +1,278 @@
-'         ______   ___    ___
-'        /\  _  \ /\_ \  /\_ \
-'        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
-'         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
-'          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
-'           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
-'            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
-'                                           /\____/
-'                                           \_/__/
-'
-'      Basic graphics support routines.
-'
-'      By Shawn Hargreaves.
-'
-'      See readme.txt for copyright information.
-'
+''
+''
+'' allegro\gfx -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __allegro_gfx_bi__
+#define __allegro_gfx_bi__
 
+#include once "allegro/base.bi"
+#include once "allegro/fixed.bi"
 
-#ifndef ALLEGRO_GFX_H
-#define ALLEGRO_GFX_H
+#define GFX_TEXT -1
+#define GFX_AUTODETECT 0
+#define GFX_AUTODETECT_FULLSCREEN 1
+#define GFX_AUTODETECT_WINDOWED 2
+#define GFX_SAFE AL_ID(asc("S"),asc("A"),asc("F"),asc("E"))
 
-#include "allegro/base.bi"
-#include "allegro/fixed.bi"
-
-Const GFX_TEXT%				= -1
-Const GFX_AUTODETECT%			= 0
-Const GFX_AUTODETECT_FULLSCREEN%	= 1
-Const GFX_AUTODETECT_WINDOWED%		= 2
-Const GFX_SAFE%				= (83 shl 24) or (65 shl 16) or (70 shl 8) or 69 ' AL_ID('S','A','F','E')
-
-Type GFX_MODE
-	width As Integer
-	height As Integer
-	bpp As Integer
-End Type
-
-Type GFX_MODE_LIST
-	num_modes As Integer			' number of gfx modes
-	mode As GFX_MODE Ptr			' pointer to the actual mode list array
-End Type
-
-type GFX_DRIVER
-   id as integer
-   name as byte ptr
-   desc as byte ptr
-   ascii_name as byte ptr
-   init as sub
-   exit as sub
-   scroll as sub
-   vsync as sub
-   set_palette as sub
-   request_scroll as sub
-   poll_scroll as sub
-   enable_triple_buffer as sub
-   create_video_bitmap as sub
-   destroy_video_bitmap as sub
-   show_video_bitmap as sub
-   request_video_bitmap as sub
-   create_system_bitmap as sub
-   destroy_system_bitmap as sub
-   set_mouse_sprite as sub
-   show_mouse as sub
-   hide_mouse as sub
-   move_mouse as sub
-   drawing_mode as sub
-   save_video_state as sub
-   restore_video_state as sub
-   fetch_mode_list as sub
-   w as integer
-   h as integer
-   linear as integer
-   bank_size as integer
-   bank_gran as integer
-   vid_mem as integer
-   vid_phys_base as integer
-   windowed as integer
+type GFX_MODE
+	width as integer
+	height as integer
+	bpp as integer
 end type
 
-extern import gfx_driver alias "gfx_driver" as GFX_DRIVER ptr
-extern import _gfx_driver_list Alias "_gfx_driver_list" As _DRIVER_INFO Ptr
+type GFX_MODE_LIST
+	num_modes as integer
+	mode as GFX_MODE ptr
+end type
 
-Const GFX_CAN_SCROLL%			= &H00000001
-Const GFX_CAN_TRIPLE_BUFFER%		= &H00000002
-Const GFX_HW_CURSOR%			= &H00000004
-Const GFX_HW_HLINE%			= &H00000008
-Const GFX_HW_HLINE_XOR%			= &H00000010
-Const GFX_HW_HLINE_SOLID_PATTERN%	= &H00000020
-Const GFX_HW_HLINE_COPY_PATTERN%	= &H00000040
-Const GFX_HW_FILL%			= &H00000080
-Const GFX_HW_FILL_XOR%			= &H00000100
-Const GFX_HW_FILL_SOLID_PATTERN%	= &H00000200
-Const GFX_HW_FILL_COPY_PATTERN%		= &H00000400
-Const GFX_HW_LINE%			= &H00000800
-Const GFX_HW_LINE_XOR%			= &H00001000
-Const GFX_HW_TRIANGLE%			= &H00002000
-Const GFX_HW_TRIANGLE_XOR%		= &H00004000
-Const GFX_HW_GLYPH%			= &H00008000
-Const GFX_HW_VRAM_BLIT%			= &H00010000
-Const GFX_HW_VRAM_BLIT_MASKED%		= &H00020000
-Const GFX_HW_MEM_BLIT%			= &H00040000
-Const GFX_HW_MEM_BLIT_MASKED%		= &H00080000
-Const GFX_HW_SYS_TO_VRAM_BLIT%		= &H00100000
-Const GFX_HW_SYS_TO_VRAM_BLIT_MASKED%	= &H00200000
+type BITMAP_ as BITMAP
 
-Extern Import gfx_capabilities Alias "gfx_capabilities" As Integer
+type GFX_DRIVER
+	id as integer
+	name as zstring ptr
+	desc as zstring ptr
+	ascii_name as zstring ptr
+	init as function cdecl(byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as BITMAP_ ptr
+	exit as sub cdecl(byval as BITMAP_ ptr)
+	scroll as function cdecl(byval as integer, byval as integer) as integer
+	vsync as sub cdecl()
+	set_palette as sub cdecl(byval as RGB ptr, byval as integer, byval as integer, byval as integer)
+	request_scroll as function cdecl(byval as integer, byval as integer) as integer
+	poll_scroll as function cdecl() as integer
+	enable_triple_buffer as sub cdecl()
+	create_video_bitmap as function cdecl(byval as integer, byval as integer) as BITMAP_ ptr
+	destroy_video_bitmap as sub cdecl(byval as BITMAP_ ptr)
+	show_video_bitmap as function cdecl(byval as BITMAP_ ptr) as integer
+	request_video_bitmap as function cdecl(byval as BITMAP_ ptr) as integer
+	create_system_bitmap as function cdecl(byval as integer, byval as integer) as BITMAP_ ptr
+	destroy_system_bitmap as sub cdecl(byval as BITMAP_ ptr)
+	set_mouse_sprite as function cdecl(byval as BITMAP_ ptr, byval as integer, byval as integer) as integer
+	show_mouse as function cdecl(byval as BITMAP_ ptr, byval as integer, byval as integer) as integer
+	hide_mouse as sub cdecl()
+	move_mouse as sub cdecl(byval as integer, byval as integer)
+	drawing_mode as sub cdecl()
+	save_video_state as sub cdecl()
+	restore_video_state as sub cdecl()
+	fetch_mode_list as function cdecl() as GFX_MODE_LIST ptr
+	w as integer
+	h as integer
+	linear as integer
+	bank_size as integer
+	bank_gran as integer
+	vid_mem as integer
+	vid_phys_base as integer
+	windowed as integer
+end type
 
-Type GFX_VTABLE        ' functions for drawing onto bitmaps
-	color_depth As Integer
-	mask_color As Integer
-	unwrite_bank As Integer  ' C function on some machines, asm on i386
-	set_clip As Integer
-	acquire As Integer
-	release As Integer
-	create_sub_bitmap As Integer
-	created_sub_bitmap As Integer
-	getpixel As Integer
-	putpixel As Integer
-	vline As Integer
-	hline As Integer
-	hfill As Integer
-	draw_line As Integer
-	rectfill As Integer
-	triangle As Integer
-	draw_sprite As Integer
-	draw_256_sprite As Integer
-	draw_sprite_v_flip As Integer
-	draw_sprite_h_flip As Integer
-	draw_sprite_vh_flip As Integer
-	draw_trans_sprite As Integer
-	draw_trans_rgba_sprite As Integer
-	draw_lit_sprite As Integer
-	draw_rle_sprite As Integer
-	draw_trans_rle_sprite As Integer
-	draw_trans_rgba_rle_sprite As Integer
-	draw_lit_rle_sprite As Integer
-	draw_character As Integer
-	draw_glyph As Integer
-	blit_from_memory As Integer
-	blit_to_memory As Integer
-	blit_from_system As Integer
-	blit_to_system As Integer
-	blit_to_self As Integer
-	blit_to_self_forward As Integer
-	blit_to_self_backward As Integer
-	blit_between_formats As Integer
-	masked_blit As Integer
-	clear_to_color As Integer
-	pivot_scaled_sprite_flip As Integer
-	draw_sprite_end As Integer
-	blit_end As Integer
-End Type
+extern _AL_DLL gfx_driver alias "gfx_driver" as GFX_DRIVER ptr
+extern _AL_DLL ___gfx_driver_list alias "_gfx_driver_list" as _DRIVER_INFO
+#define _gfx_driver_list(x) *(@___gfx_driver_list + (x))
 
-Extern Import __linear_vtable8 Alias "__linear_vtable8" As GFX_VTABLE
-Extern Import __linear_vtable15 Alias "__linear_vtable15" As GFX_VTABLE
-Extern Import __linear_vtable16 Alias "__linear_vtable16" As GFX_VTABLE
-Extern Import __linear_vtable24 Alias "__linear_vtable24" As GFX_VTABLE
-Extern Import __linear_vtable32 Alias "__linear_vtable32" As GFX_VTABLE
+#define GFX_CAN_SCROLL &h00000001
+#define GFX_CAN_TRIPLE_BUFFER &h00000002
+#define GFX_HW_CURSOR &h00000004
+#define GFX_HW_HLINE &h00000008
+#define GFX_HW_HLINE_XOR &h00000010
+#define GFX_HW_HLINE_SOLID_PATTERN &h00000020
+#define GFX_HW_HLINE_COPY_PATTERN &h00000040
+#define GFX_HW_FILL &h00000080
+#define GFX_HW_FILL_XOR &h00000100
+#define GFX_HW_FILL_SOLID_PATTERN &h00000200
+#define GFX_HW_FILL_COPY_PATTERN &h00000400
+#define GFX_HW_LINE &h00000800
+#define GFX_HW_LINE_XOR &h00001000
+#define GFX_HW_TRIANGLE &h00002000
+#define GFX_HW_TRIANGLE_XOR &h00004000
+#define GFX_HW_GLYPH &h00008000
+#define GFX_HW_VRAM_BLIT &h00010000
+#define GFX_HW_VRAM_BLIT_MASKED &h00020000
+#define GFX_HW_MEM_BLIT &h00040000
+#define GFX_HW_MEM_BLIT_MASKED &h00080000
+#define GFX_HW_SYS_TO_VRAM_BLIT &h00100000
+#define GFX_HW_SYS_TO_VRAM_BLIT_MASKED &h00200000
+
+extern _AL_DLL gfx_capabilities alias "gfx_capabilities" as integer
+
+type RLE_SPRITE_ as RLE_SPRITE
+type FONT_GLYPH_ as FONT_GLYPH
+
+type GFX_VTABLE
+	color_depth as integer
+	mask_color as integer
+	unwrite_bank as any ptr
+	set_clip as sub cdecl(byval as BITMAP_ ptr)
+	acquire as sub cdecl(byval as BITMAP_ ptr)
+	release as sub cdecl(byval as BITMAP_ ptr)
+	create_sub_bitmap as function cdecl(byval as BITMAP_ ptr, byval as integer, byval as integer, byval as integer, byval as integer) as BITMAP_ ptr
+	created_sub_bitmap as sub cdecl(byval as BITMAP_ ptr, byval as BITMAP_ ptr)
+	getpixel as function cdecl(byval as BITMAP_ ptr, byval as integer, byval as integer) as integer
+	putpixel as sub cdecl(byval as BITMAP_ ptr, byval as integer, byval as integer, byval as integer)
+	vline as sub cdecl(byval as BITMAP_ ptr, byval as integer, byval as integer, byval as integer, byval as integer)
+	hline as sub cdecl(byval as BITMAP_ ptr, byval as integer, byval as integer, byval as integer, byval as integer)
+	hfill as sub cdecl(byval as BITMAP_ ptr, byval as integer, byval as integer, byval as integer, byval as integer)
+	line as sub cdecl(byval as BITMAP_ ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer)
+	rectfill as sub cdecl(byval as BITMAP_ ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer)
+	triangle as function cdecl(byval as BITMAP_ ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as integer
+	draw_sprite as sub cdecl(byval as BITMAP_ ptr, byval as BITMAP_ ptr, byval as integer, byval as integer)
+	draw_256_sprite as sub cdecl(byval as BITMAP_ ptr, byval as BITMAP_ ptr, byval as integer, byval as integer)
+	draw_sprite_v_flip as sub cdecl(byval as BITMAP_ ptr, byval as BITMAP_ ptr, byval as integer, byval as integer)
+	draw_sprite_h_flip as sub cdecl(byval as BITMAP_ ptr, byval as BITMAP_ ptr, byval as integer, byval as integer)
+	draw_sprite_vh_flip as sub cdecl(byval as BITMAP_ ptr, byval as BITMAP_ ptr, byval as integer, byval as integer)
+	draw_trans_sprite as sub cdecl(byval as BITMAP_ ptr, byval as BITMAP_ ptr, byval as integer, byval as integer)
+	draw_trans_rgba_sprite as sub cdecl(byval as BITMAP_ ptr, byval as BITMAP_ ptr, byval as integer, byval as integer)
+	draw_lit_sprite as sub cdecl(byval as BITMAP_ ptr, byval as BITMAP_ ptr, byval as integer, byval as integer, byval as integer)
+	draw_rle_sprite as sub cdecl(byval as BITMAP_ ptr, byval as RLE_SPRITE_ ptr, byval as integer, byval as integer)
+	draw_trans_rle_sprite as sub cdecl(byval as BITMAP_ ptr, byval as RLE_SPRITE_ ptr, byval as integer, byval as integer)
+	draw_trans_rgba_rle_sprite as sub cdecl(byval as BITMAP_ ptr, byval as RLE_SPRITE_ ptr, byval as integer, byval as integer)
+	draw_lit_rle_sprite as sub cdecl(byval as BITMAP_ ptr, byval as RLE_SPRITE_ ptr, byval as integer, byval as integer, byval as integer)
+	draw_character as sub cdecl(byval as BITMAP_ ptr, byval as BITMAP_ ptr, byval as integer, byval as integer, byval as integer)
+	draw_glyph as sub cdecl(byval as BITMAP_ ptr, byval as FONT_GLYPH_ ptr, byval as integer, byval as integer, byval as integer)
+	blit_from_memory as sub cdecl(byval as BITMAP_ ptr, byval as BITMAP_ ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer)
+	blit_to_memory as sub cdecl(byval as BITMAP_ ptr, byval as BITMAP_ ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer)
+	blit_from_system as sub cdecl(byval as BITMAP_ ptr, byval as BITMAP_ ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer)
+	blit_to_system as sub cdecl(byval as BITMAP_ ptr, byval as BITMAP_ ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer)
+	blit_to_self as sub cdecl(byval as BITMAP_ ptr, byval as BITMAP_ ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer)
+	blit_to_self_forward as sub cdecl(byval as BITMAP_ ptr, byval as BITMAP_ ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer)
+	blit_to_self_backward as sub cdecl(byval as BITMAP_ ptr, byval as BITMAP_ ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer)
+	blit_between_formats as sub cdecl(byval as BITMAP_ ptr, byval as BITMAP_ ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer)
+	masked_blit as sub cdecl(byval as BITMAP_ ptr, byval as BITMAP_ ptr, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer)
+	clear_to_color as sub cdecl(byval as BITMAP_ ptr, byval as integer)
+	pivot_scaled_sprite_flip as sub cdecl(byval as BITMAP_ ptr, byval as BITMAP_ ptr, byval as fixed, byval as fixed, byval as fixed, byval as fixed, byval as fixed, byval as fixed, byval as integer)
+	draw_sprite_end as sub cdecl()
+	blit_end as sub cdecl()
+end type
+
+extern _AL_DLL __linear_vtable8 alias "__linear_vtable8" as GFX_VTABLE
+extern _AL_DLL __linear_vtable15 alias "__linear_vtable15" as GFX_VTABLE
+extern _AL_DLL __linear_vtable16 alias "__linear_vtable16" as GFX_VTABLE
+extern _AL_DLL __linear_vtable24 alias "__linear_vtable24" as GFX_VTABLE
+extern _AL_DLL __linear_vtable32 alias "__linear_vtable32" as GFX_VTABLE
 
 type _VTABLE_INFO
 	color_depth as integer
 	vtable as GFX_VTABLE ptr
 end type
 
-extern import _vtable_list alias "_vtable_list" as _VTABLE_INFO ptr
+extern _AL_DLL ___vtable_list alias "_vtable_list" as _VTABLE_INFO
+#define _vtable_list(x) *(@___vtable_list + (x))
 
-Type BITMAP            				' a bitmap structure
-	w As Integer				' width and height in pixels
+type BITMAP
+	w as integer
 	h as integer
-	clip As Integer				' flag if clipping is turned on
-	cl As Integer				' clip left, right, top and bottom values
-	cr As Integer
-	ct As Integer
-	cb As Integer
-	vtable As GFX_VTABLE Ptr		' drawing functions
-	write_bank As Integer 'void *write_bank;' C func on some machines, asm on i386
-	read_bank As Integer 'void *read_bank;	' C func on some machines, asm on i386
-	dat As Integer Ptr			' the memory we allocated for the bitmap
-	id As Unsigned Integer			' for identifying sub-bitmaps
-	extra As UByte Ptr			' points to a structure with more info
-	x_ofs As Integer			' horizontal offset (for sub-bitmaps)
-	y_ofs As Integer			' vertical offset (for sub-bitmaps)
-	seg As Integer				' bitmap segment
-	line As UByte Ptr 			'ZERO_SIZE_ARRAY(unsigned char *, line);
-End Type
+	clip as integer
+	cl as integer
+	cr as integer
+	ct as integer
+	cb as integer
+	vtable as GFX_VTABLE ptr
+	write_bank as any ptr
+	read_bank as any ptr
+	dat as any ptr
+	id as uinteger
+	extra as any ptr
+	x_ofs as integer
+	y_ofs as integer
+	seg as integer
+	line(0 to 0) as ubyte ptr
+end type
 
-#define BMP_ID_VIDEO       &H80000000
-#define BMP_ID_SYSTEM      &H40000000
-#define BMP_ID_SUB         &H20000000
-#define BMP_ID_PLANAR      &H10000000
-#define BMP_ID_NOBLIT      &H08000000
-#define BMP_ID_LOCKED      &H04000000
-#define BMP_ID_AUTOLOCK    &H02000000
-#define BMP_ID_MASK        &H01FFFFFF
+#define BMP_ID_VIDEO &h80000000
+#define BMP_ID_SYSTEM &h40000000
+#define BMP_ID_SUB &h20000000
+#define BMP_ID_PLANAR &h10000000
+#define BMP_ID_NOBLIT &h08000000
+#define BMP_ID_LOCKED &h04000000
+#define BMP_ID_AUTOLOCK &h02000000
+#define BMP_ID_MASK &h01FFFFFF
 
-Extern Import screen Alias "screen" As BITMAP Ptr
+extern _AL_DLL screen alias "screen" as BITMAP ptr
 
-#define SCREEN_W iif(gfx_driver <> 0, gfx_driver->w, 0)
-#define SCREEN_H iif(gfx_driver <> 0, gfx_driver->h, 0)
+#define SCREEN_W iif(gfx_driver, gfx_driver->w, 0)
+#define SCREEN_H iif(gfx_driver, gfx_driver->h, 0)
+#define VIRTUAL_W iif(screen, screen->w, 0)
+#define VIRTUAL_H iif(screen, screen->h, 0)
 
-#define VIRTUAL_W    iif(screen <> 0, screen->w, 0)
-#define VIRTUAL_H    iif(screen <> 0, screen->h, 0)
+#define COLORCONV_NONE 0
+#define COLORCONV_8_TO_15 1
+#define COLORCONV_8_TO_16 2
+#define COLORCONV_8_TO_24 4
+#define COLORCONV_8_TO_32 8
+#define COLORCONV_15_TO_8 &h10
+#define COLORCONV_15_TO_16 &h20
+#define COLORCONV_15_TO_24 &h40
+#define COLORCONV_15_TO_32 &h80
+#define COLORCONV_16_TO_8 &h100
+#define COLORCONV_16_TO_15 &h200
+#define COLORCONV_16_TO_24 &h400
+#define COLORCONV_16_TO_32 &h800
+#define COLORCONV_24_TO_8 &h1000
+#define COLORCONV_24_TO_15 &h2000
+#define COLORCONV_24_TO_16 &h4000
+#define COLORCONV_24_TO_32 &h8000
+#define COLORCONV_32_TO_8 &h10000
+#define COLORCONV_32_TO_15 &h20000
+#define COLORCONV_32_TO_16 &h40000
+#define COLORCONV_32_TO_24 &h80000
+#define COLORCONV_32A_TO_8 &h100000
+#define COLORCONV_32A_TO_15 &h200000
+#define COLORCONV_32A_TO_16 &h400000
+#define COLORCONV_32A_TO_24 &h800000
+#define COLORCONV_DITHER_PAL &h1000000
+#define COLORCONV_DITHER_HI &h2000000
+#define COLORCONV_KEEP_TRANS &h4000000
+#define COLORCONV_DITHER (&h1000000 or &h2000000)
+#define COLORCONV_EXPAND_256 (1 or 2 or 4 or 8)
+#define COLORCONV_REDUCE_TO_256 (&h10 or &h100 or &h1000 or &h10000 or &h100000)
+#define COLORCONV_EXPAND_15_TO_16 &h20
+#define COLORCONV_REDUCE_16_TO_15 &h200
+#define COLORCONV_EXPAND_HI_TO_TRUE (&h40 or &h80 or &h400 or &h800)
+#define COLORCONV_REDUCE_TRUE_TO_HI (&h2000 or &h4000 or &h20000 or &h40000)
+#define COLORCONV_24_EQUALS_32 (&h8000 or &h80000)
+#define COLORCONV_TOTAL ((1 or 2 or 4 or 8) or (&h10 or &h100 or &h1000 or &h10000 or &h100000) or &h20 or &h200 or (&h40 or &h80 or &h400 or &h800) or (&h2000 or &h4000 or &h20000 or &h40000) or (&h8000 or &h80000) or &h200000 or &h400000 or &h800000)
+#define COLORCONV_PARTIAL (&h20 or &h200 or (&h8000 or &h80000))
+#define COLORCONV_MOST (&h20 or &h200 or (&h40 or &h80 or &h400 or &h800) or (&h2000 or &h4000 or &h20000 or &h40000) or (&h8000 or &h80000))
 
+declare function get_gfx_mode_list cdecl alias "get_gfx_mode_list" (byval card as integer) as GFX_MODE_LIST ptr
+declare sub destroy_gfx_mode_list cdecl alias "destroy_gfx_mode_list" (byval gfx_mode_list as GFX_MODE_LIST ptr)
+declare sub set_color_depth cdecl alias "set_color_depth" (byval depth as integer)
+declare sub set_color_conversion cdecl alias "set_color_conversion" (byval mode as integer)
+declare sub request_refresh_rate cdecl alias "request_refresh_rate" (byval rate as integer)
+declare function get_refresh_rate cdecl alias "get_refresh_rate" () as integer
+declare function set_gfx_mode cdecl alias "set_gfx_mode" (byval card as integer, byval w as integer, byval h as integer, byval v_w as integer, byval v_h as integer) as integer
+declare function scroll_screen cdecl alias "scroll_screen" (byval x as integer, byval y as integer) as integer
+declare function request_scroll cdecl alias "request_scroll" (byval x as integer, byval y as integer) as integer
+declare function poll_scroll cdecl alias "poll_scroll" () as integer
+declare function show_video_bitmap cdecl alias "show_video_bitmap" (byval bitmap as BITMAP ptr) as integer
+declare function request_video_bitmap cdecl alias "request_video_bitmap" (byval bitmap as BITMAP ptr) as integer
+declare function enable_triple_buffer cdecl alias "enable_triple_buffer" () as integer
+declare function create_bitmap cdecl alias "create_bitmap" (byval width as integer, byval height as integer) as BITMAP ptr
+declare function create_bitmap_ex cdecl alias "create_bitmap_ex" (byval color_depth as integer, byval width as integer, byval height as integer) as BITMAP ptr
+declare function create_sub_bitmap cdecl alias "create_sub_bitmap" (byval parent as BITMAP ptr, byval x as integer, byval y as integer, byval width as integer, byval height as integer) as BITMAP ptr
+declare function create_video_bitmap cdecl alias "create_video_bitmap" (byval width as integer, byval height as integer) as BITMAP ptr
+declare function create_system_bitmap cdecl alias "create_system_bitmap" (byval width as integer, byval height as integer) as BITMAP ptr
+declare sub destroy_bitmap cdecl alias "destroy_bitmap" (byval bitmap as BITMAP ptr)
+declare sub set_clip cdecl alias "set_clip" (byval bitmap as BITMAP ptr, byval x1 as integer, byval y1 as integer, byval x2 as integer, byval y2 as integer)
+declare sub clear_bitmap cdecl alias "clear_bitmap" (byval bitmap as BITMAP ptr)
+declare sub vsync cdecl alias "vsync" ()
 
-#define COLORCONV_NONE              0
+#define SWITCH_NONE 0
+#define SWITCH_PAUSE 1
+#define SWITCH_AMNESIA 2
+#define SWITCH_BACKGROUND 3
+#define SWITCH_BACKAMNESIA 4
+#define SWITCH_IN 0
+#define SWITCH_OUT 1
 
-#define COLORCONV_8_TO_15           1
-#define COLORCONV_8_TO_16           2
-#define COLORCONV_8_TO_24           4
-#define COLORCONV_8_TO_32           8
+declare function set_display_switch_mode cdecl alias "set_display_switch_mode" (byval mode as integer) as integer
+declare function get_display_switch_mode cdecl alias "get_display_switch_mode" () as integer
+declare function set_display_switch_callback cdecl alias "set_display_switch_callback" (byval dir as integer, byval cb as sub cdecl()) as integer
+declare sub remove_display_switch_callback cdecl alias "remove_display_switch_callback" (byval cb as sub cdecl())
+declare sub lock_bitmap cdecl alias "lock_bitmap" (byval bmp as BITMAP ptr)
 
-#define COLORCONV_15_TO_8           &H10
-#define COLORCONV_15_TO_16          &H20
-#define COLORCONV_15_TO_24          &H40
-#define COLORCONV_15_TO_32          &H80
-
-#define COLORCONV_16_TO_8           &H100
-#define COLORCONV_16_TO_15          &H200
-#define COLORCONV_16_TO_24          &H400
-#define COLORCONV_16_TO_32          &H800
-
-#define COLORCONV_24_TO_8           &H1000
-#define COLORCONV_24_TO_15          &H2000
-#define COLORCONV_24_TO_16          &H4000
-#define COLORCONV_24_TO_32          &H8000
-
-#define COLORCONV_32_TO_8           &H10000
-#define COLORCONV_32_TO_15          &H20000
-#define COLORCONV_32_TO_16          &H40000
-#define COLORCONV_32_TO_24          &H80000
-
-#define COLORCONV_32A_TO_8          &H100000
-#define COLORCONV_32A_TO_15         &H200000
-#define COLORCONV_32A_TO_16         &H400000
-#define COLORCONV_32A_TO_24         &H800000
-
-#define COLORCONV_DITHER_PAL        &H1000000
-#define COLORCONV_DITHER_HI         &H2000000
-#define COLORCONV_KEEP_TRANS        &H4000000
-
-#define COLORCONV_DITHER            (COLORCONV_DITHER_PAL or COLORCONV_DITHER_HI)
-
-#define COLORCONV_EXPAND_256        (COLORCONV_8_TO_15 or COLORCONV_8_TO_16 or COLORCONV_8_TO_24 or COLORCONV_8_TO_32)
-
-#define COLORCONV_REDUCE_TO_256     (COLORCONV_15_TO_8 or COLORCONV_16_TO_8 or COLORCONV_24_TO_8 or COLORCONV_32_TO_8 or COLORCONV_32A_TO_8)
-
-#define COLORCONV_EXPAND_15_TO_16    COLORCONV_15_TO_16
-
-#define COLORCONV_REDUCE_16_TO_15    COLORCONV_16_TO_15
-
-#define COLORCONV_EXPAND_HI_TO_TRUE (COLORCONV_15_TO_24 or COLORCONV_15_TO_32 or COLORCONV_16_TO_24 or COLORCONV_16_TO_32)
-
-#define COLORCONV_REDUCE_TRUE_TO_HI (COLORCONV_24_TO_15 or COLORCONV_24_TO_16 or COLORCONV_32_TO_15 or COLORCONV_32_TO_16)
-
-#define COLORCONV_24_EQUALS_32      (COLORCONV_24_TO_32 or COLORCONV_32_TO_24)
-
-#define COLORCONV_TOTAL             (COLORCONV_EXPAND_256 or COLORCONV_REDUCE_TO_256 or COLORCONV_EXPAND_15_TO_16 or COLORCONV_REDUCE_16_TO_15 or COLORCONV_EXPAND_HI_TO_TRUE or COLORCONV_REDUCE_TRUE_TO_HI or COLORCONV_24_EQUALS_32 or COLORCONV_32A_TO_15 or COLORCONV_32A_TO_16 or COLORCONV_32A_TO_24)
-
-#define COLORCONV_PARTIAL           (COLORCONV_EXPAND_15_TO_16 or COLORCONV_REDUCE_16_TO_15 or COLORCONV_24_EQUALS_32)
-
-#define COLORCONV_MOST              (COLORCONV_EXPAND_15_TO_16 or COLORCONV_REDUCE_16_TO_15 or COLORCONV_EXPAND_HI_TO_TRUE or COLORCONV_REDUCE_TRUE_TO_HI or COLORCONV_24_EQUALS_32)
-
-
-Declare Function get_gfx_mode_list CDecl Alias "get_gfx_mode_list" (ByVal card As Integer) As GFX_MODE_LIST Ptr
-Declare Sub destroy_gfx_mode_list CDecl Alias "destroy_gfx_mode_list" (ByVal mode_list As GFX_MODE_LIST Ptr)
-Declare Sub set_color_depth CDecl Alias "set_color_depth" (ByVal depth As Integer)
-Declare Sub set_color_conversion CDecl Alias "set_color_conversion" (ByVal mode As Integer)
-Declare Sub request_refresh_rate CDecl Alias "request_refresh_rate" (ByVal rate As Integer)
-Declare Function get_refresh_rate CDecl Alias "get_refresh_rate" () As Integer
-Declare Function set_gfx_mode CDecl Alias "set_gfx_mode" (ByVal card As Integer, ByVal w As Integer, ByVal h As Integer, ByVal v_w As Integer, ByVal v_h As Integer)
-Declare Function scroll_screen CDecl Alias "scroll_screen" (ByVal x As Integer, ByVal y As Integer) As Integer
-Declare Function request_scroll CDecl Alias "request_scroll" (ByVal x As Integer, ByVal y As Integer) As Integer
-Declare Function poll_scroll CDecl Alias "poll_scroll" () As Integer
-Declare Function show_video_bitmap CDecl Alias "show_video_bitmap" (ByVal bmp As BITMAP Ptr) As Integer
-Declare Function request_video_bitmap CDecl Alias "request_video_bitmap" (ByVal bmp As BITMAP Ptr) As Integer
-Declare Function enable_triple_buffer CDecl Alias "enable_triple_buffer" () As Integer
-Declare Function create_bitmap CDecl Alias "create_bitmap" (ByVal w As Integer, ByVal h As Integer) as BITMAP Ptr
-Declare Function create_bitmap_ex CDecl Alias "create_bitmap_ex" (ByVal color_depth As Integer, ByVal width As Integer, ByVal height As Integer) As BITMAP Ptr
-Declare Function create_sub_bitmap CDecl Alias "create_sub_bitmap" (ByVal parent As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal width As Integer, ByVal height As Integer) As BITMAP Ptr
-Declare Function create_video_bitmap CDecl Alias "create_video_bitmap" (ByVal width As Integer, ByVal height As Integer) As BITMAP Ptr
-Declare Function create_system_bitmap CDecl Alias "create_system_bitmap" (ByVal width As Integer, ByVal height As Integer) As BITMAP Ptr
-Declare Sub destroy_bitmap CDecl Alias "destroy_bitmap" (ByVal bmp As BITMAP Ptr)
-Declare Sub set_clip CDecl Alias "set_clip" (ByVal bmp As BITMAP Ptr, ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer)
-Declare Sub clear_bitmap CDecl Alias "clear_bitmap" (ByVal bmp As BITMAP Ptr)
-Declare Sub vsync CDecl Alias "vsync" ()
-
-#define SWITCH_NONE           0
-#define SWITCH_PAUSE          1
-#define SWITCH_AMNESIA        2
-#define SWITCH_BACKGROUND     3
-#define SWITCH_BACKAMNESIA    4
-
-#define SWITCH_IN             0
-#define SWITCH_OUT            1
-
-Declare Function set_display_switch_mode CDecl Alias "set_display_switch_mode" (ByVal mode As Integer) As Integer
-Declare Function get_display_switch_mode CDecl Alias "get_display_switch_mode" () As Integer
-Declare Function set_display_switch_callback CDecl Alias "set_display_switch_callback" (ByVal dir As Integer, ByVal cb As Sub()) As Integer
-Declare Sub remove_display_switch_callback CDecl Alias "remove_display_switch_callback" (ByVal cb As Sub())
-Declare Sub lock_bitmap CDecl Alias "lock_bitmap" (ByVal bmp As BITMAP Ptr)
-
-#include "allegro/inline/gfx.inl"
+#include once "allegro/inline/gfx.bi"
 
 #endif

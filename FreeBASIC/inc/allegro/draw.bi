@@ -1,60 +1,50 @@
-'         ______   ___    ___
-'        /\  _  \ /\_ \  /\_ \
-'        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
-'         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
-'          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
-'           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
-'            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
-'                                           /\____/
-'                                           \_/__/
-'
-'      Drawing and sprite routines.
-'
-'      By Shawn Hargreaves.
-'
-'      See readme.txt for copyright information.
-'
+''
+''
+'' allegro\draw -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __allegro_draw_bi__
+#define __allegro_draw_bi__
 
+#include once "allegro/base.bi"
+#include once "allegro/fixed.bi"
+#include once "allegro/gfx.bi"
 
-#ifndef ALLEGRO_DRAW_H
-#define ALLEGRO_DRAW_H
+#define DRAW_MODE_SOLID 0
+#define DRAW_MODE_XOR 1
+#define DRAW_MODE_COPY_PATTERN 2
+#define DRAW_MODE_SOLID_PATTERN 3
+#define DRAW_MODE_MASKED_PATTERN 4
+#define DRAW_MODE_TRANS 5
 
-#include "allegro/base.bi"
-#include "allegro/fixed.bi"
-#include "allegro/gfx.bi"
+declare sub drawing_mode cdecl alias "drawing_mode" (byval mode as integer, byval pattern as BITMAP ptr, byval x_anchor as integer, byval y_anchor as integer)
+declare sub xor_mode cdecl alias "xor_mode" (byval on as integer)
+declare sub solid_mode cdecl alias "solid_mode" ()
+declare sub do_line cdecl alias "do_line" (byval bmp as BITMAP ptr, byval x1 as integer, byval y1 as integer, byval x2 as integer, byval y2 as integer, byval d as integer, byval proc as sub cdecl(byval as BITMAP ptr, byval as integer, byval as integer, byval as integer))
+declare sub triangle cdecl alias "triangle" (byval bmp as BITMAP ptr, byval x1 as integer, byval y1 as integer, byval x2 as integer, byval y2 as integer, byval x3 as integer, byval y3 as integer, byval color as integer)
+declare sub polygon cdecl alias "polygon" (byval bmp as BITMAP ptr, byval vertices as integer, byval points as integer ptr, byval color as integer)
+declare sub rect cdecl alias "rect" (byval bmp as BITMAP ptr, byval x1 as integer, byval y1 as integer, byval x2 as integer, byval y2 as integer, byval color as integer)
+declare sub do_circle cdecl alias "do_circle" (byval bmp as BITMAP ptr, byval x as integer, byval y as integer, byval radius as integer, byval d as integer, byval proc as sub cdecl(byval as BITMAP ptr, byval as integer, byval as integer, byval as integer))
+declare sub circle cdecl alias "circle" (byval bmp as BITMAP ptr, byval x as integer, byval y as integer, byval radius as integer, byval color as integer)
+declare sub circlefill cdecl alias "circlefill" (byval bmp as BITMAP ptr, byval x as integer, byval y as integer, byval radius as integer, byval color as integer)
+declare sub do_ellipse cdecl alias "do_ellipse" (byval bmp as BITMAP ptr, byval x as integer, byval y as integer, byval rx as integer, byval ry as integer, byval d as integer, byval proc as sub cdecl(byval as BITMAP ptr, byval as integer, byval as integer, byval as integer))
+declare sub ellipse cdecl alias "ellipse" (byval bmp as BITMAP ptr, byval x as integer, byval y as integer, byval rx as integer, byval ry as integer, byval color as integer)
+declare sub ellipsefill cdecl alias "ellipsefill" (byval bmp as BITMAP ptr, byval x as integer, byval y as integer, byval rx as integer, byval ry as integer, byval color as integer)
+declare sub do_arc cdecl alias "do_arc" (byval bmp as BITMAP ptr, byval x as integer, byval y as integer, byval ang1 as fixed, byval ang2 as fixed, byval r as integer, byval d as integer, byval proc as sub cdecl(byval as BITMAP ptr, byval as integer, byval as integer, byval as integer))
+declare sub arc cdecl alias "arc" (byval bmp as BITMAP ptr, byval x as integer, byval y as integer, byval ang1 as fixed, byval ang2 as fixed, byval r as integer, byval color as integer)
+declare sub calc_spline cdecl alias "calc_spline" (byval points as integer ptr, byval npts as integer, byval x as integer ptr, byval y as integer ptr)
+declare sub spline cdecl alias "spline" (byval bmp as BITMAP ptr, byval points as integer ptr, byval color as integer)
+declare sub floodfill cdecl alias "floodfill" (byval bmp as BITMAP ptr, byval x as integer, byval y as integer, byval color as integer)
+declare sub blit cdecl alias "blit" (byval source as BITMAP ptr, byval dest as BITMAP ptr, byval source_x as integer, byval source_y as integer, byval dest_x as integer, byval dest_y as integer, byval width as integer, byval height as integer)
+declare sub masked_blit cdecl alias "masked_blit" (byval source as BITMAP ptr, byval dest as BITMAP ptr, byval source_x as integer, byval source_y as integer, byval dest_x as integer, byval dest_y as integer, byval width as integer, byval height as integer)
+declare sub stretch_blit cdecl alias "stretch_blit" (byval s as BITMAP ptr, byval d as BITMAP ptr, byval s_x as integer, byval s_y as integer, byval s_w as integer, byval s_h as integer, byval d_x as integer, byval d_y as integer, byval d_w as integer, byval d_h as integer)
+declare sub masked_stretch_blit cdecl alias "masked_stretch_blit" (byval s as BITMAP ptr, byval d as BITMAP ptr, byval s_x as integer, byval s_y as integer, byval s_w as integer, byval s_h as integer, byval d_x as integer, byval d_y as integer, byval d_w as integer, byval d_h as integer)
+declare sub stretch_sprite cdecl alias "stretch_sprite" (byval bmp as BITMAP ptr, byval sprite as BITMAP ptr, byval x as integer, byval y as integer, byval w as integer, byval h as integer)
+declare sub draw_gouraud_sprite cdecl alias "draw_gouraud_sprite" (byval bmp as BITMAP ptr, byval sprite as BITMAP ptr, byval x as integer, byval y as integer, byval c1 as integer, byval c2 as integer, byval c3 as integer, byval c4 as integer)
 
-#define DRAW_MODE_SOLID             0        ' flags for drawing_mode()
-#define DRAW_MODE_XOR               1
-#define DRAW_MODE_COPY_PATTERN      2
-#define DRAW_MODE_SOLID_PATTERN     3
-#define DRAW_MODE_MASKED_PATTERN    4
-#define DRAW_MODE_TRANS             5
-
-Declare Sub drawing_mode CDecl Alias "drawing_mode" ( byval mode as integer, byval pattern as BITMAP ptr, byval x_anchor as integer, byval y_anchor as integer )
-Declare Sub xor_mode CDecl Alias "xor_mode" (ByVal iOn As Integer)
-Declare Sub solid_mode CDecl Alias "solid_mode" ()
-Declare Sub do_line CDecl Alias "do_line" (ByVal bmp As BITMAP Ptr, ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer, ByVal d As Integer, ByVal proc As Sub(ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal d As Integer))
-Declare Sub triangle CDecl Alias "triangle" (ByVal bmp As BITMAP Ptr, ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer, ByVal x3 As Integer, ByVal y3 As Integer, ByVal c As Integer)
-Declare Sub polygon CDecl Alias "polygon" (ByVal bmp As BITMAP Ptr, ByVal vertices As Integer, ByVal points As Integer Ptr, ByVal c As Integer)
-Declare Sub rect CDecl Alias "rect" (ByVal bmp As BITMAP Ptr, ByVal x1 As Integer, ByVal y1 As Integer, ByVal x2 As Integer, ByVal y2 As Integer, ByVal c As Integer)
-Declare Sub do_circle CDecl Alias "do_circle" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal radius As Integer, ByVal d As Integer, ByVal proc As Sub(ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal d As Integer))
-Declare Sub circle CDecl Alias "circle" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal radius As Integer, ByVal c As Integer) ' note: this is called 'circle' in Allegro docs
-Declare Sub circlefill CDecl Alias "circlefill" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal radius As Integer, ByVal c As Integer)
-Declare Sub do_ellipse CDecl Alias "do_ellipse" (ByVal bmp As BITMAP Ptr, BYVal x As Integer, ByVal y As Integer, ByVal rx As Integer, ByVal ry As Integer, ByVal d As Integer, ByVal proc As Sub(ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal d As Integer))
-Declare Sub ellipse CDecl Alias "ellipse" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal rx As Integer, ByVal ry As Integer, ByVal c As Integer)
-Declare Sub ellipsefill CDecl Alias "ellipsefill" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal rx As Integer, ByVal ry As Integer, ByVal c As Integer)
-Declare Sub do_arc CDecl Alias "do_arc" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal a1 As fixed, ByVal a2 As fixed, ByVal r As Integer, ByVal d As Integer, ByVal proc As Sub(ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal d As Integer))
-Declare Sub arc CDecl Alias "arc" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal ang1 As fixed, ByVal ang2 As fixed, ByVal r As Integer, ByVal c As Integer)
-Declare Sub calc_spline CDecl Alias "calc_spline" (ByVal points As Integer Ptr, ByVal npts As Integer, ByRef x As Integer, ByRef y As Integer)
-Declare Sub spline CDecl Alias "spline" (ByVal bmp As BITMAP Ptr, ByVal points As Integer Ptr, ByVal c As Integer)
-Declare Sub floodfill CDecl Alias "floodfill" (ByVal bmp As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal c As Integer)
-Declare Sub blit CDecl Alias "blit" (ByVal source AS BITMAP Ptr, ByVal dest As BITMAP Ptr, ByVal source_x As Integer, BYVal source_y As Integer, ByVal dest_x As Integer, ByVal dest_y As Integer, ByVal width As Integer, ByVal height As Integer)
-Declare Sub masked_blit CDecl Alias "masked_blit" (ByVal source AS BITMAP Ptr, ByVal dest As BITMAP Ptr, ByVal source_x As Integer, BYVal source_y As Integer, ByVal dest_x As Integer, ByVal dest_y As Integer, ByVal width As Integer, ByVal height As Integer)
-Declare Sub stretch_blit CDecl Alias "stretch_blit" (ByVal source As BITMAP Ptr, ByVal dest As BITMAP Ptr, ByVal source_x As Integer, ByVal source_y As Integer, ByVal source_width As Integer, ByVal source_height As Integer, ByVal dest_x As Integer, ByVal dest_y As Integer, ByVal dest_width As Integer, ByVal dest_height As Integer)
-Declare Sub masked_stretch_blit CDecl Alias "masked_stretch_blit" (ByVal source As BITMAP Ptr, ByVal dest As BITMAP Ptr, ByVal source_x As Integer, ByVal source_y As Integer, ByVal source_width As Integer, ByVal source_height As Integer, ByVal dest_x As Integer, ByVal dest_y As Integer, ByVal dest_width As Integer, ByVal dest_height As Integer)
-Declare Sub stretch_sprite CDecl Alias "stretch_sprite" (ByVal bmp As BITMAP Ptr, ByVal sprite As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal w As Integer, ByVal h As Integer)
-Declare Sub draw_gouraud_sprite CDecl Alias "draw_gouraud_sprite" (ByVal bmp As BITMAP Ptr, ByVal sprite As BITMAP Ptr, ByVal x As Integer, ByVal y As Integer, ByVal c1 As Integer, ByVal c2 As Integer, ByVal c3 As Integer, ByVal c4 As Integer)
-
-#include "allegro/inline/draw.inl"
+#include once "allegro/inline/draw.bi"
 
 #endif

@@ -1,37 +1,27 @@
-'         ______   ___    ___
-'        /\  _  \ /\_ \  /\_ \
-'        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
-'         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
-'          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
-'           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
-'            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
-'                                           /\____/
-'                                           \_/__/
-'
-'      Debug facilities.
-'
-'      By Shawn Hargreaves.
-'
-'      See readme.txt for copyright information.
-'
+''
+''
+'' allegro\debug -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __allegro_debug_bi__
+#define __allegro_debug_bi__
 
-#ifndef ALLEGRO_DEBUG_H
-#define ALLEGRO_DEBUG_H
+#include once "allegro/base.bi"
 
-#include "allegro/base.bi"
-
-declare sub al_assert cdecl alias "al_assert" ( byval file as zstring ptr, byval _line as integer )
-declare sub al_trace cdecl alias "al_trace" ( byval msg as zstring ptr, ... )
-
-declare sub register_assert_handler cdecl alias "register_assert_handler" ( byval handler as function(byval msg as byte ptr) as integer)
-declare sub register_trace_handler cdecl alias "register_trace_handler" ( byval handler as function(byval msg as byte ptr) as integer)
+declare sub al_assert_ cdecl alias "al_assert" (byval file as zstring ptr, byval line as integer)
+declare sub al_trace_ cdecl alias "al_trace" (byval msg as zstring ptr, ...)
+declare sub register_assert_handler cdecl alias "register_assert_handler" (byval handler as function cdecl(byval as zstring ptr) as integer)
+declare sub register_trace_handler cdecl alias "register_trace_handler" (byval handler as function cdecl(byval as zstring ptr) as integer)
 
 #ifdef DEBUGMODE
-	#define ASSERT(condition)	if 0 <> (condition) then al_assert(__FILE__, __LINE__)
-	#define TRACE			al_trace
+#define AL_ASSERT(condition) if (condition) = 0 then al_assert_( __FILE__, __LINE__ )
+#define AL_TRACE al_trace_
 #else
-	#define ASSERT(condition)	if 0 then : end if
-	#define TRACE			if 0 then : end if
+#define AL_ASSERT(condition)
+#define AL_TRACE
 #endif
 
 #endif

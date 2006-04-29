@@ -1,194 +1,144 @@
-'         ______   ___    ___
-'        /\  _  \ /\_ \  /\_ \
-'        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
-'         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
-'          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
-'           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
-'            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
-'                                           /\____/
-'                                           \_/__/
-'
-'      Digital sound routines.
-'
-'      By Shawn Hargreaves.
-'
-'      See readme.txt for copyright information.
-'
+''
+''
+'' allegro\digi -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __allegro_digi_bi__
+#define __allegro_digi_bi__
 
-#ifndef ALLEGRO_DIGI_H
-#define ALLEGRO_DIGI_H
+#include once "allegro/base.bi"
 
-#include "allegro/base.bi"
+#define DIGI_VOICES 64
 
-#define DIGI_VOICES           64       ' Theoretical maximums:
-                                       ' actual drivers may not be
-                                       ' able to handle this many
+type SAMPLE
+	bits as integer
+	stereo as integer
+	freq as integer
+	priority as integer
+	len as uinteger
+	loop_start as uinteger
+	loop_end as uinteger
+	param as uinteger
+	data as any ptr
+end type
 
-Type SAMPLE					' a sample
-	bits As Integer				' 8 or 16
-	stereo As Integer			' sample type flag
-	freq As Integer				' sample frequency
-	priority As Integer			' 0-255
-	length As Unsigned Long			' length (in samples) - name changed from 'len'
-	loop_start As Unsigned Long		' loop start position
-	loop_end As Unsigned Long		' loop finish position
-	param As Unsigned Long			' for internal use by the driver
-	data As UByte Ptr			' sample data
-End Type
+#define DIGI_AUTODETECT -1
+#define DIGI_NONE 0
 
-#define DIGI_AUTODETECT		-1	' for passing to install_sound()
-#define DIGI_NONE		0
+type DIGI_DRIVER
+	id as integer
+	name as zstring ptr
+	desc as zstring ptr
+	ascii_name as zstring ptr
+	voices as integer
+	basevoice as integer
+	max_voices as integer
+	def_voices as integer
+	detect as function cdecl(byval as integer) as integer
+	init as function cdecl(byval as integer, byval as integer) as integer
+	exit as sub cdecl(byval as integer)
+	mixer_volume as function cdecl(byval as integer) as integer
+	lock_voice as sub cdecl(byval as integer, byval as integer, byval as integer)
+	unlock_voice as sub cdecl(byval as integer)
+	buffer_size as function cdecl() as integer
+	init_voice as sub cdecl(byval as integer, byval as SAMPLE ptr)
+	release_voice as sub cdecl(byval as integer)
+	start_voice as sub cdecl(byval as integer)
+	stop_voice as sub cdecl(byval as integer)
+	loop_voice as sub cdecl(byval as integer, byval as integer)
+	get_position as function cdecl(byval as integer) as integer
+	set_position as sub cdecl(byval as integer, byval as integer)
+	get_volume as function cdecl(byval as integer) as integer
+	set_volume as sub cdecl(byval as integer, byval as integer)
+	ramp_volume as sub cdecl(byval as integer, byval as integer, byval as integer)
+	stop_volume_ramp as sub cdecl(byval as integer)
+	get_frequency as function cdecl(byval as integer) as integer
+	set_frequency as sub cdecl(byval as integer, byval as integer)
+	sweep_frequency as sub cdecl(byval as integer, byval as integer, byval as integer)
+	stop_frequency_sweep as sub cdecl(byval as integer)
+	get_pan as function cdecl(byval as integer) as integer
+	set_pan as sub cdecl(byval as integer, byval as integer)
+	sweep_pan as sub cdecl(byval as integer, byval as integer, byval as integer)
+	stop_pan_sweep as sub cdecl(byval as integer)
+	set_echo as sub cdecl(byval as integer, byval as integer, byval as integer)
+	set_tremolo as sub cdecl(byval as integer, byval as integer, byval as integer)
+	set_vibrato as sub cdecl(byval as integer, byval as integer, byval as integer)
+	rec_cap_bits as integer
+	rec_cap_stereo as integer
+	rec_cap_rate as function cdecl(byval as integer, byval as integer) as integer
+	rec_cap_parm as function cdecl(byval as integer, byval as integer, byval as integer) as integer
+	rec_source as function cdecl(byval as integer) as integer
+	rec_start as function cdecl(byval as integer, byval as integer, byval as integer) as integer
+	rec_stop as sub cdecl()
+	rec_read as function cdecl(byval as any ptr) as integer
+end type
 
-Type DIGI_DRIVER			' driver for playing digital sfx
-	id As Integer			' driver ID code 
-	name As zstring ptr		' driver name
-	desc As zstring ptr		' description string
-	ascii_name As zstring ptr	' ASCII format name string
-	voices As Integer		' available voices
-	basevoices As Integer		' voice number offset
-	max_voices As Integer		' maximum voices we can support
-	def_voices As Integer		' default number of voices to use
+extern _AL_DLL ___digi_driver_list alias "_digi_driver_list" as _DRIVER_INFO
+#define _digi_driver_list(x) *(@___digi_driver_list + (x))
+extern _AL_DLL digi_driver alias "digi_driver" as DIGI_DRIVER ptr
+extern _AL_DLL digi_input_driver alias "digi_input_driver" as DIGI_DRIVER ptr
+extern _AL_DLL digi_card alias "digi_card" as integer
+extern _AL_DLL digi_input_card alias "digi_input_card" as integer
 
-	' setup routines
-	detect As Function(ByVal _input As Integer) As Integer
-	init As Function(ByVal _input As Integer, ByVal voices As Integer) As Integer
-	exit As Sub(ByVal _input As Integer)
-	mixer_volume As Function(ByVal volume As Integer) As Integer
+declare function detect_digi_driver cdecl alias "detect_digi_driver" (byval driver_id as integer) as integer
+declare function load_sample cdecl alias "load_sample" (byval filename as zstring ptr) as SAMPLE ptr
+declare function load_wav cdecl alias "load_wav" (byval filename as zstring ptr) as SAMPLE ptr
+declare function load_voc cdecl alias "load_voc" (byval filename as zstring ptr) as SAMPLE ptr
+declare function create_sample cdecl alias "create_sample" (byval bits as integer, byval stereo as integer, byval freq as integer, byval len as integer) as SAMPLE ptr
+declare sub destroy_sample cdecl alias "destroy_sample" (byval spl as SAMPLE ptr)
+declare function play_sample cdecl alias "play_sample" (byval spl as SAMPLE ptr, byval vol as integer, byval pan as integer, byval freq as integer, byval loop as integer) as integer
+declare sub stop_sample cdecl alias "stop_sample" (byval spl as SAMPLE ptr)
+declare sub adjust_sample cdecl alias "adjust_sample" (byval spl as SAMPLE ptr, byval vol as integer, byval pan as integer, byval freq as integer, byval loop as integer)
+declare function allocate_voice cdecl alias "allocate_voice" (byval spl as SAMPLE ptr) as integer
+declare sub deallocate_voice cdecl alias "deallocate_voice" (byval voice as integer)
+declare sub reallocate_voice cdecl alias "reallocate_voice" (byval voice as integer, byval spl as SAMPLE ptr)
+declare sub release_voice cdecl alias "release_voice" (byval voice as integer)
+declare sub voice_start cdecl alias "voice_start" (byval voice as integer)
+declare sub voice_stop cdecl alias "voice_stop" (byval voice as integer)
+declare sub voice_set_priority cdecl alias "voice_set_priority" (byval voice as integer, byval priority as integer)
+declare function voice_check cdecl alias "voice_check" (byval voice as integer) as SAMPLE ptr
 
+#define PLAYMODE_PLAY 0
+#define PLAYMODE_LOOP 1
+#define PLAYMODE_FORWARD 0
+#define PLAYMODE_BACKWARD 2
+#define PLAYMODE_BIDIR 4
 
-	' for use by the audiostream functions
-	lock_voice As Function(ByVal voice As Integer, ByVal start As Integer, ByVal _end As Integer) As Any Ptr
-	unlock_voice As Sub(ByVal voice As Integer)
-	buffer_size As Function() As Integer
+declare sub voice_set_playmode cdecl alias "voice_set_playmode" (byval voice as integer, byval playmode as integer)
+declare function voice_get_position cdecl alias "voice_get_position" (byval voice as integer) as integer
+declare sub voice_set_position cdecl alias "voice_set_position" (byval voice as integer, byval position as integer)
+declare function voice_get_volume cdecl alias "voice_get_volume" (byval voice as integer) as integer
+declare sub voice_set_volume cdecl alias "voice_set_volume" (byval voice as integer, byval volume as integer)
+declare sub voice_ramp_volume cdecl alias "voice_ramp_volume" (byval voice as integer, byval time as integer, byval endvol as integer)
+declare sub voice_stop_volumeramp cdecl alias "voice_stop_volumeramp" (byval voice as integer)
+declare function voice_get_frequency cdecl alias "voice_get_frequency" (byval voice as integer) as integer
+declare sub voice_set_frequency cdecl alias "voice_set_frequency" (byval voice as integer, byval frequency as integer)
+declare sub voice_sweep_frequency cdecl alias "voice_sweep_frequency" (byval voice as integer, byval time as integer, byval endfreq as integer)
+declare sub voice_stop_frequency_sweep cdecl alias "voice_stop_frequency_sweep" (byval voice as integer)
+declare function voice_get_pan cdecl alias "voice_get_pan" (byval voice as integer) as integer
+declare sub voice_set_pan cdecl alias "voice_set_pan" (byval voice as integer, byval pan as integer)
+declare sub voice_sweep_pan cdecl alias "voice_sweep_pan" (byval voice as integer, byval time as integer, byval endpan as integer)
+declare sub voice_stop_pan_sweep cdecl alias "voice_stop_pan_sweep" (byval voice as integer)
+declare sub voice_set_echo cdecl alias "voice_set_echo" (byval voice as integer, byval strength as integer, byval delay as integer)
+declare sub voice_set_tremolo cdecl alias "voice_set_tremolo" (byval voice as integer, byval rate as integer, byval depth as integer)
+declare sub voice_set_vibrato cdecl alias "voice_set_vibrato" (byval voice as integer, byval rate as integer, byval depth as integer)
 
+#define SOUND_INPUT_MIC 1
+#define SOUND_INPUT_LINE 2
+#define SOUND_INPUT_CD 3
 
-	' voice control functions
-	init_voice As Sub(ByVal voice As Integer, ByVal _sample As SAMPLE Ptr)
-	release_voice As Sub(ByVal voice As Integer)
-	start_voice As Sub(ByVal voice As Integer)
-	stop_voice As Sub(ByVal voice As Integer)
-	loop_voice As Sub(ByVal voice As Integer, ByVal playmode As Integer)
-
-
-	' position control functions
-	get_position As Function(ByVal voice AS INteger) As INteger
-	set_position As Sub(ByVal voice As Integer, ByVal position As Integer)
-
-
-	' volume control functions
-	get_volume As Function(ByVal voice As Integer) As Integer
-	set_volume As Sub(ByVal voice As Integer, ByVal volume As Integer)
-	ramp_volume As Sub(ByVal voice As Integer, ByVal _time As Integer, ByVal endvol As Integer)
-	stop_volume_ramp As Sub(ByVal voice As Integer)
-
-
-	' pitch control functions
-	get_frequency As Function(ByVal voice As Integer) As Integer
-	set_frequency As Sub(ByVal voice As Integer, ByVal frequency As Integer)
-	sweep_frequency As Sub(BYVal voice As Integer, ByVal _time As Integer, ByVal endfreq As Integer)
-	stop_frequency_sweep As Sub(ByVal voice As Integer)
-
-
-	' pan control functions
-	get_pan As Function(ByVal voice As Integer) As Integer
-	set_pan As Sub(ByVal voice As Integer, ByVal pan As Integer)
-	sweep_pan As Sub(ByVal voice As Integer, ByVal _time As Integer, ByVal endpan As Integer)
-	stop_pan_sweep As Sub(ByVal voice As Integer)
-
-
-	' effect control functions
-	set_echo As Sub(ByVal voice As Integer, ByVal strength As Integer, ByVal delay As Integer)
-	set_tremolo As Sub(ByVal voice As Integer, ByVal rate As Integer, bYVal depth As Integer)
-	set_Vibrato As Sub(ByVal voice As Integer, ByVal rate As Integer, ByVal depth As Integer)
-
-
-	' input functions
-	rec_cap_bits As Integer
-	rec_cap_stereo As Integer
-	rec_cap_Rate As Function(ByVal bits As Integer, ByVal stereo As Integer) As Integer
-	rec_cap_parm As Function(ByVal rate As Integer, BYVal bits As Integer, ByVal stereo As Integer) As Integer
-	rec_source As Function(ByVal source As Integer) As Integer
-	rec_start As Function(ByVal Rate As Integer, ByVal bits As Integer, ByVal stereo As Integer) As Integer
-	rec_stop As Sub()
-	rec_read As Function(ByVal buf As ANy Ptr) As Integer
-End Type
-
-Extern Import _digi_driver_list Alias "_digi_driver_list" As _DRIVER_INFO Ptr
-
-Extern Import digi_driver Alias "digi_driver" As DIGI_DRIVER Ptr
-
-Extern Import digi_input_driver Alias "digi_input_driver" As DIGI_DRIVER Ptr
-
-Extern Import digi_card Alias "digi_card" As Integer
-
-Extern Import digi_input_card Alias "digi_input_card" As Integer
-
-Declare Function detect_digi_driver CDecl Alias "detect_digi_driver" (ByVal driver_id As Integer) As Integer
-
-Declare Function load_sample CDecl Alias "load_sample" (byval filename as zstring ptr) As SAMPLE Ptr
-Declare Function load_wav CDecl Alias "load_wav" (byval filename as zstring ptr) As SAMPLE Ptr
-Declare Function load_voc CDecl Alias "load_voc" (byval filename as zstring ptr) As SAMPLE Ptr
-Declare Function create_sample CDecl Alias "create_sample" (ByVal bits As Integer, ByVal stereo As Integer, ByVal freq As Integer, ByVal iLen As Integer) As SAMPLE Ptr
-Declare Sub destroy_sample CDecl Alias "destroy_sample" (ByVal spl As SAMPLE Ptr)
-
-Declare Function play_sample CDecl Alias "play_sample" (ByVal spl As SAMPLE Ptr, ByVal vol As Integer, ByVal pan As Integer, ByVal freq As Integer, ByVal iLoop As Integer)
-Declare Sub stop_sample CDecl Alias "stop_sample" (ByVal spl As SAMPLE Ptr)
-Declare Sub adjust_sample CDecl Alias "adjust_sample" (ByVal spl As SAMPLE Ptr, ByVal vol As Integer, ByVal pan As Integer, ByVal freq As Integer, ByVal iLoop As Integer)
-
-Declare Function allocate_voice CDecl Alias "allocate_voice" (ByVal spl As SAMPLE Ptr) As Integer
-Declare Sub deallocate_voice CDecl Alias "deallocate_voice" (ByVal voice As Integer)
-Declare Sub reallocate_voice CDecl Alias "reallocate_voice" (ByVal voice As Integer, ByVal spl As SAMPLE Ptr)
-Declare Sub release_voice CDecl Alias "release_Voice" (ByVal voice As Integer)
-Declare Sub voice_start CDecl Alias "voice_start" (ByVal voice As Integer)
-Declare Sub voice_stop CDecl Alias "voice_stop" (ByVal voice As Integer)
-Declare Sub voice_set_priority CDecl Alias "voice_set_priority" (ByVal voice As Integer, ByVal priority As Integer)
-Declare Function voice_check CDecl Alias "voice_check" (ByVal voice As Integer) As SAMPLE Ptr
-
-#define PLAYMODE_PLAY           0
-#define PLAYMODE_LOOP           1
-#define PLAYMODE_FORWARD        0
-#define PLAYMODE_BACKWARD       2
-#define PLAYMODE_BIDIR          4
-
-Declare Sub voice_set_playmode CDecl Alias "voice_set_playmode" (ByVal voice As Integer, ByVal playmode As Integer)
-
-Declare Function voice_get_position CDecl Alias "voice_get_position" (ByVal voice As Integer) As Integer
-Declare Sub voice_set_position CDecl Alias "voice_set_position" (ByVal voice As Integer, ByVal position As Integer)
-
-Declare Function voice_get_volume CDecl Alias "voice_get_volume" (ByVal voice As Integer) As Integer
-Declare Sub voice_set_volume CDecl Alias "voice_set_volume" (ByVal voice As Integer, ByVal volume As Integer)
-Declare Sub voice_ramp_volume CDecl Alias "voice_ramp_volume" (ByVal voice As Integer, ByVal itime As Integer, ByVal endvol As Integer)
-Declare Sub voice_stop_volumeramp CDecl Alias "voice_stop_volumeramp" (ByVal voice As Integer)
-
-Declare Function voice_get_frequency CDecl Alias "voice_get_frequency" (ByVal voice As Integer) As Integer
-Declare Sub voice_set_frequency CDecl Alias "voice_set_frequency" (ByVal voice As Integer, BYVal frequency As Integer)
-Declare Sub voice_sweep_frequency CDecl Alias "voice_sweep_frequency" (ByVal voice As Integer, bYvAl iTime As Integer, ByVal endfreq As Integer)
-Declare Sub voice_stop_frequency_sweep CDecl Alias "voice_stop_frequency_sweep" (ByVal voice As Integer)
-
-Declare Function voice_get_pan CDecl Alias "voice_get_pan" (ByVal voice As Integer) As Integer
-Declare Sub voice_set_pan CDecl Alias "voice_set_pan" (ByVal voice As Integer, ByVal pan As Integer)
-Declare Sub voice_sweep_pan CDecl Alias "voice_sweep_pan" (ByVal voice As Integer, ByVal iTime As Integer, ByVal endpan As Integer)
-Declare Sub voice_stop_pan_sweep CDecl Alias "voice_stop_pan_sweep" (ByVal voice As Integer)
-
-Declare Sub voice_set_echo CDecl Alias "voice_set_echo" (ByVal voice As Integer, BYVal strength As Integer, ByVal delay As Integer)
-Declare Sub voice_set_tremolo CDecl Alias "voice_set_tremolo" (ByVal voice As Integer, ByVal rate As Integer, ByVal depth As Integer)
-Declare Sub voice_set_vibrato CDecl Alias "voice_set_vibrato" (ByVal voice As Integer, ByVal rate As Integer, ByVal depth As Integer)
-
-#define SOUND_INPUT_MIC    1
-#define SOUND_INPUT_LINE   2
-#define SOUND_INPUT_CD     3
-
-Declare Function get_sound_input_cap_bits CDecl Alias "get_sound_input_cap_bits" () As Integer
-Declare Function get_sound_input_cap_stereo CDecl Alias "get_sound_input_cap_stereo" () As Integer
-Declare Function get_sound_input_cap_rate CDecl Alias "get_sound_input_cap_rate" (ByVal bits As Integer, ByVal stereo As Integer) As Integer
-Declare Function get_sound_input_cap_parm CDecl Alias "get_sound_input_cap_parm" (BYVal rate As Integer, ByVal bits As Integer, ByVal stereo As Integer) As Integer
-Declare Function set_sound_input_source CDecl Alias "set_sound_input_source" (ByVal source As Integer) As Integer
-Declare Function start_sound_input CDecl Alias "start_sound_input" (ByVal rate As Integer, ByVal bits As Integer, ByVal stereo As Integer) As Integer
-Declare Sub stop_sound_input CDecl Alias "stop_sound_input" ()
-Declare Function read_sound_input CDecl Alias "read_sound_input" (ByVal buffer As UByte Ptr)
-
-Extern Import digi_recorder Alias "digi_recorder" As Sub()
-
-Declare Sub lock_sample CDecl Alias "lock_sample" (ByVal spl As SAMPLE Ptr)
+declare function get_sound_input_cap_bits cdecl alias "get_sound_input_cap_bits" () as integer
+declare function get_sound_input_cap_stereo cdecl alias "get_sound_input_cap_stereo" () as integer
+declare function get_sound_input_cap_rate cdecl alias "get_sound_input_cap_rate" (byval bits as integer, byval stereo as integer) as integer
+declare function get_sound_input_cap_parm cdecl alias "get_sound_input_cap_parm" (byval rate as integer, byval bits as integer, byval stereo as integer) as integer
+declare function set_sound_input_source cdecl alias "set_sound_input_source" (byval source as integer) as integer
+declare function start_sound_input cdecl alias "start_sound_input" (byval rate as integer, byval bits as integer, byval stereo as integer) as integer
+declare sub stop_sound_input cdecl alias "stop_sound_input" ()
+declare function read_sound_input cdecl alias "read_sound_input" (byval buffer as any ptr) as integer
+extern _AL_DLL digi_recorder alias "digi_recorder" as sub cdecl()
+declare sub lock_sample cdecl alias "lock_sample" (byval spl as SAMPLE ptr)
 
 #endif

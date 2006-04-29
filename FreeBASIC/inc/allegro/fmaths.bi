@@ -1,36 +1,26 @@
-'         ______   ___    ___
-'        /\  _  \ /\_ \  /\_ \
-'        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
-'         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
-'          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
-'           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
-'            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
-'                                           /\____/
-'                                           \_/__/
-'
-'      Fixed point math routines.
-'
-'      By Shawn Hargreaves.
-'
-'      See readme.txt for copyright information.
-'
+''
+''
+'' allegro\fmaths -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __allegro_fmaths_bi__
+#define __allegro_fmaths_bi__
 
+#include once "allegro/base.bi"
+#include once "allegro/fixed.bi"
 
-#ifndef ALLEGRO_FMATH_H
-#define ALLEGRO_FMATH_H
+declare function fixsqrt cdecl alias "fixsqrt" (byval x as fixed) as fixed
+declare function fixhypot cdecl alias "fixhypot" (byval x as fixed, byval y as fixed) as fixed
+declare function fixatan cdecl alias "fixatan" (byval x as fixed) as fixed
+declare function fixatan2 cdecl alias "fixatan2" (byval y as fixed, byval x as fixed) as fixed
 
-#include "allegro/base.bi"
-#include "allegro/fixed.bi"
+extern _AL_DLL _cos_tbl(0 to 255) alias "_cos_tbl" as fixed
+extern _AL_DLL _tan_tbl(0 to 255) alias "_tan_tbl" as fixed
+extern _AL_DLL _acos_tbl(0 to 255) alias "_acos_tbl" as fixed
 
-Declare Function fixsqrt CDecl Alias "fixsqrt" (ByVal x As fixed) As fixed
-Declare Function fixhypot CDecl Alias "fixhypot" (ByVal x As fixed, ByVal y As fixed) As fixed
-Declare Function fixatan CDecl Alias "fixatan" (ByVal x As fixed) As fixed
-Declare Function fixatan2 CDecl Alias "fixatan2" (ByVal y As fixed, byVal x As fixed) As fixed
-
-extern import _cos_tbl alias "_cos_tbl" as fixed ptr
-extern import _tan_tbl alias "_tan_tbl" as fixed ptr
-extern import _acos_tbl alias "_acos_tbl" as fixed ptr
-
-#include "allegro/inline/fmaths.inl"
+#include once "allegro/inline/fmaths.bi"
 
 #endif

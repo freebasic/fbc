@@ -1,53 +1,37 @@
-'         ______   ___    ___
-'        /\  _  \ /\_ \  /\_ \
-'        \ \ \L\ \\//\ \ \//\ \      __     __   _ __   ___
-'         \ \  __ \ \ \ \  \ \ \   /'__`\ /'_ `\/\`'__\/ __`\
-'          \ \ \/\ \ \_\ \_ \_\ \_/\  __//\ \L\ \ \ \//\ \L\ \
-'           \ \_\ \_\/\____\/\____\ \____\ \____ \ \_\\ \____/
-'            \/_/\/_/\/____/\/____/\/____/\/___L\ \/_/ \/___/
-'                                           /\____/
-'                                           \_/__/
-'
-'      3D oriented math routines.
-'
-'      By Shawn Hargreaves.
-'
-'      See readme.txt for copyright information.
-'
+''
+''
+'' allegro\3dmaths -- header translated with help of SWIG FB wrapper
+''
+'' NOTICE: This file is part of the FreeBASIC Compiler package and can't
+''         be included in other distributions without authorization.
+''
+''
+#ifndef __allegro_3dmaths_bi__
+#define __allegro_3dmaths_bi__
 
-#ifndef ALLEGRO_3DMATHS_H
-#define ALLEGRO_3DMATHS_H
+#include once "allegro/base.bi"
+#include once "allegro/fixed.bi"
 
+declare function vector_length cdecl alias "vector_length" (byval x as fixed, byval y as fixed, byval z as fixed) as fixed
+declare function vector_length_f cdecl alias "vector_length_f" (byval x as single, byval y as single, byval z as single) as single
+declare sub normalize_vector cdecl alias "normalize_vector" (byval x as fixed ptr, byval y as fixed ptr, byval z as fixed ptr)
+declare sub normalize_vector_f cdecl alias "normalize_vector_f" (byval x as single ptr, byval y as single ptr, byval z as single ptr)
+declare sub cross_product cdecl alias "cross_product" (byval x1 as fixed, byval y1 as fixed, byval z1 as fixed, byval x2 as fixed, byval y2 as fixed, byval z2 as fixed, byval xout as fixed ptr, byval yout as fixed ptr, byval zout as fixed ptr)
+declare sub cross_product_f cdecl alias "cross_product_f" (byval x1 as single, byval y1 as single, byval z1 as single, byval x2 as single, byval y2 as single, byval z2 as single, byval xout as single ptr, byval yout as single ptr, byval zout as single ptr)
 
-#include "allegro/base.bi"
-#include "allegro/fixed.bi"
-#include "allegro/quat.bi"
-#include "allegro/matrix.bi"
+extern _AL_DLL _persp_xscale alias "_persp_xscale" as fixed
+extern _AL_DLL _persp_yscale alias "_persp_yscale" as fixed
+extern _AL_DLL _persp_xoffset alias "_persp_xoffset" as fixed
+extern _AL_DLL _persp_yoffset alias "_persp_yoffset" as fixed
+extern _AL_DLL _persp_xscale_f alias "_persp_xscale_f" as single
+extern _AL_DLL _persp_yscale_f alias "_persp_yscale_f" as single
+extern _AL_DLL _persp_xoffset_f alias "_persp_xoffset_f" as single
+extern _AL_DLL _persp_yoffset_f alias "_persp_yoffset_f" as single
 
-Declare Function vector_length CDecl Alias "vector_length" (ByVal x As fixed, BYVal y As fixed, ByVal z As fixed) As fixed
-Declare Function vector_length_f CDecl Alias "vector_length_f" (ByVal x As Single, BYVal y As Single, ByVal z As Single) As SIngle
+declare sub set_projection_viewport cdecl alias "set_projection_viewport" (byval x as integer, byval y as integer, byval w as integer, byval h as integer)
+declare sub quat_to_matrix cdecl alias "quat_to_matrix" (byval q as QUAT ptr, byval m as MATRIX_f ptr)
+declare sub matrix_to_quat cdecl alias "matrix_to_quat" (byval m as MATRIX_f ptr, byval q as QUAT ptr)
 
-Declare Sub normalize_vector CDecl Alias "normalize_vector" (ByRef x As fixed, ByRef y As fixed, ByRef z As fixed)
-Declare Sub normalize_vector_f CDecl Alias "normalize_vector_f" (ByRef x As Single, ByRef y As Single, ByRef z As Single)
-
-Declare Sub cross_product CDecl Alias "cross_product" (ByVal x1 As fixed, BYVal y1 As fixed, ByVal z1 As fixed, BYVal x2 As fixed, BYVal y2 As fixed, ByVal z2 As fixed, ByRef xout As fixed, ByRef yout As fixed, ByRef zout As fixed)
-Declare Sub cross_product_f CDecl Alias "cross_product_f" (ByVal x1 As Single, BYVal y1 As Single, ByVal z1 As Single, BYVal x2 As Single, BYVal y2 As Single, ByVal z2 As Single, ByRef xout As Single, ByRef yout As Single, ByRef zout As Single)
-
-extern import _persp_xscale alias "_persp_xscale" as fixed
-extern import _persp_yscale alias "_persp_yscale" as fixed
-extern import _persp_xoffset alias "_persp_xoffset" as fixed
-extern import _persp_yoffset alias "_persp_yoffset" as fixed
-
-extern import _persp_xscale_f alias "_persp_xscale_f" as single
-extern import _persp_yscale_f alias "_persp_yscale_f" as single
-extern import _persp_xoffset_f alias "_persp_xoffset_f" as single
-extern import _persp_yoffset_f alias "_persp_yoffset_f" as single
-
-Declare Sub set_projection_viewport CDecl Alias "set_projection_viewport" (ByVal x As Integer, BYVal y As Integer, ByVal w As Integer, ByVal h As Integer)
-
-declare sub quat_to_matrix cdecl alias "quat_to_matrix" ( byval q as QUAT ptr, byval m as MATRIX_f ptr )
-declare sub matrix_to_quat cdecl alias "matrix_to_quat" ( byval m as MATRIX_f ptr, byval q as QUAT ptr )
-
-#include "allegro/inline/3dmaths.inl"
+#include once "allegro/inline/3dmaths.bi"
 
 #endif
