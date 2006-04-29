@@ -27,6 +27,7 @@ Version 0.16 Beta:
 - Dir()'s "attribute" parameter by default shouldn't include directories, hidden or system files (v1c)
 - INPUT will now accept floating-point numbers loaded to integer types, rounding them as in QB (v1c)
 - maximum number of array dimensions changed to 8 to speed up allocation of arrays with unknown dimensions (v1c)
+- more restrict pointer resolution in overloaded functions (v1c)
 
 [added]
 - anonymous UDT's that can be passed as parameters or used in assignments, like:
@@ -113,6 +114,7 @@ Version 0.16 Beta:
 - converting unsigned constants to strings at compile-time was returning the numbers in signed form (v1c)
 - type aliases to themselves were case sensitive, causing forward symbols to be created if cases were different (v1c)
 - descriptors of local dynamic arrays with unknown dimensions weren't been reseted (v1c)
+- non-pointer arguments were been coerced when passed to pointer parameters (v1c)
 
 
 Version 0.15 Beta:
