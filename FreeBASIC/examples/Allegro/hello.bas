@@ -44,4 +44,4 @@
 	' wait for a keypress
 	readkey()
 
-	end 0
+	END_OF_MAIN()

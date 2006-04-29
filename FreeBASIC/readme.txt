@@ -634,7 +634,7 @@ Credits (in alphabetic order):
 
   o Daniel R. Verkamp (i_am_drv[at]yahoo.com) - Project Member:
     - Ported FreeBASIC to DOS and Xbox; ports maintainer.
-    - Translated the Allegro headers (W.I.P.).
+    - Translated the Allegro headers (later replaced by the SWIG FB wrapper version).
     - Wrote the DLL and static library automation, plus resource scripts
       support on Windows.
 

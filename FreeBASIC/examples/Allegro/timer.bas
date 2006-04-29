@@ -59,4 +59,5 @@ end sub
       				    SCREEN_W\2, 176, makecol(0, 0, 0) )
 	loop
 
-	end 0
+	END_OF_MAIN()
+	

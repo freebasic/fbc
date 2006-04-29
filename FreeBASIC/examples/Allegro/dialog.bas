@@ -53,4 +53,4 @@ end function
 	'run the dialog 
 	do_dialog( @color_builder(0), -1 ) 
 	
-	
+	END_OF_MAIN()

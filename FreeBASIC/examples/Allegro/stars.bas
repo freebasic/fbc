@@ -7,9 +7,7 @@
 
 option explicit
 
-'$include: "allegro.bi"
-
-
+#include once "allegro.bi"
 
 '' starfield system
 type VECTOR
@@ -107,8 +105,8 @@ sub draw_stars()
 
    for i = 0 to NUM_STARS-1
       get_translation_matrix_f(@m, delta.x, delta.y, delta.z)
-      apply_matrix_f(@m, stars(i).x, stars(i).y, stars(i).z, outs(i).x, outs(i).y, outs(i).z)
-      persp_project_f(outs(i).x, outs(i).y, outs(i).z, star_x(i), star_y(i))
+      apply_matrix_f(@m, stars(i).x, stars(i).y, stars(i).z, @outs(i).x, @outs(i).y, @outs(i).z)
+      persp_project_f(outs(i).x, outs(i).y, outs(i).z, @star_x(i), @star_y(i))
       c = (cint(outs(i).z) shr 8) + 16
       putpixel( buffer, star_x(i), star_y(i), palette_color[c] )
    next
@@ -191,7 +189,7 @@ sub init_ship()
    v2.x = pts[face->v3].x - pts[face->v1].x
    v2.y = pts[face->v3].y - pts[face->v1].y
    v2.z = pts[face->v3].z - pts[face->v1].z
-   cross_product_f(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, face->normal.x, face->normal.y, face->normal.z)
+   cross_product_f(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, @face->normal.x, @face->normal.y, @face->normal.z)
 
    ship.faces(1).v1 = 2
    ship.faces(1).v2 = 0
@@ -203,7 +201,7 @@ sub init_ship()
    v2.x = pts[face->v3].x - pts[face->v1].x
    v2.y = pts[face->v3].y - pts[face->v1].y
    v2.z = pts[face->v3].z - pts[face->v1].z
-   cross_product_f(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, face->normal.x, face->normal.y, face->normal.z)
+   cross_product_f(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, @face->normal.x, @face->normal.y, @face->normal.z)
 
    ship.faces(2).v1 = 1
    ship.faces(2).v2 = 0
@@ -215,7 +213,7 @@ sub init_ship()
    v2.x = pts[face->v3].x - pts[face->v1].x
    v2.y = pts[face->v3].y - pts[face->v1].y
    v2.z = pts[face->v3].z - pts[face->v1].z
-   cross_product_f(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, face->normal.x, face->normal.y, face->normal.z)
+   cross_product_f(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, @face->normal.x, @face->normal.y, @face->normal.z)
 
    ship.faces(3).v1 = 2
    ship.faces(3).v2 = 3
@@ -227,12 +225,12 @@ sub init_ship()
    v2.x = pts[face->v3].x - pts[face->v1].x
    v2.y = pts[face->v3].y - pts[face->v1].y
    v2.z = pts[face->v3].z - pts[face->v1].z
-   cross_product_f(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, face->normal.x, face->normal.y, face->normal.z)
+   cross_product_f(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, @face->normal.x, @face->normal.y, @face->normal.z)
 
    for i = 0 to NUM_FACES-1
       ship.faces(i).colour = 32
       ship.faces(i).range = 15
-      normalize_vector_f(ship.faces(i).normal.x, ship.faces(i).normal.y, ship.faces(i).normal.z)
+      normalize_vector_f(@ship.faces(i).normal.x, @ship.faces(i).normal.y, @ship.faces(i).normal.z)
       ship.faces(i).rnormal.x = ship.faces(i).normal.x
       ship.faces(i).rnormal.y = ship.faces(i).normal.y
       ship.faces(i).rnormal.z = ship.faces(i).normal.z
@@ -261,20 +259,20 @@ sub draw_ship()
    ship.maxx = 0: ship.maxy = 0
 
    get_rotation_matrix_f(@m, ship.rx, ship.ry, ship.rz)
-   apply_matrix_f(@m, ship.aim.x, ship.aim.y, ship.aim.z, outs(0).x, outs(0).y, outs(0).z)
+   apply_matrix_f(@m, ship.aim.x, ship.aim.y, ship.aim.z, @outs(0).x, @outs(0).y, @outs(0).z)
    direction.x = outs(0).x
    direction.y = outs(0).y
    direction.z = outs(0).z
 
    for i = 0 to NUM_FACES-1
-      apply_matrix_f(@m, ship.faces(i).normal.x, ship.faces(i).normal.y, ship.faces(i).normal.z, ship.faces(i).rnormal.x, ship.faces(i).rnormal.y, ship.faces(i).rnormal.z)
+      apply_matrix_f(@m, ship.faces(i).normal.x, ship.faces(i).normal.y, ship.faces(i).normal.z, @ship.faces(i).rnormal.x, @ship.faces(i).rnormal.y, @ship.faces(i).rnormal.z)
    next
 
    get_transformation_matrix_f(@m, 1, ship.rx, ship.ry, ship.rz, ship.x, ship.y, ship.z)
 
    for i = 0 to NUM_VERTS-1
-      apply_matrix_f(@m, ship.points(i).x, ship.points(i).y, ship.points(i).z, outs(i).x, outs(i).y, outs(i).z)
-      persp_project_f(outs(i).x, outs(i).y, outs(i).z, outs(i).x, outs(i).y)
+      apply_matrix_f(@m, ship.points(i).x, ship.points(i).y, ship.points(i).z, @outs(i).x, @outs(i).y, @outs(i).z)
+      persp_project_f(outs(i).x, outs(i).y, outs(i).z, @outs(i).x, @outs(i).y)
       if (outs(i).x < ship.minx) then _
 	 	ship.minx = outs(i).x
       if (outs(i).x > ship.maxx) then _
@@ -428,4 +426,5 @@ end sub
    loop
 
    destroy_bitmap(buffer)
-   end 0
+   
+   END_OF_MAIN()

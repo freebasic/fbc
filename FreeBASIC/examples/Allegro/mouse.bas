@@ -127,4 +127,4 @@ option explicit
 
    	destroy_bitmap(custom_cursor)
 
-	end 0
+	END_OF_MAIN()

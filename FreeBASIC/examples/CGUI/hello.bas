@@ -41,4 +41,4 @@ end sub
 
    InitCgui(1024, 768, 15)
    make_a_window()
-   end 0
+   END_OF_MAIN()
