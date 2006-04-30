@@ -42,7 +42,6 @@
 
 #ifdef ALLEGRO_EXTRA_HEADER
    #include ALLEGRO_EXTRA_HEADER
-  '#include once "allegro/platform/alwin.bi"
 #endif
 
 
