@@ -57,7 +57,8 @@ FBCALL int fb_Width( int cols, int rows )
         FB_HANDLE_SCREEN->width = cols;
 
     /* Reset VIEW PRINT */
-    fb_ConsoleView( 0, 0 );
+    if( (cols > 0) || (rows > 0) )
+    	fb_ConsoleView( 0, 0 );
 
 	FB_UNLOCK();
 
