@@ -105,12 +105,13 @@ function cWidthStmt( byval isfunc as integer ) as ASTNODE ptr
 	end if
 
     if( isfunc ) then
-    	' Width Screen?
-    	if( (checkrprnt = FALSE) or _                   '' !!!FIXME!!! change to OrElse
-    		hMatch( CHAR_RPRNT ) ) then
+    	'' used as function?
+    	if( checkrprnt = FALSE ) then
+    		return rtlWidthScreen( NULL, NULL, isfunc )
+    	'' ()?
+    	elseif( hMatch( CHAR_RPRNT ) ) then
     		return rtlWidthScreen( NULL, NULL, isfunc )
     	end if
-
 	end if
 
     if( hMatch( FB_TK_LPRINT ) ) then
