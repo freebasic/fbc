@@ -14,6 +14,7 @@
 # inclib "ALut"
 # elseif defined(__FB_LINUX__)
 # inclib "openal"
+# inclib "alut"
 #else
 # error Platform not supported
 #endif
