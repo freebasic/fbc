@@ -34,6 +34,8 @@ end function
 		end 1
 	end if
 	
+	print "Printing to: "; printerName
+	
 	print #1, "Hello, world!"
 	
 	close #1
