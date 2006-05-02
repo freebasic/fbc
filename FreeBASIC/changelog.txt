@@ -29,6 +29,8 @@ Version 0.16 Beta:
 - maximum number of array dimensions changed to 8 to speed up allocation of arrays with unknown dimensions (v1c)
 - more restrict pointer resolution in overloaded functions (v1c)
 - the Allegro headers were replaced by machine translated ones, END_OF_MAIN() must be used now in Linux (v1c)
+- bad compound statements are better handled now, new-lines won't be ignored anymore neither multiple error 
+  messages will be shown (v1c)
 
 [added]
 - anonymous UDT's that can be passed as parameters or used in assignments, like:
@@ -116,6 +118,7 @@ Version 0.16 Beta:
 - type aliases to themselves were case sensitive, causing forward symbols to be created if cases were different (v1c)
 - descriptors of local dynamic arrays with unknown dimensions weren't been reseted (v1c)
 - non-pointer arguments were been coerced when passed to pointer parameters (v1c)
+- changing string constants was been allowed (v1c)
 
 
 Version 0.15 Beta:
