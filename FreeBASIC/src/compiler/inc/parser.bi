@@ -23,11 +23,73 @@
 #include once "inc\lex.bi"
 #include once "inc\ast.bi"
 
+type FB_CMPSTMT_DO
+	attop		as integer
+	inilabel	as FBSYMBOL ptr
+end type
+
+type FB_CMPSTMT_FOR
+	inilabel	as FBSYMBOL ptr
+	testlabel	as FBSYMBOL ptr
+	iscomplex	as integer
+	ispositive	as integer
+	cnt			as FBSYMBOL ptr
+	endc		as FBSYMBOL ptr
+	stp			as FBSYMBOL ptr
+	eval		as FBVALUE
+	sval		as FBVALUE
+end type
+
+type FB_CMPSTMT_IF
+	issingle	as integer
+	nxtlabel	as FBSYMBOL ptr
+	endlabel	as FBSYMBOL ptr
+end type
+
+type FB_CMPSTMT_PROC
+	node		as ASTNODE ptr
+end type
+
+type FB_CMPSTMT_SCOPE
+	node		as ASTNODE ptr
+end type
+
+type FB_CMPSTMT_SELCONST
+	base		as integer
+	deflabel 	as FBSYMBOL ptr
+	minval		as uinteger
+	maxval		as uinteger
+end type
+
+type FB_CMPSTMT_SELECT
+	isconst		as integer
+	sym			as FBSYMBOL ptr
+	dtype		as FB_DATATYPE
+	casecnt		as integer
+	const		as FB_CMPSTMT_SELCONST
+end type
+
+type FB_CMPSTMT_WITH
+	last		as FBSYMBOL ptr
+end type
+
+type FB_CMPSTMTSTK
+	last		as FBCMPSTMT
+	id			as integer
+	union
+		do		as FB_CMPSTMT_DO
+		for		as FB_CMPSTMT_FOR
+		if		as FB_CMPSTMT_IF
+		proc	as FB_CMPSTMT_PROC
+		scope	as FB_CMPSTMT_SCOPE
+		select	as FB_CMPSTMT_SELECT
+		with	as FB_CMPSTMT_WITH
+	end union
+end type
+
 declare function 	cProgram				( ) as integer
 
 declare function 	cLine					( ) as integer
-
-declare function 	cSimpleLine             ( ) as integer
 
 declare function 	cLabel                  ( ) as integer
 
@@ -36,8 +98,6 @@ declare function 	cComment                ( byval lexflags as LEXCHECK_ENUM = LE
 declare function 	cDirective              ( ) as integer
 
 declare function 	cStatement              ( ) as integer
-
-declare function 	cSimpleStatement        ( ) as integer
 
 declare function 	cStmtSeparator 			( byval lexflags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
 
@@ -92,29 +152,45 @@ declare function 	cQuirkStmt				( ) as integer
 
 declare function 	cCompoundStmt           ( ) as integer
 
-declare function 	cIfStatement			( ) as integer
+declare function 	cCompStmtCheck      	( ) as integer
+
+declare function 	cIfStmtBegin			( ) as integer
+
+declare function 	cIfStmtNext				( ) as integer
+
+declare function 	cIfStmtEnd				( ) as integer
 
 declare function 	cSingleIfStatement		( byval expr as ASTNODE ptr ) as integer
 
 declare function 	cBlockIfStatement		( byval expr as ASTNODE ptr ) as integer
 
-declare function 	cForStatement          	( ) as integer
+declare function 	cForStmtBegin          	( ) as integer
 
-declare function 	cDoStatement           	( ) as integer
+declare function 	cForStmtEnd          	( ) as integer
 
-declare function 	cWhileStatement        	( ) as integer
+declare function 	cDoStmtBegin           	( ) as integer
 
-declare function 	cSelectStatement       	( ) as integer
+declare function 	cDoStmtEnd           	( ) as integer
 
-declare function 	cCaseStatement         	( byval s as FBSYMBOL ptr, _
-											  byval sdtype as integer, _
-											  byval exitlabel as FBSYMBOL ptr ) as integer
+declare function 	cWhileStmtBegin        	( ) as integer
 
-declare function 	cSelectConstStmt 		( ) as integer
+declare function 	cWhileStmtEnd        	( ) as integer
 
-declare function 	cCompoundStmtElm		( ) as integer
+declare function 	cSelectStmtBegin       	( ) as integer
 
-declare function 	cProcStatement         	( ) as integer
+declare function 	cSelectStmtNext       	( ) as integer
+
+declare function 	cSelectStmtEnd       	( ) as integer
+
+declare function 	cSelConstStmtBegin 		( ) as integer
+
+declare function 	cSelConstStmtNext		( byval stk as FB_CMPSTMTSTK ptr ) as integer
+
+declare function 	cSelConstStmtEnd		( byval stk as FB_CMPSTMTSTK ptr ) as integer
+
+declare function 	cProcStmtBegin         	( ) as integer
+
+declare function 	cProcStmtEnd         	( ) as integer
 
 declare function 	cExitStatement			( ) as integer
 
@@ -122,9 +198,13 @@ declare function 	cEndStatement			( ) as integer
 
 declare function 	cContinueStatement		( ) as integer
 
-declare function 	cWithStatement          ( ) as integer
+declare function 	cWithStmtBegin          ( ) as integer
 
-declare function 	cScopeStatement			( ) as integer
+declare function 	cWithStmtEnd            ( ) as integer
+
+declare function 	cScopeStmtBegin			( ) as integer
+
+declare function 	cScopeStmtEnd			( ) as integer
 
 declare function 	cAssignmentOrPtrCall	( ) as integer
 

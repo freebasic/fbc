@@ -380,7 +380,7 @@ function astUpdComp2Branch( byval n as ASTNODE ptr, _
 
 		'' invert it
 		if( isinverse = FALSE ) then
-			n->op.op = irGetInverseLogOp( op )
+			n->op.op = astGetInverseLogOp( op )
 		end if
 
 		'' tell IR that the destine label is already set
@@ -537,6 +537,28 @@ function astFuncPtrCheck( byval pdtype as integer, _
 	case else
 		function = astPtrCheck( pdtype, psubtype, expr )
 	end select
+
+end function
+
+'':::::
+function astGetInverseLogOp( byval op as integer ) as integer static
+
+	select case as const op
+	case AST_OP_EQ
+		op = AST_OP_NE
+	case AST_OP_NE
+		op = AST_OP_EQ
+	case AST_OP_GT
+		op = AST_OP_LE
+	case AST_OP_LT
+		op = AST_OP_GE
+	case AST_OP_GE
+		op = AST_OP_LT
+	case AST_OP_LE
+		op = AST_OP_GT
+	end select
+
+	function = op
 
 end function
 

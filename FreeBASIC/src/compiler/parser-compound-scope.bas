@@ -29,27 +29,16 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-''ScopeStatement  =   SCOPE Comment?
-''					  	SimpleLine*
-''					  END SCOPE .
+''ScopeStmtBegin  =   SCOPE .
 ''
-function cScopeStatement as integer
-    dim as integer lastcompstmt
+function cScopeStmtBegin as integer
     dim as ASTNODE ptr n
+    dim as FB_CMPSTMTSTK ptr stk
 
 	function = FALSE
 
 	'' SCOPE
 	lexSkipToken( )
-
-	'' Comment?
-	cComment( )
-
-	'' separator
-	if( cStmtSeparator( ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDEOL )
-		exit function
-	end if
 
 	n = astScopeBegin( )
 	if( n = NULL ) then
@@ -58,29 +47,44 @@ function cScopeStatement as integer
 	end if
 
 	''
-	lastcompstmt     = env.lastcompound
-	env.lastcompound = FB_TK_SCOPE
-
-	'' loop body
-	do
-		if( cSimpleLine( ) = FALSE ) then
-			exit do
-		end if
-	loop while( lexGetToken( ) <> FB_TK_EOF )
-
-	''
-	astScopeEnd( n )
-
-	env.lastcompound = lastcompstmt
-
-	'' END SCOPE
-	if( (hMatch( FB_TK_END ) = FALSE) or _
-		(hMatch( FB_TK_SCOPE ) = FALSE) ) then
-		hReportError( FB_ERRMSG_EXPECTEDENDSCOPE )
-		exit function
-	end if
+	stk = stackPush( @env.stmtstk )
+	stk->id = FB_TK_SCOPE
+	stk->scope.node = n
 
 	function = TRUE
 
 end function
 
+'':::::
+''ScopeStmtEnd  =     END SCOPE .
+''
+function cScopeStmtEnd as integer
+	dim as integer iserror
+	dim as FB_CMPSTMTSTK ptr stk
+
+	function = FALSE
+
+	stk = stackGetTOS( @env.stmtstk )
+	iserror = (stk = NULL)
+	if( iserror = FALSE ) then
+		iserror = (stk->id <> FB_TK_SCOPE)
+	end if
+
+	if( iserror ) then
+		hReportError( FB_ERRMSG_ENDSCOPEWITHOUTSCOPE )
+		exit function
+	end if
+
+	'' END SCOPE
+	lexSkipToken( )
+	lexSkipToken( )
+
+	''
+	astScopeEnd( stk->scope.node )
+
+	'' pop from stmt stack
+	stackPop( @env.stmtstk )
+
+	function = TRUE
+
+end function

@@ -47,50 +47,7 @@ function cStatement as integer
 	do
 		if( cDeclaration( ) = FALSE ) then
 			if( cCompoundStmt( ) = FALSE ) then
-				if( cProcStatement( ) = FALSE ) then
-					if( cQuirkStmt( ) = FALSE ) then
-						if( cAsmBlock( ) = FALSE ) then
-							if( cProcCallOrAssign( ) = FALSE ) then
-								cAssignmentOrPtrCall( )
-							end if
-						end if
-					end if
-				end if
-			end if
-		end if
-
-		'' ':'?
-		if( lexGetToken( ) <> FB_TK_STATSEPCHAR ) then
-			exit do
-		end if
-		lexSkipToken( )
-	loop
-
-	function = (hGetLastError( ) = FB_ERRMSG_OK)
-
-end function
-
-'':::::
-''SimpleStatement =   STT_SEPARATOR? ( ConstDecl
-''									 | SymbolDecl
-''									 | ProcCallOrAssign
-''									 | CompoundStmt
-''									 | QuirkStmt
-''									 | AsmBlock
-''									 | AssignmentOrPtrCall )?
-''                    (STT_SEPARATOR SimpleStatement)* .
-''
-function cSimpleStatement as integer
-
-	'' ':'?
-	if( lexGetToken( ) = FB_TK_STATSEPCHAR ) then
-		lexSkipToken( )
-	end if
-
-	do
-		if( cConstDecl( ) = FALSE ) then
-			if( cSymbolDecl( ) = FALSE ) then
-				if( cCompoundStmt( ) = FALSE ) then
+				if( cProcStmtBegin( ) = FALSE ) then
 					if( cQuirkStmt( ) = FALSE ) then
 						if( cAsmBlock( ) = FALSE ) then
 							if( cProcCallOrAssign( ) = FALSE ) then

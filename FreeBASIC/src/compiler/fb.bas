@@ -132,11 +132,8 @@ private sub hSetCtx( )
 	env.opt.escapestr		= FALSE
 	env.opt.dynamic			= FALSE
 
-	env.compoundcnt 		= 0
-	env.lastcompound		= INVALID
 	env.isprocstatic		= FALSE
 	env.procerrorhnd 		= NULL
-	env.withvar				= NULL
 	env.stmtcnt				= 0
 
 	env.prntcnt				= 0
@@ -146,16 +143,17 @@ private sub hSetCtx( )
 	env.isexpr 				= FALSE
 
 	''
-	env.forstmt.endlabel	= NULL
-	env.forstmt.cmplabel	= NULL
-	env.dostmt.endlabel		= NULL
-	env.dostmt.cmplabel		= NULL
-	env.whilestmt.endlabel	= NULL
-	env.whilestmt.cmplabel	= NULL
-	env.selectstmt.endlabel	= NULL
-	env.selectstmt.cmplabel	= NULL
-	env.procstmt.endlabel	= NULL
-	env.procstmt.cmplabel	= NULL
+	env.stmt.for.cmplabel	= NULL
+	env.stmt.for.endlabel	= NULL
+	env.stmt.do.cmplabel	= NULL
+	env.stmt.do.endlabel	= NULL
+	env.stmt.while.cmplabel	= NULL
+	env.stmt.while.endlabel	= NULL
+	env.stmt.select.cmplabel= NULL
+	env.stmt.select.endlabel= NULL
+	env.stmt.proc.cmplabel	= NULL
+	env.stmt.proc.endlabel	= NULL
+	env.stmt.with.sym		= NULL
 
 	''
 	env.incpaths			= 0
@@ -198,9 +196,22 @@ private sub incTbEnd( )
 end sub
 
 '':::::
+private sub stmtStackInit( )
+
+	stackNew( @env.stmtstk, FB_INITSTMTSTACKNODES, len( FB_CMPSTMTSTK ), FALSE )
+
+end sub
+
+'':::::
+private sub stmtStackEnd( )
+
+	stackFree( @env.stmtstk )
+
+end sub
+
+'':::::
 function fbInit( byval ismain as integer ) as integer static
 
-	''
 	function = FALSE
 
 	''
@@ -228,6 +239,8 @@ function fbInit( byval ismain as integer ) as integer static
 
 	inctbInit( )
 
+	stmtStackInit( )
+
 	parserAsmInit( )
 
 	''
@@ -239,12 +252,9 @@ end function
 sub fbEnd
 
 	''
-	erase incpathTB
-
-	erase infileTb
-
-	''
 	parserAsmEnd( )
+
+	stmtStackEnd( )
 
 	incTbEnd( )
 
@@ -261,6 +271,11 @@ sub fbEnd
 	hlpEnd( )
 
 	symbEnd( )
+
+	''
+	erase incpathTB
+
+	erase infileTb
 
 end sub
 

@@ -280,28 +280,6 @@ end sub
 		dc = INVALID								: _
 	end if
 
-'':::::
-function irGetInverseLogOp( byval op as integer ) as integer static
-
-	select case as const op
-	case AST_OP_EQ
-		op = AST_OP_NE
-	case AST_OP_NE
-		op = AST_OP_EQ
-	case AST_OP_GT
-		op = AST_OP_LE
-	case AST_OP_LT
-		op = AST_OP_GE
-	case AST_OP_GE
-		op = AST_OP_LT
-	case AST_OP_LE
-		op = AST_OP_GT
-	end select
-
-	function = op
-
-end function
-
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ''::::

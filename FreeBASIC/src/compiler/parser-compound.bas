@@ -30,18 +30,28 @@ option escape
 #include once "inc\rtl.bi"
 
 declare sub 	 parserSelectStmtInit		( )
+
 declare sub 	 parserSelectStmtEnd		( )
 
+declare sub 	 parserSelConstStmtInit		( )
+
+declare sub 	 parserSelConstStmtEnd		( )
+
+declare function cCompoundEnd				( ) as integer
 
 '':::::
 sub parserCompoundStmtInit( )
 
 	parserSelectStmtInit( )
 
+	parserSelConstStmtInit( )
+
 end sub
 
 '':::::
 sub parserCompoundStmtEnd( )
+
+	parserSelConstStmtEnd( )
 
 	parserSelectStmtEnd( )
 
@@ -59,69 +69,82 @@ end sub
 ''
 function cCompoundStmt as integer
 
-    env.compoundcnt += 1
-
 	select case as const lexGetToken( )
 	case FB_TK_IF
-		function = cIfStatement( )
+		function = cIfStmtBegin( )
+
 	case FB_TK_FOR
-		function = cForStatement( )
+		function = cForStmtBegin( )
+
 	case FB_TK_DO
-		function = cDoStatement( )
+		function = cDoStmtBegin( )
+
 	case FB_TK_WHILE
-		function = cWhileStatement( )
-	case FB_TK_ELSE, FB_TK_ELSEIF, FB_TK_CASE, FB_TK_LOOP, FB_TK_NEXT, FB_TK_WEND
-		function = cCompoundStmtElm( )
+		function = cWhileStmtBegin( )
+
 	case FB_TK_SELECT
-		function = cSelectStatement( )
+		function = cSelectStmtBegin( )
+
+	case FB_TK_WITH
+		function = cWithStmtBegin( )
+
+	case FB_TK_SCOPE
+		function = cScopeStmtBegin( )
+
+	case FB_TK_ELSE, FB_TK_ELSEIF
+		function = cIfStmtNext( )
+
+	case FB_TK_CASE
+		function = cSelectStmtNext( )
+
+	case FB_TK_LOOP
+		function = cDoStmtEnd( )
+
+	case FB_TK_NEXT
+		function = cForStmtEnd( )
+
+	case FB_TK_WEND
+		function = cWhileStmtEnd( )
+
 	case FB_TK_EXIT
 		function = cExitStatement( )
+
 	case FB_TK_CONTINUE
 		function = cContinueStatement( )
-	case FB_TK_END
-		function = cEndStatement( )
-	case FB_TK_WITH
-		function = cWithStatement( )
-	case FB_TK_SCOPE
-		function = cScopeStatement( )
-	case else
-		function = FALSE
-	end select
 
-	env.compoundcnt -= 1
+	case FB_TK_END
+		'' any compound END will be parsed by the compound stmt
+		if( lexGetLookAheadClass( 1 ) <> FB_TKCLASS_KEYWORD ) then
+			return cEndStatement( )
+		end if
+
+		function = cCompoundEnd( )
+
+	case FB_TK_ENDIF
+		function = cIfStmtEnd( )
+
+	case else
+		return FALSE
+	end select
 
 end function
 
 '':::::
-''EndStatement	  =	  END (Expression | Keyword | ) .
+''EndStatement	  =	  END Expression? .
 ''
 function cEndStatement as integer
 	dim as ASTNODE ptr errlevel
 
 	function = FALSE
 
-	if( lexGetToken( ) <> FB_TK_END ) then
-		exit function
-	end if
+	'' END
+	lexSkipToken( )
 
-	'' any compound END will be parsed by the compound stmt
-	if( lexGetLookAheadClass(1) = FB_TKCLASS_KEYWORD ) then
-
-		if( env.compoundcnt = 1 ) then
-			hReportError( FB_ERRMSG_ILLEGALEND )
-			exit function
-		end if
-
-		return TRUE
-
-	else
-		lexSkipToken( )							'' END
-	end if
-
-  	'' (Expression | )
+  	'' Expression?
   	select case lexGetToken( )
   	case FB_TK_STATSEPCHAR, FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
   		errlevel = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+
   	case else
   		if( cExpression( errlevel ) = FALSE ) then
   			errlevel = NULL
@@ -147,19 +170,19 @@ function cExitStatement as integer
 	'' (FOR | DO | WHILE | SELECT | SUB | FUNCTION)
 	select case as const lexGetToken( )
 	case FB_TK_FOR
-		label = env.forstmt.endlabel
+		label = env.stmt.for.endlabel
 
 	case FB_TK_DO
-		label = env.dostmt.endlabel
+		label = env.stmt.do.endlabel
 
 	case FB_TK_WHILE
-		label = env.whilestmt.endlabel
+		label = env.stmt.while.endlabel
 
 	case FB_TK_SELECT
-		label = env.selectstmt.endlabel
+		label = env.stmt.select.endlabel
 
 	case FB_TK_SUB, FB_TK_FUNCTION
-		label = env.procstmt.endlabel
+		label = env.stmt.proc.endlabel
 
 		if( label = NULL ) then
 			hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB )
@@ -206,13 +229,13 @@ function cContinueStatement as integer
 	'' (FOR | DO | WHILE)
 	select case as const lexGetToken( )
 	case FB_TK_FOR
-		label = env.forstmt.cmplabel
+		label = env.stmt.for.cmplabel
 
 	case FB_TK_DO
-		label = env.dostmt.cmplabel
+		label = env.stmt.do.cmplabel
 
 	case FB_TK_WHILE
-		label = env.whilestmt.cmplabel
+		label = env.stmt.while.cmplabel
 
 	case else
 		hReportError( FB_ERRMSG_ILLEGALOUTSIDEASTMT )
@@ -232,35 +255,73 @@ function cContinueStatement as integer
 end function
 
 '':::::
-''CompoundStmtElm  =  WEND | LOOP | NEXT | CASE | ELSE | ELSEIF .
+''CompoundEnd	  =	  END (IF | SELECT | SUB | FUNCTION | SCOPE | WITH)
 ''
-function cCompoundStmtElm as integer
-    dim as integer comp
+function cCompoundEnd( ) as integer
 
-	function = FALSE
+	select case as const lexGetLookAhead( 1 )
+	case FB_TK_IF
+		function = cIfStmtEnd( )
 
-	'' WEND | LOOP | NEXT | CASE | ELSE | ELSEIF
-	select case as const lexGetToken( )
-	case FB_TK_WEND
-		comp = FB_TK_WHILE
-	case FB_TK_LOOP
-		comp = FB_TK_DO
-	case FB_TK_NEXT
-		comp = FB_TK_FOR
-	case FB_TK_CASE
-		comp = FB_TK_SELECT
-	case FB_TK_ELSE, FB_TK_ELSEIF
-		comp = FB_TK_IF
+	case FB_TK_SELECT
+		function = cSelectStmtEnd( )
+
+	case FB_TK_SUB, FB_TK_FUNCTION
+		function = cProcStmtEnd( )
+
+	case FB_TK_SCOPE
+		function = cScopeStmtEnd( )
+
+	case FB_TK_WITH
+		function = cWithStmtEnd( )
+
 	case else
-		exit function
+		hReportError( FB_ERRMSG_ILLEGALEND )
+		function = FALSE
 	end select
 
-	if( comp <> env.lastcompound ) then
-		hReportError( FB_ERRMSG_ILLEGALOUTSIDECOMP )
-		exit function
-	end if
+end function
 
-	function = TRUE
+'':::::
+function cCompStmtCheck( ) as integer
+    dim as integer errmsg
+    dim as FB_CMPSTMTSTK ptr stk
+
+    stk = stackGetTOS( @env.stmtstk )
+    if( stk = NULL ) then
+    	return TRUE
+    end if
+
+    select case as const stk->id
+    case FB_TK_IF
+    	errmsg = FB_ERRMSG_EXPECTEDENDIF
+
+    case FB_TK_SELECT
+    	errmsg = FB_ERRMSG_EXPECTEDENDSELECT
+
+    case FB_TK_SCOPE
+    	errmsg = FB_ERRMSG_EXPECTEDENDSCOPE
+
+    case FB_TK_WITH
+    	errmsg = FB_ERRMSG_EXPECTEDENDWITH
+
+    case FB_TK_SUB, FB_TK_FUNCTION
+    	errmsg = FB_ERRMSG_EXPECTEDENDSUBORFUNCT
+
+    case FB_TK_DO
+    	errmsg = FB_ERRMSG_EXPECTEDLOOP
+
+    case FB_TK_WHILE
+    	errmsg = FB_ERRMSG_EXPECTEDWEND
+
+    case FB_TK_FOR
+    	errmsg = FB_ERRMSG_EXPECTEDNEXT
+
+    end select
+
+    hReportError( errmsg )
+
+    function = FALSE
 
 end function
 

@@ -226,8 +226,6 @@ declare sub 		irFlush 			( )
 
 declare function 	irGetDistance		( byval vreg as IRVREG ptr ) as uinteger
 
-declare function 	irGetInverseLogOp	( byval op as integer ) as integer
-
 declare sub 		irLoadVR			( byval reg as integer, _
 										  byval vreg as IRVREG ptr, _
 										  byval doload as integer = TRUE )

@@ -121,7 +121,8 @@ end function
 
 '':::::
 ''SubOrFuncHeader   =  ID (STDCALL|CDECL|PASCAL) OVERLOAD? (ALIAS LIT_STRING)?
-''                     ('(' Arguments? ')')? (AS SymbolType)? (CONSTRUCTOR|DESTRUCTOR)? STATIC? EXPORT?
+''                     ('(' Arguments? ')')? (AS SymbolType)? (CONSTRUCTOR|DESTRUCTOR)?
+''					   STATIC? EXPORT?
 ''
 function cSubOrFuncHeader( byval issub as integer, _
 						   byref attrib as integer _
@@ -356,17 +357,20 @@ function cSubOrFuncHeader( byval issub as integer, _
 end function
 
 '':::::
-''ProcStatement	  =	  (PRIVATE|PUBLIC)? STATIC? ((SUB SubDecl) | (FUNCTION FuncDecl)) Comment? SttSeparator
-''					  SimpleLine*
-''				      END (SUB | FUNCTION)
+''ProcStmtBegin	  =	  (PRIVATE|PUBLIC)? STATIC? ((SUB SubDecl) | (FUNCTION FuncDecl)) .
 ''
-function cProcStatement static
+function cProcStmtBegin as integer static
 	dim as integer res, issub, attrib
-    dim as FBCMPSTMT oldprocstmt
     dim as FBSYMBOL ptr proc
     dim as ASTNODE ptr expr, procnode
+    dim as FB_CMPSTMTSTK ptr stk
 
 	function = FALSE
+
+	'' inside a compound statement?
+	if( stackGetTOS( @env.stmtstk ) <> NULL ) then
+		exit function
+	end if
 
 	'' (PRIVATE|PUBLIC)?
 	select case lexGetToken( )
@@ -418,13 +422,7 @@ function cProcStatement static
 	end if
 
 	''
-	env.compoundcnt += 1
-
-	if( (attrib and FB_SYMBATTRIB_STATIC) > 0 ) then
-		env.isprocstatic = TRUE
-	else
-		env.isprocstatic = FALSE
-	end if
+	env.isprocstatic = (attrib and FB_SYMBATTRIB_STATIC) > 0
 
 	'' emit proc setup
 	procnode = astProcBegin( proc, FALSE )
@@ -432,67 +430,76 @@ function cProcStatement static
 		exit function
 	end if
 
-	'' save old proc stmt info
-	oldprocstmt = env.procstmt
+	'' push to stmt stack
+	stk = stackPush( @env.stmtstk )
+	stk->id = iif( issub, FB_TK_SUB, FB_TK_FUNCTION )
+	stk->proc.node = procnode
 
-	env.procstmt.cmplabel = NULL
-	env.procstmt.endlabel = astGetProcExitlabel( procnode )
-
-	'' Comment?
-	cComment( )
-
-	'' SttSeparator
-	res = cStmtSeparator( )
-	if( res = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDEOL )
-	end if
+	env.stmt.proc.cmplabel = NULL
+	env.stmt.proc.endlabel = astGetProcExitlabel( procnode )
 
 	'' init
 	astAdd( astNewLABEL( astGetProcInitlabel( procnode ) ) )
 
-	'' proc body
-	if( res = TRUE ) then
-		do
-			if( cSimpleLine( ) = FALSE ) then
-				exit do
-			end if
-		loop while( lexGetToken( ) <> FB_TK_EOF )
+	function = TRUE
 
-		'' END (SUB | FUNCTION)
-		if( hMatch( FB_TK_END ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDENDSUBORFUNCT )
-			res = FALSE
+end function
+
+'':::::
+''ProcStmtEnd	  =	  END (SUB | FUNCTION) .
+''
+function cProcStmtEnd as integer static
+    dim as integer res, iserror, issub
+	dim as FB_CMPSTMTSTK ptr stk
+
+	function = FALSE
+
+	stk = stackGetTOS( @env.stmtstk )
+	iserror = (stk = NULL)
+	if( iserror = FALSE ) then
+		issub = (stk->id = FB_TK_SUB)
+		if( issub ) then
+			iserror = FALSE
 		else
-			res = FALSE
-			if( hMatch( FB_TK_SUB ) ) then
-				if( issub ) then
-					res = TRUE
-				end if
-			elseif( hMatch( FB_TK_FUNCTION ) ) then
-				if( issub = FALSE ) then
-					res = TRUE
-				end if
-			end if
-
-			if( res = FALSE ) then
-				hReportError( FB_ERRMSG_EXPECTEDENDSUBORFUNCT )
-			end if
+			iserror = (stk->id <> FB_TK_FUNCTION)
 		end if
 	end if
 
-	'' always finish
-	function = astProcEnd( procnode, FALSE )
+	if( iserror ) then
+		hReportError( FB_ERRMSG_WENDWITHOUTWHILE )
+		exit function
+	end if
+
+	'' END
+	lexSkipToken( )
+
+	if( hMatch( FB_TK_SUB ) ) then
+		res = iif( issub, TRUE, FALSE )
+	elseif( hMatch( FB_TK_FUNCTION ) ) then
+		res = iif( issub, FALSE, TRUE )
+	else
+		res = FALSE
+	end if
+
+	if( res = FALSE ) then
+		hReportError( FB_ERRMSG_EXPECTEDENDSUBORFUNCT )
+	end if
+
+    '' always finish
+	function = astProcEnd( stk->proc.node, FALSE )
+
+	'' pop from stmt stack
+	env.isprocstatic = FALSE
+	env.stmt.proc.cmplabel = NULL
+	env.stmt.proc.endlabel = NULL
+	stackPop( @env.stmtstk )
 
 	if( res = FALSE ) then
 		function = FALSE
 	end if
 
-	'' back to old state
-	env.compoundcnt -= 1
-	env.isprocstatic = FALSE
-	env.procstmt.cmplabel = NULL
-	env.procstmt.endlabel = NULL
-
 end function
+
+
 
 

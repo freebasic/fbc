@@ -35,7 +35,7 @@ private function hFuncReturn( ) as integer
 
     function = FALSE
 
-	if( env.procstmt.endlabel = NULL ) then
+	if( env.stmt.proc.endlabel = NULL ) then
 		hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB )
 		exit function
 	end if
@@ -55,7 +55,7 @@ private function hFuncReturn( ) as integer
 	end if
 
 	'' do an implicit exit function
-	function = astScopeBreak( env.procstmt.endlabel )
+	function = astScopeBreak( env.stmt.proc.endlabel )
 
 end function
 

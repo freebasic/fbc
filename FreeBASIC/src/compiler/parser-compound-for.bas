@@ -131,18 +131,14 @@ private sub cFlushSelfBOP( byval op as integer, _
 end sub
 
 '':::::
-''ForStatement    =   FOR ID '=' Expression TO Expression (STEP Expression)? Comment? SttSeparator
-''					  SimpleLine*
-''					  NEXT ID? .
+''ForStmtBegin    =   FOR ID '=' Expression TO Expression (STEP Expression)? .
 ''
-function cForStatement as integer
-    dim as integer iscomplex, ispositive, isconst
-    dim as FBSYMBOL ptr il, tl, el, cl, c2l
-    dim as FBSYMBOL ptr cnt, endc, stp
-    dim as FBVALUE sval, eval, ival
+function cForStmtBegin as integer
+    dim as FBSYMBOL ptr il, tl, el, cl
+    dim as FBVALUE ival
     dim as ASTNODE ptr idexpr, expr
-    dim as integer op, dtype, dclass, typ, lastcompstmt
-    dim as FBCMPSTMT oldforstmt
+    dim as integer op, dtype, isconst
+    dim as FB_CMPSTMTSTK ptr stk
 
 	function = FALSE
 
@@ -160,28 +156,31 @@ function cForStatement as integer
 		exit function
 	end if
 
-	cnt = astGetSymbol( idexpr )
+	stk = stackPush( @env.stmtstk )
 
-	typ = symbGetType( cnt )
+	stk->for.cnt = astGetSymbol( idexpr )
 
-	if( (typ < FB_DATATYPE_BYTE) or (typ > FB_DATATYPE_DOUBLE) ) then
+	dtype = symbGetType( stk->for.cnt )
+
+	if( (dtype < FB_DATATYPE_BYTE) or (dtype > FB_DATATYPE_DOUBLE) ) then
+		stackPop( @env.stmtstk )
 		hReportError( FB_ERRMSG_EXPECTEDSCALAR, TRUE )
 		exit function
 	end if
 
 	'' =
 	if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+		stackPop( @env.stmtstk )
 		hReportError( FB_ERRMSG_EXPECTEDEQ )
 		exit function
 	end if
 
 	'' get counter type (endc and step must be the same type)
-	dtype  = typ
-	dclass = symbGetDataClass( dtype )
 	isconst = 0
 
     '' Expression
     if( cExpression( expr ) = FALSE ) then
+    	stackPop( @env.stmtstk )
     	hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
     	exit function
     end if
@@ -198,34 +197,38 @@ function cForStatement as integer
 
 	'' TO
 	if( hMatch( FB_TK_TO ) = FALSE ) then
+		stackPop( @env.stmtstk )
 		hReportError( FB_ERRMSG_EXPECTEDTO )
 		exit function
 	end if
 
 	'' end condition (Expression)
 	if( cExpression( expr ) = FALSE ) then
+		stackPop( @env.stmtstk )
 		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 		exit function
 	end if
 
 	''
 	if( astIsCONST( expr ) ) then
-		astConvertValue( expr, @eval, dtype )
+		astConvertValue( expr, @stk->for.eval, dtype )
 		astDelNode( expr )
-		endc = NULL
+		stk->for.endc = NULL
 		isconst += 1
 
 	'' store end condition into a temp var
 	else
-		endc = cStoreTemp( expr, dtype )
+		stk->for.endc = cStoreTemp( expr, dtype )
 	end if
 
 	'' STEP
-	ispositive 	= TRUE
-	iscomplex 	= FALSE
+	stk->for.ispositive	= TRUE
+	stk->for.iscomplex = FALSE
+
 	if( lexGetToken( ) = FB_TK_STEP ) then
 		lexSkipToken( )
 		if( cExpression( expr ) = FALSE ) then
+			stackPop( @env.stmtstk )
 			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
@@ -234,43 +237,38 @@ function cForStatement as integer
 		if( astIsCONST( expr ) ) then
 			select case as const astGetDataType( expr )
 			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-				ispositive = (astGetValLong( expr ) >= 0)
+				stk->for.ispositive = (astGetValLong( expr ) >= 0)
 			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-				ispositive = (astGetValFloat( expr ) >= 0)
+				stk->for.ispositive = (astGetValFloat( expr ) >= 0)
 			case else
-				ispositive = (astGetValInt( expr ) >= 0)
+				stk->for.ispositive = (astGetValInt( expr ) >= 0)
 			end select
 		else
-			iscomplex = TRUE
+			stk->for.iscomplex = TRUE
 		end if
 
-		if( iscomplex ) then
-
-			stp = symbAddTempVar( typ )
-			if( stp = NULL ) then
-				exit function
-			end if
-
-			astAdd( astNewASSIGN( astNewVAR( stp, 0, dtype ), expr ) )
+		if( stk->for.iscomplex ) then
+			stk->for.stp = symbAddTempVar( dtype )
+			astAdd( astNewASSIGN( astNewVAR( stk->for.stp, 0, dtype ), expr ) )
 
 		else
             '' get constant step
-            astConvertValue( expr, @sval, dtype )
+            astConvertValue( expr, @stk->for.sval, dtype )
 			astDelNode( expr )
-			stp = NULL
+			stk->for.stp = NULL
 			isconst += 1
 		end if
 
 	else
 		select case as const dtype
 		case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-			sval.long = 1
+			stk->for.sval.long = 1
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-			sval.float = 1.0
+			stk->for.sval.float = 1.0
 		case else
-			sval.int = 1
+			stk->for.sval.int = 1
 		end select
-		stp = NULL
+		stk->for.stp = NULL
 		isconst += 1
 	end if
 
@@ -283,17 +281,20 @@ function cForStatement as integer
     '' if inic, endc and stepc are all constants,
     '' check if this branch is needed
     if( isconst = 3 ) then
-
-		if( ispositive ) then
+		if( stk->for.ispositive ) then
 			op = AST_OP_LE
     	else
 			op = AST_OP_GE
     	end if
 
-    	expr = astNewBOP( op, astNewCONST( @ival, dtype ), astNewCONST( @eval, dtype ) )
+    	expr = astNewBOP( op, _
+    					  astNewCONST( @ival, dtype ), _
+    					  astNewCONST( @stk->for.eval, dtype ) )
+
     	if( astGetValInt( expr ) = FALSE ) then
     		astAdd( astNewBRANCH( AST_OP_JMP, el ) )
     	end if
+
     	astDelNode( expr )
 
     else
@@ -304,72 +305,54 @@ function cForStatement as integer
 	il = symbAddLabel( NULL, TRUE )
 	astAdd( astNewLABEL( il ) )
 
-	'' save old for stmt info
-	oldforstmt = env.forstmt
+	'' push to stmt stack
+	stk->last = env.stmt.for
+	stk->id = FB_TK_FOR
+	stk->for.testlabel = tl
+	stk->for.inilabel = il
 
-	env.forstmt.cmplabel = cl
-	env.forstmt.endlabel = el
+	env.stmt.for.cmplabel = cl
+	env.stmt.for.endlabel = el
 
-	''
-	lastcompstmt = env.lastcompound
-	env.lastcompound = FB_TK_FOR
+	function = TRUE
 
-	'' Comment?
-	cComment( )
+end function
 
-	'' separator
-	if( cStmtSeparator( ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDEOL )
-		exit function
-	end if
+'':::::
+private function hForStmtClose( byval stk as FB_CMPSTMTSTK ptr ) as integer static
+	dim as FBSYMBOL ptr cl
+	dim as integer op, dtype
+	dim as FBVALUE ival
 
-	'' loop body
-	do
-		if( cSimpleLine( ) = FALSE ) then
-			exit do
-		end if
-	loop while( lexGetToken( ) <> FB_TK_EOF )
-
-	'' NEXT
-	if( hMatch( FB_TK_NEXT ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDNEXT )
-		exit function
-	end if
-
-	'' counter?
-	if( lexGetClass( ) = FB_TKCLASS_IDENTIFIER ) then
-		lexSkipToken( )
-
-		'' ( ',' counter? )*
-		if( lexGetToken( ) = CHAR_COMMA ) then
-			'' hack to handle multiple identifiers...
-			lexSetToken( FB_TK_NEXT, FB_TKCLASS_KEYWORD )
-		end if
-	end if
+	dtype = symbGetType( stk->for.cnt )
 
 	'' cmp label
-	astAdd( astNewLABEL( cl ) )
+	astAdd( astNewLABEL( env.stmt.for.cmplabel ) )
 
 	'' counter += step
-	cFlushSelfBOP( AST_OP_ADD, dtype, cnt, stp, @sval )
+	cFlushSelfBOP( AST_OP_ADD, dtype, _
+				   stk->for.cnt, _
+				   stk->for.stp, @stk->for.sval )
 
 	'' test label
-	astAdd( astNewLABEL( tl ) )
+	astAdd( astNewLABEL( stk->for.testlabel ) )
 
-    if( iscomplex = FALSE ) then
+    if( stk->for.iscomplex = FALSE ) then
 
-		if( ispositive ) then
+		if( stk->for.ispositive ) then
 			op = AST_OP_LE
     	else
 			op = AST_OP_GE
     	end if
 
     	'' counter <= or >= end cond?
-		cFlushBOP( op, dtype, cnt, NULL, endc, @eval, il )
+		cFlushBOP( op, dtype, _
+				   stk->for.cnt, NULL, _
+				   stk->for.endc, @stk->for.eval, _
+				   stk->for.inilabel )
 
-		c2l = NULL
     else
-		c2l = symbAddLabel( NULL, TRUE )
+		cl = symbAddLabel( NULL, TRUE )
 
     	'' test step sign and branch
 		select case as const dtype
@@ -381,28 +364,80 @@ function cForStatement as integer
 			ival.int = 0
 		end select
 
-		cFlushBOP( AST_OP_GE, dtype, stp, @sval, NULL, @ival, c2l )
+		cFlushBOP( AST_OP_GE, dtype, _
+				   stk->for.stp, @stk->for.sval, _
+				   NULL, @ival, _
+				   cl )
 
     	'' negative, loop if >=
-		cFlushBOP( AST_OP_GE, dtype, cnt, NULL, endc, @eval, il )
+		cFlushBOP( AST_OP_GE, dtype, _
+				   stk->for.cnt, NULL, _
+				   stk->for.endc, @stk->for.eval, _
+				   stk->for.inilabel )
 		'' exit loop
-		astAdd( astNewBRANCH( AST_OP_JMP, el ) )
+		astAdd( astNewBRANCH( AST_OP_JMP, env.stmt.for.endlabel ) )
     	'' control label
-    	astAdd( astNewLABEL( c2l, FALSE ) )
+    	astAdd( astNewLABEL( cl, FALSE ) )
     	'' positive, loop if <=
-		cFlushBOP( AST_OP_LE, dtype, cnt, NULL, endc, @eval, il )
+		cFlushBOP( AST_OP_LE, dtype, _
+				   stk->for.cnt, NULL, _
+				   stk->for.endc, @stk->for.eval, _
+				   stk->for.inilabel )
     end if
 
     '' end label (loop exit)
-    astAdd( astNewLABEL( el ) )
-
-	'' restore old for stmt info
-	env.forstmt = oldforstmt
-
-	''
-	env.lastcompound = lastcompstmt
+    astAdd( astNewLABEL( env.stmt.for.endlabel ) )
 
 	function = TRUE
 
 end function
+
+'':::::
+''ForStmtEnd      =   NEXT (ID (',' ID?))? .
+''
+function cForStmtEnd as integer
+	dim as integer iserror
+	dim as FB_CMPSTMTSTK ptr stk
+
+	function = FALSE
+
+	'' NEXT
+	lexSkipToken( )
+
+	do
+		stk = stackGetTOS( @env.stmtstk )
+		iserror = (stk = NULL)
+		if( iserror = FALSE ) then
+			iserror = (stk->id <> FB_TK_FOR)
+		end if
+
+		if( iserror ) then
+			hReportError( FB_ERRMSG_NEXTWITHOUTFOR )
+			exit function
+		end if
+
+		hForStmtClose( stk )
+
+		'' pop from stmt stack
+		env.stmt.for = stk->last
+		stackPop( @env.stmtstk )
+
+		'' ID?
+		if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
+			exit do
+		end if
+		lexSkipToken( )
+
+		'' ','?
+		if( lexGetToken( ) <> CHAR_COMMA ) then
+			exit do
+		end if
+		lexSkipToken( )
+	loop
+
+	function = TRUE
+
+end function
+
+
 

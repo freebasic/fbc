@@ -59,11 +59,15 @@ function cProgram as integer
 
     if( res ) then
     	if( hMatch( FB_TK_EOF ) = FALSE ) then
-    		'hReportError FB_ERRMSG_EXPECTEDEOF
+			'''''hReportError( FB_ERRMSG_EXPECTEDEOF )
     		res = FALSE
     	else
     		res = TRUE
     	end if
+    end if
+
+    if( hGetLastError( ) = FB_ERRMSG_OK ) then
+    	res = cCompStmtCheck( )
     end if
 
     function = res
@@ -93,42 +97,6 @@ function cLine as integer
 			return FALSE
 		end if
     end if
-
-	''
-	astAdd( astNewDBG( AST_OP_DBG_LINEEND ) )
-
-    function = TRUE
-
-end function
-
-'':::::
-''SimpleLine      =   Label? SimpleStatement? Comment? EOL .
-''
-function cSimpleLine as integer
-    dim res as integer
-
-	''
-	astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ) ) )
-
-    '' Label? SimpleStatement? Comment?
-    cLabel( )
-    res = cSimpleStatement( )
-    cComment( )
-
-	if( hGetLastError( ) <> FB_ERRMSG_OK ) then
-		return FALSE
-	end if
-
-	if( hMatch( FB_TK_EOL ) = FALSE ) then
-		if( res ) then
-			return FALSE
-		else
-			if( lexGetToken( ) <> FB_TK_EOF ) then
-				hReportError( FB_ERRMSG_EXPECTEDEOL )
-				return FALSE
-			end if
-		end if
-	end if
 
 	''
 	astAdd( astNewDBG( AST_OP_DBG_LINEEND ) )

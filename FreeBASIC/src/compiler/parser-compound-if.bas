@@ -29,39 +29,17 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-''SingleIfStatement=  !(COMMENT|NEWLINE|STATSEP) NUM_LIT | SimpleStatement*)
-''                    (ELSE SimpleStatement*)?
+''SingleIfStatement=  !(COMMENT|NEWLINE|STATSEP) NUM_LIT | Statement*)
+''                    (ELSE Statement*)?
 ''
-function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
-	dim as FBSYMBOL ptr el, nl, l
-	dim as integer lastcompstmt
+private function hIfSingleLine( byval stk as FB_CMPSTMTSTK ptr ) as integer
+	dim as FBSYMBOL ptr l
 
 	function = FALSE
 
-	'' !COMMENT|NEWLINE
-	select case lexGetToken( )
-	case FB_TK_COMMENTCHAR, FB_TK_REM, FB_TK_EOL, FB_TK_STATSEPCHAR
-		exit function
-	end select
+	stk->if.issingle = TRUE
 
-	'' add end and next label (at ELSE/ELSEIF)
-	nl = symbAddLabel( NULL, FALSE )
-	el = symbAddLabel( NULL, FALSE )
-
-	''
-	lastcompstmt = env.lastcompound
-	env.lastcompound = FB_TK_IF
-
-	'' branch
-	expr = astUpdComp2Branch( expr, nl, FALSE )
-	if( expr = NULL ) then
-		hReportError( FB_ERRMSG_INVALIDDATATYPES )
-		exit function
-	end if
-
-	astAdd( expr )
-
-	'' NUM_LIT | SimpleStatement*
+	'' NUM_LIT | Statement*
 	if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
 		l = symbFindByClass( lexGetSymbol, FB_SYMBCLASS_LABEL )
 		if( l = NULL ) then
@@ -71,57 +49,79 @@ function cSingleIfStatement( byval expr as ASTNODE ptr ) as integer
 
 		astAdd( astNewBRANCH( AST_OP_JMP, l ) )
 
-	elseif( cSimpleStatement( ) = FALSE ) then
+	elseif( cStatement( ) = FALSE ) then
 		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
 	end if
 
-	'' (ELSE SimpleStatement*)?
+	'' (ELSE Statement*)?
 	if( hMatch( FB_TK_ELSE ) ) then
-
 		'' exit if stmt
-		astAdd( astNewBRANCH( AST_OP_JMP, el ) )
+		astAdd( astNewBRANCH( AST_OP_JMP, stk->if.endlabel ) )
 
 		'' emit next label
-		astAdd( astNewLABEL( nl ) )
+		astAdd( astNewLABEL( stk->if.nxtlabel ) )
 
-		'' SimpleStatement|IF*
-		if( cSimpleStatement( ) = FALSE ) then
+		'' Statement|IF*
+		if( cStatement( ) = FALSE ) then
+			exit function
+		end if
+
+		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
 
 		'' emit end label
-		astAdd( astNewLABEL( el ) )
+		astAdd( astNewLABEL( stk->if.endlabel ) )
 
 	else
 		'' emit next label
-		astAdd( astNewLABEL( nl ) )
+		astAdd( astNewLABEL( stk->if.nxtlabel ) )
 	end if
 
 	'' END IF? -- added to make complex macros easier to be done
-	if( lexGetToken( ) = FB_TK_END ) then
+	select case lexGetToken( )
+	case FB_TK_END
 		if( lexGetLookAhead(1) = FB_TK_IF ) then
 			lexSkipToken( )
 			lexSkipToken( )
 		end if
-	end if
 
-	''
-	env.lastcompound = lastcompstmt
+	case FB_TK_ENDIF
+		lexSkipToken( )
+	end select
+
+	'' pop from stmt stack
+	stackPop( @env.stmtstk )
 
 	function = TRUE
 
 end function
 
 '':::::
-function cIfStmtBody( byval expr as ASTNODE ptr, _
-					  byval nl as FBSYMBOL ptr, _
-					  byval el as FBSYMBOL ptr, _
-					  byval checkstmtsep as integer = TRUE _
-					) as integer
+''IfStmtBegin	  =   IF Expression THEN (BlockIfStatement | SingleIfStatement) .
+''
+function cIfStmtBegin as integer
+	dim as ASTNODE ptr expr
+	dim as FBSYMBOL ptr nl, el
+	dim as FB_CMPSTMTSTK ptr stk
 
 	function = FALSE
+
+	'' IF
+	lexSkipToken( )
+
+    '' Expression
+    if( cExpression( expr ) = FALSE ) then
+    	hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
+    	exit function
+    end if
+
+	'' add end label (at ENDIF)
+	el = symbAddLabel( NULL, FALSE )
+	'' and next label (at ELSE/ELSEIF)
+	nl = symbAddLabel( NULL, FALSE )
 
 	'' branch
 	expr = astUpdComp2Branch( expr, nl, FALSE )
@@ -131,78 +131,84 @@ function cIfStmtBody( byval expr as ASTNODE ptr, _
 	end if
 	astAdd( expr )
 
-	if( checkstmtsep ) then
-		'' Comment?
-		cComment( )
+	'' push to stmt stack
+	stk = stackPush( @env.stmtstk )
+	stk->id = FB_TK_IF
+	stk->if.issingle = FALSE
+	stk->if.nxtlabel = nl
+	stk->if.endlabel = el
 
-		'' separator
-		if( cStmtSeparator( ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDEOL )
-			exit function
-		end if
-	end if
+	select case lexGetToken( )
+	'' THEN?
+	case FB_TK_THEN
+		lexSkipToken( )
 
-	'' loop body
-	do
-		if( cSimpleLine( ) = FALSE ) then
-			exit do
-		end if
-	loop while( lexGetToken( ) <> FB_TK_EOF )
+		select case lexGetToken( )
+		'' COMMENT|NEWLINE?
+		case FB_TK_COMMENTCHAR, FB_TK_REM, FB_TK_EOL, FB_TK_STATSEPCHAR
 
-	if( hGetLastError( ) = FB_ERRMSG_OK ) then
-		function = TRUE
-	end if
+		case else
+			return hIfSingleLine( stk )
+		end select
+
+	'' GOTO?
+	case FB_TK_GOTO
+		return hIfSingleLine( stk )
+
+	case else
+		hReportError( FB_ERRMSG_EXPECTEDTHEN )
+		stackPop( @env.stmtstk )
+		exit function
+	end select
+
+	function = TRUE
 
 end function
 
 '':::::
-''BlockIfStatement=   (COMMENT|NEWLINE|STATSEP)
-''					  SimpleLine*
-''					  (ELSEIF Expression THEN Comment? SttSeparator
-''					   SimpleLine*)?
-''                    (ELSE Comment? SttSeparator
-''					   SimpleLine*)?
-''					  END IF.
+''IfStmtNext	=     ELSEIF Expression THEN
+''              |     ELSE .
 ''
-function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
-	dim el as FBSYMBOL ptr, nl as FBSYMBOL ptr
-	dim lastcompstmt as integer
+function cIfStmtNext(  ) as integer
+	dim as ASTNODE ptr expr
+	dim as integer iserror
+	dim as FB_CMPSTMTSTK ptr stk
 
 	function = FALSE
 
-	'' COMMENT|NEWLINE
-	select case lexGetToken( )
-	case FB_TK_COMMENTCHAR, FB_TK_REM, FB_TK_EOL, FB_TK_STATSEPCHAR
+	stk = stackGetTOS( @env.stmtstk )
+	iserror = (stk = NULL)
+	if( iserror = FALSE ) then
+		iserror = (stk->id <> FB_TK_IF)
+	end if
 
-	case else
-		exit function
-	end select
-
-	'' add end label (at ENDIF)
-	el = symbAddLabel( NULL, FALSE )
-
-	'' add next label (at ELSE/ELSEIF)
-	nl = symbAddLabel( NULL, FALSE )
-
-	''
-	lastcompstmt = env.lastcompound
-	env.lastcompound = FB_TK_IF
-
-	if( cIfStmtBody( expr, nl, el ) = FALSE ) then
+	if( iserror ) then
+		if( lexGetToken( ) = FB_TK_ELSEIF ) then
+			hReportError( FB_ERRMSG_ELSEIFWITHOUTIF )
+		else
+			hReportError( FB_ERRMSG_ELSEWITHOUTIF )
+		end if
 		exit function
 	end if
 
-	'' (ELSEIF Expression THEN SimpleLine*)?
-    do while( hMatch( FB_TK_ELSEIF ) )
+	'' single line? don't process
+	if( stk->if.issingle ) then
+		return TRUE
+	end if
+
+	'' ELSEIF Expression THEN ?
+    select case lexGetToken( )
+    case FB_TK_ELSEIF
+    	lexSkipToken( )
 
 		'' exit last if stmt
-		astAdd( astNewBRANCH( AST_OP_JMP, el ) )
+		astAdd( astNewBRANCH( AST_OP_JMP, stk->if.endlabel ) )
 
 		'' emit next label
-		astAdd( astNewLABEL( nl ) )
+		astAdd( astNewLABEL( stk->if.nxtlabel ) )
 
 		'' add next label (at ELSE/ELSEIF)
-		nl = symbAddLabel( NULL, FALSE )
+		stk->if.nxtlabel = symbAddLabel( NULL, FALSE )
 
 	    '' Expression
     	if( cExpression( expr ) = FALSE ) then
@@ -216,100 +222,71 @@ function cBlockIfStatement( byval expr as ASTNODE ptr ) as integer
 			exit function
 		end if
 
-		if( cIfStmtBody( expr, nl, el, FALSE ) = FALSE ) then
+		'' branch
+		expr = astUpdComp2Branch( expr, stk->if.nxtlabel, FALSE )
+		if( expr = NULL ) then
+			hReportError( FB_ERRMSG_INVALIDDATATYPES )
 			exit function
 		end if
+		astAdd( expr )
 
-    loop
-
-	'' (ELSE SimpleLine*)?
-	if( hMatch( FB_TK_ELSE ) ) then
+    '' ELSE?
+    case FB_TK_ELSE
+    	lexSkipToken( )
 
 		'' exit last if stmt
-		astAdd( astNewBRANCH( AST_OP_JMP, el ) )
+		astAdd( astNewBRANCH( AST_OP_JMP, stk->if.endlabel ) )
 
 		'' emit next label
-		astAdd( astNewLABEL( nl ) )
+		astAdd( astNewLABEL( stk->if.nxtlabel ) )
+		stk->if.nxtlabel = NULL
 
-		'' loop body
-		do
-			if( cSimpleLine( ) = FALSE ) then
-				exit do
-			end if
-		loop while( lexGetToken( ) <> FB_TK_EOF )
-
-	else
-		'' emit next label
-		astAdd( astNewLABEL( nl ) )
-	end if
-
-	'' emit end label
-	astAdd( astNewLABEL( el ) )
-
-	'' ENDIF or END IF
-    if( hMatch( FB_TK_ENDIF ) = FALSE ) then
-        if( (hMatch( FB_TK_END ) = FALSE) or _
-        	(hMatch( FB_TK_IF ) = FALSE) ) then
-            hReportError( FB_ERRMSG_EXPECTEDENDIF )
-            exit function
-        end if
-    end if
-
-	''
-	env.lastcompound = lastcompstmt
+	end select
 
 	function = TRUE
 
 end function
 
 '':::::
-''IfStatement	  =   IF Expression THEN (BlockIfStatement | SingleIfStatement) .
+''IfStmtEnd	  =   END IF | ENDIF .
 ''
-function cIfStatement as integer
-	dim expr as ASTNODE ptr
+function cIfStmtEnd as integer
+	dim as integer iserror
+	dim as FB_CMPSTMTSTK ptr stk
 
 	function = FALSE
 
-	'' IF
-	lexSkipToken( )
-
-    '' Expression
-    if( cExpression( expr ) = FALSE ) then
-    	hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-    	exit function
-    end if
-
-	'' THEN
-	if( hMatch( FB_TK_THEN ) ) then
-
-		'' (BlockIfStatement | SingleIfStatement)
-		if( cBlockIfStatement( expr ) = FALSE ) then
-			if( hGetLastError = FB_ERRMSG_OK ) then
-				if( cSingleIfStatement( expr ) = FALSE ) then
-					hReportError( FB_ERRMSG_SYNTAXERROR )
-					exit function
-				end if
-			end if
-		end if
-
-	else
-
-		'' GOTO
-		if( lexGetToken( ) <> FB_TK_GOTO ) then
-			hReportError( FB_ERRMSG_EXPECTEDTHEN )
-			exit function
-		end if
-
-		if( cSingleIfStatement( expr ) = FALSE ) then
-			hReportError( FB_ERRMSG_SYNTAXERROR )
-			exit function
-		end if
-
+	stk = stackGetTOS( @env.stmtstk )
+	iserror = (stk = NULL)
+	if( iserror = FALSE ) then
+		iserror = (stk->id <> FB_TK_IF)
 	end if
 
+	if( iserror ) then
+		hReportError( FB_ERRMSG_ENDIFWITHOUTIF )
+		exit function
+	end if
 
-	function = TRUE
+	'' single line? don't process
+	if( stk->if.issingle ) then
+		return TRUE
+	end if
+
+	'' ENDIF or END IF
+	if( lexGetToken() = FB_TK_END ) then
+		lexSkipToken( )
+	end if
+	lexSkipToken( )
+
+	'' emit next label
+	if( stk->if.nxtlabel <> NULL ) then
+		astAdd( astNewLABEL( stk->if.nxtlabel ) )
+	end if
+
+	'' emit end label
+	astAdd( astNewLABEL( stk->if.endlabel ) )
+
+	'' pop from stmt stack
+	stackPop( @env.stmtstk )
 
 end function
-
-

@@ -64,7 +64,7 @@ type LEX_CTX
 	lahdchar		as uinteger					'' look ahead char
 
 	linenum 		as integer
-	lasttoken 		as integer
+	lasttk_id 		as integer
 
 	reclevel 		as integer					'' PP recursion
 	currmacro		as FBSYMBOL ptr
@@ -167,6 +167,8 @@ declare function	lexPeekCurrentLine		( byref token_pos as string ) as string
 ''
 
 #define lexLineNum( ) lex->linenum
+
+#define lexGetLastToken( ) lex->lasttk_id
 
 ''
 '' inter-module globals

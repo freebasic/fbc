@@ -64,62 +64,61 @@ private function hAllocWithVar( ) as FBSYMBOL ptr
 end function
 
 '':::::
-''WithStatement   =   WITH Variable Comment?
-''					  SimpleLine*
-''					  END WITH .
+''WithStmtBegin   =   WITH Variable .
 ''
-function cWithStatement as integer
-    dim as FBSYMBOL ptr oldvar
-    dim as integer lastcompstmt
+function cWithStmtBegin as integer
+    dim as FBSYMBOL ptr sym
+    dim as FB_CMPSTMTSTK ptr stk
 
 	function = FALSE
 
 	'' WITH
 	lexSkipToken( )
 
-	'' save old
-	oldvar = env.withvar
-
 	'' Variable
-	env.withvar = hAllocWithVar( )
-	if( env.withvar = NULL ) then
-		env.withvar = oldvar
+	sym = hAllocWithVar( )
+	if( sym = NULL ) then
 		exit function
 	end if
 
-	'' Comment?
-	cComment( )
+	'' push to stmt stack
+	stk = stackPush( @env.stmtstk )
+	stk->id = FB_TK_WITH
+	stk->with.last = env.stmt.with.sym
 
-	'' separator
-	if( cStmtSeparator( ) = FALSE ) then
-		env.withvar = oldvar
-		hReportError( FB_ERRMSG_EXPECTEDEOL )
-		exit function
+	env.stmt.with.sym = sym
+
+	function = TRUE
+
+end function
+
+'':::::
+''WithStmtEnd	  =   END WITH .
+''
+function cWithStmtEnd as integer
+	dim as integer iserror
+	dim as FB_CMPSTMTSTK ptr stk
+
+	function = FALSE
+
+	stk = stackGetTOS( @env.stmtstk )
+	iserror = (stk = NULL)
+	if( iserror = FALSE ) then
+		iserror = (stk->id <> FB_TK_WITH)
 	end if
 
-	''
-	lastcompstmt     = env.lastcompound
-	env.lastcompound = FB_TK_WITH
-
-	'' loop body
-	do
-		if( cSimpleLine( ) = FALSE ) then
-			exit do
-		end if
-	loop while( lexGetToken( ) <> FB_TK_EOF )
-
-	'' restore old
-	env.withvar = oldvar
-
-	''
-	env.lastcompound = lastcompstmt
+	if( iserror ) then
+		hReportError( FB_ERRMSG_ENDWITHWITHOUTWITH )
+		exit function
+	end if
 
 	'' END WITH
-	if( (hMatch( FB_TK_END ) = FALSE) or _
-		(hMatch( FB_TK_WITH ) = FALSE) ) then
-		hReportError( FB_ERRMSG_EXPECTEDENDWITH )
-		exit function
-	end if
+	lexSkipToken( )
+	lexSkipToken( )
+
+	'' pop from stmt stack
+	env.stmt.with.sym = stk->with.last
+	stackPop( @env.stmtstk )
 
 	function = TRUE
 

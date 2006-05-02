@@ -76,6 +76,7 @@ enum FB_SYMBATTRIB
     FB_SYMBATTRIB_DESCRIPTOR	= &h100000
 	FB_SYMBATTRIB_LITERAL		= &h200000
 	FB_SYMBATTRIB_FUNCRESULT	= &h400000
+	FB_SYMBATTRIB_CONSTANT		= &h800000
 end enum
 
 type FBSYMBOL_ as FBSYMBOL
@@ -1073,7 +1074,9 @@ declare function 	symbFreeDynVar			( byval s as FBSYMBOL ptr ) as ASTNODE ptr
 
 #define symbIsDestructor(s) ((s->attrib and FB_SYMBATTRIB_DESTRUCTOR) <> 0)
 
-#define symbIsDescriptor( s ) ((s->attrib and FB_SYMBATTRIB_DESCRIPTOR) <> 0)
+#define symbIsDescriptor(s) ((s->attrib and FB_SYMBATTRIB_DESCRIPTOR) <> 0)
+
+#define symbIsConstant(s) ((s->attrib and FB_SYMBATTRIB_CONSTANT) <> 0)
 
 #define symbGetIsLiteral(s) ((s->attrib and FB_SYMBATTRIB_LITERAL) <> 0)
 

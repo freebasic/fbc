@@ -107,7 +107,7 @@ function symbAllocFloatConst( byval value as double, _
 	'' proc, the global symbol tb should be used, so just one constant
 	'' will be ever allocated over the module
 	s = symbAddVarEx( @cname, @aname, typ, NULL, 0, 0, 0, dTB(), _
-					  FB_SYMBATTRIB_SHARED, TRUE, FALSE, FALSE )
+					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONSTANT, TRUE, FALSE, FALSE )
 
 	''
 	symbSetIsLiteral( s )
@@ -158,7 +158,7 @@ function symbAllocStrConst( byval sname as zstring ptr, _
 	'' it must be declare as SHARED, see symbAllocFloatConst()
 	s = symbAddVarEx( @cname, @aname, FB_DATATYPE_CHAR, NULL, _
 					  0, lgt + 1, 0, dTB(), _
-					  FB_SYMBATTRIB_SHARED, FALSE, TRUE, FALSE )
+					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONSTANT, FALSE, TRUE, FALSE )
 
 	''
 	symbSetIsLiteral( s )
@@ -209,7 +209,7 @@ function symbAllocWStrConst( byval sname as wstring ptr, _
 	'' it must be declare as SHARED, see symbAllocFloatConst()
 	s = symbAddVarEx( @cname, @aname, FB_DATATYPE_WCHAR, NULL, _
 					  0, (lgt+1) * len( wstring ), 0, dTB(), _
-					  FB_SYMBATTRIB_SHARED, FALSE, TRUE, FALSE )
+					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONSTANT, FALSE, TRUE, FALSE )
 
 	''
 	symbSetIsLiteral( s )

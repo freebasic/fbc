@@ -33,7 +33,7 @@ option escape
 ''                |   ID ':' .
 ''
 function cLabel as integer
-    dim l as FBSYMBOL ptr
+    dim as FBSYMBOL ptr l
 
     function = FALSE
 

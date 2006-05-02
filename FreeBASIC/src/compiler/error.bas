@@ -156,7 +156,19 @@ end type
 		@"Cannot initialize UDT's containing dynamic string fields", _
 		@"Branching to scope blocks containing local variables", _
 		@"Branching to other SUB's/FUNCTION's or to module-level", _
-		@"Branch crossing local array or object definition" _
+		@"Branch crossing local array or object definition", _
+		@"LOOP without DO", _
+		@"NEXT without FOR", _
+		@"WEND without WHILE", _
+		@"END WITH without WITH", _
+		@"END IF without IF", _
+		@"END SELECT without SELECT", _
+		@"END SUB or FUNCTION without SUB or FUNCTION",_
+		@"END SCOPE without SCOPE", _
+		@"ELSEIF without IF", _
+		@"ELSE without IF", _
+		@"CASE without SELECT", _
+		@"Cannot modify a constant" _
 	}
 
 

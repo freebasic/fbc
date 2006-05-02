@@ -104,7 +104,7 @@ sub lexInit( byval isinclude as integer )
 	lex->lahdchar	= UINVALID
 
 	lex->linenum	= 1
-	lex->lasttoken	= INVALID
+	lex->lasttk_id	= INVALID
 
 	lex->reclevel	= 0
 	lex->currmacro	= NULL
@@ -1277,7 +1277,7 @@ private sub hLoadWith( byval t as FBTOKEN ptr, _
 	t->tlen   = 8
 	t->typ    = INVALID
 	t->dotpos = 0
-	t->sym    = env.withvar
+	t->sym    = env.stmt.with.sym
 	t->id 	  = FB_TK_ID
 	t->class  = FB_TKCLASS_IDENTIFIER
 
@@ -1416,10 +1416,10 @@ re_read:
 
 			else
 				'' last token not ')' or ']'?
-				if( (lex->lasttoken <> CHAR_RPRNT) and _
-					(lex->lasttoken <> CHAR_RBRACKET) ) then
+				if( (lex->lasttk_id <> CHAR_RPRNT) and _
+					(lex->lasttk_id <> CHAR_RBRACKET) ) then
 					'' WITH?
-					if( env.withvar <> NULL ) then
+					if( env.stmt.with.sym <> NULL ) then
 						hLoadWith( t, flags )
 						exit sub
 					end if
@@ -1597,7 +1597,7 @@ private sub hCheckPP( )
 		'' '#' char?
 		if( lex->head->id = CHAR_SHARP ) then
 			'' at beginning of line (or top of source-file)?
-			if( (lex->lasttoken = FB_TK_EOL) or (lex->lasttoken = INVALID) ) then
+			if( (lex->lasttk_id = FB_TK_EOL) or (lex->lasttk_id = INVALID) ) then
                 lex->reclevel += 1
                 lexSkipToken( )
 
@@ -1713,7 +1713,7 @@ sub lexSkipToken( byval flags as LEXCHECK_ENUM ) static
 		lex->currmacro = NULL
 	end if
 
-    lex->lasttoken = lex->head->id
+    lex->lasttk_id = lex->head->id
 
     ''
     if( lex->k = 0 ) then

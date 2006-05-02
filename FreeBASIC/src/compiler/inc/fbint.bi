@@ -47,6 +47,8 @@ const FB_INITVARININODES	= 1000
 
 const FB_INITINCFILES		= 256
 
+const FB_INITSTMTSTACKNODES	= 128
+
 ''
 const FB_POINTERSIZE		= 4
 const FB_INTEGERSIZE		= 4
@@ -211,7 +213,8 @@ const CHAR_NULL   	= 00, _
       CHAR_RBRACKET	= 93
 
 
-const FB_INTSCAPECHAR		= CHAR_ESC			'' assuming it won't ever be used inside lit strings
+'' assuming it won't ever be used inside lit strings
+const FB_INTSCAPECHAR		= CHAR_ESC
 
 
 '' tokens
@@ -541,7 +544,7 @@ end enum
 
 
 #include once "inc\hash.bi"
-
+#include once "inc\stack.bi"
 #include once "inc\symb.bi"
 
 ''
@@ -564,12 +567,6 @@ type FB_ASMTOK
 	next			as FB_ASMTOK ptr
 end type
 
-
-''
-type FBCMPSTMT
-	cmplabel		as FBSYMBOL ptr				'' or inilabel
-    endlabel		as FBSYMBOL ptr
-end type
 
 ''
 enum FBFILE_FORMAT
@@ -616,6 +613,24 @@ type FBMAIN
 	initnode		as ASTNODE ptr
 end type
 
+type FBCMPSTMT
+	cmplabel		as FBSYMBOL ptr				'' or inilabel
+    endlabel		as FBSYMBOL ptr
+end type
+
+type FBENV_STMT_WITH
+	sym				as FBSYMBOL ptr
+end type
+
+type FBENV_STMT
+	for				as FBCMPSTMT
+	do				as FBCMPSTMT
+	while			as FBCMPSTMT
+	select			as FBCMPSTMT
+	proc			as FBCMPSTMT
+	with			as FBENV_STMT_WITH
+end type
+
 type FBENV
 	inf				as FBFILE					'' source file
 	outf			as FBFILE					'' destine file
@@ -625,23 +640,17 @@ type FBENV
 	incfilehash		as THASH
 
 	'' stmt recursion
-	forstmt			as FBCMPSTMT
-	dostmt			as FBCMPSTMT
-	whilestmt		as FBCMPSTMT
-	selectstmt		as FBCMPSTMT
-	procstmt		as FBCMPSTMT
+	stmtstk			as TSTACK
+	stmt			as FBENV_STMT
 
 	'' globals
 	scope			as uinteger					'' current scope (0=main module)
 	reclevel		as integer					'' >0 if parsing an include file
 	currproc 		as FBSYMBOL ptr				'' current proc
 	currblock 		as FBSYMBOL ptr				'' current scope block (= proc if outside any block)
-	withvar			as FBSYMBOL ptr				'' current WITH var
 
 	main			as FBMAIN
 
-	compoundcnt		as integer					'' checked when parsing EXIT
-	lastcompound	as integer					'' last compound stmt (token), def= INVALID
 	isprocstatic	as integer					'' TRUE with SUB/FUNCTION (...) STATIC
 	procerrorhnd	as FBSYMBOL ptr				'' var holding the old error handler inside a proc
 	stmtcnt			as integer					'' keep track of :'s to help scope break's

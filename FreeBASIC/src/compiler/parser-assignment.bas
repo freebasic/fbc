@@ -35,6 +35,15 @@ function cAssignment( byval assgexpr as ASTNODE ptr ) as integer
 
 	function = FALSE
 
+	'' constant?
+	dim as FBSYMBOL ptr sym = astGetSymbol( assgexpr )
+	if( sym <> NULL ) then
+		if( symbIsConstant( sym ) ) then
+			hReportError( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
+			exit function
+		end if
+	end if
+
 	'' BOP?
     op = INVALID
     if( lexGetToken( ) <> FB_TK_ASSIGN ) then

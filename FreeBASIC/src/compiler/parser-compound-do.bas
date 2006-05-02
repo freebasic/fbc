@@ -29,15 +29,13 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-''DoStatement     =   DO ((WHILE | UNTIL) Expression)? Comment? SttSeparator
-''					  SimpleLine*
-''					  LOOP ((WHILE | UNTIL) Expression)? .
+'' DoStmtBegin     =   DO ((WHILE | UNTIL) Expression)? .
 ''
-function cDoStatement as integer
+function cDoStmtBegin as integer
     dim as ASTNODE ptr expr
-	dim as integer iswhile, isuntil, isinverse, lastcompstmt, op
+	dim as integer iswhile, isuntil, isinverse
     dim as FBSYMBOL ptr il, el, cl
-    dim as FBCMPSTMT olddostmt
+    dim as FB_CMPSTMTSTK ptr stk
 
 	function = FALSE
 
@@ -92,37 +90,43 @@ function cDoStatement as integer
 		cl = symbAddLabel( NULL, FALSE )
 	end if
 
-	'' save old do stmt info
-	olddostmt = env.dostmt
+	'' push to stmt stack
+	stk = stackPush( @env.stmtstk )
+	stk->last = env.stmt.do
+	stk->id = FB_TK_DO
+	stk->do.attop = (expr <> NULL)
+	stk->do.inilabel = il
 
-	env.dostmt.cmplabel = cl
-	env.dostmt.endlabel = el
+	env.stmt.do.cmplabel = cl
+	env.stmt.do.endlabel = el
 
-	''
-	lastcompstmt = env.lastcompound
-	env.lastcompound = FB_TK_DO
+	function = TRUE
 
-	'' Comment?
-	cComment( )
+end function
 
-	'' separator
-	if( cStmtSeparator( ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDEOL )
-		exit function
+'':::::
+'' DoStmtEnd     =   LOOP ((WHILE | UNTIL) Expression)? .
+''
+function cDoStmtEnd as integer
+    dim as ASTNODE ptr expr
+	dim as integer iswhile, isuntil, isinverse, iserror
+	dim as FB_CMPSTMTSTK ptr stk
+
+	function = FALSE
+
+	stk = stackGetTOS( @env.stmtstk )
+	iserror = (stk = NULL)
+	if( iserror = FALSE ) then
+		iserror = (stk->id <> FB_TK_DO)
 	end if
 
-	'' loop body
-	do
-		if( cSimpleLine( ) = FALSE ) then
-			exit do
-		end if
-	loop while( lexGetToken( ) <> FB_TK_EOF )
+	if( iserror ) then
+		hReportError( FB_ERRMSG_LOOPWITHOUTDO )
+		exit function
+	end if
 
 	'' LOOP
-	if( hMatch( FB_TK_LOOP ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDLOOP )
-		exit function
-	end if
+	lexSkipToken( )
 
 	'' ((WHILE | UNTIL | SttSeparator) Expression)?
 	iswhile = FALSE
@@ -135,14 +139,14 @@ function cDoStatement as integer
 		isuntil = TRUE
 	end select
 
-	if( (iswhile or isuntil) and (expr <> NULL) ) then
+	if( (iswhile or isuntil) and (stk->do.attop) ) then
 		hReportError( FB_ERRMSG_SYNTAXERROR )
 		exit function
 	end if
 
 	'' emit comp label, if needed
-	if( cl <> il ) then
-		astAdd( astNewLABEL( cl ) )
+	if( env.stmt.do.cmplabel <> stk->do.inilabel ) then
+		astAdd( astNewLABEL( env.stmt.do.cmplabel ) )
 	end if
 
 	if( iswhile or isuntil ) then
@@ -161,7 +165,7 @@ function cDoStatement as integer
 			isinverse = FALSE
 		end if
 
-		expr = astUpdComp2Branch( expr, il, isinverse )
+		expr = astUpdComp2Branch( expr, stk->do.inilabel, isinverse )
 		if( expr = NULL ) then
 			hReportError( FB_ERRMSG_INVALIDDATATYPES )
 			exit function
@@ -169,19 +173,16 @@ function cDoStatement as integer
 		astAdd( expr )
 
 	else
-		astAdd( astNewBRANCH( AST_OP_JMP, il ) )
+		astAdd( astNewBRANCH( AST_OP_JMP, stk->do.inilabel ) )
 	end if
 
     '' end label (loop exit)
-    astAdd( astNewLABEL( el ) )
+    astAdd( astNewLABEL( env.stmt.do.endlabel ) )
 
-	'' restore old for stmt info
-	env.dostmt = olddostmt
-
-	''
-	env.lastcompound = lastcompstmt
+	'' pop from stmt stack
+	env.stmt.do = stk->last
+	stackPop( @env.stmtstk )
 
 	function = TRUE
 
 end function
-

@@ -608,6 +608,8 @@ declare sub 		astTypeIniUpdCnt	( byval tree as ASTNODE ptr )
 
 declare function 	astTypeIniGetHead	( byval tree as ASTNODE ptr ) as ASTNODE ptr
 
+declare function 	astGetInverseLogOp	( byval op as integer ) as integer
+
 
 ''
 '' macros

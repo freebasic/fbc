@@ -29,15 +29,12 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-''WhileStatement  =   WHILE Expression Comment? SttSeparator
-''					  SimpleLine*
-''					  WEND .
+''WhileStmtBegin  =   WHILE Expression .
 ''
-function cWhileStatement as integer
+function cWhileStmtBegin as integer
     dim as ASTNODE ptr expr
-    dim as integer lastcompstmt
     dim as FBSYMBOL ptr il, el
-    dim as FBCMPSTMT oldwhilestmt
+    dim as FB_CMPSTMTSTK ptr stk
 
 	function = FALSE
 
@@ -47,16 +44,6 @@ function cWhileStatement as integer
 	'' add ini and end labels
 	il = symbAddLabel( NULL, TRUE )
 	el = symbAddLabel( NULL, FALSE )
-
-	'' save old while stmt info
-	oldwhilestmt = env.whilestmt
-
-	env.whilestmt.cmplabel = il
-	env.whilestmt.endlabel = el
-
-	''
-	lastcompstmt = env.lastcompound
-	env.lastcompound = FB_TK_WHILE
 
 	'' emit ini label
 	astAdd( astNewLABEL( il ) )
@@ -75,40 +62,50 @@ function cWhileStatement as integer
 	end if
 	astAdd( expr )
 
-	'' Comment?
-	cComment( )
+	'' push to stmt stack
+	stk = stackPush( @env.stmtstk )
+	stk->last = env.stmt.while
+	stk->id = FB_TK_WHILE
 
-	'' separator
-	if( cStmtSeparator( ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDEOL )
-		exit function
-	end if
-
-	'' loop body
-	do
-		if( cSimpleLine( ) = FALSE ) then
-			exit do
-		end if
-	loop while( (lexGetToken( ) <> FB_TK_EOF) )
-
-	'' WEND
-	if( hMatch( FB_TK_WEND ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDWEND )
-		exit function
-	end if
-
-    astAdd( astNewBRANCH( AST_OP_JMP, il ) )
-
-    '' end label (loop exit)
-    astAdd( astNewLABEL( el ) )
-
-	'' restore old while stmt info
-	env.whilestmt = oldwhilestmt
-
-	''
-	env.lastcompound = lastcompstmt
+	env.stmt.while.cmplabel = il
+	env.stmt.while.endlabel = el
 
 	function = TRUE
 
 end function
 
+'':::::
+''WhileStmtEnd  =   WEND
+''
+function cWhileStmtEnd as integer
+	dim as integer iserror
+	dim as FB_CMPSTMTSTK ptr stk
+
+	function = FALSE
+
+	stk = stackGetTOS( @env.stmtstk )
+	iserror = (stk = NULL)
+	if( iserror = FALSE ) then
+		iserror = (stk->id <> FB_TK_WHILE)
+	end if
+
+	if( iserror ) then
+		hReportError( FB_ERRMSG_WENDWITHOUTWHILE )
+		exit function
+	end if
+
+	'' WEND
+	lexSkipToken( )
+
+    astAdd( astNewBRANCH( AST_OP_JMP, env.stmt.while.cmplabel ) )
+
+    '' end label (loop exit)
+    astAdd( astNewLABEL( env.stmt.while.endlabel ) )
+
+	'' pop from stmt stack
+	env.stmt.while = stk->last
+	stackPop( @env.stmtstk )
+
+	function = TRUE
+
+end function
