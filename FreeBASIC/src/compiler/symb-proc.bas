@@ -876,6 +876,8 @@ private function hCheckOvlParam( byval param as FBSYMBOL ptr, _
 				return 0
 			end select
 
+			'' allow different ENUM's?
+
 			return FB_OVLPROC_HALFMATCH
         end if
 

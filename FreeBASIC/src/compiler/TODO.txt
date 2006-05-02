@@ -14,7 +14,8 @@
       the other ones #include different libraries
       - a foo.o.liblist or such will be needed then, should be created only when
         #inclib's are found
-    - a libfoo.a.liblist will be
+    - a libfoo.a.liblist for libraries
+    - #libpath's must be added to .liblist too and checked also
 
 [ ] fbmain - explicit main function
     - must check if anything but the init/end labels were defined already inside

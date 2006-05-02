@@ -105,7 +105,8 @@ declare function 	cDeclaration            ( ) as integer
 
 declare function 	cConstDecl              ( ) as integer
 
-declare function 	cConstAssign            ( ) as integer
+declare function 	cConstAssign            ( byval dtype as integer, _
+					   						  byval subtype as FBSYMBOL ptr ) as integer
 
 declare function 	cTypeDecl               ( ) as integer
 

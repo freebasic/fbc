@@ -32,7 +32,7 @@ option escape
 
 '':::::
 function symbAddConst( byval symbol as zstring ptr, _
-					   byval typ as integer, _
+					   byval dtype as integer, _
 					   byval subtype as FBSYMBOL ptr, _
 					   byval value as FBVALUE ptr _
 					 ) as FBSYMBOL ptr static
@@ -43,31 +43,25 @@ function symbAddConst( byval symbol as zstring ptr, _
 
     function = NULL
 
-    isglobal = TRUE
-    '' enum?
-    if( typ = FB_DATATYPE_ENUM ) then
-    	symtb = @subtype->enum.elmtb
-
-    else
-    	'' if parsing main, all consts must go to the global table
-    	if( fbIsModLevel( ) ) then
-    		'' unless it's inside a scope block..
-    		if( env.scope > FB_MAINSCOPE ) then
-    			symtb = symb.loctb
-    			isglobal = FALSE
-
-    		else
-    			symtb = @symb.globtb
-    		end if
-
-    	else
+    '' if parsing main, all consts must go to the global table
+    if( fbIsModLevel( ) ) then
+    	'' unless it's inside a scope block..
+    	if( env.scope > FB_MAINSCOPE ) then
     		symtb = symb.loctb
     		isglobal = FALSE
+
+    	else
+    		symtb = @symb.globtb
+    		isglobal = TRUE
     	end if
+
+    else
+    	symtb = symb.loctb
+    	isglobal = FALSE
     end if
 
     c = symbNewSymbol( NULL, symtb, isglobal, FB_SYMBCLASS_CONST, _
-    				   TRUE, symbol, NULL, typ, subtype )
+    				   TRUE, symbol, NULL, dtype, subtype )
 	if( c = NULL ) then
 		exit function
 	end if
@@ -80,7 +74,7 @@ end function
 
 '':::::
 function symbAllocFloatConst( byval value as double, _
-						   	  byval typ as integer _
+						   	  byval dtype as integer _
 						 	) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXINTNAMELEN+1 cname, aname
@@ -91,12 +85,12 @@ function symbAllocFloatConst( byval value as double, _
 	function = NULL
 
 	'' can't use STR() because GAS doesn't support the 1.#INF notation
-	svalue = hFloatToStr( value, typ )
+	svalue = hFloatToStr( value, dtype )
 
 	cname = "{fbnc}"
 	cname += svalue
 
-	s = symbFindByNameAndSuffix( @cname, typ, FALSE )
+	s = symbFindByNameAndSuffix( @cname, dtype, FALSE )
 	if( s <> NULL ) then
 		return s
 	end if
@@ -106,7 +100,7 @@ function symbAllocFloatConst( byval value as double, _
 	'' it must be declare as SHARED, because even if currently inside an
 	'' proc, the global symbol tb should be used, so just one constant
 	'' will be ever allocated over the module
-	s = symbAddVarEx( @cname, @aname, typ, NULL, 0, 0, 0, dTB(), _
+	s = symbAddVarEx( @cname, @aname, dtype, NULL, 0, 0, 0, dTB(), _
 					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONSTANT, TRUE, FALSE, FALSE )
 
 	''

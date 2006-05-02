@@ -274,7 +274,7 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
 					 	byval dohash as integer, _
 					 	byval symbol as zstring ptr, _
 					 	byval aliasname as zstring ptr, _
-					 	byval typ as integer, _
+					 	byval dtype as integer, _
 					 	byval subtype as FBSYMBOL ptr, _
 					 	byval ptrcnt as integer, _
 					 	byval suffix as integer, _
@@ -299,7 +299,7 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
     s->class = class
 
     s->scope = env.scope
-    s->typ = typ
+    s->typ = dtype
     s->subtype = subtype
     s->ptrcnt = ptrcnt
 
@@ -389,8 +389,8 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
 	end if
 
 	''
-	typ -= ptrcnt * FB_DATATYPE_POINTER
-	if( typ = FB_DATATYPE_FWDREF ) then
+	dtype -= ptrcnt * FB_DATATYPE_POINTER
+	if( dtype = FB_DATATYPE_FWDREF ) then
 		symbAddToFwdRef( subtype, s )
 	end if
 

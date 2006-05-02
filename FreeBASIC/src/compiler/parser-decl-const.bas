@@ -28,44 +28,59 @@ option escape
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
 
-'':::::
-''ConstDecl       =   CONST ConstAssign (DECL_SEPARATOR ConstAssign)* .
-''
-function cConstDecl as integer
+''::::
+private function hGetType( byref dtype as integer, _
+						   byref subtype as FBSYMBOL ptr _
+						 ) as integer static
 
-    function = FALSE
+	dim as integer lgt, ptrcnt
 
-    '' CONST
-    if( hMatch( FB_TK_CONST ) = FALSE ) then
-    	exit function
-    end if
+	function = FALSE
 
-	do
-		'' ConstAssign
-		if( cConstAssign( ) = FALSE ) then
+	'' (AS SymbolType)?
+	if( lexGetToken( ) = FB_TK_AS ) then
+		lexSkipToken( )
+
+		if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
 			exit function
 		end if
 
-    	'' ','
-    	if( lexGetToken( ) <> FB_TK_DECLSEPCHAR ) then
-    		exit do
-    	else
-    		lexSkipToken( )
-    	end if
-	loop
+		'' check for invalid types
+		if( subtype <> NULL ) then
+			'' only allow if it's an enum
+			if( dtype <> FB_DATATYPE_ENUM ) then
+				hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+				exit function
+			end if
+		end if
+
+		select case as const dtype
+		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR, _
+			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+			exit function
+		end select
+
+	else
+		dtype = INVALID
+		subtype = NULL
+	end if
 
 	function = TRUE
 
 end function
 
 '':::
-''ConstAssign     =   ID (AS SymbolType)? ASSIGN ConstExpression .
+''ConstAssign     =   ID (AS SymbolType)? '=' ConstExpression .
 ''
-function cConstAssign as integer static
+function cConstAssign( byval dtype as integer, _
+					   byval subtype as FBSYMBOL ptr _
+					 ) as integer static
+
     static as zstring * FB_MAXNAMELEN+1 id
-    dim as integer sdtype, edtype, lgt, ptrcnt
+    dim as integer edtype
     dim as ASTNODE ptr expr
-    dim as FBSYMBOL ptr litsym, subtype
+    dim as FBSYMBOL ptr litsym
     dim as FBVALUE value
 
 	function = FALSE
@@ -76,33 +91,23 @@ function cConstAssign as integer static
 	end if
 
 	'' ID
-	sdtype = lexGetType( )
+	edtype = lexGetType( )
 	lexEatToken( id )
 
-	'' (AS SymbolType)?
-	if( hMatch( FB_TK_AS ) ) then
-		if( sdtype <> INVALID ) then
-			hReportError( FB_ERRMSG_SYNTAXERROR )
+	'' not multiple?
+	if( dtype = INVALID ) then
+		'' (AS SymbolType)?
+		if( hGetType( dtype, subtype ) = FALSE ) then
 			exit function
 		end if
+	end if
 
-		if( cSymbolType( sdtype, subtype, lgt, ptrcnt ) = FALSE ) then
+	'' both suffix and type given?
+	if( edtype <> INVALID ) then
+		if( dtype <> INVALID ) then
+			hReportErrorEx( FB_ERRMSG_SYNTAXERROR, id )
 			exit function
 		end if
-
-		'' check for invalid types
-		if( subtype <> NULL ) then
-			hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-			exit function
-		end if
-
-		select case as const sdtype
-		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR, _
-			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-			hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-			exit function
-		end select
-
 	end if
 
 	'' '='
@@ -128,10 +133,11 @@ function cConstAssign as integer static
 	'' string?
 	if( litsym <> NULL ) then
 
-		if( sdtype <> INVALID ) then
+		if( dtype <> INVALID ) then
 			'' not a string?
-			if( sdtype <> FB_DATATYPE_STRING ) then
+			if( dtype <> FB_DATATYPE_STRING ) then
 				hReportErrorEx( FB_ERRMSG_INVALIDDATATYPES, id )
+				exit function
 			end if
 		end if
 
@@ -151,16 +157,33 @@ function cConstAssign as integer static
 			exit function
 		end if
 
-		if( sdtype <> INVALID ) then
+		if( dtype <> INVALID ) then
 			'' string?
-			if( sdtype = FB_DATATYPE_STRING ) then
+			if( dtype = FB_DATATYPE_STRING ) then
 				hReportErrorEx( FB_ERRMSG_INVALIDDATATYPES, id )
+				exit function
 			end if
+
+			'' convert if needed
+			if( (dtype <> edtype) or _
+				(subtype <> astGetSubtype( expr )) ) then
+
+				expr = astNewCONV( INVALID, dtype, subtype, expr, FALSE )
+				if( expr = NULL ) then
+					hReportErrorEx( FB_ERRMSG_INVALIDDATATYPES, id )
+					exit function
+				end if
+			end if
+
+		else
+			dtype = edtype
+			subtype = astGetSubtype( expr )
 		end if
 
+		''
 		if( symbAddConst( @id, _
-						  edtype, _
-						  astGetSubtype( expr ), _
+						  dtype, _
+						  subtype, _
 						  @astGetValue( expr ) ) = NULL ) then
     		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
     		exit function
@@ -174,4 +197,39 @@ function cConstAssign as integer static
 	function = TRUE
 
 end function
+
+'':::::
+''ConstDecl       =   CONST (AS SymbolType)? ConstAssign (DECL_SEPARATOR ConstAssign)* .
+''
+function cConstDecl as integer
+    dim as integer dtype
+    dim as FBSYMBOL ptr subtype
+
+    function = FALSE
+
+    '' CONST
+    lexSkipToken( )
+
+	'' (AS SymbolType)?
+	if( hGetType( dtype, subtype ) = FALSE ) then
+		exit function
+	end if
+
+	do
+		'' ConstAssign
+		if( cConstAssign( dtype, subtype ) = FALSE ) then
+			exit function
+		end if
+
+    	'' ','?
+    	if( lexGetToken( ) <> FB_TK_DECLSEPCHAR ) then
+    		exit do
+    	end if
+    	lexSkipToken( )
+	loop
+
+	function = TRUE
+
+end function
+
 

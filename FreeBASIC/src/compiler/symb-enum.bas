@@ -71,20 +71,20 @@ function symbAddEnumElement( byval parent as FBSYMBOL ptr, _
 					         byval intval as integer _
 					       ) as FBSYMBOL ptr static
 
-	dim as FBSYMBOL ptr elm, tail
-	dim as FBVALUE value
+	dim as FBSYMBOL ptr c
 
-	value.int = intval
-	elm = symbAddConst( symbol, FB_DATATYPE_ENUM, parent, @value )
-
-	if( elm = NULL ) then
-		return NULL
+    c = symbNewSymbol( NULL, @parent->enum.elmtb, TRUE, FB_SYMBCLASS_CONST, _
+    				   TRUE, symbol, NULL, FB_DATATYPE_ENUM, parent )
+	if( c = NULL ) then
+		exit function
 	end if
+
+	c->con.val.int = intval
 
 	parent->enum.elements += 1
 
 	''
-	function = elm
+	function = c
 
 end function
 
