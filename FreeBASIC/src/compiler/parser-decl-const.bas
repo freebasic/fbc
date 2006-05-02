@@ -108,6 +108,9 @@ function cConstAssign( byval dtype as integer, _
 			hReportErrorEx( FB_ERRMSG_SYNTAXERROR, id )
 			exit function
 		end if
+
+		dtype = edtype
+		subtype = NULL
 	end if
 
 	'' '='
