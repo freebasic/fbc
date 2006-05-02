@@ -31,6 +31,7 @@ Version 0.16 Beta:
 - the Allegro headers were replaced by machine translated ones, END_OF_MAIN() must be used now in Linux (v1c)
 - bad compound statements are better handled now, new-lines won't be ignored anymore neither multiple error 
   messages will be shown (v1c)
+- for CONST's with explicit types, no inference will be done, the r-side values will be converted instead (v1c)
 
 [added]
 - anonymous UDT's that can be passed as parameters or used in assignments, like:
@@ -63,6 +64,8 @@ Version 0.16 Beta:
 - the __FB_OUT_EXE__, __FB_OUT_DLL__, __FB_OUT_LIB__, __FB_OUT_OBJ__ defines, that are set to TRUE (-1) depending on the
   output format (Executable, Shared library, Static library or Object file) select when compiling (v1c)
 - overloaded unsigned versions (ubyte, ushort, uinteger and ulongint) of INPUT (v1c)
+- CONST AS SymbolType foo, bar, ... (v1c)
+- ENUM's can now be used in explicit;y typed CONST's (v1c)
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)
