@@ -123,6 +123,9 @@ private function hAllocTB( byval stk as TSTACK ptr, _
 
 	prev = stk->tos
 	node = nodetb
+	if( prev <> NULL ) then
+		prev->next = node
+	end if
 
 	for i = 1 to nodes-1
 		node->prev = prev
