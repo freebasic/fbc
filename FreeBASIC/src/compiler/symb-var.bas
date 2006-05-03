@@ -550,7 +550,7 @@ private sub hDelVarDims( byval s as FBSYMBOL ptr ) static
     do while( n <> NULL )
     	nxt = n->next
 
-    	listDelNode( @symb.dimlist, cast( TLISTNODE ptr, n ) )
+    	listDelNode( @symb.dimlist, n )
 
     	n = nxt
     loop

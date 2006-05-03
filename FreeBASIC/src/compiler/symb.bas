@@ -355,7 +355,7 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
 				ZstrFree( s->name )
 				ZstrFree( s->alias )
 				if( delok ) then
-					listDelNode( @symb.symlist, cast( TLISTNODE ptr, s ) )
+					listDelNode( @symb.symlist, s )
 				end if
 				exit function
 			end if
@@ -768,7 +768,7 @@ sub symbFreeSymbol( byval s as FBSYMBOL ptr, _
     	ZstrFree( s->name )
     	ZstrFree( s->alias )
 
-    	listDelNode( @symb.symlist, cast( TLISTNODE ptr, s ) )
+    	listDelNode( @symb.symlist, s )
 
     '' move from local to global table
     else

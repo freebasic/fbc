@@ -23,7 +23,6 @@
 
 type TFLISTITEM
 	next		as TFLISTITEM ptr
-	'' ...
 end type
 
 type TFLIST
@@ -44,10 +43,10 @@ declare function flistFree		( byval flist as TFLIST ptr ) as integer
 
 declare function flistNewItem	( byval flist as TFLIST ptr ) as any ptr
 
-declare function flistGetHead	( byval flist as TFLIST ptr ) as any ptr
-
 declare sub 	 flistReset		( byval flist as TFLIST ptr )
 
-#define flistGetNext(n) cast(any ptr, cast(TFLISTITEM ptr, n)->next)
+declare function flistGetHead	( byval flist as TFLIST ptr ) as any ptr
+
+declare function flistGetNext	( byval node as any ptr ) as any ptr
 
 #endif '' __FLIST_BI__

@@ -21,7 +21,6 @@
 '' chng: jan/2005 written [v1ctor]
 ''
 
-defint a-z
 option explicit
 option escape
 
@@ -35,13 +34,14 @@ function listNew( byval list as TLIST ptr, _
 				  byval nodes as integer, _
 				  byval nodelen as integer, _
 				  byval doclear as integer, _
-				  byval relink as integer ) as integer
+				  byval relink as integer _
+				) as integer
 
 	'' fill ctrl struct
 	list->tbhead 	= NULL
 	list->tbtail 	= NULL
 	list->nodes 	= 0
-	list->nodelen	= nodelen
+	list->nodelen	= nodelen + len( TLISTNODE )
 	list->head		= NULL
 	list->tail		= NULL
 	list->clear		= doclear
@@ -75,10 +75,12 @@ end function
 '':::::
 function listAllocTB( byval list as TLIST ptr, _
 					  byval nodes as integer, _
-					  byval relink as integer = TRUE ) as integer static
-	dim as integer i
+					  byval relink as integer = TRUE _
+					) as integer static
+
 	dim as TLISTNODE ptr nodetb, node, prv
 	dim as TLISTTB ptr tb
+	dim as integer i
 
 	function = FALSE
 
@@ -127,7 +129,7 @@ function listAllocTB( byval list as TLIST ptr, _
 
 		for i = 1 to nodes-1
 			node->prev	= prv
-			node->next	= cast(TLISTNODE ptr, cast(byte ptr, node) + list->nodelen)
+			node->next	= cast( TLISTNODE ptr, cast( byte ptr, node ) + list->nodelen )
 
 			prv 	   	= node
 			node 		= node->next
@@ -168,18 +170,21 @@ function listNewNode( byval list as TLIST ptr ) as any ptr static
 	node->next	= NULL
 
 	''
-	function = node
+	function = cast( byte ptr, node ) + len( TLISTNODE )
 
 end function
 
 '':::::
-function listDelNode( byval list as TLIST ptr, _
-					  byval node as TLISTNODE ptr ) as integer static
-	dim as TLISTNODE ptr prv, nxt
+sub listDelNode( byval list as TLIST ptr, _
+				 byval node_ as any ptr ) static
 
-	if( node = NULL ) then
-		exit function
+	dim as TLISTNODE ptr node, prv, nxt
+
+	if( node_ = NULL ) then
+		exit sub
 	end if
+
+	node = cast( TLISTNODE ptr, cast( byte ptr, node_ ) - len( TLISTNODE ) )
 
 	'' remove from used list
 	prv = node->prev
@@ -202,9 +207,72 @@ function listDelNode( byval list as TLIST ptr, _
 
 	'' node can contain strings descriptors, so, erase it..
 	if( list->clear ) then
-		clear( byval cast(any ptr ptr, node) + 2, 0, list->nodelen - (len( any ptr ) * 2) )
+		clear( byval node_, 0, list->nodelen - len( TLISTNODE ) )
+	end if
+
+end sub
+
+'':::::
+function listGetHead( byval list as TLIST ptr ) as any ptr
+
+	if( list->head = NULL ) then
+		function = NULL
+	else
+		function = cast( byte ptr, list->head ) + len( TLISTNODE )
 	end if
 
 end function
 
+'':::::
+function listGetTail( byval list as TLIST ptr ) as any ptr
+
+	if( list->tail = NULL ) then
+		function = NULL
+	else
+		function = cast( byte ptr, list->tail ) + len( TLISTNODE )
+	end if
+
+end function
+
+'':::::
+function listGetPrev( byval node as any ptr ) as any ptr
+    dim as TLISTNODE ptr prev
+
+#ifdef DEBUG
+	if( node = NULL ) then
+		return NULL
+	end if
+#endif
+
+	 prev = cast( TLISTNODE ptr, _
+				  cast( byte ptr, node ) - len( TLISTNODE ) )->prev
+
+	if( prev = NULL ) then
+		function = NULL
+	else
+		function = cast( byte ptr, prev ) + len( TLISTNODE )
+	end if
+
+end function
+
+'':::::
+function listGetNext( byval node as any ptr ) as any ptr
+    dim as TLISTNODE ptr nxt
+
+#ifdef DEBUG
+	if( node = NULL ) then
+		return NULL
+	end if
+#endif
+
+	nxt = cast( TLISTNODE ptr, _
+				cast( byte ptr, node ) - len( TLISTNODE ) )->next
+
+	if( nxt = NULL ) then
+		function = NULL
+	else
+		function = cast( byte ptr, nxt ) + len( TLISTNODE )
+	end if
+
+end function
 

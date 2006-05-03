@@ -429,7 +429,7 @@ private sub hDelDefineParams( byval s as FBSYMBOL ptr )
     do while( param <> NULL )
     	nxt = param->next
     	ZstrFree( param->name )
-    	listDelNode( @symb.defparamlist, cast( TLISTNODE ptr, param ) )
+    	listDelNode( @symb.defparamlist, param )
     	param = nxt
     loop
 
@@ -450,7 +450,7 @@ private sub hDelDefineTokens( byval s as FBSYMBOL ptr )
     		WstrFree( tok->textw )
     	end select
 
-    	listDelNode( @symb.deftoklist, cast( TLISTNODE ptr, tok ) )
+    	listDelNode( @symb.deftoklist, tok )
     	tok = nxt
     loop
 

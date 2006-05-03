@@ -96,9 +96,6 @@ type FBARRAYDIM
 end type
 
 type FBVARDIM
-	ll_prv			as FBVARDIM ptr				'' linked-list nodes
-	ll_nxt			as FBVARDIM ptr				'' /
-
 	lower			as integer
 	upper			as integer
 
@@ -107,9 +104,6 @@ end type
 
 ''
 type FBLIBRARY
-	ll_prv			as FBLIBRARY ptr			'' linked-list nodes
-	ll_nxt			as FBLIBRARY ptr			'' /
-
 	name			as zstring ptr
 
 	hashitem		as HASHITEM ptr
@@ -138,9 +132,6 @@ end type
 
 ''
 type FB_DEFPARAM
-	ll_prv			as FB_DEFPARAM ptr				'' linked-list nodes
-	ll_nxt			as FB_DEFPARAM ptr				'' /
-
 	name			as zstring ptr
 	next			as FB_DEFPARAM ptr
 end type
@@ -153,9 +144,6 @@ enum FB_DEFTOK_TYPE
 end enum
 
 type FB_DEFTOK
-	ll_prv			as FB_DEFTOK ptr				'' linked-list nodes
-	ll_nxt			as FB_DEFTOK ptr				'' /
-
 	type			as FB_DEFTOK_TYPE
 
 	union
@@ -186,9 +174,6 @@ end type
 
 ''
 type FBFWDREF
-	ll_prv			as FBFWDREF ptr				'' linked-list nodes
-	ll_nxt			as FBFWDREF ptr				'' /
-
 	ref				as FBSYMBOL_ ptr
 	prev			as FBFWDREF ptr
 end type
@@ -340,9 +325,6 @@ end type
 
 ''
 type FBSYMBOL
-	ll_prv			as FBSYMBOL ptr				'' linked-list nodes
-	ll_nxt			as FBSYMBOL ptr				'' /
-
 	class			as FB_SYMBCLASS
 	typ				as FB_DATATYPE
 	subtype			as FBSYMBOL ptr

@@ -43,9 +43,6 @@ type LEXPP_ARG
 end type
 
 type LEXPP_ARGTB
-	ll_prv		as LEXPP_ARGTB ptr				'' linked-list nodes
-	ll_nxt		as LEXPP_ARGTB ptr				'' /
-
 	tb(0 to FB_MAXDEFINEARGS-1) as LEXPP_ARG
 end type
 
@@ -97,7 +94,7 @@ private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
 
 	'' allocate a new arg list (support recursion)
 	if( symbGetDefineHeadToken( s ) ) then
-		argtb = cast( LEXPP_ARGTB ptr, listNewNode( @ctx.argtblist ) )
+		argtb = listNewNode( @ctx.argtblist )
 	else
 		argtb = NULL
 	end if
@@ -220,7 +217,7 @@ private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
 			DZstrAssign( argtb->tb(num).text, NULL )
 		loop
 
-		listDelNode( @ctx.argtblist, cast( TLISTNODE ptr, argtb ) )
+		listDelNode( @ctx.argtblist, argtb )
 	end if
 
 	''
@@ -343,7 +340,7 @@ private function hLoadMacroW( byval s as FBSYMBOL ptr ) as integer
 	prntcnt = 1
 	'' allocate a new arg list (because the recursivity)
 	if( symbGetDefineHeadToken( s ) ) then
-		argtb = cast( LEXPP_ARGTB ptr, listNewNode( @ctx.argtblist ) )
+		argtb = listNewNode( @ctx.argtblist )
 	else
 		argtb = NULL
 	end if
@@ -466,7 +463,7 @@ private function hLoadMacroW( byval s as FBSYMBOL ptr ) as integer
 			DWstrAssign( argtb->tb(num).textw, NULL )
 		loop
 
-		listDelNode( @ctx.argtblist, cast( TLISTNODE ptr, argtb ) )
+		listDelNode( @ctx.argtblist, argtb )
 	end if
 
 	''

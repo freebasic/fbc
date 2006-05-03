@@ -70,8 +70,6 @@ type IRTACVREG_GRP
 end type
 
 type IRTAC
-	ll_nxt		as IRTAC ptr					'' linked-list field
-
 	pos			as integer
 
 	op			as AST_OPCODE					'' opcode
@@ -85,8 +83,6 @@ type IRTAC
 end type
 
 type IRVREG
-	ll_nxt		as IRVREG ptr					'' linked-list field
-
 	typ			as IRVREGTYPE_ENUM				'' VAR, IMM, IDX, etc
 	dtype		as FB_DATATYPE					'' CHAR, INTEGER, ...
 

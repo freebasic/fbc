@@ -244,7 +244,7 @@ private sub hashDelItem( byval list as HASHLIST ptr, _
 	end if
 
 	'' remove node
-	listDelNode( @ctx.itemlist, cast( TLISTNODE ptr, item ) )
+	listDelNode( @ctx.itemlist, item )
 
 end sub
 

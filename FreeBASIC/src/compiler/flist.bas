@@ -38,7 +38,11 @@ function flistNew( byval flist as TFLIST ptr, _
 	flist->totitems	= items
 	flist->items 	= items
 
-	function = listNew( @flist->list, items, itemlen, FALSE, FALSE )
+	function = listNew( @flist->list, _
+						items, _
+						itemlen + len( TFLISTITEM ), _
+						FALSE, _
+						FALSE )
 
 	flist->listtb 	= flist->list.tbtail
 	flist->index 	= 0
@@ -82,7 +86,8 @@ function flistNewItem( byval flist as TFLIST ptr ) as any ptr static
 	end if
 
 	''
-	item = cast(TFLISTITEM ptr, cast(byte ptr, flist->itemtb) + (flist->index * flist->list.nodelen))
+	item = cast( TFLISTITEM ptr, _
+				 cast( byte ptr, flist->itemtb ) + (flist->index * flist->list.nodelen) )
 	flist->index += 1
 	flist->items -= 1
 
@@ -95,7 +100,7 @@ function flistNewItem( byval flist as TFLIST ptr ) as any ptr static
 	item->next = NULL
 
 	''
-	function = item
+	function = cast( byte ptr, item ) + len( TFLISTITEM )
 
 end function
 
@@ -112,8 +117,35 @@ end sub
 
 '':::::
 function flistGetHead( byval flist as TFLIST ptr ) as any ptr static
+    dim as TFLISTITEM ptr item
 
-	function = flist->list.tbhead->nodetb
+	item = flist->list.tbhead->nodetb
+	if( item = NULL ) then
+		function = NULL
+	else
+		function = cast( byte ptr, item ) + len( TFLISTITEM )
+	end if
+
+end function
+
+'':::::
+function flistGetNext( byval node as any ptr ) as any ptr static
+    dim as TFLISTITEM ptr nxt
+
+#ifdef DEBUG
+	if( node = NULL ) then
+		return NULL
+	end if
+#endif
+
+	 nxt = cast( TFLISTITEM ptr, _
+				 cast( byte ptr, node ) - len( TFLISTITEM ) )->next
+
+	if( nxt = NULL ) then
+		function = NULL
+	else
+		function = cast( byte ptr, nxt ) + len( TFLISTITEM )
+	end if
 
 end function
 

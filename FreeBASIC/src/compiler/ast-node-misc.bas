@@ -152,7 +152,7 @@ function astLoadASM( byval n as ASTNODE ptr ) as IRVREG ptr
 			ZstrFree( node->text )
 		end if
 
-		listDelNode( @env.asmtoklist, cast( any ptr, node ) )
+		listDelNode( @env.asmtoklist, node )
 		node = nxt
 	loop
 

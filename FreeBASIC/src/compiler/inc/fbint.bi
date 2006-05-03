@@ -554,9 +554,6 @@ enum FB_ASMTOK_TYPE
 end enum
 
 type FB_ASMTOK
-	ll_prv			as FB_ASMTOK ptr			'' linked-list nodes
-	ll_nxt			as FB_ASMTOK ptr			'' /
-
 	type			as FB_ASMTOK_TYPE
 
 	union

@@ -77,7 +77,7 @@ sub symbDelLib( byval l as FBLIBRARY ptr ) static
 
 	ZstrFree( l->name )
 
-    listDelNode( @symb.liblist, cast( TLISTNODE ptr, l ) )
+    listDelNode( @symb.liblist, l )
 
 end sub
 
@@ -103,13 +103,15 @@ end function
 
 '':::::
 function symbListLibs( namelist() as string, _
-					   byval index as integer ) as integer static
+					   byval index as integer _
+					 ) as integer static
+
     dim cnt as integer
     dim node as FBLIBRARY ptr
 
 	cnt  = index
 
-	node = symb.liblist.head
+	node = listGetHead( @symb.liblist )
 	do while( node <> NULL )
 
 		if( hFindLib( node->name, namelist() ) = INVALID ) then
@@ -117,7 +119,7 @@ function symbListLibs( namelist() as string, _
 			cnt += 1
 		end if
 
-		node = node->ll_nxt
+		node = listGetNext( node )
 	loop
 
 	function = cnt - index

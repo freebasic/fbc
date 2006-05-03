@@ -217,8 +217,6 @@ type EMIT_MEMNODE
 end type
 
 type EMIT_NODE
-	ll_nxt							as EMIT_NODE ptr
-
 	class							as EMIT_NODECLASS_ENUM
 
 	union

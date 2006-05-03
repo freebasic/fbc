@@ -2137,7 +2137,7 @@ function irGetDistance( byval vreg as IRVREG ptr ) as uinteger
 	end if
 
 	'' skip the current tac
-	t = ir.tacidx->ll_nxt
+	t = flistGetNext( ir.tacidx )
 
 	'' eol?
 	if( t = NULL ) then

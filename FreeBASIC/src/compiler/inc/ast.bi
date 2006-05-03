@@ -148,18 +148,12 @@ type ASTNODE_ as ASTNODE
 #endif
 
 type ASTTEMPSTR
-	ll_prv			as ASTTEMPSTR ptr				'' linked-list nodes
-	ll_nxt			as ASTTEMPSTR ptr				'' /
-
 	tmpsym			as FBSYMBOL ptr
 	srctree			as ASTNODE_ ptr
 	prev			as ASTTEMPSTR ptr
 end type
 
 type ASTTEMPARRAY
-	ll_prv			as ASTTEMPARRAY ptr				'' linked-list nodes
-	ll_nxt			as ASTTEMPARRAY ptr				'' /
-
 	pdesc			as FBSYMBOL ptr
 	prev			as ASTTEMPARRAY ptr
 end type
@@ -276,9 +270,6 @@ end type
 
 ''
 type ASTNODE
-	ll_prv			as ASTNODE ptr					'' linked-list nodes
-	ll_nxt			as ASTNODE ptr					'' /  (can't be swapped/copied!)
-
 	class			as integer						'' CONST, VAR, BOP, UOP, IDX, FUNCT, etc
 
 	dtype			as integer
@@ -561,12 +552,6 @@ declare function 	astCheckCONV		( byval to_dtype as integer, _
 
 declare function	astUpdStrConcat		( byval n as ASTNODE ptr ) as ASTNODE ptr
 
-declare sub 		astCopy				( byval d as ASTNODE ptr, _
-			 							  byval s as ASTNODE ptr )
-
-declare sub 		astSwap				( byval d as ASTNODE ptr, _
-			 							  byval s as ASTNODE ptr )
-
 declare function 	astIsClassOnTree	( byval class as integer, _
 						   				  byval n as ASTNODE ptr ) as ASTNODE ptr
 
@@ -614,7 +599,7 @@ declare function 	astGetInverseLogOp	( byval op as integer ) as integer
 ''
 '' macros
 ''
-#define astInitNode( n, class_, dtype, subtype)		:_
+#define astInitNode(n, class_, dtype, subtype)		:_
 	n->class 		= class_						:_
 	n->dtype 		= dtype							:_
 	n->subtype		= subtype						:_
@@ -622,6 +607,10 @@ declare function 	astGetInverseLogOp	( byval op as integer ) as integer
 	n->l    		= NULL							:_
 	n->r    		= NULL							:_
 	n->sym			= NULL
+
+#define astCopy(dst, src) *dst = *src
+
+#define astSwap(dst, src) swap *dst, *src
 
 #define astGetClass(n) n->class
 

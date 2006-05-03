@@ -22,9 +22,6 @@ const HASH_INITENTRYNODES	= 1000
 const HASH_INITITEMNODES	= HASH_INITENTRYNODES*8
 
 type HASHITEM
-	ll_prv		as HASHITEM ptr			'' linked-list nodes
-	ll_nxt		as HASHITEM ptr			'' /
-
 	name		as zstring ptr			'' shared
 	idx			as any ptr
 

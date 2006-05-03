@@ -567,43 +567,6 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub astCopy( byval d as ASTNODE ptr, _
-			 byval s as ASTNODE ptr ) static
-
-	dim as ASTNODE ptr p, n
-
-	p = d->ll_prv
-	n = d->ll_nxt
-
-	*d = *s
-
-	d->ll_prv = p
-	d->ll_nxt = n
-
-end sub
-
-'':::::
-sub astSwap( byval d as ASTNODE ptr, _
-			 byval s as ASTNODE ptr ) static
-
-	dim as ASTNODE ptr dp, dn
-	dim as ASTNODE ptr sp, sn
-
-	dp = d->ll_prv
-	dn = d->ll_nxt
-	sp = s->ll_prv
-	sn = s->ll_nxt
-
-	swap *d, *s
-
-	d->ll_prv = dp
-	d->ll_nxt = dn
-	s->ll_prv = sp
-	s->ll_nxt = sn
-
-end sub
-
-'':::::
 function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 	dim as ASTNODE ptr nn, p
 
@@ -918,7 +881,7 @@ sub astDelNode( byval n as ASTNODE ptr ) static
 		exit sub
 	end if
 
-	listDelNode( @ast.astTB, cast( TLISTNODE ptr, n ) )
+	listDelNode( @ast.astTB, n )
 
 end sub
 

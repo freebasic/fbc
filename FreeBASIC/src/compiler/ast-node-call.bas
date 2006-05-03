@@ -223,7 +223,7 @@ private sub hCheckTmpStrings( byval f as ASTNODE ptr )
 		astDelNode( t )
 
 		p = n->prev
-		listDelNode( @ast.tempstr, cast( TLISTNODE ptr, n ) )
+		listDelNode( @ast.tempstr, n )
 		n = p
 	loop
 
@@ -244,7 +244,7 @@ private sub hFreeTempArrayDescs( byval f as ASTNODE ptr )
 		end if
 
 		p = n->prev
-		listDelNode( @ast.temparray, cast( TLISTNODE ptr, n ) )
+		listDelNode( @ast.temparray, n )
 		n = p
 	loop
 
