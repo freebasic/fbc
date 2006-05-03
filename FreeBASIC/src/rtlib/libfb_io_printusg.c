@@ -91,37 +91,52 @@ static int fb_PrintUsingFmtStr( int fnum )
 {
 	FB_PRINTUSGCTX *ctx;
 	char buffer[BUFFERLEN+1];
-	int c, len, doexit;
+	int c, lc, nc, len, doexit;
 
 	ctx = FB_TLSGETCTX( PRINTUSG );
 
 	len = 0;
-	if( ctx->ptr == 0 )
+	if( ctx->ptr == NULL )
 		ctx->chars = 0;
 
+	lc = -1;
 	while( (ctx->chars > 0) && (len < BUFFERLEN) )
 	{
 		c = *ctx->ptr;
+		nc = ( ctx->chars > 1? ctx->ptr[1] : -1 );
 
 		doexit = 0;
 		switch( c )
 		{
+		case '*':
+			if( nc == '*' || lc == '*' )
+				doexit = 1;
+
+			break;
+
+		case '$':
+			if( nc == '$' || lc == '$' || lc == '*' )
+				doexit = 1;
+
+			break;
+
 		case '!':
 		case '\\':
 		case '&':
 		case '+':
 		case ',':
-		case '$':
-		case '*':
 		case '.':
 		case '#':
 			doexit = 1;
 			break;
 
 		case '_':
-			c = *(ctx->ptr+1);
-			++ctx->ptr;
-			--ctx->chars;
+			c = nc;
+			if( ctx->chars > 1 )
+			{
+				++ctx->ptr;
+				--ctx->chars;
+			}
 		}
 
 		if( doexit )
@@ -131,6 +146,8 @@ static int fb_PrintUsingFmtStr( int fnum )
 
 		++ctx->ptr;
 		--ctx->chars;
+
+		lc = c;
 	}
 
     /* flush */
@@ -165,17 +182,13 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 
 	strchars = -1;
 
-	if( ctx->ptr == 0 )
+	if( ctx->ptr == NULL )
 		ctx->chars = 0;
 
 	while( ctx->chars > 0 )
     {
 		c = *ctx->ptr;
-
-		if( ctx->chars > 1 )
-			nc = *(ctx->ptr+1);
-		else
-			nc = -1;
+        nc = ( ctx->chars > 1? ctx->ptr[1] : -1 );
 
 		doexit = 1;
 		switch( c )
@@ -386,17 +399,13 @@ static int hPrintDouble( int fnum, double value, int mask, int maxdigits )
 
 	lc = -1;
 
-	if( ctx->ptr == 0 )
+	if( ctx->ptr == NULL )
 		ctx->chars = 0;
 
 	while( ctx->chars > 0 )
 	{
 		c = *ctx->ptr;
-
-		if( ctx->chars > 1 )
-			nc = *(ctx->ptr+1);
-		else
-			nc = -1;
+        nc = ( ctx->chars > 1? ctx->ptr[1] : -1 );
 
 		doexit = 0;
 		switch( c )
@@ -587,7 +596,7 @@ static int hPrintDouble( int fnum, double value, int mask, int maxdigits )
 		}
 	}
 
-	/**/
+	/* any fractional part? */
 	if( decdigs > 0 )
 	{
 		strcat( fix_buf, frac_buf );
@@ -600,6 +609,9 @@ static int hPrintDouble( int fnum, double value, int mask, int maxdigits )
 			frac_buf[fix_len+decdigs] = '\0';
 		}
 	}
+	/* but period must be added? */
+	else if( decdigs == 0 )
+		strcat( fix_buf, "." );
 
 	/* add exponent? */
 	if( isexp )
