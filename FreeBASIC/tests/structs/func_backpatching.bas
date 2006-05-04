@@ -6,8 +6,8 @@ declare function fun ( byval cnt as integer, _
 					   byval a as integer, byval b as integer, byval c as integer ) as foo ptr
 
 type foo_
-	a as integer
-	b as integer
+	a as byte
+	b as short
 	c as integer
 end type
 
