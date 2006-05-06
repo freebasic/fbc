@@ -11,7 +11,6 @@
 
 #ifdef __FB_WIN32__
 # inclib "OpenAL32"
-# inclib "ALut"
 #elseif defined(__FB_LINUX__)
 # inclib "openal"
 #else
