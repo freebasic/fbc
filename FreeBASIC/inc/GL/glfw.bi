@@ -9,7 +9,7 @@
 #ifndef __glfw_bi__
 #define __glfw_bi__
 
-'' Copyright (c) 2002-2004 Marcus Geelnard
+'' Copyright (c) 2002-2005 Marcus Geelnard
 ''
 '' This software is provided 'as-is', without any express or implied
 '' warranty. In no event will the authors be held liable for any damages
@@ -50,10 +50,12 @@
 #	define GLFWCALL     cdecl
 #endif
 
+#include once "GL/gl.bi"
+#include once "GL/glu.bi"
 
 #define GLFW_VERSION_MAJOR 2
-#define GLFW_VERSION_MINOR 4
-#define GLFW_VERSION_REVISION 2
+#define GLFW_VERSION_MINOR 5
+#define GLFW_VERSION_REVISION 0
 #define GLFW_RELEASE 0
 #define GLFW_PRESS 1
 #define GLFW_KEY_UNKNOWN -1
@@ -122,10 +124,18 @@
 #define GLFW_KEY_KP_EQUAL (256+61)
 #define GLFW_KEY_KP_ENTER (256+62)
 #define GLFW_KEY_LAST (256+62)
+#define GLFW_MOUSE_BUTTON_1 0
+#define GLFW_MOUSE_BUTTON_2 1
+#define GLFW_MOUSE_BUTTON_3 2
+#define GLFW_MOUSE_BUTTON_4 3
+#define GLFW_MOUSE_BUTTON_5 4
+#define GLFW_MOUSE_BUTTON_6 5
+#define GLFW_MOUSE_BUTTON_7 6
+#define GLFW_MOUSE_BUTTON_8 7
+#define GLFW_MOUSE_BUTTON_LAST 7
 #define GLFW_MOUSE_BUTTON_LEFT 0
 #define GLFW_MOUSE_BUTTON_RIGHT 1
 #define GLFW_MOUSE_BUTTON_MIDDLE 2
-#define GLFW_MOUSE_BUTTON_LAST 2
 #define GLFW_JOYSTICK_1 0
 #define GLFW_JOYSTICK_2 1
 #define GLFW_JOYSTICK_3 2
@@ -176,6 +186,7 @@
 #define GLFW_NO_RESCALE_BIT &h00000001
 #define GLFW_ORIGIN_UL_BIT &h00000002
 #define GLFW_BUILD_MIPMAPS_BIT &h00000004
+#define GLFW_ALPHA_MAP_BIT &h00000008
 #define GLFW_INFINITY 100000.0
 
 type GLFWvidmode
@@ -198,6 +209,8 @@ type GLFWthread as integer
 type GLFWmutex as any ptr
 type GLFWcond as any ptr
 type GLFWwindowsizefun as sub GLFWCALL(byval as integer, byval as integer)
+type GLFWwindowclosefun as function GLFWCALL() as integer
+type GLFWwindowrefreshfun as sub GLFWCALL()
 type GLFWmousebuttonfun as sub GLFWCALL(byval as integer, byval as integer)
 type GLFWmouseposfun as sub GLFWCALL(byval as integer, byval as integer)
 type GLFWmousewheelfun as sub GLFWCALL(byval as integer)
@@ -221,9 +234,12 @@ declare sub glfwSwapBuffers GLFWAPIENTRY alias "glfwSwapBuffers" ()
 declare sub glfwSwapInterval GLFWAPIENTRY alias "glfwSwapInterval" (byval interval as integer)
 declare function glfwGetWindowParam GLFWAPIENTRY alias "glfwGetWindowParam" (byval param as integer) as integer
 declare sub glfwSetWindowSizeCallback GLFWAPIENTRY alias "glfwSetWindowSizeCallback" (byval cbfun as GLFWwindowsizefun)
+declare sub glfwSetWindowCloseCallback GLFWAPIENTRY alias "glfwSetWindowCloseCallback" (byval cbfun as GLFWwindowclosefun)
+declare sub glfwSetWindowRefreshCallback GLFWAPIENTRY alias "glfwSetWindowRefreshCallback" (byval cbfun as GLFWwindowrefreshfun)
 declare function glfwGetVideoModes GLFWAPIENTRY alias "glfwGetVideoModes" (byval list as GLFWvidmode ptr, byval maxcount as integer) as integer
 declare sub glfwGetDesktopMode GLFWAPIENTRY alias "glfwGetDesktopMode" (byval mode as GLFWvidmode ptr)
 declare sub glfwPollEvents GLFWAPIENTRY alias "glfwPollEvents" ()
+declare sub glfwWaitEvents GLFWAPIENTRY alias "glfwWaitEvents" ()
 declare function glfwGetKey GLFWAPIENTRY alias "glfwGetKey" (byval key as integer) as integer
 declare function glfwGetMouseButton GLFWAPIENTRY alias "glfwGetMouseButton" (byval button as integer) as integer
 declare sub glfwGetMousePos GLFWAPIENTRY alias "glfwGetMousePos" (byval xpos as integer ptr, byval ypos as integer ptr)
