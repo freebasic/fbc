@@ -57,7 +57,10 @@ declare sub		 parserAsmEnd           ( )
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub fbAddIncPath( byval path as zstring ptr )
+sub fbAddIncPath _
+	( _
+		byval path as zstring ptr _
+	)
 
 	if( env.incpaths < FB_MAXINCPATHS ) then
         ' test for both path dividers because a slash is also supported
@@ -77,15 +80,22 @@ sub fbAddIncPath( byval path as zstring ptr )
 end sub
 
 '':::::
-sub fbAddDefine( byval dname as zstring ptr, _
-				 byval dtext as zstring ptr )
+sub fbAddDefine _
+	( _
+		byval dname as zstring ptr, _
+		byval dtext as zstring ptr _
+	)
 
     symbAddDefine( dname, dtext, len( *dtext ) )
 
 end sub
 
 '':::::
-private function hFindIncFile( byval filename as zstring ptr ) as zstring ptr static
+private function hFindIncFile _
+	( _
+		byval filename as zstring ptr _
+	) as zstring ptr static
+
 	dim as string fname
 
 	fname = ucase( *filename )
@@ -95,7 +105,11 @@ private function hFindIncFile( byval filename as zstring ptr ) as zstring ptr st
 end function
 
 '':::::
-private function hAddIncFile( byval filename as zstring ptr ) as zstring ptr static
+private function hAddIncFile _
+	( _
+		byval filename as zstring ptr _
+	) as zstring ptr static
+
     dim as zstring ptr fname, res
     dim as uinteger index
 
@@ -103,6 +117,7 @@ private function hAddIncFile( byval filename as zstring ptr ) as zstring ptr sta
 	hUcase( filename, fname )
 
 	index = hashHash( fname )
+
 	res = hashLookupEx( @env.incfilehash, fname, index )
 	if( res = NULL ) then
 		hashAdd( @env.incfilehash, fname, fname, index )
@@ -119,9 +134,13 @@ end function
 private sub hSetCtx( )
 
 	env.scope				= FB_MAINSCOPE
-	env.reclevel			= 0
+	env.includerec			= 0
+	env.namespcrec			= 0
 	env.currproc 			= NULL
 	env.currblock 			= NULL
+
+	env.mangling			= FB_MANGLING_BASIC
+	env.currlib				= NULL
 
 	env.main.proc			= NULL
 
@@ -210,7 +229,10 @@ private sub stmtStackEnd( )
 end sub
 
 '':::::
-function fbInit( byval ismain as integer ) as integer static
+function fbInit _
+	( _
+		byval ismain as integer _
+	) as integer static
 
 	function = FALSE
 
@@ -306,40 +328,58 @@ sub fbSetDefaultOptions( )
 end sub
 
 '':::::
-sub fbSetOption ( byval opt as integer, _
-				  byval value as integer )
+sub fbSetOption _
+	( _
+		byval opt as integer, _
+		byval value as integer _
+	)
 
 	select case as const opt
 	case FB_COMPOPT_DEBUG
 		env.clopt.debug = value
+
 	case FB_COMPOPT_CPUTYPE
 		env.clopt.cputype = value
+
 	case FB_COMPOPT_ERRORCHECK
 		env.clopt.errorcheck = value
+
 	case FB_COMPOPT_NOSTDCALL
 		env.clopt.nostdcall = value
+
 	case FB_COMPOPT_NOUNDERPREFIX
 		env.clopt.nounderprefix = value
+
 	case FB_COMPOPT_OUTTYPE
 		env.clopt.outtype = value
+
 	case FB_COMPOPT_RESUMEERROR
 		env.clopt.resumeerr = value
+
 	case FB_COMPOPT_WARNINGLEVEL
 		env.clopt.warninglevel = value
+
 	case FB_COMPOPT_EXPORT
 		env.clopt.export = value
+
 	case FB_COMPOPT_NODEFLIBS
 		env.clopt.nodeflibs = value
+
 	case FB_COMPOPT_SHOWERROR
 		env.clopt.showerror = value
+
 	case FB_COMPOPT_MULTITHREADED
 		env.clopt.multithreaded = value
+
 	case FB_COMPOPT_PROFILE
 		env.clopt.profile = value
+
 	case FB_COMPOPT_TARGET
 		env.clopt.target = value
+
 	case FB_COMPOPT_EXTRAERRCHECK
 		env.clopt.extraerrchk = value
+
 	case FB_COMPOPT_MSBITFIELDS
 		env.clopt.msbitfields = value
 	end select
@@ -347,41 +387,60 @@ sub fbSetOption ( byval opt as integer, _
 end sub
 
 '':::::
-function fbGetOption ( byval opt as integer ) as integer
+function fbGetOption _
+	( _
+		byval opt as integer _
+	) as integer
 
 	select case as const opt
 	case FB_COMPOPT_DEBUG
 		function = env.clopt.debug
+
 	case FB_COMPOPT_CPUTYPE
 		function = env.clopt.cputype
+
 	case FB_COMPOPT_ERRORCHECK
 		function = env.clopt.errorcheck
+
 	case FB_COMPOPT_NOSTDCALL
 		function = env.clopt.nostdcall
+
 	case FB_COMPOPT_NOUNDERPREFIX
 		function = env.clopt.nounderprefix
+
 	case FB_COMPOPT_OUTTYPE
 		function = env.clopt.outtype
+
 	case FB_COMPOPT_RESUMEERROR
 		function = env.clopt.resumeerr
+
 	case FB_COMPOPT_WARNINGLEVEL
 		function = env.clopt.warninglevel
+
 	case FB_COMPOPT_EXPORT
 		function = env.clopt.export
+
 	case FB_COMPOPT_NODEFLIBS
 		function = env.clopt.nodeflibs
+
 	case FB_COMPOPT_SHOWERROR
 		function = env.clopt.showerror
+
 	case FB_COMPOPT_MULTITHREADED
 		function = env.clopt.multithreaded
+
 	case FB_COMPOPT_PROFILE
 		function = env.clopt.profile
+
 	case FB_COMPOPT_TARGET
 		function = env.clopt.target
+
 	case FB_COMPOPT_EXTRAERRCHECK
 		function = env.clopt.extraerrchk
+
 	case FB_COMPOPT_MSBITFIELDS
 		function = env.clopt.msbitfields
+
 	case else
 		function = FALSE
 	end select
@@ -389,7 +448,10 @@ function fbGetOption ( byval opt as integer ) as integer
 end function
 
 '':::::
-sub fbSetPaths( byval target as integer ) static
+sub fbSetPaths _
+	( _
+		byval target as integer _
+	) static
 
 	select case as const target
 	case FB_COMPTARGET_WIN32
@@ -427,7 +489,10 @@ sub fbSetPaths( byval target as integer ) static
 end sub
 
 '':::::
-function fbGetPath( byval path as integer ) as zstring ptr static
+function fbGetPath _
+	( _
+		byval path as integer _
+	) as zstring ptr static
 
 	function = @pathTB( path )
 
@@ -460,9 +525,11 @@ function fbGetModuleEntry( ) as string static
 end function
 
 '':::::
-function fbPreInclude( preincTb() as string, _
-				       byval preincfiles as integer _
-				     ) as integer
+function fbPreInclude _
+	( _
+		preincTb() as string, _
+		byval preincfiles as integer _
+	) as integer
 
 	dim as integer i
 
@@ -477,12 +544,14 @@ function fbPreInclude( preincTb() as string, _
 end function
 
 '':::::
-function fbCompile( byval infname as zstring ptr, _
-				    byval outfname as zstring ptr, _
-				    byval ismain as integer, _
-				    preincTb() as string, _
-				    byval preincfiles as integer _
-				  ) as integer
+function fbCompile _
+	( _
+		byval infname as zstring ptr, _
+		byval outfname as zstring ptr, _
+		byval ismain as integer, _
+		preincTb() as string, _
+		byval preincfiles as integer _
+	) as integer
 
     dim as integer res
 	dim as double tmr
@@ -560,7 +629,12 @@ function fbCompile( byval infname as zstring ptr, _
 end function
 
 '':::::
-function fbListLibs( namelist() as string, byval index as integer ) as integer
+function fbListLibs _
+	( _
+		namelist() as string, _
+		byval index as integer _
+	) as integer
+
 	dim as integer i
 
 	index += symbListLibs( namelist(), index )
@@ -629,8 +703,11 @@ sub fbAddDefaultLibs( ) static
 end sub
 
 ''::::
-function fbIncludeFile( byval filename as zstring ptr, _
-						byval isonce as integer ) as integer
+function fbIncludeFile _
+	( _
+		byval filename as zstring ptr, _
+		byval isonce as integer _
+	) as integer
 
     static as zstring * FB_MAXPATHLEN incfile
     dim as zstring ptr fileidx
@@ -638,8 +715,8 @@ function fbIncludeFile( byval filename as zstring ptr, _
 
 	function = FALSE
 
-	if( env.reclevel >= FB_MAXINCRECLEVEL ) then
-		hReportError( FB_ERRMSG_RECLEVELTOODEPTH )
+	if( env.includerec >= FB_MAXINCRECLEVEL ) then
+		hReportError( FB_ERRMSG_RECLEVELTOODEEP )
 		exit function
 	end if
 
@@ -686,8 +763,8 @@ function fbIncludeFile( byval filename as zstring ptr, _
 		fileidx = hAddIncFile( incfile )
 
 		''
-		infileTb(env.reclevel) = env.inf
-    	env.reclevel += 1
+		infileTb(env.includerec) = env.inf
+    	env.includerec += 1
 
         '' we must remember the path - otherwise we'd be unable to
         '' find header files in the same path
@@ -718,8 +795,8 @@ function fbIncludeFile( byval filename as zstring ptr, _
 		end if
 
 		''
-		env.reclevel -= 1
-		env.inf = infileTb( env.reclevel )
+		env.includerec -= 1
+		env.inf = infileTb( env.includerec )
 	end if
 
 end function

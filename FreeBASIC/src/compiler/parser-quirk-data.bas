@@ -38,6 +38,7 @@ function cDataStmt as integer static
 	dim as ASTNODE ptr expr
 	dim as FBSYMBOL ptr litsym, sym
 	dim as string littext
+	dim as FBSYMCHAIN ptr chain_
 
 	function = FALSE
 
@@ -50,7 +51,12 @@ function cDataStmt as integer static
 		sym = NULL
 		select case lexGetClass( )
 		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_NUMLITERAL
-			sym = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_LABEL )
+			chain_ = cIdentifier( )
+			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+				exit function
+			end if
+
+			sym = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
 			if( sym = NULL ) then
 				sym = symbAddLabel( lexGetText( ), FALSE, TRUE )
 				if( sym = NULL ) then
@@ -84,9 +90,8 @@ function cDataStmt as integer static
 	'' DATA literal|constant expr (',' literal|constant expr)*
 	case FB_TK_DATA
 
-		'' not allowed if inside an scope block
-		if( env.scope > iif( fbIsModLevel( ), FB_MAINSCOPE, FB_MAINSCOPE+1 ) ) then
-			hReportError( FB_ERRMSG_ILLEGALINSIDEASCOPE )
+		'' allowed?
+		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DATA ) = FALSE ) then
 			exit function
 		end if
 

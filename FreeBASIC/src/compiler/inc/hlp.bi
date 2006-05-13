@@ -32,76 +32,97 @@ const INVALID = -1
 '' helper module protos
 ''
 
-declare	sub 		hlpInit					( )
 
-declare	sub 		hlpEnd					( )
+declare	sub 		hlpInit					( _
+											)
 
-declare	function 	hGetDefType				( byval symbol as zstring ptr ) as integer
+declare	sub 		hlpEnd					( _
+											)
 
-declare	sub 		hSetDefType				( byval ichar as integer, _
-											  byval echar as integer, _
-											  byval typ as integer )
+declare	function 	hGetDefType				( _
+												byval symbol as zstring ptr _
+											) as integer
 
-declare function 	hMatch					( byval token as integer ) as integer
+declare	sub 		hSetDefType				( _
+												byval ichar as integer, _
+												byval echar as integer, _
+												byval typ as integer _
+											)
 
-declare function 	hMakeTmpStr 			( byval islabel as integer = TRUE ) as zstring ptr
+declare function 	hMatch					( _
+												byval token as integer _
+											) as integer
 
-declare function 	hFBrelop2IRrelop		( byval op as integer ) as integer
+declare function 	hMakeTmpStr 			( _
+												byval islabel as integer = TRUE _
+											) as zstring ptr
 
-declare function 	hFileExists				( byval filename as zstring ptr ) as integer
+declare function 	hFBrelop2IRrelop		( _
+												byval op as integer _
+											) as integer
 
-declare sub 		hClearName				( byval src as zstring ptr )
+declare function 	hFileExists				( _
+												byval filename as zstring ptr _
+											) as integer
 
-declare sub 		hUcase					( byval src as zstring ptr, _
-											  byval dst as zstring ptr )
+declare sub 		hClearName				( _
+												byval src as zstring ptr _
+											)
 
-declare function 	hCreateProcAlias		( byval symbol as zstring ptr, _
-											  byval argslen as integer, _
-						   					  byval mode as integer ) as zstring ptr
+declare sub 		hUcase					( _
+												byval src as zstring ptr, _
+												byval dst as zstring ptr _
+											)
 
-#ifdef FBSYMBOL
-declare function 	hCreateOvlProcAlias		( byval symbol as zstring ptr, _
-					    	  				  byval params as integer, _
-					    	  				  byval param as FBSYMBOL ptr ) as zstring ptr
-#endif
+declare function 	hStripUnderscore		( _
+												byval symbol as zstring ptr _
+											) as string
 
-declare function 	hCreateDataAlias		( byval symbol as zstring ptr, _
-											  byval isimport as integer ) as string
+declare function 	hStripExt				( _
+												byval filename as zstring ptr _
+											) as string
 
-declare function 	hCreateName 			( byval symbol as zstring ptr, _
-											  byval typ as integer = INVALID, _
-											  byval preservecase as integer = FALSE, _
-								      		  byval addunderscore as integer = TRUE, _
-								      		  byval clearname as integer  = TRUE) as zstring ptr
+declare function 	hStripPath				( _
+												byval filename as zstring ptr _
+											) as string
 
-declare function 	hStripUnderscore		( byval symbol as zstring ptr ) as string
+declare function 	hStripFilename 			( _
+												byval filename as zstring ptr _
+											) as string
 
-declare function 	hStripExt				( byval filename as zstring ptr ) as string
+declare function 	hGetFileExt				( _
+												byval fname as zstring ptr _
+											) as string
 
-declare function 	hStripPath				( byval filename as zstring ptr ) as string
+declare function 	hRevertSlash			( _
+												byval s as zstring ptr, _
+												byval allocnew as integer _
+											) as zstring ptr
 
-declare function 	hStripFilename 			( byval filename as zstring ptr ) as string
-
-declare function 	hGetFileExt				( byval fname as zstring ptr ) as string
-
-declare function 	hRevertSlash			( byval s as zstring ptr, _
-											  byval allocnew as integer ) as zstring ptr
-
-declare function 	hToPow2					( byval value as uinteger ) as uinteger
+declare function 	hToPow2					( _
+												byval value as uinteger _
+											) as uinteger
 
 #ifdef FBVALUE
-declare sub 		hConvertValue			( byval src as FBVALUE ptr, _
-				   							  byval sdtype as integer, _
-				   							  byval dst as FBVALUE ptr, _
-				   							  byval ddtype as integer )
+declare sub 		hConvertValue			( _
+												byval src as FBVALUE ptr, _
+												byval sdtype as integer, _
+												byval dst as FBVALUE ptr, _
+												byval ddtype as integer _
+											)
 #endif
 
-declare function 	hJumpTbAllocSym			( ) as any ptr
+declare function 	hJumpTbAllocSym			( _
+											) as any ptr
 
-declare function 	hFloatToStr				( byval value as double, _
-					  						  byref typ as integer ) as string
+declare function 	hFloatToStr				( _
+												byval value as double, _
+												byref typ as integer _
+											) as string
 
-declare function 	hCheckFileFormat		( byval f as integer ) as integer
+declare function 	hCheckFileFormat		( _
+												byval f as integer _
+											) as integer
 
 
 #include once "inc\hlp-str.bi"

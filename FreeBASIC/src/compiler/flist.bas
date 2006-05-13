@@ -22,7 +22,6 @@
 '' chng: apr/2005 written [v1ctor]
 ''
 
-defint a-z
 option explicit
 option escape
 
@@ -31,9 +30,12 @@ option escape
 const NULL = 0
 
 '':::::
-function flistNew( byval flist as TFLIST ptr, _
-				   byval items as integer, _
-				   byval itemlen as integer ) as integer
+function flistNew _
+	( _
+		byval flist as TFLIST ptr, _
+		byval items as integer, _
+		byval itemlen as integer _
+	) as integer
 
 	flist->totitems	= items
 	flist->items 	= items
@@ -41,8 +43,7 @@ function flistNew( byval flist as TFLIST ptr, _
 	function = listNew( @flist->list, _
 						items, _
 						itemlen + len( TFLISTITEM ), _
-						FALSE, _
-						FALSE )
+						LIST_FLAGS_NONE )
 
 	flist->listtb 	= flist->list.tbtail
 	flist->index 	= 0
@@ -52,7 +53,10 @@ function flistNew( byval flist as TFLIST ptr, _
 end function
 
 '':::::
-function flistFree( byval flist as TFLIST ptr ) as integer
+function flistFree _
+	( _
+		byval flist as TFLIST ptr _
+	) as integer
 
 	flist->totitems	= 0
 	flist->items	= 0
@@ -64,7 +68,11 @@ function flistFree( byval flist as TFLIST ptr ) as integer
 end function
 
 '':::::
-function flistNewItem( byval flist as TFLIST ptr ) as any ptr static
+function flistNewItem _
+	( _
+		byval flist as TFLIST ptr _
+	) as any ptr static
+
     dim as TFLISTITEM ptr item
 
 	'' alloc new item flist if there are no free items
@@ -75,7 +83,7 @@ function flistNewItem( byval flist as TFLIST ptr ) as any ptr static
 		if( flist->listtb = NULL ) then
 			flist->items = cunsg(flist->totitems) \ 2
 			flist->totitems += flist->items
-			listAllocTB( @flist->list, flist->items, FALSE )
+			listAllocTB( @flist->list, flist->items )
 			flist->listtb = flist->list.tbtail
 		else
 			flist->items = flist->listtb->nodes
@@ -105,7 +113,10 @@ function flistNewItem( byval flist as TFLIST ptr ) as any ptr static
 end function
 
 '':::::
-sub flistReset( byval flist as TFLIST ptr ) static
+sub flistReset _
+	( _
+		byval flist as TFLIST ptr _
+	) static
 
 	flist->listtb 	= flist->list.tbhead
 	flist->items	= flist->listtb->nodes
@@ -116,7 +127,11 @@ sub flistReset( byval flist as TFLIST ptr ) static
 end sub
 
 '':::::
-function flistGetHead( byval flist as TFLIST ptr ) as any ptr static
+function flistGetHead _
+	( _
+		byval flist as TFLIST ptr _
+	) as any ptr static
+
     dim as TFLISTITEM ptr item
 
 	item = flist->list.tbhead->nodetb
@@ -129,7 +144,11 @@ function flistGetHead( byval flist as TFLIST ptr ) as any ptr static
 end function
 
 '':::::
-function flistGetNext( byval node as any ptr ) as any ptr static
+function flistGetNext _
+	( _
+		byval node as any ptr _
+	) as any ptr static
+
     dim as TFLISTITEM ptr nxt
 
 #ifdef DEBUG
@@ -138,8 +157,8 @@ function flistGetNext( byval node as any ptr ) as any ptr static
 	end if
 #endif
 
-	 nxt = cast( TFLISTITEM ptr, _
-				 cast( byte ptr, node ) - len( TFLISTITEM ) )->next
+	nxt = cast( TFLISTITEM ptr, _
+				cast( byte ptr, node ) - len( TFLISTITEM ) )->next
 
 	if( nxt = NULL ) then
 		function = NULL

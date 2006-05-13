@@ -30,11 +30,13 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-private function hCheckStringOps( byval l as ASTNODE ptr, _
-							      byval ldclass as FB_DATACLASS, _
-							      byval r as ASTNODE ptr, _
-							      byval rdclass as FB_DATACLASS _
-							    ) as integer static
+private function hCheckStringOps _
+	( _
+		byval l as ASTNODE ptr, _
+		byval ldclass as FB_DATACLASS, _
+		byval r as ASTNODE ptr, _
+		byval rdclass as FB_DATACLASS _
+	) as integer static
 
 	function = FALSE
 
@@ -75,11 +77,13 @@ private function hCheckStringOps( byval l as ASTNODE ptr, _
 end function
 
 '':::::
-private function hCheckUDTOps( byval l as ASTNODE ptr, _
-							   byval ldclass as FB_DATACLASS, _
-							   byval r as ASTNODE ptr, _
-							   byval rdclass as FB_DATACLASS _
-							 ) as integer static
+private function hCheckUDTOps _
+	( _
+		byval l as ASTNODE ptr, _
+		byval ldclass as FB_DATACLASS, _
+		byval r as ASTNODE ptr, _
+		byval rdclass as FB_DATACLASS _
+	) as integer static
 
 	dim as FBSYMBOL ptr proc
 
@@ -139,12 +143,14 @@ private function hCheckUDTOps( byval l as ASTNODE ptr, _
 end function
 
 '':::::
-private function hCheckWstringOps( byval l as ASTNODE ptr, _
-							       byref ldtype as FB_DATATYPE, _
-							       byval r as ASTNODE ptr, _
-							       byref rdtype as FB_DATATYPE, _
-							       byref is_zstr as integer _
-							   	  ) as integer static
+private function hCheckWstringOps _
+	( _
+		byval l as ASTNODE ptr, _
+		byref ldtype as FB_DATATYPE, _
+		byval r as ASTNODE ptr, _
+		byref rdtype as FB_DATATYPE, _
+		byref is_zstr as integer _
+	) as integer static
 
 	function = FALSE
 
@@ -190,11 +196,13 @@ private function hCheckWstringOps( byval l as ASTNODE ptr, _
 end function
 
 '':::::
-private function hCheckZstringOps( byval l as ASTNODE ptr, _
-							       byref ldtype as FB_DATATYPE, _
-							       byval r as ASTNODE ptr, _
-							       byref rdtype as FB_DATATYPE _
-							   	  ) as integer static
+private function hCheckZstringOps _
+	( _
+		byval l as ASTNODE ptr, _
+		byref ldtype as FB_DATATYPE, _
+		byval r as ASTNODE ptr, _
+		byref rdtype as FB_DATATYPE _
+	) as integer static
 
 	function = FALSE
 
@@ -221,11 +229,13 @@ private function hCheckZstringOps( byval l as ASTNODE ptr, _
 end function
 
 '':::::
-private function hCheckEnumOps( byval l as ASTNODE ptr, _
-							    byval ldclass as FB_DATACLASS, _
-							    byval r as ASTNODE ptr, _
-							    byval rdclass as FB_DATACLASS _
-							  ) as integer static
+private function hCheckEnumOps _
+	( _
+		byval l as ASTNODE ptr, _
+		byval ldclass as FB_DATACLASS, _
+		byval r as ASTNODE ptr, _
+		byval rdclass as FB_DATACLASS _
+	) as integer static
 
 	function = FALSE
 
@@ -242,11 +252,13 @@ private function hCheckEnumOps( byval l as ASTNODE ptr, _
 end function
 
 '':::::
-private function hCheckPointerOps( byval l as ASTNODE ptr, _
-							       byval ldtype as FB_DATATYPE, _
-							       byval r as ASTNODE ptr, _
-							       byval rdtype as FB_DATATYPE _
-							 	 ) as integer static
+private function hCheckPointerOps _
+	( _
+		byval l as ASTNODE ptr, _
+		byval ldtype as FB_DATATYPE, _
+		byval r as ASTNODE ptr, _
+		byval rdtype as FB_DATATYPE _
+	) as integer static
 
 	function = FALSE
 
@@ -274,9 +286,11 @@ private function hCheckPointerOps( byval l as ASTNODE ptr, _
 end function
 
 '':::::
-function astCheckASSIGN( byval l as ASTNODE ptr, _
-					   	 byval r as ASTNODE ptr _
-					   ) as integer static
+function astCheckASSIGN _
+	( _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as integer static
 
     dim as ASTNODE ptr n
     dim as FB_DATATYPE ldtype, rdtype
@@ -380,10 +394,12 @@ function astCheckASSIGN( byval l as ASTNODE ptr, _
 end function
 
 '':::::
-function astNewASSIGN( byval l as ASTNODE ptr, _
-					   byval r as ASTNODE ptr, _
-					   byval checktypes as integer = TRUE _
-					 ) as ASTNODE ptr static
+function astNewASSIGN _
+	( _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr, _
+		byval checktypes as integer = TRUE _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
     dim as FB_DATATYPE ldtype, rdtype
@@ -536,14 +552,17 @@ function astNewASSIGN( byval l as ASTNODE ptr, _
 end function
 
 '':::::
-private function hSetBitField( byval l as ASTNODE ptr, _
-							   byval r as ASTNODE ptr _
-							 ) as ASTNODE ptr static
+private function hSetBitField _
+	( _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as ASTNODE ptr static
 
 	dim as FBSYMBOL ptr s
 
 	s = l->subtype
 
+	'' remap type
 	l->dtype = s->typ
 	l->subtype = NULL
 
@@ -561,7 +580,11 @@ private function hSetBitField( byval l as ASTNODE ptr, _
 end function
 
 '':::::
-function astLoadASSIGN( byval n as ASTNODE ptr ) as IRVREG ptr
+function astLoadASSIGN _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
     dim as ASTNODE ptr l, r
     dim as IRVREG ptr vs, vr
 
@@ -572,12 +595,14 @@ function astLoadASSIGN( byval n as ASTNODE ptr ) as IRVREG ptr
 	end if
 
 	'' handle bitfields..
-	if( l->dtype = FB_DATATYPE_BITFIELD ) then
-		'' l is a field node, use its left child instead
-		r = hSetBitField( l->l, r )
-		'' the field node can be removed
-		astDelNode( l )
-		l = l->l
+	if( l->class = AST_NODECLASS_FIELD ) then
+		if( l->l->dtype = FB_DATATYPE_BITFIELD ) then
+			'' l is a field node, use its left child instead
+			r = hSetBitField( l->l, r )
+			'' the field node can be removed
+			astDelNode( l )
+			l = l->l
+		end if
 	end if
 
 	vs = astLoad( r )

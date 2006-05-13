@@ -32,44 +32,33 @@ const FB_MAXPROCARGS		= 64
 const FB_MAXARRAYDIMS		= 8
 const FB_MAXDEFINEARGS		= FB_MAXPROCARGS \ 2
 
-const FB_MAXNAMELEN			= 96
+const FB_MAXNAMELEN			= 64
 const FB_MAXLITLEN			= 1024				'' literal strings max length
 const FB_MAXNUMLEN			= 64
 const FB_MAXOPERANDLEN		= FB_MAXNAMELEN + 2 + 16 + 2 + 1
 const FB_MAXDEFINELEN		= FB_MAXLITLEN*4
 
 const FB_MAXSCOPEDEPTH		= 128
+const FB_MAXNAMEPSPACEDEPTH	= 8
 
 ''
-const TRUE			= -1
-const FALSE			= 0
-const NULL			= 0
-const INVALID		= -1
+const TRUE					= -1
+const FALSE					= 0
+const NULL					= 0
+const INVALID				= -1
 
 ''
-#define FB_VER_MAJOR            0
-#define FB_VER_MINOR            16
-#define FB_VER_PATCH            0
-#define FB_VERSION				"0.16"
-#define FB_SIGN					"FreeBASIC v0.16b"
+#define FB_VER_MAJOR		0
+#define FB_VER_MINOR		16
+#define FB_VER_PATCH		0
+#define FB_VERSION			"0.16"
+#define FB_SIGN				"FreeBASIC v0.16b"
 
-#define FB_TO_STRING(v)         #v
+#define FB_TO_STRING(v)		#v
 
-#define FB_VER_STR_MAJOR        FB_TO_STRING(FB_VER_MAJOR)
-#define FB_VER_STR_MINOR        FB_TO_STRING(FB_VER_MINOR)
-#define FB_VER_STR_PATCH        FB_TO_STRING(FB_VER_PATCH)
-
-#ifndef __FB_VER_MAJOR__
-#define __FB_VER_MAJOR__ 0
-#endif
-
-#ifndef __FB_VER_MINOR__
-#define __FB_VER_MINOR__ 14
-#endif
-
-#ifndef __FB_VER_PATCH__
-#define __FB_VER_PATCH__ 2
-#endif
+#define FB_VER_STR_MAJOR    FB_TO_STRING(FB_VER_MAJOR)
+#define FB_VER_STR_MINOR    FB_TO_STRING(FB_VER_MINOR)
+#define FB_VER_STR_PATCH    FB_TO_STRING(FB_VER_PATCH)
 
 #ifndef __FB_MIN_VERSION__
 #define __FB_MIN_VERSION__(major,minor,patch_level) _
@@ -78,28 +67,28 @@ const INVALID		= -1
                                       (__FB_VER_MINOR__ = minor and __FB_VER_PATCH__ >= patch_level))))
 #endif
 
-#ifdef TARGET_WIN32
-#define FB_TARGET				"win32"
+#if defined(TARGET_WIN32)
+#define FB_TARGET			"win32"
 #elseif defined(TARGET_CYGWIN)
-#define FB_TARGET				"cygwin"
+#define FB_TARGET			"cygwin"
 #elseif defined(TARGET_LINUX)
-#define FB_TARGET				"linux"
+#define FB_TARGET			"linux"
 #elseif defined(TARGET_DOS)
-#define FB_TARGET				"dos"
+#define FB_TARGET			"dos"
 #elseif defined(TARGET_XBOX)
-#define FB_TARGET				"xbox"
+#define FB_TARGET			"xbox"
 #endif
 
-#ifdef __FB_WIN32__
-#define FB_HOST					"win32"
+#if defined(__FB_WIN32__)
+#define FB_HOST				"win32"
 #elseif defined(__FB_CYGWIN__)
-#define FB_HOST					"cygwin"
+#define FB_HOST				"cygwin"
 #elseif defined(__FB_LINUX__)
-#define FB_HOST					"linux"
+#define FB_HOST				"linux"
 #elseif defined(__FB_DOS__)
-#define FB_HOST					"dos"
+#define FB_HOST				"dos"
 #elseif defined(__FB_XBOX__)
-#define FB_HOST					"xbox"
+#define FB_HOST				"xbox"
 #endif
 
 
@@ -201,47 +190,76 @@ end enum
 ''
 ''
 ''
-declare function 	fbInit			( byval ismain as integer ) as integer
+declare function 	fbInit			( _
+										byval ismain as integer _
+									) as integer
 
-declare sub 		fbEnd			( )
+declare sub 		fbEnd			( _
+									)
 
-declare function 	fbCompile		( byval infname as zstring ptr, _
-									  byval outfname as zstring ptr, _
-									  byval ismain as integer, _
-				    				  preincTb() as string, _
-				    				  byval preincfiles as integer ) as integer
+declare function 	fbCompile		( _
+										byval infname as zstring ptr, _
+										byval outfname as zstring ptr, _
+										byval ismain as integer, _
+				    				  	preincTb() as string, _
+										byval preincfiles as integer _
+									) as integer
 
-declare sub 		fbSetPaths		( byval target as integer )
+declare sub 		fbSetPaths		( _
+										byval target as integer _
+									)
 
-declare function 	fbGetPath		( byval path as integer ) as zstring ptr
+declare function 	fbGetPath		( _
+										byval path as integer _
+									) as zstring ptr
 
-declare sub 		fbSetDefaultOptions ( )
+declare sub 		fbSetDefaultOptions ( _
+									)
 
-declare sub 		fbSetOption		( byval opt as integer, _
-									  byval value as integer )
+declare sub 		fbSetOption		( _
+										byval opt as integer, _
+										byval value as integer _
+									)
 
-declare function 	fbGetOption 	( byval opt as integer ) as integer
+declare function 	fbGetOption 	( _
+										byval opt as integer _
+									) as integer
 
-declare function 	fbListLibs		( namelist() as string, _
-									  byval index as integer ) as integer
-declare sub 		fbAddIncPath	( byval path as zstring ptr )
+declare function 	fbListLibs		( _
+										namelist() as string, _
+										byval index as integer _
+									) as integer
+declare sub 		fbAddIncPath	( _
+										byval path as zstring ptr _
+									)
 
-declare function	fbAddLibPath	( byval path as zstring ptr ) as integer
+declare function	fbAddLibPath	( _
+										byval path as zstring ptr _
+									) as integer
 
-declare sub 		fbAddDefine		( byval dname as zstring ptr, _
-									  byval dtext as zstring ptr )
+declare sub 		fbAddDefine		( _
+										byval dname as zstring ptr, _
+										byval dtext as zstring ptr _
+									)
 
-declare function 	fbIncludeFile	( byval filename as zstring ptr, _
-									  byval isonce as integer ) as integer
+declare function 	fbIncludeFile	( _
+										byval filename as zstring ptr, _
+										byval isonce as integer _
+									) as integer
 
-declare function 	fbGetEntryPoint ( ) as string
+declare function 	fbGetEntryPoint ( _
+									) as string
 
-declare function 	fbGetModuleEntry( ) as string
+declare function 	fbGetModuleEntry( _
+									) as string
 
-declare sub 		fbAddDefaultLibs( )
+declare sub 		fbAddDefaultLibs( _
+									)
 
-declare sub 		fbMainBegin		( )
+declare sub 		fbMainBegin		( _
+									)
 
-declare sub 		fbMainEnd		( )
+declare sub 		fbMainEnd		( _
+ 									)
 
 #endif '' __FB_BI__

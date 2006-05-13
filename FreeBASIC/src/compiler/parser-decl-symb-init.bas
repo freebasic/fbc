@@ -35,10 +35,12 @@ declare function 	hUDTInit			( byval tree as ASTNODE ptr, _
 					   	   				  byval isarray as integer ) as integer
 
 '':::::
-private function hElmInit( byval tree as ASTNODE ptr, _
-						   byval sym as FBSYMBOL ptr, _
-						   byval isarray as integer _
-						 ) as integer
+private function hElmInit _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr, _
+		byval isarray as integer _
+	) as integer
 
     dim as ASTNODE ptr expr
     dim as FBSYMBOL ptr oldsym
@@ -80,10 +82,12 @@ private function hElmInit( byval tree as ASTNODE ptr, _
 end function
 
 '':::::
-private function hArrayInit( byval tree as ASTNODE ptr, _
-						 	 byval sym as FBSYMBOL ptr, _
-						 	 byval isarray as integer _
-					   	   ) as integer
+private function hArrayInit _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr, _
+		byval isarray as integer _
+	) as integer
 
     dim as integer dimensions, dimcnt, elements, elm_cnt
     dim as integer isopen, lgt, pad_lgt
@@ -185,10 +189,12 @@ private function hArrayInit( byval tree as ASTNODE ptr, _
 end function
 
 '':::::
-private function hUDTInit( byval tree as ASTNODE ptr, _
-					  	   byval sym as FBSYMBOL ptr, _
-					   	   byval isarray as integer _
-					 	 ) as integer
+private function hUDTInit _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr, _
+		byval isarray as integer _
+	) as integer
 
 	dim as integer elements, elm_cnt, elm_ofs, lgt, baseofs, pad_lgt
     dim as FBSYMBOL ptr elm, udt
@@ -222,7 +228,7 @@ private function hUDTInit( byval tree as ASTNODE ptr, _
 		'' '{'?
 		isarray = hMatch( CHAR_LBRACE )
 
-		elm_ofs = elm->var.elm.ofs
+		elm_ofs = elm->ofs
 		if( lgt > 0 ) then
 			pad_lgt = elm_ofs - lgt
 			if( pad_lgt > 0 ) then
@@ -272,9 +278,11 @@ private function hUDTInit( byval tree as ASTNODE ptr, _
 end function
 
 '':::::
-function cSymbolInit( byval sym as FBSYMBOL ptr, _
-					  byval isinitializer as integer _
-					) as ASTNODE ptr
+function cSymbolInit _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval isinitializer as integer _
+	) as ASTNODE ptr
 
     dim as ASTNODE ptr tree
     dim as integer isarray

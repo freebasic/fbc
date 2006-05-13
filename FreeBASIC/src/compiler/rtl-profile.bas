@@ -86,7 +86,7 @@ private function hGetProcName( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
 		s = symbAllocStrConst( "(??)", -1 )
 
 	else
-		procname = *symbGetName( proc )
+		procname = *symbGetMangledName( proc )
 
 		select case env.clopt.target
         case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN

@@ -16,58 +16,99 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-declare sub			edbgInit			( )
 
-declare sub			edbgEnd				( )
+declare sub			edbgInit			( _
+										)
 
-declare sub 		edbgEmitHeader		( byval filename as zstring ptr )
+declare sub			edbgEnd				( _
+										)
 
-declare sub 		edbgLineBegin		( byval proc as FBSYMBOL ptr, _
-										  byval lnum as integer )
+declare sub 		edbgEmitHeader		( _
+											byval filename as zstring ptr _
+										)
 
-declare sub 		edbgLineEnd			( byval proc as FBSYMBOL ptr, _
-										  byval unused as integer )
+declare sub 		edbgLineBegin		( _
+											byval proc as FBSYMBOL ptr, _
+											byval lnum as integer _
+										)
 
-declare sub 		edbgEmitLine		( byval proc as FBSYMBOL ptr, _
-										  byval lnum as integer, _
-										  byval label as FBSYMBOL ptr )
+declare sub 		edbgLineEnd			( _
+											byval proc as FBSYMBOL ptr, _
+											byval unused as integer _
+										)
 
-declare sub 		edbgEmitLineFlush	( byval proc as FBSYMBOL ptr, _
-										  byval lnum as integer, _
-										  byval label as FBSYMBOL ptr )
+declare sub 		edbgEmitLine		( _
+											byval proc as FBSYMBOL ptr, _
+											byval lnum as integer, _
+											byval label as FBSYMBOL ptr _
+										)
 
-declare sub 		edbgScopeBegin		( byval s as FBSYMBOL ptr )
+declare sub 		edbgEmitLineFlush	( _
+											byval proc as FBSYMBOL ptr, _
+											byval lnum as integer, _
+											byval label as FBSYMBOL ptr _
+										)
 
-declare sub 		edbgScopeEnd		( byval s as FBSYMBOL ptr )
+declare sub 		edbgScopeBegin		( _
+											byval s as FBSYMBOL ptr _
+										)
 
-declare sub 		edbgEmitScopeINI	( byval s as FBSYMBOL ptr )
+declare sub 		edbgScopeEnd		( _
+											byval s as FBSYMBOL ptr _
+										)
 
-declare sub 		edbgEmitScopeEND	( byval s as FBSYMBOL ptr )
+declare sub 		edbgEmitScopeINI	( _
+											byval s as FBSYMBOL ptr _
+										)
 
-declare sub 		edbgProcBegin		( byval proc as FBSYMBOL ptr )
+declare sub 		edbgEmitScopeEND	( _
+											byval s as FBSYMBOL ptr _
+										)
 
-declare sub 		edbgProcEnd			( byval proc as FBSYMBOL ptr )
+declare sub 		edbgProcBegin		( _
+											byval proc as FBSYMBOL ptr _
+										)
 
-declare sub			edbgProcEmitBegin	( byval proc as FBSYMBOL ptr )
+declare sub 		edbgProcEnd			( _
+											byval proc as FBSYMBOL ptr _
+										)
 
-declare sub 		edbgEmitProcHeader	( byval proc as FBSYMBOL ptr )
+declare sub			edbgProcEmitBegin	( _
+											byval proc as FBSYMBOL ptr _
+										)
 
-declare sub 		edbgEmitProcFooter	( byval proc as FBSYMBOL ptr, _
-										  byval initlabel as FBSYMBOL ptr, _
-			      						  byval exitlabel as FBSYMBOL ptr )
+declare sub 		edbgEmitProcHeader	( _
+											byval proc as FBSYMBOL ptr _
+										)
 
-declare sub 		edbgEmitFooter		( )
+declare sub 		edbgEmitProcFooter	( _
+											byval proc as FBSYMBOL ptr, _
+											byval initlabel as FBSYMBOL ptr, _
+											byval exitlabel as FBSYMBOL ptr _
+										)
 
-declare sub 		edbgEmitGlobalVar	( byval sym as FBSYMBOL ptr, _
-				   						  byval section as integer )
+declare sub 		edbgEmitFooter		( _
+										)
 
-declare sub 		edbgEmitProcArg		( byval sym as FBSYMBOL ptr )
+declare sub 		edbgEmitGlobalVar	( _
+											byval sym as FBSYMBOL ptr, _
+											byval section as integer _
+										)
 
-declare sub 		edbgEmitLocalVar	( byval sym as FBSYMBOL ptr, _
-										  byval isstatic as integer )
+declare sub 		edbgEmitProcArg		( _
+											byval sym as FBSYMBOL ptr _
+										)
 
-declare sub 		edbgIncludeBegin 	( byval incname as zstring ptr, _
-					   					  byval incfile as zstring ptr )
+declare sub 		edbgEmitLocalVar	( _
+											byval sym as FBSYMBOL ptr, _
+											byval isstatic as integer _
+										)
 
-declare sub 		edbgIncludeEnd 		( )
+declare sub 		edbgIncludeBegin 	( _
+											byval incname as zstring ptr, _
+											byval incfile as zstring ptr _
+										)
+
+declare sub 		edbgIncludeEnd 		( _
+										)
 

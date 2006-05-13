@@ -32,7 +32,7 @@ option escape
 '':::::
 sub symbInitLibs( ) static
 
-	listNew( @symb.liblist, FB_INITLIBNODES, len( FBLIBRARY ), FALSE )
+	listNew( @symb.liblist, FB_INITLIBNODES, len( FBLIBRARY ), LIST_FLAGS_NOCLEAR )
 
     hashNew( @symb.libhash, FB_INITLIBNODES )
 
@@ -40,7 +40,7 @@ end sub
 
 '':::::
 function symbAddLib( byval libname as zstring ptr ) as FBLIBRARY ptr static
-    dim l as FBLIBRARY ptr
+    dim as FBLIBRARY ptr l
 
     function = NULL
 
@@ -56,10 +56,10 @@ function symbAddLib( byval libname as zstring ptr ) as FBLIBRARY ptr static
 	end if
 
 	''
-	l->name		= ZstrAllocate( len( *libname ) )
-	*l->name	= *libname
+	l->name	= ZstrAllocate( len( *libname ) )
+	*l->name = *libname
 
-	l->hashindex = INVALID
+	l->hashindex = hashHash( l->name )
 	l->hashitem = hashAdd( @symb.libhash, l->name, l, l->hashindex )
 
 	function = l

@@ -23,6 +23,14 @@ const FALSE = 0
 const TRUE  = -1
 #endif
 
+enum LIST_FLAGS
+	LIST_FLAGS_NONE				= &h00000000
+	LIST_FLAGS_CLEARNODES		= &h00000001
+	LIST_FLAGS_LINKFREENODES	= &h00000002
+	LIST_FLAGS_LINKUSEDNODES	= &h00000004
+	LIST_FLAGS_NOCLEAR			= LIST_FLAGS_LINKFREENODES or LIST_FLAGS_LINKUSEDNODES
+	LIST_FLAGS_ALL 				= &hFFFFFFFF
+end enum
 
 type TLISTNODE
 	prev	as TLISTNODE ptr
@@ -43,32 +51,48 @@ type TLIST
 	fhead	as TLISTNODE ptr					'' free list
 	head	as any ptr							'' used list
 	tail	as any ptr							'' /
-	clear	as integer							'' clear nodes?
+	flags	as LIST_FLAGS
 end type
 
-declare function listNew		( byval list as TLIST ptr, _
-								  byval nodes as integer, _
-								  byval nodelen as integer, _
-								  byval doclear as integer = TRUE, _
-								  byval relink as integer = TRUE ) as integer
+declare function listNew		( _
+									byval list as TLIST ptr, _
+								  	byval nodes as integer, _
+								  	byval nodelen as integer, _
+								  	byval flags as LIST_FLAGS = LIST_FLAGS_ALL _
+								) as integer
 
-declare function listFree		( byval list as TLIST ptr ) as integer
+declare function listFree		( _
+									byval list as TLIST ptr _
+								) as integer
 
-declare function listNewNode	( byval list as TLIST ptr ) as any ptr
+declare function listNewNode	( _
+									byval list as TLIST ptr _
+								) as any ptr
 
-declare sub 	 listDelNode	( byval list as TLIST ptr, _
-								  byval node as any ptr )
+declare sub 	 listDelNode	( _
+									byval list as TLIST ptr, _
+								  	byval node as any ptr _
+								)
 
-declare function listAllocTB	( byval list as TLIST ptr, _
-					  			  byval nodes as integer, _
-					  			  byval relink as integer = TRUE ) as integer
+declare function listAllocTB	( _
+									byval list as TLIST ptr, _
+					  			  	byval nodes as integer _
+					  			) as integer
 
-declare function listGetHead	( byval list as TLIST ptr ) as any ptr
+declare function listGetHead	( _
+									byval list as TLIST ptr _
+								) as any ptr
 
-declare function listGetTail	( byval list as TLIST ptr ) as any ptr
+declare function listGetTail	( _
+									byval list as TLIST ptr _
+								) as any ptr
 
-declare function listGetPrev	( byval node as any ptr ) as any ptr
+declare function listGetPrev	( _
+									byval node as any ptr _
+								) as any ptr
 
-declare function listGetNext	( byval node as any ptr ) as any ptr
+declare function listGetNext	( _
+									byval node as any ptr _
+								) as any ptr
 
 #endif '' __LIST_BI__

@@ -31,9 +31,11 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function astTypeIniBegin( byval dtype as integer, _
-						  byval subtype as FBSYMBOL ptr _
-					  	) as ASTNODE ptr static
+function astTypeIniBegin _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
 
@@ -50,9 +52,11 @@ function astTypeIniBegin( byval dtype as integer, _
 end function
 
 '':::::
-sub astTypeIniEnd( byval tree as ASTNODE ptr, _
-				   byval isinitializer as integer _
-				 ) static
+sub astTypeIniEnd _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval isinitializer as integer _
+	) static
 
     dim as ASTNODE ptr n, p, l, r
 
@@ -103,11 +107,13 @@ sub astTypeIniEnd( byval tree as ASTNODE ptr, _
 end sub
 
 '':::::
-private function hAddNode( byval tree as ASTNODE ptr, _
-						   byval class_ as AST_NODECLASS, _
-						   byval dtype as FB_DATATYPE, _
-						   byval subtype as FBSYMBOL ptr _
-					   	 ) as ASTNODE ptr static
+private function hAddNode _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval class_ as AST_NODECLASS, _
+		byval dtype as FB_DATATYPE, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr static
 
 	dim as ASTNODE ptr n
 
@@ -126,9 +132,11 @@ private function hAddNode( byval tree as ASTNODE ptr, _
 end function
 
 '':::::
-function astTypeIniAddPad( byval tree as ASTNODE ptr, _
-						   byval bytes as integer _
-					   	 ) as ASTNODE ptr static
+function astTypeIniAddPad _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval bytes as integer _
+	) as ASTNODE ptr static
 
 	dim as ASTNODE ptr n
 
@@ -141,11 +149,13 @@ function astTypeIniAddPad( byval tree as ASTNODE ptr, _
 end function
 
 '':::::
-function astTypeIniAddExpr( byval tree as ASTNODE ptr, _
-						 	byval expr as ASTNODE ptr, _
-						 	byval sym as FBSYMBOL ptr, _
-						 	byval ofs as integer _
-					   	  ) as ASTNODE ptr static
+function astTypeIniAddExpr _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval expr as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr, _
+		byval ofs as integer _
+	) as ASTNODE ptr static
 
 	dim as ASTNODE ptr n
 
@@ -160,9 +170,11 @@ function astTypeIniAddExpr( byval tree as ASTNODE ptr, _
 end function
 
 '':::::
-private function hFlushTree( byval tree as ASTNODE ptr, _
-					   	     byval basesym as FBSYMBOL ptr _
-					 	   ) as integer
+private function hFlushTree _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval basesym as FBSYMBOL ptr _
+	) as integer
 
     dim as ASTNODE ptr n, nxt
     static as ASTNODE ptr lside
@@ -205,9 +217,11 @@ private function hFlushTree( byval tree as ASTNODE ptr, _
 end function
 
 '':::::
-private function hFlushExprStatic( byval n as ASTNODE ptr, _
-					   	   		   byval basesym as FBSYMBOL ptr _
-					 	 		 ) as integer static
+private function hFlushExprStatic _
+	( _
+		byval n as ASTNODE ptr, _
+		byval basesym as FBSYMBOL ptr _
+	) as integer static
 
 	dim as ASTNODE ptr expr
 	dim as integer edtype, sdtype
@@ -305,9 +319,11 @@ private function hFlushExprStatic( byval n as ASTNODE ptr, _
 end function
 
 '':::::
-private function hFlushTreeStatic( byval tree as ASTNODE ptr, _
-					   	   		   byval basesym as FBSYMBOL ptr _
-					 	 		 ) as integer static
+private function hFlushTreeStatic _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval basesym as FBSYMBOL ptr _
+	) as integer static
 
     dim as ASTNODE ptr n, nxt
 
@@ -336,11 +352,13 @@ private function hFlushTreeStatic( byval tree as ASTNODE ptr, _
 end function
 
 '':::::
-function astTypeIniFlush( byval tree as ASTNODE ptr, _
-						  byval basesym as FBSYMBOL ptr, _
-						  byval isstatic as integer, _
-						  byval isinitializer as integer _
-						) as integer static
+function astTypeIniFlush _
+	( _
+		byval tree as ASTNODE ptr, _
+		byval basesym as FBSYMBOL ptr, _
+		byval isstatic as integer, _
+		byval isinitializer as integer _
+	) as integer static
 
 	if( isinitializer = FALSE ) then
 		ast.typeinicnt -= 1

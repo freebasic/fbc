@@ -81,8 +81,7 @@ end sub
 
 '':::::
 function ppCondIf( ) as integer
-    dim istrue as integer
-    dim d as FBSYMBOL ptr
+    dim as integer istrue
 
     function = FALSE
 
@@ -93,8 +92,7 @@ function ppCondIf( ) as integer
 	case FB_TK_IFDEF
         lexSkipToken( LEXCHECK_NODEFINE )
 
-		d = lexGetSymbol( )
-		if( d <> NULL ) then
+		if( cIdentifier( FALSE ) <> NULL ) then
 			'' any symbol is okay or type's wouldn't be found
 			istrue = TRUE
 		end if
@@ -104,8 +102,7 @@ function ppCondIf( ) as integer
 	case FB_TK_IFNDEF
         lexSkipToken( LEXCHECK_NODEFINE )
 
-		d = lexGetSymbol( )
-		if( d = NULL ) then
+		if( cIdentifier( FALSE ) = NULL ) then
 			'' ditto
 			istrue = TRUE
 		end if
@@ -123,7 +120,7 @@ function ppCondIf( ) as integer
 
 	ctx.level += 1
 	if( ctx.level > FB_PP_MAXRECLEVEL ) then
-		hReportError( FB_ERRMSG_RECLEVELTOODEPTH )
+		hReportError( FB_ERRMSG_RECLEVELTOODEEP )
 		exit function
 	end if
 
@@ -140,7 +137,7 @@ end function
 
 '':::::
 function ppCondElse( ) as integer
-	dim istrue as integer
+	dim as integer istrue
 
    	function = FALSE
 
@@ -209,7 +206,7 @@ function ppCondEndIf( ) as integer
 end function
 
 '':::::
-private function ppSkip as integer
+private function ppSkip( ) as integer
     dim iflevel as integer
 
 	function = FALSE
@@ -278,9 +275,12 @@ private function ppSkip as integer
 end function
 
 '':::::
-private sub hNumLogBOP( byval op as integer, _
-					 	byref l as PPEXPR, _
-					 	byref r as PPEXPR )
+private sub hNumLogBOP _
+	( _
+		byval op as integer, _
+		byref l as PPEXPR, _
+		byref r as PPEXPR _
+	)
 
     '' convert to highest precison (must be integer class)..
   	select case as const l.dtype
@@ -340,9 +340,12 @@ private sub hNumLogBOP( byval op as integer, _
 end sub
 
 '':::::
-private sub hNumRelBOP( byval op as integer, _
-					 	byref l as PPEXPR, _
-					 	byref r as PPEXPR )
+private sub hNumRelBOP _
+	( _
+		byval op as integer, _
+		byref l as PPEXPR, _
+		byref r as PPEXPR _
+	)
 
     '' convert to highest precison..
   	select case as const l.dtype
@@ -448,7 +451,10 @@ private sub hNumRelBOP( byval op as integer, _
 end sub
 
 '':::::
-private sub hNumNot( byref l as PPEXPR )
+private sub hNumNot _
+	( _
+		byref l as PPEXPR _
+	)
 
   	'' convert float to integer
   	select case l.dtype
@@ -467,7 +473,10 @@ private sub hNumNot( byref l as PPEXPR )
 end sub
 
 '':::::
-private sub hNumNeg( byref l as PPEXPR )
+private sub hNumNeg _
+	( _
+		byref l as PPEXPR _
+	)
 
   	select case as const l.dtype
   	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
@@ -481,9 +490,11 @@ private sub hNumNeg( byref l as PPEXPR )
 end sub
 
 '':::::
-private function hNumToBool( byval dtype as integer, _
-							 byref v as FBVALUE _
-						   ) as integer
+private function hNumToBool _
+	( _
+		byval dtype as integer, _
+		byref v as FBVALUE _
+	) as integer
 
   	select case as const dtype
   	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
@@ -501,7 +512,11 @@ end function
 '':::::
 ''Expression      =   LogExpression .
 ''
-private function ppExpression( byref istrue as integer ) as integer
+private function ppExpression _
+	( _
+		byref istrue as integer _
+	) as integer
+
     dim as PPEXPR expr
 
     function = FALSE
@@ -524,7 +539,11 @@ end function
 '':::::
 ''LogExpression      =   RelExpression ( (AND | OR) RelExpression )* .
 ''
-private function ppLogExpression( byref logexpr as PPEXPR ) as integer
+private function ppLogExpression _
+	( _
+		byref logexpr as PPEXPR _
+	) as integer
+
     dim as integer op
     dim as PPEXPR relexpr
 
@@ -570,7 +589,11 @@ end function
 '':::::
 ''RelExpression   =   ParentExpr ( (EQ | GT | LT | NE | LE | GE) ParentExpr )* .
 ''
-private function ppRelExpression( byref relexpr as PPEXPR ) as integer
+private function ppRelExpression _
+	( _
+		byref relexpr as PPEXPR _
+	) as integer
+
     dim as integer op
     dim as PPEXPR parexpr
 
@@ -641,9 +664,10 @@ end function
 ''			   |   DEFINED'(' ID ')'
 ''             |   LITERAL
 ''			   |   NOT RelExpression .
-private function ppParentExpr( byref parexpr as PPEXPR ) as integer
-
-    dim as FBSYMBOL ptr d
+private function ppParentExpr _
+	( _
+		byref parexpr as PPEXPR _
+	) as integer
 
   	function = FALSE
 
@@ -676,12 +700,9 @@ private function ppParentExpr( byref parexpr as PPEXPR ) as integer
 		parexpr.class = PPEXPR_CLASS_NUM
 		parexpr.dtype = FB_DATATYPE_INTEGER
 
-		d = lexGetSymbol( )
 		parexpr.num.int = FALSE
-		if( d <> NULL ) then
-			if( d->class = FB_SYMBCLASS_DEFINE ) then
-				parexpr.num.int = TRUE
-			end if
+		if( cIdentifier( FALSE ) <> NULL ) then
+			parexpr.num.int = TRUE
 		end if
 		lexSkipToken( )
 

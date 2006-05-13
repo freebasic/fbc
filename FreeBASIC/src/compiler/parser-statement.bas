@@ -47,10 +47,10 @@ function cStatement as integer
 	do
 		if( cDeclaration( ) = FALSE ) then
 			if( cCompoundStmt( ) = FALSE ) then
-				if( cProcStmtBegin( ) = FALSE ) then
-					if( cQuirkStmt( ) = FALSE ) then
-						if( cAsmBlock( ) = FALSE ) then
-							if( cProcCallOrAssign( ) = FALSE ) then
+				if( cProcCallOrAssign( ) = FALSE ) then
+					if( cProcStmtBegin( ) = FALSE ) then
+						if( cQuirkStmt( ) = FALSE ) then
+							if( cAsmBlock( ) = FALSE ) then
 								cAssignmentOrPtrCall( )
 							end if
 						end if

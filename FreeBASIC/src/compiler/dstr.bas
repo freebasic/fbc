@@ -27,10 +27,12 @@ option escape
 #include once "inc\fbint.bi"
 #include once "inc\dstr.bi"
 
-declare sub 	hRealloc			( byval s as DSTRING ptr, _
-					  			  	  byval chars as integer, _
-					  				  byval charsize as integer, _
-					  				  byval dopreserve as integer )
+declare sub 	hRealloc			( _
+										byval s as DSTRING ptr, _
+					  			  	  	byval chars as integer, _
+										byval charsize as integer, _
+					  				  	byval dopreserve as integer _
+					  				)
 
 
 '':::::
@@ -72,7 +74,10 @@ declare sub 	hRealloc			( byval s as DSTRING ptr, _
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub DZstrZero ( byref dst as DZSTRING )
+sub DZstrZero _
+	( _
+		byref dst as DZSTRING _
+	)
 
     dst.data = NULL
     dst.len = 0
@@ -81,16 +86,22 @@ sub DZstrZero ( byref dst as DZSTRING )
 end sub
 
 '':::::
-sub DZstrAllocate ( byref dst as DZSTRING, _
-				    byval chars as integer )
+sub DZstrAllocate _
+	( _
+		byref dst as DZSTRING, _
+		byval chars as integer _
+	)
 
 	ALLOC_SETUP( dst, chars, zstring )
 
 end sub
 
 '':::::
-sub DZstrAssign ( byref dst as DZSTRING, _
-				  byval src as zstring ptr )
+sub DZstrAssign _
+	( _
+		byref dst as DZSTRING, _
+		byval src as zstring ptr _
+	)
 
 	dim as integer src_len = CALC_LEN( src )
 
@@ -103,8 +114,11 @@ sub DZstrAssign ( byref dst as DZSTRING, _
 end sub
 
 '':::::
-sub DZstrAssignW ( byref dst as DZSTRING, _
-				   byval src as wstring ptr )
+sub DZstrAssignW _
+	( _
+		byref dst as DZSTRING, _
+		byval src as wstring ptr _
+	)
 
 	dim as integer src_len = CALC_LEN( src )
 
@@ -117,8 +131,11 @@ sub DZstrAssignW ( byref dst as DZSTRING, _
 end sub
 
 '':::::
-sub DZstrConcatAssign ( byref dst as DZSTRING, _
-						byval src as zstring ptr )
+sub DZstrConcatAssign _
+	( _
+		byref dst as DZSTRING, _
+		byval src as zstring ptr _
+	)
 
 	dim as integer src_len = CALC_LEN( src )
 	dim as integer dst_len = dst.len
@@ -132,8 +149,11 @@ sub DZstrConcatAssign ( byref dst as DZSTRING, _
 end sub
 
 '':::::
-sub DZstrConcatAssignW ( byref dst as DZSTRING, _
-						 byval src as wstring ptr )
+sub DZstrConcatAssignW _
+	( _
+		byref dst as DZSTRING, _
+		byval src as wstring ptr _
+	)
 
 	dim as integer src_len = CALC_LEN( src )
 	dim as integer dst_len = dst.len
@@ -151,7 +171,10 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub DWstrZero ( byref dst as DWSTRING )
+sub DWstrZero _
+	( _
+		byref dst as DWSTRING _
+	)
 
     dst.data = NULL
     dst.len = 0
@@ -160,16 +183,22 @@ sub DWstrZero ( byref dst as DWSTRING )
 end sub
 
 '':::::
-sub DWstrAllocate ( byref dst as DWSTRING, _
-				 	byval chars as integer )
+sub DWstrAllocate _
+	( _
+		byref dst as DWSTRING, _
+		byval chars as integer _
+	)
 
 	ALLOC_SETUP( dst, chars, wstring )
 
 end sub
 
 '':::::
-sub DWstrAssign ( byref dst as DWSTRING, _
-				  byval src as wstring ptr )
+sub DWstrAssign _
+	( _
+		byref dst as DWSTRING, _
+		byval src as wstring ptr _
+	)
 
 	dim as integer src_len = CALC_LEN( src )
 
@@ -182,8 +211,11 @@ sub DWstrAssign ( byref dst as DWSTRING, _
 end sub
 
 '':::::
-sub DWstrAssignA ( byref dst as DWSTRING, _
-				   byval src as zstring ptr )
+sub DWstrAssignA _
+	( _
+		byref dst as DWSTRING, _
+		byval src as zstring ptr _
+	)
 
 	dim as integer src_len = CALC_LEN( src )
 
@@ -196,8 +228,11 @@ sub DWstrAssignA ( byref dst as DWSTRING, _
 end sub
 
 '':::::
-sub DWstrConcatAssign ( byref dst as DWSTRING, _
-						byval src as wstring ptr )
+sub DWstrConcatAssign _
+	( _
+		byref dst as DWSTRING, _
+		byval src as wstring ptr _
+	)
 
 	dim as integer src_len = CALC_LEN( src )
 	dim as integer dst_len = dst.len
@@ -211,8 +246,11 @@ sub DWstrConcatAssign ( byref dst as DWSTRING, _
 end sub
 
 '':::::
-sub DWstrConcatAssignA ( byref dst as DWSTRING, _
-						 byval src as zstring ptr )
+sub DWstrConcatAssignA _
+	( _
+		byref dst as DWSTRING, _
+		byval src as zstring ptr _
+	)
 
 	dim as integer src_len = CALC_LEN( src )
 	dim as integer dst_len = dst.len
@@ -226,10 +264,13 @@ sub DWstrConcatAssignA ( byref dst as DWSTRING, _
 end sub
 
 '':::::
-private sub hRealloc( byval s as DSTRING ptr, _
-					  byval chars as integer, _
-					  byval charsize as integer, _
-					  byval dopreserve as integer ) static
+private sub hRealloc _
+	( _
+		byval s as DSTRING ptr, _
+		byval chars as integer, _
+		byval charsize as integer, _
+		byval dopreserve as integer _
+	) static
 
 	dim as integer newsize
 	dim as any ptr p

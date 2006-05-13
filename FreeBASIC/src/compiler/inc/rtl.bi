@@ -602,511 +602,751 @@ enum FB_RTL_IDX
 	FB_RTL_INDEXES
 end enum
 
-declare sub 		rtlInit				( )
 
-declare sub 		rtlEnd				( )
-
-declare sub 		rtlAddIntrinsicProcs( )
-
-declare function 	rtlProcLookup		( byval pname as zstring ptr, _
-			   							  byval pidx as integer ) as FBSYMBOL ptr
-
-declare function 	rtlCalcExprLen		( byval expr as ASTNODE ptr, _
-						 				  byval realsize as integer = TRUE ) as integer
-
-declare function 	rtlCalcStrLen		( byval expr as ASTNODE ptr, _
-										  byval dtype as integer ) as integer
-
-declare function 	rtlStrCompare 		( byval str1 as ASTNODE ptr, _
-										  byval sdtype1 as integer, _
-					     			  	  byval str2 as ASTNODE ptr, _
-					     			  	  byval sdtype2 as integer ) as ASTNODE ptr
-
-declare function 	rtlWstrCompare		( byval str1 as ASTNODE ptr, _
-					     				  byval str2 as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	rtlStrConcat		( byval str1 as ASTNODE ptr, _
-										  byval sdtype1 as integer, _
-					   				  	  byval str2 as ASTNODE ptr, _
-					   				  	  byval sdtype2 as integer ) as ASTNODE ptr
-
-declare function 	rtlWstrConcat		( byval str1 as ASTNODE ptr, _
-					    				  byval sdtype1 as integer, _
-					    				  byval str2 as ASTNODE ptr, _
-					    				  byval sdtype2 as integer ) as ASTNODE ptr
-
-declare function 	rtlStrAssign		( byval dst as ASTNODE ptr, _
-										  byval src as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	rtlWstrAssign		( byval dst as ASTNODE ptr, _
-					    				  byval src as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	rtlStrConcatAssign	( byval dst as ASTNODE ptr, _
-										  byval src as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	rtlWstrConcatAssign	( byval dst as ASTNODE ptr, _
-							 			  byval src as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	rtlStrDelete		( byval strg as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	rtlStrAllocTmpResult( byval strg as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	rtlStrAllocTmpDesc	( byval strg as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	rtlWstrAlloc		( byval lenexpr as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	rtlToStr			( byval expr as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	rtlToWstr			( byval expr as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	rtlStrToVal			( byval expr as ASTNODE ptr, _
-					  					  byval to_dtype as integer ) as ASTNODE ptr
-
-declare function 	rtlStrMid			( byval expr1 as ASTNODE ptr, _
-										  byval expr2 as ASTNODE ptr, _
-										  byval expr3 as ASTNODE ptr ) as ASTNODE ptr
-
-declare function	rtlStrAssignMid		( byval expr1 as ASTNODE ptr, _
-										  byval expr2 as ASTNODE ptr, _
-										  byval expr3 as ASTNODE ptr, _
-										  byval expr4 as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	rtlStrLSet			( byval dstexpr as ASTNODE ptr, _
-					 					  byval srcexpr as ASTNODE ptr ) as integer
-
-declare function 	rtlStrFill			( byval expr1 as ASTNODE ptr, _
-										  byval expr2 as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	rtlWstrFill			( byval expr1 as ASTNODE ptr, _
-										  byval expr2 as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	rtlStrAsc			( byval expr as ASTNODE ptr, _
-										  byval posexpr as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	rtlStrChr			( byval args as integer, _
-										  exprtb() as ASTNODE ptr, _
-										  byval is_wstr as integer ) as ASTNODE ptr
-
-declare function    rtlStrInstr         ( byval nd_start as ASTNODE ptr, _
-					                      byval nd_text as ASTNODE ptr, _
-					                      byval nd_pattern as ASTNODE ptr, _
-                                          byval search_any as integer ) as ASTNODE ptr
-
-declare function    rtlStrTrim          ( byval nd_text as ASTNODE ptr, _
-					                      byval nd_pattern as ASTNODE ptr, _
-                                          byval is_any as integer ) as ASTNODE ptr
-
-declare function    rtlStrRTrim         ( byval nd_text as ASTNODE ptr, _
-					                      byval nd_pattern as ASTNODE ptr, _
-                                          byval is_any as integer ) as ASTNODE ptr
-
-declare function    rtlStrLTrim         ( byval nd_text as ASTNODE ptr, _
-					                      byval nd_pattern as ASTNODE ptr, _
-                                          byval is_any as integer ) as ASTNODE ptr
-
-declare function	rtlArrayRedim		( byval s as FBSYMBOL ptr, _
-										  byval elementlen as integer, _
-									  	  byval dimensions as integer, _
-									  	  exprTB() as ASTNODE ptr, _
-									  	  byval dopreserve as integer ) as integer
-
-declare function	rtlArrayErase		( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr
-
-declare function	rtlArrayClear		( byval arrayexpr as ASTNODE ptr ) as integer
-
-declare function 	rtlArrayBound		( byval sexpr as ASTNODE ptr, _
-										  byval dimexpr as ASTNODE ptr, _
-										  byval islbound as integer ) as ASTNODE ptr
-
-declare function	rtlArraySetDesc		( byval sym as FBSYMBOL ptr, _
-										  byval elementlen as integer, _
-										  byval dimensions as integer, _
-										  dTB() as FBARRAYDIM ) as integer
-
-declare function	rtlArrayResetDesc	( byval sym as FBSYMBOL ptr, _
-										  byval elementlen as integer, _
-										  byval dimensions as integer ) as integer
-
-declare function 	rtlArrayStrErase	( byval s as FBSYMBOL ptr ) as ASTNODE ptr
-
-declare function 	rtlArrayAllocTmpDesc( byval arrayexpr as ASTNODE ptr, _
-										  byval pdesc as FBSYMBOL ptr ) as ASTNODE ptr
-
-declare function 	rtlArrayFreeTempDesc( byval pdesc as FBSYMBOL ptr ) as ASTNODE ptr
-
-declare function 	rtlArrayBoundsCheck	( byval idx as ASTNODE ptr, _
-							  			  byval lb as ASTNODE ptr, _
-							  			  byval rb as ASTNODE ptr, _
-							  			  byval linenum as integer, _
-							  			  byval module as zstring ptr ) as ASTNODE ptr
-
-declare function 	rtlNullPtrCheck		( byval p as ASTNODE ptr, _
-							  			  byval linenum as integer, _
-							  			  byval module as zstring ptr ) as ASTNODE ptr
-
-declare function	rtlDataRestore		( byval label as FBSYMBOL ptr, _
-										  byval afternode as ASTNODE ptr = NULL, _
-										  byval isprofiler as integer = FALSE ) as integer
-
-declare function	rtlDataRead			( byval varexpr as ASTNODE ptr ) as integer
-
-declare sub 		rtlDataStoreBegin	( )
-
-declare function	rtlDataStore		( byval littext as zstring ptr, _
-										  byval litlen as integer, _
-										  byval typ as integer ) as integer
-
-declare function 	rtlDataStoreW		( byval littext as wstring ptr, _
-					    				  byval litlen as integer, _
-					    				  byval typ as integer ) as integer
-
-declare function 	rtlDataStoreOFS		( byval sym as FBSYMBOL ptr ) as integer
-
-declare sub 		rtlDataStoreEnd		( )
-
-declare function 	rtlMathPow			( byval xexpr as ASTNODE ptr, _
-					  					  byval yexpr as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	rtlMathFSGN 		( byval expr as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	rtlMathFIX 			( byval expr as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	rtlMathTRANS		( byval op as integer, _
-					   					  byval expr as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	rtlMathLen			( byval expr as ASTNODE ptr, _
-										  byval checkstrings as integer = TRUE ) as ASTNODE ptr
-
-declare function 	rtlMathLongintCMP	( byval op as integer, _
-										  byval dtype as integer, _
-										  byval lexpr as ASTNODE ptr, _
-										  byval ldtype as integer, _
-					        			  byval rexpr as ASTNODE ptr, _
-					        			  byval rdtype as integer ) as ASTNODE ptr
-
-declare function 	rtlMathLongintDIV	( byval dtype as integer, _
-										  byval lexpr as ASTNODE ptr, _
-										  byval ldtype as integer, _
-					        			  byval rexpr as ASTNODE ptr, _
-					        			  byval rdtype as integer ) as ASTNODE ptr
-
-declare function 	rtlMathLongintMUL	( byval dtype as integer, _
-										  byval lexpr as ASTNODE ptr, _
-										  byval ldtype as integer, _
-					        			  byval rexpr as ASTNODE ptr, _
-					        			  byval rdtype as integer ) as ASTNODE ptr
-
-declare function 	rtlMathLongintMOD	( byval dtype as integer, _
-										  byval lexpr as ASTNODE ptr, _
-										  byval ldtype as integer, _
-					        			  byval rexpr as ASTNODE ptr, _
-					        			  byval rdtype as integer ) as ASTNODE ptr
-
-declare function 	rtlMathFp2ULongint	( byval expr as ASTNODE ptr, _
-										  byval dtype as integer ) as ASTNODE ptr
-
-declare function    rtlInitMain         ( ) as integer
-
-declare function 	rtlInitApp			( byval argc as ASTNODE ptr, _
-										  byval argv as ASTNODE ptr, _
-										  byval isdllmain as integer ) as ASTNODE ptr
-
-declare function 	rtlInitRt			( ) as ASTNODE ptr
-
-declare function	rtlExitApp			( byval errlevel as ASTNODE ptr ) as integer
-
-declare function 	rtlMemCopy			( byval dst as ASTNODE ptr, _
-										  byval src as ASTNODE ptr, _
-										  byval bytes as integer ) as ASTNODE ptr
-
-declare function	rtlMemSwap			( byval dst as ASTNODE ptr, _
-										  byval src as ASTNODE ptr ) as integer
-
-declare function	rtlStrSwap			( byval str1 as ASTNODE ptr, _
-										  byval str2 as ASTNODE ptr ) as integer
-
-declare function	rtlWstrSwap			( byval str1 as ASTNODE ptr, _
-										  byval str2 as ASTNODE ptr ) as integer
-
-declare function 	rtlMemCopyClear		( byval dstexpr as ASTNODE ptr, _
-					      				  byval dstlen as integer, _
-					      				  byval srcexpr as ASTNODE ptr, _
-					      				  byval srclen as integer ) as integer
-
-declare function	rtlPrint			( byval fileexpr as ASTNODE ptr, _
-										  byval iscomma as integer, _
-										  byval issemicolon as integer, _
-										  byval expr as ASTNODE ptr, _
-                                          byval islprint as integer = FALSE ) as integer
-
-declare function	rtlPrintSPC			( byval fileexpr as ASTNODE ptr, _
-										  byval expr as ASTNODE ptr, _
-                                          byval islprint as integer = FALSE ) as integer
-
-declare function	rtlPrintTab			( byval fileexpr as ASTNODE ptr, _
-										  byval expr as ASTNODE ptr, _
-                                          byval islprint as integer = FALSE ) as integer
-
-declare function	rtlWrite			( byval fileexpr as ASTNODE ptr, _
-										  byval iscomma as integer, _
-										  byval expr as ASTNODE ptr ) as integer
-
-declare function	rtlPrintUsingInit	( byval usingexpr as ASTNODE ptr, _
-                                          byval islprint as integer = FALSE ) as integer
-
-declare function	rtlPrintUsingEnd	( byval fileexpr as ASTNODE ptr, _
-                                          byval islprint as integer = FALSE ) as integer
-
-declare function	rtlPrintUsing		( byval fileexpr as ASTNODE ptr, _
-										  byval expr as ASTNODE ptr, _
-										  byval iscomma as integer, _
-										  byval issemicolon as integer, _
-                                          byval islprint as integer = FALSE ) as integer
-
-declare function	rtlFileOpen			( byval filename as ASTNODE ptr, _
-										  byval fmode as ASTNODE ptr, _
-										  byval faccess as ASTNODE ptr, _
-										  byval flock as ASTNODE ptr, _
-										  byval filenum as ASTNODE ptr, _
-										  byval flen as ASTNODE ptr, _
-										  byval fencoding as ASTNODE ptr, _
-										  byval isfunc as integer, _
-                                          byval openkind as FBOPENKIND ) as ASTNODE ptr
-
-declare function	rtlFileOpenShort	( byval filename as ASTNODE ptr, _
-										  byval fmode as ASTNODE ptr, _
-										  byval faccess as ASTNODE ptr, _
-										  byval flock as ASTNODE ptr, _
-										  byval filenum as ASTNODE ptr, _
-										  byval flen as ASTNODE ptr, _
-										  byval isfunc as integer ) as ASTNODE ptr
-
-declare function	rtlFileRename		( byval filename_new as ASTNODE ptr, _
-										  byval filename_old as ASTNODE ptr, _
-                                          byval isfunc as integer ) as ASTNODE ptr
-
-declare function    rtlWidthScreen      ( byval width_arg as ASTNODE ptr, _
-                                          byval height_arg as ASTNODE ptr, _
-                                          byval isfunc as integer ) as ASTNODE ptr
-declare function    rtlWidthDev         ( byval device as ASTNODE ptr, _
-                                          byval width_arg as ASTNODE ptr, _
-                                          byval isfunc as integer ) as ASTNODE ptr
-declare function    rtlWidthFile        ( byval fnum as ASTNODE ptr, _
-                                          byval width_arg as ASTNODE ptr, _
-                                          byval isfunc as integer ) as ASTNODE ptr
-
-declare function	rtlFileClose		( byval filenum as ASTNODE ptr, _
-										  byval isfunc as integer ) as ASTNODE ptr
-
-declare function	rtlFileSeek			( byval filenum as ASTNODE ptr, _
-										  byval newpos as ASTNODE ptr ) as integer
-
-declare function 	rtlFileTell			( byval filenum as ASTNODE ptr ) as ASTNODE ptr
-
-declare function	rtlFilePut			( byval filenum as ASTNODE ptr, _
-										  byval offset as ASTNODE ptr, _
-										  byval src as ASTNODE ptr, _
-										  byval bytes as ASTNODE ptr, _
-										  byval isfunc as integer ) as ASTNODE ptr
-
-declare function	rtlFilePutArray		( byval filenum as ASTNODE ptr, _
-										  byval offset as ASTNODE ptr, _
-										  byval src as ASTNODE ptr, _
-										  byval isfunc as integer ) as ASTNODE ptr
-
-declare function	rtlFileGet			( byval filenum as ASTNODE ptr, _
-										  byval offset as ASTNODE ptr, _
-										  byval dst as ASTNODE ptr, _
-										  byval bytes as ASTNODE ptr, _
-										  byval isfunc as integer ) as ASTNODE ptr
-
-declare function	rtlFileGetArray		( byval filenum as ASTNODE ptr, _
-										  byval offset as ASTNODE ptr, _
-										  byval dst as ASTNODE ptr, _
-										  byval isfunc as integer ) as ASTNODE ptr
-
-declare function 	rtlFileStrInput		( byval bytesexpr as ASTNODE ptr, _
-										  byval filenum as ASTNODE ptr ) as ASTNODE ptr
-
-declare function	rtlFileLineInput	( byval isfile as integer, _
-										  byval expr as ASTNODE ptr, _
-										  byval dstexpr as ASTNODE ptr, _
-										  byval addquestion as integer, _
-										  byval addnewline as integer ) as integer
-
-declare function 	rtlFileLineInputWstr( byval isfile as integer, _
-						   	   			  byval expr as ASTNODE ptr, _
-						   	   			  byval dstexpr as ASTNODE ptr, _
-					       	   			  byval addquestion as integer, _
-					       	   			  byval addnewline as integer ) as integer
-
-declare function	rtlFileInput		( byval isfile as integer, _
-										  byval expr as ASTNODE ptr, _
-										  byval addquestion as integer, _
-										  byval addnewline as integer ) as integer
-
-declare function	rtlFileInputGet		( byval dstexpr as ASTNODE ptr ) as integer
-
-declare function	rtlFileLock			( byval islock as integer, _
-										  byval filenum as ASTNODE ptr, _
-										  byval iniexpr as ASTNODE ptr, _
-										  byval endexpr as ASTNODE ptr ) as integer
-
-declare function	rtlErrorCheck		( byval resexpr as ASTNODE ptr, _
-										  byval reslabel as FBSYMBOL ptr, _
-										  byval linenum as integer ) as integer
-
-declare sub 		rtlErrorThrow		( byval errexpr as ASTNODE ptr, _
-										  byval linenum as integer, _
-										  byval module as zstring ptr )
-
-declare sub 		rtlErrorSetHandler	( byval newhandler as ASTNODE ptr, _
-										  byval savecurrent as integer )
-
-declare function	rtlErrorGetNum		( ) as ASTNODE ptr
-
-declare sub 		rtlErrorSetNum		( byval errexpr as ASTNODE ptr )
-
-declare sub 		rtlErrorResume		( byval isnext as integer )
-
-declare function	rtlConsoleView		( byval topexpr as ASTNODE ptr, _
-										  byval botexpr as ASTNODE ptr ) as ASTNODE ptr
-
-declare function    rtlLocate           ( byval row_arg as ASTNODE ptr, _
-                                          byval col_arg as ASTNODE ptr, _
-                                          byval cursor_vis_arg as ASTNODE ptr, _
-                                          byval isfunc as integer ) as ASTNODE ptr
-
-declare function	rtlConsoleReadXY	( byval rowexpr as ASTNODE ptr, _
-										  byval columnexpr as ASTNODE ptr, _
-										  byval colorflagexpr as ASTNODE ptr ) as ASTNODE ptr
-
-declare function	rtlGfxPset			( byval target as ASTNODE ptr, _
-										  byval targetisptr as integer, _
-										  byval xexpr as ASTNODE ptr, _
-										  byval yexpr as ASTNODE ptr, _
-										  byval cexpr as ASTNODE ptr, _
-										  byval coordtype as integer, _
-										  byval ispreset as integer ) as integer
-
-declare function	rtlGfxPoint			( byval target as ASTNODE ptr, _
-										  byval targetisptr as integer, _
-										  byval xexpr as ASTNODE ptr, _
-										  byval yexpr as ASTNODE ptr ) as ASTNODE ptr
-
-declare function	rtlGfxLine			( byval target as ASTNODE ptr, _
-										  byval targetisptr as integer, _
-										  byval x1expr as ASTNODE ptr, _
-										  byval y1expr as ASTNODE ptr, _
-										  byval x2expr as ASTNODE ptr, _
-										  byval y2expr as ASTNODE ptr, _
-										  byval cexpr as ASTNODE ptr, _
-										  byval linetype as integer, _
-										  byval styleexpr as ASTNODE ptr, _
-										  byval coordtype as integer ) as integer
-
-declare function	rtlGfxCircle		( byval target as ASTNODE ptr, _
-										  byval targetisptr as integer, _
-										  byval xexpr as ASTNODE ptr, _
-										  byval yexpr as ASTNODE ptr, _
-										  byval radexpr as ASTNODE ptr, _
-										  byval cexpr as ASTNODE ptr, _
-										  byval aspexpr as ASTNODE ptr, _
-										  byval iniexpr as ASTNODE ptr, _
-										  byval endexpr as ASTNODE ptr, _
-										  byval fillflag as integer, _
-										  byval coordtype as integer ) as integer
-
-declare function	rtlGfxPaint			( byval target as ASTNODE ptr, _
-										  byval targetisptr as integer, _
-										  byval xexpr as ASTNODE ptr, _
-										  byval yexpr as ASTNODE ptr, _
-										  byval pexpr as ASTNODE ptr, _
-										  byval bexpr as ASTNODE ptr, _
-									 	  byval coord_type as integer ) as integer
-
-declare function	rtlGfxDraw			( byval target as ASTNODE ptr, _
-										  byval targetisptr as integer, _
-										  byval cexpr as ASTNODE ptr )
-
-declare function	rtlGfxDrawString	( byval target as ASTNODE ptr, _
-										  byval targetisptr as integer, _
-										  byval xexpr as ASTNODE ptr, _
-										  byval texpr as ASTNODE ptr, _
-										  byval sexpr as ASTNODE ptr, _
-										  byval cexpr as ASTNODE ptr, _
-										  byval fexpr as ASTNODE ptr, _
-										  byval fisptr as integer, _
-										  byval coord_type as integer, _
-										  byval mode as integer, _
-										  byval alphaexpr as ASTNODE ptr, _
-										  byval funcexpr as ASTNODE ptr ) as integer
-
-declare function	rtlGfxView			( byval x1expr as ASTNODE ptr, _
-										  byval y1expr as ASTNODE ptr, _
-										  byval x2expr as ASTNODE ptr, _
-										  byval y2expr as ASTNODE ptr, _
-			    						  byval fillexpr as ASTNODE ptr, _
-			    						  byval bordexpr as ASTNODE ptr, _
-			    						  byval screenflag as integer ) as integer
-
-declare function	rtlGfxWindow		( byval x1expr as ASTNODE ptr, _
-										  byval y1expr as ASTNODE ptr, _
-										  byval x2expr as ASTNODE ptr, _
-										  byval y2expr as ASTNODE ptr, _
-			    						  byval screenflag as integer ) as integer
-
-declare function	rtlGfxPalette 		( byval attexpr as ASTNODE ptr, _
-										  byval rexpr as ASTNODE ptr, _
-										  byval gexpr as ASTNODE ptr, _
-										  byval bexpr as ASTNODE ptr, _
-										  byval isget as integer ) as integer
-
-declare function	rtlGfxPaletteUsing	( byval arrayexpr as ASTNODE ptr, _
-										  byval isptr as integer, _
-										  byval isget as integer ) as integer
-
-declare function 	rtlGfxPut			( byval target as ASTNODE ptr, _
-										  byval targetisptr as integer, _
-										  byval xexpr as ASTNODE ptr, _
-										  byval yexpr as ASTNODE ptr, _
-										  byval arrayexpr as ASTNODE ptr, _
-										  byval isptr as integer, _
-										  byval x1expr as ASTNODE ptr, _
-										  byval x2expr as ASTNODE ptr, _
-										  byval y1expr as ASTNODE ptr, _
-										  byval y2expr as ASTNODE ptr, _
-										  byval mode as integer, _
-										  byval alphaexpr as ASTNODE ptr, _
-										  byval funcexpr as ASTNODE ptr, _
-										  byval coordtype as integer ) as integer
-
-declare function	rtlGfxGet			( byval target as ASTNODE ptr, _
-										  byval targetisptr as integer, _
-										  byval x1expr as ASTNODE ptr, _
-										  byval y1expr as ASTNODE ptr, _
-										  byval x2expr as ASTNODE ptr, _
-										  byval y2expr as ASTNODE ptr, _
-										  byval arrayexpr as ASTNODE ptr, _
-										  byval isptr as integer, _
-										  byval symbol as FBSYMBOL ptr, _
-										  byval coordtype as integer ) as integer
-
-declare function	rtlGfxScreenSet		( byval wexpr as ASTNODE ptr, _
-										  byval hexpr as ASTNODE ptr, _
-										  byval dexpr as ASTNODE ptr, _
-										  byval pexpr as ASTNODE ptr, _
-										  byval fexpr as ASTNODE ptr, _
-										  byval rexpr as ASTNODE ptr ) as integer
-
-declare function	rtlProfileBeginCall ( byval symbol as FBSYMBOL ptr ) as ASTNODE ptr
-
-declare function	rtlProfileEndCall	( ) as ASTNODE ptr
-
-
-declare function 	rtlMultinput_cb		( byval sym as FBSYMBOL ptr ) as integer
-
-declare function    rtlPrinter_cb       ( byval sym as FBSYMBOL ptr ) as integer
+declare sub 		rtlInit				( _
+										)
+
+declare sub 		rtlEnd				( _
+										)
+
+declare sub 		rtlAddIntrinsicProcs( _
+										)
+
+declare function 	rtlProcLookup		( _
+											byval pname as zstring ptr, _
+											byval pidx as integer _
+										) as FBSYMBOL ptr
+
+declare function 	rtlCalcExprLen		( _
+											byval expr as ASTNODE ptr, _
+											byval realsize as integer = TRUE _
+										) as integer
+
+declare function 	rtlCalcStrLen		( _
+											byval expr as ASTNODE ptr, _
+											byval dtype as integer _
+										) as integer
+
+declare function 	rtlStrCompare 		( _
+											byval str1 as ASTNODE ptr, _
+											byval sdtype1 as integer, _
+											byval str2 as ASTNODE ptr, _
+											byval sdtype2 as integer _
+										) as ASTNODE ptr
+
+declare function 	rtlWstrCompare		( _
+											byval str1 as ASTNODE ptr, _
+											byval str2 as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlStrConcat		( _
+											byval str1 as ASTNODE ptr, _
+											byval sdtype1 as integer, _
+											byval str2 as ASTNODE ptr, _
+											byval sdtype2 as integer _
+										) as ASTNODE ptr
+
+declare function 	rtlWstrConcat		( _
+											byval str1 as ASTNODE ptr, _
+											byval sdtype1 as integer, _
+											byval str2 as ASTNODE ptr, _
+											byval sdtype2 as integer _
+										) as ASTNODE ptr
+
+declare function 	rtlStrAssign		( _
+											byval dst as ASTNODE ptr, _
+											byval src as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlWstrAssign		( _
+											byval dst as ASTNODE ptr, _
+											byval src as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlStrConcatAssign	( _
+											byval dst as ASTNODE ptr, _
+											byval src as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlWstrConcatAssign	( _
+											byval dst as ASTNODE ptr, _
+											byval src as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlStrDelete		( _
+											byval strg as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlStrAllocTmpResult( _
+											byval strg as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlStrAllocTmpDesc	( _
+											byval strg as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlWstrAlloc		( _
+											byval lenexpr as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlToStr			( _
+											byval expr as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlToWstr			( _
+											byval expr as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlStrToVal			( _
+											byval expr as ASTNODE ptr, _
+											byval to_dtype as integer _
+										) as ASTNODE ptr
+
+declare function 	rtlStrMid			( _
+											byval expr1 as ASTNODE ptr, _
+											byval expr2 as ASTNODE ptr, _
+											byval expr3 as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function	rtlStrAssignMid		( _
+											byval expr1 as ASTNODE ptr, _
+											byval expr2 as ASTNODE ptr, _
+											byval expr3 as ASTNODE ptr, _
+											byval expr4 as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlStrLSet			( _
+											byval dstexpr as ASTNODE ptr, _
+											byval srcexpr as ASTNODE ptr _
+										) as integer
+
+declare function 	rtlStrFill			( _
+											byval expr1 as ASTNODE ptr, _
+											byval expr2 as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlWstrFill			( _
+											byval expr1 as ASTNODE ptr, _
+											byval expr2 as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlStrAsc			( _
+											byval expr as ASTNODE ptr, _
+											byval posexpr as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlStrChr			( _
+											byval args as integer, _
+										  	exprtb() as ASTNODE ptr, _
+											byval is_wstr as integer _
+										) as ASTNODE ptr
+
+declare function    rtlStrInstr         ( _
+											byval nd_start as ASTNODE ptr, _
+											byval nd_text as ASTNODE ptr, _
+											byval nd_pattern as ASTNODE ptr, _
+											byval search_any as integer _
+										) as ASTNODE ptr
+
+declare function    rtlStrTrim          ( _
+											byval nd_text as ASTNODE ptr, _
+											byval nd_pattern as ASTNODE ptr, _
+											byval is_any as integer _
+										) as ASTNODE ptr
+
+declare function    rtlStrRTrim         ( _
+											byval nd_text as ASTNODE ptr, _
+											byval nd_pattern as ASTNODE ptr, _
+											byval is_any as integer _
+										) as ASTNODE ptr
+
+declare function    rtlStrLTrim         ( _
+											byval nd_text as ASTNODE ptr, _
+											byval nd_pattern as ASTNODE ptr, _
+											byval is_any as integer _
+										) as ASTNODE ptr
+
+declare function	rtlArrayRedim		( _
+											byval s as FBSYMBOL ptr, _
+											byval elementlen as integer, _
+											byval dimensions as integer, _
+									  	  	exprTB() as ASTNODE ptr, _
+											byval dopreserve as integer _
+										) as integer
+
+declare function	rtlArrayErase		( _
+											byval arrayexpr as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function	rtlArrayClear		( _
+											byval arrayexpr as ASTNODE ptr _
+										) as integer
+
+declare function 	rtlArrayBound		( _
+											byval sexpr as ASTNODE ptr, _
+											byval dimexpr as ASTNODE ptr, _
+											byval islbound as integer _
+										) as ASTNODE ptr
+
+declare function	rtlArraySetDesc		( _
+											byval sym as FBSYMBOL ptr, _
+											byval elementlen as integer, _
+											byval dimensions as integer, _
+										  	dTB() as FBARRAYDIM _
+										) as integer
+
+declare function	rtlArrayResetDesc	( _
+											byval sym as FBSYMBOL ptr, _
+											byval elementlen as integer, _
+											byval dimensions as integer _
+										) as integer
+
+declare function 	rtlArrayStrErase	( _
+											byval s as FBSYMBOL ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlArrayAllocTmpDesc( _
+											byval arrayexpr as ASTNODE ptr, _
+											byval pdesc as FBSYMBOL ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlArrayFreeTempDesc( _
+											byval pdesc as FBSYMBOL ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlArrayBoundsCheck	( _
+											byval idx as ASTNODE ptr, _
+											byval lb as ASTNODE ptr, _
+											byval rb as ASTNODE ptr, _
+											byval linenum as integer, _
+											byval module as zstring ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlNullPtrCheck		( _
+											byval p as ASTNODE ptr, _
+											byval linenum as integer, _
+											byval module as zstring ptr _
+										) as ASTNODE ptr
+
+declare function	rtlDataRestore		( _
+											byval label as FBSYMBOL ptr, _
+											byval afternode as ASTNODE ptr = NULL, _
+											byval isprofiler as integer = FALSE _
+										) as integer
+
+declare function	rtlDataRead			( _
+											byval varexpr as ASTNODE ptr _
+										) as integer
+
+declare sub 		rtlDataStoreBegin	( _
+										)
+
+declare function	rtlDataStore		( _
+											byval littext as zstring ptr, _
+											byval litlen as integer, _
+											byval typ as integer _
+										) as integer
+
+declare function 	rtlDataStoreW		( _
+											byval littext as wstring ptr, _
+											byval litlen as integer, _
+											byval typ as integer _
+										) as integer
+
+declare function 	rtlDataStoreOFS		( _
+											byval sym as FBSYMBOL ptr _
+										) as integer
+
+declare sub 		rtlDataStoreEnd		( _
+										)
+
+declare function 	rtlMathPow			( _
+											byval xexpr as ASTNODE ptr, _
+											byval yexpr as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlMathFSGN 		( _
+											byval expr as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlMathFIX 			( _
+											byval expr as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlMathTRANS		( _
+											byval op as integer, _
+											byval expr as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function 	rtlMathLen			( _
+											byval expr as ASTNODE ptr, _
+											byval checkstrings as integer = TRUE _
+										) as ASTNODE ptr
+
+declare function 	rtlMathLongintCMP	( _
+											byval op as integer, _
+											byval dtype as integer, _
+											byval lexpr as ASTNODE ptr, _
+											byval ldtype as integer, _
+											byval rexpr as ASTNODE ptr, _
+											byval rdtype as integer _
+										) as ASTNODE ptr
+
+declare function 	rtlMathLongintDIV	( _
+											byval dtype as integer, _
+											byval lexpr as ASTNODE ptr, _
+											byval ldtype as integer, _
+											byval rexpr as ASTNODE ptr, _
+											byval rdtype as integer _
+										) as ASTNODE ptr
+
+declare function 	rtlMathLongintMUL	( _
+											byval dtype as integer, _
+											byval lexpr as ASTNODE ptr, _
+											byval ldtype as integer, _
+											byval rexpr as ASTNODE ptr, _
+											byval rdtype as integer _
+										) as ASTNODE ptr
+
+declare function 	rtlMathLongintMOD	( _
+											byval dtype as integer, _
+											byval lexpr as ASTNODE ptr, _
+											byval ldtype as integer, _
+											byval rexpr as ASTNODE ptr, _
+											byval rdtype as integer _
+										) as ASTNODE ptr
+
+declare function 	rtlMathFp2ULongint	( _
+											byval expr as ASTNODE ptr, _
+											byval dtype as integer _
+										) as ASTNODE ptr
+
+declare function    rtlInitMain         ( _
+											_
+										) as integer
+
+declare function 	rtlInitApp			( _
+											byval argc as ASTNODE ptr, _
+											byval argv as ASTNODE ptr, _
+											byval isdllmain as integer _
+										) as ASTNODE ptr
+
+declare function 	rtlInitRt			( _
+											_
+										) as ASTNODE ptr
+
+declare function	rtlExitApp			( _
+											byval errlevel as ASTNODE ptr _
+										) as integer
+
+declare function 	rtlMemCopy			( _
+											byval dst as ASTNODE ptr, _
+											byval src as ASTNODE ptr, _
+											byval bytes as integer _
+										) as ASTNODE ptr
+
+declare function	rtlMemSwap			( _
+											byval dst as ASTNODE ptr, _
+											byval src as ASTNODE ptr _
+										) as integer
+
+declare function	rtlStrSwap			( _
+											byval str1 as ASTNODE ptr, _
+											byval str2 as ASTNODE ptr _
+										) as integer
+
+declare function	rtlWstrSwap			( _
+											byval str1 as ASTNODE ptr, _
+											byval str2 as ASTNODE ptr _
+										) as integer
+
+declare function 	rtlMemCopyClear		( _
+											byval dstexpr as ASTNODE ptr, _
+											byval dstlen as integer, _
+											byval srcexpr as ASTNODE ptr, _
+											byval srclen as integer _
+										) as integer
+
+declare function	rtlPrint			( _
+											byval fileexpr as ASTNODE ptr, _
+											byval iscomma as integer, _
+											byval issemicolon as integer, _
+											byval expr as ASTNODE ptr, _
+											byval islprint as integer = FALSE _
+										) as integer
+
+declare function	rtlPrintSPC			( _
+											byval fileexpr as ASTNODE ptr, _
+											byval expr as ASTNODE ptr, _
+											byval islprint as integer = FALSE _
+										) as integer
+
+declare function	rtlPrintTab			( _
+											byval fileexpr as ASTNODE ptr, _
+											byval expr as ASTNODE ptr, _
+											byval islprint as integer = FALSE _
+										) as integer
+
+declare function	rtlWrite			( _
+											byval fileexpr as ASTNODE ptr, _
+											byval iscomma as integer, _
+											byval expr as ASTNODE ptr _
+										) as integer
+
+declare function	rtlPrintUsingInit	( _
+											byval usingexpr as ASTNODE ptr, _
+											byval islprint as integer = FALSE _
+										) as integer
+
+declare function	rtlPrintUsingEnd	( _
+											byval fileexpr as ASTNODE ptr, _
+											byval islprint as integer = FALSE _
+										) as integer
+
+declare function	rtlPrintUsing		( _
+											byval fileexpr as ASTNODE ptr, _
+											byval expr as ASTNODE ptr, _
+											byval iscomma as integer, _
+											byval issemicolon as integer, _
+											byval islprint as integer = FALSE _
+										) as integer
+
+declare function	rtlFileOpen			( _
+											byval filename as ASTNODE ptr, _
+											byval fmode as ASTNODE ptr, _
+											byval faccess as ASTNODE ptr, _
+											byval flock as ASTNODE ptr, _
+											byval filenum as ASTNODE ptr, _
+											byval flen as ASTNODE ptr, _
+											byval fencoding as ASTNODE ptr, _
+											byval isfunc as integer, _
+											byval openkind as FBOPENKIND _
+										) as ASTNODE ptr
+
+declare function	rtlFileOpenShort	( _
+											byval filename as ASTNODE ptr, _
+											byval fmode as ASTNODE ptr, _
+											byval faccess as ASTNODE ptr, _
+											byval flock as ASTNODE ptr, _
+											byval filenum as ASTNODE ptr, _
+											byval flen as ASTNODE ptr, _
+											byval isfunc as integer _
+										) as ASTNODE ptr
+
+declare function	rtlFileRename		( _
+											byval filename_new as ASTNODE ptr, _
+											byval filename_old as ASTNODE ptr, _
+											byval isfunc as integer _
+										) as ASTNODE ptr
+
+declare function    rtlWidthScreen      ( _
+											byval width_arg as ASTNODE ptr, _
+											byval height_arg as ASTNODE ptr, _
+											byval isfunc as integer _
+										) as ASTNODE ptr
+declare function    rtlWidthDev         ( _
+											byval device as ASTNODE ptr, _
+											byval width_arg as ASTNODE ptr, _
+											byval isfunc as integer _
+										) as ASTNODE ptr
+declare function    rtlWidthFile        ( _
+											byval fnum as ASTNODE ptr, _
+											byval width_arg as ASTNODE ptr, _
+											byval isfunc as integer _
+										) as ASTNODE ptr
+
+declare function	rtlFileClose		( _
+											byval filenum as ASTNODE ptr, _
+											byval isfunc as integer _
+										) as ASTNODE ptr
+
+declare function	rtlFileSeek			( _
+											byval filenum as ASTNODE ptr, _
+											byval newpos as ASTNODE ptr _
+										) as integer
+
+declare function 	rtlFileTell			( _
+											byval filenum as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function	rtlFilePut			( _
+											byval filenum as ASTNODE ptr, _
+											byval offset as ASTNODE ptr, _
+											byval src as ASTNODE ptr, _
+											byval bytes as ASTNODE ptr, _
+											byval isfunc as integer _
+										) as ASTNODE ptr
+
+declare function	rtlFilePutArray		( _
+											byval filenum as ASTNODE ptr, _
+											byval offset as ASTNODE ptr, _
+											byval src as ASTNODE ptr, _
+											byval isfunc as integer _
+										) as ASTNODE ptr
+
+declare function	rtlFileGet			( _
+											byval filenum as ASTNODE ptr, _
+											byval offset as ASTNODE ptr, _
+											byval dst as ASTNODE ptr, _
+											byval bytes as ASTNODE ptr, _
+											byval isfunc as integer _
+										) as ASTNODE ptr
+
+declare function	rtlFileGetArray		( _
+											byval filenum as ASTNODE ptr, _
+											byval offset as ASTNODE ptr, _
+											byval dst as ASTNODE ptr, _
+											byval isfunc as integer _
+										) as ASTNODE ptr
+
+declare function 	rtlFileStrInput		( _
+											byval bytesexpr as ASTNODE ptr, _
+											byval filenum as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function	rtlFileLineInput	( _
+											byval isfile as integer, _
+											byval expr as ASTNODE ptr, _
+											byval dstexpr as ASTNODE ptr, _
+											byval addquestion as integer, _
+											byval addnewline as integer _
+										) as integer
+
+declare function 	rtlFileLineInputWstr( _
+											byval isfile as integer, _
+											byval expr as ASTNODE ptr, _
+											byval dstexpr as ASTNODE ptr, _
+											byval addquestion as integer, _
+											byval addnewline as integer _
+										) as integer
+
+declare function	rtlFileInput		( _
+											byval isfile as integer, _
+											byval expr as ASTNODE ptr, _
+											byval addquestion as integer, _
+											byval addnewline as integer _
+										) as integer
+
+declare function	rtlFileInputGet		( _
+											byval dstexpr as ASTNODE ptr, _
+											byval islast as integer _
+										) as integer
+
+declare function	rtlFileLock			( _
+											byval islock as integer, _
+											byval filenum as ASTNODE ptr, _
+											byval iniexpr as ASTNODE ptr, _
+											byval endexpr as ASTNODE ptr _
+										) as integer
+
+declare function	rtlErrorCheck		( _
+											byval resexpr as ASTNODE ptr, _
+											byval reslabel as FBSYMBOL ptr, _
+											byval linenum as integer _
+										) as integer
+
+declare sub 		rtlErrorThrow		( _
+											byval errexpr as ASTNODE ptr, _
+											byval linenum as integer, _
+											byval module as zstring ptr _
+										)
+
+declare sub 		rtlErrorSetHandler	( _
+											byval newhandler as ASTNODE ptr, _
+											byval savecurrent as integer _
+										)
+
+declare function	rtlErrorGetNum		( _
+											_
+										) as ASTNODE ptr
+
+declare sub 		rtlErrorSetNum		( _
+											byval errexpr as ASTNODE ptr _
+										)
+
+declare sub 		rtlErrorResume		( _
+											byval isnext as integer _
+										)
+
+declare function	rtlConsoleView		( _
+											byval topexpr as ASTNODE ptr, _
+											byval botexpr as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function    rtlLocate           ( _
+											byval row_arg as ASTNODE ptr, _
+											byval col_arg as ASTNODE ptr, _
+											byval cursor_vis_arg as ASTNODE ptr, _
+											byval isfunc as integer _
+										) as ASTNODE ptr
+
+declare function	rtlConsoleReadXY	( _
+											byval rowexpr as ASTNODE ptr, _
+											byval columnexpr as ASTNODE ptr, _
+											byval colorflagexpr as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function	rtlGfxPset			( _
+											byval target as ASTNODE ptr, _
+											byval targetisptr as integer, _
+											byval xexpr as ASTNODE ptr, _
+											byval yexpr as ASTNODE ptr, _
+											byval cexpr as ASTNODE ptr, _
+											byval coordtype as integer, _
+											byval ispreset as integer _
+										) as integer
+
+declare function	rtlGfxPoint			( _
+											byval target as ASTNODE ptr, _
+											byval targetisptr as integer, _
+											byval xexpr as ASTNODE ptr, _
+											byval yexpr as ASTNODE ptr _
+										) as ASTNODE ptr
+
+declare function	rtlGfxLine			( _
+											byval target as ASTNODE ptr, _
+											byval targetisptr as integer, _
+											byval x1expr as ASTNODE ptr, _
+											byval y1expr as ASTNODE ptr, _
+											byval x2expr as ASTNODE ptr, _
+											byval y2expr as ASTNODE ptr, _
+											byval cexpr as ASTNODE ptr, _
+											byval linetype as integer, _
+											byval styleexpr as ASTNODE ptr, _
+											byval coordtype as integer _
+										) as integer
+
+declare function	rtlGfxCircle		( _
+											byval target as ASTNODE ptr, _
+											byval targetisptr as integer, _
+											byval xexpr as ASTNODE ptr, _
+											byval yexpr as ASTNODE ptr, _
+											byval radexpr as ASTNODE ptr, _
+											byval cexpr as ASTNODE ptr, _
+											byval aspexpr as ASTNODE ptr, _
+											byval iniexpr as ASTNODE ptr, _
+											byval endexpr as ASTNODE ptr, _
+											byval fillflag as integer, _
+											byval coordtype as integer _
+										) as integer
+
+declare function	rtlGfxPaint			( _
+											byval target as ASTNODE ptr, _
+											byval targetisptr as integer, _
+											byval xexpr as ASTNODE ptr, _
+											byval yexpr as ASTNODE ptr, _
+											byval pexpr as ASTNODE ptr, _
+											byval bexpr as ASTNODE ptr, _
+											byval coord_type as integer _
+										) as integer
+
+declare function	rtlGfxDraw			( _
+											byval target as ASTNODE ptr, _
+											byval targetisptr as integer, _
+											byval cexpr as ASTNODE ptr _
+										)
+
+declare function	rtlGfxDrawString	( _
+											byval target as ASTNODE ptr, _
+											byval targetisptr as integer, _
+											byval xexpr as ASTNODE ptr, _
+											byval texpr as ASTNODE ptr, _
+											byval sexpr as ASTNODE ptr, _
+											byval cexpr as ASTNODE ptr, _
+											byval fexpr as ASTNODE ptr, _
+											byval fisptr as integer, _
+											byval coord_type as integer, _
+											byval mode as integer, _
+											byval alphaexpr as ASTNODE ptr, _
+											byval funcexpr as ASTNODE ptr _
+										) as integer
+
+declare function	rtlGfxView			( _
+											byval x1expr as ASTNODE ptr, _
+											byval y1expr as ASTNODE ptr, _
+											byval x2expr as ASTNODE ptr, _
+											byval y2expr as ASTNODE ptr, _
+											byval fillexpr as ASTNODE ptr, _
+											byval bordexpr as ASTNODE ptr, _
+											byval screenflag as integer _
+										) as integer
+
+declare function	rtlGfxWindow		( _
+											byval x1expr as ASTNODE ptr, _
+											byval y1expr as ASTNODE ptr, _
+											byval x2expr as ASTNODE ptr, _
+											byval y2expr as ASTNODE ptr, _
+											byval screenflag as integer _
+										) as integer
+
+declare function	rtlGfxPalette 		( _
+											byval attexpr as ASTNODE ptr, _
+											byval rexpr as ASTNODE ptr, _
+											byval gexpr as ASTNODE ptr, _
+											byval bexpr as ASTNODE ptr, _
+											byval isget as integer _
+										) as integer
+
+declare function	rtlGfxPaletteUsing	( _
+											byval arrayexpr as ASTNODE ptr, _
+											byval isptr as integer, _
+											byval isget as integer _
+										) as integer
+
+declare function 	rtlGfxPut			( _
+											byval target as ASTNODE ptr, _
+											byval targetisptr as integer, _
+											byval xexpr as ASTNODE ptr, _
+											byval yexpr as ASTNODE ptr, _
+											byval arrayexpr as ASTNODE ptr, _
+											byval isptr as integer, _
+											byval x1expr as ASTNODE ptr, _
+											byval x2expr as ASTNODE ptr, _
+											byval y1expr as ASTNODE ptr, _
+											byval y2expr as ASTNODE ptr, _
+											byval mode as integer, _
+											byval alphaexpr as ASTNODE ptr, _
+											byval funcexpr as ASTNODE ptr, _
+											byval coordtype as integer _
+										) as integer
+
+declare function	rtlGfxGet			( _
+											byval target as ASTNODE ptr, _
+											byval targetisptr as integer, _
+											byval x1expr as ASTNODE ptr, _
+											byval y1expr as ASTNODE ptr, _
+											byval x2expr as ASTNODE ptr, _
+											byval y2expr as ASTNODE ptr, _
+											byval arrayexpr as ASTNODE ptr, _
+											byval isptr as integer, _
+											byval symbol as FBSYMBOL ptr, _
+											byval coordtype as integer _
+										) as integer
+
+declare function	rtlGfxScreenSet		( _
+											byval wexpr as ASTNODE ptr, _
+											byval hexpr as ASTNODE ptr, _
+											byval dexpr as ASTNODE ptr, _
+											byval pexpr as ASTNODE ptr, _
+											byval fexpr as ASTNODE ptr, _
+											byval rexpr as ASTNODE ptr _
+										) as integer
+
+declare function	rtlProfileBeginCall ( _
+											byval symbol as FBSYMBOL ptr _
+										) as ASTNODE ptr
+
+declare function	rtlProfileEndCall	( _
+											_
+										) as ASTNODE ptr
+
+declare function 	rtlMultinput_cb		( _
+											byval sym as FBSYMBOL ptr _
+										) as integer
+
+declare function    rtlPrinter_cb       ( _
+											byval sym as FBSYMBOL ptr _
+										) as integer
 
 ''
 '' macros

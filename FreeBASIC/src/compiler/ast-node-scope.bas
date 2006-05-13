@@ -66,7 +66,7 @@ function astScopeBegin( ) as ASTNODE ptr static
 	env.currblock = s
     ast.currblock = n
 
-	symbSetLocalTb( @s->scp.loctb )
+	symbSetCurrentSymTb( @s->scp.symtb )
 
 	''
 	irScopeBegin( s )
@@ -140,7 +140,7 @@ sub astScopeEnd( byval n as ASTNODE ptr ) static
 	irScopeEnd( s )
 
 	'' back to preview symbol tb
-	symbSetLocalTb( s->symtb )
+	symbSetCurrentSymTb( s->symtb )
 
 	ast.currblock = n->block.parent
 	env.currblock = ast.currblock->sym
@@ -197,7 +197,7 @@ private function hCheckScopeLocals( byval dst as FBSYMBOL ptr, _
 
 	parent = symbGetLabelParent( dst )
     do
-    	s = parent->scp.loctb.head
+    	s = parent->scp.symtb.head
     	do while( s <> NULL )
     		'' non-static or shared var?
     		if( symbIsVar( s ) ) then
@@ -235,9 +235,9 @@ private function hIsBranchCrossing( byval n as ASTNODE ptr ) as FBSYMBOL ptr sta
 
     s = symbGetLabelParent( n->sym )
     if( symbIsScope( s ) ) then
-    	s = s->scp.loctb.head
+    	s = s->scp.symtb.head
     else
-    	s = s->proc.loctb.head
+    	s = s->proc.symtb.head
     end if
 
     do while( s <> NULL )
@@ -269,9 +269,9 @@ private function hDelBlockLocals( byval blk as FBSYMBOL ptr, _
 	dim as integer p
 
     if( symbIsScope( blk ) ) then
-    	s = blk->scp.loctb.head
+    	s = blk->scp.symtb.head
     else
-    	s = blk->proc.loctb.head
+    	s = blk->proc.symtb.head
     end if
 
     do while( s <> NULL )
@@ -366,15 +366,15 @@ private sub hBranchError( byval errnum as integer, _
 	showerror = env.clopt.showerror
 	env.clopt.showerror = FALSE
 
-	if( symbGetOrgName( n->sym ) <> NULL ) then
-		msg = "to " + *symbGetOrgName( n->sym )
+	if( symbGetName( n->sym ) <> NULL ) then
+		msg = "to " + *symbGetName( n->sym )
 		if( s <> NULL ) then
 			msg += ", "
 		end if
 	end if
 
 	if( s <> NULL ) then
-		msg += "array or object: " + *symbGetOrgName( s )
+		msg += "array or object: " + *symbGetName( s )
 	end if
 
 	hReportErrorEx( errnum, msg, n->break.linenum )

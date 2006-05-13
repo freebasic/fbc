@@ -35,26 +35,30 @@ option escape
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbAddUDT( byval parent as FBSYMBOL ptr, _
-					 byval symbol as zstring ptr, _
-					 byval isunion as integer, _
-					 byval align as integer _
-				   ) as FBSYMBOL ptr static
+function symbAddUDT _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval id as zstring ptr, _
+		byval isunion as integer, _
+		byval align as integer _
+	) as FBSYMBOL ptr static
 
-    dim t as FBSYMBOL ptr
-    dim as FBSYMBOLTB ptr symtb
+    dim as FBSYMBOL ptr t
+    dim as zstring ptr id_alias
 
     function = NULL
 
-    '' if parsing main, all UDT's must go to the global table
-    if( fbIsModLevel( ) ) then
-    	symtb = @symb.globtb
-    else
-    	symtb = symb.loctb
+    '' only preserve a case-sensitive version if in BASIC mangling
+    if( env.mangling <> FB_MANGLING_BASIC ) then
+    	id_alias = id
+   	else
+   		id_alias = NULL
     end if
 
-    t = symbNewSymbol( NULL, symtb, fbIsModLevel( ), FB_SYMBCLASS_UDT, _
-    				   TRUE, symbol, NULL )
+    t = symbNewSymbol( NULL, _
+    				   NULL, NULL, fbIsModLevel( ), _
+    				   FB_SYMBCLASS_UDT, _
+    				   TRUE, id, id_alias )
 	if( t = NULL ) then
 		exit function
 	end if
@@ -65,7 +69,7 @@ function symbAddUDT( byval parent as FBSYMBOL ptr, _
 	t->udt.fldtb.owner = t
 	t->udt.fldtb.head = NULL
 	t->udt.fldtb.tail = NULL
-	t->udt.ofs = 0
+	t->ofs = 0
 	t->udt.align = align
 	t->udt.lfldlen = 0
 	t->udt.bitpos = 0
@@ -80,10 +84,12 @@ function symbAddUDT( byval parent as FBSYMBOL ptr, _
 end function
 
 '':::::
-private function hGetRealLen( byval orglen as integer, _
-							  byval dtype as integer, _
-							  byval subtype as FBSYMBOL ptr _
-					 	    ) as integer static
+private function hGetRealLen _
+	( _
+		byval orglen as integer, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer static
 
 	select case as const dtype
 	'' UDT? return its largest field len
@@ -109,12 +115,14 @@ private function hGetRealLen( byval orglen as integer, _
 end function
 
 '':::::
-private function hCalcALign( byval lgt as integer, _
-					 		 byval ofs as integer, _
-					 		 byval align as integer, _
-					 		 byval dtype as integer, _
-					 		 byval subtype as FBSYMBOL ptr _
-					 	   ) as integer static
+private function hCalcALign _
+	( _
+		byval lgt as integer, _
+		byval ofs as integer, _
+		byval align as integer, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer static
 
 	'' do align?
 	if( align = 1 ) then
@@ -154,16 +162,18 @@ private function hCalcALign( byval lgt as integer, _
 end function
 
 '':::::
-function symbCheckBitField( byval udt as FBSYMBOL ptr, _
-							byval typ as integer, _
-							byval lgt as integer, _
-							byval bits as integer _
-						  ) as integer
+function symbCheckBitField _
+	( _
+		byval udt as FBSYMBOL ptr, _
+		byval dtype as integer, _
+		byval lgt as integer, _
+		byval bits as integer _
+	) as integer
 
 	'' <= 0 or > sizeof(type) or not an integer type?
 	if( (bits <= 0) or _
 		(bits > lgt*8) or _
-		(typ >= FB_DATATYPE_ENUM) ) then
+		(dtype >= FB_DATATYPE_ENUM) ) then
 		return FALSE
 	end if
 
@@ -172,16 +182,18 @@ function symbCheckBitField( byval udt as FBSYMBOL ptr, _
 end function
 
 '':::::
-function symbAddUDTElement( byval t as FBSYMBOL ptr, _
-							byval elmname as zstring ptr, _
-						    byval dimensions as integer, _
-						    dTB() as FBARRAYDIM, _
-						    byval typ as integer, _
-						    byval subtype as FBSYMBOL ptr, _
-						    byval ptrcnt as integer, _
-						    byval lgt as integer, _
-						    byval bits as integer _
-						  ) as FBSYMBOL ptr static
+function symbAddUDTElement _
+	( _
+		byval t as FBSYMBOL ptr, _
+		byval id as zstring ptr, _
+		byval dimensions as integer, _
+		dTB() as FBARRAYDIM, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval ptrcnt as integer, _
+		byval lgt as integer, _
+		byval bits as integer _
+	) as FBSYMBOL ptr static
 
     static as zstring * FB_MAXINTNAMELEN+1 ename
     dim as FBSYMBOL ptr p, e, tail
@@ -189,7 +201,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 
     function = NULL
 
-    hUcase( *elmname, ename )
+    hUcase( *id, ename )
 
     '' check if element already exists in the current struct and parents
     p = t
@@ -209,11 +221,11 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 
     '' calc length if it wasn't given
 	if( lgt <= 0 ) then
-		lgt	= symbCalcLen( typ, subtype, TRUE )
+		lgt	= symbCalcLen( dtype, subtype, TRUE )
 
 	'' or use the non-padded len if it's a non-array UDT field (for array
 	'' of UDT's fields the padded len will be used, to follow the GCC ABI)
-	elseif( typ = FB_DATATYPE_USERDEF ) then
+	elseif( dtype = FB_DATATYPE_USERDEF ) then
 		if( dimensions = 0 ) then
 			lgt = subtype->udt.unpadlgt
 		end if
@@ -231,7 +243,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
     		else
     			'' if it fits but len is different, make it the same
     			if( lgt <> tail->lgt ) then
-    				typ = tail->typ
+    				dtype = tail->typ
     				lgt = tail->lgt
     			end if
     		end if
@@ -248,7 +260,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 
 	''
 	if( updateudt ) then
-		pad = hCalcALign( lgt, t->udt.ofs, t->udt.align, typ, subtype )
+		pad = hCalcALign( lgt, t->ofs, t->udt.align, dtype, subtype )
 		if( pad > 0 ) then
 
 			'' bitfield?
@@ -263,16 +275,16 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 						'' remap type
 						select case lgt
 						case 1
-							if( symbIsSigned( typ ) ) then
-								typ = FB_DATATYPE_BYTE
+							if( symbIsSigned( dtype ) ) then
+								dtype = FB_DATATYPE_BYTE
 							else
-								typ = FB_DATATYPE_UBYTE
+								dtype = FB_DATATYPE_UBYTE
 							end if
 						case 2
-							if( symbIsSigned( typ ) ) then
-								typ = FB_DATATYPE_SHORT
+							if( symbIsSigned( dtype ) ) then
+								dtype = FB_DATATYPE_SHORT
 							else
-								typ = FB_DATATYPE_USHORT
+								dtype = FB_DATATYPE_USHORT
 							end if
 
 						'' padding won't be >= sizeof(int) because only
@@ -284,11 +296,11 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 				end if
 			end if
 
-			t->udt.ofs += pad
+			t->ofs += pad
 		end if
 
 		'' update largest field len
-		elen = hGetRealLen( lgt, typ, subtype )
+		elen = hGetRealLen( lgt, dtype, subtype )
 
 		'' larger?
 		if( elen > t->udt.lfldlen ) then
@@ -298,13 +310,17 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 
 	'' bitfield?
 	if( bits > 0 ) then
-		subtype = symbAddBitField( t->udt.bitpos, bits, typ, lgt )
-		typ = FB_DATATYPE_BITFIELD
+		subtype = symbAddBitField( t->udt.bitpos, bits, dtype, lgt )
+		dtype = FB_DATATYPE_BITFIELD
 	end if
 
 	''
-    e = symbNewSymbol( NULL, @t->udt.fldtb, TRUE, FB_SYMBCLASS_UDTELM, _
-    				   FALSE, @ename, NULL, typ, subtype, ptrcnt )
+    e = symbNewSymbol( NULL, _
+    				   @t->udt.fldtb, NULL, TRUE, _
+    				   FB_SYMBCLASS_UDTELM, _
+    				   FALSE, @ename, NULL, _
+    				   dtype, subtype, ptrcnt, _
+    				   TRUE )
     if( e = NULL ) then
     	exit function
     end if
@@ -316,9 +332,9 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 	e->lgt = lgt
 
 	if( updateudt or t->udt.isunion ) then
-		e->var.elm.ofs = t->udt.ofs
+		e->ofs = t->ofs
 	else
-		e->var.elm.ofs = t->udt.ofs - lgt
+		e->ofs = t->ofs - lgt
 	end if
 
 	'' array fields
@@ -340,7 +356,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 	lgt *= e->var.array.elms
 
 	'' check ptr or var-len string fields
-	select case typ
+	select case dtype
 	case is >= FB_DATATYPE_POINTER
 		p = t
 		do
@@ -359,14 +375,14 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 	'' struct?
 	if( t->udt.isunion = FALSE ) then
 		if( updateudt ) then
-			t->udt.ofs += lgt
-			t->lgt = t->udt.ofs
+			t->ofs += lgt
+			t->lgt = t->ofs
 		end if
 
 	'' union..
 	else
 		'' always update, been it a bitfield or not
-		t->udt.ofs = 0
+		t->ofs = 0
 		if( lgt > t->lgt ) then
 			t->lgt = lgt
 		end if
@@ -375,7 +391,7 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 	'' update the bit position, wrapping around
 	if( bits > 0 ) then
 		t->udt.bitpos += bits
-		t->udt.bitpos and= (symbGetDataBits( typ ) - 1)
+		t->udt.bitpos and= (symbGetDataBits( dtype ) - 1)
 	end if
 
     function = e
@@ -383,8 +399,11 @@ function symbAddUDTElement( byval t as FBSYMBOL ptr, _
 end function
 
 '':::::
-sub symbInsertInnerUDT( byval t as FBSYMBOL ptr, _
-						byval inner as FBSYMBOL ptr ) static
+sub symbInsertInnerUDT _
+	( _
+		byval t as FBSYMBOL ptr, _
+		byval inner as FBSYMBOL ptr _
+	) static
 
     dim as FBSYMBOL ptr e
     dim as FBSYMBOLTB ptr symtb
@@ -392,10 +411,10 @@ sub symbInsertInnerUDT( byval t as FBSYMBOL ptr, _
 
 	if( t->udt.isunion = FALSE ) then
 		'' calc padding (should be aligned like if an UDT field were been added)
-		pad = hCalcALign( inner->udt.lfldlen, t->udt.ofs, t->udt.align, _
+		pad = hCalcALign( inner->udt.lfldlen, t->ofs, t->udt.align, _
 						  FB_DATATYPE_VOID, NULL )
 		if( pad > 0 ) then
-			t->udt.ofs += pad
+			t->ofs += pad
 		end if
 	end if
 
@@ -428,8 +447,8 @@ sub symbInsertInnerUDT( byval t as FBSYMBOL ptr, _
     		e->symtb = symtb
 
 			'' update the offsets
-			t->udt.ofs += e->var.elm.ofs
-			e->var.elm.ofs = t->udt.ofs
+			t->ofs += e->ofs
+			e->ofs = t->ofs
 
     		'' next
     		e = e->next
@@ -443,12 +462,12 @@ sub symbInsertInnerUDT( byval t as FBSYMBOL ptr, _
 
 	'' struct? update ofs + len
 	if( t->udt.isunion = FALSE ) then
-		t->udt.ofs += inner->udt.unpadlgt
-		t->lgt = t->udt.ofs
+		t->ofs += inner->udt.unpadlgt
+		t->lgt = t->ofs
 
 	'' union.. update len, if bigger
 	else
-		t->udt.ofs = 0
+		t->ofs = 0
 		if( inner->udt.unpadlgt > t->lgt ) then
 			t->lgt = inner->udt.unpadlgt
 		end if
@@ -469,7 +488,11 @@ sub symbInsertInnerUDT( byval t as FBSYMBOL ptr, _
 end sub
 
 '':::::
-sub symbRoundUDTSize( byval t as FBSYMBOL ptr ) static
+sub symbRoundUDTSize _
+	( _
+		byval t as FBSYMBOL ptr _
+	) static
+
     dim as integer align, pad
 
 	align = t->udt.align
@@ -509,160 +532,33 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbGetUDTElmOffset( byref elm as FBSYMBOL ptr, _
-							  byref typ as integer, _
-							  byref subtype as FBSYMBOL ptr, _
-							  byval fields as zstring ptr _
-							) as integer
+function symbLookupUDTElm _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval id as zstring ptr _
+	) as FBSYMBOL ptr static
 
 	static as zstring * FB_MAXNAMELEN+1 ename
-	dim as FBSYMBOL ptr e
-	dim as integer p, ofs, res
-	dim as integer flen
+	dim as FBSYMBOL ptr fld
 
-    flen = len( *fields )
+	if( parent = NULL ) then
+		return NULL
+	end if
 
-    '' find next dot
-    p = instr( 1, *fields, "." )
-    ename = *fields
-    if( p > 0 ) then
-    	ename[p-1] = 0							'' ename = left$( fields, p-1 )
-    else
-    	p = flen
-    end if
-
-    '' to upper
-    hUcase( ename, ename )
-
-	''
-	elm = NULL
-
-    '' no subtupe? can't be an UDT
-    if( subtype = NULL ) then
-    	return -1
-    end if
+    hUcase( id, ename )
 
 	'' for each field
-	e = subtype->udt.fldtb.head
-	do while( e <> NULL )
-
+	fld = parent->udt.fldtb.head
+	do while( fld <> NULL )
         '' names match?
-        if( *e->name = ename ) then
-
-        	elm 		= e
-        	ofs 		= e->var.elm.ofs
-        	typ 		= e->typ
-        	subtype 	= e->subtype
-
-        	if( typ <> FB_DATATYPE_USERDEF ) then
-				if( p < flen ) then
-        			return -1
-        		else
-        			return ofs
-        		end if
-        	end if
-
-    		'' another UDT..
-    		if( p = flen ) then
-    			return ofs
-    		end if
-
-			'' array and no index?
-			if( symbGetArrayDimensions( e ) <> 0 ) then
-				hReportError( FB_ERRMSG_EXPECTEDINDEX )
-				return -1
-			end if
-
-    		res = symbGetUDTElmOffset( elm, _
-    								   typ, subtype, _
-    								   @ename[p] )		'' mid$( fields, p+1 )
-    		if( res < 0 ) then
-    			return -1
-    		end if
-
-    		return ofs + res
-
+        if( *fld->name = ename ) then
+    		exit do
         end if
 
-		'' next
-		e = e->next
+		fld = fld->next
     loop
 
-    function = -1
-
-end function
-
-'':::::
-function symbLookupUDTVar( byval symbol as zstring ptr, _
-						   byval dotpos as integer _
-						 ) as FBSYMBOL ptr static
-
-    static as zstring * FB_MAXNAMELEN+1 sname
-	dim as FBSYMBOL ptr s
-
-    function = NULL
-
-    '' symbol contains no dots?
-    if( dotpos < 1 ) then
-    	exit function
-    end if
-
-	'' check if it's an UDT field
-    sname = *symbol
-    sname[dotpos-1] = 0 						'' left$( symbol, dotpos-1 )
-
-    s = symbFindByNameAndClass( @sname, FB_SYMBCLASS_VAR )
-	if( s = NULL ) then
-		exit function
-	end if
-
-	if( s->typ <> FB_DATATYPE_USERDEF ) then
-		exit function
-	end if
-
-	function = s
-
-end function
-
-'':::::
-function symbLookupUDTElm( byval symbol as zstring ptr, _
-						   byval dotpos as integer, _
-						   byref typ as integer, _
-					       byref subtype as FBSYMBOL ptr, _
-						   byref ofs as integer, _
-					       byref elm as FBSYMBOL ptr _
-					     ) as FBSYMBOL ptr static
-
-    dim as FBSYMBOL ptr s
-
-    function = NULL
-
-    s = symbLookupUDTVar( symbol, dotpos )
-    if( s = NULL ) then
-    	exit function
-    end if
-
-	'' array and no index?
-	if( symbGetArrayDimensions( s ) <> 0 ) then
-		hReportError( FB_ERRMSG_EXPECTEDINDEX )
-		exit function
-	end if
-
-    ''
-    elm	    = NULL
-    subtype	= s->subtype
-    typ 	= s->typ
-
-	'' find the offset
-	ofs = symbGetUDTElmOffset( elm, _
-							   typ, subtype, _
-							   @symbol[dotpos] )		'' mid$( symbol, dotpos+1 )
-	if( ofs < 0 ) then
-		hReportError( FB_ERRMSG_ELEMENTNOTDEFINED )
-    	exit function
-	end if
-
-	function = s
+    function = fld
 
 end function
 
@@ -671,27 +567,25 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-sub symbDelUDT( byval s as FBSYMBOL ptr, _
-				byval dolookup as integer )
+sub symbDelUDT _
+	( _
+		byval udt as FBSYMBOL ptr _
+	)
 
-    dim as FBSYMBOL ptr e, nxt
+    dim as FBSYMBOL ptr fld, nxt
     dim as FBVARDIM ptr dimn, dimnxt
 
-    if( dolookup ) then
-    	s = symbFindByClass( s, FB_SYMBCLASS_UDT )
-    end if
-
-    if( s = NULL ) then
+    if( udt = NULL ) then
     	exit sub
     end if
 
     '' del all udt elements
-    e = s->udt.fldtb.head
-    do while( e <> NULL )
-        nxt = e->next
+    fld = udt->udt.fldtb.head
+    do while( fld <> NULL )
+        nxt = fld->next
 
     	'' del array dims if not a scalar type
-    	dimn = s->var.array.dimhead
+    	dimn = fld->var.array.dimhead
     	do while( dimn <> NULL )
     		dimnxt = dimn->next
 
@@ -700,12 +594,12 @@ sub symbDelUDT( byval s as FBSYMBOL ptr, _
     		dimn = dimnxt
     	loop
 
-    	symbFreeSymbol( e )
-    	e = nxt
+    	symbFreeSymbol( fld )
+    	fld = nxt
     loop
 
 	'' del the udt node
-	symbFreeSymbol( s )
+	symbFreeSymbol( udt )
 
 end sub
 
@@ -714,8 +608,11 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbGetUDTLen( byval s as FBSYMBOL ptr, _
-						byval unpadlen as integer = TRUE ) as integer static
+function symbGetUDTLen _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval unpadlen as integer = TRUE _
+	) as integer static
 
 	if( unpadlen ) then
 		function = s->udt.unpadlgt
@@ -724,5 +621,4 @@ function symbGetUDTLen( byval s as FBSYMBOL ptr, _
 	end if
 
 end function
-
 

@@ -25,11 +25,16 @@ option escape
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\lex.bi"
+#include once "inc\parser.bi"
 #include once "inc\pp.bi"
 #include once "inc\list.bi"
 #include once "inc\dstr.bi"
 
-#define LEX_FLAGS LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX or LEXCHECK_NODEFINE or LEXCHECK_NOQUOTES
+#define LEX_FLAGS LEXCHECK_NOWHITESPC or _
+				  LEXCHECK_NOSUFFIX or _
+				  LEXCHECK_NODEFINE or _
+				  LEXCHECK_NOQUOTES or _
+				  LEXCHECK_NOSYMBOL
 
 type LEXPP_CTX
 	argtblist	as TLIST
@@ -52,7 +57,7 @@ end type
 ''::::
 sub ppDefineInit( )
 
-	listNew( @ctx.argtblist, 5, len( LEXPP_ARGTB ), FALSE )
+	listNew( @ctx.argtblist, 5, len( LEXPP_ARGTB ), LIST_FLAGS_NOCLEAR )
 
 end sub
 
@@ -67,7 +72,7 @@ end sub
 private sub hReportMacroError( byval s as FBSYMBOL ptr, _
 							   byval errnum as integer )
 
-	hReportErrorEx( errnum, "expanding: " + *symbGetOrgName( s ) )
+	hReportErrorEx( errnum, "expanding: " + *symbGetName( s ) )
 
 end sub
 
@@ -133,7 +138,7 @@ private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
 			end select
 
 			if( argtb <> NULL ) then
-	   			if( t.typ <> FB_DATATYPE_WCHAR ) then
+	   			if( t.dtype <> FB_DATATYPE_WCHAR ) then
 	    			DZstrConcatAssign( argtb->tb(num).text, t.text )
 	    		else
 	    			DZstrConcatAssignW( argtb->tb(num).text, t.textw )
@@ -378,7 +383,7 @@ private function hLoadMacroW( byval s as FBSYMBOL ptr ) as integer
 			end select
 
 			if( argtb <> NULL ) then
-    			if( t.typ <> FB_DATATYPE_WCHAR ) then
+    			if( t.dtype <> FB_DATATYPE_WCHAR ) then
     				DWstrConcatAssignA( argtb->tb(num).textw, t.text )
     			else
     				DWstrConcatAssign( argtb->tb(num).textw, t.textw )
@@ -592,7 +597,7 @@ private function hReadMacroText( byval args as integer, _
 						   	   ) as FB_DEFTOK ptr
 
 	static as zstring * FB_MAXNAMELEN+1 token
-    dim as integer dpos, num, addquotes
+    dim as integer num, addquotes
     dim as FB_DEFPARAM ptr param
     dim as FB_DEFTOK ptr tok, tokhead
 
@@ -663,11 +668,6 @@ private function hReadMacroText( byval args as integer, _
     		'' otherwise, check if it's a parameter
     		else
     			token = ucase( *lexGetText( ) )
-    			'' contains a period? assume it's an udt access
-    			dpos = lexGetPeriodPos( )
-    			if( dpos > 1 ) then
-    				token[dpos-1] = 0 			'' token = left( token, dpos-1 )
-    			end if
 
     			'' for each define param..
     			param = paramhead
@@ -684,16 +684,7 @@ private function hReadMacroText( byval args as integer, _
 
 						symbSetDefTokParamNum( tok, num )
 
-    					'' add the remainder if it's an udt access
-    					if( dpos > 1 ) then
-    						tok = symbAddDefineTok( tok, FB_DEFTOK_TYPE_TEX )
-    						lexEatToken( token, LEX_FLAGS )
-    						ZstrAssign( @tok->text, _
-    								    cast( zstring ptr, @token[dpos-1] ) ) ''mid( token, dpos )
-    					else
-    						lexSkipToken( LEX_FLAGS )
-    					end if
-
+    					lexSkipToken( LEX_FLAGS )
     					exit do
     				end if
 
@@ -724,18 +715,25 @@ function ppDefine( ) as integer
 	dim as wstring ptr textw
 	dim as integer params, isargless
 	dim as FB_DEFPARAM ptr paramhead, lastparam
-	dim as FBSYMBOL ptr s
+	dim as FBSYMBOL ptr sym
+	dim as FBSYMCHAIN ptr chain_
 	dim as FB_DEFTOK ptr tokhead
 
 	function = FALSE
 
     '' ID
-    s = lexGetSymbol( )
-    if( s <> NULL ) then
-    	if( symbIsDefine( s ) = FALSE ) then
+    chain_ = cIdentifier( )
+    if( chain_ <> NULL ) then
+    	sym = chain_->sym
+    	if( symbIsDefine( sym ) = FALSE ) then
     		hReportError( FB_ERRMSG_DUPDEFINITION )
     		exit function
     	end if
+    else
+		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+			exit function
+		end if
+    	sym = NULL
     end if
 
     lexEatToken( defname, LEX_FLAGS )
@@ -746,13 +744,13 @@ function ppDefine( ) as integer
 
     '' '('?
     if( lexGetToken( LEX_FLAGS ) = CHAR_LPRNT ) then
-    	lexSkipToken( LEXCHECK_NODEFINE )
+    	lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL )
 
 		'' not arg-less?
-		if( lexGetToken( LEXCHECK_NODEFINE ) <> CHAR_RPRNT ) then
+		if( lexGetToken( LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL ) <> CHAR_RPRNT ) then
 			lastparam = NULL
 			do
-		    	lexEatToken( paramname, LEXCHECK_NODEFINE )
+		    	lexEatToken( paramname, LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL )
 		    	lastparam = symbAddDefineParam( lastparam, @paramname )
 
 		    	params += 1
@@ -766,11 +764,11 @@ function ppDefine( ) as integer
 		    	end if
 
 				'' ','?
-				if( lexGetToken( LEXCHECK_NODEFINE ) <> CHAR_COMMA ) then
+				if( lexGetToken( LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL ) <> CHAR_COMMA ) then
 					exit do
 				end if
 
-		    	lexSkipToken( LEXCHECK_NODEFINE )
+		    	lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL )
 			loop
 
 		else
@@ -799,13 +797,13 @@ function ppDefine( ) as integer
     		text = ppReadLiteral( )
 
     		'' already defined? if there are no differences, do nothing..
-    		if( s <> NULL ) then
-    			if( (symbGetDefineParams( s ) > 0) or _
-    				(symbGetType( s ) <> FB_DATATYPE_CHAR) ) then
+    		if( sym <> NULL ) then
+    			if( (symbGetDefineParams( sym ) > 0) or _
+    				(symbGetType( sym ) <> FB_DATATYPE_CHAR) ) then
     				hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname )
     				exit function
 
-    			elseif( (*symbGetDefineText( s ) <> *text) ) then
+    			elseif( (*symbGetDefineText( sym ) <> *text) ) then
     				hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname )
     				exit function
     			end if
@@ -821,13 +819,13 @@ function ppDefine( ) as integer
     		textw = ppReadLiteralW( )
 
     		'' already defined? if there are no differences, do nothing..
-    		if( s <> NULL ) then
-    			if( (symbGetDefineParams( s ) > 0) or _
-    				(symbGetType( s ) <> FB_DATATYPE_WCHAR) ) then
+    		if( sym <> NULL ) then
+    			if( (symbGetDefineParams( sym ) > 0) or _
+    				(symbGetType( sym ) <> FB_DATATYPE_WCHAR) ) then
     				hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname )
     				exit function
 
-    			elseif( (*symbGetDefineTextW( s ) <> *textw) ) then
+    			elseif( (*symbGetDefineTextW( sym ) <> *textw) ) then
     				hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname )
     				exit function
     			end if
@@ -842,7 +840,7 @@ function ppDefine( ) as integer
     '' macro..
     else
     	'' already defined? can't check..
-    	if( s <> NULL ) then
+    	if( sym <> NULL ) then
     		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname )
     		exit function
     	end if

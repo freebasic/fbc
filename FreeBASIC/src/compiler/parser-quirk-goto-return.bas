@@ -68,6 +68,7 @@ end function
 function cGotoStmt as integer
 	dim as FBSYMBOL ptr l
 	dim as integer isglobal, isnext
+	dim as FBSYMCHAIN ptr chain_
 
 	function = FALSE
 
@@ -78,8 +79,14 @@ function cGotoStmt as integer
 
 		if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
 			l = symbFindByNameAndClass( lexGetText( ), FB_SYMBCLASS_LABEL )
+
 		else
-			l = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_LABEL )
+			chain_ = cIdentifier( )
+			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+				exit function
+			end if
+
+			l = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
 		end if
 
 		if( l = NULL ) then
@@ -102,8 +109,14 @@ function cGotoStmt as integer
 
 		if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
 			l = symbFindByNameAndClass( lexGetText( ), FB_SYMBCLASS_LABEL )
+
 		else
-			l = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_LABEL )
+			chain_ = cIdentifier( )
+			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+				exit function
+			end if
+
+			l = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
 		end if
 
 		if( l = NULL ) then
@@ -138,8 +151,14 @@ function cGotoStmt as integer
 			case else
 				if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
 					l = symbFindByNameAndClass( lexGetText( ), FB_SYMBCLASS_LABEL )
+
 				else
-					l = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_LABEL )
+					chain_ = cIdentifier( )
+					if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+						exit function
+					end if
+
+					l = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
 				end if
 
 				'' label?

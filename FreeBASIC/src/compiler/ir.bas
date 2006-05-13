@@ -458,12 +458,16 @@ end sub
 '':::::
 sub irEmitSCOPEBEGIN( byval s as FBSYMBOL ptr ) static
 
+	irFlush( )
+
 	emitSCOPEHEADER( s )
 
 end sub
 
 '':::::
 sub irEmitSCOPEEND( byval s as FBSYMBOL ptr ) static
+
+	irFlush( )
 
 	emitSCOPEFOOTER( s )
 
@@ -661,7 +665,7 @@ sub irEmitJMPTB( byval dtype as integer, _
 
 	irFlush( )
 
-	emitJMPTB( dtype, symbGetName( label ) )
+	emitJMPTB( dtype, symbGetMangledName( label ) )
 
 end sub
 
@@ -729,7 +733,7 @@ end sub
 '':::::
 sub irEmitVARINIOFS( byval sym as FBSYMBOL ptr ) static
 
-	emitVARINIOFS( symbGetName( sym ) )
+	emitVARINIOFS( symbGetMangledName( sym ) )
 
 end sub
 
@@ -2190,7 +2194,7 @@ private sub hCreateTMPVAR( byval vreg as IRVREG ptr ) static
 	if( vreg->typ <> IR_VREGTYPE_VAR ) then
 		vreg->typ = IR_VREGTYPE_VAR
 		vreg->sym = symbAddTempVar( vreg->dtype, NULL, TRUE )
-		vreg->ofs = symbGetVarOfs( vreg->sym )
+		vreg->ofs = symbGetOfs( vreg->sym )
 		vreg->reg = INVALID
 	end if
 

@@ -114,9 +114,7 @@ function cSelConstStmtBegin( ) as integer
 	astAdd( astNewBRANCH( AST_OP_JMP, cl ) )
 
 	'' push to stmt stack
-	stk = stackPush( @env.stmtstk )
-	stk->last = env.stmt.select
-	stk->id = FB_TK_SELECT
+	stk = cCompStmtPush( FB_TK_SELECT )
 	stk->select.isconst = TRUE
 	stk->select.sym = sym
 	stk->select.casecnt = 0
@@ -381,8 +379,7 @@ function cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr ) as integer
     astAdd( astNewLABEL( env.stmt.select.endlabel ) )
 
 	'' pop from stmt stack
-	env.stmt.select = stk->last
-	stackPop( @env.stmtstk )
+	cCompStmtPop( stk )
 
 	function = TRUE
 

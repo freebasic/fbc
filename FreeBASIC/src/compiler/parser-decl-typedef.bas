@@ -52,7 +52,8 @@ function cTypedefDecl _
     			exit function
     		end if
 
-    		lexEatToken( tname )
+			tname = *lexGetText( )
+			lexSkipToken( )
     		ptname = @tname
 
 			if( ptrcnt = 0 ) then
@@ -91,7 +92,8 @@ function cTypedefDecl _
     			exit function
 		    end select
 
-			lexEatToken( id )
+			id = *lexGetText( )
+			lexSkipToken( )
 			pid = @id
     	end if
 

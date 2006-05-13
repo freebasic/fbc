@@ -32,7 +32,11 @@ option escape
 ''SingleIfStatement=  !(COMMENT|NEWLINE|STATSEP) NUM_LIT | Statement*)
 ''                    (ELSE Statement*)?
 ''
-private function hIfSingleLine( byval stk as FB_CMPSTMTSTK ptr ) as integer
+private function hIfSingleLine _
+	( _
+		byval stk as FB_CMPSTMTSTK ptr _
+	) as integer
+
 	dim as FBSYMBOL ptr l
 
 	function = FALSE
@@ -41,7 +45,7 @@ private function hIfSingleLine( byval stk as FB_CMPSTMTSTK ptr ) as integer
 
 	'' NUM_LIT | Statement*
 	if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
-		l = symbFindByClass( lexGetSymbol, FB_SYMBCLASS_LABEL )
+		l = symbFindByClass( lexGetSymChain( ), FB_SYMBCLASS_LABEL )
 		if( l = NULL ) then
 			l = symbAddLabel( lexGetText( ), FALSE, TRUE )
 		end if
@@ -93,7 +97,7 @@ private function hIfSingleLine( byval stk as FB_CMPSTMTSTK ptr ) as integer
 	end select
 
 	'' pop from stmt stack
-	stackPop( @env.stmtstk )
+	cCompStmtPop( stk )
 
 	function = TRUE
 
@@ -132,11 +136,11 @@ function cIfStmtBegin as integer
 	astAdd( expr )
 
 	'' push to stmt stack
-	stk = stackPush( @env.stmtstk )
-	stk->id = FB_TK_IF
+	stk = cCompStmtPush( FB_TK_IF )
 	stk->if.issingle = FALSE
 	stk->if.nxtlabel = nl
 	stk->if.endlabel = el
+	stk->if.elsecnt = 0
 
 	select case lexGetToken( )
 	'' THEN?
@@ -157,7 +161,7 @@ function cIfStmtBegin as integer
 
 	case else
 		hReportError( FB_ERRMSG_EXPECTEDTHEN )
-		stackPop( @env.stmtstk )
+		cCompStmtPop( stk )
 		exit function
 	end select
 
@@ -171,18 +175,12 @@ end function
 ''
 function cIfStmtNext(  ) as integer
 	dim as ASTNODE ptr expr
-	dim as integer iserror
 	dim as FB_CMPSTMTSTK ptr stk
 
 	function = FALSE
 
-	stk = stackGetTOS( @env.stmtstk )
-	iserror = (stk = NULL)
-	if( iserror = FALSE ) then
-		iserror = (stk->id <> FB_TK_IF)
-	end if
-
-	if( iserror ) then
+	stk = cCompStmtGetTOS( FB_TK_IF, FALSE )
+	if( stk = NULL ) then
 		if( lexGetToken( ) = FB_TK_ELSEIF ) then
 			hReportError( FB_ERRMSG_ELSEIFWITHOUTIF )
 		else
@@ -232,6 +230,12 @@ function cIfStmtNext(  ) as integer
 
     '' ELSE?
     case FB_TK_ELSE
+    	if( stk->if.elsecnt <> 0 ) then
+    		hReportError( FB_ERRMSG_SYNTAXERROR )
+    		exit function
+    	end if
+    	stk->if.elsecnt += 1
+
     	lexSkipToken( )
 
 		'' exit last if stmt
@@ -251,19 +255,12 @@ end function
 ''IfStmtEnd	  =   END IF | ENDIF .
 ''
 function cIfStmtEnd as integer
-	dim as integer iserror
 	dim as FB_CMPSTMTSTK ptr stk
 
 	function = FALSE
 
-	stk = stackGetTOS( @env.stmtstk )
-	iserror = (stk = NULL)
-	if( iserror = FALSE ) then
-		iserror = (stk->id <> FB_TK_IF)
-	end if
-
-	if( iserror ) then
-		hReportError( FB_ERRMSG_ENDIFWITHOUTIF )
+	stk = cCompStmtGetTOS( FB_TK_IF )
+	if( stk = NULL ) then
 		exit function
 	end if
 
@@ -287,6 +284,6 @@ function cIfStmtEnd as integer
 	astAdd( astNewLABEL( stk->if.endlabel ) )
 
 	'' pop from stmt stack
-	stackPop( @env.stmtstk )
+	cCompStmtPop( stk )
 
 end function

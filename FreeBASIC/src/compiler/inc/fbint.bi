@@ -264,6 +264,23 @@ enum FB_TOKEN
 	FB_TK_NEXT
 	FB_TK_TO
 	FB_TK_SCOPE
+	FB_TK_NAMESPACE
+	FB_TK_USING
+
+	FB_TK_EXTERN
+	FB_TK_STATIC
+	FB_TK_DIM
+	FB_TK_REDIM
+	FB_TK_COMMON
+	FB_TK_SHARED
+	FB_TK_PRESERVE
+
+	FB_TK_DEFINE
+	FB_TK_UNDEF
+	FB_TK_IFDEF
+	FB_TK_IFNDEF
+	FB_TK_ENDIF
+	FB_TK_DEFINED
 
 	FB_TK_INCLUDE
 	FB_TK_DYNAMIC
@@ -275,15 +292,6 @@ enum FB_TOKEN
 	FB_TK_EXPLICIT
 	FB_TK_BYVAL
 	FB_TK_BYREF
-	FB_TK_VARARG
-
-	FB_TK_STATIC
-	FB_TK_DIM
-	FB_TK_REDIM
-	FB_TK_COMMON
-	FB_TK_EXTERN
-	FB_TK_SHARED
-	FB_TK_PRESERVE
 
 	FB_TK_DEFINT
 	FB_TK_DEFLNG
@@ -398,7 +406,6 @@ enum FB_TOKEN
 	FB_TK_ATAN2
 	FB_TK_PRINT
     FB_TK_LPRINT
-	FB_TK_USING
 	FB_TK_LEN
 	FB_TK_SIZEOF
 	FB_TK_PEEK
@@ -439,13 +446,6 @@ enum FB_TOKEN
 	FB_TK_RESUME
 	FB_TK_IIF
 
-	FB_TK_DEFINE
-	FB_TK_UNDEF
-	FB_TK_IFDEF
-	FB_TK_IFNDEF
-	FB_TK_ENDIF
-	FB_TK_DEFINED
-
 	FB_TK_CONSTRUCTOR
 	FB_TK_DESTRUCTOR
 
@@ -466,7 +466,7 @@ const FB_TK_STATSEPCHAR			= CHAR_COLON	'' :
 const FB_TK_COMMENTCHAR			= CHAR_APOST	'' '
 const FB_TK_DIRECTIVECHAR		= CHAR_DOLAR	'' $
 const FB_TK_DECLSEPCHAR			= CHAR_COMMA	'' ,
-const FB_TK_ASSIGN				= FB_TK_EQ		'' special case, due the way lex processes comparators
+const FB_TK_ASSIGN				= FB_TK_EQ		'' special case, because lex
 const FB_TK_DEREFCHAR			= CHAR_CARET	'' *
 const FB_TK_ADDROFCHAR			= CHAR_AT		'' @
 
@@ -488,6 +488,14 @@ enum FB_TKCLASS
 	FB_TKCLASS_DELIMITER
 end enum
 
+''
+enum FB_MANGLING
+	FB_MANGLING_BASIC
+	FB_MANGLING_CDECL
+	FB_MANGLING_STDCALL
+	FB_MANGLING_CPP
+	FB_MANGLING_PASCAL
+end enum
 
 '' parameter modes
 enum FB_PARAMMODE
@@ -635,22 +643,26 @@ type FBENV
 	'' include files
 	incpaths		as integer
 	incfilehash		as THASH
+	includerec		as integer					'' >0 if parsing an include file
 
 	'' stmt recursion
 	stmtstk			as TSTACK
 	stmt			as FBENV_STMT
+	stmtcnt			as integer					'' keep track of :'s to help scope break's
 
 	'' globals
 	scope			as uinteger					'' current scope (0=main module)
-	reclevel		as integer					'' >0 if parsing an include file
+
+	namespcrec		as integer
+	mangling		as FB_MANGLING
+	currlib			as FBLIBRARY ptr
+
 	currproc 		as FBSYMBOL ptr				'' current proc
+	isprocstatic	as integer					'' TRUE with SUB/FUNCTION (...) STATIC
 	currblock 		as FBSYMBOL ptr				'' current scope block (= proc if outside any block)
+	procerrorhnd	as FBSYMBOL ptr				'' var holding the old error handler inside a proc
 
 	main			as FBMAIN
-
-	isprocstatic	as integer					'' TRUE with SUB/FUNCTION (...) STATIC
-	procerrorhnd	as FBSYMBOL ptr				'' var holding the old error handler inside a proc
-	stmtcnt			as integer					'' keep track of :'s to help scope break's
 
 	asmtoklist		as TLIST
 
@@ -661,6 +673,7 @@ type FBENV
 	ctxsym			as FBSYMBOL ptr				'' used to resolve the address of overloaded procs
 	isexpr 			as integer
 
+	''
 	clopt			as FBCMMLINEOPT				'' cmm-line options
 	target			as FBTARGET					'' target specific
 

@@ -154,7 +154,7 @@ function astLoadCONST( byval n as ASTNODE ptr ) as IRVREG ptr static
 		'' if node is a float, create a temp float var (x86 assumption)
 		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 			s = symbAllocFloatConst( n->con.val.float, dtype )
-			return irAllocVRVAR( dtype, s, symbGetVarOfs( s ) )
+			return irAllocVRVAR( dtype, s, symbGetOfs( s ) )
 
 		''
 		case else

@@ -1,5 +1,5 @@
-#ifndef __FLIST_BI__
-#define __FLIST_BI__
+#ifndef __POOL_BI__
+#define __POOL_BI__
 
 ''	FreeBASIC - 32-bit BASIC Compiler.
 ''	Copyright (C) 2004-2006 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
@@ -18,47 +18,40 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-
 #include once "inc\list.bi"
 
-type TFLISTITEM
-	next		as TFLISTITEM ptr
+type TPOOLITEM
+	idx			as integer
 end type
 
-type TFLIST
-	totitems	as integer
-	items		as integer
-	itemtb		as TFLISTITEM ptr
-	index		as integer
-	lastitem	as TFLISTITEM ptr
-	list		as TLIST
-	listtb 		as TLISTTB ptr
+type TPOOL
+	chunks		as integer
+	chunksize   as integer
+	chunkTb		as TLIST ptr
 end type
 
-declare function flistNew		( _
-									byval flist as TFLIST ptr, _
-								  	byval items as integer, _
-								  	byval itemlen as integer _
-								) as integer
+declare function	poolNew 		( _
+										byval pool as TPOOL ptr, _
+										byval items as integer, _
+										byval minlen as integer, _
+										byval maxlen as integer _
+									) as integer
 
-declare function flistFree		( _
-									byval flist as TFLIST ptr _
-								) as integer
 
-declare function flistNewItem	( _
-									byval flist as TFLIST ptr _
-								) as any ptr
+declare sub 		poolFree 		( _
+										byval pool as TPOOL ptr _
+									)
 
-declare sub 	 flistReset		( _
-									byval flist as TFLIST ptr _
-								)
 
-declare function flistGetHead	( _
-									byval flist as TFLIST ptr _
-								) as any ptr
+declare function 	poolNewItem 	( _
+										byval pool as TPOOL ptr, _
+										byval len_ as integer _
+									) as any ptr
 
-declare function flistGetNext	( _
-									byval node as any ptr _
-								) as any ptr
+declare sub 		poolDelItem		( _
+										byval pool as TPOOL ptr, _
+										byval node as any ptr _
+									)
 
-#endif '' __FLIST_BI__
+
+#endif '' __POOL_BI__

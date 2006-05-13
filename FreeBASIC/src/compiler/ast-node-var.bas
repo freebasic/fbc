@@ -74,7 +74,7 @@ function astLoadVAR( byval n as ASTNODE ptr ) as IRVREG ptr static
 	ofs = n->var.ofs
 	if( s <> NULL ) then
 		symbSetIsAccessed( s )
-		ofs += symbGetVarOfs( s )
+		ofs += symbGetOfs( s )
 	end if
 
 	if( ast.doemit ) then

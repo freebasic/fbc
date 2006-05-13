@@ -57,6 +57,11 @@ sub parserCompoundStmtEnd( )
 
 end sub
 
+#define CHECK_CODEMASK( ) 												_
+    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then		:_
+    	exit function													:_
+    end if
+
 '':::::
 ''CompoundStmt	  =   IfStatement
 ''				  |   ForStatement
@@ -69,27 +74,42 @@ end sub
 ''
 function cCompoundStmt as integer
 
+	function = FALSE
+
 	select case as const lexGetToken( )
 	case FB_TK_IF
+		CHECK_CODEMASK( )
 		function = cIfStmtBegin( )
 
 	case FB_TK_FOR
+		CHECK_CODEMASK( )
 		function = cForStmtBegin( )
 
 	case FB_TK_DO
+		CHECK_CODEMASK( )
 		function = cDoStmtBegin( )
 
 	case FB_TK_WHILE
+		CHECK_CODEMASK( )
 		function = cWhileStmtBegin( )
 
 	case FB_TK_SELECT
+		CHECK_CODEMASK( )
 		function = cSelectStmtBegin( )
 
 	case FB_TK_WITH
+		CHECK_CODEMASK( )
 		function = cWithStmtBegin( )
 
 	case FB_TK_SCOPE
+		CHECK_CODEMASK( )
 		function = cScopeStmtBegin( )
+
+	case FB_TK_NAMESPACE
+		function = cNamespaceStmtBegin( )
+
+	case FB_TK_EXTERN
+		function = cExternStmtBegin( )
 
 	case FB_TK_ELSE, FB_TK_ELSEIF
 		function = cIfStmtNext( )
@@ -115,6 +135,7 @@ function cCompoundStmt as integer
 	case FB_TK_END
 		'' any compound END will be parsed by the compound stmt
 		if( lexGetLookAheadClass( 1 ) <> FB_TKCLASS_KEYWORD ) then
+			CHECK_CODEMASK( )
 			return cEndStatement( )
 		end if
 
@@ -122,6 +143,9 @@ function cCompoundStmt as integer
 
 	case FB_TK_ENDIF
 		function = cIfStmtEnd( )
+
+	case FB_TK_USING
+		function = cUsingStmt( )
 
 	case else
 		return FALSE
@@ -255,7 +279,7 @@ function cContinueStatement as integer
 end function
 
 '':::::
-''CompoundEnd	  =	  END (IF | SELECT | SUB | FUNCTION | SCOPE | WITH)
+''CompoundEnd	  =	  END (IF | SELECT | SUB | FUNCTION | SCOPE | WITH | NAMESPACE | EXTERN)
 ''
 function cCompoundEnd( ) as integer
 
@@ -274,6 +298,12 @@ function cCompoundEnd( ) as integer
 
 	case FB_TK_WITH
 		function = cWithStmtEnd( )
+
+	case FB_TK_NAMESPACE
+		function = cNamespaceStmtEnd( )
+
+	case FB_TK_EXTERN
+		function = cExternStmtEnd( )
 
 	case else
 		hReportError( FB_ERRMSG_ILLEGALEND )
@@ -305,8 +335,16 @@ function cCompStmtCheck( ) as integer
     case FB_TK_WITH
     	errmsg = FB_ERRMSG_EXPECTEDENDWITH
 
-    case FB_TK_SUB, FB_TK_FUNCTION
-    	errmsg = FB_ERRMSG_EXPECTEDENDSUBORFUNCT
+    case FB_TK_NAMESPACE
+    	errmsg = FB_ERRMSG_EXPECTEDENDNAMESPACE
+
+    case FB_TK_EXTERN
+    	errmsg = FB_ERRMSG_EXPECTEDENDEXTERN
+
+    case FB_TK_FUNCTION
+    	errmsg = iif( stk->proc.issub, _
+    				  FB_ERRMSG_EXPECTEDENDSUB, _
+    				  FB_ERRMSG_EXPECTEDENDFUNCTION )
 
     case FB_TK_DO
     	errmsg = FB_ERRMSG_EXPECTEDLOOP
@@ -325,3 +363,173 @@ function cCompStmtCheck( ) as integer
 
 end function
 
+'':::::
+function cCompStmtPush _
+	( _
+		byval id as FB_TOKEN, _
+		byval allowmask as FB_CMPSTMT_MASK _
+	) as FB_CMPSTMTSTK ptr static
+
+	dim as FB_CMPSTMTSTK ptr stk
+
+	stk = stackPush( @env.stmtstk )
+	stk->id = id
+	stk->allowmask = allowmask
+
+	'' same current values, if any
+	select case as const id
+	case FB_TK_DO
+		stk->last = env.stmt.do
+
+	case FB_TK_FOR
+		stk->last = env.stmt.for
+
+	case FB_TK_SELECT
+		stk->last = env.stmt.select
+
+	case FB_TK_WHILE
+		stk->last = env.stmt.while
+
+	case FB_TK_FUNCTION
+		stk->last = env.stmt.proc
+	end select
+
+	function = stk
+
+end function
+
+'':::::
+function cCompStmtGetTOS _
+	( _
+		byval forid as FB_TOKEN, _
+		byval showerror as integer _
+	) as FB_CMPSTMTSTK ptr static
+
+	dim as FB_CMPSTMTSTK ptr stk
+	dim as integer iserror
+
+	stk = stackGetTOS( @env.stmtstk )
+	iserror = (stk = NULL)
+
+	if( iserror = FALSE ) then
+		'' not the expected id?
+		iserror = (stk->id <> forid)
+	end if
+
+	if( iserror ) then
+		if( showerror ) then
+			if( stk <> NULL ) then
+				cCompStmtCheck( )
+
+			else
+				dim as integer errmsg
+				select case as const forid
+				case FB_TK_DO
+					errmsg = FB_ERRMSG_LOOPWITHOUTDO
+
+        		case FB_TK_EXTERN
+        			errmsg = FB_ERRMSG_ENDEXTERNWITHOUTEXTERN
+
+				case FB_TK_FOR
+					errmsg = FB_ERRMSG_NEXTWITHOUTFOR
+
+				case FB_TK_IF
+					errmsg = FB_ERRMSG_ENDIFWITHOUTIF
+
+				case FB_TK_SCOPE
+					errmsg = FB_ERRMSG_ENDSCOPEWITHOUTSCOPE
+
+				case FB_TK_SELECT
+					errmsg = FB_ERRMSG_ENDSELECTWITHOUTSELECT
+
+				case FB_TK_WHILE
+					errmsg = FB_ERRMSG_WENDWITHOUTWHILE
+
+				case FB_TK_WITH
+					errmsg = FB_ERRMSG_ENDWITHWITHOUTWITH
+
+            	case FB_TK_FUNCTION
+            		errmsg = FB_ERRMSG_ENDSUBWITHOUTSUB
+
+				case FB_TK_NAMESPACE
+            		errmsg = FB_ERRMSG_ENDNAMESPACEWITHOUTNAMESPACE
+				end select
+
+				hReportError( errmsg )
+			end if
+		end if
+
+		function = NULL
+
+	else
+		function = stk
+	end if
+
+end function
+
+'':::::
+sub cCompStmtPop _
+	( _
+		byval stk as FB_CMPSTMTSTK ptr _
+	) static
+
+	'' restore old values if any
+	select case as const stk->id
+	case FB_TK_DO
+		env.stmt.do = stk->last
+
+	case FB_TK_FOR
+		env.stmt.for = stk->last
+
+	case FB_TK_SELECT
+		env.stmt.select = stk->last
+
+	case FB_TK_WHILE
+		env.stmt.while = stk->last
+
+	case FB_TK_FUNCTION
+		env.stmt.proc = stk->last
+	end select
+
+	stackPop( @env.stmtstk )
+
+end sub
+
+'':::::
+function cCompStmtIsAllowed _
+	( _
+		byval allowmask as FB_CMPSTMT_MASK _
+	) as integer static
+
+	dim as FB_CMPSTMTSTK ptr stk
+
+	stk = stackGetTOS( @env.stmtstk )
+
+	'' module-level? anything allowed..
+	if( stk = NULL ) then
+		return TRUE
+	end if
+
+	'' allowed?
+	if( stk->allowmask and allowmask ) then
+		return TRUE
+	end if
+
+	'' error..
+	dim as integer errmsg
+
+	if( fbIsModLevel( ) = FALSE ) then
+		errmsg = FB_ERRMSG_ILLEGALINSIDEASUB
+	else
+		if( symbIsGlobalNamespc( ) ) then
+			errmsg = FB_ERRMSG_ILLEGALINSIDEASCOPE
+		else
+			errmsg = FB_ERRMSG_ILLEGALINSIDEANAMESPC
+		end if
+	end if
+
+    hReportError( errmsg )
+
+	function = FALSE
+
+end function

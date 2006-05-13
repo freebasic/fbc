@@ -19,56 +19,89 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-declare sub 		ZstrAssign 				( byval dst as zstring ptr ptr, _
-				 							  byval src as zstring ptr )
 
-declare sub 		ZstrAssignW 			( byval dst as zstring ptr ptr, _
-				  							  byval src as wstring ptr )
+declare sub 		ZstrAssign 				( _
+												byval dst as zstring ptr ptr, _
+												byval src as zstring ptr _
+											)
 
-declare sub 		ZstrConcatAssign 		( byval dst as zstring ptr ptr, _
-					   						  byval src as zstring ptr )
+declare sub 		ZstrAssignW 			( _
+												byval dst as zstring ptr ptr, _
+												byval src as wstring ptr _
+											)
 
-declare sub 		ZstrConcatAssignW 		( byval dst as zstring ptr ptr, _
-											  byval src as wstring ptr )
+declare sub 		ZstrConcatAssign 		( _
+												byval dst as zstring ptr ptr, _
+												byval src as zstring ptr _
+											)
 
-declare sub 		WstrAssign 				( byval dst as wstring ptr ptr, _
-				 							  byval src as wstring ptr )
+declare sub 		ZstrConcatAssignW 		( _
+												byval dst as zstring ptr ptr, _
+												byval src as wstring ptr _
+											)
 
-declare sub 		WstrAssignA 			( byval dst as wstring ptr ptr, _
-				  							  byval src as zstring ptr )
+declare sub 		WstrAssign 				( _
+												byval dst as wstring ptr ptr, _
+												byval src as wstring ptr _
+											)
 
-declare sub 		WstrConcatAssign 		( byval dst as wstring ptr ptr, _
-					   						  byval src as wstring ptr )
+declare sub 		WstrAssignA 			( _
+												byval dst as wstring ptr ptr, _
+												byval src as zstring ptr _
+											)
 
-declare sub 		WstrConcatAssignW 		( byval dst as wstring ptr ptr, _
-											  byval src as zstring ptr )
+declare sub 		WstrConcatAssign 		( _
+												byval dst as wstring ptr ptr, _
+												byval src as wstring ptr _
+											)
+
+declare sub 		WstrConcatAssignW 		( _
+												byval dst as wstring ptr ptr, _
+												byval src as zstring ptr _
+											)
 
 
-declare function 	hReEscape				( byval text as zstring ptr, _
-											  byref textlen as integer, _
-											  byref isunicode as integer ) as zstring ptr
+declare function 	hReEscape				( _
+												byval text as zstring ptr, _
+												byref textlen as integer, _
+												byref isunicode as integer _
+											) as zstring ptr
 
-declare function 	hReEscapeW				( byval text as wstring ptr, _
-											  byref textlen as integer _
+declare function 	hReEscapeW				( _
+												byval text as wstring ptr, _
+												byref textlen as integer _
 											) as wstring ptr
 
-declare function 	hEscape					( byval text as zstring ptr ) as zstring ptr
+declare function 	hEscape					( _
+												byval text as zstring ptr _
+											) as zstring ptr
 
-declare function 	hEscapeW				( byval text as wstring ptr ) as zstring ptr
+declare function 	hEscapeW				( _
+												byval text as wstring ptr _
+											) as zstring ptr
 
-declare function 	hUnescape				( byval text as zstring ptr ) as zstring ptr
+declare function 	hUnescape				( _
+												byval text as zstring ptr _
+											) as zstring ptr
 
-declare function 	hUnescapeW				( byval text as wstring ptr ) as wstring ptr
+declare function 	hUnescapeW				( _
+												byval text as wstring ptr _
+											) as wstring ptr
 
-declare function	hReplace				( byval text as zstring ptr, _
-											  byval oldtext as zstring ptr, _
-											  byval newtext as zstring ptr ) as string
+declare function	hReplace				( _
+												byval text as zstring ptr, _
+												byval oldtext as zstring ptr, _
+												byval newtext as zstring ptr _
+											) as string
 
-declare function 	hReplaceW				( byval orgtext as wstring ptr, _
-			 	    						  byval oldtext as wstring ptr, _
-			  	    						  byval newtext as wstring ptr ) as wstring ptr
+declare function 	hReplaceW				( _
+												byval orgtext as wstring ptr, _
+												byval oldtext as wstring ptr, _
+												byval newtext as wstring ptr _
+											) as wstring ptr
 
-declare function 	hGetWstrNull			( ) as zstring ptr
+declare function 	hGetWstrNull			( _
+											) as zstring ptr
 
 
 '':::::

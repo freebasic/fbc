@@ -1327,7 +1327,7 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr static
 
 	case AST_NODECLASS_FIELD
 		'' isn't it a bitfield?
-		if( l->dtype = FB_DATATYPE_BITFIELD ) then
+		if( l->l->dtype = FB_DATATYPE_BITFIELD ) then
 			exit function
 		end if
 

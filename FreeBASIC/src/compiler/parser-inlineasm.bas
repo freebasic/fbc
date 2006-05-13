@@ -50,7 +50,8 @@ end sub
 ''
 function cAsmCode as integer static
 	static as zstring * FB_MAXLITLEN+1 text
-	dim as FBSYMBOL ptr sym, s
+	dim as FBSYMBOL ptr sym
+	dim as FBSYMCHAIN ptr chain_
 	dim as FB_ASMTOK ptr head, tail, node
 
 	function = FALSE
@@ -69,30 +70,34 @@ function cAsmCode as integer static
 
 		if( lexGetClass( LEXCHECK_NOWHITESPC ) = FB_TKCLASS_IDENTIFIER ) then
 			if( emitIsKeyword( text ) = FALSE ) then
-				s = lexGetSymbol( )
-				if( s <> NULL ) then
+				chain_ = cIdentifier( )
+				if( chain_ <> NULL ) then
 					'' function?
-					sym = symbFindByClass( s, FB_SYMBCLASS_PROC )
+					sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
 					if( sym <> NULL ) then
-						text = *symbGetName( sym )
+						text = *symbGetMangledName( sym )
 						sym = NULL
 					else
 						'' const?
-						sym = symbFindByClass( s, FB_SYMBCLASS_CONST )
+						sym = symbFindByClass( chain_, FB_SYMBCLASS_CONST )
 				    	if( sym <> NULL ) then
 							text = symbGetConstValueAsStr( sym )
 							sym = NULL
 						else
 							'' label?
-							sym = symbFindByClass( s, FB_SYMBCLASS_LABEL )
+							sym = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
 							if( sym <> NULL ) then
-								text = *symbGetName( sym )
+								text = *symbGetMangledName( sym )
 								sym = NULL
 							else
 								'' var?
-								sym = symbFindByClass( s, FB_SYMBCLASS_VAR )
+								sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
 							end if
 						end if
+					end if
+				else
+					if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+						exit function
 					end if
 				end if
             end if
@@ -150,10 +155,16 @@ function cAsmBlock as integer
 
 	function = FALSE
 
-	'' ASM
-	if( hMatch( FB_TK_ASM ) = FALSE ) then
+	'' ASM?
+	if( lexGetToken( ) <> FB_TK_ASM ) then
 		exit function
 	end if
+
+    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+    	exit function
+    end if
+
+	lexSkipToken( )
 
 	'' (Comment SttSeparator)?
 	issingleline = FALSE

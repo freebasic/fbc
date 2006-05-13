@@ -31,53 +31,60 @@ option escape
 #include once "inc\ir.bi"
 
 '':::::
-function symbAddConst( byval symbol as zstring ptr, _
-					   byval dtype as integer, _
-					   byval subtype as FBSYMBOL ptr, _
-					   byval value as FBVALUE ptr _
-					 ) as FBSYMBOL ptr static
+function symbAddConst _
+	( _
+		byval symbol as zstring ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval value as FBVALUE ptr _
+	) as FBSYMBOL ptr static
 
-    dim as FBSYMBOL ptr c
+    dim as FBSYMBOL ptr sym
     dim as FBSYMBOLTB ptr symtb
     dim as integer isglobal
 
     function = NULL
 
-    '' if parsing main, all consts must go to the global table
-    if( fbIsModLevel( ) ) then
+    '' parsing main and not inside another namespace? add to global tb
+    if( fbIsModLevel( ) and symbIsGlobalNamespc( ) ) then
     	'' unless it's inside a scope block..
     	if( env.scope > FB_MAINSCOPE ) then
-    		symtb = symb.loctb
+    		symtb = symb.symtb
     		isglobal = FALSE
 
     	else
-    		symtb = @symb.globtb
+    		symtb = @symbGetGlobalTb( )
     		isglobal = TRUE
     	end if
 
     else
-    	symtb = symb.loctb
+    	symtb = symb.symtb
     	isglobal = FALSE
     end if
 
-    c = symbNewSymbol( NULL, symtb, isglobal, FB_SYMBCLASS_CONST, _
-    				   TRUE, symbol, NULL, dtype, subtype )
-	if( c = NULL ) then
+    sym = symbNewSymbol( NULL, _
+    					 symtb, NULL, isglobal, _
+    					 FB_SYMBCLASS_CONST, _
+    				   	 TRUE, symbol, NULL, _
+    				   	 dtype, subtype )
+	if( sym = NULL ) then
 		exit function
 	end if
 
-	c->con.val = *value
+	sym->con.val = *value
 
-	function = c
+	function = sym
 
 end function
 
 '':::::
-function symbAllocFloatConst( byval value as double, _
-						   	  byval dtype as integer _
-						 	) as FBSYMBOL ptr static
+function symbAllocFloatConst _
+	( _
+		byval value as double, _
+		byval dtype as integer _
+	) as FBSYMBOL ptr static
 
-    static as zstring * FB_MAXINTNAMELEN+1 cname, aname
+    static as zstring * FB_MAXINTNAMELEN+1 id, id_alias
 	dim as FBSYMBOL ptr s
 	dim as FBARRAYDIM dTB(0)
 	dim as string svalue
@@ -87,25 +94,23 @@ function symbAllocFloatConst( byval value as double, _
 	'' can't use STR() because GAS doesn't support the 1.#INF notation
 	svalue = hFloatToStr( value, dtype )
 
-	cname = "{fbnc}"
-	cname += svalue
+	id = "{fbnc}"
+	id += svalue
 
-	s = symbFindByNameAndSuffix( @cname, dtype, FALSE )
+	s = symbFindByNameAndSuffix( @id, dtype, FALSE )
 	if( s <> NULL ) then
 		return s
 	end if
 
-	aname = *hMakeTmpStr( FALSE )
+	id_alias = *hMakeTmpStr( FALSE )
 
 	'' it must be declare as SHARED, because even if currently inside an
 	'' proc, the global symbol tb should be used, so just one constant
 	'' will be ever allocated over the module
-	s = symbAddVarEx( @cname, @aname, dtype, NULL, 0, 0, 0, dTB(), _
-					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONSTANT, TRUE, FALSE, FALSE )
+	s = symbAddVarEx( @id, @id_alias, dtype, NULL, 0, 0, 0, dTB(), _
+					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, TRUE, FALSE )
 
 	''
-	symbSetIsLiteral( s )
-
 	s->var.littext = ZstrAllocate( len( svalue ) )
 	*s->var.littext = svalue
 
@@ -114,11 +119,13 @@ function symbAllocFloatConst( byval value as double, _
 end function
 
 '':::::
-function symbAllocStrConst( byval sname as zstring ptr, _
-							byval lgt as integer _
-						  ) as FBSYMBOL ptr static
+function symbAllocStrConst _
+	( _
+		byval sname as zstring ptr, _
+		byval lgt as integer _
+	) as FBSYMBOL ptr static
 
-    static as zstring * FB_MAXINTNAMELEN+1 cname, aname
+    static as zstring * FB_MAXINTNAMELEN+1 id, id_alias
 	dim as FBSYMBOL ptr s
 	dim as FBARRAYDIM dTB(0)
 	dim as integer strlen
@@ -133,30 +140,28 @@ function symbAllocStrConst( byval sname as zstring ptr, _
 	end if
 
 	if( strlen <= FB_MAXNAMELEN-6 ) then
-		cname = "{fbsc}"
-		cname += *sname
+		id = "{fbsc}"
+		id += *sname
 	else
-		cname = *hMakeTmpStr( FALSE )
+		id = *hMakeTmpStr( FALSE )
 	end if
 
 	''
-	s = symbFindByNameAndClass( @cname, FB_SYMBCLASS_VAR, TRUE )
+	s = symbFindByNameAndClass( @id, FB_SYMBCLASS_VAR, TRUE )
 	if( s <> NULL ) then
 		return s
 	end if
 
-	aname = *hMakeTmpStr( FALSE )
+	id_alias = *hMakeTmpStr( FALSE )
 
 	'' lgt += the null-char (rtlib wrappers will take it into account)
 
 	'' it must be declare as SHARED, see symbAllocFloatConst()
-	s = symbAddVarEx( @cname, @aname, FB_DATATYPE_CHAR, NULL, _
+	s = symbAddVarEx( @id, @id_alias, FB_DATATYPE_CHAR, NULL, _
 					  0, lgt + 1, 0, dTB(), _
-					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONSTANT, FALSE, TRUE, FALSE )
+					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, FALSE, TRUE )
 
 	''
-	symbSetIsLiteral( s )
-
 	s->var.littext = ZstrAllocate( strlen )
 	*s->var.littext = *sname
 
@@ -165,11 +170,13 @@ function symbAllocStrConst( byval sname as zstring ptr, _
 end function
 
 '':::::
-function symbAllocWStrConst( byval sname as wstring ptr, _
-						  	 byval lgt as integer _
-						   ) as FBSYMBOL ptr static
+function symbAllocWStrConst _
+	( _
+		byval sname as wstring ptr, _
+		byval lgt as integer _
+	) as FBSYMBOL ptr static
 
-    static as zstring * FB_MAXINTNAMELEN+1 cname, aname
+    static as zstring * FB_MAXINTNAMELEN+1 id, id_alias
 	dim as FBSYMBOL ptr s
 	dim as FBARRAYDIM dTB(0)
 	dim as integer strlen
@@ -185,29 +192,27 @@ function symbAllocWStrConst( byval sname as wstring ptr, _
 
 	'' hEscapeW() can use up to 4 chars p/ unicode char (\ooo)
 	if( strlen * (3+1) <= FB_MAXNAMELEN-6 ) then
-		cname = "{fbwc}"
-		cname += *hEscapeW( sname )
+		id = "{fbwc}"
+		id += *hEscapeW( sname )
 	else
-		cname = *hMakeTmpStr( FALSE )
+		id = *hMakeTmpStr( FALSE )
 	end if
 
 	''
-	s = symbFindByNameAndClass( @cname, FB_SYMBCLASS_VAR, TRUE )
+	s = symbFindByNameAndClass( @id, FB_SYMBCLASS_VAR, TRUE )
 	if( s <> NULL ) then
 		return s
 	end if
 
-	aname = *hMakeTmpStr( FALSE )
+	id_alias = *hMakeTmpStr( FALSE )
 
 	'' lgt = (lgt + null-char) * sizeof( wstring ) (see parser-decl-symbinit.bas)
 	'' it must be declare as SHARED, see symbAllocFloatConst()
-	s = symbAddVarEx( @cname, @aname, FB_DATATYPE_WCHAR, NULL, _
+	s = symbAddVarEx( @id, @id_alias, FB_DATATYPE_WCHAR, NULL, _
 					  0, (lgt+1) * len( wstring ), 0, dTB(), _
-					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_CONSTANT, FALSE, TRUE, FALSE )
+					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, FALSE, TRUE )
 
 	''
-	symbSetIsLiteral( s )
-
 	s->var.littextw = WstrAllocate( strlen )
 	*s->var.littextw = *sname
 
@@ -216,12 +221,10 @@ function symbAllocWStrConst( byval sname as wstring ptr, _
 end function
 
 '':::::
-sub symbDelConst( byval s as FBSYMBOL ptr, _
-				  byval dolookup as integer )
-
-    if( dolookup ) then
-    	s = symbFindByClass( s, FB_SYMBCLASS_CONST )
-    end if
+sub symbDelConst _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
 
     if( s = NULL ) then
     	exit sub
@@ -234,7 +237,10 @@ sub symbDelConst( byval s as FBSYMBOL ptr, _
 end sub
 
 '':::::
-function symbGetConstValueAsStr( byval s as FBSYMBOL ptr ) as string
+function symbGetConstValueAsStr _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as string
 
   	select case as const symbGetType( s )
   	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR

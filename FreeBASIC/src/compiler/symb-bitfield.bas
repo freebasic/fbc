@@ -31,24 +31,34 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function symbAddBitField( byval bitpos as integer, _
-					      byval bits as integer, _
-						  byval typ as integer, _
-						  byval lgt as integer _
-					    ) as FBSYMBOL ptr static
+function symbAddBitField _
+	( _
+		byval bitpos as integer, _
+		byval bits as integer, _
+		byval dtype as integer, _
+		byval lgt as integer _
+	) as FBSYMBOL ptr static
 
-    dim as FBSYMBOL ptr s
+    dim as FBSYMBOL ptr sym
 
-    '' the symbol table doesn't matter
+    '' table must be the global one, if the UDT is been defined
+    '' at main(), it will be deleted before some private function
+    '' accessing the bitfield
 
-    s = symbNewSymbol( NULL, symb.loctb, TRUE, FB_SYMBCLASS_BITFIELD, _
-    				   FALSE, NULL, NULL, typ, NULL )
+    sym = symbNewSymbol( NULL, _
+    					 NULL, NULL, fbIsModLevel( ), _
+    					 FB_SYMBCLASS_BITFIELD, _
+    				   	 FALSE, NULL, NULL, _
+    				   	 dtype, NULL )
+	if( sym = NULL ) then
+		return NULL
+	end if
 
-    s->bitfld.bitpos = bitpos
-    s->bitfld.bits = bits
-    s->lgt = lgt
+    sym->bitfld.bitpos = bitpos
+    sym->bitfld.bits = bits
+    sym->lgt = lgt
 
-	function = s
+	function = sym
 
 end function
 

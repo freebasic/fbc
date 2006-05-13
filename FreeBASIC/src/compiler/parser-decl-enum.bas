@@ -38,7 +38,8 @@ function cEnumConstDecl( byval id as zstring ptr, _
 	function = FALSE
 
 	'' ID
-	lexEatToken( id )
+	*id = *lexGetText( )
+	lexSkipToken( )
 
 	'' '='?
 	if( lexGetToken( ) = FB_TK_ASSIGN ) then
@@ -153,12 +154,24 @@ function cEnumDecl as integer static
 
 	function = FALSE
 
+    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL ) = FALSE ) then
+    	exit function
+    end if
+
 	'' ENUM
 	lexSkipToken( )
 
 	'' ID?
 	if( lexGetClass( ) = FB_TKCLASS_IDENTIFIER ) then
-    	lexEatToken( id )
+		id = *lexGetText( )
+
+    	'' contains a period?
+    	if( lexGetPeriodPos( ) > 0 ) then
+    		hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
+    		exit function
+    	end if
+
+    	lexSkipToken( )
     else
     	id = *hMakeTmpStr( FALSE )
     end if

@@ -39,26 +39,6 @@ end type
 
 	dim shared deftypeTB( 0 to (asc("_")-asc("A")+1)-1 ) as integer
 
-	dim shared suffixTB( 0 to FB_DATATYPES-1 ) as zstring * 1+1 => _
-	{ _
-				"v", _							'' void
-				"b", "a", _                     '' byte, ubyte
-				"c", _                          '' char
-				"s", "r", _                     '' short, ushort
-				"w", _                          '' wchar
-				"i", "j", _                     '' integer, uinteger
-				"e", _                          '' enum
-				"~", _                          '' bitfield
-				"l", "m", _                     '' longint, ulongint
-				"f", "d", _                     '' single, double
-				"t", "x", _                     '' var-len string, fix-len string
-				"u", _                     		'' udt
-				"n", _							'' function
-				"z", _                          '' fwd-ref
-				"p" _                           '' pointer
-	}
-
-
 '':::::
 sub hlpInit
     dim i as integer
@@ -66,13 +46,6 @@ sub hlpInit
 	''
 	for i = 0 to (asc("_")-asc("A")+1)-1
 		deftypeTB(i) = FB_DATATYPE_INTEGER
-	next
-
-	''
-	for i = 0 to FB_DATATYPES-1
-		if( len( suffixTB(i) ) = 0 ) then
-			suffixTB(i) = chr( CHAR_ALOW + i )
-		end if
 	next
 
 	''
@@ -86,7 +59,10 @@ sub hlpEnd
 end sub
 
 '':::::
-function hMatch( byval token as integer ) as integer
+function hMatch _
+	( _
+		byval token as integer _
+	) as integer
 
 	function = FALSE
 	if( lexGetToken( ) = token ) then
@@ -97,12 +73,16 @@ function hMatch( byval token as integer ) as integer
 end function
 
 '':::::
-function hHexUInt( byval value as uinteger ) as zstring ptr static
+function hHexUInt _
+	( _
+		byval value as uinteger _
+	) as zstring ptr static
+
     static as zstring * 8 + 1 res
     dim as zstring ptr p
     dim as integer lgt, maxlen
 
-	static hexTB(0 to 15) as integer = { asc( "0" ), asc( "1" ), asc( "2" ), asc( "3" ), _
+	static as integer hexTB(0 to 15) = { asc( "0" ), asc( "1" ), asc( "2" ), asc( "3" ), _
 									  	 asc( "4" ), asc( "5" ), asc( "6" ), asc( "7" ), _
 										 asc( "8" ), asc( "9" ), asc( "A" ), asc( "B" ), _
 										 asc( "C" ), asc( "D" ), asc( "E" ), asc( "F" ) }
@@ -132,7 +112,11 @@ function hHexUInt( byval value as uinteger ) as zstring ptr static
 end function
 
 '':::::
-function hMakeTmpStr( byval islabel as integer ) as zstring ptr static
+function hMakeTmpStr _
+	( _
+		byval islabel as integer _
+	) as zstring ptr static
+
 	static as zstring * 4 + 8 + 1 res
 
 	if( islabel ) then
@@ -148,8 +132,11 @@ function hMakeTmpStr( byval islabel as integer ) as zstring ptr static
 end function
 
 '':::::
-function hFloatToStr( byval value as double, _
-					  byref typ as integer ) as string static
+function hFloatToStr _
+	( _
+		byval value as double, _
+		byref typ as integer _
+	) as string static
 
     dim as integer expval
 
@@ -192,8 +179,12 @@ function hFloatToStr( byval value as double, _
 end function
 
 '':::::
-function hGetDefType( byval symbol as zstring ptr ) as integer static
-    dim c as integer
+function hGetDefType _
+	( _
+		byval symbol as zstring ptr _
+	) as integer static
+
+    dim as integer c
 
 	c = symbol[0][0]
 
@@ -207,10 +198,14 @@ function hGetDefType( byval symbol as zstring ptr ) as integer static
 end function
 
 '':::::
-sub hSetDefType( byval ichar as integer, _
-				 byval echar as integer, _
-				 byval typ as integer ) static
-    dim i as integer
+sub hSetDefType _
+	( _
+		byval ichar as integer, _
+		byval echar as integer, _
+		byval dtype as integer _
+	) static
+
+    dim as integer i
 
 	if( ichar < asc("A") ) then
 		ichar = asc("A")
@@ -229,8 +224,8 @@ sub hSetDefType( byval ichar as integer, _
 	end if
 
 	for i = ichar to echar
-		deftypeTB(i - asc("A")) = typ
-	next i
+		deftypeTB(i - asc("A")) = dtype
+	next
 
 end sub
 
@@ -272,8 +267,11 @@ function hFileExists( byval filename as zstring ptr ) as integer static
 end function
 
 '':::::
-sub hUcase( byval src as zstring ptr, _
-		    byval dst as zstring ptr ) static
+sub hUcase _
+	( _
+		byval src as zstring ptr, _
+		byval dst as zstring ptr _
+	) static
 
     dim as integer i, c
     dim as zstring ptr s, d
@@ -300,16 +298,18 @@ sub hUcase( byval src as zstring ptr, _
 
 end sub
 
-
 '':::::
-sub hClearName( byval src as zstring ptr ) static
-    dim i as integer
-    dim p as zstring ptr
+sub hClearName _
+	( _
+		byval src as zstring ptr _
+	) static
+
+    dim as integer i
+    dim as zstring ptr p
 
 	p = src
 
 	for i = 1 to len( *src )
-
 		select case as const *p
 		case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW, CHAR_0 to CHAR_9, CHAR_UNDER
 
@@ -323,150 +323,10 @@ sub hClearName( byval src as zstring ptr ) static
 end sub
 
 '':::::
-function hCreateName( byval symbol as zstring ptr, _
-					  byval typ as integer = INVALID, _
-					  byval preservecase as integer = FALSE, _
-					  byval addunderscore as integer = TRUE, _
-					  byval clearname as integer = TRUE ) as zstring ptr static
-
-    static sname as zstring * FB_MAXINTNAMELEN+1
-
-	if( addunderscore ) then
-		sname = "_"
-		sname += *symbol
-	else
-		sname = *symbol
-	end if
-
-	if( preservecase = FALSE ) then
-		hUcase( sname, sname )
-	end if
-
-    if( clearname ) then
-    	hClearName( sname )
-    end if
-
-    if( typ <> INVALID ) then
-    	if( typ > FB_DATATYPE_POINTER ) then
-    		typ = FB_DATATYPE_POINTER
-    	end if
-    	sname += suffixTB( typ )
-    end if
-
-	function = @sname
-
-end function
-
-'':::::
-function hCreateProcAlias( byval symbol as zstring ptr, _
-						   byval argslen as integer, _
-						   byval mode as integer ) as zstring ptr static
-
-    static sname as zstring * FB_MAXINTNAMELEN+1
-
-
-	select case as const env.clopt.target
-    case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-        dim addat as integer
-
-        if( env.clopt.nounderprefix ) then
-            sname = *symbol
-        else
-            sname = "_"
-            sname += *symbol
-        end if
-
-        if( env.clopt.nostdcall ) then
-            addat = FALSE
-        else
-            addat = (mode = FB_FUNCMODE_STDCALL)
-        end if
-
-        if( addat ) then
-            if( instr( *symbol, "@" ) = 0 ) then
-            	sname += "@"
-            	sname += str( argslen )
-            end if
-        end if
-
-	case FB_COMPTARGET_LINUX
-		sname = *symbol
-
-	case FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
-        sname = "_"
-        sname += *symbol
-
-    end select
-
-	function = @sname
-
-end function
-
-'':::::
-function hCreateOvlProcAlias( byval symbol as zstring ptr, _
-					    	  byval params as integer, _
-					    	  byval param as FBSYMBOL ptr _
-					    	) as zstring ptr static
-
-    dim as integer i, typ
-    static as zstring * FB_MAXINTNAMELEN+1 pname
-
-    pname = *symbol
-    pname += "__ovl_"
-
-    for i = 0 to params-1
-    	pname += "_"
-
-		'' by descriptor?
-		if( symbGetParamMode( param ) = FB_PARAMMODE_BYDESC ) then
-			pname += "d"
-		end if
-
-    	typ = symbGetType( param )
-    	do while( typ >= FB_DATATYPE_POINTER )
-    		pname += "p"
-    		typ -= FB_DATATYPE_POINTER
-    	loop
-
-    	pname += suffixTB( typ )
-    	if( (typ = FB_DATATYPE_USERDEF) or _
-    		(typ = FB_DATATYPE_ENUM) ) then
-    		pname += *symbGetOrgName( symbGetSubType( param ) )
-    	end if
-
-    	'' next
-    	param = symbGetParamNext( param )
-    next
-
-	function = @pname
-
-end function
-
-
-'':::::
-function hCreateDataAlias( byval symbol as zstring ptr, _
-						   byval isimport as integer ) as string static
-
-	select case as const env.clopt.target
-    case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-        if( isimport ) then
-            function = "__imp__" + *symbol
-        else
-            function = "_" + *symbol
-        end if
-
-    case FB_COMPTARGET_DOS, FB_COMPTARGET_XBOX
-		function = "_" + *symbol
-
-    case FB_COMPTARGET_LINUX
-		function = *symbol
-
-    end select
-
-end function
-
-'':::::
-function hStripUnderscore( byval symbol as zstring ptr ) as string static
+function hStripUnderscore _
+	( _
+		byval symbol as zstring ptr _
+	) as string static
 
 	select case as const env.clopt.target
     case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
@@ -713,7 +573,7 @@ function hJumpTbAllocSym( ) as any ptr static
 
 	s = symbAddVarEx( @sname, NULL, FB_DATATYPE_UINT, NULL, 0, _
 					  FB_INTEGERSIZE, 1, dTB(), FB_SYMBATTRIB_SHARED+FB_SYMBATTRIB_JUMPTB, _
-					  FALSE, FALSE, FALSE )
+					  FALSE, FALSE )
 
 	symbSetIsInitialized( s )
 

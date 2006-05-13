@@ -76,10 +76,10 @@ const SYMB_MAXDEFINES = 24
 		(@"__FB_OPTION_ESCAPE__",	NULL,		  	   1, @hDefOptEscape_cb  ), _
 		(@"__FB_OPTION_EXPLICIT__",	NULL,		  	   1, @hDefOptExplicit_cb), _
 		(@"__FB_OPTION_PRIVATE__",	NULL,		  	   1, @hDefOptPrivate_cb ), _
-		(@"__FB_OUT_EXE__",				NULL,		   1, @hDefOutExe_cb 	 ), _
-		(@"__FB_OUT_LIB__",				NULL,		   1, @hDefOutLib_cb 	 ), _
-		(@"__FB_OUT_DLL__",				NULL,		   1, @hDefOutDll_cb 	 ), _
-		(@"__FB_OUT_OBJ__",				NULL,		   1, @hDefOutObj_cb 	 ), _
+		(@"__FB_OUT_EXE__",			NULL,		   	   1, @hDefOutExe_cb 	 ), _
+		(@"__FB_OUT_LIB__",			NULL,		   	   1, @hDefOutLib_cb 	 ), _
+		(@"__FB_OUT_DLL__",			NULL,		   	   1, @hDefOutDll_cb 	 ), _
+		(@"__FB_OUT_OBJ__",			NULL,		   	   1, @hDefOutObj_cb 	 ), _
 		(NULL) _
 	}
 
@@ -189,14 +189,18 @@ private function hDefOutObj_cb ( ) as string
 end function
 
 '':::::
-sub symbInitDefines( byval ismain as integer ) static
+sub symbInitDefines _
+	( _
+		byval ismain as integer _
+	) static
+
 	dim as string value
 	dim as zstring ptr def
 	dim as integer i
 
-    listNew( @symb.defparamlist, FB_INITDEFARGNODES, len( FB_DEFPARAM ), FALSE )
+    listNew( @symb.defparamlist, FB_INITDEFARGNODES, len( FB_DEFPARAM ), LIST_FLAGS_NOCLEAR )
 
-    listNew( @symb.deftoklist, FB_INITDEFTOKNODES, len( FB_DEFTOK ), FALSE )
+    listNew( @symb.deftoklist, FB_INITDEFTOKNODES, len( FB_DEFTOK ), LIST_FLAGS_NOCLEAR )
 
     for i = 0 to SYMB_MAXDEFINES-1
     	if( defTb(i).name = NULL ) then
@@ -238,134 +242,120 @@ sub symbInitDefines( byval ismain as integer ) static
 end sub
 
 '':::::
-function symbAddDefine( byval symbol as zstring ptr, _
-						byval text as zstring ptr, _
-						byval lgt as integer, _
-						byval isargless as integer = FALSE, _
-						byval proc as function( ) as string = NULL, _
-                        byval flags as integer = 0 _
-                      ) as FBSYMBOL ptr static
+function symbAddDefine _
+	( _
+		byval symbol as zstring ptr, _
+		byval text as zstring ptr, _
+		byval lgt as integer, _
+		byval isargless as integer = FALSE, _
+		byval proc as function( ) as string = NULL, _
+        byval flags as integer = 0 _
+	) as FBSYMBOL ptr static
 
-    dim as FBSYMBOL ptr d
-    dim as FBSYMBOLTB ptr symtb
+    dim as FBSYMBOL ptr sym
 
     function = NULL
 
-    '' if parsing main, all #defines must go to the global table
-    if( fbIsModLevel( ) ) then
-    	symtb = @symb.globtb
-    else
-    	symtb = symb.loctb
-    end if
-
     '' allocate new node
-    d = symbNewSymbol( NULL, symtb, fbIsModLevel( ), FB_SYMBCLASS_DEFINE, _
-    				   TRUE, symbol, NULL, FB_DATATYPE_CHAR, NULL )
-    if( d = NULL ) then
+    sym = symbNewSymbol( NULL, _
+    					 NULL, NULL, fbIsModLevel( ), _
+    					 FB_SYMBCLASS_DEFINE, _
+    				   	 TRUE, symbol, NULL, _
+    				   	 FB_DATATYPE_CHAR, NULL )
+    if( sym = NULL ) then
     	exit function
     end if
 
-	''
-	d->def.text	= ZstrAllocate( lgt )
-	*d->def.text = *text
-	d->lgt = lgt
-	d->def.params	= 0
-	d->def.paramhead = NULL
-	d->def.isargless = isargless
-	d->def.proc = proc
-    d->def.flags = flags
+	sym->def.text	= ZstrAllocate( lgt )
+	*sym->def.text = *text
+	sym->lgt = lgt
+	sym->def.params	= 0
+	sym->def.paramhead = NULL
+	sym->def.isargless = isargless
+	sym->def.proc = proc
+    sym->def.flags = flags
 
-	''
-	function = d
+	function = sym
 
 end function
 
 '':::::
-function symbAddDefineW( byval symbol as zstring ptr, _
-						 byval text as wstring ptr, _
-						 byval lgt as integer, _
-						 byval isargless as integer = FALSE, _
-						 byval proc as function( ) as string = NULL, _
-                         byval flags as integer = 0 _
-                       ) as FBSYMBOL ptr static
+function symbAddDefineW _
+	( _
+		byval symbol as zstring ptr, _
+		byval text as wstring ptr, _
+		byval lgt as integer, _
+		byval isargless as integer = FALSE, _
+		byval proc as function( ) as string = NULL, _
+        byval flags as integer = 0 _
+	) as FBSYMBOL ptr static
 
-    dim as FBSYMBOL ptr d
-    dim as FBSYMBOLTB ptr symtb
+    dim as FBSYMBOL ptr sym
 
     function = NULL
 
-    '' if parsing main, all #defines must go to the global table
-    if( fbIsModLevel( ) ) then
-    	symtb = @symb.globtb
-    else
-    	symtb = symb.loctb
-    end if
-
     '' allocate new node
-    d = symbNewSymbol( NULL, symtb, fbIsModLevel( ), FB_SYMBCLASS_DEFINE, _
-    				   TRUE, symbol, NULL, FB_DATATYPE_WCHAR, NULL )
-    if( d = NULL ) then
+    sym = symbNewSymbol( NULL, _
+    					 NULL, NULL, fbIsModLevel( ), _
+    					 FB_SYMBCLASS_DEFINE, _
+    				   	 TRUE, symbol, NULL, _
+    				   	 FB_DATATYPE_WCHAR, NULL )
+    if( sym = NULL ) then
     	exit function
     end if
 
-	''
-	d->def.textw = WstrAllocate( lgt )
-	*d->def.textw = *text
-	d->lgt = lgt
-	d->def.params = 0
-	d->def.paramhead = NULL
-	d->def.isargless = isargless
-	d->def.proc = proc
-    d->def.flags = flags
+	sym->def.textw = WstrAllocate( lgt )
+	*sym->def.textw = *text
+	sym->lgt = lgt
+	sym->def.params = 0
+	sym->def.paramhead = NULL
+	sym->def.isargless = isargless
+	sym->def.proc = proc
+    sym->def.flags = flags
 
-	''
-	function = d
+	function = sym
 
 end function
 
 '':::::
-function symbAddDefineMacro( byval symbol as zstring ptr, _
-							 byval tokhead as FB_DEFTOK ptr, _
-							 byval params as integer, _
-						 	 byval paramhead as FB_DEFPARAM ptr _
-						   ) as FBSYMBOL ptr static
+function symbAddDefineMacro _
+	( _
+		byval symbol as zstring ptr, _
+		byval tokhead as FB_DEFTOK ptr, _
+		byval params as integer, _
+		byval paramhead as FB_DEFPARAM ptr _
+	) as FBSYMBOL ptr static
 
-    dim as FBSYMBOL ptr d
-    dim as FBSYMBOLTB ptr symtb
+    dim as FBSYMBOL ptr sym
 
     function = NULL
 
-    '' if parsing main, all #defines must go to the global table
-    if( fbIsModLevel( ) ) then
-    	symtb = @symb.globtb
-    else
-    	symtb = symb.loctb
-    end if
-
     '' allocate new node
-    d = symbNewSymbol( NULL, symtb, fbIsModLevel( ), FB_SYMBCLASS_DEFINE, _
-    				   TRUE, symbol, NULL,  )
-    if( d = NULL ) then
+    sym = symbNewSymbol( NULL, _
+    					 NULL, NULL, fbIsModLevel( ), _
+    					 FB_SYMBCLASS_DEFINE, _
+    				   	 TRUE, symbol, NULL )
+    if( sym = NULL ) then
     	exit function
     end if
 
-	''
-	d->def.tokhead = tokhead
-	d->def.params = params
-	d->def.paramhead = paramhead
-	d->def.isargless = FALSE
-	d->def.proc = NULL
-    d->def.flags = 0
+	sym->def.tokhead = tokhead
+	sym->def.params = params
+	sym->def.paramhead = paramhead
+	sym->def.isargless = FALSE
+	sym->def.proc = NULL
+    sym->def.flags = 0
 
-	''
-	function = d
+	function = sym
 
 end function
 
 '':::::
-function symbAddDefineParam( byval lastparam as FB_DEFPARAM ptr, _
-						     byval symbol as zstring ptr _
-						   ) as FB_DEFPARAM ptr static
+function symbAddDefineParam _
+	( _
+		byval lastparam as FB_DEFPARAM ptr, _
+		byval symbol as zstring ptr _
+	) as FB_DEFPARAM ptr static
 
     dim as FB_DEFPARAM ptr param
 
@@ -390,9 +380,11 @@ function symbAddDefineParam( byval lastparam as FB_DEFPARAM ptr, _
 end function
 
 '':::::
-function symbAddDefineTok( byval lasttok as FB_DEFTOK ptr, _
-						   byval typ as FB_DEFTOK_TYPE _
-						 ) as FB_DEFTOK ptr static
+function symbAddDefineTok _
+	( _
+		byval lasttok as FB_DEFTOK ptr, _
+		byval dtype as FB_DEFTOK_TYPE _
+	) as FB_DEFTOK ptr static
 
     dim t as FB_DEFTOK ptr
 
@@ -409,8 +401,8 @@ function symbAddDefineTok( byval lasttok as FB_DEFTOK ptr, _
 	t->next	= NULL
 
 	''
-	t->type = typ
-	select case typ
+	t->type = dtype
+	select case dtype
 	case FB_DEFTOK_TYPE_TEX
 		t->text = NULL
 	case FB_DEFTOK_TYPE_TEXW
@@ -457,15 +449,12 @@ private sub hDelDefineTokens( byval s as FBSYMBOL ptr )
 end sub
 
 '':::::
-function symbDelDefine( byval s as FBSYMBOL ptr, _
-				        byval dolookup as integer _
-				      ) as integer static
+function symbDelDefine _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as integer static
 
     function = FALSE
-
-	if( dolookup ) then
-		s = symbFindByClass( s, FB_SYMBCLASS_DEFINE )
-	end if
 
     if( s = NULL ) then
     	exit function

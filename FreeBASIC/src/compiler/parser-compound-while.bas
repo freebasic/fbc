@@ -63,9 +63,7 @@ function cWhileStmtBegin as integer
 	astAdd( expr )
 
 	'' push to stmt stack
-	stk = stackPush( @env.stmtstk )
-	stk->last = env.stmt.while
-	stk->id = FB_TK_WHILE
+	stk = cCompStmtPush( FB_TK_WHILE )
 
 	env.stmt.while.cmplabel = il
 	env.stmt.while.endlabel = el
@@ -78,19 +76,12 @@ end function
 ''WhileStmtEnd  =   WEND
 ''
 function cWhileStmtEnd as integer
-	dim as integer iserror
 	dim as FB_CMPSTMTSTK ptr stk
 
 	function = FALSE
 
-	stk = stackGetTOS( @env.stmtstk )
-	iserror = (stk = NULL)
-	if( iserror = FALSE ) then
-		iserror = (stk->id <> FB_TK_WHILE)
-	end if
-
-	if( iserror ) then
-		hReportError( FB_ERRMSG_WENDWITHOUTWHILE )
+	stk = cCompStmtGetTOS( FB_TK_WHILE )
+	if( stk = NULL ) then
 		exit function
 	end if
 
@@ -103,8 +94,7 @@ function cWhileStmtEnd as integer
     astAdd( astNewLABEL( env.stmt.while.endlabel ) )
 
 	'' pop from stmt stack
-	env.stmt.while = stk->last
-	stackPop( @env.stmtstk )
+	cCompStmtPop( stk )
 
 	function = TRUE
 

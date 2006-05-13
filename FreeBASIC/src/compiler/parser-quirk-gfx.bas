@@ -156,7 +156,7 @@ private function hGetMode( byref mode as uinteger, byref alphaexpr as ASTNODE pt
     dim as FBSYMBOL ptr s, arg1, arg2
 
 	function = FALSE
-	
+
 	select case as const lexGetToken
 
 	case FB_TK_PSET
@@ -234,9 +234,9 @@ private function hGetMode( byref mode as uinteger, byref alphaexpr as ASTNODE pt
 			exit function
 		end select
 	end select
-	
+
 	function = TRUE
-	
+
 end function
 
 
@@ -602,7 +602,7 @@ function cGfxDrawString as integer
 		'' custom user font
 		if( hMatch( CHAR_COMMA ) ) then
 			target = hGetTarget( fexpr, fisptr )
-			
+
 			'' mode
 			if( hMatch( CHAR_COMMA ) ) then
 				if( hGetMode( mode, alphaexpr, funcexpr ) = FALSE ) then
@@ -1114,6 +1114,11 @@ function cGfxPoint( byref funcexpr as ASTNODE ptr ) as integer
 
 end function
 
+#define CHECK_CODEMASK( ) 												_
+    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then		:_
+    	exit function													:_
+    end if
+
 '':::::
 function cGfxStmt as integer
 
@@ -1121,54 +1126,67 @@ function cGfxStmt as integer
 
 	select case as const lexGetToken( )
 	case FB_TK_PSET
+		CHECK_CODEMASK( )
 		lexSkipToken( )
 		function = cGfxPSet( FALSE )
 
 	case FB_TK_PRESET
+		CHECK_CODEMASK( )
 		lexSkipToken( )
 		function = cGfxPSet( TRUE )
 
 	case FB_TK_LINE
+		CHECK_CODEMASK( )
 		lexSkipToken( )
 		function = cGfxLine( )
 
 	case FB_TK_CIRCLE
+		CHECK_CODEMASK( )
 		lexSkipToken( )
 		function = cGfxCircle( )
 
 	case FB_TK_PAINT
+		CHECK_CODEMASK( )
 		lexSkipToken( )
 		function = cGfxPaint( )
 
 	case FB_TK_DRAW
+		CHECK_CODEMASK( )
 		lexSkipToken( )
 		function = cGfxDraw( )
 
 	case FB_TK_VIEW
+		CHECK_CODEMASK( )
 		lexSkipToken( )
 		function = cGfxView( TRUE )
 
 	case FB_TK_WINDOW
+		CHECK_CODEMASK( )
 		lexSkipToken( )
 		function = cGfxView( FALSE )
 
 	case FB_TK_PALETTE
+		CHECK_CODEMASK( )
 		lexSkipToken( )
 		function = cGfxPalette( )
 
 	case FB_TK_PUT
+		CHECK_CODEMASK( )
 		lexSkipToken( )
 		function = cGfxPut( )
 
 	case FB_TK_GET
+		CHECK_CODEMASK( )
 		lexSkipToken( )
 		function = cGfxGet( )
 
 	case FB_TK_SCREEN
+		CHECK_CODEMASK( )
 		lexSkipToken( )
 		function = cGfxScreen( )
 
 	case FB_TK_SCREENRES
+		CHECK_CODEMASK( )
 		lexSkipToken( )
 		function = cGfxScreenRes( )
 

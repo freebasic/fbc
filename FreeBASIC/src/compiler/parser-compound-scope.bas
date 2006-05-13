@@ -42,13 +42,12 @@ function cScopeStmtBegin as integer
 
 	n = astScopeBegin( )
 	if( n = NULL ) then
-		hReportError( FB_ERRMSG_RECLEVELTOODEPTH )
+		hReportError( FB_ERRMSG_RECLEVELTOODEEP )
 		exit function
 	end if
 
 	''
-	stk = stackPush( @env.stmtstk )
-	stk->id = FB_TK_SCOPE
+	stk = cCompStmtPush( FB_TK_SCOPE )
 	stk->scope.node = n
 
 	function = TRUE
@@ -59,19 +58,12 @@ end function
 ''ScopeStmtEnd  =     END SCOPE .
 ''
 function cScopeStmtEnd as integer
-	dim as integer iserror
 	dim as FB_CMPSTMTSTK ptr stk
 
 	function = FALSE
 
-	stk = stackGetTOS( @env.stmtstk )
-	iserror = (stk = NULL)
-	if( iserror = FALSE ) then
-		iserror = (stk->id <> FB_TK_SCOPE)
-	end if
-
-	if( iserror ) then
-		hReportError( FB_ERRMSG_ENDSCOPEWITHOUTSCOPE )
+	stk = cCompStmtGetTOS( FB_TK_SCOPE )
+	if( stk = NULL ) then
 		exit function
 	end if
 
@@ -83,7 +75,7 @@ function cScopeStmtEnd as integer
 	astScopeEnd( stk->scope.node )
 
 	'' pop from stmt stack
-	stackPop( @env.stmtstk )
+	cCompStmtPop( stk )
 
 	function = TRUE
 

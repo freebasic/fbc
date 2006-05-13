@@ -19,7 +19,6 @@
 '' symbol table module for scopes
 ''
 '' chng: sep/2004 written [v1ctor]
-''		 jan/2005 updated to use real linked-lists [v1ctor]
 
 option explicit
 option escape
@@ -32,14 +31,19 @@ option escape
 #include once "inc\rtl.bi"
 
 '':::::
-function symbAddScope( byval backnode as ASTNODE ptr ) as FBSYMBOL ptr
+function symbAddScope _
+	( _
+		byval backnode as ASTNODE ptr _
+	) as FBSYMBOL ptr
+
     dim as FBSYMBOL ptr s
 
-    s = symbNewSymbol( NULL, symb.loctb, TRUE, FB_SYMBCLASS_SCOPE, FALSE, NULL, NULL )
+    s = symbNewSymbol( NULL, _
+    				   symb.symtb, NULL, TRUE, _
+    				   FB_SYMBCLASS_SCOPE, _
+    				   FALSE, NULL, NULL )
 
-	s->scp.loctb.owner = s
-    s->scp.loctb.head = NULL
-    s->scp.loctb.tail = NULL
+	symbSymTbInit( @s->scp.symtb, s )
     s->scp.backnode = backnode
 
 	function = s
@@ -47,7 +51,11 @@ function symbAddScope( byval backnode as ASTNODE ptr ) as FBSYMBOL ptr
 end function
 
 '':::::
-sub symbDelScope( byval scp as FBSYMBOL ptr )
+sub symbDelScope _
+	( _
+		byval scp as FBSYMBOL ptr _
+	)
+
 	dim as FBSYMBOL ptr s, nxt
 
     if( scp = NULL ) then
@@ -56,7 +64,7 @@ sub symbDelScope( byval scp as FBSYMBOL ptr )
 
     '' del all symbols inside the scope block
     do
-		s = scp->scp.loctb.head
+		s = scp->scp.symtb.head
 		if( s = NULL ) then
 			exit do
 		end if
@@ -70,21 +78,36 @@ sub symbDelScope( byval scp as FBSYMBOL ptr )
 end sub
 
 '':::::
-sub symbDelScopeTb( byval scp as FBSYMBOL ptr ) static
+sub symbDelScopeTb _
+	( _
+		byval scp as FBSYMBOL ptr _
+	) static
+
     dim as FBSYMBOL ptr s
 
 	'' for each symbol declared inside the SCOPE block..
-	s = scp->scp.loctb.head
+	s = scp->scp.symtb.head
     do while( s <> NULL )
     	'' remove from hash only
-    	symbDelFromHash( s )
+
+    	'' not a namespace import (USING)?
+    	if( s->class <> FB_SYMBCLASS_NSIMPORT ) then
+    		symbDelFromHash( s )
+    	else
+    		symbNamespaceRemove( s, TRUE )
+    	end if
+
     	s = s->next
     loop
 
 end sub
 
 '':::::
-function symbScopeAllocLocals( byval scp as FBSYMBOL ptr ) as integer
+function symbScopeAllocLocals _
+	( _
+		byval scp as FBSYMBOL ptr _
+	) as integer
+
     dim as integer lgt
     dim as FBSYMBOL ptr s
 
@@ -99,7 +122,7 @@ function symbScopeAllocLocals( byval scp as FBSYMBOL ptr ) as integer
     			 				FB_SYMBATTRIB_STATIC)) = 0 ) then
 
 				lgt = s->lgt * symbGetArrayElements( s )
-				ZstrAssign( @s->alias, emitAllocLocal( env.currproc, lgt, s->ofs ) )
+				s->ofs = emitAllocLocal( env.currproc, lgt )
 
 				symbSetIsAllocated( s )
 
@@ -115,12 +138,15 @@ function symbScopeAllocLocals( byval scp as FBSYMBOL ptr ) as integer
 end function
 
 '':::::
-sub symbFreeScopeDynVars( byval scp as FBSYMBOL ptr ) static
+sub symbFreeScopeDynVars _
+	( _
+		byval scp as FBSYMBOL ptr _
+	) static
 
     dim as FBSYMBOL ptr s
 
 	'' for each symbol declared inside the SCOPE block..
-	s = scp->scp.loctb.head
+	s = scp->scp.symtb.head
     do while( s <> NULL )
     	'' variable?
     	if( s->class = FB_SYMBCLASS_VAR ) then

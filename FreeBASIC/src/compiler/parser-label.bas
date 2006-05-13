@@ -58,10 +58,16 @@ function cLabel as integer
 	'' ID
 	case FB_TKCLASS_IDENTIFIER
 		'' ':'
-		if( lexGetLookAhead(1) = CHAR_COLON ) then
+		if( lexGetLookAhead( 1 ) = CHAR_COLON ) then
 
 			'' ambiguity: it could be a proc call followed by a ':' stmt separator..
-			if( symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_PROC ) <> NULL ) then
+			dim as FBSYMCHAIN ptr chain_
+			chain_ = cIdentifier( )
+			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+				exit function
+			end if
+
+			if( symbFindByClass( chain_, FB_SYMBCLASS_PROC ) <> NULL ) then
 				exit function
 			end if
 

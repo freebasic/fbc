@@ -23,8 +23,7 @@ const HASH_INITITEMNODES	= HASH_INITENTRYNODES*8
 
 type HASHITEM
 	name		as zstring ptr			'' shared
-	idx			as any ptr
-
+	data		as any ptr				'' user data
 	prev		as HASHITEM ptr
 	next		as HASHITEM ptr
 end type
@@ -44,30 +43,42 @@ declare sub 		hashInit		( )
 
 declare sub 		hashEnd			( )
 
-declare sub 		hashNew			( byval hash as THASH ptr, _
-								  	  byval nodes as integer, _
-								  	  byval delstr as integer = FALSE )
+declare sub 		hashNew			( _
+										byval hash as THASH ptr, _
+								  	  	byval nodes as integer, _
+								  	  	byval delstr as integer = FALSE _
+								  	)
 
-declare sub 		hashFree		( byval hash as THASH ptr )
+declare sub 		hashFree		( _
+										byval hash as THASH ptr _
+									)
 
-declare function 	hashHash		( byval symbol as zstring ptr ) as uinteger
+declare function 	hashHash		( _
+										byval symbol as zstring ptr _
+									) as uinteger
 
-declare function 	hashLookup		( byval hash as THASH ptr, _
-									  byval symbol as zstring ptr ) as any ptr
+declare function 	hashLookup		( _
+										byval hash as THASH ptr, _
+									  	byval symbol as zstring ptr _
+									) as any ptr
 
-declare function 	hashLookupEx	( byval hash as THASH ptr, _
-									  byval symbol as zstring ptr, _
-									  byval index as uinteger ) as any ptr
+declare function 	hashLookupEx	( _
+										byval hash as THASH ptr, _
+									  	byval symbol as zstring ptr, _
+									  	byval index as uinteger _
+									) as any ptr
 
-declare function	hashAdd			( byval hash as THASH ptr, _
-									  byval symbol as zstring ptr, _
-									  byval idx as any ptr, _
-									  byref index as uinteger ) as HASHITEM ptr
+declare function	hashAdd			( _
+										byval hash as THASH ptr, _
+									  	byval symbol as zstring ptr, _
+									  	byval userdata as any ptr, _
+									  	byval index as uinteger _
+									) as HASHITEM ptr
 
-declare sub 		hashDel			( byval hash as THASH ptr, _
-									  byval item as HASHITEM ptr, _
-									  byval index as uinteger )
-
-declare sub 		hashDump		( byval hash as THASH ptr )
+declare sub 		hashDel			( _
+										byval hash as THASH ptr, _
+									  	byval item as HASHITEM ptr, _
+									  	byval index as uinteger _
+									)
 
 #endif '' __HASH_BI__

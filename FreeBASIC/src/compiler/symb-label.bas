@@ -38,19 +38,24 @@ function symbGetLastLabel( ) as FBSYMBOL ptr static
 end function
 
 '':::::
-sub symbSetLastLabel( byval l as FBSYMBOL ptr ) static
+sub symbSetLastLabel _
+	( _
+		byval l as FBSYMBOL ptr _
+	) static
 
 	symb.lastlbl = l
 
 end sub
 
 '':::::
-function symbAddLabel( byval symbol as zstring ptr, _
-					   byval declaring as integer = TRUE, _
-					   byval createalias as integer = FALSE _
-					 ) as FBSYMBOL ptr static
+function symbAddLabel _
+	( _
+		byval symbol as zstring ptr, _
+		byval declaring as integer = TRUE, _
+		byval createalias as integer = FALSE _
+	) as FBSYMBOL ptr static
 
-    dim as zstring ptr lname, aname
+    dim as zstring ptr id, id_alias
     dim as FBSYMBOL ptr l
     dim as FBSYMBOLTB ptr symtb
 
@@ -79,31 +84,38 @@ function symbAddLabel( byval symbol as zstring ptr, _
 
 		'' add the new label
 		if( createalias = FALSE ) then
-    		aname = symbol
+    		id_alias = symbol
 		else
-			aname = hMakeTmpStr( TRUE )
+			id_alias = hMakeTmpStr( TRUE )
 		end if
 
-		lname = symbol
+		id = symbol
 
 	else
-		lname = NULL
-		aname = hMakeTmpStr( TRUE )
+		id = NULL
+		id_alias = hMakeTmpStr( TRUE )
 	end if
 
-    '' if parsing main, all labels must go to the global table
+    '' parsing main? add to global tb
     if( fbIsModLevel( ) ) then
-    	symtb = @symb.globtb
+    	'' unless inside a namespace..
+    	if( symbIsGlobalNamespc() = FALSE ) then
+    		symtb = symb.symtb
+    	else
+    		symtb = @symbGetGlobalTb( )
+    	end if
 
     '' otherside the current proc sym table must be used, not the
     '' current scope because labels inside scopes are unique,
     '' and branching to them from other scopes must be allowed
     else
-    	symtb = @env.currproc->proc.loctb
+    	symtb = @env.currproc->proc.symtb
     end if
 
-    l = symbNewSymbol( NULL, symtb, fbIsModLevel( ), FB_SYMBCLASS_LABEL, _
-    				   symbol <> NULL, lname, aname )
+    l = symbNewSymbol( NULL, _
+    				   symtb, NULL, fbIsModLevel( ), _
+    				   FB_SYMBCLASS_LABEL, _
+    				   symbol <> NULL, id, id_alias )
     if( l = NULL ) then
     	exit function
     end if
@@ -122,12 +134,10 @@ function symbAddLabel( byval symbol as zstring ptr, _
 end function
 
 '':::::
-sub symbDelLabel( byval s as FBSYMBOL ptr, _
-				  byval dolookup as integer ) static
-
-    if( dolookup ) then
-    	s = symbFindByClass( s, FB_SYMBCLASS_LABEL )
-    end if
+sub symbDelLabel _
+	( _
+		byval s as FBSYMBOL ptr _
+	) static
 
     if( s = NULL ) then
     	exit sub
@@ -144,12 +154,12 @@ function symbCheckLabels( ) as integer
 
 	cnt = 0
 
-    s = symb.globtb.head
+    s = symbGetGlobalTb( ).head
     do while( s <> NULL )
     	if( s->class = FB_SYMBCLASS_LABEL ) then
     		if( s->lbl.declared = FALSE ) then
-    			if( symbGetOrgName( s ) <> NULL ) then
-    				hReportErrorEx( FB_ERRMSG_UNDEFINEDLABEL, *symbGetOrgName( s ), -1 )
+    			if( symbGetName( s ) <> NULL ) then
+    				hReportErrorEx( FB_ERRMSG_UNDEFINEDLABEL, *symbGetName( s ), -1 )
     				cnt += 1
     			end if
     		end if
@@ -163,19 +173,19 @@ function symbCheckLabels( ) as integer
 end function
 
 '':::::
-function symbCheckLocalLabels(  ) as integer
+function symbCheckLocalLabels( ) as integer
     dim as FBSYMBOL ptr s
     dim as integer cnt
 
     cnt = 0
 
-    s = env.currproc->proc.loctb.head
+    s = env.currproc->proc.symtb.head
     do while( s <> NULL )
 
     	if( s->class = FB_SYMBCLASS_LABEL ) then
     		if( s->lbl.declared = FALSE ) then
-    			if( symbGetOrgName( s ) <> NULL ) then
-    				hReportErrorEx( FB_ERRMSG_UNDEFINEDLABEL, *symbGetOrgName( s ), -1 )
+    			if( symbGetName( s ) <> NULL ) then
+    				hReportErrorEx( FB_ERRMSG_UNDEFINEDLABEL, *symbGetName( s ), -1 )
     				cnt += 1
     			end if
     		end if

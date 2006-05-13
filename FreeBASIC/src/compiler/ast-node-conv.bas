@@ -225,12 +225,14 @@ function astCheckCONV( byval to_dtype as integer, _
 end function
 
 '':::::
-function astNewCONV( byval op as integer, _
-					 byval to_dtype as integer, _
-					 byval to_subtype as FBSYMBOL ptr, _
-					 byval l as ASTNODE ptr, _
-					 byval check_str as integer _
-				   ) as ASTNODE ptr static
+function astNewCONV _
+	( _
+		byval op as integer, _
+		byval to_dtype as integer, _
+		byval to_subtype as FBSYMBOL ptr, _
+		byval l as ASTNODE ptr, _
+		byval check_str as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
     dim as integer ldclass, ldtype

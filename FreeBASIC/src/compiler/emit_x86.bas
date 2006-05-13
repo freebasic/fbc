@@ -298,16 +298,21 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function emitGetVarName( byval s as FBSYMBOL ptr ) as string static
-	dim sname as string
+function emitGetVarName _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as string static
+
+	dim as string sname
 
 	if( s <> NULL ) then
-		sname = *symbGetName( s )
+		sname = *symbGetMangledName( s )
 
-		if( symbGetVarOfs( s ) > 0 ) then
-			sname += "+" + str( symbGetVarOfs( s ) )
-		elseif( symbGetVarOfs( s ) < 0 ) then
-			sname += str( symbGetVarOfs( s ) )
+		if( symbGetOfs( s ) > 0 ) then
+			sname += "+" + str( symbGetOfs( s ) )
+
+		elseif( symbGetOfs( s ) < 0 ) then
+			sname += str( symbGetOfs( s ) )
 		end if
 
 		function = sname
@@ -319,8 +324,19 @@ function emitGetVarName( byval s as FBSYMBOL ptr ) as string static
 end function
 
 '':::::
-function emitIsRegPreserved ( byval dclass as integer, _
-							  byval reg as integer ) as integer static
+function emitGetFramePtrName as zstring ptr
+	static as zstring * 3+1 sname = "ebp"
+
+	function = @sname
+
+end function
+
+'':::::
+function emitIsRegPreserved _
+	( _
+		byval dclass as integer, _
+		byval reg as integer _
+	) as integer static
 
     '' fp? fpu stack *must* be cleared before calling any function
     if( dclass = FB_DATACLASS_FPOINT ) then
@@ -337,10 +353,13 @@ function emitIsRegPreserved ( byval dclass as integer, _
 end function
 
 '':::::
-sub emitGetResultReg( byval dtype as integer, _
-					  byval dclass as integer, _
-					  byref r1 as integer, _
-					  byref r2 as integer ) static
+sub emitGetResultReg _
+	( _
+		byval dtype as integer, _
+		byval dclass as integer, _
+		byref r1 as integer, _
+		byref r2 as integer _
+	) static
 
 	if( dtype >= FB_DATATYPE_POINTER ) then
 		dtype = FB_DATATYPE_UINT
@@ -361,7 +380,10 @@ sub emitGetResultReg( byval dtype as integer, _
 end sub
 
 '':::::
-function emitGetFreePreservedReg( byval dclass as integer ) as integer static
+function emitGetFreePreservedReg _
+	( _
+		byval dclass as integer _
+	) as integer static
 
 	function = INVALID
 
@@ -384,7 +406,10 @@ function emitGetFreePreservedReg( byval dclass as integer ) as integer static
 end function
 
 '':::::
-function emitIsKeyword( byval text as zstring ptr ) as integer static
+function emitIsKeyword _
+	( _
+		byval text as zstring ptr _
+	) as integer static
 
 	if( emit.keyinited = FALSE ) then
 		hInitKeywordsTB( )
@@ -593,7 +618,11 @@ private function hGetRegName( byval dtype as integer, _
 end function
 
 '':::::
-private function hGetIdxName( byval vreg as IRVREG ptr ) as zstring ptr static
+private function hGetIdxName _
+	( _
+		byval vreg as IRVREG ptr _
+	) as zstring ptr static
+
     static as zstring * FB_MAXINTNAMELEN+1+8+1+1+1+8+1 iname
     dim as FBSYMBOL ptr sym
     dim as IRVREG ptr vi
@@ -604,7 +633,7 @@ private function hGetIdxName( byval vreg as IRVREG ptr ) as zstring ptr static
 	vi  = vreg->vidx
 
 	if( sym <> NULL ) then
-		iname = *symbGetName( sym )
+		iname = *symbGetMangledName( sym )
 		if( vi <> NULL ) then
 			iname += "+"
 		end if
@@ -669,7 +698,7 @@ private sub hPrepOperand( byval vreg as IRVREG ptr, _
 		end if
 
 		if( vreg->typ = IR_VREGTYPE_VAR ) then
-			operand += *symbGetName( vreg->sym )
+			operand += *symbGetMangledName( vreg->sym )
 		else
         	operand += *hGetIdxName( vreg )
 		end if
@@ -690,7 +719,7 @@ private sub hPrepOperand( byval vreg as IRVREG ptr, _
 
 	case IR_VREGTYPE_OFS
 		operand = "offset "
-		operand += *symbGetName( vreg->sym )
+		operand += *symbGetMangledName( vreg->sym )
 
 	case IR_VREGTYPE_REG
 		if( isaux = FALSE ) then
@@ -918,7 +947,7 @@ private sub _emitCALL( byval unused as IRVREG ptr, _
     dim ostr as string
 
 	ostr = "call "
-	ostr += *symbGetName( label )
+	ostr += *symbGetMangledName( label )
 	outp( ostr )
 
     if( bytestopop <> 0 ) then
@@ -968,7 +997,7 @@ private sub _emitBRANCH( byval unused as IRVREG ptr, _
 		ostr = "jne "
 	end select
 
-	ostr += *symbGetName( label )
+	ostr += *symbGetMangledName( label )
 	outp( ostr )
 
 end sub
@@ -980,7 +1009,7 @@ private sub _emitJUMP( byval unused1 as IRVREG ptr, _
     dim ostr as string
 
 	ostr = "jmp "
-	ostr += *symbGetName( label )
+	ostr += *symbGetMangledName( label )
 	outp( ostr )
 
 end sub
@@ -1013,7 +1042,7 @@ private sub _emitPUBLIC( byval label as FBSYMBOL ptr ) static
     dim ostr as string
 
 	ostr = "\r\n.globl "
-	ostr += *symbGetName( label )
+	ostr += *symbGetMangledName( label )
 	ostr += NEWLINE
 	outEx( ostr )
 
@@ -1023,7 +1052,7 @@ end sub
 private sub _emitLABEL( byval label as FBSYMBOL ptr ) static
     dim ostr as string
 
-	ostr = *symbGetName( label )
+	ostr = *symbGetMangledName( label )
 	ostr += ":\r\n"
 	outEx( ostr )
 
@@ -3543,7 +3572,7 @@ private sub hCMPL( byval rvreg as IRVREG ptr, _
 	if( label = NULL ) then
 		lname = *hMakeTmpStr( )
 	else
-		lname = *symbGetName( label )
+		lname = *symbGetMangledName( label )
 	end if
 
 	'' check high
@@ -3604,7 +3633,7 @@ private sub hCMPI( byval rvreg as IRVREG ptr, _
 	if( label = NULL ) then
 		lname = *hMakeTmpStr( )
 	else
-		lname = *symbGetName( label )
+		lname = *symbGetMangledName( label )
 	end if
 
 	'' optimize "cmp" to "test"
@@ -3702,7 +3731,7 @@ private sub hCMPF( byval rvreg as IRVREG ptr, _
 	if( label = NULL ) then
 		lname = *hMakeTmpStr( )
 	else
-		lname = *symbGetName( label )
+		lname = *symbGetMangledName( label )
 	end if
 
 	'' do comp
@@ -4964,7 +4993,7 @@ private sub hDestroyFrame( byval proc as FBSYMBOL ptr, _
     end if
 
 	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-    	outEx( ".size " + *symbGetName( proc ) + ", .-" + *symbGetName( proc ) + NEWLINE )
+    	outEx( ".size " + *symbGetMangledName( proc ) + ", .-" + *symbGetMangledName( proc ) + NEWLINE )
 	end if
 
 end sub
@@ -5000,13 +5029,13 @@ sub emitPROCFOOTER( byval proc as FBSYMBOL ptr, _
 	hALIGN( 16 )
 
 	if( ispublic ) then
-		hPUBLIC( *symbGetName( proc ) )
+		hPUBLIC( *symbGetMangledName( proc ) )
 	end if
 
-	hLABEL( *symbGetName( proc ) )
+	hLABEL( *symbGetMangledName( proc ) )
 
 	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-		outEx( ".type " + *symbGetName( proc ) + ", @function" + NEWLINE )
+		outEx( ".type " + *symbGetMangledName( proc ) + ", @function" + NEWLINE )
 	end if
 
 	'' frame
@@ -5034,17 +5063,19 @@ sub emitPROCFOOTER( byval proc as FBSYMBOL ptr, _
     end if
 
     if( emit_cdtor_ptr ) then
-    	emitVARINIOFS( symbGetName( proc ) )
+    	emitVARINIOFS( symbGetMangledName( proc ) )
     end if
 
 end sub
 
 '':::::
-function emitAllocLocal( byval proc as FBSYMBOL ptr, _
-						 byval lgt as integer, _
-						 byref ofs as integer ) as zstring ptr static
+function emitAllocLocal _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval lgt as integer _
+	) as integer static
 
-    static as zstring * 3+1 sname = "ebp"
+    dim as integer ofs
 
     proc->proc.ext->stk.localofs += ((lgt + 3) and not 3)
 
@@ -5054,22 +5085,20 @@ function emitAllocLocal( byval proc as FBSYMBOL ptr, _
     	proc->proc.ext->stk.localmax = -ofs
     end if
 
-	function = @sname
+	function = ofs
 
 end function
 
 '':::::
-function emitAllocArg( byval proc as FBSYMBOL ptr, _
-					   byval lgt as integer, _
-					   ofs as integer ) as zstring ptr static
+function emitAllocArg _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval lgt as integer _
+	) as integer static
 
-    static as zstring * 3+1 sname = "ebp"
-
-	ofs = proc->proc.ext->stk.argofs
+	function = proc->proc.ext->stk.argofs
 
     proc->proc.ext->stk.argofs += ((lgt + 3) and not 3)
-
-	function = @sname
 
 end function
 
@@ -5205,10 +5234,10 @@ sub emitVARINIBEGIN( byval sym as FBSYMBOL ptr ) static
 
 	'' public?
 	if( symbIsPublic( sym ) ) then
-		hPUBLIC( *symbGetName( sym ) )
+		hPUBLIC( *symbGetMangledName( sym ) )
 	end if
 
-	hLABEL( *symbGetName( sym ) )
+	hLABEL( *symbGetMangledName( sym ) )
 
 end sub
 
@@ -5389,6 +5418,10 @@ sub emitWriteBss( byval s as FBSYMBOL ptr )
 		doemit = FALSE
 
     	select case symbGetClass( s )
+		'' name space?
+		case FB_SYMBCLASS_NAMESPACE
+			emitWriteBss( symbGetNamespaceTb( s ).head )
+
 		'' scope block?
 		case FB_SYMBCLASS_SCOPE
 			emitWriteBss( symbGetScopeTbHead( s ) )
@@ -5422,11 +5455,11 @@ sub emitWriteBss( byval s as FBSYMBOL ptr )
     	    '' allocation modifier
     	    if( (attrib and FB_SYMBATTRIB_COMMON) = 0 ) then
     	    	if( (attrib and FB_SYMBATTRIB_PUBLIC) > 0 ) then
-    	    		hPUBLIC( *symbGetName( s ) )
+    	    		hPUBLIC( *symbGetMangledName( s ) )
 				end if
     	    	alloc = ".lcomm"
 			else
-    	    	hPUBLIC( *symbGetName( s ) )
+    	    	hPUBLIC( *symbGetMangledName( s ) )
     	    	alloc = ".comm"
     	    end if
 
@@ -5440,7 +5473,7 @@ sub emitWriteBss( byval s as FBSYMBOL ptr )
 
     	    '' emit
     	    ostr = alloc + "\t"
-    	    ostr += *symbGetName( s )
+    	    ostr += *symbGetMangledName( s )
     	    ostr += "," + str( symbGetLen( s ) * elements )
     	    hWriteStr( TRUE, ostr )
 
@@ -5481,6 +5514,10 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
     	doemit = FALSE
 
     	select case symbGetClass( s )
+		'' name space?
+		case FB_SYMBCLASS_NAMESPACE
+			emitWriteConst( symbGetNamespaceTb( s ).head )
+
 		'' scope block?
 		case FB_SYMBCLASS_SCOPE
 			emitWriteConst( symbGetScopeTbHead( s ) )
@@ -5529,7 +5566,7 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
     	    end if
 
     	    stype = hGetTypeString( dtype )
-    	    ostr = *symbGetName( s )
+    	    ostr = *symbGetMangledName( s )
     	    ostr += ":\t" + stype + "\t" + stext
     	    hWriteStr( FALSE, ostr )
 
@@ -5570,10 +5607,10 @@ private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
     if( symbGetIsDynamic( s ) ) then
     	sname = "0"
 	else
-    	sname = *symbGetName( s )
+    	sname = *symbGetMangledName( s )
 	end if
 
-	dname = symbGetArrayDescName( s )
+	dname = symbGetMangledName( symbGetArrayDescriptor( s ) )
 
    	'' add dbg info, if public or shared
     if( (symbGetAttrib( s ) and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_PUBLIC)) > 0 ) then
@@ -5654,13 +5691,13 @@ end sub
 private sub hWriteStringDesc( byval s as FBSYMBOL ptr ) static
     dim as zstring ptr dname
 
-	dname = symbGetArrayDescName( s )
+	dname = symbGetMangledName( symbGetArrayDescriptor( s ) )
 
     hALIGN( 4 )
     hWriteStr( FALSE, *dname + ":" )
 
 	''	void		*data
-	hWriteStr( TRUE,  ".int\t" + *symbGetName( s ) )
+	hWriteStr( TRUE,  ".int\t" + *symbGetMangledName( s ) )
 	''	int			len
 	hWriteStr( TRUE,  ".int\t" + str( symbGetLen( s ) ) )
 	''	int			size
@@ -5690,6 +5727,10 @@ sub emitWriteData( byval s as FBSYMBOL ptr )
     do while( s <> NULL )
 
     	select case symbGetClass( s )
+		'' name space?
+		case FB_SYMBCLASS_NAMESPACE
+			emitWriteData( symbGetNamespaceTb( s ).head )
+
 		'' scope block?
 		case FB_SYMBCLASS_SCOPE
 			emitWriteData( symbGetScopeTbHead( s ) )
@@ -5748,7 +5789,7 @@ sub emitWriteExport( ) static
     		if( symbGetIsDeclared( s ) ) then
     			if( symbIsExport( s ) ) then
     				hEmitExportHeader( )
-    				sname = hStripUnderscore( symbGetName( s ) )
+    				sname = hStripUnderscore( symbGetMangledName( s ) )
     				hWriteStr( TRUE, ".ascii \" -export:" + sname + "\"" + NEWLINE )
     			end if
     		end if

@@ -78,7 +78,7 @@ private function pragmaPush( byval opt as integer, _
 
 	with pragmaStk(opt)
 		if( .tos >= FB_MAXPRAGMARECLEVEL ) then
-             hReportError( FB_ERRMSG_RECLEVELTOODEPTH )
+             hReportError( FB_ERRMSG_RECLEVELTOODEEP )
              exit function
 		end if
 		.stk(.tos) = value

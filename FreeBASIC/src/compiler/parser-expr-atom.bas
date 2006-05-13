@@ -31,7 +31,10 @@ option escape
 '':::::
 ''ParentExpression=   '(' Expression ')' .
 ''
-function cParentExpression( byref parexpr as ASTNODE ptr ) as integer
+function cParentExpression _
+	( _
+		byref parexpr as ASTNODE ptr _
+	) as integer
 
   	function = FALSE
 
@@ -71,29 +74,79 @@ end function
 '':::::
 ''Atom            =   Constant | Function | QuirkFunction | Variable | Literal .
 ''
-function cAtom( byref atom as ASTNODE ptr ) as integer
-    dim as integer res
+function cAtom _
+	( _
+		byref atom as ASTNODE ptr _
+	) as integer
 
   	atom = NULL
 
-  	select case lexGetClass
+  	select case as const lexGetClass( )
   	case FB_TKCLASS_KEYWORD
-  		return cQuirkFunction( atom )
+  		return cQuirkFunction( cIdentifier( )->sym, atom )
 
   	case FB_TKCLASS_IDENTIFIER
-  		res = cConstant( atom )
-  		if( res = FALSE ) then
-  			res = cFunction( atom )
-  			if( res = FALSE ) then
-  				res = cVariable( atom, env.checkarray )
-  			end if
+    	dim as FBSYMBOL ptr sym
+    	dim as FBSYMCHAIN ptr chain_
+
+  		chain_ = cIdentifier( )
+    	if( chain_ <> NULL ) then
+    		do
+    			sym = chain_->sym
+    			select case symbGetClass( sym )
+				case FB_SYMBCLASS_CONST
+					return cConstantEx( sym, atom )
+
+				case FB_SYMBCLASS_PROC
+					return cFunctionEx( sym, atom )
+
+				case FB_SYMBCLASS_VAR
+                	return cVariableEx( chain_, atom, env.checkarray )
+
+				case FB_SYMBCLASS_ENUM
+					'' '.'?
+					if( lexGetLookAhead( 1 ) = CHAR_DOT ) then
+                		return cEnumConstant( sym, atom )
+                	end if
+
+				end select
+
+    			chain_ = symbChainGetNext( chain_ )
+    		loop while( chain_ <> NULL )
+
+    	else
+			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+				return FALSE
+			end if
+
+  			return cVariableEx( NULL, atom, env.checkarray )
   		end if
 
-  		return res
+	case FB_TKCLASS_NUMLITERAL
+		return cNumLiteral( atom )
 
-  	case else
-  		return cLiteral( atom )
+  	case FB_TKCLASS_STRLITERAL
+        return cStrLiteral( atom, env.opt.escapestr )
+
+  	case FB_TKCLASS_DELIMITER
+		select case lexGetToken( )
+		'' '.'?
+		case CHAR_DOT
+  			if( env.stmt.with.sym <> NULL ) then
+  				return cWithVariable( env.stmt.with.sym, atom, env.checkarray )
+  			end if
+
+  		'' '$'?
+  		case CHAR_DOLAR
+  			'' literal string?
+  			if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_STRLITERAL ) then
+  				lexSkipToken( )
+  				return cStrLiteral( atom, FALSE )
+  			end if
+  		end select
   	end select
+
+  	function = FALSE
 
 end function
 

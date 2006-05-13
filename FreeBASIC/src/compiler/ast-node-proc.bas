@@ -130,7 +130,7 @@ private sub hProcFlush( byval p as ASTNODE ptr, _
 	env.scope = iif( p->block.ismain, FB_MAINSCOPE, FB_MAINSCOPE+1 )
 	env.currproc = sym
 	env.currblock = sym
-	symbSetLocalTb( @sym->proc.loctb )
+	symbSetCurrentSymTb( @sym->proc.symtb )
 
 	'' do pre-loading, before allocating variables on stack
 	prv = @tmp
@@ -179,7 +179,7 @@ private sub hProcFlush( byval p as ASTNODE ptr, _
     end if
 
     '' del symbols from hash and symbol tb's
-    symbDelSymbolTb( @sym->proc.loctb, FALSE )
+    symbDelSymbolTb( @sym->proc.symtb, FALSE )
 
 	''
 	hDelProcNode( p )
@@ -316,9 +316,7 @@ function astProcBegin( byval sym as FBSYMBOL ptr, _
 	end if
 
 	''
-	sym->proc.loctb.owner = sym
-	sym->proc.loctb.head = NULL
-	sym->proc.loctb.tail = NULL
+	symbSymTbInit( @sym->proc.symtb, sym )
 
 	''
 	if( sym->proc.ext = NULL ) then
@@ -332,8 +330,8 @@ function astProcBegin( byval sym as FBSYMBOL ptr, _
 	env.scope = iif( ismain, FB_MAINSCOPE, FB_MAINSCOPE+1 )
 	env.currproc = sym
 	env.currblock = sym
-	ast.proc.oldsymtb = symbGetLocalTb( )
-	symbSetLocalTb( @sym->proc.loctb )
+	ast.proc.oldsymtb = symbGetCurrentSymTb( )
+	symbSetCurrentSymTb( @sym->proc.symtb )
 
 	'' add init and exit labels (see the note in the top,
 	'' procs don't create an implicit scope block)
@@ -436,7 +434,7 @@ function astProcEnd( byval n as ASTNODE ptr, _
 
 			'' remove from hash tb only
 			else
-				symbDelSymbolTb( @sym->proc.loctb, TRUE )
+				symbDelSymbolTb( @sym->proc.symtb, TRUE )
 			end if
 
 		'' main? flush all remaining, it's the latest
@@ -453,7 +451,7 @@ function astProcEnd( byval n as ASTNODE ptr, _
     env.scope = FB_MAINSCOPE
     env.currproc = env.main.proc
     env.currblock = env.main.proc
-	symbSetLocalTb( ast.proc.oldsymtb )
+	symbSetCurrentSymTb( ast.proc.oldsymtb )
 
 	function = res
 

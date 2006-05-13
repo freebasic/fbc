@@ -91,8 +91,9 @@ function cConstAssign( byval dtype as integer, _
 	end if
 
 	'' ID
+	id = *lexGetText( )
 	edtype = lexGetType( )
-	lexEatToken( id )
+	lexSkipToken( )
 
 	'' not multiple?
 	if( dtype = INVALID ) then

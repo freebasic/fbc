@@ -230,16 +230,26 @@ function cProcCallOrAssign as integer
 	dim as FBSYMBOL ptr s
 	dim as ASTNODE ptr procexpr
 	dim as integer dtype
+	dim as FBSYMCHAIN ptr chain_
 
 	function = FALSE
 
 	select case lexGetToken( )
 	'' CALL?
 	case FB_TK_CALL
+    	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+    		exit function
+    	end if
+
 		lexSkipToken( )
 
 		'' ID
-		s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_PROC )
+		chain_ = cIdentifier( )
+		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+			exit function
+		end if
+
+		s = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
 		if( s = NULL ) then
 			hReportError( FB_ERRMSG_PROCNOTDECLARED )
 			exit function
@@ -261,8 +271,17 @@ function cProcCallOrAssign as integer
 	'' ID?
 	case FB_TK_ID
 
-		s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_PROC )
+		chain_ = cIdentifier( )
+		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+			exit function
+		end if
+
+		s = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
 		if( s <> NULL ) then
+    		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+    			exit function
+    		end if
+
 			lexSkipToken( )
 
 			'' ID ProcParamList?

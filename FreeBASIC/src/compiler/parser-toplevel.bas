@@ -50,27 +50,25 @@ end sub
 '':::::
 ''Program         =   Line* EOF .
 ''
-function cProgram as integer
-    dim res as integer
+function cProgram( ) as integer
 
     do
-    	res = cLine( )
-    loop while( (res) and (lexGetToken( ) <> FB_TK_EOF) )
-
-    if( res ) then
-    	if( hMatch( FB_TK_EOF ) = FALSE ) then
-			'''''hReportError( FB_ERRMSG_EXPECTEDEOF )
-    		res = FALSE
-    	else
-    		res = TRUE
+    	if( cLine( ) = FALSE ) then
+    		exit do
     	end if
-    end if
+    loop
 
     if( hGetLastError( ) = FB_ERRMSG_OK ) then
-    	res = cCompStmtCheck( )
-    end if
+    	'' EOF
+    	if( lexGetToken( ) = FB_TK_EOF ) then
+    		lexSkipToken( )
+    	end if
 
-    function = res
+    	function = cCompStmtCheck( )
+
+    else
+    	function = FALSE
+    end if
 
 end function
 
@@ -82,26 +80,34 @@ function cLine as integer
 	''
 	astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ) ) )
 
-    '' Label? Statement? Comment?
+    '' Label?
     cLabel( )
+
+    '' Statement?
     cStatement( )
+
+    '' Comment?
     cComment( )
 
 	if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 		return FALSE
 	end if
 
-	if( hMatch( FB_TK_EOL ) = FALSE ) then
-		if( lexGetToken( ) <> FB_TK_EOF ) then
-			hReportError( FB_ERRMSG_EXPECTEDEOL )
-			return FALSE
-		end if
-    end if
+	select case lexGetToken( )
+	case FB_TK_EOL
+		lexSkipToken( )
+		function = TRUE
+
+	case FB_TK_EOF
+		function = FALSE
+
+	case else
+		hReportError( FB_ERRMSG_EXPECTEDEOL )
+		function = FALSE
+    end select
 
 	''
 	astAdd( astNewDBG( AST_OP_DBG_LINEEND ) )
-
-    function = TRUE
 
 end function
 

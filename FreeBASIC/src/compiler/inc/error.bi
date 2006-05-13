@@ -50,7 +50,7 @@ enum FBERRMSG_ENUM
 	FB_ERRMSG_INVALIDDATATYPES
 	FB_ERRMSG_INVALIDCHARACTER
 	FB_ERRMSG_FILEACCESSERROR
-	FB_ERRMSG_RECLEVELTOODEPTH
+	FB_ERRMSG_RECLEVELTOODEEP
 	FB_ERRMSG_EXPECTEDPOINTER
 	FB_ERRMSG_EXPECTEDLOOP
 	FB_ERRMSG_EXPECTEDWEND
@@ -126,10 +126,19 @@ enum FBERRMSG_ENUM
 	FB_ERRMSG_ENDSELECTWITHOUTSELECT
 	FB_ERRMSG_ENDSUBWITHOUTSUB
 	FB_ERRMSG_ENDSCOPEWITHOUTSCOPE
+	FB_ERRMSG_ENDNAMESPACEWITHOUTNAMESPACE
+	FB_ERRMSG_ENDEXTERNWITHOUTEXTERN
 	FB_ERRMSG_ELSEIFWITHOUTIF
 	FB_ERRMSG_ELSEWITHOUTIF
 	FB_ERRMSG_CASEWITHOUTSELECT
 	FB_ERRMSG_CONSTANTCANTBECHANGED
+	FB_ERRMSG_EXPECTEDPERIOD
+	FB_ERRMSG_EXPECTEDENDNAMESPACE
+	FB_ERRMSG_ILLEGALINSIDEANAMESPC
+	FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS
+	FB_ERRMSG_EXPECTEDENDEXTERN
+	FB_ERRMSG_EXPECTEDENDSUB
+	FB_ERRMSG_EXPECTEDENDFUNCTION
 
 	FB_ERRMSGS
 end enum
@@ -170,31 +179,46 @@ enum FBRTERROR_ENUM
 end enum
 
 
-declare	sub 		errInit					( )
+declare	sub 		errInit					( _
+											)
 
-declare	sub 		errEnd					( )
+declare	sub 		errEnd					( _
+											)
 
-declare sub 		hReportErrorEx			( byval errnum as integer, _
-											  byval msgex as zstring ptr, _
-											  byval linenum as integer = 0 )
+declare sub 		hReportErrorEx			( _
+												byval errnum as integer, _
+												byval msgex as zstring ptr, _
+												byval linenum as integer = 0 _
+											)
 
-declare sub 		hReportError			( byval errnum as integer, _
-											  byval isbefore as integer = FALSE )
+declare sub 		hReportError			( _
+												byval errnum as integer, _
+												byval isbefore as integer = FALSE _
+											)
 
-declare function 	hGetLastError 			( ) as integer
+declare function 	hGetLastError 			( _
+											) as integer
 
-declare function 	hGetErrorCnt 			( ) as integer
+declare function 	hGetErrorCnt 			( _
+											) as integer
 
-declare sub 		hReportWarning			( byval msgnum as integer, _
-											  byval msgex as zstring ptr = NULL )
+declare sub 		hReportWarning			( _
+												byval msgnum as integer, _
+												byval msgex as zstring ptr = NULL _
+											)
 
-declare sub 		hReportParamError		( byval proc as any ptr, _
-					   						  byval pnum as integer, _
-					   						  byval pid as zstring ptr, _
-					   						  byval msgnum as integer )
+declare sub 		hReportParamError		( _
+												byval proc as any ptr, _
+												byval pnum as integer, _
+												byval pid as zstring ptr, _
+												byval msgnum as integer _
+											)
 
-declare sub 		hReportParamWarning		( byval proc as any ptr, _
-					   						  byval pnum as integer, _
-					   						  byval pid as zstring ptr, _
-					   						  byval msgnum as integer )
+declare sub 		hReportParamWarning		( _
+												byval proc as any ptr, _
+												byval pnum as integer, _
+												byval pid as zstring ptr, _
+												byval msgnum as integer _
+											)
+
 #endif ''__ERROR_BI__

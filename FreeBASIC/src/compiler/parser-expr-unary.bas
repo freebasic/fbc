@@ -193,8 +193,13 @@ end function
 
 '':::::
 '' AnonUDT			=	TYPE ('<' Symbol '>')? '(' ... ')'
-function cAnonUDT( byref expr as ASTNODE ptr ) as integer
+function cAnonUDT _
+	( _
+		byref expr as ASTNODE ptr _
+	) as integer
+
     dim as FBSYMBOL ptr sym, subtype
+    dim as FBSYMCHAIN ptr chain_
 
 	function = FALSE
 
@@ -204,11 +209,13 @@ function cAnonUDT( byref expr as ASTNODE ptr ) as integer
     '' ('<' Symbol '>')?
     if( lexGetToken( ) = FB_TK_LT ) then
     	lexSkipToken( )
-    	subtype  = lexGetSymbol( )
-    	if( subtype = NULL ) then
+    	chain_ = cIdentifier( )
+    	if( chain_ = NULL ) then
 			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			exit function
     	end if
+
+    	subtype = chain_->sym
 
     	if( symbIsUDT( subtype ) = FALSE ) then
 			hReportError( FB_ERRMSG_INVALIDDATATYPES )
@@ -243,16 +250,18 @@ function cAnonUDT( byref expr as ASTNODE ptr ) as integer
     '' let the initializer do the rest..
     expr = cSymbolInit( sym, FALSE )
 
-    symbDelVar( sym, FALSE )
+    symbDelVar( sym )
 
     function = (expr <> NULL)
 
 end function
 
 '':::::
-private function hCast( byref expr as ASTNODE ptr, _
-						byval ptronly as integer _
-			  		  ) as integer
+private function hCast _
+	( _
+		byref expr as ASTNODE ptr, _
+		byval ptronly as integer _
+	) as integer
 
     dim as integer dtype, lgt, ptrcnt
     dim as FBSYMBOL ptr subtype
@@ -324,7 +333,10 @@ end function
 '':::::
 '' CastingExpr	=	CAST '(' DataType ',' Expression ')'
 ''
-function cCastingExpr( byref expr as ASTNODE ptr ) as integer
+function cCastingExpr _
+	( _
+		byref expr as ASTNODE ptr _
+	) as integer
 
 	'' CAST
 	lexSkipToken( )
@@ -336,7 +348,10 @@ end function
 '':::::
 '' PtrTypeCastingExpr	=   CPTR '(' DataType ',' Expression{int|uint|ptr} ')'
 ''
-function cPtrTypeCastingExpr( byref expr as ASTNODE ptr ) as integer
+function cPtrTypeCastingExpr _
+	( _
+		byref expr as ASTNODE ptr _
+	) as integer
 
 	'' CPTR
 	lexSkipToken( )
@@ -346,11 +361,13 @@ function cPtrTypeCastingExpr( byref expr as ASTNODE ptr ) as integer
 end function
 
 '':::::
-private function hDoDeref( byval cnt as integer, _
-						   byref expr as ASTNODE ptr, _
-					       byval dtype as integer, _
-					       byval subtype as FBSYMBOL ptr _
-					     ) as integer
+private function hDoDeref _
+	( _
+		byval cnt as integer, _
+		byref expr as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer
 
 	function = INVALID
 
@@ -390,7 +407,11 @@ end function
 '':::::
 ''DerefExpression	= 	DREF+ HighestPresExpr .
 ''
-function cDerefExpression( byref derefexpr as ASTNODE ptr ) as integer
+function cDerefExpression _
+	( _
+		byref derefexpr as ASTNODE ptr _
+	) as integer
+
     dim as FBSYMBOL ptr subtype
     dim as integer derefcnt, dtype
     dim as ASTNODE ptr funcexpr
@@ -430,8 +451,12 @@ function cDerefExpression( byref derefexpr as ASTNODE ptr ) as integer
 end function
 
 '':::::
-private function hProcPtrBody( byval proc as FBSYMBOL ptr, _
-							   byref addrofexpr as ASTNODE ptr ) as integer
+private function hProcPtrBody _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byref addrofexpr as ASTNODE ptr _
+	) as integer
+
 	dim as ASTNODE ptr expr
 	dim as FBSYMBOL ptr sym
 
@@ -468,7 +493,10 @@ private function hProcPtrBody( byval proc as FBSYMBOL ptr, _
 end function
 
 '':::::
-private function hVarPtrBody( byref addrofexpr as ASTNODE ptr) as integer
+private function hVarPtrBody _
+	( _
+		byref addrofexpr as ASTNODE ptr _
+	) as integer
 
 	function = FALSE
 
@@ -481,7 +509,7 @@ private function hVarPtrBody( byref addrofexpr as ASTNODE ptr) as integer
 
 	case AST_NODECLASS_FIELD
 		'' can't take address of bitfields..
-		if( astGetDataType( addrofexpr ) = FB_DATATYPE_BITFIELD ) then
+		if( astGetDataType( astGetLeft( addrofexpr ) ) = FB_DATATYPE_BITFIELD ) then
 			hReportError( FB_ERRMSG_INVALIDDATATYPES )
 			exit function
 		end if
@@ -503,10 +531,15 @@ end function
 '' 					| 	'@' (Proc ('('')')? | HighPrecExpr)
 ''					|   SADD|STRPTR '(' Variable{str}|Const{str}|Literal{str} ')' .
 ''
-function cAddrOfExpression( byref addrofexpr as ASTNODE ptr ) as integer
+function cAddrOfExpression _
+	( _
+		byref addrofexpr as ASTNODE ptr _
+	) as integer
+
     dim as ASTNODE ptr expr
     dim as integer dtype
     dim as FBSYMBOL ptr sym
+    dim as FBSYMCHAIN ptr chain_
 
 	function = FALSE
 
@@ -516,7 +549,13 @@ function cAddrOfExpression( byref addrofexpr as ASTNODE ptr ) as integer
 
 		'' proc?
 		if( lexGetClass( ) = FB_TKCLASS_IDENTIFIER ) then
-			sym = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_PROC )
+
+			chain_ = cIdentifier( )
+			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+				exit function
+			end if
+
+			sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
 			if( sym <> NULL ) then
 				lexSkipToken( )
 				return hProcPtrBody( sym, addrofexpr )
@@ -560,7 +599,12 @@ function cAddrOfExpression( byref addrofexpr as ASTNODE ptr ) as integer
 		end if
 
 		'' proc?
-		sym = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_PROC )
+		chain_ = cIdentifier( )
+		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+			exit function
+		end if
+
+		sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
 		if( sym = NULL ) then
 			hReportError( FB_ERRMSG_UNDEFINEDSYMBOL )
 			exit function
@@ -591,8 +635,13 @@ function cAddrOfExpression( byref addrofexpr as ASTNODE ptr ) as integer
 		end if
 
 		if( cLiteral( expr ) = FALSE ) then
-			if( cConstant( expr ) = FALSE ) then
-				if( cVariable( expr ) = FALSE ) then
+			chain_ = cIdentifier( )
+			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+				exit function
+			end if
+
+			if( cConstant( chain_, expr ) = FALSE ) then
+				if( cVariable( chain_, expr ) = FALSE ) then
 					hReportError( FB_ERRMSG_INVALIDDATATYPES )
 					exit function
 				end if

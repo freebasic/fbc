@@ -165,10 +165,19 @@ end type
 		@"END SELECT without SELECT", _
 		@"END SUB or FUNCTION without SUB or FUNCTION",_
 		@"END SCOPE without SCOPE", _
+		@"END MAMESPACE without NAMESPACE", _
+		@"END EXTERN without EXTERN", _
 		@"ELSEIF without IF", _
 		@"ELSE without IF", _
 		@"CASE without SELECT", _
-		@"Cannot modify a constant" _
+		@"Cannot modify a constant", _
+		@"Expected period ('.')", _
+		@"Expected END NAMESPACE", _
+		@"Illegal inside a NAMESPACE block", _
+		@"Cannot remove symbols defined in other namespaces", _
+		@"Expected END EXTERN", _
+		@"Expected 'END SUB'", _
+		@"Expected 'END FUNCTION'" _
 	}
 
 
@@ -351,9 +360,9 @@ private function hReportMakeDesc( byval proc as FBSYMBOL ptr, _
 		'' part of the rtlib?
 		if( symbGetIsRTL( proc ) ) then
 			'' any name set?
-			if( symbGetOrgName( proc ) <> NULL ) then
+			if( symbGetName( proc ) <> NULL ) then
 				'' starts with "FB_"?
-				if( left( *symbGetOrgName( proc ), 3 ) = "FB_" ) then
+				if( left( *symbGetName( proc ), 3 ) = "FB_" ) then
 					showname = FALSE
 				end if
 			else
@@ -362,10 +371,10 @@ private function hReportMakeDesc( byval proc as FBSYMBOL ptr, _
 		end if
 
 		if( showname ) then
-			pname = symbGetOrgName( proc )
+			pname = symbGetName( proc )
 			if( pname <> NULL ) then
 				if( len( *pname ) = 0 ) then
-					pname = symbGetName( proc )
+					pname = symbGetMangledName( proc )
 				end if
 			end if
 
@@ -373,10 +382,10 @@ private function hReportMakeDesc( byval proc as FBSYMBOL ptr, _
 				if( pnum > 0 ) then
 					desc += " of "
 				end if
-				if( len( *symbGetOrgName( proc ) ) > 0 ) then
-					desc += *symbGetOrgName( proc )
-				else
+				if( len( *symbGetName( proc ) ) > 0 ) then
 					desc += *symbGetName( proc )
+				else
+					desc += *symbGetMangledName( proc )
 				end if
 				desc += "()"
 			end if

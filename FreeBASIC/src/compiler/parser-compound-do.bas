@@ -91,9 +91,7 @@ function cDoStmtBegin as integer
 	end if
 
 	'' push to stmt stack
-	stk = stackPush( @env.stmtstk )
-	stk->last = env.stmt.do
-	stk->id = FB_TK_DO
+	stk = cCompStmtPush( FB_TK_DO )
 	stk->do.attop = (expr <> NULL)
 	stk->do.inilabel = il
 
@@ -109,19 +107,13 @@ end function
 ''
 function cDoStmtEnd as integer
     dim as ASTNODE ptr expr
-	dim as integer iswhile, isuntil, isinverse, iserror
+	dim as integer iswhile, isuntil, isinverse
 	dim as FB_CMPSTMTSTK ptr stk
 
 	function = FALSE
 
-	stk = stackGetTOS( @env.stmtstk )
-	iserror = (stk = NULL)
-	if( iserror = FALSE ) then
-		iserror = (stk->id <> FB_TK_DO)
-	end if
-
-	if( iserror ) then
-		hReportError( FB_ERRMSG_LOOPWITHOUTDO )
+	stk = cCompStmtGetTOS( FB_TK_DO )
+	if( stk = NULL ) then
 		exit function
 	end if
 
@@ -180,8 +172,7 @@ function cDoStmtEnd as integer
     astAdd( astNewLABEL( env.stmt.do.endlabel ) )
 
 	'' pop from stmt stack
-	env.stmt.do = stk->last
-	stackPop( @env.stmtstk )
+	cCompStmtPop( stk )
 
 	function = TRUE
 

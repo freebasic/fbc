@@ -30,7 +30,11 @@ option escape
 #include once "inc\parser.bi"
 #include once "inc\pp.bi"
 
-#define LEX_FLAGS LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX or LEXCHECK_NODEFINE or LEXCHECK_NOQUOTES
+#define LEX_FLAGS LEXCHECK_NOWHITESPC or _
+				  LEXCHECK_NOSUFFIX or _
+				  LEXCHECK_NODEFINE or _
+				  LEXCHECK_NOQUOTES or _
+				  LEXCHECK_NOSYMBOL
 
 declare function ppInclude					( ) as integer
 
@@ -77,7 +81,7 @@ end sub
 ''				 |	 '#'ERROR LIT_STR .
 ''
 function ppParse( ) as integer
-    dim as FBSYMBOL ptr s
+    dim as FBSYMCHAIN ptr chain_
 
 	function = FALSE
 
@@ -94,9 +98,16 @@ function ppParse( ) as integer
     case FB_TK_UNDEF
     	lexSkipToken( LEXCHECK_NODEFINE )
 
-    	s = lexGetSymbol( )
-    	if( s <> NULL ) then
-    		symbDelSymbol( s )
+    	chain_ = cIdentifier( FALSE )
+    	if( chain_ <> NULL ) then
+    		dim as FBSYMBOL ptr sym = chain_->sym
+    		'' don't remove if it was defined in other namespace
+    		if( symbGetHashTb( sym ) <> symbGetCurrentHashTb( ) ) then
+    			hReportError( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS )
+    			exit function
+    		end if
+
+    		symbDelSymbol( sym )
     	end if
 
     	lexSkipToken( )
@@ -253,7 +264,7 @@ function ppReadLiteralW( ) as wstring ptr
 			exit do
 		end select
 
-    	if( lexGetType() = FB_DATATYPE_WCHAR ) then
+    	if( lexGetType( ) = FB_DATATYPE_WCHAR ) then
     		DWstrConcatAssign( text, lexGetTextW( ) )
     	else
     		DWstrConcatAssignA( text, lexGetText( ) )

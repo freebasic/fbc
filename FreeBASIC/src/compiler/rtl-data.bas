@@ -289,7 +289,7 @@ function rtlDataRestore( byval label as FBSYMBOL ptr, _
 
     '' begin of data or start from label?
     if( label <> NULL ) then
-    	lname = FB_DATALABELPREFIX + *symbGetName( label )
+    	lname = FB_DATALABELPREFIX + *symbGetMangledName( label )
     else
     	lname = FB_DATALABELNAME
     end if
@@ -337,7 +337,7 @@ sub rtlDataStoreBegin static
 			l = symbFindByNameAndClass( strptr( FB_DATALABELNAME ), FB_SYMBCLASS_LABEL )
 		end if
 
-		lname = *symbGetName( l )
+		lname = *symbGetMangledName( l )
 		emitDATALABEL( lname )
 	end if
 
@@ -346,13 +346,13 @@ sub rtlDataStoreBegin static
 	label = symbGetLastLabel( )
 	if( label <> NULL ) then
     	''
-    	lname = FB_DATALABELPREFIX + *symbGetName( label )
+    	lname = FB_DATALABELPREFIX + *symbGetMangledName( label )
     	l = symbFindByNameAndClass( @lname, FB_SYMBCLASS_LABEL )
     	if( l = NULL ) then
        		l = symbAddLabel( @lname, TRUE, TRUE )
     	end if
 
-    	lname = *symbGetName( l )
+    	lname = *symbGetMangledName( l )
 
     	'' stills the same label as before? incrase counter to link DATA's
     	if( ctx.lastlabel = label ) then
@@ -404,7 +404,7 @@ end function
 '':::::
 function rtlDataStoreOFS( byval sym as FBSYMBOL ptr ) as integer static
 
-	emitDATAOFS( symbGetName( sym ) )
+	emitDATAOFS( symbGetMangledName( sym ) )
 
 	function = TRUE
 

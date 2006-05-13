@@ -30,47 +30,35 @@ option escape
 '':::::
 ''Declaration     =   ConstDecl | TypeDecl | SymbolDecl | ProcDecl | DefDecl | OptDecl.
 ''
-function cDeclaration as integer
+function cDeclaration as integer static
 
-	function = FALSE
+	select case as const lexGetToken( )
+	case FB_TK_CONST
+		function = cConstDecl( )
 
-	'' inside a compound statement?
-	if( stackGetTOS( @env.stmtstk ) <> NULL ) then
-		select case as const lexGetToken( )
-		case FB_TK_CONST
-			function = cConstDecl( )
+	case FB_TK_DECLARE
+		function = cProcDecl( )
 
-		case FB_TK_DIM, FB_TK_REDIM, FB_TK_COMMON, FB_TK_EXTERN, FB_TK_STATIC
-			function = cSymbolDecl( )
-		end select
+	case FB_TK_TYPE, FB_TK_UNION
+		function = cTypeDecl( )
 
-	else
-		select case as const lexGetToken( )
-		case FB_TK_CONST
-			function = cConstDecl( )
+	case FB_TK_ENUM
+		function = cEnumDecl( )
 
-		case FB_TK_DECLARE
-			function = cProcDecl( )
+	case FB_TK_DIM, FB_TK_REDIM, FB_TK_COMMON, FB_TK_EXTERN, FB_TK_STATIC
+		function = cSymbolDecl( )
 
-		case FB_TK_TYPE, FB_TK_UNION
-			function = cTypeDecl( )
+	case FB_TK_DEFBYTE, FB_TK_DEFUBYTE, FB_TK_DEFSHORT, FB_TK_DEFUSHORT, _
+		 FB_TK_DEFINT, FB_TK_DEFLNG, FB_TK_DEFUINT, FB_TK_DEFSNG, FB_TK_DEFDBL, _
+	 	 FB_TK_DEFSTR, FB_TK_DEFLNGINT, FB_TK_DEFULNGINT
+		function = cDefDecl( )
 
-		case FB_TK_ENUM
-			function = cEnumDecl( )
+	case FB_TK_OPTION
+		function = cOptDecl( )
 
-		case FB_TK_DIM, FB_TK_REDIM, FB_TK_COMMON, FB_TK_EXTERN, FB_TK_STATIC
-			function = cSymbolDecl( )
-
-		case FB_TK_DEFBYTE, FB_TK_DEFUBYTE, FB_TK_DEFSHORT, FB_TK_DEFUSHORT, _
-			 FB_TK_DEFINT, FB_TK_DEFLNG, FB_TK_DEFUINT, FB_TK_DEFSNG, FB_TK_DEFDBL, _
-		 	FB_TK_DEFSTR, FB_TK_DEFLNGINT, FB_TK_DEFULNGINT
-			function = cDefDecl( )
-
-		case FB_TK_OPTION
-			function = cOptDecl( )
-		end select
-
-	end if
+	case else
+		function = FALSE
+	end select
 
 end function
 

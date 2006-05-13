@@ -323,7 +323,7 @@ end function
 ''
 function cInputStmt as integer
     dim as ASTNODE ptr filestrexpr, dstexpr
-    dim as integer iscomma, isfile, addnewline, addquestion, lgt
+    dim as integer islast, isfile, addnewline, addquestion, lgt
 
 	function = FALSE
 
@@ -383,15 +383,16 @@ function cInputStmt as integer
        		exit function
        	end if
 
-		iscomma = FALSE
 		if( hMatch( CHAR_COMMA ) ) then
-			iscomma = TRUE
+			islast = FALSE
+		else
+			islast = TRUE
 		end if
 
-    	if( rtlFileInputGet( dstexpr ) = FALSE ) then
+    	if( rtlFileInputGet( dstexpr, islast ) = FALSE ) then
 			exit function
 		end if
-    loop while( iscomma )
+    loop until( islast )
 
     function = TRUE
 
@@ -625,7 +626,7 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 	select case ucase( *lexGetText( ) )
     case "CONS"
 		'' not a symbol?
-		if( lexGetSymbol( ) = NULL ) then
+		if( lexGetSymChain( ) = NULL ) then
 			lexSkipToken( )
     		open_kind = FB_FILE_TYPE_CONS
     	end if
@@ -636,28 +637,28 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 
     case "PIPE"
 		'' not a symbol?
-		if( lexGetSymbol( ) = NULL ) then
+		if( lexGetSymChain( ) = NULL ) then
 			lexSkipToken( )
         	open_kind = FB_FILE_TYPE_PIPE
         end if
 
     case "SCRN"
 		'' not a symbol?
-		if( lexGetSymbol( ) = NULL ) then
+		if( lexGetSymChain( ) = NULL ) then
 			lexSkipToken( )
         	open_kind = FB_FILE_TYPE_SCRN
         end if
 
     case "LPT"
 		'' not a symbol?
-		if( lexGetSymbol( ) = NULL ) then
+		if( lexGetSymChain( ) = NULL ) then
 			lexSkipToken( )
     		open_kind = FB_FILE_TYPE_LPT
     	end if
 
     case "COM"
 		'' not a symbol?
-		if( lexGetSymbol( ) = NULL ) then
+		if( lexGetSymChain( ) = NULL ) then
 			lexSkipToken( )
     		open_kind = FB_FILE_TYPE_COM
     	end if

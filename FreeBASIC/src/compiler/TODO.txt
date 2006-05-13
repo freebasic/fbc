@@ -1,3 +1,31 @@
+
+[ ] deref of a fun ptr is been allowed, causing the compiler to crash
+    - happens because *funptr() is been checking the dtype before calling
+      the ptr, after calling it the dtype will change to the funptr return
+      type
+
+[ ] EXTERN ... END EXTERN
+    - C++ mangling needs CONST's to be handled in param attributes:
+      - refs and ptrs to constants can't be added unless _POINTER is added
+        as a new symbol like with BITFIELD? that will need *a lot* of changes..
+
+[ ] add namespaces:
+    - DIM foo.bar(value) should be allowed outside a "foo" ns only with dynamic
+       arrays, for anything else, don't allow identifiers with namespace specified
+       in declarations
+       - same for all other declarations that use the current symbol like
+         with procs (for overloading and prototypes)
+    - no symbol can contain .'s if declared inside a namespace, must check
+      everything..
+    - how to add namespaces to stabs?
+      - a new ast node ala done with scopes may be needed? begin, end..
+      - how to pass "using" to GDB?
+
+[ ] disallow:
+	dim foo as foo | enum foo
+	.. and later ..
+	const|dim|function|etc foo.bar
+
 [ ] when creating static libraries, emit a LD script file with the #inclib's found,
     when linking, check for the scripts (libfoo_a.libs.x or such) and include the files
     listed (will have to check the same dirs as LD does, including LD_LIBRARY_PATH and
@@ -121,7 +149,6 @@
     - properties
     - pure virtual methods
     - down casting
-    - name space
     - static constructors and destructors (including with non-constant args inside scope blocks)
     - some support for RTTI
 

@@ -28,17 +28,21 @@ option escape
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
 
-declare function 	hParamDecl			( byval proc as FBSYMBOL ptr, _
-				   			 			  byval procmode as integer, _
-				   			 			  byval isproto as integer ) as FBSYMBOL ptr
+declare function 	hParamDecl			( _
+											byval proc as FBSYMBOL ptr, _
+				   			 			  	byval procmode as integer, _
+				   			 			  	byval isproto as integer _
+				   			 			) as FBSYMBOL ptr
 
 '':::::
 ''Parameters=   ParamDecl (',' ParamDecl)* .
 ''
-function cParameters( byval proc as FBSYMBOL ptr, _
-					  byval procmode as integer, _
-					  byval isproto as integer _
-				    ) as FBSYMBOL ptr
+function cParameters _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval procmode as integer, _
+		byval isproto as integer _
+	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr n
 
@@ -61,19 +65,24 @@ function cParameters( byval proc as FBSYMBOL ptr, _
 end function
 
 '':::::
-private sub hParamError( byval proc as FBSYMBOL ptr, _
-						 byval argnum as integer, _
-						 byval argid as zstring ptr )
+private sub hParamError _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval argnum as integer, _
+		byval argid as zstring ptr _
+	)
 
 	hReportParamError( proc, argnum+1, argid, FB_ERRMSG_ILLEGALPARAMSPECAT )
 
 end sub
 
 '':::::
-private function cOptionalExpr( byval mode as FB_PARAMMODE, _
-								byval dtype as FB_DATATYPE, _
-								byval subtype as FBSYMBOL ptr _
-					   		  ) as ASTNODE ptr
+private function cOptionalExpr _
+	( _
+		byval mode as FB_PARAMMODE, _
+		byval dtype as FB_DATATYPE, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr
 
     dim as ASTNODE ptr expr
     dim as FBSYMBOL ptr sym
@@ -109,7 +118,7 @@ private function cOptionalExpr( byval mode as FB_PARAMMODE, _
     		exit function
     	end if
 
-    	symbDelVar( sym, FALSE )
+    	symbDelVar( sym )
     end if
 
 	function = expr
@@ -119,10 +128,12 @@ end function
 '':::::
 '' ParamDecl      =   (BYVAL|BYREF)? ID (('(' ')')? (AS SymbolType)?)? ('=" (NUM_LIT|STR_LIT))? .
 ''
-private function hParamDecl( byval proc as FBSYMBOL ptr, _
-				   			 byval procmode as integer, _
-				   			 byval isproto as integer _
-				 		   ) as FBSYMBOL ptr
+private function hParamDecl _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval procmode as integer, _
+		byval isproto as integer _
+	) as FBSYMBOL ptr
 
 	static as zstring * FB_MAXNAMELEN+1 idTB(0 to FB_MAXARGRECLEVEL-1)
 	static as integer arglevel = 0
@@ -133,21 +144,32 @@ private function hParamDecl( byval proc as FBSYMBOL ptr, _
 
 	function = NULL
 
-	'' "..."?
-	if( lexGetToken( ) = FB_TK_VARARG ) then
-		'' not cdecl or is it the first arg?
-		if( (procmode <> FB_FUNCMODE_CDECL) or _
-			(symbGetProcParams( proc ) = 0) ) then
-			hParamError( proc, symbGetProcParams( proc ), *lexGetText( ) )
-			exit function
+	'' '...'?
+	if( lexGetToken( ) = CHAR_DOT ) then
+		if( lexGetLookAhead( 1 ) = CHAR_DOT ) then
+		    lexSkipToken( )
+		    lexSkipToken( )
+
+		    ''
+		    if( lexGetToken( ) <> CHAR_DOT ) then
+		    	hParamError( proc, symbGetProcParams( proc ), lexGetText( ) )
+		    	exit function
+		    end if
+
+			'' not cdecl or is it the first arg?
+			if( (procmode <> FB_FUNCMODE_CDECL) or _
+				(symbGetProcParams( proc ) = 0) ) then
+				hParamError( proc, symbGetProcParams( proc ), lexGetText( ) )
+				exit function
+			end if
+
+			lexSkipToken( )
+
+			return symbAddProcParam( proc, NULL, _
+						   	     	 INVALID, NULL, 0, _
+						   	     	 0, FB_PARAMMODE_VARARG, INVALID, _
+						   	      	 FALSE, NULL )
 		end if
-
-		lexSkipToken( )
-
-		return symbAddProcParam( proc, NULL, _
-						   	     INVALID, NULL, 0, _
-						   	     0, FB_PARAMMODE_VARARG, INVALID, _
-						   	     FALSE, NULL )
 	end if
 
 	'' (BYVAL|BYREF)?
@@ -168,14 +190,14 @@ private function hParamDecl( byval proc as FBSYMBOL ptr, _
 		if( isproto = FALSE ) then
 			'' anything but keywords will be catch by parser (could be a ')' too)
 			if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
-				hParamError( proc, symbGetProcParams( proc ), *lexGetText( ) )
+				hParamError( proc, symbGetProcParams( proc ), lexGetText( ) )
 				exit function
 			end if
 		end if
 
 		if(	lexGetClass( ) <> FB_TKCLASS_KEYWORD ) then
 			if( symbGetProcParams( proc ) > 0 ) then
-				hParamError( proc, symbGetProcParams( proc ), *lexGetText( ) )
+				hParamError( proc, symbGetProcParams( proc ), lexGetText( ) )
 			end if
 			exit function
 		end if
@@ -190,7 +212,7 @@ private function hParamDecl( byval proc as FBSYMBOL ptr, _
 
 	''
 	if( arglevel >= FB_MAXARGRECLEVEL ) then
-		hReportError( FB_ERRMSG_RECLEVELTOODEPTH )
+		hReportError( FB_ERRMSG_RECLEVELTOODEEP )
 		exit function
 	end if
 
@@ -199,15 +221,15 @@ private function hParamDecl( byval proc as FBSYMBOL ptr, _
 	''
 	if( readid ) then
 		'' ID
-		ptype  = lexGetType( )
-		dotpos = lexGetPeriodPos( )
-		lexEatToken( pid )
+		*pid = *lexGetText( )
+		ptype = lexGetType( )
+		lexSkipToken( )
 
 		'' ('('')')
 		if( hMatch( CHAR_LPRNT ) ) then
 			if( (mode <> INVALID) or _
 				(hMatch( CHAR_RPRNT ) = FALSE) ) then
-				hParamError( proc, symbGetProcParams( proc ), *pid )
+				hParamError( proc, symbGetProcParams( proc ), pid )
 				exit function
 			end if
 
@@ -224,7 +246,6 @@ private function hParamDecl( byval proc as FBSYMBOL ptr, _
 	'' no id
 	else
 		ptype  = INVALID
-		dotpos = 0
 
 		if( mode = INVALID ) then
 			pmode = env.opt.parammode
@@ -236,13 +257,13 @@ private function hParamDecl( byval proc as FBSYMBOL ptr, _
     '' (AS SymbolType)?
     if( hMatch( FB_TK_AS ) ) then
     	if( ptype <> INVALID ) then
-    		hParamError( proc, symbGetProcParams( proc ), *pid )
+    		hParamError( proc, symbGetProcParams( proc ), pid )
     		exit function
     	end if
 
     	arglevel += 1
     	if( cSymbolType( ptype, subtype, plen, ptrcnt ) = FALSE ) then
-    		hParamError( proc, symbGetProcParams( proc ), *pid )
+    		hParamError( proc, symbGetProcParams( proc ), pid )
     		arglevel -= 1
     		exit function
     	end if
@@ -271,13 +292,13 @@ private function hParamDecl( byval proc as FBSYMBOL ptr, _
     select case as const ptype
     '' can't be a fixed-len string
     case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    	hParamError( proc, symbGetProcParams( proc ), *pid )
+    	hParamError( proc, symbGetProcParams( proc ), pid )
     	exit function
 
 	'' can't be as ANY on non-prototypes
     case FB_DATATYPE_VOID
     	if( isproto = FALSE ) then
-    		hParamError( proc, symbGetProcParams( proc ), *pid )
+    		hParamError( proc, symbGetProcParams( proc ), pid )
     		exit function
     	end if
     end select
@@ -293,7 +314,7 @@ private function hParamDecl( byval proc as FBSYMBOL ptr, _
     	if( isproto ) then
     		select case ptype
     		case FB_DATATYPE_VOID
-    			hParamError( proc, symbGetProcParams( proc ), *pid )
+    			hParamError( proc, symbGetProcParams( proc ), pid )
     			exit function
     		end select
     	end if
@@ -309,7 +330,7 @@ private function hParamDecl( byval proc as FBSYMBOL ptr, _
     	'' contains a period?
     	if( dotpos > 0 ) then
     		if( ptype = FB_DATATYPE_USERDEF ) then
-    			hParamError( proc, symbGetProcParams( proc ), *pid )
+    			hParamError( proc, symbGetProcParams( proc ), pid )
     			exit function
     		end if
     	end if
@@ -321,7 +342,7 @@ private function hParamDecl( byval proc as FBSYMBOL ptr, _
 
 		optval = cOptionalExpr( pmode, ptype, subtype )
 		if( optval = NULL ) then
- 	   		hParamError( proc, symbGetProcParams( proc ), *pid )
+ 	   		hParamError( proc, symbGetProcParams( proc ), pid )
  	   	end if
 
     else

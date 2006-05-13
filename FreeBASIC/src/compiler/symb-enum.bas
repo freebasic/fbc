@@ -30,22 +30,27 @@ option escape
 #include once "inc\list.bi"
 
 '':::::
-function symbAddEnum( byval symbol as zstring ptr ) as FBSYMBOL ptr static
+function symbAddEnum _
+	( _
+		byval id as zstring ptr _
+	) as FBSYMBOL ptr static
+
     dim as FBSYMBOL ptr e
-    dim as FBSYMBOLTB ptr symtb
+    dim as zstring ptr id_alias
 
     function = NULL
 
-    '' if parsing main, all enums must go to the global table
-    if( fbIsModLevel( ) ) then
-    	symtb = @symb.globtb
-    else
-    	symtb = symb.loctb
+    '' only preserve a case-sensitive version if in BASIC mangling
+    if( env.mangling <> FB_MANGLING_BASIC ) then
+    	id_alias = id
+   	else
+   		id_alias = NULL
     end if
 
-    ''
-    e = symbNewSymbol( NULL, symtb, fbIsModLevel( ), FB_SYMBCLASS_ENUM, _
-    				   TRUE, symbol, NULL )
+    e = symbNewSymbol( NULL, _
+    				   NULL, NULL, fbIsModLevel( ), _
+    				   FB_SYMBCLASS_ENUM, _
+    				   TRUE, id, id_alias )
 	if( e = NULL ) then
 		exit function
 	end if
@@ -66,15 +71,20 @@ function symbAddEnum( byval symbol as zstring ptr ) as FBSYMBOL ptr static
 end function
 
 '':::::
-function symbAddEnumElement( byval parent as FBSYMBOL ptr, _
-							 byval symbol as zstring ptr, _
-					         byval intval as integer _
-					       ) as FBSYMBOL ptr static
+function symbAddEnumElement _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval symbol as zstring ptr, _
+		byval intval as integer _
+	) as FBSYMBOL ptr static
 
 	dim as FBSYMBOL ptr c
 
-    c = symbNewSymbol( NULL, @parent->enum.elmtb, TRUE, FB_SYMBCLASS_CONST, _
-    				   TRUE, symbol, NULL, FB_DATATYPE_ENUM, parent )
+    c = symbNewSymbol( NULL, _
+    				   @parent->enum.elmtb, NULL, TRUE, _
+    				   FB_SYMBCLASS_CONST, _
+    				   TRUE, symbol, NULL, _
+    				   FB_DATATYPE_ENUM, parent )
 	if( c = NULL ) then
 		exit function
 	end if
@@ -89,14 +99,12 @@ function symbAddEnumElement( byval parent as FBSYMBOL ptr, _
 end function
 
 '':::::
-sub symbDelEnum( byval s as FBSYMBOL ptr, _
-				 byval dolookup as integer )
+sub symbDelEnum _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
 
 	dim as FBSYMBOL ptr e, nxt
-
-    if( dolookup ) then
-    	s = symbFindByClass( s, FB_SYMBCLASS_ENUM )
-    end if
 
     if( s = NULL ) then
     	exit sub

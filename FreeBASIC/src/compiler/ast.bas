@@ -146,9 +146,9 @@ declare function 	astLoadSCOPEEND		( byval n as ASTNODE ptr ) as IRVREG ptr
 '':::::
 private sub hInitTempLists
 
-	listNew( @ast.tempstr, AST_INITTEMPSTRINGS, len( ASTTEMPSTR ), FALSE )
+	listNew( @ast.tempstr, AST_INITTEMPSTRINGS, len( ASTTEMPSTR ), LIST_FLAGS_NOCLEAR )
 
-	listNew( @ast.temparray, AST_INITTEMPARRAYS, len( ASTTEMPARRAY ), FALSE )
+	listNew( @ast.temparray, AST_INITTEMPARRAYS, len( ASTTEMPARRAY ), LIST_FLAGS_NOCLEAR )
 
 end sub
 
@@ -165,7 +165,7 @@ end sub
 sub astInit static
 
 	''
-    listNew( @ast.astTB, AST_INITNODES, len( ASTNODE ), FALSE )
+    listNew( @ast.astTB, AST_INITNODES, len( ASTNODE ), LIST_FLAGS_NOCLEAR )
 
     ''
     hInitTempLists( )

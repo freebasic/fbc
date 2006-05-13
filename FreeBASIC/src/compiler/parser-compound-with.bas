@@ -82,10 +82,9 @@ function cWithStmtBegin as integer
 	end if
 
 	'' push to stmt stack
-	stk = stackPush( @env.stmtstk )
-	stk->id = FB_TK_WITH
-	stk->with.last = env.stmt.with.sym
+	stk = cCompStmtPush( FB_TK_WITH )
 
+	stk->with.last = env.stmt.with.sym
 	env.stmt.with.sym = sym
 
 	function = TRUE
@@ -96,19 +95,12 @@ end function
 ''WithStmtEnd	  =   END WITH .
 ''
 function cWithStmtEnd as integer
-	dim as integer iserror
 	dim as FB_CMPSTMTSTK ptr stk
 
 	function = FALSE
 
-	stk = stackGetTOS( @env.stmtstk )
-	iserror = (stk = NULL)
-	if( iserror = FALSE ) then
-		iserror = (stk->id <> FB_TK_WITH)
-	end if
-
-	if( iserror ) then
-		hReportError( FB_ERRMSG_ENDWITHWITHOUTWITH )
+	stk = cCompStmtGetTOS( FB_TK_WITH )
+	if( stk = NULL ) then
 		exit function
 	end if
 
@@ -118,7 +110,7 @@ function cWithStmtEnd as integer
 
 	'' pop from stmt stack
 	env.stmt.with.sym = stk->with.last
-	stackPop( @env.stmtstk )
+	cCompStmtPop( stk )
 
 	function = TRUE
 

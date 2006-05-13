@@ -138,6 +138,7 @@ function cForStmtBegin as integer
     dim as FBVALUE ival
     dim as ASTNODE ptr idexpr, expr
     dim as integer op, dtype, isconst
+    dim as FBSYMCHAIN ptr chain_
     dim as FB_CMPSTMTSTK ptr stk
 
 	function = FALSE
@@ -146,7 +147,12 @@ function cForStmtBegin as integer
 	lexSkipToken( )
 
 	'' ID
-	if( cVariable( idexpr ) = FALSE ) then
+	chain_ = cIdentifier( )
+	if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+		exit function
+	end if
+
+	if( cVariable( chain_, idexpr ) = FALSE ) then
 		hReportError( FB_ERRMSG_EXPECTEDVAR )
 		exit function
 	end if
@@ -156,22 +162,21 @@ function cForStmtBegin as integer
 		exit function
 	end if
 
-	stk = stackPush( @env.stmtstk )
-
+	stk = cCompStmtPush( FB_TK_FOR )
 	stk->for.cnt = astGetSymbol( idexpr )
 
 	dtype = symbGetType( stk->for.cnt )
 
 	if( (dtype < FB_DATATYPE_BYTE) or (dtype > FB_DATATYPE_DOUBLE) ) then
-		stackPop( @env.stmtstk )
 		hReportError( FB_ERRMSG_EXPECTEDSCALAR, TRUE )
+		cCompStmtPop( stk )
 		exit function
 	end if
 
 	'' =
 	if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
-		stackPop( @env.stmtstk )
 		hReportError( FB_ERRMSG_EXPECTEDEQ )
+		cCompStmtPop( stk )
 		exit function
 	end if
 
@@ -180,8 +185,8 @@ function cForStmtBegin as integer
 
     '' Expression
     if( cExpression( expr ) = FALSE ) then
-    	stackPop( @env.stmtstk )
     	hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
+    	cCompStmtPop( stk )
     	exit function
     end if
 
@@ -197,15 +202,15 @@ function cForStmtBegin as integer
 
 	'' TO
 	if( hMatch( FB_TK_TO ) = FALSE ) then
-		stackPop( @env.stmtstk )
 		hReportError( FB_ERRMSG_EXPECTEDTO )
+		cCompStmtPop( stk )
 		exit function
 	end if
 
 	'' end condition (Expression)
 	if( cExpression( expr ) = FALSE ) then
-		stackPop( @env.stmtstk )
 		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
+		cCompStmtPop( stk )
 		exit function
 	end if
 
@@ -228,8 +233,8 @@ function cForStmtBegin as integer
 	if( lexGetToken( ) = FB_TK_STEP ) then
 		lexSkipToken( )
 		if( cExpression( expr ) = FALSE ) then
-			stackPop( @env.stmtstk )
 			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
+			cCompStmtPop( stk )
 			exit function
 		end if
 
@@ -306,8 +311,6 @@ function cForStmtBegin as integer
 	astAdd( astNewLABEL( il ) )
 
 	'' push to stmt stack
-	stk->last = env.stmt.for
-	stk->id = FB_TK_FOR
 	stk->for.testlabel = tl
 	stk->for.inilabel = il
 
@@ -396,7 +399,6 @@ end function
 ''ForStmtEnd      =   NEXT (ID (',' ID?))? .
 ''
 function cForStmtEnd as integer
-	dim as integer iserror
 	dim as FB_CMPSTMTSTK ptr stk
 
 	function = FALSE
@@ -405,22 +407,15 @@ function cForStmtEnd as integer
 	lexSkipToken( )
 
 	do
-		stk = stackGetTOS( @env.stmtstk )
-		iserror = (stk = NULL)
-		if( iserror = FALSE ) then
-			iserror = (stk->id <> FB_TK_FOR)
-		end if
-
-		if( iserror ) then
-			hReportError( FB_ERRMSG_NEXTWITHOUTFOR )
+		stk = cCompStmtGetTOS( FB_TK_FOR )
+		if( stk = NULL ) then
 			exit function
 		end if
 
 		hForStmtClose( stk )
 
 		'' pop from stmt stack
-		env.stmt.for = stk->last
-		stackPop( @env.stmtstk )
+		cCompStmtPop( stk )
 
 		'' ID?
 		if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then

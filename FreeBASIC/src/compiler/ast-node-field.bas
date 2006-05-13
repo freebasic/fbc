@@ -29,12 +29,20 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function astNewFIELD( byval p as ASTNODE ptr, _
-					  byval sym as FBSYMBOL ptr, _
-					  byval dtype as integer, _
-					  byval subtype as FBSYMBOL ptr = NULL _
-					) as ASTNODE ptr static
+function astNewFIELD _
+	( _
+		byval p as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr = NULL _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
+
+	if( dtype = FB_DATATYPE_BITFIELD ) then
+		dtype = subtype->typ
+		subtype = NULL
+	end if
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_FIELD, dtype, subtype )
@@ -45,19 +53,22 @@ function astNewFIELD( byval p as ASTNODE ptr, _
 	end if
 
 	n->sym = sym
-	n->l   = p
+	n->l = p
 
 end function
 
 '':::::
-private function hGetBitField( byval n as ASTNODE ptr ) as ASTNODE ptr static
+private function hGetBitField _
+	( _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr static
 
 	dim as ASTNODE ptr c
 	dim as FBSYMBOL ptr s
 
 	s = n->subtype
 
-	''
+	'' remap type
 	n->dtype = s->typ
 	n->subtype = NULL
 
@@ -80,19 +91,25 @@ private function hGetBitField( byval n as ASTNODE ptr ) as ASTNODE ptr static
 end function
 
 '':::::
-function astLoadFIELD( byval n as ASTNODE ptr ) as IRVREG ptr static
+function astLoadFIELD _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
+    dim as ASTNODE ptr l
 
 	'' handle bitfields..
-	if( n->dtype = FB_DATATYPE_BITFIELD ) then
-		n = hGetBitField( n->l )
-		function = astLoad( n )
-		astDelNode( n )
+	l = n->l
+	if( l->dtype = FB_DATATYPE_BITFIELD ) then
+		l = hGetBitField( l )
+		function = astLoad( l )
+		astDelNode( l )
 		exit function
 	end if
 
-	function = astLoad( n->l )
+	function = astLoad( l )
 
-	astDelNode( n->l )
+	astDelNode( l )
 
 end function
 

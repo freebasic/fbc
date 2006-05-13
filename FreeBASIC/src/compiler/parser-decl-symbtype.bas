@@ -29,7 +29,11 @@ option escape
 #include once "inc\ast.bi"
 
 ''::::
-function cConstExprValue( byref value as integer ) as integer
+function cConstExprValue _
+	( _
+		byref value as integer _
+	) as integer
+
     dim as ASTNODE ptr expr
 
     function = FALSE
@@ -52,49 +56,56 @@ function cConstExprValue( byref value as integer ) as integer
 end function
 
 '':::::
-function hMangleFuncPtrName( byval proc as FBSYMBOL ptr, _
-							 byval typ as integer, _
-							 byval subtype as FBSYMBOL ptr, _
-					    	 byval mode as integer ) as zstring ptr static
+function hMangleFuncPtrName _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval mode as integer _
+	) as zstring ptr static
 
-    static as zstring * FB_MAXINTNAMELEN+1 mname
+    static as zstring * FB_MAXINTNAMELEN+1 id
     dim as FBSYMBOL ptr p
     dim as integer i
 
-    mname = "{fbfp}"
+    id = "{fbfp}"
 
     p = symbGetProcHeadParam( proc )
     for i = 0 to symbGetProcParams( proc )-1
-    	mname += "_"
+    	id += "_"
 
     	if( p->subtype = NULL ) then
-    		mname += hex( p->typ * cint(p->param.mode) )
+    		id += hex( p->typ * cint(p->param.mode) )
     	else
-    		mname += hex( p->subtype )
+    		id += hex( p->subtype )
     	end if
 
     	p = symbGetParamNext( p )
     next
 
-    mname += "@"
+    id += "@"
 
 	if( subtype = NULL ) then
-		mname += hex( typ )
+		id += hex( dtype )
 	else
-		mname += hex( subtype )
+		id += hex( subtype )
 	end if
 
-    mname += "@"
+    id += "@"
 
-    mname += hex( mode )
+    id += hex( mode )
 
-	function = @mname
+	function = @id
 
 end function
 
 '':::::
-function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
-	dim as integer typ, lgt, mode, ptrcnt
+function cSymbolTypeFuncPtr _
+	( _
+		byval isfunction as integer _
+	) as FBSYMBOL ptr
+
+	dim as integer dtype, lgt, mode, ptrcnt
 	dim as FBSYMBOL ptr proc, sym, subtype
 	static as zstring ptr sname
 
@@ -106,24 +117,41 @@ function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
 	proc = symbPreAddProc( NULL )
 
 	'' ('(' Parameters? ')')
-	if( hMatch( CHAR_LPRNT ) ) then
+	if( lexGetToken( ) = CHAR_LPRNT ) then
+        lexSkipToken( )
 
 		cParameters( proc, mode, TRUE )
 		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
 
-    	if( hMatch( CHAR_RPRNT ) = FALSE ) then
+    	if( lexGetToken( ) <> CHAR_RPRNT ) then
 			hReportError( FB_ERRMSG_SYNTAXERROR )
 			exit function
 		end if
+
+		lexSkipToken( )
 	end if
 
 	'' (AS SymbolType)?
-	if( hMatch( FB_TK_AS ) ) then
-		if( cSymbolType( typ, subtype, lgt, ptrcnt ) = FALSE ) then
+	if( lexGetToken( ) = FB_TK_AS ) then
+		lexSkipToken( )
+
+		if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			exit function
 		end if
+
+    	'' check for invalid types
+    	select case as const dtype
+    	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+    		hReportError( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS )
+    		exit function
+
+    	case FB_DATATYPE_VOID
+    		hReportError( FB_ERRMSG_INVALIDDATATYPES )
+    		exit function
+    	end select
 
 	else
 		'' if it's a function and type was not given, it can't be guessed
@@ -133,11 +161,11 @@ function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
 		end if
 
 		subtype = NULL
-		typ = FB_DATATYPE_VOID
+		dtype = FB_DATATYPE_VOID
 		ptrcnt = 0
 	end if
 
-	sname = hMangleFuncPtrName( proc, typ, subtype, mode )
+	sname = hMangleFuncPtrName( proc, dtype, subtype, mode )
 
 	'' already exists?
 	sym = symbFindByNameAndClass( sname, FB_SYMBCLASS_PROC, TRUE )
@@ -147,7 +175,7 @@ function cSymbolTypeFuncPtr( byval isfunction as integer ) as FBSYMBOL ptr
 
 	'' create a new prototype
 	function = symbAddPrototype( proc, sname, NULL, NULL, _
-							     typ, subtype, ptrcnt, _
+							     dtype, subtype, ptrcnt, _
 							     0, mode, TRUE, TRUE )
 
 end function
@@ -166,20 +194,21 @@ end function
 ''				  |   (FUNCTION|SUB) ('(' args ')') (AS SymbolType)?
 ''				      (PTR|POINTER)* .
 ''
-function cSymbolType( byref typ as integer, _
-					  byref subtype as FBSYMBOL ptr, _
-					  byref lgt as integer, _
-					  byref ptrcnt as integer, _
-					  byval checkptr as integer = TRUE _
-					) as integer
+function cSymbolType _
+	( _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr, _
+		byref lgt as integer, _
+		byref ptrcnt as integer, _
+		byval checkptr as integer = TRUE _
+	) as integer
 
     dim as integer isunsigned, isfunction, allowptr
-    dim s as FBSYMBOL ptr
 
 	function = FALSE
 
 	lgt 	= 0
-	typ 	= INVALID
+	dtype 	= INVALID
 	subtype = NULL
 	ptrcnt	= 0
 
@@ -192,56 +221,56 @@ function cSymbolType( byref typ as integer, _
 	select case as const lexGetToken( )
 	case FB_TK_ANY
 		lexSkipToken( )
-		typ = FB_DATATYPE_VOID
+		dtype = FB_DATATYPE_VOID
 		lgt = 0
 
 	case FB_TK_BYTE
 		lexSkipToken( )
-		typ = FB_DATATYPE_BYTE
+		dtype = FB_DATATYPE_BYTE
 		lgt = 1
 	case FB_TK_UBYTE
 		lexSkipToken( )
-		typ = FB_DATATYPE_UBYTE
+		dtype = FB_DATATYPE_UBYTE
 		lgt = 1
 
 	case FB_TK_SHORT
 		lexSkipToken( )
-		typ = FB_DATATYPE_SHORT
+		dtype = FB_DATATYPE_SHORT
 		lgt = 2
 
 	case FB_TK_USHORT
 		lexSkipToken( )
-		typ = FB_DATATYPE_USHORT
+		dtype = FB_DATATYPE_USHORT
 		lgt = 2
 
 	case FB_TK_INTEGER, FB_TK_LONG
 		lexSkipToken( )
-		typ = FB_DATATYPE_INTEGER
+		dtype = FB_DATATYPE_INTEGER
 		lgt = FB_INTEGERSIZE
 
 	case FB_TK_UINT
 		lexSkipToken( )
-		typ = FB_DATATYPE_UINT
+		dtype = FB_DATATYPE_UINT
 		lgt = FB_INTEGERSIZE
 
 	case FB_TK_LONGINT
 		lexSkipToken( )
-		typ = FB_DATATYPE_LONGINT
+		dtype = FB_DATATYPE_LONGINT
 		lgt = FB_INTEGERSIZE*2
 
 	case FB_TK_ULONGINT
 		lexSkipToken( )
-		typ = FB_DATATYPE_ULONGINT
+		dtype = FB_DATATYPE_ULONGINT
 		lgt = FB_INTEGERSIZE*2
 
 	case FB_TK_SINGLE
 		lexSkipToken( )
-		typ = FB_DATATYPE_SINGLE
+		dtype = FB_DATATYPE_SINGLE
 		lgt = 4
 
 	case FB_TK_DOUBLE
 		lexSkipToken( )
-		typ = FB_DATATYPE_DOUBLE
+		dtype = FB_DATATYPE_DOUBLE
 		lgt = 8
 
 	case FB_TK_STRING
@@ -249,7 +278,7 @@ function cSymbolType( byref typ as integer, _
 		if( lexGetLookAhead(1) = CHAR_STAR ) then
 			lexSkipToken( )
 			lexSkipToken( )
-			typ = FB_DATATYPE_FIXSTR
+			dtype = FB_DATATYPE_FIXSTR
 			if( cConstExprValue( lgt ) = FALSE ) then
 				exit function
 			end if
@@ -266,7 +295,7 @@ function cSymbolType( byref typ as integer, _
 
 		'' var-len string..
 		else
-			typ = FB_DATATYPE_STRING
+			dtype = FB_DATATYPE_STRING
 			lgt = FB_STRDESCLEN
 			lexSkipToken( )
 		end if
@@ -274,9 +303,9 @@ function cSymbolType( byref typ as integer, _
 	case FB_TK_ZSTRING, FB_TK_WSTRING
 
 		if( lexGetToken( ) = FB_TK_ZSTRING ) then
-			typ = FB_DATATYPE_CHAR
+			dtype = FB_DATATYPE_CHAR
 		else
-			typ = FB_DATATYPE_WCHAR
+			dtype = FB_DATATYPE_WCHAR
 		end if
 
 		lexSkipToken( )
@@ -299,7 +328,7 @@ function cSymbolType( byref typ as integer, _
 			''       the number of chars times sizeof(wstring), so
 			''		 always use symbGetWstrLen( ) to retrieve the
 			''       len in characters, not the bytes
-			if( typ = FB_DATATYPE_WCHAR ) then
+			if( dtype = FB_DATATYPE_WCHAR ) then
 				lgt *= symbGetDataSize( FB_DATATYPE_WCHAR )
 			end if
 
@@ -312,7 +341,7 @@ function cSymbolType( byref typ as integer, _
 	    isfunction = (lexGetToken( ) = FB_TK_FUNCTION)
 	    lexSkipToken( )
 
-		typ = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION
+		dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION
 		lgt = FB_POINTERSIZE
 		ptrcnt = 1
 
@@ -322,45 +351,63 @@ function cSymbolType( byref typ as integer, _
 		end if
 
 	case else
-		s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_UDT )
-		if( s <> NULL ) then
-			lexSkipToken( )
-			typ 	= FB_DATATYPE_USERDEF
-			subtype = s
-			lgt 	= symbGetLen( s )
-		else
-			s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_ENUM )
-			if( s <> NULL ) then
-				lexSkipToken( )
-				typ 	= FB_DATATYPE_ENUM
-				subtype = s
-				lgt 	= FB_INTEGERSIZE
-			else
-				s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_TYPEDEF )
-				if( s <> NULL ) then
-					lexSkipToken( )
-					typ 	= symbGetType( s )
-					subtype = symbGetSubtype( s )
-					lgt 	= symbGetLen( s )
-					ptrcnt	= s->ptrcnt
-			    end if
+		dim as FBSYMBOL ptr sym
+		dim as FBSYMCHAIN ptr chain_
+
+		chain_ = cIdentifier( )
+		if( chain_ = NULL ) then
+			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+				exit function
 			end if
+
+		else
+			do
+				sym = chain_->sym
+				select case symbGetClass( sym )
+				case FB_SYMBCLASS_UDT
+					lexSkipToken( )
+					dtype = FB_DATATYPE_USERDEF
+					subtype = sym
+					lgt = symbGetLen( sym )
+					exit do
+
+			    case FB_SYMBCLASS_ENUM
+					'' handle len( id{enum} '.' id{const} )
+					if( lexGetLookAhead( 1 ) <> CHAR_DOT ) then
+						lexSkipToken( )
+						dtype = FB_DATATYPE_ENUM
+						subtype = sym
+						lgt = FB_INTEGERSIZE
+						exit do
+					end if
+
+				case FB_SYMBCLASS_TYPEDEF
+					lexSkipToken( )
+					dtype = symbGetType( sym )
+					subtype = symbGetSubtype( sym )
+					lgt = symbGetLen( sym )
+					ptrcnt = sym->ptrcnt
+					exit do
+				end select
+
+				chain_ = symbChainGetNext( chain_ )
+			loop while( chain_ <> NULL )
 		end if
 	end select
 
 	''
-	if( typ <> INVALID ) then
+	if( dtype <> INVALID ) then
 
 		if( isunsigned ) then
-			select case as const typ
+			select case as const dtype
 			case FB_DATATYPE_BYTE
-				typ = FB_DATATYPE_UBYTE
+				dtype = FB_DATATYPE_UBYTE
 			case FB_DATATYPE_SHORT
-				typ = FB_DATATYPE_USHORT
+				dtype = FB_DATATYPE_USHORT
 			case FB_DATATYPE_INTEGER
-				typ = FB_DATATYPE_UINT
+				dtype = FB_DATATYPE_UINT
 			case FB_DATATYPE_LONGINT
-				typ = FB_DATATYPE_ULONGINT
+				dtype = FB_DATATYPE_ULONGINT
 			case else
 				hReportError( FB_ERRMSG_SYNTAXERROR )
 				exit function
@@ -372,7 +419,7 @@ function cSymbolType( byref typ as integer, _
 			select case lexGetToken( )
 			case FB_TK_PTR, FB_TK_POINTER
 				lexSkipToken( )
-				typ += FB_DATATYPE_POINTER
+				dtype += FB_DATATYPE_POINTER
 				ptrcnt += 1
 			case else
 				exit do
@@ -389,19 +436,19 @@ function cSymbolType( byref typ as integer, _
 
 		else
 			'' can't have forward typedef's if they aren't pointers
-			if( typ = FB_DATATYPE_FWDREF ) then
+			if( dtype = FB_DATATYPE_FWDREF ) then
 				hReportError( FB_ERRMSG_INCOMPLETETYPE )
 				exit function
 
 			elseif( lgt <= 0 ) then
-				select case typ
+				select case dtype
 				case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 					'' LEN() and SIZEOF() allow Z|WSTRING to be used w/o PTR
 					if( checkptr ) then
 						hReportError( FB_ERRMSG_EXPECTEDPOINTER )
 						exit function
 					else
-						lgt = symbGetDataSize( typ )
+						lgt = symbGetDataSize( dtype )
 					end if
 				end select
 			end if
@@ -417,4 +464,78 @@ function cSymbolType( byref typ as integer, _
 	end if
 
 end function
+
+'':::::
+private sub hSkipSymbol( )
+
+	do
+		lexSkipToken( LEXCHECK_NOLOOKUP )
+
+    	'' '.'?
+    	if( lexGetToken( ) <> CHAR_DOT ) then
+    		exit do
+    	end if
+
+    	select case lexGetClass()
+    	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD
+
+    	case else
+    		exit do
+    	end select
+	loop
+
+end sub
+
+'':::::
+'' Identifier	= (ID{namespace} '.')* ID
+''				|  ID ('.' ID)* .
+''
+function cIdentifier _
+	( _
+		byval showerror as integer _
+	) as FBSYMCHAIN ptr
+
+    dim as FBSYMCHAIN ptr chain_
+
+    chain_ = lexGetSymChain( )
+
+    if( chain_ = NULL ) then
+    	return NULL
+    end if
+
+    do while( symbGetClass( chain_->sym ) = FB_SYMBCLASS_NAMESPACE )
+    	lexSkipToken( LEXCHECK_NOLOOKUP )
+
+    	'' '.'?
+    	if( lexGetToken( ) <> CHAR_DOT ) then
+    		exit do
+    	end if
+
+    	lexSkipToken( LEXCHECK_NOLOOKUP )
+
+    	'' ID
+    	if( lexGetToken( ) <> FB_TK_ID ) then
+    		if( showerror ) then
+    			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+    		end if
+
+    		return NULL
+    	end if
+
+    	chain_ = symbLookupAt( chain_->sym, lexGetText( ) )
+    	if( chain_ = NULL ) then
+           	if( showerror ) then
+           		hReportError( FB_ERRMSG_UNDEFINEDSYMBOL )
+    		else
+    			hSkipSymbol( )
+           	end if
+
+           	return NULL
+    	end if
+    loop
+
+	function = chain_
+
+end function
+
 

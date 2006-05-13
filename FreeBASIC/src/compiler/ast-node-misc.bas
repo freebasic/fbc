@@ -171,12 +171,16 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewDBG( byval op as integer, _
-				    byval ex as integer ) as ASTNODE ptr static
+function astNewDBG _
+	( _
+		byval op as integer, _
+		byval ex as integer _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
 
 	if( env.clopt.debug = FALSE ) then
-		exit function
+		return NULL
 	end if
 
 	'' alloc new node

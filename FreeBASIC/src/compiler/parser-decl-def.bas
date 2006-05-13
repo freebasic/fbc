@@ -32,40 +32,44 @@ option escape
 ''
 function cDefDecl as integer static
     static as zstring * 32+1 char
-    dim as integer typ, ichar, echar
+    dim as integer dtype, ichar, echar
 
 	function = FALSE
 
-	typ = INVALID
+    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL ) = FALSE ) then
+    	exit function
+    end if
+
+	dtype = INVALID
 
 	select case as const lexGetToken( )
 	case FB_TK_DEFBYTE
-		typ = FB_DATATYPE_BYTE
+		dtype = FB_DATATYPE_BYTE
 	case FB_TK_DEFUBYTE
-		typ = FB_DATATYPE_UBYTE
+		dtype = FB_DATATYPE_UBYTE
 	case FB_TK_DEFSHORT
-		typ = FB_DATATYPE_SHORT
+		dtype = FB_DATATYPE_SHORT
 	case FB_TK_DEFUSHORT
-		typ = FB_DATATYPE_USHORT
+		dtype = FB_DATATYPE_USHORT
 	case FB_TK_DEFINT, FB_TK_DEFLNG
-		typ = FB_DATATYPE_INTEGER
+		dtype = FB_DATATYPE_INTEGER
 	case FB_TK_DEFUINT
-		typ = FB_DATATYPE_UINT
+		dtype = FB_DATATYPE_UINT
 	case FB_TK_DEFLNGINT
-		typ = FB_DATATYPE_LONGINT
+		dtype = FB_DATATYPE_LONGINT
 	case FB_TK_DEFULNGINT
-		typ = FB_DATATYPE_ULONGINT
+		dtype = FB_DATATYPE_ULONGINT
 	case FB_TK_DEFUSHORT
-		typ = FB_DATATYPE_USHORT
+		dtype = FB_DATATYPE_USHORT
 	case FB_TK_DEFSNG
-		typ = FB_DATATYPE_SINGLE
+		dtype = FB_DATATYPE_SINGLE
 	case FB_TK_DEFDBL
-		typ = FB_DATATYPE_DOUBLE
+		dtype = FB_DATATYPE_DOUBLE
 	case FB_TK_DEFSTR
-		typ = FB_DATATYPE_STRING
+		dtype = FB_DATATYPE_STRING
 	end select
 
-	if( typ <> INVALID ) then
+	if( dtype <> INVALID ) then
 		lexSkipToken( )
 
 		'' (CHAR '-' CHAR ','?)*
@@ -80,22 +84,23 @@ function cDefDecl as integer static
 			lexSkipToken( )
 
 			'' '-'
-			if( hMatch( CHAR_MINUS ) = FALSE ) then
-				hReportError FB_ERRMSG_EXPECTEDMINUS
-				exit do
+			if( lexGetToken( ) = CHAR_MINUS ) then
+				lexSkipToken( )
+
+				'' CHAR
+				char = ucase( *lexGetText( ) )
+				if( len( char ) <> 1 ) then
+					hReportError( FB_ERRMSG_EXPECTEDCOMMA )
+					exit do
+				end if
+				echar = asc( char )
+				lexSkipToken( )
+
+			else
+				echar = ichar
 			end if
 
-			'' CHAR
-			char = ucase( *lexGetText( ) )
-			if( len( char ) <> 1 ) then
-				hReportError( FB_ERRMSG_EXPECTEDCOMMA )
-				exit do
-			end if
-			echar = asc( char )
-			lexSkipToken( )
-
-			''
-			hSetDefType( ichar, echar, typ )
+			hSetDefType( ichar, echar, dtype )
 
       		'' ','
       		if( lexGetToken( ) <> CHAR_COMMA ) then

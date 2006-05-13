@@ -75,7 +75,7 @@ private function hEmitIDX( byval n as ASTNODE ptr, _
 
     ofs = n->idx.ofs
 	if( symbGetIsDynamic( s ) = FALSE ) then
-		ofs += symbGetArrayDiff( s ) + symbGetVarOfs( s ) + var->var.ofs
+		ofs += symbGetArrayDiff( s ) + symbGetOfs( s ) + var->var.ofs
 	else
 		s = NULL
 	end if

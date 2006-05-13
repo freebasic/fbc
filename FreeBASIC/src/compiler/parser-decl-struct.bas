@@ -34,7 +34,11 @@ declare function cTypeBody					( byval s as FBSYMBOL ptr ) as integer
 ''TypeMultElementDecl =   AS SymbolType ID (ArrayDecl | ':' NUMLIT)?
 ''							 (',' ID (ArrayDecl | ':' NUMLIT)?)*
 ''
-function cTypeMultElementDecl( byval s as FBSYMBOL ptr ) as integer static
+function cTypeMultElementDecl _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as integer static
+
     static as zstring * FB_MAXNAMELEN+1 id
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr subtype
@@ -58,14 +62,16 @@ function cTypeMultElementDecl( byval s as FBSYMBOL ptr ) as integer static
     		exit function
     	end select
 
+		id = *lexGetText( )
+	    bits = 0
+
     	'' contains a period?
     	if( lexGetPeriodPos( ) > 0 ) then
     		hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
     		exit function
     	end if
 
-	    lexEatToken( id )
-	    bits = 0
+		lexSkipToken( )
 
 		'' ArrayDecl?
 		if( cStaticArrayDecl( dims, dTB() ) = FALSE ) then
@@ -109,7 +115,11 @@ end function
 '':::::
 '' TypeElementDecl	= ID (ArrayDecl| ':' NUMLIT)? AS SymbolType
 ''
-function cTypeElementDecl( byval s as FBSYMBOL ptr ) as integer static
+function cTypeElementDecl _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as integer static
+
     static as zstring * FB_MAXNAMELEN+1 id
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr subtype
@@ -126,17 +136,19 @@ function cTypeElementDecl( byval s as FBSYMBOL ptr ) as integer static
     	exit function
     end select
 
+	'' ID
+	id = *lexGetText( )
+	typ = lexGetType( )
+	subtype = NULL
+	bits = 0
+
     '' contains a period?
     if( lexGetPeriodPos( ) > 0 ) then
     	hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
     	exit function
     end if
 
-	'' ID
-	typ = lexGetType( )
-	subtype = NULL
-	lexEatToken( id )
-	bits = 0
+	lexSkipToken( )
 
 	'' ArrayDecl?
 	if( cStaticArrayDecl( dims, dTB() ) = FALSE ) then
@@ -194,10 +206,13 @@ function cTypeElementDecl( byval s as FBSYMBOL ptr ) as integer static
 end function
 
 '':::::
-private function hTypeAdd( byval parent as FBSYMBOL ptr, _
-						   byval id as zstring ptr, _
-						   byval isunion as integer, _
-						   byval align as integer ) as FBSYMBOL ptr
+private function hTypeAdd _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval id as zstring ptr, _
+		byval isunion as integer, _
+		byval align as integer _
+	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr s
 
@@ -251,7 +266,11 @@ end function
 ''                  | ElementDecl
 ''				    | AS AsElementDecl )+ .
 ''
-function cTypeBody( byval s as FBSYMBOL ptr ) as integer
+function cTypeBody _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as integer
+
 	dim as integer istype
 	dim as FBSYMBOL ptr inner
 
@@ -383,13 +402,20 @@ end function
 ''TypeDecl        =   (TYPE|UNION) ID (FIELD '=' Expression)? Comment? SttSeparator
 ''						TypeLine+
 ''					  END (TYPE|UNION) .
-function cTypeDecl as integer static
+function cTypeDecl _
+	( _
+	) as integer static
+
     static as zstring * FB_MAXNAMELEN+1 id
     dim as ASTNODE ptr expr
     dim as FBSYMBOL ptr s
     dim as integer align, isunion
 
 	function = FALSE
+
+    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL ) = FALSE ) then
+    	exit function
+    end if
 
 	'' TYPE | UNION
 	select case lexGetToken( )
@@ -421,7 +447,15 @@ function cTypeDecl as integer static
     	exit function
     end select
 
-	lexEatToken( id )
+	id = *lexGetText( )
+
+    '' contains a period?
+    if( lexGetPeriodPos( ) > 0 ) then
+    	hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
+    	exit function
+    end if
+
+	lexSkipToken( )
 
 	''
 	select case lexGetToken( )
@@ -470,7 +504,6 @@ function cTypeDecl as integer static
 		align = 0
 	end select
 
-    ''
 	function = (hTypeAdd( NULL, id, isunion, align ) <> NULL)
 
 end function

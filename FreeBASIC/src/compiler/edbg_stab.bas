@@ -116,11 +116,14 @@ sub	edbgEnd( )
 end sub
 
 '':::::
-private sub hEmitSTABS( byval _type as integer, _
-						byval _string as zstring ptr, _
-						byval _other as integer = 0, _
-						byval _desc as integer = 0, _
-						byval _value as string = "0" ) static
+private sub hEmitSTABS _
+	( _
+		byval _type as integer, _
+		byval _string as zstring ptr, _
+		byval _other as integer = 0, _
+		byval _desc as integer = 0, _
+		byval _value as string = "0" _
+	) static
 
 	dim as string ostr
 
@@ -140,10 +143,13 @@ private sub hEmitSTABS( byval _type as integer, _
 end sub
 
 '':::::
-private function hMakeSTABN( byval _type as integer, _
-							 byval _other as integer = 0, _
-							 byval _desc as integer = 0, _
-							 byval _value as zstring ptr ) as zstring ptr static
+private function hMakeSTABN _
+	( _
+		byval _type as integer, _
+		byval _other as integer = 0, _
+		byval _desc as integer = 0, _
+		byval _value as zstring ptr _
+	) as zstring ptr static
 
 	static as string ostr
 
@@ -161,10 +167,13 @@ private function hMakeSTABN( byval _type as integer, _
 end function
 
 '':::::
-private sub hEmitSTABN( byval _type as integer, _
-						byval _other as integer = 0, _
-						byval _desc as integer = 0, _
-						byval _value as string = "0" ) static
+private sub hEmitSTABN _
+	( _
+		byval _type as integer, _
+		byval _other as integer = 0, _
+		byval _desc as integer = 0, _
+		byval _value as string = "0" _
+	) static
 
 
 	hWriteStr( TRUE, hMakeSTABN( _type, _other, _desc, _value ) )
@@ -172,9 +181,12 @@ private sub hEmitSTABN( byval _type as integer, _
 end sub
 
 '':::::
-private sub hEmitSTABD( byval _type as integer, _
-						byval _other as integer = 0, _
-						byval _desc as integer = 0 ) static
+private sub hEmitSTABD _
+	( _
+		byval _type as integer, _
+		byval _other as integer = 0, _
+		byval _desc as integer = 0 _
+	) static
 
 	dim as string ostr
 
@@ -190,7 +202,11 @@ private sub hEmitSTABD( byval _type as integer, _
 end sub
 
 '':::::
-private sub hLABEL( byval label as zstring ptr ) static
+private sub hLABEL _
+	( _
+		byval label as zstring ptr _
+	) static
+
     dim ostr as string
 
 	ostr = *label
@@ -201,7 +217,11 @@ end sub
 
 
 '':::::
-sub edbgEmitHeader( byval filename as zstring ptr ) static
+sub edbgEmitHeader _
+	( _
+		byval filename as zstring ptr _
+	) static
+
     dim as integer i
     dim as string stab, lname
 
@@ -270,8 +290,11 @@ sub edbgEmitFooter( ) static
 end sub
 
 '':::::
-sub edbgLineBegin( byval proc as FBSYMBOL ptr, _
-				   byval lnum as integer )
+sub edbgLineBegin _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval lnum as integer _
+	)
 
     if( env.clopt.debug = FALSE ) then
     	exit sub
@@ -296,8 +319,11 @@ sub edbgLineBegin( byval proc as FBSYMBOL ptr, _
 end sub
 
 '':::::
-sub edbgLineEnd( byval proc as FBSYMBOL ptr, _
-				 byval unused as integer  )
+sub edbgLineEnd _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval unused as integer _
+	)
 
     if( env.clopt.debug = FALSE ) then
     	exit sub
@@ -315,9 +341,13 @@ sub edbgLineEnd( byval proc as FBSYMBOL ptr, _
 end sub
 
 '':::::
-sub edbgEmitLine( byval proc as FBSYMBOL ptr, _
-				  byval lnum as integer, _
-			  	  byval label as FBSYMBOL ptr ) static
+sub edbgEmitLine _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval lnum as integer, _
+		byval label as FBSYMBOL ptr _
+	) static
+
     dim as zstring ptr s
 
 	if( env.clopt.debug = FALSE ) then
@@ -334,16 +364,19 @@ sub edbgEmitLine( byval proc as FBSYMBOL ptr, _
 	s = hMakeSTABN( STAB_TYPE_SLINE, _
 					0, _
 					lnum, _
-					*symbGetName( label ) + "-" + *symbGetName( proc ) )
+					*symbGetMangledName( label ) + "-" + *symbGetMangledName( proc ) )
 
 	emitLIT( byval s )
 
 end sub
 
 '':::::
-sub edbgEmitLineFlush( byval proc as FBSYMBOL ptr, _
-				  	   byval lnum as integer, _
-			  	  	   byval label as FBSYMBOL ptr ) static
+sub edbgEmitLineFlush _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval lnum as integer, _
+		byval label as FBSYMBOL ptr _
+	) static
 
 	if( env.clopt.debug = FALSE ) then
 		exit sub
@@ -352,12 +385,15 @@ sub edbgEmitLineFlush( byval proc as FBSYMBOL ptr, _
 	hEmitSTABN( STAB_TYPE_SLINE, _
 				0, _
 				lnum, _
-				*symbGetName( label ) + "-" + *symbGetName( proc ) )
+				*symbGetMangledName( label ) + "-" + *symbGetMangledName( proc ) )
 
 end sub
 
 '':::::
-sub edbgScopeBegin( byval s as FBSYMBOL ptr ) static
+sub edbgScopeBegin _
+	( _
+		byval s as FBSYMBOL ptr _
+	) static
 
 	'' called by ir->ast
 
@@ -371,7 +407,10 @@ sub edbgScopeBegin( byval s as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub edbgScopeEnd( byval s as FBSYMBOL ptr ) static
+sub edbgScopeEnd _
+	( _
+		byval s as FBSYMBOL ptr _
+	) static
 
 	'' called by ir->ast
 
@@ -385,7 +424,10 @@ sub edbgScopeEnd( byval s as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub edbgEmitScopeINI( byval s as FBSYMBOL ptr ) static
+sub edbgEmitScopeINI _
+	( _
+		byval s as FBSYMBOL ptr _
+	) static
 
     if( env.clopt.debug = FALSE ) then
     	exit sub
@@ -396,7 +438,10 @@ sub edbgEmitScopeINI( byval s as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub edbgEmitScopeEND( byval s as FBSYMBOL ptr ) static
+sub edbgEmitScopeEND _
+	( _
+		byval s as FBSYMBOL ptr _
+	) static
 
     if( env.clopt.debug = FALSE ) then
     	exit sub
@@ -407,7 +452,10 @@ sub edbgEmitScopeEND( byval s as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub edbgProcBegin( byval proc as FBSYMBOL ptr ) static
+sub edbgProcBegin _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) static
 
 	'' called by ir->ast
 
@@ -416,7 +464,10 @@ sub edbgProcBegin( byval proc as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub edbgProcEnd( byval proc as FBSYMBOL ptr ) static
+sub edbgProcEnd _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) static
 
 	'' called by ir->ast
 
@@ -425,7 +476,10 @@ sub edbgProcEnd( byval proc as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub edbgProcEmitBegin( byval proc as FBSYMBOL ptr ) static
+sub edbgProcEmitBegin _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) static
 
 	'' called by emit->ir
 
@@ -435,7 +489,11 @@ sub edbgProcEmitBegin( byval proc as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-private sub hDeclArgs( byval proc as FBSYMBOL ptr ) static
+private sub hDeclArgs _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) static
+
 	dim as FBSYMBOL ptr s
 
 	s = symbGetProcLocTbHead( proc )
@@ -444,8 +502,8 @@ private sub hDeclArgs( byval proc as FBSYMBOL ptr ) static
     	if( symbIsVar( s ) ) then
 			'' an argument?
     		if( (s->attrib and (FB_SYMBATTRIB_PARAMBYDESC or _
-    			  				   FB_SYMBATTRIB_PARAMBYVAL or _
-    			  				   FB_SYMBATTRIB_PARAMBYREF)) <> 0 ) then
+    			  				FB_SYMBATTRIB_PARAMBYVAL or _
+    			  				FB_SYMBATTRIB_PARAMBYREF)) <> 0 ) then
 
 				edbgEmitProcArg( s )
 			end if
@@ -457,7 +515,11 @@ private sub hDeclArgs( byval proc as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub edbgEmitProcHeader( byval proc as FBSYMBOL ptr ) static
+sub edbgEmitProcHeader _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) static
+
     dim as string desc, procname
     dim as zstring ptr incfile
 
@@ -486,7 +548,7 @@ sub edbgEmitProcHeader( byval proc as FBSYMBOL ptr ) static
 					fbGetEntryPoint( ), _
 					0, _
 					ctx.firstline, _
-					*symbGetName( proc ) )
+					*symbGetMangledName( proc ) )
 
     	'' set the entry line
     	hEmitSTABD( STAB_TYPE_SLINE, 0, ctx.firstline )
@@ -497,11 +559,11 @@ sub edbgEmitProcHeader( byval proc as FBSYMBOL ptr ) static
 
     	desc = fbGetEntryPoint( )
     else
-    	desc = *symbGetOrgName( proc )
+    	desc = *symbGetName( proc )
     end if
 
 	''
-	procname = *symbGetName( proc )
+	procname = *symbGetMangledName( proc )
 
 	if( symbIsPublic( proc ) ) then
 		desc += ":F"
@@ -523,10 +585,13 @@ sub edbgEmitProcHeader( byval proc as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-private sub hDeclLocalVars( byval proc as FBSYMBOL ptr, _
-							byval blk as FBSYMBOL ptr, _
-			     	  		byval inilabel as FBSYMBOL ptr, _
-			      			byval endlabel as FBSYMBOL ptr )
+private sub hDeclLocalVars _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval blk as FBSYMBOL ptr, _
+		byval inilabel as FBSYMBOL ptr, _
+		byval endlabel as FBSYMBOL ptr _
+	)
 
 	dim as FBSYMBOL ptr shead, s
 	static as integer scopecnt
@@ -571,7 +636,7 @@ private sub hDeclLocalVars( byval proc as FBSYMBOL ptr, _
 	hEmitSTABN( STAB_TYPE_LBRAC, _
 				0, _
 				0, _
-				*symbGetName( inilabel ) + "-" + *symbGetName( proc ) )
+				*symbGetMangledName( inilabel ) + "-" + *symbGetMangledName( proc ) )
 
 	if( scopecnt > 0 ) then
 		'' for each scope..
@@ -588,14 +653,17 @@ private sub hDeclLocalVars( byval proc as FBSYMBOL ptr, _
 	hEmitSTABN( STAB_TYPE_RBRAC, _
 				0, _
 				0, _
-				*symbGetName( endlabel ) + "-" + *symbGetName( proc ) )
+				*symbGetMangledName( endlabel ) + "-" + *symbGetMangledName( proc ) )
 
 end sub
 
 '':::::
-sub edbgEmitProcFooter( byval proc as FBSYMBOL ptr, _
-			     	  	byval initlabel as FBSYMBOL ptr, _
-			      		byval exitlabel as FBSYMBOL ptr ) static
+sub edbgEmitProcFooter _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval initlabel as FBSYMBOL ptr, _
+		byval exitlabel as FBSYMBOL ptr _
+	) static
 
     dim as string procname, lname
 
@@ -604,7 +672,7 @@ sub edbgEmitProcFooter( byval proc as FBSYMBOL ptr, _
 	end if
 
 	''
-	procname = *symbGetName( proc )
+	procname = *symbGetMangledName( proc )
 
     ''
     hDeclLocalVars( proc, proc, initlabel, exitlabel )
@@ -623,11 +691,14 @@ sub edbgEmitProcFooter( byval proc as FBSYMBOL ptr, _
 end sub
 
 '':::::
-private function hDeclUDTField( byval sname as zstring ptr, _
-								byval stype as integer, _
-								byval soffs as integer, _
-								byval ssize as integer, _
-								byval stypeopt as zstring ptr = NULL ) as string static
+private function hDeclUDTField _
+	( _
+		byval sname as zstring ptr, _
+		byval stype as integer, _
+		byval soffs as integer, _
+		byval ssize as integer, _
+		byval stypeopt as zstring ptr = NULL _
+	) as string static
 
 	dim as string desc
 
@@ -651,7 +722,11 @@ private function hDeclUDTField( byval sname as zstring ptr, _
 end function
 
 '':::::
-private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
+private function hDeclDynArray _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as string static
+
     dim as string desc, dimdesc
     dim as FBVARDIM ptr d
     dim as integer ofs, i, dtype
@@ -733,7 +808,11 @@ private function hDeclDynArray( byval sym as FBSYMBOL ptr ) as string static
 end function
 
 '':::::
-private function hDeclPointer( byref dtype as integer ) as string static
+private function hDeclPointer _
+	( _
+		byref dtype as integer _
+	) as string static
+
     dim as string desc
 
     desc = ""
@@ -748,7 +827,11 @@ private function hDeclPointer( byref dtype as integer ) as string static
 end function
 
 '':::::
-private function hDeclArrayDims( byval sym as FBSYMBOL ptr ) as string static
+private function hDeclArrayDims _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as string static
+
 	dim as FBVARDIM ptr d
     dim as string desc
 
@@ -768,7 +851,11 @@ private function hDeclArrayDims( byval sym as FBSYMBOL ptr ) as string static
 end function
 
 '':::::
-private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
+private function hGetDataType _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as string
+
 	dim as integer dtype
 	dim as FBSYMBOL ptr subtype
 	dim as string desc
@@ -842,20 +929,24 @@ private function hGetDataType( byval sym as FBSYMBOL ptr ) as string
 end function
 
 '':::::
-private sub hDeclUDT( byval sym as FBSYMBOL ptr )
+private sub hDeclUDT _
+	( _
+		byval sym as FBSYMBOL ptr _
+	)
+
     dim as FBSYMBOL ptr e
     dim as string desc
 
 	sym->udt.dbg.typenum = ctx.typecnt
 	ctx.typecnt += 1
 
-	desc = *symbGetOrgName( sym )
+	desc = *symbGetName( sym )
 
 	desc += ":T" + str( sym->udt.dbg.typenum ) + "=s" + str( symbGetUDTLen( sym ) )
 
 	e = symbGetUDTFirstElm( sym )
 	do while( e <> NULL )
-        desc += *symbGetOrgName( e ) + ":" + hGetDataType( e )
+        desc += *symbGetName( e ) + ":" + hGetDataType( e )
 
         desc += "," + str( symbGetUDTElmBitOfs( e ) ) + "," + _
         		str( symbGetUDTElmBitLen( e ) ) + ";"
@@ -870,20 +961,24 @@ private sub hDeclUDT( byval sym as FBSYMBOL ptr )
 end sub
 
 '':::::
-private sub hDeclENUM( byval sym as FBSYMBOL ptr )
+private sub hDeclENUM _
+	( _
+		byval sym as FBSYMBOL ptr _
+	)
+
     dim as FBSYMBOL ptr e
     dim as string desc
 
 	sym->enum.dbg.typenum = ctx.typecnt
 	ctx.typecnt += 1
 
-	desc = *symbGetOrgName( sym )
+	desc = *symbGetName( sym )
 
 	desc += ":T" + str( sym->enum.dbg.typenum ) + "=e"
 
 	e = symbGetENUMFirstElm( sym )
 	do while( e <> NULL )
-        desc += *symbGetName( e ) + ":" + str( symbGetConstValInt( e ) ) + ","
+        desc += *symbGetMangledName( e ) + ":" + str( symbGetConstValInt( e ) ) + ","
 
 		e = symbGetENUMNextElm( e )
 	loop
@@ -895,8 +990,11 @@ private sub hDeclENUM( byval sym as FBSYMBOL ptr )
 end sub
 
 '':::::
-sub edbgEmitGlobalVar( byval sym as FBSYMBOL ptr, _
-				   	   byval section as integer ) static
+sub edbgEmitGlobalVar _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval section as integer _
+	) static
 
 	dim as integer t, attrib
 	dim as string desc
@@ -922,7 +1020,7 @@ sub edbgEmitGlobalVar( byval sym as FBSYMBOL ptr, _
 	end select
 
     '' allocation type (static, global, etc)
-    desc = *symbGetOrgName( sym )
+    desc = *symbGetName( sym )
 
     attrib = symbGetAttrib( sym )
     if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_COMMON)) > 0 ) then
@@ -938,9 +1036,9 @@ sub edbgEmitGlobalVar( byval sym as FBSYMBOL ptr, _
 
     ''
     if( symbIsDynamic( sym ) ) then
-    	sname = symbGetArrayDescName( sym )
+    	sname = symbGetMangledName( symbGetArrayDescriptor( sym ) )
     else
-    	sname = symbGetName( sym )
+    	sname = symbGetMangledName( sym )
     end if
 
     ''
@@ -949,8 +1047,12 @@ sub edbgEmitGlobalVar( byval sym as FBSYMBOL ptr, _
 end sub
 
 '':::::
-sub edbgEmitLocalVar( byval sym as FBSYMBOL ptr, _
-					  byval isstatic as integer ) static
+sub edbgEmitLocalVar _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval isstatic as integer _
+	) static
+
 	dim as integer t
 	dim as string desc, value
 
@@ -958,7 +1060,7 @@ sub edbgEmitLocalVar( byval sym as FBSYMBOL ptr, _
 		exit sub
 	end if
 
-    desc = *symbGetOrgName( sym )
+    desc = *symbGetName( sym )
 
     ''
     if( isstatic ) then
@@ -971,9 +1073,9 @@ sub edbgEmitLocalVar( byval sym as FBSYMBOL ptr, _
 
     	'' dynamic array? use the descriptor
     	if( symbIsDynamic( sym ) ) then
-    		value = *symbGetArrayDescName( sym )
+    		value = *symbGetMangledName( symbGetArrayDescriptor( sym ) )
     	else
-			value = *symbGetName( sym )
+			value = *symbGetMangledName( sym )
 		end if
 
     else
@@ -981,9 +1083,9 @@ sub edbgEmitLocalVar( byval sym as FBSYMBOL ptr, _
     	desc += ":"
     	'' dynamic array? use the descriptor
     	if( symbIsDynamic( sym ) ) then
-    		value = str( symbGetVarOfs( symbGetArrayDescriptor( sym ) ) )
+    		value = str( symbGetOfs( symbGetArrayDescriptor( sym ) ) )
     	else
-    		value = str( symbGetVarOfs( sym ) )
+    		value = str( symbGetOfs( sym ) )
     	end if
     end if
 
@@ -996,7 +1098,10 @@ sub edbgEmitLocalVar( byval sym as FBSYMBOL ptr, _
 end sub
 
 '':::::
-sub edbgEmitProcArg( byval sym as FBSYMBOL ptr ) static
+sub edbgEmitProcArg _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) static
 
 	dim as string desc
 
@@ -1004,7 +1109,7 @@ sub edbgEmitProcArg( byval sym as FBSYMBOL ptr ) static
 		exit sub
 	end if
 
-    desc = *symbGetOrgName( sym ) + ":"
+    desc = *symbGetName( sym ) + ":"
 
     if( symbIsParamByVal( sym ) ) then
 	    desc += "p"
@@ -1020,13 +1125,16 @@ sub edbgEmitProcArg( byval sym as FBSYMBOL ptr ) static
     desc += hGetDataType( sym )
 
     ''
-    hEmitSTABS( STAB_TYPE_PSYM, desc, 0, 0, str( symbGetVarOfs( sym ) ) )
+    hEmitSTABS( STAB_TYPE_PSYM, desc, 0, 0, str( symbGetOfs( sym ) ) )
 
 end sub
 
 '':::::
-sub edbgIncludeBegin ( byval filename as zstring ptr, _
-					   byval incfile as zstring ptr ) static
+sub edbgIncludeBegin _
+	( _
+		byval filename as zstring ptr, _
+		byval incfile as zstring ptr _
+	) static
 
 	dim as string lname
 

@@ -29,9 +29,12 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function cFunctionCall( byval sym as FBSYMBOL ptr, _
-						byref funcexpr as ASTNODE ptr, _
-						byval ptrexpr as ASTNODE ptr ) as integer
+function cFunctionCall _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byref funcexpr as ASTNODE ptr, _
+		byval ptrexpr as ASTNODE ptr _
+	) as integer
 
 	dim as integer typ, isfuncptr
 	dim as FBSYMBOL ptr subtype
@@ -100,17 +103,13 @@ end function
 '':::::
 ''Function        =   ID ('(' ProcParamList ')')? FuncPtrOrDerefFields? .
 ''
-function cFunction( byref funcexpr as ASTNODE ptr ) as integer
-    dim as FBSYMBOL ptr sym
-
-	function = FALSE
+function cFunctionEx _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byref funcexpr as ASTNODE ptr _
+	) as integer
 
 	'' ID
-	sym = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_PROC )
-	if( sym = NULL ) then
-		exit function
-	end if
-
 	lexSkipToken( )
 
 	function = cFunctionCall( sym, funcexpr, NULL )

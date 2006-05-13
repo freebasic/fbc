@@ -28,6 +28,11 @@ option escape
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
 
+#define CHECK_CODEMASK( ) 												_
+    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then		:_
+    	exit function													:_
+    end if
+
 '':::::
 ''QuirkStmt   	  =   GotoStmt
 ''				  |   ArrayStmt
@@ -43,48 +48,80 @@ function cQuirkStmt as integer
 
 	if( lexGetClass( ) <> FB_TKCLASS_KEYWORD ) then
 		if( lexGetToken( ) = CHAR_QUESTION ) then	'' PRINT as '?', can't be a keyword..
+			CHECK_CODEMASK( )
 			function = cPrintStmt( )
 		end if
 		exit function
 	end if
 
-	res = FALSE
-
 	select case as const lexGetToken( )
 	case FB_TK_GOTO, FB_TK_GOSUB, FB_TK_RETURN, FB_TK_RESUME
+		CHECK_CODEMASK( )
 		res = cGotoStmt( )
+
 	case FB_TK_PRINT, FB_TK_LPRINT
+		CHECK_CODEMASK( )
 		res = cPrintStmt( )
+
 	case FB_TK_RESTORE, FB_TK_READ, FB_TK_DATA
+		CHECK_CODEMASK( )
 		res = cDataStmt( )
+
 	case FB_TK_ERASE, FB_TK_SWAP
+		CHECK_CODEMASK( )
 		res = cArrayStmt( )
+
 	case FB_TK_LINE
+		CHECK_CODEMASK( )
 		res = cLineInputStmt( )
+
 	case FB_TK_INPUT
+		CHECK_CODEMASK( )
 		res = cInputStmt( )
+
 	case FB_TK_POKE
+		CHECK_CODEMASK( )
 		res = cPokeStmt( )
+
 	case FB_TK_OPEN, FB_TK_CLOSE, FB_TK_SEEK, FB_TK_PUT, FB_TK_GET, _
 		 FB_TK_LOCK, FB_TK_UNLOCK, FB_TK_NAME
+		CHECK_CODEMASK( )
 		res = cFileStmt( )
+
 	case FB_TK_LOCATE
+		CHECK_CODEMASK( )
 		res = cLocateStmt( FALSE ) <> NULL
+
 	case FB_TK_ON
+		CHECK_CODEMASK( )
 		res = cOnStmt( )
+
 	case FB_TK_WRITE
+		CHECK_CODEMASK( )
 		res = cWriteStmt( )
+
 	case FB_TK_ERROR, FB_TK_ERR
+		CHECK_CODEMASK( )
 		res = cErrorStmt( )
+
 	case FB_TK_VIEW
+		CHECK_CODEMASK( )
 		res = cViewStmt( )
+
 	case FB_TK_MID
+		CHECK_CODEMASK( )
 		res = cMidStmt( )
+
 	case FB_TK_LSET
+		CHECK_CODEMASK( )
 		res = cLSetStmt( )
+
     case FB_TK_WIDTH
+        CHECK_CODEMASK( )
         res = cWidthStmt( FALSE ) <> NULL
 
+	case else
+		res = FALSE
 	end select
 
 	if( res = FALSE ) then
@@ -100,14 +137,15 @@ end function
 '':::::
 ''QuirkFunction =   QBFUNCTION ('(' ProcParamList ')')? .
 ''
-function cQuirkFunction( byref funcexpr as ASTNODE ptr ) as integer
+function cQuirkFunction _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byref funcexpr as ASTNODE ptr _
+	) as integer
+
 	dim as integer res
 
 	function = FALSE
-
-	if( lexGetClass( ) <> FB_TKCLASS_KEYWORD ) then
-		exit function
-	end if
 
 	res = FALSE
 

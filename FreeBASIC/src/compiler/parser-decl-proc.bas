@@ -36,6 +36,10 @@ function cProcDecl as integer
 
     function = FALSE
 
+    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL ) = FALSE ) then
+    	exit function
+    end if
+
     '' DECLARE
     lexSkipToken( )
 
@@ -62,14 +66,26 @@ function cFunctionMode as integer
 	case FB_TK_CDECL
 		function = FB_FUNCMODE_CDECL
 		lexSkipToken( )
+
 	case FB_TK_STDCALL
 		function = FB_FUNCMODE_STDCALL
 		lexSkipToken( )
+
 	case FB_TK_PASCAL
 		function = FB_FUNCMODE_PASCAL
 		lexSkipToken( )
+
 	case else
-		function = FB_DEFAULT_FUNCMODE
+		select case as const env.mangling
+		case FB_MANGLING_BASIC
+			function = FB_DEFAULT_FUNCMODE
+
+		case FB_MANGLING_CDECL, FB_MANGLING_CPP
+			function = FB_FUNCMODE_CDECL
+
+		case FB_MANGLING_STDCALL
+			function = FB_FUNCMODE_STDCALL
+		end select
 	end select
 
 end function
@@ -80,10 +96,14 @@ end function
 ''					 |	ID FunctionMode? OVERLOAD?
 ''						(ALIAS STR_LIT)? (LIB STR_LIT)? ('(' Arguments? ')')? (AS SymbolType)? .
 ''
-function cSubOrFuncDecl( byval isSub as integer ) as integer static
+function cSubOrFuncDecl _
+	( _
+		byval isSub as integer _
+	) as integer static
+
     static as zstring * FB_MAXNAMELEN+1 id, libname, aliasname
     dim as zstring ptr plib, palias
-    dim as integer typ, mode, lgt, ptrcnt, attrib
+    dim as integer dtype, mode, lgt, ptrcnt, attrib
     dim as FBSYMBOL ptr subtype, proc
 
 	function = FALSE
@@ -94,15 +114,17 @@ function cSubOrFuncDecl( byval isSub as integer ) as integer static
 		exit function
 	end if
 
-	typ = lexGetType( )
-	lexEatToken( id )
+	id = *lexGetText( )
+	dtype = lexGetType( )
 	subtype = NULL
 	ptrcnt = 0
 
-	if( (isSub) and (typ <> INVALID) ) then
+	if( (isSub) and (dtype <> INVALID) ) then
     	hReportError( FB_ERRMSG_INVALIDCHARACTER )
     	exit function
 	end if
+
+	lexSkipToken( )
 
 	''
 	mode = cFunctionMode( )
@@ -160,21 +182,22 @@ function cSubOrFuncDecl( byval isSub as integer ) as integer static
     if( lexGetToken( ) = FB_TK_AS ) then
     	lexSkipToken( )
 
-    	if( (typ <> INVALID) or (isSub) ) then
+    	if( (dtype <> INVALID) or (isSub) ) then
     		hReportError( FB_ERRMSG_SYNTAXERROR )
     		exit function
     	end if
 
-    	if( cSymbolType( typ, subtype, lgt, ptrcnt ) = FALSE ) then
+    	if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
     		exit function
     	end if
 
     	'' check for invalid types
-    	select case as const typ
+    	select case as const dtype
     	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     		hReportError( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS )
     		exit function
+
     	case FB_DATATYPE_VOID
     		hReportError( FB_ERRMSG_INVALIDDATATYPES )
     		exit function
@@ -182,18 +205,18 @@ function cSubOrFuncDecl( byval isSub as integer ) as integer static
     end if
 
     if( issub ) then
-    	typ = FB_DATATYPE_VOID
+    	dtype = FB_DATATYPE_VOID
     	subtype = NULL
     end if
 
 	''
-	if( typ = INVALID ) then
-		typ = hGetDefType( id )
+	if( dtype = INVALID ) then
+		dtype = hGetDefType( id )
 	end if
 
     ''
     proc = symbAddPrototype( proc, @id, palias, plib, _
-    						 typ, subtype, ptrcnt, _
+    						 dtype, subtype, ptrcnt, _
     					     attrib, mode, FALSE )
     if( proc = NULL ) then
     	hReportError( FB_ERRMSG_DUPDEFINITION )

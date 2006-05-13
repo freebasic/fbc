@@ -55,7 +55,7 @@ sub hashInit static
 	end if
 
 	'' allocate the initial item list pool
-	listNew( @ctx.itemlist, HASH_INITITEMNODES, len( HASHITEM ), FALSE )
+	listNew( @ctx.itemlist, HASH_INITITEMNODES, len( HASHITEM ), LIST_FLAGS_NOCLEAR )
 
 end sub
 
@@ -72,9 +72,12 @@ sub hashEnd static
 end sub
 
 '':::::
-sub hashNew( byval hash as THASH ptr, _
-			 byval nodes as integer, _
-			 byval delstr as integer ) static
+sub hashNew _
+	( _
+		byval hash as THASH ptr, _
+		byval nodes as integer, _
+		byval delstr as integer _
+	) static
 
     dim as integer i
     dim as HASHLIST ptr list
@@ -95,7 +98,11 @@ sub hashNew( byval hash as THASH ptr, _
 end sub
 
 ''::::::
-sub hashFree( byval hash as THASH ptr ) static
+sub hashFree _
+	( _
+		byval hash as THASH ptr _
+	) static
+
     dim as integer i
     dim as HASHITEM ptr item, nxt
     dim as HASHLIST ptr list
@@ -141,7 +148,11 @@ sub hashFree( byval hash as THASH ptr ) static
 end sub
 
 '':::::
-function hashHash( byval symbol as zstring ptr ) as uinteger static
+function hashHash _
+	( _
+		byval symbol as zstring ptr _
+	) as uinteger static
+
 	dim as uinteger index
 	dim as integer i
 
@@ -156,17 +167,19 @@ function hashHash( byval symbol as zstring ptr ) as uinteger static
 end function
 
 ''::::::
-function hashLookupEx( byval hash as THASH ptr, _
-					   byval symbol as zstring ptr, _
-					   byval index as uinteger _
-					 ) as any ptr static
+function hashLookupEx _
+	( _
+		byval hash as THASH ptr, _
+		byval symbol as zstring ptr, _
+		byval index as uinteger _
+	) as any ptr static
 
     dim as HASHITEM ptr item
     dim as HASHLIST ptr list
 
     function = NULL
 
-    index = index mod hash->nodes
+    index mod= hash->nodes
 
 	'' get the start of list
 	list = @hash->list[index]
@@ -178,7 +191,7 @@ function hashLookupEx( byval hash as THASH ptr, _
 	'' loop until end of list or if item was found
 	do while( item <> NULL )
 		if( *item->name = *symbol ) then
-			return item->idx
+			return item->data
 		end if
 		item = item->next
 	loop
@@ -186,16 +199,22 @@ function hashLookupEx( byval hash as THASH ptr, _
 end function
 
 ''::::::
-function hashLookup( byval hash as THASH ptr, _
-					 byval symbol as zstring ptr _
-				   ) as any ptr static
+function hashLookup _
+	( _
+		byval hash as THASH ptr, _
+		byval symbol as zstring ptr _
+	) as any ptr static
 
     function = hashLookupEx( hash, symbol, hashHash( symbol ) )
 
 end function
 
 ''::::::
-private function hashNewItem( byval list as HASHLIST ptr ) as HASHITEM ptr static
+private function hashNewItem _
+	( _
+		byval list as HASHLIST ptr _
+	) as HASHITEM ptr static
+
 	dim as HASHITEM ptr item
 
 	'' add a new node
@@ -218,8 +237,11 @@ private function hashNewItem( byval list as HASHLIST ptr ) as HASHITEM ptr stati
 end function
 
 ''::::::
-private sub hashDelItem( byval list as HASHLIST ptr, _
-						 byval item as HASHITEM ptr ) static
+private sub hashDelItem _
+	( _
+		byval list as HASHLIST ptr, _
+		byval item as HASHITEM ptr _
+	) static
 
 	dim as HASHITEM ptr prv, nxt
 
@@ -249,20 +271,22 @@ private sub hashDelItem( byval list as HASHLIST ptr, _
 end sub
 
 ''::::::
-function hashAdd( byval hash as THASH ptr, _
-				  byval symbol as zstring ptr, _
-				  byval idx as any ptr, _
-			 	  byref index as uinteger _
-			 	) as HASHITEM ptr static
+function hashAdd _
+	( _
+		byval hash as THASH ptr, _
+		byval symbol as zstring ptr, _
+		byval userdata as any ptr, _
+		byval index as uinteger _
+	) as HASHITEM ptr static
 
     dim as HASHITEM ptr item
 
     '' calc hash?
     if( index = INVALID ) then
-    	index = hashHash( symbol ) mod hash->nodes
-    else
-    	index mod= hash->nodes
+    	index = hashHash( symbol )
     end if
+
+    index mod= hash->nodes
 
     '' allocate a new node
     item = hashNewItem( @hash->list[index] )
@@ -273,22 +297,26 @@ function hashAdd( byval hash as THASH ptr, _
 	end if
 
     '' fill node
-    item->name 	  = symbol
-    item->idx	  = idx
+    item->name = symbol
+    item->data = userdata
 
 end function
 
 ''::::::
-sub hashDel( byval hash as THASH ptr, _
-			 byval item as HASHITEM ptr, _
-			 byval index as uinteger _
-		   ) static
+sub hashDel _
+	( _
+		byval hash as THASH ptr, _
+		byval item as HASHITEM ptr, _
+		byval index as uinteger _
+	) static
 
     dim as HASHLIST ptr list
 
 	if( item = NULL ) then
 		exit sub
 	end if
+
+	index mod= hash->nodes
 
 	'' get start of list
 	list = @hash->list[index]
@@ -299,7 +327,7 @@ sub hashDel( byval hash as THASH ptr, _
 	end if
 	item->name = NULL
 
-	item->idx = NULL
+	item->data = NULL
 
 	hashDelItem( list, item )
 

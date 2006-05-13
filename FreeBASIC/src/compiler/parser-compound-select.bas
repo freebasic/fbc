@@ -113,15 +113,11 @@ function cSelectStmtBegin as integer
 	'' store expression into a temp var
 	dtype = astGetDataType( expr )
 	subtype = astGetSubType( expr )
+
 	select case dtype
 	'' fixed-len or zstring? temp will be a var-len string..
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 		dtype = FB_DATATYPE_STRING
-
-	'' bitfield? they are always converted to uint's..
-	case FB_DATATYPE_BITFIELD
-		dtype   = FB_DATATYPE_UINT
-	    subtype = NULL
 	end select
 
     '' not a wstring?
@@ -169,9 +165,7 @@ function cSelectStmtBegin as integer
 	end if
 
 	'' push to stmt stack
-	stk = stackPush( @env.stmtstk )
-	stk->last = env.stmt.select
-	stk->id = FB_TK_SELECT
+	stk = cCompStmtPush( FB_TK_SELECT )
 	stk->select.isconst = FALSE
 	stk->select.sym = sym
 	stk->select.dtype = dtype
@@ -304,18 +298,13 @@ end function
 ''
 function cSelectStmtNext( ) as integer
 	dim as FBSYMBOL ptr sym, il, nl
-	dim as integer dtype, cnt, i, cntbase, iserror
+	dim as integer dtype, cnt, i, cntbase
 	dim as FB_CMPSTMTSTK ptr stk
 
 	function = FALSE
 
-	stk = stackGetTOS( @env.stmtstk )
-	iserror = (stk = NULL)
-	if( iserror = FALSE ) then
-		iserror = (stk->id <> FB_TK_SELECT)
-	end if
-
-	if( iserror ) then
+	stk = cCompStmtGetTOS( FB_TK_SELECT, FALSE )
+	if( stk = NULL ) then
 		hReportError( FB_ERRMSG_CASEWITHOUTSELECT )
 		exit function
 	end if
@@ -414,19 +403,12 @@ end function
 ''
 function cSelectStmtEnd as integer
 	dim as integer dtype
-	dim as integer iserror
 	dim as FB_CMPSTMTSTK ptr stk
 
 	function = FALSE
 
-	stk = stackGetTOS( @env.stmtstk )
-	iserror = (stk = NULL)
-	if( iserror = FALSE ) then
-		iserror = (stk->id <> FB_TK_SELECT)
-	end if
-
-	if( iserror ) then
-		hReportError( FB_ERRMSG_ENDSELECTWITHOUTSELECT )
+	stk = cCompStmtGetTOS( FB_TK_SELECT )
+	if( stk = NULL ) then
 		exit function
 	end if
 
@@ -463,8 +445,7 @@ function cSelectStmtEnd as integer
 	end select
 
 	'' pop from stmt stack
-	env.stmt.select = stk->last
-	stackPop( @env.stmtstk )
+	cCompStmtPop( stk )
 
 	function = TRUE
 

@@ -38,9 +38,11 @@ const FBPREFIX_PROCRES = "{fbpr}"
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private function hCalcProcParamsLen( byval params as integer, _
-						   		     byval paramtail as FBSYMBOL ptr _
-						   		   ) as integer
+private function hCalcProcParamsLen _
+	( _
+		byval params as integer, _
+		byval paramtail as FBSYMBOL ptr _
+	) as integer
 
 	dim as integer i, lgt
 
@@ -63,25 +65,30 @@ private function hCalcProcParamsLen( byval params as integer, _
 end function
 
 '':::::
-function symbAddProcParam( byval proc as FBSYMBOL ptr, _
-					 	   byval symbol as zstring ptr, _
-					 	   byval typ as integer, _
-					 	   byval subtype as FBSYMBOL ptr, _
-					 	   byval ptrcnt as integer, _
-					 	   byval lgt as integer, _
-					 	   byval mode as integer, _
-					 	   byval suffix as integer, _
-					 	   byval optional as integer, _
-					 	   byval optexpr as ASTNODE ptr _
-					     ) as FBSYMBOL ptr static
+function symbAddProcParam _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval symbol as zstring ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval ptrcnt as integer, _
+		byval lgt as integer, _
+		byval mode as integer, _
+		byval suffix as integer, _
+		byval optional as integer, _
+		byval optexpr as ASTNODE ptr _
+	) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr param
 
     function = NULL
 
-    param = symbNewSymbol( NULL, @proc->proc.paramtb, TRUE, FB_SYMBCLASS_PARAM, _
-    				   	   FALSE, NULL, symbol, _
-    				   	   typ, subtype, ptrcnt, INVALID, TRUE )
+    param = symbNewSymbol( NULL, _
+    					   @proc->proc.paramtb, NULL, TRUE, _
+    					   FB_SYMBCLASS_PARAM, _
+    				   	   FALSE, symbol, NULL, _
+    				   	   dtype, subtype, ptrcnt, _
+    				   	   TRUE )
     if( param = NULL ) then
     	exit function
     end if
@@ -100,11 +107,13 @@ function symbAddProcParam( byval proc as FBSYMBOL ptr, _
 end function
 
 '':::::
-private function hGetProcRealType( byval typ as integer, _
-								   byval subtype as FBSYMBOL ptr _
-								 ) as integer static
+private function hGetProcRealType _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer static
 
-    select case typ
+    select case dtype
     '' string? it's actually a pointer to a string descriptor
     case FB_DATATYPE_STRING
     	 return FB_DATATYPE_POINTER + FB_DATATYPE_STRING
@@ -192,22 +201,24 @@ private function hGetProcRealType( byval typ as integer, _
 
 	'' type is the same
 	case else
-    	return typ
+    	return dtype
 
 	end select
 
 end function
 
 '':::::
-private function hAddOvlProc( byval proc as FBSYMBOL ptr, _
-							  byval parent as FBSYMBOL ptr, _
-							  byval symbol as zstring ptr, _
-							  byval aname as zstring ptr, _
-							  byval typ as integer, _
-							  byval subtype as FBSYMBOL ptr, _
-							  byval ptrcnt as integer, _
-				              byval preservecase as integer _
-				            ) as FBSYMBOL ptr static
+private function hAddOvlProc _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval parent as FBSYMBOL ptr, _
+		byval id as zstring ptr, _
+		byval id_alias as zstring ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval ptrcnt as integer, _
+		byval preservecase as integer _
+	) as FBSYMBOL ptr static
 
 	dim as FBSYMBOL ptr f, fparam, pparam
 	dim as integer params
@@ -291,20 +302,36 @@ private function hAddOvlProc( byval proc as FBSYMBOL ptr, _
 
 
     '' add the new proc symbol, w/o adding it to the hash table
-	proc = symbNewSymbol( proc, @symb.globtb, TRUE, FB_SYMBCLASS_PROC, _
-						  FALSE, symbol, aname, _
-					      typ, subtype, ptrcnt, INVALID, preservecase )
+
+	proc = symbNewSymbol( proc, _
+						  NULL, NULL, TRUE, _
+						  FB_SYMBCLASS_PROC, _
+						  FALSE, id, id_alias, _
+					      dtype, subtype, ptrcnt, _
+					      preservecase )
 
 	if( proc = NULL ) then
 		exit function
 	end if
 
-	'' add to linked-list or getOrgName will fail
-	parent->right = proc
-	proc->left = parent
+	'' add to hash chain list, as they share the same name
+	dim as FBSYMCHAIN ptr chain_, nxt
+	chain_ = listNewNode( @symb.chainlist )
 
-	proc->hashitem = parent->hashitem
-	proc->hashindex	= parent->hashindex
+	chain_->index = parent->hash.chain->index
+	chain_->item = parent->hash.chain->item
+
+    nxt = parent->hash.chain->next
+	parent->hash.chain->next = chain_
+
+	chain_->prev = parent->hash.chain
+	chain_->next = nxt
+	if( nxt <> NULL ) then
+		nxt->prev = chain_
+	end if
+
+	chain_->sym = proc
+	proc->hash.chain = chain_
 
     ''
 	function = proc
@@ -312,9 +339,11 @@ private function hAddOvlProc( byval proc as FBSYMBOL ptr, _
 end function
 
 '':::::
-function symbIsProcOverloadOf( byval proc as FBSYMBOL ptr, _
-							   byval parent as FBSYMBOL ptr _
-							 ) as integer static
+function symbIsProcOverloadOf _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval parent as FBSYMBOL ptr _
+	) as integer static
 
 	dim as FBSYMBOL ptr f
 
@@ -351,58 +380,54 @@ function symbIsProcOverloadOf( byval proc as FBSYMBOL ptr, _
 end function
 
 '':::::
-private function hSetupProc( byval sym as FBSYMBOL ptr, _
-							 byval id as zstring ptr, _
-							 byval aliasname as zstring ptr, _
-							 byval libname as zstring ptr, _
-				             byval typ as integer, _
-				             byval subtype as FBSYMBOL ptr, _
-				             byval ptrcnt as integer, _
-				             byval attrib as integer, _
-				             byval mode as integer, _
-			                 byval declaring as integer, _
-			                 byval preservecase as integer _
-			               ) as FBSYMBOL ptr static
+private function hSetupProc _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval id as zstring ptr, _
+		byval id_alias as zstring ptr, _
+		byval libname as zstring ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval ptrcnt as integer, _
+		byval attrib as integer, _
+		byval mode as integer, _
+		byval declaring as integer, _
+		byval preservecase as integer _
+	) as FBSYMBOL ptr static
 
-    static as zstring * FB_MAXINTNAMELEN+1 aname
-    dim as integer lgt, realtype
+    dim as integer lgt, realtype, stats
     dim as FBSYMBOL ptr proc, parent
 
     function = NULL
 
 	''
-	if( typ = INVALID ) then
-		typ = hGetDefType( id )
+	if( dtype = INVALID ) then
+		dtype = hGetDefType( id )
 		subtype = NULL
 	end if
 
-    realtype = hGetProcRealType( typ, subtype )
+    realtype = hGetProcRealType( dtype, subtype )
 
     lgt = hCalcProcParamsLen( symbGetProcParams( sym ), symbGetProcTailParam( sym ) )
 
-    '' no alias? make one..
-    if( aliasname = NULL ) then
-
-    	hUcase( id, aname )
-
-    	'' overloaded?
-		if( (attrib and FB_SYMBATTRIB_OVERLOADED) > 0 ) then
-			aname = *hCreateOvlProcAlias( aname, _
-										  symbGetProcParams( sym ), _
-										  symbGetProcHeadParam( sym ) )
-		end if
-
-		aname = *hCreateProcAlias( aname, lgt, mode )
-
-    '' alias given..
+    '' no explict alias?
+    if( id_alias = NULL ) then
+    	'' only preserve a case-sensitive version if in BASIC mangling
+    	if( env.mangling <> FB_MANGLING_BASIC ) then
+    		id_alias = id
+    	end if
+    	stats = 0
     else
-	   	aname = *hCreateProcAlias( aliasname, lgt, mode )
+    	stats = FB_SYMBSTATS_HASALIAS
     end if
 
-    ''
-	proc = symbNewSymbol( sym, @symb.globtb, TRUE, FB_SYMBCLASS_PROC, _
-						  TRUE, id, @aname, _
-					   	  typ, subtype, ptrcnt, INVALID, preservecase )
+	''
+	proc = symbNewSymbol( sym, _
+						  NULL, NULL, TRUE, _
+						  FB_SYMBCLASS_PROC, _
+						  TRUE, id, id_alias, _
+					   	  dtype, subtype, ptrcnt, _
+					   	  preservecase )
 
 	'' dup def?
 	if( proc = NULL ) then
@@ -417,22 +442,8 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 			exit function
 		end if
 
-    	'' no alias?
-    	if( aliasname = NULL ) then
-			'' not declared explicitly as overloaded?
-			if( (attrib and FB_SYMBATTRIB_OVERLOADED) = 0 ) then
-    			hUcase( *id, aname )
-
-				aname = *hCreateOvlProcAlias( aname, _
-											  symbGetProcParams( sym ), _
-											  symbGetProcHeadParam( sym ) )
-
-				aname = *hCreateProcAlias( aname, lgt, mode )
-			end if
-		end if
-
 		'' try to overload..
-		proc = hAddOvlProc( sym, parent, id, aname, typ, subtype, ptrcnt, preservecase )
+		proc = hAddOvlProc( sym, parent, id, id_alias, dtype, subtype, ptrcnt, preservecase )
 		if( proc = NULL ) then
 			exit function
 		end if
@@ -447,7 +458,7 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 	proc->attrib = attrib or FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
 
     '' if proc returns an UDT, add the hidden pointer passed as the 1st arg
-    if( typ = FB_DATATYPE_USERDEF ) then
+    if( dtype = FB_DATATYPE_USERDEF ) then
     	if( realtype = FB_DATATYPE_POINTER + FB_DATATYPE_USERDEF ) then
     		lgt += FB_POINTERSIZE
     	end if
@@ -471,7 +482,7 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 			proc->proc.lib = NULL
 		end if
 	else
-		proc->proc.lib = NULL
+		proc->proc.lib = env.currlib
 	end if
 
 	'' if overloading, update the linked-list
@@ -496,28 +507,32 @@ private function hSetupProc( byval sym as FBSYMBOL ptr, _
 	''
 	proc->proc.ext = NULL
 
+	proc->stats or= stats
+
 	function = proc
 
 end function
 
 '':::::
-function symbAddPrototype( byval proc as FBSYMBOL ptr, _
-						   byval symbol as zstring ptr, _
-						   byval aliasname as zstring ptr, _
-						   byval libname as zstring ptr, _
-						   byval typ as integer, _
-						   byval subtype as FBSYMBOL ptr, _
-						   byval ptrcnt as integer, _
-						   byval attrib as integer, _
-						   byval mode as integer, _
-						   byval isexternal as integer, _
-						   byval preservecase as integer = FALSE _
-						 ) as FBSYMBOL ptr static
+function symbAddPrototype _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval symbol as zstring ptr, _
+		byval aliasname as zstring ptr, _
+		byval libname as zstring ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval ptrcnt as integer, _
+		byval attrib as integer, _
+		byval mode as integer, _
+		byval isexternal as integer, _
+		byval preservecase as integer = FALSE _
+	) as FBSYMBOL ptr static
 
     function = NULL
 
 	proc = hSetupProc( proc, symbol, aliasname, libname, _
-					   typ, subtype, ptrcnt, _
+					   dtype, subtype, ptrcnt, _
 					   attrib, mode, isexternal, preservecase )
 	if( proc = NULL ) then
 		exit function
@@ -528,21 +543,23 @@ function symbAddPrototype( byval proc as FBSYMBOL ptr, _
 end function
 
 '':::::
-function symbAddProc( byval proc as FBSYMBOL ptr, _
-					  byval symbol as zstring ptr, _
-					  byval aliasname as zstring ptr, _
-					  byval libname as zstring ptr, _
-					  byval typ as integer, _
-					  byval subtype as FBSYMBOL ptr, _
-					  byval ptrcnt as integer, _
-					  byval attrib as integer, _
-					  byval mode as integer _
-					) as FBSYMBOL ptr static
+function symbAddProc _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval symbol as zstring ptr, _
+		byval aliasname as zstring ptr, _
+		byval libname as zstring ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval ptrcnt as integer, _
+		byval attrib as integer, _
+		byval mode as integer _
+	) as FBSYMBOL ptr static
 
     function = NULL
 
 	proc = hSetupProc( proc, symbol, aliasname, libname, _
-					   typ, subtype, ptrcnt, _
+					   dtype, subtype, ptrcnt, _
 					   attrib, mode, TRUE, FALSE )
 	if( proc = NULL ) then
 		exit function
@@ -553,7 +570,11 @@ function symbAddProc( byval proc as FBSYMBOL ptr, _
 end function
 
 '':::::
-function symbPreAddProc( byval symbol as zstring ptr ) as FBSYMBOL ptr static
+function symbPreAddProc _
+	( _
+		byval symbol as zstring ptr _
+	) as FBSYMBOL ptr static
+
     dim as FBSYMBOL ptr proc
 
 	proc = listNewNode( @symb.symlist )
@@ -573,9 +594,11 @@ function symbPreAddProc( byval symbol as zstring ptr ) as FBSYMBOL ptr static
 end function
 
 '':::::
-function symbAddParam( byval symbol as zstring ptr, _
-					   byval param as FBSYMBOL ptr _
-				     ) as FBSYMBOL ptr static
+function symbAddParam _
+	( _
+		byval symbol as zstring ptr, _
+		byval param as FBSYMBOL ptr _
+	) as FBSYMBOL ptr static
 
     dim as FBARRAYDIM dTB(0)
     dim as FBSYMBOL ptr s
@@ -607,7 +630,7 @@ function symbAddParam( byval symbol as zstring ptr, _
 
     s = symbAddVarEx( symbol, NULL, dtype, param->subtype, 0, 0, _
     				  0, dTB(), attrib, _
-    				  param->param.suffix <> INVALID, FALSE, TRUE )
+    				  param->param.suffix <> INVALID, FALSE )
 
     if( s = NULL ) then
     	exit function
@@ -618,8 +641,12 @@ function symbAddParam( byval symbol as zstring ptr, _
 end function
 
 '':::::
-function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
-    static as zstring * FB_MAXINTNAMELEN+1 symbol
+function symbAddProcResultParam _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as FBSYMBOL ptr static
+
+    static as zstring * FB_MAXINTNAMELEN+1 id
     dim as FBARRAYDIM dTB(0)
     dim as FBSYMBOL ptr s
 
@@ -633,21 +660,25 @@ function symbAddProcResultParam( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr st
 		return NULL
 	end if
 
-	symbol = FBPREFIX_PROCRES
-	symbol += *symbGetOrgName( proc )
+	id = FBPREFIX_PROCRES
+	id += *proc->name
 
-    s = symbAddVarEx( @symbol, NULL, _
+    s = symbAddVarEx( @id, NULL, _
     				  FB_DATATYPE_POINTER+FB_DATATYPE_USERDEF, proc->subtype, 0, 0, _
     				  0, dTB(), FB_SYMBATTRIB_PARAMBYVAL, _
-    				  TRUE, TRUE, FALSE )
+    				  TRUE, TRUE )
 
 	function = s
 
 end function
 
 '':::::
-function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
-	static as zstring * FB_MAXINTNAMELEN+1 rname
+function symbAddProcResult _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as FBSYMBOL ptr static
+
+	static as zstring * FB_MAXINTNAMELEN+1 id
 	dim as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr s, subtype
 	dim as integer dtype
@@ -660,18 +691,22 @@ function symbAddProcResult( byval proc as FBSYMBOL ptr ) as FBSYMBOL ptr static
 		end if
 	end if
 
-	rname = FBPREFIX_PROCRES
-	rname += *symbGetOrgName( proc )
+	id = FBPREFIX_PROCRES
+	id += *proc->name
 
-	s = symbAddVarEx( @rname, NULL, proc->typ, proc->subtype, 0, 0, 0, _
-					  dTB(), FB_SYMBATTRIB_FUNCRESULT, TRUE, TRUE, FALSE )
+	s = symbAddVarEx( @id, NULL, proc->typ, proc->subtype, 0, 0, 0, _
+					  dTB(), FB_SYMBATTRIB_FUNCRESULT, TRUE, TRUE )
 
 	function = s
 
 end function
 
 '':::::
-function symbProcAllocLocals( byval proc as FBSYMBOL ptr ) as integer static
+function symbProcAllocLocals _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as integer static
+
     dim as FBSYMBOL ptr s
     dim as integer lgt
 
@@ -691,14 +726,14 @@ function symbProcAllocLocals( byval proc as FBSYMBOL ptr ) as integer static
     			  				   	FB_SYMBATTRIB_PARAMBYREF)) = 0 ) then
 
 					lgt = s->lgt * symbGetArrayElements( s )
-					ZstrAssign( @s->alias, emitAllocLocal( env.currproc, lgt, s->ofs ) )
+					s->ofs = emitAllocLocal( env.currproc, lgt )
 
 				'' parameter..
 				else
 					lgt = iif( (s->attrib and FB_SYMBATTRIB_PARAMBYVAL), _
 						   	   s->lgt, _
 						   	   FB_POINTERSIZE )
-					ZstrAssign( @s->alias, emitAllocArg( env.currproc, lgt, s->ofs ) )
+					s->ofs = emitAllocArg( env.currproc, lgt )
 
 				end if
 
@@ -720,24 +755,30 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbLookupProcResult( byval f as FBSYMBOL ptr ) as FBSYMBOL ptr static
-	static as zstring * FB_MAXINTNAMELEN+1 rname
+function symbLookupProcResult _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as FBSYMBOL ptr static
 
-	if( f = NULL ) then
+	static as zstring * FB_MAXINTNAMELEN+1 id
+
+	if( proc = NULL ) then
 		return NULL
 	end if
 
-	rname = FBPREFIX_PROCRES
-	rname += *symbGetOrgName( f )
+	id = FBPREFIX_PROCRES
+	id += *proc->name
 
-	function = symbFindByNameAndClass( @rname, FB_SYMBCLASS_VAR, TRUE )
+	function = symbFindByNameAndClass( @id, FB_SYMBCLASS_VAR, TRUE )
 
 end function
 
 '':::::
-function symbFindOverloadProc( byval parent as FBSYMBOL ptr, _
-							   byval proc as FBSYMBOL ptr _
-							 ) as FBSYMBOL ptr static
+function symbFindOverloadProc _
+	( _
+		byval parent as FBSYMBOL ptr, _
+		byval proc as FBSYMBOL ptr _
+	) as FBSYMBOL ptr static
 
 	dim as FBSYMBOL ptr f, fparam, pparam, fsubtype, psubtype
 	dim as integer params
@@ -812,10 +853,12 @@ const FB_OVLPROC_HALFMATCH = FB_DATATYPES
 const FB_OVLPROC_FULLMATCH = FB_OVLPROC_HALFMATCH * 2
 
 '':::::
-private function hCheckOvlParam( byval param as FBSYMBOL ptr, _
-	  						     byval arg_expr as ASTNODE ptr, _
-							     byval arg_mode as integer _
-							   ) as integer static
+private function hCheckOvlParam _
+	( _
+		byval param as FBSYMBOL ptr, _
+	  	byval arg_expr as ASTNODE ptr, _
+		byval arg_mode as integer _
+	) as integer static
 
 	dim as integer adtype, adclass, pdtype
 	dim as FBSYMBOL ptr s, asubtype
@@ -1079,11 +1122,13 @@ private function hCheckOvlParam( byval param as FBSYMBOL ptr, _
 end function
 
 '':::::
-function symbFindClosestOvlProc( byval prochead as FBSYMBOL ptr, _
-					   		     byval args as integer, _
-					   		     exprTB() as ASTNODE ptr, _
-					   		     modeTB() as integer _
-					   		   ) as FBSYMBOL ptr static
+function symbFindClosestOvlProc _
+	( _
+		byval prochead as FBSYMBOL ptr, _
+		byval args as integer, _
+		exprTB() as ASTNODE ptr, _
+		modeTB() as integer _
+	) as FBSYMBOL ptr static
 
 	dim as FBSYMBOL ptr proc, ovlproc, param
 	dim as integer i, argmatches, matches, maxmatches, ambcnt
@@ -1176,7 +1221,11 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private sub hDelParams( byval f as FBSYMBOL ptr )
+private sub hDelParams _
+	( _
+		byval f as FBSYMBOL ptr _
+	)
+
 	dim as FBSYMBOL ptr param, nxt
 
     param = f->proc.paramtb.head
@@ -1189,14 +1238,12 @@ private sub hDelParams( byval f as FBSYMBOL ptr )
 end sub
 
 '':::::
-sub symbDelPrototype( byval s as FBSYMBOL ptr, _
-				      byval dolookup as integer )
+sub symbDelPrototype _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
 
 	dim as FBSYMBOL ptr n
-
-    if( dolookup ) then
-    	s = symbFindByClass( s, FB_SYMBCLASS_PROC )
-    end if
 
     if( s = NULL ) then
     	exit sub
@@ -1234,20 +1281,23 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbCalcParamLen( byval typ as integer, _
-						   byval subtype as FBSYMBOL ptr, _
-						   byval mode as integer _
-						 ) as integer static
-    dim lgt as integer
+function symbCalcParamLen _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval mode as integer _
+	) as integer static
+
+    dim as integer lgt
 
 	select case mode
 	case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
 		lgt = FB_POINTERSIZE
 	case else
-		if( typ = FB_DATATYPE_STRING ) then
+		if( dtype = FB_DATATYPE_STRING ) then
 			lgt = FB_POINTERSIZE
 		else
-			lgt = symbCalcLen( typ, subtype )
+			lgt = symbCalcLen( dtype, subtype )
 		end if
 	end select
 
@@ -1256,8 +1306,11 @@ function symbCalcParamLen( byval typ as integer, _
 end function
 
 '':::::
-sub symbSetProcIncFile( byval p as FBSYMBOL ptr, _
-						byval incf as zstring ptr )
+sub symbSetProcIncFile _
+	( _
+		byval p as FBSYMBOL ptr, _
+		byval incf as zstring ptr _
+	)
 
 	if( p->proc.ext = NULL ) then
 		p->proc.ext = callocate( len( FB_PROCEXT ) )
@@ -1266,5 +1319,6 @@ sub symbSetProcIncFile( byval p as FBSYMBOL ptr, _
 	p->proc.ext->dbg.incfile = incf
 
 end sub
+
 
 

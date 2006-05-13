@@ -148,7 +148,12 @@ function cAssignmentOrPtrCall as integer
 
 	function = FALSE
 
-	if( hMatch( FB_TK_LET ) ) then
+	if( lexGetToken( ) = FB_TK_LET ) then
+    	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+    		exit function
+    	end if
+
+		lexSkipToken( )
 		islet = TRUE
 	else
 		islet = FALSE
@@ -156,6 +161,10 @@ function cAssignmentOrPtrCall as integer
 
 	'' Variable
 	if( cVarOrDeref( assgexpr ) ) then
+
+    	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+    		exit function
+    	end if
 
     	'' calling a SUB ptr?
     	if( assgexpr = NULL ) then

@@ -40,7 +40,7 @@ declare sub 		hDelVarDims			( byval s as FBSYMBOL ptr )
 '':::::
 sub symbInitDims( ) static
 
-	listNew( @symb.dimlist, FB_INITDIMNODES, len( FBVARDIM ), FALSE )
+	listNew( @symb.dimlist, FB_INITDIMNODES, len( FBVARDIM ), LIST_FLAGS_NOCLEAR )
 
 end sub
 
@@ -50,12 +50,13 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
-						   byval dimensions as integer _
-						 ) as FBSYMBOL ptr static
+function hCreateArrayDesc _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval dimensions as integer _
+	) as FBSYMBOL ptr static
 
-    static as zstring * FB_MAXINTNAMELEN+1 sname
-    dim as zstring ptr aname
+    dim as zstring ptr id, id_alias
     dim as FBSYMBOL ptr d
     dim as integer lgt
     dim as integer isshared, isstatic, isdynamic, iscommon, ispubext
@@ -76,21 +77,21 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 	'' COMMON, public or dynamic? use the array name for the descriptor,
 	'' as only it will be allocated or seen by other modules
 	if( (iscommon) or (ispubext and isdynamic) ) then
-		sname = *symbGetName( s )
+		id = s->name
+		id_alias = s->alias
 
 	'' otherwise, create a temporary name..
 	else
-		sname = *hMakeTmpStr( FALSE )
+		id = hMakeTmpStr( FALSE )
+		id_alias = NULL
 	end if
 
 	'' common, shared (also extern) or static? create alias
 	if( iscommon or isshared or isstatic ) then
-		aname = @sname
 		lgt = 0
 
 	'' local..
 	else
-		aname = NULL
 		'' dimensions will be unknown if it's a DIM|REDIM array()
 		lgt = FB_ARRAYDESCLEN + _
 			  iif( dimensions <> INVALID, _
@@ -98,9 +99,12 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 			  	   FB_MAXARRAYDIMS ) * FB_ARRAYDESC_DIMLEN
 	end if
 
-	d = symbNewSymbol( NULL, s->symtb, s->symtb = @symb.globtb, FB_SYMBCLASS_VAR, _
-					   FALSE, NULL, aname, _
-					   FB_DATATYPE_USERDEF, cast( FBSYMBOL ptr, FB_DESCTYPE_ARRAY ), 0 )
+	d = symbNewSymbol( NULL, _
+					   s->symtb, NULL, s->symtb = @symbGetGlobalTb( ), _
+					   FB_SYMBCLASS_VAR, _
+					   FALSE, id, id_alias, _
+					   FB_DATATYPE_USERDEF, cast( FBSYMBOL ptr, FB_DESCTYPE_ARRAY ), 0, _
+					   TRUE )
     if( d = NULL ) then
     	exit function
     end if
@@ -117,6 +121,8 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 
 	d->lgt = lgt
 	d->ofs = 0
+	d->stats = s->stats
+
 	d->var.array.desc = NULL
 	d->var.array.dif = 0
 	d->var.array.dims = 0
@@ -132,10 +138,12 @@ function hCreateArrayDesc( byval s as FBSYMBOL ptr, _
 end function
 
 '':::::
-function symbNewArrayDim( byval s as FBSYMBOL ptr, _
-				  		  byval lower as integer, _
-				  		  byval upper as integer _
-				  		) as FBVARDIM ptr static
+function symbNewArrayDim _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval lower as integer, _
+		byval upper as integer _
+	) as FBVARDIM ptr static
 
     dim as FBVARDIM ptr d, n
 
@@ -164,9 +172,12 @@ function symbNewArrayDim( byval s as FBSYMBOL ptr, _
 end function
 
 '':::::
-sub symbSetArrayDims( byval s as FBSYMBOL ptr, _
-					  byval dimensions as integer, _
-					  dTB() as FBARRAYDIM )
+sub symbSetArrayDims _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval dimensions as integer, _
+		dTB() as FBARRAYDIM _
+	)
 
     dim as integer i
     dim as FBVARDIM ptr d
@@ -214,22 +225,26 @@ sub symbSetArrayDims( byval s as FBSYMBOL ptr, _
 end sub
 
 '':::::
-private sub hSetupVar( byval s as FBSYMBOL ptr, _
-			   		   byval symbol as zstring ptr, _
-			   		   byval typ as integer, _
-			   		   byval subtype as FBSYMBOL ptr, _
-			   		   byval lgt as integer, _
-			   		   byval dimensions as integer, _
-			   		   dTB() as FBARRAYDIM, _
-			   		   byval attrib as integer _
-			   		 ) static
+private sub hSetupVar _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval id as zstring ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval lgt as integer, _
+		byval dimensions as integer, _
+		dTB() as FBARRAYDIM, _
+		byval attrib as integer, _
+		byval stats as integer _
+	) static
 
-	if( typ = INVALID ) then
-		typ = hGetDefType( symbol )
+	if( dtype = INVALID ) then
+		dtype = hGetDefType( id )
 	end if
 
 	''
 	s->attrib or= attrib
+	s->stats or= stats
 
 	s->lgt = lgt
 	s->ofs = 0
@@ -254,127 +269,146 @@ private sub hSetupVar( byval s as FBSYMBOL ptr, _
 end sub
 
 '':::::
-function symbAddVarEx( byval symbol as zstring ptr, _
-					   byval aliasname as zstring ptr, _
-					   byval typ as integer, _
-					   byval subtype as FBSYMBOL ptr, _
-					   byval ptrcnt as integer, _
-					   byval lgt as integer, _
-					   byval dimensions as integer, _
-					   dTB() as FBARRAYDIM, _
-				       byval attrib as integer, _
-				       byval addsuffix as integer, _
-				       byval preservecase as integer, _
-				       byval clearname as integer _
-				     ) as FBSYMBOL ptr static
+function symbAddVarEx _
+	( _
+		byval id as zstring ptr, _
+		byval id_alias as zstring ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval ptrcnt as integer, _
+		byval lgt as integer, _
+		byval dimensions as integer, _
+		dTB() as FBARRAYDIM, _
+		byval attrib as integer, _
+		byval addsuffix as integer, _
+		byval preservecase as integer _
+	) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr s
     dim as FBSYMBOLTB ptr symtb
-    dim as zstring ptr aname
-    dim as integer isshared, isstatic
-    dim as integer suffix
+    dim as FBHASHTB ptr hashtb
+    dim as integer isglobal, suffix, stats
 
     function = NULL
 
     ''
-    isshared = (attrib and FB_SYMBATTRIB_SHARED) > 0
-    isstatic = (attrib and FB_SYMBATTRIB_STATIC) > 0
+    isglobal = (attrib and (FB_SYMBATTRIB_PUBLIC or _
+			 				FB_SYMBATTRIB_EXTERN or _
+			 				FB_SYMBATTRIB_SHARED)) <> 0
+
+	'' inside a namespace but outside a proc?
+	if( symbIsGlobalNamespc() = FALSE ) then
+		if( fbIsModLevel( ) ) then
+			'' they are never allocated on stack..
+			attrib or= FB_SYMBATTRIB_STATIC
+		end if
+	end if
 
     ''
     if( lgt <= 0 ) then
-		if( typ = INVALID ) then
-			suffix = hGetDefType( symbol )
+		if( dtype = INVALID ) then
+			suffix = hGetDefType( id )
 		else
-			suffix = typ
+			suffix = dtype
  		end if
     	lgt	= symbCalcLen( suffix, subtype )
     end if
 
     ''
     if( addsuffix ) then
-    	suffix = typ
+    	suffix = dtype
     else
     	suffix = INVALID
     end if
 
-    ''
-	'' create an alias name (the real one that will be emited)
-	if( aliasname <> NULL ) then
-		'' if alias was given, it can't be a local var
-		aname = aliasname
+    '' no explict alias?
+    if( id_alias = NULL ) then
+    	'' only preserve a case-sensitive version if in BASIC mangling
+    	if( env.mangling <> FB_MANGLING_BASIC ) then
+    		id_alias = id
+    	end if
+    	stats = 0
 
+    else
+		stats = FB_SYMBSTATS_HASALIAS
+	end if
+
+	'' local? add to local symb & hash tbs
+	if( isglobal = FALSE ) then
+		symtb = symb.symtb
+		hashtb = symb.hashtb
+
+		'' can't add local static vars to global list because
+		'' symbDelSymbolTb() will miss them when flushing the
+		'' proc/scope block, and also because the the dbg info
+
+	'' global..
 	else
-		'' shared, public or extern?
-		if( (attrib and _
-			(FB_SYMBATTRIB_PUBLIC or _
-			 FB_SYMBATTRIB_EXTERN or _
-			 FB_SYMBATTRIB_SHARED)) <> 0 ) then
+		'' inside a namespace and not a literal-constant?
+		if( (symbIsGlobalNamespc( ) = FALSE) and _
+			((attrib and FB_SYMBATTRIB_LITCONST) = 0) ) then
 
-			aname = hCreateName( symbol, suffix, preservecase, _
-			   				  	 TRUE, clearname )
+			symtb = @symbGetNamespaceTb( symb.namespc )
+			hashtb = @symbGetNamespaceHashTb( symb.namespc )
 
-		'' static?
-		elseif( isstatic ) then
-
-			aname = hMakeTmpStr( FALSE )
-
-		'' local..
+		'' module-level..
 		else
-			aname = NULL
+			symtb = @symbGetGlobalTb( )
+			hashtb = @symbGetGlobalHashTb( )
 		end if
 	end if
 
-	'' if SHARED, use the global symbol tb, even if inside a proc
-	if( isshared ) then
-		symtb = @symb.globtb
-	else
-		symtb = symb.loctb
-	end if
-
-	s = symbNewSymbol( NULL, symtb, isshared, FB_SYMBCLASS_VAR, _
-					   TRUE, symbol, aname, _
-					   typ, subtype, ptrcnt, suffix, preservecase )
+	s = symbNewSymbol( NULL, _
+					   symtb, hashtb, isglobal, _
+					   FB_SYMBCLASS_VAR, _
+					   TRUE, id, id_alias, _
+					   dtype, subtype, ptrcnt, _
+					   preservecase, suffix )
 
 	if( s = NULL ) then
 		exit function
 	end if
 
 	''
-	hSetupVar( s, symbol, typ, subtype, lgt, dimensions, dTB(), attrib )
+	hSetupVar( s, id, dtype, subtype, lgt, dimensions, dTB(), attrib, stats )
 
 	function = s
 
 end function
 
 '':::::
-function symbAddVar( byval symbol as zstring ptr, _
-					 byval typ as integer, _
-					 byval subtype as FBSYMBOL ptr, _
-				     byval ptrcnt as integer, _
-				     byval dimensions as integer, _
-				     dTB() as FBARRAYDIM, _
-				     byval attrib as integer _
-				   ) as FBSYMBOL ptr static
+function symbAddVar _
+	( _
+		byval symbol as zstring ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval ptrcnt as integer, _
+		byval dimensions as integer, _
+		dTB() as FBARRAYDIM, _
+		byval attrib as integer _
+	) as FBSYMBOL ptr static
 
-    function = symbAddVarEx( symbol, NULL, typ, subtype, ptrcnt, _
+    function = symbAddVarEx( symbol, NULL, dtype, subtype, ptrcnt, _
     		  			     0, dimensions, dTB(), _
     						 attrib, _
-    						 TRUE, FALSE, TRUE )
+    						 TRUE, FALSE )
 end function
 
 '':::::
-function symbAddTempVar( byval typ as integer, _
-						 byval subtype as FBSYMBOL ptr = NULL, _
-						 byval doalloc as integer = FALSE, _
-						 byval checkstatic as integer = TRUE _
-					   ) as FBSYMBOL ptr static
+function symbAddTempVar _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr = NULL, _
+		byval doalloc as integer = FALSE, _
+		byval checkstatic as integer = TRUE _
+	) as FBSYMBOL ptr static
 
-	static as zstring * FB_MAXINTNAMELEN+1 sname
+	static as zstring * FB_MAXINTNAMELEN+1 id
 	dim as integer attrib
     dim as FBSYMBOL ptr s
     dim as FBARRAYDIM dTB(0)
 
-	sname = *hMakeTmpStr( FALSE )
+	id = *hMakeTmpStr( FALSE )
 
 	attrib = FB_SYMBATTRIB_TEMP
 	if( checkstatic ) then
@@ -385,10 +419,10 @@ function symbAddTempVar( byval typ as integer, _
 		end if
 	end if
 
-	s = symbAddVarEx( sname, NULL, typ, subtype, 0, _
+	s = symbAddVarEx( id, NULL, dtype, subtype, 0, _
 					  0, 0, dTB(), _
 					  attrib, _
-					  FALSE, FALSE, FALSE )
+					  FALSE, FALSE )
     if( s = NULL ) then
     	return NULL
     end if
@@ -403,7 +437,7 @@ function symbAddTempVar( byval typ as integer, _
     			  			FB_SYMBATTRIB_PARAMBYVAL or _
     			  			FB_SYMBATTRIB_PARAMBYREF)) = 0 ) then
 
-			ZstrAssign( @s->alias, emitAllocLocal( env.currproc, s->lgt, s->ofs ) )
+			s->ofs = emitAllocLocal( env.currproc, s->lgt )
 
 		end if
 	end if
@@ -417,10 +451,12 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbCalcArrayDiff( byval dimensions as integer, _
-							dTB() as FBARRAYDIM, _
-							byval lgt as integer _
-						  ) as integer
+function symbCalcArrayDiff _
+	( _
+		byval dimensions as integer, _
+		dTB() as FBARRAYDIM, _
+		byval lgt as integer _
+	) as integer
 
     dim as integer d, diff, elms, mult
 
@@ -443,9 +479,11 @@ function symbCalcArrayDiff( byval dimensions as integer, _
 end function
 
 '':::::
-function symbCalcArrayElements( byval s as FBSYMBOL ptr, _
-								byval n as FBVARDIM ptr = NULL _
-							  ) as integer static
+function symbCalcArrayElements _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval n as FBVARDIM ptr = NULL _
+	) as integer static
 
     dim as integer e, d
 
@@ -465,10 +503,13 @@ function symbCalcArrayElements( byval s as FBSYMBOL ptr, _
 end function
 
 '':::::
-private function hCalcArrayElements( byval dimensions as integer, _
-						 		 	 dTB() as FBARRAYDIM _
-						 		   ) as integer static
-    dim e as integer, i as integer, d as integer
+private function hCalcArrayElements _
+	( _
+		byval dimensions as integer, _
+		dTB() as FBARRAYDIM _
+	) as integer static
+
+    dim as integer e, i, d
 
 	e = 1
 	for i = 0 to dimensions-1
@@ -481,7 +522,10 @@ private function hCalcArrayElements( byval dimensions as integer, _
 end function
 
 '':::::
-function symbVarIsLocalDyn( byval s as FBSYMBOL ptr ) as integer static
+function symbVarIsLocalDyn _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as integer static
 
     function = FALSE
 
@@ -510,7 +554,10 @@ function symbVarIsLocalDyn( byval s as FBSYMBOL ptr ) as integer static
 end function
 
 '':::::
-function symbVarIsLocalObj( byval s as FBSYMBOL ptr ) as integer static
+function symbVarIsLocalObj _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as integer static
 
     '' shared, static, param or temp?
     if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
@@ -543,7 +590,11 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private sub hDelVarDims( byval s as FBSYMBOL ptr ) static
+private sub hDelVarDims _
+	( _
+		byval s as FBSYMBOL ptr _
+	) static
+
     dim as FBVARDIM ptr n, nxt
 
     n = s->var.array.dimhead
@@ -562,10 +613,12 @@ private sub hDelVarDims( byval s as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub symbDelVar( byval s as FBSYMBOL ptr, _
-				byval dolookup as integer )
+sub symbDelVar _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
 
-    dim movetoglob as integer
+    dim as integer movetoglob
 
     if( s = NULL ) then
     	exit sub
@@ -573,12 +626,10 @@ sub symbDelVar( byval s as FBSYMBOL ptr, _
 
 	movetoglob = FALSE
 
-	'' local?
+	'' local and static? move to global sym tb (see symbAddVarEx())
 	if( symbIsLocal( s ) ) then
-    	'' static?
     	if( symbIsStatic( s ) ) then
-    		'' move it to global list if not already
-    		if( s->symtb <> @symb.globtb ) then
+    		if( s->symtb <> @symbGetGlobalTb( ) ) then
     			movetoglob = TRUE
     		end if
     	end if
@@ -613,12 +664,16 @@ sub symbDelVar( byval s as FBSYMBOL ptr, _
 
     end if
 
+    ''
     symbFreeSymbol( s, movetoglob )
 
 end sub
 
 '':::::
-function symbFreeDynVar( byval s as FBSYMBOL ptr ) as ASTNODE ptr
+function symbFreeDynVar _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as ASTNODE ptr
 
 	'' assuming conditions were checked already
 
@@ -640,11 +695,14 @@ function symbFreeDynVar( byval s as FBSYMBOL ptr ) as ASTNODE ptr
 
 end function
 '':::::
-sub symbFreeLocalDynVars( byval proc as FBSYMBOL ptr ) static
+sub symbFreeLocalDynVars _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) static
 
     dim as FBSYMBOL ptr s
 
-	s = symb.loctb->head
+	s = symb.symtb->head
     do while( s <> NULL )
     	'' variable?
     	if( s->class = FB_SYMBCLASS_VAR ) then

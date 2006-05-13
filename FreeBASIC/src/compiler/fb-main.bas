@@ -32,7 +32,8 @@ option escape
 #include once "inc\symb.bi"
 
 ':::::
-private sub hDllMainBegin( )
+private sub hDllMainBegin ( )
+
     dim as FBSYMBOL ptr proc, label, param
    	dim as ASTNODE ptr reason, main, procnode
     dim as integer argn
@@ -98,7 +99,11 @@ const fbdllreason = "__FB_DLLREASON__"
 end sub
 
 ':::::
-private sub hMainBegin( byval isdllmain as integer )
+private sub hMainBegin _
+	( _
+		byval isdllmain as integer _
+	)
+
     dim as FBSYMBOL ptr proc
     dim as integer attrib
 
@@ -199,7 +204,10 @@ sub fbMainBegin( )
 end sub
 
 '':::::
-private sub hMainEnd( byval isdllmain as integer )
+private sub hMainEnd _
+	( _
+		byval isdllmain as integer _
+	)
 
     '' set default data label (def label isn't global as it could clash with other
     '' modules, so DataRestore alone can't figure out where to start)

@@ -28,16 +28,19 @@ const NULL = 0
 
 #include once "inc\stack.bi"
 
-declare function hAllocTB		( byval stk as TSTACK ptr, _
-					  	   		  byval nodes as integer _
+declare function hAllocTB		( _
+									byval stk as TSTACK ptr, _
+					  	   		  	byval nodes as integer _
 						 		) as integer
 
 '':::::
-function stackNew( byval stk as TSTACK ptr, _
-				   byval nodes as integer, _
-				   byval nodelen as integer, _
-				   byval doclear as integer _
-				 ) as integer
+function stackNew _
+	( _
+		byval stk as TSTACK ptr, _
+		byval nodes as integer, _
+		byval nodelen as integer, _
+		byval doclear as integer _
+	) as integer
 
 	'' fill ctrl struct
 	stk->tbhead 	= NULL
@@ -53,7 +56,11 @@ function stackNew( byval stk as TSTACK ptr, _
 end function
 
 '':::::
-function stackFree( byval stk as TSTACK ptr ) as integer
+function stackFree _
+	( _
+		byval stk as TSTACK ptr _
+	) as integer
+
     dim as TSTACKTB ptr tb, nxt
 
 	'' for each pool, free the mem block and the pool ctrl struct
@@ -74,9 +81,11 @@ function stackFree( byval stk as TSTACK ptr ) as integer
 end function
 
 '':::::
-private function hAllocTB( byval stk as TSTACK ptr, _
-					  	   byval nodes as integer _
-						 ) as integer static
+private function hAllocTB _
+	( _
+		byval stk as TSTACK ptr, _
+		byval nodes as integer _
+	) as integer static
 
 	dim as TSTACKNODE ptr nodetb, node, prev
 	dim as TSTACKTB ptr tb
@@ -143,7 +152,10 @@ private function hAllocTB( byval stk as TSTACK ptr, _
 end function
 
 '':::::
-function stackPush( byval stk as TSTACK ptr ) as any ptr static
+function stackPush _
+	( _
+		byval stk as TSTACK ptr _
+	) as any ptr static
 
 	'' move up
 	if( stk->tos = NULL ) then
@@ -162,7 +174,10 @@ function stackPush( byval stk as TSTACK ptr ) as any ptr static
 end function
 
 '':::::
-sub stackPop( byval stk as TSTACK ptr ) static
+sub stackPop _
+	( _
+		byval stk as TSTACK ptr _
+	) static
 
 	'' node can contain strings descriptors, so, erase it..
 	if( stk->clear ) then
@@ -175,7 +190,10 @@ sub stackPop( byval stk as TSTACK ptr ) static
 end sub
 
 '':::::
-function stackGetTOS( byval stk as TSTACK ptr ) as any ptr
+function stackGetTOS _
+	( _
+		byval stk as TSTACK ptr _
+	) as any ptr
 
 	if( stk->tos = NULL ) then
 		return NULL

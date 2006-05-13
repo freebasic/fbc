@@ -56,114 +56,121 @@ function cSymbolDecl as integer
 
 	function = FALSE
 
+	attrib = 0
+	dopreserve = FALSE
+
 	tk = lexGetToken( )
 	select case as const tk
-	case FB_TK_DIM, FB_TK_REDIM, FB_TK_COMMON, FB_TK_EXTERN, _
-		 FB_TK_STATIC
+	'' REDIM
+	case FB_TK_REDIM
+		'' REDIM generates code, check if allowed
+    	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+    		exit function
+    	end if
 
-		attrib = 0
-		dopreserve = FALSE
+		lexSkipToken( )
+		attrib or= FB_SYMBATTRIB_DYNAMIC
 
-		select case as const lexGetToken( )
-		'' REDIM
-		case FB_TK_REDIM
-			lexSkipToken( )
-			attrib or= FB_SYMBATTRIB_DYNAMIC
+		'' PRESERVE?
+		if( hMatch( FB_TK_PRESERVE ) ) then
+			dopreserve = TRUE
+		end if
 
-			'' PRESERVE?
-			if( hMatch( FB_TK_PRESERVE ) ) then
-				dopreserve = TRUE
-			end if
+	'' COMMON
+	case FB_TK_COMMON
+		'' can't use COMMON inside a proc or inside a scope block
+		if( hCheckScope( ) = FALSE ) then
+			exit function
+		end if
 
-		'' COMMON
-		case FB_TK_COMMON
-			'' can't use COMMON inside a proc or inside a scope block
-			if( hCheckScope( ) = FALSE ) then
-				exit function
-			end if
+		''
+		lexSkipToken( )
 
-			''
-			lexSkipToken( )
+		attrib or= FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_STATIC
 
-			attrib or= FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_STATIC
+	'' EXTERN
+	case FB_TK_EXTERN
+		'' ambiguity with EXTERN "mangling spec"
+		if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_STRLITERAL ) then
+			return FALSE
+		end if
 
-		'' EXTERN
-		case FB_TK_EXTERN
-			'' can't use EXTERN inside a proc
-			if( hCheckScope( ) = FALSE ) then
-				exit function
-			end if
+		'' can't use EXTERN inside a proc
+		if( hCheckScope( ) = FALSE ) then
+			exit function
+		end if
 
-			lexSkipToken( )
+		lexSkipToken( )
 
-			attrib or= FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
+		attrib or= FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
 
-		'' STATIC
-		case FB_TK_STATIC
-
-			'' check ambiguity with STATIC SUB|FUNCTION
-			select case lexGetLookAhead( 1 )
-			case FB_TK_SUB, FB_TK_FUNCTION
-				exit function
-			end select
-
-			lexSkipToken( )
-
-			attrib or= FB_SYMBATTRIB_STATIC
-
-		case else
-			lexSkipToken( )
-
+	'' STATIC
+	case FB_TK_STATIC
+		'' check ambiguity with STATIC SUB|FUNCTION
+		select case lexGetLookAhead( 1 )
+		case FB_TK_SUB, FB_TK_FUNCTION
+			exit function
 		end select
 
-		''
-		if( env.opt.dynamic ) then
-			if( (attrib and FB_SYMBATTRIB_STATIC) = 0 ) then
-				attrib or= FB_SYMBATTRIB_DYNAMIC
-			end if
-		end if
+		lexSkipToken( )
 
-		if( (attrib and FB_SYMBATTRIB_EXTERN) = 0 ) then
-			'' SHARED?
-			if( lexGetToken( ) = FB_TK_SHARED ) then
-				'' can't use SHARED inside a proc
-				if( hCheckScope( ) = FALSE ) then
-					exit function
-				end if
+		attrib or= FB_SYMBATTRIB_STATIC
 
-				lexSkipToken( )
-				attrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
-			end if
-
-		else
-			'' IMPORT?
-			if( hMatch( FB_TK_IMPORT ) ) then
-				'' only if target is Windows
-				select case env.clopt.target
-				case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-					attrib or= FB_SYMBATTRIB_IMPORT
-				end select
-			end if
-		end if
-
-		''
-		if( env.isprocstatic ) then
-			if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
-				attrib or= FB_SYMBATTRIB_STATIC
-			end if
-		end if
-
-		''
-		function = cSymbolDef( attrib, dopreserve, tk )
+	case else
+		lexSkipToken( )
 
 	end select
+
+	''
+	if( env.opt.dynamic ) then
+		if( (attrib and FB_SYMBATTRIB_STATIC) = 0 ) then
+			attrib or= FB_SYMBATTRIB_DYNAMIC
+		end if
+	end if
+
+	if( (attrib and FB_SYMBATTRIB_EXTERN) = 0 ) then
+		'' SHARED?
+		if( lexGetToken( ) = FB_TK_SHARED ) then
+			'' can't use SHARED inside a proc
+			if( hCheckScope( ) = FALSE ) then
+				exit function
+			end if
+
+			lexSkipToken( )
+			attrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
+		end if
+
+	else
+		'' IMPORT?
+		if( hMatch( FB_TK_IMPORT ) ) then
+			'' only if target is Windows
+			select case env.clopt.target
+			case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
+				attrib or= FB_SYMBATTRIB_IMPORT
+			end select
+		end if
+	end if
+
+	''
+	if( env.isprocstatic ) then
+		if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
+			attrib or= FB_SYMBATTRIB_STATIC
+		end if
+	end if
+
+	''
+	function = cSymbolDef( attrib, dopreserve, tk )
 
 end function
 
 '':::::
-private function hIsDynamic( byval dimensions as integer, _
-					 		 exprTB() as ASTNODE ptr ) as integer
-    dim i as integer
+private function hIsDynamic _
+	( _
+		byval dimensions as integer, _
+		exprTB() as ASTNODE ptr _
+	) as integer
+
+    dim as integer i
 
 	function = TRUE
 
@@ -180,9 +187,13 @@ private function hIsDynamic( byval dimensions as integer, _
 end function
 
 ''::::
-private sub hMakeArrayDimTB( byval dimensions as integer, _
-					 		 exprTB() as ASTNODE ptr, _
-					 		 dTB() as FBARRAYDIM )
+private sub hMakeArrayDimTB _
+	( _
+		byval dimensions as integer, _
+		exprTB() as ASTNODE ptr, _
+		dTB() as FBARRAYDIM _
+	)
+
     static as integer i
     static as ASTNODE ptr expr
 
@@ -218,24 +229,27 @@ private sub hMakeArrayDimTB( byval dimensions as integer, _
 		end select
 
 		astDelNode( expr )
-	next i
+	next
 
 end sub
 
 '':::::
-private function hDeclExternVar( byval id as zstring ptr, _
-						 		 byval typ as integer, _
-						 		 byval subtype as FBSYMBOL ptr, _
-						 		 byval attrib as integer, _
-						 		 byval addsuffix as integer, _
-						 		 byval dimensions as integer, _
-					   	 		 dTB() as FBARRAYDIM _
-					   	 	   ) as FBSYMBOL ptr
+private function hDeclExternVar _
+	( _
+		byval id as zstring ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval attrib as integer, _
+		byval addsuffix as integer, _
+		byval dimensions as integer, _
+		dTB() as FBARRAYDIM _
+	) as FBSYMBOL ptr
+
 	dim as FBSYMBOL ptr s
 
     function = NULL
 
-    s = symbFindByNameAndSuffix( id, typ )
+    s = symbFindByNameAndSuffix( id, dtype )
     if( s <> NULL ) then
 
     	'' no extern?
@@ -244,7 +258,7 @@ private function hDeclExternVar( byval id as zstring ptr, _
     	end if
 
     	'' check type
-		if( (typ <> symbGetType( s )) or _
+		if( (dtype <> symbGetType( s )) or _
 			(subtype <> symbGetSubType( s )) ) then
     		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *id )
     		exit function
@@ -275,8 +289,8 @@ private function hDeclExternVar( byval id as zstring ptr, _
 
     	'' set type
     	symbSetAttrib( s, (attrib and not FB_SYMBATTRIB_EXTERN) or _
-    					      FB_SYMBATTRIB_PUBLIC or _
-    					      FB_SYMBATTRIB_SHARED )
+    					  FB_SYMBATTRIB_PUBLIC or _
+    					  FB_SYMBATTRIB_SHARED )
 
 		'' check dimensions
 		if( symbGetArrayDimensions( s ) <> 0 ) then
@@ -303,18 +317,19 @@ private function hDeclExternVar( byval id as zstring ptr, _
 end function
 
 '':::::
-private function hStaticSymbDef( byval id as zstring ptr, _
-					     		 byval dotpos as integer, _
-					     		 byval idalias as zstring ptr, _
-					     		 byval typ as integer, _
-					     		 byval subtype as FBSYMBOL ptr, _
-					     		 byval ptrcnt as integer, _
-					     		 byval lgt as integer, _
-					     		 byval addsuffix as integer, _
-					     		 byval attrib as integer, _
-					     		 byval dimensions as integer, _
-					     		 exprTB() as ASTNODE ptr _
-					     	   ) as FBSYMBOL ptr static
+private function hStaticSymbDef _
+	( _
+		byval id as zstring ptr, _
+		byval idalias as zstring ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval ptrcnt as integer, _
+		byval lgt as integer, _
+		byval addsuffix as integer, _
+		byval attrib as integer, _
+		byval dimensions as integer, _
+		exprTB() as ASTNODE ptr _
+	) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr s
     dim as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
@@ -323,22 +338,13 @@ private function hStaticSymbDef( byval id as zstring ptr, _
 
     attrib and= (not FB_SYMBATTRIB_DYNAMIC)
 
-    '' symbol with periods? double-check..
-    if( dotpos > 0 ) then
-    	'' any UDT var already allocated?
-    	if( symbLookupUDTVar( id, dotpos ) <> NULL ) then
-    		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
-    		exit function
-    	end if
-    end if
-
     ''
-    s = symbAddVarEx( id, idalias, typ, subtype, ptrcnt, _
+    s = symbAddVarEx( id, idalias, dtype, subtype, ptrcnt, _
     				  lgt, dimensions, dTB(), _
-    				  attrib, addsuffix, FALSE, TRUE )
+    				  attrib, addsuffix, FALSE )
 
     if( s = NULL ) then
-    	s = hDeclExternVar( id, typ, subtype, attrib, _
+    	s = hDeclExternVar( id, dtype, subtype, attrib, _
     						addsuffix, dimensions, dTB() )
 
 		if( s = NULL ) then
@@ -365,20 +371,21 @@ private function hStaticSymbDef( byval id as zstring ptr, _
 end function
 
 '':::::
-private function hDynArrayDef( byval id as zstring ptr, _
-							   byval dotpos as integer, _
-					   		   byval idalias as zstring ptr, _
-					   		   byval typ as integer, _
-					   		   byval subtype as FBSYMBOL ptr, _
-					   		   byval ptrcnt as integer, _
-					   		   byval istypeless as integer, _
-					   		   byval lgt as integer, _
-					   		   byval addsuffix as integer, _
-					   		   byval attrib as integer, _
-					   		   byval dopreserve as integer, _
-					   		   byval dimensions as integer, _
-					   		   exprTB() as ASTNODE ptr _
-					   		 ) as FBSYMBOL ptr static
+private function hDynArrayDef _
+	( _
+		byval id as zstring ptr, _
+		byval idalias as zstring ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval ptrcnt as integer, _
+		byval istypeless as integer, _
+		byval lgt as integer, _
+		byval addsuffix as integer, _
+		byval attrib as integer, _
+		byval dopreserve as integer, _
+		byval dimensions as integer, _
+		exprTB() as ASTNODE ptr _
+	) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr s
     dim as integer isrealloc
@@ -386,20 +393,18 @@ private function hDynArrayDef( byval id as zstring ptr, _
 
     function = NULL
 
-    attrib or= FB_SYMBATTRIB_DYNAMIC
-
-    '' symbol with periods? double-check..
-    if( dotpos > 0 ) then
-    	'' any UDT var already allocated?
-    	if( symbLookupUDTVar( id, dotpos ) <> NULL ) then
-    		hReportErrorEx( FB_ERRMSG_CANTREDIMARRAYFIELDS, *id )
+    if( dimensions <> -1 ) then
+		'' DIM'g dynamic arrays gens code, check if allowed
+    	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
     		exit function
     	end if
-    end if
+	end if
+
+    attrib or= FB_SYMBATTRIB_DYNAMIC
 
     ''
   	isrealloc = TRUE
-  	s = symbFindByNameAndSuffix( id, typ )
+  	s = symbFindByNameAndSuffix( id, dtype )
    	if( s = NULL ) then
 
    		'' typeless REDIM's?
@@ -408,17 +413,17 @@ private function hDynArrayDef( byval id as zstring ptr, _
    			s = symbFindByNameAndClass( id, FB_SYMBCLASS_VAR )
    			'' copy type
    			if( s <> NULL ) then
-   				typ 	= symbGetType( s )
+   				dtype = symbGetType( s )
    				subtype = symbGetSubtype( s )
-   				lgt		= symbGetLen( s )
+   				lgt = symbGetLen( s )
    			end if
    		end if
 
    		if( s = NULL ) then
    			isrealloc = FALSE
-   			s = symbAddVarEx( id, idalias, typ, subtype, ptrcnt, _
+   			s = symbAddVarEx( id, idalias, dtype, subtype, ptrcnt, _
    							  lgt, dimensions, dTB(), _
-   							  attrib, addsuffix, FALSE, TRUE )
+   							  attrib, addsuffix, FALSE )
    			if( s = NULL ) then
    				hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *id )
    				exit function
@@ -433,7 +438,7 @@ private function hDynArrayDef( byval id as zstring ptr, _
 		if( symbGetIsDynamic( s ) = FALSE ) then
 
    			'' could be an external..
-   			s = hDeclExternVar( id, typ, subtype, attrib, addsuffix, _
+   			s = hDeclExternVar( id, dtype, subtype, attrib, addsuffix, _
    								dimensions, dTB() )
    			if( s = NULL ) then
    				hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *id )
@@ -450,8 +455,8 @@ private function hDynArrayDef( byval id as zstring ptr, _
 				end if
 
 				symbSetAttrib( s, (attrib and not FB_SYMBATTRIB_EXTERN) or _
-    					             FB_SYMBATTRIB_PUBLIC or _
-    					             FB_SYMBATTRIB_SHARED )
+    					          FB_SYMBATTRIB_PUBLIC or _
+    					          FB_SYMBATTRIB_SHARED )
 			end if
 		end if
 	end if
@@ -466,7 +471,8 @@ private function hDynArrayDef( byval id as zstring ptr, _
 	'' not an argument passed by descriptor or a common array?
 	if( (attrib and (FB_SYMBATTRIB_PARAMBYDESC or FB_SYMBATTRIB_COMMON)) = 0 ) then
 
-		if( (typ <> symbGetType( s )) or (subtype <> symbGetSubType( s )) ) then
+		if( (dtype <> symbGetType( s )) or _
+			(subtype <> symbGetSubType( s )) ) then
     		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *id )
     		exit function
 		end if
@@ -480,7 +486,8 @@ private function hDynArrayDef( byval id as zstring ptr, _
 
 	'' else, can't check it's dimensions at compile-time
 	else
-		if( (typ <> symbGetType( s )) or (subtype <> symbGetSubType( s )) ) then
+		if( (dtype <> symbGetType( s )) or _
+			(subtype <> symbGetSubType( s )) ) then
     		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *id )
     		exit function
 		end if
@@ -526,15 +533,18 @@ end function
 ''SymbolDef       =   ID ('(' ArrayDecl? ')')? (AS SymbolType)? ('=' VarInitializer)?
 ''                       (',' SymbolDef)* .
 ''
-function cSymbolDef( byval attrib as integer, _
-					 byval dopreserve as integer, _
-                     byval token as integer _
-                   ) as integer static
+function cSymbolDef _
+	( _
+		byval attrib as integer, _
+		byval dopreserve as integer, _
+        byval token as integer _
+	) as integer static
 
     static as zstring * FB_MAXNAMELEN+1 id, idalias
-    dim as FBSYMBOL ptr symbol, subtype, test_symbol
+    dim as FBSYMBOL ptr symbol, subtype
+    dim as FBSYMCHAIN ptr chain_
     dim as integer addsuffix, isdynamic, ismultdecl, istypeless
-    dim as integer typ, lgt, ofs, ptrcnt, dotpos
+    dim as integer dtype, lgt, ofs, ptrcnt
     dim as integer dimensions
     dim as ASTNODE ptr exprTB(0 to FB_MAXARRAYDIMS-1, 0 to 1)
     dim as zstring ptr palias
@@ -546,13 +556,13 @@ function cSymbolDef( byval attrib as integer, _
     if( lexGetToken( ) = FB_TK_AS ) then
     	lexSkipToken( )
 
-    	if( cSymbolType( typ, subtype, lgt, ptrcnt ) = FALSE ) then
+    	if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
     		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
     		exit function
     	end if
 
     	'' ANY?
-    	if( typ = FB_DATATYPE_VOID ) then
+    	if( dtype = FB_DATATYPE_VOID ) then
     		hReportError( FB_ERRMSG_INVALIDDATATYPES )
     		exit function
     	end if
@@ -569,11 +579,20 @@ function cSymbolDef( byval attrib as integer, _
     		exit function
     	end if
 
+    	chain_ = cIdentifier( )
+		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+			exit function
+		end if
+
+    	id = *lexGetText( )
+    	palias = NULL
+    	istypeless = FALSE
+
     	if( ismultdecl = FALSE ) then
-    		typ 		= lexGetType( )
-    		subtype 	= NULL
-    		lgt			= 0
-    		addsuffix 	= TRUE
+    		dtype = lexGetType( )
+    		subtype	= NULL
+    		lgt	= 0
+    		addsuffix = TRUE
     	else
     		if( lexGetType( ) <> INVALID ) then
     			hReportError( FB_ERRMSG_SYNTAXERROR )
@@ -581,10 +600,7 @@ function cSymbolDef( byval attrib as integer, _
     		end if
     	end if
 
-    	dotpos = lexGetPeriodPos( )
-    	lexEatToken( id )
-    	palias = NULL
-    	istypeless	= FALSE
+    	lexSkipToken( )
 
     	'' ('(' ArrayDecl? ')')?
 		dimensions = 0
@@ -623,10 +639,10 @@ function cSymbolDef( byval attrib as integer, _
             '' when the symbol was defined already by a preceeding COMMON
             '' statement, then a DIM will work the same way as a REDIM
             if( token = FB_TK_DIM ) then
-                test_symbol = symbFindByNameAndClass( @id, FB_SYMBCLASS_VAR )
-                if( test_symbol <> NULL ) then
-                    if( (symbGetArrayDimensions( test_symbol ) <> 0) and _
-                      	symbIsCommon( test_symbol ) ) then
+                symbol = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
+                if( symbol <> NULL ) then
+                    if( (symbGetArrayDimensions( symbol ) <> 0) and _
+                      	symbIsCommon( symbol ) ) then
                         isdynamic = TRUE
                     end if
                 end if
@@ -643,15 +659,17 @@ function cSymbolDef( byval attrib as integer, _
     		isdynamic = FALSE
     	end if
 
-		'' ALIAS LIT_STR
+		'' ALIAS LIT_STR?
 		if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) > 0 ) then
-			if( hMatch( FB_TK_ALIAS ) ) then
+			if( lexGetToken( ) = FB_TK_ALIAS ) then
+				lexSkipToken( )
+
 				if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
 					hReportError( FB_ERRMSG_SYNTAXERROR )
 					exit function
 				end if
+
 				lexEatToken( idalias )
-				idalias = hCreateDataAlias( idalias, (attrib and FB_SYMBATTRIB_IMPORT) > 0 )
 				palias = @idalias
 			end if
 		end if
@@ -660,20 +678,20 @@ function cSymbolDef( byval attrib as integer, _
     		'' (AS SymbolType)?
     		if( lexGetToken( ) = FB_TK_AS ) then
 
-    			if( typ <> INVALID ) then
+    			if( dtype <> INVALID ) then
     				hReportError( FB_ERRMSG_SYNTAXERROR )
     				exit function
     			end if
 
     			lexSkipToken( )
 
-    			if( cSymbolType( typ, subtype, lgt, ptrcnt ) = FALSE ) then
+    			if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
     				hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
     				exit function
     			end if
 
     			'' ANY?
-    			if( typ = FB_DATATYPE_VOID ) then
+    			if( dtype = FB_DATATYPE_VOID ) then
     				hReportError( FB_ERRMSG_INVALIDDATATYPES )
     				exit function
     			end if
@@ -682,32 +700,24 @@ function cSymbolDef( byval attrib as integer, _
 
     		else
 
-				if( typ = INVALID ) then
+				if( dtype = INVALID ) then
 					istypeless = TRUE
-					typ = hGetDefType( id )
+					dtype = hGetDefType( id )
 				end if
-    			lgt	= symbCalcLen( typ, subtype )
+    			lgt	= symbCalcLen( dtype, subtype )
 
-    		end if
-    	end if
-
-    	'' contains a period?
-    	if( dotpos > 0 ) then
-    		if( typ = FB_DATATYPE_USERDEF ) then
-    			hReportErrorEx( FB_ERRMSG_CANTINCLUDEPERIODS, id )
-    			exit function
     		end if
     	end if
 
     	''
     	if( isdynamic ) then
-    		symbol = hDynArrayDef( id, dotpos, palias, _
-    							   typ, subtype, ptrcnt, istypeless, _
+    		symbol = hDynArrayDef( id, palias, _
+    							   dtype, subtype, ptrcnt, istypeless, _
     							   lgt, addsuffix, attrib, dopreserve, _
     							   dimensions, exprTB() )
     	else
-			symbol = hStaticSymbDef( id, dotpos, palias, _
-									 typ, subtype, ptrcnt, _
+			symbol = hStaticSymbDef( id, palias, _
+									 dtype, subtype, ptrcnt, _
     							     lgt, addsuffix, attrib, _
     							     dimensions, exprTB() )
 		end if

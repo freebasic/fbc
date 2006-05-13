@@ -393,21 +393,25 @@ data @FB_RTL_INPUTDOUBLE,"", _
 	 1, _
 	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYREF, FALSE
 
-'' fb_InputString ( x as any, byval strlen as integer, byval fillrem as integer = 1 ) as void
+'' fb_InputString ( x as any, byval strlen as integer, byval islast as integer,
+''					byval fillrem as integer = 1 ) as void
 data @FB_RTL_INPUTSTR,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
-	 3, _
+	 4, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,1
 
-'' fb_InputWstr ( byval dst as wstring ptr, byval maxchars as integer ) as integer
+'' fb_InputWstr ( byval dst as wstring ptr, byval maxchars as integer,
+''				  byval islast as integer ) as integer
 data @FB_RTL_INPUTWSTR,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
-	 2, _
+	 3, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_FileLock ( byval inipos as integer, byval endpos as integer ) as integer
@@ -511,16 +515,18 @@ sub rtlFileModEnd( )
 end sub
 
 '':::::
-function rtlFileOpen( byval filename as ASTNODE ptr, _
-					  byval fmode as ASTNODE ptr, _
-					  byval faccess as ASTNODE ptr, _
-				      byval flock as ASTNODE ptr, _
-				      byval filenum as ASTNODE ptr, _
-				      byval flen as ASTNODE ptr, _
-				      byval fencoding as ASTNODE ptr, _
-				      byval isfunc as integer, _
-                      byval openkind as FBOPENKIND _
-                    ) as ASTNODE ptr static
+function rtlFileOpen _
+	( _
+		byval filename as ASTNODE ptr, _
+		byval fmode as ASTNODE ptr, _
+		byval faccess as ASTNODE ptr, _
+		byval flock as ASTNODE ptr, _
+		byval filenum as ASTNODE ptr, _
+		byval flen as ASTNODE ptr, _
+		byval fencoding as ASTNODE ptr, _
+		byval isfunc as integer, _
+        byval openkind as FBOPENKIND _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f, reslabel
@@ -619,14 +625,16 @@ function rtlFileOpen( byval filename as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlFileOpenShort( byval filename as ASTNODE ptr, _
-					  	   byval fmode as ASTNODE ptr, _
-					  	   byval faccess as ASTNODE ptr, _
-				      	   byval flock as ASTNODE ptr, _
-				           byval filenum as ASTNODE ptr, _
-				           byval flen as ASTNODE ptr, _
-				           byval isfunc as integer _
-				         ) as ASTNODE ptr static
+function rtlFileOpenShort _
+	( _
+		byval filename as ASTNODE ptr, _
+		byval fmode as ASTNODE ptr, _
+		byval faccess as ASTNODE ptr, _
+		byval flock as ASTNODE ptr, _
+		byval filenum as ASTNODE ptr, _
+		byval flen as ASTNODE ptr, _
+		byval isfunc as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f, reslabel
@@ -684,9 +692,11 @@ function rtlFileOpenShort( byval filename as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlFileClose( byval filenum as ASTNODE ptr, _
-					   byval isfunc as integer _
-					 ) as ASTNODE ptr static
+function rtlFileClose _
+	( _
+		byval filenum as ASTNODE ptr, _
+		byval isfunc as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr reslabel
@@ -719,9 +729,11 @@ function rtlFileClose( byval filenum as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlFileSeek( byval filenum as ASTNODE ptr, _
-					  byval newpos as ASTNODE ptr _
-					) as integer static
+function rtlFileSeek _
+	( _
+		byval filenum as ASTNODE ptr, _
+		byval newpos as ASTNODE ptr _
+	) as integer static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr reslabel
@@ -755,7 +767,11 @@ function rtlFileSeek( byval filenum as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlFileTell( byval filenum as ASTNODE ptr ) as ASTNODE ptr static
+function rtlFileTell _
+	( _
+		byval filenum as ASTNODE ptr _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr proc
 
     function = NULL
@@ -774,12 +790,14 @@ function rtlFileTell( byval filenum as ASTNODE ptr ) as ASTNODE ptr static
 end function
 
 '':::::
-function rtlFilePut( byval filenum as ASTNODE ptr, _
-					 byval offset as ASTNODE ptr, _
-					 byval src as ASTNODE ptr, _
-					 byval elements as ASTNODE ptr, _
-					 byval isfunc as integer _
-				   ) as ASTNODE ptr static
+function rtlFilePut _
+	( _
+		byval filenum as ASTNODE ptr, _
+		byval offset as ASTNODE ptr, _
+		byval src as ASTNODE ptr, _
+		byval elements as ASTNODE ptr, _
+		byval isfunc as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc, bytes
     dim as integer dtype, lgt, isstring
@@ -859,11 +877,13 @@ function rtlFilePut( byval filenum as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlFilePutArray( byval filenum as ASTNODE ptr, _
-						  byval offset as ASTNODE ptr, _
-						  byval src as ASTNODE ptr, _
-					 	  byval isfunc as integer _
-					 	) as ASTNODE ptr static
+function rtlFilePutArray _
+	( _
+		byval filenum as ASTNODE ptr, _
+		byval offset as ASTNODE ptr, _
+		byval src as ASTNODE ptr, _
+		byval isfunc as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr reslabel
@@ -916,12 +936,14 @@ function rtlFilePutArray( byval filenum as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlFileGet( byval filenum as ASTNODE ptr, _
-					 byval offset as ASTNODE ptr, _
-					 byval dst as ASTNODE ptr, _
-					 byval elements as ASTNODE ptr, _
-					 byval isfunc as integer _
-				   ) as ASTNODE ptr static
+function rtlFileGet _
+	( _
+		byval filenum as ASTNODE ptr, _
+		byval offset as ASTNODE ptr, _
+		byval dst as ASTNODE ptr, _
+		byval elements as ASTNODE ptr, _
+		byval isfunc as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc, bytes
     dim as integer dtype, lgt, isstring
@@ -1001,11 +1023,13 @@ function rtlFileGet( byval filenum as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlFileGetArray( byval filenum as ASTNODE ptr, _
-						  byval offset as ASTNODE ptr, _
-						  byval dst as ASTNODE ptr, _
-					 	  byval isfunc as integer _
-					 	) as ASTNODE ptr static
+function rtlFileGetArray _
+	( _
+		byval filenum as ASTNODE ptr, _
+		byval offset as ASTNODE ptr, _
+		byval dst as ASTNODE ptr, _
+		byval isfunc as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr reslabel
@@ -1058,9 +1082,11 @@ function rtlFileGetArray( byval filenum as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlFileStrInput( byval bytesexpr as ASTNODE ptr, _
-						  byval filenum as ASTNODE ptr _
-						) as ASTNODE ptr static
+function rtlFileStrInput _
+	( _
+		byval bytesexpr as ASTNODE ptr, _
+		byval filenum as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
 
@@ -1085,12 +1111,14 @@ function rtlFileStrInput( byval bytesexpr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlFileLineInput( byval isfile as integer, _
-						   byval expr as ASTNODE ptr, _
-						   byval dstexpr as ASTNODE ptr, _
-					       byval addquestion as integer, _
-					       byval addnewline as integer _
-					     ) as integer static
+function rtlFileLineInput _
+	( _
+		byval isfile as integer, _
+		byval expr as ASTNODE ptr, _
+		byval dstexpr as ASTNODE ptr, _
+		byval addquestion as integer, _
+		byval addnewline as integer _
+	) as integer static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -1156,12 +1184,14 @@ function rtlFileLineInput( byval isfile as integer, _
 end function
 
 '':::::
-function rtlFileLineInputWstr( byval isfile as integer, _
-						   	   byval expr as ASTNODE ptr, _
-						   	   byval dstexpr as ASTNODE ptr, _
-					       	   byval addquestion as integer, _
-					       	   byval addnewline as integer _
-					       	 ) as integer static
+function rtlFileLineInputWstr _
+	( _
+		byval isfile as integer, _
+		byval expr as ASTNODE ptr, _
+		byval dstexpr as ASTNODE ptr, _
+		byval addquestion as integer, _
+		byval addnewline as integer _
+	) as integer static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -1222,11 +1252,13 @@ function rtlFileLineInputWstr( byval isfile as integer, _
 end function
 
 '':::::
-function rtlFileInput( byval isfile as integer, _
-					   byval expr as ASTNODE ptr, _
-				       byval addquestion as integer, _
-				       byval addnewline as integer _
-				     ) as integer
+function rtlFileInput _
+	( _
+		byval isfile as integer, _
+		byval expr as ASTNODE ptr, _
+		byval addquestion as integer, _
+		byval addnewline as integer _
+	) as integer
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -1273,7 +1305,12 @@ function rtlFileInput( byval isfile as integer, _
 end function
 
 '':::::
-function rtlFileInputGet( byval dstexpr as ASTNODE ptr ) as integer
+function rtlFileInputGet _
+	( _
+		byval dstexpr as ASTNODE ptr, _
+		byval islast as integer _
+	) as integer
+
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
     dim as integer args, lgt, dtype
@@ -1286,11 +1323,11 @@ function rtlFileInputGet( byval dstexpr as ASTNODE ptr ) as integer
 	select case as const dtype
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_STRING, FB_DATATYPE_CHAR
 		f = PROCLOOKUP( INPUTSTR )
-		args = 3
+		args = 4
 
 	case FB_DATATYPE_WCHAR
 		f = PROCLOOKUP( INPUTWSTR )
-		args = 2
+		args = 3
 
 	case FB_DATATYPE_BYTE
 		f = PROCLOOKUP( INPUTBYTE )
@@ -1352,7 +1389,12 @@ function rtlFileInputGet( byval dstexpr as ASTNODE ptr ) as integer
  			exit function
  		end if
 
-		if( args > 2 ) then
+		'' byval islast as integer
+		if( astNewARG( proc, astNewCONSTi( islast, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
+ 			exit function
+ 		end if
+
+		if( args > 3 ) then
 			'' byval fillrem as integer
 			if( astNewARG( proc, astNewCONSTi( dtype = FB_DATATYPE_FIXSTR, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
     			exit function
@@ -1367,11 +1409,13 @@ function rtlFileInputGet( byval dstexpr as ASTNODE ptr ) as integer
 end function
 
 '':::::
-function rtlFileLock( byval islock as integer, _
-					  byval filenum as ASTNODE ptr, _
-					  byval iniexpr as ASTNODE ptr, _
-					  byval endexpr as ASTNODE ptr _
-					) as integer
+function rtlFileLock _
+	( _
+		byval islock as integer, _
+		byval filenum as ASTNODE ptr, _
+		byval iniexpr as ASTNODE ptr, _
+		byval endexpr as ASTNODE ptr _
+	) as integer
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -1409,10 +1453,12 @@ function rtlFileLock( byval islock as integer, _
 end function
 
 '':::::
-function rtlFileRename( byval filename_new as ASTNODE ptr, _
-                        byval filename_old as ASTNODE ptr, _
-                        byval isfunc as integer _
-                      ) as ASTNODE ptr static
+function rtlFileRename _
+	( _
+		byval filename_new as ASTNODE ptr, _
+        byval filename_old as ASTNODE ptr, _
+        byval isfunc as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr reslabel
@@ -1449,10 +1495,12 @@ function rtlFileRename( byval filename_new as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlWidthFile ( byval fnum as ASTNODE ptr, _
-					    byval width_arg as ASTNODE ptr, _
-                        byval isfunc as integer _
-                      ) as ASTNODE ptr
+function rtlWidthFile _
+	( _
+		byval fnum as ASTNODE ptr, _
+		byval width_arg as ASTNODE ptr, _
+        byval isfunc as integer _
+    ) as ASTNODE ptr
 
     dim as ASTNODE ptr proc
 
@@ -1486,6 +1534,7 @@ function rtlWidthFile ( byval fnum as ASTNODE ptr, _
     else
     	function = proc
     end if
+
 end function
 
 

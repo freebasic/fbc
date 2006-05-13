@@ -32,20 +32,24 @@ option escape
 '':::::
 sub symbInitFwdRef( ) static
 
-	listNew( @symb.fwdlist, FB_INITFWDREFNODES, len( FBFWDREF ), FALSE )
+	listNew( @symb.fwdlist, FB_INITFWDREFNODES, len( FBFWDREF ), LIST_FLAGS_NOCLEAR )
 
 	symb.fwdrefcnt = 0
 
 end sub
 
 '':::::
-sub symbAddToFwdRef( byval f as FBSYMBOL ptr, _
-					 byval ref as FBSYMBOL ptr ) static
+sub symbAddToFwdRef _
+	( _
+		byval f as FBSYMBOL ptr, _
+		byval ref as FBSYMBOL ptr _
+	) static
+
 	dim n as FBFWDREF ptr
 
 	n = listNewNode( @symb.fwdlist )
 
-	n->ref 	= ref
+	n->ref = ref
 	n->prev	= f->fwd.reftail
 	f->fwd.reftail = n
 
@@ -54,24 +58,30 @@ sub symbAddToFwdRef( byval f as FBSYMBOL ptr, _
 end sub
 
 '':::::
-private sub hFixForwardRef( byval f as FBSYMBOL ptr, _
-							byval sym as FBSYMBOL ptr, _
-							byval class as integer )
+private sub hFixForwardRef _
+	( _
+		byval f as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr, _
+		byval class as integer _
+	)
+
     dim as FBFWDREF ptr n, p
     dim as FBSYMBOL ptr ref
-    dim as integer typ, ptrcnt
+    dim as integer dtype, ptrcnt
 
 	select case as const class
 	case FB_SYMBCLASS_UDT
-		typ 	= FB_DATATYPE_USERDEF
+		dtype = FB_DATATYPE_USERDEF
 		ptrcnt 	= 0
+
 	case FB_SYMBCLASS_ENUM
-		typ 	= FB_DATATYPE_ENUM
-		ptrcnt 	= 0
+		dtype = FB_DATATYPE_ENUM
+		ptrcnt = 0
+
 	case FB_SYMBCLASS_TYPEDEF
-		typ 	= sym->typ
-		ptrcnt 	= sym->ptrcnt
-		sym 	= sym->subtype
+		dtype = sym->typ
+		ptrcnt = sym->ptrcnt
+		sym = sym->subtype
 	end select
 
 	n = f->fwd.reftail
@@ -80,10 +90,10 @@ private sub hFixForwardRef( byval f as FBSYMBOL ptr, _
 
 		ref = n->ref
 
-		ref->typ     = typ + (ref->ptrcnt * FB_DATATYPE_POINTER)
+		ref->typ = dtype + (ref->ptrcnt * FB_DATATYPE_POINTER)
 		ref->subtype = sym
-		ref->ptrcnt  = ptrcnt
-		ref->lgt	 = symbCalcLen( ref->typ, sym )
+		ref->ptrcnt = ptrcnt
+		ref->lgt = symbCalcLen( ref->typ, sym )
 
 		listDelNode( @symb.fwdlist, n )
 
@@ -97,46 +107,48 @@ private sub hFixForwardRef( byval f as FBSYMBOL ptr, _
 end sub
 
 '':::::
-sub symbCheckFwdRef( byval s as FBSYMBOL ptr, _
-					 byval class as integer ) static
-	dim as FBSYMBOL ptr f, n
+sub symbCheckFwdRef _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval class as integer _
+	) static
+
+	dim as FBSYMBOL ptr fwd
+	dim as FBSYMCHAIN ptr chain_
 
 	'' go to head
-	n = s
-	do while( n->left <> NULL )
-		n = n->left
+	chain_ = sym->hash.chain
+	do while( chain_->prev <> NULL )
+		chain_ = chain_->prev
 	loop
 
-	f = symbFindByClass( n, FB_SYMBCLASS_FWDREF )
-	if( f <> NULL ) then
-		hFixForwardRef( f, s, class )
+	fwd = symbFindByClass( chain_, FB_SYMBCLASS_FWDREF )
+	if( fwd <> NULL ) then
+		hFixForwardRef( fwd, sym, class )
 	end if
 
 end sub
 
 '':::::
-function symbAddTypedef( byval symbol as zstring ptr, _
-						 byval typ as integer, _
-						 byval subtype as FBSYMBOL ptr, _
-						 byval ptrcnt as integer, _
-						 byval lgt as integer _
-					   ) as FBSYMBOL ptr static
+function symbAddTypedef _
+	( _
+		byval symbol as zstring ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval ptrcnt as integer, _
+		byval lgt as integer _
+	) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr t
-    dim as FBSYMBOLTB ptr symtb
 
     function = NULL
 
-    '' if parsing main, all type defs must go to the global table
-    if( fbIsModLevel( ) ) then
-    	symtb = @symb.globtb
-    else
-    	symtb = symb.loctb
-    end if
-
     '' allocate new node
-    t = symbNewSymbol( NULL, symtb, fbIsModLevel( ), FB_SYMBCLASS_TYPEDEF, _
-    				   TRUE, symbol, NULL, typ, subtype, ptrcnt )
+    t = symbNewSymbol( NULL, _
+    				   NULL, NULL, fbIsModLevel( ), _
+    				   FB_SYMBCLASS_TYPEDEF, _
+    				   TRUE, symbol, NULL, _
+    				   dtype, subtype, ptrcnt )
     if( t = NULL ) then
     	exit function
     end if
@@ -155,21 +167,19 @@ function symbAddTypedef( byval symbol as zstring ptr, _
 end function
 
 '':::::
-function symbAddFwdRef( byval symbol as zstring ptr ) as FBSYMBOL ptr static
+function symbAddFwdRef _
+	( _
+		byval symbol as zstring ptr _
+	) as FBSYMBOL ptr static
+
     dim as FBSYMBOL ptr f
-    dim as FBSYMBOLTB ptr symtb
 
     function = NULL
 
-    '' if parsing main, all type defs must go to the global table
-    if( fbIsModLevel( ) ) then
-    	symtb = @symb.globtb
-    else
-    	symtb = symb.loctb
-    end if
-
     '' allocate new node
-    f = symbNewSymbol( NULL, symtb, fbIsModLevel( ), FB_SYMBCLASS_FWDREF, _
+    f = symbNewSymbol( NULL, _
+    				   NULL, NULL, fbIsModLevel( ), _
+    				   FB_SYMBCLASS_FWDREF, _
     				   TRUE, symbol, NULL )
     if( f = NULL ) then
     	exit function

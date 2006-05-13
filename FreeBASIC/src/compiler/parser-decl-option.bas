@@ -35,6 +35,10 @@ function cOptDecl as integer
 
 	function = FALSE
 
+    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL ) = FALSE ) then
+    	exit function
+    end if
+
 	'' OPTION
 	lexSkipToken( )
 
@@ -71,7 +75,7 @@ function cOptDecl as integer
 	case else
 
 		'' ESCAPE? (it's not a reserved word, there are too many already..)
-		select case ucase$( *lexGetText( ) )
+		select case ucase( *lexGetText( ) )
 		case "ESCAPE"
 			lexSkipToken( )
 			env.opt.escapestr = TRUE
@@ -83,7 +87,7 @@ function cOptDecl as integer
 			do
 				select case lexGetClass( LEXCHECK_NODEFINE )
 				case FB_TKCLASS_KEYWORD
-					if( symbDelKeyword( lexGetSymbol ) = FALSE ) then
+					if( symbDelKeyword( lexGetSymChain( )->sym ) = FALSE ) then
 						hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 						exit function
 					end if
@@ -92,7 +96,7 @@ function cOptDecl as integer
 
 				case FB_TKCLASS_IDENTIFIER
 					'' proc?
-					s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_PROC )
+					s = symbFindByClass( lexGetSymChain( ), FB_SYMBCLASS_PROC )
 					if( s <> NULL ) then
 
 						'' is it from the rtlib (gfxlib will be listed as part of the rt too)?
@@ -101,13 +105,25 @@ function cOptDecl as integer
 							exit function
 						end if
 
+						'' don't remove if it was defined in other namespace
+						if( symbGetHashTb( s ) <> symbGetCurrentHashTb( ) ) then
+							hReportError( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS )
+							exit function
+						end if
+
 						symbDelPrototype( s )
 					else
 
 						'' macro?
-						s = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_DEFINE )
+						s = symbFindByClass( lexGetSymChain( ), FB_SYMBCLASS_DEFINE )
 						if( s = NULL ) then
 							hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+							exit function
+						end if
+
+						'' don't remove if it was defined in other namespace
+						if( symbGetHashTb( s ) <> symbGetCurrentHashTb( ) ) then
+							hReportError( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS )
 							exit function
 						end if
 

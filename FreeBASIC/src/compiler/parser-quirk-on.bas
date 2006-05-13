@@ -35,6 +35,7 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
     dim as ASTNODE ptr idxexpr
 	dim as integer l, i
 	dim as FBSYMBOL ptr sym, exitlabel, tbsym, labelTB(0 to FB_MAXGOTBITEMS-1)
+	dim as FBSYMCHAIN ptr chain_
 
 	function = FALSE
 
@@ -65,7 +66,12 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
 		end if
 
 		'' Label
-		labelTB(l) = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_LABEL )
+		chain_ = cIdentifier( )
+		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+			exit function
+		end if
+
+		labelTB(l) = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
 		if( labelTB(l) = NULL ) then
 			labelTB(l) = symbAddLabel( lexGetText( ), FALSE, TRUE )
 		end if
@@ -124,6 +130,7 @@ function cOnStmt as integer
 	dim as ASTNODE ptr expr
 	dim as integer isgoto, islocal, isrestore
 	dim as FBSYMBOL ptr label
+	dim as FBSYMCHAIN ptr chain_
 
 	function = FALSE
 
@@ -165,7 +172,7 @@ function cOnStmt as integer
 	    	exit function
 	    end if
 
-	    '' difference from QB: GOSUB not allowed inside procs
+		'' difference from QB: not allowed inside procs
 		if( fbIsModLevel() = FALSE ) then
 			hReportError( FB_ERRMSG_ILLEGALINSIDEASUB )
 			exit function
@@ -192,7 +199,12 @@ function cOnStmt as integer
 
 		if( isrestore = FALSE ) then
 			'' Label
-			label = symbFindByClass( lexGetSymbol( ), FB_SYMBCLASS_LABEL )
+			chain_ = cIdentifier( )
+			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+				exit function
+			end if
+
+			label = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
 			if( label = NULL ) then
 				label = symbAddLabel( lexGetText( ), FALSE, TRUE )
 			end if

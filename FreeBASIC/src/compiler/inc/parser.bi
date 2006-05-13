@@ -23,6 +23,17 @@
 #include once "inc\lex.bi"
 #include once "inc\ast.bi"
 
+enum FB_CMPSTMT_MASK
+	FB_CMPSTMT_MASK_CODE		= &h00000001
+	FB_CMPSTMT_MASK_PROC		= &h00000002
+	FB_CMPSTMT_MASK_NAMESPC		= &h00000004
+	FB_CMPSTMT_MASK_DECL		= &h00000008
+	FB_CMPSTMT_MASK_EXTERN		= &h00000010
+	FB_CMPSTMT_MASK_DATA		= &h00000020
+	FB_CMPSTMT_MASK_ALL 		= &hFFFFFFFF
+	FB_CMPSTMT_MASK_DEFAULT		= FB_CMPSTMT_MASK_CODE
+end enum
+
 type FB_CMPSTMT_DO
 	attop		as integer
 	inilabel	as FBSYMBOL ptr
@@ -44,9 +55,11 @@ type FB_CMPSTMT_IF
 	issingle	as integer
 	nxtlabel	as FBSYMBOL ptr
 	endlabel	as FBSYMBOL ptr
+	elsecnt		as integer
 end type
 
 type FB_CMPSTMT_PROC
+	issub		as integer
 	node		as ASTNODE ptr
 end type
 
@@ -73,9 +86,21 @@ type FB_CMPSTMT_WITH
 	last		as FBSYMBOL ptr
 end type
 
+type FB_CMPSTMT_NAMESPACE
+	lastsymtb	as FBSYMBOLTB ptr
+	lasthashtb	as FBHASHTB ptr
+	lastns		as FBSYMBOL ptr
+end type
+
+type FB_CMPSTMT_EXTERN
+	lastlib		as FBLIBRARY ptr
+	lastmang	as FB_MANGLING
+end type
+
 type FB_CMPSTMTSTK
-	last		as FBCMPSTMT
 	id			as integer
+	allowmask	as FB_CMPSTMT_MASK
+	last		as FBCMPSTMT
 	union
 		do		as FB_CMPSTMT_DO
 		for		as FB_CMPSTMT_FOR
@@ -84,299 +109,614 @@ type FB_CMPSTMTSTK
 		scope	as FB_CMPSTMT_SCOPE
 		select	as FB_CMPSTMT_SELECT
 		with	as FB_CMPSTMT_WITH
+		nspc	as FB_CMPSTMT_NAMESPACE
+		ext		as FB_CMPSTMT_EXTERN
 	end union
 end type
 
-declare function 	cProgram				( ) as integer
 
-declare function 	cLine					( ) as integer
+declare function 	cProgram				( _
+												_
+											) as integer
+
+declare function 	cLine					( _
+												_
+											) as integer
+
+declare function 	cLabel                  ( _
+												_
+											) as integer
+
+declare function 	cComment                ( _
+												byval lexflags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING _
+											) as integer
+
+declare function 	cDirective              ( _
+												_
+											) as integer
+
+declare function 	cStatement              ( _
+												_
+											) as integer
+
+declare function 	cStmtSeparator 			( _
+												byval lexflags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING _
+											) as integer
+
+declare function 	cDeclaration            ( _
+												_
+											) as integer
+
+declare function 	cConstDecl              ( _
+												_
+											) as integer
+
+declare function 	cConstAssign            ( _
+												byval dtype as integer, _
+					   						  	byval subtype as FBSYMBOL ptr _
+											) as integer
+
+declare function 	cTypeDecl               ( _
+												_
+											) as integer
+
+declare function 	cTypedefDecl			( _
+												byval id as zstring ptr _
+											) as integer
+
+declare function 	cEnumDecl               ( _
+												_
+											) as integer
+
+declare function 	cSymbolDecl             ( _
+												_
+											) as integer
+
+declare function 	cSymbolDef 				( _
+												byval attrib as integer, _
+												byval dopreserve as integer, _
+                                              byval token as integer _
+											) as integer
+
+declare function 	cStaticArrayDecl 		( _
+												byref dimensions as integer, _
+												dTB() as FBARRAYDIM _
+											) as integer
+
+declare function 	cArrayDecl				( _
+												byref dimensions as integer, _
+												exprTB() as ASTNODE ptr _
+											) as integer
+
+declare function 	cSymbolInit				( _
+												byval s as FBSYMBOL ptr, _
+												byval isinitializer as integer _
+											) as ASTNODE ptr
+
+declare function 	cSymbolType 			( _
+												byref dtype as integer, _
+												byref subtype as FBSYMBOL ptr, _
+												byref lgt as integer, _
+												byref ptrcnt as integer, _
+												byval checkptr as integer = TRUE _
+											) as integer
+
+declare function 	cIdentifier				( _
+												byval showerror as integer = TRUE _
+											) as FBSYMCHAIN ptr
+
+declare function 	cProcDecl               ( _
+												_
+											) as integer
+
+declare function 	cSubOrFuncDecl 			( _
+												byval isSub as integer _
+											) as integer
+
+declare function 	cParameters             ( _
+												byval proc as FBSYMBOL ptr, _
+												byval procmode as integer, _
+												byval isproto as integer _
+											) as FBSYMBOL ptr
+
+declare function 	cDefDecl				( _
+												_
+											) as integer
+
+declare function 	cOptDecl				( _
+												_
+											) as integer
+
+declare function 	cProcCallOrAssign		( _
+												_
+											) as integer
+
+declare function 	cQuirkStmt				( _
+												_
+											) as integer
+
+declare function 	cCompoundStmt           ( _
+												_
+											) as integer
+
+declare function 	cCompStmtCheck      	( _
+												_
+											) as integer
+
+declare function 	cCompStmtPush 			( _
+												byval id as FB_TOKEN, _
+												byval allowmask as FB_CMPSTMT_MASK = FB_CMPSTMT_MASK_DEFAULT _
+											) as FB_CMPSTMTSTK ptr
+
+declare function 	cCompStmtGetTOS  		( _
+												byval forid as FB_TOKEN, _
+												byval showerror as integer = TRUE _
+											) as FB_CMPSTMTSTK ptr
+
+declare sub 		cCompStmtPop 			( _
+												byval stk as FB_CMPSTMTSTK ptr _
+											)
+
+declare function 	cCompStmtIsAllowed 		( _
+												byval allowmask as FB_CMPSTMT_MASK _
+											) as integer
+
+declare function 	cIfStmtBegin			( _
+												_
+											) as integer
+
+declare function 	cIfStmtNext				( _
+												_
+											) as integer
+
+declare function 	cIfStmtEnd				( _
+												_
+											) as integer
+
+declare function 	cSingleIfStatement		( _
+												byval expr as ASTNODE ptr _
+											) as integer
+
+declare function 	cBlockIfStatement		( _
+												byval expr as ASTNODE ptr _
+											) as integer
+
+declare function 	cForStmtBegin          	( _
+												_
+											) as integer
+
+declare function 	cForStmtEnd          	( _
+												_
+											) as integer
+
+declare function 	cDoStmtBegin           	( _
+												_
+											) as integer
+
+declare function 	cDoStmtEnd           	( _
+												_
+											) as integer
+
+declare function 	cWhileStmtBegin        	( _
+												_
+											) as integer
+
+declare function 	cWhileStmtEnd        	( _
+												_
+											) as integer
+
+declare function 	cSelectStmtBegin       	( _
+												_
+											) as integer
+
+declare function 	cSelectStmtNext       	( _
+												_
+											) as integer
+
+declare function 	cSelectStmtEnd       	( _
+												_
+											) as integer
+
+declare function 	cSelConstStmtBegin 		( _
+												_
+											) as integer
+
+declare function 	cSelConstStmtNext		( _
+												byval stk as FB_CMPSTMTSTK ptr _
+											) as integer
+
+declare function 	cSelConstStmtEnd		( _
+												byval stk as FB_CMPSTMTSTK ptr _
+											) as integer
+
+declare function 	cProcStmtBegin         	( _
+												_
+											) as integer
+
+declare function 	cProcStmtEnd         	( _
+												_
+											) as integer
+
+declare function 	cExitStatement			( _
+												_
+											) as integer
+
+declare function 	cEndStatement			( _
+												_
+											) as integer
+
+declare function 	cContinueStatement		( _
+												_
+											) as integer
+
+declare function 	cWithStmtBegin          ( _
+												_
+											) as integer
+
+declare function 	cWithStmtEnd            ( _
+												_
+											) as integer
+
+declare function 	cScopeStmtBegin			( _
+												_
+											) as integer
+
+declare function 	cScopeStmtEnd			( _
+												_
+											) as integer
+
+declare function 	cNamespaceStmtBegin		( _
+												_
+											) as integer
+
+declare function 	cNamespaceStmtEnd		( _
+												_
+											) as integer
+
+declare function 	cUsingStmt 				( _
+												_
+											) as integer
+
+declare function 	cExternStmtBegin		( _
+												_
+											) as integer
+
+declare function 	cExternStmtEnd			( _
+												_
+											) as integer
+
+declare function 	cAssignmentOrPtrCall	( _
+												_
+											) as integer
+
+declare function 	cExpression				( _
+												byref expr as ASTNODE ptr _
+											) as integer
+
+declare function 	cCatExpression			( _
+												byref catexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cLogExpression			( _
+												byref logexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cRelExpression			( _
+												byref relexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cAddExpression			( _
+												byref addexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cShiftExpression		( _
+												byref shiftexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cModExpression			( _
+												byref modexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cIntDivExpression		( _
+												byref idivexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cMultExpression			( _
+												byref mulexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cExpExpression 			( _
+												byref expexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cNegNotExpression		( _
+												byref negexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cHighestPrecExpr		( _
+												byref highexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cPtrTypeCastingExpr		( _
+												byref castexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cDerefExpression		( _
+												byref derefexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cAddrOfExpression		( _
+												byref addrofexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cTypeConvExpr			( _
+												byref tconvexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cParentExpression		( _
+												byref parexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cAtom					( _
+												byref atom as ASTNODE ptr _
+											) as integer
+
+declare function 	cVariable				( _
+												byval chain as FBSYMCHAIN ptr, _
+												byref varexpr as ASTNODE ptr, _
+												byval checkarray as integer = TRUE _
+											) as integer
+
+declare function 	cVariableEx				( _
+												byval chain as FBSYMCHAIN ptr, _
+					  						  	byref varexpr as ASTNODE ptr, _
+					  						  	byval checkarray as integer _
+											) as integer
+
+declare function 	cWithVariable			( _
+												byval sym as FBSYMBOL ptr, _
+					   					  	  	byref varexpr as ASTNODE ptr, _
+					    				  	  	byval checkarray as integer _
+											) as integer
+
+declare function 	cVarOrDeref				( _
+												byref varexpr as ASTNODE ptr, _
+												byval checkarray as integer = TRUE, _
+												byval checkaddrof as integer = FALSE _
+											) as integer
+
+declare function 	cFunctionEx				( _
+												byval sym as FBSYMBOL ptr, _
+												byref funcexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cQuirkFunction			( _
+												byval sym as FBSYMBOL ptr, _
+												byref funcexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cConstant				( _
+												byval chain as FBSYMCHAIN ptr, _
+												byref constexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cConstantEx				( _
+												byval sym as FBSYMBOL ptr, _
+					  						  	byref expr as ASTNODE ptr _
+											) as integer
+
+declare function 	cEnumConstant			( _
+												byval sym as FBSYMBOL ptr, _
+				  							  	byref expr as ASTNODE ptr _
+											) as integer
+
+declare function 	cLiteral 				( _
+												byref litexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cNumLiteral				( _
+												byref expr as ASTNODE ptr _
+											) as integer
+
+declare function 	cStrLiteral				( _
+												byref expr as ASTNODE ptr, _
+					  						  	byval checkescape as integer _
+											) as integer
+
+declare function 	cProcArgList			( _
+												byval proc as FBSYMBOL ptr, _
+						 					  	byval ptrexpr as ASTNODE ptr, _
+						 					  	byval isfunc as integer, _
+						 					  	byval optonly as integer _
+											) as ASTNODE ptr
+
+declare function 	cAsmBlock				( _
+												_
+											) as integer
+
+declare function 	cFunctionMode 			( _
+												_
+											) as integer
+
+declare function 	cFunctionCall			( _
+												byval sym as FBSYMBOL ptr, _
+												byref funcexpr as ASTNODE ptr, _
+												byval ptrexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cProcCall				( _
+												byval sym as FBSYMBOL ptr, _
+												byref procexpr as ASTNODE ptr, _
+												byval ptrexpr as ASTNODE ptr, _
+												byval checkparents as integer = FALSE _
+											) as integer
+
+declare function 	cDerefFields			( _
+												byref typ as integer, _
+												byref subtype as FBSYMBOL ptr, _
+					   						  	byref varexpr as ASTNODE ptr, _
+					   						  	byval checkarray as integer _
+											) as integer
+
+declare function    cFuncPtrOrDerefFields	( _
+												byval typ as integer, _
+					      					  	byval subtype as FBSYMBOL ptr, _
+					      					  	byref varexpr as ASTNODE ptr, _
+					      					  	byval isfuncptr as integer, _
+					      					  	byval checkarray as integer _
+											) as integer
+
+declare function	cUpdPointer				( _
+												byval op as integer, _
+					  						  	byval p as ASTNODE ptr, _
+					  						  	byval e as ASTNODE ptr _
+											) as ASTNODE ptr
+
+declare function 	cAssignment				( _
+												byval assgexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	hAssignFunctResult		( _
+												byval proc as FBSYMBOL ptr _
+											) as integer
+
+declare function 	cGfxStmt 				( _
+												_
+											) as integer
+
+declare function 	cGfxFunct				( _
+												byref funcexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cGotoStmt				( _
+												_
+											) as integer
+
+declare function 	cPrintStmt				( _
+												_
+											) as integer
+
+declare function 	cDataStmt				( _
+												_
+											) as integer
+
+declare function 	cArrayStmt				( _
+												_
+											) as integer
+
+declare function 	cLineInputStmt			( _
+												_
+											) as integer
+
+declare function 	cInputStmt				( _
+												_
+											) as integer
+
+declare function 	cPokeStmt				( _
+												_
+											) as integer
+
+declare function 	cFileStmt				( _
+												_
+											) as integer
+
+declare function 	cLocateStmt				( _
+												byval isfunc as integer _
+											) as ASTNODE ptr
+
+declare function 	cOnStmt					( _
+												_
+											) as integer
+
+declare function 	cWriteStmt				( _
+												_
+											) as integer
+
+declare function 	cErrorStmt				( _
+												_
+											) as integer
+
+declare function 	cViewStmt				( _
+												byval is_func as integer = FALSE, _
+                   							 	byref funcexpr as ASTNODE ptr = NULL _
+											) as integer
+
+declare function 	cMidStmt				( _
+												_
+											) as integer
+
+declare function 	cLSetStmt				( _
+												_
+											) as integer
+
+declare function 	cWidthStmt				( _
+												byval isfunc as integer _
+											) as ASTNODE ptr
+
+declare function 	cStringFunct			( _
+												byref funcexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cMathFunct				( _
+												byref funcexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cPeekFunct				( _
+												byref funcexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cArrayFunct				( _
+												byref funcexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cFileFunct				( _
+												byref funcexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cErrorFunct				( _
+												byref funcexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cIIFFunct				( _
+												byref funcexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cVAFunct				( _
+												byref funcexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cScreenFunct			( _
+												byref funcexpr as ASTNODE ptr _
+											) as integer
+
+declare function 	cConstExprValue			( _
+												byref value as integer _
+											) as integer
 
-declare function 	cLabel                  ( ) as integer
-
-declare function 	cComment                ( byval lexflags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
-
-declare function 	cDirective              ( ) as integer
-
-declare function 	cStatement              ( ) as integer
-
-declare function 	cStmtSeparator 			( byval lexflags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
-
-declare function 	cDeclaration            ( ) as integer
-
-declare function 	cConstDecl              ( ) as integer
-
-declare function 	cConstAssign            ( byval dtype as integer, _
-					   						  byval subtype as FBSYMBOL ptr ) as integer
-
-declare function 	cTypeDecl               ( ) as integer
-
-declare function 	cTypedefDecl			( byval id as zstring ptr ) as integer
-
-declare function 	cEnumDecl               ( ) as integer
-
-declare function 	cSymbolDecl             ( ) as integer
-
-declare function 	cSymbolDef 				( byval attrib as integer, _
-											  byval dopreserve as integer, _
-                                              byval token as integer ) as integer
-
-declare function 	cStaticArrayDecl 		( byref dimensions as integer, _
-											  dTB() as FBARRAYDIM ) as integer
-
-declare function 	cArrayDecl				( byref dimensions as integer, _
-											  exprTB() as ASTNODE ptr ) as integer
-
-declare function 	cSymbolInit				( byval s as FBSYMBOL ptr, _
-											  byval isinitializer as integer ) as ASTNODE ptr
-
-declare function 	cSymbolType 			( byref typ as integer, _
-											  byref subtype as FBSYMBOL ptr, _
-											  byref lgt as integer, _
-											  byref ptrcnt as integer, _
-											  byval checkptr as integer = TRUE ) as integer
-
-declare function 	cProcDecl               ( ) as integer
-
-declare function 	cSubOrFuncDecl 			( byval isSub as integer ) as integer
-
-declare function 	cParameters             ( byval proc as FBSYMBOL ptr, _
-											  byval procmode as integer, _
-											  byval isproto as integer ) as FBSYMBOL ptr
-
-declare function 	cDefDecl				( ) as integer
-
-declare function 	cOptDecl				( ) as integer
-
-declare function 	cProcCallOrAssign		( ) as integer
-
-declare function 	cQuirkStmt				( ) as integer
-
-declare function 	cCompoundStmt           ( ) as integer
-
-declare function 	cCompStmtCheck      	( ) as integer
-
-declare function 	cIfStmtBegin			( ) as integer
-
-declare function 	cIfStmtNext				( ) as integer
-
-declare function 	cIfStmtEnd				( ) as integer
-
-declare function 	cSingleIfStatement		( byval expr as ASTNODE ptr ) as integer
-
-declare function 	cBlockIfStatement		( byval expr as ASTNODE ptr ) as integer
-
-declare function 	cForStmtBegin          	( ) as integer
-
-declare function 	cForStmtEnd          	( ) as integer
-
-declare function 	cDoStmtBegin           	( ) as integer
-
-declare function 	cDoStmtEnd           	( ) as integer
-
-declare function 	cWhileStmtBegin        	( ) as integer
-
-declare function 	cWhileStmtEnd        	( ) as integer
-
-declare function 	cSelectStmtBegin       	( ) as integer
-
-declare function 	cSelectStmtNext       	( ) as integer
-
-declare function 	cSelectStmtEnd       	( ) as integer
-
-declare function 	cSelConstStmtBegin 		( ) as integer
-
-declare function 	cSelConstStmtNext		( byval stk as FB_CMPSTMTSTK ptr ) as integer
-
-declare function 	cSelConstStmtEnd		( byval stk as FB_CMPSTMTSTK ptr ) as integer
-
-declare function 	cProcStmtBegin         	( ) as integer
-
-declare function 	cProcStmtEnd         	( ) as integer
-
-declare function 	cExitStatement			( ) as integer
-
-declare function 	cEndStatement			( ) as integer
-
-declare function 	cContinueStatement		( ) as integer
-
-declare function 	cWithStmtBegin          ( ) as integer
-
-declare function 	cWithStmtEnd            ( ) as integer
-
-declare function 	cScopeStmtBegin			( ) as integer
-
-declare function 	cScopeStmtEnd			( ) as integer
-
-declare function 	cAssignmentOrPtrCall	( ) as integer
-
-declare function 	cExpression				( byref expr as ASTNODE ptr ) as integer
-
-declare function 	cCatExpression			( byref catexpr as ASTNODE ptr ) as integer
-
-declare function 	cLogExpression			( byref logexpr as ASTNODE ptr ) as integer
-
-declare function 	cRelExpression			( byref relexpr as ASTNODE ptr ) as integer
-
-declare function 	cAddExpression			( byref addexpr as ASTNODE ptr ) as integer
-
-declare function 	cShiftExpression		( byref shiftexpr as ASTNODE ptr ) as integer
-
-declare function 	cModExpression			( byref modexpr as ASTNODE ptr ) as integer
-
-declare function 	cIntDivExpression		( byref idivexpr as ASTNODE ptr ) as integer
-
-declare function 	cMultExpression			( byref mulexpr as ASTNODE ptr ) as integer
-
-declare function 	cExpExpression 			( byref expexpr as ASTNODE ptr ) as integer
-
-declare function 	cNegNotExpression		( byref negexpr as ASTNODE ptr ) as integer
-
-declare function 	cHighestPrecExpr		( byref highexpr as ASTNODE ptr ) as integer
-
-declare function 	cPtrTypeCastingExpr		( byref castexpr as ASTNODE ptr ) as integer
-
-declare function 	cDerefExpression		( byref derefexpr as ASTNODE ptr ) as integer
-
-declare function 	cAddrOfExpression		( byref addrofexpr as ASTNODE ptr ) as integer
-
-declare function 	cTypeConvExpr			( byref tconvexpr as ASTNODE ptr ) as integer
-
-declare function 	cParentExpression		( byref parexpr as ASTNODE ptr ) as integer
-
-declare function 	cAtom					( byref atom as ASTNODE ptr ) as integer
-
-declare function 	cVariable				( byref varexpr as ASTNODE ptr, _
-											  byval checkarray as integer = TRUE ) as integer
-
-declare function 	cVarOrDeref				( byref varexpr as ASTNODE ptr, _
-											  byval checkarray as integer = TRUE, _
-											  byval checkaddrof as integer = FALSE ) as integer
-
-declare function 	cFunction				( byref funcexpr as ASTNODE ptr ) as integer
-
-declare function 	cQuirkFunction			( byref funcexpr as ASTNODE ptr ) as integer
-
-declare function 	cConstant				( byref constexpr as ASTNODE ptr ) as integer
-
-declare function 	cLiteral 				( byref litexpr as ASTNODE ptr ) as integer
-
-declare function 	cProcArgList			( byval proc as FBSYMBOL ptr, _
-						 					  byval ptrexpr as ASTNODE ptr, _
-						 					  byval isfunc as integer, _
-						 					  byval optonly as integer ) as ASTNODE ptr
-
-declare function 	cAsmBlock				( ) as integer
-
-declare function 	cFunctionMode 			( ) as integer
-
-declare function 	cFunctionCall			( byval sym as FBSYMBOL ptr, _
-											  byref funcexpr as ASTNODE ptr, _
-											  byval ptrexpr as ASTNODE ptr ) as integer
-
-declare function 	cProcCall				( byval sym as FBSYMBOL ptr, _
-											  byref procexpr as ASTNODE ptr, _
-											  byval ptrexpr as ASTNODE ptr, _
-											  byval checkparents as integer = FALSE ) as integer
-
-declare function 	cDerefFields			( byref typ as integer, _
-											  byref subtype as FBSYMBOL ptr, _
-					   						  byref varexpr as ASTNODE ptr, _
-					   						  byval checkarray as integer ) as integer
-
-declare function    cFuncPtrOrDerefFields	( byval typ as integer, _
-					      					  byval subtype as FBSYMBOL ptr, _
-					      					  byref varexpr as ASTNODE ptr, _
-					      					  byval isfuncptr as integer, _
-					      					  byval checkarray as integer ) as integer
-
-declare function	cUpdPointer				( byval op as integer, _
-					  						  byval p as ASTNODE ptr, _
-					  						  byval e as ASTNODE ptr ) as ASTNODE ptr
-
-declare function 	cAssignment				( byval assgexpr as ASTNODE ptr ) as integer
-
-declare function 	hAssignFunctResult		( byval proc as FBSYMBOL ptr ) as integer
-
-declare function 	cGfxStmt 				( ) as integer
-
-declare function 	cGfxFunct				( byref funcexpr as ASTNODE ptr ) as integer
-
-declare function 	cGotoStmt				( ) as integer
-
-declare function 	cPrintStmt				( ) as integer
-
-declare function 	cDataStmt				( ) as integer
-
-declare function 	cArrayStmt				( ) as integer
-
-declare function 	cLineInputStmt			( ) as integer
-
-declare function 	cInputStmt				( ) as integer
-
-declare function 	cPokeStmt				( ) as integer
-
-declare function 	cFileStmt				( ) as integer
-
-declare function 	cLocateStmt				( byval isfunc as integer ) as ASTNODE ptr
-
-declare function 	cOnStmt					( ) as integer
-
-declare function 	cWriteStmt				( ) as integer
-
-declare function 	cErrorStmt				( ) as integer
-
-declare function 	cViewStmt				( byval is_func as integer = FALSE, _
-                   							 byref funcexpr as ASTNODE ptr = NULL ) as integer
-
-declare function 	cMidStmt				( ) as integer
-
-declare function 	cLSetStmt				( ) as integer
-
-declare function 	cWidthStmt				( byval isfunc as integer ) as ASTNODE ptr
-
-declare function 	cStringFunct			( byref funcexpr as ASTNODE ptr ) as integer
-
-declare function 	cMathFunct				( byref funcexpr as ASTNODE ptr ) as integer
-
-declare function 	cPeekFunct				( byref funcexpr as ASTNODE ptr ) as integer
-
-declare function 	cArrayFunct				( byref funcexpr as ASTNODE ptr ) as integer
-
-declare function 	cFileFunct				( byref funcexpr as ASTNODE ptr ) as integer
-
-declare function 	cErrorFunct				( byref funcexpr as ASTNODE ptr ) as integer
-
-declare function 	cIIFFunct				( byref funcexpr as ASTNODE ptr ) as integer
-
-declare function 	cVAFunct				( byref funcexpr as ASTNODE ptr ) as integer
-
-declare function 	cScreenFunct			( byref funcexpr as ASTNODE ptr ) as integer
-
-declare function 	cConstExprValue			( byref value as integer ) as integer
 
 '':::::
 #define hMatchToken(token, errcode)							 _
-	if( hMatch( token ) = FALSE ) then							:_
+	if( hMatch( token ) = FALSE ) then						:_
 		hReportError errcode								:_
 		exit function										:_
 	end if
 
 '':::::
-#define hMatchLPRNT()											 _
+#define hMatchLPRNT()										_
     hMatchToken( CHAR_LPRNT, FB_ERRMSG_EXPECTEDLPRNT )
 
 '':::::
-#define hMatchRPRNT()											 _
+#define hMatchRPRNT()										_
     hMatchToken( CHAR_RPRNT, FB_ERRMSG_EXPECTEDRPRNT )
 
 '':::::
-#define hMatchCOMMA()											 _
+#define hMatchCOMMA()										_
     hMatchToken( CHAR_COMMA, FB_ERRMSG_EXPECTEDCOMMA )
 
 '':::::
-#define hMatchExpression(e)										 _
-	if( cExpression( e ) = FALSE ) then                         	:_
-		hReportError FB_ERRMSG_EXPECTEDEXPRESSION				:_
-		exit function											:_
+#define hMatchExpression(e)									 _
+	if( cExpression( e ) = FALSE ) then                     :_
+		hReportError FB_ERRMSG_EXPECTEDEXPRESSION			:_
+		exit function										:_
 	end if
 

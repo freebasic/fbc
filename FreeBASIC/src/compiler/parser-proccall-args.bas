@@ -29,7 +29,10 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-private function hCreateOptArg( byval param as FBSYMBOL ptr ) as ASTNODE ptr
+private function hCreateOptArg _
+	( _
+		byval param as FBSYMBOL ptr _
+	) as ASTNODE ptr
 
 	dim as ASTNODE ptr tree
 
@@ -49,13 +52,15 @@ end function
 '':::::
 ''ProcArg        =   BYVAL? (ID(('(' ')')? | Expression) .
 ''
-private function hProcArg( byval proc as FBSYMBOL ptr, _
-					 	   byval param as FBSYMBOL ptr, _
-					 	   byval argnum as integer, _
-					 	   byref expr as ASTNODE ptr, _
-					 	   byref amode as integer, _
-					 	   byval isfunc as integer _
-				   		 ) as integer
+private function hProcArg _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval param as FBSYMBOL ptr, _
+		byval argnum as integer, _
+		byref expr as ASTNODE ptr, _
+		byref amode as integer, _
+		byval isfunc as integer _
+	) as integer
 
 	dim as integer pmode
 	dim as FBSYMBOL ptr oldsym
@@ -163,11 +168,13 @@ end function
 '':::::
 ''ProcParam         =   BYVAL? (ID(('(' ')')? | Expression) .
 ''
-private function cOvlProcParam( byval argnum as integer, _
-					    		byref expr as ASTNODE ptr, _
-					    		byref amode as integer, _
-					    		byval isfunc as integer _
-					  		  ) as integer
+private function cOvlProcParam _
+	( _
+		byval argnum as integer, _
+		byref expr as ASTNODE ptr, _
+		byref amode as integer, _
+		byval isfunc as integer _
+	) as integer
 
 	dim as FBSYMBOL ptr oldsym
 
@@ -244,11 +251,13 @@ end function
 '':::::
 ''ProcArgList     =    ProcArg (DECL_SEPARATOR ProcArg)* .
 ''
-private function hOvlProcArgList( byval proc as FBSYMBOL ptr, _
-								  byval ptrexpr as ASTNODE ptr, _
-								  byval isfunc as integer, _
-								  byval optonly as integer _
-								) as ASTNODE ptr
+private function hOvlProcArgList _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval ptrexpr as ASTNODE ptr, _
+		byval isfunc as integer, _
+		byval optonly as integer _
+	) as ASTNODE ptr
 
     dim as integer args, p, params, modeTB(0 to FB_MAXPROCARGS-1)
     dim as ASTNODE ptr procexpr, exprTB(0 to FB_MAXPROCARGS-1)
@@ -357,11 +366,13 @@ end function
 '':::::
 ''ProcArgList     =    ProcArg (DECL_SEPARATOR ProcArg)* .
 ''
-function cProcArgList( byval proc as FBSYMBOL ptr, _
-					   byval ptrexpr as ASTNODE ptr, _
-					   byval isfunc as integer, _
-					   byval optonly as integer _
-					 ) as ASTNODE ptr
+function cProcArgList _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval ptrexpr as ASTNODE ptr, _
+		byval isfunc as integer, _
+		byval optonly as integer _
+	) as ASTNODE ptr
 
     dim as integer args, params, mode
     dim as FBSYMBOL ptr param

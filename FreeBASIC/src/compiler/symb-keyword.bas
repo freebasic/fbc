@@ -223,6 +223,7 @@ const SYMB_MAXKEYWORDS = 210
         (@"STRPTR"	, FB_TK_STRPTR			, FB_TKCLASS_KEYWORD), _
         (@"WITH"	, FB_TK_WITH			, FB_TKCLASS_KEYWORD), _
         (@"SCOPE"	, FB_TK_SCOPE			, FB_TKCLASS_KEYWORD), _
+        (@"NAMESPACE", FB_TK_NAMESPACE		, FB_TKCLASS_KEYWORD), _
         (@"EXPORT"	, FB_TK_EXPORT			, FB_TKCLASS_KEYWORD), _
         (@"IMPORT"	, FB_TK_IMPORT			, FB_TKCLASS_KEYWORD), _
         (@"LIBPATH"	, FB_TK_LIBPATH			, FB_TKCLASS_KEYWORD), _
@@ -231,7 +232,6 @@ const SYMB_MAXKEYWORDS = 210
         (@"ASC"		, FB_TK_ASC				, FB_TKCLASS_KEYWORD), _
         (@"LSET"	, FB_TK_LSET			, FB_TKCLASS_KEYWORD), _
         (@"IIF"		, FB_TK_IIF				, FB_TKCLASS_KEYWORD), _
-        (@"..."		, FB_TK_VARARG			, FB_TKCLASS_KEYWORD), _
         (@"VA_FIRST", FB_TK_VA_FIRST		, FB_TKCLASS_KEYWORD), _
         (@"SIZEOF"	, FB_TK_SIZEOF			, FB_TKCLASS_KEYWORD), _
         (@"SIN"		, FB_TK_SIN				, FB_TKCLASS_KEYWORD), _
@@ -255,12 +255,14 @@ const SYMB_MAXKEYWORDS = 210
 '':::::
 sub symbInitKeywords( ) static
     dim as integer i
+    dim as FBSYMBOL ptr s
 
 	for i = 0 to SYMB_MAXKEYWORDS-1
     	if( kwdTb(i).name = NULL ) then
     		exit for
     	end if
-    	if( symbAddKeyword( kwdTb(i).name, kwdTb(i).id, kwdTb(i).class ) = NULL ) then
+    	s = symbAddKeyword( kwdTb(i).name, kwdTb(i).id, kwdTb(i).class )
+    	if( s = NULL ) then
     		exit sub
     	end if
     next
@@ -268,13 +270,20 @@ sub symbInitKeywords( ) static
 end sub
 
 '':::::
-function symbAddKeyword( byval symbol as zstring ptr, _
-						 byval id as integer, _
-						 byval class as integer ) as FBSYMBOL ptr
-    dim k as FBSYMBOL ptr
+function symbAddKeyword _
+	( _
+		byval symbol as zstring ptr, _
+		byval id as integer, _
+		byval class as integer _
+	) as FBSYMBOL ptr
 
-    k = symbNewSymbol( NULL, @symb.globtb, TRUE, FB_SYMBCLASS_KEYWORD, _
-    				   TRUE, symbol, NULL )
+    dim as FBSYMBOL ptr k
+
+    k = symbNewSymbol( NULL, _
+    				   @symbGetGlobalTb( ), NULL, TRUE, _
+    				   FB_SYMBCLASS_KEYWORD, _
+    				   TRUE, symbol, NULL, _
+    				   TRUE )
     if( k = NULL ) then
     	return NULL
     end if
@@ -288,14 +297,12 @@ function symbAddKeyword( byval symbol as zstring ptr, _
 end function
 
 '':::::
-function symbDelKeyword( byval s as FBSYMBOL ptr, _
-				         byval dolookup as integer ) as integer
+function symbDelKeyword _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as integer
 
     function = FALSE
-
-	if( dolookup ) then
-		s = symbFindByClass( s, FB_SYMBCLASS_KEYWORD )
-	end if
 
 	if( s = NULL ) then
 		exit function

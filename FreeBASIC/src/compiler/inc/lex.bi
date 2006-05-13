@@ -29,12 +29,15 @@ enum LEXCHECK_ENUM
 	LEXCHECK_NOWHITESPC	= 4
 	LEXCHECK_NOSUFFIX	= 8
 	LEXCHECK_NOQUOTES	= 16
+	LEXCHECK_NOSYMBOL	= 32
+	LEXCHECK_NOLOOKUP	= 64
+	LEXCHECK_IDPERIOD	= 128
 end enum
 
 type FBTOKEN
 	id				as integer
 	class			as integer
-	typ				as integer
+	dtype			as integer
 
 	'' used by literal strings too
 	union
@@ -42,9 +45,9 @@ type FBTOKEN
 		textw		as wstring * FB_MAXLITLEN+1
 	end union
 
-	tlen			as integer                  '' length
-	dotpos			as integer                  '' first '.' position, if any
-	sym				as FBSYMBOL ptr				'' symbol found, if any
+	len				as integer                  '' length
+	sym_chain		as FBSYMCHAIN ptr			'' symbol found, if any
+	ppos			as integer
 
 	next			as FBTOKEN ptr
 end type
@@ -84,9 +87,6 @@ type LEX_CTX
 		end type
 	end union
 
-	'' last WITH
-	withcnt 		as integer
-
 	'' input buffer
 	bufflen			as integer
 
@@ -106,61 +106,78 @@ type LEX_CTX
 	lastfilepos 	as integer
 end type
 
+declare sub 		lexInit                 ( _
+												byval isinclude as integer _
+											)
 
-declare sub 		lexInit                 ( byval isinclude as integer )
+declare sub 		lexEnd					( _
+											)
 
-declare sub 		lexEnd					( )
+declare sub 		lexPushCtx				( _
+											)
 
-declare sub 		lexPushCtx				( )
+declare sub 		lexPopCtx				( _
+											)
 
-declare sub 		lexPopCtx				( )
+declare function 	lexGetToken 			( _
+												byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING _
+											) as integer
 
-declare function 	lexGetToken 			( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
+declare function 	lexGetClass 			( _
+												byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING _
+											) as integer
 
-declare function 	lexGetClass 			( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
+declare function 	lexGetText 				( _
+											) as zstring ptr
 
-declare function 	lexGetText 				( ) as zstring ptr
+declare sub 		lexEatToken 			( _
+												byval token as zstring ptr, _
+												byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING _
+											)
 
-declare function 	lexGetTextW				( ) as wstring ptr
+declare sub 		lexSkipToken			( _
+												byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING _
+											)
 
-declare function 	lexGetTextLen 			( ) as integer
+declare function 	lexGetLookAheadClass 	( _
+												byval k as integer, _
+												byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING _
+											) as integer
 
-declare function 	lexGetType 				( ) as integer
+declare function 	lexGetLookAhead 		( _
+												byval k as integer, _
+												byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING _
+											) as integer
 
-declare function 	lexGetSymbol 			( ) as FBSYMBOL ptr
+declare sub 		lexReadLine				( _
+												byval endchar as uinteger = INVALID, _
+												byval dst as zstring ptr, _
+												byval skipline as integer = FALSE _
+											)
 
-declare function 	lexGetPeriodPos 		( ) as integer
+declare sub 		lexSkipLine				( _
+											)
 
-declare sub 		lexEatToken 			( byval token as zstring ptr, _
-											  byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )
+declare sub 		lexNextToken 			( _
+												byval t as FBTOKEN ptr, _
+												byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING _
+											)
 
-declare sub 		lexSkipToken			( byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )
+declare function 	lexCurrentChar          ( _
+												byval skipwhitespc as integer = FALSE _
+											) as uinteger
 
-declare function 	lexGetLookAheadClass 	( byval k as integer, _
-											  byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
+declare function 	lexGetLookAheadChar     ( _
+												byval skipwhitespc as integer = FALSE _
+											) as uinteger
 
-declare function 	lexGetLookAhead 		( byval k as integer, _
-											  byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING ) as integer
+declare function 	lexEatChar              ( _
+											) as uinteger
 
-declare sub 		lexReadLine				( byval endchar as uinteger = INVALID, _
-											  byval dst as zstring ptr, _
-											  byval skipline as integer = FALSE )
+declare function	lexPeekCurrentLine		( _
+												byref token_pos as string _
+											) as string
 
-declare sub 		lexSkipLine				( )
-
-declare sub 		lexSetToken				( byval id as integer, _
-											  byval class as integer )
-
-declare sub 		lexNextToken 			( byval t as FBTOKEN ptr, _
-											  byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING )
-
-declare function 	lexCurrentChar          ( byval skipwhitespc as integer = FALSE ) as uinteger
-
-declare function 	lexGetLookAheadChar     ( byval skipwhitespc as integer = FALSE ) as uinteger
-
-declare function 	lexEatChar              ( ) as uinteger
-
-declare function	lexPeekCurrentLine		( byref token_pos as string ) as string
 
 ''
 '' macros
@@ -169,6 +186,18 @@ declare function	lexPeekCurrentLine		( byref token_pos as string ) as string
 #define lexLineNum( ) lex->linenum
 
 #define lexGetLastToken( ) lex->lasttk_id
+
+#define lexGetTextW( ) @lex->head->textw
+
+#define lexGetTextLen( ) lex->head->len
+
+#define lexGetType( ) lex->head->dtype
+
+#define lexGetSymChain( ) lex->head->sym_chain
+
+#define lexGetPeriodPos( ) lex->head->ppos
+
+#define lexGetHead( ) lex->head
 
 ''
 '' inter-module globals

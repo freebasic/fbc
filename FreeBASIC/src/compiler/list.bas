@@ -30,29 +30,34 @@ const NULL = 0
 
 
 '':::::
-function listNew( byval list as TLIST ptr, _
-				  byval nodes as integer, _
-				  byval nodelen as integer, _
-				  byval doclear as integer, _
-				  byval relink as integer _
-				) as integer
+function listNew _
+	( _
+		byval list as TLIST ptr, _
+		byval nodes as integer, _
+		byval nodelen as integer, _
+		byval flags as LIST_FLAGS _
+	) as integer
 
 	'' fill ctrl struct
-	list->tbhead 	= NULL
-	list->tbtail 	= NULL
-	list->nodes 	= 0
-	list->nodelen	= nodelen + len( TLISTNODE )
-	list->head		= NULL
-	list->tail		= NULL
-	list->clear		= doclear
+	list->tbhead = NULL
+	list->tbtail = NULL
+	list->nodes	= 0
+	list->nodelen = nodelen + len( TLISTNODE )
+	list->head = NULL
+	list->tail = NULL
+	list->flags	= flags
 
 	'' allocate the initial pool
-	function = listAllocTB( list, nodes, relink )
+	function = listAllocTB( list, nodes )
 
 end function
 
 '':::::
-function listFree( byval list as TLIST ptr ) as integer
+function listFree _
+	( _
+		byval list as TLIST ptr _
+	) as integer
+
     dim as TLISTTB ptr tb, nxt
 
 	'' for each pool, free the mem block and the pool ctrl struct
@@ -64,19 +69,20 @@ function listFree( byval list as TLIST ptr ) as integer
 		tb = nxt
 	loop
 
-	list->tbhead 	= NULL
-	list->tbtail 	= NULL
-	list->nodes		= 0
+	list->tbhead = NULL
+	list->tbtail = NULL
+	list->nodes	= 0
 
 	function = TRUE
 
 end function
 
 '':::::
-function listAllocTB( byval list as TLIST ptr, _
-					  byval nodes as integer, _
-					  byval relink as integer = TRUE _
-					) as integer static
+function listAllocTB _
+	( _
+		byval list as TLIST ptr, _
+		byval nodes as integer _
+	) as integer static
 
 	dim as TLISTNODE ptr nodetb, node, prv
 	dim as TLISTTB ptr tb
@@ -89,7 +95,7 @@ function listAllocTB( byval list as TLIST ptr, _
 	end if
 
 	'' allocate the pool
-	if( list->clear ) then
+	if( (list->flags and LIST_FLAGS_CLEARNODES) <> 0 ) then
 		nodetb = callocate( nodes * list->nodelen )
 	else
 		nodetb = allocate( nodes * list->nodelen )
@@ -114,16 +120,16 @@ function listAllocTB( byval list as TLIST ptr, _
 	end if
 	list->tbtail = tb
 
-	tb->next 	= NULL
-	tb->nodetb 	= nodetb
-	tb->nodes 	= nodes
+	tb->next = NULL
+	tb->nodetb = nodetb
+	tb->nodes = nodes
 
 	'' add new nodes to the free list
 	list->fhead = nodetb
 	list->nodes += nodes
 
 	''
-	if( relink ) then
+	if( (list->flags and LIST_FLAGS_LINKFREENODES) <> 0 ) then
 		prv = NULL
 		node = list->fhead
 
@@ -131,8 +137,8 @@ function listAllocTB( byval list as TLIST ptr, _
 			node->prev	= prv
 			node->next	= cast( TLISTNODE ptr, cast( byte ptr, node ) + list->nodelen )
 
-			prv 	   	= node
-			node 		= node->next
+			prv = node
+			node = node->next
 		next
 
 		node->prev = prv
@@ -145,7 +151,11 @@ function listAllocTB( byval list as TLIST ptr, _
 end function
 
 '':::::
-function listNewNode( byval list as TLIST ptr ) as any ptr static
+function listNewNode _
+	( _
+		byval list as TLIST ptr _
+	) as any ptr static
+
 	dim as TLISTNODE ptr node, tail
 
 	'' alloc new node list if there are no free nodes
@@ -157,26 +167,33 @@ function listNewNode( byval list as TLIST ptr ) as any ptr static
 	node = list->fhead
 	list->fhead = node->next
 
-	'' add to used list
-	tail = list->tail
-	list->tail = node
-	if( tail <> NULL ) then
-		tail->next = node
+	if( (list->flags and LIST_FLAGS_LINKUSEDNODES) <> 0 ) then
+		'' add to used list
+		tail = list->tail
+		list->tail = node
+		if( tail <> NULL ) then
+			tail->next = node
+		else
+			list->head = node
+		end If
+
+		node->prev = tail
+		node->next = NULL
+
+		function = cast( byte ptr, node ) + len( TLISTNODE )
+
 	else
-		list->head = node
-	end If
-
-	node->prev	= tail
-	node->next	= NULL
-
-	''
-	function = cast( byte ptr, node ) + len( TLISTNODE )
+		function = node
+	end if
 
 end function
 
 '':::::
-sub listDelNode( byval list as TLIST ptr, _
-				 byval node_ as any ptr ) static
+sub listDelNode _
+	( _
+		byval list as TLIST ptr, _
+		byval node_ as any ptr _
+	) static
 
 	dim as TLISTNODE ptr node, prv, nxt
 
@@ -184,36 +201,46 @@ sub listDelNode( byval list as TLIST ptr, _
 		exit sub
 	end if
 
-	node = cast( TLISTNODE ptr, cast( byte ptr, node_ ) - len( TLISTNODE ) )
+	if( (list->flags and LIST_FLAGS_LINKUSEDNODES) <> 0 ) then
+		node = cast( TLISTNODE ptr, cast( byte ptr, node_ ) - len( TLISTNODE ) )
 
-	'' remove from used list
-	prv = node->prev
-	nxt = node->next
-	if( prv <> NULL ) then
-		prv->next = nxt
-	else
-		list->head = nxt
-	end If
+		'' remove from used list
+		prv = node->prev
+		nxt = node->next
+		if( prv <> NULL ) then
+			prv->next = nxt
+		else
+			list->head = nxt
+		end If
 
-	if( nxt <> NULL ) then
-		nxt->prev = prv
+		if( nxt <> NULL ) then
+			nxt->prev = prv
+		else
+			list->tail = prv
+		end If
+
 	else
-		list->tail = prv
-	end If
+		node = cast( TLISTNODE ptr, node_ )
+	end if
 
 	'' add to free list
 	node->next = list->fhead
 	list->fhead = node
 
 	'' node can contain strings descriptors, so, erase it..
-	if( list->clear ) then
+	if( (list->flags and LIST_FLAGS_CLEARNODES) <> 0 ) then
 		clear( byval node_, 0, list->nodelen - len( TLISTNODE ) )
 	end if
 
 end sub
 
 '':::::
-function listGetHead( byval list as TLIST ptr ) as any ptr
+function listGetHead _
+	( _
+		byval list as TLIST ptr _
+	) as any ptr
+
+	assert( (list->flags and LIST_FLAGS_LINKUSEDNODES) <> 0 )
 
 	if( list->head = NULL ) then
 		function = NULL
@@ -224,7 +251,12 @@ function listGetHead( byval list as TLIST ptr ) as any ptr
 end function
 
 '':::::
-function listGetTail( byval list as TLIST ptr ) as any ptr
+function listGetTail _
+	( _
+		byval list as TLIST ptr _
+	) as any ptr
+
+	assert( (list->flags and LIST_FLAGS_LINKUSEDNODES) <> 0 )
 
 	if( list->tail = NULL ) then
 		function = NULL
@@ -235,17 +267,17 @@ function listGetTail( byval list as TLIST ptr ) as any ptr
 end function
 
 '':::::
-function listGetPrev( byval node as any ptr ) as any ptr
+function listGetPrev _
+	( _
+		byval node as any ptr _
+	) as any ptr
+
     dim as TLISTNODE ptr prev
 
-#ifdef DEBUG
-	if( node = NULL ) then
-		return NULL
-	end if
-#endif
+	assert( node <> NULL )
 
-	 prev = cast( TLISTNODE ptr, _
-				  cast( byte ptr, node ) - len( TLISTNODE ) )->prev
+	prev = cast( TLISTNODE ptr, _
+				 cast( byte ptr, node ) - len( TLISTNODE ) )->prev
 
 	if( prev = NULL ) then
 		function = NULL
@@ -256,14 +288,14 @@ function listGetPrev( byval node as any ptr ) as any ptr
 end function
 
 '':::::
-function listGetNext( byval node as any ptr ) as any ptr
+function listGetNext _
+	( _
+		byval node as any ptr _
+	) as any ptr
+
     dim as TLISTNODE ptr nxt
 
-#ifdef DEBUG
-	if( node = NULL ) then
-		return NULL
-	end if
-#endif
+	assert( node <> NULL )
 
 	nxt = cast( TLISTNODE ptr, _
 				cast( byte ptr, node ) - len( TLISTNODE ) )->next

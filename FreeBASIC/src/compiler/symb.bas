@@ -19,7 +19,6 @@
 '' symbol table core module
 ''
 '' chng: sep/2004 written [v1ctor]
-''		 jan/2005 updated to use real linked-lists [v1ctor]
 
 option explicit
 option escape
@@ -28,12 +27,15 @@ option escape
 #include once "inc\fbint.bi"
 #include once "inc\hash.bi"
 #include once "inc\list.bi"
+#include once "inc\pool.bi"
 
 declare sub			symbDelGlobalTb 	( )
 
 declare sub 		symbInitKeywords	( )
 
-declare sub 		symbInitDefines		( byval ismain as integer )
+declare sub 		symbInitDefines		( _
+											byval ismain as integer _
+										)
 
 declare sub 		symbInitLibs		( )
 
@@ -41,8 +43,16 @@ declare sub 		symbInitFwdRef		( )
 
 declare sub 		symbInitDims		( )
 
-declare sub 		symbAddToFwdRef		( byval f as FBSYMBOL ptr, _
-					 					  byval ref as FBSYMBOL ptr )
+declare sub 		symbAddToFwdRef		( _
+											byval f as FBSYMBOL ptr, _
+					 					  	byval ref as FBSYMBOL ptr _
+					 					)
+
+declare sub 		symbMangleInit		( )
+
+declare sub 		symbMangleEnd		( )
+
+
 ''globals
 	dim shared symb as SYMBCTX
 
@@ -52,19 +62,70 @@ declare sub 		symbAddToFwdRef		( byval f as FBSYMBOL ptr, _
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
+function symbHashTbInit _
+	( _
+		byval hashtb as FBHASHTB ptr, _
+		byval owner as FBSYMBOL ptr, _
+		byval nodes as integer _
+	) as integer
+
+	hashtb->owner = owner
+	hashtb->prev = NULL
+	hashtb->next = NULL
+	hashNew( @hashtb->tb, nodes )
+
+	function = TRUE
+
+end function
+
+'':::::
+function symbSymTbInit _
+	( _
+		byval symtb as FBSYMBOLTB ptr, _
+		byval owner as FBSYMBOL ptr _
+	) as integer
+
+	symtb->owner = owner
+	symtb->head = NULL
+	symtb->tail = NULL
+
+	function = TRUE
+
+end function
+
+'':::::
 sub symbInitSymbols static
 
-	'' globals/module-level
-	listNew( @symb.symlist, FB_INITSYMBOLNODES, len( FBSYMBOL ), FALSE )
+	'' common symbols list
+	listNew( @symb.symlist, FB_INITSYMBOLNODES, len( FBSYMBOL ), LIST_FLAGS_NOCLEAR )
 
-	hashNew( @symb.symhash, FB_INITSYMBOLNODES )
+	'' common chain list
+	listNew( @symb.chainlist, FB_INITSYMBOLNODES, len( FBSYMCHAIN ), LIST_FLAGS_NOCLEAR )
 
-	symb.globtb.owner = NULL
-	symb.globtb.head = NULL
-	symb.globtb.tail = NULL
+	'' global namespace - not complete, just a mock symbol
+    with symb.globnspc.nspc
+        symbSymTbInit( @.symtb, NULL )
+		symbHashTbInit( @.hashtb, NULL, FB_INITSYMBOLNODES )
+    	.implist.head = NULL
+    	.implist.tail = NULL
+    	.next = NULL
+    end with
 
-	symb.loctb = @symb.globtb
+    ''
+    poolNew( @symb.namepool, FB_INITSYMBOLNODES \ 8, FB_MAXNAMELEN\8+1, FB_MAXNAMELEN+1 )
 
+	''
+	symb.namespc = @symb.globnspc
+	symb.symtb = @symb.globnspc.nspc.symtb
+	symb.hashtb = @symb.globnspc.nspc.hashtb
+
+	''
+	symb.hashlist.head = NULL
+	symb.hashlist.tail = NULL
+
+	symbHashListAdd( symb.hashtb )
+
+	''
 	symb.lastlbl = NULL
 
 	symbDataInit( )
@@ -72,7 +133,10 @@ sub symbInitSymbols static
 end sub
 
 '':::::
-sub symbInit( byval ismain as integer )
+sub symbInit _
+	( _
+		byval ismain as integer _
+	)
 
 	''
 	if( symb.inited ) then
@@ -87,6 +151,9 @@ sub symbInit( byval ismain as integer )
 
 	''
 	symbDataInit( )
+
+	''
+	symbMangleInit( )
 
 	'' keywords
 	symbInitKeywords( )
@@ -104,7 +171,7 @@ sub symbInit( byval ismain as integer )
 	symbInitLibs( )
 
     ''
-    symb.inited 	= TRUE
+    symb.inited = TRUE
 
 end sub
 
@@ -118,9 +185,9 @@ sub symbEnd
 	''
 	symbDelGlobalTb( )
 
-	symb.globtb.head = NULL
-	symb.globtb.tail = NULL
-	symb.loctb = NULL
+	symbGetGlobalTb( ).head = NULL
+	symbGetGlobalTb( ).tail = NULL
+	symb.symtb = NULL
 
 	''
 	symbDataEnd( )
@@ -128,7 +195,7 @@ sub symbEnd
     ''
 	hashFree( @symb.libhash )
 
-    hashFree( @symb.symhash )
+    hashFree( @symb.globnspc.nspc.hashtb.tb )
 
 	''
 	listFree( @symb.liblist )
@@ -140,6 +207,12 @@ sub symbEnd
 	listFree( @symb.deftoklist )
 
 	listFree( @symb.defparamlist )
+
+	symbMangleEnd( )
+
+	poolFree( @symb.namepool )
+
+	listFree( @symb.chainlist )
 
 	listFree( @symb.symlist )
 
@@ -155,13 +228,15 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private function hCanDuplicate( byval n as FBSYMBOL ptr, _
-								byval s as FBSYMBOL ptr _
-							  ) as integer
+function symbCanDuplicate _
+	( _
+		byval chain_ as FBSYMCHAIN ptr, _
+		byval s as FBSYMBOL ptr _
+	) as integer
 
 	select case as const s->class
-	'' adding a define or keyword? no dups can exist
-	case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_KEYWORD
+	'' adding a define, keyword or namespace? no dups can exist
+	case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_KEYWORD, FB_SYMBCLASS_NAMESPACE
 		return FALSE
 
 	'' adding a type field? anything is allowed (udt elms are not added to a hash tb)
@@ -173,13 +248,14 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, _
 		function = FALSE
 
 		do
-			select case n->class
-			case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_KEYWORD, FB_SYMBCLASS_LABEL
+			select case as const chain_->sym->class
+			case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_KEYWORD, FB_SYMBCLASS_NAMESPACE, _
+				 FB_SYMBCLASS_LABEL
 				exit function
 			end select
 
-			n = n->right
-		loop while( n <> NULL )
+			chain_ = chain_->next
+		loop while( chain_ <> NULL )
 
 	'' adding a forward ref? anything but a define or another forward ref is allowed
 	case FB_SYMBCLASS_FWDREF
@@ -187,13 +263,13 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, _
 		function = FALSE
 
 		do
-			select case n->class
-			case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_FWDREF
+			select case chain_->sym->class
+			case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_NAMESPACE, FB_SYMBCLASS_FWDREF
 				exit function
 			end select
 
-			n = n->right
-		loop while( n <> NULL )
+			chain_ = chain_->next
+		loop while( chain_ <> NULL )
 
 	'' adding an udt, enum or typedef? anything but a define or
 	'' themselves is allowed
@@ -202,14 +278,14 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, _
 		function = FALSE
 
 		do
-			select case as const n->class
-			case FB_SYMBCLASS_DEFINE, _
+			select case as const chain_->sym->class
+			case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_NAMESPACE, _
 				 FB_SYMBCLASS_UDT, FB_SYMBCLASS_ENUM, FB_SYMBCLASS_TYPEDEF
 				exit function
 			end select
 
-			n = n->right
-		loop while( n <> NULL )
+			chain_ = chain_->next
+		loop while( chain_ <> NULL )
 
 	'' adding a constant or proc? only dup allowed are labels, udts or enums
 	case FB_SYMBCLASS_CONST, FB_SYMBCLASS_PROC
@@ -217,7 +293,7 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, _
 		function = FALSE
 
 		do
-			select case as const n->class
+			select case as const chain_->sym->class
 			case FB_SYMBCLASS_LABEL, FB_SYMBCLASS_UDT, FB_SYMBCLASS_ENUM, _
 				 FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_FWDREF
 
@@ -225,8 +301,8 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, _
 				exit function
 			end select
 
-			n = n->right
-		loop while( n <> NULL )
+			chain_ = chain_->next
+		loop while( chain_ <> NULL )
 
 	'' adding a variable? labels, udts or enums are allowed as dups AND
 	'' other vars if they have different suffixes -- if any with suffix
@@ -235,19 +311,22 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, _
 
 		function = FALSE
 
+		dim as FBSYMBOL ptr sym
 		do
-			select case as const n->class
+			sym = chain_->sym
+			select case as const sym->class
 			case FB_SYMBCLASS_LABEL, FB_SYMBCLASS_UDT, FB_SYMBCLASS_ENUM, _
 				 FB_SYMBCLASS_TYPEDEF, FB_SYMBCLASS_FWDREF
 
 			case FB_SYMBCLASS_VAR
-				if( s->scope = n->scope ) then
-					if( (s->var.suffix = INVALID) or (n->var.suffix = INVALID) ) then
+				'' same scope?
+				if( s->scope = sym->scope ) then
+					if( (s->var.suffix = INVALID) or (sym->var.suffix = INVALID) ) then
 	    				exit function
 					end if
 
     				'' same suffix?
-    				if( n->var.suffix = s->var.suffix ) then
+    				if( sym->var.suffix = s->var.suffix ) then
     					exit function
     				end if
     			end if
@@ -256,8 +335,8 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, _
 				exit function
 			end select
 
-			n = n->right
-		loop while( n <> NULL )
+			chain_ = chain_->next
+		loop while( chain_ <> NULL )
 
 	end select
 
@@ -267,25 +346,42 @@ private function hCanDuplicate( byval n as FBSYMBOL ptr, _
 end function
 
 '':::::
-function symbNewSymbol( byval s as FBSYMBOL ptr, _
-					 	byval symtb as FBSYMBOLTB ptr, _
-					 	byval isglobal as integer, _
-					 	byval class as FB_SYMBCLASS, _
-					 	byval dohash as integer, _
-					 	byval symbol as zstring ptr, _
-					 	byval aliasname as zstring ptr, _
-					 	byval dtype as integer, _
-					 	byval subtype as FBSYMBOL ptr, _
-					 	byval ptrcnt as integer, _
-					 	byval suffix as integer, _
-					 	byval preservecase as integer _
-					  ) as FBSYMBOL ptr static
+function symbNewSymbol _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval symtb as FBSYMBOLTB ptr, _
+		byval hashtb as FBHASHTB ptr, _
+		byval isglobal as integer, _
+		byval class as FB_SYMBCLASS, _
+		byval dohash as integer, _
+		byval id as zstring ptr, _
+		byval id_alias as zstring ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval ptrcnt as integer, _
+		byval preservecase as integer, _
+		byval suffix as integer _
+	) as FBSYMBOL ptr static
 
-    dim as FBSYMBOL ptr n
+    dim as FBSYMCHAIN ptr chain_, chain_head
     dim as integer slen, delok
 
     function = NULL
 
+	if( symtb = NULL ) then
+    	'' parsing main and not inside a namespace? add to global tb
+    	if( fbIsModLevel( ) and symbIsGlobalNamespc( ) ) then
+    		symtb = @symbGetGlobalTb( )
+    	else
+    		symtb = symb.symtb
+    	end if
+    end if
+
+    if( hashtb = NULL ) then
+    	hashtb = symb.hashtb
+    end if
+
+    '' alloc symbol node?
     delok = FALSE
     if( s = NULL ) then
     	delok = TRUE
@@ -297,62 +393,65 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
 
     ''
     s->class = class
+	s->attrib = iif( isglobal, 0, FB_SYMBATTRIB_LOCAL )
+	s->stats = 0
+	symbSetMangling( s, env.mangling )
 
-    s->scope = env.scope
     s->typ = dtype
     s->subtype = subtype
     s->ptrcnt = ptrcnt
+    s->scope = env.scope
 
-	s->attrib = iif( isglobal, 0, FB_SYMBATTRIB_LOCAL )
-    s->lgt = 0
-    s->ofs = 0
-
-	s->stats = 0
-
-    if( class = FB_SYMBCLASS_VAR ) then
-    	s->var.suffix = suffix
-    end if
-
-    ''
-    s->name = NULL
-    slen = len( *symbol )
+    '' name
+    slen = iif( id <> NULL, len( *id ), 0 )
     if( slen > 0 ) then
+    	s->name = poolNewItem( @symb.namepool, slen + 1 ) 'ZstrAllocate( slen )
     	if( preservecase = FALSE ) then
-    		s->name = ZstrAllocate( slen )
-    		hUcase( symbol, s->name )
+    		hUcase( id, s->name )
     	else
-    	    ZstrAssign( @s->name, symbol )
+    	    *s->name = *id
 		end if
     else
+    	s->name = NULL
     	dohash = FALSE
     end if
 
-    s->alias = NULL
-    if( aliasname <> NULL ) then
-    	ZstrAssign( @s->alias, aliasname )
+    '' alias
+    if( id_alias <> NULL ) then
+    	s->alias = ZstrAllocate( len( *id_alias ) )
+    	*s->alias = *id_alias
     else
-		if( class = FB_SYMBCLASS_PROC ) then
-			ZstrAssign( @s->alias, s->name )
-		end if
+    	s->alias = NULL
     end if
 
-	s->left  = NULL
-	s->right = NULL
+    ''
+    s->lgt = 0
+    s->ofs = 0
 
-	''
+    if( class = FB_SYMBCLASS_VAR ) then
+    	'' needed by symbCanDup()
+    	s->var.suffix = suffix
+    end if
+
+	'' add to hash table
 	if( dohash ) then
+		chain_ = listNewNode( @symb.chainlist )
+		chain_->index = hashHash( s->name )
 
 		'' doesn't exist yet?
-		s->hashindex = hashHash( s->name )
-		n = hashLookupEx( @symb.symhash, s->name, s->hashindex )
-		if( n = NULL ) then
+		chain_head = hashLookupEx( @hashtb->tb, s->name, chain_->index )
+		if( chain_head = NULL ) then
 			'' add to hash table
-			s->hashitem = hashAdd( @symb.symhash, s->name, s, s->hashindex )
+            chain_->sym = s
+			chain_->item = hashAdd( @hashtb->tb, s->name, chain_, chain_->index )
+            chain_->prev = NULL
+            chain_->next = NULL
 
 		else
 			'' can be duplicated?
-			if( hCanDuplicate( n, s ) = FALSE ) then
-				ZstrFree( s->name )
+			if( symbCanDuplicate( chain_head, s ) = FALSE ) then
+				listDelNode( @symb.chainlist, chain_ )
+				poolDelItem( @symb.namepool, s->name ) 'ZstrFree( s->name )
 				ZstrFree( s->alias )
 				if( delok ) then
 					listDelNode( @symb.symlist, s )
@@ -360,39 +459,38 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
 				exit function
 			end if
 
-			s->hashitem = n->hashitem
-			s->hashindex = n->hashindex
+            chain_->sym = s
+			chain_->item = chain_head->item
 
 			'' module-level scope?
 			if( isglobal ) then
 				'' add to tail
-				do while( n->right <> NULL )
-					n = n->right
+				do while( chain_head->next <> NULL )
+					chain_head = chain_head->next
 				loop
 
-				n->right = s
-				s->left = n
+				chain_head->next = chain_
+				chain_->prev = chain_head
+				chain_->next = NULL
 
 			else
 				'' add to head
-				n->hashitem->idx = s
-				n->hashitem->name = s->name
-			    n->left = s
-			    s->right = n
+				chain_head->item->data = chain_
+				chain_head->item->name = s->name
+			    chain_head->prev = chain_
+			    chain_->prev = NULL
+			    chain_->next = chain_head
 
 			end if
 		end if
 
+		s->hash.chain = chain_
+
 	else
-		s->hashitem = NULL
-		s->hashindex = 0
+		s->hash.chain = NULL
 	end if
 
-	''
-	dtype -= ptrcnt * FB_DATATYPE_POINTER
-	if( dtype = FB_DATATYPE_FWDREF ) then
-		symbAddToFwdRef( subtype, s )
-	end if
+	s->hash.tb = hashtb
 
 	'' add to symbol table
 	if( symtb->tail <> NULL ) then
@@ -408,6 +506,12 @@ function symbNewSymbol( byval s as FBSYMBOL ptr, _
 
 	s->symtb = symtb
 
+	'' forward type? add to the back-patch list..
+	dtype -= ptrcnt * FB_DATATYPE_POINTER
+	if( dtype = FB_DATATYPE_FWDREF ) then
+		symbAddToFwdRef( subtype, s )
+	end if
+
     ''
     function = s
 
@@ -418,52 +522,142 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbLookup( byval symbol as zstring ptr, _
-					 byref id as integer, _
-					 byref class as integer, _
-					 byval preservecase as integer = FALSE _
-				   ) as FBSYMBOL ptr static
+sub symbHashListAdd _
+	( _
+		byval hashtb as FBHASHTB ptr, _
+		byval checkdup as integer _
+	) static
+
+	dim as FBHASHTB ptr n
+
+	if( checkdup ) then
+    	n = symb.hashlist.head
+    	do
+    		if( n = hashtb ) then
+    			exit sub
+    		end if
+    		n = n->next
+    	loop while( n <> NULL )
+	end if
+
+	if( symb.hashlist.tail <> NULL ) then
+		symb.hashlist.tail->next = hashtb
+	else
+		symb.hashlist.head = hashtb
+	end If
+
+	hashtb->prev = symb.hashlist.tail
+	hashtb->next = NULL
+
+	symb.hashlist.tail = hashtb
+
+end sub
+
+'':::::
+sub symbHashListDel _
+	( _
+		byval hashtb as FBHASHTB ptr _
+	)
+
+	if( hashtb->prev <> NULL ) then
+		hashtb->prev->next = hashtb->next
+	else
+		symb.hashlist.head = hashtb->next
+	end If
+
+	if( hashtb->next <> NULL ) then
+		hashtb->next->prev = hashtb->prev
+	else
+		symb.hashlist.tail = hashtb->prev
+	end If
+
+end sub
+
+'':::::
+function symbLookup _
+	( _
+		byval symbol as zstring ptr, _
+		byref id as integer, _
+		byref class as integer, _
+		byval preservecase as integer = FALSE _
+	) as FBSYMCHAIN ptr static
 
     static as zstring * FB_MAXNAMELEN+1 sname
-    dim as FBSYMBOL ptr s
+    dim as FBSYMCHAIN ptr chain_
+    dim as uinteger index
+    dim as FBHASHTB ptr hashtb
 
     if( preservecase = FALSE ) then
     	hUcase( *symbol, sname )
-    	s = hashLookup( @symb.symhash, @sname )
-    else
-    	s = hashLookup( @symb.symhash, symbol )
+    	symbol = @sname
     end if
 
+    index = hashHash( symbol )
+
+    '' for each hash tb, starting from last
+    hashtb = symb.hashlist.tail
+    do
+    	chain_ = hashLookupEx( @hashtb->tb, symbol, index )
+        if( chain_ <> NULL ) then
+        	exit do
+        end if
+    	hashtb = hashtb->prev
+    loop while( hashtb <> NULL )
+
 	'' assume it's an unknown identifier
-	id 	  = FB_TK_ID
+	id = FB_TK_ID
 	class = FB_TKCLASS_IDENTIFIER
 
-	if( s <> NULL ) then
+	if( chain_ <> NULL ) then
 		'' if it's a keyword, return id and class
-		if( s->class = FB_SYMBCLASS_KEYWORD ) then
-			id 	  = s->key.id
-			class = s->key.class
+		if( chain_->sym->class = FB_SYMBCLASS_KEYWORD ) then
+			id = chain_->sym->key.id
+			class = chain_->sym->key.class
 		end if
 	end if
 
-	function = s
+	function = chain_
 
 end function
 
 '':::::
-function symbFindByClass( byval s as FBSYMBOL ptr, _
-						  byval class as integer _
-						) as FBSYMBOL ptr static
+function symbLookupAt _
+	( _
+		byval ns as FBSYMBOL ptr, _
+		byval symbol as zstring ptr, _
+		byval preservecase as integer = FALSE _
+	) as FBSYMCHAIN ptr static
+
+    static as zstring * FB_MAXNAMELEN+1 sname
+    dim as uinteger index
+
+    if( preservecase = FALSE ) then
+    	hUcase( *symbol, sname )
+    	symbol = @sname
+    end if
+
+    index = hashHash( symbol )
+
+    function = hashLookupEx( @ns->nspc.hashtb.tb, symbol, index )
+
+end function
+
+'':::::
+function symbFindByClass _
+	( _
+		byval chain_ as FBSYMCHAIN ptr, _
+		byval class as integer _
+	) as FBSYMBOL ptr static
 
     '' lookup a symbol with the same class
-    do while( s <> NULL )
-    	if( s->class = class ) then
+    do while( chain_ <> NULL )
+    	if( chain_->sym->class = class ) then
 			exit do
 		end if
-    	s = s->right
+    	chain_ = chain_->next
     loop
 
-	if( s = NULL ) then
+	if( chain_ = NULL ) then
 		return NULL
 	end if
 
@@ -472,55 +666,57 @@ function symbFindByClass( byval s as FBSYMBOL ptr, _
 		'' inside a proc? (but main())
 		if( fbIsModLevel( ) = FALSE ) then
 			'' local?
-			if( symbIsLocal( s ) ) then
+			if( symbIsLocal( chain_->sym ) ) then
 				'' not a main()'s local?
-				if( s->scope = FB_MAINSCOPE ) then
+				if( chain_->sym->scope = FB_MAINSCOPE ) then
 					return NULL
 			    end if
 			'' not shared?
-			elseif( symbIsShared( s ) = FALSE ) then
+			elseif( symbIsShared( chain_->sym ) = FALSE ) then
 				return NULL
 			end if
 		end if
 	end if
 
-	function = s
+	function = chain_->sym
 
 end function
 
 '':::::
-function symbFindBySuffix( byval s as FBSYMBOL ptr, _
-						   byval suffix as integer, _
-						   byval deftyp as integer _
-						 ) as FBSYMBOL ptr static
+function symbFindBySuffix _
+	( _
+		byval chain_ as FBSYMCHAIN ptr, _
+		byval suffix as integer, _
+		byval deftyp as integer _
+	) as FBSYMBOL ptr static
 
     '' symbol has a suffix? lookup a symbol with the same type, suffixed or not
     if( suffix <> INVALID ) then
 
     	'' QB quirk: fixed-len and zstrings referenced using '$' as suffix..
     	if( suffix = FB_DATATYPE_STRING ) then
-    		do while( s <> NULL )
-    			if( s->class = FB_SYMBCLASS_VAR ) then
-     				select case s->typ
+    		do while( chain_ <> NULL )
+    			if( chain_->sym->class = FB_SYMBCLASS_VAR ) then
+     				select case chain_->sym->typ
      				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
      					 FB_DATATYPE_CHAR
      					exit do
      				end select
      			end if
 
-    			s = s->right
+    			chain_ = chain_->next
     		loop
 
     	'' anything but strings..
     	else
-    		do while( s <> NULL )
-    			if( s->class = FB_SYMBCLASS_VAR ) then
-     				if( s->typ = suffix ) then
+    		do while( chain_ <> NULL )
+    			if( chain_->sym->class = FB_SYMBCLASS_VAR ) then
+     				if( chain_->sym->typ = suffix ) then
      					exit do
      				end if
      			end if
 
-    			s = s->right
+    			chain_ = chain_->next
     		loop
     	end if
 
@@ -530,74 +726,76 @@ function symbFindBySuffix( byval s as FBSYMBOL ptr, _
 
     	'' QB quirk: see above
     	if( deftyp = FB_DATATYPE_STRING ) then
-    		do while( s <> NULL )
-    			if( s->class = FB_SYMBCLASS_VAR ) then
-     				if( s->var.suffix = INVALID ) then
+    		do while( chain_ <> NULL )
+    			if( chain_->sym->class = FB_SYMBCLASS_VAR ) then
+     				if( chain_->sym->var.suffix = INVALID ) then
      					exit do
      				end if
-     				select case s->typ
+     				select case chain_->sym->typ
      				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
      					 FB_DATATYPE_CHAR
      					exit do
      				end select
      			end if
 
-    			s = s->right
+    			chain_ = chain_->next
     		loop
 
     	'' anything but strings..
     	else
-    		do while( s <> NULL )
-    			if( s->class = FB_SYMBCLASS_VAR ) then
-     				if( s->var.suffix = INVALID ) then
+    		do while( chain_ <> NULL )
+    			if( chain_->sym->class = FB_SYMBCLASS_VAR ) then
+     				if( chain_->sym->var.suffix = INVALID ) then
      					exit do
-     				elseif( s->typ = deftyp ) then
+     				elseif( chain_->sym->typ = deftyp ) then
      					exit do
      				end if
      			end if
 
-    			s = s->right
+    			chain_ = chain_->next
     		loop
     	end if
     end if
 
-	if( s = NULL ) then
+	if( chain_ = NULL ) then
 		return NULL
 	end if
 
 	'' check if symbol isn't a non-shared module level one
 	if( fbIsModLevel( ) = FALSE ) then
 		'' local?
-		if( symbIsLocal( s ) ) then
+		if( symbIsLocal( chain_->sym ) ) then
 			'' not a main()'s local?
-			if( s->scope = FB_MAINSCOPE ) then
+			if( chain_->sym->scope = FB_MAINSCOPE ) then
 				return NULL
 		    end if
 		'' not shared?
-		elseif( symbIsShared( s ) = FALSE ) then
+		elseif( symbIsShared( chain_->sym ) = FALSE ) then
 			return NULL
 		end if
 	end if
 
-	function = s
+	function = chain_->sym
 
 end function
 
 '':::::
-function symbFindByNameAndClass ( byval symbol as zstring ptr, _
-	  							  byval class as integer, _
-	  							  byval preservecase as integer = FALSE _
-								) as FBSYMBOL ptr static
+function symbFindByNameAndClass _
+	( _
+		byval symbol as zstring ptr, _
+	  	byval class as integer, _
+	  	byval preservecase as integer = FALSE _
+	) as FBSYMBOL ptr static
 
-	dim s as FBSYMBOL ptr
-	dim tkid as integer, tkclass as integer
+	dim as FBSYMCHAIN ptr chain_
+	dim as integer tkid, tkclass
 
-    s = symbLookup( symbol, tkid, tkclass, preservecase )
+    chain_ = symbLookup( symbol, tkid, tkclass, preservecase )
 
     '' any found?
-    if( s <> NULL ) then
+    if( chain_ <> NULL ) then
     	'' check if classes match
-    	function = symbFindByClass( s, class )
+    	function = symbFindByClass( chain_, class )
     else
     	function = NULL
     end if
@@ -605,25 +803,27 @@ function symbFindByNameAndClass ( byval symbol as zstring ptr, _
 end function
 
 '':::::
-function symbFindByNameAndSuffix( byval symbol as zstring ptr, _
-								  byval suffix as integer, _
-								  byval preservecase as integer = FALSE _
-								) as FBSYMBOL ptr static
-	dim s as FBSYMBOL ptr
-	dim deftyp as integer
-	dim tkid as integer, tkclass as integer
+function symbFindByNameAndSuffix _
+	( _
+		byval symbol as zstring ptr, _
+		byval suffix as integer, _
+		byval preservecase as integer = FALSE _
+	) as FBSYMBOL ptr static
 
-	s = symbLookup( symbol, tkid, tkclass, preservecase )
+	dim as FBSYMCHAIN ptr chain_
+	dim as integer tkid, tkclass, deftyp
+
+	chain_ = symbLookup( symbol, tkid, tkclass, preservecase )
 
     '' any found?
-    if( s <> NULL ) then
+    if( chain_ <> NULL ) then
     	'' get default type if no suffix was given
     	if( suffix = INVALID ) then
     		deftyp = hGetDefType( symbol )
     	end if
 
 		'' check if types match
-		function = symbFindBySuffix( s, suffix, deftyp )
+		function = symbFindBySuffix( chain_, suffix, deftyp )
 	else
 		function = NULL
 	end if
@@ -635,16 +835,18 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbCalcLen( byval typ as integer, _
-					  byval subtype as FBSYMBOL ptr, _
-					  byval realsize as integer = FALSE _
-					) as integer static
+function symbCalcLen _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval realsize as integer = FALSE _
+	) as integer static
 
     dim e as FBSYMBOL ptr
 
 	function = 0
 
-	select case as const typ
+	select case as const dtype
 	case FB_DATATYPE_FWDREF
 		function = 0
 
@@ -686,7 +888,7 @@ function symbCalcLen( byval typ as integer, _
 		function = subtype->lgt
 
 	case else
-		if( typ >= FB_DATATYPE_POINTER ) then
+		if( dtype >= FB_DATATYPE_POINTER ) then
 			function = FB_POINTERSIZE
 		end if
 	end select
@@ -697,51 +899,69 @@ end function
 '' del
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-'':::::
-sub symbDelFromHash( byval s as FBSYMBOL ptr ) static
-    dim as FBSYMBOL ptr prv, nxt
+sub symbDelFromChainList _
+	( _
+		byval hashtb as THASH ptr, _
+		byval chain_ as FBSYMCHAIN ptr _
+	) static
 
-	if( s->hashitem = NULL ) then
-		exit sub
-	end if
+    dim as FBSYMCHAIN ptr prv, nxt
 
     '' relink
-    prv = s->left
-    nxt = s->right
+    prv = chain_->prev
+    nxt = chain_->next
     if( prv <> NULL ) then
-    	prv->right = nxt
+    	prv->next = nxt
     end if
     if( nxt <> NULL ) then
-    	nxt->left = prv
+    	nxt->prev = prv
     end if
 
     '' symbol was the head node?
     if( prv = NULL ) then
     	'' nothing left? remove from hash table
     	if( nxt = NULL ) then
-    		hashDel( @symb.symhash, s->hashitem, s->hashindex )
+    		hashDel( hashtb, chain_->item, chain_->index )
 
     	'' update list head
     	else
-       		s->hashitem->idx  = nxt
-       		s->hashitem->name = nxt->name
+       		chain_->item->data = nxt
+       		chain_->item->name = nxt->sym->name
     	end if
     end if
 
-    s->hashitem  = NULL
-    s->hashindex = 0
-    s->left 	 = NULL
-    s->right 	 = NULL
+    '' delete node
+    listDelNode( @symb.chainlist, chain_ )
 
 end sub
 
 '':::::
-sub symbFreeSymbol( byval s as FBSYMBOL ptr, _
-				 	byval movetoglob as integer ) static
+sub symbDelFromHash _
+	( _
+		byval s as FBSYMBOL ptr _
+	) static
+
+	if( s->hash.chain = NULL ) then
+		exit sub
+	end if
+
+	symbDelFromChainList( @s->hash.tb->tb, s->hash.chain )
+
+    s->hash.chain = NULL
+
+end sub
+
+'':::::
+sub symbFreeSymbol _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval movetoglob as integer _
+	) static
 
     dim as FBSYMBOLTB ptr tb
     dim as FBSYMBOL ptr prv, nxt
 
+	''
 	symbDelFromHash( s )
 
     '' del from table
@@ -765,57 +985,69 @@ sub symbFreeSymbol( byval s as FBSYMBOL ptr, _
     if( movetoglob = FALSE ) then
     	s->prev  = NULL
     	s->next  = NULL
-    	ZstrFree( s->name )
+    	poolDelItem( @symb.namepool, s->name ) 'ZstrFree( s->name )
     	ZstrFree( s->alias )
 
     	listDelNode( @symb.symlist, s )
 
     '' move from local to global table
     else
-		if( symb.globtb.tail <> NULL ) then
-			symb.globtb.tail->next = s
+		if( symbGetGlobalTb( ).tail <> NULL ) then
+			symbGetGlobalTb( ).tail->next = s
 		else
-			symb.globtb.head = s
+			symbGetGlobalTb( ).head = s
 		end if
 
-		s->prev = symb.globtb.tail
+		s->prev = symbGetGlobalTb( ).tail
 		s->next = NULL
-		symb.globtb.tail = s
-		s->symtb = @symb.globtb
+		symbGetGlobalTb( ).tail = s
+		s->symtb = @symbGetGlobalTb( )
     end if
 
 end sub
 
 '':::::
-sub symbDelSymbol( byval s as FBSYMBOL ptr )
+sub symbDelSymbol _
+	( _
+		byval s as FBSYMBOL ptr _
+	)
 
 	select case as const s->class
     case FB_SYMBCLASS_VAR
-    	symbDelVar( s, FALSE )
+    	symbDelVar( s )
 
     case FB_SYMBCLASS_CONST
-		symbDelConst( s, FALSE )
+		symbDelConst( s )
 
     case FB_SYMBCLASS_PROC
-    	symbDelPrototype( s, FALSE )
+    	symbDelPrototype( s )
 
 	case FB_SYMBCLASS_DEFINE
-		symbDelDefine( s, FALSE )
+		symbDelDefine( s )
 
 	case FB_SYMBCLASS_KEYWORD
-		symbDelKeyword( s, FALSE )
+		symbDelKeyword( s )
 
     case FB_SYMBCLASS_LABEL
-    	symbDelLabel( s, FALSE )
+    	symbDelLabel( s )
 
     case FB_SYMBCLASS_ENUM
-		symbDelEnum( s, FALSE )
+		symbDelEnum( s )
 
     case FB_SYMBCLASS_UDT
-    	symbDelUDT( s, FALSE )
+    	symbDelUDT( s )
 
     case FB_SYMBCLASS_SCOPE
     	symbDelScope( s )
+
+    case FB_SYMBCLASS_NAMESPACE
+    	symbDelNamespace( s )
+
+	case FB_SYMBCLASS_NSIMPORT
+		symbNamespaceRemove( s, FALSE )
+
+	case FB_SYMBCLASS_BITFIELD
+        symbFreeSymbol( s )
 
 	case else
 		symbFreeSymbol( s )
@@ -829,7 +1061,7 @@ sub symbDelGlobalTb( ) static
     dim as FBSYMBOL ptr s
 
     do
-    	s = symb.globtb.head
+    	s = symbGetGlobalTb( ).head
     	if( s = NULL ) then
     		exit do
     	end if
@@ -840,8 +1072,11 @@ sub symbDelGlobalTb( ) static
 end sub
 
 '':::::
-sub symbDelSymbolTb( byval tb as FBSYMBOLTB ptr, _
-					 byval hashonly as integer ) static
+sub symbDelSymbolTb _
+	( _
+		byval tb as FBSYMBOLTB ptr, _
+		byval hashonly as integer _
+	) static
 
     dim as FBSYMBOL ptr s
 
@@ -862,6 +1097,9 @@ sub symbDelSymbolTb( byval tb as FBSYMBOLTB ptr, _
 
     			symbDelFromHash( s )
 
+    		case FB_SYMBCLASS_NSIMPORT
+    			symbNamespaceRemove( s, TRUE )
+
     		case FB_SYMBCLASS_SCOPE
     			'' already removed..
     			''''' symbDelScopeTb( s )
@@ -872,7 +1110,6 @@ sub symbDelSymbolTb( byval tb as FBSYMBOLTB ptr, _
 
     '' del from hash and symbol tb's
     else
-
     	do
     	    s = tb->head
     		if( s = NULL ) then
@@ -891,8 +1128,11 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function symbIsEqual( byval sym1 as FBSYMBOL ptr, _
-					  byval sym2 as FBSYMBOL ptr ) as integer
+function symbIsEqual _
+	( _
+		byval sym1 as FBSYMBOL ptr, _
+		byval sym2 as FBSYMBOL ptr _
+	) as integer
 
 	dim as FBSYMBOL ptr paraml, paramr
 
@@ -1004,6 +1244,5 @@ function symbIsEqual( byval sym1 as FBSYMBOL ptr, _
     end if
 
 end function
-
 
 
