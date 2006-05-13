@@ -1,6 +1,6 @@
 
 namespace ns
-	dim foo = 1    
+	dim foo as integer = 1    
 end namespace
 
 	scope
@@ -8,6 +8,6 @@ end namespace
 		print "ns::foo ="; foo
 	end scope
 
-	dim foo = 2
+	dim foo as integer = 2
 
     print "ns::foo ="; ns.foo, "::foo ="; foo
