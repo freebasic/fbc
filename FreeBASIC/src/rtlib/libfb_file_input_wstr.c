@@ -40,12 +40,13 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-void fb_FileInputNextTokenWstr( FB_WCHAR *buffer, int max_chars, int is_string );
+void fb_FileInputNextTokenWstrEx( FB_WCHAR *buffer, int max_chars,
+								  int is_string, int is_last );
 
 /*:::::*/
-FBCALL int fb_InputWstr( FB_WCHAR *dst, int dst_chars )
+FBCALL int fb_InputWstr( FB_WCHAR *dst, int dst_chars, int is_last )
 {
-	fb_FileInputNextTokenWstr( dst, dst_chars, TRUE );
+	fb_FileInputNextTokenWstrEx( dst, dst_chars, TRUE, is_last );
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

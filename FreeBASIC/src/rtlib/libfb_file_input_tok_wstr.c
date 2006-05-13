@@ -43,7 +43,10 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-static FB_WCHAR hReadChar( FB_INPUTCTX *ctx )
+static FB_WCHAR hReadChar
+	(
+		FB_INPUTCTX *ctx
+	)
 {
     /* device? */
     if( FB_HANDLE_USED(ctx->handle) )
@@ -70,7 +73,11 @@ static FB_WCHAR hReadChar( FB_INPUTCTX *ctx )
 }
 
 /*:::::*/
-static int hUnreadChar( FB_INPUTCTX *ctx, FB_WCHAR c )
+static int hUnreadChar
+	(
+		FB_INPUTCTX *ctx,
+		FB_WCHAR c
+	)
 {
     /* device? */
     if( FB_HANDLE_USED(ctx->handle) )
@@ -92,7 +99,10 @@ static int hUnreadChar( FB_INPUTCTX *ctx, FB_WCHAR c )
 }
 
 /*:::::*/
-static FB_WCHAR hSkipWhiteSpc( FB_INPUTCTX *ctx )
+static FB_WCHAR hSkipWhiteSpc
+	(
+		FB_INPUTCTX *ctx
+	)
 {
 	FB_WCHAR c;
 
@@ -102,13 +112,17 @@ static FB_WCHAR hSkipWhiteSpc( FB_INPUTCTX *ctx )
 		c = hReadChar( ctx );
 		if( c == WEOF )
 			break;
-	} while( (c == _LC(' ')) || (c == _LC('\t')) || (c == _LC('\r')) || (c == _LC('\n')) );
+	} while( (c == _LC(' ')) || (c == _LC('\t')) );
 
 	return c;
 }
 
 /*:::::*/
-static void hSkipComma( FB_INPUTCTX *ctx, FB_WCHAR c )
+static void hSkipDelimiter
+	(
+		FB_INPUTCTX *ctx,
+		FB_WCHAR c
+	)
 {
 	/* skip white space */
 	while( (c == _LC(' ')) || (c == _LC('\t')) )
@@ -135,18 +149,24 @@ static void hSkipComma( FB_INPUTCTX *ctx, FB_WCHAR c )
 }
 
 /*:::::*/
-void fb_FileInputNextTokenWstr( FB_WCHAR *buffer, int max_chars, int is_string )
+void fb_FileInputNextTokenWstrEx
+	(
+		FB_WCHAR *buffer,
+		int max_chars,
+		int is_string,
+		int is_last
+	)
 {
-    int len, isquote, skipcomma;
+    int len, isquote, skipdelim;
     FB_WCHAR c;
 	FB_INPUTCTX *ctx = FB_TLSGETCTX( INPUT );
 
-	c = hSkipWhiteSpc( ctx );
-
 	/* */
+	skipdelim = TRUE;
 	isquote = 0;
 	len = 0;
-	skipcomma = 0;
+
+	c = hSkipWhiteSpc( ctx );
 
 	while( c != WEOF )
 	{
@@ -154,6 +174,7 @@ void fb_FileInputNextTokenWstr( FB_WCHAR *buffer, int max_chars, int is_string )
 		{
 		case _LC('\n'):
 			len = max_chars;						/* exit */
+			skipdelim = FALSE;
 			break;
 
 		case _LC('\r'):
@@ -161,6 +182,7 @@ void fb_FileInputNextTokenWstr( FB_WCHAR *buffer, int max_chars, int is_string )
 				hUnreadChar( ctx, c );
 
 			len = max_chars;						/* exit */
+			skipdelim = FALSE;
 			break;
 
 		case _LC('"'):
@@ -177,7 +199,6 @@ void fb_FileInputNextTokenWstr( FB_WCHAR *buffer, int max_chars, int is_string )
 				if( is_string )
 				{
 					c = hReadChar( ctx );
-					skipcomma = 1;
 					len = max_chars;				/* exit */
 				}
 			}
@@ -188,6 +209,7 @@ void fb_FileInputNextTokenWstr( FB_WCHAR *buffer, int max_chars, int is_string )
 			if( !isquote )
 			{
 				len = max_chars;					/* exit */
+				skipdelim = FALSE;
 				break;
 			}
 
@@ -195,15 +217,13 @@ void fb_FileInputNextTokenWstr( FB_WCHAR *buffer, int max_chars, int is_string )
 
 		case _LC('\t'):
 		case _LC(' '):
-			if( len == 0 )
+			if( !isquote )
 			{
-				if( !is_string || !isquote )
-					break;						/* skip white-space */
-			}
-			else if( !is_string && !isquote )
-			{
-				len = max_chars;					/* exit */
-				break;
+				if( !is_string || !is_last )
+				{
+					len = max_chars;				/* exit */
+					break;
+				}
 			}
 
 		default:
@@ -222,8 +242,18 @@ savechar:
 	*buffer = _LC('\0');
 
 	/* skip comma or newline */
-	if( skipcomma )
-		hSkipComma( ctx, c );
+	if( skipdelim )
+		hSkipDelimiter( ctx, c );
 }
 
+/*:::::*/
+void fb_FileInputNextTokenWstr
+	(
+		FB_WCHAR *buffer,
+		int max_chars,
+		int is_string
+	)
+{
+	fb_FileInputNextTokenWstrEx( buffer, max_chars, is_string, FALSE );
+}
 
