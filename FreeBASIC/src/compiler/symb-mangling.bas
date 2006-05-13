@@ -44,6 +44,11 @@ type FB_MANGLECTX
 end type
 
 
+declare function 	hDoCppMangling 			( _
+												byval sym as FBSYMBOL ptr, _
+												byval mangling as FB_MANGLING _
+											) as integer
+
 declare sub 		hMangleProc  			( _
 												byval sym as FBSYMBOL ptr _
 											)
@@ -116,9 +121,22 @@ function symbGetName _
 		byval sym as FBSYMBOL ptr _
 	) as zstring ptr
 
-	'' !!!WRITEME!!! add namespace support when emitting stabs
-
 	function = sym->name
+
+end function
+
+'':::::
+function symbGetDBGName _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as zstring ptr
+
+    '' GDB will demangle the symbols automatically
+	if( hDoCppMangling( sym, symbGetMangling( sym ) ) ) then
+		function = symbGetMangledName( sym )
+	else
+		function = sym->name
+	end if
 
 end function
 
@@ -300,6 +318,11 @@ private function hDoCppMangling _
 		byval mangling as FB_MANGLING _
 	) as integer
 
+	'' local? no mangling
+	if( sym->scope > FB_MAINSCOPE ) then
+		return FALSE
+	end if
+
     '' C++?
     if( mangling = FB_MANGLING_CPP ) then
     	return TRUE
@@ -430,13 +453,32 @@ private function hGetVarPrefix _
 end function
 
 '':::::
+private function hGetVarIdentifier _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval id as zstring ptr, _
+		byref id_len as integer, _
+		byval suffix_len as integer _
+	) as zstring ptr static
+
+    static as string res
+
+    res = str( id_len + suffix_len )
+    id_len += len( res )
+    res += *id
+
+    function = strptr( res )
+
+end function
+
+'':::::
 private sub hMangleVariable  _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) static
 
     dim as zstring ptr prefix_str, nspc_str, id_str, suffix_str
-    dim as integer docpp, prefix_len, nspc_len, id_len, suffix_len
+    dim as integer prefix_len, nspc_len, id_len, suffix_len, docpp, isglobal
     dim as FB_MANGLING mangling
 
     mangling = symbGetMangling( sym )
@@ -473,10 +515,13 @@ private sub hMangleVariable  _
     	id_str = sym->alias
 
     else
-		'' shared, public or extern?
-		if( (sym->attrib and (FB_SYMBATTRIB_PUBLIC or _
-			 			   	  FB_SYMBATTRIB_EXTERN or _
-			 				  FB_SYMBATTRIB_SHARED)) <> 0 ) then
+		'' shared, public, extern or inside a n?
+		isglobal = (sym->attrib and (FB_SYMBATTRIB_PUBLIC or _
+			 			   	  		 FB_SYMBATTRIB_EXTERN or _
+			 				  		 FB_SYMBATTRIB_SHARED)) <> 0
+
+
+		if( isglobal or docpp ) then
 
     		'' BASIC? use the upper-cased name
     		if( mangling = FB_MANGLING_BASIC ) then
@@ -505,10 +550,15 @@ private sub hMangleVariable  _
 
 	id_len = len( *id_str )
 
+	if( docpp ) then
+		id_str = hGetVarIdentifier( sym, id_str, id_len, suffix_len )
+	end if
+
 	'' concat
 	dim as zstring ptr dst, id_alias
 
-	id_alias = ZStrAllocate( prefix_len + nspc_len + id_len + suffix_len )
+	id_alias = ZStrAllocate( prefix_len + nspc_len + _
+							 id_len + suffix_len + 1 ) '' +1 for the "E"
 
 	dst = id_alias
 	if( prefix_str <> NULL ) then
@@ -526,6 +576,13 @@ private sub hMangleVariable  _
 
 	if( suffix_str <> NULL ) then
 		*dst = *suffix_str
+		dst += suffix_len
+	end if
+
+	'' nested? (namespace or class) close..
+	if( symbGetNamespace( sym ) <> NULL ) then
+		dst[0] = asc( "E" )
+		dst[1] = 0
 	end if
 
 	''

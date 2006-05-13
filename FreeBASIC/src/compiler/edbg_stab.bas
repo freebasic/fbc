@@ -44,12 +44,29 @@ type EDBGCTX
 	incfile			as zstring ptr
 end type
 
-declare sub 	 hDeclUDT				( byval sym as FBSYMBOL ptr )
-declare sub 	 hDeclENUM				( byval sym as FBSYMBOL ptr )
-declare function hDeclPointer			( byref dtype as integer ) as string
-declare function hDeclArrayDims			( byval sym as FBSYMBOL ptr ) as string
+declare sub 	 hDeclUDT				( _
+											byval sym as FBSYMBOL ptr _
+										)
 
-declare function hGetDataType			( byval sym as FBSYMBOL ptr ) as string
+declare sub 	 hDeclENUM				( _
+											byval sym as FBSYMBOL ptr _
+										)
+
+declare function hDeclPointer			( _
+											byref dtype as integer _
+										) as string
+
+declare function hDeclArrayDims			( _
+											byval sym as FBSYMBOL ptr _
+										) as string
+
+declare function hGetDataType			( _
+											byval sym as FBSYMBOL ptr _
+										) as string
+
+declare function symbGetDBGName 		( _
+											byval sym as FBSYMBOL ptr _
+										) as zstring ptr
 
 '' globals
 	dim shared ctx as EDBGCTX
@@ -559,7 +576,7 @@ sub edbgEmitProcHeader _
 
     	desc = fbGetEntryPoint( )
     else
-    	desc = *symbGetName( proc )
+    	desc = *symbGetDBGName( proc )
     end if
 
 	''
@@ -940,7 +957,7 @@ private sub hDeclUDT _
 	sym->udt.dbg.typenum = ctx.typecnt
 	ctx.typecnt += 1
 
-	desc = *symbGetName( sym )
+	desc = *symbGetDBGName( sym )
 
 	desc += ":T" + str( sym->udt.dbg.typenum ) + "=s" + str( symbGetUDTLen( sym ) )
 
@@ -972,7 +989,7 @@ private sub hDeclENUM _
 	sym->enum.dbg.typenum = ctx.typecnt
 	ctx.typecnt += 1
 
-	desc = *symbGetName( sym )
+	desc = *symbGetDBGName( sym )
 
 	desc += ":T" + str( sym->enum.dbg.typenum ) + "=e"
 
@@ -1020,7 +1037,7 @@ sub edbgEmitGlobalVar _
 	end select
 
     '' allocation type (static, global, etc)
-    desc = *symbGetName( sym )
+    desc = *symbGetDBGName( sym )
 
     attrib = symbGetAttrib( sym )
     if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_COMMON)) > 0 ) then
