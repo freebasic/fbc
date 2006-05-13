@@ -27,23 +27,29 @@ hr {
 	height: 1px;
 }
 
-#fb_tab {
-	margin: 0; 
-	padding: 4pt 8pt 4pt 8pt; 
-	background:#e9e9d9; 
-	float: left; 
-	border-top: 1px solid #afaf9f;
-	border-right: 1px solid #afaf9f; 
-	border-left: 1px solid #afaf9f;
-	font-weight: bold;
-	color: #aa0000;
-}
+#fb_tab { 
+   padding: 8pt 12pt 8pt 12pt; 
+   background: #efefdf; 
+   color: #aa0000; 
+   border-bottom: 1px solid #8f8f8f; 
+   width: 100%; 
+} 
 
-#fb_tab_right {
-	margin: 0; 
-	padding: 4pt 8pt 4pt 8pt; 
-	border-bottom: 1px solid #afaf9f;
-}
+#fb_tab_l, #fb_tab_r { 
+   font-weight: bold; 
+   font-size: 12pt; 
+   vertical-align: middle; 
+} 
+
+#fb_tab_l { 
+   text-align: left; 
+   float: left; 
+} 
+
+#fb_tab_r { 
+   text-align: right; 
+   float: right; 
+} 
 
 #fb_pg_body {
 	border-right: 1px solid #afaf9f;
