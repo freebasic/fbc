@@ -13,6 +13,8 @@ Version 0.16 Beta:
 - floating-point literal numbers in scientific notation without an integer and fractional part cannot be written as
   ".E###" anymore, they must be changed to "0.E###" due ambiguities with macro substituions and .'s been used in WITH 
   and (later) to access objects' member fields (v1c)
+- symbols mangling, if using DLL's that contain exported variables or overloaded functions and was compiled by older 
+  versions, rebuilt the DLL also (v1c)
 - when aborting because run-time errors, the name of the module that caused the error will be printed too (v1c)
 - runtime error checking removed from getmouse() and getjoystick() (v1c)
 - the size of argument-less #defines and macro expansion texts can be now up to 2GB (v1c)
@@ -32,8 +34,11 @@ Version 0.16 Beta:
 - bad compound statements are better handled now, new-lines won't be ignored anymore neither multiple error 
   messages will be shown (v1c)
 - for CONST's with explicit types, no inference will be done, the r-side values will be converted instead (v1c)
+- the GLFW include file was retranslated using the latest C header (v1c)
 
 [added]
+- name spaces blocks (NAMESPACE ID ... END NAMESPACE), that can be nested, imported, etc (v1c)
+- extern blocks (EXTERN "MANGLING_SPEC" LIB "LIB_NAME" ... END EXTERN), to better support C++ libraries (v1c)
 - anonymous UDT's that can be passed as parameters or used in assignments, like:
   "foo TYPE(1,2)" where foo was declared as "foo([mode] p as bar)" (v1c)
 - support for the optional "digits" argument in HEX(), OCT() and BIN() (and their wide-char versions) (v1c)
@@ -65,7 +70,8 @@ Version 0.16 Beta:
   output format (Executable, Shared library, Static library or Object file) select when compiling (v1c)
 - overloaded unsigned versions (ubyte, ushort, uinteger and ulongint) of INPUT (v1c)
 - CONST AS SymbolType foo, bar, ... (v1c)
-- ENUM's can now be used in explicit;y typed CONST's (v1c)
+- ENUM's can now be used in explicitly typed CONST's (v1c)
+- ENUM elements can now be referenced as: enumid.elmentid (v1c)
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)
@@ -122,6 +128,9 @@ Version 0.16 Beta:
 - descriptors of local dynamic arrays with unknown dimensions weren't been reseted (v1c)
 - non-pointer arguments were been coerced when passed to pointer parameters (v1c)
 - changing string constants was been allowed (v1c)
+- WRITE was outputing floating-point numbers around quotes (v1c)
+- non-decimal 64-bit literal constants were been sign-extended from 32-bit if below 2^32 (v1c)
+- bit-fields accessed inside private functions would cause errors (v1c)
 
 
 Version 0.15 Beta:
