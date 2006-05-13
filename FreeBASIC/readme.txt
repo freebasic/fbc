@@ -294,6 +294,54 @@ Most Important Features:
     - PRINT'ing to console is also supported (see Requirements), INPUT or LINE
       INPUT from console still not allowing wide-characters to be entered yet.
 
+  o Name spaces:
+    - Recursive (up to 8 levels):
+
+      NAMESPACE outer
+        DIM foo        
+        NAMESPACE inner
+          DIM bar          
+        END NAMESPACE
+      END NAMESPACE
+
+      outer.inner.bar = outer.foo + 1
+
+    - Can be imported (including into another name spaces):
+
+      USING outer
+
+      inner.bar = foo + 1
+
+    - Imported name spaces go out-scope if used inside compound statements or routines:
+
+      NAMESPACE ns1
+        DIM foo = 1
+      END NAMESPACE
+
+      SCOPE
+        USING ns1
+        PRINT "ns1.foo ="; foo
+      END SCOPE
+
+      DIM foo = 2
+      PRINT "ns1.foo ="; ns1.foo, "foo ="; foo
+
+    - Symbols are mangled following the GCC 3.x ABI, allowing C++ global functions
+      and variables defined inside name spaces to be accessed directly:
+
+      // compile with G++ 3.x or above
+      namespace cpp {
+        int sum( int a, int b ) { return a + b; }
+      }
+
+      EXTERN "c++"
+        NAMESPACE cpp
+          declare function sum cdecl( byval a as integer, byval b as integer ) as integer        
+        END NAMESPACE
+      END EXTERN
+
+      PRINT cpp.sum( 1, 2 )
+
   o A large number of variable types available:
 
     - Integer: BYTE, UBYTE, SHORT, USHORT, INTEGER, UINTEGER, 

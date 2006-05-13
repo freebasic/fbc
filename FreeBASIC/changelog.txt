@@ -13,8 +13,8 @@ Version 0.16 Beta:
 - floating-point literal numbers in scientific notation without an integer and fractional part cannot be written as
   ".E###" anymore, they must be changed to "0.E###" due ambiguities with macro substituions and .'s been used in WITH 
   and (later) to access objects' member fields (v1c)
-- symbols mangling, if using DLL's that contain exported variables or overloaded functions and was compiled by older 
-  versions, rebuilt the DLL also (v1c)
+- internal symbols mangling, if using DLL's that contain exported variables or overloaded functions and that were 
+  compiled by older versions, rebuilt the DLL's also (v1c)
 - when aborting because run-time errors, the name of the module that caused the error will be printed too (v1c)
 - runtime error checking removed from getmouse() and getjoystick() (v1c)
 - the size of argument-less #defines and macro expansion texts can be now up to 2GB (v1c)
@@ -38,7 +38,8 @@ Version 0.16 Beta:
 
 [added]
 - name spaces blocks (NAMESPACE ID ... END NAMESPACE), that can be nested, imported, etc (v1c)
-- extern blocks (EXTERN "MANGLING_SPEC" LIB "LIB_NAME" ... END EXTERN), to better support C++ libraries (v1c)
+- extern blocks (EXTERN "MANGLING_SPEC" LIB "LIB_NAME" ... END EXTERN), to better support libraries written in
+  different languages than BASIC or C (C++ for example) (v1c)
 - anonymous UDT's that can be passed as parameters or used in assignments, like:
   "foo TYPE(1,2)" where foo was declared as "foo([mode] p as bar)" (v1c)
 - support for the optional "digits" argument in HEX(), OCT() and BIN() (and their wide-char versions) (v1c)
