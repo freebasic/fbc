@@ -12,12 +12,12 @@
 #include once "gtk/gtk/gtkwidget.bi"
 #include once "gtk/gtk/gtkwindow.bi"
 
-#define GTK_TYPE_TOOLTIPS                  (gtk_tooltips_get_type ())
-#define GTK_TOOLTIPS(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TOOLTIPS, GtkTooltips))
-#define GTK_TOOLTIPS_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TOOLTIPS, GtkTooltipsClass))
-#define GTK_IS_TOOLTIPS(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TOOLTIPS))
-#define GTK_IS_TOOLTIPS_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TOOLTIPS))
-#define GTK_TOOLTIPS_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TOOLTIPS, GtkTooltipsClass))
+#define GTK_TYPE_TOOLTIPS (gtk_tooltips_get_type ())
+#define GTK_TOOLTIPS(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TOOLTIPS, GtkTooltips))
+#define GTK_TOOLTIPS_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TOOLTIPS, GtkTooltipsClass))
+#define GTK_IS_TOOLTIPS(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TOOLTIPS))
+#define GTK_IS_TOOLTIPS_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TOOLTIPS))
+#define GTK_TOOLTIPS_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TOOLTIPS, GtkTooltipsClass))
 
 type GtkTooltips as _GtkTooltips
 type GtkTooltipsClass as _GtkTooltipsClass
@@ -52,15 +52,15 @@ type _GtkTooltipsClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_tooltips_get_type cdecl alias "gtk_tooltips_get_type" () as GType
-declare function gtk_tooltips_new cdecl alias "gtk_tooltips_new" () as GtkTooltips ptr
-declare sub gtk_tooltips_enable cdecl alias "gtk_tooltips_enable" (byval tooltips as GtkTooltips ptr)
-declare sub gtk_tooltips_disable cdecl alias "gtk_tooltips_disable" (byval tooltips as GtkTooltips ptr)
-declare sub gtk_tooltips_set_delay cdecl alias "gtk_tooltips_set_delay" (byval tooltips as GtkTooltips ptr, byval delay as guint)
-declare sub gtk_tooltips_set_tip cdecl alias "gtk_tooltips_set_tip" (byval tooltips as GtkTooltips ptr, byval widget as GtkWidget ptr, byval tip_text as zstring ptr, byval tip_private as zstring ptr)
-declare function gtk_tooltips_data_get cdecl alias "gtk_tooltips_data_get" (byval widget as GtkWidget ptr) as GtkTooltipsData ptr
-declare sub gtk_tooltips_force_window cdecl alias "gtk_tooltips_force_window" (byval tooltips as GtkTooltips ptr)
-declare sub _gtk_tooltips_toggle_keyboard_mode cdecl alias "_gtk_tooltips_toggle_keyboard_mode" (byval widget as GtkWidget ptr)
-declare function gtk_tooltips_get_info_from_tip_window cdecl alias "gtk_tooltips_get_info_from_tip_window" (byval tip_window as GtkWindow ptr, byval tooltips as GtkTooltips ptr ptr, byval current_widget as GtkWidget ptr ptr) as gboolean
+declare function gtk_tooltips_get_type () as GType
+declare function gtk_tooltips_new () as GtkTooltips ptr
+declare sub gtk_tooltips_enable (byval tooltips as GtkTooltips ptr)
+declare sub gtk_tooltips_disable (byval tooltips as GtkTooltips ptr)
+declare sub gtk_tooltips_set_delay (byval tooltips as GtkTooltips ptr, byval delay as guint)
+declare sub gtk_tooltips_set_tip (byval tooltips as GtkTooltips ptr, byval widget as GtkWidget ptr, byval tip_text as zstring ptr, byval tip_private as zstring ptr)
+declare function gtk_tooltips_data_get (byval widget as GtkWidget ptr) as GtkTooltipsData ptr
+declare sub gtk_tooltips_force_window (byval tooltips as GtkTooltips ptr)
+declare sub _gtk_tooltips_toggle_keyboard_mode (byval widget as GtkWidget ptr)
+declare function gtk_tooltips_get_info_from_tip_window (byval tip_window as GtkWindow ptr, byval tooltips as GtkTooltips ptr ptr, byval current_widget as GtkWidget ptr ptr) as gboolean
 
 #endif

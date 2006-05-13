@@ -13,12 +13,12 @@
 #include once "gtk/gtk/gtkobject.bi"
 #include once "gtk/pango.bi"
 
-#define GTK_TYPE_IM_CONTEXT              (gtk_im_context_get_type ())
-#define GTK_IM_CONTEXT(obj)              (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_IM_CONTEXT, GtkIMContext))
-#define GTK_IM_CONTEXT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_IM_CONTEXT, GtkIMContextClass))
-#define GTK_IS_IM_CONTEXT(obj)           (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_IM_CONTEXT))
-#define GTK_IS_IM_CONTEXT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_IM_CONTEXT))
-#define GTK_IM_CONTEXT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_IM_CONTEXT, GtkIMContextClass))
+#define GTK_TYPE_IM_CONTEXT (gtk_im_context_get_type ())
+#define GTK_IM_CONTEXT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_IM_CONTEXT, GtkIMContext))
+#define GTK_IM_CONTEXT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_IM_CONTEXT, GtkIMContextClass))
+#define GTK_IS_IM_CONTEXT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_IM_CONTEXT))
+#define GTK_IS_IM_CONTEXT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_IM_CONTEXT))
+#define GTK_IM_CONTEXT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_IM_CONTEXT, GtkIMContextClass))
 
 type GtkIMContext as _GtkIMContext
 type GtkIMContextClass as _GtkIMContextClass
@@ -53,17 +53,17 @@ type _GtkIMContextClass
 	_gtk_reserved6 as sub cdecl()
 end type
 
-declare function gtk_im_context_get_type cdecl alias "gtk_im_context_get_type" () as GType
-declare sub gtk_im_context_set_client_window cdecl alias "gtk_im_context_set_client_window" (byval context as GtkIMContext ptr, byval window as GdkWindow ptr)
-declare sub gtk_im_context_get_preedit_string cdecl alias "gtk_im_context_get_preedit_string" (byval context as GtkIMContext ptr, byval str as zstring ptr ptr, byval attrs as PangoAttrList ptr ptr, byval cursor_pos as gint ptr)
-declare function gtk_im_context_filter_keypress cdecl alias "gtk_im_context_filter_keypress" (byval context as GtkIMContext ptr, byval event as GdkEventKey ptr) as gboolean
-declare sub gtk_im_context_focus_in cdecl alias "gtk_im_context_focus_in" (byval context as GtkIMContext ptr)
-declare sub gtk_im_context_focus_out cdecl alias "gtk_im_context_focus_out" (byval context as GtkIMContext ptr)
-declare sub gtk_im_context_reset cdecl alias "gtk_im_context_reset" (byval context as GtkIMContext ptr)
-declare sub gtk_im_context_set_cursor_location cdecl alias "gtk_im_context_set_cursor_location" (byval context as GtkIMContext ptr, byval area as GdkRectangle ptr)
-declare sub gtk_im_context_set_use_preedit cdecl alias "gtk_im_context_set_use_preedit" (byval context as GtkIMContext ptr, byval use_preedit as gboolean)
-declare sub gtk_im_context_set_surrounding cdecl alias "gtk_im_context_set_surrounding" (byval context as GtkIMContext ptr, byval text as zstring ptr, byval len as gint, byval cursor_index as gint)
-declare function gtk_im_context_get_surrounding cdecl alias "gtk_im_context_get_surrounding" (byval context as GtkIMContext ptr, byval text as zstring ptr ptr, byval cursor_index as gint ptr) as gboolean
-declare function gtk_im_context_delete_surrounding cdecl alias "gtk_im_context_delete_surrounding" (byval context as GtkIMContext ptr, byval offset as gint, byval n_chars as gint) as gboolean
+declare function gtk_im_context_get_type () as GType
+declare sub gtk_im_context_set_client_window (byval context as GtkIMContext ptr, byval window as GdkWindow ptr)
+declare sub gtk_im_context_get_preedit_string (byval context as GtkIMContext ptr, byval str as zstring ptr ptr, byval attrs as PangoAttrList ptr ptr, byval cursor_pos as gint ptr)
+declare function gtk_im_context_filter_keypress (byval context as GtkIMContext ptr, byval event as GdkEventKey ptr) as gboolean
+declare sub gtk_im_context_focus_in (byval context as GtkIMContext ptr)
+declare sub gtk_im_context_focus_out (byval context as GtkIMContext ptr)
+declare sub gtk_im_context_reset (byval context as GtkIMContext ptr)
+declare sub gtk_im_context_set_cursor_location (byval context as GtkIMContext ptr, byval area as GdkRectangle ptr)
+declare sub gtk_im_context_set_use_preedit (byval context as GtkIMContext ptr, byval use_preedit as gboolean)
+declare sub gtk_im_context_set_surrounding (byval context as GtkIMContext ptr, byval text as zstring ptr, byval len as gint, byval cursor_index as gint)
+declare function gtk_im_context_get_surrounding (byval context as GtkIMContext ptr, byval text as zstring ptr ptr, byval cursor_index as gint ptr) as gboolean
+declare function gtk_im_context_delete_surrounding (byval context as GtkIMContext ptr, byval offset as gint, byval n_chars as gint) as gboolean
 
 #endif

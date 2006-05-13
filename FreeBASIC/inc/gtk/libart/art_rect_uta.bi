@@ -12,6 +12,6 @@
 #include once "gtk/libart/art_rect.bi"
 #include once "gtk/libart/art_uta.bi"
 
-declare function art_rect_list_from_uta cdecl alias "art_rect_list_from_uta" (byval uta as ArtUta ptr, byval max_width as integer, byval max_height as integer, byval p_nrects as integer ptr) as ArtIRect ptr
+declare function art_rect_list_from_uta (byval uta as ArtUta ptr, byval max_width as integer, byval max_height as integer, byval p_nrects as integer ptr) as ArtIRect ptr
 
 #endif

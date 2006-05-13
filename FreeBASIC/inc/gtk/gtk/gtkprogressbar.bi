@@ -12,12 +12,12 @@
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkprogress.bi"
 
-#define GTK_TYPE_PROGRESS_BAR            (gtk_progress_bar_get_type ())
-#define GTK_PROGRESS_BAR(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_PROGRESS_BAR, GtkProgressBar))
-#define GTK_PROGRESS_BAR_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_PROGRESS_BAR, GtkProgressBarClass))
-#define GTK_IS_PROGRESS_BAR(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_PROGRESS_BAR))
+#define GTK_TYPE_PROGRESS_BAR (gtk_progress_bar_get_type ())
+#define GTK_PROGRESS_BAR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_PROGRESS_BAR, GtkProgressBar))
+#define GTK_PROGRESS_BAR_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_PROGRESS_BAR, GtkProgressBarClass))
+#define GTK_IS_PROGRESS_BAR(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_PROGRESS_BAR))
 #define GTK_IS_PROGRESS_BAR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_PROGRESS_BAR))
-#define GTK_PROGRESS_BAR_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_PROGRESS_BAR, GtkProgressBarClass))
+#define GTK_PROGRESS_BAR_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_PROGRESS_BAR, GtkProgressBarClass))
 
 type GtkProgressBar as _GtkProgressBar
 type GtkProgressBarClass as _GtkProgressBarClass
@@ -58,24 +58,24 @@ type _GtkProgressBarClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_progress_bar_get_type cdecl alias "gtk_progress_bar_get_type" () as GType
-declare function gtk_progress_bar_new cdecl alias "gtk_progress_bar_new" () as GtkWidget ptr
-declare sub gtk_progress_bar_pulse cdecl alias "gtk_progress_bar_pulse" (byval pbar as GtkProgressBar ptr)
-declare sub gtk_progress_bar_set_text cdecl alias "gtk_progress_bar_set_text" (byval pbar as GtkProgressBar ptr, byval text as zstring ptr)
-declare sub gtk_progress_bar_set_fraction cdecl alias "gtk_progress_bar_set_fraction" (byval pbar as GtkProgressBar ptr, byval fraction as gdouble)
-declare sub gtk_progress_bar_set_pulse_step cdecl alias "gtk_progress_bar_set_pulse_step" (byval pbar as GtkProgressBar ptr, byval fraction as gdouble)
-declare sub gtk_progress_bar_set_orientation cdecl alias "gtk_progress_bar_set_orientation" (byval pbar as GtkProgressBar ptr, byval orientation as GtkProgressBarOrientation)
-declare function gtk_progress_bar_get_text cdecl alias "gtk_progress_bar_get_text" (byval pbar as GtkProgressBar ptr) as zstring ptr
-declare function gtk_progress_bar_get_fraction cdecl alias "gtk_progress_bar_get_fraction" (byval pbar as GtkProgressBar ptr) as gdouble
-declare function gtk_progress_bar_get_pulse_step cdecl alias "gtk_progress_bar_get_pulse_step" (byval pbar as GtkProgressBar ptr) as gdouble
-declare function gtk_progress_bar_get_orientation cdecl alias "gtk_progress_bar_get_orientation" (byval pbar as GtkProgressBar ptr) as GtkProgressBarOrientation
-declare sub gtk_progress_bar_set_ellipsize cdecl alias "gtk_progress_bar_set_ellipsize" (byval pbar as GtkProgressBar ptr, byval mode as PangoEllipsizeMode)
-declare function gtk_progress_bar_get_ellipsize cdecl alias "gtk_progress_bar_get_ellipsize" (byval pbar as GtkProgressBar ptr) as PangoEllipsizeMode
-declare function gtk_progress_bar_new_with_adjustment cdecl alias "gtk_progress_bar_new_with_adjustment" (byval adjustment as GtkAdjustment ptr) as GtkWidget ptr
-declare sub gtk_progress_bar_set_bar_style cdecl alias "gtk_progress_bar_set_bar_style" (byval pbar as GtkProgressBar ptr, byval style as GtkProgressBarStyle)
-declare sub gtk_progress_bar_set_discrete_blocks cdecl alias "gtk_progress_bar_set_discrete_blocks" (byval pbar as GtkProgressBar ptr, byval blocks as guint)
-declare sub gtk_progress_bar_set_activity_step cdecl alias "gtk_progress_bar_set_activity_step" (byval pbar as GtkProgressBar ptr, byval step as guint)
-declare sub gtk_progress_bar_set_activity_blocks cdecl alias "gtk_progress_bar_set_activity_blocks" (byval pbar as GtkProgressBar ptr, byval blocks as guint)
-declare sub gtk_progress_bar_update cdecl alias "gtk_progress_bar_update" (byval pbar as GtkProgressBar ptr, byval percentage as gdouble)
+declare function gtk_progress_bar_get_type () as GType
+declare function gtk_progress_bar_new () as GtkWidget ptr
+declare sub gtk_progress_bar_pulse (byval pbar as GtkProgressBar ptr)
+declare sub gtk_progress_bar_set_text (byval pbar as GtkProgressBar ptr, byval text as zstring ptr)
+declare sub gtk_progress_bar_set_fraction (byval pbar as GtkProgressBar ptr, byval fraction as gdouble)
+declare sub gtk_progress_bar_set_pulse_step (byval pbar as GtkProgressBar ptr, byval fraction as gdouble)
+declare sub gtk_progress_bar_set_orientation (byval pbar as GtkProgressBar ptr, byval orientation as GtkProgressBarOrientation)
+declare function gtk_progress_bar_get_text (byval pbar as GtkProgressBar ptr) as zstring ptr
+declare function gtk_progress_bar_get_fraction (byval pbar as GtkProgressBar ptr) as gdouble
+declare function gtk_progress_bar_get_pulse_step (byval pbar as GtkProgressBar ptr) as gdouble
+declare function gtk_progress_bar_get_orientation (byval pbar as GtkProgressBar ptr) as GtkProgressBarOrientation
+declare sub gtk_progress_bar_set_ellipsize (byval pbar as GtkProgressBar ptr, byval mode as PangoEllipsizeMode)
+declare function gtk_progress_bar_get_ellipsize (byval pbar as GtkProgressBar ptr) as PangoEllipsizeMode
+declare function gtk_progress_bar_new_with_adjustment (byval adjustment as GtkAdjustment ptr) as GtkWidget ptr
+declare sub gtk_progress_bar_set_bar_style (byval pbar as GtkProgressBar ptr, byval style as GtkProgressBarStyle)
+declare sub gtk_progress_bar_set_discrete_blocks (byval pbar as GtkProgressBar ptr, byval blocks as guint)
+declare sub gtk_progress_bar_set_activity_step (byval pbar as GtkProgressBar ptr, byval step as guint)
+declare sub gtk_progress_bar_set_activity_blocks (byval pbar as GtkProgressBar ptr, byval blocks as guint)
+declare sub gtk_progress_bar_update (byval pbar as GtkProgressBar ptr, byval percentage as gdouble)
 
 #endif

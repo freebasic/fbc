@@ -18,16 +18,16 @@ type _GTuples
 	len as guint
 end type
 
-declare function g_relation_new cdecl alias "g_relation_new" (byval fields as gint) as GRelation ptr
-declare sub g_relation_destroy cdecl alias "g_relation_destroy" (byval relation as GRelation ptr)
-declare sub g_relation_index cdecl alias "g_relation_index" (byval relation as GRelation ptr, byval field as gint, byval hash_func as GHashFunc, byval key_equal_func as GEqualFunc)
-declare sub g_relation_insert cdecl alias "g_relation_insert" (byval relation as GRelation ptr, ...)
-declare function g_relation_delete cdecl alias "g_relation_delete" (byval relation as GRelation ptr, byval key as gconstpointer, byval field as gint) as gint
-declare function g_relation_select cdecl alias "g_relation_select" (byval relation as GRelation ptr, byval key as gconstpointer, byval field as gint) as GTuples ptr
-declare function g_relation_count cdecl alias "g_relation_count" (byval relation as GRelation ptr, byval key as gconstpointer, byval field as gint) as gint
-declare function g_relation_exists cdecl alias "g_relation_exists" (byval relation as GRelation ptr, ...) as gboolean
-declare sub g_relation_print cdecl alias "g_relation_print" (byval relation as GRelation ptr)
-declare sub g_tuples_destroy cdecl alias "g_tuples_destroy" (byval tuples as GTuples ptr)
-declare function g_tuples_index cdecl alias "g_tuples_index" (byval tuples as GTuples ptr, byval index_ as gint, byval field as gint) as gpointer
+declare function g_relation_new (byval fields as gint) as GRelation ptr
+declare sub g_relation_destroy (byval relation as GRelation ptr)
+declare sub g_relation_index (byval relation as GRelation ptr, byval field as gint, byval hash_func as GHashFunc, byval key_equal_func as GEqualFunc)
+declare sub g_relation_insert (byval relation as GRelation ptr, ...)
+declare function g_relation_delete (byval relation as GRelation ptr, byval key as gconstpointer, byval field as gint) as gint
+declare function g_relation_select (byval relation as GRelation ptr, byval key as gconstpointer, byval field as gint) as GTuples ptr
+declare function g_relation_count (byval relation as GRelation ptr, byval key as gconstpointer, byval field as gint) as gint
+declare function g_relation_exists (byval relation as GRelation ptr, ...) as gboolean
+declare sub g_relation_print (byval relation as GRelation ptr)
+declare sub g_tuples_destroy (byval tuples as GTuples ptr)
+declare function g_tuples_index (byval tuples as GTuples ptr, byval index_ as gint, byval field as gint) as gpointer
 
 #endif

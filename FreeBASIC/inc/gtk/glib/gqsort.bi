@@ -11,6 +11,6 @@
 
 #include once "gtk/glib/gtypes.bi"
 
-declare sub g_qsort_with_data cdecl alias "g_qsort_with_data" (byval pbase as gconstpointer, byval total_elems as gint, byval size as gsize, byval compare_func as GCompareDataFunc, byval user_data as gpointer)
+declare sub g_qsort_with_data (byval pbase as gconstpointer, byval total_elems as gint, byval size as gsize, byval compare_func as GCompareDataFunc, byval user_data as gpointer)
 
 #endif

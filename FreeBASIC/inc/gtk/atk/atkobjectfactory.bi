@@ -35,9 +35,9 @@ type _AtkObjectFactoryClass
 	pad2 as AtkFunction
 end type
 
-declare function atk_object_factory_get_type cdecl alias "atk_object_factory_get_type" () as GType
-declare function atk_object_factory_create_accessible cdecl alias "atk_object_factory_create_accessible" (byval factory as AtkObjectFactory ptr, byval obj as GObject ptr) as AtkObject ptr
-declare sub atk_object_factory_invalidate cdecl alias "atk_object_factory_invalidate" (byval factory as AtkObjectFactory ptr)
-declare function atk_object_factory_get_accessible_type cdecl alias "atk_object_factory_get_accessible_type" (byval factory as AtkObjectFactory ptr) as GType
+declare function atk_object_factory_get_type () as GType
+declare function atk_object_factory_create_accessible (byval factory as AtkObjectFactory ptr, byval obj as GObject ptr) as AtkObject ptr
+declare sub atk_object_factory_invalidate (byval factory as AtkObjectFactory ptr)
+declare function atk_object_factory_get_accessible_type (byval factory as AtkObjectFactory ptr) as GType
 
 #endif

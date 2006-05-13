@@ -12,8 +12,8 @@
 #include once "gtk/gdkgl/gdkgldefs.bi"
 #include once "gtk/gdkgl/gdkgltypes.bi"
 
-declare function gdk_gl_parse_args cdecl alias "gdk_gl_parse_args" (byval argc as integer ptr, byval argv as byte ptr ptr ptr) as gboolean
-declare function gdk_gl_init_check cdecl alias "gdk_gl_init_check" (byval argc as integer ptr, byval argv as byte ptr ptr ptr) as gboolean
-declare sub gdk_gl_init cdecl alias "gdk_gl_init" (byval argc as integer ptr, byval argv as byte ptr ptr ptr)
+declare function gdk_gl_parse_args (byval argc as integer ptr, byval argv as byte ptr ptr ptr) as gboolean
+declare function gdk_gl_init_check (byval argc as integer ptr, byval argv as byte ptr ptr ptr) as gboolean
+declare sub gdk_gl_init (byval argc as integer ptr, byval argv as byte ptr ptr ptr)
 
 #endif

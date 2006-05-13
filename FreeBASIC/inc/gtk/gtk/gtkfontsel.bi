@@ -13,20 +13,20 @@
 #include once "gtk/gtk/gtkdialog.bi"
 #include once "gtk/gtk/gtkvbox.bi"
 
-#define GTK_TYPE_FONT_SELECTION              (gtk_font_selection_get_type ())
-#define GTK_FONT_SELECTION(obj)              (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FONT_SELECTION, GtkFontSelection))
-#define GTK_FONT_SELECTION_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_FONT_SELECTION, GtkFontSelectionClass))
-#define GTK_IS_FONT_SELECTION(obj)           (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_FONT_SELECTION))
-#define GTK_IS_FONT_SELECTION_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_FONT_SELECTION))
-#define GTK_FONT_SELECTION_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_FONT_SELECTION, GtkFontSelectionClass))
+#define GTK_TYPE_FONT_SELECTION (gtk_font_selection_get_type ())
+#define GTK_FONT_SELECTION(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FONT_SELECTION, GtkFontSelection))
+#define GTK_FONT_SELECTION_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_FONT_SELECTION, GtkFontSelectionClass))
+#define GTK_IS_FONT_SELECTION(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_FONT_SELECTION))
+#define GTK_IS_FONT_SELECTION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_FONT_SELECTION))
+#define GTK_FONT_SELECTION_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_FONT_SELECTION, GtkFontSelectionClass))
 
 
-#define GTK_TYPE_FONT_SELECTION_DIALOG              (gtk_font_selection_dialog_get_type ())
-#define GTK_FONT_SELECTION_DIALOG(obj)              (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FONT_SELECTION_DIALOG, GtkFontSelectionDialog))
-#define GTK_FONT_SELECTION_DIALOG_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_FONT_SELECTION_DIALOG, GtkFontSelectionDialogClass))
-#define GTK_IS_FONT_SELECTION_DIALOG(obj)           (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_FONT_SELECTION_DIALOG))
-#define GTK_IS_FONT_SELECTION_DIALOG_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_FONT_SELECTION_DIALOG))
-#define GTK_FONT_SELECTION_DIALOG_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_FONT_SELECTION_DIALOG, GtkFontSelectionDialogClass))
+#define GTK_TYPE_FONT_SELECTION_DIALOG (gtk_font_selection_dialog_get_type ())
+#define GTK_FONT_SELECTION_DIALOG(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FONT_SELECTION_DIALOG, GtkFontSelectionDialog))
+#define GTK_FONT_SELECTION_DIALOG_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_FONT_SELECTION_DIALOG, GtkFontSelectionDialogClass))
+#define GTK_IS_FONT_SELECTION_DIALOG(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_FONT_SELECTION_DIALOG))
+#define GTK_IS_FONT_SELECTION_DIALOG_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_FONT_SELECTION_DIALOG))
+#define GTK_FONT_SELECTION_DIALOG_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_FONT_SELECTION_DIALOG, GtkFontSelectionDialogClass))
 
 type GtkFontSelection as _GtkFontSelection
 type GtkFontSelectionClass as _GtkFontSelectionClass
@@ -79,19 +79,19 @@ type _GtkFontSelectionDialogClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_font_selection_get_type cdecl alias "gtk_font_selection_get_type" () as GType
-declare function gtk_font_selection_new cdecl alias "gtk_font_selection_new" () as GtkWidget ptr
-declare function gtk_font_selection_get_font_name cdecl alias "gtk_font_selection_get_font_name" (byval fontsel as GtkFontSelection ptr) as zstring ptr
-declare function gtk_font_selection_get_font cdecl alias "gtk_font_selection_get_font" (byval fontsel as GtkFontSelection ptr) as GdkFont ptr
-declare function gtk_font_selection_set_font_name cdecl alias "gtk_font_selection_set_font_name" (byval fontsel as GtkFontSelection ptr, byval fontname as zstring ptr) as gboolean
-declare function gtk_font_selection_get_preview_text cdecl alias "gtk_font_selection_get_preview_text" (byval fontsel as GtkFontSelection ptr) as zstring ptr
-declare sub gtk_font_selection_set_preview_text cdecl alias "gtk_font_selection_set_preview_text" (byval fontsel as GtkFontSelection ptr, byval text as zstring ptr)
-declare function gtk_font_selection_dialog_get_type cdecl alias "gtk_font_selection_dialog_get_type" () as GType
-declare function gtk_font_selection_dialog_new cdecl alias "gtk_font_selection_dialog_new" (byval title as zstring ptr) as GtkWidget ptr
-declare function gtk_font_selection_dialog_get_font_name cdecl alias "gtk_font_selection_dialog_get_font_name" (byval fsd as GtkFontSelectionDialog ptr) as zstring ptr
-declare function gtk_font_selection_dialog_get_font cdecl alias "gtk_font_selection_dialog_get_font" (byval fsd as GtkFontSelectionDialog ptr) as GdkFont ptr
-declare function gtk_font_selection_dialog_set_font_name cdecl alias "gtk_font_selection_dialog_set_font_name" (byval fsd as GtkFontSelectionDialog ptr, byval fontname as zstring ptr) as gboolean
-declare function gtk_font_selection_dialog_get_preview_text cdecl alias "gtk_font_selection_dialog_get_preview_text" (byval fsd as GtkFontSelectionDialog ptr) as zstring ptr
-declare sub gtk_font_selection_dialog_set_preview_text cdecl alias "gtk_font_selection_dialog_set_preview_text" (byval fsd as GtkFontSelectionDialog ptr, byval text as zstring ptr)
+declare function gtk_font_selection_get_type () as GType
+declare function gtk_font_selection_new () as GtkWidget ptr
+declare function gtk_font_selection_get_font_name (byval fontsel as GtkFontSelection ptr) as zstring ptr
+declare function gtk_font_selection_get_font (byval fontsel as GtkFontSelection ptr) as GdkFont ptr
+declare function gtk_font_selection_set_font_name (byval fontsel as GtkFontSelection ptr, byval fontname as zstring ptr) as gboolean
+declare function gtk_font_selection_get_preview_text (byval fontsel as GtkFontSelection ptr) as zstring ptr
+declare sub gtk_font_selection_set_preview_text (byval fontsel as GtkFontSelection ptr, byval text as zstring ptr)
+declare function gtk_font_selection_dialog_get_type () as GType
+declare function gtk_font_selection_dialog_new (byval title as zstring ptr) as GtkWidget ptr
+declare function gtk_font_selection_dialog_get_font_name (byval fsd as GtkFontSelectionDialog ptr) as zstring ptr
+declare function gtk_font_selection_dialog_get_font (byval fsd as GtkFontSelectionDialog ptr) as GdkFont ptr
+declare function gtk_font_selection_dialog_set_font_name (byval fsd as GtkFontSelectionDialog ptr, byval fontname as zstring ptr) as gboolean
+declare function gtk_font_selection_dialog_get_preview_text (byval fsd as GtkFontSelectionDialog ptr) as zstring ptr
+declare sub gtk_font_selection_dialog_set_preview_text (byval fsd as GtkFontSelectionDialog ptr, byval text as zstring ptr)
 
 #endif

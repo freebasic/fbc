@@ -21,7 +21,7 @@ enum GKeyFileError
 end enum
 
 
-declare function g_key_file_error_quark cdecl alias "g_key_file_error_quark" () as GQuark
+declare function g_key_file_error_quark () as GQuark
 
 type GKeyFile as _GKeyFile
 
@@ -32,40 +32,40 @@ enum GKeyFileFlags
 end enum
 
 
-declare function g_key_file_new cdecl alias "g_key_file_new" () as GKeyFile ptr
-declare sub g_key_file_free cdecl alias "g_key_file_free" (byval key_file as GKeyFile ptr)
-declare sub g_key_file_set_list_separator cdecl alias "g_key_file_set_list_separator" (byval key_file as GKeyFile ptr, byval separator as gchar)
-declare function g_key_file_load_from_file cdecl alias "g_key_file_load_from_file" (byval key_file as GKeyFile ptr, byval file as zstring ptr, byval flags as GKeyFileFlags, byval error as GError ptr ptr) as gboolean
-declare function g_key_file_load_from_data cdecl alias "g_key_file_load_from_data" (byval key_file as GKeyFile ptr, byval data as zstring ptr, byval length as gsize, byval flags as GKeyFileFlags, byval error as GError ptr ptr) as gboolean
-declare function g_key_file_load_from_data_dirs cdecl alias "g_key_file_load_from_data_dirs" (byval key_file as GKeyFile ptr, byval file as zstring ptr, byval full_path as zstring ptr ptr, byval flags as GKeyFileFlags, byval error as GError ptr ptr) as gboolean
-declare function g_key_file_to_data cdecl alias "g_key_file_to_data" (byval key_file as GKeyFile ptr, byval length as gsize ptr, byval error as GError ptr ptr) as zstring ptr
-declare function g_key_file_get_start_group cdecl alias "g_key_file_get_start_group" (byval key_file as GKeyFile ptr) as zstring ptr
-declare function g_key_file_get_groups cdecl alias "g_key_file_get_groups" (byval key_file as GKeyFile ptr, byval length as gsize ptr) as zstring ptr ptr
-declare function g_key_file_get_keys cdecl alias "g_key_file_get_keys" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval length as gsize ptr, byval error as GError ptr ptr) as zstring ptr ptr
-declare function g_key_file_has_group cdecl alias "g_key_file_has_group" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr) as gboolean
-declare function g_key_file_has_key cdecl alias "g_key_file_has_key" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval error as GError ptr ptr) as gboolean
-declare function g_key_file_get_value cdecl alias "g_key_file_get_value" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval error as GError ptr ptr) as zstring ptr
-declare sub g_key_file_set_value cdecl alias "g_key_file_set_value" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval value as zstring ptr)
-declare function g_key_file_get_string cdecl alias "g_key_file_get_string" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval error as GError ptr ptr) as zstring ptr
-declare sub g_key_file_set_string cdecl alias "g_key_file_set_string" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval string as zstring ptr)
-declare function g_key_file_get_locale_string cdecl alias "g_key_file_get_locale_string" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval locale as zstring ptr, byval error as GError ptr ptr) as zstring ptr
-declare sub g_key_file_set_locale_string cdecl alias "g_key_file_set_locale_string" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval locale as zstring ptr, byval string as zstring ptr)
-declare function g_key_file_get_boolean cdecl alias "g_key_file_get_boolean" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval error as GError ptr ptr) as gboolean
-declare sub g_key_file_set_boolean cdecl alias "g_key_file_set_boolean" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval value as gboolean)
-declare function g_key_file_get_integer cdecl alias "g_key_file_get_integer" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval error as GError ptr ptr) as gint
-declare sub g_key_file_set_integer cdecl alias "g_key_file_set_integer" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval value as gint)
-declare function g_key_file_get_string_list cdecl alias "g_key_file_get_string_list" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval length as gsize ptr, byval error as GError ptr ptr) as zstring ptr ptr
-declare sub g_key_file_set_string_list cdecl alias "g_key_file_set_string_list" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval list as zstring ptr ptr, byval length as gsize)
-declare function g_key_file_get_locale_string_list cdecl alias "g_key_file_get_locale_string_list" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval locale as zstring ptr, byval length as gsize ptr, byval error as GError ptr ptr) as zstring ptr ptr
-declare sub g_key_file_set_locale_string_list cdecl alias "g_key_file_set_locale_string_list" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval locale as zstring ptr, byval list as zstring ptr ptr, byval length as gsize)
-declare function g_key_file_get_boolean_list cdecl alias "g_key_file_get_boolean_list" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gboolean ptr
-declare sub g_key_file_set_boolean_list cdecl alias "g_key_file_set_boolean_list" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval list as gboolean ptr, byval length as gsize)
-declare function g_key_file_get_integer_list cdecl alias "g_key_file_get_integer_list" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gint ptr
-declare sub g_key_file_set_integer_list cdecl alias "g_key_file_set_integer_list" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval list as gint ptr, byval length as gsize)
-declare sub g_key_file_set_comment cdecl alias "g_key_file_set_comment" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval comment as zstring ptr, byval error as GError ptr ptr)
-declare function g_key_file_get_comment cdecl alias "g_key_file_get_comment" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval error as GError ptr ptr) as zstring ptr
-declare sub g_key_file_remove_comment cdecl alias "g_key_file_remove_comment" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval error as GError ptr ptr)
-declare sub g_key_file_remove_key cdecl alias "g_key_file_remove_key" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval error as GError ptr ptr)
-declare sub g_key_file_remove_group cdecl alias "g_key_file_remove_group" (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval error as GError ptr ptr)
+declare function g_key_file_new () as GKeyFile ptr
+declare sub g_key_file_free (byval key_file as GKeyFile ptr)
+declare sub g_key_file_set_list_separator (byval key_file as GKeyFile ptr, byval separator as gchar)
+declare function g_key_file_load_from_file (byval key_file as GKeyFile ptr, byval file as zstring ptr, byval flags as GKeyFileFlags, byval error as GError ptr ptr) as gboolean
+declare function g_key_file_load_from_data (byval key_file as GKeyFile ptr, byval data as zstring ptr, byval length as gsize, byval flags as GKeyFileFlags, byval error as GError ptr ptr) as gboolean
+declare function g_key_file_load_from_data_dirs (byval key_file as GKeyFile ptr, byval file as zstring ptr, byval full_path as zstring ptr ptr, byval flags as GKeyFileFlags, byval error as GError ptr ptr) as gboolean
+declare function g_key_file_to_data (byval key_file as GKeyFile ptr, byval length as gsize ptr, byval error as GError ptr ptr) as zstring ptr
+declare function g_key_file_get_start_group (byval key_file as GKeyFile ptr) as zstring ptr
+declare function g_key_file_get_groups (byval key_file as GKeyFile ptr, byval length as gsize ptr) as zstring ptr ptr
+declare function g_key_file_get_keys (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval length as gsize ptr, byval error as GError ptr ptr) as zstring ptr ptr
+declare function g_key_file_has_group (byval key_file as GKeyFile ptr, byval group_name as zstring ptr) as gboolean
+declare function g_key_file_has_key (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval error as GError ptr ptr) as gboolean
+declare function g_key_file_get_value (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval error as GError ptr ptr) as zstring ptr
+declare sub g_key_file_set_value (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval value as zstring ptr)
+declare function g_key_file_get_string (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval error as GError ptr ptr) as zstring ptr
+declare sub g_key_file_set_string (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval string as zstring ptr)
+declare function g_key_file_get_locale_string (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval locale as zstring ptr, byval error as GError ptr ptr) as zstring ptr
+declare sub g_key_file_set_locale_string (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval locale as zstring ptr, byval string as zstring ptr)
+declare function g_key_file_get_boolean (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval error as GError ptr ptr) as gboolean
+declare sub g_key_file_set_boolean (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval value as gboolean)
+declare function g_key_file_get_integer (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval error as GError ptr ptr) as gint
+declare sub g_key_file_set_integer (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval value as gint)
+declare function g_key_file_get_string_list (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval length as gsize ptr, byval error as GError ptr ptr) as zstring ptr ptr
+declare sub g_key_file_set_string_list (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval list as zstring ptr ptr, byval length as gsize)
+declare function g_key_file_get_locale_string_list (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval locale as zstring ptr, byval length as gsize ptr, byval error as GError ptr ptr) as zstring ptr ptr
+declare sub g_key_file_set_locale_string_list (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval locale as zstring ptr, byval list as zstring ptr ptr, byval length as gsize)
+declare function g_key_file_get_boolean_list (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gboolean ptr
+declare sub g_key_file_set_boolean_list (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval list as gboolean ptr, byval length as gsize)
+declare function g_key_file_get_integer_list (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval length as gsize ptr, byval error as GError ptr ptr) as gint ptr
+declare sub g_key_file_set_integer_list (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval list as gint ptr, byval length as gsize)
+declare sub g_key_file_set_comment (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval comment as zstring ptr, byval error as GError ptr ptr)
+declare function g_key_file_get_comment (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval error as GError ptr ptr) as zstring ptr
+declare sub g_key_file_remove_comment (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval error as GError ptr ptr)
+declare sub g_key_file_remove_key (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval key as zstring ptr, byval error as GError ptr ptr)
+declare sub g_key_file_remove_group (byval key_file as GKeyFile ptr, byval group_name as zstring ptr, byval error as GError ptr ptr)
 
 #endif

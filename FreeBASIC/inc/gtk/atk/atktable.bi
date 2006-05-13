@@ -63,35 +63,35 @@ type _AtkTableIface
 	pad4 as AtkFunction
 end type
 
-declare function atk_table_get_type cdecl alias "atk_table_get_type" () as GType
-declare function atk_table_ref_at cdecl alias "atk_table_ref_at" (byval table as AtkTable ptr, byval row as gint, byval column as gint) as AtkObject ptr
-declare function atk_table_get_index_at cdecl alias "atk_table_get_index_at" (byval table as AtkTable ptr, byval row as gint, byval column as gint) as gint
-declare function atk_table_get_column_at_index cdecl alias "atk_table_get_column_at_index" (byval table as AtkTable ptr, byval index_ as gint) as gint
-declare function atk_table_get_row_at_index cdecl alias "atk_table_get_row_at_index" (byval table as AtkTable ptr, byval index_ as gint) as gint
-declare function atk_table_get_n_columns cdecl alias "atk_table_get_n_columns" (byval table as AtkTable ptr) as gint
-declare function atk_table_get_n_rows cdecl alias "atk_table_get_n_rows" (byval table as AtkTable ptr) as gint
-declare function atk_table_get_column_extent_at cdecl alias "atk_table_get_column_extent_at" (byval table as AtkTable ptr, byval row as gint, byval column as gint) as gint
-declare function atk_table_get_row_extent_at cdecl alias "atk_table_get_row_extent_at" (byval table as AtkTable ptr, byval row as gint, byval column as gint) as gint
-declare function atk_table_get_caption cdecl alias "atk_table_get_caption" (byval table as AtkTable ptr) as AtkObject ptr
-declare function atk_table_get_column_description cdecl alias "atk_table_get_column_description" (byval table as AtkTable ptr, byval column as gint) as zstring ptr
-declare function atk_table_get_column_header cdecl alias "atk_table_get_column_header" (byval table as AtkTable ptr, byval column as gint) as AtkObject ptr
-declare function atk_table_get_row_description cdecl alias "atk_table_get_row_description" (byval table as AtkTable ptr, byval row as gint) as zstring ptr
-declare function atk_table_get_row_header cdecl alias "atk_table_get_row_header" (byval table as AtkTable ptr, byval row as gint) as AtkObject ptr
-declare function atk_table_get_summary cdecl alias "atk_table_get_summary" (byval table as AtkTable ptr) as AtkObject ptr
-declare sub atk_table_set_caption cdecl alias "atk_table_set_caption" (byval table as AtkTable ptr, byval caption as AtkObject ptr)
-declare sub atk_table_set_column_description cdecl alias "atk_table_set_column_description" (byval table as AtkTable ptr, byval column as gint, byval description as zstring ptr)
-declare sub atk_table_set_column_header cdecl alias "atk_table_set_column_header" (byval table as AtkTable ptr, byval column as gint, byval header as AtkObject ptr)
-declare sub atk_table_set_row_description cdecl alias "atk_table_set_row_description" (byval table as AtkTable ptr, byval row as gint, byval description as zstring ptr)
-declare sub atk_table_set_row_header cdecl alias "atk_table_set_row_header" (byval table as AtkTable ptr, byval row as gint, byval header as AtkObject ptr)
-declare sub atk_table_set_summary cdecl alias "atk_table_set_summary" (byval table as AtkTable ptr, byval accessible as AtkObject ptr)
-declare function atk_table_get_selected_columns cdecl alias "atk_table_get_selected_columns" (byval table as AtkTable ptr, byval selected as gint ptr ptr) as gint
-declare function atk_table_get_selected_rows cdecl alias "atk_table_get_selected_rows" (byval table as AtkTable ptr, byval selected as gint ptr ptr) as gint
-declare function atk_table_is_column_selected cdecl alias "atk_table_is_column_selected" (byval table as AtkTable ptr, byval column as gint) as gboolean
-declare function atk_table_is_row_selected cdecl alias "atk_table_is_row_selected" (byval table as AtkTable ptr, byval row as gint) as gboolean
-declare function atk_table_is_selected cdecl alias "atk_table_is_selected" (byval table as AtkTable ptr, byval row as gint, byval column as gint) as gboolean
-declare function atk_table_add_row_selection cdecl alias "atk_table_add_row_selection" (byval table as AtkTable ptr, byval row as gint) as gboolean
-declare function atk_table_remove_row_selection cdecl alias "atk_table_remove_row_selection" (byval table as AtkTable ptr, byval row as gint) as gboolean
-declare function atk_table_add_column_selection cdecl alias "atk_table_add_column_selection" (byval table as AtkTable ptr, byval column as gint) as gboolean
-declare function atk_table_remove_column_selection cdecl alias "atk_table_remove_column_selection" (byval table as AtkTable ptr, byval column as gint) as gboolean
+declare function atk_table_get_type () as GType
+declare function atk_table_ref_at (byval table as AtkTable ptr, byval row as gint, byval column as gint) as AtkObject ptr
+declare function atk_table_get_index_at (byval table as AtkTable ptr, byval row as gint, byval column as gint) as gint
+declare function atk_table_get_column_at_index (byval table as AtkTable ptr, byval index_ as gint) as gint
+declare function atk_table_get_row_at_index (byval table as AtkTable ptr, byval index_ as gint) as gint
+declare function atk_table_get_n_columns (byval table as AtkTable ptr) as gint
+declare function atk_table_get_n_rows (byval table as AtkTable ptr) as gint
+declare function atk_table_get_column_extent_at (byval table as AtkTable ptr, byval row as gint, byval column as gint) as gint
+declare function atk_table_get_row_extent_at (byval table as AtkTable ptr, byval row as gint, byval column as gint) as gint
+declare function atk_table_get_caption (byval table as AtkTable ptr) as AtkObject ptr
+declare function atk_table_get_column_description (byval table as AtkTable ptr, byval column as gint) as zstring ptr
+declare function atk_table_get_column_header (byval table as AtkTable ptr, byval column as gint) as AtkObject ptr
+declare function atk_table_get_row_description (byval table as AtkTable ptr, byval row as gint) as zstring ptr
+declare function atk_table_get_row_header (byval table as AtkTable ptr, byval row as gint) as AtkObject ptr
+declare function atk_table_get_summary (byval table as AtkTable ptr) as AtkObject ptr
+declare sub atk_table_set_caption (byval table as AtkTable ptr, byval caption as AtkObject ptr)
+declare sub atk_table_set_column_description (byval table as AtkTable ptr, byval column as gint, byval description as zstring ptr)
+declare sub atk_table_set_column_header (byval table as AtkTable ptr, byval column as gint, byval header as AtkObject ptr)
+declare sub atk_table_set_row_description (byval table as AtkTable ptr, byval row as gint, byval description as zstring ptr)
+declare sub atk_table_set_row_header (byval table as AtkTable ptr, byval row as gint, byval header as AtkObject ptr)
+declare sub atk_table_set_summary (byval table as AtkTable ptr, byval accessible as AtkObject ptr)
+declare function atk_table_get_selected_columns (byval table as AtkTable ptr, byval selected as gint ptr ptr) as gint
+declare function atk_table_get_selected_rows (byval table as AtkTable ptr, byval selected as gint ptr ptr) as gint
+declare function atk_table_is_column_selected (byval table as AtkTable ptr, byval column as gint) as gboolean
+declare function atk_table_is_row_selected (byval table as AtkTable ptr, byval row as gint) as gboolean
+declare function atk_table_is_selected (byval table as AtkTable ptr, byval row as gint, byval column as gint) as gboolean
+declare function atk_table_add_row_selection (byval table as AtkTable ptr, byval row as gint) as gboolean
+declare function atk_table_remove_row_selection (byval table as AtkTable ptr, byval row as gint) as gboolean
+declare function atk_table_add_column_selection (byval table as AtkTable ptr, byval column as gint) as gboolean
+declare function atk_table_remove_column_selection (byval table as AtkTable ptr, byval column as gint) as gboolean
 
 #endif

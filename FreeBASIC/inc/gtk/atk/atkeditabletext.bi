@@ -33,13 +33,13 @@ type _AtkEditableTextIface
 	pad2 as AtkFunction
 end type
 
-declare function atk_editable_text_get_type cdecl alias "atk_editable_text_get_type" () as GType
-declare function atk_editable_text_set_run_attributes cdecl alias "atk_editable_text_set_run_attributes" (byval text as AtkEditableText ptr, byval attrib_set as AtkAttributeSet ptr, byval start_offset as gint, byval end_offset as gint) as gboolean
-declare sub atk_editable_text_set_text_contents cdecl alias "atk_editable_text_set_text_contents" (byval text as AtkEditableText ptr, byval string as zstring ptr)
-declare sub atk_editable_text_insert_text cdecl alias "atk_editable_text_insert_text" (byval text as AtkEditableText ptr, byval string as zstring ptr, byval length as gint, byval position as gint ptr)
-declare sub atk_editable_text_copy_text cdecl alias "atk_editable_text_copy_text" (byval text as AtkEditableText ptr, byval start_pos as gint, byval end_pos as gint)
-declare sub atk_editable_text_cut_text cdecl alias "atk_editable_text_cut_text" (byval text as AtkEditableText ptr, byval start_pos as gint, byval end_pos as gint)
-declare sub atk_editable_text_delete_text cdecl alias "atk_editable_text_delete_text" (byval text as AtkEditableText ptr, byval start_pos as gint, byval end_pos as gint)
-declare sub atk_editable_text_paste_text cdecl alias "atk_editable_text_paste_text" (byval text as AtkEditableText ptr, byval position as gint)
+declare function atk_editable_text_get_type () as GType
+declare function atk_editable_text_set_run_attributes (byval text as AtkEditableText ptr, byval attrib_set as AtkAttributeSet ptr, byval start_offset as gint, byval end_offset as gint) as gboolean
+declare sub atk_editable_text_set_text_contents (byval text as AtkEditableText ptr, byval string as zstring ptr)
+declare sub atk_editable_text_insert_text (byval text as AtkEditableText ptr, byval string as zstring ptr, byval length as gint, byval position as gint ptr)
+declare sub atk_editable_text_copy_text (byval text as AtkEditableText ptr, byval start_pos as gint, byval end_pos as gint)
+declare sub atk_editable_text_cut_text (byval text as AtkEditableText ptr, byval start_pos as gint, byval end_pos as gint)
+declare sub atk_editable_text_delete_text (byval text as AtkEditableText ptr, byval start_pos as gint, byval end_pos as gint)
+declare sub atk_editable_text_paste_text (byval text as AtkEditableText ptr, byval position as gint)
 
 #endif

@@ -11,12 +11,12 @@
 
 #include once "gtk/gtk/gtkwidget.bi"
 
-#define GTK_TYPE_SIZE_GROUP            (gtk_size_group_get_type ())
-#define GTK_SIZE_GROUP(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SIZE_GROUP, GtkSizeGroup))
-#define GTK_SIZE_GROUP_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_SIZE_GROUP, GtkSizeGroupClass))
-#define GTK_IS_SIZE_GROUP(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_SIZE_GROUP))
+#define GTK_TYPE_SIZE_GROUP (gtk_size_group_get_type ())
+#define GTK_SIZE_GROUP(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SIZE_GROUP, GtkSizeGroup))
+#define GTK_SIZE_GROUP_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_SIZE_GROUP, GtkSizeGroupClass))
+#define GTK_IS_SIZE_GROUP(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_SIZE_GROUP))
 #define GTK_IS_SIZE_GROUP_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_SIZE_GROUP))
-#define GTK_SIZE_GROUP_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_SIZE_GROUP, GtkSizeGroupClass))
+#define GTK_SIZE_GROUP_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_SIZE_GROUP, GtkSizeGroupClass))
 
 type GtkSizeGroup as _GtkSizeGroup
 type GtkSizeGroupClass as _GtkSizeGroupClass
@@ -46,14 +46,14 @@ enum GtkSizeGroupMode
 end enum
 
 
-declare function gtk_size_group_get_type cdecl alias "gtk_size_group_get_type" () as GType
-declare function gtk_size_group_new cdecl alias "gtk_size_group_new" (byval mode as GtkSizeGroupMode) as GtkSizeGroup ptr
-declare sub gtk_size_group_set_mode cdecl alias "gtk_size_group_set_mode" (byval size_group as GtkSizeGroup ptr, byval mode as GtkSizeGroupMode)
-declare function gtk_size_group_get_mode cdecl alias "gtk_size_group_get_mode" (byval size_group as GtkSizeGroup ptr) as GtkSizeGroupMode
-declare sub gtk_size_group_add_widget cdecl alias "gtk_size_group_add_widget" (byval size_group as GtkSizeGroup ptr, byval widget as GtkWidget ptr)
-declare sub gtk_size_group_remove_widget cdecl alias "gtk_size_group_remove_widget" (byval size_group as GtkSizeGroup ptr, byval widget as GtkWidget ptr)
-declare sub _gtk_size_group_get_child_requisition cdecl alias "_gtk_size_group_get_child_requisition" (byval widget as GtkWidget ptr, byval requisition as GtkRequisition ptr)
-declare sub _gtk_size_group_compute_requisition cdecl alias "_gtk_size_group_compute_requisition" (byval widget as GtkWidget ptr, byval requisition as GtkRequisition ptr)
-declare sub _gtk_size_group_queue_resize cdecl alias "_gtk_size_group_queue_resize" (byval widget as GtkWidget ptr)
+declare function gtk_size_group_get_type () as GType
+declare function gtk_size_group_new (byval mode as GtkSizeGroupMode) as GtkSizeGroup ptr
+declare sub gtk_size_group_set_mode (byval size_group as GtkSizeGroup ptr, byval mode as GtkSizeGroupMode)
+declare function gtk_size_group_get_mode (byval size_group as GtkSizeGroup ptr) as GtkSizeGroupMode
+declare sub gtk_size_group_add_widget (byval size_group as GtkSizeGroup ptr, byval widget as GtkWidget ptr)
+declare sub gtk_size_group_remove_widget (byval size_group as GtkSizeGroup ptr, byval widget as GtkWidget ptr)
+declare sub _gtk_size_group_get_child_requisition (byval widget as GtkWidget ptr, byval requisition as GtkRequisition ptr)
+declare sub _gtk_size_group_compute_requisition (byval widget as GtkWidget ptr, byval requisition as GtkRequisition ptr)
+declare sub _gtk_size_group_queue_resize (byval widget as GtkWidget ptr)
 
 #endif

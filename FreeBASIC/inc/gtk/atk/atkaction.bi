@@ -31,13 +31,13 @@ type _AtkActionIface
 	pad2 as AtkFunction
 end type
 
-declare function atk_action_get_type cdecl alias "atk_action_get_type" () as GType
-declare function atk_action_do_action cdecl alias "atk_action_do_action" (byval action as AtkAction ptr, byval i as gint) as gboolean
-declare function atk_action_get_n_actions cdecl alias "atk_action_get_n_actions" (byval action as AtkAction ptr) as gint
-declare function atk_action_get_description cdecl alias "atk_action_get_description" (byval action as AtkAction ptr, byval i as gint) as zstring ptr
-declare function atk_action_get_name cdecl alias "atk_action_get_name" (byval action as AtkAction ptr, byval i as gint) as zstring ptr
-declare function atk_action_get_keybinding cdecl alias "atk_action_get_keybinding" (byval action as AtkAction ptr, byval i as gint) as zstring ptr
-declare function atk_action_set_description cdecl alias "atk_action_set_description" (byval action as AtkAction ptr, byval i as gint, byval desc as zstring ptr) as gboolean
-declare function atk_action_get_localized_name cdecl alias "atk_action_get_localized_name" (byval action as AtkAction ptr, byval i as gint) as zstring ptr
+declare function atk_action_get_type () as GType
+declare function atk_action_do_action (byval action as AtkAction ptr, byval i as gint) as gboolean
+declare function atk_action_get_n_actions (byval action as AtkAction ptr) as gint
+declare function atk_action_get_description (byval action as AtkAction ptr, byval i as gint) as zstring ptr
+declare function atk_action_get_name (byval action as AtkAction ptr, byval i as gint) as zstring ptr
+declare function atk_action_get_keybinding (byval action as AtkAction ptr, byval i as gint) as zstring ptr
+declare function atk_action_set_description (byval action as AtkAction ptr, byval i as gint, byval desc as zstring ptr) as gboolean
+declare function atk_action_get_localized_name (byval action as AtkAction ptr, byval i as gint) as zstring ptr
 
 #endif

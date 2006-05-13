@@ -60,22 +60,22 @@ type _GtkDialogClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_dialog_get_type cdecl alias "gtk_dialog_get_type" () as GType
-declare function gtk_dialog_new cdecl alias "gtk_dialog_new" () as GtkWidget ptr
-declare function gtk_dialog_new_with_buttons cdecl alias "gtk_dialog_new_with_buttons" (byval title as zstring ptr, byval parent as GtkWindow ptr, byval flags as GtkDialogFlags, byval first_button_text as zstring ptr, ...) as GtkWidget ptr
-declare sub gtk_dialog_add_action_widget cdecl alias "gtk_dialog_add_action_widget" (byval dialog as GtkDialog ptr, byval child as GtkWidget ptr, byval response_id as gint)
-declare function gtk_dialog_add_button cdecl alias "gtk_dialog_add_button" (byval dialog as GtkDialog ptr, byval button_text as zstring ptr, byval response_id as gint) as GtkWidget ptr
-declare sub gtk_dialog_add_buttons cdecl alias "gtk_dialog_add_buttons" (byval dialog as GtkDialog ptr, byval first_button_text as zstring ptr, ...)
-declare sub gtk_dialog_set_response_sensitive cdecl alias "gtk_dialog_set_response_sensitive" (byval dialog as GtkDialog ptr, byval response_id as gint, byval setting as gboolean)
-declare sub gtk_dialog_set_default_response cdecl alias "gtk_dialog_set_default_response" (byval dialog as GtkDialog ptr, byval response_id as gint)
-declare sub gtk_dialog_set_has_separator cdecl alias "gtk_dialog_set_has_separator" (byval dialog as GtkDialog ptr, byval setting as gboolean)
-declare function gtk_dialog_get_has_separator cdecl alias "gtk_dialog_get_has_separator" (byval dialog as GtkDialog ptr) as gboolean
-declare function gtk_alternative_dialog_button_order cdecl alias "gtk_alternative_dialog_button_order" (byval screen as GdkScreen ptr) as gboolean
-declare sub gtk_dialog_set_alternative_button_order cdecl alias "gtk_dialog_set_alternative_button_order" (byval dialog as GtkDialog ptr, byval first_response_id as gint, ...)
-declare sub gtk_dialog_set_alternative_button_order_from_array cdecl alias "gtk_dialog_set_alternative_button_order_from_array" (byval dialog as GtkDialog ptr, byval n_params as gint, byval new_order as gint ptr)
-declare sub gtk_dialog_response cdecl alias "gtk_dialog_response" (byval dialog as GtkDialog ptr, byval response_id as gint)
-declare function gtk_dialog_run cdecl alias "gtk_dialog_run" (byval dialog as GtkDialog ptr) as gint
-declare sub _gtk_dialog_set_ignore_separator cdecl alias "_gtk_dialog_set_ignore_separator" (byval dialog as GtkDialog ptr, byval ignore_separator as gboolean)
-declare function _gtk_dialog_get_response_for_widget cdecl alias "_gtk_dialog_get_response_for_widget" (byval dialog as GtkDialog ptr, byval widget as GtkWidget ptr) as gint
+declare function gtk_dialog_get_type () as GType
+declare function gtk_dialog_new () as GtkWidget ptr
+declare function gtk_dialog_new_with_buttons (byval title as zstring ptr, byval parent as GtkWindow ptr, byval flags as GtkDialogFlags, byval first_button_text as zstring ptr, ...) as GtkWidget ptr
+declare sub gtk_dialog_add_action_widget (byval dialog as GtkDialog ptr, byval child as GtkWidget ptr, byval response_id as gint)
+declare function gtk_dialog_add_button (byval dialog as GtkDialog ptr, byval button_text as zstring ptr, byval response_id as gint) as GtkWidget ptr
+declare sub gtk_dialog_add_buttons (byval dialog as GtkDialog ptr, byval first_button_text as zstring ptr, ...)
+declare sub gtk_dialog_set_response_sensitive (byval dialog as GtkDialog ptr, byval response_id as gint, byval setting as gboolean)
+declare sub gtk_dialog_set_default_response (byval dialog as GtkDialog ptr, byval response_id as gint)
+declare sub gtk_dialog_set_has_separator (byval dialog as GtkDialog ptr, byval setting as gboolean)
+declare function gtk_dialog_get_has_separator (byval dialog as GtkDialog ptr) as gboolean
+declare function gtk_alternative_dialog_button_order (byval screen as GdkScreen ptr) as gboolean
+declare sub gtk_dialog_set_alternative_button_order (byval dialog as GtkDialog ptr, byval first_response_id as gint, ...)
+declare sub gtk_dialog_set_alternative_button_order_from_array (byval dialog as GtkDialog ptr, byval n_params as gint, byval new_order as gint ptr)
+declare sub gtk_dialog_response (byval dialog as GtkDialog ptr, byval response_id as gint)
+declare function gtk_dialog_run (byval dialog as GtkDialog ptr) as gint
+declare sub _gtk_dialog_set_ignore_separator (byval dialog as GtkDialog ptr, byval ignore_separator as gboolean)
+declare function _gtk_dialog_get_response_for_widget (byval dialog as GtkDialog ptr, byval widget as GtkWidget ptr) as gint
 
 #endif

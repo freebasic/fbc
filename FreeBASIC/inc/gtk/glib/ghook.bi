@@ -51,28 +51,28 @@ type _GHook
 	destroy as GDestroyNotify
 end type
 
-declare sub g_hook_list_init cdecl alias "g_hook_list_init" (byval hook_list as GHookList ptr, byval hook_size as guint)
-declare sub g_hook_list_clear cdecl alias "g_hook_list_clear" (byval hook_list as GHookList ptr)
-declare function g_hook_alloc cdecl alias "g_hook_alloc" (byval hook_list as GHookList ptr) as GHook ptr
-declare sub g_hook_free cdecl alias "g_hook_free" (byval hook_list as GHookList ptr, byval hook as GHook ptr)
-declare function g_hook_ref cdecl alias "g_hook_ref" (byval hook_list as GHookList ptr, byval hook as GHook ptr) as GHook ptr
-declare sub g_hook_unref cdecl alias "g_hook_unref" (byval hook_list as GHookList ptr, byval hook as GHook ptr)
-declare function g_hook_destroy cdecl alias "g_hook_destroy" (byval hook_list as GHookList ptr, byval hook_id as gulong) as gboolean
-declare sub g_hook_destroy_link cdecl alias "g_hook_destroy_link" (byval hook_list as GHookList ptr, byval hook as GHook ptr)
-declare sub g_hook_prepend cdecl alias "g_hook_prepend" (byval hook_list as GHookList ptr, byval hook as GHook ptr)
-declare sub g_hook_insert_before cdecl alias "g_hook_insert_before" (byval hook_list as GHookList ptr, byval sibling as GHook ptr, byval hook as GHook ptr)
-declare sub g_hook_insert_sorted cdecl alias "g_hook_insert_sorted" (byval hook_list as GHookList ptr, byval hook as GHook ptr, byval func as GHookCompareFunc)
-declare function g_hook_get cdecl alias "g_hook_get" (byval hook_list as GHookList ptr, byval hook_id as gulong) as GHook ptr
-declare function g_hook_find cdecl alias "g_hook_find" (byval hook_list as GHookList ptr, byval need_valids as gboolean, byval func as GHookFindFunc, byval data as gpointer) as GHook ptr
-declare function g_hook_find_data cdecl alias "g_hook_find_data" (byval hook_list as GHookList ptr, byval need_valids as gboolean, byval data as gpointer) as GHook ptr
-declare function g_hook_find_func cdecl alias "g_hook_find_func" (byval hook_list as GHookList ptr, byval need_valids as gboolean, byval func as gpointer) as GHook ptr
-declare function g_hook_find_func_data cdecl alias "g_hook_find_func_data" (byval hook_list as GHookList ptr, byval need_valids as gboolean, byval func as gpointer, byval data as gpointer) as GHook ptr
-declare function g_hook_first_valid cdecl alias "g_hook_first_valid" (byval hook_list as GHookList ptr, byval may_be_in_call as gboolean) as GHook ptr
-declare function g_hook_next_valid cdecl alias "g_hook_next_valid" (byval hook_list as GHookList ptr, byval hook as GHook ptr, byval may_be_in_call as gboolean) as GHook ptr
-declare function g_hook_compare_ids cdecl alias "g_hook_compare_ids" (byval new_hook as GHook ptr, byval sibling as GHook ptr) as gint
-declare sub g_hook_list_invoke cdecl alias "g_hook_list_invoke" (byval hook_list as GHookList ptr, byval may_recurse as gboolean)
-declare sub g_hook_list_invoke_check cdecl alias "g_hook_list_invoke_check" (byval hook_list as GHookList ptr, byval may_recurse as gboolean)
-declare sub g_hook_list_marshal cdecl alias "g_hook_list_marshal" (byval hook_list as GHookList ptr, byval may_recurse as gboolean, byval marshaller as GHookMarshaller, byval marshal_data as gpointer)
-declare sub g_hook_list_marshal_check cdecl alias "g_hook_list_marshal_check" (byval hook_list as GHookList ptr, byval may_recurse as gboolean, byval marshaller as GHookCheckMarshaller, byval marshal_data as gpointer)
+declare sub g_hook_list_init (byval hook_list as GHookList ptr, byval hook_size as guint)
+declare sub g_hook_list_clear (byval hook_list as GHookList ptr)
+declare function g_hook_alloc (byval hook_list as GHookList ptr) as GHook ptr
+declare sub g_hook_free (byval hook_list as GHookList ptr, byval hook as GHook ptr)
+declare function g_hook_ref (byval hook_list as GHookList ptr, byval hook as GHook ptr) as GHook ptr
+declare sub g_hook_unref (byval hook_list as GHookList ptr, byval hook as GHook ptr)
+declare function g_hook_destroy (byval hook_list as GHookList ptr, byval hook_id as gulong) as gboolean
+declare sub g_hook_destroy_link (byval hook_list as GHookList ptr, byval hook as GHook ptr)
+declare sub g_hook_prepend (byval hook_list as GHookList ptr, byval hook as GHook ptr)
+declare sub g_hook_insert_before (byval hook_list as GHookList ptr, byval sibling as GHook ptr, byval hook as GHook ptr)
+declare sub g_hook_insert_sorted (byval hook_list as GHookList ptr, byval hook as GHook ptr, byval func as GHookCompareFunc)
+declare function g_hook_get (byval hook_list as GHookList ptr, byval hook_id as gulong) as GHook ptr
+declare function g_hook_find (byval hook_list as GHookList ptr, byval need_valids as gboolean, byval func as GHookFindFunc, byval data as gpointer) as GHook ptr
+declare function g_hook_find_data (byval hook_list as GHookList ptr, byval need_valids as gboolean, byval data as gpointer) as GHook ptr
+declare function g_hook_find_func (byval hook_list as GHookList ptr, byval need_valids as gboolean, byval func as gpointer) as GHook ptr
+declare function g_hook_find_func_data (byval hook_list as GHookList ptr, byval need_valids as gboolean, byval func as gpointer, byval data as gpointer) as GHook ptr
+declare function g_hook_first_valid (byval hook_list as GHookList ptr, byval may_be_in_call as gboolean) as GHook ptr
+declare function g_hook_next_valid (byval hook_list as GHookList ptr, byval hook as GHook ptr, byval may_be_in_call as gboolean) as GHook ptr
+declare function g_hook_compare_ids (byval new_hook as GHook ptr, byval sibling as GHook ptr) as gint
+declare sub g_hook_list_invoke (byval hook_list as GHookList ptr, byval may_recurse as gboolean)
+declare sub g_hook_list_invoke_check (byval hook_list as GHookList ptr, byval may_recurse as gboolean)
+declare sub g_hook_list_marshal (byval hook_list as GHookList ptr, byval may_recurse as gboolean, byval marshaller as GHookMarshaller, byval marshal_data as gpointer)
+declare sub g_hook_list_marshal_check (byval hook_list as GHookList ptr, byval may_recurse as gboolean, byval marshaller as GHookCheckMarshaller, byval marshal_data as gpointer)
 
 #endif

@@ -26,7 +26,7 @@ enum ArtPathStrokeCapType
 end enum
 
 
-declare function art_svp_vpath_stroke cdecl alias "art_svp_vpath_stroke" (byval vpath as ArtVpath ptr, byval join as ArtPathStrokeJoinType, byval cap as ArtPathStrokeCapType, byval line_width as double, byval miter_limit as double, byval flatness as double) as ArtSVP ptr
-declare function art_svp_vpath_stroke_raw cdecl alias "art_svp_vpath_stroke_raw" (byval vpath as ArtVpath ptr, byval join as ArtPathStrokeJoinType, byval cap as ArtPathStrokeCapType, byval line_width as double, byval miter_limit as double, byval flatness as double) as ArtVpath ptr
+declare function art_svp_vpath_stroke (byval vpath as ArtVpath ptr, byval join as ArtPathStrokeJoinType, byval cap as ArtPathStrokeCapType, byval line_width as double, byval miter_limit as double, byval flatness as double) as ArtSVP ptr
+declare function art_svp_vpath_stroke_raw (byval vpath as ArtVpath ptr, byval join as ArtPathStrokeJoinType, byval cap as ArtPathStrokeCapType, byval line_width as double, byval miter_limit as double, byval flatness as double) as ArtVpath ptr
 
 #endif

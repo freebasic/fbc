@@ -19,15 +19,15 @@ type _GValueArray
 	n_prealloced as guint
 end type
 
-declare function g_value_array_get_nth cdecl alias "g_value_array_get_nth" (byval value_array as GValueArray ptr, byval index_ as guint) as GValue ptr
-declare function g_value_array_new cdecl alias "g_value_array_new" (byval n_prealloced as guint) as GValueArray ptr
-declare sub g_value_array_free cdecl alias "g_value_array_free" (byval value_array as GValueArray ptr)
-declare function g_value_array_copy cdecl alias "g_value_array_copy" (byval value_array as GValueArray ptr) as GValueArray ptr
-declare function g_value_array_prepend cdecl alias "g_value_array_prepend" (byval value_array as GValueArray ptr, byval value as GValue ptr) as GValueArray ptr
-declare function g_value_array_append cdecl alias "g_value_array_append" (byval value_array as GValueArray ptr, byval value as GValue ptr) as GValueArray ptr
-declare function g_value_array_insert cdecl alias "g_value_array_insert" (byval value_array as GValueArray ptr, byval index_ as guint, byval value as GValue ptr) as GValueArray ptr
-declare function g_value_array_remove cdecl alias "g_value_array_remove" (byval value_array as GValueArray ptr, byval index_ as guint) as GValueArray ptr
-declare function g_value_array_sort cdecl alias "g_value_array_sort" (byval value_array as GValueArray ptr, byval compare_func as GCompareFunc) as GValueArray ptr
-declare function g_value_array_sort_with_data cdecl alias "g_value_array_sort_with_data" (byval value_array as GValueArray ptr, byval compare_func as GCompareDataFunc, byval user_data as gpointer) as GValueArray ptr
+declare function g_value_array_get_nth (byval value_array as GValueArray ptr, byval index_ as guint) as GValue ptr
+declare function g_value_array_new (byval n_prealloced as guint) as GValueArray ptr
+declare sub g_value_array_free (byval value_array as GValueArray ptr)
+declare function g_value_array_copy (byval value_array as GValueArray ptr) as GValueArray ptr
+declare function g_value_array_prepend (byval value_array as GValueArray ptr, byval value as GValue ptr) as GValueArray ptr
+declare function g_value_array_append (byval value_array as GValueArray ptr, byval value as GValue ptr) as GValueArray ptr
+declare function g_value_array_insert (byval value_array as GValueArray ptr, byval index_ as guint, byval value as GValue ptr) as GValueArray ptr
+declare function g_value_array_remove (byval value_array as GValueArray ptr, byval index_ as guint) as GValueArray ptr
+declare function g_value_array_sort (byval value_array as GValueArray ptr, byval compare_func as GCompareFunc) as GValueArray ptr
+declare function g_value_array_sort_with_data (byval value_array as GValueArray ptr, byval compare_func as GCompareDataFunc, byval user_data as gpointer) as GValueArray ptr
 
 #endif

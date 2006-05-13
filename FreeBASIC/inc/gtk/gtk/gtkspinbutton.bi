@@ -13,12 +13,12 @@
 #include once "gtk/gtk/gtkentry.bi"
 #include once "gtk/gtk/gtkadjustment.bi"
 
-#define GTK_TYPE_SPIN_BUTTON                  (gtk_spin_button_get_type ())
-#define GTK_SPIN_BUTTON(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SPIN_BUTTON, GtkSpinButton))
-#define GTK_SPIN_BUTTON_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_SPIN_BUTTON, GtkSpinButtonClass))
-#define GTK_IS_SPIN_BUTTON(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_SPIN_BUTTON))
-#define GTK_IS_SPIN_BUTTON_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_SPIN_BUTTON))
-#define GTK_SPIN_BUTTON_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_SPIN_BUTTON, GtkSpinButtonClass))
+#define GTK_TYPE_SPIN_BUTTON (gtk_spin_button_get_type ())
+#define GTK_SPIN_BUTTON(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SPIN_BUTTON, GtkSpinButton))
+#define GTK_SPIN_BUTTON_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_SPIN_BUTTON, GtkSpinButtonClass))
+#define GTK_IS_SPIN_BUTTON(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_SPIN_BUTTON))
+#define GTK_IS_SPIN_BUTTON_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_SPIN_BUTTON))
+#define GTK_SPIN_BUTTON_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_SPIN_BUTTON, GtkSpinButtonClass))
 
 #define GTK_INPUT_ERROR -1
 
@@ -72,31 +72,31 @@ type _GtkSpinButtonClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_spin_button_get_type cdecl alias "gtk_spin_button_get_type" () as GType
-declare sub gtk_spin_button_configure cdecl alias "gtk_spin_button_configure" (byval spin_button as GtkSpinButton ptr, byval adjustment as GtkAdjustment ptr, byval climb_rate as gdouble, byval digits as guint)
-declare function gtk_spin_button_new cdecl alias "gtk_spin_button_new" (byval adjustment as GtkAdjustment ptr, byval climb_rate as gdouble, byval digits as guint) as GtkWidget ptr
-declare function gtk_spin_button_new_with_range cdecl alias "gtk_spin_button_new_with_range" (byval min as gdouble, byval max as gdouble, byval step as gdouble) as GtkWidget ptr
-declare sub gtk_spin_button_set_adjustment cdecl alias "gtk_spin_button_set_adjustment" (byval spin_button as GtkSpinButton ptr, byval adjustment as GtkAdjustment ptr)
-declare function gtk_spin_button_get_adjustment cdecl alias "gtk_spin_button_get_adjustment" (byval spin_button as GtkSpinButton ptr) as GtkAdjustment ptr
-declare sub gtk_spin_button_set_digits cdecl alias "gtk_spin_button_set_digits" (byval spin_button as GtkSpinButton ptr, byval digits as guint)
-declare function gtk_spin_button_get_digits cdecl alias "gtk_spin_button_get_digits" (byval spin_button as GtkSpinButton ptr) as guint
-declare sub gtk_spin_button_set_increments cdecl alias "gtk_spin_button_set_increments" (byval spin_button as GtkSpinButton ptr, byval step as gdouble, byval page as gdouble)
-declare sub gtk_spin_button_get_increments cdecl alias "gtk_spin_button_get_increments" (byval spin_button as GtkSpinButton ptr, byval step as gdouble ptr, byval page as gdouble ptr)
-declare sub gtk_spin_button_set_range cdecl alias "gtk_spin_button_set_range" (byval spin_button as GtkSpinButton ptr, byval min as gdouble, byval max as gdouble)
-declare sub gtk_spin_button_get_range cdecl alias "gtk_spin_button_get_range" (byval spin_button as GtkSpinButton ptr, byval min as gdouble ptr, byval max as gdouble ptr)
-declare function gtk_spin_button_get_value cdecl alias "gtk_spin_button_get_value" (byval spin_button as GtkSpinButton ptr) as gdouble
-declare function gtk_spin_button_get_value_as_int cdecl alias "gtk_spin_button_get_value_as_int" (byval spin_button as GtkSpinButton ptr) as gint
-declare sub gtk_spin_button_set_value cdecl alias "gtk_spin_button_set_value" (byval spin_button as GtkSpinButton ptr, byval value as gdouble)
-declare sub gtk_spin_button_set_update_policy cdecl alias "gtk_spin_button_set_update_policy" (byval spin_button as GtkSpinButton ptr, byval policy as GtkSpinButtonUpdatePolicy)
-declare function gtk_spin_button_get_update_policy cdecl alias "gtk_spin_button_get_update_policy" (byval spin_button as GtkSpinButton ptr) as GtkSpinButtonUpdatePolicy
-declare sub gtk_spin_button_set_numeric cdecl alias "gtk_spin_button_set_numeric" (byval spin_button as GtkSpinButton ptr, byval numeric as gboolean)
-declare function gtk_spin_button_get_numeric cdecl alias "gtk_spin_button_get_numeric" (byval spin_button as GtkSpinButton ptr) as gboolean
-declare sub gtk_spin_button_spin cdecl alias "gtk_spin_button_spin" (byval spin_button as GtkSpinButton ptr, byval direction as GtkSpinType, byval increment as gdouble)
-declare sub gtk_spin_button_set_wrap cdecl alias "gtk_spin_button_set_wrap" (byval spin_button as GtkSpinButton ptr, byval wrap as gboolean)
-declare function gtk_spin_button_get_wrap cdecl alias "gtk_spin_button_get_wrap" (byval spin_button as GtkSpinButton ptr) as gboolean
-declare sub gtk_spin_button_set_snap_to_ticks cdecl alias "gtk_spin_button_set_snap_to_ticks" (byval spin_button as GtkSpinButton ptr, byval snap_to_ticks as gboolean)
-declare function gtk_spin_button_get_snap_to_ticks cdecl alias "gtk_spin_button_get_snap_to_ticks" (byval spin_button as GtkSpinButton ptr) as gboolean
-declare sub gtk_spin_button_update cdecl alias "gtk_spin_button_update" (byval spin_button as GtkSpinButton ptr)
+declare function gtk_spin_button_get_type () as GType
+declare sub gtk_spin_button_configure (byval spin_button as GtkSpinButton ptr, byval adjustment as GtkAdjustment ptr, byval climb_rate as gdouble, byval digits as guint)
+declare function gtk_spin_button_new (byval adjustment as GtkAdjustment ptr, byval climb_rate as gdouble, byval digits as guint) as GtkWidget ptr
+declare function gtk_spin_button_new_with_range (byval min as gdouble, byval max as gdouble, byval step as gdouble) as GtkWidget ptr
+declare sub gtk_spin_button_set_adjustment (byval spin_button as GtkSpinButton ptr, byval adjustment as GtkAdjustment ptr)
+declare function gtk_spin_button_get_adjustment (byval spin_button as GtkSpinButton ptr) as GtkAdjustment ptr
+declare sub gtk_spin_button_set_digits (byval spin_button as GtkSpinButton ptr, byval digits as guint)
+declare function gtk_spin_button_get_digits (byval spin_button as GtkSpinButton ptr) as guint
+declare sub gtk_spin_button_set_increments (byval spin_button as GtkSpinButton ptr, byval step as gdouble, byval page as gdouble)
+declare sub gtk_spin_button_get_increments (byval spin_button as GtkSpinButton ptr, byval step as gdouble ptr, byval page as gdouble ptr)
+declare sub gtk_spin_button_set_range (byval spin_button as GtkSpinButton ptr, byval min as gdouble, byval max as gdouble)
+declare sub gtk_spin_button_get_range (byval spin_button as GtkSpinButton ptr, byval min as gdouble ptr, byval max as gdouble ptr)
+declare function gtk_spin_button_get_value (byval spin_button as GtkSpinButton ptr) as gdouble
+declare function gtk_spin_button_get_value_as_int (byval spin_button as GtkSpinButton ptr) as gint
+declare sub gtk_spin_button_set_value (byval spin_button as GtkSpinButton ptr, byval value as gdouble)
+declare sub gtk_spin_button_set_update_policy (byval spin_button as GtkSpinButton ptr, byval policy as GtkSpinButtonUpdatePolicy)
+declare function gtk_spin_button_get_update_policy (byval spin_button as GtkSpinButton ptr) as GtkSpinButtonUpdatePolicy
+declare sub gtk_spin_button_set_numeric (byval spin_button as GtkSpinButton ptr, byval numeric as gboolean)
+declare function gtk_spin_button_get_numeric (byval spin_button as GtkSpinButton ptr) as gboolean
+declare sub gtk_spin_button_spin (byval spin_button as GtkSpinButton ptr, byval direction as GtkSpinType, byval increment as gdouble)
+declare sub gtk_spin_button_set_wrap (byval spin_button as GtkSpinButton ptr, byval wrap as gboolean)
+declare function gtk_spin_button_get_wrap (byval spin_button as GtkSpinButton ptr) as gboolean
+declare sub gtk_spin_button_set_snap_to_ticks (byval spin_button as GtkSpinButton ptr, byval snap_to_ticks as gboolean)
+declare function gtk_spin_button_get_snap_to_ticks (byval spin_button as GtkSpinButton ptr) as gboolean
+declare sub gtk_spin_button_update (byval spin_button as GtkSpinButton ptr)
 
 #define gtk_spin_button_get_value_as_float gtk_spin_button_get_value
 

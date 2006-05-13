@@ -13,12 +13,12 @@
 #include once "gtk/gtk/gtkcontainer.bi"
 #include once "gtk/gtk/gtkadjustment.bi"
 
-#define GTK_TYPE_LAYOUT            (gtk_layout_get_type ())
-#define GTK_LAYOUT(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_LAYOUT, GtkLayout))
-#define GTK_LAYOUT_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_LAYOUT, GtkLayoutClass))
-#define GTK_IS_LAYOUT(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_LAYOUT))
+#define GTK_TYPE_LAYOUT (gtk_layout_get_type ())
+#define GTK_LAYOUT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_LAYOUT, GtkLayout))
+#define GTK_LAYOUT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_LAYOUT, GtkLayoutClass))
+#define GTK_IS_LAYOUT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_LAYOUT))
 #define GTK_IS_LAYOUT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_LAYOUT))
-#define GTK_LAYOUT_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_LAYOUT, GtkLayoutClass))
+#define GTK_LAYOUT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_LAYOUT, GtkLayoutClass))
 
 type GtkLayout as _GtkLayout
 type GtkLayoutClass as _GtkLayoutClass
@@ -46,17 +46,17 @@ type _GtkLayoutClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_layout_get_type cdecl alias "gtk_layout_get_type" () as GType
-declare function gtk_layout_new cdecl alias "gtk_layout_new" (byval hadjustment as GtkAdjustment ptr, byval vadjustment as GtkAdjustment ptr) as GtkWidget ptr
-declare sub gtk_layout_put cdecl alias "gtk_layout_put" (byval layout as GtkLayout ptr, byval child_widget as GtkWidget ptr, byval x as gint, byval y as gint)
-declare sub gtk_layout_move cdecl alias "gtk_layout_move" (byval layout as GtkLayout ptr, byval child_widget as GtkWidget ptr, byval x as gint, byval y as gint)
-declare sub gtk_layout_set_size cdecl alias "gtk_layout_set_size" (byval layout as GtkLayout ptr, byval width as guint, byval height as guint)
-declare sub gtk_layout_get_size cdecl alias "gtk_layout_get_size" (byval layout as GtkLayout ptr, byval width as guint ptr, byval height as guint ptr)
-declare function gtk_layout_get_hadjustment cdecl alias "gtk_layout_get_hadjustment" (byval layout as GtkLayout ptr) as GtkAdjustment ptr
-declare function gtk_layout_get_vadjustment cdecl alias "gtk_layout_get_vadjustment" (byval layout as GtkLayout ptr) as GtkAdjustment ptr
-declare sub gtk_layout_set_hadjustment cdecl alias "gtk_layout_set_hadjustment" (byval layout as GtkLayout ptr, byval adjustment as GtkAdjustment ptr)
-declare sub gtk_layout_set_vadjustment cdecl alias "gtk_layout_set_vadjustment" (byval layout as GtkLayout ptr, byval adjustment as GtkAdjustment ptr)
-declare sub gtk_layout_freeze cdecl alias "gtk_layout_freeze" (byval layout as GtkLayout ptr)
-declare sub gtk_layout_thaw cdecl alias "gtk_layout_thaw" (byval layout as GtkLayout ptr)
+declare function gtk_layout_get_type () as GType
+declare function gtk_layout_new (byval hadjustment as GtkAdjustment ptr, byval vadjustment as GtkAdjustment ptr) as GtkWidget ptr
+declare sub gtk_layout_put (byval layout as GtkLayout ptr, byval child_widget as GtkWidget ptr, byval x as gint, byval y as gint)
+declare sub gtk_layout_move (byval layout as GtkLayout ptr, byval child_widget as GtkWidget ptr, byval x as gint, byval y as gint)
+declare sub gtk_layout_set_size (byval layout as GtkLayout ptr, byval width as guint, byval height as guint)
+declare sub gtk_layout_get_size (byval layout as GtkLayout ptr, byval width as guint ptr, byval height as guint ptr)
+declare function gtk_layout_get_hadjustment (byval layout as GtkLayout ptr) as GtkAdjustment ptr
+declare function gtk_layout_get_vadjustment (byval layout as GtkLayout ptr) as GtkAdjustment ptr
+declare sub gtk_layout_set_hadjustment (byval layout as GtkLayout ptr, byval adjustment as GtkAdjustment ptr)
+declare sub gtk_layout_set_vadjustment (byval layout as GtkLayout ptr, byval adjustment as GtkAdjustment ptr)
+declare sub gtk_layout_freeze (byval layout as GtkLayout ptr)
+declare sub gtk_layout_thaw (byval layout as GtkLayout ptr)
 
 #endif

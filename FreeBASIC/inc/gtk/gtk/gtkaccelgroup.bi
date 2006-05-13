@@ -12,12 +12,12 @@
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkenums.bi"
 
-#define GTK_TYPE_ACCEL_GROUP              (gtk_accel_group_get_type ())
-#define GTK_ACCEL_GROUP(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GTK_TYPE_ACCEL_GROUP, GtkAccelGroup))
-#define GTK_ACCEL_GROUP_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_ACCEL_GROUP, GtkAccelGroupClass))
-#define GTK_IS_ACCEL_GROUP(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GTK_TYPE_ACCEL_GROUP))
-#define GTK_IS_ACCEL_GROUP_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_ACCEL_GROUP))
-#define GTK_ACCEL_GROUP_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_ACCEL_GROUP, GtkAccelGroupClass))
+#define GTK_TYPE_ACCEL_GROUP (gtk_accel_group_get_type ())
+#define GTK_ACCEL_GROUP(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GTK_TYPE_ACCEL_GROUP, GtkAccelGroup))
+#define GTK_ACCEL_GROUP_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_ACCEL_GROUP, GtkAccelGroupClass))
+#define GTK_IS_ACCEL_GROUP(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), GTK_TYPE_ACCEL_GROUP))
+#define GTK_IS_ACCEL_GROUP_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_ACCEL_GROUP))
+#define GTK_ACCEL_GROUP_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_ACCEL_GROUP, GtkAccelGroupClass))
 
 
 enum GtkAccelFlags
@@ -57,29 +57,29 @@ type _GtkAccelKey
 	accel_flags as guint
 end type
 
-declare function gtk_accel_group_get_type cdecl alias "gtk_accel_group_get_type" () as GType
-declare function gtk_accel_group_new cdecl alias "gtk_accel_group_new" () as GtkAccelGroup ptr
-declare sub gtk_accel_group_lock cdecl alias "gtk_accel_group_lock" (byval accel_group as GtkAccelGroup ptr)
-declare sub gtk_accel_group_unlock cdecl alias "gtk_accel_group_unlock" (byval accel_group as GtkAccelGroup ptr)
-declare sub gtk_accel_group_connect cdecl alias "gtk_accel_group_connect" (byval accel_group as GtkAccelGroup ptr, byval accel_key as guint, byval accel_mods as GdkModifierType, byval accel_flags as GtkAccelFlags, byval closure as GClosure ptr)
-declare sub gtk_accel_group_connect_by_path cdecl alias "gtk_accel_group_connect_by_path" (byval accel_group as GtkAccelGroup ptr, byval accel_path as zstring ptr, byval closure as GClosure ptr)
-declare function gtk_accel_group_disconnect cdecl alias "gtk_accel_group_disconnect" (byval accel_group as GtkAccelGroup ptr, byval closure as GClosure ptr) as gboolean
-declare function gtk_accel_group_disconnect_key cdecl alias "gtk_accel_group_disconnect_key" (byval accel_group as GtkAccelGroup ptr, byval accel_key as guint, byval accel_mods as GdkModifierType) as gboolean
-declare function gtk_accel_group_activate cdecl alias "gtk_accel_group_activate" (byval accel_group as GtkAccelGroup ptr, byval accel_quark as GQuark, byval acceleratable as GObject ptr, byval accel_key as guint, byval accel_mods as GdkModifierType) as gboolean
-declare sub _gtk_accel_group_attach cdecl alias "_gtk_accel_group_attach" (byval accel_group as GtkAccelGroup ptr, byval object as GObject ptr)
-declare sub _gtk_accel_group_detach cdecl alias "_gtk_accel_group_detach" (byval accel_group as GtkAccelGroup ptr, byval object as GObject ptr)
-declare function gtk_accel_groups_activate cdecl alias "gtk_accel_groups_activate" (byval object as GObject ptr, byval accel_key as guint, byval accel_mods as GdkModifierType) as gboolean
-declare function gtk_accel_groups_from_object cdecl alias "gtk_accel_groups_from_object" (byval object as GObject ptr) as GSList ptr
-declare function gtk_accel_group_find cdecl alias "gtk_accel_group_find" (byval accel_group as GtkAccelGroup ptr, byval find_func as GtkAccelGroupFindFunc, byval data as gpointer) as GtkAccelKey ptr
-declare function gtk_accel_group_from_accel_closure cdecl alias "gtk_accel_group_from_accel_closure" (byval closure as GClosure ptr) as GtkAccelGroup ptr
-declare function gtk_accelerator_valid cdecl alias "gtk_accelerator_valid" (byval keyval as guint, byval modifiers as GdkModifierType) as gboolean
-declare sub gtk_accelerator_parse cdecl alias "gtk_accelerator_parse" (byval accelerator as zstring ptr, byval accelerator_key as guint ptr, byval accelerator_mods as GdkModifierType ptr)
-declare function gtk_accelerator_name cdecl alias "gtk_accelerator_name" (byval accelerator_key as guint, byval accelerator_mods as GdkModifierType) as zstring ptr
-declare function gtk_accelerator_get_label cdecl alias "gtk_accelerator_get_label" (byval accelerator_key as guint, byval accelerator_mods as GdkModifierType) as zstring ptr
-declare sub gtk_accelerator_set_default_mod_mask cdecl alias "gtk_accelerator_set_default_mod_mask" (byval default_mod_mask as GdkModifierType)
-declare function gtk_accelerator_get_default_mod_mask cdecl alias "gtk_accelerator_get_default_mod_mask" () as guint
-declare function gtk_accel_group_query cdecl alias "gtk_accel_group_query" (byval accel_group as GtkAccelGroup ptr, byval accel_key as guint, byval accel_mods as GdkModifierType, byval n_entries as guint ptr) as GtkAccelGroupEntry ptr
-declare sub _gtk_accel_group_reconnect cdecl alias "_gtk_accel_group_reconnect" (byval accel_group as GtkAccelGroup ptr, byval accel_path_quark as GQuark)
+declare function gtk_accel_group_get_type () as GType
+declare function gtk_accel_group_new () as GtkAccelGroup ptr
+declare sub gtk_accel_group_lock (byval accel_group as GtkAccelGroup ptr)
+declare sub gtk_accel_group_unlock (byval accel_group as GtkAccelGroup ptr)
+declare sub gtk_accel_group_connect (byval accel_group as GtkAccelGroup ptr, byval accel_key as guint, byval accel_mods as GdkModifierType, byval accel_flags as GtkAccelFlags, byval closure as GClosure ptr)
+declare sub gtk_accel_group_connect_by_path (byval accel_group as GtkAccelGroup ptr, byval accel_path as zstring ptr, byval closure as GClosure ptr)
+declare function gtk_accel_group_disconnect (byval accel_group as GtkAccelGroup ptr, byval closure as GClosure ptr) as gboolean
+declare function gtk_accel_group_disconnect_key (byval accel_group as GtkAccelGroup ptr, byval accel_key as guint, byval accel_mods as GdkModifierType) as gboolean
+declare function gtk_accel_group_activate (byval accel_group as GtkAccelGroup ptr, byval accel_quark as GQuark, byval acceleratable as GObject ptr, byval accel_key as guint, byval accel_mods as GdkModifierType) as gboolean
+declare sub _gtk_accel_group_attach (byval accel_group as GtkAccelGroup ptr, byval object as GObject ptr)
+declare sub _gtk_accel_group_detach (byval accel_group as GtkAccelGroup ptr, byval object as GObject ptr)
+declare function gtk_accel_groups_activate (byval object as GObject ptr, byval accel_key as guint, byval accel_mods as GdkModifierType) as gboolean
+declare function gtk_accel_groups_from_object (byval object as GObject ptr) as GSList ptr
+declare function gtk_accel_group_find (byval accel_group as GtkAccelGroup ptr, byval find_func as GtkAccelGroupFindFunc, byval data as gpointer) as GtkAccelKey ptr
+declare function gtk_accel_group_from_accel_closure (byval closure as GClosure ptr) as GtkAccelGroup ptr
+declare function gtk_accelerator_valid (byval keyval as guint, byval modifiers as GdkModifierType) as gboolean
+declare sub gtk_accelerator_parse (byval accelerator as zstring ptr, byval accelerator_key as guint ptr, byval accelerator_mods as GdkModifierType ptr)
+declare function gtk_accelerator_name (byval accelerator_key as guint, byval accelerator_mods as GdkModifierType) as zstring ptr
+declare function gtk_accelerator_get_label (byval accelerator_key as guint, byval accelerator_mods as GdkModifierType) as zstring ptr
+declare sub gtk_accelerator_set_default_mod_mask (byval default_mod_mask as GdkModifierType)
+declare function gtk_accelerator_get_default_mod_mask () as guint
+declare function gtk_accel_group_query (byval accel_group as GtkAccelGroup ptr, byval accel_key as guint, byval accel_mods as GdkModifierType, byval n_entries as guint ptr) as GtkAccelGroupEntry ptr
+declare sub _gtk_accel_group_reconnect (byval accel_group as GtkAccelGroup ptr, byval accel_path_quark as GQuark)
 
 type _GtkAccelGroupEntry
 	key as GtkAccelKey

@@ -13,12 +13,12 @@
 #include once "gtk/gdkgl/gdkgltypes.bi"
 #include once "gtk/gdk/gdkwindow.bi"
 
-#define GDK_TYPE_GL_CONFIG              (gdk_gl_config_get_type ())
-#define GDK_GL_CONFIG(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_GL_CONFIG, GdkGLConfig))
-#define GDK_GL_CONFIG_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_GL_CONFIG, GdkGLConfigClass))
-#define GDK_IS_GL_CONFIG(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_GL_CONFIG))
-#define GDK_IS_GL_CONFIG_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_GL_CONFIG))
-#define GDK_GL_CONFIG_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_GL_CONFIG, GdkGLConfigClass))
+#define GDK_TYPE_GL_CONFIG (gdk_gl_config_get_type ())
+#define GDK_GL_CONFIG(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_GL_CONFIG, GdkGLConfig))
+#define GDK_GL_CONFIG_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_GL_CONFIG, GdkGLConfigClass))
+#define GDK_IS_GL_CONFIG(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_GL_CONFIG))
+#define GDK_IS_GL_CONFIG_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_GL_CONFIG))
+#define GDK_GL_CONFIG_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_GL_CONFIG, GdkGLConfigClass))
 
 
 enum GdkGLConfigMode
@@ -56,23 +56,23 @@ type _GdkGLConfigClass
 	parent_class as GObjectClass
 end type
 
-declare function gdk_gl_config_get_type cdecl alias "gdk_gl_config_get_type" () as GType
-declare function gdk_gl_config_new cdecl alias "gdk_gl_config_new" (byval attrib_list as integer ptr) as GdkGLConfig ptr
-declare function gdk_gl_config_new_by_mode cdecl alias "gdk_gl_config_new_by_mode" (byval mode as GdkGLConfigMode) as GdkGLConfig ptr
-declare function gdk_gl_config_get_screen cdecl alias "gdk_gl_config_get_screen" (byval glconfig as GdkGLConfig ptr) as GdkScreen ptr
-declare function gdk_gl_config_get_attrib cdecl alias "gdk_gl_config_get_attrib" (byval glconfig as GdkGLConfig ptr, byval attribute as integer, byval value as integer ptr) as gboolean
-declare function gdk_gl_config_get_colormap cdecl alias "gdk_gl_config_get_colormap" (byval glconfig as GdkGLConfig ptr) as GdkColormap ptr
-declare function gdk_gl_config_get_visual cdecl alias "gdk_gl_config_get_visual" (byval glconfig as GdkGLConfig ptr) as GdkVisual ptr
-declare function gdk_gl_config_get_depth cdecl alias "gdk_gl_config_get_depth" (byval glconfig as GdkGLConfig ptr) as gint
-declare function gdk_gl_config_get_layer_plane cdecl alias "gdk_gl_config_get_layer_plane" (byval glconfig as GdkGLConfig ptr) as gint
-declare function gdk_gl_config_get_n_aux_buffers cdecl alias "gdk_gl_config_get_n_aux_buffers" (byval glconfig as GdkGLConfig ptr) as gint
-declare function gdk_gl_config_get_n_sample_buffers cdecl alias "gdk_gl_config_get_n_sample_buffers" (byval glconfig as GdkGLConfig ptr) as gint
-declare function gdk_gl_config_is_rgba cdecl alias "gdk_gl_config_is_rgba" (byval glconfig as GdkGLConfig ptr) as gboolean
-declare function gdk_gl_config_is_double_buffered cdecl alias "gdk_gl_config_is_double_buffered" (byval glconfig as GdkGLConfig ptr) as gboolean
-declare function gdk_gl_config_is_stereo cdecl alias "gdk_gl_config_is_stereo" (byval glconfig as GdkGLConfig ptr) as gboolean
-declare function gdk_gl_config_has_alpha cdecl alias "gdk_gl_config_has_alpha" (byval glconfig as GdkGLConfig ptr) as gboolean
-declare function gdk_gl_config_has_depth_buffer cdecl alias "gdk_gl_config_has_depth_buffer" (byval glconfig as GdkGLConfig ptr) as gboolean
-declare function gdk_gl_config_has_stencil_buffer cdecl alias "gdk_gl_config_has_stencil_buffer" (byval glconfig as GdkGLConfig ptr) as gboolean
-declare function gdk_gl_config_has_accum_buffer cdecl alias "gdk_gl_config_has_accum_buffer" (byval glconfig as GdkGLConfig ptr) as gboolean
+declare function gdk_gl_config_get_type () as GType
+declare function gdk_gl_config_new (byval attrib_list as integer ptr) as GdkGLConfig ptr
+declare function gdk_gl_config_new_by_mode (byval mode as GdkGLConfigMode) as GdkGLConfig ptr
+declare function gdk_gl_config_get_screen (byval glconfig as GdkGLConfig ptr) as GdkScreen ptr
+declare function gdk_gl_config_get_attrib (byval glconfig as GdkGLConfig ptr, byval attribute as integer, byval value as integer ptr) as gboolean
+declare function gdk_gl_config_get_colormap (byval glconfig as GdkGLConfig ptr) as GdkColormap ptr
+declare function gdk_gl_config_get_visual (byval glconfig as GdkGLConfig ptr) as GdkVisual ptr
+declare function gdk_gl_config_get_depth (byval glconfig as GdkGLConfig ptr) as gint
+declare function gdk_gl_config_get_layer_plane (byval glconfig as GdkGLConfig ptr) as gint
+declare function gdk_gl_config_get_n_aux_buffers (byval glconfig as GdkGLConfig ptr) as gint
+declare function gdk_gl_config_get_n_sample_buffers (byval glconfig as GdkGLConfig ptr) as gint
+declare function gdk_gl_config_is_rgba (byval glconfig as GdkGLConfig ptr) as gboolean
+declare function gdk_gl_config_is_double_buffered (byval glconfig as GdkGLConfig ptr) as gboolean
+declare function gdk_gl_config_is_stereo (byval glconfig as GdkGLConfig ptr) as gboolean
+declare function gdk_gl_config_has_alpha (byval glconfig as GdkGLConfig ptr) as gboolean
+declare function gdk_gl_config_has_depth_buffer (byval glconfig as GdkGLConfig ptr) as gboolean
+declare function gdk_gl_config_has_stencil_buffer (byval glconfig as GdkGLConfig ptr) as gboolean
+declare function gdk_gl_config_has_accum_buffer (byval glconfig as GdkGLConfig ptr) as gboolean
 
 #endif

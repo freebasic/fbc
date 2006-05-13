@@ -12,12 +12,12 @@
 #include once "gtk/gtk/gtktexttag.bi"
 #include once "gtk/gtk/gtktexttag.bi"
 
-#define GTK_TYPE_TEXT_TAG_TABLE            (gtk_text_tag_table_get_type ())
-#define GTK_TEXT_TAG_TABLE(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TEXT_TAG_TABLE, GtkTextTagTable))
-#define GTK_TEXT_TAG_TABLE_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TEXT_TAG_TABLE, GtkTextTagTableClass))
-#define GTK_IS_TEXT_TAG_TABLE(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TEXT_TAG_TABLE))
+#define GTK_TYPE_TEXT_TAG_TABLE (gtk_text_tag_table_get_type ())
+#define GTK_TEXT_TAG_TABLE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TEXT_TAG_TABLE, GtkTextTagTable))
+#define GTK_TEXT_TAG_TABLE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TEXT_TAG_TABLE, GtkTextTagTableClass))
+#define GTK_IS_TEXT_TAG_TABLE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TEXT_TAG_TABLE))
 #define GTK_IS_TEXT_TAG_TABLE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TEXT_TAG_TABLE))
-#define GTK_TEXT_TAG_TABLE_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TEXT_TAG_TABLE, GtkTextTagTableClass))
+#define GTK_TEXT_TAG_TABLE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TEXT_TAG_TABLE, GtkTextTagTableClass))
 
 type GtkTextTagTableForeach as sub cdecl(byval as GtkTextTag ptr, byval as gpointer)
 type GtkTextTagTableClass as _GtkTextTagTableClass
@@ -41,14 +41,14 @@ type _GtkTextTagTableClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_text_tag_table_get_type cdecl alias "gtk_text_tag_table_get_type" () as GType
-declare function gtk_text_tag_table_new cdecl alias "gtk_text_tag_table_new" () as GtkTextTagTable ptr
-declare sub gtk_text_tag_table_add cdecl alias "gtk_text_tag_table_add" (byval table as GtkTextTagTable ptr, byval tag as GtkTextTag ptr)
-declare sub gtk_text_tag_table_remove cdecl alias "gtk_text_tag_table_remove" (byval table as GtkTextTagTable ptr, byval tag as GtkTextTag ptr)
-declare function gtk_text_tag_table_lookup cdecl alias "gtk_text_tag_table_lookup" (byval table as GtkTextTagTable ptr, byval name as zstring ptr) as GtkTextTag ptr
-declare sub gtk_text_tag_table_foreach cdecl alias "gtk_text_tag_table_foreach" (byval table as GtkTextTagTable ptr, byval func as GtkTextTagTableForeach, byval data as gpointer)
-declare function gtk_text_tag_table_get_size cdecl alias "gtk_text_tag_table_get_size" (byval table as GtkTextTagTable ptr) as gint
-declare sub _gtk_text_tag_table_add_buffer cdecl alias "_gtk_text_tag_table_add_buffer" (byval table as GtkTextTagTable ptr, byval buffer as gpointer)
-declare sub _gtk_text_tag_table_remove_buffer cdecl alias "_gtk_text_tag_table_remove_buffer" (byval table as GtkTextTagTable ptr, byval buffer as gpointer)
+declare function gtk_text_tag_table_get_type () as GType
+declare function gtk_text_tag_table_new () as GtkTextTagTable ptr
+declare sub gtk_text_tag_table_add (byval table as GtkTextTagTable ptr, byval tag as GtkTextTag ptr)
+declare sub gtk_text_tag_table_remove (byval table as GtkTextTagTable ptr, byval tag as GtkTextTag ptr)
+declare function gtk_text_tag_table_lookup (byval table as GtkTextTagTable ptr, byval name as zstring ptr) as GtkTextTag ptr
+declare sub gtk_text_tag_table_foreach (byval table as GtkTextTagTable ptr, byval func as GtkTextTagTableForeach, byval data as gpointer)
+declare function gtk_text_tag_table_get_size (byval table as GtkTextTagTable ptr) as gint
+declare sub _gtk_text_tag_table_add_buffer (byval table as GtkTextTagTable ptr, byval buffer as gpointer)
+declare sub _gtk_text_tag_table_remove_buffer (byval table as GtkTextTagTable ptr, byval buffer as gpointer)
 
 #endif

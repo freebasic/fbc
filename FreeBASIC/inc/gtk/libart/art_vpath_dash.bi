@@ -19,6 +19,6 @@ type _ArtVpathDash
 	dash as double ptr
 end type
 
-declare function art_vpath_dash cdecl alias "art_vpath_dash" (byval vpath as ArtVpath ptr, byval dash as ArtVpathDash ptr) as ArtVpath ptr
+declare function art_vpath_dash (byval vpath as ArtVpath ptr, byval dash as ArtVpathDash ptr) as ArtVpath ptr
 
 #endif

@@ -33,13 +33,13 @@ type _AtkSelectionIface
 	pad2 as AtkFunction
 end type
 
-declare function atk_selection_get_type cdecl alias "atk_selection_get_type" () as GType
-declare function atk_selection_add_selection cdecl alias "atk_selection_add_selection" (byval selection as AtkSelection ptr, byval i as gint) as gboolean
-declare function atk_selection_clear_selection cdecl alias "atk_selection_clear_selection" (byval selection as AtkSelection ptr) as gboolean
-declare function atk_selection_ref_selection cdecl alias "atk_selection_ref_selection" (byval selection as AtkSelection ptr, byval i as gint) as AtkObject ptr
-declare function atk_selection_get_selection_count cdecl alias "atk_selection_get_selection_count" (byval selection as AtkSelection ptr) as gint
-declare function atk_selection_is_child_selected cdecl alias "atk_selection_is_child_selected" (byval selection as AtkSelection ptr, byval i as gint) as gboolean
-declare function atk_selection_remove_selection cdecl alias "atk_selection_remove_selection" (byval selection as AtkSelection ptr, byval i as gint) as gboolean
-declare function atk_selection_select_all_selection cdecl alias "atk_selection_select_all_selection" (byval selection as AtkSelection ptr) as gboolean
+declare function atk_selection_get_type () as GType
+declare function atk_selection_add_selection (byval selection as AtkSelection ptr, byval i as gint) as gboolean
+declare function atk_selection_clear_selection (byval selection as AtkSelection ptr) as gboolean
+declare function atk_selection_ref_selection (byval selection as AtkSelection ptr, byval i as gint) as AtkObject ptr
+declare function atk_selection_get_selection_count (byval selection as AtkSelection ptr) as gint
+declare function atk_selection_is_child_selected (byval selection as AtkSelection ptr, byval i as gint) as gboolean
+declare function atk_selection_remove_selection (byval selection as AtkSelection ptr, byval i as gint) as gboolean
+declare function atk_selection_select_all_selection (byval selection as AtkSelection ptr) as gboolean
 
 #endif

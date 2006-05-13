@@ -12,12 +12,12 @@
 #include once "gtk/gtk/gtkimcontext.bi"
 #include once "gtk/gtk/gtkmenushell.bi"
 
-#define GTK_TYPE_IM_MULTICONTEXT              (gtk_im_multicontext_get_type ())
-#define GTK_IM_MULTICONTEXT(obj)              (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_IM_MULTICONTEXT, GtkIMMulticontext))
-#define GTK_IM_MULTICONTEXT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_IM_MULTICONTEXT, GtkIMMulticontextClass))
-#define GTK_IS_IM_MULTICONTEXT(obj)           (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_IM_MULTICONTEXT))
-#define GTK_IS_IM_MULTICONTEXT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_IM_MULTICONTEXT))
-#define GTK_IM_MULTICONTEXT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_IM_MULTICONTEXT, GtkIMMulticontextClass))
+#define GTK_TYPE_IM_MULTICONTEXT (gtk_im_multicontext_get_type ())
+#define GTK_IM_MULTICONTEXT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_IM_MULTICONTEXT, GtkIMMulticontext))
+#define GTK_IM_MULTICONTEXT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_IM_MULTICONTEXT, GtkIMMulticontextClass))
+#define GTK_IS_IM_MULTICONTEXT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_IM_MULTICONTEXT))
+#define GTK_IS_IM_MULTICONTEXT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_IM_MULTICONTEXT))
+#define GTK_IM_MULTICONTEXT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_IM_MULTICONTEXT, GtkIMMulticontextClass))
 
 
 type GtkIMMulticontext as _GtkIMMulticontext
@@ -39,8 +39,8 @@ type _GtkIMMulticontextClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_im_multicontext_get_type cdecl alias "gtk_im_multicontext_get_type" () as GType
-declare function gtk_im_multicontext_new cdecl alias "gtk_im_multicontext_new" () as GtkIMContext ptr
-declare sub gtk_im_multicontext_append_menuitems cdecl alias "gtk_im_multicontext_append_menuitems" (byval context as GtkIMMulticontext ptr, byval menushell as GtkMenuShell ptr)
+declare function gtk_im_multicontext_get_type () as GType
+declare function gtk_im_multicontext_new () as GtkIMContext ptr
+declare sub gtk_im_multicontext_append_menuitems (byval context as GtkIMMulticontext ptr, byval menushell as GtkMenuShell ptr)
 
 #endif

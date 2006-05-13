@@ -12,12 +12,12 @@
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkcontainer.bi"
 
-#define GTK_TYPE_TABLE			(gtk_table_get_type ())
-#define GTK_TABLE(obj)			(G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TABLE, GtkTable))
-#define GTK_TABLE_CLASS(klass)		(G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TABLE, GtkTableClass))
-#define GTK_IS_TABLE(obj)		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TABLE))
-#define GTK_IS_TABLE_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TABLE))
-#define GTK_TABLE_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TABLE, GtkTableClass))
+#define GTK_TYPE_TABLE (gtk_table_get_type ())
+#define GTK_TABLE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TABLE, GtkTable))
+#define GTK_TABLE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TABLE, GtkTableClass))
+#define GTK_IS_TABLE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TABLE))
+#define GTK_IS_TABLE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TABLE))
+#define GTK_TABLE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TABLE, GtkTableClass))
 
 type GtkTable as _GtkTable
 type GtkTableClass as _GtkTableClass
@@ -67,20 +67,20 @@ type _GtkTableRowCol
 	empty:1 as guint
 end type
 
-declare function gtk_table_get_type cdecl alias "gtk_table_get_type" () as GType
-declare function gtk_table_new cdecl alias "gtk_table_new" (byval rows as guint, byval columns as guint, byval homogeneous as gboolean) as GtkWidget ptr
-declare sub gtk_table_resize cdecl alias "gtk_table_resize" (byval table as GtkTable ptr, byval rows as guint, byval columns as guint)
-declare sub gtk_table_attach cdecl alias "gtk_table_attach" (byval table as GtkTable ptr, byval child as GtkWidget ptr, byval left_attach as guint, byval right_attach as guint, byval top_attach as guint, byval bottom_attach as guint, byval xoptions as GtkAttachOptions, byval yoptions as GtkAttachOptions, byval xpadding as guint, byval ypadding as guint)
-declare sub gtk_table_attach_defaults cdecl alias "gtk_table_attach_defaults" (byval table as GtkTable ptr, byval widget as GtkWidget ptr, byval left_attach as guint, byval right_attach as guint, byval top_attach as guint, byval bottom_attach as guint)
-declare sub gtk_table_set_row_spacing cdecl alias "gtk_table_set_row_spacing" (byval table as GtkTable ptr, byval row as guint, byval spacing as guint)
-declare function gtk_table_get_row_spacing cdecl alias "gtk_table_get_row_spacing" (byval table as GtkTable ptr, byval row as guint) as guint
-declare sub gtk_table_set_col_spacing cdecl alias "gtk_table_set_col_spacing" (byval table as GtkTable ptr, byval column as guint, byval spacing as guint)
-declare function gtk_table_get_col_spacing cdecl alias "gtk_table_get_col_spacing" (byval table as GtkTable ptr, byval column as guint) as guint
-declare sub gtk_table_set_row_spacings cdecl alias "gtk_table_set_row_spacings" (byval table as GtkTable ptr, byval spacing as guint)
-declare function gtk_table_get_default_row_spacing cdecl alias "gtk_table_get_default_row_spacing" (byval table as GtkTable ptr) as guint
-declare sub gtk_table_set_col_spacings cdecl alias "gtk_table_set_col_spacings" (byval table as GtkTable ptr, byval spacing as guint)
-declare function gtk_table_get_default_col_spacing cdecl alias "gtk_table_get_default_col_spacing" (byval table as GtkTable ptr) as guint
-declare sub gtk_table_set_homogeneous cdecl alias "gtk_table_set_homogeneous" (byval table as GtkTable ptr, byval homogeneous as gboolean)
-declare function gtk_table_get_homogeneous cdecl alias "gtk_table_get_homogeneous" (byval table as GtkTable ptr) as gboolean
+declare function gtk_table_get_type () as GType
+declare function gtk_table_new (byval rows as guint, byval columns as guint, byval homogeneous as gboolean) as GtkWidget ptr
+declare sub gtk_table_resize (byval table as GtkTable ptr, byval rows as guint, byval columns as guint)
+declare sub gtk_table_attach (byval table as GtkTable ptr, byval child as GtkWidget ptr, byval left_attach as guint, byval right_attach as guint, byval top_attach as guint, byval bottom_attach as guint, byval xoptions as GtkAttachOptions, byval yoptions as GtkAttachOptions, byval xpadding as guint, byval ypadding as guint)
+declare sub gtk_table_attach_defaults (byval table as GtkTable ptr, byval widget as GtkWidget ptr, byval left_attach as guint, byval right_attach as guint, byval top_attach as guint, byval bottom_attach as guint)
+declare sub gtk_table_set_row_spacing (byval table as GtkTable ptr, byval row as guint, byval spacing as guint)
+declare function gtk_table_get_row_spacing (byval table as GtkTable ptr, byval row as guint) as guint
+declare sub gtk_table_set_col_spacing (byval table as GtkTable ptr, byval column as guint, byval spacing as guint)
+declare function gtk_table_get_col_spacing (byval table as GtkTable ptr, byval column as guint) as guint
+declare sub gtk_table_set_row_spacings (byval table as GtkTable ptr, byval spacing as guint)
+declare function gtk_table_get_default_row_spacing (byval table as GtkTable ptr) as guint
+declare sub gtk_table_set_col_spacings (byval table as GtkTable ptr, byval spacing as guint)
+declare function gtk_table_get_default_col_spacing (byval table as GtkTable ptr) as guint
+declare sub gtk_table_set_homogeneous (byval table as GtkTable ptr, byval homogeneous as gboolean)
+declare function gtk_table_get_homogeneous (byval table as GtkTable ptr) as gboolean
 
 #endif

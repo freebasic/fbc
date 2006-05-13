@@ -13,7 +13,7 @@
 # pragma push(msbitfields)
 #endif
 
-#inclib "atk-1.0"
+extern "c" lib "atk-1.0"
 
 #include once "gtk/atk/atkobject.bi"
 #include once "gtk/atk/atkaction.bi"
@@ -39,6 +39,8 @@
 #include once "gtk/atk/atktext.bi"
 #include once "gtk/atk/atkutil.bi"
 #include once "gtk/atk/atkvalue.bi"
+
+end extern
 
 #ifdef __FB_WIN32__
 # pragma pop(msbitfields)

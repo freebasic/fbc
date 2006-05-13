@@ -87,36 +87,36 @@ type _GtkEntryClass
 	_gtk_reserved3 as sub cdecl()
 end type
 
-declare function gtk_entry_get_type cdecl alias "gtk_entry_get_type" () as GType
-declare function gtk_entry_new cdecl alias "gtk_entry_new" () as GtkWidget ptr
-declare sub gtk_entry_set_visibility cdecl alias "gtk_entry_set_visibility" (byval entry as GtkEntry ptr, byval visible as gboolean)
-declare function gtk_entry_get_visibility cdecl alias "gtk_entry_get_visibility" (byval entry as GtkEntry ptr) as gboolean
-declare sub gtk_entry_set_invisible_char cdecl alias "gtk_entry_set_invisible_char" (byval entry as GtkEntry ptr, byval ch as gunichar)
-declare function gtk_entry_get_invisible_char cdecl alias "gtk_entry_get_invisible_char" (byval entry as GtkEntry ptr) as gunichar
-declare sub gtk_entry_set_has_frame cdecl alias "gtk_entry_set_has_frame" (byval entry as GtkEntry ptr, byval setting as gboolean)
-declare function gtk_entry_get_has_frame cdecl alias "gtk_entry_get_has_frame" (byval entry as GtkEntry ptr) as gboolean
-declare sub gtk_entry_set_max_length cdecl alias "gtk_entry_set_max_length" (byval entry as GtkEntry ptr, byval max as gint)
-declare function gtk_entry_get_max_length cdecl alias "gtk_entry_get_max_length" (byval entry as GtkEntry ptr) as gint
-declare sub gtk_entry_set_activates_default cdecl alias "gtk_entry_set_activates_default" (byval entry as GtkEntry ptr, byval setting as gboolean)
-declare function gtk_entry_get_activates_default cdecl alias "gtk_entry_get_activates_default" (byval entry as GtkEntry ptr) as gboolean
-declare sub gtk_entry_set_width_chars cdecl alias "gtk_entry_set_width_chars" (byval entry as GtkEntry ptr, byval n_chars as gint)
-declare function gtk_entry_get_width_chars cdecl alias "gtk_entry_get_width_chars" (byval entry as GtkEntry ptr) as gint
-declare sub gtk_entry_set_text cdecl alias "gtk_entry_set_text" (byval entry as GtkEntry ptr, byval text as zstring ptr)
-declare function gtk_entry_get_text cdecl alias "gtk_entry_get_text" (byval entry as GtkEntry ptr) as zstring ptr
-declare function gtk_entry_get_layout cdecl alias "gtk_entry_get_layout" (byval entry as GtkEntry ptr) as PangoLayout ptr
-declare sub gtk_entry_get_layout_offsets cdecl alias "gtk_entry_get_layout_offsets" (byval entry as GtkEntry ptr, byval x as gint ptr, byval y as gint ptr)
-declare sub gtk_entry_set_alignment cdecl alias "gtk_entry_set_alignment" (byval entry as GtkEntry ptr, byval xalign as gfloat)
-declare function gtk_entry_get_alignment cdecl alias "gtk_entry_get_alignment" (byval entry as GtkEntry ptr) as gfloat
-declare sub gtk_entry_set_completion cdecl alias "gtk_entry_set_completion" (byval entry as GtkEntry ptr, byval completion as GtkEntryCompletion ptr)
-declare function gtk_entry_get_completion cdecl alias "gtk_entry_get_completion" (byval entry as GtkEntry ptr) as GtkEntryCompletion ptr
-declare function gtk_entry_layout_index_to_text_index cdecl alias "gtk_entry_layout_index_to_text_index" (byval entry as GtkEntry ptr, byval layout_index as gint) as gint
-declare function gtk_entry_text_index_to_layout_index cdecl alias "gtk_entry_text_index_to_layout_index" (byval entry as GtkEntry ptr, byval text_index as gint) as gint
-declare function gtk_entry_new_with_max_length cdecl alias "gtk_entry_new_with_max_length" (byval max as gint) as GtkWidget ptr
-declare sub gtk_entry_append_text cdecl alias "gtk_entry_append_text" (byval entry as GtkEntry ptr, byval text as zstring ptr)
-declare sub gtk_entry_prepend_text cdecl alias "gtk_entry_prepend_text" (byval entry as GtkEntry ptr, byval text as zstring ptr)
-declare sub gtk_entry_set_position cdecl alias "gtk_entry_set_position" (byval entry as GtkEntry ptr, byval position as gint)
-declare sub gtk_entry_select_region cdecl alias "gtk_entry_select_region" (byval entry as GtkEntry ptr, byval start as gint, byval end as gint)
-declare sub gtk_entry_set_editable cdecl alias "gtk_entry_set_editable" (byval entry as GtkEntry ptr, byval editable as gboolean)
-declare sub _gtk_entry_get_borders cdecl alias "_gtk_entry_get_borders" (byval entry as GtkEntry ptr, byval xborder as gint ptr, byval yborder as gint ptr)
+declare function gtk_entry_get_type () as GType
+declare function gtk_entry_new () as GtkWidget ptr
+declare sub gtk_entry_set_visibility (byval entry as GtkEntry ptr, byval visible as gboolean)
+declare function gtk_entry_get_visibility (byval entry as GtkEntry ptr) as gboolean
+declare sub gtk_entry_set_invisible_char (byval entry as GtkEntry ptr, byval ch as gunichar)
+declare function gtk_entry_get_invisible_char (byval entry as GtkEntry ptr) as gunichar
+declare sub gtk_entry_set_has_frame (byval entry as GtkEntry ptr, byval setting as gboolean)
+declare function gtk_entry_get_has_frame (byval entry as GtkEntry ptr) as gboolean
+declare sub gtk_entry_set_max_length (byval entry as GtkEntry ptr, byval max as gint)
+declare function gtk_entry_get_max_length (byval entry as GtkEntry ptr) as gint
+declare sub gtk_entry_set_activates_default (byval entry as GtkEntry ptr, byval setting as gboolean)
+declare function gtk_entry_get_activates_default (byval entry as GtkEntry ptr) as gboolean
+declare sub gtk_entry_set_width_chars (byval entry as GtkEntry ptr, byval n_chars as gint)
+declare function gtk_entry_get_width_chars (byval entry as GtkEntry ptr) as gint
+declare sub gtk_entry_set_text (byval entry as GtkEntry ptr, byval text as zstring ptr)
+declare function gtk_entry_get_text (byval entry as GtkEntry ptr) as zstring ptr
+declare function gtk_entry_get_layout (byval entry as GtkEntry ptr) as PangoLayout ptr
+declare sub gtk_entry_get_layout_offsets (byval entry as GtkEntry ptr, byval x as gint ptr, byval y as gint ptr)
+declare sub gtk_entry_set_alignment (byval entry as GtkEntry ptr, byval xalign as gfloat)
+declare function gtk_entry_get_alignment (byval entry as GtkEntry ptr) as gfloat
+declare sub gtk_entry_set_completion (byval entry as GtkEntry ptr, byval completion as GtkEntryCompletion ptr)
+declare function gtk_entry_get_completion (byval entry as GtkEntry ptr) as GtkEntryCompletion ptr
+declare function gtk_entry_layout_index_to_text_index (byval entry as GtkEntry ptr, byval layout_index as gint) as gint
+declare function gtk_entry_text_index_to_layout_index (byval entry as GtkEntry ptr, byval text_index as gint) as gint
+declare function gtk_entry_new_with_max_length (byval max as gint) as GtkWidget ptr
+declare sub gtk_entry_append_text (byval entry as GtkEntry ptr, byval text as zstring ptr)
+declare sub gtk_entry_prepend_text (byval entry as GtkEntry ptr, byval text as zstring ptr)
+declare sub gtk_entry_set_position (byval entry as GtkEntry ptr, byval position as gint)
+declare sub gtk_entry_select_region (byval entry as GtkEntry ptr, byval start as gint, byval end as gint)
+declare sub gtk_entry_set_editable (byval entry as GtkEntry ptr, byval editable as gboolean)
+declare sub _gtk_entry_get_borders (byval entry as GtkEntry ptr, byval xborder as gint ptr, byval yborder as gint ptr)
 
 #endif

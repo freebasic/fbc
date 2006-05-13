@@ -13,9 +13,9 @@
 
 type GDir as _GDir
 
-declare function g_dir_open_utf8 cdecl alias "g_dir_open_utf8" (byval path as zstring ptr, byval flags as guint, byval error as GError ptr ptr) as GDir ptr
-declare function g_dir_read_name_utf8 cdecl alias "g_dir_read_name_utf8" (byval dir as GDir ptr) as zstring ptr
-declare sub g_dir_rewind cdecl alias "g_dir_rewind" (byval dir as GDir ptr)
-declare sub g_dir_close cdecl alias "g_dir_close" (byval dir as GDir ptr)
+declare function g_dir_open_utf8 (byval path as zstring ptr, byval flags as guint, byval error as GError ptr ptr) as GDir ptr
+declare function g_dir_read_name_utf8 (byval dir as GDir ptr) as zstring ptr
+declare sub g_dir_rewind (byval dir as GDir ptr)
+declare sub g_dir_close (byval dir as GDir ptr)
 
 #endif

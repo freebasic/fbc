@@ -12,6 +12,6 @@
 #include once "gtk/libart/art_rect.bi"
 #include once "gtk/libart/art_uta.bi"
 
-declare function art_uta_from_irect cdecl alias "art_uta_from_irect" (byval bbox as ArtIRect ptr) as ArtUta ptr
+declare function art_uta_from_irect (byval bbox as ArtIRect ptr) as ArtUta ptr
 
 #endif

@@ -12,9 +12,9 @@
 #include once "gtk/gdkgl/gdkgldefs.bi"
 #include once "gtk/gdkgl/gdkgltypes.bi"
 
-declare function gdk_gl_query_extension cdecl alias "gdk_gl_query_extension" () as gboolean
-declare function gdk_gl_query_version cdecl alias "gdk_gl_query_version" (byval major as integer ptr, byval minor as integer ptr) as gboolean
-declare function gdk_gl_query_gl_extension cdecl alias "gdk_gl_query_gl_extension" (byval extension as zstring ptr) as gboolean
-declare function gdk_gl_get_proc_address cdecl alias "gdk_gl_get_proc_address" (byval proc_name as zstring ptr) as GdkGLProc
+declare function gdk_gl_query_extension () as gboolean
+declare function gdk_gl_query_version (byval major as integer ptr, byval minor as integer ptr) as gboolean
+declare function gdk_gl_query_gl_extension (byval extension as zstring ptr) as gboolean
+declare function gdk_gl_get_proc_address (byval proc_name as zstring ptr) as GdkGLProc
 
 #endif

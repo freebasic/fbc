@@ -16,16 +16,16 @@
 
 type GdkPixbufFormat as _GdkPixbufFormat
 
-declare function gdk_pixbuf_get_formats cdecl alias "gdk_pixbuf_get_formats" () as GSList ptr
-declare function gdk_pixbuf_format_get_name cdecl alias "gdk_pixbuf_format_get_name" (byval format as GdkPixbufFormat ptr) as zstring ptr
-declare function gdk_pixbuf_format_get_description cdecl alias "gdk_pixbuf_format_get_description" (byval format as GdkPixbufFormat ptr) as zstring ptr
-declare function gdk_pixbuf_format_get_mime_types cdecl alias "gdk_pixbuf_format_get_mime_types" (byval format as GdkPixbufFormat ptr) as zstring ptr ptr
-declare function gdk_pixbuf_format_get_extensions cdecl alias "gdk_pixbuf_format_get_extensions" (byval format as GdkPixbufFormat ptr) as zstring ptr ptr
-declare function gdk_pixbuf_format_is_writable cdecl alias "gdk_pixbuf_format_is_writable" (byval format as GdkPixbufFormat ptr) as gboolean
-declare function gdk_pixbuf_format_is_scalable cdecl alias "gdk_pixbuf_format_is_scalable" (byval format as GdkPixbufFormat ptr) as gboolean
-declare function gdk_pixbuf_format_is_disabled cdecl alias "gdk_pixbuf_format_is_disabled" (byval format as GdkPixbufFormat ptr) as gboolean
-declare sub gdk_pixbuf_format_set_disabled cdecl alias "gdk_pixbuf_format_set_disabled" (byval format as GdkPixbufFormat ptr, byval disabled as gboolean)
-declare function gdk_pixbuf_format_get_license cdecl alias "gdk_pixbuf_format_get_license" (byval format as GdkPixbufFormat ptr) as zstring ptr
-declare function gdk_pixbuf_get_file_info cdecl alias "gdk_pixbuf_get_file_info" (byval filename as zstring ptr, byval width as gint ptr, byval height as gint ptr) as GdkPixbufFormat ptr
+declare function gdk_pixbuf_get_formats () as GSList ptr
+declare function gdk_pixbuf_format_get_name (byval format as GdkPixbufFormat ptr) as zstring ptr
+declare function gdk_pixbuf_format_get_description (byval format as GdkPixbufFormat ptr) as zstring ptr
+declare function gdk_pixbuf_format_get_mime_types (byval format as GdkPixbufFormat ptr) as zstring ptr ptr
+declare function gdk_pixbuf_format_get_extensions (byval format as GdkPixbufFormat ptr) as zstring ptr ptr
+declare function gdk_pixbuf_format_is_writable (byval format as GdkPixbufFormat ptr) as gboolean
+declare function gdk_pixbuf_format_is_scalable (byval format as GdkPixbufFormat ptr) as gboolean
+declare function gdk_pixbuf_format_is_disabled (byval format as GdkPixbufFormat ptr) as gboolean
+declare sub gdk_pixbuf_format_set_disabled (byval format as GdkPixbufFormat ptr, byval disabled as gboolean)
+declare function gdk_pixbuf_format_get_license (byval format as GdkPixbufFormat ptr) as zstring ptr
+declare function gdk_pixbuf_get_file_info (byval filename as zstring ptr, byval width as gint ptr, byval height as gint ptr) as GdkPixbufFormat ptr
 
 #endif

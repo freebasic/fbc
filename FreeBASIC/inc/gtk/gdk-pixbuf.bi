@@ -13,7 +13,7 @@
 # pragma push(msbitfields)
 #endif
 
-#inclib "gdk_pixbuf-2.0"
+extern "c" lib "gdk_pixbuf-2.0"
 
 #include once "gtk/glib.bi"
 #include once "gtk/gdk-pixbuf/gdk-pixbuf-features.bi"
@@ -24,6 +24,8 @@
 #include once "gtk/gdk-pixbuf/gdk-pixbuf-io.bi"
 #include once "gtk/gdk-pixbuf/gdk-pixbuf-loader.bi"
 #include once "gtk/gdk-pixbuf/gdk-pixbuf-enum-types.bi"
+
+end extern
 
 #ifdef __FB_WIN32__
 # pragma pop(msbitfields)

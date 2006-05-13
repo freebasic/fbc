@@ -29,10 +29,10 @@ type _AtkValueIface
 	pad2 as AtkFunction
 end type
 
-declare function atk_value_get_type cdecl alias "atk_value_get_type" () as GType
-declare sub atk_value_get_current_value cdecl alias "atk_value_get_current_value" (byval obj as AtkValue ptr, byval value as GValue ptr)
-declare sub atk_value_get_maximum_value cdecl alias "atk_value_get_maximum_value" (byval obj as AtkValue ptr, byval value as GValue ptr)
-declare sub atk_value_get_minimum_value cdecl alias "atk_value_get_minimum_value" (byval obj as AtkValue ptr, byval value as GValue ptr)
-declare function atk_value_set_current_value cdecl alias "atk_value_set_current_value" (byval obj as AtkValue ptr, byval value as GValue ptr) as gboolean
+declare function atk_value_get_type () as GType
+declare sub atk_value_get_current_value (byval obj as AtkValue ptr, byval value as GValue ptr)
+declare sub atk_value_get_maximum_value (byval obj as AtkValue ptr, byval value as GValue ptr)
+declare sub atk_value_get_minimum_value (byval obj as AtkValue ptr, byval value as GValue ptr)
+declare function atk_value_set_current_value (byval obj as AtkValue ptr, byval value as GValue ptr) as gboolean
 
 #endif

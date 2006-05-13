@@ -13,7 +13,7 @@
 # pragma push(msbitfields)
 #endif
 
-#inclib "glib-2.0"
+extern "c" lib "glib-2.0"
 
 #include once "gtk/glib/galloca.bi"
 #include once "gtk/glib/garray.bi"
@@ -61,6 +61,8 @@
 #include once "gtk/glib/gunicode.bi"
 #include once "gtk/glib/gutils.bi"
 #include once "gtk/glib/gwin32.bi"
+
+end extern
 
 #ifdef __FB_WIN32__
 # pragma pop(msbitfields)

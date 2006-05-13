@@ -11,12 +11,12 @@
 
 #include once "gtk/gtk/gtktoolitem.bi"
 
-#define GTK_TYPE_SEPARATOR_TOOL_ITEM            (gtk_separator_tool_item_get_type ())
-#define GTK_SEPARATOR_TOOL_ITEM(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SEPARATOR_TOOL_ITEM, GtkSeparatorToolItem))
-#define GTK_SEPARATOR_TOOL_ITEM_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_SEPARATOR_TOOL_ITEM, GtkSeparatorToolItemClass))
-#define GTK_IS_SEPARATOR_TOOL_ITEM(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_SEPARATOR_TOOL_ITEM))
+#define GTK_TYPE_SEPARATOR_TOOL_ITEM (gtk_separator_tool_item_get_type ())
+#define GTK_SEPARATOR_TOOL_ITEM(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SEPARATOR_TOOL_ITEM, GtkSeparatorToolItem))
+#define GTK_SEPARATOR_TOOL_ITEM_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_SEPARATOR_TOOL_ITEM, GtkSeparatorToolItemClass))
+#define GTK_IS_SEPARATOR_TOOL_ITEM(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_SEPARATOR_TOOL_ITEM))
 #define GTK_IS_SEPARATOR_TOOL_ITEM_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_SEPARATOR_TOOL_ITEM))
-#define GTK_SEPARATOR_TOOL_ITEM_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), GTK_TYPE_SEPARATOR_TOOL_ITEM, GtkSeparatorToolItemClass))
+#define GTK_SEPARATOR_TOOL_ITEM_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GTK_TYPE_SEPARATOR_TOOL_ITEM, GtkSeparatorToolItemClass))
 
 type GtkSeparatorToolItem as _GtkSeparatorToolItem
 type GtkSeparatorToolItemClass as _GtkSeparatorToolItemClass
@@ -35,9 +35,9 @@ type _GtkSeparatorToolItemClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_separator_tool_item_get_type cdecl alias "gtk_separator_tool_item_get_type" () as GType
-declare function gtk_separator_tool_item_new cdecl alias "gtk_separator_tool_item_new" () as GtkToolItem ptr
-declare function gtk_separator_tool_item_get_draw cdecl alias "gtk_separator_tool_item_get_draw" (byval item as GtkSeparatorToolItem ptr) as gboolean
-declare sub gtk_separator_tool_item_set_draw cdecl alias "gtk_separator_tool_item_set_draw" (byval item as GtkSeparatorToolItem ptr, byval draw as gboolean)
+declare function gtk_separator_tool_item_get_type () as GType
+declare function gtk_separator_tool_item_new () as GtkToolItem ptr
+declare function gtk_separator_tool_item_get_draw (byval item as GtkSeparatorToolItem ptr) as gboolean
+declare sub gtk_separator_tool_item_set_draw (byval item as GtkSeparatorToolItem ptr, byval draw as gboolean)
 
 #endif

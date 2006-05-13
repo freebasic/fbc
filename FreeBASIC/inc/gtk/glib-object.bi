@@ -13,7 +13,7 @@
 # pragma push(msbitfields)
 #endif
 
-#inclib "gobject-2.0"
+extern "c" lib "gobject-2.0"
 
 #include once "gtk/gobject/gboxed.bi"
 #include once "gtk/gobject/genums.bi"
@@ -28,6 +28,8 @@
 #include once "gtk/gobject/gvalue.bi"
 #include once "gtk/gobject/gvaluearray.bi"
 #include once "gtk/gobject/gvaluetypes.bi"
+
+end extern
 
 #ifdef __FB_WIN32__
 # pragma pop(msbitfields)

@@ -18,6 +18,8 @@
 # error Platform not supported!
 #endif
 
+extern "c"
+
 #include once "gtk/gdkgl/gdkgldefs.bi"
 #include once "gtk/gdkgl/gdkglversion.bi"
 #include once "gtk/gdkgl/gdkgltokens.bi"
@@ -32,6 +34,8 @@
 #include once "gtk/gdkgl/gdkglwindow.bi"
 #include once "gtk/gdkgl/gdkglfont.bi"
 #include once "gtk/gdkgl/gdkglshapes.bi"
+
+end extern
 
 #ifdef __FB_WIN32__
 # pragma pop(msbitfields)

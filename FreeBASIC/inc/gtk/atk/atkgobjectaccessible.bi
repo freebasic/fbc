@@ -25,7 +25,7 @@ type _AtkGObjectAccessible
 	parent as AtkObject
 end type
 
-declare function atk_gobject_accessible_get_type cdecl alias "atk_gobject_accessible_get_type" () as GType
+declare function atk_gobject_accessible_get_type () as GType
 
 type _AtkGObjectAccessibleClass
 	parent_class as AtkObjectClass
@@ -33,7 +33,7 @@ type _AtkGObjectAccessibleClass
 	pad2 as AtkFunction
 end type
 
-declare function atk_gobject_accessible_for_object cdecl alias "atk_gobject_accessible_for_object" (byval obj as GObject ptr) as AtkObject ptr
-declare function atk_gobject_accessible_get_object cdecl alias "atk_gobject_accessible_get_object" (byval obj as AtkGObjectAccessible ptr) as GObject ptr
+declare function atk_gobject_accessible_for_object (byval obj as GObject ptr) as AtkObject ptr
+declare function atk_gobject_accessible_get_object (byval obj as AtkGObjectAccessible ptr) as GObject ptr
 
 #endif

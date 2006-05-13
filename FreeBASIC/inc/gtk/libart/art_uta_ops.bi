@@ -11,6 +11,6 @@
 
 #include once "gtk/libart/art_uta.bi"
 
-declare function art_uta_union cdecl alias "art_uta_union" (byval uta1 as ArtUta ptr, byval uta2 as ArtUta ptr) as ArtUta ptr
+declare function art_uta_union (byval uta1 as ArtUta ptr, byval uta2 as ArtUta ptr) as ArtUta ptr
 
 #endif

@@ -15,14 +15,14 @@ type GTimer as _GTimer
 
 #define G_USEC_PER_SEC 1000000
 
-declare function g_timer_new cdecl alias "g_timer_new" () as GTimer ptr
-declare sub g_timer_destroy cdecl alias "g_timer_destroy" (byval timer as GTimer ptr)
-declare sub g_timer_start cdecl alias "g_timer_start" (byval timer as GTimer ptr)
-declare sub g_timer_stop cdecl alias "g_timer_stop" (byval timer as GTimer ptr)
-declare sub g_timer_reset cdecl alias "g_timer_reset" (byval timer as GTimer ptr)
-declare sub g_timer_continue cdecl alias "g_timer_continue" (byval timer as GTimer ptr)
-declare function g_timer_elapsed cdecl alias "g_timer_elapsed" (byval timer as GTimer ptr, byval microseconds as gulong ptr) as gdouble
-declare sub g_usleep cdecl alias "g_usleep" (byval microseconds as gulong)
-declare sub g_time_val_add cdecl alias "g_time_val_add" (byval time_ as GTimeVal ptr, byval microseconds as glong)
+declare function g_timer_new () as GTimer ptr
+declare sub g_timer_destroy (byval timer as GTimer ptr)
+declare sub g_timer_start (byval timer as GTimer ptr)
+declare sub g_timer_stop (byval timer as GTimer ptr)
+declare sub g_timer_reset (byval timer as GTimer ptr)
+declare sub g_timer_continue (byval timer as GTimer ptr)
+declare function g_timer_elapsed (byval timer as GTimer ptr, byval microseconds as gulong ptr) as gdouble
+declare sub g_usleep (byval microseconds as gulong)
+declare sub g_time_val_add (byval time_ as GTimeVal ptr, byval microseconds as glong)
 
 #endif

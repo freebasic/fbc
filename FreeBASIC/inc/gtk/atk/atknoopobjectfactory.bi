@@ -29,7 +29,7 @@ type _AtkNoOpObjectFactoryClass
 	parent_class as AtkObjectFactoryClass
 end type
 
-declare function atk_no_op_object_factory_get_type cdecl alias "atk_no_op_object_factory_get_type" () as GType
-declare function atk_no_op_object_factory_new cdecl alias "atk_no_op_object_factory_new" () as AtkObjectFactory ptr
+declare function atk_no_op_object_factory_get_type () as GType
+declare function atk_no_op_object_factory_new () as AtkObjectFactory ptr
 
 #endif

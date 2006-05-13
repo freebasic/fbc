@@ -40,13 +40,13 @@ type _GtkFileChooserButtonClass
 	__gtk_reserved8 as any ptr
 end type
 
-declare function gtk_file_chooser_button_get_type cdecl alias "gtk_file_chooser_button_get_type" () as GType
-declare function gtk_file_chooser_button_new cdecl alias "gtk_file_chooser_button_new" (byval title as zstring ptr, byval action as GtkFileChooserAction) as GtkWidget ptr
-declare function gtk_file_chooser_button_new_with_backend cdecl alias "gtk_file_chooser_button_new_with_backend" (byval title as zstring ptr, byval action as GtkFileChooserAction, byval backend as zstring ptr) as GtkWidget ptr
-declare function gtk_file_chooser_button_new_with_dialog cdecl alias "gtk_file_chooser_button_new_with_dialog" (byval dialog as GtkWidget ptr) as GtkWidget ptr
-declare function gtk_file_chooser_button_get_title cdecl alias "gtk_file_chooser_button_get_title" (byval button as GtkFileChooserButton ptr) as zstring ptr
-declare sub gtk_file_chooser_button_set_title cdecl alias "gtk_file_chooser_button_set_title" (byval button as GtkFileChooserButton ptr, byval title as zstring ptr)
-declare function gtk_file_chooser_button_get_width_chars cdecl alias "gtk_file_chooser_button_get_width_chars" (byval button as GtkFileChooserButton ptr) as gint
-declare sub gtk_file_chooser_button_set_width_chars cdecl alias "gtk_file_chooser_button_set_width_chars" (byval button as GtkFileChooserButton ptr, byval n_chars as gint)
+declare function gtk_file_chooser_button_get_type () as GType
+declare function gtk_file_chooser_button_new (byval title as zstring ptr, byval action as GtkFileChooserAction) as GtkWidget ptr
+declare function gtk_file_chooser_button_new_with_backend (byval title as zstring ptr, byval action as GtkFileChooserAction, byval backend as zstring ptr) as GtkWidget ptr
+declare function gtk_file_chooser_button_new_with_dialog (byval dialog as GtkWidget ptr) as GtkWidget ptr
+declare function gtk_file_chooser_button_get_title (byval button as GtkFileChooserButton ptr) as zstring ptr
+declare sub gtk_file_chooser_button_set_title (byval button as GtkFileChooserButton ptr, byval title as zstring ptr)
+declare function gtk_file_chooser_button_get_width_chars (byval button as GtkFileChooserButton ptr) as gint
+declare sub gtk_file_chooser_button_set_width_chars (byval button as GtkFileChooserButton ptr, byval n_chars as gint)
 
 #endif

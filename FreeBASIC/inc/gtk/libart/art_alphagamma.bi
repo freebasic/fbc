@@ -20,7 +20,7 @@ type _ArtAlphaGamma
 	invtable(0 to 1-1) as art_u8
 end type
 
-declare function art_alphagamma_new cdecl alias "art_alphagamma_new" (byval gamma as double) as ArtAlphaGamma ptr
-declare sub art_alphagamma_free cdecl alias "art_alphagamma_free" (byval alphagamma as ArtAlphaGamma ptr)
+declare function art_alphagamma_new (byval gamma as double) as ArtAlphaGamma ptr
+declare sub art_alphagamma_free (byval alphagamma as ArtAlphaGamma ptr)
 
 #endif

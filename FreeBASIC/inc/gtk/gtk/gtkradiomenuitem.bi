@@ -12,12 +12,12 @@
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkcheckmenuitem.bi"
 
-#define GTK_TYPE_RADIO_MENU_ITEM	      (gtk_radio_menu_item_get_type ())
-#define GTK_RADIO_MENU_ITEM(obj)	      (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_RADIO_MENU_ITEM, GtkRadioMenuItem))
-#define GTK_RADIO_MENU_ITEM_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_RADIO_MENU_ITEM, GtkRadioMenuItemClass))
-#define GTK_IS_RADIO_MENU_ITEM(obj)	      (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_RADIO_MENU_ITEM))
-#define GTK_IS_RADIO_MENU_ITEM_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_RADIO_MENU_ITEM))
-#define GTK_RADIO_MENU_ITEM_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_RADIO_MENU_ITEM, GtkRadioMenuItemClass))
+#define GTK_TYPE_RADIO_MENU_ITEM (gtk_radio_menu_item_get_type ())
+#define GTK_RADIO_MENU_ITEM(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_RADIO_MENU_ITEM, GtkRadioMenuItem))
+#define GTK_RADIO_MENU_ITEM_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_RADIO_MENU_ITEM, GtkRadioMenuItemClass))
+#define GTK_IS_RADIO_MENU_ITEM(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_RADIO_MENU_ITEM))
+#define GTK_IS_RADIO_MENU_ITEM_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_RADIO_MENU_ITEM))
+#define GTK_RADIO_MENU_ITEM_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_RADIO_MENU_ITEM, GtkRadioMenuItemClass))
 
 type GtkRadioMenuItem as _GtkRadioMenuItem
 type GtkRadioMenuItemClass as _GtkRadioMenuItemClass
@@ -35,15 +35,15 @@ type _GtkRadioMenuItemClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_radio_menu_item_get_type cdecl alias "gtk_radio_menu_item_get_type" () as GType
-declare function gtk_radio_menu_item_new cdecl alias "gtk_radio_menu_item_new" (byval group as GSList ptr) as GtkWidget ptr
-declare function gtk_radio_menu_item_new_with_label cdecl alias "gtk_radio_menu_item_new_with_label" (byval group as GSList ptr, byval label as zstring ptr) as GtkWidget ptr
-declare function gtk_radio_menu_item_new_with_mnemonic cdecl alias "gtk_radio_menu_item_new_with_mnemonic" (byval group as GSList ptr, byval label as zstring ptr) as GtkWidget ptr
-declare function gtk_radio_menu_item_new_from_widget cdecl alias "gtk_radio_menu_item_new_from_widget" (byval group as GtkRadioMenuItem ptr) as GtkWidget ptr
-declare function gtk_radio_menu_item_new_with_mnemonic_from_widget cdecl alias "gtk_radio_menu_item_new_with_mnemonic_from_widget" (byval group as GtkRadioMenuItem ptr, byval label as zstring ptr) as GtkWidget ptr
-declare function gtk_radio_menu_item_new_with_label_from_widget cdecl alias "gtk_radio_menu_item_new_with_label_from_widget" (byval group as GtkRadioMenuItem ptr, byval label as zstring ptr) as GtkWidget ptr
-declare function gtk_radio_menu_item_get_group cdecl alias "gtk_radio_menu_item_get_group" (byval radio_menu_item as GtkRadioMenuItem ptr) as GSList ptr
-declare sub gtk_radio_menu_item_set_group cdecl alias "gtk_radio_menu_item_set_group" (byval radio_menu_item as GtkRadioMenuItem ptr, byval group as GSList ptr)
+declare function gtk_radio_menu_item_get_type () as GType
+declare function gtk_radio_menu_item_new (byval group as GSList ptr) as GtkWidget ptr
+declare function gtk_radio_menu_item_new_with_label (byval group as GSList ptr, byval label as zstring ptr) as GtkWidget ptr
+declare function gtk_radio_menu_item_new_with_mnemonic (byval group as GSList ptr, byval label as zstring ptr) as GtkWidget ptr
+declare function gtk_radio_menu_item_new_from_widget (byval group as GtkRadioMenuItem ptr) as GtkWidget ptr
+declare function gtk_radio_menu_item_new_with_mnemonic_from_widget (byval group as GtkRadioMenuItem ptr, byval label as zstring ptr) as GtkWidget ptr
+declare function gtk_radio_menu_item_new_with_label_from_widget (byval group as GtkRadioMenuItem ptr, byval label as zstring ptr) as GtkWidget ptr
+declare function gtk_radio_menu_item_get_group (byval radio_menu_item as GtkRadioMenuItem ptr) as GSList ptr
+declare sub gtk_radio_menu_item_set_group (byval radio_menu_item as GtkRadioMenuItem ptr, byval group as GSList ptr)
 
 #define gtk_radio_menu_item_group gtk_radio_menu_item_get_group
 

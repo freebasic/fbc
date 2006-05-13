@@ -21,14 +21,14 @@ enum PangoCoverageLevel
 end enum
 
 
-declare function pango_coverage_new cdecl alias "pango_coverage_new" () as PangoCoverage ptr
-declare function pango_coverage_ref cdecl alias "pango_coverage_ref" (byval coverage as PangoCoverage ptr) as PangoCoverage ptr
-declare sub pango_coverage_unref cdecl alias "pango_coverage_unref" (byval coverage as PangoCoverage ptr)
-declare function pango_coverage_copy cdecl alias "pango_coverage_copy" (byval coverage as PangoCoverage ptr) as PangoCoverage ptr
-declare function pango_coverage_get cdecl alias "pango_coverage_get" (byval coverage as PangoCoverage ptr, byval index_ as integer) as PangoCoverageLevel
-declare sub pango_coverage_set cdecl alias "pango_coverage_set" (byval coverage as PangoCoverage ptr, byval index_ as integer, byval level as PangoCoverageLevel)
-declare sub pango_coverage_max cdecl alias "pango_coverage_max" (byval coverage as PangoCoverage ptr, byval other as PangoCoverage ptr)
-declare sub pango_coverage_to_bytes cdecl alias "pango_coverage_to_bytes" (byval coverage as PangoCoverage ptr, byval bytes as guchar ptr ptr, byval n_bytes as integer ptr)
-declare function pango_coverage_from_bytes cdecl alias "pango_coverage_from_bytes" (byval bytes as guchar ptr, byval n_bytes as integer) as PangoCoverage ptr
+declare function pango_coverage_new () as PangoCoverage ptr
+declare function pango_coverage_ref (byval coverage as PangoCoverage ptr) as PangoCoverage ptr
+declare sub pango_coverage_unref (byval coverage as PangoCoverage ptr)
+declare function pango_coverage_copy (byval coverage as PangoCoverage ptr) as PangoCoverage ptr
+declare function pango_coverage_get (byval coverage as PangoCoverage ptr, byval index_ as integer) as PangoCoverageLevel
+declare sub pango_coverage_set (byval coverage as PangoCoverage ptr, byval index_ as integer, byval level as PangoCoverageLevel)
+declare sub pango_coverage_max (byval coverage as PangoCoverage ptr, byval other as PangoCoverage ptr)
+declare sub pango_coverage_to_bytes (byval coverage as PangoCoverage ptr, byval bytes as guchar ptr ptr, byval n_bytes as integer ptr)
+declare function pango_coverage_from_bytes (byval bytes as guchar ptr, byval n_bytes as integer) as PangoCoverage ptr
 
 #endif

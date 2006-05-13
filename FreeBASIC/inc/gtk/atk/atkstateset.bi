@@ -30,17 +30,17 @@ type _AtkStateSetClass
 	parent as GObjectClass
 end type
 
-declare function atk_state_set_get_type cdecl alias "atk_state_set_get_type" () as GType
-declare function atk_state_set_new cdecl alias "atk_state_set_new" () as AtkStateSet ptr
-declare function atk_state_set_is_empty cdecl alias "atk_state_set_is_empty" (byval set as AtkStateSet ptr) as gboolean
-declare function atk_state_set_add_state cdecl alias "atk_state_set_add_state" (byval set as AtkStateSet ptr, byval type as AtkStateType) as gboolean
-declare sub atk_state_set_add_states cdecl alias "atk_state_set_add_states" (byval set as AtkStateSet ptr, byval types as AtkStateType ptr, byval n_types as gint)
-declare sub atk_state_set_clear_states cdecl alias "atk_state_set_clear_states" (byval set as AtkStateSet ptr)
-declare function atk_state_set_contains_state cdecl alias "atk_state_set_contains_state" (byval set as AtkStateSet ptr, byval type as AtkStateType) as gboolean
-declare function atk_state_set_contains_states cdecl alias "atk_state_set_contains_states" (byval set as AtkStateSet ptr, byval types as AtkStateType ptr, byval n_types as gint) as gboolean
-declare function atk_state_set_remove_state cdecl alias "atk_state_set_remove_state" (byval set as AtkStateSet ptr, byval type as AtkStateType) as gboolean
-declare function atk_state_set_and_sets cdecl alias "atk_state_set_and_sets" (byval set as AtkStateSet ptr, byval compare_set as AtkStateSet ptr) as AtkStateSet ptr
-declare function atk_state_set_or_sets cdecl alias "atk_state_set_or_sets" (byval set as AtkStateSet ptr, byval compare_set as AtkStateSet ptr) as AtkStateSet ptr
-declare function atk_state_set_xor_sets cdecl alias "atk_state_set_xor_sets" (byval set as AtkStateSet ptr, byval compare_set as AtkStateSet ptr) as AtkStateSet ptr
+declare function atk_state_set_get_type () as GType
+declare function atk_state_set_new () as AtkStateSet ptr
+declare function atk_state_set_is_empty (byval set as AtkStateSet ptr) as gboolean
+declare function atk_state_set_add_state (byval set as AtkStateSet ptr, byval type as AtkStateType) as gboolean
+declare sub atk_state_set_add_states (byval set as AtkStateSet ptr, byval types as AtkStateType ptr, byval n_types as gint)
+declare sub atk_state_set_clear_states (byval set as AtkStateSet ptr)
+declare function atk_state_set_contains_state (byval set as AtkStateSet ptr, byval type as AtkStateType) as gboolean
+declare function atk_state_set_contains_states (byval set as AtkStateSet ptr, byval types as AtkStateType ptr, byval n_types as gint) as gboolean
+declare function atk_state_set_remove_state (byval set as AtkStateSet ptr, byval type as AtkStateType) as gboolean
+declare function atk_state_set_and_sets (byval set as AtkStateSet ptr, byval compare_set as AtkStateSet ptr) as AtkStateSet ptr
+declare function atk_state_set_or_sets (byval set as AtkStateSet ptr, byval compare_set as AtkStateSet ptr) as AtkStateSet ptr
+declare function atk_state_set_xor_sets (byval set as AtkStateSet ptr, byval compare_set as AtkStateSet ptr) as AtkStateSet ptr
 
 #endif

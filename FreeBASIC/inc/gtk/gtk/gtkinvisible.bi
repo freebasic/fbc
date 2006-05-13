@@ -11,12 +11,12 @@
 
 #include once "gtk/gtk/gtkwidget.bi"
 
-#define GTK_TYPE_INVISIBLE		(gtk_invisible_get_type ())
-#define GTK_INVISIBLE(obj)		(G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_INVISIBLE, GtkInvisible))
-#define GTK_INVISIBLE_CLASS(klass)	(G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_INVISIBLE, GtkInvisibleClass))
-#define GTK_IS_INVISIBLE(obj)		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_INVISIBLE))
-#define GTK_IS_INVISIBLE_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_INVISIBLE))
-#define GTK_INVISIBLE_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_INVISIBLE, GtkInvisibleClass))
+#define GTK_TYPE_INVISIBLE (gtk_invisible_get_type ())
+#define GTK_INVISIBLE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_INVISIBLE, GtkInvisible))
+#define GTK_INVISIBLE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_INVISIBLE, GtkInvisibleClass))
+#define GTK_IS_INVISIBLE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_INVISIBLE))
+#define GTK_IS_INVISIBLE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_INVISIBLE))
+#define GTK_INVISIBLE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_INVISIBLE, GtkInvisibleClass))
 
 type GtkInvisible as _GtkInvisible
 type GtkInvisibleClass as _GtkInvisibleClass
@@ -35,10 +35,10 @@ type _GtkInvisibleClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_invisible_get_type cdecl alias "gtk_invisible_get_type" () as GType
-declare function gtk_invisible_new cdecl alias "gtk_invisible_new" () as GtkWidget ptr
-declare function gtk_invisible_new_for_screen cdecl alias "gtk_invisible_new_for_screen" (byval screen as GdkScreen ptr) as GtkWidget ptr
-declare sub gtk_invisible_set_screen cdecl alias "gtk_invisible_set_screen" (byval invisible as GtkInvisible ptr, byval screen as GdkScreen ptr)
-declare function gtk_invisible_get_screen cdecl alias "gtk_invisible_get_screen" (byval invisible as GtkInvisible ptr) as GdkScreen ptr
+declare function gtk_invisible_get_type () as GType
+declare function gtk_invisible_new () as GtkWidget ptr
+declare function gtk_invisible_new_for_screen (byval screen as GdkScreen ptr) as GtkWidget ptr
+declare sub gtk_invisible_set_screen (byval invisible as GtkInvisible ptr, byval screen as GdkScreen ptr)
+declare function gtk_invisible_get_screen (byval invisible as GtkInvisible ptr) as GdkScreen ptr
 
 #endif

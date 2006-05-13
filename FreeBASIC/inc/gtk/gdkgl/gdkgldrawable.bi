@@ -35,16 +35,16 @@ type _GdkGLDrawableClass
 	get_size as sub cdecl(byval as GdkGLDrawable ptr, byval as gint ptr, byval as gint ptr)
 end type
 
-declare function gdk_gl_drawable_get_type cdecl alias "gdk_gl_drawable_get_type" () as GType
-declare function gdk_gl_drawable_make_current cdecl alias "gdk_gl_drawable_make_current" (byval gldrawable as GdkGLDrawable ptr, byval glcontext as GdkGLContext ptr) as gboolean
-declare function gdk_gl_drawable_is_double_buffered cdecl alias "gdk_gl_drawable_is_double_buffered" (byval gldrawable as GdkGLDrawable ptr) as gboolean
-declare sub gdk_gl_drawable_swap_buffers cdecl alias "gdk_gl_drawable_swap_buffers" (byval gldrawable as GdkGLDrawable ptr)
-declare sub gdk_gl_drawable_wait_gl cdecl alias "gdk_gl_drawable_wait_gl" (byval gldrawable as GdkGLDrawable ptr)
-declare sub gdk_gl_drawable_wait_gdk cdecl alias "gdk_gl_drawable_wait_gdk" (byval gldrawable as GdkGLDrawable ptr)
-declare function gdk_gl_drawable_gl_begin cdecl alias "gdk_gl_drawable_gl_begin" (byval gldrawable as GdkGLDrawable ptr, byval glcontext as GdkGLContext ptr) as gboolean
-declare sub gdk_gl_drawable_gl_end cdecl alias "gdk_gl_drawable_gl_end" (byval gldrawable as GdkGLDrawable ptr)
-declare function gdk_gl_drawable_get_gl_config cdecl alias "gdk_gl_drawable_get_gl_config" (byval gldrawable as GdkGLDrawable ptr) as GdkGLConfig ptr
-declare sub gdk_gl_drawable_get_size cdecl alias "gdk_gl_drawable_get_size" (byval gldrawable as GdkGLDrawable ptr, byval width as gint ptr, byval height as gint ptr)
-declare function gdk_gl_drawable_get_current cdecl alias "gdk_gl_drawable_get_current" () as GdkGLDrawable ptr
+declare function gdk_gl_drawable_get_type () as GType
+declare function gdk_gl_drawable_make_current (byval gldrawable as GdkGLDrawable ptr, byval glcontext as GdkGLContext ptr) as gboolean
+declare function gdk_gl_drawable_is_double_buffered (byval gldrawable as GdkGLDrawable ptr) as gboolean
+declare sub gdk_gl_drawable_swap_buffers (byval gldrawable as GdkGLDrawable ptr)
+declare sub gdk_gl_drawable_wait_gl (byval gldrawable as GdkGLDrawable ptr)
+declare sub gdk_gl_drawable_wait_gdk (byval gldrawable as GdkGLDrawable ptr)
+declare function gdk_gl_drawable_gl_begin (byval gldrawable as GdkGLDrawable ptr, byval glcontext as GdkGLContext ptr) as gboolean
+declare sub gdk_gl_drawable_gl_end (byval gldrawable as GdkGLDrawable ptr)
+declare function gdk_gl_drawable_get_gl_config (byval gldrawable as GdkGLDrawable ptr) as GdkGLConfig ptr
+declare sub gdk_gl_drawable_get_size (byval gldrawable as GdkGLDrawable ptr, byval width as gint ptr, byval height as gint ptr)
+declare function gdk_gl_drawable_get_current () as GdkGLDrawable ptr
 
 #endif

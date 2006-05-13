@@ -31,9 +31,9 @@ type _AtkHypertextIface
 	pad3 as AtkFunction
 end type
 
-declare function atk_hypertext_get_type cdecl alias "atk_hypertext_get_type" () as GType
-declare function atk_hypertext_get_link cdecl alias "atk_hypertext_get_link" (byval hypertext as AtkHypertext ptr, byval link_index as gint) as AtkHyperlink ptr
-declare function atk_hypertext_get_n_links cdecl alias "atk_hypertext_get_n_links" (byval hypertext as AtkHypertext ptr) as gint
-declare function atk_hypertext_get_link_index cdecl alias "atk_hypertext_get_link_index" (byval hypertext as AtkHypertext ptr, byval char_index as gint) as gint
+declare function atk_hypertext_get_type () as GType
+declare function atk_hypertext_get_link (byval hypertext as AtkHypertext ptr, byval link_index as gint) as AtkHyperlink ptr
+declare function atk_hypertext_get_n_links (byval hypertext as AtkHypertext ptr) as gint
+declare function atk_hypertext_get_link_index (byval hypertext as AtkHypertext ptr, byval char_index as gint) as gint
 
 #endif

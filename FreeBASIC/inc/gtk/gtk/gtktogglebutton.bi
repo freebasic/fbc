@@ -12,12 +12,12 @@
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkbutton.bi"
 
-#define GTK_TYPE_TOGGLE_BUTTON                  (gtk_toggle_button_get_type ())
-#define GTK_TOGGLE_BUTTON(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TOGGLE_BUTTON, GtkToggleButton))
-#define GTK_TOGGLE_BUTTON_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TOGGLE_BUTTON, GtkToggleButtonClass))
-#define GTK_IS_TOGGLE_BUTTON(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TOGGLE_BUTTON))
-#define GTK_IS_TOGGLE_BUTTON_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TOGGLE_BUTTON))
-#define GTK_TOGGLE_BUTTON_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TOGGLE_BUTTON, GtkToggleButtonClass))
+#define GTK_TYPE_TOGGLE_BUTTON (gtk_toggle_button_get_type ())
+#define GTK_TOGGLE_BUTTON(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TOGGLE_BUTTON, GtkToggleButton))
+#define GTK_TOGGLE_BUTTON_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TOGGLE_BUTTON, GtkToggleButtonClass))
+#define GTK_IS_TOGGLE_BUTTON(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TOGGLE_BUTTON))
+#define GTK_IS_TOGGLE_BUTTON_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TOGGLE_BUTTON))
+#define GTK_TOGGLE_BUTTON_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TOGGLE_BUTTON, GtkToggleButtonClass))
 
 type GtkToggleButton as _GtkToggleButton
 type GtkToggleButtonClass as _GtkToggleButtonClass
@@ -38,17 +38,17 @@ type _GtkToggleButtonClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_toggle_button_get_type cdecl alias "gtk_toggle_button_get_type" () as GType
-declare function gtk_toggle_button_new cdecl alias "gtk_toggle_button_new" () as GtkWidget ptr
-declare function gtk_toggle_button_new_with_label cdecl alias "gtk_toggle_button_new_with_label" (byval label as zstring ptr) as GtkWidget ptr
-declare function gtk_toggle_button_new_with_mnemonic cdecl alias "gtk_toggle_button_new_with_mnemonic" (byval label as zstring ptr) as GtkWidget ptr
-declare sub gtk_toggle_button_set_mode cdecl alias "gtk_toggle_button_set_mode" (byval toggle_button as GtkToggleButton ptr, byval draw_indicator as gboolean)
-declare function gtk_toggle_button_get_mode cdecl alias "gtk_toggle_button_get_mode" (byval toggle_button as GtkToggleButton ptr) as gboolean
-declare sub gtk_toggle_button_set_active cdecl alias "gtk_toggle_button_set_active" (byval toggle_button as GtkToggleButton ptr, byval is_active as gboolean)
-declare function gtk_toggle_button_get_active cdecl alias "gtk_toggle_button_get_active" (byval toggle_button as GtkToggleButton ptr) as gboolean
-declare sub gtk_toggle_button_toggled cdecl alias "gtk_toggle_button_toggled" (byval toggle_button as GtkToggleButton ptr)
-declare sub gtk_toggle_button_set_inconsistent cdecl alias "gtk_toggle_button_set_inconsistent" (byval toggle_button as GtkToggleButton ptr, byval setting as gboolean)
-declare function gtk_toggle_button_get_inconsistent cdecl alias "gtk_toggle_button_get_inconsistent" (byval toggle_button as GtkToggleButton ptr) as gboolean
+declare function gtk_toggle_button_get_type () as GType
+declare function gtk_toggle_button_new () as GtkWidget ptr
+declare function gtk_toggle_button_new_with_label (byval label as zstring ptr) as GtkWidget ptr
+declare function gtk_toggle_button_new_with_mnemonic (byval label as zstring ptr) as GtkWidget ptr
+declare sub gtk_toggle_button_set_mode (byval toggle_button as GtkToggleButton ptr, byval draw_indicator as gboolean)
+declare function gtk_toggle_button_get_mode (byval toggle_button as GtkToggleButton ptr) as gboolean
+declare sub gtk_toggle_button_set_active (byval toggle_button as GtkToggleButton ptr, byval is_active as gboolean)
+declare function gtk_toggle_button_get_active (byval toggle_button as GtkToggleButton ptr) as gboolean
+declare sub gtk_toggle_button_toggled (byval toggle_button as GtkToggleButton ptr)
+declare sub gtk_toggle_button_set_inconsistent (byval toggle_button as GtkToggleButton ptr, byval setting as gboolean)
+declare function gtk_toggle_button_get_inconsistent (byval toggle_button as GtkToggleButton ptr) as gboolean
 
 #define	gtk_toggle_button_set_state	gtk_toggle_button_set_active
 

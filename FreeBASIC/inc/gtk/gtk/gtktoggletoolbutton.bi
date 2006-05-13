@@ -11,12 +11,12 @@
 
 #include once "gtk/gtk/gtktoolbutton.bi"
 
-#define GTK_TYPE_TOGGLE_TOOL_BUTTON             (gtk_toggle_tool_button_get_type ())
-#define GTK_TOGGLE_TOOL_BUTTON(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TOGGLE_TOOL_BUTTON, GtkToggleToolButton))
-#define GTK_TOGGLE_TOOL_BUTTON_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TOGGLE_TOOL_BUTTON, GtkToggleToolButtonClass))
-#define GTK_IS_TOGGLE_TOOL_BUTTON(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TOGGLE_TOOL_BUTTON))
-#define GTK_IS_TOGGLE_TOOL_BUTTON_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TOGGLE_TOOL_BUTTON))
-#define GTK_TOGGLE_TOOL_BUTTON_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS((obj), GTK_TYPE_TOGGLE_TOOL_BUTTON, GtkToggleToolButtonClass))
+#define GTK_TYPE_TOGGLE_TOOL_BUTTON (gtk_toggle_tool_button_get_type ())
+#define GTK_TOGGLE_TOOL_BUTTON(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TOGGLE_TOOL_BUTTON, GtkToggleToolButton))
+#define GTK_TOGGLE_TOOL_BUTTON_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TOGGLE_TOOL_BUTTON, GtkToggleToolButtonClass))
+#define GTK_IS_TOGGLE_TOOL_BUTTON(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TOGGLE_TOOL_BUTTON))
+#define GTK_IS_TOGGLE_TOOL_BUTTON_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TOGGLE_TOOL_BUTTON))
+#define GTK_TOGGLE_TOOL_BUTTON_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GTK_TYPE_TOGGLE_TOOL_BUTTON, GtkToggleToolButtonClass))
 
 type GtkToggleToolButton as _GtkToggleToolButton
 type GtkToggleToolButtonClass as _GtkToggleToolButtonClass
@@ -36,10 +36,10 @@ type _GtkToggleToolButtonClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_toggle_tool_button_get_type cdecl alias "gtk_toggle_tool_button_get_type" () as GType
-declare function gtk_toggle_tool_button_new cdecl alias "gtk_toggle_tool_button_new" () as GtkToolItem ptr
-declare function gtk_toggle_tool_button_new_from_stock cdecl alias "gtk_toggle_tool_button_new_from_stock" (byval stock_id as zstring ptr) as GtkToolItem ptr
-declare sub gtk_toggle_tool_button_set_active cdecl alias "gtk_toggle_tool_button_set_active" (byval button as GtkToggleToolButton ptr, byval is_active as gboolean)
-declare function gtk_toggle_tool_button_get_active cdecl alias "gtk_toggle_tool_button_get_active" (byval button as GtkToggleToolButton ptr) as gboolean
+declare function gtk_toggle_tool_button_get_type () as GType
+declare function gtk_toggle_tool_button_new () as GtkToolItem ptr
+declare function gtk_toggle_tool_button_new_from_stock (byval stock_id as zstring ptr) as GtkToolItem ptr
+declare sub gtk_toggle_tool_button_set_active (byval button as GtkToggleToolButton ptr, byval is_active as gboolean)
+declare function gtk_toggle_tool_button_get_active (byval button as GtkToggleToolButton ptr) as gboolean
 
 #endif

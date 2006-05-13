@@ -11,9 +11,9 @@
 
 #include once "gtk/libart/art_svp.bi"
 
-declare function art_svp_union cdecl alias "art_svp_union" (byval svp1 as ArtSVP ptr, byval svp2 as ArtSVP ptr) as ArtSVP ptr
-declare function art_svp_intersect cdecl alias "art_svp_intersect" (byval svp1 as ArtSVP ptr, byval svp2 as ArtSVP ptr) as ArtSVP ptr
-declare function art_svp_diff cdecl alias "art_svp_diff" (byval svp1 as ArtSVP ptr, byval svp2 as ArtSVP ptr) as ArtSVP ptr
-declare function art_svp_minus cdecl alias "art_svp_minus" (byval svp1 as ArtSVP ptr, byval svp2 as ArtSVP ptr) as ArtSVP ptr
+declare function art_svp_union (byval svp1 as ArtSVP ptr, byval svp2 as ArtSVP ptr) as ArtSVP ptr
+declare function art_svp_intersect (byval svp1 as ArtSVP ptr, byval svp2 as ArtSVP ptr) as ArtSVP ptr
+declare function art_svp_diff (byval svp1 as ArtSVP ptr, byval svp2 as ArtSVP ptr) as ArtSVP ptr
+declare function art_svp_minus (byval svp1 as ArtSVP ptr, byval svp2 as ArtSVP ptr) as ArtSVP ptr
 
 #endif

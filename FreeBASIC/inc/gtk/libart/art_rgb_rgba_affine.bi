@@ -12,6 +12,6 @@
 #include once "gtk/libart/art_filterlevel.bi"
 #include once "gtk/libart/art_alphagamma.bi"
 
-declare sub art_rgb_rgba_affine cdecl alias "art_rgb_rgba_affine" (byval dst as art_u8 ptr, byval x0 as integer, byval y0 as integer, byval x1 as integer, byval y1 as integer, byval dst_rowstride as integer, byval src as art_u8 ptr, byval src_width as integer, byval src_height as integer, byval src_rowstride as integer, byval affine as double ptr, byval level as ArtFilterLevel, byval alphagamma as ArtAlphaGamma ptr)
+declare sub art_rgb_rgba_affine (byval dst as art_u8 ptr, byval x0 as integer, byval y0 as integer, byval x1 as integer, byval y1 as integer, byval dst_rowstride as integer, byval src as art_u8 ptr, byval src_width as integer, byval src_height as integer, byval src_rowstride as integer, byval affine as double ptr, byval level as ArtFilterLevel, byval alphagamma as ArtAlphaGamma ptr)
 
 #endif

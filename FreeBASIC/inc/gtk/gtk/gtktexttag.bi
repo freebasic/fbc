@@ -14,14 +14,14 @@
 #include once "gtk/gtk/gtkenums.bi"
 #include once "gtk/gtk/gtkobject.bi"
 
-#define GTK_TYPE_TEXT_TAG            (gtk_text_tag_get_type ())
-#define GTK_TEXT_TAG(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TEXT_TAG, GtkTextTag))
-#define GTK_TEXT_TAG_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TEXT_TAG, GtkTextTagClass))
-#define GTK_IS_TEXT_TAG(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TEXT_TAG))
+#define GTK_TYPE_TEXT_TAG (gtk_text_tag_get_type ())
+#define GTK_TEXT_TAG(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TEXT_TAG, GtkTextTag))
+#define GTK_TEXT_TAG_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TEXT_TAG, GtkTextTagClass))
+#define GTK_IS_TEXT_TAG(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TEXT_TAG))
 #define GTK_IS_TEXT_TAG_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TEXT_TAG))
-#define GTK_TEXT_TAG_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TEXT_TAG, GtkTextTagClass))
+#define GTK_TEXT_TAG_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TEXT_TAG, GtkTextTagClass))
 
-#define GTK_TYPE_TEXT_ATTRIBUTES     (gtk_text_attributes_get_type ())
+#define GTK_TYPE_TEXT_ATTRIBUTES (gtk_text_attributes_get_type ())
 
 type GtkTextIter as _GtkTextIter
 type GtkTextTagTable as _GtkTextTagTable
@@ -70,11 +70,11 @@ type _GtkTextTagClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_text_tag_get_type cdecl alias "gtk_text_tag_get_type" () as GType
-declare function gtk_text_tag_new cdecl alias "gtk_text_tag_new" (byval name as zstring ptr) as GtkTextTag ptr
-declare function gtk_text_tag_get_priority cdecl alias "gtk_text_tag_get_priority" (byval tag as GtkTextTag ptr) as gint
-declare sub gtk_text_tag_set_priority cdecl alias "gtk_text_tag_set_priority" (byval tag as GtkTextTag ptr, byval priority as gint)
-declare function gtk_text_tag_event cdecl alias "gtk_text_tag_event" (byval tag as GtkTextTag ptr, byval event_object as GObject ptr, byval event as GdkEvent ptr, byval iter as GtkTextIter ptr) as gboolean
+declare function gtk_text_tag_get_type () as GType
+declare function gtk_text_tag_new (byval name as zstring ptr) as GtkTextTag ptr
+declare function gtk_text_tag_get_priority (byval tag as GtkTextTag ptr) as gint
+declare sub gtk_text_tag_set_priority (byval tag as GtkTextTag ptr, byval priority as gint)
+declare function gtk_text_tag_event (byval tag as GtkTextTag ptr, byval event_object as GObject ptr, byval event as GdkEvent ptr, byval iter as GtkTextIter ptr) as gboolean
 
 type GtkTextAppearance as _GtkTextAppearance
 
@@ -123,11 +123,11 @@ type _GtkTextAttributes
 	pad4:1 as guint
 end type
 
-declare function gtk_text_attributes_new cdecl alias "gtk_text_attributes_new" () as GtkTextAttributes ptr
-declare function gtk_text_attributes_copy cdecl alias "gtk_text_attributes_copy" (byval src as GtkTextAttributes ptr) as GtkTextAttributes ptr
-declare sub gtk_text_attributes_copy_values cdecl alias "gtk_text_attributes_copy_values" (byval src as GtkTextAttributes ptr, byval dest as GtkTextAttributes ptr)
-declare sub gtk_text_attributes_unref cdecl alias "gtk_text_attributes_unref" (byval values as GtkTextAttributes ptr)
-declare sub gtk_text_attributes_ref cdecl alias "gtk_text_attributes_ref" (byval values as GtkTextAttributes ptr)
-declare function gtk_text_attributes_get_type cdecl alias "gtk_text_attributes_get_type" () as GType
+declare function gtk_text_attributes_new () as GtkTextAttributes ptr
+declare function gtk_text_attributes_copy (byval src as GtkTextAttributes ptr) as GtkTextAttributes ptr
+declare sub gtk_text_attributes_copy_values (byval src as GtkTextAttributes ptr, byval dest as GtkTextAttributes ptr)
+declare sub gtk_text_attributes_unref (byval values as GtkTextAttributes ptr)
+declare sub gtk_text_attributes_ref (byval values as GtkTextAttributes ptr)
+declare function gtk_text_attributes_get_type () as GType
 
 #endif

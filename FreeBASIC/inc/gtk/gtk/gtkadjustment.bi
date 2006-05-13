@@ -12,12 +12,12 @@
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkobject.bi"
 
-#define GTK_TYPE_ADJUSTMENT                  (gtk_adjustment_get_type ())
-#define GTK_ADJUSTMENT(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_ADJUSTMENT, GtkAdjustment))
-#define GTK_ADJUSTMENT_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_ADJUSTMENT, GtkAdjustmentClass))
-#define GTK_IS_ADJUSTMENT(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_ADJUSTMENT))
-#define GTK_IS_ADJUSTMENT_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_ADJUSTMENT))
-#define GTK_ADJUSTMENT_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_ADJUSTMENT, GtkAdjustmentClass))
+#define GTK_TYPE_ADJUSTMENT (gtk_adjustment_get_type ())
+#define GTK_ADJUSTMENT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_ADJUSTMENT, GtkAdjustment))
+#define GTK_ADJUSTMENT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_ADJUSTMENT, GtkAdjustmentClass))
+#define GTK_IS_ADJUSTMENT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_ADJUSTMENT))
+#define GTK_IS_ADJUSTMENT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_ADJUSTMENT))
+#define GTK_ADJUSTMENT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_ADJUSTMENT, GtkAdjustmentClass))
 
 type GtkAdjustment as _GtkAdjustment
 type GtkAdjustmentClass as _GtkAdjustmentClass
@@ -42,12 +42,12 @@ type _GtkAdjustmentClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_adjustment_get_type cdecl alias "gtk_adjustment_get_type" () as GType
-declare function gtk_adjustment_new cdecl alias "gtk_adjustment_new" (byval value as gdouble, byval lower as gdouble, byval upper as gdouble, byval step_increment as gdouble, byval page_increment as gdouble, byval page_size as gdouble) as GtkObject ptr
-declare sub gtk_adjustment_changed cdecl alias "gtk_adjustment_changed" (byval adjustment as GtkAdjustment ptr)
-declare sub gtk_adjustment_value_changed cdecl alias "gtk_adjustment_value_changed" (byval adjustment as GtkAdjustment ptr)
-declare sub gtk_adjustment_clamp_page cdecl alias "gtk_adjustment_clamp_page" (byval adjustment as GtkAdjustment ptr, byval lower as gdouble, byval upper as gdouble)
-declare function gtk_adjustment_get_value cdecl alias "gtk_adjustment_get_value" (byval adjustment as GtkAdjustment ptr) as gdouble
-declare sub gtk_adjustment_set_value cdecl alias "gtk_adjustment_set_value" (byval adjustment as GtkAdjustment ptr, byval value as gdouble)
+declare function gtk_adjustment_get_type () as GType
+declare function gtk_adjustment_new (byval value as gdouble, byval lower as gdouble, byval upper as gdouble, byval step_increment as gdouble, byval page_increment as gdouble, byval page_size as gdouble) as GtkObject ptr
+declare sub gtk_adjustment_changed (byval adjustment as GtkAdjustment ptr)
+declare sub gtk_adjustment_value_changed (byval adjustment as GtkAdjustment ptr)
+declare sub gtk_adjustment_clamp_page (byval adjustment as GtkAdjustment ptr, byval lower as gdouble, byval upper as gdouble)
+declare function gtk_adjustment_get_value (byval adjustment as GtkAdjustment ptr) as gdouble
+declare sub gtk_adjustment_set_value (byval adjustment as GtkAdjustment ptr, byval value as gdouble)
 
 #endif

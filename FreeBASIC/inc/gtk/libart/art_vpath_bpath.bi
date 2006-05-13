@@ -12,7 +12,7 @@
 #include once "gtk/libart/art_bpath.bi"
 #include once "gtk/libart/art_vpath.bi"
 
-declare function art_bezier_to_vec cdecl alias "art_bezier_to_vec" (byval x0 as double, byval y0 as double, byval x1 as double, byval y1 as double, byval x2 as double, byval y2 as double, byval x3 as double, byval y3 as double, byval p as ArtPoint ptr, byval level as integer) as ArtPoint ptr
-declare function art_bez_path_to_vec cdecl alias "art_bez_path_to_vec" (byval bez as ArtBpath ptr, byval flatness as double) as ArtVpath ptr
+declare function art_bezier_to_vec (byval x0 as double, byval y0 as double, byval x1 as double, byval y1 as double, byval x2 as double, byval y2 as double, byval x3 as double, byval y3 as double, byval p as ArtPoint ptr, byval level as integer) as ArtPoint ptr
+declare function art_bez_path_to_vec (byval bez as ArtBpath ptr, byval flatness as double) as ArtVpath ptr
 
 #endif

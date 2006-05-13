@@ -12,6 +12,6 @@
 #include once "gtk/libart/art_svp.bi"
 #include once "gtk/libart/art_uta.bi"
 
-declare function art_uta_from_svp cdecl alias "art_uta_from_svp" (byval svp as ArtSVP ptr) as ArtUta ptr
+declare function art_uta_from_svp (byval svp as ArtSVP ptr) as ArtUta ptr
 
 #endif

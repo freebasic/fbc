@@ -21,7 +21,7 @@ enum GMarkupError
 end enum
 
 
-declare function g_markup_error_quark cdecl alias "g_markup_error_quark" () as GQuark
+declare function g_markup_error_quark () as GQuark
 
 enum GMarkupParseFlags
 	G_MARKUP_DO_NOT_USE_THIS_UNSUPPORTED_FLAG = 1 shl 0
@@ -38,14 +38,14 @@ type _GMarkupParser
 	error as sub cdecl(byval as GMarkupParseContext ptr, byval as GError ptr, byval as gpointer)
 end type
 
-declare function g_markup_parse_context_new cdecl alias "g_markup_parse_context_new" (byval parser as GMarkupParser ptr, byval flags as GMarkupParseFlags, byval user_data as gpointer, byval user_data_dnotify as GDestroyNotify) as GMarkupParseContext ptr
-declare sub g_markup_parse_context_free cdecl alias "g_markup_parse_context_free" (byval context as GMarkupParseContext ptr)
-declare function g_markup_parse_context_parse cdecl alias "g_markup_parse_context_parse" (byval context as GMarkupParseContext ptr, byval text as zstring ptr, byval text_len as gssize, byval error as GError ptr ptr) as gboolean
-declare function g_markup_parse_context_end_parse cdecl alias "g_markup_parse_context_end_parse" (byval context as GMarkupParseContext ptr, byval error as GError ptr ptr) as gboolean
-declare function g_markup_parse_context_get_element cdecl alias "g_markup_parse_context_get_element" (byval context as GMarkupParseContext ptr) as zstring ptr
-declare sub g_markup_parse_context_get_position cdecl alias "g_markup_parse_context_get_position" (byval context as GMarkupParseContext ptr, byval line_number as gint ptr, byval char_number as gint ptr)
-declare function g_markup_escape_text cdecl alias "g_markup_escape_text" (byval text as zstring ptr, byval length as gssize) as zstring ptr
-declare function g_markup_printf_escaped cdecl alias "g_markup_printf_escaped" (byval format as zstring ptr, ...) as zstring ptr
-''''''' declare function g_markup_vprintf_escaped cdecl alias "g_markup_vprintf_escaped" (byval format as zstring ptr, byval args as va_list) as zstring ptr
+declare function g_markup_parse_context_new (byval parser as GMarkupParser ptr, byval flags as GMarkupParseFlags, byval user_data as gpointer, byval user_data_dnotify as GDestroyNotify) as GMarkupParseContext ptr
+declare sub g_markup_parse_context_free (byval context as GMarkupParseContext ptr)
+declare function g_markup_parse_context_parse (byval context as GMarkupParseContext ptr, byval text as zstring ptr, byval text_len as gssize, byval error as GError ptr ptr) as gboolean
+declare function g_markup_parse_context_end_parse (byval context as GMarkupParseContext ptr, byval error as GError ptr ptr) as gboolean
+declare function g_markup_parse_context_get_element (byval context as GMarkupParseContext ptr) as zstring ptr
+declare sub g_markup_parse_context_get_position (byval context as GMarkupParseContext ptr, byval line_number as gint ptr, byval char_number as gint ptr)
+declare function g_markup_escape_text (byval text as zstring ptr, byval length as gssize) as zstring ptr
+declare function g_markup_printf_escaped (byval format as zstring ptr, ...) as zstring ptr
+''''''' declare function g_markup_vprintf_escaped (byval format as zstring ptr, byval args as va_list) as zstring ptr
 
 #endif

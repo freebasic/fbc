@@ -11,12 +11,12 @@
 
 #include once "gtk/gtk/gtkdialog.bi"
 
-#define GTK_TYPE_MESSAGE_DIALOG                  (gtk_message_dialog_get_type ())
-#define GTK_MESSAGE_DIALOG(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_MESSAGE_DIALOG, GtkMessageDialog))
-#define GTK_MESSAGE_DIALOG_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_MESSAGE_DIALOG, GtkMessageDialogClass))
-#define GTK_IS_MESSAGE_DIALOG(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_MESSAGE_DIALOG))
-#define GTK_IS_MESSAGE_DIALOG_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_MESSAGE_DIALOG))
-#define GTK_MESSAGE_DIALOG_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_MESSAGE_DIALOG, GtkMessageDialogClass))
+#define GTK_TYPE_MESSAGE_DIALOG (gtk_message_dialog_get_type ())
+#define GTK_MESSAGE_DIALOG(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_MESSAGE_DIALOG, GtkMessageDialog))
+#define GTK_MESSAGE_DIALOG_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_MESSAGE_DIALOG, GtkMessageDialogClass))
+#define GTK_IS_MESSAGE_DIALOG(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_MESSAGE_DIALOG))
+#define GTK_IS_MESSAGE_DIALOG_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_MESSAGE_DIALOG))
+#define GTK_MESSAGE_DIALOG_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_MESSAGE_DIALOG, GtkMessageDialogClass))
 
 enum GtkMessageType
 	GTK_MESSAGE_INFO
@@ -52,11 +52,11 @@ type _GtkMessageDialogClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_message_dialog_get_type cdecl alias "gtk_message_dialog_get_type" () as GType
-declare function gtk_message_dialog_new cdecl alias "gtk_message_dialog_new" (byval parent as GtkWindow ptr, byval flags as GtkDialogFlags, byval type as GtkMessageType, byval buttons as GtkButtonsType, byval message_format as zstring ptr, ...) as GtkWidget ptr
-declare function gtk_message_dialog_new_with_markup cdecl alias "gtk_message_dialog_new_with_markup" (byval parent as GtkWindow ptr, byval flags as GtkDialogFlags, byval type as GtkMessageType, byval buttons as GtkButtonsType, byval message_format as zstring ptr, ...) as GtkWidget ptr
-declare sub gtk_message_dialog_set_markup cdecl alias "gtk_message_dialog_set_markup" (byval message_dialog as GtkMessageDialog ptr, byval str as zstring ptr)
-declare sub gtk_message_dialog_format_secondary_text cdecl alias "gtk_message_dialog_format_secondary_text" (byval message_dialog as GtkMessageDialog ptr, byval message_format as zstring ptr, ...)
-declare sub gtk_message_dialog_format_secondary_markup cdecl alias "gtk_message_dialog_format_secondary_markup" (byval message_dialog as GtkMessageDialog ptr, byval message_format as zstring ptr, ...)
+declare function gtk_message_dialog_get_type () as GType
+declare function gtk_message_dialog_new (byval parent as GtkWindow ptr, byval flags as GtkDialogFlags, byval type as GtkMessageType, byval buttons as GtkButtonsType, byval message_format as zstring ptr, ...) as GtkWidget ptr
+declare function gtk_message_dialog_new_with_markup (byval parent as GtkWindow ptr, byval flags as GtkDialogFlags, byval type as GtkMessageType, byval buttons as GtkButtonsType, byval message_format as zstring ptr, ...) as GtkWidget ptr
+declare sub gtk_message_dialog_set_markup (byval message_dialog as GtkMessageDialog ptr, byval str as zstring ptr)
+declare sub gtk_message_dialog_format_secondary_text (byval message_dialog as GtkMessageDialog ptr, byval message_format as zstring ptr, ...)
+declare sub gtk_message_dialog_format_secondary_markup (byval message_dialog as GtkMessageDialog ptr, byval message_format as zstring ptr, ...)
 
 #endif

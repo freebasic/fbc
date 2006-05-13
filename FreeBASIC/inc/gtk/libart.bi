@@ -13,7 +13,7 @@
 # pragma push(msbitfields)
 #endif
 
-#inclib "art_lgpl_2"
+extern "c" lib "art_lgpl_2"
 
 #include once "gtk/libart/art_affine.bi"
 #include once "gtk/libart/art_alphagamma.bi"
@@ -49,6 +49,8 @@
 #include once "gtk/libart/art_vpath_bpath.bi"
 #include once "gtk/libart/art_vpath_dash.bi"
 #include once "gtk/libart/art_vpath_svp.bi"
+
+end extern
 
 #ifdef __FB_WIN32__
 # pragma pop(msbitfields)

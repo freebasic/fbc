@@ -102,14 +102,14 @@ type _GdkCursor
 	ref_count as guint
 end type
 
-declare function gdk_cursor_get_type cdecl alias "gdk_cursor_get_type" () as GType
-declare function gdk_cursor_new_for_display cdecl alias "gdk_cursor_new_for_display" (byval display as GdkDisplay ptr, byval cursor_type as GdkCursorType) as GdkCursor ptr
-declare function gdk_cursor_new cdecl alias "gdk_cursor_new" (byval cursor_type as GdkCursorType) as GdkCursor ptr
-declare function gdk_cursor_new_from_pixmap cdecl alias "gdk_cursor_new_from_pixmap" (byval source as GdkPixmap ptr, byval mask as GdkPixmap ptr, byval fg as GdkColor ptr, byval bg as GdkColor ptr, byval x as gint, byval y as gint) as GdkCursor ptr
-declare function gdk_cursor_new_from_pixbuf cdecl alias "gdk_cursor_new_from_pixbuf" (byval display as GdkDisplay ptr, byval pixbuf as GdkPixbuf ptr, byval x as gint, byval y as gint) as GdkCursor ptr
-declare function gdk_cursor_get_display cdecl alias "gdk_cursor_get_display" (byval cursor as GdkCursor ptr) as GdkDisplay ptr
-declare function gdk_cursor_ref cdecl alias "gdk_cursor_ref" (byval cursor as GdkCursor ptr) as GdkCursor ptr
-declare sub gdk_cursor_unref cdecl alias "gdk_cursor_unref" (byval cursor as GdkCursor ptr)
+declare function gdk_cursor_get_type () as GType
+declare function gdk_cursor_new_for_display (byval display as GdkDisplay ptr, byval cursor_type as GdkCursorType) as GdkCursor ptr
+declare function gdk_cursor_new (byval cursor_type as GdkCursorType) as GdkCursor ptr
+declare function gdk_cursor_new_from_pixmap (byval source as GdkPixmap ptr, byval mask as GdkPixmap ptr, byval fg as GdkColor ptr, byval bg as GdkColor ptr, byval x as gint, byval y as gint) as GdkCursor ptr
+declare function gdk_cursor_new_from_pixbuf (byval display as GdkDisplay ptr, byval pixbuf as GdkPixbuf ptr, byval x as gint, byval y as gint) as GdkCursor ptr
+declare function gdk_cursor_get_display (byval cursor as GdkCursor ptr) as GdkDisplay ptr
+declare function gdk_cursor_ref (byval cursor as GdkCursor ptr) as GdkCursor ptr
+declare sub gdk_cursor_unref (byval cursor as GdkCursor ptr)
 
 #define gdk_cursor_destroy gdk_cursor_unref
 

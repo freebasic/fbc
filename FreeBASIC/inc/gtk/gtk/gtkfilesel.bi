@@ -12,12 +12,12 @@
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkdialog.bi"
 
-#define GTK_TYPE_FILE_SELECTION            (gtk_file_selection_get_type ())
-#define GTK_FILE_SELECTION(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FILE_SELECTION, GtkFileSelection))
-#define GTK_FILE_SELECTION_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_FILE_SELECTION, GtkFileSelectionClass))
-#define GTK_IS_FILE_SELECTION(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_FILE_SELECTION))
+#define GTK_TYPE_FILE_SELECTION (gtk_file_selection_get_type ())
+#define GTK_FILE_SELECTION(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FILE_SELECTION, GtkFileSelection))
+#define GTK_FILE_SELECTION_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_FILE_SELECTION, GtkFileSelectionClass))
+#define GTK_IS_FILE_SELECTION(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_FILE_SELECTION))
 #define GTK_IS_FILE_SELECTION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_FILE_SELECTION))
-#define GTK_FILE_SELECTION_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_FILE_SELECTION, GtkFileSelectionClass))
+#define GTK_FILE_SELECTION_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_FILE_SELECTION, GtkFileSelectionClass))
 
 type GtkFileSelection as _GtkFileSelection
 type GtkFileSelectionClass as _GtkFileSelectionClass
@@ -56,15 +56,15 @@ type _GtkFileSelectionClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_file_selection_get_type cdecl alias "gtk_file_selection_get_type" () as GType
-declare function gtk_file_selection_new cdecl alias "gtk_file_selection_new" (byval title as zstring ptr) as GtkWidget ptr
-declare sub gtk_file_selection_set_filename cdecl alias "gtk_file_selection_set_filename" (byval filesel as GtkFileSelection ptr, byval filename as zstring ptr)
-declare function gtk_file_selection_get_filename cdecl alias "gtk_file_selection_get_filename" (byval filesel as GtkFileSelection ptr) as zstring ptr
-declare sub gtk_file_selection_complete cdecl alias "gtk_file_selection_complete" (byval filesel as GtkFileSelection ptr, byval pattern as zstring ptr)
-declare sub gtk_file_selection_show_fileop_buttons cdecl alias "gtk_file_selection_show_fileop_buttons" (byval filesel as GtkFileSelection ptr)
-declare sub gtk_file_selection_hide_fileop_buttons cdecl alias "gtk_file_selection_hide_fileop_buttons" (byval filesel as GtkFileSelection ptr)
-declare function gtk_file_selection_get_selections cdecl alias "gtk_file_selection_get_selections" (byval filesel as GtkFileSelection ptr) as zstring ptr ptr
-declare sub gtk_file_selection_set_select_multiple cdecl alias "gtk_file_selection_set_select_multiple" (byval filesel as GtkFileSelection ptr, byval select_multiple as gboolean)
-declare function gtk_file_selection_get_select_multiple cdecl alias "gtk_file_selection_get_select_multiple" (byval filesel as GtkFileSelection ptr) as gboolean
+declare function gtk_file_selection_get_type () as GType
+declare function gtk_file_selection_new (byval title as zstring ptr) as GtkWidget ptr
+declare sub gtk_file_selection_set_filename (byval filesel as GtkFileSelection ptr, byval filename as zstring ptr)
+declare function gtk_file_selection_get_filename (byval filesel as GtkFileSelection ptr) as zstring ptr
+declare sub gtk_file_selection_complete (byval filesel as GtkFileSelection ptr, byval pattern as zstring ptr)
+declare sub gtk_file_selection_show_fileop_buttons (byval filesel as GtkFileSelection ptr)
+declare sub gtk_file_selection_hide_fileop_buttons (byval filesel as GtkFileSelection ptr)
+declare function gtk_file_selection_get_selections (byval filesel as GtkFileSelection ptr) as zstring ptr ptr
+declare sub gtk_file_selection_set_select_multiple (byval filesel as GtkFileSelection ptr, byval select_multiple as gboolean)
+declare function gtk_file_selection_get_select_multiple (byval filesel as GtkFileSelection ptr) as gboolean
 
 #endif

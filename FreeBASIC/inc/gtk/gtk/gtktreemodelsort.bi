@@ -12,12 +12,12 @@
 #include once "gtk/gtk/gtktreemodel.bi"
 #include once "gtk/gtk/gtktreesortable.bi"
 
-#define GTK_TYPE_TREE_MODEL_SORT			(gtk_tree_model_sort_get_type ())
-#define GTK_TREE_MODEL_SORT(obj)			(G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TREE_MODEL_SORT, GtkTreeModelSort))
-#define GTK_TREE_MODEL_SORT_CLASS(klass)		(G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TREE_MODEL_SORT, GtkTreeModelSortClass))
-#define GTK_IS_TREE_MODEL_SORT(obj)			(G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TREE_MODEL_SORT))
-#define GTK_IS_TREE_MODEL_SORT_CLASS(klass)		(G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TREE_MODEL_SORT))
-#define GTK_TREE_MODEL_SORT_GET_CLASS(obj)		(G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TREE_MODEL_SORT, GtkTreeModelSortClass))
+#define GTK_TYPE_TREE_MODEL_SORT (gtk_tree_model_sort_get_type ())
+#define GTK_TREE_MODEL_SORT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_TREE_MODEL_SORT, GtkTreeModelSort))
+#define GTK_TREE_MODEL_SORT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TREE_MODEL_SORT, GtkTreeModelSortClass))
+#define GTK_IS_TREE_MODEL_SORT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_TREE_MODEL_SORT))
+#define GTK_IS_TREE_MODEL_SORT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TREE_MODEL_SORT))
+#define GTK_TREE_MODEL_SORT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_TREE_MODEL_SORT, GtkTreeModelSortClass))
 
 type GtkTreeModelSort as _GtkTreeModelSort
 type GtkTreeModelSortClass as _GtkTreeModelSortClass
@@ -50,15 +50,15 @@ type _GtkTreeModelSortClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_tree_model_sort_get_type cdecl alias "gtk_tree_model_sort_get_type" () as GType
-declare function gtk_tree_model_sort_new_with_model cdecl alias "gtk_tree_model_sort_new_with_model" (byval child_model as GtkTreeModel ptr) as GtkTreeModel ptr
-declare function gtk_tree_model_sort_get_model cdecl alias "gtk_tree_model_sort_get_model" (byval tree_model as GtkTreeModelSort ptr) as GtkTreeModel ptr
-declare function gtk_tree_model_sort_convert_child_path_to_path cdecl alias "gtk_tree_model_sort_convert_child_path_to_path" (byval tree_model_sort as GtkTreeModelSort ptr, byval child_path as GtkTreePath ptr) as GtkTreePath ptr
-declare sub gtk_tree_model_sort_convert_child_iter_to_iter cdecl alias "gtk_tree_model_sort_convert_child_iter_to_iter" (byval tree_model_sort as GtkTreeModelSort ptr, byval sort_iter as GtkTreeIter ptr, byval child_iter as GtkTreeIter ptr)
-declare function gtk_tree_model_sort_convert_path_to_child_path cdecl alias "gtk_tree_model_sort_convert_path_to_child_path" (byval tree_model_sort as GtkTreeModelSort ptr, byval sorted_path as GtkTreePath ptr) as GtkTreePath ptr
-declare sub gtk_tree_model_sort_convert_iter_to_child_iter cdecl alias "gtk_tree_model_sort_convert_iter_to_child_iter" (byval tree_model_sort as GtkTreeModelSort ptr, byval child_iter as GtkTreeIter ptr, byval sorted_iter as GtkTreeIter ptr)
-declare sub gtk_tree_model_sort_reset_default_sort_func cdecl alias "gtk_tree_model_sort_reset_default_sort_func" (byval tree_model_sort as GtkTreeModelSort ptr)
-declare sub gtk_tree_model_sort_clear_cache cdecl alias "gtk_tree_model_sort_clear_cache" (byval tree_model_sort as GtkTreeModelSort ptr)
-declare function gtk_tree_model_sort_iter_is_valid cdecl alias "gtk_tree_model_sort_iter_is_valid" (byval tree_model_sort as GtkTreeModelSort ptr, byval iter as GtkTreeIter ptr) as gboolean
+declare function gtk_tree_model_sort_get_type () as GType
+declare function gtk_tree_model_sort_new_with_model (byval child_model as GtkTreeModel ptr) as GtkTreeModel ptr
+declare function gtk_tree_model_sort_get_model (byval tree_model as GtkTreeModelSort ptr) as GtkTreeModel ptr
+declare function gtk_tree_model_sort_convert_child_path_to_path (byval tree_model_sort as GtkTreeModelSort ptr, byval child_path as GtkTreePath ptr) as GtkTreePath ptr
+declare sub gtk_tree_model_sort_convert_child_iter_to_iter (byval tree_model_sort as GtkTreeModelSort ptr, byval sort_iter as GtkTreeIter ptr, byval child_iter as GtkTreeIter ptr)
+declare function gtk_tree_model_sort_convert_path_to_child_path (byval tree_model_sort as GtkTreeModelSort ptr, byval sorted_path as GtkTreePath ptr) as GtkTreePath ptr
+declare sub gtk_tree_model_sort_convert_iter_to_child_iter (byval tree_model_sort as GtkTreeModelSort ptr, byval child_iter as GtkTreeIter ptr, byval sorted_iter as GtkTreeIter ptr)
+declare sub gtk_tree_model_sort_reset_default_sort_func (byval tree_model_sort as GtkTreeModelSort ptr)
+declare sub gtk_tree_model_sort_clear_cache (byval tree_model_sort as GtkTreeModelSort ptr)
+declare function gtk_tree_model_sort_iter_is_valid (byval tree_model_sort as GtkTreeModelSort ptr, byval iter as GtkTreeIter ptr) as gboolean
 
 #endif

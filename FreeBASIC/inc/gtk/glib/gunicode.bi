@@ -84,55 +84,55 @@ enum GUnicodeBreakType
 end enum
 
 
-declare function g_get_charset cdecl alias "g_get_charset" (byval charset as byte ptr ptr) as gboolean
-declare function g_unichar_isalnum cdecl alias "g_unichar_isalnum" (byval c as gunichar) as gboolean
-declare function g_unichar_isalpha cdecl alias "g_unichar_isalpha" (byval c as gunichar) as gboolean
-declare function g_unichar_iscntrl cdecl alias "g_unichar_iscntrl" (byval c as gunichar) as gboolean
-declare function g_unichar_isdigit cdecl alias "g_unichar_isdigit" (byval c as gunichar) as gboolean
-declare function g_unichar_isgraph cdecl alias "g_unichar_isgraph" (byval c as gunichar) as gboolean
-declare function g_unichar_islower cdecl alias "g_unichar_islower" (byval c as gunichar) as gboolean
-declare function g_unichar_isprint cdecl alias "g_unichar_isprint" (byval c as gunichar) as gboolean
-declare function g_unichar_ispunct cdecl alias "g_unichar_ispunct" (byval c as gunichar) as gboolean
-declare function g_unichar_isspace cdecl alias "g_unichar_isspace" (byval c as gunichar) as gboolean
-declare function g_unichar_isupper cdecl alias "g_unichar_isupper" (byval c as gunichar) as gboolean
-declare function g_unichar_isxdigit cdecl alias "g_unichar_isxdigit" (byval c as gunichar) as gboolean
-declare function g_unichar_istitle cdecl alias "g_unichar_istitle" (byval c as gunichar) as gboolean
-declare function g_unichar_isdefined cdecl alias "g_unichar_isdefined" (byval c as gunichar) as gboolean
-declare function g_unichar_iswide cdecl alias "g_unichar_iswide" (byval c as gunichar) as gboolean
-declare function g_unichar_toupper cdecl alias "g_unichar_toupper" (byval c as gunichar) as gunichar
-declare function g_unichar_tolower cdecl alias "g_unichar_tolower" (byval c as gunichar) as gunichar
-declare function g_unichar_totitle cdecl alias "g_unichar_totitle" (byval c as gunichar) as gunichar
-declare function g_unichar_digit_value cdecl alias "g_unichar_digit_value" (byval c as gunichar) as gint
-declare function g_unichar_xdigit_value cdecl alias "g_unichar_xdigit_value" (byval c as gunichar) as gint
-declare function g_unichar_type cdecl alias "g_unichar_type" (byval c as gunichar) as GUnicodeType
-declare function g_unichar_break_type cdecl alias "g_unichar_break_type" (byval c as gunichar) as GUnicodeBreakType
-declare sub g_unicode_canonical_ordering cdecl alias "g_unicode_canonical_ordering" (byval string as gunichar ptr, byval len as gsize)
-declare function g_unicode_canonical_decomposition cdecl alias "g_unicode_canonical_decomposition" (byval ch as gunichar, byval result_len as gsize ptr) as gunichar ptr
-declare function g_utf8_get_char cdecl alias "g_utf8_get_char" (byval p as zstring ptr) as gunichar
-declare function g_utf8_get_char_validated cdecl alias "g_utf8_get_char_validated" (byval p as zstring ptr, byval max_len as gssize) as gunichar
-declare function g_utf8_offset_to_pointer cdecl alias "g_utf8_offset_to_pointer" (byval str as zstring ptr, byval offset as glong) as zstring ptr
-declare function g_utf8_pointer_to_offset cdecl alias "g_utf8_pointer_to_offset" (byval str as zstring ptr, byval pos as zstring ptr) as glong
-declare function g_utf8_prev_char cdecl alias "g_utf8_prev_char" (byval p as zstring ptr) as zstring ptr
-declare function g_utf8_find_next_char cdecl alias "g_utf8_find_next_char" (byval p as zstring ptr, byval end as zstring ptr) as zstring ptr
-declare function g_utf8_find_prev_char cdecl alias "g_utf8_find_prev_char" (byval str as zstring ptr, byval p as zstring ptr) as zstring ptr
-declare function g_utf8_strlen cdecl alias "g_utf8_strlen" (byval p as zstring ptr, byval max as gssize) as glong
-declare function g_utf8_strncpy cdecl alias "g_utf8_strncpy" (byval dest as zstring ptr, byval src as zstring ptr, byval n as gsize) as zstring ptr
-declare function g_utf8_strchr cdecl alias "g_utf8_strchr" (byval p as zstring ptr, byval len as gssize, byval c as gunichar) as zstring ptr
-declare function g_utf8_strrchr cdecl alias "g_utf8_strrchr" (byval p as zstring ptr, byval len as gssize, byval c as gunichar) as zstring ptr
-declare function g_utf8_strreverse cdecl alias "g_utf8_strreverse" (byval str as zstring ptr, byval len as gssize) as zstring ptr
-declare function g_utf8_to_utf16 cdecl alias "g_utf8_to_utf16" (byval str as zstring ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as gunichar2 ptr
-declare function g_utf8_to_ucs4 cdecl alias "g_utf8_to_ucs4" (byval str as zstring ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as gunichar ptr
-declare function g_utf8_to_ucs4_fast cdecl alias "g_utf8_to_ucs4_fast" (byval str as zstring ptr, byval len as glong, byval items_written as glong ptr) as gunichar ptr
-declare function g_utf16_to_ucs4 cdecl alias "g_utf16_to_ucs4" (byval str as gunichar2 ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as gunichar ptr
-declare function g_utf16_to_utf8 cdecl alias "g_utf16_to_utf8" (byval str as gunichar2 ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as zstring ptr
-declare function g_ucs4_to_utf16 cdecl alias "g_ucs4_to_utf16" (byval str as gunichar ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as gunichar2 ptr
-declare function g_ucs4_to_utf8 cdecl alias "g_ucs4_to_utf8" (byval str as gunichar ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as zstring ptr
-declare function g_unichar_to_utf8 cdecl alias "g_unichar_to_utf8" (byval c as gunichar, byval outbuf as zstring ptr) as gint
-declare function g_utf8_validate cdecl alias "g_utf8_validate" (byval str as zstring ptr, byval max_len as gssize, byval end as zstring ptr ptr) as gboolean
-declare function g_unichar_validate cdecl alias "g_unichar_validate" (byval ch as gunichar) as gboolean
-declare function g_utf8_strup cdecl alias "g_utf8_strup" (byval str as zstring ptr, byval len as gssize) as zstring ptr
-declare function g_utf8_strdown cdecl alias "g_utf8_strdown" (byval str as zstring ptr, byval len as gssize) as zstring ptr
-declare function g_utf8_casefold cdecl alias "g_utf8_casefold" (byval str as zstring ptr, byval len as gssize) as zstring ptr
+declare function g_get_charset (byval charset as byte ptr ptr) as gboolean
+declare function g_unichar_isalnum (byval c as gunichar) as gboolean
+declare function g_unichar_isalpha (byval c as gunichar) as gboolean
+declare function g_unichar_iscntrl (byval c as gunichar) as gboolean
+declare function g_unichar_isdigit (byval c as gunichar) as gboolean
+declare function g_unichar_isgraph (byval c as gunichar) as gboolean
+declare function g_unichar_islower (byval c as gunichar) as gboolean
+declare function g_unichar_isprint (byval c as gunichar) as gboolean
+declare function g_unichar_ispunct (byval c as gunichar) as gboolean
+declare function g_unichar_isspace (byval c as gunichar) as gboolean
+declare function g_unichar_isupper (byval c as gunichar) as gboolean
+declare function g_unichar_isxdigit (byval c as gunichar) as gboolean
+declare function g_unichar_istitle (byval c as gunichar) as gboolean
+declare function g_unichar_isdefined (byval c as gunichar) as gboolean
+declare function g_unichar_iswide (byval c as gunichar) as gboolean
+declare function g_unichar_toupper (byval c as gunichar) as gunichar
+declare function g_unichar_tolower (byval c as gunichar) as gunichar
+declare function g_unichar_totitle (byval c as gunichar) as gunichar
+declare function g_unichar_digit_value (byval c as gunichar) as gint
+declare function g_unichar_xdigit_value (byval c as gunichar) as gint
+declare function g_unichar_type (byval c as gunichar) as GUnicodeType
+declare function g_unichar_break_type (byval c as gunichar) as GUnicodeBreakType
+declare sub g_unicode_canonical_ordering (byval string as gunichar ptr, byval len as gsize)
+declare function g_unicode_canonical_decomposition (byval ch as gunichar, byval result_len as gsize ptr) as gunichar ptr
+declare function g_utf8_get_char (byval p as zstring ptr) as gunichar
+declare function g_utf8_get_char_validated (byval p as zstring ptr, byval max_len as gssize) as gunichar
+declare function g_utf8_offset_to_pointer (byval str as zstring ptr, byval offset as glong) as zstring ptr
+declare function g_utf8_pointer_to_offset (byval str as zstring ptr, byval pos as zstring ptr) as glong
+declare function g_utf8_prev_char (byval p as zstring ptr) as zstring ptr
+declare function g_utf8_find_next_char (byval p as zstring ptr, byval end as zstring ptr) as zstring ptr
+declare function g_utf8_find_prev_char (byval str as zstring ptr, byval p as zstring ptr) as zstring ptr
+declare function g_utf8_strlen (byval p as zstring ptr, byval max as gssize) as glong
+declare function g_utf8_strncpy (byval dest as zstring ptr, byval src as zstring ptr, byval n as gsize) as zstring ptr
+declare function g_utf8_strchr (byval p as zstring ptr, byval len as gssize, byval c as gunichar) as zstring ptr
+declare function g_utf8_strrchr (byval p as zstring ptr, byval len as gssize, byval c as gunichar) as zstring ptr
+declare function g_utf8_strreverse (byval str as zstring ptr, byval len as gssize) as zstring ptr
+declare function g_utf8_to_utf16 (byval str as zstring ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as gunichar2 ptr
+declare function g_utf8_to_ucs4 (byval str as zstring ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as gunichar ptr
+declare function g_utf8_to_ucs4_fast (byval str as zstring ptr, byval len as glong, byval items_written as glong ptr) as gunichar ptr
+declare function g_utf16_to_ucs4 (byval str as gunichar2 ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as gunichar ptr
+declare function g_utf16_to_utf8 (byval str as gunichar2 ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as zstring ptr
+declare function g_ucs4_to_utf16 (byval str as gunichar ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as gunichar2 ptr
+declare function g_ucs4_to_utf8 (byval str as gunichar ptr, byval len as glong, byval items_read as glong ptr, byval items_written as glong ptr, byval error as GError ptr ptr) as zstring ptr
+declare function g_unichar_to_utf8 (byval c as gunichar, byval outbuf as zstring ptr) as gint
+declare function g_utf8_validate (byval str as zstring ptr, byval max_len as gssize, byval end as zstring ptr ptr) as gboolean
+declare function g_unichar_validate (byval ch as gunichar) as gboolean
+declare function g_utf8_strup (byval str as zstring ptr, byval len as gssize) as zstring ptr
+declare function g_utf8_strdown (byval str as zstring ptr, byval len as gssize) as zstring ptr
+declare function g_utf8_casefold (byval str as zstring ptr, byval len as gssize) as zstring ptr
 
 enum GNormalizeMode
 	G_NORMALIZE_DEFAULT
@@ -146,9 +146,9 @@ enum GNormalizeMode
 end enum
 
 
-declare function g_utf8_normalize cdecl alias "g_utf8_normalize" (byval str as zstring ptr, byval len as gssize, byval mode as GNormalizeMode) as zstring ptr
-declare function g_utf8_collate cdecl alias "g_utf8_collate" (byval str1 as zstring ptr, byval str2 as zstring ptr) as gint
-declare function g_utf8_collate_key cdecl alias "g_utf8_collate_key" (byval str as zstring ptr, byval len as gssize) as zstring ptr
-declare function g_unichar_get_mirror_char cdecl alias "g_unichar_get_mirror_char" (byval ch as gunichar, byval mirrored_ch as gunichar ptr) as gboolean
+declare function g_utf8_normalize (byval str as zstring ptr, byval len as gssize, byval mode as GNormalizeMode) as zstring ptr
+declare function g_utf8_collate (byval str1 as zstring ptr, byval str2 as zstring ptr) as gint
+declare function g_utf8_collate_key (byval str as zstring ptr, byval len as gssize) as zstring ptr
+declare function g_unichar_get_mirror_char (byval ch as gunichar, byval mirrored_ch as gunichar ptr) as gboolean
 
 #endif

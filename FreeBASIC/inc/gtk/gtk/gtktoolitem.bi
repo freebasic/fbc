@@ -13,12 +13,12 @@
 #include once "gtk/gtk/gtktooltips.bi"
 #include once "gtk/gtk/gtkmenuitem.bi"
 
-#define GTK_TYPE_TOOL_ITEM            (gtk_tool_item_get_type ())
-#define GTK_TOOL_ITEM(o)              (G_TYPE_CHECK_INSTANCE_CAST ((o), GTK_TYPE_TOOL_ITEM, GtkToolItem))
-#define GTK_TOOL_ITEM_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TOOL_ITEM, GtkToolItemClass))
-#define GTK_IS_TOOL_ITEM(o)           (G_TYPE_CHECK_INSTANCE_TYPE ((o), GTK_TYPE_TOOL_ITEM))
+#define GTK_TYPE_TOOL_ITEM (gtk_tool_item_get_type ())
+#define GTK_TOOL_ITEM(o) (G_TYPE_CHECK_INSTANCE_CAST ((o), GTK_TYPE_TOOL_ITEM, GtkToolItem))
+#define GTK_TOOL_ITEM_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_TOOL_ITEM, GtkToolItemClass))
+#define GTK_IS_TOOL_ITEM(o) (G_TYPE_CHECK_INSTANCE_TYPE ((o), GTK_TYPE_TOOL_ITEM))
 #define GTK_IS_TOOL_ITEM_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TOOL_ITEM))
-#define GTK_TOOL_ITEM_GET_CLASS(o)    (G_TYPE_INSTANCE_GET_CLASS((o), GTK_TYPE_TOOL_ITEM, GtkToolItemClass))
+#define GTK_TOOL_ITEM_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS((o), GTK_TYPE_TOOL_ITEM, GtkToolItemClass))
 
 type GtkToolItem as _GtkToolItem
 type GtkToolItemClass as _GtkToolItemClass
@@ -40,29 +40,29 @@ type _GtkToolItemClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_tool_item_get_type cdecl alias "gtk_tool_item_get_type" () as GType
-declare function gtk_tool_item_new cdecl alias "gtk_tool_item_new" () as GtkToolItem ptr
-declare sub gtk_tool_item_set_homogeneous cdecl alias "gtk_tool_item_set_homogeneous" (byval tool_item as GtkToolItem ptr, byval homogeneous as gboolean)
-declare function gtk_tool_item_get_homogeneous cdecl alias "gtk_tool_item_get_homogeneous" (byval tool_item as GtkToolItem ptr) as gboolean
-declare sub gtk_tool_item_set_expand cdecl alias "gtk_tool_item_set_expand" (byval tool_item as GtkToolItem ptr, byval expand as gboolean)
-declare function gtk_tool_item_get_expand cdecl alias "gtk_tool_item_get_expand" (byval tool_item as GtkToolItem ptr) as gboolean
-declare sub gtk_tool_item_set_tooltip cdecl alias "gtk_tool_item_set_tooltip" (byval tool_item as GtkToolItem ptr, byval tooltips as GtkTooltips ptr, byval tip_text as zstring ptr, byval tip_private as zstring ptr)
-declare sub gtk_tool_item_set_use_drag_window cdecl alias "gtk_tool_item_set_use_drag_window" (byval toolitem as GtkToolItem ptr, byval use_drag_window as gboolean)
-declare function gtk_tool_item_get_use_drag_window cdecl alias "gtk_tool_item_get_use_drag_window" (byval toolitem as GtkToolItem ptr) as gboolean
-declare sub gtk_tool_item_set_visible_horizontal cdecl alias "gtk_tool_item_set_visible_horizontal" (byval toolitem as GtkToolItem ptr, byval visible_horizontal as gboolean)
-declare function gtk_tool_item_get_visible_horizontal cdecl alias "gtk_tool_item_get_visible_horizontal" (byval toolitem as GtkToolItem ptr) as gboolean
-declare sub gtk_tool_item_set_visible_vertical cdecl alias "gtk_tool_item_set_visible_vertical" (byval toolitem as GtkToolItem ptr, byval visible_vertical as gboolean)
-declare function gtk_tool_item_get_visible_vertical cdecl alias "gtk_tool_item_get_visible_vertical" (byval toolitem as GtkToolItem ptr) as gboolean
-declare function gtk_tool_item_get_is_important cdecl alias "gtk_tool_item_get_is_important" (byval tool_item as GtkToolItem ptr) as gboolean
-declare sub gtk_tool_item_set_is_important cdecl alias "gtk_tool_item_set_is_important" (byval tool_item as GtkToolItem ptr, byval is_important as gboolean)
-declare function gtk_tool_item_get_icon_size cdecl alias "gtk_tool_item_get_icon_size" (byval tool_item as GtkToolItem ptr) as GtkIconSize
-declare function gtk_tool_item_get_orientation cdecl alias "gtk_tool_item_get_orientation" (byval tool_item as GtkToolItem ptr) as GtkOrientation
-declare function gtk_tool_item_get_toolbar_style cdecl alias "gtk_tool_item_get_toolbar_style" (byval tool_item as GtkToolItem ptr) as GtkToolbarStyle
-declare function gtk_tool_item_get_relief_style cdecl alias "gtk_tool_item_get_relief_style" (byval tool_item as GtkToolItem ptr) as GtkReliefStyle
-declare function gtk_tool_item_retrieve_proxy_menu_item cdecl alias "gtk_tool_item_retrieve_proxy_menu_item" (byval tool_item as GtkToolItem ptr) as GtkWidget ptr
-declare function gtk_tool_item_get_proxy_menu_item cdecl alias "gtk_tool_item_get_proxy_menu_item" (byval tool_item as GtkToolItem ptr, byval menu_item_id as zstring ptr) as GtkWidget ptr
-declare sub gtk_tool_item_set_proxy_menu_item cdecl alias "gtk_tool_item_set_proxy_menu_item" (byval tool_item as GtkToolItem ptr, byval menu_item_id as zstring ptr, byval menu_item as GtkWidget ptr)
-declare sub gtk_tool_item_rebuild_menu cdecl alias "gtk_tool_item_rebuild_menu" (byval tool_item as GtkToolItem ptr)
-declare sub _gtk_tool_item_toolbar_reconfigured cdecl alias "_gtk_tool_item_toolbar_reconfigured" (byval tool_item as GtkToolItem ptr)
+declare function gtk_tool_item_get_type () as GType
+declare function gtk_tool_item_new () as GtkToolItem ptr
+declare sub gtk_tool_item_set_homogeneous (byval tool_item as GtkToolItem ptr, byval homogeneous as gboolean)
+declare function gtk_tool_item_get_homogeneous (byval tool_item as GtkToolItem ptr) as gboolean
+declare sub gtk_tool_item_set_expand (byval tool_item as GtkToolItem ptr, byval expand as gboolean)
+declare function gtk_tool_item_get_expand (byval tool_item as GtkToolItem ptr) as gboolean
+declare sub gtk_tool_item_set_tooltip (byval tool_item as GtkToolItem ptr, byval tooltips as GtkTooltips ptr, byval tip_text as zstring ptr, byval tip_private as zstring ptr)
+declare sub gtk_tool_item_set_use_drag_window (byval toolitem as GtkToolItem ptr, byval use_drag_window as gboolean)
+declare function gtk_tool_item_get_use_drag_window (byval toolitem as GtkToolItem ptr) as gboolean
+declare sub gtk_tool_item_set_visible_horizontal (byval toolitem as GtkToolItem ptr, byval visible_horizontal as gboolean)
+declare function gtk_tool_item_get_visible_horizontal (byval toolitem as GtkToolItem ptr) as gboolean
+declare sub gtk_tool_item_set_visible_vertical (byval toolitem as GtkToolItem ptr, byval visible_vertical as gboolean)
+declare function gtk_tool_item_get_visible_vertical (byval toolitem as GtkToolItem ptr) as gboolean
+declare function gtk_tool_item_get_is_important (byval tool_item as GtkToolItem ptr) as gboolean
+declare sub gtk_tool_item_set_is_important (byval tool_item as GtkToolItem ptr, byval is_important as gboolean)
+declare function gtk_tool_item_get_icon_size (byval tool_item as GtkToolItem ptr) as GtkIconSize
+declare function gtk_tool_item_get_orientation (byval tool_item as GtkToolItem ptr) as GtkOrientation
+declare function gtk_tool_item_get_toolbar_style (byval tool_item as GtkToolItem ptr) as GtkToolbarStyle
+declare function gtk_tool_item_get_relief_style (byval tool_item as GtkToolItem ptr) as GtkReliefStyle
+declare function gtk_tool_item_retrieve_proxy_menu_item (byval tool_item as GtkToolItem ptr) as GtkWidget ptr
+declare function gtk_tool_item_get_proxy_menu_item (byval tool_item as GtkToolItem ptr, byval menu_item_id as zstring ptr) as GtkWidget ptr
+declare sub gtk_tool_item_set_proxy_menu_item (byval tool_item as GtkToolItem ptr, byval menu_item_id as zstring ptr, byval menu_item as GtkWidget ptr)
+declare sub gtk_tool_item_rebuild_menu (byval tool_item as GtkToolItem ptr)
+declare sub _gtk_tool_item_toolbar_reconfigured (byval tool_item as GtkToolItem ptr)
 
 #endif

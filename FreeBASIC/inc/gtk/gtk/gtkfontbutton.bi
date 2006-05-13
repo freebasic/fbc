@@ -11,12 +11,12 @@
 
 #include once "gtk/gtk/gtkbutton.bi"
 
-#define GTK_TYPE_FONT_BUTTON             (gtk_font_button_get_type ())
-#define GTK_FONT_BUTTON(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FONT_BUTTON, GtkFontButton))
-#define GTK_FONT_BUTTON_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_FONT_BUTTON, GtkFontButtonClass))
-#define GTK_IS_FONT_BUTTON(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_FONT_BUTTON))
-#define GTK_IS_FONT_BUTTON_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_FONT_BUTTON))
-#define GTK_FONT_BUTTON_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_FONT_BUTTON, GtkFontButtonClass))
+#define GTK_TYPE_FONT_BUTTON (gtk_font_button_get_type ())
+#define GTK_FONT_BUTTON(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_FONT_BUTTON, GtkFontButton))
+#define GTK_FONT_BUTTON_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_FONT_BUTTON, GtkFontButtonClass))
+#define GTK_IS_FONT_BUTTON(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_FONT_BUTTON))
+#define GTK_IS_FONT_BUTTON_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_FONT_BUTTON))
+#define GTK_FONT_BUTTON_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_FONT_BUTTON, GtkFontButtonClass))
 
 type GtkFontButton as _GtkFontButton
 type GtkFontButtonClass as _GtkFontButtonClass
@@ -36,20 +36,20 @@ type _GtkFontButtonClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_font_button_get_type cdecl alias "gtk_font_button_get_type" () as GType
-declare function gtk_font_button_new cdecl alias "gtk_font_button_new" () as GtkWidget ptr
-declare function gtk_font_button_new_with_font cdecl alias "gtk_font_button_new_with_font" (byval fontname as zstring ptr) as GtkWidget ptr
-declare function gtk_font_button_get_title cdecl alias "gtk_font_button_get_title" (byval font_button as GtkFontButton ptr) as zstring ptr
-declare sub gtk_font_button_set_title cdecl alias "gtk_font_button_set_title" (byval font_button as GtkFontButton ptr, byval title as zstring ptr)
-declare function gtk_font_button_get_use_font cdecl alias "gtk_font_button_get_use_font" (byval font_button as GtkFontButton ptr) as gboolean
-declare sub gtk_font_button_set_use_font cdecl alias "gtk_font_button_set_use_font" (byval font_button as GtkFontButton ptr, byval use_font as gboolean)
-declare function gtk_font_button_get_use_size cdecl alias "gtk_font_button_get_use_size" (byval font_button as GtkFontButton ptr) as gboolean
-declare sub gtk_font_button_set_use_size cdecl alias "gtk_font_button_set_use_size" (byval font_button as GtkFontButton ptr, byval use_size as gboolean)
-declare function gtk_font_button_get_font_name cdecl alias "gtk_font_button_get_font_name" (byval font_button as GtkFontButton ptr) as zstring ptr
-declare function gtk_font_button_set_font_name cdecl alias "gtk_font_button_set_font_name" (byval font_button as GtkFontButton ptr, byval fontname as zstring ptr) as gboolean
-declare function gtk_font_button_get_show_style cdecl alias "gtk_font_button_get_show_style" (byval font_button as GtkFontButton ptr) as gboolean
-declare sub gtk_font_button_set_show_style cdecl alias "gtk_font_button_set_show_style" (byval font_button as GtkFontButton ptr, byval show_style as gboolean)
-declare function gtk_font_button_get_show_size cdecl alias "gtk_font_button_get_show_size" (byval font_button as GtkFontButton ptr) as gboolean
-declare sub gtk_font_button_set_show_size cdecl alias "gtk_font_button_set_show_size" (byval font_button as GtkFontButton ptr, byval show_size as gboolean)
+declare function gtk_font_button_get_type () as GType
+declare function gtk_font_button_new () as GtkWidget ptr
+declare function gtk_font_button_new_with_font (byval fontname as zstring ptr) as GtkWidget ptr
+declare function gtk_font_button_get_title (byval font_button as GtkFontButton ptr) as zstring ptr
+declare sub gtk_font_button_set_title (byval font_button as GtkFontButton ptr, byval title as zstring ptr)
+declare function gtk_font_button_get_use_font (byval font_button as GtkFontButton ptr) as gboolean
+declare sub gtk_font_button_set_use_font (byval font_button as GtkFontButton ptr, byval use_font as gboolean)
+declare function gtk_font_button_get_use_size (byval font_button as GtkFontButton ptr) as gboolean
+declare sub gtk_font_button_set_use_size (byval font_button as GtkFontButton ptr, byval use_size as gboolean)
+declare function gtk_font_button_get_font_name (byval font_button as GtkFontButton ptr) as zstring ptr
+declare function gtk_font_button_set_font_name (byval font_button as GtkFontButton ptr, byval fontname as zstring ptr) as gboolean
+declare function gtk_font_button_get_show_style (byval font_button as GtkFontButton ptr) as gboolean
+declare sub gtk_font_button_set_show_style (byval font_button as GtkFontButton ptr, byval show_style as gboolean)
+declare function gtk_font_button_get_show_size (byval font_button as GtkFontButton ptr) as gboolean
+declare sub gtk_font_button_set_show_size (byval font_button as GtkFontButton ptr, byval show_size as gboolean)
 
 #endif

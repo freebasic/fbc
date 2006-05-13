@@ -12,12 +12,12 @@
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkrange.bi"
 
-#define GTK_TYPE_SCALE            (gtk_scale_get_type ())
-#define GTK_SCALE(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SCALE, GtkScale))
-#define GTK_SCALE_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_SCALE, GtkScaleClass))
-#define GTK_IS_SCALE(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_SCALE))
+#define GTK_TYPE_SCALE (gtk_scale_get_type ())
+#define GTK_SCALE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SCALE, GtkScale))
+#define GTK_SCALE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_SCALE, GtkScaleClass))
+#define GTK_IS_SCALE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_SCALE))
 #define GTK_IS_SCALE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_SCALE))
-#define GTK_SCALE_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_SCALE, GtkScaleClass))
+#define GTK_SCALE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_SCALE, GtkScaleClass))
 
 type GtkScale as _GtkScale
 type GtkScaleClass as _GtkScaleClass
@@ -39,17 +39,17 @@ type _GtkScaleClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_scale_get_type cdecl alias "gtk_scale_get_type" () as GType
-declare sub gtk_scale_set_digits cdecl alias "gtk_scale_set_digits" (byval scale as GtkScale ptr, byval digits as gint)
-declare function gtk_scale_get_digits cdecl alias "gtk_scale_get_digits" (byval scale as GtkScale ptr) as gint
-declare sub gtk_scale_set_draw_value cdecl alias "gtk_scale_set_draw_value" (byval scale as GtkScale ptr, byval draw_value as gboolean)
-declare function gtk_scale_get_draw_value cdecl alias "gtk_scale_get_draw_value" (byval scale as GtkScale ptr) as gboolean
-declare sub gtk_scale_set_value_pos cdecl alias "gtk_scale_set_value_pos" (byval scale as GtkScale ptr, byval pos as GtkPositionType)
-declare function gtk_scale_get_value_pos cdecl alias "gtk_scale_get_value_pos" (byval scale as GtkScale ptr) as GtkPositionType
-declare function gtk_scale_get_layout cdecl alias "gtk_scale_get_layout" (byval scale as GtkScale ptr) as PangoLayout ptr
-declare sub gtk_scale_get_layout_offsets cdecl alias "gtk_scale_get_layout_offsets" (byval scale as GtkScale ptr, byval x as gint ptr, byval y as gint ptr)
-declare sub _gtk_scale_clear_layout cdecl alias "_gtk_scale_clear_layout" (byval scale as GtkScale ptr)
-declare sub _gtk_scale_get_value_size cdecl alias "_gtk_scale_get_value_size" (byval scale as GtkScale ptr, byval width as gint ptr, byval height as gint ptr)
-declare function _gtk_scale_format_value cdecl alias "_gtk_scale_format_value" (byval scale as GtkScale ptr, byval value as gdouble) as zstring ptr
+declare function gtk_scale_get_type () as GType
+declare sub gtk_scale_set_digits (byval scale as GtkScale ptr, byval digits as gint)
+declare function gtk_scale_get_digits (byval scale as GtkScale ptr) as gint
+declare sub gtk_scale_set_draw_value (byval scale as GtkScale ptr, byval draw_value as gboolean)
+declare function gtk_scale_get_draw_value (byval scale as GtkScale ptr) as gboolean
+declare sub gtk_scale_set_value_pos (byval scale as GtkScale ptr, byval pos as GtkPositionType)
+declare function gtk_scale_get_value_pos (byval scale as GtkScale ptr) as GtkPositionType
+declare function gtk_scale_get_layout (byval scale as GtkScale ptr) as PangoLayout ptr
+declare sub gtk_scale_get_layout_offsets (byval scale as GtkScale ptr, byval x as gint ptr, byval y as gint ptr)
+declare sub _gtk_scale_clear_layout (byval scale as GtkScale ptr)
+declare sub _gtk_scale_get_value_size (byval scale as GtkScale ptr, byval width as gint ptr, byval height as gint ptr)
+declare function _gtk_scale_format_value (byval scale as GtkScale ptr, byval value as gdouble) as zstring ptr
 
 #endif

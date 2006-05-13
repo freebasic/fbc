@@ -42,41 +42,41 @@ type _GtkIconViewClass
 	activate_cursor_item as function cdecl(byval as GtkIconView ptr) as gboolean
 end type
 
-declare function gtk_icon_view_get_type cdecl alias "gtk_icon_view_get_type" () as GType
-declare function gtk_icon_view_new cdecl alias "gtk_icon_view_new" () as GtkWidget ptr
-declare function gtk_icon_view_new_with_model cdecl alias "gtk_icon_view_new_with_model" (byval model as GtkTreeModel ptr) as GtkWidget ptr
-declare sub gtk_icon_view_set_model cdecl alias "gtk_icon_view_set_model" (byval icon_view as GtkIconView ptr, byval model as GtkTreeModel ptr)
-declare function gtk_icon_view_get_model cdecl alias "gtk_icon_view_get_model" (byval icon_view as GtkIconView ptr) as GtkTreeModel ptr
-declare sub gtk_icon_view_set_text_column cdecl alias "gtk_icon_view_set_text_column" (byval icon_view as GtkIconView ptr, byval column as gint)
-declare function gtk_icon_view_get_text_column cdecl alias "gtk_icon_view_get_text_column" (byval icon_view as GtkIconView ptr) as gint
-declare sub gtk_icon_view_set_markup_column cdecl alias "gtk_icon_view_set_markup_column" (byval icon_view as GtkIconView ptr, byval column as gint)
-declare function gtk_icon_view_get_markup_column cdecl alias "gtk_icon_view_get_markup_column" (byval icon_view as GtkIconView ptr) as gint
-declare sub gtk_icon_view_set_pixbuf_column cdecl alias "gtk_icon_view_set_pixbuf_column" (byval icon_view as GtkIconView ptr, byval column as gint)
-declare function gtk_icon_view_get_pixbuf_column cdecl alias "gtk_icon_view_get_pixbuf_column" (byval icon_view as GtkIconView ptr) as gint
-declare sub gtk_icon_view_set_orientation cdecl alias "gtk_icon_view_set_orientation" (byval icon_view as GtkIconView ptr, byval orientation as GtkOrientation)
-declare function gtk_icon_view_get_orientation cdecl alias "gtk_icon_view_get_orientation" (byval icon_view as GtkIconView ptr) as GtkOrientation
-declare sub gtk_icon_view_set_columns cdecl alias "gtk_icon_view_set_columns" (byval icon_view as GtkIconView ptr, byval columns as gint)
-declare function gtk_icon_view_get_columns cdecl alias "gtk_icon_view_get_columns" (byval icon_view as GtkIconView ptr) as gint
-declare sub gtk_icon_view_set_item_width cdecl alias "gtk_icon_view_set_item_width" (byval icon_view as GtkIconView ptr, byval item_width as gint)
-declare function gtk_icon_view_get_item_width cdecl alias "gtk_icon_view_get_item_width" (byval icon_view as GtkIconView ptr) as gint
-declare sub gtk_icon_view_set_spacing cdecl alias "gtk_icon_view_set_spacing" (byval icon_view as GtkIconView ptr, byval spacing as gint)
-declare function gtk_icon_view_get_spacing cdecl alias "gtk_icon_view_get_spacing" (byval icon_view as GtkIconView ptr) as gint
-declare sub gtk_icon_view_set_row_spacing cdecl alias "gtk_icon_view_set_row_spacing" (byval icon_view as GtkIconView ptr, byval row_spacing as gint)
-declare function gtk_icon_view_get_row_spacing cdecl alias "gtk_icon_view_get_row_spacing" (byval icon_view as GtkIconView ptr) as gint
-declare sub gtk_icon_view_set_column_spacing cdecl alias "gtk_icon_view_set_column_spacing" (byval icon_view as GtkIconView ptr, byval column_spacing as gint)
-declare function gtk_icon_view_get_column_spacing cdecl alias "gtk_icon_view_get_column_spacing" (byval icon_view as GtkIconView ptr) as gint
-declare sub gtk_icon_view_set_margin cdecl alias "gtk_icon_view_set_margin" (byval icon_view as GtkIconView ptr, byval margin as gint)
-declare function gtk_icon_view_get_margin cdecl alias "gtk_icon_view_get_margin" (byval icon_view as GtkIconView ptr) as gint
-declare function gtk_icon_view_get_path_at_pos cdecl alias "gtk_icon_view_get_path_at_pos" (byval icon_view as GtkIconView ptr, byval x as gint, byval y as gint) as GtkTreePath ptr
-declare sub gtk_icon_view_selected_foreach cdecl alias "gtk_icon_view_selected_foreach" (byval icon_view as GtkIconView ptr, byval func as GtkIconViewForeachFunc, byval data as gpointer)
-declare sub gtk_icon_view_set_selection_mode cdecl alias "gtk_icon_view_set_selection_mode" (byval icon_view as GtkIconView ptr, byval mode as GtkSelectionMode)
-declare function gtk_icon_view_get_selection_mode cdecl alias "gtk_icon_view_get_selection_mode" (byval icon_view as GtkIconView ptr) as GtkSelectionMode
-declare sub gtk_icon_view_select_path cdecl alias "gtk_icon_view_select_path" (byval icon_view as GtkIconView ptr, byval path as GtkTreePath ptr)
-declare sub gtk_icon_view_unselect_path cdecl alias "gtk_icon_view_unselect_path" (byval icon_view as GtkIconView ptr, byval path as GtkTreePath ptr)
-declare function gtk_icon_view_path_is_selected cdecl alias "gtk_icon_view_path_is_selected" (byval icon_view as GtkIconView ptr, byval path as GtkTreePath ptr) as gboolean
-declare function gtk_icon_view_get_selected_items cdecl alias "gtk_icon_view_get_selected_items" (byval icon_view as GtkIconView ptr) as GList ptr
-declare sub gtk_icon_view_select_all cdecl alias "gtk_icon_view_select_all" (byval icon_view as GtkIconView ptr)
-declare sub gtk_icon_view_unselect_all cdecl alias "gtk_icon_view_unselect_all" (byval icon_view as GtkIconView ptr)
-declare sub gtk_icon_view_item_activated cdecl alias "gtk_icon_view_item_activated" (byval icon_view as GtkIconView ptr, byval path as GtkTreePath ptr)
+declare function gtk_icon_view_get_type () as GType
+declare function gtk_icon_view_new () as GtkWidget ptr
+declare function gtk_icon_view_new_with_model (byval model as GtkTreeModel ptr) as GtkWidget ptr
+declare sub gtk_icon_view_set_model (byval icon_view as GtkIconView ptr, byval model as GtkTreeModel ptr)
+declare function gtk_icon_view_get_model (byval icon_view as GtkIconView ptr) as GtkTreeModel ptr
+declare sub gtk_icon_view_set_text_column (byval icon_view as GtkIconView ptr, byval column as gint)
+declare function gtk_icon_view_get_text_column (byval icon_view as GtkIconView ptr) as gint
+declare sub gtk_icon_view_set_markup_column (byval icon_view as GtkIconView ptr, byval column as gint)
+declare function gtk_icon_view_get_markup_column (byval icon_view as GtkIconView ptr) as gint
+declare sub gtk_icon_view_set_pixbuf_column (byval icon_view as GtkIconView ptr, byval column as gint)
+declare function gtk_icon_view_get_pixbuf_column (byval icon_view as GtkIconView ptr) as gint
+declare sub gtk_icon_view_set_orientation (byval icon_view as GtkIconView ptr, byval orientation as GtkOrientation)
+declare function gtk_icon_view_get_orientation (byval icon_view as GtkIconView ptr) as GtkOrientation
+declare sub gtk_icon_view_set_columns (byval icon_view as GtkIconView ptr, byval columns as gint)
+declare function gtk_icon_view_get_columns (byval icon_view as GtkIconView ptr) as gint
+declare sub gtk_icon_view_set_item_width (byval icon_view as GtkIconView ptr, byval item_width as gint)
+declare function gtk_icon_view_get_item_width (byval icon_view as GtkIconView ptr) as gint
+declare sub gtk_icon_view_set_spacing (byval icon_view as GtkIconView ptr, byval spacing as gint)
+declare function gtk_icon_view_get_spacing (byval icon_view as GtkIconView ptr) as gint
+declare sub gtk_icon_view_set_row_spacing (byval icon_view as GtkIconView ptr, byval row_spacing as gint)
+declare function gtk_icon_view_get_row_spacing (byval icon_view as GtkIconView ptr) as gint
+declare sub gtk_icon_view_set_column_spacing (byval icon_view as GtkIconView ptr, byval column_spacing as gint)
+declare function gtk_icon_view_get_column_spacing (byval icon_view as GtkIconView ptr) as gint
+declare sub gtk_icon_view_set_margin (byval icon_view as GtkIconView ptr, byval margin as gint)
+declare function gtk_icon_view_get_margin (byval icon_view as GtkIconView ptr) as gint
+declare function gtk_icon_view_get_path_at_pos (byval icon_view as GtkIconView ptr, byval x as gint, byval y as gint) as GtkTreePath ptr
+declare sub gtk_icon_view_selected_foreach (byval icon_view as GtkIconView ptr, byval func as GtkIconViewForeachFunc, byval data as gpointer)
+declare sub gtk_icon_view_set_selection_mode (byval icon_view as GtkIconView ptr, byval mode as GtkSelectionMode)
+declare function gtk_icon_view_get_selection_mode (byval icon_view as GtkIconView ptr) as GtkSelectionMode
+declare sub gtk_icon_view_select_path (byval icon_view as GtkIconView ptr, byval path as GtkTreePath ptr)
+declare sub gtk_icon_view_unselect_path (byval icon_view as GtkIconView ptr, byval path as GtkTreePath ptr)
+declare function gtk_icon_view_path_is_selected (byval icon_view as GtkIconView ptr, byval path as GtkTreePath ptr) as gboolean
+declare function gtk_icon_view_get_selected_items (byval icon_view as GtkIconView ptr) as GList ptr
+declare sub gtk_icon_view_select_all (byval icon_view as GtkIconView ptr)
+declare sub gtk_icon_view_unselect_all (byval icon_view as GtkIconView ptr)
+declare sub gtk_icon_view_item_activated (byval icon_view as GtkIconView ptr, byval path as GtkTreePath ptr)
 
 #endif

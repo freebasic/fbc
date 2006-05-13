@@ -11,6 +11,6 @@
 
 #include once "gtk/glib/gtypes.bi"
 
-declare function alloca cdecl alias "alloca" () as zstring ptr
+declare function alloca () as zstring ptr
 
 #endif

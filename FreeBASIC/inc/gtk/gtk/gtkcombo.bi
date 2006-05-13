@@ -48,14 +48,14 @@ type _GtkComboClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_combo_get_type cdecl alias "gtk_combo_get_type" () as GType
-declare function gtk_combo_new cdecl alias "gtk_combo_new" () as GtkWidget ptr
-declare sub gtk_combo_set_value_in_list cdecl alias "gtk_combo_set_value_in_list" (byval combo as GtkCombo ptr, byval val as gboolean, byval ok_if_empty as gboolean)
-declare sub gtk_combo_set_use_arrows cdecl alias "gtk_combo_set_use_arrows" (byval combo as GtkCombo ptr, byval val as gboolean)
-declare sub gtk_combo_set_use_arrows_always cdecl alias "gtk_combo_set_use_arrows_always" (byval combo as GtkCombo ptr, byval val as gboolean)
-declare sub gtk_combo_set_case_sensitive cdecl alias "gtk_combo_set_case_sensitive" (byval combo as GtkCombo ptr, byval val as gboolean)
-declare sub gtk_combo_set_item_string cdecl alias "gtk_combo_set_item_string" (byval combo as GtkCombo ptr, byval item as GtkItem ptr, byval item_value as zstring ptr)
-declare sub gtk_combo_set_popdown_strings cdecl alias "gtk_combo_set_popdown_strings" (byval combo as GtkCombo ptr, byval strings as GList ptr)
-declare sub gtk_combo_disable_activate cdecl alias "gtk_combo_disable_activate" (byval combo as GtkCombo ptr)
+declare function gtk_combo_get_type () as GType
+declare function gtk_combo_new () as GtkWidget ptr
+declare sub gtk_combo_set_value_in_list (byval combo as GtkCombo ptr, byval val as gboolean, byval ok_if_empty as gboolean)
+declare sub gtk_combo_set_use_arrows (byval combo as GtkCombo ptr, byval val as gboolean)
+declare sub gtk_combo_set_use_arrows_always (byval combo as GtkCombo ptr, byval val as gboolean)
+declare sub gtk_combo_set_case_sensitive (byval combo as GtkCombo ptr, byval val as gboolean)
+declare sub gtk_combo_set_item_string (byval combo as GtkCombo ptr, byval item as GtkItem ptr, byval item_value as zstring ptr)
+declare sub gtk_combo_set_popdown_strings (byval combo as GtkCombo ptr, byval strings as GList ptr)
+declare sub gtk_combo_disable_activate (byval combo as GtkCombo ptr)
 
 #endif

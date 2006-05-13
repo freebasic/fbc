@@ -12,12 +12,12 @@
 #include once "gtk/gtk/gtktreemodel.bi"
 #include once "gtk/gtk/gtkcellrenderertext.bi"
 
-#define GTK_TYPE_CELL_RENDERER_COMBO		(gtk_cell_renderer_combo_get_type ())
-#define GTK_CELL_RENDERER_COMBO(obj)		(G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CELL_RENDERER_COMBO, GtkCellRendererCombo))
-#define GTK_CELL_RENDERER_COMBO_CLASS(klass)	(G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_CELL_RENDERER_COMBO, GtkCellRendererComboClass))
-#define GTK_IS_CELL_RENDERER_COMBO(obj)		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_CELL_RENDERER_COMBO))
-#define GTK_IS_CELL_RENDERER_COMBO_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_CELL_RENDERER_COMBO))
-#define GTK_CELL_RENDERER_COMBO_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_CELL_RENDERER_COMBO, GtkCellRendererTextClass))
+#define GTK_TYPE_CELL_RENDERER_COMBO (gtk_cell_renderer_combo_get_type ())
+#define GTK_CELL_RENDERER_COMBO(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CELL_RENDERER_COMBO, GtkCellRendererCombo))
+#define GTK_CELL_RENDERER_COMBO_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_CELL_RENDERER_COMBO, GtkCellRendererComboClass))
+#define GTK_IS_CELL_RENDERER_COMBO(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_CELL_RENDERER_COMBO))
+#define GTK_IS_CELL_RENDERER_COMBO_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_CELL_RENDERER_COMBO))
+#define GTK_CELL_RENDERER_COMBO_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_CELL_RENDERER_COMBO, GtkCellRendererTextClass))
 
 type GtkCellRendererCombo as _GtkCellRendererCombo
 type GtkCellRendererComboClass as _GtkCellRendererComboClass
@@ -34,7 +34,7 @@ type _GtkCellRendererComboClass
 	parent as GtkCellRendererTextClass
 end type
 
-declare function gtk_cell_renderer_combo_get_type cdecl alias "gtk_cell_renderer_combo_get_type" () as GType
-declare function gtk_cell_renderer_combo_new cdecl alias "gtk_cell_renderer_combo_new" () as GtkCellRenderer ptr
+declare function gtk_cell_renderer_combo_get_type () as GType
+declare function gtk_cell_renderer_combo_new () as GtkCellRenderer ptr
 
 #endif

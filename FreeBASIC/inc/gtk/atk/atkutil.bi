@@ -57,7 +57,7 @@ type _AtkUtilClass
 	get_toolkit_version as function cdecl() as gchar
 end type
 
-declare function atk_util_get_type cdecl alias "atk_util_get_type" () as GType
+declare function atk_util_get_type () as GType
 
 enum AtkCoordType
 	ATK_XY_SCREEN
@@ -65,17 +65,17 @@ enum AtkCoordType
 end enum
 
 
-declare function atk_add_focus_tracker cdecl alias "atk_add_focus_tracker" (byval focus_tracker as AtkEventListener) as guint
-declare sub atk_remove_focus_tracker cdecl alias "atk_remove_focus_tracker" (byval tracker_id as guint)
-declare sub atk_focus_tracker_init cdecl alias "atk_focus_tracker_init" (byval add_function as AtkEventListenerInit)
-declare sub atk_focus_tracker_notify cdecl alias "atk_focus_tracker_notify" (byval object as AtkObject ptr)
-declare function atk_add_global_event_listener cdecl alias "atk_add_global_event_listener" (byval listener as GSignalEmissionHook, byval event_type as zstring ptr) as guint
-declare sub atk_remove_global_event_listener cdecl alias "atk_remove_global_event_listener" (byval listener_id as guint)
-declare function atk_add_key_event_listener cdecl alias "atk_add_key_event_listener" (byval listener as AtkKeySnoopFunc, byval data as gpointer) as guint
-declare sub atk_remove_key_event_listener cdecl alias "atk_remove_key_event_listener" (byval listener_id as guint)
-declare function atk_get_root cdecl alias "atk_get_root" () as AtkObject ptr
-declare function atk_get_focus_object cdecl alias "atk_get_focus_object" () as AtkObject ptr
-declare function atk_get_toolkit_name cdecl alias "atk_get_toolkit_name" () as zstring ptr
-declare function atk_get_toolkit_version cdecl alias "atk_get_toolkit_version" () as zstring ptr
+declare function atk_add_focus_tracker (byval focus_tracker as AtkEventListener) as guint
+declare sub atk_remove_focus_tracker (byval tracker_id as guint)
+declare sub atk_focus_tracker_init (byval add_function as AtkEventListenerInit)
+declare sub atk_focus_tracker_notify (byval object as AtkObject ptr)
+declare function atk_add_global_event_listener (byval listener as GSignalEmissionHook, byval event_type as zstring ptr) as guint
+declare sub atk_remove_global_event_listener (byval listener_id as guint)
+declare function atk_add_key_event_listener (byval listener as AtkKeySnoopFunc, byval data as gpointer) as guint
+declare sub atk_remove_key_event_listener (byval listener_id as guint)
+declare function atk_get_root () as AtkObject ptr
+declare function atk_get_focus_object () as AtkObject ptr
+declare function atk_get_toolkit_name () as zstring ptr
+declare function atk_get_toolkit_version () as zstring ptr
 
 #endif

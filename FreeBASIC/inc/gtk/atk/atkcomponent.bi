@@ -29,7 +29,7 @@ type _AtkRectangle
 	height as gint
 end type
 
-declare function atk_rectangle_get_type cdecl alias "atk_rectangle_get_type" () as GType
+declare function atk_rectangle_get_type () as GType
 
 type _AtkComponentIface
 	parent as GTypeInterface
@@ -50,19 +50,19 @@ type _AtkComponentIface
 	pad2 as AtkFunction
 end type
 
-declare function atk_component_get_type cdecl alias "atk_component_get_type" () as GType
-declare function atk_component_add_focus_handler cdecl alias "atk_component_add_focus_handler" (byval component as AtkComponent ptr, byval handler as AtkFocusHandler) as guint
-declare function atk_component_contains cdecl alias "atk_component_contains" (byval component as AtkComponent ptr, byval x as gint, byval y as gint, byval coord_type as AtkCoordType) as gboolean
-declare function atk_component_ref_accessible_at_point cdecl alias "atk_component_ref_accessible_at_point" (byval component as AtkComponent ptr, byval x as gint, byval y as gint, byval coord_type as AtkCoordType) as AtkObject ptr
-declare sub atk_component_get_extents cdecl alias "atk_component_get_extents" (byval component as AtkComponent ptr, byval x as gint ptr, byval y as gint ptr, byval width as gint ptr, byval height as gint ptr, byval coord_type as AtkCoordType)
-declare sub atk_component_get_position cdecl alias "atk_component_get_position" (byval component as AtkComponent ptr, byval x as gint ptr, byval y as gint ptr, byval coord_type as AtkCoordType)
-declare sub atk_component_get_size cdecl alias "atk_component_get_size" (byval component as AtkComponent ptr, byval width as gint ptr, byval height as gint ptr)
-declare function atk_component_get_layer cdecl alias "atk_component_get_layer" (byval component as AtkComponent ptr) as AtkLayer
-declare function atk_component_get_mdi_zorder cdecl alias "atk_component_get_mdi_zorder" (byval component as AtkComponent ptr) as gint
-declare function atk_component_grab_focus cdecl alias "atk_component_grab_focus" (byval component as AtkComponent ptr) as gboolean
-declare sub atk_component_remove_focus_handler cdecl alias "atk_component_remove_focus_handler" (byval component as AtkComponent ptr, byval handler_id as guint)
-declare function atk_component_set_extents cdecl alias "atk_component_set_extents" (byval component as AtkComponent ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval coord_type as AtkCoordType) as gboolean
-declare function atk_component_set_position cdecl alias "atk_component_set_position" (byval component as AtkComponent ptr, byval x as gint, byval y as gint, byval coord_type as AtkCoordType) as gboolean
-declare function atk_component_set_size cdecl alias "atk_component_set_size" (byval component as AtkComponent ptr, byval width as gint, byval height as gint) as gboolean
+declare function atk_component_get_type () as GType
+declare function atk_component_add_focus_handler (byval component as AtkComponent ptr, byval handler as AtkFocusHandler) as guint
+declare function atk_component_contains (byval component as AtkComponent ptr, byval x as gint, byval y as gint, byval coord_type as AtkCoordType) as gboolean
+declare function atk_component_ref_accessible_at_point (byval component as AtkComponent ptr, byval x as gint, byval y as gint, byval coord_type as AtkCoordType) as AtkObject ptr
+declare sub atk_component_get_extents (byval component as AtkComponent ptr, byval x as gint ptr, byval y as gint ptr, byval width as gint ptr, byval height as gint ptr, byval coord_type as AtkCoordType)
+declare sub atk_component_get_position (byval component as AtkComponent ptr, byval x as gint ptr, byval y as gint ptr, byval coord_type as AtkCoordType)
+declare sub atk_component_get_size (byval component as AtkComponent ptr, byval width as gint ptr, byval height as gint ptr)
+declare function atk_component_get_layer (byval component as AtkComponent ptr) as AtkLayer
+declare function atk_component_get_mdi_zorder (byval component as AtkComponent ptr) as gint
+declare function atk_component_grab_focus (byval component as AtkComponent ptr) as gboolean
+declare sub atk_component_remove_focus_handler (byval component as AtkComponent ptr, byval handler_id as guint)
+declare function atk_component_set_extents (byval component as AtkComponent ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint, byval coord_type as AtkCoordType) as gboolean
+declare function atk_component_set_position (byval component as AtkComponent ptr, byval x as gint, byval y as gint, byval coord_type as AtkCoordType) as gboolean
+declare function atk_component_set_size (byval component as AtkComponent ptr, byval width as gint, byval height as gint) as gboolean
 
 #endif

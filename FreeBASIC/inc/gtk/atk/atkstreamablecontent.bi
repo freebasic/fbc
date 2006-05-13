@@ -30,9 +30,9 @@ type _AtkStreamableContentIface
 	pad4 as AtkFunction
 end type
 
-declare function atk_streamable_content_get_type cdecl alias "atk_streamable_content_get_type" () as GType
-declare function atk_streamable_content_get_n_mime_types cdecl alias "atk_streamable_content_get_n_mime_types" (byval streamable as AtkStreamableContent ptr) as gint
-declare function atk_streamable_content_get_mime_type cdecl alias "atk_streamable_content_get_mime_type" (byval streamable as AtkStreamableContent ptr, byval i as gint) as zstring ptr
-declare function atk_streamable_content_get_stream cdecl alias "atk_streamable_content_get_stream" (byval streamable as AtkStreamableContent ptr, byval mime_type as zstring ptr) as GIOChannel ptr
+declare function atk_streamable_content_get_type () as GType
+declare function atk_streamable_content_get_n_mime_types (byval streamable as AtkStreamableContent ptr) as gint
+declare function atk_streamable_content_get_mime_type (byval streamable as AtkStreamableContent ptr, byval i as gint) as zstring ptr
+declare function atk_streamable_content_get_stream (byval streamable as AtkStreamableContent ptr, byval mime_type as zstring ptr) as GIOChannel ptr
 
 #endif

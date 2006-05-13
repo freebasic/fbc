@@ -30,9 +30,9 @@ type _PangoItem
 	analysis as PangoAnalysis
 end type
 
-declare function pango_item_new cdecl alias "pango_item_new" () as PangoItem ptr
-declare function pango_item_copy cdecl alias "pango_item_copy" (byval item as PangoItem ptr) as PangoItem ptr
-declare sub pango_item_free cdecl alias "pango_item_free" (byval item as PangoItem ptr)
-declare function pango_item_split cdecl alias "pango_item_split" (byval orig as PangoItem ptr, byval split_index as integer, byval split_offset as integer) as PangoItem ptr
+declare function pango_item_new () as PangoItem ptr
+declare function pango_item_copy (byval item as PangoItem ptr) as PangoItem ptr
+declare sub pango_item_free (byval item as PangoItem ptr)
+declare function pango_item_split (byval orig as PangoItem ptr, byval split_index as integer, byval split_offset as integer) as PangoItem ptr
 
 #endif

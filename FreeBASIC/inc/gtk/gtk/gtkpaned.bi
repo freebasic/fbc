@@ -11,12 +11,12 @@
 
 #include once "gtk/gtk/gtkcontainer.bi"
 
-#define GTK_TYPE_PANED                  (gtk_paned_get_type ())
-#define GTK_PANED(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_PANED, GtkPaned))
-#define GTK_PANED_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_PANED, GtkPanedClass))
-#define GTK_IS_PANED(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_PANED))
-#define GTK_IS_PANED_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_PANED))
-#define GTK_PANED_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_PANED, GtkPanedClass))
+#define GTK_TYPE_PANED (gtk_paned_get_type ())
+#define GTK_PANED(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_PANED, GtkPaned))
+#define GTK_PANED_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_PANED, GtkPanedClass))
+#define GTK_IS_PANED(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_PANED))
+#define GTK_IS_PANED_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_PANED))
+#define GTK_PANED_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_PANED, GtkPanedClass))
 
 type GtkPaned as _GtkPaned
 type GtkPanedClass as _GtkPanedClass
@@ -64,16 +64,16 @@ type _GtkPanedClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_paned_get_type cdecl alias "gtk_paned_get_type" () as GType
-declare sub gtk_paned_add1 cdecl alias "gtk_paned_add1" (byval paned as GtkPaned ptr, byval child as GtkWidget ptr)
-declare sub gtk_paned_add2 cdecl alias "gtk_paned_add2" (byval paned as GtkPaned ptr, byval child as GtkWidget ptr)
-declare sub gtk_paned_pack1 cdecl alias "gtk_paned_pack1" (byval paned as GtkPaned ptr, byval child as GtkWidget ptr, byval resize as gboolean, byval shrink as gboolean)
-declare sub gtk_paned_pack2 cdecl alias "gtk_paned_pack2" (byval paned as GtkPaned ptr, byval child as GtkWidget ptr, byval resize as gboolean, byval shrink as gboolean)
-declare function gtk_paned_get_position cdecl alias "gtk_paned_get_position" (byval paned as GtkPaned ptr) as gint
-declare sub gtk_paned_set_position cdecl alias "gtk_paned_set_position" (byval paned as GtkPaned ptr, byval position as gint)
-declare function gtk_paned_get_child1 cdecl alias "gtk_paned_get_child1" (byval paned as GtkPaned ptr) as GtkWidget ptr
-declare function gtk_paned_get_child2 cdecl alias "gtk_paned_get_child2" (byval paned as GtkPaned ptr) as GtkWidget ptr
-declare sub gtk_paned_compute_position cdecl alias "gtk_paned_compute_position" (byval paned as GtkPaned ptr, byval allocation as gint, byval child1_req as gint, byval child2_req as gint)
+declare function gtk_paned_get_type () as GType
+declare sub gtk_paned_add1 (byval paned as GtkPaned ptr, byval child as GtkWidget ptr)
+declare sub gtk_paned_add2 (byval paned as GtkPaned ptr, byval child as GtkWidget ptr)
+declare sub gtk_paned_pack1 (byval paned as GtkPaned ptr, byval child as GtkWidget ptr, byval resize as gboolean, byval shrink as gboolean)
+declare sub gtk_paned_pack2 (byval paned as GtkPaned ptr, byval child as GtkWidget ptr, byval resize as gboolean, byval shrink as gboolean)
+declare function gtk_paned_get_position (byval paned as GtkPaned ptr) as gint
+declare sub gtk_paned_set_position (byval paned as GtkPaned ptr, byval position as gint)
+declare function gtk_paned_get_child1 (byval paned as GtkPaned ptr) as GtkWidget ptr
+declare function gtk_paned_get_child2 (byval paned as GtkPaned ptr) as GtkWidget ptr
+declare sub gtk_paned_compute_position (byval paned as GtkPaned ptr, byval allocation as gint, byval child1_req as gint, byval child2_req as gint)
 
 #define	gtk_paned_gutter_size(p,s) 
 #define	gtk_paned_set_gutter_size(p,s) 

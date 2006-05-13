@@ -40,14 +40,14 @@ type _GtkTreeItemClass
 	collapse as sub cdecl(byval as GtkTreeItem ptr)
 end type
 
-declare function gtk_tree_item_get_type cdecl alias "gtk_tree_item_get_type" () as GtkType
-declare function gtk_tree_item_new cdecl alias "gtk_tree_item_new" () as GtkWidget ptr
-declare function gtk_tree_item_new_with_label cdecl alias "gtk_tree_item_new_with_label" (byval label as gchar ptr) as GtkWidget ptr
-declare sub gtk_tree_item_set_subtree cdecl alias "gtk_tree_item_set_subtree" (byval tree_item as GtkTreeItem ptr, byval subtree as GtkWidget ptr)
-declare sub gtk_tree_item_remove_subtree cdecl alias "gtk_tree_item_remove_subtree" (byval tree_item as GtkTreeItem ptr)
-declare sub gtk_tree_item_select cdecl alias "gtk_tree_item_select" (byval tree_item as GtkTreeItem ptr)
-declare sub gtk_tree_item_deselect cdecl alias "gtk_tree_item_deselect" (byval tree_item as GtkTreeItem ptr)
-declare sub gtk_tree_item_expand cdecl alias "gtk_tree_item_expand" (byval tree_item as GtkTreeItem ptr)
-declare sub gtk_tree_item_collapse cdecl alias "gtk_tree_item_collapse" (byval tree_item as GtkTreeItem ptr)
+declare function gtk_tree_item_get_type () as GtkType
+declare function gtk_tree_item_new () as GtkWidget ptr
+declare function gtk_tree_item_new_with_label (byval label as gchar ptr) as GtkWidget ptr
+declare sub gtk_tree_item_set_subtree (byval tree_item as GtkTreeItem ptr, byval subtree as GtkWidget ptr)
+declare sub gtk_tree_item_remove_subtree (byval tree_item as GtkTreeItem ptr)
+declare sub gtk_tree_item_select (byval tree_item as GtkTreeItem ptr)
+declare sub gtk_tree_item_deselect (byval tree_item as GtkTreeItem ptr)
+declare sub gtk_tree_item_expand (byval tree_item as GtkTreeItem ptr)
+declare sub gtk_tree_item_collapse (byval tree_item as GtkTreeItem ptr)
 
 #endif

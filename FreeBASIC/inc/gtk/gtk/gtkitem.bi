@@ -12,12 +12,12 @@
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkbin.bi"
 
-#define GTK_TYPE_ITEM                  (gtk_item_get_type ())
-#define GTK_ITEM(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_ITEM, GtkItem))
-#define GTK_ITEM_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_ITEM, GtkItemClass))
-#define GTK_IS_ITEM(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_ITEM))
-#define GTK_IS_ITEM_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_ITEM))
-#define GTK_ITEM_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_ITEM, GtkItemClass))
+#define GTK_TYPE_ITEM (gtk_item_get_type ())
+#define GTK_ITEM(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_ITEM, GtkItem))
+#define GTK_ITEM_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_ITEM, GtkItemClass))
+#define GTK_IS_ITEM(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_ITEM))
+#define GTK_IS_ITEM_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_ITEM))
+#define GTK_ITEM_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_ITEM, GtkItemClass))
 
 type GtkItem as _GtkItem
 type GtkItemClass as _GtkItemClass
@@ -37,9 +37,9 @@ type _GtkItemClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_item_get_type cdecl alias "gtk_item_get_type" () as GType
-declare sub gtk_item_select cdecl alias "gtk_item_select" (byval item as GtkItem ptr)
-declare sub gtk_item_deselect cdecl alias "gtk_item_deselect" (byval item as GtkItem ptr)
-declare sub gtk_item_toggle cdecl alias "gtk_item_toggle" (byval item as GtkItem ptr)
+declare function gtk_item_get_type () as GType
+declare sub gtk_item_select (byval item as GtkItem ptr)
+declare sub gtk_item_deselect (byval item as GtkItem ptr)
+declare sub gtk_item_toggle (byval item as GtkItem ptr)
 
 #endif

@@ -12,12 +12,12 @@
 #include once "gtk/atk.bi"
 #include once "gtk/gtk/gtkwidget.bi"
 
-#define GTK_TYPE_ACCESSIBLE                  (gtk_accessible_get_type ())
-#define GTK_ACCESSIBLE(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_ACCESSIBLE, GtkAccessible))
-#define GTK_ACCESSIBLE_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_ACCESSIBLE, GtkAccessibleClass))
-#define GTK_IS_ACCESSIBLE(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_ACCESSIBLE))
-#define GTK_IS_ACCESSIBLE_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_ACCESSIBLE))
-#define GTK_ACCESSIBLE_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_ACCESSIBLE, GtkAccessibleClass))
+#define GTK_TYPE_ACCESSIBLE (gtk_accessible_get_type ())
+#define GTK_ACCESSIBLE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_ACCESSIBLE, GtkAccessible))
+#define GTK_ACCESSIBLE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_ACCESSIBLE, GtkAccessibleClass))
+#define GTK_IS_ACCESSIBLE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_ACCESSIBLE))
+#define GTK_IS_ACCESSIBLE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_ACCESSIBLE))
+#define GTK_ACCESSIBLE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_ACCESSIBLE, GtkAccessibleClass))
 
 type GtkAccessible as _GtkAccessible
 type GtkAccessibleClass as _GtkAccessibleClass
@@ -36,7 +36,7 @@ type _GtkAccessibleClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_accessible_get_type cdecl alias "gtk_accessible_get_type" () as GType
-declare sub gtk_accessible_connect_widget_destroyed cdecl alias "gtk_accessible_connect_widget_destroyed" (byval accessible as GtkAccessible ptr)
+declare function gtk_accessible_get_type () as GType
+declare sub gtk_accessible_connect_widget_destroyed (byval accessible as GtkAccessible ptr)
 
 #endif

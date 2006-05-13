@@ -20,6 +20,8 @@
 # error Platform not supported!
 #endif
 
+extern "c"
+
 #include once "gtk/pango/pango-attributes.bi"
 #include once "gtk/pango/pango-break.bi"
 #include once "gtk/pango/pango-context.bi"
@@ -34,6 +36,8 @@
 #include once "gtk/pango/pango-renderer.bi"
 #include once "gtk/pango/pango-script.bi"
 #include once "gtk/pango/pango-types.bi"
+
+end extern
 
 #ifdef __FB_WIN32__
 # pragma pop(msbitfields)

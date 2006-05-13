@@ -11,12 +11,12 @@
 
 #include once "gtk/gtk/gtktoggleaction.bi"
 
-#define GTK_TYPE_RADIO_ACTION            (gtk_radio_action_get_type ())
-#define GTK_RADIO_ACTION(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_RADIO_ACTION, GtkRadioAction))
-#define GTK_RADIO_ACTION_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_RADIO_ACTION, GtkRadioActionClass))
-#define GTK_IS_RADIO_ACTION(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_RADIO_ACTION))
+#define GTK_TYPE_RADIO_ACTION (gtk_radio_action_get_type ())
+#define GTK_RADIO_ACTION(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_RADIO_ACTION, GtkRadioAction))
+#define GTK_RADIO_ACTION_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_RADIO_ACTION, GtkRadioActionClass))
+#define GTK_IS_RADIO_ACTION(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_RADIO_ACTION))
 #define GTK_IS_RADIO_ACTION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_RADIO_ACTION))
-#define GTK_RADIO_ACTION_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), GTK_TYPE_RADIO_ACTION, GtkRadioActionClass))
+#define GTK_RADIO_ACTION_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), GTK_TYPE_RADIO_ACTION, GtkRadioActionClass))
 
 type GtkRadioAction as _GtkRadioAction
 type GtkRadioActionPrivate as _GtkRadioActionPrivate
@@ -36,10 +36,10 @@ type _GtkRadioActionClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_radio_action_get_type cdecl alias "gtk_radio_action_get_type" () as GType
-declare function gtk_radio_action_new cdecl alias "gtk_radio_action_new" (byval name as zstring ptr, byval label as zstring ptr, byval tooltip as zstring ptr, byval stock_id as zstring ptr, byval value as gint) as GtkRadioAction ptr
-declare function gtk_radio_action_get_group cdecl alias "gtk_radio_action_get_group" (byval action as GtkRadioAction ptr) as GSList ptr
-declare sub gtk_radio_action_set_group cdecl alias "gtk_radio_action_set_group" (byval action as GtkRadioAction ptr, byval group as GSList ptr)
-declare function gtk_radio_action_get_current_value cdecl alias "gtk_radio_action_get_current_value" (byval action as GtkRadioAction ptr) as gint
+declare function gtk_radio_action_get_type () as GType
+declare function gtk_radio_action_new (byval name as zstring ptr, byval label as zstring ptr, byval tooltip as zstring ptr, byval stock_id as zstring ptr, byval value as gint) as GtkRadioAction ptr
+declare function gtk_radio_action_get_group (byval action as GtkRadioAction ptr) as GSList ptr
+declare sub gtk_radio_action_set_group (byval action as GtkRadioAction ptr, byval group as GSList ptr)
+declare function gtk_radio_action_get_current_value (byval action as GtkRadioAction ptr) as gint
 
 #endif

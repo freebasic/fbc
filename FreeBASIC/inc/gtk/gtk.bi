@@ -18,6 +18,8 @@
 # error Platform not supported!
 #endif
 
+extern "c"
+
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkaboutdialog.bi"
 #include once "gtk/gtk/gtkaccelgroup.bi"
@@ -179,6 +181,8 @@
 #include once "gtk/gtk/gtkvseparator.bi"
 #include once "gtk/gtk/gtkwidget.bi"
 #include once "gtk/gtk/gtkwindow.bi"
+
+end extern
 
 #ifdef __FB_WIN32__
 # pragma pop(msbitfields)

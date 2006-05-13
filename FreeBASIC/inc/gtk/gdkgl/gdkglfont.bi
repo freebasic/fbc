@@ -12,6 +12,6 @@
 #include once "gtk/gdkgl/gdkgldefs.bi"
 #include once "gtk/gdkgl/gdkgltypes.bi"
 
-declare function gdk_gl_font_use_pango_font cdecl alias "gdk_gl_font_use_pango_font" (byval font_desc as PangoFontDescription ptr, byval first as integer, byval count as integer, byval list_base as integer) as PangoFont ptr
+declare function gdk_gl_font_use_pango_font (byval font_desc as PangoFontDescription ptr, byval first as integer, byval count as integer, byval list_base as integer) as PangoFont ptr
 
 #endif

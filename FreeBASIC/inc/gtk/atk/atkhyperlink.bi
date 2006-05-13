@@ -43,14 +43,14 @@ type _AtkHyperlinkClass
 	pad1 as AtkFunction
 end type
 
-declare function atk_hyperlink_get_type cdecl alias "atk_hyperlink_get_type" () as GType
-declare function atk_hyperlink_get_uri cdecl alias "atk_hyperlink_get_uri" (byval link_ as AtkHyperlink ptr, byval i as gint) as zstring ptr
-declare function atk_hyperlink_get_object cdecl alias "atk_hyperlink_get_object" (byval link_ as AtkHyperlink ptr, byval i as gint) as AtkObject ptr
-declare function atk_hyperlink_get_end_index cdecl alias "atk_hyperlink_get_end_index" (byval link_ as AtkHyperlink ptr) as gint
-declare function atk_hyperlink_get_start_index cdecl alias "atk_hyperlink_get_start_index" (byval link_ as AtkHyperlink ptr) as gint
-declare function atk_hyperlink_is_valid cdecl alias "atk_hyperlink_is_valid" (byval link_ as AtkHyperlink ptr) as gboolean
-declare function atk_hyperlink_is_inline cdecl alias "atk_hyperlink_is_inline" (byval link_ as AtkHyperlink ptr) as gboolean
-declare function atk_hyperlink_get_n_anchors cdecl alias "atk_hyperlink_get_n_anchors" (byval link_ as AtkHyperlink ptr) as gint
-declare function atk_hyperlink_is_selected_link cdecl alias "atk_hyperlink_is_selected_link" (byval link_ as AtkHyperlink ptr) as gboolean
+declare function atk_hyperlink_get_type () as GType
+declare function atk_hyperlink_get_uri (byval link_ as AtkHyperlink ptr, byval i as gint) as zstring ptr
+declare function atk_hyperlink_get_object (byval link_ as AtkHyperlink ptr, byval i as gint) as AtkObject ptr
+declare function atk_hyperlink_get_end_index (byval link_ as AtkHyperlink ptr) as gint
+declare function atk_hyperlink_get_start_index (byval link_ as AtkHyperlink ptr) as gint
+declare function atk_hyperlink_is_valid (byval link_ as AtkHyperlink ptr) as gboolean
+declare function atk_hyperlink_is_inline (byval link_ as AtkHyperlink ptr) as gboolean
+declare function atk_hyperlink_get_n_anchors (byval link_ as AtkHyperlink ptr) as gint
+declare function atk_hyperlink_is_selected_link (byval link_ as AtkHyperlink ptr) as gboolean
 
 #endif

@@ -11,6 +11,6 @@
 
 #include once "gtk/glib/gtypes.bi"
 
-declare function g_spaced_primes_closest cdecl alias "g_spaced_primes_closest" (byval num as guint) as guint
+declare function g_spaced_primes_closest (byval num as guint) as guint
 
 #endif

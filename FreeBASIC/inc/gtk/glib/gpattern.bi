@@ -13,11 +13,11 @@
 
 type GPatternSpec as _GPatternSpec
 
-declare function g_pattern_spec_new cdecl alias "g_pattern_spec_new" (byval pattern as zstring ptr) as GPatternSpec ptr
-declare sub g_pattern_spec_free cdecl alias "g_pattern_spec_free" (byval pspec as GPatternSpec ptr)
-declare function g_pattern_spec_equal cdecl alias "g_pattern_spec_equal" (byval pspec1 as GPatternSpec ptr, byval pspec2 as GPatternSpec ptr) as gboolean
-declare function g_pattern_match cdecl alias "g_pattern_match" (byval pspec as GPatternSpec ptr, byval string_length as guint, byval string as zstring ptr, byval string_reversed as zstring ptr) as gboolean
-declare function g_pattern_match_string cdecl alias "g_pattern_match_string" (byval pspec as GPatternSpec ptr, byval string as zstring ptr) as gboolean
-declare function g_pattern_match_simple cdecl alias "g_pattern_match_simple" (byval pattern as zstring ptr, byval string as zstring ptr) as gboolean
+declare function g_pattern_spec_new (byval pattern as zstring ptr) as GPatternSpec ptr
+declare sub g_pattern_spec_free (byval pspec as GPatternSpec ptr)
+declare function g_pattern_spec_equal (byval pspec1 as GPatternSpec ptr, byval pspec2 as GPatternSpec ptr) as gboolean
+declare function g_pattern_match (byval pspec as GPatternSpec ptr, byval string_length as guint, byval string as zstring ptr, byval string_reversed as zstring ptr) as gboolean
+declare function g_pattern_match_string (byval pspec as GPatternSpec ptr, byval string as zstring ptr) as gboolean
+declare function g_pattern_match_simple (byval pattern as zstring ptr, byval string as zstring ptr) as gboolean
 
 #endif

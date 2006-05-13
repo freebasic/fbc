@@ -30,10 +30,10 @@ type _AtkImageIface
 	pad2 as AtkFunction
 end type
 
-declare function atk_image_get_type cdecl alias "atk_image_get_type" () as GType
-declare function atk_image_get_image_description cdecl alias "atk_image_get_image_description" (byval image as AtkImage ptr) as zstring ptr
-declare sub atk_image_get_image_size cdecl alias "atk_image_get_image_size" (byval image as AtkImage ptr, byval width as gint ptr, byval height as gint ptr)
-declare function atk_image_set_image_description cdecl alias "atk_image_set_image_description" (byval image as AtkImage ptr, byval description as zstring ptr) as gboolean
-declare sub atk_image_get_image_position cdecl alias "atk_image_get_image_position" (byval image as AtkImage ptr, byval x as gint ptr, byval y as gint ptr, byval coord_type as AtkCoordType)
+declare function atk_image_get_type () as GType
+declare function atk_image_get_image_description (byval image as AtkImage ptr) as zstring ptr
+declare sub atk_image_get_image_size (byval image as AtkImage ptr, byval width as gint ptr, byval height as gint ptr)
+declare function atk_image_set_image_description (byval image as AtkImage ptr, byval description as zstring ptr) as gboolean
+declare sub atk_image_get_image_position (byval image as AtkImage ptr, byval x as gint ptr, byval y as gint ptr, byval coord_type as AtkCoordType)
 
 #endif

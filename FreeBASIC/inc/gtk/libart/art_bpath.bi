@@ -25,6 +25,6 @@ type _ArtBpath
 	y3 as double
 end type
 
-declare function art_bpath_affine_transform cdecl alias "art_bpath_affine_transform" (byval src as ArtBpath ptr, byval matrix as double ptr) as ArtBpath ptr
+declare function art_bpath_affine_transform (byval src as ArtBpath ptr, byval matrix as double ptr) as ArtBpath ptr
 
 #endif

@@ -11,9 +11,9 @@
 
 #include once "gtk/gobject/gclosure.bi"
 
-declare sub g_source_set_closure cdecl alias "g_source_set_closure" (byval source as GSource ptr, byval closure as GClosure ptr)
-declare function g_io_channel_get_type cdecl alias "g_io_channel_get_type" () as GType
-declare function g_io_condition_get_type cdecl alias "g_io_condition_get_type" () as GType
+declare sub g_source_set_closure (byval source as GSource ptr, byval closure as GClosure ptr)
+declare function g_io_channel_get_type () as GType
+declare function g_io_condition_get_type () as GType
 
 #define G_TYPE_IO_CHANNEL (g_io_channel_get_type ())
 #define G_TYPE_IO_CONDITION (g_io_condition_get_type ())

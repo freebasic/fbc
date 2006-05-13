@@ -13,12 +13,12 @@
 #include once "gtk/gtk/gtkwidget.bi"
 #include once "gtk/gtk/gtksignal.bi"
 
-#define GTK_TYPE_CALENDAR                  (gtk_calendar_get_type ())
-#define GTK_CALENDAR(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CALENDAR, GtkCalendar))
-#define GTK_CALENDAR_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_CALENDAR, GtkCalendarClass))
-#define GTK_IS_CALENDAR(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_CALENDAR))
-#define GTK_IS_CALENDAR_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_CALENDAR))
-#define GTK_CALENDAR_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_CALENDAR, GtkCalendarClass))
+#define GTK_TYPE_CALENDAR (gtk_calendar_get_type ())
+#define GTK_CALENDAR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CALENDAR, GtkCalendar))
+#define GTK_CALENDAR_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_CALENDAR, GtkCalendarClass))
+#define GTK_IS_CALENDAR(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_CALENDAR))
+#define GTK_IS_CALENDAR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_CALENDAR))
+#define GTK_CALENDAR_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_CALENDAR, GtkCalendarClass))
 
 type GtkCalendar as _GtkCalendar
 type GtkCalendarClass as _GtkCalendarClass
@@ -70,18 +70,18 @@ type _GtkCalendarClass
 	next_year as sub cdecl(byval as GtkCalendar ptr)
 end type
 
-declare function gtk_calendar_get_type cdecl alias "gtk_calendar_get_type" () as GType
-declare function gtk_calendar_new cdecl alias "gtk_calendar_new" () as GtkWidget ptr
-declare function gtk_calendar_select_month cdecl alias "gtk_calendar_select_month" (byval calendar as GtkCalendar ptr, byval month as guint, byval year as guint) as gboolean
-declare sub gtk_calendar_select_day cdecl alias "gtk_calendar_select_day" (byval calendar as GtkCalendar ptr, byval day as guint)
-declare function gtk_calendar_mark_day cdecl alias "gtk_calendar_mark_day" (byval calendar as GtkCalendar ptr, byval day as guint) as gboolean
-declare function gtk_calendar_unmark_day cdecl alias "gtk_calendar_unmark_day" (byval calendar as GtkCalendar ptr, byval day as guint) as gboolean
-declare sub gtk_calendar_clear_marks cdecl alias "gtk_calendar_clear_marks" (byval calendar as GtkCalendar ptr)
-declare sub gtk_calendar_set_display_options cdecl alias "gtk_calendar_set_display_options" (byval calendar as GtkCalendar ptr, byval flags as GtkCalendarDisplayOptions)
-declare function gtk_calendar_get_display_options cdecl alias "gtk_calendar_get_display_options" (byval calendar as GtkCalendar ptr) as GtkCalendarDisplayOptions
-declare sub gtk_calendar_display_options cdecl alias "gtk_calendar_display_options" (byval calendar as GtkCalendar ptr, byval flags as GtkCalendarDisplayOptions)
-declare sub gtk_calendar_get_date cdecl alias "gtk_calendar_get_date" (byval calendar as GtkCalendar ptr, byval year as guint ptr, byval month as guint ptr, byval day as guint ptr)
-declare sub gtk_calendar_freeze cdecl alias "gtk_calendar_freeze" (byval calendar as GtkCalendar ptr)
-declare sub gtk_calendar_thaw cdecl alias "gtk_calendar_thaw" (byval calendar as GtkCalendar ptr)
+declare function gtk_calendar_get_type () as GType
+declare function gtk_calendar_new () as GtkWidget ptr
+declare function gtk_calendar_select_month (byval calendar as GtkCalendar ptr, byval month as guint, byval year as guint) as gboolean
+declare sub gtk_calendar_select_day (byval calendar as GtkCalendar ptr, byval day as guint)
+declare function gtk_calendar_mark_day (byval calendar as GtkCalendar ptr, byval day as guint) as gboolean
+declare function gtk_calendar_unmark_day (byval calendar as GtkCalendar ptr, byval day as guint) as gboolean
+declare sub gtk_calendar_clear_marks (byval calendar as GtkCalendar ptr)
+declare sub gtk_calendar_set_display_options (byval calendar as GtkCalendar ptr, byval flags as GtkCalendarDisplayOptions)
+declare function gtk_calendar_get_display_options (byval calendar as GtkCalendar ptr) as GtkCalendarDisplayOptions
+declare sub gtk_calendar_display_options (byval calendar as GtkCalendar ptr, byval flags as GtkCalendarDisplayOptions)
+declare sub gtk_calendar_get_date (byval calendar as GtkCalendar ptr, byval year as guint ptr, byval month as guint ptr, byval day as guint ptr)
+declare sub gtk_calendar_freeze (byval calendar as GtkCalendar ptr)
+declare sub gtk_calendar_thaw (byval calendar as GtkCalendar ptr)
 
 #endif

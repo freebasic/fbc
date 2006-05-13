@@ -13,13 +13,13 @@
 #include once "gtk/gdk/gdktypes.bi"
 #include once "gtk/gdk/gdkevents.bi"
 
-#define GDK_TYPE_WINDOW              (gdk_window_object_get_type ())
-#define GDK_WINDOW(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_WINDOW, GdkWindow))
-#define GDK_WINDOW_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_WINDOW, GdkWindowObjectClass))
-#define GDK_IS_WINDOW(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_WINDOW))
-#define GDK_IS_WINDOW_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_WINDOW))
-#define GDK_WINDOW_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_WINDOW, GdkWindowObjectClass))
-#define GDK_WINDOW_OBJECT(object)    (cast(GdkWindowObject ptr, GDK_WINDOW (object)))
+#define GDK_TYPE_WINDOW (gdk_window_object_get_type ())
+#define GDK_WINDOW(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_WINDOW, GdkWindow))
+#define GDK_WINDOW_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_WINDOW, GdkWindowObjectClass))
+#define GDK_IS_WINDOW(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_WINDOW))
+#define GDK_IS_WINDOW_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_WINDOW))
+#define GDK_WINDOW_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_WINDOW, GdkWindowObjectClass))
+#define GDK_WINDOW_OBJECT(object) (cast(GdkWindowObject ptr, GDK_WINDOW (object)))
 
 type GdkGeometry as _GdkGeometry
 type GdkWindowAttr as _GdkWindowAttr
@@ -196,111 +196,111 @@ type _GdkWindowObjectClass
 	parent_class as GdkDrawableClass
 end type
 
-declare function gdk_window_object_get_type cdecl alias "gdk_window_object_get_type" () as GType
-declare function gdk_window_new cdecl alias "gdk_window_new" (byval parent as GdkWindow ptr, byval attributes as GdkWindowAttr ptr, byval attributes_mask as gint) as GdkWindow ptr
-declare sub gdk_window_destroy cdecl alias "gdk_window_destroy" (byval window as GdkWindow ptr)
-declare function gdk_window_get_window_type cdecl alias "gdk_window_get_window_type" (byval window as GdkWindow ptr) as GdkWindowType
-declare function gdk_window_at_pointer cdecl alias "gdk_window_at_pointer" (byval win_x as gint ptr, byval win_y as gint ptr) as GdkWindow ptr
-declare sub gdk_window_show cdecl alias "gdk_window_show" (byval window as GdkWindow ptr)
-declare sub gdk_window_hide cdecl alias "gdk_window_hide" (byval window as GdkWindow ptr)
-declare sub gdk_window_withdraw cdecl alias "gdk_window_withdraw" (byval window as GdkWindow ptr)
-declare sub gdk_window_show_unraised cdecl alias "gdk_window_show_unraised" (byval window as GdkWindow ptr)
-declare sub gdk_window_move cdecl alias "gdk_window_move" (byval window as GdkWindow ptr, byval x as gint, byval y as gint)
-declare sub gdk_window_resize cdecl alias "gdk_window_resize" (byval window as GdkWindow ptr, byval width as gint, byval height as gint)
-declare sub gdk_window_move_resize cdecl alias "gdk_window_move_resize" (byval window as GdkWindow ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-declare sub gdk_window_reparent cdecl alias "gdk_window_reparent" (byval window as GdkWindow ptr, byval new_parent as GdkWindow ptr, byval x as gint, byval y as gint)
-declare sub gdk_window_clear cdecl alias "gdk_window_clear" (byval window as GdkWindow ptr)
-declare sub gdk_window_clear_area cdecl alias "gdk_window_clear_area" (byval window as GdkWindow ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-declare sub gdk_window_clear_area_e cdecl alias "gdk_window_clear_area_e" (byval window as GdkWindow ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
-declare sub gdk_window_raise cdecl alias "gdk_window_raise" (byval window as GdkWindow ptr)
-declare sub gdk_window_lower cdecl alias "gdk_window_lower" (byval window as GdkWindow ptr)
-declare sub gdk_window_focus cdecl alias "gdk_window_focus" (byval window as GdkWindow ptr, byval timestamp as guint32)
-declare sub gdk_window_set_user_data cdecl alias "gdk_window_set_user_data" (byval window as GdkWindow ptr, byval user_data as gpointer)
-declare sub gdk_window_set_override_redirect cdecl alias "gdk_window_set_override_redirect" (byval window as GdkWindow ptr, byval override_redirect as gboolean)
-declare sub gdk_window_set_accept_focus cdecl alias "gdk_window_set_accept_focus" (byval window as GdkWindow ptr, byval accept_focus as gboolean)
-declare sub gdk_window_set_focus_on_map cdecl alias "gdk_window_set_focus_on_map" (byval window as GdkWindow ptr, byval focus_on_map as gboolean)
-declare sub gdk_window_add_filter cdecl alias "gdk_window_add_filter" (byval window as GdkWindow ptr, byval function as GdkFilterFunc, byval data as gpointer)
-declare sub gdk_window_remove_filter cdecl alias "gdk_window_remove_filter" (byval window as GdkWindow ptr, byval function as GdkFilterFunc, byval data as gpointer)
-declare sub gdk_window_scroll cdecl alias "gdk_window_scroll" (byval window as GdkWindow ptr, byval dx as gint, byval dy as gint)
-declare sub gdk_window_shape_combine_mask cdecl alias "gdk_window_shape_combine_mask" (byval window as GdkWindow ptr, byval mask as GdkBitmap ptr, byval x as gint, byval y as gint)
-declare sub gdk_window_shape_combine_region cdecl alias "gdk_window_shape_combine_region" (byval window as GdkWindow ptr, byval shape_region as GdkRegion ptr, byval offset_x as gint, byval offset_y as gint)
-declare sub gdk_window_set_child_shapes cdecl alias "gdk_window_set_child_shapes" (byval window as GdkWindow ptr)
-declare sub gdk_window_merge_child_shapes cdecl alias "gdk_window_merge_child_shapes" (byval window as GdkWindow ptr)
-declare function gdk_window_is_visible cdecl alias "gdk_window_is_visible" (byval window as GdkWindow ptr) as gboolean
-declare function gdk_window_is_viewable cdecl alias "gdk_window_is_viewable" (byval window as GdkWindow ptr) as gboolean
-declare function gdk_window_get_state cdecl alias "gdk_window_get_state" (byval window as GdkWindow ptr) as GdkWindowState
-declare function gdk_window_set_static_gravities cdecl alias "gdk_window_set_static_gravities" (byval window as GdkWindow ptr, byval use_static as gboolean) as gboolean
-declare function gdk_window_foreign_new cdecl alias "gdk_window_foreign_new" (byval anid as GdkNativeWindow) as GdkWindow ptr
-declare function gdk_window_lookup cdecl alias "gdk_window_lookup" (byval anid as GdkNativeWindow) as GdkWindow ptr
-declare function gdk_window_foreign_new_for_display cdecl alias "gdk_window_foreign_new_for_display" (byval display as GdkDisplay ptr, byval anid as GdkNativeWindow) as GdkWindow ptr
-declare function gdk_window_lookup_for_display cdecl alias "gdk_window_lookup_for_display" (byval display as GdkDisplay ptr, byval anid as GdkNativeWindow) as GdkWindow ptr
-declare sub gdk_window_set_hints cdecl alias "gdk_window_set_hints" (byval window as GdkWindow ptr, byval x as gint, byval y as gint, byval min_width as gint, byval min_height as gint, byval max_width as gint, byval max_height as gint, byval flags as gint)
-declare sub gdk_window_set_type_hint cdecl alias "gdk_window_set_type_hint" (byval window as GdkWindow ptr, byval hint as GdkWindowTypeHint)
-declare sub gdk_window_set_modal_hint cdecl alias "gdk_window_set_modal_hint" (byval window as GdkWindow ptr, byval modal as gboolean)
-declare sub gdk_window_set_skip_taskbar_hint cdecl alias "gdk_window_set_skip_taskbar_hint" (byval window as GdkWindow ptr, byval skips_taskbar as gboolean)
-declare sub gdk_window_set_skip_pager_hint cdecl alias "gdk_window_set_skip_pager_hint" (byval window as GdkWindow ptr, byval skips_pager as gboolean)
-declare sub gdk_window_set_geometry_hints cdecl alias "gdk_window_set_geometry_hints" (byval window as GdkWindow ptr, byval geometry as GdkGeometry ptr, byval geom_mask as GdkWindowHints)
-declare sub gdk_set_sm_client_id cdecl alias "gdk_set_sm_client_id" (byval sm_client_id as zstring ptr)
-declare sub gdk_window_begin_paint_rect cdecl alias "gdk_window_begin_paint_rect" (byval window as GdkWindow ptr, byval rectangle as GdkRectangle ptr)
-declare sub gdk_window_begin_paint_region cdecl alias "gdk_window_begin_paint_region" (byval window as GdkWindow ptr, byval region as GdkRegion ptr)
-declare sub gdk_window_end_paint cdecl alias "gdk_window_end_paint" (byval window as GdkWindow ptr)
-declare sub gdk_window_set_title cdecl alias "gdk_window_set_title" (byval window as GdkWindow ptr, byval title as zstring ptr)
-declare sub gdk_window_set_role cdecl alias "gdk_window_set_role" (byval window as GdkWindow ptr, byval role as zstring ptr)
-declare sub gdk_window_set_transient_for cdecl alias "gdk_window_set_transient_for" (byval window as GdkWindow ptr, byval parent as GdkWindow ptr)
-declare sub gdk_window_set_background cdecl alias "gdk_window_set_background" (byval window as GdkWindow ptr, byval color as GdkColor ptr)
-declare sub gdk_window_set_back_pixmap cdecl alias "gdk_window_set_back_pixmap" (byval window as GdkWindow ptr, byval pixmap as GdkPixmap ptr, byval parent_relative as gboolean)
-declare sub gdk_window_set_cursor cdecl alias "gdk_window_set_cursor" (byval window as GdkWindow ptr, byval cursor as GdkCursor ptr)
-declare sub gdk_window_get_user_data cdecl alias "gdk_window_get_user_data" (byval window as GdkWindow ptr, byval data as gpointer ptr)
-declare sub gdk_window_get_geometry cdecl alias "gdk_window_get_geometry" (byval window as GdkWindow ptr, byval x as gint ptr, byval y as gint ptr, byval width as gint ptr, byval height as gint ptr, byval depth as gint ptr)
-declare sub gdk_window_get_position cdecl alias "gdk_window_get_position" (byval window as GdkWindow ptr, byval x as gint ptr, byval y as gint ptr)
-declare function gdk_window_get_origin cdecl alias "gdk_window_get_origin" (byval window as GdkWindow ptr, byval x as gint ptr, byval y as gint ptr) as gint
-declare function gdk_window_get_deskrelative_origin cdecl alias "gdk_window_get_deskrelative_origin" (byval window as GdkWindow ptr, byval x as gint ptr, byval y as gint ptr) as gboolean
-declare sub gdk_window_get_root_origin cdecl alias "gdk_window_get_root_origin" (byval window as GdkWindow ptr, byval x as gint ptr, byval y as gint ptr)
-declare sub gdk_window_get_frame_extents cdecl alias "gdk_window_get_frame_extents" (byval window as GdkWindow ptr, byval rect as GdkRectangle ptr)
-declare function gdk_window_get_pointer cdecl alias "gdk_window_get_pointer" (byval window as GdkWindow ptr, byval x as gint ptr, byval y as gint ptr, byval mask as GdkModifierType ptr) as GdkWindow ptr
-declare function gdk_window_get_parent cdecl alias "gdk_window_get_parent" (byval window as GdkWindow ptr) as GdkWindow ptr
-declare function gdk_window_get_toplevel cdecl alias "gdk_window_get_toplevel" (byval window as GdkWindow ptr) as GdkWindow ptr
-declare function gdk_window_get_children cdecl alias "gdk_window_get_children" (byval window as GdkWindow ptr) as GList ptr
-declare function gdk_window_peek_children cdecl alias "gdk_window_peek_children" (byval window as GdkWindow ptr) as GList ptr
-declare function gdk_window_get_events cdecl alias "gdk_window_get_events" (byval window as GdkWindow ptr) as GdkEventMask
-declare sub gdk_window_set_events cdecl alias "gdk_window_set_events" (byval window as GdkWindow ptr, byval event_mask as GdkEventMask)
-declare sub gdk_window_set_icon_list cdecl alias "gdk_window_set_icon_list" (byval window as GdkWindow ptr, byval pixbufs as GList ptr)
-declare sub gdk_window_set_icon cdecl alias "gdk_window_set_icon" (byval window as GdkWindow ptr, byval icon_window as GdkWindow ptr, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr)
-declare sub gdk_window_set_icon_name cdecl alias "gdk_window_set_icon_name" (byval window as GdkWindow ptr, byval name as zstring ptr)
-declare sub gdk_window_set_group cdecl alias "gdk_window_set_group" (byval window as GdkWindow ptr, byval leader as GdkWindow ptr)
-declare function gdk_window_get_group cdecl alias "gdk_window_get_group" (byval window as GdkWindow ptr) as GdkWindow ptr
-declare sub gdk_window_set_decorations cdecl alias "gdk_window_set_decorations" (byval window as GdkWindow ptr, byval decorations as GdkWMDecoration)
-declare function gdk_window_get_decorations cdecl alias "gdk_window_get_decorations" (byval window as GdkWindow ptr, byval decorations as GdkWMDecoration ptr) as gboolean
-declare sub gdk_window_set_functions cdecl alias "gdk_window_set_functions" (byval window as GdkWindow ptr, byval functions as GdkWMFunction)
-declare function gdk_window_get_toplevels cdecl alias "gdk_window_get_toplevels" () as GList ptr
-declare sub gdk_window_iconify cdecl alias "gdk_window_iconify" (byval window as GdkWindow ptr)
-declare sub gdk_window_deiconify cdecl alias "gdk_window_deiconify" (byval window as GdkWindow ptr)
-declare sub gdk_window_stick cdecl alias "gdk_window_stick" (byval window as GdkWindow ptr)
-declare sub gdk_window_unstick cdecl alias "gdk_window_unstick" (byval window as GdkWindow ptr)
-declare sub gdk_window_maximize cdecl alias "gdk_window_maximize" (byval window as GdkWindow ptr)
-declare sub gdk_window_unmaximize cdecl alias "gdk_window_unmaximize" (byval window as GdkWindow ptr)
-declare sub gdk_window_fullscreen cdecl alias "gdk_window_fullscreen" (byval window as GdkWindow ptr)
-declare sub gdk_window_unfullscreen cdecl alias "gdk_window_unfullscreen" (byval window as GdkWindow ptr)
-declare sub gdk_window_set_keep_above cdecl alias "gdk_window_set_keep_above" (byval window as GdkWindow ptr, byval setting as gboolean)
-declare sub gdk_window_set_keep_below cdecl alias "gdk_window_set_keep_below" (byval window as GdkWindow ptr, byval setting as gboolean)
-declare sub gdk_window_register_dnd cdecl alias "gdk_window_register_dnd" (byval window as GdkWindow ptr)
-declare sub gdk_window_begin_resize_drag cdecl alias "gdk_window_begin_resize_drag" (byval window as GdkWindow ptr, byval edge as GdkWindowEdge, byval button as gint, byval root_x as gint, byval root_y as gint, byval timestamp as guint32)
-declare sub gdk_window_begin_move_drag cdecl alias "gdk_window_begin_move_drag" (byval window as GdkWindow ptr, byval button as gint, byval root_x as gint, byval root_y as gint, byval timestamp as guint32)
-declare sub gdk_window_invalidate_rect cdecl alias "gdk_window_invalidate_rect" (byval window as GdkWindow ptr, byval rect as GdkRectangle ptr, byval invalidate_children as gboolean)
-declare sub gdk_window_invalidate_region cdecl alias "gdk_window_invalidate_region" (byval window as GdkWindow ptr, byval region as GdkRegion ptr, byval invalidate_children as gboolean)
-declare sub gdk_window_invalidate_maybe_recurse cdecl alias "gdk_window_invalidate_maybe_recurse" (byval window as GdkWindow ptr, byval region as GdkRegion ptr, byval child_func as function cdecl(byval as GdkWindow ptr, byval as gpointer) as gboolean, byval user_data as gpointer)
-declare function gdk_window_get_update_area cdecl alias "gdk_window_get_update_area" (byval window as GdkWindow ptr) as GdkRegion ptr
-declare sub gdk_window_freeze_updates cdecl alias "gdk_window_freeze_updates" (byval window as GdkWindow ptr)
-declare sub gdk_window_thaw_updates cdecl alias "gdk_window_thaw_updates" (byval window as GdkWindow ptr)
-declare sub gdk_window_process_all_updates cdecl alias "gdk_window_process_all_updates" ()
-declare sub gdk_window_process_updates cdecl alias "gdk_window_process_updates" (byval window as GdkWindow ptr, byval update_children as gboolean)
-declare sub gdk_window_set_debug_updates cdecl alias "gdk_window_set_debug_updates" (byval setting as gboolean)
-declare sub gdk_window_constrain_size cdecl alias "gdk_window_constrain_size" (byval geometry as GdkGeometry ptr, byval flags as guint, byval width as gint, byval height as gint, byval new_width as gint ptr, byval new_height as gint ptr)
-declare sub gdk_window_get_internal_paint_info cdecl alias "gdk_window_get_internal_paint_info" (byval window as GdkWindow ptr, byval real_drawable as GdkDrawable ptr ptr, byval x_offset as gint ptr, byval y_offset as gint ptr)
-declare sub gdk_window_enable_synchronized_configure cdecl alias "gdk_window_enable_synchronized_configure" (byval window as GdkWindow ptr)
-declare sub gdk_window_configure_finished cdecl alias "gdk_window_configure_finished" (byval window as GdkWindow ptr)
-declare function gdk_set_pointer_hooks cdecl alias "gdk_set_pointer_hooks" (byval new_hooks as GdkPointerHooks ptr) as GdkPointerHooks ptr
-declare function gdk_get_default_root_window cdecl alias "gdk_get_default_root_window" () as GdkWindow ptr
+declare function gdk_window_object_get_type () as GType
+declare function gdk_window_new (byval parent as GdkWindow ptr, byval attributes as GdkWindowAttr ptr, byval attributes_mask as gint) as GdkWindow ptr
+declare sub gdk_window_destroy (byval window as GdkWindow ptr)
+declare function gdk_window_get_window_type (byval window as GdkWindow ptr) as GdkWindowType
+declare function gdk_window_at_pointer (byval win_x as gint ptr, byval win_y as gint ptr) as GdkWindow ptr
+declare sub gdk_window_show (byval window as GdkWindow ptr)
+declare sub gdk_window_hide (byval window as GdkWindow ptr)
+declare sub gdk_window_withdraw (byval window as GdkWindow ptr)
+declare sub gdk_window_show_unraised (byval window as GdkWindow ptr)
+declare sub gdk_window_move (byval window as GdkWindow ptr, byval x as gint, byval y as gint)
+declare sub gdk_window_resize (byval window as GdkWindow ptr, byval width as gint, byval height as gint)
+declare sub gdk_window_move_resize (byval window as GdkWindow ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+declare sub gdk_window_reparent (byval window as GdkWindow ptr, byval new_parent as GdkWindow ptr, byval x as gint, byval y as gint)
+declare sub gdk_window_clear (byval window as GdkWindow ptr)
+declare sub gdk_window_clear_area (byval window as GdkWindow ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+declare sub gdk_window_clear_area_e (byval window as GdkWindow ptr, byval x as gint, byval y as gint, byval width as gint, byval height as gint)
+declare sub gdk_window_raise (byval window as GdkWindow ptr)
+declare sub gdk_window_lower (byval window as GdkWindow ptr)
+declare sub gdk_window_focus (byval window as GdkWindow ptr, byval timestamp as guint32)
+declare sub gdk_window_set_user_data (byval window as GdkWindow ptr, byval user_data as gpointer)
+declare sub gdk_window_set_override_redirect (byval window as GdkWindow ptr, byval override_redirect as gboolean)
+declare sub gdk_window_set_accept_focus (byval window as GdkWindow ptr, byval accept_focus as gboolean)
+declare sub gdk_window_set_focus_on_map (byval window as GdkWindow ptr, byval focus_on_map as gboolean)
+declare sub gdk_window_add_filter (byval window as GdkWindow ptr, byval function as GdkFilterFunc, byval data as gpointer)
+declare sub gdk_window_remove_filter (byval window as GdkWindow ptr, byval function as GdkFilterFunc, byval data as gpointer)
+declare sub gdk_window_scroll (byval window as GdkWindow ptr, byval dx as gint, byval dy as gint)
+declare sub gdk_window_shape_combine_mask (byval window as GdkWindow ptr, byval mask as GdkBitmap ptr, byval x as gint, byval y as gint)
+declare sub gdk_window_shape_combine_region (byval window as GdkWindow ptr, byval shape_region as GdkRegion ptr, byval offset_x as gint, byval offset_y as gint)
+declare sub gdk_window_set_child_shapes (byval window as GdkWindow ptr)
+declare sub gdk_window_merge_child_shapes (byval window as GdkWindow ptr)
+declare function gdk_window_is_visible (byval window as GdkWindow ptr) as gboolean
+declare function gdk_window_is_viewable (byval window as GdkWindow ptr) as gboolean
+declare function gdk_window_get_state (byval window as GdkWindow ptr) as GdkWindowState
+declare function gdk_window_set_static_gravities (byval window as GdkWindow ptr, byval use_static as gboolean) as gboolean
+declare function gdk_window_foreign_new (byval anid as GdkNativeWindow) as GdkWindow ptr
+declare function gdk_window_lookup (byval anid as GdkNativeWindow) as GdkWindow ptr
+declare function gdk_window_foreign_new_for_display (byval display as GdkDisplay ptr, byval anid as GdkNativeWindow) as GdkWindow ptr
+declare function gdk_window_lookup_for_display (byval display as GdkDisplay ptr, byval anid as GdkNativeWindow) as GdkWindow ptr
+declare sub gdk_window_set_hints (byval window as GdkWindow ptr, byval x as gint, byval y as gint, byval min_width as gint, byval min_height as gint, byval max_width as gint, byval max_height as gint, byval flags as gint)
+declare sub gdk_window_set_type_hint (byval window as GdkWindow ptr, byval hint as GdkWindowTypeHint)
+declare sub gdk_window_set_modal_hint (byval window as GdkWindow ptr, byval modal as gboolean)
+declare sub gdk_window_set_skip_taskbar_hint (byval window as GdkWindow ptr, byval skips_taskbar as gboolean)
+declare sub gdk_window_set_skip_pager_hint (byval window as GdkWindow ptr, byval skips_pager as gboolean)
+declare sub gdk_window_set_geometry_hints (byval window as GdkWindow ptr, byval geometry as GdkGeometry ptr, byval geom_mask as GdkWindowHints)
+declare sub gdk_set_sm_client_id (byval sm_client_id as zstring ptr)
+declare sub gdk_window_begin_paint_rect (byval window as GdkWindow ptr, byval rectangle as GdkRectangle ptr)
+declare sub gdk_window_begin_paint_region (byval window as GdkWindow ptr, byval region as GdkRegion ptr)
+declare sub gdk_window_end_paint (byval window as GdkWindow ptr)
+declare sub gdk_window_set_title (byval window as GdkWindow ptr, byval title as zstring ptr)
+declare sub gdk_window_set_role (byval window as GdkWindow ptr, byval role as zstring ptr)
+declare sub gdk_window_set_transient_for (byval window as GdkWindow ptr, byval parent as GdkWindow ptr)
+declare sub gdk_window_set_background (byval window as GdkWindow ptr, byval color as GdkColor ptr)
+declare sub gdk_window_set_back_pixmap (byval window as GdkWindow ptr, byval pixmap as GdkPixmap ptr, byval parent_relative as gboolean)
+declare sub gdk_window_set_cursor (byval window as GdkWindow ptr, byval cursor as GdkCursor ptr)
+declare sub gdk_window_get_user_data (byval window as GdkWindow ptr, byval data as gpointer ptr)
+declare sub gdk_window_get_geometry (byval window as GdkWindow ptr, byval x as gint ptr, byval y as gint ptr, byval width as gint ptr, byval height as gint ptr, byval depth as gint ptr)
+declare sub gdk_window_get_position (byval window as GdkWindow ptr, byval x as gint ptr, byval y as gint ptr)
+declare function gdk_window_get_origin (byval window as GdkWindow ptr, byval x as gint ptr, byval y as gint ptr) as gint
+declare function gdk_window_get_deskrelative_origin (byval window as GdkWindow ptr, byval x as gint ptr, byval y as gint ptr) as gboolean
+declare sub gdk_window_get_root_origin (byval window as GdkWindow ptr, byval x as gint ptr, byval y as gint ptr)
+declare sub gdk_window_get_frame_extents (byval window as GdkWindow ptr, byval rect as GdkRectangle ptr)
+declare function gdk_window_get_pointer (byval window as GdkWindow ptr, byval x as gint ptr, byval y as gint ptr, byval mask as GdkModifierType ptr) as GdkWindow ptr
+declare function gdk_window_get_parent (byval window as GdkWindow ptr) as GdkWindow ptr
+declare function gdk_window_get_toplevel (byval window as GdkWindow ptr) as GdkWindow ptr
+declare function gdk_window_get_children (byval window as GdkWindow ptr) as GList ptr
+declare function gdk_window_peek_children (byval window as GdkWindow ptr) as GList ptr
+declare function gdk_window_get_events (byval window as GdkWindow ptr) as GdkEventMask
+declare sub gdk_window_set_events (byval window as GdkWindow ptr, byval event_mask as GdkEventMask)
+declare sub gdk_window_set_icon_list (byval window as GdkWindow ptr, byval pixbufs as GList ptr)
+declare sub gdk_window_set_icon (byval window as GdkWindow ptr, byval icon_window as GdkWindow ptr, byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr)
+declare sub gdk_window_set_icon_name (byval window as GdkWindow ptr, byval name as zstring ptr)
+declare sub gdk_window_set_group (byval window as GdkWindow ptr, byval leader as GdkWindow ptr)
+declare function gdk_window_get_group (byval window as GdkWindow ptr) as GdkWindow ptr
+declare sub gdk_window_set_decorations (byval window as GdkWindow ptr, byval decorations as GdkWMDecoration)
+declare function gdk_window_get_decorations (byval window as GdkWindow ptr, byval decorations as GdkWMDecoration ptr) as gboolean
+declare sub gdk_window_set_functions (byval window as GdkWindow ptr, byval functions as GdkWMFunction)
+declare function gdk_window_get_toplevels () as GList ptr
+declare sub gdk_window_iconify (byval window as GdkWindow ptr)
+declare sub gdk_window_deiconify (byval window as GdkWindow ptr)
+declare sub gdk_window_stick (byval window as GdkWindow ptr)
+declare sub gdk_window_unstick (byval window as GdkWindow ptr)
+declare sub gdk_window_maximize (byval window as GdkWindow ptr)
+declare sub gdk_window_unmaximize (byval window as GdkWindow ptr)
+declare sub gdk_window_fullscreen (byval window as GdkWindow ptr)
+declare sub gdk_window_unfullscreen (byval window as GdkWindow ptr)
+declare sub gdk_window_set_keep_above (byval window as GdkWindow ptr, byval setting as gboolean)
+declare sub gdk_window_set_keep_below (byval window as GdkWindow ptr, byval setting as gboolean)
+declare sub gdk_window_register_dnd (byval window as GdkWindow ptr)
+declare sub gdk_window_begin_resize_drag (byval window as GdkWindow ptr, byval edge as GdkWindowEdge, byval button as gint, byval root_x as gint, byval root_y as gint, byval timestamp as guint32)
+declare sub gdk_window_begin_move_drag (byval window as GdkWindow ptr, byval button as gint, byval root_x as gint, byval root_y as gint, byval timestamp as guint32)
+declare sub gdk_window_invalidate_rect (byval window as GdkWindow ptr, byval rect as GdkRectangle ptr, byval invalidate_children as gboolean)
+declare sub gdk_window_invalidate_region (byval window as GdkWindow ptr, byval region as GdkRegion ptr, byval invalidate_children as gboolean)
+declare sub gdk_window_invalidate_maybe_recurse (byval window as GdkWindow ptr, byval region as GdkRegion ptr, byval child_func as function cdecl(byval as GdkWindow ptr, byval as gpointer) as gboolean, byval user_data as gpointer)
+declare function gdk_window_get_update_area (byval window as GdkWindow ptr) as GdkRegion ptr
+declare sub gdk_window_freeze_updates (byval window as GdkWindow ptr)
+declare sub gdk_window_thaw_updates (byval window as GdkWindow ptr)
+declare sub gdk_window_process_all_updates ()
+declare sub gdk_window_process_updates (byval window as GdkWindow ptr, byval update_children as gboolean)
+declare sub gdk_window_set_debug_updates (byval setting as gboolean)
+declare sub gdk_window_constrain_size (byval geometry as GdkGeometry ptr, byval flags as guint, byval width as gint, byval height as gint, byval new_width as gint ptr, byval new_height as gint ptr)
+declare sub gdk_window_get_internal_paint_info (byval window as GdkWindow ptr, byval real_drawable as GdkDrawable ptr ptr, byval x_offset as gint ptr, byval y_offset as gint ptr)
+declare sub gdk_window_enable_synchronized_configure (byval window as GdkWindow ptr)
+declare sub gdk_window_configure_finished (byval window as GdkWindow ptr)
+declare function gdk_set_pointer_hooks (byval new_hooks as GdkPointerHooks ptr) as GdkPointerHooks ptr
+declare function gdk_get_default_root_window () as GdkWindow ptr
 
 #define GDK_ROOT_PARENT() (gdk_get_default_root_window ())
 #define gdk_window_get_size gdk_drawable_get_size

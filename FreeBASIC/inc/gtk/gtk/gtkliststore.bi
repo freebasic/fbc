@@ -12,12 +12,12 @@
 #include once "gtk/gtk/gtktreemodel.bi"
 #include once "gtk/gtk/gtktreesortable.bi"
 
-#define GTK_TYPE_LIST_STORE	       (gtk_list_store_get_type ())
-#define GTK_LIST_STORE(obj)	       (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_LIST_STORE, GtkListStore))
-#define GTK_LIST_STORE_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_LIST_STORE, GtkListStoreClass))
-#define GTK_IS_LIST_STORE(obj)	       (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_LIST_STORE))
+#define GTK_TYPE_LIST_STORE (gtk_list_store_get_type ())
+#define GTK_LIST_STORE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_LIST_STORE, GtkListStore))
+#define GTK_LIST_STORE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_LIST_STORE, GtkListStoreClass))
+#define GTK_IS_LIST_STORE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_LIST_STORE))
 #define GTK_IS_LIST_STORE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_LIST_STORE))
-#define GTK_LIST_STORE_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_LIST_STORE, GtkListStoreClass))
+#define GTK_LIST_STORE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_LIST_STORE, GtkListStoreClass))
 
 type GtkListStore as _GtkListStore
 type GtkListStoreClass as _GtkListStoreClass
@@ -47,26 +47,26 @@ type _GtkListStoreClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_list_store_get_type cdecl alias "gtk_list_store_get_type" () as GType
-declare function gtk_list_store_new cdecl alias "gtk_list_store_new" (byval n_columns as gint, ...) as GtkListStore ptr
-declare function gtk_list_store_newv cdecl alias "gtk_list_store_newv" (byval n_columns as gint, byval types as GType ptr) as GtkListStore ptr
-declare sub gtk_list_store_set_column_types cdecl alias "gtk_list_store_set_column_types" (byval list_store as GtkListStore ptr, byval n_columns as gint, byval types as GType ptr)
-declare sub gtk_list_store_set_value cdecl alias "gtk_list_store_set_value" (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr, byval column as gint, byval value as GValue ptr)
-declare sub gtk_list_store_set cdecl alias "gtk_list_store_set" (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr, ...)
-''''''' declare sub gtk_list_store_set_valist cdecl alias "gtk_list_store_set_valist" (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr, byval var_args as va_list)
-declare function gtk_list_store_remove cdecl alias "gtk_list_store_remove" (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr) as gboolean
-declare sub gtk_list_store_insert cdecl alias "gtk_list_store_insert" (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr, byval position as gint)
-declare sub gtk_list_store_insert_before cdecl alias "gtk_list_store_insert_before" (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr, byval sibling as GtkTreeIter ptr)
-declare sub gtk_list_store_insert_after cdecl alias "gtk_list_store_insert_after" (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr, byval sibling as GtkTreeIter ptr)
-declare sub gtk_list_store_insert_with_values cdecl alias "gtk_list_store_insert_with_values" (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr, byval position as gint, ...)
-declare sub gtk_list_store_insert_with_valuesv cdecl alias "gtk_list_store_insert_with_valuesv" (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr, byval position as gint, byval columns as gint ptr, byval values as GValue ptr, byval n_values as gint)
-declare sub gtk_list_store_prepend cdecl alias "gtk_list_store_prepend" (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr)
-declare sub gtk_list_store_append cdecl alias "gtk_list_store_append" (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr)
-declare sub gtk_list_store_clear cdecl alias "gtk_list_store_clear" (byval list_store as GtkListStore ptr)
-declare function gtk_list_store_iter_is_valid cdecl alias "gtk_list_store_iter_is_valid" (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr) as gboolean
-declare sub gtk_list_store_reorder cdecl alias "gtk_list_store_reorder" (byval store as GtkListStore ptr, byval new_order as gint ptr)
-declare sub gtk_list_store_swap cdecl alias "gtk_list_store_swap" (byval store as GtkListStore ptr, byval a as GtkTreeIter ptr, byval b as GtkTreeIter ptr)
-declare sub gtk_list_store_move_after cdecl alias "gtk_list_store_move_after" (byval store as GtkListStore ptr, byval iter as GtkTreeIter ptr, byval position as GtkTreeIter ptr)
-declare sub gtk_list_store_move_before cdecl alias "gtk_list_store_move_before" (byval store as GtkListStore ptr, byval iter as GtkTreeIter ptr, byval position as GtkTreeIter ptr)
+declare function gtk_list_store_get_type () as GType
+declare function gtk_list_store_new (byval n_columns as gint, ...) as GtkListStore ptr
+declare function gtk_list_store_newv (byval n_columns as gint, byval types as GType ptr) as GtkListStore ptr
+declare sub gtk_list_store_set_column_types (byval list_store as GtkListStore ptr, byval n_columns as gint, byval types as GType ptr)
+declare sub gtk_list_store_set_value (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr, byval column as gint, byval value as GValue ptr)
+declare sub gtk_list_store_set (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr, ...)
+''''''' declare sub gtk_list_store_set_valist (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr, byval var_args as va_list)
+declare function gtk_list_store_remove (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr) as gboolean
+declare sub gtk_list_store_insert (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr, byval position as gint)
+declare sub gtk_list_store_insert_before (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr, byval sibling as GtkTreeIter ptr)
+declare sub gtk_list_store_insert_after (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr, byval sibling as GtkTreeIter ptr)
+declare sub gtk_list_store_insert_with_values (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr, byval position as gint, ...)
+declare sub gtk_list_store_insert_with_valuesv (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr, byval position as gint, byval columns as gint ptr, byval values as GValue ptr, byval n_values as gint)
+declare sub gtk_list_store_prepend (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr)
+declare sub gtk_list_store_append (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr)
+declare sub gtk_list_store_clear (byval list_store as GtkListStore ptr)
+declare function gtk_list_store_iter_is_valid (byval list_store as GtkListStore ptr, byval iter as GtkTreeIter ptr) as gboolean
+declare sub gtk_list_store_reorder (byval store as GtkListStore ptr, byval new_order as gint ptr)
+declare sub gtk_list_store_swap (byval store as GtkListStore ptr, byval a as GtkTreeIter ptr, byval b as GtkTreeIter ptr)
+declare sub gtk_list_store_move_after (byval store as GtkListStore ptr, byval iter as GtkTreeIter ptr, byval position as GtkTreeIter ptr)
+declare sub gtk_list_store_move_before (byval store as GtkListStore ptr, byval iter as GtkTreeIter ptr, byval position as GtkTreeIter ptr)
 
 #endif

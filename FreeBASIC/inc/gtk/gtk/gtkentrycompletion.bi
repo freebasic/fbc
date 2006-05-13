@@ -15,12 +15,12 @@
 #include once "gtk/gtk/gtktreeviewcolumn.bi"
 #include once "gtk/gtk/gtktreemodelfilter.bi"
 
-#define GTK_TYPE_ENTRY_COMPLETION            (gtk_entry_completion_get_type ())
-#define GTK_ENTRY_COMPLETION(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_ENTRY_COMPLETION, GtkEntryCompletion))
-#define GTK_ENTRY_COMPLETION_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_ENTRY_COMPLETION, GtkEntryCompletionClass))
-#define GTK_IS_ENTRY_COMPLETION(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_ENTRY_COMPLETION))
+#define GTK_TYPE_ENTRY_COMPLETION (gtk_entry_completion_get_type ())
+#define GTK_ENTRY_COMPLETION(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_ENTRY_COMPLETION, GtkEntryCompletion))
+#define GTK_ENTRY_COMPLETION_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_ENTRY_COMPLETION, GtkEntryCompletionClass))
+#define GTK_IS_ENTRY_COMPLETION(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_ENTRY_COMPLETION))
 #define GTK_IS_ENTRY_COMPLETION_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_ENTRY_COMPLETION))
-#define GTK_ENTRY_COMPLETION_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_ENTRY_COMPLETION, GtkEntryCompletionClass))
+#define GTK_ENTRY_COMPLETION_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_ENTRY_COMPLETION, GtkEntryCompletionClass))
 
 type GtkEntryCompletion as _GtkEntryCompletion
 type GtkEntryCompletionClass as _GtkEntryCompletionClass
@@ -42,24 +42,24 @@ type _GtkEntryCompletionClass
 	_gtk_reserved2 as sub cdecl()
 end type
 
-declare function gtk_entry_completion_get_type cdecl alias "gtk_entry_completion_get_type" () as GType
-declare function gtk_entry_completion_new cdecl alias "gtk_entry_completion_new" () as GtkEntryCompletion ptr
-declare function gtk_entry_completion_get_entry cdecl alias "gtk_entry_completion_get_entry" (byval completion as GtkEntryCompletion ptr) as GtkWidget ptr
-declare sub gtk_entry_completion_set_model cdecl alias "gtk_entry_completion_set_model" (byval completion as GtkEntryCompletion ptr, byval model as GtkTreeModel ptr)
-declare function gtk_entry_completion_get_model cdecl alias "gtk_entry_completion_get_model" (byval completion as GtkEntryCompletion ptr) as GtkTreeModel ptr
-declare sub gtk_entry_completion_set_match_func cdecl alias "gtk_entry_completion_set_match_func" (byval completion as GtkEntryCompletion ptr, byval func as GtkEntryCompletionMatchFunc, byval func_data as gpointer, byval func_notify as GDestroyNotify)
-declare sub gtk_entry_completion_set_minimum_key_length cdecl alias "gtk_entry_completion_set_minimum_key_length" (byval completion as GtkEntryCompletion ptr, byval length as gint)
-declare function gtk_entry_completion_get_minimum_key_length cdecl alias "gtk_entry_completion_get_minimum_key_length" (byval completion as GtkEntryCompletion ptr) as gint
-declare sub gtk_entry_completion_complete cdecl alias "gtk_entry_completion_complete" (byval completion as GtkEntryCompletion ptr)
-declare sub gtk_entry_completion_insert_prefix cdecl alias "gtk_entry_completion_insert_prefix" (byval completion as GtkEntryCompletion ptr)
-declare sub gtk_entry_completion_insert_action_text cdecl alias "gtk_entry_completion_insert_action_text" (byval completion as GtkEntryCompletion ptr, byval index_ as gint, byval text as zstring ptr)
-declare sub gtk_entry_completion_insert_action_markup cdecl alias "gtk_entry_completion_insert_action_markup" (byval completion as GtkEntryCompletion ptr, byval index_ as gint, byval markup as zstring ptr)
-declare sub gtk_entry_completion_delete_action cdecl alias "gtk_entry_completion_delete_action" (byval completion as GtkEntryCompletion ptr, byval index_ as gint)
-declare sub gtk_entry_completion_set_inline_completion cdecl alias "gtk_entry_completion_set_inline_completion" (byval completion as GtkEntryCompletion ptr, byval inline_completion as gboolean)
-declare function gtk_entry_completion_get_inline_completion cdecl alias "gtk_entry_completion_get_inline_completion" (byval completion as GtkEntryCompletion ptr) as gboolean
-declare sub gtk_entry_completion_set_popup_completion cdecl alias "gtk_entry_completion_set_popup_completion" (byval completion as GtkEntryCompletion ptr, byval popup_completion as gboolean)
-declare function gtk_entry_completion_get_popup_completion cdecl alias "gtk_entry_completion_get_popup_completion" (byval completion as GtkEntryCompletion ptr) as gboolean
-declare sub gtk_entry_completion_set_text_column cdecl alias "gtk_entry_completion_set_text_column" (byval completion as GtkEntryCompletion ptr, byval column as gint)
-declare function gtk_entry_completion_get_text_column cdecl alias "gtk_entry_completion_get_text_column" (byval completion as GtkEntryCompletion ptr) as gint
+declare function gtk_entry_completion_get_type () as GType
+declare function gtk_entry_completion_new () as GtkEntryCompletion ptr
+declare function gtk_entry_completion_get_entry (byval completion as GtkEntryCompletion ptr) as GtkWidget ptr
+declare sub gtk_entry_completion_set_model (byval completion as GtkEntryCompletion ptr, byval model as GtkTreeModel ptr)
+declare function gtk_entry_completion_get_model (byval completion as GtkEntryCompletion ptr) as GtkTreeModel ptr
+declare sub gtk_entry_completion_set_match_func (byval completion as GtkEntryCompletion ptr, byval func as GtkEntryCompletionMatchFunc, byval func_data as gpointer, byval func_notify as GDestroyNotify)
+declare sub gtk_entry_completion_set_minimum_key_length (byval completion as GtkEntryCompletion ptr, byval length as gint)
+declare function gtk_entry_completion_get_minimum_key_length (byval completion as GtkEntryCompletion ptr) as gint
+declare sub gtk_entry_completion_complete (byval completion as GtkEntryCompletion ptr)
+declare sub gtk_entry_completion_insert_prefix (byval completion as GtkEntryCompletion ptr)
+declare sub gtk_entry_completion_insert_action_text (byval completion as GtkEntryCompletion ptr, byval index_ as gint, byval text as zstring ptr)
+declare sub gtk_entry_completion_insert_action_markup (byval completion as GtkEntryCompletion ptr, byval index_ as gint, byval markup as zstring ptr)
+declare sub gtk_entry_completion_delete_action (byval completion as GtkEntryCompletion ptr, byval index_ as gint)
+declare sub gtk_entry_completion_set_inline_completion (byval completion as GtkEntryCompletion ptr, byval inline_completion as gboolean)
+declare function gtk_entry_completion_get_inline_completion (byval completion as GtkEntryCompletion ptr) as gboolean
+declare sub gtk_entry_completion_set_popup_completion (byval completion as GtkEntryCompletion ptr, byval popup_completion as gboolean)
+declare function gtk_entry_completion_get_popup_completion (byval completion as GtkEntryCompletion ptr) as gboolean
+declare sub gtk_entry_completion_set_text_column (byval completion as GtkEntryCompletion ptr, byval column as gint)
+declare function gtk_entry_completion_get_text_column (byval completion as GtkEntryCompletion ptr) as gint
 
 #endif

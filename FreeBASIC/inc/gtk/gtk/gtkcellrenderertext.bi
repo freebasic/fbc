@@ -12,12 +12,12 @@
 #include once "gtk/pango.bi"
 #include once "gtk/gtk/gtkcellrenderer.bi"
 
-#define GTK_TYPE_CELL_RENDERER_TEXT		(gtk_cell_renderer_text_get_type ())
-#define GTK_CELL_RENDERER_TEXT(obj)		(G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CELL_RENDERER_TEXT, GtkCellRendererText))
-#define GTK_CELL_RENDERER_TEXT_CLASS(klass)	(G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_CELL_RENDERER_TEXT, GtkCellRendererTextClass))
-#define GTK_IS_CELL_RENDERER_TEXT(obj)		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_CELL_RENDERER_TEXT))
-#define GTK_IS_CELL_RENDERER_TEXT_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_CELL_RENDERER_TEXT))
-#define GTK_CELL_RENDERER_TEXT_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_CELL_RENDERER_TEXT, GtkCellRendererTextClass))
+#define GTK_TYPE_CELL_RENDERER_TEXT (gtk_cell_renderer_text_get_type ())
+#define GTK_CELL_RENDERER_TEXT(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CELL_RENDERER_TEXT, GtkCellRendererText))
+#define GTK_CELL_RENDERER_TEXT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_CELL_RENDERER_TEXT, GtkCellRendererTextClass))
+#define GTK_IS_CELL_RENDERER_TEXT(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_CELL_RENDERER_TEXT))
+#define GTK_IS_CELL_RENDERER_TEXT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_CELL_RENDERER_TEXT))
+#define GTK_CELL_RENDERER_TEXT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_CELL_RENDERER_TEXT, GtkCellRendererTextClass))
 
 type GtkCellRendererText as _GtkCellRendererText
 type GtkCellRendererTextClass as _GtkCellRendererTextClass
@@ -54,8 +54,8 @@ type _GtkCellRendererTextClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_cell_renderer_text_get_type cdecl alias "gtk_cell_renderer_text_get_type" () as GType
-declare function gtk_cell_renderer_text_new cdecl alias "gtk_cell_renderer_text_new" () as GtkCellRenderer ptr
-declare sub gtk_cell_renderer_text_set_fixed_height_from_font cdecl alias "gtk_cell_renderer_text_set_fixed_height_from_font" (byval renderer as GtkCellRendererText ptr, byval number_of_rows as gint)
+declare function gtk_cell_renderer_text_get_type () as GType
+declare function gtk_cell_renderer_text_new () as GtkCellRenderer ptr
+declare sub gtk_cell_renderer_text_set_fixed_height_from_font (byval renderer as GtkCellRendererText ptr, byval number_of_rows as gint)
 
 #endif

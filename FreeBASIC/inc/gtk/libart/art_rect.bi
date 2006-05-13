@@ -26,15 +26,15 @@ type _ArtIRect
 	y1 as integer
 end type
 
-declare sub art_irect_copy cdecl alias "art_irect_copy" (byval dest as ArtIRect ptr, byval src as ArtIRect ptr)
-declare sub art_irect_union cdecl alias "art_irect_union" (byval dest as ArtIRect ptr, byval src1 as ArtIRect ptr, byval src2 as ArtIRect ptr)
-declare sub art_irect_intersect cdecl alias "art_irect_intersect" (byval dest as ArtIRect ptr, byval src1 as ArtIRect ptr, byval src2 as ArtIRect ptr)
-declare function art_irect_empty cdecl alias "art_irect_empty" (byval src as ArtIRect ptr) as integer
-declare sub art_drect_copy cdecl alias "art_drect_copy" (byval dest as ArtDRect ptr, byval src as ArtDRect ptr)
-declare sub art_drect_union cdecl alias "art_drect_union" (byval dest as ArtDRect ptr, byval src1 as ArtDRect ptr, byval src2 as ArtDRect ptr)
-declare sub art_drect_intersect cdecl alias "art_drect_intersect" (byval dest as ArtDRect ptr, byval src1 as ArtDRect ptr, byval src2 as ArtDRect ptr)
-declare function art_drect_empty cdecl alias "art_drect_empty" (byval src as ArtDRect ptr) as integer
-declare sub art_drect_affine_transform cdecl alias "art_drect_affine_transform" (byval dst as ArtDRect ptr, byval src as ArtDRect ptr, byval matrix as double ptr)
-declare sub art_drect_to_irect cdecl alias "art_drect_to_irect" (byval dst as ArtIRect ptr, byval src as ArtDRect ptr)
+declare sub art_irect_copy (byval dest as ArtIRect ptr, byval src as ArtIRect ptr)
+declare sub art_irect_union (byval dest as ArtIRect ptr, byval src1 as ArtIRect ptr, byval src2 as ArtIRect ptr)
+declare sub art_irect_intersect (byval dest as ArtIRect ptr, byval src1 as ArtIRect ptr, byval src2 as ArtIRect ptr)
+declare function art_irect_empty (byval src as ArtIRect ptr) as integer
+declare sub art_drect_copy (byval dest as ArtDRect ptr, byval src as ArtDRect ptr)
+declare sub art_drect_union (byval dest as ArtDRect ptr, byval src1 as ArtDRect ptr, byval src2 as ArtDRect ptr)
+declare sub art_drect_intersect (byval dest as ArtDRect ptr, byval src1 as ArtDRect ptr, byval src2 as ArtDRect ptr)
+declare function art_drect_empty (byval src as ArtDRect ptr) as integer
+declare sub art_drect_affine_transform (byval dst as ArtDRect ptr, byval src as ArtDRect ptr, byval matrix as double ptr)
+declare sub art_drect_to_irect (byval dst as ArtIRect ptr, byval src as ArtDRect ptr)
 
 #endif

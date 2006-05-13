@@ -11,12 +11,12 @@
 
 #include once "gtk/gdk/gdktypes.bi"
 
-#define GDK_TYPE_VISUAL              (gdk_visual_get_type ())
-#define GDK_VISUAL(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_VISUAL, GdkVisual))
-#define GDK_VISUAL_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_VISUAL, GdkVisualClass))
-#define GDK_IS_VISUAL(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_VISUAL))
-#define GDK_IS_VISUAL_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_VISUAL))
-#define GDK_VISUAL_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_VISUAL, GdkVisualClass))
+#define GDK_TYPE_VISUAL (gdk_visual_get_type ())
+#define GDK_VISUAL(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_VISUAL, GdkVisual))
+#define GDK_VISUAL_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_VISUAL, GdkVisualClass))
+#define GDK_IS_VISUAL(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_VISUAL))
+#define GDK_IS_VISUAL_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_VISUAL))
+#define GDK_VISUAL_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_VISUAL, GdkVisualClass))
 
 type GdkVisualClass as _GdkVisualClass
 
@@ -48,18 +48,18 @@ type _GdkVisual
 	blue_prec as gint
 end type
 
-declare function gdk_visual_get_type cdecl alias "gdk_visual_get_type" () as GType
-declare function gdk_visual_get_best_depth cdecl alias "gdk_visual_get_best_depth" () as gint
-declare function gdk_visual_get_best_type cdecl alias "gdk_visual_get_best_type" () as GdkVisualType
-declare function gdk_visual_get_system cdecl alias "gdk_visual_get_system" () as GdkVisual ptr
-declare function gdk_visual_get_best cdecl alias "gdk_visual_get_best" () as GdkVisual ptr
-declare function gdk_visual_get_best_with_depth cdecl alias "gdk_visual_get_best_with_depth" (byval depth as gint) as GdkVisual ptr
-declare function gdk_visual_get_best_with_type cdecl alias "gdk_visual_get_best_with_type" (byval visual_type as GdkVisualType) as GdkVisual ptr
-declare function gdk_visual_get_best_with_both cdecl alias "gdk_visual_get_best_with_both" (byval depth as gint, byval visual_type as GdkVisualType) as GdkVisual ptr
-declare sub gdk_query_depths cdecl alias "gdk_query_depths" (byval depths as gint ptr ptr, byval count as gint ptr)
-declare sub gdk_query_visual_types cdecl alias "gdk_query_visual_types" (byval visual_types as GdkVisualType ptr ptr, byval count as gint ptr)
-declare function gdk_list_visuals cdecl alias "gdk_list_visuals" () as GList ptr
-declare function gdk_visual_get_screen cdecl alias "gdk_visual_get_screen" (byval visual as GdkVisual ptr) as GdkScreen ptr
+declare function gdk_visual_get_type () as GType
+declare function gdk_visual_get_best_depth () as gint
+declare function gdk_visual_get_best_type () as GdkVisualType
+declare function gdk_visual_get_system () as GdkVisual ptr
+declare function gdk_visual_get_best () as GdkVisual ptr
+declare function gdk_visual_get_best_with_depth (byval depth as gint) as GdkVisual ptr
+declare function gdk_visual_get_best_with_type (byval visual_type as GdkVisualType) as GdkVisual ptr
+declare function gdk_visual_get_best_with_both (byval depth as gint, byval visual_type as GdkVisualType) as GdkVisual ptr
+declare sub gdk_query_depths (byval depths as gint ptr ptr, byval count as gint ptr)
+declare sub gdk_query_visual_types (byval visual_types as GdkVisualType ptr ptr, byval count as gint ptr)
+declare function gdk_list_visuals () as GList ptr
+declare function gdk_visual_get_screen (byval visual as GdkVisual ptr) as GdkScreen ptr
 
 #define gdk_visual_ref(v) g_object_ref(v)
 #define gdk_visual_unref(v) g_object_unref(v)

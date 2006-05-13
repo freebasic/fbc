@@ -34,10 +34,10 @@ type _GtkPixmapClass
 	parent_class as GtkMiscClass
 end type
 
-declare function gtk_pixmap_get_type cdecl alias "gtk_pixmap_get_type" () as GtkType
-declare function gtk_pixmap_new cdecl alias "gtk_pixmap_new" (byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr) as GtkWidget ptr
-declare sub gtk_pixmap_set cdecl alias "gtk_pixmap_set" (byval pixmap as GtkPixmap ptr, byval val as GdkPixmap ptr, byval mask as GdkBitmap ptr)
-declare sub gtk_pixmap_get cdecl alias "gtk_pixmap_get" (byval pixmap as GtkPixmap ptr, byval val as GdkPixmap ptr ptr, byval mask as GdkBitmap ptr ptr)
-declare sub gtk_pixmap_set_build_insensitive cdecl alias "gtk_pixmap_set_build_insensitive" (byval pixmap as GtkPixmap ptr, byval build as gboolean)
+declare function gtk_pixmap_get_type () as GtkType
+declare function gtk_pixmap_new (byval pixmap as GdkPixmap ptr, byval mask as GdkBitmap ptr) as GtkWidget ptr
+declare sub gtk_pixmap_set (byval pixmap as GtkPixmap ptr, byval val as GdkPixmap ptr, byval mask as GdkBitmap ptr)
+declare sub gtk_pixmap_get (byval pixmap as GtkPixmap ptr, byval val as GdkPixmap ptr ptr, byval mask as GdkBitmap ptr ptr)
+declare sub gtk_pixmap_set_build_insensitive (byval pixmap as GtkPixmap ptr, byval build as gboolean)
 
 #endif

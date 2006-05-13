@@ -13,7 +13,7 @@
 
 #define	GTK_TYPE_TIPS_QUERY (gtk_tips_query_get_type ())
 #define GTK_TIPS_QUERY(obj) (GTK_CHECK_CAST ((obj), GTK_TYPE_TIPS_QUERY, GtkTipsQuery))
-#define GTK_TIPS_QUERY_CLASS(klass)	(GTK_CHECK_CLASS_CAST ((klass), GTK_TYPE_TIPS_QUERY, GtkTipsQueryClass))
+#define GTK_TIPS_QUERY_CLASS(klass) (GTK_CHECK_CLASS_CAST ((klass), GTK_TYPE_TIPS_QUERY, GtkTipsQueryClass))
 #define GTK_IS_TIPS_QUERY(obj) (GTK_CHECK_TYPE ((obj), GTK_TYPE_TIPS_QUERY))
 #define GTK_IS_TIPS_QUERY_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_TIPS_QUERY))
 #define GTK_TIPS_QUERY_GET_CLASS(obj) (GTK_CHECK_GET_CLASS ((obj), GTK_TYPE_TIPS_QUERY, GtkTipsQueryClass))
@@ -44,11 +44,11 @@ type _GtkTipsQueryClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_tips_query_get_type cdecl alias "gtk_tips_query_get_type" () as GtkType
-declare function gtk_tips_query_new cdecl alias "gtk_tips_query_new" () as GtkWidget ptr
-declare sub gtk_tips_query_start_query cdecl alias "gtk_tips_query_start_query" (byval tips_query as GtkTipsQuery ptr)
-declare sub gtk_tips_query_stop_query cdecl alias "gtk_tips_query_stop_query" (byval tips_query as GtkTipsQuery ptr)
-declare sub gtk_tips_query_set_caller cdecl alias "gtk_tips_query_set_caller" (byval tips_query as GtkTipsQuery ptr, byval caller as GtkWidget ptr)
-declare sub gtk_tips_query_set_labels cdecl alias "gtk_tips_query_set_labels" (byval tips_query as GtkTipsQuery ptr, byval label_inactive as zstring ptr, byval label_no_tip as zstring ptr)
+declare function gtk_tips_query_get_type () as GtkType
+declare function gtk_tips_query_new () as GtkWidget ptr
+declare sub gtk_tips_query_start_query (byval tips_query as GtkTipsQuery ptr)
+declare sub gtk_tips_query_stop_query (byval tips_query as GtkTipsQuery ptr)
+declare sub gtk_tips_query_set_caller (byval tips_query as GtkTipsQuery ptr, byval caller as GtkWidget ptr)
+declare sub gtk_tips_query_set_labels (byval tips_query as GtkTipsQuery ptr, byval label_inactive as zstring ptr, byval label_no_tip as zstring ptr)
 
 #endif

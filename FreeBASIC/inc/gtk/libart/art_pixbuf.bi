@@ -32,14 +32,14 @@ type _ArtPixBuf
 	destroy as ArtDestroyNotify
 end type
 
-declare function art_pixbuf_new_rgb cdecl alias "art_pixbuf_new_rgb" (byval pixels as art_u8 ptr, byval width as integer, byval height as integer, byval rowstride as integer) as ArtPixBuf ptr
-declare function art_pixbuf_new_rgba cdecl alias "art_pixbuf_new_rgba" (byval pixels as art_u8 ptr, byval width as integer, byval height as integer, byval rowstride as integer) as ArtPixBuf ptr
-declare function art_pixbuf_new_const_rgb cdecl alias "art_pixbuf_new_const_rgb" (byval pixels as art_u8 ptr, byval width as integer, byval height as integer, byval rowstride as integer) as ArtPixBuf ptr
-declare function art_pixbuf_new_const_rgba cdecl alias "art_pixbuf_new_const_rgba" (byval pixels as art_u8 ptr, byval width as integer, byval height as integer, byval rowstride as integer) as ArtPixBuf ptr
-declare function art_pixbuf_new_rgb_dnotify cdecl alias "art_pixbuf_new_rgb_dnotify" (byval pixels as art_u8 ptr, byval width as integer, byval height as integer, byval rowstride as integer, byval dfunc_data as any ptr, byval dfunc as ArtDestroyNotify) as ArtPixBuf ptr
-declare function art_pixbuf_new_rgba_dnotify cdecl alias "art_pixbuf_new_rgba_dnotify" (byval pixels as art_u8 ptr, byval width as integer, byval height as integer, byval rowstride as integer, byval dfunc_data as any ptr, byval dfunc as ArtDestroyNotify) as ArtPixBuf ptr
-declare sub art_pixbuf_free cdecl alias "art_pixbuf_free" (byval pixbuf as ArtPixBuf ptr)
-declare sub art_pixbuf_free_shallow cdecl alias "art_pixbuf_free_shallow" (byval pixbuf as ArtPixBuf ptr)
-declare function art_pixbuf_duplicate cdecl alias "art_pixbuf_duplicate" (byval pixbuf as ArtPixBuf ptr) as ArtPixBuf ptr
+declare function art_pixbuf_new_rgb (byval pixels as art_u8 ptr, byval width as integer, byval height as integer, byval rowstride as integer) as ArtPixBuf ptr
+declare function art_pixbuf_new_rgba (byval pixels as art_u8 ptr, byval width as integer, byval height as integer, byval rowstride as integer) as ArtPixBuf ptr
+declare function art_pixbuf_new_const_rgb (byval pixels as art_u8 ptr, byval width as integer, byval height as integer, byval rowstride as integer) as ArtPixBuf ptr
+declare function art_pixbuf_new_const_rgba (byval pixels as art_u8 ptr, byval width as integer, byval height as integer, byval rowstride as integer) as ArtPixBuf ptr
+declare function art_pixbuf_new_rgb_dnotify (byval pixels as art_u8 ptr, byval width as integer, byval height as integer, byval rowstride as integer, byval dfunc_data as any ptr, byval dfunc as ArtDestroyNotify) as ArtPixBuf ptr
+declare function art_pixbuf_new_rgba_dnotify (byval pixels as art_u8 ptr, byval width as integer, byval height as integer, byval rowstride as integer, byval dfunc_data as any ptr, byval dfunc as ArtDestroyNotify) as ArtPixBuf ptr
+declare sub art_pixbuf_free (byval pixbuf as ArtPixBuf ptr)
+declare sub art_pixbuf_free_shallow (byval pixbuf as ArtPixBuf ptr)
+declare function art_pixbuf_duplicate (byval pixbuf as ArtPixBuf ptr) as ArtPixBuf ptr
 
 #endif

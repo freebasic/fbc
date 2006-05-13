@@ -11,20 +11,20 @@
 
 #include once "gtk/glib-object.bi"
 
-declare function pango_attr_type_get_type cdecl alias "pango_attr_type_get_type" () as GType
-declare function pango_underline_get_type cdecl alias "pango_underline_get_type" () as GType
-declare function pango_coverage_level_get_type cdecl alias "pango_coverage_level_get_type" () as GType
-declare function pango_style_get_type cdecl alias "pango_style_get_type" () as GType
-declare function pango_variant_get_type cdecl alias "pango_variant_get_type" () as GType
-declare function pango_weight_get_type cdecl alias "pango_weight_get_type" () as GType
-declare function pango_stretch_get_type cdecl alias "pango_stretch_get_type" () as GType
-declare function pango_font_mask_get_type cdecl alias "pango_font_mask_get_type" () as GType
-declare function pango_alignment_get_type cdecl alias "pango_alignment_get_type" () as GType
-declare function pango_wrap_mode_get_type cdecl alias "pango_wrap_mode_get_type" () as GType
-declare function pango_ellipsize_mode_get_type cdecl alias "pango_ellipsize_mode_get_type" () as GType
-declare function pango_render_part_get_type cdecl alias "pango_render_part_get_type" () as GType
-declare function pango_script_get_type cdecl alias "pango_script_get_type" () as GType
-declare function pango_tab_align_get_type cdecl alias "pango_tab_align_get_type" () as GType
-declare function pango_direction_get_type cdecl alias "pango_direction_get_type" () as GType
+declare function pango_attr_type_get_type () as GType
+declare function pango_underline_get_type () as GType
+declare function pango_coverage_level_get_type () as GType
+declare function pango_style_get_type () as GType
+declare function pango_variant_get_type () as GType
+declare function pango_weight_get_type () as GType
+declare function pango_stretch_get_type () as GType
+declare function pango_font_mask_get_type () as GType
+declare function pango_alignment_get_type () as GType
+declare function pango_wrap_mode_get_type () as GType
+declare function pango_ellipsize_mode_get_type () as GType
+declare function pango_render_part_get_type () as GType
+declare function pango_script_get_type () as GType
+declare function pango_tab_align_get_type () as GType
+declare function pango_direction_get_type () as GType
 
 #endif

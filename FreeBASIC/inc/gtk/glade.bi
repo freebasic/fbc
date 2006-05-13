@@ -13,11 +13,13 @@
 # pragma push(msbitfields)
 #endif
 
-#inclib "glade-2.0"
+extern "c" lib "glade-2.0"
 
 #include once "gtk/glib.bi"
 #include once "gtk/libglade/glade-init.bi"
 #include once "gtk/libglade/glade-xml.bi"
+
+end extern
 
 #ifdef __FB_WIN32__
 # pragma pop(msbitfields)

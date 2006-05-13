@@ -11,12 +11,12 @@
 
 #include once "gtk/gtk/gtkhbox.bi"
 
-#define GTK_TYPE_STATUSBAR            (gtk_statusbar_get_type ())
-#define GTK_STATUSBAR(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_STATUSBAR, GtkStatusbar))
-#define GTK_STATUSBAR_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_STATUSBAR, GtkStatusbarClass))
-#define GTK_IS_STATUSBAR(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_STATUSBAR))
+#define GTK_TYPE_STATUSBAR (gtk_statusbar_get_type ())
+#define GTK_STATUSBAR(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_STATUSBAR, GtkStatusbar))
+#define GTK_STATUSBAR_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_STATUSBAR, GtkStatusbarClass))
+#define GTK_IS_STATUSBAR(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_STATUSBAR))
 #define GTK_IS_STATUSBAR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_STATUSBAR))
-#define GTK_STATUSBAR_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_STATUSBAR, GtkStatusbarClass))
+#define GTK_STATUSBAR_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_STATUSBAR, GtkStatusbarClass))
 
 type GtkStatusbar as _GtkStatusbar
 type GtkStatusbarClass as _GtkStatusbarClass
@@ -44,13 +44,13 @@ type _GtkStatusbarClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_statusbar_get_type cdecl alias "gtk_statusbar_get_type" () as GType
-declare function gtk_statusbar_new cdecl alias "gtk_statusbar_new" () as GtkWidget ptr
-declare function gtk_statusbar_get_context_id cdecl alias "gtk_statusbar_get_context_id" (byval statusbar as GtkStatusbar ptr, byval context_description as zstring ptr) as guint
-declare function gtk_statusbar_push cdecl alias "gtk_statusbar_push" (byval statusbar as GtkStatusbar ptr, byval context_id as guint, byval text as zstring ptr) as guint
-declare sub gtk_statusbar_pop cdecl alias "gtk_statusbar_pop" (byval statusbar as GtkStatusbar ptr, byval context_id as guint)
-declare sub gtk_statusbar_remove cdecl alias "gtk_statusbar_remove" (byval statusbar as GtkStatusbar ptr, byval context_id as guint, byval message_id as guint)
-declare sub gtk_statusbar_set_has_resize_grip cdecl alias "gtk_statusbar_set_has_resize_grip" (byval statusbar as GtkStatusbar ptr, byval setting as gboolean)
-declare function gtk_statusbar_get_has_resize_grip cdecl alias "gtk_statusbar_get_has_resize_grip" (byval statusbar as GtkStatusbar ptr) as gboolean
+declare function gtk_statusbar_get_type () as GType
+declare function gtk_statusbar_new () as GtkWidget ptr
+declare function gtk_statusbar_get_context_id (byval statusbar as GtkStatusbar ptr, byval context_description as zstring ptr) as guint
+declare function gtk_statusbar_push (byval statusbar as GtkStatusbar ptr, byval context_id as guint, byval text as zstring ptr) as guint
+declare sub gtk_statusbar_pop (byval statusbar as GtkStatusbar ptr, byval context_id as guint)
+declare sub gtk_statusbar_remove (byval statusbar as GtkStatusbar ptr, byval context_id as guint, byval message_id as guint)
+declare sub gtk_statusbar_set_has_resize_grip (byval statusbar as GtkStatusbar ptr, byval setting as gboolean)
+declare function gtk_statusbar_get_has_resize_grip (byval statusbar as GtkStatusbar ptr) as gboolean
 
 #endif

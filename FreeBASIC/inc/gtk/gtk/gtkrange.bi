@@ -13,12 +13,12 @@
 #include once "gtk/gtk/gtkadjustment.bi"
 #include once "gtk/gtk/gtkwidget.bi"
 
-#define GTK_TYPE_RANGE            (gtk_range_get_type ())
-#define GTK_RANGE(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_RANGE, GtkRange))
-#define GTK_RANGE_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_RANGE, GtkRangeClass))
-#define GTK_IS_RANGE(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_RANGE))
+#define GTK_TYPE_RANGE (gtk_range_get_type ())
+#define GTK_RANGE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_RANGE, GtkRange))
+#define GTK_RANGE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_RANGE, GtkRangeClass))
+#define GTK_IS_RANGE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_RANGE))
 #define GTK_IS_RANGE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_RANGE))
-#define GTK_RANGE_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_RANGE, GtkRangeClass))
+#define GTK_RANGE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_RANGE, GtkRangeClass))
 
 type GtkRangeLayout as _GtkRangeLayout
 type GtkRangeStepTimer as _GtkRangeStepTimer
@@ -67,17 +67,17 @@ type _GtkRangeClass
 	_gtk_reserved3 as sub cdecl()
 end type
 
-declare function gtk_range_get_type cdecl alias "gtk_range_get_type" () as GType
-declare sub gtk_range_set_update_policy cdecl alias "gtk_range_set_update_policy" (byval range as GtkRange ptr, byval policy as GtkUpdateType)
-declare function gtk_range_get_update_policy cdecl alias "gtk_range_get_update_policy" (byval range as GtkRange ptr) as GtkUpdateType
-declare sub gtk_range_set_adjustment cdecl alias "gtk_range_set_adjustment" (byval range as GtkRange ptr, byval adjustment as GtkAdjustment ptr)
-declare function gtk_range_get_adjustment cdecl alias "gtk_range_get_adjustment" (byval range as GtkRange ptr) as GtkAdjustment ptr
-declare sub gtk_range_set_inverted cdecl alias "gtk_range_set_inverted" (byval range as GtkRange ptr, byval setting as gboolean)
-declare function gtk_range_get_inverted cdecl alias "gtk_range_get_inverted" (byval range as GtkRange ptr) as gboolean
-declare sub gtk_range_set_increments cdecl alias "gtk_range_set_increments" (byval range as GtkRange ptr, byval step as gdouble, byval page as gdouble)
-declare sub gtk_range_set_range cdecl alias "gtk_range_set_range" (byval range as GtkRange ptr, byval min as gdouble, byval max as gdouble)
-declare sub gtk_range_set_value cdecl alias "gtk_range_set_value" (byval range as GtkRange ptr, byval value as gdouble)
-declare function gtk_range_get_value cdecl alias "gtk_range_get_value" (byval range as GtkRange ptr) as gdouble
-declare function _gtk_range_get_wheel_delta cdecl alias "_gtk_range_get_wheel_delta" (byval range as GtkRange ptr, byval direction as GdkScrollDirection) as gdouble
+declare function gtk_range_get_type () as GType
+declare sub gtk_range_set_update_policy (byval range as GtkRange ptr, byval policy as GtkUpdateType)
+declare function gtk_range_get_update_policy (byval range as GtkRange ptr) as GtkUpdateType
+declare sub gtk_range_set_adjustment (byval range as GtkRange ptr, byval adjustment as GtkAdjustment ptr)
+declare function gtk_range_get_adjustment (byval range as GtkRange ptr) as GtkAdjustment ptr
+declare sub gtk_range_set_inverted (byval range as GtkRange ptr, byval setting as gboolean)
+declare function gtk_range_get_inverted (byval range as GtkRange ptr) as gboolean
+declare sub gtk_range_set_increments (byval range as GtkRange ptr, byval step as gdouble, byval page as gdouble)
+declare sub gtk_range_set_range (byval range as GtkRange ptr, byval min as gdouble, byval max as gdouble)
+declare sub gtk_range_set_value (byval range as GtkRange ptr, byval value as gdouble)
+declare function gtk_range_get_value (byval range as GtkRange ptr) as gdouble
+declare function _gtk_range_get_wheel_delta (byval range as GtkRange ptr, byval direction as GdkScrollDirection) as gdouble
 
 #endif

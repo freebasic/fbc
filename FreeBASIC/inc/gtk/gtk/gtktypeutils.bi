@@ -91,7 +91,7 @@ type GtkObjectInitFunc as GInstanceInitFunc
 
 #include once "gtk/gtk/gtktypebuiltins.bi"
 
-declare function gtk_identifier_get_type cdecl alias "gtk_identifier_get_type" () as GType
+declare function gtk_identifier_get_type () as GType
 
 type GtkArg as _GtkArg
 type GtkObject as _GtkObject
@@ -140,17 +140,17 @@ type _GtkTypeInfo
 	base_class_init_func as GtkClassInitFunc
 end type
 
-declare function gtk_type_class cdecl alias "gtk_type_class" (byval type as GtkType) as gpointer
-declare function gtk_type_unique cdecl alias "gtk_type_unique" (byval parent_type as GtkType, byval gtkinfo as GtkTypeInfo ptr) as GtkType
-declare function gtk_type_new cdecl alias "gtk_type_new" (byval type as GtkType) as gpointer
+declare function gtk_type_class (byval type as GtkType) as gpointer
+declare function gtk_type_unique (byval parent_type as GtkType, byval gtkinfo as GtkTypeInfo ptr) as GtkType
+declare function gtk_type_new (byval type as GtkType) as gpointer
 
 type GtkEnumValue as GEnumValue
 type GtkFlagValue as GFlagsValue
 
-declare function gtk_type_enum_get_values cdecl alias "gtk_type_enum_get_values" (byval enum_type as GtkType) as GtkEnumValue ptr
-declare function gtk_type_flags_get_values cdecl alias "gtk_type_flags_get_values" (byval flags_type as GtkType) as GtkFlagValue ptr
-declare function gtk_type_enum_find_value cdecl alias "gtk_type_enum_find_value" (byval enum_type as GtkType, byval value_name as zstring ptr) as GtkEnumValue ptr
-declare function gtk_type_flags_find_value cdecl alias "gtk_type_flags_find_value" (byval flags_type as GtkType, byval value_name as zstring ptr) as GtkFlagValue ptr
-declare sub gtk_type_init cdecl alias "gtk_type_init" (byval debug_flags as GTypeDebugFlags)
+declare function gtk_type_enum_get_values (byval enum_type as GtkType) as GtkEnumValue ptr
+declare function gtk_type_flags_get_values (byval flags_type as GtkType) as GtkFlagValue ptr
+declare function gtk_type_enum_find_value (byval enum_type as GtkType, byval value_name as zstring ptr) as GtkEnumValue ptr
+declare function gtk_type_flags_find_value (byval flags_type as GtkType, byval value_name as zstring ptr) as GtkFlagValue ptr
+declare sub gtk_type_init (byval debug_flags as GTypeDebugFlags)
 
 #endif

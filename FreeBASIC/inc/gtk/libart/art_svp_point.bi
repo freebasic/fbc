@@ -11,7 +11,7 @@
 
 #include once "gtk/libart/art_svp.bi"
 
-declare function art_svp_point_wind cdecl alias "art_svp_point_wind" (byval svp as ArtSVP ptr, byval x as double, byval y as double) as integer
-declare function art_svp_point_dist cdecl alias "art_svp_point_dist" (byval svp as ArtSVP ptr, byval x as double, byval y as double) as double
+declare function art_svp_point_wind (byval svp as ArtSVP ptr, byval x as double, byval y as double) as integer
+declare function art_svp_point_dist (byval svp as ArtSVP ptr, byval x as double, byval y as double) as double
 
 #endif

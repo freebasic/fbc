@@ -19,7 +19,7 @@ enum ArtWindRule
 end enum
 
 
-declare function art_svp_uncross cdecl alias "art_svp_uncross" (byval vp as ArtSVP ptr) as ArtSVP ptr
-declare function art_svp_rewind_uncrossed cdecl alias "art_svp_rewind_uncrossed" (byval vp as ArtSVP ptr, byval rule as ArtWindRule) as ArtSVP ptr
+declare function art_svp_uncross (byval vp as ArtSVP ptr) as ArtSVP ptr
+declare function art_svp_rewind_uncrossed (byval vp as ArtSVP ptr, byval rule as ArtWindRule) as ArtSVP ptr
 
 #endif

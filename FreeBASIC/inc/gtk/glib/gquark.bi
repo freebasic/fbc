@@ -13,9 +13,9 @@
 
 type GQuark as guint32
 
-declare function g_quark_try_string cdecl alias "g_quark_try_string" (byval string as zstring ptr) as GQuark
-declare function g_quark_from_static_string cdecl alias "g_quark_from_static_string" (byval string as zstring ptr) as GQuark
-declare function g_quark_from_string cdecl alias "g_quark_from_string" (byval string as zstring ptr) as GQuark
-declare function g_quark_to_string cdecl alias "g_quark_to_string" (byval quark as GQuark) as zstring ptr
+declare function g_quark_try_string (byval string as zstring ptr) as GQuark
+declare function g_quark_from_static_string (byval string as zstring ptr) as GQuark
+declare function g_quark_from_string (byval string as zstring ptr) as GQuark
+declare function g_quark_to_string (byval quark as GQuark) as zstring ptr
 
 #endif

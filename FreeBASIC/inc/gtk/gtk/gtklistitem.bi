@@ -40,10 +40,10 @@ type _GtkListItemClass
 	toggle_add_mode as sub cdecl(byval as GtkListItem ptr)
 end type
 
-declare function gtk_list_item_get_type cdecl alias "gtk_list_item_get_type" () as GtkType
-declare function gtk_list_item_new cdecl alias "gtk_list_item_new" () as GtkWidget ptr
-declare function gtk_list_item_new_with_label cdecl alias "gtk_list_item_new_with_label" (byval label as zstring ptr) as GtkWidget ptr
-declare sub gtk_list_item_select cdecl alias "gtk_list_item_select" (byval list_item as GtkListItem ptr)
-declare sub gtk_list_item_deselect cdecl alias "gtk_list_item_deselect" (byval list_item as GtkListItem ptr)
+declare function gtk_list_item_get_type () as GtkType
+declare function gtk_list_item_new () as GtkWidget ptr
+declare function gtk_list_item_new_with_label (byval label as zstring ptr) as GtkWidget ptr
+declare sub gtk_list_item_select (byval list_item as GtkListItem ptr)
+declare sub gtk_list_item_deselect (byval list_item as GtkListItem ptr)
 
 #endif

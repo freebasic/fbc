@@ -17,10 +17,10 @@
 #define GDK_TYPE_INTERP_TYPE gdk_interp_type_get_type()
 #define GDK_TYPE_PIXBUF_ROTATION gdk_pixbuf_rotation_get_type()
 
-declare function gdk_pixbuf_alpha_mode_get_type cdecl alias "gdk_pixbuf_alpha_mode_get_type" () as GType
-declare function gdk_colorspace_get_type cdecl alias "gdk_colorspace_get_type" () as GType
-declare function gdk_pixbuf_error_get_type cdecl alias "gdk_pixbuf_error_get_type" () as GType
-declare function gdk_interp_type_get_type cdecl alias "gdk_interp_type_get_type" () as GType
-declare function gdk_pixbuf_rotation_get_type cdecl alias "gdk_pixbuf_rotation_get_type" () as GType
+declare function gdk_pixbuf_alpha_mode_get_type () as GType
+declare function gdk_colorspace_get_type () as GType
+declare function gdk_pixbuf_error_get_type () as GType
+declare function gdk_interp_type_get_type () as GType
+declare function gdk_pixbuf_rotation_get_type () as GType
 
 #endif

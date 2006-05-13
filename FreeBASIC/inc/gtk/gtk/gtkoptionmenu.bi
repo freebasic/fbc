@@ -12,12 +12,12 @@
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkbutton.bi"
 
-#define GTK_TYPE_OPTION_MENU              (gtk_option_menu_get_type ())
-#define GTK_OPTION_MENU(obj)              (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_OPTION_MENU, GtkOptionMenu))
-#define GTK_OPTION_MENU_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_OPTION_MENU, GtkOptionMenuClass))
-#define GTK_IS_OPTION_MENU(obj)           (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_OPTION_MENU))
-#define GTK_IS_OPTION_MENU_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_OPTION_MENU))
-#define GTK_OPTION_MENU_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_OPTION_MENU, GtkOptionMenuClass))
+#define GTK_TYPE_OPTION_MENU (gtk_option_menu_get_type ())
+#define GTK_OPTION_MENU(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_OPTION_MENU, GtkOptionMenu))
+#define GTK_OPTION_MENU_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_OPTION_MENU, GtkOptionMenuClass))
+#define GTK_IS_OPTION_MENU(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_OPTION_MENU))
+#define GTK_IS_OPTION_MENU_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_OPTION_MENU))
+#define GTK_OPTION_MENU_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_OPTION_MENU, GtkOptionMenuClass))
 
 type GtkOptionMenu as _GtkOptionMenu
 type GtkOptionMenuClass as _GtkOptionMenuClass
@@ -39,12 +39,12 @@ type _GtkOptionMenuClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_option_menu_get_type cdecl alias "gtk_option_menu_get_type" () as GType
-declare function gtk_option_menu_new cdecl alias "gtk_option_menu_new" () as GtkWidget ptr
-declare function gtk_option_menu_get_menu cdecl alias "gtk_option_menu_get_menu" (byval option_menu as GtkOptionMenu ptr) as GtkWidget ptr
-declare sub gtk_option_menu_set_menu cdecl alias "gtk_option_menu_set_menu" (byval option_menu as GtkOptionMenu ptr, byval menu as GtkWidget ptr)
-declare sub gtk_option_menu_remove_menu cdecl alias "gtk_option_menu_remove_menu" (byval option_menu as GtkOptionMenu ptr)
-declare function gtk_option_menu_get_history cdecl alias "gtk_option_menu_get_history" (byval option_menu as GtkOptionMenu ptr) as gint
-declare sub gtk_option_menu_set_history cdecl alias "gtk_option_menu_set_history" (byval option_menu as GtkOptionMenu ptr, byval index_ as guint)
+declare function gtk_option_menu_get_type () as GType
+declare function gtk_option_menu_new () as GtkWidget ptr
+declare function gtk_option_menu_get_menu (byval option_menu as GtkOptionMenu ptr) as GtkWidget ptr
+declare sub gtk_option_menu_set_menu (byval option_menu as GtkOptionMenu ptr, byval menu as GtkWidget ptr)
+declare sub gtk_option_menu_remove_menu (byval option_menu as GtkOptionMenu ptr)
+declare function gtk_option_menu_get_history (byval option_menu as GtkOptionMenu ptr) as gint
+declare sub gtk_option_menu_set_history (byval option_menu as GtkOptionMenu ptr, byval index_ as guint)
 
 #endif

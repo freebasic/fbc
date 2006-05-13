@@ -12,12 +12,12 @@
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkdrawingarea.bi"
 
-#define GTK_TYPE_CURVE                  (gtk_curve_get_type ())
-#define GTK_CURVE(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CURVE, GtkCurve))
-#define GTK_CURVE_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_CURVE, GtkCurveClass))
-#define GTK_IS_CURVE(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_CURVE))
-#define GTK_IS_CURVE_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_CURVE))
-#define GTK_CURVE_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_CURVE, GtkCurveClass))
+#define GTK_TYPE_CURVE (gtk_curve_get_type ())
+#define GTK_CURVE(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_CURVE, GtkCurve))
+#define GTK_CURVE_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_CURVE, GtkCurveClass))
+#define GTK_IS_CURVE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_CURVE))
+#define GTK_IS_CURVE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_CURVE))
+#define GTK_CURVE_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_CURVE, GtkCurveClass))
 
 type GtkCurve as _GtkCurve
 type GtkCurveClass as _GtkCurveClass
@@ -49,13 +49,13 @@ type _GtkCurveClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_curve_get_type cdecl alias "gtk_curve_get_type" () as GType
-declare function gtk_curve_new cdecl alias "gtk_curve_new" () as GtkWidget ptr
-declare sub gtk_curve_reset cdecl alias "gtk_curve_reset" (byval curve as GtkCurve ptr)
-declare sub gtk_curve_set_gamma cdecl alias "gtk_curve_set_gamma" (byval curve as GtkCurve ptr, byval gamma_ as gfloat)
-declare sub gtk_curve_set_range cdecl alias "gtk_curve_set_range" (byval curve as GtkCurve ptr, byval min_x as gfloat, byval max_x as gfloat, byval min_y as gfloat, byval max_y as gfloat)
-declare sub gtk_curve_get_vector cdecl alias "gtk_curve_get_vector" (byval curve as GtkCurve ptr, byval veclen as integer, byval vector as gfloat ptr)
-declare sub gtk_curve_set_vector cdecl alias "gtk_curve_set_vector" (byval curve as GtkCurve ptr, byval veclen as integer, byval vector as gfloat ptr)
-declare sub gtk_curve_set_curve_type cdecl alias "gtk_curve_set_curve_type" (byval curve as GtkCurve ptr, byval type as GtkCurveType)
+declare function gtk_curve_get_type () as GType
+declare function gtk_curve_new () as GtkWidget ptr
+declare sub gtk_curve_reset (byval curve as GtkCurve ptr)
+declare sub gtk_curve_set_gamma (byval curve as GtkCurve ptr, byval gamma_ as gfloat)
+declare sub gtk_curve_set_range (byval curve as GtkCurve ptr, byval min_x as gfloat, byval max_x as gfloat, byval min_y as gfloat, byval max_y as gfloat)
+declare sub gtk_curve_get_vector (byval curve as GtkCurve ptr, byval veclen as integer, byval vector as gfloat ptr)
+declare sub gtk_curve_set_vector (byval curve as GtkCurve ptr, byval veclen as integer, byval vector as gfloat ptr)
+declare sub gtk_curve_set_curve_type (byval curve as GtkCurve ptr, byval type as GtkCurveType)
 
 #endif

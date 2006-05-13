@@ -15,7 +15,7 @@
 #include once "gtk/gdk/gdkinput.bi"
 
 #define GDK_TYPE_EVENT (gdk_event_get_type ())
-#define GDK_PRIORITY_EVENTS	(G_PRIORITY_DEFAULT)
+#define GDK_PRIORITY_EVENTS (G_PRIORITY_DEFAULT)
 #define GDK_PRIORITY_REDRAW (G_PRIORITY_HIGH_IDLE + 20)
 
 type GdkEventAny as _GdkEventAny
@@ -399,26 +399,26 @@ union _GdkEvent
 	setting as GdkEventSetting
 end union
 
-declare function gdk_event_get_type cdecl alias "gdk_event_get_type" () as GType
-declare function gdk_events_pending cdecl alias "gdk_events_pending" () as gboolean
-declare function gdk_event_get cdecl alias "gdk_event_get" () as GdkEvent ptr
-declare function gdk_event_peek cdecl alias "gdk_event_peek" () as GdkEvent ptr
-declare function gdk_event_get_graphics_expose cdecl alias "gdk_event_get_graphics_expose" (byval window as GdkWindow ptr) as GdkEvent ptr
-declare sub gdk_event_put cdecl alias "gdk_event_put" (byval event as GdkEvent ptr)
-declare function gdk_event_new cdecl alias "gdk_event_new" (byval type as GdkEventType) as GdkEvent ptr
-declare function gdk_event_copy cdecl alias "gdk_event_copy" (byval event as GdkEvent ptr) as GdkEvent ptr
-declare sub gdk_event_free cdecl alias "gdk_event_free" (byval event as GdkEvent ptr)
-declare function gdk_event_get_time cdecl alias "gdk_event_get_time" (byval event as GdkEvent ptr) as guint32
-declare function gdk_event_get_state cdecl alias "gdk_event_get_state" (byval event as GdkEvent ptr, byval state as GdkModifierType ptr) as gboolean
-declare function gdk_event_get_coords cdecl alias "gdk_event_get_coords" (byval event as GdkEvent ptr, byval x_win as gdouble ptr, byval y_win as gdouble ptr) as gboolean
-declare function gdk_event_get_root_coords cdecl alias "gdk_event_get_root_coords" (byval event as GdkEvent ptr, byval x_root as gdouble ptr, byval y_root as gdouble ptr) as gboolean
-declare function gdk_event_get_axis cdecl alias "gdk_event_get_axis" (byval event as GdkEvent ptr, byval axis_use as GdkAxisUse, byval value as gdouble ptr) as gboolean
-declare sub gdk_event_handler_set cdecl alias "gdk_event_handler_set" (byval func as GdkEventFunc, byval data as gpointer, byval notify as GDestroyNotify)
-declare sub gdk_event_set_screen cdecl alias "gdk_event_set_screen" (byval event as GdkEvent ptr, byval screen as GdkScreen ptr)
-declare function gdk_event_get_screen cdecl alias "gdk_event_get_screen" (byval event as GdkEvent ptr) as GdkScreen ptr
-declare sub gdk_set_show_events cdecl alias "gdk_set_show_events" (byval show_events as gboolean)
-declare function gdk_get_show_events cdecl alias "gdk_get_show_events" () as gboolean
-declare sub gdk_add_client_message_filter cdecl alias "gdk_add_client_message_filter" (byval message_type as GdkAtom, byval func as GdkFilterFunc, byval data as gpointer)
-declare function gdk_setting_get cdecl alias "gdk_setting_get" (byval name as zstring ptr, byval value as GValue ptr) as gboolean
+declare function gdk_event_get_type () as GType
+declare function gdk_events_pending () as gboolean
+declare function gdk_event_get () as GdkEvent ptr
+declare function gdk_event_peek () as GdkEvent ptr
+declare function gdk_event_get_graphics_expose (byval window as GdkWindow ptr) as GdkEvent ptr
+declare sub gdk_event_put (byval event as GdkEvent ptr)
+declare function gdk_event_new (byval type as GdkEventType) as GdkEvent ptr
+declare function gdk_event_copy (byval event as GdkEvent ptr) as GdkEvent ptr
+declare sub gdk_event_free (byval event as GdkEvent ptr)
+declare function gdk_event_get_time (byval event as GdkEvent ptr) as guint32
+declare function gdk_event_get_state (byval event as GdkEvent ptr, byval state as GdkModifierType ptr) as gboolean
+declare function gdk_event_get_coords (byval event as GdkEvent ptr, byval x_win as gdouble ptr, byval y_win as gdouble ptr) as gboolean
+declare function gdk_event_get_root_coords (byval event as GdkEvent ptr, byval x_root as gdouble ptr, byval y_root as gdouble ptr) as gboolean
+declare function gdk_event_get_axis (byval event as GdkEvent ptr, byval axis_use as GdkAxisUse, byval value as gdouble ptr) as gboolean
+declare sub gdk_event_handler_set (byval func as GdkEventFunc, byval data as gpointer, byval notify as GDestroyNotify)
+declare sub gdk_event_set_screen (byval event as GdkEvent ptr, byval screen as GdkScreen ptr)
+declare function gdk_event_get_screen (byval event as GdkEvent ptr) as GdkScreen ptr
+declare sub gdk_set_show_events (byval show_events as gboolean)
+declare function gdk_get_show_events () as gboolean
+declare sub gdk_add_client_message_filter (byval message_type as GdkAtom, byval func as GdkFilterFunc, byval data as gpointer)
+declare function gdk_setting_get (byval name as zstring ptr, byval value as GValue ptr) as gboolean
 
 #endif

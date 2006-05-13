@@ -11,12 +11,12 @@
 
 #include once "gtk/gdk/gdktypes.bi"
 
-#define GDK_TYPE_DRAG_CONTEXT              (gdk_drag_context_get_type ())
-#define GDK_DRAG_CONTEXT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_DRAG_CONTEXT, GdkDragContext))
-#define GDK_DRAG_CONTEXT_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_DRAG_CONTEXT, GdkDragContextClass))
-#define GDK_IS_DRAG_CONTEXT(object)        (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_DRAG_CONTEXT))
-#define GDK_IS_DRAG_CONTEXT_CLASS(klass)   (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_DRAG_CONTEXT))
-#define GDK_DRAG_CONTEXT_GET_CLASS(obj)    (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_DRAG_CONTEXT, GdkDragContextClass))
+#define GDK_TYPE_DRAG_CONTEXT (gdk_drag_context_get_type ())
+#define GDK_DRAG_CONTEXT(object) (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_DRAG_CONTEXT, GdkDragContext))
+#define GDK_DRAG_CONTEXT_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_DRAG_CONTEXT, GdkDragContextClass))
+#define GDK_IS_DRAG_CONTEXT(object) (G_TYPE_CHECK_INSTANCE_TYPE ((object), GDK_TYPE_DRAG_CONTEXT))
+#define GDK_IS_DRAG_CONTEXT_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_DRAG_CONTEXT))
+#define GDK_DRAG_CONTEXT_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_DRAG_CONTEXT, GdkDragContextClass))
 
 type GdkDragContext as _GdkDragContext
 
@@ -60,22 +60,22 @@ type _GdkDragContextClass
 	parent_class as GObjectClass
 end type
 
-declare function gdk_drag_context_get_type cdecl alias "gdk_drag_context_get_type" () as GType
-declare function gdk_drag_context_new cdecl alias "gdk_drag_context_new" () as GdkDragContext ptr
-declare sub gdk_drag_context_ref cdecl alias "gdk_drag_context_ref" (byval context as GdkDragContext ptr)
-declare sub gdk_drag_context_unref cdecl alias "gdk_drag_context_unref" (byval context as GdkDragContext ptr)
-declare sub gdk_drag_status cdecl alias "gdk_drag_status" (byval context as GdkDragContext ptr, byval action as GdkDragAction, byval time_ as guint32)
-declare sub gdk_drop_reply cdecl alias "gdk_drop_reply" (byval context as GdkDragContext ptr, byval ok as gboolean, byval time_ as guint32)
-declare sub gdk_drop_finish cdecl alias "gdk_drop_finish" (byval context as GdkDragContext ptr, byval success as gboolean, byval time_ as guint32)
-declare function gdk_drag_get_selection cdecl alias "gdk_drag_get_selection" (byval context as GdkDragContext ptr) as GdkAtom
-declare function gdk_drag_begin cdecl alias "gdk_drag_begin" (byval window as GdkWindow ptr, byval targets as GList ptr) as GdkDragContext ptr
-declare function gdk_drag_get_protocol_for_display cdecl alias "gdk_drag_get_protocol_for_display" (byval display as GdkDisplay ptr, byval xid as guint32, byval protocol as GdkDragProtocol ptr) as guint32
-declare sub gdk_drag_find_window_for_screen cdecl alias "gdk_drag_find_window_for_screen" (byval context as GdkDragContext ptr, byval drag_window as GdkWindow ptr, byval screen as GdkScreen ptr, byval x_root as gint, byval y_root as gint, byval dest_window as GdkWindow ptr ptr, byval protocol as GdkDragProtocol ptr)
-declare function gdk_drag_get_protocol cdecl alias "gdk_drag_get_protocol" (byval xid as guint32, byval protocol as GdkDragProtocol ptr) as guint32
-declare sub gdk_drag_find_window cdecl alias "gdk_drag_find_window" (byval context as GdkDragContext ptr, byval drag_window as GdkWindow ptr, byval x_root as gint, byval y_root as gint, byval dest_window as GdkWindow ptr ptr, byval protocol as GdkDragProtocol ptr)
-declare function gdk_drag_motion cdecl alias "gdk_drag_motion" (byval context as GdkDragContext ptr, byval dest_window as GdkWindow ptr, byval protocol as GdkDragProtocol, byval x_root as gint, byval y_root as gint, byval suggested_action as GdkDragAction, byval possible_actions as GdkDragAction, byval time_ as guint32) as gboolean
-declare sub gdk_drag_drop cdecl alias "gdk_drag_drop" (byval context as GdkDragContext ptr, byval time_ as guint32)
-declare sub gdk_drag_abort cdecl alias "gdk_drag_abort" (byval context as GdkDragContext ptr, byval time_ as guint32)
-declare function gdk_drag_drop_succeeded cdecl alias "gdk_drag_drop_succeeded" (byval context as GdkDragContext ptr) as gboolean
+declare function gdk_drag_context_get_type () as GType
+declare function gdk_drag_context_new () as GdkDragContext ptr
+declare sub gdk_drag_context_ref (byval context as GdkDragContext ptr)
+declare sub gdk_drag_context_unref (byval context as GdkDragContext ptr)
+declare sub gdk_drag_status (byval context as GdkDragContext ptr, byval action as GdkDragAction, byval time_ as guint32)
+declare sub gdk_drop_reply (byval context as GdkDragContext ptr, byval ok as gboolean, byval time_ as guint32)
+declare sub gdk_drop_finish (byval context as GdkDragContext ptr, byval success as gboolean, byval time_ as guint32)
+declare function gdk_drag_get_selection (byval context as GdkDragContext ptr) as GdkAtom
+declare function gdk_drag_begin (byval window as GdkWindow ptr, byval targets as GList ptr) as GdkDragContext ptr
+declare function gdk_drag_get_protocol_for_display (byval display as GdkDisplay ptr, byval xid as guint32, byval protocol as GdkDragProtocol ptr) as guint32
+declare sub gdk_drag_find_window_for_screen (byval context as GdkDragContext ptr, byval drag_window as GdkWindow ptr, byval screen as GdkScreen ptr, byval x_root as gint, byval y_root as gint, byval dest_window as GdkWindow ptr ptr, byval protocol as GdkDragProtocol ptr)
+declare function gdk_drag_get_protocol (byval xid as guint32, byval protocol as GdkDragProtocol ptr) as guint32
+declare sub gdk_drag_find_window (byval context as GdkDragContext ptr, byval drag_window as GdkWindow ptr, byval x_root as gint, byval y_root as gint, byval dest_window as GdkWindow ptr ptr, byval protocol as GdkDragProtocol ptr)
+declare function gdk_drag_motion (byval context as GdkDragContext ptr, byval dest_window as GdkWindow ptr, byval protocol as GdkDragProtocol, byval x_root as gint, byval y_root as gint, byval suggested_action as GdkDragAction, byval possible_actions as GdkDragAction, byval time_ as guint32) as gboolean
+declare sub gdk_drag_drop (byval context as GdkDragContext ptr, byval time_ as guint32)
+declare sub gdk_drag_abort (byval context as GdkDragContext ptr, byval time_ as guint32)
+declare function gdk_drag_drop_succeeded (byval context as GdkDragContext ptr) as gboolean
 
 #endif

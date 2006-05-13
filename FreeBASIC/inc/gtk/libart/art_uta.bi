@@ -25,8 +25,8 @@ type _ArtUta
 	utiles as ArtUtaBbox ptr
 end type
 
-declare function art_uta_new cdecl alias "art_uta_new" (byval x0 as integer, byval y0 as integer, byval x1 as integer, byval y1 as integer) as ArtUta ptr
-declare function art_uta_new_coords cdecl alias "art_uta_new_coords" (byval x0 as integer, byval y0 as integer, byval x1 as integer, byval y1 as integer) as ArtUta ptr
-declare sub art_uta_free cdecl alias "art_uta_free" (byval uta as ArtUta ptr)
+declare function art_uta_new (byval x0 as integer, byval y0 as integer, byval x1 as integer, byval y1 as integer) as ArtUta ptr
+declare function art_uta_new_coords (byval x0 as integer, byval y0 as integer, byval x1 as integer, byval y1 as integer) as ArtUta ptr
+declare sub art_uta_free (byval uta as ArtUta ptr)
 
 #endif

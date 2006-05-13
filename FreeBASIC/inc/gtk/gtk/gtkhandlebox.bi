@@ -12,12 +12,12 @@
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkbin.bi"
 
-#define GTK_TYPE_HANDLE_BOX            (gtk_handle_box_get_type ())
-#define GTK_HANDLE_BOX(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_HANDLE_BOX, GtkHandleBox))
-#define GTK_HANDLE_BOX_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_HANDLE_BOX, GtkHandleBoxClass))
-#define GTK_IS_HANDLE_BOX(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_HANDLE_BOX))
+#define GTK_TYPE_HANDLE_BOX (gtk_handle_box_get_type ())
+#define GTK_HANDLE_BOX(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_HANDLE_BOX, GtkHandleBox))
+#define GTK_HANDLE_BOX_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_HANDLE_BOX, GtkHandleBoxClass))
+#define GTK_IS_HANDLE_BOX(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_HANDLE_BOX))
 #define GTK_IS_HANDLE_BOX_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_HANDLE_BOX))
-#define GTK_HANDLE_BOX_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_HANDLE_BOX, GtkHandleBoxClass))
+#define GTK_HANDLE_BOX_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_HANDLE_BOX, GtkHandleBoxClass))
 
 type GtkHandleBox as _GtkHandleBox
 type GtkHandleBoxClass as _GtkHandleBoxClass
@@ -49,13 +49,13 @@ type _GtkHandleBoxClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_handle_box_get_type cdecl alias "gtk_handle_box_get_type" () as GType
-declare function gtk_handle_box_new cdecl alias "gtk_handle_box_new" () as GtkWidget ptr
-declare sub gtk_handle_box_set_shadow_type cdecl alias "gtk_handle_box_set_shadow_type" (byval handle_box as GtkHandleBox ptr, byval type as GtkShadowType)
-declare function gtk_handle_box_get_shadow_type cdecl alias "gtk_handle_box_get_shadow_type" (byval handle_box as GtkHandleBox ptr) as GtkShadowType
-declare sub gtk_handle_box_set_handle_position cdecl alias "gtk_handle_box_set_handle_position" (byval handle_box as GtkHandleBox ptr, byval position as GtkPositionType)
-declare function gtk_handle_box_get_handle_position cdecl alias "gtk_handle_box_get_handle_position" (byval handle_box as GtkHandleBox ptr) as GtkPositionType
-declare sub gtk_handle_box_set_snap_edge cdecl alias "gtk_handle_box_set_snap_edge" (byval handle_box as GtkHandleBox ptr, byval edge as GtkPositionType)
-declare function gtk_handle_box_get_snap_edge cdecl alias "gtk_handle_box_get_snap_edge" (byval handle_box as GtkHandleBox ptr) as GtkPositionType
+declare function gtk_handle_box_get_type () as GType
+declare function gtk_handle_box_new () as GtkWidget ptr
+declare sub gtk_handle_box_set_shadow_type (byval handle_box as GtkHandleBox ptr, byval type as GtkShadowType)
+declare function gtk_handle_box_get_shadow_type (byval handle_box as GtkHandleBox ptr) as GtkShadowType
+declare sub gtk_handle_box_set_handle_position (byval handle_box as GtkHandleBox ptr, byval position as GtkPositionType)
+declare function gtk_handle_box_get_handle_position (byval handle_box as GtkHandleBox ptr) as GtkPositionType
+declare sub gtk_handle_box_set_snap_edge (byval handle_box as GtkHandleBox ptr, byval edge as GtkPositionType)
+declare function gtk_handle_box_get_snap_edge (byval handle_box as GtkHandleBox ptr) as GtkPositionType
 
 #endif

@@ -23,12 +23,12 @@ type _AtkNoOpObject
 	parent as AtkObject
 end type
 
-declare function atk_no_op_object_get_type cdecl alias "atk_no_op_object_get_type" () as GType
+declare function atk_no_op_object_get_type () as GType
 
 type _AtkNoOpObjectClass
 	parent_class as AtkObjectClass
 end type
 
-declare function atk_no_op_object_new cdecl alias "atk_no_op_object_new" (byval obj as GObject ptr) as AtkObject ptr
+declare function atk_no_op_object_new (byval obj as GObject ptr) as AtkObject ptr
 
 #endif

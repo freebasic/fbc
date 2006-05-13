@@ -12,12 +12,12 @@
 #include once "gtk/gdk.bi"
 #include once "gtk/gtk/gtkcontainer.bi"
 
-#define GTK_TYPE_NOTEBOOK                  (gtk_notebook_get_type ())
-#define GTK_NOTEBOOK(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_NOTEBOOK, GtkNotebook))
-#define GTK_NOTEBOOK_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_NOTEBOOK, GtkNotebookClass))
-#define GTK_IS_NOTEBOOK(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_NOTEBOOK))
-#define GTK_IS_NOTEBOOK_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_NOTEBOOK))
-#define GTK_NOTEBOOK_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_NOTEBOOK, GtkNotebookClass))
+#define GTK_TYPE_NOTEBOOK (gtk_notebook_get_type ())
+#define GTK_NOTEBOOK(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_NOTEBOOK, GtkNotebook))
+#define GTK_NOTEBOOK_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_NOTEBOOK, GtkNotebookClass))
+#define GTK_IS_NOTEBOOK(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_NOTEBOOK))
+#define GTK_IS_NOTEBOOK_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_NOTEBOOK))
+#define GTK_NOTEBOOK_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_NOTEBOOK, GtkNotebookClass))
 
 enum GtkNotebookTab
 	GTK_NOTEBOOK_TAB_FIRST
@@ -70,47 +70,47 @@ type _GtkNotebookClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_notebook_get_type cdecl alias "gtk_notebook_get_type" () as GType
-declare function gtk_notebook_new cdecl alias "gtk_notebook_new" () as GtkWidget ptr
-declare function gtk_notebook_append_page cdecl alias "gtk_notebook_append_page" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_label as GtkWidget ptr) as gint
-declare function gtk_notebook_append_page_menu cdecl alias "gtk_notebook_append_page_menu" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_label as GtkWidget ptr, byval menu_label as GtkWidget ptr) as gint
-declare function gtk_notebook_prepend_page cdecl alias "gtk_notebook_prepend_page" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_label as GtkWidget ptr) as gint
-declare function gtk_notebook_prepend_page_menu cdecl alias "gtk_notebook_prepend_page_menu" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_label as GtkWidget ptr, byval menu_label as GtkWidget ptr) as gint
-declare function gtk_notebook_insert_page cdecl alias "gtk_notebook_insert_page" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_label as GtkWidget ptr, byval position as gint) as gint
-declare function gtk_notebook_insert_page_menu cdecl alias "gtk_notebook_insert_page_menu" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_label as GtkWidget ptr, byval menu_label as GtkWidget ptr, byval position as gint) as gint
-declare sub gtk_notebook_remove_page cdecl alias "gtk_notebook_remove_page" (byval notebook as GtkNotebook ptr, byval page_num as gint)
-declare function gtk_notebook_get_current_page cdecl alias "gtk_notebook_get_current_page" (byval notebook as GtkNotebook ptr) as gint
-declare function gtk_notebook_get_nth_page cdecl alias "gtk_notebook_get_nth_page" (byval notebook as GtkNotebook ptr, byval page_num as gint) as GtkWidget ptr
-declare function gtk_notebook_get_n_pages cdecl alias "gtk_notebook_get_n_pages" (byval notebook as GtkNotebook ptr) as gint
-declare function gtk_notebook_page_num cdecl alias "gtk_notebook_page_num" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as gint
-declare sub gtk_notebook_set_current_page cdecl alias "gtk_notebook_set_current_page" (byval notebook as GtkNotebook ptr, byval page_num as gint)
-declare sub gtk_notebook_next_page cdecl alias "gtk_notebook_next_page" (byval notebook as GtkNotebook ptr)
-declare sub gtk_notebook_prev_page cdecl alias "gtk_notebook_prev_page" (byval notebook as GtkNotebook ptr)
-declare sub gtk_notebook_set_show_border cdecl alias "gtk_notebook_set_show_border" (byval notebook as GtkNotebook ptr, byval show_border as gboolean)
-declare function gtk_notebook_get_show_border cdecl alias "gtk_notebook_get_show_border" (byval notebook as GtkNotebook ptr) as gboolean
-declare sub gtk_notebook_set_show_tabs cdecl alias "gtk_notebook_set_show_tabs" (byval notebook as GtkNotebook ptr, byval show_tabs as gboolean)
-declare function gtk_notebook_get_show_tabs cdecl alias "gtk_notebook_get_show_tabs" (byval notebook as GtkNotebook ptr) as gboolean
-declare sub gtk_notebook_set_tab_pos cdecl alias "gtk_notebook_set_tab_pos" (byval notebook as GtkNotebook ptr, byval pos as GtkPositionType)
-declare function gtk_notebook_get_tab_pos cdecl alias "gtk_notebook_get_tab_pos" (byval notebook as GtkNotebook ptr) as GtkPositionType
-declare sub gtk_notebook_set_homogeneous_tabs cdecl alias "gtk_notebook_set_homogeneous_tabs" (byval notebook as GtkNotebook ptr, byval homogeneous as gboolean)
-declare sub gtk_notebook_set_tab_border cdecl alias "gtk_notebook_set_tab_border" (byval notebook as GtkNotebook ptr, byval border_width as guint)
-declare sub gtk_notebook_set_tab_hborder cdecl alias "gtk_notebook_set_tab_hborder" (byval notebook as GtkNotebook ptr, byval tab_hborder as guint)
-declare sub gtk_notebook_set_tab_vborder cdecl alias "gtk_notebook_set_tab_vborder" (byval notebook as GtkNotebook ptr, byval tab_vborder as guint)
-declare sub gtk_notebook_set_scrollable cdecl alias "gtk_notebook_set_scrollable" (byval notebook as GtkNotebook ptr, byval scrollable as gboolean)
-declare function gtk_notebook_get_scrollable cdecl alias "gtk_notebook_get_scrollable" (byval notebook as GtkNotebook ptr) as gboolean
-declare sub gtk_notebook_popup_enable cdecl alias "gtk_notebook_popup_enable" (byval notebook as GtkNotebook ptr)
-declare sub gtk_notebook_popup_disable cdecl alias "gtk_notebook_popup_disable" (byval notebook as GtkNotebook ptr)
-declare function gtk_notebook_get_tab_label cdecl alias "gtk_notebook_get_tab_label" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as GtkWidget ptr
-declare sub gtk_notebook_set_tab_label cdecl alias "gtk_notebook_set_tab_label" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_label as GtkWidget ptr)
-declare sub gtk_notebook_set_tab_label_text cdecl alias "gtk_notebook_set_tab_label_text" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_text as zstring ptr)
-declare function gtk_notebook_get_tab_label_text cdecl alias "gtk_notebook_get_tab_label_text" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as zstring ptr
-declare function gtk_notebook_get_menu_label cdecl alias "gtk_notebook_get_menu_label" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as GtkWidget ptr
-declare sub gtk_notebook_set_menu_label cdecl alias "gtk_notebook_set_menu_label" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval menu_label as GtkWidget ptr)
-declare sub gtk_notebook_set_menu_label_text cdecl alias "gtk_notebook_set_menu_label_text" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval menu_text as zstring ptr)
-declare function gtk_notebook_get_menu_label_text cdecl alias "gtk_notebook_get_menu_label_text" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as zstring ptr
-declare sub gtk_notebook_query_tab_label_packing cdecl alias "gtk_notebook_query_tab_label_packing" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval expand as gboolean ptr, byval fill as gboolean ptr, byval pack_type as GtkPackType ptr)
-declare sub gtk_notebook_set_tab_label_packing cdecl alias "gtk_notebook_set_tab_label_packing" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval expand as gboolean, byval fill as gboolean, byval pack_type as GtkPackType)
-declare sub gtk_notebook_reorder_child cdecl alias "gtk_notebook_reorder_child" (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval position as gint)
+declare function gtk_notebook_get_type () as GType
+declare function gtk_notebook_new () as GtkWidget ptr
+declare function gtk_notebook_append_page (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_label as GtkWidget ptr) as gint
+declare function gtk_notebook_append_page_menu (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_label as GtkWidget ptr, byval menu_label as GtkWidget ptr) as gint
+declare function gtk_notebook_prepend_page (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_label as GtkWidget ptr) as gint
+declare function gtk_notebook_prepend_page_menu (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_label as GtkWidget ptr, byval menu_label as GtkWidget ptr) as gint
+declare function gtk_notebook_insert_page (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_label as GtkWidget ptr, byval position as gint) as gint
+declare function gtk_notebook_insert_page_menu (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_label as GtkWidget ptr, byval menu_label as GtkWidget ptr, byval position as gint) as gint
+declare sub gtk_notebook_remove_page (byval notebook as GtkNotebook ptr, byval page_num as gint)
+declare function gtk_notebook_get_current_page (byval notebook as GtkNotebook ptr) as gint
+declare function gtk_notebook_get_nth_page (byval notebook as GtkNotebook ptr, byval page_num as gint) as GtkWidget ptr
+declare function gtk_notebook_get_n_pages (byval notebook as GtkNotebook ptr) as gint
+declare function gtk_notebook_page_num (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as gint
+declare sub gtk_notebook_set_current_page (byval notebook as GtkNotebook ptr, byval page_num as gint)
+declare sub gtk_notebook_next_page (byval notebook as GtkNotebook ptr)
+declare sub gtk_notebook_prev_page (byval notebook as GtkNotebook ptr)
+declare sub gtk_notebook_set_show_border (byval notebook as GtkNotebook ptr, byval show_border as gboolean)
+declare function gtk_notebook_get_show_border (byval notebook as GtkNotebook ptr) as gboolean
+declare sub gtk_notebook_set_show_tabs (byval notebook as GtkNotebook ptr, byval show_tabs as gboolean)
+declare function gtk_notebook_get_show_tabs (byval notebook as GtkNotebook ptr) as gboolean
+declare sub gtk_notebook_set_tab_pos (byval notebook as GtkNotebook ptr, byval pos as GtkPositionType)
+declare function gtk_notebook_get_tab_pos (byval notebook as GtkNotebook ptr) as GtkPositionType
+declare sub gtk_notebook_set_homogeneous_tabs (byval notebook as GtkNotebook ptr, byval homogeneous as gboolean)
+declare sub gtk_notebook_set_tab_border (byval notebook as GtkNotebook ptr, byval border_width as guint)
+declare sub gtk_notebook_set_tab_hborder (byval notebook as GtkNotebook ptr, byval tab_hborder as guint)
+declare sub gtk_notebook_set_tab_vborder (byval notebook as GtkNotebook ptr, byval tab_vborder as guint)
+declare sub gtk_notebook_set_scrollable (byval notebook as GtkNotebook ptr, byval scrollable as gboolean)
+declare function gtk_notebook_get_scrollable (byval notebook as GtkNotebook ptr) as gboolean
+declare sub gtk_notebook_popup_enable (byval notebook as GtkNotebook ptr)
+declare sub gtk_notebook_popup_disable (byval notebook as GtkNotebook ptr)
+declare function gtk_notebook_get_tab_label (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as GtkWidget ptr
+declare sub gtk_notebook_set_tab_label (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_label as GtkWidget ptr)
+declare sub gtk_notebook_set_tab_label_text (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval tab_text as zstring ptr)
+declare function gtk_notebook_get_tab_label_text (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as zstring ptr
+declare function gtk_notebook_get_menu_label (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as GtkWidget ptr
+declare sub gtk_notebook_set_menu_label (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval menu_label as GtkWidget ptr)
+declare sub gtk_notebook_set_menu_label_text (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval menu_text as zstring ptr)
+declare function gtk_notebook_get_menu_label_text (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr) as zstring ptr
+declare sub gtk_notebook_query_tab_label_packing (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval expand as gboolean ptr, byval fill as gboolean ptr, byval pack_type as GtkPackType ptr)
+declare sub gtk_notebook_set_tab_label_packing (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval expand as gboolean, byval fill as gboolean, byval pack_type as GtkPackType)
+declare sub gtk_notebook_reorder_child (byval notebook as GtkNotebook ptr, byval child as GtkWidget ptr, byval position as gint)
 
 #define	gtk_notebook_current_page gtk_notebook_get_current_page
 #define gtk_notebook_set_page gtk_notebook_set_current_page

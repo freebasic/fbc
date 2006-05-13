@@ -97,30 +97,30 @@ enum GTypeDebugFlags
 	G_TYPE_DEBUG_MASK = &h03
 end enum
 
-declare sub g_type_init cdecl alias "g_type_init" ()
-declare sub g_type_init_with_debug_flags cdecl alias "g_type_init_with_debug_flags" (byval debug_flags as GTypeDebugFlags)
-declare function g_type_name cdecl alias "g_type_name" (byval type as GType) as zstring ptr
-declare function g_type_qname cdecl alias "g_type_qname" (byval type as GType) as GQuark
-declare function g_type_from_name cdecl alias "g_type_from_name" (byval name as zstring ptr) as GType
-declare function g_type_parent cdecl alias "g_type_parent" (byval type as GType) as GType
-declare function g_type_depth cdecl alias "g_type_depth" (byval type as GType) as guint
-declare function g_type_next_base cdecl alias "g_type_next_base" (byval leaf_type as GType, byval root_type as GType) as GType
-declare function g_type_is_a cdecl alias "g_type_is_a" (byval type as GType, byval is_a_type as GType) as gboolean
-declare function g_type_class_ref cdecl alias "g_type_class_ref" (byval type as GType) as gpointer
-declare function g_type_class_peek cdecl alias "g_type_class_peek" (byval type as GType) as gpointer
-declare function g_type_class_peek_static cdecl alias "g_type_class_peek_static" (byval type as GType) as gpointer
-declare sub g_type_class_unref cdecl alias "g_type_class_unref" (byval g_class as gpointer)
-declare function g_type_class_peek_parent cdecl alias "g_type_class_peek_parent" (byval g_class as gpointer) as gpointer
-declare function g_type_interface_peek cdecl alias "g_type_interface_peek" (byval instance_class as gpointer, byval iface_type as GType) as gpointer
-declare function g_type_interface_peek_parent cdecl alias "g_type_interface_peek_parent" (byval g_iface as gpointer) as gpointer
-declare function g_type_default_interface_ref cdecl alias "g_type_default_interface_ref" (byval g_type as GType) as gpointer
-declare function g_type_default_interface_peek cdecl alias "g_type_default_interface_peek" (byval g_type as GType) as gpointer
-declare sub g_type_default_interface_unref cdecl alias "g_type_default_interface_unref" (byval g_iface as gpointer)
-declare function g_type_children cdecl alias "g_type_children" (byval type as GType, byval n_children as guint ptr) as GType ptr
-declare function g_type_interfaces cdecl alias "g_type_interfaces" (byval type as GType, byval n_interfaces as guint ptr) as GType ptr
-declare sub g_type_set_qdata cdecl alias "g_type_set_qdata" (byval type as GType, byval quark as GQuark, byval data as gpointer)
-declare function g_type_get_qdata cdecl alias "g_type_get_qdata" (byval type as GType, byval quark as GQuark) as gpointer
-declare sub g_type_query cdecl alias "g_type_query" (byval type as GType, byval query as GTypeQuery ptr)
+declare sub g_type_init ()
+declare sub g_type_init_with_debug_flags (byval debug_flags as GTypeDebugFlags)
+declare function g_type_name (byval type as GType) as zstring ptr
+declare function g_type_qname (byval type as GType) as GQuark
+declare function g_type_from_name (byval name as zstring ptr) as GType
+declare function g_type_parent (byval type as GType) as GType
+declare function g_type_depth (byval type as GType) as guint
+declare function g_type_next_base (byval leaf_type as GType, byval root_type as GType) as GType
+declare function g_type_is_a (byval type as GType, byval is_a_type as GType) as gboolean
+declare function g_type_class_ref (byval type as GType) as gpointer
+declare function g_type_class_peek (byval type as GType) as gpointer
+declare function g_type_class_peek_static (byval type as GType) as gpointer
+declare sub g_type_class_unref (byval g_class as gpointer)
+declare function g_type_class_peek_parent (byval g_class as gpointer) as gpointer
+declare function g_type_interface_peek (byval instance_class as gpointer, byval iface_type as GType) as gpointer
+declare function g_type_interface_peek_parent (byval g_iface as gpointer) as gpointer
+declare function g_type_default_interface_ref (byval g_type as GType) as gpointer
+declare function g_type_default_interface_peek (byval g_type as GType) as gpointer
+declare sub g_type_default_interface_unref (byval g_iface as gpointer)
+declare function g_type_children (byval type as GType, byval n_children as guint ptr) as GType ptr
+declare function g_type_interfaces (byval type as GType, byval n_interfaces as guint ptr) as GType ptr
+declare sub g_type_set_qdata (byval type as GType, byval quark as GQuark, byval data as gpointer)
+declare function g_type_get_qdata (byval type as GType, byval quark as GQuark) as gpointer
+declare sub g_type_query (byval type as GType, byval query as GTypeQuery ptr)
 
 type GBaseInitFunc as sub cdecl(byval as gpointer)
 type GBaseFinalizeFunc as sub cdecl(byval as gpointer)
@@ -180,47 +180,47 @@ type _GTypeValueTable
 	lcopy_value as function cdecl(byval as GValue ptr, byval as guint, byval as GTypeCValue ptr, byval as guint) as gchar
 end type
 
-declare function g_type_register_static cdecl alias "g_type_register_static" (byval parent_type as GType, byval type_name as zstring ptr, byval info as GTypeInfo ptr, byval flags as GTypeFlags) as GType
-declare function g_type_register_dynamic cdecl alias "g_type_register_dynamic" (byval parent_type as GType, byval type_name as zstring ptr, byval plugin as GTypePlugin ptr, byval flags as GTypeFlags) as GType
-declare function g_type_register_fundamental cdecl alias "g_type_register_fundamental" (byval type_id as GType, byval type_name as zstring ptr, byval info as GTypeInfo ptr, byval finfo as GTypeFundamentalInfo ptr, byval flags as GTypeFlags) as GType
-declare sub g_type_add_interface_static cdecl alias "g_type_add_interface_static" (byval instance_type as GType, byval interface_type as GType, byval info as GInterfaceInfo ptr)
-declare sub g_type_add_interface_dynamic cdecl alias "g_type_add_interface_dynamic" (byval instance_type as GType, byval interface_type as GType, byval plugin as GTypePlugin ptr)
-declare sub g_type_interface_add_prerequisite cdecl alias "g_type_interface_add_prerequisite" (byval interface_type as GType, byval prerequisite_type as GType)
-declare function g_type_interface_prerequisites cdecl alias "g_type_interface_prerequisites" (byval interface_type as GType, byval n_prerequisites as guint ptr) as GType ptr
-declare sub g_type_class_add_private cdecl alias "g_type_class_add_private" (byval g_class as gpointer, byval private_size as gsize)
-declare function g_type_instance_get_private_ cdecl alias "g_type_instance_get_private" (byval instance as GTypeInstance ptr, byval private_type as GType) as gpointer
-declare function g_type_get_plugin cdecl alias "g_type_get_plugin" (byval type as GType) as GTypePlugin ptr
-declare function g_type_interface_get_plugin cdecl alias "g_type_interface_get_plugin" (byval instance_type as GType, byval interface_type as GType) as GTypePlugin ptr
-declare function g_type_fundamental_next cdecl alias "g_type_fundamental_next" () as GType
-declare function g_type_fundamental_ cdecl alias "g_type_fundamental" (byval type_id as GType) as GType
-declare function g_type_create_instance cdecl alias "g_type_create_instance" (byval type as GType) as GTypeInstance ptr
-declare sub g_type_free_instance cdecl alias "g_type_free_instance" (byval instance as GTypeInstance ptr)
-declare sub g_type_add_class_cache_func cdecl alias "g_type_add_class_cache_func" (byval cache_data as gpointer, byval cache_func as GTypeClassCacheFunc)
-declare sub g_type_remove_class_cache_func cdecl alias "g_type_remove_class_cache_func" (byval cache_data as gpointer, byval cache_func as GTypeClassCacheFunc)
-declare sub g_type_class_unref_uncached cdecl alias "g_type_class_unref_uncached" (byval g_class as gpointer)
-declare sub g_type_add_interface_check cdecl alias "g_type_add_interface_check" (byval check_data as gpointer, byval check_func as GTypeInterfaceCheckFunc)
-declare sub g_type_remove_interface_check cdecl alias "g_type_remove_interface_check" (byval check_data as gpointer, byval check_func as GTypeInterfaceCheckFunc)
-declare function g_type_value_table_peek cdecl alias "g_type_value_table_peek" (byval type as GType) as GTypeValueTable ptr
-declare function g_type_check_instance_ cdecl alias "g_type_check_instance" (byval instance as GTypeInstance ptr) as gboolean
-declare function g_type_check_instance_cast_ cdecl alias "g_type_check_instance_cast" (byval instance as GTypeInstance ptr, byval iface_type as GType) as GTypeInstance ptr
-declare function g_type_check_instance_is_a cdecl alias "g_type_check_instance_is_a" (byval instance as GTypeInstance ptr, byval iface_type as GType) as gboolean
-declare function g_type_check_class_cast_ cdecl alias "g_type_check_class_cast" (byval g_class as GTypeClass ptr, byval is_a_type as GType) as GTypeClass ptr
-declare function g_type_check_class_is_a cdecl alias "g_type_check_class_is_a" (byval g_class as GTypeClass ptr, byval is_a_type as GType) as gboolean
-declare function g_type_check_is_value_type cdecl alias "g_type_check_is_value_type" (byval type as GType) as gboolean
-declare function g_type_check_value_ cdecl alias "g_type_check_value" (byval value as GValue ptr) as gboolean
-declare function g_type_check_value_holds cdecl alias "g_type_check_value_holds" (byval value as GValue ptr, byval type as GType) as gboolean
-declare function g_type_test_flags cdecl alias "g_type_test_flags" (byval type as GType, byval flags as guint) as gboolean
-declare function g_type_name_from_instance cdecl alias "g_type_name_from_instance" (byval instance as GTypeInstance ptr) as zstring ptr
-declare function g_type_name_from_class cdecl alias "g_type_name_from_class" (byval g_class as GTypeClass ptr) as zstring ptr
-declare sub g_value_c_init cdecl alias "g_value_c_init" ()
-declare sub g_value_types_init cdecl alias "g_value_types_init" ()
-declare sub g_enum_types_init cdecl alias "g_enum_types_init" ()
-declare sub g_param_type_init cdecl alias "g_param_type_init" ()
-declare sub g_boxed_type_init cdecl alias "g_boxed_type_init" ()
-declare sub g_object_type_init cdecl alias "g_object_type_init" ()
-declare sub g_param_spec_types_init cdecl alias "g_param_spec_types_init" ()
-declare sub g_value_transforms_init cdecl alias "g_value_transforms_init" ()
-declare sub g_signal_init cdecl alias "g_signal_init" ()
+declare function g_type_register_static (byval parent_type as GType, byval type_name as zstring ptr, byval info as GTypeInfo ptr, byval flags as GTypeFlags) as GType
+declare function g_type_register_dynamic (byval parent_type as GType, byval type_name as zstring ptr, byval plugin as GTypePlugin ptr, byval flags as GTypeFlags) as GType
+declare function g_type_register_fundamental (byval type_id as GType, byval type_name as zstring ptr, byval info as GTypeInfo ptr, byval finfo as GTypeFundamentalInfo ptr, byval flags as GTypeFlags) as GType
+declare sub g_type_add_interface_static (byval instance_type as GType, byval interface_type as GType, byval info as GInterfaceInfo ptr)
+declare sub g_type_add_interface_dynamic (byval instance_type as GType, byval interface_type as GType, byval plugin as GTypePlugin ptr)
+declare sub g_type_interface_add_prerequisite (byval interface_type as GType, byval prerequisite_type as GType)
+declare function g_type_interface_prerequisites (byval interface_type as GType, byval n_prerequisites as guint ptr) as GType ptr
+declare sub g_type_class_add_private (byval g_class as gpointer, byval private_size as gsize)
+declare function g_type_instance_get_private_ alias "g_type_instance_get_private" (byval instance as GTypeInstance ptr, byval private_type as GType) as gpointer
+declare function g_type_get_plugin (byval type as GType) as GTypePlugin ptr
+declare function g_type_interface_get_plugin (byval instance_type as GType, byval interface_type as GType) as GTypePlugin ptr
+declare function g_type_fundamental_next () as GType
+declare function g_type_fundamental_ alias "g_type_fundamental" (byval type_id as GType) as GType
+declare function g_type_create_instance (byval type as GType) as GTypeInstance ptr
+declare sub g_type_free_instance (byval instance as GTypeInstance ptr)
+declare sub g_type_add_class_cache_func (byval cache_data as gpointer, byval cache_func as GTypeClassCacheFunc)
+declare sub g_type_remove_class_cache_func (byval cache_data as gpointer, byval cache_func as GTypeClassCacheFunc)
+declare sub g_type_class_unref_uncached (byval g_class as gpointer)
+declare sub g_type_add_interface_check (byval check_data as gpointer, byval check_func as GTypeInterfaceCheckFunc)
+declare sub g_type_remove_interface_check (byval check_data as gpointer, byval check_func as GTypeInterfaceCheckFunc)
+declare function g_type_value_table_peek (byval type as GType) as GTypeValueTable ptr
+declare function g_type_check_instance_ alias "g_type_check_instance" (byval instance as GTypeInstance ptr) as gboolean
+declare function g_type_check_instance_cast_ alias "g_type_check_instance_cast" (byval instance as GTypeInstance ptr, byval iface_type as GType) as GTypeInstance ptr
+declare function g_type_check_instance_is_a (byval instance as GTypeInstance ptr, byval iface_type as GType) as gboolean
+declare function g_type_check_class_cast_ alias "g_type_check_class_cast" (byval g_class as GTypeClass ptr, byval is_a_type as GType) as GTypeClass ptr
+declare function g_type_check_class_is_a (byval g_class as GTypeClass ptr, byval is_a_type as GType) as gboolean
+declare function g_type_check_is_value_type (byval type as GType) as gboolean
+declare function g_type_check_value_ alias "g_type_check_value" (byval value as GValue ptr) as gboolean
+declare function g_type_check_value_holds (byval value as GValue ptr, byval type as GType) as gboolean
+declare function g_type_test_flags (byval type as GType, byval flags as guint) as gboolean
+declare function g_type_name_from_instance (byval instance as GTypeInstance ptr) as zstring ptr
+declare function g_type_name_from_class (byval g_class as GTypeClass ptr) as zstring ptr
+declare sub g_value_c_init ()
+declare sub g_value_types_init ()
+declare sub g_enum_types_init ()
+declare sub g_param_type_init ()
+declare sub g_boxed_type_init ()
+declare sub g_object_type_init ()
+declare sub g_param_spec_types_init ()
+declare sub g_value_transforms_init ()
+declare sub g_signal_init ()
 
 #define G_DEFINE_TYPE(TN, t_n, T_P) G_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, 0, { 0 })
 #define G_DEFINE_TYPE_WITH_CODE(TN, t_n, T_P, _C_) G_DEFINE_TYPE_EXTENDED (TN, t_n, T_P, 0, _C_)

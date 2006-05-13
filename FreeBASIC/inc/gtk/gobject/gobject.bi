@@ -59,51 +59,51 @@ type _GObjectConstructParam
 	value as GValue ptr
 end type
 
-declare sub g_object_class_install_property cdecl alias "g_object_class_install_property" (byval oclass as GObjectClass ptr, byval property_id as guint, byval pspec as GParamSpec ptr)
-declare function g_object_class_find_property cdecl alias "g_object_class_find_property" (byval oclass as GObjectClass ptr, byval property_name as zstring ptr) as GParamSpec ptr
-declare function g_object_class_list_properties cdecl alias "g_object_class_list_properties" (byval oclass as GObjectClass ptr, byval n_properties as guint ptr) as GParamSpec ptr ptr
-declare sub g_object_class_override_property cdecl alias "g_object_class_override_property" (byval oclass as GObjectClass ptr, byval property_id as guint, byval name as zstring ptr)
-declare sub g_object_interface_install_property cdecl alias "g_object_interface_install_property" (byval g_iface as gpointer, byval pspec as GParamSpec ptr)
-declare function g_object_interface_find_property cdecl alias "g_object_interface_find_property" (byval g_iface as gpointer, byval property_name as zstring ptr) as GParamSpec ptr
-declare function g_object_interface_list_properties cdecl alias "g_object_interface_list_properties" (byval g_iface as gpointer, byval n_properties_p as guint ptr) as GParamSpec ptr ptr
-declare function g_object_new cdecl alias "g_object_new" (byval object_type as GType, byval first_property_name as zstring ptr, ...) as gpointer
-declare function g_object_newv cdecl alias "g_object_newv" (byval object_type as GType, byval n_parameters as guint, byval parameters as GParameter ptr) as gpointer
-''''''' declare function g_object_new_valist cdecl alias "g_object_new_valist" (byval object_type as GType, byval first_property_name as zstring ptr, byval var_args as va_list) as GObject ptr
-declare sub g_object_set cdecl alias "g_object_set" (byval object as gpointer, byval first_property_name as zstring ptr, ...)
-declare sub g_object_get cdecl alias "g_object_get" (byval object as gpointer, byval first_property_name as zstring ptr, ...)
-declare function g_object_connect cdecl alias "g_object_connect" (byval object as gpointer, byval signal_spec as zstring ptr, ...) as gpointer
-declare sub g_object_disconnect cdecl alias "g_object_disconnect" (byval object as gpointer, byval signal_spec as zstring ptr, ...)
-''''''' declare sub g_object_set_valist cdecl alias "g_object_set_valist" (byval object as GObject ptr, byval first_property_name as zstring ptr, byval var_args as va_list)
-''''''' declare sub g_object_get_valist cdecl alias "g_object_get_valist" (byval object as GObject ptr, byval first_property_name as zstring ptr, byval var_args as va_list)
-declare sub g_object_set_property cdecl alias "g_object_set_property" (byval object as GObject ptr, byval property_name as zstring ptr, byval value as GValue ptr)
-declare sub g_object_get_property cdecl alias "g_object_get_property" (byval object as GObject ptr, byval property_name as zstring ptr, byval value as GValue ptr)
-declare sub g_object_freeze_notify cdecl alias "g_object_freeze_notify" (byval object as GObject ptr)
-declare sub g_object_notify cdecl alias "g_object_notify" (byval object as GObject ptr, byval property_name as zstring ptr)
-declare sub g_object_thaw_notify cdecl alias "g_object_thaw_notify" (byval object as GObject ptr)
-declare function g_object_ref cdecl alias "g_object_ref" (byval object as gpointer) as gpointer
-declare sub g_object_unref cdecl alias "g_object_unref" (byval object as gpointer)
-declare sub g_object_weak_ref cdecl alias "g_object_weak_ref" (byval object as GObject ptr, byval notify as GWeakNotify, byval data as gpointer)
-declare sub g_object_weak_unref cdecl alias "g_object_weak_unref" (byval object as GObject ptr, byval notify as GWeakNotify, byval data as gpointer)
-declare sub g_object_add_weak_pointer cdecl alias "g_object_add_weak_pointer" (byval object as GObject ptr, byval weak_pointer_location as gpointer ptr)
-declare sub g_object_remove_weak_pointer cdecl alias "g_object_remove_weak_pointer" (byval object as GObject ptr, byval weak_pointer_location as gpointer ptr)
-declare function g_object_get_qdata cdecl alias "g_object_get_qdata" (byval object as GObject ptr, byval quark as GQuark) as gpointer
-declare sub g_object_set_qdata cdecl alias "g_object_set_qdata" (byval object as GObject ptr, byval quark as GQuark, byval data as gpointer)
-declare sub g_object_set_qdata_full cdecl alias "g_object_set_qdata_full" (byval object as GObject ptr, byval quark as GQuark, byval data as gpointer, byval destroy as GDestroyNotify)
-declare function g_object_steal_qdata cdecl alias "g_object_steal_qdata" (byval object as GObject ptr, byval quark as GQuark) as gpointer
-declare function g_object_get_data cdecl alias "g_object_get_data" (byval object as GObject ptr, byval key as zstring ptr) as gpointer
-declare sub g_object_set_data cdecl alias "g_object_set_data" (byval object as GObject ptr, byval key as zstring ptr, byval data as gpointer)
-declare sub g_object_set_data_full cdecl alias "g_object_set_data_full" (byval object as GObject ptr, byval key as zstring ptr, byval data as gpointer, byval destroy as GDestroyNotify)
-declare function g_object_steal_data cdecl alias "g_object_steal_data" (byval object as GObject ptr, byval key as zstring ptr) as gpointer
-declare sub g_object_watch_closure cdecl alias "g_object_watch_closure" (byval object as GObject ptr, byval closure as GClosure ptr)
-declare function g_cclosure_new_object cdecl alias "g_cclosure_new_object" (byval callback_func as GCallback, byval object as GObject ptr) as GClosure ptr
-declare function g_cclosure_new_object_swap cdecl alias "g_cclosure_new_object_swap" (byval callback_func as GCallback, byval object as GObject ptr) as GClosure ptr
-declare function g_closure_new_object cdecl alias "g_closure_new_object" (byval sizeof_closure as guint, byval object as GObject ptr) as GClosure ptr
-declare sub g_value_set_object cdecl alias "g_value_set_object" (byval value as GValue ptr, byval v_object as gpointer)
-declare function g_value_get_object cdecl alias "g_value_get_object" (byval value as GValue ptr) as gpointer
-declare function g_value_dup_object cdecl alias "g_value_dup_object" (byval value as GValue ptr) as GObject ptr
-declare function g_signal_connect_object cdecl alias "g_signal_connect_object" (byval instance as gpointer, byval detailed_signal as zstring ptr, byval c_handler as GCallback, byval gobject as gpointer, byval connect_flags as GConnectFlags) as gulong
-declare sub g_object_run_dispose cdecl alias "g_object_run_dispose" (byval object as GObject ptr)
-declare sub g_value_take_object cdecl alias "g_value_take_object" (byval value as GValue ptr, byval v_object as gpointer)
-declare sub g_value_set_object_take_ownership cdecl alias "g_value_set_object_take_ownership" (byval value as GValue ptr, byval v_object as gpointer)
+declare sub g_object_class_install_property (byval oclass as GObjectClass ptr, byval property_id as guint, byval pspec as GParamSpec ptr)
+declare function g_object_class_find_property (byval oclass as GObjectClass ptr, byval property_name as zstring ptr) as GParamSpec ptr
+declare function g_object_class_list_properties (byval oclass as GObjectClass ptr, byval n_properties as guint ptr) as GParamSpec ptr ptr
+declare sub g_object_class_override_property (byval oclass as GObjectClass ptr, byval property_id as guint, byval name as zstring ptr)
+declare sub g_object_interface_install_property (byval g_iface as gpointer, byval pspec as GParamSpec ptr)
+declare function g_object_interface_find_property (byval g_iface as gpointer, byval property_name as zstring ptr) as GParamSpec ptr
+declare function g_object_interface_list_properties (byval g_iface as gpointer, byval n_properties_p as guint ptr) as GParamSpec ptr ptr
+declare function g_object_new (byval object_type as GType, byval first_property_name as zstring ptr, ...) as gpointer
+declare function g_object_newv (byval object_type as GType, byval n_parameters as guint, byval parameters as GParameter ptr) as gpointer
+''''''' declare function g_object_new_valist (byval object_type as GType, byval first_property_name as zstring ptr, byval var_args as va_list) as GObject ptr
+declare sub g_object_set (byval object as gpointer, byval first_property_name as zstring ptr, ...)
+declare sub g_object_get (byval object as gpointer, byval first_property_name as zstring ptr, ...)
+declare function g_object_connect (byval object as gpointer, byval signal_spec as zstring ptr, ...) as gpointer
+declare sub g_object_disconnect (byval object as gpointer, byval signal_spec as zstring ptr, ...)
+''''''' declare sub g_object_set_valist (byval object as GObject ptr, byval first_property_name as zstring ptr, byval var_args as va_list)
+''''''' declare sub g_object_get_valist (byval object as GObject ptr, byval first_property_name as zstring ptr, byval var_args as va_list)
+declare sub g_object_set_property (byval object as GObject ptr, byval property_name as zstring ptr, byval value as GValue ptr)
+declare sub g_object_get_property (byval object as GObject ptr, byval property_name as zstring ptr, byval value as GValue ptr)
+declare sub g_object_freeze_notify (byval object as GObject ptr)
+declare sub g_object_notify (byval object as GObject ptr, byval property_name as zstring ptr)
+declare sub g_object_thaw_notify (byval object as GObject ptr)
+declare function g_object_ref (byval object as gpointer) as gpointer
+declare sub g_object_unref (byval object as gpointer)
+declare sub g_object_weak_ref (byval object as GObject ptr, byval notify as GWeakNotify, byval data as gpointer)
+declare sub g_object_weak_unref (byval object as GObject ptr, byval notify as GWeakNotify, byval data as gpointer)
+declare sub g_object_add_weak_pointer (byval object as GObject ptr, byval weak_pointer_location as gpointer ptr)
+declare sub g_object_remove_weak_pointer (byval object as GObject ptr, byval weak_pointer_location as gpointer ptr)
+declare function g_object_get_qdata (byval object as GObject ptr, byval quark as GQuark) as gpointer
+declare sub g_object_set_qdata (byval object as GObject ptr, byval quark as GQuark, byval data as gpointer)
+declare sub g_object_set_qdata_full (byval object as GObject ptr, byval quark as GQuark, byval data as gpointer, byval destroy as GDestroyNotify)
+declare function g_object_steal_qdata (byval object as GObject ptr, byval quark as GQuark) as gpointer
+declare function g_object_get_data (byval object as GObject ptr, byval key as zstring ptr) as gpointer
+declare sub g_object_set_data (byval object as GObject ptr, byval key as zstring ptr, byval data as gpointer)
+declare sub g_object_set_data_full (byval object as GObject ptr, byval key as zstring ptr, byval data as gpointer, byval destroy as GDestroyNotify)
+declare function g_object_steal_data (byval object as GObject ptr, byval key as zstring ptr) as gpointer
+declare sub g_object_watch_closure (byval object as GObject ptr, byval closure as GClosure ptr)
+declare function g_cclosure_new_object (byval callback_func as GCallback, byval object as GObject ptr) as GClosure ptr
+declare function g_cclosure_new_object_swap (byval callback_func as GCallback, byval object as GObject ptr) as GClosure ptr
+declare function g_closure_new_object (byval sizeof_closure as guint, byval object as GObject ptr) as GClosure ptr
+declare sub g_value_set_object (byval value as GValue ptr, byval v_object as gpointer)
+declare function g_value_get_object (byval value as GValue ptr) as gpointer
+declare function g_value_dup_object (byval value as GValue ptr) as GObject ptr
+declare function g_signal_connect_object (byval instance as gpointer, byval detailed_signal as zstring ptr, byval c_handler as GCallback, byval gobject as gpointer, byval connect_flags as GConnectFlags) as gulong
+declare sub g_object_run_dispose (byval object as GObject ptr)
+declare sub g_value_take_object (byval value as GValue ptr, byval v_object as gpointer)
+declare sub g_value_set_object_take_ownership (byval value as GValue ptr, byval v_object as gpointer)
 
 #endif

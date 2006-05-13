@@ -59,7 +59,7 @@ enum AtkTextAttribute
 end enum
 
 
-declare function atk_text_attribute_register cdecl alias "atk_text_attribute_register" (byval name as zstring ptr) as AtkTextAttribute
+declare function atk_text_attribute_register (byval name as zstring ptr) as AtkTextAttribute
 
 type AtkText as _AtkText
 type AtkTextIface as _AtkTextIface
@@ -128,30 +128,30 @@ type _AtkTextIface
 	pad4 as AtkFunction
 end type
 
-declare function atk_text_get_type cdecl alias "atk_text_get_type" () as GType
-declare function atk_text_get_text cdecl alias "atk_text_get_text" (byval text as AtkText ptr, byval start_offset as gint, byval end_offset as gint) as zstring ptr
-declare function atk_text_get_character_at_offset cdecl alias "atk_text_get_character_at_offset" (byval text as AtkText ptr, byval offset as gint) as gunichar
-declare function atk_text_get_text_after_offset cdecl alias "atk_text_get_text_after_offset" (byval text as AtkText ptr, byval offset as gint, byval boundary_type as AtkTextBoundary, byval start_offset as gint ptr, byval end_offset as gint ptr) as zstring ptr
-declare function atk_text_get_text_at_offset cdecl alias "atk_text_get_text_at_offset" (byval text as AtkText ptr, byval offset as gint, byval boundary_type as AtkTextBoundary, byval start_offset as gint ptr, byval end_offset as gint ptr) as zstring ptr
-declare function atk_text_get_text_before_offset cdecl alias "atk_text_get_text_before_offset" (byval text as AtkText ptr, byval offset as gint, byval boundary_type as AtkTextBoundary, byval start_offset as gint ptr, byval end_offset as gint ptr) as zstring ptr
-declare function atk_text_get_caret_offset cdecl alias "atk_text_get_caret_offset" (byval text as AtkText ptr) as gint
-declare sub atk_text_get_character_extents cdecl alias "atk_text_get_character_extents" (byval text as AtkText ptr, byval offset as gint, byval x as gint ptr, byval y as gint ptr, byval width as gint ptr, byval height as gint ptr, byval coords as AtkCoordType)
-declare function atk_text_get_run_attributes cdecl alias "atk_text_get_run_attributes" (byval text as AtkText ptr, byval offset as gint, byval start_offset as gint ptr, byval end_offset as gint ptr) as AtkAttributeSet ptr
-declare function atk_text_get_default_attributes cdecl alias "atk_text_get_default_attributes" (byval text as AtkText ptr) as AtkAttributeSet ptr
-declare function atk_text_get_character_count cdecl alias "atk_text_get_character_count" (byval text as AtkText ptr) as gint
-declare function atk_text_get_offset_at_point cdecl alias "atk_text_get_offset_at_point" (byval text as AtkText ptr, byval x as gint, byval y as gint, byval coords as AtkCoordType) as gint
-declare function atk_text_get_n_selections cdecl alias "atk_text_get_n_selections" (byval text as AtkText ptr) as gint
-declare function atk_text_get_selection cdecl alias "atk_text_get_selection" (byval text as AtkText ptr, byval selection_num as gint, byval start_offset as gint ptr, byval end_offset as gint ptr) as zstring ptr
-declare function atk_text_add_selection cdecl alias "atk_text_add_selection" (byval text as AtkText ptr, byval start_offset as gint, byval end_offset as gint) as gboolean
-declare function atk_text_remove_selection cdecl alias "atk_text_remove_selection" (byval text as AtkText ptr, byval selection_num as gint) as gboolean
-declare function atk_text_set_selection cdecl alias "atk_text_set_selection" (byval text as AtkText ptr, byval selection_num as gint, byval start_offset as gint, byval end_offset as gint) as gboolean
-declare function atk_text_set_caret_offset cdecl alias "atk_text_set_caret_offset" (byval text as AtkText ptr, byval offset as gint) as gboolean
-declare sub atk_text_get_range_extents cdecl alias "atk_text_get_range_extents" (byval text as AtkText ptr, byval start_offset as gint, byval end_offset as gint, byval coord_type as AtkCoordType, byval rect as AtkTextRectangle ptr)
-declare function atk_text_get_bounded_ranges cdecl alias "atk_text_get_bounded_ranges" (byval text as AtkText ptr, byval rect as AtkTextRectangle ptr, byval coord_type as AtkCoordType, byval x_clip_type as AtkTextClipType, byval y_clip_type as AtkTextClipType) as AtkTextRange ptr ptr
-declare sub atk_text_free_ranges cdecl alias "atk_text_free_ranges" (byval ranges as AtkTextRange ptr ptr)
-declare sub atk_attribute_set_free cdecl alias "atk_attribute_set_free" (byval attrib_set as AtkAttributeSet ptr)
-declare function atk_text_attribute_get_name cdecl alias "atk_text_attribute_get_name" (byval attr as AtkTextAttribute) as zstring ptr
-declare function atk_text_attribute_for_name cdecl alias "atk_text_attribute_for_name" (byval name as zstring ptr) as AtkTextAttribute
-declare function atk_text_attribute_get_value cdecl alias "atk_text_attribute_get_value" (byval attr as AtkTextAttribute, byval index_ as gint) as zstring ptr
+declare function atk_text_get_type () as GType
+declare function atk_text_get_text (byval text as AtkText ptr, byval start_offset as gint, byval end_offset as gint) as zstring ptr
+declare function atk_text_get_character_at_offset (byval text as AtkText ptr, byval offset as gint) as gunichar
+declare function atk_text_get_text_after_offset (byval text as AtkText ptr, byval offset as gint, byval boundary_type as AtkTextBoundary, byval start_offset as gint ptr, byval end_offset as gint ptr) as zstring ptr
+declare function atk_text_get_text_at_offset (byval text as AtkText ptr, byval offset as gint, byval boundary_type as AtkTextBoundary, byval start_offset as gint ptr, byval end_offset as gint ptr) as zstring ptr
+declare function atk_text_get_text_before_offset (byval text as AtkText ptr, byval offset as gint, byval boundary_type as AtkTextBoundary, byval start_offset as gint ptr, byval end_offset as gint ptr) as zstring ptr
+declare function atk_text_get_caret_offset (byval text as AtkText ptr) as gint
+declare sub atk_text_get_character_extents (byval text as AtkText ptr, byval offset as gint, byval x as gint ptr, byval y as gint ptr, byval width as gint ptr, byval height as gint ptr, byval coords as AtkCoordType)
+declare function atk_text_get_run_attributes (byval text as AtkText ptr, byval offset as gint, byval start_offset as gint ptr, byval end_offset as gint ptr) as AtkAttributeSet ptr
+declare function atk_text_get_default_attributes (byval text as AtkText ptr) as AtkAttributeSet ptr
+declare function atk_text_get_character_count (byval text as AtkText ptr) as gint
+declare function atk_text_get_offset_at_point (byval text as AtkText ptr, byval x as gint, byval y as gint, byval coords as AtkCoordType) as gint
+declare function atk_text_get_n_selections (byval text as AtkText ptr) as gint
+declare function atk_text_get_selection (byval text as AtkText ptr, byval selection_num as gint, byval start_offset as gint ptr, byval end_offset as gint ptr) as zstring ptr
+declare function atk_text_add_selection (byval text as AtkText ptr, byval start_offset as gint, byval end_offset as gint) as gboolean
+declare function atk_text_remove_selection (byval text as AtkText ptr, byval selection_num as gint) as gboolean
+declare function atk_text_set_selection (byval text as AtkText ptr, byval selection_num as gint, byval start_offset as gint, byval end_offset as gint) as gboolean
+declare function atk_text_set_caret_offset (byval text as AtkText ptr, byval offset as gint) as gboolean
+declare sub atk_text_get_range_extents (byval text as AtkText ptr, byval start_offset as gint, byval end_offset as gint, byval coord_type as AtkCoordType, byval rect as AtkTextRectangle ptr)
+declare function atk_text_get_bounded_ranges (byval text as AtkText ptr, byval rect as AtkTextRectangle ptr, byval coord_type as AtkCoordType, byval x_clip_type as AtkTextClipType, byval y_clip_type as AtkTextClipType) as AtkTextRange ptr ptr
+declare sub atk_text_free_ranges (byval ranges as AtkTextRange ptr ptr)
+declare sub atk_attribute_set_free (byval attrib_set as AtkAttributeSet ptr)
+declare function atk_text_attribute_get_name (byval attr as AtkTextAttribute) as zstring ptr
+declare function atk_text_attribute_for_name (byval name as zstring ptr) as AtkTextAttribute
+declare function atk_text_attribute_get_value (byval attr as AtkTextAttribute, byval index_ as gint) as zstring ptr
 
 #endif

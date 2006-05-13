@@ -15,12 +15,12 @@
 #include once "gtk/gdk-pixbuf/gdk-pixbuf-animation.bi"
 #include once "gtk/gdk-pixbuf/gdk-pixbuf-io.bi"
 
-#define GDK_TYPE_PIXBUF_LOADER		   (gdk_pixbuf_loader_get_type ())
-#define GDK_PIXBUF_LOADER(obj)		   (G_TYPE_CHECK_INSTANCE_CAST ((obj), GDK_TYPE_PIXBUF_LOADER, GdkPixbufLoader))
-#define GDK_PIXBUF_LOADER_CLASS(klass)	   (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_PIXBUF_LOADER, GdkPixbufLoaderClass))
-#define GDK_IS_PIXBUF_LOADER(obj)	   (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GDK_TYPE_PIXBUF_LOADER))
-#define GDK_IS_PIXBUF_LOADER_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_PIXBUF_LOADER))
-#define GDK_PIXBUF_LOADER_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_PIXBUF_LOADER, GdkPixbufLoaderClass))
+#define GDK_TYPE_PIXBUF_LOADER (gdk_pixbuf_loader_get_type ())
+#define GDK_PIXBUF_LOADER(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GDK_TYPE_PIXBUF_LOADER, GdkPixbufLoader))
+#define GDK_PIXBUF_LOADER_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_PIXBUF_LOADER, GdkPixbufLoaderClass))
+#define GDK_IS_PIXBUF_LOADER(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GDK_TYPE_PIXBUF_LOADER))
+#define GDK_IS_PIXBUF_LOADER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GDK_TYPE_PIXBUF_LOADER))
+#define GDK_PIXBUF_LOADER_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GDK_TYPE_PIXBUF_LOADER, GdkPixbufLoaderClass))
 
 type GdkPixbufLoader as _GdkPixbufLoader
 
@@ -39,15 +39,15 @@ type _GdkPixbufLoaderClass
 	closed as sub cdecl(byval as GdkPixbufLoader ptr)
 end type
 
-declare function gdk_pixbuf_loader_get_type cdecl alias "gdk_pixbuf_loader_get_type" () as GType
-declare function gdk_pixbuf_loader_new cdecl alias "gdk_pixbuf_loader_new" () as GdkPixbufLoader ptr
-declare function gdk_pixbuf_loader_new_with_type cdecl alias "gdk_pixbuf_loader_new_with_type" (byval image_type as zstring ptr, byval error as GError ptr ptr) as GdkPixbufLoader ptr
-declare function gdk_pixbuf_loader_new_with_mime_type cdecl alias "gdk_pixbuf_loader_new_with_mime_type" (byval mime_type as zstring ptr, byval error as GError ptr ptr) as GdkPixbufLoader ptr
-declare sub gdk_pixbuf_loader_set_size cdecl alias "gdk_pixbuf_loader_set_size" (byval loader as GdkPixbufLoader ptr, byval width as integer, byval height as integer)
-declare function gdk_pixbuf_loader_write cdecl alias "gdk_pixbuf_loader_write" (byval loader as GdkPixbufLoader ptr, byval buf as guchar ptr, byval count as gsize, byval error as GError ptr ptr) as gboolean
-declare function gdk_pixbuf_loader_get_pixbuf cdecl alias "gdk_pixbuf_loader_get_pixbuf" (byval loader as GdkPixbufLoader ptr) as GdkPixbuf ptr
-declare function gdk_pixbuf_loader_get_animation cdecl alias "gdk_pixbuf_loader_get_animation" (byval loader as GdkPixbufLoader ptr) as GdkPixbufAnimation ptr
-declare function gdk_pixbuf_loader_close cdecl alias "gdk_pixbuf_loader_close" (byval loader as GdkPixbufLoader ptr, byval error as GError ptr ptr) as gboolean
-declare function gdk_pixbuf_loader_get_format cdecl alias "gdk_pixbuf_loader_get_format" (byval loader as GdkPixbufLoader ptr) as GdkPixbufFormat ptr
+declare function gdk_pixbuf_loader_get_type () as GType
+declare function gdk_pixbuf_loader_new () as GdkPixbufLoader ptr
+declare function gdk_pixbuf_loader_new_with_type (byval image_type as zstring ptr, byval error as GError ptr ptr) as GdkPixbufLoader ptr
+declare function gdk_pixbuf_loader_new_with_mime_type (byval mime_type as zstring ptr, byval error as GError ptr ptr) as GdkPixbufLoader ptr
+declare sub gdk_pixbuf_loader_set_size (byval loader as GdkPixbufLoader ptr, byval width as integer, byval height as integer)
+declare function gdk_pixbuf_loader_write (byval loader as GdkPixbufLoader ptr, byval buf as guchar ptr, byval count as gsize, byval error as GError ptr ptr) as gboolean
+declare function gdk_pixbuf_loader_get_pixbuf (byval loader as GdkPixbufLoader ptr) as GdkPixbuf ptr
+declare function gdk_pixbuf_loader_get_animation (byval loader as GdkPixbufLoader ptr) as GdkPixbufAnimation ptr
+declare function gdk_pixbuf_loader_close (byval loader as GdkPixbufLoader ptr, byval error as GError ptr ptr) as gboolean
+declare function gdk_pixbuf_loader_get_format (byval loader as GdkPixbufLoader ptr) as GdkPixbufFormat ptr
 
 #endif

@@ -11,12 +11,12 @@
 
 #include once "gtk/gtk/gtkcontainer.bi"
 
-#define GTK_TYPE_SOCKET            (gtk_socket_get_type ())
-#define GTK_SOCKET(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SOCKET, GtkSocket))
-#define GTK_SOCKET_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_SOCKET, GtkSocketClass))
-#define GTK_IS_SOCKET(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_SOCKET))
+#define GTK_TYPE_SOCKET (gtk_socket_get_type ())
+#define GTK_SOCKET(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GTK_TYPE_SOCKET, GtkSocket))
+#define GTK_SOCKET_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GTK_TYPE_SOCKET, GtkSocketClass))
+#define GTK_IS_SOCKET(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_SOCKET))
 #define GTK_IS_SOCKET_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_SOCKET))
-#define GTK_SOCKET_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_SOCKET, GtkSocketClass))
+#define GTK_SOCKET_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GTK_TYPE_SOCKET, GtkSocketClass))
 
 type GtkSocket as _GtkSocket
 type GtkSocketClass as _GtkSocketClass
@@ -50,10 +50,10 @@ type _GtkSocketClass
 	_gtk_reserved4 as sub cdecl()
 end type
 
-declare function gtk_socket_get_type cdecl alias "gtk_socket_get_type" () as GType
-declare function gtk_socket_new cdecl alias "gtk_socket_new" () as GtkWidget ptr
-declare sub gtk_socket_add_id cdecl alias "gtk_socket_add_id" (byval socket_ as GtkSocket ptr, byval window_id as GdkNativeWindow)
-declare function gtk_socket_get_id cdecl alias "gtk_socket_get_id" (byval socket_ as GtkSocket ptr) as GdkNativeWindow
-declare sub gtk_socket_steal cdecl alias "gtk_socket_steal" (byval socket_ as GtkSocket ptr, byval wid as GdkNativeWindow)
+declare function gtk_socket_get_type () as GType
+declare function gtk_socket_new () as GtkWidget ptr
+declare sub gtk_socket_add_id (byval socket_ as GtkSocket ptr, byval window_id as GdkNativeWindow)
+declare function gtk_socket_get_id (byval socket_ as GtkSocket ptr) as GdkNativeWindow
+declare sub gtk_socket_steal (byval socket_ as GtkSocket ptr, byval wid as GdkNativeWindow)
 
 #endif

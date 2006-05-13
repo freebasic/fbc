@@ -50,26 +50,26 @@ type _GtkObjectClass
 	destroy as sub cdecl(byval as GtkObject ptr)
 end type
 
-declare function gtk_object_get_type cdecl alias "gtk_object_get_type" () as GtkType
-declare sub gtk_object_sink cdecl alias "gtk_object_sink" (byval object as GtkObject ptr)
-declare sub gtk_object_destroy cdecl alias "gtk_object_destroy" (byval object as GtkObject ptr)
-declare function gtk_object_new cdecl alias "gtk_object_new" (byval type as GtkType, byval first_property_name as zstring ptr, ...) as GtkObject ptr
-declare function gtk_object_ref cdecl alias "gtk_object_ref" (byval object as GtkObject ptr) as GtkObject ptr
-declare sub gtk_object_unref cdecl alias "gtk_object_unref" (byval object as GtkObject ptr)
-declare sub gtk_object_weakref cdecl alias "gtk_object_weakref" (byval object as GtkObject ptr, byval notify as GtkDestroyNotify, byval data as gpointer)
-declare sub gtk_object_weakunref cdecl alias "gtk_object_weakunref" (byval object as GtkObject ptr, byval notify as GtkDestroyNotify, byval data as gpointer)
-declare sub gtk_object_set_data cdecl alias "gtk_object_set_data" (byval object as GtkObject ptr, byval key as zstring ptr, byval data as gpointer)
-declare sub gtk_object_set_data_full cdecl alias "gtk_object_set_data_full" (byval object as GtkObject ptr, byval key as zstring ptr, byval data as gpointer, byval destroy as GtkDestroyNotify)
-declare sub gtk_object_remove_data cdecl alias "gtk_object_remove_data" (byval object as GtkObject ptr, byval key as zstring ptr)
-declare function gtk_object_get_data cdecl alias "gtk_object_get_data" (byval object as GtkObject ptr, byval key as zstring ptr) as gpointer
-declare sub gtk_object_remove_no_notify cdecl alias "gtk_object_remove_no_notify" (byval object as GtkObject ptr, byval key as zstring ptr)
-declare sub gtk_object_set_user_data cdecl alias "gtk_object_set_user_data" (byval object as GtkObject ptr, byval data as gpointer)
-declare function gtk_object_get_user_data cdecl alias "gtk_object_get_user_data" (byval object as GtkObject ptr) as gpointer
-declare sub gtk_object_set_data_by_id cdecl alias "gtk_object_set_data_by_id" (byval object as GtkObject ptr, byval data_id as GQuark, byval data as gpointer)
-declare sub gtk_object_set_data_by_id_full cdecl alias "gtk_object_set_data_by_id_full" (byval object as GtkObject ptr, byval data_id as GQuark, byval data as gpointer, byval destroy as GtkDestroyNotify)
-declare function gtk_object_get_data_by_id cdecl alias "gtk_object_get_data_by_id" (byval object as GtkObject ptr, byval data_id as GQuark) as gpointer
-declare sub gtk_object_remove_data_by_id cdecl alias "gtk_object_remove_data_by_id" (byval object as GtkObject ptr, byval data_id as GQuark)
-declare sub gtk_object_remove_no_notify_by_id cdecl alias "gtk_object_remove_no_notify_by_id" (byval object as GtkObject ptr, byval key_id as GQuark)
+declare function gtk_object_get_type () as GtkType
+declare sub gtk_object_sink (byval object as GtkObject ptr)
+declare sub gtk_object_destroy (byval object as GtkObject ptr)
+declare function gtk_object_new (byval type as GtkType, byval first_property_name as zstring ptr, ...) as GtkObject ptr
+declare function gtk_object_ref (byval object as GtkObject ptr) as GtkObject ptr
+declare sub gtk_object_unref (byval object as GtkObject ptr)
+declare sub gtk_object_weakref (byval object as GtkObject ptr, byval notify as GtkDestroyNotify, byval data as gpointer)
+declare sub gtk_object_weakunref (byval object as GtkObject ptr, byval notify as GtkDestroyNotify, byval data as gpointer)
+declare sub gtk_object_set_data (byval object as GtkObject ptr, byval key as zstring ptr, byval data as gpointer)
+declare sub gtk_object_set_data_full (byval object as GtkObject ptr, byval key as zstring ptr, byval data as gpointer, byval destroy as GtkDestroyNotify)
+declare sub gtk_object_remove_data (byval object as GtkObject ptr, byval key as zstring ptr)
+declare function gtk_object_get_data (byval object as GtkObject ptr, byval key as zstring ptr) as gpointer
+declare sub gtk_object_remove_no_notify (byval object as GtkObject ptr, byval key as zstring ptr)
+declare sub gtk_object_set_user_data (byval object as GtkObject ptr, byval data as gpointer)
+declare function gtk_object_get_user_data (byval object as GtkObject ptr) as gpointer
+declare sub gtk_object_set_data_by_id (byval object as GtkObject ptr, byval data_id as GQuark, byval data as gpointer)
+declare sub gtk_object_set_data_by_id_full (byval object as GtkObject ptr, byval data_id as GQuark, byval data as gpointer, byval destroy as GtkDestroyNotify)
+declare function gtk_object_get_data_by_id (byval object as GtkObject ptr, byval data_id as GQuark) as gpointer
+declare sub gtk_object_remove_data_by_id (byval object as GtkObject ptr, byval data_id as GQuark)
+declare sub gtk_object_remove_no_notify_by_id (byval object as GtkObject ptr, byval key_id as GQuark)
 
 enum GtkArgFlags
 	GTK_ARG_READABLE = G_PARAM_READABLE
@@ -80,8 +80,8 @@ enum GtkArgFlags
 end enum
 
 
-declare sub gtk_object_get cdecl alias "gtk_object_get" (byval object as GtkObject ptr, byval first_property_name as zstring ptr, ...)
-declare sub gtk_object_set cdecl alias "gtk_object_set" (byval object as GtkObject ptr, byval first_property_name as zstring ptr, ...)
-declare sub gtk_object_add_arg_type cdecl alias "gtk_object_add_arg_type" (byval arg_name as zstring ptr, byval arg_type as GtkType, byval arg_flags as guint, byval arg_id as guint)
+declare sub gtk_object_get (byval object as GtkObject ptr, byval first_property_name as zstring ptr, ...)
+declare sub gtk_object_set (byval object as GtkObject ptr, byval first_property_name as zstring ptr, ...)
+declare sub gtk_object_add_arg_type (byval arg_name as zstring ptr, byval arg_type as GtkType, byval arg_flags as guint, byval arg_id as guint)
 
 #endif

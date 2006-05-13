@@ -27,8 +27,8 @@ type _ArtSVP
 	segs(0 to 1-1) as ArtSVPSeg
 end type
 
-declare function art_svp_add_segment cdecl alias "art_svp_add_segment" (byval p_vp as ArtSVP ptr ptr, byval pn_segs_max as integer ptr, byval pn_points_max as integer ptr ptr, byval n_points as integer, byval dir as integer, byval points as ArtPoint ptr, byval bbox as ArtDRect ptr) as integer
-declare sub art_svp_free cdecl alias "art_svp_free" (byval svp as ArtSVP ptr)
-declare function art_svp_seg_compare cdecl alias "art_svp_seg_compare" (byval s1 as any ptr, byval s2 as any ptr) as integer
+declare function art_svp_add_segment (byval p_vp as ArtSVP ptr ptr, byval pn_segs_max as integer ptr, byval pn_points_max as integer ptr ptr, byval n_points as integer, byval dir as integer, byval points as ArtPoint ptr, byval bbox as ArtDRect ptr) as integer
+declare sub art_svp_free (byval svp as ArtSVP ptr)
+declare function art_svp_seg_compare (byval s1 as any ptr, byval s2 as any ptr) as integer
 
 #endif

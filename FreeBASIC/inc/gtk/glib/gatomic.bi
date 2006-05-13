@@ -11,9 +11,9 @@
 
 #include once "gtk/glib/gtypes.bi"
 
-declare function g_atomic_int_exchange_and_add cdecl alias "g_atomic_int_exchange_and_add" (byval atomic as gint ptr, byval val as gint) as gint
-declare sub g_atomic_int_add cdecl alias "g_atomic_int_add" (byval atomic as gint ptr, byval val as gint)
-declare function g_atomic_int_compare_and_exchange cdecl alias "g_atomic_int_compare_and_exchange" (byval atomic as gint ptr, byval oldval as gint, byval newval as gint) as gboolean
-declare function g_atomic_pointer_compare_and_exchange cdecl alias "g_atomic_pointer_compare_and_exchange" (byval atomic as gpointer ptr, byval oldval as gpointer, byval newval as gpointer) as gboolean
+declare function g_atomic_int_exchange_and_add (byval atomic as gint ptr, byval val as gint) as gint
+declare sub g_atomic_int_add (byval atomic as gint ptr, byval val as gint)
+declare function g_atomic_int_compare_and_exchange (byval atomic as gint ptr, byval oldval as gint, byval newval as gint) as gboolean
+declare function g_atomic_pointer_compare_and_exchange (byval atomic as gpointer ptr, byval oldval as gpointer, byval newval as gpointer) as gboolean
 
 #endif

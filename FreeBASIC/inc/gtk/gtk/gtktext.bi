@@ -90,20 +90,20 @@ type _GtkTextClass
 	set_scroll_adjustments as sub cdecl(byval as GtkText ptr, byval as GtkAdjustment ptr, byval as GtkAdjustment ptr)
 end type
 
-declare function gtk_text_get_type cdecl alias "gtk_text_get_type" () as GtkType
-declare function gtk_text_new cdecl alias "gtk_text_new" (byval hadj as GtkAdjustment ptr, byval vadj as GtkAdjustment ptr) as GtkWidget ptr
-declare sub gtk_text_set_editable cdecl alias "gtk_text_set_editable" (byval text as GtkText ptr, byval editable as gboolean)
-declare sub gtk_text_set_word_wrap cdecl alias "gtk_text_set_word_wrap" (byval text as GtkText ptr, byval word_wrap as gboolean)
-declare sub gtk_text_set_line_wrap cdecl alias "gtk_text_set_line_wrap" (byval text as GtkText ptr, byval line_wrap as gboolean)
-declare sub gtk_text_set_adjustments cdecl alias "gtk_text_set_adjustments" (byval text as GtkText ptr, byval hadj as GtkAdjustment ptr, byval vadj as GtkAdjustment ptr)
-declare sub gtk_text_set_point cdecl alias "gtk_text_set_point" (byval text as GtkText ptr, byval index as guint)
-declare function gtk_text_get_point cdecl alias "gtk_text_get_point" (byval text as GtkText ptr) as guint
-declare function gtk_text_get_length cdecl alias "gtk_text_get_length" (byval text as GtkText ptr) as guint
-declare sub gtk_text_freeze cdecl alias "gtk_text_freeze" (byval text as GtkText ptr)
-declare sub gtk_text_thaw cdecl alias "gtk_text_thaw" (byval text as GtkText ptr)
-declare sub gtk_text_insert cdecl alias "gtk_text_insert" (byval text as GtkText ptr, byval font as GdkFont ptr, byval fore as GdkColor ptr, byval back as GdkColor ptr, byval chars as zstring ptr, byval length as gint)
-declare function gtk_text_backward_delete cdecl alias "gtk_text_backward_delete" (byval text as GtkText ptr, byval nchars as guint) as gboolean
-declare function gtk_text_forward_delete cdecl alias "gtk_text_forward_delete" (byval text as GtkText ptr, byval nchars as guint) as gboolean
+declare function gtk_text_get_type () as GtkType
+declare function gtk_text_new (byval hadj as GtkAdjustment ptr, byval vadj as GtkAdjustment ptr) as GtkWidget ptr
+declare sub gtk_text_set_editable (byval text as GtkText ptr, byval editable as gboolean)
+declare sub gtk_text_set_word_wrap (byval text as GtkText ptr, byval word_wrap as gboolean)
+declare sub gtk_text_set_line_wrap (byval text as GtkText ptr, byval line_wrap as gboolean)
+declare sub gtk_text_set_adjustments (byval text as GtkText ptr, byval hadj as GtkAdjustment ptr, byval vadj as GtkAdjustment ptr)
+declare sub gtk_text_set_point (byval text as GtkText ptr, byval index as guint)
+declare function gtk_text_get_point (byval text as GtkText ptr) as guint
+declare function gtk_text_get_length (byval text as GtkText ptr) as guint
+declare sub gtk_text_freeze (byval text as GtkText ptr)
+declare sub gtk_text_thaw (byval text as GtkText ptr)
+declare sub gtk_text_insert (byval text as GtkText ptr, byval font as GdkFont ptr, byval fore as GdkColor ptr, byval back as GdkColor ptr, byval chars as zstring ptr, byval length as gint)
+declare function gtk_text_backward_delete (byval text as GtkText ptr, byval nchars as guint) as gboolean
+declare function gtk_text_forward_delete (byval text as GtkText ptr, byval nchars as guint) as gboolean
 
 #define GTK_TEXT_INDEX(t, index) iif( (t)->use_wchar, _
 									  iif( (index) < (t)->gap_position, (t)->text.wc[index], (t)->text.wc[(index)+(t)->gap_size] ), _
