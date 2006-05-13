@@ -48,7 +48,7 @@ sub	parserEnd( )
 end sub
 
 '':::::
-''Program         =   Line* EOF .
+''Program         =   Line* EOF? .
 ''
 function cProgram( ) as integer
 
@@ -59,12 +59,16 @@ function cProgram( ) as integer
     loop
 
     if( hGetLastError( ) = FB_ERRMSG_OK ) then
-    	'' EOF
+    	'' EOF?
     	if( lexGetToken( ) = FB_TK_EOF ) then
     		lexSkipToken( )
     	end if
 
-    	function = cCompStmtCheck( )
+    	if( env.includerec = 0 ) then
+    		function = cCompStmtCheck( )
+    	else
+    		function = TRUE
+    	end if
 
     else
     	function = FALSE

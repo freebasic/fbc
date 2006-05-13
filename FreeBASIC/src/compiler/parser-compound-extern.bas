@@ -85,7 +85,6 @@ function cExternStmtBegin _
 	''
 	stk = cCompStmtPush( FB_TK_EXTERN, _
 						 FB_CMPSTMT_MASK_ALL and (not FB_CMPSTMT_MASK_CODE) _
-						 					 and (not FB_CMPSTMT_MASK_EXTERN) _
 						 					 and (not FB_CMPSTMT_MASK_DATA) )
 
 	stk->ext.lastmang = env.mangling
