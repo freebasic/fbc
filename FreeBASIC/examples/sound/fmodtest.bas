@@ -7,7 +7,7 @@ option explicit
 declare sub ErrorQuit( byval Message as string )
 
 const FALSE = 0
-const MusicFile = "dne_trtn.mod"
+const MusicFile = "data/dne_trtn.mod"
 	
 	dim song as FMUSIC_MODULE ptr 
 

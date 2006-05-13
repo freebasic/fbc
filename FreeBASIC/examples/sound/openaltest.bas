@@ -65,7 +65,7 @@ end if
 print "done."
 
 print "Loading the WAV resource into audio buffer... ";
-alutLoadWAVFile("prodigy.wav", @wavFormat, @wavData, @wavSize, @wavFreq, @wavLoop)
+alutLoadWAVFile("data/prodigy.wav", @wavFormat, @wavData, @wavSize, @wavFreq, @wavLoop)
 alBufferData(Buffer, wavFormat, wavData, wavSize, wavFreq)
 alutUnloadWAV(wavFormat, wavData, wavSize, wavFreq)
 

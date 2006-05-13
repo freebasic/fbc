@@ -2,7 +2,7 @@ option explicit
 
 #include once "bass.bi"
 
-const MusicFile = "dne_trtn.mod"
+const MusicFile = "data/dne_trtn.mod"
 
 	if( BASS_GetVersion( ) < MAKELONG(2,2) ) then
 		print "Error: BASS version 2.2 or above required"

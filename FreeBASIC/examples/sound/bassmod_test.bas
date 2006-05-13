@@ -2,7 +2,7 @@ option explicit
 
 #include once "bassmod.bi"
 
-const MusicFile = "dne_trtn.mod"
+const MusicFile = "data/dne_trtn.mod"
 
 	if( BASSMOD_GetVersion( ) < 2 ) then
 		print "Error: BASSMOD version 2 or above required"
