@@ -10,6 +10,8 @@ const IMG_WIDTH = 320
 const IMG_HEIGHT = 200
 
 declare function saveImgToGIF( byval img as gdImagePtr, filename as string ) as integer
+declare function saveImgToPNG( byval img as gdImagePtr, filename as string ) as integer
+declare function saveImgToJPEG( byval img as gdImagePtr, filename as string ) as integer
 
 '':::::
 	
@@ -35,13 +37,17 @@ declare function saveImgToGIF( byval img as gdImagePtr, filename as string ) as 
 	'' save to file
 	saveImgToGIF( img, "test.gif" )
 	
+	saveImgToPNG( img, "test.png" )
+	
+	saveImgToJPEG( img, "test.jpg" )
+	
 	
 	
 '':::::	
 function saveImgToGIF( byval img as gdImagePtr, filename as string ) as integer
 	dim outf as FILE ptr
 	
-	saveImgToGIF = 0
+	function = 0
 	
 	outf = fopen( filename, "wb" )
 	if( outf = 0 ) then
@@ -52,6 +58,44 @@ function saveImgToGIF( byval img as gdImagePtr, filename as string ) as integer
 	
 	fclose( outf )
 	
-	saveImgToGIF = -1
+	function = -1
+	
+end function
+
+'':::::	
+function saveImgToPNG( byval img as gdImagePtr, filename as string ) as integer
+	dim outf as FILE ptr
+	
+	function = 0
+	
+	outf = fopen( filename, "wb" )
+	if( outf = 0 ) then
+		exit function
+	end if
+	
+	gdImagePng( img, outf )
+	
+	fclose( outf )
+	
+	function = -1
+	
+end function
+
+'':::::	
+function saveImgToJPEG( byval img as gdImagePtr, filename as string ) as integer
+	dim outf as FILE ptr
+	
+	function = 0
+	
+	outf = fopen( filename, "wb" )
+	if( outf = 0 ) then
+		exit function
+	end if
+	
+	gdImageJpeg( img, outf, 50 )
+	
+	fclose( outf )
+	
+	function = -1
 	
 end function
