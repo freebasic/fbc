@@ -10,6 +10,8 @@
 #define __gd_bi__
 
 #inclib "gd"
+#inclib "jpeg"
+#inclib "png"
 
 #include once "crt.bi"
 
