@@ -328,7 +328,7 @@ type Virtual_Create as sub (byval as wxWindow ptr, byval as wxWindowID, byval as
 type Virtual_BeginEdit as sub (byval as integer, byval as integer, byval as wxGrid ptr)
 type Virtual_EndEdit as function (byval as integer, byval as integer, byval as wxGrid ptr) as integer
 type Virtual_Reset as sub ( )
-type Virtual_Clone as function ( ) as wxGridCellEditor
+type Virtual_Clone as function ( ) as wxGridCellEditor ptr
 type Virtual_SetSize as sub (byval as wxRect ptr)
 type Virtual_Show as sub (byval as integer, byval as wxGridCellAttr ptr)
 type Virtual_PaintBackground as sub (byval as wxRect ptr, byval as wxGridCellAttr ptr)
@@ -368,15 +368,15 @@ type Virtual_GetValueAsCustom as sub (byval as integer, byval as integer, byval 
 type Virtual_SetValueAsCustom as sub (byval as integer, byval as integer, byval as wxString ptr, byval as any ptr)
 type Virtual_GetColLabelValue as function (byval as integer) as byte
 type Virtual_SetView as sub (byval as wxGrid ptr)
-type Virtual_GetView as function ( ) as wxGrid
+type Virtual_GetView as function ( ) as wxGrid ptr
 type Virtual_Clear as sub ( )
 type Virtual_InsertRows as function (byval as integer, byval as integer) as integer
 type Virtual_AppendRows as function (byval as integer) as integer
 type Virtual_SetRowLabelValue as sub (byval as integer, byval as wxString ptr)
 type Virtual_SetAttrProvider as sub (byval as wxGridCellAttrProvider ptr)
-type Virtual_GetAttrProvider as function ( ) as wxGridCellAttrProvider
+type Virtual_GetAttrProvider as function ( ) as wxGridCellAttrProvider ptr
 type Virtual_CanHaveAttributes as function ( ) as integer
-type Virtual_GetAttr as function (byval as integer, byval as integer, byval as integer) as wxGridCellAttr
+type Virtual_GetAttr as function (byval as integer, byval as integer, byval as integer) as wxGridCellAttr ptr
 type Virtual_SetAttr as sub (byval as wxGridCellAttr ptr, byval as integer, byval as integer)
 type Virtual_SetRowAttr as sub (byval as wxGridCellAttr ptr, byval as integer)
 
@@ -512,7 +512,7 @@ declare function wxGridCellBoolRenderer_Clone cdecl alias "wxGridCellBoolRendere
 
 type Virtual_Draw as sub (byval as wxGrid ptr, byval as wxGridCellAttr ptr, byval as wxDC ptr, byval as wxRect ptr, byval as integer, byval as integer, byval as integer)
 type Virtual_GetBestSize as function (byval as wxGrid ptr, byval as wxGridCellAttr ptr, byval as wxDC ptr, byval as integer, byval as integer) as wxSize
-type Virtual_RendererClone as function ( ) as wxGridCellRenderer
+type Virtual_RendererClone as function ( ) as wxGridCellRenderer ptr
 
 declare function wxGridCellRenderer cdecl alias "wxGridCellRenderer_ctor" () as wxGridCellRenderer ptr
 declare sub wxGridCellRenderer_dtor cdecl alias "wxGridCellRenderer_dtor" (byval self as _GridCellRenderer ptr)

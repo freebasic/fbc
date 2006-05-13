@@ -15,7 +15,7 @@
 type Virtual_VoidNoParams as sub ( )
 type Virtual_VoidSizeT as sub (byval as integer)
 type Virtual_wxStringSizeT as function (byval as integer) as byte
-type Virtual_wxColourwxColour as function (byval as wxColour ptr) as wxColour
+type Virtual_wxColourwxColour as function (byval as wxColour ptr) as wxColour ptr
 type Virtual_OnDrawItem as sub (byval as wxDC ptr, byval as wxRect ptr, byval as integer)
 type Virtual_OnMeasureItem as function (byval as integer) as wxCoord
 
