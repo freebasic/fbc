@@ -959,7 +959,7 @@ private sub hDeclUDT _
 
 	desc = *symbGetDBGName( sym )
 
-	desc += ":T" + str( sym->udt.dbg.typenum ) + "=s" + str( symbGetUDTLen( sym ) )
+	desc += ":Tt" + str( sym->udt.dbg.typenum ) + "=s" + str( symbGetUDTLen( sym ) )
 
 	e = symbGetUDTFirstElm( sym )
 	do while( e <> NULL )
