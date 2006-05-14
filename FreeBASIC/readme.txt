@@ -189,6 +189,11 @@ Debugging:
 
     - Use "watch ABC" to stop each time a variable called "abc" is changed.
 
+    - To reference variables declared inside name spaces, use the C++
+      scope resolution operator (::), enclosing them in single quotes. For 
+      example, to show the value of a variable called "abc" that was defined 
+      in a name space called "foo", use: "print 'FOO::ABC'".
+
     - Use "r" again to restart the application when finished.
 
     - Type "q" to quit.
