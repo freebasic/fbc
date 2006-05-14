@@ -29,15 +29,21 @@ option escape
 #include once "inc\ast.bi"
 #include once "inc\rtl.bi"
 
-declare function cLogOrExpression			( byref logexpr as ASTNODE ptr ) as integer
+declare function cLogOrExpression			( _
+												byref logexpr as ASTNODE ptr _
+											) as integer
 
-declare function cLogAndExpression			( byref logexpr as ASTNODE ptr ) as integer
+declare function cLogAndExpression			( _
+												byref logexpr as ASTNODE ptr _
+											) as integer
 
 '':::::
-function cUpdPointer( byval op as integer, _
-				 	  byval p as ASTNODE ptr, _
-				 	  byval e as ASTNODE ptr _
-				 	) as ASTNODE ptr static
+function cUpdPointer _
+	( _
+		byval op as integer, _
+		byval p as ASTNODE ptr, _
+		byval e as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as integer edtype
     dim as integer lgt
@@ -118,7 +124,10 @@ end function
 '':::::
 ''Expression      =   CatExpression .
 ''
-function cExpression( byref expr as ASTNODE ptr ) as integer
+function cExpression _
+	( _
+		byref expr as ASTNODE ptr _
+	) as integer
 
 	env.isexpr = TRUE
 
@@ -131,7 +140,11 @@ end function
 '':::::
 ''CatExpression   =   LogExpression ( & LogExpression )* .
 ''
-function cCatExpression( byref catexpr as ASTNODE ptr ) as integer
+function cCatExpression _
+	( _
+		byref catexpr as ASTNODE ptr _
+	) as integer
+
 	dim as ASTNODE ptr expr
 
 	function = FALSE
@@ -211,7 +224,11 @@ end function
 '':::::
 ''LogExpression      =   LogOrExpression ( (XOR | EQV | IMP) LogOrExpression )* .
 ''
-function cLogExpression( byref logexpr as ASTNODE ptr ) as integer
+function cLogExpression _
+	( _
+		byref logexpr as ASTNODE ptr _
+	) as integer
+
     dim as integer op
     dim as ASTNODE ptr expr
 
@@ -261,7 +278,11 @@ end function
 '':::::
 ''LogOrExpression    =   LogAndExpression ( OR LogAndExpression )* .
 ''
-function cLogOrExpression( byref logexpr as ASTNODE ptr ) as integer
+function cLogOrExpression _
+	( _
+		byref logexpr as ASTNODE ptr _
+	) as integer
+
     dim as ASTNODE ptr expr
 
 	function = FALSE
@@ -303,7 +324,11 @@ end function
 '':::::
 ''LogAndExpression   =   RelExpression ( AND RelExpression )* .
 ''
-function cLogAndExpression( byref logexpr as ASTNODE ptr ) as integer
+function cLogAndExpression _
+	( _
+		byref logexpr as ASTNODE ptr _
+	) as integer
+
     dim as ASTNODE ptr expr
 
 	function = FALSE
@@ -345,7 +370,11 @@ end function
 '':::::
 ''RelExpression   =   AddExpression ( (EQ | GT | LT | NE | LE | GE) AddExpression )* .
 ''
-function cRelExpression( byref relexpr as ASTNODE ptr ) as integer
+function cRelExpression _
+	( _
+		byref relexpr as ASTNODE ptr _
+	) as integer
+
     dim as integer op
     dim as ASTNODE ptr expr
 
@@ -400,7 +429,11 @@ end function
 '':::::
 ''AddExpression   =   ShiftExpression ( ('+' | '-') ShiftExpression )* .
 ''
-function cAddExpression( byref addexpr as ASTNODE ptr ) as integer
+function cAddExpression _
+	( _
+		byref addexpr as ASTNODE ptr _
+	) as integer
+
     dim as integer op
     dim as ASTNODE ptr expr
 
@@ -455,7 +488,11 @@ end function
 '':::::
 ''ShiftExpression  =   ModExpression ( (SHL | SHR) ModExpression )* .
 ''
-function cShiftExpression( byref shiftexpr as ASTNODE ptr ) as integer
+function cShiftExpression _
+	( _
+		byref shiftexpr as ASTNODE ptr _
+	) as integer
+
     dim as integer op
     dim as ASTNODE ptr expr
 
@@ -502,7 +539,11 @@ end function
 '':::::
 ''ModExpression   =   IntDivExpression ( MOD IntDivExpression )* .
 ''
-function cModExpression( byref modexpr as ASTNODE ptr ) as integer
+function cModExpression _
+	( _
+		byref modexpr as ASTNODE ptr _
+	) as integer
+
     dim as ASTNODE ptr expr
 
     function = FALSE
@@ -543,7 +584,11 @@ end function
 '':::::
 ''IntDivExpression=   MultExpression ( '\' MultExpression )* .
 ''
-function cIntDivExpression( byref idivexpr as ASTNODE ptr ) as integer
+function cIntDivExpression _
+	( _
+		byref idivexpr as ASTNODE ptr _
+	) as integer
+
 	dim as ASTNODE ptr expr
 
     function = FALSE
@@ -584,7 +629,11 @@ end function
 '':::::
 ''MultExpression  =   ExpExpression ( ('*' | '/') ExpExpression )* .
 ''
-function cMultExpression( byref mulexpr as ASTNODE ptr ) as integer
+function cMultExpression _
+	( _
+		byref mulexpr as ASTNODE ptr _
+	) as integer
+
     dim as integer op
     dim as ASTNODE ptr expr
 
@@ -631,7 +680,11 @@ end function
 '':::::
 ''ExpExpression   =   NegNotExpression ( '^' NegNotExpression )* .
 ''
-function cExpExpression( byref expexpr as ASTNODE ptr ) as integer
+function cExpExpression _
+	( _
+		byref expexpr as ASTNODE ptr _
+	) as integer
+
 	dim as ASTNODE ptr expr
 
     function = FALSE

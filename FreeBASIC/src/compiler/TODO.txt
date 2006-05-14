@@ -1,9 +1,3 @@
-
-[ ] deref of a fun ptr is been allowed, causing the compiler to crash
-    - happens because *funptr() is been checking the dtype before calling
-      the ptr, after calling it the dtype will change to the funptr return
-      type
-
 [ ] EXTERN ... END EXTERN
     - C++ mangling needs CONST's to be handled in param attributes:
       - refs and ptrs to constants can't be added unless _POINTER is added
@@ -17,9 +11,6 @@
          with procs (for overloading and prototypes)
     - no symbol can contain .'s if declared inside a namespace, must check
       everything..
-    - how to add namespaces to stabs?
-      - a new ast node ala done with scopes may be needed? begin, end..
-      - how to pass "using" to GDB?
 
 [ ] disallow:
 	dim foo as foo | enum foo

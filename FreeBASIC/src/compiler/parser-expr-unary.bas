@@ -37,7 +37,10 @@ declare function 	cCastingExpr		( byref expr as ASTNODE ptr ) as integer
 ''				  |   NOT RelExpression
 ''				  |   HighestPresExpr .
 ''
-function cNegNotExpression( byref negexpr as ASTNODE ptr ) as integer
+function cNegNotExpression _
+	( _
+	 	byref negexpr as ASTNODE ptr _
+	 ) as integer
 
 	function = FALSE
 
@@ -110,7 +113,11 @@ end function
 ''				  |	  AnonUDT
 ''				  |   Atom .
 ''
-function cHighestPrecExpr( byref highexpr as ASTNODE ptr ) as integer
+function cHighestPrecExpr _
+	( _
+		byref highexpr as ASTNODE ptr _
+	) as integer
+
 	dim as FBSYMBOL ptr subtype
 	dim as integer isfuncptr, dtype
 
@@ -436,8 +443,13 @@ function cDerefExpression _
         exit function
 	end if
 
+	if( derefexpr = NULL ) then
+        hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
+        exit function
+	end if
+
 	''
-	dtype   = astGetDataType( derefexpr )
+	dtype = astGetDataType( derefexpr )
 	subtype = astGetSubType( derefexpr )
 
 	''
