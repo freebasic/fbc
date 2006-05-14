@@ -210,6 +210,7 @@ private function hTypeAdd _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
+		byval id_alias as zstring ptr, _
 		byval isunion as integer, _
 		byval align as integer _
 	) as FBSYMBOL ptr
@@ -218,7 +219,7 @@ private function hTypeAdd _
 
 	function = NULL
 
-	s = symbAddUDT( parent, id, isunion, align )
+	s = symbAddUDT( parent, id, id_alias, isunion, align )
 	if( s = NULL ) then
     	hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
     	exit function
@@ -324,7 +325,7 @@ declinner:		'' it's an anonymous inner UDT
 				lexSkipToken( )
 
 				'' create a "temp" one
-				inner = hTypeAdd( s, hMakeTmpStr( ), not istype, symbGetUDTAlign( s ) )
+				inner = hTypeAdd( s, hMakeTmpStr( ), NULL, not istype, symbGetUDTAlign( s ) )
 				if( inner = NULL ) then
 					exit function
 				end if
@@ -399,14 +400,15 @@ declinner:		'' it's an anonymous inner UDT
 end function
 
 '':::::
-''TypeDecl        =   (TYPE|UNION) ID (FIELD '=' Expression)? Comment? SttSeparator
+''TypeDecl        =   (TYPE|UNION) ID (ALIAS LITSTR)? (FIELD '=' Expression)? Comment? SttSeparator
 ''						TypeLine+
 ''					  END (TYPE|UNION) .
 function cTypeDecl _
 	( _
 	) as integer static
 
-    static as zstring * FB_MAXNAMELEN+1 id
+    static as zstring * FB_MAXNAMELEN+1 id, id_alias
+    dim as zstring ptr palias
     dim as ASTNODE ptr expr
     dim as FBSYMBOL ptr s
     dim as integer align, isunion
@@ -447,15 +449,15 @@ function cTypeDecl _
     	exit function
     end select
 
-	id = *lexGetText( )
-
     '' contains a period?
     if( lexGetPeriodPos( ) > 0 ) then
     	hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
     	exit function
     end if
 
-	lexSkipToken( )
+	lexEatToken( @id )
+
+	palias = NULL
 
 	''
 	select case lexGetToken( )
@@ -470,8 +472,22 @@ function cTypeDecl _
 
 		return cTypedefDecl( id )
 
+	'' (ALIAS LITSTR)?
+	case FB_TK_ALIAS
+    	lexSkipToken( )
+
+		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
+			hReportError( FB_ERRMSG_SYNTAXERROR )
+			exit function
+		end if
+
+		lexEatToken( @id_alias )
+		palias = @id_alias
+
+	end select
+
 	'' (FIELD '=' Expression)?
-    case FB_TK_FIELD
+    if( lexGetToken( ) = FB_TK_FIELD ) then
 		lexSkipToken( )
 
 		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
@@ -500,11 +516,11 @@ function cTypeDecl _
   			align = 2
   		end if
 
-	case else
+	else
 		align = 0
-	end select
+	end if
 
-	function = (hTypeAdd( NULL, id, isunion, align ) <> NULL)
+	function = (hTypeAdd( NULL, id, palias, isunion, align ) <> NULL)
 
 end function
 

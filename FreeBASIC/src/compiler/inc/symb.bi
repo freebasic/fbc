@@ -645,7 +645,7 @@ declare function 	symbAddTempVar			( _
 											) as FBSYMBOL ptr
 
 declare function 	symbAddConst			( _
-												byval symbol as zstring ptr, _
+												byval id as zstring ptr, _
 												byval dtype as integer, _
 												byval subtype as FBSYMBOL ptr, _
 												byval value as FBVALUE ptr _
@@ -653,7 +653,8 @@ declare function 	symbAddConst			( _
 
 declare function 	symbAddUDT				( _
 												byval parent as FBSYMBOL ptr, _
-												byval symbol as zstring ptr, _
+												byval id as zstring ptr, _
+												byval id_alias as zstring ptr, _
 												byval isunion as integer, _
 												byval align as integer _
 											) as FBSYMBOL ptr
@@ -676,18 +677,19 @@ declare sub 		symbInsertInnerUDT		( _
 											)
 
 declare function 	symbAddEnum				( _
-												byval symbol as zstring ptr _
+												byval id as zstring ptr, _
+												byval id_alias as zstring ptr _
 											) as FBSYMBOL ptr
 
 declare function 	symbAddEnumElement		( _
 												byval parent as FBSYMBOL ptr, _
-												byval symbol as zstring ptr, _
+												byval id as zstring ptr, _
 					         				  	byval value as integer _
 											) as FBSYMBOL ptr
 
 declare function 	symbAddProcParam		( _
 												byval proc as FBSYMBOL ptr, _
-												byval symbol as zstring ptr, _
+												byval id as zstring ptr, _
 												byval dtype as integer, _
 					 						  	byval subtype as FBSYMBOL ptr, _
 					 						  	byval ptrcnt as integer, _
@@ -741,7 +743,7 @@ declare function 	symbAddLib				( _
 											) as FBLIBRARY ptr
 
 declare function 	symbAddParam			( _
-												byval symbol as zstring ptr, _
+												byval id as zstring ptr, _
 												byval param as FBSYMBOL ptr _
 											) as FBSYMBOL ptr
 
@@ -757,7 +759,8 @@ declare function	symbAddBitField			( _
 											) as FBSYMBOL ptr
 
 declare function 	symbAddNamespace		( _
-												byval symbol as zstring ptr _
+												byval id as zstring ptr, _
+												byval id_alias as zstring ptr _
 											) as FBSYMBOL ptr
 
 declare sub 		symbRoundUDTSize		( _

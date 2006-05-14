@@ -580,7 +580,7 @@ private sub hMangleVariable  _
 	end if
 
 	'' nested? (namespace or class) close..
-	if( symbGetNamespace( sym ) <> NULL ) then
+	if(	nspc_str <> NULL ) then
 		dst[0] = asc( "E" )
 		dst[1] = 0
 	end if

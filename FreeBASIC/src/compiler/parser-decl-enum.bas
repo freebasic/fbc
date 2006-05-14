@@ -145,11 +145,12 @@ function cEnumBody( byval s as FBSYMBOL ptr ) as integer
 end function
 
 '':::::
-''EnumDecl        =   ENUM ID? Comment? SttSeparator
+''EnumDecl        =   ENUM ID? (ALIAS LITSTR)? Comment? SttSeparator
 ''                        EnumLine+
 ''					  END ENUM .
 function cEnumDecl as integer static
-    static as zstring * FB_MAXNAMELEN+1 id
+    static as zstring * FB_MAXNAMELEN+1 id, id_alias
+    dim as zstring ptr palias
     dim as FBSYMBOL ptr e
 
 	function = FALSE
@@ -163,20 +164,34 @@ function cEnumDecl as integer static
 
 	'' ID?
 	if( lexGetClass( ) = FB_TKCLASS_IDENTIFIER ) then
-		id = *lexGetText( )
-
     	'' contains a period?
     	if( lexGetPeriodPos( ) > 0 ) then
     		hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
     		exit function
     	end if
 
-    	lexSkipToken( )
+		lexEatToken( @id )
     else
     	id = *hMakeTmpStr( FALSE )
     end if
 
-	e = symbAddEnum( @id )
+	'' (ALIAS LITSTR)?
+	if( lexGetToken( ) = FB_TK_ALIAS ) then
+    	lexSkipToken( )
+
+		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
+			hReportError( FB_ERRMSG_SYNTAXERROR )
+			exit function
+		end if
+
+		lexEatToken( @id_alias )
+		palias = @id_alias
+
+	else
+		palias = NULL
+	end if
+
+	e = symbAddEnum( @id, palias )
 	if( e = NULL ) then
     	hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
     	exit function

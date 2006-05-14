@@ -29,10 +29,15 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-''NamespaceStmtBegin  =   NAMESPACE ID .
+''NamespaceStmtBegin  =   NAMESPACE ID (ALIAS LITSTR)?.
 ''
-function cNamespaceStmtBegin( ) as integer
-    dim as zstring ptr id
+function cNamespaceStmtBegin _
+	( _
+		_
+	) as integer
+
+    static as zstring * FB_MAXNAMELEN+1 id, id_alias
+    dim as zstring ptr palias
     dim as FBSYMBOL ptr sym
     dim as FBSYMCHAIN ptr chain_
     dim as FB_CMPSTMTSTK ptr stk
@@ -63,7 +68,7 @@ function cNamespaceStmtBegin( ) as integer
     	exit function
     end if
 
-	id = lexGetText( )
+	id = *lexGetText( )
 
 	chain_ = lexGetSymChain( )
 	if( chain_ <> NULL ) then
@@ -85,15 +90,31 @@ function cNamespaceStmtBegin( ) as integer
 		sym = NULL
 	end if
 
+	lexSkipToken( )
+
 	if( sym = NULL ) then
-		sym = symbAddNamespace( id )
+		'' (ALIAS LITSTR)?
+		if( lexGetToken( ) = FB_TK_ALIAS ) then
+    		lexSkipToken( )
+
+			if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
+				hReportError( FB_ERRMSG_SYNTAXERROR )
+				exit function
+			end if
+
+			lexEatToken( @id_alias )
+			palias = @id_alias
+
+		else
+			palias = NULL
+		end if
+
+		sym = symbAddNamespace( @id, palias )
 		if( sym = NULL ) then
 			hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
 			exit function
 		end if
 	end if
-
-	lexSkipToken( )
 
 	''
 	stk = cCompStmtPush( FB_TK_NAMESPACE, _

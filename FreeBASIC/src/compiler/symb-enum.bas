@@ -32,19 +32,20 @@ option escape
 '':::::
 function symbAddEnum _
 	( _
-		byval id as zstring ptr _
+		byval id as zstring ptr, _
+		byval id_alias as zstring ptr _
 	) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr e
-    dim as zstring ptr id_alias
 
     function = NULL
 
-    '' only preserve a case-sensitive version if in BASIC mangling
-    if( env.mangling <> FB_MANGLING_BASIC ) then
-    	id_alias = id
-   	else
-   		id_alias = NULL
+	'' no explict alias given?
+    if( id_alias = NULL ) then
+    	'' only preserve a case-sensitive version if in BASIC mangling
+    	if( env.mangling <> FB_MANGLING_BASIC ) then
+    		id_alias = id
+    	end if
     end if
 
     e = symbNewSymbol( NULL, _
@@ -74,7 +75,7 @@ end function
 function symbAddEnumElement _
 	( _
 		byval parent as FBSYMBOL ptr, _
-		byval symbol as zstring ptr, _
+		byval id as zstring ptr, _
 		byval intval as integer _
 	) as FBSYMBOL ptr static
 
@@ -83,7 +84,7 @@ function symbAddEnumElement _
     c = symbNewSymbol( NULL, _
     				   @parent->enum.elmtb, NULL, TRUE, _
     				   FB_SYMBCLASS_CONST, _
-    				   TRUE, symbol, NULL, _
+    				   TRUE, id, NULL, _
     				   FB_DATATYPE_ENUM, parent )
 	if( c = NULL ) then
 		exit function

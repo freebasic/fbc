@@ -68,7 +68,7 @@ end function
 function symbAddProcParam _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval symbol as zstring ptr, _
+		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval ptrcnt as integer, _
@@ -86,7 +86,7 @@ function symbAddProcParam _
     param = symbNewSymbol( NULL, _
     					   @proc->proc.paramtb, NULL, TRUE, _
     					   FB_SYMBCLASS_PARAM, _
-    				   	   FALSE, symbol, NULL, _
+    				   	   FALSE, id, NULL, _
     				   	   dtype, subtype, ptrcnt, _
     				   	   TRUE )
     if( param = NULL ) then

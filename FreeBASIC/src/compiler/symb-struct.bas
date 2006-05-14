@@ -39,20 +39,21 @@ function symbAddUDT _
 	( _
 		byval parent as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
+		byval id_alias as zstring ptr, _
 		byval isunion as integer, _
 		byval align as integer _
 	) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr t
-    dim as zstring ptr id_alias
 
     function = NULL
 
-    '' only preserve a case-sensitive version if in BASIC mangling
-    if( env.mangling <> FB_MANGLING_BASIC ) then
-    	id_alias = id
-   	else
-   		id_alias = NULL
+    '' no explict alias given?
+    if( id_alias = NULL ) then
+    	'' only preserve a case-sensitive version if in BASIC mangling
+    	if( env.mangling <> FB_MANGLING_BASIC ) then
+    		id_alias = id
+    	end if
     end if
 
     t = symbNewSymbol( NULL, _

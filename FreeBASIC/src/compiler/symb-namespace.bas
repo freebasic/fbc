@@ -29,17 +29,18 @@ option escape
 '':::::
 function symbAddNamespace _
 	( _
-		byval id as zstring ptr _
+		byval id as zstring ptr, _
+		byval id_alias as zstring ptr _
 	) as FBSYMBOL ptr static
 
-    dim as zstring ptr id_alias
     dim as FBSYMBOL ptr s
 
-    '' only preserve a case-sensitive version if in BASIC mangling
-    if( env.mangling <> FB_MANGLING_BASIC ) then
-    	id_alias = id
-   	else
-   		id_alias = NULL
+    '' no explict alias given?
+    if( id_alias = NULL ) then
+    	'' only preserve a case-sensitive version if in BASIC mangling
+    	if( env.mangling <> FB_MANGLING_BASIC ) then
+    		id_alias = id
+    	end if
     end if
 
     s = symbNewSymbol( NULL, _
