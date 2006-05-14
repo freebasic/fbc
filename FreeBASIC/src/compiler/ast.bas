@@ -99,9 +99,9 @@ declare function 	astLoadSCOPEBEGIN	( byval n as ASTNODE ptr ) as IRVREG ptr
 declare function 	astLoadSCOPEEND		( byval n as ASTNODE ptr ) as IRVREG ptr
 
 '' globals
-	dim shared ast as ASTCTX
+	dim shared as ASTCTX ast
 
-	dim shared ast_bitmaskTB( 0 to 32 ) as uinteger = _
+	dim shared as uinteger ast_bitmaskTB( 0 to 32 ) = _
 	{ _
 		0, _
 		1, 3, 7, 15, 31, 63, 127, 255, _
@@ -110,7 +110,7 @@ declare function 	astLoadSCOPEEND		( byval n as ASTNODE ptr ) as IRVREG ptr
         33554431, 67108863, 134217727, 268435455, 536870911, 1073741823, 2147483647, 4294967295 _
 	}
 
-	dim shared ast_minlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) as longint = _
+	dim shared as longint ast_minlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) = _
 	{ _
 		-128LL, _								'' byte
 		0LL, _                                  '' ubyte
@@ -126,7 +126,7 @@ declare function 	astLoadSCOPEEND		( byval n as ASTNODE ptr ) as IRVREG ptr
 		0LL _                                   '' ulongint
 	}
 
-	dim shared ast_maxlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) as longint = _
+	dim shared as ulongint ast_maxlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) = _
 	{ _
 		127LL, _                                '' ubyte
 		255LL, _                                '' byte
@@ -1078,7 +1078,7 @@ function astCheckConst( byval dtype as integer, _
 
 		lval = astGetValueAsLongInt( n )
 		if( (lval < ast_minlimitTB( dtype )) or _
-			(lval > ast_maxlimitTB( dtype )) ) then
+			(lval > clngint( ast_maxlimitTB( dtype ) )) ) then
 			n = astNewCONV( INVALID, dtype, NULL, n )
 			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 		end if
@@ -1089,7 +1089,7 @@ function astCheckConst( byval dtype as integer, _
 
 		ulval = astGetValueAsULongInt( n )
 		if( (ulval < culngint( ast_minlimitTB( dtype ) )) or _
-			(ulval > culngint( ast_maxlimitTB( dtype ) )) ) then
+			(ulval > ast_maxlimitTB( dtype )) ) then
 			n = astNewCONV( INVALID, dtype, NULL, n )
 			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
 		end if
