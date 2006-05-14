@@ -1356,410 +1356,414 @@ type IGlobalInterfaceTableVtbl
 end type
 
 #ifdef WIN_INCLUDEPROXY
-declare function IMarshal_GetUnmarshalClass_Proxy alias "IMarshal_GetUnmarshalClass_Proxy" (byval as IMarshal ptr, byval as IID ptr, byval as any ptr, byval as DWORD, byval as any ptr, byval as DWORD, byval as CLSID ptr) as HRESULT
-declare sub IMarshal_GetUnmarshalClass_Stub alias "IMarshal_GetUnmarshalClass_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMarshal_GetMarshalSizeMax_Proxy alias "IMarshal_GetMarshalSizeMax_Proxy" (byval as IMarshal ptr, byval as IID ptr, byval as any ptr, byval as DWORD, byval as any ptr, byval as DWORD, byval as DWORD ptr) as HRESULT
-declare sub IMarshal_GetMarshalSizeMax_Stub alias "IMarshal_GetMarshalSizeMax_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMarshal_MarshalInterface_Proxy alias "IMarshal_MarshalInterface_Proxy" (byval as IMarshal ptr, byval as IStream ptr, byval as IID ptr, byval as any ptr, byval as DWORD, byval as any ptr, byval as DWORD) as HRESULT
-declare sub IMarshal_MarshalInterface_Stub alias "IMarshal_MarshalInterface_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMarshal_UnmarshalInterface_Proxy alias "IMarshal_UnmarshalInterface_Proxy" (byval as IMarshal ptr, byval as IStream ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
-declare sub IMarshal_UnmarshalInterface_Stub alias "IMarshal_UnmarshalInterface_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMarshal_ReleaseMarshalData_Proxy alias "IMarshal_ReleaseMarshalData_Proxy" (byval as IMarshal ptr, byval as IStream ptr) as HRESULT
-declare sub IMarshal_ReleaseMarshalData_Stub alias "IMarshal_ReleaseMarshalData_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMarshal_DisconnectObject_Proxy alias "IMarshal_DisconnectObject_Proxy" (byval as IMarshal ptr, byval as DWORD) as HRESULT
-declare sub IMarshal_DisconnectObject_Stub alias "IMarshal_DisconnectObject_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMalloc_Alloc_Proxy alias "IMalloc_Alloc_Proxy" (byval as IMalloc ptr, byval as ULONG) as any ptr
-declare sub IMalloc_Alloc_Stub alias "IMalloc_Alloc_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMalloc_Realloc_Proxy alias "IMalloc_Realloc_Proxy" (byval as IMalloc ptr, byval as any ptr, byval as ULONG) as any ptr
-declare sub IMalloc_Realloc_Stub alias "IMalloc_Realloc_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare sub IMalloc_Free_Proxy alias "IMalloc_Free_Proxy" (byval as IMalloc ptr, byval as any ptr)
-declare sub IMalloc_Free_Stub alias "IMalloc_Free_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMalloc_GetSize_Proxy alias "IMalloc_GetSize_Proxy" (byval as IMalloc ptr, byval as any ptr) as ULONG
-declare sub IMalloc_GetSize_Stub alias "IMalloc_GetSize_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMalloc_DidAlloc_Proxy alias "IMalloc_DidAlloc_Proxy" (byval as IMalloc ptr, byval as any ptr) as integer
-declare sub IMalloc_DidAlloc_Stub alias "IMalloc_DidAlloc_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare sub IMalloc_HeapMinimize_Proxy alias "IMalloc_HeapMinimize_Proxy" (byval as IMalloc ptr)
-declare sub IMalloc_HeapMinimize_Stub alias "IMalloc_HeapMinimize_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMallocSpy_PreAlloc_Proxy alias "IMallocSpy_PreAlloc_Proxy" (byval as IMallocSpy ptr, byval cbRequest as ULONG) as ULONG
-declare sub IMallocSpy_PreAlloc_Stub alias "IMallocSpy_PreAlloc_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMallocSpy_PostAlloc_Proxy alias "IMallocSpy_PostAlloc_Proxy" (byval as IMallocSpy ptr, byval as any ptr) as any ptr
-declare sub IMallocSpy_PostAlloc_Stub alias "IMallocSpy_PostAlloc_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMallocSpy_PreFree_Proxy alias "IMallocSpy_PreFree_Proxy" (byval as IMallocSpy ptr, byval as any ptr, byval as BOOL) as any ptr
-declare sub IMallocSpy_PreFree_Stub alias "IMallocSpy_PreFree_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare sub IMallocSpy_PostFree_Proxy alias "IMallocSpy_PostFree_Proxy" (byval as IMallocSpy ptr, byval as BOOL)
-declare sub IMallocSpy_PostFree_Stub alias "IMallocSpy_PostFree_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMallocSpy_PreRealloc_Proxy alias "IMallocSpy_PreRealloc_Proxy" (byval as IMallocSpy ptr, byval as any ptr, byval as ULONG, byval as any ptr ptr, byval as BOOL) as ULONG
-declare sub IMallocSpy_PreRealloc_Stub alias "IMallocSpy_PreRealloc_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMallocSpy_PostRealloc_Proxy alias "IMallocSpy_PostRealloc_Proxy" (byval as IMallocSpy ptr, byval as any ptr, byval as BOOL) as any ptr
-declare sub IMallocSpy_PostRealloc_Stub alias "IMallocSpy_PostRealloc_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMallocSpy_PreGetSize_Proxy alias "IMallocSpy_PreGetSize_Proxy" (byval as IMallocSpy ptr, byval as any ptr, byval as BOOL) as any ptr
-declare sub IMallocSpy_PreGetSize_Stub alias "IMallocSpy_PreGetSize_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMallocSpy_PostGetSize_Proxy alias "IMallocSpy_PostGetSize_Proxy" (byval as IMallocSpy ptr, byval as ULONG, byval as BOOL) as ULONG
-declare sub IMallocSpy_PostGetSize_Stub alias "IMallocSpy_PostGetSize_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMallocSpy_PreDidAlloc_Proxy alias "IMallocSpy_PreDidAlloc_Proxy" (byval as IMallocSpy ptr, byval as any ptr, byval as BOOL) as any ptr
-declare sub IMallocSpy_PreDidAlloc_Stub alias "IMallocSpy_PreDidAlloc_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMallocSpy_PostDidAlloc_Proxy alias "IMallocSpy_PostDidAlloc_Proxy" (byval as IMallocSpy ptr, byval as any ptr, byval as BOOL, byval as integer) as integer
-declare sub IMallocSpy_PostDidAlloc_Stub alias "IMallocSpy_PostDidAlloc_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare sub IMallocSpy_PreHeapMinimize_Proxy alias "IMallocSpy_PreHeapMinimize_Proxy" (byval as IMallocSpy ptr)
-declare sub IMallocSpy_PreHeapMinimize_Stub alias "IMallocSpy_PreHeapMinimize_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare sub IMallocSpy_PostHeapMinimize_Proxy alias "IMallocSpy_PostHeapMinimize_Proxy" (byval as IMallocSpy ptr)
-declare sub IMallocSpy_PostHeapMinimize_Stub alias "IMallocSpy_PostHeapMinimize_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStdMarshalInfo_GetClassForHandler_Proxy alias "IStdMarshalInfo_GetClassForHandler_Proxy" (byval as IStdMarshalInfo ptr, byval as DWORD, byval as any ptr, byval as CLSID ptr) as HRESULT
-declare sub IStdMarshalInfo_GetClassForHandler_Stub alias "IStdMarshalInfo_GetClassForHandler_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IExternalConnection_AddConnection_Proxy alias "IExternalConnection_AddConnection_Proxy" (byval as IExternalConnection ptr, byval as DWORD, byval as DWORD) as DWORD
-declare sub IExternalConnection_AddConnection_Stub alias "IExternalConnection_AddConnection_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IExternalConnection_ReleaseConnection_Proxy alias "IExternalConnection_ReleaseConnection_Proxy" (byval as IExternalConnection ptr, byval as DWORD, byval as DWORD, byval as BOOL) as DWORD
-declare sub IExternalConnection_ReleaseConnection_Stub alias "IExternalConnection_ReleaseConnection_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumUnknown_RemoteNext_Proxy alias "IEnumUnknown_RemoteNext_Proxy" (byval as IEnumUnknown ptr, byval as ULONG, byval as IUnknown ptr ptr, byval as ULONG ptr) as HRESULT
-declare sub IEnumUnknown_RemoteNext_Stub alias "IEnumUnknown_RemoteNext_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumUnknown_Skip_Proxy alias "IEnumUnknown_Skip_Proxy" (byval as IEnumUnknown ptr, byval as ULONG) as HRESULT
-declare sub IEnumUnknown_Skip_Stub alias "IEnumUnknown_Skip_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumUnknown_Reset_Proxy alias "IEnumUnknown_Reset_Proxy" (byval as IEnumUnknown ptr) as HRESULT
-declare sub IEnumUnknown_Reset_Stub alias "IEnumUnknown_Reset_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumUnknown_Clone_Proxy alias "IEnumUnknown_Clone_Proxy" (byval as IEnumUnknown ptr, byval as IEnumUnknown ptr ptr) as HRESULT
-declare sub IEnumUnknown_Clone_Stub alias "IEnumUnknown_Clone_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IBindCtx_RegisterObjectBound_Proxy alias "IBindCtx_RegisterObjectBound_Proxy" (byval as IBindCtx ptr, byval punk as IUnknown ptr) as HRESULT
-declare sub IBindCtx_RegisterObjectBound_Stub alias "IBindCtx_RegisterObjectBound_Stub" (byval as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IBindCtx_RevokeObjectBound_Proxy alias "IBindCtx_RevokeObjectBound_Proxy" (byval as IBindCtx ptr, byval punk as IUnknown ptr) as HRESULT
-declare sub IBindCtx_RevokeObjectBound_Stub alias "IBindCtx_RevokeObjectBound_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IBindCtx_ReleaseBoundObjects_Proxy alias "IBindCtx_ReleaseBoundObjects_Proxy" (byval as IBindCtx ptr) as HRESULT
-declare sub IBindCtx_ReleaseBoundObjects_Stub alias "IBindCtx_ReleaseBoundObjects_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IBindCtx_SetBindOptions_Proxy alias "IBindCtx_SetBindOptions_Proxy" (byval as IBindCtx ptr, byval as BIND_OPTS ptr) as HRESULT
-declare sub IBindCtx_SetBindOptions_Stub alias "IBindCtx_SetBindOptions_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IBindCtx_GetBindOptions_Proxy alias "IBindCtx_GetBindOptions_Proxy" (byval as IBindCtx ptr, byval pbindopts as BIND_OPTS ptr) as HRESULT
-declare sub IBindCtx_GetBindOptions_Stub alias "IBindCtx_GetBindOptions_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IBindCtx_GetRunningObjectTable_Proxy alias "IBindCtx_GetRunningObjectTable_Proxy" (byval as IBindCtx ptr, byval as IRunningObjectTable ptr ptr) as HRESULT
-declare sub IBindCtx_GetRunningObjectTable_Stub alias "IBindCtx_GetRunningObjectTable_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IBindCtx_RegisterObjectParam_Proxy alias "IBindCtx_RegisterObjectParam_Proxy" (byval as IBindCtx ptr, byval as LPCSTR, byval as IUnknown ptr) as HRESULT
-declare sub IBindCtx_RegisterObjectParam_Stub alias "IBindCtx_RegisterObjectParam_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IBindCtx_GetObjectParam_Proxy alias "IBindCtx_GetObjectParam_Proxy" (byval as IBindCtx ptr, byval as LPCSTR, byval as IUnknown ptr ptr) as HRESULT
-declare sub IBindCtx_GetObjectParam_Stub alias "IBindCtx_GetObjectParam_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IBindCtx_EnumObjectParam_Proxy alias "IBindCtx_EnumObjectParam_Proxy" (byval as IBindCtx ptr, byval as IEnumString ptr ptr) as HRESULT
-declare sub IBindCtx_EnumObjectParam_Stub alias "IBindCtx_EnumObjectParam_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IBindCtx_RevokeObjectParam_Proxy alias "IBindCtx_RevokeObjectParam_Proxy" (byval as IBindCtx ptr, byval as LPCSTR) as HRESULT
-declare sub IBindCtx_RevokeObjectParam_Stub alias "IBindCtx_RevokeObjectParam_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumMoniker_RemoteNext_Proxy alias "IEnumMoniker_RemoteNext_Proxy" (byval as IEnumMoniker ptr, byval as ULONG, byval as IMoniker ptr ptr, byval as ULONG ptr) as HRESULT
-declare sub IEnumMoniker_RemoteNext_Stub alias "IEnumMoniker_RemoteNext_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumMoniker_Skip_Proxy alias "IEnumMoniker_Skip_Proxy" (byval as IEnumMoniker ptr, byval as ULONG) as HRESULT
-declare sub IEnumMoniker_Skip_Stub alias "IEnumMoniker_Skip_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumMoniker_Reset_Proxy alias "IEnumMoniker_Reset_Proxy" (byval as IEnumMoniker ptr) as HRESULT
-declare sub IEnumMoniker_Reset_Stub alias "IEnumMoniker_Reset_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumMoniker_Clone_Proxy alias "IEnumMoniker_Clone_Proxy" (byval as IEnumMoniker ptr, byval as IEnumMoniker ptr ptr) as HRESULT
-declare sub IEnumMoniker_Clone_Stub alias "IEnumMoniker_Clone_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRunnableObject_GetRunningClass_Proxy alias "IRunnableObject_GetRunningClass_Proxy" (byval as IRunnableObject ptr, byval as LPCLSID) as HRESULT
-declare sub IRunnableObject_GetRunningClass_Stub alias "IRunnableObject_GetRunningClass_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRunnableObject_Run_Proxy alias "IRunnableObject_Run_Proxy" (byval as IRunnableObject ptr, byval as LPBINDCTX) as HRESULT
-declare sub IRunnableObject_Run_Stub alias "IRunnableObject_Run_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRunnableObject_IsRunning_Proxy alias "IRunnableObject_IsRunning_Proxy" (byval as IRunnableObject ptr) as BOOL
-declare sub IRunnableObject_IsRunning_Stub alias "IRunnableObject_IsRunning_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRunnableObject_LockRunning_Proxy alias "IRunnableObject_LockRunning_Proxy" (byval as IRunnableObject ptr, byval as BOOL, byval as BOOL) as HRESULT
-declare sub IRunnableObject_LockRunning_Stub alias "IRunnableObject_LockRunning_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRunnableObject_SetContainedObject_Proxy alias "IRunnableObject_SetContainedObject_Proxy" (byval as IRunnableObject ptr, byval as BOOL) as HRESULT
-declare sub IRunnableObject_SetContainedObject_Stub alias "IRunnableObject_SetContainedObject_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRunningObjectTable_Register_Proxy alias "IRunningObjectTable_Register_Proxy" (byval as IRunningObjectTable ptr, byval as DWORD, byval as IUnknown ptr, byval as IMoniker ptr, byval as DWORD ptr) as HRESULT
-declare sub IRunningObjectTable_Register_Stub alias "IRunningObjectTable_Register_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRunningObjectTable_Revoke_Proxy alias "IRunningObjectTable_Revoke_Proxy" (byval as IRunningObjectTable ptr, byval as DWORD) as HRESULT
-declare sub IRunningObjectTable_Revoke_Stub alias "IRunningObjectTable_Revoke_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRunningObjectTable_IsRunning_Proxy alias "IRunningObjectTable_IsRunning_Proxy" (byval as IRunningObjectTable ptr, byval as IMoniker ptr) as HRESULT
-declare sub IRunningObjectTable_IsRunning_Stub alias "IRunningObjectTable_IsRunning_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRunningObjectTable_GetObject_Proxy alias "IRunningObjectTable_GetObject_Proxy" (byval as IRunningObjectTable ptr, byval as IMoniker ptr, byval as IUnknown ptr ptr) as HRESULT
-declare sub IRunningObjectTable_GetObject_Stub alias "IRunningObjectTable_GetObject_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRunningObjectTable_NoteChangeTime_Proxy alias "IRunningObjectTable_NoteChangeTime_Proxy" (byval as IRunningObjectTable ptr, byval as DWORD, byval as FILETIME ptr) as HRESULT
-declare sub IRunningObjectTable_NoteChangeTime_Stub alias "IRunningObjectTable_NoteChangeTime_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRunningObjectTable_GetTimeOfLastChange_Proxy alias "IRunningObjectTable_GetTimeOfLastChange_Proxy" (byval as IRunningObjectTable ptr, byval as IMoniker ptr, byval as FILETIME ptr) as HRESULT
-declare sub IRunningObjectTable_GetTimeOfLastChange_Stub alias "IRunningObjectTable_GetTimeOfLastChange_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRunningObjectTable_EnumRunning_Proxy alias "IRunningObjectTable_EnumRunning_Proxy" (byval as IRunningObjectTable ptr, byval as IEnumMoniker ptr ptr) as HRESULT
-declare sub IRunningObjectTable_EnumRunning_Stub alias "IRunningObjectTable_EnumRunning_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IPersist_GetClassID_Proxy alias "IPersist_GetClassID_Proxy" (byval as IPersist ptr, byval as CLSID ptr) as HRESULT
-declare sub IPersist_GetClassID_Stub alias "IPersist_GetClassID_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IPersistStream_IsDirty_Proxy alias "IPersistStream_IsDirty_Proxy" (byval as IPersistStream ptr) as HRESULT
-declare sub IPersistStream_IsDirty_Stub alias "IPersistStream_IsDirty_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IPersistStream_Load_Proxy alias "IPersistStream_Load_Proxy" (byval as IPersistStream ptr, byval as IStream ptr) as HRESULT
-declare sub IPersistStream_Load_Stub alias "IPersistStream_Load_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IPersistStream_Save_Proxy alias "IPersistStream_Save_Proxy" (byval as IPersistStream ptr, byval as IStream ptr, byval as BOOL) as HRESULT
-declare sub IPersistStream_Save_Stub alias "IPersistStream_Save_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IPersistStream_GetSizeMax_Proxy alias "IPersistStream_GetSizeMax_Proxy" (byval as IPersistStream ptr, byval as ULARGE_INTEGER ptr) as HRESULT
-declare sub IPersistStream_GetSizeMax_Stub alias "IPersistStream_GetSizeMax_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMoniker_RemoteBindToObject_Proxy alias "IMoniker_RemoteBindToObject_Proxy" (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as IID ptr, byval as IUnknown ptr ptr) as HRESULT
-declare sub IMoniker_RemoteBindToObject_Stub alias "IMoniker_RemoteBindToObject_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMoniker_RemoteBindToStorage_Proxy alias "IMoniker_RemoteBindToStorage_Proxy" (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as IID ptr, byval as IUnknown ptr ptr) as HRESULT
-declare sub IMoniker_RemoteBindToStorage_Stub alias "IMoniker_RemoteBindToStorage_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMoniker_Reduce_Proxy alias "IMoniker_Reduce_Proxy" (byval as IMoniker ptr, byval as IBindCtx ptr, byval as DWORD, byval as IMoniker ptr ptr, byval as IMoniker ptr ptr) as HRESULT
-declare sub IMoniker_Reduce_Stub alias "IMoniker_Reduce_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMoniker_ComposeWith_Proxy alias "IMoniker_ComposeWith_Proxy" (byval as IMoniker ptr, byval as IMoniker ptr, byval as BOOL, byval as IMoniker ptr ptr) as HRESULT
-declare sub IMoniker_ComposeWith_Stub alias "IMoniker_ComposeWith_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMoniker_Enum_Proxy alias "IMoniker_Enum_Proxy" (byval as IMoniker ptr, byval as BOOL, byval as IEnumMoniker ptr ptr) as HRESULT
-declare sub IMoniker_Enum_Stub alias "IMoniker_Enum_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMoniker_IsEqual_Proxy alias "IMoniker_IsEqual_Proxy" (byval as IMoniker ptr, byval as IMoniker ptr) as HRESULT
-declare sub IMoniker_IsEqual_Stub alias "IMoniker_IsEqual_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMoniker_Hash_Proxy alias "IMoniker_Hash_Proxy" (byval as IMoniker ptr, byval as DWORD ptr) as HRESULT
-declare sub IMoniker_Hash_Stub alias "IMoniker_Hash_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMoniker_IsRunning_Proxy alias "IMoniker_IsRunning_Proxy" (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as IMoniker ptr) as HRESULT
-declare sub IMoniker_IsRunning_Stub alias "IMoniker_IsRunning_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMoniker_GetTimeOfLastChange_Proxy alias "IMoniker_GetTimeOfLastChange_Proxy" (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as FILETIME ptr) as HRESULT
-declare sub IMoniker_GetTimeOfLastChange_Stub alias "IMoniker_GetTimeOfLastChange_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMoniker_Inverse_Proxy alias "IMoniker_Inverse_Proxy" (byval as IMoniker ptr, byval as IMoniker ptr ptr) as HRESULT
-declare sub IMoniker_Inverse_Stub alias "IMoniker_Inverse_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMoniker_CommonPrefixWith_Proxy alias "IMoniker_CommonPrefixWith_Proxy" (byval as IMoniker ptr, byval as IMoniker ptr, byval as IMoniker ptr ptr) as HRESULT
-declare sub IMoniker_CommonPrefixWith_Stub alias "IMoniker_CommonPrefixWith_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMoniker_RelativePathTo_Proxy alias "IMoniker_RelativePathTo_Proxy" (byval as IMoniker ptr, byval as IMoniker ptr, byval as IMoniker ptr ptr) as HRESULT
-declare sub IMoniker_RelativePathTo_Stub alias "IMoniker_RelativePathTo_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMoniker_GetDisplayName_Proxy alias "IMoniker_GetDisplayName_Proxy" (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as LPCSTR ptr) as HRESULT
-declare sub IMoniker_GetDisplayName_Stub alias "IMoniker_GetDisplayName_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMoniker_ParseDisplayName_Proxy alias "IMoniker_ParseDisplayName_Proxy" (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as LPCSTR, byval as ULONG ptr, byval as IMoniker ptr ptr) as HRESULT
-declare sub IMoniker_ParseDisplayName_Stub alias "IMoniker_ParseDisplayName_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMoniker_IsSystemMoniker_Proxy alias "IMoniker_IsSystemMoniker_Proxy" (byval as IMoniker ptr, byval as DWORD ptr) as HRESULT
-declare sub IMoniker_IsSystemMoniker_Stub alias "IMoniker_IsSystemMoniker_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IROTData_GetComparisonData_Proxy alias "IROTData_GetComparisonData_Proxy" (byval as IROTData ptr, byval as BYTE ptr, byval cbMax as ULONG, byval as ULONG ptr) as HRESULT
-declare sub IROTData_GetComparisonData_Stub alias "IROTData_GetComparisonData_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumString_RemoteNext_Proxy alias "IEnumString_RemoteNext_Proxy" (byval as IEnumString ptr, byval as ULONG, byval rgelt as LPCSTR ptr, byval as ULONG ptr) as HRESULT
-declare sub IEnumString_RemoteNext_Stub alias "IEnumString_RemoteNext_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumString_Skip_Proxy alias "IEnumString_Skip_Proxy" (byval as IEnumString ptr, byval as ULONG) as HRESULT
-declare sub IEnumString_Skip_Stub alias "IEnumString_Skip_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumString_Reset_Proxy alias "IEnumString_Reset_Proxy" (byval as IEnumString ptr) as HRESULT
-declare sub IEnumString_Reset_Stub alias "IEnumString_Reset_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumString_Clone_Proxy alias "IEnumString_Clone_Proxy" (byval as IEnumString ptr, byval as IEnumString ptr ptr) as HRESULT
-declare sub IEnumString_Clone_Stub alias "IEnumString_Clone_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStream_RemoteRead_Proxy alias "IStream_RemoteRead_Proxy" (byval as IStream ptr, byval as BYTE ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
-declare sub IStream_RemoteRead_Stub alias "IStream_RemoteRead_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStream_RemoteWrite_Proxy alias "IStream_RemoteWrite_Proxy" (byval as IStream ptr, byval pv as BYTE ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
-declare sub IStream_RemoteWrite_Stub alias "IStream_RemoteWrite_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStream_RemoteSeek_Proxy alias "IStream_RemoteSeek_Proxy" (byval as IStream ptr, byval as LARGE_INTEGER, byval as DWORD, byval as ULARGE_INTEGER ptr) as HRESULT
-declare sub IStream_RemoteSeek_Stub alias "IStream_RemoteSeek_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStream_SetSize_Proxy alias "IStream_SetSize_Proxy" (byval as IStream ptr, byval as ULARGE_INTEGER) as HRESULT
-declare sub IStream_SetSize_Stub alias "IStream_SetSize_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStream_RemoteCopyTo_Proxy alias "IStream_RemoteCopyTo_Proxy" (byval as IStream ptr, byval as IStream ptr, byval as ULARGE_INTEGER, byval as ULARGE_INTEGER ptr, byval as ULARGE_INTEGER ptr) as HRESULT
-declare sub IStream_RemoteCopyTo_Stub alias "IStream_RemoteCopyTo_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStream_Commit_Proxy alias "IStream_Commit_Proxy" (byval as IStream ptr, byval as DWORD) as HRESULT
-declare sub IStream_Commit_Stub alias "IStream_Commit_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStream_Revert_Proxy alias "IStream_Revert_Proxy" (byval as IStream ptr) as HRESULT
-declare sub IStream_Revert_Stub alias "IStream_Revert_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStream_LockRegion_Proxy alias "IStream_LockRegion_Proxy" (byval as IStream ptr, byval as ULARGE_INTEGER, byval as ULARGE_INTEGER, byval as DWORD) as HRESULT
-declare sub IStream_LockRegion_Stub alias "IStream_LockRegion_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStream_UnlockRegion_Proxy alias "IStream_UnlockRegion_Proxy" (byval as IStream ptr, byval as ULARGE_INTEGER, byval as ULARGE_INTEGER, byval as DWORD) as HRESULT
-declare sub IStream_UnlockRegion_Stub alias "IStream_UnlockRegion_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStream_Stat_Proxy alias "IStream_Stat_Proxy" (byval as IStream ptr, byval as STATSTG ptr, byval as DWORD) as HRESULT
-declare sub IStream_Stat_Stub alias "IStream_Stat_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStream_Clone_Proxy alias "IStream_Clone_Proxy" (byval as IStream ptr, byval as IStream ptr ptr) as HRESULT
-declare sub IStream_Clone_Stub alias "IStream_Clone_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumSTATSTG_RemoteNext_Proxy alias "IEnumSTATSTG_RemoteNext_Proxy" (byval as IEnumSTATSTG ptr, byval as ULONG, byval as STATSTG ptr, byval as ULONG ptr) as HRESULT
-declare sub IEnumSTATSTG_RemoteNext_Stub alias "IEnumSTATSTG_RemoteNext_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumSTATSTG_Skip_Proxy alias "IEnumSTATSTG_Skip_Proxy" (byval as IEnumSTATSTG ptr, byval celt as ULONG) as HRESULT
-declare sub IEnumSTATSTG_Skip_Stub alias "IEnumSTATSTG_Skip_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumSTATSTG_Reset_Proxy alias "IEnumSTATSTG_Reset_Proxy" (byval as IEnumSTATSTG ptr) as HRESULT
-declare sub IEnumSTATSTG_Reset_Stub alias "IEnumSTATSTG_Reset_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumSTATSTG_Clone_Proxy alias "IEnumSTATSTG_Clone_Proxy" (byval as IEnumSTATSTG ptr, byval as IEnumSTATSTG ptr ptr) as HRESULT
-declare sub IEnumSTATSTG_Clone_Stub alias "IEnumSTATSTG_Clone_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStorage_CreateStream_Proxy alias "IStorage_CreateStream_Proxy" (byval as IStorage ptr, byval as OLECHAR ptr, byval as DWORD, byval as DWORD, byval as DWORD, byval as IStream ptr ptr) as HRESULT
-declare sub IStorage_CreateStream_Stub alias "IStorage_CreateStream_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStorage_RemoteOpenStream_Proxy alias "IStorage_RemoteOpenStream_Proxy" (byval as IStorage ptr, byval as OLECHAR ptr, byval as uinteger, byval as BYTE ptr, byval as DWORD, byval as DWORD, byval as IStream ptr ptr) as HRESULT
-declare sub IStorage_RemoteOpenStream_Stub alias "IStorage_RemoteOpenStream_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStorage_CreateStorage_Proxy alias "IStorage_CreateStorage_Proxy" (byval as IStorage ptr, byval as OLECHAR ptr, byval as DWORD, byval as DWORD, byval as DWORD, byval as IStorage ptr ptr) as HRESULT
-declare sub IStorage_CreateStorage_Stub alias "IStorage_CreateStorage_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStorage_OpenStorage_Proxy alias "IStorage_OpenStorage_Proxy" (byval as IStorage ptr, byval as OLECHAR ptr, byval as IStorage ptr, byval as DWORD, byval as SNB, byval as DWORD, byval as IStorage ptr ptr) as HRESULT
-declare sub IStorage_OpenStorage_Stub alias "IStorage_OpenStorage_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStorage_CopyTo_Proxy alias "IStorage_CopyTo_Proxy" (byval as IStorage ptr, byval as DWORD, byval as IID ptr, byval as SNB, byval as IStorage ptr) as HRESULT
-declare sub IStorage_CopyTo_Stub alias "IStorage_CopyTo_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStorage_MoveElementTo_Proxy alias "IStorage_MoveElementTo_Proxy" (byval as IStorage ptr, byval as OLECHAR ptr, byval as IStorage ptr, byval as OLECHAR ptr, byval as DWORD) as HRESULT
-declare sub IStorage_MoveElementTo_Stub alias "IStorage_MoveElementTo_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStorage_Commit_Proxy alias "IStorage_Commit_Proxy" (byval as IStorage ptr, byval as DWORD) as HRESULT
-declare sub IStorage_Commit_Stub alias "IStorage_Commit_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStorage_Revert_Proxy alias "IStorage_Revert_Proxy" (byval as IStorage ptr) as HRESULT
-declare sub IStorage_Revert_Stub alias "IStorage_Revert_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStorage_RemoteEnumElements_Proxy alias "IStorage_RemoteEnumElements_Proxy" (byval as IStorage ptr, byval as DWORD, byval as uinteger, byval as BYTE ptr, byval as DWORD, byval as IEnumSTATSTG ptr ptr) as HRESULT
-declare sub IStorage_RemoteEnumElements_Stub alias "IStorage_RemoteEnumElements_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStorage_DestroyElement_Proxy alias "IStorage_DestroyElement_Proxy" (byval as IStorage ptr, byval as OLECHAR ptr) as HRESULT
-declare sub IStorage_DestroyElement_Stub alias "IStorage_DestroyElement_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStorage_RenameElement_Proxy alias "IStorage_RenameElement_Proxy" (byval as IStorage ptr, byval as OLECHAR ptr, byval as OLECHAR ptr) as HRESULT
-declare sub IStorage_RenameElement_Stub alias "IStorage_RenameElement_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStorage_SetElementTimes_Proxy alias "IStorage_SetElementTimes_Proxy" (byval as IStorage ptr, byval as OLECHAR ptr, byval as FILETIME ptr, byval as FILETIME ptr, byval as FILETIME ptr) as HRESULT
-declare sub IStorage_SetElementTimes_Stub alias "IStorage_SetElementTimes_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStorage_SetClass_Proxy alias "IStorage_SetClass_Proxy" (byval as IStorage ptr, byval as CLSID ptr) as HRESULT
-declare sub IStorage_SetClass_Stub alias "IStorage_SetClass_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStorage_SetStateBits_Proxy alias "IStorage_SetStateBits_Proxy" (byval as IStorage ptr, byval as DWORD, byval as DWORD) as HRESULT
-declare sub IStorage_SetStateBits_Stub alias "IStorage_SetStateBits_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IStorage_Stat_Proxy alias "IStorage_Stat_Proxy" (byval as IStorage ptr, byval as STATSTG ptr, byval as DWORD) as HRESULT
-declare sub IStorage_Stat_Stub alias "IStorage_Stat_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IPersistFile_IsDirty_Proxy alias "IPersistFile_IsDirty_Proxy" (byval as IPersistFile ptr) as HRESULT
-declare sub IPersistFile_IsDirty_Stub alias "IPersistFile_IsDirty_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IPersistFile_Load_Proxy alias "IPersistFile_Load_Proxy" (byval as IPersistFile ptr, byval as LPCOLESTR, byval as DWORD) as HRESULT
-declare sub IPersistFile_Load_Stub alias "IPersistFile_Load_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IPersistFile_Save_Proxy alias "IPersistFile_Save_Proxy" (byval as IPersistFile ptr, byval pszFileName as LPCOLESTR, byval as BOOL) as HRESULT
-declare sub IPersistFile_Save_Stub alias "IPersistFile_Save_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IPersistFile_SaveCompleted_Proxy alias "IPersistFile_SaveCompleted_Proxy" (byval as IPersistFile ptr, byval as LPCOLESTR) as HRESULT
-declare sub IPersistFile_SaveCompleted_Stub alias "IPersistFile_SaveCompleted_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IPersistFile_GetCurFile_Proxy alias "IPersistFile_GetCurFile_Proxy" (byval as IPersistFile ptr, byval as LPCSTR ptr) as HRESULT
-declare sub IPersistFile_GetCurFile_Stub alias "IPersistFile_GetCurFile_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IPersistStorage_IsDirty_Proxy alias "IPersistStorage_IsDirty_Proxy" (byval as IPersistStorage ptr) as HRESULT
-declare sub IPersistStorage_IsDirty_Stub alias "IPersistStorage_IsDirty_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IPersistStorage_InitNew_Proxy alias "IPersistStorage_InitNew_Proxy" (byval as IPersistStorage ptr, byval as IStorage ptr) as HRESULT
-declare sub IPersistStorage_InitNew_Stub alias "IPersistStorage_InitNew_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IPersistStorage_Load_Proxy alias "IPersistStorage_Load_Proxy" (byval as IPersistStorage ptr, byval as IStorage ptr) as HRESULT
-declare sub IPersistStorage_Load_Stub alias "IPersistStorage_Load_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IPersistStorage_Save_Proxy alias "IPersistStorage_Save_Proxy" (byval as IPersistStorage ptr, byval as IStorage ptr, byval as BOOL) as HRESULT
-declare sub IPersistStorage_Save_Stub alias "IPersistStorage_Save_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IPersistStorage_SaveCompleted_Proxy alias "IPersistStorage_SaveCompleted_Proxy" (byval as IPersistStorage ptr, byval as IStorage ptr) as HRESULT
-declare sub IPersistStorage_SaveCompleted_Stub alias "IPersistStorage_SaveCompleted_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IPersistStorage_HandsOffStorage_Proxy alias "IPersistStorage_HandsOffStorage_Proxy" (byval as IPersistStorage ptr) as HRESULT
-declare sub IPersistStorage_HandsOffStorage_Stub alias "IPersistStorage_HandsOffStorage_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function ILockBytes_RemoteReadAt_Proxy alias "ILockBytes_RemoteReadAt_Proxy" (byval as ILockBytes ptr, byval as ULARGE_INTEGER, byval as BYTE ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
-declare sub ILockBytes_RemoteReadAt_Stub alias "ILockBytes_RemoteReadAt_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function ILockBytes_RemoteWriteAt_Proxy alias "ILockBytes_RemoteWriteAt_Proxy" (byval as ILockBytes ptr, byval as ULARGE_INTEGER, byval pv as BYTE ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
-declare sub ILockBytes_RemoteWriteAt_Stub alias "ILockBytes_RemoteWriteAt_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function ILockBytes_Flush_Proxy alias "ILockBytes_Flush_Proxy" (byval as ILockBytes ptr) as HRESULT
-declare sub ILockBytes_Flush_Stub alias "ILockBytes_Flush_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function ILockBytes_SetSize_Proxy alias "ILockBytes_SetSize_Proxy" (byval as ILockBytes ptr, byval as ULARGE_INTEGER) as HRESULT
-declare sub ILockBytes_SetSize_Stub alias "ILockBytes_SetSize_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function ILockBytes_LockRegion_Proxy alias "ILockBytes_LockRegion_Proxy" (byval as ILockBytes ptr, byval as ULARGE_INTEGER, byval as ULARGE_INTEGER, byval as DWORD) as HRESULT
-declare sub ILockBytes_LockRegion_Stub alias "ILockBytes_LockRegion_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function ILockBytes_UnlockRegion_Proxy alias "ILockBytes_UnlockRegion_Proxy" (byval as ILockBytes ptr, byval as ULARGE_INTEGER, byval as ULARGE_INTEGER, byval as DWORD) as HRESULT
-declare sub ILockBytes_UnlockRegion_Stub alias "ILockBytes_UnlockRegion_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function ILockBytes_Stat_Proxy alias "ILockBytes_Stat_Proxy" (byval as ILockBytes ptr, byval as STATSTG ptr, byval as DWORD) as HRESULT
-declare sub ILockBytes_Stat_Stub alias "ILockBytes_Stat_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumFORMATETC_RemoteNext_Proxy alias "IEnumFORMATETC_RemoteNext_Proxy" (byval as IEnumFORMATETC ptr, byval as ULONG, byval as FORMATETC ptr, byval as ULONG ptr) as HRESULT
-declare sub IEnumFORMATETC_RemoteNext_Stub alias "IEnumFORMATETC_RemoteNext_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumFORMATETC_Skip_Proxy alias "IEnumFORMATETC_Skip_Proxy" (byval as IEnumFORMATETC ptr, byval as ULONG) as HRESULT
-declare sub IEnumFORMATETC_Skip_Stub alias "IEnumFORMATETC_Skip_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumFORMATETC_Reset_Proxy alias "IEnumFORMATETC_Reset_Proxy" (byval as IEnumFORMATETC ptr) as HRESULT
-declare sub IEnumFORMATETC_Reset_Stub alias "IEnumFORMATETC_Reset_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumFORMATETC_Clone_Proxy alias "IEnumFORMATETC_Clone_Proxy" (byval as IEnumFORMATETC ptr, byval as IEnumFORMATETC ptr ptr) as HRESULT
-declare sub IEnumFORMATETC_Clone_Stub alias "IEnumFORMATETC_Clone_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumFORMATETC_Next_Proxy alias "IEnumFORMATETC_Next_Proxy" (byval as IEnumFORMATETC ptr, byval as ULONG, byval as FORMATETC ptr, byval as ULONG ptr) as HRESULT
-declare function IEnumFORMATETC_Next_Stub alias "IEnumFORMATETC_Next_Stub" (byval as IEnumFORMATETC ptr, byval as ULONG, byval as FORMATETC ptr, byval as ULONG ptr) as HRESULT
-declare function IEnumSTATDATA_RemoteNext_Proxy alias "IEnumSTATDATA_RemoteNext_Proxy" (byval as IEnumSTATDATA ptr, byval as ULONG, byval as STATDATA ptr, byval as ULONG ptr) as HRESULT
-declare sub IEnumSTATDATA_RemoteNext_Stub alias "IEnumSTATDATA_RemoteNext_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumSTATDATA_Skip_Proxy alias "IEnumSTATDATA_Skip_Proxy" (byval as IEnumSTATDATA ptr, byval as ULONG) as HRESULT
-declare sub IEnumSTATDATA_Skip_Stub alias "IEnumSTATDATA_Skip_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumSTATDATA_Reset_Proxy alias "IEnumSTATDATA_Reset_Proxy" (byval as IEnumSTATDATA ptr) as HRESULT
-declare sub IEnumSTATDATA_Reset_Stub alias "IEnumSTATDATA_Reset_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumSTATDATA_Clone_Proxy alias "IEnumSTATDATA_Clone_Proxy" (byval as IEnumSTATDATA ptr, byval as IEnumSTATDATA ptr ptr) as HRESULT
-declare sub IEnumSTATDATA_Clone_Stub alias "IEnumSTATDATA_Clone_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumSTATDATA_Next_Proxy alias "IEnumSTATDATA_Next_Proxy" (byval as IEnumSTATDATA ptr, byval as ULONG, byval as STATDATA ptr, byval as ULONG ptr) as HRESULT
-declare function IEnumSTATDATA_Next_Stub alias "IEnumSTATDATA_Next_Stub" (byval as IEnumSTATDATA ptr, byval as ULONG, byval as STATDATA ptr, byval as ULONG ptr) as HRESULT
-declare function IRootStorage_SwitchToFile_Proxy alias "IRootStorage_SwitchToFile_Proxy" (byval as IRootStorage ptr, byval as LPCSTR) as HRESULT
-declare sub IRootStorage_SwitchToFile_Stub alias "IRootStorage_SwitchToFile_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare sub IAdviseSink_RemoteOnDataChange_Proxy alias "IAdviseSink_RemoteOnDataChange_Proxy" (byval as IAdviseSink ptr, byval as FORMATETC ptr, byval as RemSTGMEDIUM ptr)
-declare sub IAdviseSink_RemoteOnDataChange_Stub alias "IAdviseSink_RemoteOnDataChange_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare sub IAdviseSink_RemoteOnViewChange_Proxy alias "IAdviseSink_RemoteOnViewChange_Proxy" (byval as IAdviseSink ptr, byval as DWORD, byval as LONG)
-declare sub IAdviseSink_RemoteOnViewChange_Stub alias "IAdviseSink_RemoteOnViewChange_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare sub IAdviseSink_RemoteOnRename_Proxy alias "IAdviseSink_RemoteOnRename_Proxy" (byval as IAdviseSink ptr, byval as IMoniker ptr)
-declare sub IAdviseSink_RemoteOnRename_Stub alias "IAdviseSink_RemoteOnRename_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare sub IAdviseSink_RemoteOnSave_Proxy alias "IAdviseSink_RemoteOnSave_Proxy" (byval as IAdviseSink ptr)
-declare sub IAdviseSink_RemoteOnSave_Stub alias "IAdviseSink_RemoteOnSave_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IAdviseSink_RemoteOnClose_Proxy alias "IAdviseSink_RemoteOnClose_Proxy" (byval as IAdviseSink ptr) as HRESULT
-declare sub IAdviseSink_RemoteOnClose_Stub alias "IAdviseSink_RemoteOnClose_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare sub IAdviseSink_OnDataChange_Proxy alias "IAdviseSink_OnDataChange_Proxy" (byval as IAdviseSink ptr, byval as FORMATETC ptr, byval as STGMEDIUM ptr)
-declare sub IAdviseSink_OnDataChange_Stub alias "IAdviseSink_OnDataChange_Stub" (byval as IAdviseSink ptr, byval as FORMATETC ptr, byval as RemSTGMEDIUM ptr)
-declare sub IAdviseSink_OnViewChange_Proxy alias "IAdviseSink_OnViewChange_Proxy" (byval as IAdviseSink ptr, byval as DWORD, byval as LONG)
-declare sub IAdviseSink_OnViewChange_Stub alias "IAdviseSink_OnViewChange_Stub" (byval as IAdviseSink ptr, byval as DWORD, byval as LONG)
-declare sub IAdviseSink_OnRename_Proxy alias "IAdviseSink_OnRename_Proxy" (byval as IAdviseSink ptr, byval as IMoniker ptr)
-declare sub IAdviseSink_OnRename_Stub alias "IAdviseSink_OnRename_Stub" (byval as IAdviseSink ptr, byval as IMoniker ptr)
-declare sub IAdviseSink_OnSave_Proxy alias "IAdviseSink_OnSave_Proxy" (byval as IAdviseSink ptr)
-declare sub IAdviseSink_OnSave_Stub alias "IAdviseSink_OnSave_Stub" (byval as IAdviseSink ptr)
-declare sub IAdviseSink_OnClose_Proxy alias "IAdviseSink_OnClose_Proxy" (byval as IAdviseSink ptr)
-declare function IAdviseSink_OnClose_Stub alias "IAdviseSink_OnClose_Stub" (byval as IAdviseSink ptr) as HRESULT
-declare sub IAdviseSink2_RemoteOnLinkSrcChange_Proxy alias "IAdviseSink2_RemoteOnLinkSrcChange_Proxy" (byval as IAdviseSink2 ptr, byval as IMoniker ptr)
-declare sub IAdviseSink2_RemoteOnLinkSrcChange_Stub alias "IAdviseSink2_RemoteOnLinkSrcChange_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare sub IAdviseSink2_OnLinkSrcChange_Proxy alias "IAdviseSink2_OnLinkSrcChange_Proxy" (byval as IAdviseSink2 ptr, byval as IMoniker ptr)
-declare sub IAdviseSink2_OnLinkSrcChange_Stub alias "IAdviseSink2_OnLinkSrcChange_Stub" (byval as IAdviseSink2 ptr, byval as IMoniker ptr)
-declare function IDataObject_RemoteGetData_Proxy alias "IDataObject_RemoteGetData_Proxy" (byval as IDataObject ptr, byval as FORMATETC ptr, byval as RemSTGMEDIUM ptr ptr) as HRESULT
-declare sub IDataObject_RemoteGetData_Stub alias "IDataObject_RemoteGetData_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IDataObject_RemoteGetDataHere_Proxy alias "IDataObject_RemoteGetDataHere_Proxy" (byval as IDataObject ptr, byval as FORMATETC ptr, byval as RemSTGMEDIUM ptr ptr) as HRESULT
-declare sub IDataObject_RemoteGetDataHere_Stub alias "IDataObject_RemoteGetDataHere_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IDataObject_QueryGetData_Proxy alias "IDataObject_QueryGetData_Proxy" (byval as IDataObject ptr, byval as FORMATETC ptr) as HRESULT
-declare sub IDataObject_QueryGetData_Stub alias "IDataObject_QueryGetData_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IDataObject_GetCanonicalFormatEtc_Proxy alias "IDataObject_GetCanonicalFormatEtc_Proxy" (byval as IDataObject ptr, byval as FORMATETC ptr, byval as FORMATETC ptr) as HRESULT
-declare sub IDataObject_GetCanonicalFormatEtc_Stub alias "IDataObject_GetCanonicalFormatEtc_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IDataObject_RemoteSetData_Proxy alias "IDataObject_RemoteSetData_Proxy" (byval as IDataObject ptr, byval as FORMATETC ptr, byval as RemSTGMEDIUM ptr, byval as BOOL) as HRESULT
-declare sub IDataObject_RemoteSetData_Stub alias "IDataObject_RemoteSetData_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IDataObject_EnumFormatEtc_Proxy alias "IDataObject_EnumFormatEtc_Proxy" (byval as IDataObject ptr, byval as DWORD, byval as IEnumFORMATETC ptr ptr) as HRESULT
-declare sub IDataObject_EnumFormatEtc_Stub alias "IDataObject_EnumFormatEtc_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IDataObject_DAdvise_Proxy alias "IDataObject_DAdvise_Proxy" (byval as IDataObject ptr, byval as FORMATETC ptr, byval as DWORD, byval as IAdviseSink ptr, byval as DWORD ptr) as HRESULT
-declare sub IDataObject_DAdvise_Stub alias "IDataObject_DAdvise_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IDataObject_DUnadvise_Proxy alias "IDataObject_DUnadvise_Proxy" (byval as IDataObject ptr, byval as DWORD) as HRESULT
-declare sub IDataObject_DUnadvise_Stub alias "IDataObject_DUnadvise_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IDataObject_EnumDAdvise_Proxy alias "IDataObject_EnumDAdvise_Proxy" (byval as IDataObject ptr, byval as IEnumSTATDATA ptr ptr) as HRESULT
-declare sub IDataObject_EnumDAdvise_Stub alias "IDataObject_EnumDAdvise_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IDataObject_GetData_Proxy alias "IDataObject_GetData_Proxy" (byval as IDataObject ptr, byval as FORMATETC ptr, byval as STGMEDIUM ptr) as HRESULT
-declare function IDataObject_GetData_Stub alias "IDataObject_GetData_Stub" (byval as IDataObject ptr, byval as FORMATETC ptr, byval as RemSTGMEDIUM ptr ptr) as HRESULT
-declare function IDataObject_GetDataHere_Proxy alias "IDataObject_GetDataHere_Proxy" (byval as IDataObject ptr, byval as FORMATETC ptr, byval as STGMEDIUM ptr) as HRESULT
-declare function IDataObject_GetDataHere_Stub alias "IDataObject_GetDataHere_Stub" (byval as IDataObject ptr, byval as FORMATETC ptr, byval as RemSTGMEDIUM ptr ptr) as HRESULT
-declare function IDataObject_SetData_Proxy alias "IDataObject_SetData_Proxy" (byval as IDataObject ptr, byval as FORMATETC ptr, byval as STGMEDIUM ptr, byval as BOOL) as HRESULT
-declare function IDataObject_SetData_Stub alias "IDataObject_SetData_Stub" (byval as IDataObject ptr, byval as FORMATETC ptr, byval as RemSTGMEDIUM ptr, byval as BOOL) as HRESULT
-declare function IDataAdviseHolder_Advise_Proxy alias "IDataAdviseHolder_Advise_Proxy" (byval as IDataAdviseHolder ptr, byval as IDataObject ptr, byval as FORMATETC ptr, byval as DWORD, byval as IAdviseSink ptr, byval as DWORD ptr) as HRESULT
-declare sub IDataAdviseHolder_Advise_Stub alias "IDataAdviseHolder_Advise_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IDataAdviseHolder_Unadvise_Proxy alias "IDataAdviseHolder_Unadvise_Proxy" (byval as IDataAdviseHolder ptr, byval as DWORD) as HRESULT
-declare sub IDataAdviseHolder_Unadvise_Stub alias "IDataAdviseHolder_Unadvise_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IDataAdviseHolder_EnumAdvise_Proxy alias "IDataAdviseHolder_EnumAdvise_Proxy" (byval as IDataAdviseHolder ptr, byval as IEnumSTATDATA ptr ptr) as HRESULT
-declare sub IDataAdviseHolder_EnumAdvise_Stub alias "IDataAdviseHolder_EnumAdvise_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IDataAdviseHolder_SendOnDataChange_Proxy alias "IDataAdviseHolder_SendOnDataChange_Proxy" (byval as IDataAdviseHolder ptr, byval as IDataObject ptr, byval as DWORD, byval as DWORD) as HRESULT
-declare sub IDataAdviseHolder_SendOnDataChange_Stub alias "IDataAdviseHolder_SendOnDataChange_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMessageFilter_HandleInComingCall_Proxy alias "IMessageFilter_HandleInComingCall_Proxy" (byval as IMessageFilter ptr, byval as DWORD, byval as HTASK, byval as DWORD, byval as LPINTERFACEINFO) as DWORD
-declare sub IMessageFilter_HandleInComingCall_Stub alias "IMessageFilter_HandleInComingCall_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMessageFilter_RetryRejectedCall_Proxy alias "IMessageFilter_RetryRejectedCall_Proxy" (byval as IMessageFilter ptr, byval as HTASK, byval as DWORD, byval as DWORD) as DWORD
-declare sub IMessageFilter_RetryRejectedCall_Stub alias "IMessageFilter_RetryRejectedCall_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IMessageFilter_MessagePending_Proxy alias "IMessageFilter_MessagePending_Proxy" (byval as IMessageFilter ptr, byval as HTASK, byval as DWORD, byval as DWORD) as DWORD
-declare sub IMessageFilter_MessagePending_Stub alias "IMessageFilter_MessagePending_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRpcChannelBuffer_GetBuffer_Proxy alias "IRpcChannelBuffer_GetBuffer_Proxy" (byval as IRpcChannelBuffer ptr, byval as RPCOLEMESSAGE ptr, byval as IID ptr) as HRESULT
-declare sub IRpcChannelBuffer_GetBuffer_Stub alias "IRpcChannelBuffer_GetBuffer_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRpcChannelBuffer_SendReceive_Proxy alias "IRpcChannelBuffer_SendReceive_Proxy" (byval as IRpcChannelBuffer ptr, byval as RPCOLEMESSAGE ptr, byval as ULONG ptr) as HRESULT
-declare sub IRpcChannelBuffer_SendReceive_Stub alias "IRpcChannelBuffer_SendReceive_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRpcChannelBuffer_FreeBuffer_Proxy alias "IRpcChannelBuffer_FreeBuffer_Proxy" (byval as IRpcChannelBuffer ptr, byval as RPCOLEMESSAGE ptr) as HRESULT
-declare sub IRpcChannelBuffer_FreeBuffer_Stub alias "IRpcChannelBuffer_FreeBuffer_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRpcChannelBuffer_GetDestCtx_Proxy alias "IRpcChannelBuffer_GetDestCtx_Proxy" (byval as IRpcChannelBuffer ptr, byval as DWORD ptr, byval as any ptr ptr) as HRESULT
-declare sub IRpcChannelBuffer_GetDestCtx_Stub alias "IRpcChannelBuffer_GetDestCtx_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRpcChannelBuffer_IsConnected_Proxy alias "IRpcChannelBuffer_IsConnected_Proxy" (byval as IRpcChannelBuffer ptr) as HRESULT
-declare sub IRpcChannelBuffer_IsConnected_Stub alias "IRpcChannelBuffer_IsConnected_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRpcProxyBuffer_Connect_Proxy alias "IRpcProxyBuffer_Connect_Proxy" (byval as IRpcProxyBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr) as HRESULT
-declare sub IRpcProxyBuffer_Connect_Stub alias "IRpcProxyBuffer_Connect_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare sub IRpcProxyBuffer_Disconnect_Proxy alias "IRpcProxyBuffer_Disconnect_Proxy" (byval as IRpcProxyBuffer ptr)
-declare sub IRpcProxyBuffer_Disconnect_Stub alias "IRpcProxyBuffer_Disconnect_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRpcStubBuffer_Connect_Proxy alias "IRpcStubBuffer_Connect_Proxy" (byval as IRpcStubBuffer ptr, byval as IUnknown ptr) as HRESULT
-declare sub IRpcStubBuffer_Connect_Stub alias "IRpcStubBuffer_Connect_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare sub IRpcStubBuffer_Disconnect_Proxy alias "IRpcStubBuffer_Disconnect_Proxy" (byval as IRpcStubBuffer ptr)
-declare sub IRpcStubBuffer_Disconnect_Stub alias "IRpcStubBuffer_Disconnect_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRpcStubBuffer_Invoke_Proxy alias "IRpcStubBuffer_Invoke_Proxy" (byval as IRpcStubBuffer ptr, byval as RPCOLEMESSAGE ptr, byval as IRpcChannelBuffer ptr) as HRESULT
-declare sub IRpcStubBuffer_Invoke_Stub alias "IRpcStubBuffer_Invoke_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRpcStubBuffer_IsIIDSupported_Proxy alias "IRpcStubBuffer_IsIIDSupported_Proxy" (byval as IRpcStubBuffer ptr, byval as IID ptr) as IRpcStubBuffer ptr
-declare sub IRpcStubBuffer_IsIIDSupported_Stub alias "IRpcStubBuffer_IsIIDSupported_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRpcStubBuffer_CountRefs_Proxy alias "IRpcStubBuffer_CountRefs_Proxy" (byval as IRpcStubBuffer ptr) as ULONG
-declare sub IRpcStubBuffer_CountRefs_Stub alias "IRpcStubBuffer_CountRefs_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IRpcStubBuffer_DebugServerQueryInterface_Proxy alias "IRpcStubBuffer_DebugServerQueryInterface_Proxy" (byval as IRpcStubBuffer ptr, byval as any ptr ptr) as HRESULT
-declare sub IRpcStubBuffer_DebugServerQueryInterface_Stub alias "IRpcStubBuffer_DebugServerQueryInterface_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare sub IRpcStubBuffer_DebugServerRelease_Proxy alias "IRpcStubBuffer_DebugServerRelease_Proxy" (byval as IRpcStubBuffer ptr, byval as any ptr)
-declare sub IRpcStubBuffer_DebugServerRelease_Stub alias "IRpcStubBuffer_DebugServerRelease_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IPSFactoryBuffer_CreateProxy_Proxy alias "IPSFactoryBuffer_CreateProxy_Proxy" (byval as IPSFactoryBuffer ptr, byval as IUnknown ptr, byval as IID ptr, byval as IRpcProxyBuffer ptr ptr, byval as any ptr ptr) as HRESULT
-declare sub IPSFactoryBuffer_CreateProxy_Stub alias "IPSFactoryBuffer_CreateProxy_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IPSFactoryBuffer_CreateStub_Proxy alias "IPSFactoryBuffer_CreateStub_Proxy" (byval as IPSFactoryBuffer ptr, byval as IID ptr, byval as IUnknown ptr, byval as IRpcStubBuffer ptr ptr) as HRESULT
-declare sub IPSFactoryBuffer_CreateStub_Stub alias "IPSFactoryBuffer_CreateStub_Stub" (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
-declare function IEnumUnknown_Next_Proxy alias "IEnumUnknown_Next_Proxy" (byval as IEnumUnknown ptr, byval as ULONG, byval as IUnknown ptr ptr, byval as ULONG ptr) as HRESULT
-declare function IEnumUnknown_Next_Stub alias "IEnumUnknown_Next_Stub" (byval as IEnumUnknown ptr, byval as ULONG, byval as IUnknown ptr ptr, byval as ULONG ptr) as HRESULT
-declare function IEnumMoniker_Next_Proxy alias "IEnumMoniker_Next_Proxy" (byval as IEnumMoniker ptr, byval as ULONG, byval as IMoniker ptr ptr, byval as ULONG ptr) as HRESULT
-declare function IEnumMoniker_Next_Stub alias "IEnumMoniker_Next_Stub" (byval as IEnumMoniker ptr, byval as ULONG, byval as IMoniker ptr ptr, byval as ULONG ptr) as HRESULT
-declare function IMoniker_BindToObject_Proxy alias "IMoniker_BindToObject_Proxy" (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
-declare function IMoniker_BindToObject_Stub alias "IMoniker_BindToObject_Stub" (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as IID ptr, byval as IUnknown ptr ptr) as HRESULT
-declare function IMoniker_BindToStorage_Proxy alias "IMoniker_BindToStorage_Proxy" (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
-declare function IMoniker_BindToStorage_Stub alias "IMoniker_BindToStorage_Stub" (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as IID ptr, byval as IUnknown ptr ptr) as HRESULT
-declare function IEnumString_Next_Proxy alias "IEnumString_Next_Proxy" (byval as IEnumString ptr, byval as ULONG, byval as LPCSTR ptr, byval as ULONG ptr) as HRESULT
-declare function IEnumString_Next_Stub alias "IEnumString_Next_Stub" (byval as IEnumString ptr, byval as ULONG, byval as LPCSTR ptr, byval as ULONG ptr) as HRESULT
-declare function IStream_Read_Proxy alias "IStream_Read_Proxy" (byval as IStream ptr, byval as any ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
-declare function IStream_Read_Stub alias "IStream_Read_Stub" (byval as IStream ptr, byval as BYTE ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
-declare function IStream_Write_Proxy alias "IStream_Write_Proxy" (byval as IStream ptr, byval as any ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
-declare function IStream_Write_Stub alias "IStream_Write_Stub" (byval as IStream ptr, byval as BYTE ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
-declare function IStream_Seek_Proxy alias "IStream_Seek_Proxy" (byval as IStream ptr, byval as LARGE_INTEGER, byval as DWORD, byval as ULARGE_INTEGER ptr) as HRESULT
-declare function IStream_Seek_Stub alias "IStream_Seek_Stub" (byval as IStream ptr, byval as LARGE_INTEGER, byval as DWORD, byval as ULARGE_INTEGER ptr) as HRESULT
-declare function IStream_CopyTo_Proxy alias "IStream_CopyTo_Proxy" (byval as IStream ptr, byval as IStream ptr, byval as ULARGE_INTEGER, byval as ULARGE_INTEGER ptr, byval as ULARGE_INTEGER ptr) as HRESULT
-declare function IStream_CopyTo_Stub alias "IStream_CopyTo_Stub" (byval as IStream ptr, byval as IStream ptr, byval as ULARGE_INTEGER, byval as ULARGE_INTEGER ptr, byval as ULARGE_INTEGER ptr) as HRESULT
-declare function IEnumSTATSTG_Next_Proxy alias "IEnumSTATSTG_Next_Proxy" (byval as IEnumSTATSTG ptr, byval as ULONG, byval as STATSTG ptr, byval as ULONG ptr) as HRESULT
-declare function IEnumSTATSTG_Next_Stub alias "IEnumSTATSTG_Next_Stub" (byval as IEnumSTATSTG ptr, byval as ULONG, byval as STATSTG ptr, byval as ULONG ptr) as HRESULT
-declare function IStorage_OpenStream_Proxy alias "IStorage_OpenStream_Proxy" (byval as IStorage ptr, byval as OLECHAR ptr, byval as any ptr, byval as DWORD, byval as DWORD, byval as IStream ptr ptr) as HRESULT
-declare function IStorage_OpenStream_Stub alias "IStorage_OpenStream_Stub" (byval as IStorage ptr, byval as OLECHAR ptr, byval as uinteger, byval as BYTE ptr, byval as DWORD, byval as DWORD, byval as IStream ptr ptr) as HRESULT
-declare function IStorage_EnumElements_Proxy alias "IStorage_EnumElements_Proxy" (byval as IStorage ptr, byval as DWORD, byval as any ptr, byval as DWORD, byval as IEnumSTATSTG ptr ptr) as HRESULT
-declare function IStorage_EnumElements_Stub alias "IStorage_EnumElements_Stub" (byval as IStorage ptr, byval as DWORD, byval as uinteger, byval as BYTE ptr, byval as DWORD, byval as IEnumSTATSTG ptr ptr) as HRESULT
-declare function ILockBytes_ReadAt_Proxy alias "ILockBytes_ReadAt_Proxy" (byval as ILockBytes ptr, byval as ULARGE_INTEGER, byval as any ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
-declare function ILockBytes_ReadAt_Stub alias "ILockBytes_ReadAt_Stub" (byval as ILockBytes ptr, byval as ULARGE_INTEGER, byval as BYTE ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
-declare function ILockBytes_WriteAt_Proxy alias "ILockBytes_WriteAt_Proxy" (byval as ILockBytes ptr, byval as ULARGE_INTEGER, byval as any ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
-declare function ILockBytes_WriteAt_Stub alias "ILockBytes_WriteAt_Stub" (byval as ILockBytes ptr, byval as ULARGE_INTEGER, byval as BYTE ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
+extern "windows"
+
+declare function IMarshal_GetUnmarshalClass_Proxy (byval as IMarshal ptr, byval as IID ptr, byval as any ptr, byval as DWORD, byval as any ptr, byval as DWORD, byval as CLSID ptr) as HRESULT
+declare sub IMarshal_GetUnmarshalClass_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMarshal_GetMarshalSizeMax_Proxy (byval as IMarshal ptr, byval as IID ptr, byval as any ptr, byval as DWORD, byval as any ptr, byval as DWORD, byval as DWORD ptr) as HRESULT
+declare sub IMarshal_GetMarshalSizeMax_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMarshal_MarshalInterface_Proxy (byval as IMarshal ptr, byval as IStream ptr, byval as IID ptr, byval as any ptr, byval as DWORD, byval as any ptr, byval as DWORD) as HRESULT
+declare sub IMarshal_MarshalInterface_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMarshal_UnmarshalInterface_Proxy (byval as IMarshal ptr, byval as IStream ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
+declare sub IMarshal_UnmarshalInterface_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMarshal_ReleaseMarshalData_Proxy (byval as IMarshal ptr, byval as IStream ptr) as HRESULT
+declare sub IMarshal_ReleaseMarshalData_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMarshal_DisconnectObject_Proxy (byval as IMarshal ptr, byval as DWORD) as HRESULT
+declare sub IMarshal_DisconnectObject_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMalloc_Alloc_Proxy (byval as IMalloc ptr, byval as ULONG) as any ptr
+declare sub IMalloc_Alloc_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMalloc_Realloc_Proxy (byval as IMalloc ptr, byval as any ptr, byval as ULONG) as any ptr
+declare sub IMalloc_Realloc_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare sub IMalloc_Free_Proxy (byval as IMalloc ptr, byval as any ptr)
+declare sub IMalloc_Free_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMalloc_GetSize_Proxy (byval as IMalloc ptr, byval as any ptr) as ULONG
+declare sub IMalloc_GetSize_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMalloc_DidAlloc_Proxy (byval as IMalloc ptr, byval as any ptr) as integer
+declare sub IMalloc_DidAlloc_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare sub IMalloc_HeapMinimize_Proxy (byval as IMalloc ptr)
+declare sub IMalloc_HeapMinimize_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMallocSpy_PreAlloc_Proxy (byval as IMallocSpy ptr, byval cbRequest as ULONG) as ULONG
+declare sub IMallocSpy_PreAlloc_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMallocSpy_PostAlloc_Proxy (byval as IMallocSpy ptr, byval as any ptr) as any ptr
+declare sub IMallocSpy_PostAlloc_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMallocSpy_PreFree_Proxy (byval as IMallocSpy ptr, byval as any ptr, byval as BOOL) as any ptr
+declare sub IMallocSpy_PreFree_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare sub IMallocSpy_PostFree_Proxy (byval as IMallocSpy ptr, byval as BOOL)
+declare sub IMallocSpy_PostFree_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMallocSpy_PreRealloc_Proxy (byval as IMallocSpy ptr, byval as any ptr, byval as ULONG, byval as any ptr ptr, byval as BOOL) as ULONG
+declare sub IMallocSpy_PreRealloc_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMallocSpy_PostRealloc_Proxy (byval as IMallocSpy ptr, byval as any ptr, byval as BOOL) as any ptr
+declare sub IMallocSpy_PostRealloc_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMallocSpy_PreGetSize_Proxy (byval as IMallocSpy ptr, byval as any ptr, byval as BOOL) as any ptr
+declare sub IMallocSpy_PreGetSize_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMallocSpy_PostGetSize_Proxy (byval as IMallocSpy ptr, byval as ULONG, byval as BOOL) as ULONG
+declare sub IMallocSpy_PostGetSize_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMallocSpy_PreDidAlloc_Proxy (byval as IMallocSpy ptr, byval as any ptr, byval as BOOL) as any ptr
+declare sub IMallocSpy_PreDidAlloc_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMallocSpy_PostDidAlloc_Proxy (byval as IMallocSpy ptr, byval as any ptr, byval as BOOL, byval as integer) as integer
+declare sub IMallocSpy_PostDidAlloc_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare sub IMallocSpy_PreHeapMinimize_Proxy (byval as IMallocSpy ptr)
+declare sub IMallocSpy_PreHeapMinimize_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare sub IMallocSpy_PostHeapMinimize_Proxy (byval as IMallocSpy ptr)
+declare sub IMallocSpy_PostHeapMinimize_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStdMarshalInfo_GetClassForHandler_Proxy (byval as IStdMarshalInfo ptr, byval as DWORD, byval as any ptr, byval as CLSID ptr) as HRESULT
+declare sub IStdMarshalInfo_GetClassForHandler_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IExternalConnection_AddConnection_Proxy (byval as IExternalConnection ptr, byval as DWORD, byval as DWORD) as DWORD
+declare sub IExternalConnection_AddConnection_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IExternalConnection_ReleaseConnection_Proxy (byval as IExternalConnection ptr, byval as DWORD, byval as DWORD, byval as BOOL) as DWORD
+declare sub IExternalConnection_ReleaseConnection_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumUnknown_RemoteNext_Proxy (byval as IEnumUnknown ptr, byval as ULONG, byval as IUnknown ptr ptr, byval as ULONG ptr) as HRESULT
+declare sub IEnumUnknown_RemoteNext_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumUnknown_Skip_Proxy (byval as IEnumUnknown ptr, byval as ULONG) as HRESULT
+declare sub IEnumUnknown_Skip_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumUnknown_Reset_Proxy (byval as IEnumUnknown ptr) as HRESULT
+declare sub IEnumUnknown_Reset_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumUnknown_Clone_Proxy (byval as IEnumUnknown ptr, byval as IEnumUnknown ptr ptr) as HRESULT
+declare sub IEnumUnknown_Clone_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IBindCtx_RegisterObjectBound_Proxy (byval as IBindCtx ptr, byval punk as IUnknown ptr) as HRESULT
+declare sub IBindCtx_RegisterObjectBound_Stub (byval as IRpcStubBuffer ptr, byval _pRpcChannelBuffer as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IBindCtx_RevokeObjectBound_Proxy (byval as IBindCtx ptr, byval punk as IUnknown ptr) as HRESULT
+declare sub IBindCtx_RevokeObjectBound_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IBindCtx_ReleaseBoundObjects_Proxy (byval as IBindCtx ptr) as HRESULT
+declare sub IBindCtx_ReleaseBoundObjects_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IBindCtx_SetBindOptions_Proxy (byval as IBindCtx ptr, byval as BIND_OPTS ptr) as HRESULT
+declare sub IBindCtx_SetBindOptions_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IBindCtx_GetBindOptions_Proxy (byval as IBindCtx ptr, byval pbindopts as BIND_OPTS ptr) as HRESULT
+declare sub IBindCtx_GetBindOptions_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IBindCtx_GetRunningObjectTable_Proxy (byval as IBindCtx ptr, byval as IRunningObjectTable ptr ptr) as HRESULT
+declare sub IBindCtx_GetRunningObjectTable_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IBindCtx_RegisterObjectParam_Proxy (byval as IBindCtx ptr, byval as LPCSTR, byval as IUnknown ptr) as HRESULT
+declare sub IBindCtx_RegisterObjectParam_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IBindCtx_GetObjectParam_Proxy (byval as IBindCtx ptr, byval as LPCSTR, byval as IUnknown ptr ptr) as HRESULT
+declare sub IBindCtx_GetObjectParam_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IBindCtx_EnumObjectParam_Proxy (byval as IBindCtx ptr, byval as IEnumString ptr ptr) as HRESULT
+declare sub IBindCtx_EnumObjectParam_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IBindCtx_RevokeObjectParam_Proxy (byval as IBindCtx ptr, byval as LPCSTR) as HRESULT
+declare sub IBindCtx_RevokeObjectParam_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumMoniker_RemoteNext_Proxy (byval as IEnumMoniker ptr, byval as ULONG, byval as IMoniker ptr ptr, byval as ULONG ptr) as HRESULT
+declare sub IEnumMoniker_RemoteNext_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumMoniker_Skip_Proxy (byval as IEnumMoniker ptr, byval as ULONG) as HRESULT
+declare sub IEnumMoniker_Skip_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumMoniker_Reset_Proxy (byval as IEnumMoniker ptr) as HRESULT
+declare sub IEnumMoniker_Reset_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumMoniker_Clone_Proxy (byval as IEnumMoniker ptr, byval as IEnumMoniker ptr ptr) as HRESULT
+declare sub IEnumMoniker_Clone_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRunnableObject_GetRunningClass_Proxy (byval as IRunnableObject ptr, byval as LPCLSID) as HRESULT
+declare sub IRunnableObject_GetRunningClass_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRunnableObject_Run_Proxy (byval as IRunnableObject ptr, byval as LPBINDCTX) as HRESULT
+declare sub IRunnableObject_Run_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRunnableObject_IsRunning_Proxy (byval as IRunnableObject ptr) as BOOL
+declare sub IRunnableObject_IsRunning_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRunnableObject_LockRunning_Proxy (byval as IRunnableObject ptr, byval as BOOL, byval as BOOL) as HRESULT
+declare sub IRunnableObject_LockRunning_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRunnableObject_SetContainedObject_Proxy (byval as IRunnableObject ptr, byval as BOOL) as HRESULT
+declare sub IRunnableObject_SetContainedObject_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRunningObjectTable_Register_Proxy (byval as IRunningObjectTable ptr, byval as DWORD, byval as IUnknown ptr, byval as IMoniker ptr, byval as DWORD ptr) as HRESULT
+declare sub IRunningObjectTable_Register_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRunningObjectTable_Revoke_Proxy (byval as IRunningObjectTable ptr, byval as DWORD) as HRESULT
+declare sub IRunningObjectTable_Revoke_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRunningObjectTable_IsRunning_Proxy (byval as IRunningObjectTable ptr, byval as IMoniker ptr) as HRESULT
+declare sub IRunningObjectTable_IsRunning_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRunningObjectTable_GetObject_Proxy (byval as IRunningObjectTable ptr, byval as IMoniker ptr, byval as IUnknown ptr ptr) as HRESULT
+declare sub IRunningObjectTable_GetObject_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRunningObjectTable_NoteChangeTime_Proxy (byval as IRunningObjectTable ptr, byval as DWORD, byval as FILETIME ptr) as HRESULT
+declare sub IRunningObjectTable_NoteChangeTime_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRunningObjectTable_GetTimeOfLastChange_Proxy (byval as IRunningObjectTable ptr, byval as IMoniker ptr, byval as FILETIME ptr) as HRESULT
+declare sub IRunningObjectTable_GetTimeOfLastChange_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRunningObjectTable_EnumRunning_Proxy (byval as IRunningObjectTable ptr, byval as IEnumMoniker ptr ptr) as HRESULT
+declare sub IRunningObjectTable_EnumRunning_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IPersist_GetClassID_Proxy (byval as IPersist ptr, byval as CLSID ptr) as HRESULT
+declare sub IPersist_GetClassID_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IPersistStream_IsDirty_Proxy (byval as IPersistStream ptr) as HRESULT
+declare sub IPersistStream_IsDirty_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IPersistStream_Load_Proxy (byval as IPersistStream ptr, byval as IStream ptr) as HRESULT
+declare sub IPersistStream_Load_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IPersistStream_Save_Proxy (byval as IPersistStream ptr, byval as IStream ptr, byval as BOOL) as HRESULT
+declare sub IPersistStream_Save_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IPersistStream_GetSizeMax_Proxy (byval as IPersistStream ptr, byval as ULARGE_INTEGER ptr) as HRESULT
+declare sub IPersistStream_GetSizeMax_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMoniker_RemoteBindToObject_Proxy (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as IID ptr, byval as IUnknown ptr ptr) as HRESULT
+declare sub IMoniker_RemoteBindToObject_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMoniker_RemoteBindToStorage_Proxy (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as IID ptr, byval as IUnknown ptr ptr) as HRESULT
+declare sub IMoniker_RemoteBindToStorage_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMoniker_Reduce_Proxy (byval as IMoniker ptr, byval as IBindCtx ptr, byval as DWORD, byval as IMoniker ptr ptr, byval as IMoniker ptr ptr) as HRESULT
+declare sub IMoniker_Reduce_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMoniker_ComposeWith_Proxy (byval as IMoniker ptr, byval as IMoniker ptr, byval as BOOL, byval as IMoniker ptr ptr) as HRESULT
+declare sub IMoniker_ComposeWith_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMoniker_Enum_Proxy (byval as IMoniker ptr, byval as BOOL, byval as IEnumMoniker ptr ptr) as HRESULT
+declare sub IMoniker_Enum_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMoniker_IsEqual_Proxy (byval as IMoniker ptr, byval as IMoniker ptr) as HRESULT
+declare sub IMoniker_IsEqual_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMoniker_Hash_Proxy (byval as IMoniker ptr, byval as DWORD ptr) as HRESULT
+declare sub IMoniker_Hash_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMoniker_IsRunning_Proxy (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as IMoniker ptr) as HRESULT
+declare sub IMoniker_IsRunning_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMoniker_GetTimeOfLastChange_Proxy (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as FILETIME ptr) as HRESULT
+declare sub IMoniker_GetTimeOfLastChange_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMoniker_Inverse_Proxy (byval as IMoniker ptr, byval as IMoniker ptr ptr) as HRESULT
+declare sub IMoniker_Inverse_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMoniker_CommonPrefixWith_Proxy (byval as IMoniker ptr, byval as IMoniker ptr, byval as IMoniker ptr ptr) as HRESULT
+declare sub IMoniker_CommonPrefixWith_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMoniker_RelativePathTo_Proxy (byval as IMoniker ptr, byval as IMoniker ptr, byval as IMoniker ptr ptr) as HRESULT
+declare sub IMoniker_RelativePathTo_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMoniker_GetDisplayName_Proxy (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as LPCSTR ptr) as HRESULT
+declare sub IMoniker_GetDisplayName_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMoniker_ParseDisplayName_Proxy (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as LPCSTR, byval as ULONG ptr, byval as IMoniker ptr ptr) as HRESULT
+declare sub IMoniker_ParseDisplayName_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMoniker_IsSystemMoniker_Proxy (byval as IMoniker ptr, byval as DWORD ptr) as HRESULT
+declare sub IMoniker_IsSystemMoniker_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IROTData_GetComparisonData_Proxy (byval as IROTData ptr, byval as BYTE ptr, byval cbMax as ULONG, byval as ULONG ptr) as HRESULT
+declare sub IROTData_GetComparisonData_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumString_RemoteNext_Proxy (byval as IEnumString ptr, byval as ULONG, byval rgelt as LPCSTR ptr, byval as ULONG ptr) as HRESULT
+declare sub IEnumString_RemoteNext_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumString_Skip_Proxy (byval as IEnumString ptr, byval as ULONG) as HRESULT
+declare sub IEnumString_Skip_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumString_Reset_Proxy (byval as IEnumString ptr) as HRESULT
+declare sub IEnumString_Reset_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumString_Clone_Proxy (byval as IEnumString ptr, byval as IEnumString ptr ptr) as HRESULT
+declare sub IEnumString_Clone_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStream_RemoteRead_Proxy (byval as IStream ptr, byval as BYTE ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
+declare sub IStream_RemoteRead_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStream_RemoteWrite_Proxy (byval as IStream ptr, byval pv as BYTE ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
+declare sub IStream_RemoteWrite_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStream_RemoteSeek_Proxy (byval as IStream ptr, byval as LARGE_INTEGER, byval as DWORD, byval as ULARGE_INTEGER ptr) as HRESULT
+declare sub IStream_RemoteSeek_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStream_SetSize_Proxy (byval as IStream ptr, byval as ULARGE_INTEGER) as HRESULT
+declare sub IStream_SetSize_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStream_RemoteCopyTo_Proxy (byval as IStream ptr, byval as IStream ptr, byval as ULARGE_INTEGER, byval as ULARGE_INTEGER ptr, byval as ULARGE_INTEGER ptr) as HRESULT
+declare sub IStream_RemoteCopyTo_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStream_Commit_Proxy (byval as IStream ptr, byval as DWORD) as HRESULT
+declare sub IStream_Commit_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStream_Revert_Proxy (byval as IStream ptr) as HRESULT
+declare sub IStream_Revert_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStream_LockRegion_Proxy (byval as IStream ptr, byval as ULARGE_INTEGER, byval as ULARGE_INTEGER, byval as DWORD) as HRESULT
+declare sub IStream_LockRegion_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStream_UnlockRegion_Proxy (byval as IStream ptr, byval as ULARGE_INTEGER, byval as ULARGE_INTEGER, byval as DWORD) as HRESULT
+declare sub IStream_UnlockRegion_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStream_Stat_Proxy (byval as IStream ptr, byval as STATSTG ptr, byval as DWORD) as HRESULT
+declare sub IStream_Stat_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStream_Clone_Proxy (byval as IStream ptr, byval as IStream ptr ptr) as HRESULT
+declare sub IStream_Clone_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumSTATSTG_RemoteNext_Proxy (byval as IEnumSTATSTG ptr, byval as ULONG, byval as STATSTG ptr, byval as ULONG ptr) as HRESULT
+declare sub IEnumSTATSTG_RemoteNext_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumSTATSTG_Skip_Proxy (byval as IEnumSTATSTG ptr, byval celt as ULONG) as HRESULT
+declare sub IEnumSTATSTG_Skip_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumSTATSTG_Reset_Proxy (byval as IEnumSTATSTG ptr) as HRESULT
+declare sub IEnumSTATSTG_Reset_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumSTATSTG_Clone_Proxy (byval as IEnumSTATSTG ptr, byval as IEnumSTATSTG ptr ptr) as HRESULT
+declare sub IEnumSTATSTG_Clone_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStorage_CreateStream_Proxy (byval as IStorage ptr, byval as OLECHAR ptr, byval as DWORD, byval as DWORD, byval as DWORD, byval as IStream ptr ptr) as HRESULT
+declare sub IStorage_CreateStream_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStorage_RemoteOpenStream_Proxy (byval as IStorage ptr, byval as OLECHAR ptr, byval as uinteger, byval as BYTE ptr, byval as DWORD, byval as DWORD, byval as IStream ptr ptr) as HRESULT
+declare sub IStorage_RemoteOpenStream_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStorage_CreateStorage_Proxy (byval as IStorage ptr, byval as OLECHAR ptr, byval as DWORD, byval as DWORD, byval as DWORD, byval as IStorage ptr ptr) as HRESULT
+declare sub IStorage_CreateStorage_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStorage_OpenStorage_Proxy (byval as IStorage ptr, byval as OLECHAR ptr, byval as IStorage ptr, byval as DWORD, byval as SNB, byval as DWORD, byval as IStorage ptr ptr) as HRESULT
+declare sub IStorage_OpenStorage_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStorage_CopyTo_Proxy (byval as IStorage ptr, byval as DWORD, byval as IID ptr, byval as SNB, byval as IStorage ptr) as HRESULT
+declare sub IStorage_CopyTo_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStorage_MoveElementTo_Proxy (byval as IStorage ptr, byval as OLECHAR ptr, byval as IStorage ptr, byval as OLECHAR ptr, byval as DWORD) as HRESULT
+declare sub IStorage_MoveElementTo_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStorage_Commit_Proxy (byval as IStorage ptr, byval as DWORD) as HRESULT
+declare sub IStorage_Commit_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStorage_Revert_Proxy (byval as IStorage ptr) as HRESULT
+declare sub IStorage_Revert_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStorage_RemoteEnumElements_Proxy (byval as IStorage ptr, byval as DWORD, byval as uinteger, byval as BYTE ptr, byval as DWORD, byval as IEnumSTATSTG ptr ptr) as HRESULT
+declare sub IStorage_RemoteEnumElements_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStorage_DestroyElement_Proxy (byval as IStorage ptr, byval as OLECHAR ptr) as HRESULT
+declare sub IStorage_DestroyElement_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStorage_RenameElement_Proxy (byval as IStorage ptr, byval as OLECHAR ptr, byval as OLECHAR ptr) as HRESULT
+declare sub IStorage_RenameElement_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStorage_SetElementTimes_Proxy (byval as IStorage ptr, byval as OLECHAR ptr, byval as FILETIME ptr, byval as FILETIME ptr, byval as FILETIME ptr) as HRESULT
+declare sub IStorage_SetElementTimes_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStorage_SetClass_Proxy (byval as IStorage ptr, byval as CLSID ptr) as HRESULT
+declare sub IStorage_SetClass_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStorage_SetStateBits_Proxy (byval as IStorage ptr, byval as DWORD, byval as DWORD) as HRESULT
+declare sub IStorage_SetStateBits_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IStorage_Stat_Proxy (byval as IStorage ptr, byval as STATSTG ptr, byval as DWORD) as HRESULT
+declare sub IStorage_Stat_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IPersistFile_IsDirty_Proxy (byval as IPersistFile ptr) as HRESULT
+declare sub IPersistFile_IsDirty_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IPersistFile_Load_Proxy (byval as IPersistFile ptr, byval as LPCOLESTR, byval as DWORD) as HRESULT
+declare sub IPersistFile_Load_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IPersistFile_Save_Proxy (byval as IPersistFile ptr, byval pszFileName as LPCOLESTR, byval as BOOL) as HRESULT
+declare sub IPersistFile_Save_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IPersistFile_SaveCompleted_Proxy (byval as IPersistFile ptr, byval as LPCOLESTR) as HRESULT
+declare sub IPersistFile_SaveCompleted_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IPersistFile_GetCurFile_Proxy (byval as IPersistFile ptr, byval as LPCSTR ptr) as HRESULT
+declare sub IPersistFile_GetCurFile_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IPersistStorage_IsDirty_Proxy (byval as IPersistStorage ptr) as HRESULT
+declare sub IPersistStorage_IsDirty_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IPersistStorage_InitNew_Proxy (byval as IPersistStorage ptr, byval as IStorage ptr) as HRESULT
+declare sub IPersistStorage_InitNew_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IPersistStorage_Load_Proxy (byval as IPersistStorage ptr, byval as IStorage ptr) as HRESULT
+declare sub IPersistStorage_Load_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IPersistStorage_Save_Proxy (byval as IPersistStorage ptr, byval as IStorage ptr, byval as BOOL) as HRESULT
+declare sub IPersistStorage_Save_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IPersistStorage_SaveCompleted_Proxy (byval as IPersistStorage ptr, byval as IStorage ptr) as HRESULT
+declare sub IPersistStorage_SaveCompleted_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IPersistStorage_HandsOffStorage_Proxy (byval as IPersistStorage ptr) as HRESULT
+declare sub IPersistStorage_HandsOffStorage_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function ILockBytes_RemoteReadAt_Proxy (byval as ILockBytes ptr, byval as ULARGE_INTEGER, byval as BYTE ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
+declare sub ILockBytes_RemoteReadAt_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function ILockBytes_RemoteWriteAt_Proxy (byval as ILockBytes ptr, byval as ULARGE_INTEGER, byval pv as BYTE ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
+declare sub ILockBytes_RemoteWriteAt_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function ILockBytes_Flush_Proxy (byval as ILockBytes ptr) as HRESULT
+declare sub ILockBytes_Flush_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function ILockBytes_SetSize_Proxy (byval as ILockBytes ptr, byval as ULARGE_INTEGER) as HRESULT
+declare sub ILockBytes_SetSize_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function ILockBytes_LockRegion_Proxy (byval as ILockBytes ptr, byval as ULARGE_INTEGER, byval as ULARGE_INTEGER, byval as DWORD) as HRESULT
+declare sub ILockBytes_LockRegion_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function ILockBytes_UnlockRegion_Proxy (byval as ILockBytes ptr, byval as ULARGE_INTEGER, byval as ULARGE_INTEGER, byval as DWORD) as HRESULT
+declare sub ILockBytes_UnlockRegion_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function ILockBytes_Stat_Proxy (byval as ILockBytes ptr, byval as STATSTG ptr, byval as DWORD) as HRESULT
+declare sub ILockBytes_Stat_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumFORMATETC_RemoteNext_Proxy (byval as IEnumFORMATETC ptr, byval as ULONG, byval as FORMATETC ptr, byval as ULONG ptr) as HRESULT
+declare sub IEnumFORMATETC_RemoteNext_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumFORMATETC_Skip_Proxy (byval as IEnumFORMATETC ptr, byval as ULONG) as HRESULT
+declare sub IEnumFORMATETC_Skip_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumFORMATETC_Reset_Proxy (byval as IEnumFORMATETC ptr) as HRESULT
+declare sub IEnumFORMATETC_Reset_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumFORMATETC_Clone_Proxy (byval as IEnumFORMATETC ptr, byval as IEnumFORMATETC ptr ptr) as HRESULT
+declare sub IEnumFORMATETC_Clone_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumFORMATETC_Next_Proxy (byval as IEnumFORMATETC ptr, byval as ULONG, byval as FORMATETC ptr, byval as ULONG ptr) as HRESULT
+declare function IEnumFORMATETC_Next_Stub (byval as IEnumFORMATETC ptr, byval as ULONG, byval as FORMATETC ptr, byval as ULONG ptr) as HRESULT
+declare function IEnumSTATDATA_RemoteNext_Proxy (byval as IEnumSTATDATA ptr, byval as ULONG, byval as STATDATA ptr, byval as ULONG ptr) as HRESULT
+declare sub IEnumSTATDATA_RemoteNext_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumSTATDATA_Skip_Proxy (byval as IEnumSTATDATA ptr, byval as ULONG) as HRESULT
+declare sub IEnumSTATDATA_Skip_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumSTATDATA_Reset_Proxy (byval as IEnumSTATDATA ptr) as HRESULT
+declare sub IEnumSTATDATA_Reset_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumSTATDATA_Clone_Proxy (byval as IEnumSTATDATA ptr, byval as IEnumSTATDATA ptr ptr) as HRESULT
+declare sub IEnumSTATDATA_Clone_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumSTATDATA_Next_Proxy (byval as IEnumSTATDATA ptr, byval as ULONG, byval as STATDATA ptr, byval as ULONG ptr) as HRESULT
+declare function IEnumSTATDATA_Next_Stub (byval as IEnumSTATDATA ptr, byval as ULONG, byval as STATDATA ptr, byval as ULONG ptr) as HRESULT
+declare function IRootStorage_SwitchToFile_Proxy (byval as IRootStorage ptr, byval as LPCSTR) as HRESULT
+declare sub IRootStorage_SwitchToFile_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare sub IAdviseSink_RemoteOnDataChange_Proxy (byval as IAdviseSink ptr, byval as FORMATETC ptr, byval as RemSTGMEDIUM ptr)
+declare sub IAdviseSink_RemoteOnDataChange_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare sub IAdviseSink_RemoteOnViewChange_Proxy (byval as IAdviseSink ptr, byval as DWORD, byval as LONG)
+declare sub IAdviseSink_RemoteOnViewChange_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare sub IAdviseSink_RemoteOnRename_Proxy (byval as IAdviseSink ptr, byval as IMoniker ptr)
+declare sub IAdviseSink_RemoteOnRename_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare sub IAdviseSink_RemoteOnSave_Proxy (byval as IAdviseSink ptr)
+declare sub IAdviseSink_RemoteOnSave_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IAdviseSink_RemoteOnClose_Proxy (byval as IAdviseSink ptr) as HRESULT
+declare sub IAdviseSink_RemoteOnClose_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare sub IAdviseSink_OnDataChange_Proxy (byval as IAdviseSink ptr, byval as FORMATETC ptr, byval as STGMEDIUM ptr)
+declare sub IAdviseSink_OnDataChange_Stub (byval as IAdviseSink ptr, byval as FORMATETC ptr, byval as RemSTGMEDIUM ptr)
+declare sub IAdviseSink_OnViewChange_Proxy (byval as IAdviseSink ptr, byval as DWORD, byval as LONG)
+declare sub IAdviseSink_OnViewChange_Stub (byval as IAdviseSink ptr, byval as DWORD, byval as LONG)
+declare sub IAdviseSink_OnRename_Proxy (byval as IAdviseSink ptr, byval as IMoniker ptr)
+declare sub IAdviseSink_OnRename_Stub (byval as IAdviseSink ptr, byval as IMoniker ptr)
+declare sub IAdviseSink_OnSave_Proxy (byval as IAdviseSink ptr)
+declare sub IAdviseSink_OnSave_Stub (byval as IAdviseSink ptr)
+declare sub IAdviseSink_OnClose_Proxy (byval as IAdviseSink ptr)
+declare function IAdviseSink_OnClose_Stub (byval as IAdviseSink ptr) as HRESULT
+declare sub IAdviseSink2_RemoteOnLinkSrcChange_Proxy (byval as IAdviseSink2 ptr, byval as IMoniker ptr)
+declare sub IAdviseSink2_RemoteOnLinkSrcChange_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare sub IAdviseSink2_OnLinkSrcChange_Proxy (byval as IAdviseSink2 ptr, byval as IMoniker ptr)
+declare sub IAdviseSink2_OnLinkSrcChange_Stub (byval as IAdviseSink2 ptr, byval as IMoniker ptr)
+declare function IDataObject_RemoteGetData_Proxy (byval as IDataObject ptr, byval as FORMATETC ptr, byval as RemSTGMEDIUM ptr ptr) as HRESULT
+declare sub IDataObject_RemoteGetData_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IDataObject_RemoteGetDataHere_Proxy (byval as IDataObject ptr, byval as FORMATETC ptr, byval as RemSTGMEDIUM ptr ptr) as HRESULT
+declare sub IDataObject_RemoteGetDataHere_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IDataObject_QueryGetData_Proxy (byval as IDataObject ptr, byval as FORMATETC ptr) as HRESULT
+declare sub IDataObject_QueryGetData_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IDataObject_GetCanonicalFormatEtc_Proxy (byval as IDataObject ptr, byval as FORMATETC ptr, byval as FORMATETC ptr) as HRESULT
+declare sub IDataObject_GetCanonicalFormatEtc_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IDataObject_RemoteSetData_Proxy (byval as IDataObject ptr, byval as FORMATETC ptr, byval as RemSTGMEDIUM ptr, byval as BOOL) as HRESULT
+declare sub IDataObject_RemoteSetData_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IDataObject_EnumFormatEtc_Proxy (byval as IDataObject ptr, byval as DWORD, byval as IEnumFORMATETC ptr ptr) as HRESULT
+declare sub IDataObject_EnumFormatEtc_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IDataObject_DAdvise_Proxy (byval as IDataObject ptr, byval as FORMATETC ptr, byval as DWORD, byval as IAdviseSink ptr, byval as DWORD ptr) as HRESULT
+declare sub IDataObject_DAdvise_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IDataObject_DUnadvise_Proxy (byval as IDataObject ptr, byval as DWORD) as HRESULT
+declare sub IDataObject_DUnadvise_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IDataObject_EnumDAdvise_Proxy (byval as IDataObject ptr, byval as IEnumSTATDATA ptr ptr) as HRESULT
+declare sub IDataObject_EnumDAdvise_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IDataObject_GetData_Proxy (byval as IDataObject ptr, byval as FORMATETC ptr, byval as STGMEDIUM ptr) as HRESULT
+declare function IDataObject_GetData_Stub (byval as IDataObject ptr, byval as FORMATETC ptr, byval as RemSTGMEDIUM ptr ptr) as HRESULT
+declare function IDataObject_GetDataHere_Proxy (byval as IDataObject ptr, byval as FORMATETC ptr, byval as STGMEDIUM ptr) as HRESULT
+declare function IDataObject_GetDataHere_Stub (byval as IDataObject ptr, byval as FORMATETC ptr, byval as RemSTGMEDIUM ptr ptr) as HRESULT
+declare function IDataObject_SetData_Proxy (byval as IDataObject ptr, byval as FORMATETC ptr, byval as STGMEDIUM ptr, byval as BOOL) as HRESULT
+declare function IDataObject_SetData_Stub (byval as IDataObject ptr, byval as FORMATETC ptr, byval as RemSTGMEDIUM ptr, byval as BOOL) as HRESULT
+declare function IDataAdviseHolder_Advise_Proxy (byval as IDataAdviseHolder ptr, byval as IDataObject ptr, byval as FORMATETC ptr, byval as DWORD, byval as IAdviseSink ptr, byval as DWORD ptr) as HRESULT
+declare sub IDataAdviseHolder_Advise_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IDataAdviseHolder_Unadvise_Proxy (byval as IDataAdviseHolder ptr, byval as DWORD) as HRESULT
+declare sub IDataAdviseHolder_Unadvise_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IDataAdviseHolder_EnumAdvise_Proxy (byval as IDataAdviseHolder ptr, byval as IEnumSTATDATA ptr ptr) as HRESULT
+declare sub IDataAdviseHolder_EnumAdvise_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IDataAdviseHolder_SendOnDataChange_Proxy (byval as IDataAdviseHolder ptr, byval as IDataObject ptr, byval as DWORD, byval as DWORD) as HRESULT
+declare sub IDataAdviseHolder_SendOnDataChange_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMessageFilter_HandleInComingCall_Proxy (byval as IMessageFilter ptr, byval as DWORD, byval as HTASK, byval as DWORD, byval as LPINTERFACEINFO) as DWORD
+declare sub IMessageFilter_HandleInComingCall_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMessageFilter_RetryRejectedCall_Proxy (byval as IMessageFilter ptr, byval as HTASK, byval as DWORD, byval as DWORD) as DWORD
+declare sub IMessageFilter_RetryRejectedCall_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IMessageFilter_MessagePending_Proxy (byval as IMessageFilter ptr, byval as HTASK, byval as DWORD, byval as DWORD) as DWORD
+declare sub IMessageFilter_MessagePending_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRpcChannelBuffer_GetBuffer_Proxy (byval as IRpcChannelBuffer ptr, byval as RPCOLEMESSAGE ptr, byval as IID ptr) as HRESULT
+declare sub IRpcChannelBuffer_GetBuffer_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRpcChannelBuffer_SendReceive_Proxy (byval as IRpcChannelBuffer ptr, byval as RPCOLEMESSAGE ptr, byval as ULONG ptr) as HRESULT
+declare sub IRpcChannelBuffer_SendReceive_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRpcChannelBuffer_FreeBuffer_Proxy (byval as IRpcChannelBuffer ptr, byval as RPCOLEMESSAGE ptr) as HRESULT
+declare sub IRpcChannelBuffer_FreeBuffer_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRpcChannelBuffer_GetDestCtx_Proxy (byval as IRpcChannelBuffer ptr, byval as DWORD ptr, byval as any ptr ptr) as HRESULT
+declare sub IRpcChannelBuffer_GetDestCtx_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRpcChannelBuffer_IsConnected_Proxy (byval as IRpcChannelBuffer ptr) as HRESULT
+declare sub IRpcChannelBuffer_IsConnected_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRpcProxyBuffer_Connect_Proxy (byval as IRpcProxyBuffer ptr, byval pRpcChannelBuffer as IRpcChannelBuffer ptr) as HRESULT
+declare sub IRpcProxyBuffer_Connect_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare sub IRpcProxyBuffer_Disconnect_Proxy (byval as IRpcProxyBuffer ptr)
+declare sub IRpcProxyBuffer_Disconnect_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRpcStubBuffer_Connect_Proxy (byval as IRpcStubBuffer ptr, byval as IUnknown ptr) as HRESULT
+declare sub IRpcStubBuffer_Connect_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare sub IRpcStubBuffer_Disconnect_Proxy (byval as IRpcStubBuffer ptr)
+declare sub IRpcStubBuffer_Disconnect_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRpcStubBuffer_Invoke_Proxy (byval as IRpcStubBuffer ptr, byval as RPCOLEMESSAGE ptr, byval as IRpcChannelBuffer ptr) as HRESULT
+declare sub IRpcStubBuffer_Invoke_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRpcStubBuffer_IsIIDSupported_Proxy (byval as IRpcStubBuffer ptr, byval as IID ptr) as IRpcStubBuffer ptr
+declare sub IRpcStubBuffer_IsIIDSupported_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRpcStubBuffer_CountRefs_Proxy (byval as IRpcStubBuffer ptr) as ULONG
+declare sub IRpcStubBuffer_CountRefs_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IRpcStubBuffer_DebugServerQueryInterface_Proxy (byval as IRpcStubBuffer ptr, byval as any ptr ptr) as HRESULT
+declare sub IRpcStubBuffer_DebugServerQueryInterface_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare sub IRpcStubBuffer_DebugServerRelease_Proxy (byval as IRpcStubBuffer ptr, byval as any ptr)
+declare sub IRpcStubBuffer_DebugServerRelease_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IPSFactoryBuffer_CreateProxy_Proxy (byval as IPSFactoryBuffer ptr, byval as IUnknown ptr, byval as IID ptr, byval as IRpcProxyBuffer ptr ptr, byval as any ptr ptr) as HRESULT
+declare sub IPSFactoryBuffer_CreateProxy_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IPSFactoryBuffer_CreateStub_Proxy (byval as IPSFactoryBuffer ptr, byval as IID ptr, byval as IUnknown ptr, byval as IRpcStubBuffer ptr ptr) as HRESULT
+declare sub IPSFactoryBuffer_CreateStub_Stub (byval as IRpcStubBuffer ptr, byval as IRpcChannelBuffer ptr, byval as PRPC_MESSAGE, byval as PDWORD)
+declare function IEnumUnknown_Next_Proxy (byval as IEnumUnknown ptr, byval as ULONG, byval as IUnknown ptr ptr, byval as ULONG ptr) as HRESULT
+declare function IEnumUnknown_Next_Stub (byval as IEnumUnknown ptr, byval as ULONG, byval as IUnknown ptr ptr, byval as ULONG ptr) as HRESULT
+declare function IEnumMoniker_Next_Proxy (byval as IEnumMoniker ptr, byval as ULONG, byval as IMoniker ptr ptr, byval as ULONG ptr) as HRESULT
+declare function IEnumMoniker_Next_Stub (byval as IEnumMoniker ptr, byval as ULONG, byval as IMoniker ptr ptr, byval as ULONG ptr) as HRESULT
+declare function IMoniker_BindToObject_Proxy (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
+declare function IMoniker_BindToObject_Stub (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as IID ptr, byval as IUnknown ptr ptr) as HRESULT
+declare function IMoniker_BindToStorage_Proxy (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as IID ptr, byval as any ptr ptr) as HRESULT
+declare function IMoniker_BindToStorage_Stub (byval as IMoniker ptr, byval as IBindCtx ptr, byval as IMoniker ptr, byval as IID ptr, byval as IUnknown ptr ptr) as HRESULT
+declare function IEnumString_Next_Proxy (byval as IEnumString ptr, byval as ULONG, byval as LPCSTR ptr, byval as ULONG ptr) as HRESULT
+declare function IEnumString_Next_Stub (byval as IEnumString ptr, byval as ULONG, byval as LPCSTR ptr, byval as ULONG ptr) as HRESULT
+declare function IStream_Read_Proxy (byval as IStream ptr, byval as any ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
+declare function IStream_Read_Stub (byval as IStream ptr, byval as BYTE ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
+declare function IStream_Write_Proxy (byval as IStream ptr, byval as any ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
+declare function IStream_Write_Stub (byval as IStream ptr, byval as BYTE ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
+declare function IStream_Seek_Proxy (byval as IStream ptr, byval as LARGE_INTEGER, byval as DWORD, byval as ULARGE_INTEGER ptr) as HRESULT
+declare function IStream_Seek_Stub (byval as IStream ptr, byval as LARGE_INTEGER, byval as DWORD, byval as ULARGE_INTEGER ptr) as HRESULT
+declare function IStream_CopyTo_Proxy (byval as IStream ptr, byval as IStream ptr, byval as ULARGE_INTEGER, byval as ULARGE_INTEGER ptr, byval as ULARGE_INTEGER ptr) as HRESULT
+declare function IStream_CopyTo_Stub (byval as IStream ptr, byval as IStream ptr, byval as ULARGE_INTEGER, byval as ULARGE_INTEGER ptr, byval as ULARGE_INTEGER ptr) as HRESULT
+declare function IEnumSTATSTG_Next_Proxy (byval as IEnumSTATSTG ptr, byval as ULONG, byval as STATSTG ptr, byval as ULONG ptr) as HRESULT
+declare function IEnumSTATSTG_Next_Stub (byval as IEnumSTATSTG ptr, byval as ULONG, byval as STATSTG ptr, byval as ULONG ptr) as HRESULT
+declare function IStorage_OpenStream_Proxy (byval as IStorage ptr, byval as OLECHAR ptr, byval as any ptr, byval as DWORD, byval as DWORD, byval as IStream ptr ptr) as HRESULT
+declare function IStorage_OpenStream_Stub (byval as IStorage ptr, byval as OLECHAR ptr, byval as uinteger, byval as BYTE ptr, byval as DWORD, byval as DWORD, byval as IStream ptr ptr) as HRESULT
+declare function IStorage_EnumElements_Proxy (byval as IStorage ptr, byval as DWORD, byval as any ptr, byval as DWORD, byval as IEnumSTATSTG ptr ptr) as HRESULT
+declare function IStorage_EnumElements_Stub (byval as IStorage ptr, byval as DWORD, byval as uinteger, byval as BYTE ptr, byval as DWORD, byval as IEnumSTATSTG ptr ptr) as HRESULT
+declare function ILockBytes_ReadAt_Proxy (byval as ILockBytes ptr, byval as ULARGE_INTEGER, byval as any ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
+declare function ILockBytes_ReadAt_Stub (byval as ILockBytes ptr, byval as ULARGE_INTEGER, byval as BYTE ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
+declare function ILockBytes_WriteAt_Proxy (byval as ILockBytes ptr, byval as ULARGE_INTEGER, byval as any ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
+declare function ILockBytes_WriteAt_Stub (byval as ILockBytes ptr, byval as ULARGE_INTEGER, byval as BYTE ptr, byval as ULONG, byval as ULONG ptr) as HRESULT
+
+end extern
 #endif
 
 declare sub SNB_to_xmit alias "SNB_to_xmit" (byval as SNB ptr, byval as RemSNB ptr ptr)

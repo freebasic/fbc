@@ -9,8 +9,6 @@
 #ifndef __win_mmsystem_bi__
 #define __win_mmsystem_bi__
 
-#inclib "winmm"
-
 #define MAXPNAMELEN 32
 #define MAXERRORLENGTH 256
 #define MAX_JOYSTICKOEMVXDNAME 260
@@ -1922,119 +1920,121 @@ end type
 type PMCI_WAVE_SET_PARMS as MCI_WAVE_SET_PARMS ptr
 type LPMCI_WAVE_SET_PARMS as MCI_WAVE_SET_PARMS ptr
 
-declare function CloseDriver alias "CloseDriver" (byval as HDRVR, byval as LONG, byval as LONG) as LRESULT
-declare function OpenDriver alias "OpenDriver" (byval as LPCWSTR, byval as LPCWSTR, byval as LONG) as HDRVR
-declare function SendDriverMessage alias "SendDriverMessage" (byval as HDRVR, byval as UINT, byval as LONG, byval as LONG) as LRESULT
-declare function DrvGetModuleHandle alias "DrvGetModuleHandle" (byval as HDRVR) as HMODULE
-declare function GetDriverModuleHandle alias "GetDriverModuleHandle" (byval as HDRVR) as HMODULE
-declare function DefDriverProc alias "DefDriverProc" (byval as DWORD, byval as HDRVR, byval as UINT, byval as LPARAM, byval as LPARAM) as LRESULT
-declare function mmsystemGetVersion alias "mmsystemGetVersion" () as UINT
-declare function waveOutGetNumDevs alias "waveOutGetNumDevs" () as UINT
-declare function waveOutGetVolume alias "waveOutGetVolume" (byval as HWAVEOUT, byval as PDWORD) as MMRESULT
-declare function waveOutSetVolume alias "waveOutSetVolume" (byval as HWAVEOUT, byval as DWORD) as MMRESULT
-declare function waveOutOpen alias "waveOutOpen" (byval as LPHWAVEOUT, byval as UINT, byval as LPCWAVEFORMATEX, byval as DWORD, byval as DWORD, byval as DWORD) as MMRESULT
-declare function waveOutClose alias "waveOutClose" (byval as HWAVEOUT) as MMRESULT
-declare function waveOutPrepareHeader alias "waveOutPrepareHeader" (byval as HWAVEOUT, byval as LPWAVEHDR, byval as UINT) as MMRESULT
-declare function waveOutUnprepareHeader alias "waveOutUnprepareHeader" (byval as HWAVEOUT, byval as LPWAVEHDR, byval as UINT) as MMRESULT
-declare function waveOutWrite alias "waveOutWrite" (byval as HWAVEOUT, byval as LPWAVEHDR, byval as UINT) as MMRESULT
-declare function waveOutPause alias "waveOutPause" (byval as HWAVEOUT) as MMRESULT
-declare function waveOutRestart alias "waveOutRestart" (byval as HWAVEOUT) as MMRESULT
-declare function waveOutReset alias "waveOutReset" (byval as HWAVEOUT) as MMRESULT
-declare function waveOutBreakLoop alias "waveOutBreakLoop" (byval as HWAVEOUT) as MMRESULT
-declare function waveOutGetPosition alias "waveOutGetPosition" (byval as HWAVEOUT, byval as LPMMTIME, byval as UINT) as MMRESULT
-declare function waveOutGetPitch alias "waveOutGetPitch" (byval as HWAVEOUT, byval as PDWORD) as MMRESULT
-declare function waveOutSetPitch alias "waveOutSetPitch" (byval as HWAVEOUT, byval as DWORD) as MMRESULT
-declare function waveOutGetPlaybackRate alias "waveOutGetPlaybackRate" (byval as HWAVEOUT, byval as PDWORD) as MMRESULT
-declare function waveOutSetPlaybackRate alias "waveOutSetPlaybackRate" (byval as HWAVEOUT, byval as DWORD) as MMRESULT
-declare function waveOutGetID alias "waveOutGetID" (byval as HWAVEOUT, byval as LPUINT) as MMRESULT
-declare function waveOutMessage alias "waveOutMessage" (byval as HWAVEOUT, byval as UINT, byval as DWORD, byval as DWORD) as MMRESULT
-declare function waveInGetNumDevs alias "waveInGetNumDevs" () as UINT
-declare function waveInOpen alias "waveInOpen" (byval as LPHWAVEIN, byval as UINT, byval as LPCWAVEFORMATEX, byval as DWORD, byval as DWORD, byval as DWORD) as MMRESULT
-declare function waveInClose alias "waveInClose" (byval as HWAVEIN) as MMRESULT
-declare function waveInPrepareHeader alias "waveInPrepareHeader" (byval as HWAVEIN, byval as LPWAVEHDR, byval as UINT) as MMRESULT
-declare function waveInUnprepareHeader alias "waveInUnprepareHeader" (byval as HWAVEIN, byval as LPWAVEHDR, byval as UINT) as MMRESULT
-declare function waveInAddBuffer alias "waveInAddBuffer" (byval as HWAVEIN, byval as LPWAVEHDR, byval as UINT) as MMRESULT
-declare function waveInStart alias "waveInStart" (byval as HWAVEIN) as MMRESULT
-declare function waveInStop alias "waveInStop" (byval as HWAVEIN) as MMRESULT
-declare function waveInReset alias "waveInReset" (byval as HWAVEIN) as MMRESULT
-declare function waveInGetPosition alias "waveInGetPosition" (byval as HWAVEIN, byval as LPMMTIME, byval as UINT) as MMRESULT
-declare function waveInGetID alias "waveInGetID" (byval as HWAVEIN, byval as LPUINT) as MMRESULT
-declare function waveInMessage alias "waveInMessage" (byval as HWAVEIN, byval as UINT, byval as DWORD, byval as DWORD) as MMRESULT
-declare function midiOutGetNumDevs alias "midiOutGetNumDevs" () as UINT
-declare function midiStreamOpen alias "midiStreamOpen" (byval as LPHMIDISTRM, byval as LPUINT, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD) as MMRESULT
-declare function midiStreamClose alias "midiStreamClose" (byval as HMIDISTRM) as MMRESULT
-declare function midiStreamProperty alias "midiStreamProperty" (byval as HMIDISTRM, byval as LPBYTE, byval as DWORD) as MMRESULT
-declare function midiStreamPosition alias "midiStreamPosition" (byval as HMIDISTRM, byval as LPMMTIME, byval as UINT) as MMRESULT
-declare function midiStreamOut alias "midiStreamOut" (byval as HMIDISTRM, byval as LPMIDIHDR, byval as UINT) as MMRESULT
-declare function midiStreamPause alias "midiStreamPause" (byval as HMIDISTRM) as MMRESULT
-declare function midiStreamRestart alias "midiStreamRestart" (byval as HMIDISTRM) as MMRESULT
-declare function midiStreamStop alias "midiStreamStop" (byval as HMIDISTRM) as MMRESULT
-declare function midiConnect alias "midiConnect" (byval as HMIDI, byval as HMIDIOUT, byval as PVOID) as MMRESULT
-declare function midiDisconnect alias "midiDisconnect" (byval as HMIDI, byval as HMIDIOUT, byval as PVOID) as MMRESULT
-declare function midiOutGetVolume alias "midiOutGetVolume" (byval as HMIDIOUT, byval as PDWORD) as MMRESULT
-declare function midiOutSetVolume alias "midiOutSetVolume" (byval as HMIDIOUT, byval as DWORD) as MMRESULT
-declare function midiOutOpen alias "midiOutOpen" (byval as LPHMIDIOUT, byval as UINT, byval as DWORD, byval as DWORD, byval as DWORD) as MMRESULT
-declare function midiOutClose alias "midiOutClose" (byval as HMIDIOUT) as MMRESULT
-declare function midiOutPrepareHeader alias "midiOutPrepareHeader" (byval as HMIDIOUT, byval as LPMIDIHDR, byval as UINT) as MMRESULT
-declare function midiOutUnprepareHeader alias "midiOutUnprepareHeader" (byval as HMIDIOUT, byval as LPMIDIHDR, byval as UINT) as MMRESULT
-declare function midiOutShortMsg alias "midiOutShortMsg" (byval as HMIDIOUT, byval as DWORD) as MMRESULT
-declare function midiOutLongMsg alias "midiOutLongMsg" (byval as HMIDIOUT, byval as LPMIDIHDR, byval as UINT) as MMRESULT
-declare function midiOutReset alias "midiOutReset" (byval as HMIDIOUT) as MMRESULT
-declare function midiOutCachePatches alias "midiOutCachePatches" (byval as HMIDIOUT, byval as UINT, byval as LPWORD, byval as UINT) as MMRESULT
-declare function midiOutCacheDrumPatches alias "midiOutCacheDrumPatches" (byval as HMIDIOUT, byval as UINT, byval as LPWORD, byval as UINT) as MMRESULT
-declare function midiOutGetID alias "midiOutGetID" (byval as HMIDIOUT, byval as LPUINT) as MMRESULT
-declare function midiOutMessage alias "midiOutMessage" (byval as HMIDIOUT, byval as UINT, byval as DWORD, byval as DWORD) as MMRESULT
-declare function midiInGetNumDevs alias "midiInGetNumDevs" () as UINT
-declare function midiInOpen alias "midiInOpen" (byval as LPHMIDIIN, byval as UINT, byval as DWORD, byval as DWORD, byval as DWORD) as MMRESULT
-declare function midiInClose alias "midiInClose" (byval as HMIDIIN) as MMRESULT
-declare function midiInPrepareHeader alias "midiInPrepareHeader" (byval as HMIDIIN, byval as LPMIDIHDR, byval as UINT) as MMRESULT
-declare function midiInUnprepareHeader alias "midiInUnprepareHeader" (byval as HMIDIIN, byval as LPMIDIHDR, byval as UINT) as MMRESULT
-declare function midiInAddBuffer alias "midiInAddBuffer" (byval as HMIDIIN, byval as LPMIDIHDR, byval as UINT) as MMRESULT
-declare function midiInStart alias "midiInStart" (byval as HMIDIIN) as MMRESULT
-declare function midiInStop alias "midiInStop" (byval as HMIDIIN) as MMRESULT
-declare function midiInReset alias "midiInReset" (byval as HMIDIIN) as MMRESULT
-declare function midiInGetID alias "midiInGetID" (byval as HMIDIIN, byval as LPUINT) as MMRESULT
-declare function midiInMessage alias "midiInMessage" (byval as HMIDIIN, byval as UINT, byval as DWORD, byval as DWORD) as MMRESULT
-declare function auxGetNumDevs alias "auxGetNumDevs" () as UINT
-declare function auxSetVolume alias "auxSetVolume" (byval as UINT, byval as DWORD) as MMRESULT
-declare function auxGetVolume alias "auxGetVolume" (byval as UINT, byval as PDWORD) as MMRESULT
-declare function auxOutMessage alias "auxOutMessage" (byval as UINT, byval as UINT, byval as DWORD, byval as DWORD) as MMRESULT
-declare function mixerGetNumDevs alias "mixerGetNumDevs" () as UINT
-declare function mixerOpen alias "mixerOpen" (byval as LPHMIXER, byval as UINT, byval as DWORD, byval as DWORD, byval as DWORD) as MMRESULT
-declare function mixerClose alias "mixerClose" (byval as HMIXER) as MMRESULT
-declare function mixerMessage alias "mixerMessage" (byval as HMIXER, byval as UINT, byval as DWORD, byval as DWORD) as DWORD
-declare function mixerGetID alias "mixerGetID" (byval as HMIXEROBJ, byval as PUINT, byval as DWORD) as MMRESULT
-declare function mixerSetControlDetails alias "mixerSetControlDetails" (byval as HMIXEROBJ, byval as LPMIXERCONTROLDETAILS, byval as DWORD) as MMRESULT
-declare function timeGetSystemTime alias "timeGetSystemTime" (byval as LPMMTIME, byval as UINT) as MMRESULT
-declare function timeGetTime alias "timeGetTime" () as DWORD
-declare function timeSetEvent alias "timeSetEvent" (byval as UINT, byval as UINT, byval as LPTIMECALLBACK, byval as DWORD, byval as UINT) as MMRESULT
-declare function timeKillEvent alias "timeKillEvent" (byval as UINT) as MMRESULT
-declare function timeGetDevCaps alias "timeGetDevCaps" (byval as LPTIMECAPS, byval as UINT) as MMRESULT
-declare function timeBeginPeriod alias "timeBeginPeriod" (byval as UINT) as MMRESULT
-declare function timeEndPeriod alias "timeEndPeriod" (byval as UINT) as MMRESULT
-declare function joyGetNumDevs alias "joyGetNumDevs" () as UINT
-declare function joyGetPos alias "joyGetPos" (byval as UINT, byval as LPJOYINFO) as MMRESULT
-declare function joyGetPosEx alias "joyGetPosEx" (byval as UINT, byval as LPJOYINFOEX) as MMRESULT
-declare function joyGetThreshold alias "joyGetThreshold" (byval as UINT, byval as LPUINT) as MMRESULT
-declare function joyReleaseCapture alias "joyReleaseCapture" (byval as UINT) as MMRESULT
-declare function joySetCapture alias "joySetCapture" (byval as HWND, byval as UINT, byval as UINT, byval as BOOL) as MMRESULT
-declare function joySetThreshold alias "joySetThreshold" (byval as UINT, byval as UINT) as MMRESULT
-declare function mmioClose alias "mmioClose" (byval as HMMIO, byval as UINT) as MMRESULT
-declare function mmioRead alias "mmioRead" (byval as HMMIO, byval as HPSTR, byval as LONG) as LONG
-declare function mmioWrite alias "mmioWrite" (byval as HMMIO, byval as LPCSTR, byval as LONG) as LONG
-declare function mmioSeek alias "mmioSeek" (byval as HMMIO, byval as LONG, byval as integer) as LONG
-declare function mmioGetInfo alias "mmioGetInfo" (byval as HMMIO, byval as LPMMIOINFO, byval as UINT) as MMRESULT
-declare function mmioSetInfo alias "mmioSetInfo" (byval as HMMIO, byval as LPCMMIOINFO, byval as UINT) as MMRESULT
-declare function mmioSetBuffer alias "mmioSetBuffer" (byval as HMMIO, byval as LPSTR, byval as LONG, byval as UINT) as MMRESULT
-declare function mmioFlush alias "mmioFlush" (byval as HMMIO, byval as UINT) as MMRESULT
-declare function mmioAdvance alias "mmioAdvance" (byval as HMMIO, byval as LPMMIOINFO, byval as UINT) as MMRESULT
-declare function mmioSendMessage alias "mmioSendMessage" (byval as HMMIO, byval as UINT, byval as LPARAM, byval as LPARAM) as LRESULT
-declare function mmioDescend alias "mmioDescend" (byval as HMMIO, byval as LPMMCKINFO, byval as MMCKINFO ptr, byval as UINT) as MMRESULT
-declare function mmioAscend alias "mmioAscend" (byval as HMMIO, byval as LPMMCKINFO, byval as UINT) as MMRESULT
-declare function mmioCreateChunk alias "mmioCreateChunk" (byval as HMMIO, byval as LPMMCKINFO, byval as UINT) as MMRESULT
-declare function mciSetYieldProc alias "mciSetYieldProc" (byval as MCIDEVICEID, byval as YIELDPROC, byval as DWORD) as BOOL
-declare function mciGetCreatorTask alias "mciGetCreatorTask" (byval as MCIDEVICEID) as HTASK
-declare function mciGetYieldProc alias "mciGetYieldProc" (byval as MCIDEVICEID, byval as PDWORD) as YIELDPROC
+extern "windows" lib "winmm"
+
+declare function CloseDriver (byval as HDRVR, byval as LONG, byval as LONG) as LRESULT
+declare function OpenDriver (byval as LPCWSTR, byval as LPCWSTR, byval as LONG) as HDRVR
+declare function SendDriverMessage (byval as HDRVR, byval as UINT, byval as LONG, byval as LONG) as LRESULT
+declare function DrvGetModuleHandle (byval as HDRVR) as HMODULE
+declare function GetDriverModuleHandle (byval as HDRVR) as HMODULE
+declare function DefDriverProc (byval as DWORD, byval as HDRVR, byval as UINT, byval as LPARAM, byval as LPARAM) as LRESULT
+declare function mmsystemGetVersion () as UINT
+declare function waveOutGetNumDevs () as UINT
+declare function waveOutGetVolume (byval as HWAVEOUT, byval as PDWORD) as MMRESULT
+declare function waveOutSetVolume (byval as HWAVEOUT, byval as DWORD) as MMRESULT
+declare function waveOutOpen (byval as LPHWAVEOUT, byval as UINT, byval as LPCWAVEFORMATEX, byval as DWORD, byval as DWORD, byval as DWORD) as MMRESULT
+declare function waveOutClose (byval as HWAVEOUT) as MMRESULT
+declare function waveOutPrepareHeader (byval as HWAVEOUT, byval as LPWAVEHDR, byval as UINT) as MMRESULT
+declare function waveOutUnprepareHeader (byval as HWAVEOUT, byval as LPWAVEHDR, byval as UINT) as MMRESULT
+declare function waveOutWrite (byval as HWAVEOUT, byval as LPWAVEHDR, byval as UINT) as MMRESULT
+declare function waveOutPause (byval as HWAVEOUT) as MMRESULT
+declare function waveOutRestart (byval as HWAVEOUT) as MMRESULT
+declare function waveOutReset (byval as HWAVEOUT) as MMRESULT
+declare function waveOutBreakLoop (byval as HWAVEOUT) as MMRESULT
+declare function waveOutGetPosition (byval as HWAVEOUT, byval as LPMMTIME, byval as UINT) as MMRESULT
+declare function waveOutGetPitch (byval as HWAVEOUT, byval as PDWORD) as MMRESULT
+declare function waveOutSetPitch (byval as HWAVEOUT, byval as DWORD) as MMRESULT
+declare function waveOutGetPlaybackRate (byval as HWAVEOUT, byval as PDWORD) as MMRESULT
+declare function waveOutSetPlaybackRate (byval as HWAVEOUT, byval as DWORD) as MMRESULT
+declare function waveOutGetID (byval as HWAVEOUT, byval as LPUINT) as MMRESULT
+declare function waveOutMessage (byval as HWAVEOUT, byval as UINT, byval as DWORD, byval as DWORD) as MMRESULT
+declare function waveInGetNumDevs () as UINT
+declare function waveInOpen (byval as LPHWAVEIN, byval as UINT, byval as LPCWAVEFORMATEX, byval as DWORD, byval as DWORD, byval as DWORD) as MMRESULT
+declare function waveInClose (byval as HWAVEIN) as MMRESULT
+declare function waveInPrepareHeader (byval as HWAVEIN, byval as LPWAVEHDR, byval as UINT) as MMRESULT
+declare function waveInUnprepareHeader (byval as HWAVEIN, byval as LPWAVEHDR, byval as UINT) as MMRESULT
+declare function waveInAddBuffer (byval as HWAVEIN, byval as LPWAVEHDR, byval as UINT) as MMRESULT
+declare function waveInStart (byval as HWAVEIN) as MMRESULT
+declare function waveInStop (byval as HWAVEIN) as MMRESULT
+declare function waveInReset (byval as HWAVEIN) as MMRESULT
+declare function waveInGetPosition (byval as HWAVEIN, byval as LPMMTIME, byval as UINT) as MMRESULT
+declare function waveInGetID (byval as HWAVEIN, byval as LPUINT) as MMRESULT
+declare function waveInMessage (byval as HWAVEIN, byval as UINT, byval as DWORD, byval as DWORD) as MMRESULT
+declare function midiOutGetNumDevs () as UINT
+declare function midiStreamOpen (byval as LPHMIDISTRM, byval as LPUINT, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD) as MMRESULT
+declare function midiStreamClose (byval as HMIDISTRM) as MMRESULT
+declare function midiStreamProperty (byval as HMIDISTRM, byval as LPBYTE, byval as DWORD) as MMRESULT
+declare function midiStreamPosition (byval as HMIDISTRM, byval as LPMMTIME, byval as UINT) as MMRESULT
+declare function midiStreamOut (byval as HMIDISTRM, byval as LPMIDIHDR, byval as UINT) as MMRESULT
+declare function midiStreamPause (byval as HMIDISTRM) as MMRESULT
+declare function midiStreamRestart (byval as HMIDISTRM) as MMRESULT
+declare function midiStreamStop (byval as HMIDISTRM) as MMRESULT
+declare function midiConnect (byval as HMIDI, byval as HMIDIOUT, byval as PVOID) as MMRESULT
+declare function midiDisconnect (byval as HMIDI, byval as HMIDIOUT, byval as PVOID) as MMRESULT
+declare function midiOutGetVolume (byval as HMIDIOUT, byval as PDWORD) as MMRESULT
+declare function midiOutSetVolume (byval as HMIDIOUT, byval as DWORD) as MMRESULT
+declare function midiOutOpen (byval as LPHMIDIOUT, byval as UINT, byval as DWORD, byval as DWORD, byval as DWORD) as MMRESULT
+declare function midiOutClose (byval as HMIDIOUT) as MMRESULT
+declare function midiOutPrepareHeader (byval as HMIDIOUT, byval as LPMIDIHDR, byval as UINT) as MMRESULT
+declare function midiOutUnprepareHeader (byval as HMIDIOUT, byval as LPMIDIHDR, byval as UINT) as MMRESULT
+declare function midiOutShortMsg (byval as HMIDIOUT, byval as DWORD) as MMRESULT
+declare function midiOutLongMsg (byval as HMIDIOUT, byval as LPMIDIHDR, byval as UINT) as MMRESULT
+declare function midiOutReset (byval as HMIDIOUT) as MMRESULT
+declare function midiOutCachePatches (byval as HMIDIOUT, byval as UINT, byval as LPWORD, byval as UINT) as MMRESULT
+declare function midiOutCacheDrumPatches (byval as HMIDIOUT, byval as UINT, byval as LPWORD, byval as UINT) as MMRESULT
+declare function midiOutGetID (byval as HMIDIOUT, byval as LPUINT) as MMRESULT
+declare function midiOutMessage (byval as HMIDIOUT, byval as UINT, byval as DWORD, byval as DWORD) as MMRESULT
+declare function midiInGetNumDevs () as UINT
+declare function midiInOpen (byval as LPHMIDIIN, byval as UINT, byval as DWORD, byval as DWORD, byval as DWORD) as MMRESULT
+declare function midiInClose (byval as HMIDIIN) as MMRESULT
+declare function midiInPrepareHeader (byval as HMIDIIN, byval as LPMIDIHDR, byval as UINT) as MMRESULT
+declare function midiInUnprepareHeader (byval as HMIDIIN, byval as LPMIDIHDR, byval as UINT) as MMRESULT
+declare function midiInAddBuffer (byval as HMIDIIN, byval as LPMIDIHDR, byval as UINT) as MMRESULT
+declare function midiInStart (byval as HMIDIIN) as MMRESULT
+declare function midiInStop (byval as HMIDIIN) as MMRESULT
+declare function midiInReset (byval as HMIDIIN) as MMRESULT
+declare function midiInGetID (byval as HMIDIIN, byval as LPUINT) as MMRESULT
+declare function midiInMessage (byval as HMIDIIN, byval as UINT, byval as DWORD, byval as DWORD) as MMRESULT
+declare function auxGetNumDevs () as UINT
+declare function auxSetVolume (byval as UINT, byval as DWORD) as MMRESULT
+declare function auxGetVolume (byval as UINT, byval as PDWORD) as MMRESULT
+declare function auxOutMessage (byval as UINT, byval as UINT, byval as DWORD, byval as DWORD) as MMRESULT
+declare function mixerGetNumDevs () as UINT
+declare function mixerOpen (byval as LPHMIXER, byval as UINT, byval as DWORD, byval as DWORD, byval as DWORD) as MMRESULT
+declare function mixerClose (byval as HMIXER) as MMRESULT
+declare function mixerMessage (byval as HMIXER, byval as UINT, byval as DWORD, byval as DWORD) as DWORD
+declare function mixerGetID (byval as HMIXEROBJ, byval as PUINT, byval as DWORD) as MMRESULT
+declare function mixerSetControlDetails (byval as HMIXEROBJ, byval as LPMIXERCONTROLDETAILS, byval as DWORD) as MMRESULT
+declare function timeGetSystemTime (byval as LPMMTIME, byval as UINT) as MMRESULT
+declare function timeGetTime () as DWORD
+declare function timeSetEvent (byval as UINT, byval as UINT, byval as LPTIMECALLBACK, byval as DWORD, byval as UINT) as MMRESULT
+declare function timeKillEvent (byval as UINT) as MMRESULT
+declare function timeGetDevCaps (byval as LPTIMECAPS, byval as UINT) as MMRESULT
+declare function timeBeginPeriod (byval as UINT) as MMRESULT
+declare function timeEndPeriod (byval as UINT) as MMRESULT
+declare function joyGetNumDevs () as UINT
+declare function joyGetPos (byval as UINT, byval as LPJOYINFO) as MMRESULT
+declare function joyGetPosEx (byval as UINT, byval as LPJOYINFOEX) as MMRESULT
+declare function joyGetThreshold (byval as UINT, byval as LPUINT) as MMRESULT
+declare function joyReleaseCapture (byval as UINT) as MMRESULT
+declare function joySetCapture (byval as HWND, byval as UINT, byval as UINT, byval as BOOL) as MMRESULT
+declare function joySetThreshold (byval as UINT, byval as UINT) as MMRESULT
+declare function mmioClose (byval as HMMIO, byval as UINT) as MMRESULT
+declare function mmioRead (byval as HMMIO, byval as HPSTR, byval as LONG) as LONG
+declare function mmioWrite (byval as HMMIO, byval as LPCSTR, byval as LONG) as LONG
+declare function mmioSeek (byval as HMMIO, byval as LONG, byval as integer) as LONG
+declare function mmioGetInfo (byval as HMMIO, byval as LPMMIOINFO, byval as UINT) as MMRESULT
+declare function mmioSetInfo (byval as HMMIO, byval as LPCMMIOINFO, byval as UINT) as MMRESULT
+declare function mmioSetBuffer (byval as HMMIO, byval as LPSTR, byval as LONG, byval as UINT) as MMRESULT
+declare function mmioFlush (byval as HMMIO, byval as UINT) as MMRESULT
+declare function mmioAdvance (byval as HMMIO, byval as LPMMIOINFO, byval as UINT) as MMRESULT
+declare function mmioSendMessage (byval as HMMIO, byval as UINT, byval as LPARAM, byval as LPARAM) as LRESULT
+declare function mmioDescend (byval as HMMIO, byval as LPMMCKINFO, byval as MMCKINFO ptr, byval as UINT) as MMRESULT
+declare function mmioAscend (byval as HMMIO, byval as LPMMCKINFO, byval as UINT) as MMRESULT
+declare function mmioCreateChunk (byval as HMMIO, byval as LPMMCKINFO, byval as UINT) as MMRESULT
+declare function mciSetYieldProc (byval as MCIDEVICEID, byval as YIELDPROC, byval as DWORD) as BOOL
+declare function mciGetCreatorTask (byval as MCIDEVICEID) as HTASK
+declare function mciGetYieldProc (byval as MCIDEVICEID, byval as PDWORD) as YIELDPROC
 
 #ifdef UNICODE
 declare function sndPlaySound alias "sndPlaySoundW" (byval as LPCWSTR, byval as UINT) as BOOL
@@ -2091,6 +2091,8 @@ declare function mciGetDeviceIDFromElementID alias "mciGetDeviceIDFromElementIDA
 declare function mciGetErrorString alias "mciGetErrorStringA" (byval as MCIERROR, byval as LPSTR, byval as UINT) as BOOL
 
 #endif ''UNICODE
+
+end extern
 
 type MCI_SEQ_SET_PARMS field=1
 	dwCallback as DWORD

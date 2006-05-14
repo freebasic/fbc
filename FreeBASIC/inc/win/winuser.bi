@@ -9,8 +9,6 @@
 #ifndef __win_winuser_bi__
 #define __win_winuser_bi__
 
-#inclib "user32"
-
 #define WC_DIALOG MAKEINTATOM(&h8002)
 #define FALT 16
 #define FCONTROL 8
@@ -3271,318 +3269,320 @@ type PGUITHREADINFO as GUITHREADINFO ptr
 #define POINTSTOPOINT(p,ps) p.x = LOWORD( *cptr(DWORD ptr, @ps) ) : p.y = HIWORD( *cptr(DWORD ptr, @ps) )
 ''''''' #define POINTTOPOINTS(p) ((POINTS)MAKELONG(p.x,p.y))
 
-declare function ActivateKeyboardLayout alias "ActivateKeyboardLayout" (byval as HKL, byval as UINT) as HKL
-declare function AdjustWindowRect alias "AdjustWindowRect" (byval as LPRECT, byval as DWORD, byval as BOOL) as BOOL
-declare function AdjustWindowRectEx alias "AdjustWindowRectEx" (byval as LPRECT, byval as DWORD, byval as BOOL, byval as DWORD) as BOOL
-declare function AnimateWindow alias "AnimateWindow" (byval as HWND, byval as DWORD, byval as DWORD) as BOOL
-declare function AnyPopup alias "AnyPopup" () as BOOL
-declare function ArrangeIconicWindows alias "ArrangeIconicWindows" (byval as HWND) as UINT
-declare function AttachThreadInput alias "AttachThreadInput" (byval as DWORD, byval as DWORD, byval as BOOL) as BOOL
-declare function BeginDeferWindowPos alias "BeginDeferWindowPos" (byval as integer) as HDWP
-declare function BeginPaint alias "BeginPaint" (byval as HWND, byval as LPPAINTSTRUCT) as HDC
-declare function BringWindowToTop alias "BringWindowToTop" (byval as HWND) as BOOL
-declare function BroadcastSystemMessage alias "BroadcastSystemMessage" (byval as DWORD, byval as LPDWORD, byval as UINT, byval as WPARAM, byval as LPARAM) as integer
-declare function CallNextHookEx alias "CallNextHookEx" (byval as HHOOK, byval as integer, byval as WPARAM, byval as LPARAM) as LRESULT
-declare function CascadeWindows alias "CascadeWindows" (byval as HWND, byval as UINT, byval as LPCRECT, byval as UINT, byval as HWND ptr) as WORD
-declare function ChangeClipboardChain alias "ChangeClipboardChain" (byval as HWND, byval as HWND) as BOOL
-declare function CheckDlgButton alias "CheckDlgButton" (byval as HWND, byval as integer, byval as UINT) as BOOL
-declare function CheckMenuItem alias "CheckMenuItem" (byval as HMENU, byval as UINT, byval as UINT) as DWORD
-declare function CheckMenuRadioItem alias "CheckMenuRadioItem" (byval as HMENU, byval as UINT, byval as UINT, byval as UINT, byval as UINT) as BOOL
-declare function CheckRadioButton alias "CheckRadioButton" (byval as HWND, byval as integer, byval as integer, byval as integer) as BOOL
-declare function ChildWindowFromPoint alias "ChildWindowFromPoint" (byval as HWND, byval as POINT) as HWND
-declare function ChildWindowFromPointEx alias "ChildWindowFromPointEx" (byval as HWND, byval as POINT, byval as UINT) as HWND
-declare function ClientToScreen alias "ClientToScreen" (byval as HWND, byval as LPPOINT) as BOOL
-declare function ClipCursor alias "ClipCursor" (byval as LPCRECT) as BOOL
-declare function CloseClipboard alias "CloseClipboard" () as BOOL
-declare function CloseDesktop alias "CloseDesktop" (byval as HDESK) as BOOL
-declare function CloseWindow alias "CloseWindow" (byval as HWND) as BOOL
-declare function CloseWindowStation alias "CloseWindowStation" (byval as HWINSTA) as BOOL
-declare function CopyIcon alias "CopyIcon" (byval as HICON) as HICON
-declare function CopyImage alias "CopyImage" (byval as HANDLE, byval as UINT, byval as integer, byval as integer, byval as UINT) as HANDLE
-declare function CopyRect alias "CopyRect" (byval as LPRECT, byval as LPCRECT) as BOOL
-declare function CountClipboardFormats alias "CountClipboardFormats" () as integer
-declare function CreateCaret alias "CreateCaret" (byval as HWND, byval as HBITMAP, byval as integer, byval as integer) as BOOL
-declare function CreateCursor alias "CreateCursor" (byval as HINSTANCE, byval as integer, byval as integer, byval as integer, byval as integer, byval as PCVOID, byval as PCVOID) as HCURSOR
-declare function CreateIcon alias "CreateIcon" (byval as HINSTANCE, byval as integer, byval as integer, byval as BYTE, byval as BYTE, byval as BYTE ptr, byval as BYTE ptr) as HICON
-declare function CreateIconFromResource alias "CreateIconFromResource" (byval as PBYTE, byval as DWORD, byval as BOOL, byval as DWORD) as HICON
-declare function CreateIconFromResourceEx alias "CreateIconFromResourceEx" (byval as PBYTE, byval as DWORD, byval as BOOL, byval as DWORD, byval as integer, byval as integer, byval as UINT) as HICON
-declare function CreateIconIndirect alias "CreateIconIndirect" (byval as PICONINFO) as HICON
-declare function CreateMenu alias "CreateMenu" () as HMENU
-declare function CreatePopupMenu alias "CreatePopupMenu" () as HMENU
-declare function DeferWindowPos alias "DeferWindowPos" (byval as HDWP, byval as HWND, byval as HWND, byval as integer, byval as integer, byval as integer, byval as integer, byval as UINT) as HDWP
-declare function DefRawInputProc alias "DefRawInputProc" (byval as PRAWINPUT ptr, byval as INT_, byval as UINT) as LRESULT
-declare function DeleteMenu alias "DeleteMenu" (byval as HMENU, byval as UINT, byval as UINT) as BOOL
-declare function DeregisterShellHookWindow alias "DeregisterShellHookWindow" (byval as HWND) as BOOL
-declare function DestroyAcceleratorTable alias "DestroyAcceleratorTable" (byval as HACCEL) as BOOL
-declare function DestroyCaret alias "DestroyCaret" () as BOOL
-declare function DestroyCursor alias "DestroyCursor" (byval as HCURSOR) as BOOL
-declare function DestroyIcon alias "DestroyIcon" (byval as HICON) as BOOL
-declare function DestroyMenu alias "DestroyMenu" (byval as HMENU) as BOOL
-declare function DestroyWindow alias "DestroyWindow" (byval as HWND) as BOOL
-declare function DragDetect alias "DragDetect" (byval as HWND, byval as POINT) as BOOL
-declare function DragObject alias "DragObject" (byval as HWND, byval as HWND, byval as UINT, byval as DWORD, byval as HCURSOR) as DWORD
-declare function DrawAnimatedRects alias "DrawAnimatedRects" (byval as HWND, byval as integer, byval as LPCRECT, byval as LPCRECT) as BOOL
-declare function DrawCaption alias "DrawCaption" (byval as HWND, byval as HDC, byval as LPCRECT, byval as UINT) as BOOL
-declare function DrawEdge alias "DrawEdge" (byval as HDC, byval as LPRECT, byval as UINT, byval as UINT) as BOOL
-declare function DrawFocusRect alias "DrawFocusRect" (byval as HDC, byval as LPCRECT) as BOOL
-declare function DrawFrameControl alias "DrawFrameControl" (byval as HDC, byval as LPRECT, byval as UINT, byval as UINT) as BOOL
-declare function DrawIcon alias "DrawIcon" (byval as HDC, byval as integer, byval as integer, byval as HICON) as BOOL
-declare function DrawIconEx alias "DrawIconEx" (byval as HDC, byval as integer, byval as integer, byval as HICON, byval as integer, byval as integer, byval as UINT, byval as HBRUSH, byval as UINT) as BOOL
-declare function DrawMenuBar alias "DrawMenuBar" (byval as HWND) as BOOL
-declare function EmptyClipboard alias "EmptyClipboard" () as BOOL
-declare function EnableMenuItem alias "EnableMenuItem" (byval as HMENU, byval as UINT, byval as UINT) as BOOL
-declare function EnableScrollBar alias "EnableScrollBar" (byval as HWND, byval as UINT, byval as UINT) as BOOL
-declare function EnableWindow alias "EnableWindow" (byval as HWND, byval as BOOL) as BOOL
-declare function EndDeferWindowPos alias "EndDeferWindowPos" (byval as HDWP) as BOOL
-declare function EndDialog alias "EndDialog" (byval as HWND, byval as integer) as BOOL
-declare function EndMenu alias "EndMenu" () as BOOL
-declare function EndPaint alias "EndPaint" (byval as HWND, byval as PAINTSTRUCT ptr) as BOOL
-declare function EndTask alias "EndTask" (byval as HWND, byval as BOOL, byval as BOOL) as BOOL
-declare function EnumChildWindows alias "EnumChildWindows" (byval as HWND, byval as ENUMWINDOWSPROC, byval as LPARAM) as BOOL
-declare function EnumClipboardFormats alias "EnumClipboardFormats" (byval as UINT) as UINT
-declare function EnumDesktopWindows alias "EnumDesktopWindows" (byval as HDESK, byval as ENUMWINDOWSPROC, byval as LPARAM) as BOOL
-declare function EnumDisplayMonitors alias "EnumDisplayMonitors" (byval as HDC, byval as LPCRECT, byval as MONITORENUMPROC, byval as LPARAM) as BOOL
-declare function EnumThreadWindows alias "EnumThreadWindows" (byval as DWORD, byval as WNDENUMPROC, byval as LPARAM) as BOOL
-declare function EnumWindows alias "EnumWindows" (byval as WNDENUMPROC, byval as LPARAM) as BOOL
-declare function EqualRect alias "EqualRect" (byval as LPCRECT, byval as LPCRECT) as BOOL
-declare function ExitWindowsEx alias "ExitWindowsEx" (byval as UINT, byval as DWORD) as BOOL
-declare function FlashWindow alias "FlashWindow" (byval as HWND, byval as BOOL) as BOOL
-declare function FlashWindowEx alias "FlashWindowEx" (byval as PFLASHWINFO) as BOOL
-declare function FrameRect alias "FrameRect" (byval as HDC, byval as LPCRECT, byval as HBRUSH) as integer
-declare function FrameRgn alias "FrameRgn" (byval as HDC, byval as HRGN, byval as HBRUSH, byval as integer, byval as integer) as BOOL
-declare function GetActiveWindow alias "GetActiveWindow" () as HWND
-declare function GetAncestor alias "GetAncestor" (byval as HWND, byval as UINT) as HWND
-declare function GetAsyncKeyState alias "GetAsyncKeyState" (byval as integer) as SHORT
-declare function GetCapture alias "GetCapture" () as HWND
-declare function GetCaretBlinkTime alias "GetCaretBlinkTime" () as UINT
-declare function GetCaretPos alias "GetCaretPos" (byval as LPPOINT) as BOOL
-declare function GetClassWord alias "GetClassWord" (byval as HWND, byval as integer) as WORD
-declare function GetClientRect alias "GetClientRect" (byval as HWND, byval as LPRECT) as BOOL
-declare function GetClipboardData alias "GetClipboardData" (byval as UINT) as HANDLE
-declare function GetClipboardOwner alias "GetClipboardOwner" () as HWND
-declare function GetClipboardSequenceNumber alias "GetClipboardSequenceNumber" () as DWORD
-declare function GetClipboardViewer alias "GetClipboardViewer" () as HWND
-declare function GetClipCursor alias "GetClipCursor" (byval as LPRECT) as BOOL
-declare function GetCursorPos alias "GetCursorPos" (byval as LPPOINT) as BOOL
-declare function GetDC alias "GetDC" (byval as HWND) as HDC
-declare function GetDCEx alias "GetDCEx" (byval as HWND, byval as HRGN, byval as DWORD) as HDC
-declare function GetDesktopWindow alias "GetDesktopWindow" () as HWND
-declare function GetDialogBaseUnits alias "GetDialogBaseUnits" () as integer
-declare function GetDlgCtrlID alias "GetDlgCtrlID" (byval as HWND) as integer
-declare function GetDlgItem alias "GetDlgItem" (byval as HWND, byval as integer) as HWND
-declare function GetDlgItemInt alias "GetDlgItemInt" (byval as HWND, byval as integer, byval as PBOOL, byval as BOOL) as UINT
-declare function GetDoubleClickTime alias "GetDoubleClickTime" () as UINT
-declare function GetFocus alias "GetFocus" () as HWND
-declare function GetForegroundWindow alias "GetForegroundWindow" () as HWND
-declare function GetGuiResources alias "GetGuiResources" (byval as HANDLE, byval as DWORD) as DWORD
-declare function GetIconInfo alias "GetIconInfo" (byval as HICON, byval as PICONINFO) as BOOL
-declare function GetInputState alias "GetInputState" () as BOOL
-declare function GetKBCodePage alias "GetKBCodePage" () as UINT
-declare function GetKeyboardLayout alias "GetKeyboardLayout" (byval as DWORD) as HKL
-declare function GetKeyboardLayoutList alias "GetKeyboardLayoutList" (byval as integer, byval as HKL ptr) as UINT
-declare function GetKeyboardState alias "GetKeyboardState" (byval as PBYTE) as BOOL
-declare function GetKeyboardType alias "GetKeyboardType" (byval as integer) as integer
-declare function GetKeyState alias "GetKeyState" (byval as integer) as SHORT
-declare function GetLastActivePopup alias "GetLastActivePopup" (byval as HWND) as HWND
-declare function GetMenu alias "GetMenu" (byval as HWND) as HMENU
-declare function GetMenuCheckMarkDimensions alias "GetMenuCheckMarkDimensions" () as LONG
-declare function GetMenuContextHelpId alias "GetMenuContextHelpId" (byval as HMENU) as DWORD
-declare function GetMenuDefaultItem alias "GetMenuDefaultItem" (byval as HMENU, byval as UINT, byval as UINT) as UINT
-declare function GetMenuItemCount alias "GetMenuItemCount" (byval as HMENU) as integer
-declare function GetMenuItemID alias "GetMenuItemID" (byval as HMENU, byval as integer) as UINT
-declare function GetMenuItemRect alias "GetMenuItemRect" (byval as HWND, byval as HMENU, byval as UINT, byval as LPRECT) as BOOL
-declare function GetMenuState alias "GetMenuState" (byval as HMENU, byval as UINT, byval as UINT) as UINT
-declare function GetMessageExtraInfo alias "GetMessageExtraInfo" () as LONG
-declare function GetMessagePos alias "GetMessagePos" () as DWORD
-declare function GetMessageTime alias "GetMessageTime" () as LONG
-declare function GetMouseMovePointsEx alias "GetMouseMovePointsEx" (byval as UINT, byval as LPMOUSEMOVEPOINT, byval as LPMOUSEMOVEPOINT, byval as integer, byval as DWORD) as integer
-declare function GetNextDlgGroupItem alias "GetNextDlgGroupItem" (byval as HWND, byval as HWND, byval as BOOL) as HWND
-declare function GetNextDlgTabItem alias "GetNextDlgTabItem" (byval as HWND, byval as HWND, byval as BOOL) as HWND
-declare function GetOpenClipboardWindow alias "GetOpenClipboardWindow" () as HWND
-declare function GetParent alias "GetParent" (byval as HWND) as HWND
-declare function GetPriorityClipboardFormat alias "GetPriorityClipboardFormat" (byval as UINT ptr, byval as integer) as integer
-declare function GetRawInputBuffer alias "GetRawInputBuffer" (byval as PRAWINPUT, byval as PUINT, byval as UINT) as UINT
-declare function GetRawInputData alias "GetRawInputData" (byval as HRAWINPUT, byval as UINT, byval as LPVOID, byval as PUINT, byval as UINT) as UINT
-declare function GetRawInputDeviceList alias "GetRawInputDeviceList" (byval as PRAWINPUTDEVICELIST, byval as PUINT, byval as UINT) as UINT
-declare function GetRegisteredRawInputDevices alias "GetRegisteredRawInputDevices" (byval as PRAWINPUTDEVICE, byval as PUINT, byval as UINT) as UINT
-declare function GetQueueStatus alias "GetQueueStatus" (byval as UINT) as DWORD
-declare function GetScrollInfo alias "GetScrollInfo" (byval as HWND, byval as integer, byval as LPSCROLLINFO) as BOOL
-declare function GetScrollPos alias "GetScrollPos" (byval as HWND, byval as integer) as integer
-declare function GetScrollRange alias "GetScrollRange" (byval as HWND, byval as integer, byval as LPINT, byval as LPINT) as BOOL
-declare function GetShellWindow alias "GetShellWindow" () as HWND
-declare function GetSubMenu alias "GetSubMenu" (byval as HMENU, byval as integer) as HMENU
-declare function GetSysColor alias "GetSysColor" (byval as integer) as DWORD
-declare function GetSysColorBrush alias "GetSysColorBrush" (byval as integer) as HBRUSH
-declare function GetSystemMenu alias "GetSystemMenu" (byval as HWND, byval as BOOL) as HMENU
-declare function GetSystemMetrics alias "GetSystemMetrics" (byval as integer) as integer
-declare function GetThreadDesktop alias "GetThreadDesktop" (byval as DWORD) as HDESK
-declare function GetTopWindow alias "GetTopWindow" (byval as HWND) as HWND
-declare function GetUpdateRect alias "GetUpdateRect" (byval as HWND, byval as LPRECT, byval as BOOL) as BOOL
-declare function GetUpdateRgn alias "GetUpdateRgn" (byval as HWND, byval as HRGN, byval as BOOL) as integer
-declare function GetUserObjectSecurity alias "GetUserObjectSecurity" (byval as HANDLE, byval as PSECURITY_INFORMATION, byval as PSECURITY_DESCRIPTOR, byval as DWORD, byval as PDWORD) as BOOL
-declare function GetWindow alias "GetWindow" (byval as HWND, byval as UINT) as HWND
-declare function GetWindowContextHelpId alias "GetWindowContextHelpId" (byval as HWND) as DWORD
-declare function GetWindowDC alias "GetWindowDC" (byval as HWND) as HDC
+extern "windows" lib "user32"
+
+declare function ActivateKeyboardLayout (byval as HKL, byval as UINT) as HKL
+declare function AdjustWindowRect (byval as LPRECT, byval as DWORD, byval as BOOL) as BOOL
+declare function AdjustWindowRectEx (byval as LPRECT, byval as DWORD, byval as BOOL, byval as DWORD) as BOOL
+declare function AnimateWindow (byval as HWND, byval as DWORD, byval as DWORD) as BOOL
+declare function AnyPopup () as BOOL
+declare function ArrangeIconicWindows (byval as HWND) as UINT
+declare function AttachThreadInput (byval as DWORD, byval as DWORD, byval as BOOL) as BOOL
+declare function BeginDeferWindowPos (byval as integer) as HDWP
+declare function BeginPaint (byval as HWND, byval as LPPAINTSTRUCT) as HDC
+declare function BringWindowToTop (byval as HWND) as BOOL
+declare function BroadcastSystemMessage (byval as DWORD, byval as LPDWORD, byval as UINT, byval as WPARAM, byval as LPARAM) as integer
+declare function CallNextHookEx (byval as HHOOK, byval as integer, byval as WPARAM, byval as LPARAM) as LRESULT
+declare function CascadeWindows (byval as HWND, byval as UINT, byval as LPCRECT, byval as UINT, byval as HWND ptr) as WORD
+declare function ChangeClipboardChain (byval as HWND, byval as HWND) as BOOL
+declare function CheckDlgButton (byval as HWND, byval as integer, byval as UINT) as BOOL
+declare function CheckMenuItem (byval as HMENU, byval as UINT, byval as UINT) as DWORD
+declare function CheckMenuRadioItem (byval as HMENU, byval as UINT, byval as UINT, byval as UINT, byval as UINT) as BOOL
+declare function CheckRadioButton (byval as HWND, byval as integer, byval as integer, byval as integer) as BOOL
+declare function ChildWindowFromPoint (byval as HWND, byval as POINT) as HWND
+declare function ChildWindowFromPointEx (byval as HWND, byval as POINT, byval as UINT) as HWND
+declare function ClientToScreen (byval as HWND, byval as LPPOINT) as BOOL
+declare function ClipCursor (byval as LPCRECT) as BOOL
+declare function CloseClipboard () as BOOL
+declare function CloseDesktop (byval as HDESK) as BOOL
+declare function CloseWindow (byval as HWND) as BOOL
+declare function CloseWindowStation (byval as HWINSTA) as BOOL
+declare function CopyIcon (byval as HICON) as HICON
+declare function CopyImage (byval as HANDLE, byval as UINT, byval as integer, byval as integer, byval as UINT) as HANDLE
+declare function CopyRect (byval as LPRECT, byval as LPCRECT) as BOOL
+declare function CountClipboardFormats () as integer
+declare function CreateCaret (byval as HWND, byval as HBITMAP, byval as integer, byval as integer) as BOOL
+declare function CreateCursor (byval as HINSTANCE, byval as integer, byval as integer, byval as integer, byval as integer, byval as PCVOID, byval as PCVOID) as HCURSOR
+declare function CreateIcon (byval as HINSTANCE, byval as integer, byval as integer, byval as BYTE, byval as BYTE, byval as BYTE ptr, byval as BYTE ptr) as HICON
+declare function CreateIconFromResource (byval as PBYTE, byval as DWORD, byval as BOOL, byval as DWORD) as HICON
+declare function CreateIconFromResourceEx (byval as PBYTE, byval as DWORD, byval as BOOL, byval as DWORD, byval as integer, byval as integer, byval as UINT) as HICON
+declare function CreateIconIndirect (byval as PICONINFO) as HICON
+declare function CreateMenu () as HMENU
+declare function CreatePopupMenu () as HMENU
+declare function DeferWindowPos (byval as HDWP, byval as HWND, byval as HWND, byval as integer, byval as integer, byval as integer, byval as integer, byval as UINT) as HDWP
+declare function DefRawInputProc (byval as PRAWINPUT ptr, byval as INT_, byval as UINT) as LRESULT
+declare function DeleteMenu (byval as HMENU, byval as UINT, byval as UINT) as BOOL
+declare function DeregisterShellHookWindow (byval as HWND) as BOOL
+declare function DestroyAcceleratorTable (byval as HACCEL) as BOOL
+declare function DestroyCaret () as BOOL
+declare function DestroyCursor (byval as HCURSOR) as BOOL
+declare function DestroyIcon (byval as HICON) as BOOL
+declare function DestroyMenu (byval as HMENU) as BOOL
+declare function DestroyWindow (byval as HWND) as BOOL
+declare function DragDetect (byval as HWND, byval as POINT) as BOOL
+declare function DragObject (byval as HWND, byval as HWND, byval as UINT, byval as DWORD, byval as HCURSOR) as DWORD
+declare function DrawAnimatedRects (byval as HWND, byval as integer, byval as LPCRECT, byval as LPCRECT) as BOOL
+declare function DrawCaption (byval as HWND, byval as HDC, byval as LPCRECT, byval as UINT) as BOOL
+declare function DrawEdge (byval as HDC, byval as LPRECT, byval as UINT, byval as UINT) as BOOL
+declare function DrawFocusRect (byval as HDC, byval as LPCRECT) as BOOL
+declare function DrawFrameControl (byval as HDC, byval as LPRECT, byval as UINT, byval as UINT) as BOOL
+declare function DrawIcon (byval as HDC, byval as integer, byval as integer, byval as HICON) as BOOL
+declare function DrawIconEx (byval as HDC, byval as integer, byval as integer, byval as HICON, byval as integer, byval as integer, byval as UINT, byval as HBRUSH, byval as UINT) as BOOL
+declare function DrawMenuBar (byval as HWND) as BOOL
+declare function EmptyClipboard () as BOOL
+declare function EnableMenuItem (byval as HMENU, byval as UINT, byval as UINT) as BOOL
+declare function EnableScrollBar (byval as HWND, byval as UINT, byval as UINT) as BOOL
+declare function EnableWindow (byval as HWND, byval as BOOL) as BOOL
+declare function EndDeferWindowPos (byval as HDWP) as BOOL
+declare function EndDialog (byval as HWND, byval as integer) as BOOL
+declare function EndMenu () as BOOL
+declare function EndPaint (byval as HWND, byval as PAINTSTRUCT ptr) as BOOL
+declare function EndTask (byval as HWND, byval as BOOL, byval as BOOL) as BOOL
+declare function EnumChildWindows (byval as HWND, byval as ENUMWINDOWSPROC, byval as LPARAM) as BOOL
+declare function EnumClipboardFormats (byval as UINT) as UINT
+declare function EnumDesktopWindows (byval as HDESK, byval as ENUMWINDOWSPROC, byval as LPARAM) as BOOL
+declare function EnumDisplayMonitors (byval as HDC, byval as LPCRECT, byval as MONITORENUMPROC, byval as LPARAM) as BOOL
+declare function EnumThreadWindows (byval as DWORD, byval as WNDENUMPROC, byval as LPARAM) as BOOL
+declare function EnumWindows (byval as WNDENUMPROC, byval as LPARAM) as BOOL
+declare function EqualRect (byval as LPCRECT, byval as LPCRECT) as BOOL
+declare function ExitWindowsEx (byval as UINT, byval as DWORD) as BOOL
+declare function FlashWindow (byval as HWND, byval as BOOL) as BOOL
+declare function FlashWindowEx (byval as PFLASHWINFO) as BOOL
+declare function FrameRect (byval as HDC, byval as LPCRECT, byval as HBRUSH) as integer
+declare function FrameRgn (byval as HDC, byval as HRGN, byval as HBRUSH, byval as integer, byval as integer) as BOOL
+declare function GetActiveWindow () as HWND
+declare function GetAncestor (byval as HWND, byval as UINT) as HWND
+declare function GetAsyncKeyState (byval as integer) as SHORT
+declare function GetCapture () as HWND
+declare function GetCaretBlinkTime () as UINT
+declare function GetCaretPos (byval as LPPOINT) as BOOL
+declare function GetClassWord (byval as HWND, byval as integer) as WORD
+declare function GetClientRect (byval as HWND, byval as LPRECT) as BOOL
+declare function GetClipboardData (byval as UINT) as HANDLE
+declare function GetClipboardOwner () as HWND
+declare function GetClipboardSequenceNumber () as DWORD
+declare function GetClipboardViewer () as HWND
+declare function GetClipCursor (byval as LPRECT) as BOOL
+declare function GetCursorPos (byval as LPPOINT) as BOOL
+declare function GetDC (byval as HWND) as HDC
+declare function GetDCEx (byval as HWND, byval as HRGN, byval as DWORD) as HDC
+declare function GetDesktopWindow () as HWND
+declare function GetDialogBaseUnits () as integer
+declare function GetDlgCtrlID (byval as HWND) as integer
+declare function GetDlgItem (byval as HWND, byval as integer) as HWND
+declare function GetDlgItemInt (byval as HWND, byval as integer, byval as PBOOL, byval as BOOL) as UINT
+declare function GetDoubleClickTime () as UINT
+declare function GetFocus () as HWND
+declare function GetForegroundWindow () as HWND
+declare function GetGuiResources (byval as HANDLE, byval as DWORD) as DWORD
+declare function GetIconInfo (byval as HICON, byval as PICONINFO) as BOOL
+declare function GetInputState () as BOOL
+declare function GetKBCodePage () as UINT
+declare function GetKeyboardLayout (byval as DWORD) as HKL
+declare function GetKeyboardLayoutList (byval as integer, byval as HKL ptr) as UINT
+declare function GetKeyboardState (byval as PBYTE) as BOOL
+declare function GetKeyboardType (byval as integer) as integer
+declare function GetKeyState (byval as integer) as SHORT
+declare function GetLastActivePopup (byval as HWND) as HWND
+declare function GetMenu (byval as HWND) as HMENU
+declare function GetMenuCheckMarkDimensions () as LONG
+declare function GetMenuContextHelpId (byval as HMENU) as DWORD
+declare function GetMenuDefaultItem (byval as HMENU, byval as UINT, byval as UINT) as UINT
+declare function GetMenuItemCount (byval as HMENU) as integer
+declare function GetMenuItemID (byval as HMENU, byval as integer) as UINT
+declare function GetMenuItemRect (byval as HWND, byval as HMENU, byval as UINT, byval as LPRECT) as BOOL
+declare function GetMenuState (byval as HMENU, byval as UINT, byval as UINT) as UINT
+declare function GetMessageExtraInfo () as LONG
+declare function GetMessagePos () as DWORD
+declare function GetMessageTime () as LONG
+declare function GetMouseMovePointsEx (byval as UINT, byval as LPMOUSEMOVEPOINT, byval as LPMOUSEMOVEPOINT, byval as integer, byval as DWORD) as integer
+declare function GetNextDlgGroupItem (byval as HWND, byval as HWND, byval as BOOL) as HWND
+declare function GetNextDlgTabItem (byval as HWND, byval as HWND, byval as BOOL) as HWND
+declare function GetOpenClipboardWindow () as HWND
+declare function GetParent (byval as HWND) as HWND
+declare function GetPriorityClipboardFormat (byval as UINT ptr, byval as integer) as integer
+declare function GetRawInputBuffer (byval as PRAWINPUT, byval as PUINT, byval as UINT) as UINT
+declare function GetRawInputData (byval as HRAWINPUT, byval as UINT, byval as LPVOID, byval as PUINT, byval as UINT) as UINT
+declare function GetRawInputDeviceList (byval as PRAWINPUTDEVICELIST, byval as PUINT, byval as UINT) as UINT
+declare function GetRegisteredRawInputDevices (byval as PRAWINPUTDEVICE, byval as PUINT, byval as UINT) as UINT
+declare function GetQueueStatus (byval as UINT) as DWORD
+declare function GetScrollInfo (byval as HWND, byval as integer, byval as LPSCROLLINFO) as BOOL
+declare function GetScrollPos (byval as HWND, byval as integer) as integer
+declare function GetScrollRange (byval as HWND, byval as integer, byval as LPINT, byval as LPINT) as BOOL
+declare function GetShellWindow () as HWND
+declare function GetSubMenu (byval as HMENU, byval as integer) as HMENU
+declare function GetSysColor (byval as integer) as DWORD
+declare function GetSysColorBrush (byval as integer) as HBRUSH
+declare function GetSystemMenu (byval as HWND, byval as BOOL) as HMENU
+declare function GetSystemMetrics (byval as integer) as integer
+declare function GetThreadDesktop (byval as DWORD) as HDESK
+declare function GetTopWindow (byval as HWND) as HWND
+declare function GetUpdateRect (byval as HWND, byval as LPRECT, byval as BOOL) as BOOL
+declare function GetUpdateRgn (byval as HWND, byval as HRGN, byval as BOOL) as integer
+declare function GetUserObjectSecurity (byval as HANDLE, byval as PSECURITY_INFORMATION, byval as PSECURITY_DESCRIPTOR, byval as DWORD, byval as PDWORD) as BOOL
+declare function GetWindow (byval as HWND, byval as UINT) as HWND
+declare function GetWindowContextHelpId (byval as HWND) as DWORD
+declare function GetWindowDC (byval as HWND) as HDC
 #ifndef GetWindowExtEx
-declare function GetWindowExtEx alias "GetWindowExtEx" (byval as HDC, byval as LPSIZE) as BOOL
+declare function GetWindowExtEx (byval as HDC, byval as LPSIZE) as BOOL
 #endif
-declare function GetWindowPlacement alias "GetWindowPlacement" (byval as HWND, byval as WINDOWPLACEMENT ptr) as BOOL
-declare function GetWindowRect alias "GetWindowRect" (byval as HWND, byval as LPRECT) as BOOL
-declare function GetWindowRgn alias "GetWindowRgn" (byval as HWND, byval as HRGN) as integer
-declare function GetWindowWord alias "GetWindowWord" (byval as HWND, byval as integer) as WORD
-declare function GetComboBoxInfo alias "GetComboBoxInfo" (byval as HWND, byval as PCOMBOBOXINFO) as BOOL
-declare function GetCursorInfo alias "GetCursorInfo" (byval as PCURSORINFO) as BOOL
-declare function GetLastInputInfo alias "GetLastInputInfo" (byval as PLASTINPUTINFO) as BOOL
-declare function GetListBoxInfo alias "GetListBoxInfo" (byval as HWND) as DWORD
-declare function GetMenuBarInfo alias "GetMenuBarInfo" (byval as HWND, byval as LONG, byval as LONG, byval as PMENUBARINFO) as BOOL
-declare function GetMenuInfo alias "GetMenuInfo" (byval as HMENU, byval as LPMENUINFO) as BOOL
-declare function GetProcessDefaultLayout alias "GetProcessDefaultLayout" (byval as DWORD ptr) as BOOL
-declare function GetScrollBarInfo alias "GetScrollBarInfo" (byval as HWND, byval as LONG, byval as PSCROLLBARINFO) as BOOL
-declare function GetTitleBarInfo alias "GetTitleBarInfo" (byval as HWND, byval as PTITLEBARINFO) as BOOL
-declare function GetWindowInfo alias "GetWindowInfo" (byval as HWND, byval as PWINDOWINFO) as BOOL
-declare function HideCaret alias "HideCaret" (byval as HWND) as BOOL
-declare function HiliteMenuItem alias "HiliteMenuItem" (byval as HWND, byval as HMENU, byval as UINT, byval as UINT) as BOOL
-declare function InflateRect alias "InflateRect" (byval as LPRECT, byval as integer, byval as integer) as BOOL
-declare function InSendMessage alias "InSendMessage" () as BOOL
-declare function InSendMessageEx alias "InSendMessageEx" (byval as LPVOID) as DWORD
-declare function InternalGetWindowText alias "InternalGetWindowText" (byval as HWND, byval as LPWSTR, byval as INT_) as INT_
-declare function IntersectRect alias "IntersectRect" (byval as LPRECT, byval as LPCRECT, byval as LPCRECT) as BOOL
-declare function InvalidateRect alias "InvalidateRect" (byval as HWND, byval as LPCRECT, byval as BOOL) as BOOL
-declare function InvalidateRgn alias "InvalidateRgn" (byval as HWND, byval as HRGN, byval as BOOL) as BOOL
-declare function InvertRect alias "InvertRect" (byval as HDC, byval as LPCRECT) as BOOL
-declare function IsChild alias "IsChild" (byval as HWND, byval as HWND) as BOOL
-declare function IsClipboardFormatAvailable alias "IsClipboardFormatAvailable" (byval as UINT) as BOOL
-declare function IsDlgButtonChecked alias "IsDlgButtonChecked" (byval as HWND, byval as integer) as UINT
-declare function IsGUIThread alias "IsGUIThread" (byval as BOOL) as BOOL
-declare function IsHungAppWindow alias "IsHungAppWindow" (byval as HWND) as BOOL
-declare function IsIconic alias "IsIconic" (byval as HWND) as BOOL
-declare function IsMenu alias "IsMenu" (byval as HMENU) as BOOL
-declare function IsRectEmpty alias "IsRectEmpty" (byval as LPCRECT) as BOOL
-declare function IsWindow alias "IsWindow" (byval as HWND) as BOOL
-declare function IsWindowEnabled alias "IsWindowEnabled" (byval as HWND) as BOOL
-declare function IsWindowUnicode alias "IsWindowUnicode" (byval as HWND) as BOOL
-declare function IsWindowVisible alias "IsWindowVisible" (byval as HWND) as BOOL
-declare function IsWinEventHookInstalled alias "IsWinEventHookInstalled" (byval as DWORD) as BOOL
-declare function IsZoomed alias "IsZoomed" (byval as HWND) as BOOL
-declare sub keybd_event alias "keybd_event" (byval as BYTE, byval as BYTE, byval as DWORD, byval as DWORD)
-declare function KillTimer alias "KillTimer" (byval as HWND, byval as UINT) as BOOL
-declare function LockWindowUpdate alias "LockWindowUpdate" (byval as HWND) as BOOL
-declare function LockWorkStation alias "LockWorkStation" () as BOOL
-declare function LookupIconIdFromDirectory alias "LookupIconIdFromDirectory" (byval as PBYTE, byval as BOOL) as integer
-declare function LookupIconIdFromDirectoryEx alias "LookupIconIdFromDirectoryEx" (byval as PBYTE, byval as BOOL, byval as integer, byval as integer, byval as UINT) as integer
-declare function MapDialogRect alias "MapDialogRect" (byval as HWND, byval as LPRECT) as BOOL
-declare function MapWindowPoints alias "MapWindowPoints" (byval as HWND, byval as HWND, byval as LPPOINT, byval as UINT) as integer
-declare function MenuItemFromPoint alias "MenuItemFromPoint" (byval as HWND, byval as HMENU, byval as POINT) as integer
-declare function MessageBeep alias "MessageBeep" (byval as UINT) as BOOL
-declare function MonitorFromPoint alias "MonitorFromPoint" (byval as POINT, byval as DWORD) as HMONITOR
-declare function MonitorFromRect alias "MonitorFromRect" (byval as LPCRECT, byval as DWORD) as HMONITOR
-declare function MonitorFromWindow alias "MonitorFromWindow" (byval as HWND, byval as DWORD) as HMONITOR
-declare sub mouse_event alias "mouse_event" (byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as ULONG_PTR)
-declare function MoveWindow alias "MoveWindow" (byval as HWND, byval as integer, byval as integer, byval as integer, byval as integer, byval as BOOL) as BOOL
-declare function MsgWaitForMultipleObjects alias "MsgWaitForMultipleObjects" (byval as DWORD, byval as HANDLE ptr, byval as BOOL, byval as DWORD, byval as DWORD) as DWORD
-declare function MsgWaitForMultipleObjectsEx alias "MsgWaitForMultipleObjectsEx" (byval as DWORD, byval as HANDLE ptr, byval as DWORD, byval as DWORD, byval as DWORD) as DWORD
-declare function OemKeyScan alias "OemKeyScan" (byval as WORD) as DWORD
-declare function OffsetRect alias "OffsetRect" (byval as LPRECT, byval as integer, byval as integer) as BOOL
-declare function OpenClipboard alias "OpenClipboard" (byval as HWND) as BOOL
-declare function OpenIcon alias "OpenIcon" (byval as HWND) as BOOL
-declare function OpenInputDesktop alias "OpenInputDesktop" (byval as DWORD, byval as BOOL, byval as DWORD) as HDESK
-declare function PaintDesktop alias "PaintDesktop" (byval as HDC) as BOOL
-declare sub PostQuitMessage alias "PostQuitMessage" (byval as integer)
-declare function PrintWindow alias "PrintWindow" (byval as HWND, byval as HDC, byval as UINT) as BOOL
-declare function PtInRect alias "PtInRect" (byval as LPCRECT, byval as POINT) as BOOL
-declare function RealChildWindowFromPoint alias "RealChildWindowFromPoint" (byval as HWND, byval as POINT) as HWND
-declare function RedrawWindow alias "RedrawWindow" (byval as HWND, byval as LPCRECT, byval as HRGN, byval as UINT) as BOOL
-declare function RegisterHotKey alias "RegisterHotKey" (byval as HWND, byval as integer, byval as UINT, byval as UINT) as BOOL
-declare function RegisterRawInputDevices alias "RegisterRawInputDevices" (byval as PCRAWINPUTDEVICE, byval as UINT, byval as UINT) as BOOL
-declare function ReleaseCapture alias "ReleaseCapture" () as BOOL
-declare function ReleaseDC alias "ReleaseDC" (byval as HWND, byval as HDC) as integer
-declare function RemoveMenu alias "RemoveMenu" (byval as HMENU, byval as UINT, byval as UINT) as BOOL
-declare function ReplyMessage alias "ReplyMessage" (byval as LRESULT) as BOOL
-declare function ScreenToClient alias "ScreenToClient" (byval as HWND, byval as LPPOINT) as BOOL
-declare function ScrollDC alias "ScrollDC" (byval as HDC, byval as integer, byval as integer, byval as LPCRECT, byval as LPCRECT, byval as HRGN, byval as LPRECT) as BOOL
-declare function ScrollWindow alias "ScrollWindow" (byval as HWND, byval as integer, byval as integer, byval as LPCRECT, byval as LPCRECT) as BOOL
-declare function ScrollWindowEx alias "ScrollWindowEx" (byval as HWND, byval as integer, byval as integer, byval as LPCRECT, byval as LPCRECT, byval as HRGN, byval as LPRECT, byval as UINT) as integer
-declare function SendInput alias "SendInput" (byval as UINT, byval as LPINPUT, byval as integer) as UINT
-declare function SetActiveWindow alias "SetActiveWindow" (byval as HWND) as HWND
-declare function SetCapture alias "SetCapture" (byval hWnd as HWND) as HWND
-declare function SetCaretBlinkTime alias "SetCaretBlinkTime" (byval as UINT) as BOOL
-declare function SetCaretPos alias "SetCaretPos" (byval as integer, byval as integer) as BOOL
-declare function SetClassWord alias "SetClassWord" (byval as HWND, byval as integer, byval as WORD) as WORD
-declare function SetClipboardData alias "SetClipboardData" (byval as UINT, byval as HANDLE) as HANDLE
-declare function SetClipboardViewer alias "SetClipboardViewer" (byval as HWND) as HWND
-declare function SetCursor alias "SetCursor" (byval as HCURSOR) as HCURSOR
-declare function SetCursorPos alias "SetCursorPos" (byval as integer, byval as integer) as BOOL
-declare sub SetDebugErrorLevel alias "SetDebugErrorLevel" (byval as DWORD)
-declare function SetDlgItemInt alias "SetDlgItemInt" (byval as HWND, byval as integer, byval as UINT, byval as BOOL) as BOOL
-declare function SetDoubleClickTime alias "SetDoubleClickTime" (byval as UINT) as BOOL
-declare function SetFocus alias "SetFocus" (byval as HWND) as HWND
-declare function SetForegroundWindow alias "SetForegroundWindow" (byval as HWND) as BOOL
-declare function SetKeyboardState alias "SetKeyboardState" (byval as PBYTE) as BOOL
-declare function SetMenu alias "SetMenu" (byval as HWND, byval as HMENU) as BOOL
-declare function SetMenuContextHelpId alias "SetMenuContextHelpId" (byval as HMENU, byval as DWORD) as BOOL
-declare function SetMenuDefaultItem alias "SetMenuDefaultItem" (byval as HMENU, byval as UINT, byval as UINT) as BOOL
-declare function SetMenuInfo alias "SetMenuInfo" (byval as HMENU, byval as LPCMENUINFO) as BOOL
-declare function SetMenuItemBitmaps alias "SetMenuItemBitmaps" (byval as HMENU, byval as UINT, byval as UINT, byval as HBITMAP, byval as HBITMAP) as BOOL
-declare function SetMessageExtraInfo alias "SetMessageExtraInfo" (byval as LPARAM) as LPARAM
-declare function SetMessageQueue alias "SetMessageQueue" (byval as integer) as BOOL
-declare function SetParent alias "SetParent" (byval as HWND, byval as HWND) as HWND
-declare function SetProcessDefaultLayout alias "SetProcessDefaultLayout" (byval as DWORD) as BOOL
-declare function SetProcessWindowStation alias "SetProcessWindowStation" (byval as HWINSTA) as BOOL
-declare function SetRect alias "SetRect" (byval as LPRECT, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
-declare function SetRectEmpty alias "SetRectEmpty" (byval as LPRECT) as BOOL
-declare function SetScrollInfo alias "SetScrollInfo" (byval as HWND, byval as integer, byval as LPCSCROLLINFO, byval as BOOL) as integer
-declare function SetScrollPos alias "SetScrollPos" (byval as HWND, byval as integer, byval as integer, byval as BOOL) as integer
-declare function SetScrollRange alias "SetScrollRange" (byval as HWND, byval as integer, byval as integer, byval as integer, byval as BOOL) as BOOL
-declare function SetSysColors alias "SetSysColors" (byval as integer, byval as INT_ ptr, byval as COLORREF ptr) as BOOL
-declare function SetSystemCursor alias "SetSystemCursor" (byval as HCURSOR, byval as DWORD) as BOOL
-declare function SetThreadDesktop alias "SetThreadDesktop" (byval as HDESK) as BOOL
-declare function SetTimer alias "SetTimer" (byval as HWND, byval as UINT, byval as UINT, byval as TIMERPROC) as UINT
-declare function SetUserObjectSecurity alias "SetUserObjectSecurity" (byval as HANDLE, byval as PSECURITY_INFORMATION, byval as PSECURITY_DESCRIPTOR) as BOOL
-declare function SetWindowContextHelpId alias "SetWindowContextHelpId" (byval as HWND, byval as DWORD) as BOOL
-declare function SetWindowPlacement alias "SetWindowPlacement" (byval hWnd as HWND, byval as WINDOWPLACEMENT ptr) as BOOL
-declare function SetWindowPos alias "SetWindowPos" (byval as HWND, byval as HWND, byval as integer, byval as integer, byval as integer, byval as integer, byval as UINT) as BOOL
-declare function SetWindowRgn alias "SetWindowRgn" (byval as HWND, byval as HRGN, byval as BOOL) as integer
-declare function SetWindowWord alias "SetWindowWord" (byval as HWND, byval as integer, byval as WORD) as WORD
-declare function ShowCaret alias "ShowCaret" (byval as HWND) as BOOL
-declare function ShowCursor alias "ShowCursor" (byval as BOOL) as integer
-declare function ShowOwnedPopups alias "ShowOwnedPopups" (byval as HWND, byval as BOOL) as BOOL
-declare function ShowScrollBar alias "ShowScrollBar" (byval as HWND, byval as integer, byval as BOOL) as BOOL
-declare function ShowWindow alias "ShowWindow" (byval as HWND, byval as integer) as BOOL
-declare function ShowWindowAsync alias "ShowWindowAsync" (byval as HWND, byval as integer) as BOOL
-declare function SubtractRect alias "SubtractRect" (byval as LPRECT, byval as LPCRECT, byval as LPCRECT) as BOOL
-declare function SwapMouseButton alias "SwapMouseButton" (byval as BOOL) as BOOL
-declare function SwitchDesktop alias "SwitchDesktop" (byval as HDESK) as BOOL
-declare sub SwitchToThisWindow alias "SwitchToThisWindow" (byval as HWND, byval as BOOL)
-declare function TileWindows alias "TileWindows" (byval as HWND, byval as UINT, byval as LPCRECT, byval as UINT, byval as HWND ptr) as WORD
-declare function ToAscii alias "ToAscii" (byval as UINT, byval as UINT, byval as PBYTE, byval as LPWORD, byval as UINT) as integer
-declare function ToAsciiEx alias "ToAsciiEx" (byval as UINT, byval as UINT, byval as PBYTE, byval as LPWORD, byval as UINT, byval as HKL) as integer
-declare function ToUnicode alias "ToUnicode" (byval as UINT, byval as UINT, byval as PBYTE, byval as LPWSTR, byval as integer, byval as UINT) as integer
-declare function ToUnicodeEx alias "ToUnicodeEx" (byval as UINT, byval as UINT, byval as PBYTE, byval as LPWSTR, byval as integer, byval as UINT, byval as HKL) as integer
-declare function TrackMouseEvent alias "TrackMouseEvent" (byval as LPTRACKMOUSEEVENT) as BOOL
-declare function TrackPopupMenu alias "TrackPopupMenu" (byval as HMENU, byval as UINT, byval as integer, byval as integer, byval as integer, byval as HWND, byval as LPCRECT) as BOOL
-declare function TrackPopupMenuEx alias "TrackPopupMenuEx" (byval as HMENU, byval as UINT, byval as integer, byval as integer, byval as HWND, byval as LPTPMPARAMS) as BOOL
-declare function TranslateMDISysAccel alias "TranslateMDISysAccel" (byval as HWND, byval as LPMSG) as BOOL
-declare function TranslateMessage alias "TranslateMessage" (byval as MSG ptr) as BOOL
-declare function UnhookWindowsHook alias "UnhookWindowsHook" (byval as integer, byval as HOOKPROC) as BOOL
-declare function UnhookWindowsHookEx alias "UnhookWindowsHookEx" (byval as HHOOK) as BOOL
-declare function UnionRect alias "UnionRect" (byval as LPRECT, byval as LPCRECT, byval as LPCRECT) as BOOL
-declare function UnloadKeyboardLayout alias "UnloadKeyboardLayout" (byval as HKL) as BOOL
-declare function UnregisterDeviceNotification alias "UnregisterDeviceNotification" (byval as HANDLE) as BOOL
-declare function UnregisterHotKey alias "UnregisterHotKey" (byval as HWND, byval as integer) as BOOL
-declare function UpdateWindow alias "UpdateWindow" (byval as HWND) as BOOL
-declare function UserHandleGrantAccess alias "UserHandleGrantAccess" (byval as HANDLE, byval as HANDLE, byval as BOOL) as BOOL
-declare function ValidateRect alias "ValidateRect" (byval as HWND, byval as LPCRECT) as BOOL
-declare function ValidateRgn alias "ValidateRgn" (byval as HWND, byval as HRGN) as BOOL
-declare function WaitForInputIdle alias "WaitForInputIdle" (byval as HANDLE, byval as DWORD) as DWORD
-declare function WaitMessage alias "WaitMessage" () as BOOL
-declare function WindowFromDC alias "WindowFromDC" (byval hDC as HDC) as HWND
-declare function WindowFromPoint alias "WindowFromPoint" (byval as POINT) as HWND
-declare function WinExec alias "WinExec" (byval as LPCSTR, byval as UINT) as UINT
-declare function AllowSetForegroundWindow alias "AllowSetForegroundWindow" (byval as DWORD) as BOOL
-declare function LockSetForegroundWindow alias "LockSetForegroundWindow" (byval as UINT) as BOOL
-declare function SetLayeredWindowAttributes alias "SetLayeredWindowAttributes" (byval as HWND, byval as COLORREF, byval as BYTE, byval as DWORD) as BOOL
-declare function UpdateLayeredWindow alias "UpdateLayeredWindow" (byval as HWND, byval as HDC, byval as POINT ptr, byval as SIZE ptr, byval as HDC, byval as POINT ptr, byval as COLORREF, byval as BLENDFUNCTION ptr, byval as DWORD) as BOOL
-declare function GetLayeredWindowAttributes alias "GetLayeredWindowAttributes" (byval as HWND, byval as COLORREF ptr, byval as BYTE ptr, byval as DWORD ptr) as BOOL
+declare function GetWindowPlacement (byval as HWND, byval as WINDOWPLACEMENT ptr) as BOOL
+declare function GetWindowRect (byval as HWND, byval as LPRECT) as BOOL
+declare function GetWindowRgn (byval as HWND, byval as HRGN) as integer
+declare function GetWindowWord (byval as HWND, byval as integer) as WORD
+declare function GetComboBoxInfo (byval as HWND, byval as PCOMBOBOXINFO) as BOOL
+declare function GetCursorInfo (byval as PCURSORINFO) as BOOL
+declare function GetLastInputInfo (byval as PLASTINPUTINFO) as BOOL
+declare function GetListBoxInfo (byval as HWND) as DWORD
+declare function GetMenuBarInfo (byval as HWND, byval as LONG, byval as LONG, byval as PMENUBARINFO) as BOOL
+declare function GetMenuInfo (byval as HMENU, byval as LPMENUINFO) as BOOL
+declare function GetProcessDefaultLayout (byval as DWORD ptr) as BOOL
+declare function GetScrollBarInfo (byval as HWND, byval as LONG, byval as PSCROLLBARINFO) as BOOL
+declare function GetTitleBarInfo (byval as HWND, byval as PTITLEBARINFO) as BOOL
+declare function GetWindowInfo (byval as HWND, byval as PWINDOWINFO) as BOOL
+declare function HideCaret (byval as HWND) as BOOL
+declare function HiliteMenuItem (byval as HWND, byval as HMENU, byval as UINT, byval as UINT) as BOOL
+declare function InflateRect (byval as LPRECT, byval as integer, byval as integer) as BOOL
+declare function InSendMessage () as BOOL
+declare function InSendMessageEx (byval as LPVOID) as DWORD
+declare function InternalGetWindowText (byval as HWND, byval as LPWSTR, byval as INT_) as INT_
+declare function IntersectRect (byval as LPRECT, byval as LPCRECT, byval as LPCRECT) as BOOL
+declare function InvalidateRect (byval as HWND, byval as LPCRECT, byval as BOOL) as BOOL
+declare function InvalidateRgn (byval as HWND, byval as HRGN, byval as BOOL) as BOOL
+declare function InvertRect (byval as HDC, byval as LPCRECT) as BOOL
+declare function IsChild (byval as HWND, byval as HWND) as BOOL
+declare function IsClipboardFormatAvailable (byval as UINT) as BOOL
+declare function IsDlgButtonChecked (byval as HWND, byval as integer) as UINT
+declare function IsGUIThread (byval as BOOL) as BOOL
+declare function IsHungAppWindow (byval as HWND) as BOOL
+declare function IsIconic (byval as HWND) as BOOL
+declare function IsMenu (byval as HMENU) as BOOL
+declare function IsRectEmpty (byval as LPCRECT) as BOOL
+declare function IsWindow (byval as HWND) as BOOL
+declare function IsWindowEnabled (byval as HWND) as BOOL
+declare function IsWindowUnicode (byval as HWND) as BOOL
+declare function IsWindowVisible (byval as HWND) as BOOL
+declare function IsWinEventHookInstalled (byval as DWORD) as BOOL
+declare function IsZoomed (byval as HWND) as BOOL
+declare sub keybd_event (byval as BYTE, byval as BYTE, byval as DWORD, byval as DWORD)
+declare function KillTimer (byval as HWND, byval as UINT) as BOOL
+declare function LockWindowUpdate (byval as HWND) as BOOL
+declare function LockWorkStation () as BOOL
+declare function LookupIconIdFromDirectory (byval as PBYTE, byval as BOOL) as integer
+declare function LookupIconIdFromDirectoryEx (byval as PBYTE, byval as BOOL, byval as integer, byval as integer, byval as UINT) as integer
+declare function MapDialogRect (byval as HWND, byval as LPRECT) as BOOL
+declare function MapWindowPoints (byval as HWND, byval as HWND, byval as LPPOINT, byval as UINT) as integer
+declare function MenuItemFromPoint (byval as HWND, byval as HMENU, byval as POINT) as integer
+declare function MessageBeep (byval as UINT) as BOOL
+declare function MonitorFromPoint (byval as POINT, byval as DWORD) as HMONITOR
+declare function MonitorFromRect (byval as LPCRECT, byval as DWORD) as HMONITOR
+declare function MonitorFromWindow (byval as HWND, byval as DWORD) as HMONITOR
+declare sub mouse_event (byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as ULONG_PTR)
+declare function MoveWindow (byval as HWND, byval as integer, byval as integer, byval as integer, byval as integer, byval as BOOL) as BOOL
+declare function MsgWaitForMultipleObjects (byval as DWORD, byval as HANDLE ptr, byval as BOOL, byval as DWORD, byval as DWORD) as DWORD
+declare function MsgWaitForMultipleObjectsEx (byval as DWORD, byval as HANDLE ptr, byval as DWORD, byval as DWORD, byval as DWORD) as DWORD
+declare function OemKeyScan (byval as WORD) as DWORD
+declare function OffsetRect (byval as LPRECT, byval as integer, byval as integer) as BOOL
+declare function OpenClipboard (byval as HWND) as BOOL
+declare function OpenIcon (byval as HWND) as BOOL
+declare function OpenInputDesktop (byval as DWORD, byval as BOOL, byval as DWORD) as HDESK
+declare function PaintDesktop (byval as HDC) as BOOL
+declare sub PostQuitMessage (byval as integer)
+declare function PrintWindow (byval as HWND, byval as HDC, byval as UINT) as BOOL
+declare function PtInRect (byval as LPCRECT, byval as POINT) as BOOL
+declare function RealChildWindowFromPoint (byval as HWND, byval as POINT) as HWND
+declare function RedrawWindow (byval as HWND, byval as LPCRECT, byval as HRGN, byval as UINT) as BOOL
+declare function RegisterHotKey (byval as HWND, byval as integer, byval as UINT, byval as UINT) as BOOL
+declare function RegisterRawInputDevices (byval as PCRAWINPUTDEVICE, byval as UINT, byval as UINT) as BOOL
+declare function ReleaseCapture () as BOOL
+declare function ReleaseDC (byval as HWND, byval as HDC) as integer
+declare function RemoveMenu (byval as HMENU, byval as UINT, byval as UINT) as BOOL
+declare function ReplyMessage (byval as LRESULT) as BOOL
+declare function ScreenToClient (byval as HWND, byval as LPPOINT) as BOOL
+declare function ScrollDC (byval as HDC, byval as integer, byval as integer, byval as LPCRECT, byval as LPCRECT, byval as HRGN, byval as LPRECT) as BOOL
+declare function ScrollWindow (byval as HWND, byval as integer, byval as integer, byval as LPCRECT, byval as LPCRECT) as BOOL
+declare function ScrollWindowEx (byval as HWND, byval as integer, byval as integer, byval as LPCRECT, byval as LPCRECT, byval as HRGN, byval as LPRECT, byval as UINT) as integer
+declare function SendInput (byval as UINT, byval as LPINPUT, byval as integer) as UINT
+declare function SetActiveWindow (byval as HWND) as HWND
+declare function SetCapture (byval hWnd as HWND) as HWND
+declare function SetCaretBlinkTime (byval as UINT) as BOOL
+declare function SetCaretPos (byval as integer, byval as integer) as BOOL
+declare function SetClassWord (byval as HWND, byval as integer, byval as WORD) as WORD
+declare function SetClipboardData (byval as UINT, byval as HANDLE) as HANDLE
+declare function SetClipboardViewer (byval as HWND) as HWND
+declare function SetCursor (byval as HCURSOR) as HCURSOR
+declare function SetCursorPos (byval as integer, byval as integer) as BOOL
+declare sub SetDebugErrorLevel (byval as DWORD)
+declare function SetDlgItemInt (byval as HWND, byval as integer, byval as UINT, byval as BOOL) as BOOL
+declare function SetDoubleClickTime (byval as UINT) as BOOL
+declare function SetFocus (byval as HWND) as HWND
+declare function SetForegroundWindow (byval as HWND) as BOOL
+declare function SetKeyboardState (byval as PBYTE) as BOOL
+declare function SetMenu (byval as HWND, byval as HMENU) as BOOL
+declare function SetMenuContextHelpId (byval as HMENU, byval as DWORD) as BOOL
+declare function SetMenuDefaultItem (byval as HMENU, byval as UINT, byval as UINT) as BOOL
+declare function SetMenuInfo (byval as HMENU, byval as LPCMENUINFO) as BOOL
+declare function SetMenuItemBitmaps (byval as HMENU, byval as UINT, byval as UINT, byval as HBITMAP, byval as HBITMAP) as BOOL
+declare function SetMessageExtraInfo (byval as LPARAM) as LPARAM
+declare function SetMessageQueue (byval as integer) as BOOL
+declare function SetParent (byval as HWND, byval as HWND) as HWND
+declare function SetProcessDefaultLayout (byval as DWORD) as BOOL
+declare function SetProcessWindowStation (byval as HWINSTA) as BOOL
+declare function SetRect (byval as LPRECT, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
+declare function SetRectEmpty (byval as LPRECT) as BOOL
+declare function SetScrollInfo (byval as HWND, byval as integer, byval as LPCSCROLLINFO, byval as BOOL) as integer
+declare function SetScrollPos (byval as HWND, byval as integer, byval as integer, byval as BOOL) as integer
+declare function SetScrollRange (byval as HWND, byval as integer, byval as integer, byval as integer, byval as BOOL) as BOOL
+declare function SetSysColors (byval as integer, byval as INT_ ptr, byval as COLORREF ptr) as BOOL
+declare function SetSystemCursor (byval as HCURSOR, byval as DWORD) as BOOL
+declare function SetThreadDesktop (byval as HDESK) as BOOL
+declare function SetTimer (byval as HWND, byval as UINT, byval as UINT, byval as TIMERPROC) as UINT
+declare function SetUserObjectSecurity (byval as HANDLE, byval as PSECURITY_INFORMATION, byval as PSECURITY_DESCRIPTOR) as BOOL
+declare function SetWindowContextHelpId (byval as HWND, byval as DWORD) as BOOL
+declare function SetWindowPlacement (byval hWnd as HWND, byval as WINDOWPLACEMENT ptr) as BOOL
+declare function SetWindowPos (byval as HWND, byval as HWND, byval as integer, byval as integer, byval as integer, byval as integer, byval as UINT) as BOOL
+declare function SetWindowRgn (byval as HWND, byval as HRGN, byval as BOOL) as integer
+declare function SetWindowWord (byval as HWND, byval as integer, byval as WORD) as WORD
+declare function ShowCaret (byval as HWND) as BOOL
+declare function ShowCursor (byval as BOOL) as integer
+declare function ShowOwnedPopups (byval as HWND, byval as BOOL) as BOOL
+declare function ShowScrollBar (byval as HWND, byval as integer, byval as BOOL) as BOOL
+declare function ShowWindow (byval as HWND, byval as integer) as BOOL
+declare function ShowWindowAsync (byval as HWND, byval as integer) as BOOL
+declare function SubtractRect (byval as LPRECT, byval as LPCRECT, byval as LPCRECT) as BOOL
+declare function SwapMouseButton (byval as BOOL) as BOOL
+declare function SwitchDesktop (byval as HDESK) as BOOL
+declare sub SwitchToThisWindow (byval as HWND, byval as BOOL)
+declare function TileWindows (byval as HWND, byval as UINT, byval as LPCRECT, byval as UINT, byval as HWND ptr) as WORD
+declare function ToAscii (byval as UINT, byval as UINT, byval as PBYTE, byval as LPWORD, byval as UINT) as integer
+declare function ToAsciiEx (byval as UINT, byval as UINT, byval as PBYTE, byval as LPWORD, byval as UINT, byval as HKL) as integer
+declare function ToUnicode (byval as UINT, byval as UINT, byval as PBYTE, byval as LPWSTR, byval as integer, byval as UINT) as integer
+declare function ToUnicodeEx (byval as UINT, byval as UINT, byval as PBYTE, byval as LPWSTR, byval as integer, byval as UINT, byval as HKL) as integer
+declare function TrackMouseEvent (byval as LPTRACKMOUSEEVENT) as BOOL
+declare function TrackPopupMenu (byval as HMENU, byval as UINT, byval as integer, byval as integer, byval as integer, byval as HWND, byval as LPCRECT) as BOOL
+declare function TrackPopupMenuEx (byval as HMENU, byval as UINT, byval as integer, byval as integer, byval as HWND, byval as LPTPMPARAMS) as BOOL
+declare function TranslateMDISysAccel (byval as HWND, byval as LPMSG) as BOOL
+declare function TranslateMessage (byval as MSG ptr) as BOOL
+declare function UnhookWindowsHook (byval as integer, byval as HOOKPROC) as BOOL
+declare function UnhookWindowsHookEx (byval as HHOOK) as BOOL
+declare function UnionRect (byval as LPRECT, byval as LPCRECT, byval as LPCRECT) as BOOL
+declare function UnloadKeyboardLayout (byval as HKL) as BOOL
+declare function UnregisterDeviceNotification (byval as HANDLE) as BOOL
+declare function UnregisterHotKey (byval as HWND, byval as integer) as BOOL
+declare function UpdateWindow (byval as HWND) as BOOL
+declare function UserHandleGrantAccess (byval as HANDLE, byval as HANDLE, byval as BOOL) as BOOL
+declare function ValidateRect (byval as HWND, byval as LPCRECT) as BOOL
+declare function ValidateRgn (byval as HWND, byval as HRGN) as BOOL
+declare function WaitForInputIdle (byval as HANDLE, byval as DWORD) as DWORD
+declare function WaitMessage () as BOOL
+declare function WindowFromDC (byval hDC as HDC) as HWND
+declare function WindowFromPoint (byval as POINT) as HWND
+declare function WinExec (byval as LPCSTR, byval as UINT) as UINT
+declare function AllowSetForegroundWindow (byval as DWORD) as BOOL
+declare function LockSetForegroundWindow (byval as UINT) as BOOL
+declare function SetLayeredWindowAttributes (byval as HWND, byval as COLORREF, byval as BYTE, byval as DWORD) as BOOL
+declare function UpdateLayeredWindow (byval as HWND, byval as HDC, byval as POINT ptr, byval as SIZE ptr, byval as HDC, byval as POINT ptr, byval as COLORREF, byval as BLENDFUNCTION ptr, byval as DWORD) as BOOL
+declare function GetLayeredWindowAttributes (byval as HWND, byval as COLORREF ptr, byval as BYTE ptr, byval as DWORD ptr) as BOOL
 
 #ifdef UNICODE
 type WNDCLASS as WNDCLASSW
@@ -3950,5 +3950,7 @@ declare function wsprintf cdecl alias "wsprintfA" (byval as LPSTR, byval as LPCS
 #define ExitWindows(r,c) ExitWindowsEx(EWX_LOGOFF,0)
 #define GetWindowTask(hWnd) cptr(HANDLE, GetWindowThreadProcessId(hWnd, NULL))
 #define SetSysModalWindow(h)
+
+end extern
 
 #endif

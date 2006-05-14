@@ -9,8 +9,6 @@
 #ifndef __win_wingdi_bi__
 #define __win_wingdi_bi__
 
-#inclib "gdi32"
-
 #define BI_RGB 0
 #define BI_RLE8 1
 #define BI_RLE4 2
@@ -3065,256 +3063,258 @@ type ICMENUMPROCW as function (byval as LPWSTR, byval as LPARAM) as integer
 #define PALETTERGB(r,g,b) (&h02000000 or BGR(r,g,b))
 
 
-declare function AbortDoc alias "AbortDoc" (byval as HDC) as integer
-declare function AbortPath alias "AbortPath" (byval as HDC) as BOOL
-declare function AddFontMemResourceEx alias "AddFontMemResourceEx" (byval as PVOID, byval as DWORD, byval as PVOID, byval as DWORD ptr) as HANDLE
-declare function AngleArc alias "AngleArc" (byval as HDC, byval as integer, byval as integer, byval as DWORD, byval as FLOAT, byval as FLOAT) as BOOL
-declare function AnimatePalette alias "AnimatePalette" (byval as HPALETTE, byval as UINT, byval as UINT, byval as PALETTEENTRY ptr) as BOOL
-declare function Arc alias "Arc" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
-declare function ArcTo alias "ArcTo" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
-declare function BeginPath alias "BeginPath" (byval as HDC) as BOOL
-declare function BitBlt alias "BitBlt" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as HDC, byval as integer, byval as integer, byval as DWORD) as BOOL
-declare function CancelDC alias "CancelDC" (byval as HDC) as BOOL
-declare function CheckColorsInGamut alias "CheckColorsInGamut" (byval as HDC, byval as PVOID, byval as PVOID, byval as DWORD) as BOOL
-declare function Chord alias "Chord" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
-declare function ChoosePixelFormat alias "ChoosePixelFormat" (byval as HDC, byval as PIXELFORMATDESCRIPTOR ptr) as integer
-declare function CloseEnhMetaFile alias "CloseEnhMetaFile" (byval as HDC) as HENHMETAFILE
-declare function CloseFigure alias "CloseFigure" (byval as HDC) as BOOL
-declare function CloseMetaFile alias "CloseMetaFile" (byval as HDC) as HMETAFILE
-declare function ColorMatchToTarget alias "ColorMatchToTarget" (byval as HDC, byval as HDC, byval as DWORD) as BOOL
-declare function CombineRgn alias "CombineRgn" (byval as HRGN, byval as HRGN, byval as HRGN, byval as integer) as integer
-declare function CombineTransform alias "CombineTransform" (byval as LPXFORM, byval as XFORM ptr, byval as XFORM ptr) as BOOL
-declare function CreateBitmap alias "CreateBitmap" (byval as integer, byval as integer, byval as UINT, byval as UINT, byval as PCVOID) as HBITMAP
-declare function CreateBitmapIndirect alias "CreateBitmapIndirect" (byval as BITMAP ptr) as HBITMAP
-declare function CreateBrushIndirect alias "CreateBrushIndirect" (byval as LOGBRUSH ptr) as HBRUSH
-declare function CreateCompatibleBitmap alias "CreateCompatibleBitmap" (byval as HDC, byval as integer, byval as integer) as HBITMAP
-declare function CreateCompatibleDC alias "CreateCompatibleDC" (byval as HDC) as HDC
-declare function CreateDIBitmap alias "CreateDIBitmap" (byval as HDC, byval as BITMAPINFOHEADER ptr, byval as DWORD, byval as PCVOID, byval as BITMAPINFO ptr, byval as UINT) as HBITMAP
-declare function CreateDIBPatternBrush alias "CreateDIBPatternBrush" (byval as HGLOBAL, byval as UINT) as HBRUSH
-declare function CreateDIBPatternBrushPt alias "CreateDIBPatternBrushPt" (byval as PCVOID, byval as UINT) as HBRUSH
-declare function CreateDIBSection alias "CreateDIBSection" (byval as HDC, byval as BITMAPINFO ptr, byval as UINT, byval as any ptr ptr, byval as HANDLE, byval as DWORD) as HBITMAP
-declare function CreateDiscardableBitmap alias "CreateDiscardableBitmap" (byval as HDC, byval as integer, byval as integer) as HBITMAP
-declare function CreateEllipticRgn alias "CreateEllipticRgn" (byval as integer, byval as integer, byval as integer, byval as integer) as HRGN
-declare function CreateEllipticRgnIndirect alias "CreateEllipticRgnIndirect" (byval as LPCRECT) as HRGN
-declare function CreateHalftonePalette alias "CreateHalftonePalette" (byval as HDC) as HPALETTE
-declare function CreateHatchBrush alias "CreateHatchBrush" (byval as integer, byval as COLORREF) as HBRUSH
-declare function CreatePalette alias "CreatePalette" (byval as LOGPALETTE ptr) as HPALETTE
-declare function CreatePatternBrush alias "CreatePatternBrush" (byval as HBITMAP) as HBRUSH
-declare function CreatePen alias "CreatePen" (byval as integer, byval as integer, byval as COLORREF) as HPEN
-declare function CreatePenIndirect alias "CreatePenIndirect" (byval as LOGPEN ptr) as HPEN
-declare function CreatePolygonRgn alias "CreatePolygonRgn" (byval as POINT ptr, byval as integer, byval as integer) as HRGN
-declare function CreatePolyPolygonRgn alias "CreatePolyPolygonRgn" (byval as POINT ptr, byval as INT_ ptr, byval as integer, byval as integer) as HRGN
-declare function CreateRectRgn alias "CreateRectRgn" (byval as integer, byval as integer, byval as integer, byval as integer) as HRGN
-declare function CreateRectRgnIndirect alias "CreateRectRgnIndirect" (byval as LPCRECT) as HRGN
-declare function CreateRoundRectRgn alias "CreateRoundRectRgn" (byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as HRGN
-declare function CreateSolidBrush alias "CreateSolidBrush" (byval as COLORREF) as HBRUSH
-declare function DeleteColorSpace alias "DeleteColorSpace" (byval as HCOLORSPACE) as BOOL
-declare function DeleteDC alias "DeleteDC" (byval as HDC) as BOOL
-declare function DeleteEnhMetaFile alias "DeleteEnhMetaFile" (byval as HENHMETAFILE) as BOOL
-declare function DeleteMetaFile alias "DeleteMetaFile" (byval as HMETAFILE) as BOOL
-declare function DeleteObject alias "DeleteObject" (byval as HGDIOBJ) as BOOL
-declare function DescribePixelFormat alias "DescribePixelFormat" (byval as HDC, byval as integer, byval as UINT, byval as LPPIXELFORMATDESCRIPTOR) as integer
-declare function DPtoLP alias "DPtoLP" (byval as HDC, byval as LPPOINT, byval as integer) as BOOL
-declare function DrawEscape alias "DrawEscape" (byval as HDC, byval as integer, byval as integer, byval as LPCSTR) as integer
-declare function Ellipse alias "Ellipse" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
-declare function EndDoc alias "EndDoc" (byval as HDC) as integer
-declare function EndPage alias "EndPage" (byval as HDC) as integer
-declare function EndPath alias "EndPath" (byval as HDC) as BOOL
-declare function EnumEnhMetaFile alias "EnumEnhMetaFile" (byval as HDC, byval as HENHMETAFILE, byval as ENHMFENUMPROC, byval as PVOID, byval as LPCRECT) as BOOL
-declare function EnumMetaFile alias "EnumMetaFile" (byval as HDC, byval as HMETAFILE, byval as MFENUMPROC, byval as LPARAM) as BOOL
-declare function EnumObjects alias "EnumObjects" (byval as HDC, byval as integer, byval as GOBJENUMPROC, byval as LPARAM) as integer
-declare function EqualRgn alias "EqualRgn" (byval as HRGN, byval as HRGN) as BOOL
-declare function Escape alias "Escape" (byval as HDC, byval as integer, byval as integer, byval as LPCSTR, byval as PVOID) as integer
-declare function ExcludeClipRect alias "ExcludeClipRect" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer) as integer
-declare function ExcludeUpdateRgn alias "ExcludeUpdateRgn" (byval as HDC, byval as HWND) as integer
-declare function ExtCreatePen alias "ExtCreatePen" (byval as DWORD, byval as DWORD, byval as LOGBRUSH ptr, byval as DWORD, byval as DWORD ptr) as HPEN
-declare function ExtCreateRegion alias "ExtCreateRegion" (byval as XFORM ptr, byval as DWORD, byval as RGNDATA ptr) as HRGN
-declare function ExtEscape alias "ExtEscape" (byval as HDC, byval as integer, byval as integer, byval as LPCSTR, byval as integer, byval as LPSTR) as integer
-declare function ExtFloodFill alias "ExtFloodFill" (byval as HDC, byval as integer, byval as integer, byval as COLORREF, byval as UINT) as BOOL
-declare function ExtSelectClipRgn alias "ExtSelectClipRgn" (byval as HDC, byval as HRGN, byval as integer) as integer
-declare function FillPath alias "FillPath" (byval as HDC) as BOOL
-declare function FillRect alias "FillRect" (byval as HDC, byval as LPCRECT, byval as HBRUSH) as integer
-declare function FillRgn alias "FillRgn" (byval as HDC, byval as HRGN, byval as HBRUSH) as integer
-declare function FixBrushOrgEx alias "FixBrushOrgEx" (byval as HDC, byval as integer, byval as integer, byval as LPPOINT) as BOOL
-declare function FlattenPath alias "FlattenPath" (byval as HDC) as BOOL
-declare function FloodFill alias "FloodFill" (byval as HDC, byval as integer, byval as integer, byval as COLORREF) as BOOL
-declare function GdiComment alias "GdiComment" (byval as HDC, byval as UINT, byval as BYTE ptr) as BOOL
-declare function GdiFlush alias "GdiFlush" () as BOOL
-declare function GdiGetBatchLimit alias "GdiGetBatchLimit" () as DWORD
-declare function GdiSetBatchLimit alias "GdiSetBatchLimit" (byval as DWORD) as DWORD
-declare function GetArcDirection alias "GetArcDirection" (byval as HDC) as integer
-declare function GetAspectRatioFilterEx alias "GetAspectRatioFilterEx" (byval as HDC, byval as LPSIZE) as BOOL
-declare function GetBitmapBits alias "GetBitmapBits" (byval as HBITMAP, byval as LONG, byval as PVOID) as LONG
-declare function GetBitmapDimensionEx alias "GetBitmapDimensionEx" (byval as HBITMAP, byval as LPSIZE) as BOOL
-declare function GetBkColor alias "GetBkColor" (byval as HDC) as COLORREF
-declare function GetBkMode alias "GetBkMode" (byval as HDC) as integer
-declare function GetBoundsRect alias "GetBoundsRect" (byval as HDC, byval as LPRECT, byval as UINT) as UINT
-declare function GetBrushOrgEx alias "GetBrushOrgEx" (byval as HDC, byval as LPPOINT) as BOOL
-declare function GetClipBox alias "GetClipBox" (byval as HDC, byval as LPRECT) as integer
-declare function GetClipRgn alias "GetClipRgn" (byval as HDC, byval as HRGN) as integer
-declare function GetColorAdjustment alias "GetColorAdjustment" (byval as HDC, byval as LPCOLORADJUSTMENT) as BOOL
-declare function GetColorSpace alias "GetColorSpace" (byval as HDC) as HANDLE
-declare function GetCurrentObject alias "GetCurrentObject" (byval as HDC, byval as UINT) as HGDIOBJ
-declare function GetCurrentPositionEx alias "GetCurrentPositionEx" (byval as HDC, byval as LPPOINT) as BOOL
-declare function GetCursor alias "GetCursor" () as HCURSOR
-declare function GetDCOrgEx alias "GetDCOrgEx" (byval as HDC, byval as LPPOINT) as BOOL
-declare function GetDeviceCaps alias "GetDeviceCaps" (byval as HDC, byval as integer) as integer
-declare function GetDeviceGammaRamp alias "GetDeviceGammaRamp" (byval as HDC, byval as PVOID) as BOOL
-declare function GetDIBColorTable alias "GetDIBColorTable" (byval as HDC, byval as UINT, byval as UINT, byval as RGBQUAD ptr) as UINT
-declare function GetDIBits alias "GetDIBits" (byval as HDC, byval as HBITMAP, byval as UINT, byval as UINT, byval as PVOID, byval as LPBITMAPINFO, byval as UINT) as integer
-declare function GetEnhMetaFileBits alias "GetEnhMetaFileBits" (byval as HENHMETAFILE, byval as UINT, byval as LPBYTE) as UINT
-declare function GetEnhMetaFileHeader alias "GetEnhMetaFileHeader" (byval as HENHMETAFILE, byval as UINT, byval as LPENHMETAHEADER) as UINT
-declare function GetEnhMetaFilePaletteEntries alias "GetEnhMetaFilePaletteEntries" (byval as HENHMETAFILE, byval as UINT, byval as LPPALETTEENTRY) as UINT
-declare function GetEnhMetaFilePixelFormat alias "GetEnhMetaFilePixelFormat" (byval as HENHMETAFILE, byval as DWORD, byval as PIXELFORMATDESCRIPTOR ptr) as UINT
-declare function GetFontData alias "GetFontData" (byval as HDC, byval as DWORD, byval as DWORD, byval as PVOID, byval as DWORD) as DWORD
-declare function GetFontLanguageInfo alias "GetFontLanguageInfo" (byval as HDC) as DWORD
-declare function GetGraphicsMode alias "GetGraphicsMode" (byval as HDC) as integer
-declare function GetMapMode alias "GetMapMode" (byval as HDC) as integer
-declare function GetMetaFileBitsEx alias "GetMetaFileBitsEx" (byval as HMETAFILE, byval as UINT, byval as PVOID) as UINT
-declare function GetMetaRgn alias "GetMetaRgn" (byval as HDC, byval as HRGN) as integer
-declare function GetMiterLimit alias "GetMiterLimit" (byval as HDC, byval as PFLOAT) as BOOL
-declare function GetNearestColor alias "GetNearestColor" (byval as HDC, byval as COLORREF) as COLORREF
-declare function GetNearestPaletteIndex alias "GetNearestPaletteIndex" (byval as HPALETTE, byval as COLORREF) as UINT
-declare function GetObjectType alias "GetObjectType" (byval as HGDIOBJ) as DWORD
-declare function GetPaletteEntries alias "GetPaletteEntries" (byval as HPALETTE, byval as UINT, byval as UINT, byval as LPPALETTEENTRY) as UINT
-declare function GetPath alias "GetPath" (byval as HDC, byval as LPPOINT, byval as PBYTE, byval as integer) as integer
-declare function GetPixel alias "GetPixel" (byval as HDC, byval as integer, byval as integer) as COLORREF
-declare function GetPixelFormat alias "GetPixelFormat" (byval as HDC) as integer
-declare function GetPolyFillMode alias "GetPolyFillMode" (byval as HDC) as integer
-declare function GetRasterizerCaps alias "GetRasterizerCaps" (byval as LPRASTERIZER_STATUS, byval as UINT) as BOOL
-declare function GetRandomRgn alias "GetRandomRgn" (byval as HDC, byval as HRGN, byval as INT_) as integer
-declare function GetRegionData alias "GetRegionData" (byval as HRGN, byval as DWORD, byval as LPRGNDATA) as DWORD
-declare function GetRgnBox alias "GetRgnBox" (byval as HRGN, byval as LPRECT) as integer
-declare function GetROP2 alias "GetROP2" (byval as HDC) as integer
-declare function GetStockObject alias "GetStockObject" (byval as integer) as HGDIOBJ
-declare function GetStretchBltMode alias "GetStretchBltMode" (byval as HDC) as integer
-declare function GetSystemPaletteEntries alias "GetSystemPaletteEntries" (byval as HDC, byval as UINT, byval as UINT, byval as LPPALETTEENTRY) as UINT
-declare function GetSystemPaletteUse alias "GetSystemPaletteUse" (byval as HDC) as UINT
-declare function GetTextAlign alias "GetTextAlign" (byval as HDC) as UINT
-declare function GetTextCharacterExtra alias "GetTextCharacterExtra" (byval as HDC) as integer
-declare function GetTextCharset alias "GetTextCharset" (byval as HDC) as integer
-declare function GetTextCharsetInfo alias "GetTextCharsetInfo" (byval as HDC, byval as LPFONTSIGNATURE, byval as DWORD) as integer
-declare function GetTextColor alias "GetTextColor" (byval as HDC) as COLORREF
-declare function GetViewportExtEx alias "GetViewportExtEx" (byval as HDC, byval as LPSIZE) as BOOL
-declare function GetViewportOrgEx alias "GetViewportOrgEx" (byval as HDC, byval as LPPOINT) as BOOL
-declare function GetWindowExtEx alias "GetWindowExtEx" (byval as HDC, byval as LPSIZE) as BOOL
-declare function GetWindowOrgEx alias "GetWindowOrgEx" (byval as HDC, byval as LPPOINT) as BOOL
-declare function GetWinMetaFileBits alias "GetWinMetaFileBits" (byval as HENHMETAFILE, byval as UINT, byval as LPBYTE, byval as INT_, byval as HDC) as UINT
-declare function GetWorldTransform alias "GetWorldTransform" (byval as HDC, byval as LPXFORM) as BOOL
-declare function IntersectClipRect alias "IntersectClipRect" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer) as integer
-declare function InvertRgn alias "InvertRgn" (byval as HDC, byval as HRGN) as BOOL
-declare function LineDDA alias "LineDDA" (byval as integer, byval as integer, byval as integer, byval as integer, byval as LINEDDAPROC, byval as LPARAM) as BOOL
-declare function LineTo alias "LineTo" (byval as HDC, byval as integer, byval as integer) as BOOL
-declare function LPtoDP alias "LPtoDP" (byval as HDC, byval as LPPOINT, byval as integer) as BOOL
-declare function MaskBlt alias "MaskBlt" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as HDC, byval as integer, byval as integer, byval as HBITMAP, byval as integer, byval as integer, byval as DWORD) as BOOL
-declare function ModifyWorldTransform alias "ModifyWorldTransform" (byval as HDC, byval as XFORM ptr, byval as DWORD) as BOOL
-declare function MoveToEx alias "MoveToEx" (byval as HDC, byval as integer, byval as integer, byval as LPPOINT) as BOOL
-declare function OffsetClipRgn alias "OffsetClipRgn" (byval as HDC, byval as integer, byval as integer) as integer
-declare function OffsetRgn alias "OffsetRgn" (byval as HRGN, byval as integer, byval as integer) as integer
-declare function OffsetViewportOrgEx alias "OffsetViewportOrgEx" (byval as HDC, byval as integer, byval as integer, byval as LPPOINT) as BOOL
-declare function OffsetWindowOrgEx alias "OffsetWindowOrgEx" (byval as HDC, byval as integer, byval as integer, byval as LPPOINT) as BOOL
-declare function PaintRgn alias "PaintRgn" (byval as HDC, byval as HRGN) as BOOL
-declare function PatBlt alias "PatBlt" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as DWORD) as BOOL
-declare function PathToRegion alias "PathToRegion" (byval as HDC) as HRGN
-declare function Pie alias "Pie" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
-declare function PlayEnhMetaFile alias "PlayEnhMetaFile" (byval as HDC, byval as HENHMETAFILE, byval as LPCRECT) as BOOL
-declare function PlayEnhMetaFileRecord alias "PlayEnhMetaFileRecord" (byval as HDC, byval as LPHANDLETABLE, byval as ENHMETARECORD ptr, byval as UINT) as BOOL
-declare function PlayMetaFile alias "PlayMetaFile" (byval as HDC, byval as HMETAFILE) as BOOL
-declare function PlayMetaFileRecord alias "PlayMetaFileRecord" (byval as HDC, byval as LPHANDLETABLE, byval as LPMETARECORD, byval as UINT) as BOOL
-declare function PlgBlt alias "PlgBlt" (byval as HDC, byval as POINT ptr, byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as HBITMAP, byval as integer, byval as integer) as BOOL
-declare function PolyBezier alias "PolyBezier" (byval as HDC, byval as POINT ptr, byval as DWORD) as BOOL
-declare function PolyBezierTo alias "PolyBezierTo" (byval as HDC, byval as POINT ptr, byval as DWORD) as BOOL
-declare function PolyDraw alias "PolyDraw" (byval as HDC, byval as POINT ptr, byval as BYTE ptr, byval as integer) as BOOL
-declare function Polygon alias "Polygon" (byval as HDC, byval as POINT ptr, byval as integer) as BOOL
-declare function Polyline alias "Polyline" (byval as HDC, byval as POINT ptr, byval as integer) as BOOL
-declare function PolylineTo alias "PolylineTo" (byval as HDC, byval as POINT ptr, byval as DWORD) as BOOL
-declare function PolyPolygon alias "PolyPolygon" (byval as HDC, byval as POINT ptr, byval as INT_ ptr, byval as integer) as BOOL
-declare function PolyPolyline alias "PolyPolyline" (byval as HDC, byval as POINT ptr, byval as DWORD ptr, byval as DWORD) as BOOL
-declare function PtInRegion alias "PtInRegion" (byval as HRGN, byval as integer, byval as integer) as BOOL
-declare function PtVisible alias "PtVisible" (byval as HDC, byval as integer, byval as integer) as BOOL
-declare function RealizePalette alias "RealizePalette" (byval as HDC) as UINT
-declare function Rectangle alias "Rectangle" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
-declare function RectInRegion alias "RectInRegion" (byval as HRGN, byval as LPCRECT) as BOOL
-declare function RectVisible alias "RectVisible" (byval as HDC, byval as LPCRECT) as BOOL
-declare function RemoveFontMemResourceEx alias "RemoveFontMemResourceEx" (byval as HANDLE) as BOOL
-declare function ResizePalette alias "ResizePalette" (byval as HPALETTE, byval as UINT) as BOOL
-declare function RestoreDC alias "RestoreDC" (byval as HDC, byval as integer) as BOOL
-declare function RoundRect alias "RoundRect" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
-declare function SaveDC alias "SaveDC" (byval as HDC) as integer
-declare function ScaleViewportExtEx alias "ScaleViewportExtEx" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as LPSIZE) as BOOL
-declare function ScaleWindowExtEx alias "ScaleWindowExtEx" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as LPSIZE) as BOOL
-declare function SelectClipPath alias "SelectClipPath" (byval as HDC, byval as integer) as BOOL
-declare function SelectClipRgn alias "SelectClipRgn" (byval as HDC, byval as HRGN) as integer
-declare function SelectObject alias "SelectObject" (byval as HDC, byval as HGDIOBJ) as HGDIOBJ
-declare function SelectPalette alias "SelectPalette" (byval as HDC, byval as HPALETTE, byval as BOOL) as HPALETTE
-declare function SetAbortProc alias "SetAbortProc" (byval as HDC, byval as ABORTPROC) as integer
-declare function SetArcDirection alias "SetArcDirection" (byval as HDC, byval as integer) as integer
-declare function SetBitmapBits alias "SetBitmapBits" (byval as HBITMAP, byval as DWORD, byval as PCVOID) as LONG
-declare function SetBitmapDimensionEx alias "SetBitmapDimensionEx" (byval as HBITMAP, byval as integer, byval as integer, byval as LPSIZE) as BOOL
-declare function SetBkColor alias "SetBkColor" (byval as HDC, byval as COLORREF) as COLORREF
-declare function SetBkMode alias "SetBkMode" (byval as HDC, byval as integer) as integer
-declare function SetBoundsRect alias "SetBoundsRect" (byval as HDC, byval as LPCRECT, byval as UINT) as UINT
-declare function SetBrushOrgEx alias "SetBrushOrgEx" (byval as HDC, byval as integer, byval as integer, byval as LPPOINT) as BOOL
-declare function SetColorAdjustment alias "SetColorAdjustment" (byval as HDC, byval as COLORADJUSTMENT ptr) as BOOL
-declare function SetColorSpace alias "SetColorSpace" (byval as HDC, byval as HCOLORSPACE) as BOOL
-declare function SetDCBrushColor alias "SetDCBrushColor" (byval as HDC, byval as COLORREF) as COLORREF
-declare function SetDCPenColor alias "SetDCPenColor" (byval as HDC, byval as COLORREF) as COLORREF
-declare function SetDeviceGammaRamp alias "SetDeviceGammaRamp" (byval as HDC, byval as PVOID) as BOOL
-declare function SetDIBColorTable alias "SetDIBColorTable" (byval as HDC, byval as UINT, byval as UINT, byval as RGBQUAD ptr) as UINT
-declare function SetDIBits alias "SetDIBits" (byval as HDC, byval as HBITMAP, byval as UINT, byval as UINT, byval as PCVOID, byval as BITMAPINFO ptr, byval as UINT) as integer
-declare function SetDIBitsToDevice alias "SetDIBitsToDevice" (byval as HDC, byval as integer, byval as integer, byval as DWORD, byval as DWORD, byval as integer, byval as integer, byval as UINT, byval as UINT, byval as PCVOID, byval as BITMAPINFO ptr, byval as UINT) as integer
-declare function SetEnhMetaFileBits alias "SetEnhMetaFileBits" (byval as UINT, byval as BYTE ptr) as HENHMETAFILE
-declare function SetGraphicsMode alias "SetGraphicsMode" (byval as HDC, byval as integer) as integer
-declare function SetICMMode alias "SetICMMode" (byval as HDC, byval as integer) as integer
-declare function SetMapMode alias "SetMapMode" (byval as HDC, byval as integer) as integer
-declare function SetMapperFlags alias "SetMapperFlags" (byval as HDC, byval as DWORD) as DWORD
-declare function SetMetaFileBitsEx alias "SetMetaFileBitsEx" (byval as UINT, byval as BYTE ptr) as HMETAFILE
-declare function SetMetaRgn alias "SetMetaRgn" (byval as HDC) as integer
-declare function SetMiterLimit alias "SetMiterLimit" (byval as HDC, byval as FLOAT, byval as PFLOAT) as BOOL
-declare function SetPaletteEntries alias "SetPaletteEntries" (byval as HPALETTE, byval as UINT, byval as UINT, byval as PALETTEENTRY ptr) as UINT
-declare function SetPixel alias "SetPixel" (byval as HDC, byval as integer, byval as integer, byval as COLORREF) as COLORREF
-declare function SetPixelFormat alias "SetPixelFormat" (byval as HDC, byval as integer, byval as PIXELFORMATDESCRIPTOR ptr) as BOOL
-declare function SetPixelV alias "SetPixelV" (byval as HDC, byval as integer, byval as integer, byval as COLORREF) as BOOL
-declare function SetPolyFillMode alias "SetPolyFillMode" (byval as HDC, byval as integer) as integer
-declare function SetRectRgn alias "SetRectRgn" (byval as HRGN, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
-declare function SetROP2 alias "SetROP2" (byval as HDC, byval as integer) as integer
-declare function SetStretchBltMode alias "SetStretchBltMode" (byval as HDC, byval as integer) as integer
-declare function SetSystemPaletteUse alias "SetSystemPaletteUse" (byval as HDC, byval as UINT) as UINT
-declare function SetTextAlign alias "SetTextAlign" (byval as HDC, byval as UINT) as UINT
-declare function SetTextCharacterExtra alias "SetTextCharacterExtra" (byval as HDC, byval as integer) as integer
-declare function SetTextColor alias "SetTextColor" (byval as HDC, byval as COLORREF) as COLORREF
-declare function SetTextJustification alias "SetTextJustification" (byval as HDC, byval as integer, byval as integer) as BOOL
-declare function SetViewportExtEx alias "SetViewportExtEx" (byval as HDC, byval as integer, byval as integer, byval as LPSIZE) as BOOL
-declare function SetViewportOrgEx alias "SetViewportOrgEx" (byval as HDC, byval as integer, byval as integer, byval as LPPOINT) as BOOL
-declare function SetWindowExtEx alias "SetWindowExtEx" (byval as HDC, byval as integer, byval as integer, byval as LPSIZE) as BOOL
-declare function SetWindowOrgEx alias "SetWindowOrgEx" (byval as HDC, byval as integer, byval as integer, byval as LPPOINT) as BOOL
-declare function SetWinMetaFileBits alias "SetWinMetaFileBits" (byval as UINT, byval as BYTE ptr, byval as HDC, byval as METAFILEPICT ptr) as HENHMETAFILE
-declare function SetWorldTransform alias "SetWorldTransform" (byval as HDC, byval as XFORM ptr) as BOOL
-declare function StartPage alias "StartPage" (byval as HDC) as integer
-declare function StretchBlt alias "StretchBlt" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as DWORD) as BOOL
-declare function StretchDIBits alias "StretchDIBits" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as any ptr, byval as BITMAPINFO ptr, byval as UINT, byval as DWORD) as integer
-declare function StrokeAndFillPath alias "StrokeAndFillPath" (byval as HDC) as BOOL
-declare function StrokePath alias "StrokePath" (byval as HDC) as BOOL
-declare function SwapBuffers alias "SwapBuffers" (byval as HDC) as BOOL
-declare function TranslateCharsetInfo alias "TranslateCharsetInfo" (byval as PDWORD, byval as LPCHARSETINFO, byval as DWORD) as BOOL
-declare function UnrealizeObject alias "UnrealizeObject" (byval as HGDIOBJ) as BOOL
-declare function UpdateColors alias "UpdateColors" (byval as HDC) as BOOL
-declare function WidenPath alias "WidenPath" (byval as HDC) as BOOL
-declare function wglCopyContext alias "wglCopyContext" (byval as HGLRC, byval as HGLRC, byval as UINT) as BOOL
-declare function wglCreateContext alias "wglCreateContext" (byval as HDC) as HGLRC
-declare function wglCreateLayerContext alias "wglCreateLayerContext" (byval as HDC, byval as integer) as HGLRC
-declare function wglDeleteContext alias "wglDeleteContext" (byval as HGLRC) as BOOL
-declare function wglDescribeLayerPlane alias "wglDescribeLayerPlane" (byval as HDC, byval as integer, byval as integer, byval as UINT, byval as LPLAYERPLANEDESCRIPTOR) as BOOL
-declare function wglGetCurrentContext alias "wglGetCurrentContext" () as HGLRC
-declare function wglGetCurrentDC alias "wglGetCurrentDC" () as HDC
-declare function wglGetLayerPaletteEntries alias "wglGetLayerPaletteEntries" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as COLORREF ptr) as integer
-declare function wglGetProcAddress alias "wglGetProcAddress" (byval as LPCSTR) as PROC
-declare function wglMakeCurrent alias "wglMakeCurrent" (byval as HDC, byval as HGLRC) as BOOL
-declare function wglRealizeLayerPalette alias "wglRealizeLayerPalette" (byval as HDC, byval as integer, byval as BOOL) as BOOL
-declare function wglSetLayerPaletteEntries alias "wglSetLayerPaletteEntries" (byval as HDC, byval as integer, byval as integer, byval as integer, byval as COLORREF ptr) as integer
-declare function wglShareLists alias "wglShareLists" (byval as HGLRC, byval as HGLRC) as BOOL
-declare function wglSwapLayerBuffers alias "wglSwapLayerBuffers" (byval as HDC, byval as UINT) as BOOL
-declare function GetFontUnicodeRanges alias "GetFontUnicodeRanges" (byval as HDC, byval as LPGLYPHSET) as DWORD
+extern "windows" lib "gdi32"
+
+declare function AbortDoc (byval as HDC) as integer
+declare function AbortPath (byval as HDC) as BOOL
+declare function AddFontMemResourceEx (byval as PVOID, byval as DWORD, byval as PVOID, byval as DWORD ptr) as HANDLE
+declare function AngleArc (byval as HDC, byval as integer, byval as integer, byval as DWORD, byval as FLOAT, byval as FLOAT) as BOOL
+declare function AnimatePalette (byval as HPALETTE, byval as UINT, byval as UINT, byval as PALETTEENTRY ptr) as BOOL
+declare function Arc (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
+declare function ArcTo (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
+declare function BeginPath (byval as HDC) as BOOL
+declare function BitBlt (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as HDC, byval as integer, byval as integer, byval as DWORD) as BOOL
+declare function CancelDC (byval as HDC) as BOOL
+declare function CheckColorsInGamut (byval as HDC, byval as PVOID, byval as PVOID, byval as DWORD) as BOOL
+declare function Chord (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
+declare function ChoosePixelFormat (byval as HDC, byval as PIXELFORMATDESCRIPTOR ptr) as integer
+declare function CloseEnhMetaFile (byval as HDC) as HENHMETAFILE
+declare function CloseFigure (byval as HDC) as BOOL
+declare function CloseMetaFile (byval as HDC) as HMETAFILE
+declare function ColorMatchToTarget (byval as HDC, byval as HDC, byval as DWORD) as BOOL
+declare function CombineRgn (byval as HRGN, byval as HRGN, byval as HRGN, byval as integer) as integer
+declare function CombineTransform (byval as LPXFORM, byval as XFORM ptr, byval as XFORM ptr) as BOOL
+declare function CreateBitmap (byval as integer, byval as integer, byval as UINT, byval as UINT, byval as PCVOID) as HBITMAP
+declare function CreateBitmapIndirect (byval as BITMAP ptr) as HBITMAP
+declare function CreateBrushIndirect (byval as LOGBRUSH ptr) as HBRUSH
+declare function CreateCompatibleBitmap (byval as HDC, byval as integer, byval as integer) as HBITMAP
+declare function CreateCompatibleDC (byval as HDC) as HDC
+declare function CreateDIBitmap (byval as HDC, byval as BITMAPINFOHEADER ptr, byval as DWORD, byval as PCVOID, byval as BITMAPINFO ptr, byval as UINT) as HBITMAP
+declare function CreateDIBPatternBrush (byval as HGLOBAL, byval as UINT) as HBRUSH
+declare function CreateDIBPatternBrushPt (byval as PCVOID, byval as UINT) as HBRUSH
+declare function CreateDIBSection (byval as HDC, byval as BITMAPINFO ptr, byval as UINT, byval as any ptr ptr, byval as HANDLE, byval as DWORD) as HBITMAP
+declare function CreateDiscardableBitmap (byval as HDC, byval as integer, byval as integer) as HBITMAP
+declare function CreateEllipticRgn (byval as integer, byval as integer, byval as integer, byval as integer) as HRGN
+declare function CreateEllipticRgnIndirect (byval as LPCRECT) as HRGN
+declare function CreateHalftonePalette (byval as HDC) as HPALETTE
+declare function CreateHatchBrush (byval as integer, byval as COLORREF) as HBRUSH
+declare function CreatePalette (byval as LOGPALETTE ptr) as HPALETTE
+declare function CreatePatternBrush (byval as HBITMAP) as HBRUSH
+declare function CreatePen (byval as integer, byval as integer, byval as COLORREF) as HPEN
+declare function CreatePenIndirect (byval as LOGPEN ptr) as HPEN
+declare function CreatePolygonRgn (byval as POINT ptr, byval as integer, byval as integer) as HRGN
+declare function CreatePolyPolygonRgn (byval as POINT ptr, byval as INT_ ptr, byval as integer, byval as integer) as HRGN
+declare function CreateRectRgn (byval as integer, byval as integer, byval as integer, byval as integer) as HRGN
+declare function CreateRectRgnIndirect (byval as LPCRECT) as HRGN
+declare function CreateRoundRectRgn (byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as HRGN
+declare function CreateSolidBrush (byval as COLORREF) as HBRUSH
+declare function DeleteColorSpace (byval as HCOLORSPACE) as BOOL
+declare function DeleteDC (byval as HDC) as BOOL
+declare function DeleteEnhMetaFile (byval as HENHMETAFILE) as BOOL
+declare function DeleteMetaFile (byval as HMETAFILE) as BOOL
+declare function DeleteObject (byval as HGDIOBJ) as BOOL
+declare function DescribePixelFormat (byval as HDC, byval as integer, byval as UINT, byval as LPPIXELFORMATDESCRIPTOR) as integer
+declare function DPtoLP (byval as HDC, byval as LPPOINT, byval as integer) as BOOL
+declare function DrawEscape (byval as HDC, byval as integer, byval as integer, byval as LPCSTR) as integer
+declare function Ellipse (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
+declare function EndDoc (byval as HDC) as integer
+declare function EndPage (byval as HDC) as integer
+declare function EndPath (byval as HDC) as BOOL
+declare function EnumEnhMetaFile (byval as HDC, byval as HENHMETAFILE, byval as ENHMFENUMPROC, byval as PVOID, byval as LPCRECT) as BOOL
+declare function EnumMetaFile (byval as HDC, byval as HMETAFILE, byval as MFENUMPROC, byval as LPARAM) as BOOL
+declare function EnumObjects (byval as HDC, byval as integer, byval as GOBJENUMPROC, byval as LPARAM) as integer
+declare function EqualRgn (byval as HRGN, byval as HRGN) as BOOL
+declare function Escape (byval as HDC, byval as integer, byval as integer, byval as LPCSTR, byval as PVOID) as integer
+declare function ExcludeClipRect (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer) as integer
+declare function ExcludeUpdateRgn (byval as HDC, byval as HWND) as integer
+declare function ExtCreatePen (byval as DWORD, byval as DWORD, byval as LOGBRUSH ptr, byval as DWORD, byval as DWORD ptr) as HPEN
+declare function ExtCreateRegion (byval as XFORM ptr, byval as DWORD, byval as RGNDATA ptr) as HRGN
+declare function ExtEscape (byval as HDC, byval as integer, byval as integer, byval as LPCSTR, byval as integer, byval as LPSTR) as integer
+declare function ExtFloodFill (byval as HDC, byval as integer, byval as integer, byval as COLORREF, byval as UINT) as BOOL
+declare function ExtSelectClipRgn (byval as HDC, byval as HRGN, byval as integer) as integer
+declare function FillPath (byval as HDC) as BOOL
+declare function FillRect (byval as HDC, byval as LPCRECT, byval as HBRUSH) as integer
+declare function FillRgn (byval as HDC, byval as HRGN, byval as HBRUSH) as integer
+declare function FixBrushOrgEx (byval as HDC, byval as integer, byval as integer, byval as LPPOINT) as BOOL
+declare function FlattenPath (byval as HDC) as BOOL
+declare function FloodFill (byval as HDC, byval as integer, byval as integer, byval as COLORREF) as BOOL
+declare function GdiComment (byval as HDC, byval as UINT, byval as BYTE ptr) as BOOL
+declare function GdiFlush () as BOOL
+declare function GdiGetBatchLimit () as DWORD
+declare function GdiSetBatchLimit (byval as DWORD) as DWORD
+declare function GetArcDirection (byval as HDC) as integer
+declare function GetAspectRatioFilterEx (byval as HDC, byval as LPSIZE) as BOOL
+declare function GetBitmapBits (byval as HBITMAP, byval as LONG, byval as PVOID) as LONG
+declare function GetBitmapDimensionEx (byval as HBITMAP, byval as LPSIZE) as BOOL
+declare function GetBkColor (byval as HDC) as COLORREF
+declare function GetBkMode (byval as HDC) as integer
+declare function GetBoundsRect (byval as HDC, byval as LPRECT, byval as UINT) as UINT
+declare function GetBrushOrgEx (byval as HDC, byval as LPPOINT) as BOOL
+declare function GetClipBox (byval as HDC, byval as LPRECT) as integer
+declare function GetClipRgn (byval as HDC, byval as HRGN) as integer
+declare function GetColorAdjustment (byval as HDC, byval as LPCOLORADJUSTMENT) as BOOL
+declare function GetColorSpace (byval as HDC) as HANDLE
+declare function GetCurrentObject (byval as HDC, byval as UINT) as HGDIOBJ
+declare function GetCurrentPositionEx (byval as HDC, byval as LPPOINT) as BOOL
+declare function GetCursor () as HCURSOR
+declare function GetDCOrgEx (byval as HDC, byval as LPPOINT) as BOOL
+declare function GetDeviceCaps (byval as HDC, byval as integer) as integer
+declare function GetDeviceGammaRamp (byval as HDC, byval as PVOID) as BOOL
+declare function GetDIBColorTable (byval as HDC, byval as UINT, byval as UINT, byval as RGBQUAD ptr) as UINT
+declare function GetDIBits (byval as HDC, byval as HBITMAP, byval as UINT, byval as UINT, byval as PVOID, byval as LPBITMAPINFO, byval as UINT) as integer
+declare function GetEnhMetaFileBits (byval as HENHMETAFILE, byval as UINT, byval as LPBYTE) as UINT
+declare function GetEnhMetaFileHeader (byval as HENHMETAFILE, byval as UINT, byval as LPENHMETAHEADER) as UINT
+declare function GetEnhMetaFilePaletteEntries (byval as HENHMETAFILE, byval as UINT, byval as LPPALETTEENTRY) as UINT
+declare function GetEnhMetaFilePixelFormat (byval as HENHMETAFILE, byval as DWORD, byval as PIXELFORMATDESCRIPTOR ptr) as UINT
+declare function GetFontData (byval as HDC, byval as DWORD, byval as DWORD, byval as PVOID, byval as DWORD) as DWORD
+declare function GetFontLanguageInfo (byval as HDC) as DWORD
+declare function GetGraphicsMode (byval as HDC) as integer
+declare function GetMapMode (byval as HDC) as integer
+declare function GetMetaFileBitsEx (byval as HMETAFILE, byval as UINT, byval as PVOID) as UINT
+declare function GetMetaRgn (byval as HDC, byval as HRGN) as integer
+declare function GetMiterLimit (byval as HDC, byval as PFLOAT) as BOOL
+declare function GetNearestColor (byval as HDC, byval as COLORREF) as COLORREF
+declare function GetNearestPaletteIndex (byval as HPALETTE, byval as COLORREF) as UINT
+declare function GetObjectType (byval as HGDIOBJ) as DWORD
+declare function GetPaletteEntries (byval as HPALETTE, byval as UINT, byval as UINT, byval as LPPALETTEENTRY) as UINT
+declare function GetPath (byval as HDC, byval as LPPOINT, byval as PBYTE, byval as integer) as integer
+declare function GetPixel (byval as HDC, byval as integer, byval as integer) as COLORREF
+declare function GetPixelFormat (byval as HDC) as integer
+declare function GetPolyFillMode (byval as HDC) as integer
+declare function GetRasterizerCaps (byval as LPRASTERIZER_STATUS, byval as UINT) as BOOL
+declare function GetRandomRgn (byval as HDC, byval as HRGN, byval as INT_) as integer
+declare function GetRegionData (byval as HRGN, byval as DWORD, byval as LPRGNDATA) as DWORD
+declare function GetRgnBox (byval as HRGN, byval as LPRECT) as integer
+declare function GetROP2 (byval as HDC) as integer
+declare function GetStockObject (byval as integer) as HGDIOBJ
+declare function GetStretchBltMode (byval as HDC) as integer
+declare function GetSystemPaletteEntries (byval as HDC, byval as UINT, byval as UINT, byval as LPPALETTEENTRY) as UINT
+declare function GetSystemPaletteUse (byval as HDC) as UINT
+declare function GetTextAlign (byval as HDC) as UINT
+declare function GetTextCharacterExtra (byval as HDC) as integer
+declare function GetTextCharset (byval as HDC) as integer
+declare function GetTextCharsetInfo (byval as HDC, byval as LPFONTSIGNATURE, byval as DWORD) as integer
+declare function GetTextColor (byval as HDC) as COLORREF
+declare function GetViewportExtEx (byval as HDC, byval as LPSIZE) as BOOL
+declare function GetViewportOrgEx (byval as HDC, byval as LPPOINT) as BOOL
+declare function GetWindowExtEx (byval as HDC, byval as LPSIZE) as BOOL
+declare function GetWindowOrgEx (byval as HDC, byval as LPPOINT) as BOOL
+declare function GetWinMetaFileBits (byval as HENHMETAFILE, byval as UINT, byval as LPBYTE, byval as INT_, byval as HDC) as UINT
+declare function GetWorldTransform (byval as HDC, byval as LPXFORM) as BOOL
+declare function IntersectClipRect (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer) as integer
+declare function InvertRgn (byval as HDC, byval as HRGN) as BOOL
+declare function LineDDA (byval as integer, byval as integer, byval as integer, byval as integer, byval as LINEDDAPROC, byval as LPARAM) as BOOL
+declare function LineTo (byval as HDC, byval as integer, byval as integer) as BOOL
+declare function LPtoDP (byval as HDC, byval as LPPOINT, byval as integer) as BOOL
+declare function MaskBlt (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as HDC, byval as integer, byval as integer, byval as HBITMAP, byval as integer, byval as integer, byval as DWORD) as BOOL
+declare function ModifyWorldTransform (byval as HDC, byval as XFORM ptr, byval as DWORD) as BOOL
+declare function MoveToEx (byval as HDC, byval as integer, byval as integer, byval as LPPOINT) as BOOL
+declare function OffsetClipRgn (byval as HDC, byval as integer, byval as integer) as integer
+declare function OffsetRgn (byval as HRGN, byval as integer, byval as integer) as integer
+declare function OffsetViewportOrgEx (byval as HDC, byval as integer, byval as integer, byval as LPPOINT) as BOOL
+declare function OffsetWindowOrgEx (byval as HDC, byval as integer, byval as integer, byval as LPPOINT) as BOOL
+declare function PaintRgn (byval as HDC, byval as HRGN) as BOOL
+declare function PatBlt (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as DWORD) as BOOL
+declare function PathToRegion (byval as HDC) as HRGN
+declare function Pie (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
+declare function PlayEnhMetaFile (byval as HDC, byval as HENHMETAFILE, byval as LPCRECT) as BOOL
+declare function PlayEnhMetaFileRecord (byval as HDC, byval as LPHANDLETABLE, byval as ENHMETARECORD ptr, byval as UINT) as BOOL
+declare function PlayMetaFile (byval as HDC, byval as HMETAFILE) as BOOL
+declare function PlayMetaFileRecord (byval as HDC, byval as LPHANDLETABLE, byval as LPMETARECORD, byval as UINT) as BOOL
+declare function PlgBlt (byval as HDC, byval as POINT ptr, byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as HBITMAP, byval as integer, byval as integer) as BOOL
+declare function PolyBezier (byval as HDC, byval as POINT ptr, byval as DWORD) as BOOL
+declare function PolyBezierTo (byval as HDC, byval as POINT ptr, byval as DWORD) as BOOL
+declare function PolyDraw (byval as HDC, byval as POINT ptr, byval as BYTE ptr, byval as integer) as BOOL
+declare function Polygon (byval as HDC, byval as POINT ptr, byval as integer) as BOOL
+declare function Polyline (byval as HDC, byval as POINT ptr, byval as integer) as BOOL
+declare function PolylineTo (byval as HDC, byval as POINT ptr, byval as DWORD) as BOOL
+declare function PolyPolygon (byval as HDC, byval as POINT ptr, byval as INT_ ptr, byval as integer) as BOOL
+declare function PolyPolyline (byval as HDC, byval as POINT ptr, byval as DWORD ptr, byval as DWORD) as BOOL
+declare function PtInRegion (byval as HRGN, byval as integer, byval as integer) as BOOL
+declare function PtVisible (byval as HDC, byval as integer, byval as integer) as BOOL
+declare function RealizePalette (byval as HDC) as UINT
+declare function Rectangle (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
+declare function RectInRegion (byval as HRGN, byval as LPCRECT) as BOOL
+declare function RectVisible (byval as HDC, byval as LPCRECT) as BOOL
+declare function RemoveFontMemResourceEx (byval as HANDLE) as BOOL
+declare function ResizePalette (byval as HPALETTE, byval as UINT) as BOOL
+declare function RestoreDC (byval as HDC, byval as integer) as BOOL
+declare function RoundRect (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
+declare function SaveDC (byval as HDC) as integer
+declare function ScaleViewportExtEx (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as LPSIZE) as BOOL
+declare function ScaleWindowExtEx (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as LPSIZE) as BOOL
+declare function SelectClipPath (byval as HDC, byval as integer) as BOOL
+declare function SelectClipRgn (byval as HDC, byval as HRGN) as integer
+declare function SelectObject (byval as HDC, byval as HGDIOBJ) as HGDIOBJ
+declare function SelectPalette (byval as HDC, byval as HPALETTE, byval as BOOL) as HPALETTE
+declare function SetAbortProc (byval as HDC, byval as ABORTPROC) as integer
+declare function SetArcDirection (byval as HDC, byval as integer) as integer
+declare function SetBitmapBits (byval as HBITMAP, byval as DWORD, byval as PCVOID) as LONG
+declare function SetBitmapDimensionEx (byval as HBITMAP, byval as integer, byval as integer, byval as LPSIZE) as BOOL
+declare function SetBkColor (byval as HDC, byval as COLORREF) as COLORREF
+declare function SetBkMode (byval as HDC, byval as integer) as integer
+declare function SetBoundsRect (byval as HDC, byval as LPCRECT, byval as UINT) as UINT
+declare function SetBrushOrgEx (byval as HDC, byval as integer, byval as integer, byval as LPPOINT) as BOOL
+declare function SetColorAdjustment (byval as HDC, byval as COLORADJUSTMENT ptr) as BOOL
+declare function SetColorSpace (byval as HDC, byval as HCOLORSPACE) as BOOL
+declare function SetDCBrushColor (byval as HDC, byval as COLORREF) as COLORREF
+declare function SetDCPenColor (byval as HDC, byval as COLORREF) as COLORREF
+declare function SetDeviceGammaRamp (byval as HDC, byval as PVOID) as BOOL
+declare function SetDIBColorTable (byval as HDC, byval as UINT, byval as UINT, byval as RGBQUAD ptr) as UINT
+declare function SetDIBits (byval as HDC, byval as HBITMAP, byval as UINT, byval as UINT, byval as PCVOID, byval as BITMAPINFO ptr, byval as UINT) as integer
+declare function SetDIBitsToDevice (byval as HDC, byval as integer, byval as integer, byval as DWORD, byval as DWORD, byval as integer, byval as integer, byval as UINT, byval as UINT, byval as PCVOID, byval as BITMAPINFO ptr, byval as UINT) as integer
+declare function SetEnhMetaFileBits (byval as UINT, byval as BYTE ptr) as HENHMETAFILE
+declare function SetGraphicsMode (byval as HDC, byval as integer) as integer
+declare function SetICMMode (byval as HDC, byval as integer) as integer
+declare function SetMapMode (byval as HDC, byval as integer) as integer
+declare function SetMapperFlags (byval as HDC, byval as DWORD) as DWORD
+declare function SetMetaFileBitsEx (byval as UINT, byval as BYTE ptr) as HMETAFILE
+declare function SetMetaRgn (byval as HDC) as integer
+declare function SetMiterLimit (byval as HDC, byval as FLOAT, byval as PFLOAT) as BOOL
+declare function SetPaletteEntries (byval as HPALETTE, byval as UINT, byval as UINT, byval as PALETTEENTRY ptr) as UINT
+declare function SetPixel (byval as HDC, byval as integer, byval as integer, byval as COLORREF) as COLORREF
+declare function SetPixelFormat (byval as HDC, byval as integer, byval as PIXELFORMATDESCRIPTOR ptr) as BOOL
+declare function SetPixelV (byval as HDC, byval as integer, byval as integer, byval as COLORREF) as BOOL
+declare function SetPolyFillMode (byval as HDC, byval as integer) as integer
+declare function SetRectRgn (byval as HRGN, byval as integer, byval as integer, byval as integer, byval as integer) as BOOL
+declare function SetROP2 (byval as HDC, byval as integer) as integer
+declare function SetStretchBltMode (byval as HDC, byval as integer) as integer
+declare function SetSystemPaletteUse (byval as HDC, byval as UINT) as UINT
+declare function SetTextAlign (byval as HDC, byval as UINT) as UINT
+declare function SetTextCharacterExtra (byval as HDC, byval as integer) as integer
+declare function SetTextColor (byval as HDC, byval as COLORREF) as COLORREF
+declare function SetTextJustification (byval as HDC, byval as integer, byval as integer) as BOOL
+declare function SetViewportExtEx (byval as HDC, byval as integer, byval as integer, byval as LPSIZE) as BOOL
+declare function SetViewportOrgEx (byval as HDC, byval as integer, byval as integer, byval as LPPOINT) as BOOL
+declare function SetWindowExtEx (byval as HDC, byval as integer, byval as integer, byval as LPSIZE) as BOOL
+declare function SetWindowOrgEx (byval as HDC, byval as integer, byval as integer, byval as LPPOINT) as BOOL
+declare function SetWinMetaFileBits (byval as UINT, byval as BYTE ptr, byval as HDC, byval as METAFILEPICT ptr) as HENHMETAFILE
+declare function SetWorldTransform (byval as HDC, byval as XFORM ptr) as BOOL
+declare function StartPage (byval as HDC) as integer
+declare function StretchBlt (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as DWORD) as BOOL
+declare function StretchDIBits (byval as HDC, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as integer, byval as any ptr, byval as BITMAPINFO ptr, byval as UINT, byval as DWORD) as integer
+declare function StrokeAndFillPath (byval as HDC) as BOOL
+declare function StrokePath (byval as HDC) as BOOL
+declare function SwapBuffers (byval as HDC) as BOOL
+declare function TranslateCharsetInfo (byval as PDWORD, byval as LPCHARSETINFO, byval as DWORD) as BOOL
+declare function UnrealizeObject (byval as HGDIOBJ) as BOOL
+declare function UpdateColors (byval as HDC) as BOOL
+declare function WidenPath (byval as HDC) as BOOL
+declare function wglCopyContext (byval as HGLRC, byval as HGLRC, byval as UINT) as BOOL
+declare function wglCreateContext (byval as HDC) as HGLRC
+declare function wglCreateLayerContext (byval as HDC, byval as integer) as HGLRC
+declare function wglDeleteContext (byval as HGLRC) as BOOL
+declare function wglDescribeLayerPlane (byval as HDC, byval as integer, byval as integer, byval as UINT, byval as LPLAYERPLANEDESCRIPTOR) as BOOL
+declare function wglGetCurrentContext () as HGLRC
+declare function wglGetCurrentDC () as HDC
+declare function wglGetLayerPaletteEntries (byval as HDC, byval as integer, byval as integer, byval as integer, byval as COLORREF ptr) as integer
+declare function wglGetProcAddress (byval as LPCSTR) as PROC
+declare function wglMakeCurrent (byval as HDC, byval as HGLRC) as BOOL
+declare function wglRealizeLayerPalette (byval as HDC, byval as integer, byval as BOOL) as BOOL
+declare function wglSetLayerPaletteEntries (byval as HDC, byval as integer, byval as integer, byval as integer, byval as COLORREF ptr) as integer
+declare function wglShareLists (byval as HGLRC, byval as HGLRC) as BOOL
+declare function wglSwapLayerBuffers (byval as HDC, byval as UINT) as BOOL
+declare function GetFontUnicodeRanges (byval as HDC, byval as LPGLYPHSET) as DWORD
 
 #ifdef UNICODE
 type BCHAR as WCHAR
@@ -3514,5 +3514,7 @@ declare function GetGlyphIndices alias "GetGlyphIndicesA" (byval as HDC, byval a
 #define GetRValue(c) cubyte(c)
 #define GetGValue(c) cubyte(cushort(c) shr 8)
 #define GetBValue(c) cubyte((c) shr 16)
+
+end extern
 
 #endif

@@ -9,8 +9,6 @@
 #ifndef __win_winbase_bi__
 #define __win_winbase_bi__
 
-#inclib "kernel32"
-
 #define SP_SERIALCOMM 1
 #define PST_UNSPECIFIED 0
 #define PST_RS232 1
@@ -1169,416 +1167,418 @@ type PTIMERAPCROUTINE as sub (byval as PVOID, byval as DWORD, byval as DWORD)
 
 #define MAKEINTATOM(i) cptr(zstring ptr, cuint(i))
 
-declare function aWinMain alias "WinMain" (byval as HINSTANCE, byval as HINSTANCE, byval as LPSTR, byval as integer) as integer
-declare function wWinMain alias "wWinMain" (byval as HINSTANCE, byval as HINSTANCE, byval as LPWSTR, byval as integer) as integer
-declare function _hread alias "_hread" (byval as HFILE, byval as LPVOID, byval as integer) as integer
-declare function _hwrite alias "_hwrite" (byval as HFILE, byval as LPCSTR, byval as integer) as integer
-declare function _lclose alias "_lclose" (byval as HFILE) as HFILE
-declare function _lcreat alias "_lcreat" (byval as LPCSTR, byval as integer) as HFILE
-declare function _llseek alias "_llseek" (byval as HFILE, byval as LONG, byval as integer) as LONG
-declare function _lopen alias "_lopen" (byval as LPCSTR, byval as integer) as HFILE
-declare function _lread alias "_lread" (byval as HFILE, byval as LPVOID, byval as UINT) as UINT
-declare function _lwrite alias "_lwrite" (byval as HFILE, byval as LPCSTR, byval as UINT) as UINT
-declare function AccessCheck alias "AccessCheck" (byval as PSECURITY_DESCRIPTOR, byval as HANDLE, byval as DWORD, byval as PGENERIC_MAPPING, byval as PPRIVILEGE_SET, byval as PDWORD, byval as PDWORD, byval as PBOOL) as BOOL
-declare function ActivateActCtx alias "ActivateActCtx" (byval as HANDLE, byval as ULONG_PTR ptr) as BOOL
-declare function AddAccessAllowedAce alias "AddAccessAllowedAce" (byval as PACL, byval as DWORD, byval as DWORD, byval as PSID) as BOOL
-declare function AddAccessDeniedAce alias "AddAccessDeniedAce" (byval as PACL, byval as DWORD, byval as DWORD, byval as PSID) as BOOL
-declare function AddAccessAllowedAceEx alias "AddAccessAllowedAceEx" (byval as PACL, byval as DWORD, byval as DWORD, byval as DWORD, byval as PSID) as BOOL
-declare function AddAccessDeniedAceEx alias "AddAccessDeniedAceEx" (byval as PACL, byval as DWORD, byval as DWORD, byval as DWORD, byval as PSID) as BOOL
-declare function AddAce alias "AddAce" (byval as PACL, byval as DWORD, byval as DWORD, byval as PVOID, byval as DWORD) as BOOL
-declare function AddAuditAccessAce alias "AddAuditAccessAce" (byval as PACL, byval as DWORD, byval as DWORD, byval as PSID, byval as BOOL, byval as BOOL) as BOOL
-declare sub AddRefActCtx alias "AddRefActCtx" (byval as HANDLE)
-declare function AddVectoredExceptionHandler alias "AddVectoredExceptionHandler" (byval as ULONG, byval as PVECTORED_EXCEPTION_HANDLER) as PVOID
-declare function AdjustTokenGroups alias "AdjustTokenGroups" (byval as HANDLE, byval as BOOL, byval as PTOKEN_GROUPS, byval as DWORD, byval as PTOKEN_GROUPS, byval as PDWORD) as BOOL
-declare function AdjustTokenPrivileges alias "AdjustTokenPrivileges" (byval as HANDLE, byval as BOOL, byval as PTOKEN_PRIVILEGES, byval as DWORD, byval as PTOKEN_PRIVILEGES, byval as PDWORD) as BOOL
-declare function AllocateAndInitializeSid alias "AllocateAndInitializeSid" (byval as PSID_IDENTIFIER_AUTHORITY, byval as BYTE, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as PSID ptr) as BOOL
-declare function AllocateLocallyUniqueId alias "AllocateLocallyUniqueId" (byval as PLUID) as BOOL
-declare function AreAllAccessesGranted alias "AreAllAccessesGranted" (byval as DWORD, byval as DWORD) as BOOL
-declare function AreAnyAccessesGranted alias "AreAnyAccessesGranted" (byval as DWORD, byval as DWORD) as BOOL
-declare function AreFileApisANSI alias "AreFileApisANSI" () as BOOL
-declare function BackupRead alias "BackupRead" (byval as HANDLE, byval as LPBYTE, byval as DWORD, byval as LPDWORD, byval as BOOL, byval as BOOL, byval as LPVOID ptr) as BOOL
-declare function BackupSeek alias "BackupSeek" (byval as HANDLE, byval as DWORD, byval as DWORD, byval as LPDWORD, byval as LPDWORD, byval as LPVOID ptr) as BOOL
-declare function BackupWrite alias "BackupWrite" (byval as HANDLE, byval as LPBYTE, byval as DWORD, byval as LPDWORD, byval as BOOL, byval as BOOL, byval as LPVOID ptr) as BOOL
+extern "windows" lib "kernel32"
+
+declare function aWinMain (byval as HINSTANCE, byval as HINSTANCE, byval as LPSTR, byval as integer) as integer
+declare function wWinMain (byval as HINSTANCE, byval as HINSTANCE, byval as LPWSTR, byval as integer) as integer
+declare function _hread (byval as HFILE, byval as LPVOID, byval as integer) as integer
+declare function _hwrite (byval as HFILE, byval as LPCSTR, byval as integer) as integer
+declare function _lclose (byval as HFILE) as HFILE
+declare function _lcreat (byval as LPCSTR, byval as integer) as HFILE
+declare function _llseek (byval as HFILE, byval as LONG, byval as integer) as LONG
+declare function _lopen (byval as LPCSTR, byval as integer) as HFILE
+declare function _lread (byval as HFILE, byval as LPVOID, byval as UINT) as UINT
+declare function _lwrite (byval as HFILE, byval as LPCSTR, byval as UINT) as UINT
+declare function AccessCheck (byval as PSECURITY_DESCRIPTOR, byval as HANDLE, byval as DWORD, byval as PGENERIC_MAPPING, byval as PPRIVILEGE_SET, byval as PDWORD, byval as PDWORD, byval as PBOOL) as BOOL
+declare function ActivateActCtx (byval as HANDLE, byval as ULONG_PTR ptr) as BOOL
+declare function AddAccessAllowedAce (byval as PACL, byval as DWORD, byval as DWORD, byval as PSID) as BOOL
+declare function AddAccessDeniedAce (byval as PACL, byval as DWORD, byval as DWORD, byval as PSID) as BOOL
+declare function AddAccessAllowedAceEx (byval as PACL, byval as DWORD, byval as DWORD, byval as DWORD, byval as PSID) as BOOL
+declare function AddAccessDeniedAceEx (byval as PACL, byval as DWORD, byval as DWORD, byval as DWORD, byval as PSID) as BOOL
+declare function AddAce (byval as PACL, byval as DWORD, byval as DWORD, byval as PVOID, byval as DWORD) as BOOL
+declare function AddAuditAccessAce (byval as PACL, byval as DWORD, byval as DWORD, byval as PSID, byval as BOOL, byval as BOOL) as BOOL
+declare sub AddRefActCtx (byval as HANDLE)
+declare function AddVectoredExceptionHandler (byval as ULONG, byval as PVECTORED_EXCEPTION_HANDLER) as PVOID
+declare function AdjustTokenGroups (byval as HANDLE, byval as BOOL, byval as PTOKEN_GROUPS, byval as DWORD, byval as PTOKEN_GROUPS, byval as PDWORD) as BOOL
+declare function AdjustTokenPrivileges (byval as HANDLE, byval as BOOL, byval as PTOKEN_PRIVILEGES, byval as DWORD, byval as PTOKEN_PRIVILEGES, byval as PDWORD) as BOOL
+declare function AllocateAndInitializeSid (byval as PSID_IDENTIFIER_AUTHORITY, byval as BYTE, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as PSID ptr) as BOOL
+declare function AllocateLocallyUniqueId (byval as PLUID) as BOOL
+declare function AreAllAccessesGranted (byval as DWORD, byval as DWORD) as BOOL
+declare function AreAnyAccessesGranted (byval as DWORD, byval as DWORD) as BOOL
+declare function AreFileApisANSI () as BOOL
+declare function BackupRead (byval as HANDLE, byval as LPBYTE, byval as DWORD, byval as LPDWORD, byval as BOOL, byval as BOOL, byval as LPVOID ptr) as BOOL
+declare function BackupSeek (byval as HANDLE, byval as DWORD, byval as DWORD, byval as LPDWORD, byval as LPDWORD, byval as LPVOID ptr) as BOOL
+declare function BackupWrite (byval as HANDLE, byval as LPBYTE, byval as DWORD, byval as LPDWORD, byval as BOOL, byval as BOOL, byval as LPVOID ptr) as BOOL
 declare function Beep_ alias "Beep" (byval as DWORD, byval as DWORD) as BOOL
-declare function CancelDeviceWakeupRequest alias "CancelDeviceWakeupRequest" (byval as HANDLE) as BOOL
-declare function CancelIo alias "CancelIo" (byval as HANDLE) as BOOL
-declare function CancelWaitableTimer alias "CancelWaitableTimer" (byval as HANDLE) as BOOL
-declare function CheckRemoteDebuggerPresent alias "CheckRemoteDebuggerPresent" (byval as HANDLE, byval as PBOOL) as BOOL
-declare function ClearCommBreak alias "ClearCommBreak" (byval as HANDLE) as BOOL
-declare function ClearCommError alias "ClearCommError" (byval as HANDLE, byval as PDWORD, byval as LPCOMSTAT) as BOOL
-declare function CloseEventLog alias "CloseEventLog" (byval as HANDLE) as BOOL
-declare function CloseHandle alias "CloseHandle" (byval as HANDLE) as BOOL
-declare function CompareFileTime alias "CompareFileTime" (byval as FILETIME ptr, byval as FILETIME ptr) as LONG
-declare function ConnectNamedPipe alias "ConnectNamedPipe" (byval as HANDLE, byval as LPOVERLAPPED) as BOOL
-declare function ContinueDebugEvent alias "ContinueDebugEvent" (byval as DWORD, byval as DWORD, byval as DWORD) as BOOL
-declare function ConvertFiberToThread alias "ConvertFiberToThread" () as BOOL
-declare function ConvertThreadToFiber alias "ConvertThreadToFiber" (byval as PVOID) as PVOID
-declare function CopySid alias "CopySid" (byval as DWORD, byval as PSID, byval as PSID) as BOOL
-declare function CreateFiber alias "CreateFiber" (byval as SIZE_T, byval as LPFIBER_START_ROUTINE, byval as LPVOID) as LPVOID
-declare function CreateFiberEx alias "CreateFiberEx" (byval as SIZE_T, byval as SIZE_T, byval as DWORD, byval as LPFIBER_START_ROUTINE, byval as LPVOID) as LPVOID
-declare function CreateIoCompletionPort alias "CreateIoCompletionPort" (byval as HANDLE, byval as HANDLE, byval as DWORD, byval as DWORD) as HANDLE
-declare function CreatePipe alias "CreatePipe" (byval as PHANDLE, byval as PHANDLE, byval as LPSECURITY_ATTRIBUTES, byval as DWORD) as BOOL
-declare function CreatePrivateObjectSecurity alias "CreatePrivateObjectSecurity" (byval as PSECURITY_DESCRIPTOR, byval as PSECURITY_DESCRIPTOR, byval as PSECURITY_DESCRIPTOR ptr, byval as BOOL, byval as HANDLE, byval as PGENERIC_MAPPING) as BOOL
-declare function CreateRemoteThread alias "CreateRemoteThread" (byval as HANDLE, byval as LPSECURITY_ATTRIBUTES, byval as DWORD, byval as LPTHREAD_START_ROUTINE, byval as LPVOID, byval as DWORD, byval as LPDWORD) as HANDLE
-declare function CreateTapePartition alias "CreateTapePartition" (byval as HANDLE, byval as DWORD, byval as DWORD, byval as DWORD) as DWORD
-declare function CreateTimerQueue alias "CreateTimerQueue" () as HANDLE
-declare function CreateTimerQueueTimer alias "CreateTimerQueueTimer" (byval as PHANDLE, byval as HANDLE, byval as WAITORTIMERCALLBACKFUNC, byval as PVOID, byval as DWORD, byval as DWORD, byval as ULONG) as BOOL
-declare function CreateThread alias "CreateThread" (byval as LPSECURITY_ATTRIBUTES, byval as DWORD, byval as LPTHREAD_START_ROUTINE, byval as PVOID, byval as DWORD, byval as PDWORD) as HANDLE
-declare function DeactivateActCtx alias "DeactivateActCtx" (byval as DWORD, byval as ULONG_PTR) as BOOL
-declare function DebugActiveProcess alias "DebugActiveProcess" (byval as DWORD) as BOOL
-declare function DebugActiveProcessStop alias "DebugActiveProcessStop" (byval as DWORD) as BOOL
-declare sub DebugBreak alias "DebugBreak" ()
-declare function DebugBreakProcess alias "DebugBreakProcess" (byval as HANDLE) as BOOL
-declare function DebugSetProcessKillOnExit alias "DebugSetProcessKillOnExit" (byval as BOOL) as BOOL
-declare function DeleteAce alias "DeleteAce" (byval as PACL, byval as DWORD) as BOOL
-declare function DeleteAtom alias "DeleteAtom" (byval as ATOM) as ATOM
-declare sub DeleteCriticalSection alias "DeleteCriticalSection" (byval as PCRITICAL_SECTION)
-declare sub DeleteFiber alias "DeleteFiber" (byval as PVOID)
-declare function DeregisterEventSource alias "DeregisterEventSource" (byval as HANDLE) as BOOL
-declare function DestroyPrivateObjectSecurity alias "DestroyPrivateObjectSecurity" (byval as PSECURITY_DESCRIPTOR ptr) as BOOL
-declare function DeviceIoControl alias "DeviceIoControl" (byval as HANDLE, byval as DWORD, byval as PVOID, byval as DWORD, byval as PVOID, byval as DWORD, byval as PDWORD, byval as POVERLAPPED) as BOOL
-declare function DisableThreadLibraryCalls alias "DisableThreadLibraryCalls" (byval as HMODULE) as BOOL
-declare function DisconnectNamedPipe alias "DisconnectNamedPipe" (byval as HANDLE) as BOOL
-declare function DosDateTimeToFileTime alias "DosDateTimeToFileTime" (byval as WORD, byval as WORD, byval as LPFILETIME) as BOOL
-declare function DuplicateHandle alias "DuplicateHandle" (byval as HANDLE, byval as HANDLE, byval as HANDLE, byval as PHANDLE, byval as DWORD, byval as BOOL, byval as DWORD) as BOOL
-declare function DuplicateToken alias "DuplicateToken" (byval as HANDLE, byval as SECURITY_IMPERSONATION_LEVEL, byval as PHANDLE) as BOOL
-declare function DuplicateTokenEx alias "DuplicateTokenEx" (byval as HANDLE, byval as DWORD, byval as LPSECURITY_ATTRIBUTES, byval as SECURITY_IMPERSONATION_LEVEL, byval as TOKEN_TYPE, byval as PHANDLE) as BOOL
-declare sub EnterCriticalSection alias "EnterCriticalSection" (byval as LPCRITICAL_SECTION)
-declare function EqualPrefixSid alias "EqualPrefixSid" (byval as PSID, byval as PSID) as BOOL
-declare function EqualSid alias "EqualSid" (byval as PSID, byval as PSID) as BOOL
-declare function EraseTape alias "EraseTape" (byval as HANDLE, byval as DWORD, byval as BOOL) as DWORD
-declare function EscapeCommFunction alias "EscapeCommFunction" (byval as HANDLE, byval as DWORD) as BOOL
-declare sub ExitProcess alias "ExitProcess" (byval as UINT)
-declare sub ExitThread alias "ExitThread" (byval as DWORD)
-declare sub FatalExit alias "FatalExit" (byval as integer)
-declare function FileTimeToDosDateTime alias "FileTimeToDosDateTime" (byval as FILETIME ptr, byval as LPWORD, byval as LPWORD) as BOOL
-declare function FileTimeToLocalFileTime alias "FileTimeToLocalFileTime" (byval as FILETIME ptr, byval as LPFILETIME) as BOOL
-declare function FileTimeToSystemTime alias "FileTimeToSystemTime" (byval as FILETIME ptr, byval as LPSYSTEMTIME) as BOOL
-declare function FindClose alias "FindClose" (byval as HANDLE) as BOOL
-declare function FindCloseChangeNotification alias "FindCloseChangeNotification" (byval as HANDLE) as BOOL
-declare function FindFirstFreeAce alias "FindFirstFreeAce" (byval as PACL, byval as PVOID ptr) as BOOL
-declare function FindNextChangeNotification alias "FindNextChangeNotification" (byval as HANDLE) as BOOL
-declare function FlushFileBuffers alias "FlushFileBuffers" (byval as HANDLE) as BOOL
-declare function FlushInstructionCache alias "FlushInstructionCache" (byval as HANDLE, byval as PCVOID, byval as DWORD) as BOOL
-declare function FlushViewOfFile alias "FlushViewOfFile" (byval as PCVOID, byval as DWORD) as BOOL
-declare function FreeLibrary alias "FreeLibrary" (byval as HMODULE) as BOOL
-declare sub FreeLibraryAndExitThread alias "FreeLibraryAndExitThread" (byval as HMODULE, byval as DWORD)
-declare function FreeResource alias "FreeResource" (byval as HGLOBAL) as BOOL
-declare function FreeSid alias "FreeSid" (byval as PSID) as PVOID
-declare function GetAce alias "GetAce" (byval as PACL, byval as DWORD, byval as LPVOID ptr) as BOOL
-declare function GetAclInformation alias "GetAclInformation" (byval as PACL, byval as PVOID, byval as DWORD, byval as ACL_INFORMATION_CLASS) as BOOL
-declare function GetCommConfig alias "GetCommConfig" (byval as HANDLE, byval as LPCOMMCONFIG, byval as PDWORD) as BOOL
-declare function GetCommMask alias "GetCommMask" (byval as HANDLE, byval as PDWORD) as BOOL
-declare function GetCommModemStatus alias "GetCommModemStatus" (byval as HANDLE, byval as PDWORD) as BOOL
-declare function GetCommProperties alias "GetCommProperties" (byval as HANDLE, byval as LPCOMMPROP) as BOOL
-declare function GetCommState alias "GetCommState" (byval as HANDLE, byval as LPDCB) as BOOL
-declare function GetCommTimeouts alias "GetCommTimeouts" (byval as HANDLE, byval as LPCOMMTIMEOUTS) as BOOL
-declare function GetCurrentActCtx alias "GetCurrentActCtx" (byval as HANDLE ptr) as BOOL
-declare function GetCurrentProcess alias "GetCurrentProcess" () as HANDLE
-declare function GetCurrentProcessId alias "GetCurrentProcessId" () as DWORD
-declare function GetCurrentThread alias "GetCurrentThread" () as HANDLE
-declare function GetCurrentThreadId alias "GetCurrentThreadId" () as DWORD
-declare function GetExitCodeProcess alias "GetExitCodeProcess" (byval as HANDLE, byval as PDWORD) as BOOL
-declare function GetExitCodeThread alias "GetExitCodeThread" (byval as HANDLE, byval as PDWORD) as BOOL
-declare function GetFileInformationByHandle alias "GetFileInformationByHandle" (byval as HANDLE, byval as LPBY_HANDLE_FILE_INFORMATION) as BOOL
-declare function GetFileSize alias "GetFileSize" (byval as HANDLE, byval as PDWORD) as DWORD
-declare function GetFileSizeEx alias "GetFileSizeEx" (byval as HANDLE, byval as PLARGE_INTEGER) as BOOL
-declare function GetFileTime alias "GetFileTime" (byval as HANDLE, byval as LPFILETIME, byval as LPFILETIME, byval as LPFILETIME) as BOOL
-declare function GetFileType alias "GetFileType" (byval as HANDLE) as DWORD
-declare function GetHandleInformation alias "GetHandleInformation" (byval as HANDLE, byval as PDWORD) as BOOL
-declare function GetKernelObjectSecurity alias "GetKernelObjectSecurity" (byval as HANDLE, byval as SECURITY_INFORMATION, byval as PSECURITY_DESCRIPTOR, byval as DWORD, byval as PDWORD) as BOOL
-declare function GetLastError alias "GetLastError" () as DWORD
-declare function GetLengthSid alias "GetLengthSid" (byval as PSID) as DWORD
-declare sub GetLocalTime alias "GetLocalTime" (byval as LPSYSTEMTIME)
-declare function GetLogicalDrives alias "GetLogicalDrives" () as DWORD
-declare function GetMailslotInfo alias "GetMailslotInfo" (byval as HANDLE, byval as PDWORD, byval as PDWORD, byval as PDWORD, byval as PDWORD) as BOOL
-declare function GetNamedPipeInfo alias "GetNamedPipeInfo" (byval as HANDLE, byval as PDWORD, byval as PDWORD, byval as PDWORD, byval as PDWORD) as BOOL
-declare sub GetNativeSystemInfo alias "GetNativeSystemInfo" (byval as LPSYSTEM_INFO)
-declare function GetNumberOfEventLogRecords alias "GetNumberOfEventLogRecords" (byval as HANDLE, byval as PDWORD) as BOOL
-declare function GetOldestEventLogRecord alias "GetOldestEventLogRecord" (byval as HANDLE, byval as PDWORD) as BOOL
-declare function GetOverlappedResult alias "GetOverlappedResult" (byval as HANDLE, byval as LPOVERLAPPED, byval as PDWORD, byval as BOOL) as BOOL
-declare function GetPriorityClass alias "GetPriorityClass" (byval as HANDLE) as DWORD
-declare function GetPrivateObjectSecurity alias "GetPrivateObjectSecurity" (byval as PSECURITY_DESCRIPTOR, byval as SECURITY_INFORMATION, byval as PSECURITY_DESCRIPTOR, byval as DWORD, byval as PDWORD) as BOOL
-declare function GetProcAddress alias "GetProcAddress" (byval as HINSTANCE, byval as LPCSTR) as FARPROC
-declare function GetProcessAffinityMask alias "GetProcessAffinityMask" (byval as HANDLE, byval as PDWORD, byval as PDWORD) as BOOL
-declare function GetProcessHandleCount alias "GetProcessHandleCount" (byval as HANDLE, byval as PDWORD) as BOOL
-declare function GetProcessHeap alias "GetProcessHeap" () as HANDLE
-declare function GetProcessHeaps alias "GetProcessHeaps" (byval as DWORD, byval as PHANDLE) as DWORD
-declare function GetProcessId alias "GetProcessId" (byval as HANDLE) as DWORD
-declare function GetProcessIoCounters alias "GetProcessIoCounters" (byval as HANDLE, byval as PIO_COUNTERS) as BOOL
-declare function GetProcessPriorityBoost alias "GetProcessPriorityBoost" (byval as HANDLE, byval as PBOOL) as BOOL
-declare function GetProcessShutdownParameters alias "GetProcessShutdownParameters" (byval as PDWORD, byval as PDWORD) as BOOL
-declare function GetProcessTimes alias "GetProcessTimes" (byval as HANDLE, byval as LPFILETIME, byval as LPFILETIME, byval as LPFILETIME, byval as LPFILETIME) as BOOL
-declare function GetProcessVersion alias "GetProcessVersion" (byval as DWORD) as DWORD
-declare function GetProcessWindowStation alias "GetProcessWindowStation" () as HWINSTA
-declare function GetProcessWorkingSetSize alias "GetProcessWorkingSetSize" (byval as HANDLE, byval as PSIZE_T, byval as PSIZE_T) as BOOL
-declare function GetQueuedCompletionStatus alias "GetQueuedCompletionStatus" (byval as HANDLE, byval as PDWORD, byval as PDWORD, byval as LPOVERLAPPED ptr, byval as DWORD) as BOOL
-declare function GetSecurityDescriptorControl alias "GetSecurityDescriptorControl" (byval as PSECURITY_DESCRIPTOR, byval as PSECURITY_DESCRIPTOR_CONTROL, byval as PDWORD) as BOOL
-declare function GetSecurityDescriptorDacl alias "GetSecurityDescriptorDacl" (byval as PSECURITY_DESCRIPTOR, byval as LPBOOL, byval as PACL ptr, byval as LPBOOL) as BOOL
-declare function GetSecurityDescriptorGroup alias "GetSecurityDescriptorGroup" (byval as PSECURITY_DESCRIPTOR, byval as PSID ptr, byval as LPBOOL) as BOOL
-declare function GetSecurityDescriptorLength alias "GetSecurityDescriptorLength" (byval as PSECURITY_DESCRIPTOR) as DWORD
-declare function GetSecurityDescriptorOwner alias "GetSecurityDescriptorOwner" (byval as PSECURITY_DESCRIPTOR, byval as PSID ptr, byval as LPBOOL) as BOOL
-declare function GetSecurityDescriptorSacl alias "GetSecurityDescriptorSacl" (byval as PSECURITY_DESCRIPTOR, byval as LPBOOL, byval as PACL ptr, byval as LPBOOL) as BOOL
-declare function GetSidIdentifierAuthority alias "GetSidIdentifierAuthority" (byval as PSID) as PSID_IDENTIFIER_AUTHORITY
-declare function GetSidLengthRequired alias "GetSidLengthRequired" (byval as UCHAR) as DWORD
-declare function GetSidSubAuthority alias "GetSidSubAuthority" (byval as PSID, byval as DWORD) as PDWORD
-declare function GetSidSubAuthorityCount alias "GetSidSubAuthorityCount" (byval as PSID) as PUCHAR
-declare function GetStdHandle alias "GetStdHandle" (byval as DWORD) as HANDLE
-declare sub GetSystemInfo alias "GetSystemInfo" (byval as LPSYSTEM_INFO)
-declare function GetSystemPowerStatus alias "GetSystemPowerStatus" (byval as LPSYSTEM_POWER_STATUS) as BOOL
-declare function GetSystemRegistryQuota alias "GetSystemRegistryQuota" (byval as PDWORD, byval as PDWORD) as BOOL
-declare sub GetSystemTime alias "GetSystemTime" (byval as LPSYSTEMTIME)
-declare function GetSystemTimes alias "GetSystemTimes" (byval as LPFILETIME, byval as LPFILETIME, byval as LPFILETIME) as BOOL
-declare function GetSystemTimeAdjustment alias "GetSystemTimeAdjustment" (byval as PDWORD, byval as PDWORD, byval as PBOOL) as BOOL
-declare sub GetSystemTimeAsFileTime alias "GetSystemTimeAsFileTime" (byval as LPFILETIME)
-declare function GetTapeParameters alias "GetTapeParameters" (byval as HANDLE, byval as DWORD, byval as PDWORD, byval as PVOID) as DWORD
-declare function GetTapePosition alias "GetTapePosition" (byval as HANDLE, byval as DWORD, byval as PDWORD, byval as PDWORD, byval as PDWORD) as DWORD
-declare function GetTapeStatus alias "GetTapeStatus" (byval as HANDLE) as DWORD
-declare function GetThreadContext alias "GetThreadContext" (byval as HANDLE, byval as LPCONTEXT) as BOOL
-declare function GetThreadIOPendingFlag alias "GetThreadIOPendingFlag" (byval as HANDLE, byval as PBOOL) as BOOL
-declare function GetThreadPriority alias "GetThreadPriority" (byval as HANDLE) as integer
-declare function GetThreadPriorityBoost alias "GetThreadPriorityBoost" (byval as HANDLE, byval as PBOOL) as BOOL
-declare function GetThreadSelectorEntry alias "GetThreadSelectorEntry" (byval as HANDLE, byval as DWORD, byval as LPLDT_ENTRY) as BOOL
-declare function GetThreadTimes alias "GetThreadTimes" (byval as HANDLE, byval as LPFILETIME, byval as LPFILETIME, byval as LPFILETIME, byval as LPFILETIME) as BOOL
-declare function GetTickCount alias "GetTickCount" () as DWORD
-declare function GetTimeZoneInformation alias "GetTimeZoneInformation" (byval as LPTIME_ZONE_INFORMATION) as DWORD
-declare function GetTokenInformation alias "GetTokenInformation" (byval as HANDLE, byval as TOKEN_INFORMATION_CLASS, byval as PVOID, byval as DWORD, byval as PDWORD) as BOOL
-declare function GetVersion alias "GetVersion" () as DWORD
-declare function GetWindowThreadProcessId alias "GetWindowThreadProcessId" (byval as HWND, byval as PDWORD) as DWORD
-declare function GetWriteWatch alias "GetWriteWatch" (byval as DWORD, byval as PVOID, byval as SIZE_T, byval as PVOID ptr, byval as PULONG_PTR, byval as PULONG) as UINT
-declare function GlobalAlloc alias "GlobalAlloc" (byval as UINT, byval as DWORD) as HGLOBAL
-declare function GlobalCompact alias "GlobalCompact" (byval as DWORD) as SIZE_T
-declare function GlobalDeleteAtom alias "GlobalDeleteAtom" (byval as ATOM) as ATOM
-declare function GlobalDiscard alias "GlobalDiscard" (byval as HGLOBAL) as HGLOBAL
-declare sub GlobalFix alias "GlobalFix" (byval as HGLOBAL)
-declare function GlobalFlags alias "GlobalFlags" (byval as HGLOBAL) as UINT
-declare function GlobalFree alias "GlobalFree" (byval as HGLOBAL) as HGLOBAL
-declare function GlobalHandle alias "GlobalHandle" (byval as PCVOID) as HGLOBAL
-declare function GlobalLock alias "GlobalLock" (byval as HGLOBAL) as LPVOID
-declare sub GlobalMemoryStatus alias "GlobalMemoryStatus" (byval as LPMEMORYSTATUS)
-declare function GlobalMemoryStatusEx alias "GlobalMemoryStatusEx" (byval as LPMEMORYSTATUSEX) as BOOL
-declare function GlobalReAlloc alias "GlobalReAlloc" (byval as HGLOBAL, byval as DWORD, byval as UINT) as HGLOBAL
-declare function GlobalSize alias "GlobalSize" (byval as HGLOBAL) as DWORD
-declare sub GlobalUnfix alias "GlobalUnfix" (byval as HGLOBAL)
-declare function GlobalUnlock alias "GlobalUnlock" (byval as HGLOBAL) as BOOL
-declare function GlobalUnWire alias "GlobalUnWire" (byval as HGLOBAL) as BOOL
-declare function GlobalWire alias "GlobalWire" (byval as HGLOBAL) as PVOID
+declare function CancelDeviceWakeupRequest (byval as HANDLE) as BOOL
+declare function CancelIo (byval as HANDLE) as BOOL
+declare function CancelWaitableTimer (byval as HANDLE) as BOOL
+declare function CheckRemoteDebuggerPresent (byval as HANDLE, byval as PBOOL) as BOOL
+declare function ClearCommBreak (byval as HANDLE) as BOOL
+declare function ClearCommError (byval as HANDLE, byval as PDWORD, byval as LPCOMSTAT) as BOOL
+declare function CloseEventLog (byval as HANDLE) as BOOL
+declare function CloseHandle (byval as HANDLE) as BOOL
+declare function CompareFileTime (byval as FILETIME ptr, byval as FILETIME ptr) as LONG
+declare function ConnectNamedPipe (byval as HANDLE, byval as LPOVERLAPPED) as BOOL
+declare function ContinueDebugEvent (byval as DWORD, byval as DWORD, byval as DWORD) as BOOL
+declare function ConvertFiberToThread () as BOOL
+declare function ConvertThreadToFiber (byval as PVOID) as PVOID
+declare function CopySid (byval as DWORD, byval as PSID, byval as PSID) as BOOL
+declare function CreateFiber (byval as SIZE_T, byval as LPFIBER_START_ROUTINE, byval as LPVOID) as LPVOID
+declare function CreateFiberEx (byval as SIZE_T, byval as SIZE_T, byval as DWORD, byval as LPFIBER_START_ROUTINE, byval as LPVOID) as LPVOID
+declare function CreateIoCompletionPort (byval as HANDLE, byval as HANDLE, byval as DWORD, byval as DWORD) as HANDLE
+declare function CreatePipe (byval as PHANDLE, byval as PHANDLE, byval as LPSECURITY_ATTRIBUTES, byval as DWORD) as BOOL
+declare function CreatePrivateObjectSecurity (byval as PSECURITY_DESCRIPTOR, byval as PSECURITY_DESCRIPTOR, byval as PSECURITY_DESCRIPTOR ptr, byval as BOOL, byval as HANDLE, byval as PGENERIC_MAPPING) as BOOL
+declare function CreateRemoteThread (byval as HANDLE, byval as LPSECURITY_ATTRIBUTES, byval as DWORD, byval as LPTHREAD_START_ROUTINE, byval as LPVOID, byval as DWORD, byval as LPDWORD) as HANDLE
+declare function CreateTapePartition (byval as HANDLE, byval as DWORD, byval as DWORD, byval as DWORD) as DWORD
+declare function CreateTimerQueue () as HANDLE
+declare function CreateTimerQueueTimer (byval as PHANDLE, byval as HANDLE, byval as WAITORTIMERCALLBACKFUNC, byval as PVOID, byval as DWORD, byval as DWORD, byval as ULONG) as BOOL
+declare function CreateThread (byval as LPSECURITY_ATTRIBUTES, byval as DWORD, byval as LPTHREAD_START_ROUTINE, byval as PVOID, byval as DWORD, byval as PDWORD) as HANDLE
+declare function DeactivateActCtx (byval as DWORD, byval as ULONG_PTR) as BOOL
+declare function DebugActiveProcess (byval as DWORD) as BOOL
+declare function DebugActiveProcessStop (byval as DWORD) as BOOL
+declare sub DebugBreak ()
+declare function DebugBreakProcess (byval as HANDLE) as BOOL
+declare function DebugSetProcessKillOnExit (byval as BOOL) as BOOL
+declare function DeleteAce (byval as PACL, byval as DWORD) as BOOL
+declare function DeleteAtom (byval as ATOM) as ATOM
+declare sub DeleteCriticalSection (byval as PCRITICAL_SECTION)
+declare sub DeleteFiber (byval as PVOID)
+declare function DeregisterEventSource (byval as HANDLE) as BOOL
+declare function DestroyPrivateObjectSecurity (byval as PSECURITY_DESCRIPTOR ptr) as BOOL
+declare function DeviceIoControl (byval as HANDLE, byval as DWORD, byval as PVOID, byval as DWORD, byval as PVOID, byval as DWORD, byval as PDWORD, byval as POVERLAPPED) as BOOL
+declare function DisableThreadLibraryCalls (byval as HMODULE) as BOOL
+declare function DisconnectNamedPipe (byval as HANDLE) as BOOL
+declare function DosDateTimeToFileTime (byval as WORD, byval as WORD, byval as LPFILETIME) as BOOL
+declare function DuplicateHandle (byval as HANDLE, byval as HANDLE, byval as HANDLE, byval as PHANDLE, byval as DWORD, byval as BOOL, byval as DWORD) as BOOL
+declare function DuplicateToken (byval as HANDLE, byval as SECURITY_IMPERSONATION_LEVEL, byval as PHANDLE) as BOOL
+declare function DuplicateTokenEx (byval as HANDLE, byval as DWORD, byval as LPSECURITY_ATTRIBUTES, byval as SECURITY_IMPERSONATION_LEVEL, byval as TOKEN_TYPE, byval as PHANDLE) as BOOL
+declare sub EnterCriticalSection (byval as LPCRITICAL_SECTION)
+declare function EqualPrefixSid (byval as PSID, byval as PSID) as BOOL
+declare function EqualSid (byval as PSID, byval as PSID) as BOOL
+declare function EraseTape (byval as HANDLE, byval as DWORD, byval as BOOL) as DWORD
+declare function EscapeCommFunction (byval as HANDLE, byval as DWORD) as BOOL
+declare sub ExitProcess (byval as UINT)
+declare sub ExitThread (byval as DWORD)
+declare sub FatalExit (byval as integer)
+declare function FileTimeToDosDateTime (byval as FILETIME ptr, byval as LPWORD, byval as LPWORD) as BOOL
+declare function FileTimeToLocalFileTime (byval as FILETIME ptr, byval as LPFILETIME) as BOOL
+declare function FileTimeToSystemTime (byval as FILETIME ptr, byval as LPSYSTEMTIME) as BOOL
+declare function FindClose (byval as HANDLE) as BOOL
+declare function FindCloseChangeNotification (byval as HANDLE) as BOOL
+declare function FindFirstFreeAce (byval as PACL, byval as PVOID ptr) as BOOL
+declare function FindNextChangeNotification (byval as HANDLE) as BOOL
+declare function FlushFileBuffers (byval as HANDLE) as BOOL
+declare function FlushInstructionCache (byval as HANDLE, byval as PCVOID, byval as DWORD) as BOOL
+declare function FlushViewOfFile (byval as PCVOID, byval as DWORD) as BOOL
+declare function FreeLibrary (byval as HMODULE) as BOOL
+declare sub FreeLibraryAndExitThread (byval as HMODULE, byval as DWORD)
+declare function FreeResource (byval as HGLOBAL) as BOOL
+declare function FreeSid (byval as PSID) as PVOID
+declare function GetAce (byval as PACL, byval as DWORD, byval as LPVOID ptr) as BOOL
+declare function GetAclInformation (byval as PACL, byval as PVOID, byval as DWORD, byval as ACL_INFORMATION_CLASS) as BOOL
+declare function GetCommConfig (byval as HANDLE, byval as LPCOMMCONFIG, byval as PDWORD) as BOOL
+declare function GetCommMask (byval as HANDLE, byval as PDWORD) as BOOL
+declare function GetCommModemStatus (byval as HANDLE, byval as PDWORD) as BOOL
+declare function GetCommProperties (byval as HANDLE, byval as LPCOMMPROP) as BOOL
+declare function GetCommState (byval as HANDLE, byval as LPDCB) as BOOL
+declare function GetCommTimeouts (byval as HANDLE, byval as LPCOMMTIMEOUTS) as BOOL
+declare function GetCurrentActCtx (byval as HANDLE ptr) as BOOL
+declare function GetCurrentProcess () as HANDLE
+declare function GetCurrentProcessId () as DWORD
+declare function GetCurrentThread () as HANDLE
+declare function GetCurrentThreadId () as DWORD
+declare function GetExitCodeProcess (byval as HANDLE, byval as PDWORD) as BOOL
+declare function GetExitCodeThread (byval as HANDLE, byval as PDWORD) as BOOL
+declare function GetFileInformationByHandle (byval as HANDLE, byval as LPBY_HANDLE_FILE_INFORMATION) as BOOL
+declare function GetFileSize (byval as HANDLE, byval as PDWORD) as DWORD
+declare function GetFileSizeEx (byval as HANDLE, byval as PLARGE_INTEGER) as BOOL
+declare function GetFileTime (byval as HANDLE, byval as LPFILETIME, byval as LPFILETIME, byval as LPFILETIME) as BOOL
+declare function GetFileType (byval as HANDLE) as DWORD
+declare function GetHandleInformation (byval as HANDLE, byval as PDWORD) as BOOL
+declare function GetKernelObjectSecurity (byval as HANDLE, byval as SECURITY_INFORMATION, byval as PSECURITY_DESCRIPTOR, byval as DWORD, byval as PDWORD) as BOOL
+declare function GetLastError () as DWORD
+declare function GetLengthSid (byval as PSID) as DWORD
+declare sub GetLocalTime (byval as LPSYSTEMTIME)
+declare function GetLogicalDrives () as DWORD
+declare function GetMailslotInfo (byval as HANDLE, byval as PDWORD, byval as PDWORD, byval as PDWORD, byval as PDWORD) as BOOL
+declare function GetNamedPipeInfo (byval as HANDLE, byval as PDWORD, byval as PDWORD, byval as PDWORD, byval as PDWORD) as BOOL
+declare sub GetNativeSystemInfo (byval as LPSYSTEM_INFO)
+declare function GetNumberOfEventLogRecords (byval as HANDLE, byval as PDWORD) as BOOL
+declare function GetOldestEventLogRecord (byval as HANDLE, byval as PDWORD) as BOOL
+declare function GetOverlappedResult (byval as HANDLE, byval as LPOVERLAPPED, byval as PDWORD, byval as BOOL) as BOOL
+declare function GetPriorityClass (byval as HANDLE) as DWORD
+declare function GetPrivateObjectSecurity (byval as PSECURITY_DESCRIPTOR, byval as SECURITY_INFORMATION, byval as PSECURITY_DESCRIPTOR, byval as DWORD, byval as PDWORD) as BOOL
+declare function GetProcAddress (byval as HINSTANCE, byval as LPCSTR) as FARPROC
+declare function GetProcessAffinityMask (byval as HANDLE, byval as PDWORD, byval as PDWORD) as BOOL
+declare function GetProcessHandleCount (byval as HANDLE, byval as PDWORD) as BOOL
+declare function GetProcessHeap () as HANDLE
+declare function GetProcessHeaps (byval as DWORD, byval as PHANDLE) as DWORD
+declare function GetProcessId (byval as HANDLE) as DWORD
+declare function GetProcessIoCounters (byval as HANDLE, byval as PIO_COUNTERS) as BOOL
+declare function GetProcessPriorityBoost (byval as HANDLE, byval as PBOOL) as BOOL
+declare function GetProcessShutdownParameters (byval as PDWORD, byval as PDWORD) as BOOL
+declare function GetProcessTimes (byval as HANDLE, byval as LPFILETIME, byval as LPFILETIME, byval as LPFILETIME, byval as LPFILETIME) as BOOL
+declare function GetProcessVersion (byval as DWORD) as DWORD
+declare function GetProcessWindowStation () as HWINSTA
+declare function GetProcessWorkingSetSize (byval as HANDLE, byval as PSIZE_T, byval as PSIZE_T) as BOOL
+declare function GetQueuedCompletionStatus (byval as HANDLE, byval as PDWORD, byval as PDWORD, byval as LPOVERLAPPED ptr, byval as DWORD) as BOOL
+declare function GetSecurityDescriptorControl (byval as PSECURITY_DESCRIPTOR, byval as PSECURITY_DESCRIPTOR_CONTROL, byval as PDWORD) as BOOL
+declare function GetSecurityDescriptorDacl (byval as PSECURITY_DESCRIPTOR, byval as LPBOOL, byval as PACL ptr, byval as LPBOOL) as BOOL
+declare function GetSecurityDescriptorGroup (byval as PSECURITY_DESCRIPTOR, byval as PSID ptr, byval as LPBOOL) as BOOL
+declare function GetSecurityDescriptorLength (byval as PSECURITY_DESCRIPTOR) as DWORD
+declare function GetSecurityDescriptorOwner (byval as PSECURITY_DESCRIPTOR, byval as PSID ptr, byval as LPBOOL) as BOOL
+declare function GetSecurityDescriptorSacl (byval as PSECURITY_DESCRIPTOR, byval as LPBOOL, byval as PACL ptr, byval as LPBOOL) as BOOL
+declare function GetSidIdentifierAuthority (byval as PSID) as PSID_IDENTIFIER_AUTHORITY
+declare function GetSidLengthRequired (byval as UCHAR) as DWORD
+declare function GetSidSubAuthority (byval as PSID, byval as DWORD) as PDWORD
+declare function GetSidSubAuthorityCount (byval as PSID) as PUCHAR
+declare function GetStdHandle (byval as DWORD) as HANDLE
+declare sub GetSystemInfo (byval as LPSYSTEM_INFO)
+declare function GetSystemPowerStatus (byval as LPSYSTEM_POWER_STATUS) as BOOL
+declare function GetSystemRegistryQuota (byval as PDWORD, byval as PDWORD) as BOOL
+declare sub GetSystemTime (byval as LPSYSTEMTIME)
+declare function GetSystemTimes (byval as LPFILETIME, byval as LPFILETIME, byval as LPFILETIME) as BOOL
+declare function GetSystemTimeAdjustment (byval as PDWORD, byval as PDWORD, byval as PBOOL) as BOOL
+declare sub GetSystemTimeAsFileTime (byval as LPFILETIME)
+declare function GetTapeParameters (byval as HANDLE, byval as DWORD, byval as PDWORD, byval as PVOID) as DWORD
+declare function GetTapePosition (byval as HANDLE, byval as DWORD, byval as PDWORD, byval as PDWORD, byval as PDWORD) as DWORD
+declare function GetTapeStatus (byval as HANDLE) as DWORD
+declare function GetThreadContext (byval as HANDLE, byval as LPCONTEXT) as BOOL
+declare function GetThreadIOPendingFlag (byval as HANDLE, byval as PBOOL) as BOOL
+declare function GetThreadPriority (byval as HANDLE) as integer
+declare function GetThreadPriorityBoost (byval as HANDLE, byval as PBOOL) as BOOL
+declare function GetThreadSelectorEntry (byval as HANDLE, byval as DWORD, byval as LPLDT_ENTRY) as BOOL
+declare function GetThreadTimes (byval as HANDLE, byval as LPFILETIME, byval as LPFILETIME, byval as LPFILETIME, byval as LPFILETIME) as BOOL
+declare function GetTickCount () as DWORD
+declare function GetTimeZoneInformation (byval as LPTIME_ZONE_INFORMATION) as DWORD
+declare function GetTokenInformation (byval as HANDLE, byval as TOKEN_INFORMATION_CLASS, byval as PVOID, byval as DWORD, byval as PDWORD) as BOOL
+declare function GetVersion () as DWORD
+declare function GetWindowThreadProcessId (byval as HWND, byval as PDWORD) as DWORD
+declare function GetWriteWatch (byval as DWORD, byval as PVOID, byval as SIZE_T, byval as PVOID ptr, byval as PULONG_PTR, byval as PULONG) as UINT
+declare function GlobalAlloc (byval as UINT, byval as DWORD) as HGLOBAL
+declare function GlobalCompact (byval as DWORD) as SIZE_T
+declare function GlobalDeleteAtom (byval as ATOM) as ATOM
+declare function GlobalDiscard (byval as HGLOBAL) as HGLOBAL
+declare sub GlobalFix (byval as HGLOBAL)
+declare function GlobalFlags (byval as HGLOBAL) as UINT
+declare function GlobalFree (byval as HGLOBAL) as HGLOBAL
+declare function GlobalHandle (byval as PCVOID) as HGLOBAL
+declare function GlobalLock (byval as HGLOBAL) as LPVOID
+declare sub GlobalMemoryStatus (byval as LPMEMORYSTATUS)
+declare function GlobalMemoryStatusEx (byval as LPMEMORYSTATUSEX) as BOOL
+declare function GlobalReAlloc (byval as HGLOBAL, byval as DWORD, byval as UINT) as HGLOBAL
+declare function GlobalSize (byval as HGLOBAL) as DWORD
+declare sub GlobalUnfix (byval as HGLOBAL)
+declare function GlobalUnlock (byval as HGLOBAL) as BOOL
+declare function GlobalUnWire (byval as HGLOBAL) as BOOL
+declare function GlobalWire (byval as HGLOBAL) as PVOID
 #define HasOverlappedIoCompleted(lpOverlapped) ((lpOverlapped)->Internal <> STATUS_PENDING)
-declare function HeapAlloc alias "HeapAlloc" (byval as HANDLE, byval as DWORD, byval as DWORD) as PVOID
-declare function HeapCompact alias "HeapCompact" (byval as HANDLE, byval as DWORD) as SIZE_T
-declare function HeapCreate alias "HeapCreate" (byval as DWORD, byval as DWORD, byval as DWORD) as HANDLE
-declare function HeapDestroy alias "HeapDestroy" (byval as HANDLE) as BOOL
-declare function HeapFree alias "HeapFree" (byval as HANDLE, byval as DWORD, byval as PVOID) as BOOL
-declare function HeapLock alias "HeapLock" (byval as HANDLE) as BOOL
-declare function HeapQueryInformation alias "HeapQueryInformation" (byval as HANDLE, byval as HEAP_INFORMATION_CLASS, byval as PVOID, byval as SIZE_T, byval as PSIZE_T) as BOOL
-declare function HeapReAlloc alias "HeapReAlloc" (byval as HANDLE, byval as DWORD, byval as PVOID, byval as DWORD) as PVOID
-declare function HeapSetInformation alias "HeapSetInformation" (byval as HANDLE, byval as HEAP_INFORMATION_CLASS, byval as PVOID, byval as SIZE_T) as BOOL
-declare function HeapSize alias "HeapSize" (byval as HANDLE, byval as DWORD, byval as PCVOID) as DWORD
-declare function HeapUnlock alias "HeapUnlock" (byval as HANDLE) as BOOL
-declare function HeapValidate alias "HeapValidate" (byval as HANDLE, byval as DWORD, byval as PCVOID) as BOOL
-declare function HeapWalk alias "HeapWalk" (byval as HANDLE, byval as LPPROCESS_HEAP_ENTRY) as BOOL
-declare function ImpersonateLoggedOnUser alias "ImpersonateLoggedOnUser" (byval as HANDLE) as BOOL
-declare function ImpersonateNamedPipeClient alias "ImpersonateNamedPipeClient" (byval as HANDLE) as BOOL
-declare function ImpersonateSelf alias "ImpersonateSelf" (byval as SECURITY_IMPERSONATION_LEVEL) as BOOL
-declare function InitAtomTable alias "InitAtomTable" (byval as DWORD) as BOOL
-declare function InitializeAcl alias "InitializeAcl" (byval as PACL, byval as DWORD, byval as DWORD) as BOOL
-declare sub InitializeCriticalSection alias "InitializeCriticalSection" (byval as LPCRITICAL_SECTION)
-declare function InitializeCriticalSectionAndSpinCount alias "InitializeCriticalSectionAndSpinCount" (byval as LPCRITICAL_SECTION, byval as DWORD) as BOOL
-declare function SetCriticalSectionSpinCount alias "SetCriticalSectionSpinCount" (byval as LPCRITICAL_SECTION, byval as DWORD) as DWORD
-declare function InitializeSecurityDescriptor alias "InitializeSecurityDescriptor" (byval as PSECURITY_DESCRIPTOR, byval as DWORD) as BOOL
-declare function InitializeSid alias "InitializeSid" (byval as PSID, byval as PSID_IDENTIFIER_AUTHORITY, byval as BYTE) as BOOL
-declare sub InitializeSListHead alias "InitializeSListHead" (byval as PSLIST_HEADER)
-declare function InterlockedCompareExchange alias "InterlockedCompareExchange" (byval as LPLONG, byval as LONG, byval as LONG) as LONG
-declare function InterlockedDecrement alias "InterlockedDecrement" (byval as LPLONG) as LONG
-declare function InterlockedExchange alias "InterlockedExchange" (byval as LPLONG, byval as LONG) as LONG
-declare function InterlockedExchangeAdd alias "InterlockedExchangeAdd" (byval as LPLONG, byval as LONG) as LONG
-declare function InterlockedFlushSList alias "InterlockedFlushSList" (byval as PSLIST_HEADER) as PSINGLE_LIST_ENTRY
-declare function InterlockedIncrement alias "InterlockedIncrement" (byval as LPLONG) as LONG
+declare function HeapAlloc (byval as HANDLE, byval as DWORD, byval as DWORD) as PVOID
+declare function HeapCompact (byval as HANDLE, byval as DWORD) as SIZE_T
+declare function HeapCreate (byval as DWORD, byval as DWORD, byval as DWORD) as HANDLE
+declare function HeapDestroy (byval as HANDLE) as BOOL
+declare function HeapFree (byval as HANDLE, byval as DWORD, byval as PVOID) as BOOL
+declare function HeapLock (byval as HANDLE) as BOOL
+declare function HeapQueryInformation (byval as HANDLE, byval as HEAP_INFORMATION_CLASS, byval as PVOID, byval as SIZE_T, byval as PSIZE_T) as BOOL
+declare function HeapReAlloc (byval as HANDLE, byval as DWORD, byval as PVOID, byval as DWORD) as PVOID
+declare function HeapSetInformation (byval as HANDLE, byval as HEAP_INFORMATION_CLASS, byval as PVOID, byval as SIZE_T) as BOOL
+declare function HeapSize (byval as HANDLE, byval as DWORD, byval as PCVOID) as DWORD
+declare function HeapUnlock (byval as HANDLE) as BOOL
+declare function HeapValidate (byval as HANDLE, byval as DWORD, byval as PCVOID) as BOOL
+declare function HeapWalk (byval as HANDLE, byval as LPPROCESS_HEAP_ENTRY) as BOOL
+declare function ImpersonateLoggedOnUser (byval as HANDLE) as BOOL
+declare function ImpersonateNamedPipeClient (byval as HANDLE) as BOOL
+declare function ImpersonateSelf (byval as SECURITY_IMPERSONATION_LEVEL) as BOOL
+declare function InitAtomTable (byval as DWORD) as BOOL
+declare function InitializeAcl (byval as PACL, byval as DWORD, byval as DWORD) as BOOL
+declare sub InitializeCriticalSection (byval as LPCRITICAL_SECTION)
+declare function InitializeCriticalSectionAndSpinCount (byval as LPCRITICAL_SECTION, byval as DWORD) as BOOL
+declare function SetCriticalSectionSpinCount (byval as LPCRITICAL_SECTION, byval as DWORD) as DWORD
+declare function InitializeSecurityDescriptor (byval as PSECURITY_DESCRIPTOR, byval as DWORD) as BOOL
+declare function InitializeSid (byval as PSID, byval as PSID_IDENTIFIER_AUTHORITY, byval as BYTE) as BOOL
+declare sub InitializeSListHead (byval as PSLIST_HEADER)
+declare function InterlockedCompareExchange (byval as LPLONG, byval as LONG, byval as LONG) as LONG
+declare function InterlockedDecrement (byval as LPLONG) as LONG
+declare function InterlockedExchange (byval as LPLONG, byval as LONG) as LONG
+declare function InterlockedExchangeAdd (byval as LPLONG, byval as LONG) as LONG
+declare function InterlockedFlushSList (byval as PSLIST_HEADER) as PSINGLE_LIST_ENTRY
+declare function InterlockedIncrement (byval as LPLONG) as LONG
 #define InterlockedCompareExchangePointer(d,e,c) cptr(PVOID, InterlockedCompareExchange( cptr(LPLONG, d),cint(e),cint(c) ))
 #define InterlockedExchangePointer(t,v) cptr(PVOID, InterlockedExchange( cptr(LPLONG,t),cint(v) ))
-declare function IsBadCodePtr alias "IsBadCodePtr" (byval as FARPROC) as BOOL
-declare function IsBadHugeReadPtr alias "IsBadHugeReadPtr" (byval as PCVOID, byval as UINT) as BOOL
-declare function IsBadHugeWritePtr alias "IsBadHugeWritePtr" (byval as PVOID, byval as UINT) as BOOL
-declare function IsBadReadPtr alias "IsBadReadPtr" (byval as PCVOID, byval as UINT) as BOOL
-declare function IsBadWritePtr alias "IsBadWritePtr" (byval as PVOID, byval as UINT) as BOOL
-declare function IsDebuggerPresent alias "IsDebuggerPresent" () as BOOL
-declare function IsProcessInJob alias "IsProcessInJob" (byval as HANDLE, byval as HANDLE, byval as PBOOL) as BOOL
-declare function IsProcessorFeaturePresent alias "IsProcessorFeaturePresent" (byval as DWORD) as BOOL
-declare function IsSystemResumeAutomatic alias "IsSystemResumeAutomatic" () as BOOL
-declare function IsTextUnicode alias "IsTextUnicode" (byval as PCVOID, byval as integer, byval as LPINT) as BOOL
-declare function IsValidAcl alias "IsValidAcl" (byval as PACL) as BOOL
-declare function IsValidSecurityDescriptor alias "IsValidSecurityDescriptor" (byval as PSECURITY_DESCRIPTOR) as BOOL
-declare function IsValidSid alias "IsValidSid" (byval as PSID) as BOOL
-declare function IsWow64Process alias "IsWow64Process" (byval as HANDLE, byval as PBOOL) as BOOL
-declare sub LeaveCriticalSection alias "LeaveCriticalSection" (byval as LPCRITICAL_SECTION)
-declare function LoadModule alias "LoadModule" (byval as LPCSTR, byval as PVOID) as DWORD
-declare function LoadResource alias "LoadResource" (byval as HINSTANCE, byval as HRSRC) as HGLOBAL
-declare function LocalAlloc alias "LocalAlloc" (byval as UINT, byval as SIZE_T) as HLOCAL
-declare function LocalCompact alias "LocalCompact" (byval as UINT) as SIZE_T
-declare function LocalDiscard alias "LocalDiscard" (byval as HLOCAL) as HLOCAL
-declare function LocalFileTimeToFileTime alias "LocalFileTimeToFileTime" (byval as FILETIME ptr, byval as LPFILETIME) as BOOL
-declare function LocalFlags alias "LocalFlags" (byval as HLOCAL) as UINT
-declare function LocalFree alias "LocalFree" (byval as HLOCAL) as HLOCAL
-declare function LocalHandle alias "LocalHandle" (byval as LPCVOID) as HLOCAL
-declare function LocalLock alias "LocalLock" (byval as HLOCAL) as PVOID
-declare function LocalReAlloc alias "LocalReAlloc" (byval as HLOCAL, byval as SIZE_T, byval as UINT) as HLOCAL
-declare function LocalShrink alias "LocalShrink" (byval as HLOCAL, byval as UINT) as SIZE_T
-declare function LocalSize alias "LocalSize" (byval as HLOCAL) as UINT
-declare function LocalUnlock alias "LocalUnlock" (byval as HLOCAL) as BOOL
-declare function LockFile alias "LockFile" (byval as HANDLE, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD) as BOOL
-declare function LockFileEx alias "LockFileEx" (byval as HANDLE, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as LPOVERLAPPED) as BOOL
-declare function LockResource alias "LockResource" (byval as HGLOBAL) as PVOID
-declare function MakeAbsoluteSD alias "MakeAbsoluteSD" (byval as PSECURITY_DESCRIPTOR, byval as PSECURITY_DESCRIPTOR, byval as PDWORD, byval as PACL, byval as PDWORD, byval as PACL, byval as PDWORD, byval as PSID, byval as PDWORD, byval as PSID, byval as PDWORD) as BOOL
-declare function MakeSelfRelativeSD alias "MakeSelfRelativeSD" (byval as PSECURITY_DESCRIPTOR, byval as PSECURITY_DESCRIPTOR, byval as PDWORD) as BOOL
-declare sub MapGenericMask alias "MapGenericMask" (byval as PDWORD, byval as PGENERIC_MAPPING)
-declare function MapViewOfFile alias "MapViewOfFile" (byval as HANDLE, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD) as PVOID
-declare function MapViewOfFileEx alias "MapViewOfFileEx" (byval as HANDLE, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as PVOID) as PVOID
-declare function MulDiv alias "MulDiv" (byval as integer, byval as integer, byval as integer) as integer
-declare function NotifyChangeEventLog alias "NotifyChangeEventLog" (byval as HANDLE, byval as HANDLE) as BOOL
-declare function OpenFile alias "OpenFile" (byval as LPCSTR, byval as LPOFSTRUCT, byval as UINT) as HFILE
-declare function OpenProcess alias "OpenProcess" (byval as DWORD, byval as BOOL, byval as DWORD) as HANDLE
-declare function OpenProcessToken alias "OpenProcessToken" (byval as HANDLE, byval as DWORD, byval as PHANDLE) as BOOL
-declare function OpenThread alias "OpenThread" (byval as DWORD, byval as BOOL, byval as DWORD) as HANDLE
-declare function OpenThreadToken alias "OpenThreadToken" (byval as HANDLE, byval as DWORD, byval as BOOL, byval as PHANDLE) as BOOL
-declare function PeekNamedPipe alias "PeekNamedPipe" (byval as HANDLE, byval as PVOID, byval as DWORD, byval as PDWORD, byval as PDWORD, byval as PDWORD) as BOOL
-declare function PostQueuedCompletionStatus alias "PostQueuedCompletionStatus" (byval as HANDLE, byval as DWORD, byval as DWORD, byval as LPOVERLAPPED) as BOOL
-declare function PrepareTape alias "PrepareTape" (byval as HANDLE, byval as DWORD, byval as BOOL) as DWORD
-declare function PrivilegeCheck alias "PrivilegeCheck" (byval as HANDLE, byval as PPRIVILEGE_SET, byval as PBOOL) as BOOL
-declare function ProcessIdToSessionId alias "ProcessIdToSessionId" (byval as DWORD, byval as DWORD ptr) as BOOL
-declare function PulseEvent alias "PulseEvent" (byval as HANDLE) as BOOL
-declare function PurgeComm alias "PurgeComm" (byval as HANDLE, byval as DWORD) as BOOL
-declare function QueryMemoryResourceNotification alias "QueryMemoryResourceNotification" (byval as HANDLE, byval as PBOOL) as BOOL
-declare function QueryPerformanceCounter alias "QueryPerformanceCounter" (byval as PLARGE_INTEGER) as BOOL
-declare function QueryPerformanceFrequency alias "QueryPerformanceFrequency" (byval as PLARGE_INTEGER) as BOOL
-declare function QueueUserAPC alias "QueueUserAPC" (byval as PAPCFUNC, byval as HANDLE, byval as DWORD) as DWORD
-declare function QueueUserWorkItem alias "QueueUserWorkItem" (byval as LPTHREAD_START_ROUTINE, byval as PVOID, byval as ULONG) as BOOL
-declare sub RaiseException alias "RaiseException" (byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD ptr)
-declare function ReadFile alias "ReadFile" (byval as HANDLE, byval as PVOID, byval as DWORD, byval as PDWORD, byval as LPOVERLAPPED) as BOOL
-declare function ReadFileEx alias "ReadFileEx" (byval as HANDLE, byval as PVOID, byval as DWORD, byval as LPOVERLAPPED, byval as LPOVERLAPPED_COMPLETION_ROUTINE) as BOOL
-declare function ReadFileScatter alias "ReadFileScatter" (byval as HANDLE, byval as FILE_SEGMENT_ELEMENT ptr, byval as DWORD, byval as LPDWORD, byval as LPOVERLAPPED) as BOOL
-declare function ReadProcessMemory alias "ReadProcessMemory" (byval as HANDLE, byval as PCVOID, byval as PVOID, byval as DWORD, byval as PDWORD) as BOOL
-declare function RegisterWaitForSingleObject alias "RegisterWaitForSingleObject" (byval as PHANDLE, byval as HANDLE, byval as WAITORTIMERCALLBACKFUNC, byval as PVOID, byval as ULONG, byval as ULONG) as BOOL
-declare function RegisterWaitForSingleObjectEx alias "RegisterWaitForSingleObjectEx" (byval as HANDLE, byval as WAITORTIMERCALLBACKFUNC, byval as PVOID, byval as ULONG, byval as ULONG) as HANDLE
-declare sub ReleaseActCtx alias "ReleaseActCtx" (byval as HANDLE)
-declare function ReleaseMutex alias "ReleaseMutex" (byval as HANDLE) as BOOL
-declare function ReleaseSemaphore alias "ReleaseSemaphore" (byval as HANDLE, byval as LONG, byval as LPLONG) as BOOL
-declare function RemoveVectoredExceptionHandler alias "RemoveVectoredExceptionHandler" (byval as PVOID) as ULONG
-declare function ResetEvent alias "ResetEvent" (byval as HANDLE) as BOOL
-declare function ResetWriteWatch alias "ResetWriteWatch" (byval as LPVOID, byval as SIZE_T) as UINT
-declare sub RestoreLastError alias "RestoreLastError" (byval as DWORD)
-declare function ResumeThread alias "ResumeThread" (byval as HANDLE) as DWORD
-declare function RevertToSelf alias "RevertToSelf" () as BOOL
-declare function SetAclInformation alias "SetAclInformation" (byval as PACL, byval as PVOID, byval as DWORD, byval as ACL_INFORMATION_CLASS) as BOOL
-declare function SetCommBreak alias "SetCommBreak" (byval as HANDLE) as BOOL
-declare function SetCommConfig alias "SetCommConfig" (byval as HANDLE, byval as LPCOMMCONFIG, byval as DWORD) as BOOL
-declare function SetCommMask alias "SetCommMask" (byval as HANDLE, byval as DWORD) as BOOL
-declare function SetCommState alias "SetCommState" (byval as HANDLE, byval as LPDCB) as BOOL
-declare function SetCommTimeouts alias "SetCommTimeouts" (byval as HANDLE, byval as LPCOMMTIMEOUTS) as BOOL
-declare function SetEndOfFile alias "SetEndOfFile" (byval as HANDLE) as BOOL
-declare function SetErrorMode alias "SetErrorMode" (byval as UINT) as UINT
-declare function SetEvent alias "SetEvent" (byval as HANDLE) as BOOL
-declare sub SetFileApisToANSI alias "SetFileApisToANSI" ()
-declare sub SetFileApisToOEM alias "SetFileApisToOEM" ()
-declare function SetFilePointer alias "SetFilePointer" (byval as HANDLE, byval as LONG, byval as PLONG, byval as DWORD) as DWORD
-declare function SetFilePointerEx alias "SetFilePointerEx" (byval as HANDLE, byval as LARGE_INTEGER, byval as PLARGE_INTEGER, byval as DWORD) as BOOL
-declare function SetFileTime alias "SetFileTime" (byval as HANDLE, byval as FILETIME ptr, byval as FILETIME ptr, byval as FILETIME ptr) as BOOL
-declare function SetFileValidData alias "SetFileValidData" (byval as HANDLE, byval as LONGLONG) as BOOL
-declare function SetHandleCount alias "SetHandleCount" (byval as UINT) as UINT
-declare function SetHandleInformation alias "SetHandleInformation" (byval as HANDLE, byval as DWORD, byval as DWORD) as BOOL
-declare function SetKernelObjectSecurity alias "SetKernelObjectSecurity" (byval as HANDLE, byval as SECURITY_INFORMATION, byval as PSECURITY_DESCRIPTOR) as BOOL
-declare sub SetLastError alias "SetLastError" (byval as DWORD)
-declare sub SetLastErrorEx alias "SetLastErrorEx" (byval as DWORD, byval as DWORD)
-declare function SetLocalTime alias "SetLocalTime" (byval as SYSTEMTIME ptr) as BOOL
-declare function SetMailslotInfo alias "SetMailslotInfo" (byval as HANDLE, byval as DWORD) as BOOL
-declare function SetNamedPipeHandleState alias "SetNamedPipeHandleState" (byval as HANDLE, byval as PDWORD, byval as PDWORD, byval as PDWORD) as BOOL
-declare function SetPriorityClass alias "SetPriorityClass" (byval as HANDLE, byval as DWORD) as BOOL
-declare function SetPrivateObjectSecurity alias "SetPrivateObjectSecurity" (byval as SECURITY_INFORMATION, byval as PSECURITY_DESCRIPTOR, byval as PSECURITY_DESCRIPTOR ptr, byval as PGENERIC_MAPPING, byval as HANDLE) as BOOL
-declare function SetProcessAffinityMask alias "SetProcessAffinityMask" (byval as HANDLE, byval as DWORD) as BOOL
-declare function SetProcessPriorityBoost alias "SetProcessPriorityBoost" (byval as HANDLE, byval as BOOL) as BOOL
-declare function SetProcessShutdownParameters alias "SetProcessShutdownParameters" (byval as DWORD, byval as DWORD) as BOOL
-declare function SetProcessWorkingSetSize alias "SetProcessWorkingSetSize" (byval as HANDLE, byval as DWORD, byval as DWORD) as BOOL
-declare function SetSecurityDescriptorControl alias "SetSecurityDescriptorControl" (byval as PSECURITY_DESCRIPTOR, byval as SECURITY_DESCRIPTOR_CONTROL, byval as SECURITY_DESCRIPTOR_CONTROL) as BOOL
-declare function SetSecurityDescriptorDacl alias "SetSecurityDescriptorDacl" (byval as PSECURITY_DESCRIPTOR, byval as BOOL, byval as PACL, byval as BOOL) as BOOL
-declare function SetSecurityDescriptorGroup alias "SetSecurityDescriptorGroup" (byval as PSECURITY_DESCRIPTOR, byval as PSID, byval as BOOL) as BOOL
-declare function SetSecurityDescriptorOwner alias "SetSecurityDescriptorOwner" (byval as PSECURITY_DESCRIPTOR, byval as PSID, byval as BOOL) as BOOL
-declare function SetSecurityDescriptorSacl alias "SetSecurityDescriptorSacl" (byval as PSECURITY_DESCRIPTOR, byval as BOOL, byval as PACL, byval as BOOL) as BOOL
-declare function SetStdHandle alias "SetStdHandle" (byval as DWORD, byval as HANDLE) as BOOL
-declare function SetSystemPowerState alias "SetSystemPowerState" (byval as BOOL, byval as BOOL) as BOOL
-declare function SetSystemTime alias "SetSystemTime" (byval as SYSTEMTIME ptr) as BOOL
-declare function SetSystemTimeAdjustment alias "SetSystemTimeAdjustment" (byval as DWORD, byval as BOOL) as BOOL
-declare function SetTapeParameters alias "SetTapeParameters" (byval as HANDLE, byval as DWORD, byval as PVOID) as DWORD
-declare function SetTapePosition alias "SetTapePosition" (byval as HANDLE, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as BOOL) as DWORD
-declare function SetThreadAffinityMask alias "SetThreadAffinityMask" (byval as HANDLE, byval as DWORD) as DWORD
-declare function SetThreadContext alias "SetThreadContext" (byval as HANDLE, byval as CONTEXT ptr) as BOOL
-declare function SetThreadExecutionState alias "SetThreadExecutionState" (byval as EXECUTION_STATE) as EXECUTION_STATE
-declare function SetThreadIdealProcessor alias "SetThreadIdealProcessor" (byval as HANDLE, byval as DWORD) as DWORD
-declare function SetThreadPriority alias "SetThreadPriority" (byval as HANDLE, byval as integer) as BOOL
-declare function SetThreadPriorityBoost alias "SetThreadPriorityBoost" (byval as HANDLE, byval as BOOL) as BOOL
-declare function SetThreadToken alias "SetThreadToken" (byval as PHANDLE, byval as HANDLE) as BOOL
-declare function SetTimeZoneInformation alias "SetTimeZoneInformation" (byval as TIME_ZONE_INFORMATION ptr) as BOOL
-declare function SetTokenInformation alias "SetTokenInformation" (byval as HANDLE, byval as TOKEN_INFORMATION_CLASS, byval as PVOID, byval as DWORD) as BOOL
-declare function SetUnhandledExceptionFilter alias "SetUnhandledExceptionFilter" (byval as LPTOP_LEVEL_EXCEPTION_FILTER) as LPTOP_LEVEL_EXCEPTION_FILTER
-declare function SetupComm alias "SetupComm" (byval as HANDLE, byval as DWORD, byval as DWORD) as BOOL
-declare function SetWaitableTimer alias "SetWaitableTimer" (byval as HANDLE, byval as LARGE_INTEGER ptr, byval as LONG, byval as PTIMERAPCROUTINE, byval as PVOID, byval as BOOL) as BOOL
-declare function SignalObjectAndWait alias "SignalObjectAndWait" (byval as HANDLE, byval as HANDLE, byval as DWORD, byval as BOOL) as DWORD
-declare function SizeofResource alias "SizeofResource" (byval as HINSTANCE, byval as HRSRC) as DWORD
+declare function IsBadCodePtr (byval as FARPROC) as BOOL
+declare function IsBadHugeReadPtr (byval as PCVOID, byval as UINT) as BOOL
+declare function IsBadHugeWritePtr (byval as PVOID, byval as UINT) as BOOL
+declare function IsBadReadPtr (byval as PCVOID, byval as UINT) as BOOL
+declare function IsBadWritePtr (byval as PVOID, byval as UINT) as BOOL
+declare function IsDebuggerPresent () as BOOL
+declare function IsProcessInJob (byval as HANDLE, byval as HANDLE, byval as PBOOL) as BOOL
+declare function IsProcessorFeaturePresent (byval as DWORD) as BOOL
+declare function IsSystemResumeAutomatic () as BOOL
+declare function IsTextUnicode (byval as PCVOID, byval as integer, byval as LPINT) as BOOL
+declare function IsValidAcl (byval as PACL) as BOOL
+declare function IsValidSecurityDescriptor (byval as PSECURITY_DESCRIPTOR) as BOOL
+declare function IsValidSid (byval as PSID) as BOOL
+declare function IsWow64Process (byval as HANDLE, byval as PBOOL) as BOOL
+declare sub LeaveCriticalSection (byval as LPCRITICAL_SECTION)
+declare function LoadModule (byval as LPCSTR, byval as PVOID) as DWORD
+declare function LoadResource (byval as HINSTANCE, byval as HRSRC) as HGLOBAL
+declare function LocalAlloc (byval as UINT, byval as SIZE_T) as HLOCAL
+declare function LocalCompact (byval as UINT) as SIZE_T
+declare function LocalDiscard (byval as HLOCAL) as HLOCAL
+declare function LocalFileTimeToFileTime (byval as FILETIME ptr, byval as LPFILETIME) as BOOL
+declare function LocalFlags (byval as HLOCAL) as UINT
+declare function LocalFree (byval as HLOCAL) as HLOCAL
+declare function LocalHandle (byval as LPCVOID) as HLOCAL
+declare function LocalLock (byval as HLOCAL) as PVOID
+declare function LocalReAlloc (byval as HLOCAL, byval as SIZE_T, byval as UINT) as HLOCAL
+declare function LocalShrink (byval as HLOCAL, byval as UINT) as SIZE_T
+declare function LocalSize (byval as HLOCAL) as UINT
+declare function LocalUnlock (byval as HLOCAL) as BOOL
+declare function LockFile (byval as HANDLE, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD) as BOOL
+declare function LockFileEx (byval as HANDLE, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as LPOVERLAPPED) as BOOL
+declare function LockResource (byval as HGLOBAL) as PVOID
+declare function MakeAbsoluteSD (byval as PSECURITY_DESCRIPTOR, byval as PSECURITY_DESCRIPTOR, byval as PDWORD, byval as PACL, byval as PDWORD, byval as PACL, byval as PDWORD, byval as PSID, byval as PDWORD, byval as PSID, byval as PDWORD) as BOOL
+declare function MakeSelfRelativeSD (byval as PSECURITY_DESCRIPTOR, byval as PSECURITY_DESCRIPTOR, byval as PDWORD) as BOOL
+declare sub MapGenericMask (byval as PDWORD, byval as PGENERIC_MAPPING)
+declare function MapViewOfFile (byval as HANDLE, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD) as PVOID
+declare function MapViewOfFileEx (byval as HANDLE, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as PVOID) as PVOID
+declare function MulDiv (byval as integer, byval as integer, byval as integer) as integer
+declare function NotifyChangeEventLog (byval as HANDLE, byval as HANDLE) as BOOL
+declare function OpenFile (byval as LPCSTR, byval as LPOFSTRUCT, byval as UINT) as HFILE
+declare function OpenProcess (byval as DWORD, byval as BOOL, byval as DWORD) as HANDLE
+declare function OpenProcessToken (byval as HANDLE, byval as DWORD, byval as PHANDLE) as BOOL
+declare function OpenThread (byval as DWORD, byval as BOOL, byval as DWORD) as HANDLE
+declare function OpenThreadToken (byval as HANDLE, byval as DWORD, byval as BOOL, byval as PHANDLE) as BOOL
+declare function PeekNamedPipe (byval as HANDLE, byval as PVOID, byval as DWORD, byval as PDWORD, byval as PDWORD, byval as PDWORD) as BOOL
+declare function PostQueuedCompletionStatus (byval as HANDLE, byval as DWORD, byval as DWORD, byval as LPOVERLAPPED) as BOOL
+declare function PrepareTape (byval as HANDLE, byval as DWORD, byval as BOOL) as DWORD
+declare function PrivilegeCheck (byval as HANDLE, byval as PPRIVILEGE_SET, byval as PBOOL) as BOOL
+declare function ProcessIdToSessionId (byval as DWORD, byval as DWORD ptr) as BOOL
+declare function PulseEvent (byval as HANDLE) as BOOL
+declare function PurgeComm (byval as HANDLE, byval as DWORD) as BOOL
+declare function QueryMemoryResourceNotification (byval as HANDLE, byval as PBOOL) as BOOL
+declare function QueryPerformanceCounter (byval as PLARGE_INTEGER) as BOOL
+declare function QueryPerformanceFrequency (byval as PLARGE_INTEGER) as BOOL
+declare function QueueUserAPC (byval as PAPCFUNC, byval as HANDLE, byval as DWORD) as DWORD
+declare function QueueUserWorkItem (byval as LPTHREAD_START_ROUTINE, byval as PVOID, byval as ULONG) as BOOL
+declare sub RaiseException (byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD ptr)
+declare function ReadFile (byval as HANDLE, byval as PVOID, byval as DWORD, byval as PDWORD, byval as LPOVERLAPPED) as BOOL
+declare function ReadFileEx (byval as HANDLE, byval as PVOID, byval as DWORD, byval as LPOVERLAPPED, byval as LPOVERLAPPED_COMPLETION_ROUTINE) as BOOL
+declare function ReadFileScatter (byval as HANDLE, byval as FILE_SEGMENT_ELEMENT ptr, byval as DWORD, byval as LPDWORD, byval as LPOVERLAPPED) as BOOL
+declare function ReadProcessMemory (byval as HANDLE, byval as PCVOID, byval as PVOID, byval as DWORD, byval as PDWORD) as BOOL
+declare function RegisterWaitForSingleObject (byval as PHANDLE, byval as HANDLE, byval as WAITORTIMERCALLBACKFUNC, byval as PVOID, byval as ULONG, byval as ULONG) as BOOL
+declare function RegisterWaitForSingleObjectEx (byval as HANDLE, byval as WAITORTIMERCALLBACKFUNC, byval as PVOID, byval as ULONG, byval as ULONG) as HANDLE
+declare sub ReleaseActCtx (byval as HANDLE)
+declare function ReleaseMutex (byval as HANDLE) as BOOL
+declare function ReleaseSemaphore (byval as HANDLE, byval as LONG, byval as LPLONG) as BOOL
+declare function RemoveVectoredExceptionHandler (byval as PVOID) as ULONG
+declare function ResetEvent (byval as HANDLE) as BOOL
+declare function ResetWriteWatch (byval as LPVOID, byval as SIZE_T) as UINT
+declare sub RestoreLastError (byval as DWORD)
+declare function ResumeThread (byval as HANDLE) as DWORD
+declare function RevertToSelf () as BOOL
+declare function SetAclInformation (byval as PACL, byval as PVOID, byval as DWORD, byval as ACL_INFORMATION_CLASS) as BOOL
+declare function SetCommBreak (byval as HANDLE) as BOOL
+declare function SetCommConfig (byval as HANDLE, byval as LPCOMMCONFIG, byval as DWORD) as BOOL
+declare function SetCommMask (byval as HANDLE, byval as DWORD) as BOOL
+declare function SetCommState (byval as HANDLE, byval as LPDCB) as BOOL
+declare function SetCommTimeouts (byval as HANDLE, byval as LPCOMMTIMEOUTS) as BOOL
+declare function SetEndOfFile (byval as HANDLE) as BOOL
+declare function SetErrorMode (byval as UINT) as UINT
+declare function SetEvent (byval as HANDLE) as BOOL
+declare sub SetFileApisToANSI ()
+declare sub SetFileApisToOEM ()
+declare function SetFilePointer (byval as HANDLE, byval as LONG, byval as PLONG, byval as DWORD) as DWORD
+declare function SetFilePointerEx (byval as HANDLE, byval as LARGE_INTEGER, byval as PLARGE_INTEGER, byval as DWORD) as BOOL
+declare function SetFileTime (byval as HANDLE, byval as FILETIME ptr, byval as FILETIME ptr, byval as FILETIME ptr) as BOOL
+declare function SetFileValidData (byval as HANDLE, byval as LONGLONG) as BOOL
+declare function SetHandleCount (byval as UINT) as UINT
+declare function SetHandleInformation (byval as HANDLE, byval as DWORD, byval as DWORD) as BOOL
+declare function SetKernelObjectSecurity (byval as HANDLE, byval as SECURITY_INFORMATION, byval as PSECURITY_DESCRIPTOR) as BOOL
+declare sub SetLastError (byval as DWORD)
+declare sub SetLastErrorEx (byval as DWORD, byval as DWORD)
+declare function SetLocalTime (byval as SYSTEMTIME ptr) as BOOL
+declare function SetMailslotInfo (byval as HANDLE, byval as DWORD) as BOOL
+declare function SetNamedPipeHandleState (byval as HANDLE, byval as PDWORD, byval as PDWORD, byval as PDWORD) as BOOL
+declare function SetPriorityClass (byval as HANDLE, byval as DWORD) as BOOL
+declare function SetPrivateObjectSecurity (byval as SECURITY_INFORMATION, byval as PSECURITY_DESCRIPTOR, byval as PSECURITY_DESCRIPTOR ptr, byval as PGENERIC_MAPPING, byval as HANDLE) as BOOL
+declare function SetProcessAffinityMask (byval as HANDLE, byval as DWORD) as BOOL
+declare function SetProcessPriorityBoost (byval as HANDLE, byval as BOOL) as BOOL
+declare function SetProcessShutdownParameters (byval as DWORD, byval as DWORD) as BOOL
+declare function SetProcessWorkingSetSize (byval as HANDLE, byval as DWORD, byval as DWORD) as BOOL
+declare function SetSecurityDescriptorControl (byval as PSECURITY_DESCRIPTOR, byval as SECURITY_DESCRIPTOR_CONTROL, byval as SECURITY_DESCRIPTOR_CONTROL) as BOOL
+declare function SetSecurityDescriptorDacl (byval as PSECURITY_DESCRIPTOR, byval as BOOL, byval as PACL, byval as BOOL) as BOOL
+declare function SetSecurityDescriptorGroup (byval as PSECURITY_DESCRIPTOR, byval as PSID, byval as BOOL) as BOOL
+declare function SetSecurityDescriptorOwner (byval as PSECURITY_DESCRIPTOR, byval as PSID, byval as BOOL) as BOOL
+declare function SetSecurityDescriptorSacl (byval as PSECURITY_DESCRIPTOR, byval as BOOL, byval as PACL, byval as BOOL) as BOOL
+declare function SetStdHandle (byval as DWORD, byval as HANDLE) as BOOL
+declare function SetSystemPowerState (byval as BOOL, byval as BOOL) as BOOL
+declare function SetSystemTime (byval as SYSTEMTIME ptr) as BOOL
+declare function SetSystemTimeAdjustment (byval as DWORD, byval as BOOL) as BOOL
+declare function SetTapeParameters (byval as HANDLE, byval as DWORD, byval as PVOID) as DWORD
+declare function SetTapePosition (byval as HANDLE, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD, byval as BOOL) as DWORD
+declare function SetThreadAffinityMask (byval as HANDLE, byval as DWORD) as DWORD
+declare function SetThreadContext (byval as HANDLE, byval as CONTEXT ptr) as BOOL
+declare function SetThreadExecutionState (byval as EXECUTION_STATE) as EXECUTION_STATE
+declare function SetThreadIdealProcessor (byval as HANDLE, byval as DWORD) as DWORD
+declare function SetThreadPriority (byval as HANDLE, byval as integer) as BOOL
+declare function SetThreadPriorityBoost (byval as HANDLE, byval as BOOL) as BOOL
+declare function SetThreadToken (byval as PHANDLE, byval as HANDLE) as BOOL
+declare function SetTimeZoneInformation (byval as TIME_ZONE_INFORMATION ptr) as BOOL
+declare function SetTokenInformation (byval as HANDLE, byval as TOKEN_INFORMATION_CLASS, byval as PVOID, byval as DWORD) as BOOL
+declare function SetUnhandledExceptionFilter (byval as LPTOP_LEVEL_EXCEPTION_FILTER) as LPTOP_LEVEL_EXCEPTION_FILTER
+declare function SetupComm (byval as HANDLE, byval as DWORD, byval as DWORD) as BOOL
+declare function SetWaitableTimer (byval as HANDLE, byval as LARGE_INTEGER ptr, byval as LONG, byval as PTIMERAPCROUTINE, byval as PVOID, byval as BOOL) as BOOL
+declare function SignalObjectAndWait (byval as HANDLE, byval as HANDLE, byval as DWORD, byval as BOOL) as DWORD
+declare function SizeofResource (byval as HINSTANCE, byval as HRSRC) as DWORD
 declare sub Sleep_ alias "Sleep" (byval as DWORD)
-declare function SleepEx alias "SleepEx" (byval as DWORD, byval as BOOL) as DWORD
-declare function SuspendThread alias "SuspendThread" (byval as HANDLE) as DWORD
-declare sub SwitchToFiber alias "SwitchToFiber" (byval as PVOID)
-declare function SwitchToThread alias "SwitchToThread" () as BOOL
-declare function SystemTimeToFileTime alias "SystemTimeToFileTime" (byval as SYSTEMTIME ptr, byval as LPFILETIME) as BOOL
-declare function SystemTimeToTzSpecificLocalTime alias "SystemTimeToTzSpecificLocalTime" (byval as LPTIME_ZONE_INFORMATION, byval as LPSYSTEMTIME, byval as LPSYSTEMTIME) as BOOL
-declare function TerminateProcess alias "TerminateProcess" (byval as HANDLE, byval as UINT) as BOOL
-declare function TerminateThread alias "TerminateThread" (byval as HANDLE, byval as DWORD) as BOOL
-declare function TlsAlloc alias "TlsAlloc" () as DWORD
-declare function TlsFree alias "TlsFree" (byval as DWORD) as BOOL
-declare function TlsGetValue alias "TlsGetValue" (byval as DWORD) as PVOID
-declare function TlsSetValue alias "TlsSetValue" (byval as DWORD, byval as PVOID) as BOOL
-declare function TransactNamedPipe alias "TransactNamedPipe" (byval as HANDLE, byval as PVOID, byval as DWORD, byval as PVOID, byval as DWORD, byval as PDWORD, byval as LPOVERLAPPED) as BOOL
-declare function TransmitCommChar alias "TransmitCommChar" (byval as HANDLE, byval as byte) as BOOL
-declare function TryEnterCriticalSection alias "TryEnterCriticalSection" (byval as LPCRITICAL_SECTION) as BOOL
-declare function UnhandledExceptionFilter alias "UnhandledExceptionFilter" (byval as LPEXCEPTION_POINTERS) as LONG
-declare function UnlockFile alias "UnlockFile" (byval as HANDLE, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD) as BOOL
-declare function UnlockFileEx alias "UnlockFileEx" (byval as HANDLE, byval as DWORD, byval as DWORD, byval as DWORD, byval as LPOVERLAPPED) as BOOL
-declare function UnmapViewOfFile alias "UnmapViewOfFile" (byval as PVOID) as BOOL
-declare function UnregisterWaitEx alias "UnregisterWaitEx" (byval as HANDLE, byval as HANDLE) as BOOL
-declare function VirtualAlloc alias "VirtualAlloc" (byval as PVOID, byval as DWORD, byval as DWORD, byval as DWORD) as PVOID
-declare function VirtualAllocEx alias "VirtualAllocEx" (byval as HANDLE, byval as PVOID, byval as DWORD, byval as DWORD, byval as DWORD) as PVOID
-declare function VirtualFree alias "VirtualFree" (byval as PVOID, byval as DWORD, byval as DWORD) as BOOL
-declare function VirtualFreeEx alias "VirtualFreeEx" (byval as HANDLE, byval as PVOID, byval as DWORD, byval as DWORD) as BOOL
-declare function VirtualLock alias "VirtualLock" (byval as PVOID, byval as DWORD) as BOOL
-declare function VirtualProtect alias "VirtualProtect" (byval as PVOID, byval as DWORD, byval as DWORD, byval as PDWORD) as BOOL
-declare function VirtualProtectEx alias "VirtualProtectEx" (byval as HANDLE, byval as PVOID, byval as DWORD, byval as DWORD, byval as PDWORD) as BOOL
-declare function VirtualQuery alias "VirtualQuery" (byval as LPCVOID, byval as PMEMORY_BASIC_INFORMATION, byval as DWORD) as DWORD
-declare function VirtualQueryEx alias "VirtualQueryEx" (byval as HANDLE, byval as LPCVOID, byval as PMEMORY_BASIC_INFORMATION, byval as DWORD) as DWORD
-declare function VirtualUnlock alias "VirtualUnlock" (byval as PVOID, byval as DWORD) as BOOL
-declare function WaitCommEvent alias "WaitCommEvent" (byval as HANDLE, byval as PDWORD, byval as LPOVERLAPPED) as BOOL
-declare function WaitForDebugEvent alias "WaitForDebugEvent" (byval as LPDEBUG_EVENT, byval as DWORD) as BOOL
-declare function WaitForMultipleObjects alias "WaitForMultipleObjects" (byval as DWORD, byval as HANDLE ptr, byval as BOOL, byval as DWORD) as DWORD
-declare function WaitForMultipleObjectsEx alias "WaitForMultipleObjectsEx" (byval as DWORD, byval as HANDLE ptr, byval as BOOL, byval as DWORD, byval as BOOL) as DWORD
-declare function WaitForSingleObject alias "WaitForSingleObject" (byval as HANDLE, byval as DWORD) as DWORD
-declare function WaitForSingleObjectEx alias "WaitForSingleObjectEx" (byval as HANDLE, byval as DWORD, byval as BOOL) as DWORD
-declare function WinLoadTrustProvider alias "WinLoadTrustProvider" (byval as GUID ptr) as BOOL
-declare function WriteFile alias "WriteFile" (byval as HANDLE, byval as PCVOID, byval as DWORD, byval as PDWORD, byval as LPOVERLAPPED) as BOOL
-declare function WriteFileEx alias "WriteFileEx" (byval as HANDLE, byval as PCVOID, byval as DWORD, byval as LPOVERLAPPED, byval as LPOVERLAPPED_COMPLETION_ROUTINE) as BOOL
-declare function WriteFileGather alias "WriteFileGather" (byval as HANDLE, byval as FILE_SEGMENT_ELEMENT ptr, byval as DWORD, byval as LPDWORD, byval as LPOVERLAPPED) as BOOL
-declare function WriteProcessMemory alias "WriteProcessMemory" (byval as HANDLE, byval as LPVOID, byval as LPCVOID, byval as SIZE_T, byval as SIZE_T ptr) as BOOL
-declare function WriteTapemark alias "WriteTapemark" (byval as HANDLE, byval as DWORD, byval as DWORD, byval as BOOL) as DWORD
-declare function TerminateJobObject alias "TerminateJobObject" (byval as HANDLE, byval as UINT) as BOOL
-declare function AssignProcessToJobObject alias "AssignProcessToJobObject" (byval as HANDLE, byval as HANDLE) as BOOL
-declare function CreateMemoryResourceNotification alias "CreateMemoryResourceNotification" (byval as MEMORY_RESOURCE_NOTIFICATION_TYPE) as HANDLE
-declare function DeleteTimerQueue alias "DeleteTimerQueue" (byval as HANDLE) as BOOL
-declare function DeleteTimerQueueEx alias "DeleteTimerQueueEx" (byval as HANDLE, byval as HANDLE) as BOOL
-declare function DeleteTimerQueueTimer alias "DeleteTimerQueueTimer" (byval as HANDLE, byval as HANDLE, byval as HANDLE) as BOOL
-declare function FindActCtxSectionGuid alias "FindActCtxSectionGuid" (byval as DWORD, byval as GUID ptr, byval as ULONG, byval as GUID ptr, byval as PACTCTX_SECTION_KEYED_DATA) as BOOL
-declare function FindVolumeClose alias "FindVolumeClose" (byval as HANDLE) as BOOL
-declare function FindVolumeMountPointClose alias "FindVolumeMountPointClose" (byval as HANDLE) as BOOL
-declare function ZombifyActCtx alias "ZombifyActCtx" (byval as HANDLE) as BOOL
-declare function AllocateUserPhysicalPages alias "AllocateUserPhysicalPages" (byval as HANDLE, byval as PULONG_PTR, byval as PULONG_PTR) as BOOL
-declare function FreeUserPhysicalPages alias "FreeUserPhysicalPages" (byval as HANDLE, byval as PULONG_PTR, byval as PULONG_PTR) as BOOL
-declare function MapUserPhysicalPages alias "MapUserPhysicalPages" (byval as PVOID, byval as ULONG_PTR, byval as PULONG_PTR) as BOOL
-declare function MapUserPhysicalPagesScatter alias "MapUserPhysicalPagesScatter" (byval as PVOID ptr, byval as ULONG_PTR, byval as PULONG_PTR) as BOOL
+declare function SleepEx (byval as DWORD, byval as BOOL) as DWORD
+declare function SuspendThread (byval as HANDLE) as DWORD
+declare sub SwitchToFiber (byval as PVOID)
+declare function SwitchToThread () as BOOL
+declare function SystemTimeToFileTime (byval as SYSTEMTIME ptr, byval as LPFILETIME) as BOOL
+declare function SystemTimeToTzSpecificLocalTime (byval as LPTIME_ZONE_INFORMATION, byval as LPSYSTEMTIME, byval as LPSYSTEMTIME) as BOOL
+declare function TerminateProcess (byval as HANDLE, byval as UINT) as BOOL
+declare function TerminateThread (byval as HANDLE, byval as DWORD) as BOOL
+declare function TlsAlloc () as DWORD
+declare function TlsFree (byval as DWORD) as BOOL
+declare function TlsGetValue (byval as DWORD) as PVOID
+declare function TlsSetValue (byval as DWORD, byval as PVOID) as BOOL
+declare function TransactNamedPipe (byval as HANDLE, byval as PVOID, byval as DWORD, byval as PVOID, byval as DWORD, byval as PDWORD, byval as LPOVERLAPPED) as BOOL
+declare function TransmitCommChar (byval as HANDLE, byval as byte) as BOOL
+declare function TryEnterCriticalSection (byval as LPCRITICAL_SECTION) as BOOL
+declare function UnhandledExceptionFilter (byval as LPEXCEPTION_POINTERS) as LONG
+declare function UnlockFile (byval as HANDLE, byval as DWORD, byval as DWORD, byval as DWORD, byval as DWORD) as BOOL
+declare function UnlockFileEx (byval as HANDLE, byval as DWORD, byval as DWORD, byval as DWORD, byval as LPOVERLAPPED) as BOOL
+declare function UnmapViewOfFile (byval as PVOID) as BOOL
+declare function UnregisterWaitEx (byval as HANDLE, byval as HANDLE) as BOOL
+declare function VirtualAlloc (byval as PVOID, byval as DWORD, byval as DWORD, byval as DWORD) as PVOID
+declare function VirtualAllocEx (byval as HANDLE, byval as PVOID, byval as DWORD, byval as DWORD, byval as DWORD) as PVOID
+declare function VirtualFree (byval as PVOID, byval as DWORD, byval as DWORD) as BOOL
+declare function VirtualFreeEx (byval as HANDLE, byval as PVOID, byval as DWORD, byval as DWORD) as BOOL
+declare function VirtualLock (byval as PVOID, byval as DWORD) as BOOL
+declare function VirtualProtect (byval as PVOID, byval as DWORD, byval as DWORD, byval as PDWORD) as BOOL
+declare function VirtualProtectEx (byval as HANDLE, byval as PVOID, byval as DWORD, byval as DWORD, byval as PDWORD) as BOOL
+declare function VirtualQuery (byval as LPCVOID, byval as PMEMORY_BASIC_INFORMATION, byval as DWORD) as DWORD
+declare function VirtualQueryEx (byval as HANDLE, byval as LPCVOID, byval as PMEMORY_BASIC_INFORMATION, byval as DWORD) as DWORD
+declare function VirtualUnlock (byval as PVOID, byval as DWORD) as BOOL
+declare function WaitCommEvent (byval as HANDLE, byval as PDWORD, byval as LPOVERLAPPED) as BOOL
+declare function WaitForDebugEvent (byval as LPDEBUG_EVENT, byval as DWORD) as BOOL
+declare function WaitForMultipleObjects (byval as DWORD, byval as HANDLE ptr, byval as BOOL, byval as DWORD) as DWORD
+declare function WaitForMultipleObjectsEx (byval as DWORD, byval as HANDLE ptr, byval as BOOL, byval as DWORD, byval as BOOL) as DWORD
+declare function WaitForSingleObject (byval as HANDLE, byval as DWORD) as DWORD
+declare function WaitForSingleObjectEx (byval as HANDLE, byval as DWORD, byval as BOOL) as DWORD
+declare function WinLoadTrustProvider (byval as GUID ptr) as BOOL
+declare function WriteFile (byval as HANDLE, byval as PCVOID, byval as DWORD, byval as PDWORD, byval as LPOVERLAPPED) as BOOL
+declare function WriteFileEx (byval as HANDLE, byval as PCVOID, byval as DWORD, byval as LPOVERLAPPED, byval as LPOVERLAPPED_COMPLETION_ROUTINE) as BOOL
+declare function WriteFileGather (byval as HANDLE, byval as FILE_SEGMENT_ELEMENT ptr, byval as DWORD, byval as LPDWORD, byval as LPOVERLAPPED) as BOOL
+declare function WriteProcessMemory (byval as HANDLE, byval as LPVOID, byval as LPCVOID, byval as SIZE_T, byval as SIZE_T ptr) as BOOL
+declare function WriteTapemark (byval as HANDLE, byval as DWORD, byval as DWORD, byval as BOOL) as DWORD
+declare function TerminateJobObject (byval as HANDLE, byval as UINT) as BOOL
+declare function AssignProcessToJobObject (byval as HANDLE, byval as HANDLE) as BOOL
+declare function CreateMemoryResourceNotification (byval as MEMORY_RESOURCE_NOTIFICATION_TYPE) as HANDLE
+declare function DeleteTimerQueue (byval as HANDLE) as BOOL
+declare function DeleteTimerQueueEx (byval as HANDLE, byval as HANDLE) as BOOL
+declare function DeleteTimerQueueTimer (byval as HANDLE, byval as HANDLE, byval as HANDLE) as BOOL
+declare function FindActCtxSectionGuid (byval as DWORD, byval as GUID ptr, byval as ULONG, byval as GUID ptr, byval as PACTCTX_SECTION_KEYED_DATA) as BOOL
+declare function FindVolumeClose (byval as HANDLE) as BOOL
+declare function FindVolumeMountPointClose (byval as HANDLE) as BOOL
+declare function ZombifyActCtx (byval as HANDLE) as BOOL
+declare function AllocateUserPhysicalPages (byval as HANDLE, byval as PULONG_PTR, byval as PULONG_PTR) as BOOL
+declare function FreeUserPhysicalPages (byval as HANDLE, byval as PULONG_PTR, byval as PULONG_PTR) as BOOL
+declare function MapUserPhysicalPages (byval as PVOID, byval as ULONG_PTR, byval as PULONG_PTR) as BOOL
+declare function MapUserPhysicalPagesScatter (byval as PVOID ptr, byval as ULONG_PTR, byval as PULONG_PTR) as BOOL
 
 #ifdef UNICODE
 type STARTUPINFO as STARTUPINFOW
@@ -1927,5 +1927,7 @@ declare function RtlFillMemory cdecl alias "memset" (byval as any ptr, byval as 
 #define CopyMemory RtlCopyMemory
 #define FillMemory RtlFillMemory
 #define ZeroMemory RtlZeroMemory
+
+end extern
 
 #endif
