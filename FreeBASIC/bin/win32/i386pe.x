@@ -1,6 +1,6 @@
 /* Default linker script, for normal executables */
-OUTPUT_FORMAT(pei-i386)
-SEARCH_DIR("lib");
+OUTPUT_FORMAT("pei-i386")
+
 SECTIONS
 {
   .text  __image_base__ + __section_alignment__  :
