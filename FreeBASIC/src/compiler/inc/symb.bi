@@ -1030,12 +1030,9 @@ declare function 	symbCanDuplicate		( _
 						   					  	byval s as FBSYMBOL ptr _
 											) as integer
 
-declare function 	symbGetMangledName 		( _
-												byval sym as FBSYMBOL ptr _
-											) as zstring ptr
-
-declare function	symbGetName				( _
-												byval sym as FBSYMBOL ptr _
+declare function 	symbGetMangledNameEx 	( _
+												byval sym as FBSYMBOL ptr, _
+												byval checkhash as integer _
 											) as zstring ptr
 
 declare sub 		symbSetName 			( _
@@ -1124,6 +1121,10 @@ declare sub 		symbSetName 			( _
 #define symbGetMangling(s) (cuint( s->stats ) shr 16)
 
 #define symbSetMangling(s,v) s->stats or= (cuint( v ) shl 16)
+
+#define symbGetMangledName(s) symbGetMangledNameEx( s, FALSE )
+
+#define symbGetName(s) s->name
 
 #define symbGetOfs(s) s->ofs
 
@@ -1376,7 +1377,6 @@ declare sub 		symbSetName 			( _
 #define symbGetCurrentProcName( ) symbGetName( env.currproc )
 
 #define hIsString(t) ((t = FB_DATATYPE_STRING) or (t = FB_DATATYPE_FIXSTR) or (t = FB_DATATYPE_CHAR) or (t = FB_DATATYPE_WCHAR))
-
 
 ''
 '' inter-module globals

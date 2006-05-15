@@ -40,7 +40,6 @@ type FB_MANGLECTX
 	list		as TLIST					'' of FB_MANGLEABBR
 	hashtb		as THASH
 	cnt			as integer
-	addnested	as integer
 end type
 
 
@@ -49,17 +48,19 @@ declare function 	hDoCppMangling 			( _
 												byval mangling as FB_MANGLING _
 											) as integer
 
-declare sub 		hMangleProc  			( _
+declare function	hMangleProc  			( _
 												byval sym as FBSYMBOL ptr _
-											)
+											) as zstring ptr
 
-declare sub 		hMangleVariable  		( _
+declare function	hMangleVariable  		( _
 												byval sym as FBSYMBOL ptr _
-											)
+											) as zstring ptr
 
-declare sub 		hMangleCompType			( _
-												byval sym as FBSYMBOL ptr _
-											)
+declare function	hMangleCompType			( _
+												byval sym as FBSYMBOL ptr, _
+												byval checkhash as integer, _
+												byval checkns as integer _
+											) as zstring ptr
 
 declare function 	hGetProcParamsTypeCode 	( _
 												byval sym as FBSYMBOL ptr _
@@ -102,7 +103,6 @@ sub symbMangleInit( )
 	listNew( @ctx.list, FB_MAXPROCARGS, len( FB_MANGLEABBR ), LIST_FLAGS_NOCLEAR )
 
 	ctx.cnt = 0
-	ctx.addnested = FALSE
 
 end sub
 
@@ -116,20 +116,14 @@ sub symbMangleEnd( )
 end sub
 
 '':::::
-function symbGetName _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) as zstring ptr
-
-	function = sym->name
-
-end function
-
-'':::::
 function symbGetDBGName _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as zstring ptr
+
+	if( (sym->stats and FB_SYMBSTATS_MANGLED) <> 0 ) then
+		return sym->alias
+	end if
 
     '' GDB will demangle the symbols automatically
 	if( hDoCppMangling( sym, symbGetMangling( sym ) ) ) then
@@ -166,29 +160,53 @@ sub symbSetName _
 end sub
 
 '':::::
-function symbGetMangledName _
+function symbGetMangledNameEx _
 	( _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval checkhash as integer _
 	) as zstring ptr
 
-	if( (sym->stats and FB_SYMBSTATS_MANGLED) = FALSE ) then
-		sym->stats or= FB_SYMBSTATS_MANGLED
+	dim as zstring ptr id_alias
 
-        select case as const sym->class
-        case FB_SYMBCLASS_PROC
-			hMangleProc( sym )
-
-        case FB_SYMBCLASS_ENUM, FB_SYMBCLASS_UDT, FB_SYMBCLASS_NAMESPACE
-        	hMangleCompType( sym )
-
-        case FB_SYMBCLASS_VAR
-        	hMangleVariable( sym )
-        end select
+	if( (sym->stats and FB_SYMBSTATS_MANGLED) <> 0 ) then
+		return sym->alias
 	end if
 
-	function = sym->alias
+	sym->stats or= FB_SYMBSTATS_MANGLED
+
+    select case as const sym->class
+    case FB_SYMBCLASS_PROC
+		id_alias = hMangleProc( sym )
+
+	case FB_SYMBCLASS_ENUM, FB_SYMBCLASS_UDT
+    	id_alias = hMangleCompType( sym, checkhash, FALSE )
+
+	case FB_SYMBCLASS_NAMESPACE
+    	id_alias = hMangleCompType( sym, checkhash, TRUE )
+
+	case FB_SYMBCLASS_VAR
+    	id_alias = hMangleVariable( sym )
+
+	case else
+    	return sym->alias
+	end select
+
+	if( sym->alias <> NULL ) then
+		ZStrFree( sym->alias )
+	end if
+
+	sym->alias = id_alias
+
+	function = id_alias
 
 end function
+
+'':::::
+private sub hAbbrevIni ( )
+
+	ctx.cnt = 0
+
+end sub
 
 '':::::
 private function hAbbrevAdd _
@@ -202,8 +220,12 @@ private function hAbbrevAdd _
 
     n = listNewNode( @ctx.list )
     n->idx = ctx.cnt
-    n->sig = ZStrAllocate( slen )
-    *n->sig = *sig
+    if( slen > 0 ) then
+    	n->sig = ZStrAllocate( slen )
+    	*n->sig = *sig
+    else
+    	n->sig = sig
+    end if
 	n->hash = hash
     n->item = hashAdd( @ctx.hashtb, n->sig, n, hash )
 
@@ -212,17 +234,6 @@ private function hAbbrevAdd _
     function = n
 
 end function
-
-'':::::
-private sub hAbbrevIni _
-	( _
-		byval donested as integer _
-	)
-
-	ctx.cnt = 0
-	ctx.addnested = donested
-
-end sub
 
 '':::::
 private function hAbbrevGet _
@@ -276,7 +287,6 @@ private sub hAbbrevEnd( ) static
 		n = nxt
 	loop
 
-	ctx.addnested = FALSE
 	ctx.cnt = 0
 
 end sub
@@ -318,11 +328,6 @@ private function hDoCppMangling _
 		byval mangling as FB_MANGLING _
 	) as integer
 
-	'' local? no mangling
-	if( sym->scope > FB_MAINSCOPE ) then
-		return FALSE
-	end if
-
     '' C++?
     if( mangling = FB_MANGLING_CPP ) then
     	return TRUE
@@ -352,35 +357,94 @@ end function
 '':::::
 private function hGetNamespace _
 	( _
-		byval sym as FBSYMBOL ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval checkhash as integer _
 	) as zstring ptr static
 
 	dim as FBSYMBOL ptr ns
 	dim as zstring ptr id_alias
-
-	'' local? no ns..
-	if( sym->scope > FB_MAINSCOPE ) then
-		return NULL
-	end if
 
 	ns = symbGetNamespace( sym )
 	if( ns = NULL ) then
 		return NULL
 	end if
 
-	id_alias = symbGetMangledName( ns )
+    if( checkhash = FALSE ) then
+    	return symbGetMangledNameEx( ns, FALSE )
+    end if
 
-    if( ctx.addnested ) then
-    	dim as uinteger hash
-    	dim as FB_MANGLEABBR ptr n
-    	hash = hashHash( id_alias )
-    	n = hashLookupEx( @ctx.hashtb, id_alias, hash )
-    	if( n = NULL ) then
-        	hAbbrevAdd( id_alias, len( *id_alias ), hash )
-        else
-        	id_alias = hAbbrevGet( n->idx )
-        end if
+    '' can't set or use the UDT alias because the debugging
+    '' symbols, emit_stabs will call GetDBGName() recursively
+    '' if the UDT types were not emitted yet
+    id_alias = hMangleCompType( ns, TRUE, TRUE )
+
+    dim as uinteger hash
+    dim as FB_MANGLEABBR ptr n
+    hash = hashHash( id_alias )
+    n = hashLookupEx( @ctx.hashtb, id_alias, hash )
+    if( n = NULL ) then
+       	'' don't copy id_alias, pass len as 0
+       	hAbbrevAdd( id_alias, 0, hash )
+	else
+       	ZStrFree( id_alias )
+       	id_alias = hAbbrevGet( n->idx )
 	end if
+
+	function = id_alias
+
+end function
+
+'':::::
+private function hMangleCompType _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval checkhash as integer, _
+		byval checkns as integer _
+	) as zstring ptr static
+
+    dim as zstring ptr id_str, nspc_str, dst, id_alias
+    dim as integer id_len, nspc_len
+
+    nspc_len = 0
+    if( checkns ) then
+    	'' namespace
+    	nspc_str = hGetNamespace( sym, checkhash )
+    	if( nspc_str <> NULL ) then
+    		nspc_len = len( *nspc_str )
+    	end if
+    else
+    	nspc_str = NULL
+    end if
+
+    '' id
+    id_str = sym->alias
+    if( id_str = NULL ) then
+    	id_str = sym->name
+    end if
+
+    id_len = len( *id_str )
+
+	'' concat
+	id_alias = ZStrAllocate( nspc_len + id_len + 2 )
+
+	dst = id_alias
+	if( nspc_str <> NULL ) then
+		*dst = *nspc_str
+		dst += nspc_len
+	end if
+
+	if( checkns ) then
+		if( id_len < 10 ) then
+			*dst = CHAR_0 + id_len
+			dst += 1
+		else
+			*(dst+0) = CHAR_0 + (id_len \ 10)
+			*(dst+1) = CHAR_0 + (id_len mod 10)
+			dst += 2
+		end if
+	end if
+
+	*dst = *id_str
 
 	function = id_alias
 
@@ -395,7 +459,7 @@ private function hGetVarPrefix _
 
 	dim as integer isimport
 
-	'' local? no prefix
+	'' local or argument? no prefix
 	if( (sym->attrib and (FB_SYMBATTRIB_PUBLIC or _
 			 		   	  FB_SYMBATTRIB_EXTERN or _
 			 			  FB_SYMBATTRIB_SHARED or _
@@ -472,10 +536,10 @@ private function hGetVarIdentifier _
 end function
 
 '':::::
-private sub hMangleVariable  _
+private function hMangleVariable  _
 	( _
 		byval sym as FBSYMBOL ptr _
-	) static
+	) as zstring ptr static
 
     dim as zstring ptr prefix_str, nspc_str, id_str, suffix_str
     dim as integer prefix_len, nspc_len, id_len, suffix_len, docpp, isglobal
@@ -483,7 +547,12 @@ private sub hMangleVariable  _
 
     mangling = symbGetMangling( sym )
 
-    docpp = hDoCppMangling( sym, mangling )
+	'' local? no mangling
+	if( sym->scope > FB_MAINSCOPE ) then
+		docpp = FALSE
+	else
+		docpp = hDoCppMangling( sym, mangling )
+	end if
 
     '' prefix
     prefix_len = 0
@@ -495,7 +564,7 @@ private sub hMangleVariable  _
     '' namespace
     nspc_len = 0
 	if( docpp ) then
-    	nspc_str = hGetNamespace( sym )
+    	nspc_str = hGetNamespace( sym, FALSE )
     	if(	nspc_str <> NULL ) then
     		nspc_len = len( *nspc_str )
     	end if
@@ -585,68 +654,9 @@ private sub hMangleVariable  _
 		dst[1] = 0
 	end if
 
-	''
-	if( sym->alias <> NULL ) then
-		ZStrFree( sym->alias )
-	end if
+	function = id_alias
 
-	sym->alias = id_alias
-
-end sub
-
-'':::::
-private sub hMangleCompType  _
-	( _
-		byval sym as FBSYMBOL ptr _
-	) static
-
-    dim as zstring ptr id_str, nspc_str, dst, id_alias
-    dim as integer id_len, nspc_len
-
-    '' namespace
-    nspc_str = hGetNamespace( sym )
-    if( nspc_str <> NULL ) then
-    	nspc_len = len( *nspc_str )
-    else
-    	nspc_len = 0
-    end if
-
-    '' id
-    id_str = sym->alias
-    if( id_str = NULL ) then
-    	id_str = sym->name
-    end if
-
-    id_len = len( *id_str )
-
-	'' concat
-	id_alias = ZStrAllocate( nspc_len + id_len + 2 )
-
-	dst = id_alias
-	if( nspc_str <> NULL ) then
-		*dst = *nspc_str
-		dst += nspc_len
-	end if
-
-	if( id_len < 10 ) then
-		*dst = CHAR_0 + id_len
-		dst += 1
-	else
-		*(dst+0) = CHAR_0 + (id_len \ 10)
-		*(dst+1) = CHAR_0 + (id_len mod 10)
-		dst += 2
-	end if
-
-	*dst = *id_str
-
-	''
-	if( sym->alias <> NULL ) then
-		ZStrFree( sym->alias )
-	end if
-
-	sym->alias = id_alias
-
-end sub
+end function
 
 '':::::
 private function hGetProcIdentifier _
@@ -745,17 +755,22 @@ function hGetTypeCode _
 
     select case as const dtype
     case FB_DATATYPE_USERDEF, FB_DATATYPE_ENUM
-    	dim as zstring ptr pstr
+    	dim as zstring ptr id_alias
 
-		'' nested? (namespace or class)
-		if( symbGetNamespace( sym->subtype ) <> NULL ) then
+		'' nested (namespace or class)? open..
+		if( symbGetNamespace( sym ) <> NULL ) then
 			sig += "N"
 		end if
 
-    	sig += *symbGetMangledName( sym->subtype )
+    	'' can't set or use the UDT alias because the debugging
+    	'' symbols, emit_stabs will call GetDBGName() recursively
+    	'' if the UDT types were not emitted yet
+    	id_alias = hMangleCompType( sym->subtype, TRUE, TRUE )
+    	sig += *id_alias
+    	ZStrFree( id_alias )
 
-		'' nested? (namespace or class)
-		if( symbGetNamespace( sym->subtype ) <> NULL ) then
+		'' nested (namespace or class)? close..
+		if( symbGetNamespace( sym ) <> NULL ) then
 			sig += "E"
 		end if
 
@@ -870,10 +885,10 @@ function hGetProcParams _
 end function
 
 '':::::
-private sub hMangleProc  _
+private function hMangleProc  _
 	( _
 		byval sym as FBSYMBOL ptr _
-	) static
+	) as zstring ptr static
 
     dim as zstring ptr prefix_str, nspc_str, id_str, param_str, suffix_str
     dim as integer docpp, prefix_len, nspc_len, id_len, param_len, suffix_len
@@ -883,9 +898,7 @@ private sub hMangleProc  _
 
     docpp = hDoCppMangling( sym, mangling )
 
-    if( docpp ) then
-    	hAbbrevIni( TRUE )
-    end if
+    hAbbrevIni( )
 
     '' prefix
     prefix_len = 0
@@ -897,7 +910,7 @@ private sub hMangleProc  _
     '' namespace
     nspc_len = 0
 	if( docpp ) then
-    	nspc_str = hGetNamespace( sym )
+    	nspc_str = hGetNamespace( sym, TRUE )
     	if(	nspc_str <> NULL ) then
     		nspc_len = len( *nspc_str )
     	end if
@@ -947,10 +960,6 @@ private sub hMangleProc  _
     	suffix_len = len( *suffix_str )
     end if
 
-    if( docpp ) then
-    	hAbbrevEnd( )
-    end if
-
 	'' concat
 	dim as zstring ptr dst, id_alias
 
@@ -979,12 +988,9 @@ private sub hMangleProc  _
 		*dst = *suffix_str
 	end if
 
-	''
-	if( sym->alias <> NULL ) then
-		ZStrFree( sym->alias )
-	end if
+	function = id_alias
 
-	sym->alias = id_alias
+   	hAbbrevEnd( )
 
-end sub
+end function
 
