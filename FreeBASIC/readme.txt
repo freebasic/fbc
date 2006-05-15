@@ -844,6 +844,8 @@ Links:
     - GD: http://www.boutell.com/gd/ or http://gnuwin32.sourceforge.net/packages/gd.htm
 
     - GDSL: http://www.nongnu.org/gdsl/
+    
+    - GIFLIB: http://sourceforge.net/projects/libungif/
 
     - GLFW: http://glfw.sourceforge.net/
 
@@ -892,6 +894,8 @@ Links:
     - SDL: http://www.libsdl.org/ (look under Libraries for SDL_net, SDL_image, SDL_ttf, etc)
 
     - SDL_gfx: http://www.ferzkopp.net/~aschiffler/Software/SDL_gfx-2.0/
+    
+    - SpiderMonkey: http://www.mozilla.org/js/spidermonkey/
 
     - SQLite: http://www.sqlite.org/
 
