@@ -114,6 +114,14 @@ function cSubOrFuncDecl _
 		exit function
 	end if
 
+    '' if inside a namespace, symbols can't contain periods (.)'s
+    if( symbIsGlobalNamespc( ) = FALSE ) then
+    	if( lexGetPeriodPos( ) > 0 ) then
+    		hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
+    		exit function
+    	end if
+    end if
+
 	id = *lexGetText( )
 	dtype = lexGetType( )
 	subtype = NULL

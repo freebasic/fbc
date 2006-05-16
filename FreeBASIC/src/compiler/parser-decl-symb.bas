@@ -51,7 +51,7 @@ end function
 ''				  |   EXTERN IMPORT? SymbolDef ALIAS STR_LIT
 ''                |   STATIC SymbolDef .							// ambiguity w/ STATIC SUB|FUNCTION
 ''
-function cSymbolDecl as integer
+function cSymbolDecl( ) as integer
 	dim as integer attrib, dopreserve, tk
 
 	function = FALSE
@@ -579,6 +579,14 @@ function cSymbolDef _
     		exit function
     	end if
 
+    	'' if inside a namespace, symbols can't contain periods (.)'s
+    	if( symbIsGlobalNamespc( ) = FALSE ) then
+    		if( lexGetPeriodPos( ) > 0 ) then
+    			hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
+    			exit function
+    		end if
+    	end if
+
     	chain_ = cIdentifier( )
 		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 			exit function
@@ -771,8 +779,11 @@ end function
 ''                             (DECL_SEPARATOR Expression (TO Expression)?)*
 ''				      ')' .
 ''
-function cStaticArrayDecl( byref dimensions as integer, _
-						   dTB() as FBARRAYDIM ) as integer
+function cStaticArrayDecl _
+	( _
+		byref dimensions as integer, _
+		dTB() as FBARRAYDIM _
+	) as integer
 
     static as integer i
     static as ASTNODE ptr expr
@@ -864,8 +875,11 @@ end function
 ''                             (DECL_SEPARATOR Expression (TO Expression)?)*
 ''				      ')' .
 ''
-function cArrayDecl( byref dimensions as integer, _
-					 exprTB() as ASTNODE ptr ) as integer
+function cArrayDecl _
+	( _
+		byref dimensions as integer, _
+		exprTB() as ASTNODE ptr _
+	) as integer
 
     dim as integer i
     dim as ASTNODE ptr expr

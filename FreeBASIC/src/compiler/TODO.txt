@@ -1,16 +1,20 @@
+[ ] namespaces:
+    - add a check to decl of overloaded functions from different namespaces when
+      USING is been used
+
+[ ] SCOPE..END SCOPE:
+    - error handlers should be restored too (or not allowed at all)
+
+[ ] every compound statement should start new scope:
+    - that's needed for gcc, scope is very important
+    - will allow "FOR iterator AS datatype = ..."
+    - will break some old or buggy apps that declare implicit vars inside compounds
+      and use them after leaving the stmts, better now than later..
+
 [ ] EXTERN ... END EXTERN
     - C++ mangling needs CONST's to be handled in param attributes:
       - refs and ptrs to constants can't be added unless _POINTER is added
         as a new symbol like with BITFIELD? that will need *a lot* of changes..
-
-[ ] add namespaces:
-    - DIM foo.bar(value) should be allowed outside a "foo" ns only with dynamic
-       arrays, for anything else, don't allow identifiers with namespace specified
-       in declarations
-       - same for all other declarations that use the current symbol like
-         with procs (for overloading and prototypes)
-    - no symbol can contain .'s if declared inside a namespace, must check
-      everything..
 
 [ ] disallow:
 	dim foo as foo | enum foo
@@ -43,15 +47,6 @@
     - must create as CDECL but it doesn't have to be obligatory
     - must support RETURN or FUNCTION = to set the result
     - must check the params if passed byval and if they have the right types
-
-[ ] SCOPE..END SCOPE:
-    - error handlers should be restored too (or not allowed at all)
-
-[ ] every compound statement should start new scope:
-    - that's needed for gcc, scope is very important
-    - will allow "FOR iterator AS datatype = ..."
-    - will break some old or buggy apps that declare implicit vars inside compounds
-      and use them after leaving the stmts, better now than later..
 
 [ ] add the ... subscript when initializing array so
     "dim array(0 to ...) = {1, 2, 3, 4}" could be allowed

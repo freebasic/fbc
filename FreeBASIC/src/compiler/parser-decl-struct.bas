@@ -424,9 +424,11 @@ function cTypeDecl _
 	case FB_TK_TYPE
 		isunion = FALSE
 		lexSkipToken( )
+
 	case FB_TK_UNION
 		isunion = TRUE
 		lexSkipToken( )
+
 	case else
 		exit function
 	end select
@@ -449,10 +451,12 @@ function cTypeDecl _
     	exit function
     end select
 
-    '' contains a period?
-    if( lexGetPeriodPos( ) > 0 ) then
-    	hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
-    	exit function
+    '' if inside a namespace, symbols can't contain periods (.)'s
+    if( symbIsGlobalNamespc( ) = FALSE ) then
+    	if( lexGetPeriodPos( ) > 0 ) then
+    		hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
+    		exit function
+    	end if
     end if
 
 	lexEatToken( @id )
