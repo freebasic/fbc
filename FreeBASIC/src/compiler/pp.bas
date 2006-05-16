@@ -188,10 +188,15 @@ private function ppInclude( ) as integer
 	'' ONCE?
 	isonce = FALSE
 	if( lexGetClass( ) = FB_TKCLASS_IDENTIFIER ) then
-		if( ucase$( *lexGetText( ) ) = "ONCE" ) then
+		if( ucase( *lexGetText( ) ) = "ONCE" ) then
 			lexSkipToken( )
 			isonce = TRUE
 		end if
+	end if
+
+	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
+		hReportError( FB_ERRMSG_SYNTAXERROR )
+		exit function
 	end if
 
 	lexEatToken( incfile )
@@ -204,6 +209,11 @@ end function
 private function ppIncLib( ) as integer
     static as zstring * FB_MAXPATHLEN+1 libfile
 
+	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
+		hReportError( FB_ERRMSG_SYNTAXERROR )
+		return FALSE
+	end if
+
 	lexEatToken( libfile )
 
 	function = symbAddLib( libfile ) <> NULL
@@ -213,6 +223,11 @@ end function
 '':::::
 private function ppLibPath( ) as integer
     static as zstring * FB_MAXPATHLEN+1 path
+
+	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
+		hReportError( FB_ERRMSG_SYNTAXERROR )
+		return FALSE
+	end if
 
 	lexEatToken( path )
 
