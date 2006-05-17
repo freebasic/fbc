@@ -54,12 +54,12 @@ FBCALL int fb_InputShort( short *dst )
 	if( isfp == FALSE )
 	{
 		if( len <= FB_INPUT_MAXINTLEN )
-			*dst = (short)atoi( buffer );
+			*dst = (short)fb_hStr2Int( buffer, len );
 		else
-			*dst = strtoll( buffer, NULL, 10 );
+			*dst = (short)fb_hStr2Longint( buffer, len );
 	}
 	else
-		*dst = (short)rint( strtod( buffer, NULL ) );
+		*dst = (short)rint( fb_hStr2Double( buffer, len ) );
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

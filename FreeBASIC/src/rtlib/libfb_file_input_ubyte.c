@@ -54,12 +54,12 @@ FBCALL int fb_InputUbyte( unsigned char *dst )
 	if( isfp == FALSE )
 	{
 		if( len <= FB_INPUT_MAXINTLEN )
-			*dst = (unsigned char)strtoul( buffer, NULL, 10 );
+			*dst = (unsigned char)fb_hStr2UInt( buffer, len );
 		else
-			*dst = (unsigned char)strtoull( buffer, NULL, 10 );
+			*dst = (unsigned char)fb_hStr2ULongint( buffer, len );
 	}
 	else
-		*dst = (unsigned char)rint( strtod( buffer, NULL ) );
+		*dst = (unsigned char)rint( fb_hStr2Double( buffer, len ) );
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }

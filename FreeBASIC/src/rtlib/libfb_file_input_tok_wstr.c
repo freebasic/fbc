@@ -173,17 +173,15 @@ void fb_FileInputNextTokenWstrEx
 		switch( c )
 		{
 		case _LC('\n'):
-			len = max_chars;						/* exit */
 			skipdelim = FALSE;
-			break;
+			goto exit;
 
 		case _LC('\r'):
 			if( (c = hReadChar( ctx )) != _LC('\n') )
 				hUnreadChar( ctx, c );
 
-			len = max_chars;						/* exit */
 			skipdelim = FALSE;
-			break;
+			goto exit;
 
 		case _LC('"'):
 			if( !isquote )
@@ -199,7 +197,7 @@ void fb_FileInputNextTokenWstrEx
 				if( is_string )
 				{
 					c = hReadChar( ctx );
-					len = max_chars;				/* exit */
+					goto exit;
 				}
 			}
 
@@ -208,9 +206,8 @@ void fb_FileInputNextTokenWstrEx
 		case _LC(','):
 			if( !isquote )
 			{
-				len = max_chars;					/* exit */
 				skipdelim = FALSE;
-				break;
+				goto exit;
 			}
 
 			goto savechar;
@@ -221,8 +218,7 @@ void fb_FileInputNextTokenWstrEx
 			{
 				if( !is_string || !is_last )
 				{
-					len = max_chars;				/* exit */
-					break;
+					goto exit;
 				}
 			}
 
@@ -239,6 +235,7 @@ savechar:
 		c = hReadChar( ctx );
 	}
 
+exit:
 	*buffer = _LC('\0');
 
 	/* skip comma or newline */

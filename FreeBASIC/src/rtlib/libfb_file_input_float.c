@@ -52,9 +52,9 @@ FBCALL int fb_InputSingle( float *dst )
 	if( isfp == FALSE )
 	{
 		if( len <= FB_INPUT_MAXINTLEN )
-			*dst = (float)atoi( buffer );
+			*dst = (float)fb_hStr2Int( buffer, len );
 		else
-			*dst = (float)strtoll( buffer, NULL, 10 );
+			*dst = (float)fb_hStr2Longint( buffer, len );
 	}
 	else
 		*dst = strtof( buffer, NULL );
@@ -73,9 +73,9 @@ FBCALL int fb_InputDouble( double *dst )
 	if( isfp == FALSE )
 	{
 		if( len <= FB_INPUT_MAXINTLEN )
-			*dst = (double)atoi( buffer );
+			*dst = (double)fb_hStr2Int( buffer, len );
 		else
-			*dst = (double)strtoll( buffer, NULL, 10 );
+			*dst = (double)fb_hStr2Longint( buffer, len );
 	}
 	else
 		*dst = strtod( buffer, NULL );

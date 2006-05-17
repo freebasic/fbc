@@ -174,17 +174,15 @@ int fb_FileInputNextTokenEx
 		switch( c )
 		{
 		case '\n':
-			len = max_chars;						/* exit */
 			skipdelim = FALSE;
-			break;
+			goto exit;
 
 		case '\r':
 			if( (c = hReadChar( ctx )) != '\n' )
 				hUnreadChar( ctx, c );
 
-			len = max_chars;						/* exit */
 			skipdelim = FALSE;
-			break;
+			goto exit;
 
 		case '"':
 			if( !isquote )
@@ -200,7 +198,7 @@ int fb_FileInputNextTokenEx
 				if( is_string )
 				{
 					c = hReadChar( ctx );
-					len = max_chars;				/* exit */
+					goto exit;
 				}
 			}
 
@@ -209,9 +207,8 @@ int fb_FileInputNextTokenEx
 		case ',':
 			if( !isquote )
 			{
-				len = max_chars;					/* exit */
 				skipdelim = FALSE;
-				break;
+				goto exit;
 			}
 
 			goto savechar;
@@ -226,8 +223,7 @@ int fb_FileInputNextTokenEx
 			{
 				if( !is_string || !is_last )
 				{
-					len = max_chars;				/* exit */
-					break;
+					goto exit;
 				}
 			}
 
@@ -244,6 +240,7 @@ savechar:
 		c = hReadChar( ctx );
 	}
 
+exit:
 	/* add the null-term */
 	*buffer = '\0';
 

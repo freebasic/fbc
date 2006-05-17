@@ -52,9 +52,9 @@ FBCALL int fb_InputUlongint( unsigned long long *dst )
 	len = fb_FileInputNextToken( buffer, FB_INPUT_MAXNUMERICLEN, FB_FALSE, &isfp );
 
 	if( isfp == FALSE )
-		*dst = strtoull( buffer, NULL, 10 );
+		*dst = fb_hStr2ULongint( buffer, len );
 	else
-		*dst = (unsigned long long)rint( strtod( buffer, NULL ) );
+		*dst = (unsigned long long)rint( fb_hStr2Double( buffer, len ) );
 
 	return fb_ErrorSetNum( FB_RTERROR_OK );
 }
