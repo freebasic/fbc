@@ -105,7 +105,7 @@ sub symbInitSymbols static
 	'' global namespace - not complete, just a mock symbol
     with symb.globnspc.nspc
         symbSymTbInit( @.symtb, NULL )
-		symbHashTbInit( @.hashtb, NULL, FB_INITSYMBOLNODES )
+		symbHashTbInit( @.hashtb, @symb.globnspc, FB_INITSYMBOLNODES )
     	.implist.head = NULL
     	.implist.tail = NULL
     	.next = NULL
@@ -579,7 +579,7 @@ function symbLookup _
 		byval symbol as zstring ptr, _
 		byref id as integer, _
 		byref class as integer, _
-		byval preservecase as integer = FALSE _
+		byval preservecase as integer _
 	) as FBSYMCHAIN ptr static
 
     static as zstring * FB_MAXNAMELEN+1 sname
@@ -625,7 +625,7 @@ function symbLookupAt _
 	( _
 		byval ns as FBSYMBOL ptr, _
 		byval symbol as zstring ptr, _
-		byval preservecase as integer = FALSE _
+		byval preservecase as integer _
 	) as FBSYMCHAIN ptr static
 
     static as zstring * FB_MAXNAMELEN+1 sname
@@ -639,6 +639,58 @@ function symbLookupAt _
     index = hashHash( symbol )
 
     function = hashLookupEx( @ns->nspc.hashtb.tb, symbol, index )
+
+end function
+
+'':::::
+function symbLookupByNameAndClass _
+	( _
+		byval ns as FBSYMBOL ptr, _
+		byval symbol as zstring ptr, _
+	  	byval class as integer, _
+	  	byval preservecase as integer _
+	) as FBSYMBOL ptr static
+
+	dim as FBSYMCHAIN ptr chain_
+
+    chain_ = symbLookupAt( ns, symbol, preservecase )
+
+    '' any found?
+    if( chain_ <> NULL ) then
+    	'' check if classes match
+    	function = symbFindByClass( chain_, class )
+    else
+    	function = NULL
+    end if
+
+end function
+
+'':::::
+function symbLookupByNameAndSuffix _
+	( _
+		byval ns as FBSYMBOL ptr, _
+		byval symbol as zstring ptr, _
+		byval suffix as integer, _
+		byval preservecase as integer _
+	) as FBSYMBOL ptr static
+
+	dim as FBSYMCHAIN ptr chain_
+	dim as integer deftyp
+
+	chain_ = symbLookupAt( ns, symbol, preservecase )
+
+    '' any found?
+    if( chain_ <> NULL ) then
+    	'' get default type if no suffix was given
+    	if( suffix = INVALID ) then
+    		deftyp = hGetDefType( symbol )
+    	end if
+
+		'' check if types match
+		function = symbFindBySuffix( chain_, suffix, deftyp )
+	else
+		function = NULL
+	end if
 
 end function
 
@@ -776,57 +828,6 @@ function symbFindBySuffix _
 	end if
 
 	function = chain_->sym
-
-end function
-
-'':::::
-function symbFindByNameAndClass _
-	( _
-		byval symbol as zstring ptr, _
-	  	byval class as integer, _
-	  	byval preservecase as integer = FALSE _
-	) as FBSYMBOL ptr static
-
-	dim as FBSYMCHAIN ptr chain_
-	dim as integer tkid, tkclass
-
-    chain_ = symbLookup( symbol, tkid, tkclass, preservecase )
-
-    '' any found?
-    if( chain_ <> NULL ) then
-    	'' check if classes match
-    	function = symbFindByClass( chain_, class )
-    else
-    	function = NULL
-    end if
-
-end function
-
-'':::::
-function symbFindByNameAndSuffix _
-	( _
-		byval symbol as zstring ptr, _
-		byval suffix as integer, _
-		byval preservecase as integer = FALSE _
-	) as FBSYMBOL ptr static
-
-	dim as FBSYMCHAIN ptr chain_
-	dim as integer tkid, tkclass, deftyp
-
-	chain_ = symbLookup( symbol, tkid, tkclass, preservecase )
-
-    '' any found?
-    if( chain_ <> NULL ) then
-    	'' get default type if no suffix was given
-    	if( suffix = INVALID ) then
-    		deftyp = hGetDefType( symbol )
-    	end if
-
-		'' check if types match
-		function = symbFindBySuffix( chain_, suffix, deftyp )
-	else
-		function = NULL
-	end if
 
 end function
 
@@ -1244,5 +1245,4 @@ function symbIsEqual _
     end if
 
 end function
-
 

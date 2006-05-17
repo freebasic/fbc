@@ -99,7 +99,7 @@ function cNegNotExpression _
 		return TRUE
 	end select
 
-	function = cHighestPrecExpr( negexpr )
+	function = cHighestPrecExpr( NULL, negexpr )
 
 end function
 
@@ -115,6 +115,7 @@ end function
 ''
 function cHighestPrecExpr _
 	( _
+		byval chain_ as FBSYMCHAIN ptr, _
 		byref highexpr as ASTNODE ptr _
 	) as integer
 
@@ -163,7 +164,7 @@ function cHighestPrecExpr _
 
 		'' Atom
 		case else
-			return cAtom( highexpr )
+			return cAtom( chain_, highexpr )
 
 		end select
 
@@ -255,7 +256,7 @@ function cAnonUDT _
     sym = symbAddTempVar( FB_DATATYPE_USERDEF, subtype, FALSE, FALSE )
 
     '' let the initializer do the rest..
-    expr = cSymbolInit( sym, FALSE )
+    expr = cVariableInit( sym, FALSE )
 
     symbDelVar( sym )
 
@@ -438,7 +439,7 @@ function cDerefExpression _
 	loop while( lexGetToken( ) = FB_TK_DEREFCHAR )
 
 	'' HighestPresExpr
-	if( cHighestPrecExpr( derefexpr ) = FALSE ) then
+	if( cHighestPrecExpr( NULL, derefexpr ) = FALSE ) then
         hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
         exit function
 	end if
@@ -507,12 +508,13 @@ end function
 '':::::
 private function hVarPtrBody _
 	( _
+		byval chain_ as FBSYMCHAIN ptr, _
 		byref addrofexpr as ASTNODE ptr _
 	) as integer
 
 	function = FALSE
 
-	if( cHighestPrecExpr( addrofexpr ) = FALSE ) then
+	if( cHighestPrecExpr( chain_, addrofexpr ) = FALSE ) then
 		exit function
 	end if
 
@@ -574,7 +576,7 @@ function cAddrOfExpression _
 			end if
         end if
 
-		return hVarPtrBody( addrofexpr )
+		return hVarPtrBody( chain_, addrofexpr )
 	end if
 
 	select case as const lexGetToken( )
@@ -588,7 +590,7 @@ function cAddrOfExpression _
 			exit function
 		end if
 
-		if( hVarPtrBody( addrofexpr ) = FALSE ) then
+		if( hVarPtrBody( NULL, addrofexpr ) = FALSE ) then
 			exit function
 		end if
 

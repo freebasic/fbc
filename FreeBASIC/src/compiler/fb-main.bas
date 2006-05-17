@@ -46,12 +46,14 @@ const fbdllreason = "__FB_DLLREASON__"
 	'' instance
 	symbAddProcParam( proc, "__FB_DLLINSTANCE__", _
 					  FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, 1, _
-					  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, INVALID, FALSE, NULL )
+					  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, _
+					  INVALID, FALSE, NULL )
 
 	'' reason
-	symbAddProcParam( proc, fbdllreason, _
-					  FB_DATATYPE_UINT, NULL, 0, _
-					  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, INVALID, FALSE, NULL )
+	param = symbAddProcParam( proc, fbdllreason, _
+					  		  FB_DATATYPE_UINT, NULL, 0, _
+					  		  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, _
+					  		  INVALID, FALSE, NULL )
 
 	'' reserved
 	symbAddProcParam( proc, "__FB_DLLRESERVED__", _
@@ -73,13 +75,13 @@ const fbdllreason = "__FB_DLLREASON__"
    	astAdd( astNewLABEL( astGetProcInitlabel( procnode ) ) )
 
    	'' function = TRUE
-   	astAdd( astNewASSIGN( astNewVAR( symbLookupProcResult( proc ), _
+   	astAdd( astNewASSIGN( astNewVAR( symbGetProcResult( proc ), _
    									 0, symbGetType( proc ) ), _
    						  astNewCONSTi( 1, symbGetType( proc ) ) ) )
 
 	'' if( reason = DLL_PROCESS_ATTACH ) then
 
-	param = symbFindByNameAndClass( fbdllreason, FB_SYMBCLASS_VAR )
+	param = symbGetParamVar( param )
 	reason = astNewVAR( param, 0, symbGetType( param ) )
 	label = symbAddLabel( NULL )
 	astAdd( astNewBOP( AST_OP_NE, reason, astNewCONSTi( 1, FB_DATATYPE_UINT ), label, FALSE ) )
@@ -114,14 +116,16 @@ const fbargv = "__FB_ARGV__"
 	proc = symbPreAddProc( NULL )
 
 	'' argc
-	symbAddProcParam( proc, fbargc, _
-					  FB_DATATYPE_INTEGER, NULL, 0, _
-					  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, INVALID, FALSE, NULL )
+	env.main.argc = symbAddProcParam( proc, fbargc, _
+					  			   	  FB_DATATYPE_INTEGER, NULL, 0, _
+					  				  FB_INTEGERSIZE, FB_PARAMMODE_BYVAL, _
+					  				  INVALID, FALSE, NULL )
 
 	'' argv
-	symbAddProcParam( proc, fbargv, _
-					  FB_DATATYPE_POINTER+FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, NULL, 2, _
-					  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, INVALID, FALSE, NULL )
+	env.main.argv = symbAddProcParam( proc, fbargv, _
+					  				  FB_DATATYPE_POINTER+FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, NULL, 2, _
+					  				  FB_POINTERSIZE, FB_PARAMMODE_BYVAL, _
+					  				  INVALID, FALSE, NULL )
 
 	''
 	if( isdllmain = FALSE ) then
@@ -141,8 +145,8 @@ const fbargv = "__FB_ARGV__"
 
     symbSetProcIncFile( env.main.proc, NULL )
 
-	env.main.argc = symbFindByNameAndClass( fbargc, FB_SYMBCLASS_VAR )
-	env.main.argv = symbFindByNameAndClass( fbargv, FB_SYMBCLASS_VAR )
+	env.main.argc = symbGetParamVar( env.main.argc )
+	env.main.argv = symbGetParamVar( env.main.argv )
 
 	''
     dim as ASTNODE ptr argc, argv
@@ -211,7 +215,9 @@ private sub hMainEnd _
 
     '' set default data label (def label isn't global as it could clash with other
     '' modules, so DataRestore alone can't figure out where to start)
-    if( symbFindByNameAndClass( FB_DATALABELNAME, FB_SYMBCLASS_LABEL ) <> NULL ) then
+    if( symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
+    							  FB_DATALABELNAME, _
+    							  FB_SYMBCLASS_LABEL ) <> NULL ) then
     	rtlDataRestore( NULL, env.main.initnode, TRUE )
     end if
 

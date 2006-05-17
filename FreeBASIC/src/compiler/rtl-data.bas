@@ -295,7 +295,8 @@ function rtlDataRestore( byval label as FBSYMBOL ptr, _
     end if
 
     '' label already declared?
-    s = symbFindByNameAndClass( @lname, FB_SYMBCLASS_LABEL )
+    s = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
+    							  @lname, FB_SYMBCLASS_LABEL )
     if( s = NULL ) then
        	s = symbAddLabel( @lname, TRUE, TRUE )
     end if
@@ -327,14 +328,16 @@ sub rtlDataStoreBegin static
 
 	'' emit default label if not yet emited (also if DATA's are
 	'' been used inside procs, the label will get removed)
-	l = symbFindByNameAndClass( strptr( FB_DATALABELNAME ), FB_SYMBCLASS_LABEL )
+	l = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
+								  @FB_DATALABELNAME, FB_SYMBCLASS_LABEL )
 
 	if( (l = NULL) or (ctx.datainited = FALSE) ) then
 		ctx.datainited = TRUE
 
 		l = symbAddLabel( strptr( FB_DATALABELNAME ), TRUE, TRUE )
 		if( l = NULL ) then
-			l = symbFindByNameAndClass( strptr( FB_DATALABELNAME ), FB_SYMBCLASS_LABEL )
+			l = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
+										  @FB_DATALABELNAME, FB_SYMBCLASS_LABEL )
 		end if
 
 		lname = *symbGetMangledName( l )
@@ -347,7 +350,8 @@ sub rtlDataStoreBegin static
 	if( label <> NULL ) then
     	''
     	lname = FB_DATALABELPREFIX + *symbGetMangledName( label )
-    	l = symbFindByNameAndClass( @lname, FB_SYMBCLASS_LABEL )
+    	l = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
+    								  @lname, FB_SYMBCLASS_LABEL )
     	if( l = NULL ) then
        		l = symbAddLabel( @lname, TRUE, TRUE )
     	end if
@@ -366,8 +370,9 @@ sub rtlDataStoreBegin static
     	emitDATALABEL( lname )
 
     else
-    	symbSetLastLabel( symbFindByNameAndClass( strptr( FB_DATALABELNAME ), _
-    											  FB_SYMBCLASS_LABEL ) )
+    	symbSetLastLabel( symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
+    												@FB_DATALABELNAME, _
+    											  	FB_SYMBCLASS_LABEL ) )
     end if
 
 	'' emit will link the last DATA with this one if any exists

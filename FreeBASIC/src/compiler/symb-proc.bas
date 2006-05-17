@@ -408,7 +408,8 @@ private function hSetupProc _
 
     realtype = hGetProcRealType( dtype, subtype )
 
-    lgt = hCalcProcParamsLen( symbGetProcParams( sym ), symbGetProcTailParam( sym ) )
+    lgt = hCalcProcParamsLen( symbGetProcParams( sym ), _
+    						  symbGetProcTailParam( sym ) )
 
     '' no explict alias?
     if( id_alias = NULL ) then
@@ -432,7 +433,10 @@ private function hSetupProc _
 	'' dup def?
 	if( proc = NULL ) then
 		'' is the dup a proc symbol?
-		parent = symbFindByNameAndClass( id, FB_SYMBCLASS_PROC, preservecase )
+		parent = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
+										   id, _
+										   FB_SYMBCLASS_PROC, _
+										   preservecase )
 		if( parent = NULL ) then
 			exit function
 		end if
@@ -443,7 +447,9 @@ private function hSetupProc _
 		end if
 
 		'' try to overload..
-		proc = hAddOvlProc( sym, parent, id, id_alias, dtype, subtype, ptrcnt, preservecase )
+		proc = hAddOvlProc( sym, parent, id, id_alias, _
+							dtype, subtype, ptrcnt, _
+							preservecase )
 		if( proc = NULL ) then
 			exit function
 		end if
@@ -486,7 +492,7 @@ private function hSetupProc _
 	end if
 
 	'' if overloading, update the linked-list
-	if( (attrib and FB_SYMBATTRIB_OVERLOADED) > 0 ) then
+	if( (attrib and FB_SYMBATTRIB_OVERLOADED) <> 0 ) then
 		if( parent <> NULL ) then
 			proc->proc.ovl.next = parent->proc.ovl.next
 			parent->proc.ovl.next = proc
@@ -500,7 +506,8 @@ private function hSetupProc _
 		end if
 
 	'' ctor or dtor? even if private it should be always emitted
-	elseif( (attrib and (FB_SYMBATTRIB_CONSTRUCTOR or FB_SYMBATTRIB_DESTRUCTOR)) > 0 ) then
+	elseif( (attrib and (FB_SYMBATTRIB_CONSTRUCTOR or _
+						 FB_SYMBATTRIB_DESTRUCTOR)) <> 0 ) then
 		symbSetIsCalled( proc )
 	end if
 
@@ -517,8 +524,8 @@ end function
 function symbAddPrototype _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval symbol as zstring ptr, _
-		byval aliasname as zstring ptr, _
+		byval id as zstring ptr, _
+		byval id_alias as zstring ptr, _
 		byval libname as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
@@ -531,7 +538,7 @@ function symbAddPrototype _
 
     function = NULL
 
-	proc = hSetupProc( proc, symbol, aliasname, libname, _
+	proc = hSetupProc( proc, id, id_alias, libname, _
 					   dtype, subtype, ptrcnt, _
 					   attrib, mode, isexternal, preservecase )
 	if( proc = NULL ) then
@@ -546,8 +553,8 @@ end function
 function symbAddProc _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval symbol as zstring ptr, _
-		byval aliasname as zstring ptr, _
+		byval id as zstring ptr, _
+		byval id_alias as zstring ptr, _
 		byval libname as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
@@ -558,7 +565,7 @@ function symbAddProc _
 
     function = NULL
 
-	proc = hSetupProc( proc, symbol, aliasname, libname, _
+	proc = hSetupProc( proc, id, id_alias, libname, _
 					   dtype, subtype, ptrcnt, _
 					   attrib, mode, TRUE, FALSE )
 	if( proc = NULL ) then
@@ -628,15 +635,9 @@ function symbAddParam _
     	exit function
 	end select
 
-    s = symbAddVarEx( symbol, NULL, dtype, param->subtype, 0, 0, _
-    				  0, dTB(), attrib, _
-    				  param->param.suffix <> INVALID, FALSE )
-
-    if( s = NULL ) then
-    	exit function
-    end if
-
-	function = s
+    function = symbAddVarEx( symbol, NULL, dtype, param->subtype, 0, 0, _
+    				  		 0, dTB(), attrib, _
+    				  		 param->param.suffix <> INVALID, FALSE )
 
 end function
 
@@ -668,6 +669,13 @@ function symbAddProcResultParam _
     				  0, dTB(), FB_SYMBATTRIB_PARAMBYVAL, _
     				  TRUE, TRUE )
 
+
+	if( proc->proc.ext = NULL ) then
+		proc->proc.ext = callocate( len( FB_PROCEXT ) )
+	end if
+
+	proc->proc.ext->res = s
+
 	function = s
 
 end function
@@ -687,7 +695,7 @@ function symbAddProcResult _
 	if( proc->typ = FB_DATATYPE_USERDEF ) then
 		'' returning a ptr? result is at the hidden arg
 		if( proc->proc.realtype = FB_DATATYPE_POINTER+FB_DATATYPE_USERDEF ) then
-			return symbLookupProcResult( proc )
+			return symbGetProcResult( proc )
 		end if
 	end if
 
@@ -696,6 +704,12 @@ function symbAddProcResult _
 
 	s = symbAddVarEx( @id, NULL, proc->typ, proc->subtype, 0, 0, 0, _
 					  dTB(), FB_SYMBATTRIB_FUNCRESULT, TRUE, TRUE )
+
+	if( proc->proc.ext = NULL ) then
+		proc->proc.ext = callocate( len( FB_PROCEXT ) )
+	end if
+
+	proc->proc.ext->res = s
 
 	function = s
 
@@ -753,25 +767,6 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' lookup
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'':::::
-function symbLookupProcResult _
-	( _
-		byval proc as FBSYMBOL ptr _
-	) as FBSYMBOL ptr static
-
-	static as zstring * FB_MAXINTNAMELEN+1 id
-
-	if( proc = NULL ) then
-		return NULL
-	end if
-
-	id = FBPREFIX_PROCRES
-	id += *proc->name
-
-	function = symbFindByNameAndClass( @id, FB_SYMBCLASS_VAR, TRUE )
-
-end function
 
 '':::::
 function symbFindOverloadProc _
@@ -1279,6 +1274,26 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' misc
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+'':::::
+function symbGetProcResult _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as FBSYMBOL ptr static
+
+	static as zstring * FB_MAXINTNAMELEN+1 id
+
+	if( proc = NULL ) then
+		return NULL
+	end if
+
+	if( proc->proc.ext = NULL ) then
+		return NULL
+	end if
+
+	function = proc->proc.ext->res
+
+end function
 
 '':::::
 function symbCalcParamLen _

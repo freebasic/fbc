@@ -76,6 +76,7 @@ end function
 ''
 function cAtom _
 	( _
+		byval chain_ as FBSYMCHAIN ptr, _
 		byref atom as ASTNODE ptr _
 	) as integer
 
@@ -87,9 +88,11 @@ function cAtom _
 
   	case FB_TKCLASS_IDENTIFIER
     	dim as FBSYMBOL ptr sym
-    	dim as FBSYMCHAIN ptr chain_
 
-  		chain_ = cIdentifier( )
+  		if( chain_ = NULL ) then
+  			chain_ = cIdentifier( )
+  		end if
+
     	if( chain_ <> NULL ) then
     		do
     			sym = chain_->sym

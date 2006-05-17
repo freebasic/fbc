@@ -123,10 +123,10 @@ function cNamespaceStmtBegin _
 						 					 and (not FB_CMPSTMT_MASK_DATA) )
 
 	stk->nspc.lastsymtb = symbGetCurrentSymTb( )
-	symbSetCurrentSymTb( @sym->nspc.symtb )
+	symbSetCurrentSymTb( @symbGetNamespaceTb( sym ) )
 
 	stk->nspc.lasthashtb = symbGetCurrentHashTb( )
-	symbSetCurrentHashTb( @sym->nspc.hashtb )
+	symbSetCurrentHashTb( @symbGetNamespaceHashTb( sym ) )
 
 	stk->nspc.lastns = symbGetCurrentNamespc( )
 	symbSetCurrentNamespc( sym )

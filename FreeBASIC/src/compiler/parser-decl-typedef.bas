@@ -39,7 +39,7 @@ function cTypedefDecl _
     static as zstring * FB_MAXNAMELEN+1 id, tname
     dim as zstring ptr ptname
     dim as integer dtype, lgt, ptrcnt, isfwd, ismult
-    dim as FBSYMBOL ptr subtype
+    dim as FBSYMBOL ptr ns, subtype
 
     function = FALSE
 
@@ -92,6 +92,19 @@ function cTypedefDecl _
     			exit function
 		    end select
 
+			'' don't allow explicit namespaces
+			ns = cNamespace( )
+    		if( ns <> NULL ) then
+				if( ns <> symbGetCurrentNamespc( ) ) then
+					hReportError( FB_ERRMSG_DECLOUTSIDENAMESPC )
+					exit function
+    			end if
+    		else
+    			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+    				exit function
+    			end if
+    		end if
+
     		'' if inside a namespace, symbols can't contain periods (.)'s
     		if( symbIsGlobalNamespc( ) = FALSE ) then
     			if( lexGetPeriodPos( ) > 0 ) then
@@ -120,7 +133,9 @@ function cTypedefDecl _
     			subtype = symbAddFwdRef( ptname )
 				lgt = -1
 				if( subtype = NULL ) then
-					subtype = symbFindByNameAndClass( ptname, FB_SYMBCLASS_FWDREF )
+					subtype = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
+														ptname, _
+														FB_SYMBCLASS_FWDREF )
 					if( subtype = NULL ) then
 						hReportError( FB_ERRMSG_DUPDEFINITION )
 						exit function
@@ -158,7 +173,8 @@ function cTypedefDecl _
 			isdup = TRUE
 
 			dim as FBSYMBOL ptr sym
-			sym = symbFindByNameAndClass( pid, FB_SYMBCLASS_TYPEDEF )
+			sym = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
+											pid, FB_SYMBCLASS_TYPEDEF )
 
 			if( sym <> NULL ) then
 				if( symbGetType( sym ) = dtype ) then

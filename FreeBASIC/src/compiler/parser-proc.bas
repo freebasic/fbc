@@ -145,15 +145,41 @@ function cSubOrFuncHeader _
 	function = NULL
 
 	'' ID
+	chain_ = cIdentifier( TRUE )
+
+    '' symbol found?
+    if( chain_ <> NULL ) then
+    	'' proc?
+    	sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
+    	if( sym <> NULL ) then
+    		'' from a different namespace?
+    		if( symbGetNamespace( sym ) <> symbGetCurrentNamespc( ) ) then
+    			'' allow dups if not the global ns
+    			if( symbIsGlobalNamespc( ) = FALSE ) then
+    				sym = NULL
+    			end if
+    		end if
+    	end if
+
+    else
+		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+			exit function
+		end if
+    	sym = NULL
+    end if
+
 	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
 		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		exit function
 	end if
 
-	chain_ = cIdentifier( )
-	if( hGetLastError( ) <> FB_ERRMSG_OK ) then
-		exit function
-	end if
+    '' if inside a namespace, symbols can't contain periods (.)'s
+    if( symbIsGlobalNamespc( ) = FALSE ) then
+    	if( lexGetPeriodPos( ) > 0 ) then
+    		hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
+    		exit function
+    	end if
+    end if
 
 	id = *lexGetText( )
 	dtype = lexGetType( )
@@ -283,14 +309,6 @@ function cSubOrFuncHeader _
 	if( dtype = INVALID ) then
 		dtype = hGetDefType( id )
 	end if
-
-    '' symbol found?
-    if( chain_ <> NULL ) then
-    	'' any proc?
-    	sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
-    else
-    	sym = NULL
-    end if
 
     if( sym = NULL ) then
     	proc = symbAddProc( proc, @id, palias, NULL, _

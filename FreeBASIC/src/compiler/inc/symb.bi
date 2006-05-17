@@ -270,6 +270,7 @@ end type
 type FBS_PARAM
 	mode			as FB_PARAMMODE
 	suffix			as integer					'' QB quirk..
+	var				as FBSYMBOL_ ptr			'' link to decl var in func bodies
 	optional		as integer
 	optexpr			as ASTNODE_ ptr				'' default value
 end type
@@ -294,6 +295,7 @@ type FB_PROCDBG
 end type
 
 type FB_PROCEXT
+	res				as FBSYMBOL_ ptr			'' result, if any
 	stk				as FB_PROCSTK 				'' to keep track of the stack frame
 	dbg				as FB_PROCDBG 				'' debugging
 end type
@@ -312,7 +314,7 @@ type FBS_PROC
 	rtl				as FB_PROCRTL
 	ovl				as FB_PROCOVL				'' overloading
 	symtb			as FBSYMBOLTB				'' local symbols table
-	ext				as FB_PROCEXT ptr           '' extra stuff, not used with prototypes
+	ext				as FB_PROCEXT ptr           '' extra fields, not used with prototypes
 end type
 
 type FB_SCOPEDBG
@@ -501,13 +503,15 @@ declare function 	symbFindBySuffix		( _
 						   					  	byval deftyp as integer _
 											) as FBSYMBOL ptr
 
-declare function 	symbFindByNameAndClass	( _
+declare function 	symbLookupByNameAndClass( _
+												byval ns as FBSYMBOL ptr, _
 												byval symbol as zstring ptr, _
 												byval class as integer, _
 												byval preservecase as integer = FALSE _
 											) as FBSYMBOL ptr
 
-declare function 	symbFindByNameAndSuffix	( _
+declare function 	symbLookupByNameAndSuffix( _
+												byval ns as FBSYMBOL ptr, _
 												byval symbol as zstring ptr, _
 												byval suffix as integer, _
 												byval preservecase as integer = FALSE _
@@ -530,8 +534,8 @@ declare function 	symbLookupUDTElm		( _
 						   					  	byval id as zstring ptr _
 											) as FBSYMBOL ptr
 
-declare function 	symbLookupProcResult	( _
-												byval f as FBSYMBOL ptr _
+declare function 	symbGetProcResult		( _
+												byval proc as FBSYMBOL ptr _
 											) as FBSYMBOL ptr
 
 declare function 	symbGetUDTLen			( _
@@ -544,7 +548,7 @@ declare function 	symbGetConstValueAsStr	( _
 											) as string
 
 declare function 	symbCalcParamLen		( _
-												byval typ as integer, _
+												byval dtype as integer, _
 												byval subtype as FBSYMBOL ptr, _
 												byval mode as integer _
 											) as integer
@@ -1044,13 +1048,15 @@ declare sub 		symbSetName 			( _
 '' getters and setters as macros
 ''
 
-#define symbIsGlobalNamespc( ) (symb.namespc = @symb.globnspc)
+#define symbGetGlobalNamespc( ) symb.globnspc
 
-#define symbGetGlobalTb( ) symb.globnspc.nspc.symtb
+#define symbIsGlobalNamespc( ) (symb.namespc = @symbGetGlobalNamespc( ))
+
+#define symbGetGlobalTb( ) symbGetGlobalNamespc( ).nspc.symtb
 
 #define symbGetGlobalTbHead( ) symbGetGlobalTb( ).head
 
-#define symbGetGlobalHashTb( ) symb.globnspc.nspc.hashtb
+#define symbGetGlobalHashTb( ) symbGetGlobalNamespc( ).nspc.hashtb
 
 #define symbGetCurrentNamespc( ) symb.namespc
 
@@ -1310,6 +1316,8 @@ declare sub 		symbSetName 			( _
 #define symbGetProcLocTbHead(f) f->proc.symtb.head
 
 #define symbGetParamMode(a) a->param.mode
+
+#define symbGetParamVar(a) a->param.var
 
 #define symbGetParamOptional(a) a->param.optional
 

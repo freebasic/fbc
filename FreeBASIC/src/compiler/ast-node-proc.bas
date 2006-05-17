@@ -89,7 +89,10 @@ private function hNewProcNode(  ) as ASTNODE ptr static
 end function
 
 '':::::
-private sub hDelProcNode( byval n as ASTNODE ptr ) static
+private sub hDelProcNode _
+	( _
+		byval n as ASTNODE ptr _
+	) static
 
 	n->l = NULL
 	n->r = NULL
@@ -112,9 +115,11 @@ private sub hDelProcNode( byval n as ASTNODE ptr ) static
 end sub
 
 ''::::
-private sub hProcFlush( byval p as ASTNODE ptr, _
-						byval doemit as integer _
-					  ) static
+private sub hProcFlush _
+	( _
+		byval p as ASTNODE ptr, _
+		byval doemit as integer _
+	) static
 
     dim as ASTNODE ptr n, nxt, prv
     dim as ASTNODE tmp
@@ -230,7 +235,10 @@ private sub hProcFlushAll( ) static
 end sub
 
 ''::::
-sub astAdd( byval n as ASTNODE ptr ) static
+sub astAdd _
+	( _
+		byval n as ASTNODE ptr _
+	) static
 
 	if( n = NULL ) then
 		exit sub
@@ -253,9 +261,11 @@ sub astAdd( byval n as ASTNODE ptr ) static
 end sub
 
 ''::::
-sub astAddAfter( byval n as ASTNODE ptr, _
-				 byval p as ASTNODE ptr _
-			   ) static
+sub astAddAfter _
+	( _
+		byval n as ASTNODE ptr, _
+		byval p as ASTNODE ptr _
+	) static
 
 	if( (p = NULL) or (n = NULL) ) then
 		exit sub
@@ -277,9 +287,11 @@ sub astAddAfter( byval n as ASTNODE ptr, _
 end sub
 
 ''::::
-sub astAddBefore( byval n as ASTNODE ptr, _
-				  byval p as ASTNODE ptr _
-			  	) static
+sub astAddBefore _
+	( _
+		byval n as ASTNODE ptr, _
+		byval p as ASTNODE ptr _
+	) static
 
 	if( (p = NULL) or (n = NULL) ) then
 		exit sub
@@ -301,11 +313,14 @@ sub astAddBefore( byval n as ASTNODE ptr, _
 end sub
 
 '':::::
-function astProcBegin( byval sym as FBSYMBOL ptr, _
-					   byval ismain as integer _
-					 ) as ASTNODE ptr static
+function astProcBegin _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval ismain as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
+    dim as FBSYMBOL ptr ns
 
 	function = NULL
 
@@ -330,8 +345,26 @@ function astProcBegin( byval sym as FBSYMBOL ptr, _
 	env.scope = iif( ismain, FB_MAINSCOPE, FB_MAINSCOPE+1 )
 	env.currproc = sym
 	env.currblock = sym
+
 	ast.proc.oldsymtb = symbGetCurrentSymTb( )
 	symbSetCurrentSymTb( @sym->proc.symtb )
+
+	'' proc body can be declared outside the original namespace
+	'' if the prototype was declared inside one (as in C++), so
+	'' change the hashtb too
+	ns = symbGetNamespace( sym )
+	if( ns <> symbGetCurrentNamespc( ) ) then
+		ast.proc.oldns = symbGetCurrentNamespc( )
+		symbSetCurrentNamespc( ns )
+
+		ast.proc.oldhashtb = symbGetCurrentHashTb( )
+		symbSetCurrentHashTb( @symbGetNamespaceHashTb( ns ) )
+
+		symbHashListAdd( @symbGetNamespaceHashTb( ns ) )
+
+	else
+		ast.proc.oldns = NULL
+	end if
 
 	'' add init and exit labels (see the note in the top,
 	'' procs don't create an implicit scope block)
@@ -371,9 +404,11 @@ function astProcBegin( byval sym as FBSYMBOL ptr, _
 end function
 
 '':::::
-function astProcEnd( byval n as ASTNODE ptr, _
-			    	 byval callrtexit as integer _
-			       ) as integer static
+function astProcEnd _
+	( _
+		byval n as ASTNODE ptr, _
+		byval callrtexit as integer _
+	) as integer static
 
     dim as integer res
     dim as FBSYMBOL ptr sym
@@ -451,6 +486,14 @@ function astProcEnd( byval n as ASTNODE ptr, _
     env.scope = FB_MAINSCOPE
     env.currproc = env.main.proc
     env.currblock = env.main.proc
+
+	'' was the namespace changed? see procBegin()
+	if( ast.proc.oldns <> NULL ) then
+		symbHashListDel( @symbGetNamespaceHashTb( symbGetCurrentNamespc( ) ) )
+		symbSetCurrentHashTb( ast.proc.oldhashtb )
+		symbSetCurrentNamespc( ast.proc.oldns )
+	end if
+
 	symbSetCurrentSymTb( ast.proc.oldsymtb )
 
 	function = res
@@ -458,7 +501,11 @@ function astProcEnd( byval n as ASTNODE ptr, _
 end function
 
 '':::::
-private function hDeclProcParams( byval proc as FBSYMBOL ptr ) as integer static
+private function hDeclProcParams _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as integer static
+
     dim as integer i
     dim as FBSYMBOL ptr p
 
@@ -476,7 +523,8 @@ private function hDeclProcParams( byval proc as FBSYMBOL ptr ) as integer static
 	do while( p <> NULL )
 
 		if( p->param.mode <> FB_PARAMMODE_VARARG ) then
-			if( symbAddParam( symbGetName( p ), p ) = NULL ) then
+			p->param.var = symbAddParam( symbGetName( p ), p )
+			if( p->param.var = NULL ) then
 				hReportParamError( proc, i, NULL, FB_ERRMSG_DUPDEFINITION )
 				exit function
 			end if
@@ -491,12 +539,16 @@ private function hDeclProcParams( byval proc as FBSYMBOL ptr ) as integer static
 end function
 
 '':::::
-private sub hLoadProcResult ( byval proc as FBSYMBOL ptr ) static
+private sub hLoadProcResult _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) static
+
     dim as FBSYMBOL ptr s
     dim as ASTNODE ptr n, t
     dim as integer dtype
 
-	s = symbLookupProcResult( proc )
+	s = symbGetProcResult( proc )
 	dtype = symbGetType( proc )
     n = NULL
 
@@ -524,7 +576,11 @@ private sub hLoadProcResult ( byval proc as FBSYMBOL ptr ) static
 end sub
 
 ''::::
-private function hModLevelIsEmpty( byval p as ASTNODE ptr ) as integer
+private function hModLevelIsEmpty _
+	( _
+		byval p as ASTNODE ptr _
+	) as integer
+
     dim as ASTNODE ptr n, nxt
 
 	'' an empty module-level proc will have just the
@@ -557,7 +613,11 @@ private function hModLevelIsEmpty( byval p as ASTNODE ptr ) as integer
 end function
 
 ''::::
-private sub hModLevelAddRtInit( byval p as ASTNODE ptr )
+private sub hModLevelAddRtInit _
+	( _
+		byval p as ASTNODE ptr _
+	)
+
     dim as ASTNODE ptr n
 
     n = p->l

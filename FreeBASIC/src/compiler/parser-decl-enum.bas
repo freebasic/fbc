@@ -31,11 +31,21 @@ option escape
 '':::
 ''EnumConstDecl     =   ID ('=' ConstExpression)? .
 ''
-function cEnumConstDecl( byval id as zstring ptr, _
-						 byref value as integer ) as integer
+function cEnumConstDecl _
+	( _
+		byval id as zstring ptr, _
+		byref value as integer _
+	) as integer
+
     static as ASTNODE ptr expr
 
 	function = FALSE
+
+    '' contains a period?
+    if( lexGetPeriodPos( ) > 0 ) then
+    	hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
+    	exit function
+    end if
 
 	'' ID
 	*id = *lexGetText( )
@@ -73,7 +83,11 @@ end function
 '':::::
 ''EnumBody      =   (EnumDecl (',' EnumDecl)? Comment? SttSeparator)+ .
 ''
-function cEnumBody( byval s as FBSYMBOL ptr ) as integer
+function cEnumBody _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as integer
+
 	static as zstring * FB_MAXNAMELEN+1 ename
 	dim as integer value
 
@@ -148,10 +162,10 @@ end function
 ''EnumDecl        =   ENUM ID? (ALIAS LITSTR)? Comment? SttSeparator
 ''                        EnumLine+
 ''					  END ENUM .
-function cEnumDecl as integer static
+function cEnumDecl( ) as integer static
     static as zstring * FB_MAXNAMELEN+1 id, id_alias
     dim as zstring ptr palias
-    dim as FBSYMBOL ptr e
+    dim as FBSYMBOL ptr ns, e
 
 	function = FALSE
 
@@ -164,6 +178,19 @@ function cEnumDecl as integer static
 
 	'' ID?
 	if( lexGetClass( ) = FB_TKCLASS_IDENTIFIER ) then
+		'' don't allow explicit namespaces
+		ns = cNamespace( )
+    	if( ns <> NULL ) then
+			if( ns <> symbGetCurrentNamespc( ) ) then
+				hReportError( FB_ERRMSG_DECLOUTSIDENAMESPC )
+				exit function
+    		end if
+    	else
+    		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+    			exit function
+    		end if
+    	end if
+
     	'' contains a period?
     	if( lexGetPeriodPos( ) > 0 ) then
     		hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
@@ -215,6 +242,7 @@ function cEnumDecl as integer static
     	hReportError( FB_ERRMSG_EXPECTEDENDENUM )
     	exit function
 	end if
+
 	if( hMatch( FB_TK_ENUM ) = FALSE ) then
     	hReportError( FB_ERRMSG_EXPECTEDENDENUM )
     	exit function

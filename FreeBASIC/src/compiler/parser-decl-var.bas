@@ -16,7 +16,7 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
 
-'' symbol declarations (DIM, REDIM, COMMON, EXTERN or STATIC)
+'' variable declarations (DIM, REDIM, COMMON, EXTERN or STATIC)
 ''
 '' chng: sep/2004 written [v1ctor]
 
@@ -28,6 +28,13 @@ option escape
 #include once "inc\parser.bi"
 #include once "inc\rtl.bi"
 #include once "inc\ast.bi"
+
+declare function 	hVarDecl 				( _
+												byval attrib as integer, _
+												byval dopreserve as integer, _
+                                              	byval token as integer _
+											) as integer
+
 
 '':::::
 private function hCheckScope( ) as integer
@@ -47,11 +54,11 @@ private function hCheckScope( ) as integer
 end function
 
 '':::::
-''SymbolDecl      =   (REDIM PRESERVE?|DIM|COMMON) SHARED? SymbolDef
+''VariableDecl    =   (REDIM PRESERVE?|DIM|COMMON) SHARED? SymbolDef
 ''				  |   EXTERN IMPORT? SymbolDef ALIAS STR_LIT
 ''                |   STATIC SymbolDef .							// ambiguity w/ STATIC SUB|FUNCTION
 ''
-function cSymbolDecl( ) as integer
+function cVariableDecl( ) as integer
 	dim as integer attrib, dopreserve, tk
 
 	function = FALSE
@@ -159,7 +166,7 @@ function cSymbolDecl( ) as integer
 	end if
 
 	''
-	function = cSymbolDef( attrib, dopreserve, tk )
+	function = hVarDecl( attrib, dopreserve, tk )
 
 end function
 
@@ -236,6 +243,7 @@ end sub
 '':::::
 private function hDeclExternVar _
 	( _
+		byval ns as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
@@ -249,9 +257,8 @@ private function hDeclExternVar _
 
     function = NULL
 
-    s = symbFindByNameAndSuffix( id, dtype )
+    s = symbLookupByNameAndSuffix( ns, id, dtype )
     if( s <> NULL ) then
-
     	'' no extern?
     	if( symbIsExtern( s ) = FALSE ) then
     		exit function
@@ -260,7 +267,7 @@ private function hDeclExternVar _
     	'' check type
 		if( (dtype <> symbGetType( s )) or _
 			(subtype <> symbGetSubType( s )) ) then
-    		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *id )
+    		hReportErrorEx( FB_ERRMSG_TYPEMISMATCH, *id )
     		exit function
 		end if
 
@@ -270,20 +277,22 @@ private function hDeclExternVar _
     			hReportErrorEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, *id )
     			exit function
     		end if
+
+    	'' static..
     	else
-			if( (attrib and FB_SYMBATTRIB_DYNAMIC) > 0 ) then
+			if( (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0 ) then
     			hReportErrorEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, *id )
     			exit function
     		end if
 
-    		'' no static as local
+    		'' no extern static as local
     		if( hCheckScope( ) = FALSE ) then
 				exit function
 			end if
     	end if
 
     	'' dup extern?
-    	if( (attrib and FB_SYMBATTRIB_EXTERN) > 0 ) then
+    	if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
     		return s
     	end if
 
@@ -306,7 +315,7 @@ private function hDeclExternVar _
 
     else
     	'' dup extern?
-    	if( (attrib and FB_SYMBATTRIB_EXTERN) > 0 ) then
+    	if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
     		exit function
     	end if
 
@@ -317,8 +326,9 @@ private function hDeclExternVar _
 end function
 
 '':::::
-private function hStaticSymbDef _
+private function hDeclStaticVar _
 	( _
+		byval sym as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
 		byval idalias as zstring ptr, _
 		byval dtype as integer, _
@@ -331,24 +341,49 @@ private function hStaticSymbDef _
 		exprTB() as ASTNODE ptr _
 	) as FBSYMBOL ptr static
 
-    dim as FBSYMBOL ptr s
+    dim as FBSYMBOL ptr s, ns
+    dim as integer isextern
     dim as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
+
+    isextern = FALSE
+
+    '' any var already defined?
+    if( sym <> NULL ) then
+		ns = symbGetNamespace( sym )
+        '' different namespaces?
+    	if( ns <> symbGetCurrentNamespc( ) ) then
+    		'' not extern?
+    		if( symbIsExtern( sym ) = FALSE ) then
+    			hReportError( FB_ERRMSG_DECLOUTSIDENAMESPC )
+    			exit function
+    		end if
+    		isextern = TRUE
+    	end if
+
+	else
+		ns = @symbGetGlobalNamespc( )
+    end if
 
     hMakeArrayDimTB( dimensions, exprTB(), dTB() )
 
     attrib and= (not FB_SYMBATTRIB_DYNAMIC)
 
     ''
-    s = symbAddVarEx( id, idalias, dtype, subtype, ptrcnt, _
-    				  lgt, dimensions, dTB(), _
-    				  attrib, addsuffix, FALSE )
+    if( isextern = FALSE ) then
+    	s = symbAddVarEx( id, idalias, dtype, subtype, ptrcnt, _
+    				  	  lgt, dimensions, dTB(), _
+    				  	  attrib, addsuffix, FALSE )
+	else
+		s = NULL
+	end if
 
     if( s = NULL ) then
-    	s = hDeclExternVar( id, dtype, subtype, attrib, _
-    						addsuffix, dimensions, dTB() )
+    	'' check if it's not an extern been declared
+    	s = hDeclExternVar( ns, id, dtype, subtype, attrib, _
+    		  			    addsuffix, dimensions, dTB() )
 
 		if( s = NULL ) then
-    		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *id )
+    		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
     		return NULL
     	end if
 
@@ -371,8 +406,9 @@ private function hStaticSymbDef _
 end function
 
 '':::::
-private function hDynArrayDef _
+private function hDeclDynArray _
 	( _
+		byval sym as FBSYMBOL ptr, _
 		byval id as zstring ptr, _
 		byval idalias as zstring ptr, _
 		byval dtype as integer, _
@@ -387,7 +423,7 @@ private function hDynArrayDef _
 		exprTB() as ASTNODE ptr _
 	) as FBSYMBOL ptr static
 
-    dim as FBSYMBOL ptr s
+    dim as FBSYMBOL ptr s, ns
     dim as integer isrealloc
     dim as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
 
@@ -402,15 +438,21 @@ private function hDynArrayDef _
 
     attrib or= FB_SYMBATTRIB_DYNAMIC
 
+	if( sym <> NULL ) then
+		ns = symbGetNamespace( sym )
+	else
+		ns = @symbGetGlobalNamespc( )
+	end if
+
     ''
   	isrealloc = TRUE
-  	s = symbFindByNameAndSuffix( id, dtype )
+  	s = symbLookupByNameAndSuffix( ns, id, dtype )
    	if( s = NULL ) then
 
    		'' typeless REDIM's?
    		if( istypeless ) then
    			'' try to find a var with the same name
-   			s = symbFindByNameAndClass( id, FB_SYMBCLASS_VAR )
+   			s = symbLookupByNameAndClass( ns, id, FB_SYMBCLASS_VAR )
    			'' copy type
    			if( s <> NULL ) then
    				dtype = symbGetType( s )
@@ -438,7 +480,7 @@ private function hDynArrayDef _
 		if( symbGetIsDynamic( s ) = FALSE ) then
 
    			'' could be an external..
-   			s = hDeclExternVar( id, dtype, subtype, attrib, addsuffix, _
+   			s = hDeclExternVar( ns, id, dtype, subtype, attrib, addsuffix, _
    								dimensions, dTB() )
    			if( s = NULL ) then
    				hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *id )
@@ -449,7 +491,7 @@ private function hDynArrayDef _
 
 			'' external?
 			if( symbIsExtern( s ) ) then
-				if( (attrib and FB_SYMBATTRIB_EXTERN) > 0 ) then
+				if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
    					hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *id )
 					exit function
 				end if
@@ -464,7 +506,7 @@ private function hDynArrayDef _
 	attrib = symbGetAttrib( s )
 
 	'' external? don't do any checks
-	if( (attrib and FB_SYMBATTRIB_EXTERN) > 0 ) then
+	if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
 		return s
 	end if
 
@@ -530,10 +572,10 @@ private function hDynArrayDef _
 end function
 
 '':::::
-''SymbolDef       =   ID ('(' ArrayDecl? ')')? (AS SymbolType)? ('=' VarInitializer)?
+''VarDecl         =   ID ('(' ArrayDecl? ')')? (AS SymbolType)? ('=' VarInitializer)?
 ''                       (',' SymbolDef)* .
 ''
-function cSymbolDef _
+private function hVarDecl _
 	( _
 		byval attrib as integer, _
 		byval dopreserve as integer, _
@@ -541,7 +583,7 @@ function cSymbolDef _
 	) as integer static
 
     static as zstring * FB_MAXNAMELEN+1 id, idalias
-    dim as FBSYMBOL ptr symbol, subtype
+    dim as FBSYMBOL ptr sym, subtype, ns
     dim as FBSYMCHAIN ptr chain_
     dim as integer addsuffix, isdynamic, ismultdecl, istypeless
     dim as integer dtype, lgt, ofs, ptrcnt
@@ -573,6 +615,28 @@ function cSymbolDef _
     end if
 
     do
+    	chain_ = cIdentifier( TRUE )
+		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+			exit function
+		end if
+
+    	'' symbol found?
+    	if( chain_ <> NULL ) then
+    		'' any var?
+    		sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
+    		if( sym <> NULL ) then
+    			'' from a different namespace? (because USING)
+    			if( symbGetNamespace( sym ) <> symbGetCurrentNamespc( ) ) then
+    				'' allow dup, unless it's the global ns (same as in C++)
+    				if( symbIsGlobalNamespc( ) = FALSE ) then
+    					sym = NULL
+    				end if
+    			end if
+    		end if
+    	else
+    		sym = NULL
+    	end if
+
     	'' ID
     	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
     		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
@@ -586,11 +650,6 @@ function cSymbolDef _
     			exit function
     		end if
     	end if
-
-    	chain_ = cIdentifier( )
-		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
 
     	id = *lexGetText( )
     	palias = NULL
@@ -647,10 +706,9 @@ function cSymbolDef _
             '' when the symbol was defined already by a preceeding COMMON
             '' statement, then a DIM will work the same way as a REDIM
             if( token = FB_TK_DIM ) then
-                symbol = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
-                if( symbol <> NULL ) then
-                    if( (symbGetArrayDimensions( symbol ) <> 0) and _
-                      	symbIsCommon( symbol ) ) then
+                if( sym <> NULL ) then
+                    if( (symbGetArrayDimensions( sym ) <> 0) and _
+                      	symbIsCommon( sym ) ) then
                         isdynamic = TRUE
                     end if
                 end if
@@ -719,18 +777,18 @@ function cSymbolDef _
 
     	''
     	if( isdynamic ) then
-    		symbol = hDynArrayDef( id, palias, _
-    							   dtype, subtype, ptrcnt, istypeless, _
-    							   lgt, addsuffix, attrib, dopreserve, _
-    							   dimensions, exprTB() )
+    		sym = hDeclDynArray( sym, id, palias, _
+    							 dtype, subtype, ptrcnt, istypeless, _
+    							 lgt, addsuffix, attrib, dopreserve, _
+    							 dimensions, exprTB() )
     	else
-			symbol = hStaticSymbDef( id, palias, _
-									 dtype, subtype, ptrcnt, _
-    							     lgt, addsuffix, attrib, _
-    							     dimensions, exprTB() )
+			sym = hDeclStaticVar( sym, id, palias, _
+								  dtype, subtype, ptrcnt, _
+    							  lgt, addsuffix, attrib, _
+    							  dimensions, exprTB() )
 		end if
 
-    	if( symbol = NULL ) then
+    	if( sym = NULL ) then
     		exit function
     	end if
 
@@ -740,16 +798,16 @@ function cSymbolDef _
 			lexSkipToken( )
 
         	dim as ASTNODE ptr tree
-        	tree = cSymbolInit( symbol, TRUE )
+        	tree = cVariableInit( sym, TRUE )
         	if( tree = NULL ) then
         		exit function
         	end if
 
         	'' not static or shared?
-        	if( (symbGetAttrib( symbol ) and _
+        	if( (symbGetAttrib( sym ) and _
         		 (FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED)) = 0 ) then
 
-        		astTypeIniFlush( tree, symbol, FALSE, TRUE )
+        		astTypeIniFlush( tree, sym, FALSE, TRUE )
 
         	'' static or shared (includes extern/public), let emit flush it..
         	else
@@ -757,7 +815,7 @@ function cSymbolDef _
         			exit function
         		end if
 
-        		symbSetTypeIniTree( symbol, tree )
+        		symbSetTypeIniTree( sym, tree )
         	end if
 		end select
 
@@ -801,11 +859,11 @@ function cStaticArrayDecl _
     do
     	'' Expression
 		if( cExpression( expr ) = FALSE ) then
-			hReportError FB_ERRMSG_EXPECTEDCONST
+			hReportError( FB_ERRMSG_EXPECTEDCONST )
 			exit function
 		else
 			if( astIsCONST( expr ) = FALSE ) then
-				hReportError FB_ERRMSG_EXPECTEDCONST
+				hReportError( FB_ERRMSG_EXPECTEDCONST )
 				exit function
 			end if
 		end if
@@ -827,11 +885,11 @@ function cStaticArrayDecl _
 
     		'' Expression
 			if( cExpression( expr ) = FALSE ) then
-				hReportError FB_ERRMSG_EXPECTEDCONST
+				hReportError( FB_ERRMSG_EXPECTEDCONST )
 				exit function
 			else
 				if( astIsCONST( expr ) = FALSE ) then
-					hReportError FB_ERRMSG_EXPECTEDCONST
+					hReportError( FB_ERRMSG_EXPECTEDCONST )
 					exit function
 				end if
 			end if
@@ -855,14 +913,14 @@ function cStaticArrayDecl _
     	end if
 
 		if( i >= FB_MAXARRAYDIMS ) then
-			hReportError FB_ERRMSG_TOOMANYDIMENSIONS
+			hReportError( FB_ERRMSG_TOOMANYDIMENSIONS )
 			exit function
 		end if
 	loop
 
 	'' IDX_CLOSE
     if( hMatch( CHAR_RPRNT ) = FALSE ) then
-    	hReportError FB_ERRMSG_EXPECTEDRPRNT
+    	hReportError( FB_ERRMSG_EXPECTEDRPRNT )
     	exit function
     end if
 
@@ -892,7 +950,7 @@ function cArrayDecl _
     do
     	'' Expression
 		if( cExpression( expr ) = FALSE ) then
-			hReportError FB_ERRMSG_EXPECTEDEXPRESSION
+			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
 
@@ -938,7 +996,7 @@ function cArrayDecl _
     	end if
 
 		if( i >= FB_MAXARRAYDIMS ) then
-			hReportError FB_ERRMSG_TOOMANYDIMENSIONS
+			hReportError( FB_ERRMSG_TOOMANYDIMENSIONS )
 			exit function
 		end if
 	loop

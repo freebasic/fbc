@@ -97,7 +97,9 @@ function symbAllocFloatConst _
 	id = "{fbnc}"
 	id += svalue
 
-	s = symbFindByNameAndSuffix( @id, dtype, FALSE )
+	'' preserve case, 'D', 'd', 'E', 'e' will become 'e' in lexer
+	s = symbLookupByNameAndSuffix( @symbGetGlobalNamespc( ), _
+								   @id, dtype, TRUE )
 	if( s <> NULL ) then
 		return s
 	end if
@@ -108,7 +110,7 @@ function symbAllocFloatConst _
 	'' proc, the global symbol tb should be used, so just one constant
 	'' will be ever allocated over the module
 	s = symbAddVarEx( @id, @id_alias, dtype, NULL, 0, 0, 0, dTB(), _
-					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, TRUE, FALSE )
+					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, TRUE, TRUE )
 
 	''
 	s->var.littext = ZstrAllocate( len( svalue ) )
@@ -147,7 +149,8 @@ function symbAllocStrConst _
 	end if
 
 	''
-	s = symbFindByNameAndClass( @id, FB_SYMBCLASS_VAR, TRUE )
+	s = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
+								  @id, FB_SYMBCLASS_VAR, TRUE )
 	if( s <> NULL ) then
 		return s
 	end if
@@ -199,7 +202,8 @@ function symbAllocWStrConst _
 	end if
 
 	''
-	s = symbFindByNameAndClass( @id, FB_SYMBCLASS_VAR, TRUE )
+	s = symbLookupByNameAndClass( @symbGetGlobalNamespc( ), _
+								  @id, FB_SYMBCLASS_VAR, TRUE )
 	if( s <> NULL ) then
 		return s
 	end if

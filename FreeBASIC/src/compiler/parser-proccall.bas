@@ -38,7 +38,7 @@ function hAssignFunctResult( byval proc as FBSYMBOL ptr _
 
     function = FALSE
 
-    s = symbLookupProcResult( proc )
+    s = symbGetProcResult( proc )
     if( s = NULL ) then
     	hReportError( FB_ERRMSG_SYNTAXERROR )
     	exit function
@@ -228,7 +228,7 @@ end function
 ''
 function cProcCallOrAssign as integer
 	dim as FBSYMBOL ptr s
-	dim as ASTNODE ptr procexpr
+	dim as ASTNODE ptr expr
 	dim as integer dtype
 	dim as FBSYMCHAIN ptr chain_
 
@@ -256,12 +256,12 @@ function cProcCallOrAssign as integer
 		end if
 
 		lexSkipToken( )
-		if( cProcCall( s, procexpr, NULL, TRUE ) = FALSE ) then
+		if( cProcCall( s, expr, NULL, TRUE ) = FALSE ) then
 			exit function
 		end if
 
 		'' can't assign deref'ed functions with CALL's
-		if( procexpr <> NULL ) then
+		if( expr <> NULL ) then
 			hReportError( FB_ERRMSG_SYNTAXERROR )
 			exit function
 		end if
@@ -276,39 +276,56 @@ function cProcCallOrAssign as integer
 			exit function
 		end if
 
-		s = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
-		if( s <> NULL ) then
-    		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
-    			exit function
-    		end if
+    	do while( chain_ <> NULL )
 
-			lexSkipToken( )
+    		s = chain_->sym
+    		select case symbGetClass( s )
+    		'' proc?
+    		case FB_SYMBCLASS_PROC
+    			if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+	   				exit function
+    			end if
 
-			'' ID ProcParamList?
-			if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
-				if( cProcCall( s, procexpr, NULL ) = FALSE ) then
-					exit function
+				lexSkipToken( )
+
+				'' ID ProcParamList?
+				if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+					if( cProcCall( s, expr, NULL ) = FALSE ) then
+						exit function
+					end if
+
+					'' assignment of a function deref?
+					if( expr <> NULL ) then
+						return cAssignment( expr )
+           			end if
+
+           			return TRUE
+
+				'' ID '=' Expression
+				else
+               		'' check if name is valid (or if overloaded)
+					if( symbIsProcOverloadOf( env.currproc, s ) = FALSE ) then
+						hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB, TRUE )
+						exit function
+					end if
+
+        			return hAssignFunctResult( env.currproc )
 				end if
 
-				'' assignment of a function deref?
-				if( procexpr <> NULL ) then
-					return cAssignment( procexpr )
-            	end if
+    		'' variable?
+    		case FB_SYMBCLASS_VAR
+    	    	'' must process variables here, multiple calls to
+    	    	'' Identifier() will fail if a namespace was explicitly
+    	    	'' given, because the next call will return an inner symbol
+    	    	if( cVariableEx( chain_, expr, TRUE ) = FALSE ) then
+    	    		exit function
+    	    	end if
 
-            	return TRUE
+    	    	return cAssignmentOrPtrCallEx( expr )
+			end select
 
-			'' ID '=' Expression
-			else
-                '' check if name is valid (or if overloaded)
-				if( symbIsProcOverloadOf( env.currproc, s ) = FALSE ) then
-					hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB, TRUE )
-					exit function
-				end if
-
-        		return hAssignFunctResult( env.currproc )
-			end if
-
-		end if
+    		chain_ = symbChainGetNext( chain_ )
+    	loop
 
 	'' FUNCTION?
 	case FB_TK_FUNCTION

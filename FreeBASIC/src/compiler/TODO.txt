@@ -1,6 +1,6 @@
 [ ] namespaces:
-    - add a check to decl of overloaded functions from different namespaces when
-      USING is been used
+    - add access to the global ns, make GLOBAL a reserved word as in vb.net
+      - can't add the symbol at symbinit()?
 
 [ ] SCOPE..END SCOPE:
     - error handlers should be restored too (or not allowed at all)

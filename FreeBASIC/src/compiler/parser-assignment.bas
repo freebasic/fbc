@@ -29,7 +29,11 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function cAssignment( byval assgexpr as ASTNODE ptr ) as integer
+function cAssignment _
+	( _
+		byval assgexpr as ASTNODE ptr _
+	) as integer
+
 	dim as ASTNODE ptr expr
 	dim as integer op, dtype
 
@@ -92,10 +96,12 @@ function cAssignment( byval assgexpr as ASTNODE ptr ) as integer
 	end if
 
 	'' '='
-    if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+    if( lexGetToken( ) <> FB_TK_ASSIGN ) then
     	hReportError( FB_ERRMSG_EXPECTEDEQ )
     	exit function
     end if
+
+    lexSkipToken( )
 
     '' set the context symbol to allow taking the address of overloaded
     '' procs and also to allow anonymous UDT's
@@ -139,12 +145,57 @@ function cAssignment( byval assgexpr as ASTNODE ptr ) as integer
 end function
 
 '':::::
+function cAssignmentOrPtrCallEx _
+	( _
+		byval expr as ASTNODE ptr _
+	) as integer
+
+    function = FALSE
+
+    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+    	exit function
+    end if
+
+    '' calling a SUB ptr?
+    if( expr = NULL ) then
+    	return TRUE
+    end if
+
+    '' ordinary assignment?
+    if( astIsFUNCT( expr ) = FALSE ) then
+    	return cAssignment( expr )
+    end if
+
+	'' calling a FUNCTION ptr..
+
+	'' can the result be skipped?
+	if( symbGetDataClass( astGetDataType( expr ) ) <> FB_DATACLASS_INTEGER ) then
+		hReportError( FB_ERRMSG_VARIABLEREQUIRED )
+		exit function
+
+    '' CHAR and WCHAR literals are also from the INTEGER class
+    else
+    	select case astGetDataType( expr )
+    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			hReportError( FB_ERRMSG_VARIABLEREQUIRED )
+			exit function
+		end select
+	end if
+
+    '' flush the call
+    astAdd( expr )
+
+    function = TRUE
+
+end function
+
+'':::::
 ''Assignment      =   LET? Variable BOP? '=' Expression
 ''				  |	  Variable{function ptr} '(' ProcParamList ')' .
 ''
 function cAssignmentOrPtrCall as integer
 	dim as integer islet
-	dim as ASTNODE ptr assgexpr
+	dim as ASTNODE ptr expr
 
 	function = FALSE
 
@@ -160,44 +211,8 @@ function cAssignmentOrPtrCall as integer
 	end if
 
 	'' Variable
-	if( cVarOrDeref( assgexpr ) ) then
-
-    	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
-    		exit function
-    	end if
-
-    	'' calling a SUB ptr?
-    	if( assgexpr = NULL ) then
-    		return TRUE
-    	end if
-
-    	'' calling a FUNCTION ptr?
-    	if( astIsFUNCT( assgexpr ) ) then
-			'' can the result be skipped?
-			if( symbGetDataClass( astGetDataType( assgexpr ) ) <> FB_DATACLASS_INTEGER ) then
-				hReportError( FB_ERRMSG_VARIABLEREQUIRED )
-				exit function
-
-    		'' CHAR and WCHAR literals are also from the INTEGER class
-    		else
-    			select case astGetDataType( assgexpr )
-    			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-					hReportError( FB_ERRMSG_VARIABLEREQUIRED )
-					exit function
-				end select
-			end if
-
-    		'' flush the call
-    		astAdd( assgexpr )
-    		function = TRUE
-
-    	'' ordinary assignment..
-    	else
-
-    		function = cAssignment( assgexpr )
-
-    	end if
-
+	if( cVarOrDeref( expr ) ) then
+    	function = cAssignmentOrPtrCallEx( expr )
 
 	else
 		if( islet ) then

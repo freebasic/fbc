@@ -29,9 +29,11 @@ option escape
 #include once "inc\ast.bi"
 
 ''::::
-private function hGetType( byref dtype as integer, _
-						   byref subtype as FBSYMBOL ptr _
-						 ) as integer static
+private function hGetType _
+	( _
+		byref dtype as integer, _
+		byref subtype as FBSYMBOL ptr _
+	) as integer static
 
 	dim as integer lgt, ptrcnt
 
@@ -73,18 +75,34 @@ end function
 '':::
 ''ConstAssign     =   ID (AS SymbolType)? '=' ConstExpression .
 ''
-function cConstAssign( byval dtype as integer, _
-					   byval subtype as FBSYMBOL ptr _
-					 ) as integer static
+function cConstAssign _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as integer static
 
     static as zstring * FB_MAXNAMELEN+1 id
     dim as integer edtype
     dim as ASTNODE ptr expr
-    dim as FBSYMBOL ptr litsym
+    dim as FBSYMBOL ptr ns, litsym
     dim as FBVALUE value
 
 	function = FALSE
 
+	'' don't allow explicit namespaces
+	ns = cNamespace( )
+    if( ns <> NULL ) then
+		if( ns <> symbGetCurrentNamespc( ) ) then
+			hReportError( FB_ERRMSG_DECLOUTSIDENAMESPC )
+			exit function
+    	end if
+    else
+    	if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+    		exit function
+    	end if
+    end if
+
+	'' ID
 	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
 		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		exit function
@@ -98,7 +116,6 @@ function cConstAssign( byval dtype as integer, _
     	end if
     end if
 
-	'' ID
 	id = *lexGetText( )
 	edtype = lexGetType( )
 	lexSkipToken( )

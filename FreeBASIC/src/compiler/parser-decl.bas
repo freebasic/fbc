@@ -28,7 +28,7 @@ option escape
 #include once "inc\parser.bi"
 
 '':::::
-''Declaration     =   ConstDecl | TypeDecl | SymbolDecl | ProcDecl | DefDecl | OptDecl.
+''Declaration     =   ConstDecl | TypeDecl | VariableDecl | ProcDecl | DefDecl | OptDecl.
 ''
 function cDeclaration as integer static
 
@@ -46,7 +46,7 @@ function cDeclaration as integer static
 		function = cEnumDecl( )
 
 	case FB_TK_DIM, FB_TK_REDIM, FB_TK_COMMON, FB_TK_EXTERN, FB_TK_STATIC
-		function = cSymbolDecl( )
+		function = cVariableDecl( )
 
 	case FB_TK_DEFBYTE, FB_TK_DEFUBYTE, FB_TK_DEFSHORT, FB_TK_DEFUSHORT, _
 		 FB_TK_DEFINT, FB_TK_DEFLNG, FB_TK_DEFUINT, FB_TK_DEFSNG, FB_TK_DEFDBL, _

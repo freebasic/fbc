@@ -168,14 +168,8 @@ declare function 	cEnumDecl               ( _
 												_
 											) as integer
 
-declare function 	cSymbolDecl             ( _
+declare function 	cVariableDecl           ( _
 												_
-											) as integer
-
-declare function 	cSymbolDef 				( _
-												byval attrib as integer, _
-												byval dopreserve as integer, _
-                                              byval token as integer _
 											) as integer
 
 declare function 	cStaticArrayDecl 		( _
@@ -188,7 +182,7 @@ declare function 	cArrayDecl				( _
 												exprTB() as ASTNODE ptr _
 											) as integer
 
-declare function 	cSymbolInit				( _
+declare function 	cVariableInit			( _
 												byval s as FBSYMBOL ptr, _
 												byval isinitializer as integer _
 											) as ASTNODE ptr
@@ -202,8 +196,13 @@ declare function 	cSymbolType 			( _
 											) as integer
 
 declare function 	cIdentifier				( _
+												byval isdecl as integer = FALSE, _
 												byval showerror as integer = TRUE _
 											) as FBSYMCHAIN ptr
+
+declare function 	cNamespace				( _
+												_
+											) as FBSYMBOL ptr
 
 declare function 	cProcDecl               ( _
 												_
@@ -389,6 +388,10 @@ declare function 	cAssignmentOrPtrCall	( _
 												_
 											) as integer
 
+declare function 	cAssignmentOrPtrCallEx	( _
+												byval expr as ASTNODE ptr _
+											) as integer
+
 declare function 	cExpression				( _
 												byref expr as ASTNODE ptr _
 											) as integer
@@ -434,6 +437,7 @@ declare function 	cNegNotExpression		( _
 											) as integer
 
 declare function 	cHighestPrecExpr		( _
+												byval chain_ as FBSYMCHAIN ptr, _
 												byref highexpr as ASTNODE ptr _
 											) as integer
 
@@ -458,6 +462,7 @@ declare function 	cParentExpression		( _
 											) as integer
 
 declare function 	cAtom					( _
+												byval chain_ as FBSYMCHAIN ptr, _
 												byref atom as ASTNODE ptr _
 											) as integer
 

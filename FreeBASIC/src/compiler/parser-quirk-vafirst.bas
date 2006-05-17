@@ -61,7 +61,7 @@ function cVAFunct( byref funcexpr as ASTNODE ptr ) as integer
 		exit function
 	end if
 
-	sym = symbFindByNameAndClass( symbGetName( param ), FB_SYMBCLASS_VAR )
+	sym = symbGetParamVar( param )
 	if( sym = NULL ) then
 		exit function
 	end if

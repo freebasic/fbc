@@ -168,7 +168,10 @@ function cSymbolTypeFuncPtr _
 	sname = hMangleFuncPtrName( proc, dtype, subtype, mode )
 
 	'' already exists?
-	sym = symbFindByNameAndClass( sname, FB_SYMBCLASS_PROC, TRUE )
+	sym = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
+									sname, _
+									FB_SYMBCLASS_PROC, _
+									TRUE )
 	if( sym <> NULL ) then
 		return sym
 	end if
@@ -462,79 +465,6 @@ function cSymbolType _
 			exit function
 		end if
 	end if
-
-end function
-
-'':::::
-private sub hSkipSymbol( )
-
-	do
-		lexSkipToken( LEXCHECK_NOLOOKUP )
-
-    	'' '.'?
-    	if( lexGetToken( ) <> CHAR_DOT ) then
-    		exit do
-    	end if
-
-    	select case lexGetClass()
-    	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD
-
-    	case else
-    		exit do
-    	end select
-	loop
-
-end sub
-
-'':::::
-'' Identifier	= (ID{namespace} '.')* ID
-''				|  ID ('.' ID)* .
-''
-function cIdentifier _
-	( _
-		byval showerror as integer _
-	) as FBSYMCHAIN ptr
-
-    dim as FBSYMCHAIN ptr chain_
-
-    chain_ = lexGetSymChain( )
-
-    if( chain_ = NULL ) then
-    	return NULL
-    end if
-
-    do while( symbGetClass( chain_->sym ) = FB_SYMBCLASS_NAMESPACE )
-    	lexSkipToken( LEXCHECK_NOLOOKUP )
-
-    	'' '.'?
-    	if( lexGetToken( ) <> CHAR_DOT ) then
-    		exit do
-    	end if
-
-    	lexSkipToken( LEXCHECK_NOLOOKUP )
-
-    	'' ID
-    	if( lexGetToken( ) <> FB_TK_ID ) then
-    		if( showerror ) then
-    			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-    		end if
-
-    		return NULL
-    	end if
-
-    	chain_ = symbLookupAt( chain_->sym, lexGetText( ) )
-    	if( chain_ = NULL ) then
-           	if( showerror ) then
-           		hReportError( FB_ERRMSG_UNDEFINEDSYMBOL )
-    		else
-    			hSkipSymbol( )
-           	end if
-
-           	return NULL
-    	end if
-    loop
-
-	function = chain_
 
 end function
 

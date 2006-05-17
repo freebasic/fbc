@@ -312,7 +312,9 @@ type AST_PROCCTX
 	head			as ASTNODE ptr
 	tail			as ASTNODE ptr
 	curr			as ASTNODE ptr
+	oldns			as FBSYMBOL ptr					'' last namespace
 	oldsymtb		as FBSYMBOLTB ptr
+	oldhashtb		as FBHASHTB ptr
 end type
 
 type ASTCTX

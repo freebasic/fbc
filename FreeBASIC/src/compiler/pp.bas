@@ -98,7 +98,7 @@ function ppParse( ) as integer
     case FB_TK_UNDEF
     	lexSkipToken( LEXCHECK_NODEFINE )
 
-    	chain_ = cIdentifier( FALSE )
+    	chain_ = cIdentifier( FALSE, FALSE )
     	if( chain_ <> NULL ) then
     		dim as FBSYMBOL ptr sym = chain_->sym
     		'' don't remove if it was defined in other namespace

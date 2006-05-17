@@ -78,10 +78,12 @@ function cGotoStmt as integer
 		lexSkipToken( )
 
 		if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
-			l = symbFindByNameAndClass( lexGetText( ), FB_SYMBCLASS_LABEL )
+			l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
+										  lexGetText( ), _
+										  FB_SYMBCLASS_LABEL )
 
 		else
-			chain_ = cIdentifier( )
+			chain_ = cIdentifier( TRUE )
 			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
@@ -108,10 +110,12 @@ function cGotoStmt as integer
 		lexSkipToken( )
 
 		if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
-			l = symbFindByNameAndClass( lexGetText( ), FB_SYMBCLASS_LABEL )
+			l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
+										  lexGetText( ), _
+										  FB_SYMBCLASS_LABEL )
 
 		else
-			chain_ = cIdentifier( )
+			chain_ = cIdentifier( TRUE )
 			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
@@ -150,10 +154,12 @@ function cGotoStmt as integer
 
 			case else
 				if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
-					l = symbFindByNameAndClass( lexGetText( ), FB_SYMBCLASS_LABEL )
+					l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
+												  lexGetText( ), _
+												  FB_SYMBCLASS_LABEL )
 
 				else
-					chain_ = cIdentifier( )
+					chain_ = cIdentifier( TRUE )
 					if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 						exit function
 					end if

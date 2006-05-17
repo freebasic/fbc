@@ -34,6 +34,7 @@ option escape
 ''
 function cLabel as integer
     dim as FBSYMBOL ptr l
+    dim as FBSYMCHAIN ptr chain_
 
     function = FALSE
 
@@ -61,8 +62,9 @@ function cLabel as integer
 		if( lexGetLookAhead( 1 ) = CHAR_COLON ) then
 
 			'' ambiguity: it could be a proc call followed by a ':' stmt separator..
-			dim as FBSYMCHAIN ptr chain_
-			chain_ = cIdentifier( )
+
+			'' no need to call Identifier(), ':' wouldn't follow 'ns.symbol' ids
+			chain_ = lexGetSymChain( )
 			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if

@@ -113,7 +113,7 @@ private function cOptionalExpr _
     else
     	sym = symbAddTempVar( dtype, subtype, FALSE, FALSE )
 
-    	expr = cSymbolInit( sym, TRUE )
+    	expr = cVariableInit( sym, TRUE )
     	if( expr = NULL ) then
     		exit function
     	end if

@@ -936,6 +936,19 @@ function cVariableEx _
 			exit function
 		end if
 
+		'' don't allow explicit namespaces
+    	if( chain_ <> NULL ) then
+    		'' variable?
+    		sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
+    		if( sym <> NULL ) then
+    			'' from a different namespace?
+    			if( symbGetNamespace( sym ) <> symbGetCurrentNamespc( ) ) then
+    				hReportError( FB_ERRMSG_DECLOUTSIDENAMESPC )
+    				exit function
+    			end if
+    		end if
+    	end if
+
 		'' add undeclared variable
 		if( dtype = INVALID ) then
 			dtype = hGetDefType( id )
@@ -1161,7 +1174,7 @@ function cVarOrDeref _
 
 	swap env.checkarray, checkarray
 
-	res = cHighestPrecExpr( varexpr )
+	res = cHighestPrecExpr( NULL, varexpr )
 
 	swap env.checkarray, checkarray
 

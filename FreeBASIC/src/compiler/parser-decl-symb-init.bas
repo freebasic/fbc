@@ -278,7 +278,7 @@ private function hUDTInit _
 end function
 
 '':::::
-function cSymbolInit _
+function cVariableInit _
 	( _
 		byval sym as FBSYMBOL ptr, _
 		byval isinitializer as integer _

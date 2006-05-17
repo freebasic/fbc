@@ -339,7 +339,7 @@ private function hDoCppMangling _
     end if
 
     '' inside a namespace or class?
-    if( symbGetNamespace( sym ) <> NULL ) then
+    if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
     	return TRUE
     end if
 
@@ -365,7 +365,7 @@ private function hGetNamespace _
 	dim as zstring ptr id_alias
 
 	ns = symbGetNamespace( sym )
-	if( ns = NULL ) then
+	if( ns = @symbGetGlobalNamespc( ) ) then
 		return NULL
 	end if
 
@@ -489,7 +489,7 @@ private function hGetVarPrefix _
 	end if
 
 	'' inside a namespace or class?
-	if( symbGetNamespace( sym ) <> NULL ) then
+	if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
 		if( isimport ) then
 			return @"__imp__ZN"
 
@@ -691,7 +691,7 @@ private function hGetProcPrefix _
 	end if
 
 	'' inside a namespace or class?
-	if( symbGetNamespace( sym ) <> NULL ) then
+	if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
 		if( hAddUnderscore( ) ) then
 			return @"__ZN"
 		else
@@ -758,7 +758,7 @@ function hGetTypeCode _
     	dim as zstring ptr id_alias
 
 		'' nested (namespace or class)? open..
-		if( symbGetNamespace( sym ) <> NULL ) then
+		if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
 			sig += "N"
 		end if
 
@@ -770,7 +770,7 @@ function hGetTypeCode _
     	ZStrFree( id_alias )
 
 		'' nested (namespace or class)? close..
-		if( symbGetNamespace( sym ) <> NULL ) then
+		if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
 			sig += "E"
 		end if
 
@@ -872,7 +872,7 @@ function hGetProcParams _
     static as string res
 
 	'' nested? (namespace or class)
-	if( symbGetNamespace( sym ) <> NULL ) then
+	if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
 		res = "E"
 		res += hGetProcParamsTypeCode( sym )
 

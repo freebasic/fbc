@@ -106,7 +106,7 @@ function cAsmCode as integer static
 		else
 			'' FUNCTION?
 			if( lexGetToken( LEXCHECK_NOWHITESPC ) = FB_TK_FUNCTION ) then
-    			sym = symbLookupProcResult( env.currproc )
+    			sym = symbGetProcResult( env.currproc )
     			if( sym = NULL ) then
     				hReportError( FB_ERRMSG_SYNTAXERROR )
     				exit function

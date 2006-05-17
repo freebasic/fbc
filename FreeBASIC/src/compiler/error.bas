@@ -177,7 +177,8 @@ end type
 		@"Cannot remove symbols defined in other namespaces", _
 		@"Expected END EXTERN", _
 		@"Expected 'END SUB'", _
-		@"Expected 'END FUNCTION'" _
+		@"Expected 'END FUNCTION'", _
+		@"Declaration outside the original namespace" _
 	}
 
 

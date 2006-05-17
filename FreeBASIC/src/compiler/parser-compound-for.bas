@@ -147,7 +147,7 @@ function cForStmtBegin as integer
 	lexSkipToken( )
 
 	'' ID
-	chain_ = cIdentifier( )
+	chain_ = cIdentifier( TRUE )
 	if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 		exit function
 	end if

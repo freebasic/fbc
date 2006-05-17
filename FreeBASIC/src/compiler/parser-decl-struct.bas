@@ -410,7 +410,7 @@ function cTypeDecl _
     static as zstring * FB_MAXNAMELEN+1 id, id_alias
     dim as zstring ptr palias
     dim as ASTNODE ptr expr
-    dim as FBSYMBOL ptr s
+    dim as FBSYMBOL ptr ns, s
     dim as integer align, isunion
 
 	function = FALSE
@@ -450,6 +450,19 @@ function cTypeDecl _
     	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
     	exit function
     end select
+
+	'' don't allow explicit namespaces
+	ns = cNamespace( )
+    if( ns <> NULL ) then
+		if( ns <> symbGetCurrentNamespc( ) ) then
+			hReportError( FB_ERRMSG_DECLOUTSIDENAMESPC )
+			exit function
+    	end if
+    else
+    	if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+    		exit function
+    	end if
+    end if
 
     '' if inside a namespace, symbols can't contain periods (.)'s
     if( symbIsGlobalNamespc( ) = FALSE ) then

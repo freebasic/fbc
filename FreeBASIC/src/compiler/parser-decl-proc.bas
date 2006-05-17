@@ -122,6 +122,12 @@ function cSubOrFuncDecl _
     	end if
     end if
 
+	'' don't allow explicit namespaces
+	cIdentifier( TRUE )
+	if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+		exit function
+	end if
+
 	id = *lexGetText( )
 	dtype = lexGetType( )
 	subtype = NULL

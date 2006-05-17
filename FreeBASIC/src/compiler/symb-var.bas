@@ -72,7 +72,7 @@ function hCreateArrayDesc _
 	isstatic  = symbIsStatic( s )
 	isdynamic = symbIsDynamic( s )
 	iscommon  = symbIsCommon( s )
-	ispubext  = (s->attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) > 0
+	ispubext  = (s->attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_EXTERN)) <> 0
 
 	'' COMMON, public or dynamic? use the array name for the descriptor,
 	'' as only it will be allocated or seen by other modules
