@@ -554,6 +554,26 @@ sub symbHashListAdd _
 end sub
 
 '':::::
+sub symbHashListAddBefore _
+	( _
+		byval lasttb as FBHASHTB ptr, _
+		byval hashtb as FBHASHTB ptr _
+	) static
+
+	if( lasttb->prev = NULL ) then
+		symb.hashlist.head = hashtb
+	else
+		lasttb->prev->next = hashtb
+	end if
+
+	hashtb->prev = lasttb->prev
+	hashtb->next = lasttb
+
+	lasttb->prev = hashtb
+
+end sub
+
+'':::::
 sub symbHashListDel _
 	( _
 		byval hashtb as FBHASHTB ptr _

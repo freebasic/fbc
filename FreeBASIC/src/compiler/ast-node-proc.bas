@@ -354,13 +354,13 @@ function astProcBegin _
 	'' change the hashtb too
 	ns = symbGetNamespace( sym )
 	if( ns <> symbGetCurrentNamespc( ) ) then
+		symbNamespaceInsertChain( ns )
+
 		ast.proc.oldns = symbGetCurrentNamespc( )
 		symbSetCurrentNamespc( ns )
 
 		ast.proc.oldhashtb = symbGetCurrentHashTb( )
 		symbSetCurrentHashTb( @symbGetNamespaceHashTb( ns ) )
-
-		symbHashListAdd( @symbGetNamespaceHashTb( ns ) )
 
 	else
 		ast.proc.oldns = NULL
@@ -489,9 +489,12 @@ function astProcEnd _
 
 	'' was the namespace changed? see procBegin()
 	if( ast.proc.oldns <> NULL ) then
-		symbHashListDel( @symbGetNamespaceHashTb( symbGetCurrentNamespc( ) ) )
+		symbNamespaceRemoveChain( symbGetCurrentNamespc( ) )
+
 		symbSetCurrentHashTb( ast.proc.oldhashtb )
 		symbSetCurrentNamespc( ast.proc.oldns )
+
+		ast.proc.oldns = NULL
 	end if
 
 	symbSetCurrentSymTb( ast.proc.oldsymtb )

@@ -1016,6 +1016,11 @@ declare sub 		symbHashListAdd			( _
 												byval checkdup as integer = FALSE _
 											)
 
+declare sub 		symbHashListAddBefore 	( _
+												byval lasttb as FBHASHTB ptr, _
+												byval hashtb as FBHASHTB ptr _
+											)
+
 declare sub 		symbHashListDel			( _
 												byval hashtb as FBHASHTB ptr _
 											)
@@ -1027,6 +1032,14 @@ declare function 	symbNamespaceImport		( _
 declare sub			symbNamespaceRemove		( _
 												byval sym as FBSYMBOL ptr, _
 												byval hashonly as integer _
+											)
+
+declare sub 		symbNamespaceInsertChain( _
+												byval ns as FBSYMBOL ptr _
+											)
+
+declare sub 		symbNamespaceRemoveChain( _
+												byval ns as FBSYMBOL ptr _
 											)
 
 declare function 	symbCanDuplicate		( _

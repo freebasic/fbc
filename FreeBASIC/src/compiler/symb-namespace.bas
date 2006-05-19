@@ -321,3 +321,45 @@ sub symbNamespaceRemove _
 
 end sub
 
+'':::::
+sub symbNamespaceInsertChain _
+	( _
+		byval ns as FBSYMBOL ptr _
+	) static
+
+	dim as FBHASHTB ptr hashtb, lasttb
+	dim as FBSYMBOL ptr s
+
+	'' add this ns to hash list and all parents, but the global one
+
+	hashtb = @symbGetNamespaceHashTb( ns )
+	symbHashListAdd( hashtb, FALSE )
+
+	'' in reverse other, child ns must be the tail, parents follow
+	lasttb = hashtb
+	s = symbGetNamespace( ns )
+	do until( s = @symbGetGlobalNamespc( ) )
+
+		hashtb = @symbGetNamespaceHashTb( s )
+		symbHashListAddBefore( lasttb, hashtb )
+
+		lasttb = hashtb
+		s = symbGetNamespace( s )
+	loop
+
+end sub
+
+'':::::
+sub symbNamespaceRemoveChain _
+	( _
+		byval ns as FBSYMBOL ptr _
+	) static
+
+	'' remove this ns to hash list and all parents, but the global one
+	do
+		symbHashListDel( @symbGetNamespaceHashTb( ns ) )
+
+		ns = symbGetNamespace( ns )
+	loop until( ns = @symbGetGlobalNamespc( ) )
+
+end sub
