@@ -16,8 +16,6 @@ extern "c++"
 				as integer i
 			end type
 		
-			'extern int i;
-		
 			function sum( byval z as baz ptr, _
 						  byval f1 as foo ptr, _
 						  byval f2 as foo ptr, _
