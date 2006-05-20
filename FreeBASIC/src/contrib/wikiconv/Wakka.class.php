@@ -78,10 +78,8 @@ class Wakka
 								   $offs );
 			if( $matches == 0 )
 			{
-				Wakka::_parseToken( $pageInfoTb, 
-									$page,
-									substr( $text, $offs ), 
-									$tokensTb[$i] );
+				$tokensTb[$i]['id'] = WK_TOKEN_TEXT;
+				$tokensTb[$i]['text'] = substr( $text, $offs );
 				++$i;
 				break;
 			}
@@ -91,10 +89,8 @@ class Wakka
 		
 			if( $moffs > $offs )
 			{
-				Wakka::_parseToken( $pageInfoTb, 
-									$page,
-									substr( $text, $offs, $moffs - $offs ), 
-									$tokensTb[$i] );
+				$tokensTb[$i]['id'] = WK_TOKEN_TEXT;
+				$tokensTb[$i]['text'] = substr( $text, $offs, $moffs - $offs );
 				++$i;
 			}
 		
@@ -118,7 +114,7 @@ class Wakka
 		case '<':
 			$token['id'] = WK_TOKEN_LT;
 			return;
-		
+
 		case '>':
 			$token['id'] = WK_TOKEN_GT;
 			return;
@@ -139,6 +135,7 @@ class Wakka
 			$token['id'] = WK_TOKEN_KBD;
 			return;
 	
+		case '==':
 		case '**':
 			$token['id'] = WK_TOKEN_BOLD;
 			return;
@@ -167,7 +164,6 @@ class Wakka
 			$token['id'] = WK_TOKEN_CENTER;
 			return;
 	
-		case '==':
 		case '===':
 		case '====':
 		case '=====':
@@ -218,6 +214,9 @@ class Wakka
 			$token['id'] = WK_TOKEN_LINK;
 			$token['url']  = $matchesTb[1];
 			$token['text'] = trim( $matchesTb[2] );
+			
+			if( substr( $token['url'], 0, 5 ) == 'KeyPg' )
+				$token['text'] = ucfirst( strtolower( $token['text'] ) );
 
 			$pg =& $token['url'];
 			if( strpos( $pg, ':' ) === false )
@@ -297,6 +296,9 @@ class Wakka
 			switch( $token['paramsTb']['item'] )
 			{
 			case 'title':
+				if( substr( $page, 0, 5 ) == 'KeyPg' )
+					$value = ucfirst( strtolower( trim( $value ) ) );
+				
 				$pageInfoTb[$page]['title'] = $value;
 				break;
 			
@@ -304,6 +306,9 @@ class Wakka
 				list( $pg, $title ) = explode( '|', $value );
 				if( !isset( $pageInfoTb[$pg]['emitted'] ) )
 				{
+					if( substr( $g, 0, 5 ) == 'KeyPg' )
+						$title = ucfirst( strtolower( trim( $title ) ) );
+
 					$pageInfoTb[$pg]['emitted'] = 0;
 					$pageInfoTb[$pg]['title'] = $title;
 				}
@@ -485,6 +490,9 @@ class Wakka2Html
 					 			'keyword' 	=> array( false, '{#fb_sect_key}'	), 
 					 			'title' 	=> array( false, '{#fb_sect_title}'	), 
 					 			'syntax' 	=> array( true , '{#fb_sect_syntax}'), 
+					 			'usage' 	=> array( true , '{#fb_sect_usage}' ), 
+					 			'param' 	=> array( true , '{#fb_sect_param}' ), 
+					 			'ret' 		=> array( true , '{#fb_sect_ret}'   ), 
 					 			'desc' 		=> array( true , '{#fb_sect_desc}'  ), 
 					 			'ex' 		=> array( true , '{#fb_sect_ex}'    ), 
 					 			'diff' 		=> array( true , '{#fb_sect_diff}'  ),
@@ -507,9 +515,7 @@ class Wakka2Html
 		$res = '';
 		if( $isblock )
 		{
-			if( $this->tagFlags[WK_TAG_SECTION] != 0  )
-				$res = '</div>';
-			
+			$this->_closeTags( $res );
 			$this->tagFlags[WK_TAG_SECTION] = 1;
 		}
 				
@@ -517,7 +523,7 @@ class Wakka2Html
 		{
 		case 'title':
 			if( $this->tagGenTb[WK_TOKEN_SECT_ITEM] )
-				return $res . '<div class="fb_header">' . $value . '</div>';
+				return $res . '<div class="fb_header">' . ucfirst( strtolower( trim( $value ) ) ) . '</div>';
 			else
 				return $res;
 	
@@ -536,7 +542,11 @@ class Wakka2Html
 			list( $page, $name ) = explode( '|', $value );
 			
 			if( strpos( $page, ':' ) === false )
+			{
+				if( substr( $page, 0, 5 ) == 'KeyPg' )
+					$name = ucfirst( strtolower( trim( $name ) ) );
 				$ext = '.html';
+			}
 			else
 				$ext = '';
 			
@@ -574,9 +584,11 @@ class Wakka2Html
 	/*:::::*/
 	function &_actionGenTable( &$paramsTb )
 	{
+		$res = $this->_closeList( );
+		
 		$cellTb = explode( ';', $paramsTb['cells'] );
 				
-		$res = '<div class="' . $this->cssClassTb[WK_TOKEN_ACTION_TB] . '"><table>';
+		$res .= '<div class="' . $this->cssClassTb[WK_TOKEN_ACTION_TB] . '"><table>';
 			
 		if( isset( $paramsTb['columns'] ) )
 			$cols = (int)$paramsTb['columns'];
@@ -627,6 +639,20 @@ class Wakka2Html
 	}
 
 	/*:::::*/
+	function &_actionGenAnchor( &$paramsTb )
+	{
+		$res = $this->_closeList( );
+		
+		$name =& $paramsTb['name'];
+
+		if( strpos( $name, '|' ) === false )
+			return $res . '<a name="' . $name . '"></a>';
+
+		list( $target, $link ) = explode( '|', $name );
+		return $res . '<a href="#' . $target . '">' . $link . '</a>';
+	}
+
+	/*:::::*/
 	function &_actionToHtml( &$name, &$paramsTb )
 	{
 		switch( $name )
@@ -640,6 +666,9 @@ class Wakka2Html
 
 		case 'image':
 			return $this->_actionGenImage( $paramsTb );
+
+		case 'anchor':
+			return $this->_actionGenAnchor( $paramsTb );
 			
 		default:
 			return '';

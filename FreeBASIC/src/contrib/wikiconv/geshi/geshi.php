@@ -76,6 +76,7 @@ define('GESHI_HEADER_PRE', 2);
 define('GESHI_CAPS_NO_CHANGE', 0);
 define('GESHI_CAPS_UPPER', 1);
 define('GESHI_CAPS_LOWER', 2);
+define('GESHI_CAPS_CAPITALIZE', 3);
 
 // Link style constants - use these (added in 1.0.2)
 define('GESHI_LINK', 0);
@@ -225,9 +226,9 @@ class GeSHi
 	 * ------------------
 	 * Sets the source code for this object
 	 */
-	function set_source ( &$source )
+	function set_source ( $source )
 	{
-		$this->source =& $source;
+		$this->source = $source;
 	}
 
 
@@ -1072,7 +1073,7 @@ class GeSHi
 	 * If you want to highlight the same source multiple times, you're better
 	 * off doing a whole lot of str_replaces to replace the <span>s
 	 */
-	function &parse_code()
+	function parse_code()
 	{
 		// Start the timer
 		$start_time = microtime();
@@ -1553,15 +1554,17 @@ class GeSHi
 	 */
 	function change_case ( $instr )
 	{
-		if ( $this->language_data['CASE_KEYWORDS'] == GESHI_CAPS_UPPER )
+		switch ( $this->language_data['CASE_KEYWORDS'] )
 		{
+		case GESHI_CAPS_UPPER:
 			return strtoupper($instr);
-		}
-		elseif ( $this->language_data['CASE_KEYWORDS'] == GESHI_CAPS_LOWER )
-		{
+		case GESHI_CAPS_LOWER:
 			return strtolower($instr);
+		case GESHI_CAPS_CAPITALIZE:
+			return ucfirst( strtolower( $instr ) );
+		default:
+			return $instr;
 		}
-		return $instr;
 	}
 
 

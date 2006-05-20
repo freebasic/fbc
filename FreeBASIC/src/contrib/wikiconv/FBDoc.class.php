@@ -95,7 +95,7 @@ class FBDoc
 	}
 	
 	/*:::::*/
-	function _emitPage( &$page, &$title )
+	function _emitPage( &$page, $title )
 	{
 		if( isset( $this->pgInfoTb[$page]['emitted'] ) )
 			if( $this->pgInfoTb[$page]['emitted'] != 0 )
@@ -110,27 +110,36 @@ class FBDoc
 			print( "***FIXME*** Page missing<br>\n" );
 			return 1;
 		}
-										
-		$tokensTb =& Wakka::parse( $this->pgInfoTb,
-								   $page, 
-								   $this->pgBodyTb[$page], 
-								   $this->dstPath );
-				
-		if( count( $tokensTb ) == 0 )
-		{
-			print( "***FIXME*** No page body<br>\n" );
-			return 1;
-		}
-				
-		switch( substr( $page, 0, 5 ) )
-		{
-		case 'CatPg':
-			$this->_emitCatPage( $page, $title, $tokensTb );
-			break;
-				
-		default:
-			$this->_emitDefPage( $page, $title, $tokensTb );
-		}
+		
+		$filename = $this->dstPath . '/' . $page . '.html';
+		
+		//if( !file_exists( $filename ) )
+		//{
+			$tokensTb =& Wakka::parse( $this->pgInfoTb,
+									   $page, 
+									   $this->pgBodyTb[$page], 
+									   $this->dstPath );
+					
+			if( count( $tokensTb ) == 0 )
+			{
+				print( "***FIXME*** No page body<br>\n" );
+				return 1;
+			}
+					
+			switch( substr( $page, 0, 5 ) )
+			{
+			case 'KeyPg':
+				$title = ucfirst( strtolower( trim( $title ) ) );
+				// fall through
+					
+			case 'CatPg':
+				$this->_emitCatPage( $page, $title, $tokensTb );
+				break;
+
+			default:
+				$this->_emitDefPage( $page, $title, $tokensTb );
+			}
+		//}
 				
 		print( "<br> \n \n \n \n \n \n \n \n" );
 		
@@ -231,7 +240,7 @@ class FBDoc
 					if( $token['paramsTb']['item'] == 'keyword' )
 					{
 						list( $page, $title ) = explode( '|', $token['paramsTb']['value'] );
-						$resTb[$page] = $title;
+						$resTb[$page] = ucfirst( strtolower( trim( $title ) ) );
 					}					
 				
 		return $resTb;
@@ -528,7 +537,7 @@ class FBDoc
 				if( !isset( $info['emitted']) || ($info['emitted'] == 0) )
 					continue;
 				
-				$pagesTb[$page] = $info['title'];
+				$pagesTb[$page] = ucfirst( strtolower( trim( $info['title'] ) ) );
 				break;
 			}	
 		}

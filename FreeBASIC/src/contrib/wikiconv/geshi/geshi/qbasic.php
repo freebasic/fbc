@@ -53,77 +53,77 @@ $language_data = array (
 	'LANG_NAME' => 'QBasic/QuickBASIC',
 	'COMMENT_SINGLE' => array(1 => "'", 2 => 'REM'),
 	'COMMENT_MULTI' => array(),
-	'CASE_KEYWORDS' => GESHI_CAPS_UPPER,
+	'CASE_KEYWORDS' => GESHI_CAPS_CAPITALIZE,
 	'QUOTEMARKS' => array('"'),
 	'ESCAPE_CHAR' => '',
 	'KEYWORDS' => array(
 		1 => array(
-			'DO', 'LOOP', 'WHILE', 'WEND', 'THEN', 'ELSE', 'ELSEIF', 'IF',
-			'FOR', 'TO', 'NEXT', 'STEP', 'GOTO', 'GOSUB', 'RETURN', 'RESUME', 'SELECT',
-			'CASE', 'UNTIL', 'EXIT', 'CONTINUE', 'WITH', 'SCOPE',
+			'Do', 'Loop', 'While', 'Wend', 'Then', 'Else', 'Elseif', 'If',
+			'For', 'To', 'Next', 'Step', 'Goto', 'Gosub', 'Return', 'Resume', 'Select',
+			'Case', 'Until', 'Exit', 'Continue', 'With', 'Scope',
 			
-			'STRING', 'ZSTRING', 'WSTRING',
-			'UNSIGNED',
-			'BYTE', 'UBYTE', 
-			'SHORT', 'USHORT', 
-			'INTEGER', 'UINTEGER', 'LONG',
-			'LONGINT', 'ULONGINT', 
-			'SINGLE', 'DOUBLE',
-			'PTR', 'POINTER'
+			'String', 'Zstring', 'Wstring',
+			'Unsigned',
+			'Byte', 'Ubyte', 
+			'Short', 'Ushort', 
+			'Integer', 'Uinteger', 'Long',
+			'Longint', 'Ulongint', 
+			'Single', 'Double',
+			'Ptr', 'Pointer'
 			),
 		3 => array(
-			'ABS', 'ABSOLUTE', 'ACCESS', 'ALIAS', 'AND', 'ANY', 'APPEND', 'AS', 'ASC', 'ATN',
+			'Abs', 'Absolute', 'Access', 'Alias', 'And', 'Any', 'Append', 'As', 'Asc', 'Atn',
 			
-			'BASE', 'BEEP', 'BINARY', 'BLOAD', 'BSAVE', 'BYVAL', 'BYREF',
+			'Base', 'Beep', 'Binary', 'Bload', 'Bsave', 'Byval', 'Byref',
 			
-			'CALL', 'CALLS', 'CASE', 'CDBL', 'CDECL', 'CHAIN', 'CHDIR', 'CHDIR', 'CHR', 'CINT', 
-			'CIRCLE', 'CLEAR', 'CLNG', 'CLOSE', 'CLS', 'COM', 'COMMAND', 'COMMON', 'CONST', 'COLOR', 
-			'COS', 'CSNG', 'CSRLIN', 'CVD', 'CVDMBF', 'CVI', 'CVL', 'CVS', 'CVSMDF', 
+			'Call', 'Calls', 'Case', 'Cdbl', 'Cdecl', 'Chain', 'Chdir', 'Chdir', 'Chr', 'Cint', 
+			'Circle', 'Clear', 'Clng', 'Close', 'Cls', 'Com', 'Command', 'Common', 'Const', 'Color', 
+			'Cos', 'Csng', 'Csrlin', 'Cvd', 'Cvdmbf', 'Cvi', 'Cvl', 'Cvs', 'Cvsmdf', 
 			
-			'DATA', 'DATE', 'DECLARE', 'DEF', 'FN', 'SEG', 'DEFDBL', 'DEFINT', 'DEFLNG', 'DEFSNG', 
-			'DEFSTR', 'DIM', 'DRAW', 
+			'Data', 'Date', 'Declare', 'Def', 'Fn', 'Seg', 'Defdbl', 'Defint', 'Deflng', 'Defsng', 
+			'Defstr', 'Dim', 'Draw', 
 			
-			'END', 'ENVIRON', 'ENVIRON', 'EOF', 'EQV', 'ERASE', 'ERDEV', 'ERDEV', 'ERL', 'ERR', 
-			'ERROR', 'EXP', 
+			'End', 'Environ', 'Environ', 'Eof', 'Eqv', 'Erase', 'Erdev', 'Erdev', 'Erl', 'Err', 
+			'Error', 'Exp', 
 			
-			'FIELD', 'FILEATTR', 'FILES', 'FIX', 'FRE', 'FREEFILE', 'FUNCTION', 
+			'Field', 'Fileattr', 'Files', 'Fix', 'Fre', 'Freefile', 'Function', 
 			
-			'GET', 
+			'Get', 
 			
-			'HEX', 
+			'Hex', 
 			
-			'INKEY', 'INP', 'INPUT', 'INPUT', 'INSTR', 'INT', 'IOCTL', 'IOCTL', 'IS',
+			'Inkey', 'Inp', 'Input', 'Input', 'Instr', 'Int', 'Ioctl', 'Ioctl', 'Is',
 			
-			'KEY', 'KILL', 
+			'Key', 'Kill', 
 			
-			'LBOUND', 'LCASE', 'LEFT', 'LEN', 'LET', 'LINE', 'LIST', 'LOC', 'LOCAL', 'LOCATE', 'LOCK', 
-			'LOF', 'LOG', 'UNLOCK', 'LPOS', 'LPRINT', 'LSET', 'LTRIM', 
+			'Lbound', 'Lcase', 'Left', 'Len', 'Let', 'Line', 'List', 'Loc', 'Local', 'Locate', 'Lock', 
+			'Lof', 'Log', 'Unlock', 'Lpos', 'Lprint', 'Lset', 'Ltrim', 
 			
-			'MID', 'MKD', 'MKDIR', 'MKDMBF', 'MKI', 'MKL', 'MKS', 'MKSMBF', 'MOD', 
+			'Mid', 'Mkd', 'Mkdir', 'Mkdmbf', 'Mki', 'Mkl', 'Mks', 'Mksmbf', 'Mod', 
 			
-			'NAME', 'NOT', 'OCT', 'OFF', 'ON', 
+			'Name', 'Not', 'Oct', 'Off', 'On', 
 			
-			'OPEN', 'OPTION', 'OR', 'OUT', 'OUTPUT',
+			'Open', 'Option', 'Or', 'Out', 'Output',
 			
-			'PEN', 'PLAY', 'PAINT', 'PALETTE', 'PCOPY', 'PEEK', 'PMAP', 'POINT', 'POKE', 'POS', 
-			'PRESET', 'PRINT', 'PTR', 'PSET', 'PUT', 
+			'Pen', 'Play', 'Paint', 'Palette', 'Pcopy', 'Peek', 'Pmap', 'Point', 'Poke', 'Pos', 
+			'Preset', 'Print', 'Ptr', 'Pset', 'Put', 
 			
-			'RANDOM', 'RANDOMIZE', 'READ', 'REDIM', 'RESET', 'RESTORE', 'RIGHT', 'RMDIR', 'RND', 
-			'RSET', 'RTRIM', 'RUN', 
+			'Random', 'Randomize', 'Read', 'Redim', 'Reset', 'Restore', 'Right', 'Rmdir', 'Rnd', 
+			'Rset', 'Rtrim', 'Run', 
 			
-			'SADD', 'SCREEN', 'SEEK', 'SETMEM', 'SGN', 'SHARED', 'SHELL', 'SIGNAL', 'SIN', 'SLEEP', 
-			'SOUND', 'SPACE', 'SPC', 'SQR', 'STATIC', 'STICK', 'STOP', 'STR', 'STRIG', 'SUB', 
-			'SWAP', 'SYSTEM', 'STRIG', 'SHR', 'SHL',
+			'Sadd', 'Screen', 'Seek', 'Setmem', 'Sgn', 'Shared', 'Shell', 'Signal', 'Sin', 'Sleep', 
+			'Sound', 'Space', 'Spc', 'Sqr', 'Static', 'Stick', 'Stop', 'Str', 'Strig', 'Sub', 
+			'Swap', 'System', 'Strig', 'Shr', 'Shl',
 			
-			'TAB', 'TAN', 'TIME', 'TIMER', 'TROFF', 'TRON', 'TYPE', 
+			'Tab', 'Tan', 'Time', 'Timer', 'Troff', 'Tron', 'Type', 
 			
-			'UBOUND', 'UCASE', 'UEVENT', 'UNLOCK', 'USING', 
+			'Ubound', 'Ucase', 'Uevent', 'Unlock', 'Using', 
 			
-			'VAL', 'VARPTR', 'VARPTR', 'VARSEG', 'VIEW', 
+			'Val', 'Varptr', 'Varptr', 'Varseg', 'View', 
 			
-			'WAIT', 'WIDTH', 'WINDOW', 'WRITE', 
+			'Wait', 'Width', 'Window', 'Write', 
 			
-			'XOR'
+			'Xor'
 			)
 		),
 	'SYMBOLS' => array(
