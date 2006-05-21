@@ -36,7 +36,7 @@ function cFunctionCall _
 		byval ptrexpr as ASTNODE ptr _
 	) as integer
 
-	dim as integer typ, isfuncptr
+	dim as integer dtype, isfuncptr
 	dim as FBSYMBOL ptr subtype
 
 	function = FALSE
@@ -45,12 +45,13 @@ function cFunctionCall _
     	exit function
     end if
 
-    typ = symbGetType( sym )
+    dtype = symbGetType( sym )
 
 	'' is it really a function?
-	if( typ = FB_DATATYPE_VOID ) then
-		hReportError( FB_ERRMSG_SYNTAXERROR )
-		exit function
+	if( dtype = FB_DATATYPE_VOID ) then
+		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			exit function
+		end if
 	end if
 
 	'' '('?
@@ -64,9 +65,15 @@ function cFunctionCall _
 		end if
 
 		'' ')'
-		if( hMatch( CHAR_RPRNT ) = FALSE ) then
-    		hReportError FB_ERRMSG_EXPECTEDRPRNT
-    		exit function
+		if( lexGetToken( ) <> CHAR_RPRNT ) then
+    		if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: skip until next ')'
+    			cSkipUntil( CHAR_RPRNT, TRUE )
+    		end if
+		else
+			lexSkipToken( )
 		end if
 
 	else
@@ -78,22 +85,27 @@ function cFunctionCall _
 	end if
 
 	'' if function returns a pointer, check for field deref
-	if( typ >= FB_DATATYPE_POINTER ) then
+	if( dtype >= FB_DATATYPE_POINTER ) then
     	subtype = symbGetSubType( sym )
 
 		isfuncptr = FALSE
    		if( lexGetToken( ) = CHAR_LPRNT ) then
-   			if( typ = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
+   			if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
 				isfuncptr = TRUE
    			end if
    		end if
 
 		'' FuncPtrOrDerefFields?
-		cFuncPtrOrDerefFields( typ, subtype, funcexpr, isfuncptr, TRUE )
+		cFuncPtrOrDerefFields( dtype, subtype, funcexpr, isfuncptr, TRUE )
 
 		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
+
+	'' error recovery: remove the SUB call, return a fake node
+	elseif( dtype = FB_DATATYPE_VOID ) then
+		astDelTree( funcexpr )
+		funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
 
 	function = TRUE

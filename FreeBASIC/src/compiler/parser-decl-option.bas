@@ -50,11 +50,17 @@ function cOptDecl as integer
 	case FB_TK_BASE
 		lexSkipToken( )
 		if( lexGetClass( ) <> FB_TKCLASS_NUMLITERAL ) then
-			hReportError( FB_ERRMSG_SYNTAXERROR )
-			exit function
+			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip stmt
+				cSkipStmt( )
+			end if
+
+		else
+			env.opt.base = valint( *lexGetText( ) )
+			lexSkipToken( )
 		end if
-		env.opt.base = valint( *lexGetText( ) )
-		lexSkipToken( )
 
 	case FB_TK_BYVAL
 		lexSkipToken( )
@@ -88,8 +94,9 @@ function cOptDecl as integer
 				select case lexGetClass( LEXCHECK_NODEFINE )
 				case FB_TKCLASS_KEYWORD
 					if( symbDelKeyword( lexGetSymChain( )->sym ) = FALSE ) then
-						hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-						exit function
+						if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+							exit function
+						end if
 					end if
 
 					lexSkipToken( )
@@ -101,54 +108,68 @@ function cOptDecl as integer
 
 						'' is it from the rtlib (gfxlib will be listed as part of the rt too)?
 						if( symbGetIsRTL( s ) = FALSE ) then
-							hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-							exit function
+							if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+								exit function
+							end if
+
+						else
+							'' don't remove if it was defined in other namespace
+							if( symbGetHashTb( s ) <> symbGetCurrentHashTb( ) ) then
+								if( hReportError( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS ) = FALSE ) then
+									exit function
+								end if
+
+							else
+								symbDelPrototype( s )
+							end if
 						end if
 
-						'' don't remove if it was defined in other namespace
-						if( symbGetHashTb( s ) <> symbGetCurrentHashTb( ) ) then
-							hReportError( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS )
-							exit function
-						end if
 
-						symbDelPrototype( s )
 					else
-
 						'' macro?
 						s = symbFindByClass( lexGetSymChain( ), FB_SYMBCLASS_DEFINE )
 						if( s = NULL ) then
-							hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-							exit function
+							if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+								exit function
+							end if
+
+						else
+							'' don't remove if it was defined in other namespace
+							if( symbGetHashTb( s ) <> symbGetCurrentHashTb( ) ) then
+								if( hReportError( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS ) = FALSE ) then
+									exit function
+								end if
+
+							else
+								symbDelDefine( s )
+							end if
 						end if
 
-						'' don't remove if it was defined in other namespace
-						if( symbGetHashTb( s ) <> symbGetCurrentHashTb( ) ) then
-							hReportError( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS )
-							exit function
-						end if
-
-						symbDelDefine( s )
 					end if
 
 					lexSkipToken( )
 
 				case else
-					hReportError( FB_ERRMSG_SYNTAXERROR )
-					exit function
+					if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: skip until next ','
+						cSkipUntil( CHAR_COMMA )
+					end if
 				end select
 
 				'' ','?
 				if( lexGetToken( ) <> CHAR_COMMA ) then
 					exit do
-				else
-					lexSkipToken( LEXCHECK_NODEFINE )
 				end if
 
+				lexSkipToken( LEXCHECK_NODEFINE )
 			loop
 
 		case else
-			hReportError( FB_ERRMSG_SYNTAXERROR )
-			exit function
+			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			end if
 		end select
 
 	end select

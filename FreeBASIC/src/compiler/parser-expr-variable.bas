@@ -192,7 +192,7 @@ private function hTypeField _
 
     	sym = symbLookupUDTElm( subtype, lexGetText( ) )
     	if( sym = NULL ) then
-    		hReportError( FB_ERRMSG_ELEMENTNOTDEFINED )
+    		hReportUndefError( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) )
     		exit function
     	end if
 
@@ -932,7 +932,7 @@ function cVariableEx _
 
 	else
 		if( env.opt.explicit ) then
-			hReportError( FB_ERRMSG_VARIABLENOTDECLARED )
+			hReportUndefError( FB_ERRMSG_VARIABLENOTDECLARED, id )
 			exit function
 		end if
 

@@ -102,6 +102,9 @@ sub symbInitSymbols static
 	'' common chain list
 	listNew( @symb.chainlist, FB_INITSYMBOLNODES, len( FBSYMCHAIN ), LIST_FLAGS_NOCLEAR )
 
+    ''
+    poolNew( @symb.namepool, FB_INITSYMBOLNODES \ 8, FB_MAXNAMELEN\8+1, FB_MAXNAMELEN+1 )
+
 	'' global namespace - not complete, just a mock symbol
     with symb.globnspc.nspc
         symbSymTbInit( @.symtb, NULL )
@@ -110,9 +113,6 @@ sub symbInitSymbols static
     	.implist.tail = NULL
     	.next = NULL
     end with
-
-    ''
-    poolNew( @symb.namepool, FB_INITSYMBOLNODES \ 8, FB_MAXNAMELEN\8+1, FB_MAXNAMELEN+1 )
 
 	''
 	symb.namespc = @symb.globnspc
@@ -129,6 +129,8 @@ sub symbInitSymbols static
 	symb.lastlbl = NULL
 
 	symbDataInit( )
+
+	''
 
 end sub
 
@@ -148,9 +150,6 @@ sub symbInit _
 
 	'' vars, arrays, procs & consts
 	symbInitSymbols( )
-
-	''
-	symbDataInit( )
 
 	''
 	symbMangleInit( )

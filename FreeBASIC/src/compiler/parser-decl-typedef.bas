@@ -86,35 +86,41 @@ function cTypedefDecl _
     	else
     		select case lexGetClass( )
     		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD
+				'' don't allow explicit namespaces
+				ns = cNamespace( )
+    			if( ns <> NULL ) then
+					if( ns <> symbGetCurrentNamespc( ) ) then
+						if( hReportError( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
+							exit function
+						end if
+    				end if
+    			else
+    				if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+    					exit function
+    				end if
+    			end if
+
+    			'' if inside a namespace, symbols can't contain periods (.)'s
+    			if( symbIsGlobalNamespc( ) = FALSE ) then
+    				if( lexGetPeriodPos( ) > 0 ) then
+    					if( hReportError( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+    						exit function
+    					end if
+    				end if
+    			end if
+
+				id = *lexGetText( )
+				lexSkipToken( )
 
     		case else
-    			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-    			exit function
+    			if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+    				exit function
+    			else
+    				'' error recovery: fake an id
+    				id = *hMakeTmpStr( )
+    			end if
 		    end select
 
-			'' don't allow explicit namespaces
-			ns = cNamespace( )
-    		if( ns <> NULL ) then
-				if( ns <> symbGetCurrentNamespc( ) ) then
-					hReportError( FB_ERRMSG_DECLOUTSIDENAMESPC )
-					exit function
-    			end if
-    		else
-    			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
-    				exit function
-    			end if
-    		end if
-
-    		'' if inside a namespace, symbols can't contain periods (.)'s
-    		if( symbIsGlobalNamespc( ) = FALSE ) then
-    			if( lexGetPeriodPos( ) > 0 ) then
-    				hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
-    				exit function
-    			end if
-    		end if
-
-			id = *lexGetText( )
-			lexSkipToken( )
 			pid = @id
     	end if
 
@@ -137,8 +143,12 @@ function cTypedefDecl _
 														ptname, _
 														FB_SYMBCLASS_FWDREF )
 					if( subtype = NULL ) then
-						hReportError( FB_ERRMSG_DUPDEFINITION )
-						exit function
+						if( hReportError( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+							exit function
+						else
+							'' error recovery: fake a symbol
+							subtype = symbAddFwdRef( hMakeTmpStr( ) )
+						end if
 					end if
 				end if
     		end if
@@ -185,13 +195,19 @@ function cTypedefDecl _
 			end if
 
 			if( isdup ) then
-				hReportError( FB_ERRMSG_DUPDEFINITION, TRUE )
-				exit function
+				if( hReportError( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
+					exit function
+				end if
 			end if
     	end if
 
-    '' ','?
-    loop while( hMatch( FB_TK_DECLSEPCHAR ) )
+    	'' ','?
+    	if( lexGetToken( ) <> CHAR_COMMA ) then
+    		exit do
+    	end if
+
+    	lexSkipToken( )
+    loop
 
 	function = TRUE
 

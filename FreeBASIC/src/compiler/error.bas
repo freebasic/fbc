@@ -28,12 +28,6 @@ option escape
 #include once "inc\ir.bi"
 #include once "inc\lex.bi"
 
-type FB_ERRCTX
-	lasterror 	as integer
-	lastline	as integer
-	errcnt		as integer
-end type
-
 type FBWARNING
 	level		as integer
 	text		as zstring ptr
@@ -41,7 +35,7 @@ end type
 
 
 ''globals
-	dim shared ctx as FB_ERRCTX
+	dim shared errctx as FB_ERRCTX
 
 	dim shared warningMsgs( 1 to FB_WARNINGMSGS-1 ) as FBWARNING = _
 	{ _
@@ -178,43 +172,43 @@ end type
 		@"Expected END EXTERN", _
 		@"Expected 'END SUB'", _
 		@"Expected 'END FUNCTION'", _
-		@"Declaration outside the original namespace" _
+		@"Declaration outside the original namespace", _
+		@"Too many errors, exiting" _
 	}
 
 
 '':::::
 sub errInit
 
-	ctx.lastline= -1
-	ctx.errcnt	= 0
+	errctx.cnt = 0
+	errctx.lastmsg = FB_ERRMSG_OK
+	errctx.lastline = -1
+	errctx.laststmt = -1
+
+	'' alloc the undefined symbols tb, used to not report them more than once
+	hashInit( )
+	hashNew( @errctx.undefhash, 64, TRUE )
 
 end sub
 
 '':::::
 sub errEnd
 
+	hashFree( @errctx.undefhash )
+	hashEnd( )
+
 end sub
 
-'':::::
-sub hReportErrorEx( byval errnum as integer, _
-					byval msgex as zstring ptr, _
-					byval linenum as integer = 0 )
+private sub hPrintErrMsg _
+	( _
+		byval errnum as integer, _
+		byval msgex as zstring ptr, _
+		byval linenum as integer, _
+		byval showerror as integer = TRUE _
+	) static
 
     dim as zstring ptr msg
     dim as string token_pos
-
-	if( linenum = 0 ) then
-		linenum = lexLineNum( )
-
-		if( linenum = ctx.lastline ) then
-			exit sub
-		end if
-
-		ctx.lasterror = errnum
-		ctx.lastline  = linenum
-	end if
-
-	ctx.errcnt += 1
 
 	if( (errnum < 1) or (errnum >= FB_ERRMSGS) ) then
 		msg = NULL
@@ -240,7 +234,7 @@ sub hReportErrorEx( byval errnum as integer, _
 			print
 		end if
 
-		if( ( linenum > 0 ) and ( env.clopt.showerror ) ) then
+		if( ( linenum > 0 ) and ( showerror ) ) then
 			print
 			print lexPeekCurrentLine( token_pos )
 			print token_pos
@@ -252,9 +246,52 @@ sub hReportErrorEx( byval errnum as integer, _
 end sub
 
 '':::::
-sub hReportError( byval errnum as integer, _
-				  byval isbefore as integer = FALSE )
-    dim token as string, msgex as string
+function hReportErrorEx _
+	( _
+		byval errnum as integer, _
+		byval msgex as zstring ptr, _
+		byval linenum as integer = 0 _
+	)
+
+    '' too many errors?
+    if( errctx.cnt >= env.clopt.maxerrors ) then
+    	return FALSE
+    end if
+
+	if( linenum = 0 ) then
+		'' only one error per stmt
+		if( env.stmtcnt = errctx.laststmt ) then
+			return TRUE
+		end if
+
+		linenum = lexLineNum( )
+
+		errctx.lastmsg = errnum
+		errctx.lastline = linenum
+    	errctx.laststmt = env.stmtcnt
+	end if
+
+    hPrintErrMsg( errnum, msgex, linenum, env.clopt.showerror )
+
+	errctx.cnt += 1
+
+    if( errctx.cnt >= env.clopt.maxerrors ) then
+		hPrintErrMsg( FB_ERRMSG_TOOMANYERRORS, NULL, linenum, FALSE )
+		function = FALSE
+	else
+		function = TRUE
+	end if
+
+end function
+
+'':::::
+function hReportError _
+	( _
+		byval errnum as integer, _
+		byval isbefore as integer = FALSE _
+	)
+
+    dim as string token, msgex
 
 	token = *lexGetText( )
 	if( len( token ) > 0 ) then
@@ -268,28 +305,16 @@ sub hReportError( byval errnum as integer, _
 		msgex = ""
 	end if
 
-    ''
-	hReportErrorEx( errnum, msgex )
-
-end sub
-
-'':::::
-function hGetLastError as integer
-
-	function = ctx.lasterror
+	function = hReportErrorEx( errnum, msgex )
 
 end function
 
 '':::::
-function hGetErrorCnt as integer
-
-	function = ctx.errcnt
-
-end function
-
-'':::::
-sub hReportWarning( byval msgnum as integer, _
-				 	byval msgex as zstring ptr )
+sub hReportWarning _
+	( _
+		byval msgnum as integer, _
+		byval msgex as zstring ptr _
+	)
 
 	if( (msgnum < 1) or (msgnum >= FB_WARNINGMSGS) ) then
 		exit sub
@@ -316,10 +341,12 @@ end sub
 
 
 '':::::
-private function hReportMakeDesc( byval proc as FBSYMBOL ptr, _
-								  byval pnum as integer, _
-								  byval pid as zstring ptr _
-								) as zstring ptr
+private function hReportMakeDesc _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval pnum as integer, _
+		byval pid as zstring ptr _
+	) as zstring ptr
 
     static as zstring * FB_MAXNAMELEN*2+32+1 desc
     dim as zstring ptr pname
@@ -398,22 +425,77 @@ private function hReportMakeDesc( byval proc as FBSYMBOL ptr, _
 end function
 
 '':::::
-sub hReportParamError( byval proc as any ptr, _
-					   byval pnum as integer, _
-					   byval pid as zstring ptr, _
-					   byval msgnum as integer )
+function hReportParamError _
+	( _
+		byval proc as any ptr, _
+		byval pnum as integer, _
+		byval pid as zstring ptr, _
+		byval msgnum as integer _
+	) as integer
 
-	hReportErrorEx( msgnum, *hReportMakeDesc( proc, pnum, pid ) )
+	static as any ptr lastproc = NULL
+	static as integer lastpnum = -1
+	dim as integer cnt
 
-end sub
+	'' don't report more than one error in a single param
+	if( proc = lastproc ) then
+		if( pnum = lastpnum ) then
+			return TRUE
+		end if
+
+		cnt = errctx.cnt
+	end if
+
+	'' new param, take as a new statement
+	errctx.laststmt = -1
+
+	function = hReportErrorEx( msgnum, *hReportMakeDesc( proc, pnum, pid ) )
+
+	'' if it's the same proc, n-param errors will count as just one
+	if( proc = lastproc ) then
+		errctx.cnt = cnt
+	end if
+
+	lastproc = proc
+	lastpnum = pnum
+
+end function
 
 '':::::
-sub hReportParamWarning( byval proc as any ptr, _
-					   	 byval pnum as integer, _
-					   	 byval pid as zstring ptr, _
-						 byval msgnum as integer )
+sub hReportParamWarning _
+	( _
+		byval proc as any ptr, _
+		byval pnum as integer, _
+		byval pid as zstring ptr, _
+		byval msgnum as integer _
+	)
 
 	hReportWarning( msgnum, *hReportMakeDesc( proc, pnum, pid ) )
 
 end sub
 
+'':::::
+function hReportUndefError _
+	( _
+		byval errnum as integer, _
+		byval id as zstring ptr _
+	) as integer
+
+	dim as uinteger hash
+	dim as zstring ptr id_cpy
+
+	'' already reported?
+	hash = hashHash( id )
+	if( hashLookupEx( @errctx.undefhash, id, hash ) <> NULL ) then
+		return errctx.cnt < env.clopt.maxerrors
+	end if
+
+	'' add to hash and report the error
+	id_cpy = NULL
+	ZStrAssign( @id_cpy, id )
+
+	hashAdd( @errctx.undefhash, id_cpy, id_cpy, hash )
+
+	function = hReportErrorEx( errnum, id )
+
+end function

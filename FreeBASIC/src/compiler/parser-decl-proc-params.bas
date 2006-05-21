@@ -57,24 +57,29 @@ function cParameters _
 			exit do
 		end if
 
-	'' ','
-	loop while( hMatch( CHAR_COMMA ) )
+		'' ','
+	    if( lexGetToken( ) <> CHAR_COMMA ) then
+	    	exit do
+	    end if
+
+		lexSkipToken( )
+	loop
 
 	function = n
 
 end function
 
 '':::::
-private sub hParamError _
+private function hParamError _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval argnum as integer, _
 		byval argid as zstring ptr _
-	)
+	) as integer
 
-	hReportParamError( proc, argnum+1, argid, FB_ERRMSG_ILLEGALPARAMSPECAT )
+	function = hReportParamError( proc, argnum+1, argid, FB_ERRMSG_ILLEGALPARAMSPECAT )
 
-end sub
+end function
 
 '':::::
 private function cOptionalExpr _
@@ -114,14 +119,55 @@ private function cOptionalExpr _
     	sym = symbAddTempVar( dtype, subtype, FALSE, FALSE )
 
     	expr = cVariableInit( sym, TRUE )
-    	if( expr = NULL ) then
-    		exit function
-    	end if
-
     	symbDelVar( sym )
     end if
 
 	function = expr
+
+end function
+
+'':::::
+private function hMockParam _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval pmode as integer = INVALID _
+	) as FBSYMBOL ptr
+
+	dim as FBSYMBOL ptr s
+	dim as integer dtype, plen
+
+	if( pmode = INVALID ) then
+		pmode = env.opt.parammode
+	end if
+
+    dtype = FB_DATATYPE_INTEGER
+
+    select case pmode
+    case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
+    	plen = FB_POINTERSIZE
+
+    case FB_PARAMMODE_BYVAL
+    	if( dtype = FB_DATATYPE_STRING ) then
+    		plen = FB_POINTERSIZE
+    	else
+    		plen = symbCalcLen( dtype, NULL, TRUE )
+    	end if
+
+    case FB_PARAMMODE_VARARG
+    	dtype = INVALID
+    	plen = 0
+    end select
+
+	s = symbAddProcParam( proc, _
+						  NULL, _
+						  dtype, NULL, 0, plen, _
+					  	  pmode, _
+					  	  INVALID, _
+					  	  FALSE, NULL )
+
+	symbSetIsMock( s )
+
+	function = s
 
 end function
 
@@ -139,7 +185,8 @@ private function hParamDecl _
 	static as integer arglevel = 0
 	dim as zstring ptr pid
 	dim as ASTNODE ptr optval
-	dim as integer ptype, pmode, plen, psuffix, optional, ptrcnt, readid, mode, dotpos
+	dim as integer ptype, pmode, plen, psuffix, optional, ptrcnt
+	dim as integer readid, mode, dotpos, doskip
 	dim as FBSYMBOL ptr subtype
 
 	function = NULL
@@ -152,23 +199,41 @@ private function hParamDecl _
 
 		    ''
 		    if( lexGetToken( ) <> CHAR_DOT ) then
-		    	hParamError( proc, symbGetProcParams( proc ), lexGetText( ) )
-		    	exit function
+		    	if( hParamError( proc, symbGetProcParams( proc ), "..." ) = FALSE ) then
+		    		exit function
+		    	else
+		    		'' error recovery: skip until next ')', this is the last param
+		    		cSkipUntil( CHAR_RPRNT )
+		    		hMockParam( proc, FB_PARAMMODE_VARARG )
+		    	end if
+			else
+				lexSkipToken( )
 		    end if
 
 			'' not cdecl or is it the first arg?
 			if( (procmode <> FB_FUNCMODE_CDECL) or _
 				(symbGetProcParams( proc ) = 0) ) then
-				hParamError( proc, symbGetProcParams( proc ), lexGetText( ) )
-				exit function
+				if( hParamError( proc, symbGetProcParams( proc ), "..." ) = FALSE ) then
+					exit function
+				else
+					return hMockParam( proc, FB_PARAMMODE_VARARG )
+				end if
 			end if
-
-			lexSkipToken( )
 
 			return symbAddProcParam( proc, NULL, _
 						   	     	 INVALID, NULL, 0, _
 						   	     	 0, FB_PARAMMODE_VARARG, INVALID, _
 						   	      	 FALSE, NULL )
+
+		'' syntax error..
+		else
+		    if( hParamError( proc, symbGetProcParams( proc ), "..." ) = FALSE ) then
+		    	exit function
+		    else
+		    	'' error recovery: skip until next ')', this is the last param
+		    	cSkipUntil( CHAR_RPRNT )
+		    	return hMockParam( proc, FB_PARAMMODE_VARARG )
+		    end if
 		end if
 	end if
 
@@ -190,14 +255,25 @@ private function hParamDecl _
 		if( isproto = FALSE ) then
 			'' anything but keywords will be catch by parser (could be a ')' too)
 			if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
-				hParamError( proc, symbGetProcParams( proc ), lexGetText( ) )
-				exit function
+				if( hParamError( proc, symbGetProcParams( proc ), lexGetText( ) ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: skip until next ',' or ')' and return a mock param
+					cSkipUntil( CHAR_COMMA )
+					return hMockParam( proc, mode )
+				end if
 			end if
 		end if
 
 		if(	lexGetClass( ) <> FB_TKCLASS_KEYWORD ) then
 			if( symbGetProcParams( proc ) > 0 ) then
-				hParamError( proc, symbGetProcParams( proc ), lexGetText( ) )
+				if( hParamError( proc, symbGetProcParams( proc ), lexGetText( ) ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: skip until next ',' or ')' and return a mock param
+					cSkipUntil( CHAR_COMMA )
+					return hMockParam( proc, mode )
+				end if
 			end if
 			exit function
 		end if
@@ -212,8 +288,13 @@ private function hParamDecl _
 
 	''
 	if( arglevel >= FB_MAXARGRECLEVEL ) then
-		hReportError( FB_ERRMSG_RECLEVELTOODEEP )
-		exit function
+		if( hReportError( FB_ERRMSG_RECLEVELTOODEEP ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip until next ',' or ')' and return a mock param
+			cSkipUntil( CHAR_COMMA )
+			return hMockParam( proc, mode )
+		end if
 	end if
 
 	pid = @idTB(arglevel)
@@ -226,11 +307,13 @@ private function hParamDecl _
 		lexSkipToken( )
 
 		'' ('('')')
-		if( hMatch( CHAR_LPRNT ) ) then
+		if( lexGetToken( ) = CHAR_LPRNT ) then
+			lexSkipToken( )
 			if( (mode <> INVALID) or _
 				(hMatch( CHAR_RPRNT ) = FALSE) ) then
-				hParamError( proc, symbGetProcParams( proc ), pid )
-				exit function
+				if( hParamError( proc, symbGetProcParams( proc ), pid ) = FALSE ) then
+					exit function
+				end if
 			end if
 
 			pmode = FB_PARAMMODE_BYDESC
@@ -255,17 +338,29 @@ private function hParamDecl _
 	end if
 
     '' (AS SymbolType)?
-    if( hMatch( FB_TK_AS ) ) then
+    doskip = FALSE
+    if( lexGetToken( ) = FB_TK_AS ) then
+    	lexSkipToken( )
     	if( ptype <> INVALID ) then
-    		hParamError( proc, symbGetProcParams( proc ), pid )
-    		exit function
+    		if( hParamError( proc, symbGetProcParams( proc ), pid ) ) then
+    			exit function
+    		else
+    			ptype = INVALID
+    		end if
     	end if
 
     	arglevel += 1
     	if( cSymbolType( ptype, subtype, plen, ptrcnt ) = FALSE ) then
-    		hParamError( proc, symbGetProcParams( proc ), pid )
-    		arglevel -= 1
-    		exit function
+    		if( hParamError( proc, symbGetProcParams( proc ), pid ) = FALSE ) then
+    			arglevel -= 1
+    			exit function
+    		else
+    			'' error recovery: fake type
+    			ptype = FB_DATATYPE_INTEGER
+    			subtype = NULL
+    			ptrcnt = 0
+    			doskip = TRUE
+    		end if
     	end if
     	arglevel -= 1
 
@@ -273,8 +368,11 @@ private function hParamDecl _
 
     else
     	if( readid = FALSE ) then
-    		hParamError( proc, symbGetProcParams( proc ), "" )
-    		exit function
+    		if( hParamError( proc, symbGetProcParams( proc ), "" ) = FALSE ) then
+    			exit function
+    		else
+    			doskip = TRUE
+    		end if
     	end if
 
     	subtype = NULL
@@ -288,18 +386,30 @@ private function hParamDecl _
         psuffix = ptype
     end if
 
+	if( doskip ) then
+		cSkipUntil( CHAR_COMMA )
+	end if
+
     '' check for invalid args
     select case as const ptype
     '' can't be a fixed-len string
     case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    	hParamError( proc, symbGetProcParams( proc ), pid )
-    	exit function
+    	if( hParamError( proc, symbGetProcParams( proc ), pid ) = FALSE ) then
+    		exit function
+    	else
+    		'' error recovery: fake correct type
+    		ptype += FB_DATATYPE_POINTER
+    	end if
 
 	'' can't be as ANY on non-prototypes
     case FB_DATATYPE_VOID
     	if( isproto = FALSE ) then
-    		hParamError( proc, symbGetProcParams( proc ), pid )
-    		exit function
+    		if( hParamError( proc, symbGetProcParams( proc ), pid ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: fake correct type
+    			ptype += FB_DATATYPE_POINTER
+    		end if
     	end if
     end select
 
@@ -314,8 +424,12 @@ private function hParamDecl _
     	if( isproto ) then
     		select case ptype
     		case FB_DATATYPE_VOID
-    			hParamError( proc, symbGetProcParams( proc ), pid )
-    			exit function
+    			if( hParamError( proc, symbGetProcParams( proc ), pid ) = FALSE ) then
+    				exit function
+    			else
+    				'' error recovery: fake correct param
+    				ptype += FB_DATATYPE_POINTER
+    			end if
     		end select
     	end if
 
@@ -330,19 +444,31 @@ private function hParamDecl _
     	'' contains a period?
     	if( dotpos > 0 ) then
     		if( ptype = FB_DATATYPE_USERDEF ) then
-    			hParamError( proc, symbGetProcParams( proc ), pid )
-    			exit function
+    			if( hParamError( proc, symbGetProcParams( proc ), pid ) = FALSE ) then
+    				exit function
+    			end if
     		end if
     	end if
     end if
 
     '' ('=' (NUM_LIT|STR_LIT))?
-    if( hMatch( FB_TK_ASSIGN ) ) then
+    if( lexGetToken( ) = FB_TK_ASSIGN ) then
+    	lexSkipToken( )
         optional = TRUE
 
 		optval = cOptionalExpr( pmode, ptype, subtype )
 		if( optval = NULL ) then
- 	   		hParamError( proc, symbGetProcParams( proc ), pid )
+ 	   		if( hParamError( proc, symbGetProcParams( proc ), pid ) = FALSE ) then
+ 	   			exit function
+ 	   		else
+ 	   			'' error recovery: skip until next ',' or ')' and create a def value
+ 	   			cSkipUntil( CHAR_COMMA )
+				if( ptype <> FB_DATATYPE_USERDEF ) then
+					optval = astNewCONSTz( ptype )
+				else
+					optional = FALSE
+				end if
+ 	   		end if
  	   	end if
 
     else

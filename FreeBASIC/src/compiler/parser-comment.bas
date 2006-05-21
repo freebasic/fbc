@@ -91,8 +91,8 @@ function cDirective as integer static
 
 		'' ':'
 		if( hMatch( CHAR_COLON ) = FALSE ) then
-			hReportError( FB_ERRMSG_SYNTAXERROR )
-			exit function
+			function = hReportError( FB_ERRMSG_SYNTAXERROR )
+			exit select
 		end if
 
 		'' "STR_LIT"
@@ -102,8 +102,8 @@ function cDirective as integer static
 		else
 			'' '\''
 			if( lexGetToken( LEX_FLAGS or LEXCHECK_NOWHITESPC ) <> CHAR_APOST ) then
-				hReportError( FB_ERRMSG_SYNTAXERROR )
-				exit function
+				function = hReportError( FB_ERRMSG_SYNTAXERROR )
+				exit select
 			else
 				lexSkipToken( LEX_FLAGS or LEXCHECK_NOWHITESPC )
 			end if
@@ -112,8 +112,8 @@ function cDirective as integer static
 
 			'' '\''
 			if( hMatch( CHAR_APOST ) = FALSE ) then
-				hReportError( FB_ERRMSG_SYNTAXERROR )
-				exit function
+				function = hReportError( FB_ERRMSG_SYNTAXERROR )
+				exit select
 			end if
 		end if
 
@@ -128,12 +128,17 @@ function cDirective as integer static
 
 	case else
 		if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
-			hReportError( FB_ERRMSG_SYNTAXERROR )
-			exit function
+			function = hReportError( FB_ERRMSG_SYNTAXERROR )
 		end if
 	end select
 
-	do until( (lexGetToken( ) = FB_TK_EOL) or (lexGetToken( ) = FB_TK_EOF) )
+	'' skip until next line
+	do
+		select case lexGetToken( )
+		case FB_TK_EOL, FB_TK_EOF
+			exit do
+		end select
+
 		lexSkipToken( )
 	loop
 

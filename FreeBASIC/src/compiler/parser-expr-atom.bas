@@ -39,35 +39,49 @@ function cParentExpression _
   	function = FALSE
 
   	'' '('
-  	if( hMatch( CHAR_LPRNT ) = FALSE ) then
+  	if( lexGetToken( ) <> CHAR_LPRNT ) then
   		exit function
   	end if
+
+  	lexSkipToken( )
 
   	'' ++parent cnt
   	env.prntcnt += 1
 
   	if( cExpression( parexpr ) = FALSE ) then
-  		'' calling a SUB? it can be a BYVAL or nothing due the optional ()'s
-  		if( env.prntopt = FALSE ) then
-  			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
+  		'' calling a SUB? it could be a BYVAL or nothing due the optional ()'s
+  		if( env.prntopt ) then
   			exit function
   		end if
 
-  	else
-  		'' ')'
-  		if( hMatch( CHAR_RPRNT ) ) then
-  			'' --parent cnt
-  			env.prntcnt -= 1
+  		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+  			exit function
   		else
-  			'' not calling a SUB or parent cnt = 0?
-  			if( (env.prntopt = FALSE) or (env.prntcnt = 0) ) then
-  				hReportError( FB_ERRMSG_EXPECTEDRPRNT )
+  			'' error recovery: skip until next ')'
+  			cSkipUntil( CHAR_RPRNT, TRUE )
+  			return TRUE
+  		end if
+    end if
+
+  	'' ')'
+  	if( lexGetToken( ) = CHAR_RPRNT ) then
+  		lexSkipToken( )
+  		'' --parent cnt
+  		env.prntcnt -= 1
+
+  	else
+  		'' not calling a SUB or parent cnt = 0?
+  		if( (env.prntopt = FALSE) or (env.prntcnt = 0) ) then
+  			if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
   				exit function
+  			else
+  				'' error recovery: skip until next ')'
+  				cSkipUntil( CHAR_RPRNT, TRUE )
   			end if
   		end if
-
-  		function = TRUE
   	end if
+
+  	function = TRUE
 
 end function
 

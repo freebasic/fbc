@@ -1014,17 +1014,23 @@ function astGetStrLitSymbol( byval n as ASTNODE ptr ) as FBSYMBOL ptr static
 end function
 
 '':::::
-sub astConvertValue( byval n as ASTNODE ptr, _
-					 byval v as FBVALUE ptr, _
-					 byval todtype as integer ) static
+sub astConvertValue _
+	( _
+		byval n as ASTNODE ptr, _
+		byval v as FBVALUE ptr, _
+		byval todtype as integer _
+	) static
 
 	hConvertValue( @n->con.val, n->dtype, v, todtype )
 
 end sub
 
 '':::::
-function astCheckConst( byval dtype as integer, _
-					    byval n as ASTNODE ptr ) as ASTNODE ptr static
+function astCheckConst _
+	( _
+		byval dtype as integer, _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr static
 
 	dim as longint lval
 	dim as ulongint ulval
@@ -1047,7 +1053,6 @@ function astCheckConst( byval dtype as integer, _
     	if( dval <> 0 ) then
     		if( (dval < dmin) or (dval > dmax) ) then
     			hReportError( FB_ERRMSG_MATHOVERFLOW, TRUE )
-    			return NULL
 			end if
 		end if
 

@@ -459,7 +459,7 @@ function astProcEnd _
 	''
 	irProcEnd( sym )
 
-	if( (res = TRUE) and (hGetLastError( ) = FB_ERRMSG_OK) ) then
+	if( (res = TRUE) and (hGetErrorCnt( ) = 0) ) then
 		symbSetIsParsed( sym )
 
 		if( n->block.ismain = FALSE ) then
@@ -477,6 +477,10 @@ function astProcEnd _
 			hProcFlushAll( )
 
 		end if
+
+	'' errors.. just remove from hash so no false dups will appear
+	else
+		symbDelSymbolTb( @sym->proc.symtb, TRUE )
 	end if
 
 	'' back to main (or NULL if main was emitted already)

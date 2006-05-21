@@ -31,16 +31,22 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-private sub hParamError( byval f as ASTNODE ptr, _
-					     byval msgnum as integer = FB_ERRMSG_PARAMTYPEMISMATCHAT )
+private sub hParamError _
+	( _
+		byval f as ASTNODE ptr, _
+		byval msgnum as integer = FB_ERRMSG_PARAMTYPEMISMATCHAT _
+	)
 
 	hReportParamError( f->sym, f->call.args+1, NULL, msgnum )
 
 end sub
 
 '':::::
-private sub hParamWarning( byval f as ASTNODE ptr, _
-						   byval msgnum as integer )
+private sub hParamWarning _
+	( _
+		byval f as ASTNODE ptr, _
+		byval msgnum as integer _
+	)
 
 	hReportParamWarning( f->sym, f->call.args+1, NULL, msgnum )
 

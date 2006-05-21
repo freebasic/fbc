@@ -1,3 +1,9 @@
+[ ] non-fatal error handling:
+    - update func call
+    - update var expr
+    - update compounds
+    - update quirks, only when really needed, the line/stmt will be skipped anyways
+
 [ ] namespaces:
     - add access to the global ns, make GLOBAL a reserved word as in vb.net
       - can't add the symbol at symbinit()?
@@ -138,8 +144,4 @@
     - static constructors and destructors (including with non-constant args inside scope blocks)
     - some support for RTTI
 
-[ ] non-fatal error handling:
-    - recover from non-fatal errors, without quiting the parser
-    - take care with nodes, they must be valid
-    - don't repeat missing symbols errors, do like GCC, only once
-    - there are over 500 calls to ReportError, all them must be updated
+

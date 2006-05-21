@@ -77,8 +77,9 @@ function cIdentifier _
     		if( ns <> symbGetCurrentNamespc( ) ) then
     			'' anything but the global one? (same as in C++)
     			if( symbIsGlobalNamespc( ) = FALSE ) then
-    				hReportError( FB_ERRMSG_DECLOUTSIDENAMESPC )
-    				exit function
+    				if( hReportError( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
+    					exit function
+    				end if
     			end if
     		end if
 
@@ -107,7 +108,7 @@ function cIdentifier _
     	chain_ = symbLookupAt( ns, lexGetText( ) )
     	if( chain_ = NULL ) then
            	if( showerror ) then
-           		hReportError( FB_ERRMSG_UNDEFINEDSYMBOL )
+           		hReportUndefError( FB_ERRMSG_UNDEFINEDSYMBOL, lexGetText( ) )
     		else
     			hSkipSymbol( )
            	end if
@@ -145,16 +146,22 @@ function cNamespace _
 
     	'' '.'?
     	if( lexGetToken( ) <> CHAR_DOT ) then
-    		hReportError( FB_ERRMSG_EXPECTEDPERIOD )
-    		return NULL
+    		if( hReportError( FB_ERRMSG_EXPECTEDPERIOD ) = FALSE ) then
+    			return NULL
+    		else
+    			exit do
+    		end if
     	end if
 
     	lexSkipToken( LEXCHECK_NOLOOKUP )
 
     	'' ID
     	if( lexGetToken( ) <> FB_TK_ID ) then
-    		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-    		return NULL
+    		if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+    			return NULL
+    		else
+    			exit do
+    		end if
     	end if
 
     	chain_ = symbLookupAt( chain_->sym, lexGetText( ) )

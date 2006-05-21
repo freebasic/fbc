@@ -140,6 +140,7 @@ enum FBERRMSG_ENUM
 	FB_ERRMSG_EXPECTEDENDSUB
 	FB_ERRMSG_EXPECTEDENDFUNCTION
 	FB_ERRMSG_DECLOUTSIDENAMESPC
+	FB_ERRMSG_TOOMANYERRORS
 
 	FB_ERRMSGS
 end enum
@@ -179,6 +180,16 @@ enum FBRTERROR_ENUM
 	FB_RTERROR_SIGQUIT
 end enum
 
+#include once "inc\hash.bi"
+
+type FB_ERRCTX
+	cnt				as integer
+	lastmsg 		as integer
+	lastline		as integer
+	laststmt		as integer
+	undefhash		as THASH				'' undefined symbols
+end type
+
 
 declare	sub 		errInit					( _
 											)
@@ -186,21 +197,15 @@ declare	sub 		errInit					( _
 declare	sub 		errEnd					( _
 											)
 
-declare sub 		hReportErrorEx			( _
+declare function	hReportErrorEx			( _
 												byval errnum as integer, _
 												byval msgex as zstring ptr, _
 												byval linenum as integer = 0 _
-											)
-
-declare sub 		hReportError			( _
-												byval errnum as integer, _
-												byval isbefore as integer = FALSE _
-											)
-
-declare function 	hGetLastError 			( _
 											) as integer
 
-declare function 	hGetErrorCnt 			( _
+declare function	hReportError			( _
+												byval errnum as integer, _
+												byval isbefore as integer = FALSE _
 											) as integer
 
 declare sub 		hReportWarning			( _
@@ -208,12 +213,12 @@ declare sub 		hReportWarning			( _
 												byval msgex as zstring ptr = NULL _
 											)
 
-declare sub 		hReportParamError		( _
+declare function	hReportParamError		( _
 												byval proc as any ptr, _
 												byval pnum as integer, _
 												byval pid as zstring ptr, _
 												byval msgnum as integer _
-											)
+											) as integer
 
 declare sub 		hReportParamWarning		( _
 												byval proc as any ptr, _
@@ -221,5 +226,26 @@ declare sub 		hReportParamWarning		( _
 												byval pid as zstring ptr, _
 												byval msgnum as integer _
 											)
+
+declare function	hReportUndefError		( _
+												byval errnum as integer, _
+												byval id as zstring ptr _
+											) as integer
+
+''
+'' macros
+''
+#define hGetLastError( ) iif( errctx.cnt >= env.clopt.maxerrors, _
+							  errctx.lastmsg, _
+							  cint(FB_ERRMSG_OK) )
+
+#define hGetErrorCnt( ) errctx.cnt
+
+
+''
+'' inter-module globals
+''
+extern errctx as FB_ERRCTX
+
 
 #endif ''__ERROR_BI__

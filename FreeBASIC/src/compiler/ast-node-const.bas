@@ -29,7 +29,11 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function astNewCONSTstr( byval v as zstring ptr ) as ASTNODE ptr static
+function astNewCONSTstr _
+	( _
+		byval v as zstring ptr _
+	) as ASTNODE ptr static
+
     dim as FBSYMBOL ptr tc
 
 	'' assuming no escape sequences are used
@@ -43,7 +47,11 @@ function astNewCONSTstr( byval v as zstring ptr ) as ASTNODE ptr static
 end function
 
 '':::::
-function astNewCONSTwstr( byval v as wstring ptr ) as ASTNODE ptr static
+function astNewCONSTwstr _
+	( _
+		byval v as wstring ptr _
+	) as ASTNODE ptr static
+
     dim as FBSYMBOL ptr tc
 
 	'' assuming no escape sequences are used
@@ -58,9 +66,13 @@ end function
 
 
 '':::::
-function astNewCONSTi( byval value as integer, _
-					   byval dtype as integer, _
-					   byval subtype as FBSYMBOL ptr ) as ASTNODE ptr static
+function astNewCONSTi _
+	( _
+		byval value as integer, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
 
 	'' alloc new node
@@ -77,8 +89,12 @@ function astNewCONSTi( byval value as integer, _
 end function
 
 '':::::
-function astNewCONSTf( byval value as double, _
-					   byval dtype as integer ) as ASTNODE ptr static
+function astNewCONSTf _
+	( _
+		byval value as double, _
+		byval dtype as integer _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
 
 	'' alloc new node
@@ -90,13 +106,17 @@ function astNewCONSTf( byval value as double, _
 	end if
 
 	n->con.val.float = value
-	n->defined   = TRUE
+	n->defined = TRUE
 
 end function
 
 '':::::
-function astNewCONSTl( byval value as longint, _
-					   byval dtype as integer ) as ASTNODE ptr static
+function astNewCONSTl _
+	( _
+		byval value as longint, _
+		byval dtype as integer _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
 
 	'' alloc new node
@@ -108,17 +128,22 @@ function astNewCONSTl( byval value as longint, _
 	end if
 
 	n->con.val.long  = value
-	n->defined   = TRUE
+	n->defined = TRUE
 
 end function
 
 '':::::
-function astNewCONST( byval v as FBVALUE ptr, _
-					  byval dtype as integer ) as ASTNODE ptr static
+function astNewCONST _
+	( _
+		byval v as FBVALUE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_CONST, dtype )
+	n = astNewNode( AST_NODECLASS_CONST, dtype, subtype )
 	function = n
 
 	if( n = NULL ) then
@@ -127,14 +152,56 @@ function astNewCONST( byval v as FBVALUE ptr, _
 
 	select case as const dtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-		n->con.val.long = v->long
+		if( v <> NULL ) then
+			n->con.val.long = v->long
+		else
+			n->con.val.long = 0
+		end if
+
 	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-		n->con.val.float = v->float
+		if( v <> NULL ) then
+			n->con.val.float = v->float
+	    else
+	    	n->con.val.float = 0.0
+	    end if
+
 	case else
-		n->con.val.int = v->int
+		if( v <> NULL ) then
+			n->con.val.int = v->int
+		else
+			n->con.val.int = 0
+		end if
 	end select
 
 	n->defined = TRUE
+
+end function
+
+'':::::
+function astNewCONSTz _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr static
+
+    select case as const dtype
+    case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+    	function = astNewCONSTstr( NULL )
+
+    case FB_DATATYPE_WCHAR
+    	function = astNewCONSTwstr( NULL )
+
+    case FB_DATATYPE_USERDEF
+    	function = astNewCONST( NULL, FB_DATATYPE_POINTER + dtype, subtype )
+
+    case else
+    	if( dtype = INVALID ) then
+    		dtype = FB_DATATYPE_INTEGER
+    	end if
+
+    	function = astNewCONST( NULL, dtype, subtype )
+
+    end select
 
 end function
 

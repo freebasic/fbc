@@ -53,7 +53,12 @@ function cProcDecl as integer
 		function = cSubOrFuncDecl( FALSE )
 
 	case else
-		hReportError( FB_ERRMSG_SYNTAXERROR )
+		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: try to parse the prototype
+			function = cSubOrFuncDecl( TRUE )
+		end if
 	end select
 
 end function
@@ -108,25 +113,31 @@ function cSubOrFuncDecl _
 
 	function = FALSE
 
-	'' ID
-	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
-		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-		exit function
-	end if
-
-    '' if inside a namespace, symbols can't contain periods (.)'s
-    if( symbIsGlobalNamespc( ) = FALSE ) then
-    	if( lexGetPeriodPos( ) > 0 ) then
-    		hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
-    		exit function
-    	end if
-    end if
-
 	'' don't allow explicit namespaces
 	cIdentifier( TRUE )
 	if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 		exit function
 	end if
+
+	'' ID
+	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
+		if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip stmt
+			cSkipStmt( )
+			return TRUE
+		end if
+	end if
+
+    '' if inside a namespace, symbols can't contain periods (.)'s
+    if( symbIsGlobalNamespc( ) = FALSE ) then
+    	if( lexGetPeriodPos( ) > 0 ) then
+    		if( hReportError( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+    			exit function
+    		end if
+    	end if
+    end if
 
 	id = *lexGetText( )
 	dtype = lexGetType( )
@@ -134,8 +145,9 @@ function cSubOrFuncDecl _
 	ptrcnt = 0
 
 	if( (isSub) and (dtype <> INVALID) ) then
-    	hReportError( FB_ERRMSG_INVALIDCHARACTER )
-    	exit function
+    	if( hReportError( FB_ERRMSG_INVALIDCHARACTER ) ) then
+    		exit function
+    	end if
 	end if
 
 	lexSkipToken( )
@@ -151,29 +163,33 @@ function cSubOrFuncDecl _
 	end if
 
 	'' (LIB STR_LIT)?
+	plib = NULL
 	if( lexGetToken( ) = FB_TK_LIB ) then
 		lexSkipToken( )
 		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-			hReportError( FB_ERRMSG_SYNTAXERROR )
-			exit function
+			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			end if
+
+		else
+			lexEatToken( libname )
+			plib = @libname
 		end if
-		lexEatToken( libname )
-		plib = @libname
-	else
-		plib = NULL
 	end if
 
 	'' (ALIAS STR_LIT)?
+	palias = NULL
 	if( lexGetToken( ) = FB_TK_ALIAS ) then
 		lexSkipToken( )
 		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-			hReportError( FB_ERRMSG_SYNTAXERROR )
-			exit function
+			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			end if
+
+		else
+			lexEatToken( aliasname )
+			palias = @aliasname
 		end if
-		lexEatToken( aliasname )
-		palias = @aliasname
-	else
-		palias = NULL
 	end if
 
 	proc = symbPreAddProc( id )
@@ -185,11 +201,15 @@ function cSubOrFuncDecl _
 		cParameters( proc, mode, TRUE )
 
 		if( lexGetToken( ) <> CHAR_RPRNT ) then
-			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until ')'
+				cSkipUntil( CHAR_RPRNT )
+			end if
+		else
+			lexSkipToken( )
 		end if
-
-		lexSkipToken( )
 	end if
 
     '' (AS SymbolType)?
@@ -197,24 +217,43 @@ function cSubOrFuncDecl _
     	lexSkipToken( )
 
     	if( (dtype <> INVALID) or (isSub) ) then
-    		hReportError( FB_ERRMSG_SYNTAXERROR )
-    		exit function
+    		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+    			exit function
+    		end if
     	end if
 
     	if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
-    		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-    		exit function
+    		if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: discard return type
+    			dtype = INVALID
+    			subtype = NULL
+    			ptrcnt = 0
+    		end if
     	end if
 
     	'' check for invalid types
     	select case as const dtype
     	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    		hReportError( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS )
-    		exit function
+    		if( hReportError( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: discard return type
+    			dtype = INVALID
+    			subtype = NULL
+    			ptrcnt = 0
+    		end if
 
     	case FB_DATATYPE_VOID
-    		hReportError( FB_ERRMSG_INVALIDDATATYPES )
-    		exit function
+    		if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: discard return type
+    			dtype = INVALID
+    			subtype = NULL
+    			ptrcnt = 0
+    		end if
     	end select
     end if
 
@@ -233,8 +272,9 @@ function cSubOrFuncDecl _
     						 dtype, subtype, ptrcnt, _
     					     attrib, mode, FALSE )
     if( proc = NULL ) then
-    	hReportError( FB_ERRMSG_DUPDEFINITION )
-    	exit function
+    	if( hReportError( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+    		exit function
+    	end if
     end if
 
     function = TRUE

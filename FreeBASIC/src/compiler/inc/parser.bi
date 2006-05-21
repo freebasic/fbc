@@ -127,6 +127,11 @@ declare function 	cLabel                  ( _
 												_
 											) as integer
 
+declare sub 		cSkipUntil				( _
+												byval token as integer, _
+												byval doeat as integer = FALSE _
+											)
+
 declare function 	cComment                ( _
 												byval lexflags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING _
 											) as integer
@@ -174,7 +179,8 @@ declare function 	cVariableDecl           ( _
 
 declare function 	cStaticArrayDecl 		( _
 												byref dimensions as integer, _
-												dTB() as FBARRAYDIM _
+												dTB() as FBARRAYDIM, _
+												byval checkprnts as integer = TRUE _
 											) as integer
 
 declare function 	cArrayDecl				( _
@@ -698,6 +704,8 @@ declare function 	cConstExprValue			( _
 												byref value as integer _
 											) as integer
 
+
+#define cSkipStmt( ) cSkipUntil( INVALID, FALSE )
 
 '':::::
 #define hMatchToken(token, errcode)							 _

@@ -84,19 +84,36 @@ function cEnumConstant _
 
 	'' ID
 	if( lexGetToken( ) <> FB_TK_ID ) then
-		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-		exit function
+		if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: fake a node
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return TRUE
+		end if
 	end if
 
 	elm = symbFindByClass( lexGetSymChain( ), FB_SYMBCLASS_CONST )
     if( elm = NULL ) then
-    	hReportError( FB_ERRMSG_ELEMENTNOTDEFINED )
-    	exit function
+    	if( hReportUndefError( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) ) = FALSE ) then
+    		exit function
+		else
+			'' error recovery: fake a node
+			lexSkipToken( )
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return TRUE
+		end if
     end if
 
     if( symbGetParent( elm ) <> sym ) then
-    	hReportError( FB_ERRMSG_ELEMENTNOTDEFINED )
-    	exit function
+    	if( hReportUndefError( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) ) = FALSE ) then
+    		exit function
+		else
+			'' error recovery: fake a node
+			lexSkipToken( )
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return TRUE
+		end if
     end if
 
     lexSkipToken( )

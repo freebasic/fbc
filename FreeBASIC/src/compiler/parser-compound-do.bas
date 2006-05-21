@@ -65,8 +65,12 @@ function cDoStmtBegin as integer
 
 		'' Expression
 		if( cExpression( expr ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake a node
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			end if
 		end if
 
 		'' branch
@@ -78,8 +82,12 @@ function cDoStmtBegin as integer
 
 		expr = astUpdComp2Branch( expr, el, isinverse )
 		if( expr = NULL ) then
-			hReportError( FB_ERRMSG_INVALIDDATATYPES )
-			exit function
+			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake a node
+				expr = astNewNOP( )
+			end if
 		end if
 
 		astAdd( expr )
@@ -132,8 +140,9 @@ function cDoStmtEnd as integer
 	end select
 
 	if( (iswhile or isuntil) and (stk->do.attop) ) then
-		hReportError( FB_ERRMSG_SYNTAXERROR )
-		exit function
+		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			exit function
+		end if
 	end if
 
 	'' emit comp label, if needed
@@ -146,8 +155,12 @@ function cDoStmtEnd as integer
 
 		'' Expression
 		if( cExpression( expr ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake a node
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			end if
 		end if
 
 		'' branch
@@ -159,9 +172,14 @@ function cDoStmtEnd as integer
 
 		expr = astUpdComp2Branch( expr, stk->do.inilabel, isinverse )
 		if( expr = NULL ) then
-			hReportError( FB_ERRMSG_INVALIDDATATYPES )
-			exit function
+			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake a node
+				expr = astNewNOP( )
+			end if
 		end if
+
 		astAdd( expr )
 
 	else

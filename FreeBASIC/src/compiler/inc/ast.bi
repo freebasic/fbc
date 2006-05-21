@@ -492,7 +492,8 @@ declare function 	astNewUOP			( _
 
 declare function 	astNewCONST			( _
 											byval v as FBVALUE ptr, _
-											byval dtype as integer _
+											byval dtype as integer, _
+											byval subtype as FBSYMBOL ptr = NULL _
 										) as ASTNODE ptr
 
 declare function 	astNewCONSTstr		( _
@@ -517,6 +518,11 @@ declare function 	astNewCONSTf		( _
 declare function 	astNewCONSTl		( _
 											byval value as longint, _
 											byval dtype as integer _
+										) as ASTNODE ptr
+
+declare function	astNewCONSTz		( _
+											byval dtype as integer, _
+											byval subtype as FBSYMBOL ptr = NULL _
 										) as ASTNODE ptr
 
 declare function 	astNewVAR			( _

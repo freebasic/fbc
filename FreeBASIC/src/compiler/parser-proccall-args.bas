@@ -393,11 +393,18 @@ function cProcArgList _
 		'' sub? check the optional parentheses
 		if( isfunc = FALSE ) then
 			'' '('
-			if( hMatch( CHAR_LPRNT ) ) then
+			if( lexGetToken( ) = CHAR_LPRNT ) then
+				lexSkipToken( )
 				'' ')'
-				if( hMatch( CHAR_RPRNT ) = FALSE ) then
-					hReportError( FB_ERRMSG_EXPECTEDRPRNT )
-					exit function
+				if( lexGetToken( ) <> CHAR_RPRNT ) then
+					if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: skip until next ')'
+						cSkipUntil( CHAR_RPRNT, TRUE )
+					end if
+				else
+					lexSkipToken( )
 				end if
 			end if
 		end if

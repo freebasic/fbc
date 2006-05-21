@@ -35,7 +35,7 @@ function cAssignment _
 	) as integer
 
 	dim as ASTNODE ptr expr
-	dim as integer op, dtype
+	dim as integer op, dtype, doskip
 
 	function = FALSE
 
@@ -43,8 +43,9 @@ function cAssignment _
 	dim as FBSYMBOL ptr sym = astGetSymbol( assgexpr )
 	if( sym <> NULL ) then
 		if( symbIsConstant( sym ) ) then
-			hReportError( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE )
-			exit function
+			if( hReportError( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE ) = FALSE ) then
+				exit function
+			end if
 		end if
 	end if
 
@@ -97,20 +98,27 @@ function cAssignment _
 
 	'' '='
     if( lexGetToken( ) <> FB_TK_ASSIGN ) then
-    	hReportError( FB_ERRMSG_EXPECTEDEQ )
-    	exit function
+    	if( hReportError( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
+    		exit function
+    	end if
+    else
+    	lexSkipToken( )
     end if
-
-    lexSkipToken( )
 
     '' set the context symbol to allow taking the address of overloaded
     '' procs and also to allow anonymous UDT's
     env.ctxsym = astGetSubType( assgexpr )
 
     '' Expression
+    doskip = FALSE
     if( cExpression( expr ) = FALSE ) then
-       	hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-       	exit function
+       	if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+       		env.ctxsym = NULL
+       		exit function
+       	else
+       		expr = NULL
+       		doskip = TRUE
+       	end if
     end if
 
     env.ctxsym = NULL
@@ -125,20 +133,29 @@ function cAssignment _
     	end if
 
     	if( expr = NULL ) Then
-    		hReportError( FB_ERRMSG_TYPEMISMATCH )
-    		exit function
+    		if( hReportError( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+    			exit function
+    		end if
     	end if
 	end if
 
-    '' do assign
-    assgexpr = astNewASSIGN( assgexpr, expr )
+    if( expr <> NULL ) then
+    	'' do assign
+    	assgexpr = astNewASSIGN( assgexpr, expr )
 
-    if( assgexpr = NULL ) then
-		hReportError( FB_ERRMSG_INVALIDDATATYPES )
-        exit function
-	end if
+    	if( assgexpr = NULL ) then
+			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
+			end if
+		else
+			astAdd( assgexpr )
+		end if
+    end if
 
-    astAdd( assgexpr )
+    if( doskip ) then
+    	'' error recovery: skip until next stmt
+    	cSkipStmt( )
+    end if
 
     function = TRUE
 
@@ -170,20 +187,32 @@ function cAssignmentOrPtrCallEx _
 
 	'' can the result be skipped?
 	if( symbGetDataClass( astGetDataType( expr ) ) <> FB_DATACLASS_INTEGER ) then
-		hReportError( FB_ERRMSG_VARIABLEREQUIRED )
-		exit function
+		if( hReportError( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip call
+			astDelTree( expr )
+			expr = NULL
+		end if
 
     '' CHAR and WCHAR literals are also from the INTEGER class
     else
     	select case astGetDataType( expr )
     	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-			hReportError( FB_ERRMSG_VARIABLEREQUIRED )
-			exit function
+			if( hReportError( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip call
+				astDelTree( expr )
+				expr = NULL
+			end if
 		end select
 	end if
 
     '' flush the call
-    astAdd( expr )
+    if( expr <> NULL ) then
+    	astAdd( expr )
+    end if
 
     function = TRUE
 
@@ -216,8 +245,12 @@ function cAssignmentOrPtrCall as integer
 
 	else
 		if( islet ) then
-        	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-        	exit function
+        	if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+        		exit function
+        	else
+        		'' error recovery: skip stmt
+        		cSkipStmt( )
+        	end if
 		end if
 	end if
 

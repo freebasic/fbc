@@ -58,14 +58,16 @@ function cProgram( ) as integer
     	end if
     loop
 
-    if( hGetLastError( ) = FB_ERRMSG_OK ) then
+    if( hGetErrorCnt( ) = 0 ) then
     	'' EOF?
     	if( lexGetToken( ) = FB_TK_EOF ) then
     		lexSkipToken( )
     	end if
 
+    	'' only check compound stmts if not parsing an include file
     	if( env.includerec = 0 ) then
-    		function = cCompStmtCheck( )
+    		cCompStmtCheck( )
+    		function = (hGetErrorCnt( ) = 0)
     	else
     		function = TRUE
     	end if
@@ -81,6 +83,8 @@ end function
 ''
 function cLine as integer
 
+	function = FALSE
+
 	''
 	astAdd( astNewDBG( AST_OP_DBG_LINEINI, lexLineNum( ) ) )
 
@@ -94,7 +98,7 @@ function cLine as integer
     cComment( )
 
 	if( hGetLastError( ) <> FB_ERRMSG_OK ) then
-		return FALSE
+		exit function
 	end if
 
 	select case lexGetToken( )
@@ -103,11 +107,20 @@ function cLine as integer
 		function = TRUE
 
 	case FB_TK_EOF
-		function = FALSE
+		exit function
 
 	case else
-		hReportError( FB_ERRMSG_EXPECTEDEOL )
-		function = FALSE
+		if( hReportError( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip until EOL
+			cSkipStmt( )
+			if( lexGetToken( ) = FB_TK_EOL ) then
+				lexSkipToken( )
+			end if
+		end if
+
+		function = TRUE
     end select
 
 	''
@@ -115,3 +128,67 @@ function cLine as integer
 
 end function
 
+''::::
+sub cSkipUntil _
+	( _
+		byval token as integer, _
+		byval doeat as integer _
+	)
+
+	dim as integer prntcnt
+
+	prntcnt = 0
+	do
+		select case as const lexGetToken( )
+		case FB_TK_STATSEPCHAR, FB_TK_EOL, FB_TK_COMMENTCHAR, FB_TK_REM
+			exit do
+
+		case FB_TK_EOF
+			exit sub
+
+		'' '('?
+		case CHAR_LPRNT, CHAR_LBRACE
+			prntcnt += 1
+
+		'' ')'?
+		case CHAR_RPRNT, CHAR_RBRACE
+			'' inside parentheses?
+			if( prntcnt > 0 ) then
+				prntcnt -= 1
+			else
+				'' skip until ',' or ')'?
+				select case token
+				case CHAR_COMMA
+					exit sub
+				case CHAR_RPRNT, CHAR_RBRACE
+					exit do
+				end select
+			end if
+
+		'' ','?
+		case CHAR_COMMA
+			'' skip until ','?
+			if( token = CHAR_COMMA ) then
+				'' not inside parentheses?
+				if( prntcnt = 0 ) then
+					exit do
+				end if
+			end if
+
+		case else
+			'' token found? exit..
+			if( lexGetToken( ) = token ) then
+				exit do
+			end if
+
+		end select
+
+		lexSkipToken( )
+	loop
+
+	''
+	if( doeat ) then
+		lexSkipToken( )
+	end if
+
+end sub

@@ -324,6 +324,7 @@ sub fbSetDefaultOptions( )
 	env.clopt.target		= FB_DEFAULTTARGET
 	env.clopt.extraerrchk	= FALSE
 	env.clopt.msbitfields	= FALSE
+	env.clopt.maxerrors		= 10
 
 end sub
 
@@ -382,6 +383,9 @@ sub fbSetOption _
 
 	case FB_COMPOPT_MSBITFIELDS
 		env.clopt.msbitfields = value
+
+	case FB_COMPOPT_MAXERRORS
+		env.clopt.maxerrors = value
 	end select
 
 end sub
@@ -440,6 +444,9 @@ function fbGetOption _
 
 	case FB_COMPOPT_MSBITFIELDS
 		function = env.clopt.msbitfields
+
+	case FB_COMPOPT_MAXERRORS
+		function = env.clopt.maxerrors
 
 	case else
 		function = FALSE

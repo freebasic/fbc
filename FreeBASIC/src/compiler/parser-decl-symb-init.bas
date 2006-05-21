@@ -53,8 +53,13 @@ private function hElmInit _
     env.ctxsym = symbGetSubType( sym )
 
 	if( cExpression( expr ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-		exit function
+		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip until ',' and create a fake expression
+			cSkipUntil( CHAR_COMMA )
+			expr = astNewCONSTz( symbGetType( sym ) )
+		end if
 	end if
 
 	env.ctxsym = oldsym
@@ -68,8 +73,13 @@ private function hElmInit _
     '' that doesn't matter with checkASSIGN
 
     if( astCheckASSIGN( @lside, expr ) = FALSE ) then
-		hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-        exit function
+		if( hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+        	exit function
+        else
+        	'' error recovery: create a fake expression
+        	astDelTree( expr )
+        	expr = astNewCONSTz( symbGetType( sym ) )
+        end if
 	end if
 
 	''
@@ -114,12 +124,18 @@ private function hArrayInit _
 			if( hMatch( CHAR_LBRACE ) ) then
 				dimcnt += 1
 				if( dimcnt > dimensions ) then
-					hReportError( FB_ERRMSG_TOOMANYEXPRESSIONS )
-					exit function
-				end if
+					if( hReportError( FB_ERRMSG_TOOMANYEXPRESSIONS ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: skip until next '}'
+						cSkipUntil( CHAR_RBRACE, TRUE )
+						d = NULL
+					end if
 
-				ld = d
-				d = d->next
+				else
+					ld = d
+					d = d->next
+				end if
 
 				isopen = TRUE
 			end if
@@ -166,8 +182,12 @@ private function hArrayInit _
 		if( isarray ) then
 			'' '}'?
 			if( hMatch( CHAR_RBRACE ) = FALSE ) then
-				hReportError( FB_ERRMSG_EXPECTEDRBRACKET )
-				exit function
+				if( hReportError( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: skip until next '}'
+					cSkipUntil( CHAR_RBRACE, TRUE )
+				end if
 			end if
 
 			dimcnt -= 1
@@ -221,8 +241,13 @@ private function hUDTInit _
 	do
 		elm_cnt += 1
 		if( elm_cnt > elements ) then
-			hReportError( FB_ERRMSG_TOOMANYEXPRESSIONS )
-			exit function
+			if( hReportError( FB_ERRMSG_TOOMANYEXPRESSIONS ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until next ')'
+				cSkipUntil( CHAR_RPRNT, TRUE )
+				exit do
+			end if
 		end if
 
 		'' '{'?
@@ -248,8 +273,12 @@ private function hUDTInit _
         if( isarray ) then
 			'' '}'
 			if( hMatch( CHAR_RBRACE ) = FALSE ) then
-				hReportError( FB_ERRMSG_EXPECTEDRBRACKET )
-				exit function
+				if( hReportError( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: skip until next '}'
+					cSkipUntil( CHAR_RBRACE, TRUE )
+				end if
 			end if
 		end if
 
@@ -261,8 +290,12 @@ private function hUDTInit _
 
 	'' ')'
 	if( hMatch( CHAR_RPRNT ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDRPRNT )
-		exit function
+		if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip until next ')'
+			cSkipUntil( CHAR_RPRNT, TRUE )
+		end if
 	end if
 
 	'' pad
@@ -317,8 +350,12 @@ function cVariableInit _
     if( isarray ) then
 		'' '}'
 		if( hMatch( CHAR_RBRACE ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDRBRACKET )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until new '}'
+				cSkipUntil( CHAR_RBRACE, TRUE )
+			end if
 		end if
 	end if
 

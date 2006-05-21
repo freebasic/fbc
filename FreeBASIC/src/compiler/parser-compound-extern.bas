@@ -37,6 +37,7 @@ function cExternStmtBegin _
     dim as FB_CMPSTMTSTK ptr stk
     dim as integer mangling
     dim as FBLIBRARY ptr library
+    dim as zstring ptr litstr
 
 	function = FALSE
 
@@ -49,35 +50,50 @@ function cExternStmtBegin _
 
 	'' "mangling spec"
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-		hReportError( FB_ERRMSG_SYNTAXERROR )
-		exit function
+		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			exit function
+		else
+			litstr = @"c"
+		end if
+	else
+		litstr = lexGetText( )
 	end if
 
-	select case lcase( *lexGetText( ) )
+	select case lcase( *litstr )
 	case "c"
 		mangling = FB_MANGLING_CDECL
+
 	case "windows"
 		mangling = FB_MANGLING_STDCALL
+
 	case "c++"
 		mangling = FB_MANGLING_CPP
+
 	case else
-		hReportError( FB_ERRMSG_SYNTAXERROR )
-		exit function
+		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			exit function
+		else
+			mangling = FB_MANGLING_CDECL
+		end if
 	end select
 
-	lexSkipToken( )
+	if( litstr <> @"c" ) then
+		lexSkipToken( )
+	end if
 
 	if( lexGetToken( ) = FB_TK_LIB ) then
 		lexSkipToken( )
 
 		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-			hReportError( FB_ERRMSG_SYNTAXERROR )
-			exit function
+			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			end if
+
+		else
+			library = symbAddLib( lexGetText( ) )
+			lexSkipToken( )
 		end if
 
-		library = symbAddLib( lexGetText( ) )
-
-		lexSkipToken( )
 	else
 		library = NULL
 	end if

@@ -43,8 +43,9 @@ function cEnumConstDecl _
 
     '' contains a period?
     if( lexGetPeriodPos( ) > 0 ) then
-    	hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
-    	exit function
+    	if( hReportError( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+    		exit function
+    	end if
     end if
 
 	'' ID
@@ -57,13 +58,23 @@ function cEnumConstDecl _
 
 		'' ConstExpression
 		if( cExpression( expr ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDCONST )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip till next ','
+				cSkipUntil( CHAR_COMMA )
+				return TRUE
+			end if
 		end if
 
 		if( astIsCONST( expr ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDCONST )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: no value change
+				astDelTree( expr )
+				return TRUE
+			end if
 		end if
 
 		'' not an integer? (CHAR or WCHAR will fail in astIsCONST())
@@ -124,8 +135,9 @@ function cEnumBody _
 				end if
 
 				if( symbAddEnumElement( s, @ename, value ) = NULL ) then
-					hReportErrorEx( FB_ERRMSG_DUPDEFINITION, ename )
-					exit function
+					if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, ename ) = FALSE ) then
+						exit function
+					end if
 				end if
 
 				value += 1
@@ -134,6 +146,7 @@ function cEnumBody _
 				if( lexGetToken( ) <> CHAR_COMMA ) then
 					exit do
 				end if
+
 				lexSkipToken( )
 			loop
 
@@ -141,8 +154,12 @@ function cEnumBody _
 			cComment( )
 
 			if( cStmtSeparator( ) = FALSE ) then
-    			hReportError( FB_ERRMSG_EXPECTEDEOL )
-    			exit function
+    			if( hReportError( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
+    				exit function
+    			else
+    				'' error recovery: skip until next line or stmt
+    				cSkipUntil( INVALID, TRUE )
+    			end if
 			end if
 		end select
 
@@ -150,8 +167,9 @@ function cEnumBody _
 
 	'' nothing added?
 	if( symbGetEnumElements( s ) = 0 ) then
-		hReportError( FB_ERRMSG_ELEMENTNOTDEFINED )
-		exit function
+		if( hReportError( FB_ERRMSG_ELEMENTNOTDEFINED ) = FALSE ) then
+			exit function
+		end if
 	end if
 
     function = TRUE
@@ -182,8 +200,9 @@ function cEnumDecl( ) as integer static
 		ns = cNamespace( )
     	if( ns <> NULL ) then
 			if( ns <> symbGetCurrentNamespc( ) ) then
-				hReportError( FB_ERRMSG_DECLOUTSIDENAMESPC )
-				exit function
+				if( hReportError( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
+					exit function
+				end if
     		end if
     	else
     		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
@@ -193,43 +212,52 @@ function cEnumDecl( ) as integer static
 
     	'' contains a period?
     	if( lexGetPeriodPos( ) > 0 ) then
-    		hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
-    		exit function
+    		if( hReportError( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+    			exit function
+    		end if
     	end if
 
 		lexEatToken( @id )
+
     else
     	id = *hMakeTmpStr( FALSE )
     end if
 
 	'' (ALIAS LITSTR)?
+	palias = NULL
 	if( lexGetToken( ) = FB_TK_ALIAS ) then
     	lexSkipToken( )
 
 		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-			hReportError( FB_ERRMSG_SYNTAXERROR )
-			exit function
+			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			end if
+        else
+			lexEatToken( @id_alias )
+			palias = @id_alias
 		end if
-
-		lexEatToken( @id_alias )
-		palias = @id_alias
-
-	else
-		palias = NULL
 	end if
 
 	e = symbAddEnum( @id, palias )
 	if( e = NULL ) then
-    	hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
-    	exit function
+    	if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
+    		exit function
+    	else
+    		'' error recovery: create a fake symbol
+    		e = symbAddEnum( hMakeTmpStr( ), NULL )
+    	end if
 	end if
 
 	'' Comment? SttSeparator
 	cComment( )
 
 	if( cStmtSeparator( ) = FALSE ) then
-    	hReportError( FB_ERRMSG_SYNTAXERROR )
-    	exit function
+    	if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+    		exit function
+    	else
+    		'' error recovery: skip until next line or stmt
+    		cSkipUntil( INVALID, TRUE )
+    	end if
 	end if
 
 	'' EnumBody
@@ -238,14 +266,28 @@ function cEnumDecl( ) as integer static
 	end if
 
 	'' END ENUM
-	if( hMatch( FB_TK_END ) = FALSE ) then
-    	hReportError( FB_ERRMSG_EXPECTEDENDENUM )
-    	exit function
-	end if
+	if( lexGetToken( ) <> FB_TK_END ) then
+    	if( hReportError( FB_ERRMSG_EXPECTEDENDENUM ) = FALSE ) then
+    		exit function
+    	else
+    		'' error recovery: skip until next stmt
+    		cSkipStmt( )
+    	end if
 
-	if( hMatch( FB_TK_ENUM ) = FALSE ) then
-    	hReportError( FB_ERRMSG_EXPECTEDENDENUM )
-    	exit function
+	else
+		lexSkipToken( )
+
+		if( lexGetToken( ) <> FB_TK_ENUM ) then
+    		if( hReportError( FB_ERRMSG_EXPECTEDENDENUM ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: skip until next stmt
+    			cSkipStmt( )
+    		end if
+
+		else
+			lexSkipToken( )
+		end if
 	end if
 
     ''

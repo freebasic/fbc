@@ -28,7 +28,9 @@ option escape
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
 
-declare function cTypeBody					( byval s as FBSYMBOL ptr ) as integer
+declare function cTypeBody					( _
+												byval s as FBSYMBOL ptr _
+											) as integer
 
 '':::::
 ''TypeMultElementDecl =   AS SymbolType ID (ArrayDecl | ':' NUMLIT)?
@@ -42,36 +44,46 @@ function cTypeMultElementDecl _
     static as zstring * FB_MAXNAMELEN+1 id
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr subtype
-    dim as integer dims, typ, lgt, ptrcnt, bits
+    dim as integer dims, dtype, lgt, ptrcnt, bits
 
     function = FALSE
 
     '' SymbolType
-    if( cSymbolType( typ, subtype, lgt, ptrcnt ) = FALSE ) then
-    	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-    	exit function
+    if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+    	if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+    		exit function
+    	else
+    		'' error recovery: create a fake type
+    		dtype = FB_DATATYPE_INTEGER
+    		subtype = NULL
+    		lgt = FB_INTEGERSIZE
+    	end if
     end if
 
 	do
 		'' allow keywords as field names
 		select case lexGetClass( )
 		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD
+    		'' contains a period?
+    		if( lexGetPeriodPos( ) > 0 ) then
+    			if( hReportError( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+    				exit function
+    			end if
+    		end if
+
+			id = *lexGetText( )
+			lexSkipToken( )
 
 		case else
-    		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-    		exit function
+    		if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: fake an id
+    			id = *hMakeTmpStr( )
+    		end if
     	end select
 
-		id = *lexGetText( )
 	    bits = 0
-
-    	'' contains a period?
-    	if( lexGetPeriodPos( ) > 0 ) then
-    		hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
-    		exit function
-    	end if
-
-		lexSkipToken( )
 
 		'' ArrayDecl?
 		if( cStaticArrayDecl( dims, dTB() ) = FALSE ) then
@@ -88,9 +100,13 @@ function cTypeMultElementDecl _
 					lexSkipToken( )
 				end if
 
-				if( symbCheckBitField( s, typ, lgt, bits ) = FALSE ) then
-    				hReportError( FB_ERRMSG_INVALIDBITFIELD, TRUE )
-    				exit function
+				if( symbCheckBitField( s, dtype, lgt, bits ) = FALSE ) then
+    				if( hReportError( FB_ERRMSG_INVALIDBITFIELD, TRUE ) = FALSE ) then
+    					exit function
+    				else
+    					'' error recovery: no bits
+    					bits = 0
+    				end if
 				end if
 
 			end if
@@ -100,13 +116,20 @@ function cTypeMultElementDecl _
         ''
 		if( symbAddUDTElement( s, @id, _
 							   dims, dTB(), _
-							   typ, subtype, ptrcnt, lgt, bits ) = NULL ) then
-			hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
-			exit function
+							   dtype, subtype, ptrcnt, _
+							   lgt, bits ) = NULL ) then
+			if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
+				exit function
+			end if
 		end if
 
-	'' ','?
-	loop while( hMatch( CHAR_COMMA ) )
+		'' ','?
+	    if( lexGetToken( ) <> CHAR_COMMA ) then
+	    	exit do
+	    end if
+
+	    lexSkipToken( )
+	loop
 
 	function = TRUE
 
@@ -123,32 +146,43 @@ function cTypeElementDecl _
     static as zstring * FB_MAXNAMELEN+1 id
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr subtype
-    dim as integer dims, typ, lgt, ptrcnt, bits
+    dim as integer dims, dtype, lgt, ptrcnt, bits
 
 	function = FALSE
 
 	'' allow keywords as field names
 	select case lexGetClass( )
 	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD
+		'' ID
+		id = *lexGetText( )
+
+    	if( lexGetType( ) <> INVALID ) then
+    		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+    			exit function
+    		end if
+    	end if
+
+    	'' contains a period?
+    	if( lexGetPeriodPos( ) > 0 ) then
+    		if( hReportError( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+    			exit function
+    		end if
+    	end if
+
+		lexSkipToken( )
 
     case else
-    	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-    	exit function
+    	if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+    		exit function
+    	else
+    		'' error recovery: fake an id
+    		id = *hMakeTmpStr( )
+    		dtype = INVALID
+    	end if
     end select
 
-	'' ID
-	id = *lexGetText( )
-	typ = lexGetType( )
 	subtype = NULL
 	bits = 0
-
-    '' contains a period?
-    if( lexGetPeriodPos( ) > 0 ) then
-    	hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
-    	exit function
-    end if
-
-	lexSkipToken( )
 
 	'' ArrayDecl?
 	if( cStaticArrayDecl( dims, dTB() ) = FALSE ) then
@@ -159,46 +193,74 @@ function cTypeElementDecl _
 				bits = valint( *lexGetText( ) )
 				lexSkipToken( )
 				if( bits <= 0 ) then
-    				hReportError( FB_ERRMSG_SYNTAXERROR, TRUE )
-    				exit function
+    				if( hReportError( FB_ERRMSG_SYNTAXERROR, TRUE ) ) then
+    					exit function
+    				else
+    					'' error recovery: no bits
+    					bits = 0
+    				end if
     			end if
 			end if
 		end if
 	end if
 
     '' AS
-    if( (hMatch( FB_TK_AS ) = FALSE) or (typ <> INVALID) ) then
-    	hReportError( FB_ERRMSG_SYNTAXERROR )
-    	exit function
+    if( lexGetToken( ) <> FB_TK_AS ) then
+    	if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+    		exit function
+    	end if
+
+    else
+    	lexSkipToken( )
     end if
 
     '' SymbolType
-    if( cSymbolType( typ, subtype, lgt, ptrcnt ) = FALSE ) then
-    	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-    	exit function
+    if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
+    	if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+    		exit function
+		else
+			'' error recovery: create a fake type
+			dtype = FB_DATATYPE_INTEGER
+			subtype = NULL
+			lgt = FB_INTEGERSIZE
+		end if
     end if
 
 	''
 	if( bits <> 0 ) then
-		if( symbCheckBitField( s, typ, lgt, bits ) = FALSE ) then
-    		hReportError( FB_ERRMSG_INVALIDBITFIELD, TRUE )
-    		exit function
+		if( symbCheckBitField( s, dtype, lgt, bits ) = FALSE ) then
+    		if( hReportError( FB_ERRMSG_INVALIDBITFIELD, TRUE ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: no bits
+    			bits = 0
+    		end if
 		end if
 	end if
 
 	'' ref to self?
-	if( typ = FB_DATATYPE_USERDEF ) then
+	if( dtype = FB_DATATYPE_USERDEF ) then
 		if( subtype = s ) then
-			hReportError( FB_ERRMSG_RECURSIVEUDT )
-			exit function
+			if( hReportError( FB_ERRMSG_RECURSIVEUDT ) = FALSE ) then
+				exit function
+			else
+    			'' error recovery: fake type
+				dtype = FB_DATATYPE_INTEGER
+				subtype = NULL
+				lgt = FB_INTEGERSIZE
+			end if
 		end if
 	end if
 
 	if( symbAddUDTElement( s, @id, _
 						   dims, dTB(), _
-						   typ, subtype, ptrcnt, lgt, bits ) = NULL ) then
-		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
-		exit function
+						   dtype, subtype, ptrcnt, _
+						   lgt, bits ) = NULL ) then
+
+		if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
+			exit function
+		end if
+
 	end if
 
 	function = TRUE
@@ -221,16 +283,24 @@ private function hTypeAdd _
 
 	s = symbAddUDT( parent, id, id_alias, isunion, align )
 	if( s = NULL ) then
-    	hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
-    	exit function
+    	if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
+    		exit function
+    	else
+    		'' error recovery: create a fake symbol
+    		s = symbAddUDT( parent, hMakeTmpStr( ), NULL, isunion, align )
+    	end if
 	end if
 
 	'' Comment? SttSeparator
 	cComment( )
 
 	if( cStmtSeparator( ) = FALSE ) then
-    	hReportError( FB_ERRMSG_SYNTAXERROR )
-    	exit function
+    	if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+    		exit function
+    	else
+    		'' error recovery: skip until next line or stmt
+    		cSkipUntil( INVALID, TRUE )
+    	end if
 	end if
 
 	'' TypeBody
@@ -246,14 +316,28 @@ private function hTypeAdd _
 	symbRoundUDTSize( s )
 
 	'' END TYPE|UNION
-	if( hMatch( FB_TK_END ) = FALSE ) then
-    	hReportError( FB_ERRMSG_EXPECTEDENDTYPE )
-    	exit function
-	end if
+	if( lexGetToken( ) <> FB_TK_END ) then
+    	if( hReportError( FB_ERRMSG_EXPECTEDENDTYPE ) = FALSE ) then
+    		exit function
+    	else
+    		'' error recovery: skip until next stmt
+    		cSkipStmt( )
+    	end if
 
-	if( hMatch( iif( isunion, FB_TK_UNION, FB_TK_TYPE ) ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDENDTYPE )
-		exit function
+	else
+		lexSkipToken( )
+
+		if( lexGetToken( ) <> iif( isunion, FB_TK_UNION, FB_TK_TYPE ) ) then
+			if( hReportError( FB_ERRMSG_EXPECTEDENDTYPE ) = FALSE ) then
+				exit function
+			else
+    			'' error recovery: skip until next stmt
+    			cSkipStmt( )
+    		end if
+
+		else
+			lexSkipToken( )
+		end if
 	end if
 
 	function = s
@@ -308,17 +392,25 @@ function cTypeBody _
 			select case lexGetLookAhead( 1 )
 			case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
 
-declinner:		'' it's an anonymous inner UDT
+decl_inner:		'' it's an anonymous inner UDT
 				istype = lexGetToken( ) = FB_TK_TYPE
 				if( istype ) then
 					if( symbGetUDTIsUnion( s ) = FALSE ) then
-						hReportError( FB_ERRMSG_SYNTAXERROR )
-						exit function
+						if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+							exit function
+						else
+							'' error recovery: fake type
+							istype = FALSE
+						end if
 					end if
 				else
 					if( symbGetUDTIsUnion( s ) ) then
-						hReportError( FB_ERRMSG_SYNTAXERROR )
-						exit function
+						if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+							exit function
+						else
+							'' error recovery: fake type
+							istype = TRUE
+						end if
 					end if
 				end if
 
@@ -337,7 +429,7 @@ declinner:		'' it's an anonymous inner UDT
 			case CHAR_COLON
 				'' not a bitfield? separator..
 				if( lexGetLookAheadClass( 2 ) <> FB_TKCLASS_NUMLITERAL ) then
-					goto declinner
+					goto decl_inner
 				end if
 
 				'' bitfield..
@@ -383,16 +475,21 @@ declinner:		'' it's an anonymous inner UDT
 		cComment( )
 
 	    if( cStmtSeparator( ) = FALSE ) then
-	    	hReportError( FB_ERRMSG_SYNTAXERROR )
-	    	exit function
+	    	if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+	    		exit function
+    		else
+    			'' error recovery: skip until next line or stmt
+    			cSkipUntil( INVALID, TRUE )
+    		end if
 		end if
 
 	loop
 
 	'' nothing added?
 	if( symbGetUDTElements( s ) = 0 ) then
-		hReportError( FB_ERRMSG_ELEMENTNOTDEFINED )
-		exit function
+		if( hReportError( FB_ERRMSG_ELEMENTNOTDEFINED ) = FALSE ) then
+			exit function
+		end if
 	end if
 
     function = TRUE
@@ -411,7 +508,7 @@ function cTypeDecl _
     dim as zstring ptr palias
     dim as ASTNODE ptr expr
     dim as FBSYMBOL ptr ns, s
-    dim as integer align, isunion
+    dim as integer align, isunion, checkid
 
 	function = FALSE
 
@@ -434,6 +531,7 @@ function cTypeDecl _
 	end select
 
 	'' ID
+	checkid = TRUE
 	select case lexGetClass( )
 	case FB_TKCLASS_IDENTIFIER
 
@@ -447,32 +545,43 @@ function cTypeDecl _
     	end if
 
     case else
-    	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-    	exit function
+    	if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+    		exit function
+    	else
+ 			'' error recovery: fake an ID
+ 			checkid = FALSE
+ 		end if
     end select
 
-	'' don't allow explicit namespaces
-	ns = cNamespace( )
-    if( ns <> NULL ) then
-		if( ns <> symbGetCurrentNamespc( ) ) then
-			hReportError( FB_ERRMSG_DECLOUTSIDENAMESPC )
-			exit function
+	if( checkid ) then
+		'' don't allow explicit namespaces
+		ns = cNamespace( )
+    	if( ns <> NULL ) then
+			if( ns <> symbGetCurrentNamespc( ) ) then
+				if( hReportError( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
+					exit function
+				end if
+    		end if
+    	else
+    		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+    			exit function
+    		end if
     	end if
-    else
-    	if( hGetLastError( ) <> FB_ERRMSG_OK ) then
-    		exit function
-    	end if
-    end if
 
-    '' if inside a namespace, symbols can't contain periods (.)'s
-    if( symbIsGlobalNamespc( ) = FALSE ) then
-    	if( lexGetPeriodPos( ) > 0 ) then
-    		hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
-    		exit function
+    	'' if inside a namespace, symbols can't contain periods (.)'s
+    	if( symbIsGlobalNamespc( ) = FALSE ) then
+    		if( lexGetPeriodPos( ) > 0 ) then
+	    		if( hReportError( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+    				exit function
+    			end if
+    		end if
     	end if
-    end if
 
-	lexEatToken( @id )
+		lexEatToken( @id )
+
+	else
+		id = *hMakeTmpStr( FALSE )
+	end if
 
 	palias = NULL
 
@@ -481,8 +590,9 @@ function cTypeDecl _
 	'' AS?
 	case FB_TK_AS
 		if( isunion ) then
-			hReportError( FB_ERRMSG_SYNTAXERROR )
-			exit function
+			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			end if
 		end if
 
 		lexSkipToken( )
@@ -494,12 +604,13 @@ function cTypeDecl _
     	lexSkipToken( )
 
 		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-			hReportError( FB_ERRMSG_SYNTAXERROR )
-			exit function
+			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			end if
+        else
+			lexEatToken( @id_alias )
+			palias = @id_alias
 		end if
-
-		lexEatToken( @id_alias )
-		palias = @id_alias
 
 	end select
 
@@ -508,18 +619,28 @@ function cTypeDecl _
 		lexSkipToken( )
 
 		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
-			hReportError( FB_ERRMSG_SYNTAXERROR )
-			exit function
+			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			end if
 		end if
 
     	if( cExpression( expr ) = FALSE ) then
-    		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-    		exit function
+    		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: fake an expr
+    			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+    		end if
     	end if
 
 		if( astIsCONST( expr ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDCONST )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
+				exit function
+			else
+    			'' error recovery: fake an expr
+    			astDelTree( expr )
+    			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+    		end if
 		end if
 
   		'' follow the GCC 3.x ABI

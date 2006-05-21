@@ -51,14 +51,24 @@ function cNegNotExpression _
 
 		'' ExpExpression
 		if( cExpExpression( negexpr ) = FALSE ) then
-			exit function
+    		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: fake a new node
+    			negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+    		end if
+
+		else
+			negexpr = astNewUOP( AST_OP_NEG, negexpr )
 		end if
 
-		negexpr = astNewUOP( AST_OP_NEG, negexpr )
-
     	if( negexpr = NULL ) Then
-    		hReportError( FB_ERRMSG_TYPEMISMATCH )
-    		exit function
+    		if( hReportError( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: fake a new node
+    			negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+    		end if
     	end if
 
 		return TRUE
@@ -69,14 +79,26 @@ function cNegNotExpression _
 
 		'' ExpExpression
 		if( cExpExpression( negexpr ) = FALSE ) then
-			exit function
+    		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: fake a new node
+    			negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+    		end if
+
+        else
+    		'' not numeric? can't operate..
+    		if( astGetDataClass( negexpr ) >= FB_DATACLASS_STRING ) then
+    			if( hReportError( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+    				exit function
+    			else
+    				'' error recovery: fake a new node
+    				astDelTree( negexpr )
+    				negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+    			end if
+    		end if
 		end if
 
-    	'' not numeric? can't operate..
-    	if( astGetDataClass( negexpr ) >= FB_DATACLASS_STRING ) then
-    		hReportError( FB_ERRMSG_TYPEMISMATCH )
-    		exit function
-    	end if
 
     	return TRUE
 
@@ -86,14 +108,24 @@ function cNegNotExpression _
 
 		'' RelExpression
 		if( cRelExpression( negexpr ) = FALSE ) then
-			exit function
+    		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: fake a new node
+    			negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+    		end if
+
+		else
+			negexpr = astNewUOP( AST_OP_NOT, negexpr )
 		end if
 
-		negexpr = astNewUOP( AST_OP_NOT, negexpr )
-
     	if( negexpr = NULL ) Then
-    		hReportError( FB_ERRMSG_TYPEMISMATCH )
-    		exit function
+    		if( hReportError( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: fake a new node
+    			negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+    		end if
     	end if
 
 		return TRUE
@@ -219,37 +251,65 @@ function cAnonUDT _
     	lexSkipToken( )
     	chain_ = cIdentifier( )
     	if( chain_ = NULL ) then
-			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until next '>', fake a node
+				cSkipUntil( FB_TK_GT, TRUE )
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				return TRUE
+			end if
     	end if
 
     	subtype = chain_->sym
 
     	if( symbIsUDT( subtype ) = FALSE ) then
-			hReportError( FB_ERRMSG_INVALIDDATATYPES )
-			exit function
+			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until next '>', fake a node
+				cSkipUntil( FB_TK_GT, TRUE )
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				return TRUE
+			end if
     	end if
 
     	lexSkipToken( )
 
     	'' '>'
     	if( lexGetToken( ) <> FB_TK_GT ) then
-			hReportError( FB_ERRMSG_SYNTAXERROR )
-			exit function
+			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until next '>'
+				cSkipUntil( FB_TK_GT, TRUE )
+			end if
+
+    	else
+    		lexSkipToken( )
     	end if
-    	lexSkipToken( )
 
     else
     	subtype = env.ctxsym
 
     	if( subtype = NULL ) then
-			hReportError( FB_ERRMSG_SYNTAXERROR, TRUE )
-			exit function
+			if( hReportError( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake a node
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				return TRUE
+			end if
     	end if
 
     	if( symbIsUDT( subtype ) = FALSE ) then
-			hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-			exit function
+			if( hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake a node
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				return TRUE
+			end if
 		end if
     end if
 
@@ -277,12 +337,35 @@ private function hCast _
 	function = FALSE
 
 	'' '('
-	hMatchLPRNT( )
+	if( lexGetToken( ) <> CHAR_LPRNT ) then
+		if( hReportError( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip until ')', fake a node
+			cSkipUntil( CHAR_RPRNT, TRUE )
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return TRUE
+		end if
+
+	else
+		lexSkipToken( )
+	end if
 
     '' DataType
     if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
-    	hReportError( FB_ERRMSG_SYNTAXERROR )
-    	exit function
+    	if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+    		exit function
+    	else
+			'' error recovery: skip until ',', create a fake type
+			cSkipUntil( CHAR_COMMA )
+
+			if( ptronly ) then
+				dtype = FB_DATATYPE_POINTER+FB_DATATYPE_VOID
+			else
+				dtype = FB_DATATYPE_INTEGER
+			end if
+            subtype = NULL
+    	end if
     end if
 
 	'' check for invalid types
@@ -306,11 +389,22 @@ private function hCast _
 	end if
 
 	'' ','
-	hMatchCOMMA( )
+	if( lexGetToken( ) <> CHAR_COMMA ) then
+		if( hReportError( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then
+			exit function
+		end if
+	else
+		lexSkipToken( )
+	end if
 
 	'' expression
 	if( cExpression( expr ) = FALSE ) then
-		exit function
+		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+			exit function
+		else
+    		'' error recovery: create a fake node
+    		expr = astNewCONSTz( dtype, subtype )
+		end if
 	end if
 
 	if( ptronly ) then
@@ -319,20 +413,39 @@ private function hCast _
 			 is >= FB_DATATYPE_POINTER
 
 		case else
-			hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: create a fake type
+				dtype = FB_DATATYPE_POINTER+FB_DATATYPE_VOID
+				subtype = NULL
+			end if
 		end select
 	end if
 
 	expr = astNewCONV( iif( ptronly, AST_OP_TOPOINTER, INVALID ), _
 					   dtype, subtype, expr, TRUE )
     if( expr = NULL ) Then
-    	hReportError( FB_ERRMSG_TYPEMISMATCH, TRUE )
-    	exit function
+    	if( hReportError( FB_ERRMSG_TYPEMISMATCH, TRUE ) = FALSE ) then
+    		exit function
+    	else
+    		'' error recovery: create a fake node
+    		expr = astNewCONSTz( dtype, subtype )
+    	end if
     end if
 
 	'' ')'
-	hMatchRPRNT( )
+	if( lexGetToken( ) <> CHAR_RPRNT ) then
+		if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip until next ')'
+			cSkipUntil( CHAR_RPRNT, TRUE )
+		end if
+
+	else
+		lexSkipToken( )
+	end if
 
 	function = TRUE
 
@@ -386,16 +499,22 @@ private function hDoDeref _
 	do while( cnt > 0 )
 		'' not a pointer?
 		if( dtype < FB_DATATYPE_POINTER ) then
-			hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
+				exit function
+			else
+				exit do
+			end if
 		end if
 
 		dtype -= FB_DATATYPE_POINTER
 
 		'' incomplete type?
 		if( (dtype = FB_DATATYPE_VOID) or (dtype = FB_DATATYPE_FWDREF) ) then
-			hReportError( FB_ERRMSG_INCOMPLETETYPE, TRUE )
-			exit function
+			if( hReportError( FB_ERRMSG_INCOMPLETETYPE, TRUE ) = FALSE ) then
+				exit function
+			else
+				exit do
+			end if
 		end if
 
 		'' null pointer checking
@@ -440,13 +559,23 @@ function cDerefExpression _
 
 	'' HighestPresExpr
 	if( cHighestPrecExpr( NULL, derefexpr ) = FALSE ) then
-        hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-        exit function
+        if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+        	exit function
+        else
+        	'' error recovery: fake a node
+        	derefexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+        	return TRUE
+        end if
 	end if
 
 	if( derefexpr = NULL ) then
-        hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
-        exit function
+        if( hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
+        	exit function
+        else
+        	'' error recovery: fake a node
+        	derefexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+        	return TRUE
+        end if
 	end if
 
 	''
@@ -476,10 +605,14 @@ private function hProcPtrBody _
 	function = FALSE
 
 	'' '('')'?
-	if( hMatch( CHAR_LPRNT ) ) then
+	if( lexGetToken( ) = CHAR_LPRNT ) then
+		lexSkipToken( )
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+				exit function
+			else
+				cSkipUntil( CHAR_RPRNT, TRUE )
+			end if
 		end if
 	end if
 
@@ -515,7 +648,13 @@ private function hVarPtrBody _
 	function = FALSE
 
 	if( cHighestPrecExpr( chain_, addrofexpr ) = FALSE ) then
-		exit function
+		if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: fake a node
+			addrofexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return TRUE
+		end if
 	end if
 
 	select case as const astGetClass( addrofexpr )
@@ -524,13 +663,25 @@ private function hVarPtrBody _
 	case AST_NODECLASS_FIELD
 		'' can't take address of bitfields..
 		if( astGetDataType( astGetLeft( addrofexpr ) ) = FB_DATATYPE_BITFIELD ) then
-			hReportError( FB_ERRMSG_INVALIDDATATYPES )
-			exit function
+			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake a node
+				astDelTree( addrofexpr )
+				addrofexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				return TRUE
+			end if
 		end if
 
 	case else
-		hReportErrorEx( FB_ERRMSG_INVALIDDATATYPES, "for @ or VARPTR" )
-		exit function
+		if( hReportErrorEx( FB_ERRMSG_INVALIDDATATYPES, "for @ or VARPTR" ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: fake a node
+			astDelTree( addrofexpr )
+			addrofexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			return TRUE
+		end if
 	end select
 
 	addrofexpr = astNewADDR( AST_OP_ADDROF, addrofexpr )
@@ -586,8 +737,15 @@ function cAddrOfExpression _
 
 		'' '('
 		if( hMatch( CHAR_LPRNT ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDLPRNT )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until ')' and fake a node
+				cSkipUntil( CHAR_RPRNT, TRUE )
+				addrofexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				return TRUE
+			end if
+
 		end if
 
 		if( hVarPtrBody( NULL, addrofexpr ) = FALSE ) then
@@ -596,8 +754,12 @@ function cAddrOfExpression _
 
 		'' ')'
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until ')'
+				cSkipUntil( CHAR_RPRNT, TRUE )
+			end if
 		end if
 
 		return TRUE
@@ -608,8 +770,14 @@ function cAddrOfExpression _
 
 		'' '('
 		if( hMatch( CHAR_LPRNT ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDLPRNT )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until ')' and fake a node
+				cSkipUntil( CHAR_RPRNT, TRUE )
+				addrofexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				return TRUE
+			end if
 		end if
 
 		'' proc?
@@ -620,8 +788,14 @@ function cAddrOfExpression _
 
 		sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
 		if( sym = NULL ) then
-			hReportError( FB_ERRMSG_UNDEFINEDSYMBOL )
-			exit function
+			if( hReportError( FB_ERRMSG_UNDEFINEDSYMBOL ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until ')' and fake a node
+				cSkipUntil( CHAR_RPRNT, TRUE )
+				addrofexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				return TRUE
+			end if
 		else
 			lexSkipToken( )
 		end if
@@ -632,8 +806,12 @@ function cAddrOfExpression _
 
 		'' ')'
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until ')'
+				cSkipUntil( CHAR_RPRNT, TRUE )
+			end if
 		end if
 
 		return TRUE
@@ -644,8 +822,14 @@ function cAddrOfExpression _
 
 		'' '('
 		if( hMatch( CHAR_LPRNT ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDLPRNT )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until ')' and fake a node
+				cSkipUntil( CHAR_RPRNT, TRUE )
+				addrofexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				return TRUE
+			end if
 		end if
 
 		if( cLiteral( expr ) = FALSE ) then
@@ -656,22 +840,40 @@ function cAddrOfExpression _
 
 			if( cConstant( chain_, expr ) = FALSE ) then
 				if( cVariable( chain_, expr ) = FALSE ) then
-					hReportError( FB_ERRMSG_INVALIDDATATYPES )
-					exit function
+					if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: skip until ')' and fake a node
+						cSkipUntil( CHAR_RPRNT, TRUE )
+						astDelTree( expr )
+						addrofexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+						return TRUE
+					end if
 				end if
 			end if
 		end if
 
 		dtype = astGetDataType( expr )
 		if( hIsString( dtype ) = FALSE ) then
-			hReportError( FB_ERRMSG_INVALIDDATATYPES )
-			exit function
+			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until ')' and fake a node
+				cSkipUntil( CHAR_RPRNT, TRUE )
+				astDelTree( expr )
+				addrofexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				return TRUE
+			end if
 		end if
 
 		'' ')'
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until ')'
+				cSkipUntil( CHAR_RPRNT, TRUE )
+			end if
 		end if
 
 		if( dtype = FB_DATATYPE_STRING ) then

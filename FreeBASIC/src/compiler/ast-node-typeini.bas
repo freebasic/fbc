@@ -255,21 +255,23 @@ private function hFlushExprStatic _
 								   sdtype, _
 								   symbGetSubtype( sym ), _
 								   expr )
+
                 '' shouldn't happen, but..
 				if( expr = NULL ) then
 			   		hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-					exit function
 				end if
 			end if
 
-			select case as const sdtype
-			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-				irEmitVARINI64( sdtype, astGetValLong( expr ) )
-			case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-				irEmitVARINIf( sdtype, astGetValFloat( expr ) )
-			case else
-				irEmitVARINIi( sdtype, astGetValInt( expr ) )
-			end select
+			if( expr <> NULL ) then
+				select case as const sdtype
+				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+					irEmitVARINI64( sdtype, astGetValLong( expr ) )
+				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+					irEmitVARINIf( sdtype, astGetValFloat( expr ) )
+				case else
+					irEmitVARINIi( sdtype, astGetValInt( expr ) )
+				end select
+			end if
 		end if
 
 	'' literal string..
@@ -375,7 +377,11 @@ function astTypeIniFlush _
 end function
 
 '':::::
-private function hExprIsConst( byval n as ASTNODE ptr ) as integer static
+private function hExprIsConst _
+	( _
+		byval n as ASTNODE ptr _
+	) as integer static
+
     dim as FBSYMBOL ptr sym, litsym
     dim as ASTNODE ptr expr
     dim as integer sdtype, edtype
@@ -458,7 +464,11 @@ private function hExprIsConst( byval n as ASTNODE ptr ) as integer static
 end function
 
 '':::::
-function astTypeIniIsConst( byval tree as ASTNODE ptr ) as integer static
+function astTypeIniIsConst _
+	( _
+		byval tree as ASTNODE ptr _
+	) as integer static
+
     dim as ASTNODE ptr n
 
 	function = FALSE
@@ -480,8 +490,11 @@ function astTypeIniIsConst( byval tree as ASTNODE ptr ) as integer static
 end function
 
 '':::::
-private sub hWalk( byval node as ASTNODE ptr, _
-				   byval parent as ASTNODE ptr )
+private sub hWalk _
+	( _
+		byval node as ASTNODE ptr, _
+		byval parent as ASTNODE ptr _
+	)
 
     dim as ASTNODE ptr expr
     dim as FBSYMBOL ptr sym
@@ -538,7 +551,10 @@ function astTypeIniUpdate( byval tree as ASTNODE ptr ) as ASTNODE ptr
 end function
 
 '':::::
-sub astTypeIniUpdCnt( byval tree as ASTNODE ptr )
+sub astTypeIniUpdCnt _
+	( _
+		byval tree as ASTNODE ptr _
+	)
 
 	if( tree->class = AST_NODECLASS_TYPEINI ) then
 		ast.typeinicnt += 1
@@ -556,7 +572,10 @@ sub astTypeIniUpdCnt( byval tree as ASTNODE ptr )
 end sub
 
 '':::::
-function astTypeIniGetHead( byval tree as ASTNODE ptr ) as ASTNODE ptr
+function astTypeIniGetHead _
+	( _
+		byval tree as ASTNODE ptr _
+	) as ASTNODE ptr
 
 	'' head node will be always an EXPR
 	function = tree->l->l
