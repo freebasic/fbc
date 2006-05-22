@@ -111,7 +111,7 @@ function cLSetStmt( ) as integer
 
 	'' ',' or '='
 	if( hMatch( CHAR_COMMA ) = FALSE ) then
-        if( hMatch( CHAR_EQ ) = FALSE ) then
+        if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
 			if( hReportError( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then
 				exit function
 			end if
