@@ -613,6 +613,12 @@ Most Important Features:
     - You can create static and dynamic libraries adding just one command-line
       option (-lib or -dll).
 
+  o Non-fatal error handling:
+
+    - The FreeBASIC parser won't exit unless n# syntax and/or semantic errors 
+      happened, making it easier to port sources from different languages and 
+      to work with large projects.
+
   o A a 32-bit application:
 
     - FreeBASIC can compile source code files up to 2 GB long.
