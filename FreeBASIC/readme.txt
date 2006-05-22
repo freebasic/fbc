@@ -300,7 +300,7 @@ Most Important Features:
       INPUT from console still not allowing wide-characters to be entered yet.
 
   o Name spaces:
-    - Recursive (up to 8 levels):
+    - Recursive (to an unlimited number of levels):
 
       NAMESPACE outer
         DIM foo        
