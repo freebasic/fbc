@@ -29,7 +29,7 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-''NamespaceStmtBegin  =   NAMESPACE ID (ALIAS LITSTR)?.
+''NamespaceStmtBegin  =   NAMESPACE (ID (ALIAS LITSTR)?)? .
 ''
 function cNamespaceStmtBegin _
 	( _
@@ -48,72 +48,81 @@ function cNamespaceStmtBegin _
     	exit function
     end if
 
-	if( env.namespcrec >= FB_MAXNAMEPSPACEDEPTH ) then
-		hReportError( FB_ERRMSG_RECLEVELTOODEEP )
-		exit function
-	end if
-
 	'' NAMESPACE
 	lexSkipToken( )
 
-	'' ID
+	'' ID?
+	palias = NULL
 	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
-		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-		exit function
-	end if
+		'' anonymous namespace..
+		id = *hMakeTmpStr( )
 
-    '' contains a period?
-    if( lexGetPeriodPos( ) > 0 ) then
-    	hReportError( FB_ERRMSG_CANTINCLUDEPERIODS )
-    	exit function
-    end if
+	else
+    	'' contains a period?
+    	if( lexGetPeriodPos( ) > 0 ) then
+    		if( hReportError( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+    			exit function
+    		end if
+    	end if
 
-	id = *lexGetText( )
+		id = *lexGetText( )
 
-	chain_ = lexGetSymChain( )
-	if( chain_ <> NULL ) then
-		sym = chain_->sym
+		chain_ = lexGetSymChain( )
+		if( chain_ <> NULL ) then
+			sym = chain_->sym
 
-		'' not a namespace?
-		if( symbIsNamespace( sym ) = FALSE ) then
-			hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
-			exit function
-		end if
+			'' not a namespace?
+			if( symbIsNamespace( sym ) = FALSE ) then
+				if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id ) ) then
+					exit function
+				else
+					'' error recovery: fake an id
+					id = *hMakeTmpStr( )
+					sym = NULL
+				end if
 
-		'' not the same hash tb?
-		if( symbGetHashTb( sym ) <> symbGetCurrentHashTb( ) ) then
-			'' then it's an inner ns with the same name as an outer one..
+            else
+				'' not the same hash tb?
+				if( symbGetHashTb( sym ) <> symbGetCurrentHashTb( ) ) then
+					'' then it's an inner ns with the same name as an outer one..
+					sym = NULL
+				end if
+			end if
+
+
+		else
 			sym = NULL
 		end if
 
-	else
-		sym = NULL
-	end if
+		lexSkipToken( )
 
-	lexSkipToken( )
+		if( sym = NULL ) then
+			'' (ALIAS LITSTR)?
+			if( lexGetToken( ) = FB_TK_ALIAS ) then
+    			lexSkipToken( )
 
-	if( sym = NULL ) then
-		'' (ALIAS LITSTR)?
-		if( lexGetToken( ) = FB_TK_ALIAS ) then
-    		lexSkipToken( )
+				if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
+					if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+						exit function
+					end if
 
-			if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-				hReportError( FB_ERRMSG_SYNTAXERROR )
-				exit function
+				else
+					lexEatToken( @id_alias )
+					palias = @id_alias
+				end if
 			end if
 
-			lexEatToken( @id_alias )
-			palias = @id_alias
-
-		else
-			palias = NULL
+			sym = symbAddNamespace( @id, palias )
+			if( sym = NULL ) then
+				if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake an id
+					sym = symbAddNamespace( hMakeTmpStr( ), NULL )
+				end if
+			end if
 		end if
 
-		sym = symbAddNamespace( @id, palias )
-		if( sym = NULL ) then
-			hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
-			exit function
-		end if
 	end if
 
 	''
@@ -132,8 +141,6 @@ function cNamespaceStmtBegin _
 	symbSetCurrentNamespc( sym )
 
 	symbHashListAdd( @symbGetNamespaceHashTb( sym ) )
-
-	env.namespcrec += 1
 
 	function = TRUE
 
@@ -165,8 +172,6 @@ function cNamespaceStmtEnd as integer
 	'' pop from stmt stack
 	cCompStmtPop( stk )
 
-	env.namespcrec -= 1
-
 	function = TRUE
 
 end function
@@ -186,27 +191,39 @@ function cUsingStmt as integer
     do
     	'' ID
     	if( lexGetToken( ) <> FB_TK_ID ) then
-			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until next ','
+				hSkipUntil( CHAR_COMMA )
+			end if
+
+        else
+    		chain_ = cIdentifier( )
+    		if( chain_ = NULL ) then
+    			if( hReportError( FB_ERRMSG_UNDEFINEDSYMBOL ) = FALSE ) then
+    				exit function
+				else
+					'' error recovery: skip until next ','
+					hSkipUntil( CHAR_COMMA )
+				end if
+
+    		else
+    			sym = chain_->sym
+
+				'' not a namespace?
+				if( symbIsNamespace( sym ) = FALSE ) then
+					if( hReportError( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+						exit function
+					end if
+
+				else
+    				if( symbNamespaceImport( sym ) = FALSE ) then
+	   					exit function
+    				end if
+				end if
+    		end if
 		end if
-
-    	chain_ = cIdentifier( )
-    	if( chain_ = NULL ) then
-    		hReportError( FB_ERRMSG_UNDEFINEDSYMBOL )
-    		exit function
-    	end if
-
-    	sym = chain_->sym
-
-		'' not a namespace?
-		if( symbIsNamespace( sym ) = FALSE ) then
-			hReportError( FB_ERRMSG_TYPEMISMATCH )
-			exit function
-		end if
-
-    	if( symbNamespaceImport( sym ) = FALSE ) then
-    		exit function
-    	end if
 
     '' ','?
     loop while( hMatch( CHAR_COMMA ) )

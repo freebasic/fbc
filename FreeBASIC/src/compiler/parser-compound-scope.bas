@@ -42,8 +42,9 @@ function cScopeStmtBegin as integer
 
 	n = astScopeBegin( )
 	if( n = NULL ) then
-		hReportError( FB_ERRMSG_RECLEVELTOODEEP )
-		exit function
+		if( hReportError( FB_ERRMSG_RECLEVELTOODEEP ) = FALSE ) then
+			exit function
+		end if
 	end if
 
 	''
@@ -72,7 +73,9 @@ function cScopeStmtEnd as integer
 	lexSkipToken( )
 
 	''
-	astScopeEnd( stk->scope.node )
+	if( stk->scope.node <> NULL ) then
+		astScopeEnd( stk->scope.node )
+	end if
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )

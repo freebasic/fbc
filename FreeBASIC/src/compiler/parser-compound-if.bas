@@ -118,8 +118,12 @@ function cIfStmtBegin as integer
 
     '' Expression
     if( cExpression( expr ) = FALSE ) then
-    	hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-    	exit function
+    	if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    		exit function
+		else
+			'' error recovery: fake an expr
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
     end if
 
 	'' add end label (at ENDIF)
@@ -130,10 +134,13 @@ function cIfStmtBegin as integer
 	'' branch
 	expr = astUpdComp2Branch( expr, nl, FALSE )
 	if( expr = NULL ) then
-		hReportError( FB_ERRMSG_INVALIDDATATYPES )
-		exit function
+		if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			exit function
+		end if
+
+	else
+		astAdd( expr )
 	end if
-	astAdd( expr )
 
 	'' push to stmt stack
 	stk = cCompStmtPush( FB_TK_IF )
@@ -142,27 +149,27 @@ function cIfStmtBegin as integer
 	stk->if.endlabel = el
 	stk->if.elsecnt = 0
 
-	select case lexGetToken( )
-	'' THEN?
-	case FB_TK_THEN
-		lexSkipToken( )
-
-		select case lexGetToken( )
-		'' COMMENT|NEWLINE?
-		case FB_TK_COMMENTCHAR, FB_TK_REM, FB_TK_EOL, FB_TK_STATSEPCHAR
-
-		case else
-			return hIfSingleLine( stk )
-		end select
-
 	'' GOTO?
-	case FB_TK_GOTO
+	if( lexGetToken( ) = FB_TK_GOTO ) then
 		return hIfSingleLine( stk )
+	end if
+
+	'' THEN?
+	if( lexGetToken( ) <> FB_TK_THEN ) then
+		if( hReportError( FB_ERRMSG_EXPECTEDTHEN ) = FALSE ) then
+			cCompStmtPop( stk )
+			exit function
+		end if
+	else
+		lexSkipToken( )
+	end if
+
+	select case lexGetToken( )
+	'' COMMENT|NEWLINE?
+	case FB_TK_COMMENTCHAR, FB_TK_REM, FB_TK_EOL, FB_TK_STATSEPCHAR
 
 	case else
-		hReportError( FB_ERRMSG_EXPECTEDTHEN )
-		cCompStmtPop( stk )
-		exit function
+		return hIfSingleLine( stk )
 	end select
 
 	function = TRUE
@@ -194,6 +201,13 @@ function cIfStmtNext(  ) as integer
 		return TRUE
 	end if
 
+    '' ELSE already parsed?
+    if( stk->if.elsecnt <> 0 ) then
+    	if( hReportError( FB_ERRMSG_EXPECTEDENDIF ) = FALSE ) then
+    		exit function
+    	end if
+    end if
+
 	'' ELSEIF Expression THEN ?
     select case lexGetToken( )
     case FB_TK_ELSEIF
@@ -210,30 +224,34 @@ function cIfStmtNext(  ) as integer
 
 	    '' Expression
     	if( cExpression( expr ) = FALSE ) then
-    		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-    		exit function
+    		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    			exit function
+			else
+				'' error recovery: fake an expr
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			end if
     	end if
 
 		'' THEN
 		if( hMatch( FB_TK_THEN ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDTHEN )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDTHEN ) = FALSE ) then
+				exit function
+			end if
 		end if
 
 		'' branch
 		expr = astUpdComp2Branch( expr, stk->if.nxtlabel, FALSE )
 		if( expr = NULL ) then
-			hReportError( FB_ERRMSG_INVALIDDATATYPES )
-			exit function
+			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
+			end if
+
+		else
+			astAdd( expr )
 		end if
-		astAdd( expr )
 
     '' ELSE?
     case FB_TK_ELSE
-    	if( stk->if.elsecnt <> 0 ) then
-    		hReportError( FB_ERRMSG_SYNTAXERROR )
-    		exit function
-    	end if
     	stk->if.elsecnt += 1
 
     	lexSkipToken( )
@@ -242,8 +260,10 @@ function cIfStmtNext(  ) as integer
 		astAdd( astNewBRANCH( AST_OP_JMP, stk->if.endlabel ) )
 
 		'' emit next label
-		astAdd( astNewLABEL( stk->if.nxtlabel ) )
-		stk->if.nxtlabel = NULL
+		if( stk->if.nxtlabel <> NULL ) then
+			astAdd( astNewLABEL( stk->if.nxtlabel ) )
+			stk->if.nxtlabel = NULL
+		end if
 
 	end select
 

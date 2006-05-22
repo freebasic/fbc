@@ -54,7 +54,7 @@ function cOptDecl as integer
 				exit function
 			else
 				'' error recovery: skip stmt
-				cSkipStmt( )
+				hSkipStmt( )
 			end if
 
 		else
@@ -154,7 +154,7 @@ function cOptDecl as integer
 						exit function
 					else
 						'' error recovery: skip until next ','
-						cSkipUntil( CHAR_COMMA )
+						hSkipUntil( CHAR_COMMA )
 					end if
 				end select
 

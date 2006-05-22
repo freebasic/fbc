@@ -53,6 +53,7 @@ function cExternStmtBegin _
 		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 			exit function
 		else
+			'' error recovery: assume it's "C"
 			litstr = @"c"
 		end if
 	else
@@ -73,6 +74,7 @@ function cExternStmtBegin _
 		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 			exit function
 		else
+			'' error recovery: assume it's "C"
 			mangling = FB_MANGLING_CDECL
 		end if
 	end select
@@ -81,6 +83,7 @@ function cExternStmtBegin _
 		lexSkipToken( )
 	end if
 
+    library = NULL
 	if( lexGetToken( ) = FB_TK_LIB ) then
 		lexSkipToken( )
 
@@ -93,9 +96,6 @@ function cExternStmtBegin _
 			library = symbAddLib( lexGetText( ) )
 			lexSkipToken( )
 		end if
-
-	else
-		library = NULL
 	end if
 
 	''

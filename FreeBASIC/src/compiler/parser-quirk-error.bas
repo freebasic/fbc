@@ -46,7 +46,7 @@ function cErrorStmt as integer
 		lexSkipToken( )
 
 		'' Expression
-		hMatchExpression( expr )
+		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 
 		rtlErrorThrow( expr, lexLineNum( ), env.inf.name )
 
@@ -63,7 +63,7 @@ function cErrorStmt as integer
 		end if
 
 		'' Expression
-		hMatchExpression( expr )
+		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 
 		rtlErrorSetnum( expr )
 

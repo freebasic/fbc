@@ -100,7 +100,7 @@ function cDataStmt as integer static
 		rtlDataStoreBegin( )
 
 		do
-			hMatchExpression( expr )
+			hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 
 			'' check if it's an string
 			litsym = NULL

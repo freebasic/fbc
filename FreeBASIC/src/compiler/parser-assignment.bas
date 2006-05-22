@@ -154,7 +154,7 @@ function cAssignment _
 
     if( doskip ) then
     	'' error recovery: skip until next stmt
-    	cSkipStmt( )
+    	hSkipStmt( )
     end if
 
     function = TRUE
@@ -249,7 +249,7 @@ function cAssignmentOrPtrCall as integer
         		exit function
         	else
         		'' error recovery: skip stmt
-        		cSkipStmt( )
+        		hSkipStmt( )
         	end if
 		end if
 	end if

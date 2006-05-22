@@ -41,14 +41,14 @@ function cMidStmt as integer
 
 		hMatchLPRNT()
 
-		hMatchExpression( expr1 )
+		hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
 
 		hMatchCOMMA( )
 
-		hMatchExpression( expr2 )
+		hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
 
 		if( hMatch( CHAR_COMMA ) ) then
-			hMatchExpression( expr3 )
+			hMatchExpressionEx( expr3, FB_DATATYPE_INTEGER )
 		else
 			expr3 = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
 		end if
@@ -56,16 +56,20 @@ function cMidStmt as integer
 		hMatchRPRNT( )
 
 		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDEQ )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
+				exit function
+			end if
 		end if
 
-		hMatchExpression( expr4 )
+		hMatchExpressionEx( expr4, FB_DATATYPE_STRING )
 
 		function = rtlStrAssignMid( expr1, expr2, expr3, expr4 ) <> NULL
 	end if
 
 end function
+
+#define CREATEFAKEID() _
+	astNewVAR( symbAddTempVar( FB_DATATYPE_STRING ), 0, FB_DATATYPE_STRING )
 
 '':::::
 '' LsetStmt		=	LSET String|UDT (','|'=') Expression|UDT
@@ -81,8 +85,12 @@ function cLSetStmt( ) as integer
 
 	'' Expression
 	if( cVarOrDeref( dstexpr ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-		exit function
+		if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: fake a var
+			dstexpr = CREATEFAKEID( )
+		end if
 	end if
 
 	dtype1 = astGetDataType( dstexpr )
@@ -90,45 +98,70 @@ function cLSetStmt( ) as integer
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, _
 		 FB_DATATYPE_USERDEF
+
 	case else
-		hReportError( FB_ERRMSG_INVALIDDATATYPES )
-		exit function
+		if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: fake a var
+			astDelTree( dstexpr )
+			dstexpr = CREATEFAKEID( )
+		end if
 	end select
 
 	'' ',' or '='
 	if( hMatch( CHAR_COMMA ) = FALSE ) then
         if( hMatch( CHAR_EQ ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDCOMMA )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then
+				exit function
+			end if
         end if
 	end if
 
 	'' Expression
-	hMatchExpression( srcexpr )
+	hMatchExpressionEx( srcexpr, dtype1 )
 
 	dtype2 = astGetDataType( srcexpr )
 	select case dtype2
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, _
 		 FB_DATATYPE_USERDEF
+
 	case else
-		hReportError( FB_ERRMSG_INVALIDDATATYPES )
-		exit function
+		if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) ) then
+			exit function
+		else
+			'' error recovery: fake a var
+			astDelTree( srcexpr )
+			srcexpr = CREATEFAKEID( )
+		end if
 	end select
 
 	if( (dtype1 = FB_DATATYPE_USERDEF) or _
 		(dtype2 = FB_DATATYPE_USERDEF) ) then
 
 		if( dtype1 <> dtype2 ) then
-			hReportError( FB_ERRMSG_INVALIDDATATYPES )
-			exit function
+			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
+			else
+				'' no error recovery: stmt already parsed
+				astDelTree( srcexpr )
+				astDelTree( dstexpr )
+				return TRUE
+			end if
 		end if
 
 		dst = astGetSymbol( dstexpr )
 		src = astGetSymbol( srcexpr )
 		if( (dst = NULL) or (src = NULL) ) then
-			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+				exit function
+			else
+				'' no error recovery: stmt already parsed
+				astDelTree( srcexpr )
+				astDelTree( dstexpr )
+				return TRUE
+			end if
 		end if
 
 		function = rtlMemCopyClear( dstexpr, symbGetUDTLen( dst->subtype ), _
@@ -140,9 +173,11 @@ function cLSetStmt( ) as integer
 end function
 
 '':::::
-private function cStrCHR( byref funcexpr as ASTNODE ptr, _
-						  byval is_wstr as integer _
-						) as integer
+private function cStrCHR _
+	( _
+		byref funcexpr as ASTNODE ptr, _
+		byval is_wstr as integer _
+	) as integer
 
 	static as zstring * 32*6+1 zs
 	static as wstring * 32*6+1 ws
@@ -156,7 +191,7 @@ private function cStrCHR( byref funcexpr as ASTNODE ptr, _
 
 	cnt = 0
 	do
-		hMatchExpression( exprtb(cnt) )
+		hMatchExpressionEx( exprtb(cnt), FB_DATATYPE_INTEGER )
 		cnt += 1
 		if( cnt >= 32 ) then
 			exit do
@@ -246,7 +281,11 @@ private function cStrCHR( byref funcexpr as ASTNODE ptr, _
 end function
 
 '':::::
-private function cStrASC( byref funcexpr as ASTNODE ptr ) as integer
+private function cStrASC _
+	( _
+		byref funcexpr as ASTNODE ptr _
+	) as integer
+
     dim as ASTNODE ptr expr1, posexpr
     dim as integer p
     dim as FBSYMBOL ptr litsym
@@ -255,11 +294,11 @@ private function cStrASC( byref funcexpr as ASTNODE ptr ) as integer
 
 	hMatchLPRNT( )
 
-	hMatchExpression( expr1 )
+	hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
 
 	'' (',' Expression)?
 	if( hMatch( CHAR_COMMA ) ) then
-		hMatchExpression( posexpr )
+		hMatchExpressionEx( posexpr, FB_DATATYPE_INTEGER )
 	else
 		posexpr = NULL
 	end if
@@ -334,7 +373,11 @@ end function
 ''              |   INSTR '(' (Expression{int} ',')? Expression{str}, "ANY"? Expression{str} ')'
 ''              |   RTRIM$ '(' Expression{str} (, "ANY" Expression{str} )? ')'
 ''
-function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
+function cStringFunct _
+	( _
+		byref funcexpr as ASTNODE ptr _
+	) as integer
+
     dim as ASTNODE ptr expr1, expr2, expr3
     dim as integer dclass, dtype, is_any, is_wstr
 
@@ -348,7 +391,7 @@ function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 		hMatchLPRNT( )
 
-		hMatchExpression( expr1 )
+		hMatchExpressionEx( expr1, FB_DATATYPE_INTEGER )
 
 		hMatchRPRNT( )
 
@@ -366,14 +409,14 @@ function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 		hMatchLPRNT( )
 
-		hMatchExpression( expr1 )
+		hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
 
 		hMatchCOMMA( )
 
-		hMatchExpression( expr2 )
+		hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
 
 		if( hMatch( CHAR_COMMA ) ) then
-			hMatchExpression( expr3 )
+			hMatchExpressionEx( expr3, FB_DATATYPE_INTEGER )
 		else
 			expr3 = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
 		end if
@@ -392,11 +435,11 @@ function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 		hMatchLPRNT( )
 
-		hMatchExpression( expr1 )
+		hMatchExpressionEx( expr1, FB_DATATYPE_INTEGER )
 
 		hMatchCOMMA( )
 
-		hMatchExpression( expr2 )
+		hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
 
 		hMatchRPRNT( )
 
@@ -427,18 +470,18 @@ function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 		hMatchLPRNT( )
 
-		hMatchExpression( expr1 )
+		hMatchExpressionEx( expr1, FB_DATATYPE_INTEGER )
 
 		hMatchCOMMA( )
 
         is_any = hMatch( FB_TK_ANY )
 
-		hMatchExpression( expr2 )
+		hMatchExpressionEx( expr2, FB_DATATYPE_STRING )
 
         if( is_any = FALSE ) then
         	if( hMatch( CHAR_COMMA ) ) then
                 is_any = hMatch( FB_TK_ANY )
-                hMatchExpression( expr3 )
+                hMatchExpressionEx( expr3, FB_DATATYPE_STRING )
             end if
         end if
 
@@ -459,11 +502,11 @@ function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
 
         hMatchLPRNT( )
 
-        hMatchExpression( expr1 )
+        hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
 
         if( hMatch( CHAR_COMMA ) ) then
             is_any = hMatch( FB_TK_ANY )
-	        hMatchExpression( expr2 )
+	        hMatchExpressionEx( expr2, FB_DATATYPE_STRING )
         else
             is_any = FALSE
             expr2 = NULL
@@ -480,11 +523,11 @@ function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
 
         hMatchLPRNT( )
 
-        hMatchExpression( expr1 )
+        hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
 
         if( hMatch( CHAR_COMMA ) ) then
             is_any = hMatch( FB_TK_ANY )
-	        hMatchExpression( expr2 )
+	        hMatchExpressionEx( expr2, FB_DATATYPE_STRING )
         else
             is_any = FALSE
             expr2 = NULL
@@ -501,11 +544,11 @@ function cStringFunct( byref funcexpr as ASTNODE ptr ) as integer
 
         hMatchLPRNT( )
 
-        hMatchExpression( expr1 )
+        hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
 
         if( hMatch( CHAR_COMMA ) ) then
             is_any = hMatch( FB_TK_ANY )
-	        hMatchExpression( expr2 )
+	        hMatchExpressionEx( expr2, FB_DATATYPE_STRING )
         else
             is_any = FALSE
             expr2 = NULL

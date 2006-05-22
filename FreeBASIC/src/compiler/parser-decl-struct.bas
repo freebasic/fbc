@@ -299,7 +299,7 @@ private function hTypeAdd _
     		exit function
     	else
     		'' error recovery: skip until next line or stmt
-    		cSkipUntil( INVALID, TRUE )
+    		hSkipUntil( INVALID, TRUE )
     	end if
 	end if
 
@@ -321,7 +321,7 @@ private function hTypeAdd _
     		exit function
     	else
     		'' error recovery: skip until next stmt
-    		cSkipStmt( )
+    		hSkipStmt( )
     	end if
 
 	else
@@ -332,7 +332,7 @@ private function hTypeAdd _
 				exit function
 			else
     			'' error recovery: skip until next stmt
-    			cSkipStmt( )
+    			hSkipStmt( )
     		end if
 
 		else
@@ -479,7 +479,7 @@ decl_inner:		'' it's an anonymous inner UDT
 	    		exit function
     		else
     			'' error recovery: skip until next line or stmt
-    			cSkipUntil( INVALID, TRUE )
+    			hSkipUntil( INVALID, TRUE )
     		end if
 		end if
 

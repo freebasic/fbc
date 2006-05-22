@@ -125,7 +125,7 @@ function cSubOrFuncDecl _
 			exit function
 		else
 			'' error recovery: skip stmt
-			cSkipStmt( )
+			hSkipStmt( )
 			return TRUE
 		end if
 	end if
@@ -205,7 +205,7 @@ function cSubOrFuncDecl _
 				exit function
 			else
 				'' error recovery: skip until ')'
-				cSkipUntil( CHAR_RPRNT )
+				hSkipUntil( CHAR_RPRNT )
 			end if
 		else
 			lexSkipToken( )

@@ -142,7 +142,7 @@ function cSymbolTypeFuncPtr _
 				exit function
 			else
 				'' error recovery: skip until next ')'
-				cSkipUntil( CHAR_RPRNT, TRUE )
+				hSkipUntil( CHAR_RPRNT, TRUE )
 			end if
 		else
 			lexSkipToken( )

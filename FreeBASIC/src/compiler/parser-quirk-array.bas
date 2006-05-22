@@ -161,7 +161,7 @@ function cArrayFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 		'' (',' Expression)?
 		if( hMatch( CHAR_COMMA ) ) then
-			hMatchExpression( expr )
+			hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 		else
 			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if

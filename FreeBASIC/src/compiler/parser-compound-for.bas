@@ -29,8 +29,12 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-private function cStoreTemp( byval expr as ASTNODE ptr, _
-							 byval dtype as integer ) as FBSYMBOL ptr static
+private function cStoreTemp _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval dtype as integer _
+	) as FBSYMBOL ptr static
+
     dim as FBSYMBOL ptr s
     dim as ASTNODE ptr vexpr
 
@@ -49,13 +53,16 @@ private function cStoreTemp( byval expr as ASTNODE ptr, _
 end function
 
 '':::::
-private sub cFlushBOP( byval op as integer, _
-					   byval dtype as integer, _
-	 		   		   byval v1 as FBSYMBOL ptr, _
-	 		   		   byval val1 as FBVALUE ptr, _
-			   		   byval v2 as FBSYMBOL ptr, _
-			   		   byval val2 as FBVALUE ptr, _
-			   		   byval ex as FBSYMBOL ptr ) static
+private sub cFlushBOP _
+	( _
+		byval op as integer, _
+		byval dtype as integer, _
+	 	byval v1 as FBSYMBOL ptr, _
+	 	byval val1 as FBVALUE ptr, _
+		byval v2 as FBSYMBOL ptr, _
+		byval val2 as FBVALUE ptr, _
+		byval ex as FBSYMBOL ptr _
+	) static
 
 	dim as ASTNODE ptr expr1, expr2, expr
 
@@ -94,11 +101,14 @@ private sub cFlushBOP( byval op as integer, _
 end sub
 
 '':::::
-private sub cFlushSelfBOP( byval op as integer, _
-						   byval dtype as integer, _
-	 		       		   byval v1 as FBSYMBOL PTR, _
-			       		   byval v2 as FBSYMBOL PTR, _
-			       		   byval val2 as FBVALUE ptr ) static
+private sub cFlushSelfBOP _
+	( _
+		byval op as integer, _
+		byval dtype as integer, _
+	 	byval v1 as FBSYMBOL PTR, _
+		byval v2 as FBSYMBOL PTR, _
+		byval val2 as FBVALUE ptr _
+	) static
 
 	dim as ASTNODE ptr expr1, expr2, expr
 
@@ -130,6 +140,9 @@ private sub cFlushSelfBOP( byval op as integer, _
 
 end sub
 
+#define CREATEFAKEID( ) _
+	astNewVAR( symbAddTempVar( FB_DATATYPE_INTEGER ), 0, FB_DATATYPE_INTEGER )
+
 '':::::
 ''ForStmtBegin    =   FOR ID '=' Expression TO Expression (STEP Expression)? .
 ''
@@ -153,13 +166,22 @@ function cForStmtBegin as integer
 	end if
 
 	if( cVariable( chain_, idexpr ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDVAR )
-		exit function
+		if( hReportError( FB_ERRMSG_EXPECTEDVAR ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: fake a var
+			idexpr = CREATEFAKEID( )
+		end if
 	end if
 
 	if( astIsVAR( idexpr ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDSCALAR, TRUE )
-		exit function
+		if( hReportError( FB_ERRMSG_EXPECTEDSCALAR, TRUE ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: fake a var
+			astDelTree( idexpr )
+			idexpr = CREATEFAKEID( )
+		end if
 	end if
 
 	stk = cCompStmtPush( FB_TK_FOR )
@@ -168,16 +190,24 @@ function cForStmtBegin as integer
 	dtype = symbGetType( stk->for.cnt )
 
 	if( (dtype < FB_DATATYPE_BYTE) or (dtype > FB_DATATYPE_DOUBLE) ) then
-		hReportError( FB_ERRMSG_EXPECTEDSCALAR, TRUE )
-		cCompStmtPop( stk )
-		exit function
+		if( hReportError( FB_ERRMSG_EXPECTEDSCALAR, TRUE ) = FALSE ) then
+			cCompStmtPop( stk )
+			exit function
+		else
+			'' error recovery: fake a var
+			astDelTree( idexpr )
+			idexpr = CREATEFAKEID( )
+		end if
 	end if
 
 	'' =
-	if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDEQ )
-		cCompStmtPop( stk )
-		exit function
+	if( lexGetToken( ) <> FB_TK_ASSIGN) then
+		if( hReportError( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
+			cCompStmtPop( stk )
+			exit function
+		end if
+	else
+		lexSkipToken( )
 	end if
 
 	'' get counter type (endc and step must be the same type)
@@ -185,9 +215,13 @@ function cForStmtBegin as integer
 
     '' Expression
     if( cExpression( expr ) = FALSE ) then
-    	hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-    	cCompStmtPop( stk )
-    	exit function
+    	if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    		cCompStmtPop( stk )
+    		exit function
+    	else
+			'' error recovery: fake an expr
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
     end if
 
 	''
@@ -201,17 +235,24 @@ function cForStmtBegin as integer
 	astAdd( expr )
 
 	'' TO
-	if( hMatch( FB_TK_TO ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDTO )
-		cCompStmtPop( stk )
-		exit function
+	if( lexGetToken( ) <> FB_TK_TO ) then
+		if( hReportError( FB_ERRMSG_EXPECTEDTO ) = FALSE ) then
+			cCompStmtPop( stk )
+			exit function
+		end if
+	else
+		lexSkipToken( )
 	end if
 
 	'' end condition (Expression)
 	if( cExpression( expr ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-		cCompStmtPop( stk )
-		exit function
+		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+			cCompStmtPop( stk )
+			exit function
+		else
+			'' error recovery: fake an expr
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
 	end if
 
 	''
@@ -232,10 +273,15 @@ function cForStmtBegin as integer
 
 	if( lexGetToken( ) = FB_TK_STEP ) then
 		lexSkipToken( )
+
 		if( cExpression( expr ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-			cCompStmtPop( stk )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+				cCompStmtPop( stk )
+				exit function
+			else
+				'' error recovery: fake an expr
+				expr = astNewCONSTi( 1, FB_DATATYPE_INTEGER )
+			end if
 		end if
 
 		'' store step into a temp var

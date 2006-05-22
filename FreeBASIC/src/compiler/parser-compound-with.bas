@@ -37,16 +37,24 @@ private function hAllocWithVar( ) as FBSYMBOL ptr
 
     '' Variable
     if( cVarOrDeref( expr ) = FALSE ) then
-    	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-    	return NULL
-    end if
+    	if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+    		return NULL
+    	else
+    		'' error recovery: fake a var
+    		expr = astNewVAR( symbAddTempVar( FB_DATATYPE_INTEGER ), _
+    						  0, _
+    						  FB_DATATYPE_INTEGER )
+    	end if
 
-	'' not an UDT?
-	dtype = astGetDataType( expr )
-	if( dtype <> FB_DATATYPE_USERDEF ) then
-		hReportError( FB_ERRMSG_INVALIDDATATYPES )
-		return NULL
-	end if
+    else
+		'' not an UDT?
+		dtype = astGetDataType( expr )
+		if( dtype <> FB_DATATYPE_USERDEF ) then
+			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				return NULL
+			end if
+		end if
+    end if
 
     '' create a temporary pointer
     dtype += FB_DATATYPE_POINTER

@@ -120,7 +120,7 @@ function cConstAssign _
 		if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 			exit function
 		else
-			cSkipUntil( FB_TK_DECLSEPCHAR )
+			hSkipUntil( FB_TK_DECLSEPCHAR )
 			return TRUE
 		end if
 	end if
@@ -282,7 +282,7 @@ function cConstAssign _
 
 	if( doskip ) then
 		'' error recovery: skip until next stmt or const decl
-		cSkipUntil( FB_TK_DECLSEPCHAR )
+		hSkipUntil( FB_TK_DECLSEPCHAR )
 	end if
 
 	function = TRUE

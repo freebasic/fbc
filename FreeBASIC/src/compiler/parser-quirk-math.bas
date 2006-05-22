@@ -43,59 +43,62 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 	function = FALSE
 
-	select case as const lexGetToken
+	select case as const lexGetToken( )
 	'' ABS( Expression )
 	case FB_TK_ABS
-		lexSkipToken
+		lexSkipToken( )
 
 		hMatchLPRNT( )
 
-		hMatchExpression( expr )
+		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 
 		hMatchRPRNT( )
 
 		'' hack! implemented as Unary OP for better speed on x86's
 		funcexpr = astNewUOP( AST_OP_ABS, expr )
 		if( funcexpr = NULL ) then
-			hReportError( FB_ERRMSG_INVALIDDATATYPES )
-			exit function
+			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
+			end if
 		end if
 
 		function = TRUE
 
 	'' SGN( Expression )
 	case FB_TK_SGN
-		lexSkipToken
+		lexSkipToken( )
 
 		hMatchLPRNT( )
 
-		hMatchExpression( expr )
+		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 
 		hMatchRPRNT( )
 
 		'' hack! implemented as Unary OP for better speed on x86's
 		funcexpr = astNewUOP( AST_OP_SGN, expr )
 		if( funcexpr = NULL ) then
-			hReportError( FB_ERRMSG_INVALIDDATATYPES )
-			exit function
+			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
+			end if
 		end if
 
 		function = TRUE
 
 	'' FIX( Expression )
 	case FB_TK_FIX
-		lexSkipToken
+		lexSkipToken( )
 
 		hMatchLPRNT( )
 
-		hMatchExpression( expr )
+		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 
 		hMatchRPRNT( )
 
 		funcexpr = rtlMathFIX( expr )
 		if( funcexpr = NULL ) then
-			hReportError( FB_ERRMSG_INVALIDDATATYPES )
-			exit function
+			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
+			end if
 		end if
 
 		function = TRUE
@@ -129,15 +132,16 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 		hMatchLPRNT( )
 
-		hMatchExpression( expr )
+		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 
 		hMatchRPRNT( )
 
 		'' hack! implemented as Unary OP for better speed on x86's
 		funcexpr = astNewUOP( op, expr )
 		if( funcexpr = NULL ) then
-			hReportError( FB_ERRMSG_INVALIDDATATYPES )
-			exit function
+			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
+			end if
 		end if
 
 		function = TRUE
@@ -148,19 +152,20 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 		hMatchLPRNT( )
 
-		hMatchExpression( expr )
+		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 
 		hMatchCOMMA( )
 
-		hMatchExpression( expr2 )
+		hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
 
 		hMatchRPRNT( )
 
 		'' hack! implemented as Binary OP for better speed on x86's
 		funcexpr = astNewBOP( AST_OP_ATAN2, expr, expr2 )
 		if( funcexpr = NULL ) then
-			hReportError( FB_ERRMSG_INVALIDDATATYPES )
-			exit function
+			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
+			end if
 		end if
 
 		function = TRUE
@@ -177,8 +182,12 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 			env.checkarray = FALSE
 			if( cExpression( expr ) = FALSE ) then
 				env.checkarray = TRUE
-				hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-				exit function
+				if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake an expr
+					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				end if
 			end if
 			env.checkarray = TRUE
 		end if
@@ -188,8 +197,13 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 			if( islen = FALSE ) then
 				if( astGetDataClass( expr ) = FB_DATACLASS_STRING ) then
 					if( (astGetSymbol( expr ) = NULL) or (astIsFUNCT( expr )) ) then
-						hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE )
-						exit function
+						if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE ) = FALSE ) then
+							exit function
+						else
+							'' error recovery: fake an expr
+							astDelTree( expr )
+							expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+						end if
 					end if
 				end if
 			end if

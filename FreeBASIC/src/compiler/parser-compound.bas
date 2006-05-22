@@ -209,27 +209,48 @@ function cExitStatement as integer
 		label = env.stmt.proc.endlabel
 
 		if( label = NULL ) then
-			hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB )
-			exit function
+			if( hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip stmt
+				lexSkipToken( )
+				return TRUE
+			end if
 		end if
 
 		'' useless check
 		if( lexGetToken( ) <> iif( symbGetType( env.currproc ) = FB_DATATYPE_VOID, _
 								   FB_TK_SUB, _
 								   FB_TK_FUNCTION ) ) then
-			hReportError( FB_ERRMSG_SYNTAXERROR )
-			exit function
+
+			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip stmt
+				lexSkipToken( )
+				return TRUE
+			end if
 		end if
 
 	case else
-		hReportError( FB_ERRMSG_ILLEGALOUTSIDEASTMT )
-		exit function
+		if( hReportError( FB_ERRMSG_ILLEGALOUTSIDEASTMT ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip stmt
+			lexSkipToken( )
+			return TRUE
+		end if
 	end select
 
 	''
 	if( label = NULL ) then
-		hReportError( FB_ERRMSG_ILLEGALOUTSIDECOMP )
-		exit function
+		if( hReportError( FB_ERRMSG_ILLEGALOUTSIDECOMP ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip stmt
+			lexSkipToken( )
+			return TRUE
+		end if
 	end if
 
 	lexSkipToken( )
@@ -262,13 +283,23 @@ function cContinueStatement as integer
 		label = env.stmt.while.cmplabel
 
 	case else
-		hReportError( FB_ERRMSG_ILLEGALOUTSIDEASTMT )
-		exit function
+		if( hReportError( FB_ERRMSG_ILLEGALOUTSIDEASTMT ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip stmt
+			lexSkipToken( )
+			return TRUE
+		end if
 	end select
 
 	if( label = NULL ) then
-		hReportError( FB_ERRMSG_ILLEGALOUTSIDECOMP )
-		exit function
+		if( hReportError( FB_ERRMSG_ILLEGALOUTSIDECOMP ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip stmt
+			lexSkipToken( )
+			return TRUE
+		end if
 	end if
 
 	lexSkipToken( )
@@ -306,8 +337,13 @@ function cCompoundEnd( ) as integer
 		function = cExternStmtEnd( )
 
 	case else
-		hReportError( FB_ERRMSG_ILLEGALEND )
-		function = FALSE
+		if( hReportError( FB_ERRMSG_ILLEGALEND ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip stmt
+			hSkipStmt( )
+			return TRUE
+		end if
 	end select
 
 end function

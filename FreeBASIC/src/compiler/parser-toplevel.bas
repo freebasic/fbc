@@ -114,7 +114,7 @@ function cLine as integer
 			exit function
 		else
 			'' error recovery: skip until EOL
-			cSkipStmt( )
+			hSkipStmt( )
 			if( lexGetToken( ) = FB_TK_EOL ) then
 				lexSkipToken( )
 			end if
@@ -129,7 +129,7 @@ function cLine as integer
 end function
 
 ''::::
-sub cSkipUntil _
+sub hSkipUntil _
 	( _
 		byval token as integer, _
 		byval doeat as integer _
@@ -192,3 +192,29 @@ sub cSkipUntil _
 	end if
 
 end sub
+
+'':::::
+function hMatchExpr _
+	( _
+		byval dtype as integer _
+	) as ASTNODE ptr
+
+	dim as ASTNODE ptr expr
+
+	if( cExpression( expr ) = FALSE ) then
+		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+			return NULL
+		else
+			'' error recovery: fake an expr
+			if( dtype = INVALID ) then
+				return NULL
+			end if
+
+			expr = astNewCONSTz( dtype )
+		end if
+	end if
+
+	function = expr
+
+end function
+

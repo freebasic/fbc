@@ -43,19 +43,19 @@ function cIIFFunct( byref funcexpr as ASTNODE ptr ) as integer
 	hMatchLPRNT( )
 
 	'' condexpr
-	hMatchExpression( condexpr )
+	hMatchExpressionEx( condexpr, FB_DATATYPE_INTEGER )
 
 	'' ','
 	hMatchCOMMA( )
 
 	'' truexpr
-	hMatchExpression( truexpr )
+	hMatchExpressionEx( truexpr, FB_DATATYPE_INTEGER )
 
 	'' ','
 	hMatchCOMMA( )
 
 	'' falsexpr
-	hMatchExpression( falsexpr )
+	hMatchExpressionEx( falsexpr, astGetDataType( truexpr ) )
 
 	'' ')'
 	hMatchRPRNT( )
@@ -64,8 +64,9 @@ function cIIFFunct( byref funcexpr as ASTNODE ptr ) as integer
 	funcexpr = astNewIIF( condexpr, truexpr, falsexpr )
 
 	if( funcexpr = NULL ) then
-		hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-		exit function
+		if( hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+			exit function
+		end if
 	end if
 
 	function = TRUE

@@ -135,7 +135,6 @@ private sub hSetCtx( )
 
 	env.scope				= FB_MAINSCOPE
 	env.includerec			= 0
-	env.namespcrec			= 0
 	env.currproc 			= NULL
 	env.currblock 			= NULL
 

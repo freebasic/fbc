@@ -29,12 +29,14 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-sub astBuildVAR( byval n as ASTNODE ptr, _
-				 byval sym as FBSYMBOL ptr, _
-				 byval ofs as integer, _
-				 byval dtype as integer, _
-				 byval subtype as FBSYMBOL ptr = NULL _
-			   ) static
+sub astBuildVAR _
+	( _
+		byval n as ASTNODE ptr, _
+		byval sym as FBSYMBOL ptr, _
+		byval ofs as integer, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr = NULL _
+	) static
 
 	astInitNode( n, AST_NODECLASS_VAR, dtype, subtype )
 
@@ -44,11 +46,13 @@ sub astBuildVAR( byval n as ASTNODE ptr, _
 end sub
 
 '':::::
-function astNewVAR( byval sym as FBSYMBOL ptr, _
-					byval ofs as integer, _
-					byval dtype as integer, _
-					byval subtype as FBSYMBOL ptr = NULL _
-				  ) as ASTNODE ptr static
+function astNewVAR _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval ofs as integer, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr = NULL _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
 
@@ -66,7 +70,11 @@ function astNewVAR( byval sym as FBSYMBOL ptr, _
 end function
 
 '':::::
-function astLoadVAR( byval n as ASTNODE ptr ) as IRVREG ptr static
+function astLoadVAR _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr static
+
     dim as FBSYMBOL ptr s
     dim as integer ofs
 

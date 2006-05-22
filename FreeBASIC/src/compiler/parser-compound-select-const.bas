@@ -70,13 +70,17 @@ function cSelConstStmtBegin( ) as integer
 
 	'' Expression
 	if( cExpression( expr ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-		exit function
+		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: fake an expr
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
 	end if
 
 	if( astGetDataClass( expr ) <> FB_DATACLASS_INTEGER ) then
-		hReportError( FB_ERRMSG_INVALIDDATATYPES )
-		exit function
+		astDelTree( expr )
+		expr = NULL
 
     '' CHAR and WCHAR literals are also from the INTEGER class
     else
@@ -84,10 +88,19 @@ function cSelConstStmtBegin( ) as integer
     	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
     		'' don't allow, unless it's a deref pointer
     		if( astIsPTR( expr ) = FALSE ) then
-    			hReportError( FB_ERRMSG_INVALIDDATATYPES )
-    			exit function
+				astDelTree( expr )
+				expr = NULL
     		end if
     	end select
+	end if
+
+	if( expr = NULL ) then
+		if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: fake an expr
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
 	end if
 
 	if( astGetDataType( expr ) <> FB_DATATYPE_UINT ) then
@@ -105,10 +118,9 @@ function cSelConstStmtBegin( ) as integer
 	end if
 
 	expr = astNewASSIGN( astNewVAR( sym, 0, FB_DATATYPE_UINT ), expr )
-	if( expr = NULL ) then
-		exit function
+	if( expr <> NULL ) then
+		astAdd( expr )
 	end if
-	astAdd( expr )
 
 	'' skip the statements
 	astAdd( astNewBRANCH( AST_OP_JMP, cl ) )
@@ -131,10 +143,12 @@ function cSelConstStmtBegin( ) as integer
 end function
 
 '':::::
-private function hSelConstAddCase( byval swtbase as integer, _
-								   byval value as uinteger, _
-							       byval label as FBSYMBOL ptr _
-							     ) as integer static
+private function hSelConstAddCase _
+	( _
+		byval swtbase as integer, _
+		byval value as uinteger, _
+		byval label as FBSYMBOL ptr _
+	) as integer static
 
 	dim as integer probe, high, low, i
 	dim as uinteger v
@@ -143,8 +157,6 @@ private function hSelConstAddCase( byval swtbase as integer, _
 	if( ctx.base >= FB_MAXSWTCASEEXPR ) then
 		return FALSE
 	end if
-
-	function = TRUE
 
 	'' find the slot using bin-search
 	high = ctx.base - swtbase
@@ -155,8 +167,10 @@ private function hSelConstAddCase( byval swtbase as integer, _
 		v = ctx.caseTB(swtbase+probe).value
 		if( v < value ) then
 			low = probe
+
 		elseif( v > value ) then
 			high = probe
+
 		else
 			exit function
 		end if
@@ -172,12 +186,18 @@ private function hSelConstAddCase( byval swtbase as integer, _
 	ctx.caseTB(swtbase+high).label = label
 	ctx.base += 1
 
+	function = TRUE
+
 end function
 
 '':::::
-''cSelConstStmtNext =   CASE (ELSE | (ConstExpression{int} (COMMA ConstExpression{int})*)) .
+''cSelConstStmtNext =   CASE (ELSE | (ConstExpression{int} (',' ConstExpression{int})*)) .
 ''
-function cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr ) as integer
+function cSelConstStmtNext _
+	( _
+		byval stk as FB_CMPSTMTSTK ptr _
+	) as integer
+
 	dim as ASTNODE ptr expr1, expr2
 	dim as uinteger value, tovalue, maxval, minval
 	dim as FBSYMBOL ptr label
@@ -193,74 +213,80 @@ function cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr ) as integer
 		astAdd( astNewBRANCH( AST_OP_JMP, env.stmt.select.endlabel ) )
     end if
 
-	'' ELSE
+	'' ELSE?
 	if( lexGetToken( ) = FB_TK_ELSE ) then
 		lexSkipToken( )
+
 		stk->select.const.deflabel = symbAddLabel( NULL, TRUE )
 		astAdd( astNewLABEL( stk->select.const.deflabel ) )
 		stk->select.casecnt = -1
 
-	else
+		return TRUE
+	end if
 
-		swtbase = stk->select.const.base
+	'' ConstExpression{int} ((',' | TO) ConstExpression{int})*
+	swtbase = stk->select.const.base
+
+	'' add label
+	label = symbAddLabel( NULL, FALSE )
+
+	do
+		if( cExpression( expr1 ) = FALSE ) then
+			if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake an expr
+				expr1 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			end if
+		end if
+
+		if( astIsCONST( expr1 ) = FALSE ) then
+			if( hReportError( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until next ',' and fake an expr
+				if( lexGetToken( ) <> FB_TK_TO ) then
+					hSkipUntil( CHAR_COMMA )
+				end if
+				astDelTree( expr1 )
+				expr1 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			end if
+		end if
+
+		value = astGetValueAsInt( expr1 )
+		astDelNode( expr1 )
+
 		minval = stk->select.const.minval
 		maxval = stk->select.const.maxval
 
-		'' add label
-		label = symbAddLabel( NULL, FALSE )
+		'' TO?
+		if( lexGetToken( ) = FB_TK_TO ) then
+			lexSkipToken( )
 
-		'' ConstExpression (COMMA ConstExpression (TO ConstExpression)?)*
-		do
-			if( cExpression( expr1 ) = FALSE ) then
-				hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-				exit function
+			if( cExpression( expr2 ) = FALSE ) then
+				if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: skip until next ',' and fake an expr
+					hSkipUntil( CHAR_COMMA )
+					expr2 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				end if
 			end if
 
-			if( astIsCONST( expr1 ) = FALSE ) then
-				hReportError( FB_ERRMSG_EXPECTEDCONST )
-				exit function
+			if( astIsCONST( expr2 ) = FALSE ) then
+				if( hReportError( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake an expr
+					astDelTree( expr2 )
+					expr2 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				end if
 			end if
 
-			value = astGetValueAsInt( expr1 )
-			astDelNode( expr1 )
+			tovalue = astGetValueAsInt( expr2 )
+			astDelNode( expr2 )
 
-			'' TO?
-			if( hMatch( FB_TK_TO ) ) then
-				if( cExpression( expr2 ) = FALSE ) then
-					hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-					exit function
-				end if
-
-				if( astIsCONST( expr2 ) = FALSE ) then
-					hReportError( FB_ERRMSG_EXPECTEDCONST )
-					exit function
-				end if
-
-				tovalue = astGetValueAsInt( expr2 )
-				astDelNode( expr2 )
-
-				for value = value to tovalue
-					if( value < minval ) then
-						minval = value
-					end if
-					if( value > maxval ) then
-						maxval = value
-					end if
-
-					 '' too big?
-					 if( (minval > maxval) or _
-					 	 (maxval - minval > FB_MAXSWTCASERANGE) or _
-					 	 (culngint(minval) * FB_INTEGERSIZE > 4294967292ULL) ) then
-					 	exit function
-					 end if
-
-					'' add item
-					if( hSelConstAddCase( swtbase, value, label ) = FALSE ) then
-						exit function
-					end if
-				next
-
-			else
+			for value = value to tovalue
 				if( value < minval ) then
 					minval = value
 				end if
@@ -268,30 +294,72 @@ function cSelConstStmtNext( byval stk as FB_CMPSTMTSTK ptr ) as integer
 					maxval = value
 				end if
 
-				'' too big?
-				if( (minval > maxval) or _
-					(maxval - minval > FB_MAXSWTCASERANGE) or _
-					(culngint(minval) * FB_INTEGERSIZE > 4294967292ULL) ) then
-					exit function
-				end if
+				 '' too big?
+				 if( (minval > maxval) or _
+				 	 (maxval - minval > FB_MAXSWTCASERANGE) or _
+				 	 (culngint(minval) * FB_INTEGERSIZE > 4294967292ULL) ) then
 
-				'' add item
-				if( hSelConstAddCase( swtbase, value, label ) = FALSE ) then
-					exit function
-				end if
+				 	if( hReportError( FB_ERRMSG_RANGETOOLARGE ) = FALSE ) then
+				 		exit function
 
+				 	else
+						'' error recovery: reset values
+						minval = stk->select.const.minval
+						maxval = stk->select.const.maxval
+				 	end if
+
+				 else
+					'' add item
+					if( hSelConstAddCase( swtbase, value, label ) = FALSE ) then
+						if( hReportError( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+							exit function
+						end if
+					end if
+				 end if
+
+			next
+
+		else
+			if( value < minval ) then
+				minval = value
+			end if
+			if( value > maxval ) then
+				maxval = value
 			end if
 
-		loop while( hMatch( CHAR_COMMA ) )
+			'' too big?
+			if( (minval > maxval) or _
+				(maxval - minval > FB_MAXSWTCASERANGE) or _
+				(culngint(minval) * FB_INTEGERSIZE > 4294967292ULL) ) then
 
-		''
-		astAdd( astNewLABEL( label ) )
+				if( hReportError( FB_ERRMSG_RANGETOOLARGE ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: reset values
+					minval = stk->select.const.minval
+					maxval = stk->select.const.maxval
+				end if
+
+			else
+				'' add item
+				if( hSelConstAddCase( swtbase, value, label ) = FALSE ) then
+					if( hReportError( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+						exit function
+					end if
+				end if
+			end if
+
+		end if
 
 		stk->select.const.minval = minval
 		stk->select.const.maxval = maxval
-		stk->select.casecnt += 1
 
-	end if
+	loop while( hMatch( CHAR_COMMA ) )
+
+	''
+	astAdd( astNewLABEL( label ) )
+
+	stk->select.casecnt += 1
 
 	function = TRUE
 
@@ -306,15 +374,8 @@ function cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr ) as integer
 	dim as ASTNODE ptr expr, idxexpr
 	dim as integer i
 
-    '' too large?
     minval = stk->select.const.minval
     maxval = stk->select.const.maxval
-    if( (minval > maxval) or _
-    	(maxval - minval > FB_MAXSWTCASERANGE) or _
-    	(culngint(minval) * FB_INTEGERSIZE > 4294967292ULL) ) then
-    	hReportError( FB_ERRMSG_RANGETOOLARGE )
-    	exit function
-    end if
 
 	'' END SELECT
 	lexSkipToken( )

@@ -59,8 +59,6 @@ function cDefDecl as integer static
 		dtype = FB_DATATYPE_LONGINT
 	case FB_TK_DEFULNGINT
 		dtype = FB_DATATYPE_ULONGINT
-	case FB_TK_DEFUSHORT
-		dtype = FB_DATATYPE_USHORT
 	case FB_TK_DEFSNG
 		dtype = FB_DATATYPE_SINGLE
 	case FB_TK_DEFDBL

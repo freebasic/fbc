@@ -63,7 +63,7 @@ function cViewStmt(byval is_func as integer = FALSE, _
                 exit function
             end if
 
-            hMatchExpression( expr2 )
+            hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
         else
             default_view = TRUE
         end if
@@ -117,17 +117,17 @@ function cWidthStmt( byval isfunc as integer ) as ASTNODE ptr
     if( hMatch( FB_TK_LPRINT ) ) then
        ' fb_WidthDev
        dev_name = astNewCONSTstr( "LPT1:" )
-       hMatchExpression( width_arg )
+       hMatchExpressionEx( width_arg, FB_DATATYPE_INTEGER )
 
        function = rtlWidthDev( dev_name, width_arg, isfunc )
 
 	elseif( hMatch( CHAR_SHARP ) ) then
     	' fb_WidthFile
 
-        hMatchExpression( fnum )
+        hMatchExpressionEx( fnum, FB_DATATYPE_INTEGER )
 
         if( hMatch( CHAR_COMMA ) ) then
-        	hMatchExpression( width_arg )
+        	hMatchExpressionEx( width_arg, FB_DATATYPE_INTEGER )
 		else
         	width_arg = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
 		end if
@@ -137,15 +137,15 @@ function cWidthStmt( byval isfunc as integer ) as ASTNODE ptr
 	elseif( hMatch( CHAR_COMMA ) ) then
     	' fb_WidthScreen
         width_arg = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
-        hMatchExpression( height_arg )
+        hMatchExpressionEx( height_arg, FB_DATATYPE_INTEGER )
         function = rtlWidthScreen( width_arg, height_arg, isfunc )
 
 	else
-		hMatchExpression( dev_name )
+		hMatchExpressionEx( dev_name, FB_DATATYPE_STRING )
         ' fb_WidthDev
         if( hIsString( astGetDataType( dev_name ) ) ) then
         	if( hMatch( CHAR_COMMA ) ) then
-            	hMatchExpression( width_arg )
+            	hMatchExpressionEx( width_arg, FB_DATATYPE_INTEGER )
 			else
             	width_arg = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
 			end if
@@ -157,7 +157,7 @@ function cWidthStmt( byval isfunc as integer ) as ASTNODE ptr
             dev_name = NULL
 
             if( hMatch( CHAR_COMMA ) ) then
-            	hMatchExpression( height_arg )
+            	hMatchExpressionEx( height_arg, FB_DATATYPE_INTEGER )
 			else
             	height_arg = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
 			end if
@@ -218,15 +218,15 @@ function cScreenFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 	hMatchLPRNT( )
 
-	hMatchExpression( yexpr )
+	hMatchExpressionEx( yexpr, FB_DATATYPE_INTEGER )
 
 	hMatchCOMMA( )
 
-	hMatchExpression( xexpr )
+	hMatchExpressionEx( xexpr, FB_DATATYPE_INTEGER )
 
 	fexpr = NULL
 	if( hMatch( CHAR_COMMA ) ) then
-		hMatchExpression( fexpr )
+		hMatchExpressionEx( fexpr, FB_DATATYPE_INTEGER )
 	end if
 
 	hMatchRPRNT( )

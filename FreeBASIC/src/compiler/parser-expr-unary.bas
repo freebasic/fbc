@@ -255,7 +255,7 @@ function cAnonUDT _
 				exit function
 			else
 				'' error recovery: skip until next '>', fake a node
-				cSkipUntil( FB_TK_GT, TRUE )
+				hSkipUntil( FB_TK_GT, TRUE )
 				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 				return TRUE
 			end if
@@ -268,7 +268,7 @@ function cAnonUDT _
 				exit function
 			else
 				'' error recovery: skip until next '>', fake a node
-				cSkipUntil( FB_TK_GT, TRUE )
+				hSkipUntil( FB_TK_GT, TRUE )
 				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 				return TRUE
 			end if
@@ -282,7 +282,7 @@ function cAnonUDT _
 				exit function
 			else
 				'' error recovery: skip until next '>'
-				cSkipUntil( FB_TK_GT, TRUE )
+				hSkipUntil( FB_TK_GT, TRUE )
 			end if
 
     	else
@@ -342,7 +342,7 @@ private function hCast _
 			exit function
 		else
 			'' error recovery: skip until ')', fake a node
-			cSkipUntil( CHAR_RPRNT, TRUE )
+			hSkipUntil( CHAR_RPRNT, TRUE )
 			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			return TRUE
 		end if
@@ -357,7 +357,7 @@ private function hCast _
     		exit function
     	else
 			'' error recovery: skip until ',', create a fake type
-			cSkipUntil( CHAR_COMMA )
+			hSkipUntil( CHAR_COMMA )
 
 			if( ptronly ) then
 				dtype = FB_DATATYPE_POINTER+FB_DATATYPE_VOID
@@ -371,15 +371,28 @@ private function hCast _
 	'' check for invalid types
 	select case dtype
 	case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR
-		hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
-		exit function
+		if( hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: create a fake type
+			if( ptronly ) then
+				dtype = FB_DATATYPE_POINTER+FB_DATATYPE_VOID
+			else
+				dtype = FB_DATATYPE_INTEGER
+			end if
+            subtype = NULL
+		end if
 	end select
 
 	if( ptronly ) then
 		'' check if it's a pointer
 		if( dtype < FB_DATATYPE_POINTER ) then
-			hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) ) then
+				exit function
+			else
+				'' error recovery: create a fake type
+				dtype += FB_DATATYPE_POINTER
+			end if
 		end if
 
 	else
@@ -440,7 +453,7 @@ private function hCast _
 			exit function
 		else
 			'' error recovery: skip until next ')'
-			cSkipUntil( CHAR_RPRNT, TRUE )
+			hSkipUntil( CHAR_RPRNT, TRUE )
 		end if
 
 	else
@@ -611,7 +624,7 @@ private function hProcPtrBody _
 			if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
 				exit function
 			else
-				cSkipUntil( CHAR_RPRNT, TRUE )
+				hSkipUntil( CHAR_RPRNT, TRUE )
 			end if
 		end if
 	end if
@@ -741,7 +754,7 @@ function cAddrOfExpression _
 				exit function
 			else
 				'' error recovery: skip until ')' and fake a node
-				cSkipUntil( CHAR_RPRNT, TRUE )
+				hSkipUntil( CHAR_RPRNT, TRUE )
 				addrofexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 				return TRUE
 			end if
@@ -758,7 +771,7 @@ function cAddrOfExpression _
 				exit function
 			else
 				'' error recovery: skip until ')'
-				cSkipUntil( CHAR_RPRNT, TRUE )
+				hSkipUntil( CHAR_RPRNT, TRUE )
 			end if
 		end if
 
@@ -774,7 +787,7 @@ function cAddrOfExpression _
 				exit function
 			else
 				'' error recovery: skip until ')' and fake a node
-				cSkipUntil( CHAR_RPRNT, TRUE )
+				hSkipUntil( CHAR_RPRNT, TRUE )
 				addrofexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 				return TRUE
 			end if
@@ -792,7 +805,7 @@ function cAddrOfExpression _
 				exit function
 			else
 				'' error recovery: skip until ')' and fake a node
-				cSkipUntil( CHAR_RPRNT, TRUE )
+				hSkipUntil( CHAR_RPRNT, TRUE )
 				addrofexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 				return TRUE
 			end if
@@ -810,7 +823,7 @@ function cAddrOfExpression _
 				exit function
 			else
 				'' error recovery: skip until ')'
-				cSkipUntil( CHAR_RPRNT, TRUE )
+				hSkipUntil( CHAR_RPRNT, TRUE )
 			end if
 		end if
 
@@ -826,7 +839,7 @@ function cAddrOfExpression _
 				exit function
 			else
 				'' error recovery: skip until ')' and fake a node
-				cSkipUntil( CHAR_RPRNT, TRUE )
+				hSkipUntil( CHAR_RPRNT, TRUE )
 				addrofexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 				return TRUE
 			end if
@@ -844,7 +857,7 @@ function cAddrOfExpression _
 						exit function
 					else
 						'' error recovery: skip until ')' and fake a node
-						cSkipUntil( CHAR_RPRNT, TRUE )
+						hSkipUntil( CHAR_RPRNT, TRUE )
 						astDelTree( expr )
 						addrofexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 						return TRUE
@@ -859,7 +872,7 @@ function cAddrOfExpression _
 				exit function
 			else
 				'' error recovery: skip until ')' and fake a node
-				cSkipUntil( CHAR_RPRNT, TRUE )
+				hSkipUntil( CHAR_RPRNT, TRUE )
 				astDelTree( expr )
 				addrofexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 				return TRUE
@@ -872,7 +885,7 @@ function cAddrOfExpression _
 				exit function
 			else
 				'' error recovery: skip until ')'
-				cSkipUntil( CHAR_RPRNT, TRUE )
+				hSkipUntil( CHAR_RPRNT, TRUE )
 			end if
 		end if
 

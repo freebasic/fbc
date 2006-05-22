@@ -39,7 +39,7 @@ function cPokeStmt as integer
 	function = FALSE
 
 	'' POKE
-	lexSkipToken
+	lexSkipToken( )
 
 	'' (SymbolType ',')?
 	if( cSymbolType( poketype, subtype, lgt, ptrcnt ) ) then
@@ -47,8 +47,13 @@ function cPokeStmt as integer
 		'' check for invalid types
 		select case poketype
 		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR
-			hReportError FB_ERRMSG_INVALIDDATATYPES, TRUE
-			exit function
+			if( hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake a type
+				poketype = FB_DATATYPE_UBYTE
+				subtype = NULL
+			end if
 		end select
 
 		'' ','
@@ -60,21 +65,27 @@ function cPokeStmt as integer
 	end if
 
 	'' Expression, Expression
-	hMatchExpression( expr1 )
+	hMatchExpressionEx( expr1, FB_DATATYPE_INTEGER )
 
 	hMatchCOMMA( )
 
-	hMatchExpression( expr2 )
+	hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
 
     select case astGetDataClass( expr1 )
     case FB_DATACLASS_STRING
-    	hReportError FB_ERRMSG_INVALIDDATATYPES
+    	hReportError( FB_ERRMSG_INVALIDDATATYPES )
+    	'' no error recovery: stmt was already parsed
+    	astDelTree( expr1 )
         exit function
+
 	case FB_DATACLASS_FPOINT
     	expr1 = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, expr1 )
+
 	case else
         if( astGetDataSize( expr1 ) <> FB_POINTERSIZE ) then
-        	hReportError FB_ERRMSG_INVALIDDATATYPES
+        	hReportError( FB_ERRMSG_INVALIDDATATYPES )
+        	'' no error recovery: ditto
+        	astDelTree( expr1 )
         	exit function
         end if
 	end select
@@ -82,8 +93,13 @@ function cPokeStmt as integer
     expr1 = astNewPTR( 0, expr1, poketype, subtype )
 
     expr1 = astNewASSIGN( expr1, expr2 )
-
-	astAdd( expr1 )
+    if( expr1 = NULL ) then
+    	if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+    		exit function
+    	end if
+	else
+		astAdd( expr1 )
+	end if
 
     function = TRUE
 
@@ -92,7 +108,11 @@ end function
 '':::::
 '' PeekFunct =   PEEK '(' (SymbolType ',')? Expression ')' .
 ''
-function cPeekFunct( byref funcexpr as ASTNODE ptr ) as integer
+function cPeekFunct _
+	( _
+		byref funcexpr as ASTNODE ptr _
+	) as integer
+
 	dim as ASTNODE ptr expr
 	dim as integer peektype, lgt, ptrcnt
 	dim as FBSYMBOL ptr subtype
@@ -100,7 +120,7 @@ function cPeekFunct( byref funcexpr as ASTNODE ptr ) as integer
 	function = FALSE
 
 	'' PEEK
-	lexSkipToken
+	lexSkipToken( )
 
 	'' '('
 	hMatchLPRNT( )
@@ -111,8 +131,13 @@ function cPeekFunct( byref funcexpr as ASTNODE ptr ) as integer
 		'' check for invalid types
 		select case peektype
 		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR
-			hReportError FB_ERRMSG_INVALIDDATATYPES
-			exit function
+			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake a type
+				peektype = FB_DATATYPE_UBYTE
+				subtype = NULL
+			end if
 		end select
 
 		'' ','
@@ -124,7 +149,7 @@ function cPeekFunct( byref funcexpr as ASTNODE ptr ) as integer
 	end if
 
 	'' Expression
-	hMatchExpression( expr )
+	hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 
 	' ')'
 	hMatchRPRNT( )
@@ -132,16 +157,32 @@ function cPeekFunct( byref funcexpr as ASTNODE ptr ) as integer
     ''
     select case astGetDataClass( expr )
     case FB_DATACLASS_STRING
-    	hReportError FB_ERRMSG_INVALIDDATATYPES
-		exit function
+    	if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: fake an expr
+			astDelTree( expr )
+			expr = NULL
+		end if
+
 	case FB_DATACLASS_FPOINT
 		expr = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, expr )
+
 	case else
 		if( astGetDataSize( expr ) <> FB_POINTERSIZE ) then
-        	hReportError FB_ERRMSG_INVALIDDATATYPES
-        	exit function
+        	if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+        		exit function
+        	else
+				'' error recovery: fake an expr
+				astDelTree( expr )
+				expr = NULL
+        	end if
 		end if
 	end select
+
+    if( expr = NULL ) then
+    	expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+    end if
 
     funcexpr = astNewPTR( 0, expr, peektype, subtype )
 

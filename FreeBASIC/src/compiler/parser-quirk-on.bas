@@ -30,8 +30,12 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function cGOTBStmt( byval expr as ASTNODE ptr, _
-					byval isgoto as integer ) as integer
+function cGOTBStmt _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval isgoto as integer _
+	) as integer
+
     dim as ASTNODE ptr idxexpr
 	dim as integer l, i
 	dim as FBSYMBOL ptr sym, exitlabel, tbsym, labelTB(0 to FB_MAXGOTBITEMS-1)
@@ -59,23 +63,29 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
 	'' read labels
 	l = 0
 	do
-		if( (lexGetClass( ) <> FB_TKCLASS_NUMLITERAL) and _
-			(lexGetClass( ) <> FB_TKCLASS_IDENTIFIER) ) then
-			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
-			exit function
-		end if
-
 		'' Label
-		chain_ = cIdentifier( )
-		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
+		select case lexGetClass( )
+		case FB_TKCLASS_NUMLITERAL, FB_TKCLASS_IDENTIFIER
+			chain_ = cIdentifier( )
+			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+				exit function
+			end if
 
-		labelTB(l) = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
-		if( labelTB(l) = NULL ) then
-			labelTB(l) = symbAddLabel( lexGetText( ), FALSE, TRUE )
-		end if
-		lexSkipToken( )
+			labelTB(l) = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
+			if( labelTB(l) = NULL ) then
+				labelTB(l) = symbAddLabel( lexGetText( ), FALSE, TRUE )
+			end if
+
+			lexSkipToken( )
+
+		case else
+			if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+				exit function
+			else
+			    '' error recovery: fake an label
+				labelTB(l) = symbAddLabel( hMakeTmpStr( ), FALSE, FALSE )
+			end if
+		end select
 
 		l += 1
 	loop while( hMatch( CHAR_COMMA ) )
@@ -96,14 +106,20 @@ function cGOTBStmt( byval expr as ASTNODE ptr, _
     '' jump to table[idx]
     tbsym = hJumpTbAllocSym( )
 
-	idxexpr = astNewBOP( AST_OP_MUL, astNewVAR( sym, 0, FB_DATATYPE_UINT ), _
-    				  			    astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_UINT ) )
+	idxexpr = astNewBOP( AST_OP_MUL, _
+						 astNewVAR( sym, 0, FB_DATATYPE_UINT ), _
+    				  	 astNewCONSTi( FB_INTEGERSIZE, FB_DATATYPE_UINT ) )
 
-    expr = astNewIDX( astNewVAR( tbsym, -1*FB_INTEGERSIZE, FB_DATATYPE_UINT ), idxexpr, _
+    expr = astNewIDX( astNewVAR( tbsym, _
+    							 -1*FB_INTEGERSIZE, _
+    							 FB_DATATYPE_UINT ), _
+					  idxexpr, _
     				  FB_DATATYPE_UINT, NULL )
 
     if( isgoto = FALSE ) then
-    	astAdd( astNewSTACK( AST_OP_PUSH, astNewADDR( AST_OP_ADDROF, astNewVAR( exitlabel ) ) ) )
+    	astAdd( astNewSTACK( AST_OP_PUSH, _
+    						 astNewADDR( AST_OP_ADDROF, _
+    						 			 astNewVAR( exitlabel ) ) ) )
     end if
 
     astAdd( astNewBRANCH( AST_OP_JUMPPTR, NULL, expr ) )
@@ -152,12 +168,11 @@ function cOnStmt as integer
 
 	'' ERROR | Expression
 	expr = NULL
-	select case lexGetToken( )
-	case FB_TK_ERROR
+	if( lexGetToken( ) = FB_TK_ERROR ) then
 		lexSkipToken( )
-	case else
-		hMatchExpression( expr )
-	end select
+	else
+		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
+	end if
 
 	'' GOTO|GOSUB
 	select case lexGetToken( )
@@ -168,22 +183,36 @@ function cOnStmt as integer
 	case FB_TK_GOSUB
 	    '' can't do GOSUB with ON ERROR
 	    if( expr = NULL ) then
-	    	hReportError( FB_ERRMSG_SYNTAXERROR )
-	    	exit function
+	    	if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+	    		exit function
+	    	else
+	    		'' error recovery: fake an expr
+	    		expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+	    	end if
 	    end if
 
 		'' difference from QB: not allowed inside procs
 		if( fbIsModLevel() = FALSE ) then
-			hReportError( FB_ERRMSG_ILLEGALINSIDEASUB )
-			exit function
+			if( hReportError( FB_ERRMSG_ILLEGALINSIDEASUB ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip stmt
+				hSkipStmt( )
+				return TRUE
+			end if
 		end if
 
 	    lexSkipToken( )
 	    isgoto = FALSE
 
 	case else
-		hReportError( FB_ERRMSG_SYNTAXERROR )
-		exit function
+		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip stmt
+			hSkipStmt( )
+			return TRUE
+		end if
 	end select
 
     '' on error?

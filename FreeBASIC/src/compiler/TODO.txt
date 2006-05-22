@@ -1,8 +1,9 @@
 [ ] non-fatal error handling:
+    - update pre-processor
+    - update proc body
     - update func call
     - update var expr
-    - update compounds
-    - update quirks, only when really needed, the line/stmt will be skipped anyways
+    - update quirks
 
 [ ] namespaces:
     - add access to the global ns, make GLOBAL a reserved word as in vb.net

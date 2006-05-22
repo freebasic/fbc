@@ -57,7 +57,7 @@ private function hElmInit _
 			exit function
 		else
 			'' error recovery: skip until ',' and create a fake expression
-			cSkipUntil( CHAR_COMMA )
+			hSkipUntil( CHAR_COMMA )
 			expr = astNewCONSTz( symbGetType( sym ) )
 		end if
 	end if
@@ -128,7 +128,7 @@ private function hArrayInit _
 						exit function
 					else
 						'' error recovery: skip until next '}'
-						cSkipUntil( CHAR_RBRACE, TRUE )
+						hSkipUntil( CHAR_RBRACE, TRUE )
 						d = NULL
 					end if
 
@@ -186,7 +186,7 @@ private function hArrayInit _
 					exit function
 				else
 					'' error recovery: skip until next '}'
-					cSkipUntil( CHAR_RBRACE, TRUE )
+					hSkipUntil( CHAR_RBRACE, TRUE )
 				end if
 			end if
 
@@ -245,7 +245,7 @@ private function hUDTInit _
 				exit function
 			else
 				'' error recovery: skip until next ')'
-				cSkipUntil( CHAR_RPRNT, TRUE )
+				hSkipUntil( CHAR_RPRNT, TRUE )
 				exit do
 			end if
 		end if
@@ -277,7 +277,7 @@ private function hUDTInit _
 					exit function
 				else
 					'' error recovery: skip until next '}'
-					cSkipUntil( CHAR_RBRACE, TRUE )
+					hSkipUntil( CHAR_RBRACE, TRUE )
 				end if
 			end if
 		end if
@@ -294,7 +294,7 @@ private function hUDTInit _
 			exit function
 		else
 			'' error recovery: skip until next ')'
-			cSkipUntil( CHAR_RPRNT, TRUE )
+			hSkipUntil( CHAR_RPRNT, TRUE )
 		end if
 	end if
 
@@ -354,7 +354,7 @@ function cVariableInit _
 				exit function
 			else
 				'' error recovery: skip until new '}'
-				cSkipUntil( CHAR_RBRACE, TRUE )
+				hSkipUntil( CHAR_RBRACE, TRUE )
 			end if
 		end if
 	end if

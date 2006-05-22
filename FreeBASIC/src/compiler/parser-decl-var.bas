@@ -371,6 +371,7 @@ private function hDeclStaticVar _
 
 		if( s = NULL ) then
     		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
+    		'' no error recovery: already parsed
     		return NULL
     	end if
 
@@ -481,8 +482,8 @@ private function hDeclDynArray _
 			'' external?
 			if( symbIsExtern( s ) ) then
 				if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
-   					'' no error recovery, ditto
    					hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *id )
+   					'' no error recovery, ditto
 					exit function
 				end if
 
@@ -505,15 +506,15 @@ private function hDeclDynArray _
 
 		if( (dtype <> symbGetType( s )) or _
 			(subtype <> symbGetSubType( s )) ) then
-    		'' no error recovery, caller will take care of that
     		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *id )
+    		'' no error recovery, caller will take care of that
     		exit function
 		end if
 
 		if( symbGetArrayDimensions( s ) > 0 ) then
 			if( dimensions <> symbGetArrayDimensions( s ) ) then
-    			'' no error recovery, ditto
     			hReportErrorEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
+    			'' no error recovery, ditto
     			exit function
     		end if
 		end if
@@ -522,8 +523,8 @@ private function hDeclDynArray _
 	else
 		if( (dtype <> symbGetType( s )) or _
 			(subtype <> symbGetSubType( s )) ) then
-    		'' no error recovery, ditto
     		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *id )
+    		'' no error recovery, ditto
     		exit function
 		end if
 	end if
@@ -635,8 +636,15 @@ private function hVarDecl _
 
     	'' ANY?
     	if( dtype = FB_DATATYPE_VOID ) then
-    		hReportError( FB_ERRMSG_INVALIDDATATYPES )
-    		exit function
+    		if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: fake a type
+    			dtype += FB_DATATYPE_POINTER
+    			subtype = NULL
+    			lgt = FB_POINTERSIZE
+    			ptrcnt = 1
+    		end if
     	end if
 
     	addsuffix = FALSE
@@ -768,7 +776,7 @@ private function hVarDecl _
     						exit function
     					else
     						'' error recovery: skip until next ')'
-    						cSkipUntil( CHAR_RPRNT )
+    						hSkipUntil( CHAR_RPRNT )
     					end if
     				end if
     			end if
@@ -891,7 +899,7 @@ private function hVarDecl _
 
         	if( sym = NULL ) then
         		'' error recovery: skip until next ','
-        		cSkipUntil( CHAR_COMMA )
+        		hSkipUntil( CHAR_COMMA )
 
         	else
         		dim as ASTNODE ptr tree
@@ -966,7 +974,7 @@ function cStaticArrayDecl _
 			else
 				'' error recovery: fake an expr
 				if( lexGetToken( ) <> FB_TK_TO ) then
-					cSkipUntil( CHAR_COMMA )
+					hSkipUntil( CHAR_COMMA )
 				end if
 				expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
 			end if
@@ -995,7 +1003,7 @@ function cStaticArrayDecl _
 					exit function
 				else
 					'' error recovery: skip to next ',' and fake an expr
-					cSkipUntil( CHAR_COMMA )
+					hSkipUntil( CHAR_COMMA )
 					expr = astNewCONSTi( dTB(i).lower, FB_DATATYPE_INTEGER )
 				end if
 			else
@@ -1033,7 +1041,7 @@ function cStaticArrayDecl _
 				exit function
 			else
 				'' error recovery: skip to next ')'
-				cSkipUntil( CHAR_RPRNT )
+				hSkipUntil( CHAR_RPRNT )
 				exit do
 			end if
 		end if
@@ -1081,7 +1089,7 @@ function cArrayDecl _
 			else
 				'' error recovery: fake an expr
 				if( lexGetToken( ) <> FB_TK_TO ) then
-					cSkipUntil( CHAR_COMMA )
+					hSkipUntil( CHAR_COMMA )
 				end if
 				expr = astNewCONSTi( env.opt.base, FB_DATATYPE_INTEGER )
 			end if
@@ -1111,7 +1119,7 @@ function cArrayDecl _
 					exit function
 				else
 					'' error recovery: skip to next ',' and fake an expr
-					cSkipUntil( CHAR_COMMA )
+					hSkipUntil( CHAR_COMMA )
 					expr = astCloneTree( exprTB(i,0) )
 				end if
 
@@ -1149,7 +1157,7 @@ function cArrayDecl _
 				exit function
 			else
 				'' error recovery: skip to next ')'
-				cSkipUntil( CHAR_RPRNT )
+				hSkipUntil( CHAR_RPRNT )
 				exit do
 			end if
 		end if

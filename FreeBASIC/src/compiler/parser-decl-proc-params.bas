@@ -203,7 +203,7 @@ private function hParamDecl _
 		    		exit function
 		    	else
 		    		'' error recovery: skip until next ')', this is the last param
-		    		cSkipUntil( CHAR_RPRNT )
+		    		hSkipUntil( CHAR_RPRNT )
 		    		hMockParam( proc, FB_PARAMMODE_VARARG )
 		    	end if
 			else
@@ -231,7 +231,7 @@ private function hParamDecl _
 		    	exit function
 		    else
 		    	'' error recovery: skip until next ')', this is the last param
-		    	cSkipUntil( CHAR_RPRNT )
+		    	hSkipUntil( CHAR_RPRNT )
 		    	return hMockParam( proc, FB_PARAMMODE_VARARG )
 		    end if
 		end if
@@ -259,7 +259,7 @@ private function hParamDecl _
 					exit function
 				else
 					'' error recovery: skip until next ',' or ')' and return a mock param
-					cSkipUntil( CHAR_COMMA )
+					hSkipUntil( CHAR_COMMA )
 					return hMockParam( proc, mode )
 				end if
 			end if
@@ -271,7 +271,7 @@ private function hParamDecl _
 					exit function
 				else
 					'' error recovery: skip until next ',' or ')' and return a mock param
-					cSkipUntil( CHAR_COMMA )
+					hSkipUntil( CHAR_COMMA )
 					return hMockParam( proc, mode )
 				end if
 			end if
@@ -292,7 +292,7 @@ private function hParamDecl _
 			exit function
 		else
 			'' error recovery: skip until next ',' or ')' and return a mock param
-			cSkipUntil( CHAR_COMMA )
+			hSkipUntil( CHAR_COMMA )
 			return hMockParam( proc, mode )
 		end if
 	end if
@@ -387,7 +387,7 @@ private function hParamDecl _
     end if
 
 	if( doskip ) then
-		cSkipUntil( CHAR_COMMA )
+		hSkipUntil( CHAR_COMMA )
 	end if
 
     '' check for invalid args
@@ -462,7 +462,7 @@ private function hParamDecl _
  	   			exit function
  	   		else
  	   			'' error recovery: skip until next ',' or ')' and create a def value
- 	   			cSkipUntil( CHAR_COMMA )
+ 	   			hSkipUntil( CHAR_COMMA )
 				if( ptype <> FB_DATATYPE_USERDEF ) then
 					optval = astNewCONSTz( ptype )
 				else

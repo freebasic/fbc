@@ -50,17 +50,24 @@ function cWhileStmtBegin as integer
 
 	'' Expression
 	if( cExpression( expr ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-		exit function
+		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: fake an expr
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
 	end if
 
 	'' branch
 	expr = astUpdComp2Branch( expr, el, FALSE )
 	if( expr = NULL ) then
-		hReportError( FB_ERRMSG_INVALIDDATATYPES )
-		exit function
+		if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			exit function
+		end if
+
+	else
+		astAdd( expr )
 	end if
-	astAdd( expr )
 
 	'' push to stmt stack
 	stk = cCompStmtPush( FB_TK_WHILE )

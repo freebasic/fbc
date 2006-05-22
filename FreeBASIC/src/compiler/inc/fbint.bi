@@ -653,7 +653,6 @@ type FBENV
 	'' globals
 	scope			as uinteger					'' current scope (0=main module)
 
-	namespcrec		as integer
 	mangling		as FB_MANGLING
 	currlib			as FBLIBRARY ptr
 

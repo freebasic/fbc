@@ -54,7 +54,7 @@ function cPrintStmt as integer
     else
         '' ('#' Expression)?
         if( hMatch( CHAR_SHARP ) ) then
-            hMatchExpression( filexpr )
+            hMatchExpressionEx( filexpr, FB_DATATYPE_INTEGER )
 
             hMatchCOMMA( )
 
@@ -66,7 +66,7 @@ function cPrintStmt as integer
 	'' (USING Expression{str} ';')?
 	usingexpr = NULL
 	if( hMatch( FB_TK_USING ) ) then
-		hMatchExpression( usingexpr )
+		hMatchExpressionEx( usingexpr, FB_DATATYPE_STRING )
 
 		if( hMatch( CHAR_SEMICOLON ) = FALSE ) then
 			hReportError( FB_ERRMSG_EXPECTEDSEMICOLON )
@@ -88,7 +88,7 @@ function cPrintStmt as integer
         	isspc = TRUE
 			hMatchLPRNT( )
 
-			hMatchExpression( expr )
+			hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 
 			hMatchRPRNT( )
 
@@ -96,7 +96,7 @@ function cPrintStmt as integer
             istab = TRUE
 			hMatchLPRNT( )
 
-			hMatchExpression( expr )
+			hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 
 			hMatchRPRNT( )
 
@@ -182,7 +182,7 @@ function cWriteStmt as integer
 
 	'' ('#' Expression)?
 	if( hMatch( CHAR_SHARP ) ) then
-		hMatchExpression( filexpr )
+		hMatchExpressionEx( filexpr, FB_DATATYPE_INTEGER )
 
 		hMatchCOMMA( )
 
@@ -343,7 +343,7 @@ function cInputStmt as integer
 	if( hMatch( CHAR_SHARP ) ) then
 		isfile = TRUE
 		'' Expression
-		hMatchExpression( filestrexpr )
+		hMatchExpressionEx( filestrexpr, FB_DATATYPE_INTEGER )
 
     else
     	isfile = FALSE
@@ -463,7 +463,7 @@ private function hFilePut( byval isfunc as integer ) as ASTNODE ptr
 		lexSkipToken( )
 	end if
 
-	hMatchExpression( fileexpr )
+	hMatchExpressionEx( fileexpr, FB_DATATYPE_INTEGER )
 
 	'' ',' offset
 	hMatchCOMMA( )
@@ -475,7 +475,7 @@ private function hFilePut( byval isfunc as integer ) as ASTNODE ptr
 	'' ',' source
 	hMatchCOMMA( )
 
-	hMatchExpression( srcexpr )
+	hMatchExpressionEx( srcexpr, FB_DATATYPE_INTEGER )
 
 	'' don't allow literal values, due the way "byref as
 	'' any" args work (ie, the VB-way: literals are passed by value)
@@ -541,7 +541,7 @@ private function hFileGet( byval isfunc as integer ) as ASTNODE ptr
 		lexSkipToken( )
 	end if
 
-	hMatchExpression( fileexpr )
+	hMatchExpressionEx( fileexpr, FB_DATATYPE_INTEGER )
 
 	'' ',' offset
 	hMatchCOMMA( )
@@ -673,7 +673,7 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
     case FB_FILE_TYPE_FILE, FB_FILE_TYPE_PIPE, FB_FILE_TYPE_LPT, FB_FILE_TYPE_COM
         '' a filename is only valid for some file types
 
-		hMatchExpression( filename )
+		hMatchExpressionEx( filename, FB_DATATYPE_STRING )
 
         if( isfunc ) then
             '' ','?
@@ -710,25 +710,25 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 
         '' '#'? file number
         hMatch( CHAR_SHARP )
-        hMatchExpression( filenum )
+        hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
 
         hMatchCOMMA( )
         '' file name
-        hMatchExpression( filename )
+        hMatchExpressionEx( filename, FB_DATATYPE_STRING )
 
         '' record length
         if( hMatch( CHAR_COMMA ) ) then
             if( lexGetToken( ) <> CHAR_COMMA ) then
-            	hMatchExpression( flen )
+            	hMatchExpressionEx( flen, FB_DATATYPE_INTEGER )
             end if
             '' access mode
             if( hMatch( CHAR_COMMA ) ) then
                 if( lexGetToken( ) <> CHAR_COMMA ) then
-                    hMatchExpression( faccess )
+                    hMatchExpressionEx( faccess, FB_DATATYPE_STRING )
                 end if
                 '' lock mode
                 if( hMatch( CHAR_COMMA ) ) then
-                	hMatchExpression( flock )
+                	hMatchExpressionEx( flock, FB_DATATYPE_STRING )
                 end if
             end if
         end if
@@ -792,7 +792,7 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 	case FB_FILE_MODE_INPUT, FB_FILE_MODE_OUTPUT, FB_FILE_MODE_APPEND
 		'' (ENCODING Expression)?
 		if( hMatch( FB_TK_ENCODING ) ) then
-			hMatchExpression( fencoding )
+			hMatchExpressionEx( fencoding, FB_DATATYPE_STRING )
 
 			if( isfunc ) then
 				'' ','?
@@ -864,7 +864,7 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 
 	hMatch( CHAR_SHARP )
 
-	hMatchExpression( filenum )
+	hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
 
 	if( isfunc ) then
 		'' ','?
@@ -877,7 +877,7 @@ private function hFileOpen( byval isfunc as integer ) as ASTNODE ptr
 			hReportError FB_ERRMSG_EXPECTEDEQ
 			exit function
 		end if
-		hMatchExpression( flen )
+		hMatchExpressionEx( flen, FB_DATATYPE_INTEGER )
 	else
 		flen = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 	end if
@@ -908,7 +908,7 @@ private function hFileRename( byval isfunc as integer ) as ASTNODE ptr
        	matchprnt = hMatch( CHAR_LPRNT )
     end if
 
-	hMatchExpression( filename_old )
+	hMatchExpressionEx( filename_old, FB_DATATYPE_STRING )
 
 	if( isfunc ) then
 		'' ','?
@@ -922,7 +922,7 @@ private function hFileRename( byval isfunc as integer ) as ASTNODE ptr
         end if
 	end if
 
-	hMatchExpression( filename_new )
+	hMatchExpressionEx( filename_new, FB_DATATYPE_STRING )
 
 	if( isfunc or matchprnt ) then
 		'' ')'
@@ -946,9 +946,9 @@ function cFileStmt as integer
 
 	function = FALSE
 
-	select case as const lexGetToken
+	select case as const lexGetToken( )
 	case FB_TK_OPEN
-		lexSkipToken
+		lexSkipToken( )
 
 		function = (hFileOpen( FALSE ) <> NULL)
 
@@ -960,14 +960,14 @@ function cFileStmt as integer
 
 	'' SEEK '#'? Expression ',' Expression
 	case FB_TK_SEEK
-		lexSkipToken
+		lexSkipToken( )
 		hMatch( CHAR_SHARP )
 
-		hMatchExpression( filenum )
+		hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
 
 		hMatchCOMMA( )
 
-		hMatchExpression( expr1 )
+		hMatchExpressionEx( expr1, FB_DATATYPE_INTEGER )
 
 		function = rtlFileSeek( filenum, expr1 )
 
@@ -993,23 +993,24 @@ function cFileStmt as integer
 
 	'' (LOCK|UNLOCK) '#'? Expression, Expression (TO Expression)?
 	case FB_TK_LOCK, FB_TK_UNLOCK
-		if( lexGetToken = FB_TK_LOCK ) then
+		if( lexGetToken( ) = FB_TK_LOCK ) then
 			islock = TRUE
 		else
 			islock = FALSE
 		end if
 
-		lexSkipToken
+		lexSkipToken( )
+
 		hMatch( CHAR_SHARP )
 
-		hMatchExpression( filenum )
+		hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
 
 		hMatchCOMMA( )
 
-		hMatchExpression( expr1 )
+		hMatchExpressionEx( expr1, FB_DATATYPE_INTEGER )
 
 		if( hMatch( FB_TK_TO ) ) then
-			hMatchExpression( expr2 )
+			hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
 		else
 			expr2 = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
@@ -1018,7 +1019,7 @@ function cFileStmt as integer
 
     '' NAME oldfilespec$ AS newfilespec$
     case FB_TK_NAME
-		lexSkipToken
+		lexSkipToken( )
 
 		function = (hFileRename( FALSE ) <> NULL)
 
@@ -1036,13 +1037,13 @@ function cFileFunct( byref funcexpr as ASTNODE ptr ) as integer
 	function = FALSE
 
 	'' SEEK '(' Expression ')'
-	select case as const lexGetToken
+	select case as const lexGetToken( )
 	case FB_TK_SEEK
-		lexSkipToken
+		lexSkipToken( )
 
 		hMatchLPRNT( )
 
-		hMatchExpression( filenum )
+		hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
 
 		hMatchRPRNT( )
 
@@ -1052,16 +1053,16 @@ function cFileFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 	'' INPUT '(' Expr (',' '#'? Expr)? ')'
 	case FB_TK_INPUT
-		lexSkipToken
+		lexSkipToken( )
 
 		hMatchLPRNT( )
 
-		hMatchExpression( expr )
+		hMatchExpressionEx( expr, FB_DATATYPE_INTEGER )
 
 		if( hMatch( CHAR_COMMA ) ) then
 			hMatch( CHAR_SHARP )
 
-			hMatchExpression( filenum )
+			hMatchExpressionEx( filenum, FB_DATATYPE_INTEGER )
 		else
 			filenum = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 		end if
@@ -1074,7 +1075,7 @@ function cFileFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 	'' OPEN '(' ... ')'
 	case FB_TK_OPEN
-		lexSkipToken
+		lexSkipToken( )
 
 		funcexpr = hFileOpen( TRUE )
 		function = funcexpr <> NULL
@@ -1087,7 +1088,7 @@ function cFileFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 	'' PUT '(' '#'? Expr, Expr?, Expr ')'
 	case FB_TK_PUT
-		lexSkipToken
+		lexSkipToken( )
 
 		hMatchLPRNT( )
 
@@ -1098,7 +1099,7 @@ function cFileFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 	'' GET '(' '#'? Expr, Expr?, Expr ')'
 	case FB_TK_GET
-		lexSkipToken
+		lexSkipToken( )
 
 		hMatchLPRNT( )
 
@@ -1109,7 +1110,7 @@ function cFileFunct( byref funcexpr as ASTNODE ptr ) as integer
 
     '' NAME '(' oldfilespec$ ',' newfilespec$ ')'
     case FB_TK_NAME
-		lexSkipToken
+		lexSkipToken( )
 
 		funcexpr = hFileRename( TRUE )
 		function = funcexpr <> NULL

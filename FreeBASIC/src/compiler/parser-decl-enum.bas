@@ -62,7 +62,7 @@ function cEnumConstDecl _
 				exit function
 			else
 				'' error recovery: skip till next ','
-				cSkipUntil( CHAR_COMMA )
+				hSkipUntil( CHAR_COMMA )
 				return TRUE
 			end if
 		end if
@@ -158,7 +158,7 @@ function cEnumBody _
     				exit function
     			else
     				'' error recovery: skip until next line or stmt
-    				cSkipUntil( INVALID, TRUE )
+    				hSkipUntil( INVALID, TRUE )
     			end if
 			end if
 		end select
@@ -256,7 +256,7 @@ function cEnumDecl( ) as integer static
     		exit function
     	else
     		'' error recovery: skip until next line or stmt
-    		cSkipUntil( INVALID, TRUE )
+    		hSkipUntil( INVALID, TRUE )
     	end if
 	end if
 
@@ -271,7 +271,7 @@ function cEnumDecl( ) as integer static
     		exit function
     	else
     		'' error recovery: skip until next stmt
-    		cSkipStmt( )
+    		hSkipStmt( )
     	end if
 
 	else
@@ -282,7 +282,7 @@ function cEnumDecl( ) as integer static
     			exit function
     		else
     			'' error recovery: skip until next stmt
-    			cSkipStmt( )
+    			hSkipStmt( )
     		end if
 
 		else

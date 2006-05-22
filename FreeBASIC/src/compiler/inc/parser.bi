@@ -127,11 +127,6 @@ declare function 	cLabel                  ( _
 												_
 											) as integer
 
-declare sub 		cSkipUntil				( _
-												byval token as integer, _
-												byval doeat as integer = FALSE _
-											)
-
 declare function 	cComment                ( _
 												byval lexflags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING _
 											) as integer
@@ -704,32 +699,61 @@ declare function 	cConstExprValue			( _
 												byref value as integer _
 											) as integer
 
+declare sub 		hSkipUntil				( _
+												byval token as integer, _
+												byval doeat as integer = FALSE _
+											)
 
-#define cSkipStmt( ) cSkipUntil( INVALID, FALSE )
+declare function 	hMatchExpr 				( _
+												byval dtype as integer _
+											) as ASTNODE ptr
+
+#define hSkipStmt( ) 													_
+	hSkipUntil( INVALID, FALSE )
 
 '':::::
-#define hMatchToken(token, errcode)							 _
-	if( hMatch( token ) = FALSE ) then						:_
-		hReportError errcode								:_
-		exit function										:_
+#define hMatchLPRNT()													_
+	if( lexGetToken( ) <> CHAR_LPRNT ) then								:_
+		if( hReportError( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then		:_
+			exit function												:_
+		end if                                                          :_
+	else																:_
+		lexSkipToken( )                                                 :_
 	end if
 
 '':::::
-#define hMatchLPRNT()										_
-    hMatchToken( CHAR_LPRNT, FB_ERRMSG_EXPECTEDLPRNT )
+#define hMatchRPRNT()													_
+	if( lexGetToken( ) <> CHAR_RPRNT ) then								:_
+		if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then		:_
+			exit function												:_
+		else															:_
+			hSkipUntil( CHAR_RPRNT, TRUE )								:_
+		end if                                                          :_
+	else																:_
+		lexSkipToken( )                                                 :_
+	end if
 
 '':::::
-#define hMatchRPRNT()										_
-    hMatchToken( CHAR_RPRNT, FB_ERRMSG_EXPECTEDRPRNT )
+#define hMatchCOMMA()													_
+	if( lexGetToken( ) <> CHAR_COMMA ) then								:_
+		if( hReportError( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then		:_
+			exit function												:_
+		end if                                                          :_
+	else																:_
+		lexSkipToken( )                                                 :_
+	end if
 
 '':::::
-#define hMatchCOMMA()										_
-    hMatchToken( CHAR_COMMA, FB_ERRMSG_EXPECTEDCOMMA )
+#define hMatchExpression(e)									 			_
+	e = hMatchExpr( INVALID )											:_
+	if( e = NULL ) then													:_
+		exit function													:_
+	end if
 
 '':::::
-#define hMatchExpression(e)									 _
-	if( cExpression( e ) = FALSE ) then                     :_
-		hReportError FB_ERRMSG_EXPECTEDEXPRESSION			:_
-		exit function										:_
+#define hMatchExpressionEx(e, dtype)						 			_
+	e = hMatchExpr( dtype )												:_
+	if( e = NULL ) then													:_
+		exit function													:_
 	end if
 
