@@ -256,9 +256,9 @@ function symbAddDefine _
 
     function = NULL
 
-    '' allocate new node
+    '' allocate new node (always on global hash, ns' won't work in lexer)
     sym = symbNewSymbol( NULL, _
-    					 NULL, NULL, fbIsModLevel( ), _
+    					 NULL, @symbGetGlobalHashTb( ), fbIsModLevel( ), _
     					 FB_SYMBCLASS_DEFINE, _
     				   	 TRUE, symbol, NULL, _
     				   	 FB_DATATYPE_CHAR, NULL )
@@ -294,9 +294,9 @@ function symbAddDefineW _
 
     function = NULL
 
-    '' allocate new node
+    '' allocate new node (always on global hash, ns' won't work in lexer)
     sym = symbNewSymbol( NULL, _
-    					 NULL, NULL, fbIsModLevel( ), _
+    					 NULL, @symbGetGlobalHashTb( ), fbIsModLevel( ), _
     					 FB_SYMBCLASS_DEFINE, _
     				   	 TRUE, symbol, NULL, _
     				   	 FB_DATATYPE_WCHAR, NULL )
@@ -330,9 +330,9 @@ function symbAddDefineMacro _
 
     function = NULL
 
-    '' allocate new node
+    '' allocate new node (always on global hash, ns' won't work in lexer)
     sym = symbNewSymbol( NULL, _
-    					 NULL, NULL, fbIsModLevel( ), _
+    					 NULL, @symbGetGlobalHashTb( ), fbIsModLevel( ), _
     					 FB_SYMBCLASS_DEFINE, _
     				   	 TRUE, symbol, NULL )
     if( sym = NULL ) then
