@@ -51,9 +51,9 @@ const TEST = 1000
 	dim as integer ok
 	
 	select case as const v
-	case TEST - 5, TEST - 6, TEST - 7, TEST - 8
+	case TEST - 8, TEST - 9, TEST - 10, TEST - 11
 		ok = FALSE
-	case TEST - 4, TEST - 5, TEST - 6
+	case TEST - 5, TEST - 6, TEST - 7
 		ok = FALSE
 	case TEST - 3, TEST - 4
 		ok = FALSE
@@ -67,9 +67,9 @@ const TEST = 1000
 		ok = FALSE
 	case TEST + 3, TEST + 4
 		ok = FALSE
-	case TEST + 4, TEST + 5, TEST + 6
+	case TEST + 5, TEST + 6, TEST + 7
 		ok = FALSE
-	case TEST + 5, TEST + 6, TEST + 7, TEST + 8
+	case TEST + 8, TEST + 9, TEST + 10, TEST + 11
 		ok = FALSE
 	case TEST
 		ok = TRUE
@@ -90,25 +90,25 @@ const TEST = 100
 	dim as integer ok
 	
 	select case as const v
-	case TEST - 8 to TEST - 5
+	case TEST - 8 to TEST - 6
 		ok = FALSE
-	case TEST - 6 to TEST - 4
+	case TEST - 5 to TEST - 4
 		ok = FALSE
-	case TEST - 4 to TEST - 3
+	case TEST - 3 to TEST - 3
 		ok = FALSE
 	case TEST - 2 to TEST - 2
 		ok = FALSE
-	case TEST - 1 
+	case TEST - 10
 		ok = FALSE
-	case TEST + 1
+	case TEST + 10
 		ok = FALSE
 	case TEST + 2 to TEST + 2
 		ok = FALSE
 	case TEST + 3 to TEST + 4
 		ok = FALSE
-	case TEST + 4 to TEST + 6
+	case TEST + 5 to TEST + 6
 		ok = FALSE
-	case TEST + 5 to TEST + 8
+	case TEST + 7 to TEST + 8
 		ok = FALSE
 	case TEST - 1 to TEST + 1
 		ok = TRUE
@@ -129,25 +129,25 @@ const TEST = 1000
 	dim as integer ok
 	
 	select case as const v
-	case TEST - 8 to TEST - 5, TEST - 12 to TEST - 9
+	case TEST - 15 to TEST - 14, TEST - 13 to TEST - 12
 		ok = FALSE
-	case TEST - 6 to TEST - 4, TEST - 7 to TEST - 5
+	case TEST - 11 to TEST - 10, TEST - 9 to TEST - 8
 		ok = FALSE
-	case TEST - 4 to TEST - 3, TEST - 5 to TEST - 4
+	case TEST - 7 to TEST - 6, TEST - 5 to TEST - 4
 		ok = FALSE
 	case TEST - 2 to TEST - 2
 		ok = FALSE
-	case TEST - 1 
+	case TEST - 100 
 		ok = FALSE
-	case TEST + 1
+	case TEST + 100
 		ok = FALSE
 	case TEST + 2 to TEST + 2
 		ok = FALSE
-	case TEST + 3 to TEST + 4, TEST + 4 to TEST + 5
+	case TEST + 3 to TEST + 4, TEST + 5 to TEST + 6
 		ok = FALSE
-	case TEST + 4 to TEST + 6, TEST + 4 to TEST + 7
+	case TEST + 7 to TEST + 8, TEST + 9 to TEST + 10
 		ok = FALSE
-	case TEST + 5 to TEST + 8, TEST + 9 to TEST + 12
+	case TEST + 11 to TEST + 12, TEST + 13 to TEST + 14
 		ok = FALSE
 	case TEST - 1 to TEST + 1
 		ok = TRUE
