@@ -128,7 +128,7 @@ declare function 	cLabel                  ( _
 											) as integer
 
 declare function 	cComment                ( _
-												byval lexflags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING _
+												byval lexflags as LEXCHECK = LEXCHECK_EVERYTHING _
 											) as integer
 
 declare function 	cDirective              ( _
@@ -140,7 +140,7 @@ declare function 	cStatement              ( _
 											) as integer
 
 declare function 	cStmtSeparator 			( _
-												byval lexflags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING _
+												byval lexflags as LEXCHECK = LEXCHECK_EVERYTHING _
 											) as integer
 
 declare function 	cDeclaration            ( _
@@ -701,7 +701,8 @@ declare function 	cConstExprValue			( _
 
 declare sub 		hSkipUntil				( _
 												byval token as integer, _
-												byval doeat as integer = FALSE _
+												byval doeat as integer = FALSE, _
+												byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
 											)
 
 declare function 	hMatchExpr 				( _

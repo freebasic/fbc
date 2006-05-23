@@ -73,7 +73,7 @@ end function
 '':::
 ''SttSeparator    =   (STT_SEPARATOR | EOL)+ .
 ''
-function cStmtSeparator( byval lexflags as LEXCHECK_ENUM ) as integer
+function cStmtSeparator( byval lexflags as LEXCHECK ) as integer
 
 	function = FALSE
 

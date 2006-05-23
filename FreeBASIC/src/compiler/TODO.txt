@@ -1,5 +1,4 @@
 [ ] non-fatal error handling:
-    - update pre-processor
     - update proc body
     - update func call
     - update var expr

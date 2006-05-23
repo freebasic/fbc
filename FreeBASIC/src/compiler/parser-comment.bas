@@ -33,7 +33,7 @@ option escape
 ''Comment         =   (COMMENT_CHAR | REM) ((DIRECTIVE_CHAR Directive)
 ''				                              |   (any_char_but_EOL*)) .
 ''
-function cComment( byval lexflags as LEXCHECK_ENUM ) as integer
+function cComment( byval lexflags as LEXCHECK ) as integer
 
 	select case lexGetToken( lexflags )
 	case FB_TK_COMMENTCHAR, FB_TK_REM

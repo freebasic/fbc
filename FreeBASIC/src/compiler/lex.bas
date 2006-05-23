@@ -382,7 +382,7 @@ private sub hReadIdentifier _
 		byval pid as zstring ptr, _
 		byref tlen as integer, _
 		byref typ as integer, _
-		byval flags as LEXCHECK_ENUM _
+		byval flags as LEXCHECK _
 	) static
 
 	dim as uinteger c
@@ -482,7 +482,7 @@ private function hReadNonDecNumber _
 		byref pnum as zstring ptr, _
 		byref tlen as integer, _
 		byref islong as integer, _
-		byval flags as LEXCHECK_ENUM _
+		byval flags as LEXCHECK _
 	) as ulongint static
 
 	dim as uinteger value, c, first_c
@@ -711,7 +711,7 @@ private sub hReadFloatNumber _
 		byref pnum as zstring ptr, _
 		byref tlen as integer, _
 		byref typ as integer, _
-		byval flags as LEXCHECK_ENUM _
+		byval flags as LEXCHECK _
 	) static
 
     dim as uinteger c
@@ -848,7 +848,7 @@ private sub hReadNumber _
 		byval pnum as zstring ptr, _
 		byref typ as integer, _
 		byref tlen as integer, _
-		byval flags as LEXCHECK_ENUM _
+		byval flags as LEXCHECK _
 	) static
 
 	dim as uinteger c
@@ -1101,7 +1101,7 @@ end sub
 private function hReadString _
 	( _
 		byval ps as zstring ptr, _
-		byval flags as LEXCHECK_ENUM _
+		byval flags as LEXCHECK _
 	) as integer static
 
 	dim as integer tlen
@@ -1198,7 +1198,7 @@ end function
 private function hReadWStr _
 	( _
 		byval ps as wstring ptr, _
-		byval flags as LEXCHECK_ENUM _
+		byval flags as LEXCHECK _
 	) as integer static
 
 	dim as integer tlen
@@ -1294,7 +1294,7 @@ end function
 sub lexNextToken _
 	( _
 		byval t as FBTOKEN ptr, _
-		byval flags as LEXCHECK_ENUM _
+		byval flags as LEXCHECK _
 	) static
 
 	dim as uinteger char
@@ -1689,7 +1689,7 @@ end sub
 '':::::
 function lexGetToken _
 	( _
-		byval flags as LEXCHECK_ENUM _
+		byval flags as LEXCHECK _
 	) as integer static
 
     if( lex->head->id = INVALID ) then
@@ -1704,7 +1704,7 @@ end function
 '':::::
 function lexGetClass _
 	( _
-		byval flags as LEXCHECK_ENUM _
+		byval flags as LEXCHECK _
 	) as integer static
 
     if( lex->head->id = INVALID ) then
@@ -1720,7 +1720,7 @@ end function
 function lexGetLookAhead _
 	( _
 		byval k as integer, _
-		byval flags as LEXCHECK_ENUM _
+		byval flags as LEXCHECK _
 	) as integer static
 
     if( k > FB_LEX_MAXK ) then
@@ -1744,7 +1744,7 @@ end function
 function lexGetLookAheadClass _
 	( _
 		byval k as integer, _
-		byval flags as LEXCHECK_ENUM _
+		byval flags as LEXCHECK _
 	) as integer static
 
     if( k > FB_LEX_MAXK ) then
@@ -1777,7 +1777,7 @@ end sub
 '':::::
 sub lexSkipToken _
 	( _
-		byval flags as LEXCHECK_ENUM _
+		byval flags as LEXCHECK _
 	) static
 
     '' update stats
@@ -1811,7 +1811,7 @@ end sub
 sub lexEatToken _
 	( _
 		byval token as zstring ptr, _
-		byval flags as LEXCHECK_ENUM _
+		byval flags as LEXCHECK _
 	) static
 
     ''

@@ -22,7 +22,7 @@
 
 #include once "inc\dstr.bi"
 
-enum LEXCHECK_ENUM
+enum LEXCHECK
 	LEXCHECK_EVERYTHING	= 0
 	LEXCHECK_NOLINECONT	= 1
 	LEXCHECK_NODEFINE	= 2
@@ -120,11 +120,11 @@ declare sub 		lexPopCtx				( _
 											)
 
 declare function 	lexGetToken 			( _
-												byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING _
+												byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
 											) as integer
 
 declare function 	lexGetClass 			( _
-												byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING _
+												byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
 											) as integer
 
 declare function 	lexGetText 				( _
@@ -132,21 +132,21 @@ declare function 	lexGetText 				( _
 
 declare sub 		lexEatToken 			( _
 												byval token as zstring ptr, _
-												byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING _
+												byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
 											)
 
 declare sub 		lexSkipToken			( _
-												byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING _
+												byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
 											)
 
 declare function 	lexGetLookAheadClass 	( _
 												byval k as integer, _
-												byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING _
+												byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
 											) as integer
 
 declare function 	lexGetLookAhead 		( _
 												byval k as integer, _
-												byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING _
+												byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
 											) as integer
 
 declare sub 		lexReadLine				( _
@@ -160,7 +160,7 @@ declare sub 		lexSkipLine				( _
 
 declare sub 		lexNextToken 			( _
 												byval t as FBTOKEN ptr, _
-												byval flags as LEXCHECK_ENUM = LEXCHECK_EVERYTHING _
+												byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
 											)
 
 declare function 	lexCurrentChar          ( _

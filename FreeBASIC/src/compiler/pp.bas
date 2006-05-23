@@ -103,11 +103,13 @@ function ppParse( ) as integer
     		dim as FBSYMBOL ptr sym = chain_->sym
     		'' don't remove if it was defined in other namespace
     		if( symbGetHashTb( sym ) <> symbGetCurrentHashTb( ) ) then
-    			hReportError( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS )
-    			exit function
-    		end if
+    			if( hReportError( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS ) = FALSE ) then
+    				exit function
+    			end if
 
-    		symbDelSymbol( sym )
+    		else
+    			symbDelSymbol( sym )
+    		end if
     	end if
 
     	lexSkipToken( )
@@ -137,8 +139,7 @@ function ppParse( ) as integer
 	'' ERROR LITERAL*
 	case FB_TK_ERROR
 		lexSkipToken( )
-		hReportErrorEx( -1, *ppReadLiteral( ) )
-		exit function
+		return hReportErrorEx( -1, *ppReadLiteral( ) )
 
 	'' INCLUDE ONCE? LIT_STR
 	case FB_TK_INCLUDE
@@ -161,8 +162,9 @@ function ppParse( ) as integer
 		function = ppPragma( )
 
 	case else
-		hReportError( FB_ERRMSG_SYNTAXERROR )
-		exit function
+		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			exit function
+		end if
 	end select
 
 	'' Comment?
@@ -171,8 +173,12 @@ function ppParse( ) as integer
 	'' EOL
 	if( lexGetToken( ) <> FB_TK_EOL ) then
 		if( lexGetToken( ) <> FB_TK_EOF ) then
-			hReportError( FB_ERRMSG_EXPECTEDEOL )
-			return FALSE
+			if( hReportError( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
+				return FALSE
+			else
+				'' error recovery: skip until next line
+				hSkipUntil( FB_TK_EOL )
+			end if
 		end if
 	end if
 
@@ -195,8 +201,13 @@ private function ppInclude( ) as integer
 	end if
 
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-		hReportError( FB_ERRMSG_SYNTAXERROR )
-		exit function
+		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip
+			lexSkipToken( )
+			return TRUE
+		end if
 	end if
 
 	lexEatToken( incfile )
@@ -210,8 +221,13 @@ private function ppIncLib( ) as integer
     static as zstring * FB_MAXPATHLEN+1 libfile
 
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-		hReportError( FB_ERRMSG_SYNTAXERROR )
-		return FALSE
+		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			return FALSE
+		else
+			'' error recovery: skip
+			lexSkipToken( )
+			return TRUE
+		end if
 	end if
 
 	lexEatToken( libfile )
@@ -225,15 +241,21 @@ private function ppLibPath( ) as integer
     static as zstring * FB_MAXPATHLEN+1 path
 
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-		hReportError( FB_ERRMSG_SYNTAXERROR )
-		return FALSE
+		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			return FALSE
+		else
+			'' error recovery: skip
+			lexSkipToken( )
+			return TRUE
+		end if
 	end if
 
 	lexEatToken( path )
 
 	if( fbAddLibPath( path ) = FALSE ) then
-		hReportError( FB_ERRMSG_SYNTAXERROR, TRUE )
-		return FALSE
+		if( hReportError( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
+			return FALSE
+		end if
 	end if
 
 	function = TRUE

@@ -121,6 +121,7 @@ function ppCondIf( ) as integer
 	ctx.level += 1
 	if( ctx.level > FB_PP_MAXRECLEVEL ) then
 		hReportError( FB_ERRMSG_RECLEVELTOODEEP )
+		'' no error recovery: fatal
 		exit function
 	end if
 
@@ -144,18 +145,27 @@ function ppCondElse( ) as integer
    	istrue = FALSE
 
 	if( ctx.level = 0 ) then
-        hReportError( FB_ERRMSG_ILLEGALOUTSIDECOMP )
-		exit function
+        if( hReportError( FB_ERRMSG_ILLEGALOUTSIDECOMP ) = FALSE ) then
+        	exit function
+        else
+        	'' error recovery: skip smtm
+        	hSkipStmt( )
+        	return TRUE
+        end if
 	end if
 
     if( pptb(ctx.level).elsecnt > 0 ) then
-	   	hReportError( FB_ERRMSG_SYNTAXERROR )
-       	exit function
+	   	if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+	   		exit function
+	   	else
+        	'' error recovery: skip smtm
+        	hSkipStmt( )
+        	return TRUE
+        end if
     end if
 
+	'' ELSEIF?
 	if( lexGetToken( ) = FB_TK_ELSEIF ) then
-		'' ELSEIF
-
         lexSkipToken( )
 
 		if( ppExpression( istrue ) = FALSE ) then
@@ -168,15 +178,12 @@ function ppCondElse( ) as integer
 			pptb(ctx.level).istrue = istrue
 		end if
 
+	'' ELSE
 	else
-		'' ELSE
-
 		lexSkipToken( )
 
         pptb(ctx.level).elsecnt += 1
-
         pptb(ctx.level).istrue = not pptb(ctx.level).istrue
-
     end if
 
    	if( pptb(ctx.level).istrue = FALSE ) then
@@ -184,7 +191,6 @@ function ppCondElse( ) as integer
    	else
    		function = TRUE
    	end if
-
 
 end function
 
@@ -194,8 +200,13 @@ function ppCondEndIf( ) as integer
    	function = FALSE
 
 	if( ctx.level = 0 ) then
-        hReportError( FB_ERRMSG_ILLEGALOUTSIDECOMP )
-		exit function
+        if( hReportError( FB_ERRMSG_ILLEGALOUTSIDECOMP ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip token
+			lexSkipToken( )
+			return TRUE
+		end if
 	end if
 
    	'' ENDIF
@@ -207,7 +218,7 @@ end function
 
 '':::::
 private function ppSkip( ) as integer
-    dim iflevel as integer
+    dim as integer iflevel
 
 	function = FALSE
 
@@ -215,11 +226,17 @@ private function ppSkip( ) as integer
 	cComment( )
 
 	'' EOL
-	if( hMatch( FB_TK_EOL ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDEOL )
-		exit function
-	end if
+	if( lexGetToken( ) <> FB_TK_EOL ) then
+		if( hReportError( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip until next line
+			hSkipUntil( FB_TK_EOL, TRUE )
+		end if
 
+	else
+		lexSkipToken( )
+	end if
 
 	iflevel = ctx.level
 
@@ -237,17 +254,21 @@ private function ppSkip( ) as integer
         	case FB_TK_ELSE, FB_TK_ELSEIF
         		if( iflevel = ctx.level ) then
         			return ppCondElse( )
+
 				elseif( iflevel = 0 ) then
-            		hReportError( FB_ERRMSG_ILLEGALOUTSIDECOMP )
-					exit function
+            		if( hReportError( FB_ERRMSG_ILLEGALOUTSIDECOMP ) = FALSE ) then
+						exit function
+					end if
         		end if
 
         	case FB_TK_ENDIF
         		if( iflevel = ctx.level ) then
         			return ppCondEndIf( )
+
 				elseif( iflevel = 0 ) then
-	          		hReportError( FB_ERRMSG_ILLEGALOUTSIDECOMP )
-					exit function
+	          		if( hReportError( FB_ERRMSG_ILLEGALOUTSIDECOMP ) = FALSE ) then
+						exit function
+					end if
 				else
         			iflevel -= 1
         		end if
@@ -257,8 +278,9 @@ private function ppSkip( ) as integer
     			 FB_TK_PRAGMA
 
         	case else
-        		hReportError( FB_ERRMSG_SYNTAXERROR )
-        		exit function
+        		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+        			exit function
+        		end if
         	end select
 
        	case FB_TK_EOF
@@ -267,6 +289,7 @@ private function ppSkip( ) as integer
        	end select
 
 		lexSkipLine( )
+
 		if( lexGetToken( ) = FB_TK_EOL ) then
 			lexSkipToken( )
 		end if
@@ -566,16 +589,39 @@ private function ppLogExpression _
     	end select
 
     	if( logexpr.class <> PPEXPR_CLASS_NUM ) then
-    		exit function
+   			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+   				exit function
+			else
+  				'' error recovery: convert expr
+  				logexpr.class = PPEXPR_CLASS_NUM
+  				logexpr.dtype = FB_DATATYPE_INTEGER
+  				logexpr.num.int = valint( logexpr.str )
+  				logexpr.str = ""
+    		end if
     	end if
 
     	'' RelExpression
     	if( ppRelExpression( relexpr ) = FALSE ) then
-    		exit function
+            if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+           		exit function
+           	else
+  				'' error recovery: fake an expr
+  				relexpr.class = PPEXPR_CLASS_NUM
+  				relexpr.dtype = FB_DATATYPE_INTEGER
+  				relexpr.num.int = 0
+    		end if
     	end if
 
     	if( relexpr.class <> PPEXPR_CLASS_NUM ) then
-    		exit function
+   			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+   				exit function
+			else
+  				'' error recovery: convert expr
+  				relexpr.class = PPEXPR_CLASS_NUM
+  				relexpr.dtype = FB_DATATYPE_INTEGER
+  				relexpr.num.int = valint( relexpr.str )
+  				relexpr.str = ""
+    		end if
     	end if
 
     	'' do operation
@@ -617,13 +663,40 @@ private function ppRelExpression _
 
     	'' ParentExpr
     	if( ppParentExpr( parexpr ) = FALSE ) then
-    		exit function
+            if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+           		exit function
+           	else
+  				'' error recovery: fake an expr
+  				parexpr.class = PPEXPR_CLASS_NUM
+  				parexpr.dtype = FB_DATATYPE_INTEGER
+  				parexpr.num.int = 0
+    		end if
     	end if
 
    		'' same type?
    		if( relexpr.class <> parexpr.class ) then
-   			hReportError( FB_ERRMSG_SYNTAXERROR )
-   			exit function
+   			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+   				exit function
+   			else
+   				'' error recovery: fake a type
+   				if( relexpr.class = PPEXPR_CLASS_NUM ) then
+   					parexpr.class = PPEXPR_CLASS_NUM
+   					parexpr.dtype = FB_DATATYPE_INTEGER
+   					parexpr.num.int = valint( parexpr.str )
+   					parexpr.str = ""
+
+   				else
+   					parexpr.class = PPEXPR_CLASS_STR
+   					select case parexpr.dtype
+   					case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
+   						parexpr.str = str( parexpr.num.long )
+   					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+   					    parexpr.str = str( parexpr.num.float )
+   					case else
+   						parexpr.str = str( parexpr.num.int )
+   					end select
+   				end if
+   			end if
    		end if
 
    		'' can't compare as strings if both are numbers, '"10" > "2"' is FALSE for QB/FB
@@ -677,22 +750,33 @@ private function ppParentExpr _
   		lexSkipToken( )
 
   		if( ppLogExpression( parexpr ) = FALSE ) then
-  			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-  			exit function
+  			if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+  				exit function
+  			else
+  				'' error recovery: fake an expr
+  				parexpr.class = PPEXPR_CLASS_NUM
+  				parexpr.dtype = FB_DATATYPE_INTEGER
+  				parexpr.num.int = FALSE
+  			end if
   		end if
 
   		if( hMatch( CHAR_RPRNT ) = FALSE ) then
-  			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
-  			exit function
+  			if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+  				exit function
+  			else
+  				'' error recovery: skip until ')'
+  				hSkipUntil( CHAR_RPRNT, TRUE )
+  			end if
   		end if
 
   	'' DEFINED'(' ID ')'
   	case FB_TK_DEFINED
-  		lexSkipToken( )
+  		lexSkipToken( LEXCHECK_NODEFINE )
 
     	if( lexGetToken( ) <> CHAR_LPRNT ) then
-    		hReportError( FB_ERRMSG_EXPECTEDLPRNT )
-    		exit function
+    		if( hReportError( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
+    			exit function
+    		end if
     	else
     		lexSkipToken( LEXCHECK_NODEFINE )
     	end if
@@ -704,11 +788,16 @@ private function ppParentExpr _
 		if( cIdentifier( FALSE, FALSE ) <> NULL ) then
 			parexpr.num.int = TRUE
 		end if
+
 		lexSkipToken( )
 
   		if( hMatch( CHAR_RPRNT ) = FALSE ) then
-  			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
-  			exit function
+  			if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+  				exit function
+  			else
+  				'' error recovery: skip until ')'
+  				hSkipUntil( CHAR_RPRNT, TRUE )
+  			end if
   		end if
 
   	'' '-'
@@ -720,27 +809,47 @@ private function ppParentExpr _
   		end if
 
   		if( parexpr.class <> PPEXPR_CLASS_NUM ) then
-  			hReportError( FB_ERRMSG_INVALIDDATATYPES )
-  			exit function
-  		end if
+  			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+  				exit function
+  			else
+  				'' error recovery: fake an expr
+  				parexpr.class = PPEXPR_CLASS_NUM
+  				parexpr.dtype = FB_DATATYPE_INTEGER
+  				parexpr.num.int = 0
+  			end if
 
-  		hNumNeg( parexpr )
+  		else
+  			hNumNeg( parexpr )
+  		end if
 
     '' NOT RelExpression
 	case FB_TK_NOT
 		lexSkipToken( )
 
   		if( ppRelExpression( parexpr ) = FALSE ) then
-  			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-  			exit function
+  			if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+  				exit function
+  			else
+  				'' error recovery: fake an expr
+  				parexpr.class = PPEXPR_CLASS_NUM
+  				parexpr.dtype = FB_DATATYPE_INTEGER
+  				parexpr.num.int = 0
+  			end if
   		end if
 
   		if( parexpr.class <> PPEXPR_CLASS_NUM ) then
-  			hReportError( FB_ERRMSG_INVALIDDATATYPES )
-  			exit function
-  		end if
+  			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+  				exit function
+  			else
+  				'' error recovery: fake an expr
+  				parexpr.class = PPEXPR_CLASS_NUM
+  				parexpr.dtype = FB_DATATYPE_INTEGER
+  				parexpr.num.int = 0
+  			end if
 
-  		hNumNot( parexpr )
+  		else
+  			hNumNot( parexpr )
+  		end if
 
   	'' LITERAL
   	case else

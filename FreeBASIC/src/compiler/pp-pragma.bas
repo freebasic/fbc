@@ -71,16 +71,24 @@ sub ppPragmaEnd( )
 end sub
 
 '':::::
-private function pragmaPush( byval opt as integer, _
-							 byval value as integer ) as integer
+private function pragmaPush _
+	( _
+		byval opt as integer, _
+		byval value as integer _
+	) as integer
 
 	function = FALSE
 
 	with pragmaStk(opt)
 		if( .tos >= FB_MAXPRAGMARECLEVEL ) then
-             hReportError( FB_ERRMSG_RECLEVELTOODEEP )
-             exit function
+             if( hReportError( FB_ERRMSG_RECLEVELTOODEEP ) = FALSE ) then
+             	exit function
+             else
+             	'' error recovery: skip
+             	return TRUE
+             end if
 		end if
+
 		.stk(.tos) = value
 		.tos += 1
 	end with
@@ -90,16 +98,25 @@ private function pragmaPush( byval opt as integer, _
 end function
 
 '':::::
-private function pragmaPop( byval opt as integer, _
-							byref value as integer ) as integer
+private function pragmaPop _
+	( _
+		byval opt as integer, _
+		byref value as integer _
+	) as integer
 
 	function = FALSE
 
 	with pragmaStk(opt)
 		if( .tos <= 0 ) then
-             hReportError( FB_ERRMSG_STACKUNDERFLOW )
-             exit function
+             if( hReportError( FB_ERRMSG_STACKUNDERFLOW ) = FALSE ) then
+             	exit function
+             else
+             	'' error recovery: skip
+             	value = FALSE
+             	return TRUE
+             end if
 		end if
+
 		.tos -= 1
 		value = .stk(.tos)
 	end with
@@ -132,10 +149,12 @@ function ppPragma( ) as integer
 
 		'' '('
 		if( lexGetToken() <> CHAR_LPRNT ) then
-			hReportError( FB_ERRMSG_EXPECTEDLPRNT )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
+				exit function
+			end if
+		else
+			lexSkipToken( )
 		end if
-		lexSkipToken( )
 
 		tk = lcase( *lexGetText( ) )
 	end if
@@ -149,8 +168,17 @@ function ppPragma( ) as integer
 	next
 
 	if( p = -1 ) then
-		hReportError( FB_ERRMSG_SYNTAXERROR )
-		exit function
+		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip line
+			if( ispop or ispush ) then
+				hSkipUntil( CHAR_RPRNT, TRUE )
+			else
+				hSkipUntil( FB_TK_EOL )
+			end if
+			return TRUE
+		end if
 	end if
 
 	lexSkipToken( )
@@ -201,10 +229,16 @@ function ppPragma( ) as integer
 	if( ispop or ispush ) then
 		'' ')'
 		if( lexGetToken() <> CHAR_RPRNT ) then
-			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until next ')'
+				hSkipUntil( CHAR_RPRNT, TRUE )
+			end if
+
+		else
+			lexSkipToken( )
 		end if
-		lexSkipToken( )
 	end if
 
 	function = TRUE

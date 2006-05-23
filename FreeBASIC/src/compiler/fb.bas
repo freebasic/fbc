@@ -304,7 +304,7 @@ end sub
 sub fbSetDefaultOptions( )
 
 	env.clopt.debug			= FALSE
-	env.clopt.cputype 		= FB_DEFAULTCPUTYPE
+	env.clopt.cputype 		= FB_DEFAULT_CPUTYPE
 	env.clopt.errorcheck	= FALSE
 	env.clopt.resumeerr 	= FALSE
 #if defined(TARGET_WIN32) or defined(TARGET_CYGWIN)
@@ -313,17 +313,17 @@ sub fbSetDefaultOptions( )
 	env.clopt.nostdcall 	= TRUE
 #endif
 	env.clopt.nounderprefix	= FALSE
-	env.clopt.outtype		= FB_OUTTYPE_EXECUTABLE
+	env.clopt.outtype		= FB_DEFAULT_OUTTYPE
 	env.clopt.warninglevel 	= 0
 	env.clopt.export		= FALSE
 	env.clopt.nodeflibs		= FALSE
 	env.clopt.showerror		= TRUE
 	env.clopt.multithreaded	= FALSE
 	env.clopt.profile       = FALSE
-	env.clopt.target		= FB_DEFAULTTARGET
+	env.clopt.target		= FB_DEFAULT_TARGET
 	env.clopt.extraerrchk	= FALSE
 	env.clopt.msbitfields	= FALSE
-	env.clopt.maxerrors		= 10
+	env.clopt.maxerrors		= FB_DEFAULT_MAXERRORS
 
 end sub
 

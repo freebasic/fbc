@@ -132,16 +132,22 @@ end function
 sub hSkipUntil _
 	( _
 		byval token as integer, _
-		byval doeat as integer _
+		byval doeat as integer, _
+		byval flags as LEXCHECK _
 	)
 
 	dim as integer prntcnt
 
 	prntcnt = 0
 	do
-		select case as const lexGetToken( )
-		case FB_TK_STATSEPCHAR, FB_TK_EOL, FB_TK_COMMENTCHAR, FB_TK_REM
+		select case as const lexGetToken( flags )
+		case FB_TK_EOL
 			exit do
+
+		case FB_TK_STATSEPCHAR, FB_TK_COMMENTCHAR, FB_TK_REM
+			if( token <> FB_TK_EOL ) then
+				exit do
+			end if
 
 		case FB_TK_EOF
 			exit sub
@@ -177,18 +183,18 @@ sub hSkipUntil _
 
 		case else
 			'' token found? exit..
-			if( lexGetToken( ) = token ) then
+			if( lexGetToken( flags ) = token ) then
 				exit do
 			end if
 
 		end select
 
-		lexSkipToken( )
+		lexSkipToken( flags )
 	loop
 
 	''
 	if( doeat ) then
-		lexSkipToken( )
+		lexSkipToken( flags )
 	end if
 
 end sub

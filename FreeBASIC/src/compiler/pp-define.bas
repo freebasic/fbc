@@ -69,20 +69,27 @@ sub ppDefineEnd( )
 end sub
 
 '':::::
-private sub hReportMacroError( byval s as FBSYMBOL ptr, _
-							   byval errnum as integer )
+private function hReportMacroError _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval errnum as integer _
+	) as integer
 
-	hReportErrorEx( errnum, "expanding: " + *symbGetName( s ) )
+	function = hReportErrorEx( errnum, "expanding: " + *symbGetName( s ) )
 
-end sub
+end function
 
 '':::::
-private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
+private function hLoadMacro _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as integer
+
     dim as FB_DEFPARAM ptr param
     dim as FB_DEFTOK ptr dt
     dim as FBTOKEN t
     dim as LEXPP_ARGTB ptr argtb
-    dim as integer prntcnt, num
+    dim as integer prntcnt, num, doskip
     static as string text
 
 	function = -1
@@ -114,7 +121,9 @@ private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
 
 		'' read text until a comma or right-parentheses is found
 		do
-			lexNextToken( @t, LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX or LEXCHECK_NOQUOTES )
+			lexNextToken( @t, LEXCHECK_NOWHITESPC or _
+							  LEXCHECK_NOSUFFIX or _
+							  LEXCHECK_NOQUOTES )
 
 			select case t.id
 			'' (
@@ -133,8 +142,11 @@ private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
 				end if
 			''
 			case FB_TK_EOL, FB_TK_EOF
-				hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT )
-				exit function
+				if( hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+					exit function
+				else
+					exit do
+				end if
 			end select
 
 			if( argtb <> NULL ) then
@@ -150,14 +162,17 @@ private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
 			'' trim
 			with argtb->tb(num)
 				if( .text.data = NULL ) then
-					hReportMacroError( s, FB_ERRMSG_EXPECTEDEXPRESSION )
-					exit function
+					if( hReportMacroError( s, FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+						exit function
+					end if
+
+				else
+					if( (.text.data[0][0] = CHAR_SPACE) or _
+						(.text.data[0][len( *.text.data )-1] = CHAR_SPACE) ) then
+						DZstrAssign( .text, trim( *.text.data ) )
+					end if
 				end if
 
-				if( (.text.data[0][0] = CHAR_SPACE) or _
-					(.text.data[0][len( *.text.data )-1] = CHAR_SPACE) ) then
-					DZstrAssign( .text, trim( *.text.data ) )
-				end if
 			end with
 		end if
 
@@ -172,49 +187,60 @@ private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
 
 		'' too many args?
 		if( param = NULL ) then
-			hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
-			exit function
+			if( hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until next ')'
+				hSkipUntil( CHAR_RPRNT, TRUE, LEX_FLAGS )
+				exit do
+			end if
 		end if
 	loop
 
 	'' too few args?
+	doskip = FALSE
 	if( symbGetDefParamNext( param ) <> NULL ) then
-		hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
-		exit function
+		if( hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
+			exit function
+		else
+			doskip = TRUE
+		end if
 	end if
 
 	''
 	text = ""
 
 	if( argtb <> NULL ) then
-		dt = symbGetDefineHeadToken( s )
-		do while( dt <> NULL )
-			select case as const symbGetDefTokType( dt )
-			'' parameter?
-			case FB_DEFTOK_TYPE_PARAM
-				text += *argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
+		if( doskip = FALSE ) then
+			dt = symbGetDefineHeadToken( s )
+			do while( dt <> NULL )
+				select case as const symbGetDefTokType( dt )
+				'' parameter?
+				case FB_DEFTOK_TYPE_PARAM
+					text += *argtb->tb( symbGetDefTokParamNum( dt ) ).text.data
 
-			'' stringize parameter?
-			case FB_DEFTOK_TYPE_PARAMSTR
-				'' !!!FIXME!!! $'s won't turn off escaping
-				text += "\""
-				text += hReplace( argtb->tb( symbGetDefTokParamNum( dt ) ).text.data, _
-								  "\"", _
-								  "\"\"" )
-				text += "\""
+				'' stringize parameter?
+				case FB_DEFTOK_TYPE_PARAMSTR
+					'' !!!FIXME!!! $'s won't turn off escaping
+					text += "\""
+					text += hReplace( argtb->tb( symbGetDefTokParamNum( dt ) ).text.data, _
+								  	  "\"", _
+								  	  "\"\"" )
+					text += "\""
 
-			'' ordinary text..
-			case FB_DEFTOK_TYPE_TEX
-				text += *symbGetDefTokText( dt )
+				'' ordinary text..
+				case FB_DEFTOK_TYPE_TEX
+					text += *symbGetDefTokText( dt )
 
-			'' unicode text?
-			case FB_DEFTOK_TYPE_TEXW
-				text += str( *symbGetDefTokTextW( dt ) )
-			end select
+				'' unicode text?
+				case FB_DEFTOK_TYPE_TEXW
+					text += str( *symbGetDefTokTextW( dt ) )
+				end select
 
-			'' next
-			dt = symbGetDefTokNext( dt )
-		loop
+				'' next
+				dt = symbGetDefTokNext( dt )
+			loop
+		end if
 
 		'' free args text
 		do while( num > 0 )
@@ -226,6 +252,10 @@ private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
 	end if
 
 	''
+	if( doskip ) then
+		return 0
+	end if
+
 	if( lex->deflen = 0 ) then
 		DZstrAssign( lex->deftext, text )
 	else
@@ -237,7 +267,11 @@ private function hLoadMacro( byval s as FBSYMBOL ptr ) as integer
 end function
 
 ''::::
-private function hLoadDefine( byval s as FBSYMBOL ptr ) as integer
+private function hLoadDefine _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as integer
+
     dim as integer lgt
     static as string text
 
@@ -285,10 +319,14 @@ private function hLoadDefine( byval s as FBSYMBOL ptr ) as integer
 
 				'' ')'
 				if( lexCurrentChar( TRUE ) <> CHAR_RPRNT ) then
-					hReportError( FB_ERRMSG_EXPECTEDRPRNT )
-					exit function
+					if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+						exit function
+					end if
+
+				else
+					lexEatChar( )
 				end if
-				lexEatChar( )
+
 			end if
 
 			if( symbGetType( s ) <> FB_DATATYPE_WCHAR ) then
@@ -324,12 +362,16 @@ private function hLoadDefine( byval s as FBSYMBOL ptr ) as integer
 
 end function
 
-private function hLoadMacroW( byval s as FBSYMBOL ptr ) as integer
+private function hLoadMacroW _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as integer
+
     dim as FB_DEFPARAM ptr param
     dim as FB_DEFTOK ptr dt
     dim as FBTOKEN t
     dim as LEXPP_ARGTB ptr argtb
-    dim as integer prntcnt, lgt, num
+    dim as integer prntcnt, lgt, num, doskip
     static as DWSTRING text
 
 	function = -1
@@ -378,8 +420,11 @@ private function hLoadMacroW( byval s as FBSYMBOL ptr ) as integer
 				end if
 			''
 			case FB_TK_EOL, FB_TK_EOF
-				hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT )
-				exit function
+				if( hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+					exit function
+				else
+					exit do
+				end if
 			end select
 
 			if( argtb <> NULL ) then
@@ -395,13 +440,15 @@ private function hLoadMacroW( byval s as FBSYMBOL ptr ) as integer
 			'' trim
 			with argtb->tb(num)
 				if( .textw.data = NULL ) then
-					hReportMacroError( s, FB_ERRMSG_EXPECTEDEXPRESSION )
-					exit function
-				end if
+					if( hReportMacroError( s, FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+						exit function
+					end if
 
-				if( (.textw.data[0][0] = CHAR_SPACE) or _
-					(.textw.data[0][len( *.textw.data )-1] = CHAR_SPACE) ) then
-					DWstrAssign( .textw, trim( *.textw.data ) )
+				else
+					if( (.textw.data[0][0] = CHAR_SPACE) or _
+						(.textw.data[0][len( *.textw.data )-1] = CHAR_SPACE) ) then
+						DWstrAssign( .textw, trim( *.textw.data ) )
+					end if
 				end if
 			end with
 		end if
@@ -417,50 +464,62 @@ private function hLoadMacroW( byval s as FBSYMBOL ptr ) as integer
 
 		'' too many args?
 		if( param = NULL ) then
-			hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
-			exit function
+			if( hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until next ')'
+				hSkipUntil( CHAR_RPRNT, TRUE, LEX_FLAGS )
+				exit do
+			end if
 		end if
 	loop
 
 	'' too few args?
+	doskip = FALSE
 	if( symbGetDefParamNext( param ) <> NULL ) then
-		hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH )
-		exit function
+		if( hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
+			exit function
+		else
+			doskip = TRUE
+		end if
 	end if
 
 	'' text = ""
 	DWstrAssign( text, NULL )
 
 	if( argtb <> NULL ) then
-		dt = symbGetDefineHeadToken( s )
-		do while( dt <> NULL )
-			select case as const symbGetDefTokType( dt )
-			'' parameter?
-			case FB_DEFTOK_TYPE_PARAM
-				DWstrConcatAssign( text, _
-								   argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data )
+		if( doskip = FALSE ) then
+			dt = symbGetDefineHeadToken( s )
+			do while( dt <> NULL )
+				select case as const symbGetDefTokType( dt )
+				'' parameter?
+				case FB_DEFTOK_TYPE_PARAM
+					DWstrConcatAssign( text, _
+								   	   argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data )
 
-			'' stringize parameter?
-			case FB_DEFTOK_TYPE_PARAMSTR
-				'' !!!FIXME!!! $'s won't turn off escaping
-				DWstrConcatAssign( text, "\"" )
-				DWstrConcatAssign( text, *hReplaceW( argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data, _
-										 	  		"\"", _
-										 	  		"\"\"" ) )
-				DWstrConcatAssign( text, "\"" )
+				'' stringize parameter?
+				case FB_DEFTOK_TYPE_PARAMSTR
+					'' !!!FIXME!!! $'s won't turn off escaping
+					DWstrConcatAssign( text, "\"" )
+					DWstrConcatAssign( text, _
+									   *hReplaceW( argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data, _
+										 	  	   "\"", _
+										 	  	   "\"\"" ) )
+					DWstrConcatAssign( text, "\"" )
 
-			'' ordinary text..
-			case FB_DEFTOK_TYPE_TEX
-				DWstrConcatAssignA( text, symbGetDefTokText( dt ) )
+				'' ordinary text..
+				case FB_DEFTOK_TYPE_TEX
+					DWstrConcatAssignA( text, symbGetDefTokText( dt ) )
 
-			'' unicode text?
-			case FB_DEFTOK_TYPE_TEXW
-               	DWstrConcatAssign( text, symbGetDefTokTextW( dt ) )
-			end select
+				'' unicode text?
+				case FB_DEFTOK_TYPE_TEXW
+               		DWstrConcatAssign( text, symbGetDefTokTextW( dt ) )
+				end select
 
-			'' next
-			dt = symbGetDefTokNext( dt )
-		loop
+				'' next
+				dt = symbGetDefTokNext( dt )
+			loop
+		end if
 
 		'' free args text
 		do while( num > 0 )
@@ -472,6 +531,10 @@ private function hLoadMacroW( byval s as FBSYMBOL ptr ) as integer
 	end if
 
 	''
+	if( doskip ) then
+		return NULL
+	end if
+
 	if( lex->deflen = 0 ) then
 		DWstrAssign( lex->deftextw, text.data )
 	else
@@ -483,7 +546,11 @@ private function hLoadMacroW( byval s as FBSYMBOL ptr ) as integer
 end function
 
 ''::::
-private function hLoadDefineW( byval s as FBSYMBOL ptr ) as integer
+private function hLoadDefineW _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as integer
+
     dim as integer lgt
     static as DWSTRING text
 
@@ -530,10 +597,13 @@ private function hLoadDefineW( byval s as FBSYMBOL ptr ) as integer
 
 				'' ')'
 				if( lexCurrentChar( TRUE ) <> CHAR_RPRNT ) then
-					hReportError( FB_ERRMSG_EXPECTEDRPRNT )
-					exit function
+					if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+						exit function
+					end if
+
+				else
+					lexEatChar( )
 				end if
-				lexEatChar( )
 			end if
 
 			if( symbGetType( s ) <> FB_DATATYPE_WCHAR ) then
@@ -567,12 +637,20 @@ private function hLoadDefineW( byval s as FBSYMBOL ptr ) as integer
 end function
 
 ''::::
-function ppDefineLoad( byval s as FBSYMBOL ptr ) as integer
+function ppDefineLoad _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as integer
 
 	'' recursion?
 	if( s = lex->currmacro ) then
-		hReportError( FB_ERRMSG_RECURSIVEMACRO )
-		return FALSE
+		if( hReportError( FB_ERRMSG_RECURSIVEMACRO ) = FALSE ) then
+			return FALSE
+		else
+			'' error recovery: skip
+			hSkipUntil( INVALID, FALSE, LEX_FLAGS )
+			return TRUE
+		end if
 	end if
 
 	'' only one level
@@ -592,9 +670,11 @@ function ppDefineLoad( byval s as FBSYMBOL ptr ) as integer
 end function
 
 '':::::
-private function hReadMacroText( byval args as integer, _
-						   		 byval paramhead as FB_DEFPARAM ptr _
-						   	   ) as FB_DEFTOK ptr
+private function hReadMacroText _
+	( _
+		byval args as integer, _
+		byval paramhead as FB_DEFPARAM ptr _
+	) as FB_DEFTOK ptr
 
 	static as zstring * FB_MAXNAMELEN+1 token
     dim as integer num, addquotes
@@ -723,20 +803,27 @@ function ppDefine( ) as integer
 
     '' ID
     chain_ = cIdentifier( )
+
+    lexEatToken( @defname, LEX_FLAGS )
+
     if( chain_ <> NULL ) then
     	sym = chain_->sym
     	if( symbIsDefine( sym ) = FALSE ) then
-    		hReportError( FB_ERRMSG_DUPDEFINITION )
-    		exit function
+    		if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, @defname ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: fake an id
+    			defname = *hMakeTmpStr( )
+    		end if
     	end if
+
     else
 		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
+
     	sym = NULL
     end if
-
-    lexEatToken( defname, LEX_FLAGS )
 
     params = 0
     paramhead = NULL
@@ -755,8 +842,13 @@ function ppDefine( ) as integer
 
 		    	params += 1
 				if( params >= FB_MAXDEFINEARGS ) then
-					hReportError( FB_ERRMSG_TOOMANYPARAMS )
-					exit function
+					if( hReportError( FB_ERRMSG_TOOMANYPARAMS ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: skip until next ')'
+						hSkipUntil( CHAR_RPRNT, TRUE )
+						return TRUE
+					end if
 				end if
 
 		    	if( paramhead = NULL ) then
@@ -777,9 +869,14 @@ function ppDefine( ) as integer
 
     	'' ')'
     	if( lexGetToken( LEX_FLAGS ) <> CHAR_RPRNT ) then
-    		hReportError( FB_ERRMSG_EXPECTEDRPRNT )
-    		exit function
+    		if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+    			exit function
+			else
+				'' error recovery: skip until next ')'
+				hSkipUntil( CHAR_RPRNT, FALSE, LEX_FLAGS )
+			end if
     	end if
+
     	lexSkipToken( LEX_FLAGS and not LEXCHECK_NOWHITESPC )
 
     else
@@ -788,7 +885,6 @@ function ppDefine( ) as integer
     		lexSkipToken( LEX_FLAGS and not LEXCHECK_NOWHITESPC )
     	end if
     end if
-
 
    	'' not a macro?
    	if( params = 0 ) then
@@ -800,12 +896,15 @@ function ppDefine( ) as integer
     		if( sym <> NULL ) then
     			if( (symbGetDefineParams( sym ) > 0) or _
     				(symbGetType( sym ) <> FB_DATATYPE_CHAR) ) then
-    				hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname )
-    				exit function
+
+    				if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname ) = FALSE ) then
+    					exit function
+    				end if
 
     			elseif( (*symbGetDefineText( sym ) <> *text) ) then
-    				hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname )
-    				exit function
+    				if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname ) = FALSE ) then
+    					exit function
+    				end if
     			end if
 
     		else
@@ -822,12 +921,15 @@ function ppDefine( ) as integer
     		if( sym <> NULL ) then
     			if( (symbGetDefineParams( sym ) > 0) or _
     				(symbGetType( sym ) <> FB_DATATYPE_WCHAR) ) then
-    				hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname )
-    				exit function
+
+    				if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname ) = FALSE ) then
+    					exit function
+    				end if
 
     			elseif( (*symbGetDefineTextW( sym ) <> *textw) ) then
-    				hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname )
-    				exit function
+    				if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname ) = FALSE ) then
+    					exit function
+    				end if
     			end if
 
     		else
@@ -841,13 +943,15 @@ function ppDefine( ) as integer
     else
     	'' already defined? can't check..
     	if( sym <> NULL ) then
-    		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname )
-    		exit function
+    		if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname ) = FALSE ) then
+    			exit function
+    		end if
+
+    	else
+       		tokhead = hReadMacroText( params, paramhead )
+
+    		symbAddDefineMacro( @defname, tokhead, params, paramhead )
     	end if
-
-       	tokhead = hReadMacroText( params, paramhead )
-
-    	symbAddDefineMacro( @defname, tokhead, params, paramhead )
 
     end if
 
