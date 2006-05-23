@@ -57,8 +57,9 @@ function cParentExpression _
   		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
   			exit function
   		else
-  			'' error recovery: skip until next ')'
+  			'' error recovery: skip until next ')', fake an expr
   			hSkipUntil( CHAR_RPRNT, TRUE )
+  			parexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
   			return TRUE
   		end if
     end if
