@@ -77,8 +77,11 @@ option escape
 	end if
 
 '':::::
-sub ZstrAssign ( byval dst as zstring ptr ptr, _
-				 byval src as zstring ptr )
+sub ZstrAssign _
+	( _
+		byval dst as zstring ptr ptr, _
+		byval src as zstring ptr _
+	)
 
 	ASSIGN_SETUP( dst, src, zstring )
 
@@ -89,8 +92,11 @@ sub ZstrAssign ( byval dst as zstring ptr ptr, _
 end sub
 
 '':::::
-sub ZstrAssignW ( byval dst as zstring ptr ptr, _
-				  byval src as wstring ptr )
+sub ZstrAssignW _
+	( _
+		byval dst as zstring ptr ptr, _
+		byval src as wstring ptr _
+	)
 
 	ASSIGN_SETUP( dst, src, zstring )
 
@@ -101,8 +107,11 @@ sub ZstrAssignW ( byval dst as zstring ptr ptr, _
 end sub
 
 '':::::
-sub ZstrConcatAssign ( byval dst as zstring ptr ptr, _
-					   byval src as zstring ptr )
+sub ZstrConcatAssign _
+	( _
+		byval dst as zstring ptr ptr, _
+		byval src as zstring ptr _
+	)
 
 	CONCATASSIGN_SETUP( dst, src, zstring )
 
@@ -113,8 +122,11 @@ sub ZstrConcatAssign ( byval dst as zstring ptr ptr, _
 end sub
 
 '':::::
-sub ZstrConcatAssignW ( byval dst as zstring ptr ptr, _
-						byval src as wstring ptr )
+sub ZstrConcatAssignW _
+	( _
+		byval dst as zstring ptr ptr, _
+		byval src as wstring ptr _
+	)
 
 	CONCATASSIGN_SETUP( dst, src, zstring )
 
@@ -126,8 +138,11 @@ end sub
 
 
 '':::::
-sub WstrAssign ( byval dst as wstring ptr ptr, _
-				 byval src as wstring ptr )
+sub WstrAssign _
+	( _
+		byval dst as wstring ptr ptr, _
+		byval src as wstring ptr _
+	)
 
 	ASSIGN_SETUP( dst, src, wstring )
 
@@ -138,8 +153,11 @@ sub WstrAssign ( byval dst as wstring ptr ptr, _
 end sub
 
 '':::::
-sub WstrAssignA ( byval dst as wstring ptr ptr, _
-				  byval src as zstring ptr )
+sub WstrAssignA _
+	( _
+		byval dst as wstring ptr ptr, _
+		byval src as zstring ptr _
+	)
 
 	ASSIGN_SETUP( dst, src, wstring )
 
@@ -150,8 +168,11 @@ sub WstrAssignA ( byval dst as wstring ptr ptr, _
 end sub
 
 '':::::
-sub WstrConcatAssign ( byval dst as wstring ptr ptr, _
-					   byval src as wstring ptr )
+sub WstrConcatAssign _
+	( _
+		byval dst as wstring ptr ptr, _
+		byval src as wstring ptr _
+	)
 
 	CONCATASSIGN_SETUP( dst, src, wstring )
 
@@ -162,8 +183,11 @@ sub WstrConcatAssign ( byval dst as wstring ptr ptr, _
 end sub
 
 '':::::
-sub WstrConcatAssignW ( byval dst as wstring ptr ptr, _
-						byval src as zstring ptr )
+sub WstrConcatAssignW _
+	( _
+		byval dst as wstring ptr ptr, _
+		byval src as zstring ptr _
+	)
 
 	CONCATASSIGN_SETUP( dst, src, wstring )
 
@@ -175,9 +199,12 @@ end sub
 
 
 '':::::
-function hReplace( byval orgtext as zstring ptr, _
-			 	   byval oldtext as zstring ptr, _
-			  	   byval newtext as zstring ptr ) as string static
+function hReplace _
+	( _
+		byval orgtext as zstring ptr, _
+		byval oldtext as zstring ptr, _
+		byval newtext as zstring ptr _
+	) as string static
 
     dim as integer oldlen, newlen, p
     static as string text, remtext
@@ -205,9 +232,12 @@ function hReplace( byval orgtext as zstring ptr, _
 end function
 
 '':::::
-function hReplaceW( byval orgtext as wstring ptr, _
-			 	    byval oldtext as wstring ptr, _
-			  	    byval newtext as wstring ptr ) as wstring ptr static
+function hReplaceW _
+	( _
+		byval orgtext as wstring ptr, _
+		byval oldtext as wstring ptr, _
+		byval newtext as wstring ptr _
+	) as wstring ptr static
 
     dim as integer oldlen, newlen, p
     static as DWSTRING text, remtext
@@ -236,10 +266,12 @@ function hReplaceW( byval orgtext as wstring ptr, _
 end function
 
 '':::::
-function hReEscape( byval text as zstring ptr, _
-				    byref textlen as integer, _
-				    byref isunicode as integer _
-				  ) as zstring ptr static
+function hReEscape _
+	( _
+		byval text as zstring ptr, _
+		byref textlen as integer, _
+		byref isunicode as integer _
+	) as zstring ptr static
 
     static as DZSTRING res
     dim as integer char, lgt, i, value, isnumber
@@ -462,9 +494,11 @@ function hReEscape( byval text as zstring ptr, _
 end function
 
 '':::::
-function hReEscapeW( byval text as wstring ptr, _
-				     byref textlen as integer _
-				   ) as wstring ptr static
+function hReEscapeW _
+	( _
+		byval text as wstring ptr, _
+		byref textlen as integer _
+	) as wstring ptr static
 
     static as DWSTRING res
     dim as integer char, lgt, i, isnumber
@@ -678,7 +712,11 @@ function hReEscapeW( byval text as wstring ptr, _
 end function
 
 '':::::
-function hEscape( byval text as zstring ptr ) as zstring ptr static
+function hEscape _
+	( _
+		byval text as zstring ptr _
+	) as zstring ptr static
+
     static as DZSTRING res
     dim as integer c, octlen, lgt
     dim as zstring ptr src, dst, src_end
@@ -766,7 +804,10 @@ function hEscape( byval text as zstring ptr ) as zstring ptr static
 end function
 
 '':::::
-private function hRemapChar( byval char as integer ) as integer static
+private function hRemapChar _
+	( _
+		byval char as integer _
+	) as integer static
 
 	select case as const char
 	case asc( "r" )
@@ -797,7 +838,11 @@ private function hRemapChar( byval char as integer ) as integer static
 end function
 
 ''::::
-private function hU16ToWchar( byval src as wstring ptr ) as uinteger static
+private function hU16ToWchar _
+	( _
+		byval src as wstring ptr _
+	) as uinteger static
+
 	dim as uinteger char, c
 	dim as integer i
 
@@ -823,7 +868,11 @@ private function hU16ToWchar( byval src as wstring ptr ) as uinteger static
 end function
 
 '':::::
-function hEscapeW( byval text as wstring ptr ) as zstring ptr static
+function hEscapeW _
+	( _
+		byval text as wstring ptr _
+	) as zstring ptr static
+
     static as DZSTRING res
     dim as uinteger char, c
     dim as integer lgt, i, wstrlen
@@ -923,7 +972,11 @@ function hEscapeW( byval text as wstring ptr ) as zstring ptr static
 end function
 
 '':::::
-function hUnescape( byval text as zstring ptr ) as zstring ptr static
+function hUnescape _
+	( _
+		byval text as zstring ptr _
+	) as zstring ptr static
+
     static as DZSTRING res
     dim as integer char, lgt, i
     dim as zstring ptr src, dst, src_end
@@ -981,7 +1034,11 @@ function hUnescape( byval text as zstring ptr ) as zstring ptr static
 end function
 
 '':::::
-function hUnescapeW( byval text as wstring ptr ) as wstring ptr static
+function hUnescapeW _
+	( _
+		byval text as wstring ptr _
+	) as wstring ptr static
+
     static as DWSTRING res
     dim as integer char, lgt, i
     dim as wstring ptr src, dst, src_end
