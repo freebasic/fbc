@@ -45,6 +45,7 @@ Version 0.16 Beta:
 - TYPE<symbol>(...) to allow anonymous UDT's to be passed to overloaded functions (v1c)
 - non-fatal error handling, the parser won't exit unless #-errors happened, making it easier to port
   sources from different languages to FB and to work with large projects (v1c)
+- the -maxerr command-line option, to define after how many errors the parser should stop (v1c)
 - support for the optional "digits" argument in HEX(), OCT() and BIN() (and their wide-char versions) (v1c)
 - the -include command-line option, to pre-include headers in every source file (.bas) that will be compiled (v1c)
 - Linux framebuffer console gfx driver (lillo)

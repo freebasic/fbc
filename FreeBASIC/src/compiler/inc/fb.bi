@@ -40,6 +40,8 @@ const FB_MAXDEFINELEN		= FB_MAXLITLEN*4
 
 const FB_MAXSCOPEDEPTH		= 128
 
+const FB_DEFAULT_MAXERRORS	= 10
+
 ''
 const TRUE					= -1
 const FALSE					= 0
@@ -47,11 +49,11 @@ const NULL					= 0
 const INVALID				= -1
 
 ''
-#define FB_VER_MAJOR		0
-#define FB_VER_MINOR		16
-#define FB_VER_PATCH		0
-#define FB_VERSION			"0.16"
-#define FB_SIGN				"FreeBASIC v0.16b"
+const FB_VER_MAJOR			= 0
+const FB_VER_MINOR			= 16
+const FB_VER_PATCH			= 0
+const FB_VERSION			= str( FB_VER_MAJOR ) + "." + str( FB_VER_MINOR )
+const FB_SIGN				= "FreeBASIC v" +  FB_VERSION + "b"
 
 #define FB_TO_STRING(v)		#v
 
@@ -67,27 +69,27 @@ const INVALID				= -1
 #endif
 
 #if defined(TARGET_WIN32)
-#define FB_TARGET			"win32"
+const FB_TARGET				= "win32"
 #elseif defined(TARGET_CYGWIN)
-#define FB_TARGET			"cygwin"
+const FB_TARGET				= "cygwin"
 #elseif defined(TARGET_LINUX)
-#define FB_TARGET			"linux"
+const FB_TARGET				= "linux"
 #elseif defined(TARGET_DOS)
-#define FB_TARGET			"dos"
+const FB_TARGET				= "dos"
 #elseif defined(TARGET_XBOX)
-#define FB_TARGET			"xbox"
+const FB_TARGET				= "xbox"
 #endif
 
 #if defined(__FB_WIN32__)
-#define FB_HOST				"win32"
+const FB_HOST				= "win32"
 #elseif defined(__FB_CYGWIN__)
-#define FB_HOST				"cygwin"
+const FB_HOST				= "cygwin"
 #elseif defined(__FB_LINUX__)
-#define FB_HOST				"linux"
+const FB_HOST				= "linux"
 #elseif defined(__FB_DOS__)
-#define FB_HOST				"dos"
+const FB_HOST				= "dos"
 #elseif defined(__FB_XBOX__)
-#define FB_HOST				"xbox"
+const FB_HOST				= "xbox"
 #endif
 
 
@@ -143,7 +145,7 @@ enum FBCPUTYPE_ENUM
 	FB_CPUTYPE_686
 end enum
 
-const FB_DEFAULTCPUTYPE	= FB_CPUTYPE_486
+const FB_DEFAULT_CPUTYPE	= FB_CPUTYPE_486
 
 '' output file type
 enum FBOUTTYPE_ENUM
@@ -152,6 +154,8 @@ enum FBOUTTYPE_ENUM
 	FB_OUTTYPE_DYNAMICLIB
 	FB_OUTTYPE_OBJECT
 end enum
+
+const FB_DEFAULT_OUTTYPE 	= FB_OUTTYPE_EXECUTABLE
 
 '' target platform
 enum FB_COMPTARGET_ENUM
@@ -163,15 +167,15 @@ enum FB_COMPTARGET_ENUM
 end enum
 
 #if defined(TARGET_WIN32)
-const FB_DEFAULTTARGET = FB_COMPTARGET_WIN32
+const FB_DEFAULT_TARGET = FB_COMPTARGET_WIN32
 #elseif defined(TARGET_CYGWIN)
-const FB_DEFAULTTARGET = FB_COMPTARGET_CYGWIN
+const FB_DEFAULT_TARGET = FB_COMPTARGET_CYGWIN
 #elseif defined(TARGET_LINUX)
-const FB_DEFAULTTARGET = FB_COMPTARGET_LINUX
+const FB_DEFAULT_TARGET = FB_COMPTARGET_LINUX
 #elseif defined(TARGET_DOS)
-const FB_DEFAULTTARGET = FB_COMPTARGET_DOS
+const FB_DEFAULT_TARGET = FB_COMPTARGET_DOS
 #elseif defined(TARGET_XBOX)
-const FB_DEFAULTTARGET = FB_COMPTARGET_XBOX
+const FB_DEFAULT_TARGET = FB_COMPTARGET_XBOX
 #else
 #error Unsupported target
 #endif

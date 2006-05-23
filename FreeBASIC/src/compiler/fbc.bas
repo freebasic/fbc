@@ -23,7 +23,6 @@
 ''		 jan/2005 dos support added [DrV]
 
 
-defint a-z
 option explicit
 option private
 option escape
@@ -137,6 +136,7 @@ declare sub 	 setCompOptions			( )
     			delFiles( )
     			end 1
     		end if
+
     	else
 			'' resource files..
 			if( compileResFiles( ) = FALSE ) then
@@ -202,6 +202,7 @@ sub setCompOptions( )
 	case FB_COMPTARGET_LINUX
 		fbSetOption( FB_COMPOPT_NOSTDCALL, TRUE )
 		fbSetOption( FB_COMPOPT_NOUNDERPREFIX, TRUE )
+
 	case FB_COMPTARGET_DOS
 		fbSetOption( FB_COMPOPT_NOSTDCALL, TRUE )
 	end select
@@ -239,7 +240,8 @@ function compileFiles as integer
     	'' add include paths and defines
     	processCompLists( )
 
-    	'' if no output file given, assume it's the same name as input, with the .o extension
+    	'' if no output file given, assume it's the
+    	'' same name as input, with the .o extension
     	if( len( fbc.outlist(i) ) = 0 ) then
     		fbc.outlist(i) = hStripExt( fbc.inplist(i) ) + ".o"
     	end if
@@ -436,14 +438,17 @@ sub printOptions( )
 
 	print "Usage: fbc [options] inputlist"
 	print
-	printOption( "inputlist:", "xxx.a = library, xxx.o = object, xxx.bas = source" )
+
+	printOption( "inputlist:", "*.a = library, *.o = object, *.bas = source" )
 	if( fbc.target = FB_COMPTARGET_WIN32 or fbc.target = FB_COMPTARGET_CYGWIN ) then
-		printOption( "", "xxx.rc = resource script, xxx.res = compiled resource" )
+		printOption( "", "*.rc = resource script, *.res = compiled resource" )
 	elseif( fbc.target = FB_COMPTARGET_LINUX ) then
-		printOption( "", "xxx.xpm = icon resource" )
+		printOption( "", "*.xpm = icon resource" )
 	end if
+
 	print
 	print "options:"
+
 	printOption( "-a <name>", "Add an object file to linker's list" )
 	printOption( "-arch <type>", "Set target architecture (default: 486)" )
 	printOption( "-b <name>", "Add a source file to compilation" )
@@ -468,6 +473,7 @@ sub printOptions( )
 	printOption( "-lib", "Create a static library" )
 	printOption( "-m <name>", "Main file w/o ext, the entry point (def: 1st .bas on list)" )
 	printOption( "-map <name>", "Save the linking map to file name" )
+	printOption( "-maxerr <val>", "Only stop parsing if <val> errors occurred" )
 	if( fbc.target <> FB_COMPTARGET_DOS ) then
 		printOption( "-mt", "Link with thread-safe runtime library" )
 	end if
@@ -810,6 +816,19 @@ function processOptions( ) as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
+			'' max number of errors
+			case "maxerr"
+				if( argv(i+1) = "inf" ) then
+					value = &h7fffffff
+				else
+					value = valint( argv(i+1) )
+				end if
+
+				fbSetOption( FB_COMPOPT_MAXERRORS, value )
+
+				argv(i) = ""
+				argv(i+1) = ""
+
 			'' warning level
 			case "w"
 				if( argv(i+1) = "all" ) then
@@ -1016,7 +1035,7 @@ sub parseCmd ( byref argc as integer, argv() as string )
 			exit do
 		end if
 		argc += 1
-	loop while argc < FB_MAXARGS
+	loop while( argc < FB_MAXARGS )
 
 end sub
 
@@ -1037,16 +1056,16 @@ public function fbAddLibPath ( byval path as zstring ptr ) as integer
 		exit function
 	end if
 
-	function = TRUE
-
 	for i = 0 to fbc.pths-1
 		if( fbc.pthlist(i) = *path ) then
-			exit function
+			return TRUE
 		end if
 	next
 
 	fbc.pthlist(fbc.pths) = *path
 	fbc.pths += 1
+
+	function = TRUE
 
 end function
 
