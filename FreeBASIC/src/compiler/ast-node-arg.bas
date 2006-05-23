@@ -53,8 +53,12 @@ private sub hParamWarning _
 end sub
 
 '':::::
-private function hAllocTmpArrayDesc( byval f as ASTNODE ptr, _
-									 byval n as ASTNODE ptr ) as ASTNODE ptr
+private function hAllocTmpArrayDesc _
+	( _
+		byval f as ASTNODE ptr, _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr
+
 	dim s as FBSYMBOL ptr
 	dim t as ASTTEMPARRAY ptr
 
@@ -74,11 +78,13 @@ private function hAllocTmpArrayDesc( byval f as ASTNODE ptr, _
 end function
 
 '':::::
-private function hAllocTmpStrNode( byval proc as ASTNODE ptr, _
-								   byval n as ASTNODE ptr, _
-								   byval dtype as integer, _
-								   byval copyback as integer _
-								 ) as ASTTEMPSTR ptr static
+private function hAllocTmpStrNode _
+	( _
+		byval proc as ASTNODE ptr, _
+		byval n as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval copyback as integer _
+	) as ASTTEMPSTR ptr static
 
 	dim as ASTTEMPSTR ptr t
 	dim as FBSYMBOL ptr s
@@ -102,9 +108,12 @@ private function hAllocTmpStrNode( byval proc as ASTNODE ptr, _
 end function
 
 '':::::
-private function hAllocTmpString( byval proc as ASTNODE ptr, _
-								  byval n as ASTNODE ptr, _
-								  byval copyback as integer ) as ASTNODE ptr
+private function hAllocTmpString _
+	( _
+		byval proc as ASTNODE ptr, _
+		byval n as ASTNODE ptr, _
+		byval copyback as integer _
+	) as ASTNODE ptr
 
 	dim as ASTTEMPSTR ptr t
 
@@ -117,9 +126,11 @@ private function hAllocTmpString( byval proc as ASTNODE ptr, _
 end function
 
 '':::::
-private function hAllocTmpWstrPtr( byval proc as ASTNODE ptr, _
-							       byval n as ASTNODE ptr _
-							     ) as ASTNODE ptr
+private function hAllocTmpWstrPtr _
+	( _
+		byval proc as ASTNODE ptr, _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr
 
 	dim as ASTTEMPSTR ptr t
 
@@ -134,10 +145,12 @@ private function hAllocTmpWstrPtr( byval proc as ASTNODE ptr, _
 end function
 
 '':::::
-private function hCheckStringArg( byval proc as ASTNODE ptr, _
-							      byval arg as FBSYMBOL ptr, _
-							      byval p as ASTNODE ptr _
-							    ) as ASTNODE ptr
+private function hCheckStringArg _
+	( _
+		byval proc as ASTNODE ptr, _
+		byval arg as FBSYMBOL ptr, _
+		byval p as ASTNODE ptr _
+	) as ASTNODE ptr
 
     dim as integer pdtype, copyback
 
@@ -268,10 +281,12 @@ private function hCheckStringArg( byval proc as ASTNODE ptr, _
 end function
 
 '':::::
-private function hStrParamToPtrArg( byval proc as ASTNODE ptr, _
-									byval n as ASTNODE ptr, _
-					   				byval checkrtl as integer _
-					   			  ) as integer
+private function hStrParamToPtrArg _
+	( _
+		byval proc as ASTNODE ptr, _
+		byval n as ASTNODE ptr, _
+		byval checkrtl as integer _
+	) as integer
 
 	dim as ASTNODE ptr p
 	dim as integer pdtype
@@ -352,11 +367,13 @@ private function hStrParamToPtrArg( byval proc as ASTNODE ptr, _
 end function
 
 '':::::
-private function hCheckArrayParam( byval f as ASTNODE ptr, _
-								   byval n as ASTNODE ptr, _
-					   	   		   byval adtype as integer, _
-					   	   		   byval adclass as integer _
-					   	   		 ) as integer
+private function hCheckArrayParam _
+	( _
+		byval f as ASTNODE ptr, _
+		byval n as ASTNODE ptr, _
+		byval adtype as integer, _
+		byval adclass as integer _
+	) as integer
 
 	dim as FBSYMBOL ptr s, d
     dim as ASTNODE ptr p
@@ -428,10 +445,12 @@ private function hCheckArrayParam( byval f as ASTNODE ptr, _
 end function
 
 '':::::
-private function hCheckByRefArg( byval dtype as integer, _
-								 byval subtype as FBSYMBOL ptr, _
-								 byval n as ASTNODE ptr _
-							   ) as ASTNODE ptr static
+private function hCheckByRefArg _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr p
 
@@ -477,9 +496,11 @@ private function hCheckByRefArg( byval dtype as integer, _
 end function
 
 '':::::
-private function hCheckParam( byval f as ASTNODE ptr, _
-							  byval n as ASTNODE ptr _
-							) as integer
+private function hCheckParam _
+	( _
+		byval f as ASTNODE ptr, _
+		byval n as ASTNODE ptr _
+	) as integer
 
     dim as FBSYMBOL ptr sym, arg, s
     dim as integer adtype, adclass, amode, iswarning
@@ -751,7 +772,7 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 	end if
 
 	'' string param? handle z- and w-string ptr arguments
-	select case pdtype
+	select case as const pdtype
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
@@ -859,11 +880,13 @@ private function hCheckParam( byval f as ASTNODE ptr, _
 end function
 
 '':::::
-function astNewARG( byval f as ASTNODE ptr, _
-					  byval p as ASTNODE ptr, _
-					  byval dtype as integer = INVALID, _
-					  byval mode as integer = INVALID _
-					) as ASTNODE ptr
+function astNewARG _
+	( _
+		byval f as ASTNODE ptr, _
+		byval p as ASTNODE ptr, _
+		byval dtype as integer = INVALID, _
+		byval mode as integer = INVALID _
+	) as ASTNODE ptr
 
     dim as ASTNODE ptr n, t
     dim as FBSYMBOL ptr sym

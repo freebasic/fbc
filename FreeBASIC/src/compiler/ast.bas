@@ -203,7 +203,11 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astUpdStrConcat( byval n as ASTNODE ptr ) as ASTNODE ptr
+function astUpdStrConcat _
+	( _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr
+
 	static as ASTNODE ptr l, r
 
 	function = n
@@ -251,9 +255,13 @@ function astUpdStrConcat( byval n as ASTNODE ptr ) as ASTNODE ptr
 end function
 
 '':::::
-function astUpdComp2Branch( byval n as ASTNODE ptr, _
-							byval label as FBSYMBOL ptr, _
-							byval isinverse as integer ) as ASTNODE ptr
+function astUpdComp2Branch _
+	( _
+		byval n as ASTNODE ptr, _
+		byval label as FBSYMBOL ptr, _
+		byval isinverse as integer _
+	) as ASTNODE ptr
+
 	dim as integer op
 	dim as ASTNODE ptr l, expr
 	static as integer dtype, istrue
@@ -436,9 +444,12 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astPtrCheck( byval pdtype as integer, _
-					  byval psubtype as FBSYMBOL ptr, _
-					  byval expr as ASTNODE ptr ) as integer static
+function astPtrCheck _
+	( _
+		byval pdtype as integer, _
+		byval psubtype as FBSYMBOL ptr, _
+		byval expr as ASTNODE ptr _
+	) as integer static
 
 	dim as integer edtype, pdtype_np, edtype_np
 
@@ -480,7 +491,7 @@ function astPtrCheck( byval pdtype as integer, _
     	end if
 
     	'' 2nd) same level of indirection?
-    	if( abs( pdtype - edtype ) >= FB_DATATYPE_POINTER ) then
+    	if( (pdtype - pdtype_np) <> (edtype - edtype_np) ) then
     		exit function
     	end if
 
@@ -503,9 +514,12 @@ function astPtrCheck( byval pdtype as integer, _
 end function
 
 '':::::
-function astFuncPtrCheck( byval pdtype as integer, _
-					      byval psubtype as FBSYMBOL ptr, _
-					      byval expr as ASTNODE ptr ) as integer static
+function astFuncPtrCheck _
+	( _
+		byval pdtype as integer, _
+		byval psubtype as FBSYMBOL ptr, _
+		byval expr as ASTNODE ptr _
+	) as integer static
 
 	dim as FBSYMBOL ptr esubtype
 
@@ -541,7 +555,10 @@ function astFuncPtrCheck( byval pdtype as integer, _
 end function
 
 '':::::
-function astGetInverseLogOp( byval op as integer ) as integer static
+function astGetInverseLogOp _
+	( _
+		byval op as integer _
+	) as integer static
 
 	select case as const op
 	case AST_OP_EQ
@@ -567,7 +584,11 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
+function astCloneTree _
+	( _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr
+
 	dim as ASTNODE ptr nn, p
 
 	''
@@ -604,7 +625,11 @@ function astCloneTree( byval n as ASTNODE ptr ) as ASTNODE ptr
 end function
 
 '':::::
-sub astDelTree ( byval n as ASTNODE ptr )
+sub astDelTree _
+	( _
+		byval n as ASTNODE ptr _
+	)
+
 	dim as ASTNODE ptr p
 
 	''
@@ -635,11 +660,14 @@ sub astDelTree ( byval n as ASTNODE ptr )
 	''
 	astDelNode( n )
 
-End Sub
+end sub
 
 ''::::
-function astIsTreeEqual( byval l as ASTNODE ptr, _
-						 byval r as ASTNODE ptr ) as integer
+function astIsTreeEqual _
+	( _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as integer
 
     function = FALSE
 
@@ -766,8 +794,12 @@ const DBL_EPSILON# = 2.2204460492503131e-016
 end function
 
 '':::::
-function astIsClassOnTree( byval class as integer, _
-						   byval n as ASTNODE ptr ) as ASTNODE ptr
+function astIsClassOnTree _
+	( _
+		byval class as integer, _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr
+
 	dim as ASTNODE ptr m
 
 	''
@@ -803,8 +835,11 @@ function astIsClassOnTree( byval class as integer, _
 end function
 
 ''::::
-function astIsSymbolOnTree( byval sym as FBSYMBOL ptr, _
-							byval n as ASTNODE ptr ) as integer
+function astIsSymbolOnTree _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval n as ASTNODE ptr _
+	) as integer
 
 	dim as FBSYMBOL ptr s
 
@@ -859,10 +894,12 @@ end function
 
 
 '':::::
-function astNewNode( byval class_ as integer, _
-				 	 byval dtype as integer, _
-				 	 byval subtype as FBSYMBOL ptr _
-				   ) as ASTNODE ptr static
+function astNewNode _
+	( _
+		byval class_ as integer, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr static
 
 	dim as ASTNODE ptr n
 
@@ -875,7 +912,10 @@ function astNewNode( byval class_ as integer, _
 end function
 
 '':::::
-sub astDelNode( byval n as ASTNODE ptr ) static
+sub astDelNode _
+	( _
+		byval n as ASTNODE ptr _
+	) static
 
 	if( n = NULL ) then
 		exit sub
@@ -886,7 +926,10 @@ sub astDelNode( byval n as ASTNODE ptr ) static
 end sub
 
 '':::::
-function astIsADDR( byval n as ASTNODE ptr ) as integer static
+function astIsADDR _
+	( _
+		byval n as ASTNODE ptr _
+	) as integer static
 
 	select case n->class
 	case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET
@@ -898,13 +941,18 @@ function astIsADDR( byval n as ASTNODE ptr ) as integer static
 end function
 
 '':::::
-function astGetValueAsInt( byval n as ASTNODE ptr ) as integer
+function astGetValueAsInt _
+	( _
+		byval n as ASTNODE ptr _
+	) as integer
 
   	select case as const astGetDataType( n )
   	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   	    function = cint( astGetValLong( n ) )
+
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		function = cint( astGetValFloat( n ) )
+
   	case else
   		function = astGetValInt( n )
   	end select
@@ -912,17 +960,24 @@ function astGetValueAsInt( byval n as ASTNODE ptr ) as integer
 end function
 
 '':::::
-function astGetValueAsStr( byval n as ASTNODE ptr ) as string
+function astGetValueAsStr _
+	( _
+		byval n as ASTNODE ptr _
+	) as string
 
   	select case as const astGetDataType( n )
   	case FB_DATATYPE_LONGINT
   		function = str( astGetValLong( n ) )
+
   	case FB_DATATYPE_ULONGINT
   		function = str( cast( ulongint, astGetValLong( n ) ) )
+
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		function = str( astGetValFloat( n ) )
+
   	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
   		function = str( astGetValInt( n ) )
+
   	case else
   		function = str( cast( uinteger, astGetValInt( n ) ) )
   	end select
@@ -930,18 +985,26 @@ function astGetValueAsStr( byval n as ASTNODE ptr ) as string
 end function
 
 '':::::
-function astGetValueAsWstr( byval n as ASTNODE ptr ) as wstring ptr
+function astGetValueAsWstr _
+	( _
+		byval n as ASTNODE ptr _
+	) as wstring ptr
+
     static as wstring * 64+1 res
 
   	select case as const astGetDataType( n )
   	case FB_DATATYPE_LONGINT
 		res = wstr( astGetValLong( n ) )
+
 	case FB_DATATYPE_ULONGINT
 		res = wstr( cast( ulongint, astGetValLong( n ) ) )
+
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 		res = wstr( astGetValFloat( n ) )
+
   	case FB_DATATYPE_BYTE, FB_DATATYPE_SHORT, FB_DATATYPE_INTEGER, FB_DATATYPE_ENUM
   		res = wstr( astGetValInt( n ) )
+
   	case else
 		res = wstr( cast( uinteger, astGetValInt( n ) ) )
   	end select
@@ -951,13 +1014,18 @@ function astGetValueAsWstr( byval n as ASTNODE ptr ) as wstring ptr
 end function
 
 '':::::
-function astGetValueAsLongInt( byval n as ASTNODE ptr ) as longint
+function astGetValueAsLongInt _
+	( _
+		byval n as ASTNODE ptr _
+	) as longint
 
   	select case as const astGetDataType( n )
   	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   	    function = astGetValLong( n )
+
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		function = clngint( astGetValFloat( n ) )
+
   	case else
   		if( symbIsSigned( astGetDataType( n ) ) ) then
   			function = clngint( astGetValInt( n ) )
@@ -969,13 +1037,18 @@ function astGetValueAsLongInt( byval n as ASTNODE ptr ) as longint
 end function
 
 '':::::
-function astGetValueAsULongInt( byval n as ASTNODE ptr ) as ulongint
+function astGetValueAsULongInt _
+	( _
+		byval n as ASTNODE ptr _
+	) as ulongint
 
   	select case as const astGetDataType( n )
   	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   	    function = astGetValLong( n )
+
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		function = culngint( astGetValFloat( n ) )
+
   	case else
   		function = culngint( cuint( astGetValInt( n ) ) )
   	end select
@@ -983,13 +1056,18 @@ function astGetValueAsULongInt( byval n as ASTNODE ptr ) as ulongint
 end function
 
 '':::::
-function astGetValueAsDouble( byval n as ASTNODE ptr ) as double
+function astGetValueAsDouble _
+	( _
+		byval n as ASTNODE ptr _
+	) as double
 
   	select case as const astGetDataType( n )
   	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
   	    function = cdbl( astGetValLong( n ) )
+
   	case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
   		function = astGetValFloat( n )
+
   	case else
   		function = cdbl( astGetValInt( n ) )
   	end select
@@ -997,7 +1075,11 @@ function astGetValueAsDouble( byval n as ASTNODE ptr ) as double
 end function
 
 '':::::
-function astGetStrLitSymbol( byval n as ASTNODE ptr ) as FBSYMBOL ptr static
+function astGetStrLitSymbol _
+	( _
+		byval n as ASTNODE ptr _
+	) as FBSYMBOL ptr static
+
 	dim as FBSYMBOL ptr s
 
     function = NULL
@@ -1108,7 +1190,10 @@ function astCheckConst _
 end function
 
 ''::::
-function astLoad( byval n as ASTNODE ptr ) as IRVREG ptr
+function astLoad _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
 	if( n = NULL ) then
 		return NULL
