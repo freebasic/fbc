@@ -1335,5 +1335,105 @@ sub symbSetProcIncFile _
 
 end sub
 
+'':::::
+function symbMangleFunctionPtr _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval mode as integer _
+	) as zstring ptr static
+
+    static as zstring * FB_MAXINTNAMELEN+1 id
+    dim as FBSYMBOL ptr param
+    dim as integer i
+
+    '' cheapo and fast internal mangling..
+
+    id = "{fbfp}"
+
+    '' for each param..
+    param = symbGetProcHeadParam( proc )
+    for i = 0 to symbGetProcParams( proc )-1
+    	id += "_"
+
+    	if( param->subtype = NULL ) then
+    		id += hex( param->typ * cint(param->param.mode) )
+    	else
+    		id += hex( param->subtype )
+    	end if
+
+    	param = symbGetParamNext( param )
+    next
+
+    id += "@"
+
+	if( subtype = NULL ) then
+		id += hex( dtype )
+	else
+		id += hex( subtype )
+	end if
+
+    id += "@"
+
+    id += hex( mode )
+
+	function = @id
+
+end function
+
+'':::::
+function symbDemangleFunctionPtr _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as zstring ptr
+
+	static as zstring ptr parammodeTb( FB_PARAMMODE_BYVAL to FB_PARAMMODE_VARARG ) = _
+	{ _
+		@"byval", _
+		@"byref", _
+		@"bydesc", _
+		@"vararg" _
+	}
+	static as string res
+	dim as FBSYMBOL ptr param
+
+	'' sub or function?
+	if( proc->typ <> FB_DATATYPE_VOID ) then
+		res = "function("
+	else
+		res = "sub("
+	end if
+
+    '' for each param..
+    param = symbGetProcHeadParam( proc )
+    do while( param <> NULL )
+    	select case as const param->param.mode
+    	case FB_PARAMMODE_BYVAL, FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
+			res += *parammodeTb(param->param.mode)
+			res += " as "
+			res += *symbTypeToStr( param->typ, param->subtype )
+
+		case FB_PARAMMODE_VARARG
+			res += "..."
+		end select
+
+    	param = symbGetParamNext( param )
+
+    	if( param <> NULL ) then
+    		res += ", "
+    	end if
+    loop
+
+	res += ")"
+
+	'' any return type?
+	if( proc->typ <> FB_DATATYPE_VOID ) then
+    	res += *symbTypeToStr( proc->typ, proc->subtype )
+	end if
+
+	function = strptr( res )
+
+end function
 
 

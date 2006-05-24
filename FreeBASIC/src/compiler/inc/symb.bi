@@ -59,30 +59,31 @@ end enum
 
 '' symbol attributes mask
 enum FB_SYMBATTRIB
-	FB_SYMBATTRIB_SHARED		= &h000001
-	FB_SYMBATTRIB_STATIC		= &h000002
-	FB_SYMBATTRIB_DYNAMIC		= &h000004
-	FB_SYMBATTRIB_COMMON		= &h000008
-	FB_SYMBATTRIB_TEMP			= &h000010
-	FB_SYMBATTRIB_PARAMBYDESC	= &h000020
-	FB_SYMBATTRIB_PARAMBYVAL	= &h000040
-	FB_SYMBATTRIB_PARAMBYREF 	= &h000080
-	FB_SYMBATTRIB_PUBLIC 		= &h000100
-	FB_SYMBATTRIB_PRIVATE 		= &h000200
-	FB_SYMBATTRIB_EXTERN		= &h000400		'' extern's become public when DIM'ed
-	FB_SYMBATTRIB_EXPORT		= &h000800
-	FB_SYMBATTRIB_IMPORT		= &h001000
-	FB_SYMBATTRIB_OVERLOADED	= &h002000		'' functions only
-	FB_SYMBATTRIB_JUMPTB		= &h004000
-	FB_SYMBATTRIB_MAINPROC		= &H008000
-	FB_SYMBATTRIB_MODLEVELPROC	= &h010000
-    FB_SYMBATTRIB_CONSTRUCTOR   = &h020000
-    FB_SYMBATTRIB_DESTRUCTOR    = &h040000
-    FB_SYMBATTRIB_LOCAL			= &h080000
-    FB_SYMBATTRIB_DESCRIPTOR	= &h100000
-	FB_SYMBATTRIB_FUNCRESULT	= &h200000
-	FB_SYMBATTRIB_LITERAL		= &h400000
-	FB_SYMBATTRIB_CONST			= &h800000
+	FB_SYMBATTRIB_SHARED		= &h00000001
+	FB_SYMBATTRIB_STATIC		= &h00000002
+	FB_SYMBATTRIB_DYNAMIC		= &h00000004
+	FB_SYMBATTRIB_COMMON		= &h00000008
+	FB_SYMBATTRIB_TEMP			= &h00000010
+	FB_SYMBATTRIB_PARAMBYDESC	= &h00000020
+	FB_SYMBATTRIB_PARAMBYVAL	= &h00000040
+	FB_SYMBATTRIB_PARAMBYREF 	= &h00000080
+	FB_SYMBATTRIB_PUBLIC 		= &h00000100
+	FB_SYMBATTRIB_PRIVATE 		= &h00000200
+	FB_SYMBATTRIB_EXTERN		= &h00000400	'' extern's become public when DIM'ed
+	FB_SYMBATTRIB_EXPORT		= &h00000800
+	FB_SYMBATTRIB_IMPORT		= &h00001000
+	FB_SYMBATTRIB_OVERLOADED	= &h00002000	'' functions only
+	FB_SYMBATTRIB_JUMPTB		= &h00004000
+	FB_SYMBATTRIB_MAINPROC		= &H00008000
+	FB_SYMBATTRIB_MODLEVELPROC	= &h00010000
+    FB_SYMBATTRIB_CONSTRUCTOR   = &h00020000
+    FB_SYMBATTRIB_DESTRUCTOR    = &h00040000
+    FB_SYMBATTRIB_LOCAL			= &h00080000
+    FB_SYMBATTRIB_DESCRIPTOR	= &h00100000
+	FB_SYMBATTRIB_FUNCRESULT	= &h00200000
+	FB_SYMBATTRIB_FUNCPTR		= &h00400000	'' needed to demangle
+	FB_SYMBATTRIB_LITERAL		= &h00800000
+	FB_SYMBATTRIB_CONST			= &h01000000
 	FB_SYMBATTRIB_LITCONST		= FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL
 end enum
 
@@ -448,6 +449,7 @@ type SYMB_DATATYPE
 	bits			as integer					'' number of bits
 	signed			as integer					'' TRUE or FALSE
 	remaptype		as FB_DATATYPE				'' remapped type for ENUM, POINTER, etc
+	name			as zstring ptr
 end type
 
 
@@ -1058,6 +1060,22 @@ declare sub 		symbSetName 			( _
 												byval name_ as zstring ptr _
 											)
 
+declare function 	symbMangleFunctionPtr 	( _
+												byval proc as FBSYMBOL ptr, _
+												byval dtype as integer, _
+												byval subtype as FBSYMBOL ptr, _
+												byval mode as integer _
+											) as zstring ptr
+
+declare function 	symbDemangleFunctionPtr ( _
+												byval proc as FBSYMBOL ptr _
+											) as zstring ptr
+
+declare function 	symbTypeToStr			( _
+												byval dtype as integer, _
+												byval subtype as FBSYMBOL ptr _
+											) as zstring ptr
+
 ''
 '' getters and setters as macros
 ''
@@ -1393,6 +1411,8 @@ declare sub 		symbSetName 			( _
 #define symbIsDestructor(s) ((s->attrib and FB_SYMBATTRIB_DESTRUCTOR) <> 0)
 
 #define symbIsDescriptor(s) ((s->attrib and FB_SYMBATTRIB_DESCRIPTOR) <> 0)
+
+#define symbIsFunctionPtr(s) ((s->attrib and FB_SYMBATTRIB_FUNCPTR) <> 0)
 
 #define symbIsConstant(s) ((s->attrib and FB_SYMBATTRIB_CONST) <> 0)
 

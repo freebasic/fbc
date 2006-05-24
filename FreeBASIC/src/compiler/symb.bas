@@ -1265,3 +1265,31 @@ function symbIsEqual _
 
 end function
 
+'':::::
+function symbTypeToStr _
+	( _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as zstring ptr
+
+	static as string res
+	dim as integer dtype_np
+
+	dtype_np = dtype mod FB_DATATYPE_POINTER
+
+	select case as const dtype_np
+	case FB_DATATYPE_FWDREF, FB_DATATYPE_USERDEF, FB_DATATYPE_ENUM
+		res = *symbGetName( subtype )
+
+	case else
+		res = *symb_dtypeTB(dtype_np).name
+	end select
+
+	do while( dtype >= FB_DATATYPE_POINTER )
+		res += " ptr"
+		dtype -= FB_DATATYPE_POINTER
+	loop
+
+	function = strptr( res )
+
+end function

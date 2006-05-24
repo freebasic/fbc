@@ -339,7 +339,6 @@ sub hReportWarning _
 
 end sub
 
-
 '':::::
 private function hReportMakeDesc _
 	( _
@@ -350,6 +349,7 @@ private function hReportMakeDesc _
 
     static as zstring * FB_MAXNAMELEN*2+32+1 desc
     dim as zstring ptr pname
+    dim as integer addprnts
 
 	if( pnum > 0 ) then
 		desc = "at parameter " + str( pnum )
@@ -386,6 +386,7 @@ private function hReportMakeDesc _
 		dim as integer showname = TRUE
 
 		'' part of the rtlib?
+		pname = NULL
 		if( symbGetIsRTL( proc ) ) then
 			'' any name set?
 			if( symbGetName( proc ) <> NULL ) then
@@ -396,26 +397,35 @@ private function hReportMakeDesc _
 			else
 				showname = FALSE
 			end if
+
+		else
+			'' function pointer?
+			if( symbIsFunctionPtr( proc ) ) then
+				pname = symbDemangleFunctionPtr( proc )
+			end if
 		end if
 
 		if( showname ) then
-			pname = symbGetName( proc )
-			if( pname <> NULL ) then
-				if( len( *pname ) = 0 ) then
-					pname = symbGetMangledName( proc )
+			if( pname = NULL ) then
+				addprnts = TRUE
+				pname = symbGetName( proc )
+				if( pname <> NULL ) then
+					if( len( *pname ) = 0 ) then
+						pname = symbGetMangledName( proc )
+					end if
 				end if
+			else
+				addprnts = FALSE
 			end if
 
 			if( pname <> NULL ) then
 				if( pnum > 0 ) then
 					desc += " of "
 				end if
-				if( len( *symbGetName( proc ) ) > 0 ) then
-					desc += *symbGetName( proc )
-				else
-					desc += *symbGetMangledName( proc )
+				desc += *pname
+				if( addprnts ) then
+					desc += "()"
 				end if
-				desc += "()"
 			end if
 		end if
 	end if

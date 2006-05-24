@@ -68,50 +68,6 @@ function cConstExprValue _
 end function
 
 '':::::
-function hMangleFuncPtrName _
-	( _
-		byval proc as FBSYMBOL ptr, _
-		byval dtype as integer, _
-		byval subtype as FBSYMBOL ptr, _
-		byval mode as integer _
-	) as zstring ptr static
-
-    static as zstring * FB_MAXINTNAMELEN+1 id
-    dim as FBSYMBOL ptr p
-    dim as integer i
-
-    id = "{fbfp}"
-
-    p = symbGetProcHeadParam( proc )
-    for i = 0 to symbGetProcParams( proc )-1
-    	id += "_"
-
-    	if( p->subtype = NULL ) then
-    		id += hex( p->typ * cint(p->param.mode) )
-    	else
-    		id += hex( p->subtype )
-    	end if
-
-    	p = symbGetParamNext( p )
-    next
-
-    id += "@"
-
-	if( subtype = NULL ) then
-		id += hex( dtype )
-	else
-		id += hex( subtype )
-	end if
-
-    id += "@"
-
-    id += hex( mode )
-
-	function = @id
-
-end function
-
-'':::::
 function cSymbolTypeFuncPtr _
 	( _
 		byval isfunction as integer _
@@ -206,7 +162,7 @@ function cSymbolTypeFuncPtr _
 		end if
 	end if
 
-	sname = hMangleFuncPtrName( proc, dtype, subtype, mode )
+	sname = symbMangleFunctionPtr( proc, dtype, subtype, mode )
 
 	'' already exists?
 	sym = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
@@ -218,9 +174,15 @@ function cSymbolTypeFuncPtr _
 	end if
 
 	'' create a new prototype
-	function = symbAddPrototype( proc, sname, NULL, NULL, _
-							     dtype, subtype, ptrcnt, _
-							     0, mode, TRUE, TRUE )
+	sym = symbAddPrototype( proc, sname, NULL, NULL, _
+							dtype, subtype, ptrcnt, _
+							0, mode, TRUE, TRUE )
+
+	if( sym <> NULL ) then
+		symbGetAttrib( sym ) or= FB_SYMBATTRIB_FUNCPTR
+	end if
+
+	function = sym
 
 end function
 
