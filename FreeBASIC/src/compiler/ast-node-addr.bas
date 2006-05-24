@@ -29,7 +29,10 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function astNewOFFSET( byval l as ASTNODE ptr ) as ASTNODE ptr static
+function astNewOFFSET _
+	( _
+		byval l as ASTNODE ptr _
+	) as ASTNODE ptr static
 
 	dim as ASTNODE ptr n
 
@@ -38,15 +41,17 @@ function astNewOFFSET( byval l as ASTNODE ptr ) as ASTNODE ptr static
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_OFFSET, FB_DATATYPE_POINTER + l->dtype, l->subtype )
+	n = astNewNode( AST_NODECLASS_OFFSET, _
+					FB_DATATYPE_POINTER + l->dtype, _
+					l->subtype )
 
 	if( n = NULL ) then
 		return NULL
 	end if
 
-	n->op.op  = INVALID
-	n->l   	  = l
-	n->sym	  = l->sym
+	n->op.op = INVALID
+	n->l = l
+	n->sym = l->sym
 
 	'' access counter must be updated here too
 	'' because the var initializers used with static strings
@@ -59,7 +64,11 @@ function astNewOFFSET( byval l as ASTNODE ptr ) as ASTNODE ptr static
 end function
 
 '':::::
-function astLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr static
+function astLoadOFFSET _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr static
+
     dim as ASTNODE ptr v
     dim as IRVREG ptr vr
     dim as FBSYMBOL ptr sym
@@ -85,7 +94,11 @@ function astLoadOFFSET( byval n as ASTNODE ptr ) as IRVREG ptr static
 end function
 
 '':::::
-private sub removeNullPtrCheck( byval l as ASTNODE ptr ) static
+private sub removeNullPtrCheck _
+	( _
+		byval l as ASTNODE ptr _
+	) static
+
 	dim as ASTNODE ptr n, t
 
 	'' ptr checks must be removed because a null pointer is ok
@@ -123,9 +136,11 @@ private sub removeNullPtrCheck( byval l as ASTNODE ptr ) static
 end sub
 
 '':::::
-function astNewADDR( byval op as integer, _
-					 byval l as ASTNODE ptr _
-				   ) as ASTNODE ptr static
+function astNewADDR _
+	( _
+		byval op as integer, _
+		byval l as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
     dim as integer delchild, dtype
@@ -135,8 +150,8 @@ function astNewADDR( byval op as integer, _
 		return NULL
 	end if
 
-	dtype    = l->dtype
-	subtype  = l->subtype
+	dtype = l->dtype
+	subtype = l->subtype
 	delchild = FALSE
 
 	if( op = AST_OP_ADDROF ) then
@@ -189,7 +204,7 @@ function astNewADDR( byval op as integer, _
 			if( s <> NULL ) then
 				if( (symbIsLocal( s ) = FALSE) or _
 					 ((symbGetAttrib( s ) and (FB_SYMBATTRIB_SHARED or _
-					 							  FB_SYMBATTRIB_STATIC)) <> 0) ) then
+					 						   FB_SYMBATTRIB_STATIC)) <> 0) ) then
 					return astNewOFFSET( l )
 				end if
 			end if
@@ -219,28 +234,33 @@ function astNewADDR( byval op as integer, _
 		''
 		if( delchild ) then
 			n = l->l
-			n->dtype   = dtype - FB_DATATYPE_POINTER
-			n->subtype = subtype
+			astSetType( n, dtype - FB_DATATYPE_POINTER, subtype )
 			astDelNode( l )
 			return n
 		end if
 	end if
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_ADDR, FB_DATATYPE_POINTER + dtype, subtype )
+	n = astNewNode( AST_NODECLASS_ADDR, _
+					FB_DATATYPE_POINTER + dtype, _
+					subtype )
 	if( n = NULL ) then
 		exit function
 	end if
 
 	n->op.op = op
-	n->l      = l
+	n->l = l
 
 	function = n
 
 end function
 
 '':::::
-function astLoadADDR( byval n as ASTNODE ptr ) as IRVREG ptr
+function astLoadADDR _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
     dim as ASTNODE ptr p
     dim as IRVREG ptr v1, vr
 

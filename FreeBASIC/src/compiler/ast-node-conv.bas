@@ -30,8 +30,11 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-private sub hCONVConstEvalInt( byval dtype as integer, _
-							   byval v as ASTNODE ptr ) static
+private sub hCONVConstEvalInt _
+	( _
+		byval dtype as integer, _
+		byval v as ASTNODE ptr _
+	) static
 
 	if( dtype > FB_DATATYPE_POINTER ) then
 		dtype = FB_DATATYPE_POINTER
@@ -103,8 +106,11 @@ private sub hCONVConstEvalInt( byval dtype as integer, _
 end sub
 
 '':::::
-private sub hCONVConstEvalFlt( byval dtype as integer, _
-							   byval v as ASTNODE ptr ) static
+private sub hCONVConstEvalFlt _
+	( _
+		byval dtype as integer, _
+		byval v as ASTNODE ptr _
+	) static
 
 	dim as integer vdtype
 
@@ -154,8 +160,11 @@ private sub hCONVConstEvalFlt( byval dtype as integer, _
 end sub
 
 '':::::
-private sub hCONVConstEval64( byval dtype as integer, _
-							  byval v as ASTNODE ptr ) static
+private sub hCONVConstEval64 _
+	( _
+		byval dtype as integer, _
+		byval v as ASTNODE ptr _
+	) static
 
 	select case as const v->dtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
@@ -190,10 +199,12 @@ private sub hCONVConstEval64( byval dtype as integer, _
 end sub
 
 '':::::
-function astCheckCONV( byval to_dtype as integer, _
-					   byval to_subtype as FBSYMBOL ptr, _
-					   byval l as ASTNODE ptr _
-				     ) as integer static
+function astCheckCONV _
+	( _
+		byval to_dtype as integer, _
+		byval to_subtype as FBSYMBOL ptr, _
+		byval l as ASTNODE ptr _
+	) as integer static
 
 	function = FALSE
 
@@ -376,18 +387,22 @@ function astNewCONV _
 		exit function
 	end if
 
-	n->l  = l
+	n->l = l
 
 	function = n
 
 end function
 
 '':::::
-function astLoadCONV( byval n as ASTNODE ptr ) as IRVREG ptr
+function astLoadCONV _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
     dim as ASTNODE ptr l
     dim as IRVREG ptr vs, vr
 
-	l  = n->l
+	l = n->l
 
 	if( l = NULL ) then
 		return NULL

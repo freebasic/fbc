@@ -29,17 +29,21 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function astNewPTR( byval ofs as integer, _
-					byval l as ASTNODE ptr, _
-					byval dtype as integer, _
-					byval subtype as FBSYMBOL ptr _
-				  ) as ASTNODE ptr static
+function astNewPTR _
+	( _
+		byval ofs as integer, _
+		byval l as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
     dim as integer delchild
 
 	'' alloc new node
-	n = astNewNode( AST_NODECLASS_PTR, dtype, subtype )
+	n = astNewNode( AST_NODECLASS_PTR, _
+					dtype, _
+					subtype )
 	function = n
 
 	if( n = NULL ) then
@@ -55,6 +59,7 @@ function astNewPTR( byval ofs as integer, _
 			if( l->op.op = AST_OP_ADDROF ) then
 				delchild = TRUE
 			end if
+
 		case AST_NODECLASS_OFFSET
 			delchild = TRUE
 		end select
@@ -62,20 +67,23 @@ function astNewPTR( byval ofs as integer, _
 		''
 		if( delchild ) then
 			n = l->l
-			n->dtype   = dtype
-			n->subtype = subtype
+			astSetType( n, dtype, subtype )
 			astDelNode( l )
 			return n
 		end if
 	end if
 
-	n->l   		= l
-	n->ptr.ofs	= ofs
+	n->l = l
+	n->ptr.ofs = ofs
 
 end function
 
 '':::::
-function astLoadPTR( byval n as ASTNODE ptr ) as IRVREG ptr
+function astLoadPTR _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
     dim as ASTNODE ptr l
     dim as IRVREG ptr v1, vp, vr
 
