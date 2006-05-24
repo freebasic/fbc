@@ -1429,6 +1429,7 @@ function symbDemangleFunctionPtr _
 
 	'' any return type?
 	if( proc->typ <> FB_DATATYPE_VOID ) then
+    	res += " as "
     	res += *symbTypeToStr( proc->typ, proc->subtype )
 	end if
 
