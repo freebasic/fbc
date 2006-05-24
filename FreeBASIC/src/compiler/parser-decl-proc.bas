@@ -205,7 +205,7 @@ function cSubOrFuncDecl _
 				exit function
 			else
 				'' error recovery: skip until ')'
-				hSkipUntil( CHAR_RPRNT )
+				hSkipUntil( CHAR_RPRNT, TRUE )
 			end if
 		else
 			lexSkipToken( )
@@ -239,8 +239,8 @@ function cSubOrFuncDecl _
     		if( hReportError( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS ) = FALSE ) then
     			exit function
     		else
-    			'' error recovery: discard return type
-    			dtype = INVALID
+    			'' error recovery: fake a type
+    			dtype = FB_DATATYPE_STRING
     			subtype = NULL
     			ptrcnt = 0
     		end if
@@ -249,10 +249,10 @@ function cSubOrFuncDecl _
     		if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
     			exit function
     		else
-    			'' error recovery: discard return type
-    			dtype = INVALID
+    			'' error recovery: fake a type
+    			dtype += FB_DATATYPE_POINTER
     			subtype = NULL
-    			ptrcnt = 0
+    			ptrcnt = 1
     		end if
     	end select
     end if
