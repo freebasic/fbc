@@ -1,3 +1,8 @@
+''
+'' to compile: fbc server.bas
+'' 			   (note: build the wshelper library first)
+''
+
 option explicit
 
 #include once "wshelper.bi"

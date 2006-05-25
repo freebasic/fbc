@@ -1,3 +1,6 @@
+''
+'' to compile: fbc wshelper.bas -lib
+''
 
 #include once "wshelper.bi"
 
