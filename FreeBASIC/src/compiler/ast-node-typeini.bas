@@ -59,6 +59,7 @@ sub astTypeIniEnd _
 	) static
 
     dim as ASTNODE ptr n, p, l, r
+    dim as integer ofs
 
 	'' can't leave r pointing to the any node as the
 	'' tail node is linked already
@@ -79,6 +80,8 @@ sub astTypeIniEnd _
 			if( l->class = AST_NODECLASS_TYPEINI ) then
 				ast.typeinicnt -= 1
 
+    			ofs = n->typeini.ofs
+
     			r = n->r
     			astDelNode( n )
     			n = l->l
@@ -91,9 +94,12 @@ sub astTypeIniEnd _
     				tree->l = n
     			end if
 
+    			'' update the offset, using the parent's
     			do while( n->r <> NULL )
+    				n->typeini.ofs += ofs
     				n = n->r
     			loop
+    			n->typeini.ofs += ofs
 
     			n->r = r
 			end if
@@ -528,7 +534,11 @@ private sub hWalk _
 end sub
 
 '':::::
-function astTypeIniUpdate( byval tree as ASTNODE ptr ) as ASTNODE ptr
+function astTypeIniUpdate _
+	( _
+		byval tree as ASTNODE ptr _
+	) as ASTNODE ptr
+
     dim as ASTNODE ptr expr
 
 	function = tree
