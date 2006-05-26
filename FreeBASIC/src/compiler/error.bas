@@ -50,7 +50,8 @@ end type
 		( 0, @"Literal string too big, truncated" ), _
 		( 0, @"UDT with pointer or dynamic string fields" ), _
 		( 0, @"UDT with dynamic string fields" ), _
-		( 0, @"Implicit variable allocation" ) _
+		( 0, @"Implicit variable allocation" ), _
+		( 0, @"Missing closing quote in literal string" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring ptr => _
@@ -173,6 +174,7 @@ end type
 		@"Expected 'END SUB'", _
 		@"Expected 'END FUNCTION'", _
 		@"Declaration outside the original namespace", _
+		@"No end of multi-line comment, expected '\\", _
 		@"Too many errors, exiting" _
 	}
 

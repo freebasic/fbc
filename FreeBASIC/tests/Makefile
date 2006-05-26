@@ -1,6 +1,6 @@
 
-DIRLIST := compound console data datetime dim expressions file functions macros namespace numbers 
-DIRLIST += optimizations overload pointers string structs swap threads wstring
+DIRLIST := comments compound console data datetime dim expressions file functions macros namespace 
+DIRLIST += numbers optimizations overload pointers string structs swap threads wstring
 
 ###
 

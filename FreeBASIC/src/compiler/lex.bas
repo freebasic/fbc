@@ -42,6 +42,8 @@ declare sub 		lexReadUTF32LE			( )
 
 declare sub 		lexReadUTF32BE			( )
 
+declare sub 		hMultiLineComment		( )
+
 const UINVALID as uinteger = cuint( INVALID )
 
 '' globals
@@ -1609,19 +1611,32 @@ read_char:
 				end if
 			end select
 
-		'' '+', '-', '*', '\', '/'?
-		case CHAR_PLUS, CHAR_MINUS, CHAR_TIMES, CHAR_SLASH, CHAR_RSLASH
+		'' '+', '*', '\'?
+		case CHAR_PLUS, CHAR_TIMES, CHAR_RSLASH
+			t->class = FB_TKCLASS_OPERATOR
+
+		'' '-'?
+		case CHAR_MINUS
 			t->class = FB_TKCLASS_OPERATOR
 
 			'' check for type-field dereference
-			if( char = CHAR_MINUS ) then
-				if( lexCurrentChar( TRUE ) = CHAR_GT ) then
-					'' t.text += chr( lexEatChar )
-					t->text[t->len+0] = lexEatChar( )
-					t->text[t->len+1] = 0
-					t->len += 1
-					t->id = FB_TK_FIELDDEREF
-				end if
+			if( lexCurrentChar( TRUE ) = CHAR_GT ) then
+				'' t.text += chr( lexEatChar )
+				t->text[t->len+0] = lexEatChar( )
+				t->text[t->len+1] = 0
+				t->len += 1
+				t->id = FB_TK_FIELDDEREF
+			end if
+
+		'' '/'?
+		case CHAR_SLASH
+			t->class = FB_TKCLASS_OPERATOR
+
+			'' "/'"?
+			if( lexCurrentChar( ) = CHAR_APOST ) then
+				'' multi-line comment..
+				hMultiLineComment( )
+				goto re_read
 			end if
 
 		'' '(', ')', ',', ':', ';', '@', '.', '$'?
@@ -1658,31 +1673,81 @@ end sub
 '':::::
 private sub hCheckPP( )
 
-	'' not already inside the PP? (ie: not skipping a false #IF or #ELSE)
-	if( lex->reclevel = 0 ) then
-		'' '#' char?
-		if( lex->head->id = CHAR_SHARP ) then
-			'' at beginning of line (or top of source-file)?
-			if( (lex->lasttk_id = FB_TK_EOL) or (lex->lasttk_id = INVALID) ) then
-                lex->reclevel += 1
-                lexSkipToken( )
+	'' not a '#' char?
+	if( lex->head->id <> CHAR_SHARP ) then
+		exit sub
+	end if
 
-       			'' not a keyword? error, parser will catch it..
-       			if( lex->head->class <> FB_TKCLASS_KEYWORD ) then
-       				lex->reclevel -= 1
-       				exit sub
-       			end if
+	'' already inside the PP? (ie: skipping a false #IF or #ELSE)
+	if( lex->reclevel <> 0 ) then
+		exit sub
+	end if
 
-       			'' pp failed? exit
-       			if( ppParse( ) = FALSE ) then
-       				lex->reclevel -= 1
-       				exit sub
-       			end if
-
-				lex->reclevel -= 1
-			end if
+	'' not at the beginning of line?
+	if( lex->lasttk_id <> FB_TK_EOL ) then
+		'' or top of source-file?
+		if( lex->lasttk_id <> INVALID ) then
+			exit sub
 		end if
 	end if
+
+	lex->reclevel += 1
+    lexSkipToken( )
+
+    '' not a keyword? error, parser will catch it..
+	if( lex->head->class <> FB_TKCLASS_KEYWORD ) then
+    	lex->reclevel -= 1
+       	exit sub
+	end if
+
+    '' let the pre-processor do the rest..
+    ppParse( )
+	lex->reclevel -= 1
+
+end sub
+
+'':::::
+'' MultiLineComment	 = '/' ''' . '/' '''
+''
+private sub hMultiLineComment( )
+	dim as integer cnt
+
+	cnt = 0
+	do
+		lexEatChar( )
+
+		select case lexCurrentChar( TRUE )
+		'' EOF?
+		case 0
+			hReportError( FB_ERRMSG_EXPECTEDENDCOMMENT )
+			exit sub
+
+		'' '/'?
+		case CHAR_SLASH
+			lexEatChar( )
+
+			'' nested?
+			if( lexCurrentChar( ) = CHAR_APOST ) then
+				cnt += 1
+			end if
+
+		'' '''?
+		case CHAR_APOST
+			lexEatChar( )
+
+			'' end of ml comment?
+			if( lexCurrentChar( ) = CHAR_SLASH ) then
+				'' not nested?
+				if( cnt = 0 ) then
+					lexEatChar( )
+					exit do
+				end if
+
+				cnt -= 1
+			end if
+
+		end select
+	loop
 
 end sub
 

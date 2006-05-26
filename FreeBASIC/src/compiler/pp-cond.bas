@@ -54,13 +54,21 @@ end type
 
 declare function ppSkip 					( ) as integer
 
-declare function ppExpression				( byref istrue as integer ) as integer
+declare function ppExpression				( _
+												byref istrue as integer _
+											) as integer
 
-declare function ppLogExpression			( byref logexpr as PPEXPR ) as integer
+declare function ppLogExpression			( _
+												byref logexpr as PPEXPR _
+											) as integer
 
-declare function ppRelExpression			( byref relexpr as PPEXPR ) as integer
+declare function ppRelExpression			( _
+												byref relexpr as PPEXPR _
+											) as integer
 
-declare function ppParentExpr				( byref parexpr as PPEXPR ) as integer
+declare function ppParentExpr				( _
+												byref parexpr as PPEXPR _
+											) as integer
 
 
 '' globals
@@ -284,8 +292,12 @@ private function ppSkip( ) as integer
         	end select
 
        	case FB_TK_EOF
-       		function = TRUE
-       		exit do
+        	if( hReportError( FB_ERRMSG_EXPECTEDENDIF ) = FALSE ) then
+        		exit function
+        	else
+       			function = TRUE
+       			exit do
+       		end if
        	end select
 
 		lexSkipLine( )

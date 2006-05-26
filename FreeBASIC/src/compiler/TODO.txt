@@ -76,9 +76,6 @@
     assignment in hStrParamToPtrArg(), just a pointer copy that later should be
     strDelete()'d
 
-[ ] .stabn can't have args > 65535 (ie: line numbers)
-    - only switching to DWARF2 (ie: too complex) would fix that, let GCC do it..
-
 *** *** *** *** ***
 [ ] all functions returning STRING should actually return the FBSTRING
     structure (not a pointer to one):
@@ -106,6 +103,9 @@
     - FPU won't be set to 64-bit internally in x86..
 
 *** *** *** *** ***
+[ ] .stabn can't have args > 65535 (ie: line numbers)
+    - only switching to DWARF2 (ie: too complex) would fix that, let GCC do it..
+
 [ ] add support for functions returning references (reuse "BYREF"), so those can
     be automatically dereferenced - but *NOT* deleted, only non-local data can
     be returned by reference in C++

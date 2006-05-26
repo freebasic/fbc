@@ -2,24 +2,24 @@ Version 0.16 Beta:
 
 [changed]
 - IMPORTANT: due requests, the NOT unary operator behavior in conditional statements is now fully compatible with QB/VB
-  (ie: always bitwise, never logical), and because of that, checking for FALSE boolean results returned by C libraries 
-  or the Windows API cannot anymore been done as "IF NOT SomeFunction( ) THEN ReportError...", "TRUE" is defined as "1" 
+  (ie: always bitwise, never logical), and because of that, checking for FALSE boolean results returned by C libraries
+  or the Windows API cannot anymore been done as "IF NOT SomeFunction( ) THEN ReportError...", "TRUE" is defined as "1"
   in most libraries, not "-1" as in BASIC, so any checks must be changed to: "IF SomeFunction( ) = FALSE THEN ..." (v1c)
-- any non-SHARED, COMMON or EXTERN variable and array declared in the module-level (ie, outside any function) will be 
-  allocated on stack now (that was changed to allow non-constant expressions to be used with variable initializers in 
+- any non-SHARED, COMMON or EXTERN variable and array declared in the module-level (ie, outside any function) will be
+  allocated on stack now (that was changed to allow non-constant expressions to be used with variable initializers in
   the module-level), to declare static symbols, see the next item (v1c)
 - STATIC can now be used in the module-level too (v1c)
 - local arrays with unknown dimensions (ie: DIM array()) can now be declared inside functions too (v1c)
 - floating-point literal numbers in scientific notation without an integer and fractional part cannot be written as
-  ".E###" anymore, they must be changed to "0.E###" due ambiguities with macro substituions and .'s been used in WITH 
+  ".E###" anymore, they must be changed to "0.E###" due ambiguities with macro substituions and .'s been used in WITH
   and (later) to access objects' member fields (v1c)
-- internal symbols mangling, if using DLL's that contain exported variables or overloaded functions and that were 
+- internal symbols mangling, if using DLL's that contain exported variables or overloaded functions and that were
   compiled by older versions, rebuilt the DLL's also (v1c)
 - when aborting because run-time errors, the name of the module that caused the error will be printed too (v1c)
 - runtime error checking removed from getmouse() and getjoystick() (v1c)
 - the size of argument-less #defines and macro expansion texts can be now up to 2GB (v1c)
 - parentheses ()'s aren't anymore optional with arg-less macros, to allow them to be passed as parameters to other macros (v1c)
-- GOSUB and ON expr GOSUB cannot be used inside SUB's/FUNCTION's anymore (GOTO will be always allowed), RETURN without 
+- GOSUB and ON expr GOSUB cannot be used inside SUB's/FUNCTION's anymore (GOTO will be always allowed), RETURN without
   expression can now be used as a shortcut to EXIT SUB|FUNCTION (v1c)
 - UDT parameters (TYPE's) can now be optional too (v1c)
 - any complex expression can be used in optional parameters, not constants only (v1c)
@@ -31,10 +31,11 @@ Version 0.16 Beta:
 - maximum number of array dimensions changed to 8 to speed up allocation of arrays with unknown dimensions (v1c)
 - more restrict pointer resolution in overloaded functions (v1c)
 - the Allegro headers were replaced by machine translated ones, END_OF_MAIN() must be used now in Linux (v1c)
-- bad compound statements are better handled now, new-lines won't be ignored anymore neither multiple error 
+- bad compound statements are better handled now, new-lines won't be ignored anymore neither multiple error
   messages will be shown (v1c)
 - for CONST's with explicit types, no inference will be done, the r-side values will be converted instead (v1c)
 - the GLFW include file was retranslated using the latest C header (v1c)
+- PRINT in Linux won't convert characters over 127 to UTF-8, allowing UTF-8 string to be printed too (v1c)
 
 [added]
 - name spaces blocks (NAMESPACE ID ... END NAMESPACE), that can be nested, imported, etc (v1c)
@@ -78,13 +79,14 @@ Version 0.16 Beta:
 - ENUM's can now be used in explicitly typed CONST's (v1c)
 - ENUM elements can now be referenced as: enumid.elmentid (v1c)
 - spidermonkey (a JavaScript embedded interpreter) headers and import library (v1c)
+- multi-line comments: /' this is a comment '/ (v1c)
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)
-- "any ptr"'s weren't been taken as "byte ptr"'s when pointer arithmetics were used (v1c) 
+- "any ptr"'s weren't been taken as "byte ptr"'s when pointer arithmetics were used (v1c)
 - using the -exx option with too complex expressions in src files with too many functions would generate bad code (v1c)
 - PUT ALPHA had a problem with sprites having an odd width (lillo)
-- if the size of the destine string was unknown when assigning an ASCII to a WSTRING string, nothing would be copied (v1c) 
+- if the size of the destine string was unknown when assigning an ASCII to a WSTRING string, nothing would be copied (v1c)
 - bitfields couldn't be used in SELECT CASE (v1c)
 - address of null pointers couldn't be taken if sources were compiled with null-pointer checking on (-exx) (v1c)
 - SETDATE string to integer conversion was incorrect, making it always fail (DrV)
@@ -143,7 +145,7 @@ Version 0.15 Beta:
 
 [changed]
 - IMPORTANT: all the Windows API headers (under inc/win) were re-translated using the h2bi
-  tool, the old sources are NOT compatible with those headers because the new ones use the 
+  tool, the old sources are NOT compatible with those headers because the new ones use the
   C-like standard (pointers instead of BYREF arguments, etc). If you really want to still
   using the old headers, remove the inc/win dir and copy the old one over it - the old
   headers won't be anymore updated though (v1c)
@@ -163,17 +165,17 @@ Version 0.15 Beta:
 - level of indirection checking when assigning or passing pointers (v1c)
 - All DOS console I/O now depends on BIOS or direct memory access (mjs)
 - libfb_gfx_data.c is now created from the "original" data files (mjs)
-- speed-up of DOS console output due to direct memory accesses (mjs) 
+- speed-up of DOS console output due to direct memory accesses (mjs)
 - The "CLOSE WINDOW" key code is now changed to ALT+F4 (mjs)
 - all SDL headers were exchanged by machine translated ones (v1c)
 - the BASS and BASSMOD headers were exchanged by machine translated ones (v1c)
 
 [added]
 - the WSTRING type, for unicode strings - like ZSTRING's, they can't be variable-length (v1c)
-- UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE support for source and headers files 
+- UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE support for source and headers files
   (they can be freely mixed, also with ASCII files) (v1c)
 - OPEN CONS, OPEN LPT, OPEN ERR, OPEN PIPE (OPEN "PIPE:" won't work), OPEN SCRN (mjs)
-- the ENCODING "fmt" option to OPEN, when mode is INPUT, OUTPUT or APPEND, the "fmt" can be: 
+- the ENCODING "fmt" option to OPEN, when mode is INPUT, OUTPUT or APPEND, the "fmt" can be:
   "utf-8", "utf-16", "utf-32" or "ascii" (v1c)
 - LPRINT support (mjs)
 - LPOS(n) (mjs)
@@ -196,7 +198,7 @@ Version 0.15 Beta:
 - compiler is now much more strict at reporting implicit numeric conversions (lillo)
 - programs compiled with -e will check if the host CPU is at least the one specified in -arch (lillo)
 - FB extension library, the list of functions includes:
-  DATESERIAL, DATEVALUE, YEAR, MONTH, DAY, WEEKDAY, TIMESERIAL, TIMEVALUE, HOUR, MINUTE, 
+  DATESERIAL, DATEVALUE, YEAR, MONTH, DAY, WEEKDAY, TIMESERIAL, TIMEVALUE, HOUR, MINUTE,
   SECOND, NOW, MONTHNAME, WEEKDAYNAME, DATEADD, DATEPART, DATEDIFF,
   FORMAT (mjs)
 - the & operator, allowing to concatenate strings, automatically converting types to string if needed (lillo)
@@ -301,18 +303,18 @@ Version 0.14 Beta:
   must be changed to "p += 1"
 - to make BYVAL AS STRING arguments more safe, as they are allowed in FB functions since version 0.13, if not
   passing pointers or numeric values such as NULL or 0, the BYVAL modifier will have to be used now (v1c)
-- _main will be always the entry-point from now, to be more compatible with statically linked C libraries and 
-  to remove the DOS and Xbox temporary object creation "hack". Because of that, if compiling and not linking 
-  objects files, the -m command-line option must be used to tell the compiler which module will be the main 
+- _main will be always the entry-point from now, to be more compatible with statically linked C libraries and
+  to remove the DOS and Xbox temporary object creation "hack". Because of that, if compiling and not linking
+  objects files, the -m command-line option must be used to tell the compiler which module will be the main
   one (v1c)
-- the DllMain function is not needed anymore in the Windows version, just declare the exports and remove the 
+- the DllMain function is not needed anymore in the Windows version, just declare the exports and remove the
   DllMain function, it won't be ever called (v1c)
-- the module-level code of non-main modules will now be always executed (before the main module), no REDIM's or 
-  such will be missed as it used to happen in QB. Implicit module initialization can be done now as in Pascal, 
+- the module-level code of non-main modules will now be always executed (before the main module), no REDIM's or
+  such will be missed as it used to happen in QB. Implicit module initialization can be done now as in Pascal,
   just add any code to the module-level scope (ie: outside any function) (v1c)
 - the array descriptors had to be modified, if you have any DLL's compiled with old versions, please recompile
   them with this new version if passing arrays by descriptor to functions (v1c)
-- the intrinsic functions SIN, COS, TAN, ATN, SQR, INT and ATAN2 are now implemented as inline and will be 
+- the intrinsic functions SIN, COS, TAN, ATN, SQR, INT and ATAN2 are now implemented as inline and will be
   evaluated at compile-time when constants are used as parameters (v1c)
 - macro text will be expanded on comments emited when the -g command-line option is used (v1c)
 - multiple strings concatenation such as "a = b + c + d + ..." will be converted to
@@ -332,7 +334,7 @@ Version 0.14 Beta:
 - Printing PAD's now works exactly the same as on QB(X) with console/file/redirected console (mjs)
 - MULTIKEY, GETMOUSE and SETMOUSE will now also work in plain console text mode (lillo)
 - user defined type (UDT) assignaments are now done with inline code (v1c)
-- the Windows version of FBC can now compile and link DOS, Linux and Xbox applications if the proper cross-compiling 
+- the Windows version of FBC can now compile and link DOS, Linux and Xbox applications if the proper cross-compiling
   versions of the GNU binutils are available and if all the libraries needed are installed (v1c)
 - #UNDEF will now work with any symbol kind, not defines only (v1c)
 

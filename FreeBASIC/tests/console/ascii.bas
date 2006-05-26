@@ -1,7 +1,7 @@
 ''
 ''	Test app for console mode
 ''
-''	Draws the full ascii charset on the screen
+''	Draws the first 127 ascii characters on the screen
 
 option explicit
 
@@ -20,7 +20,7 @@ option explicit
 	draw_rect 1, 1, w, h
 	
 	for y = 0 to 15
-		for x = 0 to 15
+		for x = 0 to 7
 			locate ((h - 16) / 2) + y + 1, ((w - 16) / 2) + x + 1
 			print chr((x * 16) + y);
 		next x
