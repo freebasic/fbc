@@ -582,7 +582,7 @@ declare function 	cAssignment				( _
 												byval assgexpr as ASTNODE ptr _
 											) as integer
 
-declare function 	hAssignFunctResult		( _
+declare function 	cAssignFunctResult		( _
 												byval proc as FBSYMBOL ptr _
 											) as integer
 

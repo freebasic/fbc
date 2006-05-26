@@ -28,9 +28,8 @@ const FB_MAXPRAGMARECLEVEL	= 8
 
 const FB_MAXINCPATHS		= 16
 
-const FB_MAXPROCARGS		= 64
 const FB_MAXARRAYDIMS		= 8
-const FB_MAXDEFINEARGS		= FB_MAXPROCARGS \ 2
+const FB_MAXDEFINEARGS		= 32
 
 const FB_MAXNAMELEN			= 64
 const FB_MAXLITLEN			= 1024				'' literal strings max length

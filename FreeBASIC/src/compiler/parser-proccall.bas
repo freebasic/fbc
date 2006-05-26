@@ -30,8 +30,10 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function hAssignFunctResult( byval proc as FBSYMBOL ptr _
-						   ) as integer static
+function cAssignFunctResult _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as integer static
 
     dim as FBSYMBOL ptr s
     dim as ASTNODE ptr assg, expr
@@ -40,8 +42,13 @@ function hAssignFunctResult( byval proc as FBSYMBOL ptr _
 
     s = symbGetProcResult( proc )
     if( s = NULL ) then
-    	hReportError( FB_ERRMSG_SYNTAXERROR )
-    	exit function
+    	if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+    		exit function
+    	else
+    		'' error recovery: skip stmt, return
+    		hSkipStmt( )
+    		return TRUE
+    	end if
     end if
 
     '' set the context symbol to allow taking the address of overloaded
@@ -50,8 +57,14 @@ function hAssignFunctResult( byval proc as FBSYMBOL ptr _
 
 	'' Expression
 	if( cExpression( expr ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
-		exit function
+		env.ctxsym = NULL
+		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+			exit function
+		else
+    		'' error recovery: skip stmt, return
+    		hSkipStmt( )
+    		return TRUE
+    	end if
 	end if
 
 	env.ctxsym = NULL
@@ -68,8 +81,12 @@ function hAssignFunctResult( byval proc as FBSYMBOL ptr _
 
     assg = astNewASSIGN( assg, expr )
     if( assg = NULL ) then
-    	hReportError( FB_ERRMSG_INVALIDDATATYPES )
-    	exit function
+    	astDelTree( expr )
+    	if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+    		exit function
+    	else
+    		return TRUE
+    	end if
     end if
 
     astAdd( assg )
@@ -79,13 +96,15 @@ function hAssignFunctResult( byval proc as FBSYMBOL ptr _
 end function
 
 '':::::
-function cProcCall( byval sym as FBSYMBOL ptr, _
-					byref procexpr as ASTNODE ptr, _
-					byval ptrexpr as ASTNODE ptr, _
-					byval checkprnts as integer = FALSE _
-				   ) as integer
+function cProcCall _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byref procexpr as ASTNODE ptr, _
+		byval ptrexpr as ASTNODE ptr, _
+		byval checkprnts as integer = FALSE _
+	) as integer
 
-	dim as integer typ, isfuncptr, doflush
+	dim as integer dtype, isfuncptr, doflush
 	dim as FBSYMBOL ptr subtype, reslabel
 
 	function = FALSE
@@ -105,8 +124,9 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 	if( checkprnts ) then
 		'' '('
 		if( hMatch( CHAR_LPRNT ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDLPRNT )
-			exit function
+			if( hReportError( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
+				exit function
+			end if
 		end if
 
 	end if
@@ -126,32 +146,42 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 		'' --parent cnt
 		env.prntcnt -= 1
 
-		if( (hMatch( CHAR_RPRNT ) = FALSE) or _
-			(env.prntcnt > 0) ) then
-			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
-			exit function
+		if( hMatch( CHAR_RPRNT ) = FALSE ) then
+			if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until next ')'
+				hSkipUntil( CHAR_RPRNT, TRUE )
+			end if
+
+		elseif( env.prntcnt > 0 ) then
+			'' error recovery: skip until all ')'s are found
+			do while( env.prntcnt > 0 )
+				hSkipUntil( CHAR_RPRNT, TRUE )
+				env.prntcnt -= 1
+			loop
 		end if
 
 	end if
 
 	env.prntopt	= FALSE
 
-	typ = symbGetType( sym )
+	dtype = symbGetType( sym )
 
 	'' if function returns a pointer, check for field deref
 	doflush = TRUE
-	if( typ >= FB_DATATYPE_POINTER ) then
+	if( dtype >= FB_DATATYPE_POINTER ) then
     	subtype = symbGetSubType( sym )
 
 		isfuncptr = FALSE
    		if( lexGetToken( ) = CHAR_LPRNT ) then
-   			if( typ = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
+   			if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
 				isfuncptr = TRUE
    			end if
    		end if
 
 		'' FuncPtrOrDerefFields?
-		if( cFuncPtrOrDerefFields( typ, subtype, _
+		if( cFuncPtrOrDerefFields( dtype, subtype, _
 								   procexpr, isfuncptr, _
 								   TRUE ) = FALSE ) then
 			'' error?
@@ -162,12 +192,12 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 		'' type changed
 		else
 			doflush = FALSE
-			typ = astGetDataType( procexpr )
+			dtype = astGetDataType( procexpr )
 
 			'' if it stills a function, unless type = string (ie: implicit pointer),
 			'' flush it, as the assignment would be invalid
 			if( astIsFUNCT( procexpr ) ) then
-				if( typ <> FB_DATATYPE_STRING ) then
+				if( dtype <> FB_DATATYPE_STRING ) then
 					doflush = TRUE
 				end if
 			end if
@@ -181,17 +211,29 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 	''
 	if( doflush ) then
 		'' can proc's result be skipped?
-		if( typ <> FB_DATATYPE_VOID ) then
-			if( symbGetDataClass( typ ) <> FB_DATACLASS_INTEGER ) then
-				hReportError( FB_ERRMSG_VARIABLEREQUIRED )
-				exit function
+		if( dtype <> FB_DATATYPE_VOID ) then
+			if( symbGetDataClass( dtype ) <> FB_DATACLASS_INTEGER ) then
+				if( hReportError( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: skip
+					astDelTree( procexpr )
+					procexpr = NULL
+					return TRUE
+				end if
 
     		'' CHAR and WCHAR literals are also from the INTEGER class
     		else
-    			select case typ
+    			select case dtype
     			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-					hReportError( FB_ERRMSG_VARIABLEREQUIRED )
-					exit function
+					if( hReportError( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: skip
+						astDelTree( procexpr )
+						procexpr = NULL
+						return TRUE
+					end if
 				end select
 			end if
 		end if
@@ -208,7 +250,7 @@ function cProcCall( byval sym as FBSYMBOL ptr, _
 
 				function = rtlErrorCheck( procexpr, reslabel, lexLineNum( ) )
 				procexpr = NULL
-				exit function
+				return TRUE
 			end if
 		end if
 
@@ -251,19 +293,27 @@ function cProcCallOrAssign as integer
 
 		s = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
 		if( s = NULL ) then
-			hReportError( FB_ERRMSG_PROCNOTDECLARED )
-			exit function
+			if( hReportError( FB_ERRMSG_PROCNOTDECLARED ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip stmt, return
+				hSkipStmt( )
+				return TRUE
+			end if
 		end if
 
 		lexSkipToken( )
+
 		if( cProcCall( s, expr, NULL, TRUE ) = FALSE ) then
 			exit function
 		end if
 
 		'' can't assign deref'ed functions with CALL's
 		if( expr <> NULL ) then
-			hReportError( FB_ERRMSG_SYNTAXERROR )
-			exit function
+			astDelTree( expr )
+			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				exit function
+			end if
 		end if
 
 		return TRUE
@@ -305,11 +355,16 @@ function cProcCallOrAssign as integer
 				else
                		'' check if name is valid (or if overloaded)
 					if( symbIsProcOverloadOf( env.currproc, s ) = FALSE ) then
-						hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB, TRUE )
-						exit function
+						if( hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB, TRUE ) = FALSE ) then
+							exit function
+						else
+							'' error recovery: skip stmt, return
+							hSkipStmt( )
+							return TRUE
+						end if
 					end if
 
-        			return hAssignFunctResult( env.currproc )
+        			return cAssignFunctResult( env.currproc )
 				end if
 
     		'' variable?
@@ -330,16 +385,21 @@ function cProcCallOrAssign as integer
 	'' FUNCTION?
 	case FB_TK_FUNCTION
 		'' '='?
-		if( lexGetLookAhead(1) = FB_TK_ASSIGN ) then
+		if( lexGetLookAhead( 1 ) = FB_TK_ASSIGN ) then
 			if( fbIsModLevel( ) ) then
-				hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB )
-				exit function
+				if( hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: skip stmt, return
+					hSkipStmt( )
+					return TRUE
+				end if
 			end if
 
 			lexSkipToken( )
 			lexSkipToken( )
 
-        	return hAssignFunctResult( env.currproc )
+        	return cAssignFunctResult( env.currproc )
 		end if
 	end select
 

@@ -2190,13 +2190,15 @@ function rtlToWstr( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 end function
 
 '':::::
-function rtlStrToVal( byval expr as ASTNODE ptr, _
-					  byval to_dtype as integer _
-					) as ASTNODE ptr static
+function rtlStrToVal _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval to_dtype as integer _
+	) as ASTNODE ptr static
 
-    dim as ASTNODE ptr proc, exprTB(0)
-    dim as integer modeTB(0)
+    dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f, s
+    dim as FB_CALL_ARG arg
 
     function = NULL
 
@@ -2227,9 +2229,10 @@ function rtlStrToVal( byval expr as ASTNODE ptr, _
 	end select
 
 	'' resolve zstring or wstring
-	exprTB(0) = expr
-	modeTB(0) = INVALID
-	f = symbFindClosestOvlProc( f, 1, exprTB(), modeTB() )
+	arg.expr = expr
+	arg.mode = INVALID
+	arg.next = NULL
+	f = symbFindClosestOvlProc( f, 1, @arg )
 
     proc = astNewCALL( f )
 

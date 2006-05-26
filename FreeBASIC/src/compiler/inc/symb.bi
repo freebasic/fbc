@@ -269,6 +269,12 @@ type FBS_CONST
 end type
 
 ''
+type FB_CALL_ARG								'' used by overloaded function calls
+	expr			as ASTNODE_ ptr
+	mode			as FB_PARAMMODE
+	next			as FB_CALL_ARG ptr
+end type
+
 type FBS_PARAM
 	mode			as FB_PARAMMODE
 	suffix			as integer					'' QB quirk..
@@ -528,8 +534,7 @@ declare function 	symbFindOverloadProc	( _
 declare function 	symbFindClosestOvlProc	( _
 												byval proc as FBSYMBOL ptr, _
 					   		    			  	byval params as integer, _
-					   		    			  	exprTB() as ASTNODE ptr, _
-					   		    			  	modeTB() as integer _
+												byval arg_head as FB_CALL_ARG ptr _
 											) as FBSYMBOL ptr
 
 declare function 	symbLookupUDTElm		( _

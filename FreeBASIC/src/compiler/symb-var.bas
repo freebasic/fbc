@@ -403,7 +403,7 @@ function symbAddTempVar _
 		byval checkstatic as integer = TRUE _
 	) as FBSYMBOL ptr static
 
-	static as zstring * FB_MAXINTNAMELEN+1 id
+	static as zstring * FB_MAXNAMELEN+1 id
 	dim as integer attrib
     dim as FBSYMBOL ptr s
     dim as FBARRAYDIM dTB(0)

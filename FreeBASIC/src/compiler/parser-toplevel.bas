@@ -30,18 +30,27 @@ option escape
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
 
-declare sub		 parserCompoundStmtInit		( )
-declare sub		 parserCompoundStmtEnd		( )
+declare sub		parserCompoundStmtInit		( )
+
+declare sub		parserCompoundStmtEnd		( )
+
+declare sub		parserProcCallInit			( )
+
+declare sub		parserProcCallEnd			( )
 
 '':::::
 sub	parserInit( )
 
 	parserCompoundStmtInit( )
 
+	parserProcCallInit( )
+
 end sub
 
 '':::::
 sub	parserEnd( )
+
+	parserProcCallEnd( )
 
 	parserCompoundStmtEnd( )
 
@@ -162,13 +171,7 @@ sub hSkipUntil _
 			if( prntcnt > 0 ) then
 				prntcnt -= 1
 			else
-				'' skip until ',' or ')'?
-				select case token
-				case CHAR_COMMA
-					exit sub
-				case CHAR_RPRNT, CHAR_RBRACE
-					exit do
-				end select
+				exit do
 			end if
 
 		'' ','?
@@ -194,7 +197,9 @@ sub hSkipUntil _
 
 	''
 	if( doeat ) then
-		lexSkipToken( flags )
+		if( token = lexGetToken( flags ) ) then
+			lexSkipToken( flags )
+		end if
 	end if
 
 end sub

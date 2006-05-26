@@ -31,8 +31,6 @@ option escape
 #include once "inc\ast.bi"
 #include once "inc\emit.bi"
 
-const FBPREFIX_PROCRES = "{fbpr}"
-
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' add
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -647,7 +645,6 @@ function symbAddProcResultParam _
 		byval proc as FBSYMBOL ptr _
 	) as FBSYMBOL ptr static
 
-    static as zstring * FB_MAXINTNAMELEN+1 id
     dim as FBARRAYDIM dTB(0)
     dim as FBSYMBOL ptr s
 
@@ -661,10 +658,7 @@ function symbAddProcResultParam _
 		return NULL
 	end if
 
-	id = FBPREFIX_PROCRES
-	id += *proc->name
-
-    s = symbAddVarEx( @id, NULL, _
+    s = symbAddVarEx( NULL, NULL, _
     				  FB_DATATYPE_POINTER+FB_DATATYPE_USERDEF, proc->subtype, 0, 0, _
     				  0, dTB(), FB_SYMBATTRIB_PARAMBYVAL, _
     				  TRUE, TRUE )
@@ -686,7 +680,6 @@ function symbAddProcResult _
 		byval proc as FBSYMBOL ptr _
 	) as FBSYMBOL ptr static
 
-	static as zstring * FB_MAXINTNAMELEN+1 id
 	dim as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr s, subtype
 	dim as integer dtype
@@ -699,10 +692,7 @@ function symbAddProcResult _
 		end if
 	end if
 
-	id = FBPREFIX_PROCRES
-	id += *proc->name
-
-	s = symbAddVarEx( @id, NULL, proc->typ, proc->subtype, 0, 0, 0, _
+	s = symbAddVarEx( NULL, NULL, proc->typ, proc->subtype, 0, 0, 0, _
 					  dTB(), FB_SYMBATTRIB_FUNCRESULT, TRUE, TRUE )
 
 	if( proc->proc.ext = NULL ) then
@@ -1121,12 +1111,12 @@ function symbFindClosestOvlProc _
 	( _
 		byval prochead as FBSYMBOL ptr, _
 		byval args as integer, _
-		exprTB() as ASTNODE ptr, _
-		modeTB() as integer _
+		byval arg_head as FB_CALL_ARG ptr _
 	) as FBSYMBOL ptr static
 
 	dim as FBSYMBOL ptr proc, ovlproc, param
 	dim as integer i, argmatches, matches, maxmatches, ambcnt
+	dim as FB_CALL_ARG ptr arg
 
 	ovlproc = NULL
 	maxmatches = 0
@@ -1147,9 +1137,10 @@ function symbFindClosestOvlProc _
 			matches = 0
 
 			'' for each arg..
+			arg = arg_head
 			for i = 0 to args-1
 
-				argmatches = hCheckOvlParam( param, exprTB(i), modeTB(i) )
+				argmatches = hCheckOvlParam( param, arg->expr, arg->mode )
 				if( argmatches = 0 ) then
 					matches = 0
 					exit for
@@ -1158,6 +1149,7 @@ function symbFindClosestOvlProc _
 
                	'' next param
 				param = symbGetProcPrevParam( proc, param )
+				arg = arg->next
 			next
 
 			'' fewer params? check if the ones missing are optional
@@ -1281,8 +1273,6 @@ function symbGetProcResult _
 		byval proc as FBSYMBOL ptr _
 	) as FBSYMBOL ptr static
 
-	static as zstring * FB_MAXINTNAMELEN+1 id
-
 	if( proc = NULL ) then
 		return NULL
 	end if
@@ -1344,7 +1334,7 @@ function symbMangleFunctionPtr _
 		byval mode as integer _
 	) as zstring ptr static
 
-    static as zstring * FB_MAXINTNAMELEN+1 id
+    static as string id
     dim as FBSYMBOL ptr param
     dim as integer i
 
@@ -1378,7 +1368,7 @@ function symbMangleFunctionPtr _
 
     id += hex( mode )
 
-	function = @id
+	function = strptr( id )
 
 end function
 

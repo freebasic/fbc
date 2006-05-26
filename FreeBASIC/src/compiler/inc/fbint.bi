@@ -24,8 +24,7 @@
 
 #include once "inc\fb.bi"
 
-const FB_MAXINTNAMELEN		= FB_MAXNAMELEN + 1 + 1 + 2 + 1 + _
-							  (FB_MAXPROCARGS * len( integer ))		'' mangling..
+const FB_MAXINTNAMELEN		= 1 + FB_MAXNAMELEN + 1 + 1 + 2
 
 const FB_MAXINTLITLEN		= FB_MAXLITLEN + 32
 

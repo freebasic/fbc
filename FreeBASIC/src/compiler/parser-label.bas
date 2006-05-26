@@ -46,8 +46,12 @@ function cLabel as integer
 		if( lexGetType( ) = FB_DATATYPE_INTEGER ) then
 			l = symbAddLabel( lexGetText( ), TRUE, TRUE )
 			if( l = NULL ) then
-				hReportError( FB_ERRMSG_DUPDEFINITION )
-				exit function
+				if( hReportError( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: skip stmt
+					hSkipStmt( )
+				end if
 			else
 				lexSkipToken( )
 			end if
@@ -75,11 +79,12 @@ function cLabel as integer
 
 			l = symbAddLabel( lexGetText( ), TRUE, TRUE )
 			if( l = NULL ) then
-				hReportError( FB_ERRMSG_DUPDEFINITION )
-				exit function
-			else
-				lexSkipToken( )
+				if( hReportError( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+					exit function
+				end if
 			end if
+
+			lexSkipToken( )
 
 			'' skip ':'
 			lexSkipToken( )

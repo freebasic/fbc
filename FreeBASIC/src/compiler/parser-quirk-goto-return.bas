@@ -49,7 +49,7 @@ private function hFuncReturn( ) as integer
 	end select
 
 	if( checkexpr ) then
-		if( hAssignFunctResult( env.currproc ) = FALSE ) then
+		if( cAssignFunctResult( env.currproc ) = FALSE ) then
 			exit function
 		end if
 	end if

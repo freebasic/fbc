@@ -42,6 +42,8 @@ type FB_MANGLECTX
 	cnt			as integer
 end type
 
+const FB_INITMANGARGS = 96
+
 
 declare function 	hDoCppMangling 			( _
 												byval sym as FBSYMBOL ptr, _
@@ -98,9 +100,9 @@ declare function 	hGetProcParamsTypeCode 	( _
 '':::::
 sub symbMangleInit( )
 
-	hashNew( @ctx.hashtb, FB_MAXPROCARGS )
+	hashNew( @ctx.hashtb, FB_INITMANGARGS )
 
-	listNew( @ctx.list, FB_MAXPROCARGS, len( FB_MANGLEABBR ), LIST_FLAGS_NOCLEAR )
+	listNew( @ctx.list, FB_INITMANGARGS, len( FB_MANGLEABBR ), LIST_FLAGS_NOCLEAR )
 
 	ctx.cnt = 0
 

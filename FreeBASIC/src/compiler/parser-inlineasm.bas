@@ -53,6 +53,7 @@ function cAsmCode as integer static
 	dim as FBSYMBOL ptr sym
 	dim as FBSYMCHAIN ptr chain_
 	dim as FB_ASMTOK ptr head, tail, node
+	dim as integer doskip
 
 	function = FALSE
 
@@ -67,6 +68,7 @@ function cAsmCode as integer static
 
 		text = *lexGetText( )
 		sym = NULL
+		doskip = FALSE
 
 		if( lexGetClass( LEXCHECK_NOWHITESPC ) = FB_TKCLASS_IDENTIFIER ) then
 			if( emitIsKeyword( text ) = FALSE ) then
@@ -108,31 +110,36 @@ function cAsmCode as integer static
 			if( lexGetToken( LEXCHECK_NOWHITESPC ) = FB_TK_FUNCTION ) then
     			sym = symbGetProcResult( env.currproc )
     			if( sym = NULL ) then
-    				hReportError( FB_ERRMSG_SYNTAXERROR )
-    				exit function
+    				if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+    					exit function
+    				else
+    					doskip = TRUE
+    				end if
     			end if
 			end if
 
 		end if
 
 		''
-		node = listNewNode( @env.asmtoklist )
-		if( tail <> NULL ) then
-			tail->next = node
-		else
-			head = node
-		end if
-		tail = node
+		if( doskip = FALSE ) then
+			node = listNewNode( @env.asmtoklist )
+			if( tail <> NULL ) then
+				tail->next = node
+			else
+				head = node
+			end if
+			tail = node
 
-		if( sym <> NULL ) then
-            node->type = FB_ASMTOK_SYMB
-            node->sym = sym
-		else
-			node->type = FB_ASMTOK_TEXT
-			node->text = ZstrAllocate( len( text ) )
-			*node->text = text
+			if( sym <> NULL ) then
+            	node->type = FB_ASMTOK_SYMB
+            	node->sym = sym
+			else
+				node->type = FB_ASMTOK_TEXT
+				node->text = ZstrAllocate( len( text ) )
+				*node->text = text
+			end if
+			node->next = NULL
 		end if
-		node->next = NULL
 
 		lexSkipToken( LEXCHECK_NOWHITESPC )
 	loop
@@ -170,8 +177,12 @@ function cAsmBlock as integer
 	issingleline = FALSE
 	if( cComment( ) ) then
 		if( cStmtSeparator( ) = FALSE ) then
-    		hReportError( FB_ERRMSG_EXPECTEDEOL )
-    		exit function
+    		if( hReportError( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: skip until next line
+    			hSkipUntil( FB_TK_EOL, TRUE )
+    		end if
 		end if
 	else
 		if( cStmtSeparator( ) = FALSE ) then
@@ -203,8 +214,12 @@ function cAsmBlock as integer
 			exit do
 
 		case else
-    		hReportError( FB_ERRMSG_EXPECTEDEOL )
-    		exit function
+    		if( hReportError( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: skip until next line
+    			hSkipUntil( FB_TK_EOL, TRUE )
+    		end if
 		end select
 
 		if( issingleline = FALSE ) then
@@ -215,14 +230,16 @@ function cAsmBlock as integer
 	if( issingleline = FALSE ) then
 		'' END ASM
 		if( hMatch( FB_TK_END ) = FALSE ) then
-    		hReportError( FB_ERRMSG_EXPECTEDENDASM )
-    		exit function
+    		if( hReportError( FB_ERRMSG_EXPECTEDENDASM ) = FALSE ) then
+    			exit function
+    		end if
+
 		elseif( hMatch( FB_TK_ASM ) = FALSE ) then
-    		hReportError( FB_ERRMSG_EXPECTEDENDASM )
-    		exit function
+    		if( hReportError( FB_ERRMSG_EXPECTEDENDASM ) = FALSE ) then
+    			exit function
+    		end if
 		end if
 	end if
-
 
 	function = TRUE
 
