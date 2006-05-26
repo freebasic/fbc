@@ -54,7 +54,7 @@ type z_stream_s
 	state as internal_state ptr
 	zalloc as alloc_func
 	zfree as free_func
-	opaque as voidpf
+	opaque_ as voidpf
 	data_type as integer
 	adler as uLong
 	reserved as uLong
