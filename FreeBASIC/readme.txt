@@ -1,6 +1,6 @@
 
   FreeBASIC - A multi-platform 32-bit BASIC Compiler
-  Copyright (C) 2004-2005 Andre Victor T. Vicentini (av1ctor[at]yahoo.com.br)
+  Copyright (C) 2004-2006 Andre Victor T. Vicentini (av1ctor[at]yahoo.com.br)
 
 
 License:
@@ -276,6 +276,15 @@ Most Important Features:
       GNU binutils. The compiler is written in 100% FreeBASIC code (that's it,
       FreeBASIC compiles itself.), what makes it simple to be bootstrapped as it
       doesn't depend on non-portable tools.
+
+  o Multi-threading:
+
+     - The run-time library comes in single- and multi-threaded versions, so the
+       mutexes/locks are only used if the MT version is selected.
+
+     - The MT version is automatically select when thread functions like 
+       CreateThread are used. It can also be selected manually, passing the 
+       -mt option when compiling.
 
   o Unicode support:
 
