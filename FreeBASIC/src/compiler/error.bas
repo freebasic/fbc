@@ -261,9 +261,11 @@ function hReportErrorEx _
     end if
 
 	if( linenum = 0 ) then
-		'' only one error per stmt
-		if( env.stmtcnt = errctx.laststmt ) then
-			return TRUE
+		if( env.clopt.showsusperrors = FALSE ) then
+			'' only one error per stmt
+			if( env.stmtcnt = errctx.laststmt ) then
+				return TRUE
+			end if
 		end if
 
 		linenum = lexLineNum( )

@@ -123,10 +123,7 @@ function cLine as integer
 			exit function
 		else
 			'' error recovery: skip until EOL
-			hSkipStmt( )
-			if( lexGetToken( ) = FB_TK_EOL ) then
-				lexSkipToken( )
-			end if
+			hSkipUntil( FB_TK_EOL, TRUE )
 		end if
 
 		function = TRUE
@@ -154,6 +151,7 @@ sub hSkipUntil _
 			exit do
 
 		case FB_TK_STATSEPCHAR, FB_TK_COMMENTCHAR, FB_TK_REM
+			'' anything but EOL? exit..
 			if( token <> FB_TK_EOL ) then
 				exit do
 			end if
@@ -166,12 +164,24 @@ sub hSkipUntil _
 			prntcnt += 1
 
 		'' ')'?
-		case CHAR_RPRNT, CHAR_RBRACE
+		case CHAR_RPRNT
 			'' inside parentheses?
 			if( prntcnt > 0 ) then
 				prntcnt -= 1
 			else
-				exit do
+				if( token = CHAR_RPRNT ) then
+					exit do
+				end if
+			end if
+
+		case CHAR_RBRACE
+			'' inside braces?
+			if( prntcnt > 0 ) then
+				prntcnt -= 1
+			else
+				if( token = CHAR_RBRACE ) then
+					exit do
+				end if
 			end if
 
 		'' ','?
@@ -195,8 +205,9 @@ sub hSkipUntil _
 		lexSkipToken( flags )
 	loop
 
-	''
+	'' skip token?
 	if( doeat ) then
+		'' same?
 		if( token = lexGetToken( flags ) ) then
 			lexSkipToken( flags )
 		end if
