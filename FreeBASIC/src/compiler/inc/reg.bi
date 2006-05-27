@@ -32,41 +32,65 @@ type REG_FREETB 	as integer
 type REGCLASS
 
 	'' methods
-	ensure						as function ( byval this_ as REGCLASS ptr, _
-								  			  byval vreg as IRVREG ptr, _
-								  			  byval doload as integer = TRUE ) as integer
+	ensure						as function ( _
+												byval this_ as REGCLASS ptr, _
+								  			  	byval vreg as IRVREG ptr, _
+								  			  	byval doload as integer = TRUE _
+								  			) as integer
 
-	allocate					as function ( byval this_ as REGCLASS ptr, _
-											  byval vreg as IRVREG ptr ) as integer
+	allocate					as function ( _
+												byval this_ as REGCLASS ptr, _
+											  	byval vreg as IRVREG ptr _
+											) as integer
 
-	allocateReg					as function ( byval this_ as REGCLASS ptr, _
-								  			  byval r as integer, _
-								  			  byval vreg as IRVREG ptr ) as integer
+	allocateReg					as function ( _
+												byval this_ as REGCLASS ptr, _
+								  			  	byval r as integer, _
+								  			  	byval vreg as IRVREG ptr _
+								  			) as integer
 
-	free						as sub 		( byval this_ as REGCLASS ptr, _
-								  			  byval r as integer )
+	free						as sub 		( _
+												byval this_ as REGCLASS ptr, _
+								  			  	byval r as integer _
+								  			)
 
-	isFree						as function ( byval this_ as REGCLASS ptr, _
-								  			  byval r as integer ) as integer
+	isFree						as function ( _
+												byval this_ as REGCLASS ptr, _
+								  			  	byval r as integer _
+								  			) as integer
 
-	setOwner					as sub 		( byval this_ as REGCLASS ptr, _
-								  			  byval r as integer, _
-								  			  byval vreg as IRVREG ptr )
+	setOwner					as sub 		( _
+												byval this_ as REGCLASS ptr, _
+								  			  	byval r as integer, _
+								  			  	byval vreg as IRVREG ptr _
+								  			)
 
-	getMaxRegs					as function ( byval this_ as REGCLASS ptr ) as integer
+	getMaxRegs					as function ( _
+												byval this_ as REGCLASS ptr _
+											) as integer
 
-	getFirst					as function ( byval this_ as REGCLASS ptr ) as integer
+	getFirst					as function ( _
+												byval this_ as REGCLASS ptr _
+											) as integer
 
-	getNext						as function ( byval this_ as REGCLASS ptr, _
-								  			  byval r as integer ) as integer
+	getNext						as function ( _
+												byval this_ as REGCLASS ptr, _
+								  			  	byval r as integer _
+								  			) as integer
 
-	getVreg						as function ( byval this_ as REGCLASS ptr, _
-								  			  byval r as integer ) as IRVREG ptr
+	getVreg						as function ( _
+												byval this_ as REGCLASS ptr, _
+								  			  	byval r as integer _
+								  			) as IRVREG ptr
 
-	getRealReg					as function ( byval this_ as REGCLASS ptr, _
-								  			  byval r as integer ) as integer
+	getRealReg					as function ( _
+												byval this_ as REGCLASS ptr, _
+								  			  	byval r as integer _
+								  			) as integer
 
-	dump						as sub		( byval this_ as REGCLASS ptr )
+	dump						as sub		( _
+												byval this_ as REGCLASS ptr _
+											)
 
 	'' private data
 	class 						as integer
@@ -94,10 +118,14 @@ end type
 ''
 ''
 ''
-declare function 	regNewClass			( byval class as integer, _
-										  byval regs as integer, _
-										  byval isstack as integer ) as REGCLASS ptr
+declare function 	regNewClass			( _
+											byval class as integer, _
+										  	byval regs as integer, _
+										  	byval isstack as integer _
+										) as REGCLASS ptr
 
-declare function 	regDelClass			( byval reg as REGCLASS ptr ) as integer
+declare function 	regDelClass			( _
+											byval reg as REGCLASS ptr _
+										) as integer
 
 #endif '' __REG_BI__
