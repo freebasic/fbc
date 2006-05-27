@@ -174,7 +174,7 @@ end type
 		@"Expected 'END SUB'", _
 		@"Expected 'END FUNCTION'", _
 		@"Declaration outside the original namespace", _
-		@"No end of multi-line comment, expected '\\'", _
+		@"No end of multi-line comment, expected \"'\\\"", _
 		@"Too many errors, exiting" _
 	}
 

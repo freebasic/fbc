@@ -1719,7 +1719,7 @@ private sub hMultiLineComment( )
 		select case lexCurrentChar( TRUE )
 		'' EOF?
 		case 0
-			hReportError( FB_ERRMSG_EXPECTEDENDCOMMENT )
+			hReportErrorEx( FB_ERRMSG_EXPECTEDENDCOMMENT, NULL )
 			exit sub
 
 		'' '/'?
