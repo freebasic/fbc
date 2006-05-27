@@ -1709,18 +1709,38 @@ end sub
 '':::::
 '' MultiLineComment	 = '/' ''' . '/' '''
 ''
-private sub hMultiLineComment( )
+private sub hMultiLineComment( ) static
 	dim as integer cnt
+
+	'' skip the last '''
+	lexEatChar( )
 
 	cnt = 0
 	do
-		lexEatChar( )
-
-		select case lexCurrentChar( TRUE )
+		select case as const lexCurrentChar( TRUE )
 		'' EOF?
 		case 0
 			hReportErrorEx( FB_ERRMSG_EXPECTEDENDCOMMENT, NULL )
 			exit sub
+
+		'' EOL?
+		case CHAR_CR
+			lexEatChar( )
+
+			'' CRLF on DOS, LF only on *NIX
+			if( lexCurrentChar( ) = CHAR_LF ) then
+				lexEatChar( )
+			end if
+
+			lex->linenum += 1
+			env.stmtcnt += 1
+
+		'' EOL?
+		case CHAR_LF
+			lexEatChar( )
+
+			lex->linenum += 1
+			env.stmtcnt += 1
 
 		'' '/'?
 		case CHAR_SLASH
@@ -1728,6 +1748,7 @@ private sub hMultiLineComment( )
 
 			'' nested?
 			if( lexCurrentChar( ) = CHAR_APOST ) then
+				lexEatChar( )
 				cnt += 1
 			end if
 
@@ -1737,15 +1758,19 @@ private sub hMultiLineComment( )
 
 			'' end of ml comment?
 			if( lexCurrentChar( ) = CHAR_SLASH ) then
+				lexEatChar( )
+
 				'' not nested?
 				if( cnt = 0 ) then
-					lexEatChar( )
 					exit do
 				end if
 
 				cnt -= 1
 			end if
 
+		'' anything else, skip..
+		case else
+			lexEatChar( )
 		end select
 	loop
 
