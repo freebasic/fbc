@@ -28,10 +28,19 @@ option private
 option escape
 
 #include once "inc\fb.bi"
+#include once "inc\hash.bi"
 #include once "inc\fbc.bi"
 #include once "inc\hlp.bi"
 
-declare sub 	 parseCmd 				( argc as integer, argv() as string )
+declare sub 	fbcInit( )
+declare sub 	fbcEnd 					(  _
+											byval errnum as integer _
+										)
+
+declare sub 	 parseCmd 				( _
+											byref argc as integer, _
+											argv() as string _
+										)
 
 declare sub 	 setDefaultOptions		( )
 declare function processOptions			( ) as integer
@@ -53,10 +62,53 @@ declare sub 	 setCompOptions			( )
 
 
 ''globals
-	dim shared fbc as FBCCTX
+	dim shared as FBCCTX fbc
 
-	dim shared argc as integer
-	dim shared argv(0 to FB_MAXARGS-1) as string
+	dim shared as integer argc
+	dim shared as string argv(0 to FB_MAXARGS-1)
+
+	'' command-line options
+	dim shared as FBC_OPTION optionTb(0 to FBC_OPTS-1) = _
+	{ _
+		( FBC_OPT_E				, @"e"			 ), _
+		( FBC_OPT_EX			, @"ex"          ), _
+		( FBC_OPT_EXX			, @"exx"         ), _
+		( FBC_OPT_MT			, @"mt"          ), _
+		( FBC_OPT_PROFILE		, @"profile"     ), _
+		( FBC_OPT_NOERRLINE		, @"noerrline"   ), _
+		( FBC_OPT_NODEFLIBS		, @"nodeflibs"   ), _
+		( FBC_OPT_EXPORT		, @"export"      ), _
+		( FBC_OPT_NOSTDCALL		, @"nostdcall"   ), _
+		( FBC_OPT_STDCALL		, @"stdcall"     ), _
+		( FBC_OPT_NOUNDERSCORE	, @"nounderscore"), _
+		( FBC_OPT_UNDERSCORE	, @"underscore"  ), _
+		( FBC_OPT_SHOWSUSPERR	, @"showsusperr" ), _
+		( FBC_OPT_ARCH			, @"arch"        ), _
+		( FBC_OPT_DEBUG			, @"g"           ), _
+		( FBC_OPT_COMPILEONLY	, @"c"           ), _
+		( FBC_OPT_SHAREDLIB		, @"dylib"       ), _
+		( FBC_OPT_SHAREDLIB		, @"dll"         ), _
+		( FBC_OPT_STATICLIB		, @"lib"         ), _
+		( FBC_OPT_PRESERVEFILES	, @"r"           ), _
+		( FBC_OPT_VERBOSE		, @"v"           ), _
+		( FBC_OPT_VERSION		, @"version"     ), _
+		( FBC_OPT_OUTPUTNAME	, @"x"           ), _
+		( FBC_OPT_MAINMODULE	, @"m"           ), _
+		( FBC_OPT_MAPFILE		, @"map"         ), _
+		( FBC_OPT_MAXERRORS		, @"maxerr"      ), _
+		( FBC_OPT_WARNLEVEL		, @"w"           ), _
+		( FBC_OPT_LIBPATH		, @"p"           ), _
+		( FBC_OPT_INCPATH		, @"i"           ), _
+		( FBC_OPT_DEFINE		, @"d"           ), _
+		( FBC_OPT_INPFILE		, @"b"           ), _
+		( FBC_OPT_OUTFILE		, @"o"           ), _
+		( FBC_OPT_OBJFILE		, @"a"           ), _
+		( FBC_OPT_LIBFILE		, @"l"           ), _
+		( FBC_OPT_INCLUDE		, @"include"     ) _
+	}
+
+	''
+    fbcInit( )
 
     ''
     setDefaultOptions( )
@@ -66,12 +118,12 @@ declare sub 	 setCompOptions			( )
 
     if( argc = 0 ) then
     	printOptions( )
-    	end 1
+    	fbcEnd( 1 )
     end if
 
     ''
     if( processTargetOptions( ) = FALSE ) then
-    	end 1
+    	fbcEnd( 1 )
     end if
 
     ''
@@ -79,7 +131,7 @@ declare sub 	 setCompOptions			( )
 
     ''
     if( processOptions( ) = FALSE ) then
-    	end 1
+    	fbcEnd( 1 )
     end if
 
     ''
@@ -88,14 +140,14 @@ declare sub 	 setCompOptions			( )
     '' list
     if( listFiles( ) = FALSE ) then
     	printOptions( )
-    	end 1
+    	fbcEnd( 1 )
     end if
 
     ''
     if( fbc.showversion = FALSE ) then
     	if( (fbc.inps = 0) and (fbc.objs = 0) and (fbc.libs = 0) ) then
     		printOptions( )
-    		end 1
+    		fbcEnd( 1 )
     	end if
     end if
 
@@ -105,7 +157,7 @@ declare sub 	 setCompOptions			( )
     	print "Copyright (C) 2004-2006 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)"
     	print
     	if( fbc.showversion ) then
-    		end 0
+    		fbcEnd( 0 )
     	end if
     end if
 
@@ -118,13 +170,13 @@ declare sub 	 setCompOptions			( )
     '' compile
     if( compileFiles( ) = FALSE ) then
     	delFiles( )
-    	end 1
+    	fbcEnd( 1 )
     end if
 
     '' assemble
    	if( assembleFiles( ) = FALSE ) then
    		delFiles( )
-   		end 1
+   		fbcEnd( 1 )
    	end if
 
 	if( fbc.compileonly ) then
@@ -134,29 +186,63 @@ declare sub 	 setCompOptions			( )
     	if( fbc.outtype = FB_OUTTYPE_STATICLIB ) then
     		if( archiveFiles( ) = FALSE ) then
     			delFiles( )
-    			end 1
+    			fbcEnd( 1 )
     		end if
 
     	else
 			'' resource files..
 			if( compileResFiles( ) = FALSE ) then
 				delFiles( )
-				end 1
+				fbcEnd( 1 )
 			end if
 
     		if( linkFiles( ) = FALSE ) then
     			delFiles( )
-    			end 1
+    			fbcEnd( 1 )
     		end if
     	end if
     end if
 
     '' del temps
     if( delFiles( ) = FALSE ) then
-    	end 1
+    	fbcEnd( 1 )
     end if
 
-    end 0
+    fbcEnd( 0 )
+
+''':::::
+sub fbcInit( )
+    dim as integer i
+
+	hashInit( )
+
+	'' create teh cmd-line options hash
+	hashNew( @fbc.opthash, 32, FALSE )
+
+	for i = 0 to FBC_OPTS-1
+		hashAdd( @fbc.opthash, _
+				 optionTb(i).name, _
+				 cast( any ptr, optionTb(i).id ), _
+				 INVALID )
+	next
+
+end sub
+
+''':::::
+sub fbcEnd _
+	(  _
+		byval errnum as integer _
+	)
+
+    '' free the cmd-line options hash
+	hashFree( @fbc.opthash )
+
+	hashEnd( )
+
+	''
+	end errnum
+
+end sub
 
 '':::::
 sub initTarget( )
@@ -637,6 +723,7 @@ end function
 '':::::
 function processOptions( ) as integer
     dim as integer i, value
+    dim as FBC_OPT id
 
 	function = FALSE
 
@@ -653,72 +740,93 @@ function processOptions( ) as integer
 				continue for
 			end if
 
-			select case mid( argv(i), 2 )
-			case "e"
+			id = cast( FBC_OPT, hashLookUp( @fbc.opthash, _
+											strptr( argv(i) ) + 1 ) )
+
+			'' not found?
+			if( id = 0 ) then
+				'' target-dependent options?
+				if( fbc.processOptions( argv(i), argv(i+1) ) = FALSE ) then
+					printInvalidOpt( i )
+					exit function
+				end if
+
+				argv(i) = ""
+				argv(i+1) = ""
+
+				continue for
+			end if
+
+			select case as const id
+			case FBC_OPT_E
 				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
 
 				argv(i) = ""
 
-			case "ex"
+			case FBC_OPT_EX
 				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
 				fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
 
 				argv(i) = ""
 
-			case "exx"
+			case FBC_OPT_EXX
 				fbSetOption( FB_COMPOPT_ERRORCHECK, TRUE )
 				fbSetOption( FB_COMPOPT_RESUMEERROR, TRUE )
 				fbSetOption( FB_COMPOPT_EXTRAERRCHECK, TRUE )
 
 				argv(i) = ""
 
-			case "mt"
+			case FBC_OPT_MT
 				fbSetOption( FB_COMPOPT_MULTITHREADED, TRUE )
 
 				argv(i) = ""
 
-			case "profile"
+			case FBC_OPT_PROFILE
 				fbSetOption( FB_COMPOPT_PROFILE, TRUE )
 
 				argv(i) = ""
 
-			case "noerrline"
+			case FBC_OPT_NOERRLINE
 				fbSetOption( FB_COMPOPT_SHOWERROR, FALSE )
 
 				argv(i) = ""
 
-			case "nodeflibs"
+			case FBC_OPT_NODEFLIBS
 				fbSetOption( FB_COMPOPT_NODEFLIBS, TRUE )
 
 				argv(i) = ""
 
-			case "export"
+			case FBC_OPT_EXPORT
 				fbSetOption( FB_COMPOPT_EXPORT, TRUE )
 
 				argv(i) = ""
 
-			case "nostdcall"
+			case FBC_OPT_NOSTDCALL
 				fbSetOption( FB_COMPOPT_NOSTDCALL, TRUE )
 
 				argv(i) = ""
 
-			case "stdcall"
+			case FBC_OPT_STDCALL
 				fbSetOption( FB_COMPOPT_NOSTDCALL, FALSE )
 
 				argv(i) = ""
 
-			case "nounderscore"
+			case FBC_OPT_NOUNDERSCORE
 				fbSetOption( FB_COMPOPT_NOUNDERPREFIX, TRUE )
 
 				argv(i) = ""
 
-			case "underscore"
+			case FBC_OPT_UNDERSCORE
 				fbSetOption( FB_COMPOPT_NOUNDERPREFIX, FALSE )
 
 				argv(i) = ""
 
-			'' cpu type
-			case "arch"
+			case FBC_OPT_SHOWSUSPERR
+				fbSetOption( FB_COMPOPT_SHOWSUSPERRORS, FALSE )
+
+				argv(i) = ""
+
+			case FBC_OPT_ARCH
 				select case argv(i+1)
 				case "386"
 					value = FB_CPUTYPE_386
@@ -738,51 +846,43 @@ function processOptions( ) as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
-			'' debug symbols
-			case "g"
+			case FBC_OPT_DEBUG
 				fbc.debug = TRUE
 
 				argv(i) = ""
 
-			'' don't link
-			case "c"
+			case FBC_OPT_COMPILEONLY
 				fbc.outtype = FB_OUTTYPE_OBJECT
 				fbc.compileonly = TRUE
 
 				argv(i) = ""
 
-			'' dll
-			case "dylib", "dll"
+			case FBC_OPT_SHAREDLIB
 				fbc.outtype = FB_OUTTYPE_DYNAMICLIB
 
 				argv(i) = ""
 
-			'' static lib
-			case "lib"
+			case FBC_OPT_STATICLIB
 				fbc.outtype = FB_OUTTYPE_STATICLIB
 
 				argv(i) = ""
 
-			'' preserve asm
-			case "r"
+			case FBC_OPT_PRESERVEFILES
 				fbc.preserveasm = TRUE
 
 				argv(i) = ""
 
-			'' verbose
-			case "v"
+			case FBC_OPT_VERBOSE
 				fbc.verbose = TRUE
 
 				argv(i) = ""
 
-			'' compiler version
-			case "version"
+			case FBC_OPT_VERSION
 				fbc.showversion = TRUE
 
 				argv(i) = ""
 
-			'' out name
-			case "x"
+			case FBC_OPT_OUTPUTNAME
 				fbc.outname = argv(i+1)
 				if( len( fbc.outname ) = 0 ) then
 					printInvalidOpt( i )
@@ -792,8 +892,7 @@ function processOptions( ) as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
-			'' main module
-			case "m"
+			case FBC_OPT_MAINMODULE
 				fbc.mainfile = hStripPath( argv(i+1) )
 				if( len( fbc.mainfile ) = 0 ) then
 					printInvalidOpt( i )
@@ -805,8 +904,7 @@ function processOptions( ) as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
-			'' map file
-			case "map"
+			case FBC_OPT_MAPFILE
 				fbc.mapfile = argv(i+1)
 				if( len( fbc.mapfile ) = 0 ) then
 					printInvalidOpt( i )
@@ -816,8 +914,7 @@ function processOptions( ) as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
-			'' max number of errors
-			case "maxerr"
+			case FBC_OPT_MAXERRORS
 				if( argv(i+1) = "inf" ) then
 					value = &h7fffffff
 				else
@@ -829,8 +926,7 @@ function processOptions( ) as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
-			'' warning level
-			case "w"
+			case FBC_OPT_WARNLEVEL
 				if( argv(i+1) = "all" ) then
 					value = 0
 				else
@@ -842,8 +938,7 @@ function processOptions( ) as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
-			'' library paths
-			case "p"
+			case FBC_OPT_LIBPATH
 				if( fbAddLibPath( argv(i+1) ) = FALSE ) then
 					printInvalidOpt( i )
 					exit function
@@ -852,8 +947,7 @@ function processOptions( ) as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
-			'' include paths
-			case "i"
+			case FBC_OPT_INCPATH
 				fbc.inclist(fbc.incs) = argv(i+1)
 				if( len( fbc.inclist(fbc.incs) ) = 0 ) then
 					printInvalidOpt( i )
@@ -864,8 +958,7 @@ function processOptions( ) as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
-			'' defines
-			case "d"
+			case FBC_OPT_DEFINE
 				fbc.deflist(fbc.defs) = argv(i+1)
 				if( len( fbc.deflist(fbc.defs) ) = 0 ) then
 					printInvalidOpt( i )
@@ -877,7 +970,7 @@ function processOptions( ) as integer
 				argv(i+1) = ""
 
 			'' source files
-			case "b"
+			case FBC_OPT_INPFILE
 				fbc.inplist(fbc.inps) = argv(i+1)
 				if( len( fbc.inplist(fbc.inps) ) = 0 ) then
 					printInvalidOpt( i )
@@ -888,8 +981,7 @@ function processOptions( ) as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
-			'' outputs
-			case "o"
+			case FBC_OPT_OUTFILE
 				fbc.outlist(fbc.outs) = argv(i+1)
 				if( len( fbc.outlist(fbc.outs) ) = 0 ) then
 					printInvalidOpt( i )
@@ -900,8 +992,7 @@ function processOptions( ) as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
-			'' objects
-			case "a"
+			case FBC_OPT_OBJFILE
 				fbc.objlist(fbc.objs) = argv(i+1)
 				if( len( fbc.objlist(fbc.objs) ) = 0 ) then
 					printInvalidOpt( i )
@@ -912,8 +1003,7 @@ function processOptions( ) as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
-			'' libraries
-			case "l"
+			case FBC_OPT_LIBFILE
 				fbc.liblist(fbc.libs) = argv(i+1)
 				if( len( fbc.liblist(fbc.libs) ) = 0 ) then
 					printInvalidOpt( i )
@@ -925,7 +1015,7 @@ function processOptions( ) as integer
 				argv(i+1) = ""
 
 			'' pre-include files
-			case "include"
+			case FBC_OPT_INCLUDE
 				fbc.preinclist(fbc.preincs) = argv(i+1)
 				if( len( fbc.preinclist(fbc.preincs) ) = 0 ) then
 					printInvalidOpt( i )
@@ -936,15 +1026,6 @@ function processOptions( ) as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
-			'' target-dependent options
-			case else
-				if( fbc.processOptions( argv(i), argv(i+1) ) = FALSE ) then
-					printInvalidOpt( i )
-					exit function
-				end if
-
-				argv(i) = ""
-				argv(i+1) = ""
 			end select
 		end if
 
@@ -1026,7 +1107,11 @@ function listFiles( ) as integer
 end function
 
 '':::::
-sub parseCmd ( byref argc as integer, argv() as string )
+sub parseCmd _
+	( _
+		byref argc as integer, _
+		argv() as string _
+	)
 
 	argc = 0
 	do

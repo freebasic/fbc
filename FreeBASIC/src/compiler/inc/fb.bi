@@ -111,6 +111,7 @@ enum FBCOMPOPT_ENUM
 	FB_COMPOPT_EXTRAERRCHECK
 	FB_COMPOPT_MSBITFIELDS
 	FB_COMPOPT_MAXERRORS
+	FB_COMPOPT_SHOWSUSPERRORS
 
 	FB_COMPOPTIONS
 end enum
@@ -132,7 +133,8 @@ type FBCMMLINEOPT
 	target			as integer					'' target platform
 	extraerrchk		as integer					'' add bounds plus null pointer checking
 	msbitfields		as integer					'' use M$'s bitfields packing
-	maxerrors		as integer
+	maxerrors		as integer					'' max number errors until the parser quit
+	showsusperrors	as integer					'' show suspicious errors (def= false)
 end type
 
 

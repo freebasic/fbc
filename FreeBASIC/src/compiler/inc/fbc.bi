@@ -24,14 +24,69 @@ const FB_MAXARGS	  = 250
 const FB_MINSTACKSIZE = 32 * 1024
 const FB_DEFSTACKSIZE = 1024 * 1024
 
+'' command-line options (linked to the fbc::optionTb() array)
+enum FBC_OPT
+	FBC_OPT_E				= 1
+	FBC_OPT_EX
+	FBC_OPT_EXX
+	FBC_OPT_MT
+	FBC_OPT_PROFILE
+	FBC_OPT_NOERRLINE
+	FBC_OPT_NODEFLIBS
+	FBC_OPT_EXPORT
+	FBC_OPT_NOSTDCALL
+	FBC_OPT_STDCALL
+	FBC_OPT_NOUNDERSCORE
+	FBC_OPT_UNDERSCORE
+	FBC_OPT_SHOWSUSPERR
+	FBC_OPT_ARCH
+	FBC_OPT_DEBUG
+	FBC_OPT_COMPILEONLY
+	FBC_OPT_SHAREDLIB
+	FBC_OPT_STATICLIB
+	FBC_OPT_PRESERVEFILES
+	FBC_OPT_VERBOSE
+	FBC_OPT_VERSION
+	FBC_OPT_OUTPUTNAME
+	FBC_OPT_MAINMODULE
+	FBC_OPT_MAPFILE
+	FBC_OPT_MAXERRORS
+	FBC_OPT_WARNLEVEL
+	FBC_OPT_LIBPATH
+	FBC_OPT_INCPATH
+	FBC_OPT_DEFINE
+	FBC_OPT_INPFILE
+	FBC_OPT_OUTFILE
+	FBC_OPT_OBJFILE
+	FBC_OPT_LIBFILE
+	FBC_OPT_INCLUDE
+
+	FBC_OPTS
+end enum
+
+type FBC_OPTION
+	id			as FBC_OPT
+	name		as zstring ptr
+end type
+
 type FBCCTX
 	'' methods
-	processOptions				as function ( byval opt as zstring ptr, byval argv as zstring ptr ) as integer
-	listFiles					as function ( byval argv as zstring ptr ) as integer
-	compileResFiles				as function ( ) as integer
-	linkFiles                   as function ( ) as integer
-	archiveFiles                as function ( byval cmdline as zstring ptr ) as integer
-	delFiles                    as function ( ) as integer
+	processOptions				as function ( _
+												byval opt as zstring ptr, _
+												byval argv as zstring ptr _
+											) as integer
+	listFiles					as function ( _
+												byval argv as zstring ptr _
+											) as integer
+	compileResFiles				as function ( _
+											) as integer
+	linkFiles                   as function ( _
+											) as integer
+	archiveFiles                as function ( _
+												byval cmdline as zstring ptr _
+											) as integer
+	delFiles                    as function ( _
+											) as integer
 
 	''
 	compileonly					as integer
@@ -69,6 +124,8 @@ type FBCCTX
 	mapfile						as zstring * FB_MAXNAMELEN+1
 	mainset						as integer
 	subsystem					as zstring * FB_MAXNAMELEN+1
+
+	opthash						as THASH
 end type
 
 

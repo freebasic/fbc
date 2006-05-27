@@ -324,6 +324,7 @@ sub fbSetDefaultOptions( )
 	env.clopt.extraerrchk	= FALSE
 	env.clopt.msbitfields	= FALSE
 	env.clopt.maxerrors		= FB_DEFAULT_MAXERRORS
+	env.clopt.showsusperrors= FALSE
 
 end sub
 
@@ -385,6 +386,9 @@ sub fbSetOption _
 
 	case FB_COMPOPT_MAXERRORS
 		env.clopt.maxerrors = value
+
+	case FB_COMPOPT_SHOWSUSPERRORS
+		env.clopt.showsusperrors = value
 	end select
 
 end sub
@@ -446,6 +450,9 @@ function fbGetOption _
 
 	case FB_COMPOPT_MAXERRORS
 		function = env.clopt.maxerrors
+
+	case FB_COMPOPT_SHOWSUSPERRORS
+		function = env.clopt.showsusperrors
 
 	case else
 		function = FALSE
