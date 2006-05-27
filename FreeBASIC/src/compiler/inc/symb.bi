@@ -1060,6 +1060,10 @@ declare function 	symbGetMangledNameEx 	( _
 												byval checkhash as integer _
 											) as zstring ptr
 
+declare function 	symbGetDBGName 			( _
+												byval sym as FBSYMBOL ptr _
+											) as zstring ptr
+
 declare sub 		symbSetName 			( _
 												byval s as FBSYMBOL ptr, _
 												byval name_ as zstring ptr _

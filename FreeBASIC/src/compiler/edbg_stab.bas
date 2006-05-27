@@ -64,9 +64,6 @@ declare function hGetDataType			( _
 											byval sym as FBSYMBOL ptr _
 										) as string
 
-declare function symbGetDBGName 		( _
-											byval sym as FBSYMBOL ptr _
-										) as zstring ptr
 
 '' globals
 	dim shared ctx as EDBGCTX

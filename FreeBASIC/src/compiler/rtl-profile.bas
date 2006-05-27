@@ -76,32 +76,31 @@ end sub
 
 
 '':::::
-private function hGetProcName( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
+private function hGetProcName _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as ASTNODE ptr static
+
 	dim as string procname
 	dim as FBSYMBOL ptr s
 	dim as ASTNODE ptr expr
-	dim as integer at
+	dim as integer at, lgt, i
 
 	if( proc = NULL ) then
 		s = symbAllocStrConst( "(??)", -1 )
 
 	else
-		procname = *symbGetMangledName( proc )
+		procname = *symbGetDBGName( proc )
 
-		select case env.clopt.target
-        case FB_COMPTARGET_WIN32, FB_COMPTARGET_CYGWIN
-			procname = mid( procname, 2)
-			at = instr( procname, "@" )
-			if( at ) then
-				procname = mid( procname, 1, at - 1 )
-			end if
-        end select
-
-		if( len( procname ) and 3 ) then
-			procname += string( 4 - ( len( procname ) and 3 ), 32 )
+		lgt = len( procname )
+		if( lgt and 3 ) then
+			for i = 1 to 4 - ( lgt and 3 )
+				procname += chr( FB_INTSCAPECHAR, CHAR_0 )
+			next
+			lgt += 4 - ( lgt and 3 )
 		end if
 
-		s = symbAllocStrConst( procname, -1 )
+		s = symbAllocStrConst( procname, lgt )
 	end if
 
 	expr = astNewADDR( AST_OP_ADDROF, astNewVAR( s, 0, FB_DATATYPE_CHAR ) )
@@ -111,7 +110,11 @@ private function hGetProcName( byval proc as FBSYMBOL ptr ) as ASTNODE ptr
 end function
 
 '':::::
-function rtlProfileBeginCall( byval symbol as FBSYMBOL ptr ) as ASTNODE ptr
+function rtlProfileBeginCall _
+	( _
+		byval symbol as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
 	dim as ASTNODE ptr proc, expr
 
 	function = NULL
