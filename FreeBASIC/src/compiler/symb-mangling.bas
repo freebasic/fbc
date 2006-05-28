@@ -123,10 +123,6 @@ function symbGetDBGName _
 		byval sym as FBSYMBOL ptr _
 	) as zstring ptr
 
-	if( (sym->stats and FB_SYMBSTATS_MANGLED) <> 0 ) then
-		return sym->alias
-	end if
-
     '' GDB will demangle the symbols automatically
 	if( hDoCppMangling( sym, symbGetMangling( sym ) ) ) then
 		function = symbGetMangledName( sym )
