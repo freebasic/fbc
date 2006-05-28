@@ -263,6 +263,11 @@ function cAnonUDT _
 
     	subtype = chain_->sym
 
+		'' typedef? resolve..
+		if( symbIsTypedef( subtype ) ) then
+			subtype = symbGetSubtype( subtype )
+		end if
+
     	if( symbIsUDT( subtype ) = FALSE ) then
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function
@@ -291,6 +296,11 @@ function cAnonUDT _
 
     else
     	subtype = env.ctxsym
+
+		'' typedef? resolve..
+		if( symbIsTypedef( subtype ) ) then
+			subtype = symbGetSubtype( subtype )
+		end if
 
     	if( subtype = NULL ) then
 			if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
