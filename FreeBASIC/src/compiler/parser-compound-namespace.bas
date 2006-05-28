@@ -54,13 +54,20 @@ function cNamespaceStmtBegin _
 	'' ID?
 	palias = NULL
 	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
-		'' anonymous namespace..
-		id = *hMakeTmpStr( )
+		'' keyword?
+		if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
+			if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+				exit function
+			end if
+		end if
+
+		'' anonymous namespace.. (or error recovery)
+		sym = symbAddNamespace( hMakeTmpStr( ), NULL )
 
 	else
     	'' contains a period?
     	if( lexGetPeriodPos( ) > 0 ) then
-    		if( hReportError( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
     			exit function
     		end if
     	end if
@@ -73,7 +80,7 @@ function cNamespaceStmtBegin _
 
 			'' not a namespace?
 			if( symbIsNamespace( sym ) = FALSE ) then
-				if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id ) ) then
+				if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: fake an id
@@ -102,7 +109,7 @@ function cNamespaceStmtBegin _
     			lexSkipToken( )
 
 				if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-					if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 						exit function
 					end if
 
@@ -114,7 +121,7 @@ function cNamespaceStmtBegin _
 
 			sym = symbAddNamespace( @id, palias )
 			if( sym = NULL ) then
-				if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
+				if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: fake an id
@@ -191,7 +198,7 @@ function cUsingStmt as integer
     do
     	'' ID
     	if( lexGetToken( ) <> FB_TK_ID ) then
-			if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: skip until next ','
@@ -201,7 +208,7 @@ function cUsingStmt as integer
         else
     		chain_ = cIdentifier( )
     		if( chain_ = NULL ) then
-    			if( hReportError( FB_ERRMSG_UNDEFINEDSYMBOL ) = FALSE ) then
+    			if( errReport( FB_ERRMSG_UNDEFINEDSYMBOL ) = FALSE ) then
     				exit function
 				else
 					'' error recovery: skip until next ','
@@ -213,7 +220,7 @@ function cUsingStmt as integer
 
 				'' not a namespace?
 				if( symbIsNamespace( sym ) = FALSE ) then
-					if( hReportError( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+					if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
 						exit function
 					end if
 
