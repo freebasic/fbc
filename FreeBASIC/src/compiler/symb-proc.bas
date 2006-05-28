@@ -1339,7 +1339,6 @@ function symbMangleFunctionPtr _
     dim as integer i, p
 
     '' cheapo and fast internal mangling..
-
     id = "{fbfp}"
 
     '' for each param..
@@ -1378,7 +1377,7 @@ function symbMangleFunctionPtr _
 	if( subtype = NULL ) then
 		id += hex( dtype )
 	else
-    	p = param->ptrcnt
+    	p = dtype \ FB_DATATYPE_POINTER
     	do while( p > 0 )
     		id += "p"
     		p -= 1
