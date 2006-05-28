@@ -139,6 +139,7 @@ Version 0.16 Beta:
 - WRITE was outputing floating-point numbers around quotes (v1c)
 - non-decimal 64-bit literal constants were been sign-extended from 32-bit if below 2^32 (v1c)
 - bit-fields accessed inside private functions would cause errors (v1c)
+- the level of indirection of UDT params was not been take into account when creating mangled names for function pointers (v1c)
 
 
 Version 0.15 Beta:
