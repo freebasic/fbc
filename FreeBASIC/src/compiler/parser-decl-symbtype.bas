@@ -39,7 +39,7 @@ function cConstExprValue _
     function = FALSE
 
     if( cExpression( expr ) = FALSE ) then
-    	if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    	if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     		exit function
     	else
     		'' error recovery: fake an value
@@ -49,7 +49,7 @@ function cConstExprValue _
 
 	else
 		if( astIsCONST( expr ) = FALSE ) then
-			if( hReportError( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
 				exit function
     		else
     			'' error recovery: fake an value
@@ -89,12 +89,12 @@ function cSymbolTypeFuncPtr _
         lexSkipToken( )
 
 		cParameters( proc, mode, TRUE )
-		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
 
     	if( lexGetToken( ) <> CHAR_RPRNT ) then
-			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: skip until next ')'
@@ -110,7 +110,7 @@ function cSymbolTypeFuncPtr _
 		lexSkipToken( )
 
 		if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
-			if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: fake a type
@@ -123,7 +123,7 @@ function cSymbolTypeFuncPtr _
     	'' check for invalid types
     	select case as const dtype
     	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    		if( hReportError( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS ) = FALSE ) then
     			exit function
 			else
 				'' error recovery: fake a type
@@ -133,7 +133,7 @@ function cSymbolTypeFuncPtr _
 			end if
 
     	case FB_DATATYPE_VOID
-    		if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
     			exit function
 			else
 				'' error recovery: fake a type
@@ -146,7 +146,7 @@ function cSymbolTypeFuncPtr _
 	else
 		'' if it's a function and type was not given, it can't be guessed
 		if( isfunction ) then
-			if( hReportError( FB_ERRMSG_EXPECTEDRESTYPE ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDRESTYPE ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: fake a type
@@ -295,7 +295,7 @@ function cSymbolType _
 
 			'' min 1 char (+ null-term)
 			if( lgt <= 1 ) then
-				if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: fake a len
@@ -330,7 +330,7 @@ function cSymbolType _
 
 			'' min 1 char
 			if( lgt < 1 ) then
-				if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: fake a len
@@ -371,7 +371,7 @@ function cSymbolType _
 
 		chain_ = cIdentifier( )
 		if( chain_ = NULL ) then
-			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
 
@@ -424,7 +424,7 @@ function cSymbolType _
 			case FB_DATATYPE_LONGINT
 				dtype = FB_DATATYPE_ULONGINT
 			case else
-				if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 					exit function
 				end if
 			end select
@@ -444,7 +444,7 @@ function cSymbolType _
 
         if( ptrcnt > 0 ) then
 			if( allowptr = FALSE ) then
-				if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: remove pointers
@@ -460,7 +460,7 @@ function cSymbolType _
 		else
 			'' can't have forward typedef's if they aren't pointers
 			if( dtype = FB_DATATYPE_FWDREF ) then
-				if( hReportError( FB_ERRMSG_INCOMPLETETYPE ) = FALSE ) then
+				if( errReport( FB_ERRMSG_INCOMPLETETYPE ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: fake a type
@@ -474,7 +474,7 @@ function cSymbolType _
 				case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 					'' LEN() and SIZEOF() allow Z|WSTRING to be used w/o PTR
 					if( checkptr ) then
-						if( hReportError( FB_ERRMSG_EXPECTEDPOINTER ) = FALSE ) then
+						if( errReport( FB_ERRMSG_EXPECTEDPOINTER ) = FALSE ) then
 							exit function
 						else
 							'' error recovery: make pointer
@@ -493,7 +493,7 @@ function cSymbolType _
 
 	else
 		if( isunsigned ) then
-			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 				exit function
 			else
 				return TRUE

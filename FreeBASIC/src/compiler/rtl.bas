@@ -215,7 +215,7 @@ sub rtlAddIntrinsicProcs( )
 				symbSetIsThrowable( proc )
 			end if
 		else
-			hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *pname )
+			errReportEx( FB_ERRMSG_DUPDEFINITION, *pname )
 		end if
 	loop
 
@@ -234,7 +234,7 @@ function rtlProcLookup( byval pname as zstring ptr, _
 	if( rtlLookupTB( pidx ) = NULL ) then
 		chain_ = symbLookup( pname, id, class )
 		if( chain_ = NULL ) then
-			hReportErrorEx( FB_ERRMSG_UNDEFINEDSYMBOL, *pname )
+			errReportEx( FB_ERRMSG_UNDEFINEDSYMBOL, *pname )
 			rtlLookupTB( pidx ) = NULL
 		else
 			rtlLookupTB( pidx ) = chain_->sym

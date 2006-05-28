@@ -424,7 +424,7 @@ private sub hReadIdentifier _
  				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 					'' just once..
 					flags or= LEXCHECK_NOLINECONT
-	 				hReportWarning( FB_WARNINGMSG_IDNAMETOOBIG )
+	 				errReportWarn( FB_WARNINGMSG_IDNAMETOOBIG )
  				end if
 
 				skipchar = TRUE
@@ -539,7 +539,7 @@ private function hReadNonDecNumber _
 
 				    	elseif( lgt = 17 ) then
 				    		if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-				    			hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+				    			errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 				    		end if
 							skipchar = TRUE
 
@@ -607,7 +607,7 @@ private function hReadNonDecNumber _
 						case 22
 							if( first_c > CHAR_1 ) then
 								if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-									hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+									errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 								end if
 								skipchar = TRUE
 							else
@@ -616,7 +616,7 @@ private function hReadNonDecNumber _
 
 						case 23
 							if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-								hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+								errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 							end if
 							skipchar = TRUE
 
@@ -669,7 +669,7 @@ private function hReadNonDecNumber _
 
 				    	elseif( lgt = 65 ) then
 				    		if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-				    			hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+				    			errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 				    		end if
 				    		skipchar = TRUE
 
@@ -749,7 +749,7 @@ private sub hReadFloatNumber _
  				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
  					'' just once..
  					flags or= LEXCHECK_NOLINECONT
- 					hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+ 					errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 				end if
 			end if
 		end if
@@ -815,7 +815,7 @@ private sub hReadFloatNumber _
  					if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
  						'' just once..
  						flags or= LEXCHECK_NOLINECONT
- 						hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+ 						errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 					end if
 				end if
 			end if
@@ -947,14 +947,14 @@ private sub hReadNumber _
 						issigned = FALSE
 						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 							if( (value and &h8000000000000000ULL) = 0 ) then
-								hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+								errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 								skipchar = TRUE
 							end if
 						end if
 
 					case 21
 						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-							hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+							errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 							skipchar = TRUE
 						end if
 					end select
@@ -969,7 +969,7 @@ private sub hReadNumber _
  							if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
  								'' just once..
  								flags or= LEXCHECK_NOLINECONT
- 								hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+ 								errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 							end if
 						end if
 					end if
@@ -1040,7 +1040,7 @@ private sub hReadNumber _
 					if( islong ) then
 						if( skipchar = FALSE ) then
 							if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-								hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+								errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 							end if
 						end if
 					end if
@@ -1052,7 +1052,7 @@ private sub hReadNumber _
 				if( islong ) then
 					if( skipchar = FALSE ) then
 						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-							hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+							errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 						end if
 					end if
 				end if
@@ -1173,7 +1173,7 @@ private function hReadString _
 				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 					'' just once..
 					flags or= LEXCHECK_NOLINECONT
-					hReportWarning( FB_WARNINGMSG_LITSTRINGTOOBIG )
+					errReportWarn( FB_WARNINGMSG_LITSTRINGTOOBIG )
 				end if
 
 				skipchar = TRUE
@@ -1272,7 +1272,7 @@ private function hReadWStr _
 				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 					'' just once..
 					flags or= LEXCHECK_NOLINECONT
-					hReportWarning( FB_WARNINGMSG_LITSTRINGTOOBIG )
+					errReportWarn( FB_WARNINGMSG_LITSTRINGTOOBIG )
 				end if
 
 				skipchar = TRUE
@@ -1720,7 +1720,7 @@ private sub hMultiLineComment( ) static
 		select case as const lexCurrentChar( TRUE )
 		'' EOF?
 		case 0
-			hReportErrorEx( FB_ERRMSG_EXPECTEDENDCOMMENT, NULL )
+			errReportEx( FB_ERRMSG_EXPECTEDENDCOMMENT, NULL )
 			exit sub
 
 		'' EOL?

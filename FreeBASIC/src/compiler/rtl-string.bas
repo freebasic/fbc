@@ -2491,14 +2491,14 @@ function rtlStrChr( byval args as integer, _
 
     	'' check if non-numeric
     	if( astGetDataClass( expr ) >= FB_DATACLASS_STRING ) then
-    		hReportErrorEx( FB_ERRMSG_PARAMTYPEMISMATCHAT, "at parameter: " + str( i+1 ) )
+    		errReportEx( FB_ERRMSG_PARAMTYPEMISMATCHAT, "at parameter: " + str( i+1 ) )
     		exit function
     	end if
 
     	'' don't allow w|zstring's either..
     	select case astGetDataType( expr )
     	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    		hReportErrorEx( FB_ERRMSG_PARAMTYPEMISMATCHAT, "at parameter: " + str( i+1 ) )
+    		errReportEx( FB_ERRMSG_PARAMTYPEMISMATCHAT, "at parameter: " + str( i+1 ) )
     		exit function
 
     	case FB_DATATYPE_INTEGER

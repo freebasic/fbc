@@ -54,7 +54,7 @@ function cParentExpression _
   			exit function
   		end if
 
-  		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+  		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
   			exit function
   		else
   			'' error recovery: skip until next ')', fake an expr
@@ -73,7 +73,7 @@ function cParentExpression _
   	else
   		'' not calling a SUB or parent cnt = 0?
   		if( (env.prntopt = FALSE) or (env.prntcnt = 0) ) then
-  			if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+  			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
   				exit function
   			else
   				'' error recovery: skip until next ')'
@@ -133,7 +133,7 @@ function cAtom _
     		loop while( chain_ <> NULL )
 
     	else
-			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				return FALSE
 			end if
 

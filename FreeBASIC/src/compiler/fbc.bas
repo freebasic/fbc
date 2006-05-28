@@ -389,7 +389,7 @@ function assembleFiles as integer
 
     ''
     if( hFileExists( aspath ) = FALSE ) then
-		hReportErrorEx( FB_ERRMSG_EXEMISSING, aspath, -1 )
+		errReportEx( FB_ERRMSG_EXEMISSING, aspath, -1 )
 		exit function
     end if
 
@@ -647,9 +647,9 @@ end sub
 sub printInvalidOpt( byval argn as integer )
 
 	if( len( argv(argn+1) ) > 0 ) then
-		hReportErrorEx( FB_ERRMSG_INVALIDCMDOPTION, "\"" + argv(argn+1) + "\"", -1 )
+		errReportEx( FB_ERRMSG_INVALIDCMDOPTION, "\"" + argv(argn+1) + "\"", -1 )
 	else
-		hReportErrorEx( FB_ERRMSG_MISSINGCMDOPTION, "\"" + argv(argn) + "\"", -1 )
+		errReportEx( FB_ERRMSG_MISSINGCMDOPTION, "\"" + argv(argn) + "\"", -1 )
 	end if
 
 end sub
@@ -916,7 +916,7 @@ function processOptions( ) as integer
 
 			case FBC_OPT_MAXERRORS
 				if( argv(i+1) = "inf" ) then
-					value = &h7fffffff
+					value = FB_ERR_INFINITE
 				else
 					value = valint( argv(i+1) )
 				end if

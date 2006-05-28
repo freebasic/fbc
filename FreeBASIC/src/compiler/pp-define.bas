@@ -75,7 +75,7 @@ private function hReportMacroError _
 		byval errnum as integer _
 	) as integer
 
-	function = hReportErrorEx( errnum, "expanding: " + *symbGetName( s ) )
+	function = errReportEx( errnum, "expanding: " + *symbGetName( s ) )
 
 end function
 
@@ -319,7 +319,7 @@ private function hLoadDefine _
 
 				'' ')'
 				if( lexCurrentChar( TRUE ) <> CHAR_RPRNT ) then
-					if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+					if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
 						exit function
 					end if
 
@@ -597,7 +597,7 @@ private function hLoadDefineW _
 
 				'' ')'
 				if( lexCurrentChar( TRUE ) <> CHAR_RPRNT ) then
-					if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+					if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
 						exit function
 					end if
 
@@ -644,7 +644,7 @@ function ppDefineLoad _
 
 	'' recursion?
 	if( s = lex->currmacro ) then
-		if( hReportError( FB_ERRMSG_RECURSIVEMACRO ) = FALSE ) then
+		if( errReport( FB_ERRMSG_RECURSIVEMACRO ) = FALSE ) then
 			return FALSE
 		else
 			'' error recovery: skip
@@ -809,7 +809,7 @@ function ppDefine( ) as integer
     if( chain_ <> NULL ) then
     	sym = chain_->sym
     	if( symbIsDefine( sym ) = FALSE ) then
-    		if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, @defname ) = FALSE ) then
+    		if( errReportEx( FB_ERRMSG_DUPDEFINITION, @defname ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: fake an id
@@ -818,7 +818,7 @@ function ppDefine( ) as integer
     	end if
 
     else
-		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
 
@@ -842,7 +842,7 @@ function ppDefine( ) as integer
 
 		    	params += 1
 				if( params >= FB_MAXDEFINEARGS ) then
-					if( hReportError( FB_ERRMSG_TOOMANYPARAMS ) = FALSE ) then
+					if( errReport( FB_ERRMSG_TOOMANYPARAMS ) = FALSE ) then
 						exit function
 					else
 						'' error recovery: skip until next ')'
@@ -869,7 +869,7 @@ function ppDefine( ) as integer
 
     	'' ')'
     	if( lexGetToken( LEX_FLAGS ) <> CHAR_RPRNT ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
     			exit function
 			else
 				'' error recovery: skip until next ')'
@@ -897,12 +897,12 @@ function ppDefine( ) as integer
     			if( (symbGetDefineParams( sym ) > 0) or _
     				(symbGetType( sym ) <> FB_DATATYPE_CHAR) ) then
 
-    				if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname ) = FALSE ) then
+    				if( errReportEx( FB_ERRMSG_DUPDEFINITION, defname ) = FALSE ) then
     					exit function
     				end if
 
     			elseif( (*symbGetDefineText( sym ) <> *text) ) then
-    				if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname ) = FALSE ) then
+    				if( errReportEx( FB_ERRMSG_DUPDEFINITION, defname ) = FALSE ) then
     					exit function
     				end if
     			end if
@@ -922,12 +922,12 @@ function ppDefine( ) as integer
     			if( (symbGetDefineParams( sym ) > 0) or _
     				(symbGetType( sym ) <> FB_DATATYPE_WCHAR) ) then
 
-    				if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname ) = FALSE ) then
+    				if( errReportEx( FB_ERRMSG_DUPDEFINITION, defname ) = FALSE ) then
     					exit function
     				end if
 
     			elseif( (*symbGetDefineTextW( sym ) <> *textw) ) then
-    				if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname ) = FALSE ) then
+    				if( errReportEx( FB_ERRMSG_DUPDEFINITION, defname ) = FALSE ) then
     					exit function
     				end if
     			end if
@@ -943,7 +943,7 @@ function ppDefine( ) as integer
     else
     	'' already defined? can't check..
     	if( sym <> NULL ) then
-    		if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, defname ) = FALSE ) then
+    		if( errReportEx( FB_ERRMSG_DUPDEFINITION, defname ) = FALSE ) then
     			exit function
     		end if
 

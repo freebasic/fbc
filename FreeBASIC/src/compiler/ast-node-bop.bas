@@ -237,7 +237,7 @@ private sub hBOPConstFoldInt( byval op as integer, _
 			end if
 		else
 			l->con.val.int = 0
-			hReportError( FB_ERRMSG_DIVBYZERO )
+			errReport( FB_ERRMSG_DIVBYZERO )
 		end if
 
 	case AST_OP_MOD
@@ -249,7 +249,7 @@ private sub hBOPConstFoldInt( byval op as integer, _
 			end if
 		else
 			l->con.val.int = 0
-			hReportError( FB_ERRMSG_DIVBYZERO )
+			errReport( FB_ERRMSG_DIVBYZERO )
 		end if
 
 	case AST_OP_SHL
@@ -397,7 +397,7 @@ private sub hBOPConstFold64( byval op as integer, _
 			end if
 		else
 			l->con.val.long = 0
-			hReportError( FB_ERRMSG_DIVBYZERO )
+			errReport( FB_ERRMSG_DIVBYZERO )
 		end if
 
 	case AST_OP_MOD
@@ -409,7 +409,7 @@ private sub hBOPConstFold64( byval op as integer, _
 			end if
 		else
 			l->con.val.long = 0
-			hReportError( FB_ERRMSG_DIVBYZERO )
+			errReport( FB_ERRMSG_DIVBYZERO )
 		end if
 
 	case AST_OP_SHL
@@ -570,7 +570,7 @@ function astNewBOP( byval op as integer, _
     	if( ldtype <> rdtype ) then
     		if( (ldclass <> FB_DATACLASS_INTEGER) or _
     			(rdclass <> FB_DATACLASS_INTEGER) ) then
-    			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+    			errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
     		end if
     	end if
     end if

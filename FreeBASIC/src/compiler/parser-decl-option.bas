@@ -50,7 +50,7 @@ function cOptDecl as integer
 	case FB_TK_BASE
 		lexSkipToken( )
 		if( lexGetClass( ) <> FB_TKCLASS_NUMLITERAL ) then
-			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: skip stmt
@@ -94,7 +94,7 @@ function cOptDecl as integer
 				select case lexGetClass( LEXCHECK_NODEFINE )
 				case FB_TKCLASS_KEYWORD
 					if( symbDelKeyword( lexGetSymChain( )->sym ) = FALSE ) then
-						if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+						if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 							exit function
 						end if
 					end if
@@ -108,14 +108,14 @@ function cOptDecl as integer
 
 						'' is it from the rtlib (gfxlib will be listed as part of the rt too)?
 						if( symbGetIsRTL( s ) = FALSE ) then
-							if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+							if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 								exit function
 							end if
 
 						else
 							'' don't remove if it was defined in other namespace
 							if( symbGetHashTb( s ) <> symbGetCurrentHashTb( ) ) then
-								if( hReportError( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS ) = FALSE ) then
+								if( errReport( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS ) = FALSE ) then
 									exit function
 								end if
 
@@ -129,14 +129,14 @@ function cOptDecl as integer
 						'' macro?
 						s = symbFindByClass( lexGetSymChain( ), FB_SYMBCLASS_DEFINE )
 						if( s = NULL ) then
-							if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+							if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 								exit function
 							end if
 
 						else
 							'' don't remove if it was defined in other namespace
 							if( symbGetHashTb( s ) <> symbGetCurrentHashTb( ) ) then
-								if( hReportError( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS ) = FALSE ) then
+								if( errReport( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS ) = FALSE ) then
 									exit function
 								end if
 
@@ -150,7 +150,7 @@ function cOptDecl as integer
 					lexSkipToken( )
 
 				case else
-					if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 						exit function
 					else
 						'' error recovery: skip until next ','
@@ -167,7 +167,7 @@ function cOptDecl as integer
 			loop
 
 		case else
-			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 				exit function
 			end if
 		end select

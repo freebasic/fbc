@@ -202,20 +202,20 @@ function astNewUOP( byval op as integer, _
 					case FB_DATATYPE_UINT
 						if( astGetValInt( o ) and &h80000000 ) then
 							if( astGetValInt( o ) <> &h80000000 ) then
-								hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+								errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
 							end if
 						end if
 
 					case FB_DATATYPE_ULONGINT
 						if( astGetValLong( o ) and &h8000000000000000 ) then
 							if( astGetValLong( o ) <> &h8000000000000000 ) then
-								hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+								errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
 							end if
 						end if
 
 					case else
 						if( -astGetValueAsLongint( o ) < ast_minlimitTB( o->dtype ) ) then
-							hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+							errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
 						end if
 					end select
 

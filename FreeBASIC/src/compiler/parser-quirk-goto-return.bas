@@ -36,7 +36,7 @@ private function hFuncReturn( ) as integer
     function = FALSE
 
 	if( env.stmt.proc.endlabel = NULL ) then
-		hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB )
+		errReport( FB_ERRMSG_ILLEGALOUTSIDEASUB )
 		exit function
 	end if
 
@@ -84,7 +84,7 @@ function cGotoStmt as integer
 
 		else
 			chain_ = cIdentifier( TRUE )
-			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
 
@@ -103,7 +103,7 @@ function cGotoStmt as integer
 	case FB_TK_GOSUB
 		'' difference from QB: not allowed inside procs
 		if( fbIsModLevel() = FALSE ) then
-			hReportError( FB_ERRMSG_ILLEGALINSIDEASUB )
+			errReport( FB_ERRMSG_ILLEGALINSIDEASUB )
 			exit function
 		end if
 
@@ -116,7 +116,7 @@ function cGotoStmt as integer
 
 		else
 			chain_ = cIdentifier( TRUE )
-			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
 
@@ -160,7 +160,7 @@ function cGotoStmt as integer
 
 				else
 					chain_ = cIdentifier( TRUE )
-					if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+					if( errGetLast( ) <> FB_ERRMSG_OK ) then
 						exit function
 					end if
 
@@ -181,7 +181,7 @@ function cGotoStmt as integer
 	case FB_TK_RESUME
 
 		if( env.clopt.resumeerr = FALSE ) then
-			hReportError( FB_ERRMSG_ILLEGALRESUMEERROR )
+			errReport( FB_ERRMSG_ILLEGALRESUMEERROR )
 			exit function
 		end if
 

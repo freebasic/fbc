@@ -166,7 +166,7 @@ function cCatExpression _
     	case else
     		catexpr = rtlToStr( catexpr )
    			if( catexpr = NULL ) then
-   				if( hReportError( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+   				if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
    					exit function
    				else
    					'' error recovery: fake a new node
@@ -187,7 +187,7 @@ function cCatExpression _
 
 		'' LogExpression
     	if( cLogExpression( expr ) = FALSE ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     			exit function
     		else
             	exit do
@@ -209,7 +209,7 @@ function cCatExpression _
 	   		end if
 
 	   		if( expr = NULL ) then
-	   			if( hReportError( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+	   			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
 	   				exit function
 	   			else
    					'' error recovery: fake a new node
@@ -222,7 +222,7 @@ function cCatExpression _
     	catexpr = astNewBOP( AST_OP_ADD, catexpr, expr )
 
         if( catexpr = NULL ) then
-			if( hReportError( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
             	exit function
    			else
    				'' error recovery: fake a new node
@@ -272,7 +272,7 @@ function cLogExpression _
 
     	'' LogOrExpression
     	if( cLogOrExpression( expr ) = FALSE ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     			exit function
     		else
             	exit do
@@ -283,7 +283,7 @@ function cLogExpression _
     	logexpr = astNewBOP( op, logexpr, expr )
 
         if( logexpr = NULL ) then
-    		if( hReportError( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: fake a node
@@ -325,7 +325,7 @@ function cLogOrExpression _
 
     	'' LogAndExpression
     	if( cLogAndExpression( expr ) = FALSE ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     			exit function
     		else
             	exit do
@@ -336,7 +336,7 @@ function cLogOrExpression _
     	logexpr = astNewBOP( AST_OP_OR, logexpr, expr )
 
         if( logexpr = NULL ) then
-    		if( hReportError( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: fake a node
@@ -378,7 +378,7 @@ function cLogAndExpression _
 
     	'' RelExpression
     	if( cRelExpression( expr ) = FALSE ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     			exit function
     		else
             	exit do
@@ -389,7 +389,7 @@ function cLogAndExpression _
     	logexpr = astNewBOP( AST_OP_AND, logexpr, expr )
 
         if( logexpr = NULL ) then
-    		if( hReportError( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: fake a node
@@ -445,7 +445,7 @@ function cRelExpression _
 
     	'' AddExpression
     	if( cAddExpression( expr ) = FALSE ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     			exit function
     		else
             	exit do
@@ -456,7 +456,7 @@ function cRelExpression _
    		relexpr = astNewBOP( op, relexpr, expr )
 
     	if( relexpr = NULL ) Then
-    		if( hReportError( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: fake a node
@@ -503,7 +503,7 @@ function cAddExpression _
 
     	'' ShiftExpression
     	if( cShiftExpression( expr ) = FALSE ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     			exit function
     		else
             	exit do
@@ -522,7 +522,7 @@ function cAddExpression _
     	end if
 
     	if( addexpr = NULL ) Then
-    		if( hReportError( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: fake a node
@@ -569,7 +569,7 @@ function cShiftExpression _
 
     	'' ModExpression
     	if( cModExpression( expr ) = FALSE ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     			exit function
     		else
             	exit do
@@ -580,7 +580,7 @@ function cShiftExpression _
     	shiftexpr = astNewBOP( op, shiftexpr, expr )
 
     	if( shiftexpr = NULL ) Then
-    		if( hReportError( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: fake a node
@@ -621,7 +621,7 @@ function cModExpression _
 
     	'' IntDivExpression
     	if( cIntDivExpression( expr ) = FALSE ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     			exit function
     		else
             	exit do
@@ -632,7 +632,7 @@ function cModExpression _
     	modexpr = astNewBOP( AST_OP_MOD, modexpr, expr )
 
     	if( modexpr = NULL ) Then
-    		if( hReportError( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: fake a node
@@ -673,7 +673,7 @@ function cIntDivExpression _
 
     	'' MultExpression
     	if( cMultExpression( expr ) = FALSE ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     			exit function
     		else
             	exit do
@@ -684,7 +684,7 @@ function cIntDivExpression _
     	idivexpr = astNewBOP( AST_OP_INTDIV, idivexpr, expr )
 
     	if( idivexpr = NULL ) Then
-    		if( hReportError( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: fake a node
@@ -731,7 +731,7 @@ function cMultExpression _
 
     	'' ExpExpression
     	if( cExpExpression( expr ) = FALSE ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     			exit function
     		else
             	exit do
@@ -742,7 +742,7 @@ function cMultExpression _
     	mulexpr = astNewBOP( op, mulexpr, expr )
 
     	if( mulexpr = NULL ) Then
-    		if( hReportError( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: fake a node
@@ -782,7 +782,7 @@ function cExpExpression _
 
     	'' NegNotExpression
     	if( cNegNotExpression( expr ) = FALSE ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     			exit function
     		else
             	exit do
@@ -793,7 +793,7 @@ function cExpExpression _
     	expexpr = astNewBOP( AST_OP_POW, expexpr, expr )
 
     	if( expexpr = NULL ) Then
-    		if( hReportError( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: fake a node

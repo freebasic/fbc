@@ -80,7 +80,7 @@ function cTypeConvExpr( byref expr as ASTNODE ptr ) as integer
 
 	'' '('
 	if( hMatch( CHAR_LPRNT ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDLPRNT )
+		errReport( FB_ERRMSG_EXPECTEDLPRNT )
 		exit function
 	end if
 
@@ -90,13 +90,13 @@ function cTypeConvExpr( byref expr as ASTNODE ptr ) as integer
 
 	expr = astNewCONV( op, dtype, NULL, expr, TRUE )
     if( expr = NULL ) Then
-    	hReportError( FB_ERRMSG_TYPEMISMATCH, TRUE )
+    	errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
     	exit function
     end if
 
 	'' ')'
 	if( hMatch( CHAR_RPRNT ) = FALSE ) then
-		hReportError( FB_ERRMSG_EXPECTEDRPRNT )
+		errReport( FB_ERRMSG_EXPECTEDRPRNT )
 		exit function
 	end if
 

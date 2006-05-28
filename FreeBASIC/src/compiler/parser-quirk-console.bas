@@ -59,7 +59,7 @@ function cViewStmt(byval is_func as integer = FALSE, _
 	if( is_func = FALSE ) then
     	if( cExpression( expr1 ) ) then
             if( hMatch( FB_TK_TO ) = FALSE ) then
-                hReportError FB_ERRMSG_SYNTAXERROR
+                errReport FB_ERRMSG_SYNTAXERROR
                 exit function
             end if
 

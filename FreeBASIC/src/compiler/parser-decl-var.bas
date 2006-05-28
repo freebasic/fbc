@@ -41,9 +41,9 @@ private function hCheckScope( ) as integer
 
 	if( env.scope > FB_MAINSCOPE ) then
 		if( fbIsModLevel( ) = FALSE ) then
-			hReportError( FB_ERRMSG_ILLEGALINSIDEASUB )
+			errReport( FB_ERRMSG_ILLEGALINSIDEASUB )
 		else
-			hReportError( FB_ERRMSG_ILLEGALINSIDEASCOPE )
+			errReport( FB_ERRMSG_ILLEGALINSIDEASCOPE )
 		end if
 
 		return FALSE
@@ -87,7 +87,7 @@ function cVariableDecl( ) as integer
 	case FB_TK_COMMON
 		'' can't use COMMON inside a proc or inside a scope block
 		if( hCheckScope( ) = FALSE ) then
-			if( hGetErrorCnt( ) >= env.clopt.maxerrors ) then
+			if( errGetCount( ) >= env.clopt.maxerrors ) then
 				exit function
 			else
 				'' error recovery: don't share it
@@ -110,7 +110,7 @@ function cVariableDecl( ) as integer
 
 		'' can't use EXTERN inside a proc
 		if( hCheckScope( ) = FALSE ) then
-			if( hGetErrorCnt( ) >= env.clopt.maxerrors ) then
+			if( errGetCount( ) >= env.clopt.maxerrors ) then
 				exit function
 			else
 				'' error recovery: don't make it extern
@@ -152,7 +152,7 @@ function cVariableDecl( ) as integer
 		if( lexGetToken( ) = FB_TK_SHARED ) then
 			'' can't use SHARED inside a proc
 			if( hCheckScope( ) = FALSE ) then
-				if( hGetErrorCnt( ) >= env.clopt.maxerrors ) then
+				if( errGetCount( ) >= env.clopt.maxerrors ) then
 					exit function
 				else
 					'' error recovery: don't make it shared
@@ -243,7 +243,7 @@ private function hDeclExternVar _
     	'' check type
 		if( (dtype <> symbGetType( s )) or _
 			(subtype <> symbGetSubType( s )) ) then
-    		if( hReportErrorEx( FB_ERRMSG_TYPEMISMATCH, *id ) = FALSE ) then
+    		if( errReportEx( FB_ERRMSG_TYPEMISMATCH, *id ) = FALSE ) then
     			exit function
     		end if
 		end if
@@ -253,7 +253,7 @@ private function hDeclExternVar _
 		'' dynamic?
 		if( symbIsDynamic( s ) ) then
 			if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
-    			if( hReportErrorEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, *id ) = FALSE ) then
+    			if( errReportEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, *id ) = FALSE ) then
     				exit function
     			end if
     		end if
@@ -261,14 +261,14 @@ private function hDeclExternVar _
     	'' static..
     	else
 			if( (attrib and FB_SYMBATTRIB_DYNAMIC) <> 0 ) then
-    			if( hReportErrorEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, *id ) = FALSE ) then
+    			if( errReportEx( FB_ERRMSG_EXPECTEDDYNAMICARRAY, *id ) = FALSE ) then
     				exit function
     			end if
     		end if
 
     		'' no extern static as local
     		if( hCheckScope( ) = FALSE ) then
-				if( hGetErrorCnt( ) >= env.clopt.maxerrors ) then
+				if( errGetCount( ) >= env.clopt.maxerrors ) then
 					exit function
 				else
 					'' error recovery: don't make it shared
@@ -292,7 +292,7 @@ private function hDeclExternVar _
 		'' check dimensions
 		if( symbGetArrayDimensions( s ) <> 0 ) then
 			if( dimensions <> symbGetArrayDimensions( s ) ) then
-    			if( hReportErrorEx( FB_ERRMSG_WRONGDIMENSIONS, *id ) = FALSE ) then
+    			if( errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id ) = FALSE ) then
     				exit function
     			end if
 
@@ -342,7 +342,7 @@ private function hDeclStaticVar _
     	if( ns <> symbGetCurrentNamespc( ) ) then
     		'' not extern?
     		if( symbIsExtern( sym ) = FALSE ) then
-    			if( hReportError( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
+    			if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
     				exit function
     			end if
     		end if
@@ -370,7 +370,7 @@ private function hDeclStaticVar _
     		  			    addsuffix, dimensions, dTB() )
 
 		if( s = NULL ) then
-    		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
+    		errReportEx( FB_ERRMSG_DUPDEFINITION, id )
     		'' no error recovery: already parsed
     		return NULL
     	end if
@@ -455,7 +455,7 @@ private function hDeclDynArray _
    							  lgt, dimensions, dTB(), _
    							  attrib, addsuffix, FALSE )
    			if( s = NULL ) then
-   				hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *id )
+   				errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
    				'' no error recovery, caller will take care of that
    				exit function
    			end if
@@ -472,7 +472,7 @@ private function hDeclDynArray _
    			s = hDeclExternVar( ns, id, dtype, subtype, attrib, addsuffix, _
    								dimensions, dTB() )
    			if( s = NULL ) then
-   				hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *id )
+   				errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
 				'' no error recovery, caller will take care of that
 				exit function
 			end if
@@ -482,7 +482,7 @@ private function hDeclDynArray _
 			'' external?
 			if( symbIsExtern( s ) ) then
 				if( (attrib and FB_SYMBATTRIB_EXTERN) <> 0 ) then
-   					hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *id )
+   					errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
    					'' no error recovery, ditto
 					exit function
 				end if
@@ -506,14 +506,14 @@ private function hDeclDynArray _
 
 		if( (dtype <> symbGetType( s )) or _
 			(subtype <> symbGetSubType( s )) ) then
-    		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *id )
+    		errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
     		'' no error recovery, caller will take care of that
     		exit function
 		end if
 
 		if( symbGetArrayDimensions( s ) > 0 ) then
 			if( dimensions <> symbGetArrayDimensions( s ) ) then
-    			hReportErrorEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
+    			errReportEx( FB_ERRMSG_WRONGDIMENSIONS, *id )
     			'' no error recovery, ditto
     			exit function
     		end if
@@ -523,7 +523,7 @@ private function hDeclDynArray _
 	else
 		if( (dtype <> symbGetType( s )) or _
 			(subtype <> symbGetSubType( s )) ) then
-    		hReportErrorEx( FB_ERRMSG_DUPDEFINITION, *id )
+    		errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
     		'' no error recovery, ditto
     		exit function
 		end if
@@ -623,7 +623,7 @@ private function hVarDecl _
     	lexSkipToken( )
 
     	if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: fake a type
@@ -636,7 +636,7 @@ private function hVarDecl _
 
     	'' ANY?
     	if( dtype = FB_DATATYPE_VOID ) then
-    		if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: fake a type
@@ -654,7 +654,7 @@ private function hVarDecl _
 
     do
     	chain_ = cIdentifier( TRUE )
-		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
 
@@ -677,7 +677,7 @@ private function hVarDecl _
 
     	'' ID
     	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: fake an id
@@ -689,7 +689,7 @@ private function hVarDecl _
     		'' if inside a namespace, symbols can't contain periods (.)'s
     		if( symbIsGlobalNamespc( ) = FALSE ) then
     			if( lexGetPeriodPos( ) > 0 ) then
-    				if( hReportError( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+    				if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
     					exit function
     				end if
     			end if
@@ -709,7 +709,7 @@ private function hVarDecl _
     		addsuffix = TRUE
     	else
     		if( suffix <> INVALID ) then
-    			if( hReportErrorEx( FB_ERRMSG_SYNTAXERROR, @id ) = FALSE ) then
+    			if( errReportEx( FB_ERRMSG_SYNTAXERROR, @id ) = FALSE ) then
     				exit function
     			end if
     		end if
@@ -772,7 +772,7 @@ private function hVarDecl _
     			'' COMMON.. no subscripts
     			else
     				if( lexGetToken( ) <> CHAR_RPRNT ) then
-    					if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+    					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
     						exit function
     					else
     						'' error recovery: skip until next ')'
@@ -784,7 +784,7 @@ private function hVarDecl _
 
 			'' ')'
     		if( lexGetToken( ) <> CHAR_RPRNT ) then
-    			if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+    			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
     				exit function
     			end if
     		else
@@ -796,7 +796,7 @@ private function hVarDecl _
     	else
     		'' REDIM and scalar passed?
     		if( token = FB_TK_REDIM ) then
-    			if( hReportErrorEx( FB_ERRMSG_EXPECTEDARRAY, @id ) = FALSE ) then
+    			if( errReportEx( FB_ERRMSG_EXPECTEDARRAY, @id ) = FALSE ) then
     				exit function
     			end if
     		end if
@@ -811,7 +811,7 @@ private function hVarDecl _
 				lexSkipToken( )
 
 				if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-					if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 						exit function
 					end if
 				else
@@ -826,7 +826,7 @@ private function hVarDecl _
     		if( lexGetToken( ) = FB_TK_AS ) then
 
     			if( dtype <> INVALID ) then
-    				if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+    				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
     					exit function
     				else
     					dtype = INVALID
@@ -836,7 +836,7 @@ private function hVarDecl _
     			lexSkipToken( )
 
     			if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
-    				if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+    				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
     					exit function
     				else
     					'' error recovery: fake a type
@@ -849,7 +849,7 @@ private function hVarDecl _
 
     			'' ANY?
     			if( dtype = FB_DATATYPE_VOID ) then
-    				if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+    				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
     					exit function
     				else
     					'' error recovery: fake a type
@@ -887,7 +887,7 @@ private function hVarDecl _
 		end if
 
     	if( sym = NULL ) then
-    		if( hGetErrorCnt( ) >= env.clopt.maxerrors ) then
+    		if( errGetCount( ) >= env.clopt.maxerrors ) then
     			exit function
     		end if
     	end if
@@ -969,7 +969,7 @@ function cStaticArrayDecl _
     do
     	'' Expression
 		if( cExpression( expr ) = FALSE ) then
-			if( hReportError( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: fake an expr
@@ -980,7 +980,7 @@ function cStaticArrayDecl _
 			end if
 		else
 			if( astIsCONST( expr ) = FALSE ) then
-				if( hReportError( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
+				if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: fake an expr
@@ -999,7 +999,7 @@ function cStaticArrayDecl _
 
     		'' Expression
 			if( cExpression( expr ) = FALSE ) then
-				if( hReportError( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
+				if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: skip to next ',' and fake an expr
@@ -1008,7 +1008,7 @@ function cStaticArrayDecl _
 				end if
 			else
 				if( astIsCONST( expr ) = FALSE ) then
-					if( hReportError( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
+					if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
 						exit function
 					else
 						'' error recovery: fake an expr
@@ -1037,7 +1037,7 @@ function cStaticArrayDecl _
     	lexSkipToken( )
 
 		if( i >= FB_MAXARRAYDIMS ) then
-			if( hReportError( FB_ERRMSG_TOOMANYDIMENSIONS ) = FALSE ) then
+			if( errReport( FB_ERRMSG_TOOMANYDIMENSIONS ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: skip to next ')'
@@ -1050,7 +1050,7 @@ function cStaticArrayDecl _
 	if( checkprnts ) then
 		'' ')'
     	if( lexGetToken( ) <> CHAR_RPRNT ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
     			exit function
     		end if
     	else
@@ -1084,7 +1084,7 @@ function cArrayDecl _
     do
     	'' Expression
 		if( cExpression( expr ) = FALSE ) then
-			if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: fake an expr
@@ -1097,7 +1097,7 @@ function cArrayDecl _
 		else
     		'' check if non-numeric
     		if( astGetDataClass( expr ) >= FB_DATACLASS_STRING ) then
-    			if( hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+    			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
     				exit function
     			else
     				'' error recovery: fake an expr
@@ -1115,7 +1115,7 @@ function cArrayDecl _
 
     		'' Expression
 			if( cExpression( expr ) = FALSE ) then
-				if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: skip to next ',' and fake an expr
@@ -1126,7 +1126,7 @@ function cArrayDecl _
     		else
     			'' check if non-numeric
     			if( astGetDataClass( expr ) >= FB_DATACLASS_STRING ) then
-    				if( hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+    				if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
     					exit function
     				else
     					'' error recovery: fake an expr
@@ -1153,7 +1153,7 @@ function cArrayDecl _
     	lexSkipToken( )
 
 		if( i >= FB_MAXARRAYDIMS ) then
-			if( hReportError( FB_ERRMSG_TOOMANYDIMENSIONS ) = FALSE ) then
+			if( errReport( FB_ERRMSG_TOOMANYDIMENSIONS ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: skip to next ')'

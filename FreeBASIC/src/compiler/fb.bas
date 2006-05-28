@@ -581,13 +581,13 @@ function fbCompile _
 
 	'' open source file
 	if( hFileExists( *infname ) = FALSE ) then
-		hReportErrorEx( FB_ERRMSG_FILENOTFOUND, infname, -1 )
+		errReportEx( FB_ERRMSG_FILENOTFOUND, infname, -1 )
 		exit function
 	end if
 
 	env.inf.num = freefile
 	if( open( *infname, for binary, access read, as #env.inf.num ) <> 0 ) then
-		hReportErrorEx( FB_ERRMSG_FILEACCESSERROR, infname, -1 )
+		errReportEx( FB_ERRMSG_FILEACCESSERROR, infname, -1 )
 		exit function
 	end if
 
@@ -598,7 +598,7 @@ function fbCompile _
 
 	''
 	if( emitOpen( ) = FALSE ) then
-		hReportErrorEx( FB_ERRMSG_FILEACCESSERROR, infname, -1 )
+		errReportEx( FB_ERRMSG_FILEACCESSERROR, infname, -1 )
 		exit function
 	end if
 
@@ -634,7 +634,7 @@ function fbCompile _
 	'' check if any label undefined was used
 	if( res = TRUE ) then
 		symbCheckLabels( )
-		function = (hGetErrorCnt( ) = 0)
+		function = (errGetCount( ) = 0)
 	else
 		function = FALSE
 	end if
@@ -729,8 +729,8 @@ function fbIncludeFile _
 	function = FALSE
 
 	if( env.includerec >= FB_MAXINCRECLEVEL ) then
-		hReportError( FB_ERRMSG_RECLEVELTOODEEP )
-		exit function
+		errReport( FB_ERRMSG_RECLEVELTOODEEP )
+		return errFatal( )
 	end if
 
 	'' open include file
@@ -760,57 +760,56 @@ function fbIncludeFile _
 
 	''
 	if( hFileExists( incfile ) = FALSE ) then
-		hReportErrorEx( FB_ERRMSG_FILENOTFOUND, "\"" + *filename + "\"" )
-
-	else
-
-		''
-		if( isonce ) then
-            '' we should respect the path
-        	if( hFindIncFile( incfile ) <> NULL ) then
-        		return TRUE
-        	end if
-		end if
-
-        '' we should respect the path here too
-		fileidx = hAddIncFile( incfile )
-
-		''
-		infileTb(env.includerec) = env.inf
-    	env.includerec += 1
-
-        '' we must remember the path - otherwise we'd be unable to
-        '' find header files in the same path
-		env.inf.name 	= incfile
-		env.inf.incfile = fileidx
-
-		''
-		env.inf.num = freefile
-		if( open( incfile, for binary, access read, as #env.inf.num ) <> 0 ) then
-			hReportErrorEx( FB_ERRMSG_FILENOTFOUND, "\"" + *filename + "\"" )
-			exit function
-		end if
-
-		env.inf.format = hCheckFileFormat( env.inf.num )
-
-		'' parse
-		lexPushCtx( )
-
-		lexInit( TRUE )
-
-		function = cProgram( )
-
-		lexPopCtx( )
-
-		'' close it
-		if( close( #env.inf.num ) <> 0 ) then
-			'' ...
-		end if
-
-		''
-		env.includerec -= 1
-		env.inf = infileTb( env.includerec )
+		errReportEx( FB_ERRMSG_FILENOTFOUND, "\"" + *filename + "\"" )
+		return errFatal( )
 	end if
+
+	''
+	if( isonce ) then
+           '' we should respect the path
+       	if( hFindIncFile( incfile ) <> NULL ) then
+       		return TRUE
+       	end if
+	end if
+
+    '' we should respect the path here too
+	fileidx = hAddIncFile( incfile )
+
+	''
+	infileTb(env.includerec) = env.inf
+   	env.includerec += 1
+
+	'' we must remember the path - otherwise we'd be unable to
+	'' find header files in the same path
+	env.inf.name 	= incfile
+	env.inf.incfile = fileidx
+
+	''
+	env.inf.num = freefile
+	if( open( incfile, for binary, access read, as #env.inf.num ) <> 0 ) then
+		errReportEx( FB_ERRMSG_FILENOTFOUND, "\"" + *filename + "\"" )
+		return errFatal( )
+	end if
+
+	env.inf.format = hCheckFileFormat( env.inf.num )
+
+	'' parse
+	lexPushCtx( )
+
+	lexInit( TRUE )
+
+	function = cProgram( )
+
+	lexPopCtx( )
+
+	'' close it
+	if( close( #env.inf.num ) <> 0 ) then
+		'' ...
+	end if
+
+	''
+	env.includerec -= 1
+	env.inf = infileTb( env.includerec )
 
 end function
 

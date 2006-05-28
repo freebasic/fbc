@@ -53,7 +53,7 @@ private function hElmInit _
     env.ctxsym = symbGetSubType( sym )
 
 	if( cExpression( expr ) = FALSE ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: skip until ',' and create a fake expression
@@ -73,7 +73,7 @@ private function hElmInit _
     '' that doesn't matter with checkASSIGN
 
     if( astCheckASSIGN( @lside, expr ) = FALSE ) then
-		if( hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+		if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
         	exit function
         else
         	'' error recovery: create a fake expression
@@ -124,7 +124,7 @@ private function hArrayInit _
 			if( hMatch( CHAR_LBRACE ) ) then
 				dimcnt += 1
 				if( dimcnt > dimensions ) then
-					if( hReportError( FB_ERRMSG_TOOMANYEXPRESSIONS ) = FALSE ) then
+					if( errReport( FB_ERRMSG_TOOMANYEXPRESSIONS ) = FALSE ) then
 						exit function
 					else
 						'' error recovery: skip until next '}'
@@ -182,7 +182,7 @@ private function hArrayInit _
 		if( isarray ) then
 			'' '}'?
 			if( hMatch( CHAR_RBRACE ) = FALSE ) then
-				if( hReportError( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
+				if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: skip until next '}'
@@ -241,7 +241,7 @@ private function hUDTInit _
 	do
 		elm_cnt += 1
 		if( elm_cnt > elements ) then
-			if( hReportError( FB_ERRMSG_TOOMANYEXPRESSIONS ) = FALSE ) then
+			if( errReport( FB_ERRMSG_TOOMANYEXPRESSIONS ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: skip until next ')'
@@ -273,7 +273,7 @@ private function hUDTInit _
         if( isarray ) then
 			'' '}'
 			if( hMatch( CHAR_RBRACE ) = FALSE ) then
-				if( hReportError( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
+				if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: skip until next '}'
@@ -290,7 +290,7 @@ private function hUDTInit _
 
 	'' ')'
 	if( hMatch( CHAR_RPRNT ) = FALSE ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: skip until next ')'
@@ -325,13 +325,13 @@ function cVariableInit _
 	if( symbIsVar( sym ) ) then
 		'' cannot initialize dynamic vars
 		if( symbGetIsDynamic( sym ) ) then
-			hReportError( FB_ERRMSG_CANTINITDYNAMICARRAYS, TRUE )
+			errReport( FB_ERRMSG_CANTINITDYNAMICARRAYS, TRUE )
 			exit function
 		end if
 
 		'' common?? impossible but..
 		if( symbIsCommon( sym ) ) then
-			hReportError( FB_ERRMSG_CANTINITDYNAMICARRAYS, TRUE )
+			errReport( FB_ERRMSG_CANTINITDYNAMICARRAYS, TRUE )
 			exit function
 		end if
 	end if
@@ -350,7 +350,7 @@ function cVariableInit _
     if( isarray ) then
 		'' '}'
 		if( hMatch( CHAR_RBRACE ) = FALSE ) then
-			if( hReportError( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: skip until new '}'

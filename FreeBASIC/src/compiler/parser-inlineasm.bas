@@ -98,7 +98,7 @@ function cAsmCode as integer static
 						end if
 					end if
 				else
-					if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+					if( errGetLast( ) <> FB_ERRMSG_OK ) then
 						exit function
 					end if
 				end if
@@ -110,7 +110,7 @@ function cAsmCode as integer static
 			if( lexGetToken( LEXCHECK_NOWHITESPC ) = FB_TK_FUNCTION ) then
     			sym = symbGetProcResult( env.currproc )
     			if( sym = NULL ) then
-    				if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+    				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
     					exit function
     				else
     					doskip = TRUE
@@ -177,7 +177,7 @@ function cAsmBlock as integer
 	issingleline = FALSE
 	if( cComment( ) ) then
 		if( cStmtSeparator( ) = FALSE ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: skip until next line
@@ -214,7 +214,7 @@ function cAsmBlock as integer
 			exit do
 
 		case else
-    		if( hReportError( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: skip until next line
@@ -230,12 +230,12 @@ function cAsmBlock as integer
 	if( issingleline = FALSE ) then
 		'' END ASM
 		if( hMatch( FB_TK_END ) = FALSE ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDENDASM ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDENDASM ) = FALSE ) then
     			exit function
     		end if
 
 		elseif( hMatch( FB_TK_ASM ) = FALSE ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDENDASM ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDENDASM ) = FALSE ) then
     			exit function
     		end if
 		end if

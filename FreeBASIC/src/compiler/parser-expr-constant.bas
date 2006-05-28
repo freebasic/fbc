@@ -84,7 +84,7 @@ function cEnumConstant _
 
 	'' ID
 	if( lexGetToken( ) <> FB_TK_ID ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: fake a node
@@ -95,7 +95,7 @@ function cEnumConstant _
 
 	elm = symbFindByClass( lexGetSymChain( ), FB_SYMBCLASS_CONST )
     if( elm = NULL ) then
-    	if( hReportUndefError( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) ) = FALSE ) then
+    	if( errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) ) = FALSE ) then
     		exit function
 		else
 			'' error recovery: fake a node
@@ -106,7 +106,7 @@ function cEnumConstant _
     end if
 
     if( symbGetParent( elm ) <> sym ) then
-    	if( hReportUndefError( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) ) = FALSE ) then
+    	if( errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) ) = FALSE ) then
     		exit function
 		else
 			'' error recovery: fake a node

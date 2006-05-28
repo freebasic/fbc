@@ -66,7 +66,7 @@ function cStatement as integer
 		lexSkipToken( )
 	loop
 
-	function = (hGetLastError( ) = FB_ERRMSG_OK)
+	function = (errGetLast( ) = FB_ERRMSG_OK)
 
 end function
 

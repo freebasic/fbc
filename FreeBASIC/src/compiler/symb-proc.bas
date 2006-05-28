@@ -1191,12 +1191,12 @@ function symbFindClosestOvlProc _
 
 	'' more than one possibility?
 	if( ambcnt > 0 ) then
-		hReportParamError( prochead, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
+		errReportParam( prochead, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
 		function = NULL
 	else
 		'' no matches?
 		if( ovlproc = NULL ) then
-			hReportParamError( prochead, 0, NULL, FB_ERRMSG_NOMATCHINGPROC )
+			errReportParam( prochead, 0, NULL, FB_ERRMSG_NOMATCHINGPROC )
 		end if
 		function = ovlproc
 	end if

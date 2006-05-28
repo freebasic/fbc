@@ -54,13 +54,13 @@ private function hFieldArray _
     do
     	dims += 1
     	if( dims > maxdims ) then
-			hReportError( FB_ERRMSG_WRONGDIMENSIONS )
+			errReport( FB_ERRMSG_WRONGDIMENSIONS )
 			exit function
     	end if
 
     	'' Expression
 		if( cExpression( dimexpr ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
 
@@ -69,7 +69,7 @@ private function hFieldArray _
 			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
 			dimexpr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
-				hReportError( FB_ERRMSG_INVALIDDATATYPES )
+				errReport( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
 			end if
 		end if
@@ -82,7 +82,7 @@ private function hFieldArray _
     								  lexLineNum( ) )
 
 			if( dimexpr = NULL ) then
-				hReportError( FB_ERRMSG_ARRAYOUTOFBOUNDS )
+				errReport( FB_ERRMSG_ARRAYOUTOFBOUNDS )
 				exit function
 			end if
     	end if
@@ -104,7 +104,7 @@ private function hFieldArray _
         '' next
         d = d->next
     	if( d = NULL ) then
-			hReportError( FB_ERRMSG_WRONGDIMENSIONS )
+			errReport( FB_ERRMSG_WRONGDIMENSIONS )
 			exit function
     	end if
 
@@ -114,7 +114,7 @@ private function hFieldArray _
 
     ''
     if( dims < maxdims ) then
-		hReportError( FB_ERRMSG_WRONGDIMENSIONS )
+		errReport( FB_ERRMSG_WRONGDIMENSIONS )
 		exit function
     end if
 
@@ -186,13 +186,13 @@ private function hTypeField _
 		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD
 
 		case else
-			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			exit function
 		end select
 
     	sym = symbLookupUDTElm( subtype, lexGetText( ) )
     	if( sym = NULL ) then
-    		hReportUndefError( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) )
+    		errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) )
     		exit function
     	end if
 
@@ -236,7 +236,7 @@ private function hTypeField _
 
     		'' ')'
     		if( lexGetToken( ) <> CHAR_RPRNT ) then
-    			hReportError( FB_ERRMSG_EXPECTEDRPRNT )
+    			errReport( FB_ERRMSG_EXPECTEDRPRNT )
     			exit function
 			end if
 
@@ -246,7 +246,7 @@ private function hTypeField _
 			'' array and no index?
 			if( checkarray ) then
 				if( symbGetArrayDimensions( sym ) <> 0 ) then
-    				hReportError( FB_ERRMSG_EXPECTEDINDEX )
+    				errReport( FB_ERRMSG_EXPECTEDINDEX )
     				exit function
    				end if
    			end if
@@ -292,7 +292,7 @@ function cDerefFields _
 
 			'' Expression
 			if( cExpression( idxexpr ) = FALSE ) then
-				hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
+				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 				exit function
 			end if
 
@@ -301,14 +301,14 @@ function cDerefFields _
 				(astGetDataSize( idxexpr ) <> FB_POINTERSIZE) ) then
 				idxexpr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, idxexpr )
 				if( idxexpr = NULL ) then
-					hReportError( FB_ERRMSG_INVALIDDATATYPES )
+					errReport( FB_ERRMSG_INVALIDDATATYPES )
 					exit function
 				end if
 			end if
 
 			'' ']'
 			if( lexGetToken( ) <> CHAR_RBRACKET ) then
-				hReportError( FB_ERRMSG_SYNTAXERROR )
+				errReport( FB_ERRMSG_SYNTAXERROR )
 				exit function
 			end if
 
@@ -361,7 +361,7 @@ function cDerefFields _
 					return TRUE
 
 				case else
-					hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
+					errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
 					exit function
 				end select
 
@@ -371,7 +371,7 @@ function cDerefFields _
 			lgt = symbCalcLen( dtype - FB_DATATYPE_POINTER, subtype )
 
 			if( lgt = 0 ) then
-				hReportError( FB_ERRMSG_INCOMPLETETYPE, TRUE )
+				errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE )
 				exit function
 			end if
 
@@ -384,7 +384,7 @@ function cDerefFields _
 		end select
 
 		if( dtype < FB_DATATYPE_POINTER ) then
-			hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
+			errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
 			exit function
 		end if
 
@@ -392,7 +392,7 @@ function cDerefFields _
 
 		'' incomplete type?
 		if( (dtype = FB_DATATYPE_VOID) or (dtype = FB_DATATYPE_FWDREF) ) then
-			hReportError( FB_ERRMSG_INCOMPLETETYPE, TRUE )
+			errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE )
 			exit function
 		end if
 
@@ -401,7 +401,7 @@ function cDerefFields _
 		sym = hTypeField( dtype, subtype, expr, derefcnt, checkarray )
 		if( sym = NULL ) then
 			if( isderef ) then
-				hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+				errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 				exit function
 			end if
 		end if
@@ -434,7 +434,7 @@ function cDerefFields _
 		''
 		do while( derefcnt > 0 )
 			if( dtype < FB_DATATYPE_POINTER ) then
-				hReportError( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
+				errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
 				return FALSE
 			end if
 
@@ -442,7 +442,7 @@ function cDerefFields _
 
 			'' incomplete type?
 			if( (dtype = FB_DATATYPE_VOID) or (dtype = FB_DATATYPE_FWDREF) ) then
-				hReportError( FB_ERRMSG_INCOMPLETETYPE, TRUE )
+				errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE )
 				exit function
 			end if
 
@@ -484,7 +484,7 @@ function cFuncPtrOrDerefFields _
 		'' DerefFields?
 		cDerefFields( dtype, subtype, varexpr, checkarray )
 
-		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
 
@@ -511,7 +511,7 @@ function cFuncPtrOrDerefFields _
 					exit function
 				end if
 			else
-				hReportError( FB_ERRMSG_SYNTAXERROR )
+				errReport( FB_ERRMSG_SYNTAXERROR )
 				exit function
 			end if
 		end if
@@ -576,14 +576,14 @@ function cDynArrayIdx _
     	'' check dimensions, if not common
     	if( maxdims <> INVALID ) then
     		if( dims > maxdims ) then
-				hReportError( FB_ERRMSG_WRONGDIMENSIONS )
+				errReport( FB_ERRMSG_WRONGDIMENSIONS )
 				exit function
     		end if
     	end if
 
     	'' Expression
 		if( cExpression( dimexpr ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
 
@@ -592,7 +592,7 @@ function cDynArrayIdx _
 			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
 			dimexpr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
-				hReportError( FB_ERRMSG_INVALIDDATATYPES )
+				errReport( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
 			end if
 		end if
@@ -634,7 +634,7 @@ function cDynArrayIdx _
     '' check dimensions, if not common
     if( maxdims <> INVALID ) then
     	if( dims < maxdims ) then
-			hReportError( FB_ERRMSG_WRONGDIMENSIONS )
+			errReport( FB_ERRMSG_WRONGDIMENSIONS )
 			exit function
     	end if
     end if
@@ -692,7 +692,7 @@ function cArgArrayIdx _
     do
     	'' Expression
 		if( cExpression( dimexpr ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
 
@@ -701,7 +701,7 @@ function cArgArrayIdx _
 			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
 			dimexpr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
-				hReportError( FB_ERRMSG_INVALIDDATATYPES )
+				errReport( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
 			end if
 		end if
@@ -790,13 +790,13 @@ function cArrayIdx _
     do
     	dims += 1
     	if( dims > maxdims ) then
-			hReportError( FB_ERRMSG_WRONGDIMENSIONS )
+			errReport( FB_ERRMSG_WRONGDIMENSIONS )
 			exit function
     	end if
 
     	'' Expression
 		if( cExpression( dimexpr ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDEXPRESSION )
+			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
 			exit function
 		end if
 
@@ -805,7 +805,7 @@ function cArrayIdx _
 			(astGetDataSize( dimexpr ) <> FB_INTEGERSIZE) ) then
 			dimexpr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
-				hReportError( FB_ERRMSG_INVALIDDATATYPES )
+				errReport( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
 			end if
 		end if
@@ -818,7 +818,7 @@ function cArrayIdx _
     								  lexLineNum( ) )
 
 			if( dimexpr = NULL ) then
-				hReportError( FB_ERRMSG_ARRAYOUTOFBOUNDS )
+				errReport( FB_ERRMSG_ARRAYOUTOFBOUNDS )
 				exit function
 			end if
     	end if
@@ -840,7 +840,7 @@ function cArrayIdx _
         '' next
         d = d->next
     	if( d = NULL ) then
-			hReportError( FB_ERRMSG_WRONGDIMENSIONS )
+			errReport( FB_ERRMSG_WRONGDIMENSIONS )
 			exit function
     	end if
 
@@ -850,7 +850,7 @@ function cArrayIdx _
 
     ''
     if( dims < maxdims ) then
-		hReportError( FB_ERRMSG_WRONGDIMENSIONS )
+		errReport( FB_ERRMSG_WRONGDIMENSIONS )
 		exit function
     end if
 
@@ -932,7 +932,7 @@ function cVariableEx _
 
 	else
 		if( env.opt.explicit ) then
-			hReportUndefError( FB_ERRMSG_VARIABLENOTDECLARED, id )
+			errReportUndef( FB_ERRMSG_VARIABLENOTDECLARED, id )
 			exit function
 		end if
 
@@ -943,7 +943,7 @@ function cVariableEx _
     		if( sym <> NULL ) then
     			'' from a different namespace?
     			if( symbGetNamespace( sym ) <> symbGetCurrentNamespc( ) ) then
-    				hReportError( FB_ERRMSG_DECLOUTSIDENAMESPC )
+    				errReport( FB_ERRMSG_DECLOUTSIDENAMESPC )
     				exit function
     			end if
     		end if
@@ -956,13 +956,13 @@ function cVariableEx _
 
 		sym = hVarAddUndecl( id, dtype )
 		if( sym = NULL ) then
-			hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id )
+			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 			exit function
 		end if
 
 		'' show warning if inside an expression (ie: var was never set)
 		if( env.isexpr ) then
-			hReportWarning( FB_WARNINGMSG_IMPLICITALLOCATION, id )
+			errReportWarn( FB_WARNINGMSG_IMPLICITALLOCATION, id )
 		end if
 
 		subtype = symbGetSubtype( sym )
@@ -998,7 +998,7 @@ function cVariableEx _
 
 				'' ')'
     			if( hMatch( CHAR_RPRNT ) = FALSE ) then
-    				hReportError( FB_ERRMSG_EXPECTEDRPRNT )
+    				errReport( FB_ERRMSG_EXPECTEDRPRNT )
     				exit function
     			end if
 
@@ -1010,7 +1010,7 @@ function cVariableEx _
 
     			'' using (...) with scalars?
     			if( (isarray = FALSE) and (isfuncptr = FALSE) ) then
-    				hReportError( FB_ERRMSG_ARRAYNOTALLOCATED, TRUE )
+    				errReport( FB_ERRMSG_ARRAYNOTALLOCATED, TRUE )
     				exit function
     			end if
     		end if
@@ -1025,7 +1025,7 @@ function cVariableEx _
 
    		'' TypeField?
    		elm = hTypeField( dtype, subtype, idxexpr, drefcnt, checkarray )
-		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
 
@@ -1058,7 +1058,7 @@ function cVariableEx _
 		if( isbydesc = FALSE ) then
   			if( isarray ) then
   				if( checkarray ) then
-   					hReportError( FB_ERRMSG_EXPECTEDINDEX, TRUE )
+   					errReport( FB_ERRMSG_EXPECTEDINDEX, TRUE )
    					exit function
    				end if
    			end if
@@ -1077,7 +1077,7 @@ function cVariableEx _
     '' FuncPtrOrDerefFields?
 	cFuncPtrOrDerefFields( dtype, subtype, varexpr, isfuncptr, checkarray )
 
-	function = (hGetLastError( ) = FB_ERRMSG_OK)
+	function = (errGetLast( ) = FB_ERRMSG_OK)
 
 end function
 
@@ -1105,7 +1105,7 @@ function cWithVariable _
    	dtype -= FB_DATATYPE_POINTER
    	elm = hTypeField( dtype, subtype, varexpr, drefcnt, checkarray )
 	if( elm = NULL ) then
-		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		exit function
 	end if
 
@@ -1127,7 +1127,7 @@ function cWithVariable _
     '' FuncPtrOrDerefFields?
 	cFuncPtrOrDerefFields( dtype, subtype, varexpr, isfuncptr, checkarray )
 
-	function = (hGetLastError( ) = FB_ERRMSG_OK)
+	function = (errGetLast( ) = FB_ERRMSG_OK)
 
 end function
 
@@ -1186,12 +1186,12 @@ function cVarOrDeref _
 
 			case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET
 				if( checkaddrof = FALSE ) then
-					hReportError( FB_ERRMSG_INVALIDDATATYPES )
+					errReport( FB_ERRMSG_INVALIDDATATYPES )
 					exit function
 				end if
 
 			case else
-				hReportError( FB_ERRMSG_INVALIDDATATYPES )
+				errReport( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
 			end select
 		end if

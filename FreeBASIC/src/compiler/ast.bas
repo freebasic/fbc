@@ -1134,7 +1134,7 @@ function astCheckConst _
 		dval = abs( astGetValueAsDouble( n ) )
     	if( dval <> 0 ) then
     		if( (dval < dmin) or (dval > dmax) ) then
-    			hReportError( FB_ERRMSG_MATHOVERFLOW, TRUE )
+    			errReport( FB_ERRMSG_MATHOVERFLOW, TRUE )
 			end if
 		end if
 
@@ -1145,7 +1145,7 @@ function astCheckConst _
 			'' too big?
 			if( astGetValueAsULongInt( n ) > 9223372036854775807ULL ) then
 				n = astNewCONV( INVALID, dtype, NULL, n )
-				hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+				errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
 			end if
 		end if
 
@@ -1156,7 +1156,7 @@ function astCheckConst _
 			'' too big?
 			if( astGetValueAsLongInt( n ) and &h8000000000000000 ) then
 				n = astNewCONV( INVALID, dtype, NULL, n )
-				hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+				errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
 			end if
 		end if
 
@@ -1167,7 +1167,7 @@ function astCheckConst _
 		if( (lval < ast_minlimitTB( dtype )) or _
 			(lval > clngint( ast_maxlimitTB( dtype ) )) ) then
 			n = astNewCONV( INVALID, dtype, NULL, n )
-			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+			errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
 		end if
 
     case FB_DATATYPE_UBYTE, FB_DATATYPE_CHAR, _
@@ -1178,7 +1178,7 @@ function astCheckConst _
 		if( (ulval < culngint( ast_minlimitTB( dtype ) )) or _
 			(ulval > ast_maxlimitTB( dtype )) ) then
 			n = astNewCONV( INVALID, dtype, NULL, n )
-			hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+			errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
 		end if
 
 	case FB_DATATYPE_BITFIELD

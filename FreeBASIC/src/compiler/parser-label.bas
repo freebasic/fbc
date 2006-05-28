@@ -46,7 +46,7 @@ function cLabel as integer
 		if( lexGetType( ) = FB_DATATYPE_INTEGER ) then
 			l = symbAddLabel( lexGetText( ), TRUE, TRUE )
 			if( l = NULL ) then
-				if( hReportError( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+				if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: skip stmt
@@ -69,7 +69,7 @@ function cLabel as integer
 
 			'' no need to call Identifier(), ':' wouldn't follow 'ns.symbol' ids
 			chain_ = lexGetSymChain( )
-			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
 
@@ -79,7 +79,7 @@ function cLabel as integer
 
 			l = symbAddLabel( lexGetText( ), TRUE, TRUE )
 			if( l = NULL ) then
-				if( hReportError( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+				if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
 					exit function
 				end if
 			end if

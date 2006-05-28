@@ -75,7 +75,7 @@ function cDefDecl as integer static
 			'' CHAR
 			char = ucase( *lexGetText( ) )
 			if( len( char ) <> 1 ) then
-				if( hReportError( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then
+				if( errReport( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then
 					exit function
 				end if
 			end if
@@ -89,7 +89,7 @@ function cDefDecl as integer static
 				'' CHAR
 				char = ucase( *lexGetText( ) )
 				if( len( char ) <> 1 ) then
-					if( hReportError( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then
+					if( errReport( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then
 						exit function
 					end if
 				end if

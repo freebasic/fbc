@@ -50,7 +50,7 @@ function cExternStmtBegin _
 
 	'' "mangling spec"
 	if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: assume it's "C"
@@ -71,7 +71,7 @@ function cExternStmtBegin _
 		mangling = FB_MANGLING_CPP
 
 	case else
-		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: assume it's "C"
@@ -88,7 +88,7 @@ function cExternStmtBegin _
 		lexSkipToken( )
 
 		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 				exit function
 			end if
 

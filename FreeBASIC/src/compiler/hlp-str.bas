@@ -454,7 +454,7 @@ function hReEscape _
 
     		if( isnumber ) then
 				if( cuint( value ) > 255 ) then
-					hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+					errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 					value = 255
 				end if
 
@@ -674,7 +674,7 @@ function hReEscapeW _
 
     		if( isnumber ) then
 				if( cuint( value ) > 65535 ) then
-					hReportWarning( FB_WARNINGMSG_NUMBERTOOBIG )
+					errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 					value = 65535
 				end if
 

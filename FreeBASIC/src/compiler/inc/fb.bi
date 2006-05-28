@@ -41,6 +41,8 @@ const FB_MAXSCOPEDEPTH		= 128
 
 const FB_DEFAULT_MAXERRORS	= 10
 
+const FB_ERR_INFINITE 		= &h7fffffff
+
 ''
 const TRUE					= -1
 const FALSE					= 0

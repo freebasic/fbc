@@ -125,7 +125,7 @@ function cQuirkStmt as integer
 	end select
 
 	if( res = FALSE ) then
-		if( hGetLastError( ) = FB_ERRMSG_OK ) then
+		if( errGetLast( ) = FB_ERRMSG_OK ) then
 			res = cGfxStmt( )
 		end if
 	end if
@@ -201,7 +201,7 @@ function cQuirkFunction _
 	end select
 
 	if( res = FALSE ) then
-		if( hGetLastError( ) = FB_ERRMSG_OK ) then
+		if( errGetLast( ) = FB_ERRMSG_OK ) then
 			res = cGfxFunct( funcexpr )
 		end if
 	end if

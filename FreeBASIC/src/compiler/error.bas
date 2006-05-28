@@ -201,6 +201,22 @@ sub errEnd
 
 end sub
 
+'':::::
+function errFatal( ) as integer
+
+	'' infinite? never fatal..
+	if( env.clopt.maxerrors = FB_ERR_INFINITE ) then
+		function = TRUE
+
+	'' else, make the parser stop
+	else
+		errctx.cnt = env.clopt.maxerrors
+		function = FALSE
+	end if
+
+end function
+
+'':::::
 private sub hPrintErrMsg _
 	( _
 		byval errnum as integer, _
@@ -248,12 +264,12 @@ private sub hPrintErrMsg _
 end sub
 
 '':::::
-function hReportErrorEx _
+function errReportEx _
 	( _
 		byval errnum as integer, _
 		byval msgex as zstring ptr, _
 		byval linenum as integer = 0 _
-	)
+	) as integer
 
     '' too many errors?
     if( errctx.cnt >= env.clopt.maxerrors ) then
@@ -289,11 +305,11 @@ function hReportErrorEx _
 end function
 
 '':::::
-function hReportError _
+function errReport _
 	( _
 		byval errnum as integer, _
 		byval isbefore as integer = FALSE _
-	)
+	) as integer
 
     dim as string token, msgex
 
@@ -309,12 +325,12 @@ function hReportError _
 		msgex = ""
 	end if
 
-	function = hReportErrorEx( errnum, msgex )
+	function = errReportEx( errnum, msgex )
 
 end function
 
 '':::::
-sub hReportWarning _
+sub errReportWarn _
 	( _
 		byval msgnum as integer, _
 		byval msgex as zstring ptr _
@@ -439,7 +455,7 @@ private function hReportMakeDesc _
 end function
 
 '':::::
-function hReportParamError _
+function errReportParam _
 	( _
 		byval proc as any ptr, _
 		byval pnum as integer, _
@@ -463,7 +479,7 @@ function hReportParamError _
 	'' new param, take as a new statement
 	errctx.laststmt = -1
 
-	function = hReportErrorEx( msgnum, *hReportMakeDesc( proc, pnum, pid ) )
+	function = errReportEx( msgnum, *hReportMakeDesc( proc, pnum, pid ) )
 
 	'' if it's the same proc, n-param errors will count as just one
 	if( proc = lastproc ) then
@@ -476,7 +492,7 @@ function hReportParamError _
 end function
 
 '':::::
-sub hReportParamWarning _
+sub errReportParamWarn _
 	( _
 		byval proc as any ptr, _
 		byval pnum as integer, _
@@ -484,12 +500,12 @@ sub hReportParamWarning _
 		byval msgnum as integer _
 	)
 
-	hReportWarning( msgnum, *hReportMakeDesc( proc, pnum, pid ) )
+	errReportWarn( msgnum, *hReportMakeDesc( proc, pnum, pid ) )
 
 end sub
 
 '':::::
-function hReportUndefError _
+function errReportUndef _
 	( _
 		byval errnum as integer, _
 		byval id as zstring ptr _
@@ -510,6 +526,6 @@ function hReportUndefError _
 
 	hashAdd( @errctx.undefhash, id_cpy, id_cpy, hash )
 
-	function = hReportErrorEx( errnum, id )
+	function = errReportEx( errnum, id )
 
 end function

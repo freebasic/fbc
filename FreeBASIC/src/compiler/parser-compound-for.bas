@@ -161,12 +161,12 @@ function cForStmtBegin as integer
 
 	'' ID
 	chain_ = cIdentifier( TRUE )
-	if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+	if( errGetLast( ) <> FB_ERRMSG_OK ) then
 		exit function
 	end if
 
 	if( cVariable( chain_, idexpr ) = FALSE ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDVAR ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDVAR ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: fake a var
@@ -175,7 +175,7 @@ function cForStmtBegin as integer
 	end if
 
 	if( astIsVAR( idexpr ) = FALSE ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDSCALAR, TRUE ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDSCALAR, TRUE ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: fake a var
@@ -190,7 +190,7 @@ function cForStmtBegin as integer
 	dtype = symbGetType( stk->for.cnt )
 
 	if( (dtype < FB_DATATYPE_BYTE) or (dtype > FB_DATATYPE_DOUBLE) ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDSCALAR, TRUE ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDSCALAR, TRUE ) = FALSE ) then
 			cCompStmtPop( stk )
 			exit function
 		else
@@ -202,7 +202,7 @@ function cForStmtBegin as integer
 
 	'' =
 	if( lexGetToken( ) <> FB_TK_ASSIGN) then
-		if( hReportError( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
 			cCompStmtPop( stk )
 			exit function
 		end if
@@ -215,7 +215,7 @@ function cForStmtBegin as integer
 
     '' Expression
     if( cExpression( expr ) = FALSE ) then
-    	if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    	if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     		cCompStmtPop( stk )
     		exit function
     	else
@@ -236,7 +236,7 @@ function cForStmtBegin as integer
 
 	'' TO
 	if( lexGetToken( ) <> FB_TK_TO ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDTO ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDTO ) = FALSE ) then
 			cCompStmtPop( stk )
 			exit function
 		end if
@@ -246,7 +246,7 @@ function cForStmtBegin as integer
 
 	'' end condition (Expression)
 	if( cExpression( expr ) = FALSE ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			cCompStmtPop( stk )
 			exit function
 		else
@@ -275,7 +275,7 @@ function cForStmtBegin as integer
 		lexSkipToken( )
 
 		if( cExpression( expr ) = FALSE ) then
-			if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 				cCompStmtPop( stk )
 				exit function
 			else

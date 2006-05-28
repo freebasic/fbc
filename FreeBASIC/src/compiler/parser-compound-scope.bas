@@ -42,7 +42,7 @@ function cScopeStmtBegin as integer
 
 	n = astScopeBegin( )
 	if( n = NULL ) then
-		if( hReportError( FB_ERRMSG_RECLEVELTOODEEP ) = FALSE ) then
+		if( errReport( FB_ERRMSG_RECLEVELTOODEEP ) = FALSE ) then
 			exit function
 		end if
 	end if

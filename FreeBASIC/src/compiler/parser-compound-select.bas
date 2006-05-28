@@ -83,7 +83,7 @@ function cSelectStmtBegin as integer
 
 	'' CASE
 	if( hMatch( FB_TK_CASE ) = FALSE ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDCASE ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDCASE ) = FALSE ) then
 			exit function
 		end if
 	end if
@@ -97,14 +97,14 @@ function cSelectStmtBegin as integer
 			return cSelConstStmtBegin( )
 		end if
 
-		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 			exit function
 		end if
 	end if
 
 	'' Expression
 	if( cExpression( expr ) = FALSE ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: fake an expr
@@ -114,7 +114,7 @@ function cSelectStmtBegin as integer
 
 	'' can't be an UDT
 	if( astGetDataType( expr ) = FB_DATATYPE_USERDEF ) then
-		if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 			exit function
 		else
 			astDelTree( expr )
@@ -220,7 +220,7 @@ private function hCaseExpression _
 
 	'' Expression
 	if( cExpression( casectx.expr1 ) = FALSE ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: fake an expr
@@ -233,7 +233,7 @@ private function hCaseExpression _
 		lexSkipToken( )
 
 		if( casectx.typ <> FB_CASETYPE_SINGLE ) then
-			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: skip until next ',', assume single
@@ -245,7 +245,7 @@ private function hCaseExpression _
 			casectx.typ = FB_CASETYPE_RANGE
 
 			if( cExpression( casectx.expr2 ) = FALSE ) then
-				if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: skip until next ',', assume single
@@ -346,13 +346,13 @@ function cSelectStmtNext( ) as integer
 
 	stk = cCompStmtGetTOS( FB_TK_SELECT, FALSE )
 	if( stk = NULL ) then
-		hReportError( FB_ERRMSG_CASEWITHOUTSELECT )
+		errReport( FB_ERRMSG_CASEWITHOUTSELECT )
 		exit function
 	end if
 
 	'' ELSE already parsed?
 	if( stk->select.casecnt = -1 ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDENDSELECT ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDENDSELECT ) = FALSE ) then
 			exit function
 		end if
 	end if
@@ -391,7 +391,7 @@ function cSelectStmtNext( ) as integer
 
 	do
 		if( hCaseExpression( dtype, ctx.caseTB(cntbase + cnt) ) = FALSE ) then
-			if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 				exit function
 			end if
 		else
@@ -426,7 +426,7 @@ function cSelectStmtNext( ) as integer
 								il, nl, _
 								i = cnt-1 ) = FALSE ) then
 
-				if( hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+				if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
 					exit function
 				end if
 			end if
@@ -466,7 +466,7 @@ function cSelectStmtEnd as integer
 
     '' no CASE's?
     if( stk->select.casecnt = 0 ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDCASE ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDCASE ) = FALSE ) then
 			exit function
 		end if
     end if

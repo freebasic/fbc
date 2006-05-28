@@ -459,7 +459,7 @@ function astProcEnd _
 	''
 	irProcEnd( sym )
 
-	if( (res = TRUE) and (hGetErrorCnt( ) = 0) ) then
+	if( (res = TRUE) and (errGetCount( ) = 0) ) then
 		symbSetIsParsed( sym )
 
 		if( n->block.ismain = FALSE ) then
@@ -532,7 +532,7 @@ private function hDeclProcParams _
 		if( p->param.mode <> FB_PARAMMODE_VARARG ) then
 			p->param.var = symbAddParam( symbGetName( p ), p )
 			if( p->param.var = NULL ) then
-				hReportParamError( proc, i, NULL, FB_ERRMSG_DUPDEFINITION )
+				errReportParam( proc, i, NULL, FB_ERRMSG_DUPDEFINITION )
 				exit function
 			end if
 		end if

@@ -51,7 +51,7 @@ private function hGetType _
 		if( subtype <> NULL ) then
 			'' only allow if it's an enum
 			if( dtype <> FB_DATATYPE_ENUM ) then
-				if( hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+				if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: discard type
@@ -65,7 +65,7 @@ private function hGetType _
 		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR, _
 			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
-			if( hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: discard type
@@ -105,19 +105,19 @@ function cConstAssign _
 	ns = cNamespace( )
     if( ns <> NULL ) then
 		if( ns <> symbGetCurrentNamespc( ) ) then
-			if( hReportError( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
+			if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
 				exit function
 			end if
     	end if
     else
-    	if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+    	if( errGetLast( ) <> FB_ERRMSG_OK ) then
     		exit function
     	end if
     end if
 
 	'' ID
 	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 			exit function
 		else
 			hSkipUntil( FB_TK_DECLSEPCHAR )
@@ -128,7 +128,7 @@ function cConstAssign _
     '' if inside a namespace, symbols can't contain periods (.)'s
     if( symbIsGlobalNamespc( ) = FALSE ) then
     	if( lexGetPeriodPos( ) > 0 ) then
-    		if( hReportError( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
     			exit function
     		end if
     	end if
@@ -149,7 +149,7 @@ function cConstAssign _
 	'' both suffix and type given?
 	if( edtype <> INVALID ) then
 		if( dtype <> INVALID ) then
-			if( hReportErrorEx( FB_ERRMSG_SYNTAXERROR, id ) = FALSE ) then
+			if( errReportEx( FB_ERRMSG_SYNTAXERROR, id ) = FALSE ) then
 				exit function
 			end if
 		end if
@@ -161,7 +161,7 @@ function cConstAssign _
 	'' '='
 	doskip = FALSE
 	if( lexGetToken( ) <> FB_TK_ASSIGN ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
 			exit function
 		else
 			doskip = TRUE
@@ -173,7 +173,7 @@ function cConstAssign _
 
 	'' ConstExpression
 	if( cExpression( expr ) = FALSE ) then
-		if( hReportErrorEx( FB_ERRMSG_EXPECTEDCONST, id ) = FALSE ) then
+		if( errReportEx( FB_ERRMSG_EXPECTEDCONST, id ) = FALSE ) then
 			exit function
 		else
 			doskip = TRUE
@@ -200,7 +200,7 @@ function cConstAssign _
 		if( dtype <> INVALID ) then
 			'' not a string?
 			if( dtype <> FB_DATATYPE_STRING ) then
-				if( hReportErrorEx( FB_ERRMSG_INVALIDDATATYPES, id ) = FALSE ) then
+				if( errReportEx( FB_ERRMSG_INVALIDDATATYPES, id ) = FALSE ) then
 					exit function
 				end if
 			end if
@@ -209,7 +209,7 @@ function cConstAssign _
 		value.str = litsym
 
 		if( symbAddConst( @id, edtype, NULL, @value ) = NULL ) then
-    		if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
+    		if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
     			exit function
     		end if
 		end if
@@ -219,7 +219,7 @@ function cConstAssign _
 
 		'' not a constant?
 		if( astIsCONST( expr ) = FALSE ) then
-			if( hReportErrorEx( FB_ERRMSG_EXPECTEDCONST, id ) = FALSE ) then
+			if( errReportEx( FB_ERRMSG_EXPECTEDCONST, id ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: create a fake node
@@ -232,7 +232,7 @@ function cConstAssign _
 		if( dtype <> INVALID ) then
 			'' string?
 			if( dtype = FB_DATATYPE_STRING ) then
-				if( hReportErrorEx( FB_ERRMSG_INVALIDDATATYPES, id ) = FALSE ) then
+				if( errReportEx( FB_ERRMSG_INVALIDDATATYPES, id ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: create a fake node
@@ -249,7 +249,7 @@ function cConstAssign _
 
 				expr = astNewCONV( INVALID, dtype, subtype, expr, FALSE )
 				if( expr = NULL ) then
-					if( hReportErrorEx( FB_ERRMSG_INVALIDDATATYPES, id ) = FALSE ) then
+					if( errReportEx( FB_ERRMSG_INVALIDDATATYPES, id ) = FALSE ) then
 						exit function
 					else
 						'' error recovery: create a fake node
@@ -270,7 +270,7 @@ function cConstAssign _
 						  dtype, _
 						  subtype, _
 						  @astGetValue( expr ) ) = NULL ) then
-    		if( hReportErrorEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
+    		if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
     			exit function
     		end if
 		end if

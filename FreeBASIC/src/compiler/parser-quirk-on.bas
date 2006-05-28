@@ -67,7 +67,7 @@ function cGOTBStmt _
 		select case lexGetClass( )
 		case FB_TKCLASS_NUMLITERAL, FB_TKCLASS_IDENTIFIER
 			chain_ = cIdentifier( )
-			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
 
@@ -79,7 +79,7 @@ function cGOTBStmt _
 			lexSkipToken( )
 
 		case else
-			if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 				exit function
 			else
 			    '' error recovery: fake an label
@@ -158,7 +158,7 @@ function cOnStmt as integer
 	'' LOCAL?
 	if( hMatch( FB_TK_LOCAL ) ) then
 		if( fbIsModLevel( ) ) then
-			hReportError( FB_ERRMSG_SYNTAXERROR, TRUE )
+			errReport( FB_ERRMSG_SYNTAXERROR, TRUE )
 			exit function
 		end if
 		islocal = TRUE
@@ -183,7 +183,7 @@ function cOnStmt as integer
 	case FB_TK_GOSUB
 	    '' can't do GOSUB with ON ERROR
 	    if( expr = NULL ) then
-	    	if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+	    	if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 	    		exit function
 	    	else
 	    		'' error recovery: fake an expr
@@ -193,7 +193,7 @@ function cOnStmt as integer
 
 		'' difference from QB: not allowed inside procs
 		if( fbIsModLevel() = FALSE ) then
-			if( hReportError( FB_ERRMSG_ILLEGALINSIDEASUB ) = FALSE ) then
+			if( errReport( FB_ERRMSG_ILLEGALINSIDEASUB ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: skip stmt
@@ -206,7 +206,7 @@ function cOnStmt as integer
 	    isgoto = FALSE
 
 	case else
-		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: skip stmt
@@ -229,7 +229,7 @@ function cOnStmt as integer
 		if( isrestore = FALSE ) then
 			'' Label
 			chain_ = cIdentifier( )
-			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
 

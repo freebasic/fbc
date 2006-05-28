@@ -67,7 +67,7 @@ function cProgram( ) as integer
     	end if
     loop
 
-    if( hGetErrorCnt( ) = 0 ) then
+    if( errGetCount( ) = 0 ) then
     	'' EOF?
     	if( lexGetToken( ) = FB_TK_EOF ) then
     		lexSkipToken( )
@@ -76,7 +76,7 @@ function cProgram( ) as integer
     	'' only check compound stmts if not parsing an include file
     	if( env.includerec = 0 ) then
     		cCompStmtCheck( )
-    		function = (hGetErrorCnt( ) = 0)
+    		function = (errGetCount( ) = 0)
     	else
     		function = TRUE
     	end if
@@ -106,7 +106,7 @@ function cLine as integer
     '' Comment?
     cComment( )
 
-	if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+	if( errGetLast( ) <> FB_ERRMSG_OK ) then
 		exit function
 	end if
 
@@ -119,7 +119,7 @@ function cLine as integer
 		exit function
 
 	case else
-		if( hReportError( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: skip until EOL
@@ -224,7 +224,7 @@ function hMatchExpr _
 	dim as ASTNODE ptr expr
 
 	if( cExpression( expr ) = FALSE ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			return NULL
 		else
 			'' error recovery: fake an expr

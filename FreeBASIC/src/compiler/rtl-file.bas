@@ -845,7 +845,7 @@ function rtlFilePut _
     '' any pointer fields?
     if( astGetDataType( src ) = FB_DATATYPE_USERDEF ) then
     	if( symbGetUDTPtrCnt( astGetSubType( src ) ) <> 0 ) then
-            hReportParamWarning( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
+            errReportParamWarn( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
     	end if
     end if
 
@@ -909,7 +909,7 @@ function rtlFilePutArray _
     '' any pointer fields?
     if( astGetDataType( src ) = FB_DATATYPE_USERDEF ) then
     	if( symbGetUDTPtrCnt( astGetSubType( src ) ) <> 0 ) then
-            hReportParamWarning( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
+            errReportParamWarn( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
     	end if
     end if
 
@@ -991,7 +991,7 @@ function rtlFileGet _
     '' any pointer fields?
     if( astGetDataType( dst ) = FB_DATATYPE_USERDEF ) then
     	if( symbGetUDTPtrCnt( astGetSubType( dst ) ) <> 0 ) then
-            hReportParamWarning( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
+            errReportParamWarn( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
     	end if
     end if
 
@@ -1055,7 +1055,7 @@ function rtlFileGetArray _
     '' any pointer fields?
     if( astGetDataType( dst ) = FB_DATATYPE_USERDEF ) then
     	if( symbGetUDTPtrCnt( astGetSubType( dst ) ) <> 0 ) then
-            hReportParamWarning( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
+            errReportParamWarn( proc, 3, NULL, FB_WARNINGMSG_POINTERFIELDS )
     	end if
     end if
 
@@ -1366,7 +1366,7 @@ function rtlFileInputGet _
 
 		'' UDT, bit-fields..
 		else
-			hReportError( FB_ERRMSG_INVALIDDATATYPES )
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
 			exit function
 		end if
 	end select

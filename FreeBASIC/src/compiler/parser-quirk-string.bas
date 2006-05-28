@@ -56,7 +56,7 @@ function cMidStmt as integer
 		hMatchRPRNT( )
 
 		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
-			if( hReportError( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
 				exit function
 			end if
 		end if
@@ -85,7 +85,7 @@ function cLSetStmt( ) as integer
 
 	'' Expression
 	if( cVarOrDeref( dstexpr ) = FALSE ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: fake a var
@@ -100,7 +100,7 @@ function cLSetStmt( ) as integer
 		 FB_DATATYPE_USERDEF
 
 	case else
-		if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: fake a var
@@ -112,7 +112,7 @@ function cLSetStmt( ) as integer
 	'' ',' or '='
 	if( hMatch( CHAR_COMMA ) = FALSE ) then
         if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
-			if( hReportError( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then
 				exit function
 			end if
         end if
@@ -128,7 +128,7 @@ function cLSetStmt( ) as integer
 		 FB_DATATYPE_USERDEF
 
 	case else
-		if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) ) then
+		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) ) then
 			exit function
 		else
 			'' error recovery: fake a var
@@ -141,7 +141,7 @@ function cLSetStmt( ) as integer
 		(dtype2 = FB_DATATYPE_USERDEF) ) then
 
 		if( dtype1 <> dtype2 ) then
-			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function
 			else
 				'' no error recovery: stmt already parsed
@@ -154,7 +154,7 @@ function cLSetStmt( ) as integer
 		dst = astGetSymbol( dstexpr )
 		src = astGetSymbol( srcexpr )
 		if( (dst = NULL) or (src = NULL) ) then
-			if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 				exit function
 			else
 				'' no error recovery: stmt already parsed

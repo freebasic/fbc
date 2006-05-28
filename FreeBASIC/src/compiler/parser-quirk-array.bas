@@ -45,19 +45,19 @@ function cArrayStmt as integer
 
 		do
 			if( cVarOrDeref( expr1, FALSE ) = FALSE ) then
-				hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+				errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 				exit function
 			end if
 
 			'' array?
     		s = astGetSymbol( expr1 )
     		if( s = NULL ) then
-    			hReportError( FB_ERRMSG_EXPECTEDARRAY )
+    			errReport( FB_ERRMSG_EXPECTEDARRAY )
     			exit function
     		end if
 
     		if( symbIsArray( s ) = FALSE ) then
-				hReportError( FB_ERRMSG_EXPECTEDARRAY )
+				errReport( FB_ERRMSG_EXPECTEDARRAY )
 				exit function
 			end if
 
@@ -83,28 +83,28 @@ function cArrayStmt as integer
 		lexSkipToken( )
 
 		if( cVarOrDeref( expr1 ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			exit function
 		end if
 
 		hMatchCOMMA( )
 
 		if( cVarOrDeref( expr2 ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			exit function
 		end if
 
 		select case astGetDataType( expr1 )
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
 			if( astGetDataType( expr2 ) = FB_DATATYPE_WCHAR ) then
-				hReportError( FB_ERRMSG_INVALIDDATATYPES )
+				errReport( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
 			end if
 			function = rtlStrSwap( expr1, expr2 )
 
 		case FB_DATATYPE_WCHAR
 			if( astGetDataType( expr2 ) <> FB_DATATYPE_WCHAR ) then
-				hReportError( FB_ERRMSG_INVALIDDATATYPES )
+				errReport( FB_ERRMSG_INVALIDDATATYPES )
 				exit function
 			end if
 			function = rtlWstrSwap( expr1, expr2 )
@@ -143,19 +143,19 @@ function cArrayFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 		'' ID
 		if( cVarOrDeref( sexpr, FALSE ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			exit function
 		end if
 
 		'' array?
 		s = astGetSymbol( sexpr )
 		if( s = NULL ) then
-			hReportError( FB_ERRMSG_EXPECTEDARRAY, TRUE )
+			errReport( FB_ERRMSG_EXPECTEDARRAY, TRUE )
 			exit function
 		end if
 
 		if( symbIsArray( s ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDARRAY, TRUE )
+			errReport( FB_ERRMSG_EXPECTEDARRAY, TRUE )
 			exit function
 		end if
 

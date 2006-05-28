@@ -209,7 +209,7 @@ function cExitStatement as integer
 		label = env.stmt.proc.endlabel
 
 		if( label = NULL ) then
-			if( hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB ) = FALSE ) then
+			if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASUB ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: skip stmt
@@ -223,7 +223,7 @@ function cExitStatement as integer
 								   FB_TK_SUB, _
 								   FB_TK_FUNCTION ) ) then
 
-			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: skip stmt
@@ -233,7 +233,7 @@ function cExitStatement as integer
 		end if
 
 	case else
-		if( hReportError( FB_ERRMSG_ILLEGALOUTSIDEASTMT ) = FALSE ) then
+		if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASTMT ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: skip stmt
@@ -244,7 +244,7 @@ function cExitStatement as integer
 
 	''
 	if( label = NULL ) then
-		if( hReportError( FB_ERRMSG_ILLEGALOUTSIDECOMP ) = FALSE ) then
+		if( errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: skip stmt
@@ -283,7 +283,7 @@ function cContinueStatement as integer
 		label = env.stmt.while.cmplabel
 
 	case else
-		if( hReportError( FB_ERRMSG_ILLEGALOUTSIDEASTMT ) = FALSE ) then
+		if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASTMT ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: skip stmt
@@ -293,7 +293,7 @@ function cContinueStatement as integer
 	end select
 
 	if( label = NULL ) then
-		if( hReportError( FB_ERRMSG_ILLEGALOUTSIDECOMP ) = FALSE ) then
+		if( errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: skip stmt
@@ -337,7 +337,7 @@ function cCompoundEnd( ) as integer
 		function = cExternStmtEnd( )
 
 	case else
-		if( hReportError( FB_ERRMSG_ILLEGALEND ) = FALSE ) then
+		if( errReport( FB_ERRMSG_ILLEGALEND ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: skip stmt
@@ -393,7 +393,7 @@ function cCompStmtCheck( ) as integer
 
     end select
 
-    hReportError( errmsg )
+    errReport( errmsg )
 
     function = FALSE
 
@@ -491,7 +491,7 @@ function cCompStmtGetTOS _
             		errmsg = FB_ERRMSG_ENDNAMESPACEWITHOUTNAMESPACE
 				end select
 
-				hReportError( errmsg )
+				errReport( errmsg )
 			end if
 		end if
 
@@ -564,7 +564,7 @@ function cCompStmtIsAllowed _
 		end if
 	end if
 
-    hReportError( errmsg )
+    errReport( errmsg )
 
 	function = FALSE
 

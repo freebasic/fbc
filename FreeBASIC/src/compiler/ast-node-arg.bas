@@ -37,7 +37,7 @@ private sub hParamError _
 		byval msgnum as integer = FB_ERRMSG_PARAMTYPEMISMATCHAT _
 	)
 
-	hReportParamError( f->sym, f->call.args+1, NULL, msgnum )
+	errReportParam( f->sym, f->call.args+1, NULL, msgnum )
 
 end sub
 
@@ -48,7 +48,7 @@ private sub hParamWarning _
 		byval msgnum as integer _
 	)
 
-	hReportParamWarning( f->sym, f->call.args+1, NULL, msgnum )
+	errReportParamWarn( f->sym, f->call.args+1, NULL, msgnum )
 
 end sub
 

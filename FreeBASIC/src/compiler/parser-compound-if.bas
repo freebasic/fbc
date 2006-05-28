@@ -54,7 +54,7 @@ private function hIfSingleLine _
 		astAdd( astNewBRANCH( AST_OP_JMP, l ) )
 
 	elseif( cStatement( ) = FALSE ) then
-		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
 	end if
@@ -72,7 +72,7 @@ private function hIfSingleLine _
 			exit function
 		end if
 
-		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
 
@@ -118,7 +118,7 @@ function cIfStmtBegin as integer
 
     '' Expression
     if( cExpression( expr ) = FALSE ) then
-    	if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    	if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     		exit function
 		else
 			'' error recovery: fake an expr
@@ -134,7 +134,7 @@ function cIfStmtBegin as integer
 	'' branch
 	expr = astUpdComp2Branch( expr, nl, FALSE )
 	if( expr = NULL ) then
-		if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 			exit function
 		end if
 
@@ -156,7 +156,7 @@ function cIfStmtBegin as integer
 
 	'' THEN?
 	if( lexGetToken( ) <> FB_TK_THEN ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDTHEN ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDTHEN ) = FALSE ) then
 			cCompStmtPop( stk )
 			exit function
 		end if
@@ -189,9 +189,9 @@ function cIfStmtNext(  ) as integer
 	stk = cCompStmtGetTOS( FB_TK_IF, FALSE )
 	if( stk = NULL ) then
 		if( lexGetToken( ) = FB_TK_ELSEIF ) then
-			hReportError( FB_ERRMSG_ELSEIFWITHOUTIF )
+			errReport( FB_ERRMSG_ELSEIFWITHOUTIF )
 		else
-			hReportError( FB_ERRMSG_ELSEWITHOUTIF )
+			errReport( FB_ERRMSG_ELSEWITHOUTIF )
 		end if
 		exit function
 	end if
@@ -203,7 +203,7 @@ function cIfStmtNext(  ) as integer
 
     '' ELSE already parsed?
     if( stk->if.elsecnt <> 0 ) then
-    	if( hReportError( FB_ERRMSG_EXPECTEDENDIF ) = FALSE ) then
+    	if( errReport( FB_ERRMSG_EXPECTEDENDIF ) = FALSE ) then
     		exit function
     	end if
     end if
@@ -224,7 +224,7 @@ function cIfStmtNext(  ) as integer
 
 	    '' Expression
     	if( cExpression( expr ) = FALSE ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     			exit function
 			else
 				'' error recovery: fake an expr
@@ -234,7 +234,7 @@ function cIfStmtNext(  ) as integer
 
 		'' THEN
 		if( hMatch( FB_TK_THEN ) = FALSE ) then
-			if( hReportError( FB_ERRMSG_EXPECTEDTHEN ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDTHEN ) = FALSE ) then
 				exit function
 			end if
 		end if
@@ -242,7 +242,7 @@ function cIfStmtNext(  ) as integer
 		'' branch
 		expr = astUpdComp2Branch( expr, stk->if.nxtlabel, FALSE )
 		if( expr = NULL ) then
-			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function
 			end if
 

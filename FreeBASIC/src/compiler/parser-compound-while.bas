@@ -50,7 +50,7 @@ function cWhileStmtBegin as integer
 
 	'' Expression
 	if( cExpression( expr ) = FALSE ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: fake an expr
@@ -61,7 +61,7 @@ function cWhileStmtBegin as integer
 	'' branch
 	expr = astUpdComp2Branch( expr, el, FALSE )
 	if( expr = NULL ) then
-		if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 			exit function
 		end if
 

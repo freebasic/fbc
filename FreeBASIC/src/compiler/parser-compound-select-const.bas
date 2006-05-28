@@ -70,7 +70,7 @@ function cSelConstStmtBegin( ) as integer
 
 	'' Expression
 	if( cExpression( expr ) = FALSE ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: fake an expr
@@ -95,7 +95,7 @@ function cSelConstStmtBegin( ) as integer
 	end if
 
 	if( expr = NULL ) then
-		if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: fake an expr
@@ -232,7 +232,7 @@ function cSelConstStmtNext _
 
 	do
 		if( cExpression( expr1 ) = FALSE ) then
-			if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: fake an expr
@@ -241,7 +241,7 @@ function cSelConstStmtNext _
 		end if
 
 		if( astIsCONST( expr1 ) = FALSE ) then
-			if( hReportError( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: skip until next ',' and fake an expr
@@ -264,7 +264,7 @@ function cSelConstStmtNext _
 			lexSkipToken( )
 
 			if( cExpression( expr2 ) = FALSE ) then
-				if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: skip until next ',' and fake an expr
@@ -274,7 +274,7 @@ function cSelConstStmtNext _
 			end if
 
 			if( astIsCONST( expr2 ) = FALSE ) then
-				if( hReportError( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
+				if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: fake an expr
@@ -299,7 +299,7 @@ function cSelConstStmtNext _
 				 	 (maxval - minval > FB_MAXSWTCASERANGE) or _
 				 	 (culngint(minval) * FB_INTEGERSIZE > 4294967292ULL) ) then
 
-				 	if( hReportError( FB_ERRMSG_RANGETOOLARGE ) = FALSE ) then
+				 	if( errReport( FB_ERRMSG_RANGETOOLARGE ) = FALSE ) then
 				 		exit function
 
 				 	else
@@ -311,7 +311,7 @@ function cSelConstStmtNext _
 				 else
 					'' add item
 					if( hSelConstAddCase( swtbase, value, label ) = FALSE ) then
-						if( hReportError( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+						if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
 							exit function
 						end if
 					end if
@@ -332,7 +332,7 @@ function cSelConstStmtNext _
 				(maxval - minval > FB_MAXSWTCASERANGE) or _
 				(culngint(minval) * FB_INTEGERSIZE > 4294967292ULL) ) then
 
-				if( hReportError( FB_ERRMSG_RANGETOOLARGE ) = FALSE ) then
+				if( errReport( FB_ERRMSG_RANGETOOLARGE ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: reset values
@@ -343,7 +343,7 @@ function cSelConstStmtNext _
 			else
 				'' add item
 				if( hSelConstAddCase( swtbase, value, label ) = FALSE ) then
-					if( hReportError( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+					if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
 						exit function
 					end if
 				end if

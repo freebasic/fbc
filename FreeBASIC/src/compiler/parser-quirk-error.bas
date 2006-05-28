@@ -58,7 +58,7 @@ function cErrorStmt as integer
 
 		'' '='
 		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDEQ )
+			errReport( FB_ERRMSG_EXPECTEDEQ )
 			exit function
 		end if
 

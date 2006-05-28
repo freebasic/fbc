@@ -81,7 +81,7 @@ private function pragmaPush _
 
 	with pragmaStk(opt)
 		if( .tos >= FB_MAXPRAGMARECLEVEL ) then
-             if( hReportError( FB_ERRMSG_RECLEVELTOODEEP ) = FALSE ) then
+             if( errReport( FB_ERRMSG_RECLEVELTOODEEP ) = FALSE ) then
              	exit function
              else
              	'' error recovery: skip
@@ -108,7 +108,7 @@ private function pragmaPop _
 
 	with pragmaStk(opt)
 		if( .tos <= 0 ) then
-             if( hReportError( FB_ERRMSG_STACKUNDERFLOW ) = FALSE ) then
+             if( errReport( FB_ERRMSG_STACKUNDERFLOW ) = FALSE ) then
              	exit function
              else
              	'' error recovery: skip
@@ -149,7 +149,7 @@ function ppPragma( ) as integer
 
 		'' '('
 		if( lexGetToken() <> CHAR_LPRNT ) then
-			if( hReportError( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
 				exit function
 			end if
 		else
@@ -168,7 +168,7 @@ function ppPragma( ) as integer
 	next
 
 	if( p = -1 ) then
-		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: skip line
@@ -229,7 +229,7 @@ function ppPragma( ) as integer
 	if( ispop or ispush ) then
 		'' ')'
 		if( lexGetToken() <> CHAR_RPRNT ) then
-			if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: skip until next ')'

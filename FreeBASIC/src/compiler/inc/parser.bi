@@ -715,7 +715,7 @@ declare function 	hMatchExpr 				( _
 '':::::
 #define hMatchLPRNT()													_
 	if( lexGetToken( ) <> CHAR_LPRNT ) then								:_
-		if( hReportError( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then		:_
+		if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then		:_
 			exit function												:_
 		end if                                                          :_
 	else																:_
@@ -725,7 +725,7 @@ declare function 	hMatchExpr 				( _
 '':::::
 #define hMatchRPRNT()													_
 	if( lexGetToken( ) <> CHAR_RPRNT ) then								:_
-		if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then		:_
+		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then		:_
 			exit function												:_
 		else															:_
 			hSkipUntil( CHAR_RPRNT, TRUE )								:_
@@ -737,7 +737,7 @@ declare function 	hMatchExpr 				( _
 '':::::
 #define hMatchCOMMA()													_
 	if( lexGetToken( ) <> CHAR_COMMA ) then								:_
-		if( hReportError( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then		:_
+		if( errReport( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then		:_
 			exit function												:_
 		end if                                                          :_
 	else																:_

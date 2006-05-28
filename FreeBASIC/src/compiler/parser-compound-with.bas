@@ -37,7 +37,7 @@ private function hAllocWithVar( ) as FBSYMBOL ptr
 
     '' Variable
     if( cVarOrDeref( expr ) = FALSE ) then
-    	if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+    	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
     		return NULL
     	else
     		'' error recovery: fake a var
@@ -50,7 +50,7 @@ private function hAllocWithVar( ) as FBSYMBOL ptr
 		'' not an UDT?
 		dtype = astGetDataType( expr )
 		if( dtype <> FB_DATATYPE_USERDEF ) then
-			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				return NULL
 			end if
 		end if

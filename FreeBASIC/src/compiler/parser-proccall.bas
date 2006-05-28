@@ -42,7 +42,7 @@ function cAssignFunctResult _
 
     s = symbGetProcResult( proc )
     if( s = NULL ) then
-    	if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+    	if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
     		exit function
     	else
     		'' error recovery: skip stmt, return
@@ -58,7 +58,7 @@ function cAssignFunctResult _
 	'' Expression
 	if( cExpression( expr ) = FALSE ) then
 		env.ctxsym = NULL
-		if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 			exit function
 		else
     		'' error recovery: skip stmt, return
@@ -82,7 +82,7 @@ function cAssignFunctResult _
     assg = astNewASSIGN( assg, expr )
     if( assg = NULL ) then
     	astDelTree( expr )
-    	if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+    	if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
     		exit function
     	else
     		return TRUE
@@ -124,7 +124,7 @@ function cProcCall _
 	if( checkprnts ) then
 		'' '('
 		if( hMatch( CHAR_LPRNT ) = FALSE ) then
-			if( hReportError( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
 				exit function
 			end if
 		end if
@@ -147,7 +147,7 @@ function cProcCall _
 		env.prntcnt -= 1
 
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then
-			if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: skip until next ')'
@@ -185,7 +185,7 @@ function cProcCall _
 								   procexpr, isfuncptr, _
 								   TRUE ) = FALSE ) then
 			'' error?
-			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
 
@@ -213,7 +213,7 @@ function cProcCall _
 		'' can proc's result be skipped?
 		if( dtype <> FB_DATATYPE_VOID ) then
 			if( symbGetDataClass( dtype ) <> FB_DATACLASS_INTEGER ) then
-				if( hReportError( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
+				if( errReport( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: skip
@@ -226,7 +226,7 @@ function cProcCall _
     		else
     			select case dtype
     			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-					if( hReportError( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
+					if( errReport( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
 						exit function
 					else
 						'' error recovery: skip
@@ -287,13 +287,13 @@ function cProcCallOrAssign as integer
 
 		'' ID
 		chain_ = cIdentifier( )
-		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
 
 		s = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
 		if( s = NULL ) then
-			if( hReportError( FB_ERRMSG_PROCNOTDECLARED ) = FALSE ) then
+			if( errReport( FB_ERRMSG_PROCNOTDECLARED ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: skip stmt, return
@@ -311,7 +311,7 @@ function cProcCallOrAssign as integer
 		'' can't assign deref'ed functions with CALL's
 		if( expr <> NULL ) then
 			astDelTree( expr )
-			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 				exit function
 			end if
 		end if
@@ -322,7 +322,7 @@ function cProcCallOrAssign as integer
 	case FB_TK_ID
 
 		chain_ = cIdentifier( )
-		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
 
@@ -355,7 +355,7 @@ function cProcCallOrAssign as integer
 				else
                		'' check if name is valid (or if overloaded)
 					if( symbIsProcOverloadOf( env.currproc, s ) = FALSE ) then
-						if( hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB, TRUE ) = FALSE ) then
+						if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASUB, TRUE ) = FALSE ) then
 							exit function
 						else
 							'' error recovery: skip stmt, return
@@ -387,7 +387,7 @@ function cProcCallOrAssign as integer
 		'' '='?
 		if( lexGetLookAhead( 1 ) = FB_TK_ASSIGN ) then
 			if( fbIsModLevel( ) ) then
-				if( hReportError( FB_ERRMSG_ILLEGALOUTSIDEASUB ) = FALSE ) then
+				if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASUB ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: skip stmt, return

@@ -264,7 +264,7 @@ private function hFlushExprStatic _
 
                 '' shouldn't happen, but..
 				if( expr = NULL ) then
-			   		hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+			   		errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 				end if
 			end if
 
@@ -411,21 +411,21 @@ private function hExprIsConst _
 		'' string?
 		if( hIsString( sdtype ) ) then
 			if( hIsString( edtype ) ) then
-				hReportError( FB_ERRMSG_EXPECTEDCONST, TRUE )
+				errReport( FB_ERRMSG_EXPECTEDCONST, TRUE )
 			else
-				hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 			end if
 			exit function
 
 		elseif( hIsString( edtype ) ) then
-		    hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+		    errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 			exit function
 		end if
 
 		'' bit field?
 		if( symbIsUDTElm( sym ) ) then
 		    if( symbGetType( sym ) = FB_DATATYPE_BITFIELD ) then
-		    	hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+		    	errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 				exit function
 			end if
 		end if
@@ -436,14 +436,14 @@ private function hExprIsConst _
 			'' different types?
 			if( (symbGetDataClass( sdtype ) <> FB_DATACLASS_INTEGER) or _
 				(symbGetDataSize( sdtype ) <> FB_POINTERSIZE) ) then
-				hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+				errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 				exit function
 			end if
 
 		else
 			'' not a constant?
 			if( astIsCONST( expr ) = FALSE ) then
-				hReportError( FB_ERRMSG_EXPECTEDCONST, TRUE )
+				errReport( FB_ERRMSG_EXPECTEDCONST, TRUE )
 				exit function
 			end if
 
@@ -453,13 +453,13 @@ private function hExprIsConst _
 	else
 		'' not a string?
 		if( hIsString( sdtype ) = FALSE ) then
-			hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE )
+			errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE )
 			exit function
 		end if
 
 		'' can't be a variable-len string
 		if( sdtype = FB_DATATYPE_STRING ) then
-			hReportError( FB_ERRMSG_CANTINITDYNAMICSTRINGS, TRUE )
+			errReport( FB_ERRMSG_CANTINITDYNAMICSTRINGS, TRUE )
 			exit function
 		end if
 

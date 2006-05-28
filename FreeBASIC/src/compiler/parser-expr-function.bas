@@ -49,7 +49,7 @@ function cFunctionCall _
 
 	'' is it really a function?
 	if( dtype = FB_DATATYPE_VOID ) then
-		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 			exit function
 		end if
 	end if
@@ -66,7 +66,7 @@ function cFunctionCall _
 
 		'' ')'
 		if( lexGetToken( ) <> CHAR_RPRNT ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: skip until next ')'
@@ -98,7 +98,7 @@ function cFunctionCall _
 		'' FuncPtrOrDerefFields?
 		cFuncPtrOrDerefFields( dtype, subtype, funcexpr, isfuncptr, TRUE )
 
-		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
 

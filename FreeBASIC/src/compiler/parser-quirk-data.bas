@@ -52,7 +52,7 @@ function cDataStmt as integer static
 		select case lexGetClass( )
 		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_NUMLITERAL
 			chain_ = cIdentifier( )
-			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
 
@@ -60,7 +60,7 @@ function cDataStmt as integer static
 			if( sym = NULL ) then
 				sym = symbAddLabel( lexGetText( ), FALSE, TRUE )
 				if( sym = NULL ) then
-					hReportError( FB_ERRMSG_DUPDEFINITION )
+					errReport( FB_ERRMSG_DUPDEFINITION )
 					exit function
 				end if
 			end if
@@ -75,7 +75,7 @@ function cDataStmt as integer static
 
 		do
 		    if( cVarOrDeref( expr ) = FALSE ) then
-		    	hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		    	errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		    	exit function
 		    end if
 
@@ -140,7 +140,7 @@ function cDataStmt as integer static
 				else
 					'' not a constant?
 					if( astIsCONST( expr ) = FALSE ) then
-						hReportError( FB_ERRMSG_EXPECTEDCONST )
+						errReport( FB_ERRMSG_EXPECTEDCONST )
 						exit function
 					end if
 
@@ -148,7 +148,7 @@ function cDataStmt as integer static
             		if( rtlDataStore( littext, _
             						  len( littext ), _
             						  FB_DATATYPE_CHAR ) = FALSE ) then
-	            		hReportError( FB_ERRMSG_INVALIDDATATYPES )
+	            		errReport( FB_ERRMSG_INVALIDDATATYPES )
 	            		exit function
     	        	end if
 

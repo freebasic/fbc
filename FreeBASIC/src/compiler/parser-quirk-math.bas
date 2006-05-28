@@ -57,7 +57,7 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 		'' hack! implemented as Unary OP for better speed on x86's
 		funcexpr = astNewUOP( AST_OP_ABS, expr )
 		if( funcexpr = NULL ) then
-			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function
 			end if
 		end if
@@ -77,7 +77,7 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 		'' hack! implemented as Unary OP for better speed on x86's
 		funcexpr = astNewUOP( AST_OP_SGN, expr )
 		if( funcexpr = NULL ) then
-			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function
 			end if
 		end if
@@ -96,7 +96,7 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 		funcexpr = rtlMathFIX( expr )
 		if( funcexpr = NULL ) then
-			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function
 			end if
 		end if
@@ -139,7 +139,7 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 		'' hack! implemented as Unary OP for better speed on x86's
 		funcexpr = astNewUOP( op, expr )
 		if( funcexpr = NULL ) then
-			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function
 			end if
 		end if
@@ -163,7 +163,7 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 		'' hack! implemented as Binary OP for better speed on x86's
 		funcexpr = astNewBOP( AST_OP_ATAN2, expr, expr2 )
 		if( funcexpr = NULL ) then
-			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function
 			end if
 		end if
@@ -182,7 +182,7 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 			env.checkarray = FALSE
 			if( cExpression( expr ) = FALSE ) then
 				env.checkarray = TRUE
-				if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: fake an expr
@@ -197,7 +197,7 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 			if( islen = FALSE ) then
 				if( astGetDataClass( expr ) = FB_DATACLASS_STRING ) then
 					if( (astGetSymbol( expr ) = NULL) or (astIsFUNCT( expr )) ) then
-						if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE ) = FALSE ) then
+						if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE ) = FALSE ) then
 							exit function
 						else
 							'' error recovery: fake an expr

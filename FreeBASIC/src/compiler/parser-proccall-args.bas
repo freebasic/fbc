@@ -105,7 +105,7 @@ private function hProcArg _
 	if( cExpression( expr ) = FALSE ) then
 
 		'' error?
-		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			env.ctxsym = oldsym
 			exit function
 		end if
@@ -141,7 +141,7 @@ private function hProcArg _
 		'' check if argument is optional
 		if( symbGetParamOptional( param ) = FALSE ) then
 			if( pmode <> FB_PARAMMODE_VARARG ) then
-				if( hReportError( FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
+				if( errReport( FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: fake an expr
@@ -163,7 +163,7 @@ private function hProcArg _
 			if( lexGetToken( ) = CHAR_LPRNT ) then
 				if( lexGetLookAhead(1) = CHAR_RPRNT ) then
 					if( amode <> INVALID ) then
-						if( hReportError( FB_ERRMSG_PARAMTYPEMISMATCH ) = FALSE ) then
+						if( errReport( FB_ERRMSG_PARAMTYPEMISMATCH ) = FALSE ) then
 							exit function
 						end if
 					end if
@@ -184,7 +184,7 @@ private function hProcArg _
             	'' (to pass NULL to pointers and so on)
             	if( amode <> FB_PARAMMODE_BYVAL ) then
 					if( amode <> pmode ) then
-						if( hReportError( FB_ERRMSG_PARAMTYPEMISMATCH ) = FALSE ) then
+						if( errReport( FB_ERRMSG_PARAMTYPEMISMATCH ) = FALSE ) then
 							exit function
 						else
 							'' error recovery: discard arg mode
@@ -229,7 +229,7 @@ private function hOvlProcArg _
 	if( cExpression( arg->expr ) = FALSE ) then
 
 		'' error?
-		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			env.ctxsym = oldsym
 			exit function
 		end if
@@ -267,7 +267,7 @@ private function hOvlProcArg _
 		if( lexGetToken( ) = CHAR_LPRNT ) then
 			if( lexGetLookAhead(1) = CHAR_RPRNT ) then
 				if( arg->mode <> INVALID ) then
-					if( hReportError( FB_ERRMSG_PARAMTYPEMISMATCH ) = FALSE )then
+					if( errReport( FB_ERRMSG_PARAMTYPEMISMATCH ) = FALSE )then
 						exit function
 					end if
 				end if
@@ -328,7 +328,7 @@ private function hOvlProcArgList _
 			if( hMatch( CHAR_LPRNT ) ) then
 				'' ')'
 				if( hMatch( CHAR_RPRNT ) = FALSE ) then
-					if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+					if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
 						exit function
 					else
 						'' error recovery: skip until next ')'
@@ -348,7 +348,7 @@ private function hOvlProcArgList _
 		do
 			'' count mismatch?
 			if( args >= params ) then
-				if( hReportError( FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
+				if( errReport( FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: skip until next stmt or ')'
@@ -375,7 +375,7 @@ private function hOvlProcArgList _
 
 			if( hOvlProcArg( args, arg, isfunc ) = FALSE ) then
 				'' not an error? (could be an optional)
-				if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+				if( errGetLast( ) <> FB_ERRMSG_OK ) then
 					hDelArgNodes( arg_head )
 					exit function
 				end if
@@ -402,7 +402,7 @@ private function hOvlProcArgList _
 	ovlproc = symbFindClosestOvlProc( proc, args, arg_head )
 	if( ovlproc = NULL ) then
 		hDelArgNodes( arg_head )
-		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		else
 			'' error recovery: fake an expr
@@ -429,7 +429,7 @@ private function hOvlProcArgList _
 
 		if( astNewARG( procexpr, arg->expr, INVALID, arg->mode ) = NULL ) then
 			hDelArgNodes( arg )
-			if( hReportError( FB_ERRMSG_PARAMTYPEMISMATCH ) = FALSE ) then
+			if( errReport( FB_ERRMSG_PARAMTYPEMISMATCH ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: fake an expr (don't try to fake an arg,
@@ -494,7 +494,7 @@ function cProcArgList _
 				lexSkipToken( )
 				'' ')'
 				if( lexGetToken( ) <> CHAR_RPRNT ) then
-					if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+					if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
 						exit function
 					else
 						'' error recovery: skip until next ')'
@@ -517,7 +517,7 @@ function cProcArgList _
 			'' count mismatch?
 			if( args >= params ) then
 				if( param->param.mode <> FB_PARAMMODE_VARARG ) then
-					if( hReportError( FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
+					if( errReport( FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
 						exit function
 					else
 						'' error recovery: skip until next stmt or ')'
@@ -535,7 +535,7 @@ function cProcArgList _
 
 			if( hProcArg( proc, param, args, expr, mode, isfunc ) = FALSE ) then
 				'' not an error? (could be an optional)
-				if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+				if( errGetLast( ) <> FB_ERRMSG_OK ) then
 					exit function
 				else
 					exit do
@@ -544,7 +544,7 @@ function cProcArgList _
 
 			'' add to tree
 			if( astNewARG( procexpr, expr, INVALID, mode ) = NULL ) then
-				if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+				if( errGetLast( ) <> FB_ERRMSG_OK ) then
 					exit function
 				else
 					'' error recovery: skip until next stmt or ')'
@@ -582,7 +582,7 @@ function cProcArgList _
 
 		'' not optional?
 		if( symbGetParamOptional( param ) = FALSE ) then
-			if( hReportError( FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
+			if( errReport( FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: fake an expr

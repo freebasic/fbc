@@ -47,7 +47,7 @@ function cPokeStmt as integer
 		'' check for invalid types
 		select case poketype
 		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR
-			if( hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: fake a type
@@ -73,7 +73,7 @@ function cPokeStmt as integer
 
     select case astGetDataClass( expr1 )
     case FB_DATACLASS_STRING
-    	hReportError( FB_ERRMSG_INVALIDDATATYPES )
+    	errReport( FB_ERRMSG_INVALIDDATATYPES )
     	'' no error recovery: stmt was already parsed
     	astDelTree( expr1 )
         exit function
@@ -83,7 +83,7 @@ function cPokeStmt as integer
 
 	case else
         if( astGetDataSize( expr1 ) <> FB_POINTERSIZE ) then
-        	hReportError( FB_ERRMSG_INVALIDDATATYPES )
+        	errReport( FB_ERRMSG_INVALIDDATATYPES )
         	'' no error recovery: ditto
         	astDelTree( expr1 )
         	exit function
@@ -94,7 +94,7 @@ function cPokeStmt as integer
 
     expr1 = astNewASSIGN( expr1, expr2 )
     if( expr1 = NULL ) then
-    	if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+    	if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
     		exit function
     	end if
 	else
@@ -131,7 +131,7 @@ function cPeekFunct _
 		'' check for invalid types
 		select case peektype
 		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR
-			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: fake a type
@@ -157,7 +157,7 @@ function cPeekFunct _
     ''
     select case astGetDataClass( expr )
     case FB_DATACLASS_STRING
-    	if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+    	if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: fake an expr
@@ -170,7 +170,7 @@ function cPeekFunct _
 
 	case else
 		if( astGetDataSize( expr ) <> FB_POINTERSIZE ) then
-        	if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+        	if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
         		exit function
         	else
 				'' error recovery: fake an expr

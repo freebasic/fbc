@@ -48,7 +48,7 @@ function cTypedefDecl _
     if( ismult ) then
     	isfwd = (cSymbolType( dtype, subtype, lgt, ptrcnt, FALSE ) = NULL)
     	if( isfwd ) then
-    		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+    		if( errGetLast( ) <> FB_ERRMSG_OK ) then
     			exit function
     		end if
 
@@ -76,7 +76,7 @@ function cTypedefDecl _
 		if( ismult = FALSE ) then
     		isfwd = (cSymbolType( dtype, subtype, lgt, ptrcnt, FALSE ) = NULL)
     		if( isfwd ) then
-    			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+    			if( errGetLast( ) <> FB_ERRMSG_OK ) then
     				exit function
     			end if
     			tname = *lexGetText( )
@@ -90,12 +90,12 @@ function cTypedefDecl _
 				ns = cNamespace( )
     			if( ns <> NULL ) then
 					if( ns <> symbGetCurrentNamespc( ) ) then
-						if( hReportError( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
+						if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
 							exit function
 						end if
     				end if
     			else
-    				if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+    				if( errGetLast( ) <> FB_ERRMSG_OK ) then
     					exit function
     				end if
     			end if
@@ -103,7 +103,7 @@ function cTypedefDecl _
     			'' if inside a namespace, symbols can't contain periods (.)'s
     			if( symbIsGlobalNamespc( ) = FALSE ) then
     				if( lexGetPeriodPos( ) > 0 ) then
-    					if( hReportError( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+    					if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
     						exit function
     					end if
     				end if
@@ -113,7 +113,7 @@ function cTypedefDecl _
 				lexSkipToken( )
 
     		case else
-    			if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+    			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
     				exit function
     			else
     				'' error recovery: fake an id
@@ -143,7 +143,7 @@ function cTypedefDecl _
 														ptname, _
 														FB_SYMBCLASS_FWDREF )
 					if( subtype = NULL ) then
-						if( hReportError( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+						if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
 							exit function
 						else
 							'' error recovery: fake a symbol
@@ -195,7 +195,7 @@ function cTypedefDecl _
 			end if
 
 			if( isdup ) then
-				if( hReportError( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
+				if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
 					exit function
 				end if
 			end if

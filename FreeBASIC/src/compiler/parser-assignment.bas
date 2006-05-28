@@ -43,7 +43,7 @@ function cAssignment _
 	dim as FBSYMBOL ptr sym = astGetSymbol( assgexpr )
 	if( sym <> NULL ) then
 		if( symbIsConstant( sym ) ) then
-			if( hReportError( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE ) = FALSE ) then
+			if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE ) = FALSE ) then
 				exit function
 			end if
 		end if
@@ -98,7 +98,7 @@ function cAssignment _
 
 	'' '='
     if( lexGetToken( ) <> FB_TK_ASSIGN ) then
-    	if( hReportError( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
+    	if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
     		exit function
     	end if
     else
@@ -112,7 +112,7 @@ function cAssignment _
     '' Expression
     doskip = FALSE
     if( cExpression( expr ) = FALSE ) then
-       	if( hReportError( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+       	if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
        		env.ctxsym = NULL
        		exit function
        	else
@@ -133,7 +133,7 @@ function cAssignment _
     	end if
 
     	if( expr = NULL ) Then
-    		if( hReportError( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
     			exit function
     		end if
     	end if
@@ -144,7 +144,7 @@ function cAssignment _
     	assgexpr = astNewASSIGN( assgexpr, expr )
 
     	if( assgexpr = NULL ) then
-			if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function
 			end if
 		else
@@ -187,7 +187,7 @@ function cAssignmentOrPtrCallEx _
 
 	'' can the result be skipped?
 	if( symbGetDataClass( astGetDataType( expr ) ) <> FB_DATACLASS_INTEGER ) then
-		if( hReportError( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
+		if( errReport( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: skip call
@@ -199,7 +199,7 @@ function cAssignmentOrPtrCallEx _
     else
     	select case astGetDataType( expr )
     	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-			if( hReportError( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
+			if( errReport( FB_ERRMSG_VARIABLEREQUIRED ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: skip call
@@ -245,7 +245,7 @@ function cAssignmentOrPtrCall as integer
 
 	else
 		if( islet ) then
-        	if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+        	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
         		exit function
         	else
         		'' error recovery: skip stmt

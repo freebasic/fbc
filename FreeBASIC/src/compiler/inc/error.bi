@@ -199,49 +199,52 @@ declare	sub 		errInit					( _
 declare	sub 		errEnd					( _
 											)
 
-declare function	hReportErrorEx			( _
+declare function	errReportEx				( _
 												byval errnum as integer, _
 												byval msgex as zstring ptr, _
 												byval linenum as integer = 0 _
 											) as integer
 
-declare function	hReportError			( _
+declare function	errReport				( _
 												byval errnum as integer, _
 												byval isbefore as integer = FALSE _
 											) as integer
 
-declare sub 		hReportWarning			( _
+declare sub 		errReportWarn			( _
 												byval msgnum as integer, _
 												byval msgex as zstring ptr = NULL _
 											)
 
-declare function	hReportParamError		( _
+declare function	errReportParam			( _
 												byval proc as any ptr, _
 												byval pnum as integer, _
 												byval pid as zstring ptr, _
 												byval msgnum as integer _
 											) as integer
 
-declare sub 		hReportParamWarning		( _
+declare sub 		errReportParamWarn		( _
 												byval proc as any ptr, _
 												byval pnum as integer, _
 												byval pid as zstring ptr, _
 												byval msgnum as integer _
 											)
 
-declare function	hReportUndefError		( _
+declare function	errReportUndef			( _
 												byval errnum as integer, _
 												byval id as zstring ptr _
+											) as integer
+
+declare function	errFatal				( _
 											) as integer
 
 ''
 '' macros
 ''
-#define hGetLastError( ) iif( errctx.cnt >= env.clopt.maxerrors, _
-							  errctx.lastmsg, _
-							  cint(FB_ERRMSG_OK) )
+#define errGetLast( ) iif( errctx.cnt >= env.clopt.maxerrors, _
+						   errctx.lastmsg, _
+						   cint(FB_ERRMSG_OK) )
 
-#define hGetErrorCnt( ) errctx.cnt
+#define errGetCount( ) errctx.cnt
 
 
 ''

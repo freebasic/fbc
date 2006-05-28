@@ -86,7 +86,7 @@ function _linkFiles as integer
 	ldpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ld.exe"
 
     if( hFileExists( ldpath ) = FALSE ) then
-		hReportErrorEx( FB_ERRMSG_EXEMISSING, ldpath, -1 )
+		errReportEx( FB_ERRMSG_EXEMISSING, ldpath, -1 )
 		exit function
     end if
 

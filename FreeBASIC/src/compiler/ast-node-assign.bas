@@ -109,7 +109,7 @@ private function hCheckUDTOps _
 
 		'' any dynamic fields?
 		if( symbGetUDTDynCnt( l->subtype ) <> 0 ) then
-			hReportWarning( FB_WARNINGMSG_DYNAMICFIELDS )
+			errReportWarn( FB_WARNINGMSG_DYNAMICFIELDS )
 		end if
 
 	'' r isn't an UDT
@@ -133,7 +133,7 @@ private function hCheckUDTOps _
 
 		'' any pointer fields?
 		if( symbGetUDTDynCnt( l->subtype ) <> 0 ) then
-			hReportWarning( FB_WARNINGMSG_DYNAMICFIELDS )
+			errReportWarn( FB_WARNINGMSG_DYNAMICFIELDS )
 		end if
 
 	end if
@@ -243,7 +243,7 @@ private function hCheckEnumOps _
     if( l->dtype <> r->dtype ) then
     	if( (ldclass <> FB_DATACLASS_INTEGER) or _
     		(rdclass <> FB_DATACLASS_INTEGER) ) then
-    		hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+    		errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
     	end if
     end if
 
@@ -266,19 +266,19 @@ private function hCheckPointerOps _
 	   	'' function ptr?
     	if( ldtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
     		if( astFuncPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
-   				hReportWarning( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
+   				errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
     		end if
 
     	'' ordinary ptr..
     	else
 			if( astPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
-				hReportWarning( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
+				errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
 			end if
 		end if
 
     '' r-side expr is a ptr?
     elseif( rdtype >= FB_DATATYPE_POINTER ) then
-    	hReportWarning( FB_WARNINGMSG_IMPLICITCONVERSION )
+    	errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
     end if
 
     function = TRUE

@@ -154,7 +154,7 @@ function symbMaxDataType _
     	return FB_DATATYPE_STRING
 
     case else
-    	hReportErrorEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+    	errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
     end select
 
     '' assuming DATATYPE's are in order of precision

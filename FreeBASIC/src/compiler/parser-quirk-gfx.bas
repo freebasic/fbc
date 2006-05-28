@@ -204,16 +204,16 @@ private function hGetMode( byref mode as uinteger, byref alphaexpr as ASTNODE pt
 
 			s = astGetSubType( funcexpr )
 			if( s = NULL ) then
-				hReportError( FB_ERRMSG_TYPEMISMATCH )
+				errReport( FB_ERRMSG_TYPEMISMATCH )
 				exit function
 			end if
 				if( symbIsProc( s ) = FALSE ) then
-				hReportError( FB_ERRMSG_TYPEMISMATCH )
+				errReport( FB_ERRMSG_TYPEMISMATCH )
 				exit function
 			end if
 			if( ( symbGetType( s ) <> FB_DATATYPE_UINT ) or _
 				( symbGetProcParams( s ) <> 2 ) ) then
-				hReportError( FB_ERRMSG_TYPEMISMATCH )
+				errReport( FB_ERRMSG_TYPEMISMATCH )
 				exit function
 			end if
 
@@ -225,12 +225,12 @@ private function hGetMode( byref mode as uinteger, byref alphaexpr as ASTNODE pt
 				( symbGetType( arg2 ) <> FB_DATATYPE_UINT ) or _
 				( arg1->param.mode <> FB_PARAMMODE_BYVAL ) or _
 				( arg2->param.mode <> FB_PARAMMODE_BYVAL ) ) then
-				hReportError( FB_ERRMSG_TYPEMISMATCH )
+				errReport( FB_ERRMSG_TYPEMISMATCH )
 				exit function
 			end if
 
 		case else
-			hReportError( FB_ERRMSG_SYNTAXERROR )
+			errReport( FB_ERRMSG_SYNTAXERROR )
 			exit function
 		end select
 	end select
@@ -329,7 +329,7 @@ function cGfxLine as integer
 
 	'' '-'
 	if( hMatch( CHAR_MINUS ) = FALSE ) then
-		hReportError FB_ERRMSG_EXPECTEDMINUS
+		errReport FB_ERRMSG_EXPECTEDMINUS
 		exit function
 	end if
 
@@ -465,7 +465,7 @@ function cGfxCircle as integer
             		'' (',' Expr )? - fillflag
             		if( hMatch( CHAR_COMMA ) ) then
             			if( ucase$( *lexGetText( ) ) <> "F" ) then
-							hReportError FB_ERRMSG_EXPECTEDEXPRESSION
+							errReport FB_ERRMSG_EXPECTEDEXPRESSION
 							exit function
 						end if
 						lexSkipToken( )
@@ -638,7 +638,7 @@ function cGfxDraw as integer
 	elseif( lexGetLookAhead( 1 ) = CHAR_COMMA ) then
 		target = hGetTarget( texpr, tisptr )
 		if( (target = NULL) and (tisptr = FALSE) ) then
-			hReportError FB_ERRMSG_EXPECTEDEXPRESSION
+			errReport FB_ERRMSG_EXPECTEDEXPRESSION
 			exit function
 		end if
 		hMatch( CHAR_COMMA )
@@ -687,7 +687,7 @@ function cGfxView( byval isview as integer ) as integer
 
 		'' '-'
 		if( hMatch( CHAR_MINUS ) = FALSE ) then
-			hReportError FB_ERRMSG_EXPECTEDMINUS
+			errReport FB_ERRMSG_EXPECTEDMINUS
 			exit function
 		end if
 
@@ -747,7 +747,7 @@ function cGfxPalette as integer
 
 		s = hGetTarget( arrayexpr, isptr )
 		if( (s = NULL) and (isptr = FALSE) ) then
-            hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+            errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
             exit function
         end if
 
@@ -765,7 +765,7 @@ function cGfxPalette as integer
 
 			if( isget ) then
 				if( cVarOrDeref( rexpr, FALSE, TRUE ) = FALSE ) then
-		            hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		            errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		            exit function
 		        end if
 	        else
@@ -775,7 +775,7 @@ function cGfxPalette as integer
 			if( hMatch( CHAR_COMMA ) ) then
 				if( isget ) then
 					if( cVarOrDeref( gexpr, FALSE, TRUE ) = FALSE ) then
-			            hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			            errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			            exit function
 			        end if
 				else
@@ -786,7 +786,7 @@ function cGfxPalette as integer
 
 				if( isget ) then
 					if( cVarOrDeref( bexpr, FALSE, TRUE ) = FALSE ) then
-			            hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			            errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 			            exit function
 			        end if
 				else
@@ -795,7 +795,7 @@ function cGfxPalette as integer
 			end if
 		else
 			if( isget ) then
-				hReportError FB_ERRMSG_EXPECTEDEXPRESSION
+				errReport FB_ERRMSG_EXPECTEDEXPRESSION
 				exit function
 			end if
 		end if
@@ -849,7 +849,7 @@ function cGfxPut as integer
 
 	s = hGetTarget( arrayexpr, isptr )
 	if( (s = NULL) and (isptr = FALSE) ) then
-		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		exit function
 	end if
 
@@ -867,7 +867,7 @@ function cGfxPut as integer
 			hMatchRPRNT( )
 
 			if( hMatch( CHAR_MINUS ) = FALSE ) then
-				hReportError FB_ERRMSG_EXPECTEDMINUS
+				errReport FB_ERRMSG_EXPECTEDMINUS
 				exit function
 			end if
 
@@ -932,7 +932,7 @@ function cGfxGet as integer
 
 	'' '-'
 	if( hMatch( CHAR_MINUS ) = FALSE ) then
-		hReportError FB_ERRMSG_EXPECTEDMINUS
+		errReport FB_ERRMSG_EXPECTEDMINUS
 		exit function
 	end if
 
@@ -967,7 +967,7 @@ function cGfxGet as integer
 
 	s = hGetTarget( arrayexpr, isptr )
 	if( (s = NULL) and (isptr = FALSE) ) then
-		hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		exit function
 	end if
 
@@ -1100,7 +1100,7 @@ function cGfxPoint( byref funcexpr as ASTNODE ptr ) as integer
 		if( hMatch( CHAR_COMMA ) ) then
 			target = hGetTarget( texpr, tisptr )
 			if( (target = NULL) and (tisptr = FALSE) ) then
-				hReportError FB_ERRMSG_EXPECTEDEXPRESSION
+				errReport FB_ERRMSG_EXPECTEDEXPRESSION
 				exit function
 			end if
 		end if

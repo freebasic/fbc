@@ -77,7 +77,7 @@ private function hParamError _
 		byval argid as zstring ptr _
 	) as integer
 
-	function = hReportParamError( proc, argnum+1, argid, FB_ERRMSG_ILLEGALPARAMSPECAT )
+	function = errReportParam( proc, argnum+1, argid, FB_ERRMSG_ILLEGALPARAMSPECAT )
 
 end function
 
@@ -288,7 +288,7 @@ private function hParamDecl _
 
 	''
 	if( arglevel >= FB_MAXARGRECLEVEL ) then
-		if( hReportError( FB_ERRMSG_RECLEVELTOODEEP ) = FALSE ) then
+		if( errReport( FB_ERRMSG_RECLEVELTOODEEP ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: skip until next ',' or ')' and return a mock param

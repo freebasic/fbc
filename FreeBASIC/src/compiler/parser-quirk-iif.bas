@@ -64,7 +64,7 @@ function cIIFFunct( byref funcexpr as ASTNODE ptr ) as integer
 	funcexpr = astNewIIF( condexpr, truexpr, falsexpr )
 
 	if( funcexpr = NULL ) then
-		if( hReportError( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+		if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
 			exit function
 		end if
 	end if

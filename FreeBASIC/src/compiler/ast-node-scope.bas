@@ -377,7 +377,7 @@ private sub hBranchError( byval errnum as integer, _
 		msg += "array or object: " + *symbGetName( s )
 	end if
 
-	hReportErrorEx( errnum, msg, n->break.linenum )
+	errReportEx( errnum, msg, n->break.linenum )
 
 	env.clopt.showerror = showerror
 

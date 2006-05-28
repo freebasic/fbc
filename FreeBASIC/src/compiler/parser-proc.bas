@@ -37,7 +37,7 @@ private function hParamError _
 		byval errnum as integer = FB_ERRMSG_PARAMTYPEMISMATCHAT _
 	) as integer
 
-	function = hReportParamError( proc, argnum, NULL, errnum )
+	function = errReportParam( proc, argnum, NULL, errnum )
 
 end function
 
@@ -58,21 +58,21 @@ private function hCheckPrototype _
 	'' check arg count
 	paramc = symbGetProcParams( proc )
 	if( symbGetProcParams( proto ) <> paramc ) then
-		hReportError( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
+		errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE )
 		'' no error recovery: caller will take care
 		exit function
 	end if
 
 	'' check return type
 	if( symbGetType( proto ) <> proc_dtype ) then
-		hReportError( FB_ERRMSG_TYPEMISMATCH, TRUE )
+		errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
 		'' no error recovery: ditto
 		exit function
 	end if
 
 	'' and sub type
 	if( symbGetSubtype( proto ) <> proc_subtype ) then
-       	hReportError( FB_ERRMSG_TYPEMISMATCH, TRUE )
+       	errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
        	'' no error recovery: ditto
        	exit function
     end if
@@ -171,14 +171,14 @@ function cSubOrFuncHeader _
     	end if
 
     else
-		if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
 		end if
     	sym = NULL
     end if
 
 	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
-		if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: fake an id
@@ -190,7 +190,7 @@ function cSubOrFuncHeader _
     	'' if inside a namespace, symbols can't contain periods (.)'s
     	if( symbIsGlobalNamespc( ) = FALSE ) then
     		if( lexGetPeriodPos( ) > 0 ) then
-    			if( hReportError( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+    			if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
     				exit function
     			end if
     		end if
@@ -200,7 +200,7 @@ function cSubOrFuncHeader _
 		dtype = lexGetType( )
 
 		if( (isSub) and (dtype <> INVALID) ) then
-    		if( hReportError( FB_ERRMSG_INVALIDCHARACTER ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_INVALIDCHARACTER ) = FALSE ) then
     			exit function
     		else
     			dtype = INVALID
@@ -228,7 +228,7 @@ function cSubOrFuncHeader _
 		lexSkipToken( )
 
 		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-			if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 				exit function
 			end if
 
@@ -247,7 +247,7 @@ function cSubOrFuncHeader _
 		cParameters( proc, mode, FALSE )
 
 		if( lexGetToken( ) <> CHAR_RPRNT ) then
-			if( hReportError( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: skip until ')'
@@ -264,14 +264,14 @@ function cSubOrFuncHeader _
 
         '' not a sub?
         if( isSub = FALSE ) then
-        	if( hReportError( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
+        	if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
         		exit function
         	end if
         end if
 
         '' not argless?
         if( symbGetProcParams( proc ) <> 0 ) then
-        	if( hReportError( FB_ERRMSG_ARGCNTMISMATCH, TRUE ) = FALSE ) then
+        	if( errReport( FB_ERRMSG_ARGCNTMISMATCH, TRUE ) = FALSE ) then
         		exit function
         	end if
         end if
@@ -288,7 +288,7 @@ function cSubOrFuncHeader _
     '' (AS SymbolType)?
     if( lexGetToken( ) = FB_TK_AS ) then
     	if( (dtype <> INVALID) or (isSub) ) then
-    		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
     			exit function
     		end if
     	end if
@@ -296,7 +296,7 @@ function cSubOrFuncHeader _
     	lexSkipToken( )
 
     	if( cSymbolType( dtype, subtype, lgt, ptrcnt ) = FALSE ) then
-    		if( hReportError( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: fake a type
@@ -309,7 +309,7 @@ function cSubOrFuncHeader _
     	'' check for invalid types
     	select case dtype
     	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    		if( hReportError( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_CANNOTRETURNFIXLENFROMFUNCTS ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: fake a type
@@ -319,7 +319,7 @@ function cSubOrFuncHeader _
     		end if
 
     	case FB_DATATYPE_VOID
-    		if( hReportError( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: fake a type
@@ -347,7 +347,7 @@ function cSubOrFuncHeader _
     if( lexGetToken( ) = FB_TK_EXPORT ) then
     	'' private?
     	if( (attrib and FB_SYMBATTRIB_PRIVATE) > 0 ) then
-    		if( hReportError( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: make it public
@@ -359,7 +359,7 @@ function cSubOrFuncHeader _
 
     	fbSetOption( FB_COMPOPT_EXPORT, TRUE )
     	'''''if( fbGetOption( FB_COMPOPT_EXPORT ) = FALSE ) then
-    	'''''	hReportWarning( FB_WARNINGMSG_CANNOTEXPORT )
+    	'''''	errReportWarn( FB_WARNINGMSG_CANNOTEXPORT )
     	'''''end if
     	attrib or= FB_SYMBATTRIB_EXPORT or FB_SYMBATTRIB_PUBLIC
     end if
@@ -376,7 +376,7 @@ function cSubOrFuncHeader _
     					   attrib, mode )
 
     	if( sym = NULL ) then
-    		if( hReportError( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: create a fake symbol
@@ -402,7 +402,7 @@ function cSubOrFuncHeader _
     							   attrib, mode )
     			'' dup def?
     			if( sym = NULL ) then
-    				if( hReportError( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
+    				if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
     					exit function
     				else
     					'' error recovery: create a fake symbol
@@ -418,7 +418,7 @@ function cSubOrFuncHeader _
 
     	'' already parsed?
     	if( symbGetIsDeclared( sym ) ) then
-    		if( hReportError( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_DUPDEFINITION, TRUE ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: create a fake symbol
@@ -429,7 +429,7 @@ function cSubOrFuncHeader _
     	'' there's already a prototype for this proc, check for
     	'' declaration conflits and fix up the arguments
     	if( hCheckPrototype( sym, proc, dtype, subtype ) = FALSE ) then
-			if( hGetLastError( ) <> FB_ERRMSG_OK ) then
+			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
     		else
     			'' error recovery: create a fake symbol
@@ -439,7 +439,7 @@ function cSubOrFuncHeader _
 
     	'' check calling convention
     	if( symbGetProcMode( sym ) <> mode ) then
-    		if( hReportError( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_ILLEGALPARAMSPEC, TRUE ) = FALSE ) then
     			exit function
     		end if
     	end if
@@ -570,12 +570,12 @@ function cProcStmtEnd as integer static
 	if( stk->proc.issub ) then
 		res = hMatch( FB_TK_SUB )
 		if( res = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDENDSUB )
+			errReport( FB_ERRMSG_EXPECTEDENDSUB )
 		end if
 	else
 		res = hMatch( FB_TK_FUNCTION )
 		if( res = FALSE ) then
-			hReportError( FB_ERRMSG_EXPECTEDENDFUNCTION )
+			errReport( FB_ERRMSG_EXPECTEDENDFUNCTION )
 		end if
 	end if
 
