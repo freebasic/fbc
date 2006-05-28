@@ -1336,7 +1336,7 @@ function symbMangleFunctionPtr _
 
     static as string id
     dim as FBSYMBOL ptr param
-    dim as integer i
+    dim as integer i, p
 
     '' cheapo and fast internal mangling..
 
@@ -1347,25 +1347,47 @@ function symbMangleFunctionPtr _
     for i = 0 to symbGetProcParams( proc )-1
     	id += "_"
 
+    	'' not an UDT?
     	if( param->subtype = NULL ) then
     		id += hex( param->typ * cint(param->param.mode) )
+
     	else
+			'' modes
+			select case param->param.mode
+			case FB_PARAMMODE_BYREF
+				id += "v"
+			case FB_PARAMMODE_BYDESC
+				id += "d"
+			end select
+
+    		'' pointers
+    		p = param->ptrcnt
+    		do while( p > 0 )
+    			id += "p"
+    			p -= 1
+    		loop
+
     		id += hex( param->subtype )
     	end if
 
     	param = symbGetParamNext( param )
     next
 
+    '' return type
     id += "@"
-
 	if( subtype = NULL ) then
 		id += hex( dtype )
 	else
+    	p = param->ptrcnt
+    	do while( p > 0 )
+    		id += "p"
+    		p -= 1
+    	loop
 		id += hex( subtype )
 	end if
 
+    '' calling convention
     id += "@"
-
     id += hex( mode )
 
 	function = strptr( id )
