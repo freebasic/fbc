@@ -199,11 +199,13 @@ private function hLoadMacro _
 
 	'' too few args?
 	doskip = FALSE
-	if( symbGetDefParamNext( param ) <> NULL ) then
-		if( hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
-			exit function
-		else
-			doskip = TRUE
+	if( param <> NULL ) then
+		if( symbGetDefParamNext( param ) <> NULL ) then
+			if( hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
+				exit function
+			else
+				doskip = TRUE
+			end if
 		end if
 	end if
 
@@ -476,11 +478,13 @@ private function hLoadMacroW _
 
 	'' too few args?
 	doskip = FALSE
-	if( symbGetDefParamNext( param ) <> NULL ) then
-		if( hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
-			exit function
-		else
-			doskip = TRUE
+	if( param <> NULL ) then
+		if( symbGetDefParamNext( param ) <> NULL ) then
+			if( hReportMacroError( s, FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
+				exit function
+			else
+				doskip = TRUE
+			end if
 		end if
 	end if
 
