@@ -19,8 +19,8 @@ option explicit
 	
 	draw_rect 1, 1, w, h
 	
-	for y = 0 to 15
-		for x = 0 to 7
+	for y = 0 to 7
+		for x = 0 to 15
 			locate ((h - 16) / 2) + y + 1, ((w - 16) / 2) + x + 1
 			print chr((x * 16) + y);
 		next x
