@@ -33,11 +33,13 @@ option escape
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewBOUNDCHK( byval l as ASTNODE ptr, _
-					     byval lb as ASTNODE ptr, _
-					     byval ub as ASTNODE ptr, _
-					     byval linenum as integer _
-					   ) as ASTNODE ptr static
+function astNewBOUNDCHK _
+	( _
+		byval l as ASTNODE ptr, _
+		byval lb as ASTNODE ptr, _
+		byval ub as ASTNODE ptr, _
+		byval linenum as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
 
@@ -96,7 +98,11 @@ function astNewBOUNDCHK( byval l as ASTNODE ptr, _
 end function
 
 '':::::
-function astLoadBOUNDCHK( byval n as ASTNODE ptr ) as IRVREG ptr
+function astLoadBOUNDCHK _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
     dim as ASTNODE ptr l, r, t
     dim as FBSYMBOL ptr label
     dim as IRVREG ptr vr
@@ -142,9 +148,11 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewPTRCHK( byval l as ASTNODE ptr, _
-					   byval linenum as integer _
-					 ) as ASTNODE ptr static
+function astNewPTRCHK _
+	( _
+		byval l as ASTNODE ptr, _
+		byval linenum as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
     dim as integer dtype
@@ -177,7 +185,11 @@ function astNewPTRCHK( byval l as ASTNODE ptr, _
 end function
 
 '':::::
-function astLoadPTRCHK( byval n as ASTNODE ptr ) as IRVREG ptr
+function astLoadPTRCHK _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
     dim as ASTNODE ptr l, r, t
     dim as FBSYMBOL ptr label
     dim as IRVREG ptr vr
