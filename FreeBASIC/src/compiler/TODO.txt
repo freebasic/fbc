@@ -1,5 +1,4 @@
 [ ] non-fatal error handling:
-    - update var expr
     - update quirks
 
 [ ] namespaces:
@@ -133,6 +132,12 @@
 [ ] classes
     - *MUST* follow the GCC 3.x ABI to make it easier to reuse C++ libs compiled by GCC
     - Java/Php5-ish syntax: CLASS INTERFACE EXTENDS IMPLEMENTS THROWS ABSTRACT
+    - must support forward references for any kind of symbol, so classes can't be stored
+      directly to AST
+      - how to deal with "foo(expr)"? it could be an array or a function call..
+      - keeping everything in a parser/token tree will allow templates to be added later
+      - class shouldn't be emitted unless referenced
+        - function bodies defined outside classes follow the private/public proc rules
     - single inheritance, plus interfaces
     - exceptions - with stack unwind support
     - operator overloading

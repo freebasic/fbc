@@ -54,14 +54,21 @@ private function hFieldArray _
     do
     	dims += 1
     	if( dims > maxdims ) then
-			errReport( FB_ERRMSG_WRONGDIMENSIONS )
-			exit function
+			if( errReport( FB_ERRMSG_WRONGDIMENSIONS ) = FALSE ) then
+				exit function
+			else
+				exit do
+			end if
     	end if
 
     	'' Expression
 		if( cExpression( dimexpr ) = FALSE ) then
-			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-			exit function
+			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake an expr
+				dimexpr = astNewCONSTi( d->lower, FB_DATATYPE_INTEGER )
+			end if
 		end if
 
 		'' if index isn't an integer, convert
@@ -69,8 +76,12 @@ private function hFieldArray _
 			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
 			dimexpr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
-				errReport( FB_ERRMSG_INVALIDDATATYPES )
-				exit function
+				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake an expr
+					dimexpr = astNewCONSTi( d->lower, FB_DATATYPE_INTEGER )
+				end if
 			end if
 		end if
 
@@ -82,8 +93,12 @@ private function hFieldArray _
     								  lexLineNum( ) )
 
 			if( dimexpr = NULL ) then
-				errReport( FB_ERRMSG_ARRAYOUTOFBOUNDS )
-				exit function
+				if( errReport( FB_ERRMSG_ARRAYOUTOFBOUNDS ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake an expr
+					dimexpr = astNewCONSTi( d->lower, FB_DATATYPE_INTEGER )
+				end if
 			end if
     	end if
 
@@ -104,8 +119,11 @@ private function hFieldArray _
         '' next
         d = d->next
     	if( d = NULL ) then
-			errReport( FB_ERRMSG_WRONGDIMENSIONS )
-			exit function
+			if( errReport( FB_ERRMSG_WRONGDIMENSIONS ) = FALSE ) then
+				exit function
+			else
+				exit do
+			end if
     	end if
 
     	constexpr = astNewCONSTi( (d->upper - d->lower)+1, FB_DATATYPE_INTEGER )
@@ -114,8 +132,9 @@ private function hFieldArray _
 
     ''
     if( dims < maxdims ) then
-		errReport( FB_ERRMSG_WRONGDIMENSIONS )
-		exit function
+		if( errReport( FB_ERRMSG_WRONGDIMENSIONS ) = FALSE ) then
+			exit function
+		end if
     end if
 
 	'' times length
@@ -187,12 +206,16 @@ private function hTypeField _
 
 		case else
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+			'' no error recovery: caller will take care
 			exit function
 		end select
 
     	sym = symbLookupUDTElm( subtype, lexGetText( ) )
     	if( sym = NULL ) then
-    		errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) )
+    		if( errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) ) <> FALSE ) then
+    			'' no error recovery: caller will take care
+    			lexSkipToken( )
+    		end if
     		exit function
     	end if
 
@@ -236,18 +259,26 @@ private function hTypeField _
 
     		'' ')'
     		if( lexGetToken( ) <> CHAR_RPRNT ) then
-    			errReport( FB_ERRMSG_EXPECTEDRPRNT )
-    			exit function
-			end if
+    			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+    				exit function
+    			else
+    				'' error recovery: skip until next ')'
+    				hSkipUntil( CHAR_RPRNT, TRUE )
+    			end if
 
-			lexSkipToken( )
+			else
+				lexSkipToken( )
+			end if
 
         else
 			'' array and no index?
 			if( checkarray ) then
 				if( symbGetArrayDimensions( sym ) <> 0 ) then
-    				errReport( FB_ERRMSG_EXPECTEDINDEX )
-    				exit function
+    				if( errReport( FB_ERRMSG_EXPECTEDINDEX ) = FALSE ) then
+    					exit function
+    				end if
+    				'' error recovery: no need to fake an expr, field arrays
+    				'' are never dynamic (for now)
    				end if
    			end if
         end if
@@ -292,8 +323,12 @@ function cDerefFields _
 
 			'' Expression
 			if( cExpression( idxexpr ) = FALSE ) then
-				errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-				exit function
+				if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: faken an expr
+					idxexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				end if
 			end if
 
 			'' if index isn't an integer, convert
@@ -301,18 +336,27 @@ function cDerefFields _
 				(astGetDataSize( idxexpr ) <> FB_POINTERSIZE) ) then
 				idxexpr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, idxexpr )
 				if( idxexpr = NULL ) then
-					errReport( FB_ERRMSG_INVALIDDATATYPES )
-					exit function
+					if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: faken an expr
+						idxexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+					end if
 				end if
 			end if
 
 			'' ']'
 			if( lexGetToken( ) <> CHAR_RBRACKET ) then
-				errReport( FB_ERRMSG_SYNTAXERROR )
-				exit function
-			end if
+				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: skip until next ']'
+					hSkipUntil( CHAR_RBRACKET, TRUE )
+				end if
 
-			lexSkipToken( )
+			else
+				lexSkipToken( )
+			end if
 
 			'' string, fixstr, w|zstring?
 			if( dtype < FB_DATATYPE_POINTER ) then
@@ -361,8 +405,12 @@ function cDerefFields _
 					return TRUE
 
 				case else
-					errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
-					exit function
+					if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: fake a pointer
+						dtype += FB_DATATYPE_POINTER
+					end if
 				end select
 
 			end if
@@ -371,11 +419,19 @@ function cDerefFields _
 			lgt = symbCalcLen( dtype - FB_DATATYPE_POINTER, subtype )
 
 			if( lgt = 0 ) then
-				errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE )
-				exit function
+				if( errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake a type
+					dtype = FB_DATATYPE_POINTER + FB_DATATYPE_BYTE
+					subtype = NULL
+					lgt = 1
+				end if
 			end if
 
-			idxexpr = astNewBOP( AST_OP_MUL, idxexpr, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
+			idxexpr = astNewBOP( AST_OP_MUL, _
+								 idxexpr, _
+								 astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
 
 		'' exit..
 		case else
@@ -384,25 +440,36 @@ function cDerefFields _
 		end select
 
 		if( dtype < FB_DATATYPE_POINTER ) then
-			errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
-			exit function
+			if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake a pointer
+				dtype += FB_DATATYPE_POINTER
+			end if
 		end if
 
 		dtype -= FB_DATATYPE_POINTER
 
 		'' incomplete type?
-		if( (dtype = FB_DATATYPE_VOID) or (dtype = FB_DATATYPE_FWDREF) ) then
-			errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE )
-			exit function
-		end if
+		select case dtype
+		case FB_DATATYPE_VOID, FB_DATATYPE_FWDREF
+			if( errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake a type
+				dtype = FB_DATATYPE_POINTER + FB_DATATYPE_BYTE
+				subtype = NULL
+			end if
+		end select
 
 		'' TypeField
 		expr = NULL
 		sym = hTypeField( dtype, subtype, expr, derefcnt, checkarray )
 		if( sym = NULL ) then
 			if( isderef ) then
-				errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-				exit function
+				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+					exit function
+				end if
 			end if
 		end if
 
@@ -434,17 +501,25 @@ function cDerefFields _
 		''
 		do while( derefcnt > 0 )
 			if( dtype < FB_DATATYPE_POINTER ) then
-				errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE )
-				return FALSE
+				if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
+					return FALSE
+				else
+					exit do
+				end if
 			end if
 
 			dtype -= FB_DATATYPE_POINTER
 
 			'' incomplete type?
-			if( (dtype = FB_DATATYPE_VOID) or (dtype = FB_DATATYPE_FWDREF) ) then
-				errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE )
-				exit function
-			end if
+			select case dtype
+			case FB_DATATYPE_VOID, FB_DATATYPE_FWDREF
+				if( errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake a type
+					dtype = FB_DATATYPE_BYTE
+				end if
+			end select
 
 			'' null pointer checking
 			if( env.clopt.extraerrchk ) then
@@ -504,6 +579,7 @@ function cFuncPtrOrDerefFields _
 			if( cFunctionCall( subtype, funcexpr, varexpr ) = FALSE ) then
 				exit function
 			end if
+
 		'' sub..
 		else
 			if( env.isexpr = FALSE ) then
@@ -511,8 +587,13 @@ function cFuncPtrOrDerefFields _
 					exit function
 				end if
 			else
-				errReport( FB_ERRMSG_SYNTAXERROR )
-				exit function
+				astDelTree( funcexpr )
+				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake an expr
+					funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				end if
 			end if
 		end if
 
@@ -552,13 +633,13 @@ function cDynArrayIdx _
 		byref idxexpr as ASTNODE ptr _
 	) as integer
 
-    dim as FBSYMBOL ptr d
+    dim as FBSYMBOL ptr desc
     dim as integer i, dims, maxdims
     dim as ASTNODE ptr expr, dimexpr, constexpr, varexpr
 
     function = FALSE
 
-    d = symbGetArrayDescriptor( sym )
+    desc = symbGetArrayDescriptor( sym )
     dims = 0
 
     if( symbIsCommon( sym ) = FALSE ) then
@@ -574,32 +655,44 @@ function cDynArrayIdx _
     	dims += 1
 
     	'' check dimensions, if not common
-    	if( maxdims <> INVALID ) then
+    	if( maxdims <> -1 ) then
     		if( dims > maxdims ) then
-				errReport( FB_ERRMSG_WRONGDIMENSIONS )
-				exit function
+				if( errReport( FB_ERRMSG_WRONGDIMENSIONS ) = FALSE ) then
+					exit function
+				else
+					exit do
+				end if
     		end if
     	end if
 
     	'' Expression
 		if( cExpression( dimexpr ) = FALSE ) then
-			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-			exit function
+			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake an expr
+				dimexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			end if
 		end if
 
 		'' if index isn't an integer, convert
 		if( (astGetDataClass( dimexpr ) <> FB_DATACLASS_INTEGER) or _
 			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
+
 			dimexpr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
-				errReport( FB_ERRMSG_INVALIDDATATYPES )
-				exit function
+				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake an expr
+					dimexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				end if
 			end if
 		end if
 
     	'' bounds checking
     	if( env.clopt.extraerrchk ) then
-            dimexpr = hDynArrayBoundChk( dimexpr, d, i )
+            dimexpr = hDynArrayBoundChk( dimexpr, desc, i )
 			if( dimexpr = NULL ) then
 				exit function
 			end if
@@ -621,7 +714,7 @@ function cDynArrayIdx _
     	i += 1
 
     	'' times desc(i).elements
-    	varexpr = astNewVAR( d, _
+    	varexpr = astNewVAR( desc, _
     						 FB_ARRAYDESCLEN + i*FB_ARRAYDESC_DIMLEN, _
     						 FB_DATATYPE_INTEGER )
     	expr = astNewBOP( AST_OP_MUL, expr, varexpr )
@@ -632,15 +725,16 @@ function cDynArrayIdx _
 	expr = astNewBOP( AST_OP_MUL, expr, constexpr )
 
     '' check dimensions, if not common
-    if( maxdims <> INVALID ) then
+    if( maxdims <> -1 ) then
     	if( dims < maxdims ) then
-			errReport( FB_ERRMSG_WRONGDIMENSIONS )
-			exit function
+			if( errReport( FB_ERRMSG_WRONGDIMENSIONS ) = FALSE ) then
+				exit function
+			end if
     	end if
     end if
 
-   	'' plus dsc->data (= ptr + diff)
-    varexpr = astNewVAR( d, FB_ARRAYDESC_DATAOFFS, FB_DATATYPE_INTEGER )
+   	'' plus desc.data (= ptr + diff)
+    varexpr = astNewVAR( desc, FB_ARRAYDESC_DATAOFFS, FB_DATATYPE_INTEGER )
     expr = astNewBOP( AST_OP_ADD, expr, varexpr )
 
     idxexpr = expr
@@ -692,17 +786,26 @@ function cArgArrayIdx _
     do
     	'' Expression
 		if( cExpression( dimexpr ) = FALSE ) then
-			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-			exit function
+			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake an expr
+				dimexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			end if
 		end if
 
 		'' if index isn't an integer, convert
 		if( (astGetDataClass( dimexpr ) <> FB_DATACLASS_INTEGER) or _
 			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
+
 			dimexpr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
-				errReport( FB_ERRMSG_INVALIDDATATYPES )
-				exit function
+				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake an expr
+					dimexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				end if
 			end if
 		end if
 
@@ -760,7 +863,7 @@ end function
 ''
 function cArrayIdx _
 	( _
-		byval s as FBSYMBOL ptr, _
+		byval sym as FBSYMBOL ptr, _
 		byref idxexpr as ASTNODE ptr _
 	) as integer
 
@@ -771,42 +874,54 @@ function cArrayIdx _
     function = FALSE
 
     ''  argument passed by descriptor?
-    if( symbIsParamByDesc( s ) ) then
-    	return cArgArrayIdx( s, idxexpr )
+    if( symbIsParamByDesc( sym ) ) then
+    	return cArgArrayIdx( sym, idxexpr )
 
     '' dynamic array? (will handle common's too)
-    elseif( symbGetIsDynamic( s ) ) then
-    	return cDynArrayIdx( s, idxexpr )
+    elseif( symbGetIsDynamic( sym ) ) then
+    	return cDynArrayIdx( sym, idxexpr )
 
     end if
 
     ''
-    maxdims = symbGetArrayDimensions( s )
+    maxdims = symbGetArrayDimensions( sym )
     dims = 0
 
     ''
-    d = symbGetArrayFirstDim( s )
+    d = symbGetArrayFirstDim( sym )
     expr = NULL
     do
     	dims += 1
     	if( dims > maxdims ) then
-			errReport( FB_ERRMSG_WRONGDIMENSIONS )
-			exit function
+			if( errReport( FB_ERRMSG_WRONGDIMENSIONS ) = FALSE ) then
+				exit function
+			else
+				exit do
+			end if
     	end if
 
     	'' Expression
 		if( cExpression( dimexpr ) = FALSE ) then
-			errReport( FB_ERRMSG_EXPECTEDEXPRESSION )
-			exit function
+			if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake an expr
+				dimexpr = astNewCONSTi( d->lower, FB_DATATYPE_INTEGER )
+			end if
 		end if
 
 		'' if index isn't an integer, convert
 		if( (astGetDataClass( dimexpr ) <> FB_DATACLASS_INTEGER) or _
 			(astGetDataSize( dimexpr ) <> FB_INTEGERSIZE) ) then
+
 			dimexpr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
-				errReport( FB_ERRMSG_INVALIDDATATYPES )
-				exit function
+				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake an expr
+					dimexpr = astNewCONSTi( d->lower, FB_DATATYPE_INTEGER )
+            	end if
 			end if
 		end if
 
@@ -818,8 +933,12 @@ function cArrayIdx _
     								  lexLineNum( ) )
 
 			if( dimexpr = NULL ) then
-				errReport( FB_ERRMSG_ARRAYOUTOFBOUNDS )
-				exit function
+				if( errReport( FB_ERRMSG_ARRAYOUTOFBOUNDS ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake an expr
+					dimexpr = astNewCONSTi( d->lower, FB_DATATYPE_INTEGER )
+				end if
 			end if
     	end if
 
@@ -840,8 +959,11 @@ function cArrayIdx _
         '' next
         d = d->next
     	if( d = NULL ) then
-			errReport( FB_ERRMSG_WRONGDIMENSIONS )
-			exit function
+			if( errReport( FB_ERRMSG_WRONGDIMENSIONS ) = FALSE ) then
+				exit function
+			else
+				exit do
+			end if
     	end if
 
     	constexpr = astNewCONSTi( (d->upper - d->lower) + 1, FB_DATATYPE_INTEGER )
@@ -850,13 +972,14 @@ function cArrayIdx _
 
     ''
     if( dims < maxdims ) then
-		errReport( FB_ERRMSG_WRONGDIMENSIONS )
-		exit function
+		if( errReport( FB_ERRMSG_WRONGDIMENSIONS ) = FALSE ) then
+			exit function
+		end if
     end if
 
 	'' times length (this will be optimized if len < 10 and there's
 	'' no arrays on following fields)
-	constexpr = astNewCONSTi( symbGetLen( s ), FB_DATATYPE_INTEGER )
+	constexpr = astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_INTEGER )
 	expr = astNewBOP( AST_OP_MUL, expr, constexpr )
 
 	idxexpr = expr
@@ -887,10 +1010,44 @@ private function hVarAddUndecl _
 
     s = symbAddVar( id, dtype, NULL, 0, 0, dTB(), attrib )
     if( s = NULL ) then
-		exit function
+		if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: fake an id
+			s = symbAddVar( hMakeTmpStr( ), dtype, NULL, 0, 0, dTB(), attrib )
+		end if
 	end if
 
 	function = s
+
+end function
+
+'':::::
+private function hMakeArrayIdx _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
+    ''  argument passed by descriptor?
+    if( symbIsParamByDesc( sym ) ) then
+    	'' return descriptor->data
+    	return astNewPTR( FB_ARRAYDESC_DATAOFFS, _
+    					  astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+    					  FB_DATATYPE_INTEGER, _
+    					  NULL )
+    end if
+
+    '' dynamic array? (this will handle common's too)
+    if( symbGetIsDynamic( sym ) ) then
+    	'' return descriptor.data
+    	return astNewVAR( symbGetArrayDescriptor( sym ), _
+    					  FB_ARRAYDESC_DATAOFFS, _
+    					  FB_DATATYPE_INTEGER )
+    end if
+
+    '' static array, return lbound( array )
+    function = astNewCONSTi( symbGetArrayFirstDim( sym )->lower, _
+    						 FB_DATATYPE_INTEGER )
 
 end function
 
@@ -932,8 +1089,9 @@ function cVariableEx _
 
 	else
 		if( env.opt.explicit ) then
-			errReportUndef( FB_ERRMSG_VARIABLENOTDECLARED, id )
-			exit function
+			if( errReportUndef( FB_ERRMSG_VARIABLENOTDECLARED, id ) = FALSE ) then
+				exit function
+			end if
 		end if
 
 		'' don't allow explicit namespaces
@@ -943,8 +1101,9 @@ function cVariableEx _
     		if( sym <> NULL ) then
     			'' from a different namespace?
     			if( symbGetNamespace( sym ) <> symbGetCurrentNamespc( ) ) then
-    				errReport( FB_ERRMSG_DECLOUTSIDENAMESPC )
-    				exit function
+    				if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
+    					exit function
+    				end if
     			end if
     		end if
     	end if
@@ -956,7 +1115,6 @@ function cVariableEx _
 
 		sym = hVarAddUndecl( id, dtype )
 		if( sym = NULL ) then
-			errReportEx( FB_ERRMSG_DUPDEFINITION, id )
 			exit function
 		end if
 
@@ -998,8 +1156,12 @@ function cVariableEx _
 
 				'' ')'
     			if( hMatch( CHAR_RPRNT ) = FALSE ) then
-    				errReport( FB_ERRMSG_EXPECTEDRPRNT )
-    				exit function
+    				if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+    					exit function
+    				else
+    					'' error recovery: skip until next ')'
+    					hSkipUntil( CHAR_RPRNT, TRUE )
+    				end if
     			end if
 
     		else
@@ -1010,8 +1172,13 @@ function cVariableEx _
 
     			'' using (...) with scalars?
     			if( (isarray = FALSE) and (isfuncptr = FALSE) ) then
-    				errReport( FB_ERRMSG_ARRAYNOTALLOCATED, TRUE )
-    				exit function
+    				if( errReport( FB_ERRMSG_ARRAYNOTALLOCATED, TRUE ) = FALSE ) then
+    					exit function
+    				else
+    					'' error recovery: skip the index
+    					lexSkipToken( )
+    					hSkipUntil( CHAR_RPRNT, TRUE )
+    				end if
     			end if
     		end if
 
@@ -1045,6 +1212,22 @@ function cVariableEx _
 		varexpr = astNewVAR( sym, 0, dtype, subtype )
 	end if
 
+	'' array and no index?
+	if( checkarray ) then
+		if( isarray ) then
+			if( idxexpr = NULL ) then
+  				if( isbydesc = FALSE ) then
+   					if( errReport( FB_ERRMSG_EXPECTEDINDEX, TRUE ) = FALSE ) then
+   						exit function
+   					else
+   						'' error recovery: fake an index
+   						idxexpr = hMakeArrayIdx( sym )
+   					end if
+   				end if
+   			end if
+    	end if
+    end if
+
 	'' has index?
 	if( idxexpr <> NULL ) then
 		'' byref or import's are already pointers
@@ -1053,16 +1236,6 @@ function cVariableEx _
 		else
 			varexpr = astNewIDX( varexpr, idxexpr, dtype, subtype )
 		end if
-	else
-		'' array and no index?
-		if( isbydesc = FALSE ) then
-  			if( isarray ) then
-  				if( checkarray ) then
-   					errReport( FB_ERRMSG_EXPECTEDINDEX, TRUE )
-   					exit function
-   				end if
-   			end if
-    	end if
 	end if
 
 	'' check arguments passed by reference (implicity pointer's)
@@ -1106,6 +1279,7 @@ function cWithVariable _
    	elm = hTypeField( dtype, subtype, varexpr, drefcnt, checkarray )
 	if( elm = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+		'' no error recovery: caller will take care
 		exit function
 	end if
 
@@ -1166,17 +1340,17 @@ end function
 function cVarOrDeref _
 	( _
 		byref varexpr as ASTNODE ptr, _
-		byval checkarray as integer, _
-		byval checkaddrof as integer _
+		byval check_array as integer, _
+		byval check_addrof as integer _
 	) as integer
 
 	dim as integer res
 
-	swap env.checkarray, checkarray
+	swap env.checkarray, check_array
 
 	res = cHighestPrecExpr( NULL, varexpr )
 
-	swap env.checkarray, checkarray
+	swap env.checkarray, check_array
 
 	if( res ) then
 		if( varexpr <> NULL ) then
@@ -1185,13 +1359,19 @@ function cVarOrDeref _
 				 AST_NODECLASS_PTR, AST_NODECLASS_CALL
 
 			case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET
-				if( checkaddrof = FALSE ) then
+				if( check_addrof = FALSE ) then
+					astDelTree( varexpr )
+					varexpr = NULL
 					errReport( FB_ERRMSG_INVALIDDATATYPES )
+					'' no error recovery: caller will take care
 					exit function
 				end if
 
 			case else
+				astDelTree( varexpr )
+				varexpr = NULL
 				errReport( FB_ERRMSG_INVALIDDATATYPES )
+				'' no error recovery: ditto
 				exit function
 			end select
 		end if
