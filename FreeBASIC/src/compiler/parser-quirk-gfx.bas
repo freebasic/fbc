@@ -54,44 +54,49 @@ const FBGFX_PUTMODE_CUSTOM = 7
 
 
 '':::::
-private function hMakeArrayIndex( byval sym as FBSYMBOL ptr, _
-								  byval expr as ASTNODE ptr _
-								) as ASTNODE ptr
+private function hMakeArrayIndex _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval varexpr as ASTNODE ptr _
+	) as ASTNODE ptr
 
-    dim as ASTNODE ptr idxexpr, temp
+    dim as ASTNODE ptr idxexpr
 
     '' field?
-    if( astIsFIELD( expr ) ) then
-    	return expr
+    if( astIsFIELD( varexpr ) ) then
+    	return varexpr
     end if
 
     ''  argument passed by descriptor?
     if( symbIsParamByDesc( sym ) ) then
+    	'' deref descriptor->data
+    	idxexpr = astNewPTR( FB_ARRAYDESC_DATAOFFS, _
+    						 astNewVAR( sym, 0, FB_DATATYPE_INTEGER ), _
+    						 FB_DATATYPE_INTEGER, _
+    						 NULL )
+    	idxexpr = astNewLOAD( idxexpr, FB_DATATYPE_INTEGER )
 
-    	temp	  = astNewVAR( sym, 0, FB_DATATYPE_INTEGER )
-    	idxexpr   = astNewPTR( FB_ARRAYDESC_DATAOFFS, temp, FB_DATATYPE_INTEGER, NULL )
-    	idxexpr   = astNewLOAD( idxexpr, FB_DATATYPE_INTEGER )
-
-    	astDelTree( expr )
-    	expr 	  = astNewVAR( sym, 0, FB_DATATYPE_INTEGER )
+    	'' can't reuse varexpr
+    	astDelTree( varexpr )
+    	varexpr = astNewVAR( sym, 0, FB_DATATYPE_INTEGER )
 
     '' dynamic array? (this will handle common's too)
     elseif( symbGetIsDynamic( sym ) ) then
-
+    	'' deref descriptor.data
     	idxexpr = astNewVAR( symbGetArrayDescriptor( sym ), _
     						 FB_ARRAYDESC_DATAOFFS, _
     						 FB_DATATYPE_INTEGER )
     	idxexpr = astNewLOAD( idxexpr, FB_DATATYPE_INTEGER )
 
-    '' static array
+    '' static array..
     else
-
-    	idxexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+    	idxexpr = astNewCONSTi( symbGetArrayFirstDim( sym )->lower, _
+    							FB_DATATYPE_INTEGER )
 
     end if
 
-    function = astNewIDX( expr, idxexpr, _
-    					  astGetDataType( expr ), astGetSubType( expr ) )
+    function = astNewIDX( varexpr, idxexpr, _
+    					  astGetDataType( varexpr ), astGetSubType( varexpr ) )
 
 end function
 
