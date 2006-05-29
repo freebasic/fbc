@@ -469,6 +469,8 @@ function cDerefFields _
 			if( isderef ) then
 				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 					exit function
+				else
+					exit do
 				end if
 			end if
 		end if
