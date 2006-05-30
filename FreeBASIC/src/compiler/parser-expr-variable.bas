@@ -1064,17 +1064,15 @@ function cVariableEx _
 	) as integer
 
 	dim as zstring ptr id
-	dim as integer dtype, deftyp, drefcnt
+	dim as integer dtype, deftyp, drefcnt, checkfields
 	dim as ASTNODE ptr idxexpr
 	dim as FBSYMBOL ptr sym, elm, subtype
-	dim as integer isbyref, isfuncptr, isbydesc, isimport, isarray
+	dim as integer isbyref, isfuncptr, isimport, isarray
 
 	''
 	dtype = lexGetType( )
 	id = lexGetText( )
 	subtype = NULL
-	isfuncptr = FALSE
-	elm	= NULL
 
     '' no suffix? lookup the default type (last DEF###) in the
     '' case symbol could not be found..
@@ -1135,17 +1133,15 @@ function cVariableEx _
 	end if
 
     ''
+	elm	= NULL
     isbyref = symbIsParamByRef( sym )
-
-	'' check if it's an import (only set if target is Windows)
 	isimport = symbIsImport( sym )
-
-    ''
-    idxexpr = NULL
-    isbydesc = FALSE
-    isarray = symbIsArray( sym )
+	isarray = symbIsArray( sym )
 
     '' check for '('')', it's not an array, just passing by desc
+    idxexpr = NULL
+    isfuncptr = FALSE
+	checkfields = TRUE
     if( lexGetToken( ) = CHAR_LPRNT ) then
     	if( lexGetLookAhead( 1 ) <> CHAR_RPRNT ) then
 
@@ -1185,23 +1181,42 @@ function cVariableEx _
     		end if
 
     	else
-    		isbydesc = TRUE
+    		'' array? could be a func ptr call too..
+    		if( isarray ) then
+    			checkfields = FALSE
+    		end if
+    	end if
+
+    else
+		'' array and no index?
+		if( isarray ) then
+   			if( checkarray ) then
+   				if( errReport( FB_ERRMSG_EXPECTEDINDEX, TRUE ) = FALSE ) then
+   					exit function
+   				else
+   					'' error recovery: fake an index
+   					idxexpr = hMakeArrayIdx( sym )
+   				end if
+   			else
+   				checkfields = FALSE
+   			end if
     	end if
     end if
 
    	''
    	if( isfuncptr = FALSE ) then
+   		if( checkfields ) then
+   			'' TypeField?
+   			elm = hTypeField( dtype, subtype, idxexpr, drefcnt, checkarray )
+			if( errGetLast( ) <> FB_ERRMSG_OK ) then
+				exit function
+			end if
 
-   		'' TypeField?
-   		elm = hTypeField( dtype, subtype, idxexpr, drefcnt, checkarray )
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
-
-   		'' check for calling functions through pointers
-   		if( lexGetToken( ) = CHAR_LPRNT ) then
-   			if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
-	   			isfuncptr = TRUE
+   			'' check for calling functions through pointers
+   			if( lexGetToken( ) = CHAR_LPRNT ) then
+   				if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
+	   				isfuncptr = TRUE
+   				end if
    			end if
    		end if
    	end if
@@ -1213,22 +1228,6 @@ function cVariableEx _
 	else
 		varexpr = astNewVAR( sym, 0, dtype, subtype )
 	end if
-
-	'' array and no index?
-	if( checkarray ) then
-		if( isarray ) then
-			if( idxexpr = NULL ) then
-  				if( isbydesc = FALSE ) then
-   					if( errReport( FB_ERRMSG_EXPECTEDINDEX, TRUE ) = FALSE ) then
-   						exit function
-   					else
-   						'' error recovery: fake an index
-   						idxexpr = hMakeArrayIdx( sym )
-   					end if
-   				end if
-   			end if
-    	end if
-    end if
 
 	'' has index?
 	if( idxexpr <> NULL ) then
@@ -1249,8 +1248,10 @@ function cVariableEx _
     	varexpr = astNewFIELD( varexpr, elm, dtype, subtype )
     end if
 
-    '' FuncPtrOrDerefFields?
-	cFuncPtrOrDerefFields( dtype, subtype, varexpr, isfuncptr, checkarray )
+    if( checkfields ) then
+    	'' FuncPtrOrDerefFields?
+		cFuncPtrOrDerefFields( dtype, subtype, varexpr, isfuncptr, checkarray )
+	end if
 
 	function = (errGetLast( ) = FB_ERRMSG_OK)
 
