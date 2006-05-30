@@ -36,7 +36,11 @@ option escape
 ''				|   INT( Expression )
 ''				|	LEN( data type | Expression ) .
 ''
-function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
+function cMathFunct _
+	( _
+		byref funcexpr as ASTNODE ptr _
+	) as integer
+
     dim as ASTNODE ptr expr, expr2
     dim as integer islen, typ, lgt, ptrcnt, op
     dim as FBSYMBOL ptr sym, subtype
@@ -59,6 +63,8 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 		if( funcexpr = NULL ) then
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function
+			else
+				funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			end if
 		end if
 
@@ -79,6 +85,8 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 		if( funcexpr = NULL ) then
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function
+			else
+				funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			end if
 		end if
 
@@ -98,6 +106,8 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 		if( funcexpr = NULL ) then
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function
+			else
+				funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			end if
 		end if
 
@@ -141,6 +151,8 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 		if( funcexpr = NULL ) then
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function
+			else
+				funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			end if
 		end if
 
@@ -165,6 +177,8 @@ function cMathFunct( byref funcexpr as ASTNODE ptr ) as integer
 		if( funcexpr = NULL ) then
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function
+			else
+				funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			end if
 		end if
 

@@ -38,7 +38,6 @@ function cErrorStmt as integer
 
 	function = FALSE
 
-
 	select case lexGetToken( )
 
 	'' ERROR Expression
@@ -58,8 +57,9 @@ function cErrorStmt as integer
 
 		'' '='
 		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
-			errReport( FB_ERRMSG_EXPECTEDEQ )
-			exit function
+			if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
+				exit function
+			end if
 		end if
 
 		'' Expression
@@ -76,13 +76,16 @@ end function
 '':::::
 ''cErrorFunct =   ERR .
 ''
-function cErrorFunct( byref funcexpr as ASTNODE ptr ) as integer
+function cErrorFunct _
+	( _
+		byref funcexpr as ASTNODE ptr _
+	) as integer
 
 	function = FALSE
 
 	if( hMatch( FB_TK_ERR ) ) then
 
-		funcexpr = rtlErrorGetNum
+		funcexpr = rtlErrorGetNum( )
 
 		function = TRUE
 	end if

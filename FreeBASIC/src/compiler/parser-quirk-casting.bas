@@ -31,7 +31,11 @@ option escape
 '':::::
 ''TypeConvExpr		=    (C### '(' expression ')') .
 ''
-function cTypeConvExpr( byref expr as ASTNODE ptr ) as integer
+function cTypeConvExpr _
+	( _
+		byref expr as ASTNODE ptr _
+	) as integer
+
     dim as integer dtype, op
 
 	function = FALSE
@@ -80,24 +84,33 @@ function cTypeConvExpr( byref expr as ASTNODE ptr ) as integer
 
 	'' '('
 	if( hMatch( CHAR_LPRNT ) = FALSE ) then
-		errReport( FB_ERRMSG_EXPECTEDLPRNT )
-		exit function
+		if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
+			exit function
+		end if
 	end if
 
 	if( cExpression( expr ) = FALSE ) then
-		exit function
+		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+			exit function
+		else
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
 	end if
 
 	expr = astNewCONV( op, dtype, NULL, expr, TRUE )
     if( expr = NULL ) Then
-    	errReport( FB_ERRMSG_TYPEMISMATCH, TRUE )
-    	exit function
+    	if( errReport( FB_ERRMSG_TYPEMISMATCH, TRUE ) = FALSE ) then
+    		exit function
+    	end if
     end if
 
 	'' ')'
 	if( hMatch( CHAR_RPRNT ) = FALSE ) then
-		errReport( FB_ERRMSG_EXPECTEDRPRNT )
-		exit function
+		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+			exit function
+		else
+			hSkipUntil( CHAR_RPRNT, TRUE )
+		end if
 	end if
 
 	function = TRUE

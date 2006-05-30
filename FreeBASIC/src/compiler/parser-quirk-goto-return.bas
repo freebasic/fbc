@@ -36,8 +36,12 @@ private function hFuncReturn( ) as integer
     function = FALSE
 
 	if( env.stmt.proc.endlabel = NULL ) then
-		errReport( FB_ERRMSG_ILLEGALOUTSIDEASUB )
-		exit function
+		if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASUB ) = FALSE ) then
+			exit function
+		else
+			hSkipStmt( )
+			return TRUE
+		end if
 	end if
 
 	'' Comment|StmtSep|EOF? just exit
@@ -103,8 +107,12 @@ function cGotoStmt as integer
 	case FB_TK_GOSUB
 		'' difference from QB: not allowed inside procs
 		if( fbIsModLevel() = FALSE ) then
-			errReport( FB_ERRMSG_ILLEGALINSIDEASUB )
-			exit function
+			if( errReport( FB_ERRMSG_ILLEGALINSIDEASUB ) = FALSE ) then
+				exit function
+			else
+				hSkipStmt( )
+				return TRUE
+			end if
 		end if
 
 		lexSkipToken( )
@@ -181,8 +189,12 @@ function cGotoStmt as integer
 	case FB_TK_RESUME
 
 		if( env.clopt.resumeerr = FALSE ) then
-			errReport( FB_ERRMSG_ILLEGALRESUMEERROR )
-			exit function
+			if( errReport( FB_ERRMSG_ILLEGALRESUMEERROR ) = FALSE ) then
+				exit function
+			else
+				hSkipStmt( )
+				return TRUE
+			end if
 		end if
 
 		lexSkipToken( )

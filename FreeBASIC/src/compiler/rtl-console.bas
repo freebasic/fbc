@@ -161,8 +161,11 @@ sub rtlConsoleModEnd( )
 end sub
 
 '':::::
-function rtlConsoleView ( byval topexpr as ASTNODE ptr, _
-						  byval botexpr as ASTNODE ptr ) as ASTNODE ptr
+function rtlConsoleView _
+	( _
+		byval topexpr as ASTNODE ptr, _
+		byval botexpr as ASTNODE ptr _
+	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc
 
@@ -186,10 +189,13 @@ function rtlConsoleView ( byval topexpr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlLocate ( byval row_arg as ASTNODE ptr, _
-					 byval col_arg as ASTNODE ptr, _
-					 byval cursor_vis_arg as ASTNODE ptr, _
-                     byval isfunc as integer ) as ASTNODE ptr
+function rtlLocate _
+	( _
+		byval row_arg as ASTNODE ptr, _
+		byval col_arg as ASTNODE ptr, _
+		byval cursor_vis_arg as ASTNODE ptr, _
+        byval isfunc as integer _
+    ) as ASTNODE ptr
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -205,25 +211,16 @@ function rtlLocate ( byval row_arg as ASTNODE ptr, _
     proc = astNewCALL( f )
 
     '' byval row_arg as integer
-    if( row_arg = NULL ) then
-    	row_arg = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    end if
     if( astNewARG( proc, row_arg ) = NULL ) then
     	exit function
     end if
 
     '' byval col_arg as integer
-    if( col_arg = NULL ) then
-        col_arg = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    end if
     if( astNewARG( proc, col_arg ) = NULL ) then
     	exit function
     end if
 
     '' byval cursor_vis_arg as integer
-    if( cursor_vis_arg = NULL ) then
-        cursor_vis_arg = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
-    end if
     if( astNewARG( proc, cursor_vis_arg ) = NULL ) then
     	exit function
     end if
@@ -245,9 +242,12 @@ function rtlLocate ( byval row_arg as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlWidthScreen ( byval width_arg as ASTNODE ptr, _
-					      byval height_arg as ASTNODE ptr, _
-                          byval isfunc as integer ) as ASTNODE ptr
+function rtlWidthScreen _
+	( _
+		byval width_arg as ASTNODE ptr, _
+		byval height_arg as ASTNODE ptr, _
+        byval isfunc as integer _
+    ) as ASTNODE ptr
 
     dim as ASTNODE ptr proc
 
@@ -289,9 +289,12 @@ function rtlWidthScreen ( byval width_arg as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlConsoleReadXY ( byval rowexpr as ASTNODE ptr, _
-							byval columnexpr as ASTNODE ptr, _
-							byval colorflagexpr as ASTNODE ptr ) as ASTNODE ptr
+function rtlConsoleReadXY _
+	( _
+		byval rowexpr as ASTNODE ptr, _
+		byval columnexpr as ASTNODE ptr, _
+		byval colorflagexpr as ASTNODE ptr _
+	) as ASTNODE ptr
 
 	dim as ASTNODE ptr proc
 

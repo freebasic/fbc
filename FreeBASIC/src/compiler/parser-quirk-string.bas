@@ -128,7 +128,7 @@ function cLSetStmt( ) as integer
 		 FB_DATATYPE_USERDEF
 
 	case else
-		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) ) then
+		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 			exit function
 		else
 			'' error recovery: fake a var

@@ -1,6 +1,3 @@
-[ ] non-fatal error handling:
-    - update quirks
-
 [ ] namespaces:
     - add access to the global ns, make GLOBAL a reserved word as in vb.net
       - can't add the symbol at symbinit()?

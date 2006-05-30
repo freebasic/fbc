@@ -32,8 +32,12 @@ option escape
 '':::::
 '' ViewStmt	  =   VIEW (PRINT (Expression TO Expression)?) .
 ''
-function cViewStmt(byval is_func as integer = FALSE, _
-                   byref funcexpr as ASTNODE ptr = NULL ) as integer
+function cViewStmt _
+	( _
+		byval is_func as integer = FALSE, _
+        byref funcexpr as ASTNODE ptr = NULL _
+    ) as integer
+
     dim as ASTNODE ptr expr1, expr2
     dim as integer default_view, default_view_value
 
@@ -43,12 +47,12 @@ function cViewStmt(byval is_func as integer = FALSE, _
     default_view_value = iif(is_func,-1,0)
 
 	'' VIEW
-	if( lexGetToken <> FB_TK_VIEW ) then
+	if( lexGetToken( ) <> FB_TK_VIEW ) then
 		exit function
 	end if
 
 	'' PRINT
-	if( lexGetLookAhead(1) <> FB_TK_PRINT ) then
+	if( lexGetLookAhead( 1 ) <> FB_TK_PRINT ) then
 		exit function
 	end if
 
@@ -59,8 +63,11 @@ function cViewStmt(byval is_func as integer = FALSE, _
 	if( is_func = FALSE ) then
     	if( cExpression( expr1 ) ) then
             if( hMatch( FB_TK_TO ) = FALSE ) then
-                errReport FB_ERRMSG_SYNTAXERROR
-                exit function
+                if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+                	exit function
+                else
+                	expr1 = astNewCONST( 0, FB_DATATYPE_INTEGER )
+                end if
             end if
 
             hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
@@ -71,8 +78,8 @@ function cViewStmt(byval is_func as integer = FALSE, _
 
     if( default_view ) then
         if( is_func ) then
-            hMatchLPRNT()
-            hMatchRPRNT()
+            hMatchLPRNT( )
+            hMatchRPRNT( )
         end if
         expr1 = astNewCONSTi( default_view_value, FB_DATATYPE_INTEGER )
         expr2 = astNewCONSTi( default_view_value, FB_DATATYPE_INTEGER )
@@ -88,7 +95,11 @@ function cViewStmt(byval is_func as integer = FALSE, _
 end function
 
 '':::::
-function cWidthStmt( byval isfunc as integer ) as ASTNODE ptr
+function cWidthStmt _
+	( _
+		byval isfunc as integer _
+	) as ASTNODE ptr
+
 	dim as ASTNODE ptr fnum, width_arg, height_arg, dev_name
     dim as ASTNODE ptr func
     dim as integer checkrprnt
@@ -174,7 +185,11 @@ function cWidthStmt( byval isfunc as integer ) as ASTNODE ptr
 end function
 
 '':::::
-function cLocateStmt( byval isfunc as integer ) as ASTNODE ptr
+function cLocateStmt _
+	( _
+		byval isfunc as integer _
+	) as ASTNODE ptr
+
 	dim as ASTNODE ptr row_arg, col_arg, cursor_vis_arg
     dim as ASTNODE ptr func
 
@@ -185,20 +200,40 @@ function cLocateStmt( byval isfunc as integer ) as ASTNODE ptr
 
 	if( isfunc ) then
 		'' '('?
-		hMatchLPRNT()
+		hMatchLPRNT( )
 	end if
 
-    cExpression( row_arg )
+    if( cExpression( row_arg ) = FALSE ) then
+    	row_arg = NULL
+    end if
+
     if( hMatch( CHAR_COMMA ) ) then
-    	cExpression( col_arg )
+    	if( cExpression( col_arg ) = FALSE ) then
+    		col_arg = NULL
+    	end if
+
 	    if( hMatch( CHAR_COMMA ) ) then
-		    cExpression( cursor_vis_arg )
+		    if( cExpression( cursor_vis_arg ) = FALSE ) then
+		    	cursor_vis_arg = NULL
+		    end if
 	    end if
     end if
 
 	if( isfunc ) then
 		'' ')'?
-		hMatchRPRNT()
+		hMatchRPRNT( )
+	end if
+
+    if( row_arg = NULL ) then
+    	row_arg = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+    end if
+
+    if( col_arg = NULL ) then
+    	col_arg = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+    end if
+
+	if( cursor_vis_arg = NULL ) then
+		cursor_vis_arg = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
 	end if
 
     function = rtlLocate( row_arg, col_arg, cursor_vis_arg, isfunc )
@@ -208,7 +243,11 @@ end function
 '':::::
 '' ScreenFunct   =   SCREEN '(' expr ',' expr ( ',' expr )? ')'
 ''
-function cScreenFunct( byref funcexpr as ASTNODE ptr ) as integer
+function cScreenFunct _
+	( _
+		byref funcexpr as ASTNODE ptr _
+	) as integer
+
     dim as ASTNODE ptr yexpr, xexpr, fexpr
 
 	function = FALSE

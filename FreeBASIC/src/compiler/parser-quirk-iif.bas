@@ -31,7 +31,11 @@ option escape
 '':::::
 ''cIIFFunct =   IIF '(' condexpr ',' truexpr ',' falsexpr ')' .
 ''
-function cIIFFunct( byref funcexpr as ASTNODE ptr ) as integer
+function cIIFFunct _
+	( _
+		byref funcexpr as ASTNODE ptr _
+	) as integer
+
 	dim as ASTNODE ptr condexpr, truexpr, falsexpr
 
 	function = FALSE

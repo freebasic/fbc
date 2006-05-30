@@ -45,31 +45,42 @@ function cArrayStmt as integer
 
 		do
 			if( cVarOrDeref( expr1, FALSE ) = FALSE ) then
-				errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-				exit function
-			end if
-
-			'' array?
-    		s = astGetSymbol( expr1 )
-    		if( s = NULL ) then
-    			errReport( FB_ERRMSG_EXPECTEDARRAY )
-    			exit function
-    		end if
-
-    		if( symbIsArray( s ) = FALSE ) then
-				errReport( FB_ERRMSG_EXPECTEDARRAY )
-				exit function
-			end if
-
-			if( symbGetIsDynamic( s ) ) then
-				expr1 = rtlArrayErase( expr1 )
-				if( expr1 = NULL ) then
+				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 					exit function
+				else
+					hSkipUntil( CHAR_COMMA )
 				end if
-				astAdd( expr1 )
+
 			else
-				if( rtlArrayClear( expr1 ) = FALSE ) then
-					exit function
+				'' array?
+    			s = astGetSymbol( expr1 )
+    			if( s <> NULL ) then
+    				if( symbIsArray( s ) = FALSE ) then
+    					s = NULL
+    				end if
+    			end if
+
+				if( s = NULL ) then
+					if( errReport( FB_ERRMSG_EXPECTEDARRAY ) = FALSE ) then
+						exit function
+					else
+						hSkipUntil( CHAR_COMMA )
+					end if
+
+				else
+					if( symbGetIsDynamic( s ) ) then
+						expr1 = rtlArrayErase( expr1 )
+						if( expr1 <> NULL ) then
+							astAdd( expr1 )
+						end if
+
+					else
+						if( rtlArrayClear( expr1 ) = FALSE ) then
+							if( errGetLast( ) <> FB_ERRMSG_OK ) then
+								exit function
+							end if
+						end if
+					end if
 				end if
 			end if
 
@@ -83,31 +94,53 @@ function cArrayStmt as integer
 		lexSkipToken( )
 
 		if( cVarOrDeref( expr1 ) = FALSE ) then
-			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-			exit function
+			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+				exit function
+			else
+				hSkipStmt( )
+				return true
+			end if
 		end if
 
 		hMatchCOMMA( )
 
 		if( cVarOrDeref( expr2 ) = FALSE ) then
-			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-			exit function
+			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+				exit function
+			else
+				astDelTree( expr1 )
+				hSkipStmt( )
+				return true
+			end if
 		end if
 
-		select case astGetDataType( expr1 )
+		select case as const astGetDataType( expr1 )
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR
+
 			if( astGetDataType( expr2 ) = FB_DATATYPE_WCHAR ) then
-				errReport( FB_ERRMSG_INVALIDDATATYPES )
-				exit function
+				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+					exit function
+				else
+					astDelTree( expr1 )
+					astDelTree( expr2 )
+				end if
+
+			else
+				function = rtlStrSwap( expr1, expr2 )
 			end if
-			function = rtlStrSwap( expr1, expr2 )
 
 		case FB_DATATYPE_WCHAR
 			if( astGetDataType( expr2 ) <> FB_DATATYPE_WCHAR ) then
-				errReport( FB_ERRMSG_INVALIDDATATYPES )
-				exit function
+				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+					exit function
+				else
+					astDelTree( expr1 )
+					astDelTree( expr2 )
+				end if
+
+			else
+				function = rtlWstrSwap( expr1, expr2 )
 			end if
-			function = rtlWstrSwap( expr1, expr2 )
 
 		case else
 			function = rtlMemSwap( expr1, expr2 )
@@ -120,7 +153,11 @@ end function
 '':::::
 ''cArrayFunct =   (LBOUND|UBOUND) '(' ID (',' Expression)? ')' .
 ''
-function cArrayFunct( byref funcexpr as ASTNODE ptr ) as integer
+function cArrayFunct _
+	( _
+		byref funcexpr as ASTNODE ptr _
+	) as integer
+
 	dim as ASTNODE ptr sexpr, expr
 	dim as integer islbound
 	dim as FBSYMBOL ptr s
@@ -143,20 +180,29 @@ function cArrayFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 		'' ID
 		if( cVarOrDeref( sexpr, FALSE ) = FALSE ) then
-			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-			exit function
+			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+				exit function
+			else
+				hSkipUntil( CHAR_RPRNT, TRUE )
+				return TRUE
+			end if
 		end if
 
 		'' array?
 		s = astGetSymbol( sexpr )
-		if( s = NULL ) then
-			errReport( FB_ERRMSG_EXPECTEDARRAY, TRUE )
-			exit function
+		if( s <> NULL ) then
+			if( symbIsArray( s ) = FALSE ) then
+				s = NULL
+			end if
 		end if
 
-		if( symbIsArray( s ) = FALSE ) then
-			errReport( FB_ERRMSG_EXPECTEDARRAY, TRUE )
-			exit function
+		if( s = NULL ) then
+			if( errReport( FB_ERRMSG_EXPECTEDARRAY, TRUE ) = FALSE ) then
+				exit function
+			else
+				hSkipUntil( CHAR_RPRNT, TRUE )
+				return TRUE
+			end if
 		end if
 
 		'' (',' Expression)?

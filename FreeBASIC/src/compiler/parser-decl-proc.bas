@@ -145,7 +145,7 @@ function cSubOrFuncDecl _
 	ptrcnt = 0
 
 	if( (isSub) and (dtype <> INVALID) ) then
-    	if( errReport( FB_ERRMSG_INVALIDCHARACTER ) ) then
+    	if( errReport( FB_ERRMSG_INVALIDCHARACTER ) = FALSE ) then
     		exit function
     	end if
 	end if

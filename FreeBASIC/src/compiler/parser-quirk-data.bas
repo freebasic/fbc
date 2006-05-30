@@ -60,8 +60,12 @@ function cDataStmt as integer static
 			if( sym = NULL ) then
 				sym = symbAddLabel( lexGetText( ), FALSE, TRUE )
 				if( sym = NULL ) then
-					errReport( FB_ERRMSG_DUPDEFINITION )
-					exit function
+					if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+						exit function
+					else
+						hSkipStmt( )
+						return TRUE
+					end if
 				end if
 			end if
 			lexSkipToken( )
@@ -75,13 +79,17 @@ function cDataStmt as integer static
 
 		do
 		    if( cVarOrDeref( expr ) = FALSE ) then
-		    	errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
-		    	exit function
-		    end if
+		    	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+		    		exit function
+		    	else
+		    		hSkipUntil( CHAR_COMMA )
+		    	end if
 
-            if( rtlDataRead( expr ) = FALSE ) then
-            	exit function
-            end if
+		    else
+            	if( rtlDataRead( expr ) = FALSE ) then
+            		exit function
+            	end if
+		    end if
 
 		loop while( hMatch( CHAR_COMMA ) )
 
@@ -140,18 +148,18 @@ function cDataStmt as integer static
 				else
 					'' not a constant?
 					if( astIsCONST( expr ) = FALSE ) then
-						errReport( FB_ERRMSG_EXPECTEDCONST )
-						exit function
+						if( errReport( FB_ERRMSG_EXPECTEDCONST ) = FALSE ) then
+							exit function
+						end if
+
+					else
+            			littext = astGetValueAsStr( expr )
+            			if( rtlDataStore( littext, _
+            						  	  len( littext ), _
+            						  	  FB_DATATYPE_CHAR ) = FALSE ) then
+	            			exit function
+    	        		end if
 					end if
-
-            		littext = astGetValueAsStr( expr )
-            		if( rtlDataStore( littext, _
-            						  len( littext ), _
-            						  FB_DATATYPE_CHAR ) = FALSE ) then
-	            		errReport( FB_ERRMSG_INVALIDDATATYPES )
-	            		exit function
-    	        	end if
-
   				end if
 
 		    end if
