@@ -87,6 +87,42 @@ function cParentExpression _
 end function
 
 '':::::
+private function hFindId _
+	( _
+		byval chain_ as FBSYMCHAIN ptr, _
+		byref atom as ASTNODE ptr _
+	) as integer
+
+    dim as FBSYMBOL ptr sym
+
+    do
+    	sym = chain_->sym
+    	select case symbGetClass( sym )
+		case FB_SYMBCLASS_CONST
+			return cConstantEx( sym, atom )
+
+		case FB_SYMBCLASS_PROC
+			return cFunctionEx( sym, atom )
+
+		case FB_SYMBCLASS_VAR
+           	return cVariableEx( chain_, atom, env.checkarray )
+
+		case FB_SYMBCLASS_ENUM
+			'' '.'?
+			if( lexGetLookAhead( 1 ) = CHAR_DOT ) then
+              	return cEnumConstant( sym, atom )
+			end if
+
+		end select
+
+    	chain_ = symbChainGetNext( chain_ )
+    loop while( chain_ <> NULL )
+
+    function = FALSE
+
+end function
+
+'':::::
 ''Atom            =   Constant | Function | QuirkFunction | Variable | Literal .
 ''
 function cAtom _
@@ -102,41 +138,20 @@ function cAtom _
   		return cQuirkFunction( cIdentifier( )->sym, atom )
 
   	case FB_TKCLASS_IDENTIFIER
-    	dim as FBSYMBOL ptr sym
-
   		if( chain_ = NULL ) then
   			chain_ = cIdentifier( )
   		end if
 
+    	'' declared id?
     	if( chain_ <> NULL ) then
-    		do
-    			sym = chain_->sym
-    			select case symbGetClass( sym )
-				case FB_SYMBCLASS_CONST
-					return cConstantEx( sym, atom )
-
-				case FB_SYMBCLASS_PROC
-					return cFunctionEx( sym, atom )
-
-				case FB_SYMBCLASS_VAR
-                	return cVariableEx( chain_, atom, env.checkarray )
-
-				case FB_SYMBCLASS_ENUM
-					'' '.'?
-					if( lexGetLookAhead( 1 ) = CHAR_DOT ) then
-                		return cEnumConstant( sym, atom )
-                	end if
-
-				end select
-
-    			chain_ = symbChainGetNext( chain_ )
-    		loop while( chain_ <> NULL )
+    		return hFindId( chain_, atom )
 
     	else
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				return FALSE
 			end if
 
+  			'' try to alloc an implicit variable..
   			return cVariableEx( NULL, atom, env.checkarray )
   		end if
 
@@ -150,8 +165,22 @@ function cAtom _
 		select case lexGetToken( )
 		'' '.'?
 		case CHAR_DOT
-  			if( env.stmt.with.sym <> NULL ) then
-  				return cWithVariable( env.stmt.with.sym, atom, env.checkarray )
+  			'' can be a global ns symbol access, or a WITH variable..
+  			if( chain_ = NULL ) then
+  				chain_ = cIdentifier( )
+  			end if
+
+  			if( chain_ <> NULL ) then
+  				return hFindId( chain_, atom )
+
+  			else
+				if( errGetLast( ) <> FB_ERRMSG_OK ) then
+					exit function
+				end if
+
+  				if( env.stmt.with.sym <> NULL ) then
+  					return cWithVariable( env.stmt.with.sym, atom, env.checkarray )
+  				end if
   			end if
 
   		'' '$'?

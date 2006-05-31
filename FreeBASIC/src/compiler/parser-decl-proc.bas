@@ -124,23 +124,25 @@ function cSubOrFuncDecl _
 		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 			exit function
 		else
-			'' error recovery: skip stmt
-			hSkipStmt( )
-			return TRUE
+			'' error recovery: fake an id
+			id = *hMakeTmpStr( )
+			dtype = INVALID
 		end if
-	end if
 
-    '' if inside a namespace, symbols can't contain periods (.)'s
-    if( symbIsGlobalNamespc( ) = FALSE ) then
-    	if( lexGetPeriodPos( ) > 0 ) then
-    		if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-    			exit function
+	else
+    	'' if inside a namespace, symbols can't contain periods (.)'s
+    	if( symbIsGlobalNamespc( ) = FALSE ) then
+    		if( lexGetPeriodPos( ) > 0 ) then
+    			if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+    				exit function
+    			end if
     		end if
     	end if
-    end if
 
-	id = *lexGetText( )
-	dtype = lexGetType( )
+		id = *lexGetText( )
+		dtype = lexGetType( )
+	end if
+
 	subtype = NULL
 	ptrcnt = 0
 

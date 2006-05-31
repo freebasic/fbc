@@ -166,7 +166,7 @@ function cIfStmtBegin as integer
 
 	select case lexGetToken( )
 	'' COMMENT|NEWLINE?
-	case FB_TK_COMMENTCHAR, FB_TK_REM, FB_TK_EOL, FB_TK_STATSEPCHAR
+	case FB_TK_COMMENTCHAR, FB_TK_REM, FB_TK_EOL, FB_TK_EOF, FB_TK_STATSEPCHAR
 
 	case else
 		return hIfSingleLine( stk )

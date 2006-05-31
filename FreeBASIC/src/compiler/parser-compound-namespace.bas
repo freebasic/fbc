@@ -53,18 +53,26 @@ function cNamespaceStmtBegin _
 
 	'' ID?
 	palias = NULL
-	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
-		'' keyword?
-		if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
-			if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+
+	select case lexGetToken( )
+	'' COMMENT|NEWLINE?
+	case FB_TK_COMMENTCHAR, FB_TK_REM, FB_TK_EOL, FB_TK_EOF, FB_TK_STATSEPCHAR
+
+		'' anonymous namespace..
+		sym = symbAddNamespace( hMakeTmpStr( ), NULL )
+
+	case else
+
+    	if( lexGetToken( ) <> FB_TK_ID ) then
+			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 				exit function
+			else
+				'' error recovery: fake a symbol
+				sym = symbAddNamespace( hMakeTmpStr( ), NULL )
+				exit select
 			end if
 		end if
 
-		'' anonymous namespace.. (or error recovery)
-		sym = symbAddNamespace( hMakeTmpStr( ), NULL )
-
-	else
     	'' contains a period?
     	if( lexGetPeriodPos( ) > 0 ) then
     		if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
@@ -130,7 +138,7 @@ function cNamespaceStmtBegin _
 			end if
 		end if
 
-	end if
+	end select
 
 	''
 	stk = cCompStmtPush( FB_TK_NAMESPACE, _
@@ -197,39 +205,39 @@ function cUsingStmt as integer
 
     do
     	'' ID
-    	if( lexGetToken( ) <> FB_TK_ID ) then
-			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until next ','
-				hSkipUntil( CHAR_COMMA )
-			end if
-
-        else
-    		chain_ = cIdentifier( )
-    		if( chain_ = NULL ) then
-    			if( errReport( FB_ERRMSG_UNDEFINEDSYMBOL ) = FALSE ) then
-    				exit function
+    	chain_ = cIdentifier( )
+    	if( chain_ = NULL ) then
+    		if( lexGetToken( ) <> FB_TK_ID ) then
+				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+					exit function
 				else
 					'' error recovery: skip until next ','
 					hSkipUntil( CHAR_COMMA )
 				end if
 
     		else
-    			sym = chain_->sym
-
-				'' not a namespace?
-				if( symbIsNamespace( sym ) = FALSE ) then
-					if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-						exit function
-					end if
-
+    			if( errReport( FB_ERRMSG_UNDEFINEDSYMBOL ) = FALSE ) then
+    				exit function
 				else
-    				if( symbNamespaceImport( sym ) = FALSE ) then
-	   					exit function
-    				end if
+					'' error recovery: skip until next ','
+					hSkipUntil( CHAR_COMMA )
 				end if
-    		end if
+			end if
+
+    	else
+    		sym = chain_->sym
+
+			'' not a namespace?
+			if( symbIsNamespace( sym ) = FALSE ) then
+				if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+					exit function
+				end if
+
+			else
+    			if( symbNamespaceImport( sym ) = FALSE ) then
+	   				exit function
+    			end if
+			end if
 		end if
 
     '' ','?

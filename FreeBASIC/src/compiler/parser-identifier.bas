@@ -49,6 +49,51 @@ private sub hSkipSymbol( )
 end sub
 
 '':::::
+private function hGlobalId _
+	( _
+		byval isdecl as integer = FALSE, _
+		byval showerror as integer = TRUE _
+	) as FBSYMCHAIN ptr
+
+	function = NULL
+
+    '' another '.'?
+    if( lexGetLookAhead( 1, LEXCHECK_NOLOOKUP ) = CHAR_DOT ) then
+    	'' skip the first '.'
+    	lexSkipToken( LEXCHECK_NOLOOKUP )
+
+    else
+    	'' with inside a WITH block, a single '.' is ambiguous..
+    	if( env.stmt.with.sym <> NULL ) then
+    		exit function
+    	end if
+    end if
+
+    if( isdecl ) then
+    	'' different name spaces?
+    	if( symbIsGlobalNamespc( ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
+    			exit function
+    		end if
+    	end if
+    end if
+
+    '' skip the '.'
+    lexSkipToken( LEXCHECK_NOLOOKUP )
+
+    '' not an ID?
+    if( lexGetToken( ) <> FB_TK_ID ) then
+    	if( showerror ) then
+    		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+    	end if
+    	exit function
+    end if
+
+	function = symbLookupAt( @symbGetGlobalNamespc( ), lexGetText( ) )
+
+end function
+
+'':::::
 '' Identifier	= (ID{namespace} '.')* ID
 ''				|  ID ('.' ID)* .
 ''
@@ -64,7 +109,15 @@ function cIdentifier _
     chain_ = lexGetSymChain( )
 
     if( chain_ = NULL ) then
-    	return NULL
+    	'' '.'?
+    	if( lexGetToken( ) <> CHAR_DOT ) then
+    		return NULL
+    	end if
+
+    	chain_ = hGlobalId( isdecl, showerror )
+    	if( chain_ = NULL ) then
+    		return NULL
+    	end if
     end if
 
     do while( symbGetClass( chain_->sym ) = FB_SYMBCLASS_NAMESPACE )
@@ -135,6 +188,13 @@ function cNamespace _
     ns = NULL
 
     chain_ = lexGetSymChain( )
+    if( chain_ = NULL ) then
+    	'' '.'?
+    	if( lexGetToken( ) = CHAR_DOT ) then
+    		chain_ = hGlobalId( )
+    	end if
+    end if
+
     do while( chain_ <> NULL )
 
     	if( symbGetClass( chain_->sym ) <> FB_SYMBCLASS_NAMESPACE ) then

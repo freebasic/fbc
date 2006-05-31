@@ -735,22 +735,22 @@ function cAddrOfExpression _
 	if( lexGetToken( ) = FB_TK_ADDROFCHAR ) then
 		lexSkipToken( )
 
+		chain_ = cIdentifier( )
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
+			exit function
+		end if
+
 		'' proc?
-		if( lexGetClass( ) = FB_TKCLASS_IDENTIFIER ) then
+		sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
+		if( sym <> NULL ) then
+			lexSkipToken( )
+			return hProcPtrBody( sym, addrofexpr )
 
-			chain_ = cIdentifier( )
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-				exit function
-			end if
+		'' anything else..
+		else
+			return hVarPtrBody( chain_, addrofexpr )
+		end if
 
-			sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
-			if( sym <> NULL ) then
-				lexSkipToken( )
-				return hProcPtrBody( sym, addrofexpr )
-			end if
-        end if
-
-		return hVarPtrBody( chain_, addrofexpr )
 	end if
 
 	select case as const lexGetToken( )
