@@ -872,7 +872,7 @@ Links:
 
     - GSL: http://www.gnu.org/software/gsl/ or http://gnuwin32.sourceforge.net/packages/gsl.htm
 
-    - GTK+: http://www.gtk.org/ or http://gladewin32.sourceforge.net/modules.php?name=Downloads
+    - GTK+: http://www.gtk.org/ or http://gladewin32.sourceforge.net/modules/wfdownloads/
 
     - IUP: http://luaforge.net/projects/iup
 
