@@ -50,8 +50,9 @@ end sub
 ''
 function cAsmCode as integer static
 	static as zstring * FB_MAXLITLEN+1 text
-	dim as FBSYMBOL ptr sym
 	dim as FBSYMCHAIN ptr chain_
+	dim as FBSYMBOL ptr sym
+	dim as ASTNODE ptr expr
 	dim as FB_ASMTOK ptr head, tail, node
 	dim as integer doskip
 
@@ -70,42 +71,51 @@ function cAsmCode as integer static
 		sym = NULL
 		doskip = FALSE
 
-		if( lexGetClass( LEXCHECK_NOWHITESPC ) = FB_TKCLASS_IDENTIFIER ) then
+		select case lexGetClass( LEXCHECK_NOWHITESPC )
+
+		'' id?
+		case FB_TKCLASS_IDENTIFIER
+
 			if( emitIsKeyword( text ) = FALSE ) then
 				chain_ = cIdentifier( )
-				if( chain_ <> NULL ) then
+				do while( chain_ <> NULL )
+
+					select case symbGetClass( chain_->sym )
 					'' function?
-					sym = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
-					if( sym <> NULL ) then
-						text = *symbGetMangledName( sym )
-						sym = NULL
-					else
-						'' const?
-						sym = symbFindByClass( chain_, FB_SYMBCLASS_CONST )
-				    	if( sym <> NULL ) then
-							text = symbGetConstValueAsStr( sym )
-							sym = NULL
-						else
-							'' label?
-							sym = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
-							if( sym <> NULL ) then
-								text = *symbGetMangledName( sym )
-								sym = NULL
-							else
-								'' var?
-								sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
-							end if
-						end if
-					end if
-				else
-					if( errGetLast( ) <> FB_ERRMSG_OK ) then
-						exit function
-					end if
-				end if
+					case FB_SYMBCLASS_PROC
+						text = *symbGetMangledName( chain_->sym )
+						exit do
+
+					'' const?
+					case FB_SYMBCLASS_CONST
+						text = symbGetConstValueAsStr( chain_->sym )
+						exit do
+
+					'' label?
+					case FB_SYMBCLASS_LABEL
+						text = *symbGetMangledName( chain_->sym )
+						exit do
+
+					case FB_SYMBCLASS_VAR
+						'' var?
+						sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
+						exit do
+
+					end select
+
+					chain_ = symbChainGetNext( chain_ )
+				loop
             end if
 
+		'' lit number?
+		case FB_TKCLASS_NUMLITERAL
+			 if( cNumLiteral( expr ) ) then
+             	text = astGetValueAsStr( expr )
+			 	astDelNode( expr )
+			 end if
+
 		''
-		else
+		case FB_TKCLASS_KEYWORD
 			'' FUNCTION?
 			if( lexGetToken( LEXCHECK_NOWHITESPC ) = FB_TK_FUNCTION ) then
     			sym = symbGetProcResult( env.currproc )
@@ -118,7 +128,7 @@ function cAsmCode as integer static
     			end if
 			end if
 
-		end if
+		end select
 
 		''
 		if( doskip = FALSE ) then
