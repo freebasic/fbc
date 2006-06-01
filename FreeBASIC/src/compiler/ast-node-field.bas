@@ -40,7 +40,8 @@ function astNewFIELD _
     dim as ASTNODE ptr n
 
 	if( dtype = FB_DATATYPE_BITFIELD ) then
-		dtype = subtype->typ
+		'' final type is always an unsigned int
+		dtype = FB_DATATYPE_UINT
 		subtype = NULL
 	end if
 
@@ -76,6 +77,8 @@ private function hGetBitField _
 	c = astNewNode( INVALID, INVALID )
 	astCopy( c, n )
 
+	'' final type is always an unsigned int
+
 	if( s->bitfld.bitpos > 0 ) then
 		n = astNewBOP( AST_OP_SHR, c, _
 				   	   astNewCONSTi( s->bitfld.bitpos, FB_DATATYPE_UINT ) )
@@ -102,9 +105,6 @@ function astLoadFIELD _
 	l = n->l
 	if( l->dtype = FB_DATATYPE_BITFIELD ) then
 		l = hGetBitField( l )
-		function = astLoad( l )
-		astDelNode( l )
-		exit function
 	end if
 
 	function = astLoad( l )
