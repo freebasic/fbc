@@ -45,6 +45,8 @@ function cNamespaceStmtBegin _
 	function = FALSE
 
     if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_NAMESPC ) = FALSE ) then
+    	'' error recovery: skip the whole compound stmt
+    	hSkipCompound( FB_TK_NAMESPACE )
     	exit function
     end if
 

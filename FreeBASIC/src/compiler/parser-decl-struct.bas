@@ -512,23 +512,16 @@ function cTypeDecl _
 
 	function = FALSE
 
+	isunion = (lexGetToken( ) = FB_TK_UNION)
+
     if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL ) = FALSE ) then
+    	'' error recovery: skip the whole compound stmt
+    	hSkipCompound( iif( isunion, FB_TK_UNION, FB_TK_TYPE ) )
     	exit function
     end if
 
-	'' TYPE | UNION
-	select case lexGetToken( )
-	case FB_TK_TYPE
-		isunion = FALSE
-		lexSkipToken( )
-
-	case FB_TK_UNION
-		isunion = TRUE
-		lexSkipToken( )
-
-	case else
-		exit function
-	end select
+	'' skip TYPE | UNION
+	lexSkipToken( )
 
 	'' ID
 	checkid = TRUE

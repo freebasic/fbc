@@ -216,6 +216,62 @@ sub hSkipUntil _
 end sub
 
 '':::::
+sub hSkipCompound _
+	( _
+		byval for_token as integer, _
+		byval until_token as integer, _
+		byval flags as LEXCHECK _
+	)
+
+	dim as integer cnt, iscomment
+
+	if( until_token = INVALID ) then
+		until_token = for_token
+	end if
+
+	cnt = 0
+	iscomment = FALSE
+	do
+		select case lexGetToken( flags )
+		case FB_TK_EOF
+			exit sub
+
+		case FB_TK_EOL
+			iscomment = FALSE
+
+		case FB_TK_COMMENTCHAR, FB_TK_REM
+			iscomment = TRUE
+
+		case FB_TK_END
+			if( iscomment = FALSE ) then
+				if( lexGetLookAhead( 1, flags ) = until_token ) then
+					lexSkipToken( flags )
+
+					if( cnt > 0 ) then
+						cnt -= 1
+                    end if
+
+					if( cnt = 0 ) then
+						exit do
+					end if
+				end if
+			end if
+
+		case for_token
+			if( iscomment = FALSE ) then
+				cnt += 1
+			end if
+
+		end select
+
+		lexSkipToken( flags )
+	loop
+
+	lexSkipToken( flags )
+
+end sub
+
+'':::::
 function hMatchExpr _
 	( _
 		byval dtype as integer _

@@ -168,6 +168,8 @@ function cAsmBlock as integer
 	end if
 
     if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+    	'' error recovery: skip the whole compound stmt
+    	hSkipCompound( FB_TK_ASM )
     	exit function
     end if
 

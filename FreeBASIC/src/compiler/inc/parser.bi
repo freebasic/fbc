@@ -705,6 +705,12 @@ declare sub 		hSkipUntil				( _
 												byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
 											)
 
+declare sub 		hSkipCompound 			( _
+												byval for_token as integer, _
+												byval until_token as integer = INVALID, _
+												byval flags as LEXCHECK = LEXCHECK_EVERYTHING _
+											)
+
 declare function 	hMatchExpr 				( _
 												byval dtype as integer _
 											) as ASTNODE ptr

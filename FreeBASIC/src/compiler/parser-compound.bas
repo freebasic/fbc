@@ -57,8 +57,9 @@ sub parserCompoundStmtEnd( )
 
 end sub
 
-#define CHECK_CODEMASK( ) 												_
+#define CHECK_CODEMASK( for_tk, until_tk )								_
     if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then		:_
+    	hSkipCompound( for_tk, until_tk )								:_
     	exit function													:_
     end if
 
@@ -78,31 +79,31 @@ function cCompoundStmt as integer
 
 	select case as const lexGetToken( )
 	case FB_TK_IF
-		CHECK_CODEMASK( )
+		CHECK_CODEMASK( FB_TK_IF, FB_TK_IF )
 		function = cIfStmtBegin( )
 
 	case FB_TK_FOR
-		CHECK_CODEMASK( )
+		CHECK_CODEMASK( FB_TK_FOR, FB_TK_NEXT )
 		function = cForStmtBegin( )
 
 	case FB_TK_DO
-		CHECK_CODEMASK( )
+		CHECK_CODEMASK( FB_TK_DO, FB_TK_LOOP )
 		function = cDoStmtBegin( )
 
 	case FB_TK_WHILE
-		CHECK_CODEMASK( )
+		CHECK_CODEMASK( FB_TK_WHILE, FB_TK_WEND )
 		function = cWhileStmtBegin( )
 
 	case FB_TK_SELECT
-		CHECK_CODEMASK( )
+		CHECK_CODEMASK( FB_TK_SELECT, FB_TK_SELECT )
 		function = cSelectStmtBegin( )
 
 	case FB_TK_WITH
-		CHECK_CODEMASK( )
+		CHECK_CODEMASK( FB_TK_WITH, FB_TK_WITH )
 		function = cWithStmtBegin( )
 
 	case FB_TK_SCOPE
-		CHECK_CODEMASK( )
+		CHECK_CODEMASK( FB_TK_SCOPE, FB_TK_SCOPE )
 		function = cScopeStmtBegin( )
 
 	case FB_TK_NAMESPACE
@@ -135,7 +136,7 @@ function cCompoundStmt as integer
 	case FB_TK_END
 		'' any compound END will be parsed by the compound stmt
 		if( lexGetLookAheadClass( 1 ) <> FB_TKCLASS_KEYWORD ) then
-			CHECK_CODEMASK( )
+			CHECK_CODEMASK( INVALID, INVALID )
 			return cEndStatement( )
 		end if
 

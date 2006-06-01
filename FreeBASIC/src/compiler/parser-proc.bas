@@ -513,6 +513,8 @@ function cProcStmtBegin as integer static
 	end select
 
 	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_PROC ) = FALSE ) then
+    	'' error recovery: skip the whole compound stmt
+    	hSkipCompound( iif( issub, FB_TK_SUB, FB_TK_FUNCTION ) )
 		exit function
 	end if
 
