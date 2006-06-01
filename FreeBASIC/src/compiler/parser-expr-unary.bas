@@ -297,9 +297,11 @@ function cAnonUDT _
     else
     	subtype = env.ctxsym
 
-		'' typedef? resolve..
-		if( symbIsTypedef( subtype ) ) then
-			subtype = symbGetSubtype( subtype )
+		if( subtype <> NULL ) then
+			'' typedef? resolve..
+			if( symbIsTypedef( subtype ) ) then
+				subtype = symbGetSubtype( subtype )
+			end if
 		end if
 
     	if( subtype = NULL ) then
