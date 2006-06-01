@@ -90,7 +90,7 @@ end type
 		@"Expected 'WEND'", _
 		@"Expected 'THEN'", _
 		@"Expected 'END IF'", _
-		@"'END' without IF, SELECT, SUB or FUNCTION", _
+		@"Illegal 'END'", _
 		@"Expected 'CASE'", _
 		@"Expected 'END SELECT'", _
 		@"Wrong number of dimensions", _
