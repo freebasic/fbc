@@ -166,13 +166,13 @@ function cProcCall _
 
 	env.prntopt	= FALSE
 
-	dtype = symbGetType( sym )
+	sym = astGetSymbol( procexpr )
+	dtype = astGetDataType( procexpr )
+	subtype = astGetSubType( procexpr )
 
 	'' if function returns a pointer, check for field deref
 	doflush = TRUE
 	if( dtype >= FB_DATATYPE_POINTER ) then
-    	subtype = symbGetSubType( sym )
-
 		isfuncptr = FALSE
    		if( lexGetToken( ) = CHAR_LPRNT ) then
    			if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
@@ -203,8 +203,6 @@ function cProcCall _
 			end if
 
 		end if
-
-		sym = astGetSymbol( procexpr )
 
 	end if
 
