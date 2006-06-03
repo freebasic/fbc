@@ -1,9 +1,0 @@
-LIBRARY DPLAYX.dll
-EXPORTS
-DirectPlayCreate@12	@1
-DirectPlayEnumerate@8	@9
-DirectPlayEnumerateA@8	@2
-DirectPlayEnumerateW@8	@3
-DirectPlayLobbyCreateA@20	@4
-DirectPlayLobbyCreateW@20	@5
-gdwDPlaySPRefCount
