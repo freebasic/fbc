@@ -34,8 +34,12 @@ option escape
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private sub hOptConstRmNeg( byval n as ASTNODE ptr, _
-					  		byval p as ASTNODE ptr )
+private sub hOptConstRemNeg _
+	( _
+		byval n as ASTNODE ptr, _
+		byval p as ASTNODE ptr _
+	)
+
 	static as ASTNODE ptr l, r
 
 	'' check any UOP node, and if its of the kind "-var + const" convert to "const - var"
@@ -64,20 +68,23 @@ private sub hOptConstRmNeg( byval n as ASTNODE ptr, _
 	'' walk
 	l = n->l
 	if( l <> NULL ) then
-		hOptConstRmNeg( l, n )
+		hOptConstRemNeg( l, n )
 	end if
 
 	r = n->r
 	if( r <> NULL ) then
-		hOptConstRmNeg( r, n )
+		hOptConstRemNeg( r, n )
 	end if
 
 end sub
 
 '':::::
-private sub hConvDataType( byval v as FBVALUE ptr, _
-						   byval vdtype as integer, _
-						   byval dtype as integer ) static
+private sub hConvDataType _
+	( _
+		byval v as FBVALUE ptr, _
+		byval vdtype as integer, _
+		byval dtype as integer _
+	) static
 
 	if( dtype > FB_DATATYPE_POINTER ) then
 		dtype = FB_DATATYPE_POINTER
@@ -153,8 +160,12 @@ private sub hConvDataType( byval v as FBVALUE ptr, _
 end sub
 
 ''::::::
-private function hPrepConst( byval v as ASTVALUE ptr, _
-							 byval r as ASTNODE ptr ) as integer static
+private function hPrepConst _
+	( _
+		byval v as ASTVALUE ptr, _
+		byval r as ASTNODE ptr _
+	) as integer static
+
 	dim as integer dtype
 
 	'' first node? just copy..
@@ -200,9 +211,13 @@ private function hPrepConst( byval v as ASTVALUE ptr, _
 end function
 
 '':::::
-private function hConstAccumADDSUB( byval n as ASTNODE ptr, _
-							   		byval v as ASTVALUE ptr, _
-							   		byval op as integer ) as ASTNODE ptr
+private function hConstAccumADDSUB _
+	( _
+		byval n as ASTNODE ptr, _
+		byval v as ASTVALUE ptr, _
+		byval op as integer _
+	) as ASTNODE ptr
+
 	dim as ASTNODE ptr l, r
 	dim as integer o
 	static as integer dtype
@@ -282,8 +297,12 @@ private function hConstAccumADDSUB( byval n as ASTNODE ptr, _
 end function
 
 '':::::
-private function hConstAccumMUL( byval n as ASTNODE ptr, _
-								 byval v as ASTVALUE ptr ) as ASTNODE ptr
+private function hConstAccumMUL _
+	( _
+		byval n as ASTNODE ptr, _
+		byval v as ASTVALUE ptr _
+	) as ASTNODE ptr
+
 	dim as ASTNODE ptr l, r
 	static as integer dtype
 
@@ -333,7 +352,11 @@ private function hConstAccumMUL( byval n as ASTNODE ptr, _
 end function
 
 '':::::
-private function hOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
+private function hOptConstAccum1 _
+	( _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr
+
 	static as ASTNODE ptr l, r, nn
 	static as ASTVALUE v
 
@@ -413,7 +436,11 @@ private function hOptConstAccum1( byval n as ASTNODE ptr ) as ASTNODE ptr
 end function
 
 '':::::
-private sub hOptConstAccum2( byval n as ASTNODE ptr )
+private sub hOptConstAccum2 _
+	( _
+		byval n as ASTNODE ptr _
+	)
+
 	static as ASTNODE ptr l, r
 	static as integer dtype, checktype
 	static as ASTVALUE v
@@ -507,8 +534,12 @@ private sub hOptConstAccum2( byval n as ASTNODE ptr )
 end sub
 
 '':::::
-private function hConstDistMUL( byval n as ASTNODE ptr, _
-						 		byval v as ASTVALUE ptr ) as ASTNODE ptr
+private function hConstDistMUL _
+	( _
+		byval n as ASTNODE ptr, _
+		byval v as ASTVALUE ptr _
+	) as ASTNODE ptr
+
 	dim as ASTNODE ptr l, r
 	static as integer dtype
 
@@ -557,7 +588,11 @@ private function hConstDistMUL( byval n as ASTNODE ptr, _
 end function
 
 '':::::
-private function hOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
+private function hOptConstDistMUL _
+	( _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr
+
 	static as ASTNODE ptr l, r
 	static as ASTVALUE v
 
@@ -659,7 +694,11 @@ private function hOptConstDistMUL( byval n as ASTNODE ptr ) as ASTNODE ptr
 end function
 
 '':::::
-private sub hOptConstIDX( byval n as ASTNODE ptr )
+private sub hOptConstIDX _
+	( _
+		byval n as ASTNODE ptr _
+	)
+
 	static as ASTNODE ptr l, r, lr
 	static as integer c, delnode
 	static as ASTVALUE v
@@ -800,18 +839,24 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private sub hOptAssocADD( byval n as ASTNODE ptr )
-	static as ASTNODE ptr l, r
+private function hOptAssocADD _
+	( _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	static as ASTNODE ptr l, r, n_old
 	static as integer op, rop
 
 	if( n = NULL ) then
-		exit sub
+		return NULL
 	end if
 
     '' convert a+(b+c) to a+b+c and a-(b-c) to a-b+c
 	if( n->class = AST_NODECLASS_BOP ) then
 		op = n->op.op
-		if( op = AST_OP_ADD or op = AST_OP_SUB ) then
+		select case op
+		case AST_OP_ADD, AST_OP_SUB
+
 			'' don't mess with strings..
 			select case n->dtype
 			case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
@@ -821,12 +866,8 @@ private sub hOptAssocADD( byval n as ASTNODE ptr )
 				r = n->r
 				if( r->class = AST_NODECLASS_BOP ) then
 					rop = r->op.op
-					if( rop = AST_OP_ADD or rop = AST_OP_SUB ) then
-						n->r = r->r
-						r->r = r->l
-						r->l = n->l
-						n->l = r
-
+					select case rop
+					case AST_OP_ADD, AST_OP_SUB
 						if( op = AST_OP_SUB ) then
 							if( rop = AST_OP_SUB ) then
 								op = AST_OP_ADD
@@ -839,36 +880,48 @@ private sub hOptAssocADD( byval n as ASTNODE ptr )
 								rop = AST_OP_ADD
 							end if
 						end if
-						n->op.op = op
-						r->op.op = rop
 
-						hOptAssocADD( n )
-						exit sub
-					end if
+						n_old = n
+
+						'' n = (( n->l, r->l ), r->r)
+						n = astNewBOP( op, _
+									   astNewBOP( rop, n->l, r->l ), _
+									   r->r )
+
+						astDelNode( r )
+						astDelNode( n_old )
+					end select
 				end if
 			end select
-		end if
+
+		end select
 	end if
 
 	'' walk
 	l = n->l
 	if( l <> NULL ) then
-		hOptAssocADD( l )
+		n->l = hOptAssocADD( l )
 	end if
 
 	r = n->r
 	if( r <> NULL ) then
-		hOptAssocADD( r )
+		n->r = hOptAssocADD( r )
 	end if
 
-end sub
+	function = n
+
+end function
 
 '':::::
-private sub hOptAssocMUL( byval n as ASTNODE ptr )
-	static as ASTNODE ptr l, r
+private function hOptAssocMUL _
+	( _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	static as ASTNODE ptr l, r, n_old
 
 	if( n = NULL ) then
-		exit sub
+		return NULL
 	end if
 
 	'' convert a*(b*c) to a*b*c
@@ -877,12 +930,15 @@ private sub hOptAssocMUL( byval n as ASTNODE ptr )
 			r = n->r
 			if( r->class = AST_NODECLASS_BOP ) then
 				if( r->op.op = AST_OP_MUL ) then
-					n->r = r->r
-					r->r = r->l
-					r->l = n->l
-					n->l = r
-					hOptAssocMUL( n )
-					Exit Sub
+					n_old = n
+
+					'' n = (( n->l, r->l ), r->r)
+					n = astNewBOP( AST_OP_MUL, _
+							   	   astNewBOP( AST_OP_MUL, n->l, r->l ), _
+							   	   r->r )
+
+					astDelNode( r )
+					astDelNode( n_old )
 				end if
 			end if
 		end if
@@ -891,22 +947,28 @@ private sub hOptAssocMUL( byval n as ASTNODE ptr )
 	'' walk
 	l = n->l
 	if( l <> NULL ) then
-		hOptAssocMUL( l )
+		n->l = hOptAssocMUL( l )
 	end if
 
 	r = n->r
 	if( r <> NULL ) then
-		hOptAssocMUL( r )
+		n->r = hOptAssocMUL( r )
 	end if
 
-end sub
+	function = n
+
+end function
 
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' other optimizations
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private sub hOptToShift( byval n as ASTNODE ptr )
+private sub hOptToShift _
+	( _
+		byval n as ASTNODE ptr _
+	)
+
 	static as ASTNODE ptr l, r
 	static as integer v, op
 	static as integer bits
@@ -1005,7 +1067,11 @@ private sub hOptToShift( byval n as ASTNODE ptr )
 end sub
 
 ''::::
-private function hOptNullOp( byval n as ASTNODE ptr ) as ASTNODE ptr static
+private function hOptNullOp _
+	( _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr static
+
 	dim as ASTNODE ptr l, r
 	dim as integer v, op
 
@@ -1094,11 +1160,78 @@ private function hOptNullOp( byval n as ASTNODE ptr ) as ASTNODE ptr static
 end function
 
 '':::::
-private function hOptStrMultConcat( byval lnk as ASTNODE ptr, _
-							  		byval dst as ASTNODE ptr, _
-							  		byval n as ASTNODE ptr, _
-							  		byval is_wstr as integer _
-							  	  ) as ASTNODE ptr
+private function hOptRemConv _
+	( _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	static as ASTNODE ptr l, r
+	static as integer dorem
+
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	'' '' x86 assumption: convert l{float} op cast(float, r{var}) to l op r
+	if( n->class = AST_NODECLASS_BOP ) then
+		select case n->dtype
+		case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+			r = n->r
+			if( r->class = AST_NODECLASS_CONV ) then
+				'' left node can't be a cast() too
+				if( n->l->class <> AST_NODECLASS_CONV ) then
+					select case r->dtype
+					case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
+						l = r->l
+
+						'' can't be a longint
+						if( symbGetDataSize( l->dtype ) < FB_INTEGERSIZE*2 ) then
+							dorem = FALSE
+
+							select case as const l->class
+							case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
+								 AST_NODECLASS_FIELD, AST_NODECLASS_PTR
+								'' can't be unsigned either
+								if( symbIsSigned( l->dtype ) ) then
+									dorem = TRUE
+								end if
+							end select
+
+							if( dorem ) then
+								astDelNode( r )
+								n->r = l
+							end if
+
+						end if
+					end select
+				end if
+			end if
+		end select
+	end if
+
+	'' walk
+	l = n->l
+	if( l <> NULL ) then
+		n->l = hOptRemConv( l )
+	end if
+
+	r = n->r
+	if( r <> NULL ) then
+		n->r = hOptRemConv( r )
+	end if
+
+	function = n
+
+end function
+
+'':::::
+private function hOptStrMultConcat _
+	( _
+		byval lnk as ASTNODE ptr, _
+		byval dst as ASTNODE ptr, _
+		byval n as ASTNODE ptr, _
+		byval is_wstr as integer _
+	) as ASTNODE ptr
 
 	if( n = NULL ) then
 		return NULL
@@ -1169,9 +1302,11 @@ private function hOptStrMultConcat( byval lnk as ASTNODE ptr, _
 end function
 
 ''::::
-private function hIsMultStrConcat( byval l as ASTNODE ptr, _
-								   byval r as ASTNODE ptr _
-								 ) as integer
+private function hIsMultStrConcat _
+	( _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as integer
 
 	dim as FBSYMBOL ptr sym
 
@@ -1198,10 +1333,12 @@ private function hIsMultStrConcat( byval l as ASTNODE ptr, _
 end function
 
 ''::::
-private function hOptStrAssignment( byval n as ASTNODE ptr, _
-							   		byval l as ASTNODE ptr, _
-							   		byval r as ASTNODE ptr _
-							   	  ) as ASTNODE ptr static
+private function hOptStrAssignment _
+	( _
+		byval n as ASTNODE ptr, _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as ASTNODE ptr static
 
 	dim as integer optimize, is_wstr
 
@@ -1271,7 +1408,11 @@ private function hOptStrAssignment( byval n as ASTNODE ptr, _
 end function
 
 ''::::
-function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr static
+function astOptAssignment _
+	( _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr static
+
 	dim as ASTNODE ptr l, r
 	dim as integer dtype, dclass
 	dim as FBSYMBOL ptr s
@@ -1379,14 +1520,17 @@ function astOptAssignment( byval n as ASTNODE ptr ) as ASTNODE ptr static
 end function
 
 ''::::
-function astOptimize( byval n as ASTNODE ptr ) as ASTNODE ptr
+function astOptimize _
+	( _
+		byval n as ASTNODE ptr _
+	) as ASTNODE ptr
 
 	'' calls must be done in the order below
     ast.isopt = TRUE
 
-	hOptAssocADD( n )
+	n = hOptAssocADD( n )
 
-	hOptAssocMUL( n )
+	n = hOptAssocMUL( n )
 
 	n = hOptConstDistMUL( n )
 
@@ -1394,13 +1538,15 @@ function astOptimize( byval n as ASTNODE ptr ) as ASTNODE ptr
 
 	hOptConstAccum2( n )
 
-	hOptConstRmNeg( n, NULL )
+	hOptConstRemNeg( n, NULL )
 
 	hOptConstIDX( n )
 
 	hOptToShift( n )
 
 	n = hOptNullOp( n )
+
+    n = hOptRemConv( n )
 
 	ast.isopt = FALSE
 

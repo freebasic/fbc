@@ -31,9 +31,11 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-private function hStrLiteralConcat( byval l as ASTNODE ptr, _
-									byval r as ASTNODE ptr _
-								  ) as ASTNODE ptr
+private function hStrLiteralConcat _
+	( _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as ASTNODE ptr
 
     dim as FBSYMBOL ptr s, ls, rs
 
@@ -52,9 +54,11 @@ private function hStrLiteralConcat( byval l as ASTNODE ptr, _
 end function
 
 '':::::
-private function hWstrLiteralConcat( byval l as ASTNODE ptr, _
-									 byval r as ASTNODE ptr _
-								   ) as ASTNODE ptr
+private function hWstrLiteralConcat _
+	( _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as ASTNODE ptr
 
     dim as FBSYMBOL ptr s, ls, rs
 
@@ -83,10 +87,12 @@ private function hWstrLiteralConcat( byval l as ASTNODE ptr, _
 end function
 
 '':::::
-private function hStrLiteralCompare( byval op as integer, _
-									 byval l as ASTNODE ptr, _
-									 byval r as ASTNODE ptr _
-								   ) as ASTNODE ptr static
+private function hStrLiteralCompare _
+	( _
+		byval op as integer, _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     static as DZSTRING ltext, rtext
     dim as integer res
@@ -117,10 +123,12 @@ private function hStrLiteralCompare( byval op as integer, _
 end function
 
 '':::::
-private function hWStrLiteralCompare( byval op as integer, _
-									  byval l as ASTNODE ptr, _
-									  byval r as ASTNODE ptr _
-								    ) as ASTNODE ptr static
+private function hWStrLiteralCompare _
+	( _
+		byval op as integer, _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as FBSYMBOL ptr ls, rs
     static as DZSTRING textz
@@ -200,10 +208,12 @@ private function hWStrLiteralCompare( byval op as integer, _
 end function
 
 '':::::
-private sub hBOPConstFoldInt( byval op as integer, _
-							  byval l as ASTNODE ptr, _
-							  byval r as ASTNODE ptr _
-							) static
+private sub hBOPConstFoldInt _
+	( _
+		byval op as integer, _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) static
 
 	dim as integer issigned
 
@@ -319,10 +329,12 @@ private sub hBOPConstFoldInt( byval op as integer, _
 end sub
 
 '':::::
-private sub hBOPConstFoldFlt( byval op as integer, _
-						      byval l as ASTNODE ptr, _
-						      byval r as ASTNODE ptr _
-						    ) static
+private sub hBOPConstFoldFlt _
+	( _
+		byval op as integer, _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) static
 
 	select case as const op
 	case AST_OP_ADD
@@ -365,10 +377,12 @@ private sub hBOPConstFoldFlt( byval op as integer, _
 end sub
 
 '':::::
-private sub hBOPConstFold64( byval op as integer, _
-							 byval l as ASTNODE ptr, _
-							 byval r as ASTNODE ptr _
-						   ) static
+private sub hBOPConstFold64 _
+	( _
+		byval op as integer, _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) static
 
 	dim as integer issigned
 
@@ -479,10 +493,12 @@ private sub hBOPConstFold64( byval op as integer, _
 end sub
 
 '':::::
-private function hCheckPointer( byval op as integer, _
-								byval dtype as integer, _
-								byval dclass as integer _
-							  ) as integer
+private function hCheckPointer _
+	( _
+		byval op as integer, _
+		byval dtype as integer, _
+		byval dclass as integer _
+	) as integer
 
     '' not int?
     if( dclass <> FB_DATACLASS_INTEGER ) then
@@ -519,17 +535,19 @@ private function hCheckPointer( byval op as integer, _
 end function
 
 '':::::
-function astNewBOP( byval op as integer, _
-					byval l as ASTNODE ptr, _
-					byval r as ASTNODE ptr, _
-					byval ex as FBSYMBOL ptr = NULL, _
-					byval allocres as integer = TRUE _
-				  ) as ASTNODE ptr static
+function astNewBOP _
+	( _
+		byval op as integer, _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr, _
+		byval ex as FBSYMBOL ptr = NULL, _
+		byval allocres as integer = TRUE _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
     dim as integer ldtype, rdtype, dtype
     dim as integer ldclass, rdclass
-    dim as integer doconv, is_str
+    dim as integer is_str
     dim as FBSYMBOL ptr litsym, subtype
 
 	function = NULL
@@ -904,35 +922,15 @@ function astNewBOP( byval op as integer, _
 					'' it's already an integer
 
 				case else
-					'' x86 assumption: if it's an short|int var, let the FPU do it
-					doconv = TRUE
-					if( ldclass = FB_DATACLASS_FPOINT ) then
-						if( rdclass = FB_DATACLASS_INTEGER ) then
-							'' can't be an longint nor a byte (byte operands are converted above)
-							if( symbGetDataSize( rdtype ) < FB_INTEGERSIZE*2 ) then
-								select case as const r->class
-								case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
-									 AST_NODECLASS_FIELD, AST_NODECLASS_PTR
-									'' can't be unsigned either
-									if( symbIsSigned( rdtype ) ) then
-										doconv = FALSE
-									end if
-								end select
-							end if
-						end if
-					end if
-
-					if( doconv ) then
-						r = astNewCONV( INVALID, dtype, subtype, r )
-						rdtype = dtype
-						rdclass = ldclass
-					end if
+					r = astNewCONV( INVALID, dtype, subtype, r )
+					rdtype = dtype
+					rdclass = ldclass
 				end select
 
 			end if
 		end if
 
-	'' no conversion, type's are the same
+	'' no conversion, same types
 	else
 		dtype   = ldtype
 		subtype = l->subtype
@@ -1077,7 +1075,11 @@ function astNewBOP( byval op as integer, _
 end function
 
 '':::::
-function astLoadBOP( byval n as ASTNODE ptr ) as IRVREG ptr
+function astLoadBOP _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
     dim as ASTNODE ptr l, r
     dim as integer op
     dim as IRVREG ptr v1, v2, vr
