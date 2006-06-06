@@ -5,4 +5,4 @@ extern "c++" lib "cpplib"
 	end namespace
 end extern
 
-	print cpp.sum( 1, 2 )
+	print "1 + 2 ="; cpp.sum( 1, 2 )

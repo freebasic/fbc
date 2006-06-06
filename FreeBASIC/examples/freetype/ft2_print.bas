@@ -19,7 +19,7 @@ End Type
 
 Dim Shared FT_Var As FT_Var 
 
-Declare Function DrawGlyph(ByVal FontFT As FT_Face, ByVal x As Integer, ByVal y As Integer, ByVal Clr As UInteger) As Integer 
+Declare sub DrawGlyph(ByVal FontFT As FT_Face, ByVal x As Integer, ByVal y As Integer, ByVal Clr As UInteger)
 Declare Function PrintFT(ByVal x As Integer, ByVal y As Integer, ByVal Text As String, ByVal Font As Integer, ByVal Size As Integer = 14, ByVal Clr As UInteger = Rgb(255, 255, 255)) 
 Declare Function GetFont(ByVal FontName As String) As Integer 
 
@@ -118,7 +118,7 @@ Function PrintFT(ByVal x As Integer, ByVal y As Integer, ByVal Text As String, B
     Next i 
 End Function 
 
-Function DrawGlyph(ByVal FontFT As FT_Face, ByVal x As Integer, ByVal y As Integer, ByVal Clr As UInteger) As Integer 
+sub DrawGlyph(ByVal FontFT As FT_Face, ByVal x As Integer, ByVal y As Integer, ByVal Clr As UInteger)
     Dim BitmapFT As FT_Bitmap 
     Dim BitmapPtr As UByte Ptr 
     Dim DestPtr As UInteger Ptr 
@@ -169,4 +169,4 @@ Function DrawGlyph(ByVal FontFT As FT_Face, ByVal x As Integer, ByVal y As Integ
         DestPtr += BitmapPitch 
     Loop 
     
-End Function 
+End sub
