@@ -36,6 +36,8 @@ Function destroy Cdecl(Byval widget As GtkWidget Ptr, Byval user_data As gpointe
 
 	gtk_main_quit ()
 	
+	return FALSE
+	
 End Function
 
 ' ==============================================

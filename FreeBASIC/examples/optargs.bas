@@ -30,6 +30,8 @@ end sub
 function bar( byval arg1 as integer = -2, byval arg2 as integer )
 
 	print arg1 * arg2
+	
+	function = 0
 
 end function	
 

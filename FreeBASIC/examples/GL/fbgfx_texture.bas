@@ -293,18 +293,18 @@ Sub Draw_Cube()
 
         'variable to check if colors and cube are already initialized
         static color_init
+		'make static arrays for cube and colors
+        '(23, 2) means 23 vertices and 3 elements per vertex
+        '3 because:
+        'x, y, z for verts
+        'r, g, b for colors
+        static colors(23, 2) as GLfloat
+        static cube(23, 2) as GLfloat
+        static coords(23, 1) as GLfloat
 
         'initialize color and cube arrays
         if color_init = 0 then                          'is it initialized already?
                                                             'nope so...
-            'make static arrays for cube and colors
-            '(23, 2) means 23 vertices and 3 elements per vertex
-            '3 because:
-            'x, y, z for verts
-            'r, g, b for colors
-            static colors(23, 2) as GLfloat
-            static cube(23, 2) as GLfloat
-            static coords(23, 1) as GLfloat
 
             'put values to each elements by looping
             for i = 0 to 23

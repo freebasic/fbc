@@ -5,7 +5,8 @@
 const inter = 50000000
 
 	t# = timer
-	for i = 1 to inter
+	j = 0
+	for i = 1 to inter		
 		select case i
 		case 1, 3, 5, 7, 9
 			j += 1
@@ -27,6 +28,7 @@ const inter = 50000000
 	
 
 	t# = timer
+	j = 0
 	for i = 1 to inter
 		select case as const i
 		case 1, 3, 5, 7, 9

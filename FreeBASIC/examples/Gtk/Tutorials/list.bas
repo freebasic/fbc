@@ -96,10 +96,10 @@ Declare Sub sigh_print_selection Cdecl ( Byval gtklist As GtkWidget Ptr, Byval f
 	' label and add them to the List using gtk_container_add()
 	' Also we query the text string from the label and
 	' associate it with the list_item_data_key for each list item
+	Dim As Zstring Ptr tmp
 	For i = 0 To 4
 		Dim As GtkWidget Ptr label
 		Dim As Zstring Ptr m_string
-		Dim As Zstring Ptr tmp
 	
 		sprintf(buffer, "ListItemContainer with Label #%d", i)
 		label=gtk_label_new (buffer)

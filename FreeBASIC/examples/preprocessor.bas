@@ -57,5 +57,7 @@ function func1( byval arg1 as integer ) as integer
 	print "Worked!"
 	
 	sleep
+	
+	function = 0
 
 end function

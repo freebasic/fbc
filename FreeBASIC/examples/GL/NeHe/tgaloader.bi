@@ -186,14 +186,14 @@ function LoadCompressedTGA(byval texture as structTexture ptr, fname as string, 
 
 	do
 		dim as ubyte chunkheader = 0                           '' Storage for "chunk" header
+		dim as short counter = 0
 
 		''  Read in the 1 byte header
 		get #fTGA,,chunkheader
 		''  If the header is < 128, it means the that is the number of RAW color packets minus 1
 		if chunkheader < 128 then                              '' that follow the header
 			chunkheader+=1                                     '' add 1 to get number of following color values
-			''  Read RAW color values
-			dim as short counter = 0
+			''  Read RAW color values			
 			while counter<chunkheader
 				''  Try to read 1 pixel
 				pb = colorbuffer

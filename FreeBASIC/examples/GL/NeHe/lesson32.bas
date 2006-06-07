@@ -452,10 +452,11 @@ end sub
 '------------------------------------------------------------------------
 sub Update (byval milliseconds as integer)               '' Perform Motion Updates Here
 
+	dim as integer iLoop = 0
+	
 	'' Space Bar Being Pressed After Game Has Ended?
 	if multikey(SC_SPACE)  and  game = TRUE then
-		'' Loop Through 30 Objects
-		dim  as integer iLoop = 0
+		'' Loop Through 30 Objects		
 		while iLoop<30
 			'' Initialize Each Object
 			InitObject (iLoop)
