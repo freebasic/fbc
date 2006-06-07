@@ -5,6 +5,9 @@ Version 0.16 Beta:
   (ie: always bitwise, never logical), and because of that, checking for FALSE boolean results returned by C libraries
   or the Windows API cannot anymore been done as "IF NOT SomeFunction( ) THEN ReportError...", "TRUE" is defined as "1"
   in most libraries, not "-1" as in BASIC, so any checks must be changed to: "IF SomeFunction( ) = FALSE THEN ..." (v1c)
+- IMPORTANT: every compound statement (IF, SELECT, FOR, DO, WHILE, etc) will now open a new scope block, variables 
+  declared inside them WON'T be seen outside the block. that was needed to make the move to a GCC front-end possible
+  in the next releases (v1c)
 - any non-SHARED, COMMON or EXTERN variable and array declared in the module-level (ie, outside any function) will be
   allocated on stack now (that was changed to allow non-constant expressions to be used with variable initializers in
   the module-level), to declare static symbols, see the next item (v1c)
@@ -47,6 +50,7 @@ Version 0.16 Beta:
 - non-fatal error handling, the parser won't exit unless #-errors happened, making it easier to port
   sources from different languages to FB and to work with large projects (v1c)
 - the -maxerr command-line option, to define after how many errors the parser should stop (v1c)
+- the "= any" variable initializer, that tells the compiler to not clear the local symbol (v1c)
 - support for the optional "digits" argument in HEX(), OCT() and BIN() (and their wide-char versions) (v1c)
 - the -include command-line option, to pre-include headers in every source file (.bas) that will be compiled (v1c)
 - Linux framebuffer console gfx driver (lillo)
@@ -80,6 +84,7 @@ Version 0.16 Beta:
 - ENUM elements can now be referenced as: enumid.elmentid (v1c)
 - spidermonkey (a JavaScript embedded interpreter) headers and import library (v1c)
 - multi-line comments: /' this is a comment '/ (v1c)
+- the erfn and ermn to retrieve respectively the function and module name when a runtime error occur (v1c)
 
 [fixed]
 - INPUT from console when it's been redirected (v1c)
@@ -140,6 +145,9 @@ Version 0.16 Beta:
 - non-decimal 64-bit literal constants were been sign-extended from 32-bit if below 2^32 (v1c)
 - bit-fields accessed inside private functions would cause errors (v1c)
 - the level of indirection of UDT params was not been take into account when creating mangled names for function pointers (v1c)
+- stack was been wrongly poped in some cases of DIV and MOD of integers (v1c)
+- resolution of overloaded function pointer arguments were not working (v1c)
+- byte and short var-args were not been converted to integers (v1c)
 
 
 Version 0.15 Beta:
