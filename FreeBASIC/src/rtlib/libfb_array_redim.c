@@ -43,14 +43,13 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-int fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int dimensions, ... )
+static int hRedim( FBARRAY *array, int element_len, int doclear, int isvarlen, int dimensions, va_list ap )
 {
-    va_list 	ap;
-    int			i;
-    int			elements, diff, size;
-    FBARRAYDIM	*p;
-    int			lbTB[FB_MAXDIMENSIONS];
-    int			ubTB[FB_MAXDIMENSIONS];
+    int	i;
+    int	elements, diff, size;
+    FBARRAYDIM *p;
+    int	lbTB[FB_MAXDIMENSIONS];
+    int	ubTB[FB_MAXDIMENSIONS];
 
 	FB_LOCK();
 
@@ -66,8 +65,6 @@ int fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int dimensions
     }
 
     /* load bounds */
-    va_start( ap, dimensions );
-
     p = &array->dimTB[0];
     for( i = 0; i < dimensions; i++ )
     {
@@ -82,20 +79,22 @@ int fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int dimensions
         }
 
     	p->elements = (ubTB[i] - lbTB[i]) + 1;
-    	p->lbound 	= lbTB[i];
-    	p->ubound 	= ubTB[i];
+    	p->lbound = lbTB[i];
+    	p->ubound = ubTB[i];
     	++p;
     }
 
-    va_end( ap );
-
     /* calc size */
     elements = fb_hArrayCalcElements( dimensions, &lbTB[0], &ubTB[0] );
-    diff 	 = fb_hArrayCalcDiff( dimensions, &lbTB[0], &ubTB[0] ) * element_len;
-    size	 = elements * element_len;
+    diff = fb_hArrayCalcDiff( dimensions, &lbTB[0], &ubTB[0] ) * element_len;
+    size = elements * element_len;
 
     /* alloc new */
-    array->ptr = calloc( size, 1 );
+    if( doclear )
+    	array->ptr = calloc( size, 1 );
+    else
+    	array->ptr = malloc( size );
+    
     if( array->ptr == NULL )
     {
     	FB_UNLOCK();
@@ -109,3 +108,30 @@ int fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int dimensions
 
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }
+
+/*:::::*/
+int fb_ArrayRedimEx( FBARRAY *array, int element_len, int doclear, int isvarlen, int dimensions, ... )
+{
+	va_list ap;
+	int res;
+	
+	va_start( ap, dimensions );
+    res = hRedim( array, element_len, doclear, isvarlen, dimensions, ap );
+    va_end( ap );
+    
+    return res;
+}
+
+/*:::::*/
+int fb_ArrayRedim( FBARRAY *array, int element_len, int isvarlen, int dimensions, ... )
+{
+	va_list ap;
+	int res;
+	
+	va_start( ap, dimensions );
+	res = hRedim( array, element_len, TRUE, isvarlen, dimensions, ap );
+	va_end( ap );
+	
+	return res;
+}
+
