@@ -64,24 +64,29 @@ static const char *error_msg[] = {
 };
 
 /*:::::*/
-static void fb_Die( int errnum, int linenum, const char *fname )
+static void fb_Die
+	( 
+		int err_num, 
+		int line_num, 
+		const char *fun_name 
+	)
 {
 	int pos = 0;
 	
 	pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
-					 FB_NEWLINE "Aborting due to runtime error %d", errnum );
+					 FB_NEWLINE "Aborting due to runtime error %d", err_num );
 
-	if( (errnum >= 0) && (errnum < FB_RTERROR_MAX) )
+	if( (err_num >= 0) && (err_num < FB_RTERROR_MAX) )
 		pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
-						 " (%s)", error_msg[errnum] );
+						 " (%s)", error_msg[err_num] );
 
-	if( linenum > 0 )
+	if( line_num > 0 )
 		pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
-						 " at line %d", linenum );
+						 " at line %d", line_num );
 
-	if( fname != NULL )
+	if( fun_name != NULL )
 	    pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
-	    				 " of %s" FB_NEWLINE FB_NEWLINE, fname );
+	    				 " of %s" FB_NEWLINE FB_NEWLINE, fun_name );
 	else
 		pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos, FB_NEWLINE FB_NEWLINE );
 	
@@ -90,44 +95,59 @@ static void fb_Die( int errnum, int linenum, const char *fname )
 	/* save buffer so we can show message after console is cleaned up */
 	fb_error_message = error_buffer;
 
-	fb_End( errnum );
+	fb_End( err_num );
 }
 
 /*:::::*/
-FB_ERRHANDLER fb_ErrorThrowEx ( int errnum, int linenum, const char *fname,
-								void *res_label, void *resnext_label )
+FB_ERRHANDLER fb_ErrorThrowEx 
+	( 
+		int err_num, 
+		int line_num, 
+		const char *fun_name,
+		void *res_label, 
+		void *resnext_label 
+	)
 {
     FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
 
     if( ctx->handler )
     {
-    	ctx->num 		= errnum;
-    	ctx->linenum 	= linenum;
-    	ctx->fname      = fname;
-    	ctx->reslbl 	= res_label;
-    	ctx->resnxtlbl 	= resnext_label;
+    	ctx->err_num = err_num;
+    	ctx->line_num = line_num;
+    	if( fun_name != NULL ) 
+    		ctx->fun_name = fun_name;
+    	ctx->res_lbl = res_label;
+    	ctx->resnxt_lbl = resnext_label;
 
     	return ctx->handler;
     }
 
 	/* if no user handler defined, die */
-	fb_Die( errnum, linenum, fname );
+	fb_Die( err_num, line_num, (fun_name != NULL? fun_name: ctx->fun_name) );
 
 	return NULL;
 }
 
 /*:::::*/
-FB_ERRHANDLER fb_ErrorThrowAt ( int linenum, const char *fname,
-							  	void *res_label, void *resnext_label )
+FB_ERRHANDLER fb_ErrorThrowAt 
+	( 
+		int line_num, 
+		const char *fun_name,
+		void *res_label, 
+		void *resnext_label 
+	)
 {
 	FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
 
-	return fb_ErrorThrowEx( ctx->num, linenum, fname, res_label, resnext_label );
+	return fb_ErrorThrowEx( ctx->err_num, line_num, fun_name, res_label, resnext_label );
 
 }
 
 /*:::::*/
-FBCALL FB_ERRHANDLER fb_ErrorSetHandler ( FB_ERRHANDLER newhandler )
+FBCALL FB_ERRHANDLER fb_ErrorSetHandler 
+	( 
+		FB_ERRHANDLER newhandler 
+	)
 {
 	FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
 	FB_ERRHANDLER oldhandler;
@@ -140,49 +160,42 @@ FBCALL FB_ERRHANDLER fb_ErrorSetHandler ( FB_ERRHANDLER newhandler )
 }
 
 /*:::::*/
-void *fb_ErrorResume ( void )
+void *fb_ErrorResume 
+	( 
+		void 
+	)
 {
     FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
-    void *label = ctx->reslbl;
+    void *label = ctx->res_lbl;
 
 	/* not defined? die */
 	if( label == NULL )
 		fb_Die( FB_RTERROR_ILLEGALRESUME, -1, NULL );
 
 	/* don't loop forever */
-	ctx->reslbl = NULL;
-	ctx->resnxtlbl = NULL;
+	ctx->res_lbl = NULL;
+	ctx->resnxt_lbl = NULL;
 
 	return label;
 }
 
 /*:::::*/
-void *fb_ErrorResumeNext ( void )
+void *fb_ErrorResumeNext 
+	( 
+		void 
+	)
 {
     FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
-    void *label = ctx->resnxtlbl;
+    void *label = ctx->resnxt_lbl;
 
 	/* not defined? die */
 	if( label == NULL )
 		fb_Die( FB_RTERROR_ILLEGALRESUME, -1, NULL );
 
 	/* don't loop forever */
-	ctx->reslbl = NULL;
-	ctx->resnxtlbl = NULL;
+	ctx->res_lbl = NULL;
+	ctx->resnxt_lbl = NULL;
 
 	return label;
 }
-
-
-/* !!!FIXME!!! remove the function bellow when the chicken-egg is over */
-
-/*:::::*/
-FB_ERRHANDLER fb_ErrorThrow ( int linenum, void *res_label, void *resnext_label )
-{
-	FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
-
-	return fb_ErrorThrowEx( ctx->num, linenum, NULL, res_label, resnext_label );
-
-}
-
 

@@ -43,29 +43,76 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-FBCALL int fb_ErrorGetNum ( void )
+FBCALL int fb_ErrorGetNum 
+	( 
+		void 
+	)
 {
 	FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
 
-	return ctx->num;
+	return ctx->err_num;
 }
 
 /*:::::*/
-FBCALL int fb_ErrorSetNum ( int errnum )
+FBCALL int fb_ErrorSetNum 
+	( 
+		int err_num 
+	)
 {
     FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
 
-	ctx->num = errnum;
+	ctx->err_num = err_num;
 
-	return errnum;
+	return err_num;
 
 }
 
 /*:::::*/
-FBCALL int fb_ErrorGetLineNum ( void )
+FBCALL int fb_ErrorGetLineNum 
+	( 
+		void 
+	)
 {
     FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
 
-	return ctx->linenum;
+	return ctx->line_num;
+
+}
+
+/*:::::*/
+FBCALL const char *fb_ErrorGetModName 
+	( 
+		void 
+	)
+{
+    FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
+
+	return ctx->mod_name;
+
+}
+
+/*:::::*/
+FBCALL const char *fb_ErrorGetFuncName 
+	( 
+		void 
+	)
+{
+    FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
+
+	return ctx->fun_name;
+
+}
+
+/*:::::*/
+FBCALL void fb_ErrorSetInfo
+	( 
+		const char *mod_name, 
+		const char *fun_name
+	)
+{
+    FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
+
+	ctx->mod_name = mod_name;
+	ctx->fun_name = fun_name;
 
 }

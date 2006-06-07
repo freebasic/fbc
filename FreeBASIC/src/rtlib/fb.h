@@ -58,7 +58,7 @@ extern "C" {
 
     /** Maximum number of array dimensions.
      */
-#define FB_MAXDIMENSIONS      16
+#define FB_MAXDIMENSIONS      8
 
     /** Maximum number of temporary array descriptors.
      */
@@ -1372,11 +1372,12 @@ typedef void (*FB_ERRHANDLER) (void);
 
 typedef struct _FB_ERRORCTX {
     FB_ERRHANDLER  	handler;
-    int				num;
-    int				linenum;
-    const char	   *fname;
-    void		   *reslbl;
-    void		   *resnxtlbl;
+    int				err_num;
+    int				line_num;
+    const char	   *mod_name;
+    const char	   *fun_name;
+    void		   *res_lbl;
+    void		   *resnxt_lbl;
 } FB_ERRORCTX;
 
        FB_ERRHANDLER fb_ErrorThrowEx    ( int errnum, int linenum, const char *fname,
