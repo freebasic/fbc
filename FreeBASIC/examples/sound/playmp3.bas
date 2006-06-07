@@ -173,7 +173,7 @@ function listmp3( path as string, mp3table() as string ) as integer
    	redim mp3table(0 to maxsongs-1) as string
 
 	''
-#ifdef FB__WIN32
+#ifdef __FB_WIN32__
 const pathdiv = "\\"	
 #else
 const pathdiv = "/"

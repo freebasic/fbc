@@ -4,10 +4,12 @@
 
 option explicit
 option escape
-'$include: "SDL/SDL_net.bi"
+
+#include once "SDL/SDL_net.bi"
 
 const RECVBUFFLEN = 8192
 const NEWLINE = "\r\n"
+const DEFAULT_HOST = "www.freebasic.net"
 
 declare sub gethostandpath( src as string, hostname as string, path as string )
 	
@@ -19,9 +21,7 @@ declare sub gethostandpath( src as string, hostname as string, path as string )
 	gethostandpath command$, hostname, path
 	
 	if( len( hostname ) = 0 ) then
-		print "usage: hostname [path]"
-		sleep
-		end 1
+		hostname = DEFAULT_HOST
 	end if
 	
 	'' init

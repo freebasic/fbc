@@ -9,6 +9,7 @@ option escape
 
 const RECVBUFFLEN = 8192
 const NEWLINE = "\r\n"
+const DEFAULT_HOST = "www.freebasic.net"
 
 declare sub 	 gethostandpath	( src as string, hostname as string, path as string )
 
@@ -23,9 +24,7 @@ declare function resolveHost	( hostname as string ) as integer
 	gethostandpath command$, hostname, path
 	
 	if( len( hostname ) = 0 ) then
-		print "usage: hostname [path]"
-		sleep
-		end 1
+		hostname = DEFAULT_HOST
 	end if
 	
 	'' init winsock
