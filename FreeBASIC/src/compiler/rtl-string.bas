@@ -1311,13 +1311,14 @@ sub rtlStringModEnd( )
 
 end sub
 
-
 '':::::
-function rtlStrCompare ( byval str1 as ASTNODE ptr, _
-						 byval sdtype1 as integer, _
-					     byval str2 as ASTNODE ptr, _
-					     byval sdtype2 as integer _
-					   ) as ASTNODE ptr static
+function rtlStrCompare _
+	( _
+		byval str1 as ASTNODE ptr, _
+		byval sdtype1 as integer, _
+		byval str2 as ASTNODE ptr, _
+		byval sdtype2 as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as integer str1len, str2len
@@ -1361,9 +1362,11 @@ function rtlStrCompare ( byval str1 as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlWstrCompare( byval str1 as ASTNODE ptr, _
-					     byval str2 as ASTNODE ptr _
-					   ) as ASTNODE ptr static
+function rtlWstrCompare _
+	( _
+		byval str1 as ASTNODE ptr, _
+		byval str2 as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
 
@@ -1387,26 +1390,27 @@ function rtlWstrCompare( byval str1 as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlStrConcat( byval str1 as ASTNODE ptr, _
-					   byval sdtype1 as integer, _
-					   byval str2 as ASTNODE ptr, _
-					   byval sdtype2 as integer _
-					 ) as ASTNODE ptr static
+function rtlStrConcat _
+	( _
+		byval str1 as ASTNODE ptr, _
+		byval sdtype1 as integer, _
+		byval str2 as ASTNODE ptr, _
+		byval sdtype2 as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as integer str1len, str2len
-    dim as FBSYMBOL ptr tstr
+    dim as FBSYMBOL ptr sym
 
 	function = NULL
 
-	''
     proc = astNewCALL( PROCLOOKUP( STRCONCAT ) )
 
     '' byref dst as string
-    tstr = symbAddTempVar( FB_DATATYPE_STRING )
+    sym = symbAddTempVarEx( FB_DATATYPE_STRING )
     if( astNewARG( proc, _
-    				 astNewVAR( tstr, 0, FB_DATATYPE_STRING ), _
-    				 FB_DATATYPE_STRING ) = NULL ) then
+    			   astNewVAR( sym, 0, FB_DATATYPE_STRING ), _
+    			   FB_DATATYPE_STRING ) = NULL ) then
     	exit function
     end if
 
@@ -1422,8 +1426,8 @@ function rtlStrConcat( byval str1 as ASTNODE ptr, _
 
     '' byval str1_len as integer
     if( astNewARG( proc, _
-    				 astNewCONSTi( str1len, FB_DATATYPE_INTEGER ), _
-    				 FB_DATATYPE_INTEGER ) = NULL ) then
+    			   astNewCONSTi( str1len, FB_DATATYPE_INTEGER ), _
+    			   FB_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
@@ -1434,8 +1438,8 @@ function rtlStrConcat( byval str1 as ASTNODE ptr, _
 
     '' byval str2_len as integer
     if( astNewARG( proc, _
-    				 astNewCONSTi( str2len, FB_DATATYPE_INTEGER ), _
-    				 FB_DATATYPE_INTEGER ) = NULL ) then
+    			   astNewCONSTi( str2len, FB_DATATYPE_INTEGER ), _
+    			   FB_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
@@ -1444,10 +1448,12 @@ function rtlStrConcat( byval str1 as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlWstrConcatWA( byval str1 as ASTNODE ptr, _
-					      byval str2 as ASTNODE ptr, _
-					      byval sdtype2 as integer _
-					  	) as ASTNODE ptr static
+function rtlWstrConcatWA _
+	( _
+		byval str1 as ASTNODE ptr, _
+		byval str2 as ASTNODE ptr, _
+		byval sdtype2 as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as integer str2len
@@ -1481,10 +1487,12 @@ function rtlWstrConcatWA( byval str1 as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlWstrConcatAW( byval str1 as ASTNODE ptr, _
-					      byval sdtype1 as integer, _
-					      byval str2 as ASTNODE ptr _
-					  	) as ASTNODE ptr static
+function rtlWstrConcatAW _
+	( _
+		byval str1 as ASTNODE ptr, _
+		byval sdtype1 as integer, _
+		byval str2 as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as integer str1len
@@ -1518,11 +1526,13 @@ function rtlWstrConcatAW( byval str1 as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlWstrConcat( byval str1 as ASTNODE ptr, _
-					    byval sdtype1 as integer, _
-					    byval str2 as ASTNODE ptr, _
-					    byval sdtype2 as integer _
-					  ) as ASTNODE ptr static
+function rtlWstrConcat _
+	( _
+		byval str1 as ASTNODE ptr, _
+		byval sdtype1 as integer, _
+		byval str2 as ASTNODE ptr, _
+		byval sdtype2 as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
 
@@ -1558,9 +1568,11 @@ function rtlWstrConcat( byval str1 as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlStrConcatAssign( byval dst as ASTNODE ptr, _
-							 byval src as ASTNODE ptr _
-						   ) as ASTNODE ptr static
+function rtlStrConcatAssign _
+	( _
+		byval dst as ASTNODE ptr, _
+		byval src as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as integer lgt, ddtype, sdtype
@@ -1617,9 +1629,11 @@ function rtlStrConcatAssign( byval dst as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlWstrConcatAssign( byval dst as ASTNODE ptr, _
-							  byval src as ASTNODE ptr _
-						    ) as ASTNODE ptr static
+function rtlWstrConcatAssign _
+	( _
+		byval dst as ASTNODE ptr, _
+		byval src as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as integer lgt
@@ -1655,10 +1669,12 @@ function rtlWstrConcatAssign( byval dst as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlWstrAssignWA( byval dst as ASTNODE ptr, _
-					      byval src as ASTNODE ptr, _
-					      byval sdtype as integer _
-					  	) as ASTNODE ptr static
+function rtlWstrAssignWA _
+	( _
+		byval dst as ASTNODE ptr, _
+		byval src as ASTNODE ptr, _
+		byval sdtype as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as integer dstlen, srclen
@@ -1700,10 +1716,12 @@ function rtlWstrAssignWA( byval dst as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlWstrAssignAW( byval dst as ASTNODE ptr, _
-					      byval ddtype as integer, _
-					      byval src as ASTNODE ptr _
-					  	) as ASTNODE ptr static
+function rtlWstrAssignAW _
+	( _
+		byval dst as ASTNODE ptr, _
+		byval ddtype as integer, _
+		byval src as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as integer lgt
@@ -1744,9 +1762,11 @@ function rtlWstrAssignAW( byval dst as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlStrAssign( byval dst as ASTNODE ptr, _
-					   byval src as ASTNODE ptr _
-					 ) as ASTNODE ptr static
+function rtlStrAssign _
+	( _
+		byval dst as ASTNODE ptr, _
+		byval src as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as integer lgt, ddtype, sdtype
@@ -1812,9 +1832,11 @@ function rtlStrAssign( byval dst as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlWstrAssign( byval dst as ASTNODE ptr, _
-					    byval src as ASTNODE ptr _
-					  ) as ASTNODE ptr static
+function rtlWstrAssign _
+	( _
+		byval dst as ASTNODE ptr, _
+		byval src as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as integer lgt, ddtype, sdtype
@@ -1864,7 +1886,11 @@ function rtlWstrAssign( byval dst as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlStrDelete( byval strg as ASTNODE ptr ) as ASTNODE ptr static
+function rtlStrDelete _
+	( _
+		byval strg as ASTNODE ptr _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr proc
     dim as integer dtype
 
@@ -1893,7 +1919,11 @@ function rtlStrDelete( byval strg as ASTNODE ptr ) as ASTNODE ptr static
 end function
 
 '':::::
-function rtlStrAllocTmpResult( byval strg as ASTNODE ptr ) as ASTNODE ptr static
+function rtlStrAllocTmpResult _
+	( _
+		byval strg as ASTNODE ptr _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr proc
 
 	function = NULL
@@ -1911,7 +1941,11 @@ function rtlStrAllocTmpResult( byval strg as ASTNODE ptr ) as ASTNODE ptr static
 end function
 
 '':::::
-function rtlStrAllocTmpDesc	( byval strexpr as ASTNODE ptr ) as ASTNODE ptr static
+function rtlStrAllocTmpDesc	_
+	( _
+		byval strexpr as ASTNODE ptr _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr proc
     dim as integer lgt, dtype
     dim as FBSYMBOL ptr litsym
@@ -1983,7 +2017,11 @@ function rtlStrAllocTmpDesc	( byval strexpr as ASTNODE ptr ) as ASTNODE ptr stat
 end function
 
 '':::::
-function rtlWstrAlloc( byval lenexpr as ASTNODE ptr ) as ASTNODE ptr static
+function rtlWstrAlloc _
+	( _
+		byval lenexpr as ASTNODE ptr _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr proc
     dim as integer dtype
 
@@ -2001,7 +2039,11 @@ function rtlWstrAlloc( byval lenexpr as ASTNODE ptr ) as ASTNODE ptr static
 end function
 
 '':::::
-function rtlWstrToA( byval expr as ASTNODE ptr ) as ASTNODE ptr static
+function rtlWstrToA _
+	( _
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr proc
 
     function = NULL
@@ -2018,7 +2060,11 @@ function rtlWstrToA( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 end function
 
 '':::::
-function rtlAToWstr( byval expr as ASTNODE ptr ) as ASTNODE ptr static
+function rtlAToWstr _
+	( _
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr proc
 
     function = NULL
@@ -2035,7 +2081,11 @@ function rtlAToWstr( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 end function
 
 '':::::
-function rtlToStr( byval expr as ASTNODE ptr ) as ASTNODE ptr static
+function rtlToStr _
+	( _
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f, litsym
 
@@ -2113,7 +2163,11 @@ function rtlToStr( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 end function
 
 '':::::
-function rtlToWstr( byval expr as ASTNODE ptr ) as ASTNODE ptr static
+function rtlToWstr _
+	( _
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f, litsym
 
@@ -2246,10 +2300,12 @@ function rtlStrToVal _
 end function
 
 '':::::
-function rtlStrMid( byval expr1 as ASTNODE ptr, _
-					byval expr2 as ASTNODE ptr, _
-					byval expr3 as ASTNODE ptr _
-				  ) as ASTNODE ptr static
+function rtlStrMid _
+	( _
+		byval expr1 as ASTNODE ptr, _
+		byval expr2 as ASTNODE ptr, _
+		byval expr3 as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
 
@@ -2280,11 +2336,13 @@ function rtlStrMid( byval expr1 as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlStrAssignMid( byval expr1 as ASTNODE ptr, _
-						  byval expr2 as ASTNODE ptr, _
-						  byval expr3 as ASTNODE ptr, _
-						  byval expr4 as ASTNODE ptr _
-						) as ASTNODE ptr static
+function rtlStrAssignMid _
+	( _
+		byval expr1 as ASTNODE ptr, _
+		byval expr2 as ASTNODE ptr, _
+		byval expr3 as ASTNODE ptr, _
+		byval expr4 as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as integer dst_len
@@ -2334,9 +2392,11 @@ function rtlStrAssignMid( byval expr1 as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlStrLSet( byval dstexpr as ASTNODE ptr, _
-					 byval srcexpr as ASTNODE ptr _
-				   ) as integer static
+function rtlStrLSet _
+	( _
+		byval dstexpr as ASTNODE ptr, _
+		byval srcexpr as ASTNODE ptr _
+	) as integer static
 
     dim as ASTNODE ptr proc
 
@@ -2367,9 +2427,11 @@ function rtlStrLSet( byval dstexpr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlStrFill( byval expr1 as ASTNODE ptr, _
-					 byval expr2 as ASTNODE ptr _
-				   ) as ASTNODE ptr static
+function rtlStrFill _
+	( _
+		byval expr1 as ASTNODE ptr, _
+		byval expr2 as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -2399,9 +2461,11 @@ function rtlStrFill( byval expr1 as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlWstrFill( byval expr1 as ASTNODE ptr, _
-					  byval expr2 as ASTNODE ptr _
-				     ) as ASTNODE ptr static
+function rtlWstrFill _
+	( _
+		byval expr1 as ASTNODE ptr, _
+		byval expr2 as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -2430,9 +2494,11 @@ function rtlWstrFill( byval expr1 as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlStrAsc( byval expr as ASTNODE ptr, _
-					byval posexpr as ASTNODE ptr _
-				  ) as ASTNODE ptr static
+function rtlStrAsc _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval posexpr as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
 
@@ -2464,10 +2530,12 @@ function rtlStrAsc( byval expr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlStrChr( byval args as integer, _
-					exprtb() as ASTNODE ptr, _
-					byval is_wstr as integer _
-				  ) as ASTNODE ptr static
+function rtlStrChr _
+	( _
+		byval args as integer, _
+		exprtb() as ASTNODE ptr, _
+		byval is_wstr as integer _
+	) as ASTNODE ptr static
 
 	dim as ASTNODE ptr proc, expr
 	dim as integer i
@@ -2518,11 +2586,13 @@ function rtlStrChr( byval args as integer, _
 end function
 
 '':::::
-function rtlStrInstr( byval nd_start as ASTNODE ptr, _
-					  byval nd_text as ASTNODE ptr, _
-					  byval nd_pattern as ASTNODE ptr, _
-                      byval search_any as integer _
-                    ) as ASTNODE ptr static
+function rtlStrInstr _
+	( _
+		byval nd_start as ASTNODE ptr, _
+		byval nd_text as ASTNODE ptr, _
+		byval nd_pattern as ASTNODE ptr, _
+        byval search_any as integer _
+    ) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -2563,10 +2633,12 @@ function rtlStrInstr( byval nd_start as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlStrTrim( byval nd_text as ASTNODE ptr, _
-					 byval nd_pattern as ASTNODE ptr, _
-                     byval is_any as integer _
-                   ) as ASTNODE ptr static
+function rtlStrTrim _
+	( _
+		byval nd_text as ASTNODE ptr, _
+		byval nd_pattern as ASTNODE ptr, _
+        byval is_any as integer _
+    ) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -2611,10 +2683,12 @@ function rtlStrTrim( byval nd_text as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlStrRTrim( byval nd_text as ASTNODE ptr, _
-					  byval nd_pattern as ASTNODE ptr, _
-                      byval is_any as integer _
-                    ) as ASTNODE ptr static
+function rtlStrRTrim _
+	( _
+		byval nd_text as ASTNODE ptr, _
+		byval nd_pattern as ASTNODE ptr, _
+        byval is_any as integer _
+    ) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -2659,10 +2733,12 @@ function rtlStrRTrim( byval nd_text as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlStrLTrim( byval nd_text as ASTNODE ptr, _
-					  byval nd_pattern as ASTNODE ptr, _
-                      byval is_any as integer _
-                    ) as ASTNODE ptr static
+function rtlStrLTrim _
+	( _
+		byval nd_text as ASTNODE ptr, _
+		byval nd_pattern as ASTNODE ptr, _
+        byval is_any as integer _
+    ) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -2707,9 +2783,11 @@ function rtlStrLTrim( byval nd_text as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlStrSwap( byval str1 as ASTNODE ptr, _
-					 byval str2 as ASTNODE ptr _
-				   ) as integer static
+function rtlStrSwap _
+	( _
+		byval str1 as ASTNODE ptr, _
+		byval str2 as ASTNODE ptr _
+	) as integer static
 
     dim as ASTNODE ptr proc
     dim as integer lgt, dtype
@@ -2759,9 +2837,11 @@ function rtlStrSwap( byval str1 as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlWstrSwap( byval str1 as ASTNODE ptr, _
-					  byval str2 as ASTNODE ptr _
-					) as integer static
+function rtlWstrSwap _
+	( _
+		byval str1 as ASTNODE ptr, _
+		byval str2 as ASTNODE ptr _
+	) as integer static
 
     dim as ASTNODE ptr proc
     dim as integer lgt

@@ -270,4 +270,10 @@ declare sub 		fbMainBegin		( _
 declare sub 		fbMainEnd		( _
  									)
 
+declare sub 		fbReportRtError	( _
+										byval modname as zstring ptr, _
+										byval funname as zstring ptr, _
+										byval errnum as integer _
+									)
+
 #endif '' __FB_BI__

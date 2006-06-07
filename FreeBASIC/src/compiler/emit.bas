@@ -1293,59 +1293,48 @@ end function
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function emitMEMMOVE( byval dvreg as IRVREG ptr, _
-			    	  byval svreg as IRVREG ptr, _
-			     	  byval bytes as integer ) as EMIT_NODE ptr static
+function emitMEMMOVE _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr, _
+		byval bytes as integer _
+	) as EMIT_NODE ptr static
 
 	function = hNewMEM( EMIT_OP_MEMMOVE, dvreg, svreg, bytes )
 
 end function
 
 '':::::
-function emitMEMSWAP( byval dvreg as IRVREG ptr, _
-			     	  byval svreg as IRVREG ptr, _
-			     	  byval bytes as integer ) as EMIT_NODE ptr static
+function emitMEMSWAP _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr, _
+		byval bytes as integer _
+	) as EMIT_NODE ptr static
 
 	function = hNewMEM( EMIT_OP_MEMSWAP, dvreg, svreg, bytes )
 
 end function
 
 '':::::
-function emitMEMCLEAR( byval dvreg as IRVREG ptr, _
-			      	   byval svreg as IRVREG ptr, _
-			      	   byval bytes as integer ) as EMIT_NODE ptr static
+function emitMEMCLEAR _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval bytes as integer _
+	) as EMIT_NODE ptr static
 
-	function = hNewMEM( EMIT_OP_MEMCLEAR, dvreg, svreg, bytes )
+	function = hNewMEM( EMIT_OP_MEMCLEAR, dvreg, NULL, bytes )
 
 end function
 
 '':::::
-function emitSTKCLEAR( byval bytes as integer, _
-				  	   byval baseofs as integer ) as EMIT_NODE ptr static
+function emitSTKCLEAR _
+	( _
+		byval bytes as integer, _
+		byval baseofs as integer _
+	) as EMIT_NODE ptr static
 
 	function = hNewMEM( EMIT_OP_STKCLEAR, NULL, NULL, bytes, baseofs )
-
-end function
-
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-'' SCOPE
-''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-'':::::
-function emitSCOPEHEADER( byval s as FBSYMBOl ptr ) as EMIT_NODE ptr static
-
-	s->scp.emit.clrnode = emitSTKCLEAR( 0, s->scp.emit.baseofs )
-
-	function = s->scp.emit.clrnode
-
-end function
-
-'':::::
-function emitSCOPEFOOTER( byval s as FBSYMBOl ptr ) as EMIT_NODE ptr static
-
-	s->scp.emit.clrnode->mem.bytes = s->scp.emit.bytes
-
-	function = s->scp.emit.clrnode
 
 end function
 

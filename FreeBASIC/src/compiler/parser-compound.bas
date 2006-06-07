@@ -412,6 +412,7 @@ function cCompStmtPush _
 	stk = stackPush( @env.stmtstk )
 	stk->id = id
 	stk->allowmask = allowmask
+	stk->scopenode = NULL
 
 	'' same current values, if any
 	select case as const id

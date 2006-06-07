@@ -99,6 +99,26 @@ data @"erl", "fb_ErrorGetLineNum", _
 	 NULL, FALSE, FALSE, _
 	 0
 
+'' ERFN ( ) as zstring ptr
+data @"erfn", "fb_ErrorGetFuncName", _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 0
+
+'' ERMN ( ) as zstring ptr
+data @"ermn", "fb_ErrorGetModName", _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 0
+
+'' fb_ErrorSetInfo ( byval modname as zstring ptr, byval funname as zstring ptr ) as void
+data @FB_RTL_ERRORSETINFO,"", _
+	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 2, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE
+
 '' fb_Assert ( byval fname as zstring ptr, byval linenum as integer, _
 '''			   byval funcname as zstring ptr, byval expression as zstring ptr ) as void
 data @"fb_Assert","", _
@@ -164,9 +184,12 @@ end sub
 
 
 '':::::
-function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
-						byval reslabel as FBSYMBOL ptr, _
-						byval linenum as integer ) as integer static
+function rtlErrorCheck _
+	( _
+		byval resexpr as ASTNODE ptr, _
+		byval reslabel as FBSYMBOL ptr, _
+		byval linenum as integer _
+	) as integer static
 
 	dim as ASTNODE ptr proc, param, dst
 	dim as FBSYMBOL ptr nxtlabel
@@ -237,10 +260,12 @@ function rtlErrorCheck( byval resexpr as ASTNODE ptr, _
 end function
 
 '':::::
-sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
-				   byval linenum as integer, _
-				   byval module as zstring ptr _
-				 ) static
+sub rtlErrorThrow _
+	( _
+		byval errexpr as ASTNODE ptr, _
+		byval linenum as integer, _
+		byval module as zstring ptr _
+	) static
 
 	dim as ASTNODE ptr proc, param, dst
 	dim as FBSYMBOL ptr nxtlabel, reslabel
@@ -305,8 +330,11 @@ sub rtlErrorThrow( byval errexpr as ASTNODE ptr, _
 end sub
 
 '':::::
-sub rtlErrorSetHandler( byval newhandler as ASTNODE ptr, _
-						byval savecurrent as integer ) static
+sub rtlErrorSetHandler _
+	( _
+		byval newhandler as ASTNODE ptr, _
+		byval savecurrent as integer _
+	) static
 
     dim as ASTNODE ptr proc, expr
 
@@ -337,7 +365,11 @@ sub rtlErrorSetHandler( byval newhandler as ASTNODE ptr, _
 end sub
 
 '':::::
-function rtlErrorGetNum as ASTNODE ptr static
+function rtlErrorGetNum _
+	( _
+		_
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr proc
 
 	''
@@ -349,7 +381,11 @@ function rtlErrorGetNum as ASTNODE ptr static
 end function
 
 '':::::
-sub rtlErrorSetNum( byval errexpr as ASTNODE ptr ) static
+sub rtlErrorSetNum _
+	( _
+		byval errexpr as ASTNODE ptr _
+	) static
+
     dim as ASTNODE ptr proc
 
 	''
@@ -366,7 +402,11 @@ sub rtlErrorSetNum( byval errexpr as ASTNODE ptr ) static
 end sub
 
 '':::::
-sub rtlErrorResume( byval isnext as integer )
+sub rtlErrorResume _
+	( _
+		byval isnext as integer _
+	)
+
     dim as ASTNODE ptr proc, dst
     dim as FBSYMBOL ptr f
 
@@ -383,6 +423,31 @@ sub rtlErrorResume( byval isnext as integer )
     dst = astNewBRANCH( AST_OP_JUMPPTR, NULL, proc )
 
     astAdd( dst )
+
+end sub
+
+'':::::
+sub rtlErrorSetInfo _
+	( _
+		byval modname as zstring ptr, _
+		byval funname as zstring ptr _
+	) static
+
+    dim as ASTNODE ptr proc
+
+	proc = astNewCALL( PROCLOOKUP( ERRORSETINFO ) )
+
+    '' byval module as zstring ptr
+    if( astNewARG( proc, astNewCONSTstr( modname ) ) = NULL ) then
+    	exit sub
+    end if
+
+    '' byval function as zstring ptr
+    if( astNewARG( proc, astNewCONSTstr( funname ) ) = NULL ) then
+    	exit sub
+    end if
+
+    astAdd( proc )
 
 end sub
 

@@ -34,8 +34,12 @@ option escape
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewLABEL( byval sym as FBSYMBOL ptr, _
-					  byval doflush as integer ) as ASTNODE ptr static
+function astNewLABEL _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval doflush as integer _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
 
 	'' alloc new node
@@ -44,7 +48,7 @@ function astNewLABEL( byval sym as FBSYMBOL ptr, _
 		return NULL
 	end if
 
-	n->sym	= sym
+	n->sym = sym
 	n->lbl.flush = doflush
 
 	if( symbIsLabel( sym ) ) then
@@ -60,7 +64,10 @@ function astNewLABEL( byval sym as FBSYMBOL ptr, _
 end function
 
 '':::::
-function astLoadLABEL( byval n as ASTNODE ptr ) as IRVREG ptr
+function astLoadLABEL _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
 	if( ast.doemit ) then
 		if( n->lbl.flush ) then
@@ -79,7 +86,11 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewLIT( byval text as zstring ptr ) as ASTNODE ptr static
+function astNewLIT _
+	( _
+		byval text as zstring ptr _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
 
 	'' alloc new node
@@ -89,14 +100,17 @@ function astNewLIT( byval text as zstring ptr ) as ASTNODE ptr static
 	end if
 
 	n->lit.text = ZstrAllocate( len( *text ) )
-	*n->lit.text  = *text
+	*n->lit.text = *text
 
 	function = n
 
 end function
 
 '':::::
-function astLoadLIT( byval n as ASTNODE ptr ) as IRVREG ptr
+function astLoadLIT _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
 	if( ast.doemit ) then
 		irEmitCOMMENT( n->lit.text )
@@ -113,7 +127,11 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewASM( byval listhead as FB_ASMTOK_ ptr ) as ASTNODE ptr static
+function astNewASM _
+	( _
+		byval listhead as FB_ASMTOK_ ptr _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
 
 	'' alloc new node
@@ -129,7 +147,11 @@ function astNewASM( byval listhead as FB_ASMTOK_ ptr ) as ASTNODE ptr static
 end function
 
 '':::::
-function astLoadASM( byval n as ASTNODE ptr ) as IRVREG ptr
+function astLoadASM _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
     dim as FB_ASMTOK ptr node, nxt
     dim as string asmline
 
@@ -189,19 +211,24 @@ function astNewDBG _
 		return NULL
 	end if
 
-	n->dbg.op  = op
-	n->dbg.ex  = ex
+	n->dbg.op = op
+	n->dbg.ex = ex
 
 	function = n
 
 end function
 
 '':::::
-function astLoadDBG( byval n as ASTNODE ptr ) as IRVREG ptr
+function astLoadDBG _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
 	if( ast.doemit ) then
 		irEmitDBG( ast.proc.curr->sym, n->dbg.op, n->dbg.ex )
 	end if
+
+	function = NULL
 
 end function
 
@@ -210,10 +237,13 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewMEM( byval op as integer, _
-					byval l as ASTNODE ptr, _
-					byval r as ASTNODE ptr, _
-					byval bytes as integer ) as ASTNODE ptr static
+function astNewMEM _
+	( _
+		byval op as integer, _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr, _
+		byval bytes as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
 
@@ -224,8 +254,8 @@ function astNewMEM( byval op as integer, _
 	end if
 
 	n->mem.op  = op
-	n->l	   = l
-	n->r	   = r
+	n->l = l
+	n->r = r
 	n->mem.bytes = bytes
 
 	function = n
@@ -233,26 +263,34 @@ function astNewMEM( byval op as integer, _
 end function
 
 '':::::
-function astLoadMEM( byval n as ASTNODE ptr ) as IRVREG ptr
+function astLoadMEM _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
     dim as ASTNODE ptr l, r
     dim as IRVREG ptr v1, v2
 
 	l = n->l
 	r = n->r
 
-	if( (l = NULL) or (r = NULL) ) then
+	if( l = NULL ) then
 		return NULL
 	end if
 
 	v1 = astLoad( l )
-	v2 = astLoad( r )
+	astDelNode( l )
+
+	if( r <> NULL ) then
+		v2 = astLoad( r )
+		astDelNode( r )
+	else
+		v2 = NULL
+	end if
 
 	if( ast.doemit ) then
 		irEmitMEM( n->mem.op, v1, v2, n->mem.bytes )
 	end if
-
-	astDelNode( l )
-	astDelNode( r )
 
 	function = NULL
 
@@ -263,7 +301,11 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewNOP( ) as ASTNODE ptr static
+function astNewNOP _
+	( _
+		_
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
 
 	'' alloc new node

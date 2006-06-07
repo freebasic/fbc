@@ -94,6 +94,7 @@ enum AST_OPCODE
 	AST_OP_MEMCLEAR
 	AST_OP_STKCLEAR
 
+	'' not added to IR's tb
 	AST_OP_DBG_LINEINI
 	AST_OP_DBG_LINEEND
 	AST_OP_DBG_SCOPEINI
@@ -141,6 +142,7 @@ enum AST_NODECLASS
 	AST_NODECLASS_TYPEINI_PAD
 	AST_NODECLASS_TYPEINI_EXPR
 	AST_NODECLASS_PROC
+	AST_NODECLASS_DECL
 end enum
 
 #ifndef ASTNODE_
@@ -161,14 +163,12 @@ end type
 ''
 type AST_CALL
 	isrtl			as integer
-
 	args			as integer
 	currarg			as FBSYMBOL ptr
 	lastarg			as ASTNODE_ ptr					'' used to speed up PASCAL conv. only
-
 	arraytail 		as ASTTEMPARRAY ptr
 	strtail 		as ASTTEMPSTR ptr
-
+	res             as FBSYMBOL ptr					'' temp result structure, if needed
 	profbegin		as ASTNODE_ ptr
 	profend			as ASTNODE_ ptr
 end type
@@ -221,6 +221,10 @@ end type
 
 type AST_CONST
 	val				as FBVALUE
+end type
+
+type AST_OFFS
+	ofs				as integer
 end type
 
 type AST_JMPTB
@@ -290,6 +294,7 @@ type ASTNODE
 		op			as AST_OP
 		lod			as AST_LOAD
 		lbl			as AST_LABEL
+		ofs			as AST_OFFS
 		lit			as AST_LIT
 		asm			as AST_ASM
 		jmptb		as AST_JMPTB
@@ -448,12 +453,6 @@ declare function	astUpdComp2Branch	( _
 										) as ASTNODE ptr
 
 declare function 	astPtrCheck			( _
-											byval pdtype as integer, _
-											byval psubtype as FBSYMBOL ptr, _
-											byval expr as ASTNODE ptr _
-										) as integer
-
-declare function 	astFuncPtrCheck		( _
 											byval pdtype as integer, _
 											byval psubtype as FBSYMBOL ptr, _
 											byval expr as ASTNODE ptr _
@@ -650,6 +649,12 @@ declare function 	astNewPTRCHK		( _
 											byval linenum as integer _
 										) as ASTNODE ptr
 
+declare function 	astNewDECL 			( _
+											byval symclass as FB_SYMBCLASS, _
+											byval sym as FBSYMBOL ptr, _
+											byval initree as ASTNODE ptr _
+										) as ASTNODE ptr
+
 declare sub 		astDump 			( _
 											byval p as ASTNODE ptr, _
 											byval n as ASTNODE ptr, _
@@ -736,8 +741,7 @@ declare function 	astTypeIniAddPad	( _
 declare function 	astTypeIniAddExpr	( _
 											byval tree as ASTNODE ptr, _
 						 				  	byval expr as ASTNODE ptr, _
-						 				  	byval sym as FBSYMBOL ptr, _
-						 				  	byval ofs as integer _
+						 				  	byval sym as FBSYMBOL ptr _
 										) as ASTNODE ptr
 
 declare function 	astTypeIniFlush		( _

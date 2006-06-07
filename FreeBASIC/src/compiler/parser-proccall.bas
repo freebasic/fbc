@@ -71,6 +71,9 @@ function cAssignFunctResult _
 
     assg = astNewVAR( s, 0, symbGetType( s ), symbGetSubtype( s ) )
 
+    '' set accessed flag here, as proc will be ended before AST is flushed
+    symbSetIsAccessed( s )
+
 	'' proc returns an UDT?
 	if( symbGetType( proc ) = FB_DATATYPE_USERDEF ) then
 		'' pointer? deref

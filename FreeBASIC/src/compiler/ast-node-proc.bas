@@ -121,8 +121,7 @@ private sub hProcFlush _
 		byval doemit as integer _
 	) static
 
-    dim as ASTNODE ptr n, nxt, prv
-    dim as ASTNODE tmp
+    dim as ASTNODE ptr n, nxt
     dim as FBSYMBOL ptr sym
 
 	''
@@ -137,23 +136,7 @@ private sub hProcFlush _
 	env.currblock = sym
 	symbSetCurrentSymTb( @sym->proc.symtb )
 
-	'' do pre-loading, before allocating variables on stack
-	prv = @tmp
-	n = p->l
-	do while( n <> NULL )
-		nxt = n->next
-
-		n = astOptimize( n )
-		'' needed even when not optimizing
-		n = astOptAssignment( n )
-		n = astUpdStrConcat( n )
-
-		prv->next = n
-		prv = n
-		n = nxt
-	loop
-
-	''
+	'' allocate the local variables on stack
 	symbProcAllocLocals( sym )
 
 	'' add a call to fb_init if it's a static constructor
@@ -244,8 +227,12 @@ sub astAdd _
 		exit sub
 	end if
 
-	'' if node contains any type ini trees, they must be expanded first
+	'' do updates and optimizations now are they can
+	'' allocate new vars and create/delete nodes
 	n = astTypeIniUpdate( n )
+	n = astOptimize( n )
+	n = astOptAssignment( n )
+	n = astUpdStrConcat( n )
 
 	''
 	if( ast.proc.curr->r <> NULL ) then
@@ -271,7 +258,8 @@ sub astAddAfter _
 		exit sub
 	end if
 
-	'' assuming no tree will type ini will be passed
+	'' note: this function can't be used if node contains
+	'' type-ini tree or strings assignment/concatenations
 
 	''
 	if( p->next = NULL ) then
@@ -297,7 +285,8 @@ sub astAddBefore _
 		exit sub
 	end if
 
-	'' assuming no tree will type ini will be passed
+	'' note: this function can't be used if node contains
+	'' type-ini tree or strings assignment/concatenations
 
 	''
 	if( p->prev = NULL ) then
@@ -398,6 +387,11 @@ function astProcBegin _
 
 	'' local error handler
 	env.procerrorhnd = NULL
+
+	''
+	if( env.clopt.extraerrchk ) then
+		rtlErrorSetInfo( @env.inf.name, symbGetCurrentProcName( ) )
+	end if
 
 	function = n
 

@@ -49,7 +49,7 @@ function cScopeStmtBegin as integer
 
 	''
 	stk = cCompStmtPush( FB_TK_SCOPE )
-	stk->scope.node = n
+	stk->scopenode = n
 
 	function = TRUE
 
@@ -73,8 +73,8 @@ function cScopeStmtEnd as integer
 	lexSkipToken( )
 
 	''
-	if( stk->scope.node <> NULL ) then
-		astScopeEnd( stk->scope.node )
+	if( stk->scopenode <> NULL ) then
+		astScopeEnd( stk->scopenode )
 	end if
 
 	'' pop from stmt stack

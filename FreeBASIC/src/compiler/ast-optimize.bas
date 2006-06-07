@@ -1502,7 +1502,6 @@ function astOptAssignment _
 		exit function
 	end if
 
-
 	'' delete assign node and alert UOP/BOP to not allocate a result (IR is aware)
 	r->op.allocres = FALSE
 

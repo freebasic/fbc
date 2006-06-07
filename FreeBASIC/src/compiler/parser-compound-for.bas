@@ -29,7 +29,7 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-private function cStoreTemp _
+private function hStoreTemp _
 	( _
 		byval expr as ASTNODE ptr, _
 		byval dtype as integer _
@@ -53,7 +53,7 @@ private function cStoreTemp _
 end function
 
 '':::::
-private sub cFlushBOP _
+private sub hFlushBOP _
 	( _
 		byval op as integer, _
 		byval dtype as integer, _
@@ -101,7 +101,7 @@ private sub cFlushBOP _
 end sub
 
 '':::::
-private sub cFlushSelfBOP _
+private sub hFlushSelfBOP _
 	( _
 		byval op as integer, _
 		byval dtype as integer, _
@@ -264,7 +264,7 @@ function cForStmtBegin as integer
 
 	'' store end condition into a temp var
 	else
-		stk->for.endc = cStoreTemp( expr, dtype )
+		stk->for.endc = hStoreTemp( expr, dtype )
 	end if
 
 	'' STEP
@@ -357,6 +357,7 @@ function cForStmtBegin as integer
 	astAdd( astNewLABEL( il ) )
 
 	'' push to stmt stack
+	stk->scopenode = astScopeBegin( )
 	stk->for.testlabel = tl
 	stk->for.inilabel = il
 
@@ -368,18 +369,26 @@ function cForStmtBegin as integer
 end function
 
 '':::::
-private function hForStmtClose( byval stk as FB_CMPSTMTSTK ptr ) as integer static
+private function hForStmtClose _
+	( _
+		byval stk as FB_CMPSTMTSTK ptr _
+	) as integer static
+
 	dim as FBSYMBOL ptr cl
 	dim as integer op, dtype
 	dim as FBVALUE ival
 
 	dtype = symbGetType( stk->for.cnt )
 
+	if( stk->scopenode <> NULL ) then
+		astScopeEnd( stk->scopenode )
+	end if
+
 	'' cmp label
 	astAdd( astNewLABEL( env.stmt.for.cmplabel ) )
 
 	'' counter += step
-	cFlushSelfBOP( AST_OP_ADD, dtype, _
+	hFlushSelfBOP( AST_OP_ADD, dtype, _
 				   stk->for.cnt, _
 				   stk->for.stp, @stk->for.sval )
 
@@ -395,7 +404,7 @@ private function hForStmtClose( byval stk as FB_CMPSTMTSTK ptr ) as integer stat
     	end if
 
     	'' counter <= or >= end cond?
-		cFlushBOP( op, dtype, _
+		hFlushBOP( op, dtype, _
 				   stk->for.cnt, NULL, _
 				   stk->for.endc, @stk->for.eval, _
 				   stk->for.inilabel )
@@ -413,13 +422,13 @@ private function hForStmtClose( byval stk as FB_CMPSTMTSTK ptr ) as integer stat
 			ival.int = 0
 		end select
 
-		cFlushBOP( AST_OP_GE, dtype, _
+		hFlushBOP( AST_OP_GE, dtype, _
 				   stk->for.stp, @stk->for.sval, _
 				   NULL, @ival, _
 				   cl )
 
     	'' negative, loop if >=
-		cFlushBOP( AST_OP_GE, dtype, _
+		hFlushBOP( AST_OP_GE, dtype, _
 				   stk->for.cnt, NULL, _
 				   stk->for.endc, @stk->for.eval, _
 				   stk->for.inilabel )
@@ -428,7 +437,7 @@ private function hForStmtClose( byval stk as FB_CMPSTMTSTK ptr ) as integer stat
     	'' control label
     	astAdd( astNewLABEL( cl, FALSE ) )
     	'' positive, loop if <=
-		cFlushBOP( AST_OP_LE, dtype, _
+		hFlushBOP( AST_OP_LE, dtype, _
 				   stk->for.cnt, NULL, _
 				   stk->for.endc, @stk->for.eval, _
 				   stk->for.inilabel )

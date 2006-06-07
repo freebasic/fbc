@@ -55,6 +55,7 @@ enum FB_SYMBSTATS
 	FB_SYMBSTATS_MANGLED		= &h0100
 	FB_SYMBSTATS_HASALIAS		= &h0200
 	FB_SYMBSTATS_MOCK			= &h0400
+	FB_SYMBSTATS_DONTCLEAR		= &h0800
 end enum
 
 '' symbol attributes mask
@@ -219,15 +220,6 @@ type FBS_LABEL
 end type
 
 ''
-type FBS_ARRAY
-	dims			as integer
-	dimhead 		as FBVARDIM ptr
-	dimtail			as FBVARDIM ptr
-	dif				as integer
-	elms			as integer
-	desc			as FBSYMBOL_ ptr
-end type
-
 ''
 type FB_TYPEDBG
 	typenum			as integer
@@ -334,8 +326,6 @@ end type
 
 type FB_SCOPEEMIT
 	baseofs			as integer
-	bytes			as integer
-	clrnode			as EMIT_NODE_ ptr			'' back track node
 end type
 
 type FBS_SCOPE
@@ -343,6 +333,15 @@ type FBS_SCOPE
 	symtb			as FBSYMBOLTB
 	dbg				as FB_SCOPEDBG
 	emit			as FB_SCOPEEMIT
+end type
+
+type FBS_ARRAY
+	dims			as integer
+	dimhead 		as FBVARDIM ptr
+	dimtail			as FBVARDIM ptr
+	dif				as integer
+	elms			as integer
+	desc			as FBSYMBOL_ ptr
 end type
 
 type FBS_VAR
@@ -656,6 +655,13 @@ declare function 	symbAddTempVar			( _
 												byval checkstatic as integer = TRUE _
 											) as FBSYMBOL ptr
 
+declare function 	symbAddTempVarEx		( _
+												byval dtype as integer, _
+												byval subtype as FBSYMBOL ptr = NULL, _
+												byval doalloc as integer = FALSE, _
+												byval checkstatic as integer = TRUE _
+											) as FBSYMBOL ptr
+
 declare function 	symbAddConst			( _
 												byval id as zstring ptr, _
 												byval dtype as integer, _
@@ -791,7 +797,7 @@ declare sub 		symbSetLastLabel		( _
 												byval l as FBSYMBOL ptr _
 											)
 
-declare sub 		symbSetArrayDims		( _
+declare sub 		symbSetArrayDimTb		( _
 												byval s as FBSYMBOL ptr, _
 					  						  	byval dimensions as integer, _
 					  						  	dTB() as FBARRAYDIM _
@@ -1145,6 +1151,10 @@ declare function 	symbTypeToStr			( _
 
 #define symbSetIsMock(s) s->stats or= FB_SYMBSTATS_MOCK
 
+#define symbSetDontClear(s) s->stats or= FB_SYMBSTATS_DONTCLEAR
+
+#define symbGetDontClear(s) ((s->stats and FB_SYMBSTATS_DONTCLEAR) <> 0)
+
 #define symbGetStats(s) s->stats
 
 #define symbGetLen(s) iif( s <> NULL, s->lgt, 0 )
@@ -1259,6 +1269,8 @@ declare function 	symbTypeToStr			( _
 
 #define symbGetVarStmt(s) s->var.stmtnum
 
+#define symGetVarLine(s) s->var.linenum
+
 #define symbSetTypeIniTree(s, t) s->var.initree = t
 
 #define symbGetTypeIniTree(s) s->var.initree
@@ -1370,7 +1382,7 @@ declare function 	symbTypeToStr			( _
 
 #define symbGetParamNext(a) a->next
 
-#define symbGetIsDynamic(s) iif( s->class = FB_SYMBCLASS_UDTELM, FALSE, (s->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_PARAMBYDESC)) <> 0 )
+#define symbGetIsDynamic(s) ((s->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_PARAMBYDESC)) <> 0 )
 
 #define symbIsArray(s) iif( (s->class = FB_SYMBCLASS_VAR) or (s->class = FB_SYMBCLASS_UDTELM), _
 							iif( (s->attrib and (FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_PARAMBYDESC)) > 0, _

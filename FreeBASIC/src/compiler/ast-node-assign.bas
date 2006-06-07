@@ -263,17 +263,8 @@ private function hCheckPointerOps _
 	function = FALSE
 
     if( ldtype >= FB_DATATYPE_POINTER ) then
-	   	'' function ptr?
-    	if( ldtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
-    		if( astFuncPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
-   				errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
-    		end if
-
-    	'' ordinary ptr..
-    	else
-			if( astPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
-				errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
-			end if
+		if( astPtrCheck( ldtype, l->subtype, r ) = FALSE ) then
+			errReportWarn( FB_WARNINGMSG_SUSPICIOUSPTRASSIGN )
 		end if
 
     '' r-side expr is a ptr?

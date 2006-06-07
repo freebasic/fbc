@@ -47,14 +47,14 @@ function astNewFIELD _
 
 	'' alloc new node
 	n = astNewNode( AST_NODECLASS_FIELD, dtype, subtype )
-	function = n
-
 	if( n = NULL ) then
-		exit function
+		return NULL
 	end if
 
 	n->sym = sym
 	n->l = p
+
+	function = n
 
 end function
 

@@ -31,14 +31,22 @@ option escape
 #include once "inc\ir.bi"
 #include once "inc\emit.bi"
 
-declare function hCheckBranch			( byval proc as ASTNODE ptr, _
-										  byval n as ASTNODE ptr ) as integer
+declare function hCheckBranch			( _
+										  	byval proc as ASTNODE ptr, _
+										  	byval n as ASTNODE ptr _
+										) as integer
 
-declare sub 	 hDelLocals				( byval n as ASTNODE ptr, _
-										  byval check_backward as integer )
+declare sub 	 hDelLocals				( _
+											byval n as ASTNODE ptr, _
+										  	byval check_backward as integer _
+										)
 
 '':::::
-function astScopeBegin( ) as ASTNODE ptr static
+function astScopeBegin _
+	( _
+		_
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
     dim as FBSYMBOL ptr s
 
@@ -53,6 +61,10 @@ function astScopeBegin( ) as ASTNODE ptr static
 	end if
 
 	s = symbAddScope( n )
+
+	'' must update the stmt count or any internal label
+	'' allocated/emitted previously will lie in the same stmt
+	env.stmtcnt += 1
 
     '' change to scope's symbol tb
     n->sym = s
@@ -79,9 +91,11 @@ function astScopeBegin( ) as ASTNODE ptr static
 end function
 
 '':::::
-private sub hAddToBreakList( byval list as AST_BREAKLIST ptr, _
-				 			 byval node as ASTNODE ptr ) static
-
+private sub hAddToBreakList _
+	( _
+		byval list as AST_BREAKLIST ptr, _
+		byval node as ASTNODE ptr _
+	) static
 
 	if( list->tail <> NULL ) then
 		list->tail->next = node
@@ -96,7 +110,10 @@ private sub hAddToBreakList( byval list as AST_BREAKLIST ptr, _
 end sub
 
 '':::::
-function astScopeBreak( byval target as FBSYMBOL ptr ) as integer static
+function astScopeBreak _
+	( _
+		byval target as FBSYMBOL ptr _
+	) as integer static
 
 	dim as ASTNODE ptr n
 
@@ -123,10 +140,18 @@ function astScopeBreak( byval target as FBSYMBOL ptr ) as integer static
 end function
 
 '':::::
-sub astScopeEnd( byval n as ASTNODE ptr ) static
+sub astScopeEnd _
+	( _
+		byval n as ASTNODE ptr _
+	) static
+
 	dim as FBSYMBOL ptr s
 
 	s = n->sym
+
+	'' must update the stmt count or any internal label
+	'' allocated/emitted previously will lie in the same stmt
+	env.stmtcnt += 1
 
 	n->block.endstmt = env.stmtcnt
 
@@ -157,7 +182,11 @@ sub astScopeEnd( byval n as ASTNODE ptr ) static
 end sub
 
 '':::::
-function astScopeUpdBreakList( byval proc as ASTNODE ptr ) as integer static
+function astScopeUpdBreakList _
+	( _
+		byval proc as ASTNODE ptr _
+	) as integer static
+
     dim as ASTNODE ptr n
 
     function = FALSE
@@ -166,7 +195,7 @@ function astScopeUpdBreakList( byval proc as ASTNODE ptr ) as integer static
     n = proc->block.breaklist.head
     do while( n <> NULL )
 
-    	'' EXIT FUNCTION?
+    	'' EXIT SUB | FUNCTION?
     	if( n->sym = proc->block.exitlabel ) then
     		'' special case due the non implicit scope block, that
     		'' can't be created for procs because the implicit
@@ -188,10 +217,12 @@ function astScopeUpdBreakList( byval proc as ASTNODE ptr ) as integer static
 end function
 
 '':::::
-private function hCheckScopeLocals( byval dst as FBSYMBOL ptr, _
-						       		byval src_scope as integer, _
-						       		byval dst_scope as integer _
-						     	  ) as integer static
+private function hCheckScopeLocals _
+	( _
+		byval dst as FBSYMBOL ptr, _
+		byval src_scope as integer, _
+		byval dst_scope as integer _
+	) as integer static
 
     dim as FBSYMBOL ptr parent, s
 
@@ -199,10 +230,11 @@ private function hCheckScopeLocals( byval dst as FBSYMBOL ptr, _
     do
     	s = parent->scp.symtb.head
     	do while( s <> NULL )
-    		'' non-static or shared var?
+    		'' non-static, shared or temporary var?
     		if( symbIsVar( s ) ) then
     			if( (s->attrib and (FB_SYMBATTRIB_STATIC or _
-    								FB_SYMBATTRIB_SHARED)) = 0 ) then
+    								FB_SYMBATTRIB_SHARED or _
+    								FB_SYMBATTRIB_TEMP)) = 0 ) then
     				return FALSE
     			end if
     		end if
@@ -211,15 +243,25 @@ private function hCheckScopeLocals( byval dst as FBSYMBOL ptr, _
     	loop
 
     	parent = symbGetParent( parent )
+
+    	'' proc? end of line..
+    	if( symbIsProc( parent ) ) then
+    		exit do
+    	end if
+
 		dst_scope -= 1
 	loop while( dst_scope > src_scope )
 
-     function = TRUE
+	function = TRUE
 
 end function
 
 '':::::
-private function hIsBranchCrossing( byval n as ASTNODE ptr ) as FBSYMBOL ptr static
+private function hIsBranchCrossing _
+	( _
+		byval n as ASTNODE ptr _
+	) as FBSYMBOL ptr static
+
 	dim as FBSYMBOL ptr s
 	dim as integer dst_stmt, src_stmt, p
 
@@ -227,7 +269,7 @@ private function hIsBranchCrossing( byval n as ASTNODE ptr ) as FBSYMBOL ptr sta
 
 	'' catch:
 	'' goto label
-	'' redim array(...) as type | dim obj as object()
+	'' redim array(...) as type | dim obj as object() | dim str as string
 	'' label:
 
 	dst_stmt = symbGetLabelStmt( n->sym )
@@ -258,11 +300,13 @@ private function hIsBranchCrossing( byval n as ASTNODE ptr ) as FBSYMBOL ptr sta
 end function
 
 '':::::
-private function hDelBlockLocals( byval blk as FBSYMBOL ptr, _
-								  byval top_stmt as integer, _
-							 	  byval bot_stmt as integer, _
-							 	  byval base_expr as ASTNODE ptr _
-						   		) as ASTNODE ptr static
+private function hDelBlockLocals _
+	( _
+		byval blk as FBSYMBOL ptr, _
+		byval top_stmt as integer, _
+		byval bot_stmt as integer, _
+		byval base_expr as ASTNODE ptr _
+	) as ASTNODE ptr static
 
 	dim as FBSYMBOL ptr s
 	dim as ASTNODE ptr expr
@@ -298,7 +342,10 @@ private function hDelBlockLocals( byval blk as FBSYMBOL ptr, _
 end function
 
 '':::::
-private sub hDelBackwardLocals( byval n as ASTNODE ptr )
+private sub hDelBackwardLocals _
+	( _
+		byval n as ASTNODE ptr _
+	)
 
     '' free any dyn var allocated between the block's
     '' beginning and the branch
@@ -315,9 +362,11 @@ end sub
 
 
 '':::::
-private sub hDelLocals( byval n as ASTNODE ptr, _
-						byval check_backward as integer _
-					  ) static
+private sub hDelLocals _
+	( _
+		byval n as ASTNODE ptr, _
+		byval check_backward as integer _
+	) static
 
 	dim as FBSYMBOL ptr s
 	dim as integer dst_stmt, src_stmt
@@ -356,9 +405,12 @@ private sub hDelLocals( byval n as ASTNODE ptr, _
 end sub
 
 '':::::
-private sub hBranchError( byval errnum as integer, _
-						  byval n as ASTNODE ptr, _
-						  byval s as FBSYMBOL ptr = NULL ) static
+private sub hBranchError _
+	( _
+		byval errnum as integer, _
+		byval n as ASTNODE ptr, _
+		byval s as FBSYMBOL ptr = NULL _
+	) static
 
 	dim as integer showerror
 	dim as string msg
@@ -374,7 +426,16 @@ private sub hBranchError( byval errnum as integer, _
 	end if
 
 	if( s <> NULL ) then
-		msg += "array or object: " + *symbGetName( s )
+		msg += "local "
+		if( symbGetType( s ) = FB_DATATYPE_STRING ) then
+			msg += "string: "
+		elseif( symbGetArrayDimensions( s ) <> 0 ) then
+			msg += "array: "
+		else
+			msg += "object: "
+		end if
+
+		msg += *symbGetName( s )
 	end if
 
 	errReportEx( errnum, msg, n->break.linenum )
@@ -384,9 +445,11 @@ private sub hBranchError( byval errnum as integer, _
 end sub
 
 '':::::
-private function hIsTargetOutside( byval proc as FBSYMBOL ptr, _
-								   byval label as FBSYMBOL ptr _
-								 ) as integer
+private function hIsTargetOutside _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval label as FBSYMBOL ptr _
+	) as integer
 
 	'' main?
 	if( (proc->attrib and (FB_SYMBATTRIB_MAINPROC or _
@@ -401,9 +464,11 @@ private function hIsTargetOutside( byval proc as FBSYMBOL ptr, _
 end function
 
 '':::::
-private function hCheckBranch( byval proc as ASTNODE ptr, _
-							   byval n as ASTNODE ptr _
-						     ) as integer static
+private function hCheckBranch _
+	( _
+		byval proc as ASTNODE ptr, _
+		byval n as ASTNODE ptr _
+	) as integer static
 
     dim as ASTNODE ptr src_parent
     dim as FBSYMBOL ptr dst, dst_parent, s
@@ -439,7 +504,9 @@ private function hCheckBranch( byval proc as ASTNODE ptr, _
     	'' jumping to a child block?
     	if( dst_scope > src_scope ) then
            	'' any locals?
-			if( hCheckScopeLocals( dst, src_scope, dst_scope ) = FALSE ) then
+			if( hCheckScopeLocals( dst, _
+								   src_scope, _
+								   dst_scope ) = FALSE ) then
        			hBranchError( FB_ERRMSG_BRANCHTOBLOCKWITHLOCALVARS, n )
        			exit function
        		end if
@@ -482,7 +549,7 @@ private function hCheckBranch( byval proc as ASTNODE ptr, _
         if( isparent = FALSE ) then
 			'' any locals?
 			if( hCheckScopeLocals( dst, _
-								   symbGetScope( proc->sym ), _
+								   0, _ 		'' real value doesn't matter
 								   dst_scope ) = FALSE ) then
        			hBranchError( FB_ERRMSG_BRANCHTOBLOCKWITHLOCALVARS, n )
        			exit function
@@ -514,8 +581,14 @@ private function hCheckBranch( byval proc as ASTNODE ptr, _
 
 end function
 
+dim shared cnt as integer = 0
+
 '':::::
-function astLoadSCOPEBEGIN( byval n as ASTNODE ptr ) as IRVREG ptr static
+function astLoadSCOPEBEGIN _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr static
+
     dim as FBSYMBOL ptr s
 
 	s = n->sym
@@ -528,21 +601,27 @@ function astLoadSCOPEBEGIN( byval n as ASTNODE ptr ) as IRVREG ptr static
 		irEmitSCOPEBEGIN( s )
 	end if
 
+	function = NULL
+
 end function
 
 '':::::
-function astLoadSCOPEEND( byval n as ASTNODE ptr ) as IRVREG ptr static
+function astLoadSCOPEEND _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr static
+
     dim as FBSYMBOL ptr s
 
     s = n->sym
 
-    s->scp.emit.bytes = emitGetLocalOfs( env.currproc ) - s->scp.emit.baseofs
-
-    emitSetLocalOfs( env.currproc, s->scp.emit.baseofs )
-
 	if( ast.doemit ) then
 		irEmitSCOPEEND( s )
 	end if
+
+    emitSetLocalOfs( env.currproc, s->scp.emit.baseofs )
+
+    function = NULL
 
 end function
 

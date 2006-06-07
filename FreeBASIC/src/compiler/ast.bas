@@ -98,6 +98,8 @@ declare function 	astLoadSCOPEBEGIN	( byval n as ASTNODE ptr ) as IRVREG ptr
 
 declare function 	astLoadSCOPEEND		( byval n as ASTNODE ptr ) as IRVREG ptr
 
+declare function 	astLoadDECL			( byval n as ASTNODE ptr ) as IRVREG ptr
+
 '' globals
 	dim shared as ASTCTX ast
 
@@ -514,47 +516,6 @@ function astPtrCheck _
 end function
 
 '':::::
-function astFuncPtrCheck _
-	( _
-		byval pdtype as integer, _
-		byval psubtype as FBSYMBOL ptr, _
-		byval expr as ASTNODE ptr _
-	) as integer static
-
-	dim as FBSYMBOL ptr esubtype
-
-	function = FALSE
-
-    if( psubtype = NULL ) then
-    	exit function
-    end if
-
-	select case as const astGetClass( expr )
-	'' address, func, var, ..
-	case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET, _
-		 AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_FIELD, _
-		 AST_NODECLASS_CALL, AST_NODECLASS_PTR
-
-    	'' not a function pointer?
-    	if( astGetDataType( expr ) <> FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
-    		return astPtrCheck( pdtype, psubtype, expr )
-    	end if
-
-    	esubtype = astGetSubType( expr )
-    	if( esubtype = NULL ) then
-    		exit function
-    	end if
-
-    	function = symbIsEqual( psubtype, esubtype )
-
-	'' const, expression, ..
-	case else
-		function = astPtrCheck( pdtype, psubtype, expr )
-	end select
-
-end function
-
-'':::::
 function astGetInverseLogOp _
 	( _
 		byval op as integer _
@@ -691,12 +652,17 @@ function astIsTreeEqual _
 	end if
 
 	select case as const l->class
-	case AST_NODECLASS_VAR, AST_NODECLASS_FIELD
+	case AST_NODECLASS_VAR
 		if( l->sym <> r->sym ) then
 			exit function
 		end if
 
 		if( l->var.ofs <> r->var.ofs ) then
+			exit function
+		end if
+
+	case AST_NODECLASS_FIELD
+		if( l->sym <> r->sym ) then
 			exit function
 		end if
 
@@ -759,12 +725,21 @@ const DBL_EPSILON# = 2.2204460492503131e-016
 			exit function
 		end if
 
-	case AST_NODECLASS_ADDR, AST_NODECLASS_OFFSET
+	case AST_NODECLASS_ADDR
 		if( l->sym <> r->sym ) then
 			exit function
 		end if
 
 		if( l->op.op <> r->op.op ) then
+			exit function
+		end if
+
+	case AST_NODECLASS_OFFSET
+		if( l->sym <> r->sym ) then
+			exit function
+		end if
+
+		if( l->ofs.ofs <> r->ofs.ofs ) then
 			exit function
 		end if
 
@@ -1286,6 +1261,9 @@ function astLoad _
 
     case AST_NODECLASS_SCOPEEND
     	return astLoadSCOPEEND( n )
+
+    case AST_NODECLASS_DECL
+    	return astLoadDECL( n )
 
     end select
 

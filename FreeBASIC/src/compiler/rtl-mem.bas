@@ -140,10 +140,12 @@ end sub
 
 
 '':::::
-function rtlNullPtrCheck( byval p as ASTNODE ptr, _
-						  byval linenum as integer, _
-						  byval module as zstring ptr _
-						) as ASTNODE ptr static
+function rtlNullPtrCheck _
+	( _
+		byval p as ASTNODE ptr, _
+		byval linenum as integer, _
+		byval module as zstring ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
 
@@ -172,9 +174,12 @@ function rtlNullPtrCheck( byval p as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlMemCopy( byval dst as ASTNODE ptr, _
-					 byval src as ASTNODE ptr, _
-					 byval bytes as integer ) as ASTNODE ptr static
+function rtlMemCopy _
+	( _
+		byval dst as ASTNODE ptr, _
+		byval src as ASTNODE ptr, _
+		byval bytes as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
 
@@ -204,8 +209,11 @@ function rtlMemCopy( byval dst as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlMemSwap( byval dst as ASTNODE ptr, _
-					 byval src as ASTNODE ptr ) as integer static
+function rtlMemSwap _
+	( _
+		byval dst as ASTNODE ptr, _
+		byval src as ASTNODE ptr _
+	) as integer static
 
     dim as ASTNODE ptr proc
     dim as integer bytes
@@ -257,10 +265,13 @@ function rtlMemSwap( byval dst as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlMemCopyClear( byval dstexpr as ASTNODE ptr, _
-					      byval dstlen as integer, _
-					      byval srcexpr as ASTNODE ptr, _
-					      byval srclen as integer ) as integer static
+function rtlMemCopyClear _
+	( _
+		byval dstexpr as ASTNODE ptr, _
+		byval dstlen as integer, _
+		byval srcexpr as ASTNODE ptr, _
+		byval srclen as integer _
+	) as integer static
 
     dim as ASTNODE ptr proc
 

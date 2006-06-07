@@ -26,6 +26,7 @@ option escape
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\parser.bi"
+#include once "inc\lex.bi"
 #include once "inc\rtl.bi"
 #include once "inc\ast.bi"
 #include once "inc\ir.bi"
@@ -36,9 +37,6 @@ declare sub		 parserInit				( )
 
 declare sub		 parserEnd				( )
 
-declare sub		 parserAsmInit			( )
-
-declare sub		 parserAsmEnd           ( )
 
 '' globals
 	dim shared infileTb( ) as FBFILE
@@ -254,15 +252,17 @@ function fbInit _
 
 	irInit( )
 
-	rtlInit( )
-
 	emitInit( )
 
 	inctbInit( )
 
 	stmtStackInit( )
 
-	parserAsmInit( )
+	lexInit( FALSE )
+
+	parserInit( )
+
+	rtlInit( )
 
 	''
 	function = TRUE
@@ -273,15 +273,17 @@ end function
 sub fbEnd
 
 	''
-	parserAsmEnd( )
+	rtlEnd( )
+
+	parserEnd( )
+
+	lexEnd( )
 
 	stmtStackEnd( )
 
 	incTbEnd( )
 
 	emitEnd( )
-
-	rtlEnd( )
 
 	irEnd( )
 
@@ -593,9 +595,6 @@ function fbCompile _
 
 	env.inf.format = hCheckFileFormat( env.inf.num )
 
-	'' emitOpen() will make calls to lex
-	lexInit( FALSE )
-
 	''
 	if( emitOpen( ) = FALSE ) then
 		errReportEx( FB_ERRMSG_FILEACCESSERROR, infname, -1 )
@@ -603,8 +602,6 @@ function fbCompile _
 	end if
 
 	fbMainBegin( )
-
-	parserInit( )
 
 	tmr = timer( )
 
@@ -616,10 +613,6 @@ function fbCompile _
 	end if
 
 	tmr = timer( ) - tmr
-
-	parserEnd( )
-
-	lexEnd( )
 
 	fbMainEnd( )
 
@@ -812,4 +805,32 @@ function fbIncludeFile _
 	env.inf = infileTb( env.includerec )
 
 end function
+
+'':::::
+sub fbReportRtError _
+	( _
+		byval modname as zstring ptr, _
+		byval funname as zstring ptr, _
+		byval errnum as integer _
+	) static
+
+	print
+
+	print "Internal compiler error"; errnum;
+	if( modname <> NULL ) then
+		print " at "; *modname; "::";
+		if( funname <> NULL ) then
+			print *funname;
+		end if
+	end if
+	print " while parsing "; env.inf.name;
+	if( env.currproc <> NULL ) then
+		print ":"; *symbGetName( env.currproc );
+	end if
+	print "("; cuint( lexLineNum( ) ); ")"
+
+	print
+
+end sub
+
 

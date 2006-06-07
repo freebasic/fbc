@@ -100,6 +100,7 @@ function cDoStmtBegin as integer
 
 	'' push to stmt stack
 	stk = cCompStmtPush( FB_TK_DO )
+    stk->scopenode = astScopeBegin( )
 	stk->do.attop = (expr <> NULL)
 	stk->do.inilabel = il
 
@@ -145,11 +146,17 @@ function cDoStmtEnd as integer
 		end if
 	end if
 
+	'' end scope
+	if( stk->scopenode <> NULL ) then
+		astScopeEnd( stk->scopenode )
+	end if
+
 	'' emit comp label, if needed
 	if( env.stmt.do.cmplabel <> stk->do.inilabel ) then
 		astAdd( astNewLABEL( env.stmt.do.cmplabel ) )
 	end if
 
+	'' bottom check?
 	if( iswhile or isuntil ) then
 		lexSkipToken( )
 
@@ -182,7 +189,9 @@ function cDoStmtEnd as integer
 
 		astAdd( expr )
 
+	'' top check..
 	else
+
 		astAdd( astNewBRANCH( AST_OP_JMP, stk->do.inilabel ) )
 	end if
 

@@ -993,7 +993,28 @@ function astNewBOP _
 
 	elseif( r->defined ) then
 		select case op
+		case AST_OP_ADD
+			'' offset?
+			if( l->class = AST_NODECLASS_OFFSET ) then
+				'' no need to check for other values, floats aren't
+				'' allowed and if longints were used, this wouldn't be
+				'' an ofs node
+				l->ofs.ofs += r->con.val.int
+				astDelNode( r )
+
+				return l
+			end if
+
 		case AST_OP_SUB
+			'' offset?
+			if( l->class = AST_NODECLASS_OFFSET ) then
+				'' see above
+				l->ofs.ofs -= r->con.val.int
+				astDelNode( r )
+
+				return l
+			end if
+
 			'' ? - c = ? + -c
 			select case as const rdtype
 			case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT

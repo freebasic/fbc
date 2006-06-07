@@ -71,6 +71,7 @@ function cWhileStmtBegin as integer
 
 	'' push to stmt stack
 	stk = cCompStmtPush( FB_TK_WHILE )
+	stk->scopenode = astScopeBegin( )
 
 	env.stmt.while.cmplabel = il
 	env.stmt.while.endlabel = el
@@ -94,6 +95,10 @@ function cWhileStmtEnd as integer
 
 	'' WEND
 	lexSkipToken( )
+
+	if( stk->scopenode <> NULL ) then
+		astScopeEnd( stk->scopenode )
+	end if
 
     astAdd( astNewBRANCH( AST_OP_JMP, env.stmt.while.cmplabel ) )
 

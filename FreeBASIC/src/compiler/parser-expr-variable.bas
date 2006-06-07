@@ -1018,6 +1018,10 @@ private function hVarAddUndecl _
 			'' error recovery: fake an id
 			s = symbAddVar( hMakeTmpStr( ), dtype, NULL, 0, 0, dTB(), attrib )
 		end if
+
+	else
+		'' declare it
+		astAdd( astNewDECL( FB_SYMBCLASS_VAR, s, NULL ) )
 	end if
 
 	function = s

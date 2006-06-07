@@ -671,12 +671,15 @@ private function hGetIdxName _
 end function
 
 '':::::
-private sub hPrepOperand( byval vreg as IRVREG ptr, _
-						  byref operand as string, _
-						  byval dtype as FB_DATATYPE = INVALID, _
-						  byval ofs as integer = 0, _
-						  byval isaux as integer = FALSE, _
-						  byval addprefix as integer = TRUE ) static
+private sub hPrepOperand _
+	( _
+		byval vreg as IRVREG ptr, _
+		byref operand as string, _
+		byval dtype as FB_DATATYPE = INVALID, _
+		byval ofs as integer = 0, _
+		byval isaux as integer = FALSE, _
+		byval addprefix as integer = TRUE _
+	) static
 
     if( vreg = NULL ) then
     	operand = ""
@@ -720,6 +723,10 @@ private sub hPrepOperand( byval vreg as IRVREG ptr, _
 	case IR_VREGTYPE_OFS
 		operand = "offset "
 		operand += *symbGetMangledName( vreg->sym )
+		if( vreg->ofs <> 0 ) then
+			operand += " + "
+			operand += str( vreg->ofs )
+		end if
 
 	case IR_VREGTYPE_REG
 		if( isaux = FALSE ) then
@@ -742,9 +749,12 @@ private sub hPrepOperand( byval vreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub hPrepOperand64( byval vreg as IRVREG ptr, _
-							byref operand1 as string, _
-							byref operand2 as string ) static
+private sub hPrepOperand64 _
+	( _
+		byval vreg as IRVREG ptr, _
+		byref operand1 as string, _
+		byref operand2 as string _
+	) static
 
 	hPrepOperand( vreg, operand1, FB_DATATYPE_UINT   , 0, FALSE )
 	hPrepOperand( vreg, operand2, FB_DATATYPE_INTEGER, 0, TRUE )
@@ -1217,11 +1227,6 @@ private sub _emitSTORF2L( byval dvreg as IRVREG ptr, _
 	if( symbIsSigned( dvreg->dtype ) ) then
 		ostr = "fistp " + dst
 		outp ostr
-
-	'' unsigned.. try a bigger type
-	else
-
-		'' handled by AST already
 
 	end if
 
@@ -2780,7 +2785,7 @@ private sub _emitDIVI( byval dvreg as IRVREG ptr, _
 	end if
 
 	if( eaxindest = FALSE ) then
-		if( ecxindest ) then
+		if( ecxindest and ecxtrashed ) then
 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
 				hPOP "ecx"					'' ecx= tos (eax)
 				outp "xchg ecx, [esp]"			'' tos= ecx; ecx= dst
@@ -2928,7 +2933,7 @@ private sub _emitMODI( byval dvreg as IRVREG ptr, _
 	end if
 
 	if( eaxindest = FALSE ) then
-		if( ecxindest ) then
+		if( ecxindest and ecxtrashed ) then
 			if( dvreg->typ <> IR_VREGTYPE_REG ) then
 				hPOP "ecx"					'' ecx= tos (eax)
 				outp "xchg ecx, [esp]"			'' tos= ecx; ecx= dst
@@ -4644,9 +4649,12 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private sub hMemMoveRep( byval dvreg as IRVREG ptr, _
-			   		     byval svreg as IRVREG ptr, _
-			   		     byval bytes as integer ) static
+private sub hMemMoveRep _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr, _
+		byval bytes as integer _
+	) static
 
 	dim as string dst, src
 	dim as string ostr
@@ -4742,9 +4750,12 @@ private sub hMemMoveRep( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub hMemMoveBlk( byval dvreg as IRVREG ptr, _
-			   		     byval svreg as IRVREG ptr, _
-			   		     byval bytes as integer ) static
+private sub hMemMoveBlk _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr, _
+		byval bytes as integer _
+	) static
 
 	dim as string dst, src, aux
 	dim as integer i, ofs, reg, isfree
@@ -4800,10 +4811,13 @@ private sub hMemMoveBlk( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitMEMMOVE( byval dvreg as IRVREG ptr, _
-			   			  byval svreg as IRVREG ptr, _
-			   			  byval bytes as integer, _
-			   			  byval extra as integer ) static
+private sub _emitMEMMOVE _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr, _
+		byval bytes as integer, _
+		byval extra as integer _
+	) static
 
 	if( bytes > 16 ) then
 		hMemMoveRep( dvreg, svreg, bytes )
@@ -4814,32 +4828,148 @@ private sub _emitMEMMOVE( byval dvreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub _emitMEMSWAP( byval dvreg as IRVREG ptr, _
-			   			  byval svreg as IRVREG ptr, _
-			   			  byval bytes as integer, _
-			   			  byval extra as integer ) static
+private sub _emitMEMSWAP _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr, _
+		byval bytes as integer, _
+		byval extra as integer _
+	) static
 
 	'' implemented as function
 
 end sub
 
 '':::::
-private sub _emitMEMCLEAR( byval dvreg as IRVREG ptr, _
-			   			   byval svreg as IRVREG ptr, _
-			   			   byval bytes as integer, _
-			   			   byval extra as integer ) static
+private sub hMemClearRep _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval bytes as integer _
+	) static
 
-	'' implemented as function
+	dim as string dst
+	dim as string ostr
+	dim as integer eaxfree, ecxfree, edifree
+
+	hPrepOperand( dvreg, dst, , , , FALSE )
+
+	eaxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_EAX )
+	ecxfree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ECX )
+	edifree = hIsRegFree( FB_DATACLASS_INTEGER, EMIT_REG_ESI )
+
+	if( eaxfree = FALSE ) then
+		hPUSH( "eax" )
+	end if
+	if( ecxfree = FALSE ) then
+		hPUSH( "ecx" )
+	end if
+	if( edifree = FALSE ) then
+		hPUSH( "edi" )
+	end if
+
+	ostr = "lea edi, " + dst
+	outp ostr
+
+	outp "xor eax, eax"
+
+	if( bytes > 4 ) then
+		ostr = "mov ecx, " + str( cunsg(bytes) \ 4 )
+		outp ostr
+		outp "rep stosd"
+
+	elseif( bytes = 4 ) then
+		outp "mov dword ptr [edi], eax"
+		if( (bytes and 3) > 0 ) then
+			outp "add edi, 4"
+		end if
+	end if
+
+	bytes and= 3
+	if( bytes > 0 ) then
+		if( bytes >= 2 ) then
+			outp "mov word ptr [edi], ax"
+			if( bytes = 3 ) then
+				outp "add edi, 2"
+			end if
+		end if
+
+		if( (bytes and 1) <> 0 ) then
+			outp "mov byte ptr [edi], al"
+		end if
+	end if
+
+	if( eaxfree = FALSE ) then
+		hPOP( "eax" )
+	end if
+	if( edifree = FALSE ) then
+		hPOP( "edi" )
+	end if
+	if( ecxfree = FALSE ) then
+		hPOP( "ecx" )
+	end if
+
+end sub
+
+'':::::
+private sub hMemClearBlk _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval bytes as integer _
+	) static
+
+	dim as string dst
+	dim as integer i, ofs
+
+	ofs = 0
+	'' move dwords
+	for i = 1 to cunsg(bytes) \ 4
+		hPrepOperand( dvreg, dst, FB_DATATYPE_INTEGER, ofs )
+		hMOV( dst, "0" )
+		ofs += 4
+	next
+
+	'' a word left?
+	if( (bytes and 2) <> 0 ) then
+		hPrepOperand( dvreg, dst, FB_DATATYPE_SHORT, ofs )
+		hMOV( dst, "0" )
+		ofs += 2
+	end if
+
+	'' a byte left?
+	if( (bytes and 1) <> 0 ) then
+		hPrepOperand( dvreg, dst, FB_DATATYPE_BYTE, ofs )
+		hMOV( dst, "0" )
+	end if
+
+end sub
+
+'':::::
+private sub _emitMEMCLEAR _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval unused as IRVREG ptr, _
+		byval bytes as integer, _
+		byval extra as integer _
+	) static
+
+	if( bytes > 16 ) then
+		hMemClearRep( dvreg, bytes )
+	else
+		hMemClearBlk( dvreg, bytes )
+	end if
 
 end sub
 
 declare sub hClearLocals( byval bytestoclear as integer, byval baseoffset as integer )
 
 '':::::
-private sub _emitSTKCLEAR( byval dvreg as IRVREG ptr, _
-			   			   byval svreg as IRVREG ptr, _
-			   			   byval bytes as integer, _
-			   			   byval baseofs as integer ) static
+private sub _emitSTKCLEAR _
+	( _
+		byval dvreg as IRVREG ptr, _
+		byval svreg as IRVREG ptr, _
+		byval bytes as integer, _
+		byval baseofs as integer _
+	) static
 
 	hClearLocals( bytes, baseofs )
 
@@ -4849,8 +4979,11 @@ end sub
 '' procs
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-private sub hClearLocals( byval bytestoclear as integer, _
-						  byval baseoffset as integer ) static
+private sub hClearLocals _
+	( _
+		byval bytestoclear as integer, _
+		byval baseoffset as integer _
+	) static
 
 	dim as integer i
     dim as string lname
@@ -4921,7 +5054,11 @@ private sub hClearLocals( byval bytestoclear as integer, _
 end sub
 
 '':::::
-private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
+private sub hCreateFrame _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) static
+
     dim as integer bytestoalloc, bytestoclear
 
     bytestoalloc = ((proc->proc.ext->stk.localmax - EMIT_LOCSTART) + 3) and (not 3)
@@ -4954,15 +5091,20 @@ private sub hCreateFrame( byval proc as FBSYMBOL ptr ) static
     end if
 
 	''
+#if 0
 	bytestoclear = ((proc->proc.ext->stk.localofs - EMIT_LOCSTART) + 3) and (not 3)
 
 	hClearLocals( bytestoclear, 0 )
+#endif
 
 end sub
 
 ''::::
-private sub hDestroyFrame( byval proc as FBSYMBOL ptr, _
-						   byval bytestopop as integer ) static
+private sub hDestroyFrame _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval bytestopop as integer _
+	) static
 
     dim as integer bytestoalloc
 
@@ -4999,8 +5141,11 @@ private sub hDestroyFrame( byval proc as FBSYMBOL ptr, _
 end sub
 
 '':::::
-sub emitPROCHEADER( byval proc as FBSYMBOL ptr, _
-				   	byval initlabel as FBSYMBOL ptr ) static
+sub emitPROCHEADER _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval initlabel as FBSYMBOL ptr _
+	) static
 
 	'' do nothing, proc will be only emitted at PROCFOOTER
 
@@ -5011,10 +5156,13 @@ sub emitPROCHEADER( byval proc as FBSYMBOL ptr, _
 end sub
 
 '':::::
-sub emitPROCFOOTER( byval proc as FBSYMBOL ptr, _
-			      	byval bytestopop as integer, _
-			      	byval initlabel as FBSYMBOL ptr, _
-			      	byval exitlabel as FBSYMBOL ptr ) static
+sub emitPROCFOOTER _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval bytestopop as integer, _
+		byval initlabel as FBSYMBOL ptr, _
+		byval exitlabel as FBSYMBOL ptr _
+	) static
 
     dim as integer oldpos, ispublic, emit_cdtor_ptr
 
@@ -5029,10 +5177,10 @@ sub emitPROCFOOTER( byval proc as FBSYMBOL ptr, _
 	hALIGN( 16 )
 
 	if( ispublic ) then
-		hPUBLIC( *symbGetMangledName( proc ) )
+		hPUBLIC( symbGetMangledName( proc ) )
 	end if
 
-	hLABEL( *symbGetMangledName( proc ) )
+	hLABEL( symbGetMangledName( proc ) )
 
 	if( env.clopt.target = FB_COMPTARGET_LINUX ) then
 		outEx( ".type " + *symbGetMangledName( proc ) + ", @function" + NEWLINE )
@@ -5063,7 +5211,7 @@ sub emitPROCFOOTER( byval proc as FBSYMBOL ptr, _
     end if
 
     if( emit_cdtor_ptr ) then
-    	emitVARINIOFS( symbGetMangledName( proc ) )
+    	emitVARINIOFS( symbGetMangledName( proc ), 0 )
     end if
 
 end sub
@@ -5282,11 +5430,20 @@ sub emitVARINI64( byval dtype as integer, _
 end sub
 
 '':::::
-sub emitVARINIOFS( byval sname as zstring ptr ) static
-	dim ostr as string
+sub emitVARINIOFS _
+	( _
+		byval sname as zstring ptr, _
+		byval ofs as integer _
+	) static
+
+	dim as string ostr
 
 	ostr = ".int "
 	ostr += *sname
+	if( ofs <> 0 ) then
+		ostr += " + "
+		ostr += str( ofs )
+	end if
 	ostr += NEWLINE
 	outEx( ostr )
 
@@ -5578,134 +5735,6 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
 end sub
 
 '':::::
-private sub hWriteArrayDesc( byval s as FBSYMBOL ptr ) static
-	dim as FBVARDIM ptr d
-    dim as integer dims, diff, i
-    dim as string sname
-    dim as zstring ptr dname
-
-    '' extern?
-    if( symbIsExtern( s ) ) then
-    	'' not static? (even if extern, the descriptor will be needed with
-    	'' a static array, if it get passed by descriptor to some function)
-    	if( symbGetIsDynamic( s ) ) then
-    		exit sub
-    	end if
-
-    	'' the descriptor was never accessed? don't emit
-    	if( symbGetIsAccessed( symbGetArrayDescriptor( s ) ) = FALSE ) then
-    		exit sub
-    	end if
-    end if
-
-    dims = symbGetArrayDimensions( s )
-    diff = symbGetArrayOffset( s )
-    if( dims = 0 ) then
-    	exit sub
-    end if
-
-    if( symbGetIsDynamic( s ) ) then
-    	sname = "0"
-	else
-    	sname = *symbGetMangledName( s )
-	end if
-
-	dname = symbGetMangledName( symbGetArrayDescriptor( s ) )
-
-   	'' add dbg info, if public or shared
-    if( (symbGetAttrib( s ) and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_PUBLIC)) > 0 ) then
-    	edbgEmitGlobalVar( s, EMIT_SECTYPE_DATA )
-    end if
-
-    '' COMMON?
-    if( symbIsCommon( s ) ) then
-    	if( dims = INVALID ) then
-    		dims = 1
-    	end if
-
-    	hPUBLIC( dname )
-
-    	hALIGN( 4 )
-    	hWriteStr( TRUE,  ".comm\t" + *dname + "," + _
-    			   str( FB_ARRAYDESCLEN + dims * FB_ARRAYDESC_DIMLEN ) )
-
-    	exit sub
-    end if
-
-    '' non COMMON arrays..
-
-    '' public?
-    if( symbIsPublic( s ) ) then
-    	'' don't make the descriptor global if it's a static array
-    	if( symbGetIsDynamic( s ) ) then
-    		hPUBLIC( dname )
-    	end if
-    end if
-
-    hALIGN( 4 )
-    hWriteStr( FALSE, *dname + ":" )
-
-	'' DIM|REDIM|STATIC array()? assume max dimensions
-	if( dims = INVALID ) then
-		dims = FB_MAXARRAYDIMS
-	end if
-
-	''	void		*data 	// ptr + diff
-	hWriteStr( TRUE,  ".int\t" + sname + " +" + str( diff ) )
-	''	void		*ptr
-	hWriteStr( TRUE,  ".int\t" + sname )
-	''	uint		size
-	hWriteStr( TRUE,  ".int\t" + str( symbGetLen( s ) * symbGetArrayElements( s ) ) )
-	''	uint		element_len
-    hWriteStr( TRUE,  ".int\t" + str( symbGetLen( s ) ) )
-	''	uint		dimensions
-	hWriteStr( TRUE,  ".int\t" + str( dims ) )
-
-    if( symbGetIsDynamic( s ) = FALSE ) then
-    	d = symbGetArrayFirstDim( s )
-    	do while( d <> NULL )
-			''	uint	elements
-			hWriteStr( TRUE,  ".int\t" + str( d->upper - d->lower + 1 ) )
-			''	int		lbound
-			hWriteStr( TRUE,  ".int\t" + str( d->lower ) )
-			''	int		ubound
-			hWriteStr( TRUE,  ".int\t" + str( d->upper ) )
-            '' next
-			d = d->next
-    	loop
-
-    else
-        for i = 0 to dims-1
-			''	uint	elements
-			hWriteStr( TRUE,  ".int\t0"  )
-			''	int		lbound
-			hWriteStr( TRUE,  ".int\t0" )
-			''	int		ubound
-			hWriteStr( TRUE,  ".int\t0" )
-        next i
-    end if
-
-end sub
-
-'':::::
-private sub hWriteStringDesc( byval s as FBSYMBOL ptr ) static
-    dim as zstring ptr dname
-
-	dname = symbGetMangledName( symbGetArrayDescriptor( s ) )
-
-    hALIGN( 4 )
-    hWriteStr( FALSE, *dname + ":" )
-
-	''	void		*data
-	hWriteStr( TRUE,  ".int\t" + *symbGetMangledName( s ) )
-	''	int			len
-	hWriteStr( TRUE,  ".int\t" + str( symbGetLen( s ) ) )
-	''	int			size
-	hWriteStr( TRUE,  ".int\t" + str( symbGetLen( s ) ) )
-
-end sub
-
-'':::::
 private sub hEmitDataHeader( )
 
     if( emit.datheader ) then
@@ -5722,9 +5751,11 @@ end sub
 
 '':::::
 sub emitWriteData( byval s as FBSYMBOL ptr )
-    static as FBSYMBOL ptr d
+    dim as integer doemit
 
     do while( s <> NULL )
+
+    	doemit = FALSE
 
     	select case symbGetClass( s )
 		'' name space?
@@ -5739,23 +5770,27 @@ sub emitWriteData( byval s as FBSYMBOL ptr )
     	case FB_SYMBCLASS_VAR
     	    '' initialized?
     	    if( symbGetIsInitialized( s ) ) then
-    	    	'' not a jump tb?
-    	    	if( symbIsJumpTb( s ) = FALSE ) then
-    	    		astTypeIniFlush( s->var.initree, s, TRUE, TRUE )
+    	    	'' not extern or jump-tb?
+    	    	if( (symbGetAttrib( s ) and _
+    	    		 (FB_SYMBATTRIB_EXTERN or _
+    	    		  FB_SYMBATTRIB_JUMPTB)) = 0 ) then
+
+    	    		'' ever referenced?
+    	    		if( symbGetIsAccessed( s ) ) then
+    	    			doemit = TRUE
+    	    		else
+    	    			'' public?
+    	    			doemit = symbIsPublic( s )
+    	    		end if
+
     	    	end if
     	    end if
-
-    	    '' with descriptor?
-    	    d = symbGetArrayDescriptor( s )
-    	    if( d <> NULL ) then
-    	    	'' array descriptor?
-    	    	select case d->subtype
-    	    	case FB_DESCTYPE_ARRAY
-    	    		hEmitDataHeader( )
-    	    		hWriteArrayDesc( s )
-    	    	end select
-    	    end if
     	end select
+
+		if( doemit ) then
+			hEmitDataHeader( )
+			astTypeIniFlush( s->var.initree, s, TRUE, TRUE )
+		end if
 
     	s = s->next
     loop

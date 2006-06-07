@@ -32,8 +32,9 @@ option escape
 #include once "inc\fbc.bi"
 #include once "inc\hlp.bi"
 
-declare sub 	fbcInit( )
-declare sub 	fbcEnd 					(  _
+declare sub 	 fbcInit( )
+
+declare sub 	 fbcEnd 				(  _
 											byval errnum as integer _
 										)
 
@@ -106,6 +107,8 @@ declare sub 	 setCompOptions			( )
 		( FBC_OPT_LIBFILE		, @"l"           ), _
 		( FBC_OPT_INCLUDE		, @"include"     ) _
 	}
+
+	'on error goto runtime_err
 
 	''
     fbcInit( )
@@ -209,6 +212,14 @@ declare sub 	 setCompOptions			( )
     end if
 
     fbcEnd( 0 )
+
+runtime_err:
+#ifdef erfn
+	fbReportRtError( ermn, erfn, err )
+#else
+	fbReportRtError( NULL, NULL, err )
+#endif
+	end 1
 
 ''':::::
 sub fbcInit( )

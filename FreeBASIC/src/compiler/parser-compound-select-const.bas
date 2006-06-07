@@ -126,7 +126,8 @@ function cSelConstStmtBegin( ) as integer
 	astAdd( astNewBRANCH( AST_OP_JMP, cl ) )
 
 	'' push to stmt stack
-	stk = cCompStmtPush( FB_TK_SELECT )
+	stk = cCompStmtPush( FB_TK_SELECT, _
+						 FB_CMPSTMT_MASK_NOTHING )	'' nothing allowed but CASE's
 	stk->select.isconst = TRUE
 	stk->select.sym = sym
 	stk->select.casecnt = 0
@@ -208,6 +209,11 @@ function cSelConstStmtNext _
 	'' CASE
 	lexSkipToken( )
 
+	'' end scope
+	if( stk->scopenode <> NULL ) then
+		astScopeEnd( stk->scopenode )
+	end if
+
 	if( stk->select.casecnt > 0 ) then
 		'' break from block
 		astAdd( astNewBRANCH( AST_OP_JMP, env.stmt.select.endlabel ) )
@@ -219,6 +225,10 @@ function cSelConstStmtNext _
 
 		stk->select.const.deflabel = symbAddLabel( NULL, TRUE )
 		astAdd( astNewLABEL( stk->select.const.deflabel ) )
+
+		'' begin scope
+		stk->scopenode = astScopeBegin( )
+
 		stk->select.casecnt = -1
 
 		return TRUE
@@ -359,6 +369,9 @@ function cSelConstStmtNext _
 	''
 	astAdd( astNewLABEL( label ) )
 
+	'' begin scope
+	stk->scopenode = astScopeBegin( )
+
 	stk->select.casecnt += 1
 
 	function = TRUE
@@ -385,6 +398,11 @@ function cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr ) as integer
     if( deflabel = NULL ) then
     	deflabel = env.stmt.select.endlabel
     end if
+
+	'' end scope
+	if( stk->scopenode <> NULL ) then
+		astScopeEnd( stk->scopenode )
+	end if
 
 	'' break from block
 	astAdd( astNewBRANCH( AST_OP_JMP, env.stmt.select.endlabel ) )

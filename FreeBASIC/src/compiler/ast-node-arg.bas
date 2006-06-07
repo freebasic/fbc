@@ -94,7 +94,7 @@ private function hAllocTmpStrNode _
 	t->prev = proc->call.strtail
 	proc->call.strtail = t
 
-	s = symbAddTempVar( dtype )
+	s = symbAddTempVarEx( dtype )
 
 	t->tmpsym = s
 	if( copyback ) then
@@ -117,7 +117,7 @@ private function hAllocTmpString _
 
 	dim as ASTTEMPSTR ptr t
 
-	'' create temp string to pass as paramenter
+	'' create temp string to pass as parameter
 	t = hAllocTmpStrNode( proc, n, FB_DATATYPE_STRING, copyback )
 
 	'' temp string = src string
@@ -134,7 +134,7 @@ private function hAllocTmpWstrPtr _
 
 	dim as ASTTEMPSTR ptr t
 
-	'' create temp wstring ptr to pass as paramenter
+	'' create temp wstring ptr to pass as parameter
 	t = hAllocTmpStrNode( proc, NULL, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FALSE )
 
 	n = astNewCONV( AST_OP_TOPOINTER, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, NULL, n )
@@ -275,7 +275,7 @@ private function hCheckStringArg _
 
 	end select
 
-	'' create temp string to pass as paramenter
+	'' create temp string to pass as parameter
 	function = hAllocTmpString( proc, p, copyback )
 
 end function
@@ -411,7 +411,7 @@ private function hCheckArrayParam _
 		''''''''end if
 
 		'' create a temp array descriptor
-		n->l     = hAllocTmpArrayDesc( f, p )
+		n->l = hAllocTmpArrayDesc( f, p )
 		n->dtype = FB_DATATYPE_POINTER + FB_DATATYPE_VOID
 
 	else
@@ -420,7 +420,7 @@ private function hCheckArrayParam _
 		if( symbIsParamByDesc( s ) ) then
         	'' it's a pointer, but could be seen as anything else
         	'' (ie: if it were "s() as string"), so, create an alias
-        	n->l     = astNewVAR( s, 0, FB_DATATYPE_UINT )
+        	n->l = astNewVAR( s, 0, FB_DATATYPE_UINT )
         	n->dtype = FB_DATATYPE_POINTER + FB_DATATYPE_VOID
 
     	else
@@ -432,8 +432,8 @@ private function hCheckArrayParam _
 			end if
 
         	''
-        	n->l     = astNewADDR( AST_OP_ADDROF, _
-        						   astNewVAR( d, 0, FB_DATATYPE_UINT ) )
+        	n->l = astNewADDR( AST_OP_ADDROF, _
+        					   astNewVAR( d, 0, FB_DATATYPE_UINT ) )
         	n->dtype = FB_DATATYPE_POINTER + FB_DATATYPE_VOID
 
     	end if
@@ -503,7 +503,7 @@ private function hCheckParam _
 	) as integer
 
     dim as FBSYMBOL ptr sym, arg, s
-    dim as integer adtype, adclass, amode, iswarning
+    dim as integer adtype, adclass, amode
     dim as ASTNODE ptr p
     dim as integer pdtype, pdclass, pmode, pclass
 
@@ -540,37 +540,48 @@ private function hCheckParam _
 
         '' param is not an pointer
         if( pmode <> FB_PARAMMODE_BYVAL ) then
-
         	return hCheckArrayParam( f, n, adtype, adclass )
-
         end if
 
         return TRUE
-
     end if
 
     '' vararg?
     if( amode = FB_PARAMMODE_VARARG ) then
 
-		'' string? check..
-		if( (pdclass = FB_DATACLASS_STRING) or _
-			(pdtype = FB_DATATYPE_CHAR) or _
-			(pdtype = FB_DATATYPE_WCHAR) ) then
+		select case pdclass
+		'' var-len string? check..
+		case FB_DATACLASS_STRING
 			return hStrParamToPtrArg( f, n, FALSE )
 
-		'' float? follow C ABI and convert it to double
-		elseif( pdtype = FB_DATATYPE_SINGLE ) then
+		case FB_DATACLASS_INTEGER
+			select case pdtype
+			'' w|zstring? ditto..
+			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+				return hStrParamToPtrArg( f, n, FALSE )
 
-			p = astNewCONV( INVALID, FB_DATATYPE_DOUBLE, NULL, p )
-			if( p = NULL ) then
-				return FALSE
+			case else
+				'' if < len(integer), convert to int (C ABI)
+				if( symbGetDataSize( pdtype ) < FB_INTEGERSIZE ) then
+					p = astNewCONV( INVALID, _
+									iif( symbIsSigned( pdtype ), _
+										 FB_DATATYPE_INTEGER, _
+										 FB_DATATYPE_UINT ), _
+									NULL, _
+									p )
+					n->dtype = p->dtype
+					n->l = p
+				end if
+			end select
+
+		case FB_DATACLASS_FPOINT
+			'' float? convert it to double (C ABI)
+			if( pdtype = FB_DATATYPE_SINGLE ) then
+				p = astNewCONV( INVALID, FB_DATATYPE_DOUBLE, NULL, p )
+				n->dtype = p->dtype
+				n->l = p
 			end if
-
-			n->dtype = p->dtype
-			n->l     = p
-
-			return TRUE
-		end if
+		end select
 
 		return TRUE
 	end if
@@ -668,11 +679,11 @@ private function hCheckParam _
 		p = hCheckStringArg( f, arg, p )
 		if( p <> n->l ) then
 			'' node will be a function returning a PTR to a string descriptor
-			pdtype  = FB_DATATYPE_STRING
+			pdtype = FB_DATATYPE_STRING
 			pdclass = FB_DATACLASS_STRING
-			pclass	= AST_NODECLASS_PTR
+			pclass = AST_NODECLASS_PTR
 
-			n->l     = p
+			n->l = p
 			n->dtype = pdtype
 		end if
 
@@ -681,8 +692,8 @@ private function hCheckParam _
 			'' deref var-len (ptr at offset 0)
 			if( pdtype = FB_DATATYPE_STRING ) then
 				pdclass = FB_DATACLASS_INTEGER
-				pdtype  = FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
-				n->l     = astNewADDR( AST_OP_DEREF, p )
+				pdtype = FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
+				n->l = astNewADDR( AST_OP_DEREF, p )
 				n->dtype = pdtype
 			end if
 		end if
@@ -691,7 +702,7 @@ private function hCheckParam _
 		if( pclass <> AST_NODECLASS_PTR ) then
 			'' descriptor or fixed-len? get the address of
 			if( (pdclass = FB_DATACLASS_STRING) or (pdtype = FB_DATATYPE_CHAR) ) then
-				n->l     = astNewADDR( AST_OP_ADDROF, p )
+				n->l = astNewADDR( AST_OP_ADDROF, p )
 				n->dtype = FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
 			end if
 		end if
@@ -797,8 +808,8 @@ private function hCheckParam _
 		end select
 
 		hStrParamToPtrArg( f, n, TRUE )
-		p 		= n->l
-		pdtype  = p->dtype
+		p = n->l
+		pdtype = p->dtype
 		pdclass = symbGetDataClass( pdtype )
 
 	end select
@@ -838,26 +849,15 @@ private function hCheckParam _
 			hParamError( f, FB_ERRMSG_INVALIDDATATYPES )
 			exit function
 		end if
-		n->dtype   = adtype
+		n->dtype = adtype
 		n->subtype = symbGetSubtype( arg )
-		n->l       = p
+		n->l = p
 
 	end if
 
 	'' pointer checking
 	if( adtype >= FB_DATATYPE_POINTER ) then
-    	iswarning = FALSE
-    	if( adtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
-    		if( astFuncPtrCheck( adtype, symbGetSubtype( arg ), p ) = FALSE ) then
-	        	iswarning = TRUE
-	    	end if
-		else
-			if( astPtrCheck( adtype, symbGetSubtype( arg ), p ) = FALSE ) then
-	        	iswarning = TRUE
-	    	end if
-		end if
-
-		if( iswarning ) then
+		if( astPtrCheck( adtype, symbGetSubtype( arg ), p ) = FALSE ) then
 			if( p->dtype < FB_DATATYPE_POINTER ) then
 				hParamWarning( f, FB_WARNINGMSG_PASSINGSCALARASPTR )
 			else

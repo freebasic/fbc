@@ -149,6 +149,7 @@ function astTypeIniAddPad _
 	n = hAddNode( tree, AST_NODECLASS_TYPEINI_PAD, INVALID, NULL )
 
 	n->typeini.bytes = bytes
+	n->typeini.ofs = tree->typeini.ofs
 
 	function = n
 
@@ -159,8 +160,7 @@ function astTypeIniAddExpr _
 	( _
 		byval tree as ASTNODE ptr, _
 		byval expr as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval ofs as integer _
+		byval sym as FBSYMBOL ptr _
 	) as ASTNODE ptr static
 
 	dim as ASTNODE ptr n
@@ -169,7 +169,9 @@ function astTypeIniAddExpr _
 
 	n->l = expr
 	n->sym = sym
-	n->typeini.ofs = ofs
+	n->typeini.ofs = tree->typeini.ofs
+
+	tree->typeini.ofs += symbGetLen( sym )
 
 	function = n
 
@@ -212,9 +214,16 @@ private function hFlushTree _
 			astAdd( astNewASSIGN( lside, n->l, FALSE ) )
 
     	else
-    		astDelNode( n )
+    		astAdd( astNewMEM( AST_OP_MEMCLEAR, _
+    						   astNewVAR( basesym, _
+        					  			  n->typeini.ofs, _
+        					  			  symbGetType( basesym ), _
+        					  			  symbGetSubtype( basesym ) ), _
+    						   NULL, _
+    						   n->typeini.bytes ) )
     	end if
 
+    	astDelNode( n )
     	n = nxt
     loop
 
@@ -251,7 +260,7 @@ private function hFlushExprStatic _
 
     	'' offset?
 		if( astIsOFFSET( expr ) ) then
-			irEmitVARINIOFS( astGetSymbol( expr ) )
+			irEmitVARINIOFS( astGetSymbol( expr ), expr->ofs.ofs )
 
 		'' anything else
 		else

@@ -117,7 +117,6 @@ private function cOptionalExpr _
     '' UDT, let SymbolInit() build a tree..
     else
     	sym = symbAddTempVar( dtype, subtype, FALSE, FALSE )
-
     	expr = cVariableInit( sym, TRUE )
     	symbDelVar( sym )
     end if

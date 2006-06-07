@@ -49,6 +49,10 @@ ifdef DEBUG
     FBC_LFLAGS += -g
 endif
 
+ifdef EXTRAERR
+    FBC_CFLAGS += -exx
+endif
+
 ##################################################################
 
 # !!!FIXME!!! can't use $(DEFS) directly because FB doesn't accept cmd-line options in GCC's format
@@ -89,7 +93,7 @@ FBC_SRCS := $(FBC_MAIN)
 
 FBC_SRCS += ast.bas ast-node-addr.bas ast-node-assign.bas ast-node-bop.bas
 FBC_SRCS += ast-node-branch.bas ast-node-check.bas ast-node-const.bas ast-node-conv.bas
-FBC_SRCS += ast-node-enum.bas ast-node-call.bas ast-node-arg.bas
+FBC_SRCS += ast-node-decl.bas ast-node-enum.bas ast-node-call.bas ast-node-arg.bas
 FBC_SRCS += ast-node-idx.bas ast-node-iif.bas ast-node-link.bas ast-node-load.bas
 FBC_SRCS += ast-node-misc.bas ast-node-ptr.bas ast-node-scope.bas ast-node-stack.bas
 FBC_SRCS += ast-node-uop.bas ast-node-var.bas ast-node-field.bas ast-node-typeini.bas

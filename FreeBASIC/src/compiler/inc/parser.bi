@@ -24,6 +24,7 @@
 #include once "inc\ast.bi"
 
 enum FB_CMPSTMT_MASK
+	FB_CMPSTMT_MASK_NOTHING		= &h00000000
 	FB_CMPSTMT_MASK_CODE		= &h00000001
 	FB_CMPSTMT_MASK_PROC		= &h00000002
 	FB_CMPSTMT_MASK_NAMESPC		= &h00000004
@@ -63,10 +64,6 @@ type FB_CMPSTMT_PROC
 	node		as ASTNODE ptr
 end type
 
-type FB_CMPSTMT_SCOPE
-	node		as ASTNODE ptr
-end type
-
 type FB_CMPSTMT_SELCONST
 	base		as integer
 	deflabel 	as FBSYMBOL ptr
@@ -101,12 +98,12 @@ type FB_CMPSTMTSTK
 	id			as integer
 	allowmask	as FB_CMPSTMT_MASK
 	last		as FBCMPSTMT
+	scopenode	as ASTNODE ptr
 	union
 		do		as FB_CMPSTMT_DO
 		for		as FB_CMPSTMT_FOR
 		if		as FB_CMPSTMT_IF
 		proc	as FB_CMPSTMT_PROC
-		scope	as FB_CMPSTMT_SCOPE
 		select	as FB_CMPSTMT_SELECT
 		with	as FB_CMPSTMT_WITH
 		nspc	as FB_CMPSTMT_NAMESPACE
@@ -714,6 +711,12 @@ declare sub 		hSkipCompound 			( _
 declare function 	hMatchExpr 				( _
 												byval dtype as integer _
 											) as ASTNODE ptr
+
+
+''
+'' macros
+''
+#define cCompSetAllowmask(s, v) s->allowmask = v
 
 #define hSkipStmt( ) 													_
 	hSkipUntil( INVALID, FALSE )

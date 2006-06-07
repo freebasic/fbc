@@ -114,8 +114,8 @@
 #define FB_RTL_ULONGINTMOD				"__umoddi3"
 #define FB_RTL_DBL2ULONGINT				"__fixunsdfdi"
 
-#define FB_RTL_ARRAYREDIM				"fb_ArrayRedim"
-#define FB_RTL_ARRAYREDIMPRESV			"fb_ArrayRedimPresv"
+#define FB_RTL_ARRAYREDIM				"fb_ArrayRedimEx"
+#define FB_RTL_ARRAYREDIMPRESV			"fb_ArrayRedimPresvEx"
 #define FB_RTL_ARRAYERASE				"fb_ArrayErase"
 #define FB_RTL_ARRAYCLEAR				"fb_ArrayClear"
 #define FB_RTL_ARRAYLBOUND				"fb_ArrayLBound"
@@ -286,6 +286,7 @@
 #define FB_RTL_ERRORSETNUM 				"fb_ErrorSetNum"
 #define FB_RTL_ERRORRESUME 				"fb_ErrorResume"
 #define FB_RTL_ERRORRESUMENEXT 			"fb_ErrorResumeNext"
+#define FB_RTL_ERRORSETINFO				"fb_ErrorSetInfo"
 
 #define FB_RTL_GFXPSET 					"fb_GfxPset"
 #define FB_RTL_GFXPOINT 				"fb_GfxPoint"
@@ -576,6 +577,7 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_ERRORSETNUM
 	FB_RTL_IDX_ERRORRESUME
 	FB_RTL_IDX_ERRORRESUMENEXT
+	FB_RTL_IDX_ERRORSETINFO
 
 	FB_RTL_IDX_GFXPSET
 	FB_RTL_IDX_GFXPOINT
@@ -771,7 +773,8 @@ declare function	rtlArrayRedim		( _
 											byval elementlen as integer, _
 											byval dimensions as integer, _
 									  	  	exprTB() as ASTNODE ptr, _
-											byval dopreserve as integer _
+											byval dopreserve as integer, _
+											byval doclear as integer _
 										) as integer
 
 declare function	rtlArrayErase		( _
@@ -789,10 +792,7 @@ declare function 	rtlArrayBound		( _
 										) as ASTNODE ptr
 
 declare function	rtlArraySetDesc		( _
-											byval sym as FBSYMBOL ptr, _
-											byval elementlen as integer, _
-											byval dimensions as integer, _
-										  	dTB() as FBARRAYDIM _
+											byval sym as FBSYMBOL ptr _
 										) as integer
 
 declare function	rtlArrayResetDesc	( _
@@ -1166,6 +1166,11 @@ declare sub 		rtlErrorSetNum		( _
 
 declare sub 		rtlErrorResume		( _
 											byval isnext as integer _
+										)
+
+declare sub 		rtlErrorSetInfo 	( _
+											byval modname as zstring ptr, _
+											byval funname as zstring ptr _
 										)
 
 declare function	rtlConsoleView		( _

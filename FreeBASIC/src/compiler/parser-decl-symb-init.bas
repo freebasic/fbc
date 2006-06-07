@@ -83,9 +83,7 @@ private function hElmInit _
 	end if
 
 	''
-	astTypeIniAddExpr( tree, expr, sym, astTypeIniGetOfs( tree ) )
-
-	astTypeIniGetOfs( tree ) += symbGetLen( sym )
+	astTypeIniAddExpr( tree, expr, sym )
 
 	function = TRUE
 

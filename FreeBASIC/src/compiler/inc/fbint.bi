@@ -84,9 +84,6 @@ end type
 
 const FB_STRDESCLEN			= len( FB_STRDESC )
 
-'' "fake" descriptors as UDT's
-const FB_DESCTYPE_ARRAY 	= -2
-
 ''
 const FB_DATALABELNAME 		= "_{fbdata}_begin"
 const FB_DATALABELPREFIX	= "_{fbdata}_"

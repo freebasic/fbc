@@ -633,9 +633,18 @@ function symbAddParam _
     	exit function
 	end select
 
-    function = symbAddVarEx( symbol, NULL, dtype, param->subtype, 0, 0, _
-    				  		 0, dTB(), attrib, _
-    				  		 param->param.suffix <> INVALID, FALSE )
+    s = symbAddVarEx( symbol, NULL, dtype, param->subtype, 0, 0, _
+    				  0, dTB(), attrib, _
+    				  param->param.suffix <> INVALID, FALSE )
+
+    if( s = NULL ) then
+    	return NULL
+    end if
+
+    '' declare it or arrays passed by descriptor will be initialized when REDIM'd
+    symbSetIsDeclared( s )
+
+	function = s
 
 end function
 
@@ -670,6 +679,8 @@ function symbAddProcResultParam _
 
 	proc->proc.ext->res = s
 
+	symbSetIsDeclared( s )
+
 	function = s
 
 end function
@@ -700,6 +711,11 @@ function symbAddProcResult _
 	end if
 
 	proc->proc.ext->res = s
+
+	'' clear up the result
+	astAdd( astNewDECL( FB_SYMBCLASS_VAR, s, NULL ) )
+
+	symbSetIsDeclared( s )
 
 	function = s
 
@@ -894,6 +910,14 @@ private function hCheckOvlParam _
 
 			'' pointer? subtypes can't be different
 			if( pdtype >= FB_DATATYPE_POINTER ) then
+
+				if( astPtrCheck( pdtype, _
+					 			 symbGetSubtype( param ), _
+					 			 arg_expr ) ) then
+
+					return FB_OVLPROC_FULLMATCH
+				end if
+
 				return 0
 			end if
 
@@ -964,24 +988,24 @@ private function hCheckOvlParam _
 					return FB_OVLPROC_FULLMATCH
 				end if
 
-				'' param isn't an any ptr?
-				if( pdtype <> FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) then
-					'' arg neither?
-					if( adtype <> FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) then
-						return 0
-					end if
-
-					'' not the same level of indirection?
-					if( (pdtype mod FB_DATATYPE_POINTER) > 1 ) then
-						return 0
-					end if
-
-					return FB_OVLPROC_FULLMATCH
-
-				else
+				'' param is an any ptr?
+				if( pdtype = FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) then
 					'' as in g++, the arg indirection level shouldn't matter..
 					return FB_OVLPROC_FULLMATCH
 				end if
+
+				'' arg is an any ptr?
+				if( adtype = FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) then
+					'' not the same level of indirection?
+					if( param->ptrcnt > 1 ) then
+						return 0
+					end if
+
+					return FB_OVLPROC_FULLMATCH
+				end if
+
+				'' no match
+				return 0
 
 			'' param not a pointer, but is arg?
 			elseif( adtype >= FB_DATATYPE_POINTER ) then

@@ -118,6 +118,10 @@ sub symbCheckFwdRef _
 
 	'' go to head
 	chain_ = sym->hash.chain
+	if( chain_ = NULL ) then
+		exit sub
+	end if
+
 	do while( chain_->prev <> NULL )
 		chain_ = chain_->prev
 	loop

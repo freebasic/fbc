@@ -38,8 +38,14 @@ declare sub		parserProcCallInit			( )
 
 declare sub		parserProcCallEnd			( )
 
+declare sub		parserAsmInit				( )
+
+declare sub		parserAsmEnd           		( )
+
 '':::::
 sub	parserInit( )
+
+	parserAsmInit( )
 
 	parserCompoundStmtInit( )
 
@@ -49,6 +55,8 @@ end sub
 
 '':::::
 sub	parserEnd( )
+
+	parserAsmEnd( )
 
 	parserProcCallEnd( )
 

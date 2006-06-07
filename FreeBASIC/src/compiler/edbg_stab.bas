@@ -628,14 +628,16 @@ private sub hDeclLocalVars _
     	'' variable?
     	case FB_SYMBCLASS_VAR
 
-		'' not an argument, temporary or descriptor?
+			'' not an argument, temporary or descriptor?
     		if( (symbGetAttrib( s ) and _
     			 (FB_SYMBATTRIB_PARAMBYDESC or _
 			   	  FB_SYMBATTRIB_PARAMBYVAL or _
 			   	  FB_SYMBATTRIB_PARAMBYREF or _
     		   	  FB_SYMBATTRIB_TEMP or _
     		   	  FB_SYMBATTRIB_DESCRIPTOR)) = 0 ) then
+
 				edbgEmitLocalVar( s, symbIsStatic( s ) )
+
 			end if
 
 		'' scope? must be emitted later, due the GDB quirks
@@ -792,7 +794,7 @@ private function hDeclDynArray _
     ofs = FB_ARRAYDESCLEN
     i = 1
     d = symbGetArrayFirstDim( sym )
-    do while( d <> NULL )
+    do
     	dimdesc = "dim" + str( i )
 
     	'' elements as integer
@@ -812,8 +814,13 @@ private function hDeclDynArray _
     						   FB_INTEGERSIZE )
 
     	ofs += FB_ARRAYDESC_DIMLEN
+
+    	if( d = NULL ) then
+    		exit do
+    	end if
+
     	d = d->next
-    loop
+    loop while( d <> NULL )
 
 	desc += ";"
 
@@ -901,7 +908,7 @@ private function hGetDataType _
     '' UDT?
     case FB_DATATYPE_USERDEF
     	subtype = symbGetSubType( sym )
-    	if( subtype <> FB_DESCTYPE_ARRAY ) then
+    	if( symbIsDescriptor( sym ) = FALSE ) then
     		if( subtype->udt.dbg.typenum = INVALID ) then
     			hDeclUDT( subtype )
     		end if

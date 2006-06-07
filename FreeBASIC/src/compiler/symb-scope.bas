@@ -117,7 +117,7 @@ function symbScopeAllocLocals _
     do while( s <> NULL )
 		'' variable?
 		if( s->class = FB_SYMBCLASS_VAR ) then
-    		'' not shared, static?
+    		'' not shared or static?
     		if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
     			 				FB_SYMBATTRIB_STATIC)) = 0 ) then
 
@@ -150,9 +150,10 @@ sub symbFreeScopeDynVars _
     do while( s <> NULL )
     	'' variable?
     	if( s->class = FB_SYMBCLASS_VAR ) then
-    		'' not shared or static (for locals)
+    		'' not shared, static or temp (for locals)
     		if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
-    							FB_SYMBATTRIB_STATIC)) = 0 ) then
+    							FB_SYMBATTRIB_STATIC or _
+    							FB_SYMBATTRIB_TEMP)) = 0 ) then
 
     			astAdd( symbFreeDynVar( s ) )
 

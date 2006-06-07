@@ -51,7 +51,8 @@ end type
 		( 0, @"UDT with pointer or dynamic string fields" ), _
 		( 0, @"UDT with dynamic string fields" ), _
 		( 0, @"Implicit variable allocation" ), _
-		( 0, @"Missing closing quote in literal string" ) _
+		( 0, @"Missing closing quote in literal string" ), _
+		( 0, @"Function result was not explicitly set" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring ptr => _
@@ -108,7 +109,7 @@ end type
 		@"Expected scalar counter", _
 		@"Illegal outside a SUB or FUNCTION", _
 		@"Expected dynamic array", _
-		@"Cannot return fixed-len strings from functions", _
+		@"Fixed-len strings cannot be returned from functions", _
 		@"Array already dimensioned", _
 		@"Illegal without the -ex option", _
 		@"Type mismatch", _
@@ -126,12 +127,12 @@ end type
 		@"Array not dimensioned", _
 		@"Array access, index expected", _
 		@"Expected 'END ENUM'", _
-		@"Cannot initialize dynamic arrays", _
+		@"Dynamic arrays cannot be initialized", _
 		@"Invalid bitfield", _
 		@"Too many parameters", _
 		@"Macro text too long", _
 		@"Invalid command-line option", _
-		@"Cannot initialize dynamic strings", _
+		@"Dynamic strings cannot be initialized", _
 		@"Recursive TYPE or UNION not allowed", _
 		@"Recursive DEFINE not allowed", _
 		@"Array fields cannot be redimensioned", _
@@ -143,15 +144,15 @@ end type
 		@"Expected 'ANY'", _
 		@"Expected 'END SCOPE'", _
 		@"Illegal inside a SCOPE block", _
-		@"Cannot pass an UDT result by reference", _
+		@"UDT function results cannot be passed by reference", _
 		@"Ambiguous call to overloaded function", _
 		@"No matching overloaded function", _
 		@"Division by zero", _
 		@"Cannot pop stack, underflow", _
-		@"Cannot initialize UDT's containing dynamic string fields", _
-		@"Branching to scope blocks containing local variables", _
+		@"UDT's containing dynamic string fields cannot be initialized", _
+		@"Branching to scope block containing local variables", _
 		@"Branching to other SUB's/FUNCTION's or to module-level", _
-		@"Branch crossing local array or object definition", _
+		@"Branch crossing local array, var-len string or object definition", _
 		@"LOOP without DO", _
 		@"NEXT without FOR", _
 		@"WEND without WHILE", _
@@ -169,7 +170,7 @@ end type
 		@"Expected period ('.')", _
 		@"Expected END NAMESPACE", _
 		@"Illegal inside a NAMESPACE block", _
-		@"Cannot remove symbols defined in other namespaces", _
+		@"Symbols defined in other namespaces cannot be removed", _
 		@"Expected END EXTERN", _
 		@"Expected 'END SUB'", _
 		@"Expected 'END FUNCTION'", _

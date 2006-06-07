@@ -45,6 +45,7 @@ function symbAddUDT _
 	) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr t
+    dim as FBSYMBOLTB ptr symtb
 
     function = NULL
 
@@ -56,8 +57,13 @@ function symbAddUDT _
     	end if
     end if
 
+    '' UDT's are never added to the local symtb, they aren't allowed
+    '' inside scope blocks or procs, but when declaring static local
+    '' arrays, they will be created internally by symbAddVar( )
+    symtb = @symbGetNamespaceTb( symbGetCurrentNamespc( ) )
+
     t = symbNewSymbol( NULL, _
-    				   NULL, NULL, fbIsModLevel( ), _
+    				   symtb, NULL, TRUE, _
     				   FB_SYMBCLASS_UDT, _
     				   TRUE, id, id_alias )
 	if( t = NULL ) then
@@ -202,23 +208,28 @@ function symbAddUDTElement _
 
     function = NULL
 
-    hUcase( *id, ename )
+    if( id <> NULL ) then
+    	hUcase( id, @ename )
 
-    '' check if element already exists in the current struct and parents
-    p = t
-    do
-    	e = p->udt.fldtb.head
-    	do while( e <> NULL )
-    		if( *e->name = ename ) then
-    			exit function
-    		end if
+    	'' check if element already exists in the current struct and parents
+    	p = t
+    	do
+    		e = p->udt.fldtb.head
+    		do while( e <> NULL )
+    			if( *e->name = ename ) then
+    				exit function
+    			end if
 
-    		'' next
-    		e = e->next
-    	loop
+    			'' next
+    			e = e->next
+    		loop
 
-    	p = p->udt.parent
-    loop while( p <> NULL )
+    		p = p->udt.parent
+    	loop while( p <> NULL )
+
+    else
+    	ename[0] = 0
+    end if
 
     '' calc length if it wasn't given
 	if( lgt <= 0 ) then
@@ -339,6 +350,7 @@ function symbAddUDTElement _
 	end if
 
 	'' array fields
+	e->var.array.desc = NULL
 	e->var.array.dif = symbCalcArrayDiff( dimensions, dTB(), lgt )
 	e->var.array.dimhead = NULL
 	e->var.array.dimtail = NULL

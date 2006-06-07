@@ -380,13 +380,6 @@ declare sub 		emitPROCFOOTER		( _
 											byval exitlabel as FBSYMBOL ptr _
 										)
 
-declare function 	emitSCOPEHEADER		( _
-											byval s as FBSYMBOl ptr _
-										) as EMIT_NODE ptr
-declare function 	emitSCOPEFOOTER		( _
-											byval s as FBSYMBOl ptr _
-										) as EMIT_NODE ptr
-
 declare function	emitASM				( _
 											byval text as zstring ptr _
 										) as EMIT_NODE ptr
@@ -672,7 +665,6 @@ declare function	emitMEMSWAP			( _
 
 declare function	emitMEMCLEAR		( _
 											byval dvreg as IRVREG ptr, _
-			 					  		  	byval svreg as IRVREG ptr, _
 			 					  		  	byval bytes as integer _
 										) as EMIT_NODE ptr
 
@@ -737,7 +729,8 @@ declare sub 		emitVARINI64		( _
 										)
 
 declare sub 		emitVARINIOFS		( _
-											byval sname as zstring ptr _
+											byval sname as zstring ptr, _
+											byval ofs as integer _
 										)
 
 declare sub 		emitVARINISTR		( _

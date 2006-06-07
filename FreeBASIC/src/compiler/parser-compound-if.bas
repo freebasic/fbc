@@ -41,8 +41,6 @@ private function hIfSingleLine _
 
 	function = FALSE
 
-	stk->if.issingle = TRUE
-
 	'' NUM_LIT | Statement*
 	if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
 		l = symbFindByClass( lexGetSymChain( ), FB_SYMBCLASS_LABEL )
@@ -60,7 +58,9 @@ private function hIfSingleLine _
 	end if
 
 	'' (ELSE Statement*)?
-	if( hMatch( FB_TK_ELSE ) ) then
+	if( lexGetToken( ) = FB_TK_ELSE ) then
+		lexSkipToken( )
+
 		'' exit if stmt
 		astAdd( astNewBRANCH( AST_OP_JMP, stk->if.endlabel ) )
 
@@ -84,10 +84,10 @@ private function hIfSingleLine _
 		astAdd( astNewLABEL( stk->if.nxtlabel ) )
 	end if
 
-	'' END IF? -- added to make complex macros easier to be done
+	'' END IF? -- added to make complex macros easier to be written
 	select case lexGetToken( )
 	case FB_TK_END
-		if( lexGetLookAhead(1) = FB_TK_IF ) then
+		if( lexGetLookAhead( 1 ) = FB_TK_IF ) then
 			lexSkipToken( )
 			lexSkipToken( )
 		end if
@@ -144,7 +144,6 @@ function cIfStmtBegin as integer
 
 	'' push to stmt stack
 	stk = cCompStmtPush( FB_TK_IF )
-	stk->if.issingle = FALSE
 	stk->if.nxtlabel = nl
 	stk->if.endlabel = el
 	stk->if.elsecnt = 0
@@ -167,8 +166,12 @@ function cIfStmtBegin as integer
 	select case lexGetToken( )
 	'' COMMENT|NEWLINE?
 	case FB_TK_COMMENTCHAR, FB_TK_REM, FB_TK_EOL, FB_TK_EOF, FB_TK_STATSEPCHAR
+		stk->if.issingle = FALSE
+		stk->scopenode = astScopeBegin( )
 
 	case else
+		stk->if.issingle = TRUE
+		stk->scopenode = NULL
 		return hIfSingleLine( stk )
 	end select
 
@@ -208,9 +211,14 @@ function cIfStmtNext(  ) as integer
     	end if
     end if
 
+	'' end scope
+	if( stk->scopenode <> NULL ) then
+		astScopeEnd( stk->scopenode )
+		stk->scopenode = NULL
+	end if
+
 	'' ELSEIF Expression THEN ?
-    select case lexGetToken( )
-    case FB_TK_ELSEIF
+    if( lexGetToken( ) = FB_TK_ELSEIF ) then
     	lexSkipToken( )
 
 		'' exit last if stmt
@@ -250,8 +258,8 @@ function cIfStmtNext(  ) as integer
 			astAdd( expr )
 		end if
 
-    '' ELSE?
-    case FB_TK_ELSE
+    '' ELSE..
+    else
     	stk->if.elsecnt += 1
 
     	lexSkipToken( )
@@ -265,7 +273,10 @@ function cIfStmtNext(  ) as integer
 			stk->if.nxtlabel = NULL
 		end if
 
-	end select
+	end if
+
+	'' begin scope
+	stk->scopenode = astScopeBegin( )
 
 	function = TRUE
 
@@ -294,6 +305,11 @@ function cIfStmtEnd as integer
 		lexSkipToken( )
 	end if
 	lexSkipToken( )
+
+	'' end scope
+	if( stk->scopenode <> NULL ) then
+		astScopeEnd( stk->scopenode )
+	end if
 
 	'' emit next label
 	if( stk->if.nxtlabel <> NULL ) then

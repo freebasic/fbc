@@ -581,6 +581,13 @@ function cProcStmtEnd as integer static
 		end if
 	end if
 
+	'' function and the result wasn't set?
+	if( stk->proc.issub = FALSE ) then
+		if( symbGetIsAccessed( symbGetProcResult( env.currproc ) ) = FALSE ) then
+			errReportWarn( FB_WARNINGMSG_NOFUNCTIONRESULT )
+		end if
+	end if
+
     '' always finish
 	function = astProcEnd( stk->proc.node, FALSE )
 

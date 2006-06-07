@@ -56,12 +56,10 @@ function astNewPTR _
 		'' convert *@ to nothing
 		select case l->class
 		case AST_NODECLASS_ADDR
-			if( l->op.op = AST_OP_ADDROF ) then
-				delchild = TRUE
-			end if
+			delchild = (l->op.op = AST_OP_ADDROF)
 
 		case AST_NODECLASS_OFFSET
-			delchild = TRUE
+			delchild = (l->ofs.ofs = 0)
 		end select
 
 		''

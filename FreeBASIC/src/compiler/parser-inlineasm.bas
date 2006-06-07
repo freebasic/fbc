@@ -125,6 +125,9 @@ function cAsmCode as integer static
     				else
     					doskip = TRUE
     				end if
+
+    			else
+    				symbSetIsAccessed( sym )
     			end if
 			end if
 

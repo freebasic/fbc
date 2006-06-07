@@ -49,9 +49,9 @@ function astNewOFFSET _
 		return NULL
 	end if
 
-	n->op.op = INVALID
 	n->l = l
 	n->sym = l->sym
+	n->ofs.ofs = 0
 
 	'' access counter must be updated here too
 	'' because the var initializers used with static strings
@@ -84,7 +84,7 @@ function astLoadOFFSET _
 	end if
 
 	if( ast.doemit ) then
-		vr = irAllocVROFS( n->dtype, sym )
+		vr = irAllocVROFS( n->dtype, sym, n->ofs.ofs )
 	end if
 
 	astDelNode( v )
@@ -223,12 +223,10 @@ function astNewADDR _
 		'' convert *@ to nothing
 		select case l->class
 		case AST_NODECLASS_ADDR
-			if( l->op.op = AST_OP_ADDROF ) then
-				delchild = TRUE
-			end if
+			delchild = (l->op.op = AST_OP_ADDROF)
 
 		case AST_NODECLASS_OFFSET
-			delchild = TRUE
+			delchild = (l->ofs.ofs = 0)
 		end select
 
 		''

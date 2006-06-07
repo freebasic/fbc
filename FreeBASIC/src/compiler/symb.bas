@@ -41,7 +41,9 @@ declare sub 		symbInitLibs		( )
 
 declare sub 		symbInitFwdRef		( )
 
-declare sub 		symbInitDims		( )
+declare sub 		symbVarInit			( )
+
+declare sub 		symbVarEnd			( )
 
 declare sub 		symbAddToFwdRef		( _
 											byval f as FBSYMBOL ptr, _
@@ -164,7 +166,7 @@ sub symbInit _
 	symbInitFwdRef( )
 
 	'' arrays dim tb
-	symbInitDims( )
+	symbVarInit( )
 
 	'' libraries
 	symbInitLibs( )
@@ -199,7 +201,7 @@ sub symbEnd
 	''
 	listFree( @symb.liblist )
 
-	listFree( @symb.dimlist )
+	symbVarEnd( )
 
 	listFree( @symb.fwdlist )
 
@@ -1158,12 +1160,12 @@ function symbIsEqual _
 
 	function = FALSE
 
-	'' same?
+	'' same symbol?
 	if( sym1 = sym2 ) then
 		return TRUE
 	end if
 
-	'' NULL?
+	'' any NULL?
 	if( (sym1 = NULL) or (sym2 = NULL) ) then
 		exit function
 	end if
@@ -1179,28 +1181,15 @@ function symbIsEqual _
     end if
 
     select case sym1->class
-    case FB_SYMBCLASS_UDT
-    	''
-    	if( sym1->udt.isunion <> sym2->udt.isunion ) then
-    		exit function
-    	end if
+    '' UDT or enum?
+    case FB_SYMBCLASS_UDT, FB_SYMBCLASS_ENUM
+    	'' no check, they are pointing to different symbols
+    	exit function
 
-    	''
-    	if( sym1->udt.elements <> sym2->udt.elements ) then
-    		exit function
-    	end if
-
-    	''
-    	if( sym1->udt.fldtb.head <> sym2->udt.fldtb.head ) then
-    		exit function
-    	end if
-
-    	''
-    	if( sym1->udt.fldtb.tail <> sym2->udt.fldtb.tail ) then
-    		exit function
-    	end if
-
+    '' function? must check because a @foo will point to a different
+    '' symbol than funptr, but both can have the same signature
     case FB_SYMBCLASS_PROC
+
     	'' check calling convention
     	if( symbGetProcMode( sym1 ) <> symbGetProcMode( sym2 ) ) then
     		exit function

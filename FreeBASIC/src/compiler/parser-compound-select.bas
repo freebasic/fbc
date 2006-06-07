@@ -138,7 +138,7 @@ function cSelectStmtBegin as integer
 
     '' not a wstring?
 	if( dtype <> FB_DATATYPE_WCHAR ) then
-		sym = symbAddTempVar( dtype, subtype )
+		sym = symbAddTempVarEx( dtype, subtype )
 		if( sym = NULL ) then
 			exit function
 		end if
@@ -179,7 +179,8 @@ function cSelectStmtBegin as integer
 	end if
 
 	'' push to stmt stack
-	stk = cCompStmtPush( FB_TK_SELECT )
+	stk = cCompStmtPush( FB_TK_SELECT, _
+						 FB_CMPSTMT_MASK_NOTHING ) '' nothing allowed but CASE's
 	stk->select.isconst = FALSE
 	stk->select.sym = sym
 	stk->select.dtype = dtype
@@ -357,6 +358,9 @@ function cSelectStmtNext( ) as integer
 		end if
 	end if
 
+    '' default mask now allowed
+    cCompSetAllowmask( stk, FB_CMPSTMT_MASK_DEFAULT )
+
     '' AS CONST?
     if( stk->select.isconst ) then
     	return cSelConstStmtNext( stk )
@@ -364,6 +368,12 @@ function cSelectStmtNext( ) as integer
 
 	'' CASE
 	lexSkipToken( )
+
+	'' end scope
+	if( stk->scopenode <> NULL ) then
+		astScopeEnd( stk->scopenode )
+		stk->scopenode = NULL
+	end if
 
 	if( stk->select.casecnt > 0 ) then
 		'' break from block
@@ -376,6 +386,9 @@ function cSelectStmtNext( ) as integer
 	'' ELSE?
 	if( lexGetToken( ) = FB_TK_ELSE ) then
 		lexSkipToken( )
+
+		'' begin scope
+		stk->scopenode = astScopeBegin( )
 
 		stk->select.casecnt = -1
 
@@ -405,7 +418,6 @@ function cSelectStmtNext( ) as integer
 		lexSkipToken( )
 	loop
 
-	''
 	ctx.base += cnt
 
 	'' add block ini label
@@ -444,6 +456,9 @@ function cSelectStmtNext( ) as integer
 	'' emit init block label
 	astAdd( astNewLABEL( il ) )
 
+	'' begin scope
+	stk->scopenode = astScopeBegin( )
+
 	stk->select.casecnt += 1
 
 	function = TRUE
@@ -479,6 +494,11 @@ function cSelectStmtEnd as integer
 	'' END SELECT
 	lexSkipToken( )
 	lexSkipToken( )
+
+	'' end scope
+	if( stk->scopenode <> NULL ) then
+		astScopeEnd( stk->scopenode )
+	end if
 
     '' emit end label
     astAdd( astNewLABEL( env.stmt.select.cmplabel ) )

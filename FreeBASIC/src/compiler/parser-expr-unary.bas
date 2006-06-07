@@ -325,11 +325,13 @@ function cAnonUDT _
 		end if
     end if
 
+    '' alloc temp var
     sym = symbAddTempVar( FB_DATATYPE_USERDEF, subtype, FALSE, FALSE )
 
     '' let the initializer do the rest..
     expr = cVariableInit( sym, FALSE )
 
+    '' del temp var
     symbDelVar( sym )
 
     function = (expr <> NULL)

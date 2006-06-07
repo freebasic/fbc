@@ -1,11 +1,16 @@
-[ ] SCOPE..END SCOPE:
-    - error handlers should be restored too (or not allowed at all)
+[ ] extern arrays()
+    - when a COMMON var is REDIMed, the descriptor initializer must be rebuilt
+      to include the right number of dimensions - or that's not important
+      because redim() will not check it's 0's?
 
-[ ] every compound statement should start new scope:
-    - that's needed for gcc, scope is very important
-    - will allow "FOR iterator AS datatype = ..."
-    - will break some old or buggy apps that declare implicit vars inside compounds
-      and use them after leaving the stmts, better now than later..
+[ ] err:
+    - to fun_name and mod_name to work, the current one must be
+      saved at procBegin and restore at procEnd
+
+[ ] SCOPE..END SCOPE:
+    - can't optimize multiple MEM_CLEAR's if there's any branch to
+      one of them
+    - error handlers should be restored too (or not allowed at all)
 
 [ ] EXTERN ... END EXTERN
     - C++ mangling needs CONST's to be handled in param attributes:

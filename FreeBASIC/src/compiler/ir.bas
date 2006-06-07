@@ -192,7 +192,7 @@ declare sub 		irDump				( byval op as integer, _
 		( IR_OPTYPE_MEM		, FALSE, "mmv" ), _	'' AST_OP_MEMMOVE
 		( IR_OPTYPE_MEM		, FALSE, "msp" ), _	'' AST_OP_MEMSWAP
 		( IR_OPTYPE_MEM		, FALSE, "mcl" ), _	'' AST_OP_MEMCLEAR
-		( IR_OPTYPE_MEM		, FALSE, "scl" )  _	'' AST_OP_STKCLEAR
+		( IR_OPTYPE_MEM		, FALSE, "scl" ) _	'' AST_OP_STKCLEAR
 	}
 
 '':::::
@@ -283,8 +283,11 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ''::::
-private sub hRelink( byval vreg as IRVREG ptr, _
-					 byval tvreg as IRTACVREG ptr ) static
+private sub hRelink _
+	( _
+		byval vreg as IRVREG ptr, _
+		byval tvreg as IRTACVREG ptr _
+	) static
 
 	if( vreg->tacvhead = NULL ) then
 		vreg->tacvhead = tvreg
@@ -322,12 +325,15 @@ end sub
     end if
 
 '':::::
-sub irEmit( byval op as integer, _
-			byval v1 as IRVREG ptr, _
-			byval v2 as IRVREG ptr, _
-			byval vr as IRVREG ptr, _
-			byval ex1 as FBSYMBOL ptr = NULL, _
-			byval ex2 as integer = 0 ) static
+sub irEmit _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr, _
+		byval vr as IRVREG ptr, _
+		byval ex1 as FBSYMBOL ptr = NULL, _
+		byval ex2 as integer = 0 _
+	) static
 
     dim as IRTAC ptr t
 
@@ -354,10 +360,13 @@ sub irEmit( byval op as integer, _
 end sub
 
 '':::::
-sub irEmitCONVERT( byval v1 as IRVREG ptr, _
-				   byval dtype1 as integer, _
-				   byval v2 as IRVREG ptr, _
-				   byval dtype2 as integer ) static
+sub irEmitCONVERT _
+	( _
+		byval v1 as IRVREG ptr, _
+		byval dtype1 as integer, _
+		byval v2 as IRVREG ptr, _
+		byval dtype2 as integer _
+	) static
 
 	if( dtype1 > FB_DATATYPE_POINTER ) then
 		dtype1 = FB_DATATYPE_POINTER
@@ -373,7 +382,10 @@ sub irEmitCONVERT( byval v1 as IRVREG ptr, _
 end sub
 
 '':::::
-sub irEmitLABEL( byval label as FBSYMBOL ptr ) static
+sub irEmitLABEL _
+	( _
+		byval label as FBSYMBOL ptr _
+	) static
 
 	irFlush( )
 
@@ -382,7 +394,10 @@ sub irEmitLABEL( byval label as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub irEmitRETURN( byval bytestopop as integer ) static
+sub irEmitRETURN _
+	( _
+		byval bytestopop as integer _
+	) static
 
 	irFlush( )
 
@@ -391,7 +406,10 @@ sub irEmitRETURN( byval bytestopop as integer ) static
 end sub
 
 '':::::
-sub irProcBegin( byval proc as FBSYMBOL ptr ) static
+sub irProcBegin _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) static
 
 	emitProcBegin( proc )
 
@@ -400,7 +418,10 @@ sub irProcBegin( byval proc as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub irProcEnd( byval proc as FBSYMBOL ptr ) static
+sub irProcEnd _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) static
 
 	emitProcEnd( proc )
 
@@ -409,9 +430,11 @@ sub irProcEnd( byval proc as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub irEmitPROCBEGIN( byval proc as FBSYMBOL ptr, _
-					 byval initlabel as FBSYMBOL ptr _
-				   ) static
+sub irEmitPROCBEGIN _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval initlabel as FBSYMBOL ptr _
+	) static
 
     irFlush( )
 
@@ -420,10 +443,12 @@ sub irEmitPROCBEGIN( byval proc as FBSYMBOL ptr, _
 end sub
 
 '':::::
-sub irEmitPROCEND( byval proc as FBSYMBOL ptr, _
-				   byval initlabel as FBSYMBOL ptr, _
-				   byval exitlabel as FBSYMBOL ptr _
-				 ) static
+sub irEmitPROCEND _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval initlabel as FBSYMBOL ptr, _
+		byval exitlabel as FBSYMBOL ptr _
+	) static
 
     dim as integer bytestopop, mode
 
@@ -442,44 +467,34 @@ sub irEmitPROCEND( byval proc as FBSYMBOL ptr, _
 end sub
 
 '':::::
-sub irScopeBegin( byval s as FBSYMBOL ptr ) static
+sub irScopeBegin _
+	( _
+		byval s as FBSYMBOL ptr _
+	) static
 
 	edbgScopeBegin( s )
 
 end sub
 
 '':::::
-sub irScopeEnd( byval s as FBSYMBOL ptr ) static
+sub irScopeEnd _
+	( _
+		byval s as FBSYMBOL ptr _
+	) static
 
 	edbgScopeEnd( s )
 
 end sub
 
 '':::::
-sub irEmitSCOPEBEGIN( byval s as FBSYMBOL ptr ) static
-
-	irFlush( )
-
-	emitSCOPEHEADER( s )
-
-end sub
-
-'':::::
-sub irEmitSCOPEEND( byval s as FBSYMBOL ptr ) static
-
-	irFlush( )
-
-	emitSCOPEFOOTER( s )
-
-end sub
-
-'':::::
-function irEmitPUSHARG( byval proc as FBSYMBOL ptr, _
-						byval param as FBSYMBOL ptr, _
-						byval vr as IRVREG ptr, _
-						byval pmode as integer, _
-						byval plen as integer _
-					  ) as integer static
+function irEmitPUSHARG _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval param as FBSYMBOL ptr, _
+		byval vr as IRVREG ptr, _
+		byval pmode as integer, _
+		byval plen as integer _
+	) as integer static
 
     dim as IRVREG ptr vt
     dim as integer isptr
@@ -644,7 +659,10 @@ function irEmitPUSHARG( byval proc as FBSYMBOL ptr, _
 end function
 
 '':::::
-sub irEmitASM( byval text as zstring ptr ) static
+sub irEmitASM _
+	( _
+		byval text as zstring ptr _
+	) static
 
 	irFlush( )
 
@@ -653,15 +671,21 @@ sub irEmitASM( byval text as zstring ptr ) static
 end sub
 
 '':::::
-sub irEmitCOMMENT( byval text as zstring ptr ) static
+sub irEmitCOMMENT _
+	( _
+		byval text as zstring ptr _
+	) static
 
 	emitCOMMENT( text )
 
 end sub
 
 ''::::
-sub irEmitJMPTB( byval dtype as integer, _
-				 byval label as FBSYMBOL ptr ) static
+sub irEmitJMPTB _
+	( _
+		byval dtype as integer, _
+		byval label as FBSYMBOL ptr _
+	) static
 
 	irFlush( )
 
@@ -670,9 +694,12 @@ sub irEmitJMPTB( byval dtype as integer, _
 end sub
 
 ''::::
-sub irEmitDBG( byval proc as FBSYMBOL ptr, _
-			   byval op as integer, _
-			   byval ex as integer ) static
+sub irEmitDBG _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval op as integer, _
+		byval ex as integer _
+	) static
 
 	irFlush( )
 
@@ -691,7 +718,10 @@ sub irEmitDBG( byval proc as FBSYMBOL ptr, _
 end sub
 
 '':::::
-sub irEmitVARINIBEGIN( byval sym as FBSYMBOL ptr ) static
+sub irEmitVARINIBEGIN _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) static
 
 	'' no flush, all var-ini go to data sections
 
@@ -700,47 +730,66 @@ sub irEmitVARINIBEGIN( byval sym as FBSYMBOL ptr ) static
 end sub
 
 '':::::
-sub irEmitVARINIEND( byval sym as FBSYMBOL ptr ) static
+sub irEmitVARINIEND _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) static
 
 	emitVARINIEND( sym )
 
 end sub
 
 '':::::
-sub irEmitVARINIi( byval dtype as integer, _
-				   byval value as integer ) static
+sub irEmitVARINIi _
+	( _
+		byval dtype as integer, _
+		byval value as integer _
+	) static
 
 	emitVARINIi( dtype, value )
 
 end sub
 
 '':::::
-sub irEmitVARINIf( byval dtype as integer, _
-				   byval value as double ) static
+sub irEmitVARINIf _
+	( _
+		byval dtype as integer, _
+		byval value as double _
+	) static
 
 	emitVARINIf( dtype, value )
 
 end sub
 
 '':::::
-sub irEmitVARINI64( byval dtype as integer, _
-					byval value as longint ) static
+sub irEmitVARINI64 _
+	( _
+		byval dtype as integer, _
+		byval value as longint _
+	) static
 
 	emitVARINI64( dtype, value )
 
 end sub
 
 '':::::
-sub irEmitVARINIOFS( byval sym as FBSYMBOL ptr ) static
+sub irEmitVARINIOFS _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval ofs as integer _
+	) static
 
-	emitVARINIOFS( symbGetMangledName( sym ) )
+	emitVARINIOFS( symbGetMangledName( sym ), ofs )
 
 end sub
 
 '':::::
-sub irEmitVARINISTR( byval totlgt as integer, _
-				     byval litstr as zstring ptr, _
-				     byval litlgt as integer ) static
+sub irEmitVARINISTR _
+	( _
+		byval totlgt as integer, _
+		byval litstr as zstring ptr, _
+		byval litlgt as integer _
+	) static
 
 	dim as zstring ptr s
 
@@ -769,9 +818,12 @@ sub irEmitVARINISTR( byval totlgt as integer, _
 end sub
 
 '':::::
-sub irEmitVARINIWSTR( byval totlgt as integer, _
-				      byval litstr as wstring ptr, _
-				      byval litlgt as integer ) static
+sub irEmitVARINIWSTR _
+	( _
+		byval totlgt as integer, _
+		byval litstr as wstring ptr, _
+		byval litlgt as integer _
+	) static
 
 	dim as zstring ptr s
 	dim as integer wclen
@@ -803,7 +855,10 @@ sub irEmitVARINIWSTR( byval totlgt as integer, _
 end sub
 
 '':::::
-sub irEmitVARINIPAD( byval bytes as integer ) static
+sub irEmitVARINIPAD _
+	( _
+		byval bytes as integer _
+	) static
 
 	emitVARINIPAD( bytes )
 
@@ -812,8 +867,12 @@ end sub
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function irNewVR( byval dtype as integer, _
-				  byval vtype as integer ) as IRVREG ptr static
+function irNewVR _
+	( _
+		byval dtype as integer, _
+		byval vtype as integer _
+	) as IRVREG ptr static
+
 	dim as IRVREG ptr v
 
 	if( dtype > FB_DATATYPE_POINTER ) then
@@ -822,24 +881,28 @@ function irNewVR( byval dtype as integer, _
 
 	v = flistNewItem( @ir.vregTB )
 
-	v->typ 	= vtype
-	v->dtype= dtype
-	v->sym	= NULL
-	v->reg	= INVALID
+	v->typ = vtype
+	v->dtype = dtype
+	v->sym = NULL
+	v->reg = INVALID
 	v->vidx	= NULL
 	v->vaux	= NULL
-	v->ofs	= 0
+	v->ofs = 0
 
 	v->tacvhead = NULL
 	v->tacvtail = NULL
-	v->taclast  = NULL
+	v->taclast = NULL
 
 	function = v
 
 end function
 
 '':::::
-function irAllocVREG( byval dtype as integer ) as IRVREG ptr static
+function irAllocVREG _
+	( _
+		byval dtype as integer _
+	) as IRVREG ptr static
+
 	dim as IRVREG ptr vr
 
 	vr = irNewVR( dtype, IR_VREGTYPE_REG )
@@ -854,8 +917,12 @@ function irAllocVREG( byval dtype as integer ) as IRVREG ptr static
 end function
 
 '':::::
-function irAllocVRIMM( byval dtype as integer, _
-					   byval value as integer ) as IRVREG ptr static
+function irAllocVRIMM _
+	( _
+		byval dtype as integer, _
+		byval value as integer _
+	) as IRVREG ptr static
+
 	dim as IRVREG ptr vr
 
 	vr = irNewVR( dtype, IR_VREGTYPE_IMM )
@@ -873,8 +940,12 @@ function irAllocVRIMM( byval dtype as integer, _
 end function
 
 '':::::
-function irAllocVRIMM64( byval dtype as integer, _
-						 byval value as longint ) as IRVREG ptr static
+function irAllocVRIMM64 _
+	( _
+		byval dtype as integer, _
+		byval value as longint _
+	) as IRVREG ptr static
+
 	dim as IRVREG ptr vr
 
 	vr = irNewVR( dtype, IR_VREGTYPE_IMM )
@@ -891,17 +962,21 @@ function irAllocVRIMM64( byval dtype as integer, _
 end function
 
 '':::::
-function irAllocVRVAR( byval dtype as integer, _
-					   byval symbol as FBSYMBOL ptr, _
-					   byval ofs as integer ) as IRVREG ptr static
+function irAllocVRVAR _
+	( _
+		byval dtype as integer, _
+		byval symbol as FBSYMBOL ptr, _
+		byval ofs as integer _
+	) as IRVREG ptr static
+
 	dim as IRVREG ptr vr, va
 
 	vr = irNewVR( dtype, IR_VREGTYPE_VAR )
 
 	function = vr
 
-	vr->sym 	= symbol
-	vr->ofs 	= ofs
+	vr->sym = symbol
+	vr->ofs = ofs
 
 	'' longint?
 	if( ISLONGINT( dtype ) ) then
@@ -913,21 +988,25 @@ function irAllocVRVAR( byval dtype as integer, _
 end function
 
 '':::::
-function irAllocVRIDX( byval dtype as integer, _
-					   byval symbol as FBSYMBOL ptr, _
-					   byval ofs as integer, _
-					   byval mult as integer, _
-					   byval vidx as IRVREG ptr ) as IRVREG ptr static
+function irAllocVRIDX _
+	( _
+		byval dtype as integer, _
+		byval symbol as FBSYMBOL ptr, _
+		byval ofs as integer, _
+		byval mult as integer, _
+		byval vidx as IRVREG ptr _
+	) as IRVREG ptr static
+
 	dim as IRVREG ptr vr, va
 
 	vr = irNewVR( dtype, IR_VREGTYPE_IDX )
 
 	function = vr
 
-	vr->sym 	= symbol
-	vr->ofs 	= ofs
-	vr->mult	= mult
-	vr->vidx	= vidx
+	vr->sym = symbol
+	vr->ofs = ofs
+	vr->mult = mult
+	vr->vidx = vidx
 
 	'' longint?
 	if( ISLONGINT( dtype ) ) then
@@ -939,18 +1018,22 @@ function irAllocVRIDX( byval dtype as integer, _
 end function
 
 '':::::
-function irAllocVRPTR( byval dtype as integer, _
-					   byval ofs as integer, _
-					   byval vidx as IRVREG ptr ) as IRVREG ptr static
+function irAllocVRPTR _
+	( _
+		byval dtype as integer, _
+		byval ofs as integer, _
+		byval vidx as IRVREG ptr _
+	) as IRVREG ptr static
+
 	dim as IRVREG ptr vr, va
 
 	vr = irNewVR( dtype, IR_VREGTYPE_PTR )
 
 	function = vr
 
-	vr->ofs 	= ofs
-	vr->mult 	= 1
-	vr->vidx	= vidx
+	vr->ofs = ofs
+	vr->mult = 1
+	vr->vidx = vidx
 
 	'' longint?
 	if( ISLONGINT( dtype ) ) then
@@ -962,21 +1045,29 @@ function irAllocVRPTR( byval dtype as integer, _
 end function
 
 '':::::
-function irAllocVROFS( byval dtype as integer, _
-					   byval symbol as FBSYMBOL ptr ) as IRVREG ptr static
+function irAllocVROFS _
+	( _
+		byval dtype as integer, _
+		byval symbol as FBSYMBOL ptr, _
+		byval ofs as integer _
+	) as IRVREG ptr static
+
 	dim as IRVREG ptr vr
 
 	vr = irNewVR( dtype, IR_VREGTYPE_OFS )
 
 	function = vr
 
-	vr->sym 	= symbol
-	vr->ofs 	= 0
+	vr->sym = symbol
+	vr->ofs = ofs
 
 end function
 
 '':::::
-function irIsVAR( byval vreg as IRVREG ptr ) as integer static
+function irIsVAR _
+	( _
+		byval vreg as IRVREG ptr _
+	) as integer static
 
 	function = FALSE
 
@@ -988,7 +1079,10 @@ function irIsVAR( byval vreg as IRVREG ptr ) as integer static
 end function
 
 '':::::
-function irIsIDX( byval vreg as IRVREG ptr ) as integer static
+function irIsIDX _
+	( _
+		byval vreg as IRVREG ptr _
+	) as integer static
 
 	function = FALSE
 
@@ -1001,7 +1095,11 @@ end function
 
 
 '':::::
-function irGetVRDataClass( byval vreg as IRVREG ptr ) as integer static
+function irGetVRDataClass _
+	( _
+		byval vreg as IRVREG ptr _
+	) as integer static
+
 	dim as integer dtype
 
 	dtype = vreg->dtype
@@ -1015,7 +1113,11 @@ function irGetVRDataClass( byval vreg as IRVREG ptr ) as integer static
 end function
 
 '':::::
-function irGetVRDataSize( byval vreg as IRVREG ptr ) as integer static
+function irGetVRDataSize _
+	( _
+		byval vreg as IRVREG ptr _
+	) as integer static
+
 	dim as integer dtype
 
 	dtype = vreg->dtype
@@ -1031,8 +1133,11 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private sub hRename( byval vold as IRVREG ptr, _
-			  		 byval vnew as IRVREG ptr ) static
+private sub hRename _
+	( _
+		byval vold as IRVREG ptr, _
+		byval vnew as IRVREG ptr _
+	) static
 
     dim as IRTACVREG ptr t
     dim as IRVREG ptr v
@@ -1056,10 +1161,12 @@ private sub hRename( byval vold as IRVREG ptr, _
 end sub
 
 '':::::
-private sub hReuse( byval t as IRTAC ptr ) static
-    dim as IRVREG ptr v1
-    dim as IRVREG ptr v2
-    dim as IRVREG ptr vr
+private sub hReuse _
+	( _
+		byval t as IRTAC ptr _
+	) static
+
+    dim as IRVREG ptr v1, v2, vr
     dim as integer v1_dtype, v1_dclass, v1_typ
     dim as integer v2_dtype, v2_dclass, v2_typ
     dim as integer vr_dtype, vr_dclass, vr_typ
@@ -1197,6 +1304,7 @@ sub irFlush static
 
 		case IR_OPTYPE_MEM
 			hFlushMEM( op, v1, v2, t->ex2, t->ex1 )
+
 		end select
 
 		''
@@ -1219,8 +1327,11 @@ sub irFlush static
 end sub
 
 '':::::
-private sub hFlushBRANCH( byval op as integer, _
-				   		  byval label as FBSYMBOL ptr ) static
+private sub hFlushBRANCH _
+	( _
+		byval op as integer, _
+		byval label as FBSYMBOL ptr _
+	) static
 
 	''
 	select case as const op
@@ -1271,7 +1382,11 @@ private sub hFreePreservedRegs( ) static
 end sub
 
 '':::::
-private sub hPreserveRegs( byval ptrvreg as IRVREG ptr = NULL ) static
+private sub hPreserveRegs _
+	( _
+		byval ptrvreg as IRVREG ptr = NULL _
+	) static
+
     dim as IRVREG ptr vr
     dim as IRVREG tr
     dim as integer reg
@@ -1347,11 +1462,14 @@ private sub hPreserveRegs( byval ptrvreg as IRVREG ptr = NULL ) static
 end sub
 
 '':::::
-private sub hFlushCALL( byval op as integer, _
-				 		byval proc as FBSYMBOL ptr, _
-				 		byval bytestopop as integer, _
-				 		byval v1 as IRVREG ptr, _
-				 		byval vr as IRVREG ptr ) static
+private sub hFlushCALL _
+	( _
+		byval op as integer, _
+		byval proc as FBSYMBOL ptr, _
+		byval bytestopop as integer, _
+		byval v1 as IRVREG ptr, _
+		byval vr as IRVREG ptr _
+	) static
 
     dim as integer mode
     dim as integer vr_dclass, vr_dtype, vr_typ, vr_reg, vr_reg2
@@ -1424,9 +1542,12 @@ private sub hFlushCALL( byval op as integer, _
 end sub
 
 '':::::
-private sub hFlushSTACK( byval op as integer, _
-				  		 byval v1 as IRVREG ptr, _
-				  		 byval ex as integer ) static
+private sub hFlushSTACK _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval ex as integer _
+	) static
 
 	dim as integer v1_typ, v1_dtype, v1_dclass
 	dim as IRVREG ptr va
@@ -1469,9 +1590,12 @@ private sub hFlushSTACK( byval op as integer, _
 end sub
 
 '':::::
-private sub hFlushUOP( byval op as integer, _
-			    	   byval v1 as IRVREG ptr, _
-			    	   byval vr as IRVREG ptr ) static
+private sub hFlushUOP _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval vr as IRVREG ptr _
+	) static
 
 	dim as integer v1_typ, v1_dtype, v1_dclass
 	dim as integer vr_typ, vr_dtype, vr_dclass
@@ -1554,10 +1678,13 @@ private sub hFlushUOP( byval op as integer, _
 end sub
 
 '':::::
-private sub hFlushBOP( byval op as integer, _
-					   byval v1 as IRVREG ptr, _
-					   byval v2 as IRVREG ptr, _
-					   byval vr as IRVREG ptr ) static
+private sub hFlushBOP _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr, _
+		byval vr as IRVREG ptr _
+	) static
 
 	dim as integer v1_typ, v1_dtype, v1_dclass
 	dim as integer v2_typ, v2_dtype, v2_dclass
@@ -1670,11 +1797,14 @@ private sub hFlushBOP( byval op as integer, _
 end sub
 
 '':::::
-private sub hFlushCOMP( byval op as integer, _
-				 		byval v1 as IRVREG ptr, _
-				 		byval v2 as IRVREG ptr, _
-				 		byval vr as IRVREG ptr, _
-				 		byval label as FBSYMBOL ptr ) static
+private sub hFlushCOMP _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr, _
+		byval vr as IRVREG ptr, _
+		byval label as FBSYMBOL ptr _
+	) static
 
 	dim as string lname
 	dim as integer v1_typ, v1_dtype, v1_dclass
@@ -1806,9 +1936,12 @@ private sub hSpillRegs( ) static
 end sub
 
 '':::::
-private sub hFlushSTORE( byval op as integer, _
-				  		 byval v1 as IRVREG ptr, _
-				  		 byval v2 as IRVREG ptr ) static
+private sub hFlushSTORE _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr _
+	) static
 
 	dim as integer v1_typ, v1_dtype, v1_dclass
 	dim as integer v2_typ, v2_dtype, v2_dclass
@@ -1850,9 +1983,12 @@ private sub hFlushSTORE( byval op as integer, _
 end sub
 
 '':::::
-private sub hFlushLOAD( byval op as integer, _
-				 		byval v1 as IRVREG ptr, _
-				 		byval vr as IRVREG ptr ) static
+private sub hFlushLOAD _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval vr as IRVREG ptr _
+	) static
 
 	dim as integer v1_typ, v1_dtype, v1_dclass, v1_reg
 	dim as integer vr_reg, vr_reg2
@@ -1914,9 +2050,12 @@ private sub hFlushLOAD( byval op as integer, _
 end sub
 
 '':::::
-private sub hFlushCONVERT( byval op as integer, _
-				   		   byval v1 as IRVREG ptr, _
-				   		   byval v2 as IRVREG ptr ) static
+private sub hFlushCONVERT _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr _
+	) static
 
 	dim as integer v1_typ, v1_dtype, v1_dclass
 	dim as integer v2_typ, v2_dtype, v2_dclass
@@ -1997,9 +2136,12 @@ private sub hFlushCONVERT( byval op as integer, _
 end sub
 
 '':::::
-private sub hFlushADDR( byval op as integer, _
-						byval v1 as IRVREG ptr, _
-						byval vr as IRVREG ptr ) static
+private sub hFlushADDR _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval vr as IRVREG ptr _
+	) static
 
 	dim as integer v1_typ, v1_dtype, v1_dclass
 	dim as integer vr_typ, vr_dtype, vr_dclass
@@ -2035,24 +2177,30 @@ private sub hFlushADDR( byval op as integer, _
 end sub
 
 '':::::
-private sub hFlushMEM( byval op as integer, _
-					   byval v1 as IRVREG ptr, _
-					   byval v2 as IRVREG ptr, _
-					   byval bytes as integer, _
-					   byval extra as any ptr ) static
+private sub hFlushMEM _
+	( _
+		byval op as integer, _
+		byval v1 as IRVREG ptr, _
+		byval v2 as IRVREG ptr, _
+		byval bytes as integer, _
+		byval extra as any ptr _
+	) static
 
 	''
 	hLoadIDX( v1 )
 	hLoadIDX( v2 )
 
 	''
-	select case op
+	select case as const op
 	case AST_OP_MEMMOVE
 		emitMEMMOVE( v1, v2, bytes )
+
 	case AST_OP_MEMSWAP
 		emitMEMSWAP( v1, v2, bytes )
+
 	case AST_OP_MEMCLEAR
-		emitMEMCLEAR( v1, v2, bytes )
+		emitMEMCLEAR( v1, bytes )
+
 	case AST_OP_STKCLEAR
 		emitSTKCLEAR( bytes, cint( extra ) )
 	end select
@@ -2066,8 +2214,11 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private sub hFreeIDX( byval vreg as IRVREG ptr, _
-			  		  byval force as integer = FALSE )
+private sub hFreeIDX _
+	( _
+		byval vreg as IRVREG ptr, _
+		byval force as integer = FALSE _
+	)
 
 	dim as IRVREG ptr vidx
 
@@ -2086,8 +2237,11 @@ private sub hFreeIDX( byval vreg as IRVREG ptr, _
 end sub
 
 '':::::
-private sub hFreeREG( byval vreg as IRVREG ptr, _
-					  byval force as integer = FALSE )
+private sub hFreeREG _
+	( _
+		byval vreg as IRVREG ptr, _
+		byval force as integer = FALSE _
+	)
 
 	dim as integer dclass, dist
 	dim as IRVREG ptr vaux
@@ -2131,7 +2285,11 @@ private sub hFreeREG( byval vreg as IRVREG ptr, _
 end sub
 
 '':::::
-function irGetDistance( byval vreg as IRVREG ptr ) as uinteger
+function irGetDistance _
+	( _
+		byval vreg as IRVREG ptr _
+	) as uinteger
+
     dim as IRVREG ptr v
     dim as IRTAC ptr t
     dim as integer dist
@@ -2161,9 +2319,12 @@ function irGetDistance( byval vreg as IRVREG ptr ) as uinteger
 end function
 
 '':::::
-sub irLoadVR( byval reg as integer, _
-			  byval vreg as IRVREG ptr, _
-			  byval doload as integer ) static
+sub irLoadVR _
+	( _
+		byval reg as integer, _
+		byval vreg as IRVREG ptr, _
+		byval doload as integer _
+	) static
 
 	dim as IRVREG rvreg
 
@@ -2189,7 +2350,10 @@ sub irLoadVR( byval reg as integer, _
 end sub
 
 '':::::
-private sub hCreateTMPVAR( byval vreg as IRVREG ptr ) static
+private sub hCreateTMPVAR _
+	( _
+		byval vreg as IRVREG ptr _
+	) static
 
 	if( vreg->typ <> IR_VREGTYPE_VAR ) then
 		vreg->typ = IR_VREGTYPE_VAR
@@ -2201,8 +2365,11 @@ private sub hCreateTMPVAR( byval vreg as IRVREG ptr ) static
 end sub
 
 '':::::
-sub irStoreVR( byval vreg as IRVREG ptr, _
-			   byval reg as integer ) static
+sub irStoreVR _
+	( _
+		byval vreg as IRVREG ptr, _
+		byval reg as integer _
+	) static
 
     dim as IRVREG rvreg
 	dim as IRVREG ptr vareg
@@ -2234,7 +2401,11 @@ sub irStoreVR( byval vreg as IRVREG ptr, _
 end sub
 
 '':::::
-sub irXchgTOS( byval reg as integer ) static
+sub irXchgTOS _
+	( _
+		byval reg as integer _
+	) static
+
     dim as IRVREG rvreg
 
 	rvreg.typ 	= IR_VREGTYPE_REG

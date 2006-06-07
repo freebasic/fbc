@@ -36,27 +36,29 @@ option escape
 '' [arg typ,mode,optional[,value]]*args
 funcdata:
 
-'' fb_ArrayRedim CDECL ( array() as ANY, byval elementlen as integer, _
-''					     byval isvarlen as integer, _
-''						 byval dimensions as integer, ... ) as integer
+'' fb_ArrayRedimEx CDECL ( array() as ANY, byval elementlen as integer, _
+''					       byval doclear as integer, byval isvarlen as integer, _
+''						   byval dimensions as integer, ... ) as integer
 data @FB_RTL_ARRAYREDIM,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
-	 5, _
+	 6, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYDESC, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 INVALID,FB_PARAMMODE_VARARG, FALSE
 
-'' fb_ArrayRedimPresv CDECL ( array() as ANY, byval elementlen as integer, _
-''					          byval isvarlen as integer, _
-''						      byval dimensions as integer, ... ) as integer
+'' fb_ArrayRedimPresvEx CDECL ( array() as ANY, byval elementlen as integer, _
+''					            byval doclear as integer, byval isvarlen as integer, _
+''						        byval dimensions as integer, ... ) as integer
 data @FB_RTL_ARRAYREDIMPRESV,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_CDECL, _
 	 NULL, FALSE, FALSE, _
-	 5, _
+	 6, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYDESC, FALSE, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
@@ -185,12 +187,15 @@ sub rtlArrayModEnd( )
 end sub
 
 '':::::
-function rtlArrayRedim( byval s as FBSYMBOL ptr, _
-						byval elementlen as integer, _
-						byval dimensions as integer, _
-				        exprTB() as ASTNODE ptr, _
-				        byval dopreserve as integer _
-				      ) as integer static
+function rtlArrayRedim _
+	( _
+		byval s as FBSYMBOL ptr, _
+		byval elementlen as integer, _
+		byval dimensions as integer, _
+		exprTB() as ASTNODE ptr, _
+		byval dopreserve as integer, _
+		byval doclear as integer _
+	) as integer static
 
     dim as ASTNODE ptr proc, expr
     dim as FBSYMBOL ptr f, reslabel
@@ -216,6 +221,11 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, _
 	'' byval element_len as integer
 	expr = astNewCONSTi( elementlen, FB_DATATYPE_INTEGER )
 	if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
+    	exit function
+    end if
+
+	'' byval doclear as integer
+	if( astNewARG( proc, astNewCONSTi( doclear, FB_DATATYPE_INTEGER ), FB_DATATYPE_INTEGER ) = NULL ) then
     	exit function
     end if
 
@@ -272,7 +282,11 @@ function rtlArrayRedim( byval s as FBSYMBOL ptr, _
 end function
 
 '':::::
-function rtlArrayErase( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr static
+function rtlArrayErase _
+	( _
+		byval arrayexpr as ASTNODE ptr _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr proc
     dim as integer dtype
 
@@ -298,7 +312,11 @@ function rtlArrayErase( byval arrayexpr as ASTNODE ptr ) as ASTNODE ptr static
 end function
 
 '':::::
-function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as integer static
+function rtlArrayClear _
+	( _
+		byval arrayexpr as ASTNODE ptr _
+	) as integer static
+
     dim as ASTNODE ptr proc
     dim as integer dtype
 
@@ -327,7 +345,11 @@ function rtlArrayClear( byval arrayexpr as ASTNODE ptr ) as integer static
 end function
 
 '':::::
-function rtlArrayStrErase( byval s as FBSYMBOL ptr ) as ASTNODE ptr static
+function rtlArrayStrErase _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr proc
     dim as integer dtype
 
@@ -347,10 +369,12 @@ function rtlArrayStrErase( byval s as FBSYMBOL ptr ) as ASTNODE ptr static
 end function
 
 '':::::
-function rtlArrayBound( byval sexpr as ASTNODE ptr, _
-						byval dimexpr as ASTNODE ptr, _
-						byval islbound as integer _
-					  ) as ASTNODE ptr static
+function rtlArrayBound _
+	( _
+		byval sexpr as ASTNODE ptr, _
+		byval dimexpr as ASTNODE ptr, _
+		byval islbound as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -359,9 +383,9 @@ function rtlArrayBound( byval sexpr as ASTNODE ptr, _
 
 	''
 	if( islbound ) then
-		f = PROCLOOKUP( ARRAYLBOUND)
+		f = PROCLOOKUP( ARRAYLBOUND )
 	else
-		f = PROCLOOKUP( ARRAYUBOUND)
+		f = PROCLOOKUP( ARRAYUBOUND )
 	end if
     proc = astNewCALL( f )
 
@@ -381,13 +405,14 @@ function rtlArrayBound( byval sexpr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlArraySetDesc( byval sym as FBSYMBOL ptr, _
-						  byval elementlen as integer, _
-					      byval dimensions as integer, _
-					      dTB() as FBARRAYDIM ) as integer static
+function rtlArraySetDesc _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer static
 
     dim as ASTNODE ptr proc, expr
-    dim as integer dtype, i
+    dim as integer dtype
+    dim as FBVARDIM ptr d
 
     function = FALSE
 
@@ -406,34 +431,37 @@ function rtlArraySetDesc( byval sym as FBSYMBOL ptr, _
 
 	'' byval element_len as integer
 	if( astNewARG( proc, _
-				   astNewCONSTi( elementlen, FB_DATATYPE_INTEGER ), _
+				   astNewCONSTi( symbGetLen( sym ), FB_DATATYPE_INTEGER ), _
 				   FB_DATATYPE_INTEGER ) = NULL ) then
 		exit function
 	end if
 
 	'' byval dimensions as integer
 	if( astNewARG( proc, _
-				   astNewCONSTi( dimensions, FB_DATATYPE_INTEGER ), _
+				   astNewCONSTi( symbGetArrayDimensions( sym ), FB_DATATYPE_INTEGER ), _
 				   FB_DATATYPE_INTEGER ) = NULL ) then
 		exit function
 	end if
 
 	'' ...
-	for i = 0 to dimensions-1
+	d = symbGetArrayFirstDim( sym )
+	do while( d <> NULL )
+
 		'' lbound
-		expr = astNewCONSTi( dTB(i).lower, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( d->lower, FB_DATATYPE_INTEGER )
 		if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
 			exit function
 		end if
 
 		'' ubound
-		expr = astNewCONSTi( dTB(i).upper, FB_DATATYPE_INTEGER )
+		expr = astNewCONSTi( d->upper, FB_DATATYPE_INTEGER )
 		if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
 			exit function
 		end if
-	next
 
-    ''
+        d = d->next
+	loop
+
 	astAdd( proc )
 
 	function = TRUE
@@ -441,10 +469,12 @@ function rtlArraySetDesc( byval sym as FBSYMBOL ptr, _
 end function
 
 '':::::
-function rtlArrayResetDesc( byval sym as FBSYMBOL ptr, _
-						  	byval elementlen as integer, _
-					      	byval dimensions as integer _
-						  ) as integer static
+function rtlArrayResetDesc _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval elementlen as integer, _
+		byval dimensions as integer _
+	) as integer static
 
     dim as ASTNODE ptr proc
     dim as integer dtype
@@ -481,9 +511,11 @@ function rtlArrayResetDesc( byval sym as FBSYMBOL ptr, _
 end function
 
 '':::::
-function rtlArrayAllocTmpDesc( byval arrayexpr as ASTNODE ptr, _
-							   byval pdesc as FBSYMBOL ptr _
-							 ) as ASTNODE ptr
+function rtlArrayAllocTmpDesc _
+	( _
+		byval arrayexpr as ASTNODE ptr, _
+		byval pdesc as FBSYMBOL ptr _
+	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc, expr
     dim as integer dtype, dimensions
@@ -545,7 +577,11 @@ function rtlArrayAllocTmpDesc( byval arrayexpr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlArrayFreeTempDesc( byval pdesc as FBSYMBOL ptr ) as ASTNODE ptr
+function rtlArrayFreeTempDesc _
+	( _
+		byval pdesc as FBSYMBOL ptr _
+	) as ASTNODE ptr
+
     dim as ASTNODE ptr proc, expr
 
 	function = NULL
@@ -563,12 +599,14 @@ function rtlArrayFreeTempDesc( byval pdesc as FBSYMBOL ptr ) as ASTNODE ptr
 end function
 
 '':::::
-function rtlArrayBoundsCheck( byval idx as ASTNODE ptr, _
-							  byval lb as ASTNODE ptr, _
-							  byval rb as ASTNODE ptr, _
-							  byval linenum as integer, _
-							  byval module as zstring ptr _
-							) as ASTNODE ptr static
+function rtlArrayBoundsCheck _
+	( _
+		byval idx as ASTNODE ptr, _
+		byval lb as ASTNODE ptr, _
+		byval rb as ASTNODE ptr, _
+		byval linenum as integer, _
+		byval module as zstring ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f

@@ -147,7 +147,8 @@ declare function 	irAllocVRPTR		( _
 
 declare function 	irAllocVROFS		( _
 											byval dtype as integer, _
-											byval symbol as FBSYMBOL ptr _
+											byval symbol as FBSYMBOL ptr, _
+											byval ofs as integer _
 										) as IRVREG ptr
 
 declare sub 		irProcBegin			( _
@@ -186,14 +187,6 @@ declare sub 		irEmitPROCEND		( _
 											byval exitlabel as FBSYMBOL ptr _
 										)
 
-declare sub 		irEmitSCOPEBEGIN	( _
-											byval s as FBSYMBOL ptr _
-										)
-
-declare sub 		irEmitSCOPEEND		( _
-											byval s as FBSYMBOL ptr _
-										)
-
 declare sub 		irEmitVARINIBEGIN	( _
 											byval sym as FBSYMBOL ptr _
 										)
@@ -218,7 +211,8 @@ declare sub 		irEmitVARINI64		( _
 										)
 
 declare sub 		irEmitVARINIOFS		( _
-											byval sym as FBSYMBOL ptr _
+											byval sym as FBSYMBOL ptr, _
+											byval ofs as integer _
 										)
 
 declare sub 		irEmitVARINISTR		( _
@@ -373,8 +367,9 @@ declare sub 		irXchgTOS			( _
 
 #define irEmitMEM(op,v1,v2,bytes) irEmit( op, v1, v2, NULL, 0, bytes )
 
-#define irEmitSTKCLEAR(bytes,baseofs) irEmit( AST_OP_STKCLEAR, NULL, NULL, NULL, cast( any ptr, baseofs ), bytes )
+#define irEmitSCOPEBEGIN(s) irFlush( )
 
+#define irEmitSCOPEEND(s) irFlush( )
 
 #define ISLONGINT(t) ((t = FB_DATATYPE_LONGINT) or (t = FB_DATATYPE_ULONGINT))
 

@@ -226,9 +226,9 @@ private function hDeclExternVar _
 		byval addsuffix as integer, _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM _
-	) as FBSYMBOL ptr
+	) as FBSYMBOL ptr static
 
-	dim as FBSYMBOL ptr s
+	dim as FBSYMBOL ptr s, desc
 	dim as integer setattrib
 
     function = NULL
@@ -284,7 +284,7 @@ private function hDeclExternVar _
 
     	'' set type
     	if( setattrib ) then
-    		symbSetAttrib( s, (attrib and not FB_SYMBATTRIB_EXTERN) or _
+    		symbSetAttrib( s, (attrib and (not FB_SYMBATTRIB_EXTERN)) or _
     					  	  FB_SYMBATTRIB_PUBLIC or _
     					  	  FB_SYMBATTRIB_SHARED )
 		end if
@@ -298,7 +298,15 @@ private function hDeclExternVar _
 
     		else
 				'' set dims
-				symbSetArrayDims( s, dimensions, dTB() )
+				symbSetArrayDimTb( s, dimensions, dTB() )
+
+				if( setattrib ) then
+    				desc = symbGetArrayDescriptor( s )
+    				symbSetAttrib( desc, _
+    							   (symbGetAttrib( desc ) and (not FB_SYMBATTRIB_EXTERN)) or _
+    					  	  	   FB_SYMBATTRIB_PUBLIC or _
+    					  	  	   FB_SYMBATTRIB_SHARED )
+				end if
     		end if
 		end if
 
@@ -353,6 +361,7 @@ private function hDeclStaticVar _
 		ns = @symbGetGlobalNamespc( )
     end if
 
+    '' remove attrib, because COMMON and $dynamic..
     attrib and= (not FB_SYMBATTRIB_DYNAMIC)
 
     ''
@@ -377,18 +386,6 @@ private function hDeclStaticVar _
 
 	end if
 
-	'' another quirk: if array is local (ie, inside a proc) and it's not dynamic, it's
-	'' descriptor won't will be filled ever, so a call to another rtl routine is needed,
-	'' or that array coulnd't be passed by descriptor to other procs (allocating a static
-	'' descriptor won't help, as that would break recursion)
-	if( dimensions > 0 ) then
-		if( (attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC)) = 0 ) then
-			if( rtlArraySetDesc( s, lgt, dimensions, dTB() ) = FALSE ) then
-				return NULL
-			end if
-		end if
-	end if
-
 	function = s
 
 end function
@@ -406,9 +403,7 @@ private function hDeclDynArray _
 		byval lgt as integer, _
 		byval addsuffix as integer, _
 		byval attrib as integer, _
-		byval dopreserve as integer, _
-		byval dimensions as integer, _
-		exprTB() as ASTNODE ptr _
+		byval dimensions as integer _
 	) as FBSYMBOL ptr static
 
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)		'' always 0
@@ -487,9 +482,10 @@ private function hDeclDynArray _
 					exit function
 				end if
 
-				symbSetAttrib( s, (attrib and not FB_SYMBATTRIB_EXTERN) or _
-    					          FB_SYMBATTRIB_PUBLIC or _
-    					          FB_SYMBATTRIB_SHARED )
+				symbSetAttrib( s, (attrib and _
+								   (not FB_SYMBATTRIB_EXTERN)) or _
+    					           FB_SYMBATTRIB_PUBLIC or _
+    					           FB_SYMBATTRIB_SHARED )
 			end if
 		end if
 	end if
@@ -526,26 +522,6 @@ private function hDeclDynArray _
     		errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
     		'' no error recovery, ditto
     		exit function
-		end if
-	end if
-
-	'' if dimensions not -1 (COMMON or DIM|REDIM array()), redim it
-	if( dimensions > 0 ) then
-		if( rtlArrayRedim( s, lgt, dimensions, exprTB(), dopreserve ) = FALSE ) then
-			exit function
-		end if
-
-	else
-		'' otherwise if it's a local array, the descriptor must be
-		'' initialized, or passing it to another proc by desc will
-		'' cause errors if the called proc tries to redim the array
-		if( (attrib and (FB_SYMBATTRIB_SHARED or _
-						 FB_SYMBATTRIB_COMMON or _
-						 FB_SYMBATTRIB_STATIC or _
-						 FB_SYMBATTRIB_PARAMBYDESC)) = 0 ) then
-
-			rtlArrayResetDesc( s, symbGetLen( s ), FB_MAXARRAYDIMS )
-
 		end if
 	end if
 
@@ -610,9 +586,9 @@ private function hVarDecl _
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)
     dim as FBSYMBOL ptr sym, subtype, ns
     dim as FBSYMCHAIN ptr chain_
+    dim as ASTNODE ptr initree
     dim as integer addsuffix, isdynamic, ismultdecl, istypeless, suffix
-    dim as integer dtype, lgt, ofs, ptrcnt
-    dim as integer dimensions
+    dim as integer dtype, lgt, ofs, ptrcnt, dimensions, isdecl
     dim as zstring ptr palias
 
     function = FALSE
@@ -877,8 +853,8 @@ private function hVarDecl _
     	if( isdynamic ) then
     		sym = hDeclDynArray( sym, id, palias, _
     							 dtype, subtype, ptrcnt, istypeless, _
-    							 lgt, addsuffix, attrib, dopreserve, _
-    							 dimensions, exprTB() )
+    							 lgt, addsuffix, attrib, _
+    							 dimensions )
     	else
 			sym = hDeclStaticVar( sym, id, palias, _
 								  dtype, subtype, ptrcnt, _
@@ -890,40 +866,145 @@ private function hVarDecl _
     		if( errGetCount( ) >= env.clopt.maxerrors ) then
     			exit function
     		end if
+
+    		isdecl = FALSE
+
+    	else
+    		isdecl = symbGetIsDeclared( sym )
     	end if
 
-		'' ('=' SymbolInitializer)?
-		select case lexGetToken( )
-		case FB_TK_DBLEQ, FB_TK_EQ
-			lexSkipToken( )
+		initree = NULL
 
-        	if( sym = NULL ) then
-        		'' error recovery: skip until next ','
-        		hSkipUntil( CHAR_COMMA )
+		'' if not declared yet and not Extern, check for initializers
+		if( (isdecl = FALSE) and (token <> FB_TK_EXTERN) ) then
 
-        	else
-        		dim as ASTNODE ptr tree
-        		tree = cVariableInit( sym, TRUE )
-        		if( tree = NULL ) then
-        			exit function
-        		end if
+			'' ('=' SymbolInitializer | ANY)?
+			select case lexGetToken( )
+			case FB_TK_DBLEQ, FB_TK_EQ
+				lexSkipToken( )
 
-        		'' not static or shared?
-        		if( (symbGetAttrib( sym ) and _
-        			 (FB_SYMBATTRIB_STATIC or FB_SYMBATTRIB_SHARED)) = 0 ) then
+        		if( sym = NULL ) then
+        			'' error recovery: skip until next ','
+        			hSkipUntil( CHAR_COMMA )
 
-        			astTypeIniFlush( tree, sym, FALSE, TRUE )
+				else
+                	'' ANY?
+					if( lexGetToken( ) = FB_TK_ANY ) then
 
-        		'' static or shared (includes extern/public), let emit flush it..
-        		else
-        			if( astTypeIniIsConst( tree ) = FALSE ) then
-        				exit function
+						'' don't allow var-len strings
+						if( dtype = FB_DATATYPE_STRING ) then
+							errReport( FB_ERRMSG_INVALIDDATATYPES )
+						else
+							symbSetDontClear( sym )
+						end if
+
+						lexSkipToken( )
+
+        			else
+        				initree = cVariableInit( sym, TRUE )
+        				if( initree = NULL ) then
+        					if( errGetLast( ) <> FB_ERRMSG_OK ) then
+        						exit function
+        					end if
+
+        				else
+        					'' static or shared?
+        					if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
+        				  						   	   	   FB_SYMBATTRIB_SHARED)) <> 0 ) then
+        						if( astTypeIniIsConst( initree ) = FALSE ) then
+	        						if( errGetLast( ) <> FB_ERRMSG_OK ) then
+	        							exit function
+	        						else
+	        							'' error recovery: discard the tree
+	        							astDelTree( initree )
+	        							initree = NULL
+	        						end if
+        						end if
+        					end if
+        				end if
+
         			end if
-
-        			symbSetTypeIniTree( sym, tree )
         		end if
-        	end if
-		end select
+			end select
+
+		end if
+
+		'' add to AST
+		if( sym <> NULL ) then
+
+			dim as FBSYMBOL ptr desc = NULL
+
+			'' not declared already?
+    		if( isdecl = FALSE ) then
+    			astAdd( astNewDECL( FB_SYMBCLASS_VAR, sym, initree ) )
+
+				desc = symbGetArrayDescriptor( sym )
+				if( desc <> NULL ) then
+					astAdd( astNewDECL( FB_SYMBCLASS_VAR, _
+										desc, _
+										symbGetTypeIniTree( desc ) ) )
+				end if
+
+    		end if
+
+			'' handle arrays (must be done after adding the decl node)
+
+			'' do nothing if it's EXTERN
+			if( token <> FB_TK_EXTERN ) then
+
+				'' array?
+				if( isdynamic or (dimensions > 0) ) then
+					'' not declared yet?
+					if( isdecl = FALSE ) then
+						'' local?
+						if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
+												   	   FB_SYMBATTRIB_SHARED)) = 0 ) then
+
+							'' bydesc array params have no descriptor
+							if( desc <> NULL ) then
+								astTypeIniFlush( symbGetTypeIniTree( desc ), _
+											 	 desc, _
+											 	 FALSE, _
+											  	 TRUE )
+
+								symbSetTypeIniTree( desc, NULL )
+							end if
+						end if
+					end if
+				end if
+
+				'' dynamic? if the dimensions are known, redim it
+				if( isdynamic ) then
+					if( dimensions > 0 ) then
+						rtlArrayRedim( sym, _
+									   symbGetLen( sym ), _
+									   dimensions, _
+									   exprTB(), _
+									   dopreserve, _
+									   symbGetDontClear( sym ) = FALSE )
+					end if
+				end if
+
+				'' all set as declared
+				symbSetIsDeclared( sym )
+			end if
+
+			'' handle ini trees (ditto)
+			if( initree <> NULL ) then
+				'' not static or shared?
+        		if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
+        									   FB_SYMBATTRIB_SHARED or _
+        									   FB_SYMBATTRIB_COMMON)) = 0 ) then
+
+					astTypeIniFlush( initree, sym, FALSE, TRUE )
+
+				else
+                	'' let emit flush it..
+       				symbSetTypeIniTree( sym, initree )
+				end if
+			end if
+
+		end if
 
 		'' (',' SymbolDef)*
 		if( lexGetToken( ) <> CHAR_COMMA ) then
