@@ -7,7 +7,8 @@ License:
 
   This program is free software; you can redistribute it and/or modify it under
   the terms of the GNU General Public License as published by the Free Software
-  Foundation; either version 2 of the License, or (at your option) any later version.
+  Foundation; either version 2 of the License, or (at your option) any later 
+  version.
 
   This program is distributed in the hope that it will be useful, but WITHOUT
   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
@@ -47,9 +48,9 @@ Installing:
       directory structure as used inside the archive must be preserved.
 
 
-  (Note: if you are installing the DOS version over the Windows one or vice-versa,
-   rename the fbc.exe file of the preview installation to fbc-win.exe or such, or
-   it will be overwritten by the new one.)
+  (Note: if you are installing the DOS version over the Windows one or vice-
+   versa, rename the fbc.exe file of the preview installation to fbc-win.exe or 
+   such, or it will be overwritten by the new one.)
 
 
 Running:
@@ -101,20 +102,20 @@ Requirements:
       Win32 system installed yet.
 
     - The msvcrt.dll (the Microsoft's C runtime library) must be present (note:
-      it didn't use to come with Windows 95, but it's installed by many applications
-      and can be also downloaded at:
+      it didn't use to come with Windows 95, but it's installed by many 
+      applications and can be also downloaded at:
       http://support.microsoft.com/default.aspx?scid=kb;en-us;259403 ).
 
     - The gfx routines will use DirectX 5.0 or later if found on the host system,
       otherwise they'll fall back on standard Win32 GDI which will work on any
       Windows system.
       
-    - Unicode wide-strings (WSTRING's) only work in Windows NT/2000/XP/2003/Vista or 
-      above. Applications that depend on wide-strings will run in Windows 98/Me, but
-      no input/output will work if the character set isn't latin-based, because those 
-      platforms don't support Unicode strings. Windows 95 has most Unicode API 
-      functions missing, applications using wide-strings won't even be loaded by 
-      this specific OS.
+    - Unicode wide-strings (WSTRING's) only work in Windows NT/2000/XP/2003/Vista 
+      or above. Applications that depend on wide-strings will run in Windows 98/Me, 
+      but no input/output will work if the character set isn't latin-based, 
+      because those platforms don't support Unicode strings. Windows 95 has most 
+      Unicode API functions missing, applications using wide-strings won't even 
+      be loaded by this specific OS.
 
   o Linux version:
 
@@ -128,14 +129,14 @@ Requirements:
       problem as long as there's a recent X11 server installed in the system
       (at least XFree86 4.3.0 or any X.org version).
 
-    - If having a working X11 installation is enough to run FreeBASIC gfx programs,
-      it may be not enough to compile them; you may need to install the X11
-      development libraries from your Linux packages repository.
+    - If having a working X11 installation is enough to run FreeBASIC gfx 
+      programs, it may be not enough to compile them; you may need to install 
+      the X11 development libraries from your Linux packages repository.
 
     - Unicode wide-strings (WSTRING's) with non-ascii character sets can only be 
       displayed in console if the locale is set to an UTF-8 version - most modern
-      distros come with support that and char sets other than latin may work only
-      in xterm.
+      distros come with support that and char sets other than latin may work 
+      only in xterm.
 
   o DOS version:
 
@@ -145,24 +146,26 @@ Requirements:
       (http://clio.rice.edu/cwsdpmi/csdpmi5b.zip) must be on your PATH
       environment variable (note: FreeDOS comes with it already installed).
 
-    - Unicode isn't supported in DOS, WSTRING will be the same as ZSTRING, character
-      sets other than latin aren't supported.
+    - Unicode isn't supported in DOS, WSTRING will be the same as ZSTRING, 
+      character sets other than latin aren't supported.
 
 Debugging:
 
-  o The debugger is in the bin\win32 or bin\dos directories (the GDB.EXE file), for
-    the Windows and DOS versions respectively. It usually comes already installed
-    in most Linux distros.
+  o The debugger is in the bin\win32 or bin\dos directories (the GDB.EXE file), 
+    for the Windows and DOS versions respectively. It usually comes already 
+    installed in most Linux distros.
 
-    (Note: all commands should be typed without quotes and then [return] must be pressed.)
+    (Note: all commands should be typed without quotes and then [return] must be 
+     pressed.)
 
     - Compile the sources using the -g cmd-line option to add debugging support.
 
     - Load it in GDB using: "gdb myapplicationname.exe".
 
     - Set the arguments to the application been debugged using:
-      "set args arg1 arg2 argn". You can also run GBD and pass the arguments directly
-      to the application been debugged: "gdb --args myapp.exe arg1 arg2 arg3".
+      "set args arg1 arg2 argn". You can also run GBD and pass the arguments 
+      directly to the application been debugged: 
+      "gdb --args myapp.exe arg1 arg2 arg3".
 
     - If the executable isn't in the same directory of the source files where it
       was compiled, type: "dir path/to/my/application/sources".
@@ -236,21 +239,22 @@ Most Important Features:
       linear algebra, statistics, sorting, differential equations, and a dozen
       other sub-libraries with mathematical routines
 
-    - GMP - GNU Multiple Precision Arithmetic Library: known as the fastest bignum
-      library
+    - GMP - GNU Multiple Precision Arithmetic Library: known as the fastest 
+      bignum library
 
     - SDL - Simple DirectMedia Layer: multimedia library for audio, user input,
       3D and 2D gfx (including the sub-libraries such as SDL_Net, SDL_TTF, etc)
 
-    - OpenGL: portable library for developing interactive 2D and 3D graphics games
-      and applications (including support for frameworks such as GLUT and GLFW, plus
-      the GL Extensions)
+    - OpenGL: portable library for developing interactive 2D and 3D graphics 
+      games and applications (including support for frameworks such as GLUT and 
+      GLFW, plus the GL Extensions)
 
     - Allegro: game programming library (graphics, sounds, player input, etc)
 
     - GD, DevIL, FreeImage, GRX and other graphic-related libraries
 
-    - OpenAL, Fmod, BASS: 2D and 3D sound systems, with support for mod, mp3, ogg, etc
+    - OpenAL, Fmod, BASS: 2D and 3D sound systems, with support for mod, mp3, 
+      ogg, midi, etc
 
     - ODE and Newton - dynamics engines: rigid body dynamics simulation
 
@@ -259,8 +263,8 @@ Most Important Features:
     - Windows API - the most complete headers set between the BASIC
       compilers available, including support for the Unicode functions
 
-    - DirectX - Direct3D, DirectDraw, DirectSound, DirectMusic, DirectInput, DirectPlay 
-                and DirectShow, with interfaces up to version 9
+    - DirectX - Direct3D, DirectDraw, DirectSound, DirectMusic, DirectInput, 
+                DirectPlay and DirectShow, with interfaces up to version 9
 
     - DispHelper - COM IDispatch interfaces made easy
 
@@ -288,13 +292,13 @@ Most Important Features:
 
   o Unicode support:
 
-    - Besides ASCII files with Unicode escape sequences (\u), FreeBASIC can parse 
-      UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source (.bas) or header (.bi) 
-      files, they can freely mixed with other sources/headers in the same project
-      (also with other ASCII files).
+    - Besides ASCII files with Unicode escape sequences (\u), FreeBASIC can 
+      parse UTF-8, UTF-16LE, UTF-16BE, UTF-32LE and UTF-32BE source (.bas) or 
+      header (.bi) files, they can freely mixed with other sources/headers in 
+      the same project (also with other ASCII files).
 
-    - Literal strings can be typed in the original non-latin alphabet, just use an
-      text-editor that supports some of the Unicode formats listed above.
+    - Literal strings can be typed in the original non-latin alphabet, just use 
+      an text-editor that supports some of the Unicode formats listed above.
       
     - The WSTRING type holds wide-characters, all string functions (like LEFT, 
       TRIM, etc) will work with wide-strings too.
@@ -326,7 +330,8 @@ Most Important Features:
 
       inner.bar = foo + 1
 
-    - Imported name spaces go out-scope if used inside compound statements or routines:
+    - Imported name spaces go out-scope if used inside compound statements or 
+      routines:
 
       NAMESPACE ns1
         DIM foo = 1
@@ -340,8 +345,8 @@ Most Important Features:
       DIM foo = 2
       PRINT "ns1.foo ="; ns1.foo, "foo ="; foo
 
-    - Symbols are mangled following the GCC 3.x ABI, allowing C++ global functions
-      and variables defined inside name spaces to be accessed directly:
+    - Symbols are mangled following the GCC 3.x ABI, allowing C++ global 
+      functions and variables defined inside name spaces to be accessed directly:
 
       // compile with G++ 3.x or above
       namespace cpp {
@@ -350,7 +355,8 @@ Most Important Features:
 
       EXTERN "c++"
         NAMESPACE cpp
-          declare function sum cdecl( byval a as integer, byval b as integer ) as integer        
+          DECLARE FUNCTION sum ( BYVAL a AS INTEGER, _
+                                 BYVAL b AS INTEGER ) AS INTEGER
         END NAMESPACE
       END EXTERN
 
@@ -525,6 +531,13 @@ Most Important Features:
       DIM mytypearray(0 to 1) as MYTYPE = { ( "a", 1, 2.0 ), ( "b", 3, 4.0 ) }
 
       DIM localvar AS INTEGER = a + b * d
+      
+      - Void initializer to not clear the local symbols and speed up 
+        allocation:
+      
+        DIM localvar AS DOUBLE = ANY
+        
+        DIM localarray(0 to 9) AS INTEGER = ANY
 
   o Optional function arguments (numeric and strings):
 
@@ -609,7 +622,8 @@ Most Important Features:
 
   o Debugging support:
 
-    - Full debugging support with GDB (the GNU debugger) or Insight (the GDB GUI frontend)
+    - Full debugging support with GDB (the GNU debugger) or Insight (the GDB 
+      GUI frontend)
 
     - Array bounds checking (only enabled by the -exx command-line option)
 
@@ -624,11 +638,11 @@ Most Important Features:
 
   o Non-fatal error handling:
 
-    - The FreeBASIC parser won't exit unless n# syntax and/or semantic errors 
+    - The FreeBASIC parser won't quit unless n# syntax and/or semantic errors 
       happened, making it easier to port sources from different languages and 
       to work with large projects.
 
-  o A a 32-bit application:
+  o As a 32-bit application:
 
     - FreeBASIC can compile source code files up to 2 GB long.
 
@@ -646,7 +660,8 @@ Most Important Features:
 
     - All third-party tools are also free. No piece of abandoned or copyrighted
       software is used (but GoRC on Win32). The assembler, linker, archiver, and
-      other command-line applications come from the GNU binutil programming tools.
+      other command-line applications come from the GNU binutil programming 
+      tools.
 
 
 What FreeBASIC Isn't:
@@ -690,19 +705,22 @@ Credits (in alphabetic order):
       and compiler improvements.
 
   o Bryan Stoeberl (b_stoeberl[at]yahoo.com):
-    - Translated the OpenGL Extensions header (later replaced by the SWIG FB wrapper version).
+    - Translated the OpenGL Extensions header (later replaced by the SWIG 
+      FB wrapper version).
     - Wrote the glext example at the examples/GL dir.
 
   o Claudio Tinivella (tinycla[at]yahoo.it):
     - Translated from C all the Gtk tutorials at the examples/Gtk/Tutorials dir.
 
   o Chris Davies (c.g.davies[at]gmail.com):
-    - Translated the OpenAL headers (later replaced by the SWIG FB wrapper version).
+    - Translated the OpenAL headers (later replaced by the SWIG FB wrapper 
+      version).
     - Wrote the OpenAL demonstration in the examples/sound directory.
 
   o Daniel R. Verkamp (i_am_drv[at]yahoo.com) - Project Member:
     - Ported FreeBASIC to DOS and Xbox; ports maintainer.
-    - Translated the Allegro headers (later replaced by the SWIG FB wrapper version).
+    - Translated the Allegro headers (later replaced by the SWIG FB wrapper 
+      version).
     - Wrote the DLL and static library automation, plus resource scripts
       support on Windows.
 
@@ -711,8 +729,8 @@ Credits (in alphabetic order):
     - Wrote the wx demonstration in the examples/wx-c dir.
 
   o Edmond Leung (leung.edmond[at]gmail.com):
-    - Translated the SDL headers, including SDL_mixer and SDL_image (later replaced 
-      by the SWIG FB wrapper version).
+    - Translated the SDL headers, including SDL_mixer and SDL_image (later 
+      replaced by the SWIG FB wrapper version).
     - Wrote/ported many of the examples in the examples/SDL dir.
 
   o Eric Lope (vic_viperph[at]yahoo.com):
@@ -736,7 +754,8 @@ Credits (in alphabetic order):
     - Wrote the PDFlib demonstration, at examples/pdflib
 
   o Hans L. Nemeschkal (Hans.Leo.Nemeschkal[at]univie.ac.at):
-    - Translated the DISLIN header (later replaced by the SWIG FB wrapper version).
+    - Translated the DISLIN header (later replaced by the SWIG FB wrapper 
+      version).
 
   o Jofers (spam[at]betterwebber.com):
     - Wrote the examples in the examples/freetype directory.
@@ -745,7 +764,8 @@ Credits (in alphabetic order):
     - Wrote the GSL matrix test at the examples/GSL directory.
 
   o Matthias Faust (matthias_faust[at]web.de):
-    - Translated the SDL_ttf header (later replaced by the SWIG FB wrapper version).
+    - Translated the SDL_ttf header (later replaced by the SWIG FB wrapper 
+      version).
     - Wrote the SDL_ttf demonstration.
 
   o Mark Junker (mjscod[at]gmx.de) - Project Member:
@@ -759,7 +779,7 @@ Credits (in alphabetic order):
   o Marzec:
     - Wrote the SDL_bassgl, SDL_opengl, and SDL_key tests in the SDL directory.
     - Translated the first SDL headers (replaced by new ones since version 0.11b).
-    - Wrote the first file routines for the run-time library.
+    - Wrote the first file routines for the run-time library, later replaced.
 
   o Nek (dave[at]nodtveidt.net):
     - Translated the Windows API headers, integrating parts of fsw's work (later 
@@ -770,8 +790,8 @@ Credits (in alphabetic order):
     - Wrote the fmod.bas test in the examples/sound directory.
 
   o Sterling Christensen (sterling[at]engineer.com):
-    - Ex-project member, developer of the QB-like graphics library (later replaced by 
-      GFXLib2 in 0.11b)
+    - Ex-project member, developer of the QB-like graphics library (later 
+      replaced by GFXLib2 in 0.11b)
 
   o Steven Hidy (subxero[at]phatcode.net):
     - Rewrote this readme file, correcting v1ctor's mistakes (also re-edited by
@@ -782,11 +802,15 @@ Credits (in alphabetic order):
 
 
   o Third-party tools included:
-    - DOS version: DJGPP (http://www.delorie.com/)
+    - DOS version: 
+      * DJGPP (http://www.delorie.com/)
 
-    - Windows version: Mingw (http://www.mingw.org/) and GoRC (http://www.godevtool.com/)
+    - Windows version: 
+      * Mingw (http://www.mingw.org/)
+      * GoRC (http://www.godevtool.com/)
 
-    - Xbox version: OpenXDK (http://www.openxdk.org/)
+    - Xbox version: 
+      * OpenXDK (http://www.openxdk.org/)
 
   o The long integers (64-bit) division and modulo routines are from the GCC's
     libgcc2 sources.
@@ -797,25 +821,15 @@ Greetings:
   o Plasma: freebasic.net domain register and since mar/2005 hosts the main site
     too, many thanks to him.
 
-  o Nexinarus: Organized the documentation (W.I.P.), found bugs and saved a bunch
-    of kangaroos in the middle time.
-
   o VonGodric: author of the first FreeBASIC IDE: FBIDE (download it here:
     http://www.hot.ee/fbide/ ).
 
-  o Rel: Best beta tester ever, found loads of bugs.
+  o Everybody that helped writing the documentation (and in special to Nexinarus 
+    that started it), more details at 
+    http://www.freebasic.net/wiki/wikka.php?wakka=ContributorList
 
-  o Wildcard: Created the biggest FB forum and helped making FB known even before
-    it was released.
-
-  o Blitz: The first to see the compiler when it was just a toy (delete the
-    sources!). Helped pointing me out the right paths to follow in order to
-    generate better code. Helped finding bugs and wrote the first real apps.
-
-  o Marzec: Loads of tests, besides giving many ideas.
-
-  o Nek, na_th_an, Sj Zero, Z!re: Some serious beta testing - meaning: loads of
-    bugs found.
+  o All users that reported bugs, requested features and as such helped 
+    improving the compiler, language and run-time library somehow.
 
 
 Links:
