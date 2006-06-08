@@ -286,7 +286,8 @@
 #define FB_RTL_ERRORSETNUM 				"fb_ErrorSetNum"
 #define FB_RTL_ERRORRESUME 				"fb_ErrorResume"
 #define FB_RTL_ERRORRESUMENEXT 			"fb_ErrorResumeNext"
-#define FB_RTL_ERRORSETINFO				"fb_ErrorSetInfo"
+#define FB_RTL_ERRORSETMODNAME			"fb_ErrorSetModName"
+#define FB_RTL_ERRORSETFUNCNAME			"fb_ErrorSetFuncName"
 
 #define FB_RTL_GFXPSET 					"fb_GfxPset"
 #define FB_RTL_GFXPOINT 				"fb_GfxPoint"
@@ -577,7 +578,8 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_ERRORSETNUM
 	FB_RTL_IDX_ERRORRESUME
 	FB_RTL_IDX_ERRORRESUMENEXT
-	FB_RTL_IDX_ERRORSETINFO
+	FB_RTL_IDX_ERRORSETMODNAME
+	FB_RTL_IDX_ERRORSETFUNCNAME
 
 	FB_RTL_IDX_GFXPSET
 	FB_RTL_IDX_GFXPOINT
@@ -1168,9 +1170,14 @@ declare sub 		rtlErrorResume		( _
 											byval isnext as integer _
 										)
 
-declare sub 		rtlErrorSetInfo 	( _
-											byval modname as zstring ptr, _
-											byval funname as zstring ptr _
+declare sub 		rtlErrorSetModName 	( _
+											byval sym as FBSYMBOL ptr, _
+											byval modname as ASTNODE ptr _
+										)
+
+declare sub 		rtlErrorSetFuncName ( _
+											byval sym as FBSYMBOL ptr, _
+											byval funcname as ASTNODE ptr _
 										)
 
 declare function	rtlConsoleView		( _

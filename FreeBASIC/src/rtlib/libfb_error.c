@@ -68,7 +68,8 @@ static void fb_Die
 	( 
 		int err_num, 
 		int line_num, 
-		const char *fun_name 
+		const char *mod_name,
+		const char *fun_name
 	)
 {
 	int pos = 0;
@@ -85,8 +86,12 @@ static void fb_Die
 						 " at line %d", line_num );
 
 	if( fun_name != NULL )
-	    pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
-	    				 " of %s" FB_NEWLINE FB_NEWLINE, fun_name );
+		if( fun_name != NULL )
+	    	pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
+	    				 	 " %s %s::%s()" FB_NEWLINE FB_NEWLINE, (line_num > 0? &"of" : &"in"), mod_name, fun_name );
+		else
+	    	pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
+	    				 	 " %s %s()" FB_NEWLINE FB_NEWLINE, (line_num > 0? &"of" : &"in"), mod_name );
 	else
 		pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos, FB_NEWLINE FB_NEWLINE );
 	
@@ -103,7 +108,7 @@ FB_ERRHANDLER fb_ErrorThrowEx
 	( 
 		int err_num, 
 		int line_num, 
-		const char *fun_name,
+		const char *mod_name,
 		void *res_label, 
 		void *resnext_label 
 	)
@@ -114,8 +119,8 @@ FB_ERRHANDLER fb_ErrorThrowEx
     {
     	ctx->err_num = err_num;
     	ctx->line_num = line_num;
-    	if( fun_name != NULL ) 
-    		ctx->fun_name = fun_name;
+    	if( mod_name != NULL )
+    		ctx->mod_name = mod_name;
     	ctx->res_lbl = res_label;
     	ctx->resnxt_lbl = resnext_label;
 
@@ -123,7 +128,10 @@ FB_ERRHANDLER fb_ErrorThrowEx
     }
 
 	/* if no user handler defined, die */
-	fb_Die( err_num, line_num, (fun_name != NULL? fun_name: ctx->fun_name) );
+	fb_Die( err_num, 
+			line_num, 
+			(mod_name != NULL? mod_name: ctx->mod_name),
+			ctx->fun_name );
 
 	return NULL;
 }
@@ -132,14 +140,14 @@ FB_ERRHANDLER fb_ErrorThrowEx
 FB_ERRHANDLER fb_ErrorThrowAt 
 	( 
 		int line_num, 
-		const char *fun_name,
+		const char *mod_name,
 		void *res_label, 
 		void *resnext_label 
 	)
 {
 	FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
 
-	return fb_ErrorThrowEx( ctx->err_num, line_num, fun_name, res_label, resnext_label );
+	return fb_ErrorThrowEx( ctx->err_num, line_num, mod_name, res_label, resnext_label );
 
 }
 
@@ -170,7 +178,7 @@ void *fb_ErrorResume
 
 	/* not defined? die */
 	if( label == NULL )
-		fb_Die( FB_RTERROR_ILLEGALRESUME, -1, NULL );
+		fb_Die( FB_RTERROR_ILLEGALRESUME, -1, ctx->mod_name, ctx->fun_name );
 
 	/* don't loop forever */
 	ctx->res_lbl = NULL;
@@ -190,7 +198,7 @@ void *fb_ErrorResumeNext
 
 	/* not defined? die */
 	if( label == NULL )
-		fb_Die( FB_RTERROR_ILLEGALRESUME, -1, NULL );
+		fb_Die( FB_RTERROR_ILLEGALRESUME, -1, ctx->mod_name, ctx->fun_name );
 
 	/* don't loop forever */
 	ctx->res_lbl = NULL;

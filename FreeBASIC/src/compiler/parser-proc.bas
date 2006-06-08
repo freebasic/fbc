@@ -526,9 +526,6 @@ function cProcStmtBegin as integer static
 		exit function
 	end if
 
-	''
-	env.isprocstatic = (attrib and FB_SYMBATTRIB_STATIC) > 0
-
 	'' emit proc setup
 	procnode = astProcBegin( proc, FALSE )
 	if( procnode = NULL ) then
@@ -592,7 +589,6 @@ function cProcStmtEnd as integer static
 	function = astProcEnd( stk->proc.node, FALSE )
 
 	'' pop from stmt stack
-	env.isprocstatic = FALSE
 	cCompStmtPop( stk )
 
 	if( res = FALSE ) then

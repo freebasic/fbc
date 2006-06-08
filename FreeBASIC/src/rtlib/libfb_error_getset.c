@@ -92,6 +92,22 @@ FBCALL const char *fb_ErrorGetModName
 }
 
 /*:::::*/
+FBCALL const char *fb_ErrorSetModName 
+	( 
+		const char *mod_name
+	)
+{
+    FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
+    
+    const char *old_name = ctx->mod_name;
+    
+    ctx->mod_name = mod_name;
+
+	return old_name;
+
+}
+
+/*:::::*/
 FBCALL const char *fb_ErrorGetFuncName 
 	( 
 		void 
@@ -104,15 +120,17 @@ FBCALL const char *fb_ErrorGetFuncName
 }
 
 /*:::::*/
-FBCALL void fb_ErrorSetInfo
+FBCALL const char *fb_ErrorSetFuncName 
 	( 
-		const char *mod_name, 
 		const char *fun_name
 	)
 {
     FB_ERRORCTX *ctx = FB_TLSGETCTX( ERROR );
+    
+    const char *old_name = ctx->fun_name;
+    
+    ctx->fun_name = fun_name;
 
-	ctx->mod_name = mod_name;
-	ctx->fun_name = fun_name;
+	return old_name;
 
 }

@@ -1,10 +1,6 @@
 [ ] "= any" initializer should be allowed with REDIM or arrays
     passed by descriptor to functions will be always cleared
 
-[ ] err:
-    - to fun_name and mod_name to work, the current one must be
-      saved at procBegin and restore at procEnd
-
 [ ] SCOPE..END SCOPE:
     - can't optimize multiple MEM_CLEAR's if there's any branch to
       one of them

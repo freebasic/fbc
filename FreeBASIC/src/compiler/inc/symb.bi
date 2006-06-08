@@ -294,10 +294,17 @@ type FB_PROCDBG
 	incfile			as zstring ptr
 end type
 
+type FB_PROCERR
+	lasthnd			as FBSYMBOL_ ptr			'' last error handler
+	lastmod			as FBSYMBOL_ ptr			'' last module name
+	lastfun			as FBSYMBOL_ ptr			'' last function name
+end type
+
 type FB_PROCEXT
 	res				as FBSYMBOL_ ptr			'' result, if any
 	stk				as FB_PROCSTK 				'' to keep track of the stack frame
 	dbg				as FB_PROCDBG 				'' debugging
+	err				as FB_PROCERR
 end type
 
 type FB_PROCRTL

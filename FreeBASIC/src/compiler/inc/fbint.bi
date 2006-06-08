@@ -653,9 +653,7 @@ type FBENV
 	currlib			as FBLIBRARY ptr
 
 	currproc 		as FBSYMBOL ptr				'' current proc
-	isprocstatic	as integer					'' TRUE with SUB/FUNCTION (...) STATIC
 	currblock 		as FBSYMBOL ptr				'' current scope block (= proc if outside any block)
-	procerrorhnd	as FBSYMBOL ptr				'' var holding the old error handler inside a proc
 
 	main			as FBMAIN
 

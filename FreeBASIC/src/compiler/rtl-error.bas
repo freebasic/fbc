@@ -111,12 +111,18 @@ data @"ermn", "fb_ErrorGetModName", _
 	 NULL, FALSE, FALSE, _
 	 0
 
-'' fb_ErrorSetInfo ( byval modname as zstring ptr, byval funname as zstring ptr ) as void
-data @FB_RTL_ERRORSETINFO,"", _
-	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
+'' fb_ErrorSetModName ( byval modname as zstring ptr ) as zstring ptr
+data @FB_RTL_ERRORSETMODNAME,"", _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
-	 2, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
+	 1, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE
+
+'' fb_ErrorSetFuncName ( byval funname as zstring ptr ) as zstring ptr
+data @FB_RTL_ERRORSETFUNCNAME,"", _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 1, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_Assert ( byval fname as zstring ptr, byval linenum as integer, _
@@ -350,11 +356,13 @@ sub rtlErrorSetHandler _
     expr = NULL
     if( savecurrent ) then
     	if( fbIsModLevel( ) = FALSE ) then
-    		if( env.procerrorhnd = NULL ) then
-				env.procerrorhnd = symbAddTempVar( FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
-                expr = astNewVAR( env.procerrorhnd, 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
-                astAdd( astNewASSIGN( expr, proc ) )
-    		end if
+    		with env.currproc->proc.ext->err
+    			if( .lasthnd = NULL ) then
+					.lasthnd = symbAddTempVar( FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
+                	expr = astNewVAR( .lasthnd, 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
+                	astAdd( astNewASSIGN( expr, proc ) )
+    			end if
+    		end with
 		end if
     end if
 
@@ -427,27 +435,60 @@ sub rtlErrorResume _
 end sub
 
 '':::::
-sub rtlErrorSetInfo _
+sub rtlErrorSetModName _
 	( _
-		byval modname as zstring ptr, _
-		byval funname as zstring ptr _
+		byval sym as FBSYMBOL ptr, _
+		byval modname as ASTNODE ptr _
 	) static
 
-    dim as ASTNODE ptr proc
+    dim as ASTNODE ptr proc, expr
 
-	proc = astNewCALL( PROCLOOKUP( ERRORSETINFO ) )
+	proc = astNewCALL( PROCLOOKUP( ERRORSETMODNAME ) )
 
     '' byval module as zstring ptr
-    if( astNewARG( proc, astNewCONSTstr( modname ) ) = NULL ) then
+    if( astNewARG( proc, modname ) = NULL ) then
     	exit sub
     end if
+
+    if( sym <> NULL ) then
+    	with sym->proc.ext->err
+			.lastmod = symbAddTempVar( FB_DATATYPE_POINTER+FB_DATATYPE_CHAR )
+           	expr = astNewVAR( .lastmod, 0, FB_DATATYPE_POINTER+FB_DATATYPE_CHAR )
+          	astAdd( astNewASSIGN( expr, proc ) )
+    	end with
+
+    else
+    	astAdd( proc )
+    end if
+
+end sub
+
+'':::::
+sub rtlErrorSetFuncName _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval funcname as ASTNODE ptr _
+	) static
+
+    dim as ASTNODE ptr proc, expr
+
+	proc = astNewCALL( PROCLOOKUP( ERRORSETFUNCNAME ) )
 
     '' byval function as zstring ptr
-    if( astNewARG( proc, astNewCONSTstr( funname ) ) = NULL ) then
+    if( astNewARG( proc, funcname ) = NULL ) then
     	exit sub
     end if
 
-    astAdd( proc )
+    if( sym <> NULL ) then
+    	with sym->proc.ext->err
+			.lastfun = symbAddTempVar( FB_DATATYPE_POINTER+FB_DATATYPE_CHAR )
+            expr = astNewVAR( .lastfun, 0, FB_DATATYPE_POINTER+FB_DATATYPE_CHAR )
+            astAdd( astNewASSIGN( expr, proc ) )
+    	end with
+
+    else
+    	astAdd( proc )
+    end if
 
 end sub
 

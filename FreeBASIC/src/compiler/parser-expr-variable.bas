@@ -1004,7 +1004,7 @@ private function hVarAddUndecl _
 
 	function = NULL
 
-	if( env.isprocstatic ) then
+	if( symbIsStatic( env.currproc ) ) then
 		attrib = FB_SYMBATTRIB_STATIC
 	else
 		attrib = 0

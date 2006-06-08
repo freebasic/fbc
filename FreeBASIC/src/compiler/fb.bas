@@ -148,8 +148,6 @@ private sub hSetCtx( )
 	env.opt.escapestr		= FALSE
 	env.opt.dynamic			= FALSE
 
-	env.isprocstatic		= FALSE
-	env.procerrorhnd 		= NULL
 	env.stmtcnt				= 0
 
 	env.prntcnt				= 0

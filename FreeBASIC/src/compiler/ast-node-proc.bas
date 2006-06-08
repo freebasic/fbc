@@ -386,16 +386,56 @@ function astProcBegin _
 	end if
 
 	'' local error handler
-	env.procerrorhnd = NULL
+	with sym->proc.ext->err
+		.lasthnd = NULL
 
-	''
-	if( env.clopt.extraerrchk ) then
-		rtlErrorSetInfo( @env.inf.name, symbGetCurrentProcName( ) )
-	end if
+		if( env.clopt.extraerrchk ) then
+			rtlErrorSetModName( sym, astNewCONSTstr( @env.inf.name ) )
+			rtlErrorSetFuncName( sym, astNewCONSTstr( symbGetName( sym ) ) )
+		else
+			.lastmod = NULL
+			.lastfun = NULL
+		end if
+	end with
 
 	function = n
 
 end function
+
+'':::::
+private sub hRestoreErrHnd _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) static
+
+	with sym->proc.ext->err
+		if( .lastfun <> NULL ) then
+           	rtlErrorSetFuncName( NULL, _
+           						 astNewVAR( .lastfun, _
+           								    0, _
+           								    FB_DATATYPE_POINTER+FB_DATATYPE_CHAR ) )
+           	.lastfun = NULL
+		end if
+
+		if( .lastmod <> NULL ) then
+           	rtlErrorSetModName( NULL, _
+           						astNewVAR( .lastmod, _
+           								   0, _
+           								   FB_DATATYPE_POINTER+FB_DATATYPE_CHAR ) )
+
+			.lastmod = NULL
+		end if
+
+		if( .lasthnd <> NULL ) then
+       		rtlErrorSetHandler( astNewVAR( .lasthnd, _
+       					  	  			   0, _
+       					  	  			   FB_DATATYPE_POINTER+FB_DATATYPE_VOID ), _
+       							FALSE )
+			.lasthnd = NULL
+		end if
+	end with
+
+end sub
 
 '':::::
 function astProcEnd _
@@ -429,12 +469,7 @@ function astProcEnd _
 		end if
 
 		'' restore the old error handler if any was set
-		if( env.procerrorhnd <> NULL ) then
-        	dim as ASTNODE ptr expr
-        	expr = astNewVAR( env.procerrorhnd, 0, FB_DATATYPE_POINTER+FB_DATATYPE_VOID )
-        	rtlErrorSetHandler( expr, FALSE )
-			env.procerrorhnd = NULL
-		end if
+		hRestoreErrHnd( sym )
 
 		'' if main(), END 0 must be called because it's not safe to return to crt if
 		'' an ON ERROR module-level handler was called while inside some proc

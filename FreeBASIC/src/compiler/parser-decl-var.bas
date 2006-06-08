@@ -182,7 +182,7 @@ function cVariableDecl( ) as integer
 	end if
 
 	''
-	if( env.isprocstatic ) then
+	if( symbIsStatic( env.currproc ) ) then
 		if( (attrib and FB_SYMBATTRIB_DYNAMIC) = 0 ) then
 			attrib or= FB_SYMBATTRIB_STATIC
 		end if
