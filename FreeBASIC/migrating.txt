@@ -89,7 +89,7 @@ problems with buggy (in the logical aspect) applications.
 	The warning message "Implicit variable allocation" will be shown in that
 case, be sure to check all the offending lines.
 
-	To be safe, always use OPTION EXPLICIT and declared all variables.
+	To be safe, always use OPTION EXPLICIT and declare all variables.
 		
 
 	Local variables allocation
@@ -122,8 +122,8 @@ object definition".
 	
 	We are sorry if the changes listed affected you in some way, they were done 
 to make FB more compatible with QB or more safe to allow object-orientation and 
-exception-handling to be added later, and also to allow to GCC migration, they
-weren't superficially made just to please somebody in favor of other users.
+exception-handling to be added later, and also to allow the GCC migration, they
+weren't superficially done just to please somebody in favor of other users.
 
 
 [EOF]
