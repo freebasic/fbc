@@ -67,7 +67,7 @@ sub test_dateserial
 end sub
 
 sub test_datevalue
-	dim as integer chk_day, chk_month, chk_year, serial_date, want_ok, is_ok
+	dim as integer chk_day, chk_month, chk_year, serial_date, want_ok
     dim sDate as string
 
     print "Testing DATEVALUE ...";
@@ -76,21 +76,14 @@ sub test_datevalue
     read sDate
     while sDate<>"."
         read want_ok
-        is_ok = 0
-        on local error goto did_fail
+
         serial_date = datevalue(sDate)
-#ifdef FIXME
-        is_ok = want_ok
-#else
-        is_ok = 1
-#endif
+        
         if want_ok=1 then
             read chk_day, chk_month, chk_year
 	        ASSERT( serial_date = dateserial( chk_year, chk_month, chk_day ) )
         end if
-did_fail:
-        on local error goto 0
-        ASSERT( is_ok = want_ok )
+
         print ".";
     	read sDate
     wend
