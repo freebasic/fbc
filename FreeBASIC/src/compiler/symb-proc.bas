@@ -459,7 +459,7 @@ private function hSetupProc _
 	end if
 
     ''
-	proc->attrib = attrib or FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
+	proc->attrib = attrib or FB_SYMBATTRIB_SHARED
 
     '' if proc returns an UDT, add the hidden pointer passed as the 1st arg
     if( dtype = FB_DATATYPE_USERDEF ) then

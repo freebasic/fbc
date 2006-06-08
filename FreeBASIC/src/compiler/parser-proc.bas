@@ -497,7 +497,7 @@ function cProcStmtBegin as integer static
     '' STATIC?
     if( lexGetToken( ) = FB_TK_STATIC ) then
     	lexSkipToken( )
-    	attrib = attrib or FB_SYMBATTRIB_STATIC
+    	attrib or= FB_SYMBATTRIB_STATIC
     end if
 
 	'' SUB | FUNCTION
