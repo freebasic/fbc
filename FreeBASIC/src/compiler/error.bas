@@ -52,7 +52,8 @@ end type
 		( 0, @"UDT with dynamic string fields" ), _
 		( 0, @"Implicit variable allocation" ), _
 		( 0, @"Missing closing quote in literal string" ), _
-		( 0, @"Function result was not explicitly set" ) _
+		( 0, @"Function result was not explicitly set" ), _
+		( 0, @"Branch crossing local variable definition" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring ptr => _
@@ -331,10 +332,11 @@ function errReport _
 end function
 
 '':::::
-sub errReportWarn _
+sub errReportWarnEx _
 	( _
 		byval msgnum as integer, _
-		byval msgex as zstring ptr _
+		byval msgex as zstring ptr, _
+		byval linenum as integer _
 	)
 
 	if( (msgnum < 1) or (msgnum >= FB_WARNINGMSGS) ) then
@@ -345,11 +347,13 @@ sub errReportWarn _
 		exit sub
 	end if
 
-	print env.inf.name; "(";
-	if( lexLineNum( ) > 0 ) then
-		print str( lexLineNum( ) );
+	print env.inf.name;
+
+	if( linenum > 0 ) then
+		print "("; str( linenum ); ")";
 	end if
-	print ") : warning level"; warningMsgs(msgnum).level;
+
+	print " : warning level"; warningMsgs(msgnum).level;
 	print ": "; *warningMsgs(msgnum).text;
 
 	if( msgex <> NULL ) then
@@ -357,6 +361,17 @@ sub errReportWarn _
 	else
 		print
 	end if
+
+end sub
+
+'':::::
+sub errReportWarn _
+	( _
+		byval msgnum as integer, _
+		byval msgex as zstring ptr _
+	)
+
+	errReportWarnEx( msgnum, msgex, lexLineNum( ) )
 
 end sub
 

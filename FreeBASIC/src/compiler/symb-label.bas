@@ -77,6 +77,7 @@ function symbAddLabel _
     			l->lbl.declared = TRUE
     			l->lbl.parent = env.currblock
     			l->lbl.stmtnum = env.stmtcnt
+    			l->scope = env.scope
     			return l
 
     		else

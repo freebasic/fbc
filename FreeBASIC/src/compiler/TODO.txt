@@ -1,7 +1,5 @@
-[ ] extern arrays()
-    - when a COMMON var is REDIMed, the descriptor initializer must be rebuilt
-      to include the right number of dimensions - or that's not important
-      because redim() will not check it's 0's?
+[ ] "= any" initializer should be allowed with REDIM or arrays
+    passed by descriptor to functions will be always cleared
 
 [ ] err:
     - to fun_name and mod_name to work, the current one must be

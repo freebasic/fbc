@@ -217,78 +217,120 @@ function astScopeUpdBreakList _
 end function
 
 '':::::
-private function hCheckScopeLocals _
+private function hBranchError _
 	( _
-		byval dst as FBSYMBOL ptr, _
-		byval src_scope as integer, _
-		byval dst_scope as integer _
+		byval errnum as integer, _
+		byval n as ASTNODE ptr, _
+		byval s as FBSYMBOL ptr = NULL _
 	) as integer static
 
-    dim as FBSYMBOL ptr parent, s
+	dim as integer showerror
+	dim as string msg
 
-	parent = symbGetLabelParent( dst )
-    do
-    	s = parent->scp.symtb.head
-    	do while( s <> NULL )
-    		'' non-static, shared or temporary var?
-    		if( symbIsVar( s ) ) then
-    			if( (s->attrib and (FB_SYMBATTRIB_STATIC or _
-    								FB_SYMBATTRIB_SHARED or _
-    								FB_SYMBATTRIB_TEMP)) = 0 ) then
-    				return FALSE
-    			end if
-    		end if
+	showerror = env.clopt.showerror
+	env.clopt.showerror = FALSE
 
-    		s = s->next
-    	loop
+	if( symbGetName( n->sym ) <> NULL ) then
+		msg = "to label: " + *symbGetName( n->sym )
+		if( s <> NULL ) then
+			msg += ", "
+		end if
+	end if
 
-    	parent = symbGetParent( parent )
+	if( s <> NULL ) then
+		msg += "local "
+		if( symbGetType( s ) = FB_DATATYPE_STRING ) then
+			msg += "string: "
+		elseif( symbGetArrayDimensions( s ) <> 0 ) then
+			msg += "array: "
+		else
+			msg += "object: "
+		end if
 
-    	'' proc? end of line..
-    	if( symbIsProc( parent ) ) then
-    		exit do
-    	end if
+		msg += *symbGetName( s )
+	end if
 
-		dst_scope -= 1
-	loop while( dst_scope > src_scope )
+	function = errReportEx( errnum, msg, n->break.linenum )
 
-	function = TRUE
+	env.clopt.showerror = showerror
 
 end function
 
 '':::::
-private function hIsBranchCrossing _
+private sub hBranchWarning _
 	( _
-		byval n as ASTNODE ptr _
-	) as FBSYMBOL ptr static
+		byval errnum as integer, _
+		byval n as ASTNODE ptr, _
+		byval s as FBSYMBOL ptr = NULL _
+	) static
+
+	dim as integer showerror
+	dim as string msg
+
+	showerror = env.clopt.showerror
+	env.clopt.showerror = FALSE
+
+	if( symbGetName( n->sym ) <> NULL ) then
+		msg = "to label: " + *symbGetName( n->sym )
+		if( s <> NULL ) then
+			msg += ", "
+		end if
+	end if
+
+	if( s <> NULL ) then
+		msg += "variable: "
+		msg += *symbGetName( s )
+	end if
+
+	errReportWarnEx( errnum, msg, n->break.linenum )
+
+	env.clopt.showerror = showerror
+
+end sub
+
+'':::::
+private function hCheckCrossing _
+	( _
+		byval n as ASTNODE ptr, _
+		byval blk as FBSYMBOL ptr, _
+		byval top_stmt as integer, _
+		byval bot_stmt as integer _
+	) as integer static
 
 	dim as FBSYMBOL ptr s
-	dim as integer dst_stmt, src_stmt, p
+	dim as integer stmt
 
-	function = NULL
+	'' search for:
+	'' 		goto label
+	'' 		redim array(...) as type | dim obj as object() | dim str as string
+	'' 		label:
 
-	'' catch:
-	'' goto label
-	'' redim array(...) as type | dim obj as object() | dim str as string
-	'' label:
-
-	dst_stmt = symbGetLabelStmt( n->sym )
-	src_stmt = n->break.stmtnum
-
-    s = symbGetLabelParent( n->sym )
-    if( symbIsScope( s ) ) then
-    	s = s->scp.symtb.head
+    if( symbIsScope( blk ) ) then
+    	s = blk->scp.symtb.head
     else
-    	s = s->proc.symtb.head
+    	s = blk->proc.symtb.head
     end if
 
     do while( s <> NULL )
     	if( symbIsVar( s ) ) then
-    		p = symbGetVarStmt( s )
-    		if( p < dst_stmt ) then
-    			if( p > src_stmt ) then
+    		stmt = symbGetVarStmt( s )
+    		if( stmt > top_stmt ) then
+    			if( stmt < bot_stmt ) then
     				if( symbVarIsLocalObj( s ) ) then
-    					return s
+    					if( hBranchError( FB_ERRMSG_BRANCHCROSSINGDYNDATADEF, n, s ) = FALSE ) then
+    						return FALSE
+    					end if
+
+    				else
+    					'' not static, shared or temp?
+    					if( (s->attrib and (FB_SYMBATTRIB_STATIC or _
+    										FB_SYMBATTRIB_SHARED or _
+    										FB_SYMBATTRIB_TEMP)) = 0 ) then
+    						'' must be cleaned?
+    						if( symbGetDontClear( s ) = FALSE ) then
+    							hBranchWarning( FB_WARNINGMSG_BRANCHCROSSINGLOCALVAR, n, s )
+    						end if
+    					end if
     				end if
     			end if
     		end if
@@ -296,6 +338,50 @@ private function hIsBranchCrossing _
 
     	s = s->next
     loop
+
+	function = TRUE
+
+end function
+
+'':::::
+private function hCheckScopeLocals _
+	( _
+		byval n as ASTNODE ptr _
+	) as integer static
+
+    dim as FBSYMBOL ptr dst, blk, src_blk
+    dim as integer dst_stmt, src_stmt
+
+    dst = n->sym
+    dst_stmt = symbGetLabelStmt( dst )
+
+    src_blk = n->break.parent->sym
+    src_stmt = n->break.stmtnum
+
+    blk = symbGetLabelParent( dst )
+    do
+    	'' check for any var allocated between the block's
+    	'' beginning and the branch
+    	if( hCheckCrossing( n, blk, 0, dst_stmt ) = FALSE ) then
+    		return FALSE
+    	end if
+
+    	blk = symbGetParent( blk )
+
+    	'' same parent?
+    	if( symbIsProc( blk ) or (blk = src_blk) ) then
+    		'' forward?
+			if( dst_stmt > src_stmt ) then
+    			if( hCheckCrossing( n, blk, src_stmt, dst_stmt ) = FALSE ) then
+    				return FALSE
+    			end if
+    		end if
+
+    		exit do
+    	end if
+    loop
+
+	function = TRUE
 
 end function
 
@@ -310,7 +396,7 @@ private function hDelBlockLocals _
 
 	dim as FBSYMBOL ptr s
 	dim as ASTNODE ptr expr
-	dim as integer p
+	dim as integer stmt
 
     if( symbIsScope( blk ) ) then
     	s = blk->scp.symtb.head
@@ -320,9 +406,9 @@ private function hDelBlockLocals _
 
     do while( s <> NULL )
     	if( symbIsVar( s ) ) then
-    		p = symbGetVarStmt( s )
-    		if( p > top_stmt ) then
-    			if( p < bot_stmt ) then
+    		stmt = symbGetVarStmt( s )
+    		if( stmt > top_stmt ) then
+    			if( stmt < bot_stmt ) then
    					if( symbVarIsLocalDyn( s ) ) then
                     	expr = symbFreeDynVar( s )
                     	if( expr <> NULL ) then
@@ -405,46 +491,6 @@ private sub hDelLocals _
 end sub
 
 '':::::
-private sub hBranchError _
-	( _
-		byval errnum as integer, _
-		byval n as ASTNODE ptr, _
-		byval s as FBSYMBOL ptr = NULL _
-	) static
-
-	dim as integer showerror
-	dim as string msg
-
-	showerror = env.clopt.showerror
-	env.clopt.showerror = FALSE
-
-	if( symbGetName( n->sym ) <> NULL ) then
-		msg = "to " + *symbGetName( n->sym )
-		if( s <> NULL ) then
-			msg += ", "
-		end if
-	end if
-
-	if( s <> NULL ) then
-		msg += "local "
-		if( symbGetType( s ) = FB_DATATYPE_STRING ) then
-			msg += "string: "
-		elseif( symbGetArrayDimensions( s ) <> 0 ) then
-			msg += "array: "
-		else
-			msg += "object: "
-		end if
-
-		msg += *symbGetName( s )
-	end if
-
-	errReportEx( errnum, msg, n->break.linenum )
-
-	env.clopt.showerror = showerror
-
-end sub
-
-'':::::
 private function hIsTargetOutside _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -471,7 +517,7 @@ private function hCheckBranch _
 	) as integer static
 
     dim as ASTNODE ptr src_parent
-    dim as FBSYMBOL ptr dst, dst_parent, s
+    dim as FBSYMBOL ptr dst, dst_parent
     dim as integer src_scope, dst_scope, src_stmt, dst_stmt, isparent
 
 	function = FALSE
@@ -504,11 +550,10 @@ private function hCheckBranch _
     	'' jumping to a child block?
     	if( dst_scope > src_scope ) then
            	'' any locals?
-			if( hCheckScopeLocals( dst, _
-								   src_scope, _
-								   dst_scope ) = FALSE ) then
-       			hBranchError( FB_ERRMSG_BRANCHTOBLOCKWITHLOCALVARS, n )
-       			exit function
+			if( hCheckScopeLocals( n ) = FALSE ) then
+       			if( errGetLast( ) <> FB_ERRMSG_OK ) then
+       				exit function
+       			end if
        		end if
 
     		'' backward?
@@ -525,10 +570,10 @@ private function hCheckBranch _
     		'' forward..
     		else
     			'' crossing any declaration?
-    			s = hIsBranchCrossing( n )
-    			if( s <> NULL ) then
-       				hBranchError( FB_ERRMSG_BRANCHCROSSINGDYNDATADEF, n, s )
-       				exit function
+    			if( hCheckCrossing( n, dst_parent, src_stmt, dst_stmt ) = FALSE ) then
+       				if( errGetLast( ) <> FB_ERRMSG_OK ) then
+       					exit function
+       				end if
     			end if
     		end if
     	end if
@@ -548,11 +593,10 @@ private function hCheckBranch _
 		'' not a parent block?
         if( isparent = FALSE ) then
 			'' any locals?
-			if( hCheckScopeLocals( dst, _
-								   0, _ 		'' real value doesn't matter
-								   dst_scope ) = FALSE ) then
-       			hBranchError( FB_ERRMSG_BRANCHTOBLOCKWITHLOCALVARS, n )
-       			exit function
+			if( hCheckScopeLocals( n ) = FALSE ) then
+       			if( errGetLast( ) <> FB_ERRMSG_OK ) then
+       				exit function
+       			end if
        		end if
        	end if
 
@@ -565,10 +609,10 @@ private function hCheckBranch _
    	   	'' forward?
    		if( dst_stmt > src_stmt ) then
    			'' crossing any declaration?
-   			s = hIsBranchCrossing( n )
-   			if( s <> NULL ) then
-       			hBranchError( FB_ERRMSG_BRANCHCROSSINGDYNDATADEF, n, s )
-       			exit function
+   			if( hCheckCrossing( n, dst_parent, src_stmt, dst_stmt ) = FALSE ) then
+       			if( errGetLast( ) <> FB_ERRMSG_OK ) then
+       				exit function
+       			end if
    			end if
    		end if
    	end if

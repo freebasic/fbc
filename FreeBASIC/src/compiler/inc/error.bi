@@ -161,6 +161,7 @@ enum FBWARNINGMSG_ENUM
 	FB_WARNINGMSG_IMPLICITALLOCATION
 	FB_WARNINGMSG_NOCLOSINGQUOTE
 	FB_WARNINGMSG_NOFUNCTIONRESULT
+	FB_WARNINGMSG_BRANCHCROSSINGLOCALVAR
 
 	FB_WARNINGMSGS
 end enum
@@ -214,6 +215,12 @@ declare function	errReport				( _
 declare sub 		errReportWarn			( _
 												byval msgnum as integer, _
 												byval msgex as zstring ptr = NULL _
+											)
+
+declare sub 		errReportWarnEx			( _
+												byval msgnum as integer, _
+												byval msgex as zstring ptr = NULL, _
+												byval linenum as integer = 0 _
 											)
 
 declare function	errReportParam			( _
