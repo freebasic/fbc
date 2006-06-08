@@ -1,9 +1,7 @@
 option explicit
 option private
 
-defint a-z
-
-'$include once: "submod_c.bi"
+#include once "submod_c.bi"
 
 declare sub test_extdyn( )
 declare sub test_extstat( )
