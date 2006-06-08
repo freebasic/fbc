@@ -1,0 +1,129 @@
+	Version 0.16 has some important changes that may break applications written 
+for older versions of FreeBASIC (FB). 
+
+	There are no more plans to break compatibility from version 0.16 and up 
+(unless the GCC (GNU Compiler Collection) back-end impose that, see the next
+paragraph), but FB been in beta stage, this kind of modifications should be 
+acceptable, while we know they can cause trouble to many users working on 
+medium-sized or large projects, be sure we tried everything possible before 
+resorting to the final decisions.
+
+	In the next releases, the plan is to move FB to become a GCC front-end, 
+to take advantage of the endless number of platforms supported by the GCC 
+back-end and the high-level optimizations only found in commercial and 
+expensive C/C++ compilers. Many of the changes below were done to make the FB 
+front-end compatible with GCC, the migration will take a lot of time and 
+efforts from both the FB team and the user base, but the result will be worth.
+
+
+Most important changes:
+
+
+	The NOT unary operator behavior
+	-------------------------------
+
+	In preview versions the NOT behavior was the same as in VBDOS (the 
+compiler "BC.EXE", not the IDE): logical when used in conditional statements 
+like "IF expr THEN", and bitwise otherwise.
+
+	That behavior was actually a bug in the VBDOS compiler, and not reproduced 
+in any other version of the MS BASIC compilers like QB 4.5 and VB 6, so it was 
+modified in FB 0.16 to be compatible with the rest.
+
+	With that change, NOT can't be used anymore to test results of functions
+if they are part of any API/library not developed in a language that defines
+TRUE as "-1", that's it, most languages known languages, including C/C++, 
+where TRUE is defined as "1", not "-1". So, when checking for boolean results, 
+always use to do the tests:
+
+	    IF SomeFunc() = FALSE THEN error...
+	    
+	    or
+	    
+	    IF SomeFunc() <> FALSE THEN ok...
+    
+    "IF NOT somefunc() THEN error..." won't work anymore, unless "SomeFunc()" 
+returns 0 and -1 for FALSE and TRUE, respectively.
+    
+   
+	GOSUB is now illegal inside functions
+	-------------------------------------
+
+	Both GOSUB and ON expr GOSUB are now illegal inside functions, the GCC 
+back-end has no concept of GOSUB because the strict scope rules imposed to 
+implement most of the high-level optimizations and also to keep exception
+handling safe, so that was removed now before it's too late.
+
+	GOSUB and ON expr GOSUB will still supported when used in the main-module
+level - ie: outside any function. That won't be removed in future.
+
+	After the move to a GCC front-end, nested functions will be supported, 
+giving an alternative to GOSUB inside functions. For ON expr GOSUB, building
+a function pointers array is more safe and extensible.
+
+
+	All compound statements now create implicit scope blocks
+	--------------------------------------------------------
+	
+	All compound statements like IF (multi-line only), DO, WHILE, FOR and 
+SELECT will now open an implicit scope block. Because of that, variables 
+declared inside those statements won't be seen anymore outside them, causing 
+problems with buggy (in the logical aspect) applications.
+
+	For example:
+	
+		IF expr THEN
+			foo% = 1
+		ELSE
+			foo% = 2
+		END IF
+		
+		FOR bar% = 1 TO foo%
+		
+	Must be changed to:
+	
+		DIM foo%
+		IF expr THEN 
+		... the same code as above ...
+		
+	The warning message "Implicit variable allocation" will be shown in that
+case, be sure to check all the offending lines.
+
+	To be safe, always use OPTION EXPLICIT and declared all variables.
+		
+
+	Local variables allocation
+	--------------------------
+
+	To allow GOTO's to target labels declared inside scope blocks and also to 
+support objects and exception handling later, now the local variables aren't 
+cleared anymore at the beginning of the scope blocks, so this won't work 
+anymore (again, a logical error):
+
+		GOTO foo
+		
+		DIM bar
+		
+		foo: 
+		
+		IF bar THEN ...
+
+	The variable "bar" won't be cleared until the DIM line, that will be 
+skipped in that case because of the GOTO. The warning message: "Branch crossing 
+local variable definition" will be shown in that case.
+		
+	If the variables are variable-length strings or dynamic arrays, an error 
+message will be shown for each: "Branch crossing local array, var-len string or 
+object definition".
+
+	In both cases, just declare the offending variables before the GOTO's.
+	
+	
+	
+	We are sorry if the changes listed affected you in some way, they were done 
+to make FB more compatible with QB or more safe to allow object-orientation and 
+exception-handling to be added later, and also to allow to GCC migration, they
+weren't superficially made just to please somebody in favor of other users.
+
+
+[EOF]
