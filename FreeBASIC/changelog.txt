@@ -1,13 +1,9 @@
 Version 0.16 Beta:
 
 [changed]
-- IMPORTANT: due requests, the NOT unary operator behavior in conditional statements is now fully compatible with QB/VB
-  (ie: always bitwise, never logical), and because of that, checking for FALSE boolean results returned by C libraries
-  or the Windows API cannot anymore been done as "IF NOT SomeFunction( ) THEN ReportError...", "TRUE" is defined as "1"
-  in most libraries, not "-1" as in BASIC, so any checks must be changed to: "IF SomeFunction( ) = FALSE THEN ..." (v1c)
-- IMPORTANT: every compound statement (IF, SELECT, FOR, DO, WHILE, etc) will now open a new scope block, variables 
-  declared inside them WON'T be seen outside the block. that was needed to make the move to a GCC front-end possible
-  in the next releases (v1c)
+- IMPORTANT: the NOT unary operator behavior in conditional statements is now fully compatible with QB/VB (ie: always 
+  bitwise, never logical), see the migrating.txt file for more details (v1c)
+- IMPORTANT: every compound statement (IF, FOR, etc) will now open a new scope block, see the migrating.txt file (v1c)
 - any non-SHARED, COMMON or EXTERN variable and array declared in the module-level (ie, outside any function) will be
   allocated on stack now (that was changed to allow non-constant expressions to be used with variable initializers in
   the module-level), to declare static symbols, see the next item (v1c)
