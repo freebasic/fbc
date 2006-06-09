@@ -892,11 +892,18 @@ private function hVarDecl _
 					if( lexGetToken( ) = FB_TK_ANY ) then
 
 						'' don't allow var-len strings
-						if( dtype = FB_DATATYPE_STRING ) then
+						select case dtype
+						case FB_DATATYPE_STRING
 							errReport( FB_ERRMSG_INVALIDDATATYPES )
-						else
+
+						case FB_DATATYPE_USERDEF
+            				if( symbGetUDTDynCnt( subtype ) <> 0 ) then
+            					errReport( FB_ERRMSG_INVALIDDATATYPES )
+            				end if
+
+						case else
 							symbSetDontClear( sym )
-						end if
+						end select
 
 						lexSkipToken( )
 

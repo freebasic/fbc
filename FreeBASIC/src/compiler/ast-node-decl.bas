@@ -49,10 +49,18 @@ private function hClearVar _
 
    	'' initialized? do nothing..
    	if( initree <> NULL ) then
-   		'' unless it's a var-len string..
-   		if( symbGetType( sym ) <> FB_DATATYPE_STRING ) then
+   		'' unless it's a var-len string or UDT containing var-len string fields..
+   		select case symbGetType( sym )
+   		case FB_DATATYPE_STRING
+
+   		case FB_DATATYPE_USERDEF
+            if( symbGetUDTDynCnt( symbGetSubtype( sym ) ) = 0 ) then
+            	return NULL
+            end if
+
+   		case else
    			return NULL
-   		end if
+   		end select
    	end if
 
    	'' not initialized..
