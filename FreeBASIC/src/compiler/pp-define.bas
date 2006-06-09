@@ -123,7 +123,8 @@ private function hLoadMacro _
 		do
 			lexNextToken( @t, LEXCHECK_NOWHITESPC or _
 							  LEXCHECK_NOSUFFIX or _
-							  LEXCHECK_NOQUOTES )
+							  LEXCHECK_NOQUOTES or _
+							  LEXCHECK_NOLOOKUP )
 
 			select case t.id
 			'' (
@@ -404,7 +405,10 @@ private function hLoadMacroW _
 
 		'' read text until a comma or right-parentheses is found
 		do
-			lexNextToken( @t, LEXCHECK_NOWHITESPC or LEXCHECK_NOSUFFIX or LEXCHECK_NOQUOTES )
+			lexNextToken( @t, LEXCHECK_NOWHITESPC or _
+							  LEXCHECK_NOSUFFIX or _
+							  LEXCHECK_NOQUOTES or _
+							  LEXCHECK_NOLOOKUP )
 			select case t.id
 			'' (
 			case CHAR_LPRNT
