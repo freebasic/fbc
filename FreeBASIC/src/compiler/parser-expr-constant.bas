@@ -68,11 +68,12 @@ end function
 ''
 function cEnumConstant _
 	( _
-		byval sym as FBSYMBOL ptr, _
+		byval parent as FBSYMBOL ptr, _
 		byref expr as ASTNODE ptr _
 	) as integer static
 
 	dim as FBSYMBOL ptr elm
+	dim as FBSYMCHAIN ptr chain_
 
 	function = FALSE
 
@@ -93,7 +94,9 @@ function cEnumConstant _
 		end if
 	end if
 
-	elm = symbFindByClass( lexGetSymChain( ), FB_SYMBCLASS_CONST )
+	chain_ = symbLookupAt( symbGetNamespace( parent ), lexGetText( ) )
+
+	elm = symbFindByClass( chain_, FB_SYMBCLASS_CONST )
     if( elm = NULL ) then
     	if( errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) ) = FALSE ) then
     		exit function
@@ -105,7 +108,7 @@ function cEnumConstant _
 		end if
     end if
 
-    if( symbGetParent( elm ) <> sym ) then
+    if( symbGetParent( elm ) <> parent ) then
     	if( errReportUndef( FB_ERRMSG_ELEMENTNOTDEFINED, lexGetText( ) ) = FALSE ) then
     		exit function
 		else
@@ -116,9 +119,7 @@ function cEnumConstant _
 		end if
     end if
 
-    lexSkipToken( )
-
-    function = cConstantEx( sym, expr )
+    function = cConstantEx( elm, expr )
 
 end function
 
