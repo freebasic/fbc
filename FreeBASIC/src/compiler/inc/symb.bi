@@ -372,13 +372,13 @@ type FBS_NAMESPACE
     symtb			as FBSYMBOLTB
     hashtb			as FBHASHTB
     implist			as FBNAMESPC_IMPLIST		'' all USING's used inside the ns
-	next			as FBSYMBOL_ ptr			'' next in implist
 end type
 
 type FBS_NSIMPORT
 	ns				as FBSYMBOL_ ptr
 	head			as FBSYMCHAIN ptr
 	tail			as FBSYMCHAIN ptr
+	next			as FBSYMBOL_ ptr
 end type
 
 ''

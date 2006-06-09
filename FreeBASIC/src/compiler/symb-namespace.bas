@@ -57,7 +57,6 @@ function symbAddNamespace _
 
     s->nspc.implist.head = NULL
     s->nspc.implist.tail = NULL
-    s->nspc.next = NULL
 
 	function = s
 
@@ -165,14 +164,14 @@ end sub
 private function hAddImport _
 	( _
 		byval ns as FBSYMBOL ptr _
-	) as FBSYMBOL ptr
+	) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr s
 
     '' easier to be added as a symbol because it will be removed when
     '' respecting the scope blocks (or procs)
     s = symbNewSymbol( NULL, _
-    				   symb.symtb, NULL, TRUE, _
+    				   symb.symtb, symb.hashtb, env.scope = FB_MAINSCOPE, _
     				   FB_SYMBCLASS_NSIMPORT, _
     				   FALSE, NULL, NULL )
     if( s = NULL ) then
@@ -182,6 +181,7 @@ private function hAddImport _
 	s->nsimp.ns = ns
 	s->nsimp.head = NULL
 	s->nsimp.tail = NULL
+    s->nsimp.next = NULL
 
 	function = s
 
@@ -208,7 +208,7 @@ private function hIsOnHashList _
 end function
 
 '':::::
-function hIsOnImportList _
+private function hIsOnImportList _
 	( _
 		byval ns as FBSYMBOL ptr _
 	) as integer
@@ -217,15 +217,68 @@ function hIsOnImportList _
 
 	s = symb.namespc->nspc.implist.head
 	do while( s <> NULL )
-	    if( s = ns ) then
+	    if( s->nsimp.ns = ns ) then
 	    	return TRUE
 	    end if
-		s = s->nspc.next
+		s = s->nsimp.next
 	loop
 
 	function = FALSE
 
 end function
+
+'':::::
+private sub hAddToImportList _
+	( _
+		byval imp_ as FBSYMBOL ptr _
+	) static
+
+	with *symb.namespc
+		if( .nspc.implist.tail <> NULL ) then
+			.nspc.implist.tail->nsimp.next = imp_
+		else
+			.nspc.implist.head = imp_
+		end if
+		.nspc.implist.tail = imp_
+		imp_->nsimp.next = NULL
+	end with
+
+end sub
+
+'':::::
+private sub hDelFromImportList _
+	( _
+		byval imp_ as FBSYMBOL ptr _
+	) static
+
+	dim as FBSYMBOL ptr currns, ns, s, prev
+
+	currns = symbGetNameSpace( imp_ )
+	ns = imp_->nsimp.ns
+
+	prev = NULL
+	s = currns->nspc.implist.head
+
+	do while( s <> NULL )
+	    if( s->nsimp.ns = ns ) then
+	    	if( prev = NULL ) then
+	        	currns->nspc.implist.head = s->next
+	        else
+	        	prev->next = s->next
+	        end if
+
+	    	if( s->next = NULL ) then
+	        	currns->nspc.implist.tail = prev
+	        end if
+
+	        exit sub
+	    end if
+
+		prev = s
+		s = s->nsimp.next
+	loop
+
+end sub
 
 '':::::
 function symbNamespaceImport _
@@ -255,28 +308,19 @@ function symbNamespaceImport _
 		exit function
 	end if
 
-	'' add to import list of the current ns, to be
-	'' removed when the namespace is closed
-	with *symb.namespc
-		if( .nspc.implist.tail <> NULL ) then
-			.nspc.implist.tail->nspc.next = ns
-		else
-			.nspc.implist.head = ns
-		end if
-		.nspc.implist.tail = ns
-		ns->nspc.next = NULL
-	end with
-
 	'' for each named symbol in the name space, add it to
 	'' the current symbol table
 	hInsertIntoHashTb( imp_, ns )
 
 	'' same for any namespace included by this ns
-	ns = ns->nspc.implist.head
-	do while( ns <> NULL )
-	    hInsertIntoHashTb( imp_, ns )
-		ns = ns->nspc.next
+	s = ns->nspc.implist.head
+	do while( s <> NULL )
+	    hInsertIntoHashTb( imp_, s->nsimp.ns )
+		s = s->nsimp.next
 	loop
+
+	'' add to import list of the current ns
+	hAddToImportList( imp_ )
 
 	function = TRUE
 
@@ -313,6 +357,13 @@ sub symbNamespaceRemove _
 	)
 
 	hRemoveFromHashTb( imp_ )
+
+	if( imp_->scope > FB_MAINSCOPE ) then
+		if( imp_->nsimp.ns <> NULL ) then
+			hDelFromImportList( imp_ )
+			imp_->nsimp.ns = NULL
+		end if
+	end if
 
 	if( hashonly = FALSE ) then
 		'' del node

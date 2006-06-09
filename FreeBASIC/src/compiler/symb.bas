@@ -113,7 +113,6 @@ sub symbInitSymbols static
 		symbHashTbInit( @.hashtb, @symb.globnspc, FB_INITSYMBOLNODES )
     	.implist.head = NULL
     	.implist.tail = NULL
-    	.next = NULL
     end with
 
 	''
