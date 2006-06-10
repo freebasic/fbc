@@ -767,7 +767,7 @@ private function hCheckParam _
 		'' set the length if it's been passed by value
 		if( amode = FB_PARAMMODE_BYVAL ) then
 			if( pdtype = FB_DATATYPE_USERDEF ) then
-				n->arg.lgt = symbGetUDTLen( s )
+				n->arg.lgt = FB_ROUNDLEN( symbGetLen( s ) )
 			end if
 		end if
 

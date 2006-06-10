@@ -151,7 +151,7 @@ private function hMockParam _
     	if( dtype = FB_DATATYPE_STRING ) then
     		plen = FB_POINTERSIZE
     	else
-    		plen = symbCalcLen( dtype, NULL, TRUE )
+    		plen = symbCalcLen( dtype, NULL )
     	end if
 
     case FB_PARAMMODE_VARARG
@@ -434,7 +434,7 @@ private function hParamDecl _
     	if( ptype = FB_DATATYPE_STRING ) then
     		plen = FB_POINTERSIZE
     	else
-    		plen = symbCalcLen( ptype, subtype, TRUE )
+    		plen = symbCalcLen( ptype, subtype )
     	end if
     end select
 

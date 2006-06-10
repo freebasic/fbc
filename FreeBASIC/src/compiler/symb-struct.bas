@@ -624,7 +624,7 @@ end sub
 function symbGetUDTLen _
 	( _
 		byval s as FBSYMBOL ptr, _
-		byval unpadlen as integer = TRUE _
+		byval unpadlen as integer _
 	) as integer static
 
 	if( unpadlen ) then

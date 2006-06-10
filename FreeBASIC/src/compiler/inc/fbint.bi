@@ -681,6 +681,9 @@ end type
 ''
 #define fbIsModLevel( ) (env.currproc = env.main.proc)
 
+'' x86 assumption!
+#define FB_ROUNDLEN(lgt) ((lgt + (FB_INTEGERSIZE-1)) and not (FB_INTEGERSIZE-1))
+
 ''
 '' super globals
 ''

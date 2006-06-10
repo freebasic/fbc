@@ -860,7 +860,7 @@ function symbCalcLen _
 	( _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
-		byval realsize as integer = FALSE _
+		byval unpadlen as integer _
 	) as integer static
 
     dim e as FBSYMBOL ptr
@@ -899,10 +899,10 @@ function symbCalcLen _
 		function = FB_STRDESCLEN
 
 	case FB_DATATYPE_USERDEF
-		if( realsize = FALSE ) then
-			function = subtype->lgt
-		else
+		if( unpadlen ) then
 			function = subtype->udt.unpadlgt
+		else
+			function = subtype->lgt
 		end if
 
 	case FB_DATATYPE_BITFIELD

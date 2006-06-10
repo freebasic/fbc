@@ -164,8 +164,8 @@ function cLSetStmt( ) as integer
 			end if
 		end if
 
-		function = rtlMemCopyClear( dstexpr, symbGetUDTLen( dst->subtype ), _
-									srcexpr, symbGetUDTLen( src->subtype ) )
+		function = rtlMemCopyClear( dstexpr, symbGetUDTUnpadLen( dst->subtype ), _
+									srcexpr, symbGetUDTUnpadLen( src->subtype ) )
 	else
 		function = rtlStrLset( dstexpr, srcexpr )
 	end if

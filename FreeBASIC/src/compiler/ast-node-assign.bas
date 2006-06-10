@@ -444,7 +444,7 @@ function astNewASSIGN _
 			end if
 
 			'' do a mem copy..
-			return astNewMEM( AST_OP_MEMMOVE, l, r, symbGetUDTLen( l->subtype ) )
+			return astNewMEM( AST_OP_MEMMOVE, l, r, symbGetUDTUnpadLen( l->subtype ) )
 
 		'' r is function returning an UDT on registers
 		else

@@ -409,9 +409,7 @@ function astLoadCALL _
 		''
 		if( param = lastparam ) then
 			if( symbGetParamMode( param ) = FB_PARAMMODE_VARARG ) then
-				bytestopop += (symbCalcLen( l->dtype, NULL ) + _
-					 		  (FB_INTEGERSIZE-1)) and _
-					 		  not (FB_INTEGERSIZE-1) 		'' x86 assumption!
+				bytestopop += FB_ROUNDLEN( symbCalcLen( l->dtype, NULL ) )
 			end if
 		end if
 

@@ -48,8 +48,7 @@ private function hCalcProcParamsLen _
 	do while( paramtail <> NULL )
 		select case paramtail->param.mode
 		case FB_PARAMMODE_BYVAL
-			lgt	+= ((paramtail->lgt + (FB_INTEGERSIZE-1)) and _
-				   not (FB_INTEGERSIZE-1))						'' x86 assumption!
+			lgt	+= FB_ROUNDLEN( paramtail->lgt )
 
 		case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
 			lgt	+= FB_POINTERSIZE
@@ -120,7 +119,7 @@ private function hGetProcRealType _
     case FB_DATATYPE_USERDEF
 
 		'' use the un-padded UDT len
-		select case as const symbGetUDTLen( subtype )
+		select case as const symbGetUDTUnpadLen( subtype )
 		case 1
 			return FB_DATATYPE_BYTE
 

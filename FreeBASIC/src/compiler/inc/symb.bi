@@ -554,7 +554,7 @@ declare function 	symbGetProcResult		( _
 
 declare function 	symbGetUDTLen			( _
 												byval udt as FBSYMBOL ptr, _
-												byval realsize as integer = TRUE _
+												byval unpadlen as integer = TRUE _
 											) as integer
 
 declare function 	symbGetConstValueAsStr	( _
@@ -919,7 +919,7 @@ declare function 	symbNewArrayDim			( _
 declare function 	symbCalcLen				( _
 												byval dtype as integer, _
 												byval subtype as FBSYMBOL ptr, _
-												byval realsize as integer = FALSE _
+												byval unpadlen as integer = FALSE _
 											) as integer
 
 declare function 	symbAllocFloatConst		( _
@@ -1318,6 +1318,8 @@ declare function 	symbTypeToStr			( _
 #define symbGetUDTPtrCnt(s) (s->udt.ptrcnt + s->udt.dyncnt)
 
 #define symbGetUDTDynCnt(s) s->udt.dyncnt
+
+#define symbGetUDTUnpadLen(s) s->udt.unpadlgt
 
 #define symbGetENUMFirstElm(s) s->enum.elmtb.head
 
