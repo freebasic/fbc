@@ -1,6 +1,3 @@
-[ ] "= any" initializer should be allowed with REDIM or arrays
-    passed by descriptor to functions will be always cleared
-
 [ ] SCOPE..END SCOPE:
     - can't optimize multiple MEM_CLEAR's if there's any branch to
       one of them

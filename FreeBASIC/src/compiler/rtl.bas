@@ -107,21 +107,22 @@ sub rtlEnd
 end sub
 
 
-#define CNTPTR(typ,t,cnt)						_
-	t = typ                                     : _
-	cnt = 0                                     : _
-	do while( t >= FB_DATATYPE_POINTER )		: _
-		t -= FB_DATATYPE_POINTER				: _
-		cnt += 1								: _
-	loop
+#define CNTPTR(dtype,cnt)						_
+	scope                                       : _
+		dim as integer t = dtype                : _
+		cnt = 0                                 : _
+		do while( t >= FB_DATATYPE_POINTER )	: _
+			t -= FB_DATATYPE_POINTER			: _
+			cnt += 1							: _
+		loop									: _
+	end scope
 
 
 '':::::
 sub rtlAddIntrinsicProcs( )
-	dim as integer typ
 	dim as string aname, optstr
-	dim as integer p, pargs, ptype, pmode, pattrib
-	dim as integer a, atype, alen, amode, optional, ptrcnt, checkerror, overloaded
+	dim as integer p, pargs, ptype, pmode, attrib, checkerror, overloaded
+	dim as integer a, atype, alen, amode, ptrcnt, optional
 	dim as FBSYMBOL ptr proc
 	dim as FBRTLCALLBACK pcallback
 	dim as ASTNODE ptr optval
@@ -150,6 +151,8 @@ sub rtlAddIntrinsicProcs( )
 			read atype, amode, optional
 
 			if( optional ) then
+				attrib = FB_SYMBATTRIB_OPTIONAL
+
 				select case as const atype
 				case FB_DATATYPE_STRING
 					read optstr
@@ -169,6 +172,7 @@ sub rtlAddIntrinsicProcs( )
 				end select
 
 			else
+				attrib = 0
 				optval = NULL
 			end if
 
@@ -178,23 +182,23 @@ sub rtlAddIntrinsicProcs( )
 				alen = FB_POINTERSIZE
 			end if
 
-			CNTPTR( atype, typ, ptrcnt )
+			CNTPTR( atype, ptrcnt )
 
 			symbAddProcParam( proc, NULL, _
 							  atype, NULL, ptrcnt, _
 							  alen, amode, INVALID, _
-							  optional, optval )
+							  attrib, optval )
 		next
 
 		''
 		if( overloaded ) then
-			pattrib = FB_SYMBATTRIB_OVERLOADED
+			attrib = FB_SYMBATTRIB_OVERLOADED
 		else
-			pattrib = 0
+			attrib = 0
 		end if
 
 		''
-		CNTPTR( ptype, typ, ptrcnt )
+		CNTPTR( ptype, ptrcnt )
 
 		if( len( aname ) = 0 ) then
 			palias = pname
@@ -205,7 +209,7 @@ sub rtlAddIntrinsicProcs( )
 		proc = symbAddPrototype( proc, _
 								 pname, palias, "fb", _
 								 ptype, NULL, ptrcnt, _
-								 pattrib, pmode, TRUE )
+								 attrib, pmode, TRUE )
 
 		''
 		if( proc <> NULL ) then
@@ -222,9 +226,11 @@ sub rtlAddIntrinsicProcs( )
 end sub
 
 '':::::
-function rtlProcLookup( byval pname as zstring ptr, _
-			   			byval pidx as integer _
-			 		  ) as FBSYMBOL ptr static
+function rtlProcLookup _
+	( _
+		byval pname as zstring ptr, _
+		byval pidx as integer _
+	) as FBSYMBOL ptr static
 
     dim as integer id, class
     dim as FBSYMCHAIN ptr chain_
@@ -248,9 +254,11 @@ end function
 '':::::
 '' note: this function must be called *before* astNewARG(e) because the
 ''       expression 'e' can be changed inside the former (address-of string's etc)
-function rtlCalcExprLen( byval expr as ASTNODE ptr, _
-						 byval unpadlen as integer = TRUE _
-					   ) as integer static
+function rtlCalcExprLen _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval unpadlen as integer = TRUE _
+	) as integer static
 
 	dim as FBSYMBOL ptr s
 	dim as integer dtype
@@ -286,9 +294,11 @@ end function
 '':::::
 '' note: this function must be called *before* astNewARG(e) because the
 ''		 expression 'e' can be changed inside the former (address-of string's etc)
-function rtlCalcStrLen( byval expr as ASTNODE ptr, _
-						byval dtype as integer _
-					  ) as integer static
+function rtlCalcStrLen _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval dtype as integer _
+	) as integer static
 
 	dim as FBSYMBOL ptr s
 

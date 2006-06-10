@@ -327,7 +327,7 @@ private function hCheckCrossing _
     										FB_SYMBATTRIB_SHARED or _
     										FB_SYMBATTRIB_TEMP)) = 0 ) then
     						'' must be cleaned?
-    						if( symbGetDontClear( s ) = FALSE ) then
+    						if( symbGetDontInit( s ) = FALSE ) then
     							hBranchWarning( FB_WARNINGMSG_BRANCHCROSSINGLOCALVAR, n, s )
     						end if
     					end if

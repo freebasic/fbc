@@ -66,7 +66,7 @@ private function hClearVar _
    	'' not initialized..
 
    	'' don't clear?
-   	if( symbGetDontClear( sym ) ) then
+   	if( symbGetDontInit( sym ) ) then
    		return NULL
    	end if
 

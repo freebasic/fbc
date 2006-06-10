@@ -902,7 +902,7 @@ private function hVarDecl _
             				end if
 
 						case else
-							symbSetDontClear( sym )
+							symbSetDontInit( sym )
 						end select
 
 						lexSkipToken( )
@@ -988,7 +988,7 @@ private function hVarDecl _
 									   dimensions, _
 									   exprTB(), _
 									   dopreserve, _
-									   symbGetDontClear( sym ) = FALSE )
+									   symbGetDontInit( sym ) = FALSE )
 					end if
 				end if
 

@@ -82,7 +82,7 @@ private function hParamError _
 end function
 
 '':::::
-private function cOptionalExpr _
+private function hOptionalExpr _
 	( _
 		byval mode as FB_PARAMMODE, _
 		byval dtype as FB_DATATYPE, _
@@ -95,8 +95,10 @@ private function cOptionalExpr _
     function = NULL
 
     '' not byval or byref?
-    if( (mode <> FB_PARAMMODE_BYVAL) and (mode <> FB_PARAMMODE_BYREF) ) then
-    	exit function
+    if( mode <> FB_PARAMMODE_BYVAL ) then
+    	if( mode <> FB_PARAMMODE_BYREF ) then
+    		exit function
+    	end if
     end if
 
     '' anything but an UDT?
@@ -162,7 +164,7 @@ private function hMockParam _
 						  dtype, NULL, 0, plen, _
 					  	  pmode, _
 					  	  INVALID, _
-					  	  FALSE, NULL )
+					  	  0, NULL )
 
 	symbSetIsMock( s )
 
@@ -184,9 +186,9 @@ private function hParamDecl _
 	static as integer arglevel = 0
 	dim as zstring ptr pid
 	dim as ASTNODE ptr optval
-	dim as integer ptype, pmode, plen, psuffix, optional, ptrcnt
-	dim as integer readid, mode, dotpos, doskip
-	dim as FBSYMBOL ptr subtype
+	dim as integer ptype, pmode, plen, psuffix, ptrcnt
+	dim as integer readid, dotpos, doskip, attrib, dontinit
+	dim as FBSYMBOL ptr s, subtype
 
 	function = NULL
 
@@ -222,7 +224,7 @@ private function hParamDecl _
 			return symbAddProcParam( proc, NULL, _
 						   	     	 INVALID, NULL, 0, _
 						   	     	 0, FB_PARAMMODE_VARARG, INVALID, _
-						   	      	 FALSE, NULL )
+						   	      	 0, NULL )
 
 		'' syntax error..
 		else
@@ -239,13 +241,13 @@ private function hParamDecl _
 	'' (BYVAL|BYREF)?
 	select case lexGetToken( )
 	case FB_TK_BYVAL
-		mode = FB_PARAMMODE_BYVAL
+		pmode = FB_PARAMMODE_BYVAL
 		lexSkipToken( )
 	case FB_TK_BYREF
-		mode = FB_PARAMMODE_BYREF
+		pmode = FB_PARAMMODE_BYREF
 		lexSkipToken( )
 	case else
-		mode = INVALID
+		pmode = INVALID
 	end select
 
 	'' only allow keywords as arg names on prototypes
@@ -259,7 +261,7 @@ private function hParamDecl _
 				else
 					'' error recovery: skip until next ',' or ')' and return a mock param
 					hSkipUntil( CHAR_COMMA )
-					return hMockParam( proc, mode )
+					return hMockParam( proc, pmode )
 				end if
 			end if
 		end if
@@ -271,7 +273,7 @@ private function hParamDecl _
 				else
 					'' error recovery: skip until next ',' or ')' and return a mock param
 					hSkipUntil( CHAR_COMMA )
-					return hMockParam( proc, mode )
+					return hMockParam( proc, pmode )
 				end if
 			end if
 			exit function
@@ -292,7 +294,7 @@ private function hParamDecl _
 		else
 			'' error recovery: skip until next ',' or ')' and return a mock param
 			hSkipUntil( CHAR_COMMA )
-			return hMockParam( proc, mode )
+			return hMockParam( proc, pmode )
 		end if
 	end if
 
@@ -303,12 +305,13 @@ private function hParamDecl _
 		'' ID
 		*pid = *lexGetText( )
 		ptype = lexGetType( )
+		dotpos = lexGetPeriodPos( )
 		lexSkipToken( )
 
 		'' ('('')')
 		if( lexGetToken( ) = CHAR_LPRNT ) then
 			lexSkipToken( )
-			if( (mode <> INVALID) or _
+			if( (pmode <> INVALID) or _
 				(hMatch( CHAR_RPRNT ) = FALSE) ) then
 				if( hParamError( proc, symbGetProcParams( proc ), pid ) = FALSE ) then
 					exit function
@@ -318,10 +321,8 @@ private function hParamDecl _
 			pmode = FB_PARAMMODE_BYDESC
 
 		else
-			if( mode = INVALID ) then
+			if( pmode = INVALID ) then
 				pmode = env.opt.parammode
-			else
-				pmode = mode
 			end if
 		end if
 
@@ -329,10 +330,8 @@ private function hParamDecl _
 	else
 		ptype  = INVALID
 
-		if( mode = INVALID ) then
+		if( pmode = INVALID ) then
 			pmode = env.opt.parammode
-		else
-			pmode = mode
 		end if
 	end if
 
@@ -450,39 +449,67 @@ private function hParamDecl _
     	end if
     end if
 
-    '' ('=' (NUM_LIT|STR_LIT))?
+    attrib = 0
+   	optval = NULL
+   	dontinit = FALSE
+
+    '' ('=' (expr | ANY))?
     if( lexGetToken( ) = FB_TK_ASSIGN ) then
     	lexSkipToken( )
-        optional = TRUE
 
-		optval = cOptionalExpr( pmode, ptype, subtype )
-		if( optval = NULL ) then
- 	   		if( hParamError( proc, symbGetProcParams( proc ), pid ) = FALSE ) then
- 	   			exit function
- 	   		else
- 	   			'' error recovery: skip until next ',' or ')' and create a def value
- 	   			hSkipUntil( CHAR_COMMA )
-				if( ptype <> FB_DATATYPE_USERDEF ) then
-					optval = astNewCONSTz( ptype )
-				else
-					optional = FALSE
-				end if
+    	if( pmode = FB_PARAMMODE_BYDESC ) then
+    		'' ANY?
+    		if( lexGetToken( ) = FB_TK_ANY ) then
+            	lexSkipToken( )
+
+				dontinit = TRUE
+
+    		else
+ 	   			if( hParamError( proc, symbGetProcParams( proc ), pid ) = FALSE ) then
+ 	   				exit function
+ 	   			else
+ 	   				'' error recovery: skip until next ',' or ')'
+ 	   				hSkipUntil( CHAR_COMMA )
+ 	   			end if
+    		end if
+
+    	else
+        	attrib or= FB_SYMBATTRIB_OPTIONAL
+			optval = hOptionalExpr( pmode, ptype, subtype )
+
+			if( optval = NULL ) then
+ 	   			if( hParamError( proc, symbGetProcParams( proc ), pid ) = FALSE ) then
+ 	   				exit function
+ 	   			else
+ 	   				'' error recovery: skip until next ',' or ')' and create a def value
+ 	   				hSkipUntil( CHAR_COMMA )
+					if( ptype <> FB_DATATYPE_USERDEF ) then
+						optval = astNewCONSTz( ptype )
+					else
+						attrib and= not FB_SYMBATTRIB_OPTIONAL
+					end if
+ 	   			end if
  	   		end if
- 	   	end if
+    	end if
 
-    else
-    	optional = FALSE
-    	optval = NULL
     end if
 
     if( isproto ) then
     	pid = NULL
     end if
 
-    function = symbAddProcParam( proc, pid, _
-    					         ptype, subtype, ptrcnt, _
-    					   	     plen, pmode, psuffix, _
-    					   	     optional, optval )
+    s = symbAddProcParam( proc, pid, _
+    					  ptype, subtype, ptrcnt, _
+    					  plen, pmode, psuffix, _
+    					  attrib, optval )
+
+	if( s <> NULL ) then
+		if( dontinit ) then
+			symbSetDontInit( s )
+		end if
+	end if
+
+	function = s
 
 end function
 

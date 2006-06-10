@@ -139,7 +139,7 @@ private function hProcArg _
 	if( expr = NULL ) then
 
 		'' check if argument is optional
-		if( symbGetParamOptional( param ) = FALSE ) then
+		if( symbGetIsOptional( param ) = FALSE ) then
 			if( pmode <> FB_PARAMMODE_VARARG ) then
 				if( errReport( FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
 					exit function
@@ -581,7 +581,7 @@ function cProcArgList _
 		end if
 
 		'' not optional?
-		if( symbGetParamOptional( param ) = FALSE ) then
+		if( symbGetIsOptional( param ) = FALSE ) then
 			if( errReport( FB_ERRMSG_ARGCNTMISMATCH ) = FALSE ) then
 				exit function
 			else

@@ -55,7 +55,7 @@ enum FB_SYMBSTATS
 	FB_SYMBSTATS_MANGLED		= &h0100
 	FB_SYMBSTATS_HASALIAS		= &h0200
 	FB_SYMBSTATS_MOCK			= &h0400
-	FB_SYMBSTATS_DONTCLEAR		= &h0800
+	FB_SYMBSTATS_DONTINIT		= &h0800
 end enum
 
 '' symbol attributes mask
@@ -85,6 +85,7 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_FUNCPTR		= &h00400000	'' needed to demangle
 	FB_SYMBATTRIB_LITERAL		= &h00800000
 	FB_SYMBATTRIB_CONST			= &h01000000
+	FB_SYMBATTRIB_OPTIONAL		= &h02000000	'' params only
 	FB_SYMBATTRIB_LITCONST		= FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL
 end enum
 
@@ -271,7 +272,6 @@ type FBS_PARAM
 	mode			as FB_PARAMMODE
 	suffix			as integer					'' QB quirk..
 	var				as FBSYMBOL_ ptr			'' link to decl var in func bodies
-	optional		as integer
 	optexpr			as ASTNODE_ ptr				'' default value
 end type
 
@@ -721,7 +721,7 @@ declare function 	symbAddProcParam		( _
 					 						  	byval lgt as integer, _
 					 						  	byval mode as integer, _
 					 						  	byval suffix as integer, _
-					 						  	byval optional as integer, _
+					 						  	byval attrib as FB_SYMBATTRIB, _
 					 						  	byval optexpr as ASTNODE ptr _
 											) as FBSYMBOL ptr
 
@@ -1158,9 +1158,9 @@ declare function 	symbTypeToStr			( _
 
 #define symbSetIsMock(s) s->stats or= FB_SYMBSTATS_MOCK
 
-#define symbSetDontClear(s) s->stats or= FB_SYMBSTATS_DONTCLEAR
+#define symbSetDontInit(s) s->stats or= FB_SYMBSTATS_DONTINIT
 
-#define symbGetDontClear(s) ((s->stats and FB_SYMBSTATS_DONTCLEAR) <> 0)
+#define symbGetDontInit(s) ((s->stats and FB_SYMBSTATS_DONTINIT) <> 0)
 
 #define symbGetStats(s) s->stats
 
@@ -1381,8 +1381,6 @@ declare function 	symbTypeToStr			( _
 
 #define symbGetParamVar(a) a->param.var
 
-#define symbGetParamOptional(a) a->param.optional
-
 #define symbGetParamOptExpr(a) a->param.optexpr
 
 #define symbGetParamPrev(a) a->prev
@@ -1445,6 +1443,8 @@ declare function 	symbTypeToStr			( _
 #define symbIsConstant(s) ((s->attrib and FB_SYMBATTRIB_CONST) <> 0)
 
 #define symbGetIsLiteral(s) ((s->attrib and FB_SYMBATTRIB_LITERAL) <> 0)
+
+#define symbGetIsOptional(s) ((s->attrib and FB_SYMBATTRIB_OPTIONAL) <> 0)
 
 #define symbGetCurrentProcName( ) symbGetName( env.currproc )
 

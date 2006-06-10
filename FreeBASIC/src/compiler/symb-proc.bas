@@ -73,7 +73,7 @@ function symbAddProcParam _
 		byval lgt as integer, _
 		byval mode as integer, _
 		byval suffix as integer, _
-		byval optional as integer, _
+		byval attrib as FB_SYMBATTRIB, _
 		byval optexpr as ASTNODE ptr _
 	) as FBSYMBOL ptr static
 
@@ -94,10 +94,10 @@ function symbAddProcParam _
 	proc->proc.params += 1
 
 	''
+	param->attrib or= attrib
 	param->lgt = lgt
 	param->param.mode = mode
 	param->param.suffix = suffix
-	param->param.optional = optional
 	param->param.optexpr = optexpr
 
     function = param
@@ -644,6 +644,10 @@ function symbAddParam _
     '' declare it or arrays passed by descriptor will be initialized when REDIM'd
     symbSetIsDeclared( s )
 
+    if( symbGetDontInit( param ) ) then
+    	symbSetDontInit( s )
+    end if
+
 	function = s
 
 end function
@@ -867,7 +871,7 @@ private function hCheckOvlParam _
 	'' arg not passed?
 	if( arg_expr = NULL ) then
 		'' but param isn't optional?
-		if( symbGetParamOptional( param ) = FALSE ) then
+		if( symbGetIsOptional( param ) = FALSE ) then
 			return 0
 		end if
 
@@ -1181,7 +1185,7 @@ function symbFindClosestOvlProc _
 				if( (matches > 0) or (args = 0) ) then
 					do while( param <> NULL )
 			    		'' not optional? exit
-			    		if( symbGetParamOptional( param ) = FALSE ) then
+			    		if( symbGetIsOptional( param ) = FALSE ) then
 			    			matches = 0
 			    			exit do
 			    		else
