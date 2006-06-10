@@ -4,14 +4,14 @@ for older versions of FreeBASIC (FB).
 	There are no more plans to break compatibility from version 0.16 and up 
 (unless the GCC (GNU Compiler Collection) back-end impose that, see the next
 paragraph), but FB been in beta stage, this kind of modifications should be 
-acceptable, while we know they can cause trouble to many users working on 
+acceptable. While we know they can cause trouble to many users working on 
 medium-sized or large projects, be sure we tried everything possible before 
 resorting to the final decisions.
 
 	In the next releases, the plan is to move FB to become a GCC front-end, 
 to take advantage of the endless number of platforms supported by the GCC 
 back-end and the high-level optimizations only found in commercial and 
-expensive C/C++ compilers. Many of the changes below were done to make the FB 
+expensive C/C++ compilers. Some of the changes below were done to make the FB 
 front-end compatible with GCC, the migration will take a lot of time and 
 efforts from both the FB team and the user base, but the result will be worth.
 
@@ -32,9 +32,9 @@ modified in FB 0.16 to be compatible with the rest.
 
 	With that change, NOT can't be used anymore to test results of functions
 if they are part of any API/library not developed in a language that defines
-TRUE as "-1", that's it, most languages known languages, including C/C++, 
-where TRUE is defined as "1", not "-1". So, when checking for boolean results, 
-always use to do the tests:
+TRUE as "-1", that's it, most known languages, including C/C++, where TRUE is 
+defined as "1", not "-1". So, when checking for boolean results, always do the 
+tests with:
 
 	    IF SomeFunc() = FALSE THEN error...
 	    
@@ -67,8 +67,8 @@ a function pointers array is more safe and extensible.
 	
 	All compound statements like IF (multi-line only), DO, WHILE, FOR and 
 SELECT will now open an implicit scope block. Because of that, variables 
-declared inside those statements won't be seen anymore outside them, causing 
-problems with buggy (in the logical aspect) applications.
+declared inside those statements won't be seen anymore outside the blocks, 
+causing problems with buggy (in the logical aspect) applications.
 
 	For example:
 	
@@ -116,14 +116,16 @@ local variable definition" will be shown in that case.
 message will be shown for each: "Branch crossing local array, var-len string or 
 object definition".
 
-	In both cases, just declare the offending variables before the GOTO's.
+	In both cases, just declare before the GOTO's, the variables shown in 
+the error or warning messages.
 	
 	
 	
-	We are sorry if the changes listed affected you in some way, they were done 
-to make FB more compatible with QB or more safe to allow object-orientation and 
-exception-handling to be added later, and also to allow the GCC migration, they
-weren't superficially done just to please somebody in favor of other users.
+	We are sorry if the changes listed above affected you in some way, they 
+were done to make FB more compatible with QB or more safe to allow object-
+orientation and exception handling to be added later, and also to allow the GCC 
+migration, they weren't superficially done just to please somebody in favor of 
+other users, be sure.
 
 
-[EOF]
+EOF
