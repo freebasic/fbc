@@ -15,8 +15,8 @@
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 !define PRODUCT_STARTMENU_REGVAL "NSIS:StartMenuDir"
 
-;SetCompressor /SOLID lzma
-SetCompressor zlib
+SetCompressor /SOLID lzma
+;SetCompressor zlib
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"

@@ -144,6 +144,7 @@ Version 0.16 Beta:
 - stack was been wrongly poped in some cases of DIV and MOD of integers (v1c)
 - resolution of overloaded function pointer arguments were not working (v1c)
 - byte and short var-args were not been converted to integers (v1c)
+- fixed-len string arguments passed to var-length string parameters were not been updated correctly (v1c)
 
 
 Version 0.15 Beta:
