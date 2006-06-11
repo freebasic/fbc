@@ -29,11 +29,13 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function astNewIDX( byval var as ASTNODE ptr, _
-					byval idx as ASTNODE ptr, _
-					byval dtype as integer, _
-					byval subtype as FBSYMBOL ptr _
-				  ) as ASTNODE ptr static
+function astNewIDX _
+	( _
+		byval var as ASTNODE ptr, _
+		byval idx as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
 
@@ -50,19 +52,21 @@ function astNewIDX( byval var as ASTNODE ptr, _
 		exit function
 	end if
 
-	n->l 			= idx
-	n->r 			= var
-	n->sym			= var->sym
-	n->idx.mult 	= 1
-	n->idx.ofs 		= 0
+	n->l = idx
+	n->r = var
+	n->sym = var->sym
+	n->idx.mult	= 1
+	n->idx.ofs = 0
 
 end function
 
 '':::::
-private function hEmitIDX( byval n as ASTNODE ptr, _
-						   byval var as ASTNODE ptr, _
-					  	   byval vidx as IRVREG ptr _
-					  	 ) as IRVREG ptr static
+private function hEmitIDX _
+	( _
+		byval n as ASTNODE ptr, _
+		byval var as ASTNODE ptr, _
+		byval vidx as IRVREG ptr _
+	) as IRVREG ptr static
 
     dim as FBSYMBOL ptr s
     dim as IRVREG ptr vd
@@ -83,11 +87,13 @@ private function hEmitIDX( byval n as ASTNODE ptr, _
     ''
     if( ast.doemit ) then
 		if( vidx <> NULL ) then
-			vd = irAllocVRIDX( n->dtype, s, ofs, n->idx.mult, vidx )
-
-			if( irIsIDX( vidx ) or irIsVAR( vidx ) ) then
+			'' not a reg already? load
+			if( irIsREG( vidx ) = FALSE ) then
 				irEmitLOAD( vidx )
 			end if
+
+			vd = irAllocVRIDX( n->dtype, s, ofs, n->idx.mult, vidx )
+
 		else
 			vd = irAllocVRVAR( n->dtype, s, ofs )
 		end if
@@ -98,7 +104,11 @@ private function hEmitIDX( byval n as ASTNODE ptr, _
 end function
 
 '':::::
-function astLoadIDX( byval n as ASTNODE ptr ) as IRVREG ptr
+function astLoadIDX _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
     dim as ASTNODE ptr var, idx
     dim as IRVREG ptr vidx, vr
 

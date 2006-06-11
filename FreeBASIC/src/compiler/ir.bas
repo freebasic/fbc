@@ -1064,37 +1064,6 @@ function irAllocVROFS _
 end function
 
 '':::::
-function irIsVAR _
-	( _
-		byval vreg as IRVREG ptr _
-	) as integer static
-
-	function = FALSE
-
-	select case vreg->typ
-	case IR_VREGTYPE_VAR
-		function = TRUE
-	end select
-
-end function
-
-'':::::
-function irIsIDX _
-	( _
-		byval vreg as IRVREG ptr _
-	) as integer static
-
-	function = FALSE
-
-	select case vreg->typ
-	case IR_VREGTYPE_IDX, IR_VREGTYPE_PTR
-		function = TRUE
-	end select
-
-end function
-
-
-'':::::
 function irGetVRDataClass _
 	( _
 		byval vreg as IRVREG ptr _

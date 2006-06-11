@@ -98,7 +98,7 @@ private function hAllocTmpStrNode _
 
 	t->tmpsym = s
 	if( copyback ) then
-		t->srctree = astCloneTree( n )
+		t->srctree = astOptimize( astCloneTree( n ) )
 	else
 		t->srctree = NULL
 	end if

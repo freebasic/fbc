@@ -273,14 +273,6 @@ declare sub 		irEmitDBG			( _
 											byval ex as integer _
 										)
 
-declare function 	irIsVAR				( _
-											byval vreg as IRVREG ptr _
-										) as integer
-
-declare function 	irIsIDX				( _
-											byval vreg as IRVREG ptr _
-										) as integer
-
 declare function 	irGetVRDataClass	( _
 											byval vreg as IRVREG ptr _
 										) as integer
@@ -319,9 +311,9 @@ declare sub 		irXchgTOS			( _
 ''
 '' macros
 ''
-#define irIsREG(v) iif( v->typ = IR_VREGTYPE_REG, TRUE, FALSE )
+#define irIsREG(v) (v->typ = IR_VREGTYPE_REG)
 
-#define irIsIMM(v) iif( v->typ = IR_VREGTYPE_IMM, TRUE, FALSE )
+#define irIsIMM(v) (v->typ = IR_VREGTYPE_IMM)
 
 
 #define irGetVRType(v) v->typ
