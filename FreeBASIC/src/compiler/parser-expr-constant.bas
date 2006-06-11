@@ -226,7 +226,8 @@ end function
 '':::::
 function cNumLiteral _
 	( _
-		byref expr as ASTNODE ptr _
+		byref expr as ASTNODE ptr, _
+		byval skiptoken as integer _
 	) as integer
 
 	dim as integer dtype
@@ -249,7 +250,9 @@ function cNumLiteral _
 		expr = astNewCONSTi( valint( *lexGetText( ) ), dtype )
   	end select
 
-  	lexSkipToken( )
+  	if( skiptoken ) then
+  		lexSkipToken( )
+  	end if
 
   	function = TRUE
 

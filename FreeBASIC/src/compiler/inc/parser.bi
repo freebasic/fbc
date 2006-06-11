@@ -518,7 +518,8 @@ declare function 	cLiteral 				( _
 											) as integer
 
 declare function 	cNumLiteral				( _
-												byref expr as ASTNODE ptr _
+												byref expr as ASTNODE ptr, _
+												byval skiptoken as integer = TRUE _
 											) as integer
 
 declare function 	cStrLiteral				( _

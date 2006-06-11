@@ -1639,9 +1639,10 @@ read_char:
 				goto re_read
 			end if
 
-		'' '(', ')', ',', ':', ';', '@', '.', '$'?
+		'' '(', ')', ',', ':', ';', '@', '.', '$', '{', '}', '[', ']'?
 		case CHAR_LPRNT, CHAR_RPRNT, CHAR_COMMA, CHAR_COLON, _
-			 CHAR_SEMICOLON, CHAR_AT, CHAR_DOT, CHAR_DOLAR
+			 CHAR_SEMICOLON, CHAR_AT, CHAR_DOT, CHAR_DOLAR, _
+			 CHAR_LBRACE, CHAR_RBRACE, CHAR_LBRACKET, CHAR_RBRACKET
 			t->class = FB_TKCLASS_DELIMITER
 
 		'' ' ', '\t'?

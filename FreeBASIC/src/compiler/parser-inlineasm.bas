@@ -109,7 +109,7 @@ function cAsmCode as integer static
 
 		'' lit number?
 		case FB_TKCLASS_NUMLITERAL
-			 if( cNumLiteral( expr ) ) then
+			 if( cNumLiteral( expr, FALSE ) ) then
              	text = astGetValueAsStr( expr )
 			 	astDelNode( expr )
 			 end if
