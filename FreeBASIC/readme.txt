@@ -287,7 +287,7 @@ Most Important Features:
        mutexes/locks are only used if the MT version is selected.
 
      - The MT version is automatically select when thread functions like 
-       CreateThread are used. It can also be selected manually, passing the 
+       ThreadCreate are used. It can also be selected manually, passing the 
        -mt option when compiling.
 
   o Unicode support:
