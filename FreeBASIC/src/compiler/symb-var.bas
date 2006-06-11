@@ -368,13 +368,17 @@ private function hCreateArrayDesc _
 				     FB_SYMBATTRIB_LOCAL)) or _
 				   FB_SYMBATTRIB_DESCRIPTOR
 
-	'' static and extern? always emit the descriptor (if accessed),
-	'' because the original one won't be accessible (or may don't
-	'' exist, if it's a "C" extern array)
-	if( isstatic ) then
+	'' not dynamic?
+	if( isdynamic = FALSE ) then
+		'' extern? always emit the descriptor (if accessed),
+		'' because the original one won't be accessible (or may don't
+		'' exist, if it's a "C" extern array)
 		if( symbIsExtern( array ) ) then
 			desc->attrib and= not FB_SYMBATTRIB_EXTERN
 		end if
+
+		'' if not-dynamic, the descriptor can't be ever public
+		desc->attrib and= not FB_SYMBATTRIB_PUBLIC
 	end if
 
 	desc->stats = array->stats and (FB_SYMBSTATS_ALLOCATED or FB_SYMBSTATS_ACCESSED)

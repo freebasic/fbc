@@ -216,6 +216,39 @@ private function hIsConst _
 end function
 
 '':::::
+private sub hVarExtToPub _
+	( _
+		byval sym as FBSYMBOL ptr, _
+		byval attrib as FB_SYMBATTRIB _
+	) static
+
+	dim as FBSYMBOL ptr desc
+
+	'' remove the extern (or it won't be emitted), make it public (and shared for safety)
+	symbSetAttrib( sym, (attrib and (not FB_SYMBATTRIB_EXTERN)) or _
+    		            FB_SYMBATTRIB_PUBLIC or _
+    			        FB_SYMBATTRIB_SHARED )
+
+    '' array? update the descriptor attributes too
+    if( symbGetArrayDimensions( sym ) <> 0 ) then
+    	desc = symbGetArrayDescriptor( sym )
+
+    	attrib = (symbGetAttrib( desc ) and (not FB_SYMBATTRIB_EXTERN)) or _
+    	  	  	 FB_SYMBATTRIB_SHARED
+
+    	'' not dynamic? descriptor can't be public
+    	if( symbIsDynamic( sym ) = FALSE ) then
+			attrib and= not FB_SYMBATTRIB_PUBLIC
+		else
+			attrib or= FB_SYMBATTRIB_PUBLIC
+		end if
+
+		symbSetAttrib( desc, attrib )
+	end if
+
+end sub
+
+'':::::
 private function hDeclExternVar _
 	( _
 		byval ns as FBSYMBOL ptr, _
@@ -284,9 +317,7 @@ private function hDeclExternVar _
 
     	'' set type
     	if( setattrib ) then
-    		symbSetAttrib( s, (attrib and (not FB_SYMBATTRIB_EXTERN)) or _
-    					  	  FB_SYMBATTRIB_PUBLIC or _
-    					  	  FB_SYMBATTRIB_SHARED )
+    		hVarExtToPub( s, attrib )
 		end if
 
 		'' check dimensions
@@ -299,14 +330,6 @@ private function hDeclExternVar _
     		else
 				'' set dims
 				symbSetArrayDimTb( s, dimensions, dTB() )
-
-				if( setattrib ) then
-    				desc = symbGetArrayDescriptor( s )
-    				symbSetAttrib( desc, _
-    							   (symbGetAttrib( desc ) and (not FB_SYMBATTRIB_EXTERN)) or _
-    					  	  	   FB_SYMBATTRIB_PUBLIC or _
-    					  	  	   FB_SYMBATTRIB_SHARED )
-				end if
     		end if
 		end if
 
@@ -407,7 +430,7 @@ private function hDeclDynArray _
 	) as FBSYMBOL ptr static
 
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)		'' always 0
-    dim as FBSYMBOL ptr s, ns
+    dim as FBSYMBOL ptr s, ns, desc
     dim as integer isrealloc
 
     function = NULL
@@ -482,10 +505,7 @@ private function hDeclDynArray _
 					exit function
 				end if
 
-				symbSetAttrib( s, (attrib and _
-								   (not FB_SYMBATTRIB_EXTERN)) or _
-    					           FB_SYMBATTRIB_PUBLIC or _
-    					           FB_SYMBATTRIB_SHARED )
+				hVarExtToPub( s, attrib )
 			end if
 		end if
 	end if
