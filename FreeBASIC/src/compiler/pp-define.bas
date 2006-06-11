@@ -809,10 +809,20 @@ function ppDefine( ) as integer
 
 	function = FALSE
 
-    '' ID
-    chain_ = cIdentifier( )
+	'' don't allow explicit namespaces
+	chain_ = cIdentifier( TRUE )
+	if( errGetLast( ) <> FB_ERRMSG_OK ) then
+		exit function
+	end if
 
     lexEatToken( @defname, LEX_FLAGS )
+
+    '' contains a period? (with LEX_FLAGS it won't skip white spaces)
+    if( lexGetToken( LEX_FLAGS ) = CHAR_DOT ) then
+    	if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+    		exit function
+    	end if
+    end if
 
     if( chain_ <> NULL ) then
     	sym = chain_->sym
