@@ -14,6 +14,9 @@ RUNLIST := $(foreach i,$(EXELIST) $(patsubst %.mk,%$(EXEEXT),$(MAKLIST)),echo [$
 
 VPATH = $(DIRLIST)
 
+.SUFFIXES:
+.SUFFIXES: .bas $(EXEEXT)
+
 ### rules
 
 %.o: %.bas
@@ -30,7 +33,7 @@ run_tests: $(EXELIST) sub_make
 
 .PHONY : sub_make
 sub_make: $(MAKLIST)
-	cd $(<D) && make -f $(<F) build TESTNAME=$(subst .mk,,$(<F)) && cd ..
+	$(foreach i,$(MAKLIST),cd $(dir $(i)) && make -f $(notdir $(i)) build TESTNAME=$(subst .mk,,$(notdir $(i))) && cd .. &&) cd .
 
 .PHONY : clean
 clean: exe_clean sub_clean
