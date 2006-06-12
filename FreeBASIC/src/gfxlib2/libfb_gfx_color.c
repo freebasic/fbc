@@ -51,13 +51,13 @@ int fb_GfxColor(int fg, int bg)
 			break;
 		
 		default:
-			if (fg >= 0) {
+			if (fg != -1) {
 				if (fb_mode->depth > 8)
 					fb_mode->fg_color = fb_hMakeColor(fg, (fg >> 16) & 0xFF, (fg >> 8) & 0xFF, fg & 0xFF);
 				else
 					fb_mode->fg_color = (fg & fb_mode->color_mask);
 			}
-			if (bg >= 0) {
+			if (bg != -1) {
 				if (fb_mode->depth > 8)
 					fb_mode->bg_color = fb_hMakeColor(bg, (bg >> 16) & 0xFF, (bg >> 8) & 0xFF, bg & 0xFF);
 				else

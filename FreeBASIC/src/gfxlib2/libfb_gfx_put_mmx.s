@@ -1081,6 +1081,7 @@ FUNC(fb_hPutBlend4MMX)
 	movl ARG6, %ebx
 	incl %ebx
 	movd %ebx, %mm2
+	movq (rgb_32), %mm7
 	punpcklwd %mm2, %mm2
 	movl %ebx, LOCAL3
 	punpckldq %mm2, %mm2
@@ -1127,6 +1128,7 @@ LABEL(blend4_skip_1)
 LABEL(blend4_x_loop)
 	movq (%esi), %mm0
 	movq (%edi), %mm1
+	pand %mm7, %mm0
 	movq %mm0, %mm3
 	movq %mm1, %mm4
 	pcmpeqd (mask_32), %mm0
