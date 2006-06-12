@@ -115,7 +115,7 @@ static void get_arc_point(float angle, float a, float b, int *x, int *y)
 /*:::::*/
 FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsigned int color, float aspect, float start, float end, int fill, int coord_type)
 {
-	int x, y, x1, y1, y2;
+	int x, y, x1, y1, y2, top, bottom;
 	unsigned int orig_color;
 	float a, b, increment;
 	
@@ -176,6 +176,7 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 		
 		DRIVER_LOCK();
 		
+		top = bottom = y;
 		for (; start < end + (increment / 2); start += increment) {
 			get_arc_point(start, a, b, &x1, &y1);
 			x1 = x + x1;
@@ -184,19 +185,25 @@ FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsign
 			    (y1 < fb_mode->view_y) || (y1 >= fb_mode->view_y + fb_mode->view_h))
 				continue;
 			fb_hPutPixel(x1, y1, color);
+			if (y1 > bottom)
+				bottom = y1;
+			if (y1 < top)
+				top = y1;
 		}
 	}
 	else {
 		DRIVER_LOCK();
 		
 		draw_ellipse(x, y, a, b, color, fill);
+		top = y - b;
+		bottom = y + b;
 	}
-		
-	y1 = MID(0, y - b, fb_mode->view_h - 1);
-	y2 = MID(0, y + b, fb_mode->view_h - 1);
-	if( y1 > y2 )
-		SWAP( y1, y2 );
-	SET_DIRTY(y1, y2 - y1 + 1);
+	
+	top = MID(0, top, fb_mode->view_h - 1);
+	bottom = MID(0, bottom, fb_mode->view_h - 1);
+	if( top > bottom )
+		SWAP( top, bottom );
+	SET_DIRTY(top, bottom - top + 1);
 	
 	DRIVER_UNLOCK();
 	
