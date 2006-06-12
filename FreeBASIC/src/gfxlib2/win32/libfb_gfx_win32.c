@@ -378,7 +378,6 @@ int fb_hWin32GetMouse(int *x, int *y, int *z, int *buttons)
 	else {
 		ScreenToClient(fb_win32.wnd, &point);
 		if ((point.x < 0) || (point.x >= fb_win32.w) || (point.y < 0) || (point.y >= fb_win32.h)) {
-			mouse_buttons = 0;
 			return -1;
 		}
 		else {
