@@ -61,7 +61,8 @@ end function
 '':::::
 private function hGetBitField _
 	( _
-		byval n as ASTNODE ptr _
+		byval n as ASTNODE ptr, _
+		byval dtype as integer _
 	) as ASTNODE ptr static
 
 	dim as ASTNODE ptr c
@@ -77,17 +78,18 @@ private function hGetBitField _
 	c = astNewNode( INVALID, INVALID )
 	astCopy( c, n )
 
-	'' final type is always an unsigned int
+	'' final type is always an integer (the sign depends if CONV changed
+	'' the parent type or not)
 
 	if( s->bitfld.bitpos > 0 ) then
 		n = astNewBOP( AST_OP_SHR, c, _
-				   	   astNewCONSTi( s->bitfld.bitpos, FB_DATATYPE_UINT ) )
+				   	   astNewCONSTi( s->bitfld.bitpos, dtype ) )
 	else
 		n = c
 	end if
 
 	n = astNewBOP( AST_OP_AND, n, _
-				   astNewCONSTi( ast_bitmaskTB(s->bitfld.bits), FB_DATATYPE_UINT ) )
+				   astNewCONSTi( ast_bitmaskTB(s->bitfld.bits), dtype ) )
 
 	function = n
 
@@ -104,7 +106,7 @@ function astLoadFIELD _
 	'' handle bitfields..
 	l = n->l
 	if( l->dtype = FB_DATATYPE_BITFIELD ) then
-		l = hGetBitField( l )
+		l = hGetBitField( l, n->dtype )
 	end if
 
 	function = astLoad( l )

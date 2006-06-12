@@ -366,12 +366,20 @@ function astNewCONV _
 
 	'' only convert if the classes are different (ie, floating<->integer) or
 	'' if sizes are different (ie, byte<->int)
-	if( (ldclass = symbGetDataClass( to_dtype )) and _
-		(symbGetDataSize( ldtype ) = symbGetDataSize( to_dtype )) ) then
+	if( ldclass = symbGetDataClass( to_dtype ) ) then
+		if( symbGetDataSize( ldtype ) = symbGetDataSize( to_dtype ) ) then
+			'' check bitfields..
+			if( l->class = AST_NODECLASS_FIELD ) then
+				if( l->l->dtype = FB_DATATYPE_BITFIELD ) then
+					'' only change the top node type
+					l->dtype = to_dtype
+					return l
+				end if
+			end if
 
-		astSetType( l, to_dtype, to_subtype )
-
-		return l
+			astSetType( l, to_dtype, to_subtype )
+			return l
+		end if
 	end if
 
 	'' handle special cases..

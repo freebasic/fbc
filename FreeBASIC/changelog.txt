@@ -1,3 +1,9 @@
+Version 0.17 Beta:
+
+[fixed]
+- premature optimization in bitfields when converting to a signed integer type (v1c)
+
+
 Version 0.16 Beta:
 
 [changed]
