@@ -53,4 +53,7 @@ const vbFormFeed		= chr( 12 )
 const vbTab				= chr( 09 )
 const vbVerticalTab		= chr( 11 )
 
+'' FILE
+#include once "file.bi"
+
 #endif

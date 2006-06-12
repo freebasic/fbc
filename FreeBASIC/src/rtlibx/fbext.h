@@ -163,6 +163,10 @@ FBCALL int          fb_I18nGet          ( void );
        int          fb_DrvIntlGetTimeFormat ( char *buffer, size_t len );
        FBSTRING   * fb_DrvIntlGetMonthName  ( int month, int short_name );
        FBSTRING   * fb_DrvIntlGetWeekdayName( int weekday, int short_names );
+       
+       
+FBCALL int          fb_FileCopy         ( FBSTRING *source, FBSTRING *destination );
+       int          fb_DrvFileCopy      ( const char *source, const char *destination );
 
 #ifdef __cplusplus
 }
