@@ -1,8 +1,8 @@
 Version 0.17 Beta:
 
 [changed]
-- due requests, now implicit variables will be always allocated at the function scope, not inside of the current scope 
-  as explicit variables will (v1c)
+- due requests, now implicit variables will be always allocated at the parent function scope (unless they are 
+  allocated inside explicit SCOPE .. END SCOPE blocks), not inside of the current scope as explicit variables will (v1c)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
