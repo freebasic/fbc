@@ -1010,7 +1010,12 @@ private function hVarAddUndecl _
 		attrib = 0
 	end if
 
-    s = symbAddVarEx( id, NULL, dtype, NULL, 0, 0, 0, dTB(), attrib, FB_VAROPT_UNSCOPE )
+    s = symbAddVarEx( id, NULL, _
+    				  dtype, NULL, 0, 0, _
+    				  0, dTB(), _
+    				  attrib, _
+    				  FB_VAROPT_ADDSUFFIX or FB_VAROPT_UNSCOPE )
+
     if( s = NULL ) then
 		if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
 			exit function
