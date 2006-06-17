@@ -2,8 +2,6 @@
 '' simple inkey$ test
 ''
 
-	dim k$
-	
 	do
 		k$ = inkey$
 		if( len( k$ ) > 0 ) then
