@@ -541,8 +541,7 @@ function symbAddVarEx _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
 		byval attrib as integer, _
-		byval addsuffix as integer, _
-		byval preservecase as integer _
+		byval options as FB_VAROPT _
 	) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr s
@@ -576,7 +575,7 @@ function symbAddVarEx _
     end if
 
     ''
-    if( addsuffix ) then
+    if( (options and FB_VAROPT_ADDSUFFIX) <> 0 ) then
     	suffix = dtype
     else
     	suffix = INVALID
@@ -596,7 +595,13 @@ function symbAddVarEx _
 
 	'' local? add to local symb & hash tbs
 	if( isglobal = FALSE ) then
-		symtb = symb.symtb
+		'' QB quirk: implicit variables are moved to the function scope..
+		if( (options and FB_VAROPT_UNSCOPE) = 0 ) then
+			symtb = symb.symtb
+		else
+			symtb = @symbGetProcLocTb( env.currproc )
+		end if
+
 		hashtb = symb.hashtb
 
 		'' can't add local static vars to global list because
@@ -624,7 +629,8 @@ function symbAddVarEx _
 					   FB_SYMBCLASS_VAR, _
 					   TRUE, id, id_alias, _
 					   dtype, subtype, ptrcnt, _
-					   preservecase, suffix )
+					   (options and FB_VAROPT_PRESERVECASE) <> 0, _
+					   suffix )
 
 	if( s = NULL ) then
 		exit function
@@ -632,6 +638,18 @@ function symbAddVarEx _
 
 	''
 	hSetupVar( s, id, dtype, subtype, lgt, dimensions, dTB(), attrib, stats )
+
+	'' QB quirk: see the above
+	if( (options and FB_VAROPT_UNSCOPE) <> 0 ) then
+		if( (env.currproc->attrib and (FB_SYMBATTRIB_MAINPROC or _
+									   FB_SYMBATTRIB_MODLEVELPROC)) <> 0 ) then
+			s->scope = FB_MAINSCOPE
+		else
+			s->scope = env.currproc->scope + 1
+		end if
+
+		s->var.stmtnum = env.currproc->proc.ext->stmtnum + 1
+	end if
 
 	function = s
 
@@ -652,7 +670,8 @@ function symbAddVar _
     function = symbAddVarEx( symbol, NULL, dtype, subtype, ptrcnt, _
     		  			     0, dimensions, dTB(), _
     						 attrib, _
-    						 TRUE, FALSE )
+    						 FB_VAROPT_ADDSUFFIX )
+
 end function
 
 '':::::
@@ -682,8 +701,7 @@ function symbAddTempVar _
 
 	s = symbAddVarEx( id, NULL, dtype, subtype, 0, _
 					  0, 0, dTB(), _
-					  attrib, _
-					  FALSE, FALSE )
+					  attrib )
     if( s = NULL ) then
     	return NULL
     end if

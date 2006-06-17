@@ -68,27 +68,6 @@ sub astProcListEnd( )
 end sub
 
 '':::::
-private function hNewProcNode(  ) as ASTNODE ptr static
-	dim as ASTNODE ptr n
-
-	n = astNewNode( AST_NODECLASS_PROC, INVALID, NULL )
-
-	'' add to list
-	if( ast.proc.tail <> NULL ) then
-		ast.proc.tail->next = n
-	else
-		ast.proc.head = n
-	end if
-
-	n->prev = ast.proc.tail
-	n->next = NULL
-	ast.proc.tail = n
-
-	function = n
-
-end function
-
-'':::::
 private sub hDelProcNode _
 	( _
 		byval n as ASTNODE ptr _
@@ -301,6 +280,58 @@ sub astAddBefore _
 
 end sub
 
+''::::
+sub astAddDecl _
+	( _
+		byval n as ASTNODE ptr _
+	) static
+
+	dim as ASTNODE ptr last
+
+	if( n = NULL ) then
+		exit sub
+	end if
+
+	last = ast.proc.curr->block.decl_last
+	if( last = NULL ) then
+		last = ast.proc.curr->l
+	end if
+
+	if( last = NULL ) then
+		astAdd( n )
+	else
+		astAddAfter( n, last )
+	end if
+
+	ast.proc.curr->block.decl_last = n
+
+end sub
+
+'':::::
+private function hNewProcNode _
+	(  _
+		_
+	) as ASTNODE ptr static
+
+	dim as ASTNODE ptr n
+
+	n = astNewNode( AST_NODECLASS_PROC, INVALID, NULL )
+
+	'' add to list
+	if( ast.proc.tail <> NULL ) then
+		ast.proc.tail->next = n
+	else
+		ast.proc.head = n
+	end if
+
+	n->prev = ast.proc.tail
+	n->next = NULL
+	ast.proc.tail = n
+
+	function = n
+
+end function
+
 '':::::
 function astProcBegin _
 	( _
@@ -371,6 +402,10 @@ function astProcBegin _
 	n->block.breaklist.head = NULL
 	n->block.breaklist.tail = NULL
 
+	''
+	n->block.decl_last = NULL
+
+	''
 	irProcBegin( sym )
 
     '' alloc parameters
@@ -397,6 +432,8 @@ function astProcBegin _
 			.lastfun = NULL
 		end if
 	end with
+
+	sym->proc.ext->stmtnum = env.stmtcnt
 
 	function = n
 

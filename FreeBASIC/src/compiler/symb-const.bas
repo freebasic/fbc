@@ -110,7 +110,8 @@ function symbAllocFloatConst _
 	'' proc, the global symbol tb should be used, so just one constant
 	'' will be ever allocated over the module
 	s = symbAddVarEx( @id, @id_alias, dtype, NULL, 0, 0, 0, dTB(), _
-					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, TRUE, TRUE )
+					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
+					  FB_VAROPT_ADDSUFFIX or FB_VAROPT_PRESERVECASE )
 
 	''
 	s->var.littext = ZstrAllocate( len( svalue ) )
@@ -162,7 +163,8 @@ function symbAllocStrConst _
 	'' it must be declare as SHARED, see symbAllocFloatConst()
 	s = symbAddVarEx( @id, @id_alias, FB_DATATYPE_CHAR, NULL, _
 					  0, lgt + 1, 0, dTB(), _
-					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, FALSE, TRUE )
+					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
+					  FB_VAROPT_PRESERVECASE )
 
 	''
 	s->var.littext = ZstrAllocate( strlen )
@@ -214,7 +216,8 @@ function symbAllocWStrConst _
 	'' it must be declare as SHARED, see symbAllocFloatConst()
 	s = symbAddVarEx( @id, @id_alias, FB_DATATYPE_WCHAR, NULL, _
 					  0, (lgt+1) * len( wstring ), 0, dTB(), _
-					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, FALSE, TRUE )
+					  FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_LITCONST, _
+					  FB_VAROPT_PRESERVECASE )
 
 	''
 	s->var.littextw = WstrAllocate( strlen )

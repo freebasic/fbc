@@ -270,6 +270,7 @@ type AST_BLOCK
 	initlabel		as FBSYMBOL ptr
 	exitlabel		as FBSYMBOL ptr
 	breaklist		as AST_BREAKLIST
+	decl_last		as ASTNODE_ ptr					'' to support implicit variables decl
 end type
 
 ''
@@ -314,9 +315,9 @@ type ASTNODE
 end type
 
 type AST_PROCCTX
-	head			as ASTNODE ptr
-	tail			as ASTNODE ptr
-	curr			as ASTNODE ptr
+	head			as ASTNODE ptr					'' procs list
+	tail			as ASTNODE ptr					'' /     /
+	curr			as ASTNODE ptr					'' current proc
 	oldns			as FBSYMBOL ptr					'' last namespace
 	oldsymtb		as FBSYMBOLTB ptr
 	oldhashtb		as FBHASHTB ptr
@@ -444,6 +445,10 @@ declare sub 		astAddAfter			( _
 declare sub 		astAddBefore		( _
 											byval n as ASTNODE ptr, _
 											byval p as ASTNODE ptr _
+										)
+
+declare sub 		astAddDecl 			( _
+											byval n as ASTNODE ptr _
 										)
 
 declare function	astUpdComp2Branch	( _

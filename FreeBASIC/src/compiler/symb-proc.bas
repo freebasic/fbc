@@ -634,7 +634,7 @@ function symbAddParam _
 
     s = symbAddVarEx( symbol, NULL, dtype, param->subtype, 0, 0, _
     				  0, dTB(), attrib, _
-    				  param->param.suffix <> INVALID, FALSE )
+    				  iif( param->param.suffix <> INVALID, FB_VAROPT_ADDSUFFIX, FB_VAROPT_NONE ) )
 
     if( s = NULL ) then
     	return NULL
@@ -673,7 +673,7 @@ function symbAddProcResultParam _
     s = symbAddVarEx( NULL, NULL, _
     				  FB_DATATYPE_POINTER+FB_DATATYPE_USERDEF, proc->subtype, 0, 0, _
     				  0, dTB(), FB_SYMBATTRIB_PARAMBYVAL, _
-    				  TRUE, TRUE )
+    				  FB_VAROPT_ADDSUFFIX or FB_VAROPT_PRESERVECASE )
 
 
 	if( proc->proc.ext = NULL ) then
@@ -707,7 +707,8 @@ function symbAddProcResult _
 	end if
 
 	s = symbAddVarEx( NULL, NULL, proc->typ, proc->subtype, 0, 0, 0, _
-					  dTB(), FB_SYMBATTRIB_FUNCRESULT, TRUE, TRUE )
+					  dTB(), FB_SYMBATTRIB_FUNCRESULT, _
+					  FB_VAROPT_ADDSUFFIX or FB_VAROPT_PRESERVECASE )
 
 	if( proc->proc.ext = NULL ) then
 		proc->proc.ext = callocate( len( FB_PROCEXT ) )

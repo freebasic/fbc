@@ -89,6 +89,13 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_LITCONST		= FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL
 end enum
 
+enum FB_VAROPT
+	FB_VAROPT_NONE				= &h00000000
+	FB_VAROPT_ADDSUFFIX			= &h00000001
+	FB_VAROPT_PRESERVECASE		= &h00000002
+	FB_VAROPT_UNSCOPE			= &h00000004
+end enum
+
 type FBSYMBOL_ as FBSYMBOL
 
 #ifndef ASTNODE_
@@ -305,6 +312,7 @@ type FB_PROCEXT
 	stk				as FB_PROCSTK 				'' to keep track of the stack frame
 	dbg				as FB_PROCDBG 				'' debugging
 	err				as FB_PROCERR
+	stmtnum			as integer
 end type
 
 type FB_PROCRTL
@@ -651,8 +659,7 @@ declare function 	symbAddVarEx			( _
 												byval dimensions as integer, _
 												dTB() as FBARRAYDIM, _
 				       						  	byval attrib as integer, _
-				       						  	byval addsuffix as integer, _
-				       						  	byval preservecase as integer _
+				       						  	byval options as FB_VAROPT = FB_VAROPT_NONE _
 											) as FBSYMBOL ptr
 
 declare function 	symbAddTempVar			( _
@@ -1275,8 +1282,6 @@ declare function 	symbTypeToStr			( _
 #define symbGetVarLitTextW(s) s->var.littextw
 
 #define symbGetVarStmt(s) s->var.stmtnum
-
-#define symGetVarLine(s) s->var.linenum
 
 #define symbSetTypeIniTree(s, t) s->var.initree = t
 

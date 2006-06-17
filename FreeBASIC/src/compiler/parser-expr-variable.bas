@@ -1010,7 +1010,7 @@ private function hVarAddUndecl _
 		attrib = 0
 	end if
 
-    s = symbAddVar( id, dtype, NULL, 0, 0, dTB(), attrib )
+    s = symbAddVarEx( id, NULL, dtype, NULL, 0, 0, 0, dTB(), attrib, FB_VAROPT_UNSCOPE )
     if( s = NULL ) then
 		if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
 			exit function
@@ -1020,8 +1020,8 @@ private function hVarAddUndecl _
 		end if
 
 	else
-		'' declare it
-		astAdd( astNewDECL( FB_SYMBCLASS_VAR, s, NULL ) )
+		'' QB quirk: declare it at function scope
+		astAddDecl( astNewDECL( FB_SYMBCLASS_VAR, s, NULL ) )
 	end if
 
 	function = s

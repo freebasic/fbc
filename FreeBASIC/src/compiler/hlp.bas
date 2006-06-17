@@ -572,8 +572,7 @@ function hJumpTbAllocSym( ) as any ptr static
 	sname = *hMakeTmpStr( )
 
 	s = symbAddVarEx( @sname, NULL, FB_DATATYPE_UINT, NULL, 0, _
-					  FB_INTEGERSIZE, 1, dTB(), FB_SYMBATTRIB_SHARED+FB_SYMBATTRIB_JUMPTB, _
-					  FALSE, FALSE )
+					  FB_INTEGERSIZE, 1, dTB(), FB_SYMBATTRIB_SHARED+FB_SYMBATTRIB_JUMPTB )
 
 	symbSetIsInitialized( s )
 
