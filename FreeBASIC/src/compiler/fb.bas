@@ -155,6 +155,7 @@ private sub hSetCtx( )
 	env.checkarray			= TRUE
 	env.ctxsym 				= NULL
 	env.isexpr 				= FALSE
+	env.isscope				= FALSE
 
 	''
 	env.stmt.for.cmplabel	= NULL

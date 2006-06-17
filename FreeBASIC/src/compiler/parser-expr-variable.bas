@@ -1000,7 +1000,7 @@ private function hVarAddUndecl _
 
 	dim as FBSYMBOL ptr s
 	dim as FBARRAYDIM dTB(0)
-	dim as integer attrib
+	dim as integer attrib, options
 
 	function = NULL
 
@@ -1010,11 +1010,18 @@ private function hVarAddUndecl _
 		attrib = 0
 	end if
 
+	options = FB_VAROPT_ADDSUFFIX
+
+	'' not inside an explicit SCOPE .. END SCOPE block?
+	if( env.isscope = FALSE ) then
+		options or= FB_VAROPT_UNSCOPE
+	end if
+
     s = symbAddVarEx( id, NULL, _
     				  dtype, NULL, 0, 0, _
     				  0, dTB(), _
     				  attrib, _
-    				  FB_VAROPT_ADDSUFFIX or FB_VAROPT_UNSCOPE )
+    				  options )
 
     if( s = NULL ) then
 		if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
@@ -1025,8 +1032,15 @@ private function hVarAddUndecl _
 		end if
 
 	else
-		'' QB quirk: declare it at function scope
-		astAddDecl( astNewDECL( FB_SYMBCLASS_VAR, s, NULL ) )
+		'' not inside an explicit SCOPE .. END SCOPE block?
+		if( env.isscope = FALSE ) then
+			'' QB quirk: declare it at function scope
+			astAddDecl( astNewDECL( FB_SYMBCLASS_VAR, s, NULL ) )
+
+		'' explicit scope..
+		else
+			astAdd( astNewDECL( FB_SYMBCLASS_VAR, s, NULL ) )
+		end if
 	end if
 
 	function = s
