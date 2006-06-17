@@ -381,7 +381,9 @@ private function hCreateArrayDesc _
 		desc->attrib and= not FB_SYMBATTRIB_PUBLIC
 	end if
 
-	desc->stats = array->stats and (FB_SYMBSTATS_ALLOCATED or FB_SYMBSTATS_ACCESSED)
+	desc->stats = array->stats and (FB_SYMBSTATS_ALLOCATED or _
+									FB_SYMBSTATS_ACCESSED or _
+									FB_SYMBSTATS_HASALIAS)
 
 	'' as desc is also a var, clear the var fields
 	desc->var.array.desc = NULL
