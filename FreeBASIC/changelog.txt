@@ -6,6 +6,7 @@ Version 0.17 Beta:
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
+- the case of the aliases of extern dynamic arrays was not been preserved (v1c)
 
 
 Version 0.16 Beta:
