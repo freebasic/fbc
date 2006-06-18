@@ -283,6 +283,7 @@ static void keyboard_console_handler(void)
 										gfx_restore();
 									}
 									memset(key_state, FALSE, 128);
+									extended = 0;
 								}
 							}
 							/* fallthrough */

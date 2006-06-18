@@ -582,12 +582,14 @@ int *fb_hX11FetchModes(int depth, int *size)
 		dpy = fb_linux.display;
 	else
 		dpy = XOpenDisplay(NULL);
+	if (!dpy)
+		return NULL;
+	
 	if (fb_linux.config)
 		cfg = fb_linux.config;
 	else
 		cfg = XRRGetScreenInfo(dpy, XDefaultRootWindow(dpy));
-	
-	if ((!dpy) || (!cfg))
+	if (!cfg)
 		return NULL;
 	
 	rr_sizes = XRRConfigSizes(cfg, size);

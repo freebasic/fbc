@@ -7,6 +7,10 @@ Version 0.17 Beta:
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
 - the case of the aliases of extern dynamic arrays was not been preserved (v1c)
+- moving mouse out of program window and back onto it used to reset mouse buttons status as reported by GETMOUSE (lillo)
+- while drawing arcs with CIRCLE, the bottom line of the affected display pixels could not have been updated occasionally (lillo)
+- linux framebuffer device gfx driver now successfully restores original gfx mode on exit (lillo)
+- removed spurious keypresses reported in INKEY$ when switching terminals while in framebuffer gfx mode (lillo)
 
 
 Version 0.16 Beta:

@@ -194,7 +194,6 @@ static void driver_restore_screen(void)
 	pthread_mutex_lock(&mutex);
 	is_active = TRUE;
 	is_palette_changed = TRUE;
-	fb_hMemSet(framebuffer, 0, device_info.smem_len);
 	fb_hMemSet(fb_mode->dirty, TRUE, fb_linux.h);
 	pthread_mutex_unlock(&mutex);
 }
@@ -392,19 +391,19 @@ static void driver_exit(void)
 	}
 	
 	if (device_fd >= 0) {
-		ioctl(device_fd, FBIOPUT_VSCREENINFO, &orig_mode);
+		fb_hConsoleGfxMode(NULL, NULL, NULL);
+		if (framebuffer) {
+			munmap(framebuffer, device_info.smem_len);
+		    framebuffer = NULL;
+		}
 		if (palette) {
 		    ioctl(device_fd, FBIOPUTCMAP, &orig_cmap);
 		    free(palette);
     		palette = NULL;
 		}
-		if (framebuffer) {
-			munmap(framebuffer, device_info.smem_len);
-		    framebuffer = NULL;
-		}
+		ioctl(device_fd, FBIOPUT_VSCREENINFO, &orig_mode);
 		close(device_fd);
 		device_fd = -1;
-		fb_hConsoleGfxMode(NULL, NULL, NULL);
 	}
 }
 
@@ -467,5 +466,39 @@ static void driver_set_mouse(int x, int y, int cursor)
 /*:::::*/
 static int *driver_fetch_modes(int depth, int *size)
 {
+	const char *device_name;
+	int i, fd, num_sizes = 0, *sizes = NULL;
+	
+	if ((depth != 8) && (depth != 15) && (depth != 16) && (depth != 24) && (depth != 32))
+		return NULL;
 
+	if (device_fd < 0) {
+		device_name = getenv("FBGFX_FRAMEBUFFER");
+		if (!device_name)
+			device_name = "/dev/fb0";
+		fd = open(device_name, O_RDWR, 0);
+		if (fd < 0)
+			return NULL;
+	}
+	else
+		fd = device_fd;
+	
+	ioctl(fd, FBIOGET_VSCREENINFO, &mode);
+	for (i = 0; standard_mode[i].w; i++) {
+		mode.bits_per_pixel = depth;
+		mode.activate = FB_ACTIVATE_TEST;
+		mode.xres = mode.xres_virtual = standard_mode[i].w;
+		mode.yres = mode.yres_virtual = standard_mode[i].h;
+		if (ioctl(fd, FBIOPUT_VSCREENINFO, &mode) == 0) {
+			num_sizes++;
+			sizes = realloc(sizes, num_sizes * sizeof(int));
+			sizes[num_sizes - 1] = (mode.xres << 16) | mode.yres;
+		}
+	}
+	
+	if (device_fd < 0)
+		close(fd);
+	
+	*size = num_sizes;
+	return sizes;
 }
