@@ -70,12 +70,17 @@ SELECT will now open an implicit scope block. Because of that, variables
 declared inside those statements won't be seen anymore outside the blocks, 
 causing problems with buggy (in the logical aspect) applications.
 
+	Due complaints, implicit variables will be moved to the function scope,
+unless they are declared inside explicit SCOPE .. END SCOPE blocks, so they
+are not affected by this changes, only explicitly declared (with DIM or REDIM) 
+variables are.
+
 	For example:
 	
 		IF expr THEN
-			foo% = 1
+			DIM foo% = 1
 		ELSE
-			foo% = 2
+			DIM foo% = 2
 		END IF
 		
 		FOR bar% = 1 TO foo%
@@ -84,7 +89,7 @@ causing problems with buggy (in the logical aspect) applications.
 	
 		DIM foo%
 		IF expr THEN 
-		... the same code as above ...
+		... the same code as above, but the DIM's ...
 		
 	The warning message "Implicit variable allocation" will be shown in that
 case, be sure to check all the offending lines.
@@ -119,6 +124,8 @@ object definition".
 	In both cases, just declare before the GOTO's, the variables shown in 
 the error or warning messages.
 	
+	That only applies to explicit declared (with DIM or REDIM) variables,
+the implicit one are allocated and cleared in the beginning of the function scope.
 	
 	
 	We are sorry if the changes listed above affected you in some way, they 
