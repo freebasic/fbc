@@ -91,7 +91,7 @@ private function hFindId _
 	( _
 		byval chain_ as FBSYMCHAIN ptr, _
 		byref atom as ASTNODE ptr _
-	) as integer
+	) as integer static
 
     dim as FBSYMBOL ptr sym
 
@@ -106,13 +106,6 @@ private function hFindId _
 
 		case FB_SYMBCLASS_VAR
            	return cVariableEx( chain_, atom, env.checkarray )
-
-		case FB_SYMBCLASS_ENUM
-			'' '.'?
-			if( lexGetLookAhead( 1 ) = CHAR_DOT ) then
-              	return cEnumConstant( sym, atom )
-			end if
-
 		end select
 
     	chain_ = symbChainGetNext( chain_ )
@@ -144,16 +137,18 @@ function cAtom _
 
     	'' declared id?
     	if( chain_ <> NULL ) then
-    		return hFindId( chain_, atom )
+    		if( hFindId( chain_, atom ) ) then
+    			return TRUE
+    		end if
+        end if
 
-    	else
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-				return FALSE
-			end if
+		'' error?
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
+			return FALSE
+		end if
 
-  			'' try to alloc an implicit variable..
-  			return cVariableEx( NULL, atom, env.checkarray )
-  		end if
+  		'' try to alloc an implicit variable..
+  		return cVariableEx( NULL, atom, env.checkarray )
 
 	case FB_TKCLASS_NUMLITERAL
 		return cNumLiteral( atom )

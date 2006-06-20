@@ -1488,7 +1488,7 @@ read_id:
 		if( chain_ <> NULL ) then
 			readfullid = FALSE
 
-			select case as const symbGetClass( chain_->sym )
+			select case symbGetClass( chain_->sym )
 			'' define?
 			case FB_SYMBCLASS_DEFINE
 				'' restart..
@@ -1496,7 +1496,7 @@ read_id:
 					goto re_read
 				end if
 
-           	case FB_SYMBCLASS_NAMESPACE, FB_SYMBCLASS_ENUM
+           	case FB_SYMBCLASS_NAMESPACE
 
         	case else
 				'' is the next char a period?

@@ -386,15 +386,12 @@ function cSymbolType _
 					lgt = symbGetLen( sym )
 					exit do
 
-			    case FB_SYMBCLASS_ENUM
-					'' handle len( id{enum} '.' id{const} )
-					if( lexGetLookAhead( 1 ) <> CHAR_DOT ) then
-						lexSkipToken( )
-						dtype = FB_DATATYPE_ENUM
-						subtype = sym
-						lgt = FB_INTEGERSIZE
-						exit do
-					end if
+	    		case FB_SYMBCLASS_ENUM
+					lexSkipToken( )
+					dtype = FB_DATATYPE_ENUM
+					subtype = sym
+					lgt = FB_INTEGERSIZE
+					exit do
 
 				case FB_SYMBCLASS_TYPEDEF
 					lexSkipToken( )

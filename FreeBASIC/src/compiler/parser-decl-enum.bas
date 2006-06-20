@@ -41,10 +41,12 @@ function cEnumConstDecl _
 
 	function = FALSE
 
-    '' contains a period?
-    if( lexGetPeriodPos( ) > 0 ) then
-    	if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-    		exit function
+    '' if inside a namespace, symbols can't contain periods (.)'s
+    if( symbIsGlobalNamespc( ) = FALSE ) then
+    	if( lexGetPeriodPos( ) > 0 ) then
+	   		if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+    			exit function
+    		end if
     	end if
     end if
 
@@ -212,10 +214,12 @@ function cEnumDecl( ) as integer static
     		end if
     	end if
 
-    	'' contains a period?
-    	if( lexGetPeriodPos( ) > 0 ) then
-    		if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-    			exit function
+    	'' if inside a namespace, symbols can't contain periods (.)'s
+    	if( symbIsGlobalNamespc( ) = FALSE ) then
+    		if( lexGetPeriodPos( ) > 0 ) then
+	    		if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+    				exit function
+    			end if
     		end if
     	end if
 
