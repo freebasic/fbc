@@ -729,7 +729,7 @@ private function hGetProcSuffix _
 end function
 
 '':::::
-function hGetTypeCode _
+private function hGetTypeCode _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as string
@@ -826,7 +826,7 @@ function hGetTypeCode _
 end function
 
 '':::::
-function hGetProcParamsTypeCode _
+private function hGetProcParamsTypeCode _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as string
@@ -834,35 +834,42 @@ function hGetProcParamsTypeCode _
     dim as FBSYMBOL ptr param
     dim as string res
 
-	res = ""
-
 	param = sym->proc.paramtb.head
-    do while( param <> NULL )
 
-		select case symbGetParamMode( param )
-		'' var arg?
-		case FB_PARAMMODE_VARARG
-			res += "z"
-			exit do
+	'' no params?
+	if( param = NULL ) then
+		'' void
+		res = "v"
 
-		'' by reference (or descriptor)?
-		case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
-			res += "R"
+	else
+		res = ""
 
-		end select
+    	do
+			select case symbGetParamMode( param )
+			'' var arg?
+			case FB_PARAMMODE_VARARG
+				res += "z"
+				exit do
 
-		res += hGetTypeCode( param )
+			'' by reference (or descriptor)?
+			case FB_PARAMMODE_BYREF, FB_PARAMMODE_BYDESC
+				res += "R"
 
-    	'' next
-    	param = symbGetParamNext( param )
-    loop
+			end select
+
+			res += hGetTypeCode( param )
+
+    		'' next
+    		param = symbGetParamNext( param )
+    	loop while( param <> NULL )
+    end if
 
     function = res
 
 end function
 
 '':::::
-function hGetProcParams _
+private function hGetProcParams _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as zstring ptr static
