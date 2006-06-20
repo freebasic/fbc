@@ -11,6 +11,7 @@ Version 0.17 Beta:
 - while drawing arcs with CIRCLE, the bottom line of the affected display pixels could not have been updated occasionally (lillo)
 - linux framebuffer device gfx driver now successfully restores original gfx mode on exit (lillo)
 - removed spurious keypresses reported in INKEY$ when switching terminals while in framebuffer gfx mode (lillo)
+- when mangling parameter-less C++ functions, the void (v) type was missing (v1c)
 
 
 Version 0.16 Beta:
