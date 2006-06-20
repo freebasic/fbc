@@ -649,22 +649,22 @@ type FBENV
 	'' globals
 	scope			as uinteger					'' current scope (0=main module)
 
-	mangling		as FB_MANGLING
-	currlib			as FBLIBRARY ptr
+	mangling		as FB_MANGLING				'' current EXTERN's mangling
+	currlib			as FBLIBRARY ptr			'' current EXTERN's library
 
 	currproc 		as FBSYMBOL ptr				'' current proc
 	currblock 		as FBSYMBOL ptr				'' current scope block (= proc if outside any block)
 
 	main			as FBMAIN
 
-	asmtoklist		as TLIST
+	asmtoklist		as TLIST					'' inline ASM list
 
 	'' hacks
 	prntcnt			as integer					'' ()'s count, to allow optional ()'s on SUB's
 	prntopt			as integer					'' /
 	checkarray		as integer					'' used by LEN() to handle expr's and ()-less arrays
 	ctxsym			as FBSYMBOL ptr				'' used to resolve the address of overloaded procs
-	isexpr 			as integer
+	isexpr 			as integer					'' parsing an expression?
 	isscope			as integer					'' explicit SCOPE .. END SCOPE?
 
 	''

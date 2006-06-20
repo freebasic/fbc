@@ -51,7 +51,7 @@ const INVALID				= -1
 
 ''
 const FB_VER_MAJOR			= 0
-const FB_VER_MINOR			= 16
+const FB_VER_MINOR			= 17
 const FB_VER_PATCH			= 0
 const FB_VERSION			= str( FB_VER_MAJOR ) + "." + str( FB_VER_MINOR )
 const FB_SIGN				= "FreeBASIC v" +  FB_VERSION + "b"
