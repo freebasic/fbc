@@ -15,6 +15,7 @@ Version 0.17 Beta:
 - removed spurious keypresses reported in INKEY$ when switching terminals while in framebuffer gfx mode (lillo)
 - when mangling parameter-less C++ functions, the void (v) type was missing (v1c)
 - implicit variables with the same name as UDT's were not been allowed (v1c)
+- namespace symbols were been allowed in expressions (v1c)
 
 
 Version 0.16 Beta:
