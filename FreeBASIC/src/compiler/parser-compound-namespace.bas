@@ -198,7 +198,6 @@ end function
 ''
 function cUsingStmt as integer
     dim as FBSYMBOL ptr sym
-    dim as FBSYMCHAIN ptr chain_
 
     function = FALSE
 
@@ -207,8 +206,8 @@ function cUsingStmt as integer
 
     do
     	'' ID
-    	chain_ = cIdentifier( )
-    	if( chain_ = NULL ) then
+    	sym = cNamespace( FALSE )
+    	if( sym = NULL ) then
     		if( lexGetToken( ) <> FB_TK_ID ) then
 				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 					exit function
@@ -227,8 +226,6 @@ function cUsingStmt as integer
 			end if
 
     	else
-    		sym = chain_->sym
-
 			'' not a namespace?
 			if( symbIsNamespace( sym ) = FALSE ) then
 				if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then

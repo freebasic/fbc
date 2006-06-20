@@ -204,7 +204,7 @@ declare function 	cIdentifier				( _
 											) as FBSYMCHAIN ptr
 
 declare function 	cNamespace				( _
-												_
+												byval checkdot as integer = TRUE _
 											) as FBSYMBOL ptr
 
 declare function 	cProcDecl               ( _

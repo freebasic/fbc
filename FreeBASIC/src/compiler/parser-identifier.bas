@@ -130,8 +130,10 @@ function cIdentifier _
     		if( ns <> symbGetCurrentNamespc( ) ) then
     			'' anything but the global one? (same as in C++)
     			if( symbIsGlobalNamespc( ) = FALSE ) then
-    				if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
-    					exit function
+    				if( showerror ) then
+    					if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
+    						exit function
+    					end if
     				end if
     			end if
     		end if
@@ -144,7 +146,15 @@ function cIdentifier _
 
     	'' '.'?
     	if( lexGetToken( ) <> CHAR_DOT ) then
-    		exit do
+    		if( showerror ) then
+    			if( errReport( FB_ERRMSG_EXPECTEDPERIOD ) = FALSE ) then
+    				return NULL
+    			else
+    				exit do
+    			end if
+    		else
+    			exit do
+    		end if
     	end if
 
     	lexSkipToken( LEXCHECK_NOLOOKUP )
@@ -179,7 +189,7 @@ end function
 ''
 function cNamespace _
 	( _
-		_
+		byval checkdot as integer _
 	) as FBSYMBOL ptr static
 
     dim as FBSYMCHAIN ptr chain_
@@ -206,6 +216,10 @@ function cNamespace _
 
     	'' '.'?
     	if( lexGetToken( ) <> CHAR_DOT ) then
+    		if( checkdot = FALSE ) then
+    			exit do
+    		end if
+
     		if( errReport( FB_ERRMSG_EXPECTEDPERIOD ) = FALSE ) then
     			return NULL
     		else

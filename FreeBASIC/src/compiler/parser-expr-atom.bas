@@ -148,6 +148,10 @@ function cAtom _
 		end if
 
   		'' try to alloc an implicit variable..
+  		if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
+  			return FALSE
+  		end if
+
   		return cVariableEx( NULL, atom, env.checkarray )
 
 	case FB_TKCLASS_NUMLITERAL
