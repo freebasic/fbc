@@ -3,6 +3,8 @@ Version 0.17 Beta:
 [changed]
 - due requests, now implicit variables will be always allocated at the parent function scope (unless they are 
   allocated inside explicit SCOPE .. END SCOPE blocks), not inside of the current scope as explicit variables will (v1c)
+- enumid.elementid was removed, because the ambiguity with other symbols like UDT variables that can have the same name 
+  and because with namespaces the elements would have to be added twice to work as both "elementid" and "enumid.elementid" (v1c)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
@@ -12,6 +14,7 @@ Version 0.17 Beta:
 - linux framebuffer device gfx driver now successfully restores original gfx mode on exit (lillo)
 - removed spurious keypresses reported in INKEY$ when switching terminals while in framebuffer gfx mode (lillo)
 - when mangling parameter-less C++ functions, the void (v) type was missing (v1c)
+- implicit variables with the same name as UDT's were not been allowed (v1c)
 
 
 Version 0.16 Beta:
