@@ -16,6 +16,8 @@ Version 0.17 Beta:
 - when mangling parameter-less C++ functions, the void (v) type was missing (v1c)
 - implicit variables with the same name as UDT's were not been allowed (v1c)
 - namespace symbols were been allowed in expressions (v1c)
+- PRINT for wstrings was not using wide-chars when padding or printing a new-line (v1c)
+- when PRINTing wstrings to a redirected output in Win32, the wide-string was only partially printed (v1c)
 
 
 Version 0.16 Beta:
