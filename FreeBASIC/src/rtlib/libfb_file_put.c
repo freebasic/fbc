@@ -33,7 +33,7 @@
 /*
  *	file_put - put # function
  *
- * chng: oct/2004 written [marzec/v1ctor]
+ * chng: oct/2004 written [v1ctor]
  *
  */
 
@@ -43,13 +43,16 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-int fb_FilePutDataEx( FB_FILE *handle,
-					  long pos,
-					  const void *data,
-					  size_t length,
-					  int adjust_rec_pos,
-					  int checknewline,
-					  int is_unicode )
+int fb_FilePutDataEx
+	(
+		FB_FILE *handle,
+		long pos,
+		const void *data,
+		size_t length,
+		int adjust_rec_pos,
+		int checknewline,
+		int is_unicode
+	)
 {
 	int res;
 
@@ -159,19 +162,28 @@ int fb_FilePutDataEx( FB_FILE *handle,
 }
 
 /*:::::*/
-int fb_FilePutData( int fnum,
-					long pos,
-					const void *data,
-					size_t length,
-					int adjust_rec_pos,
-					int checknewline )
+int fb_FilePutData
+	(
+		int fnum,
+		long pos,
+		const void *data,
+		size_t length,
+		int adjust_rec_pos,
+		int checknewline
+	)
 {
     return fb_FilePutDataEx( FB_FILE_TO_HANDLE(fnum),
     						 pos, data, length, adjust_rec_pos, checknewline, FALSE );
 }
 
 /*:::::*/
-FBCALL int fb_FilePut( int fnum, long pos, void* value, unsigned int valuelen )
+FBCALL int fb_FilePut
+	(
+		int fnum,
+		long pos,
+		void* value,
+		unsigned int valuelen
+	)
 {
 	return fb_FilePutData( fnum, pos, value, valuelen, TRUE, FALSE );
 }

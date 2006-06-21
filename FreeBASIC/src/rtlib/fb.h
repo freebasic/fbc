@@ -256,6 +256,7 @@ extern "C" {
      * The printer always requires both CR and LF.
      */
 #define FB_BINARY_NEWLINE "\r\n"
+#define FB_BINARY_NEWLINE_WSTR _LC("\r\n")
 #endif
 
 #ifndef FB_NEWLINE
@@ -265,6 +266,7 @@ extern "C" {
      * LF as line-end character.
      */
 #define FB_NEWLINE "\n"
+#define FB_NEWLINE_WSTR _LC("\n")
 #endif
 
 #ifndef FB_LL_FMTMOD
@@ -815,8 +817,14 @@ FBCALL FBSTRING    *fb_ConReadLine      ( void );
 
 FBCALL void         fb_PrintPad         ( int fnum, int mask );
        void         fb_PrintPadEx       ( struct _FB_FILE *handle, int mask );
+FBCALL void 		fb_PrintPadWstr		( int fnum, int mask );
+	   void 		fb_PrintPadWstrEx 	( struct _FB_FILE *handle, int mask );
+
 FBCALL void         fb_PrintVoid        ( int fnum, int mask );
        void         fb_PrintVoidEx      ( struct _FB_FILE *handle, int mask );
+FBCALL void 		fb_PrintVoidWstr	( int fnum, int mask );
+	   void 		fb_PrintVoidWstrEx  ( struct _FB_FILE *handle, int mask );
+
 FBCALL void         fb_PrintByte        ( int fnum, char val, int mask );
 FBCALL void         fb_PrintUByte       ( int fnum, unsigned char val, int mask );
 FBCALL void         fb_PrintShort       ( int fnum, short val, int mask );
@@ -851,6 +859,7 @@ FBCALL void         fb_WriteSingle      ( int fnum, float val, int mask );
 FBCALL void         fb_WriteDouble      ( int fnum, double val, int mask );
 FBCALL void         fb_WriteString      ( int fnum, FBSTRING *s, int mask );
 FBCALL void         fb_WriteFixString   ( int fnum, char *s, int mask );
+FBCALL void 		fb_WriteWstr 		( int fnum, FB_WCHAR *s, int mask );
 
        int          fb_ConsoleGetkey    ( void );
        FBSTRING    *fb_ConsoleInkey     ( void );

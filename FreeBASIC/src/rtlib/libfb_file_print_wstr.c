@@ -44,7 +44,12 @@
 
 
 /*:::::*/
-int fb_hFilePrintBufferWstrEx( FB_FILE *handle, const FB_WCHAR *buffer, size_t len )
+int fb_hFilePrintBufferWstrEx
+	(
+		FB_FILE *handle,
+		const FB_WCHAR *buffer,
+		size_t len
+	)
 {
     int res;
 
@@ -59,7 +64,11 @@ int fb_hFilePrintBufferWstrEx( FB_FILE *handle, const FB_WCHAR *buffer, size_t l
 }
 
 /*:::::*/
-int fb_hFilePrintBufferWstr( int fnum, const FB_WCHAR *buffer )
+int fb_hFilePrintBufferWstr
+	(
+		int fnum,
+		const FB_WCHAR *buffer
+	)
 {
     return fb_hFilePrintBufferWstrEx( FB_FILE_TO_HANDLE(fnum),
                                   	  buffer, fb_wstr_Len( buffer ) );

@@ -54,13 +54,15 @@ typedef struct _fb_PrintInfo {
     int             fViewSet;
 } fb_PrintInfo;
 
-static
-void fb_hHookConScroll(struct _fb_ConHooks *handle,
-                       int x1,
-                       int y1,
-                       int x2,
-                       int y2,
-                       int rows)
+static void fb_hHookConScroll
+	(
+		struct _fb_ConHooks *handle,
+    	int x1,
+    	int y1,
+    	int x2,
+    	int y2,
+    	int rows
+	)
 {
     fb_PrintInfo *pInfo = (fb_PrintInfo*) handle->Opaque;
     HANDLE hnd = pInfo->hOutput;
@@ -144,10 +146,12 @@ void fb_hHookConScroll(struct _fb_ConHooks *handle,
     handle->Coord.Y = handle->Border.Bottom;
 }
 
-static
-int  fb_hHookConWrite (struct _fb_ConHooks *handle,
-                       const void *buffer,
-                       size_t length )
+static int fb_hHookConWrite
+	(
+		struct _fb_ConHooks *handle,
+        const void *buffer,
+        size_t length
+	)
 {
     fb_PrintInfo *pInfo = (fb_PrintInfo*) handle->Opaque;
     HANDLE hnd = pInfo->hOutput;
@@ -180,7 +184,12 @@ int  fb_hHookConWrite (struct _fb_ConHooks *handle,
 }
 
 /*:::::*/
-void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t len, int mask )
+void fb_ConsolePrintBufferWstrEx
+	(
+		const FB_WCHAR *buffer,
+		size_t chars,
+		int mask
+	)
 {
     const FB_WCHAR *pachText = (const FB_WCHAR *) buffer;
     int win_left, win_top, win_cols, win_rows;
@@ -189,27 +198,30 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t len, int mask )
     fb_ConHooks hooks;
 
     /* Do we want to correct the console cursor position? */
-    if( (mask & FB_PRINT_FORCE_ADJUST)==0 ) {
+    if( (mask & FB_PRINT_FORCE_ADJUST)==0 )
+    {
         /* No, we can check for the length to avoid unnecessary stuff ... */
-        if( len==0 )
+        if( chars == 0 )
             return;
     }
 
     FB_LOCK();
 
-    if( FB_CONSOLE_WINDOW_EMPTY() ) {
-        /* output was redirected! */
-        DWORD dwBytesWritten;
-        while( len!=0 &&
-               WriteFile( fb_out_handle,
-                          pachText,
-                          len,
-                          &dwBytesWritten,
-                          NULL ) == TRUE )
+    /* is the output redirected? */
+    if( FB_CONSOLE_WINDOW_EMPTY() )
+    {
+        DWORD dwBytesWritten,
+        	  bytes = chars * sizeof( FB_WCHAR );
+
+        while( bytes !=0 )
         {
+			if( WriteFile( fb_out_handle, pachText, bytes, &dwBytesWritten, NULL ) != TRUE )
+				break;
+
             pachText += dwBytesWritten;
-            len -= dwBytesWritten;
+            bytes -= dwBytesWritten;
         }
+
         FB_UNLOCK();
         return;
     }
@@ -231,18 +243,21 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t len, int mask )
     info.rWindow.Right  = win_left + win_cols - 1;
     info.rWindow.Bottom = win_top + win_rows - 1;
     info.fViewSet       = hooks.Border.Top!=info.rWindow.Top
-        || hooks.Border.Bottom!=info.rWindow.Bottom;
+        				|| hooks.Border.Bottom!=info.rWindow.Bottom;
 
     {
         CONSOLE_SCREEN_BUFFER_INFO screen_info;
 
-        if( !GetConsoleScreenBufferInfo( fb_out_handle, &screen_info ) ) {
+        if( !GetConsoleScreenBufferInfo( fb_out_handle, &screen_info ) )
+        {
             hooks.Coord.X = hooks.Border.Left;
             hooks.Coord.Y = hooks.Border.Top;
             info.BufferSize.X = FB_SCRN_DEFAULT_WIDTH;
             info.BufferSize.Y = FB_SCRN_DEFAULT_HEIGHT;
             info.wAttributes = 7;
-        } else {
+        }
+        else
+        {
             hooks.Coord.X = screen_info.dwCursorPosition.X;
             hooks.Coord.Y = screen_info.dwCursorPosition.Y;
             info.BufferSize.X = screen_info.dwSize.X;
@@ -250,27 +265,28 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t len, int mask )
             info.wAttributes = screen_info.wAttributes;
         }
 
-        if( ScrollWasOff ) {
+        if( ScrollWasOff )
+        {
             ScrollWasOff = FALSE;
             ++hooks.Coord.Y;
             hooks.Coord.X = hooks.Border.Left;
             fb_hConCheckScroll( &hooks );
         }
 
-        fb_ConPrintTTYWstr( &hooks,
-                        	pachText,
-                        	len,
-                        	TRUE );
+        fb_ConPrintTTYWstr( &hooks, pachText, chars, TRUE );
 
         if( hooks.Coord.X != hooks.Border.Left
             || hooks.Coord.Y != (hooks.Border.Bottom+1) )
         {
             fb_hConCheckScroll( &hooks );
-        } else {
+        }
+        else
+        {
             ScrollWasOff = TRUE;
             hooks.Coord.X = hooks.Border.Right;
             hooks.Coord.Y = hooks.Border.Bottom;
         }
+
         {
             COORD dwCoord = { (SHORT) hooks.Coord.X, (SHORT) hooks.Coord.Y };
             SetConsoleCursorPosition( info.hOutput,
@@ -278,7 +294,8 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t len, int mask )
         }
     }
 
-    if( hooks.Border.Top!=win_top && !info.fViewSet ) {
+    if( hooks.Border.Top!=win_top && !info.fViewSet )
+    {
         /* Now we have to ensure that the window shows the right part
          * of the screen buffer when it was moved previously ... */
         SMALL_RECT srWindow =
@@ -297,7 +314,11 @@ void fb_ConsolePrintBufferWstrEx( const FB_WCHAR *buffer, size_t len, int mask )
 }
 
 /*:::::*/
-void fb_ConsolePrintBufferWstr( const FB_WCHAR *buffer, int mask )
+void fb_ConsolePrintBufferWstr
+	(
+		const FB_WCHAR *buffer,
+		int mask
+	)
 {
     return fb_ConsolePrintBufferWstrEx( buffer, fb_wstr_Len( buffer ), mask );
 }

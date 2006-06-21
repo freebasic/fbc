@@ -33,7 +33,7 @@
 /*
  *	file_seek - seek function and stmt
  *
- * chng: oct/2004 written [marzec/v1ctor]
+ * chng: oct/2004 written [v1ctor]
  *
  */
 

@@ -48,6 +48,7 @@
 #include <SDL.h>
 
 #define FB_NEWLINE "\r\n"
+#define FB_NEWLINE_WSTR _LC("\r\n")
 
 typedef int FB_DIRCTX; /* dummy to make fb.h happy */
 

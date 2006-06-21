@@ -57,6 +57,7 @@
 #include <io.h>
 
 #define FB_NEWLINE "\r\n"
+#define FB_NEWLINE_WSTR _LC("\r\n")
 
 #ifdef TARGET_CYGWIN
 #define FB_LL_FMTMOD "ll"
