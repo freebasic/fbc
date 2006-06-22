@@ -9,6 +9,10 @@
 #ifndef __gsl_cblas_bi__
 #define __gsl_cblas_bi__
 
+#ifdef __FB_LINUX__
+# inclib "gslcblas"
+#endif
+
 #include once "gsl/gsl_types.bi"
 
 enum CBLAS_ORDER
