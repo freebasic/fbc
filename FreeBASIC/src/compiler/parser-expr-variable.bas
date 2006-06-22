@@ -168,7 +168,8 @@ private function hTypeField _
 		byref subtype as FBSYMBOL ptr, _
 		byref expr as ASTNODE ptr, _
 		byref derefcnt as integer, _
-		byval checkarray as integer _
+		byval checkarray as integer, _
+		byval checkderef as integer _
 	) as FBSYMBOL ptr
 
     dim as ASTNODE ptr constexpr
@@ -188,6 +189,10 @@ private function hTypeField _
 
        	'' (FIELDDEREF DREF* TypeField)*
        	case FB_TK_FIELDDEREF
+       		if( checkderef = FALSE ) then
+       			exit do
+       		end if
+
        		lexSkipToken( LEXCHECK_NOLOOKUP )
 
        		'' DREF*
@@ -464,7 +469,7 @@ function cDerefFields _
 
 		'' TypeField
 		expr = NULL
-		sym = hTypeField( dtype, subtype, expr, derefcnt, checkarray )
+		sym = hTypeField( dtype, subtype, expr, derefcnt, checkarray, TRUE )
 		if( sym = NULL ) then
 			if( isderef ) then
 				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
@@ -1230,7 +1235,7 @@ function cVariableEx _
    	if( isfuncptr = FALSE ) then
    		if( checkfields ) then
    			'' TypeField?
-   			elm = hTypeField( dtype, subtype, idxexpr, drefcnt, checkarray )
+   			elm = hTypeField( dtype, subtype, idxexpr, drefcnt, checkarray, FALSE )
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
@@ -1302,7 +1307,7 @@ function cWithVariable _
 
    	'' TypeField
    	dtype -= FB_DATATYPE_POINTER
-   	elm = hTypeField( dtype, subtype, varexpr, drefcnt, checkarray )
+   	elm = hTypeField( dtype, subtype, varexpr, drefcnt, checkarray, FALSE )
 	if( elm = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' no error recovery: caller will take care
