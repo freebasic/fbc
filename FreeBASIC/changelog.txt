@@ -5,6 +5,7 @@ Version 0.17 Beta:
   allocated inside explicit SCOPE .. END SCOPE blocks), not inside of the current scope as explicit variables will (v1c)
 - enumid.elementid was removed, because the ambiguity with other symbols like UDT variables that can have the same name 
   and because with namespaces the elements would have to be added twice to work as both "elementid" and "enumid.elementid" (v1c)
+- #undef can't remove symbols defined inside namespaces anymore, to allow namespace redefinition to work (v1c)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
@@ -18,6 +19,7 @@ Version 0.17 Beta:
 - namespace symbols were been allowed in expressions (v1c)
 - PRINT for wstrings was not using wide-chars when padding or printing a new-line (v1c)
 - when PRINTing wstrings to a redirected output in Win32, the wide-string was only partially printed (v1c)
+- namespaces when redefined were not updating the imported (USING) list used in other namespaces (v1c)
 
 
 Version 0.16 Beta:
