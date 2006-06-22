@@ -143,6 +143,7 @@ enum AST_NODECLASS
 	AST_NODECLASS_TYPEINI_EXPR
 	AST_NODECLASS_PROC
 	AST_NODECLASS_DECL
+	AST_NODECLASS_NAMESPC
 end enum
 
 #ifndef ASTNODE_
@@ -273,6 +274,12 @@ type AST_BLOCK
 	decl_last		as ASTNODE_ ptr					'' to support implicit variables decl
 end type
 
+type AST_NAMESPACE
+	lastsymtb		as FBSYMBOLTB ptr
+	lasthashtb		as FBHASHTB ptr
+	lastns			as FBSYMBOL ptr
+end type
+
 ''
 type ASTNODE
 	class			as integer						'' CONST, VAR, BOP, UOP, IDX, FUNCT, etc
@@ -305,6 +312,7 @@ type ASTNODE
 		typeini		as AST_TYPEINI
 		block		as AST_BLOCK					'' shared by PROC and SCOPE nodes
 		break		as AST_BREAK
+		nspc		as AST_NAMESPACE
 	end union
 
 	prev			as ASTNODE ptr					'' used by Add
@@ -432,6 +440,14 @@ declare function 	astScopeBreak		( _
 declare function 	astScopeUpdBreakList( _
 											byval proc as ASTNODE ptr _
 										) as integer
+
+declare function 	astNamespaceBegin 	( _
+											byval sym as FBSYMBOL ptr _
+										) as ASTNODE ptr
+
+declare sub 		astNamespaceEnd		( _
+											byval n as ASTNODE ptr _
+										)
 
 declare sub			astAdd				( _
 											byval n as ASTNODE ptr _

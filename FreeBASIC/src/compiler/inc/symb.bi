@@ -379,14 +379,18 @@ end type
 type FBS_NAMESPACE
     symtb			as FBSYMBOLTB
     hashtb			as FBHASHTB
-    implist			as FBNAMESPC_IMPLIST		'' all USING's used inside the ns
+    cnt				as integer					'' # of times this ns was re-opened
+    implist			as FBNAMESPC_IMPLIST		'' all USING's used inside this ns
+    explist			as FBNAMESPC_IMPLIST		'' all USING's that imported this ns
+    symtail			as FBSYMBOL_ ptr			'' last symtb.tail since it was implemented
 end type
 
 type FBS_NSIMPORT
 	ns				as FBSYMBOL_ ptr
 	head			as FBSYMCHAIN ptr
 	tail			as FBSYMCHAIN ptr
-	next			as FBSYMBOL_ ptr
+	imp_next		as FBSYMBOL_ ptr			'' next in the ns import list
+	exp_next		as FBSYMBOL_ ptr			'' next in the ns export list
 end type
 
 ''
@@ -1070,6 +1074,10 @@ declare sub 		symbNamespaceRemoveChain( _
 												byval ns as FBSYMBOL ptr _
 											)
 
+declare function 	symbNamespaceReImport	( _
+												byval ns as FBSYMBOL ptr _
+											) as integer
+
 declare function 	symbCanDuplicate		( _
 											  	byval n as FBSYMCHAIN ptr, _
 						   					  	byval s as FBSYMBOL ptr _
@@ -1340,7 +1348,15 @@ declare function 	symbTypeToStr			( _
 
 #define symbGetNamespaceTb(s) s->nspc.symtb
 
+#define symbGetNamespaceTbHead(s) s->nspc.symtb.head
+
+#define symbGetNamespaceTbTail(s) s->nspc.symtb.tail
+
 #define symbGetNamespaceHashTb(s) s->nspc.hashtb
+
+#define symbGetNamespaceCnt(s) s->nspc.cnt
+
+#define symbGetNamespaceLastTbTail(s) s->nspc.symtail
 
 #define symbGetLabelIsDeclared(l) l->lbl.declared
 

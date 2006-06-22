@@ -928,6 +928,10 @@ sub symbDelFromChainList _
 
     dim as FBSYMCHAIN ptr prv, nxt
 
+	'' note: symbols declared inside namespaces can't be
+    '' removed by #undef or OPTION NO KEYWORD so the import
+    '' chain doesn't have to be updated
+
     '' relink
     prv = chain_->prev
     nxt = chain_->next

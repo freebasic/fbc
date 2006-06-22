@@ -84,9 +84,7 @@ type FB_CMPSTMT_WITH
 end type
 
 type FB_CMPSTMT_NAMESPACE
-	lastsymtb	as FBSYMBOLTB ptr
-	lasthashtb	as FBHASHTB ptr
-	lastns		as FBSYMBOL ptr
+	node		as ASTNODE ptr
 end type
 
 type FB_CMPSTMT_EXTERN

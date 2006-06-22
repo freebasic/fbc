@@ -171,7 +171,7 @@ end type
 		@"Expected period ('.')", _
 		@"Expected END NAMESPACE", _
 		@"Illegal inside a NAMESPACE block", _
-		@"Symbols defined in other namespaces cannot be removed", _
+		@"Symbols defined inside namespaces cannot be removed", _
 		@"Expected END EXTERN", _
 		@"Expected 'END SUB'", _
 		@"Expected 'END FUNCTION'", _

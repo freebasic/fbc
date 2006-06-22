@@ -113,8 +113,9 @@ function cOptDecl as integer
 							end if
 
 						else
-							'' don't remove if it was defined in other namespace
-							if( symbGetHashTb( s ) <> symbGetCurrentHashTb( ) ) then
+    						'' don't remove if it was defined inside any namespace (any
+    						'' USING ref to that ns would break its linked-list)
+    						if( symbGetNamespace( s ) <> @symbGetGlobalNamespc( ) ) then
 								if( errReport( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS ) = FALSE ) then
 									exit function
 								end if
@@ -134,8 +135,9 @@ function cOptDecl as integer
 							end if
 
 						else
-							'' don't remove if it was defined in other namespace
-							if( symbGetHashTb( s ) <> symbGetCurrentHashTb( ) ) then
+    						'' don't remove if it was defined inside any namespace (any
+    						'' USING ref to that ns would break its linked-list)
+    						if( symbGetNamespace( s ) <> @symbGetGlobalNamespc( ) ) then
 								if( errReport( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS ) = FALSE ) then
 									exit function
 								end if

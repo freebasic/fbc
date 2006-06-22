@@ -101,12 +101,12 @@ function ppParse( ) as integer
     	chain_ = cIdentifier( FALSE, FALSE )
     	if( chain_ <> NULL ) then
     		dim as FBSYMBOL ptr sym = chain_->sym
-    		'' don't remove if it was defined in other namespace
-    		if( symbGetHashTb( sym ) <> symbGetCurrentHashTb( ) ) then
+    		'' don't remove if it was defined inside any namespace (any
+    		'' USING reference to that ns would break its linked-list)
+    		if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
     			if( errReport( FB_ERRMSG_CANTREMOVENAMESPCSYMBOLS ) = FALSE ) then
     				exit function
     			end if
-
     		else
     			symbDelSymbol( sym )
     		end if

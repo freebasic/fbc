@@ -1,0 +1,86 @@
+''	FreeBASIC - 32-bit BASIC Compiler.
+''	Copyright (C) 2004-2006 Andre Victor T. Vicentini (av1ctor@yahoo.com.br)
+''
+''	This program is free software; you can redistribute it and/or modify
+''	it under the terms of the GNU General Public License as published by
+''	the Free Software Foundation; either version 2 of the License, or
+''	(at your option) any later version.
+''
+''	This program is distributed in the hope that it will be useful,
+''	but WITHOUT ANY WARRANTY; without even the implied warranty of
+''	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+''	GNU General Public License for more details.
+''
+''	You should have received a copy of the GNU General Public License
+''	along with this program; if not, write to the Free Software
+''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
+
+'' AST namespace nodes
+'' l = NULL; r = NULL
+''
+'' chng: jun/2006 written [v1ctor]
+
+option explicit
+option escape
+
+#include once "inc\fb.bi"
+#include once "inc\fbint.bi"
+#include once "inc\ast.bi"
+
+
+'':::::
+function astNamespaceBegin _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as ASTNODE ptr static
+
+    dim as ASTNODE ptr n
+
+	n = astNewNode( AST_NODECLASS_NAMESPC, INVALID )
+	if( n = NULL ) then
+		return NULL
+	end if
+
+	n->sym = sym
+	n->nspc.lastsymtb = symbGetCurrentSymTb( )
+	n->nspc.lasthashtb = symbGetCurrentHashTb( )
+	n->nspc.lastns = symbGetCurrentNamespc( )
+
+	symbSetCurrentSymTb( @symbGetNamespaceTb( sym ) )
+	symbSetCurrentHashTb( @symbGetNamespaceHashTb( sym ) )
+	symbSetCurrentNamespc( sym )
+
+	symbHashListAdd( @symbGetNamespaceHashTb( sym ) )
+
+	function = n
+
+end function
+
+'':::::
+sub astNamespaceEnd _
+	( _
+		byval n as ASTNODE ptr _
+	) static
+
+	dim as FBSYMBOL ptr ns
+
+	ns = n->sym
+
+	symbHashListDel( @symbGetNamespaceHashTb( ns ) )
+
+	symbSetCurrentHashTb( n->nspc.lasthashtb )
+	symbSetCurrentSymTb( n->nspc.lastsymtb )
+	symbSetCurrentNamespc( n->nspc.lastns )
+
+	symbGetNamespaceCnt( ns ) += 1
+
+	'' reimplementation?
+	if( symbGetNamespaceCnt( ns ) > 1 ) then
+		symbNamespaceReImport( ns )
+	end if
+
+	symbGetNamespaceLastTbTail( ns ) = symbGetNamespaceTbTail( ns )
+
+end sub
+
+

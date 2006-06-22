@@ -148,16 +148,7 @@ function cNamespaceStmtBegin _
 						 					 and (not FB_CMPSTMT_MASK_EXTERN) _
 						 					 and (not FB_CMPSTMT_MASK_DATA) )
 
-	stk->nspc.lastsymtb = symbGetCurrentSymTb( )
-	symbSetCurrentSymTb( @symbGetNamespaceTb( sym ) )
-
-	stk->nspc.lasthashtb = symbGetCurrentHashTb( )
-	symbSetCurrentHashTb( @symbGetNamespaceHashTb( sym ) )
-
-	stk->nspc.lastns = symbGetCurrentNamespc( )
-	symbSetCurrentNamespc( sym )
-
-	symbHashListAdd( @symbGetNamespaceHashTb( sym ) )
+	stk->nspc.node = astNamespaceBegin( sym )
 
 	function = TRUE
 
@@ -181,10 +172,7 @@ function cNamespaceStmtEnd as integer
 	lexSkipToken( )
 
 	'' back to parent
-	symbHashListDel( @symbGetNamespaceHashTb( symbGetCurrentNamespc( ) ) )
-	symbSetCurrentHashTb( stk->nspc.lasthashtb )
-	symbSetCurrentSymTb( stk->nspc.lastsymtb )
-	symbSetCurrentNamespc( stk->nspc.lastns )
+	astNamespaceEnd( stk->nspc.node )
 
 	'' pop from stmt stack
 	cCompStmtPop( stk )
