@@ -34,6 +34,7 @@
  *	dev_lpt - LPTx device
  *
  * chng: jul/2005 written [mjs]
+ * chng: jun/2006 allowing "LPT:" as protocol for default printer [jeffmarshall]
  *
  */
 
@@ -43,8 +44,7 @@
 #include <malloc.h>
 #include "fb.h"
 #include "fb_rterr.h"
-
-int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len );
+#include "fb_printer.h"
 
 typedef struct _DEV_LPT_INFO {
     char  *pszDevice;
@@ -129,35 +129,35 @@ static FB_FILE_HOOKS fb_hooks_dev_lpt = {
 int fb_DevLptOpen( struct _FB_FILE *handle, const char *filename, size_t filename_len )
 {
     FB_FILE *redir_handle = NULL;
+		DEV_LPT_PROTOCOL *lptinfo;
     DEV_LPT_INFO *info;
     size_t i;
     int res;
 
-    if (!fb_DevLptTestProtocol( handle, filename, filename_len ))
-        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+    //if (!fb_DevLptTestProtocol( handle, filename, filename_len ))
+    //    return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+
+    if (!fb_DevLptParseProtocol( filename, filename_len, &lptinfo ))
+		{
+			if( lptinfo )
+				free( lptinfo );
+			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+		}
 
     FB_LOCK();
 
     /* Determine the port number and a normalized device name */
     info = (DEV_LPT_INFO*) calloc(1, sizeof(DEV_LPT_INFO));
     info->uiRefCount = 1;
+
     if( strcasecmp(filename, "PRN:")==0 ) {
-        info->iPort = 1;
-        info->pszDevice = strdup("LPT1:");
+      info->iPort = 1;
+      info->pszDevice = strdup("LPT1:");
+
     } else {
-        size_t i;
-        info->iPort = 0;
-        for( i = 3;
-             i != (filename_len - 1);
-             ++i )
-        {
-            char ch = filename[i];
-            if( ch<'0' || ch>'9' )
-                break;
-            info->iPort = info->iPort * 10 + (ch - '0');
-        }
-        info->pszDevice = strdup(filename);
-        memcpy(info->pszDevice, "LPT", 3);
+			info->iPort = lptinfo->iPort;
+			info->pszDevice = strdup( filename );
+		
     }
 
     /* Test if the printer is already open. */

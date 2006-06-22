@@ -33,7 +33,7 @@
 /*
  *	dev_lpt - LPTx device
  *
- * chng: jul/2005 written [mjs]
+ * chng: jun/2006 written [jeffmarshall]
  *
  */
 
@@ -44,61 +44,146 @@
 #include <malloc.h>
 #include "fb.h"
 #include "fb_rterr.h"
+#include "fb_printer.h"
+
+/*:::::*/
+int fb_DevLptParseProtocol( const char * proto_raw, size_t proto_raw_len, DEV_LPT_PROTOCOL ** lptinfo_in )
+{
+	char *p, *ptail, *pc, *pe;
+	DEV_LPT_PROTOCOL *lptinfo;
+
+	if( proto_raw == NULL )
+		return FALSE;
+
+	if( lptinfo_in == NULL )
+		return FALSE;
+
+	*lptinfo_in = malloc( sizeof( DEV_LPT_PROTOCOL ) + proto_raw_len + 1 );
+	lptinfo = *lptinfo_in;
+
+	if( lptinfo == NULL )
+		return FALSE;
+
+	strncpy( lptinfo->raw, proto_raw, proto_raw_len );
+	lptinfo->raw[proto_raw_len] = '\0';
+
+	p = lptinfo->raw;
+	ptail = p + strlen( lptinfo->raw );
+
+	lptinfo->iPort = 0;
+	lptinfo->proto =
+	  lptinfo->name = 
+	    lptinfo->title =
+	      lptinfo->emu = ptail;
+
+	/* "PRN:" */
+
+	if( stricmp( p, "PRN:" ) == 0)
+	{
+		lptinfo->proto = p;
+		lptinfo->iPort = 1;
+		return TRUE;
+	}
+
+	/* "LPTx:" */
+	
+	if( strnicmp( p, "LPT", 3) != 0)
+		return FALSE;
+
+	pc = strchr( p, ':' );
+	if( !pc )
+		return FALSE;
+
+	lptinfo->proto = p;
+	p = pc + 1;
+	*pc-- = '\0';
+
+	/* Get port number if any */
+	while( ( *pc >= '0' ) && ( *pc <= '9' ))
+		pc--;
+	pc++;
+	lptinfo->iPort = atoi( pc );
+
+	/* Name, TITLE=?, EMU=? */
+
+	while( *p )
+	{
+		if( isspace( *p ) || ( *p == ',' ))
+			p++;
+
+		else
+		{
+			char * pt;
+
+			pe = strchr(p, '=');
+			pc = strchr(p, ',');
+
+			if( pc && pe > pc )
+				pe = NULL;
+
+			if( !pe )
+			{
+				lptinfo->name = p;
+			}
+			else
+			{
+				/* remove spaces before '=' */
+				pt = pe - 1;
+				while( isspace( *pt )) *pt-- = '\0';
+
+				/* remove spaces after '=' or end*/
+				*pe++ = '\0';
+				while( isspace( *pe )) *pe++ = '\0';
+
+				if( stricmp( p, "EMU" ) == 0)
+				{
+					lptinfo->emu = pe;
+				}
+				else if( stricmp( p, "TITLE" ) == 0)
+				{
+					lptinfo->title = pe;
+				}
+				/* just ignore options we don't understand to allow forward compatibility */
+			}
+
+			/* remove spaces before ',' or end*/
+			pt = pc ? pc : ptail;
+			pt--;
+			while( isspace( *pt )) *pt-- = '\0';
+
+			if( pc )
+			{
+				p = pc + 1;
+				*pc = '\0';
+			}	
+			else
+			{
+				p = ptail;
+			}
+		}
+	}
+
+	return TRUE;
+}
 
 /** Tests for the right file name for LPT access.
  *
  * Allowed file names are:
  *
  * - PRN:
+ * - LPT:
  * - LPTx: with x>=1
- * - LPT:printer_name
+ * - LPT:printer_name,EMU=?,TITLE=?,OPT=?, ...
  */
+/*:::::*/
 int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len )
 {
-    size_t i, port;
 
-    if( strcasecmp(filename, "PRN:")==0 )
-        return TRUE;
+	DEV_LPT_PROTOCOL *lptinfo;
+	int ret = fb_DevLptParseProtocol( filename, filename_len, &lptinfo);
+	if( lptinfo )
+		free( lptinfo );
+	return ret;
 
-    if( filename_len < 5 )
-        return FALSE;
-    if( strncasecmp(filename, "LPT", 3)!=0 )
-        return FALSE;
-
-    port = 0;
-    for( i = 3;
-         i != filename_len;
-         ++i )
-    {
-        char ch = filename[i];
-        if( ch<'0' || ch>'9')
-            break;
-        port = port * 10 + (ch - '0');
-    }
-
-    if( i==filename_len )
-        return FALSE;
-
-    if( filename[i]!=':' )
-        return FALSE;
-
-    if( i==3 ) {
-        ++i;
-        while( isspace( filename[i] ) )
-            ++i;
-        if( i==filename_len )
-            return FALSE;
-    } else {
-        if( port==0 )
-            return FALSE;
-#if 0
-        /* This must be disabled to allow some extensions like setting the
-         * document title on Windows */
-        if( i!=filename_len-1 )
-            return FALSE;
-#endif
-    }
-
-    return TRUE;
 }
 
