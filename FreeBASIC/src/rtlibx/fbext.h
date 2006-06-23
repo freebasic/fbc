@@ -80,6 +80,16 @@ extern "C" {
 #define FB_TIME_INTERVAL_MINUTE         9
 #define FB_TIME_INTERVAL_SECOND         10
 
+#define FB_FILE_ATTR_MODE_INPUT         1
+#define FB_FILE_ATTR_MODE_OUTPUT        2
+#define FB_FILE_ATTR_MODE_RANDOM        4
+#define FB_FILE_ATTR_MODE_APPEND        8
+#define FB_FILE_ATTR_MODE_BINARY        32
+
+#define FB_FILE_ATTR_MODE     1
+#define FB_FILE_ATTR_HANDLE   2
+#define FB_FILE_ATTR_ENCODING 3
+
 #define fb_hTimeDaysInYear( year ) \
     (365 + fb_hTimeLeap( year ))
 
