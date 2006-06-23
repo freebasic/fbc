@@ -7,6 +7,9 @@ Version 0.17 Beta:
   and because with namespaces the elements would have to be added twice to work as both "elementid" and "enumid.elementid" (v1c)
 - #undef can't remove symbols defined inside namespaces anymore, to allow namespace redefinition to work (v1c)
 
+[added]
+TYPE's, UNION's, ENUM's and typedefs can now be declared inside functions and scope blocks (v1c)
+
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
 - the case of the aliases of extern dynamic arrays was not been preserved (v1c)
