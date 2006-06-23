@@ -40,30 +40,11 @@ function symbAddConst _
 	) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr sym
-    dim as FBSYMBOLTB ptr symtb
-    dim as integer isglobal
 
     function = NULL
 
-    '' parsing main and not inside another namespace? add to global tb
-    if( fbIsModLevel( ) and symbIsGlobalNamespc( ) ) then
-    	'' unless it's inside a scope block..
-    	if( env.scope > FB_MAINSCOPE ) then
-    		symtb = symb.symtb
-    		isglobal = FALSE
-
-    	else
-    		symtb = @symbGetGlobalTb( )
-    		isglobal = TRUE
-    	end if
-
-    else
-    	symtb = symb.symtb
-    	isglobal = FALSE
-    end if
-
     sym = symbNewSymbol( NULL, _
-    					 symtb, NULL, isglobal, _
+    					 NULL, NULL, 0, _
     					 FB_SYMBCLASS_CONST, _
     				   	 TRUE, symbol, NULL, _
     				   	 dtype, subtype )

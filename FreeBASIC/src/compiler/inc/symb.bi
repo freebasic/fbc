@@ -908,8 +908,7 @@ declare function 	symbNewSymbol			( _
 											) as FBSYMBOL ptr
 
 declare sub 		symbFreeSymbol			( _
-												byval s as FBSYMBOL ptr, _
-									  		  	byval movetoglob as integer = FALSE _
+												byval s as FBSYMBOL ptr _
 											)
 
 declare sub 		symbDelFromHash			( _
@@ -1031,7 +1030,11 @@ declare function 	symbRemapType			( _
 					  					  	  	byval subtype as FBSYMBOL ptr _
 											) as integer
 
-declare function 	symbProcAllocLocals		( _
+declare function 	symbProcAllocLocalVars	( _
+												byval proc as FBSYMBOL ptr _
+											) as integer
+
+declare function 	symbProcAllocStaticVars	( _
 												byval proc as FBSYMBOL ptr _
 											) as integer
 

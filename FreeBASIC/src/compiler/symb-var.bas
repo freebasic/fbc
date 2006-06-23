@@ -45,6 +45,10 @@ declare sub 		hDelVarDims			( _
 											byval s as FBSYMBOL ptr _
 										)
 
+declare sub 		hCreateDescDimType  ( _
+											_
+										)
+
 '' globals
 	dim shared as FB_SYMVAR_CTX ctx
 
@@ -53,7 +57,10 @@ sub symbVarInit( )
 
 	listNew( @symb.dimlist, FB_INITDIMNODES, len( FBVARDIM ), LIST_FLAGS_NOCLEAR )
 
-	ctx.array_dimtype = NULL
+	'' assuming it's safe to create UDT symbols here, the array
+	'' dimension type must be allocated at module-level or it
+	'' would be removed when going out scope
+	hCreateDescDimType( )
 
 end sub
 
@@ -69,46 +76,41 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-private function hCreateDescDimType _
+private sub hCreateDescDimType _
 	( _
 		_
-	) as FBSYMBOL ptr static
+	) static
 
 	static as FBARRAYDIM dTB(0)
 
-	if( ctx.array_dimtype = NULL ) then
+   	''
+   	ctx.array_dimtype = symbAddUDT( NULL, NULL, NULL, FALSE, 0 )
 
-    	''
-    	ctx.array_dimtype = symbAddUDT( NULL, NULL, NULL, FALSE, 0 )
+	'' elements		as integer
+	symbAddUDTElement( ctx.array_dimtype, _
+				   	   NULL, _
+				   	   0, dTB(), _
+				   	   FB_DATATYPE_INTEGER, NULL, 0, _
+				   	   FB_INTEGERSIZE, 0 )
 
-		'' elements		as integer
-		symbAddUDTElement( ctx.array_dimtype, _
-					   	   NULL, _
-					   	   0, dTB(), _
-					   	   FB_DATATYPE_INTEGER, NULL, 0, _
-					   	   FB_INTEGERSIZE, 0 )
+	'' lbound		as integer
+	symbAddUDTElement( ctx.array_dimtype, _
+				   	   NULL, _
+				   	   0, dTB(), _
+				   	   FB_DATATYPE_INTEGER, NULL, 0, _
+				   	   FB_INTEGERSIZE, 0 )
 
-		'' lbound		as integer
-		symbAddUDTElement( ctx.array_dimtype, _
-					   	   NULL, _
-					   	   0, dTB(), _
-					   	   FB_DATATYPE_INTEGER, NULL, 0, _
-					   	   FB_INTEGERSIZE, 0 )
+	'' ubound		as integer
+	symbAddUDTElement( ctx.array_dimtype, _
+				   	   NULL, _
+				   	   0, dTB(), _
+				   	   FB_DATATYPE_INTEGER, NULL, 0, _
+				   	   FB_INTEGERSIZE, 0 )
 
-		'' ubound		as integer
-		symbAddUDTElement( ctx.array_dimtype, _
-					   	   NULL, _
-					   	   0, dTB(), _
-					   	   FB_DATATYPE_INTEGER, NULL, 0, _
-					   	   FB_INTEGERSIZE, 0 )
+    ''
+	symbRoundUDTSize( ctx.array_dimtype )
 
-        ''
-		symbRoundUDTSize( ctx.array_dimtype )
-	end if
-
-	function = ctx.array_dimtype
-
-end function
+end sub
 
 '':::::
 private function hCreateDescType _
@@ -166,7 +168,7 @@ private function hCreateDescType _
 	dTB(0).lower = 0
 	dTB(0).upper = dims-1
 
-	dimtype = hCreateDescDimType( )
+	dimtype = ctx.array_dimtype
 
 	symbAddUDTElement( sym, _
 				   	   NULL, _
@@ -941,54 +943,38 @@ sub symbDelVar _
 		byval s as FBSYMBOL ptr _
 	)
 
-    dim as integer movetoglob
-
     if( s = NULL ) then
     	exit sub
     end if
 
-	movetoglob = FALSE
+    if( s->var.array.dims > 0 ) then
+    	hDelVarDims( s )
+    	'' del the array descriptor, recursively
+    	symbDelVar( s->var.array.desc )
+    end if
 
-	'' local and static? move to global sym tb (see symbAddVarEx())
-	if( symbIsLocal( s ) ) then
-    	if( symbIsStatic( s ) ) then
-    		if( s->symtb <> @symbGetGlobalTb( ) ) then
-    			movetoglob = TRUE
+    if( symbGetIsLiteral( s ) ) then
+    	s->attrib and= not FB_SYMBATTRIB_LITERAL
+
+    	'' not a wchar literal?
+    	if( s->typ <> FB_DATATYPE_WCHAR ) then
+    		if( s->var.littext <> NULL ) then
+    			ZstrFree( s->var.littext )
+    		end if
+    	else
+    		if( s->var.littextw <> NULL ) then
+    			WstrFree( s->var.littextw )
     		end if
     	end if
-	end if
 
-	if( movetoglob = FALSE ) then
-    	if( s->var.array.dims > 0 ) then
-    		hDelVarDims( s )
-    		'' del the array descriptor, recursively
-    		symbDelVar( s->var.array.desc )
-    	end if
-
-    	if( symbGetIsLiteral( s ) ) then
-    		s->attrib and= not FB_SYMBATTRIB_LITERAL
-
-    		'' not a wchar literal?
-    		if( s->typ <> FB_DATATYPE_WCHAR ) then
-    			if( s->var.littext <> NULL ) then
-    				ZstrFree( s->var.littext )
-    			end if
-    		else
-    			if( s->var.littextw <> NULL ) then
-    				WstrFree( s->var.littextw )
-    			end if
-    		end if
-
-    	''
-    	elseif( symbGetIsInitialized( s ) ) then
-    		s->stats and= not FB_SYMBSTATS_INITIALIZED
-    		'' astEnd will free the nodes..
-    	end if
-
+    ''
+    elseif( symbGetIsInitialized( s ) ) then
+    	s->stats and= not FB_SYMBSTATS_INITIALIZED
+    	'' astEnd will free the nodes..
     end if
 
     ''
-    symbFreeSymbol( s, movetoglob )
+    symbFreeSymbol( s )
 
 end sub
 

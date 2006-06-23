@@ -189,12 +189,6 @@ function cEnumDecl( ) as integer static
 
 	function = FALSE
 
-    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL ) = FALSE ) then
-    	'' error recovery: skip the whole compound stmt
-    	hSkipCompound( FB_TK_ENUM )
-    	exit function
-    end if
-
 	'' ENUM
 	lexSkipToken( )
 

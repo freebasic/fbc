@@ -45,7 +45,6 @@ function symbAddUDT _
 	) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr t
-    dim as FBSYMBOLTB ptr symtb
 
     function = NULL
 
@@ -57,13 +56,8 @@ function symbAddUDT _
     	end if
     end if
 
-    '' UDT's are never added to the local symtb, they aren't allowed
-    '' inside scope blocks or procs, but when declaring static local
-    '' arrays, they will be created internally by symbAddVar( )
-    symtb = @symbGetNamespaceTb( symbGetCurrentNamespc( ) )
-
     t = symbNewSymbol( NULL, _
-    				   symtb, NULL, TRUE, _
+    				   NULL, NULL, 0, _
     				   FB_SYMBCLASS_UDT, _
     				   TRUE, id, id_alias )
 	if( t = NULL ) then
@@ -328,7 +322,7 @@ function symbAddUDTElement _
 
 	''
     e = symbNewSymbol( NULL, _
-    				   @t->udt.fldtb, NULL, TRUE, _
+    				   @t->udt.fldtb, NULL, symbIsLocal( t ) = FALSE, _
     				   FB_SYMBCLASS_UDTELM, _
     				   FALSE, @ename, NULL, _
     				   dtype, subtype, ptrcnt, _

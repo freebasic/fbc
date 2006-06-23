@@ -46,7 +46,7 @@ function symbAddBitField _
     '' accessing the bitfield
 
     sym = symbNewSymbol( NULL, _
-    					 NULL, NULL, fbIsModLevel( ), _
+    					 NULL, NULL, 0, _
     					 FB_SYMBCLASS_BITFIELD, _
     				   	 FALSE, NULL, NULL, _
     				   	 dtype, NULL )

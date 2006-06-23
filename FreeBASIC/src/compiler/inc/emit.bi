@@ -286,12 +286,6 @@ type EMITCTX
 
 	keyinited							as integer
 	keyhash								as THASH
-
-    '' header flags, TRUE= emited already
-    bssheader							as integer
-    conheader							as integer
-    datheader							as integer
-    expheader       					as integer
 end type
 
 ''
@@ -363,6 +357,10 @@ declare function 	emitAllocArg		( _
 											byval proc as FBSYMBOL ptr, _
 											byval lgt as integer _
 										) as integer
+
+declare sub 		emitDeclVariable 	( _
+											byval s as FBSYMBOL ptr _
+										)
 
 declare function 	emitGetFramePtrName ( _
 											_

@@ -149,7 +149,7 @@ function symbAddTypedef _
 
     '' allocate new node
     t = symbNewSymbol( NULL, _
-    				   NULL, NULL, fbIsModLevel( ), _
+    				   NULL, NULL, 0, _
     				   FB_SYMBCLASS_TYPEDEF, _
     				   TRUE, symbol, NULL, _
     				   dtype, subtype, ptrcnt )
@@ -182,7 +182,7 @@ function symbAddFwdRef _
 
     '' allocate new node
     f = symbNewSymbol( NULL, _
-    				   NULL, NULL, fbIsModLevel( ), _
+    				   NULL, NULL, 0, _
     				   FB_SYMBCLASS_FWDREF, _
     				   TRUE, symbol, NULL )
     if( f = NULL ) then

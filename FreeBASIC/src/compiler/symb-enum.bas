@@ -49,7 +49,7 @@ function symbAddEnum _
     end if
 
     e = symbNewSymbol( NULL, _
-    				   NULL, NULL, fbIsModLevel( ), _
+    				   NULL, NULL, 0, _
     				   FB_SYMBCLASS_ENUM, _
     				   TRUE, id, id_alias )
 	if( e = NULL ) then
@@ -80,20 +80,9 @@ function symbAddEnumElement _
 	) as FBSYMBOL ptr static
 
 	dim as FBSYMBOL ptr s
-    dim as FBSYMBOLTB ptr symtb
-    dim as integer isglobal
-
-    '' parsing main and not inside another namespace? add to global tb
-    if( fbIsModLevel( ) and symbIsGlobalNamespc( ) ) then
-    	symtb = @symbGetGlobalTb( )
-    	isglobal = TRUE
-    else
-    	symtb = symb.symtb
-    	isglobal = FALSE
-    end if
 
     s = symbNewSymbol( NULL, _
-    				   symtb, NULL, isglobal, _
+    				   NULL, NULL, 0, _
     				   FB_SYMBCLASS_CONST, _
     				   TRUE, id, NULL, _
     				   FB_DATATYPE_ENUM, parent )

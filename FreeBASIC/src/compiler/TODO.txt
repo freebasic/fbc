@@ -1,11 +1,7 @@
 [ ] OPEN ... FOR is not checking for mode
     - does QB allow that? CONS won't work without INPUT or OUTPUT
 
-[ ] GSL is missing a library in Linux: cblas-something
-
 [ ] FORMAT$ has the same bug as PRINT USING had
-
-[ ] LPRINT wstring is broken, nothing is printed
 
 [ ] SCOPE..END SCOPE:
     - can't optimize multiple MEM_CLEAR's if there's any branch to

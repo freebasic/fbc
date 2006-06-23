@@ -275,13 +275,8 @@ sub emitSubInit
 	emit.keyinited 	= FALSE
 
 	''
-	emit.dataend 	= 0
+	emit.dataend = 0
 	emit.lastsection = INVALID
-
-	emit.bssheader	= FALSE
-	emit.conheader	= FALSE
-	emit.datheader	= FALSE
-	emit.expheader	= FALSE
 
 end sub
 
@@ -5486,6 +5481,18 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
+#define hEmitBssHeader( ) emitSECTION( EMIT_SECTYPE_BSS )
+
+'':::::
+#define hEmitConstHeader( ) emitSECTION( EMIT_SECTYPE_DATA )
+
+'':::::
+#define hEmitDataHeader( ) emitSECTION( EMIT_SECTYPE_DATA )
+
+'':::::
+#define hEmitExportHeader( ) emitSECTION( EMIT_SECTYPE_DIRECTIVE )
+
+'':::::
 sub emitWriteHeader( ) static
 
 	''
@@ -5549,30 +5556,59 @@ private function hGetTypeString( byval typ as integer ) as string static
 end function
 
 '':::::
-private sub hEmitBssHeader( )
+private sub hEmitVarBss _
+	( _
+		byval s as FBSYMBOL ptr _
+	) static
 
-    if( emit.bssheader ) then
-    	exit sub
+    dim as string alloc, ostr
+    dim as integer attrib, elements
+
+	attrib = symbGetAttrib( s )
+
+	elements = 1
+    if( symbGetArrayDimensions( s ) > 0 ) then
+    	elements = symbGetArrayElements( s )
+	end if
+
+    hEmitBssHeader( )
+
+    '' allocation modifier
+    if( (attrib and FB_SYMBATTRIB_COMMON) = 0 ) then
+      	if( (attrib and FB_SYMBATTRIB_PUBLIC) > 0 ) then
+       		hPUBLIC( *symbGetMangledName( s ) )
+		end if
+       	alloc = ".lcomm"
+	else
+       	hPUBLIC( *symbGetMangledName( s ) )
+       	alloc = ".comm"
     end if
 
-    hCOMMENT( "global non-initialized vars" )
-    emitSECTION( EMIT_SECTYPE_BSS )
-    hALIGN( 16 )
+    '' align
+    if( symbGetType( s ) = FB_DATATYPE_DOUBLE ) then
+    	hALIGN( 8 )
+    	hWriteStr( TRUE, ".balign 8" )
+	else
+    	hALIGN( 4 )
+    end if
 
-    emit.bssheader = TRUE
+	'' emit
+    ostr = alloc + "\t"
+    ostr += *symbGetMangledName( s )
+    ostr += "," + str( symbGetLen( s ) * elements )
+    hWriteStr( TRUE, ostr )
+
+    '' add dbg info, if public or shared
+    if( (attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_PUBLIC)) > 0 ) then
+    	edbgEmitGlobalVar( s, EMIT_SECTYPE_BSS )
+	end if
 
 end sub
 
-
 '':::::
 sub emitWriteBss( byval s as FBSYMBOL ptr )
-    static as string alloc, ostr
-    static as integer attrib, elements
-    dim as integer doemit
 
     do while( s <> NULL )
-
-		doemit = FALSE
 
     	select case symbGetClass( s )
 		'' name space?
@@ -5585,60 +5621,9 @@ sub emitWriteBss( byval s as FBSYMBOL ptr )
 
     	'' variable?
     	case FB_SYMBCLASS_VAR
-			'' not initialized already?
-			if( symbGetIsInitialized( s ) = FALSE ) then
-    			'' not extern, literal or dynamic?
-				if( (s->attrib and (FB_SYMBATTRIB_EXTERN or _
-							   		FB_SYMBATTRIB_LITERAL or _
-							   		FB_SYMBATTRIB_DYNAMIC)) = 0 ) then
-    	    		'' not a string or array descriptor?
-    	    		if( symbGetLen( s ) > 0 ) then
-    					doemit = TRUE
-    				end if
-    			end if
-    		end if
+    		emitDeclVariable( s )
+
     	end select
-
-    	if( doemit ) then
-    	    attrib = symbGetAttrib( s )
-
-	    	elements = 1
-    	    if( symbGetArrayDimensions( s ) > 0 ) then
-    	    	elements = symbGetArrayElements( s )
-    	    end if
-
-    	    hEmitBssHeader( )
-
-    	    '' allocation modifier
-    	    if( (attrib and FB_SYMBATTRIB_COMMON) = 0 ) then
-    	    	if( (attrib and FB_SYMBATTRIB_PUBLIC) > 0 ) then
-    	    		hPUBLIC( *symbGetMangledName( s ) )
-				end if
-    	    	alloc = ".lcomm"
-			else
-    	    	hPUBLIC( *symbGetMangledName( s ) )
-    	    	alloc = ".comm"
-    	    end if
-
-    	    '' align
-    	    if( symbGetType( s ) = FB_DATATYPE_DOUBLE ) then
-    	    	hALIGN( 8 )
-    	    	hWriteStr( TRUE, ".balign 8" )
-    	    else
-    	    	hALIGN( 4 )
-    	    end if
-
-    	    '' emit
-    	    ostr = alloc + "\t"
-    	    ostr += *symbGetMangledName( s )
-    	    ostr += "," + str( symbGetLen( s ) * elements )
-    	    hWriteStr( TRUE, ostr )
-
-    	    '' add dbg info, if public or shared
-    	    if( (attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_PUBLIC)) > 0 ) then
-    	    	edbgEmitGlobalVar( s, EMIT_SECTYPE_BSS )
-    	    end if
-    	end if
 
     	s = s->next
     loop
@@ -5646,29 +5631,51 @@ sub emitWriteBss( byval s as FBSYMBOL ptr )
 end sub
 
 '':::::
-private sub hEmitConstHeader( )
+private sub hEmitVarConst _
+	( _
+		byval s as FBSYMBOL ptr _
+	) static
 
-    if( emit.conheader ) then
-    	exit sub
+    dim as string stext, stype, ostr
+    dim as integer dtype
+
+    dtype = symbGetType( s )
+
+    select case dtype
+   	case FB_DATATYPE_CHAR
+    	stext = "\""
+    	stext += *hEscape( symbGetVarLitText( s ) )
+    	stext += "\\0\""
+
+	case FB_DATATYPE_WCHAR
+		stext = "\""
+		stext += *hEscapeW( symbGetVarLitTextW( s ) )
+		stext += *hGetWstrNull( )
+		stext += "\""
+
+	case else
+    	stext = *symbGetVarLitText( s )
+    end select
+
+    hEmitConstHeader( )
+
+    if( dtype = FB_DATATYPE_DOUBLE ) then
+       	hALIGN( 8 )
+    else
+      	hALIGN( 4 )
     end if
 
-    hCOMMENT( "global initialized constants" )
-	emitSECTION( EMIT_SECTYPE_DATA )
-    hALIGN( 16 )
-
-    emit.conheader = TRUE
+    stype = hGetTypeString( dtype )
+    ostr = *symbGetMangledName( s )
+    ostr += ":\t" + stype + "\t" + stext
+    hWriteStr( FALSE, ostr )
 
 end sub
 
 '':::::
 sub emitWriteConst( byval s as FBSYMBOL ptr )
-    static as string stext, stype, ostr
-    static as integer dtype
-    dim as integer doemit
 
     do while( s <> NULL )
-
-    	doemit = FALSE
 
     	select case symbGetClass( s )
 		'' name space?
@@ -5681,53 +5688,8 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
 
     	'' variable?
     	case FB_SYMBCLASS_VAR
-    		'' literal?
-    		if( symbGetIsLiteral( s ) ) then
-    	    	dtype = symbGetType( s )
-    	    	select case dtype
-    	    	'' udt? don't emit
-    	    	case FB_DATATYPE_USERDEF
-
-    	    	'' string? check if ever referenced
-    	    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    	    		doemit = symbGetIsAccessed( s )
-
-				'' anything else, only if len > 0
-				case else
-					doemit = symbGetLen( s ) > 0
-    	    	end select
-    	    end if
+    		emitDeclVariable( s )
 		end select
-
-    	if( doemit ) then
-    	    select case dtype
-    	    case FB_DATATYPE_CHAR
-    	    	stext = "\""
-    	    	stext += *hEscape( symbGetVarLitText( s ) )
-    	    	stext += "\\0\""
-    	    case FB_DATATYPE_WCHAR
-				stext = "\""
-				stext += *hEscapeW( symbGetVarLitTextW( s ) )
-				stext += *hGetWstrNull( )
-				stext += "\""
-    	    case else
-    	    	stext = *symbGetVarLitText( s )
-    	    end select
-
-    	    hEmitConstHeader( )
-
-    	    if( dtype = FB_DATATYPE_DOUBLE ) then
-    	    	hALIGN( 8 )
-    	    else
-    	    	hALIGN( 4 )
-    	    end if
-
-    	    stype = hGetTypeString( dtype )
-    	    ostr = *symbGetMangledName( s )
-    	    ostr += ":\t" + stype + "\t" + stext
-    	    hWriteStr( FALSE, ostr )
-
-    	end if
 
     	s = s->next
     loop
@@ -5735,27 +5697,9 @@ sub emitWriteConst( byval s as FBSYMBOL ptr )
 end sub
 
 '':::::
-private sub hEmitDataHeader( )
-
-    if( emit.datheader ) then
-    	exit sub
-    end if
-
-    hCOMMENT( "global initialized vars" )
-    emitSECTION( EMIT_SECTYPE_DATA )
-    hALIGN( 16 )
-
-    emit.datheader = TRUE
-
-end sub
-
-'':::::
 sub emitWriteData( byval s as FBSYMBOL ptr )
-    dim as integer doemit
 
     do while( s <> NULL )
-
-    	doemit = FALSE
 
     	select case symbGetClass( s )
 		'' name space?
@@ -5768,29 +5712,9 @@ sub emitWriteData( byval s as FBSYMBOL ptr )
 
     	'' variable?
     	case FB_SYMBCLASS_VAR
-    	    '' initialized?
-    	    if( symbGetIsInitialized( s ) ) then
-    	    	'' not extern or jump-tb?
-    	    	if( (symbGetAttrib( s ) and _
-    	    		 (FB_SYMBATTRIB_EXTERN or _
-    	    		  FB_SYMBATTRIB_JUMPTB)) = 0 ) then
+    		emitDeclVariable( s )
 
-    	    		'' ever referenced?
-    	    		if( symbGetIsAccessed( s ) ) then
-    	    			doemit = TRUE
-    	    		else
-    	    			'' public?
-    	    			doemit = symbIsPublic( s )
-    	    		end if
-
-    	    	end if
-    	    end if
     	end select
-
-		if( doemit ) then
-			hEmitDataHeader( )
-			astTypeIniFlush( s->var.initree, s, TRUE, TRUE )
-		end if
 
     	s = s->next
     loop
@@ -5798,23 +5722,9 @@ sub emitWriteData( byval s as FBSYMBOL ptr )
 end sub
 
 '':::::
-private sub hEmitExportHeader( )
-
-    if( emit.expheader ) then
-    	exit sub
-    end if
-
-    hWriteStr( FALSE, NEWLINE + "#exported functions" )
-    emitSECTION( EMIT_SECTYPE_DIRECTIVE )
-
-    emit.expheader = TRUE
-
-end sub
-
-'':::::
 sub emitWriteExport( ) static
-    dim s as FBSYMBOL ptr
-    dim sname as string
+    dim as FBSYMBOL ptr s
+    dim as string sname
 
     '' for each proc exported..
     s = symbGetGlobalTbHead( )
@@ -5835,6 +5745,82 @@ sub emitWriteExport( ) static
 
 end sub
 
+'':::::
+sub emitDeclVariable _
+	( _
+		byval s as FBSYMBOL ptr _
+	) static
+
+    '' already allocated?
+	if( symbGetIsAllocated( s ) ) then
+		return
+	end if
+
+	symbSetIsAllocated( s )
+
+	'' literal?
+    if( symbGetIsLiteral( s ) ) then
+
+    	select case symbGetType( s )
+    	'' udt? don't emit
+    	case FB_DATATYPE_USERDEF
+    		return
+
+    	'' string? check if ever referenced
+    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+    	  	if( symbGetIsAccessed( s ) = FALSE ) then
+    	  		return
+    	  	end if
+
+		'' anything else, only if len > 0
+		case else
+			if( symbGetLen( s ) <= 0 ) then
+				return
+			end if
+    	end select
+
+    	hEmitVarConst( s )
+
+    	return
+	end if
+
+	'' initialized?
+	if( symbGetIsInitialized( s ) ) then
+
+		'' extern or jump-tb?
+    	if( (symbGetAttrib( s ) and _
+			 (FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_JUMPTB)) <> 0 ) then
+			return
+		end if
+
+    	'' ever referenced?
+    	if( symbGetIsAccessed( s ) = FALSE ) then
+			'' not public?
+    	    if( symbIsPublic( s ) = FALSE ) then
+    	    	return
+    	    end if
+		end if
+
+		hEmitDataHeader( )
+		astTypeIniFlush( s->var.initree, s, TRUE, TRUE )
+
+		return
+	end if
+
+    '' extern or dynamic?
+	if( (s->attrib and (FB_SYMBATTRIB_EXTERN or _
+			   			FB_SYMBATTRIB_DYNAMIC)) <> 0 ) then
+		return
+	end if
+
+    '' a string or array descriptor?
+	if( symbGetLen( s ) <= 0 ) then
+		return
+	end if
+
+	hEmitVarBss( s )
+
+end sub
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' functions table

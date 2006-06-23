@@ -301,7 +301,7 @@ private function hAddOvlProc _
     '' add the new proc symbol, w/o adding it to the hash table
 
 	proc = symbNewSymbol( proc, _
-						  NULL, NULL, TRUE, _
+						  NULL, NULL, 0, _
 						  FB_SYMBCLASS_PROC, _
 						  FALSE, id, id_alias, _
 					      dtype, subtype, ptrcnt, _
@@ -421,7 +421,7 @@ private function hSetupProc _
 
 	''
 	proc = symbNewSymbol( sym, _
-						  NULL, NULL, TRUE, _
+						  NULL, NULL, 0, _
 						  FB_SYMBCLASS_PROC, _
 						  TRUE, id, id_alias, _
 					   	  dtype, subtype, ptrcnt, _
@@ -726,7 +726,7 @@ function symbAddProcResult _
 end function
 
 '':::::
-function symbProcAllocLocals _
+function symbProcAllocLocalVars _
 	( _
 		byval proc as FBSYMBOL ptr _
 	) as integer static
@@ -766,6 +766,38 @@ function symbProcAllocLocals _
 			end if
 
 		end if
+
+    	s = s->next
+    loop
+
+    function = TRUE
+
+end function
+
+'':::::
+function symbProcAllocStaticVars _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as integer static
+
+    function = FALSE
+
+    do while( s <> NULL )
+
+    	select case s->class
+    	'' scope block? recursion..
+    	case FB_SYMBCLASS_SCOPE
+    		symbProcAllocStaticVars( symbGetScopeTbHead( s ) )
+
+    	'' variable?
+    	case FB_SYMBCLASS_VAR
+    		'' static?
+    		if( symbIsStatic( s ) ) then
+				'' it's ok to call emit directly from here, the
+				'' proc is fully flushed, from ast, ir and emit itself
+				emitDeclVariable( s )
+			end if
+		end select
 
     	s = s->next
     loop

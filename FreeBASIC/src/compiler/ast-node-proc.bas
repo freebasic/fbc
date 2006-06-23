@@ -115,8 +115,8 @@ private sub hProcFlush _
 	env.currblock = sym
 	symbSetCurrentSymTb( @sym->proc.symtb )
 
-	'' allocate the local variables on stack
-	symbProcAllocLocals( sym )
+	'' allocate the non-static local variables on stack
+	symbProcAllocLocalVars( sym )
 
 	'' add a call to fb_init if it's a static constructor
 	'' (note: must be done here or ModLevelIsEmpty() will fail)
@@ -144,6 +144,9 @@ private sub hProcFlush _
     if( ast.doemit ) then
     	irEmitPROCEND( sym, p->block.initlabel, p->block.exitlabel )
     end if
+
+    '' emit static local variables
+    symbProcAllocStaticVars( symbGetProcLocTbHead( sym ) )
 
     '' del symbols from hash and symbol tb's
     symbDelSymbolTb( @sym->proc.symtb, FALSE )

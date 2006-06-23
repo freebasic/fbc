@@ -164,11 +164,11 @@ sub symbInit _
 	'' forward refs
 	symbInitFwdRef( )
 
-	'' arrays dim tb
-	symbVarInit( )
-
 	'' libraries
 	symbInitLibs( )
+
+	'' arrays dim tb
+	symbVarInit( )
 
     ''
     symb.inited = TRUE
@@ -371,9 +371,19 @@ function symbNewSymbol _
 	if( symtb = NULL ) then
     	'' parsing main and not inside a namespace? add to global tb
     	if( fbIsModLevel( ) and symbIsGlobalNamespc( ) ) then
-    		symtb = @symbGetGlobalTb( )
+    		'' unless it's inside a scope block..
+    		if( env.scope > FB_MAINSCOPE ) then
+    			symtb = symb.symtb
+    			isglobal = FALSE
+
+    		else
+    			symtb = @symbGetGlobalTb( )
+    			isglobal = TRUE
+    		end if
+
     	else
     		symtb = symb.symtb
+    		isglobal = FALSE
     	end if
     end if
 
@@ -929,7 +939,7 @@ sub symbDelFromChainList _
     dim as FBSYMCHAIN ptr prv, nxt
 
 	'' note: symbols declared inside namespaces can't be
-    '' removed by #undef or OPTION NO KEYWORD so the import
+    '' removed by #undef or OPTION NOKEYWORD so the import
     '' chain doesn't have to be updated
 
     '' relink
@@ -979,14 +989,13 @@ end sub
 '':::::
 sub symbFreeSymbol _
 	( _
-		byval s as FBSYMBOL ptr, _
-		byval movetoglob as integer _
+		byval s as FBSYMBOL ptr _
 	) static
 
     dim as FBSYMBOLTB ptr tb
     dim as FBSYMBOL ptr prv, nxt
 
-	''
+	'' revove from hash tb
 	symbDelFromHash( s )
 
     '' del from table
@@ -1006,28 +1015,13 @@ sub symbFreeSymbol _
     	tb->tail = prv
     end if
 
-    '' remove from symbol list
-    if( movetoglob = FALSE ) then
-    	s->prev  = NULL
-    	s->next  = NULL
-    	poolDelItem( @symb.namepool, s->name ) 'ZstrFree( s->name )
-    	ZstrFree( s->alias )
+    '' remove from symbol tb
+    s->prev = NULL
+    s->next = NULL
+    poolDelItem( @symb.namepool, s->name ) 'ZstrFree( s->name )
+    ZstrFree( s->alias )
 
-    	listDelNode( @symb.symlist, s )
-
-    '' move from local to global table
-    else
-		if( symbGetGlobalTb( ).tail <> NULL ) then
-			symbGetGlobalTb( ).tail->next = s
-		else
-			symbGetGlobalTb( ).head = s
-		end if
-
-		s->prev = symbGetGlobalTb( ).tail
-		s->next = NULL
-		symbGetGlobalTb( ).tail = s
-		s->symtb = @symbGetGlobalTb( )
-    end if
+    listDelNode( @symb.symlist, s )
 
 end sub
 
@@ -1116,9 +1110,9 @@ sub symbDelSymbolTb _
     			 FB_SYMBCLASS_CONST, _
     			 FB_SYMBCLASS_UDT, _
     			 FB_SYMBCLASS_ENUM, _
-    			 FB_SYMBCLASS_LABEL
-    			 '''''FB_SYMBCLASS_DEFINE, _  can't be declared inside procs
-    			 '''''FB_SYMBCLASS_TYPEDEF, _ ditto
+    			 FB_SYMBCLASS_TYPEDEF, _
+    			 FB_SYMBCLASS_LABEL, _
+    			 FB_SYMBCLASS_DEFINE
 
     			symbDelFromHash( s )
 

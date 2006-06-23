@@ -514,12 +514,6 @@ function cTypeDecl _
 
 	isunion = (lexGetToken( ) = FB_TK_UNION)
 
-    if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL ) = FALSE ) then
-    	'' error recovery: skip the whole compound stmt
-    	hSkipCompound( iif( isunion, FB_TK_UNION, FB_TK_TYPE ) )
-    	exit function
-    end if
-
 	'' skip TYPE | UNION
 	lexSkipToken( )
 
