@@ -30,30 +30,31 @@
  *  this exception statement from your version.
  */
 
-#ifndef __FB_PRINTER_H__
-#define __FB_PRINTER_H__
+#ifndef __FB_ERROR_H__
+#define __FB_ERROR_H__
 
-typedef struct _DEV_LPT_PROTOCOL 
-{
-	char * proto;
-	int iPort;
-	char * name;
-	char * title;
-	char * emu;
-	char raw[];
-} DEV_LPT_PROTOCOL;
+#define FB_ERROR_MESSAGE_SIZE		1024
+extern char *fb_error_message;
 
-int fb_DevLptParseProtocol( const char * proto_raw, size_t proto_raw_len, DEV_LPT_PROTOCOL ** lptinfo_in );
-int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len );
+typedef void (*FB_ERRHANDLER) (void);
 
-       int          fb_DevPrinterSetWidth ( const char *pszDevice, int width,
-       										int default_width );
-       int          fb_DevPrinterGetOffset( const char *pszDevice );
-       int          fb_PrinterOpen      ( int iPort, const char *pszDevice,
-       									  void **ppvHandle );
-       int          fb_PrinterWrite     ( void *pvHandle, const void *data, size_t length );
-       int          fb_PrinterWriteWstr ( void *pvHandle, const FB_WCHAR *data,
-       									  size_t length );
-       int          fb_PrinterClose     ( void *pvHandle );
+typedef struct _FB_ERRORCTX {
+    FB_ERRHANDLER  	handler;
+    int				err_num;
+    int				line_num;
+    const char	   *mod_name;
+    const char	   *fun_name;
+    void		   *res_lbl;
+    void		   *resnxt_lbl;
+} FB_ERRORCTX;
 
-#endif /*__FB_PRINTER_H__*/
+       FB_ERRHANDLER fb_ErrorThrowEx    ( int errnum, int linenum, const char *fname,
+       									  void *res_label, void *resnext_label );
+FBCALL FB_ERRHANDLER fb_ErrorSetHandler ( FB_ERRHANDLER newhandler );
+FBCALL int           fb_ErrorGetNum     ( void );
+FBCALL int           fb_ErrorSetNum     ( int errnum );
+       void         *fb_ErrorResume     ( void );
+       void         *fb_ErrorResumeNext ( void );
+
+
+#endif /* __FB_ERROR_H__ */

@@ -135,36 +135,52 @@ static __inline__ void fb_wstr_WcharToChar( char *dst,
 
 /** Calculate the number of characters between two pointers.
  */
-static __inline__ int fb_wstr_CalcDiff( const FB_WCHAR *ini,
-										const FB_WCHAR *end )
+static __inline__ int fb_wstr_CalcDiff
+	( 
+		const FB_WCHAR *ini,
+		const FB_WCHAR *end 
+	)
 {
 	return ((int)end - (int)ini) / sizeof( FB_WCHAR );
 }
 
 /*:::::*/
-static __inline__ FB_WCHAR *fb_wstr_AllocTemp( int chars )
+static __inline__ FB_WCHAR *fb_wstr_AllocTemp
+	( 
+		int chars 
+	)
 {
 	/* plus the null-term */
 	return (FB_WCHAR *)malloc( (chars + 1) * sizeof( FB_WCHAR ) );
 }
 
 /*:::::*/
-static __inline__ void fb_wstr_Del( FB_WCHAR *s )
+static __inline__ void fb_wstr_Del 
+	( 
+		FB_WCHAR *s 
+	)
 {
 	free( (void *)s );
 }
 
 /** Return the length of a WSTRING.
  */
-static __inline__ int fb_wstr_Len( const FB_WCHAR *s )
+static __inline__ int fb_wstr_Len
+	( 
+		const FB_WCHAR *s 
+	)
 {
 	/* without the null-term */
 	return wcslen( s );
 }
 
 /*:::::*/
-static __inline__ void fb_wstr_ConvFromA( FB_WCHAR *dst,
-										  int dst_chars, const char *src )
+static __inline__ void fb_wstr_ConvFromA
+	( 
+		FB_WCHAR *dst,
+		int dst_chars, 
+		const char *src 
+	)
 {
 	int chars;
 
@@ -190,8 +206,12 @@ static __inline__ void fb_wstr_ConvFromA( FB_WCHAR *dst,
 }
 
 /*:::::*/
-static __inline__ void fb_wstr_ConvToA( char *dst,
-									 	const FB_WCHAR *src, int chars )
+static __inline__ void fb_wstr_ConvToA
+	( 
+		char *dst,
+		const FB_WCHAR *src, 
+		int chars 
+	)
 {
 	/* !!!FIXME!!! wcstombs() will fail and not emit '?' or such if the
 				   characters are above 255 and can't be converted? not good.. */
@@ -218,33 +238,49 @@ static __inline__ void fb_wstr_ConvToA( char *dst,
 }
 
 /*:::::*/
-static __inline__ int fb_wstr_IsLower( FB_WCHAR c )
+static __inline__ int fb_wstr_IsLower
+	( 
+		FB_WCHAR c 
+	)
 {
 	return iswlower( c );
 }
 
 /*:::::*/
-static __inline__ int fb_wstr_IsUpper( FB_WCHAR c )
+static __inline__ int fb_wstr_IsUpper
+	( 
+		FB_WCHAR c 
+	)
 {
 	return iswupper( c );
 }
 
 /*:::::*/
-static __inline__ FB_WCHAR fb_wstr_ToLower( FB_WCHAR c )
+static __inline__ FB_WCHAR fb_wstr_ToLower
+	( 
+		FB_WCHAR c 
+	)
 {
 	return towlower( c );
 }
 
 /*:::::*/
-static __inline__ FB_WCHAR fb_wstr_ToUpper( FB_WCHAR c )
+static __inline__ FB_WCHAR fb_wstr_ToUpper
+	( 
+		FB_WCHAR c 
+	)
 {
 	return towupper( c );
 }
 
 /** Copy n characters from A to B and terminate with NUL.
  */
-static __inline__ void fb_wstr_Copy( FB_WCHAR *dst,
-									 const FB_WCHAR *src, int chars )
+static __inline__ void fb_wstr_Copy
+	( 
+		FB_WCHAR *dst,
+		const FB_WCHAR *src, 
+		int chars 
+	)
 {
     if( (src != NULL) && (chars > 0) )
         dst = FB_MEMCPYX( dst, src, chars * sizeof( FB_WCHAR ) );
@@ -255,14 +291,23 @@ static __inline__ void fb_wstr_Copy( FB_WCHAR *dst,
 
 /** Copy n characters from A to B.
  */
-static __inline__ FB_WCHAR *fb_wstr_Move( FB_WCHAR *dst,
-										  const FB_WCHAR *src, int chars )
+static __inline__ FB_WCHAR *fb_wstr_Move
+	( 
+		FB_WCHAR *dst,
+		const FB_WCHAR *src, 
+		int chars 
+	)
 {
 	return FB_MEMCPYX( dst, src, chars * sizeof( FB_WCHAR ) );
 }
 
 /*:::::*/
-static __inline__ void fb_wstr_Fill( FB_WCHAR *dst, FB_WCHAR c, int chars )
+static __inline__ void fb_wstr_Fill
+	( 
+		FB_WCHAR *dst, 
+		FB_WCHAR c, 
+		int chars 
+	)
 {
 	int i;
 
@@ -275,8 +320,12 @@ static __inline__ void fb_wstr_Fill( FB_WCHAR *dst, FB_WCHAR c, int chars )
 
 /** Skip all characters (c) from the beginning of the string, max 'n' chars.
  */
-static __inline__ const FB_WCHAR *fb_wstr_SkipChar( const FB_WCHAR *s,
-													int chars, FB_WCHAR c )
+static __inline__ const FB_WCHAR *fb_wstr_SkipChar
+	( 
+		const FB_WCHAR *s,
+		int chars, 
+		FB_WCHAR c 
+	)
 {
 	const FB_WCHAR *p;
 
@@ -297,8 +346,12 @@ static __inline__ const FB_WCHAR *fb_wstr_SkipChar( const FB_WCHAR *s,
 
 /** Skip all characters (c) from the end of the string, max 'n' chars.
  */
-static __inline__ const FB_WCHAR *fb_wstr_SkipCharRev( const FB_WCHAR *s,
-													   int chars, FB_WCHAR c )
+static __inline__ const FB_WCHAR *fb_wstr_SkipCharRev
+	( 
+		const FB_WCHAR *s,
+		int chars, 
+		FB_WCHAR c 
+	)
 {
 	const FB_WCHAR *p;
 
@@ -320,17 +373,25 @@ static __inline__ const FB_WCHAR *fb_wstr_SkipCharRev( const FB_WCHAR *s,
 }
 
 /*:::::*/
-static __inline__ FB_WCHAR *fb_wstr_Instr( const FB_WCHAR *s,
-										   const FB_WCHAR *patt )
+static __inline__ FB_WCHAR *fb_wstr_Instr
+	( 
+		const FB_WCHAR *s,
+		const FB_WCHAR *patt 
+	)
 {
 	return wcsstr( s, patt );
 }
 
 /*:::::*/
-static __inline__ int fb_wstr_Compare( const FB_WCHAR *str1,
-									   const FB_WCHAR *str2, int chars )
+static __inline__ int fb_wstr_Compare
+	( 
+		const FB_WCHAR *str1,
+		const FB_WCHAR *str2, 
+		int chars 
+	)
 {
 	return wcsncmp( str1, str2, chars );
 }
+
 
 #endif /* __FB_UNICODE__ */

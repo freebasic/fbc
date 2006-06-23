@@ -30,30 +30,17 @@
  *  this exception statement from your version.
  */
 
-#ifndef __FB_PRINTER_H__
-#define __FB_PRINTER_H__
+#ifndef __FB_DATETIME_H__
+#define __FB_DATETIME_H__
 
-typedef struct _DEV_LPT_PROTOCOL 
-{
-	char * proto;
-	int iPort;
-	char * name;
-	char * title;
-	char * emu;
-	char raw[];
-} DEV_LPT_PROTOCOL;
+FBCALL double       fb_Timer            ( void );
+FBCALL FBSTRING    *fb_Time             ( void );
+FBCALL int          fb_SetTime          ( FBSTRING *time );
+FBCALL FBSTRING    *fb_Date             ( void );
+FBCALL int          fb_SetDate          ( FBSTRING *date );
 
-int fb_DevLptParseProtocol( const char * proto_raw, size_t proto_raw_len, DEV_LPT_PROTOCOL ** lptinfo_in );
-int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len );
+       int          fb_hSetTime         ( int h, int m, int s );
+       int          fb_hSetDate         ( int y, int m, int d );
 
-       int          fb_DevPrinterSetWidth ( const char *pszDevice, int width,
-       										int default_width );
-       int          fb_DevPrinterGetOffset( const char *pszDevice );
-       int          fb_PrinterOpen      ( int iPort, const char *pszDevice,
-       									  void **ppvHandle );
-       int          fb_PrinterWrite     ( void *pvHandle, const void *data, size_t length );
-       int          fb_PrinterWriteWstr ( void *pvHandle, const FB_WCHAR *data,
-       									  size_t length );
-       int          fb_PrinterClose     ( void *pvHandle );
 
-#endif /*__FB_PRINTER_H__*/
+#endif /* __FB_DATETIME_H__ */
