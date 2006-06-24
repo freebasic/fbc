@@ -8,7 +8,8 @@ Version 0.17 Beta:
 - #undef can't remove symbols defined inside namespaces anymore, to allow namespace redefinition to work (v1c)
 
 [added]
-TYPE's, UNION's, ENUM's and typedefs can now be declared inside functions and scope blocks (v1c)
+- TYPE's, UNION's, ENUM's and typedefs can now be declared inside functions and scope blocks (v1c)
+- FileCopy, FileAttr, and FileLen VB-compatability functions [DrV]
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
