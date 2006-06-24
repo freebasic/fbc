@@ -1116,6 +1116,9 @@ declare sub glArrayElement alias "glArrayElement" (byval i as GLint)
 declare sub glDrawArrays alias "glDrawArrays" (byval mode as GLenum, byval first as GLint, byval count as GLsizei)
 declare sub glDrawElements alias "glDrawElements" (byval mode as GLenum, byval count as GLsizei, byval type as GLenum, byval indices as GLvoid ptr)
 declare sub glInterleavedArrays alias "glInterleavedArrays" (byval format as GLenum, byval stride as GLsizei, byval pointer as GLvoid ptr)
+
+#if not defined(__FB_WIN32__)
+
 declare sub glDrawRangeElements alias "glDrawRangeElements" (byval mode as GLenum, byval start as GLuint, byval end as GLuint, byval count as GLsizei, byval type as GLenum, byval indices as GLvoid ptr)
 declare sub glTexImage3D alias "glTexImage3D" (byval target as GLenum, byval level as GLint, byval internalFormat as GLenum, byval width as GLsizei, byval height as GLsizei, byval depth as GLsizei, byval border as GLint, byval format as GLenum, byval type as GLenum, byval pixels as GLvoid ptr)
 declare sub glTexSubImage3D alias "glTexSubImage3D" (byval target as GLenum, byval level as GLint, byval xoffset as GLint, byval yoffset as GLint, byval zoffset as GLint, byval width as GLsizei, byval height as GLsizei, byval depth as GLsizei, byval format as GLenum, byval type as GLenum, byval pixels as GLvoid ptr)
@@ -1201,5 +1204,7 @@ declare sub glMultTransposeMatrixd alias "glMultTransposeMatrixd" (byval m as GL
 declare sub glMultTransposeMatrixf alias "glMultTransposeMatrixf" (byval m as GLfloat ptr)
 declare sub glSampleCoverage alias "glSampleCoverage" (byval value as GLclampf, byval invert as GLboolean)
 declare sub glSamplePass alias "glSamplePass" (byval pass as GLenum)
+
+#endif
 
 #endif
