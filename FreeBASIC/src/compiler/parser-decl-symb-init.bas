@@ -30,16 +30,22 @@ option escape
 #include once "inc\ir.bi"
 #include once "inc\symb.bi"
 
-declare function 	hUDTInit			( byval tree as ASTNODE ptr, _
-					  	   				  byval sym as FBSYMBOL ptr, _
-					   	   				  byval isarray as integer ) as integer
+type FB_INITCTX
+	sym			as FBSYMBOL ptr
+	dim 		as FBVARDIM ptr
+	dimcnt		as integer
+	tree		as ASTNODE ptr
+end type
+
+declare function 	hUDTInit			( _
+											byref ctx as FB_INITCTX _
+					  	   				) as integer
+
 
 '':::::
 private function hElmInit _
 	( _
-		byval tree as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval isarray as integer _
+		byref ctx as FB_INITCTX _
 	) as integer
 
     dim as ASTNODE ptr expr
@@ -50,7 +56,7 @@ private function hElmInit _
     '' set the context symbol to allow taking the address of overloaded
     '' procs and also to allow anonymous UDT's
     oldsym = env.ctxsym
-    env.ctxsym = symbGetSubType( sym )
+    env.ctxsym = symbGetSubType( ctx.sym )
 
 	if( cExpression( expr ) = FALSE ) then
 		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
@@ -58,7 +64,7 @@ private function hElmInit _
 		else
 			'' error recovery: skip until ',' and create a fake expression
 			hSkipUntil( CHAR_COMMA )
-			expr = astNewCONSTz( symbGetType( sym ) )
+			expr = astNewCONSTz( symbGetType( ctx.sym ) )
 		end if
 	end if
 
@@ -67,7 +73,7 @@ private function hElmInit _
     ''
     static as ASTNODE lside
 
-    astBuildVAR( @lside, NULL, 0, symbGetType( sym ), symbGetSubtype( sym ) )
+    astBuildVAR( @lside, NULL, 0, symbGetType( ctx.sym ), symbGetSubtype( ctx.sym ) )
 
     '' don't build a FIELD node if it's an UDTElm symbol,
     '' that doesn't matter with checkASSIGN
@@ -78,12 +84,12 @@ private function hElmInit _
         else
         	'' error recovery: create a fake expression
         	astDelTree( expr )
-        	expr = astNewCONSTz( symbGetType( sym ) )
+        	expr = astNewCONSTz( symbGetType( ctx.sym ) )
         end if
 	end if
 
 	''
-	astTypeIniAddExpr( tree, expr, sym )
+	astTypeIniAddExpr( ctx.tree, expr, ctx.sym )
 
 	function = TRUE
 
@@ -92,114 +98,124 @@ end function
 '':::::
 private function hArrayInit _
 	( _
-		byval tree as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval isarray as integer _
+		byref ctx as FB_INITCTX _
 	) as integer
 
-    dim as integer dimensions, dimcnt, elements, elm_cnt
-    dim as integer isopen, lgt, pad_lgt
-    dim as FBVARDIM ptr d, ld
+    dim as integer dimensions, elements, elm_cnt, pad_lgt, isarray
+    dim as FBVARDIM ptr old_dim
 
 	function = FALSE
 
-	dimensions = symbGetArrayDimensions( sym )
-    dimcnt = 0
+	dimensions = symbGetArrayDimensions( ctx.sym )
+	old_dim = ctx.dim
 
-	if( isarray ) then
-		d = symbGetArrayFirstDim( sym )
+	'' '{'?
+	isarray = FALSE
+	if( hMatch( CHAR_LBRACE ) ) then
+		ctx.dimcnt += 1
+		'' too many dimensions?
+		if( ctx.dimcnt > dimensions ) then
+			if( errReport( iif( dimensions > 0, _
+								FB_ERRMSG_TOOMANYEXPRESSIONS, _
+								FB_ERRMSG_EXPECTEDARRAY ) ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until next '}'
+				hSkipUntil( CHAR_RBRACE, TRUE )
+				ctx.dim = NULL
+			end if
+
+		else
+			'' first dim?
+			if( ctx.dim = NULL ) then
+				ctx.dim = symbGetArrayFirstDim( ctx.sym )
+
+			'' next..
+			else
+				ctx.dim = ctx.dim->next
+			end if
+
+			isarray = TRUE
+		end if
+
 	else
-		d = NULL
-	end if
-
-	lgt = 0
-
-	'' for each array dimension..
-	do
-		'' '{'?
-		isopen = FALSE
-		if( isarray ) then
-			if( hMatch( CHAR_LBRACE ) ) then
-				dimcnt += 1
-				if( dimcnt > dimensions ) then
-					if( errReport( FB_ERRMSG_TOOMANYEXPRESSIONS ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: skip until next '}'
-						hSkipUntil( CHAR_RBRACE, TRUE )
-						d = NULL
-					end if
-
+		'' not the last dimension?
+		if( ctx.dimcnt < dimensions ) then
+			if( errReport( FB_ERRMSG_EXPECTEDLBRACKET ) = FALSE ) then
+				exit function
+			else
+				ctx.dimcnt += 1
+				if( ctx.dim = NULL ) then
+					ctx.dim = symbGetArrayFirstDim( ctx.sym )
 				else
-					ld = d
-					d = d->next
+					ctx.dim = ctx.dim->next
 				end if
-
-				isopen = TRUE
 			end if
 		end if
+	end if
 
-		if( d <> NULL ) then
-			elements = (d->upper - d->lower) + 1
+	if( ctx.dim <> NULL ) then
+		elements = (ctx.dim->upper - ctx.dim->lower) + 1
+	else
+		elements = 1
+	end if
+
+	'' for each array element..
+	elm_cnt = 0
+	do
+		'' not the last dimension?
+		if( ctx.dimcnt < dimensions ) then
+			if( hArrayInit( ctx ) = FALSE ) then
+				exit function
+			end if
+
 		else
-			elements = 1
-		end if
-
-		'' for each array element..
-		elm_cnt = 0
-		do
-			if( symbGetType( sym ) <> FB_DATATYPE_USERDEF ) then
-				if( hElmInit( tree, sym, isarray ) = FALSE ) then
+			if( symbGetType( ctx.sym ) <> FB_DATATYPE_USERDEF ) then
+				if( hElmInit( ctx ) = FALSE ) then
 					exit function
 				end if
 
 			else
-				if( hUDTInit( tree, sym, isarray ) = FALSE ) then
+				if( hUDTInit( ctx ) = FALSE ) then
 					exit function
 				end if
 			end if
-
-			elm_cnt += 1
-			if( elm_cnt >= elements ) then
-				exit do
-			end if
-
-		'' ','
-		loop while( hMatch( CHAR_COMMA ) )
-
-		'' pad
-		if( elm_cnt < elements ) then
-			astTypeIniAddPad( tree, (elements - elm_cnt) * symbGetLen( sym ) )
 		end if
-		lgt += elements * symbGetLen( sym )
 
-		if( isopen = FALSE ) then
+		elm_cnt += 1
+		if( elm_cnt >= elements ) then
 			exit do
-		end if
-
-		if( isarray ) then
-			'' '}'?
-			if( hMatch( CHAR_RBRACE ) = FALSE ) then
-				if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: skip until next '}'
-					hSkipUntil( CHAR_RBRACE, TRUE )
-				end if
-			end if
-
-			dimcnt -= 1
-			d = ld
 		end if
 
 	'' ','
 	loop while( hMatch( CHAR_COMMA ) )
 
 	'' pad
-	pad_lgt = (symbGetLen( sym ) * symbGetArrayElements( sym )) - lgt
-	if( pad_lgt > 0 ) then
-		astTypeIniAddPad( tree, pad_lgt )
-		astTypeIniGetOfs( tree ) += pad_lgt
+	if( elm_cnt < elements ) then
+		pad_lgt = (elements - elm_cnt) * symbGetLen( ctx.sym )
+
+		'' not the last dimension?
+		if( ctx.dim->next ) then
+			pad_lgt *= symbCalcArrayElements( ctx.sym, ctx.dim->next )
+		end if
+
+		astTypeIniAddPad( ctx.tree, pad_lgt )
+		astTypeIniGetOfs( ctx.tree ) += pad_lgt
+	end if
+
+	if( isarray ) then
+		'' '}'
+		if( hMatch( CHAR_RBRACE ) = FALSE ) then
+			if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: skip until next '}'
+				hSkipUntil( CHAR_RBRACE, TRUE )
+			end if
+		end if
+
+		ctx.dim = old_dim
+		ctx.dimcnt -= 1
 	end if
 
 	function = TRUE
@@ -209,13 +225,12 @@ end function
 '':::::
 private function hUDTInit _
 	( _
-		byval tree as ASTNODE ptr, _
-		byval sym as FBSYMBOL ptr, _
-		byval isarray as integer _
+		byref ctx as FB_INITCTX _
 	) as integer
 
 	dim as integer elements, elm_cnt, elm_ofs, lgt, baseofs, pad_lgt
     dim as FBSYMBOL ptr elm, udt
+    dim as FB_INITCTX old_ctx = any
 
     function = FALSE
 
@@ -223,17 +238,20 @@ private function hUDTInit _
 	if( hMatch( CHAR_LPRNT ) = FALSE ) then
 		'' it can be a function returning an UDT or another UDT
 		'' variable for non-static symbols..
-		return hElmInit( tree, sym, isarray )
+		return hElmInit( ctx )
 	end if
 
-	udt = symbGetSubtype( sym )
+	udt = symbGetSubtype( ctx.sym )
 	elm = symbGetUDTFirstElm( udt )
 
 	elements = symbGetUDTElements( udt )
 	elm_cnt = 0
 
 	lgt = 0
-	baseofs = astTypeIniGetOfs( tree )
+	baseofs = astTypeIniGetOfs( ctx.tree )
+
+	'' save parent
+	old_ctx = ctx
 
 	'' for each UDT element..
 	do
@@ -248,43 +266,34 @@ private function hUDTInit _
 			end if
 		end if
 
-		'' '{'?
-		isarray = hMatch( CHAR_LBRACE )
-
 		elm_ofs = elm->ofs
 		if( lgt > 0 ) then
 			pad_lgt = elm_ofs - lgt
 			if( pad_lgt > 0 ) then
-				astTypeIniAddPad( tree, pad_lgt )
+				astTypeIniAddPad( ctx.tree, pad_lgt )
 				lgt += pad_lgt
 			end if
 		end if
 
-		astTypeIniGetOfs( tree ) = baseofs + elm_ofs
+		astTypeIniGetOfs( ctx.tree ) = baseofs + elm_ofs
 
-        if( hArrayInit( tree, elm, isarray ) = FALSE ) then
+        ctx.sym = elm
+		ctx.dim = NULL
+		ctx.dimcnt = 0
+        if( hArrayInit( ctx ) = FALSE ) then
           	exit function
         end if
 
         lgt += symbGetLen( elm ) * symbGetArrayElements( elm )
-
-        if( isarray ) then
-			'' '}'
-			if( hMatch( CHAR_RBRACE ) = FALSE ) then
-				if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: skip until next '}'
-					hSkipUntil( CHAR_RBRACE, TRUE )
-				end if
-			end if
-		end if
 
 		'' next
 		elm = symbGetUDTNextElm( elm )
 
 	'' ','
 	loop while( hMatch( CHAR_COMMA ) )
+
+	'' restore parent
+	ctx = old_ctx
 
 	'' ')'
 	if( hMatch( CHAR_RPRNT ) = FALSE ) then
@@ -297,12 +306,12 @@ private function hUDTInit _
 	end if
 
 	'' pad
-	pad_lgt = symbGetLen( sym ) - lgt
+	pad_lgt = symbGetLen( ctx.sym ) - lgt
 	if( pad_lgt > 0 ) then
-		astTypeIniAddPad( tree, pad_lgt )
+		astTypeIniAddPad( ctx.tree, pad_lgt )
 	end if
 
-	astTypeIniGetOfs( tree ) = baseofs + symbGetLen( sym )
+	astTypeIniGetOfs( ctx.tree ) = baseofs + symbGetLen( ctx.sym )
 
 	function = TRUE
 
@@ -315,8 +324,7 @@ function cVariableInit _
 		byval isinitializer as integer _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr tree
-    dim as integer isarray
+    dim as FB_INITCTX ctx = any
 
 	function = NULL
 
@@ -334,36 +342,24 @@ function cVariableInit _
 		end if
 	end if
 
-	'' '{'?
-	isarray = hMatch( CHAR_LBRACE )
+	ctx.sym = sym
+	ctx.dim = NULL
+	ctx.dimcnt = 0
+	ctx.tree = astTypeIniBegin( symbGetType( sym ), symbGetSubtype( sym ) )
 
-	tree = astTypeIniBegin( symbGetType( sym ), symbGetSubtype( sym ) )
-
-	if( hArrayInit( tree, sym, isarray ) = FALSE ) then
+	if( hArrayInit( ctx ) = FALSE ) then
 		exit function
 	end if
 
-	astTypeIniEnd( tree, isinitializer )
+	astTypeIniEnd( ctx.tree, isinitializer )
 
-    if( isarray ) then
-		'' '}'
-		if( hMatch( CHAR_RBRACE ) = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDRBRACKET ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip until new '}'
-				hSkipUntil( CHAR_RBRACE, TRUE )
-			end if
-		end if
+	''
+	if( symbIsVar( ctx.sym ) ) then
+		symbSetIsInitialized( ctx.sym )
 	end if
 
 	''
-	if( symbIsVar( sym ) ) then
-		symbSetIsInitialized( sym )
-	end if
-
-	''
-	function = tree
+	function = ctx.tree
 
 end function
 
