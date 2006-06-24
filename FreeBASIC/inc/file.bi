@@ -30,4 +30,6 @@ const fbFileEncodUTF32   = 3
 
 declare function FileAttr alias "fb_FileAttr" ( byval handle as integer, byval returntype as integer = 1 ) as integer
 
+declare function FileLen alias "fb_FileLen" ( filename as string ) as integer
+
 #endif
