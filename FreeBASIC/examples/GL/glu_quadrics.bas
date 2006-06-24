@@ -74,7 +74,7 @@ declare sub drawscene ()
     'Materials (objects)
     dim Mat_Ambient(3) as single = {0.5, 0.5, 0.5, 1.0}
     dim Mat_Specular(3) as single = {1.0, 1.0, 1.0, 1.0}
-    dim Mat_Shininess as single = {50.0}
+    dim Mat_Shininess as single = 50.0
 
     glMaterialfv GL_FRONT, GL_AMBIENT, @Mat_Ambient(0)
     glMaterialfv GL_FRONT, GL_SPECULAR, @Mat_Specular(0)

@@ -12,11 +12,11 @@ end type
 	
 declare sub foo	
 
-	dim shared array(0 to 3) as bar = (TEST_1)
+	dim shared array(0 to 3) as bar = { (TEST_1) }
 	
 	scope		
 		scope 
-			dim array(0 to 3) as bar = (TEST_2)
+			dim array(0 to 3) as bar = { (TEST_2) }
 			scope
 				assert( array(0).a = TEST_2 )
 			end scope
@@ -27,7 +27,7 @@ declare sub foo
 	scope		
 		scope
 			scope
-				dim array(0 to 3) as bar = (TEST_3)
+				dim array(0 to 3) as bar = { (TEST_3) }
 			end scope
 			assert( array(0).a = TEST_1 )
 		end scope
@@ -44,7 +44,7 @@ sub foo
 
 	scope		
 		scope 
-			dim array(0 to 3) as bar = (TEST_2)
+			dim array(0 to 3) as bar = { (TEST_2) }
 			scope
 				assert( array(0).a = TEST_2 )
 			end scope
@@ -55,7 +55,7 @@ sub foo
 	scope		
 		scope
 			scope
-				dim array(0 to 3) as bar = (TEST_3)
+				dim array(0 to 3) as bar = { (TEST_3) }
 			end scope
 			assert( array(0).a = TEST_1 )
 		end scope
