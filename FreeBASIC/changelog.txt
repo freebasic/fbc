@@ -24,6 +24,7 @@ Version 0.17 Beta:
 - PRINT for wstrings was not using wide-chars when padding or printing a new-line (v1c)
 - when PRINTing wstrings to a redirected output in Win32, the wide-string was only partially printed (v1c)
 - namespaces when redefined were not updating the imported (USING) list used in other namespaces (v1c)
+- arrays with more than 2 dimensions couldn't be initialized (v1c)
 
 
 Version 0.16 Beta:
