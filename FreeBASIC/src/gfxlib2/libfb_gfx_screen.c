@@ -193,12 +193,13 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
     case 3:
     case 4:
         memset(&fb_hooks, 0, sizeof(fb_hooks));
-        fb_mode = NULL;
 
-        /* restore old mode or the width and line_len will be wrong */
-        fb_Width( 80, 50 );
-        fb_LocateEx( 1, 1, -1, NULL );
-
+        if (flags != SCREEN_EXIT) {
+            /* set and clear text screen mode or the width and line_len will be wrong */
+            fb_Width( 80, 25 );
+            fb_Cls( 0 );
+        }
+        
         break;
 
     default:

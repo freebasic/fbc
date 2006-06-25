@@ -145,9 +145,12 @@ static char *find_next ( int *attrib )
 		strncat( buffer, name, MAX_PATH );
 		buffer[MAX_PATH-1] = '\0';
 		
+		if( stat( buffer, &info ) )
+			continue;
+		
 		*attrib = get_attrib( name, &info );
 	}
-	while( ( stat( buffer, &info ) ) || ( *attrib & ~ctx->attrib ) || ( !match_spec( name ) ) );
+	while( ( *attrib & ~ctx->attrib ) || ( !match_spec( name ) ) );
 
 	return name;
 }
