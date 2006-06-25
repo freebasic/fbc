@@ -10,6 +10,7 @@ Version 0.17 Beta:
 [added]
 - TYPE's, UNION's, ENUM's and typedefs can now be declared inside functions and scope blocks (v1c)
 - FileCopy, FileAttr, and FileLen VB-compatability functions [DrV]
+- the __FB_DEBUG__ define, that is set to TRUE (-1) if in debug mode (if the -g option was used), FALSE (0) otherwise (v1c)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)

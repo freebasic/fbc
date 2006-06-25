@@ -54,6 +54,7 @@ declare function 	hDefOutExe_cb 		( ) as string
 declare function 	hDefOutLib_cb 		( ) as string
 declare function 	hDefOutDll_cb 		( ) as string
 declare function 	hDefOutObj_cb 		( ) as string
+declare function 	hDefDebug_cb 		( ) as string
 
 '' predefined #defines: name, value, flags, proc (for description flags, see FBS_DEFINE)
 const SYMB_MAXDEFINES = 24
@@ -80,6 +81,7 @@ const SYMB_MAXDEFINES = 24
 		(@"__FB_OUT_LIB__",			NULL,		   	   1, @hDefOutLib_cb 	 ), _
 		(@"__FB_OUT_DLL__",			NULL,		   	   1, @hDefOutDll_cb 	 ), _
 		(@"__FB_OUT_OBJ__",			NULL,		   	   1, @hDefOutObj_cb 	 ), _
+		(@"__FB_DEBUG__",			NULL,		   	   1, @hDefDebug_cb 	 ), _
 		(NULL) _
 	}
 
@@ -185,6 +187,13 @@ end function
 private function hDefOutObj_cb ( ) as string
 
 	function = str( env.clopt.outtype = FB_OUTTYPE_OBJECT )
+
+end function
+
+'':::::
+private function hDefDebug_cb ( ) as string
+
+	function = str( env.clopt.debug )
 
 end function
 
