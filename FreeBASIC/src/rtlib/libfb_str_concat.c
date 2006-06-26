@@ -42,7 +42,14 @@
 #include "fb.h"
 
 /*:::::*/
-static void fb_hStrConcat( char *dst, const char *str1, int len1, const char *str2, int len2 )
+static __inline__ void fb_hStrConcat
+	(
+		char *dst,
+		const char *str1,
+		int len1,
+		const char *str2,
+		int len2
+	)
 {
     dst = FB_MEMCPYX( dst, str1, len1 );
     dst = FB_MEMCPYX( dst, str2, len2 );
@@ -50,10 +57,17 @@ static void fb_hStrConcat( char *dst, const char *str1, int len1, const char *st
 }
 
 /*:::::*/
-FBCALL FBSTRING *fb_StrConcat ( FBSTRING *dst, void *str1, int str1_size, void *str2, int str2_size )
+FBCALL FBSTRING *fb_StrConcat
+	(
+		FBSTRING *dst,
+		void *str1,
+		int str1_size,
+		void *str2,
+		int str2_size
+	)
 {
-	char 	*str1_ptr, *str2_ptr;
-	int 	str1_len, str2_len;
+	const char *str1_ptr, *str2_ptr;
+	int str1_len, str2_len;
 
 	FB_STRLOCK();
 

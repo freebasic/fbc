@@ -42,11 +42,17 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL int fb_StrCompare ( void *str1, int str1_size, void *str2, int str2_size )
+FBCALL int fb_StrCompare
+	(
+		void *str1,
+		int str1_size,
+		void *str2,
+		int str2_size
+	)
 {
-	char 	*str1_ptr, *str2_ptr;
-	int 	str1_len, str2_len;
-	int		res;
+	const char *str1_ptr, *str2_ptr;
+	int	str1_len, str2_len;
+	int	res;
 
 	/* both not null? */
 	if( (str1 != NULL) && (str2 != NULL) )
@@ -57,21 +63,25 @@ FBCALL int fb_StrCompare ( void *str1, int str1_size, void *str2, int str2_size 
         res = FB_MEMCMP( str1_ptr,
                          str2_ptr,
                          ((str1_len < str2_len) ? str1_len : str2_len) );
-        if( res==0 && str1_len!=str2_len )
+
+        if( (res == 0) && (str1_len != str2_len) )
             res = (( str1_len > str2_len ) ? 1 : -1 );
 	}
 	/* left null? */
 	else if( str1 == NULL )
 	{
-		/* right also null? return = */
+		/* right also null? return eq */
 		if( str2 == NULL )
 			res = 0;
 		else
 		{
-			/* right is a var-len? the desc ptr can be null, return = */
-			if( (str2_size == -1) && (((FBSTRING *)str2)->data == NULL) )
+			FB_STRSETUP_FIX( str2, str2_size, str2_ptr, str2_len );
+
+			/* is right empty? return eq */
+			if( str2_len == 0 )
 				res = 0;
-			/* return < */
+
+			/* else, return lt */
 			else
 				res = -1;
 		}
@@ -79,10 +89,12 @@ FBCALL int fb_StrCompare ( void *str1, int str1_size, void *str2, int str2_size 
 	/* only right is null */
 	else
 	{
-		/* left is a var-len? the desc ptr can be null, return = */
-		if( (str1_size == -1) && (((FBSTRING *)str1)->data == NULL) )
+		FB_STRSETUP_FIX( str1, str1_size, str1_ptr, str1_len );
+
+		/* is left empty? return eq */
+		if( str1_len == 0 )
 			res = 0;
-		/* return > */
+		/* else, return gt */
 		else
 			res = 1;
 	}

@@ -42,11 +42,18 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL void *fb_StrAssign ( void *dst, int dst_size, void *src, int src_size, int fillrem )
+FBCALL void *fb_StrAssign
+	(
+		void *dst,
+		int dst_size,
+		void *src,
+		int src_size,
+		int fillrem
+	)
 {
-	FBSTRING 	*dstr;
-	char 		*src_ptr;
-	int 		src_len, dst_len;
+	FBSTRING *dstr;
+	const char *src_ptr;
+	int src_len, dst_len;
 
 	FB_STRLOCK();
 
@@ -80,12 +87,12 @@ FBCALL void *fb_StrAssign ( void *dst, int dst_size, void *src, int src_size, in
 			{
 				fb_StrDelete_NoLock( dstr );
 
-				dstr->data = src_ptr;
-				dstr->len  = src_len;
+				dstr->data = (char *)src_ptr;
+				dstr->len = src_len;
 				dstr->size = ((FBSTRING *)src)->size;
 
 				((FBSTRING *)src)->data = NULL;
-				((FBSTRING *)src)->len  = 0;
+				((FBSTRING *)src)->len = 0;
 				((FBSTRING *)src)->size = 0;
 
 				fb_hStrDelTempDesc( (FBSTRING *)src );

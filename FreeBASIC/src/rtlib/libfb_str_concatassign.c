@@ -42,11 +42,18 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL void *fb_StrConcatAssign ( void *dst, int dst_size, void *src, int src_size, int fillrem )
+FBCALL void *fb_StrConcatAssign
+	(
+		void *dst,
+		int dst_size,
+		void *src,
+		int src_size,
+		int fillrem
+	)
 {
-	FBSTRING 	*dstr;
-	char 		*src_ptr;
-	int 		src_len, dst_len;
+	FBSTRING *dstr;
+	const char *src_ptr;
+	int src_len, dst_len;
 
 	FB_STRLOCK();
 

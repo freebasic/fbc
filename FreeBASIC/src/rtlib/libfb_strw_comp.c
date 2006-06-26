@@ -40,7 +40,11 @@
 #include "fb.h"
 
 /*:::::*/
-FBCALL int fb_WstrCompare ( const FB_WCHAR *str1, const FB_WCHAR *str2 )
+FBCALL int fb_WstrCompare
+	(
+		const FB_WCHAR *str1,
+		const FB_WCHAR *str2
+	)
 {
 	int res, str1_len, str2_len;
 
@@ -55,26 +59,26 @@ FBCALL int fb_WstrCompare ( const FB_WCHAR *str1, const FB_WCHAR *str2 )
         	res = (( str1_len > str2_len ) ? 1 : -1 );
 
         return res;
+	}
 
-	}
 	/* left null? */
-	else if( str1 == NULL )
+	if( str1 == NULL )
 	{
-		/* right also null? return == */
-		if( str2 == NULL )
+		/* right also null? return eq */
+		if( (str2 == NULL) || (fb_wstr_Len( str2 ) == 0) )
 			return 0;
-		else
-		{
-			/* return < */
-			return -1;
-		}
+
+		/* return lt */
+		return -1;
 	}
-    /* only right is null */
-    else
-    {
-		/* return > */
-		return 1;
-	}
+
+    /* only right is null. is left empty? return eq */
+    if( fb_wstr_Len( str1 ) == 0 )
+    	return 0;
+
+	/* return gt */
+	return 1;
+
 }
 
 
