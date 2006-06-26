@@ -33,6 +33,8 @@
 #ifndef __FB_PRINTER_H__
 #define __FB_PRINTER_H__
 
+#include "fb_file.h"
+
 typedef struct _DEV_LPT_PROTOCOL 
 {
 	char * proto;
@@ -43,12 +45,28 @@ typedef struct _DEV_LPT_PROTOCOL
 	char raw[];
 } DEV_LPT_PROTOCOL;
 
-int fb_DevLptParseProtocol( const char * proto_raw, size_t proto_raw_len, DEV_LPT_PROTOCOL ** lptinfo_in );
-int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len );
+typedef struct _DEV_LPT_INFO {
+    char  *pszDevice;
+    void  *hPrinter;
+    int    iPort;
+    size_t uiRefCount;
+} DEV_LPT_INFO;
 
+int fb_DevLptParseProtocol( 
+	DEV_LPT_PROTOCOL ** lpt_proto_out, 
+	const char * proto_raw, 
+	size_t proto_raw_len,  
+	int substprn
+	);
+
+       int          fb_DevLptOpen( FB_FILE *handle, const char *filename, size_t filename_len );
+       int          fb_DevLptWrite( struct _FB_FILE *handle, const void* value, size_t valuelen );
+       int          fb_DevLptWriteWstr( struct _FB_FILE *handle, const FB_WCHAR* value, size_t valuelen );
+       int          fb_DevLptClose( struct _FB_FILE *handle );
        int          fb_DevPrinterSetWidth ( const char *pszDevice, int width,
        										int default_width );
        int          fb_DevPrinterGetOffset( const char *pszDevice );
+
        int          fb_PrinterOpen      ( int iPort, const char *pszDevice,
        									  void **ppvHandle );
        int          fb_PrinterWrite     ( void *pvHandle, const void *data, size_t length );

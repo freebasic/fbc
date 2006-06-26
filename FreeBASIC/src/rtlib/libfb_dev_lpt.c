@@ -34,8 +34,8 @@
  *	dev_lpt - LPTx device
  *
  * chng: jul/2005 written [mjs]
- * chng: jun/2006 allowing "LPT:" as protocol for default printer [jeffmarshall]
- *
+ *       jun/2006 factored common code [jeffmarshall]
+ *								removed dependencies on hardcoded "LPT" and "PRN"
  */
 
 #include <stdio.h>
@@ -44,71 +44,54 @@
 #include <malloc.h>
 #include "fb.h"
 #include "fb_rterr.h"
-#include "fb_printer.h"
 
-typedef struct _DEV_LPT_INFO {
-    char  *pszDevice;
-    void  *hPrinter;
-    int    iPort;
-    size_t uiRefCount;
-} DEV_LPT_INFO;
-
-/*:::::*/
-static int fb_DevLptClose( struct _FB_FILE *handle )
+static 
+FB_FILE * fb_DevLptFindDeviceByName( int iPort, char * filename, int no_redir )
 {
-    int res;
-    DEV_LPT_INFO *pInfo;
-
-    FB_IO_EXIT_LOCK();
-
-    pInfo = (DEV_LPT_INFO*) handle->opaque;
-    if( pInfo->uiRefCount==1 ) {
-        res = fb_PrinterClose(pInfo->hPrinter);
-        if( res==FB_RTERROR_OK ) {
-            free(pInfo->pszDevice);
-            free(pInfo);
-        }
-    } else {
-        --pInfo->uiRefCount;
-        res = fb_ErrorSetNum( FB_RTERROR_OK );
-    }
-
-    FB_IO_EXIT_UNLOCK();
-
-	return res;
+  size_t i;
+	/* Test if the printer is already open. */
+	for( i=0;
+			 i!=FB_MAX_FILES;
+			 ++i )
+	{
+		FB_FILE *handle = fb_fileTB + i;
+		if( handle->type == FB_FILE_TYPE_PRINTER )
+		{
+			if( no_redir==FALSE || handle->redirection_to==NULL )
+			{
+				DEV_LPT_INFO *pInfo = (DEV_LPT_INFO*) handle->opaque;
+				if( pInfo )
+				{
+					if( iPort == 0 || iPort == pInfo->iPort )
+					{
+						if( strcmp(pInfo->pszDevice, filename)==0 ) {
+								/* bugcheck */
+								DBG_ASSERT( handle!=FB_HANDLE_PRINTER
+												&& handle!=FB_HANDLE_PRINTER );
+								return handle;
+						}
+					}
+				}
+			}
+		}
+	}
+	return( NULL );
 }
 
-/*:::::*/
-static int fb_DevLptWrite( struct _FB_FILE *handle, const void* value, size_t valuelen )
+static
+char * fb_DevLptMakeDeviceName( DEV_LPT_PROTOCOL *lpt_proto )
 {
-    int res;
-    DEV_LPT_INFO *pInfo;
-
-    FB_LOCK();
-
-    pInfo = (DEV_LPT_INFO*) handle->opaque;
-    res = fb_PrinterWrite(pInfo->hPrinter, value, valuelen );
-
-    FB_UNLOCK();
-
-	return res;
+	if( lpt_proto )
+	{
+		char * p = calloc( strlen(lpt_proto->proto) + strlen(lpt_proto->name) + 3, 1 );
+		strcpy( p, lpt_proto->proto );
+		strcat( p, ":" );
+		strcat( p, lpt_proto->name );
+		return( p );
+	}
+	return( NULL );
 }
 
-/*:::::*/
-static int fb_DevLptWriteWstr( struct _FB_FILE *handle, const FB_WCHAR* value, size_t valuelen )
-{
-    int res;
-    DEV_LPT_INFO *pInfo;
-
-    FB_LOCK();
-
-    pInfo = (DEV_LPT_INFO*) handle->opaque;
-    res = fb_PrinterWriteWstr(pInfo->hPrinter, value, valuelen );
-
-    FB_UNLOCK();
-
-	return res;
-}
 
 static FB_FILE_HOOKS fb_hooks_dev_lpt = {
     NULL,
@@ -126,21 +109,18 @@ static FB_FILE_HOOKS fb_hooks_dev_lpt = {
 };
 
 /*:::::*/
-int fb_DevLptOpen( struct _FB_FILE *handle, const char *filename, size_t filename_len )
+int fb_DevLptOpen( FB_FILE *handle, const char *filename, size_t filename_len )
 {
     FB_FILE *redir_handle = NULL;
-		DEV_LPT_PROTOCOL *lptinfo;
+		FB_FILE *tmp_handle = NULL;
+		DEV_LPT_PROTOCOL *lpt_proto;
     DEV_LPT_INFO *info;
-    size_t i;
     int res;
 
-    //if (!fb_DevLptTestProtocol( handle, filename, filename_len ))
-    //    return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-
-    if (!fb_DevLptParseProtocol( filename, filename_len, &lptinfo ))
+    if (!fb_DevLptParseProtocol( &lpt_proto, filename, filename_len , TRUE) )
 		{
-			if( lptinfo )
-				free( lptinfo );
+			if( lpt_proto )
+				free( lpt_proto );
 			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 		}
 
@@ -149,41 +129,20 @@ int fb_DevLptOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
     /* Determine the port number and a normalized device name */
     info = (DEV_LPT_INFO*) calloc(1, sizeof(DEV_LPT_INFO));
     info->uiRefCount = 1;
-
-    if( strcasecmp(filename, "PRN:")==0 ) {
-      info->iPort = 1;
-      info->pszDevice = strdup("LPT1:");
-
-    } else {
-			info->iPort = lptinfo->iPort;
-			info->pszDevice = strdup( filename );
-		
-    }
+		info->iPort = lpt_proto->iPort;
+		info->pszDevice = fb_DevLptMakeDeviceName( lpt_proto );
 
     /* Test if the printer is already open. */
-    for( i=0;
-         i!=FB_MAX_FILES;
-         ++i )
-    {
-        FB_FILE *tmp_handle = fb_fileTB + i;
-        if( tmp_handle->hooks==&fb_hooks_dev_lpt ) {
-            DEV_LPT_INFO *tmp_info = (DEV_LPT_INFO*) tmp_handle->opaque;
-            if( strcmp(tmp_info->pszDevice, info->pszDevice)==0 ) {
-                free(info);
-                /* bugcheck */
-                DBG_ASSERT( tmp_handle!=FB_HANDLE_PRINTER
-                        && handle!=FB_HANDLE_PRINTER );
-                redir_handle = tmp_handle;
-                info = tmp_info;
-                ++info->uiRefCount;
-                break;
-            }
-        }
-    }
+		if( tmp_handle = fb_DevLptFindDeviceByName( info->iPort, info->pszDevice, FALSE ) )
+		{
+      redir_handle = tmp_handle;
+      info = (DEV_LPT_INFO*) tmp_handle->opaque;
+      ++info->uiRefCount;
+		}
 
     /* Open the printer if not opened already */
     if( info->hPrinter == NULL ) {
-        res = fb_PrinterOpen( info->iPort, info->pszDevice, &info->hPrinter );
+        res = fb_PrinterOpen( info->iPort, filename, &info->hPrinter );
     } else {
         res = fb_ErrorSetNum( FB_RTERROR_OK );
         if( FB_HANDLE_USED(redir_handle) ) {
@@ -203,11 +162,15 @@ int fb_DevLptOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
     if( res == FB_RTERROR_OK ) {
         handle->hooks = &fb_hooks_dev_lpt;
         handle->opaque = info;
+				handle->type = FB_FILE_TYPE_PRINTER;
     } else {
         if( info->pszDevice )
             free( info->pszDevice );
         free( info );
     }
+
+		if( lpt_proto )
+			free( lpt_proto );
 
     FB_UNLOCK();
 
@@ -216,74 +179,60 @@ int fb_DevLptOpen( struct _FB_FILE *handle, const char *filename, size_t filenam
 
 int fb_DevPrinterSetWidth( const char *pszDevice, int width, int default_width )
 {
+		FB_FILE *tmp_handle = NULL;
     int cur = ((default_width==-1) ? 80 : default_width);
-    size_t i;
     char *pszDev;
+		DEV_LPT_PROTOCOL *lpt_proto;
 
-    if( !fb_DevLptTestProtocol( NULL, pszDevice, strlen(pszDevice) ) )
-        return 0;
+    if (!fb_DevLptParseProtocol( &lpt_proto, pszDevice, strlen(pszDevice), TRUE) )
+		{
+			if( lpt_proto )
+				free( lpt_proto );
+			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+		}
 
-    if( strcasecmp( pszDevice, "PRN:" ) == 0 ) {
-        pszDev = strdup("LPT1:");
-    } else {
-        pszDev = strdup(pszDevice);
-        memcpy(pszDev, "LPT", 3);
-    }
+		pszDev = fb_DevLptMakeDeviceName( lpt_proto );
+
     /* Test all printers. */
-    for( i=0;
-         i!=FB_MAX_FILES;
-         ++i )
-    {
-        FB_FILE *tmp_handle = fb_fileTB + i;
-        if( tmp_handle->hooks==&fb_hooks_dev_lpt
-            && tmp_handle->redirection_to==NULL )
-        {
-            DEV_LPT_INFO *tmp_info = (DEV_LPT_INFO*) tmp_handle->opaque;
-            if( strcmp(tmp_info->pszDevice, pszDev)==0 ) {
-                if( width!=-1 )
-                    tmp_handle->width = width;
-                cur = tmp_handle->width;
-                break;
-            }
-        }
-    }
+		if( tmp_handle = fb_DevLptFindDeviceByName( lpt_proto->iPort, pszDev, TRUE ) )
+		{
+      if( width!=-1 )
+          tmp_handle->width = width;
+      cur = tmp_handle->width;
+		}
 
+		if( lpt_proto )
+			free( lpt_proto );
     free(pszDev);
+
     return cur;
 }
 
 int fb_DevPrinterGetOffset( const char *pszDevice )
 {
+		FB_FILE *tmp_handle = NULL;
     int cur = 0;
-    size_t i;
     char *pszDev;
+		DEV_LPT_PROTOCOL *lpt_proto;
 
-    if( !fb_DevLptTestProtocol( NULL, pszDevice, strlen(pszDevice) ) )
-        return 0;
+    if (!fb_DevLptParseProtocol( &lpt_proto, pszDevice, strlen(pszDevice), TRUE) )
+		{
+			if( lpt_proto )
+				free( lpt_proto );
+			return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+		}
 
-    if( strcasecmp( pszDevice, "PRN:" ) == 0 ) {
-        pszDev = strdup("LPT1:");
-    } else {
-        pszDev = strdup(pszDevice);
-        memcpy(pszDev, "LPT", 3);
-    }
+		pszDev = fb_DevLptMakeDeviceName( lpt_proto );
+
     /* Test all printers. */
-    for( i=0;
-         i!=FB_MAX_FILES;
-         ++i )
-    {
-        FB_FILE *tmp_handle = fb_fileTB + i;
-        if( tmp_handle->hooks==&fb_hooks_dev_lpt
-            && tmp_handle->redirection_to==NULL )
-        {
-            DEV_LPT_INFO *tmp_info = (DEV_LPT_INFO*) tmp_handle->opaque;
-            if( strcmp(tmp_info->pszDevice, pszDev)==0 ) {
-                cur = tmp_handle->line_length;
-                break;
-            }
-        }
-    }
+		if( tmp_handle = fb_DevLptFindDeviceByName( lpt_proto->iPort, pszDev, TRUE ) )
+      cur = tmp_handle->line_length;
 
+		if( lpt_proto )
+			free( lpt_proto );
     free(pszDev);
+
     return cur;
+
 }
+

@@ -44,44 +44,61 @@
 #include <malloc.h>
 #include "fb.h"
 #include "fb_rterr.h"
-#include "fb_printer.h"
+
+/** Tests for the right file name for LPT access.
+ *
+ * Allowed file names are:
+ *
+ * - PRN:
+ * - LPT:
+ * - LPTx: with x>=1
+ * - LPT:printer_name,EMU=?,TITLE=?,OPT=?, ...
+ */
 
 /*:::::*/
-int fb_DevLptParseProtocol( const char * proto_raw, size_t proto_raw_len, DEV_LPT_PROTOCOL ** lptinfo_in )
+int fb_DevLptParseProtocol( 
+	DEV_LPT_PROTOCOL ** lpt_proto_out, 
+	const char * proto_raw, 
+	size_t proto_raw_len,  
+	int subst_prn
+	)
 {
 	char *p, *ptail, *pc, *pe;
-	DEV_LPT_PROTOCOL *lptinfo;
+	DEV_LPT_PROTOCOL *lpt_proto;
 
 	if( proto_raw == NULL )
 		return FALSE;
 
-	if( lptinfo_in == NULL )
+	if( lpt_proto_out == NULL )
 		return FALSE;
 
-	*lptinfo_in = malloc( sizeof( DEV_LPT_PROTOCOL ) + proto_raw_len + 1 );
-	lptinfo = *lptinfo_in;
+	*lpt_proto_out = calloc( sizeof( DEV_LPT_PROTOCOL ) + proto_raw_len + 2, 1 );
+	lpt_proto = *lpt_proto_out;
 
-	if( lptinfo == NULL )
+	if( lpt_proto == NULL )
 		return FALSE;
 
-	strncpy( lptinfo->raw, proto_raw, proto_raw_len );
-	lptinfo->raw[proto_raw_len] = '\0';
+	strncpy( lpt_proto->raw, proto_raw, proto_raw_len );
+	lpt_proto->raw[proto_raw_len] = '\0';
 
-	p = lptinfo->raw;
-	ptail = p + strlen( lptinfo->raw );
+	p = lpt_proto->raw;
+	ptail = p + strlen( lpt_proto->raw );
 
-	lptinfo->iPort = 0;
-	lptinfo->proto =
-	  lptinfo->name = 
-	    lptinfo->title =
-	      lptinfo->emu = ptail;
+	lpt_proto->iPort = 0;
+	lpt_proto->proto =
+	  lpt_proto->name = 
+	    lpt_proto->title =
+	      lpt_proto->emu = ptail;
 
 	/* "PRN:" */
 
 	if( stricmp( p, "PRN:" ) == 0)
 	{
-		lptinfo->proto = p;
-		lptinfo->iPort = 1;
+		if( subst_prn )
+			strcpy( p, "LPT1:" );
+
+		lpt_proto->proto = p;
+		lpt_proto->iPort = 1;
 		return TRUE;
 	}
 
@@ -94,7 +111,7 @@ int fb_DevLptParseProtocol( const char * proto_raw, size_t proto_raw_len, DEV_LP
 	if( !pc )
 		return FALSE;
 
-	lptinfo->proto = p;
+	lpt_proto->proto = p;
 	p = pc + 1;
 	*pc-- = '\0';
 
@@ -102,7 +119,7 @@ int fb_DevLptParseProtocol( const char * proto_raw, size_t proto_raw_len, DEV_LP
 	while( ( *pc >= '0' ) && ( *pc <= '9' ))
 		pc--;
 	pc++;
-	lptinfo->iPort = atoi( pc );
+	lpt_proto->iPort = atoi( pc );
 
 	/* Name, TITLE=?, EMU=? */
 
@@ -123,7 +140,7 @@ int fb_DevLptParseProtocol( const char * proto_raw, size_t proto_raw_len, DEV_LP
 
 			if( !pe )
 			{
-				lptinfo->name = p;
+				lpt_proto->name = p;
 			}
 			else
 			{
@@ -137,11 +154,11 @@ int fb_DevLptParseProtocol( const char * proto_raw, size_t proto_raw_len, DEV_LP
 
 				if( stricmp( p, "EMU" ) == 0)
 				{
-					lptinfo->emu = pe;
+					lpt_proto->emu = pe;
 				}
 				else if( stricmp( p, "TITLE" ) == 0)
 				{
-					lptinfo->title = pe;
+					lpt_proto->title = pe;
 				}
 				/* just ignore options we don't understand to allow forward compatibility */
 			}
@@ -166,23 +183,14 @@ int fb_DevLptParseProtocol( const char * proto_raw, size_t proto_raw_len, DEV_LP
 	return TRUE;
 }
 
-/** Tests for the right file name for LPT access.
- *
- * Allowed file names are:
- *
- * - PRN:
- * - LPT:
- * - LPTx: with x>=1
- * - LPT:printer_name,EMU=?,TITLE=?,OPT=?, ...
- */
 /*:::::*/
 int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len )
 {
 
-	DEV_LPT_PROTOCOL *lptinfo;
-	int ret = fb_DevLptParseProtocol( filename, filename_len, &lptinfo);
-	if( lptinfo )
-		free( lptinfo );
+	DEV_LPT_PROTOCOL *lpt_proto;
+	int ret = fb_DevLptParseProtocol( &lpt_proto, filename, filename_len, FALSE );
+	if( lpt_proto )
+		free( lpt_proto );
 	return ret;
 
 }
