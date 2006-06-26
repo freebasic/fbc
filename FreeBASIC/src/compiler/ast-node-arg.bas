@@ -173,7 +173,7 @@ private function hCheckStringArg _
 			'' wstring? convert and let rtl to free the temp
 			'' var-len result..
 			case FB_DATATYPE_WCHAR
-				return rtlToStr( p )
+				return hAllocTmpString( proc, p, FALSE )
 
 			'' anything else, just alloc a temp descriptor (assuming
 			'' here that no rtlib function will EVER change the
