@@ -29,6 +29,8 @@ Version 0.17 Beta:
 - arrays with more than 2 dimensions couldn't be initialized (v1c)
 - DIR() under Linux was not working correctly (lillo)
 - Exiting from a gfx program now does not cause console clearing anymore under Linux (lillo)
+- literal wide-string arguments passed to byref var-len string parameters were not creating a temporary string descriptor (v1c)
+- comparing a NULL string pointer to an empty string was not returning equal (v1c)
 
 
 Version 0.16 Beta:
