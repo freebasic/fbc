@@ -59,8 +59,8 @@ int fb_hSetTime( int h, int m, int s )
 
    	/* send WM_TIMECHANGE to all top-level windows on NT and 95/98/Me
    	* (_not_ on 2K/XP etc.) */
-   	if ((GetVersion() & 0xFF) == 4)
-		SendMessage(HWND_BROADCAST, WM_TIMECHANGE, 0, 0);
+   	/*if ((GetVersion() & 0xFF) == 4)
+		SendMessage(HWND_BROADCAST, WM_TIMECHANGE, 0, 0);*/
 
 	return 0;
 }
