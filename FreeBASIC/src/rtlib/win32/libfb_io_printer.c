@@ -433,55 +433,40 @@ int fb_PrinterOpen( int iPort, const char *pszDeviceRaw, void **ppvHandle )
 		char *printer_name = NULL;
 		char *doc_title = NULL;
 
-    //size_t uiDeviceNameLengthRaw = strlen( pszDeviceRaw );
-    //size_t uiDeviceNameLength = ((uiDeviceNameLengthRaw < 20) ? 20 : uiDeviceNameLengthRaw);
-    //char *printer_name = NULL;
-    //char *pszTempBuffer = alloca( (uiDeviceNameLength+1) * 3 + 2 );
-    //char *pszEmulation = pszTempBuffer + uiDeviceNameLength + 2;
-    //char *pszDocName = pszTempBuffer + (uiDeviceNameLength+1) * 2 + 1;
-    //const char *pszDevice = NULL;
-    //*pszEmulation = 0;
-/*
-	char * proto;
-	int iPort;
-	char * name;
-	char * title;
-	char * emu;
-*/
-		DEV_LPT_PROTOCOL *lptinfo;
-		if ( !fb_DevLptParseProtocol( pszDeviceRaw, strlen(pszDeviceRaw), &lptinfo ) )
+		DEV_LPT_PROTOCOL *lpt_proto;
+		if ( !fb_DevLptParseProtocol( &lpt_proto, pszDeviceRaw, strlen(pszDeviceRaw), TRUE ) )
 		{
-			if( lptinfo!=NULL )
-				free(lptinfo);
+			if( lpt_proto!=NULL )
+				free(lpt_proto);
       return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 		}
 
     /* Allow only valid emulation modes */
-    if( *lptinfo->emu!=0 ) {
+    if( *lpt_proto->emu!=0 ) {
         size_t i;
         for( i=0;
              i!=sizeof(aEmulationModes)/sizeof(aEmulationModes[0]);
              ++i )
         {
             const DEV_PRINTER_EMU_MODE *pEmu = aEmulationModes + i;
-            if( strcasecmp( lptinfo->emu, pEmu->pszId )==0 ) {
+            if( strcasecmp( lpt_proto->emu, pEmu->pszId )==0 ) {
                 pFoundEmu = pEmu;
                 break;
             }
         }
         if( !pFoundEmu )
 				{
-					if( lptinfo!=NULL )
-						free(lptinfo);
+					if( lpt_proto!=NULL )
+						free(lpt_proto);
           return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 				}
     }
 
     if( iPort==0 ) {
       /* LPT:[PrinterName] */
-			if( *lptinfo->name )
+			if( *lpt_proto->name )
 			{
-        printer_name = strdup( lptinfo->name );
+        printer_name = strdup( lpt_proto->name );
 			} else {
 				printer_name = GetDefaultPrinterName();
 			}
@@ -495,7 +480,7 @@ int fb_PrinterOpen( int iPort, const char *pszDeviceRaw, void **ppvHandle )
         fb_hPrinterBuildList( &dev_printer_devs );
 
         /* Find printer attached to specified device */
-        node = fb_hListDevFindDevice( &dev_printer_devs, lptinfo->proto );
+        node = fb_hListDevFindDevice( &dev_printer_devs, lpt_proto->proto );
         if( node!=NULL ) {
             printer_name = strdup( node->printer_name );
         }
@@ -506,7 +491,7 @@ int fb_PrinterOpen( int iPort, const char *pszDeviceRaw, void **ppvHandle )
     if( printer_name == NULL ) {
         result = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
     } else {
-        if( *lptinfo->emu!= '\0' ) {
+        if( *lpt_proto->emu!= '\0' ) {
             /* When EMULATION is used, we have to use the DC instead of
              * the PRINTER directly */
             hDc = CreateDCA( "WINSPOOL",
@@ -523,14 +508,14 @@ int fb_PrinterOpen( int iPort, const char *pszDeviceRaw, void **ppvHandle )
         }
     }
 
-    if( lptinfo->title && *lptinfo->title ) {
-			doc_title = strdup( lptinfo->title );
+    if( lpt_proto->title && *lpt_proto->title ) {
+			doc_title = strdup( lpt_proto->title );
 		} else {
       doc_title = strdup( "FreeBASIC document" );
 		}
 
     if( result==FB_RTERROR_OK ) {
-        if( *lptinfo->emu!= '\0' ) {
+        if( *lpt_proto->emu!= '\0' ) {
             int iJob;
             DOCINFO docInfo;
             memset( &docInfo, 0, sizeof(DOCINFO) );
@@ -606,7 +591,7 @@ int fb_PrinterOpen( int iPort, const char *pszDeviceRaw, void **ppvHandle )
 
     if( result!=FB_RTERROR_OK ) {
         if( dwJob!=0 ) {
-            if( *lptinfo->emu != '\0' ) {
+            if( *lpt_proto->emu != '\0' ) {
                 EndDoc( hDc );
             } else {
                 EndDocPrinter( hPrinter );
@@ -624,8 +609,8 @@ int fb_PrinterOpen( int iPort, const char *pszDeviceRaw, void **ppvHandle )
         free( printer_name );
     if( doc_title!=NULL )
         free( doc_title );
-		if( lptinfo!=NULL )
-			free(lptinfo);
+		if( lpt_proto!=NULL )
+			free(lpt_proto);
 
     return result;
 }
