@@ -200,7 +200,9 @@ data @"dir","fb_DirNext", _
 	 1, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,NULL
 
-'' dir overload ( mask as string, byval attrib_mask as integer = &h21, byval out_attrib as integer ptr = NULL ) as string
+'' dir overload ( byref mask as string, _
+''				  byval attrib_mask as integer = &h21, _
+''				  byval out_attrib as integer ptr = NULL ) as string
 data @"dir","fb_Dir", _
 	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, TRUE, _
