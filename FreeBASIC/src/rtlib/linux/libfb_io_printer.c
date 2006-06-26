@@ -50,18 +50,30 @@ int fb_PrinterOpen( int iPort, const char *pszDevice, void **ppvHandle )
     char filename[64];
     FILE *fp;
 
+		DEV_LPT_PROTOCOL *lpt_proto;
+		if ( !fb_DevLptParseProtocol( &lpt_proto, pszDeviceRaw, strlen(pszDeviceRaw), TRUE ) )
+		{
+			if( lpt_proto!=NULL )
+				free(lpt_proto);
+      return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+		}
+
     if( iPort==0 ) {
-        result = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+			// Temporary work-around until cups
+			iPort = 1;
+		}
+
+    sprintf(filename, "/dev/lp%d", (iPort-1));
+    fp = fopen(filename, "wb");
+    if( fp==NULL ) {
+        result = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
     } else {
-        sprintf(filename, "/dev/lp%d", (iPort-1));
-        fp = fopen(filename, "wb");
-        if( fp==NULL ) {
-            result = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
-        } else {
-            *ppvHandle = fp;
-            result = fb_ErrorSetNum( FB_RTERROR_OK );
-        }
+        *ppvHandle = fp;
+        result = fb_ErrorSetNum( FB_RTERROR_OK );
     }
+
+		if( lpt_proto!=NULL )
+			free(lpt_proto);
 
     return result;
 }

@@ -34,6 +34,7 @@
  * io_printer.c -- printer access for Windows
  *
  * chng: jul/2005 written [mjs]
+ * chng: 
  *
  */
 
@@ -49,19 +50,21 @@ int fb_PrinterOpen( int iPort, const char *pszDevice, void **ppvHandle )
     int result;
     char filename[64];
     FILE *fp;
-
+		
     if( iPort==0 ) {
-        result = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-    } else {
-        sprintf(filename, "LPT%d", iPort);
-        fp = fopen(filename, "wb");
-        if( fp==NULL ) {
-            result = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
-        } else {
-            *ppvHandle = fp;
-            result = fb_ErrorSetNum( FB_RTERROR_OK );
-        }
-    }
+				// "LPT:" selects default "LPT1:"
+				iPort = 1;
+				// result = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+		}
+
+		sprintf(filename, "LPT%d", iPort);
+		fp = fopen(filename, "wb");
+		if( fp==NULL ) {
+				result = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
+		} else {
+				*ppvHandle = fp;
+				result = fb_ErrorSetNum( FB_RTERROR_OK );
+		}
 
     return result;
 }
