@@ -229,6 +229,9 @@ function cAsmBlock as integer
 
 			lexSkipToken( )
 
+		case FB_TK_EOF
+			exit do
+
 		case FB_TK_END
 			exit do
 

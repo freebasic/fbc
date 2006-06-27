@@ -13,6 +13,8 @@
       - refs and ptrs to constants can't be added unless _POINTER is added
         as a new symbol like with BITFIELD? that will need *a lot* of changes..
 
+[ ] ON ERROR GOTO inside functions is accepting mod-level labels
+
 [ ] disallow:
 	dim foo as foo
 	.. and later ..
