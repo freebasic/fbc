@@ -921,9 +921,9 @@ private function hVarDecl _
             					errReport( FB_ERRMSG_INVALIDDATATYPES )
             				end if
 
-						case else
-							symbSetDontInit( sym )
 						end select
+
+						symbSetDontInit( sym )
 
 						lexSkipToken( )
 
