@@ -99,6 +99,10 @@ function cAsmCode as integer static
 					case FB_SYMBCLASS_VAR
 						'' var?
 						sym = symbFindByClass( chain_, FB_SYMBCLASS_VAR )
+
+						if( sym <> NULL ) then
+							symbSetIsAccessed( sym )
+						end if
 						exit do
 
 					end select
