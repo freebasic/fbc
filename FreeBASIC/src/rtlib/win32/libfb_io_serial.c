@@ -34,7 +34,7 @@
  * io_serial.c -- serial port access for Windows
  *
  * chng: aug/2005 written [mjs]
- *
+ *			 jun/2006 added \\.\ to CreateFile() [jeffmarshall]
  */
 
 #include <windows.h>
@@ -99,7 +99,7 @@ int fb_SerialOpen( struct _FB_FILE *handle,
     DWORD dwDesiredAccess = 0;
     DWORD dwShareMode = 0;
     size_t uiDevNameLen;
-    char *pszDev;
+    char *pszDev, *p;
     HANDLE hDevice;
     int res;
 
@@ -137,9 +137,12 @@ int fb_SerialOpen( struct _FB_FILE *handle,
     }
 
     /* Get device name without ":" */
-    pszDev = strdup( pszDevice );
-    uiDevNameLen = strlen( pszDev ) - 1;
-    pszDev[uiDevNameLen] = 0;
+    pszDev = calloc(strlen( pszDevice ) + 5, 1);
+		strcpy(pszDev, "\\\\.\\");
+		strcat(pszDev, pszDevice);
+		if(p = strchr( pszDev, ':'))
+			*p = '\0';
+    uiDevNameLen = strlen( pszDev );
 
 #if 0
     /* FIXME: Use default COM properties by default */
