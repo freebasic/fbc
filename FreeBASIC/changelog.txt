@@ -31,6 +31,8 @@ Version 0.17 Beta:
 - Exiting from a gfx program now does not cause console clearing anymore under Linux (lillo)
 - literal wide-string arguments passed to byref var-len string parameters were not creating a temporary string descriptor (v1c)
 - comparing a NULL string pointer to an empty string was not returning equal (v1c)
+- static/global variables not accessed outside the asm block wouldn't not be emitted (v1c)
+- the "= any" initializer was not working with UDT's - they were always cleared (v1c)
 
 
 Version 0.16 Beta:
