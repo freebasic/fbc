@@ -31,10 +31,10 @@
  */
 
 /*
- * io_printer.c -- printer access for Windows
+ * io_printer.c -- printer access for Linux
  *
  * chng: jul/2005 written [mjs]
- *
+ *			 jun/2006 added spooler support [jeffmarshall]
  */
 
 #include <stdio.h>
@@ -44,10 +44,10 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-int fb_PrinterOpen( int iPort, const char *pszDevice, void **ppvHandle )
+int fb_PrinterOpen( int iPort, const char *pszDeviceRaw, void **ppvHandle )
 {
     int result;
-    char filename[64];
+    char *filename = NULL;
     FILE *fp;
 
 		DEV_LPT_PROTOCOL *lpt_proto;
@@ -59,19 +59,66 @@ int fb_PrinterOpen( int iPort, const char *pszDevice, void **ppvHandle )
 		}
 
     if( iPort==0 ) {
-			// Temporary work-around until cups
-			iPort = 1;
+			/* Use spooler */
+      /* try to open/create pipe to spooler */
+			filename = calloc(strlen(pszDeviceRaw) + 64, 1);
+			strcpy(filename, "lp ");
+
+			/* set destination, if not default */
+			if( *lpt_proto->name )	
+			{
+				strcat(filename, "-d \"");	
+				strcat(filename, lpt_proto->name);
+				strcat(filename, "\" ");	
+			}
+
+			/* set title, if not default */
+			if( *lpt_proto->title )
+			{
+				strcat(filename, "-t \"");	
+				strcat(filename, lpt_proto->title);
+				strcat(filename, "\" ");	
+			}
+			else
+			{
+				strcat(filename, "-t \"FreeBASIC document\" ");
+			}
+
+			strcat(filename, "-");
+
+			{
+				char *ptr = filename;
+				while ((ptr = strpbrk(ptr, "`&;|>^$\\")) != NULL)
+					*ptr = '_';
+			}
+
+      if( (fp = popen( filename, "w+" )) == NULL )
+      {
+					*ppvHandle = NULL;
+          result = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
+			}
+			else
+			{
+					*ppvHandle = fp;
+					result = fb_ErrorSetNum( FB_RTERROR_OK );
+      }
+
+		} else {
+			// use direct port io
+			filename = calloc(16, 1);
+			sprintf(filename, "/dev/lp%d", (iPort-1));
+			fp = fopen(filename, "wb");
+			if( fp==NULL ) {
+					result = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
+			} else {
+					*ppvHandle = fp;
+					result = fb_ErrorSetNum( FB_RTERROR_OK );
+			}
+		
 		}
 
-    sprintf(filename, "/dev/lp%d", (iPort-1));
-    fp = fopen(filename, "wb");
-    if( fp==NULL ) {
-        result = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
-    } else {
-        *ppvHandle = fp;
-        result = fb_ErrorSetNum( FB_RTERROR_OK );
-    }
-
+		if( filename )
+			free(filename);
 		if( lpt_proto!=NULL )
 			free(lpt_proto);
 

@@ -92,7 +92,6 @@ char * fb_DevLptMakeDeviceName( DEV_LPT_PROTOCOL *lpt_proto )
 	return( NULL );
 }
 
-
 static FB_FILE_HOOKS fb_hooks_dev_lpt = {
     NULL,
     fb_DevLptClose,

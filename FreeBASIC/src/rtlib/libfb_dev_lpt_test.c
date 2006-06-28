@@ -92,7 +92,7 @@ int fb_DevLptParseProtocol(
 
 	/* "PRN:" */
 
-	if( stricmp( p, "PRN:" ) == 0)
+	if( strcasecmp( p, "PRN:" ) == 0)
 	{
 		if( subst_prn )
 			strcpy( p, "LPT1:" );
@@ -104,7 +104,7 @@ int fb_DevLptParseProtocol(
 
 	/* "LPTx:" */
 	
-	if( strnicmp( p, "LPT", 3) != 0)
+	if( strncasecmp( p, "LPT", 3) != 0)
 		return FALSE;
 
 	pc = strchr( p, ':' );
@@ -152,11 +152,11 @@ int fb_DevLptParseProtocol(
 				*pe++ = '\0';
 				while( isspace( *pe )) *pe++ = '\0';
 
-				if( stricmp( p, "EMU" ) == 0)
+				if( strcasecmp( p, "EMU" ) == 0)
 				{
 					lpt_proto->emu = pe;
 				}
-				else if( stricmp( p, "TITLE" ) == 0)
+				else if( strcasecmp( p, "TITLE" ) == 0)
 				{
 					lpt_proto->title = pe;
 				}
