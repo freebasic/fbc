@@ -671,10 +671,10 @@ test_opt_imp_for
 
 '' with option explicit
 
-test_opt_imp_scope_imp_inherit
-test_opt_imp_scope_exp_shadow
-test_opt_imp_if_imp_inherit
-test_opt_imp_if_exp_shadow
-test_opt_imp_do
-test_opt_imp_while
-test_opt_imp_for
+test_opt_exp_scope_imp_inherit
+test_opt_exp_scope_exp_shadow
+test_opt_exp_if_imp_inherit
+test_opt_exp_if_exp_shadow
+test_opt_exp_do
+test_opt_exp_while
+test_opt_exp_for
