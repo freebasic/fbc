@@ -7,8 +7,11 @@ Version 0.17 Beta:
   and because with namespaces the elements would have to be added twice to work as both "elementid" and "enumid.elementid" (v1c)
 - #undef can't remove symbols defined inside namespaces anymore, to allow namespace redefinition to work (v1c)
 - Calling "SCREEN 0" now causes an 80x25 text mode to be set and cleared by default (lillo)
+- the pre-processor keywords aren't reserved words anymore (v1c)
+- because the above change, $inclib and $libpath were removed, use #inclib and #libpath instead (v1c)
 
 [added]
+- #macro .. #endmacro, to better support multi-line pre-processor defines (v1c)
 - TYPE's, UNION's, ENUM's and typedefs can now be declared inside functions and scope blocks (v1c)
 - FileCopy, FileAttr, and FileLen VB-compatability functions [DrV]
 - the __FB_DEBUG__ define, that is set to TRUE (-1) if in debug mode (if the -g option was used), FALSE (0) otherwise (v1c)
