@@ -4,7 +4,7 @@ type FnIntHandler as function cdecl( byval as uinteger) as integer
 
 declare function fb_isr_set cdecl alias "fb_isr_set"( _
 	byval irq_number as uinteger, _
-    byval pfnIntHandler as FnIntHandler ptr, _
+    byval pfnIntHandler as FnIntHandler, _
     byval size as uinteger, _
     byval stack_size as uinteger = 0) as integer
 
@@ -46,7 +46,7 @@ old_isr = fb_isr_get( 0 )
 
 dim as byte ptr ptr_end = cast( byte ptr, @isr_timer_end )
 dim as byte ptr ptr_start = cast( byte ptr, @isr_timer )
-if not fb_isr_set( 0, @isr_timer, ptr_end - ptr_start, 16384 ) then
+if 0 = fb_isr_set( 0, @isr_timer, ptr_end - ptr_start, 16384 ) then
     print "Failed to lock ISR"
     end 1
 end if
