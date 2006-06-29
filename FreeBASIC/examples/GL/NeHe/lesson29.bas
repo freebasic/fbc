@@ -187,7 +187,7 @@ function ReadTextureData(filename as string, byval buffer as TEXTURE_IMAGE ptr) 
 
 	stride = buffer->wwidth * buffer->format    '' Size Of A Row (Width * Bytes Per Pixel)
 
-	#f = freefile
+	f = freefile
 	if (open (filename, for binary, as #f) = 0) then
 		'' Loop Through Height (Bottoms Up - Flip Image)
 		i=buffer->height-1

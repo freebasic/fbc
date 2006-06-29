@@ -157,7 +157,7 @@ function Model_LoadModelData(byval pM as MODEL ptr, filename as string) as integ
 	dim materialIndex as byte
 
 
-	#ffile = freefile
+	ffile = freefile
 
 	if  dir(filename) = "" then                                      '' Couldn't open the model file.
 		return FALSE

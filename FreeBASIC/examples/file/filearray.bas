@@ -10,7 +10,7 @@ const ENTRIES = 10
 	'' save array
 	dim outarray(0 to ENTRIES-1) as byte
 	
-	#f = freefile
+	f = freefile
 	open "test.dat" for binary as #f
 	
 	for i = 0 to ENTRIES-1
@@ -24,7 +24,7 @@ const ENTRIES = 10
 	'' load array
 	dim inarray(0 to ENTRIES-1) as byte
 	
-	#f = freefile
+	f = freefile
 	open "test.dat" for binary as #f
 	
 	get #f, , inarray()
