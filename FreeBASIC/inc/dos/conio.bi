@@ -5,7 +5,7 @@
 #ifndef __dj_include_conio_h_
 #define __dj_include_conio_h_
 
-'$inclib: 'c'
+#inclib "c"
 
 extern directvideo alias "directvideo" as integer ' ignored by gppconio
 extern wscroll alias "_wscroll" as integer

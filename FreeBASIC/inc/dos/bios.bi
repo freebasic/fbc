@@ -5,7 +5,7 @@
 #ifndef __dj_include_bios_h_
 #define __dj_include_bios_h_
 
-'$inclib: 'c'
+#inclib "c"
 
 declare function	bioscom		cdecl alias "bioscom"		(byval cmd as integer, byval dat as byte, byval port as integer) as integer
 declare function	biosdisk	cdecl alias "biosdisk"		(byval cmd as integer, byval drive as integer, byval head as integer, byval track as integer, byval sector as integer, byval nsects as integer, byval buffer as any ptr) as integer

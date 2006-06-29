@@ -10,11 +10,11 @@
 #define __glu_bi__
 
 #ifdef __FB_WIN32__
-'$inclib: "glu32"
+# inclib "glu32"
 #elseif defined(__FB_LINUX__)
-'$inclib: "GLU"
+# inclib "GLU"
 #elseif defined(__FB_DOS__)
-'$inclib: "glu"
+# inclib "glu"
 #endif
 
 #include once "GL/gl.bi"
