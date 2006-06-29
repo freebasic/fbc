@@ -277,7 +277,7 @@ private function hTypeAdd _
 		byval align as integer _
 	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr s
+	dim as FBSYMBOL ptr s = any
 
 	function = NULL
 
@@ -356,8 +356,8 @@ function cTypeBody _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
-	dim as integer istype
-	dim as FBSYMBOL ptr inner
+	dim as integer istype = any
+	dim as FBSYMBOL ptr inner = any
 
 	function = FALSE
 

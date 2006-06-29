@@ -32,10 +32,10 @@ option escape
 '' DoStmtBegin     =   DO ((WHILE | UNTIL) Expression)? .
 ''
 function cDoStmtBegin as integer
-    dim as ASTNODE ptr expr
-	dim as integer iswhile, isuntil, isinverse
-    dim as FBSYMBOL ptr il, el, cl
-    dim as FB_CMPSTMTSTK ptr stk
+    dim as ASTNODE ptr expr = any
+	dim as integer iswhile = any, isuntil = any, isinverse = any
+    dim as FBSYMBOL ptr il = any, el = any, cl = any
+    dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 
@@ -115,9 +115,9 @@ end function
 '' DoStmtEnd     =   LOOP ((WHILE | UNTIL) Expression)? .
 ''
 function cDoStmtEnd as integer
-    dim as ASTNODE ptr expr
-	dim as integer iswhile, isuntil, isinverse
-	dim as FB_CMPSTMTSTK ptr stk
+    dim as ASTNODE ptr expr = any
+	dim as integer iswhile = any, isuntil = any, isinverse = any
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 

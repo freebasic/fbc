@@ -59,7 +59,7 @@ end function
 ''                |   STATIC SymbolDef .							// ambiguity w/ STATIC SUB|FUNCTION
 ''
 function cVariableDecl( ) as integer
-	dim as integer attrib, dopreserve, tk
+	dim as integer attrib = any, dopreserve = any, tk = any
 
 	function = FALSE
 
@@ -567,10 +567,10 @@ private sub hMakeArrayDimTB _
 		byval dimensions as integer, _
 		exprTB() as ASTNODE ptr, _
 		dTB() as FBARRAYDIM _
-	)
+	) static
 
-    static as integer i
-    static as ASTNODE ptr expr
+    dim as integer i
+    dim as ASTNODE ptr expr
 
 	if( dimensions = -1 ) then
 		exit sub
@@ -1055,10 +1055,10 @@ function cStaticArrayDecl _
 		byref dimensions as integer, _
 		dTB() as FBARRAYDIM, _
 		byval checkprnts as integer _
-	) as integer
+	) as integer static
 
-    static as integer i
-    static as ASTNODE ptr expr
+    dim as integer i
+    dim as ASTNODE ptr expr
 
     function = FALSE
 

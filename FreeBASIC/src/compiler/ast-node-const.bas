@@ -206,9 +206,13 @@ function astNewCONSTz _
 end function
 
 '':::::
-function astLoadCONST( byval n as ASTNODE ptr ) as IRVREG ptr static
-	dim as integer dtype
-	dim as FBSYMBOL ptr s
+function astLoadCONST _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr static
+
+	dim as integer dtype = any
+	dim as FBSYMBOL ptr s = any
 
 	if( ast.doemit ) then
 		dtype = n->dtype

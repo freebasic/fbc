@@ -103,9 +103,9 @@ function astLoadBOUNDCHK _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as ASTNODE ptr l, r, t
-    dim as FBSYMBOL ptr label
-    dim as IRVREG ptr vr
+    dim as ASTNODE ptr l = any, r = any, t = any
+    dim as FBSYMBOL ptr label = any
+    dim as IRVREG ptr vr = any
 
 	l = n->l
 	r = n->r
@@ -190,9 +190,9 @@ function astLoadPTRCHK _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as ASTNODE ptr l, r, t
-    dim as FBSYMBOL ptr label
-    dim as IRVREG ptr vr
+    dim as ASTNODE ptr l = any, r = any, t = any
+    dim as FBSYMBOL ptr label = any
+    dim as IRVREG ptr vr = any
 
 	l = n->l
 	r = n->r

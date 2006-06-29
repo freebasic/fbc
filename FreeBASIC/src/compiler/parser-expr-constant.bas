@@ -94,7 +94,7 @@ function cEnumConstant _
 		end if
 	end if
 
-	chain_ = symbLookupAt( symbGetNamespace( parent ), lexGetText( ) )
+	chain_ = symbLookupAt( symbGetNamespace( parent ), lexGetText( ), FALSE )
 
 	elm = symbFindByClass( chain_, FB_SYMBCLASS_CONST )
     if( elm = NULL ) then
@@ -230,7 +230,7 @@ function cNumLiteral _
 		byval skiptoken as integer _
 	) as integer
 
-	dim as integer dtype
+	dim as integer dtype = any
 
   	dtype = lexGetType( )
   	select case as const dtype

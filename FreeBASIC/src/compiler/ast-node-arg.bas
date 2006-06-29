@@ -888,8 +888,8 @@ function astNewARG _
 		byval mode as integer = INVALID _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n, t
-    dim as FBSYMBOL ptr sym
+    dim as ASTNODE ptr n = any, t = any
+    dim as FBSYMBOL ptr sym = any
 
 	if( dtype = INVALID ) then
 		dtype = astGetDataType( p )

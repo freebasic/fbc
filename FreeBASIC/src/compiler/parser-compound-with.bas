@@ -75,8 +75,8 @@ end function
 ''WithStmtBegin   =   WITH Variable .
 ''
 function cWithStmtBegin as integer
-    dim as FBSYMBOL ptr sym
-    dim as FB_CMPSTMTSTK ptr stk
+    dim as FBSYMBOL ptr sym = any
+    dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 
@@ -103,7 +103,7 @@ end function
 ''WithStmtEnd	  =   END WITH .
 ''
 function cWithStmtEnd as integer
-	dim as FB_CMPSTMTSTK ptr stk
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 

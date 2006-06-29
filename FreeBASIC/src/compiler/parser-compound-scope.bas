@@ -32,8 +32,8 @@ option escape
 ''ScopeStmtBegin  =   SCOPE .
 ''
 function cScopeStmtBegin as integer
-    dim as ASTNODE ptr n
-    dim as FB_CMPSTMTSTK ptr stk
+    dim as ASTNODE ptr n = any
+    dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 
@@ -64,7 +64,7 @@ end function
 ''ScopeStmtEnd  =     END SCOPE .
 ''
 function cScopeStmtEnd as integer
-	dim as FB_CMPSTMTSTK ptr stk
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 

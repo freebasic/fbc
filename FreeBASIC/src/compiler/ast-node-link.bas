@@ -29,8 +29,11 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function astNewLINK( byval l as ASTNODE ptr, _
-					 byval r as ASTNODE ptr ) as ASTNODE ptr static
+function astNewLINK _
+	( _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr _
+	) as ASTNODE ptr static
 
 	dim as ASTNODE ptr n
 	dim as integer dtype
@@ -59,7 +62,10 @@ function astNewLINK( byval l as ASTNODE ptr, _
 end function
 
 '':::::
-function astLoadLINK( byval n as ASTNODE ptr ) as IRVREG ptr
+function astLoadLINK _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
 	if( n = NULL ) then
 		return NULL

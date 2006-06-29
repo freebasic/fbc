@@ -109,8 +109,8 @@ function astLoadIDX _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as ASTNODE ptr var, idx
-    dim as IRVREG ptr vidx, vr
+    dim as ASTNODE ptr var = any, idx = any
+    dim as IRVREG ptr vidx = any, vr = any
 
 	var = n->r
 	if( var = NULL ) then

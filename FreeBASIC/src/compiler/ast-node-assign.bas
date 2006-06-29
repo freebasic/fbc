@@ -576,8 +576,8 @@ function astLoadASSIGN _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as ASTNODE ptr l, r
-    dim as IRVREG ptr vs, vr
+    dim as ASTNODE ptr l = any, r = any
+    dim as IRVREG ptr vs = any, vr = any
 
 	l = n->l
 	r = n->r

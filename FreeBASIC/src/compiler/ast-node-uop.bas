@@ -30,8 +30,11 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-private sub hUOPConstFoldInt( byval op as integer, _
-						      byval v as ASTNODE ptr ) static
+private sub hUOPConstFoldInt _
+	( _
+		byval op as integer, _
+		byval v as ASTNODE ptr _
+	) static
 
 	select case as const op
 	case AST_OP_NOT
@@ -50,8 +53,11 @@ private sub hUOPConstFoldInt( byval op as integer, _
 end sub
 
 '':::::
-private sub hUOPConstFoldFlt( byval op as integer, _
-						      byval v as ASTNODE ptr ) static
+private sub hUOPConstFoldFlt _
+	( _
+		byval op as integer, _
+		byval v as ASTNODE ptr _
+	) static
 
 	select case as const op
 	case AST_OP_NOT
@@ -97,8 +103,11 @@ private sub hUOPConstFoldFlt( byval op as integer, _
 end sub
 
 '':::::
-private sub hUOPConstFold64( byval op as integer, _
-							 byval v as ASTNODE ptr ) static
+private sub hUOPConstFold64 _
+	( _
+		byval op as integer, _
+		byval v as ASTNODE ptr _
+	) static
 
 	select case as const op
 	case AST_OP_NOT
@@ -117,8 +126,12 @@ private sub hUOPConstFold64( byval op as integer, _
 end sub
 
 '':::::
-function astNewUOP( byval op as integer, _
-					byval o as ASTNODE ptr ) as ASTNODE ptr static
+function astNewUOP _
+	( _
+		byval op as integer, _
+		byval o as ASTNODE ptr _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
     dim as integer dclass, dtype
 
@@ -267,10 +280,14 @@ function astNewUOP( byval op as integer, _
 end function
 
 '':::::
-function astLoadUOP( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as ASTNODE ptr o
-    dim as integer op
-    dim as IRVREG ptr v1, vr
+function astLoadUOP _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
+    dim as ASTNODE ptr o = any
+    dim as integer op = any
+    dim as IRVREG ptr v1 = any, vr = any
 
 	o  = n->l
 	op = n->op.op

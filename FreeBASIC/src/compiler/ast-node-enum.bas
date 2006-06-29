@@ -29,8 +29,12 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function astNewENUM( byval value as integer, _
-					 byval sym as FBSYMBOL ptr ) as ASTNODE ptr static
+function astNewENUM _
+	( _
+		byval value as integer, _
+		byval sym as FBSYMBOL ptr _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr n
 
 	'' alloc new node
@@ -47,7 +51,10 @@ function astNewENUM( byval value as integer, _
 end function
 
 '':::::
-function astLoadENUM( byval n as ASTNODE ptr ) as IRVREG ptr static
+function astLoadENUM _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
 	if( ast.doemit ) then
 		function = irAllocVRIMM( FB_DATATYPE_INTEGER, n->con.val.int )

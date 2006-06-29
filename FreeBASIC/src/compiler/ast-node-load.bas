@@ -29,9 +29,13 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function astNewLOAD( byval l as ASTNODE ptr, _
-					 byval dtype as integer, _
-					 byval isresult as integer ) as ASTNODE ptr static
+function astNewLOAD _
+	( _
+		byval l as ASTNODE ptr, _
+		byval dtype as integer, _
+		byval isresult as integer _
+	) as ASTNODE ptr static
+
     dim n as ASTNODE ptr
 
 	'' alloc new node
@@ -48,9 +52,13 @@ function astNewLOAD( byval l as ASTNODE ptr, _
 end function
 
 '':::::
-function astLoadLOAD( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as ASTNODE ptr l
-    dim as IRVREG ptr v1, vr
+function astLoadLOAD _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
+    dim as ASTNODE ptr l = any
+    dim as IRVREG ptr v1 = any, vr = any
 
 	l = n->l
 	if( l = NULL ) then

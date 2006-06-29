@@ -107,8 +107,8 @@ function cProcCall _
 		byval checkprnts as integer = FALSE _
 	) as integer
 
-	dim as integer dtype, isfuncptr, doflush
-	dim as FBSYMBOL ptr subtype, reslabel
+	dim as integer dtype = any, isfuncptr = any, doflush = any
+	dim as FBSYMBOL ptr subtype = any, reslabel = any
 
 	function = FALSE
 
@@ -270,8 +270,8 @@ private function hAssignOrCall _
 		byval chain_ as FBSYMCHAIN ptr _
 	) as integer
 
-	dim as FBSYMBOL ptr s
-	dim as ASTNODE ptr expr
+	dim as FBSYMBOL ptr s = any
+	dim as ASTNODE ptr expr = any
 
 	function = FALSE
 
@@ -339,9 +339,9 @@ end function
 ''				  |	  (ID | FUNCTION) '=' Expression .
 ''
 function cProcCallOrAssign as integer
-	dim as FBSYMBOL ptr s
-	dim as ASTNODE ptr expr
-	dim as FBSYMCHAIN ptr chain_
+	dim as FBSYMBOL ptr s = any
+	dim as ASTNODE ptr expr = any
+	dim as FBSYMCHAIN ptr chain_ = any
 
 	function = FALSE
 

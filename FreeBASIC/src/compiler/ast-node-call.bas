@@ -57,10 +57,10 @@ function astNewCALL _
 		byval isprofiler as integer = FALSE _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr n
-    dim as FBRTLCALLBACK callback
-    dim as integer dtype
-    dim as FBSYMBOL ptr subtype
+    dim as ASTNODE ptr n = any
+    dim as FBRTLCALLBACK callback = any
+    dim as integer dtype = any
+    dim as FBSYMBOL ptr subtype = any
 
 	'' if return type is an UDT, change to the real one
 	if( sym <> NULL ) then
@@ -231,8 +231,8 @@ private sub hCheckTmpStrings _
 		byval f as ASTNODE ptr _
 	)
 
-    dim as ASTNODE ptr t
-    dim as ASTTEMPSTR ptr n, p
+    dim as ASTNODE ptr t = any
+    dim as ASTTEMPSTR ptr n = any, p = any
 
 	'' copy-back any fix-len string passed as parameter and
 	'' delete all temp strings used as parameters
@@ -265,8 +265,8 @@ private sub hFreeTempArrayDescs _
 		byval f as ASTNODE ptr _
 	)
 
-    dim as ASTNODE ptr t
-    dim as ASTTEMPARRAY ptr n, p
+    dim as ASTNODE ptr t = any
+    dim as ASTTEMPARRAY ptr n = any, p = any
 
 	n = f->call.arraytail
 	do while( n <> NULL )
@@ -322,10 +322,11 @@ function astLoadCALL _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as ASTNODE ptr arg, nextarg, l, pstart, pend
-    dim as FBSYMBOL ptr sym, param, lastparam
-    dim as integer mode, bytestopop, toalign, params, inc, args
-    dim as IRVREG ptr vr, pcvr
+    dim as ASTNODE ptr arg = any, nextarg = any, l = any, pstart = any, pend = any
+    dim as FBSYMBOL ptr sym = any, param = any, lastparam = any
+    dim as integer mode = any, bytestopop = any, toalign = any
+    dim as integer params = any, inc = any, args = any
+    dim as IRVREG ptr vr = any, pcvr = any
 
 	''
 	sym = n->sym

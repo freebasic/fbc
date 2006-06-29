@@ -264,8 +264,8 @@ function astUpdComp2Branch _
 		byval isinverse as integer _
 	) as ASTNODE ptr
 
-	dim as integer op
-	dim as ASTNODE ptr l, expr
+	dim as integer op = any
+	dim as ASTNODE ptr l = any, expr = any
 	static as integer dtype, istrue
 
 	if( n = NULL ) then
@@ -550,7 +550,7 @@ function astCloneTree _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr nn, p
+	dim as ASTNODE ptr nn = any, p = any
 
 	''
 	if( n = NULL ) then
@@ -591,7 +591,7 @@ sub astDelTree _
 		byval n as ASTNODE ptr _
 	)
 
-	dim as ASTNODE ptr p
+	dim as ASTNODE ptr p = any
 
 	''
 	if( n = NULL ) then
@@ -775,7 +775,7 @@ function astIsClassOnTree _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr m
+	dim as ASTNODE ptr m = any
 
 	''
 	if( n = NULL ) then
@@ -816,7 +816,7 @@ function astIsSymbolOnTree _
 		byval n as ASTNODE ptr _
 	) as integer
 
-	dim as FBSYMBOL ptr s
+	dim as FBSYMBOL ptr s = any
 
 	if( n = NULL ) then
 		return FALSE

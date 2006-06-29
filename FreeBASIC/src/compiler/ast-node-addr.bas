@@ -259,8 +259,8 @@ function astLoadADDR _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as ASTNODE ptr p
-    dim as IRVREG ptr v1, vr
+    dim as ASTNODE ptr p = any
+    dim as IRVREG ptr v1 = any, vr = any
 
 	p  = n->l
 	if( p = NULL ) then

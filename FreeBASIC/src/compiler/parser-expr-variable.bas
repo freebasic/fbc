@@ -39,10 +39,9 @@ private function hFieldArray _
 		byref idxexpr as ASTNODE ptr _
 	) as integer
 
-    dim as FBVARDIM ptr d
-    dim as integer maxdims, dims
-    dim as ASTNODE ptr expr, dimexpr, constexpr
-    dim as integer diff
+    dim as FBVARDIM ptr d = any
+    dim as integer maxdims = any, dims = any, diff = any
+    dim as ASTNODE ptr expr = any, dimexpr = any, constexpr = any
 
     function = FALSE
 
@@ -162,7 +161,7 @@ end function
 '':::::
 ''TypeField       =   ArrayIdx? ('.' ID ArrayIdx?)*
 ''
-private function hTypeField _
+function cTypeField _
 	( _
 		byref dtype as integer, _
 		byref subtype as FBSYMBOL ptr, _
@@ -172,8 +171,8 @@ private function hTypeField _
 		byval checkderef as integer _
 	) as FBSYMBOL ptr
 
-    dim as ASTNODE ptr constexpr
-    dim as FBSYMBOL ptr sym
+    dim as ASTNODE ptr constexpr = any
+    dim as FBSYMBOL ptr sym = any
 
 	function = NULL
 
@@ -305,9 +304,9 @@ function cDerefFields _
 		byval checkarray as integer _
 	) as integer
 
-	dim as integer derefcnt, isderef, lgt
-	dim as ASTNODE ptr expr, idxexpr
-	dim as FBSYMBOL ptr sym
+	dim as integer derefcnt = any, isderef = any, lgt = any
+	dim as ASTNODE ptr expr = any, idxexpr = any
+	dim as FBSYMBOL ptr sym = any
 
 	function = FALSE
 
@@ -319,7 +318,7 @@ function cDerefFields _
         select case lexGetToken( )
         '' (FIELDDEREF DREF* TypeField)*
         case FB_TK_FIELDDEREF
-        	'' hTypeField will do the rest..
+        	'' cTypeField will do the rest..
         	isderef = TRUE
 
 		'' '['
@@ -469,7 +468,7 @@ function cDerefFields _
 
 		'' TypeField
 		expr = NULL
-		sym = hTypeField( dtype, subtype, expr, derefcnt, checkarray, TRUE )
+		sym = cTypeField( dtype, subtype, expr, derefcnt, checkarray, TRUE )
 		if( sym = NULL ) then
 			if( isderef ) then
 				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
@@ -485,7 +484,7 @@ function cDerefFields _
 			varexpr = astNewPTRCHK( varexpr, lexLineNum( ) )
 		end if
 
-		'' fields at ofs 0 aren't returned as expressions by hTypeField()
+		'' fields at ofs 0 aren't returned as expressions by cTypeField()
 		if( expr <> NULL ) then
 			'' this should be optimized by AST, when expr is a constant and
 			'' varexpr is a scalar var
@@ -557,7 +556,7 @@ function cFuncPtrOrDerefFields _
 		byval checkarray as integer _
 	) as integer
 
-	dim as ASTNODE ptr funcexpr
+	dim as ASTNODE ptr funcexpr = any
 
 	function = FALSE
 
@@ -640,9 +639,9 @@ function cDynArrayIdx _
 		byref idxexpr as ASTNODE ptr _
 	) as integer
 
-    dim as FBSYMBOL ptr desc
-    dim as integer i, dims, maxdims
-    dim as ASTNODE ptr expr, dimexpr, constexpr, varexpr
+    dim as FBSYMBOL ptr desc = any
+    dim as integer i = any, dims = any, maxdims = any
+    dim as ASTNODE ptr expr = any, dimexpr = any, constexpr = any, varexpr = any
 
     function = FALSE
 
@@ -782,8 +781,9 @@ function cArgArrayIdx _
 		byref idxexpr as ASTNODE ptr _
 	) as integer
 
-    dim as integer i
-    dim as ASTNODE ptr expr, dimexpr, constexpr, varexpr, t
+    dim as integer i = any
+    dim as ASTNODE ptr expr = any, dimexpr = any, constexpr = any, varexpr = any
+    dim as ASTNODE ptr t = any
 
     function = FALSE
 
@@ -874,9 +874,9 @@ function cArrayIdx _
 		byref idxexpr as ASTNODE ptr _
 	) as integer
 
-    dim as FBVARDIM ptr d
-    dim as integer dtype, dims, maxdims
-    dim as ASTNODE ptr expr, dimexpr, constexpr, varexpr
+    dim as FBVARDIM ptr d = any
+    dim as integer dtype = any, dims = any, maxdims = any
+    dim as ASTNODE ptr expr = any, dimexpr = any, constexpr = any, varexpr = any
 
     function = FALSE
 
@@ -1003,9 +1003,9 @@ private function hVarAddUndecl _
 		byval dtype as integer _
 	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr s
-	dim as FBARRAYDIM dTB(0)
-	dim as integer attrib, options
+	dim as FBSYMBOL ptr s = any
+	dim as FBARRAYDIM dTB(0) = any
+	dim as integer attrib = any, options = any
 
 	function = NULL
 
@@ -1091,11 +1091,11 @@ function cVariableEx _
 		byval checkarray as integer _
 	) as integer
 
-	dim as zstring ptr id
-	dim as integer dtype, deftyp, drefcnt, checkfields
-	dim as ASTNODE ptr idxexpr
-	dim as FBSYMBOL ptr sym, elm, subtype
-	dim as integer isbyref, isfuncptr, isimport, isarray
+	dim as zstring ptr id = any
+	dim as integer dtype = any, deftyp = any, drefcnt = any, checkfields = any
+	dim as ASTNODE ptr idxexpr = any
+	dim as FBSYMBOL ptr sym = any, elm = any, subtype = any
+	dim as integer isbyref = any, isfuncptr = any, isimport = any, isarray = any
 
 	''
 	dtype = lexGetType( )
@@ -1235,7 +1235,7 @@ function cVariableEx _
    	if( isfuncptr = FALSE ) then
    		if( checkfields ) then
    			'' TypeField?
-   			elm = hTypeField( dtype, subtype, idxexpr, drefcnt, checkarray, FALSE )
+   			elm = cTypeField( dtype, subtype, idxexpr, drefcnt, checkarray, FALSE )
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function
 			end if
@@ -1295,8 +1295,8 @@ function cWithVariable _
 		byval checkarray as integer _
 	) as integer
 
-	dim as integer dtype, drefcnt, isfuncptr
-	dim as FBSYMBOL ptr elm, subtype
+	dim as integer dtype = any, drefcnt = any, isfuncptr = any
+	dim as FBSYMBOL ptr elm = any, subtype = any
 
 	function = FALSE
 
@@ -1307,7 +1307,7 @@ function cWithVariable _
 
    	'' TypeField
    	dtype -= FB_DATATYPE_POINTER
-   	elm = hTypeField( dtype, subtype, varexpr, drefcnt, checkarray, FALSE )
+   	elm = cTypeField( dtype, subtype, varexpr, drefcnt, checkarray, FALSE )
 	if( elm = NULL ) then
 		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 		'' no error recovery: caller will take care

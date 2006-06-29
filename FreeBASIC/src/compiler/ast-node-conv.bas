@@ -407,8 +407,8 @@ function astLoadCONV _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as ASTNODE ptr l
-    dim as IRVREG ptr vs, vr
+    dim as ASTNODE ptr l = any
+    dim as IRVREG ptr vs = any, vr = any
 
 	l = n->l
 

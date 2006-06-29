@@ -32,9 +32,9 @@ option escape
 ''PokeStmt =   POKE Expression, Expression .
 ''
 function cPokeStmt as integer
-	dim as ASTNODE ptr expr1, expr2
-	dim as integer poketype, lgt, ptrcnt
-	dim as FBSYMBOL ptr subtype
+	dim as ASTNODE ptr expr1 = any, expr2 = any
+	dim as integer poketype = any, lgt = any, ptrcnt = any
+	dim as FBSYMBOL ptr subtype = any
 
 	function = FALSE
 
@@ -113,9 +113,9 @@ function cPeekFunct _
 		byref funcexpr as ASTNODE ptr _
 	) as integer
 
-	dim as ASTNODE ptr expr
-	dim as integer peektype, lgt, ptrcnt
-	dim as FBSYMBOL ptr subtype
+	dim as ASTNODE ptr expr = any
+	dim as integer dtype = any, lgt = any, cnt = any
+	dim as FBSYMBOL ptr sym = any, subtype = any
 
 	function = FALSE
 
@@ -126,16 +126,16 @@ function cPeekFunct _
 	hMatchLPRNT( )
 
 	'' (SymbolType ',')?
-	if( cSymbolType( peektype, subtype, lgt, ptrcnt ) ) then
+	if( cSymbolType( dtype, subtype, lgt, cnt ) ) then
 
 		'' check for invalid types
-		select case peektype
+		select case dtype
 		case FB_DATATYPE_VOID, FB_DATATYPE_FIXSTR
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function
 			else
 				'' error recovery: fake a type
-				peektype = FB_DATATYPE_UBYTE
+				dtype = FB_DATATYPE_UBYTE
 				subtype = NULL
 			end if
 		end select
@@ -144,7 +144,7 @@ function cPeekFunct _
 		hMatchCOMMA( )
 
 	else
-		peektype = FB_DATATYPE_UBYTE
+		dtype = FB_DATATYPE_UBYTE
 		subtype = NULL
 	end if
 
@@ -184,9 +184,19 @@ function cPeekFunct _
     	expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     end if
 
-    funcexpr = astNewPTR( 0, expr, peektype, subtype )
+    ''
+    sym = cTypeField( dtype, subtype, expr, cnt, TRUE, FALSE )
 
-    function = TRUE
+	if( expr <> NULL ) then
+		funcexpr = astNewPTR( 0, expr, dtype, subtype )
+	end if
+
+	if( sym <> NULL ) then
+    	funcexpr = astNewFIELD( funcexpr, sym, dtype, subtype )
+	end if
+
+	''
+	function = (errGetLast() = FB_ERRMSG_OK)
 
 end function
 

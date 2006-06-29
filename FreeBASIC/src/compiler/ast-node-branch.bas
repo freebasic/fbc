@@ -32,10 +32,12 @@ option escape
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewBRANCH( byval op as integer, _
-					   byval label as FBSYMBOL ptr, _
-					   byval l as ASTNODE ptr _
-					 ) as ASTNODE ptr static
+function astNewBRANCH _
+	( _
+		byval op as integer, _
+		byval label as FBSYMBOL ptr, _
+		byval l as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
     dim as integer dtype
@@ -62,9 +64,13 @@ function astNewBRANCH( byval op as integer, _
 end function
 
 '':::::
-function astLoadBRANCH( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as ASTNODE ptr l
-    dim as IRVREG ptr vr
+function astLoadBRANCH _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
+    dim as ASTNODE ptr l = any
+    dim as IRVREG ptr vr = any
 
 	l  = n->l
 
@@ -104,9 +110,11 @@ end function
 '':::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
-function astNewJMPTB( byval dtype as integer, _
-					  byval label as FBSYMBOL ptr _
-					) as ASTNODE ptr static
+function astNewJMPTB _
+	( _
+		byval dtype as integer, _
+		byval label as FBSYMBOL ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
 
@@ -123,7 +131,10 @@ function astNewJMPTB( byval dtype as integer, _
 end function
 
 '':::::
-function astLoadJMPTB( byval n as ASTNODE ptr ) as IRVREG ptr
+function astLoadJMPTB _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
 
 	if( ast.doemit ) then
 		irEmitJMPTB( n->dtype, n->jmptb.label )

@@ -34,10 +34,10 @@ function cExternStmtBegin _
 	( _
 	) as integer
 
-    dim as FB_CMPSTMTSTK ptr stk
-    dim as integer mangling
-    dim as FBLIBRARY ptr library
-    dim as zstring ptr litstr
+    dim as FB_CMPSTMTSTK ptr stk = any
+    dim as integer mangling = any
+    dim as FBLIBRARY ptr library = any
+    dim as zstring ptr litstr = any
 
 	function = FALSE
 
@@ -119,7 +119,7 @@ end function
 ''ExternStmtEnd  =     END EXTERN .
 ''
 function cExternStmtEnd as integer
-	dim as FB_CMPSTMTSTK ptr stk
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 

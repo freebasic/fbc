@@ -34,8 +34,8 @@ function cAssignment _
 		byval assgexpr as ASTNODE ptr _
 	) as integer
 
-	dim as ASTNODE ptr expr
-	dim as integer op, dtype, doskip
+	dim as ASTNODE ptr expr = any
+	dim as integer op = any, dtype = any, doskip = any
 
 	function = FALSE
 
@@ -223,8 +223,8 @@ end function
 ''				  |	  Variable{function ptr} '(' ProcParamList ')' .
 ''
 function cAssignmentOrPtrCall as integer
-	dim as integer islet
-	dim as ASTNODE ptr expr
+	dim as integer islet = any
+	dim as ASTNODE ptr expr = any
 
 	function = FALSE
 

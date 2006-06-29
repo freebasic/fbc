@@ -218,8 +218,8 @@ private function hConstAccumADDSUB _
 		byval op as integer _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr l, r
-	dim as integer o
+	dim as ASTNODE ptr l = any, r = any
+	dim as integer o = any
 	static as integer dtype
 
 	if( n = NULL ) then
@@ -303,7 +303,7 @@ private function hConstAccumMUL _
 		byval v as ASTVALUE ptr _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr l, r
+	dim as ASTNODE ptr l = any, r = any
 	static as integer dtype
 
 	if( n = NULL ) then
@@ -540,7 +540,7 @@ private function hConstDistMUL _
 		byval v as ASTVALUE ptr _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr l, r
+	dim as ASTNODE ptr l = any, r = any
 	static as integer dtype
 
 	if( n = NULL ) then
@@ -1308,7 +1308,7 @@ private function hIsMultStrConcat _
 		byval r as ASTNODE ptr _
 	) as integer
 
-	dim as FBSYMBOL ptr sym
+	dim as FBSYMBOL ptr sym = any
 
 	function = FALSE
 

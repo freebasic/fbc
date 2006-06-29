@@ -184,9 +184,9 @@ private function hFlushTree _
 		byval basesym as FBSYMBOL ptr _
 	) as integer
 
-    dim as ASTNODE ptr n, nxt
     static as ASTNODE ptr lside
     static as FBSYMBOL ptr sym
+    dim as ASTNODE ptr n = any, nxt = any
 
 	function = FALSE
 
@@ -511,8 +511,8 @@ private sub hWalk _
 		byval parent as ASTNODE ptr _
 	)
 
-    dim as ASTNODE ptr expr
-    dim as FBSYMBOL ptr sym
+    dim as ASTNODE ptr expr = any
+    dim as FBSYMBOL ptr sym = any
 
 	if( node->class = AST_NODECLASS_TYPEINI ) then
 		sym = symbAddTempVar( node->dtype, node->subtype, FALSE, FALSE )

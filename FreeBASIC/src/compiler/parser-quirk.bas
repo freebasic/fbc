@@ -42,7 +42,7 @@ option escape
 ''				  |   etc .
 ''
 function cQuirkStmt as integer
-	dim as integer res
+	dim as integer res = any
 
 	function = FALSE
 
@@ -143,7 +143,7 @@ function cQuirkFunction _
 		byref funcexpr as ASTNODE ptr _
 	) as integer
 
-	dim as integer res
+	dim as integer res = any
 
 	function = FALSE
 

@@ -73,10 +73,10 @@ end function
 function astLoadVAR _
 	( _
 		byval n as ASTNODE ptr _
-	) as IRVREG ptr static
+	) as IRVREG ptr
 
-    dim as FBSYMBOL ptr s
-    dim as integer ofs
+    dim as FBSYMBOL ptr s = any
+    dim as integer ofs = any
 
 	s = n->sym
 	ofs = n->var.ofs

@@ -37,7 +37,7 @@ private function hIfSingleLine _
 		byval stk as FB_CMPSTMTSTK ptr _
 	) as integer
 
-	dim as FBSYMBOL ptr l
+	dim as FBSYMBOL ptr l = any
 
 	function = FALSE
 
@@ -107,9 +107,9 @@ end function
 ''IfStmtBegin	  =   IF Expression THEN (BlockIfStatement | SingleIfStatement) .
 ''
 function cIfStmtBegin as integer
-	dim as ASTNODE ptr expr
-	dim as FBSYMBOL ptr nl, el
-	dim as FB_CMPSTMTSTK ptr stk
+	dim as ASTNODE ptr expr = any
+	dim as FBSYMBOL ptr nl = any, el = any
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 
@@ -184,8 +184,8 @@ end function
 ''              |     ELSE .
 ''
 function cIfStmtNext(  ) as integer
-	dim as ASTNODE ptr expr
-	dim as FB_CMPSTMTSTK ptr stk
+	dim as ASTNODE ptr expr = any
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 
@@ -286,7 +286,7 @@ end function
 ''IfStmtEnd	  =   END IF | ENDIF .
 ''
 function cIfStmtEnd as integer
-	dim as FB_CMPSTMTSTK ptr stk
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 

@@ -293,8 +293,8 @@ end function
 ''ConstDecl       =   CONST (AS SymbolType)? ConstAssign (DECL_SEPARATOR ConstAssign)* .
 ''
 function cConstDecl as integer
-    dim as integer dtype
-    dim as FBSYMBOL ptr subtype
+    dim as integer dtype = any
+    dim as FBSYMBOL ptr subtype = any
 
     function = FALSE
 

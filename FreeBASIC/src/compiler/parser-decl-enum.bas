@@ -102,7 +102,7 @@ function cEnumBody _
 	) as integer
 
 	static as zstring * FB_MAXNAMELEN+1 ename
-	dim as integer value
+	dim as integer value = any
 
 	function = FALSE
 
@@ -182,7 +182,11 @@ end function
 ''EnumDecl        =   ENUM ID? (ALIAS LITSTR)? Comment? SttSeparator
 ''                        EnumLine+
 ''					  END ENUM .
-function cEnumDecl( ) as integer static
+function cEnumDecl _
+	( _
+		_
+	) as integer static
+
     static as zstring * FB_MAXNAMELEN+1 id, id_alias
     dim as zstring ptr palias
     dim as FBSYMBOL ptr ns, e

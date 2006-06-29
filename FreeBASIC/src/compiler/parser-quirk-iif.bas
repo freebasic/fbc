@@ -36,12 +36,12 @@ function cIIFFunct _
 		byref funcexpr as ASTNODE ptr _
 	) as integer
 
-	dim as ASTNODE ptr condexpr, truexpr, falsexpr
+	dim as ASTNODE ptr condexpr = any, truexpr = any, falsexpr = any
 
 	function = FALSE
 
 	'' IIF
-	lexSkipToken
+	lexSkipToken( )
 
 	'' '('
 	hMatchLPRNT( )

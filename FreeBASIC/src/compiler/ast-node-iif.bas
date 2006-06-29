@@ -29,10 +29,12 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function astNewIIF( byval condexpr as ASTNODE ptr, _
-					byval truexpr as ASTNODE ptr, _
-					byval falsexpr as ASTNODE ptr _
-				  ) as ASTNODE ptr static
+function astNewIIF _
+	( _
+		byval condexpr as ASTNODE ptr, _
+		byval truexpr as ASTNODE ptr, _
+		byval falsexpr as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
     dim as integer true_dtype, false_dtype
@@ -107,9 +109,13 @@ function astNewIIF( byval condexpr as ASTNODE ptr, _
 end function
 
 '':::::
-function astLoadIIF( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as ASTNODE ptr l, r, t
-    dim as FBSYMBOL ptr exitlabel
+function astLoadIIF _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
+    dim as ASTNODE ptr l = any, r = any, t = any
+    dim as FBSYMBOL ptr exitlabel = any
 
 	l = n->l
 	r = n->r

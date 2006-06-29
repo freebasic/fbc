@@ -71,10 +71,10 @@ end sub
 ''SelectStatement =   SELECT CASE (AS CONST)? Expression .
 ''
 function cSelectStmtBegin as integer
-    dim as ASTNODE ptr expr
-    dim as integer dtype
-	dim as FBSYMBOL ptr sym, el, subtype
-	dim as FB_CMPSTMTSTK ptr stk
+    dim as ASTNODE ptr expr = any
+    dim as integer dtype = any
+	dim as FBSYMBOL ptr sym = any, el = any, subtype = any
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 
@@ -285,7 +285,7 @@ private function hFlushCaseExpr _
 		byval islast as integer _
 	) as integer static
 
-	dim as ASTNODE ptr expr
+	dim as ASTNODE ptr expr = any
 
 	if( casectx.typ <> FB_CASETYPE_RANGE ) then
         expr = NEWCASEVAR( sym, dtype )
@@ -339,9 +339,9 @@ end function
 ''SelectStmtNext   =    CASE (ELSE | (CaseExpression (',' CaseExpression)*)) .
 ''
 function cSelectStmtNext( ) as integer
-	dim as FBSYMBOL ptr sym, il, nl
-	dim as integer dtype, cnt, i, cntbase
-	dim as FB_CMPSTMTSTK ptr stk
+	dim as FBSYMBOL ptr sym = any, il = any, nl = any
+	dim as integer dtype = any, cnt = any, i = any, cntbase = any
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 
@@ -469,8 +469,8 @@ end function
 ''SelectStmtEnd =   END SELECT .
 ''
 function cSelectStmtEnd as integer
-	dim as integer dtype
-	dim as FB_CMPSTMTSTK ptr stk
+	dim as integer dtype = any
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 

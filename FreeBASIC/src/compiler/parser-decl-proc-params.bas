@@ -44,7 +44,7 @@ function cParameters _
 		byval isproto as integer _
 	) as FBSYMBOL ptr
 
-	dim as FBSYMBOL ptr n
+	dim as FBSYMBOL ptr n = any
 
 	do
 		n = hParamDecl( proc, procmode, isproto )
@@ -89,8 +89,8 @@ private function hOptionalExpr _
 		byval subtype as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-    dim as ASTNODE ptr expr
-    dim as FBSYMBOL ptr sym
+    dim as ASTNODE ptr expr = any
+    dim as FBSYMBOL ptr sym = any
 
     function = NULL
 
@@ -184,11 +184,11 @@ private function hParamDecl _
 
 	static as zstring * FB_MAXNAMELEN+1 idTB(0 to FB_MAXARGRECLEVEL-1)
 	static as integer arglevel = 0
-	dim as zstring ptr pid
-	dim as ASTNODE ptr optval
-	dim as integer ptype, pmode, plen, psuffix, ptrcnt
-	dim as integer readid, dotpos, doskip, attrib, dontinit
-	dim as FBSYMBOL ptr s, subtype
+	dim as zstring ptr pid = any
+	dim as ASTNODE ptr optval = any
+	dim as integer ptype = any, pmode = any, plen = any, psuffix = any, ptrcnt = any
+	dim as integer readid = any, dotpos = any, doskip = any, attrib = any, dontinit = any
+	dim as FBSYMBOL ptr s = any, subtype = any
 
 	function = NULL
 

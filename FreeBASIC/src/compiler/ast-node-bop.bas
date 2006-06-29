@@ -1101,9 +1101,9 @@ function astLoadBOP _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as ASTNODE ptr l, r
-    dim as integer op
-    dim as IRVREG ptr v1, v2, vr
+    dim as ASTNODE ptr l = any, r = any
+    dim as integer op = any
+    dim as IRVREG ptr v1 = any, v2 = any, vr = any
 
 	op = n->op.op
 	l  = n->l

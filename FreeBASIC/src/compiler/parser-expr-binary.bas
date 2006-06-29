@@ -145,7 +145,7 @@ function cCatExpression _
 		byref catexpr as ASTNODE ptr _
 	) as integer
 
-	dim as ASTNODE ptr expr
+	dim as ASTNODE ptr expr = any
 
 	function = FALSE
 
@@ -244,8 +244,8 @@ function cLogExpression _
 		byref logexpr as ASTNODE ptr _
 	) as integer
 
-    dim as integer op
-    dim as ASTNODE ptr expr
+    dim as integer op = any
+    dim as ASTNODE ptr expr = any
 
 	function = FALSE
 
@@ -305,7 +305,7 @@ function cLogOrExpression _
 		byref logexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr expr
+    dim as ASTNODE ptr expr = any
 
 	function = FALSE
 
@@ -358,7 +358,7 @@ function cLogAndExpression _
 		byref logexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr expr
+    dim as ASTNODE ptr expr = any
 
 	function = FALSE
 
@@ -411,8 +411,8 @@ function cRelExpression _
 		byref relexpr as ASTNODE ptr _
 	) as integer
 
-    dim as integer op
-    dim as ASTNODE ptr expr
+    dim as integer op = any
+    dim as ASTNODE ptr expr = any
 
     function = FALSE
 
@@ -477,8 +477,8 @@ function cAddExpression _
 		byref addexpr as ASTNODE ptr _
 	) as integer
 
-    dim as integer op
-    dim as ASTNODE ptr expr
+    dim as integer op = any
+    dim as ASTNODE ptr expr = any
 
     function = FALSE
 
@@ -543,8 +543,8 @@ function cShiftExpression _
 		byref shiftexpr as ASTNODE ptr _
 	) as integer
 
-    dim as integer op
-    dim as ASTNODE ptr expr
+    dim as integer op = any
+    dim as ASTNODE ptr expr = any
 
     function = FALSE
 
@@ -601,7 +601,7 @@ function cModExpression _
 		byref modexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr expr
+    dim as ASTNODE ptr expr = any
 
     function = FALSE
 
@@ -653,7 +653,7 @@ function cIntDivExpression _
 		byref idivexpr as ASTNODE ptr _
 	) as integer
 
-	dim as ASTNODE ptr expr
+	dim as ASTNODE ptr expr = any
 
     function = FALSE
 
@@ -705,8 +705,8 @@ function cMultExpression _
 		byref mulexpr as ASTNODE ptr _
 	) as integer
 
-    dim as integer op
-    dim as ASTNODE ptr expr
+    dim as integer op = any
+    dim as ASTNODE ptr expr = any
 
     function = FALSE
 
@@ -763,7 +763,7 @@ function cExpExpression _
 		byref expexpr as ASTNODE ptr _
 	) as integer
 
-	dim as ASTNODE ptr expr
+	dim as ASTNODE ptr expr = any
 
     function = FALSE
 

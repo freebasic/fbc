@@ -58,14 +58,12 @@ end function
 
 '':::::
 ''Directive       =   INCLUDE ONCE? ':' '\'' STR_LIT '\''
-''				  |   INCLIB ':' '\'' STR_LIT '\''
-''				  |   LIBPATH ':' '\'' STR_LIT '\''
 ''				  |   DYNAMIC
 ''				  |   STATIC .
 ''
 function cDirective as integer static
     static as zstring * FB_MAXPATHLEN+1 incfile
-    dim as integer isonce, token
+    dim as integer isonce
 
 	function = FALSE
 
@@ -80,9 +78,7 @@ function cDirective as integer static
 		env.opt.dynamic = FALSE
 		function = TRUE
 
-	case FB_TK_INCLUDE, FB_TK_INCLIB, FB_TK_LIBPATH
-
-		token = lexGetToken( )
+	case FB_TK_INCLUDE
 		lexSkipToken( )
 
 		'' ONCE?
@@ -120,14 +116,7 @@ function cDirective as integer static
 			end if
 		end if
 
-		select case token
-		case FB_TK_INCLUDE
-			function = fbIncludeFile( incfile, isonce )
-		case FB_TK_INCLIB
-			function = symbAddLib( incfile ) <> NULL
-		case FB_TK_LIBPATH
-			function = fbAddLibPath( incfile )
-		end select
+		function = fbIncludeFile( incfile, isonce )
 
 	case else
 		if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then

@@ -82,8 +82,8 @@ function astLoadPTR _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as ASTNODE ptr l
-    dim as IRVREG ptr v1, vp, vr
+    dim as ASTNODE ptr l = any
+    dim as IRVREG ptr v1 = any, vp = any, vr = any
 
 	l = n->l
 	'' no index? can happen with absolute addresses + ptr typecasting

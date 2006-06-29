@@ -558,6 +558,15 @@ declare function 	cProcCall				( _
 												byval checkparents as integer = FALSE _
 											) as integer
 
+declare function 	cTypeField 				( _
+												byref dtype as integer, _
+												byref subtype as FBSYMBOL ptr, _
+												byref expr as ASTNODE ptr, _
+												byref derefcnt as integer, _
+												byval checkarray as integer, _
+												byval checkderef as integer _
+											) as FBSYMBOL ptr
+
 declare function 	cDerefFields			( _
 												byref typ as integer, _
 												byref subtype as FBSYMBOL ptr, _
@@ -571,6 +580,10 @@ declare function    cFuncPtrOrDerefFields	( _
 					      					  	byref varexpr as ASTNODE ptr, _
 					      					  	byval isfuncptr as integer, _
 					      					  	byval checkarray as integer _
+											) as integer
+
+declare function 	cStrIdxOrFieldDeref		( _
+												byref expr as ASTNODE ptr _
 											) as integer
 
 declare function	cUpdPointer				( _

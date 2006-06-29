@@ -175,7 +175,7 @@ end function
 ''                        (AsmCode Comment? NewLine)+
 ''					  END ASM .
 function cAsmBlock as integer
-    dim as integer issingleline
+    dim as integer issingleline = any
 
 	function = FALSE
 

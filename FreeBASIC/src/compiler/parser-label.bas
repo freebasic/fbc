@@ -33,12 +33,10 @@ option escape
 ''                |   ID ':' .
 ''
 function cLabel as integer
-    dim as FBSYMBOL ptr l
-    dim as FBSYMCHAIN ptr chain_
+    dim as FBSYMBOL ptr l = NULL
+    dim as FBSYMCHAIN ptr chain_ = any
 
     function = FALSE
-
-    l = NULL
 
     '' NUM_LIT
     select case lexGetClass( )

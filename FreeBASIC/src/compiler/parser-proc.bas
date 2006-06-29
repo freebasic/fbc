@@ -468,7 +468,11 @@ end function
 '':::::
 ''ProcStmtBegin	  =	  (PRIVATE|PUBLIC)? STATIC? ((SUB SubDecl) | (FUNCTION FuncDecl)) .
 ''
-function cProcStmtBegin as integer static
+function cProcStmtBegin _
+	( _
+		_
+	) as integer static
+
 	dim as integer res, issub, attrib
     dim as FBSYMBOL ptr proc
     dim as ASTNODE ptr expr, procnode
@@ -552,7 +556,11 @@ end function
 '':::::
 ''ProcStmtEnd	  =	  END (SUB | FUNCTION) .
 ''
-function cProcStmtEnd as integer static
+function cProcStmtEnd _
+	( _
+		_
+	) as integer static
+
     dim as integer res, issub
 	dim as FB_CMPSTMTSTK ptr stk
 

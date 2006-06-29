@@ -29,9 +29,11 @@ option escape
 #include once "inc\ast.bi"
 
 '':::::
-function astNewSTACK( byval op as integer, _
-					  byval l as ASTNODE ptr _
-					) as ASTNODE ptr static
+function astNewSTACK _
+	( _
+		byval op as integer, _
+		byval l as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
 
@@ -53,9 +55,13 @@ function astNewSTACK( byval op as integer, _
 end function
 
 '':::::
-function astLoadSTACK( byval n as ASTNODE ptr ) as IRVREG ptr
-    dim as ASTNODE ptr l
-    dim as IRVREG ptr vr
+function astLoadSTACK _
+	( _
+		byval n as ASTNODE ptr _
+	) as IRVREG ptr
+
+    dim as ASTNODE ptr l = any
+    dim as IRVREG ptr vr = any
 
 	l  = n->l
 	if( l = NULL ) then

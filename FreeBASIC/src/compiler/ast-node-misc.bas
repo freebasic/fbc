@@ -152,7 +152,7 @@ function astLoadASM _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as FB_ASMTOK ptr node, nxt
+    dim as FB_ASMTOK ptr node = any, nxt = any
     dim as string asmline
 
 	asmline = ""
@@ -268,8 +268,8 @@ function astLoadMEM _
 		byval n as ASTNODE ptr _
 	) as IRVREG ptr
 
-    dim as ASTNODE ptr l, r
-    dim as IRVREG ptr v1, v2
+    dim as ASTNODE ptr l = any, r = any
+    dim as IRVREG ptr v1 = any, v2 = any
 
 	l = n->l
 	r = n->r

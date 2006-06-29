@@ -136,6 +136,44 @@ function cNegNotExpression _
 end function
 
 ''::::
+function cStrIdxOrFieldDeref _
+	( _
+		byref expr as ASTNODE ptr _
+	) as integer
+
+	dim as FBSYMBOL ptr subtype = any
+	dim as integer isfuncptr = any, dtype = any
+
+	dtype = astGetDataType( expr )
+	subtype = astGetSubType( expr )
+
+	select case as const dtype
+	'' zstring indexing?
+	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
+		'' '['?
+		if( lexGetToken( ) = CHAR_LBRACKET ) then
+			cDerefFields( dtype, subtype, expr, TRUE )
+		end if
+
+	case else
+		'' FuncPtrOrDerefFields?
+		if( dtype >= FB_DATATYPE_POINTER ) then
+			isfuncptr = FALSE
+			if( dtype = FB_DATATYPE_POINTER+FB_DATATYPE_FUNCTION ) then
+				if( lexGetToken( ) = CHAR_LPRNT ) then
+					isfuncptr = TRUE
+				end if
+			end if
+
+			cFuncPtrOrDerefFields( dtype, subtype, expr, isfuncptr, TRUE )
+		end if
+	end select
+
+	function = (errGetLast() = FB_ERRMSG_OK)
+
+end function
+
+''::::
 '' HighestPrecExpr=   AddrOfExpression
 ''				  |	  ( DerefExpr
 ''				  	  |	CastingExpr
@@ -150,9 +188,6 @@ function cHighestPrecExpr _
 		byval chain_ as FBSYMCHAIN ptr, _
 		byref highexpr as ASTNODE ptr _
 	) as integer
-
-	dim as FBSYMBOL ptr subtype
-	dim as integer isfuncptr, dtype
 
 	select case lexGetToken( )
 	'' AddrOfExpression
@@ -202,32 +237,8 @@ function cHighestPrecExpr _
 
 	end select
 
-	dtype = astGetDataType( highexpr )
-	subtype = astGetSubType( highexpr )
-
-	select case as const dtype
-	'' zstring indexing?
-	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR
-		'' '['?
-		if( lexGetToken( ) = CHAR_LBRACKET ) then
-			cDerefFields( dtype, subtype, highexpr, TRUE )
-		end if
-
-	case else
-		'' FuncPtrOrDerefFields?
-		if( dtype >= FB_DATATYPE_POINTER ) then
-			isfuncptr = FALSE
-			if( dtype = FB_DATATYPE_POINTER+FB_DATATYPE_FUNCTION ) then
-				if( lexGetToken( ) = CHAR_LPRNT ) then
-					isfuncptr = TRUE
-				end if
-			end if
-
-			cFuncPtrOrDerefFields( dtype, subtype, highexpr, isfuncptr, TRUE )
-		end if
-	end select
-
-	function = (errGetLast() = FB_ERRMSG_OK)
+	''
+	function = cStrIdxOrFieldDeref( highexpr )
 
 end function
 
@@ -238,8 +249,8 @@ function cAnonUDT _
 		byref expr as ASTNODE ptr _
 	) as integer
 
-    dim as FBSYMBOL ptr sym, subtype
-    dim as FBSYMCHAIN ptr chain_
+    dim as FBSYMBOL ptr sym = any, subtype = any
+    dim as FBSYMCHAIN ptr chain_ = any
 
 	function = FALSE
 
@@ -345,8 +356,8 @@ private function hCast _
 		byval ptronly as integer _
 	) as integer
 
-    dim as integer dtype, lgt, ptrcnt
-    dim as FBSYMBOL ptr subtype
+    dim as integer dtype = any, lgt = any, ptrcnt = any
+    dim as FBSYMBOL ptr subtype = any
 
 	function = FALSE
 
@@ -566,9 +577,9 @@ function cDerefExpression _
 		byref derefexpr as ASTNODE ptr _
 	) as integer
 
-    dim as FBSYMBOL ptr subtype
-    dim as integer derefcnt, dtype
-    dim as ASTNODE ptr funcexpr
+    dim as FBSYMBOL ptr subtype = any
+    dim as integer derefcnt, dtype = any
+    dim as ASTNODE ptr funcexpr = any
 
 	function = FALSE
 
@@ -626,8 +637,8 @@ private function hProcPtrBody _
 		byref addrofexpr as ASTNODE ptr _
 	) as integer
 
-	dim as ASTNODE ptr expr
-	dim as FBSYMBOL ptr sym
+	dim as ASTNODE ptr expr = any
+	dim as FBSYMBOL ptr sym = any
 
 	function = FALSE
 
@@ -728,10 +739,10 @@ function cAddrOfExpression _
 		byref addrofexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr expr
-    dim as integer dtype
-    dim as FBSYMBOL ptr sym
-    dim as FBSYMCHAIN ptr chain_
+    dim as ASTNODE ptr expr = any
+    dim as integer dtype = any
+    dim as FBSYMBOL ptr sym = any
+    dim as FBSYMCHAIN ptr chain_ = any
 
 	function = FALSE
 

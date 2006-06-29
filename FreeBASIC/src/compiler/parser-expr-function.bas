@@ -36,8 +36,8 @@ function cFunctionCall _
 		byval ptrexpr as ASTNODE ptr _
 	) as integer
 
-	dim as integer dtype, isfuncptr
-	dim as FBSYMBOL ptr subtype
+	dim as integer dtype = any, isfuncptr = any
+	dim as FBSYMBOL ptr subtype = any
 
 	function = FALSE
 

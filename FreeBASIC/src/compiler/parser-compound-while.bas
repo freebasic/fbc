@@ -32,9 +32,9 @@ option escape
 ''WhileStmtBegin  =   WHILE Expression .
 ''
 function cWhileStmtBegin as integer
-    dim as ASTNODE ptr expr
-    dim as FBSYMBOL ptr il, el
-    dim as FB_CMPSTMTSTK ptr stk
+    dim as ASTNODE ptr expr = any
+    dim as FBSYMBOL ptr il = any, el = any
+    dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 
@@ -84,7 +84,7 @@ end function
 ''WhileStmtEnd  =   WEND
 ''
 function cWhileStmtEnd as integer
-	dim as FB_CMPSTMTSTK ptr stk
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 

@@ -89,7 +89,7 @@ private function hGlobalId _
     	exit function
     end if
 
-	function = symbLookupAt( @symbGetGlobalNamespc( ), lexGetText( ) )
+	function = symbLookupAt( @symbGetGlobalNamespc( ), lexGetText( ), FALSE )
 
 end function
 
@@ -168,7 +168,7 @@ function cIdentifier _
     		return NULL
     	end if
 
-    	chain_ = symbLookupAt( ns, lexGetText( ) )
+    	chain_ = symbLookupAt( ns, lexGetText( ), FALSE )
     	if( chain_ = NULL ) then
            	if( showerror ) then
            		errReportUndef( FB_ERRMSG_UNDEFINEDSYMBOL, lexGetText( ) )
@@ -238,7 +238,7 @@ function cNamespace _
     		end if
     	end if
 
-    	chain_ = symbLookupAt( chain_->sym, lexGetText( ) )
+    	chain_ = symbLookupAt( chain_->sym, lexGetText( ), FALSE )
     loop
 
 	function = ns

@@ -147,12 +147,12 @@ end sub
 ''ForStmtBegin    =   FOR ID '=' Expression TO Expression (STEP Expression)? .
 ''
 function cForStmtBegin as integer
-    dim as FBSYMBOL ptr il, tl, el, cl
-    dim as FBVALUE ival
-    dim as ASTNODE ptr idexpr, expr
-    dim as integer op, dtype, isconst
-    dim as FBSYMCHAIN ptr chain_
-    dim as FB_CMPSTMTSTK ptr stk
+    dim as FBSYMBOL ptr il = any, tl = any, el = any, cl = any
+    dim as FBVALUE ival = any
+    dim as ASTNODE ptr idexpr = any, expr = any
+    dim as integer op = any, dtype = any, isconst = any
+    dim as FBSYMCHAIN ptr chain_ = any
+    dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 
@@ -454,7 +454,7 @@ end function
 ''ForStmtEnd      =   NEXT (ID (',' ID?))? .
 ''
 function cForStmtEnd as integer
-	dim as FB_CMPSTMTSTK ptr stk
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 

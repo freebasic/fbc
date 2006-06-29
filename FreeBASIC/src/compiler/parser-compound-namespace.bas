@@ -37,10 +37,10 @@ function cNamespaceStmtBegin _
 	) as integer
 
     static as zstring * FB_MAXNAMELEN+1 id, id_alias
-    dim as zstring ptr palias
-    dim as FBSYMBOL ptr sym
-    dim as FBSYMCHAIN ptr chain_
-    dim as FB_CMPSTMTSTK ptr stk
+    dim as zstring ptr palias = any
+    dim as FBSYMBOL ptr sym = any
+    dim as FBSYMCHAIN ptr chain_ = any
+    dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 
@@ -158,7 +158,7 @@ end function
 ''NamespaceStmtEnd  =     END NAMESPACE .
 ''
 function cNamespaceStmtEnd as integer
-	dim as FB_CMPSTMTSTK ptr stk
+	dim as FB_CMPSTMTSTK ptr stk = any
 
 	function = FALSE
 
@@ -185,7 +185,7 @@ end function
 ''Usingtmt  =     USING ID (',' ID)*
 ''
 function cUsingStmt as integer
-    dim as FBSYMBOL ptr sym
+    dim as FBSYMBOL ptr sym = any
 
     function = FALSE
 

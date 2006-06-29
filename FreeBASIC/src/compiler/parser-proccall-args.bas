@@ -56,7 +56,7 @@ private function hCreateOptArg _
 		byval param as FBSYMBOL ptr _
 	) as ASTNODE ptr
 
-	dim as ASTNODE ptr tree
+	dim as ASTNODE ptr tree = any
 
 	'' make a clone
 	tree = astCloneTree( symbGetParamOptExpr( param ) )
@@ -84,8 +84,8 @@ private function hProcArg _
 		byval isfunc as integer _
 	) as integer
 
-	dim as integer pmode
-	dim as FBSYMBOL ptr oldsym
+	dim as integer pmode = any
+	dim as FBSYMBOL ptr oldsym = any
 
 	function = FALSE
 
@@ -210,7 +210,7 @@ private function hOvlProcArg _
 		byval isfunc as integer _
 	) as integer
 
-	dim as FBSYMBOL ptr oldsym
+	dim as FBSYMBOL ptr oldsym = any
 
 	function = FALSE
 
@@ -310,10 +310,10 @@ private function hOvlProcArgList _
 		byval optonly as integer _
 	) as ASTNODE ptr
 
-    dim as integer args, i, params
-    dim as ASTNODE ptr procexpr
-    dim as FBSYMBOL ptr param, ovlproc
-    dim as FB_CALL_ARG ptr arg_head, arg_tail, arg, nxt
+    dim as integer args = any, i = any, params = any
+    dim as ASTNODE ptr procexpr = any
+    dim as FBSYMBOL ptr param = any, ovlproc = any
+    dim as FB_CALL_ARG ptr arg_head = any, arg_tail = any, arg = any, nxt = any
 
 	function = NULL
 
@@ -471,9 +471,9 @@ function cProcArgList _
 		byval optonly as integer _
 	) as ASTNODE ptr
 
-    dim as integer args, params, mode
-    dim as FBSYMBOL ptr param
-    dim as ASTNODE ptr procexpr, expr
+    dim as integer args = any, params = any, mode = any
+    dim as FBSYMBOL ptr param = any
+    dim as ASTNODE ptr procexpr = any, expr = any
 
 	'' overloaded?
 	if( symbGetProcIsOverloaded( proc ) ) then
