@@ -513,8 +513,8 @@ declare function 	symbLookup				( _
 												byval preservecase as integer = FALSE _
 											) as FBSYMCHAIN ptr
 
-declare function 	symbLookupAt			( _
-												byval ns as FBSYMBOL ptr, _
+declare function 	symbLookupAtTb			( _
+												byval hastb as FBHASHTB ptr, _
 					   						  	byval symbol as zstring ptr, _
 					   						  	byval preservecase as integer = FALSE _
 											) as FBSYMCHAIN ptr
@@ -587,7 +587,8 @@ declare function 	symbListLibs			( _
 declare function 	symbAddKeyword			( _
 												byval symbol as zstring ptr, _
 												byval id as integer, _
-												byval class as integer _
+												byval class as integer, _
+												byval hashtb as FBHASHTB ptr = NULL _
 											) as FBSYMBOL ptr
 
 declare function 	symbAddDefine			( _
@@ -1141,6 +1142,9 @@ declare function 	symbTypeToStr			( _
 #define symbGetCurrentHashTb( ) symb.hashtb
 
 #define symbSetCurrentHashTb(tb) symb.hashtb = tb
+
+#define symbLookupAt(ns_, symbol_, preservecase_) _
+	symbLookupAtTb( @(ns_)->nspc.hashtb, symbol_, preservecase_ )
 
 #define symbGetIsAccessed(s) ((s->stats and FB_SYMBSTATS_ACCESSED) <> 0)
 

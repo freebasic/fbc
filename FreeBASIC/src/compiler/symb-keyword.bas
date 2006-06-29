@@ -132,6 +132,7 @@ const SYMB_MAXKEYWORDS = 210
         (@"THEN"	, FB_TK_THEN			, FB_TKCLASS_KEYWORD), _
         (@"ELSE"	, FB_TK_ELSE			, FB_TKCLASS_KEYWORD), _
         (@"ELSEIF"	, FB_TK_ELSEIF			, FB_TKCLASS_KEYWORD), _
+        (@"ENDIF"	, FB_TK_ENDIF			, FB_TKCLASS_KEYWORD), _
         (@"SELECT"	, FB_TK_SELECT			, FB_TKCLASS_KEYWORD), _
         (@"CASE"	, FB_TK_CASE			, FB_TKCLASS_KEYWORD), _
         (@"IS"		, FB_TK_IS				, FB_TKCLASS_KEYWORD), _
@@ -191,7 +192,6 @@ const SYMB_MAXKEYWORDS = 210
         (@"ON"		, FB_TK_ON				, FB_TKCLASS_KEYWORD), _
         (@"ERROR"	, FB_TK_ERROR			, FB_TKCLASS_KEYWORD), _
         (@"ENUM"	, FB_TK_ENUM			, FB_TKCLASS_KEYWORD), _
-        (@"INCLIB"	, FB_TK_INCLIB			, FB_TKCLASS_KEYWORD), _
         (@"ASM"		, FB_TK_ASM				, FB_TKCLASS_KEYWORD), _
         (@"SPC"		, FB_TK_SPC				, FB_TKCLASS_KEYWORD), _
         (@"TAB"		, FB_TK_TAB				, FB_TKCLASS_KEYWORD), _
@@ -202,11 +202,6 @@ const SYMB_MAXKEYWORDS = 210
         (@"FIELD"	, FB_TK_FIELD			, FB_TKCLASS_KEYWORD), _
         (@"LOCAL"	, FB_TK_LOCAL			, FB_TKCLASS_KEYWORD), _
         (@"ERR"		, FB_TK_ERR				, FB_TKCLASS_KEYWORD), _
-        (@"DEFINE"	, FB_TK_DEFINE			, FB_TKCLASS_KEYWORD), _
-        (@"UNDEF"	, FB_TK_UNDEF			, FB_TKCLASS_KEYWORD), _
-        (@"IFDEF"	, FB_TK_IFDEF			, FB_TKCLASS_KEYWORD), _
-        (@"IFNDEF"	, FB_TK_IFNDEF			, FB_TKCLASS_KEYWORD), _
-        (@"ENDIF"	, FB_TK_ENDIF			, FB_TKCLASS_KEYWORD), _
         (@"DEFINED"	, FB_TK_DEFINED			, FB_TKCLASS_KEYWORD), _
         (@"RESUME"	, FB_TK_RESUME			, FB_TKCLASS_KEYWORD), _
         (@"PSET"	, FB_TK_PSET			, FB_TKCLASS_KEYWORD), _
@@ -226,7 +221,6 @@ const SYMB_MAXKEYWORDS = 210
         (@"NAMESPACE", FB_TK_NAMESPACE		, FB_TKCLASS_KEYWORD), _
         (@"EXPORT"	, FB_TK_EXPORT			, FB_TKCLASS_KEYWORD), _
         (@"IMPORT"	, FB_TK_IMPORT			, FB_TKCLASS_KEYWORD), _
-        (@"LIBPATH"	, FB_TK_LIBPATH			, FB_TKCLASS_KEYWORD), _
         (@"CHR"		, FB_TK_CHR				, FB_TKCLASS_KEYWORD), _
         (@"WCHR"	, FB_TK_WCHR			, FB_TKCLASS_KEYWORD), _
         (@"ASC"		, FB_TK_ASC				, FB_TKCLASS_KEYWORD), _
@@ -247,7 +241,6 @@ const SYMB_MAXKEYWORDS = 210
         (@"OVERLOAD", FB_TK_OVERLOAD		, FB_TKCLASS_KEYWORD), _
         (@"CONSTRUCTOR", FB_TK_CONSTRUCTOR	, FB_TKCLASS_KEYWORD), _
         (@"DESTRUCTOR", FB_TK_DESTRUCTOR	, FB_TKCLASS_KEYWORD), _
-        (@"PRAGMA"	, FB_TK_PRAGMA			, FB_TKCLASS_KEYWORD), _
         (NULL) _
 	}
 
@@ -255,14 +248,15 @@ const SYMB_MAXKEYWORDS = 210
 '':::::
 sub symbInitKeywords( ) static
     dim as integer i
-    dim as FBSYMBOL ptr s
 
 	for i = 0 to SYMB_MAXKEYWORDS-1
     	if( kwdTb(i).name = NULL ) then
     		exit for
     	end if
-    	s = symbAddKeyword( kwdTb(i).name, kwdTb(i).id, kwdTb(i).class )
-    	if( s = NULL ) then
+
+    	if( symbAddKeyword( kwdTb(i).name, _
+    						kwdTb(i).id, _
+    						kwdTb(i).class ) = NULL ) then
     		exit sub
     	end if
     next
@@ -274,13 +268,14 @@ function symbAddKeyword _
 	( _
 		byval symbol as zstring ptr, _
 		byval id as integer, _
-		byval class as integer _
+		byval class as integer, _
+		byval hashtb as FBHASHTB ptr _
 	) as FBSYMBOL ptr
 
     dim as FBSYMBOL ptr k
 
     k = symbNewSymbol( NULL, _
-    				   @symbGetGlobalTb( ), NULL, TRUE, _
+    				   @symbGetGlobalTb( ), hashtb, TRUE, _
     				   FB_SYMBCLASS_KEYWORD, _
     				   TRUE, symbol, NULL, _
     				   TRUE )

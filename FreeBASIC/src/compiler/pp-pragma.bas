@@ -133,7 +133,7 @@ end function
 ''
 function ppPragma( ) as integer
     dim as string tk
-    dim as integer i, p, value, ispop = FALSE, ispush = FALSE
+    dim as integer i = any, p = any, value = any, ispop = FALSE, ispush = FALSE
 
 	function = FALSE
 

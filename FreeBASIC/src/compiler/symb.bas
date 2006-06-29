@@ -651,24 +651,21 @@ function symbLookup _
 end function
 
 '':::::
-function symbLookupAt _
+function symbLookupAtTb _
 	( _
-		byval ns as FBSYMBOL ptr, _
+		byval hashtb as FBHASHTB ptr, _
 		byval symbol as zstring ptr, _
 		byval preservecase as integer _
 	) as FBSYMCHAIN ptr static
 
     static as zstring * FB_MAXNAMELEN+1 sname
-    dim as uinteger index
 
     if( preservecase = FALSE ) then
     	hUcase( *symbol, sname )
     	symbol = @sname
     end if
 
-    index = hashHash( symbol )
-
-    function = hashLookupEx( @ns->nspc.hashtb.tb, symbol, index )
+    function = hashLookupEx( @hashtb->tb, symbol, hashHash( symbol ) )
 
 end function
 

@@ -27,7 +27,6 @@ option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
-#include once "inc\dstr.bi"
 #include once "inc\lex.bi"
 #include once "inc\pp.bi"
 #include once "inc\ast.bi"
@@ -157,7 +156,7 @@ end sub
 
 '':::::
 private function hReadChar as uinteger static
-    dim char as uinteger
+    dim as uinteger char
 
 	'' any #define'd text?
 	if( lex->deflen > 0 ) then
@@ -174,7 +173,13 @@ private function hReadChar as uinteger static
 					insidemacro = TRUE
 					curline += " [Macro Expansion: "
 				end if
-				curline += chr( char )
+
+				select case as const char
+				case 0, CHAR_CR, CHAR_LF
+
+				case else
+					curline += chr( char )
+				end select
 			end if
 		end if
 
@@ -232,8 +237,9 @@ private function hReadChar as uinteger static
 					curline += " ] "
 				end if
 
-				select case char
-				case 0, 13, 10
+				select case as const char
+				case 0, CHAR_CR, CHAR_LF
+
 				case else
 					curline += chr( char )
 				end select
@@ -1376,7 +1382,11 @@ re_read:
 			if( islinecont = FALSE ) then
 				t->id = FB_TK_EOL
 				t->class = FB_TKCLASS_DELIMITER
+				t->len = 1
+				t->text[0] = CHAR_LF					'' t.text = chr( 10 )
+				t->text[1] = 0                          '' /
 				exit sub
+
 			else
 				lex->linenum += 1
 				env.stmtcnt += 1
@@ -1452,6 +1462,21 @@ read_number:
 read_id:
 		t->len = 0
 		hReadIdentifier( @t->text, t->len, t->dtype, flags )
+
+		'' use the special hash tb?
+		if( (flags and LEXCHECK_KEYHASHTB) <> 0 ) then
+			t->sym_chain = symbLookupAtTb( lex->kwhashtb, @t->text )
+			'' not found?
+			if( t->sym_chain = NULL ) then
+				t->id = FB_TK_ID
+				t->class = FB_TKCLASS_IDENTIFIER
+			else
+				t->id = t->sym_chain->sym->key.id
+				t->class = t->sym_chain->sym->key.class
+			end if
+
+			exit sub
+		end if
 
 		'' don't search for symbols?
 		if( (flags and LEXCHECK_NOSYMBOL) <> 0 ) then
@@ -1672,42 +1697,6 @@ read_char:
 end sub
 
 '':::::
-private sub hCheckPP( )
-
-	'' not a '#' char?
-	if( lex->head->id <> CHAR_SHARP ) then
-		exit sub
-	end if
-
-	'' already inside the PP? (ie: skipping a false #IF or #ELSE)
-	if( lex->reclevel <> 0 ) then
-		exit sub
-	end if
-
-	'' not at the beginning of line?
-	if( lex->lasttk_id <> FB_TK_EOL ) then
-		'' or top of source-file?
-		if( lex->lasttk_id <> INVALID ) then
-			exit sub
-		end if
-	end if
-
-	lex->reclevel += 1
-    lexSkipToken( )
-
-    '' not a keyword? error, parser will catch it..
-	if( lex->head->class <> FB_TKCLASS_KEYWORD ) then
-    	lex->reclevel -= 1
-       	exit sub
-	end if
-
-    '' let the pre-processor do the rest..
-    ppParse( )
-	lex->reclevel -= 1
-
-end sub
-
-'':::::
 '' MultiLineComment	 = '/' ''' . '/' '''
 ''
 private sub hMultiLineComment( ) static
@@ -1785,7 +1774,7 @@ function lexGetToken _
 
     if( lex->head->id = INVALID ) then
     	lexNextToken( lex->head, flags )
-    	hCheckPP( )
+    	ppCheck( )
     end if
 
     function = lex->head->id
@@ -1800,7 +1789,7 @@ function lexGetClass _
 
     if( lex->head->id = INVALID ) then
     	lexNextToken( lex->head, flags )
-    	hCheckPP( )
+    	ppCheck( )
     end if
 
     function = lex->head->class
@@ -1894,7 +1883,7 @@ sub lexSkipToken _
     	hMoveKDown( )
     end if
 
-    hCheckPP( )
+    ppCheck( )
 
 end sub
 

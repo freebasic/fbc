@@ -25,7 +25,6 @@ option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
-#include once "inc\dstr.bi"
 #include once "inc\lex.bi"
 #include once "inc\parser.bi"
 #include once "inc\pp.bi"
@@ -36,16 +35,68 @@ option escape
 				  LEXCHECK_NOQUOTES or _
 				  LEXCHECK_NOSYMBOL
 
+type SYMBKWD
+	name			as zstring ptr
+	id				as integer
+end type
+
 declare function ppInclude					( ) as integer
 
 declare function ppIncLib					( ) as integer
 
 declare function ppLibPath					( ) as integer
 
+declare function ppLine						( ) as integer
+
+'' globals
+	dim shared as PP_CTX pp
+
+const SYMB_MAXKEYWORDS = 24
+
+	dim shared kwdTb( 0 to SYMB_MAXKEYWORDS-1 ) as SYMBKWD => _
+	{ _
+        (@"IF"		, FB_TK_PP_IF		), _
+        (@"IFDEF"	, FB_TK_PP_IFDEF	), _
+        (@"IFNDEF"	, FB_TK_PP_IFNDEF	), _
+        (@"ELSE"	, FB_TK_PP_ELSE		), _
+        (@"ELSEIF"	, FB_TK_PP_ELSEIF	), _
+        (@"ENDIF"	, FB_TK_PP_ENDIF	), _
+        (@"DEFINE"	, FB_TK_PP_DEFINE	), _
+        (@"UNDEF"	, FB_TK_PP_UNDEF	), _
+        (@"MACRO"	, FB_TK_PP_MACRO	), _
+        (@"ENDMACRO", FB_TK_PP_ENDMACRO	), _
+        (@"INCLUDE"	, FB_TK_PP_INCLUDE	), _
+        (@"LIBPATH"	, FB_TK_PP_LIBPATH	), _
+        (@"INCLIB"	, FB_TK_PP_INCLIB	), _
+        (@"PRAGMA"	, FB_TK_PP_PRAGMA	), _
+        (@"PRINT"	, FB_TK_PP_PRINT	), _
+        (@"ERROR"	, FB_TK_PP_ERROR	), _
+        (@"LINE"	, FB_TK_PP_LINE		), _
+        (NULL) _
+	}
 
 ''::::
 sub ppInit( )
+    dim as integer i
 
+	''
+	hashInit( )
+	symbHashTbInit( @pp.keyhash, NULL, SYMB_MAXKEYWORDS )
+
+	for i = 0 to SYMB_MAXKEYWORDS-1
+    	if( kwdTb(i).name = NULL ) then
+    		exit for
+    	end if
+
+    	if( symbAddKeyword( kwdTb(i).name, _
+    						kwdTb(i).id, _
+    						FB_TKCLASS_KEYWORD, _
+    						@pp.keyhash ) = NULL ) then
+    		exit sub
+    	end if
+    next
+
+	''
 	ppDefineInit( )
 
 	ppCondInit( )
@@ -63,7 +114,47 @@ sub ppEnd( )
 
 	ppDefineEnd( )
 
+	''
+	hashFree( @pp.keyhash.tb )
+	hashEnd( )
+
 end sub
+
+'':::::
+sub ppCheck( )
+
+	'' not a '#' char?
+	if( lex->head->id <> CHAR_SHARP ) then
+		exit sub
+	end if
+
+	'' already inside the PP? (ie: skipping a false #IF or #ELSE)
+	if( lex->reclevel <> 0 ) then
+		exit sub
+	end if
+
+	'' not at the beginning of line?
+	if( lex->lasttk_id <> FB_TK_EOL ) then
+		'' or top of source-file?
+		if( lex->lasttk_id <> INVALID ) then
+			exit sub
+		end if
+	end if
+
+	lex->reclevel += 1
+
+    '' !!!FIXME!!! if LEXCHECK_KEYHASHTB is used in future, it
+    '' must be restored
+    lex->kwhashtb = @pp.keyhash
+
+    lexSkipToken( LEXCHECK_KEYHASHTB )
+
+    '' let the parser do the rest..
+    ppParse( )
+	lex->reclevel -= 1
+
+end sub
+
 
 '':::::
 '' PreProcess    =   '#'DEFINE ID (!WHITESPC '(' ID (',' ID)* ')')? LITERAL*
@@ -81,21 +172,25 @@ end sub
 ''				 |	 '#'ERROR LIT_STR .
 ''
 function ppParse( ) as integer
-    dim as FBSYMCHAIN ptr chain_
+    dim as FBSYMCHAIN ptr chain_ = any
 
 	function = FALSE
 
     '' note: when adding any new PP symbol, update ppSkip() too
-    select case as const lexGetToken( )
+    select case as const lexGetToken( LEXCHECK_KEYHASHTB )
 
     '' DEFINE ID (!WHITESPC '(' ID (',' ID)* ')')? LITERAL+
-    case FB_TK_DEFINE
+    case FB_TK_PP_DEFINE
     	lexSkipToken( LEXCHECK_NODEFINE )
+    	function = ppDefine( FALSE )
 
-    	function = ppDefine( )
+	'' MACRO ID '(' ID (',' ID)* ')' LITERAL+
+	case FB_TK_PP_MACRO
+    	lexSkipToken( LEXCHECK_NODEFINE )
+    	function = ppDefine( TRUE )
 
 	'' UNDEF ID
-    case FB_TK_UNDEF
+    case FB_TK_PP_UNDEF
     	lexSkipToken( LEXCHECK_NODEFINE )
 
     	chain_ = cIdentifier( FALSE, FALSE )
@@ -119,47 +214,51 @@ function ppParse( ) as integer
 	'' IFDEF ID
 	'' IFNDEF ID
 	'' IF ID '=' LITERAL
-    case FB_TK_IFDEF, FB_TK_IFNDEF, FB_TK_IF
+    case FB_TK_PP_IFDEF, FB_TK_PP_IFNDEF, FB_TK_PP_IF
     	function = ppCondIf( )
 
 	'' ELSE
-	case FB_TK_ELSE, FB_TK_ELSEIF
+	case FB_TK_PP_ELSE, FB_TK_PP_ELSEIF
     	function = ppCondElse( )
 
 	'' ENDIF
-	case FB_TK_ENDIF
+	case FB_TK_PP_ENDIF
 		function = ppCondEndIf( )
 
 	'' PRINT LITERAL*
-	case FB_TK_PRINT, FB_TK_LPRINT
+	case FB_TK_PP_PRINT
 		lexSkipToken( )
 		print *ppReadLiteral( )
 		function = TRUE
 
 	'' ERROR LITERAL*
-	case FB_TK_ERROR
+	case FB_TK_PP_ERROR
 		lexSkipToken( )
 		return errReportEx( -1, *ppReadLiteral( ) )
 
 	'' INCLUDE ONCE? LIT_STR
-	case FB_TK_INCLUDE
+	case FB_TK_PP_INCLUDE
 		lexSkipToken( )
 		function = ppInclude( )
 
 	'' INCLIB LIT_STR
-	case FB_TK_INCLIB
+	case FB_TK_PP_INCLIB
 		lexSkipToken( )
         function = ppIncLib( )
 
 	'' LIBPATH LIT_STR
-	case FB_TK_LIBPATH
+	case FB_TK_PP_LIBPATH
 		lexSkipToken( )
 		function = ppLibPath( )
 
 	'' PRAGMA ...
-	case FB_TK_PRAGMA
+	case FB_TK_PP_PRAGMA
 		lexSkipToken( )
 		function = ppPragma( )
+
+	case FB_TK_PP_LINE
+		lexSkipToken( )
+		function = ppLine( )
 
 	case else
 		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
@@ -185,9 +284,11 @@ function ppParse( ) as integer
 end function
 
 '':::::
+'' ppInclude		=   '#'INCLUDE ONCE? LIT_STR
+''
 private function ppInclude( ) as integer
     static as zstring * FB_MAXPATHLEN+1 incfile
-    dim as integer isonce
+    dim as integer isonce = any
 
 	function = FALSE
 
@@ -217,6 +318,8 @@ private function ppInclude( ) as integer
 end function
 
 '':::::
+'' ppIncLib			=   '#'INCLIB LIT_STR
+''
 private function ppIncLib( ) as integer
     static as zstring * FB_MAXPATHLEN+1 libfile
 
@@ -237,6 +340,8 @@ private function ppIncLib( ) as integer
 end function
 
 '':::::
+'' ppLibPath		=   '#'LIBPATH LIT_STR
+''
 private function ppLibPath( ) as integer
     static as zstring * FB_MAXPATHLEN+1 path
 
@@ -262,6 +367,36 @@ private function ppLibPath( ) as integer
 
 end function
 
+'':::::
+'' ppLine		=   '#'LINE LIT_NUM LIT_STR?
+''
+private function ppLine( ) as integer
+
+	function = FALSE
+
+	'' LIT_NUM
+	if( lexGetClass( ) <> FB_TKCLASS_NUMLITERAL ) then
+		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			return FALSE
+		else
+			'' error recovery: skip
+			hSkipUntil( FB_TK_EOL )
+		end if
+
+	else
+		lex->linenum = valint( *lexGetText( ) )
+		lexSkipToken( )
+
+		'' LIT_STR?
+		if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
+    		env.inf.name = *lexGetText( )
+    		lexSkipToken( )
+		end if
+	end if
+
+	function = TRUE
+
+end function
 
 '':::::
 function ppReadLiteral( ) as zstring ptr

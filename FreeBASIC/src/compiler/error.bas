@@ -177,7 +177,8 @@ end type
 		@"Expected 'END FUNCTION'", _
 		@"Declaration outside the original namespace", _
 		@"No end of multi-line comment, expected \"'/\"", _
-		@"Too many errors, exiting" _
+		@"Too many errors, exiting", _
+		@"Expected 'ENDMACRO'" _
 	}
 
 

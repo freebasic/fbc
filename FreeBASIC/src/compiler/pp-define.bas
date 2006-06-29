@@ -36,10 +36,6 @@ option escape
 				  LEXCHECK_NOQUOTES or _
 				  LEXCHECK_NOSYMBOL
 
-type LEXPP_CTX
-	argtblist	as TLIST
-end type
-
 type LEXPP_ARG
 	union
 		text		as DZSTRING
@@ -51,20 +47,17 @@ type LEXPP_ARGTB
 	tb(0 to FB_MAXDEFINEARGS-1) as LEXPP_ARG
 end type
 
-'' globals
-	dim shared ctx as LEXPP_CTX
-
 ''::::
 sub ppDefineInit( )
 
-	listNew( @ctx.argtblist, 5, len( LEXPP_ARGTB ), LIST_FLAGS_NOCLEAR )
+	listNew( @pp.argtblist, 5, len( LEXPP_ARGTB ), LIST_FLAGS_NOCLEAR )
 
 end sub
 
 ''::::
 sub ppDefineEnd( )
 
-	listFree( @ctx.argtblist )
+	listFree( @pp.argtblist )
 
 end sub
 
@@ -85,11 +78,11 @@ private function hLoadMacro _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
-    dim as FB_DEFPARAM ptr param
-    dim as FB_DEFTOK ptr dt
-    dim as FBTOKEN t
-    dim as LEXPP_ARGTB ptr argtb
-    dim as integer prntcnt, num, doskip
+    dim as FB_DEFPARAM ptr param = any
+    dim as FB_DEFTOK ptr dt = any
+    dim as FBTOKEN t = any
+    dim as LEXPP_ARGTB ptr argtb = any
+    dim as integer prntcnt = any, num = any, doskip = any
     static as string text
 
 	function = -1
@@ -106,7 +99,7 @@ private function hLoadMacro _
 
 	'' allocate a new arg list (support recursion)
 	if( symbGetDefineHeadToken( s ) ) then
-		argtb = listNewNode( @ctx.argtblist )
+		argtb = listNewNode( @pp.argtblist )
 	else
 		argtb = NULL
 	end if
@@ -251,7 +244,7 @@ private function hLoadMacro _
 			DZstrAssign( argtb->tb(num).text, NULL )
 		loop
 
-		listDelNode( @ctx.argtblist, argtb )
+		listDelNode( @pp.argtblist, argtb )
 	end if
 
 	''
@@ -275,8 +268,8 @@ private function hLoadDefine _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
-    dim as integer lgt
     static as string text
+    dim as integer lgt = any
 
     function = FALSE
 
@@ -370,11 +363,11 @@ private function hLoadMacroW _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
-    dim as FB_DEFPARAM ptr param
-    dim as FB_DEFTOK ptr dt
-    dim as FBTOKEN t
-    dim as LEXPP_ARGTB ptr argtb
-    dim as integer prntcnt, lgt, num, doskip
+    dim as FB_DEFPARAM ptr param = any
+    dim as FB_DEFTOK ptr dt = any
+    dim as FBTOKEN t = any
+    dim as LEXPP_ARGTB ptr argtb = any
+    dim as integer prntcnt = any, lgt = any, num = any, doskip = any
     static as DWSTRING text
 
 	function = -1
@@ -390,7 +383,7 @@ private function hLoadMacroW _
 	prntcnt = 1
 	'' allocate a new arg list (because the recursivity)
 	if( symbGetDefineHeadToken( s ) ) then
-		argtb = listNewNode( @ctx.argtblist )
+		argtb = listNewNode( @pp.argtblist )
 	else
 		argtb = NULL
 	end if
@@ -535,7 +528,7 @@ private function hLoadMacroW _
 			DWstrAssign( argtb->tb(num).textw, NULL )
 		loop
 
-		listDelNode( @ctx.argtblist, argtb )
+		listDelNode( @pp.argtblist, argtb )
 	end if
 
 	''
@@ -559,8 +552,8 @@ private function hLoadDefineW _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
-    dim as integer lgt
     static as DWSTRING text
+    dim as integer lgt = any
 
     function = FALSE
 
@@ -681,21 +674,48 @@ end function
 private function hReadMacroText _
 	( _
 		byval args as integer, _
-		byval paramhead as FB_DEFPARAM ptr _
+		byval paramhead as FB_DEFPARAM ptr, _
+		byval ismultiline as integer _
 	) as FB_DEFTOK ptr
 
 	static as zstring * FB_MAXNAMELEN+1 token
-    dim as integer num, addquotes
-    dim as FB_DEFPARAM ptr param
-    dim as FB_DEFTOK ptr tok, tokhead
+    dim as integer num = any, addquotes = any
+    dim as FB_DEFPARAM ptr param = any
+    dim as FB_DEFTOK ptr tok = any, tokhead = any
 
     tok = NULL
     tokhead = NULL
 
     do
     	select case lexGetToken( LEX_FLAGS )
-		case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
+		case FB_TK_EOF
+			if( ismultiline ) then
+				errReport( FB_ERRMSG_EXPECTEDMACRO )
+			end if
+
 			exit do
+
+		case FB_TK_EOL
+			if( ismultiline = FALSE ) then
+				exit do
+			end if
+
+		case FB_TK_COMMENTCHAR, FB_TK_REM
+			if( ismultiline = FALSE ) then
+				exit do
+			end if
+
+			do
+				lexSkipToken( LEX_FLAGS )
+
+				select case lexGetToken( LEX_FLAGS )
+				case FB_TK_EOL, FB_TK_EOF
+					exit do
+				end select
+			loop
+
+			continue do
+
 		end select
 
     	'' preserve quotes if it's a string literal
@@ -725,21 +745,25 @@ private function hReadMacroText _
     	'' anything but a literal string..
     	else
 
-			tok = symbAddDefineTok( tok, FB_DEFTOK_TYPE_TEX )
-			if( tokhead = NULL ) then
-				tokhead = tok
-			end if
-
     		addquotes = FALSE
 
     		'' '#'?
     		if( lexGetToken( LEX_FLAGS ) = CHAR_SHARP ) then
-    			select case lexGetLookAhead( 1, LEX_FLAGS )
+    			select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KEYHASHTB) and _
+    									 		(not LEXCHECK_NOWHITESPC) )
     			'' '##'?
     			case CHAR_SHARP
     				lexSkipToken( LEX_FLAGS )
     				lexSkipToken( LEX_FLAGS )
     				continue do
+
+    			'' '#' endmacro?
+    			case FB_TK_PP_ENDMACRO
+    				if( ismultiline ) then
+    					lexSkipToken( LEX_FLAGS )
+    					lexSkipToken( LEX_FLAGS )
+    					exit do
+    				end if
 
     			'' '#' id?
     			case FB_TK_ID
@@ -747,6 +771,11 @@ private function hReadMacroText _
     			    addquotes = TRUE
     			end select
     		end if
+
+			tok = symbAddDefineTok( tok, FB_DEFTOK_TYPE_TEX )
+			if( tokhead = NULL ) then
+				tokhead = tok
+			end if
 
     		'' not and identifier? read as-is
     		if( lexGetToken( LEX_FLAGS ) <> FB_TK_ID ) then
@@ -797,15 +826,19 @@ private function hReadMacroText _
 end function
 
 '':::::
-function ppDefine( ) as integer
+function ppDefine _
+	( _
+		byval ismultiline as integer _
+	) as integer
+
 	static as zstring * FB_MAXNAMELEN+1 defname, paramname
-	dim as zstring ptr text
-	dim as wstring ptr textw
-	dim as integer params, isargless
-	dim as FB_DEFPARAM ptr paramhead, lastparam
-	dim as FBSYMBOL ptr sym
-	dim as FBSYMCHAIN ptr chain_
-	dim as FB_DEFTOK ptr tokhead
+	dim as zstring ptr text = any
+	dim as wstring ptr textw = any
+	dim as integer params = any, isargless = any, flags = any
+	dim as FB_DEFPARAM ptr paramhead = any, lastparam = any
+	dim as FBSYMBOL ptr sym = any
+	dim as FBSYMCHAIN ptr chain_ = any
+	dim as FB_DEFTOK ptr tokhead = any
 
 	function = FALSE
 
@@ -815,10 +848,15 @@ function ppDefine( ) as integer
 		exit function
 	end if
 
-    lexEatToken( @defname, LEX_FLAGS )
+    flags = LEX_FLAGS
+    if( ismultiline ) then
+    	flags and= not LEXCHECK_NOWHITESPC
+    end if
+
+    lexEatToken( @defname, flags )
 
     '' contains a period? (with LEX_FLAGS it won't skip white spaces)
-    if( lexGetToken( LEX_FLAGS ) = CHAR_DOT ) then
+    if( lexGetToken( flags ) = CHAR_DOT ) then
     	if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
     		exit function
     	end if
@@ -848,7 +886,7 @@ function ppDefine( ) as integer
     isargless = FALSE
 
     '' '('?
-    if( lexGetToken( LEX_FLAGS ) = CHAR_LPRNT ) then
+    if( lexGetToken( flags ) = CHAR_LPRNT ) then
     	lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL )
 
 		'' not arg-less?
@@ -898,9 +936,16 @@ function ppDefine( ) as integer
     	lexSkipToken( LEX_FLAGS and not LEXCHECK_NOWHITESPC )
 
     else
-    	if( lexGetToken( LEX_FLAGS ) = CHAR_SPACE ) then
-    		'' skip white-spaces
-    		lexSkipToken( LEX_FLAGS and not LEXCHECK_NOWHITESPC )
+    	if( ismultiline ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
+    			exit function
+			end if
+
+    	else
+    		if( lexGetToken( LEX_FLAGS ) = CHAR_SPACE ) then
+    			'' skip white-spaces
+    			lexSkipToken( LEX_FLAGS and not LEXCHECK_NOWHITESPC )
+    		end if
     	end if
     end if
 
@@ -966,7 +1011,7 @@ function ppDefine( ) as integer
     		end if
 
     	else
-       		tokhead = hReadMacroText( params, paramhead )
+       		tokhead = hReadMacroText( params, paramhead, ismultiline )
 
     		symbAddDefineMacro( @defname, tokhead, params, paramhead )
     	end if

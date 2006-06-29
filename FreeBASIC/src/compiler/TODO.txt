@@ -1,3 +1,5 @@
+[ ] [macro expansion: won't work for inner macros
+
 [ ] OPEN ... FOR is not checking for mode
     - does QB allow that? CONS won't work without INPUT or OUTPUT
 

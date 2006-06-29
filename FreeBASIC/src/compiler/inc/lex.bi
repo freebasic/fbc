@@ -32,6 +32,7 @@ enum LEXCHECK
 	LEXCHECK_NOSYMBOL	= 32
 	LEXCHECK_NOLOOKUP	= 64
 	LEXCHECK_IDPERIOD	= 128
+	LEXCHECK_KEYHASHTB	= 256
 end enum
 
 type FBTOKEN
@@ -70,7 +71,9 @@ type LEX_CTX
 	lasttk_id 		as integer
 
 	reclevel 		as integer					'' PP recursion
-	currmacro		as FBSYMBOL ptr
+	currmacro		as FBSYMBOL ptr				'' used to check macro recursion
+
+	kwhashtb		as FBHASHTB ptr				'' used by the PP
 
 	'' last #define's text
 	deflen 			as integer

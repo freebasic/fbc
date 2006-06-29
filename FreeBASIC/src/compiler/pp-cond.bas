@@ -30,10 +30,6 @@ option escape
 
 const FB_PP_MAXRECLEVEL = 64
 
-type LEXPP_CTX
-	level 		as integer
-end type
-
 type LEXPP_REC
 	istrue		as integer
 	elsecnt		as integer
@@ -72,13 +68,12 @@ declare function ppParentExpr				( _
 
 
 '' globals
-	dim shared ctx as LEXPP_CTX
 	dim shared pptb(1 to FB_PP_MAXRECLEVEL) as LEXPP_REC
 
 ''::::
 sub ppCondInit( )
 
-	ctx.level = 0
+	pp.level = 0
 
 end sub
 
@@ -89,15 +84,15 @@ end sub
 
 '':::::
 function ppCondIf( ) as integer
-    dim as integer istrue
+    dim as integer istrue = any
 
     function = FALSE
 
 	istrue = FALSE
 
-	select case as const lexGetToken( )
+	select case as const lexGetToken( LEXCHECK_KEYHASHTB )
 	'' IFDEF ID
-	case FB_TK_IFDEF
+	case FB_TK_PP_IFDEF
         lexSkipToken( LEXCHECK_NODEFINE )
 
 		if( cIdentifier( FALSE, FALSE ) <> NULL ) then
@@ -107,7 +102,7 @@ function ppCondIf( ) as integer
 		lexSkipToken( )
 
 	'' IFNDEF ID
-	case FB_TK_IFNDEF
+	case FB_TK_PP_IFNDEF
         lexSkipToken( LEXCHECK_NODEFINE )
 
 		if( cIdentifier( FALSE, FALSE ) = NULL ) then
@@ -117,7 +112,7 @@ function ppCondIf( ) as integer
 		lexSkipToken( )
 
 	'' IF Expression
-	case FB_TK_IF
+	case FB_TK_PP_IF
         lexSkipToken( )
 
 		if( ppExpression( istrue ) = FALSE ) then
@@ -126,15 +121,15 @@ function ppCondIf( ) as integer
 
 	end select
 
-	ctx.level += 1
-	if( ctx.level > FB_PP_MAXRECLEVEL ) then
+	pp.level += 1
+	if( pp.level > FB_PP_MAXRECLEVEL ) then
 		errReport( FB_ERRMSG_RECLEVELTOODEEP )
 		'' no error recovery: fatal
 		return errFatal( )
 	end if
 
-	pptb(ctx.level).istrue = istrue
-	pptb(ctx.level).elsecnt = 0
+	pptb(pp.level).istrue = istrue
+	pptb(pp.level).elsecnt = 0
 
     if( istrue = FALSE ) then
     	function = ppSkip( )
@@ -146,13 +141,13 @@ end function
 
 '':::::
 function ppCondElse( ) as integer
-	dim as integer istrue
+	dim as integer istrue = any
 
    	function = FALSE
 
    	istrue = FALSE
 
-	if( ctx.level = 0 ) then
+	if( pp.level = 0 ) then
         if( errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP ) = FALSE ) then
         	exit function
         else
@@ -162,7 +157,7 @@ function ppCondElse( ) as integer
         end if
 	end if
 
-    if( pptb(ctx.level).elsecnt > 0 ) then
+    if( pptb(pp.level).elsecnt > 0 ) then
 	   	if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 	   		exit function
 	   	else
@@ -173,28 +168,28 @@ function ppCondElse( ) as integer
     end if
 
 	'' ELSEIF?
-	if( lexGetToken( ) = FB_TK_ELSEIF ) then
+	if( lexGetToken( LEXCHECK_KEYHASHTB ) = FB_TK_PP_ELSEIF ) then
         lexSkipToken( )
 
 		if( ppExpression( istrue ) = FALSE ) then
 			exit function
 		end if
 
-		if( pptb(ctx.level).istrue ) then
+		if( pptb(pp.level).istrue ) then
 		    return ppSkip( )
 		else
-			pptb(ctx.level).istrue = istrue
+			pptb(pp.level).istrue = istrue
 		end if
 
 	'' ELSE
 	else
 		lexSkipToken( )
 
-        pptb(ctx.level).elsecnt += 1
-        pptb(ctx.level).istrue = not pptb(ctx.level).istrue
+        pptb(pp.level).elsecnt += 1
+        pptb(pp.level).istrue = not pptb(pp.level).istrue
     end if
 
-   	if( pptb(ctx.level).istrue = FALSE ) then
+   	if( pptb(pp.level).istrue = FALSE ) then
    		function = ppSkip( )
    	else
    		function = TRUE
@@ -207,7 +202,7 @@ function ppCondEndIf( ) as integer
 
    	function = FALSE
 
-	if( ctx.level = 0 ) then
+	if( pp.level = 0 ) then
         if( errReport( FB_ERRMSG_ILLEGALOUTSIDECOMP ) = FALSE ) then
 			exit function
 		else
@@ -220,13 +215,13 @@ function ppCondEndIf( ) as integer
    	'' ENDIF
    	lexSkipToken( )
 
-	ctx.level -= 1
+	pp.level -= 1
 
 end function
 
 '':::::
 private function ppSkip( ) as integer
-    dim as integer iflevel
+    dim as integer iflevel = any
 
 	function = FALSE
 
@@ -246,21 +241,21 @@ private function ppSkip( ) as integer
 		lexSkipToken( )
 	end if
 
-	iflevel = ctx.level
+	iflevel = pp.level
 
 	'' skip lines until a #ENDIF or #ELSE at same level is found
     do
 
 		select case lexGetToken( )
         case CHAR_SHARP
-        	lexSkipToken( )
+        	lexSkipToken( LEXCHECK_KEYHASHTB )
 
-        	select case as const lexGetToken( )
-        	case FB_TK_IF, FB_TK_IFDEF, FB_TK_IFNDEF
+        	select case as const lexGetToken( LEXCHECK_KEYHASHTB )
+        	case FB_TK_PP_IF, FB_TK_PP_IFDEF, FB_TK_PP_IFNDEF
         		iflevel += 1
 
-        	case FB_TK_ELSE, FB_TK_ELSEIF
-        		if( iflevel = ctx.level ) then
+        	case FB_TK_PP_ELSE, FB_TK_PP_ELSEIF
+        		if( iflevel = pp.level ) then
         			return ppCondElse( )
 
 				elseif( iflevel = 0 ) then
@@ -269,8 +264,8 @@ private function ppSkip( ) as integer
 					end if
         		end if
 
-        	case FB_TK_ENDIF
-        		if( iflevel = ctx.level ) then
+        	case FB_TK_PP_ENDIF
+        		if( iflevel = pp.level ) then
         			return ppCondEndIf( )
 
 				elseif( iflevel = 0 ) then
@@ -281,9 +276,9 @@ private function ppSkip( ) as integer
         			iflevel -= 1
         		end if
 
-    		case FB_TK_DEFINE, FB_TK_UNDEF, FB_TK_PRINT, FB_TK_LPRINT, _
-    			 FB_TK_ERROR, FB_TK_INCLUDE, FB_TK_INCLIB, FB_TK_LIBPATH, _
-    			 FB_TK_PRAGMA
+    		case FB_TK_PP_DEFINE, FB_TK_PP_UNDEF, FB_TK_PP_PRINT, FB_TK_PP_ERROR, _
+    			 FB_TK_PP_INCLUDE, FB_TK_PP_INCLIB, FB_TK_PP_LIBPATH, FB_TK_PP_PRAGMA, _
+    			 FB_TK_PP_MACRO, FB_TK_PP_ENDMACRO, FB_TK_PP_LINE
 
         	case else
         		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
@@ -579,7 +574,7 @@ private function ppLogExpression _
 		byref logexpr as PPEXPR _
 	) as integer
 
-    dim as integer op
+    dim as integer op = any
     dim as PPEXPR relexpr
 
     function = FALSE
@@ -652,7 +647,7 @@ private function ppRelExpression _
 		byref relexpr as PPEXPR _
 	) as integer
 
-    dim as integer op
+    dim as integer op = any
     dim as PPEXPR parexpr
 
    	function = FALSE
