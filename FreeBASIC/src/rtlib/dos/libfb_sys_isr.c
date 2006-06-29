@@ -34,6 +34,7 @@
  * sys_isr.c -- ISR handling for DOS
  *
  * chng: aug/2005 written [mjs]
+ *       jun/2006 ugly memory locking hack added [DrV]
  *
  */
 
@@ -82,7 +83,12 @@ int fb_dos_lock_mem(const void *address, size_t size)
 	static __dpmi_meminfo mi;
 	mi.address = (unsigned long) address;
 	mi.size = size;
-	return __dpmi_lock_linear_region(&mi);
+	/* return __dpmi_lock_linear_region(&mi); */
+	/* WARNING: ugly hack:
+	  For some reason locking memory fails on certain DPMI servers on certain platforms...
+	  so we ignore the return value and always indicate success to the caller */
+	(void)__dpmi_lock_linear_region(&mi);
+	return 0;
 }
 
 /*:::::*/
