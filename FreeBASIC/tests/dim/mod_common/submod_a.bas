@@ -10,6 +10,9 @@ declare sub test_extdyn( )
 	
 	test_extdyn( )
 	
+	assert( ext_nonshared_dynarray(1,1) = -1 )
+	assert( ext_nonshared_dynarray(1,2) = -2 )
+	
 	assert( ext_nonshared_var = 1234 )
 	
 
@@ -17,7 +20,6 @@ declare sub test_extdyn( )
 sub test_extdyn( )
 	
 	ASSERT( ext_dynarray(1,1) = 1 )
-
 	ASSERT( ext_dynarray(1,2) = 2 )
 	
 end sub
