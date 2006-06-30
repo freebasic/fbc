@@ -316,16 +316,20 @@ function errReport _
 
     dim as string token, msgex
 
+	msgex = ""
+
 	token = *lexGetText( )
 	if( len( token ) > 0 ) then
-		if( isbefore ) then
-			msgex = "before: '"
-		else
-			msgex = "found: '"
+		'' don't print control chars
+		if( lexGetToken( ) > CHAR_SPACE ) then
+			if( isbefore ) then
+				msgex = "before: '"
+			else
+				msgex = "found: '"
+			end if
+
+			msgex += token + "'"
 		end if
-		msgex = msgex + token + "'"
-	else
-		msgex = ""
 	end if
 
 	function = errReportEx( errnum, msgex )
