@@ -91,11 +91,14 @@ function cVariableDecl( ) as integer
 				exit function
 			else
 				'' error recovery: don't share it
-				attrib = FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_STATIC
+				attrib = FB_SYMBATTRIB_STATIC or _
+						 FB_SYMBATTRIB_DYNAMIC
 			end if
 
 		else
-			attrib = FB_SYMBATTRIB_COMMON or FB_SYMBATTRIB_DYNAMIC or FB_SYMBATTRIB_STATIC
+			attrib = FB_SYMBATTRIB_COMMON or _
+					 FB_SYMBATTRIB_STATIC or _
+					 FB_SYMBATTRIB_DYNAMIC	'' this will be removed, if it's not a array
 		end if
 
 		lexSkipToken( )
@@ -118,7 +121,9 @@ function cVariableDecl( ) as integer
 			end if
 
 		else
-			attrib = FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
+			attrib = FB_SYMBATTRIB_EXTERN or _
+					 FB_SYMBATTRIB_SHARED or _
+					 FB_SYMBATTRIB_STATIC
 		end if
 
 		lexSkipToken( )
@@ -160,7 +165,8 @@ function cVariableDecl( ) as integer
 				end if
 
 			else
-				attrib or= FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_STATIC
+				attrib or= FB_SYMBATTRIB_SHARED or _
+						   FB_SYMBATTRIB_STATIC
 			end if
 
 			lexSkipToken( )
@@ -893,10 +899,24 @@ private function hVarDecl _
     		isdecl = symbGetIsDeclared( sym )
     	end if
 
+		'' check for initializers..
 		initree = NULL
 
-		'' if not declared yet and not Extern, check for initializers
-		if( (isdecl = FALSE) and (token <> FB_TK_EXTERN) ) then
+		'' already declared, extern or common?
+		if( isdecl or _
+			((attrib and (FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_COMMON)) <> 0) ) then
+
+			select case lexGetToken( )
+			case FB_TK_DBLEQ, FB_TK_EQ
+				if( errReport( FB_ERRMSG_CANNOTINITEXTERNORCOMMON ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: skip
+					hSkipUntil( FB_TK_EOL )
+				end if
+			end select
+
+		else
 
 			'' ('=' SymbolInitializer | ANY)?
 			select case lexGetToken( )
@@ -985,7 +1005,8 @@ private function hVarDecl _
 					if( isdecl = FALSE ) then
 						'' local?
 						if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
-												   	   FB_SYMBATTRIB_SHARED)) = 0 ) then
+												   	   FB_SYMBATTRIB_SHARED or _
+												   	   FB_SYMBATTRIB_COMMON)) = 0 ) then
 
 							'' bydesc array params have no descriptor
 							if( desc <> NULL ) then

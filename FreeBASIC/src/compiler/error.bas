@@ -178,7 +178,8 @@ end type
 		@"Declaration outside the original namespace", _
 		@"No end of multi-line comment, expected \"'/\"", _
 		@"Too many errors, exiting", _
-		@"Expected 'ENDMACRO'" _
+		@"Expected 'ENDMACRO'", _
+		@"EXTERN or COMMON variables cannot be initialized" _
 	}
 
 

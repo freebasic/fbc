@@ -364,6 +364,7 @@ private function hCreateArrayDesc _
 
 	desc->attrib = (array->attrib and _
 				    (FB_SYMBATTRIB_SHARED or _
+				     FB_SYMBATTRIB_COMMON or _
 				     FB_SYMBATTRIB_STATIC or _
 				     FB_SYMBATTRIB_EXTERN or _
 				     FB_SYMBATTRIB_PUBLIC or _
@@ -558,7 +559,8 @@ function symbAddVarEx _
     ''
     isglobal = (attrib and (FB_SYMBATTRIB_PUBLIC or _
 			 				FB_SYMBATTRIB_EXTERN or _
-			 				FB_SYMBATTRIB_SHARED)) <> 0
+			 				FB_SYMBATTRIB_SHARED or _
+			 				FB_SYMBATTRIB_COMMON)) <> 0
 
 	'' inside a namespace but outside a proc?
 	if( symbIsGlobalNamespc() = FALSE ) then

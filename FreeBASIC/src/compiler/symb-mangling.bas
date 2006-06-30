@@ -461,6 +461,7 @@ private function hGetVarPrefix _
 	if( (sym->attrib and (FB_SYMBATTRIB_PUBLIC or _
 			 		   	  FB_SYMBATTRIB_EXTERN or _
 			 			  FB_SYMBATTRIB_SHARED or _
+			 			  FB_SYMBATTRIB_COMMON or _
 			 			  FB_SYMBATTRIB_STATIC)) = 0 ) then
 		return NULL
 	end if
@@ -585,7 +586,8 @@ private function hMangleVariable  _
 		'' shared, public, extern or inside a n?
 		isglobal = (sym->attrib and (FB_SYMBATTRIB_PUBLIC or _
 			 			   	  		 FB_SYMBATTRIB_EXTERN or _
-			 				  		 FB_SYMBATTRIB_SHARED)) <> 0
+			 				  		 FB_SYMBATTRIB_SHARED or _
+			 				  		 FB_SYMBATTRIB_COMMON)) <> 0
 
 
 		if( isglobal or docpp ) then

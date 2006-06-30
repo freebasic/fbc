@@ -5599,7 +5599,9 @@ private sub hEmitVarBss _
     hWriteStr( TRUE, ostr )
 
     '' add dbg info, if public or shared
-    if( (attrib and (FB_SYMBATTRIB_SHARED or FB_SYMBATTRIB_PUBLIC)) > 0 ) then
+    if( (attrib and (FB_SYMBATTRIB_SHARED or _
+    				 FB_SYMBATTRIB_COMMON or _
+    				 FB_SYMBATTRIB_PUBLIC)) > 0 ) then
     	edbgEmitGlobalVar( s, EMIT_SECTYPE_BSS )
 	end if
 
@@ -5807,7 +5809,7 @@ sub emitDeclVariable _
 		return
 	end if
 
-    '' extern or dynamic?
+    '' extern or dynamic (for the latter, only the array descriptor is emitted)?
 	if( (s->attrib and (FB_SYMBATTRIB_EXTERN or _
 			   			FB_SYMBATTRIB_DYNAMIC)) <> 0 ) then
 		return

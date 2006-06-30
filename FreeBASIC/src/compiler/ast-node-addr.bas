@@ -204,6 +204,7 @@ function astNewADDR _
 			if( s <> NULL ) then
 				if( (symbIsLocal( s ) = FALSE) or _
 					 ((symbGetAttrib( s ) and (FB_SYMBATTRIB_SHARED or _
+					 						   FB_SYMBATTRIB_COMMON or _
 					 						   FB_SYMBATTRIB_STATIC)) <> 0) ) then
 					return astNewOFFSET( l )
 				end if
