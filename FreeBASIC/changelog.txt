@@ -16,6 +16,7 @@ Version 0.17 Beta:
 - FileCopy, FileAttr, and FileLen VB-compatability functions [DrV]
 - the __FB_DEBUG__ define, that is set to TRUE (-1) if in debug mode (if the -g option was used), FALSE (0) otherwise (v1c)
 - field access can now be used with PEEK, like in: PEEK( some_type, some_int ).some_field (v1c)
+- the #line number [, "filename"] pre-processor directive, works as in C (v1c)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
@@ -37,6 +38,7 @@ Version 0.17 Beta:
 - comparing a NULL string pointer to an empty string was not returning equal (v1c)
 - static/global variables not accessed outside the asm block wouldn't not be emitted (v1c)
 - the "= any" initializer was not working with UDT's - they were always cleared (v1c)
+- the string concat operator (&) had a different precedence order than in VB (v1c)
 
 
 Version 0.16 Beta:
