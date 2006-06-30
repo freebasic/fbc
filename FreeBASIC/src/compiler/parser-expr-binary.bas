@@ -122,7 +122,7 @@ function cUpdPointer _
 end function
 
 '':::::
-''Expression      =   CatExpression .
+''Expression      =   LogExpression .
 ''
 function cExpression _
 	( _
@@ -131,108 +131,10 @@ function cExpression _
 
 	env.isexpr = TRUE
 
-	function = cCatExpression( expr )
+	'' LogExpression
+	function = cLogExpression( expr )
 
 	env.isexpr = FALSE
-
-end function
-
-'':::::
-''CatExpression   =   LogExpression ( & LogExpression )* .
-''
-function cCatExpression _
-	( _
-		byref catexpr as ASTNODE ptr _
-	) as integer
-
-	dim as ASTNODE ptr expr = any
-
-	function = FALSE
-
-	'' LogExpression
-	if( cLogExpression( catexpr ) = FALSE ) then
-		exit function
-	end if
-
-	'' &
-	if( lexGetToken( ) = CHAR_AMP ) then
-
-    	'' convert operand to string if needed
-    	select case as const astGetDataType( catexpr )
-    	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-    		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-
-    	'' not a string..
-    	case else
-    		catexpr = rtlToStr( catexpr )
-   			if( catexpr = NULL ) then
-   				if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-   					exit function
-   				else
-   					'' error recovery: fake a new node
-   					catexpr = astNewCONSTstr( NULL )
-   				end if
-    		end if
-    	end select
-	end if
-
-	'' ( ... )*
-	do
-		'' &
-		if( lexGetToken( ) <> CHAR_AMP ) then
-			exit do
-		end if
-
-		lexSkipToken( )
-
-		'' LogExpression
-    	if( cLogExpression( expr ) = FALSE ) then
-    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
-    			exit function
-    		else
-            	exit do
-    		end if
-    	end if
-
-		'' convert operand to string if needed
-    	select case as const astGetDataType( expr )
-    	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
-    		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-
-    	'' not a string..
-    	case else
-	   		'' expression is not a wstring?
-	   		if( astGetDataType( catexpr ) <> FB_DATATYPE_WCHAR ) then
-	   			expr = rtlToStr( expr )
-	   		else
-	   			expr = rtlToWstr( expr )
-	   		end if
-
-	   		if( expr = NULL ) then
-	   			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-	   				exit function
-	   			else
-   					'' error recovery: fake a new node
-   					expr = astNewCONSTstr( NULL )
-   				end if
-	   		end if
-    	end select
-
-    	'' concatenate
-    	catexpr = astNewBOP( AST_OP_ADD, catexpr, expr )
-
-        if( catexpr = NULL ) then
-			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-            	exit function
-   			else
-   				'' error recovery: fake a new node
-   				catexpr = astNewCONSTstr( NULL )
-   			end if
-        end if
-
-	loop
-
-	function = TRUE
 
 end function
 
@@ -404,7 +306,7 @@ function cLogAndExpression _
 end function
 
 '':::::
-''RelExpression   =   AddExpression ( (EQ | GT | LT | NE | LE | GE) AddExpression )* .
+''RelExpression   =   CatExpression ( (EQ | GT | LT | NE | LE | GE) CatExpression )* .
 ''
 function cRelExpression _
 	( _
@@ -416,8 +318,8 @@ function cRelExpression _
 
     function = FALSE
 
-   	'' AddExpression
-   	if( cAddExpression( relexpr ) = FALSE ) then
+   	'' CatExpression
+   	if( cCatExpression( relexpr ) = FALSE ) then
    		exit function
    	end if
 
@@ -443,8 +345,8 @@ function cRelExpression _
 
     	lexSkipToken( )
 
-    	'' AddExpression
-    	if( cAddExpression( expr ) = FALSE ) then
+    	'' CatExpression
+    	if( cCatExpression( expr ) = FALSE ) then
     		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
     			exit function
     		else
@@ -466,6 +368,105 @@ function cRelExpression _
     loop
 
     function = TRUE
+
+end function
+
+'':::::
+''CatExpression   =   AddExpression ( & AddExpression )* .
+''
+function cCatExpression _
+	( _
+		byref catexpr as ASTNODE ptr _
+	) as integer
+
+	dim as ASTNODE ptr expr = any
+
+	function = FALSE
+
+	'' AddExpression
+	if( cAddExpression( catexpr ) = FALSE ) then
+		exit function
+	end if
+
+	'' &
+	if( lexGetToken( ) = CHAR_AMP ) then
+
+    	'' convert operand to string if needed
+    	select case as const astGetDataType( catexpr )
+    	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+    		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+
+    	'' not a string..
+    	case else
+    		catexpr = rtlToStr( catexpr )
+   			if( catexpr = NULL ) then
+   				if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+   					exit function
+   				else
+   					'' error recovery: fake a new node
+   					catexpr = astNewCONSTstr( NULL )
+   				end if
+    		end if
+    	end select
+	end if
+
+	'' ( ... )*
+	do
+		'' &
+		if( lexGetToken( ) <> CHAR_AMP ) then
+			exit do
+		end if
+
+		lexSkipToken( )
+
+		'' AddExpression
+    	if( cAddExpression( expr ) = FALSE ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
+    			exit function
+    		else
+            	exit do
+    		end if
+    	end if
+
+		'' convert operand to string if needed
+    	select case as const astGetDataType( expr )
+    	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
+    		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+
+    	'' not a string..
+    	case else
+	   		'' expression is not a wstring?
+	   		if( astGetDataType( catexpr ) <> FB_DATATYPE_WCHAR ) then
+	   			expr = rtlToStr( expr )
+	   		else
+	   			expr = rtlToWstr( expr )
+	   		end if
+
+	   		if( expr = NULL ) then
+	   			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+	   				exit function
+	   			else
+   					'' error recovery: fake a new node
+   					expr = astNewCONSTstr( NULL )
+   				end if
+	   		end if
+    	end select
+
+    	'' concatenate
+    	catexpr = astNewBOP( AST_OP_ADD, catexpr, expr )
+
+        if( catexpr = NULL ) then
+			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+            	exit function
+   			else
+   				'' error recovery: fake a new node
+   				catexpr = astNewCONSTstr( NULL )
+   			end if
+        end if
+
+	loop
+
+	function = TRUE
 
 end function
 
