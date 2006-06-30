@@ -83,9 +83,13 @@ declare function 	ppCondElse 				( )  as integer
 declare function 	ppCondEndIf 			( ) as integer
 
 
-declare function 	ppReadLiteral			( ) as zstring ptr
+declare function 	ppReadLiteral			( _
+												byval ismultiline as integer = FALSE _
+											) as zstring ptr
 
-declare function 	ppReadLiteralW			( ) as wstring ptr
+declare function 	ppReadLiteralW			( _
+												byval ismultiline as integer = FALSE _
+											) as wstring ptr
 
 ''
 '' inter-module globals

@@ -189,6 +189,7 @@ type FB_DEFTOK
 		paramnum	as integer
 	end union
 
+	prev			as FB_DEFTOK ptr
 	next			as FB_DEFTOK ptr
 end type
 
@@ -624,6 +625,10 @@ declare function 	symbAddDefineParam		( _
 declare function 	symbAddDefineTok		( _
 												byval lasttok as FB_DEFTOK ptr, _
 						     				  	byval dtype as FB_DEFTOK_TYPE _
+											) as FB_DEFTOK ptr
+
+declare function 	symbDelDefineTok		( _
+												byval tok as FB_DEFTOK ptr _
 											) as FB_DEFTOK ptr
 
 declare function 	symbAddFwdRef			( _
@@ -1263,6 +1268,8 @@ declare function 	symbTypeToStr			( _
 #define symbGetDefineTextW(d) d->def.textw
 
 #define symbGetDefineHeadToken(d) d->def.tokhead
+
+#define symbGetDefTokPrev(t) t->prev
 
 #define symbGetDefTokNext(t) t->next
 

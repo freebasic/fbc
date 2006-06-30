@@ -29,11 +29,11 @@ option escape
 #include once "inc\parser.bi"
 #include once "inc\pp.bi"
 
-#define LEX_FLAGS LEXCHECK_NOWHITESPC or _
-				  LEXCHECK_NOSUFFIX or _
-				  LEXCHECK_NODEFINE or _
-				  LEXCHECK_NOQUOTES or _
-				  LEXCHECK_NOSYMBOL
+#define LEX_FLAGS (LEXCHECK_NOWHITESPC or _
+				   LEXCHECK_NOSUFFIX or _
+				   LEXCHECK_NODEFINE or _
+				   LEXCHECK_NOQUOTES or _
+				   LEXCHECK_NOSYMBOL)
 
 type SYMBKWD
 	name			as zstring ptr
@@ -401,17 +401,130 @@ private function ppLine( ) as integer
 end function
 
 '':::::
-function ppReadLiteral( ) as zstring ptr
+private sub hRtrimMacroText _
+	( _
+		byval text as DZSTRING ptr _
+	) static
+
+	dim as zstring ptr p
+
+	'' remove the white-spaces (including nl)
+
+	p = text->data + (text->len - 1)
+    do while( p > text->data )
+
+		select case as const (*p)[0]
+		'' space or nl?
+    	case CHAR_SPACE, CHAR_TAB, CHAR_LF
+    		text->len -= 1
+    		*p = 0
+
+		case else
+        	exit do
+		end select
+
+		p -= 1
+    loop
+
+end sub
+
+'':::::
+function ppReadLiteral _
+	( _
+		byval ismultiline as integer _
+	) as zstring ptr
+
 	static as DZSTRING text
+	dim as integer nestedcnt = 0
 
     DZstrAllocate( text, 0 )
 
     do
-    	select case lexGetToken( LEX_FLAGS )
-		case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
-			exit do
-		end select
+    	select case as const lexGetToken( LEX_FLAGS )
+		case FB_TK_EOF
+			if( ismultiline ) then
+				errReport( FB_ERRMSG_EXPECTEDMACRO )
+			end if
 
+			exit do
+
+		'' nl?
+		case FB_TK_EOL
+			if( ismultiline = FALSE ) then
+				exit do
+			end if
+
+    		'' multi-line, only add if it's not at the beginning
+    		if( text.len > 0 ) then
+    			'' just lf
+    			DZstrConcatAssign( text, "\n" )
+    		end if
+
+    		lexSkipToken( LEX_FLAGS )
+
+    		continue do
+
+		case FB_TK_COMMENTCHAR, FB_TK_REM
+			if( ismultiline = FALSE ) then
+				exit do
+			end if
+
+			do
+				lexSkipToken( LEX_FLAGS )
+
+				select case lexGetToken( LEX_FLAGS )
+				case FB_TK_EOL, FB_TK_EOF
+					exit do
+				end select
+			loop
+
+			continue do
+
+    	'' '#'?
+    	case CHAR_SHARP
+    		select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KEYHASHTB) and _
+    								 		(not LEXCHECK_NOWHITESPC) )
+    		'' '#' macro?
+    		case FB_TK_PP_MACRO
+    			if( ismultiline ) then
+    				nestedcnt += 1
+    			end if
+
+    		'' '#' endmacro?
+    		case FB_TK_PP_ENDMACRO
+    			if( ismultiline ) then
+    				'' not nested?
+    				if( nestedcnt = 0 ) then
+    					lexSkipToken( LEX_FLAGS )
+    					'' no LEX_FLAGS, white-spaces must be skipped
+    					lexSkipToken( )
+
+						hRtrimMacroText( @text )
+
+    					exit do
+    				end if
+
+    				nestedcnt -= 1
+    			end if
+
+   			end select
+
+   		'' white space?
+   		case CHAR_SPACE, CHAR_TAB
+
+    		'' only add if it's not at the beginning
+    		if( text.len > 0 ) then
+    			'' condensed to a single white-space
+    			DZstrConcatAssign( text, " " )
+    		end if
+
+    		lexSkipToken( LEX_FLAGS )
+
+    		continue do
+
+    	end select
+
+    	'' anything else..
     	if( lexGetType() <> FB_DATATYPE_WCHAR ) then
     		DZstrConcatAssign( text, lexGetText( ) )
     	else
@@ -427,17 +540,130 @@ function ppReadLiteral( ) as zstring ptr
 end function
 
 '':::::
-function ppReadLiteralW( ) as wstring ptr
+private sub hRtrimMacroTextW _
+	( _
+		byval text as DWSTRING ptr _
+	) static
+
+	dim as wstring ptr p
+
+	'' remove the white-spaces (including nl)
+
+	p = text->data + (text->len - 1)
+    do while( p > text->data )
+
+		select case as const (*p)[0]
+		'' space or nl?
+    	case CHAR_SPACE, CHAR_TAB, CHAR_LF
+    		text->len -= 1
+    		*p = 0
+
+		case else
+        	exit do
+		end select
+
+		p -= 1
+    loop
+
+end sub
+
+'':::::
+function ppReadLiteralW _
+	( _
+		byval ismultiline as integer _
+	) as wstring ptr
+
 	static as DWSTRING text
+	dim as integer nestedcnt = 0
 
     DWstrAllocate( text, 0 )
 
     do
-    	select case lexGetToken( LEX_FLAGS )
-		case FB_TK_EOL, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
-			exit do
-		end select
+    	select case as const lexGetToken( LEX_FLAGS )
+		case FB_TK_EOF
+			if( ismultiline ) then
+				errReport( FB_ERRMSG_EXPECTEDMACRO )
+			end if
 
+			exit do
+
+		'' nl?
+		case FB_TK_EOL
+			if( ismultiline = FALSE ) then
+				exit do
+			end if
+
+    		'' multi-line, only add if it's not at the beginning
+    		if( text.len > 0 ) then
+    			'' just lf
+    			DWstrConcatAssign( text, wstr( "\n" ) )
+    		end if
+
+    		lexSkipToken( LEX_FLAGS )
+
+    		continue do
+
+		case FB_TK_COMMENTCHAR, FB_TK_REM
+			if( ismultiline = FALSE ) then
+				exit do
+			end if
+
+			do
+				lexSkipToken( LEX_FLAGS )
+
+				select case lexGetToken( LEX_FLAGS )
+				case FB_TK_EOL, FB_TK_EOF
+					exit do
+				end select
+			loop
+
+			continue do
+
+    	'' '#'?
+    	case CHAR_SHARP
+    		select case lexGetLookAhead( 1, (LEX_FLAGS or LEXCHECK_KEYHASHTB) and _
+    								 		(not LEXCHECK_NOWHITESPC) )
+    		'' '#' macro?
+    		case FB_TK_PP_MACRO
+    			if( ismultiline ) then
+    				nestedcnt += 1
+    			end if
+
+    		'' '#' endmacro?
+    		case FB_TK_PP_ENDMACRO
+    			if( ismultiline ) then
+    				'' not nested?
+    				if( nestedcnt = 0 ) then
+    					lexSkipToken( LEX_FLAGS )
+    					'' no LEX_FLAGS, white-spaces must be skipped
+    					lexSkipToken( )
+
+						hRtrimMacroTextW( @text )
+
+    					exit do
+    				end if
+
+    				nestedcnt -= 1
+    			end if
+
+   			end select
+
+   		'' white space?
+   		case CHAR_SPACE, CHAR_TAB
+
+    		'' only add if it's not at the beginning
+    		if( text.len > 0 ) then
+    			'' condensed to a single white-space
+    			DWstrConcatAssign( text, wstr( " " ) )
+    		end if
+
+    		lexSkipToken( LEX_FLAGS )
+
+    		continue do
+
+    	end select
+
+        '' anything else..
     	if( lexGetType( ) = FB_DATATYPE_WCHAR ) then
     		DWstrConcatAssign( text, lexGetTextW( ) )
     	else
@@ -451,5 +677,4 @@ function ppReadLiteralW( ) as wstring ptr
 	function = text.data
 
 end function
-
 

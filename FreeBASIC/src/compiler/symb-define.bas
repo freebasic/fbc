@@ -407,6 +407,8 @@ function symbAddDefineTok _
 	if( lasttok <> NULL ) then
 		lasttok->next = t
 	end if
+
+	t->prev = lasttok
 	t->next	= NULL
 
 	''
@@ -423,6 +425,31 @@ function symbAddDefineTok _
 end function
 
 '':::::
+function symbDelDefineTok _
+	( _
+		byval tok as FB_DEFTOK ptr _
+	) as FB_DEFTOK ptr static
+
+	'' warning: this should only be used to remove the tail tokens
+    if( tok->prev <> NULL ) then
+    	tok->prev->next = NULL
+    	function = tok->prev
+    else
+    	function = NULL
+    end if
+
+	select case tok->type
+    case FB_DEFTOK_TYPE_TEX
+    	ZstrFree( tok->text )
+    case FB_DEFTOK_TYPE_TEXW
+    	WstrFree( tok->textw )
+    end select
+
+    listDelNode( @symb.deftoklist, tok )
+
+end function
+
+'':::::
 private sub hDelDefineParams( byval s as FBSYMBOL ptr )
 	dim as FB_DEFPARAM ptr param, nxt
 
@@ -430,7 +457,9 @@ private sub hDelDefineParams( byval s as FBSYMBOL ptr )
     do while( param <> NULL )
     	nxt = param->next
     	ZstrFree( param->name )
+
     	listDelNode( @symb.defparamlist, param )
+
     	param = nxt
     loop
 
@@ -444,14 +473,8 @@ private sub hDelDefineTokens( byval s as FBSYMBOL ptr )
     do while( tok <> NULL )
     	nxt = tok->next
 
-    	select case tok->type
-    	case FB_DEFTOK_TYPE_TEX
-    		ZstrFree( tok->text )
-    	case FB_DEFTOK_TYPE_TEXW
-    		WstrFree( tok->textw )
-    	end select
+        symbDelDefineTok( tok )
 
-    	listDelNode( @symb.deftoklist, tok )
     	tok = nxt
     loop
 
