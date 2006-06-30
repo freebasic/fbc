@@ -39,6 +39,7 @@ Version 0.17 Beta:
 - static/global variables not accessed outside the asm block wouldn't not be emitted (v1c)
 - the "= any" initializer was not working with UDT's - they were always cleared (v1c)
 - the string concat operator (&) had a different precedence order than in VB (v1c)
+- names of non-shared COMMON variables were not been preserved (v1c)
 
 
 Version 0.16 Beta:
