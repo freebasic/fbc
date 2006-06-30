@@ -10,6 +10,8 @@ declare sub test_extdyn( )
 	
 	test_extdyn( )
 	
+	assert( ext_nonshared_var = 1234 )
+	
 
 ''
 sub test_extdyn( )
