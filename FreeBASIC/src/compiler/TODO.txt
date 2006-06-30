@@ -1,4 +1,12 @@
-[ ] [macro expansion: won't work for inner macros
+[ ] PP:
+    - [macro expansion: won't work for inner macros
+    - params are not checked for dups:
+    	- that can slow down parsing of big headers, turn off checking
+    	  of files under /inc? (add an cmd-line to turn it on)
+    	  - or maybe not, the param hash can be used by readMacroText
+    	    instead of the linear check
+    - add varargs support, like foo(arg1, ...) ...
+    - support default arguments?
 
 [ ] OPEN ... FOR is not checking for mode
     - does QB allow that? CONS won't work without INPUT or OUTPUT

@@ -184,7 +184,9 @@ function ppParse( ) as integer
     	lexSkipToken( LEXCHECK_NODEFINE )
     	function = ppDefine( FALSE )
 
-	'' MACRO ID '(' ID (',' ID)* ')' LITERAL+
+	'' MACRO ID '(' ID (',' ID)* ')' Comment? EOL
+	'' 	MacroBody*
+	'' ENDMACRO
 	case FB_TK_PP_MACRO
     	lexSkipToken( LEXCHECK_NODEFINE )
     	function = ppDefine( TRUE )

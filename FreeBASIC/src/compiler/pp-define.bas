@@ -30,11 +30,11 @@ option escape
 #include once "inc\list.bi"
 #include once "inc\dstr.bi"
 
-#define LEX_FLAGS LEXCHECK_NOWHITESPC or _
+#define LEX_FLAGS (LEXCHECK_NOWHITESPC or _
 				  LEXCHECK_NOSUFFIX or _
 				  LEXCHECK_NODEFINE or _
 				  LEXCHECK_NOQUOTES or _
-				  LEXCHECK_NOSYMBOL
+				  LEXCHECK_NOSYMBOL)
 
 type LEXPP_ARG
 	union
@@ -95,14 +95,14 @@ private function hLoadMacro _
 
 	lexEatChar( )
 
-	prntcnt = 1
-
 	'' allocate a new arg list (support recursion)
 	if( symbGetDefineHeadToken( s ) ) then
 		argtb = listNewNode( @pp.argtblist )
 	else
 		argtb = NULL
 	end if
+
+	prntcnt = 1
 
 	'' for each arg
 	param = symbGetDefineHeadParam( s )
@@ -119,21 +119,24 @@ private function hLoadMacro _
 							  LEXCHECK_NOQUOTES or _
 							  LEXCHECK_NOLOOKUP )
 
-			select case t.id
+			select case as const t.id
 			'' (
 			case CHAR_LPRNT
 				prntcnt += 1
+
 			'' )
 			case CHAR_RPRNT
 				prntcnt -= 1
 				if( prntcnt = 0 ) then
 					exit do
 				end if
+
 			'' ,
 			case CHAR_COMMA
 				if( prntcnt = 1 ) then
 					exit do
 				end if
+
 			''
 			case FB_TK_EOL, FB_TK_EOF
 				if( hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
@@ -152,6 +155,7 @@ private function hLoadMacro _
 	    	end if
 		loop
 
+		''
 		if( argtb <> NULL ) then
 			'' trim
 			with argtb->tb(num)
@@ -380,13 +384,14 @@ private function hLoadMacroW _
 
 	lexEatChar( )
 
-	prntcnt = 1
 	'' allocate a new arg list (because the recursivity)
 	if( symbGetDefineHeadToken( s ) ) then
 		argtb = listNewNode( @pp.argtblist )
 	else
 		argtb = NULL
 	end if
+
+	prntcnt = 1
 
 	'' for each arg
 	param = symbGetDefineHeadParam( s )
@@ -402,21 +407,25 @@ private function hLoadMacroW _
 							  LEXCHECK_NOSUFFIX or _
 							  LEXCHECK_NOQUOTES or _
 							  LEXCHECK_NOLOOKUP )
-			select case t.id
+
+			select case as const t.id
 			'' (
 			case CHAR_LPRNT
 				prntcnt += 1
+
 			'' )
 			case CHAR_RPRNT
 				prntcnt -= 1
 				if( prntcnt = 0 ) then
 					exit do
 				end if
+
 			'' ,
 			case CHAR_COMMA
 				if( prntcnt = 1 ) then
 					exit do
 				end if
+
 			''
 			case FB_TK_EOL, FB_TK_EOF
 				if( hReportMacroError( s, FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
@@ -679,12 +688,9 @@ private function hReadMacroText _
 	) as FB_DEFTOK ptr
 
 	static as zstring * FB_MAXNAMELEN+1 token
-    dim as integer num = any, addquotes = any
     dim as FB_DEFPARAM ptr param = any
-    dim as FB_DEFTOK ptr tok = any, tokhead = any
-
-    tok = NULL
-    tokhead = NULL
+    dim as FB_DEFTOK ptr tok = NULL, tokhead = NULL
+    dim as integer num = any, addquotes = any, nestedcnt = 0
 
     do
     	select case lexGetToken( LEX_FLAGS )
@@ -757,12 +763,21 @@ private function hReadMacroText _
     				lexSkipToken( LEX_FLAGS )
     				continue do
 
+    			'' '#' macro?
+    			case FB_TK_PP_MACRO
+    				if( ismultiline ) then
+    					nestedcnt += 1
+    				end if
+
     			'' '#' endmacro?
     			case FB_TK_PP_ENDMACRO
     				if( ismultiline ) then
-    					lexSkipToken( LEX_FLAGS )
-    					lexSkipToken( LEX_FLAGS )
-    					exit do
+    					if( nestedcnt = 0 ) then
+    						lexSkipToken( LEX_FLAGS )
+    						lexSkipToken( LEX_FLAGS )
+    						exit do
+    					end if
+    					nestedcnt -= 1
     				end if
 
     			'' '#' id?
@@ -826,6 +841,10 @@ private function hReadMacroText _
 end function
 
 '':::::
+'' Define			= 	DEFINE ID (!WHITESPC '(' ID (',' ID)* ')')? LITERAL+
+'' 					| 	MACRO ID '(' ID (',' ID)* ')' Comment? EOL
+'' 							MacroBody*
+'' 						ENDMACRO .
 function ppDefine _
 	( _
 		byval ismultiline as integer _
@@ -929,11 +948,32 @@ function ppDefine _
     			exit function
 			else
 				'' error recovery: skip until next ')'
-				hSkipUntil( CHAR_RPRNT, FALSE, LEX_FLAGS )
+				hSkipUntil( CHAR_RPRNT, TRUE, LEX_FLAGS )
 			end if
-    	end if
 
-    	lexSkipToken( LEX_FLAGS and not LEXCHECK_NOWHITESPC )
+    	else
+    		lexSkipToken( LEX_FLAGS and (not LEXCHECK_NOWHITESPC) )
+
+    		'' multline?
+    		if( ismultiline ) then
+    			'' Comment?
+    			cComment( )
+
+    			'' EOL
+    			if( lexGetToken( ) <> FB_TK_EOL ) then
+    				if( errReport( FB_ERRMSG_EXPECTEDEOL ) = FALSE ) then
+    					exit function
+					else
+						'' error recovery: skip line
+						hSkipUntil( FB_TK_EOL, TRUE, LEX_FLAGS )
+					end if
+
+				else
+					lexSkipToken( LEX_FLAGS )
+				end if
+    		end if
+
+    	end if
 
     else
     	if( ismultiline ) then
