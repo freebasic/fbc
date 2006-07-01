@@ -1,7 +1,7 @@
 # configure.ac for the FB Run-Time Library		-*- Autoconf -*-
 # Process this file with autoconf to generate a configuration script.
 
-AC_INIT([fbrtlib],[0.16],[http://sourceforge.net/projects/fbc])
+AC_INIT([fbrtlib],[0.17],[http://sourceforge.net/projects/fbc])
 AC_PREREQ([2.59])
 
 AC_COPYRIGHT([Copyright (c) 2004-2006 Andre Victor T. Vicentini (av1ctor@yahoo.com.br) and the FreeBASIC development team])
@@ -86,7 +86,7 @@ AC_FUNC_SETVBUF_REVERSED
 AC_FUNC_STAT
 AC_FUNC_STRTOD
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([atexit chdir floor getcwd gettimeofday memchr memmove memset mkdir pow pclose popen putenv rint rmdir select strcasecmp strchr strdup strncasecmp strrchr strstr strtoul strtoull snprintf])
+AC_CHECK_FUNCS([atexit chdir floor getcwd gettimeofday memchr memmove memset mkdir pow pclose popen putenv rint rmdir select strcasecmp strchr strdup strncasecmp strrchr strstr strtof strtod strtoul strtoull snprintf])
 
 AC_ARG_ENABLE([maintainer-mode],
 [  --enable-maintainer-mode enable rules only needed by maintainers],,

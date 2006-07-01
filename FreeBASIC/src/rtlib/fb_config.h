@@ -33,41 +33,46 @@
 #ifndef __FB_CONFIG_H__
 #define __FB_CONFIG_H__
 
+#if !defined(HAVE_STRTOF)
+ #undef strtof
+ #define strtof(x,y) ((float)strtod(x,y))
+#endif
+
 #if !defined(HAVE_POPEN) || defined(_NO_OLDNAMES)
-#undef popen
-#define popen(c,m) _popen(c, m)
+ #undef popen
+ #define popen(c,m) _popen(c, m)
 #endif
 
 #if !defined(HAVE_PCLOSE) || defined(_NO_OLDNAMES)
-#undef pclose
-#define pclose(f) _pclose(f)
+ #undef pclose
+ #define pclose(f) _pclose(f)
 #endif
 
 #if !defined(HAVE_PUTENV) || defined(_NO_OLDNAMES)
-#undef putenv
-#define putenv(x) _putenv(x)
+ #undef putenv
+ #define putenv(x) _putenv(x)
 #endif
 
 #if !defined(HAVE_CHDIR) || defined(_NO_OLDNAMES)
-#undef chdir
-#define chdir(x) _chdir(x)
+ #undef chdir
+ #define chdir(x) _chdir(x)
 #endif
 
 #if !defined(HAVE_MKDIR) || defined(_NO_OLDNAMES)
-#undef mkdir
-#define mkdir(x,y) _mkdir(x)
+ #undef mkdir
+ #define mkdir(x,y) _mkdir(x)
 #endif
 
 #if !defined(HAVE_RMDIR) || defined(_NO_OLDNAMES)
-#undef rmdir
-#define rmdir(x) _rmdir(x)
+ #undef rmdir
+ #define rmdir(x) _rmdir(x)
 #endif
 
 #if !defined(HAVE_SNPRINTF) || defined(_NO_OLDNAMES)
-#ifdef TARGET_WIN32
-#undef snprintf
-#define snprintf _snprintf
-#else
+ #ifdef TARGET_WIN32
+  #undef snprintf
+  #define snprintf _snprintf
+ #else
 static __inline__ int snprintf (char *buffer, size_t n, const char *format, ...)
 {
     int res;
@@ -79,7 +84,7 @@ static __inline__ int snprintf (char *buffer, size_t n, const char *format, ...)
 
     return res;
 }
-#endif /* TARGET_WIN32 */
+ #endif /* TARGET_WIN32 */
 #endif /* HAVE_SNPRINTF */
 
 #endif /* __FB_CONFIG_H__ */
