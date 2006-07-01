@@ -691,6 +691,7 @@ sub fbAddDefaultLibs( ) static
 	case FB_COMPTARGET_DOS
 		symbAddLib( "gcc" )
 		symbAddLib( "c" )
+		symbAddLib( "m" )
 
 	case FB_COMPTARGET_XBOX
 		symbAddLib( "gcc" )
