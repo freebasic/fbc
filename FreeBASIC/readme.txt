@@ -723,6 +723,7 @@ Credits (in alphabetic order):
       version).
     - Wrote the DLL and static library automation, plus resource scripts
       support on Windows.
+    - Developed the VB-compatible file routines in the extended runtime library.
 
   o Dumbledore
     - Ported the wx-c headers (later replaced by the SWIG FB wrapper version).
@@ -738,6 +739,10 @@ Credits (in alphabetic order):
       wrapper version).
     - Wrote the rel-* graphics demonstrations in the examples/gfx directory.
     - Wrote the examples/GL/fbgfx_texture.bas OpenGL example.
+
+  o Jeff Marshall (coder[at]execulink.com):
+    - Improved and fixed the printer support in all platforms.
+    - Added compiler tests and improved the document translator.
 
   o Florent Heyworth (florent.heyworth[at]swissonline.ch):
     - Translated the Win API sql/obdc headers (later replaced by the SWIG FB 
@@ -802,6 +807,9 @@ Credits (in alphabetic order):
 
 
   o Third-party tools included:
+    - All platforms:
+      * GNU binutils (http://www.gnu.org/software/binutils/)
+    
     - DOS version: 
       * DJGPP (http://www.delorie.com/)
 
