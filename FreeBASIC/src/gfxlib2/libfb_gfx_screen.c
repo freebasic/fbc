@@ -186,6 +186,10 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
     if (num_pages <= 0)
         num_pages = 1;
 
+	/* normalize flags */
+	if (flags & DRIVER_SHAPED_WINDOW)
+		flags = DRIVER_SHAPED_WINDOW | DRIVER_NO_FRAME | DRIVER_NO_SWITCH;
+	
     release_gfx_mem();
 
     switch (mode) {
@@ -199,6 +203,9 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
             fb_Width( 80, 25 );
             fb_Cls( 0 );
         }
+        /* reset viewport to console dimensions */
+        fb_ConsoleSetTopBotRows(-1, -1);
+        fb_ConsoleViewUpdate();
         
         break;
 

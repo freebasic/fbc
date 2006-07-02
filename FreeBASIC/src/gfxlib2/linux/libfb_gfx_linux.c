@@ -44,12 +44,12 @@ static pthread_mutex_t mutex;
 static pthread_cond_t cond;
 
 static Drawable root_window;
-static Atom wm_delete_window;
-static Colormap color_map;
+static Atom wm_delete_window, wm_intern_hints;
+static Colormap color_map = None;
 static int orig_size, target_size, current_size;
 static int orig_rate, target_rate;
 static Rotation orig_rotation;
-static Cursor blank_cursor, arrow_cursor;
+static Cursor blank_cursor, arrow_cursor = None;
 static int is_running = FALSE, has_focus, cursor_shown, xlib_inited = FALSE;
 static int mouse_x, mouse_y, mouse_wheel, mouse_buttons, mouse_on;
 
@@ -286,6 +286,8 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	int i, j, num_formats, num_sizes, num_rates;
 	int gc_mask, keycode_min, keycode_max;
 	KeySym keysym;
+	const char *intern_atoms[] = { "_MOTIF_WM_HINTS", "KWM_WIN_DECORATION", "_WIN_HINTS" };
+	int intern_hints[] = { 0x2, 0, 0, 0, 0 };
 	
 	is_running = FALSE;
 	fb_hXlibInit();
@@ -357,6 +359,19 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	size->height_inc = 0x10000;
 	XSetWMNormalHints(fb_linux.display, fb_linux.window, size);
 	XFree(size);
+	
+	if (flags & DRIVER_NO_FRAME) {
+		for (i = 0; i < 3; i++) {
+			wm_intern_hints = XInternAtom(fb_linux.display, intern_atoms[i], True);
+			if (wm_intern_hints != None) {
+				XChangeProperty(fb_linux.display, fb_linux.window, wm_intern_hints, wm_intern_hints,
+					32, PropModeReplace, (unsigned char *)&intern_hints[i], (i == 0) ? 5 : 1);
+				break;
+			}
+		}
+		if (wm_intern_hints == None)
+			return -1;
+	}
 	
 	wm_delete_window = XInternAtom(fb_linux.display, "WM_DELETE_WINDOW", False);
 	XSetWMProtocols(fb_linux.display, fb_linux.window, &wm_delete_window, 1);
@@ -451,13 +466,12 @@ int fb_hX11Init(char *title, int w, int h, int depth, int refresh_rate, int flag
 /*:::::*/
 void fb_hX11Exit(void)
 {
-	if (!is_running)
-		return;
-	is_running = FALSE;
-	pthread_join(thread, NULL);
-	pthread_mutex_destroy(&mutex);
-	pthread_cond_destroy(&cond);
-
+	if (is_running) {
+		is_running = FALSE;
+		pthread_join(thread, NULL);
+		pthread_mutex_destroy(&mutex);
+		pthread_cond_destroy(&cond);
+	}
 	if (fb_linux.display) {
 		XSync(fb_linux.display, False);
 		if (arrow_cursor != None) {
@@ -467,6 +481,8 @@ void fb_hX11Exit(void)
 		}
 		if (color_map != None)
 			XFreeColormap(fb_linux.display, color_map);
+		if (wm_intern_hints != None)
+			XDeleteProperty(fb_linux.display, fb_linux.window, wm_intern_hints);
 		if (fb_linux.window != None)
 			XDestroyWindow(fb_linux.display, fb_linux.window);
 		if (fb_linux.config) {
