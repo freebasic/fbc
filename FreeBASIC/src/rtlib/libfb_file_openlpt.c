@@ -49,9 +49,13 @@ static void close_printer_handle(void)
 }
 
 #if defined( TARGET_WIN32 ) || defined( TARGET_CYGWIN )
-static const char *pszPrinterDev = "LPT1:EMU=TTY";
+static const char *pszPrinterDev = "LPT:EMU=TTY";
+#else
+#if defined( TARGET_LINUX )
+static const char *pszPrinterDev = "LPT:";
 #else
 static const char *pszPrinterDev = "LPT1:";
+#endif
 #endif
 
 int LPrintInit(void)

@@ -421,7 +421,7 @@ fb_hPrinterBuildList( FB_LIST *list )
     fb_hPrinterBuildListOther( list, 128 );
 }
 
-int fb_PrinterOpen( int iPort, const char *pszDeviceRaw, void **ppvHandle )
+int fb_PrinterOpen( struct _DEV_LPT_INFO *devInfo, int iPort, const char *pszDevice )
 {
     int result = fb_ErrorSetNum( FB_RTERROR_OK );
     const DEV_PRINTER_EMU_MODE *pFoundEmu = NULL;
@@ -434,7 +434,7 @@ int fb_PrinterOpen( int iPort, const char *pszDeviceRaw, void **ppvHandle )
 		char *doc_title = NULL;
 
 		DEV_LPT_PROTOCOL *lpt_proto;
-		if ( !fb_DevLptParseProtocol( &lpt_proto, pszDeviceRaw, strlen(pszDeviceRaw), TRUE ) )
+		if ( !fb_DevLptParseProtocol( &lpt_proto, pszDevice, strlen(pszDevice), TRUE ) )
 		{
 			if( lpt_proto!=NULL )
 				free(lpt_proto);
@@ -545,7 +545,7 @@ int fb_PrinterOpen( int iPort, const char *pszDeviceRaw, void **ppvHandle )
         if( pInfo==NULL ) {
             result = fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
         } else {
-            *ppvHandle = pInfo;
+            devInfo->driver_opaque = pInfo;
             pInfo->hPrinter = hPrinter;
             pInfo->dwJob = dwJob;
             pInfo->hDc = hDc;
@@ -867,16 +867,17 @@ static void EmuPrint_TTY( W32_PRINTER_INFO *pInfo,
 }
 
 #if 0
-static void EmuPrint_ESC_P2( W32_PRINTER_INFO *pInfo,
+static void EmuPrint_ESC_P2( struct _DEV_LPT_INFO *devInfo,
                              const char *pachText,
                              size_t uiLength )
 {
+		W32_PRINTER_INFO *pInfo = (W32_PRINTER_INFO*) devInfo->driver_opaque;
 }
 #endif
 
-int fb_PrinterWrite( void *pvHandle, const void *data, size_t length )
+int fb_PrinterWrite( struct _DEV_LPT_INFO *devInfo, const void *data, size_t length )
 {
-    W32_PRINTER_INFO *pInfo = (W32_PRINTER_INFO*) pvHandle;
+		W32_PRINTER_INFO *pInfo = (W32_PRINTER_INFO*) devInfo->driver_opaque;
     DWORD dwWritten;
 
     if( !pInfo->hPrinter ) {
@@ -897,9 +898,9 @@ int fb_PrinterWrite( void *pvHandle, const void *data, size_t length )
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-int fb_PrinterWriteWstr( void *pvHandle, const FB_WCHAR *data, size_t length )
+int fb_PrinterWriteWstr( struct _DEV_LPT_INFO *devInfo, const FB_WCHAR *data, size_t length )
 {
-    W32_PRINTER_INFO *pInfo = (W32_PRINTER_INFO*) pvHandle;
+		W32_PRINTER_INFO *pInfo = (W32_PRINTER_INFO*) devInfo->driver_opaque;
     DWORD dwWritten;
 
     if( !pInfo->hPrinter ) {
@@ -914,15 +915,14 @@ int fb_PrinterWriteWstr( void *pvHandle, const FB_WCHAR *data, size_t length )
 
     } else if ( dwWritten != length * sizeof( FB_WCHAR )) {
         return fb_ErrorSetNum( FB_RTERROR_FILEIO );
-
     }
 
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-int fb_PrinterClose( void *pvHandle )
+int fb_PrinterClose( struct _DEV_LPT_INFO *devInfo )
 {
-    W32_PRINTER_INFO *pInfo = (W32_PRINTER_INFO*) pvHandle;
+		W32_PRINTER_INFO *pInfo = (W32_PRINTER_INFO*) devInfo->driver_opaque;
 
     if( pInfo->hDc!=NULL ) {
         if( pInfo->Emu.iPageStarted )
@@ -934,6 +934,10 @@ int fb_PrinterClose( void *pvHandle )
         ClosePrinter( pInfo->hPrinter );
     }
 
-    free(pInfo);
+		if( devInfo->driver_opaque )
+	    free(devInfo->driver_opaque);
+
+		devInfo->driver_opaque = NULL;
+
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }

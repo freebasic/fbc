@@ -33,7 +33,7 @@
 /*
  *	dev_lpt - LPTx device
  *
- * chng: jul/2005 written [mjs]
+ * chng: jul/2006 written [jeffmarshall]
  *
  */
 
@@ -47,34 +47,22 @@
 int fb_DevLptClose( struct _FB_FILE *handle )
 {
     int res;
-    DEV_LPT_INFO *pInfo;
+    DEV_LPT_INFO *devInfo;
 
     FB_IO_EXIT_LOCK();
 
-    pInfo = (DEV_LPT_INFO*) handle->opaque;
-    if( pInfo->uiRefCount==1 ) {
+    devInfo = (DEV_LPT_INFO*) handle->opaque;
+    if( devInfo->uiRefCount==1 ) {
 
-#if defined(TARGET_LINUX)
-			if( pInfo->iPort != 0 ) 
-			{
-				/* close spooler */
-				pclose( (FILE *) pInfo->hPrinter );
-				res = fb_ErrorSetNum( FB_RTERROR_OK );
-			}
-			else 
-			{
-				/* close direct port io */
-				res = fb_PrinterClose(pInfo->hPrinter);
-			}
-#else
-        res = fb_PrinterClose(pInfo->hPrinter);
-#endif
-        if( res==FB_RTERROR_OK ) {
-            free(pInfo->pszDevice);
-            free(pInfo);
-        }
+			res = fb_PrinterClose( devInfo );
+
+      if( res==FB_RTERROR_OK ) {
+          free(devInfo->pszDevice);
+          free(devInfo);
+      }
+
     } else {
-        --pInfo->uiRefCount;
+        --devInfo->uiRefCount;
         res = fb_ErrorSetNum( FB_RTERROR_OK );
     }
 

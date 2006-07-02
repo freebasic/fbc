@@ -31,10 +31,10 @@
  */
 
 /*
- * io_printer.c -- printer access for Linux
+ * io_printer.c -- Linux printer driver
  *
- * chng: jul/2005 written [mjs]
- *			 jun/2006 added spooler support [jeffmarshall]
+ * chng: jun/2006 written [jeffmarshall]
+ *			 
  */
 
 #include <stdio.h>
@@ -44,7 +44,9 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
-int fb_PrinterOpen( int iPort, const char *pszDeviceRaw, void **ppvHandle )
+/* _DEV_LPT_INFO->driver_opaque := (FILE *) file_handle */
+
+int fb_PrinterOpen( struct _DEV_LPT_INFO *devInfo, int iPort, const char *pszDeviceRaw )
 {
     int result;
     char *filename = NULL;
@@ -58,10 +60,12 @@ int fb_PrinterOpen( int iPort, const char *pszDeviceRaw, void **ppvHandle )
       return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 		}
 
-    if( iPort==0 ) {
+		devInfo->iPort = iPort;
+
+    if( devInfo->iPort==0 ) {
 			/* Use spooler */
       /* try to open/create pipe to spooler */
-			filename = calloc(strlen(pszDeviceRaw) + 64, 1);
+			filename = alloca( strlen(pszDeviceRaw) + 64 );
 			strcpy(filename, "lp ");
 
 			/* set destination, if not default */
@@ -92,51 +96,53 @@ int fb_PrinterOpen( int iPort, const char *pszDeviceRaw, void **ppvHandle )
 					*ptr = '_';
 			}
 
-      if( (fp = popen( filename, "w+" )) == NULL )
+      fp = popen( filename, "w" );
+			if(fp == NULL )
       {
-					*ppvHandle = NULL;
+					devInfo->driver_opaque = NULL;
           result = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 			}
 			else
 			{
-					*ppvHandle = fp;
+					devInfo->driver_opaque = fp;
 					result = fb_ErrorSetNum( FB_RTERROR_OK );
       }
 
 		} else {
-			// use direct port io
-			filename = calloc(16, 1);
-			sprintf(filename, "/dev/lp%d", (iPort-1));
+			/* use direct port io */
+			filename = alloca( 16 );
+			sprintf(filename, "/dev/lp%d", (devInfo->iPort-1));
 			fp = fopen(filename, "wb");
+
+
 			if( fp==NULL ) {
+					devInfo->driver_opaque = NULL;
 					result = fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
 			} else {
-					*ppvHandle = fp;
+					devInfo->driver_opaque = fp;
 					result = fb_ErrorSetNum( FB_RTERROR_OK );
 			}
 		
 		}
 
-		if( filename )
-			free(filename);
 		if( lpt_proto!=NULL )
 			free(lpt_proto);
 
     return result;
 }
 
-int fb_PrinterWrite( void *pvHandle, const void *data, size_t length )
+int fb_PrinterWrite( struct _DEV_LPT_INFO *devInfo, const void *data, size_t length )
 {
-    FILE *fp = (FILE*) pvHandle;
+    FILE *fp = (FILE*)  devInfo->driver_opaque;
     if( fwrite( data, length, 1, fp ) != 1 ) {
         return fb_ErrorSetNum( FB_RTERROR_FILEIO );
     }
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }
 
-int fb_PrinterWriteWstr( void *pvHandle, const FB_WCHAR *buffer, size_t chars )
+int fb_PrinterWriteWstr( struct _DEV_LPT_INFO *devInfo, const FB_WCHAR *buffer, size_t chars )
 {
-    FILE *fp = (FILE *)pvHandle;
+    FILE *fp = (FILE *) devInfo->driver_opaque;
 
 	/* !!!FIXME!!! is this ok? */
     int bytes;
@@ -153,9 +159,19 @@ int fb_PrinterWriteWstr( void *pvHandle, const FB_WCHAR *buffer, size_t chars )
 }
 
 
-int fb_PrinterClose( void *pvHandle )
+int fb_PrinterClose( struct _DEV_LPT_INFO *devInfo )
 {
-    FILE *fp = (FILE*) pvHandle;
-    fclose(fp);
+		if( devInfo->iPort == 0 ) 
+		{
+			/* close spooler */
+			pclose( (FILE *) devInfo->driver_opaque );
+		}
+		else 
+		{
+			/* close direct port io */
+			fclose( (FILE *) devInfo->driver_opaque );
+		}
+		devInfo->driver_opaque = NULL;
+    
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }

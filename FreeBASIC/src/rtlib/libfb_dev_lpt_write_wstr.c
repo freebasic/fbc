@@ -33,7 +33,7 @@
 /*
  *	dev_lpt - LPTx device
  *
- * chng: jul/2005 written [mjs]
+ * chng: jul/2006 written [jeffmarshall]
  *
  */
 
@@ -47,12 +47,10 @@
 int fb_DevLptWriteWstr( struct _FB_FILE *handle, const FB_WCHAR* value, size_t valuelen )
 {
     int res;
-    DEV_LPT_INFO *pInfo;
 
     FB_LOCK();
 
-    pInfo = (DEV_LPT_INFO*) handle->opaque;
-    res = fb_PrinterWriteWstr(pInfo->hPrinter, value, valuelen );
+    res = fb_PrinterWriteWstr((DEV_LPT_INFO*) handle->opaque, value, valuelen );
 
     FB_UNLOCK();
 

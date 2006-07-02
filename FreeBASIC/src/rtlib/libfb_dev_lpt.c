@@ -33,9 +33,8 @@
 /*
  *	dev_lpt - LPTx device
  *
- * chng: jul/2005 written [mjs]
- *       jun/2006 factored common code [jeffmarshall]
- *								removed dependencies on hardcoded "LPT" and "PRN"
+ * chng: jul/2006 written [jeffmarshall]
+ *								
  */
 
 #include <stdio.h>
@@ -59,12 +58,12 @@ FB_FILE * fb_DevLptFindDeviceByName( int iPort, char * filename, int no_redir )
 		{
 			if( no_redir==FALSE || handle->redirection_to==NULL )
 			{
-				DEV_LPT_INFO *pInfo = (DEV_LPT_INFO*) handle->opaque;
-				if( pInfo )
+				DEV_LPT_INFO *devInfo = (DEV_LPT_INFO*) handle->opaque;
+				if( devInfo )
 				{
-					if( iPort == 0 || iPort == pInfo->iPort )
+					if( iPort == 0 || iPort == devInfo->iPort )
 					{
-						if( strcmp(pInfo->pszDevice, filename)==0 ) {
+						if( strcmp(devInfo->pszDevice, filename)==0 ) {
 								/* bugcheck */
 								DBG_ASSERT( handle!=FB_HANDLE_PRINTER
 												&& handle!=FB_HANDLE_PRINTER );
@@ -110,10 +109,10 @@ static FB_FILE_HOOKS fb_hooks_dev_lpt = {
 /*:::::*/
 int fb_DevLptOpen( FB_FILE *handle, const char *filename, size_t filename_len )
 {
+		DEV_LPT_PROTOCOL *lpt_proto;
+    DEV_LPT_INFO *devInfo;
     FB_FILE *redir_handle = NULL;
 		FB_FILE *tmp_handle = NULL;
-		DEV_LPT_PROTOCOL *lpt_proto;
-    DEV_LPT_INFO *info;
     int res;
 
     if (!fb_DevLptParseProtocol( &lpt_proto, filename, filename_len , TRUE) )
@@ -126,22 +125,24 @@ int fb_DevLptOpen( FB_FILE *handle, const char *filename, size_t filename_len )
     FB_LOCK();
 
     /* Determine the port number and a normalized device name */
-    info = (DEV_LPT_INFO*) calloc(1, sizeof(DEV_LPT_INFO));
-    info->uiRefCount = 1;
-		info->iPort = lpt_proto->iPort;
-		info->pszDevice = fb_DevLptMakeDeviceName( lpt_proto );
+    devInfo = (DEV_LPT_INFO*) calloc(1, sizeof(DEV_LPT_INFO));
+    devInfo->uiRefCount = 1;
+		devInfo->iPort = lpt_proto->iPort;
+		devInfo->pszDevice = fb_DevLptMakeDeviceName( lpt_proto );
+		devInfo->driver_opaque = NULL;
 
     /* Test if the printer is already open. */
-		if( tmp_handle = fb_DevLptFindDeviceByName( info->iPort, info->pszDevice, FALSE ) )
+		if( tmp_handle = fb_DevLptFindDeviceByName( devInfo->iPort, devInfo->pszDevice, FALSE ) )
 		{
+			free(devInfo);
       redir_handle = tmp_handle;
-      info = (DEV_LPT_INFO*) tmp_handle->opaque;
-      ++info->uiRefCount;
+			devInfo = (DEV_LPT_INFO*) tmp_handle->opaque;
+      ++devInfo->uiRefCount;
 		}
 
     /* Open the printer if not opened already */
-    if( info->hPrinter == NULL ) {
-        res = fb_PrinterOpen( info->iPort, filename, &info->hPrinter );
+    if( devInfo->driver_opaque == NULL ) {
+        res = fb_PrinterOpen( devInfo, devInfo->iPort, filename );
     } else {
         res = fb_ErrorSetNum( FB_RTERROR_OK );
         if( FB_HANDLE_USED(redir_handle) ) {
@@ -160,12 +161,12 @@ int fb_DevLptOpen( FB_FILE *handle, const char *filename, size_t filename_len )
 
     if( res == FB_RTERROR_OK ) {
         handle->hooks = &fb_hooks_dev_lpt;
-        handle->opaque = info;
+        handle->opaque = devInfo;
 				handle->type = FB_FILE_TYPE_PRINTER;
     } else {
-        if( info->pszDevice )
-            free( info->pszDevice );
-        free( info );
+        if( devInfo->pszDevice )
+            free( devInfo->pszDevice );
+        free( devInfo );
     }
 
 		if( lpt_proto )

@@ -47,7 +47,7 @@ typedef struct _DEV_LPT_PROTOCOL
 
 typedef struct _DEV_LPT_INFO {
     char  *pszDevice;
-    void  *hPrinter;
+    void  *driver_opaque;
     int    iPort;
     size_t uiRefCount;
 } DEV_LPT_INFO;
@@ -59,19 +59,17 @@ int fb_DevLptParseProtocol(
 	int substprn
 	);
 
-       int          fb_DevLptOpen( FB_FILE *handle, const char *filename, size_t filename_len );
-       int          fb_DevLptWrite( struct _FB_FILE *handle, const void* value, size_t valuelen );
-       int          fb_DevLptWriteWstr( struct _FB_FILE *handle, const FB_WCHAR* value, size_t valuelen );
-       int          fb_DevLptClose( struct _FB_FILE *handle );
-       int          fb_DevPrinterSetWidth ( const char *pszDevice, int width,
-       										int default_width );
+       int          fb_DevLptOpen       ( struct _FB_FILE *handle, const char *filename, size_t filename_len );
+       int          fb_DevLptWrite      ( struct _FB_FILE *handle, const void* value, size_t valuelen );
+       int          fb_DevLptWriteWstr  ( struct _FB_FILE *handle, const FB_WCHAR* value, size_t valuelen );
+       int          fb_DevLptClose      ( struct _FB_FILE *handle );
+
+       int          fb_DevPrinterSetWidth ( const char *pszDevice, int width,int default_width );
        int          fb_DevPrinterGetOffset( const char *pszDevice );
 
-       int          fb_PrinterOpen      ( int iPort, const char *pszDevice,
-       									  void **ppvHandle );
-       int          fb_PrinterWrite     ( void *pvHandle, const void *data, size_t length );
-       int          fb_PrinterWriteWstr ( void *pvHandle, const FB_WCHAR *data,
-       									  size_t length );
-       int          fb_PrinterClose     ( void *pvHandle );
+       int          fb_PrinterOpen      ( struct _DEV_LPT_INFO *devInfo, int iPort, const char *pszDevice );
+       int          fb_PrinterWrite     ( struct _DEV_LPT_INFO *devInfo, const void *data, size_t length );
+       int          fb_PrinterWriteWstr ( struct _DEV_LPT_INFO *devInfo, const FB_WCHAR *data,size_t length );
+       int          fb_PrinterClose     ( struct _DEV_LPT_INFO *devInfo );
 
 #endif /*__FB_PRINTER_H__*/
