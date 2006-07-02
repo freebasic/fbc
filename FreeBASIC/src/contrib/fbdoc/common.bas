@@ -1,0 +1,238 @@
+''  fbdoc - FreeBASIC User's Manual Converter/Generator
+''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
+''  the FreeBASIC development team.
+''
+''	This program is free software; you can redistribute it and/or modify
+''	it under the terms of the GNU General Public License as published by
+''	the Free Software Foundation; either version 2 of the License, or
+''	(at your option) any later version.
+''
+''	This program is distributed in the hope that it will be useful,
+''	but WITHOUT ANY WARRANTY; without even the implied warranty of
+''	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+''	GNU General Public License for more details.
+''
+''	You should have received a copy of the GNU General Public License
+''	along with this program; if not, write to the Free Software
+''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
+
+
+'' common.bas - helper functions for fbdoc
+''
+'' chng: jun/2006 written [coderJeff]
+''
+
+option explicit
+
+#include once "common.bi"
+
+'':::::
+sub ZFree( byval s as zstring ptr ptr )
+	if( s ) then
+		if( *s ) then
+			deallocate *s
+		end if
+		*s = NULL
+	end if
+end sub
+
+'':::::
+sub ZSet( byval s as zstring ptr ptr, byval t as zstring ptr )
+	if( s ) then
+		ZFree s
+		if( t ) then
+			*s = allocate( len( *t ) + 1 )
+			**s = *t
+		end if
+	end if
+end sub
+
+'':::::
+function ReplaceSubStr _
+	( _
+		byval src as zstring ptr, _
+		byval old as zstring ptr, _
+		byval rep as zstring ptr _
+	) as string 
+
+   dim i as integer = 1, ret as string 
+   ret = *src 
+   do 
+      i = instr(i, ret, *old) 
+      if i = 0 then exit do 
+      ret = left(ret, i - 1) + *rep + mid(ret, i + len(*old)) 
+      i += len(*rep) 
+   loop 
+   return ret 
+end function
+
+'':::::
+Function ReplaceQuotes(a as string, q as string) As String
+  Dim b As String, bOK As integer
+  If Len(a) >= 2 Then
+    If Left(a, 1) = """" And Right(a, 1) = """" Then
+      bOK = True
+    ElseIf Left(a, 1) = "'" And Right(a, 1) = "'" Then
+      bOK = True
+    ElseIf Left(a, 1) = "`" And Right(a, 1) = "'" Then
+      bOK = True
+    End If
+    If bOK Then
+      b = Mid(a, 2, Len(a) - 2)
+    Else
+      b = a
+    End If
+  Else
+    b = a
+  End If
+  
+  Select Case Left(q, 1)
+  Case ""
+  Case """"
+    b = """" & b & """"
+  Case "'"
+    b = "'" & b & "'"
+  Case "`"
+    b = "`" & b & "'"
+  Case Else
+    b = Left(q, 1) & b & Left(q, 1)
+  End Select
+  
+  ReplaceQuotes = b
+End Function
+
+'':::::
+Function StripQuotes (a As String) As String
+  return ReplaceQuotes(a, "")
+End Function
+
+'':::::
+function LoadFileAsString _
+	( _
+		byval sFileName as zstring ptr _
+	) as string
+
+	if( sFileName = NULL ) then	
+		return ""
+	end if
+
+	if( len(*sFileName) = 0 ) then
+		return ""
+	end if
+
+	dim as integer h, bytes
+	dim as string sData
+
+	h = freefile
+	if( open( *sFileName for input as #h ) = 0 ) then
+		close #h
+
+		if( open( *sFileName for binary as #h ) = 0 ) then
+
+			bytes = lof( h ) 
+			if( bytes > 0 ) then
+				sData = space( bytes )
+				get #h,,sData
+			else
+				sData = ""
+			end if
+		
+			close #h
+
+			return sData
+	
+		end if	
+
+	end if
+
+	return ""
+
+end function
+
+'':::::
+function CapFirstLetter( a as string ) as string
+	return ucase(left(trim(a),1)) + lcase(mid(trim(a),2))
+end function
+
+'':::::
+function FormatPageTitle(a as string) as string
+
+	dim as string r = a
+	dim as integer i = 0, n = len(a), c = 1
+	while i < n
+		select case r[i]
+		case asc("a") to asc("z")
+			if (c) then 
+				r[i] -= 32
+				c = 0
+			end if
+		case asc("A") to asc("Z")
+			if (c=0) then
+				r[i] += 32
+			end if
+			c = 0
+		case else
+			c = 1
+		end select
+		i += 1
+	wend
+	function = r
+
+end function
+
+'':::::
+function Text2Html _
+	( _
+		text as string, _
+		byval br as integer, _
+		byval sp as integer _
+	) as string
+	
+	dim as string res
+	dim as integer i
+	dim as integer lastcr
+
+	res = ""
+	lastcr = FALSE
+
+	for i = 1 to len(text)
+		select case mid( text, i, 1)
+		case " ", chr(9)
+			if( sp ) then
+				res += "&nbsp;"
+			else
+				res += mid( text, i, 1)
+			end if
+		case "<"
+			res += "&lt;"
+		case ">"
+			res += "&gt;"
+		case "&"
+			res += "&amp;"
+		case chr(13)
+			if( br ) then
+				res += "<br />"
+			else
+				res += mid( text, i, 1)
+			end if
+		case chr(10)
+			if( br ) then
+				if( lastcr = FALSE ) then
+					res += "<br />"
+				end if
+			end if
+			res += mid( text, i, 1)
+		case else
+			res += mid( text, i, 1)
+		end select
+
+		if( mid( text, i, 1) = chr(13) ) then
+			lastcr = TRUE
+		else
+			lastcr = FALSE
+		end if
+	next i
+
+	return res
+
+end function
