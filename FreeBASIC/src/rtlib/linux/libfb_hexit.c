@@ -62,7 +62,7 @@ void fb_hExitConsole( void )
 		BG_UNLOCK();
 
 		bottom = fb_ConsoleGetMaxRow();
-		if ((fb_ConsoleGetTopRow() != 0) || (fb_ConsoleGetBotRow() != bottom)) {
+		if ((fb_ConsoleGetTopRow() != 0) || (fb_ConsoleGetBotRow() != bottom - 1)) {
 			/* Restore scrolling region to whole screen and clear */
 			fb_hTermOut(SEQ_SCROLL_REGION, bottom - 1, 0);
 			fb_hTermOut(SEQ_CLS, 0, 0);
