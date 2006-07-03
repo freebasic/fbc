@@ -240,20 +240,15 @@ function cTypeField _
 		'' '('?
 		if( lexGetToken( ) = CHAR_LPRNT ) then
 
-    		'' function pointer?
-    		if( dtype = FB_DATATYPE_POINTER + FB_DATATYPE_FUNCTION ) then
-    			exit do
-    		end if
+			'' if field isn't an array, it can be function field, exit
+			if( symbGetArrayDimensions( sym ) = 0 ) then
+				exit do
+			end if
 
     		'' '('')'?
     		if( lexGetLookAhead( 1 ) = CHAR_RPRNT ) then
     			exit do
     		end if
-
-			'' if field isn't an array, it can be function field, exit
-			if( symbGetArrayDimensions( sym ) = 0 ) then
-				exit do
-			end if
 
     		lexSkipToken( )
 
