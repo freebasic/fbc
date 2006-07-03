@@ -37,6 +37,7 @@
 #include <X11/cursorfont.h>
 #include <X11/extensions/XShm.h>
 #include <X11/extensions/Xrandr.h>
+#include <X11/extensions/shape.h>
 
 typedef struct LINUXDRIVER
 {

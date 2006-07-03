@@ -157,7 +157,7 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	}
 	*gl_attr = None;
 	
-	if (!(flags & DRIVER_OPENGL))
+	if ((!(flags & DRIVER_OPENGL)) || (flags & DRIVER_NO_FRAME))
 		return -1;
 
 	fb_hMemSet(&fb_linux, 0, sizeof(fb_linux));

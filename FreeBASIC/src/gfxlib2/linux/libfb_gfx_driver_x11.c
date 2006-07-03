@@ -47,10 +47,13 @@ GFXDRIVER fb_gfxDriverX11 =
 };
 
 
-static XImage *image;
+static XImage *image, *shape_image;
+static Pixmap shape_pixmap;
+static GC shape_gc;
 static XShmSegmentInfo shm_info;
 static BLITTER *blitter;
 static int is_shm;
+static void (*update_mask)(unsigned char *src, unsigned char *mask, int w, int h);
 
 
 /*:::::*/
@@ -72,13 +75,81 @@ static int calc_comp_height( int h )
 
 
 /*:::::*/
+static void update_mask_8(unsigned char *pixel, unsigned char *mask, int w, int h)
+{
+	int x, y, b;
+	unsigned char *p = pixel;
+	
+	for(; h; h--) {
+		b = 0;
+		for (x = 0; x < w; x++) {
+			if (*p++ != 0)
+				b |= 1 << (x & 0x7);
+			if ((x & 0x7) == 0x7) {
+				*mask++ = b;
+				b = 0;
+			}
+		}
+		if (w & 0x7)
+			*mask++ = b;
+	}
+}
+
+
+/*:::::*/
+static void update_mask_16(unsigned char *pixel, unsigned char *mask, int w, int h)
+{
+	int x, y, b;
+	unsigned short *p = (unsigned short *)pixel;
+	
+	for(; h; h--) {
+		b = 0;
+		for (x = 0; x < w; x++) {
+			if (*p++ != MASK_COLOR_16)
+				b |= 1 << (x & 0x7);
+			if ((x & 0x7) == 0x7) {
+				*mask++ = b;
+				b = 0;
+			}
+		}
+		if (w & 0x7)
+			*mask++ = b;
+	}
+}
+
+
+/*:::::*/
+static void update_mask_32(unsigned char *pixel, unsigned char *mask, int w, int h)
+{
+	int x, y, b;
+	unsigned int *p = (unsigned int *)pixel;
+	
+	for(; h; h--) {
+		b = 0;
+		for (x = 0; x < w; x++) {
+			if (*p++ != MASK_COLOR_32)
+				b |= 1 << (x & 0x7);
+			if ((x & 0x7) == 0x7) {
+				*mask++ = b;
+				b = 0;
+			}
+		}
+		if (w & 0x7)
+			*mask++ = b;
+	}
+}
+
+
+/*:::::*/
 static int x11_init(void)
 {
 	XSetWindowAttributes attribs;
+	XGCValues values;
 	int x = 0, y = 0, h, is_rgb = FALSE;
 	char *display_name;
 	
 	image = NULL;
+	shape_image = NULL;
 	is_shm = FALSE;
 	
 	if ((fb_linux.visual_depth >= 24) && (fb_linux.visual->red_mask == 0xFF))
@@ -96,6 +167,21 @@ static int x11_init(void)
 	XMoveResizeWindow(fb_linux.display, fb_linux.window, x, y, fb_linux.w, fb_linux.h);
 	attribs.override_redirect = ((fb_linux.flags & DRIVER_FULLSCREEN) ? True : False);
 	XChangeWindowAttributes(fb_linux.display, fb_linux.window, CWOverrideRedirect, &attribs);
+	if (fb_linux.flags & DRIVER_SHAPED_WINDOW) {
+		shape_image = XCreateImage(fb_linux.display, fb_linux.visual, 1, XYBitmap, 0, NULL, fb_linux.w, fb_linux.h, 8, 0);
+		shape_image->data = calloc(1, shape_image->bytes_per_line * shape_image->height);
+		shape_pixmap = XCreateBitmapFromData(fb_linux.display, fb_linux.window,
+											 shape_image->data, fb_linux.w, fb_linux.h);
+		values.foreground = 1;
+		values.background = 0;											 
+		shape_gc = XCreateGC(fb_linux.display, shape_pixmap, GCForeground | GCBackground, &values);
+		if (fb_mode->bpp == 1)
+			update_mask = update_mask_8;
+		else if (fb_mode->bpp == 2)
+			update_mask = update_mask_16;
+		else
+			update_mask = update_mask_32;
+	}
 	XMapRaised(fb_linux.display, fb_linux.window);
 	
 	fb_linux.display_offset = 0;
@@ -164,9 +250,11 @@ static void x11_exit(void)
 			shmdt(shm_info.shmaddr);
 			shmctl(shm_info.shmid, IPC_RMID, 0);
 		}
-		else
-			free(image->data);
 		XDestroyImage(image);
+	}
+	if (shape_image) {
+		XDestroyImage(shape_image);
+		XFreePixmap(fb_linux.display, shape_pixmap);
 	}
 }
 
@@ -185,6 +273,13 @@ static void x11_update(void)
 				XShmPutImage(fb_linux.display, fb_linux.window, fb_linux.gc, image, 0, y, 0, y + fb_linux.display_offset, fb_linux.w, h, False);
 			else
 				XPutImage(fb_linux.display, fb_linux.window, fb_linux.gc, image, 0, y, 0, y + fb_linux.display_offset, fb_linux.w, h);
+			
+			if (shape_image) {
+				update_mask((unsigned char *)fb_mode->framebuffer + (y * fb_mode->pitch),
+							(unsigned char *)shape_image->data + (y * shape_image->bytes_per_line), fb_linux.w, h);
+				XPutImage(fb_linux.display, shape_pixmap, shape_gc, shape_image, 0, y, 0, y, fb_linux.w, h);
+				XShapeCombineMask(fb_linux.display, fb_linux.window, ShapeBounding, 0, 0, shape_pixmap, ShapeSet);
+			}
 		}
 	}
 	fb_hMemSet(fb_mode->dirty, FALSE, fb_linux.h);

@@ -17,6 +17,9 @@ Version 0.17 Beta:
 - the __FB_DEBUG__ define, that is set to TRUE (-1) if in debug mode (if the -g option was used), FALSE (0) otherwise (v1c)
 - field access can now be used with PEEK, like in: PEEK( some_type, some_int ).some_field (v1c)
 - the #line number [, "filename"] pre-processor directive, works as in C (v1c)
+- the GFX_NO_FRAME flag to SCREEN, to create a frameless window (lillo)
+- the GFX_SHAPED_WINDOW flag to SCREEN, to create a custom shaped window. Produces the same as frameless window, but drawing
+  transparent pixels causes the corresponding portion of the window to be transparent too (lillo)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
