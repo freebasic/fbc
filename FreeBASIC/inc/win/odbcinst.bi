@@ -12,7 +12,7 @@
 #include once "win/sql.bi"
 
 #ifndef ODBCVER
-#define ODBCVER 0x0351
+#define ODBCVER &h0351
 #endif
 
 #define ODBC_ADD_DSN 1

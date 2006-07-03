@@ -1773,7 +1773,7 @@ end type
 #define DDBD_4 &h00001000l
 #define DDBD_8 &h00000800l
 #define DDBD_16 &h00000400l
-#define DDBD_24 0X00000200l
+#define DDBD_24 &h00000200l
 #define DDBD_32 &h00000100l
 #define DDCKEY_COLORSPACE &h00000001l
 #define DDCKEY_DESTBLT &h00000002l
