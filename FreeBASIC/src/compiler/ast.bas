@@ -130,18 +130,18 @@ declare function 	astLoadDECL			( byval n as ASTNODE ptr ) as IRVREG ptr
 
 	dim shared as ulongint ast_maxlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) = _
 	{ _
-		127LL, _                                '' ubyte
-		255LL, _                                '' byte
-		255LL, _                                '' char
-		32767LL, _                              '' short
-		65535LL, _                              '' ushort
-		65535LL, _                              '' wchar
-		2147483647LL, _                         '' int
-		4294967295LL, _                         '' uint
-		2147483647LL, _                         '' enum
-		4294967295LL, _                         '' bitfield
-		9223372036854775807LL, _                '' longint
-		18446744073709551615LL _                '' ulongint
+		127ULL, _                               '' ubyte
+		255ULL, _                               '' byte
+		255ULL, _                               '' char
+		32767ULL, _                             '' short
+		65535ULL, _                             '' ushort
+		65535ULL, _                             '' wchar
+		2147483647ULL, _                        '' int
+		4294967295ULL, _                        '' uint
+		2147483647ULL, _                        '' enum
+		4294967295ULL, _                        '' bitfield
+		9223372036854775807ULL, _               '' longint
+		18446744073709551615ULL _               '' ulongint
 	}
 
 
