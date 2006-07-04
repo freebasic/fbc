@@ -587,8 +587,8 @@ function cFuncPtrOrDerefFields _
 				if( cProcCall( subtype, funcexpr, varexpr ) = FALSE ) then
 					exit function
 				end if
+
 			else
-				astDelTree( funcexpr )
 				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
 					exit function
 				else
