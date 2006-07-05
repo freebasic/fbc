@@ -90,6 +90,25 @@ type IDocHostUIHandlerVtbl
 end type
 
 
+#define IDocHostUIHandler_QueryInterface(this_,riid,ppvObject) (this_)->lpVtbl -> QueryInterface(this_,riid,ppvObject)
+#define IDocHostUIHandler_AddRef(this_) (this_)->lpVtbl -> AddRef(this_)
+#define IDocHostUIHandler_Release(this_) (this_)->lpVtbl -> Release(this_)
+#define IDocHostUIHandler_ShowContextMenu(this_,dwID,ppt,pcmdtReserved,pdispReserved) (this_)->lpVtbl -> ShowContextMenu(this_,dwID,ppt,pcmdtReserved,pdispReserved)
+#define IDocHostUIHandler_GetHostInfo(this_,pInfo) (this_)->lpVtbl -> GetHostInfo(this_,pInfo)
+#define IDocHostUIHandler_ShowUI(this_,dwID,pActiveObject,pCommandTarget,pFrame,pDoc) (this_)->lpVtbl -> ShowUI(this_,dwID,pActiveObject,pCommandTarget,pFrame,pDoc)
+#define IDocHostUIHandler_HideUI(this_) (this_)->lpVtbl -> HideUI(this_)
+#define IDocHostUIHandler_UpdateUI(this_) (this_)->lpVtbl -> UpdateUI(this_)
+#define IDocHostUIHandler_EnableModeless(this_,fEnable) (this_)->lpVtbl -> EnableModeless(this_,fEnable)
+#define IDocHostUIHandler_OnDocWindowActivate(this_,fActivate) (this_)->lpVtbl -> OnDocWindowActivate(this_,fActivate)
+#define IDocHostUIHandler_OnFrameWindowActivate(this_,fActivate) (this_)->lpVtbl -> OnFrameWindowActivate(this_,fActivate)
+#define IDocHostUIHandler_ResizeBorder(this_,prcBorder,pUIWindow,fRameWindow) (this_)->lpVtbl -> ResizeBorder(this_,prcBorder,pUIWindow,fRameWindow)
+#define IDocHostUIHandler_TranslateAccelerator(this_,lpMsg,pguidCmdGroup,nCmdID) (this_)->lpVtbl -> TranslateAccelerator(this_,lpMsg,pguidCmdGroup,nCmdID)
+#define IDocHostUIHandler_GetOptionKeyPath(this_,pchKey,dw) (this_)->lpVtbl -> GetOptionKeyPath(this_,pchKey,dw)
+#define IDocHostUIHandler_GetDropTarget(this_,pDropTarget,ppDropTarget) (this_)->lpVtbl -> GetDropTarget(this_,pDropTarget,ppDropTarget)
+#define IDocHostUIHandler_GetExternal(this_,ppDispatch) (this_)->lpVtbl -> GetExternal(this_,ppDispatch)
+#define IDocHostUIHandler_TranslateUrl(this_,dwTranslate,pchURLIn,ppchURLOut) (this_)->lpVtbl -> TranslateUrl(this_,dwTranslate,pchURLIn,ppchURLOut)
+#define IDocHostUIHandler_FilterDataObject(this_,pDO,ppDORet) (this_)->lpVtbl -> FilterDataObject(this_,pDO,ppDORet)
+
 extern IID_ICustomDoc alias "IID_ICustomDoc" as IID
 
 type ICustomDocVtbl_ as ICustomDocVtbl
@@ -104,6 +123,11 @@ type ICustomDocVtbl
 	Release as function(byval as ICustomDoc ptr) as ULONG
 	SetUIHandler as function(byval as ICustomDoc ptr, byval as IDocHostUIHandler ptr) as HRESULT
 end type
+
+#define ICustomDoc_QueryInterface(this_,riid,ppvObject) (this_)->lpVtbl -> QueryInterface(this_,riid,ppvObject)
+#define ICustomDoc_AddRef(this_) (this_)->lpVtbl -> AddRef(this_)
+#define ICustomDoc_Release(this_) (this_)->lpVtbl -> Release(this_)
+#define ICustomDoc_SetUIHandler(this_,pUIHandler) (this_)->lpVtbl -> SetUIHandler(this_,pUIHandler)
 
 extern IID_IDocHostShowUI alias "IID_IDocHostShowUI" as IID
 
@@ -121,6 +145,12 @@ type IDocHostShowUIVtbl
 	ShowHelp as function(byval as IDocHostShowUI ptr, byval as HWND, byval as LPOLESTR, byval as UINT, byval as DWORD, byval as POINT, byval as IDispatch ptr) as HRESULT
 end type
 
+#define IDocHostShowUI_QueryInterface(this_,riid,ppvObject) (this_)->lpVtbl -> QueryInterface(this_,riid,ppvObject)
+#define IDocHostShowUI_AddRef(this_) (this_)->lpVtbl -> AddRef(this_)
+#define IDocHostShowUI_Release(this_) (this_)->lpVtbl -> Release(this_)
+#define IDocHostShowUI_ShowMessage(this_,hwnd,lpstrText,lpstrCaption,dwType,lpstrHelpFile,dwHelpContext,plResult) (this_)->lpVtbl -> ShowMessage(this_,hwnd,lpstrText,lpstrCaption,dwType,lpstrHelpFile,dwHelpContext,plResult)
+#define IDocHostShowUI_ShowHelp(this_,hwnd,pszHelpFile,uCommand,dwData,ptMouse,pDispatchObjectHit) (this_)->lpVtbl -> ShowHelp(this_,hwnd,pszHelpFile,uCommand,dwData,ptMouse,pDispatchObjectHit)
+
 extern IID_ICSSFilterSite alias "IID_ICSSFilterSite" as IID
 
 type ICSSFilterSiteVtbl_ as ICSSFilterSiteVtbl
@@ -137,6 +167,12 @@ type ICSSFilterSiteVtbl
 	FireOnFilterChangeEvent as function(byval as ICSSFilterSite ptr) as HRESULT
 end type
 
+#define ICSSFilterSite_QueryInterface(this_,riid,ppvObject) (this_)->lpVtbl -> QueryInterface(this_,riid,ppvObject)
+#define ICSSFilterSite_AddRef(this_) (this_)->lpVtbl -> AddRef(this_)
+#define ICSSFilterSite_Release(this_) (this_)->lpVtbl -> Release(this_)
+#define ICSSFilterSite_GetElement(this_,ppElem) (this_)->lpVtbl -> GetElement(this_,ppElem)
+#define ICSSFilterSite_FireOnFilterChangeEvent(this_) (this_)->lpVtbl -> FireOnFilterChangeEvent(this_)
+
 extern IID_ICSSFilter alias "IID_ICSSFilter" as IID
 
 type ICSSFilterVtbl_ as ICSSFilterVtbl
@@ -152,6 +188,12 @@ type ICSSFilterVtbl
 	SetSite as function(byval as ICSSFilter ptr, byval as ICSSFilterSite ptr) as HRESULT
 	OnAmbientPropertyChange as function(byval as ICSSFilter ptr, byval as LONG) as HRESULT
 end type
+
+#define ICSSFilter_QueryInterface(this_,riid,ppvObject) (this_)->lpVtbl -> QueryInterface(this_,riid,ppvObject)
+#define ICSSFilter_AddRef(this_) (this_)->lpVtbl -> AddRef(this_)
+#define ICSSFilter_Release(this_) (this_)->lpVtbl -> Release(this_)
+#define ICSSFilter_SetSite(this_,pSink) (this_)->lpVtbl -> SetSite(this_,pSink)
+#define ICSSFilter_OnAmbientPropertyChange(this_,dispid) (this_)->lpVtbl -> OnAmbientPropertyChange(this_,dispid)
 
 #ifdef WIN_INCLUDEPROXY
 declare function IDocHostUIHandler_ShowContextMenu_Proxy alias "IDocHostUIHandler_ShowContextMenu_Proxy" (byval This as IDocHostUIHandler ptr, byval dwID as DWORD, byval ppt as POINT ptr, byval pcmdtReserved as IUnknown ptr, byval pdispReserved as IDispatch ptr) as HRESULT
