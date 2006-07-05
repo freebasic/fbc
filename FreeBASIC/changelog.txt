@@ -44,6 +44,7 @@ Version 0.17 Beta:
 - the string concat operator (&) had a different precedence order than in VB (v1c)
 - names of non-shared COMMON variables were not been preserved (v1c)
 - field arrays of function pointers were not correctly parsed (v1c)
+- #define's parameters weren't checked for duplicated definitions (v1c)
 
 
 Version 0.16 Beta:
