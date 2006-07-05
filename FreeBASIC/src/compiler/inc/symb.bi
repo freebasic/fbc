@@ -170,6 +170,7 @@ end type
 ''
 type FB_DEFPARAM
 	name			as zstring ptr
+	num				as integer
 	next			as FB_DEFPARAM ptr
 end type
 
@@ -440,6 +441,21 @@ type FBHASHTBLIST
 	tail			as FBHASHTB ptr
 end type
 
+type SYMB_DEF_PARAM
+	item			as HASHITEM ptr
+	index			as uinteger
+end type
+
+type SYMB_DEF_CTX
+	paramlist		as TLIST					'' define parameters
+	toklist			as TLIST					'' define tokens
+
+	'' macros only..
+	param			as integer					'' param count
+    paramhash		as THASH
+    hash(0 to FB_MAXDEFINEARGS-1) as SYMB_DEF_PARAM
+end type
+
 type SYMBCTX
 	inited			as integer
 
@@ -459,9 +475,9 @@ type SYMBCTX
 	libhash			as THASH
 
 	dimlist			as TLIST					'' array dimensions
-	defparamlist	as TLIST					'' define parameters
-	deftoklist		as TLIST					'' define tokens
 	fwdlist			as TLIST					'' forward typedef refs
+
+	def				as SYMB_DEF_CTX				'' #define context
 
 	lastlbl			as FBSYMBOL ptr
 
@@ -804,6 +820,11 @@ declare function 	symbAddNamespace		( _
 												byval id as zstring ptr, _
 												byval id_alias as zstring ptr _
 											) as FBSYMBOL ptr
+
+declare sub 		symbAddToFwdRef			( _
+												byval f as FBSYMBOL ptr, _
+					 					  		byval ref as FBSYMBOL ptr _
+					 						)
 
 declare sub 		symbRoundUDTSize		( _
 												byval t as FBSYMBOL ptr _
@@ -1292,6 +1313,8 @@ declare function 	symbTypeToStr			( _
 #define symbGetDefParamNext(a) a->next
 
 #define symbGetDefParamName(a) a->name
+
+#define symbGetDefParamNum(a) a->num
 
 #define symbGetDefineCallback(d) d->def.proc
 

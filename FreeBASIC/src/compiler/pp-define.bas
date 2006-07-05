@@ -719,10 +719,10 @@ private function hReadMacroText _
 		byval ismultiline as integer _
 	) as FB_DEFTOK ptr
 
-	static as zstring * FB_MAXNAMELEN+1 token
+	static as zstring * FB_MAXNAMELEN+1 arg
     dim as FB_DEFPARAM ptr param = any
     dim as FB_DEFTOK ptr toktail = NULL, tokhead = NULL
-    dim as integer num = any, addquotes = any, nestedcnt = 0
+    dim as integer addquotes = any, nestedcnt = 0
 
     do
     	addquotes = FALSE
@@ -853,37 +853,27 @@ private function hReadMacroText _
 				tokhead = toktail
 			end if
 
-    		token = ucase( *lexGetText( ) )
+    		arg = ucase( *lexGetText( ) )
 
-    		'' for each define param..
-    		param = paramhead
-    		num = 0
-    		do
-    			'' same?
-    			if( token = *symbGetDefParamName( param ) ) then
+    		'' look up..
+    		param = hashLookup( @symb.def.paramhash, arg )
 
-					if( addquotes = FALSE ) then
-						symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAM )
-					else
-						symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAMSTR )
-					end if
+    		'' found?
+    		if( param <> NULL ) then
+				if( addquotes = FALSE ) then
+					symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAM )
+				else
+					symbSetDefTokType( toktail, FB_DEFTOK_TYPE_PARAMSTR )
+				end if
 
-					symbSetDefTokParamNum( toktail, num )
+				symbSetDefTokParamNum( toktail, symbGetDefParamNum( param ) )
 
-    				lexSkipToken( LEX_FLAGS )
-    				exit do
-    			end if
-
-    			'' next arg
-    			param = symbGetDefParamNext( param )
-    			num += 1
-    		loop while( param <> NULL )
-
-    		'' if none matched, read as-is
-    		if( param = NULL ) then
+    		'' none matched, read as-is
+    		else
     			ZstrAssign( @toktail->text, lexGetText( ) )
-    			lexSkipToken( LEX_FLAGS )
     		end if
+
+    		lexSkipToken( LEX_FLAGS )
 
     	'' anything else, read as-is
     	case else
@@ -982,7 +972,7 @@ function ppDefine _
 		byval ismultiline as integer _
 	) as integer
 
-	static as zstring * FB_MAXNAMELEN+1 defname, paramname
+	static as zstring * FB_MAXNAMELEN+1 defname
 	dim as integer params = any, isargless = any, flags = any
 	dim as FB_DEFPARAM ptr paramhead = any, lastparam = any
 	dim as FBSYMBOL ptr sym = any
@@ -1042,8 +1032,26 @@ function ppDefine _
 		if( lexGetToken( LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL ) <> CHAR_RPRNT ) then
 			lastparam = NULL
 			do
-		    	lexEatToken( paramname, LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL )
-		    	lastparam = symbAddDefineParam( lastparam, @paramname )
+		    	select case lexGetClass( )
+		    	case FB_TKCLASS_KEYWORD, FB_TKCLASS_IDENTIFIER
+                	lastparam = symbAddDefineParam( lastparam, lexGetText( ) )
+
+		    	case else
+    				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+    					exit function
+    				else
+    					'' error recovery: fake a param
+    					lastparam = symbAddDefineParam( lastparam, hMakeTmpStr( ) )
+    				end if
+		    	end select
+
+		    	if( lastparam = NULL ) then
+    				if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+    					exit function
+    				end if
+		    	end if
+
+		    	lexSkipToken( LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL )
 
 		    	params += 1
 				if( params >= FB_MAXDEFINEARGS ) then

@@ -30,11 +30,18 @@ option escape
 #include once "inc\list.bi"
 
 '':::::
-sub symbInitFwdRef( ) static
+sub symbFwdRefInit( ) static
 
 	listNew( @symb.fwdlist, FB_INITFWDREFNODES, len( FBFWDREF ), LIST_FLAGS_NOCLEAR )
 
 	symb.fwdrefcnt = 0
+
+end sub
+
+'':::::
+sub symbFwdRefEnd( ) static
+
+	listFree( @symb.fwdlist )
 
 end sub
 

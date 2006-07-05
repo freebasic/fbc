@@ -246,7 +246,7 @@ const SYMB_MAXKEYWORDS = 210
 
 
 '':::::
-sub symbInitKeywords( ) static
+sub symbKeywordInit( ) static
     dim as integer i
 
 	for i = 0 to SYMB_MAXKEYWORDS-1

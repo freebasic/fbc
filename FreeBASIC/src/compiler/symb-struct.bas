@@ -206,6 +206,9 @@ function symbAddUDTElement _
     	hUcase( id, @ename )
 
     	'' check if element already exists in the current struct and parents
+
+    	'' !!!FIXME!!! don't do this check for system headers !!!FIXME!!!
+
     	p = t
     	do
     		e = p->udt.fldtb.head

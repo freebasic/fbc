@@ -31,24 +31,25 @@ option escape
 
 declare sub			symbDelGlobalTb 	( )
 
-declare sub 		symbInitKeywords	( )
+declare sub 		symbKeywordInit		( )
 
-declare sub 		symbInitDefines		( _
+declare sub 		symbDefineInit		( _
 											byval ismain as integer _
 										)
 
-declare sub 		symbInitLibs		( )
+declare sub 		symbDefineEnd		( )
 
-declare sub 		symbInitFwdRef		( )
+declare sub 		symbLibInit			( )
+
+declare sub 		symbLibEnd			( )
+
+declare sub 		symbFwdRefInit		( )
+
+declare sub 		symbFwdRefEnd		( )
 
 declare sub 		symbVarInit			( )
 
 declare sub 		symbVarEnd			( )
-
-declare sub 		symbAddToFwdRef		( _
-											byval f as FBSYMBOL ptr, _
-					 					  	byval ref as FBSYMBOL ptr _
-					 					)
 
 declare sub 		symbMangleInit		( )
 
@@ -156,16 +157,16 @@ sub symbInit _
 	symbMangleInit( )
 
 	'' keywords
-	symbInitKeywords( )
+	symbKeywordInit( )
 
 	'' defines
-	symbInitDefines( ismain )
+	symbDefineInit( ismain )
 
 	'' forward refs
-	symbInitFwdRef( )
+	symbFwdRefInit( )
 
 	'' libraries
-	symbInitLibs( )
+	symbLibInit( )
 
 	'' arrays dim tb
 	symbVarInit( )
@@ -193,20 +194,16 @@ sub symbEnd
 	symbDataEnd( )
 
     ''
-	hashFree( @symb.libhash )
-
     hashFree( @symb.globnspc.nspc.hashtb.tb )
 
 	''
-	listFree( @symb.liblist )
-
 	symbVarEnd( )
 
-	listFree( @symb.fwdlist )
+	symbLibEnd( )
 
-	listFree( @symb.deftoklist )
+	symbFwdRefEnd( )
 
-	listFree( @symb.defparamlist )
+	symbDefineEnd( )
 
 	symbMangleEnd( )
 

@@ -198,7 +198,7 @@ private function hDefDebug_cb ( ) as string
 end function
 
 '':::::
-sub symbInitDefines _
+sub symbDefineInit _
 	( _
 		byval ismain as integer _
 	) static
@@ -207,10 +207,12 @@ sub symbInitDefines _
 	dim as zstring ptr def
 	dim as integer i
 
-    listNew( @symb.defparamlist, FB_INITDEFARGNODES, len( FB_DEFPARAM ), LIST_FLAGS_NOCLEAR )
+    '' lists
+    listNew( @symb.def.paramlist, FB_INITDEFARGNODES, len( FB_DEFPARAM ), LIST_FLAGS_NOCLEAR )
 
-    listNew( @symb.deftoklist, FB_INITDEFTOKNODES, len( FB_DEFTOK ), LIST_FLAGS_NOCLEAR )
+    listNew( @symb.def.toklist, FB_INITDEFTOKNODES, len( FB_DEFTOK ), LIST_FLAGS_NOCLEAR )
 
+    '' add the pre-defines
     for i = 0 to SYMB_MAXDEFINES-1
     	if( defTb(i).name = NULL ) then
     		exit for
@@ -227,7 +229,7 @@ sub symbInitDefines _
     				   FALSE, defTb(i).proc, defTb(i).flags )
     next
 
-	'' target
+	'' add "target" define
 	select case as const env.clopt.target
 	case FB_COMPTARGET_WIN32
 		def = @"__FB_WIN32__"
@@ -243,10 +245,30 @@ sub symbInitDefines _
 
 	symbAddDefine( def, NULL, 0 )
 
-	'' main
+	'' add "main" define
 	if( ismain ) then
 		symbAddDefine( "__FB_MAIN__", NULL, 0 )
 	end if
+
+	'' macro params
+	symb.def.param = 0
+
+	hashNew( @symb.def.paramhash, FB_MAXDEFINEARGS )
+
+end sub
+
+'':::::
+sub symbDefineEnd( )
+
+	'' macro params
+	hashFree( @symb.def.paramhash )
+
+	symb.def.param = 0
+
+    '' lists
+	listFree( @symb.def.paramlist )
+
+	listFree( @symb.def.toklist )
 
 end sub
 
@@ -360,29 +382,71 @@ function symbAddDefineMacro _
 end function
 
 '':::::
+private sub hResetDefHash( )
+    dim as integer i
+
+	for i = 0 to symb.def.param-1
+		hashDel( @symb.def.paramhash, symb.def.hash(i).item, symb.def.hash(i).index )
+	next
+
+	symb.def.param = 0
+
+end sub
+
+'':::::
 function symbAddDefineParam _
 	( _
 		byval lastparam as FB_DEFPARAM ptr, _
-		byval symbol as zstring ptr _
+		byval id as zstring ptr _
 	) as FB_DEFPARAM ptr static
 
     dim as FB_DEFPARAM ptr param
+    dim as uinteger index
 
     function = NULL
 
-    param = listNewNode( @symb.defparamlist )
+    param = listNewNode( @symb.def.paramlist )
     if( param = NULL ) then
     	exit function
     end if
 
 	if( lastparam <> NULL ) then
 		lastparam->next = param
+
+	'' new param list..
+	else
+		'' reset the old list, if any
+		if( symb.def.param > 0 ) then
+			hResetDefHash( )
+		end if
 	end if
 
 	''
-    param->name	= ZstrAllocate( len( *symbol ) )
-    hUcase( *symbol, *param->name )
+    param->name	= ZstrAllocate( len( *id ) )
+    hUcase( *id, *param->name )
+
+    '' add to hash, for fast lookup
+    index = hashHash( param->name )
+
+    '' dup definition? !!!FIXME!!! don't do this check for system headers !!!FIXME!!!
+    if( hashLookupEx( @symb.def.paramhash, param->name, index ) <> NULL ) then
+    	ZstrFree( param->name )
+    	listDelNode( @symb.def.paramlist, param )
+    	return NULL
+    end if
+
+    symb.def.hash(symb.def.param).item = hashAdd( @symb.def.paramhash, _
+    										      param->name, _
+    										      param, _
+    										      index )
+
+    symb.def.hash(symb.def.param).index = index
+
+    ''
+    param->num = symb.def.param
     param->next	= NULL
+
+    symb.def.param += 1
 
     function = param
 
@@ -399,7 +463,7 @@ function symbAddDefineTok _
 
     function = NULL
 
-    t = listNewNode( @symb.deftoklist )
+    t = listNewNode( @symb.def.toklist )
     if( t = NULL ) then
     	exit function
     end if
@@ -445,7 +509,7 @@ function symbDelDefineTok _
     	WstrFree( tok->textw )
     end select
 
-    listDelNode( @symb.deftoklist, tok )
+    listDelNode( @symb.def.toklist, tok )
 
 end function
 
@@ -458,7 +522,7 @@ private sub hDelDefineParams( byval s as FBSYMBOL ptr )
     	nxt = param->next
     	ZstrFree( param->name )
 
-    	listDelNode( @symb.defparamlist, param )
+    	listDelNode( @symb.def.paramlist, param )
 
     	param = nxt
     loop

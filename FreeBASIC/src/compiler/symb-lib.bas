@@ -30,11 +30,20 @@ option escape
 #include once "inc\list.bi"
 
 '':::::
-sub symbInitLibs( ) static
+sub symbLibInit( ) static
 
 	listNew( @symb.liblist, FB_INITLIBNODES, len( FBLIBRARY ), LIST_FLAGS_NOCLEAR )
 
     hashNew( @symb.libhash, FB_INITLIBNODES )
+
+end sub
+
+'':::::
+sub symbLibEnd( ) static
+
+	hashFree( @symb.libhash )
+
+	listFree( @symb.liblist )
 
 end sub
 
