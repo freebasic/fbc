@@ -24,7 +24,6 @@ option explicit
 			locate ((h - 16) \ 2) + y + 1, ((w - 16) \ 2) + x + 1
 			print chr((x * 16) + y);
 		next x
-while inkey$="":wend
 	next y
 	
 	sleep 1000
