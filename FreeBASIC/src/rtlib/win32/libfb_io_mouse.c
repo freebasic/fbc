@@ -63,7 +63,8 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons )
 	INPUT_RECORD ir;
     DWORD dwRead;
 #endif
-    DWORD dwMode;
+
+  DWORD dwMode;
 
 	if( inited == -1 ) {
 		inited = GetSystemMetrics( SM_CMOUSEBUTTONS );
@@ -77,10 +78,18 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons )
             last_x = last_y = 1;
             fb_hConvertToConsole( &last_x, &last_y, NULL, NULL );
 		}
-	}
+	} 
 	if( inited == 0 ) {
 		*x = *y = *z = *buttons = -1;
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+	}
+	if( inited > 0) {
+		GetConsoleMode( fb_in_handle, &dwMode );
+		if( !(dwMode & ENABLE_MOUSE_INPUT) )
+		{
+			dwMode |= ENABLE_MOUSE_INPUT;
+			SetConsoleMode( fb_in_handle, dwMode );
+		}
 	}
 
 #if 0
