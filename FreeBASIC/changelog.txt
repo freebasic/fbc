@@ -20,6 +20,7 @@ Version 0.17 Beta:
 - the GFX_NO_FRAME flag to SCREEN, to create a frameless window (lillo)
 - the GFX_SHAPED_WINDOW flag to SCREEN, to create a custom shaped window. Produces the same as frameless window, but drawing
   transparent pixels causes the corresponding portion of the window to be transparent too (lillo)
+- the __FB_ERR__ define, set to 1, 3, 7, if one of the -e, -ex or -exx cmd-line options was passed, respectively (v1c)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
@@ -45,6 +46,7 @@ Version 0.17 Beta:
 - names of non-shared COMMON variables were not been preserved (v1c)
 - field arrays of function pointers were not correctly parsed (v1c)
 - #define's parameters weren't checked for duplicated definitions (v1c)
+- concatenating a wstring literal and a var-len string variable was causing an ICE (v1c)
 
 
 Version 0.16 Beta:
