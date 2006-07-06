@@ -55,6 +55,9 @@ declare function 	hDefOutLib_cb 		( ) as string
 declare function 	hDefOutDll_cb 		( ) as string
 declare function 	hDefOutObj_cb 		( ) as string
 declare function 	hDefDebug_cb 		( ) as string
+declare function 	hDefErr_cb 			( ) as string
+declare function 	hDefExErr_cb 		( ) as string
+declare function 	hDefExxErr_cb 		( ) as string
 
 '' predefined #defines: name, value, flags, proc (for description flags, see FBS_DEFINE)
 const SYMB_MAXDEFINES = 24
@@ -82,6 +85,7 @@ const SYMB_MAXDEFINES = 24
 		(@"__FB_OUT_DLL__",			NULL,		   	   1, @hDefOutDll_cb 	 ), _
 		(@"__FB_OUT_OBJ__",			NULL,		   	   1, @hDefOutObj_cb 	 ), _
 		(@"__FB_DEBUG__",			NULL,		   	   1, @hDefDebug_cb 	 ), _
+		(@"__FB_ERR__",     		NULL,       	   1, @hDefErr_cb    	 ), _
 		(NULL) _
 	}
 
@@ -194,6 +198,26 @@ end function
 private function hDefDebug_cb ( ) as string
 
 	function = str( env.clopt.debug )
+
+end function
+
+''::::
+private function hDefErr_cb ( ) as string
+    dim as integer res = &h0000
+
+	if( env.clopt.errorcheck ) then
+		res = &h0001
+	end if
+
+	if( env.clopt.resumeerr ) then
+		res or= &h0002
+	end if
+
+	if( env.clopt.extraerrchk ) then
+		res or= &h0004
+	end if
+
+	function = str( res )
 
 end function
 
