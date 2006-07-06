@@ -628,6 +628,8 @@ function astNewBOP _
 					select case rdtype
 					case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 						litsym = astGetStrLitSymbol( r )
+					case else
+						litsym = NULL
 					end select
 				end if
 			end select
