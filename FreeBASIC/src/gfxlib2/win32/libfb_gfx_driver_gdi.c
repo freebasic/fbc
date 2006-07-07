@@ -163,8 +163,17 @@ static void gdi_thread(HANDLE running_event)
 					source = buffer + (y1 * ((fb_mode->pitch + 3) & ~0x3));
 				}
 				else
+				{
 					source = fb_mode->framebuffer + (y1 * fb_mode->pitch);
+				}
+
 				SetDIBitsToDevice(hdc, 0, y1, fb_win32.w, h, 0, 0, 0, h, source, bitmap_info, DIB_RGB_COLORS);
+				
+				{
+					RECT rec = { 0, y1, fb_win32.w, h };
+					InvalidateRect( fb_win32.wnd, &rec, FALSE);
+				}
+
 				break;
 			}
 		}
