@@ -183,7 +183,9 @@ function cArrayFunct _
 			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 				exit function
 			else
+				'' error recovery: skip until next ')' and fake an expr
 				hSkipUntil( CHAR_RPRNT, TRUE )
+				funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 				return TRUE
 			end if
 		end if
@@ -200,7 +202,9 @@ function cArrayFunct _
 			if( errReport( FB_ERRMSG_EXPECTEDARRAY, TRUE ) = FALSE ) then
 				exit function
 			else
+				'' error recovery: skip until next ')' and fake an expr
 				hSkipUntil( CHAR_RPRNT, TRUE )
+				funcexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 				return TRUE
 			end if
 		end if
