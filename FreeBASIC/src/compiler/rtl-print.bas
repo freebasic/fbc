@@ -483,11 +483,14 @@ sub rtlPrintModEnd( )
 end sub
 
 '':::::
-function rtlPrint( byval fileexpr as ASTNODE ptr, _
-				   byval iscomma as integer, _
-				   byval issemicolon as integer, _
-				   byval expr as ASTNODE ptr, _
-                   byval islprint as integer = FALSE ) as integer
+function rtlPrint _
+	( _
+		byval fileexpr as ASTNODE ptr, _
+		byval iscomma as integer, _
+		byval issemicolon as integer, _
+		byval expr as ASTNODE ptr, _
+        byval islprint as integer = FALSE _
+	) as integer
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -644,9 +647,12 @@ function rtlPrint( byval fileexpr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlPrintSPC( byval fileexpr as ASTNODE ptr, _
-					  byval expr as ASTNODE ptr, _
-                      byval islprint as integer = FALSE ) as integer static
+function rtlPrintSPC _
+	( _
+		byval fileexpr as ASTNODE ptr, _
+		byval expr as ASTNODE ptr, _
+        byval islprint as integer = FALSE _
+	) as integer static
 
     dim as ASTNODE ptr proc
 
@@ -676,9 +682,12 @@ function rtlPrintSPC( byval fileexpr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlPrintTab( byval fileexpr as ASTNODE ptr, _
-					  byval expr as ASTNODE ptr, _
-                      byval islprint as integer = FALSE ) as integer static
+function rtlPrintTab _
+	( _
+		byval fileexpr as ASTNODE ptr, _
+		byval expr as ASTNODE ptr, _
+        byval islprint as integer = FALSE _
+    ) as integer static
 
     dim as ASTNODE ptr proc
 
@@ -708,9 +717,12 @@ function rtlPrintTab( byval fileexpr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlWrite( byval fileexpr as ASTNODE ptr, _
-				   byval iscomma as integer, _
-				   byval expr as ASTNODE ptr ) as integer
+function rtlWrite _
+	( _
+		byval fileexpr as ASTNODE ptr, _
+		byval iscomma as integer, _
+		byval expr as ASTNODE ptr _
+	) as integer
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -810,8 +822,11 @@ function rtlWrite( byval fileexpr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlPrintUsingInit( byval usingexpr as ASTNODE ptr, _
-                            byval islprint as integer = FALSE ) as integer static
+function rtlPrintUsingInit _
+	( _
+		byval usingexpr as ASTNODE ptr, _
+        byval islprint as integer = FALSE _
+	) as integer static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -838,8 +853,11 @@ function rtlPrintUsingInit( byval usingexpr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlPrintUsingEnd( byval fileexpr as ASTNODE ptr, _
-                           byval islprint as integer = FALSE ) as integer static
+function rtlPrintUsingEnd _
+	( _
+		byval fileexpr as ASTNODE ptr, _
+        byval islprint as integer = FALSE _
+	) as integer static
 
     dim as ASTNODE ptr proc
 
@@ -864,11 +882,14 @@ function rtlPrintUsingEnd( byval fileexpr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlPrintUsing( byval fileexpr as ASTNODE ptr, _
-						byval expr as ASTNODE ptr, _
-						byval iscomma as integer, _
-						byval issemicolon as integer, _
-                        byval islprint as integer = FALSE ) as integer
+function rtlPrintUsing _
+	( _
+		byval fileexpr as ASTNODE ptr, _
+		byval expr as ASTNODE ptr, _
+		byval iscomma as integer, _
+		byval issemicolon as integer, _
+        byval islprint as integer = FALSE _
+    ) as integer
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -876,8 +897,12 @@ function rtlPrintUsing( byval fileexpr as ASTNODE ptr, _
 
 	function = FALSE
 
-    if islprint then
+    if( islprint ) then
     	rtlPrinter_cb( NULL )
+    end if
+
+    if( expr = NULL ) then
+    	exit function
     end if
 
 	select case astGetDataType( expr )
@@ -925,9 +950,12 @@ function rtlPrintUsing( byval fileexpr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlWidthDev ( byval device as ASTNODE ptr, _
-					   byval width_arg as ASTNODE ptr, _
-                       byval isfunc as integer ) as ASTNODE ptr
+function rtlWidthDev _
+	( _
+		byval device as ASTNODE ptr, _
+		byval width_arg as ASTNODE ptr, _
+        byval isfunc as integer _
+	) as ASTNODE ptr
 
     dim as ASTNODE ptr proc
 
@@ -968,7 +996,11 @@ function rtlWidthDev ( byval device as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlPrinter_cb( byval sym as FBSYMBOL ptr ) as integer static
+function rtlPrinter_cb _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer static
+
     static as integer libsAdded = FALSE
 
 	if( libsadded = FALSE ) then
