@@ -194,6 +194,7 @@ static void driver_restore_screen(void)
 	pthread_mutex_lock(&mutex);
 	is_active = TRUE;
 	is_palette_changed = TRUE;
+	fb_hMemSet(framebuffer, 0, device_info.smem_len);
 	fb_hMemSet(fb_mode->dirty, TRUE, fb_linux.h);
 	pthread_mutex_unlock(&mutex);
 }
