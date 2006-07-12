@@ -82,12 +82,15 @@ FBCALL FBSTRING *fb_hStrFormat ( double value,
  * 16               Precision when the user specified a mask
  */
 static
-void fb_hGetNumberParts( double number,
-                         char *pachFixPart, int *pcchLenFix,
-                         char *pachFracPart, int *pcchLenFrac,
-                         char *pchSign,
-                         char chDecimalPoint,
-                         int precision )
+void fb_hGetNumberParts
+	(
+		double number,
+        char *pachFixPart, int *pcchLenFix,
+        char *pachFracPart, int *pcchLenFrac,
+        char *pchSign,
+        char chDecimalPoint,
+        int precision
+	)
 {
     char *pszFracStart, *pszFracEnd;
     char chSign;
@@ -157,9 +160,12 @@ void fb_hGetNumberParts( double number,
 
 /*:::::*/
 static
-FBSTRING *fb_hBuildDouble ( double num,
-                            char decimal_point,
-                            char thousands_separator )
+FBSTRING *fb_hBuildDouble
+	(
+		double num,
+        char decimal_point,
+        char thousands_separator
+	)
 {
     char FixPart[128], FracPart[128], chSign;
     int LenFix, LenFrac, LenSign, LenDecPoint, LenTotal;
@@ -198,7 +204,11 @@ FBSTRING *fb_hBuildDouble ( double num,
 	return dst;
 }
 
-static double hRound( double value, const FormatMaskInfo *pInfo )
+static double hRound
+	(
+		double value,
+		const FormatMaskInfo *pInfo
+	)
 {
 	double fix, frac = modf( value, &fix );
 
@@ -254,14 +264,17 @@ static double hRound( double value, const FormatMaskInfo *pInfo )
  * queries of do_output will be removed.
  */
 static
-int fb_hProcessMask( FBSTRING *dst,
-                     const char *mask, int mask_length,
-                     double value,
-                     FormatMaskInfo *pInfo,
-                     char chThousandsSep,
-                     char chDecimalPoint,
-                     char chDateSep,
-                     char chTimeSep )
+int fb_hProcessMask
+	(
+		FBSTRING *dst,
+        const char *mask, int mask_length,
+        double value,
+        FormatMaskInfo *pInfo,
+        char chThousandsSep,
+        char chDecimalPoint,
+        char chDateSep,
+        char chTimeSep
+	)
 {
     char FixPart[128], FracPart[128], ExpPart[128], chSign;
     int LenFix, LenFrac, LenExp = 0, IndexFix, IndexFrac, IndexExp = 0;
@@ -348,12 +361,19 @@ int fb_hProcessMask( FBSTRING *dst,
 				/* too small? */
 				if( -ExpValue >= pInfo->num_digits_frac )
 				{
+#if 0
 					/* can't scale? */
 					if( (pInfo->num_digits_frac == 0 ) ||
-						(-ExpValue > pInfo->num_digits_fix+pInfo->num_digits_frac-pInfo->num_digits_omit) )
+						(-ExpValue > pInfo->num_digits_fix +
+									 pInfo->num_digits_frac -
+									 pInfo->num_digits_omit) )
 						value = 0.0;
 					else
 						value *= pow( 10.0, -ExpValue + pInfo->num_digits_fix );
+#else
+					value = 0.0;
+#endif
+					ExpValue = 0;
 				}
 
 			}
@@ -1133,8 +1153,12 @@ int fb_hProcessMask( FBSTRING *dst,
 }
 
 /*:::::*/
-FBCALL FBSTRING *fb_hStrFormat ( double value,
-                                 const char *mask, size_t mask_length )
+FBCALL FBSTRING *fb_hStrFormat
+	(
+		double value,
+        const char *mask,
+        size_t mask_length
+	)
 {
     FBSTRING *dst = &fb_strNullDesc;
     const char *pszIntlResult;
@@ -1190,7 +1214,11 @@ FBCALL FBSTRING *fb_hStrFormat ( double value,
 }
 
 /*:::::*/
-FBCALL FBSTRING *fb_StrFormat ( double value, FBSTRING *mask )
+FBCALL FBSTRING *fb_StrFormat
+	(
+		double value,
+		FBSTRING *mask
+	)
 {
     FBSTRING *dst;
 
