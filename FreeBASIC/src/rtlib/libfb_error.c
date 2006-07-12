@@ -85,7 +85,7 @@ static void fb_Die
 		pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
 						 " at line %d", line_num );
 
-	if( fun_name != NULL )
+	if( mod_name != NULL )
 		if( fun_name != NULL )
 	    	pos += snprintf( &error_buffer[pos], FB_ERROR_MESSAGE_SIZE - pos,
 	    				 	 " %s %s::%s()" FB_NEWLINE FB_NEWLINE, (line_num > 0? &"of" : &"in"), mod_name, fun_name );
