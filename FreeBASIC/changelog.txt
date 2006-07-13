@@ -48,6 +48,7 @@ Version 0.17 Beta:
 - #define's parameters weren't checked for duplicated definitions (v1c)
 - concatenating a wstring literal and a var-len string variable was causing an ICE (v1c)
 - when the FORMAT()'s string has no exponent part, the fraction shouldn't be scaled up (v1c)
+- CIRCLE had precision problems when deailing with large coordinates and radius values (lillo)
 
 
 Version 0.16 Beta:

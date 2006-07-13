@@ -52,7 +52,7 @@ static void draw_scanline(int y, int x1, int x2, unsigned int color, int fill)
 static void draw_ellipse(int x, int y, float a, float b, unsigned int color, int fill)
 {
 	int d, x1, y1, x2, y2;
-	int dx, dy, aq, bq, r, rx, ry;
+	long long dx, dy, aq, bq, r, rx, ry;
 
 	x1 = x - a;
 	x2 = x + a;
