@@ -5795,7 +5795,7 @@ sub emitDeclVariable _
 			return
 		end if
 
-    	'' ever referenced?
+    	'' never referenced?
     	if( symbGetIsAccessed( s ) = FALSE ) then
 			'' not public?
     	    if( symbIsPublic( s ) = FALSE ) then

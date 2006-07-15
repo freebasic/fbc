@@ -628,13 +628,14 @@ private sub hDeclLocalVars _
     	'' variable?
     	case FB_SYMBCLASS_VAR
 
-			'' not an argument, temporary or descriptor?
+			'' not an argument, temporary, descriptor or func result?
     		if( (symbGetAttrib( s ) and _
     			 (FB_SYMBATTRIB_PARAMBYDESC or _
 			   	  FB_SYMBATTRIB_PARAMBYVAL or _
 			   	  FB_SYMBATTRIB_PARAMBYREF or _
     		   	  FB_SYMBATTRIB_TEMP or _
-    		   	  FB_SYMBATTRIB_DESCRIPTOR)) = 0 ) then
+    		   	  FB_SYMBATTRIB_DESCRIPTOR or _
+    		   	  FB_SYMBATTRIB_FUNCRESULT)) = 0 ) then
 
 				edbgEmitLocalVar( s, symbIsStatic( s ) )
 
@@ -1030,6 +1031,11 @@ sub edbgEmitGlobalVar _
 		exit sub
 	end if
 
+	'' really global? (because the static local vars)
+	if( symbIsLocal( sym ) ) then
+		exit sub
+	end if
+
 	'' depends on section
 	select case section
 	case EMIT_SECTYPE_CONST
@@ -1046,7 +1052,7 @@ sub edbgEmitGlobalVar _
     attrib = symbGetAttrib( sym )
     if( (attrib and (FB_SYMBATTRIB_PUBLIC or FB_SYMBATTRIB_COMMON)) > 0 ) then
     	desc += ":G"
-    elseif( (symbIsLocal( sym ) = FALSE) or (attrib and FB_SYMBATTRIB_STATIC) > 0 ) then
+    elseif( (attrib and FB_SYMBATTRIB_STATIC) > 0 ) then
         desc += ":S"
     else
     	desc += ":"
@@ -1085,6 +1091,12 @@ sub edbgEmitLocalVar _
 
     ''
     if( isstatic ) then
+    	'' never referenced?
+    	if( symbGetIsAccessed( sym ) = FALSE ) then
+    		'' locals can't be public, don't check
+    		exit sub
+    	end if
+
 		if( symbGetIsInitialized( sym ) ) then
 			t = STAB_TYPE_STSYM
 		else
