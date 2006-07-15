@@ -322,7 +322,10 @@ function errReport _
 	token = *lexGetText( )
 	if( len( token ) > 0 ) then
 		'' don't print control chars
-		if( lexGetToken( ) > CHAR_SPACE ) then
+		select case lexGetToken( )
+		case is <= CHAR_SPACE, FB_TK_EOL, FB_TK_EOF
+
+		case else
 			if( isbefore ) then
 				msgex = "before: '"
 			else
@@ -330,7 +333,7 @@ function errReport _
 			end if
 
 			msgex += token + "'"
-		end if
+		end select
 	end if
 
 	function = errReportEx( errnum, msgex )
