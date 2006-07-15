@@ -50,6 +50,7 @@ Version 0.17 Beta:
 - when the FORMAT()'s string has no exponent part, the fraction shouldn't be scaled up (v1c)
 - CIRCLE had precision problems when deailing with large coordinates and radius values (lillo)
 - debugging info for local static variables that were never referenced was been emitted (v1c)
+- functions with forward types parameters were been incorrectly mangled (v1c)
 
 
 Version 0.16 Beta:
