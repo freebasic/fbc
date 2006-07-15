@@ -250,7 +250,7 @@ private function hParamDecl _
 		pmode = INVALID
 	end select
 
-	'' only allow keywords as arg names on prototypes
+	'' only allow keywords as param names on prototypes
 	readid = TRUE
 	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
 		if( isproto = FALSE ) then
@@ -348,7 +348,17 @@ private function hParamDecl _
     	end if
 
     	arglevel += 1
-    	if( cSymbolType( ptype, subtype, plen, ptrcnt ) = FALSE ) then
+
+    	'' if it's a proto, allow forward types in byref params
+    	dim as integer options = FB_SYMBTYPEOPT_DEFAULT
+
+    	if( pmode = FB_PARAMMODE_BYREF ) then
+			if( isproto ) then
+				options or= FB_SYMBTYPEOPT_ALLOWFORWARD
+			end if
+		end if
+
+    	if( cSymbolType( ptype, subtype, plen, ptrcnt, options ) = FALSE ) then
     		if( hParamError( proc, symbGetProcParams( proc ), pid ) = FALSE ) then
     			arglevel -= 1
     			exit function

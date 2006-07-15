@@ -546,7 +546,7 @@ function symbAddVarEx _
 		byval dimensions as integer, _
 		dTB() as FBARRAYDIM, _
 		byval attrib as integer, _
-		byval options as FB_VAROPT _
+		byval options as FB_SYMBOPT _
 	) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr s
@@ -581,7 +581,7 @@ function symbAddVarEx _
     end if
 
     ''
-    if( (options and FB_VAROPT_ADDSUFFIX) <> 0 ) then
+    if( (options and FB_SYMBOPT_ADDSUFFIX) <> 0 ) then
     	suffix = dtype
     else
     	suffix = INVALID
@@ -602,7 +602,7 @@ function symbAddVarEx _
 	'' local? add to local symb & hash tbs
 	if( isglobal = FALSE ) then
 		'' QB quirk: implicit variables are moved to the function scope..
-		if( (options and FB_VAROPT_UNSCOPE) = 0 ) then
+		if( (options and FB_SYMBOPT_UNSCOPE) = 0 ) then
 			symtb = symb.symtb
 		else
 			symtb = @symbGetProcLocTb( env.currproc )
@@ -635,7 +635,7 @@ function symbAddVarEx _
 					   FB_SYMBCLASS_VAR, _
 					   TRUE, id, id_alias, _
 					   dtype, subtype, ptrcnt, _
-					   (options and FB_VAROPT_PRESERVECASE) <> 0, _
+					   (options and FB_SYMBOPT_PRESERVECASE) <> 0, _
 					   suffix )
 
 	if( s = NULL ) then
@@ -646,7 +646,7 @@ function symbAddVarEx _
 	hSetupVar( s, id, dtype, subtype, lgt, dimensions, dTB(), attrib, stats )
 
 	'' QB quirk: see the above
-	if( (options and FB_VAROPT_UNSCOPE) <> 0 ) then
+	if( (options and FB_SYMBOPT_UNSCOPE) <> 0 ) then
 		if( (env.currproc->attrib and (FB_SYMBATTRIB_MAINPROC or _
 									   FB_SYMBATTRIB_MODLEVELPROC)) <> 0 ) then
 			s->scope = FB_MAINSCOPE
@@ -676,7 +676,7 @@ function symbAddVar _
     function = symbAddVarEx( symbol, NULL, dtype, subtype, ptrcnt, _
     		  			     0, dimensions, dTB(), _
     						 attrib, _
-    						 FB_VAROPT_ADDSUFFIX )
+    						 FB_SYMBOPT_ADDSUFFIX )
 
 end function
 

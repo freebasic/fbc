@@ -31,6 +31,13 @@ option escape
 #include once "inc\ast.bi"
 #include once "inc\emit.bi"
 
+declare function hMangleFunctionPtr				( _
+													byval proc as FBSYMBOL ptr, _
+													byval dtype as integer, _
+													byval subtype as FBSYMBOL ptr, _
+													byval mode as integer _
+												) as zstring ptr
+
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' add
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -301,7 +308,7 @@ private function hAddOvlProc _
     '' add the new proc symbol, w/o adding it to the hash table
 
 	proc = symbNewSymbol( proc, _
-						  NULL, NULL, 0, _
+						  parent->symtb, parent->hash.tb, symbIsLocal( parent ) = FALSE, _
 						  FB_SYMBCLASS_PROC, _
 						  FALSE, id, id_alias, _
 					      dtype, subtype, ptrcnt, _
@@ -388,12 +395,13 @@ private function hSetupProc _
 		byval ptrcnt as integer, _
 		byval attrib as integer, _
 		byval mode as integer, _
-		byval declaring as integer, _
-		byval preservecase as integer _
+		byval options as FB_SYMBOPT _
 	) as FBSYMBOL ptr static
 
-    dim as integer lgt, realtype, stats
-    dim as FBSYMBOL ptr proc, parent
+    dim as integer lgt, realtype, stats, preservecase
+    dim as FBSYMBOL ptr proc, parent, ns
+	dim as FBSYMBOLTB ptr symtb
+	dim as FBHASHTB ptr hashtb
 
     function = NULL
 
@@ -419,9 +427,24 @@ private function hSetupProc _
     	stats = FB_SYMBSTATS_HASALIAS
     end if
 
-	''
+	ns = symbGetCurrentNamespc( )
+	symtb = NULL
+	hashtb = NULL
+
+	'' move to global ns? (needed for function ptr protos)
+	if( (options and FB_SYMBOPT_MOVETOGLOB) <> 0 ) then
+    	'' only if not inside a scope block..
+    	if( env.scope = FB_MAINSCOPE ) then
+			ns = @symbGetGlobalNamespc( )
+			symtb = @symbGetGlobalTb( )
+			hashtb = @symbGetGlobalHashTb( )
+		end if
+	end if
+
+	preservecase = (options and FB_SYMBOPT_PRESERVECASE) <> 0
+
 	proc = symbNewSymbol( sym, _
-						  NULL, NULL, 0, _
+						  symtb, hashtb, env.scope = FB_MAINSCOPE, _
 						  FB_SYMBCLASS_PROC, _
 						  TRUE, id, id_alias, _
 					   	  dtype, subtype, ptrcnt, _
@@ -430,7 +453,7 @@ private function hSetupProc _
 	'' dup def?
 	if( proc = NULL ) then
 		'' is the dup a proc symbol?
-		parent = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
+		parent = symbLookupByNameAndClass( ns, _
 										   id, _
 										   FB_SYMBCLASS_PROC, _
 										   preservecase )
@@ -469,7 +492,7 @@ private function hSetupProc _
 
 	proc->proc.lgt = lgt
 
-	if( declaring ) then
+	if( (options and FB_SYMBOPT_DECLARING) <> 0 ) then
 		symbSetIsDeclared( proc )
 	end if
 
@@ -529,15 +552,15 @@ function symbAddPrototype _
 		byval ptrcnt as integer, _
 		byval attrib as integer, _
 		byval mode as integer, _
-		byval isexternal as integer, _
-		byval preservecase as integer = FALSE _
+		byval options as FB_SYMBOPT _
 	) as FBSYMBOL ptr static
 
     function = NULL
 
 	proc = hSetupProc( proc, id, id_alias, libname, _
 					   dtype, subtype, ptrcnt, _
-					   attrib, mode, isexternal, preservecase )
+					   attrib, mode, _
+					   options )
 	if( proc = NULL ) then
 		exit function
 	end if
@@ -564,7 +587,8 @@ function symbAddProc _
 
 	proc = hSetupProc( proc, id, id_alias, libname, _
 					   dtype, subtype, ptrcnt, _
-					   attrib, mode, TRUE, FALSE )
+					   attrib, mode, _
+					   FB_SYMBOPT_DECLARING )
 	if( proc = NULL ) then
 		exit function
 	end if
@@ -634,7 +658,7 @@ function symbAddParam _
 
     s = symbAddVarEx( symbol, NULL, dtype, param->subtype, 0, 0, _
     				  0, dTB(), attrib, _
-    				  iif( param->param.suffix <> INVALID, FB_VAROPT_ADDSUFFIX, FB_VAROPT_NONE ) )
+    				  iif( param->param.suffix <> INVALID, FB_SYMBOPT_ADDSUFFIX, FB_SYMBOPT_NONE ) )
 
     if( s = NULL ) then
     	return NULL
@@ -673,7 +697,7 @@ function symbAddProcResultParam _
     s = symbAddVarEx( NULL, NULL, _
     				  FB_DATATYPE_POINTER+FB_DATATYPE_USERDEF, proc->subtype, 0, 0, _
     				  0, dTB(), FB_SYMBATTRIB_PARAMBYVAL, _
-    				  FB_VAROPT_ADDSUFFIX or FB_VAROPT_PRESERVECASE )
+    				  FB_SYMBOPT_ADDSUFFIX or FB_SYMBOPT_PRESERVECASE )
 
 
 	if( proc->proc.ext = NULL ) then
@@ -708,7 +732,7 @@ function symbAddProcResult _
 
 	s = symbAddVarEx( NULL, NULL, proc->typ, proc->subtype, 0, 0, 0, _
 					  dTB(), FB_SYMBATTRIB_FUNCRESULT, _
-					  FB_VAROPT_ADDSUFFIX or FB_VAROPT_PRESERVECASE )
+					  FB_SYMBOPT_ADDSUFFIX or FB_SYMBOPT_PRESERVECASE )
 
 	if( proc->proc.ext = NULL ) then
 		proc->proc.ext = callocate( len( FB_PROCEXT ) )
@@ -726,83 +750,41 @@ function symbAddProcResult _
 end function
 
 '':::::
-function symbProcAllocLocalVars _
+function symbAddProcPtr _
 	( _
-		byval proc as FBSYMBOL ptr _
-	) as integer static
+		byval proc as FBSYMBOL ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval ptrcnt as integer, _
+		byval mode as integer _
+	) as FBSYMBOL ptr static
 
-    dim as FBSYMBOL ptr s
-    dim as integer lgt
+	dim as zstring ptr id
+	dim as FBSYMCHAIN ptr chain_
+	dim as FBSYMBOL ptr sym
 
-    function = FALSE
+	id = hMangleFunctionPtr( proc, dtype, subtype, mode )
 
-    s = symbGetProcLocTbHead( proc )
-    do while( s <> NULL )
-    	'' variable?
-    	if( s->class = FB_SYMBCLASS_VAR ) then
-    		'' not shared or static?
-    		if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
-    			 				FB_SYMBATTRIB_STATIC)) = 0 ) then
+	'' already exists? (it's ok to use LookupAt, literal str's are always
+	'' prefixed with {fbsc}, there will be clashes with func ptr mangled names )
+    chain_ = symbLookupAt( @symbGetGlobalNamespc( ), id, TRUE )
+	if( chain_ <> NULL ) then
+		return chain_->sym
+	end if
 
-				'' not a parameter?
-    			if( (s->attrib and (FB_SYMBATTRIB_PARAMBYDESC or _
-    						   	    FB_SYMBATTRIB_PARAMBYVAL or _
-    			  				   	FB_SYMBATTRIB_PARAMBYREF)) = 0 ) then
+	'' create a new prototype
+	sym = symbAddPrototype( proc, id, NULL, NULL, _
+							dtype, subtype, ptrcnt, _
+							0, mode, _
+							FB_SYMBOPT_DECLARING or _
+							FB_SYMBOPT_MOVETOGLOB or _
+							FB_SYMBOPT_PRESERVECASE )
 
-					lgt = s->lgt * symbGetArrayElements( s )
-					s->ofs = emitAllocLocal( env.currproc, lgt )
+	if( sym <> NULL ) then
+		symbGetAttrib( sym ) or= FB_SYMBATTRIB_FUNCPTR
+	end if
 
-				'' parameter..
-				else
-					lgt = iif( (s->attrib and FB_SYMBATTRIB_PARAMBYVAL), _
-						   	   s->lgt, _
-						   	   FB_POINTERSIZE )
-					s->ofs = emitAllocArg( env.currproc, lgt )
-
-				end if
-
-				symbSetIsAllocated( s )
-
-			end if
-
-		end if
-
-    	s = s->next
-    loop
-
-    function = TRUE
-
-end function
-
-'':::::
-function symbProcAllocStaticVars _
-	( _
-		byval s as FBSYMBOL ptr _
-	) as integer static
-
-    function = FALSE
-
-    do while( s <> NULL )
-
-    	select case s->class
-    	'' scope block? recursion..
-    	case FB_SYMBCLASS_SCOPE
-    		symbProcAllocStaticVars( symbGetScopeTbHead( s ) )
-
-    	'' variable?
-    	case FB_SYMBCLASS_VAR
-    		'' static?
-    		if( symbIsStatic( s ) ) then
-				'' it's ok to call emit directly from here, the
-				'' proc is fully flushed, from ast, ir and emit itself
-				emitDeclVariable( s )
-			end if
-		end select
-
-    	s = s->next
-    loop
-
-    function = TRUE
+	function = sym
 
 end function
 
@@ -1328,6 +1310,87 @@ end sub
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 '':::::
+function symbProcAllocLocalVars _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as integer static
+
+    dim as FBSYMBOL ptr s
+    dim as integer lgt
+
+    function = FALSE
+
+    s = symbGetProcLocTbHead( proc )
+    do while( s <> NULL )
+    	'' variable?
+    	if( s->class = FB_SYMBCLASS_VAR ) then
+    		'' not shared or static?
+    		if( (s->attrib and (FB_SYMBATTRIB_SHARED or _
+    			 				FB_SYMBATTRIB_STATIC)) = 0 ) then
+
+				'' not a parameter?
+    			if( (s->attrib and (FB_SYMBATTRIB_PARAMBYDESC or _
+    						   	    FB_SYMBATTRIB_PARAMBYVAL or _
+    			  				   	FB_SYMBATTRIB_PARAMBYREF)) = 0 ) then
+
+					lgt = s->lgt * symbGetArrayElements( s )
+					s->ofs = emitAllocLocal( env.currproc, lgt )
+
+				'' parameter..
+				else
+					lgt = iif( (s->attrib and FB_SYMBATTRIB_PARAMBYVAL), _
+						   	   s->lgt, _
+						   	   FB_POINTERSIZE )
+					s->ofs = emitAllocArg( env.currproc, lgt )
+
+				end if
+
+				symbSetIsAllocated( s )
+
+			end if
+
+		end if
+
+    	s = s->next
+    loop
+
+    function = TRUE
+
+end function
+
+'':::::
+function symbProcAllocStaticVars _
+	( _
+		byval s as FBSYMBOL ptr _
+	) as integer static
+
+    function = FALSE
+
+    do while( s <> NULL )
+
+    	select case s->class
+    	'' scope block? recursion..
+    	case FB_SYMBCLASS_SCOPE
+    		symbProcAllocStaticVars( symbGetScopeTbHead( s ) )
+
+    	'' variable?
+    	case FB_SYMBCLASS_VAR
+    		'' static?
+    		if( symbIsStatic( s ) ) then
+				'' it's ok to call emit directly from here, the
+				'' proc is fully flushed, from ast, ir and emit itself
+				emitDeclVariable( s )
+			end if
+		end select
+
+    	s = s->next
+    loop
+
+    function = TRUE
+
+end function
+
+'':::::
 function symbGetProcResult _
 	( _
 		byval proc as FBSYMBOL ptr _
@@ -1386,7 +1449,7 @@ sub symbSetProcIncFile _
 end sub
 
 '':::::
-function symbMangleFunctionPtr _
+private function hMangleFunctionPtr _
 	( _
 		byval proc as FBSYMBOL ptr, _
 		byval dtype as integer, _
@@ -1394,59 +1457,50 @@ function symbMangleFunctionPtr _
 		byval mode as integer _
 	) as zstring ptr static
 
-    static as string id
+    dim as string id
+    dim as integer i
     dim as FBSYMBOL ptr param
-    dim as integer i, p
 
     '' cheapo and fast internal mangling..
-    id = "{fbfp}"
+    id = "{fbfp}("
+
+    symbMangleInitAbbrev( )
 
     '' for each param..
     param = symbGetProcHeadParam( proc )
     for i = 0 to symbGetProcParams( proc )-1
-    	id += "_"
+    	if( i > 0 ) then
+    		id += ","
+    	end if
 
     	'' not an UDT?
     	if( param->subtype = NULL ) then
     		id += hex( param->typ * cint(param->param.mode) )
-
     	else
-			'' modes
-			select case param->param.mode
-			case FB_PARAMMODE_BYREF
-				id += "v"
-			case FB_PARAMMODE_BYDESC
-				id += "d"
-			end select
-
-    		'' pointers
-    		p = param->ptrcnt
-    		do while( p > 0 )
-    			id += "p"
-    			p -= 1
-    		loop
-
-    		id += hex( param->subtype )
+    		'' notes:
+    		'' - can't use hex( param->subtype ), because slots can be
+    		''   reused if fwd types were resolved and removed
+    		'' - can't use only the param->name because UDT's with the same
+    		''   name declared inside different namespaces
+    		id += symbMangleType( param )
     	end if
 
     	param = symbGetParamNext( param )
     next
 
     '' return type
-    id += "@"
+    id += ")"
 	if( subtype = NULL ) then
 		id += hex( dtype )
 	else
-    	p = dtype \ FB_DATATYPE_POINTER
-    	do while( p > 0 )
-    		id += "p"
-    		p -= 1
-    	loop
-		id += hex( subtype )
+		'' see the notes above
+		id += symbMangleType( subtype )
 	end if
 
+    symbMangleEndAbbrev( )
+
     '' calling convention
-    id += "@"
+    id += "$"
     id += hex( mode )
 
 	function = strptr( id )

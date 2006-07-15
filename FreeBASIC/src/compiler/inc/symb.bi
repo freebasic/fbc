@@ -89,11 +89,13 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_LITCONST		= FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL
 end enum
 
-enum FB_VAROPT
-	FB_VAROPT_NONE				= &h00000000
-	FB_VAROPT_ADDSUFFIX			= &h00000001
-	FB_VAROPT_PRESERVECASE		= &h00000002
-	FB_VAROPT_UNSCOPE			= &h00000004
+enum FB_SYMBOPT
+	FB_SYMBOPT_NONE				= &h00000000
+	FB_SYMBOPT_ADDSUFFIX		= &h00000001
+	FB_SYMBOPT_PRESERVECASE		= &h00000002
+	FB_SYMBOPT_UNSCOPE			= &h00000004
+	FB_SYMBOPT_DECLARING		= &h00000008
+	FB_SYMBOPT_MOVETOGLOB		= &h00000010
 end enum
 
 type FBSYMBOL_ as FBSYMBOL
@@ -648,11 +650,12 @@ declare function 	symbDelDefineTok		( _
 											) as FB_DEFTOK ptr
 
 declare function 	symbAddFwdRef			( _
-												byval symbol as zstring ptr _
+												byval id as zstring ptr, _
+												byval id_alias as zstring ptr = NULL _
 											) as FBSYMBOL ptr
 
 declare function 	symbAddTypedef			( _
-												byval symbol as zstring ptr, _
+												byval id as zstring ptr, _
 												byval dtype as integer, _
 												byval subtype as FBSYMBOL ptr, _
 						 					  	byval ptrcnt as integer, _
@@ -685,7 +688,7 @@ declare function 	symbAddVarEx			( _
 												byval dimensions as integer, _
 												dTB() as FBARRAYDIM, _
 				       						  	byval attrib as integer, _
-				       						  	byval options as FB_VAROPT = FB_VAROPT_NONE _
+				       						  	byval options as FB_SYMBOPT = FB_SYMBOPT_NONE _
 											) as FBSYMBOL ptr
 
 declare function 	symbAddTempVar			( _
@@ -772,8 +775,7 @@ declare function 	symbAddPrototype		( _
 												byval ptrcnt as integer, _
 												byval attrib as integer, _
 												byval mode as integer, _
-												byval isexternal as integer, _
-												byval preservecase as integer = FALSE _
+												byval options as FB_SYMBOPT = FB_SYMBOPT_NONE _
 											) as FBSYMBOL ptr
 
 declare function 	symbAddProc				( _
@@ -803,6 +805,14 @@ declare function 	symbAddLib				( _
 declare function 	symbAddParam			( _
 												byval id as zstring ptr, _
 												byval param as FBSYMBOL ptr _
+											) as FBSYMBOL ptr
+
+declare function 	symbAddProcPtr 			( _
+												byval proc as FBSYMBOL ptr, _
+												byval dtype as integer, _
+												byval subtype as FBSYMBOL ptr, _
+												byval ptrcnt as integer, _
+												byval mode as integer _
 											) as FBSYMBOL ptr
 
 declare function 	symbAddScope			( _
@@ -1127,12 +1137,13 @@ declare sub 		symbSetName 			( _
 												byval name_ as zstring ptr _
 											)
 
-declare function 	symbMangleFunctionPtr 	( _
-												byval proc as FBSYMBOL ptr, _
-												byval dtype as integer, _
-												byval subtype as FBSYMBOL ptr, _
-												byval mode as integer _
-											) as zstring ptr
+declare sub			symbMangleInitAbbrev	( )
+
+declare sub			symbMangleEndAbbrev		( )
+
+declare function 	symbMangleType 			( _
+												byval sym as FBSYMBOL ptr _
+											) as string
 
 declare function 	symbDemangleFunctionPtr ( _
 												byval proc as FBSYMBOL ptr _

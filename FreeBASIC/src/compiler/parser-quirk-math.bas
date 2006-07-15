@@ -192,7 +192,7 @@ function cMathFunct _
 		hMatchLPRNT( )
 
 		expr = NULL
-		if( cSymbolType( typ, subtype, lgt, ptrcnt, FALSE ) = FALSE ) then
+		if( cSymbolType( typ, subtype, lgt, ptrcnt, FB_SYMBTYPEOPT_NONE ) = FALSE ) then
 			env.checkarray = FALSE
 			if( cExpression( expr ) = FALSE ) then
 				env.checkarray = TRUE

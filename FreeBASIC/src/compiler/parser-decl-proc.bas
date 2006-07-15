@@ -272,7 +272,7 @@ function cSubOrFuncDecl _
     ''
     proc = symbAddPrototype( proc, @id, palias, plib, _
     						 dtype, subtype, ptrcnt, _
-    					     attrib, mode, FALSE )
+    					     attrib, mode )
     if( proc = NULL ) then
     	if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
     		exit function

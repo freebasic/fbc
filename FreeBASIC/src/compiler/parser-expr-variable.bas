@@ -1010,11 +1010,11 @@ private function hVarAddUndecl _
 		attrib = 0
 	end if
 
-	options = FB_VAROPT_ADDSUFFIX
+	options = FB_SYMBOPT_ADDSUFFIX
 
 	'' not inside an explicit SCOPE .. END SCOPE block?
 	if( env.isscope = FALSE ) then
-		options or= FB_VAROPT_UNSCOPE
+		options or= FB_SYMBOPT_UNSCOPE
 	end if
 
     s = symbAddVarEx( id, NULL, _

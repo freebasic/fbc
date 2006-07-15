@@ -209,7 +209,8 @@ sub rtlAddIntrinsicProcs( )
 		proc = symbAddPrototype( proc, _
 								 pname, palias, "fb", _
 								 ptype, NULL, ptrcnt, _
-								 attrib, pmode, TRUE )
+								 attrib, pmode, _
+								 FB_SYMBOPT_DECLARING )
 
 		''
 		if( proc <> NULL ) then

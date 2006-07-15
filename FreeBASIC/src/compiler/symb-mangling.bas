@@ -164,7 +164,7 @@ function symbGetMangledNameEx _
 		byval checkhash as integer _
 	) as zstring ptr
 
-	dim as zstring ptr id_alias
+	dim as zstring ptr id_alias = any
 
 	if( (sym->stats and FB_SYMBSTATS_MANGLED) <> 0 ) then
 		return sym->alias
@@ -200,7 +200,7 @@ function symbGetMangledNameEx _
 end function
 
 '':::::
-private sub hAbbrevIni ( )
+sub symbMangleInitAbbrev( )
 
 	ctx.cnt = 0
 
@@ -270,7 +270,7 @@ private function hAbbrevGet _
 end function
 
 '':::::
-private sub hAbbrevEnd( ) static
+sub symbMangleEndAbbrev( ) static
 	dim as FB_MANGLEABBR ptr n, nxt
 
 	'' del abbreviation list
@@ -731,15 +731,15 @@ private function hGetProcSuffix _
 end function
 
 '':::::
-private function hGetTypeCode _
+function symbMangleType _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as string
 
     dim as string sig
-    dim as uinteger hash
-    dim as integer dtype, slen, pcnt, idx, issimple
-    dim as FB_MANGLEABBR ptr n
+    dim as uinteger hash = any
+    dim as integer dtype = any, slen = any, pcnt = any, idx = any, issimple = any
+    dim as FB_MANGLEABBR ptr n = any
 
     '' follow the GCC 3.x ABI..
 
@@ -752,6 +752,16 @@ private function hGetTypeCode _
     loop
 
     issimple = FALSE
+
+    '' forward type?
+    if( dtype = FB_DATATYPE_FWDREF ) then
+    	if( sym->subtype = NULL ) then
+    		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
+    		dtype = FB_DATATYPE_VOID
+    	else
+    		dtype = FB_DATATYPE_USERDEF
+    	end if
+    end if
 
     select case as const dtype
     case FB_DATATYPE_USERDEF, FB_DATATYPE_ENUM
@@ -777,7 +787,7 @@ private function hGetTypeCode _
     case FB_DATATYPE_FUNCTION
 		'' F(return_type)(params - recursive, reuses hash)E
 		sig += "F"
-		sig += hGetTypeCode( sym->subtype )
+		sig += symbMangleType( sym->subtype )
 		sig += hGetProcParamsTypeCode( sym->subtype )
 		sig += "E"
 
@@ -833,7 +843,7 @@ private function hGetProcParamsTypeCode _
 		byval sym as FBSYMBOL ptr _
 	) as string
 
-    dim as FBSYMBOL ptr param
+    dim as FBSYMBOL ptr param = any
     dim as string res
 
 	param = sym->proc.paramtb.head
@@ -859,7 +869,7 @@ private function hGetProcParamsTypeCode _
 
 			end select
 
-			res += hGetTypeCode( param )
+			res += symbMangleType( param )
 
     		'' next
     		param = symbGetParamNext( param )
@@ -871,7 +881,7 @@ private function hGetProcParamsTypeCode _
 end function
 
 '':::::
-private function hGetProcParams _
+private function hMangleProcParams _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as zstring ptr static
@@ -905,7 +915,7 @@ private function hMangleProc  _
 
     docpp = hDoCppMangling( sym, mangling )
 
-    hAbbrevIni( )
+    symbMangleInitAbbrev( )
 
     '' prefix
     prefix_len = 0
@@ -952,7 +962,7 @@ private function hMangleProc  _
 	'' params
 	param_len = 0
 	if( docpp ) then
-		param_str = hGetProcParams( sym )
+		param_str = hMangleProcParams( sym )
 		if( param_str <> NULL ) then
 			param_len = len( *param_str )
 		end if
@@ -997,7 +1007,7 @@ private function hMangleProc  _
 
 	function = id_alias
 
-   	hAbbrevEnd( )
+   	symbMangleEndAbbrev( )
 
 end function
 

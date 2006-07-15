@@ -74,8 +74,7 @@ function cSymbolTypeFuncPtr _
 	) as FBSYMBOL ptr
 
 	dim as integer dtype, lgt, mode, ptrcnt
-	dim as FBSYMBOL ptr proc, sym, subtype
-	static as zstring ptr sname
+	dim as FBSYMBOL ptr proc, subtype
 
 	function = NULL
 
@@ -162,27 +161,7 @@ function cSymbolTypeFuncPtr _
 		end if
 	end if
 
-	sname = symbMangleFunctionPtr( proc, dtype, subtype, mode )
-
-	'' already exists?
-	sym = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
-									sname, _
-									FB_SYMBCLASS_PROC, _
-									TRUE )
-	if( sym <> NULL ) then
-		return sym
-	end if
-
-	'' create a new prototype
-	sym = symbAddPrototype( proc, sname, NULL, NULL, _
-							dtype, subtype, ptrcnt, _
-							0, mode, TRUE, TRUE )
-
-	if( sym <> NULL ) then
-		symbGetAttrib( sym ) or= FB_SYMBATTRIB_FUNCPTR
-	end if
-
-	function = sym
+	function = symbAddProcPtr( proc, dtype, subtype, ptrcnt, mode )
 
 end function
 
@@ -206,7 +185,7 @@ function cSymbolType _
 		byref subtype as FBSYMBOL ptr, _
 		byref lgt as integer, _
 		byref ptrcnt as integer, _
-		byval checkptr as integer = TRUE _
+		byval options as FB_SYMBTYPEOPT _
 	) as integer
 
     dim as integer isunsigned, isfunction, allowptr
@@ -457,20 +436,23 @@ function cSymbolType _
 		else
 			'' can't have forward typedef's if they aren't pointers
 			if( dtype = FB_DATATYPE_FWDREF ) then
-				if( errReport( FB_ERRMSG_INCOMPLETETYPE ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake a type
-					dtype = FB_DATATYPE_POINTER + FB_DATATYPE_VOID
-					subtype = NULL
-					ptrcnt = 1
+				'' forward types are allowed in func prototypes with byref params
+				if( (options and FB_SYMBTYPEOPT_ALLOWFORWARD) = 0 ) then
+					if( errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: fake a type
+						dtype = FB_DATATYPE_POINTER + FB_DATATYPE_VOID
+						subtype = NULL
+						ptrcnt = 1
+					end if
 				end if
 
 			elseif( lgt <= 0 ) then
 				select case dtype
 				case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 					'' LEN() and SIZEOF() allow Z|WSTRING to be used w/o PTR
-					if( checkptr ) then
+					if( (options and FB_SYMBTYPEOPT_CHECKSTRPTR) <> 0 ) then
 						if( errReport( FB_ERRMSG_EXPECTEDPOINTER ) = FALSE ) then
 							exit function
 						else

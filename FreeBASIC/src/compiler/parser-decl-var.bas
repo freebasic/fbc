@@ -397,7 +397,7 @@ private function hDeclStaticVar _
     if( isextern = FALSE ) then
     	s = symbAddVarEx( id, idalias, dtype, subtype, ptrcnt, _
     				  	  lgt, dimensions, dTB(), _
-    				  	  attrib, iif( addsuffix, FB_VAROPT_ADDSUFFIX, FB_VAROPT_NONE ) )
+    				  	  attrib, iif( addsuffix, FB_SYMBOPT_ADDSUFFIX, FB_SYMBOPT_NONE ) )
 	else
 		s = NULL
 	end if
@@ -477,7 +477,7 @@ private function hDeclDynArray _
    			isrealloc = FALSE
    			s = symbAddVarEx( id, idalias, dtype, subtype, ptrcnt, _
    							  lgt, dimensions, dTB(), _
-   							  attrib, iif( addsuffix, FB_VAROPT_ADDSUFFIX, FB_VAROPT_NONE ) )
+   							  attrib, iif( addsuffix, FB_SYMBOPT_ADDSUFFIX, FB_SYMBOPT_NONE ) )
    			if( s = NULL ) then
    				errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
    				'' no error recovery, caller will take care of that

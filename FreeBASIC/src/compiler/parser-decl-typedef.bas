@@ -36,7 +36,7 @@ function cTypedefDecl _
 		byval pid as zstring ptr _				'' can be changed if not a NULL
 	) as integer static
 
-    static as zstring * FB_MAXNAMELEN+1 id, tname
+    static as zstring * FB_MAXNAMELEN+1 id, tname, tname_uc
     dim as zstring ptr ptname
     dim as integer dtype, lgt, ptrcnt, isfwd, ismult
     dim as FBSYMBOL ptr ns, subtype
@@ -46,7 +46,7 @@ function cTypedefDecl _
     ismult = (pid = NULL)
 
     if( ismult ) then
-    	isfwd = (cSymbolType( dtype, subtype, lgt, ptrcnt, FALSE ) = NULL)
+    	isfwd = (cSymbolType( dtype, subtype, lgt, ptrcnt, FB_SYMBTYPEOPT_NONE ) = NULL)
     	if( isfwd ) then
     		if( errGetLast( ) <> FB_ERRMSG_OK ) then
     			exit function
@@ -74,7 +74,7 @@ function cTypedefDecl _
 
     do
 		if( ismult = FALSE ) then
-    		isfwd = (cSymbolType( dtype, subtype, lgt, ptrcnt, FALSE ) = NULL)
+    		isfwd = (cSymbolType( dtype, subtype, lgt, ptrcnt, FB_SYMBTYPEOPT_NONE ) = NULL)
     		if( isfwd ) then
     			if( errGetLast( ) <> FB_ERRMSG_OK ) then
     				exit function
@@ -126,9 +126,9 @@ function cTypedefDecl _
 
     	if( isfwd ) then
     		'' pointing to itself? then it's a void..
-   			hUcase( ptname, ptname )
+   			hUcase( ptname, @tname_uc )
 			hUcase( pid, pid )
-    		if( *ptname = *pid ) then
+    		if( tname_uc = *pid ) then
     			dtype = FB_DATATYPE_VOID
     			subtype = NULL
     			lgt = 0

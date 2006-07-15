@@ -114,6 +114,14 @@ type FB_CMPSTMTSTK
 	end union
 end type
 
+enum FB_SYMBTYPEOPT
+	FB_SYMBTYPEOPT_NONE			= &h00000000
+	FB_SYMBTYPEOPT_CHECKSTRPTR	= &h00000001
+	FB_SYMBTYPEOPT_ALLOWFORWARD	= &h00000002
+
+	FB_SYMBTYPEOPT_DEFAULT		= FB_SYMBTYPEOPT_CHECKSTRPTR
+end enum
+
 
 declare function 	cProgram				( _
 												_
@@ -193,7 +201,7 @@ declare function 	cSymbolType 			( _
 												byref subtype as FBSYMBOL ptr, _
 												byref lgt as integer, _
 												byref ptrcnt as integer, _
-												byval checkptr as integer = TRUE _
+												byval options as FB_SYMBTYPEOPT = FB_SYMBTYPEOPT_DEFAULT _
 											) as integer
 
 declare function 	cIdentifier				( _

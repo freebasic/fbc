@@ -143,7 +143,7 @@ end sub
 '':::::
 function symbAddTypedef _
 	( _
-		byval symbol as zstring ptr, _
+		byval id as zstring ptr, _
 		byval dtype as integer, _
 		byval subtype as FBSYMBOL ptr, _
 		byval ptrcnt as integer, _
@@ -158,7 +158,7 @@ function symbAddTypedef _
     t = symbNewSymbol( NULL, _
     				   NULL, NULL, 0, _
     				   FB_SYMBCLASS_TYPEDEF, _
-    				   TRUE, symbol, NULL, _
+    				   TRUE, id, NULL, _
     				   dtype, subtype, ptrcnt )
     if( t = NULL ) then
     	exit function
@@ -180,18 +180,27 @@ end function
 '':::::
 function symbAddFwdRef _
 	( _
-		byval symbol as zstring ptr _
+		byval id as zstring ptr, _
+		byval id_alias as zstring ptr _
 	) as FBSYMBOL ptr static
 
     dim as FBSYMBOL ptr f
 
     function = NULL
 
+    '' no explict alias given?
+    if( id_alias = NULL ) then
+    	'' only preserve a case-sensitive version if in BASIC mangling
+    	if( env.mangling <> FB_MANGLING_BASIC ) then
+    		id_alias = id
+    	end if
+    end if
+
     '' allocate new node
     f = symbNewSymbol( NULL, _
     				   NULL, NULL, 0, _
     				   FB_SYMBCLASS_FWDREF, _
-    				   TRUE, symbol, NULL )
+    				   TRUE, id, id_alias )
     if( f = NULL ) then
     	exit function
     end if
