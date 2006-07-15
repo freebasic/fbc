@@ -267,7 +267,8 @@ end function
 ''::::
 private function hAssignOrCall _
 	( _
-		byval chain_ as FBSYMCHAIN ptr _
+		byval chain_ as FBSYMCHAIN ptr, _
+		byval iscall as integer _
 	) as integer
 
 	dim as FBSYMBOL ptr s = any
@@ -288,7 +289,7 @@ private function hAssignOrCall _
 			lexSkipToken( )
 
 			'' ID ProcParamList?
-			if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+			if( lexGetToken( ) <> FB_TK_ASSIGN ) then
 				if( cProcCall( s, expr, NULL ) = FALSE ) then
 					exit function
 				end if
@@ -302,9 +303,20 @@ private function hAssignOrCall _
 
 			'' ID '=' Expression
 			else
-              		'' check if name is valid (or if overloaded)
+            	'' CALL?
+            	if( iscall ) then
+					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: skip stmt, return
+						hSkipStmt( )
+						return TRUE
+					end if
+            	end if
+
+            	'' check if name is valid (or if overloaded)
 				if( symbIsProcOverloadOf( env.currproc, s ) = FALSE ) then
-					if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASUB, TRUE ) = FALSE ) then
+					if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASUB ) = FALSE ) then
 						exit function
 					else
 						'' error recovery: skip stmt, return
@@ -313,6 +325,9 @@ private function hAssignOrCall _
 					end if
 				end if
 
+       			'' skip the '='
+       			lexSkipToken( )
+
        			return cAssignFunctResult( env.currproc )
 			end if
 
@@ -320,10 +335,30 @@ private function hAssignOrCall _
     	case FB_SYMBCLASS_VAR
         	'' must process variables here, multiple calls to
         	'' Identifier() will fail if a namespace was explicitly
-    	    	'' given, because the next call will return an inner symbol
+    	    '' given, because the next call will return an inner symbol
         	if( cVariableEx( chain_, expr, TRUE ) = FALSE ) then
         		exit function
         	end if
+
+    		'' CALL?
+    		if( iscall ) then
+    			'' calling a SUB ptr?
+    			if( expr = NULL ) then
+    				return TRUE
+    			end if
+
+    			'' not a ptr call?
+    			if( astIsFUNCT( expr ) = FALSE ) then
+    				astDelTree( expr )
+					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: skip stmt, return
+						hSkipStmt( )
+						return TRUE
+					end if
+    			end if
+    		end if
 
         	return cAssignmentOrPtrCallEx( expr )
 		end select
@@ -339,9 +374,8 @@ end function
 ''				  |	  (ID | FUNCTION) '=' Expression .
 ''
 function cProcCallOrAssign as integer
-	dim as FBSYMBOL ptr s = any
-	dim as ASTNODE ptr expr = any
 	dim as FBSYMCHAIN ptr chain_ = any
+	dim as ASTNODE ptr expr
 
 	function = FALSE
 
@@ -353,7 +387,7 @@ function cProcCallOrAssign as integer
 			exit function
 		end if
 
-		return hAssignOrCall( chain_ )
+		return hAssignOrCall( chain_, FALSE )
 
 	'' FUNCTION?
 	case FB_TK_FUNCTION
@@ -380,7 +414,7 @@ function cProcCallOrAssign as integer
   		'' can be a global ns symbol access, or a WITH variable..
  		chain_ = cIdentifier( )
   		if( chain_ <> NULL ) then
-  			return hAssignOrCall( chain_ )
+  			return hAssignOrCall( chain_, FALSE )
 
   		else
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
@@ -404,38 +438,16 @@ function cProcCallOrAssign as integer
 
 		lexSkipToken( )
 
-		'' ID
-		chain_ = cIdentifier( )
-		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-			exit function
-		end if
-
-		s = symbFindByClass( chain_, FB_SYMBCLASS_PROC )
-		if( s = NULL ) then
-			if( errReport( FB_ERRMSG_PROCNOTDECLARED ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip stmt, return
-				hSkipStmt( )
+ 		chain_ = cIdentifier( )
+  		if( chain_ <> NULL ) then
+			if( hAssignOrCall( chain_, TRUE ) ) then
 				return TRUE
 			end if
 		end if
 
-		lexSkipToken( )
-
-		if( cProcCall( s, expr, NULL, TRUE ) = FALSE ) then
-			exit function
-		end if
-
-		'' can't assign deref'ed functions with CALL's
-		if( expr <> NULL ) then
-			astDelTree( expr )
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			end if
-		end if
-
-		return TRUE
+		'' !!!FIXME!!! add forward function call support like in QB: ie: all
+		''             params are byref as any, show a warning too
+		return errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 	end select
 
 end function

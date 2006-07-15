@@ -1,3 +1,30 @@
+[ ] add the -lang (qb|fb) cmd-line option:
+    - "qb" will be the default, by now(?)
+    - no OPTION's
+    - no DEF### (ie: explicit types required)
+    - no implicit variables
+    - no CALL
+    - no variable suffixes
+    - no periods in symbol names
+    - no GOSUB and RETURN even in module-level
+    - no ON .. GOTO|GOSUB
+    - no ON ERROR, RESUME
+    - no numeric labels
+    - no SHARED at subs (if added later, non-shared vars at mod-level will have to be
+                         allocated statically, as before)
+
+[ ] namespace:
+    - add support for nested ns':
+      namespace net.freebasic.sys.console
+      end namespace
+    - add support for importing single symbols (mostly because classes, as nested ns'
+      are already supported)
+
+[ ] proc call:
+    - allow CALL's to undefined functions (all params BYREF as ANY)
+    - add named parameters (foo => expr)
+      - can be hard to be added because they don't have to come in order
+
 [ ] PP:
     - [macro expansion: won't work for inner macros
     - add varargs support, like foo(arg1, ...) ...
