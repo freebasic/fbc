@@ -148,6 +148,12 @@ declare function deflateInit2_ cdecl alias "deflateInit2_" (byval strm as z_stre
 declare function inflateInit2_ cdecl alias "inflateInit2_" (byval strm as z_streamp, byval windowBits as integer, byval version as zstring ptr, byval stream_size as integer) as integer
 declare function inflateBackInit_ cdecl alias "inflateBackInit_" (byval strm as z_stream ptr, byval windowBits as integer, byval window as ubyte ptr, byval version as zstring ptr, byval stream_size as integer) as integer
 
+#define deflateInit(strm, level) deflateInit_((strm), (level),       ZLIB_VERSION, sizeof(z_stream))
+#define inflateInit(strm) inflateInit_((strm),                ZLIB_VERSION, sizeof(z_stream))
+#define deflateInit2(strm, level, method, windowBits, memLevel, strategy) deflateInit2_((strm),(level),(method),(windowBits),(memLevel),(strategy), ZLIB_VERSION, sizeof(z_stream))
+#define inflateInit2(strm, windowBits) inflateInit2_((strm), (windowBits), ZLIB_VERSION, sizeof(z_stream))
+#define inflateBackInit(strm, windowBits, window) inflateBackInit_((strm), (windowBits), (window), ZLIB_VERSION, sizeof(z_stream))
+
 declare function zError cdecl alias "zError" (byval as integer) as zstring ptr
 declare function inflateSyncPoint cdecl alias "inflateSyncPoint" (byval z as z_streamp) as integer
 declare function get_crc_table cdecl alias "get_crc_table" () as uLongf ptr
