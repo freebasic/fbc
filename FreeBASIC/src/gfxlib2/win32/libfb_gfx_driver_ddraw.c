@@ -219,9 +219,13 @@ static int directx_init(void)
 		AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME, 0);
 		rect.right -= rect.left;
 		rect.bottom -= rect.top;
-		style = (WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME) | WS_VISIBLE;
-		if (fb_win32.flags & DRIVER_NO_SWITCH)
-			style &= ~WS_MAXIMIZEBOX;
+		if (fb_win32.flags & DRIVER_NO_FRAME)
+			style = WS_POPUP | WS_VISIBLE;
+		else {
+			style = (WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME) | WS_VISIBLE;
+			if (fb_win32.flags & DRIVER_NO_SWITCH)
+				style &= ~WS_MAXIMIZEBOX;
+		}
 		fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title, style,
 				   (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1,
 				   (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1,
@@ -418,7 +422,7 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 {
 	fb_hMemSet(&fb_win32, 0, sizeof(fb_win32));
 
-	if (flags & DRIVER_OPENGL)
+	if (flags & (DRIVER_OPENGL | DRIVER_SHAPED_WINDOW))
 		return -1;
 	fb_win32.init = directx_init;
 	fb_win32.exit = directx_exit;

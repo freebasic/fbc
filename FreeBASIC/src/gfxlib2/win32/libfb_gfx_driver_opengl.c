@@ -99,9 +99,13 @@ static int opengl_init(void)
 		root = HWND_TOPMOST;
 	}
 	else {
-		style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
-		if (fb_win32.flags & DRIVER_NO_SWITCH)
-			style &= ~WS_MAXIMIZEBOX;
+		if (fb_win32.flags & DRIVER_NO_FRAME)
+			style = WS_POPUP;
+		else {
+			style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+			if (fb_win32.flags & DRIVER_NO_SWITCH)
+				style &= ~WS_MAXIMIZEBOX;
+		}
 		root = HWND_NOTOPMOST;
 	}
 	SetWindowLong(fb_win32.wnd, GWL_STYLE, style);
@@ -145,7 +149,7 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	hglrc = NULL;
 	hdc = NULL;
 
-	if (!(flags & DRIVER_OPENGL))
+	if (!(flags & DRIVER_OPENGL) || (flags & DRIVER_SHAPED_WINDOW))
 		return -1;
 
 	fb_win32.init = opengl_init;

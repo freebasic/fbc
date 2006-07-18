@@ -27,6 +27,10 @@
 #include "../fb_gfx.h"
 #include "fb_gfx_win32.h"
 
+#ifndef LWA_COLORKEY
+#define LWA_COLORKEY	0x00000001
+#endif
+
 
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 
@@ -49,8 +53,10 @@ GFXDRIVER fb_gfxDriverGDI =
 
 
 static BITMAPINFO *bitmap_info;
-static RECT rect;
 static unsigned char *buffer;
+
+typedef BOOL (WINAPI *SETLAYEREDWINDOWATTRIBUTES)(HWND hWnd, COLORREF crKey, BYTE bAlpha, DWORD dwFlags);
+static SETLAYEREDWINDOWATTRIBUTES SetLayeredWindowAttributes;
 
 
 /*:::::*/
@@ -63,27 +69,64 @@ static void gdi_paint(void)
 /*:::::*/
 static int gdi_init(void)
 {
+	DEVMODE mode;
+	DWORD style, ex_style = 0;
+	HDC hdc;
+	RECT rect;
+	HMODULE module;
+	int x, y;
+
 	bitmap_info = NULL;
 	buffer = NULL;
-	HDC hdc;
-
-	if (fb_win32.flags & DRIVER_FULLSCREEN)
-		return -1;
-
-	rect.left = rect.top = 0;
+	
+	if (fb_win32.flags & DRIVER_FULLSCREEN) {
+		fb_hMemSet(&mode, 0, sizeof(mode));
+		mode.dmSize = sizeof(mode);
+		mode.dmPelsWidth = fb_win32.w;
+		mode.dmPelsHeight = fb_win32.h;
+		mode.dmBitsPerPel = fb_win32.depth;
+		mode.dmDisplayFrequency = fb_win32.refresh_rate;
+		mode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+		if (ChangeDisplaySettings(&mode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
+			return -1;
+		style = WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+	}
+	else {
+		style = WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME;
+		if (fb_win32.flags & DRIVER_NO_SWITCH)
+			style &= ~WS_MAXIMIZEBOX;
+		if (fb_win32.flags & DRIVER_NO_FRAME)
+			style = WS_POPUP;
+		if (fb_win32.flags & DRIVER_SHAPED_WINDOW) {
+			if (fb_win32.version < 0x500)
+				return -1;
+			ex_style = WS_EX_LAYERED;
+		}
+	}
+	
+	rect.left = rect.top = x = y = 0;
 	rect.right = fb_win32.w;
 	rect.bottom = fb_win32.h;
-	AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME & ~WS_MAXIMIZEBOX, 0);
-	rect.right -= rect.left;
-	rect.bottom -= rect.top;
-	fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title,
-			   (WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME & ~WS_MAXIMIZEBOX) | WS_VISIBLE,
-			   (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1,
-			   (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1,
-			   rect.right, rect.bottom, NULL, NULL, fb_win32.hinstance, NULL);
+	if (!(fb_win32.flags & DRIVER_FULLSCREEN)) {
+		AdjustWindowRect(&rect, style, 0);
+		rect.right -= rect.left;
+		rect.bottom -= rect.top;
+		x = (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1;
+		y = (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1;
+	}
+	fb_win32.wnd = CreateWindowEx(ex_style, fb_win32.window_class, fb_win32.window_title, style | WS_VISIBLE,
+			   x, y, rect.right, rect.bottom, NULL, NULL, fb_win32.hinstance, NULL);
 	if (!fb_win32.wnd)
 		return -1;
-
+	if (fb_win32.flags & DRIVER_SHAPED_WINDOW) {
+		if (!(module = GetModuleHandle("user32.dll")))
+			return -1;
+		SetLayeredWindowAttributes = (SETLAYEREDWINDOWATTRIBUTES)GetProcAddress(module, "SetLayeredWindowAttributes");
+		if (!SetLayeredWindowAttributes)
+			return -1;
+		SetLayeredWindowAttributes(fb_win32.wnd, (fb_win32.depth > 8) ? RGB(255, 0, 255) : 0, 0, LWA_COLORKEY);
+	}
+	
 	bitmap_info = (BITMAPINFO *)calloc(1, sizeof(BITMAPINFO) + (sizeof(RGBQUAD) * 256));
 	if (!bitmap_info)
 		return -1;
@@ -120,8 +163,11 @@ static void gdi_exit(void)
 		free(buffer);
 	if (bitmap_info)
 		free(bitmap_info);
-	if (fb_win32.wnd)
+	if (fb_win32.wnd) {
+		if (fb_win32.flags & DRIVER_FULLSCREEN)
+			ChangeDisplaySettings(NULL, 0);
 		DestroyWindow(fb_win32.wnd);
+	}
 }
 
 
@@ -131,12 +177,16 @@ static void gdi_thread(HANDLE running_event)
 	int i, y1, y2, h;
 	unsigned char *source, keystate[256];
 	HDC hdc;
+	RECT rect;
 
 	if (gdi_init())
 		goto error;
 
 	SetEvent(running_event);
 	fb_win32.is_active = TRUE;
+	
+	rect.left = 0;
+	rect.right = fb_win32.w;
 
 	while (fb_win32.is_running)
 	{
@@ -169,10 +219,9 @@ static void gdi_thread(HANDLE running_event)
 
 				SetDIBitsToDevice(hdc, 0, y1, fb_win32.w, h, 0, 0, 0, h, source, bitmap_info, DIB_RGB_COLORS);
 				
-				{
-					RECT rec = { 0, y1, fb_win32.w, h };
-					InvalidateRect( fb_win32.wnd, &rec, FALSE);
-				}
+				rect.top = y1;
+				rect.bottom = h;
+				InvalidateRect(fb_win32.wnd, &rect, FALSE);
 
 				break;
 			}
