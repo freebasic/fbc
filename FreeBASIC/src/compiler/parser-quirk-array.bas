@@ -98,7 +98,17 @@ function cArrayStmt as integer
 				exit function
 			else
 				hSkipStmt( )
-				return true
+				return TRUE
+			end if
+		end if
+
+		'' can't be a bitfield..
+		if( astIsBITFIELD( expr1 ) ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+				exit function
+			else
+				hSkipStmt( )
+				return TRUE
 			end if
 		end if
 
@@ -111,6 +121,16 @@ function cArrayStmt as integer
 				astDelTree( expr1 )
 				hSkipStmt( )
 				return true
+			end if
+		end if
+
+		'' can't be a bitfield..
+		if( astIsBITFIELD( expr2 ) ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+				exit function
+			else
+				hSkipStmt( )
+				return TRUE
 			end if
 		end if
 

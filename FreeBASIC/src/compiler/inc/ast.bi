@@ -829,6 +829,8 @@ declare function 	astGetInverseLogOp	( _
 
 #define astIsFIELD(n) (n->class = AST_NODECLASS_FIELD)
 
+#define astIsBITFIELD(n) iif( astIsFIELD(n), (n->l->dtype = FB_DATATYPE_BITFIELD), FALSE )
+
 #define astGetValue(n) n->con.val
 
 #define astGetValInt(n) n->con.val.int
