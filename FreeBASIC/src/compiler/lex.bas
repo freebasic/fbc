@@ -52,6 +52,13 @@ const UINVALID as uinteger = cuint( INVALID )
 	dim shared as integer insidemacro
 
 '':::::
+'' only update the line count if not inside a multi-line macro
+#define UPDATE_LINENUM( ) 		_
+	if( lex->deflen = 0 ) then 	:_
+		lex->linenum += 1 		:_
+	end if
+
+'':::::
 sub lexPushCtx( )
 
 	lex += 1
@@ -1388,7 +1395,7 @@ re_read:
 				exit sub
 
 			else
-				lex->linenum += 1
+				UPDATE_LINENUM( )
 				env.stmtcnt += 1
 				islinecont = FALSE
 				continue do
@@ -1722,14 +1729,14 @@ private sub hMultiLineComment( ) static
 				lexEatChar( )
 			end if
 
-			lex->linenum += 1
+			UPDATE_LINENUM()
 			env.stmtcnt += 1
 
 		'' EOL?
 		case CHAR_LF
 			lexEatChar( )
 
-			lex->linenum += 1
+			UPDATE_LINENUM( )
 			env.stmtcnt += 1
 
 		'' '/'?
@@ -1863,7 +1870,7 @@ sub lexSkipToken _
     '' update stats
     select case lex->head->id
     case FB_TK_EOL
-    	lex->linenum += 1
+    	UPDATE_LINENUM( )
     	env.stmtcnt += 1
     case FB_TK_STATSEPCHAR
     	env.stmtcnt += 1
