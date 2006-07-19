@@ -9,7 +9,7 @@ SRCLIST := submod_a.bas submod_b.bas
 ### targets
 
 $(TESTFILE): $(SRCLIST)
-	$(FBC) $(FBLNKFLAGS) -x $@ $^
+	$(FBC) $(FBFLAGS) -x $@ $^
 
 .PHONY : build
 build : $(TESTFILE)

@@ -6,12 +6,13 @@ else
 	FBC := ../../$(FBC)
 endif
 
-FBCMPFLAGS := -exx -g -c
-FBLNKFLAGS := -l fbx
-
+FBFLAGS := -exx -g
 ifdef FIXME
-	FBCMPFLAGS+= -d FIXME=1
+	FBFLAGS+= -d FIXME=1
 endif
+
+FBCMPFLAGS := $(FBFLAGS) -c
+FBLNKFLAGS := -l fbx
 
 HOST :=
 ifeq ($(OS),DOS)
