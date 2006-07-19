@@ -418,6 +418,9 @@ private function hMangleCompType _
     id_str = sym->alias
     if( id_str = NULL ) then
     	id_str = sym->name
+    else
+    	'' only add the prefix if not mangled already
+    	checkns = (sym->stats and FB_SYMBSTATS_MANGLED) = 0
     end if
 
     id_len = len( *id_str )
