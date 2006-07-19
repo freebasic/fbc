@@ -64,6 +64,7 @@ int fb_PrinterOpen( struct _DEV_LPT_INFO *devInfo, int iPort, const char *pszDev
 
     if( devInfo->iPort==0 ) {
 			/* Use spooler */
+
       /* try to open/create pipe to spooler */
 			filename = alloca( strlen(pszDeviceRaw) + 64 );
 			strcpy(filename, "lp ");
@@ -81,14 +82,14 @@ int fb_PrinterOpen( struct _DEV_LPT_INFO *devInfo, int iPort, const char *pszDev
 			{
 				strcat(filename, "-t \"");	
 				strcat(filename, lpt_proto->title);
-				strcat(filename, "\" ");	
+				strcat(filename, "\"");	
 			}
 			else
 			{
-				strcat(filename, "-t \"FreeBASIC document\" ");
+				strcat(filename, "-t \"FreeBASIC document\"");
 			}
 
-			strcat(filename, "-");
+			strcat(filename, " -");
 
 			{
 				char *ptr = filename;
@@ -96,6 +97,8 @@ int fb_PrinterOpen( struct _DEV_LPT_INFO *devInfo, int iPort, const char *pszDev
 					*ptr = '_';
 			}
 
+			strcat(filename, " 2> /dev/null");
+														 
       fp = popen( filename, "w" );
 			if(fp == NULL )
       {
