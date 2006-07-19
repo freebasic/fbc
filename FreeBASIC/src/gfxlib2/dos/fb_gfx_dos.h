@@ -124,7 +124,7 @@ extern void fb_dos_vga_set_palette(void);
 
 extern void fb_dos_set_palette(int idx, int r, int g, int b);
 extern void fb_dos_detect(void);
-extern void fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
+extern int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
 extern void fb_dos_exit(void);
 extern void fb_dos_set_window_title(char *title);
 extern void fb_dos_lock(void);

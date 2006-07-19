@@ -27,42 +27,42 @@ enum
 
 
 /* Info block for a VESA video mode */
-   typedef struct VesaModeInfo
-   {
-      unsigned short ModeAttributes       __attribute__ ((packed));
-      unsigned char  WinAAttributes       __attribute__ ((packed));
-      unsigned char  WinBAttributes       __attribute__ ((packed));
-      unsigned short WinGranularity       __attribute__ ((packed));
-      unsigned short WinSize              __attribute__ ((packed));
-      unsigned short WinASegment          __attribute__ ((packed));
-      unsigned short WinBSegment          __attribute__ ((packed));
-      unsigned long  WinFuncPtr           __attribute__ ((packed));
-      unsigned short BytesPerScanLine     __attribute__ ((packed));
-      unsigned short XResolution          __attribute__ ((packed));
-      unsigned short YResolution          __attribute__ ((packed));
-      unsigned char  XCharSize            __attribute__ ((packed));
-      unsigned char  YCharSize            __attribute__ ((packed));
-      unsigned char  NumberOfPlanes       __attribute__ ((packed));
-      unsigned char  BitsPerPixel         __attribute__ ((packed));
-      unsigned char  NumberOfBanks        __attribute__ ((packed));
-      unsigned char  MemoryModel          __attribute__ ((packed));
-      unsigned char  BankSize             __attribute__ ((packed));
-      unsigned char  NumberOfImagePages   __attribute__ ((packed));
-      unsigned char  Reserved_page        __attribute__ ((packed));
-      unsigned char  RedMaskSize          __attribute__ ((packed));
-      unsigned char  RedMaskPos           __attribute__ ((packed));
-      unsigned char  GreenMaskSize        __attribute__ ((packed));
-      unsigned char  GreenMaskPos         __attribute__ ((packed));
-      unsigned char  BlueMaskSize         __attribute__ ((packed));
-      unsigned char  BlueMaskPos          __attribute__ ((packed));
-      unsigned char  ReservedMaskSize     __attribute__ ((packed));
-      unsigned char  ReservedMaskPos      __attribute__ ((packed));
-      unsigned char  DirectColorModeInfo  __attribute__ ((packed));
-      unsigned long  PhysBasePtr          __attribute__ ((packed));
-      unsigned long  OffScreenMemOffset   __attribute__ ((packed));
-      unsigned short OffScreenMemSize     __attribute__ ((packed));
-      unsigned char  Reserved[206]        __attribute__ ((packed));
-   } VesaModeInfo;
+typedef struct VesaModeInfo
+{
+	unsigned short ModeAttributes;
+	unsigned char  WinAAttributes;
+	unsigned char  WinBAttributes;
+	unsigned short WinGranularity;
+	unsigned short WinSize;
+	unsigned short WinASegment;
+	unsigned short WinBSegment;
+	unsigned long  WinFuncPtr;
+	unsigned short BytesPerScanLine;
+	unsigned short XResolution;
+	unsigned short YResolution;
+	unsigned char  XCharSize;
+	unsigned char  YCharSize;
+	unsigned char  NumberOfPlanes;
+	unsigned char  BitsPerPixel;
+	unsigned char  NumberOfBanks;
+	unsigned char  MemoryModel;
+	unsigned char  BankSize;
+	unsigned char  NumberOfImagePages;
+	unsigned char  Reserved_page;
+	unsigned char  RedMaskSize;
+	unsigned char  RedMaskPos;
+	unsigned char  GreenMaskSize;
+	unsigned char  GreenMaskPos;
+	unsigned char  BlueMaskSize;
+	unsigned char  BlueMaskPos;
+	unsigned char  ReservedMaskSize;
+	unsigned char  ReservedMaskPos;
+	unsigned char  DirectColorModeInfo;
+	unsigned long  PhysBasePtr;
+	unsigned long  OffScreenMemOffset;
+	unsigned short OffScreenMemSize;
+	unsigned char  Reserved[206];
+} __attribute__ ((packed)) VesaModeInfo;
 
 
 /* Mnemonics for VesaModeInfo.mode_attributes flags */

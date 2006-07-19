@@ -175,9 +175,8 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
         fb_dos.set_palette = NULL;
     }
 
-	fb_dos_init(title, w, h, depth, refresh_rate, flags);
+	return fb_dos_init(title, w, h, depth, refresh_rate, flags);
 
-	return 0;
 }
 
 static void init_planar_access( void )
