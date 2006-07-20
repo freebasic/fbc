@@ -170,8 +170,6 @@ function symbGetMangledNameEx _
 		return sym->alias
 	end if
 
-	sym->stats or= FB_SYMBSTATS_MANGLED
-
     select case as const sym->class
     case FB_SYMBCLASS_PROC
 		id_alias = hMangleProc( sym )
@@ -194,6 +192,8 @@ function symbGetMangledNameEx _
 	end if
 
 	sym->alias = id_alias
+
+	sym->stats or= FB_SYMBSTATS_MANGLED
 
 	function = id_alias
 
@@ -401,7 +401,7 @@ private function hMangleCompType _
 	) as zstring ptr static
 
     dim as zstring ptr id_str, nspc_str, dst, id_alias
-    dim as integer id_len, nspc_len
+    dim as integer id_len, nspc_len, addprefix
 
     nspc_len = 0
     if( checkns ) then
@@ -418,9 +418,10 @@ private function hMangleCompType _
     id_str = sym->alias
     if( id_str = NULL ) then
     	id_str = sym->name
+    	addprefix = TRUE
     else
     	'' only add the prefix if not mangled already
-    	checkns = (sym->stats and FB_SYMBSTATS_MANGLED) = 0
+    	addprefix = (sym->stats and FB_SYMBSTATS_MANGLED) = 0
     end if
 
     id_len = len( *id_str )
@@ -434,7 +435,7 @@ private function hMangleCompType _
 		dst += nspc_len
 	end if
 
-	if( checkns ) then
+	if( checkns and addprefix ) then
 		if( id_len < 10 ) then
 			*dst = CHAR_0 + id_len
 			dst += 1
