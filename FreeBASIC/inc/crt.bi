@@ -9,6 +9,7 @@
 #include once "crt/math.bi"
 #include once "crt/time.bi"
 #include once "crt/wchar.bi"
+#include once "crt/ctype.bi"
 #include once "crt/stdlib.bi"
 #include once "crt/stdio.bi"
 #include once "crt/fcntl.bi"
