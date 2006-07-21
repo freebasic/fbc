@@ -49,6 +49,8 @@
 #define ARG4			20(%ebp)
 #define ARG5			24(%ebp)
 #define ARG6			28(%ebp)
+#define ARG7			32(%ebp)
+#define ARG8			36(%ebp)
 
 #define LOCAL1			-4(%ebp)
 #define LOCAL2			-8(%ebp)

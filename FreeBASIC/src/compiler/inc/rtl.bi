@@ -1270,7 +1270,8 @@ declare function	rtlGfxDrawString	( _
 											byval coord_type as integer, _
 											byval mode as integer, _
 											byval alphaexpr as ASTNODE ptr, _
-											byval funcexpr as ASTNODE ptr _
+											byval funcexpr as ASTNODE ptr, _
+											byval paramexpr as ASTNODE ptr _
 										) as integer
 
 declare function	rtlGfxView			( _
@@ -1319,6 +1320,7 @@ declare function 	rtlGfxPut			( _
 											byval mode as integer, _
 											byval alphaexpr as ASTNODE ptr, _
 											byval funcexpr as ASTNODE ptr, _
+											byval paramexpr as ASTNODE ptr, _
 											byval coordtype as integer _
 										) as integer
 

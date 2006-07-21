@@ -11,6 +11,8 @@ Version 0.17 Beta:
 - because the above change, $inclib and $libpath were removed, use #inclib and #libpath instead (v1c)
 - OpenGL option flags to SCREEN (GFX_STENCIL_BUFFER and GFX_ACCUMULATION_BUFFER from fbgfx.bi) have changed their value
   to make room for new common flags at smaller digits (lillo)
+- the CUSTOM PUT mode now accepts one more parameter to be passed to the blender function, which now must have the form:
+  function blender(byval src as uinteger, byval dest as uinteger, byval param as any ptr) as uinteger
 
 [added]
 - #macro .. #endmacro, to better support multi-line pre-processor defines (v1c)
@@ -24,6 +26,7 @@ Version 0.17 Beta:
   transparent pixels causes the corresponding portion of the window to be transparent too (lillo)
 - the __FB_ERR__ define, set to 1, 3, 7, if one of the -e, -ex or -exx cmd-line options was passed, respectively (v1c)
 - Win32 GDI gfxlib driver now supports fullscreen (lillo)
+- the ADD drawing mode to PUT and DRAW STRING, allowing additive blending; works in hi/truecolor modes only (lillo)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)

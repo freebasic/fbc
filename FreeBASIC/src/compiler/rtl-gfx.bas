@@ -126,11 +126,12 @@ data @FB_RTL_GFXDRAW, "", _
 '' fb_GfxDrawString ( byval target as any, byval x as single, byval y as single, _
 ''                    byval byval coord_type as integer = COORD_TYPE_A, text as string, _
 ''                    byval col as uinteger = DEFAULT_COLOR, byval font as any = NULL, byval mode as integer, _
-''                    byval func as function( src as uinteger, dest as uinteger ) as uinteger = 0 )
+''                    byval func as function( src as uinteger, dest as uinteger ) as uinteger = 0,
+''                    byval param as any ptr = NULL )
 data @FB_RTL_GFXDRAWSTRING, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 @hGfxlib_cb, TRUE, FALSE, _
-	 9, _
+	 10, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE, _
@@ -139,7 +140,8 @@ data @FB_RTL_GFXDRAWSTRING, "", _
 	 FB_DATATYPE_UINT,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE, _
+ 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_GfxView ( byval x1 as integer = -32768, byval y1 as integer = -32768, _
 ''              byval x1 as integer = -32768, byval y1 as integer = -32768, _
@@ -209,11 +211,12 @@ data @FB_RTL_GFXPALETTEGETUSING, "", _
 ''			   byval x1 as integer = &hFFFF0000, byval y1 as integer = &hFFFF0000, _
 ''			   byval x2 as integer = &hFFFF0000, byval y2 as integer = &hFFFF0000, _
 ''			   byval coordType as integer, byval mode as integer, byval alpha as integer = -1, _
-''			   byval func as function( src as uinteger, dest as uinteger ) as uinteger = 0 ) as integer
+''			   byval func as function( src as uinteger, dest as uinteger ) as uinteger = 0,
+''			   byval param as any ptr = NULL ) as integer
 data @FB_RTL_GFXPUT, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 @hGfxlib_cb, TRUE, FALSE, _
-	 12, _
+	 13, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE, _
@@ -225,6 +228,7 @@ data @FB_RTL_GFXPUT, "", _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
+	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_GfxGet ( byref target as any, byval x1 as single, byval y1 as single, byval x2 as single, byval y2 as single, _
@@ -994,7 +998,8 @@ function rtlGfxDrawString( byval target as ASTNODE ptr, _
 						   byval coord_type as integer, _
 						   byval mode as integer, _
 						   byval alphaexpr as ASTNODE ptr, _
-						   byval funcexpr as ASTNODE ptr ) as integer
+						   byval funcexpr as ASTNODE ptr, _
+						   byval paramexpr as ASTNODE ptr ) as integer
     dim as ASTNODE ptr proc
     dim as integer targetmode
     dim as FBSYMBOL ptr reslabel
@@ -1071,6 +1076,14 @@ function rtlGfxDrawString( byval target as ASTNODE ptr, _
  		funcexpr = astNewCONSTi(0, FB_DATATYPE_INTEGER )
  	end if
  	if( astNewARG( proc, funcexpr ) = NULL ) then
+ 		exit function
+ 	end if
+ 	
+ 	'' byval param as any ptr
+ 	if( paramexpr = NULL ) then
+ 		paramexpr = astNewCONSTi(0, FB_DATATYPE_INTEGER )
+ 	end if
+ 	if( astNewARG( proc, paramexpr ) = NULL ) then
  		exit function
  	end if
 
@@ -1331,6 +1344,7 @@ function rtlGfxPut( byval target as ASTNODE ptr, _
 			   		byval mode as integer, _
 			   		byval alphaexpr as ASTNODE ptr, _
 			   		byval funcexpr as ASTNODE ptr, _
+			   		byval paramexpr as ASTNODE ptr, _
 			   		byval coordtype as integer ) as integer
 
     dim as ASTNODE ptr proc
@@ -1419,6 +1433,14 @@ function rtlGfxPut( byval target as ASTNODE ptr, _
  		funcexpr = astNewCONSTi(0, FB_DATATYPE_INTEGER )
  	end if
  	if( astNewARG( proc, funcexpr ) = NULL ) then
+ 		exit function
+ 	end if
+ 	
+ 	'' byval param as any ptr
+ 	if( paramexpr = NULL ) then
+ 		paramexpr = astNewCONSTi(0, FB_DATATYPE_INTEGER )
+ 	end if
+ 	if( astNewARG( proc, paramexpr ) = NULL ) then
  		exit function
  	end if
 

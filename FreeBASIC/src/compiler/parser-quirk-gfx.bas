@@ -49,7 +49,8 @@ const FBGFX_PUTMODE_AND    = 3
 const FBGFX_PUTMODE_OR     = 4
 const FBGFX_PUTMODE_XOR    = 5
 const FBGFX_PUTMODE_ALPHA  = 6
-const FBGFX_PUTMODE_CUSTOM = 7
+const FBGFX_PUTMODE_ADD    = 7
+const FBGFX_PUTMODE_CUSTOM = 8
 
 
 
@@ -157,8 +158,8 @@ private function hGetTarget( byref expr as ASTNODE ptr, _
 end function
 
 '':::::
-private function hGetMode( byref mode as uinteger, byref alphaexpr as ASTNODE ptr, byref funcexpr as ASTNODE ptr )
-    dim as FBSYMBOL ptr s, arg1, arg2
+private function hGetMode( byref mode as uinteger, byref alphaexpr as ASTNODE ptr, byref funcexpr as ASTNODE ptr, byref paramexpr as ASTNODE ptr )
+    dim as FBSYMBOL ptr s, arg1, arg2, arg3
 
 	function = FALSE
 
@@ -190,6 +191,16 @@ private function hGetMode( byref mode as uinteger, byref alphaexpr as ASTNODE pt
 			lexSkipToken( )
 			mode = FBGFX_PUTMODE_TRANS
 
+		case "ADD"
+			lexSkipToken( )
+			mode = FBGFX_PUTMODE_ADD
+
+			if( hMatch( CHAR_COMMA ) ) then
+				hMatchExpression( alphaexpr )
+			else
+				alphaexpr = astNewCONSTi( 255, FB_DATATYPE_UINT )
+			end if
+
 		case "ALPHA"
 			lexSkipToken( )
 			mode = FBGFX_PUTMODE_ALPHA
@@ -206,6 +217,10 @@ private function hGetMode( byref mode as uinteger, byref alphaexpr as ASTNODE pt
 			hMatchCOMMA( )
 
 			hMatchExpression( funcexpr )
+			
+			if( hMatch( CHAR_COMMA ) ) then
+				hMatchExpression( paramexpr )
+			end if
 
 			s = astGetSubType( funcexpr )
 			if( s = NULL ) then
@@ -217,7 +232,7 @@ private function hGetMode( byref mode as uinteger, byref alphaexpr as ASTNODE pt
 				exit function
 			end if
 			if( ( symbGetType( s ) <> FB_DATATYPE_UINT ) or _
-				( symbGetProcParams( s ) <> 2 ) ) then
+				( symbGetProcParams( s ) <> 3 ) ) then
 				errReport( FB_ERRMSG_TYPEMISMATCH )
 				exit function
 			end if
@@ -225,11 +240,19 @@ private function hGetMode( byref mode as uinteger, byref alphaexpr as ASTNODE pt
 			arg1 = symbGetProcHeadParam( s )
 
 			arg2 = symbGetParamNext( arg1 )
+			
+			arg3 = symbGetParamNext( arg2 )
+			
+			if( s->proc.mode = FB_FUNCMODE_PASCAL ) then
+				swap arg1, arg3
+			end if
 
 			if( ( symbGetType( arg1 ) <> FB_DATATYPE_UINT ) or _
 				( symbGetType( arg2 ) <> FB_DATATYPE_UINT ) or _
+				( symbGetType( arg3 ) < FB_DATATYPE_POINTER ) or _
 				( arg1->param.mode <> FB_PARAMMODE_BYVAL ) or _
-				( arg2->param.mode <> FB_PARAMMODE_BYVAL ) ) then
+				( arg2->param.mode <> FB_PARAMMODE_BYVAL ) or _
+				( arg3->param.mode <> FB_PARAMMODE_BYVAL ) ) then
 				errReport( FB_ERRMSG_TYPEMISMATCH )
 				exit function
 			end if
@@ -555,7 +578,7 @@ end function
 '' GfxDrawString   =   DRAW STRING ( Expr ',' )? STEP? '(' Expr ',' Expr ')' ',' Expr ( ',' Expr ( ',' Expr ( ',' Expr ( ',' Expr )? )? )? )?
 ''
 function cGfxDrawString as integer
-	dim as ASTNODE ptr texpr, xexpr, yexpr, sexpr, cexpr, fexpr, alphaexpr, funcexpr
+	dim as ASTNODE ptr texpr, xexpr, yexpr, sexpr, cexpr, fexpr, alphaexpr, funcexpr, paramexpr
 	dim as integer tisptr, fisptr, coord_type, mode
     dim as FBSYMBOL ptr target
 
@@ -596,6 +619,7 @@ function cGfxDrawString as integer
 	fexpr = NULL
 	alphaexpr = NULL
 	funcexpr = NULL
+	paramexpr = NULL
 	mode = FBGFX_PUTMODE_TRANS
 
 	'' color/font/mode
@@ -610,7 +634,7 @@ function cGfxDrawString as integer
 
 			'' mode
 			if( hMatch( CHAR_COMMA ) ) then
-				if( hGetMode( mode, alphaexpr, funcexpr ) = FALSE ) then
+				if( hGetMode( mode, alphaexpr, funcexpr, paramexpr ) = FALSE ) then
 					exit function
 				end if
 			end if
@@ -621,7 +645,7 @@ function cGfxDrawString as integer
 		cexpr = astNewCONSTi( FBGFX_DEFAULTCOLOR, FB_DATATYPE_UINT )
 	end if
 
-	function = rtlGfxDrawString( texpr, tisptr, xexpr, yexpr, sexpr, cexpr, fexpr, fisptr, coord_type, mode, alphaexpr, funcexpr )
+	function = rtlGfxDrawString( texpr, tisptr, xexpr, yexpr, sexpr, cexpr, fexpr, fisptr, coord_type, mode, alphaexpr, funcexpr, paramexpr )
 
 end function
 
@@ -816,13 +840,14 @@ end function
 ''
 function cGfxPut as integer
     dim as integer coordtype, mode, isptr, tisptr, expectmode
-    dim as ASTNODE ptr xexpr, yexpr, arrayexpr, texpr, alphaexpr, funcexpr, x1expr, y1expr, x2expr, y2expr
+    dim as ASTNODE ptr xexpr, yexpr, arrayexpr, texpr, alphaexpr, funcexpr, paramexpr, x1expr, y1expr, x2expr, y2expr
     dim as FBSYMBOL ptr s, target, arg1, arg2
 
 	function = FALSE
 
 	alphaexpr = NULL
 	funcexpr = NULL
+	paramexpr = NULL
 	x1expr = NULL
 
 	'' ( Expr ',' )?
@@ -888,7 +913,7 @@ function cGfxPut as integer
 		end if
 
 		if( expectmode ) then
-			if( hGetMode( mode, alphaexpr, funcexpr ) = FALSE ) then
+			if( hGetMode( mode, alphaexpr, funcexpr, paramexpr ) = FALSE ) then
 				exit function
 			end if
 		end if
@@ -897,7 +922,7 @@ function cGfxPut as integer
 	''
 	function = rtlGfxPut( texpr, tisptr, xexpr, yexpr, arrayexpr, isptr, _
 						  x1expr, y1expr, x2expr, y2expr, _
-						  mode, alphaexpr, funcexpr, coordtype )
+						  mode, alphaexpr, funcexpr, paramexpr, coordtype )
 
 end function
 

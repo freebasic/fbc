@@ -55,7 +55,7 @@ typedef struct FBGFX_CHAR
 
 
 /*:::::*/
-FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FBSTRING *string, unsigned int color, void *font, int mode, BLENDER *func)
+FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FBSTRING *string, unsigned int color, void *font, int mode, BLENDER *blender, void *param)
 {
 	FBGFX_CHAR char_data[256], *ch;
 	PUTTER *put;
@@ -84,7 +84,7 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 	if (font) {
 		/* user passed a custom font */
 
-		put = fb_hGetPutter(mode, color, func);
+		put = fb_hGetPutter(mode, (int *)&color);
 		if (!put)
 			goto exit_error;
 
@@ -151,7 +151,7 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 				}
 				if (x + w > fb_mode->view_x + fb_mode->view_w)
 					w -= ((x + w) - (fb_mode->view_x + fb_mode->view_w));
-				put(data, fb_mode->line[y] + (px * fb_mode->bpp), w, h, pitch, color);
+				put(data, fb_mode->line[y] + (px * fb_mode->bpp), w, h, pitch, color, blender, param);
 				
 			}
 			x += ch->width;

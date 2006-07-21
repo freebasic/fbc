@@ -117,7 +117,8 @@ extern "C" {
 #define PUT_MODE_OR		4
 #define PUT_MODE_XOR		5
 #define PUT_MODE_ALPHA		6
-#define PUT_MODE_CUSTOM		7
+#define PUT_MODE_ADD		7
+#define PUT_MODE_CUSTOM		8
 
 #define KEY_BUFFER_LEN		16
 
@@ -212,8 +213,8 @@ typedef struct FONT
 
 
 typedef void (BLITTER)(unsigned char *, int);
-typedef FBCALL unsigned int (BLENDER)(unsigned int, unsigned int);
-typedef void (PUTTER)(unsigned char *, unsigned char *, int, int, int, int);
+typedef FBCALL unsigned int (BLENDER)(unsigned int, unsigned int, void *);
+typedef void (PUTTER)(unsigned char *, unsigned char *, int, int, int, int, BLENDER *, void *);
 
 /* Global variables */
 extern MODE *fb_mode;
@@ -235,7 +236,7 @@ extern FBCALL int fb_hEncode(const unsigned char *in_buffer, int in_size, unsign
 extern FBCALL int fb_hDecode(const unsigned char *in_buffer, int in_size, unsigned char *out_buffer, int *out_size);
 extern void fb_hPostKey(int key);
 extern BLITTER *fb_hGetBlitter(int device_depth, int is_rgb);
-extern PUTTER *fb_hGetPutter(int mode, int alpha, BLENDER *func);
+extern PUTTER *fb_hGetPutter(int mode, int *alpha);
 extern unsigned int fb_hMakeColor(unsigned int index, int r, int g, int b);
 extern unsigned int fb_hFixColor(unsigned int color);
 extern void fb_hRestorePalette(void);
@@ -275,11 +276,11 @@ extern FBCALL void fb_GfxWindow(float x1, float y1, float x2, float y2, int scre
 extern FBCALL void fb_GfxLine(void *target, float x1, float y1, float x2, float y2, unsigned int color, int type, unsigned int style, int coord_type);
 extern FBCALL void fb_GfxEllipse(void *target, float x, float y, float radius, unsigned int color, float aspect, float start, float end, int fill, int coord_type);
 extern FBCALL int fb_GfxGet(void *target, float x1, float y1, float x2, float y2, unsigned char *dest, int coord_type, FBARRAY *array);
-extern FBCALL int fb_GfxPut(void *target, float x, float y, unsigned char *src, int x1, int y1, int x2, int y2, int coord_type, int mode, int alpha, BLENDER *func);
+extern FBCALL int fb_GfxPut(void *target, float x, float y, unsigned char *src, int x1, int y1, int x2, int y2, int coord_type, int mode, int alpha, BLENDER *blender, void *param);
 extern FBCALL int fb_GfxWaitVSync(void);
 extern FBCALL void fb_GfxPaint(void *target, float fx, float fy, unsigned int color, unsigned int border_color, FBSTRING *pattern, int mode, int coord_type);
 extern FBCALL void fb_GfxDraw(void *target, FBSTRING *command);
-extern FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FBSTRING *string, unsigned int color, void *font, int mode, BLENDER *func);
+extern FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FBSTRING *string, unsigned int color, void *font, int mode, BLENDER *blender, void *param);
 extern FBCALL void fb_GfxFlip(int from_page, int to_page);
 extern FBCALL void fb_GfxSetPage(int work_page, int visible_page);
 extern FBCALL void fb_GfxLock(void);
