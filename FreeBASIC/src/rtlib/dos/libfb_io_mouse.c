@@ -73,7 +73,7 @@ int fb_ConsoleGetMouse( int *x, int *y, int *z, int *buttons )
 	regs.x.ax = 0x3;
 	__dpmi_int(0x33, &regs);
 	
-	if (wheel_ok) wheel_pos -= (int)regs.h.bh;
+	if (wheel_ok) wheel_pos -= *(signed char *)(&regs.h.bh);
 	
 	if (x) *x = regs.x.cx / 8;	/* char width is 8 pixels */
 	if (y) *y = regs.x.dx / 8;	/* char height is 8 pixels */
