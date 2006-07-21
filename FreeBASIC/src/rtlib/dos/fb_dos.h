@@ -106,7 +106,9 @@ FnIntHandler fb_isr_get( unsigned irq_number );
 int fb_dos_cli( void );
 int fb_dos_sti( void );
 
-int fb_dos_lock_mem(const void *address, size_t size);
-int fb_dos_unlock_mem(const void *address, size_t size);
+int fb_dos_lock_data(const void *address, size_t size);
+int fb_dos_lock_code(const void *address, size_t size);
+int fb_dos_unlock_data(const void *address, size_t size);
+int fb_dos_unlock_code(const void *address, size_t size);
 
 #endif

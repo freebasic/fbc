@@ -68,36 +68,75 @@ extern char fb_hDrvIntHandler_end;
 
 /** Ensures that the specified memory region isn't swappable.
  */
-#define fb_lock_memory( var_start, var_end ) \
-    fb_dos_lock_mem( &(var_start), (const char *) &(var_end) - (const char *) &(var_start) )
 
+#if 0
 #define fb_lock_memory_fn( fn_name ) \
-    fb_lock_memory( fn_name, fn_name ## _end )
+    _go32_dpmi_lock_code( fn_name, fn_name ## _end - fn_name )
 
 #define fb_lock_memory_data( var_name ) \
-    fb_lock_memory( var_name ## _start, var_name ## _end )
+    _go32_dpmi_lock_data( &var_name ## _start, &var_name ## _end - &var_name ## _start )
+#endif
 
-/*:::::*/
-int fb_dos_lock_mem(const void *address, size_t size)
+#define fb_lock_memory_fn( fn_name ) \
+	fb_dos_lock_code( fn_name, fn_name ## _end - fn_name )
+
+#define fb_lock_memory_data( var_name ) \
+	fb_dos_lock_data( &var_name ## _start, &var_name ## _end - &var_name ## _start )
+
+int fb_dos_lock_data(const void *address, size_t size)
 {
-	static __dpmi_meminfo mi;
-	mi.address = (unsigned long) address;
+	unsigned long base;
+	__dpmi_meminfo mi;
+	
+	if ( __dpmi_get_segment_base_address( _go32_my_ds(), &base ) == -1 )
+		return -1;
+	
+	mi.address = base + (unsigned long)address;
 	mi.size = size;
-	/* return __dpmi_lock_linear_region(&mi); */
-	/* WARNING: ugly hack:
-	  For some reason locking memory fails on certain DPMI servers on certain platforms...
-	  so we ignore the return value and always indicate success to the caller */
-	(void)__dpmi_lock_linear_region(&mi);
-	return 0;
+	
+	return __dpmi_lock_linear_region( &mi );
 }
 
-/*:::::*/
-int fb_dos_unlock_mem(const void *address, size_t size)
+int fb_dos_lock_code(const void *address, size_t size)
 {
-	static __dpmi_meminfo mi;
-	mi.address = (unsigned long) address;
+	unsigned long base;
+	__dpmi_meminfo mi;
+	
+	if ( __dpmi_get_segment_base_address( _go32_my_cs(), &base ) == -1 )
+		return -1;
+	
+	mi.address = base + (unsigned long)address;
 	mi.size = size;
-	return __dpmi_unlock_linear_region(&mi);
+	
+	return __dpmi_lock_linear_region( &mi );
+}
+
+int fb_dos_unlock_data(const void *address, size_t size)
+{
+	unsigned long base;
+	__dpmi_meminfo mi;
+	
+	if ( __dpmi_get_segment_base_address( _go32_my_ds(), &base ) == -1 )
+		return -1;
+	
+	mi.address = base + (unsigned long)address;
+	mi.size = size;
+	
+	return __dpmi_unlock_linear_region( &mi );
+}
+
+int fb_dos_unlock_code(const void *address, size_t size)
+{
+	unsigned long base;
+	__dpmi_meminfo mi;
+	
+	if ( __dpmi_get_segment_base_address( _go32_my_cs(), &base ) == -1 )
+		return -1;
+	
+	mi.address = base + (unsigned long)address;
+	mi.size = size;
+	
+	return __dpmi_unlock_linear_region( &mi );
 }
 
 static __inline__ int
@@ -298,7 +337,7 @@ int fb_isr_set( unsigned irq_number,
     if( fb_hDrvIntHandler[irq_number]!=NULL )
         fb_isr_reset( irq_number );
 
-    if( fb_dos_lock_mem( pfnIntHandler, fn_size )!=0 )
+    if( fb_dos_lock_code( pfnIntHandler, fn_size )!=0 )
         return FALSE;
 
     if( stack_size!=0 ) {
@@ -311,7 +350,7 @@ int fb_isr_set( unsigned irq_number,
         if( pStack==NULL )
             return FALSE;
 
-        if( fb_dos_lock_mem( pStack, stack_size )!=0 ) {
+        if( fb_dos_lock_data( pStack, stack_size )!=0 ) {
             free( pStack );
             return FALSE;
         }
@@ -354,8 +393,8 @@ int fb_isr_reset( unsigned irq_number )
         fb_hDrvIntStacks[irq_number].size = 0;
         fb_dos_sti();
 
-        fb_dos_unlock_mem( pfnIntHandler, fn_size );
-        fb_dos_unlock_mem( pStack, stack_size );
+        fb_dos_unlock_code( pfnIntHandler, fn_size );
+        fb_dos_unlock_data( pStack, stack_size );
 
         free( pStack );
     }
