@@ -49,31 +49,13 @@ fb_dos_t fb_dos;
 static void fb_dos_save_video_mode(void);
 static void fb_dos_restore_video_mode(void);
 
-static void _lock_mem(unsigned int address, size_t size)
-{
-	static __dpmi_meminfo mi;
-	mi.address = address;
-	mi.size = size;
-	__dpmi_lock_linear_region(&mi);
-}
+#define lock_var(var)        fb_dos_lock_data( &(var), sizeof(var) )
+#define lock_array(array)    fb_dos_lock_data( (array), sizeof(array) )
+#define lock_proc(proc)      fb_dos_lock_code( proc, (char *)( end_##proc ) - (char *)(proc) )
 
-#define lock_mem(addr, size) _lock_mem( (unsigned int)(addr), (size_t)(size) )
-#define lock_var(var)        lock_mem( &(var), sizeof(var) )
-#define lock_array(array)    lock_mem( (array), sizeof(array) )
-#define lock_proc(proc)      lock_mem( proc, end_##proc )
-
-static void _unlock_mem(unsigned int address, size_t size)
-{
-	static __dpmi_meminfo mi;
-	mi.address = address;
-	mi.size = size;
-	__dpmi_unlock_linear_region(&mi);
-}
-
-#define unlock_mem(addr, size) _unlock_mem( (unsigned int)(addr), (size_t)(size) )
-#define unlock_var(var)        unlock_mem( &(var), sizeof(var) )
-#define unlock_array(array)    unlock_mem( (array), sizeof(array) )
-#define unlock_proc(proc)      unlock_mem( proc, end_##proc )
+#define unlock_var(var)      fb_dos_unlock_data( &(var), sizeof(var) )
+#define unlock_array(array)  fb_dos_unlock_data( (array), sizeof(array) )
+#define unlock_proc(proc)    fb_dos_unlock_code( proc, (char *)( end_##proc ) - (char *)(proc) )
 
 /*:::::*/
 static void fb_dos_kb_init(void)
@@ -168,7 +150,7 @@ int fb_dos_update_mouse(void)
 	fb_dos.mouse_y = fb_dos.regs.x.dx;
 
 	if (fb_dos.mouse_wheel_ok)
-		fb_dos.mouse_z -= fb_dos.regs.h.bh;
+		fb_dos.mouse_z -= *(signed char *)(&fb_dos.regs.h.bh);
 
 	return (old_buttons!=fb_dos.mouse_buttons)
 	    || (old_x!=fb_dos.mouse_x)
@@ -341,10 +323,11 @@ int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flag
 
 	lock_var(fb_mode);
 	lock_var(fb_dos);
-	lock_mem(fb_mode->key, 128);
+	fb_dos_lock_data(&fb_mode->key, 128);
+	lock_proc(fb_dos_timer_handler);
 	lock_proc(fb_dos_timer_handler);
 	lock_proc(fb_dos_update_mouse);
-	lock_mem(fb_dos.update, fb_dos.update_len);
+	fb_dos_lock_code(fb_dos.update, fb_dos.update_len);
 
 	/* TODO: lock fb_hMemCpy and fb_hMemSet (the actual code and the pointers) */
 
@@ -392,10 +375,10 @@ void fb_dos_exit(void)
 
 	unlock_var(fb_mode);
 	unlock_var(fb_dos);
-	unlock_mem(fb_mode->key, 128);
+	fb_dos_unlock_data(&fb_mode->key, 128);
 	unlock_proc(fb_dos_timer_handler);
 	unlock_proc(fb_dos_update_mouse);
-	unlock_mem(fb_dos.update, fb_dos.update_len);
+	fb_dos_unlock_code(fb_dos.update, fb_dos.update_len);
 	
 	fb_dos_restore_video_mode();
 
