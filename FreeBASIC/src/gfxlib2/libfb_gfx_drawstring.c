@@ -167,7 +167,6 @@ FBCALL int fb_GfxDrawString(void *target, float fx, float fy, int coord_type, FB
 		
 		if ((x + (w * FB_STRSIZE(string)) <= fb_mode->view_x) || (x >= fb_mode->view_x + fb_mode->view_w) ||
 		    (y + font_height <= fb_mode->view_y) || (y >= fb_mode->view_y + fb_mode->view_h)) {
-			res = FB_RTERROR_ILLEGALFUNCTIONCALL;
 			goto exit_error;
 		}
 		
