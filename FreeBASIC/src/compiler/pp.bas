@@ -38,6 +38,7 @@ option escape
 type SYMBKWD
 	name			as zstring ptr
 	id				as integer
+	sym				as FBSYMBOL ptr
 end type
 
 declare function ppInclude					( ) as integer
@@ -88,10 +89,11 @@ sub ppInit( )
     		exit for
     	end if
 
-    	if( symbAddKeyword( kwdTb(i).name, _
-    						kwdTb(i).id, _
-    						FB_TKCLASS_KEYWORD, _
-    						@pp.keyhash ) = NULL ) then
+    	kwdTb(i).sym = symbAddKeyword( kwdTb(i).name, _
+    								   kwdTb(i).id, _
+    								   FB_TKCLASS_KEYWORD, _
+    								   @pp.keyhash )
+    	if( kwdTb(i).sym = NULL ) then
     		exit sub
     	end if
     next
@@ -107,6 +109,7 @@ end sub
 
 ''::::
 sub ppEnd( )
+    dim as integer i
 
 	ppPragmaEnd( )
 
@@ -115,6 +118,15 @@ sub ppEnd( )
 	ppDefineEnd( )
 
 	''
+	for i = 0 to SYMB_MAXKEYWORDS-1
+    	if( kwdTb(i).sym = NULL ) then
+    		exit for
+    	end if
+
+    	symbDelKeyword( kwdTb(i).sym )
+    	kwdTb(i).sym = NULL
+    next
+
 	hashFree( @pp.keyhash.tb )
 	hashEnd( )
 

@@ -144,6 +144,7 @@ sub hashFree _
 	end if
 
 	deallocate( hash->list )
+	hash->list = NULL
 
 end sub
 
