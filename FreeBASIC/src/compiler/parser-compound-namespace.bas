@@ -41,6 +41,7 @@ function cNamespaceStmtBegin _
     dim as FBSYMBOL ptr sym = any
     dim as FBSYMCHAIN ptr chain_ = any
     dim as FB_CMPSTMTSTK ptr stk = any
+    dim as integer levels = any
 
 	function = FALSE
 
@@ -50,8 +51,8 @@ function cNamespaceStmtBegin _
     	exit function
     end if
 
-	'' NAMESPACE
-	lexSkipToken( )
+	'' skip NAMESPACE, don't lookup '.'s
+	lexSkipToken( LEXCHECK_NOLOOKUP )
 
 	'' ID?
 	palias = NULL
@@ -63,28 +64,39 @@ function cNamespaceStmtBegin _
 		'' anonymous namespace..
 		sym = symbAddNamespace( hMakeTmpStr( ), NULL )
 
-	case else
+		stk = cCompStmtPush( FB_TK_NAMESPACE, _
+					 	 	 FB_CMPSTMT_MASK_ALL and (not FB_CMPSTMT_MASK_CODE) _
+					 					 	 	 and (not FB_CMPSTMT_MASK_EXTERN) _
+					 					 	 	 and (not FB_CMPSTMT_MASK_DATA) )
 
+		stk->nspc.node = astNamespaceBegin( sym )
+		stk->nspc.levels = 1
+
+		return TRUE
+	end select
+
+    levels = 0
+    do
+        levels += 1
+
+    	'' not an id?
     	if( lexGetToken( ) <> FB_TK_ID ) then
 			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 				exit function
-			else
-				'' error recovery: fake a symbol
-				sym = symbAddNamespace( hMakeTmpStr( ), NULL )
-				exit select
 			end if
+
+			'' error recovery: fake a symbol
+			sym = symbAddNamespace( hMakeTmpStr( ), NULL )
+			id[0] = 0							'' id = ""
+			chain_ = NULL
+
+		'' id..
+		else
+			id = *lexGetText( )
+			chain_ = lexGetSymChain( )
 		end if
 
-    	'' contains a period?
-    	if( lexGetPeriodPos( ) > 0 ) then
-    		if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-    			exit function
-    		end if
-    	end if
-
-		id = *lexGetText( )
-
-		chain_ = lexGetSymChain( )
+		'' already defined?
 		if( chain_ <> NULL ) then
 			sym = chain_->sym
 
@@ -111,21 +123,27 @@ function cNamespaceStmtBegin _
 			sym = NULL
 		end if
 
-		lexSkipToken( )
+		'' skip ID, don't lookup the '.'s
+		if( id[0] <> 0 ) then
+			lexSkipToken( LEXCHECK_NOLOOKUP )
+		end if
 
+		'' create a new symbol?
 		if( sym = NULL ) then
-			'' (ALIAS LITSTR)?
-			if( lexGetToken( ) = FB_TK_ALIAS ) then
-    			lexSkipToken( )
+			if( levels = 1 )  then
+				'' (ALIAS LITSTR)?
+				if( lexGetToken( ) = FB_TK_ALIAS ) then
+    				lexSkipToken( )
 
-				if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
-					if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-						exit function
+					if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
+						if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+							exit function
+						end if
+
+					else
+						lexEatToken( @id_alias )
+						palias = @id_alias
 					end if
-
-				else
-					lexEatToken( @id_alias )
-					palias = @id_alias
 				end if
 			end if
 
@@ -140,15 +158,29 @@ function cNamespaceStmtBegin _
 			end if
 		end if
 
-	end select
+		''
+		stk = cCompStmtPush( FB_TK_NAMESPACE, _
+						 	 FB_CMPSTMT_MASK_ALL and (not FB_CMPSTMT_MASK_CODE) _
+						 					 	 and (not FB_CMPSTMT_MASK_EXTERN) _
+						 					 	 and (not FB_CMPSTMT_MASK_DATA) )
 
-	''
-	stk = cCompStmtPush( FB_TK_NAMESPACE, _
-						 FB_CMPSTMT_MASK_ALL and (not FB_CMPSTMT_MASK_CODE) _
-						 					 and (not FB_CMPSTMT_MASK_EXTERN) _
-						 					 and (not FB_CMPSTMT_MASK_DATA) )
+		stk->nspc.node = astNamespaceBegin( sym )
+		stk->nspc.levels = 1
 
-	stk->nspc.node = astNamespaceBegin( sym )
+		'' ALIAS used?
+		if( palias <> NULL ) then
+			exit do
+		end if
+
+		'' not a '.'?
+		if( lexGetToken( ) <> CHAR_DOT ) then
+			exit do
+		end if
+
+		lexSkipToken( LEXCHECK_NOLOOKUP )
+	loop
+
+	stk->nspc.levels = levels
 
 	function = TRUE
 
@@ -159,6 +191,7 @@ end function
 ''
 function cNamespaceStmtEnd as integer
 	dim as FB_CMPSTMTSTK ptr stk = any
+	dim as integer levels = any
 
 	function = FALSE
 
@@ -171,11 +204,22 @@ function cNamespaceStmtEnd as integer
 	lexSkipToken( )
 	lexSkipToken( )
 
-	'' back to parent
-	astNamespaceEnd( stk->nspc.node )
+	levels = stk->nspc.levels
 
-	'' pop from stmt stack
-	cCompStmtPop( stk )
+	do while( levels > 0 )
+		'' back to parent
+		astNamespaceEnd( stk->nspc.node )
+
+		'' pop from stmt stack
+		cCompStmtPop( stk )
+
+		stk = cCompStmtGetTOS( FB_TK_NAMESPACE, FALSE )
+		if( stk = NULL ) then
+			exit do
+		end if
+
+		levels -= 1
+	loop
 
 	function = TRUE
 

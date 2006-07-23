@@ -85,6 +85,7 @@ end type
 
 type FB_CMPSTMT_NAMESPACE
 	node		as ASTNODE ptr
+	levels		as integer						'' nesting level
 end type
 
 type FB_CMPSTMT_EXTERN

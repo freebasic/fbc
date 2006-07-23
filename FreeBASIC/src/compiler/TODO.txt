@@ -1,8 +1,12 @@
 [ ] add the -lang (qb|fb) cmd-line option:
     - "qb" will be the default, by now(?)
+
+    - "fb" restrictions:
     - no OPTION's
     - no DEF### (ie: explicit types required)
     - no implicit variables
+    - no '$dynamic, '$static, '$include
+    - parameters passed by value by default
     - no CALL
     - no variable suffixes
     - no periods in symbol names
@@ -12,11 +16,16 @@
     - no numeric labels
     - no SHARED at subs (if added later, non-shared vars at mod-level will have to be
                          allocated statically, as before)
+    - error messages in single-line syntax ala in VS
+
+    - "qb" restrictions:
+      - namespaces
+      - classes (exception handling)
+      - op overloading (func overloading too?)
 
 [ ] namespace:
-    - add support for nested ns':
-      namespace net.freebasic.sys.console
-      end namespace
+    - all non-local variables should be shared by default, it makes no sense to have
+      SHARED if there's no way do add executable code outside functions - same as for classes
     - add support for importing single symbols (mostly because classes, as nested ns'
       are already supported)
 
@@ -80,7 +89,7 @@
 [ ] add the ... subscript when initializing array so
     "dim array(0 to ...) = {1, 2, 3, 4}" could be allowed
 
-[ ] forward type defs used in arguments of function ptr type defs shouldn't be an error
+[ ] forward type defs used in byval parms of function ptr type defs shouldn't be an error
     - the prototype mangling must be updated when that occurs, but how to do that fast
       enough? the args would have to be linked to parent (the prototype), but updating
       the mangled alias on every argument can be slow..
