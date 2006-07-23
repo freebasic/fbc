@@ -431,4 +431,7 @@ Namespace
 #Macro
 #Endmacro
 Using
+__FB_ERR__
+#line
+#libpath
 
