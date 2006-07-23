@@ -46,7 +46,7 @@ FBCALL int fb_FileExists ( FBSTRING *filename )
 	int ret = 0;
 	FILE *fp;
 	
-	if (fp = fopen(filename, "r")) {
+	if (fp = fopen(filename->data, "r")) {
 		fclose(fp);
 		ret = FB_TRUE;
 	} else {
