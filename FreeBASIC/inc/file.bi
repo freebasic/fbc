@@ -32,4 +32,6 @@ declare function FileAttr alias "fb_FileAttr" ( byval handle as integer, byval r
 
 declare function FileLen alias "fb_FileLen" ( filename as string ) as integer
 
+declare function FileExists alias "fb_FileExists" ( filename as string ) as integer
+
 #endif
