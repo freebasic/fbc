@@ -187,7 +187,7 @@ static int set_mode(const MODEINFO *info, int mode, int depth, int num_pages, in
         num_pages = 1;
 
 	/* normalize flags */
-	if (flags & DRIVER_SHAPED_WINDOW)
+	if ((flags >= 0) && (flags & DRIVER_SHAPED_WINDOW))
 		flags = DRIVER_SHAPED_WINDOW | DRIVER_NO_FRAME | DRIVER_NO_SWITCH;
 	
     release_gfx_mem();
