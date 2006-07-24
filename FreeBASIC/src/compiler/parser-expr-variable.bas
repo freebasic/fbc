@@ -364,6 +364,17 @@ function cDerefFields _
 				case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 					 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
+					'' string concatenation is delayed because optimizations..
+					varexpr = astUpdStrConcat( varexpr )
+
+					'' function deref?
+					if( astIsFUNCT( varexpr ) ) then
+						'' not allowed, STRING and WCHAR results are temporary
+						if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
+							exit function
+						end if
+					end if
+
 					if( dtype = FB_DATATYPE_STRING ) then
 						'' deref
 						varexpr = astNewADDR( AST_OP_DEREF, varexpr )
