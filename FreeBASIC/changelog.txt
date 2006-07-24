@@ -60,6 +60,7 @@ Version 0.17 Beta:
 - functions with forward types parameters were been incorrectly mangled (v1c)
 - SWAP with bitfields was been allowed (v1c)
 - the prefix was been added twice for mangled names of symbols declared inside namespaces (v1c)
+- string indexing was been allowed with functions (v1c)
 
 
 Version 0.16 Beta:
