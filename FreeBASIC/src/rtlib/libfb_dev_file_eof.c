@@ -74,13 +74,17 @@ int fb_DevFileEof( struct _FB_FILE *handle )
 
     if( feof( fp ) ) {
         res = FB_TRUE;
-    } else if( handle->mode==FB_FILE_MODE_INPUT ) {
+#if 0
+    }
+	/* !!!FIXME!!! fseek() is unreliable in text-mode, we can't use handle->size */
+	else if( handle->mode==FB_FILE_MODE_INPUT ) {
         int has_size = handle->hooks->pfnTell!=NULL && handle->hooks->pfnSeek!=NULL;
         if( has_size && (ftell( fp ) >= handle->size) )  {
             res = FB_TRUE;
         } else {
             res = FB_FALSE;
         }
+#endif
     } else {
         res = FB_FALSE;
     }
