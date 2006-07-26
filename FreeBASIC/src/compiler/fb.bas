@@ -726,36 +726,37 @@ function fbIncludeFile _
 		return errFatal( )
 	end if
 
-	'' open include file
-	if( hFileExists( filename ) = FALSE ) then
+	'' 1st) try finding it at same path as the current source-file
+	incfile = hStripFilename( env.inf.name )
+	incfile += *filename
 
-		'' try finding it at same path as env.infile
-		incfile = hStripFilename( env.inf.name ) + *filename
-		if( hFileExists( incfile ) = FALSE ) then
+	if( hFileExists( incfile ) = FALSE ) then
 
-			'' try finding it at the inc paths
+		'' 2nd) try as-is (could include an absolute or relative path)
+		if( hFileExists( filename ) = FALSE ) then
+
+			'' 3rd) try finding it at the inc paths
 			for i = env.incpaths-1 to 0 step -1
-
-				incfile = incpathTB(i) + *filename
+				incfile = incpathTB(i)
+				incfile += *filename
 				if( hFileExists( incfile ) ) then
 					exit for
 				end if
-
 			next
-		end if
 
-	else
-		incfile = *filename
+			'' not found?
+			if( i < 0 ) then
+				errReportEx( FB_ERRMSG_FILENOTFOUND, "\"" + *filename + "\"" )
+				return errFatal( )
+			end if
+
+		else
+			incfile = *filename
+		end if
 	end if
 
 	''
 	hRevertSlash( incfile, FALSE )
-
-	''
-	if( hFileExists( incfile ) = FALSE ) then
-		errReportEx( FB_ERRMSG_FILENOTFOUND, "\"" + *filename + "\"" )
-		return errFatal( )
-	end if
 
 	''
 	if( isonce ) then
@@ -768,13 +769,11 @@ function fbIncludeFile _
     '' we should respect the path here too
 	fileidx = hAddIncFile( incfile )
 
-	''
+	'' push context
 	infileTb(env.includerec) = env.inf
    	env.includerec += 1
 
-	'' we must remember the path - otherwise we'd be unable to
-	'' find header files in the same path
-	env.inf.name 	= incfile
+	env.inf.name  = incfile
 	env.inf.incfile = fileidx
 
 	''
@@ -800,7 +799,7 @@ function fbIncludeFile _
 		'' ...
 	end if
 
-	''
+	'' pop context
 	env.includerec -= 1
 	env.inf = infileTb( env.includerec )
 

@@ -41,7 +41,7 @@ end type
 
 '':::::
 sub hlpInit
-    dim i as integer
+    dim as integer i
 
 	''
 	for i = 0 to (asc("_")-asc("A")+1)-1
@@ -82,10 +82,13 @@ function hHexUInt _
     dim as zstring ptr p
     dim as integer lgt, maxlen
 
-	static as integer hexTB(0 to 15) = { asc( "0" ), asc( "1" ), asc( "2" ), asc( "3" ), _
-									  	 asc( "4" ), asc( "5" ), asc( "6" ), asc( "7" ), _
-										 asc( "8" ), asc( "9" ), asc( "A" ), asc( "B" ), _
-										 asc( "C" ), asc( "D" ), asc( "E" ), asc( "F" ) }
+	static as integer hexTB(0 to 15) = _
+	{ _
+		asc( "0" ), asc( "1" ), asc( "2" ), asc( "3" ), _
+		asc( "4" ), asc( "5" ), asc( "6" ), asc( "7" ), _
+		asc( "8" ), asc( "9" ), asc( "A" ), asc( "B" ), _
+		asc( "C" ), asc( "D" ), asc( "E" ), asc( "F" ) _
+	}
 
 	maxlen = 4
 	if( value > 65535 ) then
@@ -230,7 +233,10 @@ sub hSetDefType _
 end sub
 
 '':::::
-function hFBrelop2IRrelop( byval op as integer ) as integer static
+function hFBrelop2IRrelop _
+	( _
+		byval op as integer _
+	) as integer static
 
     select case as const op
     case FB_TK_EQ
@@ -252,7 +258,10 @@ function hFBrelop2IRrelop( byval op as integer ) as integer static
 end function
 
 '':::::
-function hFileExists( byval filename as zstring ptr ) as integer static
+function hFileExists _
+	( _
+		byval filename as zstring ptr _
+	) as integer static
     dim f as integer
 
     f = freefile
@@ -347,8 +356,12 @@ function hStripUnderscore _
 end function
 
 '':::::
-function hStripExt( byval filename as zstring ptr ) as string static
-    dim p as integer, lp as integer
+function hStripExt _
+	( _
+		byval filename as zstring ptr _
+	) as string static
+
+    dim as integer p, lp
 
 	lp = 0
 	do
@@ -368,7 +381,11 @@ function hStripExt( byval filename as zstring ptr ) as string static
 end function
 
 '':::::
-function hStripPath( byval filename as zstring ptr ) as string static
+function hStripPath _
+	( _
+		byval filename as zstring ptr _
+	) as string static
+
     dim as integer lp, p_found, p(1 to 2)
 
 	lp = 0
@@ -395,7 +412,11 @@ function hStripPath( byval filename as zstring ptr ) as string static
 end function
 
 '':::::
-function hStripFilename ( byval filename as zstring ptr ) as string static
+function hStripFilename _
+	( _
+		byval filename as zstring ptr _
+	) as string static
+
     dim as integer lp, p_found, p(1 to 2)
 
 	lp = 0
@@ -422,7 +443,11 @@ function hStripFilename ( byval filename as zstring ptr ) as string static
 end function
 
 '':::::
-function hGetFileExt( byval fname as zstring ptr ) as string static
+function hGetFileExt _
+	( _
+		byval fname as zstring ptr _
+	) as string static
+
     dim as integer p, lp
     dim as string res
 
@@ -455,9 +480,11 @@ function hGetFileExt( byval fname as zstring ptr ) as string static
 end function
 
 '':::::
-function hRevertSlash( byval src as zstring ptr, _
-					   byval allocnew as integer _
-					 ) as zstring ptr static
+function hRevertSlash _
+	( _
+		byval src as zstring ptr, _
+		byval allocnew as integer _
+	) as zstring ptr static
 
     dim as zstring ptr res
     dim as integer i, c
@@ -491,17 +518,24 @@ function hRevertSlash( byval src as zstring ptr, _
 end function
 
 '':::::
-function hToPow2( byval value as uinteger ) as uinteger static
+function hToPow2 _
+	( _
+		byval value as uinteger _
+	) as uinteger static
+
     dim n as uinteger
 
-	static pow2tb(0 to 63) as uinteger = {  0,  0,  0, 15,  0,  1, 28,  0, _
-										   16,  0,  0,  0,  2, 21, 29,  0, _
-    									    0,  0, 19, 17, 10,  0, 12,  0, _
-    									    0,  3,  0,  6,  0, 22, 30,  0, _
-    									   14,  0, 27,  0,  0,  0, 20,  0, _
-    									   18,  9, 11,  0,  5,  0,  0, 13, _
-    									   26,  0,  0,  8,  0,  4,  0, 25, _
-    									   0,   7, 24,  0, 23,  0, 31,  0 }
+	static pow2tb(0 to 63) as uinteger = _
+	{ _
+		 0,  0,  0, 15,  0,  1, 28,  0, _
+		16,  0,  0,  0,  2, 21, 29,  0, _
+    	 0,  0, 19, 17, 10,  0, 12,  0, _
+    	 0,  3,  0,  6,  0, 22, 30,  0, _
+    	14,  0, 27,  0,  0,  0, 20,  0, _
+    	18,  9, 11,  0,  5,  0,  0, 13, _
+    	26,  0,  0,  8,  0,  4,  0, 25, _
+    	 0,   7, 24,  0, 23,  0, 31,  0 _
+	}
 
 	'' don't check if it's zero
 	if( value = 0 ) then
@@ -524,10 +558,13 @@ function hToPow2( byval value as uinteger ) as uinteger static
 end function
 
 '':::::
-sub hConvertValue( byval src as FBVALUE ptr, _
-				   byval sdtype as integer, _
-				   byval dst as FBVALUE ptr, _
-				   byval ddtype as integer ) static
+sub hConvertValue _
+	( _
+		byval src as FBVALUE ptr, _
+		byval sdtype as integer, _
+		byval dst as FBVALUE ptr, _
+		byval ddtype as integer _
+	) static
 
 	select case as const sdtype
 	case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
@@ -564,7 +601,11 @@ sub hConvertValue( byval src as FBVALUE ptr, _
 end sub
 
 '':::::
-function hJumpTbAllocSym( ) as any ptr static
+function hJumpTbAllocSym _
+	( _
+		_
+	) as any ptr static
+
 	static as zstring * FB_MAXNAMELEN+1 sname
 	dim as FBARRAYDIM dTB(0)
 	dim as FBSYMBOL ptr s
@@ -581,7 +622,11 @@ function hJumpTbAllocSym( ) as any ptr static
 end function
 
 '':::::
-function hCheckFileFormat( byval f as integer ) as integer
+function hCheckFileFormat _
+	( _
+		byval f as integer _
+	) as integer
+
     dim as integer BOM
     dim as FBFILE_FORMAT fmt
 
