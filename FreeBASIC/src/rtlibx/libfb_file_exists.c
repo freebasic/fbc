@@ -39,21 +39,20 @@
 
 #include "fbext.h"
 
-#include <stdio.h>
-
-FBCALL int fb_FileExists ( FBSTRING *filename )
+FBCALL int fb_FileExists 
+	( 
+		const char *filename 
+	)
 {
-	int ret = 0;
 	FILE *fp;
 	
-	if (fp = fopen(filename->data, "r")) {
+	if (fp = fopen(filename, "r")) 
+	{
 		fclose(fp);
-		ret = FB_TRUE;
-	} else {
-		ret = FB_FALSE;
+		return FB_TRUE;
+	} 
+	else
+	{
+		return FB_FALSE;
 	}
-	
-	fb_hStrDelTemp( filename );
-	
-	return ret;
 }

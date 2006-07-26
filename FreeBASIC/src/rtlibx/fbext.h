@@ -175,7 +175,7 @@ FBCALL int          fb_I18nGet          ( void );
        FBSTRING   * fb_DrvIntlGetWeekdayName( int weekday, int short_names );
        
        
-FBCALL int          fb_FileCopy         ( FBSTRING *source, FBSTRING *destination );
+FBCALL int          fb_FileCopy         ( const char *source, const char *destination );
        int          fb_DrvFileCopy      ( const char *source, const char *destination );
 
 #ifdef __cplusplus

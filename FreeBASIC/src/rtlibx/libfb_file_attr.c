@@ -45,7 +45,11 @@ static file_mode_map[] = { FB_FILE_ATTR_MODE_BINARY,   /* FB_FILE_MODE_BINARY = 
                            FB_FILE_ATTR_MODE_OUTPUT,   /* FB_FILE_MODE_OUTPUT = 3 */
                            FB_FILE_ATTR_MODE_APPEND }; /* FB_FILE_MODE_APPEND = 4 */
 
-FBCALL int fb_FileAttr ( int handle, int returntype )
+FBCALL int fb_FileAttr 
+	( 
+		int handle, 
+		int returntype 
+	)
 {
 	int ret = 0;
 	int err = 0;
@@ -53,36 +57,35 @@ FBCALL int fb_FileAttr ( int handle, int returntype )
 	
 	file = FB_FILE_TO_HANDLE( handle );
 	
-	if ( !file ) {
-		
+	if ( !file ) 
+	{
 		ret = 0;
 		err = FB_RTERROR_ILLEGALFUNCTIONCALL;
-		
-	} else {
-		
+	} 
+	else 
+	{
 		switch ( returntype )
 		{
-			case FB_FILE_ATTR_MODE:
-				ret = file_mode_map[file->mode];
-				err = FB_RTERROR_OK;
-				break;
+		case FB_FILE_ATTR_MODE:
+			ret = file_mode_map[file->mode];
+			err = FB_RTERROR_OK;
+			break;
 				
-			case FB_FILE_ATTR_HANDLE:
-				ret = (int)file->opaque; /* WARNING: unsafe when sizeof(void *) > sizeof(int) */
-				err = FB_RTERROR_OK;
-				break;
+		case FB_FILE_ATTR_HANDLE:
+			ret = (int)file->opaque; /* WARNING: unsafe when sizeof(void *) > sizeof(int) */
+			err = FB_RTERROR_OK;
+			break;
 				
-			case FB_FILE_ATTR_ENCODING:
-				ret = file->encod;
-				err = FB_RTERROR_OK;
-				break;
+		case FB_FILE_ATTR_ENCODING:
+			ret = file->encod;
+			err = FB_RTERROR_OK;
+			break;
 				
-			default:
-				ret = 0;
-				err = FB_RTERROR_ILLEGALFUNCTIONCALL; 
-				break;
+		default:
+			ret = 0;
+			err = FB_RTERROR_ILLEGALFUNCTIONCALL; 
+			break;
 		}
-		
 	}
 	
 	fb_ErrorSetNum( err );

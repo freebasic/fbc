@@ -39,16 +39,11 @@
 
 #include "fbext.h"
 
-FBCALL int fb_FileCopy ( FBSTRING *source, FBSTRING *destination )
+FBCALL int fb_FileCopy 
+	( 
+		const char *source, 
+		const char *destination 
+	)
 {
-	int ret;
-	
-	ret = fb_DrvFileCopy( source->data, destination->data );
-	
-	/* del if temp */
-	fb_hStrDelTemp( source );
-	fb_hStrDelTemp( destination );
-	
-	return ret;
-	
+	return fb_DrvFileCopy( source, destination );
 }

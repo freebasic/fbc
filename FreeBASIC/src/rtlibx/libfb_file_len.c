@@ -42,34 +42,30 @@
 #include <stdio.h>
 
 
-FBCALL int fb_FileLen ( FBSTRING *filename )
+FBCALL int fb_FileLen 
+	( 
+		const char *filename 
+	)
 {
-	int ret = 0;
 	FILE *fp;
 	long len;
 	
-	fp = fopen( filename->data, "rb" );
-	
-	if ( !fp ) goto err;
-	if ( fseek( fp, 0, SEEK_END ) ) goto err;
-	if ( (len = ftell( fp )) == -1 ) goto err;
-	fclose( fp );
-	
-	ret = len;
-	fb_ErrorSetNum( FB_RTERROR_OK );
-	goto done;
+	fp = fopen( filename, "rb" );	
+	if( fp != NULL )
+	{
+		if( fseek( fp, 0, SEEK_END ) == 0 ) 
+		{
+			if( (len = ftell( fp )) != -1 ) 
+			{
+				fclose( fp );
+				fb_ErrorSetNum( FB_RTERROR_OK );
+				return len;
+			}
+		}
 
-err:
-	
-	if ( fp ) fclose( fp );
+		fclose( fp );
+	}
+
 	fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-	ret = 0;
-
-done:
-	
-	/* del if temp */
-	fb_hStrDelTemp( filename );
-	
-	return ret;
-	
+	return 0;
 }
