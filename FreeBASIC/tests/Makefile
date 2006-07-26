@@ -15,7 +15,7 @@ RUNLIST := $(foreach i,$(EXELIST) $(patsubst %.mk,%$(EXEEXT),$(MAKLIST)),echo [$
 VPATH = $(DIRLIST)
 
 .SUFFIXES:
-.SUFFIXES: .bas $(EXEEXT)
+.SUFFIXES: .bas .c .cpp $(EXEEXT)
 
 ### rules
 
