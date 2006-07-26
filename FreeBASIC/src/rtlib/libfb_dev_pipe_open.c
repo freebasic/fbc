@@ -83,27 +83,37 @@ int fb_DevPipeOpen( struct _FB_FILE *handle, const char *filename, size_t filena
     case FB_FILE_MODE_INPUT:
         if ( handle->access == FB_FILE_ACCESS_ANY)
             handle->access = FB_FILE_ACCESS_READ;
-        if( handle->access != FB_FILE_ACCESS_READ ) {
+        
+        if( handle->access != FB_FILE_ACCESS_READ )
             res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-        }
-        strcpy( openmask, "r" );		/* will fail if file doesn't exist */
+
+        strcpy( openmask, "rt" );
         break;
 
     case FB_FILE_MODE_OUTPUT:
         if ( handle->access == FB_FILE_ACCESS_ANY)
             handle->access = FB_FILE_ACCESS_WRITE;
-        if( handle->access != FB_FILE_ACCESS_WRITE ) {
+
+        if( handle->access != FB_FILE_ACCESS_WRITE )
             res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-        }
-        strcpy( openmask, "w" );       /* will create the file if it doesn't exist */
+        
+        strcpy( openmask, "wt" );
         break;
+
+    case FB_FILE_MODE_BINARY:
+        if ( handle->access == FB_FILE_ACCESS_ANY)
+            handle->access = FB_FILE_ACCESS_WRITE;
+        
+		strcpy( openmask, (handle->access == FB_FILE_ACCESS_WRITE? "wb" : "rb") );
+
+        break;
+    
+    default:
+    	res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
-    if (res==FB_RTERROR_OK && strlen(openmask)==0) {
-        res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-    }
-
-    if( res == FB_RTERROR_OK ) {
+    if( res == FB_RTERROR_OK ) 
+    {
         /* try to open/create pipe */
         if( (fp = popen( fname, openmask )) == NULL )
         {
