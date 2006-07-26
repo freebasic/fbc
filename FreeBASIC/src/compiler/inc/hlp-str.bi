@@ -107,10 +107,10 @@ declare function 	hGetWstrNull			( _
 '':::::
 #define ZstrAllocate(chars) allocate( chars + 1 )
 
-#define ZstrFree(p) deallocate( p )
+#define ZstrFree(p) if( p <> NULL ) then : deallocate( p ) : end if
 
 #define WstrAllocate(chars) allocate( (chars + 1) * len( wstring ) )
 
-#define WstrFree(p) deallocate( p )
+#define WstrFree(p) if( p <> NULL ) then : deallocate( p ) : end if
 
 #endif ''__HELP_STR_BI__

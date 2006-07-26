@@ -127,7 +127,7 @@ function symbGetDBGName _
 	if( hDoCppMangling( sym, symbGetMangling( sym ) ) ) then
 		function = symbGetMangledName( sym )
 	else
-		function = sym->name
+		function = sym->id.name
 	end if
 
 end function
@@ -143,16 +143,16 @@ sub symbSetName _
 
 	'' assuming only params will change names, no mangling reseted
 
-	if( s->name <> NULL ) then
-		poolDelItem( @symb.namepool, s->name ) 'ZstrFree( s->name )
+	if( s->id.name <> NULL ) then
+		poolDelItem( @symb.namepool, s->id.name ) 'ZstrFree( s->id.name )
 	end if
 
 	slen = len( *name_ )
 	if( slen = 0 ) then
-		s->name = NULL
+		s->id.name = NULL
 	else
-		s->name = poolNewItem( @symb.namepool, slen + 1 ) 'ZStrAllocate( slen )
-		*s->name = *name_
+		s->id.name = poolNewItem( @symb.namepool, slen + 1 ) 'ZStrAllocate( slen )
+		*s->id.name = *name_
 	end if
 
 end sub
@@ -164,38 +164,38 @@ function symbGetMangledNameEx _
 		byval checkhash as integer _
 	) as zstring ptr
 
-	dim as zstring ptr id_alias = any
+	dim as zstring ptr id_mangled = any
 
 	if( (sym->stats and FB_SYMBSTATS_MANGLED) <> 0 ) then
-		return sym->alias
+		return sym->id.mangled
 	end if
 
     select case as const sym->class
     case FB_SYMBCLASS_PROC
-		id_alias = hMangleProc( sym )
+		id_mangled = hMangleProc( sym )
 
 	case FB_SYMBCLASS_ENUM, FB_SYMBCLASS_UDT
-    	id_alias = hMangleCompType( sym, checkhash, FALSE )
+    	id_mangled = hMangleCompType( sym, checkhash, FALSE )
 
 	case FB_SYMBCLASS_NAMESPACE
-    	id_alias = hMangleCompType( sym, checkhash, TRUE )
+    	id_mangled = hMangleCompType( sym, checkhash, TRUE )
 
 	case FB_SYMBCLASS_VAR
-    	id_alias = hMangleVariable( sym )
+    	id_mangled = hMangleVariable( sym )
 
 	case else
-    	return sym->alias
+    	return sym->id.alias
 	end select
-
-	if( sym->alias <> NULL ) then
-		ZStrFree( sym->alias )
-	end if
-
-	sym->alias = id_alias
 
 	sym->stats or= FB_SYMBSTATS_MANGLED
 
-	function = id_alias
+	if( sym->id.mangled <> NULL ) then
+		ZStrFree( sym->id.mangled )
+	end if
+
+	sym->id.mangled = id_mangled
+
+	function = id_mangled
 
 end function
 
@@ -356,11 +356,14 @@ end function
 private function hGetNamespace _
 	( _
 		byval sym as FBSYMBOL ptr, _
-		byval checkhash as integer _
+		byval checkhash as integer, _
+		byref abbr_node as FB_MANGLEABBR ptr _
 	) as zstring ptr static
 
 	dim as FBSYMBOL ptr ns
 	dim as zstring ptr id_alias
+
+   	abbr_node = NULL
 
 	ns = symbGetNamespace( sym )
 	if( ns = @symbGetGlobalNamespc( ) ) then
@@ -377,15 +380,12 @@ private function hGetNamespace _
     id_alias = hMangleCompType( ns, TRUE, TRUE )
 
     dim as uinteger hash
-    dim as FB_MANGLEABBR ptr n
+
     hash = hashHash( id_alias )
-    n = hashLookupEx( @ctx.hashtb, id_alias, hash )
-    if( n = NULL ) then
-       	'' don't copy id_alias, pass len as 0
-       	hAbbrevAdd( id_alias, 0, hash )
-	else
-       	ZStrFree( id_alias )
-       	id_alias = hAbbrevGet( n->idx )
+    abbr_node = hashLookupEx( @ctx.hashtb, id_alias, hash )
+    if( abbr_node = NULL ) then
+    	'' don't copy id_alias, pass len as 0
+     	hAbbrevAdd( id_alias, 0, hash )
 	end if
 
 	function = id_alias
@@ -398,15 +398,27 @@ private function hMangleCompType _
 		byval sym as FBSYMBOL ptr, _
 		byval checkhash as integer, _
 		byval checkns as integer _
-	) as zstring ptr static
+	) as zstring ptr
 
-    dim as zstring ptr id_str, nspc_str, dst, id_alias
-    dim as integer id_len, nspc_len, addprefix
+    static as zstring ptr id_str, dst, id_alias
+    static as integer id_len, nspc_len
+    dim as zstring ptr nspc_str = any
+    dim as FB_MANGLEABBR ptr abbr_node = any
 
     nspc_len = 0
     if( checkns ) then
     	'' namespace
-    	nspc_str = hGetNamespace( sym, checkhash )
+    	nspc_str = hGetNamespace( sym, checkhash, abbr_node )
+
+       	'' abbreviation found?
+       	if( abbr_node <> NULL ) then
+       		'' not a namespace? (never use an abbr otherwise)
+       		if( symbIsNameSpace( sym ) = FALSE ) then
+       			ZStrFree( nspc_str )
+       			nspc_str = hAbbrevGet( abbr_node->idx )
+       		end if
+       	end if
+
     	if( nspc_str <> NULL ) then
     		nspc_len = len( *nspc_str )
     	end if
@@ -415,13 +427,9 @@ private function hMangleCompType _
     end if
 
     '' id
-    id_str = sym->alias
+    id_str = sym->id.alias
     if( id_str = NULL ) then
-    	id_str = sym->name
-    	addprefix = TRUE
-    else
-    	'' only add the prefix if not mangled already
-    	addprefix = (sym->stats and FB_SYMBSTATS_MANGLED) = 0
+    	id_str = sym->id.name
     end if
 
     id_len = len( *id_str )
@@ -435,7 +443,7 @@ private function hMangleCompType _
 		dst += nspc_len
 	end if
 
-	if( checkns and addprefix ) then
+	if( checkns ) then
 		if( id_len < 10 ) then
 			*dst = CHAR_0 + id_len
 			dst += 1
@@ -547,6 +555,7 @@ private function hMangleVariable  _
     dim as zstring ptr prefix_str, nspc_str, id_str, suffix_str
     dim as integer prefix_len, nspc_len, id_len, suffix_len, docpp, isglobal
     dim as FB_MANGLING mangling
+    dim as FB_MANGLEABBR ptr abbr_node
 
     mangling = symbGetMangling( sym )
 
@@ -567,7 +576,7 @@ private function hMangleVariable  _
     '' namespace
     nspc_len = 0
 	if( docpp ) then
-    	nspc_str = hGetNamespace( sym, FALSE )
+    	nspc_str = hGetNamespace( sym, FALSE, abbr_node )
     	if(	nspc_str <> NULL ) then
     		nspc_len = len( *nspc_str )
     	end if
@@ -584,7 +593,7 @@ private function hMangleVariable  _
 
     '' alias explicitly given?
     if( (sym->stats and FB_SYMBSTATS_HASALIAS) <> 0 ) then
-    	id_str = sym->alias
+    	id_str = sym->id.alias
 
     else
 		'' shared, public, extern or inside a n?
@@ -598,11 +607,11 @@ private function hMangleVariable  _
 
     		'' BASIC? use the upper-cased name
     		if( mangling = FB_MANGLING_BASIC ) then
-				id_str = sym->name
+				id_str = sym->id.name
 
 			'' else, the case-sensitive name saved in the alias..
 			else
-	    		id_str = sym->alias
+	    		id_str = sym->id.alias
 			end if
 
     		'' suffixed?
@@ -914,6 +923,7 @@ private function hMangleProc  _
     dim as zstring ptr prefix_str, nspc_str, id_str, param_str, suffix_str
     dim as integer docpp, prefix_len, nspc_len, id_len, param_len, suffix_len
     dim as FB_MANGLING mangling
+    dim as FB_MANGLEABBR ptr abbr_node
 
     mangling = symbGetMangling( sym )
 
@@ -931,7 +941,7 @@ private function hMangleProc  _
     '' namespace
     nspc_len = 0
 	if( docpp ) then
-    	nspc_str = hGetNamespace( sym, TRUE )
+    	nspc_str = hGetNamespace( sym, TRUE, abbr_node )
     	if(	nspc_str <> NULL ) then
     		nspc_len = len( *nspc_str )
     	end if
@@ -945,15 +955,15 @@ private function hMangleProc  _
     '' id
     '' alias explicitly given?
     if( (sym->stats and FB_SYMBSTATS_HASALIAS) <> 0 ) then
-    	id_str = sym->alias
+    	id_str = sym->id.alias
 
     else
     	'' BASIC? use the upper-cased name
     	if( mangling = FB_MANGLING_BASIC ) then
-			id_str = sym->name
+			id_str = sym->id.name
 		'' else, the case-sensitive name saved in the alias..
 		else
-	    	id_str = sym->alias
+	    	id_str = sym->id.alias
 		end if
 	end if
 

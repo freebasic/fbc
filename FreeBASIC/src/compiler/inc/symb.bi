@@ -397,19 +397,25 @@ type FBS_NSIMPORT
 	exp_next		as FBSYMBOL_ ptr			'' next in the ns export list
 end type
 
+type FB_SYMBID
+	name			as zstring ptr				'' upper-cased name, shared by hash tb
+	alias			as zstring ptr              '' alias/preserved (if EXTERN was used) name
+	mangled			as zstring ptr				'' mangled name
+end type
+
 ''
 type FBSYMBOL
 	class			as FB_SYMBCLASS
 	attrib			as FB_SYMBATTRIB
 	stats			as FB_SYMBSTATS
 
+	id				as FB_SYMBID
+
 	typ				as FB_DATATYPE
 	subtype			as FBSYMBOL ptr
 	ptrcnt 			as integer
 	scope			as uinteger
 
-	name			as zstring ptr				'' original name, shared by hash tb
-	alias			as zstring ptr
 	lgt				as integer
 	ofs				as integer					'' for local vars, args, UDT's and fields
 
@@ -1249,7 +1255,7 @@ declare function 	symbTypeToStr			( _
 
 #define symbGetMangledName(s) symbGetMangledNameEx( s, FALSE )
 
-#define symbGetName(s) s->name
+#define symbGetName(s) s->id.name
 
 #define symbGetOfs(s) s->ofs
 

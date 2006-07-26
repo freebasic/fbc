@@ -123,11 +123,11 @@ private sub hInsertIntoHashTb _
 			chain_ = listNewNode( @symb.chainlist )
 			chain_->index = s->hash.chain->index
 
-			chain_head = hashLookupEx( hashtb, s->name, chain_->index )
+			chain_head = hashLookupEx( hashtb, s->id.name, chain_->index )
 			'' not defined yet? create a new hash node
 			if( chain_head = NULL ) then
             	chain_->sym = s
-            	chain_->item = hashAdd( hashtb, s->name, chain_, chain_->index )
+            	chain_->item = hashAdd( hashtb, s->id.name, chain_, chain_->index )
             	chain_->prev = NULL
             	chain_->next = NULL
 

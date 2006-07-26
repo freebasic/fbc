@@ -615,7 +615,7 @@ function symbPreAddProc _
 	proc->proc.paramtb.owner = proc
 	proc->proc.paramtb.head = NULL
 	proc->proc.paramtb.tail = NULL
-	proc->name = symbol
+	proc->id.name = symbol
 
 	function = proc
 
@@ -1480,7 +1480,7 @@ private function hMangleFunctionPtr _
     		'' notes:
     		'' - can't use hex( param->subtype ), because slots can be
     		''   reused if fwd types were resolved and removed
-    		'' - can't use only the param->name because UDT's with the same
+    		'' - can't use only the param->id.name because UDT's with the same
     		''   name declared inside different namespaces
     		id += symbMangleType( param )
     	end if

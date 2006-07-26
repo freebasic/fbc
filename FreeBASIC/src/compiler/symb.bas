@@ -412,24 +412,26 @@ function symbNewSymbol _
     '' name
     slen = iif( id <> NULL, len( *id ), 0 )
     if( slen > 0 ) then
-    	s->name = poolNewItem( @symb.namepool, slen + 1 ) 'ZstrAllocate( slen )
+    	s->id.name = poolNewItem( @symb.namepool, slen + 1 ) 'ZstrAllocate( slen )
     	if( preservecase = FALSE ) then
-    		hUcase( id, s->name )
+    		hUcase( id, s->id.name )
     	else
-    	    *s->name = *id
+    	    *s->id.name = *id
 		end if
     else
-    	s->name = NULL
+    	s->id.name = NULL
     	dohash = FALSE
     end if
 
     '' alias
     if( id_alias <> NULL ) then
-    	s->alias = ZstrAllocate( len( *id_alias ) )
-    	*s->alias = *id_alias
+    	s->id.alias = ZstrAllocate( len( *id_alias ) )
+    	*s->id.alias = *id_alias
     else
-    	s->alias = NULL
+    	s->id.alias = NULL
     end if
+
+    s->id.mangled = NULL
 
     ''
     s->lgt = 0
@@ -443,14 +445,14 @@ function symbNewSymbol _
 	'' add to hash table
 	if( dohash ) then
 		chain_ = listNewNode( @symb.chainlist )
-		chain_->index = hashHash( s->name )
+		chain_->index = hashHash( s->id.name )
 
 		'' doesn't exist yet?
-		chain_head = hashLookupEx( @hashtb->tb, s->name, chain_->index )
+		chain_head = hashLookupEx( @hashtb->tb, s->id.name, chain_->index )
 		if( chain_head = NULL ) then
 			'' add to hash table
             chain_->sym = s
-			chain_->item = hashAdd( @hashtb->tb, s->name, chain_, chain_->index )
+			chain_->item = hashAdd( @hashtb->tb, s->id.name, chain_, chain_->index )
             chain_->prev = NULL
             chain_->next = NULL
 
@@ -458,8 +460,9 @@ function symbNewSymbol _
 			'' can be duplicated?
 			if( symbCanDuplicate( chain_head, s ) = FALSE ) then
 				listDelNode( @symb.chainlist, chain_ )
-				poolDelItem( @symb.namepool, s->name ) 'ZstrFree( s->name )
-				ZstrFree( s->alias )
+				poolDelItem( @symb.namepool, s->id.name ) 'ZstrFree( s->id.name )
+				ZstrFree( s->id.alias )
+				ZstrFree( s->id.mangled )
 				if( delok ) then
 					listDelNode( @symb.symlist, s )
 				end if
@@ -483,7 +486,7 @@ function symbNewSymbol _
 			else
 				'' add to head
 				chain_head->item->data = chain_
-				chain_head->item->name = s->name
+				chain_head->item->name = s->id.name
 			    chain_head->prev = chain_
 			    chain_->prev = NULL
 			    chain_->next = chain_head
@@ -955,7 +958,7 @@ sub symbDelFromChainList _
     	'' update list head
     	else
        		chain_->item->data = nxt
-       		chain_->item->name = nxt->sym->name
+       		chain_->item->name = nxt->sym->id.name
     	end if
     end if
 
@@ -1012,8 +1015,9 @@ sub symbFreeSymbol _
     '' remove from symbol tb
     s->prev = NULL
     s->next = NULL
-    poolDelItem( @symb.namepool, s->name ) 'ZstrFree( s->name )
-    ZstrFree( s->alias )
+    poolDelItem( @symb.namepool, s->id.name ) 'ZstrFree( s->id.name )
+    ZstrFree( s->id.alias )
+    ZstrFree( s->id.mangled )
 
     listDelNode( @symb.symlist, s )
 

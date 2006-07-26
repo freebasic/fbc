@@ -337,8 +337,8 @@ private function hCreateArrayDesc _
 	'' common or public and dynamic? use the array name for the descriptor,
 	'' as only it will be allocated or seen by other modules
 	if( iscommon or (ispubext and isdynamic) ) then
-		id = array->name
-		id_alias = array->alias
+		id = array->id.name
+		id_alias = array->id.alias
 
 	'' otherwise, create a temporary name..
 	else

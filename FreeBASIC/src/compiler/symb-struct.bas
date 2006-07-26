@@ -213,7 +213,7 @@ function symbAddUDTElement _
     	do
     		e = p->udt.fldtb.head
     		do while( e <> NULL )
-    			if( *e->name = ename ) then
+    			if( *e->id.name = ename ) then
     				exit function
     			end if
 
@@ -561,7 +561,7 @@ function symbLookupUDTElm _
 	fld = parent->udt.fldtb.head
 	do while( fld <> NULL )
         '' names match?
-        if( *fld->name = ename ) then
+        if( *fld->id.name = ename ) then
     		exit do
         end if
 
