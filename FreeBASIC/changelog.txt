@@ -59,7 +59,7 @@ Version 0.17 Beta:
 - debugging info for local static variables that were never referenced was been emitted (v1c)
 - functions with forward types parameters were been incorrectly mangled (v1c)
 - SWAP with bitfields was been allowed (v1c)
-- the prefix was been added twice for mangled names of symbols declared inside namespaces (v1c)
+- mangling of symbols declared inside nested namespaces (v1c)
 - string indexing was being allowed with functions (v1c)
 - eof() could fail with some files opened for INPUT (v1c)
 
