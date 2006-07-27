@@ -26,8 +26,18 @@ option private
 
 #define NULL 0
 
-const ZIPTOOL = "zip.exe"
-const ZIPOPTIONS = "-@ -q -9 {output}"
+const TRAM_FILELIST = "tram_filelist.txt"
+
+#ifndef __FB_LINUX__
+#define TRAM_USE_STDOUT
+const TRAM_ARCH_TOOL = "zip.exe"
+const TRAM_ARCH_OPTIONS = "-@ -q -9 {output}"
+const TRAM_NEWLINE = chr( 13, 10 )
+#else
+const TRAM_ARCH_TOOL = "tar"
+const TRAM_ARCH_OPTIONS = "-czf {output} -T {listing}"
+const TRAM_NEWLINE = chr( 10 )
+#endif
 
 using fb
 using file
@@ -57,11 +67,18 @@ declare function hReplace _
 		byval oldtext as zstring ptr, _
 		byval newtext as zstring ptr _
 	) as string
+
+declare function hRevertSlash _
+	( _
+		byval src as zstring ptr _
+	) as string
 	
+
 '' globals	
 	dim shared as ctx ctx
 
 	end main( __FB_ARGC__, __FB_ARGV__ )
+
 
 '':::::	
 function processOptions _
@@ -186,32 +203,57 @@ sub archiveFiles
 
 	dim as search.entry ptr e
 	dim as integer o
-	dim as string options, cdir
+	dim as string options, cdir, listfile
 	
-	cdir = curdir
+	cdir = hRevertSlash( curdir )
 	chdir ctx.root
 
-	options = hReplace( ZIPOPTIONS, "{output}", cdir + "/" + ctx.output )
-	
-	print "archiving:", ZIPTOOL + " " + options
+	options = hReplace( TRAM_ARCH_OPTIONS, "{output}", cdir + "/" + ctx.output )
 	
 	o = freefile
-	if( open pipe( ZIPTOOL + " " + options, for output, as #o ) <> 0 ) then
+
+#ifdef TRAM_USE_STDOUT
+	if( open pipe( TRAM_ARCH_TOOL + " " + options, for output, as #o ) <> 0 ) then
+		print "error: archiver not found"
 		return
 	end if
+
+#else
+	listfile = cdir + "/" + TRAM_FILELIST
+	
+	options = hReplace( options, "{listing}", listfile )
+	
+	if( open ( listfile, for binary, access write, as #o ) <> 0 ) then
+		print "error: cannot create the file list"
+		return
+	end if
+#endif
+	
+	print "archiving:", TRAM_ARCH_TOOL + " " + options
 	
 	e = search.getFirst( ctx.s )
 	do while( e <> NULL )
-		
 		if( e->path <> NULL ) then
-			print #o, *e->path; "/";
+			print #o, *e->path + "/";
 		end if
-		print #o, *e->name
+		print #o, *e->name + TRAM_NEWLINE;
 		
 		e = search.getNext( ctx.s )
 	loop
 	
 	close #o
+
+#ifndef TRAM_USE_STDOUT
+	o = freefile
+	if( open pipe( TRAM_ARCH_TOOL + " " + options, for output, as #o ) <> 0 ) then
+		print "error: archiver not found"
+		return
+	end if
+	
+	close #o
+	
+	kill listfile
+#endif
 	
 	chdir cdir
 	
@@ -328,5 +370,26 @@ function hReplace _
 	loop
 
 	function = text
+
+end function
+
+'':::::
+function hRevertSlash _
+	( _
+		byval src as zstring ptr _
+	) as string static
+
+    dim as string res
+    dim as integer i
+
+	res = *src
+
+	for i = 0 to len( *src )-1
+		if( src[i] = asc( "\" ) ) then
+			res[i] = asc( "/" )
+		end if		
+	next
+
+	function = res
 
 end function
