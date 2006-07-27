@@ -21,19 +21,27 @@ option private
 
 #include once "vbcompat.bi"
 #include once "file.bi"
+#include once "list.bi"
+#include once "zstr.bi"
 
 #define NULL 0
 
 const ZIPTOOL = "zip.exe"
 const ZIPOPTIONS = "-@ -q -9 {output}"
 
-using fb.file
+using fb
+using file
+	
+type excListNode
+	name	as zstring ptr
+end type	
 	
 type ctx
 	root	as zstring * 256
 	mask	as zstring * 16
 	output	as zstring * 128
 	serial	as double
+	exclist	as list.CList ptr
 	s		as search.CSearch ptr
 end type
 
@@ -69,6 +77,7 @@ function processOptions _
 	ctx.root = "."
 	ctx.mask = "*.*"
 	ctx.output = "zip.zip"
+	ctx.exclist = NULL
 	ctx.serial = 0
 
 	for i = 1 to argc-1
@@ -107,6 +116,17 @@ function processOptions _
 				end if
 			end if
 								 
+
+		case "-excl="
+			dim as string d = ucase( mid( arg, 7 ) )
+			
+			if( ctx.exclist = NULL ) then
+				ctx.exclist = list.new( 4, len( excListNode ) )
+			end if
+			
+			dim as excListNode ptr n = list.insert( ctx.exclist )
+			
+			n->name = zStr.dup( d )
 		
 		case else
 			return vbFalse
@@ -156,7 +176,9 @@ end sub
 
 '':::::
 sub showUsage 
-	print "Usage: tram -root=base_path [-mask=*.*] -date=yyyy/mm/dd [-time=hh:mm:ss] [-file=output_name]"
+	print "Usage: tram -root=base_path [-mask=*.*]"
+	print "            -date=yyyy/mm/dd [-time=hh:mm:ss]"
+	print "            [-file=output_name] [-excl=dir_name]*"
 end sub
 
 '':::::
@@ -196,6 +218,57 @@ sub archiveFiles
 end sub
 
 '':::::
+function topDir_cb _
+	( _
+		byval path as zstring ptr, _
+		byval fname as zstring ptr _
+	) as integer
+	
+	'' not at root? don't check..
+	if( path <> NULL ) then
+		return TRUE
+	end if
+	
+	'' exclude /tests and /src
+	select case *fname	
+	case "tests", "src"
+		return FALSE
+	end select
+	
+	function = TRUE
+	
+end function
+
+'':::::
+function excList_cb _
+	( _
+		byval path as zstring ptr, _
+		byval fname as zstring ptr _
+	) as integer
+	
+	'' check top dir first
+	if( topDir_cb( path, fname ) = FALSE ) then
+		return FALSE
+	end if
+	
+	dim as string uc_fname = ucase( *fname )
+	
+	dim as excListNode ptr n = list.getHead( ctx.exclist )
+	
+	do until( n = NULL )
+		
+		if( *n->name = uc_fname ) then
+			return FALSE
+		end if
+		
+		n = list.getNext( n )
+	loop
+	
+	function = TRUE
+	
+end function
+
+'':::::
 function main _
 	( _
 		byval argc as integer, _
@@ -207,7 +280,9 @@ function main _
 		return 1
 	end if
 
-	ctx.s = search.new( ctx.root )
+	dim as search.dirCallback cb = iif( ctx.exclist <> NULL, @excList_cb, @topDir_cb )
+	
+	ctx.s = search.new( ctx.root, cb )
 	
 	if( collectFiles( ) = vbFalse ) then
 		return 1

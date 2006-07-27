@@ -1,6 +1,13 @@
 #ifndef __fb_file_bi__
 #define __fb_file_bi__
 
+#ifndef FALSE
+# define FALSE 0
+# define TRUE -1
+#endif
+
+#define NULL 0
+
 namespace fb.file.search
 
 	type entry
@@ -17,11 +24,18 @@ namespace fb.file.search
 		searchBy_SerialSame
 	end enum
 	
+	type dirCallback as function _
+		( _
+			byval path as zstring ptr, _
+			byval fname as zstring ptr _
+		) as integer
+	
 	declare function new _
 		( _
-			byval root as zstring ptr _
+			byval root as zstring ptr, _
+			byval dirCb as dirCallback = NULL _
 		) as CSearch ptr
-		
+
 	declare function delete _
 		( _
 			byval _this as CSearch ptr _

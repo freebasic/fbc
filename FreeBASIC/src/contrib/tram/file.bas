@@ -5,15 +5,7 @@ option explicit
 #include once "list.bi"
 #include once "file.bi"
 
-#define NULL 0
-
 namespace fb.file.search
-
-	type CSearch_
-		root 	as zstring ptr
-		list	as list.CList ptr
-		intNode	as entry ptr
-	end type
 
 	type findCtx
 		mode 		as searchBy
@@ -21,9 +13,20 @@ namespace fb.file.search
 			serial 	as double
 		end union
 		mask 		as zstring ptr
-		list		as list.CList ptr
+	end type
+
+	type intrCtx
+		node		as entry ptr
 	end type
 	
+	type CSearch_
+		root 	as zstring ptr
+		list	as list.CList ptr
+		dirCb 	as dirCallback
+		intrCtx	as intrCtx
+		findCtx as findCtx
+	end type
+
 	declare sub _resetList _
 		( _
 			byval l as list.CList ptr _
@@ -31,15 +34,15 @@ namespace fb.file.search
 
 	declare function _findFiles _
 		( _
-			byval ctx as findCtx ptr, _
-			byval root as zstring ptr, _
+			byval _this as CSearch ptr, _
 			byval path as zstring ptr _
 		) as integer
 
 	'':::::
 	function new _
 		( _
-			byval root as zstring ptr _
+			byval root as zstring ptr, _
+			byval dirCb as dirCallback = NULL _
 		) as CSearch ptr
 	
 		dim as CSearch ptr _this
@@ -47,8 +50,10 @@ namespace fb.file.search
 		_this = allocate( len( CSearch ) )
 		
 		_this->root = zStr.Dup( root )
+		_this->dirCb = dirCb
+		
 		_this->list = list.new( 30, len( entry ), list.flags_NOCLEAR )
-		_this->intNode = NULL
+		_this->intrCtx.node = NULL
 		
 		function = _this
 	
@@ -81,9 +86,9 @@ namespace fb.file.search
 			byval _this as CSearch ptr _
 		) as entry ptr
 		
-		_this->intNode = list.getHead( _this->list )
+		_this->intrCtx.node = list.getHead( _this->list )
 		
-		function = _this->intNode
+		function = _this->intrCtx.node
 		
 	end function
 
@@ -93,13 +98,13 @@ namespace fb.file.search
 			byval _this as CSearch ptr _
 		) as entry ptr
 		
-		if( _this->intNode = NULL ) then
+		if( _this->intrCtx.node = NULL ) then
 			return NULL
 		end if
 		
-		_this->intNode = list.getNext( _this->intNode )
+		_this->intrCtx.node = list.getNext( _this->intrCtx.node )
 		
-		function = _this->intNode
+		function = _this->intrCtx.node
 		
 	end function
 
@@ -112,18 +117,15 @@ namespace fb.file.search
 			byval mode as searchBy _
 		) as integer
 		
-		dim as findCtx f = any
-		
-		with f
+		with _this->findCtx
 			.mode = mode
 			.serial = serial
 			.mask = mask
-			.list = _this->list
 		end with
 		
 		_resetList( _this->list )
 		
-		function = _findFiles( @f, _this->root, NULL ) > 0
+		function = _findFiles( _this, NULL ) > 0
 		
 	end function
 	
@@ -176,8 +178,7 @@ namespace fb.file.search
 	'':::::
 	private function _findFiles _
 		( _
-			byval ctx as findCtx ptr, _
-			byval root as zstring ptr, _
+			byval _this as CSearch ptr, _
 			byval path as zstring ptr _
 		) as integer
 		
@@ -185,24 +186,24 @@ namespace fb.file.search
 		dim as integer files = 0
 		
 		'' add files
-		if( root <> NULL ) then
-			fpath = *root + "/"
+		if( _this->root <> NULL ) then
+			fpath = *_this->root + "/"
 		end if	
 		
 		if( path <> NULL ) then
 			fpath += *path + "/" 
 		end if
 			
-		fname = *ctx->mask
+		fname = *_this->findCtx.mask
 		
 		fname = dir( fpath + fname, vbNormal )
 		do while len( fname ) > 0
 			dim as double serial = filedatetime( fpath + fname )
 				
-			select case ctx->mode
+			select case _this->findCtx.mode
 			case searchBy_SerialNewer
-				if( serial > ctx->serial ) then
-					_addFile( ctx->list, path, fname, serial )
+				if( serial > _this->findCtx.serial ) then
+					_addFile( _this->list, path, fname, serial )
 					files += 1
 				end if
 			end select
@@ -224,8 +225,12 @@ namespace fb.file.search
 			case ".", ".."
 			
 			case else
-				node = list.insert( l )
-				node->name = zStr.dup( fname )
+				dim as integer doAdd = iif( _this->dirCb <> NULL, _this->dirCb( path, fname ), TRUE )
+				
+				if( doAdd ) then
+					node = list.insert( l )
+					node->name = zStr.dup( fname )
+				end if
 			end select
 			
 			fname = dir( )
@@ -243,7 +248,7 @@ namespace fb.file.search
 			end if
 			fname += *node->name
 			
-			files += _findFiles( ctx, root, fname )
+			files += _findFiles( _this, fname )
 			
 			zStr.del( node->name )
 			list.remove( l, node )
