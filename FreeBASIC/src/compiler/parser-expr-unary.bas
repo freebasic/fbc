@@ -277,6 +277,17 @@ function cAnonUDT _
 		'' typedef? resolve..
 		if( symbIsTypedef( subtype ) ) then
 			subtype = symbGetSubtype( subtype )
+
+    		if( subtype = NULL ) then
+				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: skip until next '>', fake a node
+					hSkipUntil( FB_TK_GT, TRUE )
+					expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+					return TRUE
+				end if
+			end if
 		end if
 
     	if( symbIsUDT( subtype ) = FALSE ) then
