@@ -708,7 +708,8 @@ end function
 '':::::
 function CWiki_GetDocTocLinks _
 	( _
-		byval _this as CWiki ptr _
+		byval _this as CWiki ptr, _
+		byval useboldlinks as integer _
 	) as TLIST ptr
 
 	dim as WikiToken ptr token
@@ -762,12 +763,18 @@ function CWiki_GetDocTocLinks _
 
 			end if
 		case else
-			''''if( lcase( spagename ) = "catpgfunctindex" ) then
-			''	if( token->id = WIKI_TOKEN_BOLD_SECTION ) then
-			''		_AddPageLink( @_this->pagelinklist, FormatPageTitle( token->text ), "", 0 ) 
-			''		level = 1
-			''	end if
-			''''end if
+
+			''if( lcase( _this->pagename ) = "catpgfunctindex" ) then
+
+			if( useboldlinks ) then
+				if( token->id = WIKI_TOKEN_BOLD_SECTION ) then
+					token = cast( WikiToken ptr, listGetNext( token ) )
+					_AddPageLink( @_this->pagelinklist, FormatPageTitle( token->text ), "", 0 ) 
+					level = 2
+					token = cast( WikiToken ptr, listGetNext( token ) )
+				end if
+			end if
+			
 		end select
 		
 		token = cast( WikiToken ptr, listGetNext( token ) )

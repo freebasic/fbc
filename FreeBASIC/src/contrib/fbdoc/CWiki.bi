@@ -158,7 +158,8 @@ declare function CWiki_GetActionParamValue _
 
 
 declare function CWiki_GetDocTocLinks 	( _
-			byval _this as CWiki ptr _
+			byval _this as CWiki ptr, _
+			byval useboldlinks as integer _
 		) as TLIST ptr
 
 declare function CWiki_GetPageTitle _

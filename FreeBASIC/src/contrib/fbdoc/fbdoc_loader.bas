@@ -283,7 +283,7 @@ function _LoadAndScanPageLinks _
 	end if
 	
 	'' Get a list of all the links on the currently loaded page
-	lst = CWiki_GetDocTocLinks( wiki )
+	lst = CWiki_GetDocTocLinks( wiki, (lcase(sPageName) = "catpgfunctindex") )
 
 	dim as WikiPageLink ptr pagelink
 
