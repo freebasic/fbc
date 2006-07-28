@@ -29,6 +29,7 @@ Version 0.17 Beta:
 - the ADD drawing mode to PUT and DRAW STRING, allowing additive blending; works in hi/truecolor modes only (lillo)
 - namespace nesting, as in .net: namespace foo.bar.baz : end namespace (v1c)
 - the FileDateTime function to the extended run-time library (it returns a serial, not a string like in VB) (v1c)
+- CUnit (unit testing framework) headers, static library and examples (v1c)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
