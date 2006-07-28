@@ -138,7 +138,11 @@ int fb_SerialOpen( struct _FB_FILE *handle,
 
     /* Get device name without ":" */
     pszDev = calloc(strlen( pszDevice ) + 5, 1);
-		strcpy(pszDev, "\\\\.\\");
+		if( iPort > 9 )
+			strcpy(pszDev, "\\\\.\\");
+		else
+			*pszDev = '\0';
+			
 		strcat(pszDev, pszDevice);
 		if(p = strchr( pszDev, ':'))
 			*p = '\0';
