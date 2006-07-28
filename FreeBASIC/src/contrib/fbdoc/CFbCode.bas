@@ -655,3 +655,71 @@ function CFbCode_Parse _
 	return TRUE
 
 end function
+
+'':::::
+private function _ParseLine _
+	( _
+		byval _this as CFbCode ptr _
+	) as integer
+
+	dim as integer c
+
+	'' newline ?
+	c = PeekChar( _this )
+	if( c = 13 or c = 10 ) then
+		c = ReadChar( _this )
+		if( c = 13 ) then
+			c = PeekChar( _this )
+			if( c = 10 ) then
+				c = ReadChar( _this )
+			end if
+		end if
+		return _AddToken( _this, FB_TOKEN_NEWLINE )
+	end if
+
+	_ReadToEOL( _this )
+	return _AddToken( _this, FB_TOKEN_OTHER )
+
+end function
+
+'':::::
+function CFbCode_ParseLines _
+	( _
+		byval _this as CFbCode ptr, _
+		byval text as zstring ptr _
+	) as integer
+
+	if( _this = NULL ) then
+		return FALSE
+	end if
+
+	CFbCode_FreeTokenList( _this )
+	_this->escaped = FALSE
+	_this->incomment = FALSE
+	_this->startofline = TRUE
+
+	if( text = NULL ) then
+		return FALSE
+	end if
+
+	_this->text = text
+	_this->s = 0
+	_this->i = 0
+	_this->n = len(*text)
+
+	while ( _this->s < _this->n )
+		if( _ParseToken( _this ) = FALSE ) then
+			exit while
+		end if
+		_this->s = _this->i
+	
+	wend		
+
+	'' Closer
+	_AddToken( _this, FB_TOKEN_NULL )
+
+	_this->text = NULL
+
+	return TRUE
+
+end function

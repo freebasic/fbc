@@ -431,7 +431,7 @@ private sub CWiki_AddToken _
 	
 	'' raw?
 	if( CRegex_Search( _this->rawre, text ) ) then
-		token->id = WIKI_TOKEN_TEXT
+		token->id = WIKI_TOKEN_RAW
 		token->text = *CRegex_GetStr( _this->rawre, 1 )
 		exit sub
 	end if
@@ -612,6 +612,8 @@ sub CWiki_Dump _
 		case WIKI_TOKEN_LIST
 			t = "list:" & token->indent.level
 		case WIKI_TOKEN_TEXT
+			t = "text"
+		case WIKI_TOKEN_RAW
 			t = "text"
 		case WIKI_TOKEN_FORCENL
 			t = "forcenl"

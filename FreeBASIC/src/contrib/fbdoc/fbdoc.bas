@@ -28,6 +28,7 @@ option explicit
 
 #include once "CWikiCache.bi"
 #include once "CWiki2Chm.bi"
+#include once "CWiki2fbhelp.bi"
 #include once "COptions.bi"
 #include once "fbdoc_lang.bi"
 #include once "fbdoc_loader.bi"
@@ -54,6 +55,8 @@ const default_CacheDir = "cache/"
 	dim as integer bShowHelp = FALSE, bShowVersion = FALSE
 	dim as integer bUseWeb = FALSE, bUseSql = FALSE, bMakeIni = FALSE
 	dim as integer bEmitChm = FALSE
+	dim as integer bEmitfbhelp = FALSE
+	dim as string SinglePage = ""
 
 	if( len(command(1)) = 0 ) then
 		bShowHelp = TRUE
@@ -80,6 +83,7 @@ const default_CacheDir = "cache/"
 		? "   -usecache      use cache as only source"
 		? "   -refresh       refresh all pages"
 		? "   -chm           generate html and chm output"
+		? "   -fbhelp        generate output for fbhelp viewer"
 		? "   -version       show version"
 		? ""
 		end 1
@@ -108,6 +112,8 @@ const default_CacheDir = "cache/"
 			bMakeKeywords = TRUE
 		case "-chm"
 			bEmitChm = TRUE
+		case "-fbhelp"
+			bEmitfbhelp = TRUE
 		case else
 			? "Unrecognized option '" + command(i) + "'"
 			end 1
@@ -121,8 +127,8 @@ const default_CacheDir = "cache/"
 	end if
 	
 	'' Check output format is set
-	if( bEmitChm = FALSE ) then
-		bEmitChm = TRUE
+	if( (bEmitChm = FALSE) and (bEmitfbhelp = FALSE) ) then
+		'' bEmitChm = TRUE
 		'' TODO: warn no format is set when mutliple formats available
 	end if
 
@@ -206,10 +212,21 @@ const default_CacheDir = "cache/"
 	'' Build up an index to all pages
 	dim as CPageList ptr paglist, toclist
 
-	sDocToc = "DocToc"
-	sTocTitle = Lang_GetOption( "fb_toc_title", "Table of Contents" )
+	'' TODO: make this an option
+	'' SinglePage = "KeyPgScreenGraphics"
+	'' SinglePage = "CptAscii"
 
-	FBDoc_BuildTOC( sDocToc, sTocTitle, @paglist, @toclist )
+	if( len(SinglePage) > 0 ) then
+		FBDoc_BuildSinglePage( SinglePage, SinglePage, @paglist, @toclist )
+
+	else
+
+		sDocToc = "DocToc"
+		sTocTitle = Lang_GetOption( "fb_toc_title", "Table of Contents" )
+
+		FBDoc_BuildTOC( sDocToc, sTocTitle, @paglist, @toclist )
+
+	end if
 
 	'' Load Keywords
 	fbdoc_loadkeywords( "templates/default/keywords.lst" )
@@ -221,7 +238,7 @@ const default_CacheDir = "cache/"
 
 		'' Emit formats
 				
-		if bEmitChm then
+		if( bEmitChm )then
 
 			'' Generate CHM
 			sOutputDir = "html/"
@@ -237,6 +254,19 @@ const default_CacheDir = "cache/"
 			chm = CWiki2Chm_New( @"", 1, sOutputDir, paglist, toclist )
 			CWiki2Chm_Emit( chm )
 			CWiki2Chm_Delete( chm )
+
+		end if
+
+		if( bEmitfbhelp )then
+
+			'' Generate fbhelp output for fbhelp console viewer
+			sOutputDir = "fbhelp/"
+			sTemplateDir = "templates/default/code/"
+
+			dim as CWiki2fbhelp ptr fbhelp
+			fbhelp = CWiki2fbhelp_New( @"", 1, sOutputDir, paglist, toclist )
+			CWiki2fbhelp_Emit( fbhelp )
+			CWiki2fbhelp_Delete( fbhelp )
 
 		end if
 

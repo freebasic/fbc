@@ -46,6 +46,14 @@ declare function FBDoc_BuildTOC _
 		byval toclist as CPageList ptr ptr _
 	) as integer
 
+declare function FBDoc_BuildSinglePage _
+	( _
+		byval toc_pagename as zstring ptr, _
+		byval toc_pagetitle as zstring ptr, _
+		byval paglist as CPageList ptr ptr, _
+		byval toclist as CPageList ptr ptr _
+	) as integer
+
 declare function Wiki_Create ( ) as integer
 declare sub Wiki_Destroy ( )
 

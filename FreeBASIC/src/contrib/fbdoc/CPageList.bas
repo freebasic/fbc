@@ -295,3 +295,28 @@ sub CPageList_Dump _
 	wend
 
 end sub
+
+'':::::
+function CPageList_Count _
+	( _
+		byval _this as CPageList ptr _
+	) as integer
+
+	if( _this = NULL ) then
+		return NULL
+	end if
+
+	dim as CPage ptr page
+	dim as any ptr page_i
+
+	dim ret as integer = 0
+
+	page = CPageList_NewEnum( _this, @page_i )
+	while( page )
+		ret += 1
+		page = CPageList_NextEnum( @page_i )
+	wend
+
+	return ret
+
+end function

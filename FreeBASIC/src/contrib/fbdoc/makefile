@@ -1,12 +1,14 @@
 ##########################
 
-ifeq (,$(findstring $(TARGET),dos linux win32))
-$(error need TARGET=dos | linux | win32)
+ifeq (,$(findstring $(TARGET),linux win32))
+$(error need TARGET=linux | win32)
 endif
 
 MAIN := fbdoc
 
 SRCS := $(MAIN).bas 
+SRCS += CWiki2fbhelp.bas
+SRCS += CWakka2fbhelp.bas
 SRCS += fbdoc_misc.bas
 SRCS += CFbCode.bas
 SRCS += fbdoc_lang.bas
@@ -60,14 +62,16 @@ endif
 
 FBCFLAGS :=
 
-#ifdef DEBUG
+ifdef DEBUG
 FBCFLAGS += -exx -g
-#endif
+endif
 
 ifeq ($(TARGET),win32)
 APP := $(MAIN).exe
+APP2 := mkfbhelpfile.exe
 else
 APP := $(MAIN)
+APP2 := mkfbhelpfile
 endif
 
 .SUFFIXES:
@@ -80,10 +84,13 @@ $(objpath)/%.o : %.bas
 
 ##########################
 
-all: $(APP)
+all: $(APP) $(APP2)
 
 $(APP): $(OBJS)
 	$(FBC) $(FBCFLAGS) $(OBJS) $(LIBS) $(RCS) -x $(APP)
+
+$(APP2): mkfbhelpfile.bas
+	$(FBC) $(FBCFLAGS) mkfbhelpfile.bas -x $(APP2)
 
 fbdoc.chm:
 	hhc.exe html/fbdoc.hhp
@@ -91,3 +98,4 @@ fbdoc.chm:
 .PHONY : clean
 clean:
 	-rm -f $(OBJS) $(APP)
+	-rm -f $(objpath)/mkfbhelpfile.o mkfbhelpfile.exe

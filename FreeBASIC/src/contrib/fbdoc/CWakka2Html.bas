@@ -871,7 +871,7 @@ private function _tokenToHtml(byval _this as CWakka2Html ptr, byval token as Wik
 		skipnl = true
 		return _listToHtml( _this, token->indent.level )
 
-	case WIKI_TOKEN_TEXT:
+	case WIKI_TOKEN_TEXT, WIKI_TOKEN_RAW:
 		return token->text
 
 	case WIKI_TOKEN_ACTION:

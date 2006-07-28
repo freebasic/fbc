@@ -154,25 +154,33 @@ function CWiki2Chm_EmitPages _
 	dim as CPage ptr page
 	dim as any ptr page_i
 	dim as string sName, sBody
+	dim as integer errCount = 0, okCount = 0
 
 	CPageList_ResetEmitted( _this->paglist )
 
 	page = CPageList_NewEnum( _this->paglist, @page_i )
 	while( page )
-		sName = CPage_GetName(page)
-		if( len(sName) > 0 ) then
-			sBody = LoadPage( sName, TRUE )
-			if( len(sbody) > 0 ) then
-				? "Emitting: " + Space(CPage_GetLevel(page)*3) + Str(CPage_GetLevel(page)) + " - " + CPage_GetName(page) + " = '" + CPage_GetTitle(page) + "'"
-				if CWiki2Chm_EmitDefPage( _this, page, sBody ) then
-					CPage_SetEmitted( page, TRUE )	
+		if( CPage_GetEmitted( page ) = FALSE ) then
+			sName = CPage_GetName(page)
+			if( len(sName) > 0 ) then
+				sBody = LoadPage( sName, TRUE )
+				if( len(sbody) > 0 ) then
+					? "Emitting: " + Space(CPage_GetLevel(page)*3) + Str(CPage_GetLevel(page)) + " - " + CPage_GetName(page) + " = '" + CPage_GetTitle(page) + "'"
+					if CWiki2Chm_EmitDefPage( _this, page, sBody ) then
+						CPage_SetEmitted( page, TRUE )	
+					end if
+					okCount += 1
+				else
+					? "Error On: " + Space(CPage_GetLevel(page)*3) + Str(CPage_GetLevel(page)) + " - " + CPage_GetName(page) + " = '" + CPage_GetTitle(page) + "'"
+					errCount += 1
 				end if
-			else
-				? "Error On: " + Space(CPage_GetLevel(page)*3) + Str(CPage_GetLevel(page)) + " - " + CPage_GetName(page) + " = '" + CPage_GetTitle(page) + "'"
 			end if
 		end if
 		page = CPageList_NextEnum( @page_i )
 	wend
+
+	? str(okCount) + " pages emitted OK"  
+	? str(errCount) + " pages had no content and were skipped"
 
 	return TRUE
 
@@ -424,10 +432,13 @@ function CWiki2Chm_Emit( _
 	CWakka2Html_setTagDoGen( _this->converter, WIKI_TOKEN_SECT_ITEM, false )
 	
 	CWiki2Chm_EmitPages( _this )
-	CWiki2Chm_EmitTOC( _this, "fbdoc.hhc" )
-	CWiki2Chm_EmitIndex( _this, "fbdoc.hhk" )
-	CWiki2Chm_EmitProject( _this, "fbdoc.hhp", "fbdoc" )
-	CWiki2Chm_EmitHtmlIndex( _this, "00index.html" )
+
+	if( CPageList_Count( _this->toclist ) > 0 ) then
+		CWiki2Chm_EmitTOC( _this, "fbdoc.hhc" )
+		CWiki2Chm_EmitIndex( _this, "fbdoc.hhk" )
+		CWiki2Chm_EmitProject( _this, "fbdoc.hhp", "fbdoc" )
+		CWiki2Chm_EmitHtmlIndex( _this, "00index.html" )
+	end if
 
 	CWakka2Html_Delete( _this->converter )
 	_this->converter = NULL

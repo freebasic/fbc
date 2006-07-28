@@ -244,7 +244,8 @@ end function
 function _LoadAndScanPageLinks _
 	( _	
 		byval page as CPage ptr, _
-		byval paglist as CPageList ptr _
+		byval paglist as CPageList ptr, _
+		byval bFollowLinks as integer _
 	) as integer
 
 	dim as TLIST ptr lst
@@ -300,7 +301,9 @@ function _LoadAndScanPageLinks _
 				if( instr(pagelink->link.url, "/") = 0 ) then
 					prevpage = CPageList_Find( paglist, pagelink->link.url )
 					if( prevpage = NULL ) then
-						newpage = CPageList_AddNewPage( paglist, pagelink->link.url, pagelink->text, NULL, 0, FALSE )
+						if( bFollowLinks ) then
+							newpage = CPageList_AddNewPage( paglist, pagelink->link.url, pagelink->text, NULL, 0, FALSE )
+						end if
 					end if
 				end if
 			end if
@@ -438,13 +441,71 @@ function FBDoc_BuildTOC _
 	page = CPageList_NewEnum( *paglist, @page_i )
 	while( page )
 		if( len(CPage_GetName( page )) > 0 ) then
-			_LoadAndScanPageLinks( page, *paglist )
+			_LoadAndScanPageLinks( page, *paglist, TRUE )
 		end if
 		page = CPageList_NextEnum( @page_i )
 	wend
 
 	page = CPageList_AddNewPage( *toclist, toc_pagename, toc_pagetitle, NULL, 0, TRUE )
 	_BuildTOCFromPage( page, 1, *toclist, *paglist )
+
+	CWiki_Delete( wiki )
+	wiki = NULL
+
+	return TRUE
+
+end function
+
+
+'':::::
+function FBDoc_BuildSinglePage _
+	( _
+		byval toc_pagename as zstring ptr, _
+		byval toc_pagetitle as zstring ptr, _
+		byval paglist as CPageList ptr ptr, _
+		byval toclist as CPageList ptr ptr _
+	) as integer
+
+	dim as CPage ptr page
+	dim as any ptr page_i
+	dim as integer bFirstTime = TRUE
+
+	if( paglist = NULL ) then
+		return FALSE
+	end if
+
+	if( toclist = NULL ) then
+		return FALSE
+	end if
+
+	*paglist = CPageList_New( )
+
+	if( *paglist = NULL ) then
+		return FALSE
+	end if
+
+	*toclist = CPageList_New( )
+
+	if( *toclist = NULL ) then
+		CPageList_Delete( *paglist )
+		*paglist = NULL
+		return FALSE
+	end if
+
+	wiki = CWiki_New(  )
+
+	page = CPageList_AddNewPage( *paglist, toc_pagename, toc_pagetitle, NULL, 0, TRUE )
+	page = CPageList_NewEnum( *paglist, @page_i )
+	while( page )
+		if( len(CPage_GetName( page )) > 0 ) then
+			_LoadAndScanPageLinks( page, *paglist, bFirstTime )
+			bFirstTime = FALSE
+		end if
+		page = CPageList_NextEnum( @page_i )
+	wend
+
+	''page = CPageList_AddNewPage( *toclist, toc_pagename, toc_pagetitle, NULL, 0, TRUE )
+	''_BuildTOCFromPage( page, 1, *toclist, *paglist )
 
 	CWiki_Delete( wiki )
 	wiki = NULL

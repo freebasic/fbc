@@ -1,5 +1,5 @@
-#ifndef __CFBCODE_BI__
-#define __CFBCODE_BI__
+#ifndef __CWiki2fbhelp_BI__
+#define __CWiki2fbhelp_BI__
 
 ''  fbdoc - FreeBASIC User's Manual Converter/Generator
 ''	Copyright (C) 2006 Jeffery R. Marshall (coder[at]execulink.com) and
@@ -21,62 +21,41 @@
 
 
 #include once "common.bi"
+#include once "CPage.bi"
+#include once "CPagelist.bi"
 
-enum FB_TOKEN
-	FB_TOKEN_NULL
-	FB_TOKEN_SPACE
-	FB_TOKEN_NEWLINE
-	FB_TOKEN_COMMENT
-	FB_TOKEN_QUOTED
-	FB_TOKEN_NUMBER
-	FB_TOKEN_KEYWORD
-	FB_TOKEN_DEFINE
-	FB_TOKEN_NAME
-	FB_TOKEN_OTHER
-	FB_TOKENS
-end enum
+type CWiki2fbhelp as CWiki2fbhelp_
 
-type CFbCode as CFbCode_
-
-type FbToken
-	as any ptr				ll_prev
-	as any ptr				ll_next
-	as integer id     '' FB_TOKEN
-	as string text
-end type
-
-declare function CFbCode_New _
+declare function CWiki2fbhelp_New _
 	( _
-		byval _this as CFbCode ptr = NULL _
-	) as CFbCode ptr
+		byval urlbase as zstring ptr, _
+		byval indentbase as integer, _
+		byval outputdir as zstring ptr, _
+		byval paglist as CPageList ptr, _
+		byval toclist as CPageList ptr, _
+		byval _this as CWiki2fbhelp ptr = NULL _
+	) as CWiki2fbhelp ptr
 
-declare sub CFbCode_Delete _
+declare sub CWiki2fbhelp_Delete _
 	( _
-		byval _this as CFbCode ptr, _
+		byval _this as CWiki2fbhelp ptr, _
 		byval isstatic as integer = FALSE _
 	)
 
-declare function CFbCode_Parse _
+declare function CWiki2fbhelp_EmitPages _
 	( _
-		byval _this as CFbCode ptr, _
-		byval text as zstring ptr _
+		byval _this as CWiki2fbhelp ptr _
 	) as integer
 
-declare function CFbCode_ParseLines _
+declare function CWiki2fbhelp_EmitDefPage _
 	( _
-		byval _this as CFbCode ptr, _
-		byval text as zstring ptr _
+		byval _this as CWiki2fbhelp ptr, _
+		byval page as CPage ptr, _
+		byval sbody as zstring ptr _
 	) as integer
 
-declare function CFbCode_NewEnum _
-	( _
-		byval _this as CFbCode ptr, _
-		byval _iter as any ptr ptr _
-	) as FbToken ptr
-
-declare function CFbCode_NextEnum _
-	( _
-		byval _iter as any ptr ptr _
-	) as FbToken ptr
+declare function CWiki2fbhelp_Emit( _
+		byval _this as CWiki2fbhelp ptr _
+) as integer
 
 #endif

@@ -85,4 +85,9 @@ declare sub CPageList_Dump _
 		byval _this as CPageList ptr _
 	)
 
+declare function CPageList_Count _
+	( _
+		byval _this as CPageList ptr _
+	) as integer
+
 #endif
