@@ -770,7 +770,7 @@ function CWiki_GetDocTocLinks _
 				if( token->id = WIKI_TOKEN_BOLD_SECTION ) then
 					token = cast( WikiToken ptr, listGetNext( token ) )
 					_AddPageLink( @_this->pagelinklist, FormatPageTitle( token->text ), "", 0 ) 
-					level = 2
+					level = 1
 					token = cast( WikiToken ptr, listGetNext( token ) )
 				end if
 			end if
