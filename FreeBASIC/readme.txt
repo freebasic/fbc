@@ -860,6 +860,8 @@ Links:
 
     - cryptlib: http://www.cs.auckland.ac.nz/~pgut001/cryptlib/
 
+    - CUnit: http://cunit.sourceforge.net/
+
     - Curl: http://curl.haxx.se/
 
     - DevIL: http://openil.sourceforge.net/
