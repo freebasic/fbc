@@ -224,7 +224,7 @@ function hReplace _
 		text = left( text, p-1 )
 		text += *newtext
 		text += remtext
-		p += newlen
+		p += newlen-1
 	loop
 
 	function = text
@@ -258,7 +258,7 @@ function hReplaceW _
 		DWstrAssign( text, left( *text.data, p-1 ) )
 		DWstrConcatAssign( text, newtext )
 		DWstrConcatAssign( text, remtext.data )
-		p += newlen
+		p += newlen-1
 	loop
 
 	function = text.data
