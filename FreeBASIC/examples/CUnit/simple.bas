@@ -54,9 +54,9 @@ end function
  '/
 function clean_suite1 cdecl() as integer
    if fclose(temp_file) <> 0 then
-      remove( "temp.txt" )
       return -1
    else
+      remove( "temp.txt" )
       temp_file = NULL
       return 0
    end if
@@ -70,7 +70,7 @@ sub testFPRINTF cdecl()
    dim as integer i1 = 10
 
    if temp_file <> NULL then
-      'CU_ASSERT( fprintf(temp_file, "") = 0)
+      CU_ASSERT( fprintf(temp_file, "") = 0)
       CU_ASSERT( fprintf(temp_file, "Q\n") = 2 )
       CU_ASSERT( fprintf(temp_file, "i1 = %d", i1) = 7 )
    end if
