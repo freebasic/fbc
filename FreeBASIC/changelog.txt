@@ -64,6 +64,7 @@ Version 0.17 Beta:
 - mangling of symbols declared inside nested namespaces (v1c)
 - string indexing was being allowed with functions (v1c)
 - eof() could fail with some files opened for INPUT (v1c)
+- empty literal strings couldn't be used with stringize'd macro params (v1c)
 
 
 Version 0.16 Beta:
