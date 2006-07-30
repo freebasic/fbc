@@ -68,6 +68,8 @@ typedef struct fb_dos_t {
 	
 	fb_dos_pal_t pal[256];
 	int pal_dirty;
+	int pal_first;
+	int pal_last;
 	
 	int inited;
 	int detected;
@@ -83,9 +85,9 @@ typedef struct fb_dos_t {
 	int mouse_x;
 	int mouse_y;
 	int mouse_z;
-    int mouse_buttons;
+	int mouse_buttons;
 
-    int bios_mode;
+	int bios_mode;
 	
 	void (*update)(void);
 	unsigned int update_len;
@@ -94,10 +96,10 @@ typedef struct fb_dos_t {
 	void (*undraw_mouse)(void);
 	void (*set_palette)(void);
 	
-    __dpmi_regs regs;
+	__dpmi_regs regs;
 
-    unsigned timer_ticks;
-    unsigned timer_step;
+	unsigned timer_ticks;
+	unsigned timer_step;
 	
 	int nearptr_ok;
 	

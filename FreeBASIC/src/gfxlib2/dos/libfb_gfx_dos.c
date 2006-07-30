@@ -199,10 +199,10 @@ static int fb_dos_timer_handler(unsigned irq)
 	fb_dos.update();
 	fb_hMemSet(fb_mode->dirty, FALSE, fb_dos.h);
 
-	if ( fb_dos.mouse_ok && fb_dos.mouse_cursor )
+	if ( fb_dos.mouse_ok && fb_dos.mouse_cursor ) {
 		fb_hSoftCursorUnput(fb_dos.mouse_x, fb_dos.mouse_y);
-	
-	fb_hMemSet(fb_mode->dirty + fb_dos.mouse_y, TRUE, MIN(fb_dos.h - fb_dos.mouse_y, 21) );
+		fb_hMemSet(fb_mode->dirty + fb_dos.mouse_y, TRUE, MIN(fb_dos.h - fb_dos.mouse_y, 21) );
+	}
 
 	fb_dos.in_interrupt = FALSE;
 
@@ -256,6 +256,8 @@ void fb_dos_set_palette(int idx, int r, int g, int b)
 	fb_dos.pal[idx].r = r;
 	fb_dos.pal[idx].g = g;
 	fb_dos.pal[idx].b = b;
+	fb_dos.pal_first = MIN(fb_dos.pal_first, idx);
+	fb_dos.pal_last = MAX(fb_dos.pal_last, idx);
 }
 
 /*:::::*/
@@ -271,15 +273,18 @@ void fb_dos_vga_set_palette(void)
 	
 	if ( fb_dos.mouse_ok ) fb_hSoftCursorPaletteChanged();
 
-	color_count = (1 << fb_dos.depth);
-	for (i = 0; i!=color_count; i++) {
-		outportb(0x3C8, i);
+	color_count = MIN( (1 << fb_dos.depth), fb_dos.pal_last + 1 );
+	
+	outportb(0x3C8, fb_dos.pal_first);
+	for (i = fb_dos.pal_first; i < color_count; i++) {
 		outportb(0x3C9, fb_dos.pal[i].r >> 2);
 		outportb(0x3C9, fb_dos.pal[i].g >> 2);
 		outportb(0x3C9, fb_dos.pal[i].b >> 2);
 	}
-
+	
 	fb_dos.pal_dirty = FALSE;
+	fb_dos.pal_last = 0;
+	fb_dos.pal_first = 256;
 }
 
 /*:::::*/
