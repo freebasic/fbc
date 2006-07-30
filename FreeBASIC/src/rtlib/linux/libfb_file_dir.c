@@ -57,16 +57,25 @@ static void close_dir ( void )
 /*:::::*/
 static int get_attrib ( char *name, struct stat *info )
 {
-	int attrib = 0;
+	int attrib = 0, mask;
 
-	if( ( ( info->st_uid == geteuid() ) && ( ( info->st_mode & S_IWUSR ) == 0 ) ) ||
-	    ( ( info->st_gid == getegid() ) && ( ( info->st_mode & S_IWGRP ) == 0 ) ) ||
-	    ( ( ( info->st_mode & S_IWOTH ) == 0 ) ) )
-		attrib |= 0x1;	/* read only */
+	/* read only */
+	if( info->st_uid == geteuid() )
+		mask = S_IWUSR;
+	else if( info->st_gid == getegid() ) 
+		mask = S_IWGRP;
+	else
+		mask = S_IWOTH;
+
+    if( (info->st_mode & mask) == 0 )
+		attrib |= 0x1;
+
 	if( name[0] == '.' )
 		attrib |= 0x2;	/* hidden */
+
 	if( S_ISCHR( info->st_mode ) || S_ISBLK( info->st_mode ) || S_ISFIFO( info->st_mode ) || S_ISSOCK( info->st_mode ) )
 		attrib |= 0x4;	/* system */
+
 	if( S_ISDIR( info->st_mode ) )
 		attrib |= 0x10;	/* directory */
 	else
@@ -129,7 +138,7 @@ static char *find_next ( int *attrib )
 	char *name = NULL;
 	struct stat	info;
 	struct dirent *entry;
-	char   buffer[MAX_PATH];
+	char buffer[MAX_PATH];
 
 	do
 	{
@@ -137,8 +146,7 @@ static char *find_next ( int *attrib )
 		if( !entry )
 		{
 			close_dir( );
-			name = NULL;
-			break;
+			return NULL;
 		}
 		name = entry->d_name;
 		strcpy( buffer, ctx->dirname );
@@ -150,7 +158,7 @@ static char *find_next ( int *attrib )
 		
 		*attrib = get_attrib( name, &info );
 	}
-	while( ( *attrib & ~ctx->attrib ) || ( !match_spec( name ) ) );
+	while( ( *attrib & ~ctx->attrib ) || !match_spec( name ) );
 
 	return name;
 }
@@ -189,9 +197,7 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib, int *out_attrib )
 			{
 				strncpy( ctx->filespec, p + 1, MAX_PATH );
 				ctx->filespec[MAX_PATH-1] = '\0';
-				while( ( *p == '/' ) && ( p > ctx->filespec ) )
-					p--;
-				len = p - filespec->data + 1;
+				len = (p - filespec->data) + 1;
 				if( len > MAX_PATH - 1 )
 					len = MAX_PATH - 1;
 				memcpy( ctx->dirname, filespec->data, len );
