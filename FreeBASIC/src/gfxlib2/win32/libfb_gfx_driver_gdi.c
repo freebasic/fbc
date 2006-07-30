@@ -32,7 +32,11 @@
 #endif
 
 
+#define SCREENLIST(w, h) ((h) | (w) << 16)
+
+
 static int driver_init(char *title, int w, int h, int depth, int refresh_rate, int flags);
+static int *driver_fetch_modes(int depth, int *size);
 
 
 GFXDRIVER fb_gfxDriverGDI =
@@ -47,7 +51,7 @@ GFXDRIVER fb_gfxDriverGDI =
 	fb_hWin32GetMouse,	/* int (*get_mouse)(int *x, int *y, int *z, int *buttons); */
 	fb_hWin32SetMouse,	/* void (*set_mouse)(int x, int y, int cursor); */
 	fb_hWin32SetWindowTitle,/* void (*set_window_title)(char *title); */
-	NULL,			/* int *(*fetch_modes)(void); */
+	driver_fetch_modes,	/* int *(*fetch_modes)(int depth, int *size); */
 	NULL			/* void (*flip)(void); */
 };
 
@@ -266,4 +270,34 @@ static int driver_init(char *title, int w, int h, int depth, int refresh_rate, i
 	fb_win32.thread = gdi_thread;
 
 	return fb_hWin32Init(title, w, h, MAX(8, depth), refresh_rate, flags);
+}
+
+/*:::::*/
+static int *driver_fetch_modes(int depth, int *size)
+{
+	int *data = NULL, *newdata;
+	int mode = 0;
+	int count = 0;
+	DEVMODE dm;
+	
+	while (EnumDisplaySettings(NULL, mode, &dm)) {
+		if ((dm.dmBitsPerPel == depth) ||
+		    (dm.dmBitsPerPel == 15 && depth == 16) ||
+		    (dm.dmBitsPerPel == 16 && depth == 15) ||
+		    (dm.dmBitsPerPel == 24 && depth == 32) ||
+		    (dm.dmBitsPerPel == 32 && depth == 24)) {
+			++count;
+			newdata = realloc(data, count * sizeof(int));
+			if (!newdata) {
+				*size = count - 1;
+				return data;
+			}
+			data = newdata;
+			data[count - 1] = SCREENLIST(dm.dmPelsWidth, dm.dmPelsHeight);
+		}
+		++mode;
+	}
+	
+	*size = count;
+	return data;
 }
