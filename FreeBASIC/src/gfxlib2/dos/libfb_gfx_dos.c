@@ -312,7 +312,8 @@ void fb_dos_detect(void)
 		fb_dos.mouse_wheel_ok = ((fb_dos.regs.x.ax == 0x574D) && (fb_dos.regs.x.cx & 1)) ? TRUE : FALSE;
 		
 		/* detect nearptr */
-		fb_dos.nearptr_ok = __djgpp_nearptr_enable();
+		if ( fb_dos.nearptr_ok = __djgpp_nearptr_enable() )
+			__djgpp_nearptr_disable();
 	}
 	
 	/* save current video mode */

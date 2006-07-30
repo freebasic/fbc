@@ -277,6 +277,7 @@ static void driver_update(void)
 			}
 			
 			fb_hMemSet(fb_mode->dirty, FALSE, fb_dos.h);
+			break;
 		}
 	}
 }
