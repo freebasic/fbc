@@ -246,11 +246,13 @@ sub archiveFiles
 #ifndef TRAM_USE_STDOUT
 	o = freefile
 	if( open pipe( TRAM_ARCH_TOOL + " " + options, for output, as #o ) <> 0 ) then
-		print "error: archiver not found"
-		return
+		if( exec( TRAM_ARCH_TOOL, options ) <> 0 ) then
+			print "error: archiver not found"
+			return
+		end if
+	else
+		close #o
 	end if
-	
-	close #o
 	
 	kill listfile
 #endif
@@ -266,6 +268,11 @@ function topDir_cb _
 		byval fname as zstring ptr _
 	) as integer
 	
+	'' don't include the CVS meta-data
+	if( *fname = "CVS" ) then
+		return FALSE
+	end if
+
 	'' not at root? don't check..
 	if( path <> NULL ) then
 		return TRUE
