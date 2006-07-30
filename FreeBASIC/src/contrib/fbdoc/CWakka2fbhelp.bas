@@ -406,10 +406,13 @@ private function _emitTestLineLength( byval _this as CWakka2fbhelp ptr, byval c 
 	n = _this->maxwidth - _this->col
 
 	if(( c > n ) and ( n > 0 )) then
-		_this->res += chBreak
-		_this->col = 0
-		_this->row += 1
-		_emitIndent( _this )
+		if( _this->col > _this->maxwidth \ 4 ) then
+			_this->res += chBreak
+			_this->col = 0
+			_this->row += 1
+			_emitIndent( _this )
+			_emitAttrib( _this, _GetStyleAttrib( _this ) )
+		end if
 	end if
 
 	return TRUE
@@ -516,7 +519,8 @@ private function _emitLink _
 	end if
 
 	if( len(*text) = 0 ) then
-		return _emitText( _this, url )
+		_emitTestLineLength( _this, len( *url ) )
+		return _emitTextNoWrap( _this, url )
 	end if
 
 	_emitIndent( _this )
@@ -532,9 +536,9 @@ private function _emitLink _
 	_emitSpecial( _this, chr(2) )               '' stx
 
 	if( lcase(left( *url, 5 )) = "keypg" ) then
-		_emitText( _this, FormatPageTitle(*text) )	''   text
+		_emitTextNoWrap( _this, FormatPageTitle(*text) )	''   text
 	else
-		_emitText( _this, *text )					''   text
+		_emitTextNoWrap( _this, *text )					''   text
 	end if
 
 	_emitSpecial( _this, chr(23) )              '' etb
