@@ -31,12 +31,14 @@
 
 /* driver list */
 
+extern GFXDRIVER fb_gfxDriverVESAlinear;
 extern GFXDRIVER fb_gfxDriverVESA;
 extern GFXDRIVER fb_gfxDriverBIOS;
 extern GFXDRIVER fb_gfxDriverVGA;
 extern GFXDRIVER fb_gfxDriverModeX;
 
 const GFXDRIVER *fb_gfx_driver_list[] = {
+	&fb_gfxDriverVESAlinear,
 	&fb_gfxDriverVESA,
 	&fb_gfxDriverVGA,
 	&fb_gfxDriverModeX,

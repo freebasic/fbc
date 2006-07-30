@@ -35,6 +35,7 @@
 #include <go32.h>
 #include <pc.h>
 #include <sys/farptr.h>
+#include <sys/nearptr.h>
 #include <sys/movedata.h>
 
 #include "vga.h"
@@ -106,6 +107,12 @@ typedef struct fb_dos_t {
 	int Bpp; /* **bytes** per pixel */
 	unsigned int w_bytes;	/* bytes per scanline */
 	size_t size;
+
+	int vesa_ok;
+	VbeInfoBlock vesa_info;
+	VesaModeInfo vesa_mode_info;
+	VesaModeInfo *vesa_modes;
+	int num_vesa_modes;
 	
 } fb_dos_t;
 
@@ -121,6 +128,12 @@ extern int fb_dos_update_mouse(void);
 
 extern void fb_dos_vga_wait_vsync(void);
 extern void fb_dos_vga_set_palette(void);
+
+/* VESA */
+
+extern void fb_dos_vesa_detect(void);
+extern int fb_dos_vesa_set_mode(int w, int h, int depth, int linear);
+extern int *fb_dos_vesa_fetch_modes(int depth, int *size);
 
 /* shared */
 
