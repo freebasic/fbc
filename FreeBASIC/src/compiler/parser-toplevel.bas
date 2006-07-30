@@ -168,7 +168,14 @@ sub hSkipUntil _
 			exit sub
 
 		'' '('?
-		case CHAR_LPRNT, CHAR_LBRACE
+		case CHAR_LPRNT
+			if( token = CHAR_LPRNT ) then
+				exit do
+			end if
+
+			prntcnt += 1
+
+		case CHAR_LBRACE
 			prntcnt += 1
 
 		'' ')'?

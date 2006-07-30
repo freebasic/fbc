@@ -181,9 +181,10 @@ function cSubOrFuncHeader _
 		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 			exit function
 		else
-			'' error recovery: fake an id
+			'' error recovery: fake an id, skip until next '('
 			id = *hMakeTmpStr( )
 			dtype = INVALID
+			hSkipUntil( CHAR_LPRNT )
 		end if
 
     else
@@ -588,8 +589,13 @@ function cProcStmtEnd _
 
 	'' function and the result wasn't set?
 	if( stk->proc.issub = FALSE ) then
-		if( symbGetIsAccessed( symbGetProcResult( env.currproc ) ) = FALSE ) then
-			errReportWarn( FB_WARNINGMSG_NOFUNCTIONRESULT )
+		dim as FBSYMBOL ptr res
+		res = symbGetProcResult( env.currproc )
+		'' result can be NULL if an error occurred
+		if( res <> NULL ) then
+			if( symbGetIsAccessed( res ) = FALSE ) then
+				errReportWarn( FB_WARNINGMSG_NOFUNCTIONRESULT )
+			end if
 		end if
 	end if
 

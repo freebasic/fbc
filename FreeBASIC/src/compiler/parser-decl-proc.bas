@@ -124,9 +124,10 @@ function cSubOrFuncDecl _
 		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 			exit function
 		else
-			'' error recovery: fake an id
+			'' error recovery: fake an id, skip until next '('
 			id = *hMakeTmpStr( )
 			dtype = INVALID
+			hSkipUntil( CHAR_LPRNT )
 		end if
 
 	else
