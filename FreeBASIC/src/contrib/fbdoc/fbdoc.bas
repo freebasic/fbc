@@ -57,6 +57,8 @@ const default_CacheDir = "cache/"
 	dim as integer bEmitChm = FALSE
 	dim as integer bEmitfbhelp = FALSE
 	dim as string SinglePage = ""
+	redim as string webPageList(1 to 10)
+	dim as integer webPageCount = 0, bWebPages = FALSE
 
 	if( len(command(1)) = 0 ) then
 		bShowHelp = TRUE
@@ -85,6 +87,8 @@ const default_CacheDir = "cache/"
 		? "   -chm           generate html and chm output"
 		? "   -fbhelp        generate output for fbhelp viewer"
 		? "   -version       show version"
+		? "   -getpage page1 [page2 [ ... pageN ]]]
+		? "                  retrieve specified pages from web and store in the cache"
 		? ""
 		end 1
 	end if
@@ -97,27 +101,48 @@ const default_CacheDir = "cache/"
 
 	i = 1
 	while( len( command(i) ) > 0 )
-		select case lcase(command(i))
-		case "-makeini"
-			bMakeIni = TRUE
-		case "-r", "-refresh"
-			CacheRefreshMode = CACHE_REFRESH_ALL
-		case "-n", "-usecache"
-			CacheRefreshMode = CACHE_REFRESH_NONE
-		case "-useweb"
-			bUseWeb = TRUE
-		case "-usesql"
-			bUseSql = TRUE
-		case "-makekeypageslist"
-			bMakeKeywords = TRUE
-		case "-chm"
-			bEmitChm = TRUE
-		case "-fbhelp"
-			bEmitfbhelp = TRUE
-		case else
-			? "Unrecognized option '" + command(i) + "'"
-			end 1
-		end select
+
+		if( bWebPages ) then
+			if left( command(i), 1) = "-" then
+				bWebPages = FALSE
+			else
+				webPageCount += 1
+				if( webPageCount > ubound(webPageList) ) then
+					redim preserve webPageList(1 to Ubound(webPageList) * 2)
+				end if
+				webPageList(webPageCount) = command(i)
+			end if
+		end if
+
+		if( bWebPages = FALSE ) then
+
+			select case lcase(command(i))
+			case "-makeini"
+				bMakeIni = TRUE
+			case "-r", "-refresh"
+				CacheRefreshMode = CACHE_REFRESH_ALL
+			case "-n", "-usecache"
+				CacheRefreshMode = CACHE_REFRESH_NONE
+			case "-useweb"
+				bUseWeb = TRUE
+			case "-usesql"
+				bUseSql = TRUE
+			case "-makekeypageslist"
+				bMakeKeywords = TRUE
+			case "-chm"
+				bEmitChm = TRUE
+			case "-fbhelp"
+				bEmitfbhelp = TRUE
+			case "-getpage"
+				bWebPages = TRUE
+
+			case else
+				? "Unrecognized option '" + command(i) + "'"
+				end 1
+			end select
+		
+		end if
+
 		i += 1
 	wend
 
@@ -215,6 +240,15 @@ const default_CacheDir = "cache/"
 	'' TODO: make this an option
 	'' SinglePage = "KeyPgScreenGraphics"
 	'' SinglePage = "CptAscii"
+
+	if( webPageCount > 0 ) then
+		dim as integer i
+		dim as string ret
+		for i = 1 to webPageCount
+			ret = LoadPage( webPageList(i), FALSE, TRUE )
+		next i
+		end 0
+	end if
 
 	if( len(SinglePage) > 0 ) then
 		FBDoc_BuildSinglePage( SinglePage, SinglePage, @paglist, @toclist )

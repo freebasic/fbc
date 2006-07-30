@@ -35,7 +35,8 @@ declare sub LocalCache_Destroy( )
 declare function LoadPage _
 	( _
 		byval sPage as zstring ptr, _
-		byval bNoReload as integer = FALSE _
+		byval bNoReload as integer = FALSE, _
+		byval bCacheFromWeb as integer = FALSE _
 	) as string
 
 declare function FBDoc_BuildTOC _

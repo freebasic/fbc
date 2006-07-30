@@ -184,7 +184,8 @@ end sub
 function LoadPage _
 	( _
 		byval sPage as zstring ptr, _
-		byval bNoReload as integer _
+		byval bNoReload as integer, _
+		byval bCacheFromWeb as integer _
 	) as string
 
 	dim as integer bLoadPage = FALSE
@@ -205,19 +206,23 @@ function LoadPage _
 
 	RefreshMode = CWikiCache_GetRefreshMode( wikicache )
 
-	select case RefreshMode 
-	case CACHE_REFRESH_ALL
+	if( bCacheFromWeb ) then
 		bLoadPage = TRUE
-	case else
-		if( CWikiCache_LoadPage( wikicache, sPage, sBody ) ) = FALSE then
-			if RefreshMode = CACHE_REFRESH_NONE then
-				return ""
-			elseif( bNoReload = TRUE ) then
-				return ""
-			end if
+	else
+		select case RefreshMode 
+		case CACHE_REFRESH_ALL
 			bLoadPage = TRUE
-		end if
-	end select
+		case else
+			if( CWikiCache_LoadPage( wikicache, sPage, sBody ) ) = FALSE then
+				if RefreshMode = CACHE_REFRESH_NONE then
+					return ""
+				elseif( bNoReload = TRUE ) then
+					return ""
+				end if
+				bLoadPage = TRUE
+			end if
+		end select
+	end if
 
 	if bLoadPage = TRUE then
 		Connection_Create( )
