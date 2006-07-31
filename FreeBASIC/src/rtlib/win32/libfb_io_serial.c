@@ -272,7 +272,9 @@ int fb_SerialOpen( struct _FB_FILE *handle,
 
             if( !SetCommState( hDevice, &dcb ) ) {
                 res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-            }
+            } else {
+                EscapeCommFunction( hDevice, SETDTR );
+						}
         }
     }
 
