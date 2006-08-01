@@ -403,6 +403,8 @@ int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flag
 		fb_dos_set_mouse(fb_dos.w / 2, fb_dos.h / 2, TRUE);
 	else
 		fb_dos.mouse_cursor = FALSE;
+	
+	fb_hMemSet(fb_mode->dirty, TRUE, fb_mode->h);
 
 	return 0;
 }
