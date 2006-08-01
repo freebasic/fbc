@@ -69,74 +69,44 @@ extern char fb_hDrvIntHandler_end;
 /** Ensures that the specified memory region isn't swappable.
  */
 
-#if 0
-#define fb_lock_memory_fn( fn_name ) \
-    _go32_dpmi_lock_code( fn_name, fn_name ## _end - fn_name )
-
-#define fb_lock_memory_data( var_name ) \
-    _go32_dpmi_lock_data( &var_name ## _start, &var_name ## _end - &var_name ## _start )
-#endif
-
 #define fb_lock_memory_fn( fn_name ) \
 	fb_dos_lock_code( fn_name, fn_name ## _end - fn_name )
 
 #define fb_lock_memory_data( var_name ) \
 	fb_dos_lock_data( &var_name ## _start, &var_name ## _end - &var_name ## _start )
 
-int fb_dos_lock_data(const void *address, size_t size)
+static int do_lock(int is_code, int (*proc)(__dpmi_meminfo *), const void *address, size_t size)
 {
 	unsigned long base;
 	__dpmi_meminfo mi;
 	
-	if ( __dpmi_get_segment_base_address( _go32_my_ds(), &base ) == -1 )
+	if ( __dpmi_get_segment_base_address( is_code ? _go32_my_cs() : _go32_my_ds(), &base ) == -1 )
 		return -1;
 	
 	mi.address = base + (unsigned long)address;
 	mi.size = size;
 	
-	return __dpmi_lock_linear_region( &mi );
+	return proc( &mi );
+}
+
+int fb_dos_lock_data(const void *address, size_t size)
+{
+	return do_lock(FALSE, __dpmi_lock_linear_region, address, size);
 }
 
 int fb_dos_lock_code(const void *address, size_t size)
 {
-	unsigned long base;
-	__dpmi_meminfo mi;
-	
-	if ( __dpmi_get_segment_base_address( _go32_my_cs(), &base ) == -1 )
-		return -1;
-	
-	mi.address = base + (unsigned long)address;
-	mi.size = size;
-	
-	return __dpmi_lock_linear_region( &mi );
+	return do_lock(TRUE, __dpmi_lock_linear_region, address, size);
 }
 
 int fb_dos_unlock_data(const void *address, size_t size)
 {
-	unsigned long base;
-	__dpmi_meminfo mi;
-	
-	if ( __dpmi_get_segment_base_address( _go32_my_ds(), &base ) == -1 )
-		return -1;
-	
-	mi.address = base + (unsigned long)address;
-	mi.size = size;
-	
-	return __dpmi_unlock_linear_region( &mi );
+	return do_lock(FALSE, __dpmi_unlock_linear_region, address, size);
 }
 
 int fb_dos_unlock_code(const void *address, size_t size)
 {
-	unsigned long base;
-	__dpmi_meminfo mi;
-	
-	if ( __dpmi_get_segment_base_address( _go32_my_cs(), &base ) == -1 )
-		return -1;
-	
-	mi.address = base + (unsigned long)address;
-	mi.size = size;
-	
-	return __dpmi_unlock_linear_region( &mi );
+	return do_lock(TRUE, __dpmi_unlock_linear_region, address, size);
 }
 
 static __inline__ int
