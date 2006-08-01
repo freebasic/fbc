@@ -157,9 +157,13 @@ FBCALL int fb_GfxBsave(FBSTRING *filename, void *src, unsigned int size)
 {
 	FILE *f;
 	int result = FB_RTERROR_OK;
-	char *p;
+	char buffer[MAX_PATH], *p;
 
-	f = fopen(filename->data, "wb");
+	snprintf(buffer, MAX_PATH-1, "%s", filename->data);
+	buffer[MAX_PATH-1] = '\0';
+	fb_hConvertPath(buffer, strlen(buffer));
+	
+	f = fopen(buffer, "wb");
 	if (!f) {
 		fb_hStrDelTemp(filename);
 		return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );

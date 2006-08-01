@@ -167,12 +167,17 @@ FBCALL int fb_GfxBload(FBSTRING *filename, void *dest)
 	FILE *f;
 	unsigned char id;
 	unsigned int size = 0;
+	char buffer[MAX_PATH];
 	int result = FB_RTERROR_OK;
 
 	if ((!dest) && (!fb_mode))
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
-
-	f = fopen(filename->data, "rb");
+	
+	snprintf(buffer, MAX_PATH-1, "%s", filename->data);
+	buffer[MAX_PATH-1] = '\0';
+	fb_hConvertPath(buffer, strlen(buffer));
+	
+	f = fopen(buffer, "rb");
 
 	if (!f) {
 		fb_hStrDelTemp(filename);

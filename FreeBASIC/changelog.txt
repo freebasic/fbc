@@ -67,6 +67,7 @@ Version 0.17 Beta:
 - eof() could fail with some files opened for INPUT (v1c)
 - empty literal strings couldn't be used with stringize'd macro params (v1c)
 - DOS ISR and gfxlib were calling the DPMI memory locking service incorrectly (DrV)
+- BLOAD/BSAVE did not support automatic path separator conversion for cross-platform compatibility (lillo)
 
 
 Version 0.16 Beta:
