@@ -48,9 +48,11 @@ GFXDRIVER fb_gfxDriverVESAlinear =
 };
 
 
-static __dpmi_meminfo mapping;
+static __dpmi_meminfo mapping = {0};
 static char *video;
 static BLITTER *blitter;
+static int nearptr_enabled = FALSE;
+static int data_locked = FALSE;
 
 
 /*:::::*/
@@ -68,8 +70,6 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	if (!fb_dos.nearptr_ok)
 		return -1;
 	
-	__djgpp_nearptr_enable();
-	
 	if (!fb_dos.vesa_ok)
 		return -1;
 	
@@ -78,6 +78,10 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	
 	refresh_rate = 60; /* FIXME */
 	
+	fb_dos_lock_data(&video, sizeof(video));
+	fb_dos_lock_data(&blitter, sizeof(blitter));
+	data_locked = TRUE;
+	
 	blitter = fb_hGetBlitter(fb_dos.vesa_mode_info.BitsPerPixel, FALSE); /* FIXME */
 	if (!blitter)
 		return -1;
@@ -85,6 +89,9 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 	fb_dos.update = driver_update;
 	fb_dos.update_len = (unsigned int)end_of_driver_update - (unsigned int)driver_update;
 	fb_dos.set_palette = fb_dos_vga_set_palette; /* FIXME */
+	
+	__djgpp_nearptr_enable();
+	nearptr_enabled = TRUE;
 	
 	mapping.address = fb_dos.vesa_mode_info.PhysBasePtr;
 	mapping.size = fb_dos.vesa_info.total_memory << 16;
@@ -100,9 +107,23 @@ static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rat
 /*:::::*/
 static void driver_exit(void)
 {
-	if (fb_dos.nearptr_ok) {
+	if (mapping.address != 0)
+	{
 		__dpmi_free_physical_address_mapping(&mapping);
+		mapping.address = 0;
+	}
+	
+	if (nearptr_enabled)
+	{
 		__djgpp_nearptr_disable();
+		nearptr_enabled = FALSE;
+	}
+	
+	if (data_locked)
+	{
+		fb_dos_unlock_data(&video, sizeof(video));
+		fb_dos_unlock_data(&blitter, sizeof(blitter));
+		data_locked = FALSE;
 	}
 	
 	fb_dos_exit();

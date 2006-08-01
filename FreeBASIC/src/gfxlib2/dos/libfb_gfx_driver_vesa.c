@@ -179,6 +179,9 @@ int fb_dos_vesa_set_mode(int w, int h, int depth, int linear)
 	if (!mode)
 		return -1;
 	
+	fb_dos.regs.x.ax = 0x13;
+	__dpmi_int(0x10, &fb_dos.regs);
+	
 	fb_dos.regs.x.ax = 0x4F02;
 	fb_dos.regs.x.bx = mode;
 	if (linear) fb_dos.regs.x.bx |= 0x4000;
