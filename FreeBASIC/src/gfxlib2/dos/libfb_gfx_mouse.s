@@ -65,9 +65,6 @@ FUNC(fb_dos_mouse_isr)
 	mov ax, cs:[___djgpp_app_DS]
 	mov ds, ax
 	
-	mov ax, 13
-	mov [GLOBL(fb_dos_mouse_x)], ax
-	
 	mov ax, es:[edi + 0x18]
 	mov [GLOBL(fb_dos_mouse_x)], ax
 	
