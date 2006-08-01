@@ -86,9 +86,4 @@ FUNC(fb_dos_mouse_isr)
 
 FUNC(fb_dos_mouse_isr_end)
 
-.section .data
-
-
-_test: .word 0
-
 .end

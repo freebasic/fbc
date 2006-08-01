@@ -49,6 +49,7 @@ extern void fb_hBlit32to24RGBMMX(unsigned char *dest, int pitch);
 extern void fb_hBlit32to24BGRMMX(unsigned char *dest, int pitch);
 extern void fb_hBlit32to32RGBMMX(unsigned char *dest, int pitch);
 
+void fb_hBlit_code_start(void) { }
 
 /*:::::*/
 static void fb_hBlitCopy(unsigned char *dest, int pitch)
@@ -805,3 +806,5 @@ BLITTER *fb_hGetBlitter(int device_depth, int is_rgb)
 	}
 	return NULL;
 }
+
+void fb_hBlit_code_end(void) { }

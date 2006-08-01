@@ -32,6 +32,7 @@
 #define BIT_ENCODE(p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11)		\
 	((p0)|(p1<<2)|(p2<<4)|(p3<<6)|(p4<<8)|(p5<<10)|(p6<<12)|(p7<<14)|(p8<<16)|(p9<<18)|(p10<<20)|(p11<<22))
 
+char fb_hSoftCursor_data_start;
 
 static const unsigned int cursor_data[] = {
 	BIT_ENCODE(2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
@@ -60,27 +61,31 @@ static const unsigned int cursor_data[] = {
 static unsigned char *cursor_area;
 static unsigned int white, black;
 
+char fb_hSoftCursor_data_end;
+
+void fb_hSoftCursor_code_start(void) { }
+
 
 /*:::::*/
 static void copy_cursor_area(int x, int y, int from_area)
 {
-    unsigned char *s, *d;
+	unsigned char *s, *d;
 	int w, h, s_pitch, d_pitch;
 	
 	w = (MIN(CURSOR_W, fb_mode->w - x) * fb_mode->bpp);
 	h = MIN(CURSOR_H, fb_mode->h - y);
 	
 	if (from_area) {
-    	s = cursor_area;
-	    d = fb_mode->framebuffer + (y * fb_mode->pitch) + (x * fb_mode->bpp);
-	    s_pitch = w;
-	    d_pitch = fb_mode->pitch;
+		s = cursor_area;
+		d = fb_mode->framebuffer + (y * fb_mode->pitch) + (x * fb_mode->bpp);
+		s_pitch = w;
+		d_pitch = fb_mode->pitch;
 	}
 	else {
-	    s = fb_mode->framebuffer + (y * fb_mode->pitch) + (x * fb_mode->bpp);
-    	d = cursor_area;
-	    s_pitch = fb_mode->pitch;
-	    d_pitch = w;
+		s = fb_mode->framebuffer + (y * fb_mode->pitch) + (x * fb_mode->bpp);
+		d = cursor_area;
+		s_pitch = fb_mode->pitch;
+		d_pitch = w;
 	}
 	
 	for (; h; h--) {
@@ -95,8 +100,8 @@ static void copy_cursor_area(int x, int y, int from_area)
 static int color_distance(int index, int r, int g, int b)
 {
 	return (((fb_mode->device_palette[index] & 0xFF) - r) * ((fb_mode->device_palette[index] & 0xFF) - r)) +
-		((((fb_mode->device_palette[index] >> 8) & 0xFF) - g) * (((fb_mode->device_palette[index] >> 8) & 0xFF) - g)) +
-		((((fb_mode->device_palette[index] >> 16) & 0xFF) - b) * (((fb_mode->device_palette[index] >> 16) & 0xFF) - b));
+	       ((((fb_mode->device_palette[index] >> 8) & 0xFF) - g) * (((fb_mode->device_palette[index] >> 8) & 0xFF) - g)) +
+	       ((((fb_mode->device_palette[index] >> 16) & 0xFF) - b) * (((fb_mode->device_palette[index] >> 16) & 0xFF) - b));
 }
 
 
@@ -138,16 +143,16 @@ void fb_hSoftCursorPut(int x, int y)
 			pixel = (cursor_data[py] >> (px << 1)) & 0x3;
 			d = fb_mode->framebuffer + ((y + py) * fb_mode->pitch) + ((x + px) * fb_mode->bpp);
 			if (pixel & 0x1)
-			    color = white;
+				color = white;
 			else if (pixel & 0x2)
-			    color = black;
+				color = black;
 			if (pixel) {
-			    if (fb_mode->bpp == 1)      *d = color;
-			    else if (fb_mode->bpp == 2) *(unsigned short *)d = color;
-			    else                        *(unsigned int *)d = color;
+				if (fb_mode->bpp == 1)      *d = color;
+				else if (fb_mode->bpp == 2) *(unsigned short *)d = color;
+				else                        *(unsigned int *)d = color;
 			}
 		}
-        fb_mode->dirty[y + py] = TRUE;
+		fb_mode->dirty[y + py] = TRUE;
 	}
 }
 
@@ -167,15 +172,17 @@ void fb_hSoftCursorPaletteChanged(void)
 	if (fb_mode->bpp > 1)
 		return;
 	for (i = 0; i < 256; i++) {
-    	dist = color_distance(i, 255, 255, 255);
-	    if (dist < min_wdist) {
-		    min_wdist = dist;
-		    white = i;
+		dist = color_distance(i, 255, 255, 255);
+		if (dist < min_wdist) {
+			min_wdist = dist;
+			white = i;
 		}
-    	dist = color_distance(i, 0, 0, 0);
-    	if (dist < min_bdist) {
-    		min_bdist = dist;
-    		black = i;
-    	}
+		dist = color_distance(i, 0, 0, 0);
+		if (dist < min_bdist) {
+			min_bdist = dist;
+			black = i;
+		}
 	}
 }
+
+void fb_hSoftCursor_code_end(void) { }

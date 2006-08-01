@@ -29,6 +29,8 @@
 
 .text
 
+FUNC(fb_MMX_code_start)
+
 
 /*:::::*/
 FUNC(fb_hMemCpyMMX)
@@ -120,3 +122,5 @@ LABEL(memset_end)
 	popl %edi
 	popl %ebp
 	ret
+
+FUNC(fb_MMX_code_end)

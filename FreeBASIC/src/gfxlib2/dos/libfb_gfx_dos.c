@@ -51,28 +51,52 @@ fb_dos_t fb_dos;
 static void fb_dos_save_video_mode(void);
 static void fb_dos_restore_video_mode(void);
 
+static __dpmi_regs fb_dos_mouse_regs;
+static __dpmi_raddr fb_dos_mouse_isr_rmcb;
+
 /* layout from libfb_gfx_mouse.s */
 
-extern char fb_dos_mouse_isr_start;
+extern void fb_dos_mouse_isr_start(void);
 extern short fb_dos_mouse_x;
 extern short fb_dos_mouse_y;
 extern short fb_dos_mouse_z;
 extern char fb_dos_mouse_buttons;
 extern void fb_dos_mouse_isr(void);
-extern char fb_dos_mouse_isr_end;
+extern void fb_dos_mouse_isr_end(void);
 
-/* end libfb_gfx_mouse.s */
+/* from libfb_gfx_softcursor.c */
 
-static __dpmi_regs fb_dos_mouse_regs;
-static __dpmi_raddr fb_dos_mouse_isr_rmcb;
+extern char fb_hSoftCursor_data_start;
+extern char fb_hSoftCursor_data_end;
+extern void fb_hSoftCursor_code_start(void);
+extern void fb_hSoftCursor_code_end(void);
 
-#define lock_var(var)        fb_dos_lock_data( &(var), sizeof(var) )
-#define lock_array(array)    fb_dos_lock_data( (array), sizeof(array) )
-#define lock_proc(proc)      fb_dos_lock_code( proc, (char *)( end_##proc ) - (char *)(proc) )
+/* from libfb_gfx_blitter.c */
+extern void fb_hBlit_code_start(void);
+extern void fb_hBlit_code_end(void);
 
-#define unlock_var(var)      fb_dos_unlock_data( &(var), sizeof(var) )
-#define unlock_array(array)  fb_dos_unlock_data( (array), sizeof(array) )
-#define unlock_proc(proc)    fb_dos_unlock_code( proc, (char *)( end_##proc ) - (char *)(proc) )
+/* from libfb_gfx_blitter_mmx.s */
+extern char fb_hBlitMMX_data_start;
+extern char fb_hBlitMMX_data_end;
+extern void fb_hBlitMMX_code_start(void);
+extern void fb_hBlitMMX_code_end(void);
+
+/* from libfb_gfx_mmx.s */
+extern void fb_MMX_code_start(void);
+extern void fb_MMX_code_end(void);
+
+
+#define lock_var(var)         fb_dos_lock_data( &(var), sizeof(var) )
+#define lock_array(array)     fb_dos_lock_data( (array), sizeof(array) )
+#define lock_proc(proc)       fb_dos_lock_code( proc, (char *)( end_##proc ) - (char *)(proc) )
+#define lock_data(start, end) fb_dos_lock_data( (&start), (const char *)(&end) - (const char *)(&start) )
+#define lock_code(start, end) fb_dos_lock_code( (start), (const char *)(end) - (const char *)(start) )
+
+#define unlock_var(var)         fb_dos_unlock_data( &(var), sizeof(var) )
+#define unlock_array(array)     fb_dos_unlock_data( (array), sizeof(array) )
+#define unlock_proc(proc)       fb_dos_unlock_code( proc, (char *)( end_##proc ) - (char *)(proc) )
+#define unlock_data(start, end) fb_dos_unlock_data( (&start), (const char *)(&end) - (const char *)(&start) )
+#define unlock_code(start, end) fb_dos_unlock_code( (start), (const char *)(end) - (const char *)(start) )
 
 /*:::::*/
 static void fb_dos_kb_init(void)
@@ -328,16 +352,37 @@ void fb_dos_detect(void)
 /*:::::*/
 int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
+	int i;
+	
 	fb_dos.inited = TRUE;
 	
 	/* lock code and data accessed in int handlers */
 	
 	lock_var(fb_mode);
+	lock_var(*fb_mode);
+	fb_dos_lock_data(fb_mode->page, sizeof(unsigned char *) * fb_mode->num_pages);
+	for (i = 0; i < fb_mode->num_pages; i++)
+		fb_dos_lock_data(fb_mode->page[i], fb_mode->pitch * fb_mode->h);
+	fb_dos_lock_data(fb_mode->line, fb_mode->h * sizeof(unsigned char *));
+	fb_dos_lock_data(fb_mode->dirty, fb_mode->h * fb_mode->scanline_size);
+	fb_dos_lock_data(fb_mode->device_palette, sizeof(int) * 256);
+	fb_dos_lock_data(fb_mode->palette, sizeof(int) * 256);
+	fb_dos_lock_data(fb_color_conv_16to32, sizeof(int) * 512);
 	lock_var(fb_dos);
 	fb_dos_lock_data(&fb_mode->key, 128);
 	lock_proc(fb_dos_timer_handler);
 	lock_proc(fb_dos_timer_handler);
 	fb_dos_lock_code(fb_dos.update, fb_dos.update_len);
+	lock_code(fb_dos_mouse_isr_start, fb_dos_mouse_isr_end);
+	lock_var(fb_dos_mouse_regs);
+	lock_data(fb_hSoftCursor_data_start, fb_hSoftCursor_data_end);
+	lock_code(fb_hSoftCursor_code_start, fb_hSoftCursor_code_end);
+	lock_code(fb_hBlit_code_start, fb_hBlit_code_end);
+	lock_data(fb_hBlitMMX_data_start, fb_hBlitMMX_data_end);
+	lock_code(fb_hBlitMMX_code_start, fb_hBlitMMX_code_end);
+	lock_code(fb_MMX_code_start, fb_MMX_code_end);
+	fb_dos_lock_code(memcpy, 1024); /* we don't know how big memcpy and memset are,
+	fb_dos_lock_code(memset, 1024);    so we guess 1k each... */
 	
 	/* TODO: lock fb_hMemCpy and fb_hMemSet (the actual code and the pointers) */
 	
@@ -365,7 +410,8 @@ int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flag
 /*:::::*/
 void fb_dos_exit(void)
 {
-
+	int i;
+	
 	if (!fb_dos.inited) return;
 
 	fb_dos_cli();
@@ -381,10 +427,30 @@ void fb_dos_exit(void)
 	/* unlock code and data */
 
 	unlock_var(fb_mode);
+	unlock_var(*fb_mode);
+	fb_dos_unlock_data(fb_mode->page, sizeof(unsigned char *) * fb_mode->num_pages);
+	for (i = 0; i < fb_mode->num_pages; i++)
+		fb_dos_unlock_data(fb_mode->page[i], fb_mode->pitch * fb_mode->h);
+	fb_dos_unlock_data(fb_mode->line, fb_mode->h * sizeof(unsigned char *));
+	fb_dos_unlock_data(fb_mode->dirty, fb_mode->h * fb_mode->scanline_size);
+	fb_dos_unlock_data(fb_mode->device_palette, sizeof(int) * 256);
+	fb_dos_unlock_data(fb_mode->palette, sizeof(int) * 256);
+	fb_dos_unlock_data(fb_color_conv_16to32, sizeof(int) * 512);
 	unlock_var(fb_dos);
 	fb_dos_unlock_data(&fb_mode->key, 128);
 	unlock_proc(fb_dos_timer_handler);
+	unlock_proc(fb_dos_timer_handler);
 	fb_dos_unlock_code(fb_dos.update, fb_dos.update_len);
+	unlock_code(fb_dos_mouse_isr_start, fb_dos_mouse_isr_end);
+	unlock_var(fb_dos_mouse_regs);
+	unlock_data(fb_hSoftCursor_data_start, fb_hSoftCursor_data_end);
+	unlock_code(fb_hSoftCursor_code_start, fb_hSoftCursor_code_end);
+	unlock_code(fb_hBlit_code_start, fb_hBlit_code_end);
+	unlock_data(fb_hBlitMMX_data_start, fb_hBlitMMX_data_end);
+	unlock_code(fb_hBlitMMX_code_start, fb_hBlitMMX_code_end);
+	unlock_code(fb_MMX_code_start, fb_MMX_code_end);
+	fb_dos_unlock_code(memcpy, 1024); /* we don't know how big memcpy and memset are,
+	fb_dos_unlock_code(memset, 1024);    so we guess 1k each... */
 	
 	fb_dos_restore_video_mode();
 

@@ -31,6 +31,8 @@
 
 .balign 16
 
+FUNC(fb_hBlitMMX_data_start)
+
 const16to15_r:		.int	0x001F001F, 0x001F001F
 const16to15_g:		.int	0x07C007C0, 0x07C007C0
 const16to15_gb:		.int	0xFFC0FFC0, 0xFFC0FFC0
@@ -50,8 +52,11 @@ const32to16_g:		.int	0x0000FC00, 0x0000FC00
 const32to32_g:		.int	0x0000FF00, 0x0000FF00
 const32to32_b:		.int	0x00FF0000, 0x00FF0000
 
+FUNC(fb_hBlitMMX_data_end)
+
 .text
 
+FUNC(fb_hBlitMMX_code_start)
 
 /*:::::*/
 FUNC(fb_hBlit8to15RGBMMX)
@@ -1644,3 +1649,5 @@ LABEL(blit32to32RGB_next_line)
 	FREE_LOCALS(1)
 	popl %ebp
 	ret
+
+FUNC(fb_hBlitMMX_code_end)
