@@ -30,6 +30,7 @@ Version 0.17 Beta:
 - namespace nesting, as in .net: namespace foo.bar.baz : end namespace (v1c)
 - the FileDateTime function to the extended run-time library (it returns a serial, not a string like in VB) (v1c)
 - CUnit (unit testing framework) headers, static library and examples (v1c)
+- linear VESA gfx driver for DOS (DrV)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
@@ -65,6 +66,7 @@ Version 0.17 Beta:
 - string indexing was being allowed with functions (v1c)
 - eof() could fail with some files opened for INPUT (v1c)
 - empty literal strings couldn't be used with stringize'd macro params (v1c)
+- DOS ISR and gfxlib were calling the DPMI memory locking service incorrectly (DrV)
 
 
 Version 0.16 Beta:
