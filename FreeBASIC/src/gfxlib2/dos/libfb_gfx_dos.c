@@ -202,6 +202,7 @@ static void fb_dos_mouse_exit(void)
 static int fb_dos_timer_handler(unsigned irq)
 {
 	int do_abort;
+	int mouse_x, mouse_y;
 
 	fb_dos.timer_ticks += fb_dos.timer_step;
 	if( (do_abort = fb_dos.timer_ticks < 65536)==FALSE )
@@ -220,17 +221,20 @@ static int fb_dos_timer_handler(unsigned irq)
 	if( fb_dos.set_palette )
 		fb_dos.set_palette();
 	
-	if ( fb_dos.mouse_ok && fb_dos.mouse_cursor )
-		fb_hSoftCursorPut(fb_dos_mouse_x, fb_dos_mouse_y);
+	if ( fb_dos.mouse_ok && fb_dos.mouse_cursor ) {
+		mouse_x = fb_dos_mouse_x;
+		mouse_y = fb_dos_mouse_y;
+		fb_hSoftCursorPut(mouse_x, mouse_y);
+	}
 	
 	fb_dos.update();
 	fb_hMemSet(fb_mode->dirty, FALSE, fb_dos.h);
 
 	if ( fb_dos.mouse_ok && fb_dos.mouse_cursor ) {
-		fb_hSoftCursorUnput(fb_dos_mouse_x, fb_dos_mouse_y);
-		fb_hMemSet(fb_mode->dirty + fb_dos_mouse_y, TRUE, MIN(fb_dos.h - fb_dos_mouse_y, 21) );
+		fb_hSoftCursorUnput(mouse_x, mouse_y);
+		fb_hMemSet(fb_mode->dirty + mouse_y, TRUE, MIN(fb_dos.h - mouse_y, 21) );
 	}
-
+	
 	fb_dos.in_interrupt = FALSE;
 
 	return do_abort;
