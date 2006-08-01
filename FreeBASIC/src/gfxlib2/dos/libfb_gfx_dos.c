@@ -51,6 +51,21 @@ fb_dos_t fb_dos;
 static void fb_dos_save_video_mode(void);
 static void fb_dos_restore_video_mode(void);
 
+/* layout from libfb_gfx_mouse.s */
+
+extern char fb_dos_mouse_isr_start;
+extern short fb_dos_mouse_x;
+extern short fb_dos_mouse_y;
+extern short fb_dos_mouse_z;
+extern char fb_dos_mouse_buttons;
+extern void fb_dos_mouse_isr(void);
+extern char fb_dos_mouse_isr_end;
+
+/* end libfb_gfx_mouse.s */
+
+static __dpmi_regs fb_dos_mouse_regs;
+static __dpmi_raddr fb_dos_mouse_isr_rmcb;
+
 #define lock_var(var)        fb_dos_lock_data( &(var), sizeof(var) )
 #define lock_array(array)    fb_dos_lock_data( (array), sizeof(array) )
 #define lock_proc(proc)      fb_dos_lock_code( proc, (char *)( end_##proc ) - (char *)(proc) )
@@ -76,8 +91,9 @@ static void fb_dos_kb_exit(void)
 }
 
 /*:::::*/
-static void fb_dos_mouse_init(void)
+static int fb_dos_mouse_init(void)
 {
+	
 	if (!fb_dos.mouse_ok) return;
 
 	/* set horizontal range */
@@ -97,70 +113,53 @@ static void fb_dos_mouse_init(void)
 	__dpmi_int(0x33, &fb_dos.regs);
 	
 	fb_hSoftCursorInit();
+
+	/* allocate real-mode callback */
+	if (__dpmi_allocate_real_mode_callback(fb_dos_mouse_isr, &fb_dos_mouse_regs, &fb_dos_mouse_isr_rmcb))
+		return -1;
+	
+	/* set user interrupt routine */
+	fb_dos.regs.x.ax = 0x0C;
+	fb_dos.regs.x.cx = 0xFF;
+	fb_dos.regs.x.es = fb_dos_mouse_isr_rmcb.segment;
+	fb_dos.regs.x.dx = fb_dos_mouse_isr_rmcb.offset16;
+	__dpmi_int(0x33, &fb_dos.regs);
+
 }
 
 /*:::::*/
 int fb_dos_get_mouse(int *x, int *y, int *z, int *buttons)
 {
-
 	if (!fb_dos.mouse_ok) return -1;
-
-	*x = fb_dos.mouse_x;
-	*y = fb_dos.mouse_y;
-	*z = fb_dos.mouse_z;
-	*buttons = fb_dos.mouse_buttons;
-
+	
+	*x = fb_dos_mouse_x;
+	*y = fb_dos_mouse_y;
+	*z = (fb_dos.mouse_wheel_ok ? fb_dos_mouse_z : -1);
+	*buttons = fb_dos_mouse_buttons;
+	
 	return 0;
 }
 
 /*:::::*/
 void fb_dos_set_mouse(int x, int y, int cursor)
 {
-    int new_x, new_y;
-
+	int new_x, new_y;
+	
 	if (!fb_dos.mouse_ok) return;
-
-	new_x = ((x >= 0) ? x : fb_dos.mouse_x);
-	new_y = ((y >= 0) ? y : fb_dos.mouse_y);
+	
+	new_x = ((x >= 0) ? x : fb_dos_mouse_x);
+	new_y = ((y >= 0) ? y : fb_dos_mouse_y);
 	fb_dos.mouse_cursor = cursor;
-
+	
 	fb_dos.regs.x.ax = 0x4;
 	fb_dos.regs.x.cx = new_x;
 	fb_dos.regs.x.dx = new_y;
 	__dpmi_int(0x33, &fb_dos.regs);
+	
+	fb_dos_mouse_x = new_x;
+	fb_dos_mouse_y = new_y;
 }
 
-/*:::::*/
-int fb_dos_update_mouse(void)
-{
-	int old_buttons, old_x, old_y, old_z;
-
-	if (!fb_dos.mouse_ok)
-		return FALSE;
-
-	fb_dos.regs.x.ax = 0x3;
-	__dpmi_int(0x33, &fb_dos.regs);
-
-	old_buttons = fb_dos.mouse_buttons;
-	old_x = fb_dos.mouse_x;
-	old_y = fb_dos.mouse_y;
-	old_z = fb_dos.mouse_z;
-
-	fb_dos.mouse_buttons = fb_dos.regs.h.bl;
-
-	fb_dos.mouse_x = fb_dos.regs.x.cx;
-	fb_dos.mouse_y = fb_dos.regs.x.dx;
-
-	if (fb_dos.mouse_wheel_ok)
-		fb_dos.mouse_z -= *(signed char *)(&fb_dos.regs.h.bh);
-
-	return (old_buttons!=fb_dos.mouse_buttons)
-	    || (old_x!=fb_dos.mouse_x)
-	    || (old_y!=fb_dos.mouse_y)
-	    || (old_z!=fb_dos.mouse_z);
-}
-
-static void end_fb_dos_update_mouse(void) {}
 
 /*:::::*/
 static void fb_dos_mouse_exit(void)
@@ -171,6 +170,8 @@ static void fb_dos_mouse_exit(void)
 
 	fb_dos.regs.x.ax = 0x0;
 	__dpmi_int(0x33, &fb_dos.regs);
+	
+	__dpmi_free_real_mode_callback(&fb_dos_mouse_isr_rmcb);
 }
 
 /*:::::*/
@@ -194,16 +195,16 @@ static int fb_dos_timer_handler(unsigned irq)
 
 	if( fb_dos.set_palette )
 		fb_dos.set_palette();
-	fb_dos_update_mouse();
+	
 	if ( fb_dos.mouse_ok && fb_dos.mouse_cursor )
-		fb_hSoftCursorPut(fb_dos.mouse_x, fb_dos.mouse_y);
+		fb_hSoftCursorPut(fb_dos_mouse_x, fb_dos_mouse_y);
 	
 	fb_dos.update();
 	fb_hMemSet(fb_mode->dirty, FALSE, fb_dos.h);
 
 	if ( fb_dos.mouse_ok && fb_dos.mouse_cursor ) {
-		fb_hSoftCursorUnput(fb_dos.mouse_x, fb_dos.mouse_y);
-		fb_hMemSet(fb_mode->dirty + fb_dos.mouse_y, TRUE, MIN(fb_dos.h - fb_dos.mouse_y, 21) );
+		fb_hSoftCursorUnput(fb_dos_mouse_x, fb_dos_mouse_y);
+		fb_hMemSet(fb_mode->dirty + fb_dos_mouse_y, TRUE, MIN(fb_dos.h - fb_dos_mouse_y, 21) );
 	}
 
 	fb_dos.in_interrupt = FALSE;
@@ -328,19 +329,18 @@ void fb_dos_detect(void)
 int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flags)
 {
 	fb_dos.inited = TRUE;
-
+	
 	/* lock code and data accessed in int handlers */
-
+	
 	lock_var(fb_mode);
 	lock_var(fb_dos);
 	fb_dos_lock_data(&fb_mode->key, 128);
 	lock_proc(fb_dos_timer_handler);
 	lock_proc(fb_dos_timer_handler);
-	lock_proc(fb_dos_update_mouse);
 	fb_dos_lock_code(fb_dos.update, fb_dos.update_len);
-
+	
 	/* TODO: lock fb_hMemCpy and fb_hMemSet (the actual code and the pointers) */
-
+	
 	fb_dos.w = w;
 	fb_dos.h = h;
 	fb_dos.depth = depth;
@@ -348,19 +348,16 @@ int fb_dos_init(char *title, int w, int h, int depth, int refresh_rate, int flag
 	fb_mode->refresh_rate = fb_dos.refresh = refresh_rate;
 	
 	fb_dos_kb_init();
-	fb_dos_mouse_init();
-	if (!fb_dos_timer_init(refresh_rate)) {
-		fb_dos_exit();
+	if (!fb_dos_mouse_init())
 		return -1;
-	}
-
-	if (fb_dos.mouse_ok) {
+	
+	if (!fb_dos_timer_init(refresh_rate))
+		return -1;
+	
+	if (fb_dos.mouse_ok)
 		fb_dos_set_mouse(fb_dos.w / 2, fb_dos.h / 2, TRUE);
-	} else {
+	else
 		fb_dos.mouse_cursor = FALSE;
-	}
-
-	fb_dos.mouse_z = fb_dos.mouse_wheel_ok ? 0 : -1;
 
 	return 0;
 }
@@ -387,7 +384,6 @@ void fb_dos_exit(void)
 	unlock_var(fb_dos);
 	fb_dos_unlock_data(&fb_mode->key, 128);
 	unlock_proc(fb_dos_timer_handler);
-	unlock_proc(fb_dos_update_mouse);
 	fb_dos_unlock_code(fb_dos.update, fb_dos.update_len);
 	
 	fb_dos_restore_video_mode();
