@@ -188,16 +188,14 @@ function cSymbolType _
 		byval options as FB_SYMBTYPEOPT _
 	) as integer
 
-    dim as integer isunsigned, isfunction, allowptr
+    dim as integer isunsigned = any, isfunction = any
 
 	function = FALSE
 
-	lgt 	= 0
-	dtype 	= INVALID
+	lgt = 0
+	dtype = INVALID
 	subtype = NULL
-	ptrcnt	= 0
-
-	allowptr = TRUE
+	ptrcnt = 0
 
 	'' UNSIGNED?
 	isunsigned = hMatch( FB_TK_UNSIGNED )
@@ -259,77 +257,25 @@ function cSymbolType _
 		lgt = 8
 
 	case FB_TK_STRING
-		'' fixed-len?
-		if( lexGetLookAhead( 1 ) = CHAR_STAR ) then
-			lexSkipToken( )
-			lexSkipToken( )
-
-			dtype = FB_DATATYPE_FIXSTR
-			if( cConstExprValue( lgt ) = FALSE ) then
-				exit function
-			end if
-
-			'' plus the null-term
-			lgt += 1
-
-			'' min 1 char (+ null-term)
-			if( lgt <= 1 ) then
-				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake a len
-					lgt = 2
-				end if
-			end if
-			allowptr = FALSE
-
-		'' var-len string..
-		else
-			dtype = FB_DATATYPE_STRING
-			lgt = FB_STRDESCLEN
-			lexSkipToken( )
-		end if
-
-	case FB_TK_ZSTRING, FB_TK_WSTRING
-
-		if( lexGetToken( ) = FB_TK_ZSTRING ) then
-			dtype = FB_DATATYPE_CHAR
-		else
-			dtype = FB_DATATYPE_WCHAR
-		end if
-
 		lexSkipToken( )
 
-		'' fixed-len?
-		if( lexGetToken( ) = CHAR_STAR ) then
-			lexSkipToken( )
-			if( cConstExprValue( lgt ) = FALSE ) then
-				exit function
-			end if
+		'' assume it's a var-len string, see below for fixed-len
+		dtype = FB_DATATYPE_STRING
+		lgt = FB_STRDESCLEN
 
-			'' min 1 char
-			if( lgt < 1 ) then
-				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake a len
-					lgt = 1
-				end if
-			end if
-			allowptr = FALSE
+	case FB_TK_ZSTRING
+		lexSkipToken( )
 
-			'' note: len of "wstring * expr" symbols will be actually
-			''       the number of chars times sizeof(wstring), so
-			''		 always use symbGetWstrLen( ) to retrieve the
-			''       len in characters, not the bytes
-			if( dtype = FB_DATATYPE_WCHAR ) then
-				lgt *= symbGetDataSize( FB_DATATYPE_WCHAR )
-			end if
+		'' assume it's a pointer, see below for fixed-len
+		dtype = FB_DATATYPE_CHAR
+		lgt = 0
 
-		'' pointer..
-		else
-    		lgt = 0
-		end if
+	case FB_TK_WSTRING
+		lexSkipToken( )
+
+    	'' ditto
+		dtype = FB_DATATYPE_WCHAR
+    	lgt = 0
 
 	case FB_TK_FUNCTION, FB_TK_SUB
 	    isfunction = (lexGetToken( ) = FB_TK_FUNCTION)
@@ -386,26 +332,92 @@ function cSymbolType _
 		end if
 	end select
 
-	''
-	if( dtype <> INVALID ) then
-
+	'' no type?
+	if( dtype = INVALID ) then
 		if( isunsigned ) then
-			select case as const dtype
-			case FB_DATATYPE_BYTE
-				dtype = FB_DATATYPE_UBYTE
-			case FB_DATATYPE_SHORT
-				dtype = FB_DATATYPE_USHORT
-			case FB_DATATYPE_INTEGER
-				dtype = FB_DATATYPE_UINT
-			case FB_DATATYPE_LONGINT
-				dtype = FB_DATATYPE_ULONGINT
-			case else
-				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-					exit function
-				end if
-			end select
+			errReport( FB_ERRMSG_SYNTAXERROR )
 		end if
 
+		return FALSE
+	end if
+
+	'' unsigned?
+	if( isunsigned ) then
+		'' remap type, if valid
+		select case as const dtype
+		case FB_DATATYPE_BYTE
+			dtype = FB_DATATYPE_UBYTE
+
+		case FB_DATATYPE_SHORT
+			dtype = FB_DATATYPE_USHORT
+
+		case FB_DATATYPE_INTEGER
+			dtype = FB_DATATYPE_UINT
+
+		case FB_DATATYPE_LONGINT
+			dtype = FB_DATATYPE_ULONGINT
+
+		case else
+			if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
+				exit function
+			end if
+		end select
+	end if
+
+	'' fixed-len z|w|string? (must be handled here because the typedefs)
+	if( lexGetToken( ) = CHAR_STAR ) then
+		lexSkipToken( )
+
+		'' expr
+		if( cConstExprValue( lgt ) = FALSE ) then
+			exit function
+		end if
+
+		select case as const dtype
+		case FB_DATATYPE_STRING
+			'' plus the null-term
+			lgt += 1
+
+			'' min 1 char (+ null-term)
+			if( lgt <= 1 ) then
+				if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake a len
+					lgt = 2
+				end if
+			end if
+
+			'' remap type
+			dtype = FB_DATATYPE_FIXSTR
+
+		case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+			'' min 1 char
+			if( lgt < 1 ) then
+					if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake a len
+					lgt = 1
+				end if
+			end if
+
+			'' note: len of "wstring * expr" symbols will be actually
+			''       the number of chars times sizeof(wstring), so
+			''		 always use symbGetWstrLen( ) to retrieve the
+			''       len in characters, not the bytes
+			if( dtype = FB_DATATYPE_WCHAR ) then
+				lgt *= symbGetDataSize( FB_DATATYPE_WCHAR )
+			end if
+
+		case else
+			if( errReport( FB_ERRMSG_SYNTAXERROR, TRUE ) = FALSE ) then
+				exit function
+			end if
+
+		end select
+
+	else
 		'' (PTR|POINTER)*
 		do
 			select case lexGetToken( )
@@ -417,68 +429,47 @@ function cSymbolType _
 				exit do
 			end select
 		loop
+	end if
 
-        if( ptrcnt > 0 ) then
-			if( allowptr = FALSE ) then
-				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: remove pointers
-					ptrcnt = 0
-					dtype mod= FB_DATATYPE_POINTER
-					lgt = symbGetDataSize( dtype )
-				end if
-
-			else
-				lgt = FB_POINTERSIZE
-			end if
-
-		else
-			'' can't have forward typedef's if they aren't pointers
-			if( dtype = FB_DATATYPE_FWDREF ) then
-				'' forward types are allowed in func prototypes with byref params
-				if( (options and FB_SYMBTYPEOPT_ALLOWFORWARD) = 0 ) then
-					if( errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: fake a type
-						dtype = FB_DATATYPE_POINTER + FB_DATATYPE_VOID
-						subtype = NULL
-						ptrcnt = 1
-					end if
-				end if
-
-			elseif( lgt <= 0 ) then
-				select case dtype
-				case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-					'' LEN() and SIZEOF() allow Z|WSTRING to be used w/o PTR
-					if( (options and FB_SYMBTYPEOPT_CHECKSTRPTR) <> 0 ) then
-						if( errReport( FB_ERRMSG_EXPECTEDPOINTER ) = FALSE ) then
-							exit function
-						else
-							'' error recovery: make pointer
-							dtype += FB_DATATYPE_POINTER
-							lgt = FB_POINTERSIZE
-						end if
-
-					else
-						lgt = symbGetDataSize( dtype )
-					end if
-				end select
-			end if
-		end if
-
-		function = TRUE
+	if( ptrcnt > 0 ) then
+		lgt = FB_POINTERSIZE
 
 	else
-		if( isunsigned ) then
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			else
-				return TRUE
+		'' can't have forward typedef's if they aren't pointers
+		if( dtype = FB_DATATYPE_FWDREF ) then
+			'' forward types are allowed in func prototypes with byref params
+			if( (options and FB_SYMBTYPEOPT_ALLOWFORWARD) = 0 ) then
+				if( errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: fake a type
+					dtype = FB_DATATYPE_POINTER + FB_DATATYPE_VOID
+					subtype = NULL
+					ptrcnt = 1
+				end if
 			end if
+
+		elseif( lgt <= 0 ) then
+			select case dtype
+			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+				'' LEN() and SIZEOF() allow Z|WSTRING to be used w/o PTR
+				if( (options and FB_SYMBTYPEOPT_CHECKSTRPTR) <> 0 ) then
+					if( errReport( FB_ERRMSG_EXPECTEDPOINTER ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: make pointer
+						dtype += FB_DATATYPE_POINTER
+						lgt = FB_POINTERSIZE
+					end if
+
+				else
+					lgt = symbGetDataSize( dtype )
+				end if
+			end select
 		end if
 	end if
+
+	function = TRUE
 
 end function
 
