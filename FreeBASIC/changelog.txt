@@ -31,6 +31,7 @@ Version 0.17 Beta:
 - the FileDateTime function to the extended run-time library (it returns a serial, not a string like in VB) (v1c)
 - CUnit (unit testing framework) headers, static library and examples (v1c)
 - linear VESA gfx driver for DOS (DrV)
+- support for typedefs in fixed-len string declarations (v1c)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
