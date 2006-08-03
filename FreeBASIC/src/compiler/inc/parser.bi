@@ -649,10 +649,6 @@ declare function 	cFileStmt				( _
 												_
 											) as integer
 
-declare function 	cLocateStmt				( _
-												byval isfunc as integer _
-											) as ASTNODE ptr
-
 declare function 	cOnStmt					( _
 												_
 											) as integer

@@ -216,9 +216,6 @@
 #define FB_RTL_PRINTUSGEND 				"fb_PrintUsingEnd"
 #define FB_RTL_LPRINTUSGINIT 			"fb_LPrintUsingInit"
 
-#define FB_RTL_LOCATE_FN 				"fb_Locate"
-#define FB_RTL_LOCATE_SUB 				"fb_LocateSub"
-
 #define FB_RTL_CONSOLEVIEW 				"fb_ConsoleView"
 #define FB_RTL_CONSOLEREADXY 			"fb_ReadXY"
 
@@ -507,9 +504,6 @@ enum FB_RTL_IDX
 	FB_RTL_IDX_PRINTUSG_DBL
 	FB_RTL_IDX_PRINTUSGEND
 	FB_RTL_IDX_LPRINTUSGINIT
-
-	FB_RTL_IDX_LOCATE_FN
-	FB_RTL_IDX_LOCATE_SUB
 
 	FB_RTL_IDX_CONSOLEVIEW
 	FB_RTL_IDX_CONSOLEREADXY
@@ -1183,13 +1177,6 @@ declare sub 		rtlErrorSetFuncName ( _
 declare function	rtlConsoleView		( _
 											byval topexpr as ASTNODE ptr, _
 											byval botexpr as ASTNODE ptr _
-										) as ASTNODE ptr
-
-declare function    rtlLocate           ( _
-											byval row_arg as ASTNODE ptr, _
-											byval col_arg as ASTNODE ptr, _
-											byval cursor_vis_arg as ASTNODE ptr, _
-											byval isfunc as integer _
 										) as ASTNODE ptr
 
 declare function	rtlConsoleReadXY	( _

@@ -185,62 +185,6 @@ function cWidthStmt _
 end function
 
 '':::::
-function cLocateStmt _
-	( _
-		byval isfunc as integer _
-	) as ASTNODE ptr
-
-	dim as ASTNODE ptr row_arg, col_arg, cursor_vis_arg
-    dim as ASTNODE ptr func
-
-	function = NULL
-
-	'' LOCATE
-	lexSkipToken( )
-
-	if( isfunc ) then
-		'' '('?
-		hMatchLPRNT( )
-	end if
-
-    if( cExpression( row_arg ) = FALSE ) then
-    	row_arg = NULL
-    end if
-
-    if( hMatch( CHAR_COMMA ) ) then
-    	if( cExpression( col_arg ) = FALSE ) then
-    		col_arg = NULL
-    	end if
-
-	    if( hMatch( CHAR_COMMA ) ) then
-		    if( cExpression( cursor_vis_arg ) = FALSE ) then
-		    	cursor_vis_arg = NULL
-		    end if
-	    end if
-    end if
-
-	if( isfunc ) then
-		'' ')'?
-		hMatchRPRNT( )
-	end if
-
-    if( row_arg = NULL ) then
-    	row_arg = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    end if
-
-    if( col_arg = NULL ) then
-    	col_arg = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    end if
-
-	if( cursor_vis_arg = NULL ) then
-		cursor_vis_arg = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
-	end if
-
-    function = rtlLocate( row_arg, col_arg, cursor_vis_arg, isfunc )
-
-end function
-
-'':::::
 '' ScreenFunct   =   SCREEN '(' expr ',' expr ( ',' expr )? ')'
 ''
 function cScreenFunct _

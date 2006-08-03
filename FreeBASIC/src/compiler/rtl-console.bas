@@ -37,16 +37,7 @@ option escape
 funcdata:
 
 '' locate( byval row as integer = 0, byval col as integer = 0, byval cursor as integer = -1 ) as integer
-data @FB_RTL_LOCATE_FN, "", _
-	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
-	 3, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1
-
-'' locate( byval row as integer = 0, byval col as integer = 0, byval cursor as integer = -1 ) as integer
-data @FB_RTL_LOCATE_SUB, "", _
+data @"locate", "fb_Locate", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
 	 NULL, FALSE, FALSE, _
 	 3, _
@@ -186,59 +177,6 @@ function rtlConsoleView _
 
     function = proc
 
-end function
-
-'':::::
-function rtlLocate _
-	( _
-		byval row_arg as ASTNODE ptr, _
-		byval col_arg as ASTNODE ptr, _
-		byval cursor_vis_arg as ASTNODE ptr, _
-        byval isfunc as integer _
-    ) as ASTNODE ptr
-
-    dim as ASTNODE ptr proc
-    dim as FBSYMBOL ptr f
-
-	function = NULL
-
-	''
-    if( isfunc ) then
-		f = PROCLOOKUP( LOCATE_FN )
-    else
-		f = PROCLOOKUP( LOCATE_SUB )
-    end if
-    proc = astNewCALL( f )
-
-    '' byval row_arg as integer
-    if( astNewARG( proc, row_arg ) = NULL ) then
-    	exit function
-    end if
-
-    '' byval col_arg as integer
-    if( astNewARG( proc, col_arg ) = NULL ) then
-    	exit function
-    end if
-
-    '' byval cursor_vis_arg as integer
-    if( astNewARG( proc, cursor_vis_arg ) = NULL ) then
-    	exit function
-    end if
-
-    if( isfunc = FALSE ) then
-    	dim reslabel as FBSYMBOL ptr
-    	if( env.clopt.resumeerr ) then
-    		reslabel = symbAddLabel( NULL )
-    		astAdd( astNewLABEL( reslabel ) )
-    	else
-    		reslabel = NULL
-    	end if
-
-    	function = iif( rtlErrorCheck( proc, reslabel, lexLineNum( ) ), proc, NULL )
-
-    else
-    	function = proc
-    end if
 end function
 
 '':::::
