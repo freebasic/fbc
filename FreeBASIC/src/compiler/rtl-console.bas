@@ -36,15 +36,6 @@ option escape
 '' [arg typ,mode,optional[,value]]*args
 funcdata:
 
-'' locate( byval row as integer = 0, byval col as integer = 0, byval cursor as integer = -1 ) as integer
-data @"locate", "fb_Locate", _
-	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
-	 3, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1
-
 '' fb_ConsoleView ( byval toprow as integer = 0, byval botrow as integer = 0 ) as void
 data @FB_RTL_CONSOLEVIEW,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
@@ -85,6 +76,15 @@ data @FB_RTL_WIDTHFILE, "", _
 	 2, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE, -1
+
+'' locate( byval row as integer = 0, byval col as integer = 0, byval cursor as integer = -1 ) as integer
+data @"locate", "fb_Locate", _
+	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 NULL, FALSE, FALSE, _
+	 3, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
+	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1
 
 '' pos( ) as integer
 data @"pos", "fb_GetX", _
