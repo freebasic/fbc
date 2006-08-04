@@ -60,7 +60,7 @@ declare function 	hDefExErr_cb 		( ) as string
 declare function 	hDefExxErr_cb 		( ) as string
 
 '' predefined #defines: name, value, flags, proc (for description flags, see FBS_DEFINE)
-const SYMB_MAXDEFINES = 24
+const SYMB_MAXDEFINES = 25
 
 	dim shared defTb( 0 to SYMB_MAXDEFINES-1 ) as SYMBDEF => _
 	{ _
@@ -71,7 +71,9 @@ const SYMB_MAXDEFINES = 24
 		(@"__FB_SIGNATURE__",		@FB_SIGN,		   0, NULL               ), _
 		(@"__FB_MT__",				NULL,			   1, @hDefMultithread_cb), _
 		(@"__FILE__",				NULL,			   0, @hDefFile_cb       ), _
+		(@"__FILE_NQ__",			NULL,			   1, @hDefFile_cb       ), _
 		(@"__FUNCTION__",			NULL,			   0, @hDefFunction_cb   ), _
+		(@"__FUNCTION_NQ__",		NULL,			   1, @hDefFunction_cb   ), _
 		(@"__LINE__",				NULL,			   1, @hDefLine_cb       ), _
 		(@"__DATE__",				NULL,			   0, @hDefDate_cb       ), _
 		(@"__TIME__",				NULL,			   0, @hDefTime_cb       ), _
@@ -99,7 +101,13 @@ end function
 '':::::
 private function hDefFunction_cb( ) as string static
 
-	function = *symbGetCurrentProcName( )
+	if( symbIsMainProc( env.currproc ) ) then
+		function = FB_MAINPROCNAME
+	elseif( symbIsModLevelProc( env.currproc ) ) then
+		function = FB_MODLEVELNAME
+	else
+		function = *symbGetCurrentProcName( )
+	end if
 
 end function
 

@@ -32,6 +32,7 @@ Version 0.17 Beta:
 - CUnit (unit testing framework) headers, static library and examples (v1c)
 - linear VESA gfx driver for DOS (DrV)
 - support for typedefs in fixed-len string declarations (v1c)
+- the __FILE_NQ__ and __FUNCTION_NQ__ intrinsic defines, same as __FILE__ and __FUNCTION__, but without double-quotes (v1c)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)

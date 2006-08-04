@@ -131,6 +131,8 @@ end enum
 
 ''
 const FB_MAINSCOPE = 0
+const FB_MAINPROCNAME = "__FB_MAINPROC__"
+const FB_MODLEVELNAME = "__FB_MODLEVELPROC__"
 
 ''
 ''
