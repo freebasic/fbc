@@ -46,6 +46,45 @@
 
 /* _DEV_LPT_INFO->driver_opaque := (FILE *) file_handle */
 
+static char lp_buf[256];
+
+static int exec_lp_cmd( const char *cmd, int test_default )
+{
+	int have_default = TRUE; // Assume a default printer
+	int result = 0;
+	FILE *fp;
+
+	fp = popen( cmd, "r" );
+	if(fp == NULL )
+		return -1;
+
+	if( !test_default )
+	{
+		while( !feof( fp ) )
+			fgets( lp_buf, 256, fp );
+		return pclose( fp ) >> 8;
+	}
+
+	while( !feof( fp ) )
+	{
+		if( !fgets( lp_buf, 256, fp ) )
+		{
+			if( have_default && (strlen( lp_buf) > 2) )
+				if( (lp_buf[0] == 'n' || lp_buf[0] == 'N') 
+							&& (lp_buf[1] == 'o' || lp_buf[1] == 'O') )
+					have_default = FALSE;
+		}
+	}
+
+	result = pclose( fp ) >> 8;
+
+	if( have_default == FALSE )
+		return -1;
+
+	return result;
+
+}
+
 int fb_PrinterOpen( struct _DEV_LPT_INFO *devInfo, int iPort, const char *pszDeviceRaw )
 {
     int result;
@@ -65,16 +104,39 @@ int fb_PrinterOpen( struct _DEV_LPT_INFO *devInfo, int iPort, const char *pszDev
     if( devInfo->iPort==0 ) {
 			/* Use spooler */
 
-      /* try to open/create pipe to spooler */
+			/* create a buffer for our commands */
 			filename = alloca( strlen(pszDeviceRaw) + 64 );
-			strcpy(filename, "lp ");
 
 			/* set destination, if not default */
-			if( *lpt_proto->name )	
+			if( lpt_proto->name && *lpt_proto->name )	
 			{
+				/* does printer exist */
+				strcpy(filename, "lpstat -v \"");
+				strcat(filename, lpt_proto->name);
+				strcat(filename, "\" 2>&1");	
+				if( exec_lp_cmd( filename, FALSE ) != 0 )
+				{
+					if( lpt_proto!=NULL )
+						free(lpt_proto);
+					return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
+				}
+
+				/* build command for spooler */
+				strcpy(filename, "lp ");
 				strcat(filename, "-d \"");	
 				strcat(filename, lpt_proto->name);
 				strcat(filename, "\" ");	
+			}
+			else
+			{
+				/* is there a default printer */
+				strcpy(filename, "lpstat -d 2>&1");
+				if( exec_lp_cmd( filename, TRUE ) != 0 )
+				{
+					if( lpt_proto!=NULL )
+						free(lpt_proto);
+					return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
+				}
 			}
 
 			/* set title, if not default */
@@ -89,7 +151,8 @@ int fb_PrinterOpen( struct _DEV_LPT_INFO *devInfo, int iPort, const char *pszDev
 				strcat(filename, "-t \"FreeBASIC document\"");
 			}
 
-			strcat(filename, " -");
+			/* do not print job id */
+			strcat(filename, " -s -");
 
 			{
 				char *ptr = filename;
@@ -97,7 +160,8 @@ int fb_PrinterOpen( struct _DEV_LPT_INFO *devInfo, int iPort, const char *pszDev
 					*ptr = '_';
 			}
 
-			strcat(filename, " 2> /dev/null");
+			/* do not print error messages */
+			strcat(filename, " &> /dev/null");
 														 
       fp = popen( filename, "w" );
 			if(fp == NULL )
@@ -167,14 +231,17 @@ int fb_PrinterClose( struct _DEV_LPT_INFO *devInfo )
 		if( devInfo->iPort == 0 ) 
 		{
 			/* close spooler */
-			pclose( (FILE *) devInfo->driver_opaque );
+			int result = ( pclose( (FILE *) devInfo->driver_opaque ) >> 8 );
+			devInfo->driver_opaque = NULL;
+			if( result )
+		    return fb_ErrorSetNum( FB_RTERROR_FILEIO );
 		}
 		else 
 		{
 			/* close direct port io */
 			fclose( (FILE *) devInfo->driver_opaque );
+			devInfo->driver_opaque = NULL;
 		}
-		devInfo->driver_opaque = NULL;
     
     return fb_ErrorSetNum( FB_RTERROR_OK );
 }
