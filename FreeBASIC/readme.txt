@@ -765,6 +765,9 @@ Credits (in alphabetic order):
   o Jofers (spam[at]betterwebber.com):
     - Wrote the examples in the examples/freetype directory.
 
+  o Jose Manuel Postigo (postigo[at]uma.es):
+    - Added support for serial devices in Linux.
+
   o Randy Keeling (randy[at]keeling.com):
     - Wrote the GSL matrix test at the examples/GSL directory.
 
