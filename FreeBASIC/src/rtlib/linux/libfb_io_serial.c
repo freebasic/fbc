@@ -188,11 +188,27 @@ int fb_SerialOpen
         break;
     }
 
-     /* Get device name without ":" */
-    DevName = strcpy( DeviceName, pszDevice );
-    // DevNameLen = strlen( DevName ) - 1;
-    DevNameLen = strlen( DevName );
-    DevName[DevNameLen] = 0;
+    if( iPort == 0 )
+		{
+			if( strncasecmp(pszDevice, "COM:", 4) == 0 )
+			{
+				strcpy(DevName, "/dev/modem");      
+				DevNameLen = strlen( DevName );
+			}
+			else
+			{
+				 /* Get device name without ":" */
+				DevName = strcpy( DeviceName, pszDevice );
+				// DevNameLen = strlen( DevName ) - 1;
+				DevNameLen = strlen( DevName );
+				DevName[DevNameLen] = 0;
+			}
+		}
+		else
+		{
+			sprintf(DevName, "/dev/ttyS%d", (iPort-1));      
+			DevNameLen = strlen( DevName );
+		}
     
     /* Setting speed baud line */
     TermSpeed = get_speed(options->uiSpeed);
