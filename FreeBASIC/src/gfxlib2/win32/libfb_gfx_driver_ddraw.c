@@ -216,13 +216,13 @@ static int directx_init(void)
 		display_offset = ((height - fb_win32.h) >> 1);
 	}
 	else {
-		AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME, 0);
-		rect.right -= rect.left;
-		rect.bottom -= rect.top;
 		if (fb_win32.flags & DRIVER_NO_FRAME)
 			style = WS_POPUP | WS_VISIBLE;
 		else {
 			style = (WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME) | WS_VISIBLE;
+			AdjustWindowRect(&rect, style, 0);
+			rect.right -= rect.left;
+			rect.bottom -= rect.top;
 			if (fb_win32.flags & DRIVER_NO_SWITCH)
 				style &= ~WS_MAXIMIZEBOX;
 		}
