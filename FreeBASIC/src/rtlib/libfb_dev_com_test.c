@@ -63,7 +63,7 @@ int fb_DevComTestProtocolEx( struct _FB_FILE *handle,
         return TRUE;
     }
 
-    if( filename_len < 5 )
+    if( filename_len < 4 )
         return FALSE;
     
     if( strncasecmp(filename, "COM", 3) != 0 )
@@ -77,8 +77,10 @@ int fb_DevComTestProtocolEx( struct _FB_FILE *handle,
         ch = filename[++i];
     }
 
+		/* removed to allow for open com "COM:"
     if( port==0 )
         return FALSE;
+		*/
     if( ch!=':' )
         return FALSE;
 
