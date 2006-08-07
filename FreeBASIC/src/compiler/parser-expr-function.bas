@@ -45,15 +45,6 @@ function cFunctionCall _
     	exit function
     end if
 
-    dtype = symbGetType( sym )
-
-	'' is it really a function?
-	if( dtype = FB_DATATYPE_VOID ) then
-		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-			exit function
-		end if
-	end if
-
 	'' '('?
 	if( lexGetToken( ) = CHAR_LPRNT ) then
 		lexSkipToken( )
@@ -84,9 +75,18 @@ function cFunctionCall _
 		end if
 	end if
 
+    dtype = astGetDataType( funcexpr )
+    subtype = astGetSubtype( funcexpr )
+
+	'' is it really a function?
+	if( dtype = FB_DATATYPE_VOID ) then
+		if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+			exit function
+		end if
+	end if
+
 	'' if function returns a pointer, check for field deref
 	if( dtype >= FB_DATATYPE_POINTER ) then
-    	subtype = symbGetSubType( sym )
 
 		isfuncptr = FALSE
    		if( lexGetToken( ) = CHAR_LPRNT ) then
