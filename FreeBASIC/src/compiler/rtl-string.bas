@@ -2613,6 +2613,7 @@ function rtlStrInstr _
 			f = PROCLOOKUP( WSTRINSTR )
 		end if
     end if
+
     proc = astNewCALL( f )
 
     ''

@@ -32,8 +32,12 @@ option escape
 '':::::
 ''MidStmt   	  =   MID '(' Expression{str}, Expression{int} (',' Expression{int}) ')' '=' Expression{str} .
 ''
-function cMidStmt as integer
-	dim as ASTNODE ptr expr1, expr2, expr3, expr4
+function cMidStmt _
+	( _
+		_
+	) as integer
+
+	dim as ASTNODE ptr expr1 = any, expr2 = any, expr3 = any, expr4 = any
 
 	function = FALSE
 
@@ -73,10 +77,14 @@ end function
 
 '':::::
 '' LsetStmt		=	LSET String|UDT (','|'=') Expression|UDT
-function cLSetStmt( ) as integer
-    dim as ASTNODE ptr dstexpr, srcexpr
-    dim as integer dtype1, dtype2
-    dim as FBSYMBOL ptr dst, src
+function cLSetStmt _
+	( _
+		_
+	) as integer
+
+    dim as ASTNODE ptr dstexpr = any, srcexpr = any
+    dim as integer dtype1 = any, dtype2 = any
+    dim as FBSYMBOL ptr dst = any, src = any
 
     function = FALSE
 
@@ -182,8 +190,8 @@ private function cStrCHR _
 	static as zstring * 32*6+1 zs
 	static as wstring * 32*6+1 ws
 	static as zstring * 8+1 o
-	dim as integer v, i, cnt, isconst
-	dim as ASTNODE ptr exprtb(0 to 31), expr
+	dim as integer v = any, i = any, cnt = any, isconst = any
+	dim as ASTNODE ptr exprtb(0 to 31) = any, expr = any
 
 	function = FALSE
 
@@ -286,9 +294,9 @@ private function cStrASC _
 		byref funcexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr expr1, posexpr
-    dim as integer p
-    dim as FBSYMBOL ptr litsym
+    dim as ASTNODE ptr expr1 = any, posexpr = any
+    dim as integer p = any
+    dim as FBSYMBOL ptr litsym = any
 
 	function = FALSE
 
@@ -378,8 +386,8 @@ function cStringFunct _
 		byref funcexpr as ASTNODE ptr _
 	) as integer
 
-    dim as ASTNODE ptr expr1, expr2, expr3
-    dim as integer dclass, dtype, is_any, is_wstr
+    dim as ASTNODE ptr expr1 = any, expr2 = any, expr3 = any
+    dim as integer dclass = any, dtype = any, is_any = any, is_wstr = any
 
 	function = FALSE
 
@@ -401,7 +409,15 @@ function cStringFunct _
 			funcexpr = rtlToWstr( expr1 )
 		end if
 
-		function = funcexpr <> NULL
+		if( funcexpr = NULL ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+               	exit function
+			else
+				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
+			end if
+		end if
+
+		function = TRUE
 
 	'' MID '(' Expression ',' Expression (',' Expression)? ')'
 	case FB_TK_MID
@@ -425,8 +441,15 @@ function cStringFunct _
 
 		funcexpr = rtlStrMid( expr1, expr2, expr3 )
 
-		function = funcexpr <> NULL
+		if( funcexpr = NULL ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+               	exit function
+			else
+				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
+			end if
+		end if
 
+		function = TRUE
 
 	'' W|STRING '(' Expression ',' Expression{int|str} ')'
 	case FB_TK_STRING, FB_TK_WSTRING
@@ -449,8 +472,15 @@ function cStringFunct _
 			funcexpr = rtlWstrFill( expr1, expr2 )
 		end if
 
-		function = funcexpr <> NULL
+		if( funcexpr = NULL ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+               	exit function
+			else
+				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
+			end if
+		end if
 
+		function = TRUE
 
 	'' W|CHR '(' Expression (',' Expression )* ')'
 	case FB_TK_CHR, FB_TK_WCHR
@@ -478,6 +508,7 @@ function cStringFunct _
 
 		hMatchExpressionEx( expr2, FB_DATATYPE_STRING )
 
+        expr3 = NULL
         if( is_any = FALSE ) then
         	if( hMatch( CHAR_COMMA ) ) then
                 is_any = hMatch( FB_TK_ANY )
@@ -495,7 +526,15 @@ function cStringFunct _
 
 		funcexpr = rtlStrInstr( expr1, expr2, expr3, is_any )
 
-		function = funcexpr <> NULL
+		if( funcexpr = NULL ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+               	exit function
+			else
+				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
+			end if
+		end if
+
+		function = TRUE
 
     case FB_TK_TRIM
         lexSkipToken( )
@@ -516,7 +555,15 @@ function cStringFunct _
 
 		funcexpr = rtlStrTrim( expr1, expr2, is_any )
 
-		function = funcexpr <> NULL
+		if( funcexpr = NULL ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+               	exit function
+			else
+				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
+			end if
+		end if
+
+		function = TRUE
 
     case FB_TK_RTRIM
         lexSkipToken( )
@@ -537,7 +584,15 @@ function cStringFunct _
 
 		funcexpr = rtlStrRTrim( expr1, expr2, is_any )
 
-		function = funcexpr <> NULL
+		if( funcexpr = NULL ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+               	exit function
+			else
+				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
+			end if
+		end if
+
+		function = TRUE
 
     case FB_TK_LTRIM
         lexSkipToken( )
@@ -558,7 +613,15 @@ function cStringFunct _
 
 		funcexpr = rtlStrLTrim( expr1, expr2, is_any )
 
-		function = funcexpr <> NULL
+		if( funcexpr = NULL ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
+               	exit function
+			else
+				funcexpr = astNewCONST( 0, FB_DATATYPE_INTEGER )
+			end if
+		end if
+
+		function = TRUE
 
 	end select
 
