@@ -190,16 +190,14 @@ int fb_SerialOpen
 
     if( iPort == 0 )
 		{
-			if( strncasecmp(pszDevice, "COM:", 4) == 0 )
+			if( strcmp(pszDevice, "COM") == 0 )
 			{
 				strcpy(DevName, "/dev/modem");      
 				DevNameLen = strlen( DevName );
 			}
 			else
 			{
-				 /* Get device name without ":" */
 				DevName = strcpy( DeviceName, pszDevice );
-				// DevNameLen = strlen( DevName ) - 1;
 				DevNameLen = strlen( DevName );
 				DevName[DevNameLen] = 0;
 			}
