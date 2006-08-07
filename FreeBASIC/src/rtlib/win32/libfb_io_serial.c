@@ -138,15 +138,23 @@ int fb_SerialOpen( struct _FB_FILE *handle,
 
     /* Get device name without ":" */
     pszDev = calloc(strlen( pszDevice ) + 5, 1);
-		if( iPort > 9 )
-			strcpy(pszDev, "\\\\.\\");
+		if( iPort == 0 )
+		{
+			iPort = 1;
+			strcpy( pszDev, "COM1:" );
+		}
 		else
-			*pszDev = '\0';
-			
-		strcat(pszDev, pszDevice);
-		if(p = strchr( pszDev, ':'))
-			*p = '\0';
-    uiDevNameLen = strlen( pszDev );
+		{
+			if( iPort > 9 )
+				strcpy(pszDev, "\\\\.\\");
+			else
+				*pszDev = '\0';
+
+			strcat(pszDev, pszDevice);
+			if(p = strchr( pszDev, ':'))
+				*p = '\0';
+		}
+		uiDevNameLen = strlen( pszDev );
 
 #if 0
     /* FIXME: Use default COM properties by default */
