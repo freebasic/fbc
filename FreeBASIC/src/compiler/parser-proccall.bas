@@ -195,16 +195,18 @@ function cProcCall _
 		'' type changed
 		else
 			doflush = FALSE
-			dtype = astGetDataType( procexpr )
+			'' if it's a SUB, the expr will be NULL
+			if( procexpr <> NULL ) then
+				dtype = astGetDataType( procexpr )
 
-			'' if it stills a function, unless type = string (ie: implicit pointer),
-			'' flush it, as the assignment would be invalid
-			if( astIsFUNCT( procexpr ) ) then
-				if( dtype <> FB_DATATYPE_STRING ) then
-					doflush = TRUE
+				'' if it stills a function, unless type = string (ie: implicit pointer),
+				'' flush it, as the assignment would be invalid
+				if( astIsFUNCT( procexpr ) ) then
+					if( dtype <> FB_DATATYPE_STRING ) then
+						doflush = TRUE
+					end if
 				end if
-			end if
-
+        	end if
 		end if
 
 	end if
