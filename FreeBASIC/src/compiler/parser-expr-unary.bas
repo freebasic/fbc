@@ -881,28 +881,19 @@ function cAddrOfExpression _
 			end if
 		end if
 
-		if( cLiteral( expr ) = FALSE ) then
-			chain_ = cIdentifier( )
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
+		if( cHighestPrecExpr( NULL, expr ) = FALSE ) then
+			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function
-			end if
-
-			if( cConstant( chain_, expr ) = FALSE ) then
-				if( cVariable( chain_, expr ) = FALSE ) then
-					if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: skip until ')' and fake a node
-						hSkipUntil( CHAR_RPRNT, TRUE )
-						astDelTree( expr )
-						addrofexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-						return TRUE
-					end if
-				end if
+			else
+				'' error recovery: skip until ')' and fake a node
+				hSkipUntil( CHAR_RPRNT, TRUE )
+				addrofexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+				return TRUE
 			end if
 		end if
 
 		dtype = astGetDataType( expr )
+
 		if( hIsString( dtype ) = FALSE ) then
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function
@@ -915,6 +906,22 @@ function cAddrOfExpression _
 			end if
 		end if
 
+		'' check for invalid classes (functions, etc)
+		select case as const astGetClass( expr )
+		case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_PTR, AST_NODECLASS_TYPEINI
+
+		case else
+			if( errReportEx( FB_ERRMSG_INVALIDDATATYPES, "for STRPTR" ) = FALSE ) then
+				exit function
+			end if
+		end select
+
+		if( dtype = FB_DATATYPE_STRING ) then
+			expr = astNewADDR( AST_OP_DEREF, expr )
+		else
+			expr = astNewADDR( AST_OP_ADDROF, expr )
+		end if
+
 		'' ')'
 		if( hMatch( CHAR_RPRNT ) = FALSE ) then
 			if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
@@ -923,12 +930,6 @@ function cAddrOfExpression _
 				'' error recovery: skip until ')'
 				hSkipUntil( CHAR_RPRNT, TRUE )
 			end if
-		end if
-
-		if( dtype = FB_DATATYPE_STRING ) then
-			expr = astNewADDR( AST_OP_DEREF, expr )
-		else
-			expr = astNewADDR( AST_OP_ADDROF, expr )
 		end if
 
 		if( dtype <> FB_DATATYPE_WCHAR ) then
