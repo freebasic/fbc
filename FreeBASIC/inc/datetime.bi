@@ -35,6 +35,9 @@ declare function DateSerial          alias "fb_DateSerial" _
 declare function DateValue           alias "fb_DateValue" _
           ( s as string ) as integer
 
+declare function IsDate           alias "fb_IsDate" _
+          ( s as string ) as integer
+
 declare function Year                alias "fb_Year" _
           ( byval serial as double ) as integer
 

@@ -93,6 +93,7 @@ extern "C" {
 #define fb_hTimeDaysInYear( year ) \
     (365 + fb_hTimeLeap( year ))
 
+FBCALL int          fb_IsDate           ( FBSTRING *s );
 FBCALL int          fb_DateValue        ( FBSTRING *s );
 FBCALL int          fb_DateSerial       ( int year, int month, int day );
 FBCALL int          fb_Year             ( double serial );
