@@ -220,12 +220,12 @@ static int directx_init(void)
 			style = WS_POPUP | WS_VISIBLE;
 		else {
 			style = (WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME) | WS_VISIBLE;
-			AdjustWindowRect(&rect, style, 0);
-			rect.right -= rect.left;
-			rect.bottom -= rect.top;
 			if (fb_win32.flags & DRIVER_NO_SWITCH)
 				style &= ~WS_MAXIMIZEBOX;
 		}
+		AdjustWindowRect(&rect, style, 0);
+		rect.right -= rect.left;
+		rect.bottom -= rect.top;
 		fb_win32.wnd = CreateWindow(fb_win32.window_class, fb_win32.window_title, style,
 				   (GetSystemMetrics(SM_CXSCREEN) - rect.right) >> 1,
 				   (GetSystemMetrics(SM_CYSCREEN) - rect.bottom) >> 1,
