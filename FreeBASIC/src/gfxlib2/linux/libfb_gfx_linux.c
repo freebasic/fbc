@@ -493,6 +493,7 @@ void fb_hX11Exit(void)
 			fb_linux.config = NULL;
 		}
 		XCloseDisplay(fb_linux.display);
+		fb_linux.display = NULL;
 	}
 
 }
