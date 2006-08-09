@@ -87,13 +87,13 @@ static pthread_cond_t cond;
 /*:::::*/
 static void *driver_thread(void *arg)
 {
-    struct fb_vblank vblank;
-    unsigned int count;
+	struct fb_vblank vblank;
+	unsigned int count;
 	fd_set set;
 	struct timeval tv = { 0, 0 };
-    unsigned char buffer[1024];
-    int i, bytes_read, bytes_left = 0;
-    
+	unsigned char buffer[1024];
+	int i, bytes_read, bytes_left = 0;
+	
 	(void)arg;
 	
 	is_running = TRUE;
@@ -106,72 +106,72 @@ static void *driver_thread(void *arg)
 		pthread_mutex_lock(&mutex);
 		
 		if (mouse_fd >= 0) {
-            FD_ZERO(&set);
-            FD_SET(mouse_fd, &set);
-            if (select(FD_SETSIZE, &set, NULL, NULL, &tv) > 0) {
-                bytes_read = read(mouse_fd, &buffer[bytes_left], sizeof(buffer) - bytes_left);
-                if (bytes_read > 0) {
-                    bytes_left += bytes_read;
-                    while (bytes_left >= mouse_packet_size) {
-                        if (((mouse_packet_size == 3) && ((buffer[0] & 0xC0) != 0x00)) ||
-                            ((mouse_packet_size == 4) && ((buffer[0] & 0xC8) != 0x08)))
-                            bytes_read = 1;
-                        else {
-                            mouse_x += buffer[1];
-                            if (buffer[0] & 0x10) mouse_x -= 256;
-                            mouse_y -= buffer[2];
-                            if (buffer[0] & 0x20) mouse_y += 256;
-                            mouse_x = MID(0, mouse_x, fb_mode->w - 1);
-                            mouse_y = MID(0, mouse_y, fb_mode->h - 1);
-                            mouse_buttons = buffer[0] & 0x7;
-                            if ((mouse_packet_size == 4) && (buffer[3] & 0xF))
-                                mouse_z += (((buffer[3] & 0xF) - 7) >> 3);
-                            bytes_read = mouse_packet_size;
-                        }
-                        bytes_left -= bytes_read;
-                        memcpy(buffer, &buffer[bytes_read], bytes_left);
-                    }
-                }
-            }
+			FD_ZERO(&set);
+			FD_SET(mouse_fd, &set);
+			if (select(FD_SETSIZE, &set, NULL, NULL, &tv) > 0) {
+				bytes_read = read(mouse_fd, &buffer[bytes_left], sizeof(buffer) - bytes_left);
+				if (bytes_read > 0) {
+					bytes_left += bytes_read;
+					while (bytes_left >= mouse_packet_size) {
+						if (((mouse_packet_size == 3) && ((buffer[0] & 0xC0) != 0x00)) ||
+						   ((mouse_packet_size == 4) && ((buffer[0] & 0xC8) != 0x08)))
+							bytes_read = 1;
+						else {
+							mouse_x += buffer[1];
+							if (buffer[0] & 0x10) mouse_x -= 256;
+							mouse_y -= buffer[2];
+							if (buffer[0] & 0x20) mouse_y += 256;
+							mouse_x = MID(0, mouse_x, fb_mode->w - 1);
+							mouse_y = MID(0, mouse_y, fb_mode->h - 1);
+							mouse_buttons = buffer[0] & 0x7;
+							if ((mouse_packet_size == 4) && (buffer[3] & 0xF))
+								mouse_z += (((buffer[3] & 0xF) - 7) >> 3);
+							bytes_read = mouse_packet_size;
+						}
+						bytes_left -= bytes_read;
+						memcpy(buffer, &buffer[bytes_read], bytes_left);
+					}
+				}
+			}
 		}
 		
 		if (vsync_flags & (FB_VBLANK_HAVE_VBLANK | FB_VBLANK_HAVE_VCOUNT)) {
-		    if (vsync_flags & FB_VBLANK_HAVE_VCOUNT) {
-		        ioctl(device_fd, FBIOGET_VBLANK, &vblank);
-		        do {
-		            count = vblank.vcount;
-		        } while ((ioctl(device_fd, FBIOGET_VBLANK, &vblank) == 0) && (vblank.vcount >= count));
-		    }
-		    else {
-		        while ((ioctl(device_fd, FBIOGET_VBLANK, &vblank) == 0) && (vblank.flags & FB_VBLANK_VBLANKING))
-		            ;
-		        while ((ioctl(device_fd, FBIOGET_VBLANK, &vblank) == 0) && (!(vblank.flags & FB_VBLANK_VBLANKING)))
-		            ;
-		    }
+			if (vsync_flags & FB_VBLANK_HAVE_VCOUNT) {
+				ioctl(device_fd, FBIOGET_VBLANK, &vblank);
+				do {
+					count = vblank.vcount;
+				} while ((ioctl(device_fd, FBIOGET_VBLANK, &vblank) == 0) && (vblank.vcount >= count));
+			}
+			else {
+				while ((ioctl(device_fd, FBIOGET_VBLANK, &vblank) == 0) && (vblank.flags & FB_VBLANK_VBLANKING))
+					;
+				while ((ioctl(device_fd, FBIOGET_VBLANK, &vblank) == 0) && (!(vblank.flags & FB_VBLANK_VBLANKING)))
+					;
+			}
 		}
-        pthread_cond_signal(&cond);
+		pthread_cond_signal(&cond);
 		
 		if (is_active) {
-		    if (is_palette_changed) {
-		        ioctl(device_fd, FBIOPUTCMAP, &cmap);
-	            if (mouse_fd >= 0)
-                    fb_hSoftCursorPaletteChanged();
-		        is_palette_changed = FALSE;
-		    }
-		    if ((mouse_fd >= 0) && (mouse_shown))
-		        fb_hSoftCursorPut(mouse_x, mouse_y);
-			blitter(framebuffer + framebuffer_offset, device_info.line_length);
+			if (is_palette_changed) {
+				ioctl(device_fd, FBIOPUTCMAP, &cmap);
+				if (mouse_fd >= 0)
+					fb_hSoftCursorPaletteChanged();
+				is_palette_changed = FALSE;
+			}
 			if ((mouse_fd >= 0) && (mouse_shown))
-		        fb_hSoftCursorUnput(mouse_x, mouse_y);
+				fb_hSoftCursorPut(mouse_x, mouse_y);
+			blitter(framebuffer + framebuffer_offset, device_info.line_length);
 			fb_hMemSet(fb_mode->dirty, FALSE, fb_linux.h);
+			if ((mouse_fd >= 0) && (mouse_shown))
+				fb_hSoftCursorUnput(mouse_x, mouse_y);
 		}
 		
 		pthread_mutex_unlock(&mutex);
-
+		
 		if (vsync_flags & (FB_VBLANK_HAVE_VBLANK | FB_VBLANK_HAVE_VCOUNT))
-		    usleep(8000);
+			usleep(8000);
 		else
-		    usleep(1000000 / ((fb_linux.refresh_rate > 0) ? fb_linux.refresh_rate : 60));
+			usleep(1000000 / ((fb_linux.refresh_rate > 0) ? fb_linux.refresh_rate : 60));
 	}
 	
 	return NULL;
@@ -314,7 +314,7 @@ got_mode:
 	fb_hMemSet(framebuffer, 0, device_info.smem_len);
 	
 	framebuffer_offset = (((mode.yres - h) >> 1) * device_info.line_length) +
-			     (((mode.xres - w) >> 1) * BYTES_PER_PIXEL(mode.bits_per_pixel));
+	                     (((mode.xres - w) >> 1) * BYTES_PER_PIXEL(mode.bits_per_pixel));
 	
 	blitter = fb_hGetBlitter(mode.bits_per_pixel, (mode.red.offset == 0) ? TRUE : FALSE);
 	if (!blitter)
@@ -322,44 +322,44 @@ got_mode:
 	
 	if (fb_hConsoleGfxMode(driver_exit, driver_save_screen, driver_restore_screen))
 		return -1;
-    
-    mouse_packet_size = 3;
-    for (try = 0; mouse_device[try]; try++) {
-        mouse_fd = open(mouse_device[try], O_RDWR, 0);
-        if ((mouse_fd >= 0) && (write(mouse_fd, im_init, sizeof(im_init)) == sizeof(im_init))) {
-            mouse_packet_size++;
-            break;
-        }
-        if (mouse_fd < 0)
-            mouse_fd = open(mouse_device[try], O_RDONLY, 0);
-        if (mouse_fd >= 0)
-            break;
-    }
-    if (mouse_fd >= 0) {
-        mouse_x = w >> 1;
-        mouse_y = h >> 1;
-        mouse_buttons = mouse_z = 0;
-        mouse_shown = TRUE;
-        fb_hSoftCursorInit();
+	
+	mouse_packet_size = 3;
+	for (try = 0; mouse_device[try]; try++) {
+		mouse_fd = open(mouse_device[try], O_RDWR, 0);
+		if ((mouse_fd >= 0) && (write(mouse_fd, im_init, sizeof(im_init)) == sizeof(im_init))) {
+			mouse_packet_size++;
+			break;
+		}
+		if (mouse_fd < 0)
+			mouse_fd = open(mouse_device[try], O_RDONLY, 0);
+		if (mouse_fd >= 0)
+			break;
+	}
+	if (mouse_fd >= 0) {
+		mouse_x = w >> 1;
+		mouse_y = h >> 1;
+		mouse_buttons = mouse_z = 0;
+		mouse_shown = TRUE;
+		fb_hSoftCursorInit();
 	}
 	
-    palette = (unsigned short *)malloc(sizeof(unsigned short) * 1536);
-    orig_cmap.start = 0;
-    orig_cmap.len = 256;
-    orig_cmap.transp = NULL;
-    orig_cmap.red = palette;
-    orig_cmap.green = palette + 256;
-    orig_cmap.blue = palette + 512;
-    ioctl(device_fd, FBIOGETCMAP, &orig_cmap);
-    cmap.start = 0;
-    cmap.len = 256;
-    cmap.transp = NULL;
-    cmap.red = palette + 768;
-    cmap.green = palette + 1024;
-    cmap.blue = palette + 1280;
+	palette = (unsigned short *)malloc(sizeof(unsigned short) * 1536);
+	orig_cmap.start = 0;
+	orig_cmap.len = 256;
+	orig_cmap.transp = NULL;
+	orig_cmap.red = palette;
+	orig_cmap.green = palette + 256;
+	orig_cmap.blue = palette + 512;
+	ioctl(device_fd, FBIOGETCMAP, &orig_cmap);
+	cmap.start = 0;
+	cmap.len = 256;
+	cmap.transp = NULL;
+	cmap.red = palette + 768;
+	cmap.green = palette + 1024;
+	cmap.blue = palette + 1280;
 	
 	if (ioctl(device_fd, FBIOGET_VBLANK, &vblank) == 0)
-	    vsync_flags = vblank.flags;
+		vsync_flags = vblank.flags;
 	
 	pthread_mutex_init(&mutex, NULL);
 	pthread_cond_init(&cond, NULL);
@@ -386,21 +386,21 @@ static void driver_exit(void)
 	}
 	
 	if (mouse_fd >= 0) {
-	    fb_hSoftCursorExit();
-	    close(mouse_fd);
-	    mouse_fd = -1;
+		fb_hSoftCursorExit();
+		close(mouse_fd);
+		mouse_fd = -1;
 	}
 	
 	if (device_fd >= 0) {
 		fb_hConsoleGfxMode(NULL, NULL, NULL);
 		if (framebuffer) {
 			munmap(framebuffer, device_info.smem_len);
-		    framebuffer = NULL;
+			framebuffer = NULL;
 		}
 		if (palette) {
-		    ioctl(device_fd, FBIOPUTCMAP, &orig_cmap);
-		    free(palette);
-    		palette = NULL;
+			ioctl(device_fd, FBIOPUTCMAP, &orig_cmap);
+			free(palette);
+			palette = NULL;
 		}
 		ioctl(device_fd, FBIOPUT_VSCREENINFO, &orig_mode);
 		close(device_fd);
@@ -426,10 +426,10 @@ static void driver_unlock(void)
 /*:::::*/
 static void driver_set_palette(int index, int r, int g, int b)
 {
-    cmap.red[index] = r << 8;
-    cmap.green[index] = g << 8;
-    cmap.blue[index] = b << 8;
-    is_palette_changed = TRUE;
+	cmap.red[index] = r << 8;
+	cmap.green[index] = g << 8;
+	cmap.blue[index] = b << 8;
+	is_palette_changed = TRUE;
 }
 
 
@@ -445,22 +445,22 @@ static void driver_wait_vsync(void)
 /*:::::*/
 static int driver_get_mouse(int *x, int *y, int *z, int *buttons)
 {
-    if (mouse_fd < 0)
-        return -1;
-    *x = mouse_x;
-    *y = mouse_y;
-    *z = mouse_z;
-    *buttons = mouse_buttons;
-    return 0;
+	if (mouse_fd < 0)
+		return -1;
+	*x = mouse_x;
+	*y = mouse_y;
+	*z = mouse_z;
+	*buttons = mouse_buttons;
+	return 0;
 }
 
 
 /*:::::*/
 static void driver_set_mouse(int x, int y, int cursor)
 {
-    mouse_x = x;
-    mouse_y = y;
-    mouse_shown = (cursor != 0);
+	mouse_x = x;
+	mouse_y = y;
+	mouse_shown = (cursor != 0);
 }
 
 

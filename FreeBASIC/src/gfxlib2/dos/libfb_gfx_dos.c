@@ -232,7 +232,6 @@ static int fb_dos_timer_handler(unsigned irq)
 
 	if ( fb_dos.mouse_ok && fb_dos.mouse_cursor ) {
 		fb_hSoftCursorUnput(mouse_x, mouse_y);
-		fb_hMemSet(fb_mode->dirty + mouse_y, TRUE, MIN(fb_dos.h - mouse_y, 21) );
 	}
 	
 	fb_dos.in_interrupt = FALSE;

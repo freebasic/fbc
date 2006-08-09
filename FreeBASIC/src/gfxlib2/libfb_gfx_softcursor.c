@@ -161,6 +161,7 @@ void fb_hSoftCursorPut(int x, int y)
 void fb_hSoftCursorUnput(int x, int y)
 {
 	copy_cursor_area(x, y, TRUE);
+	fb_hMemSet(fb_mode->dirty + y, TRUE, MIN(CURSOR_H, fb_mode->h - y));
 }
 
 
