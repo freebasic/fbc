@@ -458,8 +458,10 @@ static int driver_get_mouse(int *x, int *y, int *z, int *buttons)
 /*:::::*/
 static void driver_set_mouse(int x, int y, int cursor)
 {
-	mouse_x = x;
-	mouse_y = y;
+	if ((x >= 0) && (x < fb_mode->w))
+		mouse_x = x;
+	if ((y >= 0) && (y < fb_mode->h))
+		mouse_y = y;
 	mouse_shown = (cursor != 0);
 }
 
