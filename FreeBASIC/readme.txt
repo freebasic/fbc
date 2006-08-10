@@ -163,7 +163,7 @@ Debugging:
     - Load it in GDB using: "gdb myapplicationname.exe".
 
     - Set the arguments to the application been debugged using:
-      "set args arg1 arg2 argn". You can also run GBD and pass the arguments 
+      "set args arg1 arg2 argn". You can also run GDB and pass the arguments 
       directly to the application been debugged: 
       "gdb --args myapp.exe arg1 arg2 arg3".
 
