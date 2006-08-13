@@ -221,6 +221,7 @@ union VARIANT
 		wReserved3 as WORD
 		union
 			lVal as integer
+			llVal as LONGLONG
 			bVal as ubyte
 			iVal as short
 			fltVal as single
@@ -284,6 +285,7 @@ type wireVARIANT
 	wReserved3 as USHORT
 	union
 		lVal as LONG
+		llVal as LONGLONG
 		bVal as BYTE
 		iVal as SHORT
 		fltVal as FLOAT
