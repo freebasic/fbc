@@ -1,7 +1,5 @@
 	
-	if open( ".\wstring\lineinput.txt" for input encoding "utf-16" as #1 ) <> 0 then
-		end 1
-	end if
+	open ".\wstring\lineinput.txt" for input encoding "utf-16" as #1
 
 	dim s as wstring * 32 
 	dim i as integer = 0
