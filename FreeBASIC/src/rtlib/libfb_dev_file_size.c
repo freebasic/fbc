@@ -31,33 +31,84 @@
  */
 
 /*
- * file_openencod - UTF-encoded file open function
+ * dev_file_size - file device size calc
  *
- * chng: nov/2005 written [v1ctor]
+ * chng: jul/2005 written [v1ctor]
  *
  */
 
+#include <stdio.h>
+#include <stdlib.h>
 #include "fb.h"
 #include "fb_rterr.h"
 
 /*:::::*/
-FBCALL int fb_FileOpenEncod
+int fb_hDevFileSeekStart
 	(
-		FBSTRING *str,
-		unsigned int mode,
-		unsigned int access,
-		unsigned int lock,
-		int fnum,
-		int len,
-		const char *encoding
+		FILE *fp,
+		int mode,
+		FB_FILE_ENCOD encod,
+		int seek_zero
 	)
 {
-	FB_FILE_ENCOD encod = fb_hFileStrToEncoding( encoding );
+	/* skip the BOM if in UTF-mode */
+    int ofs;
 
-	return fb_FileOpenVfsEx( FB_FILE_TO_HANDLE(fnum), str, mode,
-							 access, lock, len, encod,
-							 (encod == FB_FILE_ENCOD_ASCII?
-							  fb_DevFileOpen :
-							  fb_DevFileOpenEncod) );
+    switch( encod )
+    {
+    case FB_FILE_ENCOD_UTF8:
+    	ofs = 3;
+        break;
+
+	case FB_FILE_ENCOD_UTF16:
+    	ofs = sizeof( UTF_16 );
+        break;
+
+	case FB_FILE_ENCOD_UTF32:
+    	ofs = sizeof( UTF_32 );
+        break;
+
+	default:
+    	if( seek_zero == FALSE )
+    		return 0;
+
+    	ofs = 0;
+	}
+
+	return fseek( fp, ofs, SEEK_SET );
+}
+
+/*:::::*/
+long fb_DevFileGetSize
+	(
+		FILE *fp,
+		int mode,
+		FB_FILE_ENCOD encod,
+		int seek_back
+	)
+{
+	long size = 0;
+
+	switch( mode )
+    {
+    case FB_FILE_MODE_BINARY:
+	case FB_FILE_MODE_RANDOM:
+    case FB_FILE_MODE_INPUT:
+
+		if( fseek( fp, 0, SEEK_END ) != 0 )
+			return -1;
+
+		size = ftell( fp );
+
+		if( seek_back )
+			fb_hDevFileSeekStart( fp, mode, encod, TRUE );
+
+    	break;
+
+	case FB_FILE_MODE_APPEND:
+    	size = ftell( fp );
+	}
+
+	return size;
 }
 

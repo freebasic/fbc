@@ -45,7 +45,10 @@
 #include "fb_rterr.h"
 
 /*:::::*/
-int fb_DevFileEof( struct _FB_FILE *handle )
+int fb_DevFileEof
+	(
+		struct _FB_FILE *handle
+	)
 {
     int res;
     FILE *fp;
@@ -54,40 +57,41 @@ int fb_DevFileEof( struct _FB_FILE *handle )
 
     fp = (FILE*) handle->opaque;
 
-	if( fp == NULL ) {
+	if( fp == NULL )
+	{
 		FB_UNLOCK();
 		return FB_TRUE;
 	}
 
+    res = FB_FALSE;
+
     switch( handle->mode )
     {
+    /* non-text mode? */
     case FB_FILE_MODE_BINARY:
     case FB_FILE_MODE_RANDOM:
-        if( ftell( fp ) >= handle->size ) {
-            FB_UNLOCK();
-            return FB_TRUE;
-        } else {
-            FB_UNLOCK();
-            return FB_FALSE;
-        }
+        res = ( (ftell( fp ) - handle->putback_size) >= handle->size? FB_TRUE : FB_FALSE );
+        break;
+
+    /* text-mode (INPUT, OUTPUT or APPEND) */
+    default:
+    	/* try feof() first, because the EOF char (27) */
+    	if( feof( fp ) )
+    	{
+        	res = FB_TRUE;
+    	}
+		/* if in input mode, feof() won't return TRUE if file_pos == file_size */
+		else if( handle->mode == FB_FILE_MODE_INPUT )
+		{
+        	int has_size = handle->hooks->pfnTell!=NULL && handle->hooks->pfnSeek!=NULL;
+        	/* note: fseek() is unreliable in text-mode, sise must be calculated
+                 	 re-opening the file in binary mode */
+        	if( has_size )
+        		if( (ftell( fp ) - handle->putback_size) >= handle->size )
+            		res = FB_TRUE;
+    	}
     }
 
-    if( feof( fp ) ) {
-        res = FB_TRUE;
-#if 0
-    }
-	/* !!!FIXME!!! fseek() is unreliable in text-mode, we can't use handle->size */
-	else if( handle->mode==FB_FILE_MODE_INPUT ) {
-        int has_size = handle->hooks->pfnTell!=NULL && handle->hooks->pfnSeek!=NULL;
-        if( has_size && (ftell( fp ) >= handle->size) )  {
-            res = FB_TRUE;
-        } else {
-            res = FB_FALSE;
-        }
-#endif
-    } else {
-        res = FB_FALSE;
-    }
 	FB_UNLOCK();
 
 	return res;

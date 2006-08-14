@@ -44,6 +44,14 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
+long fb_DevFileGetSize
+	(
+		FILE *fp,
+		int mode,
+		FB_FILE_ENCOD encod,
+		int seek_back
+	);
+
 int fb_DevFileWriteEncod( struct _FB_FILE *handle, const void* buffer, size_t chars );
 int fb_DevFileWriteEncodWstr( struct _FB_FILE *handle, const FB_WCHAR* buffer, size_t len );
 int fb_DevFileReadEncod( struct _FB_FILE *handle, void *dst, size_t *max_chars );
@@ -69,7 +77,10 @@ static FB_FILE_HOOKS fb_hooks_dev_file = {
 };
 
 /*:::::*/
-static int hCheckBOM( struct _FB_FILE *handle )
+static int hCheckBOM
+	(
+		struct _FB_FILE *handle
+	)
 {
     int res, bom = 0;
     FILE *fp = (FILE *)handle->opaque;
@@ -114,7 +125,10 @@ static int hCheckBOM( struct _FB_FILE *handle )
 }
 
 /*:::::*/
-static int hWriteBOM( struct _FB_FILE *handle )
+static int hWriteBOM
+	(
+		struct _FB_FILE *handle
+	)
 {
     int bom;
     FILE *fp = (FILE *)handle->opaque;
@@ -149,7 +163,12 @@ static int hWriteBOM( struct _FB_FILE *handle )
 }
 
 /*:::::*/
-int fb_DevFileOpenEncod( struct _FB_FILE *handle, const char *filename, size_t fname_len )
+int fb_DevFileOpenEncod
+	(
+		struct _FB_FILE *handle,
+		const char *filename,
+		size_t fname_len
+	)
 {
     FILE *fp = NULL;
     char *openmask;
@@ -170,15 +189,18 @@ int fb_DevFileOpenEncod( struct _FB_FILE *handle, const char *filename, size_t f
     switch( handle->mode )
     {
     case FB_FILE_MODE_APPEND:
-        openmask = "ab";				/* will create the file if it doesn't exist */
+        /* will create the file if it doesn't exist */
+        openmask = "ab";
         break;
 
     case FB_FILE_MODE_INPUT:
-        openmask = "rb";				/* will fail if file doesn't exist */
+        /* will fail if file doesn't exist */
+        openmask = "rb";
         break;
 
     case FB_FILE_MODE_OUTPUT:
-        openmask = "wb";       			/* will create the file if it doesn't exist */
+        /* will create the file if it doesn't exist */
+        openmask = "wb";
         break;
 
     default:
@@ -222,6 +244,14 @@ int fb_DevFileOpenEncod( struct _FB_FILE *handle, const char *filename, size_t f
     		FB_UNLOCK();
         	return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
         }
+	}
+
+	/* calc file size */
+    handle->size = fb_DevFileGetSize( fp, handle->mode, handle->encod, TRUE );
+    if( handle->size == -1 )
+    {
+    	fclose( fp );
+        return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 	}
 
     FB_UNLOCK();

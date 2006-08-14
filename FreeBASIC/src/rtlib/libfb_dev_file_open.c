@@ -44,6 +44,22 @@
 #include "fb.h"
 #include "fb_rterr.h"
 
+int fb_hFileSeekStart
+	(
+		FILE *fp,
+		int mode,
+		FB_FILE_ENCOD encod,
+		int seek_zero
+	);
+
+long fb_DevFileGetSize
+	(
+		FILE *fp,
+		int mode,
+		FB_FILE_ENCOD encod,
+		int seek_back
+	);
+
 static FB_FILE_HOOKS fb_hooks_dev_file = {
     fb_DevFileEof,
     fb_DevFileClose,
@@ -61,7 +77,14 @@ static FB_FILE_HOOKS fb_hooks_dev_file = {
     fb_DevFileFlush
 };
 
-int fb_DevFileOpen( struct _FB_FILE *handle, const char *filename, size_t fname_len )
+
+/*:::::*/
+int fb_DevFileOpen
+	(
+		struct _FB_FILE *handle,
+		const char *filename,
+		size_t fname_len
+	)
 {
     FILE *fp = NULL;
     char *openmask;
@@ -82,15 +105,18 @@ int fb_DevFileOpen( struct _FB_FILE *handle, const char *filename, size_t fname_
     switch( handle->mode )
     {
     case FB_FILE_MODE_APPEND:
-        openmask = "ab";				/* will create the file if it doesn't exist */
+        /* will create the file if it doesn't exist */
+        openmask = "ab";
         break;
 
     case FB_FILE_MODE_INPUT:
-        openmask = "rt";				/* will fail if file doesn't exist */
+        /* will fail if file doesn't exist */
+        openmask = "rt";
         break;
 
     case FB_FILE_MODE_OUTPUT:
-        openmask = "wb";       			/* will create the file if it doesn't exist */
+        /* will create the file if it doesn't exist */
+        openmask = "wb";
         break;
 
     case FB_FILE_MODE_BINARY:
@@ -105,7 +131,8 @@ int fb_DevFileOpen( struct _FB_FILE *handle, const char *filename, size_t fname_
             openmask = "rb";
             break;
         default:
-            openmask = "r+b";  			/* w+ would erase the contents */
+            /* w+ would erase the contents */
+            openmask = "r+b";
             break;
         }
     }
@@ -115,6 +142,8 @@ int fb_DevFileOpen( struct _FB_FILE *handle, const char *filename, size_t fname_
         FB_UNLOCK();
         return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
+
+    handle->size = -1;
 
     switch (handle->mode)
     {
@@ -146,6 +175,38 @@ int fb_DevFileOpen( struct _FB_FILE *handle, const char *filename, size_t fname_
                 return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
             }
         }
+
+        break;
+
+    /* special case, fseek() is unreliable in text-mode, so the file size
+       must be calculated in binary mode - bin mode can't be used for text
+       input because newlines must be converted, and EOF char (27) handled */
+    case FB_FILE_MODE_INPUT:
+        /* try opening in binary mode */
+        if( (fp = fopen( fname, "rb" )) == NULL )
+        {
+            FB_UNLOCK();
+            return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
+        }
+
+        /* calc file size */
+        handle->size = fb_DevFileGetSize( fp, FB_FILE_MODE_INPUT, handle->encod, FALSE );
+        if( handle->size == -1 )
+        {
+        	fclose( fp );
+        	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
+        }
+
+        /* now reopen it in text-mode */
+        if( (fp = freopen( fname, openmask, fp )) == NULL )
+        {
+            FB_UNLOCK();
+            return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
+        }
+
+        /* skip BOM, if any */
+        fb_hDevFileSeekStart( fp, FB_FILE_MODE_INPUT, handle->encod, FALSE );
+
         break;
 
     default:
@@ -154,6 +215,17 @@ int fb_DevFileOpen( struct _FB_FILE *handle, const char *filename, size_t fname_
         {
             FB_UNLOCK();
             return fb_ErrorSetNum( FB_RTERROR_FILENOTFOUND );
+        }
+    }
+
+	if( handle->size == -1 )
+	{
+        /* calc file size */
+        handle->size = fb_DevFileGetSize( fp, handle->mode, handle->encod, TRUE );
+        if( handle->size == -1 )
+        {
+        	fclose( fp );
+        	return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
         }
     }
 

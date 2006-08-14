@@ -47,11 +47,50 @@
 void fb_hFileCtx ( int doinit );
 
 /*::::::*/
-int fb_FileOpenVfsRawEx( FB_FILE *handle,
-                         const char *filename, size_t filename_length,
-                         unsigned int mode, unsigned int access,
-                         unsigned int lock, int len, FB_FILE_ENCOD encoding,
-                         FnFileOpen pfnOpen )
+static long hFileGetSize
+	(
+		FB_FILE *handle
+	)
+{
+	long size = 0;
+
+	if( handle->hooks->pfnSeek == NULL || handle->hooks->pfnTell == NULL )
+		return size;
+
+	switch( handle->mode )
+    {
+    	case FB_FILE_MODE_BINARY:
+        case FB_FILE_MODE_RANDOM:
+        case FB_FILE_MODE_INPUT:
+            if( handle->hooks->pfnSeek( handle, 0, SEEK_END ) != 0 )
+            	return -1;
+
+            handle->hooks->pfnTell( handle, &size );
+
+			handle->hooks->pfnSeek( handle, 0, SEEK_SET );
+            break;
+
+		case FB_FILE_MODE_APPEND:
+        	handle->hooks->pfnTell( handle, &size );
+            break;
+	}
+
+	return size;
+}
+
+/*::::::*/
+int fb_FileOpenVfsRawEx
+	(
+		FB_FILE *handle,
+        const char *filename,
+        size_t filename_length,
+        unsigned int mode,
+        unsigned int access,
+        unsigned int lock,
+        int len,
+        FB_FILE_ENCOD encoding,
+        FnFileOpen pfnOpen
+	)
 {
     int result;
 
@@ -76,7 +115,6 @@ int fb_FileOpenVfsRawEx( FB_FILE *handle,
     handle->lock 	 = lock;      /* lock mode not supported yet */
     handle->line_length = 0;
 
-
     /* reclen */
     switch( handle->mode )
     {
@@ -100,51 +138,18 @@ int fb_FileOpenVfsRawEx( FB_FILE *handle,
 		return fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
     }
 
+    /* assume size won't be calculated by dev::open */
+    handle->size = -1;
+
     result = pfnOpen(handle, filename, filename_length);
+
     DBG_ASSERT(result!=FB_RTERROR_OK || handle->hooks!=NULL);
 
-    /* query the file size - only if supported */
-    if (result==0)
+    if( result == 0 )
     {
-        if ( handle->hooks->pfnSeek!=NULL && handle->hooks->pfnTell!=NULL)
-        {
-            switch( mode )
-            {
-            case FB_FILE_MODE_BINARY:
-            case FB_FILE_MODE_RANDOM:
-            case FB_FILE_MODE_INPUT:
-                result = handle->hooks->pfnSeek(handle, 0, SEEK_END);
-                if (result == 0 )
-                {
-                    result = handle->hooks->pfnTell(handle, &handle->size);
-
-                    /* skip the BOM if in UTF-mode */
-                    int ofs;
-                    switch( handle->encod )
-                    {
-                    case FB_FILE_ENCOD_UTF8:
-                    	ofs = 3;
-                    	break;
-                    case FB_FILE_ENCOD_UTF16:
-                    	ofs = sizeof( UTF_16 );
-                    	break;
-                    case FB_FILE_ENCOD_UTF32:
-                    	ofs = sizeof( UTF_32 );
-                    	break;
-                    default:
-                    	ofs = 0;
-                    	break;
-                    }
-
-                    handle->hooks->pfnSeek(handle, ofs, SEEK_SET);
-                }
-                break;
-
-            case FB_FILE_MODE_APPEND:
-                result = handle->hooks->pfnTell(handle, &handle->size);
-                break;
-            }
-        }
+    	/* if size wasn't calculated yet, do it now */
+    	if( handle->size == -1 )
+    		handle->size = hFileGetSize( handle );
     }
     else
     {
@@ -157,10 +162,17 @@ int fb_FileOpenVfsRawEx( FB_FILE *handle,
 }
 
 /*::::::*/
-int fb_FileOpenVfsEx( FB_FILE *handle,
-                      FBSTRING *str_filename, unsigned int mode, unsigned int access,
-                      unsigned int lock, int len, FB_FILE_ENCOD encoding,
-                      FnFileOpen pfnOpen )
+int fb_FileOpenVfsEx
+	(
+		FB_FILE *handle,
+        FBSTRING *str_filename,
+        unsigned int mode,
+        unsigned int access,
+        unsigned int lock,
+        int len,
+        FB_FILE_ENCOD encoding,
+        FnFileOpen pfnOpen
+	)
 {
     char *filename;
     size_t filename_length;
