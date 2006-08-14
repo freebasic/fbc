@@ -38,12 +38,14 @@ typedef struct _JOYDATA {
 static JOYDATA joy[16];
 static int inited = FALSE;
 
+#define POV_LAP 2250
 
 /*:::::*/
 FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6)
 {
 	JOYINFOEX info;
 	JOYDATA *j;
+	int povdir;
 	
 	*buttons = -1;
 	*a1 = *a2 = *a3 = *a4 = *a5 = *a6 = -1000.0;
@@ -76,10 +78,29 @@ FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *
 		*a3 = CALCPOS(info.dwZpos, j->caps.wZmin, j->caps.wZmax);
 	if (j->caps.wCaps & JOYCAPS_HASR)
 		*a4 = CALCPOS(info.dwRpos, j->caps.wRmin, j->caps.wRmax);
-	if (j->caps.wCaps & JOYCAPS_HASU)
-		*a5 = CALCPOS(info.dwUpos, j->caps.wUmin, j->caps.wUmax);
-	if (j->caps.wCaps & JOYCAPS_HASV)
-		*a6 = CALCPOS(info.dwVpos, j->caps.wVmin, j->caps.wVmax);
+	if (j->caps.wCaps & JOYCAPS_HASPOV)
+	{
+		*a5 = *a6 = 0;
+		if(( info.dwPOV > 4500 - POV_LAP ) && ( info.dwPOV < 13500 + POV_LAP ))
+			*a5 = 1;
+		else if(( info.dwPOV > 22500 - POV_LAP ) && ( info.dwPOV < 31500 + POV_LAP ))
+			*a5 = -1;
+
+		if(( info.dwPOV > 13500 - POV_LAP ) && ( info.dwPOV < 22500 + POV_LAP ))
+			*a6 = 1;
+		else if(( info.dwPOV >= 0 ) && ( info.dwPOV < 4500 + POV_LAP ))
+			*a6 = -1;
+		else if(( info.dwPOV > 31500 - POV_LAP ) && ( info.dwPOV < 36000 ))
+			*a6 = -1;
+	}
+	else
+	{
+		if (j->caps.wCaps & JOYCAPS_HASU)
+			*a5 = CALCPOS(info.dwUpos, j->caps.wUmin, j->caps.wUmax);
+		if (j->caps.wCaps & JOYCAPS_HASV)
+			*a6 = CALCPOS(info.dwVpos, j->caps.wVmin, j->caps.wVmax);
+	}
+	
 	*buttons = info.dwButtons;
 	
 	return FB_RTERROR_OK;
