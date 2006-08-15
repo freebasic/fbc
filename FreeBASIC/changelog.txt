@@ -13,6 +13,8 @@ Version 0.17 Beta:
   to make room for new common flags at smaller digits (lillo)
 - the CUSTOM PUT mode now accepts one more parameter to be passed to the blender function, which now must have the form:
   function blender(byval src as uinteger, byval dest as uinteger, byval param as any ptr) as uinteger
+- GETJOYSTICK on win32 returns POV as U, V axis values if POV is available (jeffm)
+- main GFX window on win32 captures mouse input to allow out of window mouse button releases (jeffm)
 
 [added]
 - #macro .. #endmacro, to better support multi-line pre-processor defines (v1c)
@@ -33,6 +35,7 @@ Version 0.17 Beta:
 - linear VESA gfx driver for DOS (DrV)
 - support for typedefs in fixed-len string declarations (v1c)
 - the __FILE_NQ__ and __FUNCTION_NQ__ intrinsic defines, same as __FILE__ and __FUNCTION__, but without double-quotes (v1c)
+- ISDATE function in rtlibx (jeffm)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
