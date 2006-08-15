@@ -86,27 +86,36 @@ LRESULT CALLBACK fb_hWin32WinProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 			break;
 
 		case WM_LBUTTONDOWN:
+			SetCapture( hWnd );
 			mouse_buttons |= 0x1;
 			break;
 
 		case WM_LBUTTONUP:
 			mouse_buttons &= ~0x1;
+			if(!mouse_buttons && GetCapture() == hWnd)
+				ReleaseCapture();
 			break;
 
 		case WM_RBUTTONDOWN:
+			SetCapture( hWnd );
 			mouse_buttons |= 0x2;
 			break;
 
 		case WM_RBUTTONUP:
 			mouse_buttons &= ~0x2;
+			if(!mouse_buttons && GetCapture() == hWnd)
+				ReleaseCapture();
 			break;
 
 		case WM_MBUTTONDOWN:
+			SetCapture( hWnd );
 			mouse_buttons |= 0x4;
 			break;
 
 		case WM_MBUTTONUP:
 			mouse_buttons &= ~0x4;
+			if(!mouse_buttons && GetCapture() == hWnd)
+				ReleaseCapture();
 			break;
 
 		case WM_MOUSEWHEEL:
