@@ -55,7 +55,7 @@ int fb_GfxLineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,
     tmp_result = fb_ConReadLine();
 
     if( addnewline ) {
-        fb_PrintBufferEx( FB_NEWLINE, sizeof(FB_NEWLINE)-1, 0 );
+				fb_PrintVoid( 0, FB_PRINT_NEWLINE );
     }
 
     if( tmp_result!=NULL ) {

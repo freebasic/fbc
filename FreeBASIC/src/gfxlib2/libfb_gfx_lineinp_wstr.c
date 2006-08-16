@@ -51,7 +51,7 @@ int fb_GfxLineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars,
     tmp_result = fb_ConReadLine();
 
     if( addnewline )
-        fb_PrintBufferEx( FB_NEWLINE, sizeof(FB_NEWLINE)-1, 0 );
+				fb_PrintVoid( 0, FB_PRINT_NEWLINE );
 
     if( tmp_result == NULL )
     	return fb_ErrorSetNum( FB_RTERROR_OUTOFMEM );
