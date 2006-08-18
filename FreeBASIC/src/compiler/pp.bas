@@ -421,6 +421,11 @@ private sub hRtrimMacroText _
 	dim as zstring ptr p
 
 	'' remove the white-spaces (including nl)
+	if( text = NULL ) then
+		exit sub
+	elseif( text->data = NULL ) then
+		exit sub
+	end if
 
 	p = text->data + (text->len - 1)
     do while( p > text->data )
