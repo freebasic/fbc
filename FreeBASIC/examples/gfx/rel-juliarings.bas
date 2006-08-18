@@ -5,7 +5,7 @@
 ' Rel.BetterWebber.com
 '
 
-option explicit
+
 
 #ifdef __FB_WIN32__
 #include once "windows.bi"
@@ -210,7 +210,7 @@ do
 #endif
     end if
     ptc_update @buffer(0)
-loop until inkey$ <> ""
+loop until inkey <> ""
 
 
 ptc_close

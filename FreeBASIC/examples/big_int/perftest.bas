@@ -16,7 +16,7 @@
 ''       e-mail:  valyala@gmail.com
 ''***********************************************************************
 
-option explicit
+
 
 #include once "big_int/big_int_full.bi"
 

@@ -2,9 +2,9 @@
 '' regular expression example
 ''
 
-option explicit
 
-'$include: "regex.bi"
+
+#include  "regex.bi"
 
 declare sub printmatches( byval pattern as string, byval buffer as string )
 
@@ -30,7 +30,7 @@ sub printmatches( byval pattern as string, byval buffer as string )
 	res = regexec( @re, pbuff, 1, @pm, 0 )
 	do while( res = 0 )
     	
-    	print "<"; mid$( *pbuff, 1 + pm.rm_so, pm.rm_eo - pm.rm_so ); ">"
+    	print "<"; mid( *pbuff, 1 + pm.rm_so, pm.rm_eo - pm.rm_so ); ">"
     	
     	'' next match
     	pbuff += pm.rm_eo

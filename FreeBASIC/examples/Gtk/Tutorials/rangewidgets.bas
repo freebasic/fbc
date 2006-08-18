@@ -1,9 +1,6 @@
 ' Rangewidgets.bas
 ' Translated from C to FB by TinyCla, 2006
 
-Option Explicit
-Option Escape
-
 #include once "gtk/gtk.bi"
 
 #define NULL 0
@@ -12,7 +9,7 @@ Dim Shared As GtkWidget Ptr hscale
 Dim Shared As GtkWidget Ptr vscale
 
 
-Function CLAMP(x As gdouble, low As gdouble, high As gdouble) As double
+Function CLAMP(byval x As gdouble, byval low As gdouble, byval high As gdouble) As double
     
 	Dim retval As double
 	If x > high Then

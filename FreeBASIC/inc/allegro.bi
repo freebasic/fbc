@@ -9,7 +9,11 @@
 #ifndef __allegro_bi__
 #define __allegro_bi__
 
-	option nokeyword screen, circle, line, palette, rgb
+#undef screen
+#undef circle
+#undef line
+#undef palette
+#undef rgb
 
 #include once "allegro/base.bi"
 #include once "allegro/system.bi"

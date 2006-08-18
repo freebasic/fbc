@@ -1,4 +1,4 @@
-option explicit
+
 
 const TEST_LC = "hello!"
 const TEST_UC = "HELLO!"

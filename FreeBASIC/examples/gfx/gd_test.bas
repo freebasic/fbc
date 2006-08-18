@@ -2,16 +2,16 @@
 '' GD library test
 ''
 
-option explicit
+
 
 #include once "gd/gd.bi"
 
 const IMG_WIDTH = 320
 const IMG_HEIGHT = 200
 
-declare function saveImgToGIF( byval img as gdImagePtr, filename as string ) as integer
-declare function saveImgToPNG( byval img as gdImagePtr, filename as string ) as integer
-declare function saveImgToJPEG( byval img as gdImagePtr, filename as string ) as integer
+declare function saveImgToGIF( byval img as gdImagePtr, byref filename as string ) as integer
+declare function saveImgToPNG( byval img as gdImagePtr, byref filename as string ) as integer
+declare function saveImgToJPEG( byval img as gdImagePtr, byref filename as string ) as integer
 
 '':::::
 	
@@ -44,7 +44,7 @@ declare function saveImgToJPEG( byval img as gdImagePtr, filename as string ) as
 	
 	
 '':::::	
-function saveImgToGIF( byval img as gdImagePtr, filename as string ) as integer
+function saveImgToGIF( byval img as gdImagePtr, byref filename as string ) as integer
 	dim outf as FILE ptr
 	
 	function = 0
@@ -63,7 +63,7 @@ function saveImgToGIF( byval img as gdImagePtr, filename as string ) as integer
 end function
 
 '':::::	
-function saveImgToPNG( byval img as gdImagePtr, filename as string ) as integer
+function saveImgToPNG( byval img as gdImagePtr, byref filename as string ) as integer
 	dim outf as FILE ptr
 	
 	function = 0
@@ -82,7 +82,7 @@ function saveImgToPNG( byval img as gdImagePtr, filename as string ) as integer
 end function
 
 '':::::	
-function saveImgToJPEG( byval img as gdImagePtr, filename as string ) as integer
+function saveImgToJPEG( byval img as gdImagePtr, byref filename as string ) as integer
 	dim outf as FILE ptr
 	
 	function = 0

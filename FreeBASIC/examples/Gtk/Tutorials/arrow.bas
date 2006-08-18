@@ -1,8 +1,6 @@
 ' Arrow.bas
 ' translated from C to FB by TinyCla, 2006
 
-Option Explicit
-Option escape
 
 #include once "gtk/gtk.bi"
 

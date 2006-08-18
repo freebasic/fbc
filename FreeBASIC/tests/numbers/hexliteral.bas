@@ -1,4 +1,4 @@
-option explicit
+
 
 dim as ulongint lint
 

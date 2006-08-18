@@ -2,13 +2,13 @@
 '' command-line arguments example
 ''
 
- 	print "exe name= "; command$( 0 )
+ 	print "exe name= "; command( 0 )
  	
  	dim argc as integer, argv as string
  	 	
  	argc = 1
  	do
- 		argv = command$( argc )
+ 		argv = command( argc )
  		
  		if( len( argv ) = 0 ) then
  			exit do

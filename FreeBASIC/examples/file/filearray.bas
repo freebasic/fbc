@@ -8,11 +8,12 @@ sub test
 const ENTRIES = 10
 	
 	'' save array
-	dim outarray(0 to ENTRIES-1) as byte
+	dim as byte outarray(0 to ENTRIES-1)
 	
-	f = freefile
+	dim as integer f = freefile
 	open "test.dat" for binary as #f
 	
+	dim as integer i
 	for i = 0 to ENTRIES-1
 		outarray(i) = i
 	next i
@@ -22,7 +23,7 @@ const ENTRIES = 10
 	close #f
 	
 	'' load array
-	dim inarray(0 to ENTRIES-1) as byte
+	dim as byte inarray(0 to ENTRIES-1) 
 	
 	f = freefile
 	open "test.dat" for binary as #f

@@ -2,7 +2,7 @@
 '' combo box example, translated from an C example written by Özcan Güngör
 ''
 
-option explicit
+
 #include once "gtk/gtk.bi"
 
 #define NULL 0

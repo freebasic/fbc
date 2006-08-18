@@ -14,7 +14,7 @@ end type
 	t(0).d = 2.0
 	t(0).e = "3"
 	
-	i = 5
+	dim as integer i = 5
 	
 	print t(0).c, t(0).d, t(0).e
 	

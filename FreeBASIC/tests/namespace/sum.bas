@@ -1,4 +1,4 @@
-option explicit
+
 
 extern "c++"
 

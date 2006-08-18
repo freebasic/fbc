@@ -1,13 +1,11 @@
 'gl_ext_test.bas - FreeBASIC OpenGL example by Bryan Stoeberl
 'demonstrating function pointers for using OpenGL extensions
 
-option explicit
-option private
 
-'$include once: 'GL/gl.bi'
-'$include once: 'GL/glu.bi'
-'$include once: 'GL/glext.bi'
-'$include once: 'GL/glfw.bi'
+#include once "GL/gl.bi"
+#include once "GL/glu.bi"
+#include once "GL/glext.bi"
+#include once "GL/glfw.bi"
 
 #ifndef FALSE
 #define FALSE 0

@@ -1,9 +1,6 @@
 ' Entry.bas
 ' Translated from C to FB by TinyCla, 2006
 
-Option Explicit
-Option Escape
-
 #include once "gtk/gtk.bi"
 
 #define NULL 0
@@ -14,7 +11,7 @@ Sub enter_callback cdecl( Byval widget As GtkWidget Ptr, Byval entry As GtkWidge
 	Dim As Zstring Ptr entry_text
 
 	entry_text = gtk_entry_get_text (GTK_ENTRY (entry))
-	g_print ( "Entry contents:  %s\n", entry_text)
+	g_print ( !"Entry contents:  %s\n", entry_text)
     
 End Sub
 

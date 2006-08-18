@@ -3,7 +3,7 @@
 ''
 ''	Draws the first 127 ascii characters on the screen
 
-option explicit
+
 
 #include once "common.bi"
 

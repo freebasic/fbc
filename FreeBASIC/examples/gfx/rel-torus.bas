@@ -1,9 +1,7 @@
-defint a-z 
-'$include: 'tinyptc.bi' 
+#include "tinyptc.bi" 
 
-
-declare sub smooth( buffer()) 
-declare sub put_pixel(buffer(), byval x as integer, byval y as integer, byval col as integer) 
+declare sub smooth( buffer() as integer) 
+declare sub put_pixel(buffer() as integer, byval x as integer, byval y as integer, byval col as integer) 
 declare sub domain
 
 const SCR_WIDTH = 320 
@@ -24,47 +22,10 @@ const YMID = SCR_HEIGHT \2
    domain
 
 sub domain
-    dim frame as long 
-    dim i as integer 
-    dim sx as single 
-    dim sy as single 
-    dim sz as single 
-    dim cx as single 
-    dim cy as single 
-    dim cz as single 
-    dim xx as single 
-    dim xy as single 
-    dim xz as single 
-    dim yx as single 
-    dim yy as single 
-    dim yz as single 
-    dim zx as single 
-    dim zy as single 
-    dim zz as single 
-    dim rx as single 
-    dim ry as single 
-    dim rz as single 
-    dim ang as integer 
-    dim angx as integer 
-    dim angy as integer 
-    dim angz as integer 
-    dim ax as single 
-    dim ay as single 
-    dim az as single 
-    dim a as single 
-    dim p as single 
-    dim q as single 
-    dim r as single 
-    dim rad as integer 
-    dim x as single 
-    dim y as single 
-    dim z as single 
-    dim dist as integer 
-    dim ox as integer 
-    dim oy as integer 
-    dim tx as integer 
-    dim ty as integer 
-
+   dim as long frame 
+   dim as single sx, sy, sz, cx, cy, cz, xx, xy, xz, yx, yy, yz, zx, zy, zz, rx, ry, rz  
+   dim as single ax, ay, az, a, p, q, r, x, y, z
+   dim as integer i, ang, angx, angy, angz, rad, dist, ox, oy, tx, ty
 
    if( ptc_open( "Playing with the torus", SCR_WIDTH, SCR_HEIGHT ) = 0 ) then 
       end -1 
@@ -142,7 +103,7 @@ sub domain
         smooth buffer() 
         ptc_update @buffer(0) 
 
-    loop until( inkey$ = chr$( 27 ) )
+    loop until( inkey = chr( 27 ) )
 
 
    ptc_close 
@@ -154,7 +115,7 @@ end sub
 'GFX subs/Funks 
 '
 '******************************************************************************************* 
-private sub put_pixel(buffer(), byval x as integer, byval y as integer, byval col as integer) 
+private sub put_pixel(buffer() as integer, byval x as integer, byval y as integer, byval col as integer) 
 
         if( y > 0 and y < SCR_HEIGHT-1 ) then 
         	if( x > 0 and x < SCR_WIDTH-1 ) then 
@@ -165,18 +126,9 @@ private sub put_pixel(buffer(), byval x as integer, byval y as integer, byval co
 end sub 
 
 
-private sub smooth( buffer()) 
-    dim maxpixel as integer 
-    dim offset as integer 
-    dim pixel as integer 
-    dim r as integer 
-    dim g as integer 
-    dim b as integer 
-    dim nr as integer 
-    dim ng as integer 
-    dim nb as integer 
+private sub smooth( buffer() as integer) 
 
-
+    dim as integer maxpixel, offset, pixel, r, g, b, nr, ng, nb
 
     maxpixel = ubound(buffer) 
     for offset = SCR_WIDTH to maxpixel-SCR_WIDTH 

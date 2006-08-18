@@ -3,7 +3,7 @@
 ' *  Copyright (c) 2003-2004 Jean-Yves Lamoureux <jylam@lnxscene.org>
 ' *                All Rights Reserved
 ' *
-' *  $Id$
+' *  Id: cacaball.bas,v 1.2 2005/07/23 17:39:53 v1ctor Exp 
 ' *
 ' *  This program is free software; you can redistribute it and/or
 ' *  modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@
 ' *  02111-1307  USA
 ' */
 
-option explicit
+
 
 #ifndef M_PI
 #   define M_PI 3.14159265358979323846

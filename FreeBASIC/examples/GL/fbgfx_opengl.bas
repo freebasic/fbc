@@ -4,10 +4,10 @@
 ''	Go to http://nehe.gamedev.net for his other great OpenGL tutorials!
 ''
 
-option explicit
 
-'$include: 'GL/gl.bi'
-'$include: 'GL/glu.bi'
+
+#include "GL/gl.bi"
+#include "GL/glu.bi"
 
 dim rtri as single, rquad as single
 
@@ -54,5 +54,5 @@ do
 	rtri += 0.2
 	rquad += 0.15
 	flip
-loop while inkey$ = ""
+loop while inkey = ""
 

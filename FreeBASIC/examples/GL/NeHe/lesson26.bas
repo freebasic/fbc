@@ -21,7 +21,7 @@
 
 '' compile as: fbc -s gui lesson26.bas
 
-option explicit
+
 
 '' Setup our booleans
 const false = 0
@@ -171,11 +171,11 @@ dim shared q as GLUquadricObj ptr                          '' Quadratic For Draw
 			height -= 0.03
 		end if
 		flip  '' flip or crash
-		if inkey$ = chr$(255)+"X" then exit do        '' exit if close box is clicked
+		if inkey = chr(255)+"X" then exit do        '' exit if close box is clicked
 	loop while MULTIKEY(SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
-	while INKEY$ <> "": wend
+	while INKEY <> "": wend
 
 
 	end

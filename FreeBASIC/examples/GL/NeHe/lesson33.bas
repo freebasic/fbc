@@ -6,8 +6,6 @@
 '' ( CHANGE ) Means I Have Changed The Line For This Tutorial.
 ''------------------------------------------------------------------------------
 
-option explicit
-
 '' Setup our booleans
 const false = 0
 const true  = not false
@@ -88,7 +86,7 @@ dim shared texture(2) as structTexture         '' Storage For 2 Textures ( NEW )
 			glPopMatrix ()                                       '' Pop The Matrix
 		next
         flip
-		if inkey$ = chr$(255)+"k" then exit do    '' exit if close box is clicked
+		if inkey = chr(255)+"k" then exit do    '' exit if close box is clicked
 	loop while MULTIKEY(SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer

@@ -1,9 +1,6 @@
 ' Menu.bas
 ' Translated from C to FB by TinyCla, 2006
 
-Option Explicit
-Option Escape
-
 #include once "gtk/gtk.bi"
 
 #define NULL 0
@@ -18,7 +15,7 @@ Option Escape
 ' Note that the "widget" argument is the menu being posted, NOT
 ' the button that was pressed.
  
-Function button_press Cdecl( Byval widget As GtkWidget Ptr, Byval event As GdkEvent Ptr )
+Function button_press Cdecl( Byval widget As GtkWidget Ptr, Byval event As GdkEvent Ptr ) as integer
 	If event->Type = GDK_BUTTON_PRESS Then
 		Dim bevent As GdkEventButton Ptr
 		bevent = cast(GdkEventButton Ptr, event)
@@ -35,7 +32,7 @@ End Function
 ' Print a string when a menu item is selected 
 
 Sub menuitem_response Cdecl( Byval stringa As gchar Ptr )
-    g_print ("%s\n", stringa)
+    g_print (!"%s\n", stringa)
 End Sub
 
 

@@ -1,11 +1,10 @@
-assert(__FB_OPTION_EXPLICIT__ = 0)
 
 
 '' SCOPE...END SCOPE creates a new local scope
 '' implicit variable scope is inherited
 '':::::
 sub test_opt_imp_scope_imp_inherit
-  x = 1
+  dim as integer x = 1
   assert( x = 1 )
   
   scope
@@ -33,16 +32,16 @@ end sub
 '':::::
 sub test_opt_imp_scope_exp_shadow
 
-  x = 1
+  dim as integer x = 1
   assert( x = 1 )
   
   scope
-    dim x
+    dim as integer x
     x += 3
     assert( x = 3 )
   
     scope
-      dim x
+      dim as integer x
       x += 5
       assert( x = 5 )
     end scope
@@ -63,7 +62,7 @@ end sub
 '':::::
 sub test_opt_imp_if_imp_inherit
 
-  x = 1
+  dim as integer x = 1
   assert( x = 1 )
   
   if 1 then
@@ -92,11 +91,11 @@ end sub
 '':::::
 sub test_opt_imp_if_exp_shadow
 
-  x = 1
+  dim as integer x = 1
   assert( x = 1 )
   
   if 1 then
-    dim x
+    dim as integer x
     x += 2
     assert( x = 2 )
   else
@@ -108,7 +107,7 @@ sub test_opt_imp_if_exp_shadow
   if 0 then
     assert( 0 )
   else
-    dim x
+    dim as integer x
     x += 2
     assert( x = 2 )
   end if
@@ -125,7 +124,7 @@ end sub
 '':::::
 sub test_opt_imp_do
   
-  x = 1
+  dim as integer x = 1
   assert( x = 1 )
   
   do
@@ -140,21 +139,21 @@ sub test_opt_imp_do
   assert( x = 1 )
   
   do
-    dim x
+    dim as integer x
     x += 1
     assert( x = 1 )
     exit do
   loop
   
 
-  i = 0
+  dim as integer i = 0
   assert( i = 0 )
   
   x = 0
   assert( x = 0 )
   
   do
-    dim x
+    dim as integer x
     x += 1
     i += 1
   
@@ -197,7 +196,7 @@ end sub
 '':::::
 sub test_opt_imp_while
   
-  x = 1
+  dim as integer x = 1
   assert( x = 1 )
   
   while 1
@@ -212,20 +211,20 @@ sub test_opt_imp_while
   assert( x = 1 )
   
   while 1
-    dim x
+    dim as integer x
     x += 1
     assert( x = 1 )
     exit while
   wend
   
-  i = 0
+  dim as integer i = 0
   assert( i = 0 )
   
   x = 0
   assert( x = 0 )
   
   while 1
-    dim x
+    dim as integer x
     x += 1
     i += 1
   
@@ -268,9 +267,10 @@ end sub
 '':::::
 sub test_opt_imp_for
   
-  x = 1
+  dim as integer x = 1
   assert( x = 1 )
   
+  dim as integer i
   for i = 1 to 10
     x += 1
     assert( x = 2 )
@@ -283,7 +283,7 @@ sub test_opt_imp_for
   assert( x = 1 )
   
   for i = 1 to 10
-    dim x
+    dim as integer x
     x += 1
     assert( x = 1 )
     exit for
@@ -296,7 +296,7 @@ sub test_opt_imp_for
   assert( x = 0 )
   
   for i = 1 to 10
-    dim x
+    dim as integer x
     x += 1
   
     assert( x = 1 )
@@ -325,7 +325,7 @@ end sub
 '' Explicit Variable Scope Tests
 '' With/without inner explicit dim's
 '' and variable name shadowing.
-option explicit
+
 
 assert(__FB_OPTION_EXPLICIT__ <> 0)
 
@@ -334,7 +334,7 @@ assert(__FB_OPTION_EXPLICIT__ <> 0)
 '' implicit variable scope is inherited
 '':::::
 sub test_opt_exp_scope_imp_inherit
-  dim x
+  dim as integer x
 
   x = 1
   assert( x = 1 )
@@ -363,18 +363,18 @@ end sub
 '':::::
 sub test_opt_exp_scope_exp_shadow
 
-  dim x
+  dim as integer x
 
   x = 1
   assert( x = 1 )
   
   scope
-    dim x
+    dim as integer x
     x += 3
     assert( x = 3 )
   
     scope
-      dim x
+      dim as integer x
       x += 5
       assert( x = 5 )
     end scope
@@ -394,7 +394,7 @@ end sub
 '' implicit variable scope is inherited
 '':::::
 sub test_opt_exp_if_imp_inherit
-  dim x
+  dim as integer x
 
   x = 1
   assert( x = 1 )
@@ -425,13 +425,13 @@ end sub
 '':::::
 sub test_opt_exp_if_exp_shadow
 
-  dim x
+  dim as integer x
 
   x = 1
   assert( x = 1 )
   
   if 1 then
-    dim x
+    dim as integer x
     x += 2
     assert( x = 2 )
   else
@@ -443,7 +443,7 @@ sub test_opt_exp_if_exp_shadow
   if 0 then
     assert( 0 )
   else
-    dim x
+    dim as integer x
     x += 2
     assert( x = 2 )
   end if
@@ -459,7 +459,7 @@ end sub
 '':::::
 sub test_opt_exp_do
 
-  dim x, i
+  dim as integer x, i
     
   x = 1
   assert( x = 1 )
@@ -476,7 +476,7 @@ sub test_opt_exp_do
   assert( x = 1 )
   
   do
-    dim x
+    dim as integer x
     x += 1
     assert( x = 1 )
     exit do
@@ -490,7 +490,7 @@ sub test_opt_exp_do
   assert( x = 0 )
   
   do
-    dim x
+    dim as integer x
     x += 1
     i += 1
   
@@ -532,7 +532,7 @@ end sub
 '':::::
 sub test_opt_exp_while
 
-  dim x, i
+  dim as integer x, i
   
   x = 1
   assert( x = 1 )
@@ -549,7 +549,7 @@ sub test_opt_exp_while
   assert( x = 1 )
   
   while 1
-    dim x
+    dim as integer x
     x += 1
     assert( x = 1 )
     exit while
@@ -562,7 +562,7 @@ sub test_opt_exp_while
   assert( x = 0 )
   
   while 1
-    dim x
+    dim as integer x
     x += 1
     i += 1
   
@@ -604,7 +604,7 @@ end sub
 '':::::
 sub test_opt_exp_for
 
-  dim x, i
+  dim as integer x, i
 
   x = 1
   assert( x = 1 )
@@ -621,7 +621,7 @@ sub test_opt_exp_for
   assert( x = 1 )
   
   for i = 1 to 10
-    dim x
+    dim as integer x
     x += 1
     assert( x = 1 )
     exit for
@@ -634,7 +634,7 @@ sub test_opt_exp_for
   assert( x = 0 )
   
   for i = 1 to 10
-    dim x
+    dim as integer x
     x += 1
   
     assert( x = 1 )
@@ -658,7 +658,7 @@ sub test_opt_exp_for
 end sub
 
 
-'' without option explicit
+'' without 
 
 test_opt_imp_scope_imp_inherit
 test_opt_imp_scope_exp_shadow
@@ -669,7 +669,7 @@ test_opt_imp_while
 test_opt_imp_for
 
 
-'' with option explicit
+'' with 
 
 test_opt_exp_scope_imp_inherit
 test_opt_exp_scope_exp_shadow

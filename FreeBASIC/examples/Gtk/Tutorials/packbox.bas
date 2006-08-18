@@ -1,9 +1,6 @@
 ' Packbox.bas
 ' Translated from C to FB by TinyCla, 2006
 
-Option Explicit
-Option Escape
-
 #include once "gtk/gtk.bi"
 
 #define NULL 0
@@ -89,14 +86,14 @@ End Function
 	' Our init, don't forget this! :) 
 	gtk_init (NULL, NULL)
 	
-	If Command$ = "" Then
-		Print "usage: packbox num, where num is 1, 2, or 3.\n"
+	If Command = "" Then
+		Print "usage: packbox num, where num is 1, 2, or 3."
 		' This just does cleanup in GTK and exits with an exit status of 1. 
 		sleep
 		End 1
 	End If
 	
-	which = Val (Command$)
+	which = Val (Command)
 	
 	' Create our window
 	win = gtk_window_new (GTK_WINDOW_TOPLEVEL)

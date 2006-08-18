@@ -1,10 +1,8 @@
-option explicit
+
 
 #include "vbcompat.bi"
 
 declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as integer )
-
-defint a-z
 
 tests_dateserial:
     data  1,  1, 1900, 1, 2, 2

@@ -1,4 +1,4 @@
-option explicit 
+ 
 
 #define foo1(p) #p
 #define foo2(p) p##p

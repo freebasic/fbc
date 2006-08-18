@@ -15,7 +15,9 @@ const yres = 200*1
 	
 	view (4,4)-(xres-4,yres-4)
 	
-	dim mypal(0 to 255) as integer
+	dim as integer mypal(0 to 255) 
+	
+	dim as integer i
 	for i = 0 to 255
 		mypal(i) = (i \ 4) shl 16
 	next i
@@ -46,7 +48,7 @@ const spritesize = 64
 		color 255, 0
 		print "QB gfx!";
 		
-	loop while( len( inkey$ ) = 0 )
+	loop while( len( inkey ) = 0 )
 	
 	
 '':::::	
@@ -56,6 +58,7 @@ sub createsprite( sprite() as byte, byval w as integer, byval h as integer, byva
 	
 	cls
 
+	dim as integer x, y
 	for y = 0 to h-1
 		for x = 0 to w-1
 			pset (x, y), (x xor y) * 4

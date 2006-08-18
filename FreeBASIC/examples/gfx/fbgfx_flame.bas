@@ -9,7 +9,7 @@
 #define MAX_EXPLOSIONS		32
 #define MAX_EXPLOSION_SIZE	100
 
-option explicit
+
 
 const FALSE = 0
 const TRUE = not FALSE
@@ -127,4 +127,4 @@ end sub
 		work_page xor= 1
 		screenset work_page, work_page xor 1
 		
-	loop while inkey$ = ""
+	loop while inkey = ""

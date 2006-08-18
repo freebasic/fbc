@@ -1,7 +1,7 @@
 ''
 '' wx-c sizers example, by dumbledore
 ''
-option explicit
+
 
 #include once "wx-c/wx.bi" 
 #define TRUE -1 

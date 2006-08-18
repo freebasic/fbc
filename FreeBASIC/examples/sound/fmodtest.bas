@@ -1,7 +1,7 @@
 'Simple FMOD test for FB
 'by Plasma  [11-16-2004]
 
-option explicit
+
 #include once "fmod.bi"
 
 declare sub ErrorQuit( byval Message as string )

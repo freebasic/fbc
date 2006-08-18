@@ -5,7 +5,7 @@
 '' (compile timer.bas first, of course)
 ''
 
-option explicit
+
 
 #include once "timer.bi"
 

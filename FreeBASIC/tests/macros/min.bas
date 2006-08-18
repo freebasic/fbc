@@ -10,6 +10,6 @@
 #define minA(a,b,c,d,e,f,g,h,i,j,k) iif(a <= b, min9(a,c,d,e,f,g,h,i,j,k), min9(b,c,d,e,f,g,h,i,j,k))
 
 
-	res = minA(9,8,7,6,5,4,3,2,1,0,-1)
+	dim as integer res = minA(9,8,7,6,5,4,3,2,1,0,-1)
 	
 	assert( res = -1 )

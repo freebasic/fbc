@@ -103,7 +103,7 @@ end type
 
 '' Declare MilkShape functions
 declare function LoadGLTexture (byval filename as zstring ptr) as uinteger
-declare function Model_LoadModelData(byval pM as MODEL ptr, filename as string) as integer
+declare function Model_LoadModelData(byval pM as MODEL ptr, byref filename as string) as integer
 declare sub Model_Draw(byval pM as MODEL ptr)
 declare sub Model_ReloadTextures(byval pM as MODEL ptr)
 declare sub Model_Init(byval pModel as MODEL ptr)
@@ -113,7 +113,7 @@ declare sub Model_Delete(byval pM as MODEL ptr)
 '' MilkshapeModel.bas
 ''
 
-option explicit
+
 
 ''------------------------------------------------------------------------------
 '' Common window constants
@@ -134,7 +134,7 @@ option explicit
 #include once "GL/glu.bi"
 ''------------------------------------------------------------------------------
 ''Load the model data into the private variables.
-function Model_LoadModelData(byval pM as MODEL ptr, filename as string) as integer
+function Model_LoadModelData(byval pM as MODEL ptr, byref filename as string) as integer
 	dim i as integer, j as integer, c as integer
 	dim ffile as integer
 	dim fileSize as integer

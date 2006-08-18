@@ -1,4 +1,4 @@
-option explicit
+
 
 #include "GL/glut.bi"
 #include "mini.bi"

@@ -2,7 +2,7 @@
 '' simple DOS text-mode example to demonstrate DOS-specific features
 ''
 
-Option Explicit
+
 
 #include "dos/go32.bi"
 #include "dos/pc.bi"

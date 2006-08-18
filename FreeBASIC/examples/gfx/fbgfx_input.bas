@@ -2,7 +2,7 @@
 '' gfxlib input methods demo
 ''
 
-option explicit
+
 
 declare sub center ( byval y as integer, byval text as string, byval col as integer )
 declare sub keyboard_demo
@@ -61,9 +61,9 @@ sub keyboard_demo
 			'' test keypress
 			if (multikey(i)) then
 				if (i <= &h58) then
-					center 6 + numkeys, key(i) + " (scancode &h" + hex$(i) + ")", 4
+					center 6 + numkeys, key(i) + " (scancode &h" + hex(i) + ")", 4
 				else
-					center 6 + numkeys, "unknown key (scancode &h" + hex$(i) + ")", 4
+					center 6 + numkeys, "unknown key (scancode &h" + hex(i) + ")", 4
 				end if
 				numkeys += 1
 			end if
@@ -74,7 +74,7 @@ sub keyboard_demo
 	loop while multikey(1) = 0
 	
 	while multikey(1): wend
-	while inkey$ <> "": wend
+	while inkey <> "": wend
 	
 end sub
 
@@ -88,7 +88,7 @@ sub mouse_demo
 		screencopy 2, 1
 		center 2, "Mouse demo", 9
 		center 4, "Space toggles mouse visibility, ESC to continue.", 12
-		if (inkey$ = " ") then
+		if (inkey = " ") then
 			shown xor= 1
 			if (shown) then
 				setmouse ,,1
@@ -103,16 +103,16 @@ sub mouse_demo
 		if (x = -1) then
 			center 19, "Mouse not available or not in program window", 4
 		else
-			center 18, "Mouse is at " + str$(x) + "," + str$(y), 4
-			center 19, "Buttons: " + bin$(buttons), 4
-			center 20, "Wheel is at " + str$(z), 4
+			center 18, "Mouse is at " + str(x) + "," + str(y), 4
+			center 19, "Buttons: " + bin(buttons), 4
+			center 20, "Wheel is at " + str(z), 4
 		end if
 		screencopy 1, 0
 	loop while multikey(1) = 0
 	
 	setmouse ,,1
 	while multikey(1): wend
-	while inkey$ <> "": wend
+	while inkey <> "": wend
 	
 end sub
 
@@ -151,9 +151,9 @@ sub joystick_demo
 					line (71, axis_pos)-(329, axis_pos + 11), 4, b
 					line (72, axis_pos + 1)-(72 + ((additional_axis(i) + 1.0) * 128.0), axis_pos + 10), 12, bf
 				next i
-				center 19 + num_axis, "Buttons: " + bin$(buttons), 4
+				center 19 + num_axis, "Buttons: " + bin(buttons), 4
 			else
-				center 19, "Buttons: " + bin$(buttons), 4
+				center 19, "Buttons: " + bin(buttons), 4
 			end if
 			
 			cur_x += x / 32

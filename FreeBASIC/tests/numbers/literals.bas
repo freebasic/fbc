@@ -7,7 +7,7 @@
 	
 	assert( 9223372036854775808ULL < 18446744073709551615ULL )
 	
-	assert( (1! or 2!) = 3 )
+	assert( (1F or 2F) = 3 )
 		
-	assert( (1! shl 2!) = 4 )
+	assert( (1F shl 2F) = 4 )
 

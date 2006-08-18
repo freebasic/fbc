@@ -7,8 +7,8 @@
 '
 ' Press any to start/stop the music, ESC to exit.
 
-'$include: "SDL\SDL.bi"
-'$include: "SDL\SDL_mixer.bi"
+#include  "SDL\SDL.bi"
+#include  "SDL\SDL_mixer.bi"
 
 	' Mix_Music actually holds the music information.
 	dim shared music as Mix_Music ptr

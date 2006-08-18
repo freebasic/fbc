@@ -14,6 +14,7 @@ dim y as t
 declare sub foo( array() as integer )
 declare sub bar( array() as t )
 
+	dim i as integer
 	for i = 0 to 3
 		x(10).a(i) = i
 		y.a(i) = 3-i
@@ -37,6 +38,7 @@ declare sub bar( array() as t )
 '':::::
 sub foo( array() as integer )
 
+	dim i as integer
 	for i = 0 to 3
 		print array(i);
 	next i
@@ -45,15 +47,16 @@ sub foo( array() as integer )
 end sub
 
 '':::::
-sub uppercaseme( s as string )
+sub uppercaseme( byref s as string )
 
-	s = ucase$( s )
+	s = ucase( s )
 
 end sub
 
 '':::::
 sub bar( array() as t )
 	
+	dim i as integer, a as integer
 	i = 10
 	a = 3
 	

@@ -2,7 +2,7 @@
 '' file chooser example
 ''
 
-option explicit
+
 #include once "gtk/gtk.bi"
 
 #define NULL 0

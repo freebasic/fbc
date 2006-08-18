@@ -1,4 +1,4 @@
-option explicit
+
 
 type foo1
 	a as integer

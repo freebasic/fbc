@@ -2,9 +2,6 @@
 '' freeBASIC threads example
 ''
 
-defint a-z
-option explicit
-
 const THREADS   = 5
 const SECS 		= 3
 

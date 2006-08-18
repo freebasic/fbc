@@ -1,13 +1,9 @@
 ' Buttonbox.bas
 ' Translated from C to FB by TinyCla, 2006
 
-Option Explicit
-Option Escape
-
 #include once "gtk/gtk.bi"
 
 #define NULL 0
-
 
 ' Create a Button Box with the specified parameters 
 Function create_bbox( Byval horizontal As gint, Byval title As Zstring Ptr, Byval spacing As gint, _

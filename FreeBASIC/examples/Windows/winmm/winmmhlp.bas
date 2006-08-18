@@ -6,7 +6,7 @@
 #error this is a module, not an application
 #endif
 
-option explicit
+
 #include once "windows.bi"
 #include once "win/mmsystem.bi"
 

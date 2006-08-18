@@ -2,23 +2,20 @@
 '' simple http get example using the SDL_net library
 ''
 
-option explicit
-option escape
-
 #include once "SDL/SDL_net.bi"
 
 const RECVBUFFLEN = 8192
-const NEWLINE = "\r\n"
+const NEWLINE = !"\r\n"
 const DEFAULT_HOST = "www.freebasic.net"
 
-declare sub gethostandpath( src as string, hostname as string, path as string )
+declare sub gethostandpath( byref src as string, byref hostname as string, byref path as string )
 	
 	
 	'' globals
 	dim hostname as string
 	dim path as string
 	
-	gethostandpath command$, hostname, path
+	gethostandpath command, hostname, path
 	
 	if( len( hostname ) = 0 ) then
 		hostname = DEFAULT_HOST
@@ -85,16 +82,16 @@ declare sub gethostandpath( src as string, hostname as string, path as string )
 	SDLNet_Quit
 
 '':::::
-sub gethostandpath( src as string, hostname as string, path as string )
+sub gethostandpath( byref src as string, byref hostname as string, byref path as string )
 	dim p as integer
 	
 	p = instr( src, " " )
 	if( p = 0 or p = len( src ) ) then
-		hostname = trim$( src )
+		hostname = trim( src )
 		path = ""
 	else
-		hostname = trim$( left$( src, p-1 ) )
-		path = trim$( mid$( src, p+1 ) )
+		hostname = trim( left( src, p-1 ) )
+		path = trim( mid( src, p+1 ) )
 	end if
 		
 end sub

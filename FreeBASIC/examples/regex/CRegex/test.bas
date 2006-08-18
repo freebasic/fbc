@@ -5,7 +5,7 @@
 '' 			 (note: build the CRegex static library first)
 ''
 
-option explicit 
+ 
 
 #include once "CRegex.bi"
 

@@ -1,4 +1,4 @@
-option explicit
+
 
 const TEST_LIT = "abcdef"
 const TEST_LEN = 32

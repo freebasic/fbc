@@ -1,4 +1,4 @@
-option explicit
+
 
 	dim w as wstring * 10 => "abc"
 	

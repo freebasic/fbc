@@ -2,7 +2,7 @@
 '' FreeType2 library test, by jofers (spam[at]betterwebber.com) 
 '' 
 
-Option Explicit 
+ 
 
 #include "freetype2/freetype.bi" 
 
@@ -20,7 +20,7 @@ End Type
 Dim Shared FT_Var As FT_Var 
 
 Declare sub DrawGlyph(ByVal FontFT As FT_Face, ByVal x As Integer, ByVal y As Integer, ByVal Clr As UInteger)
-Declare Function PrintFT(ByVal x As Integer, ByVal y As Integer, ByVal Text As String, ByVal Font As Integer, ByVal Size As Integer = 14, ByVal Clr As UInteger = Rgb(255, 255, 255)) 
+Declare Function PrintFT(ByVal x As Integer, ByVal y As Integer, ByVal Text As String, ByVal Font As Integer, ByVal Size As Integer = 14, ByVal Clr As UInteger = Rgb(255, 255, 255)) as integer
 Declare Function GetFont(ByVal FontName As String) As Integer 
 
 	' Initialize FreeType 
@@ -68,7 +68,7 @@ End Function
 
 ' Print Text 
 ' ---------- 
-Function PrintFT(ByVal x As Integer, ByVal y As Integer, ByVal Text As String, ByVal Font As Integer, ByVal Size As Integer = 14, ByVal Clr As UInteger = Rgb(255, 255, 255)) 
+Function PrintFT(ByVal x As Integer, ByVal y As Integer, ByVal Text As String, ByVal Font As Integer, ByVal Size As Integer = 14, ByVal Clr As UInteger = Rgb(255, 255, 255)) as integer
     Dim ErrorMsg   As FT_Error 
     Dim FontFT     As FT_Face 
     Dim GlyphIndex As FT_UInt 

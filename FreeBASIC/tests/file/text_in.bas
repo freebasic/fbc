@@ -1,5 +1,3 @@
-defint a-z
-
 '
 '
 ' Test cases
@@ -17,7 +15,7 @@ function TestInputEOF as integer
     	line input #1, l
         select case i
         case 0
-        	if l<>"" and l<>chr$(26) then return 0
+        	if l<>"" and l<>chr(26) then return 0
         case else
             return 0
         end select
@@ -47,7 +45,7 @@ function TestInputContentsEOF1 as integer
         case 0
         	if l<>"1" then return 0
         case 1
-        	if l<>"2" and l<>"2"+chr$(26) then return 0
+        	if l<>"2" and l<>"2"+chr(26) then return 0
         case else
             return 0
         end select
@@ -77,7 +75,7 @@ function TestInputContentsEOF2 as integer
         case 1
         	if l<>"2" then return 0
         case 2
-        	if l<>"" and l<>chr$(26) then return 0
+        	if l<>"" and l<>chr(26) then return 0
         case else
             return 0
         end select
@@ -107,7 +105,7 @@ function TestInputContentsEOF3 as integer
         case 0
         	if l<>"1" then return 0
         case 1
-        	if l<>"2" and l<>"2"+chr$(26) then return 0
+        	if l<>"2" and l<>"2"+chr(26) then return 0
         case 2
         	if l<>"" and l<>"3" then return 0
         case else
@@ -141,7 +139,7 @@ function TestInputContentsEOF4 as integer
         case 1
         	if l<>"2" then return 0
         case 2
-        	if l<>"" and l<>chr$(26)+"3" then return 0
+        	if l<>"" and l<>chr(26)+"3" then return 0
         case 3
             if l<>"4" then return 0
         case else
@@ -171,7 +169,7 @@ function TestBinaryEOF as integer
     	line input #1, l
         select case i
         case 0
-        	if l<>chr$(26) then return 0
+        	if l<>chr(26) then return 0
         case else
             return 0
         end select
@@ -199,7 +197,7 @@ function TestBinaryContentsEOF1 as integer
         case 0
         	if l<>"1" then return 0
         case 1
-        	if l<>"2"+chr$(26) then return 0
+        	if l<>"2"+chr(26) then return 0
         case else
             return 0
         end select
@@ -229,7 +227,7 @@ function TestBinaryContentsEOF2 as integer
         case 1
         	if l<>"2" then return 0
         case 2
-        	if l<>chr$(26) then return 0
+        	if l<>chr(26) then return 0
         case else
             return 0
         end select
@@ -257,7 +255,7 @@ function TestBinaryContentsEOF3 as integer
         case 0
         	if l<>"1" then return 0
         case 1
-        	if l<>"2"+chr$(26) then return 0
+        	if l<>"2"+chr(26) then return 0
         case 2
         	if l<>"3" then return 0
         case else
@@ -289,7 +287,7 @@ function TestBinaryContentsEOF4 as integer
         case 1
         	if l<>"2" then return 0
         case 2
-        	if l<>chr$(26)+"3" then return 0
+        	if l<>chr(26)+"3" then return 0
         case 3
         	if l<>"4" then return 0
         case else

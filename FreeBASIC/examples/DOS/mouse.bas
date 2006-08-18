@@ -2,7 +2,7 @@
 '' simple DOS text-mode mouse example to demonstrate DOS-specific features
 ''
 
-option explicit
+
 
 #include "dos/dpmi.bi"
 

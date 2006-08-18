@@ -2,7 +2,7 @@
 '' simple DOS graphics example to demonstrate DOS-specific features
 ''
 
-Option Explicit
+
 
 #include "dos/dpmi.bi"
 #include "dos/go32.bi"

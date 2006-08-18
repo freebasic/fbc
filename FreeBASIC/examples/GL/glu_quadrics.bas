@@ -7,7 +7,6 @@
 'Richard Eric M. Lope BSN RN
 'Rel.Betterwebber.com
 
-defint a-z
 
 const PI = 3.141593
 const SCR_WIDTH = 640
@@ -16,11 +15,11 @@ const BPP = 16
 const FALSE = 0
 const TRUE = 1
 
-option explicit
 
-'$include: "SDL/SDL.bi"
-'$include: "GL/gl.bi"
-'$include: "GL/glu.bi"
+
+#include  "SDL/SDL.bi"
+#include  "GL/gl.bi"
+#include  "GL/glu.bi"
 
 
 declare sub drawscene ()

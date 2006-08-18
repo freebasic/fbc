@@ -1,9 +1,6 @@
 ' Text.bas
 ' Translated from C to FB by TinyCla, 2006
 
-Option Explicit
-Option Escape
-
 #include once "gtk/gtk.bi"
 
 #define NULL 0
@@ -106,7 +103,7 @@ End Sub
 	gtk_text_insert (GTK_TEXT (text), NULL, @text->style->black, NULL, "Supports ", -1)
 	gtk_text_insert (GTK_TEXT (text), NULL, @val_color, NULL, "colored ", -1)
 	gtk_text_insert (GTK_TEXT (text), NULL, @text->style->black, NULL, "text and different ", -1)
-	gtk_text_insert (GTK_TEXT (text), fixed_font, @text->style->black, NULL, "fonts\n\n", -1)
+	gtk_text_insert (GTK_TEXT (text), fixed_font, @text->style->black, NULL, !"fonts\n\n", -1)
 	
 	' Load the file text.c into the text window 
 	infile = Freefile
@@ -121,7 +118,7 @@ End Sub
 		nchars = Len(inbuf)
 		buffer = inbuf
 		gtk_text_insert (GTK_TEXT (text), fixed_font, NULL, NULL, buffer, nchars)
-		buffer = "\n"
+		buffer = !"\n"
 		gtk_text_insert (GTK_TEXT (text), fixed_font, NULL, NULL, buffer, 1)
 	Loop
 	

@@ -1,4 +1,4 @@
-option explicit
+
 
 #include once "jpeglib.bi"
 

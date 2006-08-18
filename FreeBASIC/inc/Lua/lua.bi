@@ -285,8 +285,8 @@ declare function lua_getstack LUA_API alias "lua_getstack" (byval L as lua_State
 declare function lua_getinfo LUA_API alias "lua_getinfo" (byval L as lua_State ptr, byval what as zstring ptr, byval ar as lua_Debug ptr) as integer
 declare function lua_getlocal LUA_API alias "lua_getlocal" (byval L as lua_State ptr, byval ar as lua_Debug ptr, byval n as integer) as byte ptr
 declare function lua_setlocal LUA_API alias "lua_setlocal" (byval L as lua_State ptr, byval ar as lua_Debug ptr, byval n as integer) as byte ptr
-declare function lua_getupvalue LUA_API alias "lua_getupvalue" (byval L as lua_State ptr, byval funcindex, byval n as integer) as byte ptr
-declare function lua_setupvalue LUA_API alias "lua_setupvalue" (byval L as lua_State ptr, byval funcindex, byval n as integer) as byte ptr
+declare function lua_getupvalue LUA_API alias "lua_getupvalue" (byval L as lua_State ptr, byval funcindex as integer, byval n as integer) as byte ptr
+declare function lua_setupvalue LUA_API alias "lua_setupvalue" (byval L as lua_State ptr, byval funcindex as integer, byval n as integer) as byte ptr
 
 declare function lua_sethook LUA_API alias "lua_sethook" (byval L as lua_State ptr, byval func as lua_Hook, byval mask as integer, byval count as integer) as integer
 declare function lua_gethook LUA_API alias "lua_gethook" (byval L as lua_State ptr) as lua_Hook

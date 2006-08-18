@@ -1,4 +1,4 @@
-option explicit
+
 
 const FALSE = 0
 const TRUE = -1

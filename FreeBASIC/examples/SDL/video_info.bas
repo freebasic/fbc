@@ -2,7 +2,7 @@
 ' SDL_video example
 '
 
-'$include: "SDL\SDL.bi"
+#include  "SDL\SDL.bi"
 
 	Dim Video As SDL_VideoInfo Ptr
 

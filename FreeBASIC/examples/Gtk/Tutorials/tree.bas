@@ -1,16 +1,13 @@
 ' Text.bas
 ' Translated from C to FB by TinyCla, 2006
 
-Option Explicit
-Option Escape
-
 #include once "gtk/gtk.bi"
 
 #define NULL 0
 #define GTK_ENABLE_BROKEN 1
 
 ' for all the GtkItem:: and GtkTreeItem:: signals 
-Static Sub cb_itemsignal Cdecl (Byval item As GtkWidget Ptr, Byval signame As Zstring Ptr )
+Sub cb_itemsignal Cdecl (Byval item As GtkWidget Ptr, Byval signame As Zstring Ptr )
 
 	Dim As Zstring Ptr s_name
 	Dim As GtkLabel Ptr label
@@ -21,31 +18,31 @@ Static Sub cb_itemsignal Cdecl (Byval item As GtkWidget Ptr, Byval signame As Zs
 	' Get the text of the label 
 	gtk_label_get (label, @s_name)
 	' Get the level of the tree which the item is in 
-	g_print ("%s called for item %s->%p, level %d\n", signame, s_name, item, GTK_TREE (item->parent)->level)
+	g_print (!"%s called for item %s->%p, level %d\n", signame, s_name, item, GTK_TREE (item->parent)->level)
     
 End Sub
 
 ' Note that this is never called 
-Static Sub cb_unselect_child Cdecl (Byval root_tree As GtkWidget Ptr, Byval child As GtkWidget Ptr, Byval subtree As GtkWidget Ptr)
+Sub cb_unselect_child Cdecl (Byval root_tree As GtkWidget Ptr, Byval child As GtkWidget Ptr, Byval subtree As GtkWidget Ptr)
     
-	g_print ("unselect_child called for root tree %p, subtree %p, child %p\n", root_tree, subtree, child)
+	g_print (!"unselect_child called for root tree %p, subtree %p, child %p\n", root_tree, subtree, child)
     
 End Sub
 
 ' Note that this is called every time the user clicks on an item,
 ' whether it is already selected or not. 
-Static Sub cb_select_child Cdecl (Byval  root_tree As GtkWidget Ptr, Byval child As GtkWidget Ptr, Byval subtree As GtkWidget Ptr)
+Sub cb_select_child Cdecl (Byval  root_tree As GtkWidget Ptr, Byval child As GtkWidget Ptr, Byval subtree As GtkWidget Ptr)
     
-	g_print ("select_child called for root tree %p, subtree %p, child %p\n", root_tree, subtree, child)
+	g_print (!"select_child called for root tree %p, subtree %p, child %p\n", root_tree, subtree, child)
     
 End Sub
 
-Static Sub cb_selection_changed Cdecl(Byval tree As GtkTree Ptr)
+Sub cb_selection_changed Cdecl(Byval tree As GtkTree Ptr)
 
 	Dim As GList Ptr i
 
-	g_print ("selection_change called for tree %p\n", tree)
-	g_print ("selected objects are:\n")
+	g_print (!"selection_change called for tree %p\n", tree)
+	g_print (!"selected objects are:\n")
 
 	'i = GTK_TREE_SELECTION_OLD (cast(GtkTree ptr, tree))
 	i = tree->selection
@@ -59,7 +56,7 @@ Static Sub cb_selection_changed Cdecl(Byval tree As GtkTree Ptr)
 		item = GTK_WIDGET (i->Data)
 		label = GTK_LABEL (GTK_BIN (item)->child)
 		gtk_label_get (label, @s_name)
-		g_print ("\t%s on level %d\n", s_name, GTK_TREE (item->parent)->level)
+		g_print (!"\t%s on level %d\n", s_name, GTK_TREE (item->parent)->level)
 		i = i->Next
 	Wend
 End Sub
@@ -93,7 +90,7 @@ End Sub
 	
 	' Create the root tree 
 	tree = gtk_tree_new ()
-	g_print ("root tree is %p\n", tree)
+	g_print (!"root tree is %p\n", tree)
 	' connect all GtkTree:: signals 
 	g_signal_connect (G_OBJECT (tree), "select_child", G_CALLBACK (@cb_select_child), tree)
 	g_signal_connect (G_OBJECT (tree), "unselect_child", G_CALLBACK (@cb_unselect_child), tree)
@@ -125,7 +122,7 @@ End Sub
 		gtk_widget_show (item)
 		' Create this item's subtree 
 		subtree = gtk_tree_new ()
-		g_print ("-> item %s->%p, subtree %p\n", itemnames(i), item, subtree)
+		g_print (!"-> item %s->%p, subtree %p\n", itemnames(i), item, subtree)
 	
 		' This is still necessary if you want these signals to be called
 	       ' for the subtree's children.  Note that selection_change will be 
@@ -154,7 +151,7 @@ End Sub
 			g_signal_connect (G_OBJECT (subitem), "toggle", G_CALLBACK (@cb_itemsignal), buffer(2))
 			g_signal_connect (G_OBJECT (subitem), "expand", G_CALLBACK (@cb_itemsignal), buffer(3))
 			g_signal_connect (G_OBJECT (subitem), "collapse", G_CALLBACK (@cb_itemsignal), buffer(4))
-			g_print ("-> -> item %s->%p\n", itemnames(j), subitem)
+			g_print (!"-> -> item %s->%p\n", itemnames(j), subitem)
 			' Add it to its parent tree 
 			gtk_tree_append (GTK_TREE (subtree), subitem)
 			' Show it 

@@ -2,7 +2,7 @@
 ''
 '' make it easier, no need to explicitly add the lib's name to command-line
 ''
-'$inclib: "mylib"
+'inclib: "mylib"
 
 
 ''

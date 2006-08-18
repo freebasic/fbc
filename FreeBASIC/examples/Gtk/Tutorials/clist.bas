@@ -1,9 +1,6 @@
 ' Clist.bas
 ' Translated from C to FB by TinyCla, 2006
 
-Option Explicit
-Option Escape
-
 #include once "gtk/gtk.bi"
 
 #define NULL 0
@@ -67,7 +64,7 @@ Sub selection_made( Byval clist As GtkWidget Ptr, Byval row As gint, Byval colum
 	gtk_clist_get_text (cast (GtkCList Ptr, clist), row, column, @text)
 
 	' Just prints some information about the selected row 
-	g_print ("You selected row %d. More specifically you clicked in column %d, and the text in this cell is %s\n\n", row, column, text)
+	g_print (!"You selected row %d. More specifically you clicked in column %d, and the text in this cell is %s\n\n", row, column, text)
 
 End Sub
 

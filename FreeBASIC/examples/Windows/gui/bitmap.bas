@@ -2,19 +2,19 @@
 '' bitmap drawing test
 ''
 
-option explicit
+
 
 #include once "windows.bi"
 
 declare function WinMain     ( byval hInstance as HINSTANCE, _
                                byval hPrevInstance as HINSTANCE, _
-                               szCmdLine as string, _
+                               byref szCmdLine as string, _
                                byval iCmdShow as integer ) as integer
 
 
 extern fblogo_data(0 to 3126-1) as ubyte
 
-	end WinMain( GetModuleHandle( NULL ), NULL, command$, SW_NORMAL )
+	end WinMain( GetModuleHandle( NULL ), NULL, command, SW_NORMAL )
 
 #define SCALE_MULT 256
 #define SCALE_CALC(x,s) (((x) * (s)) \ SCALE_MULT)
@@ -150,7 +150,7 @@ end function
 ''
 function WinMain ( byval hInstance as HINSTANCE, _
                    byval hPrevInstance as HINSTANCE, _
-                   szCmdLine as string, _
+                   byref szCmdLine as string, _
                    byval iCmdShow as integer ) as integer    
      
     dim wMsg as MSG

@@ -1,7 +1,7 @@
 
 '' to build: fbc -lib movctrl.bas CMovie.bas
 
-option explicit
+
 
 #include once "win/dshow.bi"
 #include once "CMovie.bi"

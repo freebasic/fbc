@@ -12,7 +12,7 @@
 
 '' compile as: fbc -s gui lesson24.bas
 
-option explicit
+
 
 '' Setup our booleans
 const false = 0
@@ -35,9 +35,9 @@ type TEXTUREIMAGE                                  '' Create A Structure
 end type                                           '' Structure Name
 
 ''------------------------------------------------------------------------------
-declare function LoadTGA(byval texture as TEXTUREIMAGE ptr, filename as string) as integer
+declare function LoadTGA(byval texture as TEXTUREIMAGE ptr, byref filename as string) as integer
 declare sub BuildFont()
-declare sub glPrint cdecl (byval x as integer, byval y as integer, byval gset as integer, fmt as string, ...)
+declare sub glPrint cdecl (byval x as integer, byval y as integer, byval gset as integer, byref fmt as string, ...)
 
 
 dim shared textures(0) as TEXTUREIMAGE             '' Storage For One Texture
@@ -150,11 +150,11 @@ dim shared gbase as uinteger                       '' Base Display List For The 
 		end if
 
 		flip  '' flip or crash
-		if inkey$ = chr$(255)+"X" then exit do    '' exit if close box is clicked
+		if inkey = chr(255)+"X" then exit do    '' exit if close box is clicked
 	loop while MULTIKEY(SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
-	while INKEY$ <> "": wend
+	while INKEY <> "": wend
 
 	glDeleteLists(gbase,256)                      '' Delete All 256 Display Lists
 	end
@@ -162,7 +162,7 @@ dim shared gbase as uinteger                       '' Base Display List For The 
 
 '------------------------------------------------------------------------
 '' Loads A TGA File Into Memory
-function LoadTGA(byval texture as TEXTUREIMAGE ptr, filename as string) as integer
+function LoadTGA(byval texture as TEXTUREIMAGE ptr, byref filename as string) as integer
 	dim i as integer
 	dim TGAheader (0 to 11) as ubyte => {0,0,2,0,0,0,0,0,0,0,0,0} '' Uncompressed TGA Header
 	dim TGAcompare(0 to 11) as ubyte           '' Used To Compare TGA Header
@@ -176,7 +176,7 @@ function LoadTGA(byval texture as TEXTUREIMAGE ptr, filename as string) as integ
 	dim b as ubyte
 
 	hFile = freefile                           '' Open The TGA File
-	if (open (filename$, for binary, as hFile) <> 0) then
+	if (open (filename, for binary, as hFile) <> 0) then
 		return false                           '' Exit if File not Even Exist
 	end if
 
@@ -279,7 +279,7 @@ end sub
 
 '------------------------------------------------------------------------
 '' Where The Printing Happens
-sub glPrint cdecl (byval x as integer, byval y as integer, byval gset as integer, fmt as string, ...)
+sub glPrint cdecl (byval x as integer, byval y as integer, byval gset as integer, byref fmt as string, ...)
 	dim text as string * 256                '' Holds Our String
 	dim ap as any ptr                       '' Pointer To List Of Arguments
 

@@ -1,4 +1,4 @@
-OPTION EXPLICIT
+
 
 DIM depth(3) AS INTEGER
 DIM key AS STRING, driver AS STRING
@@ -12,9 +12,9 @@ FOR i = 0 to 2
 	SCREEN 14, depth(i)
 	SCREENINFO w, h, d,,,rate, driver
 	LINE(0,0)-(w-1,h-1),IIF(i = 0, 40, RGB(255, 0, 0)),B
-	LOCATE 2,2: PRINT "Mode: " + STR$(w) + "x" + STR$(h) + "x" + STR$(d);
+	LOCATE 2,2: PRINT "Mode: " + STR(w) + "x" + STR(h) + "x" + STR(d);
 	IF (rate > 0) THEN
-		PRINT " @ " + STR$(rate) + " Hz";
+		PRINT " @ " + STR(rate) + " Hz";
 	END IF
 	PRINT " (" + driver + ")"
 	IF (i = 0) THEN
@@ -26,7 +26,7 @@ FOR i = 0 to 2
 			LINE(32+j, 160)-(32+j, 199), j
 		NEXT
 	END IF
-	key = INKEY$
-	WHILE key = "": key = INKEY$: WEND
-	IF key = CHR$(255) + "X" THEN END
+	key = INKEY
+	WHILE key = "": key = INKEY: WEND
+	IF key = CHR(255) + "X" THEN END
 NEXT i

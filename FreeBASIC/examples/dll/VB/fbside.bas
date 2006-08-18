@@ -2,7 +2,7 @@
 '' compile as: fbc fbside.bas -dll
 ''
 
-option explicit
+
 
 #include once "windows.bi"
 #include once "win/ole2.bi"

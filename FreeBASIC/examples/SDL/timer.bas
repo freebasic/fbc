@@ -1,7 +1,7 @@
 ' SDL_timer example adapted to freeBasic from:
 ' http://www.lugod.org/presentations/sdl-talk-2/18.html 
 
-'$include: "SDL\SDL.bi"
+#include  "SDL\SDL.bi"
 
 	dim shared flag as integer
 

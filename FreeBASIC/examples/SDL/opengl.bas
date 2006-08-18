@@ -4,12 +4,11 @@
 '' Opengl code ported from nehe's gl tutorials
 ''
 
-defint a-z
-option explicit
 
-'$include: "SDL/SDL.bi"
-'$include: "GL/gl.bi"
-'$include: "GL/glu.bi"
+
+#include  "SDL/SDL.bi"
+#include  "GL/gl.bi"
+#include  "GL/glu.bi"
 
 declare sub doRender ()
 

@@ -1,78 +1,78 @@
 
 sub test_1
 	
-	dim z '' no cross
+	dim as integer z '' no cross
 	
 	scope
 	
-		dim y '' no cross
+		dim as integer y '' no cross
 		
 		scope
-			dim x '' no cross
+			dim as integer x '' no cross
 			
 			goto scope2
 			
-			dim w '' no cross
+			dim as integer w '' no cross
 		end scope
 	
-		dim v '' no cross
+		dim as integer v '' no cross
 	end scope
 	
-	dim a '' cross
+	dim as integer a '' cross
 	
 	scope
-		dim b	'' cross
+		dim as integer b	'' cross
 		
 		scope
-			dim c	'' cross
+			dim as integer c	'' cross
 
 scope2:	
 
-			dim d	'' no cross
+			dim as integer d	'' no cross
 		end scope
 		
-		dim e  '' no cross
+		dim as integer e  '' no cross
 	end scope
 	
-	dim f	'' no cross
+	dim as integer f	'' no cross
 	
 end sub
 
 sub test_2
 	
-	dim z '' no cross
+	dim as integer z '' no cross
 	
 	scope
 	
-		dim y '' cross
+		dim as integer y '' cross
 		
 		scope
-			dim x '' cross
+			dim as integer x '' cross
 			
 scope2:
 			
-			dim w '' no cross
+			dim as integer w '' no cross
 		end scope
 	
-		dim v '' no cross
+		dim as integer v '' no cross
 	end scope
 	
-	dim a '' no cross
+	dim as integer a '' no cross
 	
 	scope
-		dim b	'' no cross
+		dim as integer b	'' no cross
 		
 		scope
-			dim c	'' no cross
+			dim as integer c	'' no cross
 
 			goto scope2	
 
-			dim d	'' no cross
+			dim as integer d	'' no cross
 		end scope
 		
-		dim e  '' no cross
+		dim as integer e  '' no cross
 	end scope
 	
-	dim f	'' no cross
+	dim as integer f	'' no cross
 	
 end sub

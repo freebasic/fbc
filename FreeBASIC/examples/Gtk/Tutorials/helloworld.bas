@@ -1,9 +1,6 @@
 ' HelloWorld.bas
 ' Translated from C to FB by TinyCla, 2006
 
-Option Explicit
-Option Escape
-
 #include once "gtk/gtk.bi"
 
 #define NULL 0
@@ -12,18 +9,18 @@ Option Escape
 ' in this example. More on callbacks below.
 Sub hello Cdecl(Byval widget As GtkWidget Ptr, Byval user_data As gpointer Ptr)
 
-	g_print ("Hello World\n")
+	g_print (!"Hello World\n")
 	
 End Sub
 
-Function delete_event Cdecl(Byval widget As GtkWidget Ptr, Byval event As GdkEvent Ptr, Byval user_data As gpointer Ptr)
+Function delete_event Cdecl(Byval widget As GtkWidget Ptr, Byval event As GdkEvent Ptr, Byval user_data As gpointer Ptr) as integer
 	' If you return FALSE in the "delete_event" signal handler,
 	' GTK will emit the "destroy" signal. Returning TRUE means
 	' you don't want the window to be destroyed.
 	' This is useful for popping up 'are you sure you want to quit?'
 	' type dialogs. */
 
-	g_print ("delete event occurred\n")
+	g_print (!"delete event occurred\n")
 
 	' Change TRUE to FALSE and the main window will be destroyed with
 	' a "delete_event". 
@@ -32,7 +29,7 @@ Function delete_event Cdecl(Byval widget As GtkWidget Ptr, Byval event As GdkEve
 End Function
 
 ' Another callback 
-Function destroy Cdecl(Byval widget As GtkWidget Ptr, Byval user_data As gpointer Ptr)
+Function destroy Cdecl(Byval widget As GtkWidget Ptr, Byval user_data As gpointer Ptr) as integer
 
 	gtk_main_quit ()
 	

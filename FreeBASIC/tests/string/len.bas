@@ -1,4 +1,4 @@
-option explicit
+
 
 const strconst = "12345"
 

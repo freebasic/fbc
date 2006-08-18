@@ -1,7 +1,7 @@
 ''
 '' wx-c MDI example, by dumbledore
 ''
-option explicit 
+ 
 
 #include once "wx-c/wx.bi" 
 #define wxCLOSE_BOX &h1000 
@@ -36,7 +36,7 @@ sub init_frames( )
     dim as integer i
     for i = 1 to CHILDREN
     	childframe = wxMDIChildFrame( ) 
-    	wxMDIChildFrame_Create( childframe, mdiparent, -1, "child_" + str$(i), _
+    	wxMDIChildFrame_Create( childframe, mdiparent, -1, "child_" + str(i), _
     							wxSize( 10*i, 10*i ), wxSize( 120, 100 ), _
     							wxDEFAULT_FRAME_STYLE or wxCLOSE_BOX, 0 ) 
 	next

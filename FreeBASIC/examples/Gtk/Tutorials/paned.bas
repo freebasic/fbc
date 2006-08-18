@@ -1,9 +1,6 @@
 ' Paned.bas
 ' Translated from C to FB by TinyCla, 2006
 
-Option Explicit
-Option Escape
-
 #include once "gtk/gtk.bi"
 
 #define NULL 0
@@ -57,14 +54,14 @@ Sub insert_text Cdecl(Byval buffer As GtkTextBuffer Ptr)
 	Dim As GtkTextIter iter
 	Dim As Zstring * 1024 buf_text
  
-	buf_text = "From: pathfinder@nasa.gov\n"
-	buf_text += "To: mom@nasa.gov\n"
-	buf_text += "Subject: Made it!\n"
-	buf_text += "\n"
-	buf_text += "We just got in this morning. The weather has been\n"
-	buf_text += "great - clear but cold, and there are lots of fun sights.\n"
-	buf_text += "Sojourner says hi. See you soon.\n"
-	buf_text += " -Path\n"
+	buf_text = !"From: pathfinder@nasa.gov\n"
+	buf_text += !"To: mom@nasa.gov\n"
+	buf_text += !"Subject: Made it!\n"
+	buf_text += !"\n"
+	buf_text += !"We just got in this morning. The weather has been\n"
+	buf_text += !"great - clear but cold, and there are lots of fun sights.\n"
+	buf_text += !"Sojourner says hi. See you soon.\n"
+	buf_text += !" -Path\n"
 
 	gtk_text_buffer_get_iter_at_offset (buffer, @iter, 0)
 	gtk_text_buffer_insert (buffer, @iter,  buf_text, -1)

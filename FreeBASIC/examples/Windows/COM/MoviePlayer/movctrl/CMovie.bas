@@ -2,7 +2,7 @@
 '' CMovie - the movie "class"
 ''
 
-option explicit
+
 
 #include once "win/dshow.bi"
 #include once "CMovie.bi"

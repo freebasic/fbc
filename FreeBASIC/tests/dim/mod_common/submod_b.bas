@@ -1,5 +1,3 @@
-option explicit
-option private
 
 #include once "submod.bi"
 

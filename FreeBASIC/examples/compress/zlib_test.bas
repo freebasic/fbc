@@ -4,7 +4,7 @@
 
 #include once "zlib.bi"
 
-Option Explicit
+
 
 Dim As Ubyte Ptr src, dest
 Dim As Integer i

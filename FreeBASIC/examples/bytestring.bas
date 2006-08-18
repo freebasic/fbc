@@ -22,6 +22,7 @@ declare function func2( byval s as string ) as zstring ptr
 	s = *p
 	
 	redim t(10) as sometype
+	dim a as integer
 	a = 0
 	t(a).lpstring = p
 	

@@ -17,7 +17,7 @@
 
 '' compile as: fbc -s gui lesson16.bas
 
-option explicit
+
 
 #include once "GL/gl.bi"
 #include once "GL/glu.bi"
@@ -180,9 +180,9 @@ const true  = not false
 		if multikey(SC_LEFT) then yspeed-=0.01     '' If Left Arrow Being Pressed, Decrease yspeed
 
 		flip                                       '' filp or crash
-		if inkey$ = chr$(255)+"X" then exit do     '' exit if close box is clicked
+		if inkey = chr(255)+"X" then exit do     '' exit if close box is clicked
 	loop while MULTIKEY(SC_ESCAPE) = 0             '' exit if EXC is pressed
 	'' Empty keyboard buffer
-	while inkey$ <> "": wend
+	while inkey <> "": wend
 	end
 

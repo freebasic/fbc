@@ -1,9 +1,6 @@
 ' Label.bas
 ' Translated from C to FB by TinyCla, 2006
 
-Option Explicit
-Option Escape
-
 #include once "gtk/gtk.bi"
 
 #define NULL 0
@@ -39,18 +36,18 @@ Option Escape
 	gtk_box_pack_start (GTK_BOX (vbox), frame, FALSE, FALSE, 0)
 	
 	frame = gtk_frame_new ("Multi-line Label")
-	label = gtk_label_new ("This is a Multi-line label.\nSecond line\nThird line")
+	label = gtk_label_new (!"This is a Multi-line label.\nSecond line\nThird line")
 	gtk_container_add (GTK_CONTAINER (frame), label)
 	gtk_box_pack_start (GTK_BOX (vbox), frame, FALSE, FALSE, 0)
 	
 	frame = gtk_frame_new ("Left Justified Label")
-	label = gtk_label_new ("This is a Left-Justified\\nMulti-line label.\nThird      line")
+	label = gtk_label_new (!"This is a Left-Justified\\nMulti-line label.\nThird      line")
 	gtk_label_set_justify (GTK_LABEL (label), GTK_JUSTIFY_LEFT)
 	gtk_container_add (GTK_CONTAINER (frame), label)
 	gtk_box_pack_start (GTK_BOX (vbox), frame, FALSE, FALSE, 0)
 	
 	frame = gtk_frame_new ("Right Justified Label")
-	label = gtk_label_new ("This is a Right-Justified\nMulti-line label.\nFourth line, (j/k)")
+	label = gtk_label_new (!"This is a Right-Justified\nMulti-line label.\nFourth line, (j/k)")
 	gtk_label_set_justify (GTK_LABEL (label), GTK_JUSTIFY_RIGHT)
 	gtk_container_add (GTK_CONTAINER (frame), label)
 	gtk_box_pack_start (GTK_BOX (vbox), frame, FALSE, FALSE, 0)
@@ -63,7 +60,7 @@ Option Escape
 	buffer += "wraps the words to fit.  "
 	buffer += "The time has come, for all good men, to come to "
 	buffer += "the aid of their party.  "
-	buffer += "The sixth sheik's six sheep's sick.\n"
+	buffer += !"The sixth sheik's six sheep's sick.\n"
 	buffer += "     It supports multiple paragraphs correctly, "
 	buffer += "and  correctly   adds "
 	buffer += "many          extra  spaces. "
@@ -79,8 +76,8 @@ Option Escape
 	buffer += "up the entire              width allocated to it.  "
 	buffer += "Here is a sentence to prove "
 	buffer += "my point.  Here is another sentence. "
-	buffer += "Here comes the sun, do de do de do.\n"
-	buffer += "    This is a new paragraph.\n"
+	buffer += !"Here comes the sun, do de do de do.\n"
+	buffer += !"    This is a new paragraph.\n"
 	buffer += "    This is another newer, longer, better "
 	buffer += "paragraph.  It is coming to an end, "
 	buffer += "unfortunately."
@@ -91,7 +88,7 @@ Option Escape
 	gtk_box_pack_start (GTK_BOX (vbox), frame, FALSE, FALSE, 0)
 	
 	frame = gtk_frame_new ("Underlined label")
-	label = gtk_label_new ("This label is underlined!\nThis one is underlined in quite a funky fashion")
+	label = gtk_label_new (!"This label is underlined!\nThis one is underlined in quite a funky fashion")
 	gtk_label_set_justify (GTK_LABEL (label), GTK_JUSTIFY_LEFT)
 	gtk_label_set_pattern (GTK_LABEL (label), "_________________________ _ _________ _ ______     __ _______ ___")
 	gtk_container_add (GTK_CONTAINER (frame), label)

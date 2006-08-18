@@ -5,7 +5,7 @@
 ''			 (build the CHttp static library first)
 ''
 
-option explicit
+
 
 #include once "CHttp.bi"
 

@@ -19,7 +19,7 @@
 
 '' compile as: fbc -s gui lesson29.bas
 
-option explicit
+
 
 '' Setup our booleans
 const false = 0
@@ -131,7 +131,7 @@ dim shared t2 as TEXTURE_IMAGE ptr    '' Pointer To The Texture Image Data Type
 		zrot = zrot + 0.4
 
 		flip  '' flip or crash
-		if inkey$ = chr$(255)+"X" then exit do              '' exit if close box is clicked
+		if inkey = chr(255)+"X" then exit do              '' exit if close box is clicked
 	loop while MULTIKEY(SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
@@ -179,7 +179,7 @@ end sub
 ''------------------------------------------------------------------------------
 '' Read A .RAW File In To The Allocated Image Buffer Using Data In The Image Structure Header.
 '' Flip The Image Top To Bottom.  Returns 0 For Failure Of Read, Or Number Of Bytes Read.
-function ReadTextureData(filename as string, byval buffer as TEXTURE_IMAGE ptr) as integer
+function ReadTextureData(byref filename as string, byval buffer as TEXTURE_IMAGE ptr) as integer
 	dim f as integer
 	dim i as integer, j as integer, k as integer, done as integer
 	dim stride as integer

@@ -1,11 +1,7 @@
-option escape
-option explicit
 
 #include "vbcompat.bi"
 
 declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as integer )
-
-defint a-z
 
 tests_num:
 	data 0.1236,    "",                 ".1236"
@@ -16,7 +12,7 @@ tests_num:
 	data 1234.0,    "",                 "1234"
 
 	data 0.1236,    "##0.00%",          "12.36%"
-    data 123,       "\"asd\\\"",        "asd\\"
+    data 123,       !"\"asd\\\"",       !"asd\\"
 	data 0,         "###",              "0"
 	data 123,       "###",              "123"
 	data 123,       "###00000",         "00123"
@@ -43,7 +39,7 @@ tests_num:
 	data 0.999999,  "#.00e+000",        "1.00e+000"
 
 	data -0.1236,   "##0.00%",          "-12.36%"
-    data -123,      "\"asd\\\"",        "asd\\"
+    data -123,      !"\"asd\\\"",       !"asd\\"
 	data -0,        "###",              "0"
 	data -123,      "###",              "-123"
 	data -123,      "###00000",         "-00123"
@@ -70,7 +66,7 @@ tests_num:
 	data -0.999999, "#.00e+000",        "-1.00e+000"
 
 	data -0.1236,   "##0.00%-",         "12.36%-"
-    data -123,      "\"asd\\\"",        "asd\\"
+    data -123,      !"\"asd\\\"",       !"asd\\"
 	data -0,        "###-",             "0"
 	data -123,      "###-",             "123-"
 	data -123,      "###00000-",        "00123-"
@@ -97,7 +93,7 @@ tests_num:
 	data -0.999999, "#.00e+000-",       "1.00e+000-"
 
 	data 0.1236,    "##0.00%-",         "12.36%"
-    data 123,       "\"asd\\\"",        "asd\\"
+    data 123,       !"\"asd\\\"",       !"asd\\"
 	data 0,         "###-",             "0"
 	data 123,       "###-",             "123"
 	data 123,       "###00000-",        "00123"
@@ -163,7 +159,7 @@ sub test_num
 	    dblValue = val(sValue)
 	    read sMask, sWanted
 '        print sWanted,
-	    sResult = Format$(dblValue, sMask)
+	    sResult = format(dblValue, sMask)
 '        print sResult
         ASSERTWARN( sWanted = sResult )
         read sValue
@@ -181,7 +177,7 @@ sub test_dt
 	    dblValue = datevalue(sValue) + timevalue(sValue)
 	    read sMask, sWanted
 '        print sWanted,
-	    sResult = Format$(dblValue, sMask)
+	    sResult = format(dblValue, sMask)
 '        print sResult
         ASSERTWARN( sWanted = sResult )
         read sValue

@@ -12,7 +12,7 @@
 
 '' compile as: fbc -s gui lesson11.bas
 
-option explicit
+
 
 #include once "GL/gl.bi"
 #include once "GL/glu.bi"
@@ -130,5 +130,5 @@ const TRUE  = not FALSE
 		zrot = zrot + 0.4                             '' Increase The Z Rotation Variable
 
 		flip                                          '' flip or crash
-	loop while inkey$ = ""
+	loop while inkey = ""
 	end

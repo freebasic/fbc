@@ -1,8 +1,6 @@
 ' Rulers.bas
 ' Translated from C to FB by TinyCla, 2006
 
-Option Explicit
-Option Escape
 
 #include once "gtk/gtk.bi"
 
@@ -14,7 +12,7 @@ Option Escape
 #define YSIZE  400
 
 ' This routine gets control when the close button is clicked 
-Function close_application Cdecl( Byval widget As GtkWidget Ptr, Byval event As GdkEvent Ptr, Byval user_data As gpointer )
+Function close_application Cdecl( Byval widget As GtkWidget Ptr, Byval event As GdkEvent Ptr, Byval user_data As gpointer ) as integer
     
 	gtk_main_quit ()
 	Return FALSE

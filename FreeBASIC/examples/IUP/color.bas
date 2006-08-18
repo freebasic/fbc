@@ -1,5 +1,3 @@
-option explicit
-option escape
 
 #include once "IUP/iup.bi"
 

@@ -1,8 +1,6 @@
 ' Scrolledwin.bas
 ' Translated from C to FB by TinyCla, 2006
 
-Option Explicit
-Option Escape
 
 #include once "gtk/gtk.bi"
 
@@ -67,7 +65,7 @@ End Sub
 	' to demonstrate the scrolled window. 
 	For i = 0 To 9
 		For j = 0 To 9
-			buffer = "button (" + Str(i) + "," + Str(j) + ")\n"
+			buffer = "button (" + Str(i) + "," + Str(j) + !")\n"
 			button = gtk_toggle_button_new_with_label (Strptr(buffer))
 			gtk_table_attach_defaults (GTK_TABLE (table), button, i, i + 1, j, j + 1)
 			gtk_widget_show (button)

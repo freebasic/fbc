@@ -5,6 +5,7 @@ sub varints cdecl ( byval n as integer, ... )
 	
 	va = va_first( )
 	
+	dim i as integer 
 	for i = 1 to n
 		assert( va_arg( va, integer ) = i )
 		va = va_next( va, integer )
@@ -18,6 +19,7 @@ sub varintptrs cdecl ( byval n as integer, ... )
 	
 	va = va_first( )
 	
+	dim i as integer
 	for i = 1 to n
 		assert( *va_arg( va, integer ptr ) )
 		va = va_next( va, integer ptr )

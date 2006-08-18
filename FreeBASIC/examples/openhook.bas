@@ -2,8 +2,6 @@
 ' OPEN statement using the OPEN hook.
 '
 
-option explicit
-
 #include "openhook.bi"
 
 ''
@@ -13,7 +11,7 @@ private function IsNumberedDevice _
         byref prefix as string _
     ) as integer
     
-    if ucase$(left$(filename,len(prefix)))=ucase$(prefix) then
+    if ucase(left(filename,len(prefix)))=ucase(prefix) then
         dim as integer i, ch, index
         i = len(prefix)
         ch = filename[i]
@@ -43,7 +41,7 @@ private function MyOpenHook _
     print "Testing file name " & filename
     *pfnFileOpen = @fb_DevFileOpen
     
-    select case ucase$(filename)
+    select case ucase(filename)
     case "SCRN:","CON","CON:"
         *pfnFileOpen = @fb_DevScrnOpen
     
@@ -54,12 +52,12 @@ private function MyOpenHook _
         *pfnFileOpen = @fb_DevErrOpen
     
     case else
-        if ucase$(left$(filename,5))="PIPE:" then
+        if ucase(left(filename,5))="PIPE:" then
             *pfnFileOpen = @fb_DevPipeOpen
-            filename = mid$(filename, 6)
+            filename = mid(filename, 6)
     
-        elseif ucase$(left$(filename,8))="FILE:///" then
-            filename = mid$(filename, 9)
+        elseif ucase(left(filename,8))="FILE:///" then
+            filename = mid(filename, 9)
     
         elseif IsNumberedDevice(filename, "LPT")>=0 then
             *pfnFileOpen = @fb_DevLptOpen

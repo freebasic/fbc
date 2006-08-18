@@ -2,7 +2,7 @@
 '' simple rgb test using the GRX 2D graphics library (DOS, Windows and Linux)
 ''
 
-option explicit
+
 
 #include once "grx/grx20.bi"
 #include once "grx/grxkeys.bi"

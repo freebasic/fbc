@@ -2,7 +2,7 @@
 '' FreeType2 library test, by jofers (spam[at]betterwebber.com)
 ''
 
-Option Explicit 
+ 
 
 #include "freetype2/freetype.bi" 
  

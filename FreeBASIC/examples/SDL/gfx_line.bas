@@ -2,11 +2,8 @@
 '' SDL_gfx library example: line drawing
 ''
 
-defint a-z
-option explicit
-
-'$include: "SDL\SDL.bi"
-'$include: "SDL\SDL_gfx_primitives.bi"
+#include "SDL\SDL.bi"
+#include "SDL\SDL_gfx_primitives.bi"
 
 const SCR_WIDTH  = 320*1
 const SCR_HEIGHT = 240*1

@@ -1,10 +1,10 @@
-option explicit
+
 
 #include once "windows.bi"
 
 const POLY_VERTICES = 5
 
-#define DEG2RAD(x) x * (3.141593# / 180#)
+#define DEG2RAD(x) x * (3.141593 / 180)
 
 declare function        WinMain     ( byval hInstance as HINSTANCE, _
                                       byval hPrevInstance as HINSTANCE, _

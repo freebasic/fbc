@@ -3,7 +3,7 @@
 '' 			   (note: build the wshelper library first)
 ''
 
-option explicit
+
 
 #include once "wshelper.bi"
 #include once "myprotocol.bi"
@@ -320,7 +320,7 @@ end sub
 '':::::
 sub showStatus( )
 	dim xy as integer = locate( )
-	print chr$( 33 + ((screen((xy shr 8) and &hff, xy and &hff) + 1) and 31) );
+	print chr( 33 + ((screen((xy shr 8) and &hff, xy and &hff) + 1) and 31) );
 	locate (xy shr 8) and &hff, xy and &hff
 end sub
 

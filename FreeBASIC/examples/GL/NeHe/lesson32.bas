@@ -6,7 +6,7 @@
 ''
 ''------------------------------------------------------------------------------
 
-option explicit
+
 
 '' Setup our booleans
 const false = 0
@@ -81,9 +81,9 @@ dim shared size(0 to 4) as dimensions => { _
 dim shared as integer mouse_x, mouse_y, mouse_b, mouse_down
  
 '------------------------------------------------------------------------
-declare function LoadTGA(byval texture as TEXTUREIMAGE ptr, filename as string) as integer
+declare function LoadTGA(byval texture as TEXTUREIMAGE ptr, byref filename as string) as integer
 declare sub BuildFont ()
-declare sub glPrint cdecl(byval x as integer, byval y as integer, fmt as string, ...)
+declare sub glPrint cdecl(byval x as integer, byval y as integer, byref fmt as string, ...)
 declare function Compare (byval elem1 as objects ptr, byval elem2 as objects ptr) as integer
 declare sub InitObject (byval num as integer)
 declare function Initialize () as integer
@@ -125,7 +125,7 @@ declare sub drawscr ()
 		lastTickCount = tickCount			        '' Set Last Count To Current Count
 		drawscr()
 		flip
-		if inkey$ = chr$(255)+"k" then exit do      '' exit if close box is clicked
+		if inkey = chr(255)+"k" then exit do      '' exit if close box is clicked
 	loop while MULTIKEY(SC_ESCAPE) = 0
 	Deinitialize()
 	'' Empty keyboard buffer
@@ -134,7 +134,7 @@ declare sub drawscr ()
 	end
 '------------------------------------------------------------------------
 '' Loads A TGA File Into Memory
-function LoadTGA(byval texture as TEXTUREIMAGE ptr, filename as string) as integer
+function LoadTGA(byval texture as TEXTUREIMAGE ptr, byref filename as string) as integer
 	dim i as integer
 	dim TGAheader (0 to 11) as ubyte => {0,0,2,0,0,0,0,0,0,0,0,0} '' Uncompressed TGA Header
 	dim TGAcompare(0 to 11) as ubyte           '' Used To Compare TGA Header
@@ -148,7 +148,7 @@ function LoadTGA(byval texture as TEXTUREIMAGE ptr, filename as string) as integ
 	dim b as ubyte
 
 	hFile = freefile                           '' Open The TGA File
-	if (open (filename$, for binary, as hFile) <> 0) then
+	if (open (filename, for binary, as hFile) <> 0) then
 		return false                           '' Exit if File not Even Exist
 	end if
 
@@ -248,7 +248,7 @@ sub BuildFont ()
 end sub
 
 '------------------------------------------------------------------------
-sub glPrint cdecl(byval x as integer, byval y as integer, fmt as string, ...)    '' Where The Printing Happens
+sub glPrint cdecl(byval x as integer, byval y as integer, byref fmt as string, ...)    '' Where The Printing Happens
 	dim text as string * 256                           '' Holds Our String
 	dim ap as any ptr                                  '' Pointer To List Of Arguments
 

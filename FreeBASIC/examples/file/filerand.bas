@@ -1,13 +1,13 @@
 dim i as long
 
- OPEN "TEST.DAT" FOR RANDOM AS #1
- FOR i = 1 TO 10
-     PUT #1, , i
- NEXT i
+ open "test.dat" for random as #1
+ for i = 1 to 10
+     put #1, , i
+ next i
  
- SEEK #1, 2
- GET #1, , i
+ seek #1, 2
+ get #1, , i
  
- PRINT "Data: "; i; " Current record: "; LOC(1); " Next: "; SEEK(1)
+ print "data: "; i; " current record: "; loc(1); " next: "; seek(1)
  
 

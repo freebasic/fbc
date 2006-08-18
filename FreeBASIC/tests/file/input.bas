@@ -1,4 +1,4 @@
-option explicit
+
 
 const filename = ".\file\input.csv"
 

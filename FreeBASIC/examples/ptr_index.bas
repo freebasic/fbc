@@ -2,8 +2,6 @@
 '' pointer indexing example
 '' 
 
-option explicit
-
 type VECTOR
     x   as integer
     y   as integer

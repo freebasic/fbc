@@ -1,4 +1,4 @@
-option explicit
+
 
 const TEST_VAL0 as integer = 10
 const TEST_VAL1 as integer = 1

@@ -1,4 +1,4 @@
-option explicit
+
 
 type fb_image field = 1
 	width 				as ushort
@@ -12,14 +12,14 @@ type udtfield
 	array(64000+4)		as ubyte
 end type
 
-declare sub redraw(title as string)
+declare sub redraw(byref title as string)
 
 	dim udt as fb_image
 	dim udt_ptr as fb_image ptr
 	dim array(16001) as integer
 	dim array_ptr as integer ptr
 	dim udtf as udtfield, pudtf as udtfield ptr
-	dim k$
+	dim k as string
 
 	screen 13
 
@@ -32,65 +32,65 @@ declare sub redraw(title as string)
 	redraw "array": clear array(0),,64004
 	get (0,0)-(319,199), array
 	cls: put (0,0), array, pset: sleep
-	k$ = inkey$
+	k = inkey
 
 	redraw "array(0)": clear array(0),,64004
 	get (0,0)-(319,199), array(i)
 	cls: put (0,0), array(i), pset: sleep
-	k$ = inkey$
+	k = inkey
 
 	redraw "@array(0)": clear array(0),,64004
 	get (0,0)-(319,199), @array(i)
 	cls: put (0,0), @array(i), pset: sleep
-	k$ = inkey$
+	k = inkey
 
 	redraw "array_ptr": clear array(0),,64004
 	get (0,0)-(319,199), array_ptr
 	cls: put (0,0), array_ptr, pset: sleep
-	k$ = inkey$
+	k = inkey
 
 	redraw "@udt": clear udt,, 64004
 	get (0,0)-(319,199), @udt
 	cls: put (0,0), @udt, pset: sleep
-	k$ = inkey$
+	k = inkey
 
 	redraw "udt_ptr": clear udt,,64004
 	get (0,0)-(319,199), udt_ptr
 	cls: put (0,0), udt_ptr, pset: sleep
-	k$ = inkey$
+	k = inkey
 
 	redraw "@array_ptr[0]": clear array(0),,64004
 	get (0,0)-(319,199), @array_ptr[i]
 	cls: put (0,0), @array_ptr[i], pset: sleep
-	k$ = inkey$
+	k = inkey
 
 	redraw "@udt_ptr[0]": clear udt,,64004
 	get (0,0)-(319,199), @udt_ptr[i]
 	cls: put (0,0), @udt_ptr[i], pset: sleep
-	k$ = inkey$
+	k = inkey
 
 	redraw "udt.array": clear udtf.array(0),,64004
 	get (0,0)-(319,199), udtf.array
 	cls: put (0,0), udtf.array, pset: sleep
-	k$ = inkey$
+	k = inkey
 
 	redraw "udt.array(0)": clear udtf.array(0),,64004
 	get (0,0)-(319,199), udtf.array(i)
 	cls: put (0,0), udtf.array(i), pset: sleep
-	k$ = inkey$
+	k = inkey
 
 	redraw "@udt.array": clear udtf.array(0),,64004
 	get (0,0)-(319,199), @udtf.array(i)
 	cls: put (0,0), @udtf.array(i), pset: sleep
-	k$ = inkey$
+	k = inkey
 
 	redraw "udt->array": clear udtf.array(0),,64004
 	get (0,0)-(319,199), pudtf->array(i)
 	cls: put (0,0), pudtf->array(i), pset: sleep
-	k$ = inkey$
+	k = inkey
 
 
-sub redraw(title as string)
+sub redraw(byref title as string)
 	static as integer c = 1
 	cls
 	line (0,0)-(319,199), c

@@ -2,11 +2,10 @@
 '' SDL_ttf example
 ''
 
-defint a-z
-option explicit
 
-'$include once: "SDL/SDL.bi"
-'$include once: "SDL/SDL_ttf.bi"
+
+#include once "SDL/SDL.bi"
+#include once "SDL/SDL_ttf.bi"
 
 const SCR_WIDTH  = 320
 const SCR_HEIGHT = 240
@@ -18,7 +17,7 @@ const FONTTEXT	 = "tff!"
 
 declare sub drawtext( byval video as SDL_Surface ptr, _
 			  		  byval x as integer, byval y as integer, byval clr as SDL_Color, _
-			  		  text as string, byval font as TTF_Font ptr )
+			  		  byref text as string, byval font as TTF_Font ptr )
 
    
 	dim video as SDL_Surface ptr
@@ -92,7 +91,7 @@ end sub
 '':::::
 sub drawtext( byval video as SDL_Surface ptr, _
 			  byval x as integer, byval y as integer, byval clr as SDL_Color, _
-			  text as string, byval font as TTF_Font ptr ) static
+			  byref text as string, byval font as TTF_Font ptr ) static
       
       dim surface as SDL_Surface ptr
       dim rgbcolor as SDL_Color

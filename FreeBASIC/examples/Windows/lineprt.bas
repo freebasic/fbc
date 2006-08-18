@@ -2,8 +2,6 @@
 '' lineprt -- shows how to use GDI printers from FB using BASIC-only commands
 ''
 
-option explicit
-option private
 
 dim as string printer_name, doc_title
 
@@ -21,6 +19,6 @@ end if
 
 open lpt "LPT:" + printer_name + ",EMU=TTY" + doc_title as 1
 print #1, "Hello World !"
-print #1, chr$(12); ' start a new page
+print #1, chr(12); ' start a new page
 print #1, "I say ""Hello World !"" on page 2"
 close 1

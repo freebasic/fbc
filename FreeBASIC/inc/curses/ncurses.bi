@@ -6,12 +6,15 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __ncurses_bi__
-#define __ncurses_bi__
+#ifndef __curses_ncurses_bi__
+#define __curses_ncurses_bi__
+
+#undef WINDOW
+#undef SCREEN
+#undef BEEP
+#undef GETMOUSE
 
 #inclib "curses"
-
-	option nokeyword WINDOW, SCREEN, BEEP, GETMOUSE
 
 #ifndef FALSE
 	#define FALSE 0

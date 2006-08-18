@@ -1,4 +1,4 @@
-option explicit
+
 
 	dim as integer ptr i1, i2, p
 	dim as integer i

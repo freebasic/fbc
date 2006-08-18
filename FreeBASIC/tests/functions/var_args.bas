@@ -1,4 +1,4 @@
-option explicit
+
 
 const TEST_B as byte = -128
 const TEST_UB as ubyte = 255

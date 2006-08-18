@@ -1,4 +1,4 @@
-option explicit
+
 
 const TEST_1 = wstr( "123" )
 const TEST_2 = wstr( "456" )

@@ -1,4 +1,4 @@
-option explicit
+
 ' SDL_music example adapted to freeBasic from:
 ' http://www.kekkai.org/roger/sdl/mixer/
 '
@@ -6,8 +6,8 @@ option explicit
 '
 ' Press any to start/stop the wav file, ESC to exit.
 
-'$include: "SDL\SDL.bi"
-'$include: "SDL\SDL_mixer.bi"
+#include  "SDL\SDL.bi"
+#include  "SDL\SDL_mixer.bi"
 
 	' Mix_Chunk is like Mix_Music, only it's for ordinary sounds.
 	dim shared phaser as Mix_Chunk ptr

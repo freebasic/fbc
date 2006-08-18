@@ -11,7 +11,7 @@
 
 '' compile as: fbc -s gui lesson31.bas
 
-option explicit
+
 
 '' Setup our booleans
 const false = 0
@@ -61,7 +61,7 @@ dim shared MilkShapeModel as MODEL             '' Holds The Model Data
 		yrot + = 1.0f                                       '' Increase yrot By One
 
 		flip
-		if inkey$ = chr$(255)+"k" then exit do              '' exit if close box is clicked
+		if inkey = chr(255)+"k" then exit do              '' exit if close box is clicked
 	loop while MULTIKEY(SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer

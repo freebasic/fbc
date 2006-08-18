@@ -64,6 +64,7 @@ const NULL = 0
 	
 	'' show substrings stored in the output vector 
 	dim as zstring ptr substring_start  
+	dim as integer substring_length
 	for i = 0 to rc-1
 	    substring_start = @buffer[ovector(2*i)]
 	    substring_length = ovector(2*i+1) - ovector(2*i) 

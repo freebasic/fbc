@@ -1,4 +1,4 @@
-option explicit
+
 
 const TEST_1 = -1
 const TEST_2 = -2

@@ -11,12 +11,12 @@ type mytype
 	z as zstring * 16
 end type	
 
-declare sub somesub( s as string )
+declare sub somesub( byref s as string )
 declare sub somesub2( s() as string )
-declare sub somesub3( t as mytype )
+declare sub somesub3( byref t as mytype )
 declare sub somesub4( t() as mytype )
 	
-	i = 5
+	dim as integer i = 5
 	
 	''---------
 	dim s(10) as string
@@ -93,7 +93,7 @@ declare sub somesub4( t() as mytype )
 	sleep
 	
 '':::::
-sub somesub( s as string )
+sub somesub( byref s as string )
 
 	s = teststr
 	print "asc('H') ="; s[7];
@@ -106,7 +106,7 @@ end sub
 '':::::
 sub somesub2( s() as string )
 
-	i = 4
+	dim as integer i = 4
 	
 	s(i) = teststr
 	print "asc('I') ="; s(i)[8];
@@ -117,7 +117,7 @@ sub somesub2( s() as string )
 end sub	
 
 '':::::
-sub somesub3( t as mytype )
+sub somesub3( byref t as mytype )
 
 	t.s = teststr
 	print "asc('J') ="; t.s[9];
@@ -136,7 +136,7 @@ end sub
 '':::::
 sub somesub4( t() as mytype )
 
-	i = 2
+	dim as integer i = 2
 	
 	t(i).f = teststr
 	print "asc('L') ="; t(i).f[11];

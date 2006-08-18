@@ -1,7 +1,5 @@
 '' CGUI Example program showing how open a window with one close button. The program is 100% meaningless.
 
-option explicit
-option escape
 
 #include once "allegro.bi"
 #include once "cgui.bi"

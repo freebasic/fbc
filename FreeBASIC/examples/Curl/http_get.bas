@@ -2,7 +2,7 @@
 '' Curl HTTP example
 ''
 
-option explicit
+
 
 #include once "curl.bi"
 #include once "crt/string.bi"

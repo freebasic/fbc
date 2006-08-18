@@ -1,11 +1,11 @@
-option explicit
+
 
 #define TEST_SI &hFFFFFFFF
 #define TEST_UI &hFFFFFFFFU
 #define TEST_SL &hFFFFFFFFFFFFFFFFLL
 #define TEST_UL &hFFFFFFFFFFFFFFFFULL
-#define TEST_S  123456.7! 
-#define TEST_D  12345678901234.5#
+#define TEST_S  123456.7F
+#define TEST_D  12345678901234.5D
 
 sub test1
 	dim as longint v

@@ -1,7 +1,7 @@
-option explicit
 
-const foo.bar.abc = 1
-const foo.baz.abc = 2
+
+const foo_bar_abc = 1
+const foo_baz_abc = 2
 
 namespace ns1
 

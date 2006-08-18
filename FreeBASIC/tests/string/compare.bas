@@ -1,6 +1,4 @@
-option explicit
 
-defint a-z
 
 dim as string s1, s2
 

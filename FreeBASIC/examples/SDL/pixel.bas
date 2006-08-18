@@ -2,10 +2,9 @@
 '' SDL pixel ploting example
 ''
 
-defint a-z
-option explicit
 
-'$include: "SDL\SDL.bi"
+
+#include  "SDL\SDL.bi"
 
 const SCR_WIDTH  = 320*1
 const SCR_HEIGHT = 240*1

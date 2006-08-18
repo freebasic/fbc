@@ -13,7 +13,7 @@
 
 '' compile as: fbc -s gui lesson21.bas
 
-option explicit
+
 
 '' Setup our booleans
 const false = 0
@@ -35,11 +35,11 @@ type OBJECT           '' Create A Structure For Our Player
 end type
 
 declare sub BuildFont()
-declare sub glPrint cdecl (byval x as integer, byval y as integer, byval gset as integer, fmt as string, ...)
+declare sub glPrint cdecl (byval x as integer, byval y as integer, byval gset as integer, byref fmt as string, ...)
 declare sub ResetObjects()
 
 dim shared player as OBJECT
-dim shared loop1                                            '' Generic Loop1
+dim shared loop1 as integer                                 '' Generic Loop1
 dim shared stage as integer = 1                             '' Game Stage
 dim shared level as integer = 1                             '' Internal Game Level
 dim shared enemy(8) as OBJECT
@@ -54,8 +54,8 @@ dim shared texture(1) as uinteger                           '' Font Texture Stor
 	dim anti as integer = TRUE                              '' Antialiasing?
 	dim start as single                                     '' start of timing loop
 
-	dim loop2                                               '' Generic Loop2
-	dim gdelay                                              '' Enemy Delay
+	dim loop2 as integer                                    '' Generic Loop2
+	dim gdelay as integer                                   '' Enemy Delay
 	dim adjust as integer = 3                               '' Speed Adjustment For Really Slow Video Cards
 	dim lives as integer = 5                                '' Player Lives
 
@@ -426,7 +426,7 @@ dim shared texture(1) as uinteger                           '' Font Texture Stor
 	loop while MULTIKEY(SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
-	while INKEY$ <> "": wend
+	while INKEY <> "": wend
 
 	glDeleteLists gbase, 256                              '' Delete All 256 Display Lists
 	end
@@ -479,11 +479,11 @@ end sub
 
 '------------------------------------------------------------------------
 '' Where The Printing Happens
-sub glPrint cdecl (byval x as integer, byval y as integer, byval gset as integer, fmt as string, ...)
+sub glPrint cdecl (byval x as integer, byval y as integer, byval gset as integer, byref fmt as string, ...)
 	dim text as string * 256                '' Holds Our String
 	dim ap as any ptr                       '' Pointer To List Of Arguments
 
-	if len(fmt$) = 0 then                   '' If There's No Text
+	if len(fmt) = 0 then                   '' If There's No Text
 		exit sub                            '' Do Nothing
 	end if
 

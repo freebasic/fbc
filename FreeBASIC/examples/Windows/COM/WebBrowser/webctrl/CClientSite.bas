@@ -2,7 +2,7 @@
 '' CClientSite - a "class" that implements the IOleClientSite interface
 '' 
 
-option explicit
+
 
 #include once "Common.bi"
 #include once "crt/string.bi"

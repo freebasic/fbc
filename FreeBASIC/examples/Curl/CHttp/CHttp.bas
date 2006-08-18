@@ -4,7 +4,7 @@
 '' to build: fbc -lib CHtpp.bas CHttpStream.bas CHttpForm.bas
 ''
 
-option explicit
+
 
 #include once "CHttp.bi"
 #include once "curl.bi"

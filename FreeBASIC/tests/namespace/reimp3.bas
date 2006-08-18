@@ -1,4 +1,4 @@
-option explicit
+
 
 enum TEST_RES
 	TEST_T1

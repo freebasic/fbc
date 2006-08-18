@@ -3,7 +3,7 @@
 ''
 ''	User input methods test
 
-option explicit
+
 
 #include once "../console/common.bi"
 

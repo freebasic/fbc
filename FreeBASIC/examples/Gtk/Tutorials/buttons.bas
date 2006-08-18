@@ -1,9 +1,6 @@
 ' Buttons.bas
 ' Translated from C to FB by TinyCla, 2006
 
-Option Explicit
-Option Escape
-
 #include once "gtk/gtk.bi"
 
 #define NULL 0
@@ -40,7 +37,7 @@ End Function
 ' Our usual callback function 
 Sub callback Cdecl(Byval widget As GtkWidget Ptr, Byval user_data As gpointer Ptr)
     
-    g_print ("Hello again - %s was pressed\n", user_data)
+    g_print (!"Hello again - %s was pressed\n", user_data)
     
 End Sub
 

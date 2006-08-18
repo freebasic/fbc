@@ -1,4 +1,4 @@
-option explicit
+
 
 type sub1_t as sub () 
 type sub2_t as sub ( byval as integer ) 

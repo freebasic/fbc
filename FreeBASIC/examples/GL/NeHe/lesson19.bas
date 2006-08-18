@@ -9,7 +9,7 @@
 '' email to leggett@eecs.tulane.edu
 ''
 
-option explicit
+
  
 #include once "GL/gl.bi"
 #include once "GL/glu.bi"
@@ -472,7 +472,7 @@ function drawGLScene( ) as integer
 	if (t - T0 >= 2500) then
 	    dim as GLfloat seconds = (t - T0) / 1000.0
 	    dim as GLfloat fps = Frames / seconds
-	    SDL_WM_SetCaption( "FPS: " + str$( fps ), 0 )
+	    SDL_WM_SetCaption( "FPS: " + str( fps ), 0 )
 	    T0 = t
 	    Frames = 0
 	end if

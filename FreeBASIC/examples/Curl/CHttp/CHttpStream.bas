@@ -2,7 +2,7 @@
 '' CHttp - a pseudo-class wrapper for the CURL library
 ''
 
-option explicit
+
 
 #include once "CHttp.bi"
 #include once "curl.bi"

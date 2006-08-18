@@ -1,4 +1,4 @@
-option explicit 
+ 
 
 const TEST_VAL1 = 1234
 const TEST_VAL2 = 5678

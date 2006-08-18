@@ -7,8 +7,6 @@
 '' based on C++ DX tutorials found on the Net
 ''
 
-option explicit
-option private
 
 #include once "windows.bi"
 #include once "win/ddraw.bi"
@@ -23,7 +21,7 @@ const SCR_BPP 			= 16					'' \
 
 declare function WinMain     ( byval hInstance as HINSTANCE, _
                                byval hPrevInstance as HINSTANCE, _
-                               szCmdLine as string, _
+                               byref szCmdLine as string, _
                                byval iCmdShow as integer ) as integer
 
 
@@ -36,7 +34,7 @@ declare function WinMain     ( byval hInstance as HINSTANCE, _
 	dim shared ddsd AS DDSURFACEDESC2
 
 
-	end WinMain( GetModuleHandle( null ), null, Command$, SW_NORMAL )
+	end WinMain( GetModuleHandle( null ), null, Command, SW_NORMAL )
 
 
 
@@ -144,7 +142,7 @@ sub CleanUp
 end sub
 
 '':::::
-function ProcessIdle
+function ProcessIdle as integer
     dim hRet as integer
     
     function = FALSE
@@ -213,7 +211,7 @@ end function
 '':::::
 function WinMain ( byval hInstance as HINSTANCE, _
                    byval hPrevInstance as HINSTANCE, _
-                   szCmdLine as string, _
+                   byref szCmdLine as string, _
                    byval iCmdShow as integer ) as integer    
 	
 	dim appName as string

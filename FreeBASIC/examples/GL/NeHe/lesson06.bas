@@ -7,7 +7,7 @@
 
 '' compile as: fbc -s gui lesson06.bas
 
-option explicit
+
 
 #include once "GL/gl.bi"
 #include once "GL/glu.bi"
@@ -103,7 +103,7 @@ declare function LoadGLTextures() as integer
 		zrot += 0.4     '' Z Axis Rotation
 		
 		flip
-	loop while inkey$ = ""
+	loop while inkey = ""
 	
 
 '' Load Bitmaps And Convert To Textures

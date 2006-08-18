@@ -7,8 +7,8 @@
 #define mul(x,y) ((x) * (y))
 #define addsubmul(x,y) mul(x+y,y-x)
 
-	b = rnd * 10
-	c = rnd * 10
+	dim as integer b = rnd * 10
+	dim as integer c = rnd * 10
 	print b; " *"; c; " ="; mul(b,c)
 	
 	print b+c; " *"; c-b; " ="; addsubmul(b,c)
@@ -32,9 +32,9 @@ end type
 
 #define printdouble(s) print "doubled: "; s; " "; s
 
-	a$ = "abcd"
+	dim as string a = "abcd"
 	
-	printdouble(a$)
+	printdouble(a)
 	
 ''-----------------------------------	
 
@@ -42,8 +42,8 @@ end type
 
 #define minn(a,b) iif( a <= b, a, b )
 
-	x = rnd * 100
-	y = rnd * 100
+	dim as integer x = rnd * 100
+	dim as integer y = rnd * 100
 	
 	print "min:"; x; ","; y; " ="; minn( x, y )
 	print "max:"; x; ","; y; " ="; maxx( x, y )

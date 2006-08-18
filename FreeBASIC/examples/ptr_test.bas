@@ -2,8 +2,6 @@
 '' simple pointer test, using nodes
 ''
 
-defint a-z
-
 const MAXNODES = 10
 const NULL = 0
 
@@ -27,6 +25,7 @@ end type
 	list.tail = @nodeTB(MAXNODES-1)
 	
 	p = NULL
+	dim as integer i
 	for i = 0 to (MAXNODES-1)-1
 		nodeTB(i).id  = i
 		nodeTB(i).prv = p
@@ -44,7 +43,7 @@ end type
 	
 	p = list.head
 	do while( p <> NULL )
-		res = res + str$( p->id )
+		res = res + str( p->id )
 		p = p->nxt
 	loop
 		

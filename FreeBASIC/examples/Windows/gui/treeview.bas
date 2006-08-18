@@ -3,9 +3,6 @@
 '                    by zydon@mesra.net 
 '-------------------------------------------------------------- 
 
-option explicit 
-option private 
-
 #include once "windows.bi"
 #include once "win/commctrl.bi"
 #include once "win/shellapi.bi"

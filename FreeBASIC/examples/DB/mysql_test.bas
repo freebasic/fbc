@@ -1,4 +1,4 @@
-option explicit
+
 
 #include once "mysql\mysql.bi"
 

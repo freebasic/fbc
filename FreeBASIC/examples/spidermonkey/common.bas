@@ -2,7 +2,7 @@
 '' this is a help module, don't compile as standalone app
 ''
 
-option explicit
+
 
 #include once "common.bi"
 

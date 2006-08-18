@@ -9,7 +9,7 @@
 ''
 ''------------------------------------------------------------------------------
 
-option explicit
+
 
 '' Setup our booleans
 const false = 0
@@ -50,7 +50,7 @@ dim shared BlurTexture as unsigned integer            '' An Unsigned Int To Stor
 		lastTickCount = tickCount			          '' Set Last Count To Current Count
 		drawscr()
 		flip
-		if inkey$ = chr$(255)+"k" then exit do        '' exit if close box is clicked
+		if inkey = chr(255)+"k" then exit do        '' exit if close box is clicked
 	loop while MULTIKEY(SC_ESCAPE) = 0
 
 	glDeleteTextures (1, @BlurTexture)                '' Delete The Blur Texture

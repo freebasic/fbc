@@ -1,4 +1,4 @@
-option explicit
+
 
 #define VARIANT_NOASSIGNMENT
 #include once "variant.bi"

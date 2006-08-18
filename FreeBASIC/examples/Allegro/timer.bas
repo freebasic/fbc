@@ -55,7 +55,7 @@ end sub
 
    	'' the interrupts are now active...
 	do while (keypressed() = 0)
-		textout_centre( screen, font, "x=" + str$(x) + ", y=" + str$(y) + ", z=" + str$(z), _
+		textout_centre( screen, font, "x=" + str(x) + ", y=" + str(y) + ", z=" + str(z), _
       				    SCREEN_W\2, 176, makecol(0, 0, 0) )
 	loop
 

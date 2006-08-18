@@ -13,6 +13,6 @@
 
 declare function format    alias "fb_StrFormat" _
           ( byval value as double, _
-            mask as string="" ) as string
+            byref mask as string="" ) as string
 
 #endif

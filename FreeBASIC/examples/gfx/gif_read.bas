@@ -2,7 +2,7 @@
 '' gif_lib example, by jofers
 ''
 
-option explicit
+
 
 #include once "gif_lib.bi"
 

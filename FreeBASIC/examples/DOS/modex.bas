@@ -2,7 +2,7 @@
 '' DOS example utilizing tweaked VGA mode 320x240x8bpp (Mode X)
 ''
 
-Option Explicit
+
 
 #include "dos/dpmi.bi"
 #include "dos/go32.bi"

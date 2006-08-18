@@ -1,4 +1,4 @@
-option explicit
+
 
 #include "windows.bi" 
 #include "win/commdlg.bi" 

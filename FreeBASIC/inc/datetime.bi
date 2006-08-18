@@ -33,10 +33,10 @@ declare function DateSerial          alias "fb_DateSerial" _
             byval day as integer ) as integer
 
 declare function DateValue           alias "fb_DateValue" _
-          ( s as string ) as integer
+          ( byref s as string ) as integer
 
 declare function IsDate           alias "fb_IsDate" _
-          ( s as string ) as integer
+          ( byref s as string ) as integer
 
 declare function Year                alias "fb_Year" _
           ( byval serial as double ) as integer
@@ -57,7 +57,7 @@ declare function TimeSerial          alias "fb_TimeSerial" _
             byval second as integer ) as double
 
 declare function TimeValue           alias "fb_TimeValue" _
-          ( s as string ) as double
+          ( byref s as string ) as double
 
 declare function Hour                alias "fb_Hour" _
           ( byval serial as double ) as integer
@@ -72,18 +72,18 @@ declare function Now                 alias "fb_Now" _
           ( ) as double
 
 declare function DateAdd             alias "fb_DateAdd" _
-          ( interval as string, _
+          ( byref interval as string, _
             byval number as double, _
             byval serial as double ) as double
 
 declare function DatePart            alias "fb_DatePart" _
-          ( interval as string, _
+          ( byref interval as string, _
             byval serial as double, _
             byval FirstDayOfWeek as integer = fbUseSystem, _
             byval FirstDayOfYear as integer = fbUseSystem ) as integer
 
 declare function DateDiff            alias "fb_DateDiff" _
-          ( interval as string, _
+          ( byref interval as string, _
             byval serial1 as double, _
             byval serial2 as double, _
             byval FirstDayOfWeek as integer = fbUseSystem, _

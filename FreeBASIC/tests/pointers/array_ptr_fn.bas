@@ -11,8 +11,8 @@ end function
 	
 	dim fnarray(10) as fn ptr
 
-	i = 5
-	j = 3
+	dim as integer i = 5
+	dim as integer j = 3
 	fnarray(i) = allocate((j+1) * len( fn ptr ))
 	
 	fnarray(i)[j] = @func

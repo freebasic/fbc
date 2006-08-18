@@ -5,8 +5,8 @@
 '
 ' Press cursor up/down to alter the fade amount.
 
-'$include: "SDL\SDL.bi"
-'$include: "SDL\SDL_image.bi"
+#include  "SDL\SDL.bi"
+#include  "SDL\SDL_image.bi"
 
 sub fade _
    (byval video as SDL_Surface ptr, byval rgb_ as Uint32, byval a as Uint8)

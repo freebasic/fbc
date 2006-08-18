@@ -1,4 +1,4 @@
-option explicit	
+	
 
 enum RESULT
 	RESULT_W

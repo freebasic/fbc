@@ -1,8 +1,8 @@
-option explicit
+
 
 namespace net.fb.sys.console
 	''
-	function getStdIn()
+	function getStdIn() as integer
 		static as integer h = -1
 		
 		if( h = -1 ) then
@@ -15,7 +15,7 @@ namespace net.fb.sys.console
 	end function
 
 	''
-	function getStdOut()
+	function getStdOut() as integer
 		static as integer h = -1
 		
 		if( h = -1 ) then
@@ -28,55 +28,55 @@ namespace net.fb.sys.console
 	end function
 	
 	''
-	sub print_ overload ( byval v as string )
-		print #getStdOut(), v;
+	sub print overload ( byval v as string )
+		.print #getStdOut(), v;
 	end sub
 
 	''
 	sub printnl overload ( byval v as string )
-		print #getStdOut(), v
+		.print #getStdOut(), v
 	end sub
 
 	''
 	sub printnl overload ( byval v as integer )
-		print #getStdOut(), str( v )
+		.print #getStdOut(), str( v )
 	end sub
 
 	''
 	sub printnl overload ( byval v as uinteger )
-		print #getStdOut(), str( v )
+		.print #getStdOut(), str( v )
 	end sub
 	
 	''
 	sub printnl overload ( byval v as longint )
-		print #getStdOut(), str( v )
+		.print #getStdOut(), str( v )
 	end sub
 
 	''
 	sub printnl overload ( byval v as ulongint )
-		print #getStdOut(), str( v )
+		.print #getStdOut(), str( v )
 	end sub
 
 	''
 	sub printnl overload ( byval v as double )
-		print #getStdOut(), str( v )
+		.print #getStdOut(), str( v )
 	end sub
 	
 end namespace
 
-	using net.fb.sys.console
+	using net.fb.sys
 	
-	print_ "string: "
-	printnl "hello!"
-	print_ "integer: "
-	printnl &h7fffffff
-	print_ "uinteger: "
-	printnl &hfffffffful
-	print_ "longint: "
-	printnl &h7fffffffffffffff
-	print_ "ulongint: "
-	printnl &hffffffffffffffffull
-	print_ "double: "
-	printnl 1.23456789012345
+	console.print "string: "
+	console.printnl "hello!"
+	console.print "integer: "
+	console.printnl &h7fffffff
+	console.print "uinteger: "
+	console.printnl &hfffffffful
+	console.print "longint: "
+	console.printnl &h7fffffffffffffff
+	console.print "ulongint: "
+	console.printnl &hffffffffffffffffull
+	console.print "double: "
+	console.printnl 1.23456789012345
 		    
 	

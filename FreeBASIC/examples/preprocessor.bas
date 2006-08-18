@@ -2,8 +2,6 @@
 '' pre-processor test
 ''
 
-option explicit
-
 #define DWORD integer
 #define foo dim 
 #define bar DWORD

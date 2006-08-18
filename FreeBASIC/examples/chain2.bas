@@ -1,7 +1,7 @@
 
 	print "chain2 begins"
 	
-	print command$
+	print command
 	
 	print "chain2 ends"
 	

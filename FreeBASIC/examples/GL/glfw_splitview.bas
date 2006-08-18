@@ -9,7 +9,7 @@
 ''  because I am not a friend of orthogonal projections)
 ''========================================================================
 
-option explicit
+
 
 #include once "GL/gl.bi"
 #include once "GL/glu.bi"

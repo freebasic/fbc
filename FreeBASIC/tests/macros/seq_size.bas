@@ -1,4 +1,4 @@
-option explicit
+
 
 #define CAT(a,b) a##b
 

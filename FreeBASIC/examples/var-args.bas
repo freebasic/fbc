@@ -2,22 +2,20 @@
 '' variable-arguments example
 ''
 
-option explicit
-
-declare sub myprintf cdecl (fmtstr as string, ...)
+declare sub myprintf cdecl (byref fmtstr as string, ...)
 
 	dim s as string
 	
 	s = "bar"
 	
 	myprintf( "integer=%i, longint=%l single=%f, double=%d, string=%s, string=%s", _
-			  1, 1LL shl 32, 2.2!, 3.3#, "foo", s )
+			  1, 1LL shl 32, 2.2, 3.3, "foo", s )
 	
 	print
 	sleep
 	
 '':::::	
-sub myprintf cdecl (fmtstr as string, ...)
+sub myprintf cdecl (byref fmtstr as string, ...)
 	dim as any ptr arg
 	dim as zstring ptr p
 	dim as integer i, char

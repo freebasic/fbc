@@ -2,9 +2,6 @@
 '' file open dialog demo
 ''
 
-option explicit
-option escape
-
 #define WIN_INCLUDEALL
 #include once "windows.bi"
 
@@ -24,7 +21,7 @@ declare sub 	 init_menus		( byval hWnd as HWND )
 
 declare function WinMain     	( byval hInstance as HINSTANCE, _
                                   byval hPrevInstance as HINSTANCE, _
-                                  szCmdLine as string, _
+                                  byref szCmdLine as string, _
                                   byval iCmdShow as integer ) as integer
                                   
                                   
@@ -32,7 +29,7 @@ declare function WinMain     	( byval hInstance as HINSTANCE, _
 	dim shared submenuTB(0 to MAXMENUS) as TMENU
     
     ''
-	end WinMain( GetModuleHandle( null ), null, Command$, SW_NORMAL )
+	end WinMain( GetModuleHandle( null ), null, Command, SW_NORMAL )
 
 '':::::
 function file_getname( byval hWnd as HWND ) as string
@@ -44,7 +41,7 @@ function file_getname( byval hWnd as HWND ) as string
 		.lStructSize 		= sizeof( OPENFILENAME )
 		.hwndOwner	 		= hWnd
 		.hInstance	 		= GetModuleHandle( NULL )
-		.lpstrFilter 		= strptr( "All Files, (*.*)\0*.*\0Bas Files, (*.BAS)\0*.bas\0\0" )
+		.lpstrFilter 		= strptr( !"All Files, (*.*)\0*.*\0Bas Files, (*.BAS)\0*.bas\0\0" )
 		.lpstrCustomFilter 	= NULL
 		.nMaxCustFilter 	= 0
 		.nFilterIndex 		= 1
@@ -120,7 +117,7 @@ function WndProc ( byval hWnd as HWND, _
     	end if
         	
         DrawText( hDC, _
-           		  "\"" & filetoopen & "\"", _
+           		  !"\"" & filetoopen & !"\"", _
            		  -1, _
            		  @rct, _
            		  DT_SINGLELINE or DT_CENTER or DT_VCENTER )
@@ -150,7 +147,7 @@ end function
 '':::::
 function WinMain ( byval hInstance as HINSTANCE, _
                    byval hPrevInstance as HINSTANCE, _
-                   szCmdLine as string, _
+                   byref szCmdLine as string, _
                    byval iCmdShow as integer ) as integer    
      
     dim wMsg as MSG
@@ -211,7 +208,7 @@ function WinMain ( byval hInstance as HINSTANCE, _
 end function
 
 '':::::
-sub menu_insert( byval hmenu as HMENU, byval submenu as integer, title as string, byval flags as integer = 0 )
+sub menu_insert( byval hmenu as HMENU, byval submenu as integer, byref title as string, byval flags as integer = 0 )
     
     with submenuTB(submenu)
     
@@ -224,7 +221,7 @@ sub menu_insert( byval hmenu as HMENU, byval submenu as integer, title as string
 end sub
 
 '':::::
-sub menu_append( byval submenu as integer, byval id as integer, title as string, byval flags as integer = 0 )
+sub menu_append( byval submenu as integer, byval id as integer, byref title as string, byval flags as integer = 0 )
     
     AppendMenu( submenuTB(submenu).hnd, MF_STRING or flags, id, title )
    

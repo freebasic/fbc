@@ -2,7 +2,7 @@
 '' namespace re-implementation + USING test
 ''
 
-option explicit
+
 
 const TEST_T1 = -123
 const TEST_T2 = 123

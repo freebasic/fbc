@@ -8,6 +8,7 @@ sub varstrings cdecl ( byval n as integer, ... )
 	
 	va = va_first( )
 	
+	dim i as integer
 	for i = 1 to n
 		assert( *va_arg( va, zstring ptr ) = strtb(i) )
 		va = va_next( va, zstring ptr )

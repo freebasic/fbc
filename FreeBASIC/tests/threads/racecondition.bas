@@ -1,4 +1,4 @@
-option explicit
+
 
 const THREADS = 100
 

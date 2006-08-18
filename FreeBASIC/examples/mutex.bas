@@ -2,9 +2,6 @@
 '' freeBASIC threaded consumer/producer example using mutexes
 ''
 
-defint a-z
-option explicit
-
 declare sub consumer ( byval param as integer )
 declare sub producer ( byval param as integer )
 

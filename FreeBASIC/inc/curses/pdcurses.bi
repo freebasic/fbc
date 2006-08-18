@@ -6,8 +6,13 @@
 ''         be included in other distributions without authorization.
 ''
 ''
-#ifndef __pdcurses_bi__
-#define __pdcurses_bi__
+#ifndef __curses_ncurses_bi__
+#define __curses_ncurses_bi__
+
+#undef WINDOW
+#undef SCREEN
+#undef BEEP
+#undef GETMOUSE
 
 #inclib "curses"
 
@@ -15,8 +20,6 @@
 	#inclib "user32"
 	#inclib "coldname"
 #endif
-
-	option nokeyword WINDOW, SCREEN, BEEP, GETMOUSE
 
 #ifndef FALSE
 	#define FALSE 0

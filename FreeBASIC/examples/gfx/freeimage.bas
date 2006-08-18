@@ -4,11 +4,8 @@
 '' use the arrow keys to move the image, esc to quit
 ''
 
-option explicit
-option escape
-
-'$include: "FreeImage.bi"
-'$include: "SDL/SDL.bi"
+#include "FreeImage.bi"
+#include "SDL/SDL.bi"
 
 const SCR_WIDTH = 800
 const SCR_HEIGHT= 600
@@ -22,19 +19,19 @@ declare function fibitmap2sdlsurface( byval dib as FIBITMAP Ptr ) as SDL_Surface
 	dim fiType As FREE_IMAGE_FORMAT
 	dim filename as string
 	
-	filename = Command$	
+	filename = Command	
 	if( filename = "" )Then
 	  	print "usage: freeimage.exe filename.ext"
 	  	sleep
       	end 1
 	end if
 
-	if( left$( filename, 1 ) = "\"" ) then
-		filename = mid$( filename, 2 )
+	if( left( filename, 1 ) = !"\"" ) then
+		filename = mid( filename, 2 )
 	end if
 
-	if( right$( filename, 1 ) = "\"" ) then
-		filename = left$( filename, len( filename ) - 1 )
+	if( right( filename, 1 ) = !"\"" ) then
+		filename = left( filename, len( filename ) - 1 )
 	end if
 	
 	

@@ -2,7 +2,7 @@
 '' CBrowser - the browser "class"
 ''
 
-option explicit
+
 
 #include once "Common.bi
 #include once "CBrowser.bi"

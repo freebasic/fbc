@@ -3,11 +3,11 @@
 '
 ' Demonstrates the filtering and handling of events.
 
-'$include: "SDL\SDL.bi"
+#include  "SDL\SDL.bi"
 
 ' This function may run in a separate event thread 
 ' note the use of SDLCALL (or cdecl) for this callback function
-function FilterEvents SDLCALL (byval event as SDL_Event ptr)
+function FilterEvents SDLCALL (byval event as SDL_Event ptr) as integer
 	static boycott as integer
    
    	' This quit event signals the closing of the window    

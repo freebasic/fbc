@@ -5,7 +5,7 @@
 ''----------------------------------------------------------
 
 
-option explicit
+
 
 '' Setup our booleans
 const false = 0
@@ -26,7 +26,7 @@ const HEIGHT_RATIO = 1.5f                      '' Ratio That The Y Is Scaled Acc
 declare sub RenderHeightMap (byval pHeightMap as ubyte ptr)
 declare sub SetVertexColor (byval pHeightMap as ubyte ptr , byval x as integer , byval y as integer)
 declare function Height (byval pHeightMap as ubyte ptr , byval X as integer , byval Y as integer) as integer
-declare sub LoadRawFile (strName as string , byval nSize as integer , HeightMap() as ubyte)
+declare sub LoadRawFile (byref strName as string , byval nSize as integer , HeightMap() as ubyte)
 
 
 dim shared as integer bRender = TRUE, rdown = FALSE         '' Polygon Flag Set To TRUE By Default (NEW)
@@ -81,7 +81,7 @@ dim shared as single scaleValue = 0.30f                     '' Scale Value For T
 		if not multikey(SC_R) then rdown = false
 
 		flip
-		if inkey$ = chr$(255)+"k" then exit do           '' exit if close box is clicked
+		if inkey = chr(255)+"k" then exit do           '' exit if close box is clicked
 	loop while MULTIKEY(SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
@@ -92,7 +92,7 @@ dim shared as single scaleValue = 0.30f                     '' Scale Value For T
 
 '----------------------------------------------------------
 '' Loads The .RAW File And Stores It In pHeightMap
-sub LoadRawFile (strName as string , byval nSize as integer , HeightMap() as ubyte)
+sub LoadRawFile (byref strName as string , byval nSize as integer , HeightMap() as ubyte)
 	dim pFile as integer
 
 	'' Open The File In Read / Binary Mode.

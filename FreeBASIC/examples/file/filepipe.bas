@@ -8,13 +8,13 @@ const ls = "dir *.*"
 	
 	OPEN PIPE ls for input as #1
 	
-	print string$( 60, "-" )
+	print string( 60, "-" )
 	
 	do while( not eof(1 ) )
 		line input #1, inpline
 		print inpline
 	loop
 	
-	print string$( 60, "-" )
+	print string( 60, "-" )
 	
 	close #1

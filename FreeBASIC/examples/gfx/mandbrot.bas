@@ -1,5 +1,3 @@
-defdbl a-z
-
 #ifdef __FB_WIN32__
 #include once "windows.bi"
 #endif
@@ -17,13 +15,13 @@ const EX 			= 0.6    	' end value real
 const EY 			= 1.125  	' end value imaginary
 
 declare sub mandelbrot
-declare function DotsColor( byval xval, byval yval )
-declare function HSBtoRGB( byval hue, byval saturation, byval brightness ) as long
+declare function DotsColor( byval xval as double, byval yval as double ) as double
+declare function HSBtoRGB( byval hue as double, byval saturation as double, byval brightness as double ) as long
 
 '' globals	
-   	dim shared xstart, ystart
-   	dim shared xzoom, yzoom
-	dim shared buffer( 0 to SCR_SIZE-1 ) as integer
+   	dim shared as double xstart, ystart
+   	dim shared as double xzoom, yzoom
+	dim shared as integer buffer( 0 to SCR_SIZE-1 ) 
 
 	if( ptc_open( "mandelbrot test", SCR_WIDTH, SCR_HEIGHT ) = 0 ) then
 		end -1
@@ -31,20 +29,20 @@ declare function HSBtoRGB( byval hue, byval saturation, byval brightness ) as lo
 
    	xstart = SX
    	ystart = SY
-   	xend = EX
-   	yend = EY
+   	dim as double xend = EX
+   	dim as double yend = EY
 
-   	dim starttime as uinteger, tottime as uinteger
+   	dim as uinteger starttime, tottime
 #ifdef __FB_WIN32__
-   	dim hwnd as HWND
+   	dim as HWND hwnd 
    	hwnd = GetActiveWindow( )
 #endif
    	
-   	dim sectimer as uinteger
-   	dim frames as integer
+   	dim as uinteger sectimer
+   	dim as integer frames
    
-   	fac = 0.99   
-   	finc = .01
+   	dim as double fac = 0.99   
+   	dim as double finc = .01
    	
    	frames = 0
    	tottime = 0
@@ -91,7 +89,7 @@ declare function HSBtoRGB( byval hue, byval saturation, byval brightness ) as lo
 #endif
 
     	
-	loop until( inkey$ = chr$( 27 ) )
+	loop until( inkey = chr( 27 ) )
 
 'END
 
@@ -100,9 +98,9 @@ declare function HSBtoRGB( byval hue, byval saturation, byval brightness ) as lo
 ' -------------------------------------------------------------
 ' calculate all points
 private sub mandelbrot static
-   dim x as integer, y as integer
-   dim col as integer   
-   dim p as integer ptr
+   dim as integer x, y, col
+   dim as integer ptr p
+   dim as double old, h
    
    p = @buffer(0)
    old = 0
@@ -131,8 +129,10 @@ end sub
 ' -=  DotsColor  =-
 ' ------------------------------------------------------------- '
 ' color value from 0.0 to 1.0 by iterations
-private function DotsColor( byval xval, byval yval ) static
-   dim j as integer
+private function DotsColor( byval xval as double, byval yval as double ) as double static
+   
+   dim as integer j
+   dim as double m, r, i
 
    j = 0 : m = 0 : r = 0 : i = 0
    do WHILE (j < _MAX) AND (m < 4.0)
@@ -151,8 +151,8 @@ end function
 ' -------------------------------------------------------------
 ' -=  HSB2RGB  =-
 ' -------------------------------------------------------------
-private function HSBtoRGB( byval hue, byval saturation, byval brightness ) as long static
-   dim red, green, blue, domainOffset
+private function HSBtoRGB( byval hue as double, byval saturation as double, byval brightness as double ) as long static
+   dim as double red, green, blue, domainOffset
 
    IF brightness = 0.0 THEN 
    		function = 0

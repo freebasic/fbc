@@ -2,8 +2,7 @@
 '' ordinary TinyPTC test, based on the original
 ''
 
-defint a-z
-'$include: 'tinyptc.bi'
+#include "tinyptc.bi"
 
 const SCR_WIDTH = 320
 const SCR_HEIGHT = 200
@@ -33,7 +32,7 @@ const SCR_SIZE = SCR_WIDTH*SCR_HEIGHT
     
     	ptc_update @buffer(0)
     
-    loop until( inkey$ = chr$( 27 ) )
+    loop until( inkey = chr( 27 ) )
 	
 	
 	ptc_close

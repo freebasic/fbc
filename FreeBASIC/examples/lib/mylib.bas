@@ -4,7 +4,7 @@
 '' compile as: fbc -lib mylib.bas
 ''
 
-'$include: 'mylib.bi'
+#include "mylib.bi"
 
 '':::::
 function add1 ( byval arg1 as integer ) as integer

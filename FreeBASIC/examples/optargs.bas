@@ -4,14 +4,14 @@
 
 declare sub foo( byval arg1 as double = 1, byval arg2 as integer = -2 )
 
-declare function bar( byval arg1 as integer = -2 , byval arg2 as integer )
+declare function bar( byval arg1 as integer = -2 , byval arg2 as integer ) as integer
 
-declare sub optstr( byval arg1 as string = "abc", arg2 as string = "def" )
+declare sub optstr( byval arg1 as string = "abc", byref arg2 as string = "def" )
 
 
 	foo
 	
-	a = bar( , 1 )
+	dim as integer a = bar( , 1 )
 	
 	optstr
 	
@@ -27,7 +27,7 @@ sub foo( byval arg1 as double = 1, byval arg2 as integer = -2 )
 end sub
 
 '':::::
-function bar( byval arg1 as integer = -2, byval arg2 as integer )
+function bar( byval arg1 as integer = -2, byval arg2 as integer ) as integer
 
 	print arg1 * arg2
 	
@@ -36,7 +36,7 @@ function bar( byval arg1 as integer = -2, byval arg2 as integer )
 end function	
 
 '':::::
-sub optstr( byval arg1 as string, arg2 as string )
+sub optstr( byval arg1 as string, byref arg2 as string )
 
 	print arg1 + arg2
 

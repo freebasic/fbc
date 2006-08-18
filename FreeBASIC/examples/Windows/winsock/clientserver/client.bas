@@ -3,7 +3,7 @@
 '' 			   (note: build the wshelper library first)
 ''
 
-option explicit
+
 
 #include once "wshelper.bi"
 #include once "myprotocol.bi"

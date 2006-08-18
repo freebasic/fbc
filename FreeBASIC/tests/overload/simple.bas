@@ -1,5 +1,3 @@
-option private
-
 enum RESULT	
 	RESULT_INT
 	RESULT_UINT

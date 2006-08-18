@@ -5,9 +5,6 @@
 '' written by Naofumi Yasufuku  <naofumi@users.sourceforge.net>
 ''
 
-option explicit
-option private
-option escape
 
 #include once "gtk/gtk.bi"
 #include once "gtk/gtkgl.bi"
@@ -315,14 +312,14 @@ end function
                                         GDK_GL_MODE_DEPTH  or _
                                         GDK_GL_MODE_DOUBLE)
   if (glconfig = NULL) then
-      g_print ("*** Cannot find the double-buffered visual.\n")
-      g_print ("*** Trying single-buffered visual.\n")
+      g_print( !"*** Cannot find the double-buffered visual.\n" )
+      g_print( !"*** Trying single-buffered visual.\n" )
 
       '' Try single-buffered visual
       glconfig = gdk_gl_config_new_by_mode (GDK_GL_MODE_RGB   or _
                                             GDK_GL_MODE_DEPTH)
       if (glconfig = NULL) then
-          g_print ("*** No appropriate OpenGL-capable visual found.\n")
+          g_print( !"*** No appropriate OpenGL-capable visual found.\n" )
           end 1
       end if
   end if

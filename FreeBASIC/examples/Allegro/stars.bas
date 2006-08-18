@@ -5,7 +5,7 @@
 ''    starship (controllable), using the Allegro math functions.
 ''
 
-option explicit
+
 
 #include once "allegro.bi"
 
@@ -316,7 +316,7 @@ end sub
    allegro_init()
    install_keyboard()
    install_timer()
-   if (set_gfx_mode(GFX_AUTODETECT, SCR_WIDTH, SCR_HEIGHT, 0, 0) <> 0) then
+   if (set_gfx_mode(GFX_AUTODETECT_WINDOWED, SCR_WIDTH, SCR_HEIGHT, 0, 0) <> 0) then
       set_gfx_mode(GFX_TEXT, 0, 0, 0, 0)
       end 1
    end if

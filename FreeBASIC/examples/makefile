@@ -6,7 +6,7 @@ DIRLIST += pdflib regex SDL sound unicode Windows Windows/gui Windows/winsock wx
 ###
 
 FBC := fbc
-FBCFLAGS := -ex -d PTC_WIN
+FBCFLAGS := -ex -d PTC_WIN -noerrline
 
 SRCLIST := $(wildcard *.bas)
 SRCLIST += $(foreach i,$(DIRLIST),$(wildcard $(i)/*.bas))

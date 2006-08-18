@@ -44,7 +44,7 @@ end function
 '':::::
 function strfunc( byval s as string ) as string
 
-	function = ucase$( s )
+	function = ucase( s )
 
 end function
 

@@ -1,4 +1,4 @@
-option explicit
+
 
 const TEST_STR1 = "foobar"
 const TEST_STR2 = "1234"

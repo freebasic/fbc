@@ -1,8 +1,6 @@
 ' Table.bas
 ' Translated from C to FB by TinyCla, 2006
 
-Option Explicit
-Option Escape
 
 #include once "gtk/gtk.bi"
 
@@ -12,12 +10,12 @@ Option Escape
 ' The data passed to this function is printed to stdout
 Sub callback Cdecl(Byval widget As GtkWidget Ptr, Byval user_data As gpointer Ptr)
     
-	g_print ("Hello again - %s was pressed\n", user_data)
+	g_print (!"Hello again - %s was pressed\n", user_data)
     
 End Sub
 
 ' This callback quits the program
-Function delete_event Cdecl(Byval widget As GtkWidget Ptr, Byval event As GdkEvent Ptr, Byval user_data As gpointer )
+Function delete_event Cdecl(Byval widget As GtkWidget Ptr, Byval event As GdkEvent Ptr, Byval user_data As gpointer ) as integer
     
 	gtk_main_quit ()
 	Return FALSE

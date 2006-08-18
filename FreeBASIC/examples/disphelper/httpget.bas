@@ -2,7 +2,7 @@
 '' HTTP GET example, using MSXML2
 ''
 
-option explicit
+
 
 #define UNICODE
 #include "disphelper/disphelper.bi"

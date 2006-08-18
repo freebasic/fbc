@@ -22,7 +22,7 @@
 
 '' compile as: fbc -s gui lesson25.bas
 
-option explicit
+
 
 '' Setup our booleans
 const false = 0
@@ -49,8 +49,8 @@ end type
 ''------------------------------------------------------------------------------
 declare sub objallocate (byval k as OBJECT ptr, byval n as integer)
 declare sub objfree (byval k as OBJECT ptr)
-declare sub readstr(byval f as integer, sstring as string)
-declare sub objload (fname as string, byval k as OBJECT ptr)
+declare sub readstr(byval f as integer, byref sstring as string)
+declare sub objload (byref fname as string, byval k as OBJECT ptr)
 declare sub calculate (byval i as integer, byval v as VERTEX ptr)
 
 dim shared maxver as integer                     '' Will Eventually Hold The Maximum Number Of Vertices
@@ -235,11 +235,11 @@ dim shared as OBJECT ptr sour, dest              '' Source Object, Destination O
 		end if
 
 		flip  '' flip or crash
-		if inkey$ = chr$(255)+"X" then exit do    '' exit if close box is clicked
+		if inkey = chr(255)+"X" then exit do    '' exit if close box is clicked
 	loop while MULTIKEY(SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
-	while INKEY$ <> "": wend
+	while INKEY <> "": wend
 
 	objfree (@morph1)              '' Jump To Code To Release morph1 Allocated Ram
 	objfree (@morph2)              '' Jump To Code To Release morph2 Allocated Ram
@@ -262,7 +262,7 @@ end sub
 
 '---------------------------------------------------
 '' Reads A String From File (f)
-sub readstr(byval f as integer, sstring as string)                 
+sub readstr(byval f as integer, byref sstring as string)                 
 	if eof(f) then
 		sstring = ""
 	else
@@ -272,7 +272,7 @@ end sub
 
 '---------------------------------------------------
 '' Loads Object From File (name)
-sub objload (fname as string, byval k as OBJECT ptr)          
+sub objload (byref fname as string, byval k as OBJECT ptr)          
 	dim ver as integer                                  '' Will Hold Vertice Count
 	dim as single rx, ry, rz                            '' Hold Vertex X, Y & Z Position
 	dim oneline as string * 256                         '' Holds One Line Of Text
@@ -281,7 +281,7 @@ sub objload (fname as string, byval k as OBJECT ptr)
 	filein = freefile
 	open fname for input as #filein
 	readstr(filein, oneline)                            '' Jumps To Code That Reads One Line Of Text From The File
-	sscanf (strptr(oneline), "Vertices: %d\n", @ver)    '' Scans Text For "Vertices: ".  Number After Is Stored In ver
+	sscanf (strptr(oneline), !"Vertices: %d\n", @ver)   '' Scans Text For "Vertices: ".  Number After Is Stored In ver
 	k->verts = ver                                      '' Sets Objects verts Variable To Equal The Value Of ver
 	objallocate (k, ver)                                '' Jumps To Code That Allocates Ram To Hold The Object
 

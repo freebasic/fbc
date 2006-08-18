@@ -1,9 +1,6 @@
 ' List.bas
 ' Translated from C to FB by TinyCla, 2006
 
-Option Explicit
-Option Escape
-
 #include once "crt.bi"
 #include once "gtk/gtk.bi"
 
@@ -220,7 +217,7 @@ Sub sigh_print_selection Cdecl ( Byval gtklist As GtkWidget Ptr, Byval func_data
 	' to do than just telling the user so
 
 	If  dlist = NULL Then
-		g_print ("Selection cleared\n")
+		g_print (!"Selection cleared\n")
 		Return
 	End If
 	
@@ -238,5 +235,5 @@ Sub sigh_print_selection Cdecl ( Byval gtklist As GtkWidget Ptr, Byval func_data
  	
 		dlist = dlist->Next
 	Loop
-	g_print ("\n")
+	g_print (!"\n")
 End Sub

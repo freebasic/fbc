@@ -5,7 +5,7 @@ type foo
 	bar as integer
 end type
 
-	foo = 5678
+	dim as integer foo = 5678
 	
 	dim f as foo = ( 1234 )
 

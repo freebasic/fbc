@@ -4,10 +4,10 @@
 '' translated from PB source, originally written by Marco Pontello (marcopon@myrealbox.com)
 ''
 
-option explicit
-'$include once: "Lua/lua.bi"
-'$include once: "Lua/luauxlib.bi"
-'$include once: "Lua/lualib.bi"
+
+#include once "Lua/lua.bi"
+#include once "Lua/luauxlib.bi"
+#include once "Lua/lualib.bi"
 
 
 function minmax cdecl (byval L as lua_State ptr) as integer

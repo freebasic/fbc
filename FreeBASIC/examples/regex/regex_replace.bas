@@ -6,12 +6,12 @@
 #define regexmatch(match,zeile,n) mid(zeile,1+match(n).rm_so, match(n).rm_eo-match(n).rm_so)
 #endif
 
-declare function regex_replace(regex as string, replace as string, subject as string) as string
+declare function regex_replace(byref regex as string, byref replace as string, byref subject as string) as string
 
-	print regex_replace("-(.+?)-", "*$1*", "Hi -you- strange -user- :D")
+	print regex_replace("-(.+?)-", "*1*", "Hi -you- strange -user- :D")
 
 
-function regex_replace(regex as string, replace_pattern as string, subject as string) as string
+function regex_replace(byref regex as string, byref replace_pattern as string, byref subject as string) as string
     dim replaced as string, rest as string
     rest=subject
     dim re as regex_t
@@ -20,7 +20,7 @@ function regex_replace(regex as string, replace_pattern as string, subject as st
     while regexec( @re, strptr(rest), re.re_nsub+1, @match(0), 0 )=0
         replaced+=left(rest,match(0).rm_so)
         for n = 1 to len(replace_pattern)
-            if mid(replace_pattern,n,1) = "$" and _
+            if mid(replace_pattern,n,1) = "" and _
                mid(replace_pattern,n-1,1)<>"\" and _
                val(mid(replace_pattern,n+1,1)) > 0 and _
                val(mid(replace_pattern,n+1,1)) <= re.re_nsub _

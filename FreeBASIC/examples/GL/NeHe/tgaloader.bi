@@ -40,8 +40,8 @@ dim shared as structTGA tga					'' TGA image data
 dim shared as ubyte uTGAcompare(0 to 11) => {0,0,2, 0,0,0,0,0,0,0,0,0}	'' Uncompressed TGA Header
 dim shared as ubyte cTGAcompare(0 to 11) => {0,0,10,0,0,0,0,0,0,0,0,0}	'' Compressed TGA Header
 
-declare function LoadUncompressedTGA(byval as structTexture ptr, fname as string, byval filenumber as integer) as integer
-declare function LoadCompressedTGA(byval as structTexture ptr, fname as string, byval filenumber as integer) as integer
+declare function LoadUncompressedTGA(byval as structTexture ptr, byref fname as string, byval filenumber as integer) as integer
+declare function LoadCompressedTGA(byval as structTexture ptr, byref fname as string, byval filenumber as integer) as integer
 
 
 '' *******************************************************************************
@@ -51,7 +51,7 @@ declare function LoadCompressedTGA(byval as structTexture ptr, fname as string, 
 ''             filename, name of file to open
 '' *******************************************************************************
 
-function LoadTGA(byval texture as structTexture ptr, filename as string) as integer      '' Load a TGA file
+function LoadTGA(byval texture as structTexture ptr, byref filename as string) as integer      '' Load a TGA file
 	dim fTGA as integer
 	fTGA = freefile
 	if (open (filename, for binary, as fTGA) <> 0) then '' Open file for reading
@@ -77,7 +77,7 @@ function LoadTGA(byval texture as structTexture ptr, filename as string) as inte
 end function
 
 '' Load an uncompressed TGA (note, much of this code is based on NeHe's
-function LoadUncompressedTGA(byval texture as structTexture ptr, fname as string, byval fTGA as integer) as integer
+function LoadUncompressedTGA(byval texture as structTexture ptr, byref fname as string, byval fTGA as integer) as integer
 	'' TGA Loading code nehe.gamedev.net)
 	''  Read TGA header
 	dim pb as ubyte ptr
@@ -138,7 +138,7 @@ function LoadUncompressedTGA(byval texture as structTexture ptr, fname as string
 end function
 
 '' Load COMPRESSED TGAs
-function LoadCompressedTGA(byval texture as structTexture ptr, fname as string, byval fTGA as integer) as integer
+function LoadCompressedTGA(byval texture as structTexture ptr, byref fname as string, byval fTGA as integer) as integer
 	dim pb as ubyte ptr
 	dim b as ubyte
 	dim i as integer

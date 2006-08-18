@@ -1,4 +1,4 @@
-option explicit
+
 
 const TEST_1 = wchr( 65, 66, 67 )
 const TEST_2 = wchr( 256, 257, 258 )

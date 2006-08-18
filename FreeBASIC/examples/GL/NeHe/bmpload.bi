@@ -39,10 +39,10 @@ type BITMAP_RGBImageRec FIELD = 1
 end type
 
 
-declare function LoadBMP(Filename as string) as BITMAP_RGBImageRec ptr
+declare function LoadBMP(byref Filename as string) as BITMAP_RGBImageRec ptr
 
 '' Loads A Bitmap Image. Only uncompressed 8 or 24 bit BITMAP immages supported
-private function LoadBMP(Filename as string) as BITMAP_RGBImageRec ptr
+private function LoadBMP(byref Filename as string) as BITMAP_RGBImageRec ptr
   dim bitmapfileheader as BITMAPFILEHEADER '' this contains the bitmapfile header
   dim bitmapinfoheader as BITMAPINFOHEADER '' this is all the info including the palette
   dim bmpalette(256) as PALETTEENTRY       '' we will store the palette here

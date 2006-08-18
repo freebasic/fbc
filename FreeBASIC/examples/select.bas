@@ -4,8 +4,8 @@
 
 const inter = 50000000
 
-	t# = timer
-	j = 0
+	dim as double t = timer
+	dim as integer j = 0, i
 	for i = 1 to inter		
 		select case i
 		case 1, 3, 5, 7, 9
@@ -22,12 +22,12 @@ const inter = 50000000
 			print "can't happen"
 		end select
 	next i
-	print using "normal select_, secs taken: ##.###"; timer - t#
+	print using "normal select_, secs taken: ##.###"; timer - t
 	
 	print "0 ="; j
 	
 
-	t# = timer
+	t = timer
 	j = 0
 	for i = 1 to inter
 		select case as const i
@@ -47,7 +47,7 @@ const inter = 50000000
 			end if
 		end select
 	next i
-	print using "as const select_, secs taken: ##.###"; timer - t#	
+	print using "as const select_, secs taken: ##.###"; timer - t
 	
 	print "0 ="; j
 	

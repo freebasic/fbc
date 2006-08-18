@@ -49,7 +49,7 @@ end if
 
 print "Press ENTER to stop counting timer ticks"
 
-while len(inkey$)=0: sleep 100: wend
+while len(inkey)=0: sleep 100: wend
 
 fb_isr_reset( 0 )
 

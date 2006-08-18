@@ -4,7 +4,7 @@
 '' to build: fbc -lib CRegex.bas
 ''
 
-option explicit
+
 
 #include once "CRegex.bi"
 #include once "pcre/pcre.bi" 

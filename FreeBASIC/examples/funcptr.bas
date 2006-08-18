@@ -2,8 +2,6 @@
 '' function pointers test
 ''
 
-option explicit
-
 type functype
 	myfunc1 as function( byval x as integer, byval y as integer ) as integer
 	myfunc2 as function( byval x as integer, byval y as integer ) as integer ptr

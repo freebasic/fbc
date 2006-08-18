@@ -12,7 +12,7 @@
 
 '' compile as: fbc -s gui lesson17.bas
 
-option explicit
+
 
 #include once "GL/gl.bi"
 #include once "GL/glu.bi"
@@ -24,7 +24,7 @@ const false = 0
 const true  = not false
 
 declare sub BuildFont()
-declare sub glPrint(byval x as integer, byval y as integer, glstring as string, byval gset as integer)
+declare sub glPrint(byval x as integer, byval y as integer, byref glstring as string, byval gset as integer)
 
 
 dim shared gbase as uinteger                      '' Base Display List For The Font
@@ -113,10 +113,10 @@ dim shared gloop as integer                       '' Generic Loop Variable
 		cnt2 = cnt2 + 0.0081                                   '' Increase The Second Counter
 
 		flip                                      '' filp or crash
-		if INKEY$ = CHR$(255)+"X" then exit do    '' exit if close box is clicked
+		if INKEY = CHR(255)+"X" then exit do    '' exit if close box is clicked
 	loop while MULTIKEY(SC_ESCAPE) = 0            '' exit if EXC is pressed
 	'' Empty keyboard buffer
-	while INKEY$ <> "": wend
+	while INKEY <> "": wend
 	glDeleteLists gbase, 256                      '' Delete All 256 Display Lists
 	end
 
@@ -151,7 +151,7 @@ end sub
 
 '------------------------------------------------------------------------
 '' Where The Printing Happens
-sub glPrint(byval x as integer, byval y as integer, glstring as string, byval gset as integer)
+sub glPrint(byval x as integer, byval y as integer, byref glstring as string, byval gset as integer)
 
 	if gset>1 then gset=1
 

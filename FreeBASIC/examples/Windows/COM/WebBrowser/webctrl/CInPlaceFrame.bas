@@ -2,7 +2,7 @@
 '' CInPlaceFrame - a "class" that implements the IOleInPlaceFrame interface
 '' 
 
-option explicit
+
 
 #include once "Common.bi"
 #include "crt/string.bi"

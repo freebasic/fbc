@@ -1,6 +1,6 @@
 '' translated from an "C" example written by Vijay Kumar B.
 
-option explicit
+
 
 #include once "gtk/gtk.bi"
 

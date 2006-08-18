@@ -1,4 +1,4 @@
-option explicit
+
 
 sub test_long
 	const TEST_VAL = &o1777777777777777777777ULL

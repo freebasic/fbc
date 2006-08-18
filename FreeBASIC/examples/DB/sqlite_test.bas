@@ -2,7 +2,7 @@
 '' SQLite test, translated by Nex/marzec
 ''
 
-option explicit
+
 
 #include once "sqlite3.bi" 
 

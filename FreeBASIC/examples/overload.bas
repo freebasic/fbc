@@ -2,8 +2,6 @@
 '' simple function-overloading test
 '' 
 
-option private
-
 enum barenum
 	enum0, enum1, enum2
 end enum
@@ -62,35 +60,35 @@ declare sub foo 		 ( byval bar as barenum ptr )
 	sleep
 	
 '':::::
-sub foo ( byval bar as integer )
+private sub foo ( byval bar as integer )
 
 	print "foo.int     called"
 
 end sub
 
 '':::::
-sub foo ( byval bar as uinteger )
+private sub foo ( byval bar as uinteger )
 
 	print "foo.uint    called"
 
 end sub
 
 '':::::
-sub foo ( byval bar as single )
+private sub foo ( byval bar as single )
 
 	print "foo.single  called"
 
 end sub
 
 '':::::
-sub foo ( byval bar as double )
+private sub foo ( byval bar as double )
 
 	print "foo.double  called"
 
 end sub
 
 '':::::
-sub foo ( byval bar as longint )
+private sub foo ( byval bar as longint )
 
 	print "foo.lngint  called"
 
@@ -98,49 +96,49 @@ end sub
 		
 
 '':::::
-sub foo ( byval bar as integer ptr )
+private sub foo ( byval bar as integer ptr )
 
 	print "foo.intptr  called"
 
 end sub
 
 '':::::
-sub foo ( byval bar as uinteger ptr )
+private sub foo ( byval bar as uinteger ptr )
 
 	print "foo.uintptr called"
 
 end sub
 
 '':::::
-sub foo ( byval bar as single ptr )
+private sub foo ( byval bar as single ptr )
 
 	print "foo.sngptr  called"
 
 end sub
 
 '':::::
-sub foo ( byval bar as double ptr )
+private sub foo ( byval bar as double ptr )
 
 	print "foo.dblptr  called"
 
 end sub
 
 '':::::
-sub foo ( byval bar as longint ptr )
+private sub foo ( byval bar as longint ptr )
 
 	print "foo.lngptr  called"
 
 end sub
 
 '':::::
-sub foo ( byval bar as barenum )
+private sub foo ( byval bar as barenum )
 
 	print "foo.enum    called"
 
 end sub
 
 '':::::
-sub foo ( byval bar as barenum ptr )
+private sub foo ( byval bar as barenum ptr )
 
 	print "foo.enumptr called"
 

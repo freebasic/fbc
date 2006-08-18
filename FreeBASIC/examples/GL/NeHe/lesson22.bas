@@ -42,7 +42,7 @@ const null = 0
 ''#define EXT_INFO 1                '' Do You Want To See Your Extensions At Start-Up (windows only)?
 
 #if EXT_INFO
-'$include once: 'win\user32.bi'     '' Needed by messagebox
+#include once "win\user32.bi"     '' Needed by messagebox
 #endif
 
 '' Maximum Emboss-Translate. Increase To Get Higher Immersion
@@ -57,7 +57,7 @@ declare function DrawGLScene() as integer
 declare sub VMatMult(byval M as single ptr, byval v as single ptr)
 declare sub doCube ()
 declare sub doLogo()
-declare sub SetUpBumps(n as single ptr, c as single ptr, l as single ptr, s as single ptr, t as single ptr)
+declare sub SetUpBumps(byval n as single ptr, byval c as single ptr, byval l as single ptr, byval s as single ptr, byval t as single ptr)
 declare function  doMesh1TexelUnits() as integer
 declare function doMesh2TexelUnits() as integer
 declare function doMeshNoBumps() as integer
@@ -459,7 +459,7 @@ end function
 
 ''------------------------------------------------------------------------
 sub doCube ()
-	dim i
+	dim i as integer
 	glBegin(GL_QUADS)
 		'' Front Face
 		glNormal3f( 0.0, 0.0, +1.0)
@@ -563,7 +563,7 @@ end sub
 ''        * In World Space, But This Involves One Transformation For Each Vertex!
 ''
 
-sub SetUpBumps(n as single ptr, c as single ptr, l as single ptr, s as single ptr, t as single ptr)
+sub SetUpBumps(byval n as single ptr, byval c as single ptr, byval l as single ptr, byval s as single ptr, byval t as single ptr)
 	dim v(0 to 2) as single                                '' Vertex From Current Position To Light
 	dim lenQ as single                                     '' Used To Normalize
 
@@ -615,7 +615,7 @@ function doMesh1TexelUnits() as integer
 
 	dim l(0 to 3) as single                              '' Holds Our Lightposition To Be Transformed Into Object Space
 	dim Minv(15) as single                               '' Holds The Inverted Modelview Matrix To Do So.
-	dim i
+	dim i as integer
 
 	glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)  '' Clear The Screen And The Depth Buffer
 
@@ -767,7 +767,7 @@ function doMesh2TexelUnits() as integer
 
 	dim l(3) as single                                   '' holds our lightposition to be transformed into object space
 	dim Minv(15) as single                               '' holds the inverted modelview matrix to do so.
-	dim i
+	dim i as integer
 
 	glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)  '' Clear The Screen And The Depth Buffer
 

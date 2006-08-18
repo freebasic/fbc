@@ -4,7 +4,7 @@
 ' *                1998 Michele Bini <mibin@tin.it>
 ' *                All Rights Reserved
 ' *
-' *  $Id$
+' *  Id: cacaplas.bas,v 1.1 2005/03/27 07:21:59 i_am_drv Exp 
 ' *
 ' *  This program is free software; you can redistribute it and/or
 ' *  modify it under the terms of the GNU Lesser General Public
@@ -22,8 +22,8 @@
 ' *  02111-1307  USA
 ' */
 
-option explicit
-option nokeyword screen
+
+#undef screen
 
 #ifndef M_PI
 #   define M_PI 3.14159265358979323846

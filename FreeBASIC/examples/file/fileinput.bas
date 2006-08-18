@@ -1,4 +1,4 @@
-declare sub doinput( file as string )
+declare sub doinput( byref file as string )
 
 	open "bleh.dat"  for output as #1
 	
@@ -20,15 +20,19 @@ declare sub doinput( file as string )
 	doinput "bleh2.dat"
 	
 
-sub doinput( file as string )
+sub doinput( byref file as string )
+
+	dim i as integer, f as double, s as string
+
 	open file for input as #1
 	
-	input #1, s$
-	print s$
+	input #1, s
+	print s
 	
-	input #1, i%, f#, s$
+	input #1, i, f, s
 	
-	print i%, f#, s$
+	print i, f, s
 	
 	close #1
+	
 end sub

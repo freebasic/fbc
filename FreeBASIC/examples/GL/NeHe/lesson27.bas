@@ -18,7 +18,7 @@
 
 '' compile as: fbc -s gui lesson27.bas
 
-option explicit
+
 
 '' Setup our booleans
 const false = 0
@@ -203,11 +203,11 @@ dim shared as glObject obj              '' Object
 		if multikey(SC_Q) then SpherePos(2) -= 0.05       '' 'Q' Move Ball Away From Viewer
 
 		flip  '' flip or crash
-		if inkey$ = chr$(255)+"X" then exit do            '' exit if close box is clicked
+		if inkey = chr(255)+"X" then exit do            '' exit if close box is clicked
 	loop while MULTIKEY(SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
-	while INKEY$ <> "": wend
+	while INKEY <> "": wend
 
 
 	end

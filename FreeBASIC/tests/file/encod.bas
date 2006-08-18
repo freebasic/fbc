@@ -1,5 +1,3 @@
-option escape
-option explicit
 
 #define TEST_1 "Hello_"
 #define TEST_2 wstr( "World!" )

@@ -22,7 +22,7 @@ sub test2
 	assert( foo_val = 4 )
 end sub
 
-	dim foo = 5
+	dim foo as integer = 5
 	assert( foo = 5 )
 
 	test1

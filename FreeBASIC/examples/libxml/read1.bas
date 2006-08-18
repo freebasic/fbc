@@ -1,5 +1,3 @@
-option explicit
-option private
 
 #include once "libxml/xmlreader.bi"
 
@@ -49,7 +47,7 @@ end sub
 ''::::::
     dim filename as string
     
-    filename = command$(1)
+    filename = command(1)
     
     if( len( filename ) = 0 ) then
     	print "Usage: read1 filename"

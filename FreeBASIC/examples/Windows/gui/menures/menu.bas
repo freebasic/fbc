@@ -4,9 +4,6 @@
 '' compile as: fbc menu.bas menures.rc -s gui
 ''
 
-option explicit
-option private
-
 #include once "windows.bi"
 #include "menures.bi"
 
@@ -26,7 +23,7 @@ declare function        WinMain     ( byval hInstance as HINSTANCE, _
     ''
     '' Entry point    
     ''
-	end WinMain( GetModuleHandle( null ), null, Command$, SW_NORMAL )
+	end WinMain( GetModuleHandle( null ), null, Command, SW_NORMAL )
     
     
     

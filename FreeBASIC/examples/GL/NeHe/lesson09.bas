@@ -16,7 +16,7 @@
 ''
 ''------------------------------------------------------------------------------
 
-option explicit
+
 
 #include once "GL/gl.bi"
 #include once "GL/glu.bi"
@@ -148,7 +148,7 @@ declare function LoadGLTextures() as integer
 	loop while MULTIKEY(SC_ESCAPE) = 0
 	
 	'Empty keyboard buffer
-	while inkey$ <> "": wend
+	while inkey <> "": wend
 	
 	end
 

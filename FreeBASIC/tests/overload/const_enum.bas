@@ -1,4 +1,4 @@
-option explicit
+
 
 enum 
 	RES_FOO
@@ -12,17 +12,17 @@ end enum
 
 const as foo bar_a = a, bar_b = b, bar_c = c
 const bar_i as integer = a
-const bar_d# = b
+const bar_d as double = b
                  
-function foo overload( byval x as foo )
+function foo overload( byval x as foo ) as integer
 	function = RES_FOO
 end function
 
-function foo overload( byval x as integer )
+function foo overload( byval x as integer ) as integer
 	function = RES_INT
 end function
 
-function foo overload( byval x as double )
+function foo overload( byval x as double ) as integer
 	function = RES_DBL
 end function
 

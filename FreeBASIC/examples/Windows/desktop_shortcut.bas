@@ -1,4 +1,4 @@
-option explicit
+
 
 #include once "windows.bi"
 #include once "win/shlobj.bi"

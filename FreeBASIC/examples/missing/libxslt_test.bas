@@ -1,4 +1,4 @@
-option explicit
+
 
 #include once "libxml/xmlmemory.bi"
 #include once "libxml/debugXML.bi"
@@ -23,8 +23,8 @@ extern import xmlLoadExtDtdDefaultValue alias "__xmlLoadExtDtdDefaultValue" as i
 	dim as zstring ptr paramptrs(0 to 16)
 	dim as integer i, p
 	
-	xmlfile = command$(1)
-	xslfile = command$(2)
+	xmlfile = command(1)
+	xslfile = command(2)
 	
 	if( len( xmlfile ) = 0 or len( xslfile ) = 0 ) then
 		print "Usage: xml_file stylesheet_file [name value (pass a (parameter,value) pair)]"	
@@ -34,7 +34,7 @@ extern import xmlLoadExtDtdDefaultValue alias "__xmlLoadExtDtdDefaultValue" as i
 	'' read the params
 	p = 0
 	do
-		params(i) = command$( 2 + p )
+		params(i) = command( 2 + p )
 		if( len( params(p) ) = 0 ) then
 			exit do
 		end if

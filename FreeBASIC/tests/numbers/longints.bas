@@ -1,11 +1,11 @@
-option explicit
+
 
 #define TEST_SL1 &h7FFFFFFFFFFFFFLL
 #define TEST_SL2 &hFFFFLL
 #define TEST_UL1 &hFFFFFFFFFFFFFFULL
 #define TEST_UL2 &hFFFFFULL
 
-#define TEST_D 65536.0#
+#define TEST_D 65536.0D
 
 sub test_div
 	dim as longint v1

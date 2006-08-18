@@ -1,4 +1,4 @@
-option explicit
+
 #include once "allegro.bi" 
  
 #define S_RED 2 

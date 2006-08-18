@@ -16,10 +16,8 @@
 ' ============================================================================
 '
 
-option explicit
-
-'$include: 'al/al.bi'
-'$include: 'al/alut.bi'
+#include "al/al.bi"
+#include "al/alut.bi"
 
 declare sub UnloadResources()
 
@@ -151,7 +149,7 @@ print "done."
 
 
 print "Press any key to continue... "
-while inkey$ = "": wend
+while inkey = "": wend
 
 
 
@@ -164,7 +162,7 @@ print "FreeBASIC OpenAL Demo"
 color 8, 0
 print "Written by Chris Davies [shiftLynx]"
 
-print string$(80, 196)
+print string(80, 196)
 
 color 7,0
 print " Welcome to the OpenAL demonstration program.  This program will demonstrate"
@@ -173,7 +171,7 @@ print
 print " See the comments at the top of the source code for this demo for more"
 print " information, including where to find a good OpenAL tutorial. :)"
 print
-print string$(80, 196)
+print string(80, 196)
 color 15, 0
 print " Menu"
 color 7, 0
@@ -191,7 +189,7 @@ done = 0
 while done = 0
    
    ' check for input.
-   kbin = inkey$
+   kbin = inkey
    if kbin <> "" then
       select case kbin
          case "1"

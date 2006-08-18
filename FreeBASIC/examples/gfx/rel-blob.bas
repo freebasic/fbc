@@ -2,21 +2,18 @@
 '//Relsoft 2004
 '//v3cz0r is da man!
 '//bass by plaz
-defint a-z
 
+#include "tinyptc.bi"
 
-'$include: 'tinyptc.bi'
-
-#ifdef FB__WIN32
-'$Include: 'win\kernel32.bi'
-'$Include: 'win\user32.bi'
+#ifdef __FB_WIN32__
+#include "windows.bi"
 #endif
 
-Declare Sub ErrorQuit (Message$)
+Declare Sub ErrorQuit (byref Message as string)
 
-declare sub cls_(buffer())
+declare sub cls_(buffer() as integer)
 declare sub pcopy_ ( dest() as integer, source() as integer)
-declare sub put_pixel(buffer(), byval x as integer, byval y as integer, byval col as integer)
+declare sub put_pixel(buffer() as integer, byval x as integer, byval y as integer, byval col as integer)
 declare sub draw_blob(buffer() as integer, light() as integer,_
                       byval x as integer, byval y as integer)
 
@@ -75,7 +72,7 @@ const BLOB_HEI = 128
         ptc_update @buffer(0)
 
 
-    loop until( inkey$ = chr$( 27 ) )
+    loop until( inkey = chr( 27 ) )
 
 
 	ptc_close
@@ -87,14 +84,9 @@ end
 '
 '*******************************************************************************************
 
-Sub ErrorQuit (Message$)
+Sub ErrorQuit (byref Message as string)
 
-#ifdef FB__WIN32
-  MessageBox 0, Message$, "Error", MB_ICONERROR
-#else
-  Print "Error: "; Message$
-  Sleep
-#endif
+  Print "Error: "; Message
   End
 
 End Sub
@@ -196,7 +188,7 @@ end sub
 'GFX subs/Funks
 '
 '*******************************************************************************************
-private sub put_pixel(buffer(), byval x as integer, byval y as integer, byval col as integer)
+private sub put_pixel(buffer() as integer, byval x as integer, byval y as integer, byval col as integer)
     if (y >= 0) and (y < SCR_HEIGHT) and (x >= 0) and (x < SCR_WIDTH) then
         buffer(y * SCR_WIDTH + x) = col
     end if
@@ -217,7 +209,7 @@ private sub pcopy_ ( dest() as integer, source() as integer)
 
 end sub
 
-private sub cls_(buffer())
+private sub cls_(buffer() as integer)
     dim offset as integer ptr
     dim i as integer
     offset = @buffer(0)

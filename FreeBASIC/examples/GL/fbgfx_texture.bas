@@ -3,9 +3,6 @@
 'Rel.Betterwebber.com
 'create texture funk courtesy of lillo
 
-
-DEFINT A - Z
-
 #define TEX_MASKED      &h1 
 #define TEX_MIPMAP      &h2
 #DEFINE TEX_NOFILTER    &h4
@@ -13,10 +10,10 @@ DEFINT A - Z
 
 const PI = 3.141593                     'PI for rotation
 
-option explicit                         'Force declaration
+                         'Force declaration
 
-'$include: "GL/gl.bi"                  'OpenGL funks and consts
-'$include: "GL/glu.bi"                 'GL standard utility lib
+#include  "GL/gl.bi"                  'OpenGL funks and consts
+#include  "GL/glu.bi"                 'GL standard utility lib
 
 
 'Declarations
@@ -24,7 +21,7 @@ DECLARE SUB Init_GL_SCREEN ()
 Declare Sub draw_scene()
 Declare Sub Draw_Cube()
 Declare function CreateTexture( byval buffer as any ptr, byval flags as integer = 0 ) as GLuint
-Declare function load_texture(image_file as string, w as integer, h as integer) as GLuint
+Declare function load_texture(byref image_file as string, byval w as integer, byval h as integer) as GLuint
 
 '*******************************************************************************************
 'Main code
@@ -38,7 +35,7 @@ Declare function load_texture(image_file as string, w as integer, h as integer) 
 	do
         draw_scene                          'Draw something
         flip
-	loop until Inkey$ <>""
+	loop until Inkey <>""
 
 
     end
@@ -292,7 +289,7 @@ Sub Draw_Cube()
         dim i as integer, j as integer
 
         'variable to check if colors and cube are already initialized
-        static color_init
+        static color_init as integer
 		'make static arrays for cube and colors
         '(23, 2) means 23 vertices and 3 elements per vertex
         '3 because:
@@ -431,7 +428,7 @@ End Sub
 	END FUNCTION
 
 							 
-function load_texture(image_file as string, w as integer, h as integer) as GLuint
+function load_texture(byref image_file as string, byval w as integer, byval h as integer) as GLuint
 	dim image(w * h * 2 + 4) as ushort   ' set up a big enough array for our image
 	bload image_file, @image(0)			 'load it
 	dim ret as GLuint 					 'return value

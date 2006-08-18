@@ -2,7 +2,7 @@
 '' IExplorer example
 ''
 
-option explicit
+
 
 #define UNICODE
 #include "disphelper/disphelper.bi"

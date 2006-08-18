@@ -3,8 +3,8 @@
 ''
 
     locate ,,0
-	oldcolor = color
-	oldwidth = width
+	dim as integer oldcolor = color
+	dim as integer oldwidth = width
 
 	width 80, 25
 	
@@ -34,7 +34,7 @@
 	
 
 	sleep
-	clearkey$ = inkey
+	dim as string clearkey = inkey
 
 	width oldwidth and &HFFFF, oldwidth shr 16
 	color oldcolor and &HFFFF, oldcolor shr 16

@@ -1,9 +1,6 @@
 ' HelloWorld2.bas
 ' Translated from C to FB by TinyCla, 2006
 
-Option Explicit
-Option Escape
-
 #include once "gtk/gtk.bi"
 
 #define NULL 0
@@ -12,12 +9,12 @@ Option Escape
 ' is printed to stdout.
 Sub callback Cdecl(Byval widget As GtkWidget Ptr, Byval user_data As gpointer Ptr)
     
-	g_print ("Hello again - %s was pressed\n", user_data)
+	g_print (!"Hello again - %s was pressed\n", user_data)
     
 End Sub
 
 ' another callback 
-Function delete_event Cdecl(Byval widget As GtkWidget Ptr, Byval event As GdkEvent Ptr, Byval user_data As gpointer Ptr)
+Function delete_event Cdecl(Byval widget As GtkWidget Ptr, Byval event As GdkEvent Ptr, Byval user_data As gpointer Ptr) as integer
     
 	gtk_main_quit()
 	return FALSE

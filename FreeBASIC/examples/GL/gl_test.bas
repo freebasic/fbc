@@ -5,12 +5,9 @@
 '' Opengl code ported from nehe's gl tutorials
 ''
 
-defint a-z
-option explicit
-
-'$include once: 'GL/gl.bi'
-'$include once: 'GL/glu.bi'
-'$include once: 'GL/glut.bi'
+#include once "GL/gl.bi"
+#include once "GL/glu.bi"
+#include once "GL/glut.bi"
 
 ''
 declare sub         doMain           ( )
@@ -31,7 +28,6 @@ declare sub         doShutdown		 ( )
 '' desc: Is called by glut to render scene
 ''
 '' ::::::::::::
-defint a-z
 sub doRender cdecl
     static rtri as single
     static rqud as single
@@ -98,7 +94,6 @@ end sub
 '' desc: Handles input
 ''
 '' ::::::::::::
-defint a-z
 sub doInput CDECL ( byval kbcode as unsigned byte, _
               byval mousex as integer, _
               byval mousey as integer )
@@ -117,7 +112,6 @@ end sub
 '' desc: Inits OpenGL
 ''
 '' ::::::::::::
-defint a-z
 sub doInitGL
     dim i as integer
     dim lightAmb(3) as single
@@ -168,7 +162,6 @@ end sub
 '' desc: Reshapes GL window
 ''
 '' ::::::::::::
-defint a-z
 sub doReshapeGL CDECL ( byval w as integer, _
                         byval h as integer )
     

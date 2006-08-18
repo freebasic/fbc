@@ -1,5 +1,3 @@
-option explicit
-option escape
 
 #include once "IUP/iup.bi"
 
@@ -17,14 +15,14 @@ option escape
             IupHbox _
             ( _
               IupFill(), _
-              IupLabel ("IupFrame Attributes:\nFGCOLOR = \"255 0 0\"\nSIZE = \"EIGHTHxEIGHTH\"\nTITLE = \"This is the frame\"\nMARGIN = \"10x10\""), _
+              IupLabel (!"IupFrame Attributes:\nFGCOLOR = \"255 0 0\"\nSIZE = \"EIGHTHxEIGHTH\"\nTITLE = \"This is the frame\"\nMARGIN = \"10x10\""), _
               IupFill(), _
               NULL _
             ) _
           )
 
   '' Sets frame's attributes
-  IupSetAttributes(frame, "FGCOLOR=\"255 0 0\", SIZE=EIGHTHxEIGHTH, TITLE=\"This is the frame\", MARGIN=10x10")
+  IupSetAttributes(frame, !"FGCOLOR=\"255 0 0\", SIZE=EIGHTHxEIGHTH, TITLE=\"This is the frame\", MARGIN=10x10")
 
   '' Creates dialog 
   dialog = IupDialog(frame)

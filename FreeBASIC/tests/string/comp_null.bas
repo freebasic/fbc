@@ -1,4 +1,4 @@
-option explicit
+
 
 	dim shared as string v
 	dim shared as string * 10 f

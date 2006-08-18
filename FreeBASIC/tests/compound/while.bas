@@ -1,4 +1,4 @@
-option explicit 
+ 
 
 dim as string s
 dim as integer i 

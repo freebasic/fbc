@@ -2,9 +2,9 @@
 '' regular expression example
 ''
 
-option explicit
 
-'$include: "regex.bi"
+
+#include  "regex.bi"
 
 enum eFilePartKind
     eFPK_Full
@@ -14,7 +14,7 @@ enum eFilePartKind
     eFPK_Extension
 end enum
 
-function get_filepart( buffer as string, byval kind as eFilePartKind ) as string
+function get_filepart( byref buffer as string, byval kind as eFilePartKind ) as string
     dim re as regex_t
     dim pm as regmatch_t
     dim pbuff as zstring ptr
@@ -26,7 +26,7 @@ function get_filepart( buffer as string, byval kind as eFilePartKind ) as string
 	pbuff = strptr( buffer )
 	
 	'' compile the pattern
-	if regcomp( @re, "^(.*/)*([^/.]*)(((\.[^.]*)*)(\.[^.]*))?$", REG_EXTENDED or REG_ICASE )<>0 then
+	if regcomp( @re, "^(.*/)*([^/.]*)(((\.[^.]*)*)(\.[^.]*))?", REG_EXTENDED or REG_ICASE )<>0 then
         exit function
     end if
 
@@ -39,22 +39,22 @@ function get_filepart( buffer as string, byval kind as eFilePartKind ) as string
 
 '        dim i as integer
 '        for i=1 to nsub
-'            print i, mid$( *pbuff, 1 + match(i).rm_so, match(i).rm_eo - match(i).rm_so )
+'            print i, mid( *pbuff, 1 + match(i).rm_so, match(i).rm_eo - match(i).rm_so )
 '        next
 
         select case kind
         case eFPK_Full
     		function = buffer
         case eFPK_Path
-    		function = mid$( *pbuff, 1 + match(2).rm_so, match(2).rm_eo - match(2).rm_so )
+    		function = mid( *pbuff, 1 + match(2).rm_so, match(2).rm_eo - match(2).rm_so )
         case eFPK_File
-    		function = mid$( *pbuff, 1 + match(3).rm_so, match(3).rm_eo - match(3).rm_so ) + _
-    		           mid$( *pbuff, 1 + match(4).rm_so, match(4).rm_eo - match(4).rm_so )
+    		function = mid( *pbuff, 1 + match(3).rm_so, match(3).rm_eo - match(3).rm_so ) + _
+    		           mid( *pbuff, 1 + match(4).rm_so, match(4).rm_eo - match(4).rm_so )
         case eFPK_Basename
-    		function = mid$( *pbuff, 1 + match(3).rm_so, match(3).rm_eo - match(3).rm_so ) + _
-    		           mid$( *pbuff, 1 + match(5).rm_so, match(5).rm_eo - match(5).rm_so )
+    		function = mid( *pbuff, 1 + match(3).rm_so, match(3).rm_eo - match(3).rm_so ) + _
+    		           mid( *pbuff, 1 + match(5).rm_so, match(5).rm_eo - match(5).rm_so )
         case eFPK_Extension
-    		function = mid$( *pbuff, 1 + match(7).rm_so, match(7).rm_eo - match(7).rm_so )
+    		function = mid( *pbuff, 1 + match(7).rm_so, match(7).rm_eo - match(7).rm_so )
         end select
 
     end if
@@ -72,7 +72,7 @@ print get_filepart("", 0)
 
 #else
 
-private sub ShowAll( s as string )
+private sub ShowAll( byref s as string )
 	print "Full:", s
 	print "Path:", get_filepart(s, eFPK_Path)
 	print "File:", get_filepart(s, eFPK_File)

@@ -17,7 +17,7 @@
 '' compile as: fbc -s gui lesson10.bas
 
 
-option explicit
+
 
 #include once "GL/gl.bi"
 #include once "GL/glu.bi"
@@ -50,7 +50,7 @@ type SECTOR                      '' Build Our Sector Structure called SECTOR
 end type
 
 ''------------------------------------------------------------------------------
-declare sub readstr(byval f as integer, Buffer as string)
+declare sub readstr(byval f as integer, byref Buffer as string)
 declare sub SetupWorld()
 
 
@@ -228,12 +228,12 @@ dim shared bp as integer                       '' B Pressed?
 	loop while MULTIKEY(SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
-	while inkey$ <> "": wend
+	while inkey <> "": wend
 
 	end
 
 ''------------------------------------------------------------------------------
-sub readstr(byval f as integer, Buffer as string)
+sub readstr(byval f as integer, byref Buffer as string)
 	do
 		line input #f, Buffer        '' Get one line
 	loop while (left(Buffer,1) = "/") or (Buffer = "")   '' See If It Is Worthy Of Processing
@@ -252,7 +252,7 @@ sub SetupWorld()
 	if (open (exepath + "\data\World.txt", for input, as #fp) <> 0) then end 1
 	readstr(fp, oneline)                                      '' Get Single Line Of Data
 	if oneline = "" then end 1                                '' Data file error, exit
-	sscanf(strptr(oneline), "NUMPOLLIES %d\n", @numtriangles) '' Read In Number Of Triangles
+	sscanf(strptr(oneline), !"NUMPOLLIES %d\n", @numtriangles) '' Read In Number Of Triangles
 	sector1.triangle = allocate(len(TRIANGLE)*numtriangles)   '' Allocate Memory For numtriangles And Set Pointer
 	sector1.numtriangles = numtriangles                       '' Define The Number Of Triangles In Sector 1
 	for gl_loop = 0 to numtriangles-1                         '' Loop Through All The Triangles

@@ -2,16 +2,14 @@
 '' ordinary sieve test
 ''
 
-defint a-z
-
 const INTERATIONS = 1000
 
-  Dim Flags(0 to 8190)
-  dim iter 
-  dim count 
-  dim prime 
-  dim k 
-  dim i
+  Dim Flags(0 to 8190) as integer
+  dim iter as integer
+  dim count as integer
+  dim prime as integer
+  dim k as integer
+  dim i as integer
   dim x as double
   
   x = timer

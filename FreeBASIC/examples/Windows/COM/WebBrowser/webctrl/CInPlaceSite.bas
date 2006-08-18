@@ -2,7 +2,7 @@
 '' CInPlaceSite - a "class" that implements the IOleInPlaceSite interface
 '' 
 
-option explicit
+
 
 #include "Common.bi"
 #include "crt/string.bi"

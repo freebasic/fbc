@@ -4,7 +4,7 @@
 '' compile with:  fbc -s gui dialog.rc dialog.bas 
 '' 
 '' 
-option explicit 
+ 
 
 #include once "windows.bi" 
 #include "dialog.bi"

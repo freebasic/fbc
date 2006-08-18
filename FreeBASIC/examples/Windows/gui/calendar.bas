@@ -2,9 +2,6 @@
 '' calendar demo, code by zydon (...@...)
 ''
 
-option explicit
-option private
-
 #include once "windows.bi"
 #include once "win/commctrl.bi"
 	

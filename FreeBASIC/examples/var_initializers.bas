@@ -8,7 +8,7 @@ type mytype
 	as byte d
 end type
 
-declare sub testproc( byval a, byval b )
+declare sub testproc( byval a as integer, byval b as integer )
 		
 	'' module-level variables
 	dim arraytype(10) as mytype => { ( 1, 2, { 3, 4, 5 }, 6 ), ( 1*2, 2*2, { 3*2, 4*2, 5*2 }, 6*2 ) }
@@ -29,7 +29,7 @@ declare sub testproc( byval a, byval b )
 	
 
 '':::::
-sub testproc( byval a, byval b )
+sub testproc( byval a as integer, byval b as integer )
 	'' local variables
 	dim typearray(0 to 1) as mytype => { ( a, 2, { 3, 4, 5 }, 6 ), ( b, 3, { 4, 5, 6 }, 7 ) }
 	dim localvar as integer => a * b

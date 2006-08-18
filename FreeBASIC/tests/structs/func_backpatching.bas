@@ -1,4 +1,4 @@
-option explicit
+
 
 type foo as foo_
 
@@ -28,7 +28,7 @@ function fun ( byval cnt as integer, _
 
 end function
 
-sub changestack( byval a = 1, byval b = 2, byval c = 3 )
+sub changestack( byval a as integer = 1, byval b as integer = 2, byval c as integer = 3 )
 	dim as integer i, array(1 to 100)
 	for i = 1 to 100
 		array(i) = -i

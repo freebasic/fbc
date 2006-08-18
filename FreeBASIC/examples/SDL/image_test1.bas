@@ -3,8 +3,8 @@
 ' free.jpg, basic.gif and horse.tga are taken from the official freeBasic
 ' website.
 
-'$include: "SDL\SDL.bi"
-'$include: "SDL\SDL_image.bi"
+#include  "SDL\SDL.bi"
+#include  "SDL\SDL_image.bi"
 
 declare sub blitImage _
    (byval img as SDL_Surface ptr, byval x as integer, byval y as integer)

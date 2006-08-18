@@ -1,4 +1,4 @@
-option explicit
+
 
 sub test_1
 

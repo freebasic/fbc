@@ -18,7 +18,7 @@
 
 '' compile as: fbc -s gui lesson18.bas
 
-option explicit
+
 
 #include once "GL/gl.bi"
 #include once "GL/glu.bi"
@@ -177,7 +177,7 @@ declare sub glDrawCube()
 	loop while MULTIKEY(SC_ESCAPE) = 0
 
 	'' Empty keyboard buffer
-	while INKEY$ <> "": wend
+	while INKEY <> "": wend
 
 	gluDeleteQuadric quadratic 				'' Delete Quadratic - Free Resources
 	end

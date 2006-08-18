@@ -1,4 +1,4 @@
-option explicit
+
 
 const TEST_SUBR = 1234
 const TEST_FUNC = 5678

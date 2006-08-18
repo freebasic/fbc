@@ -1,9 +1,6 @@
 ' Calendar.bas
 ' Translated from C to FB by TinyCla, 2006
 
-Option Explicit
-Option Escape
-
 #include once "gtk/gtk.bi"
 #include once "vbcompat.bi"
 

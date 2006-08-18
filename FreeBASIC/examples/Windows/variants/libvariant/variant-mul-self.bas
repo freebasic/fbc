@@ -1,4 +1,4 @@
-option explicit
+
 
 #include once "variant.bi"
 #include once "intern.bi"

@@ -1,5 +1,3 @@
-option explicit
-option escape
 
 #define UNICODE
 #include "disphelper/disphelper.bi"
@@ -38,7 +36,7 @@ end sub
 	dhToggleExceptions( TRUE )
 
 	'' VBScript sample
-	RunScript( NULL, NULL, "MsgBox(\"This is a VBScript test.\" & vbcrlf & \"It worked!\",64 Or 3)", "VBScript" )
+	RunScript( NULL, NULL, !"MsgBox(\"This is a VBScript test.\" & vbcrlf & \"It worked!\",64 Or 3)", "VBScript" )
 
 	'' JScript sample
 	RunScript( "%d", @nResult, "Math.round(Math.pow(5, 2) * Math.PI)", "JScript" )

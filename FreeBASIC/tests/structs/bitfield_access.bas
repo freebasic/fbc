@@ -1,4 +1,4 @@
-option explicit 
+ 
 
 const TEST_W = 200
 const TEST_H = 100

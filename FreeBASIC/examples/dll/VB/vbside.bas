@@ -1,5 +1,5 @@
 Attribute VB_Name = "Module1"
-Option Explicit
+
 
 '' notes: 
 '' 1) the alias must be given and it must be mangled following the 

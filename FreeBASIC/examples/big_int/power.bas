@@ -1,4 +1,4 @@
-option explicit
+
 
 #include once "big_int/big_int_full.bi"
 

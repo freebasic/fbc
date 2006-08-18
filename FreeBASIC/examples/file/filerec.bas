@@ -1,42 +1,31 @@
-' Read a name and a test score from the console.
-' Store each name and score as a record in a
-' random-access file.
+type testrecord field=1
+   namefield  as string * 20
+   scorefield as single
+end type
 
-' Define record fields.
-TYPE TestRecord field=1
-   NameField  AS STRING * 20
-   ScoreField AS SINGLE
-END TYPE
+	dim filebuffer as testrecord
+	
+	open "testdat.dat" for random as #1 len = len(filebuffer)
+	
+	dim i as integer
+	for i = 1 to 10
+	   filebuffer.namefield = "name" + ltrim(str(i))
+	   filebuffer.scorefield = i
+	   put #1, i, filebuffer
+	next i
+	
+	print i; " records written."
 
-' Open the test data file.
-DIM FileBuffer AS TestRecord
-
-OPEN "TESTDAT.DAT" FOR RANDOM AS #1 LEN = LEN(FileBuffer)
-
-' Read pairs of names and scores from the console.
-
-
-FOR i = 1 TO 10
-   FileBuffer.NameField = "name" + LTRIM$(STR$(i))
-   FileBuffer.ScoreField = i
-   PUT #1, i, FileBuffer
-NEXT i
-
-PRINT i; " records written."
-
-CLOSE #1
+	close #1
 
 
 
-OPEN "TESTDAT.DAT" FOR RANDOM AS #1 LEN = LEN(FileBuffer)
-
-' Read pairs of names and scores from the console.
-
-
-FOR i = 1 TO 10
-   geT #1, i, FileBuffer
-   PRINT i, FileBuffer.NameField, str$( FileBuffer.ScoreField ), FileBuffer.ScoreField
-NEXT i
-
-CLOSE #1
-
+	open "testdat.dat" for random as #1 len = len(filebuffer)
+	
+	for i = 1 to 10
+	   get #1, i, filebuffer
+	   print i, filebuffer.namefield, str( filebuffer.scorefield ), filebuffer.scorefield
+	next i
+	
+	close #1
+	

@@ -1,4 +1,4 @@
-option explicit
+
 
 sub test1
 	dim as integer dst, src

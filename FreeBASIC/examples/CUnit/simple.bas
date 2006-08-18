@@ -25,8 +25,6 @@
  '                      asserts       5       5       5       0
  '/
  
-option explicit
-option escape
 
 #include once "crt/stdio.bi"
 #include once "crt/string.bi"
@@ -71,7 +69,7 @@ sub testFPRINTF cdecl()
 
    if temp_file <> NULL then
       CU_ASSERT( fprintf(temp_file, "") = 0)
-      CU_ASSERT( fprintf(temp_file, "Q\n") = 2 )
+      CU_ASSERT( fprintf(temp_file, !"Q\n") = 2 )
       CU_ASSERT( fprintf(temp_file, "i1 = %d", i1) = 7 )
    end if
 end sub
@@ -87,7 +85,7 @@ sub testFREAD cdecl()
    if temp_file <> NULL then
       rewind(temp_file)
       CU_ASSERT( fread(@buffer, len(ubyte), sizeof(buffer), temp_file) = 9 )
-      CU_ASSERT( buffer = "Q\ni1 = 10" )
+      CU_ASSERT( buffer = !"Q\ni1 = 10" )
    end if
 end sub
 

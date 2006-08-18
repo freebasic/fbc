@@ -6,7 +6,7 @@
 ''    Visit My Site At nehe.gamedev.net
 
 
-option explicit
+
 
 #include once "GL/gl.bi"
 #include once "GL/glu.bi"
@@ -116,4 +116,4 @@ option explicit
    		rquad = rquad -0.15                                     '' Decrease The Rotation Variable For The Quad ( NEW )
 
 		flip
-	loop while inkey$ = ""
+	loop while inkey = ""

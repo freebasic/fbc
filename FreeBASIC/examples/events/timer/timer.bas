@@ -5,7 +5,7 @@
 '' to compile: fbc timer.bas -lib
 ''
 
-option explicit
+
 
 #include once "timer.bi"
 

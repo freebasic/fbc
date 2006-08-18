@@ -1,7 +1,7 @@
 ''
 '' wxWindows-c example, by dumbledore
 ''
-option explicit
+
 
 #include once "wx-c/wx.bi"
 
@@ -125,7 +125,7 @@ function app_oninit_cb () as integer
    	
    	dim as integer i
    	for i = 0 to 15
-   		wxListBox_Append( selector, "list item " + str$( i+1 ) )
+   		wxListBox_Append( selector, "list item " + str( i+1 ) )
    	next i
    
    	'' create the main panel

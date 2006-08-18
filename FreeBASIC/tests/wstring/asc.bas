@@ -1,4 +1,4 @@
-option explicit
+
 
 const TEST_A = asc( wstr( "abc" ), 1 )
 const TEST_B = asc( wstr( "abc" ), 2 )

@@ -69,7 +69,7 @@ end type
 '
 ' RET:              error code (see ERROR statement)
 type fb_FnFileSetWidth as _
-          function cdecl ( handle as FB_FILE, _
+          function cdecl ( byref handle as FB_FILE, _
                            byval new_width as integer ) as integer
 
 '' Function to open a file and modify/set the file handles values
@@ -81,7 +81,7 @@ type fb_FnFileSetWidth as _
 '
 ' RET:              error code (see ERROR statement)
 type fb_FnFileOpen     as _
-          function cdecl ( handle as FB_FILE, _
+          function cdecl ( byref handle as FB_FILE, _
                            byval filename as zstring ptr, _
                            byval filename_len as uinteger ) as integer
 
@@ -92,7 +92,7 @@ type fb_FnFileOpen     as _
 '
 ' RET:              TRUE = EOF reached
 type fb_FnFileEof      as _
-          function cdecl ( handle as FB_FILE ) as integer
+          function cdecl ( byref handle as FB_FILE ) as integer
 
 '' Function to close a file
 '
@@ -101,7 +101,7 @@ type fb_FnFileEof      as _
 '
 ' RET:              error code (see ERROR statement)
 type fb_FnFileClose    as _
-          function cdecl ( handle as FB_FILE ) as integer
+          function cdecl ( byref handle as FB_FILE ) as integer
 
 '' Function to set the file pointers position
 '
@@ -114,7 +114,7 @@ type fb_FnFileClose    as _
 '
 ' RET:              error code (see ERROR statement)
 type fb_FnFileSeek     as _
-          function cdecl ( handle as FB_FILE, _
+          function cdecl ( byref handle as FB_FILE, _
                            byval offset as long, _
                            byval whence as integer ) as integer
 
@@ -128,8 +128,8 @@ type fb_FnFileSeek     as _
 '
 ' RET:              error code (see ERROR statement)
 type fb_FnFileTell     as _
-          function cdecl ( handle as FB_FILE, _
-                           offset as long ) as integer
+          function cdecl ( byref handle as FB_FILE, _
+                           byref offset as long ) as integer
 
 '' Function to read data from a file
 '
@@ -143,9 +143,9 @@ type fb_FnFileTell     as _
 '
 ' RET:              error code (see ERROR statement)
 type fb_FnFileRead     as _
-          function cdecl ( handle as FB_FILE, _
+          function cdecl ( byref handle as FB_FILE, _
                            byval buffer as any ptr, _
-                           length as uinteger ) as integer
+                           byref length as uinteger ) as integer
 
 '' Function to write data to a file
 '
@@ -156,7 +156,7 @@ type fb_FnFileRead     as _
 '
 ' RET:              error code (see ERROR statement)
 type fb_FnFileWrite    as _
-          function cdecl ( handle as FB_FILE, _
+          function cdecl ( byref handle as FB_FILE, _
                            byval buffer as any ptr, _
                            byval length as uinteger ) as integer
 
@@ -169,7 +169,7 @@ type fb_FnFileWrite    as _
 '
 ' RET:              error code (see ERROR statement)
 type fb_FnFileLock     as _
-          function cdecl ( handle as FB_FILE, _
+          function cdecl ( byref handle as FB_FILE, _
                            byval position as uinteger, _
                            byval length as uinteger ) as integer
 
@@ -182,7 +182,7 @@ type fb_FnFileLock     as _
 '
 ' RET:              error code (see ERROR statement)
 type fb_FnFileUnlock   as _
-          function cdecl ( handle as FB_FILE, _
+          function cdecl ( byref handle as FB_FILE, _
                            byval position as uinteger, _
                            byval length as uinteger ) as integer
 
@@ -196,8 +196,8 @@ type fb_FnFileUnlock   as _
 '
 ' RET:              error code (see ERROR statement)
 type fb_FnFileReadLine as _
-          function cdecl ( handle as FB_FILE, _
-                           dst as string ) as integer
+          function cdecl ( byref handle as FB_FILE, _
+                           byref dst as string ) as integer
 
 '' Function to flush buffered output to disk
 '
@@ -206,7 +206,7 @@ type fb_FnFileReadLine as _
 '
 ' RET:              error code (see ERROR statement)
 type fb_FnFileFlush as _
-          function cdecl ( handle as FB_FILE ) as integer
+          function cdecl ( byref handle as FB_FILE ) as integer
 
 type FB_FILE_HOOKS
     pfnEof          as fb_FnFileEof
@@ -235,7 +235,7 @@ end type
 ' pfnFileOpen       Pointer to the file's OPEN function
 '
 ' RET:              error code (see ERROR statement)
-type fb_FnDevOpenHook as function( filename as string, _
+type fb_FnDevOpenHook as function( byref filename as string, _
                                    byval open_mode as FB_FILE_MODE, _
                                    byval access_mode as FB_FILE_ACCESS, _
                                    byval lock_mode as FB_FILE_LOCK, _
@@ -246,33 +246,33 @@ extern fb_pfnDevOpenHook alias "fb_pfnDevOpenHook" as fb_FnDevOpenHook
 
 '' Implemented OPEN functions
 declare function fb_DevConsOpen cdecl _
-          alias "fb_DevConsOpen" ( handle as FB_FILE, _
+          alias "fb_DevConsOpen" ( byref handle as FB_FILE, _
                                    byval filename as zstring ptr, _
                                    byval filename_len as uinteger ) as integer
 declare function fb_DevErrOpen cdecl _
-          alias "fb_DevErrOpen"  ( handle as FB_FILE, _
+          alias "fb_DevErrOpen"  ( byref handle as FB_FILE, _
                                    byval filename as zstring ptr, _
                                    byval filename_len as uinteger ) as integer
 declare function fb_DevFileOpen cdecl _
-          alias "fb_DevFileOpen" ( handle as FB_FILE, _
+          alias "fb_DevFileOpen" ( byref handle as FB_FILE, _
                                    byval filename as zstring ptr, _
                                    byval filename_len as uinteger ) as integer
 declare function fb_DevLptOpen cdecl _
-          alias "fb_DevLptOpen"  ( handle as FB_FILE, _
+          alias "fb_DevLptOpen"  ( byref handle as FB_FILE, _
                                    byval filename as zstring ptr, _
                                    byval filename_len as uinteger ) as integer
 #if defined(__FB_WIN32__) or defined(__FB_CYGWIN__)
 declare function fb_DevComOpen cdecl _
-          alias "fb_DevComOpen"  ( handle as FB_FILE, _
+          alias "fb_DevComOpen"  ( byref handle as FB_FILE, _
                                    byval filename as zstring ptr, _
                                    byval filename_len as uinteger ) as integer
 #endif
 declare function fb_DevPipeOpen cdecl _
-          alias "fb_DevPipeOpen" ( handle as FB_FILE, _
+          alias "fb_DevPipeOpen" ( byref handle as FB_FILE, _
                                    byval filename as zstring ptr, _
                                    byval filename_len as uinteger ) as integer
 declare function fb_DevScrnOpen cdecl _
-          alias "fb_DevScrnOpen" ( handle as FB_FILE, _
+          alias "fb_DevScrnOpen" ( byref handle as FB_FILE, _
                                    byval filename as zstring ptr, _
                                    byval filename_len as uinteger ) as integer
 

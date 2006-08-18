@@ -3,12 +3,12 @@
 '' by marzec
 ''
 
-'$include: 'SDL\SDL.bi'
+#include once "SDL/SDL.bi"
 
 declare sub doInit ( )
 declare sub doQuit ( )
 declare sub doMain ( )
-declare sub exitError ( msg as string )
+declare sub exitError ( byref msg as string )
 
 dim shared video as SDL_Surface ptr
 
@@ -64,7 +64,7 @@ sub doQuit ( )
 
 end sub
 
-sub exitError ( msg as string )
+sub exitError ( byref msg as string )
 	print "error: " + msg
 	SDL_Quit
 	end

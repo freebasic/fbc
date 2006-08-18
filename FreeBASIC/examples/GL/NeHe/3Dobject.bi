@@ -37,7 +37,7 @@ type glObject
 end type
 
 '' read in a line from the data file
-private sub readstr(byval f as integer, sstring as string)
+private sub readstr(byval f as integer, byref sstring as string)
 	sstring = ""
 	do
 		line input #f, sstring    '' Gets A String Of 255 Chars Max From f (File)
@@ -45,7 +45,7 @@ private sub readstr(byval f as integer, sstring as string)
 end sub
 
 '' load object
-private function ReadObject(st as string, byval o as glObject ptr) as integer
+private function ReadObject(byref st as string, byval o as glObject ptr) as integer
 	dim as integer file
 	dim as uinteger i
 	dim oneline as string * 256

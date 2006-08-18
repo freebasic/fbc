@@ -2,7 +2,7 @@
 '' to compile: fbc eval.bas common.bas
 ''
 
-option explicit
+
 
 #include once "common.bi"
 

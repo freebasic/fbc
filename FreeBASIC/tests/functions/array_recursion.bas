@@ -6,6 +6,7 @@ end type
 '':::::
 sub sub1( array() as integer )
 
+	dim i as integer 
 	for i = lbound( array ) to ubound( array )
 		assert( array(i) = i )
 	next
@@ -29,6 +30,7 @@ end sub
 
 	dim array1(-2 to 2) as integer
 	
+	dim i as integer 
 	for i = lbound( array1 ) to ubound( array1 )
 		array1(i) = i
 	next
