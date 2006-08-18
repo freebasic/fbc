@@ -1,138 +1,126 @@
-	Version 0.16 has some important changes that may break applications written 
-for older versions of FreeBASIC (FB). 
+    Since version 0.17 FreeBASIC has a -lang command-line option, used to 
+change the language compatibility mode.
 
-	There are no more plans to break compatibility from version 0.16 and up 
-(unless the GCC (GNU Compiler Collection) back-end impose that, see the next
-paragraph), but FB been in beta stage, this kind of modifications should be 
-acceptable. While we know they can cause trouble to many users working on 
-medium-sized or large projects, be sure we tried everything possible before 
-resorting to the final decisions.
+	It was needed to let FB support object-orientation in future, without
+crippling the QuickBASIC support, or breaking compatibility with old FB
+sources, and without making FB difficult to maintain with n-different 
+versions of pretty much the same packages. The QB support can be improved
+now too, if needed, without breaking the sources written specifically for FB.
 
-	In the next releases, the plan is to move FB to become a GCC front-end, 
-to take advantage of the endless number of platforms supported by the GCC 
-back-end and the high-level optimizations only found in commercial and 
-expensive C/C++ compilers. Some of the changes below were done to make the FB 
-front-end compatible with GCC, the migration will take a lot of time and 
-efforts from both the FB team and the user base, but the result will be worth.
+    To compile old GW-BASIC and QB(ASIC) sources without too many changes,
+use "-lang qb" (without quotes) option in the command-line when running FBC.
 
-
-Most important changes:
-
-
-	The NOT unary operator behavior
-	-------------------------------
-
-	In preview versions the NOT behavior was the same as in VBDOS (the 
-compiler "BC.EXE", not the IDE): logical when used in conditional statements 
-like "IF expr THEN", and bitwise otherwise.
-
-	That behavior was actually a bug in the VBDOS compiler, and not reproduced 
-in any other version of the MS BASIC compilers like QB 4.5 and VB 6, so it was 
-modified in FB 0.16 to be compatible with the rest.
-
-	With that change, NOT can't be used anymore to test results of functions
-if they are part of any API/library not developed in a language that defines
-TRUE as "-1", that's it, most known languages, including C/C++, where TRUE is 
-defined as "1", not "-1". So, when checking for boolean results, always do the 
-tests with:
-
-	    IF SomeFunc() = FALSE THEN error...
-	    
-	    or
-	    
-	    IF SomeFunc() <> FALSE THEN ok...
+    To compile 0.16 or below sources, use the "-lang deprecated" option.
     
-    "IF NOT somefunc() THEN error..." won't work anymore, unless "SomeFunc()" 
-returns 0 and -1 for FALSE and TRUE, respectively.
+
+    The differences between modes are:
     
+    o fb (the default mode):
+    
+      Not supported:
+      
+      1) implicit variables
+         - all variables must be always explicitly declared
+      
+      2) suffixes (! # $ % &), even for constants
+         - use type-casting or the f (single), d (double), ll (longint), 
+           ul (uinteger), ull (ulongint) suffix with constants to resolve 
+           overloading
+      
+      3) DEF###, so there's no implicit types
+         - AS is always needed when declaring *any* symbol but CONST's, 
+           where types are inferred
+      
+      4) default BYREF parameters
+         - all parameters are passed by value (BYVAL) by default 
+         - use the "-w pedantic" command-line option to get paramaters 
+           without explicit BYREF or BYVAL reported
+      
+      5) OPTION's of any kind (no context-sensitivity)
+         - instead of NOKEYWORD, use #undef
+         - instead of ESCAPE, use: !"some esc seq \n\r" (notice the '!' char)
+           and pass "-w pedantic" to check for possible escape sequences
+         - EXPLICIT isn't needed, see item 1
+         - BYVAL isn't needed, see item 4
+         - instead of DYNAMIC, use REDIM to create dynamic arrays, or 
+           declare them with empty subcripts: DIM array() AS sometype
+         - instead of BASE, use explicit lbound subcripts in arrays
+         - instead of PRIVATE, declare each function as PRIVATE
+      
+      6) periods in symbol names 
+         - use namespaces instead
+     
+      7) GOSUB/RETURN 
+         - nested functions may be allowed in future
+      
+      8) ON .. GOSUB|GOTO 
+         - use SELECT expr AS CONST for the latter
+      
+      9) ON ERROR | RESUME 
+         - all statements can be used as functions to check for run-time 
+           errors like:  IF OPEN( "text" FOR INPUT AS #1 ) <> 0 THEN error... 
+      
+     10) '$DYNAMIC, '$STATIC, '$INCLUDE meta-commands embedded in 
+         comments
+         - see item 5 about OPTION DYNAMIC
+         - use #include "filename" instead of '$include
+     
+     11) CALL or LET
+         - just remove them
+     
+     12) numeric labels
+         - no comment
+     
    
-	GOSUB is now illegal inside functions
-	-------------------------------------
-
-	Both GOSUB and ON expr GOSUB are now illegal inside functions, the GCC 
-back-end has no concept of GOSUB because the strict scope rules imposed to 
-implement most of the high-level optimizations and also to keep exception
-handling safe, so that was removed now before it's too late.
-
-	GOSUB and ON expr GOSUB will still supported when used in the main-module
-level - ie: outside any function. That won't be removed in future.
-
-	After the move to a GCC front-end, nested functions will be supported, 
-giving an alternative to GOSUB inside functions. For ON expr GOSUB, building
-a function pointers array is more safe and extensible.
-
-
-	All compound statements now create implicit scope blocks
-	--------------------------------------------------------
-	
-	All compound statements like IF (multi-line only), DO, WHILE, FOR and 
-SELECT will now open an implicit scope block. Because of that, variables 
-declared inside those statements won't be seen anymore outside the blocks, 
-causing problems with buggy (in the logical aspect) applications.
-
-	Due complaints, implicit variables will be moved to the function scope,
-unless they are declared inside explicit SCOPE .. END SCOPE blocks, so they
-are not affected by this change, only explicitly declared (with DIM or REDIM) 
-variables are.
-
-	For example:
-	
-		IF expr THEN
-			DIM foo% = 1
-		ELSE
-			DIM foo% = 2
-		END IF
-		
-		FOR bar% = 1 TO foo%
-		
-	Must be changed to:
-	
-		DIM foo%
-		IF expr THEN 
-		... the same code as above, but the DIM's ...
-		
-	The warning message "Implicit variable allocation" will be shown in that
-case, be sure to check all the offending lines.
-
-	To be safe, always use OPTION EXPLICIT and declare all variables.
-		
-
-	Local variables allocation
-	--------------------------
-
-	To allow GOTO's to target labels declared inside scope blocks and also to 
-support objects and exception handling later, now the local variables aren't 
-cleared anymore at the beginning of the scope blocks, so this won't work (again, 
-a logical error):
-
-		GOTO foo
-		
-		DIM bar
-		
-		foo: 
-		
-		IF bar THEN ...
-
-	The variable "bar" won't be cleared until the DIM line, that will be 
-skipped in that case because of the GOTO. The warning message: "Branch crossing 
-local variable definition" will be shown in that case.
-		
-	If the variables are variable-length strings or dynamic arrays, an error 
-message will be shown for each: "Branch crossing local array, var-len string or 
-object definition".
-
-	In both cases, just declare before the GOTO's, the variables shown in 
-the error or warning messages.
-	
-	That only applies to explicit declared (with DIM or REDIM) variables,
-the implicit ones are allocated and cleared in the beginning of the function scope.
-	
-	
-	We are sorry if the changes listed above affected you in some way, they 
-were done to make FB more compatible with QB or more safe to allow object-
-orientation and exception handling to be added later, and also to allow the GCC 
-migration, they weren't superficially done just to please somebody in favor of 
-other users, be sure.
-
-
-EOF
+    o deprecated:
+     
+	  Supported: anything allowed in version 0.16, but: 
+     
+      1) GOSUB/RETURN and ON ... GOSUB (even at module-level)
+         - so the GOSUB implementation could be thread-unsafe in the 
+           "-lang qb" mode, allowing fast executation ("-lang qb" doesn't 
+           support multi-threading, while "-lang deprecated" does)
+     
+      Not supported:
+     
+      1) Classes
+         - periods allowed in symbols names make it too difficult and/or
+           ambiguous
+     
+      2) Operator overloading
+      	 - ditto
+     
+   
+    o qb:
+     
+      Supported: Everything not supported/allowed in the fb mode, plus:
+      
+      1) CALL can be used with forward functions (W.I.P.)
+     
+      2) SHARED can be used inside functions   (W.I.P.)
+     
+      3) all variables, implicit or explicit, are always allocated in
+         the function scope, as in QB
+        
+      4) ...
+     
+      Not supported:
+     
+      1) Multi-threading
+         - the thread*, mutex* and cond* functions can't be used
+     
+      2) Classes and Namespaces
+     
+      3) Function and operator overloading
+     
+      4) SCOPE blocks
+     
+      5) EXTERN blocks
+      
+      6) Variable initializers
+         - all variables are moved to the function scope (as in QB), 
+           making local initializers too difficult to support
+     
+     
+	The -lang qb and -lang deprecated options will always be supported in
+future versions.

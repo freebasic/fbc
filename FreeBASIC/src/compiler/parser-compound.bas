@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -322,7 +320,7 @@ function cCompoundEnd( ) as integer
 	case FB_TK_SELECT
 		function = cSelectStmtEnd( )
 
-	case FB_TK_SUB, FB_TK_FUNCTION
+	case FB_TK_SUB, FB_TK_FUNCTION, FB_TK_CONSTRUCTOR, FB_TK_DESTRUCTOR, FB_TK_OPERATOR
 		function = cProcStmtEnd( )
 
 	case FB_TK_SCOPE
@@ -379,9 +377,18 @@ function cCompStmtCheck( ) as integer
     	errmsg = FB_ERRMSG_EXPECTEDENDEXTERN
 
     case FB_TK_FUNCTION
-    	errmsg = iif( stk->proc.issub, _
-    				  FB_ERRMSG_EXPECTEDENDSUB, _
-    				  FB_ERRMSG_EXPECTEDENDFUNCTION )
+		select case stk->proc.tkn
+		case FB_TK_SUB
+			errmsg = FB_ERRMSG_EXPECTEDENDSUB
+		case FB_TK_FUNCTION
+			errmsg = FB_ERRMSG_EXPECTEDENDFUNCTION
+		case FB_TK_CONSTRUCTOR
+			errmsg = FB_ERRMSG_EXPECTEDENDCTOR
+		case FB_TK_DESTRUCTOR
+			errmsg = FB_ERRMSG_EXPECTEDENDDTOR
+		case FB_TK_OPERATOR
+			errmsg = FB_ERRMSG_EXPECTEDENDOPERATOR
+		end select
 
     case FB_TK_DO
     	errmsg = FB_ERRMSG_EXPECTEDLOOP

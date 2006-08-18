@@ -24,8 +24,6 @@
 '' chng: sep/2004 written [v1ctor]
 '' 		 jan/2005 much more modular using fake classes [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"

@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -209,7 +207,7 @@ function astCheckCONV _
 	function = FALSE
 
 	'' UDT? can't convert..
-	if( to_dtype = FB_DATATYPE_USERDEF ) then
+	if( to_dtype = FB_DATATYPE_STRUCT ) then
 		exit function
 	end if
 
@@ -227,7 +225,7 @@ function astCheckCONV _
     	end if
 
     '' UDT's? ditto
-    case FB_DATATYPE_USERDEF
+    case FB_DATATYPE_STRUCT
     	exit function
     end select
 
@@ -246,16 +244,24 @@ function astNewCONV _
 	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
-    dim as integer ldclass, ldtype
+    dim as integer ldclass, ldtype, is_ambiguous
+    dim as FBSYMBOL ptr proc
 
 	function = NULL
 
-    if( l = NULL ) then
-    	exit function
-    end if
+	'' try implicit casting op overloading
+	proc = symbFindCastOvlProc( to_dtype, to_subtype, l, @is_ambiguous )
+	if( proc <> NULL ) then
+		'' build a proc call
+		return astBuildCALL( proc, 1, l )
+	else
+		if( is_ambiguous ) then
+			return NULL
+		end if
+	end if
 
 	'' UDT? can't convert..
-	if( to_dtype = FB_DATATYPE_USERDEF ) then
+	if( to_dtype = FB_DATATYPE_STRUCT ) then
 		exit function
 	end if
 
@@ -317,7 +323,7 @@ function astNewCONV _
     end if
 
 	'' UDT's? ditto
-	if( ldtype = FB_DATATYPE_USERDEF ) then
+	if( ldtype = FB_DATATYPE_STRUCT ) then
 		exit function
     end if
 

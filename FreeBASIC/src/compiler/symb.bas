@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -57,8 +55,9 @@ declare sub 		symbMangleEnd		( )
 
 
 ''globals
-	dim shared symb as SYMBCTX
+	dim shared as SYMBCTX symb
 
+	dim shared deftypeTB( 0 to (asc("_")-asc("A")+1)-1 ) as integer
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 '' init/end
@@ -137,6 +136,33 @@ sub symbInitSymbols static
 end sub
 
 '':::::
+private sub hInitOpOvlTb( )
+	dim as integer i
+
+	for i = 0 to AST_OPCODES-1
+		symb.globOpOvlTb(i).head = NULL
+	next
+
+end sub
+
+'':::::
+private sub hInitDefTypeTb
+    dim as integer dtype, i
+
+	if( env.clopt.lang = FB_LANG_QB ) then
+		dtype = FB_DATATYPE_SINGLE
+	else
+		dtype = FB_DATATYPE_INTEGER
+	end if
+
+	''
+	for i = 0 to (asc("_")-asc("A")+1)-1
+		deftypeTB(i) = dtype
+	next
+
+end sub
+
+'':::::
 sub symbInit _
 	( _
 		byval ismain as integer _
@@ -170,6 +196,12 @@ sub symbInit _
 
 	'' arrays dim tb
 	symbVarInit( )
+
+	''
+	hInitOpOvlTb( )
+
+	''
+	hInitDefTypeTb( )
 
     ''
     symb.inited = TRUE
@@ -229,7 +261,7 @@ function symbCanDuplicate _
 	( _
 		byval chain_ as FBSYMCHAIN ptr, _
 		byval s as FBSYMBOL ptr _
-	) as integer
+	) as integer static
 
 	select case as const s->class
 	'' adding a define, keyword or namespace? no dups can exist
@@ -246,7 +278,7 @@ function symbCanDuplicate _
 
 		do
 			select case as const chain_->sym->class
-			case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_KEYWORD, FB_SYMBCLASS_NAMESPACE, _
+			case FB_SYMBCLASS_DEFINE, FB_SYMBCLASS_NAMESPACE, FB_SYMBCLASS_KEYWORD, _
 				 FB_SYMBCLASS_LABEL
 				exit function
 			end select
@@ -254,7 +286,8 @@ function symbCanDuplicate _
 			chain_ = chain_->next
 		loop while( chain_ <> NULL )
 
-	'' adding a forward ref? anything but a define or another forward ref is allowed
+	'' adding a forward ref? anything but a define or another forward ref is
+	'' allowed (keywords (but quirk-keywords) are refused when parsing)
 	case FB_SYMBCLASS_FWDREF
 
 		function = FALSE
@@ -269,7 +302,7 @@ function symbCanDuplicate _
 		loop while( chain_ <> NULL )
 
 	'' adding an udt, enum or typedef? anything but a define or
-	'' themselves is allowed
+	'' themselves is allowed (keywords (but quirk-keywords) are refused when parsing)
 	case FB_SYMBCLASS_UDT, FB_SYMBCLASS_ENUM, FB_SYMBCLASS_TYPEDEF
 
 		function = FALSE
@@ -443,6 +476,8 @@ function symbNewSymbol _
     end if
 
 	'' add to hash table
+	s->hash.tb = hashtb
+
 	if( dohash ) then
 		chain_ = listNewNode( @symb.chainlist )
 		chain_->index = hashHash( s->id.name )
@@ -499,8 +534,6 @@ function symbNewSymbol _
 	else
 		s->hash.chain = NULL
 	end if
-
-	s->hash.tb = hashtb
 
 	'' add to symbol table
 	if( symtb->tail <> NULL ) then
@@ -642,7 +675,7 @@ function symbLookup _
 		'' if it's a keyword, return id and class
 		if( chain_->sym->class = FB_SYMBCLASS_KEYWORD ) then
 			id = chain_->sym->key.id
-			class = chain_->sym->key.class
+			class = chain_->sym->key.tkclass
 		end if
 	end if
 
@@ -710,7 +743,7 @@ function symbLookupByNameAndSuffix _
     if( chain_ <> NULL ) then
     	'' get default type if no suffix was given
     	if( suffix = INVALID ) then
-    		deftyp = hGetDefType( symbol )
+    		deftyp = symbGetDefType( symbol )
     	end if
 
 		'' check if types match
@@ -905,7 +938,7 @@ function symbCalcLen _
 	case FB_DATATYPE_STRING
 		function = FB_STRDESCLEN
 
-	case FB_DATATYPE_USERDEF
+	case FB_DATATYPE_STRUCT
 		if( unpadlen ) then
 			function = subtype->udt.unpadlgt
 		else
@@ -1262,7 +1295,7 @@ function symbTypeToStr _
 	dtype_np = dtype mod FB_DATATYPE_POINTER
 
 	select case as const dtype_np
-	case FB_DATATYPE_FWDREF, FB_DATATYPE_USERDEF, FB_DATATYPE_ENUM
+	case FB_DATATYPE_FWDREF, FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 		res = *symbGetName( subtype )
 
 	case else
@@ -1277,3 +1310,55 @@ function symbTypeToStr _
 	function = strptr( res )
 
 end function
+
+'':::::
+function symbGetDefType _
+	( _
+		byval symbol as zstring ptr _
+	) as integer static
+
+    dim as integer c
+
+	c = symbol[0][0]
+
+	'' to upper
+	if( (c >= asc("a")) and (c <= asc("z")) ) then
+		c -= (asc("a") - asc("A"))
+	end if
+
+	function = deftypeTB(c - asc("A"))
+
+end function
+
+'':::::
+sub symbSetDefType _
+	( _
+		byval ichar as integer, _
+		byval echar as integer, _
+		byval dtype as integer _
+	) static
+
+    dim as integer i
+
+	if( ichar < asc("A") ) then
+		ichar = asc("A")
+	elseif( ichar > asc("_") ) then
+		ichar = asc("_")
+	end if
+
+	if( echar < asc("A") ) then
+		echar = asc("A")
+	elseif( echar > asc("_") ) then
+		echar = asc("_")
+	end if
+
+	if( ichar > echar ) then
+		swap ichar, echar
+	end if
+
+	for i = ichar to echar
+		deftypeTB(i - asc("A")) = dtype
+	next
+
+end sub
+

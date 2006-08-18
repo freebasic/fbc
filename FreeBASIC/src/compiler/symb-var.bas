@@ -21,8 +21,6 @@
 '' chng: sep/2004 written [v1ctor]
 ''		 jan/2005 updated to use real linked-lists [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -173,7 +171,7 @@ private function hCreateDescType _
 	symbAddUDTElement( sym, _
 				   	   NULL, _
 				   	   1, dTB(), _
-					   FB_DATATYPE_USERDEF, dimtype, 0, _
+					   FB_DATATYPE_STRUCT, dimtype, 0, _
 					   symbGetLen( dimtype ), 0 )
 
 	''
@@ -352,7 +350,7 @@ private function hCreateArrayDesc _
 					   	  array->symtb, NULL, symbIsLocal( array ) = FALSE, _
 					   	  FB_SYMBCLASS_VAR, _
 					   	  FALSE, id, id_alias, _
-					   	  FB_DATATYPE_USERDEF, desctype, 0, _
+					   	  FB_DATATYPE_STRUCT, desctype, 0, _
 					   	  TRUE )
     if( desc = NULL ) then
     	exit function
@@ -505,7 +503,7 @@ private sub hSetupVar _
 	) static
 
 	if( dtype = INVALID ) then
-		dtype = hGetDefType( id )
+		dtype = symbGetDefType( id )
 	end if
 
 	''
@@ -573,7 +571,7 @@ function symbAddVarEx _
     ''
     if( lgt <= 0 ) then
 		if( dtype = INVALID ) then
-			suffix = hGetDefType( id )
+			suffix = symbGetDefType( id )
 		else
 			suffix = dtype
  		end if
@@ -612,7 +610,7 @@ function symbAddVarEx _
 
 		'' can't add local static vars to global list because
 		'' symbDelSymbolTb() will miss them when flushing the
-		'' proc/scope block, and also because the the dbg info
+		'' proc/scope block, and also because the GDB info
 
 	'' global..
 	else
@@ -751,7 +749,7 @@ function symbAddTempVarEx _
 			lgt = FB_STRDESCLEN
 
 		'' UDT with var-len string fields?
-		case FB_DATATYPE_USERDEF
+		case FB_DATATYPE_STRUCT
             if( symbGetUDTDynCnt( subtype ) <> 0 ) then
             	lgt = symbGetLen( s )
             end if

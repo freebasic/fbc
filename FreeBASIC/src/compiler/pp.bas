@@ -20,8 +20,6 @@
 ''
 '' chng: dec/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -474,7 +472,7 @@ function ppReadLiteral _
     		'' multi-line, only add if it's not at the beginning
     		if( text.len > 0 ) then
     			'' just lf
-    			DZstrConcatAssign( text, "\n" )
+    			DZstrConcatAssign( text, LFCHAR )
     		end if
 
     		lexSkipToken( LEX_FLAGS )
@@ -613,7 +611,7 @@ function ppReadLiteralW _
     		'' multi-line, only add if it's not at the beginning
     		if( text.len > 0 ) then
     			'' just lf
-    			DWstrConcatAssign( text, wstr( "\n" ) )
+    			DWstrConcatAssign( text, wstr( LFCHAR ) )
     		end if
 
     		lexSkipToken( LEX_FLAGS )

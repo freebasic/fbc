@@ -20,8 +20,6 @@
 ''
 '' chng: oct/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -30,17 +28,17 @@ option escape
 
 
 '' name, alias, _
-'' type, mode, _
-'' callback, checkerror, overloaded, _
-'' args, _
-'' [arg typ,mode,optional[,value]]*args
+'' type, callconv, _
+'' callback, options, _
+'' params, _
+'' [param type, mode, optional[, value]] * params
 funcdata:
 
 '' fb_ErrorThrowAt cdecl ( byval linenum as integer, byval fname as zstring ptr, _
 ''						   byval reslabel as any ptr, byval resnxtlabel as any ptr ) as integer
 data @FB_RTL_ERRORTHROW,"", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 4, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
@@ -53,7 +51,7 @@ data @FB_RTL_ERRORTHROW,"", _
 ''						   byval reslabel as any ptr, byval resnxtlabel as any ptr ) as any ptr
 data @FB_RTL_ERRORTHROWEX,"", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 5, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
@@ -64,64 +62,64 @@ data @FB_RTL_ERRORTHROWEX,"", _
 '' fb_ErrorSetHandler( byval newhandler as any ptr ) as any ptr
 data @FB_RTL_ERRORSETHANDLER,"", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_ErrorGetNum( ) as integer
 data @FB_RTL_ERRORGETNUM, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 0
 
 '' fb_ErrorSetNum( byval errnum as integer ) as void
 data @FB_RTL_ERRORSETNUM, "", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_ErrorResume( ) as any ptr
 data @FB_RTL_ERRORRESUME, "", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 0
 
 '' fb_ErrorResumeNext( ) as any ptr
 data @FB_RTL_ERRORRESUMENEXT, "", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 0
 
 '' ERL ( ) as integer
 data @"erl", "fb_ErrorGetLineNum", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 0
 
 '' ERFN ( ) as zstring ptr
 data @"erfn", "fb_ErrorGetFuncName", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 0
 
 '' ERMN ( ) as zstring ptr
 data @"ermn", "fb_ErrorGetModName", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 0
 
 '' fb_ErrorSetModName ( byval modname as zstring ptr ) as zstring ptr
 data @FB_RTL_ERRORSETMODNAME,"", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_ErrorSetFuncName ( byval funname as zstring ptr ) as zstring ptr
 data @FB_RTL_ERRORSETFUNCNAME,"", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE
 
@@ -129,7 +127,7 @@ data @FB_RTL_ERRORSETFUNCNAME,"", _
 '''			   byval funcname as zstring ptr, byval expression as zstring ptr ) as void
 data @"fb_Assert","", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, TRUE, _
+	 NULL, FB_RTL_OPT_OVER, _
 	 4, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
@@ -140,7 +138,7 @@ data @"fb_Assert","", _
 '''			    byval funcname as zstring ptr, byval expression as wstring ptr ) as void
 data @"fb_Assert","fb_AssertW", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, TRUE, _
+	 NULL, FB_RTL_OPT_OVER, _
 	 4, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
@@ -151,7 +149,7 @@ data @"fb_Assert","fb_AssertW", _
 ''				   byval funcname as zstring ptr, byval expression as zstring ptr ) as void
 data @"fb_AssertWarn","", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, TRUE, _
+	 NULL, FB_RTL_OPT_OVER, _
 	 4, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
@@ -162,7 +160,7 @@ data @"fb_AssertWarn","", _
 ''				    byval funcname as zstring ptr, byval expression as wstring ptr ) as void
 data @"fb_AssertWarn","fb_AssertWarnW", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, TRUE, _
+	 NULL, FB_RTL_OPT_OVER, _
 	 4, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
@@ -214,7 +212,11 @@ function rtlErrorCheck _
 	nxtlabel = symbAddLabel( NULL )
 
 	'' result >= FB_RTERROR_OK? skip..
-	resexpr = astNewBOP( AST_OP_EQ, resexpr, astNewCONSTi( 0, FB_DATATYPE_INTEGER ), nxtlabel, FALSE )
+	resexpr = astNewBOP( AST_OP_EQ, _
+						 resexpr, _
+						 astNewCONSTi( 0, FB_DATATYPE_INTEGER ), _
+						 nxtlabel, _
+						 AST_OPOPT_NONE )
 
 	astAdd( resexpr )
 

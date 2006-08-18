@@ -20,10 +20,6 @@
 ''
 '' chng: jan/2005 written [DrV]
 
-defint a-z
-option explicit
-option private
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbc.bi"
@@ -38,7 +34,7 @@ declare function _processOptions		( byval opt as zstring ptr, _
 						 				  byval argv as zstring ptr ) as integer
 
 '':::::
-public function fbcInit_dos( ) as integer
+function fbcInit_dos( ) as integer
 
 	''
 	fbc.processOptions 	= @_processOptions
@@ -53,7 +49,7 @@ public function fbcInit_dos( ) as integer
 end function
 
 '':::::
-function hCreateResFile( byval cline as zstring ptr ) as string
+private function hCreateResFile( byval cline as zstring ptr ) as string
     dim as integer f
  	dim as string resfile
 
@@ -73,7 +69,7 @@ function hCreateResFile( byval cline as zstring ptr ) as string
 end function
 
 '':::::
-function _linkFiles as integer
+private function _linkFiles as integer
 	dim as integer i, f
 	dim as string ldcline, ldpath
 #ifndef TARGET_DOS
@@ -101,7 +97,7 @@ function _linkFiles as integer
     '' set script file
     select case fbc.outtype
 	case FB_OUTTYPE_EXECUTABLE
-		ldcline = " -T \"" + exepath( ) + *fbGetPath( FB_PATH_BIN ) + "i386go32.x\""
+		ldcline = " -T " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_BIN ) + ("i386go32.x" + QUOTE)
 	case else
 		ldcline = ""
 	end select
@@ -115,30 +111,30 @@ function _linkFiles as integer
 	end if
 
     '' default lib path
-    ldcline += " -L \"" + exepath( ) + *fbGetPath( FB_PATH_LIB ) + QUOTE
+    ldcline += " -L " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_LIB ) + QUOTE
     '' and the current path to libs search list
-    ldcline += " -L \"./\""
+    ldcline += " -L " + QUOTE + "./" + QUOTE
 
     '' add additional user-specified library search paths
     for i = 0 to fbc.pths-1
-    	ldcline += " -L \"" + fbc.pthlist(i) + QUOTE
+    	ldcline += " -L " + QUOTE + fbc.pthlist(i) + QUOTE
     next
 
 	'' link with crt0.o (C runtime init)
-	ldcline += " \"" + exepath( ) + *fbGetPath( FB_PATH_LIB ) + "\\crt0.o\" "
+	ldcline += " " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_LIB ) + (RSLASH + "crt0.o" + QUOTE + " ")
 
     '' add objects from output list
     for i = 0 to fbc.inps-1
-    	ldcline += QUOTE + fbc.outlist(i) + "\" "
+    	ldcline += QUOTE + fbc.outlist(i) + (QUOTE + " ")
     next
 
     '' add objects from cmm-line
     for i = 0 to fbc.objs-1
-    	ldcline += QUOTE + fbc.objlist(i) + "\" "
+    	ldcline += QUOTE + fbc.objlist(i) + (QUOTE + " ")
     next
 
     '' set executable name
-    ldcline += "-o \"" + fbc.outname + QUOTE
+    ldcline += "-o " + QUOTE + fbc.outname + QUOTE
 
     '' init lib group
     ldcline += " -( "
@@ -190,7 +186,7 @@ function _linkFiles as integer
 end function
 
 '':::::
-function _archiveFiles( byval cmdline as zstring ptr ) as integer
+private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 	dim arcpath as string
 
 	arcpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ar.exe"
@@ -204,29 +200,32 @@ function _archiveFiles( byval cmdline as zstring ptr ) as integer
 end function
 
 '':::::
-function _compileResFiles as integer
+private function _compileResFiles as integer
 
 	function = TRUE
 
 end function
 
 '':::::
-function _delFiles as integer
+private function _delFiles as integer
 
 	function = TRUE
 
 end function
 
 '':::::
-function _listFiles( byval argv as zstring ptr ) as integer
+private function _listFiles( byval argv as zstring ptr ) as integer
 
 	function = FALSE
 
 end function
 
 '':::::
-function _processOptions( byval opt as zstring ptr, _
-						  byval argv as zstring ptr ) as integer
+private function _processOptions _
+	( _
+		byval opt as zstring ptr, _
+		byval argv as zstring ptr _
+	) as integer
 
 	select case mid( *opt, 2 )
 	case "t"

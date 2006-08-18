@@ -21,8 +21,6 @@
 '' chng: sep/2004 written [v1ctor]
 ''		 jan/2005 updated to use real linked-lists [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -78,7 +76,7 @@ private sub hFixForwardRef _
 
 	select case as const class
 	case FB_SYMBCLASS_UDT
-		dtype = FB_DATATYPE_USERDEF
+		dtype = FB_DATATYPE_STRUCT
 		ptrcnt 	= 0
 
 	case FB_SYMBCLASS_ENUM

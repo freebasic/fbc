@@ -20,6 +20,7 @@
 
 
 #include once "inc\list.bi"
+#include once "inc\ast-op.bi"
 
 const AST_INITTEMPSTRINGS		= 32*4
 const AST_INITTEMPARRAYS		= 32*4
@@ -27,123 +28,63 @@ const AST_INITTEMPARRAYS		= 32*4
 const AST_INITNODES				= 8192
 const AST_INITPROCNODES			= 128
 
-'' if order is changed, update the opTB array at ir.bas
-enum AST_OPCODE
-	AST_OP_LOAD				= 0
-	AST_OP_LOADRESULT
-	AST_OP_STORE
-	AST_OP_SPILLREGS
-	AST_OP_ADD
-	AST_OP_SUB
-	AST_OP_MUL
-	AST_OP_DIV
-	AST_OP_INTDIV
-	AST_OP_MOD
-	AST_OP_AND
-	AST_OP_OR
-	AST_OP_XOR
-	AST_OP_EQV
-	AST_OP_IMP
-	AST_OP_SHL
-	AST_OP_SHR
-	AST_OP_POW
-	AST_OP_MOV
-	AST_OP_ATAN2
-	AST_OP_EQ
-	AST_OP_GT
-	AST_OP_LT
-	AST_OP_NE
-	AST_OP_GE
-	AST_OP_LE
-	AST_OP_NOT
-	AST_OP_NEG
-	AST_OP_ABS
-	AST_OP_SGN
-	AST_OP_SIN
-	AST_OP_ASIN
-	AST_OP_COS
-	AST_OP_ACOS
-	AST_OP_TAN
-	AST_OP_ATAN
-	AST_OP_SQRT
-	AST_OP_LOG
-	AST_OP_FLOOR
-	AST_OP_ADDROF
-	AST_OP_DEREF
-	AST_OP_TOINT
-	AST_OP_TOFLT
-	AST_OP_PUSH
-	AST_OP_POP
-	AST_OP_PUSHUDT
-	AST_OP_STACKALIGN
-	AST_OP_JEQ
-	AST_OP_JGT
-	AST_OP_JLT
-	AST_OP_JNE
-	AST_OP_JGE
-	AST_OP_JLE
-	AST_OP_JMP
-	AST_OP_CALL
-	AST_OP_LABEL
-	AST_OP_RET
-	AST_OP_CALLFUNCT
-	AST_OP_CALLPTR
-	AST_OP_JUMPPTR
-	AST_OP_MEMMOVE
-	AST_OP_MEMSWAP
-	AST_OP_MEMCLEAR
-	AST_OP_STKCLEAR
-
-	'' not added to IR's tb
-	AST_OP_DBG_LINEINI
-	AST_OP_DBG_LINEEND
-	AST_OP_DBG_SCOPEINI
-	AST_OP_DBG_SCOPEEND
-	AST_OP_TOPOINTER
-	AST_OP_TOSIGNED
-	AST_OP_TOUNSIGNED
-
-	AST_OPCODES									'' total
-end enum
-
 enum AST_NODECLASS
 	AST_NODECLASS_NOP
+
+	AST_NODECLASS_LOAD
+	AST_NODECLASS_ASSIGN
+	AST_NODECLASS_BOP
+	AST_NODECLASS_UOP
+	AST_NODECLASS_CONV
+	AST_NODECLASS_ADDR
+	AST_NODECLASS_BRANCH
+	AST_NODECLASS_CALL
+	AST_NODECLASS_STACK
+	AST_NODECLASS_MEM
+	AST_NODECLASS_COMP							'' used by IR only
+
 	AST_NODECLASS_LINK
 	AST_NODECLASS_CONST
 	AST_NODECLASS_VAR
 	AST_NODECLASS_IDX
 	AST_NODECLASS_FIELD
 	AST_NODECLASS_ENUM
-	AST_NODECLASS_BOP
-	AST_NODECLASS_UOP
-	AST_NODECLASS_CALL
-	AST_NODECLASS_ARG
 	AST_NODECLASS_PTR
-	AST_NODECLASS_ADDR
-	AST_NODECLASS_ASSIGN
-	AST_NODECLASS_CONV
-	AST_NODECLASS_LOAD
-	AST_NODECLASS_BRANCH
-	AST_NODECLASS_IIF
-	AST_NODECLASS_OFFSET
-	AST_NODECLASS_STACK
 	AST_NODECLASS_LABEL
+	AST_NODECLASS_ARG
+	AST_NODECLASS_OFFSET
+	AST_NODECLASS_DECL
+
+	AST_NODECLASS_IIF
 	AST_NODECLASS_LIT
 	AST_NODECLASS_ASM
 	AST_NODECLASS_JMPTB
 	AST_NODECLASS_DBG
-	AST_NODECLASS_MEM
+
 	AST_NODECLASS_BOUNDCHK
 	AST_NODECLASS_PTRCHK
+
 	AST_NODECLASS_SCOPEBEGIN
 	AST_NODECLASS_SCOPEEND
 	AST_NODECLASS_SCOPE_BREAK
+
 	AST_NODECLASS_TYPEINI
 	AST_NODECLASS_TYPEINI_PAD
 	AST_NODECLASS_TYPEINI_EXPR
+
 	AST_NODECLASS_PROC
-	AST_NODECLASS_DECL
 	AST_NODECLASS_NAMESPC
+end enum
+
+enum AST_OPOPT
+	AST_OPOPT_NONE  		= &h00000000
+
+	AST_OPOPT_ALLOCRES		= &h00000001
+	AST_OPOPT_LPTRARITH		= &h00000002
+	AST_OPOPT_RPTRARITH		= &h00000004
+	AST_OPOPT_DOPTRARITH	= AST_OPOPT_LPTRARITH or AST_OPOPT_RPTRARITH
+
+	AST_OPOPT_DEFAULT		= AST_OPOPT_ALLOCRES
 end enum
 
 #ifndef ASTNODE_
@@ -162,7 +103,7 @@ type ASTTEMPARRAY
 end type
 
 ''
-type AST_CALL
+type AST_NODE_CALL
 	isrtl			as integer
 	args			as integer
 	currarg			as FBSYMBOL ptr
@@ -174,84 +115,84 @@ type AST_CALL
 	profend			as ASTNODE_ ptr
 end type
 
-type AST_ARG
+type AST_NODE_ARG
 	mode			as integer						'' to pass NULL's to byref args, etc
 	lgt				as integer						'' length, used to push UDT's by value
 end type
 
-type AST_VAR
+type AST_NODE_VAR
 	ofs				as integer						'' offset
 end type
 
-type AST_IDX
+type AST_NODE_IDX
 	ofs				as integer						'' offset
 	mult			as integer						'' multipler
 end type
 
-type AST_PTR
+type AST_NODE_PTR
 	ofs				as integer						'' offset
 end type
 
-type AST_IIF
+type AST_NODE_IIF
 	falselabel 		as FBSYMBOL ptr
 end type
 
-type AST_LOAD
+type AST_NODE_LOAD
 	isres			as integer
 end type
 
-type AST_LABEL
+type AST_NODE_LABEL
 	flush			as integer
 end type
 
-type AST_LIT
+type AST_NODE_LIT
 	text			as zstring ptr
 end type
 
 type FB_ASMTOK_ as FB_ASMTOK
 
-type AST_ASM
+type AST_NODE_ASM
 	head			as FB_ASMTOK_ ptr
 end type
 
-type AST_OP                                        	'' used by: bop, uop, conv & addr
+type AST_NODE_OP                                  	'' used by: bop, uop, conv & addr
 	op				as integer
-	allocres 		as integer
+	options 		as AST_OPOPT
 	ex				as FBSYMBOL ptr					'' (extra: label, etc)
 end type
 
-type AST_CONST
+type AST_NODE_CONST
 	val				as FBVALUE
 end type
 
-type AST_OFFS
+type AST_NODE_OFFS
 	ofs				as integer
 end type
 
-type AST_JMPTB
+type AST_NODE_JMPTB
 	label			as FBSYMBOL ptr
 end type
 
-type AST_DBG
+type AST_NODE_DBG
 	ex				as integer
 	op				as integer
 end type
 
-type AST_MEM
+type AST_NODE_MEM
 	bytes			as integer
 	op				as integer
 end type
 
-type AST_STACK
+type AST_NODE_STACK
 	op				as integer
 end type
 
-type AST_TYPEINI
+type AST_NODE_TYPEINI
 	ofs				as integer
     bytes			as integer
 end type
 
-type AST_BREAK
+type AST_NODE_BREAK
 	parent			as ASTNODE_ ptr
 	scope			as integer
 	linenum			as integer
@@ -263,7 +204,7 @@ type AST_BREAKLIST
 	tail			as ASTNODE_ ptr
 end type
 
-type AST_BLOCK
+type AST_NODE_BLOCK
 	parent			as ASTNODE_ ptr
 	inistmt			as integer
 	endstmt			as integer
@@ -274,7 +215,7 @@ type AST_BLOCK
 	decl_last		as ASTNODE_ ptr					'' to support implicit variables decl
 end type
 
-type AST_NAMESPACE
+type AST_NODE_NAMESPACE
 	lastsymtb		as FBSYMBOLTB ptr
 	lasthashtb		as FBHASHTB ptr
 	lastns			as FBSYMBOL ptr
@@ -292,27 +233,27 @@ type ASTNODE
 	sym				as FBSYMBOL ptr					'' attached symbol
 
 	union
-		con			as AST_CONST
-		var			as AST_VAR
-		idx			as AST_IDX
-		ptr			as AST_PTR
-		call		as AST_CALL
-		arg			as AST_ARG
-		iif			as AST_IIF
-		op			as AST_OP
-		lod			as AST_LOAD
-		lbl			as AST_LABEL
-		ofs			as AST_OFFS
-		lit			as AST_LIT
-		asm			as AST_ASM
-		jmptb		as AST_JMPTB
-		dbg			as AST_DBG
-		mem			as AST_MEM
-		stack		as AST_STACK
-		typeini		as AST_TYPEINI
-		block		as AST_BLOCK					'' shared by PROC and SCOPE nodes
-		break		as AST_BREAK
-		nspc		as AST_NAMESPACE
+		con			as AST_NODE_CONST
+		var			as AST_NODE_VAR
+		idx			as AST_NODE_IDX
+		ptr			as AST_NODE_PTR
+		call		as AST_NODE_CALL
+		arg			as AST_NODE_ARG
+		iif			as AST_NODE_IIF
+		op			as AST_NODE_OP
+		lod			as AST_NODE_LOAD
+		lbl			as AST_NODE_LABEL
+		ofs			as AST_NODE_OFFS
+		lit			as AST_NODE_LIT
+		asm			as AST_NODE_ASM
+		jmptb		as AST_NODE_JMPTB
+		dbg			as AST_NODE_DBG
+		mem			as AST_NODE_MEM
+		stack		as AST_NODE_STACK
+		typeini		as AST_NODE_TYPEINI
+		block		as AST_NODE_BLOCK				'' shared by PROC and SCOPE nodes
+		break		as AST_NODE_BREAK
+		nspc		as AST_NODE_NAMESPACE
 	end union
 
 	prev			as ASTNODE ptr					'' used by Add
@@ -331,6 +272,11 @@ type AST_PROCCTX
 	oldhashtb		as FBHASHTB ptr
 end type
 
+type ASTVALUE
+	dtype			as integer
+	val				as FBVALUE
+end type
+
 type ASTCTX
 	astTB			as TLIST
 
@@ -347,9 +293,15 @@ type ASTCTX
 	typeinicnt		as integer
 end Type
 
-type ASTVALUE
-	dtype			as integer
-	val				as FBVALUE
+enum AST_OPFLAGS
+	AST_OPFLAGS_NONE		= &h00000000
+	AST_OPFLAGS_SELF		= &h00000001			'' op=
+	AST_OPFLAGS_COMM		= &h00000002			'' commutative
+end enum
+
+type AST_OPERATOR
+	class			as AST_NODECLASS
+	flags 			as AST_OPFLAGS
 end type
 
 
@@ -502,7 +454,15 @@ declare function 	astNewBOP			( _
 											byval l as ASTNODE ptr, _
 											byval r as ASTNODE ptr, _
 											byval ex as FBSYMBOL ptr = NULL, _
-											byval allocres as integer = TRUE _
+											byval options as AST_OPOPT = AST_OPOPT_DEFAULT _
+										) as ASTNODE ptr
+
+declare function 	astNewSelfBOP		( _
+											byval op as integer, _
+											byval l as ASTNODE ptr, _
+											byval r as ASTNODE ptr, _
+											byval ex as FBSYMBOL ptr = NULL, _
+											byval options as AST_OPOPT = AST_OPOPT_DEFAULT _
 										) as ASTNODE ptr
 
 declare function 	astNewUOP			( _
@@ -584,6 +544,13 @@ declare function 	astNewARG			( _
 											byval p as ASTNODE ptr, _
 											byval dtype as integer = INVALID, _
 											byval mode as integer = INVALID _
+										) as ASTNODE ptr
+
+
+declare function 	astBuildCALL cdecl 	( _
+											byval proc as FBSYMBOL ptr, _
+											byval args as integer, _
+											... _
 										) as ASTNODE ptr
 
 declare function 	astNewADDR			( _
@@ -869,6 +836,12 @@ declare function 	astGetInverseLogOp	( _
 
 #define astTypeIniGetOfs( n ) n->typeini.ofs
 
+#define astGetOpClass( op ) ast_opTB(op).class
+
+#define astGetOpIsCommutative( op ) ((ast_opTB(op).flags and AST_OPFLAGS_COMM) <> 0)
+
+#define astGetOpIsSelf( op ) ((ast_opTB(op).flags and AST_OPFLAGS_SELF) <> 0)
+
 ''
 '' inter-module globals
 ''
@@ -877,5 +850,7 @@ extern ast as ASTCTX
 extern ast_bitmaskTB( 0 to 32 ) as uinteger
 
 extern ast_minlimitTB( FB_DATATYPE_BYTE to FB_DATATYPE_ULONGINT ) as longint
+
+extern ast_opTB( 0 to AST_OPCODES-1 ) as AST_OPERATOR
 
 #endif '' __AST_BI__

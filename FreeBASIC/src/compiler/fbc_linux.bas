@@ -20,10 +20,6 @@
 ''
 '' chng: dec/2004 written [lillo]
 
-defint a-z
-option explicit
-option private
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbc.bi"
@@ -43,7 +39,7 @@ declare function _processOptions		( byval opt as zstring ptr, _
 	dim shared xpmfile as string
 
 '':::::
-public function fbcInit_linux( ) as integer
+function fbcInit_linux( ) as integer
 
 	''
 	fbc.processOptions 	= @_processOptions
@@ -61,7 +57,7 @@ public function fbcInit_linux( ) as integer
 end function
 
 '':::::
-function _linkFiles as integer
+private function _linkFiles as integer
 	dim as integer i
 	dim as string ldpath, ldcline, libdir, bindir, libname, dllname
 
@@ -111,7 +107,7 @@ function _linkFiles as integer
     end if
 
 	'' set script file
-	ldcline += " -T \"" + bindir + "elf_i386.x\""
+	ldcline += (" -T " + QUOTE) + bindir + ("elf_i386.x" + QUOTE)
 
     if( len( fbc.mapfile ) > 0) then
         ldcline += " -Map " + fbc.mapfile
@@ -124,35 +120,35 @@ function _linkFiles as integer
 
     '' default lib path
 	libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
-	ldcline += " -L \"" + libdir + QUOTE
+	ldcline += " -L " + QUOTE + libdir + QUOTE
 
     '' and the current path to libs search list
-    ldcline += " -L \"./\""
+    ldcline += " -L " + QUOTE + "./" + QUOTE
 
     '' add additional user-specified library search paths
     for i = 0 to fbc.pths-1
-    	ldcline += " -L \"" + fbc.pthlist(i) + QUOTE
+    	ldcline += " -L " + QUOTE + fbc.pthlist(i) + QUOTE
     next i
 
 	'' crt init stuff
 	if( fbc.outtype = FB_OUTTYPE_EXECUTABLE) then
-		ldcline += " \"" + libdir + "/crt1.o\""
+		ldcline += " " + QUOTE + libdir + ("/crt1.o" + QUOTE)
 	end if
-	ldcline += " \"" + libdir + "/crti.o\""
-	ldcline += " \"" + libdir + "/crtbegin.o\" "
+	ldcline += " " + QUOTE + libdir + ("/crti.o" + QUOTE)
+	ldcline += " " + QUOTE + libdir + ("/crtbegin.o" + QUOTE + " ")
 
     '' add objects from output list
     for i = 0 to fbc.inps-1
-    	ldcline += QUOTE + fbc.outlist(i) + "\" "
+    	ldcline += QUOTE + fbc.outlist(i) + (QUOTE + " ")
     next i
 
     '' add objects from cmm-line
     for i = 0 to fbc.objs-1
-    	ldcline += QUOTE + fbc.objlist(i) + "\" "
+    	ldcline += QUOTE + fbc.objlist(i) + (QUOTE + " ")
     next i
 
     '' set executable name
-    ldcline += "-o \"" + fbc.outname + QUOTE
+    ldcline += "-o " + QUOTE + fbc.outname + QUOTE
 
 	'' init lib group
     ldcline += " -( "
@@ -167,7 +163,7 @@ function _linkFiles as integer
    	        	continue for
    	        end if
    		end if
-	
+
 		ldcline += "-l" + libname + " "
 	next
 
@@ -175,8 +171,8 @@ function _linkFiles as integer
     ldcline += "-) "
 
 	'' crt end stuff
-	ldcline += " \"" + libdir + "/crtend.o\""
-	ldcline += " \"" + libdir + "/crtn.o\""
+	ldcline += " " + QUOTE + libdir + ("/crtend.o" + QUOTE)
+	ldcline += " " + QUOTE + libdir + ("/crtn.o" + QUOTE)
 
     '' invoke ld
     if( fbc.verbose ) then
@@ -192,7 +188,7 @@ function _linkFiles as integer
 end function
 
 '':::::
-function _archiveFiles( byval cmdline as zstring ptr ) as integer
+private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 	dim arcpath as string
 
 #ifdef TARGET_LINUX
@@ -215,7 +211,7 @@ end function
 #define CHAR_QUOTE			34
 
 '':::::
-function _compileResFiles as integer
+private function _compileResFiles as integer
 	dim fi as integer, fo as integer
 	dim iconsrc as string
 	dim buffer as string, chunk as string * 4096
@@ -259,7 +255,7 @@ function _compileResFiles as integer
 		fi = freefile()
 		open xpmfile for input as #fi
 		line input #1, buffer
-		if( ucase$( buffer ) <> "/* XPM */" ) then
+		if( ucase( buffer ) <> "/* XPM */" ) then
 			close #fi
 			exit function
 		end if
@@ -268,7 +264,7 @@ function _compileResFiles as integer
 			buffer_len = seek( fi )
 			get #1,, chunk
 			buffer_len = seek( fi ) - buffer_len
-			buffer += left$( chunk, buffer_len )
+			buffer += left( chunk, buffer_len )
 		wend
 		close #fi
 		buffer_len = len( buffer )
@@ -290,9 +286,9 @@ function _compileResFiles as integer
 				if( *p = CHAR_QUOTE ) then
 					state = STATE_OUT_STRING
 				elseif( *p = CHAR_TAB ) then
-					outstr(outstr_count-1) += "\\t"
+					outstr(outstr_count-1) += RSLASH + "t"
 				else
-					outstr(outstr_count-1) += chr$(*p)
+					outstr(outstr_count-1) += chr(*p)
 				end if
 
 			end select
@@ -308,14 +304,14 @@ function _compileResFiles as integer
 		open iconsrc for output as #fo
 		print #fo, ".section .rodata"
 		for label = 0 to outstr_count-1
-			print #fo, "_l" + hex$( label ) + ":"
-			print #fo, ".string \"" + outstr( label ) + "\""
+			print #fo, "_l" + hex( label ) + ":"
+			print #fo, ".string " + QUOTE + outstr( label ) + QUOTE
 		next label
 		print #fo, ".section .data"
 		print #fo, ".align 32"
 		print #fo, "_xpm_data:"
 		for label = 0 to outstr_count-1
-			print #fo, ".long _l" + hex$( label )
+			print #fo, ".long _l" + hex( label )
 		next label
 		print #fo, ".align 32"
 		print #fo, ".globl fb_program_icon"
@@ -345,7 +341,7 @@ function _compileResFiles as integer
 end function
 
 '':::::
-function _delFiles as integer
+private function _delFiles as integer
 
 	'' delete compiled icon object
 	if( len( xpmfile ) = 0 ) then
@@ -359,7 +355,7 @@ function _delFiles as integer
 end function
 
 '':::::
-function _listFiles( byval argv as zstring ptr ) as integer
+private function _listFiles( byval argv as zstring ptr ) as integer
 
 	if( hGetFileExt( argv ) = "xpm" ) then
 		if( len( xpmfile ) <> 0 ) then
@@ -376,8 +372,11 @@ function _listFiles( byval argv as zstring ptr ) as integer
 end function
 
 '':::::
-function _processOptions( byval opt as zstring ptr, _
-						  byval argv as zstring ptr ) as integer
+private function _processOptions _
+	( _
+		byval opt as zstring ptr, _
+		byval argv as zstring ptr _
+	) as integer
 
 
 	function = FALSE

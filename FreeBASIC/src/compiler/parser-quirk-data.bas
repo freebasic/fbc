@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -34,7 +32,11 @@ option escape
 ''				  |   READ Variable{int|flt|str} (',' Variable{int|flt|str})*
 ''				  |   DATA literal|constant (',' literal|constant)*
 ''
-function cDataStmt as integer static
+function cDataStmt  _
+	( _
+		byval tk as FB_TOKEN _
+	) as integer static
+
 	dim as ASTNODE ptr expr
 	dim as FBSYMBOL ptr litsym, sym
 	dim as string littext
@@ -42,7 +44,7 @@ function cDataStmt as integer static
 
 	function = FALSE
 
-	select case lexGetToken( )
+	select case tk
 	'' RESTORE LABEL?
 	case FB_TK_RESTORE
 		lexSkipToken( )
@@ -50,7 +52,7 @@ function cDataStmt as integer static
 		'' LABEL?
 		sym = NULL
 		select case lexGetClass( )
-		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_NUMLITERAL
+		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD, FB_TKCLASS_NUMLITERAL
 			chain_ = cIdentifier( )
 			if( errGetLast( ) <> FB_ERRMSG_OK ) then
 				exit function

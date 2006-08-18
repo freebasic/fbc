@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -79,7 +77,7 @@ function cSymbolTypeFuncPtr _
 	function = NULL
 
 	'' mode
-	mode = cFunctionMode( )
+	mode = cProcCallingConv( )
 
 	proc = symbPreAddProc( NULL )
 
@@ -306,7 +304,7 @@ function cSymbolType _
 				select case symbGetClass( sym )
 				case FB_SYMBCLASS_UDT
 					lexSkipToken( )
-					dtype = FB_DATATYPE_USERDEF
+					dtype = FB_DATATYPE_STRUCT
 					subtype = sym
 					lgt = symbGetLen( sym )
 					exit do

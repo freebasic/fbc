@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -86,19 +84,18 @@ function cNegNotExpression _
     			negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
     		end if
 
-        else
-    		'' not numeric? can't operate..
-    		if( astGetDataClass( negexpr ) >= FB_DATACLASS_STRING ) then
-    			if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
-    				exit function
-    			else
-    				'' error recovery: fake a new node
-    				astDelTree( negexpr )
-    				negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-    			end if
-    		end if
+		else
+			negexpr = astNewUOP( AST_OP_PLUS, negexpr )
 		end if
 
+    	if( negexpr = NULL ) Then
+    		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: fake a new node
+    			negexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+    		end if
+    	end if
 
     	return TRUE
 
@@ -348,7 +345,7 @@ function cAnonUDT _
     end if
 
     '' alloc temp var
-    sym = symbAddTempVar( FB_DATATYPE_USERDEF, subtype, FALSE, FALSE )
+    sym = symbAddTempVar( FB_DATATYPE_STRUCT, subtype, FALSE, FALSE )
 
     '' let the initializer do the rest..
     expr = cVariableInit( sym, FALSE )
@@ -908,7 +905,9 @@ function cAddrOfExpression _
 
 		'' check for invalid classes (functions, etc)
 		select case as const astGetClass( expr )
-		case AST_NODECLASS_VAR, AST_NODECLASS_IDX, AST_NODECLASS_PTR, AST_NODECLASS_TYPEINI
+		case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
+			 AST_NODECLASS_PTR, AST_NODECLASS_TYPEINI, _
+			 AST_NODECLASS_FIELD
 
 		case else
 			if( errReportEx( FB_ERRMSG_INVALIDDATATYPES, "for STRPTR" ) = FALSE ) then

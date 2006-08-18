@@ -20,8 +20,6 @@
 ''
 '' chng: may/2006 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -189,10 +187,6 @@ function symbGetMangledNameEx _
 
 	sym->stats or= FB_SYMBSTATS_MANGLED
 
-	if( sym->id.mangled <> NULL ) then
-		ZStrFree( sym->id.mangled )
-	end if
-
 	sym->id.mangled = id_mangled
 
 	function = id_mangled
@@ -320,6 +314,24 @@ private function hAddUnderscore _
 end function
 
 '':::::
+private function hIsNested _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as integer
+
+	'' inside a namespace?
+	if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
+		return TRUE
+	end if
+
+	'' class' member?
+	'' ...
+
+	function = FALSE
+
+end function
+
+'':::::
 private function hDoCppMangling _
 	( _
 		byval sym as FBSYMBOL ptr, _
@@ -342,7 +354,7 @@ private function hDoCppMangling _
     end if
 
     if( sym->class = FB_SYMBCLASS_PROC ) then
-    	'' overloaded?
+    	'' overloaded? (this will handle operators too)
     	if( symbIsOverloaded( sym ) ) then
     		return TRUE
     	end if
@@ -469,7 +481,7 @@ private function hGetVarPrefix _
 
 	dim as integer isimport
 
-	'' local or argument? no prefix
+	'' not global or public? no prefix
 	if( (sym->attrib and (FB_SYMBATTRIB_PUBLIC or _
 			 		   	  FB_SYMBATTRIB_EXTERN or _
 			 			  FB_SYMBATTRIB_SHARED or _
@@ -500,7 +512,7 @@ private function hGetVarPrefix _
 	end if
 
 	'' inside a namespace or class?
-	if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
+	if( hIsNested( sym ) ) then
 		if( isimport ) then
 			return @"__imp__ZN"
 
@@ -596,7 +608,7 @@ private function hMangleVariable  _
     	id_str = sym->id.alias
 
     else
-		'' shared, public, extern or inside a n?
+		'' shared, public, extern or inside a ns?
 		isglobal = (sym->attrib and (FB_SYMBATTRIB_PUBLIC or _
 			 			   	  		 FB_SYMBATTRIB_EXTERN or _
 			 				  		 FB_SYMBATTRIB_SHARED or _
@@ -703,8 +715,7 @@ private function hGetProcPrefix _
 		end if
 	end if
 
-	'' inside a namespace or class?
-	if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
+	if( hIsNested( sym ) ) then
 		if( hAddUnderscore( ) ) then
 			return @"__ZN"
 		else
@@ -772,16 +783,17 @@ function symbMangleType _
     		errReportEx( FB_ERRMSG_INTERNAL, __FUNCTION__ )
     		dtype = FB_DATATYPE_VOID
     	else
-    		dtype = FB_DATATYPE_USERDEF
+    		dtype = FB_DATATYPE_STRUCT
     	end if
     end if
 
     select case as const dtype
-    case FB_DATATYPE_USERDEF, FB_DATATYPE_ENUM
+    case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
     	dim as zstring ptr id_alias
 
 		'' nested (namespace or class)? open..
-		if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
+		dim as integer is_nested = hIsNested( sym )
+		if( is_nested ) then
 			sig += "N"
 		end if
 
@@ -793,7 +805,7 @@ function symbMangleType _
     	ZStrFree( id_alias )
 
 		'' nested (namespace or class)? close..
-		if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
+		if( is_nested ) then
 			sig += "E"
 		end if
 
@@ -902,7 +914,7 @@ private function hMangleProcParams _
     static as string res
 
 	'' nested? (namespace or class)
-	if( symbGetNamespace( sym ) <> @symbGetGlobalNamespc( ) ) then
+	if( hIsNested( sym ) ) then
 		res = "E"
 		res += hGetProcParamsTypeCode( sym )
 
@@ -914,16 +926,173 @@ private function hMangleProcParams _
 
 end function
 
+private function hGetOperatorName _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as zstring ptr static
+
+	select case as const sym->proc.ext->opovl.op
+	case AST_OP_ASSIGN
+		function = @"oo"
+
+	case AST_OP_ADD
+		function = @"pl"
+
+	case AST_OP_ADD_SELF
+		function = @"pL"
+
+	case AST_OP_SUB
+		function = @"mi"
+
+	case AST_OP_SUB_SELF
+		function = @"mI"
+
+	case AST_OP_MUL
+		function = @"ml"
+
+	case AST_OP_MUL_SELF
+		function = @"mL"
+
+	case AST_OP_DIV
+		function = @"dv"
+
+	case AST_OP_DIV_SELF
+		function = @"dV"
+
+	case AST_OP_INTDIV
+		function = @"Dv"
+
+	case AST_OP_INTDIV_SELF
+		function = @"DV"
+
+	case AST_OP_MOD
+		function = @"rm"
+
+	case AST_OP_MOD_SELF
+		function = @"rM"
+
+	case AST_OP_AND
+		function = @"an"
+
+	case AST_OP_AND_SELF
+		function = @"aN"
+
+	case AST_OP_OR
+		function = @"or"
+
+	case AST_OP_OR_SELF
+		function = @"oR"
+
+	case AST_OP_XOR
+		function = @"eo"
+
+	case AST_OP_XOR_SELF
+		function = @"eO"
+
+	case AST_OP_EQV
+		function = @"eq"
+
+	case AST_OP_EQV_SELF
+		function = @"eQ"
+
+	case AST_OP_IMP
+		function = @"im"
+
+	case AST_OP_IMP_SELF
+		function = @"iM"
+
+	case AST_OP_SHL
+		function = @"ls"
+
+	case AST_OP_SHL_SELF
+		function = @"lS"
+
+	case AST_OP_SHR
+		function = @"rs"
+
+	case AST_OP_SHR_SELF
+		function = @"rS"
+
+	case AST_OP_POW
+		function = @"po"
+
+	case AST_OP_POW_SELF
+		function = @"pO"
+
+	case AST_OP_EQ
+		function = @"eq"
+
+	case AST_OP_GT
+		function = @"gt"
+
+	case AST_OP_LT
+		function = @"lt"
+
+	case AST_OP_NE
+		function = @"ne"
+
+	case AST_OP_GE
+		function = @"ge"
+
+	case AST_OP_LE
+		function = @"le"
+
+	case AST_OP_NOT
+		function = @"nt"
+
+	case AST_OP_NEG
+		function = @"ng"
+
+	case AST_OP_PLUS
+		function = @"ps"
+
+	case AST_OP_CAST
+		static as string res
+
+		res = "cv"
+
+		'' note: in C++, type casting operators must be member
+		'' functions, so this mangling is only valid in FB
+
+		'' mangled the return type
+		res += symbMangleType( sym )
+
+		function = strptr( res )
+
+	end select
+
+end function
+
+'':::::
+private function hGetProcClass _
+	( _
+		byval sym as FBSYMBOL ptr _
+	) as zstring ptr static
+
+	dim as FB_MANGLEABBR ptr abbr_node
+
+    '' when classes are supported, call hMangleCompType() only
+    '' if symbol is a member function
+
+    '' namespace
+    function = hGetNamespace( sym, TRUE, abbr_node )
+
+    '' note: abbr_node won't ever be non-NULL, as this is the
+    '' first call to GetNamespace() /MangleCompType( ), so
+    '' the result don't have the freed, that will be done when
+    '' calling symbMangleEndAbbrev( )
+
+end function
+
 '':::::
 private function hMangleProc  _
 	( _
 		byval sym as FBSYMBOL ptr _
 	) as zstring ptr static
 
-    dim as zstring ptr prefix_str, nspc_str, id_str, param_str, suffix_str
-    dim as integer docpp, prefix_len, nspc_len, id_len, param_len, suffix_len
+    dim as zstring ptr prefix_str, class_str, id_str, param_str, suffix_str
+    dim as integer docpp, prefix_len, class_len, id_len, param_len, suffix_len, add_len
     dim as FB_MANGLING mangling
-    dim as FB_MANGLEABBR ptr abbr_node
 
     mangling = symbGetMangling( sym )
 
@@ -938,36 +1107,42 @@ private function hMangleProc  _
 		prefix_len = len( *prefix_str )
 	end if
 
-    '' namespace
-    nspc_len = 0
+    '' class (and/or namespace if any)
+    class_len = 0
 	if( docpp ) then
-    	nspc_str = hGetNamespace( sym, TRUE, abbr_node )
-    	if(	nspc_str <> NULL ) then
-    		nspc_len = len( *nspc_str )
+    	class_str = hGetProcClass( sym )
+    	if(	class_str <> NULL ) then
+    		class_len = len( *class_str )
     	end if
     else
-    	nspc_str = NULL
+    	class_str = NULL
     end if
 
-    '' class
-    ''class_str = hGetClass( sym )
-
     '' id
+    add_len = docpp
+
     '' alias explicitly given?
     if( (sym->stats and FB_SYMBSTATS_HASALIAS) <> 0 ) then
     	id_str = sym->id.alias
 
     else
-    	'' BASIC? use the upper-cased name
-    	if( mangling = FB_MANGLING_BASIC ) then
-			id_str = sym->id.name
-		'' else, the case-sensitive name saved in the alias..
+    	'' operator?
+    	if( symbIsOperator( sym ) ) then
+            id_str = hGetOperatorName( sym )
+            add_len = FALSE
+
 		else
-	    	id_str = sym->id.alias
+    		'' BASIC? use the upper-cased name
+    		if( mangling = FB_MANGLING_BASIC ) then
+				id_str = sym->id.name
+			'' else, the case-sensitive name saved in the alias..
+			else
+	    		id_str = sym->id.alias
+			end if
 		end if
 	end if
 
-	if( docpp ) then
+	if( add_len ) then
 		id_str = hGetProcIdentifier( sym, id_str )
 	end if
 
@@ -994,7 +1169,7 @@ private function hMangleProc  _
 	'' concat
 	dim as zstring ptr dst, id_alias
 
-	id_alias = ZStrAllocate( prefix_len + nspc_len + id_len + param_len + suffix_len )
+	id_alias = ZStrAllocate( prefix_len + class_len + id_len + param_len + suffix_len )
 
 	dst = id_alias
 	if( prefix_str <> NULL ) then
@@ -1002,9 +1177,9 @@ private function hMangleProc  _
 		dst += prefix_len
 	end if
 
-	if( nspc_str <> NULL ) then
-		*dst = *nspc_str
-		dst += nspc_len
+	if( class_str <> NULL ) then
+		*dst = *class_str
+		dst += class_len
 	end if
 
 	*dst = *id_str

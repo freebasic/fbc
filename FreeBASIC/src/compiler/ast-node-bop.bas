@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -535,13 +533,134 @@ private function hCheckPointer _
 end function
 
 '':::::
+private function hDoPointerArith _
+	( _
+		byval op as integer, _
+		byval p as ASTNODE ptr, _
+		byval e as ASTNODE ptr _
+	) as ASTNODE ptr static
+
+    dim as integer edtype
+    dim as integer lgt
+
+    function = NULL
+
+    edtype = astGetDataType( e )
+
+    '' not integer class?
+    if( symbGetDataClass( edtype ) <> FB_DATACLASS_INTEGER ) then
+    	exit function
+
+    '' CHAR and WCHAR literals are also from the INTEGER class (to allow *p = 0 etc)
+    else
+    	select case edtype
+    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
+    		exit function
+    	end select
+    end if
+
+    '' calc len( *p )
+    lgt = symbCalcLen( astGetDataType( p ) - FB_DATATYPE_POINTER, astGetSubType( p ) )
+
+	'' incomplete type?
+	if( lgt = 0 ) then
+		'' unless it's a void ptr.. pretend it's a byte ptr
+		if( astGetDataType( p ) <> FB_DATATYPE_POINTER + FB_DATATYPE_VOID ) then
+			exit function
+		end if
+		lgt = 1
+	end if
+
+    '' another pointer?
+    if( edtype >= FB_DATATYPE_POINTER ) then
+    	'' only allow if it's a subtraction
+    	if( op = AST_OP_SUB ) then
+    		'' types can't be different..
+    		if( (edtype <> astGetDataType( p )) or _
+    			(astGetSubType( e ) <> astGetSubType( p )) ) then
+    			exit function
+    		end if
+
+    		'' convert to uint or BOP will complain..
+    		p = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, p )
+    		e = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, e )
+
+ 			'' subtract..
+ 			e = astNewBOP( AST_OP_SUB, p, e )
+
+ 			'' and divide by length
+ 			function = astNewBOP( AST_OP_INTDIV, e, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
+    	end if
+
+    	exit function
+    end if
+
+    '' not integer? convert
+    if( edtype <> FB_DATATYPE_INTEGER ) then
+    	e = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, e )
+    end if
+
+    '' any op but +|-?
+    select case op
+    case AST_OP_ADD, AST_OP_SUB
+    	'' multiple by length
+		e = astNewBOP( AST_OP_MUL, e, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
+
+		'' do op
+		function = astNewBOP( op, p, e )
+
+    case else
+    	'' allow AND and OR??
+    	exit function
+    end select
+
+end function
+
+'':::::
+#macro hDoGlobOpOverload _
+	( _
+		op, l, r _
+	)
+
+	if( symb.globOpOvlTb(op).head <> NULL ) then
+		dim as FBSYMBOL ptr proc
+		dim as integer is_ambiguous
+
+		proc = symbFindBopOvlProc( op, l, r, @is_ambiguous )
+		if( proc <> NULL ) then
+			'' build a proc call
+			return astBuildCALL( proc, 2, l, r )
+		else
+			if( is_ambiguous ) then
+				return NULL
+			end if
+
+			'' commutative?
+			if( astGetOpIsCommutative( op ) ) then
+				'' try (r, l) too
+				proc = symbFindBopOvlProc( op, r, l, @is_ambiguous )
+				if( proc <> NULL ) then
+					'' build a proc call
+					return astBuildCALL( proc, 2, r, l )
+				else
+					if( is_ambiguous ) then
+						return NULL
+					end if
+				end if
+			end if
+		end if
+	end if
+
+#endmacro
+
+'':::::
 function astNewBOP _
 	( _
 		byval op as integer, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr, _
-		byval ex as FBSYMBOL ptr = NULL, _
-		byval allocres as integer = TRUE _
+		byval ex as FBSYMBOL ptr, _
+		byval options as AST_OPOPT _
 	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
@@ -552,9 +671,8 @@ function astNewBOP _
 
 	function = NULL
 
-	if( (l = NULL) or (r = NULL) ) then
-		exit function
-	end if
+	'' check op overloading
+	hDoGlobOpOverload( op, l, r )
 
 	is_str = FALSE
 
@@ -566,18 +684,29 @@ function astNewBOP _
 	''::::::
     '' pointers?
     if( ldtype >= FB_DATATYPE_POINTER ) then
-    	if( hCheckPointer( op, rdtype, rdclass ) = FALSE ) then
-    		exit function
-    	end if
+		'' do arithmetics?
+		if( (options and AST_OPOPT_LPTRARITH) <> 0 ) then
+    		return hDoPointerArith( op, l, r )
+		else
+    		if( hCheckPointer( op, rdtype, rdclass ) = FALSE ) then
+    			exit function
+    		end if
+		end if
+
     elseif( rdtype >= FB_DATATYPE_POINTER ) then
-    	if( hCheckPointer( op, ldtype, ldclass ) = FALSE ) then
-    		exit function
-    	end if
+		'' do arithmetics?
+		if( (options and AST_OPOPT_RPTRARITH) <> 0 ) then
+			return hDoPointerArith( op, r, l )
+		else
+    		if( hCheckPointer( op, ldtype, ldclass ) = FALSE ) then
+    			exit function
+    		end if
+		end if
     end if
 
 	'' UDT's? can't operate
-	if( (ldtype = FB_DATATYPE_USERDEF) or _
-		(rdtype = FB_DATATYPE_USERDEF) ) then
+	if( (ldtype = FB_DATATYPE_STRUCT) or _
+		(rdtype = FB_DATATYPE_STRUCT) ) then
 		exit function
     end if
 
@@ -1087,13 +1216,45 @@ function astNewBOP _
 	end if
 
 	'' fill it
-	n->l  		= l
-	n->r  		= r
-	n->op.ex 	= ex
-	n->op.op 	= op
-	n->op.allocres = allocres
+	n->l = l
+	n->r = r
+	n->op.ex = ex
+	n->op.op = op
+	n->op.options = options
 
 	function = n
+
+end function
+
+'':::::
+function astNewSelfBOP _
+	( _
+		byval op as integer, _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr, _
+		byval ex as FBSYMBOL ptr, _
+		byval options as AST_OPOPT _
+	) as ASTNODE ptr static
+
+	function = NULL
+
+	'' check op overloading
+	hDoGlobOpOverload( op, l, r )
+
+	'' if the operator was was not overloaded, convert
+	'' lvalue op= expr to lvalue = lvalue op expr, this
+	'' will be optimized later, but will create side-
+	'' effects like in C/C++, if lvalue has a function call
+
+	'' assuming _SELF comes right-after the binary op
+	r = astNewBOP( op - 1, astCloneTree( l ), r, ex, options or AST_OPOPT_ALLOCRES )
+
+	if( r = NULL ) then
+		exit function
+	end if
+
+	'' do the assignment
+    function = astNewASSIGN( l, r )
 
 end function
 
@@ -1123,7 +1284,7 @@ function astLoadBOP _
 
 	if( ast.doemit ) then
 		'' result type can be different, with boolean operations on floats
-		if( n->op.allocres ) then
+		if( (n->op.options and AST_OPOPT_ALLOCRES) <> 0 ) then
 			vr = irAllocVREG( n->dtype )
 		else
 			vr = NULL

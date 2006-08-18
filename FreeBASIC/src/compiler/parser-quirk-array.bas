@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -33,13 +31,17 @@ option escape
 ''ArrayStmt   	  =   ERASE ID (',' ID)*;
 ''				  |   SWAP Variable, Variable .
 ''
-function cArrayStmt as integer
+function cArrayStmt _
+	( _
+		byval tk as FB_TOKEN _
+	) as integer
+
 	dim as FBSYMBOL ptr s
 	dim as ASTNODE ptr expr1, expr2
 
 	function = FALSE
 
-	select case lexGetToken( )
+	select case tk
 	case FB_TK_ERASE
 		lexSkipToken( )
 
@@ -175,6 +177,7 @@ end function
 ''
 function cArrayFunct _
 	( _
+		byval tk as FB_TOKEN, _
 		byref funcexpr as ASTNODE ptr _
 	) as integer
 
@@ -184,11 +187,11 @@ function cArrayFunct _
 
 	function = FALSE
 
-	select case lexGetToken( )
+	select case tk
 
 	'' (LBOUND|UBOUND) '(' ID (',' Expression)? ')'
 	case FB_TK_LBOUND, FB_TK_UBOUND
-		if( lexGetToken( ) = FB_TK_LBOUND ) then
+		if( tk = FB_TK_LBOUND ) then
 			islbound = TRUE
 		else
 			islbound = FALSE

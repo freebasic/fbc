@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -45,11 +43,6 @@ function cViewStmt _
 
 	default_view = is_func
     default_view_value = iif(is_func,-1,0)
-
-	'' VIEW
-	if( lexGetToken( ) <> FB_TK_VIEW ) then
-		exit function
-	end if
 
 	'' PRINT
 	if( lexGetLookAhead( 1 ) <> FB_TK_PRINT ) then
@@ -106,6 +99,7 @@ function cWidthStmt _
 
 	function = NULL
 
+	'' WIDTH
 	lexSkipToken( )
 
 	if( isfunc ) then

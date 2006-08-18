@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -69,59 +67,75 @@ function cDirective as integer static
 
 	select case as const lexGetToken( )
 	case FB_TK_DYNAMIC
-		lexSkipToken( )
-		env.opt.dynamic = TRUE
-		function = TRUE
+		if( fbLangOptIsSet( FB_LANG_OPT_METACMD ) = FALSE ) then
+		    errReportNotAllowed( FB_LANG_OPT_METACMD )
+		else
+			lexSkipToken( )
+			env.opt.dynamic = TRUE
+			function = TRUE
+		end if
+
 
 	case FB_TK_STATIC
-		lexSkipToken( )
-		env.opt.dynamic = FALSE
-		function = TRUE
+		if( fbLangOptIsSet( FB_LANG_OPT_METACMD ) = FALSE ) then
+		    errReportNotAllowed( FB_LANG_OPT_METACMD )
+		else
+			lexSkipToken( )
+			env.opt.dynamic = FALSE
+			function = TRUE
+		end if
 
 	case FB_TK_INCLUDE
-		lexSkipToken( )
-
-		'' ONCE?
-		isonce = FALSE
-		if( ucase( *lexGetText( ) ) = "ONCE" ) then
-			lexSkipToken( )
-			isonce = TRUE
-		end if
-
-		'' ':'
-		if( hMatch( CHAR_COLON ) = FALSE ) then
-			function = errReport( FB_ERRMSG_SYNTAXERROR )
-			exit select
-		end if
-
-		'' "STR_LIT"
-		if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
-			lexEatToken( incfile )
-
+		if( fbLangOptIsSet( FB_LANG_OPT_METACMD ) = FALSE ) then
+		    errReportNotAllowed( FB_LANG_OPT_METACMD )
 		else
-			'' '\''
-			if( lexGetToken( LEX_FLAGS or LEXCHECK_NOWHITESPC ) <> CHAR_APOST ) then
+			lexSkipToken( )
+
+			'' ONCE?
+			isonce = FALSE
+			if( ucase( *lexGetText( ) ) = "ONCE" ) then
+				lexSkipToken( )
+				isonce = TRUE
+			end if
+
+			'' ':'
+			if( hMatch( CHAR_COLON ) = FALSE ) then
 				function = errReport( FB_ERRMSG_SYNTAXERROR )
 				exit select
+			end if
+
+			'' "STR_LIT"
+			if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
+				lexEatToken( incfile )
+
 			else
-				lexSkipToken( LEX_FLAGS or LEXCHECK_NOWHITESPC )
+				'' '\''
+				if( lexGetToken( LEX_FLAGS or LEXCHECK_NOWHITESPC ) <> CHAR_APOST ) then
+					function = errReport( FB_ERRMSG_SYNTAXERROR )
+					exit select
+				else
+					lexSkipToken( LEX_FLAGS or LEXCHECK_NOWHITESPC )
+				end if
+
+				lexReadLine( CHAR_APOST, @incfile )
+
+				'' '\''
+				if( hMatch( CHAR_APOST ) = FALSE ) then
+					function = errReport( FB_ERRMSG_SYNTAXERROR )
+					exit select
+				end if
 			end if
 
-			lexReadLine( CHAR_APOST, @incfile )
-
-			'' '\''
-			if( hMatch( CHAR_APOST ) = FALSE ) then
-				function = errReport( FB_ERRMSG_SYNTAXERROR )
-				exit select
-			end if
+			function = fbIncludeFile( incfile, isonce )
 		end if
-
-		function = fbIncludeFile( incfile, isonce )
 
 	case else
-		if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
-			function = errReport( FB_ERRMSG_SYNTAXERROR )
-		end if
+		select case lexGetClass( )
+		case FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
+			if( fbLangOptIsSet( FB_LANG_OPT_METACMD ) ) then
+				function = errReport( FB_ERRMSG_SYNTAXERROR )
+			end if
+		end select
 	end select
 
 	'' skip until next line

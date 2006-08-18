@@ -21,8 +21,6 @@
 '' chng: sep/2004 written [v1ctor]
 ''  	 mar/2005 longint support added [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -42,7 +40,6 @@ type EMITDATATYPE
 end type
 
 ''
-const QUOTE   = "\""
 const COMMA   = ", "
 
 
@@ -781,7 +778,7 @@ private sub outp( byval s as zstring ptr ) static
 			s[0][p-1] = CHAR_TAB		'' unsafe with constants..
 		end if
 
-		ostr = "\t"
+		ostr = TABCHAR
 		ostr += *s
 		ostr += NEWLINE
 		outEX( ostr, len( ostr ) )
@@ -862,7 +859,7 @@ end sub
 private sub hCOMMENT( byval s as zstring ptr ) static
     dim ostr as string
 
-    ostr = "\t\35"
+    ostr = TABCHAR + "#"
     ostr += *s
     ostr += NEWLINE
 	outEX( ostr )
@@ -873,7 +870,7 @@ end sub
 private sub hPUBLIC( byval label as zstring ptr ) static
     dim ostr as string
 
-	ostr = "\r\n.globl "
+	ostr = NEWLINE + ".globl "
 	ostr += *label
 	ostr += NEWLINE
 	outEx( ostr )
@@ -885,7 +882,7 @@ private sub hLABEL( byval label as zstring ptr ) static
     dim ostr as string
 
 	ostr = *label
-	ostr += ":\r\n"
+	ostr += ":" + NEWLINE
 	outEx( ostr )
 
 end sub
@@ -894,7 +891,7 @@ end sub
 private sub hALIGN( byval bytes as integer ) static
     dim ostr as string
 
-    ostr = ".balign " + str( bytes ) +  "\r\n"
+    ostr = ".balign " + str( bytes ) + NEWLINE
 	outEx( ostr )
 
 end sub
@@ -1046,7 +1043,7 @@ end sub
 private sub _emitPUBLIC( byval label as FBSYMBOL ptr ) static
     dim ostr as string
 
-	ostr = "\r\n.globl "
+	ostr = NEWLINE + ".globl "
 	ostr += *symbGetMangledName( label )
 	ostr += NEWLINE
 	outEx( ostr )
@@ -1058,7 +1055,7 @@ private sub _emitLABEL( byval label as FBSYMBOL ptr ) static
     dim ostr as string
 
 	ostr = *symbGetMangledName( label )
-	ostr += ":\r\n"
+	ostr += ":" + NEWLINE
 	outEx( ostr )
 
 end sub
@@ -1087,12 +1084,12 @@ sub emitSECTION( byval section as integer ) static
 	case EMIT_SECTYPE_CONSTRUCTOR
 		ostr += "ctors"
 		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-			ostr += ", \"aw\", @progbits"
+			ostr += ", " + QUOTE + "aw" + QUOTE + ", @progbits"
 		end if
 	case EMIT_SECTYPE_DESTRUCTOR
 		ostr += "dtors"
 		if( env.clopt.target = FB_COMPTARGET_LINUX ) then
-			ostr += ", \"aw\", @progbits"
+			ostr += ", " + QUOTE +  "aw" + QUOTE + ", @progbits"
 		end if
 	end select
 
@@ -3793,7 +3790,7 @@ private sub hCMPF( byval rvreg as IRVREG ptr, _
 				outp ostr
 			end if
 
-			ostr = "set" + *mnemonic + "\tdl"
+			ostr = "set" + *mnemonic + (TABCHAR + "dl")
 			outp ostr
 
 			if( isedxfree = FALSE ) then
@@ -5254,7 +5251,7 @@ sub emitDATALABEL( byval label as zstring ptr ) static
     dim ostr as string
 
 	ostr = *label
-	ostr += ":\r\n"
+	ostr += ":" + NEWLINE
 	outEx( ostr )
 
 end sub
@@ -5309,9 +5306,9 @@ sub emitDATA ( byval litext as zstring ptr, _
 		ostr = ".short 0x" + hex( litlen ) + NEWLINE
 		outEx( ostr )
 
-		ostr = ".ascii \""
+		ostr = ".ascii " + QUOTE
 		ostr += *esctext
-		ostr += "\\0\"" + NEWLINE
+		ostr += RSLASH + "0" + QUOTE + NEWLINE
 		outEx( ostr )
 	else
 		outEx( ".short 0x0000" + NEWLINE )
@@ -5334,7 +5331,7 @@ sub emitDATAW( byval litext as wstring ptr, _
 		ostr = ".short 0x" + hex( &h8000 or litlen ) + NEWLINE
 		outEx( ostr )
 
-		ostr = ".ascii \"" + *esctext + *hGetWstrNull( ) + "\"" + NEWLINE
+		ostr = ".ascii " + QUOTE + *esctext + *hGetWstrNull( ) + (QUOTE + NEWLINE)
 		outEx( ostr )
 	else
 		outEx( ".short 0x0000" + NEWLINE )
@@ -5448,9 +5445,9 @@ end sub
 sub emitVARINISTR( byval s as zstring ptr ) static
     dim ostr as string
 
-	ostr = ".ascii \""
+	ostr = ".ascii " + QUOTE
 	ostr += *s
-	ostr += "\\0\"" + NEWLINE
+	ostr += RSLASH + "0" + QUOTE + NEWLINE
 	outEx( ostr )
 
 end sub
@@ -5459,10 +5456,10 @@ end sub
 sub emitVARINIWSTR( byval s as zstring ptr ) static
     dim ostr as string
 
-	ostr = ".ascii \""
+	ostr = ".ascii " + QUOTE
 	ostr += *s
 	ostr += *hGetWstrNull( )
-	ostr += "\"" + NEWLINE
+	ostr += QUOTE + NEWLINE
 	outEx( ostr )
 
 end sub
@@ -5544,7 +5541,7 @@ private function hGetTypeString( byval typ as integer ) as string static
     case FB_DATATYPE_STRING
     	function = ".int"
 
-	case FB_DATATYPE_USERDEF
+	case FB_DATATYPE_STRUCT
 		function = "INVALID"
 
     case else
@@ -5593,7 +5590,7 @@ private sub hEmitVarBss _
     end if
 
 	'' emit
-    ostr = alloc + "\t"
+    ostr = alloc + TABCHAR
     ostr += *symbGetMangledName( s )
     ostr += "," + str( symbGetLen( s ) * elements )
     hWriteStr( TRUE, ostr )
@@ -5645,15 +5642,15 @@ private sub hEmitVarConst _
 
     select case dtype
    	case FB_DATATYPE_CHAR
-    	stext = "\""
+    	stext = QUOTE
     	stext += *hEscape( symbGetVarLitText( s ) )
-    	stext += "\\0\""
+    	stext += RSLASH + "0" + QUOTE
 
 	case FB_DATATYPE_WCHAR
-		stext = "\""
+		stext = QUOTE
 		stext += *hEscapeW( symbGetVarLitTextW( s ) )
 		stext += *hGetWstrNull( )
-		stext += "\""
+		stext += QUOTE
 
 	case else
     	stext = *symbGetVarLitText( s )
@@ -5669,7 +5666,7 @@ private sub hEmitVarConst _
 
     stype = hGetTypeString( dtype )
     ostr = *symbGetMangledName( s )
-    ostr += ":\t" + stype + "\t" + stext
+    ostr += (":" + TABCHAR) + stype + TABCHAR + stext
     hWriteStr( FALSE, ostr )
 
 end sub
@@ -5737,7 +5734,7 @@ sub emitWriteExport( ) static
     			if( symbIsExport( s ) ) then
     				hEmitExportHeader( )
     				sname = hStripUnderscore( symbGetMangledName( s ) )
-    				hWriteStr( TRUE, ".ascii \" -export:" + sname + "\"" + NEWLINE )
+    				hWriteStr( TRUE, ".ascii " + QUOTE + " -export:" + sname + (QUOTE + NEWLINE) )
     			end if
     		end if
     	end if
@@ -5765,7 +5762,7 @@ sub emitDeclVariable _
 
     	select case symbGetType( s )
     	'' udt? don't emit
-    	case FB_DATATYPE_USERDEF
+    	case FB_DATATYPE_STRUCT
     		return
 
     	'' string? check if ever referenced

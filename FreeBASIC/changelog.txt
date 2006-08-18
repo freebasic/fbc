@@ -1,9 +1,8 @@
 Version 0.17 Beta:
 
 [changed]
-- due requests, now implicit variables will be always allocated at the parent function scope (unless they are 
-  allocated inside explicit SCOPE .. END SCOPE blocks), not inside of the current scope as explicit variables will (v1c)
-- enumid.elementid was removed, because the ambiguity with other symbols like UDT variables that can have the same name 
+- see the migrating.txt file for the list of changes because the new -lang command-line option (v1c)
+- enumid.elementid was removed, because the ambiguity with other symbols like UDT variables that can have the same name
   and because with namespaces the elements would have to be added twice to work as both "elementid" and "enumid.elementid" (v1c)
 - #undef can't remove symbols defined inside namespaces anymore, to allow namespace redefinition to work (v1c)
 - calling "SCREEN 0" now causes an 80x25 text mode to be set and cleared by default (lillo)
@@ -15,8 +14,15 @@ Version 0.17 Beta:
   function blender(byval src as uinteger, byval dest as uinteger, byval param as any ptr) as uinteger
 - GETJOYSTICK on win32 returns POV as U, V axis values if POV is available (jeffm)
 - main GFX window on win32 captures mouse input to allow out of window mouse button releases (jeffm)
+- the arguments passed to overloaded functions that contain enum parameters must be enum's too, no auto-coercion will
+  be done from integer/floating-point, to support operator overloading (v1c)
+- the STATIC attribute when used in the left-side of function declarations was removed, it will only accepted at the
+  right-side, as in QB, to allow STATIC to be used with class methods later (v1v)
+- symbols declared inside namespaces using keyword names (like INPUT, PRINT, etc) are now allowed (v1c)
 
 [added]
+- the -lang command-line option, to allow language compatibility without keeping FB from progress, see the migrating.txt file (v1c)
+- operator overloading (W.I.P., the final syntax is not defined yet) (v1c)
 - #macro .. #endmacro, to better support multi-line pre-processor defines (v1c)
 - TYPE's, UNION's, ENUM's and typedefs can now be declared inside functions and scope blocks (v1c)
 - FileCopy, FileAttr, and FileLen VB-compatability functions [DrV]
@@ -36,6 +42,7 @@ Version 0.17 Beta:
 - support for typedefs in fixed-len string declarations (v1c)
 - the __FILE_NQ__ and __FUNCTION_NQ__ intrinsic defines, same as __FILE__ and __FUNCTION__, but without double-quotes (v1c)
 - ISDATE function in rtlibx (jeffm)
+- serial device support in Linux, written by Jose Manuel Postigo (v1c)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)
@@ -69,16 +76,20 @@ Version 0.17 Beta:
 - SWAP with bitfields was been allowed (v1c)
 - mangling of symbols declared inside nested namespaces (v1c)
 - string indexing was being allowed with functions (v1c)
-- eof() could fail with some files opened for INPUT (v1c)
+- file size calculation in text-mode, EOF() should always work in text-mode now (v1c)
 - empty literal strings couldn't be used with stringize'd macro params (v1c)
 - DOS ISR and gfxlib were calling the DPMI memory locking service incorrectly (DrV)
 - BLOAD/BSAVE did not support automatic path separator conversion for cross-platform compatibility (lillo)
+- the function type was being checked before the overloading resolution, causing overloaded SUB's and FUNCTION's when mixed to fail (v1c)
+- SUB pointers returned by functions couldn't be directly dereferenced (v1c)
+- quirk string functions were refusing invalid types without reporting the errors (v1c)
+- RETURN could be used in functions without returning any expression (v1c)
 
 
 Version 0.16 Beta:
 
 [changed]
-- IMPORTANT: the NOT unary operator behavior in conditional statements is now fully compatible with QB/VB (ie: always 
+- IMPORTANT: the NOT unary operator behavior in conditional statements is now fully compatible with QB/VB (ie: always
   bitwise, never logical), see the migrating.txt file for more details (v1c)
 - IMPORTANT: every compound statement (IF, FOR, etc) will now open a new scope block, see the migrating.txt file (v1c)
 - any non-SHARED, COMMON or EXTERN variable and array declared in the module-level (ie, outside any function) will be

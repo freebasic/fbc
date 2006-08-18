@@ -20,8 +20,6 @@
 ''
 '' chng: oct/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -30,16 +28,16 @@ option escape
 
 
 '' name, alias, _
-'' type, mode, _
-'' callback, checkerror, overloaded, _
-'' args, _
-'' [arg typ,mode,optional[,value]]*args
+'' type, callconv, _
+'' callback, options, _
+'' params, _
+'' [param type, mode, optional[, value]] * params
 funcdata:
 
 '' fb_LongintDIV ( byval x as longint, byval y as longint ) as longint
 data @FB_RTL_LONGINTDIV,"", _
 	 FB_DATATYPE_LONGINT,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_LONGINT,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_LONGINT,FB_PARAMMODE_BYVAL, FALSE
@@ -47,7 +45,7 @@ data @FB_RTL_LONGINTDIV,"", _
 '' fb_ULongintDIV ( byval x as ulongint, byval y as ulongint ) as ulongint
 data @FB_RTL_ULONGINTDIV,"", _
 	 FB_DATATYPE_ULONGINT,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_ULONGINT,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_ULONGINT,FB_PARAMMODE_BYVAL, FALSE
@@ -55,7 +53,7 @@ data @FB_RTL_ULONGINTDIV,"", _
 '' fb_LongintMOD ( byval x as longint, byval y as longint ) as longint
 data @FB_RTL_LONGINTMOD,"", _
 	 FB_DATATYPE_LONGINT,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_LONGINT,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_LONGINT,FB_PARAMMODE_BYVAL, FALSE
@@ -63,7 +61,7 @@ data @FB_RTL_LONGINTMOD,"", _
 '' fb_ULongintMOD ( byval x as ulongint, byval y as ulongint ) as ulongint
 data @FB_RTL_ULONGINTMOD,"", _
 	 FB_DATATYPE_ULONGINT,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_ULONGINT,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_ULONGINT,FB_PARAMMODE_BYVAL, FALSE
@@ -71,7 +69,7 @@ data @FB_RTL_ULONGINTMOD,"", _
 '' fb_Dbl2ULongint ( byval x as double ) as ulongint
 data @FB_RTL_DBL2ULONGINT,"", _
 	 FB_DATATYPE_ULONGINT,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
 
@@ -79,7 +77,7 @@ data @FB_RTL_DBL2ULONGINT,"", _
 '' fb_Pow CDECL ( byval x as double, byval y as double ) as double
 data @FB_RTL_POW,"pow", _
 	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
@@ -87,70 +85,70 @@ data @FB_RTL_POW,"pow", _
 '' fb_SGNSingle ( byval x as single ) as integer
 data @FB_RTL_SGNSINGLE,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_SGNDouble ( byval x as double ) as integer
 data @FB_RTL_SGNDOUBLE,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_FIXSingle ( byval x as single ) as single
 data @FB_RTL_FIXSINGLE,"", _
 	 FB_DATATYPE_SINGLE,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_FIXDouble ( byval x as double ) as double
 data @FB_RTL_FIXDOUBLE,"", _
 	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
 
 '' asin CDECL ( byval x as double ) as double
 data @FB_RTL_ASIN,"asin", _
 	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
 
 '' acos CDECL ( byval x as double ) as double
 data @FB_RTL_ACOS,"acos", _
 	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
 
 '' log CDECL ( byval x as double ) as double
 data @FB_RTL_LOG,"log", _
 	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
 
 '' exp CDECL ( byval rad as double ) as double
 data @"exp","exp", _
 	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
 
 '' randomize ( byval seed as double = -1.0 ) as void
 data @"randomize","fb_Randomize", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, TRUE, -1.0
 
 '' rnd ( byval n as integer ) as double
 data @"rnd","fb_Rnd", _
 	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,1
 

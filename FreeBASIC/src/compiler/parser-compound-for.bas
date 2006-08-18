@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -93,7 +91,7 @@ private sub hFlushBOP _
 		end select
 	end if
 
-	expr = astNewBOP( op, expr1, expr2, ex, FALSE )
+	expr = astNewBOP( op, expr1, expr2, ex, AST_OPOPT_NONE )
 
 	''
 	astAdd( expr )

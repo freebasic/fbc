@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -39,26 +37,37 @@ function cLabel as integer
     function = FALSE
 
     '' NUM_LIT
-    select case lexGetClass( )
+    select case as const lexGetClass( )
     case FB_TKCLASS_NUMLITERAL
-		if( lexGetType( ) = FB_DATATYPE_INTEGER ) then
-			l = symbAddLabel( lexGetText( ), TRUE, TRUE )
-			if( l = NULL ) then
-				if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: skip stmt
-					hSkipStmt( )
-				end if
+
+    	if( fbLangOptIsSet( FB_LANG_OPT_NUMLABEL ) = FALSE ) then
+	    	if( errReportNotAllowed( FB_LANG_OPT_NUMLABEL ) = FALSE ) then
+				exit function
 			else
-				lexSkipToken( )
+				'' error recovery: skip stmt
+				hSkipStmt( )
+		    end if
+
+		else
+			if( lexGetType( ) = FB_DATATYPE_INTEGER ) then
+				l = symbAddLabel( lexGetText( ), TRUE, TRUE )
+				if( l = NULL ) then
+					if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: skip stmt
+						hSkipStmt( )
+					end if
+				else
+					lexSkipToken( )
+				end if
 			end if
+
+			'' fake a ':'
+			env.stmtcnt += 1
 		end if
 
-		'' fake a ':'
-		env.stmtcnt += 1
-
-	'' ID
+	'' ID (labels can't be quirk-keywords)
 	case FB_TKCLASS_IDENTIFIER
 		'' ':'
 		if( lexGetLookAhead( 1 ) = CHAR_COLON ) then
@@ -91,7 +100,6 @@ function cLabel as integer
     end select
 
     if( l <> NULL ) then
-
     	astAdd( astNewLABEL( l ) )
 
     	symbSetLastLabel( l )

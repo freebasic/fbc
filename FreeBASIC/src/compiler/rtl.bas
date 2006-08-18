@@ -20,8 +20,6 @@
 ''
 '' chng: oct/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -107,120 +105,127 @@ sub rtlEnd
 end sub
 
 
-#define CNTPTR(dtype,cnt)						_
-	scope                                       : _
-		dim as integer t = dtype                : _
-		cnt = 0                                 : _
-		do while( t >= FB_DATATYPE_POINTER )	: _
-			t -= FB_DATATYPE_POINTER			: _
-			cnt += 1							: _
-		loop									: _
+#macro CNTPTR(dtype,cnt)
+	scope
+		dim as integer t
+		t = dtype
+		cnt = 0
+		do while( t >= FB_DATATYPE_POINTER )
+			t -= FB_DATATYPE_POINTER
+			cnt += 1
+		loop
 	end scope
-
+#endmacro
 
 '':::::
-sub rtlAddIntrinsicProcs( )
-	dim as string aname, optstr
-	dim as integer p, pargs, ptype, pmode, attrib, checkerror, overloaded
-	dim as integer a, atype, alen, amode, ptrcnt, optional
+sub rtlAddIntrinsicProcs( ) static
+
+	dim as string proc_aliasname, param_optstr
+	dim as integer proc_params, proc_dtype, proc_mode, attrib, doadd, i
+	dim as integer param_dtype, param_len, param_mode, param_opt, ptrcnt
 	dim as FBSYMBOL ptr proc
-	dim as FBRTLCALLBACK pcallback
-	dim as ASTNODE ptr optval
+	dim as FBRTLCALLBACK proc_callback
+	dim as ASTNODE ptr param_optval
 	dim as FBVALUE value
-	dim as zstring ptr pname, palias
+	dim as zstring ptr proc_name, proc_alias
+	dim as FB_RTL_OPT proc_options
 
 	''
 	do
 		'' for each proc..
-		read pname
-		if( pname = NULL ) then
+		read proc_name
+		if( proc_name = NULL ) then
 			exit do
 		end if
 
-		read aname
-		read ptype, pmode
-		read pcallback, checkerror, overloaded
-		read pargs
+		read proc_aliasname
+		read proc_dtype, proc_mode
+		read proc_callback, proc_options
+		read proc_params
 
-		assert( ( checkerror and ptype = FB_DATATYPE_INTEGER ) or not checkerror )
+		doadd = TRUE
+		if( (proc_options and FB_RTL_OPT_MT) <> 0 ) then
+			doadd = fbLangOptIsSet( FB_LANG_OPT_MT )
+		end if
 
 		proc = symbPreAddProc( NULL )
 
 		'' for each parameter..
-		for a = 0 to pargs-1
-			read atype, amode, optional
+		for i = 0 to proc_params-1
+			read param_dtype, param_mode, param_opt
 
-			if( optional ) then
+			if( param_opt ) then
 				attrib = FB_SYMBATTRIB_OPTIONAL
 
-				select case as const atype
+				select case as const param_dtype
 				case FB_DATATYPE_STRING
-					read optstr
-					optval = astNewCONSTstr( optstr )
+					read param_optstr
+					param_optval = astNewCONSTstr( param_optstr )
 
 				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
 					read value.long
-					optval = astNewCONSTl( value.long, atype )
+					param_optval = astNewCONSTl( value.long, param_dtype )
 
 				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
 					read value.float
-					optval = astNewCONSTf( value.float, atype )
+					param_optval = astNewCONSTf( value.float, param_dtype )
 
 				case else
 					read value.int
-					optval = astNewCONSTi( value.int, atype )
+					param_optval = astNewCONSTi( value.int, param_dtype )
 				end select
 
 			else
 				attrib = 0
-				optval = NULL
+				param_optval = NULL
 			end if
 
-			if( atype <> INVALID ) then
-				alen = symbCalcParamLen( atype, NULL, amode )
+			if( param_dtype <> INVALID ) then
+				param_len = symbCalcParamLen( param_dtype, NULL, param_mode )
 			else
-				alen = FB_POINTERSIZE
+				param_len = FB_POINTERSIZE
 			end if
 
-			CNTPTR( atype, ptrcnt )
+			CNTPTR( param_dtype, ptrcnt )
 
 			symbAddProcParam( proc, NULL, _
-							  atype, NULL, ptrcnt, _
-							  alen, amode, INVALID, _
-							  attrib, optval )
+							  param_dtype, NULL, ptrcnt, _
+							  param_len, param_mode, INVALID, _
+							  attrib, param_optval )
 		next
 
 		''
-		if( overloaded ) then
+		if( (proc_options and FB_RTL_OPT_OVER) <> 0 ) then
 			attrib = FB_SYMBATTRIB_OVERLOADED
 		else
 			attrib = 0
 		end if
 
 		''
-		CNTPTR( ptype, ptrcnt )
+		CNTPTR( proc_dtype, ptrcnt )
 
-		if( len( aname ) = 0 ) then
-			palias = pname
+		if( len( proc_aliasname ) = 0 ) then
+			proc_alias = proc_name
 		else
-			palias = strptr( aname )
+			proc_alias = strptr( proc_aliasname )
 		end if
 
-		proc = symbAddPrototype( proc, _
-								 pname, palias, "fb", _
-								 ptype, NULL, ptrcnt, _
-								 attrib, pmode, _
-								 FB_SYMBOPT_DECLARING )
+		if( doadd ) then
+			proc = symbAddPrototype( proc, _
+								 	 proc_name, proc_alias, "fb", _
+								 	 proc_dtype, NULL, ptrcnt, _
+								 	 attrib, proc_mode, _
+								 	 FB_SYMBOPT_DECLARING )
 
-		''
-		if( proc <> NULL ) then
-			symbSetIsRTL( proc )
-			symbSetProcCallback( proc, pcallback )
-			if( checkerror ) then
-				symbSetIsThrowable( proc )
+			if( proc <> NULL ) then
+				symbSetIsRTL( proc )
+				symbSetProcCallback( proc, proc_callback )
+				if( (proc_options and FB_RTL_OPT_ERROR) <> 0 ) then
+					symbSetIsThrowable( proc )
+				end if
+			else
+				errReportEx( FB_ERRMSG_DUPDEFINITION, *proc_name )
 			end if
-		else
-			errReportEx( FB_ERRMSG_DUPDEFINITION, *pname )
 		end if
 	loop
 
@@ -271,7 +276,7 @@ function rtlCalcExprLen _
 	case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 		function = rtlCalcStrLen( expr, dtype )
 
-	case FB_DATATYPE_USERDEF
+	case FB_DATATYPE_STRUCT
 		s = astGetSubtype( expr )
 		if( s <> NULL ) then
 			'' if it's a type field that's an udt, no padding is

@@ -21,6 +21,7 @@
 
 #include once "inc\list.bi"
 #include once "inc\pool.bi"
+#include once "inc\ast-op.bi"
 
 '' symbol classes
 enum FB_SYMBCLASS
@@ -79,13 +80,14 @@ enum FB_SYMBATTRIB
 	FB_SYMBATTRIB_MODLEVELPROC	= &h00010000
     FB_SYMBATTRIB_CONSTRUCTOR   = &h00020000
     FB_SYMBATTRIB_DESTRUCTOR    = &h00040000
-    FB_SYMBATTRIB_LOCAL			= &h00080000
-    FB_SYMBATTRIB_DESCRIPTOR	= &h00100000
-	FB_SYMBATTRIB_FUNCRESULT	= &h00200000
-	FB_SYMBATTRIB_FUNCPTR		= &h00400000	'' needed to demangle
-	FB_SYMBATTRIB_LITERAL		= &h00800000
-	FB_SYMBATTRIB_CONST			= &h01000000
-	FB_SYMBATTRIB_OPTIONAL		= &h02000000	'' params only
+    FB_SYMBATTRIB_OPERATOR    	= &h00080000
+    FB_SYMBATTRIB_LOCAL			= &h00100000
+    FB_SYMBATTRIB_DESCRIPTOR	= &h00200000
+	FB_SYMBATTRIB_FUNCRESULT	= &h00400000
+	FB_SYMBATTRIB_FUNCPTR		= &h00800000	'' needed to demangle
+	FB_SYMBATTRIB_LITERAL		= &h01000000
+	FB_SYMBATTRIB_CONST			= &h02000000
+	FB_SYMBATTRIB_OPTIONAL		= &h04000000	'' params only
 	FB_SYMBATTRIB_LITCONST		= FB_SYMBATTRIB_CONST or FB_SYMBATTRIB_LITERAL
 end enum
 
@@ -166,7 +168,7 @@ end union
 ''
 type FBS_KEYWORD
 	id				as integer
-	class			as integer
+	tkclass			as FB_TKCLASS
 end type
 
 ''
@@ -237,18 +239,23 @@ type FB_TYPEDBG
 	typenum			as integer
 end type
 
+type FB_TYPEOPOVL
+	cast			as FBSYMBOL_ ptr			'' cast( some_type, expr{this_type} )
+end type
+
 type FBS_UDT
 	parent			as FBSYMBOL_ ptr
-	isunion			as integer
 	elements		as integer
 	fldtb			as FBSYMBOLTB				'' fields symbol tb
-	align			as integer
 	lfldlen			as integer					'' largest field len
 	bitpos			as uinteger
 	unpadlgt		as integer					'' unpadded len
-	ptrcnt			as integer
-	dyncnt			as integer
+	isunion			as short
+	align			as short
+	ptrcnt			as short
+	dyncnt			as short
 	dbg				as FB_TYPEDBG
+	opovl			as FB_TYPEOPOVL
 end type
 
 type FBS_UDTELM
@@ -265,6 +272,7 @@ type FBS_ENUM
 	elements		as integer
 	elmtb			as FBSYMBOLTB				'' elements symbol tb
 	dbg				as FB_TYPEDBG
+	opovl			as FB_TYPEOPOVL
 end type
 
 ''
@@ -311,11 +319,16 @@ type FB_PROCERR
 	lastfun			as FBSYMBOL_ ptr			'' last function name
 end type
 
+type FB_PROCOPOVL
+	op				as AST_OP
+end type
+
 type FB_PROCEXT
 	res				as FBSYMBOL_ ptr			'' result, if any
 	stk				as FB_PROCSTK 				'' to keep track of the stack frame
 	dbg				as FB_PROCDBG 				'' debugging
 	err				as FB_PROCERR
+	opovl			as FB_PROCOPOVL
 	stmtnum			as integer
 end type
 
@@ -464,6 +477,10 @@ type SYMB_DEF_CTX
     hash(0 to FB_MAXDEFINEARGS-1) as SYMB_DEF_PARAM
 end type
 
+type SYMB_OVLOP
+	head			as FBSYMBOL ptr				'' head proc
+end type
+
 type SYMBCTX
 	inited			as integer
 
@@ -490,6 +507,10 @@ type SYMBCTX
 	lastlbl			as FBSYMBOL ptr
 
 	fwdrefcnt 		as integer
+
+	globOpOvlTb ( _
+					0 to AST_OPCODES-1 _
+				)	as SYMB_OVLOP				'' global operator overloading
 end type
 
 type SYMB_DATATYPE
@@ -574,10 +595,37 @@ declare function 	symbFindOverloadProc	( _
 												byval proc as FBSYMBOL ptr _
 											) as FBSYMBOL ptr
 
+declare function 	symbFindOpOvlProc		( _
+												byval op as AST_OP, _
+												byval parent as FBSYMBOL ptr, _
+												byval proc as FBSYMBOL ptr _
+											) as FBSYMBOL ptr
+
 declare function 	symbFindClosestOvlProc	( _
 												byval proc as FBSYMBOL ptr, _
 					   		    			  	byval params as integer, _
-												byval arg_head as FB_CALL_ARG ptr _
+												byval arg_head as FB_CALL_ARG ptr, _
+												byval isAmbiguous as integer ptr = NULL _
+											) as FBSYMBOL ptr
+
+declare function 	symbFindBopOvlProc		( _
+												byval op as AST_OP, _
+												byval l as ASTNODE ptr, _
+												byval r as ASTNODE ptr, _
+												byval isambiguous as integer ptr _
+											) as FBSYMBOL ptr
+
+declare function 	symbFindUopOvlProc		( _
+												byval op as AST_OP, _
+												byval l as ASTNODE ptr, _
+												byval isambiguous as integer ptr _
+											) as FBSYMBOL ptr
+
+declare function 	symbFindCastOvlProc 	( _
+												byval to_dtype as integer, _
+												byval to_subtype as FBSYMBOL ptr, _
+												byval expr as ASTNODE ptr, _
+												byval isambiguous as integer ptr _
 											) as FBSYMBOL ptr
 
 declare function 	symbLookupUDTElm		( _
@@ -794,6 +842,19 @@ declare function 	symbAddProc				( _
 					  						  	byval ptrcnt as integer, _
 					  						  	byval attrib as integer, _
 					  						  	byval mode as integer _
+											) as FBSYMBOL ptr
+
+declare function	symbAddOperatorOvl 		( _
+												byval proc as FBSYMBOL ptr, _
+												byval op as AST_OP, _
+												byval id_alias as zstring ptr, _
+												byval libname as zstring ptr, _
+												byval dtype as integer, _
+												byval subtype as FBSYMBOL ptr, _
+												byval ptrcnt as integer, _
+												byval attrib as integer, _
+												byval mode as integer, _
+												byval options as FB_SYMBOPT = FB_SYMBOPT_NONE _
 											) as FBSYMBOL ptr
 
 declare function 	symbPreAddProc			( _
@@ -1160,6 +1221,28 @@ declare function 	symbTypeToStr			( _
 												byval subtype as FBSYMBOL ptr _
 											) as zstring ptr
 
+declare function 	symbGetGlobOpOvlParent	( _
+												byval op as AST_OP, _
+												byval proc_param as FBSYMBOL ptr _
+											) as FBSYMBOL ptr
+
+declare	function 	symbGetDefType			( _
+												byval symbol as zstring ptr _
+											) as integer
+
+declare	sub 		symbSetDefType			( _
+												byval ichar as integer, _
+												byval echar as integer, _
+												byval typ as integer _
+											)
+
+
+#define symbAddOpOvlPrototype( proc, op, id_alias, libname, dtype, subtype, ptrcnt, attrib, mode ) _
+	symbAddOperatorOvl( proc, op, id_alias, libname, dtype, subtype, ptrcnt, attrib, mode )
+
+#define symbAddOpOvlProc( proc, op, id_alias, libname, dtype, subtype, ptrcnt, attrib, mode ) _
+	symbAddOperatorOvl( proc, op, id_alias, libname, dtype, subtype, ptrcnt, attrib, mode, FB_SYMBOPT_DECLARING )
+
 ''
 '' getters and setters as macros
 ''
@@ -1522,6 +1605,8 @@ declare function 	symbTypeToStr			( _
 #define symbGetIsLiteral(s) ((s->attrib and FB_SYMBATTRIB_LITERAL) <> 0)
 
 #define symbGetIsOptional(s) ((s->attrib and FB_SYMBATTRIB_OPTIONAL) <> 0)
+
+#define symbIsOperator(s) ((s->attrib and FB_SYMBATTRIB_OPERATOR) <> 0)
 
 #define symbGetCurrentProcName( ) symbGetName( env.currproc )
 

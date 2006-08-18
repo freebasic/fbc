@@ -22,8 +22,6 @@
 '' chng: may/2006 written [v1ctor]
 ''
 
-option explicit
-option escape
 
 #include once "inc\pool.bi"
 

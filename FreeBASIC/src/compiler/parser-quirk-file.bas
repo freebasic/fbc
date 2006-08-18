@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -32,22 +30,28 @@ option escape
 '':::::
 '' PrintStmt	  =   (PRINT|'?') ('#' Expression ',')? (USING Expression{str} ';')? (Expression? ';'|"," )*
 ''
-function cPrintStmt as integer
+function cPrintStmt  _
+	( _
+		byval tk as FB_TOKEN _
+	) as integer
+
     dim as ASTNODE ptr usingexpr, filexpr, filexprcopy, expr
     dim as integer expressions, issemicolon, iscomma, istab, isspc, islprint
 
 	function = FALSE
 
 	'' (PRINT|'?')
-	if( hMatch( FB_TK_PRINT ) = FALSE ) then
-		if( hMatch( CHAR_QUESTION ) = FALSE ) then
-            if( hMatch( FB_TK_LPRINT ) = FALSE ) then
-				exit function
-            else
-                islprint = TRUE
-            end if
-		end if
-	end if
+	select case tk
+	case FB_TK_PRINT, CHAR_QUESTION
+    	islprint = FALSE
+
+	case FB_TK_LPRINT
+
+	case else
+		exit function
+	end select
+
+	lexSkipToken( )
 
     if( islprint ) then
     	filexpr = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
@@ -193,16 +197,18 @@ end function
 '':::::
 '' WriteStmt	  =   WRITE ('#' Expression)? (Expression? "," )*
 ''
-function cWriteStmt as integer
+function cWriteStmt _
+	( _
+		_
+	) as integer
+
     dim as ASTNODE ptr filexpr, filexprcopy, expr
     dim as integer expressions, iscomma
 
 	function = FALSE
 
 	'' WRITE
-	if( hMatch( FB_TK_WRITE ) = FALSE ) then
-		exit function
-	end if
+	lexSkipToken( )
 
 	'' ('#' Expression)?
 	if( hMatch( CHAR_SHARP ) ) then
@@ -256,16 +262,15 @@ end function
 '':::::
 '' LineInputStmt	  =   LINE INPUT ';'? ('#' Expression| Expression{str}?) (','|';')? Variable? .
 ''
-function cLineInputStmt as integer
+function cLineInputStmt _
+	( _
+		_
+	) as integer
+
     dim as ASTNODE ptr expr, dstexpr
     dim as integer isfile, addnewline, issep, addquestion
 
 	function = FALSE
-
-	'' LINE
-	if( lexGetToken( ) <> FB_TK_LINE ) then
-		exit function
-	end if
 
 	'' INPUT
 	if( lexGetLookAhead( 1 ) <> FB_TK_INPUT ) then
@@ -361,16 +366,18 @@ end function
 '':::::
 '' InputStmt	  =   INPUT ';'? (('#' Expression| STRING_LIT) (','|';'))? Variable (',' Variable)*
 ''
-function cInputStmt as integer
+function cInputStmt _
+	( _
+		_
+	) as integer
+
     dim as ASTNODE ptr filestrexpr, dstexpr
     dim as integer islast, isfile, addnewline, addquestion, lgt
 
 	function = FALSE
 
 	'' INPUT
-	if( hMatch( FB_TK_INPUT ) = FALSE ) then
-		exit function
-	end if
+	lexSkipToken( )
 
 	'' ';'?
 	if( hMatch( CHAR_SEMICOLON ) ) then
@@ -1076,13 +1083,17 @@ end function
 ''				  |	   SEEK ...
 ''				  |    LOCK ...
 ''				  |	   ...
-function cFileStmt as integer
+function cFileStmt _
+	( _
+		byval tk as FB_TOKEN _
+	) as integer
+
     dim as ASTNODE ptr filenum, expr1, expr2
     dim as integer islock
 
 	function = FALSE
 
-	select case as const lexGetToken( )
+	select case as const tk
 	case FB_TK_OPEN
 		lexSkipToken( )
 
@@ -1129,7 +1140,7 @@ function cFileStmt as integer
 
 	'' (LOCK|UNLOCK) '#'? Expression, Expression (TO Expression)?
 	case FB_TK_LOCK, FB_TK_UNLOCK
-		if( lexGetToken( ) = FB_TK_LOCK ) then
+		if( tk = FB_TK_LOCK ) then
 			islock = TRUE
 		else
 			islock = FALSE
@@ -1167,13 +1178,18 @@ end function
 '' FileFunct =   SEEK '(' Expression ')' |
 ''				 INPUT '(' Expr, (',' '#'? Expr)? ')'.
 ''
-function cFileFunct( byref funcexpr as ASTNODE ptr ) as integer
+function cFileFunct _
+	( _
+	    byval tk as FB_TOKEN, _
+		byref funcexpr as ASTNODE ptr _
+	) as integer
+
 	dim as ASTNODE ptr filenum, expr
 
 	function = FALSE
 
 	'' SEEK '(' Expression ')'
-	select case as const lexGetToken( )
+	select case as const tk
 	case FB_TK_SEEK
 		lexSkipToken( )
 
@@ -1218,7 +1234,6 @@ function cFileFunct( byref funcexpr as ASTNODE ptr ) as integer
 
 	'' CLOSE '(' '#'? Expr? ')'
 	case FB_TK_CLOSE
-
 		funcexpr = hFileClose( TRUE )
 		function = funcexpr <> NULL
 

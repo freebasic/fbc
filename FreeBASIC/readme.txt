@@ -212,9 +212,10 @@ Most Important Features:
       learn anything new if you are familiar with any Microsoft-BASIC variant.
 
     - FreeBASIC is case-insensitive; scalar variables don't need to be
-      dimensioned and suffix can be used; line numbers are supported; MAIN
-      function is not required; most of the graphic and console statements and
-      functions found in MS-QuickBASIC were implemented, et cetera.
+      dimensioned and suffix can be used (in -lang qb or deprecated only); line 
+      numbers are supported (ditto); a main() function is not required; most of 
+      the graphic and console statements and functions found in MS-QuickBASIC 
+      were implemented, et cetera.
 
   o Clean Syntax:
 
@@ -223,7 +224,7 @@ Most Important Features:
       routines, and therefore there is a low chance of having name duplication
       with old code. If you want to show a message box in Windows, simply do:
 
-      '$include: 'windows.bi'
+      #include "windows.bi"
       MessageBox NULL, "Text", "Title", MB_ICONASTERISK
 
       (note: MessageBox is case-insensitive, it can be MESSAGEBOX if you want)
@@ -768,8 +769,9 @@ Credits (in alphabetic order):
   o Jose Manuel Postigo (postigo[at]uma.es):
     - Added support for serial devices in Linux.
 
-  o Randy Keeling (randy[at]keeling.com):
-    - Wrote the GSL matrix test at the examples/GSL directory.
+  o Laanan Fisher (sumofallparts[at]excite.com):
+    - Re-implemented the compiler test suite (at the /tests directory), using 
+      unit testing (CUnit).
 
   o Matthias Faust (matthias_faust[at]web.de):
     - Translated the SDL_ttf header (later replaced by the SWIG FB wrapper 
@@ -796,6 +798,9 @@ Credits (in alphabetic order):
   o plasma:
     - Translated the FMOD and BASS headers.
     - Wrote the fmod.bas test in the examples/sound directory.
+
+  o Randy Keeling (randy[at]keeling.com):
+    - Wrote the GSL matrix test at the examples/GSL directory.
 
   o Sterling Christensen (sterling[at]engineer.com):
     - Ex-project member, developer of the QB-like graphics library (later 

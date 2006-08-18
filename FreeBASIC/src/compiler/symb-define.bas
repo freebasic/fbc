@@ -21,8 +21,6 @@
 '' chng: sep/2004 written [v1ctor]
 ''		 jan/2005 updated to use real linked-lists [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -58,9 +56,10 @@ declare function 	hDefDebug_cb 		( ) as string
 declare function 	hDefErr_cb 			( ) as string
 declare function 	hDefExErr_cb 		( ) as string
 declare function 	hDefExxErr_cb 		( ) as string
+declare function	hDefLang_cb			( ) as string
 
 '' predefined #defines: name, value, flags, proc (for description flags, see FBS_DEFINE)
-const SYMB_MAXDEFINES = 25
+const SYMB_MAXDEFINES = 26
 
 	dim shared defTb( 0 to SYMB_MAXDEFINES-1 ) as SYMBDEF => _
 	{ _
@@ -88,6 +87,7 @@ const SYMB_MAXDEFINES = 25
 		(@"__FB_OUT_OBJ__",			NULL,		   	   1, @hDefOutObj_cb 	 ), _
 		(@"__FB_DEBUG__",			NULL,		   	   1, @hDefDebug_cb 	 ), _
 		(@"__FB_ERR__",     		NULL,       	   1, @hDefErr_cb    	 ), _
+		(@"__FB_LANG__",     		NULL,       	   0, @hDefLang_cb    	 ), _
 		(NULL) _
 	}
 
@@ -230,6 +230,20 @@ private function hDefErr_cb ( ) as string
 end function
 
 '':::::
+private function hDefLang_cb ( ) as string
+
+	select case as const env.clopt.lang
+	case FB_LANG_FB
+		function = "fb"
+	case FB_LANG_FB_DEPRECATED
+		function = "deprecated"
+	case FB_LANG_QB
+		function = "qb"
+	end select
+
+end function
+
+'':::::
 sub symbDefineInit _
 	( _
 		byval ismain as integer _
@@ -253,7 +267,7 @@ sub symbDefineInit _
     	value = *defTb(i).value
     	if( defTb(i).value <> NULL ) then
             if( bit( defTb(i).flags, 0 ) = 0 ) then
-    			value = "\"" + value + "\""
+    			value = QUOTE + value + QUOTE
             end if
     	end if
 

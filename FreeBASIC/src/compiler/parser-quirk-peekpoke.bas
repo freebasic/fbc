@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -31,7 +29,11 @@ option escape
 '':::::
 ''PokeStmt =   POKE Expression, Expression .
 ''
-function cPokeStmt as integer
+function cPokeStmt _
+	( _
+		_
+	) as integer
+
 	dim as ASTNODE ptr expr1 = any, expr2 = any
 	dim as integer poketype = any, lgt = any, ptrcnt = any
 	dim as FBSYMBOL ptr subtype = any

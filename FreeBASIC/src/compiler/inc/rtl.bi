@@ -600,6 +600,12 @@ enum FB_RTL_IDX
 	FB_RTL_INDEXES
 end enum
 
+enum FB_RTL_OPT
+	FB_RTL_OPT_NONE		= &h00000000
+	FB_RTL_OPT_OVER		= &h00000001
+	FB_RTL_OPT_ERROR	= &h00000002
+	FB_RTL_OPT_MT		= &h00000004
+end enum
 
 declare sub 		rtlInit				( _
 										)
@@ -1243,7 +1249,7 @@ declare function	rtlGfxDraw			( _
 											byval target as ASTNODE ptr, _
 											byval targetisptr as integer, _
 											byval cexpr as ASTNODE ptr _
-										)
+										) as integer
 
 declare function	rtlGfxDrawString	( _
 											byval target as ASTNODE ptr, _

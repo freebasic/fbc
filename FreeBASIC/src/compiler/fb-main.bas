@@ -21,8 +21,6 @@
 '' chng: jun/2005 written [v1ctor]
 ''
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -84,7 +82,11 @@ const fbdllreason = "__FB_DLLREASON__"
 	param = symbGetParamVar( param )
 	reason = astNewVAR( param, 0, symbGetType( param ) )
 	label = symbAddLabel( NULL )
-	astAdd( astNewBOP( AST_OP_NE, reason, astNewCONSTi( 1, FB_DATATYPE_UINT ), label, FALSE ) )
+	astAdd( astNewBOP( AST_OP_NE, _
+					   reason, _
+					   astNewCONSTi( 1, FB_DATATYPE_UINT ), _
+					   label, _
+					   AST_OPOPT_NONE ) )
 
 	''	main( 0, NULL )
     main = astNewCALL( env.main.proc )

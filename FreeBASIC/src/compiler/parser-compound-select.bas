@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -113,7 +111,7 @@ function cSelectStmtBegin as integer
 	end if
 
 	'' can't be an UDT
-	if( astGetDataType( expr ) = FB_DATATYPE_USERDEF ) then
+	if( astGetDataType( expr ) = FB_DATATYPE_STRUCT ) then
 		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 			exit function
 		else
@@ -295,20 +293,20 @@ private function hFlushCaseExpr _
 						  	  expr, _
 						  	  casectx.expr1, _
 						  	  nxtlabel, _
-						  	  FALSE )
+						  	  AST_OPOPT_NONE )
 
 		else
 			expr = astNewBOP( casectx.op, _
 						  	  expr, _
 						  	  casectx.expr1, _
 						  	  inilabel, _
-						  	  FALSE )
+						  	  AST_OPOPT_NONE )
 		end if
 
 	else
 		expr = NEWCASEVAR( sym, dtype )
 
-		expr = astNewBOP( AST_OP_LT, expr, casectx.expr1, nxtlabel, FALSE )
+		expr = astNewBOP( AST_OP_LT, expr, casectx.expr1, nxtlabel, AST_OPOPT_NONE )
 
 		if( expr = NULL ) then
 			return FALSE
@@ -319,9 +317,9 @@ private function hFlushCaseExpr _
 		expr = NEWCASEVAR( sym, dtype )
 
 		if( islast ) then
-			expr = astNewBOP( AST_OP_GT, expr, casectx.expr2, nxtlabel, FALSE )
+			expr = astNewBOP( AST_OP_GT, expr, casectx.expr2, nxtlabel, AST_OPOPT_NONE )
 		else
-			expr = astNewBOP( AST_OP_LE, expr, casectx.expr2, inilabel, FALSE )
+			expr = astNewBOP( AST_OP_LE, expr, casectx.expr2, inilabel, AST_OPOPT_NONE )
 		end if
 	end if
 

@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -90,7 +88,7 @@ private function hCheckUDTOps _
 	function = FALSE
 
 	'' l node must be an UDT's,
-	if( l->dtype <> FB_DATATYPE_USERDEF ) then
+	if( l->dtype <> FB_DATATYPE_STRUCT ) then
 		exit function
 	else
 		'' "udtfunct() = udt" is not allowed, l node must be a variable
@@ -100,7 +98,7 @@ private function hCheckUDTOps _
 	end if
 
     '' is r an UDT?
-	if( r->dtype = FB_DATATYPE_USERDEF ) then
+	if( r->dtype = FB_DATATYPE_STRUCT ) then
 
     	'' different subtypes?
 		if( l->subtype <> r->subtype ) then
@@ -122,7 +120,7 @@ private function hCheckUDTOps _
         '' handle functions returning UDT's when type isn't a pointer,
         '' but an integer or fpoint register
         proc = r->sym
-        if( proc->typ <> FB_DATATYPE_USERDEF ) then
+        if( proc->typ <> FB_DATATYPE_STRUCT ) then
         	exit function
 		end if
 
@@ -309,8 +307,8 @@ function astCheckASSIGN _
 	end if
 
 	'' UDT's?
-	if( (ldtype = FB_DATATYPE_USERDEF) or _
-		(rdtype = FB_DATATYPE_USERDEF) ) then
+	if( (ldtype = FB_DATATYPE_STRUCT) or _
+		(rdtype = FB_DATATYPE_STRUCT) ) then
 
 		if( hCheckUDTOps( l, ldclass, r, rdclass ) = FALSE ) then
 			exit function
@@ -395,15 +393,41 @@ function astNewASSIGN _
     dim as ASTNODE ptr n
     dim as FB_DATATYPE ldtype, rdtype
     dim as FB_DATACLASS ldclass, rdclass
-    dim as FBSYMBOL ptr lsubtype
+    dim as FBSYMBOL ptr lsubtype, proc
+	dim as integer is_ambiguous
 
 	function = NULL
 
-	ldtype   = l->dtype
+	'' 1st) check assign op overloading
+	if( symb.globOpOvlTb(AST_OP_ASSIGN).head <> NULL ) then
+		proc = symbFindBopOvlProc( AST_OP_ASSIGN, l, r, @is_ambiguous )
+		if( proc <> NULL ) then
+			'' build a proc call
+			return astBuildCALL( proc, 2, l, r )
+		else
+			if( is_ambiguous ) then
+				return NULL
+			end if
+		end if
+	end if
+
+	ldtype = l->dtype
+	ldclass = symbGetDataClass( ldtype )
 	lsubtype = l->subtype
-	rdtype   = r->dtype
-	ldclass  = symbGetDataClass( ldtype )
-	rdclass	 = symbGetDataClass( rdtype )
+
+	'' 2nd) implicit casting op overloading
+	proc = symbFindCastOvlProc( ldtype, lsubtype, r, @is_ambiguous )
+	if( proc <> NULL ) then
+		'' build a proc call
+		r = astBuildCALL( proc, 1, r )
+	else
+		if( is_ambiguous ) then
+			return NULL
+		end if
+	end if
+
+	rdtype = r->dtype
+	rdclass = symbGetDataClass( rdtype )
 
     '' strings?
     if( (ldclass = FB_DATACLASS_STRING) or _
@@ -421,15 +445,15 @@ function astNewASSIGN _
 		'' otherwise, don't do any assignment by now to allow optimizations..
 
 	'' UDT's?
-	elseif( (ldtype = FB_DATATYPE_USERDEF) or _
-			(rdtype = FB_DATATYPE_USERDEF) ) then
+	elseif( (ldtype = FB_DATATYPE_STRUCT) or _
+			(rdtype = FB_DATATYPE_STRUCT) ) then
 
 		if( hCheckUDTOps( l, ldclass, r, rdclass ) = FALSE ) then
 			exit function
 		end if
 
         '' r is an UDT too?
-		if( rdtype = FB_DATATYPE_USERDEF ) then
+		if( rdtype = FB_DATATYPE_STRUCT ) then
 
 			'' type ini tree?
 			if( r->class = AST_NODECLASS_TYPEINI ) then

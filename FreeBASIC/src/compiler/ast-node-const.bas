@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -191,7 +189,7 @@ function astNewCONSTz _
     case FB_DATATYPE_WCHAR
     	function = astNewCONSTwstr( NULL )
 
-    case FB_DATATYPE_USERDEF
+    case FB_DATATYPE_STRUCT
     	function = astNewCONST( NULL, FB_DATATYPE_POINTER + dtype, subtype )
 
     case else

@@ -20,8 +20,6 @@
 ''
 '' chng: oct/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -29,7 +27,7 @@ option escape
 #include once "inc\rtl.bi"
 
 
-'' name, debugonly?, args, arg[0] to arg[n] names, macro text
+'' name, debug_only, params, param[0] to param[n] names, macro text
 macrodata:
 
 ''#define RGB(r,g,b) ((cuint(r) shl 16) or (cuint(g) shl 8) or cuint(b))

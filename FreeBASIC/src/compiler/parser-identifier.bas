@@ -20,8 +20,6 @@
 ''
 '' chng: may/2006 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -31,15 +29,15 @@ option escape
 private sub hSkipSymbol( )
 
 	do
-		lexSkipToken( LEXCHECK_NOLOOKUP )
+		lexSkipToken( LEXCHECK_NOPERIOD )
 
     	'' '.'?
     	if( lexGetToken( ) <> CHAR_DOT ) then
     		exit do
     	end if
 
-    	select case lexGetClass()
-    	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD
+    	select case as const lexGetClass()
+    	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
 
     	case else
     		exit do
@@ -58,9 +56,9 @@ private function hGlobalId _
 	function = NULL
 
     '' another '.'?
-    if( lexGetLookAhead( 1, LEXCHECK_NOLOOKUP ) = CHAR_DOT ) then
+    if( lexGetLookAhead( 1, LEXCHECK_NOPERIOD ) = CHAR_DOT ) then
     	'' skip the first '.'
-    	lexSkipToken( LEXCHECK_NOLOOKUP )
+    	lexSkipToken( LEXCHECK_NOPERIOD )
 
     else
     	'' with inside a WITH block, a single '.' is ambiguous..
@@ -79,15 +77,18 @@ private function hGlobalId _
     end if
 
     '' skip the '.'
-    lexSkipToken( LEXCHECK_NOLOOKUP )
+    lexSkipToken( LEXCHECK_NOPERIOD )
 
     '' not an ID?
-    if( lexGetToken( ) <> FB_TK_ID ) then
+    select case lexGetClass( )
+    case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
+
+    case else
     	if( showerror ) then
     		errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
     	end if
     	exit function
-    end if
+    end select
 
 	function = symbLookupAt( @symbGetGlobalNamespc( ), lexGetText( ), FALSE )
 
@@ -107,6 +108,10 @@ function cIdentifier _
     dim as FBSYMBOL ptr ns
 
     chain_ = lexGetSymChain( )
+
+	if( fbLangOptIsSet( FB_LANG_OPT_NAMESPC ) = FALSE ) then
+	    return chain_
+	end if
 
     if( chain_ = NULL ) then
     	'' '.'?
@@ -142,7 +147,7 @@ function cIdentifier _
     		isdecl = FALSE
     	end if
 
-    	lexSkipToken( LEXCHECK_NOLOOKUP )
+    	lexSkipToken( LEXCHECK_NOPERIOD )
 
     	'' '.'?
     	if( lexGetToken( ) <> CHAR_DOT ) then
@@ -157,16 +162,19 @@ function cIdentifier _
     		end if
     	end if
 
-    	lexSkipToken( LEXCHECK_NOLOOKUP )
+    	lexSkipToken( LEXCHECK_NOPERIOD )
 
     	'' ID
-    	if( lexGetToken( ) <> FB_TK_ID ) then
+    	select case lexGetClass( )
+    	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
+
+    	case else
     		if( showerror ) then
     			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
     		end if
 
     		return NULL
-    	end if
+    	end select
 
     	chain_ = symbLookupAt( ns, lexGetText( ), FALSE )
     	if( chain_ = NULL ) then
@@ -195,6 +203,10 @@ function cNamespace _
     dim as FBSYMCHAIN ptr chain_
     dim as FBSYMBOL ptr ns
 
+	if( fbLangOptIsSet( FB_LANG_OPT_NAMESPC ) = FALSE ) then
+	    return NULL
+	end if
+
     ns = NULL
 
     chain_ = lexGetSymChain( )
@@ -212,7 +224,7 @@ function cNamespace _
     	end if
     	ns = chain_->sym
 
-    	lexSkipToken( LEXCHECK_NOLOOKUP )
+    	lexSkipToken( LEXCHECK_NOPERIOD )
 
     	'' '.'?
     	if( lexGetToken( ) <> CHAR_DOT ) then
@@ -227,16 +239,19 @@ function cNamespace _
     		end if
     	end if
 
-    	lexSkipToken( LEXCHECK_NOLOOKUP )
+    	lexSkipToken( LEXCHECK_NOPERIOD )
 
     	'' ID
-    	if( lexGetToken( ) <> FB_TK_ID ) then
+    	select case lexGetClass( )
+    	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
+
+    	case else
     		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
     			return NULL
     		else
     			exit do
     		end if
-    	end if
+    	end select
 
     	chain_ = symbLookupAt( chain_->sym, lexGetText( ), FALSE )
     loop

@@ -19,8 +19,6 @@
 ''
 '' chng: dec/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -31,10 +29,10 @@ option escape
 #include once "inc\dstr.bi"
 
 #define LEX_FLAGS (LEXCHECK_NOWHITESPC or _
-				  LEXCHECK_NOSUFFIX or _
-				  LEXCHECK_NODEFINE or _
-				  LEXCHECK_NOQUOTES or _
-				  LEXCHECK_NOSYMBOL)
+				   LEXCHECK_NOSUFFIX or _
+				   LEXCHECK_NODEFINE or _
+				   LEXCHECK_NOQUOTES or _
+				   LEXCHECK_NOSYMBOL)
 
 type LEXPP_ARG
 	union
@@ -117,7 +115,7 @@ private function hLoadMacro _
 			lexNextToken( @t, LEXCHECK_NOWHITESPC or _
 							  LEXCHECK_NOSUFFIX or _
 							  LEXCHECK_NOQUOTES or _
-							  LEXCHECK_NOLOOKUP )
+							  LEXCHECK_NOPERIOD )
 
 			select case as const t.id
 			'' (
@@ -221,12 +219,12 @@ private function hLoadMacro _
 
 				'' stringize parameter?
 				case FB_DEFTOK_TYPE_PARAMSTR
-					'' !!!FIXME!!! $'s won't turn off escaping
-					text += "\""
+					'' don't escape, preserve the sequencies as-is
+					text += "$" + QUOTE
 					text += hReplace( argtb->tb( symbGetDefTokParamNum( dt ) ).text.data, _
-								  	  "\"", _
-								  	  "\"\"" )
-					text += "\""
+								  	  QUOTE, _
+								  	  QUOTE + QUOTE )
+					text += QUOTE
 
 				'' ordinary text..
 				case FB_DEFTOK_TYPE_TEX
@@ -292,7 +290,7 @@ private function hLoadDefine _
 		if( symbGetDefineCallback( s ) <> NULL ) then
 			'' call function
             if( bit( symbGetDefineFlags( s ), 0 ) = 0 ) then
-				text = "\"" + symbGetDefineCallback( s )( ) + "\""
+				text = QUOTE + symbGetDefineCallback( s )( ) + QUOTE
             else
 				text = symbGetDefineCallback( s )( )
             end if
@@ -406,7 +404,7 @@ private function hLoadMacroW _
 			lexNextToken( @t, LEXCHECK_NOWHITESPC or _
 							  LEXCHECK_NOSUFFIX or _
 							  LEXCHECK_NOQUOTES or _
-							  LEXCHECK_NOLOOKUP )
+							  LEXCHECK_NOPERIOD )
 
 			select case as const t.id
 			'' (
@@ -509,13 +507,13 @@ private function hLoadMacroW _
 
 				'' stringize parameter?
 				case FB_DEFTOK_TYPE_PARAMSTR
-					'' !!!FIXME!!! $'s won't turn off escaping
-					DWstrConcatAssign( text, "\"" )
+					'' don't escape, preserve the sequencies as-is
+					DWstrConcatAssign( text, "$" + QUOTE )
 					DWstrConcatAssign( text, _
 									   *hReplaceW( argtb->tb( symbGetDefTokParamNum( dt ) ).textw.data, _
-										 	  	   "\"", _
-										 	  	   "\"\"" ) )
-					DWstrConcatAssign( text, "\"" )
+										 	  	   QUOTE, _
+										 	  	   QUOTE + QUOTE ) )
+					DWstrConcatAssign( text, QUOTE )
 
 				'' ordinary text..
 				case FB_DEFTOK_TYPE_TEX
@@ -581,7 +579,7 @@ private function hLoadDefineW _
 		if( symbGetDefineCallback( s ) <> NULL ) then
 			'' call function
             if( bit( symbGetDefineFlags( s ), 0 ) = 0 ) then
-				DWstrAssignA( text, "\"" + symbGetDefineCallback( s )( ) + "\"" )
+				DWstrAssignA( text, QUOTE + symbGetDefineCallback( s )( ) + QUOTE )
             else
 				DWstrAssignA( text, symbGetDefineCallback( s )( ) )
             end if
@@ -744,7 +742,7 @@ private function hReadMacroText _
     		if( tokhead <> NULL ) then
 				toktail = symbAddDefineTok( toktail, FB_DEFTOK_TYPE_TEX )
     			'' just lf
-    			ZstrAssign( @toktail->text, "\n" )
+    			ZstrAssign( @toktail->text, LFCHAR )
     		end if
 
     		lexSkipToken( LEX_FLAGS )
@@ -801,6 +799,7 @@ private function hReadMacroText _
 
     		'' '#' id?
     		case FB_TK_ID
+    		    '' note: using the PP hashtb here, non-PP keyword will be ID's
     		    lexSkipToken( LEX_FLAGS )
     		    addquotes = TRUE
     		end select
@@ -821,7 +820,7 @@ private function hReadMacroText _
 
 		end select
 
-    	select case lexGetClass( LEX_FLAGS )
+    	select case as const lexGetClass( LEX_FLAGS )
     	'' string literal? preserve quotes
     	case FB_TKCLASS_STRLITERAL
 
@@ -846,8 +845,8 @@ private function hReadMacroText _
 
     		lexSkipToken( LEX_FLAGS )
 
-        '' identifier? check if it's a parameter
-    	case FB_TKCLASS_IDENTIFIER
+        '' identifier? check if it's a parameter (params can be keywords too)
+    	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
 			toktail = symbAddDefineTok( toktail, FB_DEFTOK_TYPE_TEX )
 			if( tokhead = NULL ) then
 				tokhead = toktail
@@ -979,6 +978,8 @@ function ppDefine _
 	dim as FBSYMCHAIN ptr chain_ = any
 	dim as FB_DEFTOK ptr tokhead = any
 
+	'' note: using the PP hashtb here, so any non-PP keyword won't be found
+
 	function = FALSE
 
 	'' don't allow explicit namespaces
@@ -1032,8 +1033,8 @@ function ppDefine _
 		if( lexGetToken( LEXCHECK_NODEFINE or LEXCHECK_NOSYMBOL ) <> CHAR_RPRNT ) then
 			lastparam = NULL
 			do
-		    	select case lexGetClass( )
-		    	case FB_TKCLASS_KEYWORD, FB_TKCLASS_IDENTIFIER
+		    	select case as const lexGetClass( )
+		    	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
                 	lastparam = symbAddDefineParam( lastparam, lexGetText( ) )
 
 		    	case else

@@ -20,8 +20,6 @@
 ''
 ''
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -39,21 +37,23 @@ end type
 
 	dim shared warningMsgs( 1 to FB_WARNINGMSGS-1 ) as FBWARNING = _
 	{ _
-		( 0, @"Passing scalar as pointer" ), _
-		( 0, @"Passing pointer to scalar" ), _
-		( 0, @"Passing different pointer types" ), _
-		( 0, @"Suspicious pointer assignment" ), _
+		( 1, @"Passing scalar as pointer" ), _
+		( 1, @"Passing pointer to scalar" ), _
+		( 1, @"Passing different pointer types" ), _
+		( 1, @"Suspicious pointer assignment" ), _
 		( 0, @"Implicit conversion" ), _
-		( 0, @"Cannot export symbol without -export option" ), _
-		( 0, @"Identifier's name too big, truncated" ), _
-		( 0, @"Literal number too big, truncated" ), _
-		( 0, @"Literal string too big, truncated" ), _
+		( 1, @"Cannot export symbol without -export option" ), _
+		( 1, @"Identifier's name too big, truncated" ), _
+		( 1, @"Literal number too big, truncated" ), _
+		( 1, @"Literal string too big, truncated" ), _
 		( 0, @"UDT with pointer or dynamic string fields" ), _
 		( 0, @"UDT with dynamic string fields" ), _
 		( 0, @"Implicit variable allocation" ), _
 		( 0, @"Missing closing quote in literal string" ), _
 		( 0, @"Function result was not explicitly set" ), _
-		( 0, @"Branch crossing local variable definition" ) _
+		( 0, @"Branch crossing local variable definition" ), _
+		( 0, @"No explicit BYREF or BYVAL" ), _
+		( 0, @"Possible escape sequence found in" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring ptr => _
@@ -175,11 +175,26 @@ end type
 		@"Expected END EXTERN", _
 		@"Expected 'END SUB'", _
 		@"Expected 'END FUNCTION'", _
+		@"Expected 'END CONSTRUCTOR'", _
+		@"Expected 'END DESTRUCTOR'", _
+		@"Expected 'END OPERATOR'", _
 		@"Declaration outside the original namespace", _
-		@"No end of multi-line comment, expected \"'/\"", _
+		@("No end of multi-line comment, expected " + QUOTE + "'/" + QUOTE), _
 		@"Too many errors, exiting", _
 		@"Expected 'ENDMACRO'", _
-		@"EXTERN or COMMON variables cannot be initialized" _
+		@"EXTERN or COMMON variables cannot be initialized", _
+		@"At least one parameter must be an user-defined type", _
+		@"Parameter or result must be an user-defined type", _
+		@"Both parameters can't be of the same type", _
+		@"Parameter and result can't be of the same type", _
+		@"Invalid result type for this operator", _
+		@"Vararg parameters are not allowed in overloaded functions", _
+		@"Illegal outside an OPERATOR function", _
+		@"Parameter cannot be optional", _
+		@"Only valid in -lang", _
+		@"Default types or suffixes are only valid in -lang", _
+		@"Suffixes are only valid in -lang", _
+		@"Implicit variables are only valid in -lang" _
 	}
 
 
@@ -225,6 +240,7 @@ private sub hPrintErrMsg _
 	( _
 		byval errnum as integer, _
 		byval msgex as zstring ptr, _
+		byval options as FB_ERRMSGOPT, _
 		byval linenum as integer, _
 		byval showerror as integer = TRUE _
 	) static
@@ -250,17 +266,43 @@ private sub hPrintErrMsg _
 
 	if( errnum >= 0 ) then
 		print " "; str( errnum ); ": "; *msg;
+
+		if( showerror ) then
+			showerror = (linenum > 0)
+		end if
+
 		if( len( *msgex ) > 0 ) then
-			print ", "; *msgex
+			if( (options and FB_ERRMSGOPT_ADDCOMMA) <> 0 ) then
+				print ", ";
+			elseif( (options and FB_ERRMSGOPT_ADDCOLON) <> 0 ) then
+				print ": ";
+			else
+				print " ";
+			end if
+
+			if( (options and FB_ERRMSGOPT_ADDQUOTES) <> 0 ) then
+				print QUOTE;
+			end if
+
+			print *msgex;
+
+			if( (options and FB_ERRMSGOPT_ADDQUOTES) <> 0 ) then
+				print QUOTE;
+			end if
+		end if
+
+		if( showerror ) then
+			if( fbLangOptIsSet( FB_LANG_OPT_SINGERRLINE ) ) then
+				print ": "; lexPeekCurrentLine( token_pos )
+			else
+				print
+				print lexPeekCurrentLine( token_pos )
+				print token_pos
+			end if
 		else
 			print
 		end if
 
-		if( ( linenum > 0 ) and ( showerror ) ) then
-			print
-			print lexPeekCurrentLine( token_pos )
-			print token_pos
-		end if
 	else
 		print ": "; *msgex
 	end if
@@ -272,7 +314,8 @@ function errReportEx _
 	( _
 		byval errnum as integer, _
 		byval msgex as zstring ptr, _
-		byval linenum as integer = 0 _
+		byval linenum as integer, _
+		byval options as FB_ERRMSGOPT _
 	) as integer
 
     '' too many errors?
@@ -295,16 +338,51 @@ function errReportEx _
     	errctx.laststmt = env.stmtcnt
 	end if
 
-    hPrintErrMsg( errnum, msgex, linenum, env.clopt.showerror )
+    hPrintErrMsg( errnum, msgex, options, linenum, env.clopt.showerror )
 
 	errctx.cnt += 1
 
     if( errctx.cnt >= env.clopt.maxerrors ) then
-		hPrintErrMsg( FB_ERRMSG_TOOMANYERRORS, NULL, linenum, FALSE )
+		hPrintErrMsg( FB_ERRMSG_TOOMANYERRORS, NULL, 0, linenum, FALSE )
 		function = FALSE
 	else
 		function = TRUE
 	end if
+
+end function
+
+private function hAddToken _
+	( _
+		byval isbefore as integer, _
+		byval addcomma as integer _
+	) as string static
+
+	dim as string res, token
+
+	res = ""
+
+	token = *lexGetText( )
+	if( len( token ) > 0 ) then
+		'' don't print control chars
+		select case lexGetToken( )
+		case is <= CHAR_SPACE, FB_TK_EOL, FB_TK_EOF
+
+		case else
+			if( addcomma ) then
+				res += ", "
+			end if
+
+			if( isbefore ) then
+				res += "before: '"
+			else
+				res += "found: '"
+			end if
+
+			res += token + "'"
+		end select
+	end if
+
+	function = res
 
 end function
 
@@ -315,28 +393,7 @@ function errReport _
 		byval isbefore as integer = FALSE _
 	) as integer
 
-    dim as string token, msgex
-
-	msgex = ""
-
-	token = *lexGetText( )
-	if( len( token ) > 0 ) then
-		'' don't print control chars
-		select case lexGetToken( )
-		case is <= CHAR_SPACE, FB_TK_EOL, FB_TK_EOF
-
-		case else
-			if( isbefore ) then
-				msgex = "before: '"
-			else
-				msgex = "found: '"
-			end if
-
-			msgex += token + "'"
-		end select
-	end if
-
-	function = errReportEx( errnum, msgex )
+	function = errReportEx( errnum, hAddToken( isbefore, FALSE ) )
 
 end function
 
@@ -345,7 +402,8 @@ sub errReportWarnEx _
 	( _
 		byval msgnum as integer, _
 		byval msgex as zstring ptr, _
-		byval linenum as integer _
+		byval linenum as integer, _
+		byval options as FB_ERRMSGOPT _
 	)
 
 	if( (msgnum < 1) or (msgnum >= FB_WARNINGMSGS) ) then
@@ -362,14 +420,29 @@ sub errReportWarnEx _
 		print "("; str( linenum ); ")";
 	end if
 
-	print " : warning level"; warningMsgs(msgnum).level;
-	print ": "; *warningMsgs(msgnum).text;
+	print " : warning: "; *warningMsgs(msgnum).text;
 
 	if( msgex <> NULL ) then
-		print ", "; *msgex
-	else
-		print
+		if( (options and FB_ERRMSGOPT_ADDCOMMA) <> 0 ) then
+			print ", ";
+		elseif( (options and FB_ERRMSGOPT_ADDCOLON) <> 0 ) then
+			print ": ";
+		else
+			print " ";
+		end if
+
+		if( (options and FB_ERRMSGOPT_ADDQUOTES) <> 0 ) then
+			print QUOTE;
+		end if
+
+		print *msgex;
+
+		if( (options and FB_ERRMSGOPT_ADDQUOTES) <> 0 ) then
+			print QUOTE;
+		end if
 	end if
+
+	print
 
 end sub
 
@@ -377,12 +450,40 @@ end sub
 sub errReportWarn _
 	( _
 		byval msgnum as integer, _
-		byval msgex as zstring ptr _
+		byval msgex as zstring ptr, _
+		byval options as FB_ERRMSGOPT _
 	)
 
-	errReportWarnEx( msgnum, msgex, lexLineNum( ) )
+	errReportWarnEx( msgnum, msgex, lexLineNum( ), options )
 
 end sub
+
+'':::::
+function errReportNotAllowed _
+	( _
+		byval opt as FB_LANG_OPT, _
+		byval errnum as integer _
+	) as integer
+
+	dim as string msgex = ""
+	dim as integer i, langs
+
+	langs = 0
+	for i = 0 to FB_LANGS-1
+		if( (fbGetLangOptions( i ) and opt) <> 0 ) then
+			if( langs > 0 ) then
+				msgex += " or "
+			end if
+			msgex += fbGetLangName( i )
+			langs += 1
+		end if
+	next
+
+	msgex += hAddToken( FALSE, langs > 0 )
+
+	function = errReportEx( errnum, msgex, , FB_ERRMSGOPT_NONE )
+
+end function
 
 '':::::
 private function hReportMakeDesc _

@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -81,10 +79,13 @@ function cEnumConstant _
 	lexSkipToken( )
 
 	'' '.'
-	lexSkipToken( LEXCHECK_NOLOOKUP )
+	lexSkipToken( LEXCHECK_NOPERIOD )
 
 	'' ID
-	if( lexGetToken( ) <> FB_TK_ID ) then
+    select case lexGetClass( )
+    case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
+
+    case else
 		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 			exit function
 		else
@@ -92,7 +93,7 @@ function cEnumConstant _
 			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
 			return TRUE
 		end if
-	end if
+	end select
 
 	chain_ = symbLookupAt( symbGetNamespace( parent ), lexGetText( ), FALSE )
 
@@ -148,8 +149,7 @@ end function
 ''
 function cStrLiteral _
 	( _
-		byref expr as ASTNODE ptr, _
-		byval checkescape as integer _
+		byref expr as ASTNODE ptr _
 	) as integer static
 
     dim as integer dtype
@@ -165,11 +165,25 @@ function cStrLiteral _
 		lgt = lexGetTextLen( )
 
   		if( dtype <> FB_DATATYPE_WCHAR ) then
-			'' opt escape on? convert to internal format..
-			if( checkescape ) then
+			'' escaped? convert to internal format..
+			if( lexGetToken( ) = FB_TK_STRLIT_ESC ) then
 				zs = hReEscape( lexGetText( ), lgt, isunicode )
 			else
 				zs = lexGetText( )
+
+				'' any '\'?
+				if( lexGetHasSlash( ) ) then
+					if( fbPdCheckIsSet( FB_PDCHECK_ESCSEQ ) ) then
+						if( lexGetToken( ) <> FB_TK_STRLIT_NOESC ) then
+							if( hHasEscape( zs ) ) then
+								errReportWarn( FB_WARNINGMSG_POSSIBLEESCSEQ, _
+										   	   zs, _
+										   	   FB_ERRMSGOPT_ADDCOLON or FB_ERRMSGOPT_ADDQUOTES )
+							end if
+						end if
+					end if
+				end if
+
 				isunicode = FALSE
 			end if
 
@@ -182,10 +196,22 @@ function cStrLiteral _
 			end if
 
   		else
-			if( checkescape ) then
+			'' escaped? convert to internal format..
+			if( lexGetToken( ) = FB_TK_STRLIT_ESC ) then
 				ws = hReEscapeW( lexGetTextW( ), lgt )
 			else
 				ws = lexGetTextW( )
+
+				'' any '\'?
+				if( lexGetHasSlash( ) ) then
+					if( fbPdCheckIsSet( FB_PDCHECK_ESCSEQ ) ) then
+						if( lexGetToken( ) <> FB_TK_STRLIT_NOESC ) then
+							if( hHasEscapeW( ws ) ) then
+								errReportWarn( FB_WARNINGMSG_POSSIBLEESCSEQ )
+							end if
+						end if
+					end if
+				end if
 			end if
 
 			sym = symbAllocWstrConst( ws, lgt )
@@ -199,24 +225,10 @@ function cStrLiteral _
 
 		lexSkipToken( )
 
-  		'' another literal string? concat..
-  		if( lexGetClass( ) = FB_TKCLASS_STRLITERAL ) then
-			checkescape = env.opt.escapestr
-
-  		else
-  			'' not a '$'?
-  			if( lexGetToken( ) <> CHAR_DOLAR ) then
-  				exit do
-  			end if
-
-  			'' not a literal string?
-  			if( lexGetLookAheadClass( 1 ) <> FB_TKCLASS_STRLITERAL ) then
-  				exit do
-  			end if
-
-  			lexSkipToken( )
-  			checkescape = FALSE
-  		end if
+  		'' not another literal string?
+  		if( lexGetClass( ) <> FB_TKCLASS_STRLITERAL ) then
+			exit do
+		end if
 	loop
 
 	function = TRUE
@@ -276,17 +288,8 @@ function cLiteral _
 
   	'' (STR_LITERAL STR_LITERAL*)?
   	case FB_TKCLASS_STRLITERAL
-        return cStrLiteral( litexpr, env.opt.escapestr )
+        return cStrLiteral( litexpr )
 
-  	case else
-  		'' '$'?
-  		if( lexGetToken( ) = CHAR_DOLAR ) then
-  			'' literal string?
-  			if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_STRLITERAL ) then
-  				lexSkipToken( )
-  				return cStrLiteral( litexpr, FALSE )
-  			end if
-  		end if
   	end select
 
 end function

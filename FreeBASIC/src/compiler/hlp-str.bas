@@ -20,8 +20,6 @@
 ''
 ''
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -837,6 +835,92 @@ private function hRemapChar _
 
 end function
 
+'':::::
+function hHasEscape _
+	( _
+		byval text as zstring ptr _
+	) as integer static
+
+    dim as uinteger char
+    dim as integer lgt
+
+	lgt = len( *text )
+    do while( lgt > 0 )
+		'' '\'?
+		if( *text = CHAR_RSLASH ) then
+			text += 1
+
+			char = *text
+			select case as const char
+			case asc( "r" ), _
+				 asc( "l" ), _
+				 asc( "n" ), _
+				 asc( "t" ), _
+				 asc( "b" ), _
+				 asc( "a" ), _
+				 asc( "f" ), _
+				 asc( "v" ), _
+				 CHAR_QUOTE, _
+				 CHAR_0 to CHAR_9, _
+				 CHAR_AMP, _
+				 CHAR_ULOW, CHAR_UUPP, _
+				 CHAR_RSLASH
+
+				return TRUE
+			end select
+		end if
+
+		text += 1
+		lgt -= 1
+	loop
+
+	function = FALSE
+
+end function
+
+'':::::
+function hHasEscapeW _
+	( _
+		byval text as wstring ptr _
+	) as integer static
+
+    dim as uinteger char
+    dim as integer lgt
+
+	lgt = len( *text )
+    do while( lgt > 0 )
+		'' '\'?
+		if( *text = CHAR_RSLASH ) then
+			text += 1
+
+			char = *text
+			select case as const char
+			case asc( "r" ), _
+				 asc( "l" ), _
+				 asc( "n" ), _
+				 asc( "t" ), _
+				 asc( "b" ), _
+				 asc( "a" ), _
+				 asc( "f" ), _
+				 asc( "v" ), _
+				 CHAR_QUOTE, _
+				 CHAR_0 to CHAR_9, _
+				 CHAR_AMP, _
+				 CHAR_ULOW, CHAR_UUPP, _
+				 CHAR_RSLASH
+
+				return TRUE
+			end select
+		end if
+
+		text += 1
+		lgt -= 1
+	loop
+
+	function = FALSE
+
+end function
+
 ''::::
 private function hU16ToWchar _
 	( _
@@ -1113,7 +1197,7 @@ function hGetWstrNull( ) as zstring ptr
     	isset = TRUE
     	nullseq = ""
     	for i = 1 to symbGetDataSize( FB_DATATYPE_WCHAR )
-    		nullseq += "\\0"
+    		nullseq += RSLASH + "0"
     	next
 	end if
 

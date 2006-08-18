@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -36,90 +34,6 @@ declare function cLogOrExpression			( _
 declare function cLogAndExpression			( _
 												byref logexpr as ASTNODE ptr _
 											) as integer
-
-'':::::
-function cUpdPointer _
-	( _
-		byval op as integer, _
-		byval p as ASTNODE ptr, _
-		byval e as ASTNODE ptr _
-	) as ASTNODE ptr static
-
-    dim as integer edtype
-    dim as integer lgt
-
-    function = NULL
-
-    edtype = astGetDataType( e )
-
-    '' not integer class?
-    if( symbGetDataClass( edtype ) <> FB_DATACLASS_INTEGER ) then
-    	exit function
-
-    '' CHAR and WCHAR literals are also from the INTEGER class (to allow *p = 0 etc)
-    else
-    	select case edtype
-    	case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    		exit function
-    	end select
-    end if
-
-    '' calc len( *p )
-    lgt = symbCalcLen( astGetDataType( p ) - FB_DATATYPE_POINTER, astGetSubType( p ) )
-
-	'' incomplete type?
-	if( lgt = 0 ) then
-		'' unless it's a void ptr.. pretend it's a byte ptr
-		if( astGetDataType( p ) <> FB_DATATYPE_POINTER + FB_DATATYPE_VOID ) then
-			exit function
-		end if
-		lgt = 1
-	end if
-
-    '' another pointer?
-    if( edtype >= FB_DATATYPE_POINTER ) then
-    	'' only allow if it's a subtraction
-    	if( op = AST_OP_SUB ) then
-    		'' types can't be different..
-    		if( (edtype <> astGetDataType( p )) or _
-    			(astGetSubType( e ) <> astGetSubType( p )) ) then
-    			exit function
-    		end if
-
-    		'' convert to uint or BOP will complain..
-    		p = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, p )
-    		e = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, e )
-
- 			'' subtract..
- 			e = astNewBOP( AST_OP_SUB, p, e )
-
- 			'' and divide by length
- 			function = astNewBOP( AST_OP_INTDIV, e, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
-    	end if
-
-    	exit function
-    end if
-
-    '' not integer? convert
-    if( edtype <> FB_DATATYPE_INTEGER ) then
-    	e = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, e )
-    end if
-
-    '' any op but +|-?
-    select case op
-    case AST_OP_ADD, AST_OP_SUB
-    	'' multiple by length
-		e = astNewBOP( AST_OP_MUL, e, astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
-
-		'' do op
-		function = astNewBOP( op, p, e )
-
-    case else
-    	'' allow AND and OR??
-    	exit function
-    end select
-
-end function
 
 '':::::
 ''Expression      =   LogExpression .
@@ -511,16 +425,11 @@ function cAddExpression _
     		end if
     	end if
 
-    	'' check pointers
-    	if( astGetDataType( addexpr ) >= FB_DATATYPE_POINTER ) then
-    		addexpr = cUpdPointer( op, addexpr, expr )
-
-    	elseif( astGetDataType( expr ) >= FB_DATATYPE_POINTER ) then
-    		addexpr = cUpdPointer( op, expr, addexpr )
-
-    	else
-    		addexpr = astNewBOP( op, addexpr, expr )
-    	end if
+    	addexpr = astNewBOP( op, _
+    						 addexpr, _
+    						 expr, _
+    						 NULL, _
+    						 AST_OPOPT_DEFAULT or AST_OPOPT_DOPTRARITH )
 
     	if( addexpr = NULL ) Then
     		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then

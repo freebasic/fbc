@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -41,35 +39,46 @@ option escape
 ''				  |   DataStmt
 ''				  |   etc .
 ''
-function cQuirkStmt as integer
+function cQuirkStmt _
+	( _
+		byval tk as FB_TOKEN = INVALID _
+	) as integer
+
 	dim as integer res = any
 
 	function = FALSE
 
-	if( lexGetClass( ) <> FB_TKCLASS_KEYWORD ) then
-		if( lexGetToken( ) = CHAR_QUESTION ) then	'' PRINT as '?', can't be a keyword..
-			CHECK_CODEMASK( )
-			function = cPrintStmt( )
-		end if
-		exit function
+	if( tk = INVALID ) then
+		tk = lexGetToken( )
+
+		select case lexGetClass( )
+		case FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
+
+		case else
+			if( tk = CHAR_QUESTION ) then	'' PRINT as '?', can't be a keyword..
+				CHECK_CODEMASK( )
+				function = cPrintStmt( tk )
+			end if
+			exit function
+		end select
 	end if
 
-	select case as const lexGetToken( )
+	select case as const tk
 	case FB_TK_GOTO, FB_TK_GOSUB, FB_TK_RETURN, FB_TK_RESUME
 		CHECK_CODEMASK( )
-		res = cGotoStmt( )
+		res = cGotoStmt( tk )
 
 	case FB_TK_PRINT, FB_TK_LPRINT
 		CHECK_CODEMASK( )
-		res = cPrintStmt( )
+		res = cPrintStmt( tk )
 
 	case FB_TK_RESTORE, FB_TK_READ, FB_TK_DATA
 		CHECK_CODEMASK( )
-		res = cDataStmt( )
+		res = cDataStmt( tk )
 
 	case FB_TK_ERASE, FB_TK_SWAP
 		CHECK_CODEMASK( )
-		res = cArrayStmt( )
+		res = cArrayStmt( tk )
 
 	case FB_TK_LINE
 		CHECK_CODEMASK( )
@@ -86,7 +95,7 @@ function cQuirkStmt as integer
 	case FB_TK_OPEN, FB_TK_CLOSE, FB_TK_SEEK, FB_TK_PUT, FB_TK_GET, _
 		 FB_TK_LOCK, FB_TK_UNLOCK, FB_TK_NAME
 		CHECK_CODEMASK( )
-		res = cFileStmt( )
+		res = cFileStmt( tk )
 
 	case FB_TK_ON
 		CHECK_CODEMASK( )
@@ -98,7 +107,7 @@ function cQuirkStmt as integer
 
 	case FB_TK_ERROR, FB_TK_ERR
 		CHECK_CODEMASK( )
-		res = cErrorStmt( )
+		res = cErrorStmt( tk )
 
 	case FB_TK_VIEW
 		CHECK_CODEMASK( )
@@ -122,7 +131,7 @@ function cQuirkStmt as integer
 
 	if( res = FALSE ) then
 		if( errGetLast( ) = FB_ERRMSG_OK ) then
-			res = cGfxStmt( )
+			res = cGfxStmt( tk )
 		end if
 	end if
 
@@ -135,7 +144,7 @@ end function
 ''
 function cQuirkFunction _
 	( _
-		byval sym as FBSYMBOL ptr, _
+		byval tk as FB_TOKEN, _
 		byref funcexpr as ASTNODE ptr _
 	) as integer
 
@@ -145,26 +154,26 @@ function cQuirkFunction _
 
 	res = FALSE
 
-	select case as const lexGetToken( )
+	select case as const tk
 	case FB_TK_STR, FB_TK_WSTR, FB_TK_MID, FB_TK_STRING, FB_TK_WSTRING, _
 		 FB_TK_CHR, FB_TK_WCHR, FB_TK_ASC, _
 		 FB_TK_INSTR, FB_TK_TRIM, FB_TK_RTRIM, FB_TK_LTRIM
-		res = cStringFunct( funcexpr )
+		res = cStringFunct( tk, funcexpr )
 
 	case FB_TK_ABS, FB_TK_SGN, FB_TK_FIX, FB_TK_LEN, FB_TK_SIZEOF, _
 		 FB_TK_SIN, FB_TK_ASIN, FB_TK_COS, FB_TK_ACOS, FB_TK_TAN, FB_TK_ATN, _
 		 FB_TK_SQR, FB_TK_LOG, FB_TK_ATAN2, FB_TK_INT
-		res = cMathFunct( funcexpr )
+		res = cMathFunct( tk, funcexpr )
 
 	case FB_TK_PEEK
 		res = cPeekFunct( funcexpr )
 
 	case FB_TK_LBOUND, FB_TK_UBOUND
-		res = cArrayFunct( funcexpr )
+		res = cArrayFunct( tk, funcexpr )
 
 	case FB_TK_SEEK, FB_TK_INPUT, FB_TK_OPEN, FB_TK_CLOSE, _
 		 FB_TK_GET, FB_TK_PUT, FB_TK_NAME
-		res = cFileFunct( funcexpr )
+		res = cFileFunct( tk, funcexpr )
 
 	case FB_TK_ERR
 		res = cErrorFunct( funcexpr )
@@ -179,7 +188,7 @@ function cQuirkFunction _
 		 FB_TK_CUBYTE, FB_TK_CUSHORT, FB_TK_CUINT, FB_TK_CULNGINT, _
 		 FB_TK_CSNG, FB_TK_CDBL, _
          FB_TK_CSIGN, FB_TK_CUNSG
-		res = cTypeConvExpr( funcexpr )
+		res = cTypeConvExpr( tk, funcexpr )
 
 	case FB_TK_VIEW
 		res = cViewStmt( TRUE, funcexpr )
@@ -194,7 +203,7 @@ function cQuirkFunction _
 
 	if( res = FALSE ) then
 		if( errGetLast( ) = FB_ERRMSG_OK ) then
-			res = cGfxFunct( funcexpr )
+			res = cGfxFunct( tk, funcexpr )
 		end if
 	end if
 

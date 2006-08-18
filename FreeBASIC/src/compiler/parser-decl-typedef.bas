@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -84,30 +82,33 @@ function cTypedefDecl _
     		end if
 
     	else
-    		select case lexGetClass( )
-    		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD
-				'' don't allow explicit namespaces
-				ns = cNamespace( )
-    			if( ns <> NULL ) then
-					if( ns <> symbGetCurrentNamespc( ) ) then
-						if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
-							exit function
-						end if
-    				end if
-    			else
-    				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-    					exit function
-    				end if
+			'' don't allow explicit namespaces
+			ns = cNamespace( )
+    		if( ns <> NULL ) then
+				if( ns <> symbGetCurrentNamespc( ) ) then
+					if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
+						exit function
+					end if
     			end if
+    		else
+    			if( errGetLast( ) <> FB_ERRMSG_OK ) then
+    				exit function
+    			end if
+    		end if
 
-    			'' if inside a namespace, symbols can't contain periods (.)'s
-    			if( symbIsGlobalNamespc( ) = FALSE ) then
-    				if( lexGetPeriodPos( ) > 0 ) then
-    					if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-    						exit function
-    					end if
-    				end if
-    			end if
+    		select case as const lexGetClass( )
+    		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
+
+				if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
+					'' if inside a namespace, symbols can't contain periods (.)'s
+					if( symbIsGlobalNamespc( ) = FALSE ) then
+  						if( lexGetPeriodPos( ) > 0 ) then
+  							if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+	  							exit function
+							end if
+						end if
+					end if
+				end if
 
 				id = *lexGetText( )
 				lexSkipToken( )

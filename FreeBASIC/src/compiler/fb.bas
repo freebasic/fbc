@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -33,6 +31,11 @@ option escape
 #include once "inc\emit.bi"
 #include once "inc\emitdbg.bi"
 
+type FB_LANG_INFO
+	name		as zstring ptr
+	options		as FB_LANG_OPT
+end type
+
 declare sub		 parserInit				( )
 
 declare sub		 parserEnd				( )
@@ -43,9 +46,65 @@ declare sub		 parserEnd				( )
 	dim shared incpathTB( ) as zstring * FB_MAXPATHLEN+1
 	dim shared pathTB(0 to FB_MAXPATHS-1) as zstring * FB_MAXPATHLEN+1
 
+	dim shared as FB_LANG_INFO langTb(0 to FB_LANGS-1) = _
+	{ _
+		( _
+			@"fb", _
+			FB_LANG_OPT_MT or _
+			FB_LANG_OPT_SCOPE or _
+			FB_LANG_OPT_NAMESPC or _
+			FB_LANG_OPT_EXTERN or _
+			FB_LANG_OPT_FUNCOVL or _
+			FB_LANG_OPT_OPEROVL or _
+			FB_LANG_OPT_CLASS or _
+			FB_LANG_OPT_INITIALIZER or _
+			FB_LANG_OPT_SINGERRLINE or _
+			FB_LANG_OPT_QUIRKFUNC _
+		) _
+		, _
+		( _
+			@"deprecated", _
+			FB_LANG_OPT_MT or _
+			FB_LANG_OPT_SCOPE or _
+			FB_LANG_OPT_NAMESPC or _
+			FB_LANG_OPT_EXTERN or _
+			FB_LANG_OPT_FUNCOVL or _
+			FB_LANG_OPT_INITIALIZER or _
+			FB_LANG_OPT_CALL or _
+			FB_LANG_OPT_LET or _
+			FB_LANG_OPT_PERIODS or _
+			FB_LANG_OPT_NUMLABEL or _
+            FB_LANG_OPT_IMPLICIT or _
+            FB_LANG_OPT_DEFTYPE or _
+            FB_LANG_OPT_SUFFIX or _
+            FB_LANG_OPT_METACMD or _
+    		FB_LANG_OPT_QBOPT or _
+    		FB_LANG_OPT_DEPRECTOPT or _
+    		FB_LANG_OPT_ONERROR or _
+    		FB_LANG_OPT_QUIRKFUNC _
+		) _
+		, _
+		( _
+			@"qb", _
+			FB_LANG_OPT_GOSUB or _
+			FB_LANG_OPT_CALL or _
+			FB_LANG_OPT_LET or _
+			FB_LANG_OPT_PERIODS or _
+			FB_LANG_OPT_NUMLABEL or _
+            FB_LANG_OPT_IMPLICIT or _
+            FB_LANG_OPT_DEFTYPE or _
+            FB_LANG_OPT_SUFFIX or _
+            FB_LANG_OPT_METACMD or _
+    		FB_LANG_OPT_QBOPT or _
+    		FB_LANG_OPT_ONERROR or _
+    		FB_LANG_OPT_SHAREDLOCAL or _
+    		FB_LANG_OPT_QUIRKFUNC _
+		) _
+	}
+
 '' const
 #if defined(TARGET_WIN32) or defined(TARGET_DOS) or defined(TARGET_XBOX)
-	const PATHDIV = "\\"
+	const PATHDIV = RSLASH
 #else
 	const PATHDIV = "/"
 #endif
@@ -65,7 +124,7 @@ sub fbAddIncPath _
         ' under Win32 and DOS using DJGPP. However, the (back)slashes
         ' will always be converted to the OS' preferred type of slash.
 		select case right( *path, 1 )
-        case "/", "\\"
+        case "/", RSLASH
         case else
 			*path += PATHDIV
 		end select
@@ -129,6 +188,57 @@ private function hAddIncFile _
 end function
 
 '':::::
+private sub hSetLangOptions _
+	( _
+		byval lang as FB_LANG _
+	)
+
+	env.langopt = langTb(lang).options
+
+end sub
+
+'':::::
+function fbGetLangOptions _
+	( _
+		byval lang as FB_LANG _
+	) as FB_LANG_OPT
+
+	function = langTb(lang).options
+
+end function
+
+'':::::
+function fbGetLangName _
+	( _
+		byval lang as FB_LANG _
+	) as string
+
+	function = *langTb(lang).name
+
+end function
+
+'':::::
+private sub hSetLangCtx _
+	( _
+		byval lang as FB_LANG _
+	)
+
+	if( lang = FB_LANG_FB ) then
+		env.opt.parammode = FB_PARAMMODE_BYVAL
+		env.opt.explicit = TRUE
+	else
+		env.opt.parammode = FB_PARAMMODE_BYREF
+		env.opt.explicit = FALSE
+	end if
+
+	env.opt.procpublic		= TRUE
+	env.opt.escapestr		= FALSE
+	env.opt.dynamic			= FALSE
+	env.opt.base = 0
+
+end sub
+
+'':::::
 private sub hSetCtx( )
 
 	env.scope				= FB_MAINSCOPE
@@ -141,12 +251,7 @@ private sub hSetCtx( )
 
 	env.main.proc			= NULL
 
-	env.opt.base			= 0
-	env.opt.parammode		= FB_PARAMMODE_BYREF
-	env.opt.explicit		= FALSE
-	env.opt.procpublic		= TRUE
-	env.opt.escapestr		= FALSE
-	env.opt.dynamic			= FALSE
+	hSetLangCtx( env.clopt.lang )
 
 	env.stmtcnt				= 0
 
@@ -326,6 +431,10 @@ sub fbSetDefaultOptions( )
 	env.clopt.msbitfields	= FALSE
 	env.clopt.maxerrors		= FB_DEFAULT_MAXERRORS
 	env.clopt.showsusperrors= FALSE
+	env.clopt.lang			= FB_LANG_FB
+	env.clopt.pdcheckopt	= FB_PDCHECK_NONE
+
+	hSetLangOptions( env.clopt.lang )
 
 end sub
 
@@ -390,6 +499,13 @@ sub fbSetOption _
 
 	case FB_COMPOPT_SHOWSUSPERRORS
 		env.clopt.showsusperrors = value
+
+	case FB_COMPOPT_LANG
+		env.clopt.lang = value
+		hSetLangOptions( value )
+
+	case FB_COMPOPT_PEDANTICCHK
+		env.clopt.pdcheckopt = value
 	end select
 
 end sub
@@ -455,6 +571,12 @@ function fbGetOption _
 	case FB_COMPOPT_SHOWSUSPERRORS
 		function = env.clopt.showsusperrors
 
+	case FB_COMPOPT_LANG
+		function = env.clopt.lang
+
+	case FB_COMPOPT_PEDANTICCHK
+		function = env.clopt.pdcheckopt
+
 	case else
 		function = FALSE
 	end select
@@ -469,29 +591,29 @@ sub fbSetPaths _
 
 	select case as const target
 	case FB_COMPTARGET_WIN32
-		pathTB(FB_PATH_BIN) = "\\bin\\win32\\"
-		pathTB(FB_PATH_INC) = "\\inc\\"
-		pathTB(FB_PATH_LIB) = "\\lib\\win32"
+		pathTB(FB_PATH_BIN) = FB_BINPATH + "win32" + RSLASH
+		pathTB(FB_PATH_INC) = FB_INCPATH
+		pathTB(FB_PATH_LIB) = FB_LIBPATH + "win32"
 
 	case FB_COMPTARGET_CYGWIN
-		pathTB(FB_PATH_BIN) = "\\bin\\cygwin\\"
-		pathTB(FB_PATH_INC) = "\\inc\\"
-		pathTB(FB_PATH_LIB) = "\\lib\\cygwin"
+		pathTB(FB_PATH_BIN) = FB_BINPATH + "cygwin" + RSLASH
+		pathTB(FB_PATH_INC) = FB_INCPATH
+		pathTB(FB_PATH_LIB) = FB_LIBPATH + "cygwin"
 
 	case FB_COMPTARGET_DOS
-		pathTB(FB_PATH_BIN)	= "\\bin\\dos\\"
-		pathTB(FB_PATH_INC)	= "\\inc\\"
-		pathTB(FB_PATH_LIB)	= "\\lib\\dos"
+		pathTB(FB_PATH_BIN)	= FB_BINPATH + "dos" + RSLASH
+		pathTB(FB_PATH_INC)	= FB_INCPATH
+		pathTB(FB_PATH_LIB)	= FB_LIBPATH + "dos"
 
 	case FB_COMPTARGET_LINUX
-		pathTB(FB_PATH_BIN) = "\\bin\\linux\\"
-		pathTB(FB_PATH_INC) = "\\inc\\"
-		pathTB(FB_PATH_LIB) = "\\lib\\linux"
+		pathTB(FB_PATH_BIN) = FB_BINPATH + "linux" + RSLASH
+		pathTB(FB_PATH_INC) = FB_INCPATH
+		pathTB(FB_PATH_LIB) = FB_LIBPATH + "linux"
 
 	case FB_COMPTARGET_XBOX
-		pathTB(FB_PATH_BIN) = "\\bin\\win32\\"
-		pathTB(FB_PATH_INC) = "\\inc\\"
-		pathTB(FB_PATH_LIB) = "\\lib\\xbox"
+		pathTB(FB_PATH_BIN) = FB_BINPATH + "win32" + RSLASH
+		pathTB(FB_PATH_INC) = FB_INCPATH
+		pathTB(FB_PATH_LIB) = FB_LIBPATH + "xbox"
 	end select
 
 #ifdef TARGET_LINUX
@@ -746,7 +868,7 @@ function fbIncludeFile _
 
 			'' not found?
 			if( i < 0 ) then
-				errReportEx( FB_ERRMSG_FILENOTFOUND, "\"" + *filename + "\"" )
+				errReportEx( FB_ERRMSG_FILENOTFOUND, QUOTE + *filename + QUOTE )
 				return errFatal( )
 			end if
 
@@ -779,7 +901,7 @@ function fbIncludeFile _
 	''
 	env.inf.num = freefile
 	if( open( incfile, for binary, access read, as #env.inf.num ) <> 0 ) then
-		errReportEx( FB_ERRMSG_FILENOTFOUND, "\"" + *filename + "\"" )
+		errReportEx( FB_ERRMSG_FILENOTFOUND, QUOTE + *filename + QUOTE )
 		return errFatal( )
 	end if
 

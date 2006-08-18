@@ -20,8 +20,6 @@
 ''
 ''
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"

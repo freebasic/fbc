@@ -30,8 +30,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -41,12 +39,6 @@ option escape
 #include once "inc\flist.bi"
 #include once "inc\ir.bi"
 
-
-type IR_OPCODE
-	typ			as integer
-	cummutative as integer
-	name		as zstring * 3+1
-end type
 
 type IR_CTX
 	tacTB			as TFLIST
@@ -125,75 +117,6 @@ declare sub 		irDump				( byval op as integer, _
 	dim shared ir as IR_CTX
 
 	dim shared regTB(0 to EMIT_REGCLASSES-1) as REGCLASS ptr
-
-	'' same order as AST_OPCODE
-	dim shared opTB( 0 to AST_OPCODES-1 ) as IR_OPCODE => _
-	{ _
-		( IR_OPTYPE_LOAD	, FALSE, "ld"  ), _ '' AST_OP_LOAD
-		( IR_OPTYPE_LOAD	, FALSE, "ldr" ), _ '' AST_OP_LOADRESULT
-		( IR_OPTYPE_STORE	, FALSE, ":="  ), _	'' AST_OP_STORE
-		( IR_OPTYPE_STORE	, FALSE, ":P"  ), _	'' AST_OP_SPILLREGS
-		( IR_OPTYPE_BINARY	, TRUE , "+"   ), _	'' AST_OP_ADD
-		( IR_OPTYPE_BINARY	, FALSE, "-"   ), _	'' AST_OP_SUB
-		( IR_OPTYPE_BINARY	, TRUE , "*"   ), _	'' AST_OP_MUL
-		( IR_OPTYPE_BINARY	, FALSE, "/"   ), _	'' AST_OP_DIV
-		( IR_OPTYPE_BINARY	, FALSE, "\\"  ), _	'' AST_OP_INTDIV
-		( IR_OPTYPE_BINARY	, FALSE, "%"   ), _	'' AST_OP_MOD
-		( IR_OPTYPE_BINARY	, TRUE , "&"   ), _	'' AST_OP_AND
-		( IR_OPTYPE_BINARY	, TRUE , "|"   ), _	'' AST_OP_OR
-		( IR_OPTYPE_BINARY	, TRUE , "~"   ), _	'' AST_OP_XOR
-		( IR_OPTYPE_BINARY	, FALSE, "eqv" ), _	'' AST_OP_EQV
-		( IR_OPTYPE_BINARY	, FALSE, "imp" ), _	'' AST_OP_IMP
-		( IR_OPTYPE_BINARY	, FALSE, "<<"  ), _	'' AST_OP_SHL
-		( IR_OPTYPE_BINARY	, FALSE, ">>"  ), _	'' AST_OP_SHR
-		( IR_OPTYPE_BINARY	, FALSE, "^"   ), _	'' AST_OP_POW
-		( IR_OPTYPE_BINARY	, FALSE, "mov" ), _	'' AST_OP_MOV
-		( IR_OPTYPE_BINARY	, FALSE, "at2" ), _	'' AST_OP_ATN2
-		( IR_OPTYPE_COMP	, TRUE , "=="  ), _	'' AST_OP_EQ
-		( IR_OPTYPE_COMP	, FALSE, ">"   ), _	'' AST_OP_GT
-		( IR_OPTYPE_COMP	, FALSE, "<"   ), _	'' AST_OP_LT
-		( IR_OPTYPE_COMP	, TRUE , "<>"  ), _	'' AST_OP_NE
-		( IR_OPTYPE_COMP	, FALSE, ">="  ), _	'' AST_OP_GE
-		( IR_OPTYPE_COMP	, FALSE, "<="  ), _	'' AST_OP_LE
-		( IR_OPTYPE_UNARY 	, FALSE, "!"   ), _	'' AST_OP_NOT
-		( IR_OPTYPE_UNARY	, FALSE, "-"   ), _	'' AST_OP_NEG
-		( IR_OPTYPE_UNARY	, FALSE, "abs" ), _	'' AST_OP_ABS
-		( IR_OPTYPE_UNARY	, FALSE, "sgn" ), _	'' AST_OP_SGN
-		( IR_OPTYPE_UNARY	, FALSE, "sin" ), _	'' AST_OP_SIN
-		( IR_OPTYPE_UNARY	, FALSE, "asn" ), _	'' AST_OP_ASIN
-		( IR_OPTYPE_UNARY	, FALSE, "cos" ), _	'' AST_OP_COS
-		( IR_OPTYPE_UNARY	, FALSE, "acs" ), _	'' AST_OP_ACOS
-		( IR_OPTYPE_UNARY	, FALSE, "tan" ), _	'' AST_OP_TAN
-		( IR_OPTYPE_UNARY	, FALSE, "atn" ), _	'' AST_OP_ATAN
-		( IR_OPTYPE_UNARY	, FALSE, "sqr" ), _	'' AST_OP_SQRT
-		( IR_OPTYPE_UNARY	, FALSE, "log" ), _	'' AST_OP_LOG
-		( IR_OPTYPE_UNARY	, FALSE, "flo" ), _	'' AST_OP_FLOOR
-		( IR_OPTYPE_ADDRESS , FALSE, "@"   ), _	'' AST_OP_ADDROF
-		( IR_OPTYPE_ADDRESS , FALSE, "*"   ), _	'' AST_OP_DEREF
-		( IR_OPTYPE_CONVERT	, FALSE, "2i"  ), _	'' AST_OP_TOINT
-		( IR_OPTYPE_CONVERT	, FALSE, "2f"  ), _	'' AST_OP_TOFLT
-		( IR_OPTYPE_STACK	, FALSE, "psh" ), _	'' AST_OP_PUSH
-		( IR_OPTYPE_STACK	, FALSE, "pop" ), _	'' AST_OP_POP
-		( IR_OPTYPE_STACK	, FALSE, "psh" ), _	'' AST_OP_PUSHUDT
-		( IR_OPTYPE_STACK	, FALSE, "alg" ), _	'' AST_OP_STACKALIGN
-		( IR_OPTYPE_BRANCH	, FALSE, "jeq" ), _	'' AST_OP_JEQ
-		( IR_OPTYPE_BRANCH	, FALSE, "jgt" ), _	'' AST_OP_JGT
-		( IR_OPTYPE_BRANCH	, FALSE, "jlt" ), _	'' AST_OP_JLT
-		( IR_OPTYPE_BRANCH	, FALSE, "jne" ), _	'' AST_OP_JNE
-		( IR_OPTYPE_BRANCH	, FALSE, "jge" ), _	'' AST_OP_JGE
-		( IR_OPTYPE_BRANCH	, FALSE, "jle" ), _	'' AST_OP_JLE
-		( IR_OPTYPE_BRANCH	, FALSE, "jmp" ), _	'' AST_OP_JMP
-		( IR_OPTYPE_BRANCH	, FALSE, "cal" ), _	'' AST_OP_CALL
-		( IR_OPTYPE_BRANCH	, FALSE, "lbl" ), _	'' AST_OP_LABEL
-		( IR_OPTYPE_BRANCH	, FALSE, "ret" ), _	'' AST_OP_RET
-		( IR_OPTYPE_CALL	, FALSE, "caf" ), _	'' AST_OP_CALLFUNC
-		( IR_OPTYPE_CALL	, FALSE, "ca@" ), _	'' AST_OP_CALLPTR
-		( IR_OPTYPE_CALL	, FALSE, "jm@" ), _	'' AST_OP_JUMPPTR
-		( IR_OPTYPE_MEM		, FALSE, "mmv" ), _	'' AST_OP_MEMMOVE
-		( IR_OPTYPE_MEM		, FALSE, "msp" ), _	'' AST_OP_MEMSWAP
-		( IR_OPTYPE_MEM		, FALSE, "mcl" ), _	'' AST_OP_MEMCLEAR
-		( IR_OPTYPE_MEM		, FALSE, "scl" ) _	'' AST_OP_STKCLEAR
-	}
 
 '':::::
 sub irInit
@@ -1151,8 +1074,8 @@ private sub hReuse _
 	hGetVREG( v2, v2_dtype, v2_dclass, v2_typ )
     hGetVREG( vr, vr_dtype, vr_dclass, vr_typ )
 
-	select case opTB(op).typ
-	case IR_OPTYPE_UNARY
+	select case astGetOpClass( op )
+	case AST_NODECLASS_UOP
 		if( vr <> v1 ) then
 			if( vr_dtype = v1_dtype ) then
            		if( irGetDistance( v1 ) = IR_MAXDIST ) then
@@ -1161,7 +1084,7 @@ private sub hReuse _
            	end if
 		end if
 
-	case IR_OPTYPE_BINARY, IR_OPTYPE_COMP
+	case AST_NODECLASS_BOP, AST_NODECLASS_COMP
 
 		if( vr = NULL ) then
 			exit sub
@@ -1182,7 +1105,7 @@ private sub hReuse _
 		end if
 
 		v2rename = FALSE
-		if( opTB(op).cummutative ) then
+		if( astGetOpIsCommutative( op ) ) then
 			if( vr <> v2 ) then
 				if( vr_dtype = v2_dtype ) then
 					if( v2_typ <> IR_VREGTYPE_IMM ) then
@@ -1240,38 +1163,38 @@ sub irFlush static
 		'irDump( op, v1, v2, vr )
 
         ''
-		select case as const opTB(op).typ
-		case IR_OPTYPE_UNARY
+		select case as const astGetOpClass( op )
+		case AST_NODECLASS_UOP
 			hFlushUOP( op, v1, vr )
 
-		case IR_OPTYPE_BINARY
+		case AST_NODECLASS_BOP
 			hFlushBOP( op, v1, v2, vr )
 
-		case IR_OPTYPE_COMP
+		case AST_NODECLASS_COMP
 			hFlushCOMP( op, v1, v2, vr, t->ex1 )
 
-		case IR_OPTYPE_STORE
+		case AST_NODECLASS_ASSIGN
 			hFlushSTORE( op, v1, v2 )
 
-		case IR_OPTYPE_LOAD
+		case AST_NODECLASS_LOAD
 			hFlushLOAD( op, v1, vr )
 
-		case IR_OPTYPE_CONVERT
+		case AST_NODECLASS_CONV
 			hFlushCONVERT( op, v1, v2 )
 
-		case IR_OPTYPE_STACK
+		case AST_NODECLASS_STACK
 			hFlushSTACK( op, v1, t->ex2 )
 
-		case IR_OPTYPE_CALL
+		case AST_NODECLASS_CALL
 			hFlushCALL( op, t->ex1, t->ex2, v1, vr )
 
-		case IR_OPTYPE_BRANCH
+		case AST_NODECLASS_BRANCH
 			hFlushBRANCH( op, t->ex1 )
 
-		case IR_OPTYPE_ADDRESS
+		case AST_NODECLASS_ADDR
 			hFlushADDR( op, v1, vr )
 
-		case IR_OPTYPE_MEM
+		case AST_NODECLASS_MEM
 			hFlushMEM( op, v1, v2, t->ex2, t->ex1 )
 
 		end select
@@ -1733,9 +1656,6 @@ private sub hFlushBOP _
 	case AST_OP_IMP
 		emitIMP( v1, v2 )
 
-	case AST_OP_MOV
-		emitMOV( v1, v2 )
-
 	case AST_OP_ATAN2
         emitATN2( v1, v2 )
     case AST_OP_POW
@@ -1979,7 +1899,7 @@ private sub hFlushLOAD _
 
 		regTB(v1_dclass)->ensure( regTB(v1_dclass), v1 )
 
-	case AST_OP_LOADRESULT
+	case AST_OP_LOADRES
 		if( v1_typ = IR_VREGTYPE_REG ) then
 			'' handle longint
 			if( ISLONGINT( v1_dtype ) ) then
@@ -2385,7 +2305,7 @@ sub irXchgTOS _
 
 end sub
 
-#if 0
+/'
 '':::::
 sub irDump( byval op as integer, _
 			byval v1 as IRVREG ptr, _
@@ -2394,28 +2314,28 @@ sub irDump( byval op as integer, _
 	dim as string vname
 
 	if( vr <> NULL ) then
-		print "v";str$(vr);"(";vname;":";str$(irGetVRType( vr ));":";str$(irGetVRDataType( vr ));")";chr$( 9 );"= ";
+		print "v";str(vr);"(";vname;":";str(irGetVRType( vr ));":";str(irGetVRDataType( vr ));")";chr( 9 );"= ";
 	end if
 
 	if( v1 <> NULL ) then
-		print "v";str$(v1);"(";vname;":";str$(irGetVRType( v1 ));":";str$(irGetVRDataType( v1 ));")";
+		print "v";str(v1);"(";vname;":";str(irGetVRType( v1 ));":";str(irGetVRDataType( v1 ));")";
 	end if
 
-	if( vr = NULL ) then print chr$( 9 ); else print " ";
-	print opTB(op).name;
+	if( vr = NULL ) then print chr( 9 ); else print " ";
+	print astGetOpDesc( op );
 
 	if( v2 <> NULL ) then
-		print " v";str$(v2);"(";vname;":";str$(irGetVRType( v2 ));":";str$(irGetVRType( v2 ));")"
+		print " v";str(v2);"(";vname;":";str(irGetVRType( v2 ));":";str(irGetVRType( v2 ));")"
 	else
 		print
 	end if
 
 end sub
-#endif
+'/
 
 ''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
-#if 0
+/'
 '':::::
 function irGetVRRealValue( byval vreg as IRVREG ptr ) as integer static
     dim as integer rval
@@ -2463,9 +2383,9 @@ sub irOptimize static
 		'class= v1->class
 
         ''
-		select case as const opTB(op).typ
+		select case as const astGetOpClass( op )
 		'':::::
-		case IR_OPTYPE_BINARY
+		case AST_NODECLASS_BOP
 
             'vtx1 = irDagGetLeaf( v1 )
             if( vtx1 = INVALID ) then
@@ -2485,7 +2405,7 @@ sub irOptimize static
             end if
 
 		'':::::
-		case IR_OPTYPE_STORE
+		case AST_NODECLASS_ASSIGN
             'vtx1 = irDagGetLeaf( v2 )
             if( vtx1 = INVALID ) then
             '	vtx1 = irDagNewLeaf( v2 )
@@ -2505,4 +2425,5 @@ sub irOptimize static
 	'dagTopSort
 
 end sub
-#endif
+'/
+

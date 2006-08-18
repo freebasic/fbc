@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -62,8 +60,8 @@ function cTypeMultElementDecl _
 
 	do
 		'' allow keywords as field names
-		select case lexGetClass( )
-		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD
+		select case as const lexGetClass( )
+		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
     		'' contains a period?
     		if( lexGetPeriodPos( ) > 0 ) then
     			if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
@@ -151,8 +149,8 @@ function cTypeElementDecl _
 	function = FALSE
 
 	'' allow keywords as field names
-	select case lexGetClass( )
-	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD
+	select case as const lexGetClass( )
+	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
 		'' ID
 		id = *lexGetText( )
 
@@ -239,7 +237,7 @@ function cTypeElementDecl _
 	end if
 
 	'' ref to self?
-	if( dtype = FB_DATATYPE_USERDEF ) then
+	if( dtype = FB_DATATYPE_STRUCT ) then
 		if( subtype = s ) then
 			if( errReport( FB_ERRMSG_RECURSIVEUDT ) = FALSE ) then
 				exit function
@@ -519,7 +517,7 @@ function cTypeDecl _
 
 	'' ID
 	checkid = TRUE
-	select case lexGetClass( )
+	select case as const lexGetClass( )
 	case FB_TKCLASS_IDENTIFIER
 
 	case FB_TKCLASS_KEYWORD
@@ -530,6 +528,15 @@ function cTypeDecl _
     			return cTypedefDecl( NULL )
     		end if
     	end if
+
+    	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
+    		exit function
+    	else
+ 			'' error recovery: fake an ID
+ 			checkid = FALSE
+ 		end if
+
+	case FB_TKCLASS_QUIRKWD
 
     case else
     	if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
@@ -555,14 +562,16 @@ function cTypeDecl _
     		end if
     	end if
 
-    	'' if inside a namespace, symbols can't contain periods (.)'s
-    	if( symbIsGlobalNamespc( ) = FALSE ) then
-    		if( lexGetPeriodPos( ) > 0 ) then
-	    		if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-    				exit function
-    			end if
-    		end if
-    	end if
+		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
+			'' if inside a namespace, symbols can't contain periods (.)'s
+			if( symbIsGlobalNamespc( ) = FALSE ) then
+  				if( lexGetPeriodPos( ) > 0 ) then
+  					if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+	  					exit function
+					end if
+				end if
+			end if
+		end if
 
 		lexEatToken( @id )
 

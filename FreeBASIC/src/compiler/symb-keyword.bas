@@ -21,8 +21,6 @@
 '' chng: sep/2004 written [v1ctor]
 ''		 jan/2005 updated to use real linked-lists [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -94,7 +92,6 @@ const SYMB_MAXKEYWORDS = 210
         (@"CALL"	, FB_TK_CALL			, FB_TKCLASS_KEYWORD), _
         (@"BYVAL"	, FB_TK_BYVAL			, FB_TKCLASS_KEYWORD), _
         (@"BYREF"	, FB_TK_BYREF			, FB_TKCLASS_KEYWORD), _
-        (@"INCLUDE"	, FB_TK_INCLUDE			, FB_TKCLASS_KEYWORD), _
         (@"AS"		, FB_TK_AS				, FB_TKCLASS_KEYWORD), _
         (@"DECLARE"	, FB_TK_DECLARE			, FB_TKCLASS_KEYWORD), _
         (@"GOTO"	, FB_TK_GOTO			, FB_TKCLASS_KEYWORD), _
@@ -151,95 +148,97 @@ const SYMB_MAXKEYWORDS = 210
         (@"IIF"		, FB_TK_IIF				, FB_TKCLASS_KEYWORD), _
         (@"VA_FIRST", FB_TK_VA_FIRST		, FB_TKCLASS_KEYWORD), _
         (@"SIZEOF"	, FB_TK_SIZEOF			, FB_TKCLASS_KEYWORD), _
-        (@"ABS"		, FB_TK_ABS				, FB_TKCLASS_KEYWORD), _
-        (@"SGN"		, FB_TK_SGN				, FB_TKCLASS_KEYWORD), _
-        (@"FIX"		, FB_TK_FIX				, FB_TKCLASS_KEYWORD), _
-        (@"SIN"		, FB_TK_SIN				, FB_TKCLASS_KEYWORD), _
-        (@"ASIN"	, FB_TK_ASIN			, FB_TKCLASS_KEYWORD), _
-        (@"COS"		, FB_TK_COS				, FB_TKCLASS_KEYWORD), _
-        (@"ACOS"	, FB_TK_ACOS			, FB_TKCLASS_KEYWORD), _
-        (@"TAN"		, FB_TK_TAN				, FB_TKCLASS_KEYWORD), _
-        (@"ATN"		, FB_TK_ATN				, FB_TKCLASS_KEYWORD), _
-        (@"SQR"		, FB_TK_SQR				, FB_TKCLASS_KEYWORD), _
-        (@"LOG"		, FB_TK_LOG				, FB_TKCLASS_KEYWORD), _
-        (@"INT"		, FB_TK_INT				, FB_TKCLASS_KEYWORD), _
-        (@"ATAN2"	, FB_TK_ATAN2			, FB_TKCLASS_KEYWORD), _
         (@"OVERLOAD", FB_TK_OVERLOAD		, FB_TKCLASS_KEYWORD), _
         (@"CONSTRUCTOR", FB_TK_CONSTRUCTOR	, FB_TKCLASS_KEYWORD), _
         (@"DESTRUCTOR", FB_TK_DESTRUCTOR	, FB_TKCLASS_KEYWORD), _
-        (@"DYNAMIC"	, FB_TK_DYNAMIC			, FB_TKCLASS_KEYWORD), _
-        (@"GOSUB"	, FB_TK_GOSUB			, FB_TKCLASS_KEYWORD), _
-        (@"DEFBYTE"	, FB_TK_DEFBYTE			, FB_TKCLASS_KEYWORD), _
-        (@"DEFUBYTE", FB_TK_DEFUBYTE		, FB_TKCLASS_KEYWORD), _
-        (@"DEFSHORT", FB_TK_DEFSHORT		, FB_TKCLASS_KEYWORD), _
-        (@"DEFUSHORT", FB_TK_DEFUSHORT		, FB_TKCLASS_KEYWORD), _
-        (@"DEFINT"	, FB_TK_DEFINT			, FB_TKCLASS_KEYWORD), _
-        (@"DEFUINT"	, FB_TK_DEFUINT			, FB_TKCLASS_KEYWORD), _
-        (@"DEFLNG"	, FB_TK_DEFLNG			, FB_TKCLASS_KEYWORD), _
-        (@"DEFLONGINT", FB_TK_DEFLNGINT		, FB_TKCLASS_KEYWORD), _
-        (@"DEFULONGINT", FB_TK_DEFULNGINT	, FB_TKCLASS_KEYWORD), _
-        (@"DEFSNG"	, FB_TK_DEFSNG			, FB_TKCLASS_KEYWORD), _
-        (@"DEFDBL"	, FB_TK_DEFDBL			, FB_TKCLASS_KEYWORD), _
-        (@"DEFSTR"	, FB_TK_DEFSTR			, FB_TKCLASS_KEYWORD), _
-        (@"OPTION"	, FB_TK_OPTION			, FB_TKCLASS_KEYWORD), _
-        (@"BASE"	, FB_TK_BASE			, FB_TKCLASS_KEYWORD), _
-        (@"EXPLICIT", FB_TK_EXPLICIT		, FB_TKCLASS_KEYWORD), _
-        (@"SADD"	, FB_TK_SADD			, FB_TKCLASS_KEYWORD), _
-        (@"ON"		, FB_TK_ON				, FB_TKCLASS_KEYWORD), _
-        (@"ERROR"	, FB_TK_ERROR			, FB_TKCLASS_KEYWORD), _
-        (@"RESUME"	, FB_TK_RESUME			, FB_TKCLASS_KEYWORD), _
-        (@"ERR"		, FB_TK_ERR				, FB_TKCLASS_KEYWORD), _
-        (@"REDIM"	, FB_TK_REDIM			, FB_TKCLASS_KEYWORD), _
-        (@"ERASE"	, FB_TK_ERASE			, FB_TKCLASS_KEYWORD), _
-        (@"LBOUND"	, FB_TK_LBOUND			, FB_TKCLASS_KEYWORD), _
-        (@"UBOUND"	, FB_TK_UBOUND			, FB_TKCLASS_KEYWORD), _
-        (@"STR"		, FB_TK_STR				, FB_TKCLASS_KEYWORD), _
-        (@"WSTR"	, FB_TK_WSTR			, FB_TKCLASS_KEYWORD), _
-        (@"MID"		, FB_TK_MID				, FB_TKCLASS_KEYWORD), _
- 		(@"INSTR"	, FB_TK_INSTR			, FB_TKCLASS_KEYWORD), _
-		(@"TRIM"	, FB_TK_TRIM			, FB_TKCLASS_KEYWORD), _
-        (@"RTRIM"	, FB_TK_RTRIM			, FB_TKCLASS_KEYWORD), _
-        (@"LTRIM"	, FB_TK_LTRIM			, FB_TKCLASS_KEYWORD), _
-        (@"RESTORE"	, FB_TK_RESTORE			, FB_TKCLASS_KEYWORD), _
-        (@"READ"	, FB_TK_READ			, FB_TKCLASS_KEYWORD), _
-        (@"PRINT"	, FB_TK_PRINT			, FB_TKCLASS_KEYWORD), _
-        (@"LPRINT"	, FB_TK_LPRINT			, FB_TKCLASS_KEYWORD), _
-        (@"OPEN"	, FB_TK_OPEN			, FB_TKCLASS_KEYWORD), _
-        (@"CLOSE"	, FB_TK_CLOSE			, FB_TKCLASS_KEYWORD), _
-        (@"SEEK"	, FB_TK_SEEK			, FB_TKCLASS_KEYWORD), _
-        (@"PUT"		, FB_TK_PUT				, FB_TKCLASS_KEYWORD), _
-        (@"GET"		, FB_TK_GET				, FB_TKCLASS_KEYWORD), _
-        (@"ACCESS"	, FB_TK_ACCESS			, FB_TKCLASS_KEYWORD), _
-        (@"WRITE"	, FB_TK_WRITE			, FB_TKCLASS_KEYWORD), _
-        (@"LOCK"	, FB_TK_LOCK			, FB_TKCLASS_KEYWORD), _
-        (@"INPUT"	, FB_TK_INPUT			, FB_TKCLASS_KEYWORD), _
-        (@"OUTPUT"	, FB_TK_OUTPUT			, FB_TKCLASS_KEYWORD), _
-        (@"BINARY"	, FB_TK_BINARY			, FB_TKCLASS_KEYWORD), _
-        (@"RANDOM"	, FB_TK_RANDOM			, FB_TKCLASS_KEYWORD), _
-        (@"APPEND"	, FB_TK_APPEND			, FB_TKCLASS_KEYWORD), _
-        (@"ENCODING", FB_TK_ENCODING		, FB_TKCLASS_KEYWORD), _
-        (@"NAME"	, FB_TK_NAME			, FB_TKCLASS_KEYWORD), _
-        (@"WIDTH"	, FB_TK_WIDTH			, FB_TKCLASS_KEYWORD), _
-        (@"PRESERVE", FB_TK_PRESERVE		, FB_TKCLASS_KEYWORD), _
-        (@"SPC"		, FB_TK_SPC				, FB_TKCLASS_KEYWORD), _
-        (@"TAB"		, FB_TK_TAB				, FB_TKCLASS_KEYWORD), _
-        (@"LINE"	, FB_TK_LINE			, FB_TKCLASS_KEYWORD), _
-        (@"VIEW"	, FB_TK_VIEW			, FB_TKCLASS_KEYWORD), _
-        (@"UNLOCK"	, FB_TK_UNLOCK			, FB_TKCLASS_KEYWORD), _
-        (@"CHR"		, FB_TK_CHR				, FB_TKCLASS_KEYWORD), _
-        (@"WCHR"	, FB_TK_WCHR			, FB_TKCLASS_KEYWORD), _
-        (@"ASC"		, FB_TK_ASC				, FB_TKCLASS_KEYWORD), _
-        (@"LSET"	, FB_TK_LSET			, FB_TKCLASS_KEYWORD), _
-        (@"PSET"	, FB_TK_PSET			, FB_TKCLASS_KEYWORD), _
-        (@"PRESET"	, FB_TK_PRESET			, FB_TKCLASS_KEYWORD), _
-        (@"POINT"	, FB_TK_POINT			, FB_TKCLASS_KEYWORD), _
-        (@"CIRCLE"	, FB_TK_CIRCLE			, FB_TKCLASS_KEYWORD), _
-        (@"WINDOW"	, FB_TK_WINDOW			, FB_TKCLASS_KEYWORD), _
-        (@"PALETTE"	, FB_TK_PALETTE			, FB_TKCLASS_KEYWORD), _
-        (@"SCREEN"	, FB_TK_SCREEN			, FB_TKCLASS_KEYWORD), _
-        (@"SCREENRES", FB_TK_SCREENRES		, FB_TKCLASS_KEYWORD), _
-        (@"PAINT"	, FB_TK_PAINT			, FB_TKCLASS_KEYWORD), _
-        (@"DRAW"	, FB_TK_DRAW			, FB_TKCLASS_KEYWORD), _
+        (@"OPERATOR", FB_TK_OPERATOR		, FB_TKCLASS_KEYWORD), _
+        (@"DYNAMIC"	, FB_TK_DYNAMIC			, FB_TKCLASS_QUIRKWD), _
+        (@"INCLUDE"	, FB_TK_INCLUDE			, FB_TKCLASS_QUIRKWD), _
+        (@"GOSUB"	, FB_TK_GOSUB			, FB_TKCLASS_QUIRKWD), _
+        (@"DEFBYTE"	, FB_TK_DEFBYTE			, FB_TKCLASS_QUIRKWD), _
+        (@"DEFUBYTE", FB_TK_DEFUBYTE		, FB_TKCLASS_QUIRKWD), _
+        (@"DEFSHORT", FB_TK_DEFSHORT		, FB_TKCLASS_QUIRKWD), _
+        (@"DEFUSHORT", FB_TK_DEFUSHORT		, FB_TKCLASS_QUIRKWD), _
+        (@"DEFINT"	, FB_TK_DEFINT			, FB_TKCLASS_QUIRKWD), _
+        (@"DEFUINT"	, FB_TK_DEFUINT			, FB_TKCLASS_QUIRKWD), _
+        (@"DEFLNG"	, FB_TK_DEFLNG			, FB_TKCLASS_QUIRKWD), _
+        (@"DEFLONGINT", FB_TK_DEFLNGINT		, FB_TKCLASS_QUIRKWD), _
+        (@"DEFULONGINT", FB_TK_DEFULNGINT	, FB_TKCLASS_QUIRKWD), _
+        (@"DEFSNG"	, FB_TK_DEFSNG			, FB_TKCLASS_QUIRKWD), _
+        (@"DEFDBL"	, FB_TK_DEFDBL			, FB_TKCLASS_QUIRKWD), _
+        (@"DEFSTR"	, FB_TK_DEFSTR			, FB_TKCLASS_QUIRKWD), _
+        (@"OPTION"	, FB_TK_OPTION			, FB_TKCLASS_QUIRKWD), _
+        (@"BASE"	, FB_TK_BASE			, FB_TKCLASS_QUIRKWD), _
+        (@"EXPLICIT", FB_TK_EXPLICIT		, FB_TKCLASS_QUIRKWD), _
+        (@"SADD"	, FB_TK_SADD			, FB_TKCLASS_QUIRKWD), _
+        (@"ON"		, FB_TK_ON				, FB_TKCLASS_QUIRKWD), _
+        (@"ERROR"	, FB_TK_ERROR			, FB_TKCLASS_QUIRKWD), _
+        (@"ABS"		, FB_TK_ABS				, FB_TKCLASS_QUIRKWD), _
+        (@"SGN"		, FB_TK_SGN				, FB_TKCLASS_QUIRKWD), _
+        (@"FIX"		, FB_TK_FIX				, FB_TKCLASS_QUIRKWD), _
+        (@"SIN"		, FB_TK_SIN				, FB_TKCLASS_QUIRKWD), _
+        (@"ASIN"	, FB_TK_ASIN			, FB_TKCLASS_QUIRKWD), _
+        (@"COS"		, FB_TK_COS				, FB_TKCLASS_QUIRKWD), _
+        (@"ACOS"	, FB_TK_ACOS			, FB_TKCLASS_QUIRKWD), _
+        (@"TAN"		, FB_TK_TAN				, FB_TKCLASS_QUIRKWD), _
+        (@"ATN"		, FB_TK_ATN				, FB_TKCLASS_QUIRKWD), _
+        (@"SQR"		, FB_TK_SQR				, FB_TKCLASS_QUIRKWD), _
+        (@"LOG"		, FB_TK_LOG				, FB_TKCLASS_QUIRKWD), _
+        (@"INT"		, FB_TK_INT				, FB_TKCLASS_QUIRKWD), _
+        (@"ATAN2"	, FB_TK_ATAN2			, FB_TKCLASS_QUIRKWD), _
+        (@"RESUME"	, FB_TK_RESUME			, FB_TKCLASS_QUIRKWD), _
+        (@"ERR"		, FB_TK_ERR				, FB_TKCLASS_QUIRKWD), _
+        (@"REDIM"	, FB_TK_REDIM			, FB_TKCLASS_QUIRKWD), _
+        (@"ERASE"	, FB_TK_ERASE			, FB_TKCLASS_QUIRKWD), _
+        (@"LBOUND"	, FB_TK_LBOUND			, FB_TKCLASS_QUIRKWD), _
+        (@"UBOUND"	, FB_TK_UBOUND			, FB_TKCLASS_QUIRKWD), _
+        (@"STR"		, FB_TK_STR				, FB_TKCLASS_QUIRKWD), _
+        (@"WSTR"	, FB_TK_WSTR			, FB_TKCLASS_QUIRKWD), _
+        (@"MID"		, FB_TK_MID				, FB_TKCLASS_QUIRKWD), _
+ 		(@"INSTR"	, FB_TK_INSTR			, FB_TKCLASS_QUIRKWD), _
+		(@"TRIM"	, FB_TK_TRIM			, FB_TKCLASS_QUIRKWD), _
+        (@"RTRIM"	, FB_TK_RTRIM			, FB_TKCLASS_QUIRKWD), _
+        (@"LTRIM"	, FB_TK_LTRIM			, FB_TKCLASS_QUIRKWD), _
+        (@"RESTORE"	, FB_TK_RESTORE			, FB_TKCLASS_QUIRKWD), _
+        (@"READ"	, FB_TK_READ			, FB_TKCLASS_QUIRKWD), _
+        (@"PRINT"	, FB_TK_PRINT			, FB_TKCLASS_QUIRKWD), _
+        (@"LPRINT"	, FB_TK_LPRINT			, FB_TKCLASS_QUIRKWD), _
+        (@"OPEN"	, FB_TK_OPEN			, FB_TKCLASS_QUIRKWD), _
+        (@"CLOSE"	, FB_TK_CLOSE			, FB_TKCLASS_QUIRKWD), _
+        (@"SEEK"	, FB_TK_SEEK			, FB_TKCLASS_QUIRKWD), _
+        (@"PUT"		, FB_TK_PUT				, FB_TKCLASS_QUIRKWD), _
+        (@"GET"		, FB_TK_GET				, FB_TKCLASS_QUIRKWD), _
+        (@"ACCESS"	, FB_TK_ACCESS			, FB_TKCLASS_QUIRKWD), _
+        (@"WRITE"	, FB_TK_WRITE			, FB_TKCLASS_QUIRKWD), _
+        (@"LOCK"	, FB_TK_LOCK			, FB_TKCLASS_QUIRKWD), _
+        (@"INPUT"	, FB_TK_INPUT			, FB_TKCLASS_QUIRKWD), _
+        (@"OUTPUT"	, FB_TK_OUTPUT			, FB_TKCLASS_QUIRKWD), _
+        (@"BINARY"	, FB_TK_BINARY			, FB_TKCLASS_QUIRKWD), _
+        (@"RANDOM"	, FB_TK_RANDOM			, FB_TKCLASS_QUIRKWD), _
+        (@"APPEND"	, FB_TK_APPEND			, FB_TKCLASS_QUIRKWD), _
+        (@"ENCODING", FB_TK_ENCODING		, FB_TKCLASS_QUIRKWD), _
+        (@"NAME"	, FB_TK_NAME			, FB_TKCLASS_QUIRKWD), _
+        (@"WIDTH"	, FB_TK_WIDTH			, FB_TKCLASS_QUIRKWD), _
+        (@"PRESERVE", FB_TK_PRESERVE		, FB_TKCLASS_QUIRKWD), _
+        (@"SPC"		, FB_TK_SPC				, FB_TKCLASS_QUIRKWD), _
+        (@"TAB"		, FB_TK_TAB				, FB_TKCLASS_QUIRKWD), _
+        (@"LINE"	, FB_TK_LINE			, FB_TKCLASS_QUIRKWD), _
+        (@"VIEW"	, FB_TK_VIEW			, FB_TKCLASS_QUIRKWD), _
+        (@"UNLOCK"	, FB_TK_UNLOCK			, FB_TKCLASS_QUIRKWD), _
+        (@"CHR"		, FB_TK_CHR				, FB_TKCLASS_QUIRKWD), _
+        (@"WCHR"	, FB_TK_WCHR			, FB_TKCLASS_QUIRKWD), _
+        (@"ASC"		, FB_TK_ASC				, FB_TKCLASS_QUIRKWD), _
+        (@"LSET"	, FB_TK_LSET			, FB_TKCLASS_QUIRKWD), _
+        (@"PSET"	, FB_TK_PSET			, FB_TKCLASS_QUIRKWD), _
+        (@"PRESET"	, FB_TK_PRESET			, FB_TKCLASS_QUIRKWD), _
+        (@"POINT"	, FB_TK_POINT			, FB_TKCLASS_QUIRKWD), _
+        (@"CIRCLE"	, FB_TK_CIRCLE			, FB_TKCLASS_QUIRKWD), _
+        (@"WINDOW"	, FB_TK_WINDOW			, FB_TKCLASS_QUIRKWD), _
+        (@"PALETTE"	, FB_TK_PALETTE			, FB_TKCLASS_QUIRKWD), _
+        (@"SCREEN"	, FB_TK_SCREEN			, FB_TKCLASS_QUIRKWD), _
+        (@"SCREENRES", FB_TK_SCREENRES		, FB_TKCLASS_QUIRKWD), _
+        (@"PAINT"	, FB_TK_PAINT			, FB_TKCLASS_QUIRKWD), _
+        (@"DRAW"	, FB_TK_DRAW			, FB_TKCLASS_QUIRKWD), _
         (NULL) _
 	}
 
@@ -284,7 +283,7 @@ function symbAddKeyword _
 
     ''
     k->key.id = id
-    k->key.class = class
+    k->key.tkclass = class
 
     function = k
 

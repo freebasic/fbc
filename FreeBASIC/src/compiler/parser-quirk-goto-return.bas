@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -44,13 +42,22 @@ private function hFuncReturn( ) as integer
 		end if
 	end if
 
-	'' Comment|StmtSep|EOF? just exit
-	select case lexGetToken( )
-	case FB_TK_EOL, FB_TK_STATSEPCHAR, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
-		checkexpr = FALSE
-	case else
+	'' skip RETURN
+	lexSkipToken( )
+
+	'' function?
+	if( symbGetType( env.currproc ) <> FB_DATATYPE_VOID ) then
 		checkexpr = TRUE
-	end select
+
+	else
+		'' Comment|StmtSep|EOF? just exit
+		select case lexGetToken( )
+		case FB_TK_EOL, FB_TK_STATSEPCHAR, FB_TK_EOF, FB_TK_COMMENTCHAR, FB_TK_REM
+			checkexpr = FALSE
+		case else
+			checkexpr = TRUE
+		end select
+	end if
 
 	if( checkexpr ) then
 		if( cAssignFunctResult( env.currproc ) = FALSE ) then
@@ -69,14 +76,17 @@ end function
 ''				  |	  RETURN LABEL?
 ''				  |   RESUME NEXT? .
 ''
-function cGotoStmt as integer
+function cGotoStmt _
+	( _
+		byval tk as FB_TOKEN _
+	) as integer
+
 	dim as FBSYMBOL ptr l
-	dim as integer isglobal, isnext
 	dim as FBSYMCHAIN ptr chain_
 
 	function = FALSE
 
-	select case as const lexGetToken( )
+	select case as const tk
 	'' GOTO LABEL
 	case FB_TK_GOTO
 		lexSkipToken( )
@@ -105,9 +115,9 @@ function cGotoStmt as integer
 
 	'' GOSUB LABEL
 	case FB_TK_GOSUB
-		'' difference from QB: not allowed inside procs
-		if( fbIsModLevel() = FALSE ) then
-			if( errReport( FB_ERRMSG_ILLEGALINSIDEASUB ) = FALSE ) then
+
+		if( fbLangOptIsSet( FB_LANG_OPT_GOSUB ) = FALSE ) then
+			if( errReportNotAllowed( FB_LANG_OPT_GOSUB ) = FALSE ) then
 				exit function
 			else
 				hSkipStmt( )
@@ -143,53 +153,52 @@ function cGotoStmt as integer
 
 	'' RETURN ((LABEL? Comment|StmtSep|EOF) | Expression)
 	case FB_TK_RETURN
+
+		'' proc return?
+		if( fbLangOptIsSet( FB_LANG_OPT_GOSUB ) = FALSE ) then
+			return hFuncReturn( )
+		end if
+
+		'' it's a GOSUB's RETURN..
 		lexSkipToken( )
 
-		'' inside a proc? GOSUB not allowed, see above
-		if( fbIsModLevel() = FALSE ) then
-			function = hFuncReturn( )
+		'' Comment|StmtSep|EOF|ELSE? just return
+		select case lexGetToken( )
+		case FB_TK_EOL, FB_TK_STATSEPCHAR, FB_TK_EOF, FB_TK_COMMENTCHAR, _
+			 FB_TK_REM, FB_TK_ELSE
 
-		'' module level, it's a GOSUB's RETURN
-		else
-			'' Comment|StmtSep|EOF|ELSE? just return
-			select case lexGetToken( )
-			case FB_TK_EOL, FB_TK_STATSEPCHAR, FB_TK_EOF, FB_TK_COMMENTCHAR, _
-				 FB_TK_REM, FB_TK_ELSE
+			'' return 0
+			astAdd( astNewBRANCH( AST_OP_RET, NULL ) )
+			function = TRUE
 
-				'' return 0
-				astAdd( astNewBRANCH( AST_OP_RET, NULL ) )
+		case else
+			if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
+				l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
+											  lexGetText( ), _
+											  FB_SYMBCLASS_LABEL )
+
+			else
+				chain_ = cIdentifier( TRUE )
+				if( errGetLast( ) <> FB_ERRMSG_OK ) then
+					exit function
+				end if
+
+				l = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
+			end if
+
+			'' label?
+			if( l <> NULL ) then
+				lexSkipToken( )
+				astAdd( astNewBRANCH( AST_OP_JMP, l ) )
 				function = TRUE
-
-			case else
-				if( lexGetClass( ) = FB_TKCLASS_NUMLITERAL ) then
-					l = symbLookupByNameAndClass( symbGetCurrentNamespc( ), _
-												  lexGetText( ), _
-												  FB_SYMBCLASS_LABEL )
-
-				else
-					chain_ = cIdentifier( TRUE )
-					if( errGetLast( ) <> FB_ERRMSG_OK ) then
-						exit function
-					end if
-
-					l = symbFindByClass( chain_, FB_SYMBCLASS_LABEL )
-				end if
-
-				'' label?
-				if( l <> NULL ) then
-					lexSkipToken( )
-					astAdd( astNewBRANCH( AST_OP_JMP, l ) )
-					function = TRUE
-				end if
-			end select
-
-		end if
+			end if
+		end select
 
 	'' RESUME NEXT?
 	case FB_TK_RESUME
 
-		if( env.clopt.resumeerr = FALSE ) then
-			if( errReport( FB_ERRMSG_ILLEGALRESUMEERROR ) = FALSE ) then
+		if( fbLangOptIsSet( FB_LANG_OPT_ONERROR ) = FALSE ) then
+			if( errReportNotAllowed( FB_LANG_OPT_ONERROR ) = FALSE ) then
 				exit function
 			else
 				hSkipStmt( )
@@ -199,13 +208,7 @@ function cGotoStmt as integer
 
 		lexSkipToken( )
 
-		if( hMatch( FB_TK_NEXT ) ) then
-			isnext = TRUE
-		else
-			isnext = FALSE
-		end if
-
-		rtlErrorResume( isnext )
+		rtlErrorResume( hMatch( FB_TK_NEXT ) )
 
 		function = TRUE
 	end select

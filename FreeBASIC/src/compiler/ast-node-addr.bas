@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -143,11 +141,24 @@ function astNewADDR _
 	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
-    dim as integer delchild, dtype
-    dim as FBSYMBOL ptr subtype, s
+    dim as integer delchild, dtype, is_ambiguous
+    dim as FBSYMBOL ptr subtype, s, proc
 
 	if( l = NULL ) then
 		return NULL
+	end if
+
+	'' check op overloading
+	if( symb.globOpOvlTb(op).head <> NULL ) then
+		proc = symbFindUopOvlProc( op, l, @is_ambiguous )
+		if( proc <> NULL ) then
+			'' build a proc call
+			return astBuildCALL( proc, 1, l )
+		else
+			if( is_ambiguous ) then
+				exit function
+			end if
+		end if
 	end if
 
 	dtype = l->dtype

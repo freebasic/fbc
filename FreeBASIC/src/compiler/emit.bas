@@ -21,8 +21,6 @@
 '' chng: jun/2005 written [v1ctor]
 ''
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -145,7 +143,7 @@ sub hWriteStr( byval addtab as integer, _
     dim as string ostr
 
 	if( addtab ) then
-		ostr = "\t"
+		ostr = TABCHAR
 		ostr += *s
 	else
 		ostr = *s

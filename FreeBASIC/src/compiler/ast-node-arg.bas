@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -33,39 +31,39 @@ option escape
 '':::::
 private sub hParamError _
 	( _
-		byval f as ASTNODE ptr, _
+		byval parent as ASTNODE ptr, _
 		byval msgnum as integer = FB_ERRMSG_PARAMTYPEMISMATCHAT _
 	)
 
-	errReportParam( f->sym, f->call.args+1, NULL, msgnum )
+	errReportParam( parent->sym, parent->call.args+1, NULL, msgnum )
 
 end sub
 
 '':::::
 private sub hParamWarning _
 	( _
-		byval f as ASTNODE ptr, _
+		byval parent as ASTNODE ptr, _
 		byval msgnum as integer _
 	)
 
-	errReportParamWarn( f->sym, f->call.args+1, NULL, msgnum )
+	errReportParamWarn( parent->sym, parent->call.args+1, NULL, msgnum )
 
 end sub
 
 '':::::
 private function hAllocTmpArrayDesc _
 	( _
-		byval f as ASTNODE ptr, _
+		byval parent as ASTNODE ptr, _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
-	dim s as FBSYMBOL ptr
-	dim t as ASTTEMPARRAY ptr
+	dim as FBSYMBOL ptr s
+	dim as ASTTEMPARRAY ptr t
 
 	'' alloc a node
 	t = listNewNode( @ast.temparray )
-	t->prev = f->call.arraytail
-	f->call.arraytail = t
+	t->prev = parent->call.arraytail
+	parent->call.arraytail = t
 
 	'' create a pointer
 	s = symbAddTempVar( FB_DATATYPE_UINT )
@@ -80,7 +78,7 @@ end function
 '':::::
 private function hAllocTmpStrNode _
 	( _
-		byval proc as ASTNODE ptr, _
+		byval parent as ASTNODE ptr, _
 		byval n as ASTNODE ptr, _
 		byval dtype as integer, _
 		byval copyback as integer _
@@ -91,8 +89,8 @@ private function hAllocTmpStrNode _
 
 	'' alloc a node
 	t = listNewNode( @ast.tempstr )
-	t->prev = proc->call.strtail
-	proc->call.strtail = t
+	t->prev = parent->call.strtail
+	parent->call.strtail = t
 
 	s = symbAddTempVarEx( dtype )
 
@@ -110,7 +108,7 @@ end function
 '':::::
 private function hAllocTmpString _
 	( _
-		byval proc as ASTNODE ptr, _
+		byval parent as ASTNODE ptr, _
 		byval n as ASTNODE ptr, _
 		byval copyback as integer _
 	) as ASTNODE ptr
@@ -118,7 +116,7 @@ private function hAllocTmpString _
 	dim as ASTTEMPSTR ptr t
 
 	'' create temp string to pass as parameter
-	t = hAllocTmpStrNode( proc, n, FB_DATATYPE_STRING, copyback )
+	t = hAllocTmpStrNode( parent, n, FB_DATATYPE_STRING, copyback )
 
 	'' temp string = src string
 	return rtlStrAssign( astNewVAR( t->tmpsym, 0, FB_DATATYPE_STRING ), n )
@@ -128,14 +126,14 @@ end function
 '':::::
 private function hAllocTmpWstrPtr _
 	( _
-		byval proc as ASTNODE ptr, _
+		byval parent as ASTNODE ptr, _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr
 
 	dim as ASTTEMPSTR ptr t
 
 	'' create temp wstring ptr to pass as parameter
-	t = hAllocTmpStrNode( proc, NULL, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FALSE )
+	t = hAllocTmpStrNode( parent, NULL, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FALSE )
 
 	n = astNewCONV( AST_OP_TOPOINTER, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, NULL, n )
 
@@ -147,24 +145,24 @@ end function
 '':::::
 private function hCheckStringArg _
 	( _
-		byval proc as ASTNODE ptr, _
-		byval arg as FBSYMBOL ptr, _
-		byval p as ASTNODE ptr _
+		byval parent as ASTNODE ptr, _
+		byval param as FBSYMBOL ptr, _
+		byval arg as ASTNODE ptr _
 	) as ASTNODE ptr
 
-    dim as integer pdtype, copyback
+    dim as integer arg_dtype, copyback
 
-	function = p
+	function = arg
 
-	pdtype = p->dtype
+	arg_dtype = arg->dtype
 
 	'' calling the runtime lib?
-	if( proc->call.isrtl ) then
+	if( parent->call.isrtl ) then
 
 		'' passed byref?
-		if( symbGetParamMode( arg ) = FB_PARAMMODE_BYREF ) then
+		if( symbGetParamMode( param ) = FB_PARAMMODE_BYREF ) then
 
-			select case pdtype
+			select case arg_dtype
 			'' var-len param: all rtlib procs will free the
 			'' temporary strings and descriptors automatically
 			case FB_DATATYPE_STRING
@@ -173,23 +171,23 @@ private function hCheckStringArg _
 			'' wstring? convert and let rtl to free the temp
 			'' var-len result..
 			case FB_DATATYPE_WCHAR
-				return hAllocTmpString( proc, p, FALSE )
+				return hAllocTmpString( parent, arg, FALSE )
 
 			'' anything else, just alloc a temp descriptor (assuming
 			'' here that no rtlib function will EVER change the
 			'' strings passed as param)
 			case else
-				return rtlStrAllocTmpDesc( p )
+				return rtlStrAllocTmpDesc( arg )
 			end select
 
 		'' passed byval..
 		else
 
 			'' var-len?
-			select case pdtype
+			select case arg_dtype
 			case FB_DATATYPE_STRING
 				'' not a temp var-len returned by functions? skip..
-				if( p->class <> AST_NODECLASS_CALL ) then
+				if( arg->class <> AST_NODECLASS_CALL ) then
 					exit function
 				end if
 
@@ -204,7 +202,7 @@ private function hCheckStringArg _
 			end select
 
 			'' create temp string to pass as parameter
-			return hAllocTmpString( proc, p, FALSE )
+			return hAllocTmpString( parent, arg, FALSE )
 
 		end if
 
@@ -215,11 +213,11 @@ private function hCheckStringArg _
 	'' params as they can be modified inside the callee function..
 	copyback = FALSE
 
-	select case symbGetParamMode( arg )
+	select case symbGetParamMode( param )
 	'' passed by reference?
 	case FB_PARAMMODE_BYREF
 
-    	select case pdtype
+    	select case arg_dtype
     	'' fixed-length?
     	case FB_DATATYPE_FIXSTR
     		'' byref arg and fixed-len param: alloc a temp string, copy
@@ -228,14 +226,14 @@ private function hCheckStringArg _
 			'' returns and delete temp)
 
 			'' don't copy back if it's a function returning a fixed-len
-			if( p->class <> AST_NODECLASS_CALL ) then
+			if( arg->class <> AST_NODECLASS_CALL ) then
 				copyback = TRUE
 			end if
 
     	'' var-len?
     	case FB_DATATYPE_STRING
     		'' if not a function's result, skip..
-    		if( p->class <> AST_NODECLASS_CALL ) then
+    		if( arg->class <> AST_NODECLASS_CALL ) then
     			exit function
             end if
 
@@ -254,12 +252,12 @@ private function hCheckStringArg _
     '' passed by value?
     case FB_PARAMMODE_BYVAL
 
-		select case pdtype
+		select case arg_dtype
 		'' var-len?
 		case FB_DATATYPE_STRING
 
 			'' not a temp var-len function result? do nothing..
-			if( p->class <> AST_NODECLASS_CALL ) then
+			if( arg->class <> AST_NODECLASS_CALL ) then
 				exit function
 			end if
 
@@ -276,46 +274,46 @@ private function hCheckStringArg _
 	end select
 
 	'' create temp string to pass as parameter
-	function = hAllocTmpString( proc, p, copyback )
+	function = hAllocTmpString( parent, arg, copyback )
 
 end function
 
 '':::::
 private function hStrParamToPtrArg _
 	( _
-		byval proc as ASTNODE ptr, _
+		byval parent as ASTNODE ptr, _
 		byval n as ASTNODE ptr, _
 		byval checkrtl as integer _
 	) as integer
 
-	dim as ASTNODE ptr p
-	dim as integer pdtype
+	dim as ASTNODE ptr arg
+	dim as integer arg_dtype
 
 	if( checkrtl = FALSE ) then
 		'' rtl? don't mess..
-		if( proc->call.isrtl ) then
+		if( parent->call.isrtl ) then
 			return TRUE
 		end if
 	end if
 
 	''
-	p = n->l
-	pdtype = p->dtype
+	arg = n->l
+	arg_dtype = arg->dtype
 
 	'' var- or fixed-len string param?
-	if( symbGetDataClass( pdtype ) = FB_DATACLASS_STRING ) then
+	if( symbGetDataClass( arg_dtype ) = FB_DATACLASS_STRING ) then
 
 		'' if it's a function returning a STRING, it will have to be
 		'' deleted automagically when the proc been called return
-		if( p->class = AST_NODECLASS_CALL ) then
+		if( arg->class = AST_NODECLASS_CALL ) then
 			'' create a temp string to pass as parameter (no copy is
 			'' done at rtlib, as the returned string is a temp too)
-			n->l = hAllocTmpString( proc, p, FALSE )
-			pdtype = FB_DATATYPE_STRING
+			n->l = hAllocTmpString( parent, arg, FALSE )
+			arg_dtype = FB_DATATYPE_STRING
         end if
 
 		'' not fixed-len? deref var-len (ptr at offset 0)
-		if( pdtype <> FB_DATATYPE_FIXSTR ) then
+		if( arg_dtype <> FB_DATATYPE_FIXSTR ) then
     		n->l = astNewCONV( AST_OP_TOPOINTER, _
     						   FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
     						   NULL, _
@@ -324,7 +322,7 @@ private function hStrParamToPtrArg _
         '' fixed-len..
         else
             '' get the address of
-        	if( p->class <> AST_NODECLASS_PTR ) then
+        	if( arg->class <> AST_NODECLASS_PTR ) then
 				n->l = astNewCONV( AST_OP_TOPOINTER, _
     						   	   FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
     						   	   NULL, _
@@ -336,10 +334,10 @@ private function hStrParamToPtrArg _
 
 	'' w- or z-string
 	else
-    	select case pdtype
+    	select case arg_dtype
     	'' zstring? take the address of
     	case FB_DATATYPE_CHAR
-			n->l = astNewADDR( AST_OP_ADDROF, p )
+			n->l = astNewADDR( AST_OP_ADDROF, arg )
 			n->dtype = n->l->dtype
 
 		'' wstring?
@@ -347,13 +345,13 @@ private function hStrParamToPtrArg _
 
 			'' if it's a function returning a WSTRING, it will have to be
 			'' deleted automatically when the proc been called return
-			if( p->class = AST_NODECLASS_CALL ) then
-            	n->l = hAllocTmpWstrPtr( proc, p )
+			if( arg->class = AST_NODECLASS_CALL ) then
+            	n->l = hAllocTmpWstrPtr( parent, arg )
 
 			'' not a temporary..
 			else
 				'' take the address of
-				n->l = astNewADDR( AST_OP_ADDROF, p )
+				n->l = astNewADDR( AST_OP_ADDROF, arg )
 			end if
 
 			n->dtype = n->l->dtype
@@ -369,30 +367,30 @@ end function
 '':::::
 private function hCheckArrayParam _
 	( _
-		byval f as ASTNODE ptr, _
+		byval parent as ASTNODE ptr, _
 		byval n as ASTNODE ptr, _
 		byval adtype as integer, _
 		byval adclass as integer _
 	) as integer
 
 	dim as FBSYMBOL ptr s, d
-    dim as ASTNODE ptr p
+    dim as ASTNODE ptr arg
 
-	p = n->l
+	arg = n->l
 
 	'' type field?
-	s = astGetSymbol( p )
+	s = astGetSymbol( arg )
 
 	if( s = NULL ) then
-		hParamError( f )
+		hParamError( parent )
 		return FALSE
 	end if
 
 	'' same type? (don't check if it's a rtl proc)
-	if( f->call.isrtl = FALSE ) then
+	if( parent->call.isrtl = FALSE ) then
 		if( (adclass <> symbGetDataClass( s->typ ) ) or _
 			(symbGetDataSize( adtype ) <> symbGetDataSize( s->typ )) ) then
-			hParamError( f )
+			hParamError( parent )
 			return FALSE
 		end if
 	end if
@@ -400,7 +398,7 @@ private function hCheckArrayParam _
 	if( s->class = FB_SYMBCLASS_UDTELM ) then
 		'' not an array?
 		if( symbGetArrayDimensions( s ) = 0 ) then
-			hParamError( f )
+			hParamError( parent )
 			return FALSE
 		end if
 
@@ -411,7 +409,7 @@ private function hCheckArrayParam _
 		''''''''end if
 
 		'' create a temp array descriptor
-		n->l = hAllocTmpArrayDesc( f, p )
+		n->l = hAllocTmpArrayDesc( parent, arg )
 		n->dtype = FB_DATATYPE_POINTER + FB_DATATYPE_VOID
 
 	else
@@ -427,7 +425,7 @@ private function hCheckArrayParam _
 			'' not an array?
 			d = s->var.array.desc
 			if( d = NULL ) then
-				hParamError( f )
+				hParamError( parent )
 				return FALSE
 			end if
 
@@ -452,11 +450,11 @@ private function hCheckByRefArg _
 		byval n as ASTNODE ptr _
 	) as ASTNODE ptr static
 
-    dim as ASTNODE ptr p
+    dim as ASTNODE ptr arg
 
-	p = n->l
+	arg = n->l
 
-	select case as const p->class
+	select case as const arg->class
 	'' var, array index or pointer? pass as-is (assuming the type was already checked)
 	case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
 		 AST_NODECLASS_FIELD, AST_NODECLASS_PTR
@@ -466,120 +464,118 @@ private function hCheckByRefArg _
 		select case as const dtype
 		case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 			 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-			return p
+			return arg
 
 		'' UDT? do nothing, just take the addr of
-		case FB_DATATYPE_USERDEF
+		case FB_DATATYPE_STRUCT
 
 		case else
 			'' scalars: store param to a temp var and pass it
-			p = astNewASSIGN( astNewVAR( symbAddTempVar( dtype, subtype ), _
-									 	 0, _
-									 	 dtype, _
-									 	 subtype ), _
-							  p, _
-							  FALSE )
+			arg = astNewASSIGN( astNewVAR( symbAddTempVar( dtype, subtype ), _
+									 	   0, _
+									 	   dtype, _
+									 	   subtype ), _
+							    arg, _
+							    FALSE )
 		end select
 
 	end select
 
 	'' take the address of
-	p = astNewADDR( AST_OP_ADDROF, p )
+	arg = astNewADDR( AST_OP_ADDROF, arg )
 
-	n->l = p
-	n->dtype = p->dtype
-	n->subtype = p->subtype
+	n->l = arg
+	n->dtype = arg->dtype
+	n->subtype = arg->subtype
 	n->arg.mode = FB_PARAMMODE_BYVAL
 
-	function = p
+	function = arg
 
 end function
 
 '':::::
 private function hCheckParam _
 	( _
-		byval f as ASTNODE ptr, _
+		byval parent as ASTNODE ptr, _
 		byval n as ASTNODE ptr _
 	) as integer
 
-    dim as FBSYMBOL ptr sym, arg, s
-    dim as integer adtype, adclass, amode
-    dim as ASTNODE ptr p
-    dim as integer pdtype, pdclass, pmode, pclass
+    dim as FBSYMBOL ptr param = any
+    dim as integer param_dtype = any, param_dclass = any, param_mode = any
+    dim as ASTNODE ptr arg = any
+    dim as integer arg_dtype = any, arg_dclass = any, arg_mode = any, arg_nodeclass = any
 
     function = FALSE
 
 	''
-	sym = f->sym
-
-	if( f->call.args >= sym->proc.params ) then
-		arg = symbGetProcTailParam( sym )
+	if( parent->call.args >= parent->sym->proc.params ) then
+		param = symbGetProcTailParam( parent->sym )
 	else
-		arg = f->call.currarg
+		param = parent->call.currarg
 	end if
 
-	'' argument
-	amode = symbGetParamMode( arg )
-	adtype = symbGetType( arg )
-	if( adtype <> INVALID ) then
-		adclass = symbGetDataClass( adtype )
+	'' parameter
+	param_mode = symbGetParamMode( param )
+	param_dtype = symbGetType( param )
+	if( param_dtype <> INVALID ) then
+		param_dclass = symbGetDataClass( param_dtype )
 	end if
 
 	'' string concatenation is delayed for optimization reasons..
 	n->l = astUpdStrConcat( n->l )
 
-    '' parameter
-	p = n->l
-	pmode = n->arg.mode
-	pdtype = p->dtype
-	pdclass = symbGetDataClass( pdtype )
-	pclass = p->class
+    '' argument
+	arg_mode = n->arg.mode
+	arg = n->l
+	arg_dtype = arg->dtype
+	arg_dclass = symbGetDataClass( arg_dtype )
+	arg_nodeclass = arg->class
 
 	'' by descriptor?
-	if( amode = FB_PARAMMODE_BYDESC ) then
+	if( param_mode = FB_PARAMMODE_BYDESC ) then
 
         '' param is not an pointer
-        if( pmode <> FB_PARAMMODE_BYVAL ) then
-        	return hCheckArrayParam( f, n, adtype, adclass )
+        if( arg_mode <> FB_PARAMMODE_BYVAL ) then
+        	return hCheckArrayParam( parent, n, param_dtype, param_dclass )
         end if
 
         return TRUE
     end if
 
     '' vararg?
-    if( amode = FB_PARAMMODE_VARARG ) then
+    if( param_mode = FB_PARAMMODE_VARARG ) then
 
-		select case pdclass
+		select case arg_dclass
 		'' var-len string? check..
 		case FB_DATACLASS_STRING
-			return hStrParamToPtrArg( f, n, FALSE )
+			return hStrParamToPtrArg( parent, n, FALSE )
 
 		case FB_DATACLASS_INTEGER
-			select case pdtype
+			select case arg_dtype
 			'' w|zstring? ditto..
 			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-				return hStrParamToPtrArg( f, n, FALSE )
+				return hStrParamToPtrArg( parent, n, FALSE )
 
 			case else
 				'' if < len(integer), convert to int (C ABI)
-				if( symbGetDataSize( pdtype ) < FB_INTEGERSIZE ) then
-					p = astNewCONV( INVALID, _
-									iif( symbIsSigned( pdtype ), _
-										 FB_DATATYPE_INTEGER, _
-										 FB_DATATYPE_UINT ), _
-									NULL, _
-									p )
-					n->dtype = p->dtype
-					n->l = p
+				if( symbGetDataSize( arg_dtype ) < FB_INTEGERSIZE ) then
+					arg = astNewCONV( INVALID, _
+									  iif( symbIsSigned( arg_dtype ), _
+										   FB_DATATYPE_INTEGER, _
+										   FB_DATATYPE_UINT ), _
+									  NULL, _
+									  arg )
+					n->dtype = arg->dtype
+					n->l = arg
 				end if
 			end select
 
 		case FB_DATACLASS_FPOINT
 			'' float? convert it to double (C ABI)
-			if( pdtype = FB_DATATYPE_SINGLE ) then
-				p = astNewCONV( INVALID, FB_DATATYPE_DOUBLE, NULL, p )
-				n->dtype = p->dtype
-				n->l = p
+			if( arg_dtype = FB_DATATYPE_SINGLE ) then
+				arg = astNewCONV( INVALID, FB_DATATYPE_DOUBLE, NULL, arg )
+				n->dtype = arg->dtype
+				n->l = arg
 			end if
 		end select
 
@@ -587,70 +583,71 @@ private function hCheckParam _
 	end if
 
 	'' as any?
-    if( adtype = FB_DATATYPE_VOID ) then
+    if( param_dtype = FB_DATATYPE_VOID ) then
 
-		if( pmode = FB_PARAMMODE_BYVAL ) then
+		if( arg_mode = FB_PARAMMODE_BYVAL ) then
 			'' another quirk: BYVAL strings passed to BYREF ANY args..
-			return hStrParamToPtrArg( f, n, FALSE )
+			return hStrParamToPtrArg( parent, n, FALSE )
 		end if
 
 		'' byref arg, check if a temp param isn't needed
 		'' use the param type, not the arg type (as it's VOID)
-		return hCheckByRefArg( pdtype, p->subtype, n ) <> NULL
+		return hCheckByRefArg( arg_dtype, arg->subtype, n ) <> NULL
 
     end if
 
     '' byval or byref (but as any)..
 
     '' string argument?
-    if( adclass = FB_DATACLASS_STRING ) then
+    if( param_dclass = FB_DATACLASS_STRING ) then
 
 		'' if it's a function returning a STRING, it's actually a pointer
-		if( pclass = AST_NODECLASS_CALL ) then
-			select case pdtype
+		if( arg_nodeclass = AST_NODECLASS_CALL ) then
+			select case arg_dtype
 			case FB_DATATYPE_STRING, FB_DATATYPE_WCHAR
-				pclass = AST_NODECLASS_PTR
+				arg_nodeclass = AST_NODECLASS_PTR
 			end select
 		end if
 
 		'' param not an string?
-		if( pdclass <> FB_DATACLASS_STRING ) then
+		if( arg_dclass <> FB_DATACLASS_STRING ) then
 			'' not a zstring?
-			select case pdtype
+			select case arg_dtype
 			case FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
 			case else
 				'' check if not a byte ptr
-				if( (pclass <> AST_NODECLASS_PTR) or _
-					((pdtype <> FB_DATATYPE_BYTE) and (pdtype <> FB_DATATYPE_UBYTE)) ) then
+				if( (arg_nodeclass <> AST_NODECLASS_PTR) or _
+					((arg_dtype <> FB_DATATYPE_BYTE) and _
+					 (arg_dtype <> FB_DATATYPE_UBYTE)) ) then
 
 					'' or if passing a ptr as byval to a byval string arg
-		    		if( (pdclass <> FB_DATACLASS_INTEGER) or _
-		    			(amode <> FB_PARAMMODE_BYVAL) or _
-		    			(symbGetDataSize( pdtype ) <> FB_POINTERSIZE) ) then
-						hParamError( f )
+		    		if( (arg_dclass <> FB_DATACLASS_INTEGER) or _
+		    			(param_mode <> FB_PARAMMODE_BYVAL) or _
+		    			(symbGetDataSize( arg_dtype ) <> FB_POINTERSIZE) ) then
+						hParamError( parent )
 						exit function
 		    		end if
 
 		    		'' the BYVAL modifier was not used?
-		    		if( pmode <> FB_PARAMMODE_BYVAL ) then
+		    		if( arg_mode <> FB_PARAMMODE_BYVAL ) then
 						'' const? only accept if it's NULL
-		    			if( p->defined ) then
-		    				if( p->con.val.int <> NULL ) then
-								hParamError( f )
+		    			if( arg->defined ) then
+		    				if( arg->con.val.int <> NULL ) then
+								hParamError( parent )
 								exit function
 		    				end if
 
 		    			'' not a pointer?
-		    			elseif( pdtype < FB_DATATYPE_POINTER ) then
-							hParamError( f )
+		    			elseif( arg_dtype < FB_DATATYPE_POINTER ) then
+							hParamError( parent )
 							exit function
 
 		    			'' not a pointer to a zstring?
 		    			else
 							if( astPtrCheck( FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
-											 NULL, p ) = FALSE ) then
-			        			hParamWarning( f, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
+											 NULL, arg ) = FALSE ) then
+			        			hParamWarning( parent, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
 			    			end if
 
 		    			end if
@@ -676,33 +673,33 @@ private function hCheckParam _
 		''	 same as above but convert to ascii first
 
 		'' alloc a temp string if needed
-		p = hCheckStringArg( f, arg, p )
-		if( p <> n->l ) then
+		arg = hCheckStringArg( parent, param, arg )
+		if( arg <> n->l ) then
 			'' node will be a function returning a PTR to a string descriptor
-			pdtype = FB_DATATYPE_STRING
-			pdclass = FB_DATACLASS_STRING
-			pclass = AST_NODECLASS_PTR
+			arg_dtype = FB_DATATYPE_STRING
+			arg_dclass = FB_DATACLASS_STRING
+			arg_nodeclass = AST_NODECLASS_PTR
 
-			n->l = p
-			n->dtype = pdtype
+			n->l = arg
+			n->dtype = arg_dtype
 		end if
 
 		''
-		if( amode = FB_PARAMMODE_BYVAL ) then
+		if( param_mode = FB_PARAMMODE_BYVAL ) then
 			'' deref var-len (ptr at offset 0)
-			if( pdtype = FB_DATATYPE_STRING ) then
-				pdclass = FB_DATACLASS_INTEGER
-				pdtype = FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
-				n->l = astNewADDR( AST_OP_DEREF, p )
-				n->dtype = pdtype
+			if( arg_dtype = FB_DATATYPE_STRING ) then
+				arg_dclass = FB_DATACLASS_INTEGER
+				arg_dtype = FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
+				n->l = astNewADDR( AST_OP_DEREF, arg )
+				n->dtype = arg_dtype
 			end if
 		end if
 
 		'' not a pointer yet?
-		if( pclass <> AST_NODECLASS_PTR ) then
+		if( arg_nodeclass <> AST_NODECLASS_PTR ) then
 			'' descriptor or fixed-len? get the address of
-			if( (pdclass = FB_DATACLASS_STRING) or (pdtype = FB_DATATYPE_CHAR) ) then
-				n->l = astNewADDR( AST_OP_ADDROF, p )
+			if( (arg_dclass = FB_DATACLASS_STRING) or (arg_dtype = FB_DATATYPE_CHAR) ) then
+				n->l = astNewADDR( AST_OP_ADDROF, arg )
 				n->dtype = FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
 			end if
 		end if
@@ -713,10 +710,10 @@ private function hCheckParam _
 	'' anything but strings..
 
 	'' passing a BYVAL ptr to an BYREF arg?
-	if( (pmode = FB_PARAMMODE_BYVAL) and (amode = FB_PARAMMODE_BYREF) ) then
-		if( (pdclass <> FB_DATACLASS_INTEGER) or _
-			(symbGetDataSize( pdtype ) <> FB_POINTERSIZE) ) then
-			hParamError( f )
+	if( (arg_mode = FB_PARAMMODE_BYVAL) and (param_mode = FB_PARAMMODE_BYREF) ) then
+		if( (arg_dclass <> FB_DATACLASS_INTEGER) or _
+			(symbGetDataSize( arg_dtype ) <> FB_POINTERSIZE) ) then
+			hParamError( parent )
 			exit function
 		end if
 
@@ -724,49 +721,50 @@ private function hCheckParam _
 	end if
 
 	'' UDT arg? check if the same, can't convert
-	if( adtype = FB_DATATYPE_USERDEF ) then
+	if( param_dtype = FB_DATATYPE_STRUCT ) then
+		dim as FBSYMBOL ptr s = any
 		'' not another UDT?
-		if( pdtype <> FB_DATATYPE_USERDEF ) then
+		if( arg_dtype <> FB_DATATYPE_STRUCT ) then
 			'' not a proc? (can be an UDT been returned in registers)
-			if( pclass <> AST_NODECLASS_CALL ) then
-				hParamError( f )
+			if( arg_nodeclass <> AST_NODECLASS_CALL ) then
+				hParamError( parent )
 				exit function
 			end if
 
-			'' it's a proc, but was it originally returning an UDT?
-			s = p->sym
-			if( s->typ <> FB_DATATYPE_USERDEF ) then
-				hParamError( f )
+			'' it's a proc call, but was it originally returning an UDT?
+			s = arg->sym
+			if( s->typ <> FB_DATATYPE_STRUCT ) then
+				hParamError( parent )
 				exit function
 			end if
 
 			'' byref argument? can't create a tempory UDT..
-			if( amode = FB_PARAMMODE_BYREF ) then
-				hParamError( f, FB_ERRMSG_CANTPASSUDTRESULTBYREF )
+			if( param_mode = FB_PARAMMODE_BYREF ) then
+				hParamError( parent, FB_ERRMSG_CANTPASSUDTRESULTBYREF )
 				exit function
 			end if
 
 			'' set type..
-			n->dtype = pdtype
+			n->dtype = arg_dtype
 			s = s->subtype
 
 		else
-			if( pclass <> AST_NODECLASS_CALL ) then
-				s = p->subtype
+			if( arg_nodeclass <> AST_NODECLASS_CALL ) then
+				s = arg->subtype
 			else
-				s = p->sym->subtype
+				s = arg->sym->subtype
 			end if
 		end if
 
         '' check for invalid UDT's (different subtypes)
-		if( symbGetSubtype( arg ) <> s ) then
-			hParamError( f )
+		if( symbGetSubtype( param ) <> s ) then
+			hParamError( parent )
 			exit function
 		end if
 
 		'' set the length if it's been passed by value
-		if( amode = FB_PARAMMODE_BYVAL ) then
-			if( pdtype = FB_DATATYPE_USERDEF ) then
+		if( param_mode = FB_PARAMMODE_BYVAL ) then
+			if( arg_dtype = FB_DATATYPE_STRUCT ) then
 				n->arg.lgt = FB_ROUNDLEN( symbGetLen( s ) )
 			end if
 		end if
@@ -777,101 +775,102 @@ private function hCheckParam _
 	'' anything else..
 
 	'' can't convert UDT's to other types
-	if( pdtype = FB_DATATYPE_USERDEF ) then
-		hParamError( f )
+	if( arg_dtype = FB_DATATYPE_STRUCT ) then
+		hParamError( parent )
 		exit function
 	end if
 
 	'' string param? handle z- and w-string ptr arguments
-	select case as const pdtype
+	select case as const arg_dtype
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
 
-		select case adtype
+		select case param_dtype
 		'' zstring ptr arg?
 		case FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
 			'' if it's a wstring param, convert..
-			if( pdtype = FB_DATATYPE_WCHAR ) then
-				n->l = rtlToStr( p )
+			if( arg_dtype = FB_DATATYPE_WCHAR ) then
+				n->l = rtlToStr( arg )
 			end if
 
 		'' wstring ptr arg?
 		case FB_DATATYPE_POINTER + FB_DATATYPE_WCHAR
 			'' if it's not a wstring param, convert..
-			if( pdtype <> FB_DATATYPE_WCHAR ) then
-				n->l = rtlToWstr( p )
+			if( arg_dtype <> FB_DATATYPE_WCHAR ) then
+				n->l = rtlToWstr( arg )
 			end if
 
 		case else
-			hParamError( f )
+			hParamError( parent )
 			exit function
 		end select
 
-		hStrParamToPtrArg( f, n, TRUE )
-		p = n->l
-		pdtype = p->dtype
-		pdclass = symbGetDataClass( pdtype )
+		hStrParamToPtrArg( parent, n, TRUE )
+		arg = n->l
+		arg_dtype = arg->dtype
+		arg_dclass = symbGetDataClass( arg_dtype )
 
 	end select
 
 	'' different types? convert..
-	if( (adclass <> pdclass) or _
-		(symbGetDataSize( adtype ) <> symbGetDataSize( pdtype )) ) then
+	if( (param_dclass <> arg_dclass) or _
+		(symbGetDataSize( param_dtype ) <> symbGetDataSize( arg_dtype )) ) then
 
 		'' enum args are only allowed to be passed enum or int params
-		if( (adtype = FB_DATATYPE_ENUM) or _
-			(pdtype = FB_DATATYPE_ENUM) ) then
-			if( adclass <> pdclass ) then
-				hParamWarning( f, FB_WARNINGMSG_IMPLICITCONVERSION )
+		if( (param_dtype = FB_DATATYPE_ENUM) or _
+			(arg_dtype = FB_DATATYPE_ENUM) ) then
+			if( param_dclass <> arg_dclass ) then
+				hParamWarning( parent, FB_WARNINGMSG_IMPLICITCONVERSION )
 			end if
 		end if
 
-		if( amode = FB_PARAMMODE_BYREF ) then
+		if( param_mode = FB_PARAMMODE_BYREF ) then
 			'' param diff than arg can't passed by ref if it's a var/array/ptr
-			select case as const pclass
+			select case as const arg_nodeclass
 			case AST_NODECLASS_VAR, AST_NODECLASS_IDX, _
 			     AST_NODECLASS_FIELD, AST_NODECLASS_PTR
-				hParamError( f )
+				hParamError( parent )
 				exit function
 			end select
 		end if
 
 		'' const?
-		if( p->defined ) then
-			p = astCheckConst( adtype, p )
-			if( p = NULL ) then
+		if( arg->defined ) then
+			arg = astCheckConst( param_dtype, arg )
+			if( arg = NULL ) then
 				exit function
 			end if
 		end if
 
-		p = astNewCONV( INVALID, adtype, symbGetSubtype( arg ), p )
-		if( p = NULL ) then
-			hParamError( f, FB_ERRMSG_INVALIDDATATYPES )
+		arg = astNewCONV( INVALID, param_dtype, symbGetSubtype( param ), arg )
+		if( arg = NULL ) then
+			hParamError( parent, FB_ERRMSG_INVALIDDATATYPES )
 			exit function
 		end if
-		n->dtype = adtype
-		n->subtype = symbGetSubtype( arg )
-		n->l = p
+
+		n->dtype = param_dtype
+		n->subtype = symbGetSubtype( param )
+		n->l = arg
 
 	end if
 
 	'' pointer checking
-	if( adtype >= FB_DATATYPE_POINTER ) then
-		if( astPtrCheck( adtype, symbGetSubtype( arg ), p ) = FALSE ) then
-			if( p->dtype < FB_DATATYPE_POINTER ) then
-				hParamWarning( f, FB_WARNINGMSG_PASSINGSCALARASPTR )
+	if( param_dtype >= FB_DATATYPE_POINTER ) then
+		if( astPtrCheck( param_dtype, symbGetSubtype( param ), arg ) = FALSE ) then
+			if( arg->dtype < FB_DATATYPE_POINTER ) then
+				hParamWarning( parent, FB_WARNINGMSG_PASSINGSCALARASPTR )
 			else
-				hParamWarning( f, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
+				hParamWarning( parent, FB_WARNINGMSG_PASSINGDIFFPOINTERS )
 			end if
 		end if
 
-    elseif( p->dtype >= FB_DATATYPE_POINTER ) then
-    	hParamWarning( f, FB_WARNINGMSG_PASSINGPTRTOSCALAR )
+    elseif( arg->dtype >= FB_DATATYPE_POINTER ) then
+    	hParamWarning( parent, FB_WARNINGMSG_PASSINGPTRTOSCALAR )
 	end if
 
 	'' byref arg? check if a temp param isn't needed
-	if( amode = FB_PARAMMODE_BYREF ) then
-		p = hCheckByRefArg( adtype, symbGetSubtype( arg ), n )
+	if( param_mode = FB_PARAMMODE_BYREF ) then
+		arg = hCheckByRefArg( param_dtype, symbGetSubtype( param ), n )
         '' it's an implicit pointer
 	end if
 
@@ -882,8 +881,8 @@ end function
 '':::::
 function astNewARG _
 	( _
-		byval f as ASTNODE ptr, _
-		byval p as ASTNODE ptr, _
+		byval parent as ASTNODE ptr, _
+		byval arg as ASTNODE ptr, _
 		byval dtype as integer = INVALID, _
 		byval mode as integer = INVALID _
 	) as ASTNODE ptr
@@ -892,7 +891,7 @@ function astNewARG _
     dim as FBSYMBOL ptr sym = any
 
 	if( dtype = INVALID ) then
-		dtype = astGetDataType( p )
+		dtype = astGetDataType( arg )
 	end if
 
 	'' alloc new node
@@ -903,43 +902,43 @@ function astNewARG _
 		exit function
 	end if
 
-	n->l = p
+	n->l = arg
 	n->arg.mode = mode
 	n->arg.lgt = 0
 
 	'' add param node to function's list
-	sym = f->sym
+	sym = parent->sym
 
-	t = f->r
+	t = parent->r
 
 	'' pascal mode, first param added will be the first pushed
 	if( sym->proc.mode = FB_FUNCMODE_PASCAL ) then
 		if( t = NULL ) then
-			f->r = n
+			parent->r = n
 		else
-			t = f->call.lastarg
-			t->r = n
+			t = parent->call.lastarg
+			parent->r = n
 		end if
 
-		f->call.lastarg = n
+		parent->call.lastarg = n
 		n->r = NULL
 
 	else
 		'' non-pascal, the latest param added will be the first pushed
-		f->r = n
+		parent->r = n
 		n->r = t
 	end if
 
 	''
-	if( hCheckParam( f, n ) = FALSE ) then
+	if( hCheckParam( parent, n ) = FALSE ) then
 		return NULL
 	end if
 
 	''
-	f->call.args += 1
+	parent->call.args += 1
 
-	if( f->call.args < sym->proc.params ) then
-		f->call.currarg = symbGetParamNext( f->call.currarg )
+	if( parent->call.args < sym->proc.params ) then
+		parent->call.currarg = symbGetParamNext( parent->call.currarg )
 	end if
 
 end function

@@ -23,9 +23,6 @@
 ''		 jan/2005 dos support added [DrV]
 
 
-option explicit
-option private
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\hash.bi"
@@ -105,7 +102,8 @@ declare sub 	 setCompOptions			( )
 		( FBC_OPT_OUTFILE		, @"o"           ), _
 		( FBC_OPT_OBJFILE		, @"a"           ), _
 		( FBC_OPT_LIBFILE		, @"l"           ), _
-		( FBC_OPT_INCLUDE		, @"include"     ) _
+		( FBC_OPT_INCLUDE		, @"include"     ), _
+		( FBC_OPT_LANG			, @"lang"     	 ) _
 	}
 
 	'on error goto runtime_err
@@ -222,7 +220,7 @@ runtime_err:
 	end 1
 
 ''':::::
-sub fbcInit( )
+private sub fbcInit( )
     dim as integer i
 
 	hashInit( )
@@ -240,7 +238,7 @@ sub fbcInit( )
 end sub
 
 ''':::::
-sub fbcEnd _
+private sub fbcEnd _
 	(  _
 		byval errnum as integer _
 	)
@@ -256,7 +254,7 @@ sub fbcEnd _
 end sub
 
 '':::::
-sub initTarget( )
+private sub initTarget( )
 
 	select case as const fbc.target
 #if defined(TARGET_WIN32) or defined(CROSSCOMP_WIN32)
@@ -288,7 +286,7 @@ sub initTarget( )
 end sub
 
 '':::::
-sub setCompOptions( )
+private sub setCompOptions( )
 
 	fbSetOption( FB_COMPOPT_TARGET, fbc.target )
 
@@ -307,7 +305,7 @@ sub setCompOptions( )
 end sub
 
 '':::::
-function compileFiles as integer
+private function compileFiles as integer
 	dim as integer i, checkmain, ismain
 
 	function = FALSE
@@ -379,7 +377,7 @@ function compileFiles as integer
 end function
 
 '':::::
-function assembleFiles as integer
+private function assembleFiles as integer
 	dim i as integer, f as integer
 	dim as string aspath, ascline, binpath
 
@@ -414,7 +412,7 @@ function assembleFiles as integer
     		ascline = ""
     	end if
 
-		ascline += "\"" + fbc.asmlist(i) + "\" -o \"" + fbc.outlist(i) + "\" "
+		ascline += QUOTE + fbc.asmlist(i) + (QUOTE + " -o " + QUOTE) + fbc.outlist(i) + (QUOTE + " ")
 
     	'' invoke as
     	if( fbc.verbose ) then
@@ -431,7 +429,7 @@ function assembleFiles as integer
 end function
 
 '':::::
-function archiveFiles as integer
+private function archiveFiles as integer
     dim as integer i
     dim as string arcline
 
@@ -444,16 +442,16 @@ function archiveFiles as integer
     arcline = "-rsc "
 
     '' output library file name
-    arcline += QUOTE + fbc.outname + "\" "
+    arcline += QUOTE + fbc.outname + (QUOTE + " ")
 
     '' add objects from output list
     for i = 0 to fbc.inps-1
-    	arcline += QUOTE + fbc.outlist(i) + "\" "
+    	arcline += QUOTE + fbc.outlist(i) + (QUOTE + " ")
     next
 
     '' add objects from cmm-line
     for i = 0 to fbc.objs-1
-    	arcline += QUOTE + fbc.objlist(i) + "\" "
+    	arcline += QUOTE + fbc.objlist(i) + (QUOTE + " ")
     next
 
     '' invoke ar
@@ -468,21 +466,21 @@ function archiveFiles as integer
 end function
 
 '':::::
-function linkFiles as integer
+private function linkFiles as integer
 
 	function = fbc.linkFiles( )
 
 end function
 
 '':::::
-function compileResFiles as integer
+private function compileResFiles as integer
 
 	function = fbc.compileResFiles( )
 
 end function
 
 '':::::
-function delFiles as integer
+private function delFiles as integer
 	dim as integer i
 
     function = FALSE
@@ -501,7 +499,7 @@ function delFiles as integer
 end function
 
 '':::::
-sub setMainModule( )
+private sub setMainModule( )
 
 	if( len( fbc.mainfile ) = 0 ) then
 		if( fbc.inps > 0 ) then
@@ -530,7 +528,7 @@ end sub
 #define printOption(_opt,_desc) print _opt, " "; _desc
 
 '':::::
-sub printOptions( )
+private sub printOptions( )
 	dim as string desc
 
 	print "Usage: fbc [options] inputlist"
@@ -567,6 +565,7 @@ sub printOptions( )
 	printOption( "-i <name>", "Add a path to search for include files" )
 	print "-include <name>"; " Include a header file on each source compiled"
 	printOption( "-l <name>", "Add a library file to linker's list" )
+	printOption( "-lang <name>", "Select language compatibility: deprecated, qb" )
 	printOption( "-lib", "Create a static library" )
 	printOption( "-m <name>", "Main file w/o ext, the entry point (def: 1st .bas on list)" )
 	printOption( "-map <name>", "Save the linking map to file name" )
@@ -618,13 +617,13 @@ sub printOptions( )
 	printOption( "-v", "Be verbose" )
 	printOption( "-version", "Show compiler version" )
 	printOption( "-x <name>", "Set executable/library name" )
-	printOption( "-w <value>", "Set min warning level" )
+	printOption( "-w <value>", "Set min warning level: all, pedantic or a value" )
 
 end sub
 
 
 '':::::
-sub setDefaultOptions( )
+private sub setDefaultOptions( )
 
 	fbSetDefaultOptions( )
 
@@ -655,18 +654,18 @@ sub setDefaultOptions( )
 end sub
 
 '':::::
-sub printInvalidOpt( byval argn as integer )
+private sub printInvalidOpt( byval argn as integer )
 
 	if( len( argv(argn+1) ) > 0 ) then
-		errReportEx( FB_ERRMSG_INVALIDCMDOPTION, "\"" + argv(argn+1) + "\"", -1 )
+		errReportEx( FB_ERRMSG_INVALIDCMDOPTION, QUOTE + argv(argn+1) + QUOTE, -1 )
 	else
-		errReportEx( FB_ERRMSG_MISSINGCMDOPTION, "\"" + argv(argn) + "\"", -1 )
+		errReportEx( FB_ERRMSG_MISSINGCMDOPTION, QUOTE + argv(argn) + QUOTE, -1 )
 	end if
 
 end sub
 
 '':::::
-function processTargetOptions( ) as integer
+private function processTargetOptions( ) as integer
     dim as integer i
 
 	function = FALSE
@@ -684,9 +683,7 @@ function processTargetOptions( ) as integer
 				continue for
 			end if
 
-			select case mid( argv(i), 2 )
-            ''
-			case "target"
+			if( mid( argv(i), 2 ) = "target" ) then
 				select case argv(i+1)
 #if defined(TARGET_DOS) or defined(CROSSCOMP_DOS)
 				case "dos"
@@ -721,7 +718,7 @@ function processTargetOptions( ) as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
-			end select
+			end if
 
 		end if
 
@@ -732,7 +729,7 @@ function processTargetOptions( ) as integer
 end function
 
 '':::::
-function processOptions( ) as integer
+private function processOptions( ) as integer
     dim as integer i, value
     dim as FBC_OPT id
 
@@ -938,13 +935,32 @@ function processOptions( ) as integer
 				argv(i+1) = ""
 
 			case FBC_OPT_WARNLEVEL
-				if( argv(i+1) = "all" ) then
-					value = 0
-				else
-					value = valint( argv(i+1) )
-				end if
 
-				fbSetOption( FB_COMPOPT_WARNINGLEVEL, value )
+				value = -2
+
+				select case argv(i+1)
+				case "all"
+					value = -1
+
+				case "param"
+					fbSetOption( FB_COMPOPT_PEDANTICCHK, _
+								 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_PARAMMODE )
+
+				case "escape"
+					fbSetOption( FB_COMPOPT_PEDANTICCHK, _
+								 fbGetOption( FB_COMPOPT_PEDANTICCHK ) or FB_PDCHECK_ESCSEQ )
+
+				case "pedantic"
+					fbSetOption( FB_COMPOPT_PEDANTICCHK, FB_PDCHECK_ALL )
+					value = -1
+
+				case else
+					value = valint( argv(i+1) )
+				end select
+
+				if( value >= -1 ) then
+					fbSetOption( FB_COMPOPT_WARNINGLEVEL, value )
+				end if
 
 				argv(i) = ""
 				argv(i+1) = ""
@@ -1037,6 +1053,24 @@ function processOptions( ) as integer
 				argv(i) = ""
 				argv(i+1) = ""
 
+			case FBC_OPT_LANG
+				select case lcase( argv(i+1) )
+				case "fb"
+					value = FB_LANG_FB
+				case "deprecated"
+					value = FB_LANG_FB_DEPRECATED
+				case "qb"
+					value = FB_LANG_QB
+				case else
+					printInvalidOpt( i )
+					exit function
+				end select
+
+				fbSetOption( FB_COMPOPT_LANG, value )
+
+				argv(i) = ""
+				argv(i+1) = ""
+
 			end select
 		end if
 
@@ -1047,7 +1081,7 @@ function processOptions( ) as integer
 end function
 
 '':::::
-function processCompLists( ) as integer
+private function processCompLists( ) as integer
     dim as integer i, p
     dim as string dname, dtext
 
@@ -1081,7 +1115,7 @@ function processCompLists( ) as integer
 end function
 
 '':::::
-function listFiles( ) as integer
+private function listFiles( ) as integer
     dim as integer i
 
 	function = FALSE
@@ -1118,7 +1152,7 @@ function listFiles( ) as integer
 end function
 
 '':::::
-sub parseCmd _
+private sub parseCmd _
 	( _
 		byref argc as integer, _
 		argv() as string _
@@ -1136,14 +1170,14 @@ sub parseCmd _
 end sub
 
 '':::::
-sub getLibList( )
+private sub getLibList( )
 
 	fbc.libs = fbListLibs( fbc.liblist(), fbc.libs )
 
 end sub
 
 '':::::
-public function fbAddLibPath ( byval path as zstring ptr ) as integer
+function fbAddLibPath ( byval path as zstring ptr ) as integer
 	dim as integer i
 
 	function = FALSE

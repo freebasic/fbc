@@ -37,23 +37,6 @@ enum IRVREGTYPE_ENUM
 end enum
 
 ''
-enum IROPTYPE_ENUM
-	IR_OPTYPE_BINARY
-	IR_OPTYPE_UNARY
-	IR_OPTYPE_LOAD
-	IR_OPTYPE_STORE
-	IR_OPTYPE_BRANCH
-	IR_OPTYPE_COMP
-	IR_OPTYPE_CONVERT
-	IR_OPTYPE_CALL
-	IR_OPTYPE_STACK
-	IR_OPTYPE_ADDRESS
-	IR_OPTYPE_MEM
-end enum
-
-''
-
-''
 type IRVREG_ as IRVREG
 type IRTAC_ as IRTAC
 
@@ -72,10 +55,10 @@ end type
 type IRTAC
 	pos			as integer
 
-	op			as AST_OPCODE					'' opcode
+	op			as AST_OP						'' opcode
 
-	vr			as IRTACVREG_GRP                   '' result
-	v1			as IRTACVREG_GRP                   '' operand 1
+	vr			as IRTACVREG_GRP                '' result
+	v1			as IRTACVREG_GRP                '' operand 1
 	v2			as IRTACVREG_GRP				'' operand 2
 
 	ex1			as FBSYMBOL ptr					'' extra field, used by call/jmp
@@ -327,13 +310,13 @@ declare sub 		irXchgTOS			( _
 
 #define irEmitUOP(op,v1,vr) irEmit( op, v1, NULL, vr )
 
-#define irEmitSTORE(v1,v2) irEmit( AST_OP_STORE, v1, v2, NULL )
+#define irEmitSTORE(v1,v2) irEmit( AST_OP_ASSIGN, v1, v2, NULL )
 
 #define irEmitSPILLREGS() irEmit( AST_OP_SPILLREGS, NULL, NULL, NULL )
 
 #define irEmitLOAD(v1) irEmit( AST_OP_LOAD, v1, NULL, NULL )
 
-#define irEmitLOADRES(v1,vr) irEmit( AST_OP_LOADRESULT, v1, NULL, vr )
+#define irEmitLOADRES(v1,vr) irEmit( AST_OP_LOADRES, v1, NULL, vr )
 
 #define irEmitSTACK(op,v1) irEmit( op, v1, NULL, NULL )
 

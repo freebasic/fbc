@@ -19,8 +19,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -59,7 +57,7 @@ function astNewBRANCH _
 	n->l = l
 	n->op.op = op
 	n->op.ex = label
-	n->op.allocres = TRUE
+	n->op.options = AST_OPOPT_ALLOCRES
 
 end function
 

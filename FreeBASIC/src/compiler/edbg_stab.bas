@@ -20,8 +20,6 @@
 ''
 '' chng: nov/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -141,9 +139,9 @@ private sub hEmitSTABS _
 
 	dim as string ostr
 
-	ostr = ".stabs \""
+	ostr = ".stabs " + QUOTE
 	ostr += *_string
-	ostr += "\","
+	ostr += QUOTE + ","
 	ostr += str( _type )
 	ostr += ","
 	ostr += str( _other )
@@ -254,7 +252,7 @@ sub edbgEmitHeader _
 
 	'' emit source file
     lname = *hMakeTmpStr( )
-    hWriteStr( TRUE, ".file \"" + *filename + "\"" )
+    hWriteStr( TRUE, ".file " + QUOTE + *filename + QUOTE )
     if( instr( *filename, "/" ) = 0 ) then
     	dim as zstring ptr dirpath
     	dirpath = hRevertSlash( curdir() + "/", TRUE )
@@ -907,7 +905,7 @@ private function hGetDataType _
 
     select case dtype
     '' UDT?
-    case FB_DATATYPE_USERDEF
+    case FB_DATATYPE_STRUCT
     	subtype = symbGetSubType( sym )
     	if( symbIsDescriptor( sym ) = FALSE ) then
     		if( subtype->udt.dbg.typenum = INVALID ) then

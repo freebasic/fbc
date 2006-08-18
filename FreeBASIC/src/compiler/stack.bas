@@ -21,8 +21,6 @@
 '' chng: jan/2005 written [v1ctor]
 ''
 
-option explicit
-option escape
 
 const NULL = 0
 

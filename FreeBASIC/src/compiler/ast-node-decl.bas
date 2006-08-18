@@ -19,8 +19,6 @@
 ''
 '' chng: jun/2006 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -53,7 +51,7 @@ private function hClearVar _
    		select case symbGetType( sym )
    		case FB_DATATYPE_STRING
 
-   		case FB_DATATYPE_USERDEF
+   		case FB_DATATYPE_STRUCT
             if( symbGetUDTDynCnt( symbGetSubtype( sym ) ) = 0 ) then
             	return NULL
             end if

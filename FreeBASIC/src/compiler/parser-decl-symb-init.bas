@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -170,7 +168,7 @@ private function hArrayInit _
 			end if
 
 		else
-			if( symbGetType( ctx.sym ) <> FB_DATATYPE_USERDEF ) then
+			if( symbGetType( ctx.sym ) <> FB_DATATYPE_STRUCT ) then
 				if( hElmInit( ctx ) = FALSE ) then
 					exit function
 				end if

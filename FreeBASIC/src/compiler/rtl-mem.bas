@@ -20,8 +20,6 @@
 ''
 '' chng: oct/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -30,16 +28,16 @@ option escape
 
 
 '' name, alias, _
-'' type, mode, _
-'' callback, checkerror, overloaded, _
-'' args, _
-'' [arg typ,mode,optional[,value]]*args
+'' type, callconv, _
+'' callback, options, _
+'' params, _
+'' [param type, mode, optional[, value]] * params
 funcdata:
 
 '' fb_NullPtrChk ( byval p as any ptr, byval linenum as integer, byval fname as zstring ptr ) as any ptr
 data @FB_RTL_NULLPTRCHK,"", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 3, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
@@ -48,7 +46,7 @@ data @FB_RTL_NULLPTRCHK,"", _
 '' fb_MemCopy cdecl ( dst as any, src as any, byval bytes as integer ) as void
 data @FB_RTL_MEMCOPY,"memcpy", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 3, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
@@ -57,7 +55,7 @@ data @FB_RTL_MEMCOPY,"memcpy", _
 '' fb_MemSwap ( dst as any, src as any, byval bytes as integer ) as void
 data @FB_RTL_MEMSWAP,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 3, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
@@ -66,7 +64,7 @@ data @FB_RTL_MEMSWAP,"", _
 '' fb_MemCopyClear ( dst as any, byval dstlen as integer, src as any, byval srclen as integer ) as void
 data @FB_RTL_MEMCOPYCLEAR,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 4, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
@@ -76,21 +74,21 @@ data @FB_RTL_MEMCOPYCLEAR,"", _
 '' fre ( ) as uinteger
 data @"fre","fb_GetMemAvail", _
 	 FB_DATATYPE_UINT,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0
 
 '' allocate ( byval bytes as integer ) as any ptr
 data @"allocate","malloc", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' callocate ( byval bytes as integer ) as any ptr
 data @"callocate","calloc", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,1
@@ -98,7 +96,7 @@ data @"callocate","calloc", _
 '' reallocate ( byval p as any ptr, byval bytes as integer ) as any ptr
 data @"reallocate","realloc", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
@@ -106,14 +104,14 @@ data @"reallocate","realloc", _
 '' deallocate ( byval p as any ptr ) as void
 data @"deallocate","free", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
 
 '' clear ( dst as any, byval value as integer = 0, byval bytes as integer ) as void
 data @"clear","memset", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 3, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
@@ -222,7 +220,7 @@ function rtlMemSwap _
 
 	'' simple type?
 	'' !!!FIXME!!! other classes should be allowed too, but pointers??
-	if( (astGetDataType( dst ) <> FB_DATATYPE_USERDEF) and (astIsVAR( dst )) ) then
+	if( (astGetDataType( dst ) <> FB_DATATYPE_STRUCT) and (astIsVAR( dst )) ) then
 
 		'' push src
 		astAdd( astNewSTACK( AST_OP_PUSH, astCloneTree( src ) ) )

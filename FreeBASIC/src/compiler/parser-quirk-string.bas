@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -41,34 +39,34 @@ function cMidStmt _
 
 	function = FALSE
 
-	if( hMatch( FB_TK_MID ) ) then
+	'' MID
+	lexSkipToken( )
 
-		hMatchLPRNT()
+	hMatchLPRNT()
 
-		hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
+	hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
 
-		hMatchCOMMA( )
+	hMatchCOMMA( )
 
-		hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
+	hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
 
-		if( hMatch( CHAR_COMMA ) ) then
-			hMatchExpressionEx( expr3, FB_DATATYPE_INTEGER )
-		else
-			expr3 = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
-		end if
-
-		hMatchRPRNT( )
-
-		if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
-			if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
-				exit function
-			end if
-		end if
-
-		hMatchExpressionEx( expr4, FB_DATATYPE_STRING )
-
-		function = rtlStrAssignMid( expr1, expr2, expr3, expr4 ) <> NULL
+	if( hMatch( CHAR_COMMA ) ) then
+		hMatchExpressionEx( expr3, FB_DATATYPE_INTEGER )
+	else
+		expr3 = astNewCONSTi( -1, FB_DATATYPE_INTEGER )
 	end if
+
+	hMatchRPRNT( )
+
+	if( hMatch( FB_TK_ASSIGN ) = FALSE ) then
+		if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
+			exit function
+		end if
+	end if
+
+	hMatchExpressionEx( expr4, FB_DATATYPE_STRING )
+
+	function = rtlStrAssignMid( expr1, expr2, expr3, expr4 ) <> NULL
 
 end function
 
@@ -105,7 +103,7 @@ function cLSetStmt _
 	select case dtype1
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, _
-		 FB_DATATYPE_USERDEF
+		 FB_DATATYPE_STRUCT
 
 	case else
 		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
@@ -133,7 +131,7 @@ function cLSetStmt _
 	select case dtype2
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, _
-		 FB_DATATYPE_USERDEF
+		 FB_DATATYPE_STRUCT
 
 	case else
 		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
@@ -145,8 +143,8 @@ function cLSetStmt _
 		end if
 	end select
 
-	if( (dtype1 = FB_DATATYPE_USERDEF) or _
-		(dtype2 = FB_DATATYPE_USERDEF) ) then
+	if( (dtype1 = FB_DATATYPE_STRUCT) or _
+		(dtype2 = FB_DATATYPE_STRUCT) ) then
 
 		if( dtype1 <> dtype2 ) then
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
@@ -248,7 +246,7 @@ private function cStrCHR _
 					v = 255
 				end if
 				if( (v < CHAR_SPACE) or (v > 127) ) then
-					zs += "\27"
+					zs += ESCCHAR
 					o = oct( v )
 					zs += chr( len( o ) )
 					zs += o
@@ -258,7 +256,7 @@ private function cStrCHR _
 
 			else
 				if( (v < CHAR_SPACE) or (v > 127) ) then
-					ws += "\27"
+					ws += ESCCHAR
 					o = oct( v )
 					ws += wchr( len( o ) )
 					ws += o
@@ -383,6 +381,7 @@ end function
 ''
 function cStringFunct _
 	( _
+		byval tk as FB_TOKEN, _
 		byref funcexpr as ASTNODE ptr _
 	) as integer
 
@@ -391,10 +390,10 @@ function cStringFunct _
 
 	function = FALSE
 
-	select case lexGetToken( )
+	select case tk
 	'' W|STR '(' Expression{int|float|double|wstring} ')'
 	case FB_TK_STR, FB_TK_WSTR
-		is_wstr = (lexGetToken( ) = FB_TK_WSTR)
+		is_wstr = (tk = FB_TK_WSTR)
 		lexSkipToken( )
 
 		hMatchLPRNT( )
@@ -453,7 +452,7 @@ function cStringFunct _
 
 	'' W|STRING '(' Expression ',' Expression{int|str} ')'
 	case FB_TK_STRING, FB_TK_WSTRING
-		is_wstr = (lexGetToken( ) = FB_TK_WSTRING)
+		is_wstr = (tk = FB_TK_WSTRING)
 		lexSkipToken( )
 
 		hMatchLPRNT( )
@@ -484,7 +483,7 @@ function cStringFunct _
 
 	'' W|CHR '(' Expression (',' Expression )* ')'
 	case FB_TK_CHR, FB_TK_WCHR
-		is_wstr = (lexGetToken( ) = FB_TK_WCHR)
+		is_wstr = (tk = FB_TK_WCHR)
 		lexSkipToken( )
 
 		function = cStrCHR( funcexpr, is_wstr )

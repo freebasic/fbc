@@ -20,8 +20,6 @@
 ''
 '' chng: jun/2006 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"

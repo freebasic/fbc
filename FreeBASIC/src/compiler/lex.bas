@@ -22,8 +22,6 @@
 '' chng: sep/2004 written [v1ctor]
 ''       nov/2005 unicode support added [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -396,7 +394,7 @@ private sub hReadIdentifier _
 	( _
 		byval pid as zstring ptr, _
 		byref tlen as integer, _
-		byref typ as integer, _
+		byref dtype as integer, _
 		byval flags as LEXCHECK _
 	) static
 
@@ -420,7 +418,7 @@ private sub hReadIdentifier _
 			 CHAR_UNDER
 
 		case CHAR_DOT
-			if( (flags and LEXCHECK_IDPERIOD) = 0 ) then
+			if( (flags and LEXCHECK_EATPERIOD) = 0 ) then
 				exit do
 			end if
 
@@ -455,35 +453,54 @@ private sub hReadIdentifier _
 	*pid = 0
 
 	'' [SUFFIX]
-	typ = INVALID
+	dtype = INVALID
 
 	if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 		select case as const lexCurrentChar( )
 		'' '%' or '&'?
 		case FB_TK_INTTYPECHAR, FB_TK_LNGTYPECHAR
-			typ = FB_DATATYPE_INTEGER
+			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
+				dtype = FB_DATATYPE_INTEGER
+			else
+				errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
+			end if
+
+			c = lexEatChar( )
 
 		'' '!'?
 		case FB_TK_SGNTYPECHAR
-			typ = FB_DATATYPE_SINGLE
+			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
+				dtype = FB_DATATYPE_SINGLE
+			else
+				errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
+			end if
+
+			c = lexEatChar( )
 
 		'' '#'?
 		case FB_TK_DBLTYPECHAR
 			'' isn't it a '##'?
 			if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
-				typ = FB_DATATYPE_DOUBLE
+				if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
+					dtype = FB_DATATYPE_DOUBLE
+				else
+					errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
+				end if
+
+				c = lexEatChar( )
 			end if
 
 		'' '$'?
 		case FB_TK_STRTYPECHAR
-			typ = FB_DATATYPE_STRING
-		end select
+			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
+				dtype = FB_DATATYPE_STRING
+			else
+				errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
+			end if
 
-		if( typ <> INVALID ) then
 			c = lexEatChar( )
-		end if
-
-	end if
+		end select
+    end if
 
 end sub
 
@@ -725,7 +742,7 @@ private sub hReadFloatNumber _
 	( _
 		byref pnum as zstring ptr, _
 		byref tlen as integer, _
-		byref typ as integer, _
+		byref dtype as integer, _
 		byval flags as LEXCHECK _
 	) static
 
@@ -733,7 +750,7 @@ private sub hReadFloatNumber _
     dim as integer llen
     dim as integer skipchar
 
-	typ = FB_DATATYPE_DOUBLE
+	dtype = FB_DATATYPE_DOUBLE
 	llen = tlen
 	skipchar = FALSE
 
@@ -770,19 +787,37 @@ private sub hReadFloatNumber _
 
 	'' [FSUFFIX | { EXPCHAR [opadd] DIGIT { DIGIT } } | ]
 	select case as const lexCurrentChar( )
-	'' '!' | 'F' | 'f'
-	case FB_TK_SGNTYPECHAR, CHAR_FUPP, CHAR_FLOW
+	'' '!'
+	case FB_TK_SGNTYPECHAR
+		if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
+			dtype = FB_DATATYPE_SINGLE
+		else
+			errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
+		end if
+
 		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 			c = lexEatChar( )
 		end if
-		typ = FB_DATATYPE_SINGLE
+
+	'' 'F' | 'f'
+	case CHAR_FUPP, CHAR_FLOW
+        '' only allow because function overloading..
+		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
+			c = lexEatChar( )
+		end if
+		dtype = FB_DATATYPE_SINGLE
 
 	'' '#'
 	case FB_TK_DBLTYPECHAR
+		if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
+			dtype = FB_DATATYPE_DOUBLE
+		else
+			errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
+		end if
+
 		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 			c = lexEatChar( )
 		end if
-		typ = FB_DATATYPE_DOUBLE
 
 	case CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
 		'' EXPCHAR
@@ -861,7 +896,7 @@ end sub
 private sub hReadNumber _
 	( _
 		byval pnum as zstring ptr, _
-		byref typ as integer, _
+		byref dtype as integer, _
 		byref tlen as integer, _
 		byval flags as LEXCHECK _
 	) static
@@ -876,7 +911,7 @@ private sub hReadNumber _
 	islong     = FALSE
 	value	   = 0
 
-	typ 	   = INVALID
+	dtype 	   = INVALID
 	*pnum 	   = 0
 	tlen 	   = 0
 	skipchar   = FALSE
@@ -928,7 +963,7 @@ private sub hReadNumber _
 					end if
 				end if
 
-				hReadFloatNumber( pnum, tlen, typ, flags )
+				hReadFloatNumber( pnum, tlen, dtype, flags )
 				exit do
 
 			case else
@@ -1004,7 +1039,7 @@ private sub hReadNumber _
 		*pnum = CHAR_DOT
 		pnum += 1
 		tlen = 1
-        hReadFloatNumber( pnum, tlen, typ, flags )
+        hReadFloatNumber( pnum, tlen, dtype, flags )
 
 	'' hex, oct, bin
 	case CHAR_AMP
@@ -1059,28 +1094,53 @@ private sub hReadNumber _
 					end if
 				end if
 
+			'' 'F' | 'f'
+			case CHAR_FUPP, CHAR_FLOW
+				lexEatChar( )
+				dtype = FB_DATATYPE_SINGLE
+
+			'' 'D' | 'd'
+			case CHAR_DUPP, CHAR_DLOW
+				lexEatChar( )
+				dtype = FB_DATATYPE_DOUBLE
+
 			'' '%' | '&'
 			case FB_TK_INTTYPECHAR, FB_TK_LNGTYPECHAR
-				lexEatChar( )
-				if( islong ) then
-					if( skipchar = FALSE ) then
-						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-							errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
+				if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
+					if( islong ) then
+						if( skipchar = FALSE ) then
+							if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+								errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
+							end if
 						end if
 					end if
+                else
+					errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
 				end if
 
-			'' '!' | 'F' | 'f'
-			case FB_TK_SGNTYPECHAR, CHAR_FUPP, CHAR_FLOW
 				lexEatChar( )
-				typ = FB_DATATYPE_SINGLE
 
-			'' '#' | 'D' | 'd'
-			case FB_TK_DBLTYPECHAR, CHAR_DUPP, CHAR_DLOW
+			'' '!'
+			case FB_TK_SGNTYPECHAR
+				if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
+					dtype = FB_DATATYPE_SINGLE
+                else
+					errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
+				end if
+
+				lexEatChar( )
+
+			'' '#'
+			case FB_TK_DBLTYPECHAR
 				'' isn't it a '##'?
 				if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
+					if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
+						dtype = FB_DATATYPE_DOUBLE
+                	else
+						errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
+					end if
+
 					lexEatChar( )
-					typ = FB_DATATYPE_DOUBLE
 				end if
 
 			end select
@@ -1088,23 +1148,23 @@ private sub hReadNumber _
 		end if
 	end if
 
-	if( typ = INVALID ) then
+	if( dtype = INVALID ) then
 		if( isfloat = FALSE ) then
 			if( islong ) then
 				if( issigned ) then
-					typ = FB_DATATYPE_LONGINT
+					dtype = FB_DATATYPE_LONGINT
 				else
-					typ = FB_DATATYPE_ULONGINT
+					dtype = FB_DATATYPE_ULONGINT
 				end if
 			else
 				if( issigned ) then
-					typ = FB_DATATYPE_INTEGER
+					dtype = FB_DATATYPE_INTEGER
 				else
-					typ = FB_DATATYPE_UINT
+					dtype = FB_DATATYPE_UINT
 				end if
 			end if
 		else
-			typ = FB_DATATYPE_DOUBLE
+			dtype = FB_DATATYPE_DOUBLE
 		end if
 	end if
 
@@ -1113,18 +1173,21 @@ end sub
 '':::::
 ''string          = '"' { ANY_CHAR_BUT_QUOTE } '"'.   # less quotes
 ''
-private function hReadString _
+private sub hReadString _
 	( _
+		byval tk as FBTOKEN ptr, _
 		byval ps as zstring ptr, _
 		byval flags as LEXCHECK _
-	) as integer static
+	) static
 
-	dim as integer tlen
-	dim as integer skipchar
+	dim as integer lgt, hasesc, escaped, skipchar
 	dim as uinteger char
 
 	*ps = 0
-	tlen = 0
+	lgt = 0
+	hasesc = FALSE
+
+	escaped = (tk->id = FB_TK_STRLIT_ESC)
 	skipchar = FALSE
 
 	'' skip open quote?
@@ -1135,7 +1198,7 @@ private function hReadString _
 	else
 		*ps = lexEatChar( )
 		ps += 1
-		tlen += 1
+		lgt += 1
 	end if
 
 	do
@@ -1153,7 +1216,7 @@ private function hReadString _
 					if( skipchar = FALSE ) then
 						*ps = CHAR_QUOTE
 						ps += 1
-						tlen += 1
+						lgt += 1
 					end if
 				end if
 
@@ -1162,14 +1225,16 @@ private function hReadString _
 
 		'' '\'?
 		case CHAR_RSLASH
+			hasesc = TRUE
+
 			'' escaping on? needed or "\\" would fail..
-			if( env.opt.escapestr ) then
+			if( escaped ) then
 				lexEatChar( )
 
 				if( skipchar = FALSE ) then
 					*ps = CHAR_RSLASH
 					ps += 1
-					tlen += 1
+					lgt += 1
 				end if
 
 				lexCurrentChar( )
@@ -1181,7 +1246,7 @@ private function hReadString _
 
 		if( skipchar = FALSE ) then
 			'' no more room?
-			if( tlen = FB_MAXLITLEN ) then
+			if( lgt = FB_MAXLITLEN ) then
 				'' show warning?
 				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 					'' just once..
@@ -1194,7 +1259,7 @@ private function hReadString _
 			else
 				*ps = char
 				ps += 1
-				tlen += 1
+				lgt += 1
 			end if
 		end if
 
@@ -1203,25 +1268,30 @@ private function hReadString _
 	'' null-term
 	*ps = 0
 
-	function = tlen
+	tk->dtype = FB_DATATYPE_CHAR
+	tk->len = lgt
+	tk->hasesc = hasesc
 
-end function
+end sub
 
 '':::::
 ''string          = '"' { ANY_CHAR_BUT_QUOTE } '"'.   # less quotes
 ''
-private function hReadWStr _
+private sub hReadWStr _
 	( _
+		byval tk as FBTOKEN ptr, _
 		byval ps as wstring ptr, _
 		byval flags as LEXCHECK _
-	) as integer static
+	) static
 
-	dim as integer tlen
-	dim as integer skipchar
+	dim as integer lgt, hasesc, escaped, skipchar
 	dim as uinteger char
 
 	*ps = 0
-	tlen = 0
+	lgt = 0
+	hasesc = FALSE
+
+	escaped = (tk->id = FB_TK_STRLIT_ESC)
 	skipchar = FALSE
 
 	'' skip open quote?
@@ -1232,7 +1302,7 @@ private function hReadWStr _
 	else
 		*ps = lexEatChar( )
 		ps += 1
-		tlen += 1
+		lgt += 1
 	end if
 
 	do
@@ -1252,7 +1322,7 @@ private function hReadWStr _
 					if( skipchar = FALSE ) then
 						*ps = CHAR_QUOTE
 						ps += 1
-						tlen += 1
+						lgt += 1
 					end if
 				end if
 
@@ -1261,14 +1331,16 @@ private function hReadWStr _
 
 		'' '\'?
 		case CHAR_RSLASH
+			hasesc = TRUE
+
 			'' escaping on? needed or "\\" would fail..
-			if( env.opt.escapestr ) then
+			if( escaped ) then
 				lexEatChar( )
 
 				if( skipchar = FALSE ) then
 					*ps = CHAR_RSLASH
 					ps += 1
-					tlen += 1
+					lgt += 1
 				end if
 
 				lexCurrentChar( )
@@ -1280,7 +1352,7 @@ private function hReadWStr _
 
 		if( skipchar = FALSE ) then
 			'' no more room?
-			if( tlen = FB_MAXLITLEN ) then
+			if( lgt = FB_MAXLITLEN ) then
 				'' show warning?
 				if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
 					'' just once..
@@ -1293,7 +1365,7 @@ private function hReadWStr _
 			else
 				*ps = char
 				ps += 1
-				tlen += 1
+				lgt += 1
 			end if
 		end if
 	loop
@@ -1301,9 +1373,63 @@ private function hReadWStr _
 	'' null-term
 	*ps = 0
 
-	function = tlen
+	tk->dtype = FB_DATATYPE_WCHAR
+	tk->len = lgt
+	tk->hasesc = hasesc
 
-end function
+end sub
+
+'':::::
+private sub hCheckPeriods _
+	( _
+		byval t as FBTOKEN ptr, _
+		byval flags as LEXCHECK, _
+		byval chain_ as FBSYMCHAIN ptr _
+	) static
+
+	dim as integer readfullid
+
+	'' handle the stupid '.'s in symbols
+	if( chain_ <> NULL ) then
+		readfullid = FALSE
+
+		'' is the next char a period?
+		if( lexCurrentChar( ) = CHAR_DOT ) then
+    		'' not a qualified name (namespace or UDT var)?
+    		if( symbGetClass( chain_->sym ) <> FB_SYMBCLASS_NAMESPACE ) then
+    			readfullid = TRUE
+
+    			'' search UDT variables
+    			do while( chain_ <> NULL )
+       				if( symbIsVar( chain_->sym ) ) then
+	    				if( symbGetType( chain_->sym ) = FB_DATATYPE_STRUCT ) then
+        					readfullid = FALSE
+       						exit do
+       					end if
+					end if
+       					chain_ = symbChainGetNext( chain_ )
+       				loop
+       			end if
+       		end if
+
+	'' no symbol..
+    else
+    	'' only read if next char is a '.'
+    	readfullid = (lexCurrentChar( ) = CHAR_DOT)
+    end if
+
+    '' read the remaining? (including the '.'s)
+    if( readfullid ) then
+		t->prdpos = t->len
+		hReadIdentifier( @t->text[t->len], _
+					 	 t->len, _
+					 	 t->dtype, _
+					 	 flags or LEXCHECK_EATPERIOD )
+
+		t->sym_chain = symbLookup( @t->text, t->id, t->class )
+    end if
+
+end sub
 
 '':::::
 sub lexNextToken _
@@ -1313,13 +1439,12 @@ sub lexNextToken _
 	) static
 
 	dim as uinteger char
-	dim as integer islinecont, lgt, readfullid
+	dim as integer islinecont, lgt
 	dim as FBSYMCHAIN ptr chain_
 
 re_read:
 	t->text[0] = 0									'' t.text = ""
 	t->len = 0
-	t->ppos = 0
 	t->sym_chain = NULL
 
 	'' skip white space
@@ -1468,6 +1593,7 @@ read_number:
 	case CHAR_AUPP to CHAR_ZUPP, CHAR_ALOW to CHAR_ZLOW
 read_id:
 		t->len = 0
+		t->prdpos = 0
 		hReadIdentifier( @t->text, t->len, t->dtype, flags )
 
 		'' use the special hash tb?
@@ -1479,7 +1605,7 @@ read_id:
 				t->class = FB_TKCLASS_IDENTIFIER
 			else
 				t->id = t->sym_chain->sym->key.id
-				t->class = t->sym_chain->sym->key.class
+				t->class = t->sym_chain->sym->key.tkclass
 			end if
 
 			exit sub
@@ -1499,84 +1625,77 @@ read_id:
 			exit sub
 		end if
 
-		'' don't look up symbols?
-		if( (flags and LEXCHECK_NOLOOKUP) <> 0 ) then
-			'' only check if it's a define..
-			chain_ = t->sym_chain
-			if( chain_ <> NULL ) then
-				if( symbGetClass( chain_->sym ) = FB_SYMBCLASS_DEFINE ) then
-					'' restart..
-					if( ppDefineLoad( chain_->sym ) ) then
-						goto re_read
-					end if
-				end if
-			end if
-
-			exit sub
-		end if
-
-		'' handle the stupid '.'s in symbols..
 		chain_ = t->sym_chain
-		if( chain_ <> NULL ) then
-			readfullid = FALSE
 
-			select case symbGetClass( chain_->sym )
+		if( chain_ <> NULL ) then
 			'' define?
-			case FB_SYMBCLASS_DEFINE
+			if( symbGetClass( chain_->sym ) = FB_SYMBCLASS_DEFINE ) then
 				'' restart..
 				if( ppDefineLoad( chain_->sym ) ) then
 					goto re_read
 				end if
+			end if
+		end if
 
-           	case FB_SYMBCLASS_NAMESPACE
+		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
+			'' don't look up symbols?
+			if( (flags and LEXCHECK_NOPERIOD) <> 0 ) then
+				exit sub
+			end if
 
-        	case else
-				'' is the next char a period?
-				if( lexCurrentChar( ) = CHAR_DOT ) then
-                    readfullid = TRUE
-
-        			do while( chain_ <> NULL )
-        	    		'' variable?
-        	    		if( symbIsVar( chain_->sym ) ) then
-	    		    		'' UDT?
-	    		    		if( symbGetType( chain_->sym ) = FB_DATATYPE_USERDEF ) then
-    			    			readfullid = FALSE
-        		   				exit do
-        		   			end if
-						end if
-        				chain_ = symbChainGetNext( chain_ )
-        			loop
-        		end if
-        	end select
-
-        '' no symbol..
-        else
-        	'' only read if next char is a '.'
-        	readfullid = (lexCurrentChar( ) = CHAR_DOT)
-        end if
-
-        '' read the remaining? (including the '.'s)
-        if( readfullid ) then
-			t->ppos = t->len
-			hReadIdentifier( @t->text[t->len], _
-							 t->len, _
-							 t->dtype, _
-							 flags or LEXCHECK_IDPERIOD )
-
-			t->sym_chain = symbLookup( @t->text, t->id, t->class )
-        end if
+			hCheckPeriods( t, flags, chain_ )
+		end if
 
 	'' '"'?
 	case CHAR_QUOTE
-		t->id = FB_TK_STRLIT
 		t->class = FB_TKCLASS_STRLITERAL
 
+		t->id = iif( env.opt.escapestr, FB_TK_STRLIT_ESC, FB_TK_STRLIT )
+
 		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
-			t->len = hReadString( @t->text, flags )
-			t->dtype = FB_DATATYPE_CHAR
+			hReadString( t, @t->text, flags )
 		else
-			t->len = hReadWStr( @t->textw, flags )
-			t->dtype = FB_DATATYPE_WCHAR
+			hReadWStr( t, @t->textw, flags )
+		end if
+
+	'' '!' | '$'?
+	case CHAR_EXCL, CHAR_DOLAR
+        '' '"' following?
+        if( lexGetLookAheadChar( ) <> CHAR_QUOTE ) then
+        	goto read_char
+        end if
+
+		lexEatChar( )
+
+		t->class = FB_TKCLASS_STRLITERAL
+
+		t->id = iif( char = CHAR_EXCL, FB_TK_STRLIT_ESC, FB_TK_STRLIT_NOESC )
+
+		if( env.inf.format = FBFILE_FORMAT_ASCII ) then
+			dim as zstring ptr ps
+
+			'' do not preserve the string modifier?
+			if( (flags and LEXCHECK_NOQUOTES) = 0 ) then
+				ps = @t->text
+			else
+				t->text[0] = char
+				ps = @t->text[1]
+			end if
+
+			hReadString( t, ps, flags )
+
+		else
+			dim as wstring ptr ps
+
+			'' do not preserve the string modifier?
+			if( (flags and LEXCHECK_NOQUOTES) = 0 ) then
+				ps = @t->textw
+			else
+				t->textw[0] = char
+				ps = @t->textw[1]
+			end if
+
+			hReadWStr( t, ps, flags )
 		end if
 
 	'':::::
@@ -1643,8 +1762,8 @@ read_char:
 				end if
 			end select
 
-		'' '+', '*', '\'?
-		case CHAR_PLUS, CHAR_TIMES, CHAR_RSLASH
+		'' '+', '*', '\', '^', '@'?
+		case CHAR_PLUS, CHAR_TIMES, CHAR_RSLASH, CHAR_CART, CHAR_AT
 			t->class = FB_TKCLASS_OPERATOR
 
 		'' '-'?
@@ -1671,10 +1790,10 @@ read_char:
 				goto re_read
 			end if
 
-		'' '(', ')', ',', ':', ';', '@', '.', '$', '{', '}', '[', ']'?
+		'' '(', ')', ',', ':', ';', '.', '{', '}', '[', ']'?
 		case CHAR_LPRNT, CHAR_RPRNT, CHAR_COMMA, CHAR_COLON, _
-			 CHAR_SEMICOLON, CHAR_AT, CHAR_DOT, CHAR_DOLAR, _
-			 CHAR_LBRACE, CHAR_RBRACE, CHAR_LBRACKET, CHAR_RBRACKET
+			 CHAR_SEMICOLON, CHAR_DOT, CHAR_LBRACE, CHAR_RBRACE, _
+			 CHAR_LBRACKET, CHAR_RBRACKET
 			t->class = FB_TKCLASS_DELIMITER
 
 		'' ' ', '\t'?

@@ -60,7 +60,7 @@ type FB_CMPSTMT_IF
 end type
 
 type FB_CMPSTMT_PROC
-	issub		as integer
+	tkn			as FB_TOKEN
 	node		as ASTNODE ptr
 end type
 
@@ -117,10 +117,22 @@ end type
 
 enum FB_SYMBTYPEOPT
 	FB_SYMBTYPEOPT_NONE			= &h00000000
+
 	FB_SYMBTYPEOPT_CHECKSTRPTR	= &h00000001
 	FB_SYMBTYPEOPT_ALLOWFORWARD	= &h00000002
 
 	FB_SYMBTYPEOPT_DEFAULT		= FB_SYMBTYPEOPT_CHECKSTRPTR
+end enum
+
+enum FB_OPEROPTS
+	FB_OPEROPTS_NONE			= &h00000000
+
+	FB_OPEROPTS_UNARY			= &h00000001
+	FB_OPEROPTS_SELF			= &h00000002
+	FB_OPEROPTS_ASSIGN			= &h00000004
+	FB_OPEROPTS_RELATIVE		= &h00000008
+
+	FB_OPEROPTS_DEFAULT			= &hffffffff
 end enum
 
 
@@ -218,9 +230,16 @@ declare function 	cProcDecl               ( _
 												_
 											) as integer
 
-declare function 	cSubOrFuncDecl 			( _
-												byval isSub as integer _
-											) as integer
+declare function 	cProcHeader				( _
+												byval is_sub as integer, _
+												byval is_prototype as integer, _
+												byval attrib as integer _
+											) as FBSYMBOL ptr
+
+declare function 	cOperatorHeader			( _
+												byval is_prototype as integer, _
+												byval attrib as integer _
+											) as FBSYMBOL ptr
 
 declare function 	cParameters             ( _
 												byval proc as FBSYMBOL ptr, _
@@ -241,7 +260,7 @@ declare function 	cProcCallOrAssign		( _
 											) as integer
 
 declare function 	cQuirkStmt				( _
-												_
+												byval tk as FB_TOKEN = INVALID _
 											) as integer
 
 declare function 	cCompoundStmt           ( _
@@ -402,6 +421,10 @@ declare function 	cAssignmentOrPtrCallEx	( _
 												byval expr as ASTNODE ptr _
 											) as integer
 
+declare function 	cOperator 				( _
+												byval options as FB_OPEROPTS = FB_OPEROPTS_DEFAULT _
+											) as integer
+
 declare function 	cExpression				( _
 												byref expr as ASTNODE ptr _
 											) as integer
@@ -464,6 +487,7 @@ declare function 	cAddrOfExpression		( _
 											) as integer
 
 declare function 	cTypeConvExpr			( _
+												byval tk as FB_TOKEN, _
 												byref tconvexpr as ASTNODE ptr _
 											) as integer
 
@@ -506,7 +530,7 @@ declare function 	cFunctionEx				( _
 											) as integer
 
 declare function 	cQuirkFunction			( _
-												byval sym as FBSYMBOL ptr, _
+												byval tk as FB_TOKEN, _
 												byref funcexpr as ASTNODE ptr _
 											) as integer
 
@@ -535,8 +559,7 @@ declare function 	cNumLiteral				( _
 											) as integer
 
 declare function 	cStrLiteral				( _
-												byref expr as ASTNODE ptr, _
-					  						  	byval checkescape as integer _
+												byref expr as ASTNODE ptr _
 											) as integer
 
 declare function 	cProcArgList			( _
@@ -550,7 +573,7 @@ declare function 	cAsmBlock				( _
 												_
 											) as integer
 
-declare function 	cFunctionMode 			( _
+declare function 	cProcCallingConv 		( _
 												_
 											) as integer
 
@@ -595,12 +618,6 @@ declare function 	cStrIdxOrFieldDeref		( _
 												byref expr as ASTNODE ptr _
 											) as integer
 
-declare function	cUpdPointer				( _
-												byval op as integer, _
-					  						  	byval p as ASTNODE ptr, _
-					  						  	byval e as ASTNODE ptr _
-											) as ASTNODE ptr
-
 declare function 	cAssignment				( _
 												byval assgexpr as ASTNODE ptr _
 											) as integer
@@ -610,27 +627,28 @@ declare function 	cAssignFunctResult		( _
 											) as integer
 
 declare function 	cGfxStmt 				( _
-												_
+												byval tk as FB_TOKEN _
 											) as integer
 
 declare function 	cGfxFunct				( _
+												byval tk as FB_TOKEN, _
 												byref funcexpr as ASTNODE ptr _
 											) as integer
 
 declare function 	cGotoStmt				( _
-												_
+												byval tk as FB_TOKEN _
 											) as integer
 
 declare function 	cPrintStmt				( _
-												_
+												byval tk as FB_TOKEN _
 											) as integer
 
 declare function 	cDataStmt				( _
-												_
+												byval tk as FB_TOKEN _
 											) as integer
 
 declare function 	cArrayStmt				( _
-												_
+												byval tk as FB_TOKEN _
 											) as integer
 
 declare function 	cLineInputStmt			( _
@@ -646,7 +664,7 @@ declare function 	cPokeStmt				( _
 											) as integer
 
 declare function 	cFileStmt				( _
-												_
+												byval tk as FB_TOKEN _
 											) as integer
 
 declare function 	cOnStmt					( _
@@ -658,7 +676,7 @@ declare function 	cWriteStmt				( _
 											) as integer
 
 declare function 	cErrorStmt				( _
-												_
+												byval tk as FB_TOKEN _
 											) as integer
 
 declare function 	cViewStmt				( _
@@ -679,10 +697,12 @@ declare function 	cWidthStmt				( _
 											) as ASTNODE ptr
 
 declare function 	cStringFunct			( _
+												byval tk as FB_TOKEN, _
 												byref funcexpr as ASTNODE ptr _
 											) as integer
 
 declare function 	cMathFunct				( _
+												byval tk as FB_TOKEN, _
 												byref funcexpr as ASTNODE ptr _
 											) as integer
 
@@ -691,10 +711,12 @@ declare function 	cPeekFunct				( _
 											) as integer
 
 declare function 	cArrayFunct				( _
+												byval tk as FB_TOKEN, _
 												byref funcexpr as ASTNODE ptr _
 											) as integer
 
 declare function 	cFileFunct				( _
+												byval tk as FB_TOKEN, _
 												byref funcexpr as ASTNODE ptr _
 											) as integer
 

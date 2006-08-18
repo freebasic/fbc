@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -37,6 +35,13 @@ function cScopeStmtBegin as integer
 
 	function = FALSE
 
+    if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
+    	errReportNotAllowed( FB_LANG_OPT_SCOPE )
+    	'' error recovery: skip the whole compound stmt
+    	hSkipCompound( FB_TK_SCOPE )
+    	exit function
+    end if
+
 	'' SCOPE
 	lexSkipToken( )
 
@@ -51,7 +56,7 @@ function cScopeStmtBegin as integer
 	stk = cCompStmtPush( FB_TK_SCOPE )
 	stk->scopenode = n
 
-	'' QB quirk: implicit vars inside implici scope blocks
+	'' QB quirk: implicit vars inside implicit scope blocks
 	'' are allocated in the function scope
 	stk->scp.lastisscope = env.isscope
 	env.isscope = TRUE

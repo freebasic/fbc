@@ -20,8 +20,6 @@
 ''
 '' chng: may/2006 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -40,6 +38,13 @@ function cExternStmtBegin _
     dim as zstring ptr litstr = any
 
 	function = FALSE
+
+    if( fbLangOptIsSet( FB_LANG_OPT_EXTERN ) = FALSE ) then
+    	errReportNotAllowed( FB_LANG_OPT_EXTERN )
+    	'' error recovery: skip the whole compound stmt
+    	hSkipCompound( FB_TK_EXTERN )
+    	exit function
+    end if
 
     if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_EXTERN ) = FALSE ) then
     	'' error recovery: skip the whole compound stmt

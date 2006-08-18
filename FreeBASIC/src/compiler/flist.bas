@@ -22,8 +22,6 @@
 '' chng: apr/2005 written [v1ctor]
 ''
 
-option explicit
-option escape
 
 #include once "inc\flist.bi"
 

@@ -20,8 +20,6 @@
 ''
 '' chng: may/2006 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -45,14 +43,21 @@ function cNamespaceStmtBegin _
 
 	function = FALSE
 
+    if( fbLangOptIsSet( FB_LANG_OPT_NAMESPC ) = FALSE ) then
+    	errReportNotAllowed(FB_LANG_OPT_NAMESPC )
+    	'' error recovery: skip the whole compound stmt
+    	hSkipCompound( FB_TK_NAMESPACE )
+    	exit function
+    end if
+
     if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_NAMESPC ) = FALSE ) then
     	'' error recovery: skip the whole compound stmt
     	hSkipCompound( FB_TK_NAMESPACE )
     	exit function
     end if
 
-	'' skip NAMESPACE, don't lookup '.'s
-	lexSkipToken( LEXCHECK_NOLOOKUP )
+	'' skip NAMESPACE
+	lexSkipToken( LEXCHECK_NOPERIOD )
 
 	'' ID?
 	palias = NULL
@@ -80,7 +85,29 @@ function cNamespaceStmtBegin _
         levels += 1
 
     	'' not an id?
-    	if( lexGetToken( ) <> FB_TK_ID ) then
+    	select case lexGetClass( )
+    	case FB_TKCLASS_IDENTIFIER
+			id = *lexGetText( )
+			chain_ = lexGetSymChain( )
+
+		case FB_TKCLASS_QUIRKWD
+			'' only if inside another ns
+			if( symbIsGlobalNamespc( ) ) then
+    			if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+    				exit function
+    			else
+					'' error recovery: fake a symbol
+					sym = symbAddNamespace( hMakeTmpStr( ), NULL )
+					id[0] = 0							'' id = ""
+					chain_ = NULL
+    			end if
+
+    		else
+				id = *lexGetText( )
+				chain_ = lexGetSymChain( )
+    		end if
+
+		case else
 			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 				exit function
 			end if
@@ -89,12 +116,7 @@ function cNamespaceStmtBegin _
 			sym = symbAddNamespace( hMakeTmpStr( ), NULL )
 			id[0] = 0							'' id = ""
 			chain_ = NULL
-
-		'' id..
-		else
-			id = *lexGetText( )
-			chain_ = lexGetSymChain( )
-		end if
+		end select
 
 		'' already defined?
 		if( chain_ <> NULL ) then
@@ -123,9 +145,9 @@ function cNamespaceStmtBegin _
 			sym = NULL
 		end if
 
-		'' skip ID, don't lookup the '.'s
+		'' skip ID
 		if( id[0] <> 0 ) then
-			lexSkipToken( LEXCHECK_NOLOOKUP )
+			lexSkipToken( LEXCHECK_NOPERIOD )
 		end if
 
 		'' create a new symbol?
@@ -177,7 +199,7 @@ function cNamespaceStmtBegin _
 			exit do
 		end if
 
-		lexSkipToken( LEXCHECK_NOLOOKUP )
+		lexSkipToken( LEXCHECK_NOPERIOD )
 	loop
 
 	stk->nspc.levels = levels
@@ -233,8 +255,15 @@ function cUsingStmt as integer
 
     function = FALSE
 
+    if( fbLangOptIsSet( FB_LANG_OPT_NAMESPC ) = FALSE ) then
+    	errReportNotAllowed( FB_LANG_OPT_NAMESPC )
+    	'' error recovery: skip stmt
+    	hSkipStmt( )
+    	exit function
+    end if
+
     '' USING
-    lexSkipToken( )
+    lexSkipToken( LEXCHECK_NOPERIOD )
 
     do
     	'' ID
@@ -243,19 +272,15 @@ function cUsingStmt as integer
     		if( lexGetToken( ) <> FB_TK_ID ) then
 				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 					exit function
-				else
-					'' error recovery: skip until next ','
-					hSkipUntil( CHAR_COMMA )
 				end if
-
     		else
     			if( errReport( FB_ERRMSG_UNDEFINEDSYMBOL ) = FALSE ) then
     				exit function
-				else
-					'' error recovery: skip until next ','
-					hSkipUntil( CHAR_COMMA )
 				end if
 			end if
+
+			'' error recovery: skip until next ','
+			hSkipUntil( CHAR_COMMA )
 
     	else
 			'' not a namespace?

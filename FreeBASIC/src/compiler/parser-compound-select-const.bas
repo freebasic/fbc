@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -415,7 +413,8 @@ function cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr ) as integer
 		expr = astNewBOP( AST_OP_LT, _
 						  astNewVAR( stk->select.sym, 0, FB_DATATYPE_UINT ), _
 						  astNewCONSTi( minval, FB_DATATYPE_UINT ), _
-						  deflabel, FALSE )
+						  deflabel, _
+						  AST_OPOPT_NONE )
 		astAdd( expr )
 	end if
 
@@ -423,7 +422,8 @@ function cSelConstStmtEnd( byval stk as FB_CMPSTMTSTK ptr ) as integer
 	expr = astNewBOP( AST_OP_GT, _
 					  astNewVAR( stk->select.sym, 0, FB_DATATYPE_UINT ), _
 					  astNewCONSTi( maxval, FB_DATATYPE_UINT ), _
-					  deflabel, FALSE )
+					  deflabel, _
+					  AST_OPOPT_NONE )
 	astAdd( expr )
 
     '' jump to table[idx]

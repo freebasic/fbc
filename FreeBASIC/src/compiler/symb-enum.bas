@@ -21,8 +21,6 @@
 '' chng: sep/2004 written [v1ctor]
 ''		 jan/2005 updated to use real linked-lists [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -61,6 +59,7 @@ function symbAddEnum _
 	e->enum.elmtb.head = NULL
 	e->enum.elmtb.tail = NULL
 	e->enum.dbg.typenum = INVALID
+	e->enum.opovl.cast = NULL
 
 	'' check for forward references
 	if( symb.fwdrefcnt > 0 ) then

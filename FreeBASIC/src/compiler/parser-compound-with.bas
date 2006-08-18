@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -49,7 +47,7 @@ private function hAllocWithVar( ) as FBSYMBOL ptr
     else
 		'' not an UDT?
 		dtype = astGetDataType( expr )
-		if( dtype <> FB_DATATYPE_USERDEF ) then
+		if( dtype <> FB_DATATYPE_STRUCT ) then
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				return NULL
 			end if

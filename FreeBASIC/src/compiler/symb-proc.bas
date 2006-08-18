@@ -21,8 +21,6 @@
 '' chng: sep/2004 written [v1ctor]
 ''		 jan/2005 updated to use real linked-lists [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -111,6 +109,47 @@ function symbAddProcParam _
 end function
 
 '':::::
+function symbIsProcOverloadOf _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval parent as FBSYMBOL ptr _
+	) as integer static
+
+	dim as FBSYMBOL ptr f
+
+	'' no parent?
+	if( parent = NULL ) then
+		return FALSE
+	end if
+
+	'' same?
+	if( proc = parent ) then
+		return TRUE
+	end if
+
+	'' not overloaded?
+	if( symbIsOverloaded( parent ) = FALSE ) then
+		return FALSE
+	end if
+
+	'' for each overloaded proc..
+	f = parent->proc.ovl.next
+	do while( f <> NULL )
+
+		'' same?
+		if( proc = f ) then
+			return TRUE
+		end if
+
+		f = f->proc.ovl.next
+	loop
+
+	'' none found..
+	return FALSE
+
+end function
+
+'':::::
 private function hGetProcRealType _
 	( _
 		byval dtype as integer, _
@@ -123,7 +162,7 @@ private function hGetProcRealType _
     	 return FB_DATATYPE_POINTER + FB_DATATYPE_STRING
 
     '' UDT? follow GCC 3.x's ABI
-    case FB_DATATYPE_USERDEF
+    case FB_DATATYPE_STRUCT
 
 		'' use the un-padded UDT len
 		select case as const symbGetUDTUnpadLen( subtype )
@@ -151,7 +190,7 @@ private function hGetProcRealType _
 						return FB_DATATYPE_SINGLE
 					end if
 
-					if( subtype->udt.fldtb.head->typ <> FB_DATATYPE_USERDEF ) then
+					if( subtype->udt.fldtb.head->typ <> FB_DATATYPE_STRUCT ) then
 						exit do
 					end if
 
@@ -184,7 +223,7 @@ private function hGetProcRealType _
 						return FB_DATATYPE_DOUBLE
 					end if
 
-					if( subtype->udt.fldtb.head->typ <> FB_DATATYPE_USERDEF ) then
+					if( subtype->udt.fldtb.head->typ <> FB_DATATYPE_STRUCT ) then
 						exit do
 					end if
 
@@ -201,7 +240,7 @@ private function hGetProcRealType _
 		end select
 
 		'' if nothing matched, it's the pointer that was passed as the 1st arg
-		return FB_DATATYPE_POINTER + FB_DATATYPE_USERDEF
+		return FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT
 
 	'' type is the same
 	case else
@@ -304,7 +343,6 @@ private function hAddOvlProc _
 		f = f->proc.ovl.next
 	loop
 
-
     '' add the new proc symbol, w/o adding it to the hash table
 
 	proc = symbNewSymbol( proc, _
@@ -319,69 +357,135 @@ private function hAddOvlProc _
 	end if
 
 	'' add to hash chain list, as they share the same name
-	dim as FBSYMCHAIN ptr chain_, nxt
-	chain_ = listNewNode( @symb.chainlist )
+	if( id <> NULL ) then
+		dim as FBSYMCHAIN ptr chain_, nxt
+		chain_ = listNewNode( @symb.chainlist )
 
-	chain_->index = parent->hash.chain->index
-	chain_->item = parent->hash.chain->item
+		chain_->index = parent->hash.chain->index
+		chain_->item = parent->hash.chain->item
 
-    nxt = parent->hash.chain->next
-	parent->hash.chain->next = chain_
+    	nxt = parent->hash.chain->next
+		parent->hash.chain->next = chain_
 
-	chain_->prev = parent->hash.chain
-	chain_->next = nxt
-	if( nxt <> NULL ) then
-		nxt->prev = chain_
+		chain_->prev = parent->hash.chain
+		chain_->next = nxt
+		if( nxt <> NULL ) then
+			nxt->prev = chain_
+		end if
+
+		chain_->sym = proc
+		proc->hash.chain = chain_
 	end if
 
-	chain_->sym = proc
-	proc->hash.chain = chain_
-
-    ''
 	function = proc
 
 end function
 
 '':::::
-function symbIsProcOverloadOf _
+private function hAddOpOvlProc _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval parent as FBSYMBOL ptr _
-	) as integer static
+		byval parent as FBSYMBOL ptr, _
+		byval op as AST_OP, _
+		byval id_alias as zstring ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval ptrcnt as integer _
+	) as FBSYMBOL ptr static
 
-	dim as FBSYMBOL ptr f
+	dim as FBSYMBOL ptr p
 
-	'' no parent?
-	if( parent = NULL ) then
-		return FALSE
+	'' if it's not the type casting op, overloaded as an ordinary proc
+	if( op <> AST_OP_CAST ) then
+		return hAddOvlProc( proc, parent, NULL, id_alias, dtype, subtype, ptrcnt, FALSE )
 	end if
 
-	'' same?
-	if( proc = parent ) then
-		return TRUE
-	end if
-
-	'' not overloaded?
-	if( symbIsOverloaded( parent ) = FALSE ) then
-		return FALSE
-	end if
+	'' type casting, must check the return type, not the parameter..
 
 	'' for each overloaded proc..
-	f = parent->proc.ovl.next
-	do while( f <> NULL )
+	p = parent
+	do while( p <> NULL )
 
-		'' same?
-		if( proc = f ) then
-			return TRUE
+		'' same type?
+		if( proc->typ = p->typ ) then
+			'' and sub-type?
+			if( proc->subtype = p->subtype ) then
+				'' dup definition..
+				return NULL
+			end if
 		end if
 
-		f = f->proc.ovl.next
+		'' next
+		p = p->proc.ovl.next
 	loop
 
-	'' none found..
-	return FALSE
+    '' add it
+	proc = symbNewSymbol( proc, _
+						  parent->symtb, parent->hash.tb, symbIsLocal( parent ) = FALSE, _
+						  FB_SYMBCLASS_PROC, _
+						  FALSE, NULL, id_alias, _
+					      dtype, subtype, ptrcnt, _
+					      FALSE )
+
+	'' there's no id so it can't be added to the chain list
+
+	function = proc
 
 end function
+
+'':::::
+function symbGetGlobOpOvlParent _
+	( _
+		byval op as AST_OP, _
+		byval proc_param as FBSYMBOL ptr _
+	) as FBSYMBOL ptr
+
+    '' special case: casting
+    if( op = AST_OP_CAST ) then
+   		select case symbGetType( proc_param )
+   		case FB_DATATYPE_STRUCT
+   			function = symbGetSubtype( proc_param )->udt.opovl.cast
+
+   		case FB_DATATYPE_ENUM
+   			function = symbGetSubtype( proc_param )->enum.opovl.cast
+
+   		end select
+
+	'' anything else..
+	else
+       	function = symb.globOpOvlTb(op).head
+
+	end if
+
+end function
+
+'':::::
+private sub hSetGlobOpOvlParent _
+	( _
+		byval proc as FBSYMBOL ptr _
+	)
+
+	dim as AST_OP op = proc->proc.ext->opovl.op
+
+	'' casting?
+    if( op = AST_OP_CAST ) then
+		dim as FBSYMBOL ptr param = symbGetProcHeadParam( proc )
+
+  		select case symbGetType( param )
+   		case FB_DATATYPE_STRUCT
+			symbGetSubtype( param )->udt.opovl.cast = proc
+
+   		case FB_DATATYPE_ENUM
+			symbGetSubtype( param )->enum.opovl.cast = proc
+
+   		end select
+
+    '' anything else
+    else
+   		symb.globOpOvlTb(op).head = proc
+	end if
+
+end sub
 
 '':::::
 private function hSetupProc _
@@ -407,7 +511,7 @@ private function hSetupProc _
 
 	''
 	if( dtype = INVALID ) then
-		dtype = hGetDefType( id )
+		dtype = symbGetDefType( id )
 		subtype = NULL
 	end if
 
@@ -441,51 +545,83 @@ private function hSetupProc _
 		end if
 	end if
 
-	preservecase = (options and FB_SYMBOPT_PRESERVECASE) <> 0
+	parent = NULL
 
-	proc = symbNewSymbol( sym, _
-						  symtb, hashtb, env.scope = FB_MAINSCOPE, _
-						  FB_SYMBCLASS_PROC, _
-						  TRUE, id, id_alias, _
-					   	  dtype, subtype, ptrcnt, _
-					   	  preservecase )
+	'' not an operator or op not set (because error-recovery)?
+	if( ((attrib and FB_SYMBATTRIB_OPERATOR) = 0) or (sym->proc.ext = NULL) ) then
+		preservecase = (options and FB_SYMBOPT_PRESERVECASE) <> 0
 
-	'' dup def?
-	if( proc = NULL ) then
-		'' is the dup a proc symbol?
-		parent = symbLookupByNameAndClass( ns, _
-										   id, _
-										   FB_SYMBCLASS_PROC, _
-										   preservecase )
-		if( parent = NULL ) then
-			exit function
-		end if
+		proc = symbNewSymbol( sym, _
+						  	  symtb, hashtb, env.scope = FB_MAINSCOPE, _
+						  	  FB_SYMBCLASS_PROC, _
+						  	  TRUE, id, id_alias, _
+					   	  	  dtype, subtype, ptrcnt, _
+					   	  	  preservecase )
 
-		'' proc was defined as overloadable?
-		if( symbIsOverloaded( parent ) = FALSE ) then
-			exit function
-		end if
-
-		'' try to overload..
-		proc = hAddOvlProc( sym, parent, id, id_alias, _
-							dtype, subtype, ptrcnt, _
-							preservecase )
+		'' dup def?
 		if( proc = NULL ) then
-			exit function
+			'' is the dup a proc symbol?
+			parent = symbLookupByNameAndClass( ns, _
+										   	   id, _
+										   	   FB_SYMBCLASS_PROC, _
+										   	   preservecase )
+			if( parent = NULL ) then
+				exit function
+			end if
+
+			'' proc was defined as overloadable?
+			if( symbIsOverloaded( parent ) = FALSE ) then
+				exit function
+			end if
+
+			'' try to overload..
+			proc = hAddOvlProc( sym, parent, id, id_alias, _
+								dtype, subtype, ptrcnt, _
+								preservecase )
+			if( proc = NULL ) then
+				exit function
+			end if
+
+			attrib or= FB_SYMBATTRIB_OVERLOADED
 		end if
 
-		attrib or= FB_SYMBATTRIB_OVERLOADED
+		proc->proc.ext = NULL
 
+	'' operator..
 	else
-		parent = NULL
+        dim as AST_OP op
+        op = sym->proc.ext->opovl.op
+
+        parent = symbGetGlobOpOvlParent( op, symbGetProcHeadParam( sym ) )
+
+        '' no parent? just add it
+        if( parent = NULL ) then
+			proc = symbNewSymbol( sym, _
+					  	  	  	  symtb, hashtb, env.scope = FB_MAINSCOPE, _
+					  	  	  	  FB_SYMBCLASS_PROC, _
+					  	  	  	  FALSE, NULL, id_alias, _
+				   	  	  	  	  dtype, subtype, ptrcnt, _
+				   	  	  	  	  FALSE )
+
+        	hSetGlobOpOvlParent( proc )
+
+        '' otherwise, try to overload
+        else
+			proc = hAddOpOvlProc( sym, parent, op, id_alias, _
+								  dtype, subtype, ptrcnt )
+			if( proc = NULL ) then
+				exit function
+			end if
+        end if
+
 	end if
 
     ''
 	proc->attrib = attrib or FB_SYMBATTRIB_SHARED
 
     '' if proc returns an UDT, add the hidden pointer passed as the 1st arg
-    if( dtype = FB_DATATYPE_USERDEF ) then
-    	if( realtype = FB_DATATYPE_POINTER + FB_DATATYPE_USERDEF ) then
+    if( dtype = FB_DATATYPE_STRUCT ) then
+    	if( realtype = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
     		lgt += FB_POINTERSIZE
     	end if
     end if
@@ -532,8 +668,6 @@ private function hSetupProc _
 	end if
 
 	''
-	proc->proc.ext = NULL
-
 	proc->stats or= stats
 
 	function = proc
@@ -598,6 +732,44 @@ function symbAddProc _
 end function
 
 '':::::
+function symbAddOperatorOvl _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval op as AST_OP, _
+		byval id_alias as zstring ptr, _
+		byval libname as zstring ptr, _
+		byval dtype as integer, _
+		byval subtype as FBSYMBOL ptr, _
+		byval ptrcnt as integer, _
+		byval attrib as integer, _
+		byval mode as integer, _
+		byval options as FB_SYMBOPT _
+	) as FBSYMBOL ptr static
+
+    dim as FBSYMBOL ptr sym
+
+    function = NULL
+
+	''
+	proc->proc.ext = callocate( len( FB_PROCEXT ) )
+	proc->proc.ext->opovl.op = op
+
+	''
+	sym = hSetupProc( proc, NULL, id_alias, libname, _
+					  dtype, subtype, ptrcnt, _
+					  attrib, mode, _
+					  options )
+
+	if( sym = NULL ) then
+		deallocate( proc->proc.ext )
+		exit function
+	end if
+
+	function = sym
+
+end function
+
+'':::::
 function symbPreAddProc _
 	( _
 		byval symbol as zstring ptr _
@@ -611,11 +783,12 @@ function symbPreAddProc _
 	end if
 
 	proc->class = FB_SYMBCLASS_PROC
-	proc->proc.params	= 0
+	proc->proc.params = 0
 	proc->proc.paramtb.owner = proc
 	proc->proc.paramtb.head = NULL
 	proc->proc.paramtb.tail = NULL
 	proc->id.name = symbol
+	proc->proc.ext = NULL
 
 	function = proc
 
@@ -685,17 +858,17 @@ function symbAddProcResultParam _
     dim as FBSYMBOL ptr s
 
 	'' UDT?
-	if( proc->typ <> FB_DATATYPE_USERDEF ) then
+	if( proc->typ <> FB_DATATYPE_STRUCT ) then
 		return NULL
 	end if
 
 	'' returning a ptr?
-	if( proc->proc.realtype <> FB_DATATYPE_POINTER+FB_DATATYPE_USERDEF ) then
+	if( proc->proc.realtype <> FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
 		return NULL
 	end if
 
     s = symbAddVarEx( NULL, NULL, _
-    				  FB_DATATYPE_POINTER+FB_DATATYPE_USERDEF, proc->subtype, 0, 0, _
+    				  FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT, proc->subtype, 0, 0, _
     				  0, dTB(), FB_SYMBATTRIB_PARAMBYVAL, _
     				  FB_SYMBOPT_ADDSUFFIX or FB_SYMBOPT_PRESERVECASE )
 
@@ -723,9 +896,9 @@ function symbAddProcResult _
 	dim as integer dtype
 
 	'' UDT?
-	if( proc->typ = FB_DATATYPE_USERDEF ) then
+	if( proc->typ = FB_DATATYPE_STRUCT ) then
 		'' returning a ptr? result is at the hidden arg
-		if( proc->proc.realtype = FB_DATATYPE_POINTER+FB_DATATYPE_USERDEF ) then
+		if( proc->proc.realtype = FB_DATATYPE_POINTER+FB_DATATYPE_STRUCT ) then
 			return symbGetProcResult( proc )
 		end if
 	end if
@@ -868,109 +1041,70 @@ function symbFindOverloadProc _
 
 end function
 
+'':::::
+function symbFindOpOvlProc _
+	( _
+		byval op as AST_OP, _
+		byval parent as FBSYMBOL ptr, _
+		byval proc as FBSYMBOL ptr _
+	) as FBSYMBOL ptr static
+
+	dim as FBSYMBOL ptr p
+
+	'' if it's not type casting op, handle is as an ordinary proc
+	if( op <> AST_OP_CAST ) then
+		return symbFindOverloadProc( parent, proc )
+	end if
+
+	'' for each proc starting from parent..
+	p = parent
+	do while( p <> NULL )
+
+		'' same return type?
+		if( proc->typ = p->typ ) then
+			if( proc->subtype = p->subtype ) then
+				return p
+			end if
+		end if
+
+		p = p->proc.ovl.next
+	loop
+
+	function = NULL
+
+end function
+
 const FB_OVLPROC_HALFMATCH = FB_DATATYPES
 const FB_OVLPROC_FULLMATCH = FB_OVLPROC_HALFMATCH * 2
 
 '':::::
-private function hCheckOvlParam _
+private function hCalcTypesDiff _
 	( _
-		byval param as FBSYMBOL ptr, _
-	  	byval arg_expr as ASTNODE ptr, _
-		byval arg_mode as integer _
+		byval param_dtype as integer, _
+		byval param_subtype as FBSYMBOL ptr, _
+		byval param_ptrcnt as integer, _
+		byval arg_dtype as integer, _
+		byval arg_subtype as FBSYMBOL ptr, _
+	  	byval arg_expr as ASTNODE ptr _
 	) as integer static
 
-	dim as integer adtype, adclass, pdtype
-	dim as FBSYMBOL ptr s, asubtype
+	dim as integer arg_dclass
 
-	'' arg not passed?
-	if( arg_expr = NULL ) then
-		'' but param isn't optional?
-		if( symbGetIsOptional( param ) = FALSE ) then
-			return 0
-		end if
-
-		return FB_OVLPROC_FULLMATCH
-    end if
-
-	pdtype = symbGetType( param )
-
-	adtype = astGetDataType( arg_expr )
-	asubtype = astGetSubType( arg_expr )
-
-	'' by descriptor param?
-	if( symbGetParamMode( param ) = FB_PARAMMODE_BYDESC ) then
-		'' but arg isn't?
-		if( arg_mode <> FB_PARAMMODE_BYDESC ) then
-			return 0
-		end if
-
-		'' not a full match?
-        if( pdtype <> adtype ) then
-        	return 0
-        end if
-
-        if( symbGetSubType( param ) <> asubtype ) then
-        	return 0
-        end if
-
-		return FB_OVLPROC_FULLMATCH
-
-	'' by descriptor arg?
-	elseif( arg_mode = FB_PARAMMODE_BYDESC ) then
-		'' refuse
-		return 0
-	end if
-
-	'' same types?
-	if( pdtype = adtype ) then
-		'' check the subtype
-		if( symbGetSubType( param ) <> asubtype ) then
-
-			'' pointer? subtypes can't be different
-			if( pdtype >= FB_DATATYPE_POINTER ) then
-
-				if( astPtrCheck( pdtype, _
-					 			 symbGetSubtype( param ), _
-					 			 arg_expr ) ) then
-
-					return FB_OVLPROC_FULLMATCH
-				end if
-
-				return 0
-			end if
-
-			'' check classes
-			select case symbGetDataClass( pdtype )
-			'' UDT? can't be different..
-			case FB_DATACLASS_UDT
-				return 0
-			end select
-
-			'' allow different ENUM's?
-
-			return FB_OVLPROC_HALFMATCH
-        end if
-
-		'' same subtype too, full match..
-		return FB_OVLPROC_FULLMATCH
-	end if
-
-	'' different types..
-	adclass = symbGetDataClass( adtype )
+	arg_dclass = symbGetDataClass( arg_dtype )
 
 	'' check classes
-	select case as const symbGetDataClass( pdtype )
+	select case as const symbGetDataClass( param_dtype )
 	'' integer?
 	case FB_DATACLASS_INTEGER
 
-		select case as const adclass
+		select case as const arg_dclass
 		'' another integer..
 		case FB_DATACLASS_INTEGER
 
 			'' handle special cases..
-			select case as const adtype
+			select case as const arg_dtype
 			case FB_DATATYPE_CHAR
-				select case pdtype
+				select case param_dtype
 				case FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
 					return FB_OVLPROC_FULLMATCH
 				case FB_DATATYPE_POINTER + FB_DATATYPE_WCHAR
@@ -978,7 +1112,7 @@ private function hCheckOvlParam _
 				end select
 
 			case FB_DATATYPE_WCHAR
-				select case pdtype
+				select case param_dtype
 				case FB_DATATYPE_POINTER + FB_DATATYPE_WCHAR
 					return FB_OVLPROC_FULLMATCH
 				case FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
@@ -986,14 +1120,20 @@ private function hCheckOvlParam _
 				end select
 
 			case FB_DATATYPE_BITFIELD, FB_DATATYPE_ENUM
-				adtype = symbRemapType( adtype, asubtype )
+				'' enum args can be passed to integer params (as in C++)
+				arg_dtype = symbRemapType( arg_dtype, arg_subtype )
 
 			end select
 
 			'' check pointers..
-			if( pdtype >= FB_DATATYPE_POINTER ) then
+			if( param_dtype >= FB_DATATYPE_POINTER ) then
 				'' isn't arg a pointer too?
-				if( adtype < FB_DATATYPE_POINTER ) then
+				if( arg_dtype < FB_DATATYPE_POINTER ) then
+					'' not an expression?
+					if( arg_expr = NULL ) then
+						return 0
+					end if
+
 					'' not a numeric constant?
 					if( astIsCONST( arg_expr ) = FALSE ) then
 						return 0
@@ -1007,15 +1147,15 @@ private function hCheckOvlParam _
 				end if
 
 				'' param is an any ptr?
-				if( pdtype = FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) then
+				if( param_dtype = FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) then
 					'' as in g++, the arg indirection level shouldn't matter..
 					return FB_OVLPROC_FULLMATCH
 				end if
 
 				'' arg is an any ptr?
-				if( adtype = FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) then
+				if( arg_dtype = FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) then
 					'' not the same level of indirection?
-					if( param->ptrcnt > 1 ) then
+					if( param_ptrcnt > 1 ) then
 						return 0
 					end if
 
@@ -1026,24 +1166,24 @@ private function hCheckOvlParam _
 				return 0
 
 			'' param not a pointer, but is arg?
-			elseif( adtype >= FB_DATATYPE_POINTER ) then
+			elseif( arg_dtype >= FB_DATATYPE_POINTER ) then
 				'' use an UINT instead or LONGINT will match if any..
-				adtype = FB_DATATYPE_UINT
+				arg_dtype = FB_DATATYPE_UINT
 			end if
 
-			return FB_OVLPROC_HALFMATCH - abs( pdtype - adtype )
+			return FB_OVLPROC_HALFMATCH - abs( param_dtype - arg_dtype )
 
 		'' float? (ok due the auto-coercion, unless it's a pointer)
 		case FB_DATACLASS_FPOINT
-			if( pdtype >= FB_DATATYPE_POINTER ) then
+			if( param_dtype >= FB_DATATYPE_POINTER ) then
 				return 0
 			end if
 
-			return FB_OVLPROC_HALFMATCH - abs( pdtype - adtype )
+			return FB_OVLPROC_HALFMATCH - abs( param_dtype - arg_dtype )
 
 		'' string? only if it's a w|zstring ptr arg
 		case FB_DATACLASS_STRING
-			select case pdtype
+			select case param_dtype
 			case FB_DATATYPE_POINTER + FB_DATATYPE_CHAR
 				return FB_OVLPROC_FULLMATCH
 			case FB_DATATYPE_POINTER + FB_DATATYPE_WCHAR
@@ -1060,24 +1200,25 @@ private function hCheckOvlParam _
 	'' floating-point?
 	case FB_DATACLASS_FPOINT
 
-		select case as const adclass
+		select case as const arg_dclass
 		'' only accept if it's an integer (but pointers)
 		case FB_DATACLASS_INTEGER
-			if( adtype >= FB_DATATYPE_POINTER ) then
+			if( arg_dtype >= FB_DATATYPE_POINTER ) then
 				return 0
 			end if
 
 			'' remap to real type if it's a bitfield..
-			select case adtype
+			select case arg_dtype
 			case FB_DATATYPE_BITFIELD, FB_DATATYPE_ENUM
-				adtype = symbRemapType( adtype, asubtype )
+				'' enum args can be passed to fpoint params (as in C++)
+				arg_dtype = symbRemapType( arg_dtype, arg_subtype )
 			end select
 
-			return FB_OVLPROC_HALFMATCH - abs( pdtype - adtype )
+			return FB_OVLPROC_HALFMATCH - abs( param_dtype - arg_dtype )
 
 		'' or if another float..
 		case FB_DATACLASS_FPOINT
-			return FB_OVLPROC_HALFMATCH - abs( pdtype - adtype )
+			return FB_OVLPROC_HALFMATCH - abs( param_dtype - arg_dtype )
 
 		'' refuse anything else
 		case else
@@ -1088,14 +1229,14 @@ private function hCheckOvlParam _
 	'' string?
 	case FB_DATACLASS_STRING
 
-		select case adclass
+		select case arg_dclass
 		'' okay if it's a fixed-len string
 		case FB_DATACLASS_STRING
 			return FB_OVLPROC_FULLMATCH
 
 		'' integer only if it's a w|zstring
 		case FB_DATACLASS_INTEGER
-			select case adtype
+			select case arg_dtype
 			case FB_DATATYPE_CHAR
 				return FB_OVLPROC_FULLMATCH
 			case FB_DATATYPE_WCHAR
@@ -1112,16 +1253,23 @@ private function hCheckOvlParam _
 	'' user-defined..
 	case FB_DATACLASS_UDT
 
+		dim as FBSYMBOL ptr s
+
 		'' not another udt?
-		if( adclass <> FB_DATACLASS_UDT ) then
-			'' not a proc? (can be an UDT been returned in registers)
+		if( arg_dclass <> FB_DATACLASS_UDT ) then
+			'' not an expression?
+			if( arg_expr = NULL ) then
+				return 0
+			end if
+
+			'' not a proc? (could be an UDT being returned in registers)
 			if( astGetClass( arg_expr ) <> AST_NODECLASS_CALL ) then
 				return 0
 			end if
 
 			'' it's a proc, but was it originally returning an UDT?
 			s = astGetSymbol( arg_expr )
-			if( symbGetType( s ) <> FB_DATATYPE_USERDEF ) then
+			if( symbGetType( s ) <> FB_DATATYPE_STRUCT ) then
 				return 0
 			end if
 
@@ -1130,11 +1278,11 @@ private function hCheckOvlParam _
 
 		'' udt..
 		else
-           	s = asubtype
+           	s = arg_subtype
 		end if
 
         '' can't be different
-		if( symbGetSubType( param ) <> s ) then
+		if( param_subtype <> s ) then
 			return 0
 		end if
 
@@ -1149,23 +1297,125 @@ private function hCheckOvlParam _
 end function
 
 '':::::
+private function hCheckOvlParam _
+	( _
+		byval param as FBSYMBOL ptr, _
+	  	byval arg_expr as ASTNODE ptr, _
+		byval arg_mode as integer _
+	) as integer static
+
+	dim as integer param_dtype, arg_dtype
+	dim as FBSYMBOL ptr param_subtype, arg_subtype
+
+	'' arg not passed?
+	if( arg_expr = NULL ) then
+		'' is param optional?
+		if( symbGetIsOptional( param ) ) then
+			return FB_OVLPROC_FULLMATCH
+		else
+			return 0
+		end if
+    end if
+
+	param_dtype = symbGetType( param )
+	param_subtype = symbGetSubType( param )
+
+	arg_dtype = astGetDataType( arg_expr )
+	arg_subtype = astGetSubType( arg_expr )
+
+	'' by descriptor param?
+	if( symbGetParamMode( param ) = FB_PARAMMODE_BYDESC ) then
+		'' but arg isn't?
+		if( arg_mode <> FB_PARAMMODE_BYDESC ) then
+			return 0
+		end if
+
+		'' not a full match?
+        if( param_dtype <> arg_dtype ) then
+        	return 0
+        end if
+
+        if( param_subtype <> arg_subtype ) then
+        	return 0
+        end if
+
+		return FB_OVLPROC_FULLMATCH
+
+	'' by descriptor arg?
+	elseif( arg_mode = FB_PARAMMODE_BYDESC ) then
+		'' refuse
+		return 0
+	end if
+
+	'' same types?
+	if( param_dtype = arg_dtype ) then
+		'' check the subtype
+		if( param_subtype <> arg_subtype ) then
+
+			select case param_dtype
+			'' UDT or ENUM? can't be different..
+			case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
+				return 0
+
+			'' pointer? ditto
+			case is >= FB_DATATYPE_POINTER
+				if( astPtrCheck( param_dtype, _
+					 			 param_subtype, _
+					 			 arg_expr ) ) then
+
+					return FB_OVLPROC_FULLMATCH
+				end if
+
+				return 0
+
+			'' can't happen?
+			case else
+				return FB_OVLPROC_HALFMATCH
+			end select
+
+        end if
+
+		'' same subtype too, full match..
+		return FB_OVLPROC_FULLMATCH
+	end if
+
+	'' different types..
+
+	'' enum param? refuse any other argument type, even integers,
+	'' or operator overloading wouldn't work (as in C++)
+	if( param_dtype = FB_DATATYPE_ENUM ) then
+		return 0
+	end if
+
+	''
+	function = hCalcTypesDiff( param_dtype, _
+							   param_subtype, _
+							   param->ptrcnt, _
+							   arg_dtype, _
+							   arg_subtype, _
+							   arg_expr )
+
+end function
+
+'':::::
 function symbFindClosestOvlProc _
 	( _
-		byval prochead as FBSYMBOL ptr, _
+		byval proc_head as FBSYMBOL ptr, _
 		byval args as integer, _
-		byval arg_head as FB_CALL_ARG ptr _
+		byval arg_head as FB_CALL_ARG ptr, _
+		byval is_ambiguous as integer ptr _
 	) as FBSYMBOL ptr static
 
-	dim as FBSYMBOL ptr proc, ovlproc, param
-	dim as integer i, argmatches, matches, maxmatches, ambcnt
+	dim as FBSYMBOL ptr proc, ovl_proc, param
+	dim as integer i, arg_matches, matches, max_matches, amb_cnt
 	dim as FB_CALL_ARG ptr arg
 
-	ovlproc = NULL
-	maxmatches = 0
-	ambcnt = 0
+	ovl_proc = NULL
+	max_matches = 0
+	amb_cnt = 0
 
 	'' for each proc..
-	proc = prochead
+	proc = proc_head
 	do while( proc <> NULL )
 
 		if( args <= symbGetProcParams( proc ) ) then
@@ -1182,12 +1432,12 @@ function symbFindClosestOvlProc _
 			arg = arg_head
 			for i = 0 to args-1
 
-				argmatches = hCheckOvlParam( param, arg->expr, arg->mode )
-				if( argmatches = 0 ) then
+				arg_matches = hCheckOvlParam( param, arg->expr, arg->mode )
+				if( arg_matches = 0 ) then
 					matches = 0
 					exit for
 				end if
-				matches += argmatches
+				matches += arg_matches
 
                	'' next param
 				param = symbGetProcPrevParam( proc, param )
@@ -1213,15 +1463,15 @@ function symbFindClosestOvlProc _
 			end if
 
 		    '' closer?
-		    if( matches > maxmatches ) then
-			   	ovlproc = proc
-			   	maxmatches = matches
-			   	ambcnt = 0
+		    if( matches > max_matches ) then
+			   	ovl_proc = proc
+			   	max_matches = matches
+			   	amb_cnt = 0
 
 			'' same? ambiguity..
-			elseif( matches = maxmatches ) then
-				if( maxmatches > 0 ) then
-					ambcnt += 1
+			elseif( matches = max_matches ) then
+				if( max_matches > 0 ) then
+					amb_cnt += 1
 				end if
 			end if
 
@@ -1231,16 +1481,218 @@ function symbFindClosestOvlProc _
 		proc = proc->proc.ovl.next
 	loop
 
+	if( is_ambiguous <> NULL ) then
+		*is_ambiguous = amb_cnt > 0
+	end if
+
 	'' more than one possibility?
-	if( ambcnt > 0 ) then
-		errReportParam( prochead, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
+	if( amb_cnt > 0 ) then
+		errReportParam( proc_head, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
 		function = NULL
 	else
 		'' no matches?
-		if( ovlproc = NULL ) then
-			errReportParam( prochead, 0, NULL, FB_ERRMSG_NOMATCHINGPROC )
+		if( ovl_proc = NULL ) then
+			'' only show the error if not trying to find an operator
+			if( is_ambiguous = NULL ) then
+				errReportParam( proc_head, 0, NULL, FB_ERRMSG_NOMATCHINGPROC )
+			end if
 		end if
-		function = ovlproc
+		function = ovl_proc
+	end if
+
+end function
+
+'':::::
+function symbFindBopOvlProc _
+	( _
+		byval op as AST_OP, _
+		byval l as ASTNODE ptr, _
+		byval r as ASTNODE ptr, _
+		byval isambiguous as integer ptr _
+	) as FBSYMBOL ptr static
+
+	dim as FB_CALL_ARG argTb(0 to 1)
+	dim as SYMB_OVLOP ptr pop
+
+	pop = @symb.globOpOvlTb(op)
+
+	'' at least one must be an UDT
+   	select case astGetDataType( l )
+   	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
+
+   	case else
+   		'' try the 2nd one..
+   		select case astGetDataType( r )
+   		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
+
+   		case else
+   			*isambiguous = FALSE
+   			return NULL
+   		end select
+   	end select
+
+	'' try (l, r)
+	argTb(0).expr = l
+	argTb(0).mode = INVALID
+	argTb(0).next = @argTb(1)
+
+	argTb(1).expr = r
+	argTb(1).mode = INVALID
+	argTb(1).next = NULL
+
+	function = symbFindClosestOvlProc( pop->head, 2, @argTb(0), isambiguous )
+
+end function
+
+'':::::
+function symbFindUopOvlProc _
+	( _
+		byval op as AST_OP, _
+		byval l as ASTNODE ptr, _
+		byval isambiguous as integer ptr _
+	) as FBSYMBOL ptr static
+
+	dim as FB_CALL_ARG argTb(0)
+	dim as SYMB_OVLOP ptr pop
+
+	pop = @symb.globOpOvlTb(op)
+
+	'' arg must be an UDT
+   	select case astGetDataType( l )
+   	case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
+
+   	case else
+   		'' note: the CAST op shouldn't be passed to this function
+   		*isambiguous = FALSE
+   		return NULL
+   	end select
+
+	argTb(0).expr = l
+	argTb(0).mode = INVALID
+	argTb(0).next = NULL
+
+	function = symbFindClosestOvlProc( pop->head, 1, @argTb(0), isambiguous )
+
+end function
+
+'':::::
+private function hCheckCastOvl _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval to_dtype as integer, _
+		byval to_subtype as FBSYMBOL ptr _
+	) as integer static
+
+	dim as integer proc_dtype
+	dim as FBSYMBOL ptr proc_subtype
+
+	proc_dtype = symbGetType( proc )
+	proc_subtype = symbGetSubType( proc )
+
+	'' same types?
+	if( proc_dtype = to_dtype ) then
+		'' check the subtype
+		if( proc_subtype <> to_subtype ) then
+
+			select case proc_dtype
+			'' UDT, ENUM or pointer? can't be different..
+			case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM, is >= FB_DATATYPE_POINTER
+				return 0
+
+			'' can't happen?
+			case else
+				return FB_OVLPROC_HALFMATCH
+			end select
+
+		end if
+
+		'' same subtype too, full match..
+		return FB_OVLPROC_FULLMATCH
+	end if
+
+	'' different types..
+
+	'' enum res? refuse any other cast type, even integers,
+	'' or operator overloading wouldn't work (as in C++)
+	if( proc_dtype = FB_DATATYPE_ENUM ) then
+		return 0
+	end if
+
+	''
+	function = hCalcTypesDiff( proc_dtype, _
+							   proc_subtype, _
+							   proc->ptrcnt, _
+							   to_dtype, _
+							   to_subtype, _
+							   NULL )
+
+end function
+
+'':::::
+function symbFindCastOvlProc _
+	( _
+		byval to_dtype as integer, _
+		byval to_subtype as FBSYMBOL ptr, _
+		byval l as ASTNODE ptr, _
+		byval isambiguous as integer ptr _
+	) as FBSYMBOL ptr static
+
+	dim as FBSYMBOL ptr proc_head, proc, ovl_proc
+	dim as integer matches, max_matches, amb_cnt
+
+   	*isambiguous = FALSE
+
+	'' arg must be an UDT
+   	select case astGetDataType( l )
+   	case FB_DATATYPE_STRUCT
+   		proc_head = astGetSubType( l )->udt.opovl.cast
+
+   	case FB_DATATYPE_ENUM
+   		proc_head = astGetSubType( l )->enum.opovl.cast
+
+   	case else
+   		return NULL
+   	end select
+
+   	if( proc_head = NULL ) then
+   		return NULL
+   	end if
+
+	dim as FBSYMBOL ptr p
+
+	'' must check the return type, not the parameter..
+	ovl_proc = NULL
+	max_matches = 0
+	amb_cnt = 0
+
+	'' for each overloaded proc..
+	proc = proc_head
+	do while( proc <> NULL )
+
+		matches = hCheckCastOvl( proc, to_dtype, to_subtype )
+		if( matches > max_matches ) then
+		   	ovl_proc = proc
+		   	max_matches = matches
+		   	amb_cnt = 0
+
+		'' same? ambiguity..
+		elseif( matches = max_matches ) then
+			if( max_matches > 0 ) then
+				amb_cnt += 1
+			end if
+		end if
+
+		'' next
+		proc = proc->proc.ovl.next
+	loop
+
+	'' more than one possibility?
+	if( amb_cnt > 0 ) then
+		*isambiguous = TRUE
+		errReportParam( proc_head, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
+		function = NULL
+	else
+		function = ovl_proc
 	end if
 
 end function

@@ -20,8 +20,6 @@
 ''
 '' chng: oct/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -30,16 +28,16 @@ option escape
 #include once "inc\rtl.bi"
 
 '' name, alias, _
-'' type, mode, _
-'' callback, checkerror, overloaded, _
-'' args, _
-'' [arg typ,mode,optional[,value]]*args
+'' type, callconv, _
+'' callback, options, _
+'' params, _
+'' [param type, mode, optional[, value]] * params
 funcdata:
 
 '' fb_ConsoleView ( byval toprow as integer = 0, byval botrow as integer = 0 ) as void
 data @FB_RTL_CONSOLEVIEW,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0
@@ -47,7 +45,7 @@ data @FB_RTL_CONSOLEVIEW,"", _
 '' fb_ReadXY ( byval x as integer, byval y as integer, byval colorflag as integer ) as uinteger
 data @FB_RTL_CONSOLEREADXY,"", _
 	 FB_DATATYPE_UINT,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 3, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
@@ -56,7 +54,7 @@ data @FB_RTL_CONSOLEREADXY,"", _
 '' width( byval cols as integer = -1, byval width_arg as integer = -1 ) as integer
 data @FB_RTL_WIDTH, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1
@@ -64,7 +62,7 @@ data @FB_RTL_WIDTH, "", _
 '' width( dev as string, byval width_arg as integer = -1 ) as integer
 data @FB_RTL_WIDTHDEV, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE, -1
@@ -72,7 +70,7 @@ data @FB_RTL_WIDTHDEV, "", _
 '' width( byval fnum as integer, byval width_arg as integer = -1 ) as integer
 data @FB_RTL_WIDTHFILE, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE, -1
@@ -80,7 +78,7 @@ data @FB_RTL_WIDTHFILE, "", _
 '' locate( byval row as integer = 0, byval col as integer = 0, byval cursor as integer = -1 ) as integer
 data @"locate", "fb_Locate", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 3, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
@@ -89,33 +87,33 @@ data @"locate", "fb_Locate", _
 '' pos( ) as integer
 data @"pos", "fb_GetX", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, TRUE, _
+	 NULL, FB_RTL_OPT_OVER, _
 	 0
 
 '' pos( dummy ) as integer
 data @"pos", "fb_Pos", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, TRUE, _
+	 NULL, FB_RTL_OPT_OVER, _
      1, _
      FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' csrlin( ) as integer
 data @"csrlin", "fb_GetY", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 0
 
 '' cls( byval n as integer = 1 ) as void
 data @"cls", "fb_Cls", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,&hFFFF0000
 
 '' color( byval fc as integer = -1, byval bc as integer = -1 ) as integer
 data @"color", "fb_Color", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1
@@ -123,13 +121,13 @@ data @"color", "fb_Color", _
 '' inkey ( ) as string
 data @"inkey","fb_Inkey", _
 	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
-	 @rtlMultinput_cb, FALSE, FALSE, _
+	 @rtlMultinput_cb, FB_RTL_OPT_NONE, _
 	 0
 
 '' getkey ( ) as integer
 data @"getkey","fb_Getkey", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @rtlMultinput_cb, FALSE, FALSE, _
+	 @rtlMultinput_cb, FB_RTL_OPT_NONE, _
 	 0
 
 '' EOL

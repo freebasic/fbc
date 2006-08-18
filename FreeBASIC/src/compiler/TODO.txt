@@ -1,39 +1,90 @@
+[ ] proc def:
+    - when checking the prototype, the access modifiers must be checked too: PUBLIC, PRIVATE
+    - don't allow AS ANY params in overloaded procs
+
+[ ] operator overloading:
+    - if the struct/class has a dtor, virtual method or a copy ctor, it won't be
+      return in registers ever - just a ctor is ok though (if it's not power of 2 also)
+    - if the struct/class has a dtor, virtual method or a copy ctor, it won't be
+      passed directly BYVAL, a pointer to its temp copy will instead
+    - =op or let if called from a C++ implentation would return a result, what doesn't
+      happen in FB (assignment doesn't return anything)
+      - there will be a missing param (the pointer to the temp location to hold the
+        returned object), that would leak anyways
+    - implicit casting must be checked if UDT's, classes or enum's are passed
+      - in binary operations
+      - in assignments
+      - when passing args
+    - binary:
+      OPERATOR & ( l, r ) AS TYPE
+    - unary:
+      OPERATOR INT()|FIX()|ABS()|*|@ ( l ) AS TYPE
+    - PRINT and pseudo-overloaded functions should try to convert the UDT, ENUM, CLASS to
+      string
+    - op= is implemented when just op is ???, as in D and .net
+    - do commutative for +|*|and|or|<>, check D for more rules
+
+[ ] -exx is giving suspicious ptr assignment when module/name are been restored inside ns'
+
+[ ] GET and PUT shouldn't allow strings when the number of items is passed
+
 [ ] add the -lang (qb|fb) cmd-line option:
-    - "qb" will be the default, by now(?)
+    - "qb":
+      [x] move all variables to function-level, implicit or explict (see no SCOPE)
+      [x] GOSUB and RETURN in subroutines (so RETURN can't be used as a shortcut to EXIT FUNCTION)
+      	  [ ] implement it using setjmp/longjmp later in the rtlib
+      [x] periods in symbol names
+      [x] numeric labels
+      [ ] SHARED at subs (non-shared vars at mod-level will have to be allocated
+          statically, as before)
+      [x] params passed by reference by default
+      [x] DEF### (ie: explicit types required)
+      [x] implicit variables
+      [x] suffixes % & ! # $
+      [x] '$dynamic, '$static, '$include
+      [x] CALL
+      	  [ ] support undefined functions as in QB, all params BYREF as ANY
+      [x] LET
+      [x] ON .. GOTO|GOSUB
+      [ ] ON ERROR, RESUME
+      [x] OPTION's
+      [x] DEFSNG
+      [ ] DEF - convert to a macro? doesn't it make any symbol called Fn... invalid
+          because it allows forward refs?
+      [ ] arrays with same name as scalars
 
-    - "fb" restrictions:
-    - no OPTION's
-    - no DEF### (ie: explicit types required)
-    - no implicit variables
-    - no '$dynamic, '$static, '$include
-    - parameters passed by value by default
-    - no CALL
-    - no variable suffixes
-    - no periods in symbol names
-    - no GOSUB and RETURN even in module-level
-    - no ON .. GOTO|GOSUB
-    - no ON ERROR, RESUME
-    - no numeric labels
-    - no SHARED at subs (if added later, non-shared vars at mod-level will have to be
-                         allocated statically, as before)
-    - error messages in single-line syntax ala in VS
+      [x] no SCOPE
+      [x] no NAMESPACE
+      [x] no CLASS (and exception handling)
+      [x] no op and function overloading
+      [x] no EXTERN (periods and suffixes screw mangling)
+      [x] no multi-threading - not thread*, mutex*, cond*
 
-    - "qb" restrictions:
-      - namespaces
-      - classes (exception handling)
-      - op overloading (func overloading too?)
+    - "fb" - the inverse of "qb", but show deprecated messages by now for:
+      [ ] without ON ERROR, all stmts returning rt errors should be allowed to
+          be used as functions too
+
+    - "vb"
+      [ ] include the vbdos and vb6-only functions in the rtlibx directly in the
+          rtl definitions
+          - use #if __FB_LANG_ <> "vb" in vbcompat.bi
+      [ ] with the change above, move the rtlibx back to the rtlib
+      [ ] vb-compat like: byref params, def type as variant (if VARIANT is fully
+          op. overloaded), no scopes (GOSUB can't be added as "vb" must
+          support multi-threading too)
+
 
 [ ] namespace:
-    - all non-local variables should be shared by default, it makes no sense to have
-      SHARED if there's no way do add executable code outside functions - same as for classes
     - add support for importing single symbols (mostly because classes, as nested ns'
       are already supported)
 
 [ ] proc call:
-    - allow CALL's to undefined functions (all params BYREF as ANY)
     - add named parameters (foo => expr)
       - can be hard to be added because they don't have to come in order
 
+[ ] add #pragma cmdline="-foo bar -baz"
+	- painful to add
+	- don't allow it if any line was parsed already
 [ ] PP:
     - [macro expansion: won't work for inner macros
     - add varargs support, like foo(arg1, ...) ...

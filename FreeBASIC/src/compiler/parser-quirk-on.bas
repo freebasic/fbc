@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -142,7 +140,11 @@ end function
 '':::::
 ''OnStmt 		=	ON LOCAL? (Keyword | Expression) (GOTO|GOSUB) Label .
 ''
-function cOnStmt as integer
+function cOnStmt _
+	( _
+		_
+	) as integer
+
 	dim as ASTNODE ptr expr
 	dim as integer isgoto, islocal, isrestore
 	dim as FBSYMBOL ptr label
@@ -151,9 +153,7 @@ function cOnStmt as integer
 	function = FALSE
 
 	'' ON
-	if( hMatch( FB_TK_ON ) = FALSE ) then
-		exit function
-	end if
+	lexSkipToken( )
 
 	'' LOCAL?
 	if( hMatch( FB_TK_LOCAL ) ) then
@@ -191,12 +191,10 @@ function cOnStmt as integer
 	    	end if
 	    end if
 
-		'' difference from QB: not allowed inside procs
-		if( fbIsModLevel() = FALSE ) then
-			if( errReport( FB_ERRMSG_ILLEGALINSIDEASUB ) = FALSE ) then
+		if( fbLangOptIsSet( FB_LANG_OPT_GOSUB ) = FALSE ) then
+			if( errReportNotAllowed( FB_LANG_OPT_GOSUB ) = FALSE ) then
 				exit function
 			else
-				'' error recovery: skip stmt
 				hSkipStmt( )
 				return TRUE
 			end if

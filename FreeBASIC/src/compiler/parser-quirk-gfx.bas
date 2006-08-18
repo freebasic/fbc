@@ -20,8 +20,6 @@
 ''
 '' chng: dec/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -102,9 +100,11 @@ private function hMakeArrayIndex _
 end function
 
 '':::::
-private function hGetTarget( byref expr as ASTNODE ptr, _
-							 byref isptr as integer _
-						   ) as FBSYMBOL ptr
+private function hGetTarget _
+	( _
+		byref expr as ASTNODE ptr, _
+		byref isptr as integer _
+	) as FBSYMBOL ptr
 
 	dim as FBSYMBOL ptr s
 
@@ -158,7 +158,14 @@ private function hGetTarget( byref expr as ASTNODE ptr, _
 end function
 
 '':::::
-private function hGetMode( byref mode as uinteger, byref alphaexpr as ASTNODE ptr, byref funcexpr as ASTNODE ptr, byref paramexpr as ASTNODE ptr )
+private function hGetMode _
+	( _
+		byref mode as uinteger, _
+		byref alphaexpr as ASTNODE ptr, _
+		byref funcexpr as ASTNODE ptr, _
+		byref paramexpr as ASTNODE ptr _
+	)  as integer
+
     dim as FBSYMBOL ptr s, arg1, arg2, arg3
 
 	function = FALSE
@@ -217,7 +224,7 @@ private function hGetMode( byref mode as uinteger, byref alphaexpr as ASTNODE pt
 			hMatchCOMMA( )
 
 			hMatchExpression( funcexpr )
-			
+
 			if( hMatch( CHAR_COMMA ) ) then
 				hMatchExpression( paramexpr )
 			end if
@@ -240,9 +247,9 @@ private function hGetMode( byref mode as uinteger, byref alphaexpr as ASTNODE pt
 			arg1 = symbGetProcHeadParam( s )
 
 			arg2 = symbGetParamNext( arg1 )
-			
+
 			arg3 = symbGetParamNext( arg2 )
-			
+
 			if( s->proc.mode = FB_FUNCMODE_PASCAL ) then
 				swap arg1, arg3
 			end if
@@ -398,7 +405,7 @@ function cGfxLine as integer
 
 		'' ',' LIT_STRING? - linetype
 		if( hMatch( CHAR_COMMA ) ) then
-			select case ucase$( *lexGetText( ) )
+			select case ucase( *lexGetText( ) )
 			case "B"
 				lexSkipToken( )
 				linetype = FBGFX_LINETYPE_B
@@ -492,7 +499,7 @@ function cGfxCircle as integer
 
             		'' (',' Expr )? - fillflag
             		if( hMatch( CHAR_COMMA ) ) then
-            			if( ucase$( *lexGetText( ) ) <> "F" ) then
+            			if( ucase( *lexGetText( ) ) <> "F" ) then
 							errReport FB_ERRMSG_EXPECTEDEXPRESSION
 							exit function
 						end if
@@ -1150,11 +1157,14 @@ end function
     end if
 
 '':::::
-function cGfxStmt as integer
+function cGfxStmt _
+	( _
+		byval tk as FB_TOKEN _
+	) as integer
 
 	function = FALSE
 
-	select case as const lexGetToken( )
+	select case as const tk
 	case FB_TK_PSET
 		CHECK_CODEMASK( )
 		lexSkipToken( )
@@ -1225,11 +1235,15 @@ function cGfxStmt as integer
 end function
 
 '':::::
-function cGfxFunct ( byref funcexpr as ASTNODE ptr ) as integer
+function cGfxFunct _
+	( _
+		byval tk as FB_TOKEN, _
+		byref funcexpr as ASTNODE ptr _
+	) as integer
 
 	function = FALSE
 
-	select case lexGetToken( )
+	select case tk
 	case FB_TK_POINT
 		lexSkipToken( )
 		function = cGfxPoint( funcexpr )

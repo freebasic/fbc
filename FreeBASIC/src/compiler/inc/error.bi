@@ -139,11 +139,26 @@ enum FBERRMSG_ENUM
 	FB_ERRMSG_EXPECTEDENDEXTERN
 	FB_ERRMSG_EXPECTEDENDSUB
 	FB_ERRMSG_EXPECTEDENDFUNCTION
+	FB_ERRMSG_EXPECTEDENDCTOR
+	FB_ERRMSG_EXPECTEDENDDTOR
+	FB_ERRMSG_EXPECTEDENDOPERATOR
 	FB_ERRMSG_DECLOUTSIDENAMESPC
 	FB_ERRMSG_EXPECTEDENDCOMMENT
 	FB_ERRMSG_TOOMANYERRORS
 	FB_ERRMSG_EXPECTEDMACRO
 	FB_ERRMSG_CANNOTINITEXTERNORCOMMON
+	FB_ERRMSG_ATLEASTONEPARAMMUSTBEANUDT
+	FB_ERRMSG_PARAMORRESULTMUSTBEANUDT
+	FB_ERRMSG_SAMEPARAMETERTYPES
+	FB_ERRMSG_SAMEPARAMANDRESULTTYPES
+	FB_ERRMSG_INVALIDRESULTTYPEFORTHISOP
+	FB_ERRMSG_VARARGPARAMNOTALLOWED
+	FB_ERRMSG_ILLEGALOUTSIDEANOPERATOR
+	FB_ERRMSG_PARAMCANTBEOPTIONAL
+	FB_ERRMSG_ONLYVALIDINLANG
+	FB_ERRMSG_DEFTYPEONLYVALIDINLANG
+	FB_ERRMSG_SUFFIXONLYVALIDINLANG
+	FB_ERRMSG_IMPLICITVARSONLYVALIDINLANG
 
 	FB_ERRMSGS
 end enum
@@ -164,6 +179,8 @@ enum FBWARNINGMSG_ENUM
 	FB_WARNINGMSG_NOCLOSINGQUOTE
 	FB_WARNINGMSG_NOFUNCTIONRESULT
 	FB_WARNINGMSG_BRANCHCROSSINGLOCALVAR
+	FB_WARNINGMSG_NOEXPLICITPARAMMODE
+	FB_WARNINGMSG_POSSIBLEESCSEQ
 
 	FB_WARNINGMSGS
 end enum
@@ -196,6 +213,14 @@ type FB_ERRCTX
 	undefhash		as THASH				'' undefined symbols
 end type
 
+enum FB_ERRMSGOPT
+	FB_ERRMSGOPT_NONE 		= &h00000000
+	FB_ERRMSGOPT_ADDCOMMA 	= &h00000001
+	FB_ERRMSGOPT_ADDCOLON 	= &h00000002
+	FB_ERRMSGOPT_ADDQUOTES 	= &h00000004
+
+	FB_ERRMSGOPT_DEFAULT	= FB_ERRMSGOPT_ADDCOMMA
+end enum
 
 declare	sub 		errInit					( _
 											)
@@ -206,7 +231,8 @@ declare	sub 		errEnd					( _
 declare function	errReportEx				( _
 												byval errnum as integer, _
 												byval msgex as zstring ptr, _
-												byval linenum as integer = 0 _
+												byval linenum as integer = 0, _
+												byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT _
 											) as integer
 
 declare function	errReport				( _
@@ -216,13 +242,15 @@ declare function	errReport				( _
 
 declare sub 		errReportWarn			( _
 												byval msgnum as integer, _
-												byval msgex as zstring ptr = NULL _
+												byval msgex as zstring ptr = NULL, _
+												byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT _
 											)
 
 declare sub 		errReportWarnEx			( _
 												byval msgnum as integer, _
 												byval msgex as zstring ptr = NULL, _
-												byval linenum as integer = 0 _
+												byval linenum as integer = 0, _
+												byval options as FB_ERRMSGOPT = FB_ERRMSGOPT_DEFAULT _
 											)
 
 declare function	errReportParam			( _
@@ -242,6 +270,11 @@ declare sub 		errReportParamWarn		( _
 declare function	errReportUndef			( _
 												byval errnum as integer, _
 												byval id as zstring ptr _
+											) as integer
+
+declare function	errReportNotAllowed		( _
+												byval opt as FB_LANG_OPT, _
+												byval errnum as integer = FB_ERRMSG_ONLYVALIDINLANG _
 											) as integer
 
 declare function	errFatal				( _

@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -33,12 +31,16 @@ option escape
 ''ErrorStmt 	=	ERROR Expression
 ''				|   ERR '=' Expression .
 ''
-function cErrorStmt as integer
+function cErrorStmt _
+	( _
+		byval tk as FB_TOKEN _
+	) as integer
+
 	dim as ASTNODE ptr expr
 
 	function = FALSE
 
-	select case lexGetToken( )
+	select case tk
 
 	'' ERROR Expression
 	case FB_TK_ERROR
@@ -83,12 +85,12 @@ function cErrorFunct _
 
 	function = FALSE
 
-	if( hMatch( FB_TK_ERR ) ) then
+	'' ERR
+	lexSkipToken( )
 
-		funcexpr = rtlErrorGetNum( )
+	funcexpr = rtlErrorGetNum( )
 
-		function = TRUE
-	end if
+	function = TRUE
 
 end function
 

@@ -39,16 +39,6 @@ declare	sub 		hlpInit					( _
 declare	sub 		hlpEnd					( _
 											)
 
-declare	function 	hGetDefType				( _
-												byval symbol as zstring ptr _
-											) as integer
-
-declare	sub 		hSetDefType				( _
-												byval ichar as integer, _
-												byval echar as integer, _
-												byval typ as integer _
-											)
-
 declare function 	hMatch					( _
 												byval token as integer _
 											) as integer

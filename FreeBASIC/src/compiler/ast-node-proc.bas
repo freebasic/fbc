@@ -24,8 +24,6 @@
 ''		 non-decl statements are allowed)
 ''
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -588,7 +586,7 @@ private function hDeclProcParams _
 	function = FALSE
 
 	'' proc returns an UDT?
-	if( symbGetType( proc ) = FB_DATATYPE_USERDEF ) then
+	if( symbGetType( proc ) = FB_DATATYPE_STRUCT ) then
 		'' create an hidden arg if needed
 		symbAddProcResultParam( proc )
 	end if
@@ -639,7 +637,7 @@ private sub hLoadProcResult _
 		n = rtlStrAllocTmpResult( t )
 
 	'' UDT? use the real type
-	case FB_DATATYPE_USERDEF
+	case FB_DATATYPE_STRUCT
 		dtype = symbGetProcRealType( proc )
 	end select
 

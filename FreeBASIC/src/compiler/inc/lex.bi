@@ -30,8 +30,8 @@ enum LEXCHECK
 	LEXCHECK_NOSUFFIX	= 8
 	LEXCHECK_NOQUOTES	= 16
 	LEXCHECK_NOSYMBOL	= 32
-	LEXCHECK_NOLOOKUP	= 64
-	LEXCHECK_IDPERIOD	= 128
+	LEXCHECK_NOPERIOD	= 64
+	LEXCHECK_EATPERIOD	= 128
 	LEXCHECK_KEYHASHTB	= 256
 end enum
 
@@ -48,7 +48,11 @@ type FBTOKEN
 
 	len				as integer                  '' length
 	sym_chain		as FBSYMCHAIN ptr			'' symbol found, if any
-	ppos			as integer
+
+	union
+		prdpos		as integer					'' period '.' pos in symbol names
+		hasesc		as integer					'' any '\' in literals
+	end union
 
 	next			as FBTOKEN ptr
 end type
@@ -198,7 +202,9 @@ declare function	lexPeekCurrentLine		( _
 
 #define lexGetSymChain( ) lex->head->sym_chain
 
-#define lexGetPeriodPos( ) lex->head->ppos
+#define lexGetPeriodPos( ) lex->head->prdpos
+
+#define lexGetHasSlash( ) lex->head->hasesc
 
 #define lexGetHead( ) lex->head
 

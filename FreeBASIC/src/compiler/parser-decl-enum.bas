@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -31,7 +29,7 @@ option escape
 '':::
 ''EnumConstDecl     =   ID ('=' ConstExpression)? .
 ''
-function cEnumConstDecl _
+private function hEnumConstDecl _
 	( _
 		byval id as zstring ptr, _
 		byref value as integer _
@@ -40,19 +38,6 @@ function cEnumConstDecl _
     static as ASTNODE ptr expr
 
 	function = FALSE
-
-    '' if inside a namespace, symbols can't contain periods (.)'s
-    if( symbIsGlobalNamespc( ) = FALSE ) then
-    	if( lexGetPeriodPos( ) > 0 ) then
-	   		if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-    			exit function
-    		end if
-    	end if
-    end if
-
-	'' ID
-	*id = *lexGetText( )
-	lexSkipToken( )
 
 	'' '='?
 	if( lexGetToken( ) = FB_TK_ASSIGN ) then
@@ -101,7 +86,7 @@ function cEnumBody _
 		byval s as FBSYMBOL ptr _
 	) as integer
 
-	static as zstring * FB_MAXNAMELEN+1 ename
+	static as zstring * FB_MAXNAMELEN+1 id
 	dim as integer value = any
 
 	function = FALSE
@@ -127,17 +112,48 @@ function cEnumBody _
 			'' ID ConstDecl (',' ID ConstDecl)*
 			do
 				'' ID?
-				if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
+				select case lexGetClass( )
+				case FB_TKCLASS_IDENTIFIER
+					if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
+						'' if inside a namespace, symbols can't contain periods (.)'s
+						if( symbIsGlobalNamespc( ) = FALSE ) then
+  							if( lexGetPeriodPos( ) > 0 ) then
+  								if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+	  								exit function
+								end if
+							end if
+						end if
+					end if
+
+					id = *lexGetText( )
+
+				case FB_TKCLASS_QUIRKWD
+					'' only if inside a ns and if not local
+					if( (symbIsGlobalNamespc( )) or (env.scope > FB_MAINSCOPE) ) then
+    					if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+    						exit function
+    					else
+    						'' error recovery: fake an id
+    						id = *hMakeTmpStr( )
+    					end if
+
+    				else
+						id = *lexGetText( )
+    				end if
+
+				case else
 					exit do
-				end if
+				end select
+
+				lexSkipToken( )
 
 				'' ConstDecl
-				if( cEnumConstDecl( @ename, value ) = FALSE ) then
+				if( hEnumConstDecl( @id, value ) = FALSE ) then
 					exit function
 				end if
 
-				if( symbAddEnumElement( s, @ename, value ) = NULL ) then
-					if( errReportEx( FB_ERRMSG_DUPDEFINITION, ename ) = FALSE ) then
+				if( symbAddEnumElement( s, @id, value ) = NULL ) then
+					if( errReportEx( FB_ERRMSG_DUPDEFINITION, id ) = FALSE ) then
 						exit function
 					end if
 				end if
@@ -196,36 +212,41 @@ function cEnumDecl _
 	'' ENUM
 	lexSkipToken( )
 
-	'' ID?
-	if( lexGetClass( ) = FB_TKCLASS_IDENTIFIER ) then
-		'' don't allow explicit namespaces
-		ns = cNamespace( )
-    	if( ns <> NULL ) then
-			if( ns <> symbGetCurrentNamespc( ) ) then
-				if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
-					exit function
-				end if
-    		end if
-    	else
-    		if( errGetLast( ) <> FB_ERRMSG_OK ) then
-    			exit function
-    		end if
+	'' don't allow explicit namespaces
+	ns = cNamespace( )
+    if( ns <> NULL ) then
+		if( ns <> symbGetCurrentNamespc( ) ) then
+			if( errReport( FB_ERRMSG_DECLOUTSIDENAMESPC ) = FALSE ) then
+				exit function
+			end if
     	end if
-
-    	'' if inside a namespace, symbols can't contain periods (.)'s
-    	if( symbIsGlobalNamespc( ) = FALSE ) then
-    		if( lexGetPeriodPos( ) > 0 ) then
-	    		if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-    				exit function
-    			end if
-    		end if
-    	end if
-
-		lexEatToken( @id )
-
     else
-    	id = *hMakeTmpStr( FALSE )
+    	if( errGetLast( ) <> FB_ERRMSG_OK ) then
+    		exit function
+    	end if
     end if
+
+	'' ID?
+	select case lexGetClass( )
+	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
+
+		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
+			'' if inside a namespace, symbols can't contain periods (.)'s
+			if( symbIsGlobalNamespc( ) = FALSE ) then
+  				if( lexGetPeriodPos( ) > 0 ) then
+  					if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+	  					exit function
+					end if
+				end if
+			end if
+		end if
+
+		id = *lexGetText( )
+		lexSkipToken( )
+
+    case else
+    	id = *hMakeTmpStr( FALSE )
+    end select
 
 	'' (ALIAS LITSTR)?
 	palias = NULL

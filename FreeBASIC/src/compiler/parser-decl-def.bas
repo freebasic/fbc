@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -35,6 +33,16 @@ function cDefDecl as integer static
     dim as integer dtype, ichar, echar
 
 	function = FALSE
+
+    if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) = FALSE ) then
+	    if( errReportNotAllowed( FB_LANG_OPT_DEFTYPE ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: skip stmt
+			hSkipStmt( )
+			return TRUE
+	    end if
+	end if
 
     if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_DECL ) = FALSE ) then
     	exit function
@@ -100,7 +108,7 @@ function cDefDecl as integer static
 				echar = ichar
 			end if
 
-			hSetDefType( ichar, echar, dtype )
+			symbSetDefType( ichar, echar, dtype )
 
       		'' ','
       		if( lexGetToken( ) <> CHAR_COMMA ) then

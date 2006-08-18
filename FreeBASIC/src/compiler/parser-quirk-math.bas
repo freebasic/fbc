@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -38,6 +36,7 @@ option escape
 ''
 function cMathFunct _
 	( _
+		byval tk as FB_TOKEN, _
 		byref funcexpr as ASTNODE ptr _
 	) as integer
 
@@ -47,7 +46,7 @@ function cMathFunct _
 
 	function = FALSE
 
-	select case as const lexGetToken( )
+	select case as const tk
 	'' ABS( Expression )
 	case FB_TK_ABS
 		lexSkipToken( )
@@ -117,7 +116,7 @@ function cMathFunct _
 	case FB_TK_SIN, FB_TK_ASIN, FB_TK_COS, FB_TK_ACOS, FB_TK_TAN, FB_TK_ATN, _
 		 FB_TK_SQR, FB_TK_LOG, FB_TK_INT
 
-		select case as const lexGetToken( )
+		select case as const tk
 		case FB_TK_SIN
 			op = AST_OP_SIN
 		case FB_TK_ASIN
@@ -186,7 +185,7 @@ function cMathFunct _
 
 	'' LEN|SIZEOF( data type | Expression{idx-less arrays too} )
 	case FB_TK_LEN, FB_TK_SIZEOF
-		islen = (lexGetToken( ) = FB_TK_LEN)
+		islen = (tk = FB_TK_LEN)
 		lexSkipToken( )
 
 		hMatchLPRNT( )

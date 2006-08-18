@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -116,23 +114,40 @@ function cConstAssign _
     end if
 
 	'' ID
-	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
+	select case lexGetClass( )
+	case FB_TKCLASS_IDENTIFIER
+		if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
+			'' if inside a namespace, symbols can't contain periods (.)'s
+			if( symbIsGlobalNamespc( ) = FALSE ) then
+  				if( lexGetPeriodPos( ) > 0 ) then
+  					if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+	  					exit function
+					end if
+				end if
+			end if
+		end if
+
+	case FB_TKCLASS_QUIRKWD
+		'' only if inside a ns and if not local
+		if( (symbIsGlobalNamespc( )) or (env.scope > FB_MAINSCOPE) ) then
+    		if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+    			exit function
+    		else
+				'' error recovery: skip until next stmt or const decl
+				hSkipUntil( FB_TK_DECLSEPCHAR )
+				return TRUE
+    		end if
+    	end if
+
+	case else
 		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 			exit function
 		else
+			'' error recovery: skip until next stmt or const decl
 			hSkipUntil( FB_TK_DECLSEPCHAR )
 			return TRUE
 		end if
-	end if
-
-    '' if inside a namespace, symbols can't contain periods (.)'s
-    if( symbIsGlobalNamespc( ) = FALSE ) then
-    	if( lexGetPeriodPos( ) > 0 ) then
-    		if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-    			exit function
-    		end if
-    	end if
-    end if
+	end select
 
 	id = *lexGetText( )
 	edtype = lexGetType( )

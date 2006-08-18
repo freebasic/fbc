@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -71,11 +69,11 @@ function astNewIIF _
     end select
 
 	'' UDT's? ditto
-	if( true_dtype = FB_DATATYPE_USERDEF ) then
+	if( true_dtype = FB_DATATYPE_STRUCT ) then
 		exit function
     end if
 
-    if( false_dtype = FB_DATATYPE_USERDEF ) then
+    if( false_dtype = FB_DATATYPE_STRUCT ) then
     	exit function
     end if
 

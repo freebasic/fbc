@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -33,6 +31,7 @@ option escape
 ''
 function cTypeConvExpr _
 	( _
+		byval tk as FB_TOKEN, _
 		byref expr as ASTNODE ptr _
 	) as integer
 
@@ -43,7 +42,7 @@ function cTypeConvExpr _
 	dtype = INVALID
 	op = INVALID
 
-	select case as const lexGetToken( )
+	select case as const tk
 	case FB_TK_CBYTE
 		dtype = FB_DATATYPE_BYTE
 	case FB_TK_CSHORT

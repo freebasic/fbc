@@ -21,8 +21,6 @@
 '' chng: sep/2004 written [v1ctor]
 ''		 jan/2005 updated to use real linked-lists [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -80,6 +78,8 @@ function symbAddUDT _
 
 	t->udt.dbg.typenum = INVALID
 
+	t->udt.opovl.cast = NULL
+
 	function = t
 
 end function
@@ -94,7 +94,7 @@ private function hGetRealLen _
 
 	select case as const dtype
 	'' UDT? return its largest field len
-	case FB_DATATYPE_USERDEF
+	case FB_DATATYPE_STRUCT
 		function = subtype->udt.lfldlen
 
 	'' zstring or fixed-len? size is actually sizeof(byte)
@@ -234,7 +234,7 @@ function symbAddUDTElement _
 
 	'' or use the non-padded len if it's a non-array UDT field (for array
 	'' of UDT's fields the padded len will be used, to follow the GCC ABI)
-	elseif( dtype = FB_DATATYPE_USERDEF ) then
+	elseif( dtype = FB_DATATYPE_STRUCT ) then
 		if( dimensions = 0 ) then
 			lgt = subtype->udt.unpadlgt
 		end if

@@ -20,8 +20,6 @@
 ''
 '' chng: oct/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -30,10 +28,10 @@ option escape
 #include once "inc\rtl.bi"
 
 '' name, alias, _
-'' type, mode, _
-'' callback, checkerror, overloaded, _
-'' args, _
-'' [arg typ,mode,optional[,value]]*args
+'' type, callconv, _
+'' callback, options, _
+'' params, _
+'' [param type, mode, optional[, value]] * params
 funcdata:
 
 '' fb_ArrayRedimEx CDECL ( array() as ANY, byval elementlen as integer, _
@@ -41,7 +39,7 @@ funcdata:
 ''						   byval dimensions as integer, ... ) as integer
 data @FB_RTL_ARRAYREDIM,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 6, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYDESC, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
@@ -55,7 +53,7 @@ data @FB_RTL_ARRAYREDIM,"", _
 ''						        byval dimensions as integer, ... ) as integer
 data @FB_RTL_ARRAYREDIMPRESV,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 6, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYDESC, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
@@ -67,7 +65,7 @@ data @FB_RTL_ARRAYREDIMPRESV,"", _
 '' fb_ArrayErase ( array() as ANY, byval isvarlen as integer ) as integer
 data @FB_RTL_ARRAYERASE,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYDESC, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
@@ -75,7 +73,7 @@ data @FB_RTL_ARRAYERASE,"", _
 '' fb_ArrayClear ( array() as ANY, byval isvarlen as integer ) as integer
 data @FB_RTL_ARRAYCLEAR,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYDESC, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
@@ -83,7 +81,7 @@ data @FB_RTL_ARRAYCLEAR,"", _
 '' fb_ArrayLBound ( array() as ANY, byval dimension as integer ) as integer
 data @FB_RTL_ARRAYLBOUND,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYDESC, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
@@ -91,7 +89,7 @@ data @FB_RTL_ARRAYLBOUND,"", _
 '' fb_ArrayUBound ( array() as ANY, byval dimension as integer ) as integer
 data @FB_RTL_ARRAYUBOUND,"", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYDESC, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
@@ -100,7 +98,7 @@ data @FB_RTL_ARRAYUBOUND,"", _
 ''						   byval dimensions as integer, ... ) as void
 data @FB_RTL_ARRAYSETDESC,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 5, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYDESC, FALSE, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
@@ -112,7 +110,7 @@ data @FB_RTL_ARRAYSETDESC,"", _
 ''					   byval maxdimensions as integer ) as void
 data @FB_RTL_ARRAYRESETDESC,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 3, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYDESC, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
@@ -121,7 +119,7 @@ data @FB_RTL_ARRAYRESETDESC,"", _
 '' fb_ArrayStrErase ( array() as any ) as void
 data @FB_RTL_ARRAYSTRERASE,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYDESC, FALSE
 
@@ -129,7 +127,7 @@ data @FB_RTL_ARRAYSTRERASE,"", _
 ''						         byval dimensions as integer, ... ) as void ptr
 data @FB_RTL_ARRAYALLOCTMPDESC,"", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 5, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
@@ -140,7 +138,7 @@ data @FB_RTL_ARRAYALLOCTMPDESC,"", _
 '' fb_ArrayFreeTempDesc ( byval pdesc as any ptr) as void
 data @FB_RTL_ARRAYFREETMPDESC,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
 
@@ -148,7 +146,7 @@ data @FB_RTL_ARRAYFREETMPDESC,"", _
 ''						 byval linenum as integer ) as any ptr
 data @FB_RTL_ARRAYSNGBOUNDCHK,"", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 4, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
@@ -159,7 +157,7 @@ data @FB_RTL_ARRAYSNGBOUNDCHK,"", _
 ''						byval linenum as integer ) as any ptr
 data @FB_RTL_ARRAYBOUNDCHK,"", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 5, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _

@@ -24,8 +24,6 @@
 #include once "inc\ast.bi"
 #include once "inc\ir.bi"
 
-const NEWLINE = "\r\n"
-
 const EMIT_INITNODES	= 1024
 const EMIT_INITVREGNODES= EMIT_INITNODES*4
 

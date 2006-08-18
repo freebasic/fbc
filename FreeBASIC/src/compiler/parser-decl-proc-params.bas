@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -73,13 +71,31 @@ end function
 private function hParamError _
 	( _
 		byval proc as FBSYMBOL ptr, _
-		byval argnum as integer, _
-		byval argid as zstring ptr _
+		byval pid as zstring ptr _
 	) as integer
 
-	function = errReportParam( proc, argnum+1, argid, FB_ERRMSG_ILLEGALPARAMSPECAT )
+	function = errReportParam( proc, _
+							   symbGetProcParams( proc )+1, _
+							   pid, _
+							   FB_ERRMSG_ILLEGALPARAMSPECAT _
+							 )
 
 end function
+
+'':::::
+private sub hParamWarning _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval pid as zstring ptr, _
+		byval msgnum as integer _
+	)
+
+	errReportParamWarn( proc, _
+						symbGetProcParams( proc )+1, _
+						pid, _
+						msgnum )
+
+end sub
 
 '':::::
 private function hOptionalExpr _
@@ -102,7 +118,7 @@ private function hOptionalExpr _
     end if
 
     '' anything but an UDT?
-    if( dtype <> FB_DATATYPE_USERDEF ) then
+    if( dtype <> FB_DATATYPE_STRUCT ) then
     	if( cExpression( expr ) = FALSE ) then
     		exit function
     	end if
@@ -200,7 +216,7 @@ private function hParamDecl _
 
 		    ''
 		    if( lexGetToken( ) <> CHAR_DOT ) then
-		    	if( hParamError( proc, symbGetProcParams( proc ), "..." ) = FALSE ) then
+		    	if( hParamError( proc, "..." ) = FALSE ) then
 		    		exit function
 		    	else
 		    		'' error recovery: skip until next ')', this is the last param
@@ -214,7 +230,7 @@ private function hParamDecl _
 			'' not cdecl or is it the first arg?
 			if( (procmode <> FB_FUNCMODE_CDECL) or _
 				(symbGetProcParams( proc ) = 0) ) then
-				if( hParamError( proc, symbGetProcParams( proc ), "..." ) = FALSE ) then
+				if( hParamError( proc, "..." ) = FALSE ) then
 					exit function
 				else
 					return hMockParam( proc, FB_PARAMMODE_VARARG )
@@ -228,7 +244,7 @@ private function hParamDecl _
 
 		'' syntax error..
 		else
-		    if( hParamError( proc, symbGetProcParams( proc ), "..." ) = FALSE ) then
+		    if( hParamError( proc, "..." ) = FALSE ) then
 		    	exit function
 		    else
 		    	'' error recovery: skip until next ')', this is the last param
@@ -253,22 +269,28 @@ private function hParamDecl _
 	'' only allow keywords as param names on prototypes
 	readid = TRUE
 	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
-		if( isproto = FALSE ) then
-			'' anything but keywords will be catch by parser (could be a ')' too)
-			if( lexGetClass( ) = FB_TKCLASS_KEYWORD ) then
-				if( hParamError( proc, symbGetProcParams( proc ), lexGetText( ) ) = FALSE ) then
+
+		select case lexGetClass( )
+		case FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
+			if( isproto = FALSE ) then
+				if( hParamError( proc, lexGetText( ) ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: skip until next ',' or ')' and return a mock param
 					hSkipUntil( CHAR_COMMA )
 					return hMockParam( proc, pmode )
 				end if
-			end if
-		end if
 
-		if(	lexGetClass( ) <> FB_TKCLASS_KEYWORD ) then
+			else
+				'' AS?
+				if( lexGetToken( ) = FB_TK_AS ) then
+					readid = FALSE
+				end if
+			end if
+
+		case else
 			if( symbGetProcParams( proc ) > 0 ) then
-				if( hParamError( proc, symbGetProcParams( proc ), lexGetText( ) ) = FALSE ) then
+				if( hParamError( proc, lexGetText( ) ) = FALSE ) then
 					exit function
 				else
 					'' error recovery: skip until next ',' or ')' and return a mock param
@@ -277,14 +299,8 @@ private function hParamDecl _
 				end if
 			end if
 			exit function
-		end if
+		end select
 
-		if( isproto ) then
-			'' AS?
-			if( lexGetToken( ) = FB_TK_AS ) then
-				readid = FALSE
-			end if
-		end if
 	end if
 
 	''
@@ -313,26 +329,24 @@ private function hParamDecl _
 			lexSkipToken( )
 			if( (pmode <> INVALID) or _
 				(hMatch( CHAR_RPRNT ) = FALSE) ) then
-				if( hParamError( proc, symbGetProcParams( proc ), pid ) = FALSE ) then
+				if( hParamError( proc, pid ) = FALSE ) then
 					exit function
 				end if
 			end if
 
 			pmode = FB_PARAMMODE_BYDESC
-
-		else
-			if( pmode = INVALID ) then
-				pmode = env.opt.parammode
-			end if
 		end if
 
 	'' no id
 	else
 		ptype  = INVALID
+	end if
 
-		if( pmode = INVALID ) then
-			pmode = env.opt.parammode
-		end if
+	if( pmode = INVALID ) then
+		pmode = env.opt.parammode
+    	if( fbPdCheckIsSet( FB_PDCHECK_PARAMMODE ) ) then
+    		hParamWarning( proc, pid, FB_WARNINGMSG_NOEXPLICITPARAMMODE )
+    	end if
 	end if
 
     '' (AS SymbolType)?
@@ -340,7 +354,7 @@ private function hParamDecl _
     if( lexGetToken( ) = FB_TK_AS ) then
     	lexSkipToken( )
     	if( ptype <> INVALID ) then
-    		if( hParamError( proc, symbGetProcParams( proc ), pid ) ) then
+    		if( hParamError( proc, pid ) ) then
     			exit function
     		else
     			ptype = INVALID
@@ -359,7 +373,7 @@ private function hParamDecl _
 		end if
 
     	if( cSymbolType( ptype, subtype, plen, ptrcnt, options ) = FALSE ) then
-    		if( hParamError( proc, symbGetProcParams( proc ), pid ) = FALSE ) then
+    		if( hParamError( proc, pid ) = FALSE ) then
     			arglevel -= 1
     			exit function
     		else
@@ -375,11 +389,20 @@ private function hParamDecl _
     	psuffix = INVALID
 
     else
-    	if( readid = FALSE ) then
-    		if( hParamError( proc, symbGetProcParams( proc ), "" ) = FALSE ) then
-    			exit function
-    		else
-    			doskip = TRUE
+        if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) = FALSE ) then
+        	if( errReportNotAllowed( FB_LANG_OPT_DEFTYPE, _
+        							 FB_ERRMSG_DEFTYPEONLYVALIDINLANG ) = FALSE ) then
+				exit function
+			else
+				doskip = TRUE
+			end if
+        else
+    		if( readid = FALSE ) then
+    			if( hParamError( proc, NULL ) = FALSE ) then
+    				exit function
+    			else
+    				doskip = TRUE
+    			end if
     		end if
     	end if
 
@@ -390,7 +413,7 @@ private function hParamDecl _
 
     ''
     if( ptype = INVALID ) then
-        ptype = hGetDefType( pid )
+        ptype = symbGetDefType( pid )
         psuffix = ptype
     end if
 
@@ -402,7 +425,7 @@ private function hParamDecl _
     select case as const ptype
     '' can't be a fixed-len string
     case FB_DATATYPE_FIXSTR, FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR
-    	if( hParamError( proc, symbGetProcParams( proc ), pid ) = FALSE ) then
+    	if( hParamError( proc, pid ) = FALSE ) then
     		exit function
     	else
     		'' error recovery: fake correct type
@@ -412,7 +435,7 @@ private function hParamDecl _
 	'' can't be as ANY on non-prototypes
     case FB_DATATYPE_VOID
     	if( isproto = FALSE ) then
-    		if( hParamError( proc, symbGetProcParams( proc ), pid ) = FALSE ) then
+    		if( hParamError( proc, pid ) = FALSE ) then
     			exit function
     		else
     			'' error recovery: fake correct type
@@ -432,7 +455,7 @@ private function hParamDecl _
     	if( isproto ) then
     		select case ptype
     		case FB_DATATYPE_VOID
-    			if( hParamError( proc, symbGetProcParams( proc ), pid ) = FALSE ) then
+    			if( hParamError( proc, pid ) = FALSE ) then
     				exit function
     			else
     				'' error recovery: fake correct param
@@ -451,8 +474,8 @@ private function hParamDecl _
     if( isproto = FALSE ) then
     	'' contains a period?
     	if( dotpos > 0 ) then
-    		if( ptype = FB_DATATYPE_USERDEF ) then
-    			if( hParamError( proc, symbGetProcParams( proc ), pid ) = FALSE ) then
+    		if( ptype = FB_DATATYPE_STRUCT ) then
+    			if( hParamError( proc, pid ) = FALSE ) then
     				exit function
     			end if
     		end if
@@ -475,7 +498,7 @@ private function hParamDecl _
 				dontinit = TRUE
 
     		else
- 	   			if( hParamError( proc, symbGetProcParams( proc ), pid ) = FALSE ) then
+ 	   			if( hParamError( proc, pid ) = FALSE ) then
  	   				exit function
  	   			else
  	   				'' error recovery: skip until next ',' or ')'
@@ -488,12 +511,12 @@ private function hParamDecl _
 			optval = hOptionalExpr( pmode, ptype, subtype )
 
 			if( optval = NULL ) then
- 	   			if( hParamError( proc, symbGetProcParams( proc ), pid ) = FALSE ) then
+ 	   			if( hParamError( proc, pid ) = FALSE ) then
  	   				exit function
  	   			else
  	   				'' error recovery: skip until next ',' or ')' and create a def value
  	   				hSkipUntil( CHAR_COMMA )
-					if( ptype <> FB_DATATYPE_USERDEF ) then
+					if( ptype <> FB_DATATYPE_STRUCT ) then
 						optval = astNewCONSTz( ptype )
 					else
 						attrib and= not FB_SYMBATTRIB_OPTIONAL

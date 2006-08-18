@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -1503,7 +1501,7 @@ function astOptAssignment _
 	end if
 
 	'' delete assign node and alert UOP/BOP to not allocate a result (IR is aware)
-	r->op.allocres = FALSE
+	r->op.options and= not AST_OPOPT_ALLOCRES
 
 	''	=             o
 	'' / \           / \

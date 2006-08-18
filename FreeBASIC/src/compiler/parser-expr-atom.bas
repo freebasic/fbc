@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -97,7 +95,7 @@ private function hFindId _
 
     do
     	sym = chain_->sym
-    	select case symbGetClass( sym )
+    	select case as const symbGetClass( sym )
 		case FB_SYMBCLASS_CONST
 			return cConstantEx( sym, atom )
 
@@ -106,6 +104,10 @@ private function hFindId _
 
 		case FB_SYMBCLASS_VAR
            	return cVariableEx( chain_, atom, env.checkarray )
+
+  		'' quirk-keyword?
+  		case FB_SYMBCLASS_KEYWORD
+  			return cQuirkFunction( sym->key.id, atom )
 		end select
 
     	chain_ = symbChainGetNext( chain_ )
@@ -128,9 +130,9 @@ function cAtom _
 
   	select case as const lexGetClass( )
   	case FB_TKCLASS_KEYWORD
-  		return cQuirkFunction( cIdentifier( )->sym, atom )
+  		return cQuirkFunction( cIdentifier( )->sym->key.id, atom )
 
-  	case FB_TKCLASS_IDENTIFIER
+  	case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
   		if( chain_ = NULL ) then
   			chain_ = cIdentifier( )
   		end if
@@ -148,7 +150,13 @@ function cAtom _
 		end if
 
   		'' try to alloc an implicit variable..
-  		if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
+    	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
+  			return FALSE
+  		end if
+
+  		if( fbLangOptIsSet( FB_LANG_OPT_IMPLICIT = FALSE ) ) then
+  			errReportNotAllowed( FB_LANG_OPT_IMPLICIT, _
+  								 FB_ERRMSG_IMPLICITVARSONLYVALIDINLANG )
   			return FALSE
   		end if
 
@@ -158,38 +166,32 @@ function cAtom _
 		return cNumLiteral( atom )
 
   	case FB_TKCLASS_STRLITERAL
-        return cStrLiteral( atom, env.opt.escapestr )
+        return cStrLiteral( atom )
 
   	case FB_TKCLASS_DELIMITER
-		select case lexGetToken( )
 		'' '.'?
-		case CHAR_DOT
-  			'' can be a global ns symbol access, or a WITH variable..
-  			if( chain_ = NULL ) then
-  				chain_ = cIdentifier( )
+		if( lexGetToken( ) <> CHAR_DOT ) then
+			return FALSE
+		end if
+
+  		'' can be a global ns symbol access, or a WITH variable..
+  		if( chain_ = NULL ) then
+  			chain_ = cIdentifier( )
+  		end if
+
+  		if( chain_ <> NULL ) then
+  			return hFindId( chain_, atom )
+
+  		else
+			if( errGetLast( ) <> FB_ERRMSG_OK ) then
+				exit function
+			end if
+
+  			if( env.stmt.with.sym <> NULL ) then
+  				return cWithVariable( env.stmt.with.sym, atom, env.checkarray )
   			end if
+  		end if
 
-  			if( chain_ <> NULL ) then
-  				return hFindId( chain_, atom )
-
-  			else
-				if( errGetLast( ) <> FB_ERRMSG_OK ) then
-					exit function
-				end if
-
-  				if( env.stmt.with.sym <> NULL ) then
-  					return cWithVariable( env.stmt.with.sym, atom, env.checkarray )
-  				end if
-  			end if
-
-  		'' '$'?
-  		case CHAR_DOLAR
-  			'' literal string?
-  			if( lexGetLookAheadClass( 1 ) = FB_TKCLASS_STRLITERAL ) then
-  				lexSkipToken( )
-  				return cStrLiteral( atom, FALSE )
-  			end if
-  		end select
   	end select
 
   	function = FALSE

@@ -20,8 +20,6 @@
 ''
 '' chng: oct/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -34,10 +32,10 @@ declare function 	hPorts_cb			( byval sym as FBSYMBOL ptr ) as integer
 
 
 '' name, alias, _
-'' type, mode, _
-'' callback, checkerror, overloaded, _
-'' args, _
-'' [arg typ,mode,optional[,value]]*args
+'' type, callconv, _
+'' callback, options, _
+'' params, _
+'' [param type, mode, optional[, value]] * params
 funcdata:
 
 ''
@@ -45,7 +43,7 @@ funcdata:
 ''				byval coordType as integer, byval ispreset as integer ) as void
 data @FB_RTL_GFXPSET, "", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 6, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE, _
@@ -57,7 +55,7 @@ data @FB_RTL_GFXPSET, "", _
 '' fb_GfxPoint ( byref target as any, byval x as single, byval y as single ) as integer
 data @FB_RTL_GFXPOINT, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 3, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE, _
@@ -68,7 +66,7 @@ data @FB_RTL_GFXPOINT, "", _
 ''              byval style as uinteger = &hFFFF, byval coordType as integer = COORD_TYPE_AA ) as integer
 data @FB_RTL_GFXLINE, "", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 9, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE, _
@@ -86,7 +84,7 @@ data @FB_RTL_GFXLINE, "", _
 ''				   byval FillFlag as integer = 0, byval CoordType as integer = COORD_TYPE_A ) as integer
 data @FB_RTL_GFXCIRCLE, "", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 10, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE, _
@@ -104,7 +102,7 @@ data @FB_RTL_GFXCIRCLE, "", _
 ''				 byval mode as integer = PAINT_TYPE_FILL, byval coord_type as integer = COORD_TYPE_A ) as integer
 data @FB_RTL_GFXPAINT, "", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 8, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE, _
@@ -118,7 +116,7 @@ data @FB_RTL_GFXPAINT, "", _
 '' fb_GfxDraw ( byval target as any, cmd as string )
 data @FB_RTL_GFXDRAW, "", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE
@@ -130,7 +128,7 @@ data @FB_RTL_GFXDRAW, "", _
 ''                    byval param as any ptr = NULL )
 data @FB_RTL_GFXDRAWSTRING, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, TRUE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_ERROR, _
 	 10, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE, _
@@ -149,7 +147,7 @@ data @FB_RTL_GFXDRAWSTRING, "", _
 ''              byval screenFlag as integer = 0) as integer
 data @FB_RTL_GFXVIEW, "", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 7, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
@@ -163,7 +161,7 @@ data @FB_RTL_GFXVIEW, "", _
 '' 				 byval y2 as single = 0, byval screenflag as integer = 0 ) as integer
 data @FB_RTL_GFXWINDOW, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 5, _
 	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, TRUE,0, _
 	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, TRUE,0, _
@@ -175,7 +173,7 @@ data @FB_RTL_GFXWINDOW, "", _
 ''				  byval g as integer = -1, byval b as integer = -1 ) as void
 data @FB_RTL_GFXPALETTE, "", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 4, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1, _
@@ -185,7 +183,7 @@ data @FB_RTL_GFXPALETTE, "", _
 '' fb_GfxPaletteUsing ( array as integer ) as void
 data @FB_RTL_GFXPALETTEUSING, "", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYREF, FALSE
 
@@ -193,7 +191,7 @@ data @FB_RTL_GFXPALETTEUSING, "", _
 ''					 byref g as integer, byref b as integer ) as void
 data @FB_RTL_GFXPALETTEGET, "", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 4, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYREF, FALSE, _
@@ -203,7 +201,7 @@ data @FB_RTL_GFXPALETTEGET, "", _
 '' fb_GfxPaletteGetUsing ( array as integer ) as void
 data @FB_RTL_GFXPALETTEGETUSING, "", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYREF, FALSE
 
@@ -215,7 +213,7 @@ data @FB_RTL_GFXPALETTEGETUSING, "", _
 ''			   byval param as any ptr = NULL ) as integer
 data @FB_RTL_GFXPUT, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, TRUE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_ERROR, _
 	 13, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE, _
@@ -235,7 +233,7 @@ data @FB_RTL_GFXPUT, "", _
 ''			   byref array as any, byval coordType as integer, array() as any ) as integer
 data @FB_RTL_GFXGET, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, TRUE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_ERROR, _
 	 8, _
 	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE, _
@@ -250,7 +248,7 @@ data @FB_RTL_GFXGET, "", _
 ''                byval fullscreenFlag as integer = 0 ) as integer
 data @FB_RTL_GFXSCREENSET, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 5, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
@@ -262,7 +260,7 @@ data @FB_RTL_GFXSCREENSET, "", _
 ''					 byval num_pages as integer = 1, byval flags as integer = 0, byval refresh_rate as integer = 0 )
 data @FB_RTL_GFXSCREENRES, "", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 6, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
@@ -274,7 +272,7 @@ data @FB_RTL_GFXSCREENRES, "", _
 '' fb_GfxBload ( filename as string, byval dest as any ptr = NULL ) as integer
 data @"bload", "fb_GfxBload", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, TRUE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_ERROR, _
 	 2, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, TRUE,NULL
@@ -282,7 +280,7 @@ data @"bload", "fb_GfxBload", _
 '' fb_GfxBsave ( filename as string, byval src as any ptr, byval length as integer ) as integer
 data @"bsave", "fb_GfxBsave", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, TRUE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_ERROR, _
 	 3, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE, _
@@ -292,7 +290,7 @@ data @"bsave", "fb_GfxBsave", _
 '' fb_GfxFlip ( byval frompage as integer = -1, byval topage as integer = -1 ) as void
 data @"flip", "fb_GfxFlip", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1
@@ -300,14 +298,14 @@ data @"flip", "fb_GfxFlip", _
 '' pcopy ( byval frompage as integer, byval topage as integer ) as void
 data @"pcopy", "fb_GfxFlip", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 data @"screencopy", "fb_GfxFlip", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1
@@ -315,14 +313,14 @@ data @"screencopy", "fb_GfxFlip", _
 '' fb_GfxCursor ( number as integer) as single
 data @"pointcoord", "fb_GfxCursor", _
 	 FB_DATATYPE_SINGLE,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_GfxPMap ( byval Coord as single, byval num as integer ) as single
 data @"pmap", "fb_GfxPMap", _
 	 FB_DATATYPE_SINGLE,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
@@ -330,7 +328,7 @@ data @"pmap", "fb_GfxPMap", _
 '' fb_Out( byval port as ushort, byval data as ubyte ) as void
 data @"out", "fb_Out", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hPorts_cb, TRUE, FALSE, _
+	 @hPorts_cb, FB_RTL_OPT_ERROR, _
 	 2, _
 	 FB_DATATYPE_USHORT,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_UBYTE,FB_PARAMMODE_BYVAL, FALSE
@@ -338,14 +336,14 @@ data @"out", "fb_Out", _
 '' fb_In( byval port as ushort ) as integer
 data @"inp", "fb_In", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hPorts_cb, FALSE, FALSE, _
+	 @hPorts_cb, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_USHORT,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_Wait ( byval port as ushort, byval and_mask as integer, byval xor_mask as integer = 0 )
 data @"wait", "fb_Wait", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hPorts_cb, TRUE, FALSE, _
+	 @hPorts_cb, FB_RTL_OPT_ERROR, _
 	 3, _
 	 FB_DATATYPE_USHORT,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
@@ -354,13 +352,13 @@ data @"wait", "fb_Wait", _
 '' fb_GfxWaitVSync ( void ) as integer
 data @"screensync", "fb_GfxWaitVSync", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, TRUE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_ERROR, _
 	 0
 
 '' fb_GfxSetPage ( byval work_page as integer = -1, byval visible_page as integer = -1 ) as void
 data @"screenset", "fb_GfxSetPage", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1
@@ -368,13 +366,13 @@ data @"screenset", "fb_GfxSetPage", _
 '' fb_GfxLock ( ) as void
 data @"screenlock", "fb_GfxLock", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 0
 
 '' fb_GfxUnlock ( ) as void
 data @"screenunlock", "fb_GfxUnlock", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1
@@ -382,27 +380,27 @@ data @"screenunlock", "fb_GfxUnlock", _
 '' fb_GfxScreenPtr ( ) as any ptr
 data @"screenptr", "fb_GfxScreenPtr", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 0
 
 '' fb_GfxSetWindowTitle ( title as string ) as void
 data @"windowtitle", "fb_GfxSetWindowTitle", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE
 
 '' fb_Multikey ( byval scancode as integer ) as integer
 data @"multikey", "fb_Multikey", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @rtlMultinput_cb, FALSE, FALSE, _
+	 @rtlMultinput_cb, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' fb_GfxGetMouse ( byref x as integer, byref y as integer, byref z as integer, byref buttons as integer ) as integer
 data @"getmouse", "fb_GetMouse", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @rtlMultinput_cb, FALSE, FALSE, _
+	 @rtlMultinput_cb, FB_RTL_OPT_NONE, _
 	 4, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYREF, FALSE, _
@@ -412,7 +410,7 @@ data @"getmouse", "fb_GetMouse", _
 '' fb_GfxSetMouse ( byval x as integer = -1, byval y as integer = -1, byval cursor as integer = -1 ) as integer
 data @"setmouse", "fb_SetMouse", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @rtlMultinput_cb, FALSE, FALSE, _
+	 @rtlMultinput_cb, FB_RTL_OPT_NONE, _
 	 3, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1, _
@@ -423,7 +421,7 @@ data @"setmouse", "fb_SetMouse", _
 ''					   byref a4 as single = 0, byref a5 as single = 0, byref a6 as single = 0 ) as integer
 data @"getjoystick", "fb_GfxGetJoystick", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 8, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYREF, TRUE,0, _
@@ -438,7 +436,7 @@ data @"getjoystick", "fb_GfxGetJoystick", _
 ''					  byref bpp as integer, byref pitch as integer, byref driver_name as string ) as void
 data @"screeninfo", "fb_GfxScreenInfo", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 7, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYREF, TRUE,0, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYREF, TRUE,0, _
@@ -451,14 +449,14 @@ data @"screeninfo", "fb_GfxScreenInfo", _
 '' fb_GfxScreenList ( byval depth as integer ) as integer
 data @"screenlist", "fb_GfxScreenList", _
 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, TRUE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_ERROR, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0
 
 '' fb_GfxImageCreate ( byval width as integer, byval height as integer ) as any ptr
 data @"imagecreate", "fb_GfxImageCreate", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 3, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
@@ -467,7 +465,7 @@ data @"imagecreate", "fb_GfxImageCreate", _
 '' fb_GfxImageDestroy ( byval image as any ptr ) as void
 data @"imagedestroy", "fb_GfxImageDestroy", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
 
@@ -476,7 +474,7 @@ data @"imagedestroy", "fb_GfxImageDestroy", _
 ''						  byval width as integer, byval isrgb as integer = 1 ) as void
 data @"imageconvertrow", "fb_GfxImageConvertRow", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hGfxlib_cb, FALSE, FALSE, _
+	 @hGfxlib_cb, FB_RTL_OPT_NONE, _
 	 6, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
@@ -950,7 +948,7 @@ end function
 '':::::
 function rtlGfxDraw( byval target as ASTNODE ptr, _
 					 byval targetisptr as integer, _
-					 byval cexpr as ASTNODE ptr )
+					 byval cexpr as ASTNODE ptr ) as integer
 
     dim as ASTNODE ptr proc
     dim as integer targetmode
@@ -1065,12 +1063,12 @@ function rtlGfxDrawString( byval target as ASTNODE ptr, _
 	if( astNewARG( proc, fexpr, INVALID, targetmode ) = NULL ) then
  		exit function
  	end if
- 	
+
  	'' byval mode as integer
  	if( astNewARG( proc, astNewCONSTi( mode, FB_DATATYPE_INTEGER ) ) = NULL ) then
  		exit function
  	end if
- 	
+
  	'' byval func as function( src as uinteger, dest as uinteger ) as uinteger
  	if( funcexpr = NULL ) then
  		funcexpr = astNewCONSTi(0, FB_DATATYPE_INTEGER )
@@ -1078,7 +1076,7 @@ function rtlGfxDrawString( byval target as ASTNODE ptr, _
  	if( astNewARG( proc, funcexpr ) = NULL ) then
  		exit function
  	end if
- 	
+
  	'' byval param as any ptr
  	if( paramexpr = NULL ) then
  		paramexpr = astNewCONSTi(0, FB_DATATYPE_INTEGER )
@@ -1435,7 +1433,7 @@ function rtlGfxPut( byval target as ASTNODE ptr, _
  	if( astNewARG( proc, funcexpr ) = NULL ) then
  		exit function
  	end if
- 	
+
  	'' byval param as any ptr
  	if( paramexpr = NULL ) then
  		paramexpr = astNewCONSTi(0, FB_DATATYPE_INTEGER )

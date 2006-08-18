@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -44,44 +42,99 @@ function cOptDecl as integer
 
 	select case as const lexGetToken( )
 	case FB_TK_EXPLICIT
+    	if( fbLangOptIsSet( FB_LANG_OPT_QBOPT ) = FALSE ) then
+    		if( errReportNotAllowed( FB_LANG_OPT_QBOPT ) = FALSE ) then
+    			exit function
+    		end if
+    	else
+    		env.opt.explicit = TRUE
+    	end if
+
 		lexSkipToken( )
-		env.opt.explicit = TRUE
 
 	case FB_TK_BASE
-		lexSkipToken( )
-		if( lexGetClass( ) <> FB_TKCLASS_NUMLITERAL ) then
-			if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: skip stmt
-				hSkipStmt( )
-			end if
-
-		else
-			env.opt.base = valint( *lexGetText( ) )
+    	if( fbLangOptIsSet( FB_LANG_OPT_QBOPT ) = FALSE ) then
+    		if( errReportNotAllowed( FB_LANG_OPT_QBOPT ) = FALSE ) then
+    			exit function
+    		else
+    			'' error recovery: skip stmt
+    			hSkipStmt( )
+    		end if
+    	else
 			lexSkipToken( )
+
+			if( lexGetClass( ) <> FB_TKCLASS_NUMLITERAL ) then
+				if( errReport( FB_ERRMSG_SYNTAXERROR ) = FALSE ) then
+					exit function
+				else
+					'' error recovery: skip stmt
+					hSkipStmt( )
+				end if
+
+			else
+				env.opt.base = valint( *lexGetText( ) )
+				lexSkipToken( )
+			end if
 		end if
 
 	case FB_TK_BYVAL
+    	if( fbLangOptIsSet( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
+    		if( errReportNotAllowed( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
+    			exit function
+        	end if
+        else
+			env.opt.parammode = FB_PARAMMODE_BYVAL
+        end if
+
 		lexSkipToken( )
-		env.opt.parammode = FB_PARAMMODE_BYVAL
 
 	case FB_TK_PRIVATE
+    	if( fbLangOptIsSet( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
+    		if( errReportNotAllowed( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
+    			exit function
+        	end if
+        else
+			env.opt.procpublic = FALSE
+		end if
+
 		lexSkipToken( )
-		env.opt.procpublic = FALSE
 
 	case FB_TK_DYNAMIC
+    	if( fbLangOptIsSet( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
+    		if( errReportNotAllowed( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
+    			exit function
+        	end if
+        else
+			env.opt.dynamic = TRUE
+		end if
+
 		lexSkipToken( )
-		env.opt.dynamic = TRUE
 
 	case FB_TK_STATIC
+    	if( fbLangOptIsSet( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
+    		if( errReportNotAllowed( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
+    			exit function
+        	end if
+        else
+			env.opt.dynamic = FALSE
+		end if
+
 		lexSkipToken( )
-		env.opt.dynamic = FALSE
 
 	case else
 
-		'' ESCAPE? (it's not a reserved word, there are too many already..)
+   		if( fbLangOptIsSet( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
+  			if( errReportNotAllowed( FB_LANG_OPT_DEPRECTOPT ) = FALSE ) then
+   				exit function
+       		else
+       			'' error recovery: skip stmt
+       			hSkipStmt( )
+       			return TRUE
+       		end if
+       	end if
+
 		select case ucase( *lexGetText( ) )
+		'' ESCAPE? (it's not a reserved word, there are too many already..)
 		case "ESCAPE"
 			lexSkipToken( )
 			env.opt.escapestr = TRUE
@@ -91,8 +144,8 @@ function cOptDecl as integer
 			lexSkipToken( LEXCHECK_NODEFINE )
 
 			do
-				select case lexGetClass( LEXCHECK_NODEFINE )
-				case FB_TKCLASS_KEYWORD
+				select case as const lexGetClass( LEXCHECK_NODEFINE )
+				case FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
 					if( symbDelKeyword( lexGetSymChain( )->sym ) = FALSE ) then
 						if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 							exit function

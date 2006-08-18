@@ -20,8 +20,6 @@
 ''
 '' chng: oct/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -32,22 +30,22 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 
 
 '' name, alias, _
-'' type, mode, _
-'' callback, checkerror, overloaded, _
-'' args, _
-'' [arg typ,mode,optional[,value]]*args
+'' type, callconv, _
+'' callback, options, _
+'' params, _
+'' [param type, mode, optional[, value]] * params
 funcdata:
 
 '' fb_CpuDetect ( ) as uinteger
 data @FB_RTL_CPUDETECT,"", _
 	 FB_DATATYPE_UINT,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 0
 
 '' fb_Init ( byval argc as integer, byval argv as zstring ptr ptr ) as void
 data @FB_RTL_INIT,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE
@@ -55,96 +53,96 @@ data @FB_RTL_INIT,"", _
 '' fb_RtInit ( ) as void
 data @FB_RTL_RTINIT,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 0
 
 '' fb_InitSignals ( ) as void
 data @FB_RTL_INITSIGNALS,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 0
 
 '' fb_InitProfile ( ) as void
 data @FB_RTL_INITPROFILE,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 0
 
 '' __main CDECL ( ) as void
 data @FB_RTL_INITCRTCTOR,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 0
 
 '' fb_End ( byval errlevel as integer ) as void
 data @FB_RTL_END,"", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' command ( byval argc as integer = -1 ) as string
 data @"command","fb_Command", _
 	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1
 
 '' curdir ( ) as string
 data @"curdir","fb_CurDir", _
 	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 0
 
 '' exepath ( ) as string
 data @"exepath","fb_ExePath", _
 	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 0
 
 '' timer ( ) as double
 data @"timer","fb_Timer", _
 	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 0
 
 '' time ( ) as string
 data @"time","fb_Time", _
 	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 0
 
 '' date ( ) as string
 data @"date","fb_Date", _
 	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 0
 
 '' shell ( byval cmm as string = "" ) as integer
 data @"shell","fb_Shell", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, TRUE,""
 
 '' system ( ) as void
 data @"system","fb_End", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0
 
 '' stop ( ) as void
 data @"stop","fb_End", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0
 
 '' run ( byref exename as string, byref arguments as string = "" ) as integer
 data @"run","fb_RunEx", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, TRUE,""
@@ -152,14 +150,14 @@ data @"run","fb_RunEx", _
 '' chain ( exename as string ) as integer
 data @"chain","fb_Chain", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE
 
 '' exec ( byref exename as string, byref arguments as string ) as integer
 data @"exec","fb_Exec", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE
@@ -167,28 +165,28 @@ data @"exec","fb_Exec", _
 '' environ ( byref varname as string ) as string
 data @"environ","fb_GetEnviron", _
 	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE
 
 '' setenviron ( byref varname as string ) as integer
 data @"setenviron","fb_SetEnviron", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE
 
 '' sleep ( byval msecs as integer ) as void
 data @"sleep","fb_Sleep", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @rtlMultinput_cb, FALSE, TRUE, _
+	 @rtlMultinput_cb, FB_RTL_OPT_OVER, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE, -1
 
 '' sleepex ( byval msecs as integer, byval kind as integer ) as integer
 data @"sleep","fb_SleepEx", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @rtlMultinput_cb, TRUE, TRUE, _
+	 @rtlMultinput_cb, FB_RTL_OPT_OVER or FB_RTL_OPT_ERROR, _
 	 2, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
@@ -196,7 +194,7 @@ data @"sleep","fb_SleepEx", _
 '' dir overload ( byval out_attrib as integer ptr = NULL ) as string
 data @"dir","fb_DirNext", _
 	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, TRUE, _
+	 NULL, FB_RTL_OPT_OVER, _
 	 1, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,NULL
 
@@ -205,7 +203,7 @@ data @"dir","fb_DirNext", _
 ''				  byval out_attrib as integer ptr = NULL ) as string
 data @"dir","fb_Dir", _
 	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, TRUE, _
+	 NULL, FB_RTL_OPT_OVER, _
 	 3, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,&h21,_
@@ -214,21 +212,21 @@ data @"dir","fb_Dir", _
 '' settime ( byref time as string ) as integer
 data @"settime","fb_SetTime", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE
 
 '' setdate ( byref date as string ) as integer
 data @"setdate","fb_SetDate", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE
 
 '' threadcreate ( byval proc as sub( byval param as integer ), byval param as integer = 0) as integer
 data @"threadcreate", "fb_ThreadCreate", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @hMultithread_cb, FALSE, FALSE, _
+	 @hMultithread_cb, FB_RTL_OPT_MT, _
 	 2, _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0
@@ -236,82 +234,82 @@ data @"threadcreate", "fb_ThreadCreate", _
 '' threadwait ( byval id as integer ) as void
 data @"threadwait","fb_ThreadWait", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 @hMultithread_cb, FALSE, FALSE, _
+	 @hMultithread_cb, FB_RTL_OPT_MT, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' mutexcreate ( ) as integer
 data @"mutexcreate","fb_MutexCreate", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_MT, _
 	 0
 
 '' mutexdestroy ( byval id as integer ) as void
 data @"mutexdestroy","fb_MutexDestroy", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_MT, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' mutexlock ( byval id as integer ) as void
 data @"mutexlock","fb_MutexLock", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_MT, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' mutexunlock ( byval id as integer ) as void
 data @"mutexunlock","fb_MutexUnlock", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_MT, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' condcreate ( ) as integer
 data @"condcreate","fb_CondCreate", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_MT, _
 	 0
 
 '' conddestroy ( byval id as integer ) as void
 data @"conddestroy","fb_CondDestroy", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_MT, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' condsignal ( byval id as integer ) as void
 data @"condsignal","fb_CondSignal", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_MT, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' condbroadcast ( byval id as integer ) as void
 data @"condbroadcast","fb_CondBroadcast", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_MT, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' condwait ( byval id as integer ) as void
 data @"condwait","fb_CondWait", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_MT, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' dylibload ( filename as string ) as integer
 data @"dylibload","fb_DylibLoad", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE
 
 '' dylibsymbol ( byval library as integer, symbol as string) as any ptr
 data @"dylibsymbol","fb_DylibSymbol", _
 	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 2, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE
@@ -319,34 +317,34 @@ data @"dylibsymbol","fb_DylibSymbol", _
 '' dylibfree ( byval library as integer ) as void
 data @"dylibfree","fb_DylibFree", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
 
 '' beep ( ) as void
 data @"beep","fb_Beep", _
 	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 0
 
 '' mkdir ( byref path as string ) as integer
 data @"mkdir","fb_MkDir", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE
 
 '' rmdir ( byref path as string ) as integer
 data @"rmdir","fb_RmDir", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE
 
 '' chdir ( byref path as string ) as integer
 data @"chdir","fb_ChDir", _
 	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FALSE, FALSE, _
+	 NULL, FB_RTL_OPT_NONE, _
 	 1, _
 	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE
 
@@ -386,7 +384,11 @@ function rtlCpuCheck( ) as integer static
 
 	'' if( cpu < env.clopt.cputype ) then
 	label = symbAddLabel( NULL )
-	astAdd( astNewBOP( AST_OP_GE, cpu, astNewCONSTi( env.clopt.cputype, FB_DATATYPE_UINT ), label, FALSE ) )
+	astAdd( astNewBOP( AST_OP_GE, _
+					   cpu, _
+					   astNewCONSTi( env.clopt.cputype, FB_DATATYPE_UINT ), _
+					   label, _
+					   AST_OPOPT_NONE ) )
 
 	'' print "This program requires at least a <cpu> to run."
 	s = symbAllocStrConst( "This program requires at least a " & env.clopt.cputype & "86 to run.", -1 )

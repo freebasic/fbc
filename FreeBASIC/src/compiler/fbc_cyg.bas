@@ -20,10 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-defint a-z
-option explicit
-option private
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbc.bi"
@@ -48,7 +44,7 @@ declare function makeImpLib 			( byval dllpath as zstring ptr, _
 
 
 '':::::
-public function fbcInit_cygwin( ) as integer
+function fbcInit_cygwin( ) as integer
 
 	''
 	fbc.processOptions 	= @_processOptions
@@ -66,7 +62,7 @@ public function fbcInit_cygwin( ) as integer
 end function
 
 '':::::
-function _linkFiles as integer
+private function _linkFiles as integer
 	dim as integer i
 	dim as string ldpath, libdir, ldcline, libname, dllname
 
@@ -100,7 +96,7 @@ function _linkFiles as integer
 	end if
 
 	'' set script file and subsystem
-	ldcline = "-T \"" + exepath( ) + *fbGetPath( FB_PATH_BIN ) + "i386pe.x\" -subsystem " + fbc.subsystem
+	ldcline = "-T " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_BIN ) + ("i386pe.x" + QUOTE + " -subsystem ") + fbc.subsystem
 
     if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
 		''
@@ -137,40 +133,40 @@ function _linkFiles as integer
 	end if
 
 	'' stack size
-	ldcline += " --stack " + str$( fbc.stacksize ) + "," + str$( fbc.stacksize )
+	ldcline += " --stack " + str( fbc.stacksize ) + "," + str( fbc.stacksize )
 
     '' default lib path
     libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
 
-    ldcline += " -L \"" + libdir + QUOTE
+    ldcline += " -L " + QUOTE + libdir + QUOTE
     '' and the current path to libs search list
-    ldcline += " -L \"./\""
+    ldcline += " -L " + QUOTE + "./" + QUOTE
 
     '' add additional user-specified library search paths
     for i = 0 to fbc.pths-1
-    	ldcline += " -L \"" + fbc.pthlist(i) + QUOTE
+    	ldcline += " -L " + QUOTE + fbc.pthlist(i) + QUOTE
     next i
 
 	'' crt entry
 	if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
-		ldcline += " \"" + libdir + "\\crt0.o\" "
+		ldcline += " " + QUOTE + libdir + (RSLASH + "crt0.o" + QUOTE + " ")
 	else
         '' FIXME
-		ldcline += " \"" + libdir + "\\crt0.o\" "
+		ldcline += " " + QUOTE + libdir + (RSLASH + "crt0.o" + QUOTE + " ")
 	end if
 
     '' add objects from output list
     for i = 0 to fbc.inps-1
-    	ldcline += QUOTE + fbc.outlist(i) + "\" "
+    	ldcline += QUOTE + fbc.outlist(i) + (QUOTE + " ")
     next i
 
     '' add objects from cmm-line
     for i = 0 to fbc.objs-1
-    	ldcline += QUOTE + fbc.objlist(i) + "\" "
+    	ldcline += QUOTE + fbc.objlist(i) + (QUOTE + " ")
     next i
 
     '' set executable name
-    ldcline += "-o \"" + fbc.outname + QUOTE
+    ldcline += "-o " + QUOTE + fbc.outname + QUOTE
 
     '' init lib group
     ldcline += " -( "
@@ -196,7 +192,7 @@ function _linkFiles as integer
 	'' crt end
     if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
         '' create the def list to use when creating the import library
-        ldcline += " --output-def \"" + hStripFilename( fbc.outname ) + dllname + ".def\""
+        ldcline += " --output-def " + QUOTE + hStripFilename( fbc.outname ) + dllname + (".def" + QUOTE)
 	end if
 
     '' invoke ld
@@ -220,7 +216,7 @@ function _linkFiles as integer
 end function
 
 '':::::
-function _archiveFiles( byval cmdline as zstring ptr ) as integer
+private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 	dim arcpath as string
 
 	arcpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ar.exe"
@@ -234,7 +230,7 @@ function _archiveFiles( byval cmdline as zstring ptr ) as integer
 end function
 
 '':::::
-function _compileResFiles as integer
+private function _compileResFiles as integer
 	dim i as integer, f as integer
 	dim rescmppath as string, rescmpcline as string
 	dim oldinclude as string
@@ -242,8 +238,8 @@ function _compileResFiles as integer
 	function = FALSE
 
 	'' change the include env var
-	oldinclude = trim$( environ$( "INCLUDE" ) )
-	setenviron "INCLUDE=" + exepath( ) + *fbGetPath( FB_PATH_INC ) + "win\\rc"
+	oldinclude = trim( environ( "INCLUDE" ) )
+	setenviron "INCLUDE=" + exepath( ) + *fbGetPath( FB_PATH_INC ) + "win" + RSLASH + "rc"
 
 	''
 	rescmppath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "GoRC.exe"
@@ -252,7 +248,7 @@ function _compileResFiles as integer
 	for i = 0 to rcs-1
 
 		'' windres options
-		rescmpcline = "/ni /nw /o /fo \"" + hStripExt(rclist(i)) + ".obj\" " + rclist(i)
+		rescmpcline = "/ni /nw /o /fo " + QUOTE + hStripExt(rclist(i)) + (".obj" + QUOTE + " ") + rclist(i)
 
 		'' invoke
 		if( fbc.verbose ) then
@@ -278,14 +274,17 @@ function _compileResFiles as integer
 end function
 
 '':::::
-function _delFiles as integer
+private function _delFiles as integer
 
 	function = TRUE
 
 end function
 
 '':::::
-function _listFiles( byval argv as zstring ptr ) as integer
+private function _listFiles _
+	( _
+		byval argv as zstring ptr _
+	) as integer
 
 	select case hGetFileExt( argv )
 	case "rc", "res"
@@ -300,8 +299,11 @@ function _listFiles( byval argv as zstring ptr ) as integer
 end function
 
 '':::::
-function _processOptions( byval opt as zstring ptr, _
-						  byval argv as zstring ptr ) as integer
+private function _processOptions _
+	( _
+		byval opt as zstring ptr, _
+		byval argv as zstring ptr _
+	) as integer
 
     select case mid( *opt, 2 )
 	case "s"
@@ -365,8 +367,11 @@ function clearDefList( byval dllfile as zstring ptr ) as integer
 end function
 
 '':::::
-function makeImpLib( byval dllpath as zstring ptr, _
-					 byval dllname as zstring ptr ) as integer
+private function makeImpLib _
+	( _
+		byval dllpath as zstring ptr, _
+		byval dllname as zstring ptr _
+	) as integer
 
 	dim as string dtpath, dtcline, dllfile
 
@@ -394,9 +399,9 @@ function makeImpLib( byval dllpath as zstring ptr, _
 		exit function
 	end if
 
-	dtcline = "--def \"" + dllfile + ".def\"" + _
-			  " --dllname \"" + *dllname + ".dll\"" + _
-			  " --output-lib \"" + *dllpath + "lib" + *dllname + ".dll.a\""
+	dtcline = "--def " + QUOTE + dllfile + ".def" + QUOTE + _
+			  " --dllname " + QUOTE + *dllname + ".dll" + QUOTE + _
+			  " --output-lib " + QUOTE + *dllpath + "lib" + *dllname + (".dll.a" + QUOTE)
 
     if( fbc.verbose ) then
     	print "dlltool: ", dtcline

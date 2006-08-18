@@ -20,8 +20,6 @@
 ''
 ''
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -37,18 +35,9 @@ end type
 ''globals
 	dim shared ctx as FBHLPCTX
 
-	dim shared deftypeTB( 0 to (asc("_")-asc("A")+1)-1 ) as integer
-
 '':::::
 sub hlpInit
-    dim as integer i
 
-	''
-	for i = 0 to (asc("_")-asc("A")+1)-1
-		deftypeTB(i) = FB_DATATYPE_INTEGER
-	next
-
-	''
 	ctx.tmpcnt	= 0
 
 end sub
@@ -180,57 +169,6 @@ function hFloatToStr _
 	end select
 
 end function
-
-'':::::
-function hGetDefType _
-	( _
-		byval symbol as zstring ptr _
-	) as integer static
-
-    dim as integer c
-
-	c = symbol[0][0]
-
-	'' to upper
-	if( (c >= asc("a")) and (c <= asc("z")) ) then
-		c -= (asc("a") - asc("A"))
-	end if
-
-	function = deftypeTB(c - asc("A"))
-
-end function
-
-'':::::
-sub hSetDefType _
-	( _
-		byval ichar as integer, _
-		byval echar as integer, _
-		byval dtype as integer _
-	) static
-
-    dim as integer i
-
-	if( ichar < asc("A") ) then
-		ichar = asc("A")
-	elseif( ichar > asc("_") ) then
-		ichar = asc("_")
-	end if
-
-	if( echar < asc("A") ) then
-		echar = asc("A")
-	elseif( echar > asc("_") ) then
-		echar = asc("_")
-	end if
-
-	if( ichar > echar ) then
-		swap ichar, echar
-	end if
-
-	for i = ichar to echar
-		deftypeTB(i - asc("A")) = dtype
-	next
-
-end sub
 
 '':::::
 function hFBrelop2IRrelop _
@@ -390,7 +328,7 @@ function hStripPath _
 
 	lp = 0
 	do
-		p(1) = instr( lp+1, *filename, "\\" )
+		p(1) = instr( lp+1, *filename, RSLASH )
 		p(2) = instr( lp+1, *filename, "/" )
         if p(1)=0 or (p(2)>0 and p(2)<p(1)) then
             p_found = p(2)
@@ -421,7 +359,7 @@ function hStripFilename _
 
 	lp = 0
 	do
-		p(1) = instr( lp+1, *filename, "\\" )
+		p(1) = instr( lp+1, *filename, RSLASH )
 		p(2) = instr( lp+1, *filename, "/" )
         if p(1)=0 or (p(2)>0 and p(2)<p(1)) then
             p_found = p(2)
@@ -464,12 +402,12 @@ function hGetFileExt _
     	function = ""
     else
     	res = lcase( mid( *fname, lp+1 ) )
-        if instr( res, "\\" ) > 0 or instr( res, "/" ) > 0 then
+        if instr( res, RSLASH ) > 0 or instr( res, "/" ) > 0 then
             '' We had a folder with a "." inside ...
             function = ""
         elseif( len(res) > 0 ) then
 	    	'' . or .. dirs?
-	    	if( res[0] = asc( "\\" ) or res[0] = asc( "/" ) ) then
+	    	if( res[0] = asc( RSLASH ) or res[0] = asc( "/" ) ) then
 	    		function = ""
 	    	else
 	    		function = res

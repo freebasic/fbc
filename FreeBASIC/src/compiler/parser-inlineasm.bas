@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -71,10 +69,10 @@ function cAsmCode as integer static
 		sym = NULL
 		doskip = FALSE
 
-		select case lexGetClass( LEXCHECK_NOWHITESPC )
+		select case as const lexGetClass( LEXCHECK_NOWHITESPC )
 
 		'' id?
-		case FB_TKCLASS_IDENTIFIER
+		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
 
 			if( emitIsKeyword( text ) = FALSE ) then
 				chain_ = cIdentifier( )

@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -40,10 +38,10 @@ private sub hAllocTempStruct _
 	) static
 
 	'' follow GCC 3.x's ABI
-	if( sym->typ = FB_DATATYPE_USERDEF ) then
-		if( sym->proc.realtype = FB_DATATYPE_POINTER + FB_DATATYPE_USERDEF ) then
+	if( sym->typ = FB_DATATYPE_STRUCT ) then
+		if( sym->proc.realtype = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
 			'' create a temp struct
-			n->call.res = symbAddTempVarEx( FB_DATATYPE_USERDEF, sym->subtype )
+			n->call.res = symbAddTempVarEx( FB_DATATYPE_STRUCT, sym->subtype )
 		end if
 	end if
 
@@ -66,7 +64,7 @@ function astNewCALL _
 	if( sym <> NULL ) then
 		dtype   = symbGetType( sym )
 		subtype = symbGetSubType( sym )
-		if( dtype = FB_DATATYPE_USERDEF ) then
+		if( dtype = FB_DATATYPE_STRUCT ) then
 			'' only if it's not a pointer, but a reg (integer or fpoint)
 			if( sym->proc.realtype < FB_DATATYPE_POINTER ) then
 				dtype   = sym->proc.realtype
@@ -131,6 +129,33 @@ function astNewCALL _
 end function
 
 '':::::
+function astBuildCALL cdecl _
+	( _
+		byval proc as FBSYMBOL ptr, _
+		byval args as integer, _
+		... _
+	) as ASTNODE ptr static
+
+    dim as ASTNODE ptr p
+    dim as any ptr arg
+    dim as integer i
+
+    p = astNewCALL( proc )
+
+    arg = va_first( )
+    for i = 0 to args-1
+    	if( astNewARG( p, va_arg( arg, ASTNODE ptr ) ) = NULL ) then
+    		'' ...
+    	end if
+
+    	arg = va_next( arg, ASTNODE ptr )
+    next
+
+    function = p
+
+end function
+
+'':::::
 private function hCallProc _
 	( _
 		byval n as ASTNODE ptr, _
@@ -162,7 +187,7 @@ private function hCallProc _
 	'' string descriptor, same with UDT's..
 	select case dtype
 	case FB_DATATYPE_STRING, _
-		 FB_DATATYPE_USERDEF, _
+		 FB_DATATYPE_STRUCT, _
 		 FB_DATATYPE_WCHAR
 		dtype += FB_DATATYPE_POINTER
 	end select
@@ -215,7 +240,7 @@ private function hCallProc _
 		'' the 1st argument
 		select case n->dtype
 		case FB_DATATYPE_STRING, _
-			 FB_DATATYPE_USERDEF, _
+			 FB_DATATYPE_STRUCT, _
 			 FB_DATATYPE_WCHAR
 			vreg = irAllocVRPTR( n->dtype, 0, vreg )
 		end select
@@ -299,12 +324,12 @@ private sub hCheckTempStruct _
 	end if
 
 	'' follow GCC 3.x's ABI
-	if( sym->typ = FB_DATATYPE_USERDEF ) then
-		if( sym->proc.realtype = FB_DATATYPE_POINTER + FB_DATATYPE_USERDEF ) then
+	if( sym->typ = FB_DATATYPE_STRUCT ) then
+		if( sym->proc.realtype = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
         	'' pass the address of the temp struct
         	vr = astLoad( astNewVar( n->call.res, _
         							 0, _
-        							 FB_DATATYPE_USERDEF, _
+        							 FB_DATATYPE_STRUCT, _
         							 sym->subtype ) )
 
         	a.typ = FB_DATATYPE_VOID

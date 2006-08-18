@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -75,10 +73,10 @@ function cAssignFunctResult _
     symbSetIsAccessed( s )
 
 	'' proc returns an UDT?
-	if( symbGetType( proc ) = FB_DATATYPE_USERDEF ) then
+	if( symbGetType( proc ) = FB_DATATYPE_STRUCT ) then
 		'' pointer? deref
-		if( symbGetProcRealType( proc ) = FB_DATATYPE_POINTER + FB_DATATYPE_USERDEF ) then
-			assg = astNewPTR( 0, assg, FB_DATATYPE_USERDEF, symbGetSubType( proc ) )
+		if( symbGetProcRealType( proc ) = FB_DATATYPE_POINTER + FB_DATATYPE_STRUCT ) then
+			assg = astNewPTR( 0, assg, FB_DATATYPE_STRUCT, symbGetSubType( proc ) )
 		end if
 	end if
 
@@ -363,6 +361,10 @@ private function hAssignOrCall _
     		end if
 
         	return cAssignmentOrPtrCallEx( expr )
+
+  		'' quirk-keyword?
+  		case FB_SYMBCLASS_KEYWORD
+  			return cQuirkStmt( s->key.id )
 		end select
 
     	chain_ = symbChainGetNext( chain_ )
@@ -373,7 +375,7 @@ end function
 '':::::
 ''ProcCallOrAssign=   CALL ID ('(' ProcParamList ')')?
 ''                |   ID ProcParamList?
-''				  |	  (ID | FUNCTION) '=' Expression .
+''				  |	  (ID | FUNCTION | OPERATOR) '=' Expression .
 ''
 function cProcCallOrAssign as integer
 	dim as FBSYMCHAIN ptr chain_ = any
@@ -381,9 +383,9 @@ function cProcCallOrAssign as integer
 
 	function = FALSE
 
-	select case lexGetToken( )
-	'' ID?
-	case FB_TK_ID
+  	select case as const lexGetClass( )
+    case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
+
 		chain_ = cIdentifier( )
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function
@@ -391,65 +393,113 @@ function cProcCallOrAssign as integer
 
 		return hAssignOrCall( chain_, FALSE )
 
-	'' FUNCTION?
-	case FB_TK_FUNCTION
-		'' '='?
-		if( lexGetLookAhead( 1 ) = FB_TK_ASSIGN ) then
-			if( fbIsModLevel( ) ) then
-				if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASUB ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: skip stmt, return
-					hSkipStmt( )
+  	case FB_TKCLASS_KEYWORD
+
+		select case lexGetToken( )
+		'' FUNCTION?
+		case FB_TK_FUNCTION
+
+			'' '='?
+			if( lexGetLookAhead( 1 ) = FB_TK_ASSIGN ) then
+				if( fbIsModLevel( ) ) then
+					if( errReport( FB_ERRMSG_ILLEGALOUTSIDEASUB ) = FALSE ) then
+						exit function
+					else
+						'' error recovery: skip stmt, return
+						hSkipStmt( )
+						return TRUE
+					end if
+				end if
+
+				lexSkipToken( )
+				lexSkipToken( )
+
+    	    	return cAssignFunctResult( env.currproc )
+			end if
+
+		'' OPERATOR?
+		case FB_TK_OPERATOR
+
+			'' ambiguity: it could be just the operator '=' body
+			if( fbIsModLevel( ) = FALSE ) then
+				'' '='?
+				if( lexGetLookAhead( 1 ) = FB_TK_ASSIGN ) then
+					'' not inside an OPERATOR function?
+					if( symbIsOperator( env.currproc ) = FALSE ) then
+						if( errReport( FB_ERRMSG_ILLEGALOUTSIDEANOPERATOR ) = FALSE ) then
+							exit function
+						else
+							'' error recovery: skip stmt, return
+							hSkipStmt( )
+							return TRUE
+						end if
+					end if
+
+					lexSkipToken( )
+					lexSkipToken( )
+
+	        		return cAssignFunctResult( env.currproc )
+    	    	end if
+			end if
+
+		'' CALL?
+		case FB_TK_CALL
+
+    		if( fbLangOptIsSet( FB_LANG_OPT_CALL ) = FALSE ) then
+    			if( errReportNotAllowed( FB_LANG_OPT_CALL ) = FALSE ) then
+    				exit function
+    			else
+    				'' error recovery: skip stmt
+    				hSkipStmt( )
+    				return TRUE
+    			end if
+    		end if
+
+    		if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
+    			exit function
+    		end if
+
+			lexSkipToken( )
+
+ 			chain_ = cIdentifier( )
+  			if( chain_ <> NULL ) then
+				if( hAssignOrCall( chain_, TRUE ) ) then
 					return TRUE
 				end if
 			end if
 
-			lexSkipToken( )
-			lexSkipToken( )
+			'' !!!FIXME!!! add forward function call support like in QB: ie: all
+			''             params are byref as any, show a warning too
+			return errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 
-        	return cAssignFunctResult( env.currproc )
-		end if
+		end select
 
-	'' '.'?
-	case CHAR_DOT
-  		'' can be a global ns symbol access, or a WITH variable..
- 		chain_ = cIdentifier( )
-  		if( chain_ <> NULL ) then
-  			return hAssignOrCall( chain_, FALSE )
+	case FB_TKCLASS_DELIMITER
 
-  		else
-			if( errGetLast( ) <> FB_ERRMSG_OK ) then
-				exit function
-			end if
+		'' '.'?
+		if( lexGetToken( ) = CHAR_DOT ) then
+  			'' can be a global ns symbol access, or a WITH variable..
+ 			chain_ = cIdentifier( )
+  			if( chain_ <> NULL ) then
+  				return hAssignOrCall( chain_, FALSE )
 
-  			if( env.stmt.with.sym <> NULL ) then
-  				if( cWithVariable( env.stmt.with.sym, expr, env.checkarray ) = FALSE ) then
-  					exit function
+  			else
+				if( errGetLast( ) <> FB_ERRMSG_OK ) then
+					exit function
+				end if
+
+  				if( env.stmt.with.sym <> NULL ) then
+  					if( cWithVariable( env.stmt.with.sym, _
+  									   expr, _
+  									   env.checkarray ) = FALSE ) then
+  						exit function
+  					end if
+
+  					cAssignmentOrPtrCallEx( expr )
   				end if
-
-  				cAssignmentOrPtrCallEx( expr )
   			end if
   		end if
 
-	'' CALL?
-	case FB_TK_CALL
-    	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
-    		exit function
-    	end if
-
-		lexSkipToken( )
-
- 		chain_ = cIdentifier( )
-  		if( chain_ <> NULL ) then
-			if( hAssignOrCall( chain_, TRUE ) ) then
-				return TRUE
-			end if
-		end if
-
-		'' !!!FIXME!!! add forward function call support like in QB: ie: all
-		''             params are byref as any, show a warning too
-		return errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
 	end select
 
 end function

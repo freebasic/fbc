@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -62,7 +60,7 @@ private function hCreateOptArg _
 	tree = astCloneTree( symbGetParamOptExpr( param ) )
 
 	'' UDT?
-	if( symbGetType( param ) = FB_DATATYPE_USERDEF ) then
+	if( symbGetType( param ) = FB_DATATYPE_STRUCT ) then
 		'' update the counters
 		astTypeIniUpdCnt( tree )
 	end if

@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -133,7 +131,8 @@ function astNewUOP _
 	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
-    dim as integer dclass, dtype
+    dim as integer dclass, dtype, is_ambiguous
+    dim as FBSYMBOL ptr proc
 
 	function = NULL
 
@@ -141,7 +140,20 @@ function astNewUOP _
 		exit function
 	end if
 
-	dtype 	= o->dtype
+	'' check op overloading
+	if( symb.globOpOvlTb(op).head <> NULL ) then
+		proc = symbFindUopOvlProc( op, o, @is_ambiguous )
+		if( proc <> NULL ) then
+			'' build a proc call
+			return astBuildCALL( proc, 1, o )
+		else
+			if( is_ambiguous ) then
+				exit function
+			end if
+		end if
+	end if
+
+	dtype = o->dtype
 
     '' string? can't operate
     dclass = symbGetDataClass( dtype )
@@ -158,7 +170,7 @@ function astNewUOP _
     	end if
 
     '' UDT's?
-    case FB_DATATYPE_USERDEF
+    case FB_DATATYPE_STRUCT
     	exit function
 
 	'' pointer?
@@ -202,6 +214,10 @@ function astNewUOP _
 			dtype = FB_DATATYPE_DOUBLE
 			o = astNewCONV( INVALID, dtype, NULL, o )
 		end if
+
+	'' '+'? do nothing..
+	case AST_OP_PLUS
+		return o
 	end select
 
 	'' constant folding
@@ -269,11 +285,11 @@ function astNewUOP _
 		exit function
 	end if
 
-	n->l  		= o
-	n->r  		= NULL
-	n->op.op	= op
-	n->op.ex	= NULL
-	n->op.allocres = TRUE
+	n->l = o
+	n->r = NULL
+	n->op.op = op
+	n->op.ex = NULL
+	n->op.options = AST_OPOPT_ALLOCRES
 
 	function = n
 
@@ -289,7 +305,7 @@ function astLoadUOP _
     dim as integer op = any
     dim as IRVREG ptr v1 = any, vr = any
 
-	o  = n->l
+	o = n->l
 	op = n->op.op
 
 	if( o = NULL ) then
@@ -299,7 +315,7 @@ function astLoadUOP _
 	v1 = astLoad( o )
 
 	if( ast.doemit ) then
-		if( n->op.allocres ) then
+		if( (n->op.options and AST_OPOPT_ALLOCRES) <> 0 ) then
 			vr = irAllocVREG( o->dtype )
 		else
 			vr = NULL

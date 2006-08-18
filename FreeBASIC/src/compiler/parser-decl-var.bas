@@ -20,8 +20,6 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -56,7 +54,7 @@ end function
 '':::::
 ''VariableDecl    =   (REDIM PRESERVE?|DIM|COMMON) SHARED? SymbolDef
 ''				  |   EXTERN IMPORT? SymbolDef ALIAS STR_LIT
-''                |   STATIC SymbolDef .							// ambiguity w/ STATIC SUB|FUNCTION
+''                |   STATIC SymbolDef .
 ''
 function cVariableDecl( ) as integer
 	dim as integer attrib = any, dopreserve = any, tk = any
@@ -130,12 +128,6 @@ function cVariableDecl( ) as integer
 
 	'' STATIC
 	case FB_TK_STATIC
-		'' check ambiguity with STATIC SUB|FUNCTION
-		select case lexGetLookAhead( 1 )
-		case FB_TK_SUB, FB_TK_FUNCTION
-			exit function
-		end select
-
 		lexSkipToken( )
 
 		attrib = FB_SYMBATTRIB_STATIC
@@ -369,6 +361,7 @@ private function hDeclStaticVar _
 
     dim as FBSYMBOL ptr s, ns
     dim as integer isextern
+    dim as FB_SYMBOPT options
 
     isextern = FALSE
 
@@ -395,9 +388,19 @@ private function hDeclStaticVar _
 
     ''
     if( isextern = FALSE ) then
+		options = FB_SYMBOPT_NONE
+
+		if( addsuffix ) then
+			options or= FB_SYMBOPT_ADDSUFFIX
+		end if
+
+		if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
+			options or= FB_SYMBOPT_UNSCOPE
+		end if
+
     	s = symbAddVarEx( id, idalias, dtype, subtype, ptrcnt, _
     				  	  lgt, dimensions, dTB(), _
-    				  	  attrib, iif( addsuffix, FB_SYMBOPT_ADDSUFFIX, FB_SYMBOPT_NONE ) )
+    				  	  attrib, options )
 	else
 		s = NULL
 	end if
@@ -438,6 +441,7 @@ private function hDeclDynArray _
     static as FBARRAYDIM dTB(0 to FB_MAXARRAYDIMS-1)		'' always 0
     dim as FBSYMBOL ptr s, ns, desc
     dim as integer isrealloc
+    dim as FB_SYMBOPT options
 
     function = NULL
 
@@ -475,9 +479,20 @@ private function hDeclDynArray _
 
    		if( s = NULL ) then
    			isrealloc = FALSE
+
+			options = FB_SYMBOPT_NONE
+
+			if( addsuffix ) then
+				options or= FB_SYMBOPT_ADDSUFFIX
+			end if
+
+			if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
+				options or= FB_SYMBOPT_UNSCOPE
+			end if
+
    			s = symbAddVarEx( id, idalias, dtype, subtype, ptrcnt, _
    							  lgt, dimensions, dTB(), _
-   							  attrib, iif( addsuffix, FB_SYMBOPT_ADDSUFFIX, FB_SYMBOPT_NONE ) )
+   							  attrib, options )
    			if( s = NULL ) then
    				errReportEx( FB_ERRMSG_DUPDEFINITION, *id )
    				'' no error recovery, caller will take care of that
@@ -597,6 +612,100 @@ private sub hMakeArrayDimTB _
 end sub
 
 '':::::
+private function hVarInit _
+	( _
+        byval sym as FBSYMBOL ptr, _
+        byval attrib as integer, _
+        byval isdecl as integer _
+	) as ASTNODE ptr static
+
+	dim as ASTNODE ptr initree
+
+	function = NULL
+
+	'' '=' | '=>' ?
+	select case lexGetToken( )
+	case FB_TK_DBLEQ, FB_TK_EQ
+
+	case else
+		exit function
+	end select
+
+	'' already declared, extern or common?
+	if( isdecl or _
+		((attrib and (FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_COMMON)) <> 0) ) then
+
+		if( errReport( FB_ERRMSG_CANNOTINITEXTERNORCOMMON ) ) then
+			'' error recovery: skip
+			hSkipUntil( FB_TK_EOL )
+		end if
+
+		exit function
+	end if
+
+	if( fbLangOptIsSet( FB_LANG_OPT_INITIALIZER ) = FALSE ) then
+		if( errReportNotAllowed( FB_LANG_OPT_INITIALIZER )  ) then
+			'' error recovery: skip
+			hSkipUntil( FB_TK_EOL )
+		end if
+		exit function
+	end if
+
+	lexSkipToken( )
+
+	if( sym = NULL ) then
+		'' error recovery: skip until next ','
+		hSkipUntil( CHAR_COMMA )
+		exit function
+	end if
+
+    '' ANY?
+	if( lexGetToken( ) = FB_TK_ANY ) then
+
+		'' don't allow var-len strings
+		select case symbGetType( sym )
+		case FB_DATATYPE_STRING
+			errReport( FB_ERRMSG_INVALIDDATATYPES )
+
+		case FB_DATATYPE_STRUCT
+    		if( symbGetUDTDynCnt( symbGetSubtype( sym ) ) <> 0 ) then
+    			errReport( FB_ERRMSG_INVALIDDATATYPES )
+    		end if
+
+		case else
+			symbSetDontInit( sym )
+
+		end select
+
+		lexSkipToken( )
+
+		exit function
+	end if
+
+	initree = cVariableInit( sym, TRUE )
+	if( initree = NULL ) then
+		if( errGetLast( ) <> FB_ERRMSG_OK ) then
+			exit function
+		end if
+	end if
+
+	'' static or shared?
+	if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
+  						   	   	   FB_SYMBATTRIB_SHARED)) <> 0 ) then
+		if( astTypeIniIsConst( initree ) = FALSE ) then
+			if( errGetLast( ) = FB_ERRMSG_OK ) then
+				'' error recovery: discard the tree
+				astDelTree( initree )
+			end if
+			exit function
+		end if
+	end if
+
+	function = initree
+
+end function
+
+'':::::
 ''VarDecl         =   ID ('(' ArrayDecl? ')')? (AS SymbolType)? ('=' VarInitializer)?
 ''                       (',' SymbolDef)* .
 ''
@@ -678,7 +787,42 @@ private function hVarDecl _
     	end if
 
     	'' ID
-    	if( lexGetClass( ) <> FB_TKCLASS_IDENTIFIER ) then
+    	select case lexGetClass( )
+    	case FB_TKCLASS_IDENTIFIER
+			if( fbLangOptIsSet( FB_LANG_OPT_PERIODS ) ) then
+				'' if inside a namespace, symbols can't contain periods (.)'s
+				if( symbIsGlobalNamespc( ) = FALSE ) then
+  					if( lexGetPeriodPos( ) > 0 ) then
+  						if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
+	  						exit function
+						end if
+					end if
+				end if
+			end if
+
+    		id = *lexGetText( )
+    		suffix = lexGetType( )
+    		lexSkipToken( )
+
+		case FB_TKCLASS_QUIRKWD
+			'' only if inside a ns and if not local
+			if( (symbIsGlobalNamespc( )) or (env.scope > FB_MAINSCOPE) ) then
+    			if( errReport( FB_ERRMSG_DUPDEFINITION ) = FALSE ) then
+    				exit function
+    			else
+    				'' error recovery: fake an id
+    				id = *hMakeTmpStr( )
+    				suffix = INVALID
+    			end if
+
+    		else
+    			id = *lexGetText( )
+    			suffix = lexGetType( )
+    		end if
+
+    		lexSkipToken( )
+
+    	case else
     		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
     			exit function
     		else
@@ -686,21 +830,7 @@ private function hVarDecl _
     			id = *hMakeTmpStr( )
     			suffix = INVALID
     		end if
-
-    	else
-    		'' if inside a namespace, symbols can't contain periods (.)'s
-    		if( symbIsGlobalNamespc( ) = FALSE ) then
-    			if( lexGetPeriodPos( ) > 0 ) then
-    				if( errReport( FB_ERRMSG_CANTINCLUDEPERIODS ) = FALSE ) then
-    					exit function
-    				end if
-    			end if
-    		end if
-
-    		id = *lexGetText( )
-    		suffix = lexGetType( )
-    		lexSkipToken( )
-    	end if
+    	end select
 
     	istypeless = FALSE
 
@@ -866,10 +996,24 @@ private function hVarDecl _
 
     		'' no explicit type..
     		else
+        		if( fbLangOptIsSet( FB_LANG_OPT_DEFTYPE ) = FALSE ) then
+        			'' it's not an error if REDIM'g an already declared array
+        			if( (sym = NULL) or (token <> FB_TK_REDIM) ) then
+        				if( errReportNotAllowed( FB_LANG_OPT_DEFTYPE, _
+        							 		 	 FB_ERRMSG_DEFTYPEONLYVALIDINLANG ) = FALSE ) then
+							exit function
+						else
+							'' error recovery: fake a type
+							dtype = FB_DATATYPE_INTEGER
+						end if
+					end if
+    			end if
+
 				if( dtype = INVALID ) then
 					istypeless = TRUE
-					dtype = hGetDefType( id )
+					dtype = symbGetDefType( id )
 				end if
+
     			lgt	= symbCalcLen( dtype, subtype )
 
     		end if
@@ -899,97 +1043,47 @@ private function hVarDecl _
     		isdecl = symbGetIsDeclared( sym )
     	end if
 
-		'' check for initializers..
-		initree = NULL
+		'' check for an initializer
+		initree = hVarInit( sym, attrib, isdecl )
 
-		'' already declared, extern or common?
-		if( isdecl or _
-			((attrib and (FB_SYMBATTRIB_EXTERN or FB_SYMBATTRIB_COMMON)) <> 0) ) then
-
-			select case lexGetToken( )
-			case FB_TK_DBLEQ, FB_TK_EQ
-				if( errReport( FB_ERRMSG_CANNOTINITEXTERNORCOMMON ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: skip
-					hSkipUntil( FB_TK_EOL )
-				end if
-			end select
-
-		else
-
-			'' ('=' SymbolInitializer | ANY)?
-			select case lexGetToken( )
-			case FB_TK_DBLEQ, FB_TK_EQ
-				lexSkipToken( )
-
-        		if( sym = NULL ) then
-        			'' error recovery: skip until next ','
-        			hSkipUntil( CHAR_COMMA )
-
-				else
-                	'' ANY?
-					if( lexGetToken( ) = FB_TK_ANY ) then
-
-						'' don't allow var-len strings
-						select case dtype
-						case FB_DATATYPE_STRING
-							errReport( FB_ERRMSG_INVALIDDATATYPES )
-
-						case FB_DATATYPE_USERDEF
-            				if( symbGetUDTDynCnt( subtype ) <> 0 ) then
-            					errReport( FB_ERRMSG_INVALIDDATATYPES )
-            				end if
-
-						end select
-
-						symbSetDontInit( sym )
-
-						lexSkipToken( )
-
-        			else
-        				initree = cVariableInit( sym, TRUE )
-        				if( initree = NULL ) then
-        					if( errGetLast( ) <> FB_ERRMSG_OK ) then
-        						exit function
-        					end if
-
-        				else
-        					'' static or shared?
-        					if( (symbGetAttrib( sym ) and (FB_SYMBATTRIB_STATIC or _
-        				  						   	   	   FB_SYMBATTRIB_SHARED)) <> 0 ) then
-        						if( astTypeIniIsConst( initree ) = FALSE ) then
-	        						if( errGetLast( ) <> FB_ERRMSG_OK ) then
-	        							exit function
-	        						else
-	        							'' error recovery: discard the tree
-	        							astDelTree( initree )
-	        							initree = NULL
-	        						end if
-        						end if
-        					end if
-        				end if
-
-        			end if
-        		end if
-			end select
-
-		end if
+		if( initree = NULL ) then
+    		if( errGetLast( ) <> FB_ERRMSG_OK ) then
+    			exit function
+    		end if
+    	end if
 
 		'' add to AST
 		if( sym <> NULL ) then
 
-			dim as FBSYMBOL ptr desc = NULL
+			dim as FBSYMBOL ptr desc
+			desc = NULL
 
 			'' not declared already?
     		if( isdecl = FALSE ) then
-    			astAdd( astNewDECL( FB_SYMBCLASS_VAR, sym, initree ) )
+    			dim as ASTNODE ptr var
+				var = astNewDECL( FB_SYMBCLASS_VAR, sym, initree )
 
+				'' respect scopes?
+				if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
+					astAdd( var )
+				'' move to function scope..
+				else
+					astAddDecl( var )
+				end if
+
+				'' add the descriptor too, if any
 				desc = symbGetArrayDescriptor( sym )
 				if( desc <> NULL ) then
-					astAdd( astNewDECL( FB_SYMBCLASS_VAR, _
-										desc, _
-										symbGetTypeIniTree( desc ) ) )
+					var = astNewDECL( FB_SYMBCLASS_VAR, _
+									  desc, _
+									  symbGetTypeIniTree( desc ) )
+
+					'' see above
+					if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
+						astAdd( var )
+					else
+						astAddDecl( var )
+					end if
 				end if
 
     		end if

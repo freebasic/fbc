@@ -18,6 +18,29 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
+'' !!!REMOVEME!!! this is not needed when the next 0.17 testing is released for all platforms
+#ifndef __FB_LANG__
+option explicit
+option escape
+# define QUOTE "\""
+# define NEWLINE "\r\n"
+# define RSLASH "\\"
+# define TABCHAR "\t"
+# define ESCCHAR "\27"
+# define LFCHAR "\n"
+#else
+# define QUOTE !"\""
+# define NEWLINE !"\r\n"
+# define RSLASH !"\\"
+# define TABCHAR !"\t"
+# define ESCCHAR !"\27"
+# define LFCHAR !"\n"
+#endif
+
+'' \'s are reversed in Linux
+const FB_BINPATH = RSLASH + "bin" + RSLASH
+const FB_INCPATH = RSLASH + "inc" + RSLASH
+const FB_LIBPATH = RSLASH + "lib" + RSLASH
 
 ''
 const FB_MAXPATHLEN			= 260
@@ -114,8 +137,20 @@ enum FBCOMPOPT_ENUM
 	FB_COMPOPT_MSBITFIELDS
 	FB_COMPOPT_MAXERRORS
 	FB_COMPOPT_SHOWSUSPERRORS
+	FB_COMPOPT_LANG
+	FB_COMPOPT_PEDANTICCHK
 
 	FB_COMPOPTIONS
+end enum
+
+'' pedantic checks
+enum FB_PDCHECK
+	FB_PDCHECK_NONE			= &h00000000
+
+	FB_PDCHECK_ESCSEQ		= &h00000001
+	FB_PDCHECK_PARAMMODE	= &h00000002
+
+	FB_PDCHECK_ALL			= &hffffffff
 end enum
 
 type FBCMMLINEOPT
@@ -137,6 +172,8 @@ type FBCMMLINEOPT
 	msbitfields		as integer					'' use M$'s bitfields packing
 	maxerrors		as integer					'' max number errors until the parser quit
 	showsusperrors	as integer					'' show suspicious errors (def= false)
+	lang			as integer					'' lang compatibility
+	pdcheckopt		as FB_PDCHECK				'' pedantic checks
 end type
 
 
@@ -182,6 +219,43 @@ const FB_DEFAULT_TARGET = FB_COMPTARGET_XBOX
 #else
 #error Unsupported target
 #endif
+
+'' languages (update the fb.bas::langTb() array when changing this list)
+enum FB_LANG
+	FB_LANG_FB
+	FB_LANG_FB_DEPRECATED
+	FB_LANG_QB
+
+	FB_LANGS
+end enum
+
+'' features allowed in the selected language
+enum FB_LANG_OPT
+	FB_LANG_OPT_MT			= &h00000001
+	FB_LANG_OPT_SCOPE		= &h00000002
+	FB_LANG_OPT_NAMESPC		= &h00000004
+	FB_LANG_OPT_EXTERN		= &h00000008
+	FB_LANG_OPT_FUNCOVL		= &h00000010
+	FB_LANG_OPT_OPEROVL		= &h00000020
+	FB_LANG_OPT_CLASS		= &h00000040
+	FB_LANG_OPT_INITIALIZER = &h00000080
+	FB_LANG_OPT_SINGERRLINE = &h00000100
+
+	FB_LANG_OPT_GOSUB		= &h00010000
+	FB_LANG_OPT_CALL		= &h00020000
+	FB_LANG_OPT_LET			= &h00040000
+	FB_LANG_OPT_PERIODS		= &h00080000
+	FB_LANG_OPT_NUMLABEL	= &h00100000
+    FB_LANG_OPT_IMPLICIT	= &h00200000
+    FB_LANG_OPT_DEFTYPE		= &h00400000
+    FB_LANG_OPT_SUFFIX		= &h00800000
+    FB_LANG_OPT_METACMD		= &h01000000
+    FB_LANG_OPT_QBOPT		= &h02000000
+    FB_LANG_OPT_DEPRECTOPT	= &h04000000
+    FB_LANG_OPT_ONERROR		= &h08000000
+    FB_LANG_OPT_SHAREDLOCAL	= &h10000000
+    FB_LANG_OPT_QUIRKFUNC	= &h20000000
+end enum
 
 '' paths
 enum FB_PATH_ENUM
@@ -275,5 +349,21 @@ declare sub 		fbReportRtError	( _
 										byval funname as zstring ptr, _
 										byval errnum as integer _
 									)
+
+declare function 	fbGetLangOptions( _
+										byval lang as FB_LANG _
+									) as FB_LANG_OPT
+
+declare function	fbGetLangName	( _
+										byval lang as FB_LANG _
+									) as string
+
+''
+'' macros
+''
+
+#define fbLangOptIsSet( opt ) ((env.langopt and opt) <> 0)
+
+#define fbPdCheckIsSet( opt ) ((env.clopt.pdcheckopt and opt) <> 0)
 
 #endif '' __FB_BI__

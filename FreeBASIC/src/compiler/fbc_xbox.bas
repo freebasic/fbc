@@ -20,10 +20,6 @@
 ''
 '' chng: jul/2005 written [DrV]
 
-defint a-z
-option explicit
-option private
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbc.bi"
@@ -47,7 +43,7 @@ declare function _processOptions		( byval opt as zstring ptr, _
 
 
 '':::::
-public function fbcInit_xbox( ) as integer
+function fbcInit_xbox( ) as integer
 
 	''
 	fbc.processOptions 	= @_processOptions
@@ -65,7 +61,7 @@ public function fbcInit_xbox( ) as integer
 end function
 
 '':::::
-function _linkFiles as integer
+private function _linkFiles as integer
 	dim as integer i
 	dim as string ldcline, ldpath, libname
 	dim as string cxbepath, cxbecline
@@ -89,7 +85,8 @@ function _linkFiles as integer
 	end if
 
 	'' set script file and subsystem
-	ldcline = "-T \"" + exepath( ) + *fbGetPath( FB_PATH_BIN ) + "i386pe.x\" -nostdlib --file-alignment 0x20 --section-alignment 0x20 -shared"
+	ldcline = "-T " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_BIN ) + "i386pe.x" + QUOTE + _
+			  " -nostdlib --file-alignment 0x20 --section-alignment 0x20 -shared"
 
     if( len( fbc.mapfile ) > 0) then
         ldcline += " -Map " + fbc.mapfile
@@ -104,25 +101,25 @@ function _linkFiles as integer
 
     '' add objects from output list
     for i = 0 to fbc.inps-1
-    	ldcline += QUOTE + fbc.outlist(i) + "\" "
+    	ldcline += QUOTE + fbc.outlist(i) + (QUOTE + " ")
     next i
 
     '' add objects from cmm-line
     for i = 0 to fbc.objs-1
-    	ldcline += QUOTE + fbc.objlist(i) + "\" "
+    	ldcline += QUOTE + fbc.objlist(i) + (QUOTE + " ")
     next i
 
     '' set executable name
-    ldcline += "-o \"" + fbc.outname + QUOTE
+    ldcline += "-o " + QUOTE + fbc.outname + QUOTE
 
     '' default lib path
-    ldcline += " -L \"" + exepath( ) + *fbGetPath( FB_PATH_LIB ) + QUOTE
+    ldcline += " -L " + QUOTE + exepath( ) + *fbGetPath( FB_PATH_LIB ) + QUOTE
     '' and the current path to libs search list
-    ldcline += " -L \"./\""
+    ldcline += " -L " + QUOTE + "./" + QUOTE
 
     '' add additional user-specified library search paths
     for i = 0 to fbc.pths-1
-    	ldcline += " -L \"" + fbc.pthlist(i) + QUOTE
+    	ldcline += " -L " + QUOTE + fbc.pthlist(i) + QUOTE
     next i
 
     '' init lib group
@@ -151,17 +148,17 @@ function _linkFiles as integer
 
     '' xbe title
     if len(xbe_title) = 0 then xbe_title = hStripExt(fbc.outname)
-    cxbecline = "-TITLE:\"" + xbe_title + "\" "
+    cxbecline = "-TITLE:" + QUOTE + xbe_title + (QUOTE + " ")
 
     if fbc.debug then
-    	cxbecline += "-DUMPINFO:\"" + hStripExt(fbc.outname) + ".cxbe\""
+    	cxbecline += "-DUMPINFO:" + QUOTE + hStripExt(fbc.outname) + (".cxbe" + QUOTE)
     end if
 
     '' output xbe filename
-    cxbecline += " -OUT:\"" + hStripExt(fbc.outname) + ".xbe\" "
+    cxbecline += " -OUT:" + QUOTE + hStripExt(fbc.outname) + (".xbe " + QUOTE)
 
     '' input exe filename
-    cxbecline += "\"" + fbc.outname + "\""
+    cxbecline += " " + QUOTE + fbc.outname + QUOTE
 
     '' don't echo cxbe output
     if fbc.verbose = FALSE then
@@ -193,7 +190,7 @@ function _linkFiles as integer
 end function
 
 '':::::
-function _archiveFiles( byval cmdline as zstring ptr ) as integer
+private function _archiveFiles( byval cmdline as zstring ptr ) as integer
 	dim arcpath as string
 
 	arcpath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "ar.exe"
@@ -207,7 +204,7 @@ function _archiveFiles( byval cmdline as zstring ptr ) as integer
 end function
 
 '':::::
-function _compileResFiles as integer
+private function _compileResFiles as integer
 	dim i as integer, f as integer
 	dim rescmppath as string, rescmpcline as string
 	dim oldinclude as string
@@ -215,8 +212,8 @@ function _compileResFiles as integer
 	function = FALSE
 
 	'' change the include env var
-	oldinclude = trim$( environ$( "INCLUDE" ) )
-	setenviron "INCLUDE=" + exepath( ) + *fbGetPath( FB_PATH_INC ) + "win\\rc"
+	oldinclude = trim( environ( "INCLUDE" ) )
+	setenviron "INCLUDE=" + exepath( ) + *fbGetPath( FB_PATH_INC ) + ("win" + RSLASH + "rc")
 
 	''
 	rescmppath = exepath( ) + *fbGetPath( FB_PATH_BIN ) + "GoRC.exe"
@@ -225,7 +222,7 @@ function _compileResFiles as integer
 	for i = 0 to rcs-1
 
 		'' windres options
-		rescmpcline = "/ni /nw /o /fo \"" + hStripExt(rclist(i)) + ".obj\" " + rclist(i)
+		rescmpcline = "/ni /nw /o /fo " + QUOTE + hStripExt(rclist(i)) + (".obj" + QUOTE + " ") + rclist(i)
 
 		'' invoke
 		if( fbc.verbose ) then
@@ -251,14 +248,14 @@ function _compileResFiles as integer
 end function
 
 '':::::
-function _delFiles as integer
+private function _delFiles as integer
 
 	function = TRUE
 
 end function
 
 '':::::
-function _listFiles( byval argv as zstring ptr ) as integer
+private function _listFiles( byval argv as zstring ptr ) as integer
 
 	select case hGetFileExt( argv )
 	case "rc", "res"
@@ -273,8 +270,11 @@ function _listFiles( byval argv as zstring ptr ) as integer
 end function
 
 '':::::
-function _processOptions( byval opt as zstring ptr, _
-						  byval argv as zstring ptr ) as integer
+private function _processOptions _
+	( _
+		byval opt as zstring ptr, _
+		byval argv as zstring ptr _
+	) as integer
 
     select case mid( *opt, 2 )
 	case "s"

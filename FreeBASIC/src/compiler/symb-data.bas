@@ -21,8 +21,6 @@
 '' chng: feb/2006 moved off ir.bas [v1ctor]
 ''
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -47,7 +45,7 @@ option escape
 		(FB_DATACLASS_FPOINT , 8			 	, 8*8				, TRUE , FB_DATATYPE_DOUBLE	, @"double"		), _
 		(FB_DATACLASS_STRING , FB_STRDESCLEN	, 0					, FALSE, FB_DATATYPE_STRING	, @"string"		), _
 		(FB_DATACLASS_STRING , 1			 	, 8*1				, FALSE, FB_DATATYPE_FIXSTR	, @"string *"	), _
-		(FB_DATACLASS_UDT	 , 0			 	, 0					, FALSE, FB_DATATYPE_USERDEF, @"type"		), _
+		(FB_DATACLASS_UDT	 , 0			 	, 0					, FALSE, FB_DATATYPE_STRUCT, @"type"		), _
 		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, FB_DATATYPE_UINT	, @"function"	), _
 		(FB_DATACLASS_UNKNOWN, 0			 	, 0					, FALSE, FB_DATATYPE_VOID	, @"fwdref"		), _
 		(FB_DATACLASS_INTEGER, FB_INTEGERSIZE	, 8*FB_INTEGERSIZE	, FALSE, FB_DATATYPE_UINT	, @"pointer"	)  _

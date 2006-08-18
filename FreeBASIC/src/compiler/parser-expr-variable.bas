@@ -21,8 +21,6 @@
 '' chng: sep/2004 written [v1ctor]
 ''		 oct/2004 arrays on fields [v1c]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
@@ -179,12 +177,12 @@ function cTypeField _
 	sym = NULL
 	derefcnt = 0
 
-	do while( dtype = FB_DATATYPE_USERDEF )
+	do while( dtype = FB_DATATYPE_STRUCT )
 
 		select case lexGetToken( )
 		'' '.'?
 		case CHAR_DOT
-			lexSkipToken( LEXCHECK_NOLOOKUP )
+			lexSkipToken( LEXCHECK_NOPERIOD )
 
        	'' (FIELDDEREF DREF* TypeField)*
        	case FB_TK_FIELDDEREF
@@ -192,11 +190,11 @@ function cTypeField _
        			exit do
        		end if
 
-       		lexSkipToken( LEXCHECK_NOLOOKUP )
+       		lexSkipToken( LEXCHECK_NOPERIOD )
 
        		'' DREF*
 			do while( lexGetToken( ) = FB_TK_DEREFCHAR )
-				lexSkipToken( LEXCHECK_NOLOOKUP )
+				lexSkipToken( LEXCHECK_NOPERIOD )
 				derefcnt += 1
 			loop
 
@@ -205,8 +203,8 @@ function cTypeField _
 		end select
 
 		'' ID?
-		select case lexGetClass( )
-		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD
+		select case as const lexGetClass( )
+		case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_KEYWORD, FB_TKCLASS_QUIRKWD
 
 		case else
 			errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
@@ -1012,6 +1010,7 @@ private function hVarAddUndecl _
 	dim as FBSYMBOL ptr s = any
 	dim as FBARRAYDIM dTB(0) = any
 	dim as integer attrib = any, options = any
+	dim as ASTNODE ptr var = any
 
 	function = NULL
 
@@ -1023,8 +1022,7 @@ private function hVarAddUndecl _
 
 	options = FB_SYMBOPT_ADDSUFFIX
 
-	'' not inside an explicit SCOPE .. END SCOPE block?
-	if( env.isscope = FALSE ) then
+	if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) = FALSE ) then
 		options or= FB_SYMBOPT_UNSCOPE
 	end if
 
@@ -1043,15 +1041,16 @@ private function hVarAddUndecl _
 		end if
 
 	else
-		'' not inside an explicit SCOPE .. END SCOPE block?
-		if( env.isscope = FALSE ) then
-			'' QB quirk: declare it at function scope
-			astAddDecl( astNewDECL( FB_SYMBCLASS_VAR, s, NULL ) )
+		var = astNewDECL( FB_SYMBCLASS_VAR, s, NULL )
 
-		'' explicit scope..
+		'' respect scopes?
+		if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
+			astAdd( var )
+		'' move to function scope..
 		else
-			astAdd( astNewDECL( FB_SYMBCLASS_VAR, s, NULL ) )
+			astAddDecl( var )
 		end if
+
 	end if
 
 	function = s
@@ -1111,7 +1110,7 @@ function cVariableEx _
     '' no suffix? lookup the default type (last DEF###) in the
     '' case symbol could not be found..
     if( dtype = INVALID ) then
-    	deftyp = hGetDefType( id )
+    	deftyp = symbGetDefType( id )
     else
     	deftyp = INVALID
     end if
@@ -1144,7 +1143,7 @@ function cVariableEx _
 
 		'' add undeclared variable
 		if( dtype = INVALID ) then
-			dtype = hGetDefType( id )
+			dtype = symbGetDefType( id )
 		end if
 
 		sym = hVarAddUndecl( id, dtype )
@@ -1154,7 +1153,9 @@ function cVariableEx _
 
 		'' show warning if inside an expression (ie: var was never set)
 		if( env.isexpr ) then
-			errReportWarn( FB_WARNINGMSG_IMPLICITALLOCATION, id )
+			if( fbLangOptIsSet( FB_LANG_OPT_SCOPE ) ) then
+				errReportWarn( FB_WARNINGMSG_IMPLICITALLOCATION, id )
+			end if
 		end if
 
 		subtype = symbGetSubtype( sym )
@@ -1353,7 +1354,11 @@ function cVariable _
 	) as integer
 
 	'' ID
-	if( lexGetToken( ) <> FB_TK_ID ) then
+    select case lexGetClass( )
+    case FB_TKCLASS_IDENTIFIER, FB_TKCLASS_QUIRKWD
+	    function = cVariableEx( chain_, varexpr, checkarray )
+
+	case else
 		if( env.stmt.with.sym = NULL ) then
 			return FALSE
 		end if
@@ -1364,10 +1369,7 @@ function cVariable _
 		end if
 
 		function = cWithVariable( env.stmt.with.sym, varexpr, checkarray )
-
-	else
-		function = cVariableEx( chain_, varexpr, checkarray )
-	end if
+	end select
 
 end function
 

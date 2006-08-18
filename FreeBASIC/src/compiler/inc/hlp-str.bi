@@ -88,6 +88,14 @@ declare function 	hUnescapeW				( _
 												byval text as wstring ptr _
 											) as wstring ptr
 
+declare function 	hHasEscape				( _
+												byval text as zstring ptr _
+											) as integer
+
+declare function 	hHasEscapeW				( _
+												byval text as wstring ptr _
+											) as integer
+
 declare function	hReplace				( _
 												byval text as zstring ptr, _
 												byval oldtext as zstring ptr, _

@@ -20,13 +20,169 @@
 ''
 '' chng: sep/2004 written [v1ctor]
 
-option explicit
-option escape
 
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
+
+'':::::
+function cOperator _
+	( _
+		byval options as FB_OPEROPTS _
+	) as integer
+
+	dim as integer op
+
+    function = INVALID
+
+    '' right class?
+    select case lexGetClass( )
+    case FB_TKCLASS_OPERATOR, FB_TKCLASS_KEYWORD
+
+    case else
+    	exit function
+	end select
+
+    ''
+    select case as const lexGetToken( )
+    case FB_TK_AND
+    	op = AST_OP_AND
+
+	case FB_TK_OR
+    	op = AST_OP_OR
+
+	case FB_TK_XOR
+    	op = AST_OP_XOR
+
+	case FB_TK_EQV
+		op = AST_OP_EQV
+
+	case FB_TK_IMP
+		op = AST_OP_IMP
+
+	case FB_TK_SHL
+    	op = AST_OP_SHL
+
+	case FB_TK_SHR
+    	op = AST_OP_SHR
+
+	case FB_TK_MOD
+    	op = AST_OP_MOD
+
+   	case FB_TK_EQ
+   		if( (options and FB_OPEROPTS_RELATIVE) = 0 ) then
+   			exit function
+   		end if
+
+    	lexSkipToken( )
+   		return AST_OP_EQ
+
+   	case FB_TK_GT
+   		if( (options and FB_OPEROPTS_RELATIVE) = 0 ) then
+   			exit function
+   		end if
+
+    	lexSkipToken( )
+   		return AST_OP_GT
+
+   	case FB_TK_LT
+   		if( (options and FB_OPEROPTS_RELATIVE) = 0 ) then
+   			exit function
+   		end if
+
+    	lexSkipToken( )
+   		return AST_OP_LT
+
+   	case FB_TK_NE
+   		if( (options and FB_OPEROPTS_RELATIVE) = 0 ) then
+   			exit function
+   		end if
+
+    	lexSkipToken( )
+   		return AST_OP_NE
+
+   	case FB_TK_LE
+   		if( (options and FB_OPEROPTS_RELATIVE) = 0 ) then
+   			exit function
+   		end if
+
+    	lexSkipToken( )
+   		return AST_OP_LE
+
+   	case FB_TK_GE
+   		if( (options and FB_OPEROPTS_RELATIVE) = 0 ) then
+   			exit function
+   		end if
+
+    	lexSkipToken( )
+   		return AST_OP_GE
+
+	case FB_TK_LET
+    	if( (options and FB_OPEROPTS_ASSIGN) = 0 ) then
+    		exit function
+    	end if
+
+    	lexSkipToken( )
+    	return AST_OP_ASSIGN
+
+    case FB_TK_NOT
+    	if( (options and FB_OPEROPTS_UNARY) = 0 ) then
+    		exit function
+    	end if
+
+    	lexSkipToken( )
+    	return AST_OP_NOT
+
+    case FB_TK_CAST
+    	if( (options and FB_OPEROPTS_UNARY) = 0 ) then
+    		exit function
+    	end if
+
+    	lexSkipToken( )
+    	return AST_OP_CAST
+
+	case else
+   		select case as const lexGetToken( )
+   		case CHAR_PLUS
+   			op = AST_OP_ADD
+
+		case CHAR_MINUS
+        	op = AST_OP_SUB
+
+        case CHAR_RSLASH
+        	op = AST_OP_INTDIV
+
+		case CHAR_CARET
+        	op = AST_OP_MUL
+
+        case CHAR_SLASH
+        	op = AST_OP_DIV
+
+        case CHAR_CART
+        	op = AST_OP_POW
+
+        case else
+        	exit function
+        end select
+	end select
+
+    lexSkipToken( )
+
+    if( (options and FB_OPEROPTS_SELF) = 0 ) then
+    	return op
+    end if
+
+    '' '='?
+    if( lexGetToken( ) = FB_TK_ASSIGN ) then
+    	lexSkipToken( )
+    	'' assuming _SELF comes right-after the binary op
+    	op += 1
+    end if
+
+    function = op
+
+end function
 
 '':::::
 function cAssignment _
@@ -35,7 +191,7 @@ function cAssignment _
 	) as integer
 
 	dim as ASTNODE ptr expr = any
-	dim as integer op = any, dtype = any, doskip = any
+	dim as integer op = any, dtype = any
 
 	function = FALSE
 
@@ -49,59 +205,25 @@ function cAssignment _
 		end if
 	end if
 
-	'' BOP?
+	'' '='?
     op = INVALID
     if( lexGetToken( ) <> FB_TK_ASSIGN ) then
-    	if( lexGetClass( ) = FB_TKCLASS_OPERATOR ) then
+    	'' BOP?
+    	op = cOperator( FB_OPEROPTS_NONE )
 
-        	select case as const lexGetToken( )
-        	case FB_TK_AND
-        		op = AST_OP_AND
-        	case FB_TK_OR
-        		op = AST_OP_OR
-        	case FB_TK_XOR
-        		op = AST_OP_XOR
-			case FB_TK_EQV
-				op = AST_OP_EQV
-			case FB_TK_IMP
-				op = AST_OP_IMP
-        	case FB_TK_SHL
-        		op = AST_OP_SHL
-        	case FB_TK_SHR
-        		op = AST_OP_SHR
-        	case FB_TK_MOD
-        		op = AST_OP_MOD
-        	end select
-
-        	if( op = INVALID ) then
-        		select case as const lexGetToken( )
-        		case CHAR_PLUS
-        			op = AST_OP_ADD
-        		case CHAR_MINUS
-        			op = AST_OP_SUB
-        		case CHAR_RSLASH
-        			op = AST_OP_INTDIV
-        		case CHAR_CARET
-        			op = AST_OP_MUL
-        		case CHAR_SLASH
-        			op = AST_OP_DIV
-        		case CHAR_CART
-        			op = AST_OP_POW
-        		end select
-        	end if
-
-        	if( op <> INVALID ) then
-        		lexSkipToken( )
-        	end if
-        end if
-	end if
-
-	'' '='
-    if( lexGetToken( ) <> FB_TK_ASSIGN ) then
-    	if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
-    		exit function
+		'' '='?
+    	if( lexGetToken( ) <> FB_TK_ASSIGN ) then
+    		if( errReport( FB_ERRMSG_EXPECTEDEQ ) = FALSE ) then
+    			exit function
+    		end if
+    	else
+    		lexSkipToken( )
     	end if
-    else
+
+    	'' assuming _SELF comes right-after the binary op
+    	op += 1
+
+	else
     	lexSkipToken( )
     end if
 
@@ -110,14 +232,14 @@ function cAssignment _
     env.ctxsym = astGetSubType( assgexpr )
 
     '' Expression
-    doskip = FALSE
     if( cExpression( expr ) = FALSE ) then
        	if( errReport( FB_ERRMSG_EXPECTEDEXPRESSION ) = FALSE ) then
        		env.ctxsym = NULL
        		exit function
        	else
-       		expr = NULL
-       		doskip = TRUE
+    		'' error recovery: skip until next stmt
+    		hSkipStmt( )
+    		return TRUE
        	end if
     end if
 
@@ -125,36 +247,32 @@ function cAssignment _
 
     '' BOP?
     if( op <> INVALID ) then
-    	'' pointer?
-    	if( astGetDataType( assgexpr ) >= FB_DATATYPE_POINTER ) then
-    		expr = cUpdPointer( op, astCloneTree( assgexpr ), expr )
-    	else
-    		expr = astNewBOP( op, astCloneTree( assgexpr ), expr )
-    	end if
+    	'' do lvalue op= expr
+    	expr = astNewSelfBOP( op, _
+    					  	  assgexpr, _
+    					  	  expr, _
+    					  	  NULL, _
+    					  	  AST_OPOPT_LPTRARITH )
 
-    	if( expr = NULL ) Then
+    	if( expr = NULL ) then
     		if( errReport( FB_ERRMSG_TYPEMISMATCH ) = FALSE ) then
     			exit function
     		end if
+    	else
+    		astAdd( expr )
     	end if
-	end if
 
-    if( expr <> NULL ) then
-    	'' do assign
-    	assgexpr = astNewASSIGN( assgexpr, expr )
+	else
+    	'' do lvalue = expr
+    	expr = astNewASSIGN( assgexpr, expr )
 
-    	if( assgexpr = NULL ) then
+    	if( expr = NULL ) then
 			if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 				exit function
 			end if
 		else
-			astAdd( assgexpr )
+			astAdd( expr )
 		end if
-    end if
-
-    if( doskip ) then
-    	'' error recovery: skip until next stmt
-    	hSkipStmt( )
     end if
 
     function = TRUE
@@ -183,7 +301,7 @@ function cAssignmentOrPtrCallEx _
     	return cAssignment( expr )
     end if
 
-	'' calling a FUNCTION ptr..
+	'' calling a function ptr..
 
 	'' can the result be skipped?
 	if( symbGetDataClass( astGetDataType( expr ) ) <> FB_DATACLASS_INTEGER ) then
@@ -229,6 +347,12 @@ function cAssignmentOrPtrCall as integer
 	function = FALSE
 
 	if( lexGetToken( ) = FB_TK_LET ) then
+    	if( fbLangOptIsSet( FB_LANG_OPT_LET ) = FALSE ) then
+    		if( errReportNotAllowed( FB_LANG_OPT_LET ) = FALSE ) then
+    			exit function
+    		end if
+    	end if
+
     	if( cCompStmtIsAllowed( FB_CMPSTMT_MASK_CODE ) = FALSE ) then
     		exit function
     	end if

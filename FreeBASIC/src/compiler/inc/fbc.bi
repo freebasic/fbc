@@ -18,8 +18,6 @@
 ''	along with this program; if not, write to the Free Software
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 
-const QUOTE = "\""
-
 const FB_MAXARGS	  = 250
 const FB_MINSTACKSIZE = 32 * 1024
 const FB_DEFSTACKSIZE = 1024 * 1024
@@ -60,6 +58,7 @@ enum FBC_OPT
 	FBC_OPT_OBJFILE
 	FBC_OPT_LIBFILE
 	FBC_OPT_INCLUDE
+	FBC_OPT_LANG
 
 	FBC_OPTS
 end enum
@@ -136,15 +135,17 @@ end type
 	if( kill( f ) <> 0 ) then                                           :_
 	end if
 
-
-
 ''
 '' prototypes
 ''
 declare function fbcInit_dos			( ) as integer
+
 declare function fbcInit_linux			( ) as integer
+
 declare function fbcInit_win32			( ) as integer
+
 declare function fbcInit_cygwin			( ) as integer
+
 declare function fbcInit_xbox			( ) as integer
 
 ''
