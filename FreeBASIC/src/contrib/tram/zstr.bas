@@ -1,5 +1,3 @@
-option explicit
-
 #include once "zstr.bi"
 
 namespace fb.zstr

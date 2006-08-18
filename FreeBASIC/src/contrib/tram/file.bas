@@ -1,5 +1,3 @@
-option explicit
-
 #include once "vbcompat.bi"
 #include once "zstr.bi"
 #include once "list.bi"

@@ -1,5 +1,3 @@
-option explicit
-
 namespace fb.zstr
 
 	declare sub del _

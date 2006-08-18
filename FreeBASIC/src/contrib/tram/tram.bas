@@ -16,9 +16,6 @@
 ''	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA.
 ''
 
-option explicit
-option private
-
 #include once "vbcompat.bi"
 #include once "file.bi"
 #include once "list.bi"
@@ -81,7 +78,7 @@ declare function hRevertSlash _
 
 
 '':::::	
-function processOptions _
+private function processOptions _
 	( _
 		byval argc as integer, _
 		byval argv as zstring ptr ptr _
@@ -162,7 +159,7 @@ function processOptions _
 end function
 	
 '':::::	
-function collectFiles _
+private function collectFiles _
 	( _
 		_
 	) as integer
@@ -175,7 +172,7 @@ function collectFiles _
 end function	
 
 '':::::	
-sub dumpFiles _
+private sub dumpFiles _
 	( _
 		_
 	) 
@@ -192,14 +189,14 @@ sub dumpFiles _
 end sub
 
 '':::::
-sub showUsage 
+private sub showUsage 
 	print "Usage: tram -root=base_path [-mask=*.*]"
 	print "            -date=yyyy/mm/dd [-time=hh:mm:ss]"
 	print "            [-file=output_name] [-excl=dir_name]*"
 end sub
 
 '':::::
-sub archiveFiles
+private sub archiveFiles
 
 	dim as search.entry ptr e
 	dim as integer o
@@ -262,7 +259,7 @@ sub archiveFiles
 end sub
 
 '':::::
-function topDir_cb _
+private function topDir_cb _
 	( _
 		byval path as zstring ptr, _
 		byval fname as zstring ptr _
@@ -289,7 +286,7 @@ function topDir_cb _
 end function
 
 '':::::
-function excList_cb _
+private function excList_cb _
 	( _
 		byval path as zstring ptr, _
 		byval fname as zstring ptr _
@@ -318,7 +315,7 @@ function excList_cb _
 end function
 
 '':::::
-function main _
+private function main _
 	( _
 		byval argc as integer, _
 		byval argv as zstring ptr ptr _
@@ -348,7 +345,7 @@ function main _
 end function
 
 '':::::
-function hReplace _
+private function hReplace _
 	( _
 		byval orgtext as zstring ptr, _
 		byval oldtext as zstring ptr, _
@@ -381,7 +378,7 @@ function hReplace _
 end function
 
 '':::::
-function hRevertSlash _
+private function hRevertSlash _
 	( _
 		byval src as zstring ptr _
 	) as string static

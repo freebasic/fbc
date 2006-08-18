@@ -1,5 +1,3 @@
-option explicit
-	
 #include once "list.bi"
 
 #ifndef FALSE

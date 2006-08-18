@@ -12,7 +12,7 @@ objpath := obj
 
 OBJS := $(patsubst %.bas,$(objpath)/%.o,$(SRCS))
 
-LIBS := -l fbx
+LIBS :=
 
 ##########################
 
