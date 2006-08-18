@@ -39,7 +39,6 @@
 
 #include "fb.h"
 #include "fb_linux.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 int fb_hIn( unsigned short port )

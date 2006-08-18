@@ -38,7 +38,6 @@
  */
 
 #include "fb.h"
-#include "fb_rterr.h"
 
 void fb_FileInputNextTokenWstrEx( FB_WCHAR *buffer, int max_chars,
 								  int is_string, int is_last );

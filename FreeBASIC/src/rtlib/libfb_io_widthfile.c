@@ -42,7 +42,6 @@
 #include <malloc.h>
 #include <ctype.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 FBCALL int fb_WidthFile( int fnum, int width )

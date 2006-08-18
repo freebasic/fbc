@@ -41,7 +41,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 static char error_buffer[FB_ERROR_MESSAGE_SIZE];
 static const char *error_msg[] = {

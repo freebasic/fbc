@@ -40,7 +40,6 @@
 #include <stdlib.h>
 #include <float.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 #ifdef MULTITHREADED
 CRITICAL_SECTION fb_global_mutex;

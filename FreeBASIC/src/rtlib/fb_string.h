@@ -301,5 +301,13 @@ FBCALL int          fb_WstrInstrAny     ( int start, const FB_WCHAR *src,
 FBCALL FB_WCHAR    *fb_WstrMid          ( const FB_WCHAR *src, int start, int len );
 FBCALL void         fb_WstrAssignMid    ( FB_WCHAR *dst, int dst_len, int start, int len,
 										  const FB_WCHAR *src );
+/**************************************************************************************************
+ * VB-compatible functions
+ **************************************************************************************************/
+
+FBCALL FBSTRING *   fb_StrFormat        ( double value, FBSTRING *mask );
+
+FBCALL FBSTRING *   fb_hStrFormat       ( double value, const char *mask,
+                                          size_t mask_length );
 
 #endif /* __FB_STRING_H__ */

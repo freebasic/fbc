@@ -41,7 +41,6 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 int fb_DevFileWriteWstr( struct _FB_FILE *handle, const FB_WCHAR* src, size_t chars )

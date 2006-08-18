@@ -40,7 +40,6 @@
 
 #include <ctype.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 typedef struct _FB_KEY_CODES {
     unsigned short value_normal;

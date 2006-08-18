@@ -39,7 +39,6 @@
  */
 
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 FBCALL int fb_LineInputWstr( const FB_WCHAR *text, FB_WCHAR *dst, int max_chars,

@@ -39,7 +39,6 @@
 
 #include <stdlib.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 static void fb_hPrintStrEx( FB_FILE *handle, const char *s, size_t len, int mask )

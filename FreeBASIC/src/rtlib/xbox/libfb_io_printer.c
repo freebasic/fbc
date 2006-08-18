@@ -38,7 +38,6 @@
  */
 
 #include "fb.h"
-#include "fb_rterr.h"
 
 int fb_PrinterOpen( int iPort, const char *pszDevice, void **ppvHandle )
 {

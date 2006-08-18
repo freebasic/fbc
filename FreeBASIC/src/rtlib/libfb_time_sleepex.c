@@ -38,7 +38,6 @@
  */
 
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 FBCALL int fb_SleepEx ( int msecs, int kind )

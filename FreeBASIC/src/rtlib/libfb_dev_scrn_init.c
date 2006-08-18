@@ -41,7 +41,6 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 static FB_FILE_HOOKS fb_hooks_dev_scrn_null = { 0 };
 

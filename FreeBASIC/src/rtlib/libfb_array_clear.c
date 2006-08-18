@@ -39,7 +39,6 @@
 
 #include <malloc.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 FBCALL int fb_ArrayClear( FBARRAY *array, int isvarlen )

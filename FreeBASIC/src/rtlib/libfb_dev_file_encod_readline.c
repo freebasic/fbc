@@ -38,7 +38,6 @@
  */
 
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 int fb_DevFileReadLineEncod( struct _FB_FILE *handle, FBSTRING *dst )

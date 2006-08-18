@@ -39,7 +39,6 @@
  */
 
 #include "fb.h"
-#include "fb_rterr.h"
 
 #define KEY_BUFFER_LEN 512
 static int key_buffer[KEY_BUFFER_LEN];

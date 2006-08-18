@@ -42,7 +42,6 @@
 #include <string.h>
 #include <malloc.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 static FB_FILE_HOOKS fb_hooks_dev_err = {
     fb_DevFileEof,

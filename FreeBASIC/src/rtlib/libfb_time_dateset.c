@@ -43,7 +43,6 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 
 /** Sets the date to the specified value.

@@ -41,7 +41,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 FBCALL
 int fb_LineInput( FBSTRING *text, void *dst, int dst_len, int fillrem,

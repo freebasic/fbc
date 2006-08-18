@@ -38,7 +38,6 @@
  */
 
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 static void *hThrowError( int linenum, const char *fname )

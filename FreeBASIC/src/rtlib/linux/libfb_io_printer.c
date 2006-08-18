@@ -42,7 +42,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 /* _DEV_LPT_INFO->driver_opaque := (FILE *) file_handle */
 

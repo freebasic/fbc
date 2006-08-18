@@ -38,7 +38,6 @@
  */
 
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 int fb_DevFileReadEncod( struct _FB_FILE *handle, void *dst, size_t *max_chars )

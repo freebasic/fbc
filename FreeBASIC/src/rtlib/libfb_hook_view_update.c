@@ -39,7 +39,6 @@
  */
 
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 FBCALL void fb_ViewUpdate( void )

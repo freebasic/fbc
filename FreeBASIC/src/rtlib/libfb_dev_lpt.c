@@ -42,7 +42,6 @@
 #include <string.h>
 #include <malloc.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 static 
 FB_FILE * fb_DevLptFindDeviceByName( int iPort, char * filename, int no_redir )

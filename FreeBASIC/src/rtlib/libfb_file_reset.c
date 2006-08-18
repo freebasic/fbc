@@ -41,7 +41,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 FBCALL void fb_FileReset ( void )

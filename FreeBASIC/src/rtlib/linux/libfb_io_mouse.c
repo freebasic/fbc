@@ -38,7 +38,6 @@
  */
 
 #include "fb.h"
-#include "fb_rterr.h"
 #include "fb_linux.h"
 #include <gpm.h>
 

@@ -40,7 +40,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 #define BUFFER_LEN 1024
 

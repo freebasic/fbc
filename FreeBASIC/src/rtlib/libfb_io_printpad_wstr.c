@@ -40,7 +40,6 @@
 
 #include <stdio.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 #define FB_PRINT_BUFFER_SIZE 2048
 

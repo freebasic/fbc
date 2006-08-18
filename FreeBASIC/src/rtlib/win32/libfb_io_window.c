@@ -40,7 +40,6 @@
 #include <stdlib.h>
 #include <float.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 SMALL_RECT srConsoleWindow;
 static SMALL_RECT srRealConsoleWindow;

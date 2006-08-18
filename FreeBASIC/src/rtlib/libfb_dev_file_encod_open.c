@@ -42,7 +42,6 @@
 #include <string.h>
 #include <malloc.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 long fb_DevFileGetSize
 	(

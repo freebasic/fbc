@@ -41,7 +41,6 @@
 #include <stdlib.h>
 
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 int fb_DevFileWriteEncod( struct _FB_FILE *handle, const void* buffer, size_t chars )

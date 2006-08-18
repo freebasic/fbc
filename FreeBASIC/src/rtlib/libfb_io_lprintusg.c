@@ -40,7 +40,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 int LPrintInit(void);
 FBCALL int fb_PrintUsingInit( FBSTRING *fmtstr );

@@ -43,7 +43,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 #define GET_MSEC_TIME() ((DWORD) (fb_Timer() * 1000.0))
 

@@ -40,7 +40,6 @@
 #include <malloc.h>
 #include <stdarg.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 static int hRedim( FBARRAY *array, int element_len, int doclear, int isvarlen, int dimensions, va_list ap )

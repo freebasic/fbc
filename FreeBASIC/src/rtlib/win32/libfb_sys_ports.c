@@ -39,7 +39,6 @@
 
 #include "fb.h"
 #include "fb_win32.h"
-#include "fb_rterr.h"
 #include "portio/fbportio.h"
 #include "portio/fbportio_driver.h"
 #include <winioctl.h>

@@ -39,7 +39,6 @@
 
 #include <stdlib.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 FBCALL int fb_FileOpenCom ( FBSTRING *str_filename, unsigned int mode,

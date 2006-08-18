@@ -42,7 +42,6 @@
 #include <string.h>
 #include <malloc.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 int fb_DevFileUnlock( struct _FB_FILE *handle, unsigned int position, unsigned int size )

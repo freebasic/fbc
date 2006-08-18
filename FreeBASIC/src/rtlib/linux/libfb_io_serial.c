@@ -53,7 +53,6 @@
 #endif
 
 #include "fb.h"
-#include "fb_rterr.h"
 
 #define BUFFERSIZE	BUFSIZ*16
 #define ENDSPD		111111

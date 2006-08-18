@@ -41,7 +41,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 int fb_FilePutBackEx( FB_FILE *handle, const void *src, size_t chars )

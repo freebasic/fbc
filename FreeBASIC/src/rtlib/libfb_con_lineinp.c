@@ -41,7 +41,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 static const char *pszDefaultQuestion = "? ";
 

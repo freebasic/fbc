@@ -42,7 +42,6 @@
 #include <string.h>
 #include <malloc.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 FBCALL void fb_PrintBufferEx( const void *buffer, size_t len, int mask );
 

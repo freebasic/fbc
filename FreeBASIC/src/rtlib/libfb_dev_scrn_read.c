@@ -42,7 +42,6 @@
 #include <string.h>
 #include <malloc.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 int fb_DevScrnRead( struct _FB_FILE *handle, void* value, size_t *pLength )
 {

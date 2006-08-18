@@ -41,7 +41,6 @@
 #include <string.h>
 #include <math.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 #define BUFFERLEN 2048
 

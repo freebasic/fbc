@@ -38,7 +38,6 @@
  */
 
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 int fb_DevFileReadLineWstr( struct _FB_FILE *handle, FB_WCHAR *dst, int dst_chars )

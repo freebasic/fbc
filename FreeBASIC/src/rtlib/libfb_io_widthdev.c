@@ -42,7 +42,6 @@
 #include <malloc.h>
 #include <ctype.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 int fb_DevLptTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len );
 int fb_DevComTestProtocol( struct _FB_FILE *handle, const char *filename, size_t filename_len );

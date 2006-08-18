@@ -38,7 +38,6 @@
  */
 
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 FBCALL unsigned int fb_ReadXY( int col, int row, int colorflag )

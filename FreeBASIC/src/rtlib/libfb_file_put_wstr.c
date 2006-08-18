@@ -40,7 +40,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 int fb_FilePutWstrEx( FB_FILE *handle, long pos, FB_WCHAR *str, int len )

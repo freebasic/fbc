@@ -41,7 +41,6 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 void fb_DevScrnInit_Screen( void );
 

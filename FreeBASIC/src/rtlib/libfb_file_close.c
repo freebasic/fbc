@@ -41,7 +41,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 int fb_FileCloseEx( FB_FILE *handle )

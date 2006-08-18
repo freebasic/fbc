@@ -38,7 +38,6 @@
  */
 
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 FBCALL void *fb_NullPtrChk( void *ptr, int linenum, const char *fname )

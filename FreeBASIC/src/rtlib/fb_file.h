@@ -363,4 +363,21 @@ int fb_hFileRead_UTFToWchar
 		int max_chars 
 	);
 
+/**************************************************************************************************
+ * VB-compatible functions
+ **************************************************************************************************/
+
+#define FB_FILE_ATTR_MODE_INPUT         1
+#define FB_FILE_ATTR_MODE_OUTPUT        2
+#define FB_FILE_ATTR_MODE_RANDOM        4
+#define FB_FILE_ATTR_MODE_APPEND        8
+#define FB_FILE_ATTR_MODE_BINARY        32
+
+#define FB_FILE_ATTR_MODE     1
+#define FB_FILE_ATTR_HANDLE   2
+#define FB_FILE_ATTR_ENCODING 3
+
+FBCALL int          fb_FileCopy         ( const char *source, const char *destination );
+       int          fb_DrvFileCopy      ( const char *source, const char *destination );
+
 #endif /* __FB_FILE_H__ */

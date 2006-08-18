@@ -1,16 +1,6 @@
 #ifndef __FILE_BI__
 #define __FILE_BI__
 
-#ifdef __FB_MT__
-# if __FB_MT__
-#  inclib "fbxmt"
-# else
-#  inclib "fbx"
-# endif
-#else
-# inclib "fbx"
-#endif
-
 const fbFileAttrMode     = 1
 const fbFileAttrHandle   = 2
 const fbFileAttrEncoding = 3

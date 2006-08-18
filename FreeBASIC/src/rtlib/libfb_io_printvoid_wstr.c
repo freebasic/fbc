@@ -39,7 +39,6 @@
 
 #include <stdio.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 #include <stdlib.h>
 

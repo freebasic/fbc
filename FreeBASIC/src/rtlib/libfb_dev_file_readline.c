@@ -42,7 +42,6 @@
 #include <string.h>
 #include <malloc.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 static char *hWrapper( char *buffer, size_t count, FILE *fp )
 {

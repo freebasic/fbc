@@ -41,7 +41,6 @@
 #include <malloc.h>
 
 #include "fb.h"
-#include "fb_rterr.h"
 
 extern const char fb_utf8_trailingTb[256];
 extern const UTF_32 fb_utf8_offsetsTb[6];

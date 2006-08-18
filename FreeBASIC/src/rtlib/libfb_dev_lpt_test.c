@@ -43,7 +43,6 @@
 #include <string.h>
 #include <malloc.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 /** Tests for the right file name for LPT access.
  *

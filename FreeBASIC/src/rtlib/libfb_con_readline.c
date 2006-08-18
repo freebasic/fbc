@@ -41,7 +41,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 static
 void DoAdjust( int *x, int *y, int dx, int dy, int cols, int rows )

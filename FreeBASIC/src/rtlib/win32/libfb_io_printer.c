@@ -47,7 +47,6 @@
 #include <malloc.h>
 #include "fb.h"
 #include "fb_con.h"
-#include "fb_rterr.h"
 #include "fb_printer.h"
 
 typedef BOOL (WINAPI *FnGetDefaultPrinter)(LPTSTR pszBuffer, LPDWORD pcchBuffer);

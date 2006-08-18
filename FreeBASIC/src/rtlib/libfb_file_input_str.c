@@ -40,7 +40,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 int fb_FileInputNextTokenEx ( char *buffer, int max_chars,
 							  int is_string, int is_last, int *isfp );

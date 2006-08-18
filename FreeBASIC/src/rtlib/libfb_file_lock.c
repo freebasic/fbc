@@ -39,7 +39,6 @@
  */
 
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 int fb_FileLockEx( FB_FILE *handle, unsigned int inipos, unsigned int endpos )

@@ -41,7 +41,6 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 int fb_DevLptClose( struct _FB_FILE *handle )

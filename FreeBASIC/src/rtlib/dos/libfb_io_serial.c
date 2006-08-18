@@ -38,7 +38,6 @@
  */
 
 #include "fb.h"
-#include "fb_rterr.h"
 
 int fb_SerialOpen( struct _FB_FILE *handle,
                    int iPort, FB_SERIAL_OPTIONS *options,

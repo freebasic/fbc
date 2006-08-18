@@ -41,7 +41,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 /*:::::*/
 FBCALL int fb_InputLongint( long long *dst )

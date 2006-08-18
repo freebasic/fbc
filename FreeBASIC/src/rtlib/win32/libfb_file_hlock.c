@@ -40,7 +40,6 @@
 
 #include <io.h>
 #include "fb.h"
-#include "fb_rterr.h"
 
 #ifdef TARGET_CYGWIN
 #include <stdio.h>

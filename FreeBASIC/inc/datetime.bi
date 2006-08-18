@@ -1,16 +1,6 @@
 #ifndef __DATETIME_BI__
 #define __DATETIME_BI__
 
-#ifdef __FB_MT__
-# if __FB_MT__
-#  inclib "fbxmt"
-# else
-#  inclib "fbx"
-# endif
-#else
-# inclib "fbx"
-#endif
-
 #ifndef fbUseSystem
 #define fbUseSystem           0
 #endif
