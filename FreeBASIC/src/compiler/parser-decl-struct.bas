@@ -111,6 +111,20 @@ function cTypeMultElementDecl _
 
 		end if
 
+		'' ref to self?
+		if( dtype = FB_DATATYPE_STRUCT ) then
+			if( subtype = s ) then
+				if( errReport( FB_ERRMSG_RECURSIVEUDT ) = FALSE ) then
+					exit function
+				else
+    				'' error recovery: fake type
+					dtype = FB_DATATYPE_INTEGER
+					subtype = NULL
+					lgt = FB_INTEGERSIZE
+				end if
+			end if
+		end if
+
         ''
 		if( symbAddUDTElement( s, @id, _
 							   dims, dTB(), _
