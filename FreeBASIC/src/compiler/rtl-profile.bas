@@ -26,42 +26,54 @@
 #include once "inc\ast.bi"
 #include once "inc\rtl.bi"
 
-'' name, alias, _
-'' type, callconv, _
-'' callback, options, _
-'' params, _
-'' [param type, mode, optional[, value]] * params
-funcdata:
-
-'' fb_ProfileBeginCall ( byval procname as zstring ptr ) as any ptr
-data @FB_RTL_PROFILEBEGINCALL, "", _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_ProfileEndCall ( byval call as any ptr ) as void
-data @FB_RTL_PROFILEENDCALL, "", _
-	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_EndProfile ( byval errlevel as integer ) as integer
-data @FB_RTL_PROFILEEND, "", _
-	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
-
-'' EOL
-data NULL
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 11 ) = _
+	{ _
+		/' fb_ProfileBeginCall ( byval procname as zstring ptr ) as any ptr '/ _
+		( _
+			@FB_RTL_PROFILEBEGINCALL, NULL, _
+			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_ProfileEndCall ( byval call as any ptr ) as void '/ _
+		( _
+			@FB_RTL_PROFILEENDCALL, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_EndProfile ( byval errlevel as integer ) as integer '/ _
+		( _
+			@FB_RTL_PROFILEEND, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+	 	), _
+	 	/' EOL '/ _
+	 	( _
+	 		NULL _
+	 	) _
+	 }
 
 '':::::
 sub rtlProfileModInit( )
 
-	restore funcdata
-	rtlAddIntrinsicProcs( )
+	rtlAddIntrinsicProcs( @funcdata(0) )
 
 end sub
 

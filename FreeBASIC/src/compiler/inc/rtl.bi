@@ -605,7 +605,28 @@ enum FB_RTL_OPT
 	FB_RTL_OPT_OVER		= &h00000001
 	FB_RTL_OPT_ERROR	= &h00000002
 	FB_RTL_OPT_MT		= &h00000004
+	FB_RTL_OPT_VBSYMB	= &h00000008
 end enum
+
+type FB_RTL_PARAMDEF
+	dtype		as FB_DATATYPE
+	mode		as FB_PARAMMODE
+	isopt		as integer
+	optval		as integer
+end type
+
+type FB_RTL_PROCDEF
+	name		as zstring ptr
+	alias		as zstring ptr
+	dtype		as FB_DATATYPE
+	callconv	as FB_FUNCMODE
+	callback	as FBRTLCALLBACK
+	options		as FB_RTL_OPT
+	params		as integer
+	paramTb(0 to 15) as FB_RTL_PARAMDEF
+end type
+
+
 
 declare sub 		rtlInit				( _
 										)
@@ -614,6 +635,7 @@ declare sub 		rtlEnd				( _
 										)
 
 declare sub 		rtlAddIntrinsicProcs( _
+											byval procdef as FB_RTL_PROCDEF ptr _
 										)
 
 declare function 	rtlProcLookup		( _

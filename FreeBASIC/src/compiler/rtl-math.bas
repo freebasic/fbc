@@ -26,141 +26,226 @@
 #include once "inc\ast.bi"
 #include once "inc\rtl.bi"
 
-
-'' name, alias, _
-'' type, callconv, _
-'' callback, options, _
-'' params, _
-'' [param type, mode, optional[, value]] * params
-funcdata:
-
-'' fb_LongintDIV ( byval x as longint, byval y as longint ) as longint
-data @FB_RTL_LONGINTDIV,"", _
-	 FB_DATATYPE_LONGINT,FB_FUNCMODE_CDECL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 2, _
-	 FB_DATATYPE_LONGINT,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_LONGINT,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_ULongintDIV ( byval x as ulongint, byval y as ulongint ) as ulongint
-data @FB_RTL_ULONGINTDIV,"", _
-	 FB_DATATYPE_ULONGINT,FB_FUNCMODE_CDECL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 2, _
-	 FB_DATATYPE_ULONGINT,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_ULONGINT,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_LongintMOD ( byval x as longint, byval y as longint ) as longint
-data @FB_RTL_LONGINTMOD,"", _
-	 FB_DATATYPE_LONGINT,FB_FUNCMODE_CDECL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 2, _
-	 FB_DATATYPE_LONGINT,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_LONGINT,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_ULongintMOD ( byval x as ulongint, byval y as ulongint ) as ulongint
-data @FB_RTL_ULONGINTMOD,"", _
-	 FB_DATATYPE_ULONGINT,FB_FUNCMODE_CDECL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 2, _
-	 FB_DATATYPE_ULONGINT,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_ULONGINT,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_Dbl2ULongint ( byval x as double ) as ulongint
-data @FB_RTL_DBL2ULONGINT,"", _
-	 FB_DATATYPE_ULONGINT,FB_FUNCMODE_CDECL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
-
-''
-'' fb_Pow CDECL ( byval x as double, byval y as double ) as double
-data @FB_RTL_POW,"pow", _
-	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_CDECL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 2, _
-	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_SGNSingle ( byval x as single ) as integer
-data @FB_RTL_SGNSINGLE,"", _
-	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_SGNDouble ( byval x as double ) as integer
-data @FB_RTL_SGNDOUBLE,"", _
-	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_FIXSingle ( byval x as single ) as single
-data @FB_RTL_FIXSINGLE,"", _
-	 FB_DATATYPE_SINGLE,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_SINGLE,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_FIXDouble ( byval x as double ) as double
-data @FB_RTL_FIXDOUBLE,"", _
-	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
-
-'' asin CDECL ( byval x as double ) as double
-data @FB_RTL_ASIN,"asin", _
-	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_CDECL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
-
-'' acos CDECL ( byval x as double ) as double
-data @FB_RTL_ACOS,"acos", _
-	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_CDECL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
-
-'' log CDECL ( byval x as double ) as double
-data @FB_RTL_LOG,"log", _
-	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_CDECL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
-
-'' exp CDECL ( byval rad as double ) as double
-data @"exp","exp", _
-	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_CDECL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, FALSE
-
-'' randomize ( byval seed as double = -1.0 ) as void
-data @"randomize","fb_Randomize", _
-	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_DOUBLE,FB_PARAMMODE_BYVAL, TRUE, -1.0
-
-'' rnd ( byval n as integer ) as double
-data @"rnd","fb_Rnd", _
-	 FB_DATATYPE_DOUBLE,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,1
-
-'' EOL
-data NULL
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 19 ) = _
+	{ _
+		/' fb_LongintDIV ( byval x as longint, byval y as longint ) as longint '/ _
+		( _
+			@FB_RTL_LONGINTDIV, NULL, _
+			FB_DATATYPE_LONGINT, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_ULongintDIV ( byval x as ulongint, byval y as ulongint ) as ulongint '/ _
+		( _
+			@FB_RTL_ULONGINTDIV, NULL, _
+			FB_DATATYPE_ULONGINT, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_LongintMOD ( byval x as longint, byval y as longint ) as longint '/ _
+		( _
+			@FB_RTL_LONGINTMOD, NULL, _
+			FB_DATATYPE_LONGINT, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_LONGINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_ULongintMOD ( byval x as ulongint, byval y as ulongint ) as ulongint '/ _
+		( _
+			@FB_RTL_ULONGINTMOD, NULL, _
+			FB_DATATYPE_ULONGINT, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_ULONGINT, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_Dbl2ULongint ( byval x as double ) as ulongint '/ _
+		( _
+			@FB_RTL_DBL2ULONGINT, NULL, _
+			FB_DATATYPE_ULONGINT, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_Pow CDECL ( byval x as double, byval y as double ) as double '/ _
+		( _
+			@FB_RTL_POW, @"pow", _
+			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			2, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_SGNSingle ( byval x as single ) as integer '/ _
+		( _
+			@FB_RTL_SGNSINGLE, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_SGNDouble ( byval x as double ) as integer '/ _
+		( _
+			@FB_RTL_SGNDOUBLE, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_FIXSingle ( byval x as single ) as single '/ _
+		( _
+			@FB_RTL_FIXSINGLE, NULL, _
+			FB_DATATYPE_SINGLE, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+	 		{ _
+	 			( _
+			FB_DATATYPE_SINGLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_FIXDouble ( byval x as double ) as double '/ _
+		( _
+			@FB_RTL_FIXDOUBLE, NULL, _
+			FB_DATATYPE_DOUBLE, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' asin CDECL ( byval x as double ) as double '/ _
+		( _
+			@FB_RTL_ASIN, @"asin", _
+			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' acos CDECL ( byval x as double ) as double '/ _
+		( _
+			@FB_RTL_ACOS, @"acos", _
+			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' log CDECL ( byval x as double ) as double '/ _
+		( _
+			@FB_RTL_LOG, @"log", _
+			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' exp CDECL ( byval rad as double ) as double '/ _
+		( _
+			@"exp", @"exp", _
+			FB_DATATYPE_DOUBLE, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' randomize ( byval seed as double = -1.0 ) as void '/ _
+		( _
+			@"randomize", @"fb_Randomize", _
+			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_DOUBLE, FB_PARAMMODE_BYVAL, TRUE, -1.0 _
+	 			) _
+	 		} _
+		), _
+		/' rnd ( byval n as integer ) as double '/ _
+		( _
+			@"rnd", @"fb_Rnd", _
+			FB_DATATYPE_DOUBLE, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 1 _
+	 			) _
+	 		} _
+	 	), _
+	 	/' EOL '/ _
+	 	( _
+	 		NULL _
+	 	) _
+	 }
 
 
 '':::::
 sub rtlMathModInit( )
 
-	restore funcdata
-	rtlAddIntrinsicProcs( )
+	rtlAddIntrinsicProcs( @funcdata(0) )
 
 end sub
 
@@ -172,8 +257,11 @@ sub rtlMathModEnd( )
 end sub
 
 '':::::
-function rtlMathPow	( byval xexpr as ASTNODE ptr, _
-					  byval yexpr as ASTNODE ptr ) as ASTNODE ptr static
+function rtlMathPow	_
+	( _
+		byval xexpr as ASTNODE ptr, _
+		byval yexpr as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
 
@@ -198,7 +286,11 @@ function rtlMathPow	( byval xexpr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlMathFSGN ( byval expr as ASTNODE ptr ) as ASTNODE ptr static
+function rtlMathFSGN _
+	( _
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
 
@@ -224,8 +316,11 @@ function rtlMathFSGN ( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 end function
 
 '':::::
-function rtlMathTRANS( byval op as integer, _
-					   byval expr as ASTNODE ptr ) as ASTNODE ptr static
+function rtlMathTRANS _
+	( _
+		byval op as integer, _
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -256,7 +351,11 @@ end function
 
 
 '':::::
-function rtlMathFIX ( byval expr as ASTNODE ptr ) as ASTNODE ptr static
+function rtlMathFIX _
+	( _
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr static
+
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
 
@@ -291,8 +390,11 @@ function rtlMathFIX ( byval expr as ASTNODE ptr ) as ASTNODE ptr static
 end function
 
 '':::::
-function rtlMathLen( byval expr as ASTNODE ptr, _
-					 byval islen as integer = TRUE ) as ASTNODE ptr static
+function rtlMathLen _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval islen as integer = TRUE _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as integer dtype, lgt
@@ -389,11 +491,14 @@ function rtlMathLen( byval expr as ASTNODE ptr, _
 end function
 
 '':::::
-function rtlMathLongintDIV( byval dtype as integer, _
-							byval lexpr as ASTNODE ptr, _
-							byval ldtype as integer, _
-					        byval rexpr as ASTNODE ptr, _
-					        byval rdtype as integer ) as ASTNODE ptr static
+function rtlMathLongintDIV _
+	( _
+		byval dtype as integer, _
+		byval lexpr as ASTNODE ptr, _
+		byval ldtype as integer, _
+		byval rexpr as ASTNODE ptr, _
+		byval rdtype as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -422,11 +527,14 @@ function rtlMathLongintDIV( byval dtype as integer, _
 end function
 
 '':::::
-function rtlMathLongintMOD( byval dtype as integer, _
-							byval lexpr as ASTNODE ptr, _
-							byval ldtype as integer, _
-					        byval rexpr as ASTNODE ptr, _
-					        byval rdtype as integer ) as ASTNODE ptr static
+function rtlMathLongintMOD _
+	( _
+		byval dtype as integer, _
+		byval lexpr as ASTNODE ptr, _
+		byval ldtype as integer, _
+		byval rexpr as ASTNODE ptr, _
+		byval rdtype as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f
@@ -455,8 +563,11 @@ function rtlMathLongintMOD( byval dtype as integer, _
 end function
 
 '':::::
-function rtlMathFp2ULongint( byval expr as ASTNODE ptr, _
-							 byval dtype as integer ) as ASTNODE ptr static
+function rtlMathFp2ULongint _
+	( _
+		byval expr as ASTNODE ptr, _
+		byval dtype as integer _
+	) as ASTNODE ptr static
 
     dim as ASTNODE ptr proc
 

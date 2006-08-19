@@ -27,118 +27,187 @@
 #include once "inc\lex.bi"
 #include once "inc\rtl.bi"
 
-'' name, alias, _
-'' type, callconv, _
-'' callback, options, _
-'' params, _
-'' [param type, mode, optional[, value]] * params
-funcdata:
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 15 ) = _
+	{ _
+		/' fb_ConsoleView ( byval toprow as integer = 0, _
+							byval botrow as integer = 0 ) as void '/ _
+		( _
+			@FB_RTL_CONSOLEVIEW, NULL, _
+	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+	 		2, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
+	 			) _
+	 		} _
+		), _
+		/' fb_ReadXY ( byval x as integer, byval y as integer, _
+					   byval colorflag as integer ) as uinteger '/ _
+		( _
+			@FB_RTL_CONSOLEREADXY, NULL, _
+	 		FB_DATATYPE_UINT, FB_FUNCMODE_STDCALL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+	 		3, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, 0 _
+	 			) _
+	 		} _
+		), _
+		/' width( byval cols as integer = -1, _
+				  byval width_arg as integer = -1 ) as integer '/ _
+		( _
+			@FB_RTL_WIDTH, NULL, _
+	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+	 		2, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
+	 			) _
+	 		} _
+		), _
+		/' width( dev as string, byval width_arg as integer = -1 ) as integer '/ _
+		( _
+			@FB_RTL_WIDTHDEV, NULL, _
+	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+	 		2, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
+	 			) _
+	 		} _
+		), _
+		/' width( byval fnum as integer, byval width_arg as integer = -1 ) as integer '/ _
+		( _
+			@FB_RTL_WIDTHFILE, NULL, _
+	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+	 		2, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
+	 			) _
+	 		} _
+		), _
+		/' locate( byval row as integer = 0, byval col as integer = 0, _
+				   byval cursor as integer = -1 ) as integer '/ _
+		( _
+			@"locate", @"fb_Locate", _
+	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+	 		3, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE,0 _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE,0 _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
+	 			) _
+	 		} _
+		), _
+		/' pos( ) as integer '/ _
+		( _
+			@"pos", @"fb_GetX", _
+	 		FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
+	 		NULL, FB_RTL_OPT_OVER, _
+	 		0 _
+		), _
+		/' pos( dummy ) as integer '/ _
+		( _
+			@"pos", @"fb_Pos", _
+	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		NULL, FB_RTL_OPT_OVER, _
+     		1, _
+	 		{ _
+	 			( _
+		     		FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' csrlin( ) as integer '/ _
+		( _
+			@"csrlin", @"fb_GetY", _
+	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+	 		0 _
+		), _
+		/' cls( byval n as integer = 1 ) as void '/ _
+		( _
+			@"cls", @"fb_Cls", _
+	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+	 		1, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, &hFFFF0000 _
+	 			) _
+	 		} _
+		), _
+		/' color( byval fc as integer = -1, byval bc as integer = -1 ) as integer '/ _
+		( _
+			@"color", @"fb_Color", _
+	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+	 		2, _
+	 		{ _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
+	 			), _
+	 			( _
+	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, TRUE, -1 _
+	 			) _
+	 		} _
+		), _
+		/' inkey ( ) as string '/ _
+		( _
+			@"inkey", @"fb_Inkey", _
+	 		FB_DATATYPE_STRING, FB_FUNCMODE_STDCALL, _
+	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
+	 		0 _
+		), _
+		/' getkey ( ) as integer '/ _
+		( _
+			@"getkey", @"fb_Getkey", _
+	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		@rtlMultinput_cb, FB_RTL_OPT_NONE, _
+	 		0 _
+	 	), _
+	 	/' EOL '/ _
+	 	( _
+	 		NULL _
+	 	) _
+	 }
 
-'' fb_ConsoleView ( byval toprow as integer = 0, byval botrow as integer = 0 ) as void
-data @FB_RTL_CONSOLEVIEW,"", _
-	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 2, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0
-
-'' fb_ReadXY ( byval x as integer, byval y as integer, byval colorflag as integer ) as uinteger
-data @FB_RTL_CONSOLEREADXY,"", _
-	 FB_DATATYPE_UINT,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 3, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0
-
-'' width( byval cols as integer = -1, byval width_arg as integer = -1 ) as integer
-data @FB_RTL_WIDTH, "", _
-	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 2, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1
-
-'' width( dev as string, byval width_arg as integer = -1 ) as integer
-data @FB_RTL_WIDTHDEV, "", _
-	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 2, _
-	 FB_DATATYPE_STRING,FB_PARAMMODE_BYREF, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE, -1
-
-'' width( byval fnum as integer, byval width_arg as integer = -1 ) as integer
-data @FB_RTL_WIDTHFILE, "", _
-	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 2, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE, -1
-
-'' locate( byval row as integer = 0, byval col as integer = 0, byval cursor as integer = -1 ) as integer
-data @"locate", "fb_Locate", _
-	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 3, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1
-
-'' pos( ) as integer
-data @"pos", "fb_GetX", _
-	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_OVER, _
-	 0
-
-'' pos( dummy ) as integer
-data @"pos", "fb_Pos", _
-	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_OVER, _
-     1, _
-     FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
-
-'' csrlin( ) as integer
-data @"csrlin", "fb_GetY", _
-	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 0
-
-'' cls( byval n as integer = 1 ) as void
-data @"cls", "fb_Cls", _
-	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,&hFFFF0000
-
-'' color( byval fc as integer = -1, byval bc as integer = -1 ) as integer
-data @"color", "fb_Color", _
-	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 2, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,-1
-
-'' inkey ( ) as string
-data @"inkey","fb_Inkey", _
-	 FB_DATATYPE_STRING,FB_FUNCMODE_STDCALL, _
-	 @rtlMultinput_cb, FB_RTL_OPT_NONE, _
-	 0
-
-'' getkey ( ) as integer
-data @"getkey","fb_Getkey", _
-	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 @rtlMultinput_cb, FB_RTL_OPT_NONE, _
-	 0
-
-'' EOL
-data NULL
 
 
 '':::::
 sub rtlConsoleModInit( )
 
-	restore funcdata
-	rtlAddIntrinsicProcs( )
+	rtlAddIntrinsicProcs( @funcdata(0) )
 
 end sub
 

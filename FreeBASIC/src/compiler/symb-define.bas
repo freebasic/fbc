@@ -232,14 +232,7 @@ end function
 '':::::
 private function hDefLang_cb ( ) as string
 
-	select case as const env.clopt.lang
-	case FB_LANG_FB
-		function = "fb"
-	case FB_LANG_FB_DEPRECATED
-		function = "deprecated"
-	case FB_LANG_QB
-		function = "qb"
-	end select
+	function = fbGetLangName( env.clopt.lang )
 
 end function
 

@@ -26,156 +26,250 @@
 #include once "inc\ast.bi"
 #include once "inc\rtl.bi"
 
-
-'' name, alias, _
-'' type, callconv, _
-'' callback, options, _
-'' params, _
-'' [param type, mode, optional[, value]] * params
-funcdata:
-
-'' fb_ErrorThrowAt cdecl ( byval linenum as integer, byval fname as zstring ptr, _
-''						   byval reslabel as any ptr, byval resnxtlabel as any ptr ) as integer
-data @FB_RTL_ERRORTHROW,"", _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 4, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
-
-''
-'' fb_ErrorThrowEx cdecl ( byval errnum as integer, byval linenum as integer, _
-''						   byval fname as zstring ptr, _
-''						   byval reslabel as any ptr, byval resnxtlabel as any ptr ) as any ptr
-data @FB_RTL_ERRORTHROWEX,"", _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 5, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_ErrorSetHandler( byval newhandler as any ptr ) as any ptr
-data @FB_RTL_ERRORSETHANDLER,"", _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_ErrorGetNum( ) as integer
-data @FB_RTL_ERRORGETNUM, "", _
-	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 0
-
-'' fb_ErrorSetNum( byval errnum as integer ) as void
-data @FB_RTL_ERRORSETNUM, "", _
-	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_ErrorResume( ) as any ptr
-data @FB_RTL_ERRORRESUME, "", _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 0
-
-'' fb_ErrorResumeNext( ) as any ptr
-data @FB_RTL_ERRORRESUMENEXT, "", _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 0
-
-'' ERL ( ) as integer
-data @"erl", "fb_ErrorGetLineNum", _
-	 FB_DATATYPE_INTEGER,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 0
-
-'' ERFN ( ) as zstring ptr
-data @"erfn", "fb_ErrorGetFuncName", _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 0
-
-'' ERMN ( ) as zstring ptr
-data @"ermn", "fb_ErrorGetModName", _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 0
-
-'' fb_ErrorSetModName ( byval modname as zstring ptr ) as zstring ptr
-data @FB_RTL_ERRORSETMODNAME,"", _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_ErrorSetFuncName ( byval funname as zstring ptr ) as zstring ptr
-data @FB_RTL_ERRORSETFUNCNAME,"", _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_Assert ( byval fname as zstring ptr, byval linenum as integer, _
-'''			   byval funcname as zstring ptr, byval expression as zstring ptr ) as void
-data @"fb_Assert","", _
-	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_OVER, _
-	 4, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_AssertW ( byval fname as zstring ptr, byval linenum as integer, _
-'''			    byval funcname as zstring ptr, byval expression as wstring ptr ) as void
-data @"fb_Assert","fb_AssertW", _
-	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_OVER, _
-	 4, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_AssertWarn ( byval fname as zstring ptr, byval linenum as integer, _
-''				   byval funcname as zstring ptr, byval expression as zstring ptr ) as void
-data @"fb_AssertWarn","", _
-	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_OVER, _
-	 4, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_AssertWarnW ( byval fname as zstring ptr, byval linenum as integer, _
-''				    byval funcname as zstring ptr, byval expression as wstring ptr ) as void
-data @"fb_AssertWarn","fb_AssertWarnW", _
-	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_OVER, _
-	 4, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR,FB_PARAMMODE_BYVAL, FALSE
-
-'' EOL
-data NULL
-
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 19 ) = _
+	{ _
+		/' fb_ErrorThrowAt cdecl ( byval linenum as integer, byval fname as zstring ptr, _
+								   byval reslabel as any ptr, _
+								   byval resnxtlabel as any ptr ) as integer '/ _
+		( _
+			@FB_RTL_ERRORTHROW, NULL, _
+			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			4, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_ErrorThrowEx cdecl ( byval errnum as integer, byval linenum as integer, _
+								   byval fname as zstring ptr, _
+								   byval reslabel as any ptr, _
+								   byval resnxtlabel as any ptr ) as any ptr '/ _
+		( _
+			@FB_RTL_ERRORTHROWEX, NULL, _
+			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			5, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_ErrorSetHandler( byval newhandler as any ptr ) as any ptr '/ _
+		( _
+			@FB_RTL_ERRORSETHANDLER, NULL, _
+			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_ErrorGetNum( ) as integer '/ _
+		( _
+			@FB_RTL_ERRORGETNUM, NULL, _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			0 _
+		), _
+		/' fb_ErrorSetNum( byval errnum as integer ) as void '/ _
+		( _
+			@FB_RTL_ERRORSETNUM, NULL, _
+			FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_ErrorResume( ) as any ptr '/ _
+		( _
+			@FB_RTL_ERRORRESUME, NULL, _
+			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			0 _
+		), _
+		/' fb_ErrorResumeNext( ) as any ptr '/ _
+		( _
+			@FB_RTL_ERRORRESUMENEXT, NULL, _
+			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+			NULL, FB_RTL_OPT_NONE, _
+			0 _
+		), _
+		/' ERL ( ) as integer '/ _
+		( _
+			@"erl", @"fb_ErrorGetLineNum", _
+			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			0 _
+		), _
+		/' ERFN ( ) as zstring ptr '/ _
+		( _
+			@"erfn", @"fb_ErrorGetFuncName", _
+			FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			0 _
+		), _
+		/' ERMN ( ) as zstring ptr '/ _
+		( _
+			@"ermn", @"fb_ErrorGetModName", _
+			FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			0 _
+		), _
+		/' fb_ErrorSetModName ( byval modname as zstring ptr ) as zstring ptr '/ _
+		( _
+			@FB_RTL_ERRORSETMODNAME, NULL, _
+			FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_ErrorSetFuncName ( byval funname as zstring ptr ) as zstring ptr '/ _
+		( _
+			@FB_RTL_ERRORSETFUNCNAME, NULL, _
+			FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_NONE, _
+			1, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_Assert ( byval fname as zstring ptr, byval linenum as integer, _
+					   byval funcname as zstring ptr, _
+					   byval expression as zstring ptr ) as void '/ _
+		( _
+			@"fb_Assert", NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_OVER, _
+			4, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_AssertW ( byval fname as zstring ptr, byval linenum as integer, _
+					    byval funcname as zstring ptr, _
+						byval expression as wstring ptr ) as void '/ _
+		( _
+			@"fb_Assert", @"fb_AssertW", _
+			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_OVER, _
+			4, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR,FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_AssertWarn ( byval fname as zstring ptr, byval linenum as integer, _
+						   byval funcname as zstring ptr, _
+						   byval expression as zstring ptr ) as void '/ _
+		( _
+			@"fb_AssertWarn", NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_OVER, _
+			4, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_AssertWarnW ( byval fname as zstring ptr, byval linenum as integer, _
+						    byval funcname as zstring ptr, _
+							byval expression as wstring ptr ) as void '/ _
+		( _
+			@"fb_AssertWarn", @"fb_AssertWarnW", _
+			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+			NULL, FB_RTL_OPT_OVER, _
+			4, _
+	 		{ _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR, FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+	 	), _
+	 	/' EOL '/ _
+	 	( _
+	 		NULL _
+	 	) _
+	 }
 
 '':::::
 sub rtlErrorModInit( )
 
-	restore funcdata
-	rtlAddIntrinsicProcs( )
+	rtlAddIntrinsicProcs( @funcdata(0) )
 
 end sub
 

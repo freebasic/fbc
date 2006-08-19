@@ -118,115 +118,97 @@ end sub
 #endmacro
 
 '':::::
-sub rtlAddIntrinsicProcs( ) static
+sub rtlAddIntrinsicProcs _
+	( _
+		byval procdef as FB_RTL_PROCDEF ptr _
+	) static
 
-	dim as string proc_aliasname, param_optstr
-	dim as integer proc_params, proc_dtype, proc_mode, attrib, doadd, i
-	dim as integer param_dtype, param_len, param_mode, param_opt, ptrcnt
+	dim as integer attrib, doadd, i
+	dim as integer param_len, ptrcnt
 	dim as FBSYMBOL ptr proc
-	dim as FBRTLCALLBACK proc_callback
 	dim as ASTNODE ptr param_optval
-	dim as FBVALUE value
-	dim as zstring ptr proc_name, proc_alias
-	dim as FB_RTL_OPT proc_options
 
 	''
 	do
 		'' for each proc..
-		read proc_name
-		if( proc_name = NULL ) then
+		if( procdef->name = NULL ) then
 			exit do
 		end if
 
-		read proc_aliasname
-		read proc_dtype, proc_mode
-		read proc_callback, proc_options
-		read proc_params
-
 		doadd = TRUE
-		if( (proc_options and FB_RTL_OPT_MT) <> 0 ) then
-			doadd = fbLangOptIsSet( FB_LANG_OPT_MT )
+		if( (procdef->options and (FB_RTL_OPT_MT or FB_RTL_OPT_VBSYMB)) <> 0 ) then
+			doadd = fbLangOptIsSet( FB_LANG_OPT_MT or FB_RTL_OPT_VBSYMB )
 		end if
 
 		proc = symbPreAddProc( NULL )
 
 		'' for each parameter..
-		for i = 0 to proc_params-1
-			read param_dtype, param_mode, param_opt
+		for i = 0 to procdef->params-1
+			with procdef->paramTb(i)
+				if( .isopt ) then
+					attrib = FB_SYMBATTRIB_OPTIONAL
 
-			if( param_opt ) then
-				attrib = FB_SYMBATTRIB_OPTIONAL
+					if( .dtype = FB_DATATYPE_STRING ) then
+						'' only NULL can be used
+						param_optval = astNewCONSTstr( "" )
+					else
+						param_optval = astNewCONSTi( .optval, .dtype )
+					end if
+				else
+					attrib = 0
+					param_optval = NULL
+				end if
 
-				select case as const param_dtype
-				case FB_DATATYPE_STRING
-					read param_optstr
-					param_optval = astNewCONSTstr( param_optstr )
+				if( .dtype <> INVALID ) then
+					param_len = symbCalcParamLen( .dtype, NULL, .mode )
+				else
+					param_len = FB_POINTERSIZE
+				end if
 
-				case FB_DATATYPE_LONGINT, FB_DATATYPE_ULONGINT
-					read value.long
-					param_optval = astNewCONSTl( value.long, param_dtype )
+				CNTPTR( .dtype, ptrcnt )
 
-				case FB_DATATYPE_SINGLE, FB_DATATYPE_DOUBLE
-					read value.float
-					param_optval = astNewCONSTf( value.float, param_dtype )
+				symbAddProcParam( proc, NULL, _
+							  	  .dtype, NULL, ptrcnt, _
+							  	  param_len, .mode, INVALID, _
+							  	  attrib, param_optval )
 
-				case else
-					read value.int
-					param_optval = astNewCONSTi( value.int, param_dtype )
-				end select
-
-			else
-				attrib = 0
-				param_optval = NULL
-			end if
-
-			if( param_dtype <> INVALID ) then
-				param_len = symbCalcParamLen( param_dtype, NULL, param_mode )
-			else
-				param_len = FB_POINTERSIZE
-			end if
-
-			CNTPTR( param_dtype, ptrcnt )
-
-			symbAddProcParam( proc, NULL, _
-							  param_dtype, NULL, ptrcnt, _
-							  param_len, param_mode, INVALID, _
-							  attrib, param_optval )
+			end with
 		next
 
 		''
-		if( (proc_options and FB_RTL_OPT_OVER) <> 0 ) then
+		if( (procdef->options and FB_RTL_OPT_OVER) <> 0 ) then
 			attrib = FB_SYMBATTRIB_OVERLOADED
 		else
 			attrib = 0
 		end if
 
 		''
-		CNTPTR( proc_dtype, ptrcnt )
+		CNTPTR( procdef->dtype, ptrcnt )
 
-		if( len( proc_aliasname ) = 0 ) then
-			proc_alias = proc_name
-		else
-			proc_alias = strptr( proc_aliasname )
+		if( procdef->alias = NULL ) then
+			procdef->alias = procdef->name
 		end if
 
 		if( doadd ) then
 			proc = symbAddPrototype( proc, _
-								 	 proc_name, proc_alias, "fb", _
-								 	 proc_dtype, NULL, ptrcnt, _
-								 	 attrib, proc_mode, _
+								 	 procdef->name, procdef->alias, "fb", _
+								 	 procdef->dtype, NULL, ptrcnt, _
+								 	 attrib, procdef->callconv, _
 								 	 FB_SYMBOPT_DECLARING )
 
 			if( proc <> NULL ) then
 				symbSetIsRTL( proc )
-				symbSetProcCallback( proc, proc_callback )
-				if( (proc_options and FB_RTL_OPT_ERROR) <> 0 ) then
+				symbSetProcCallback( proc, procdef->callback )
+				if( (procdef->options and FB_RTL_OPT_ERROR) <> 0 ) then
 					symbSetIsThrowable( proc )
 				end if
 			else
-				errReportEx( FB_ERRMSG_DUPDEFINITION, *proc_name )
+				errReportEx( FB_ERRMSG_DUPDEFINITION, *procdef->name )
 			end if
 		end if
+
+		'' next
+		procdef += 1
 	loop
 
 end sub

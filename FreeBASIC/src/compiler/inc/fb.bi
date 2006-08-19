@@ -149,6 +149,7 @@ enum FB_PDCHECK
 
 	FB_PDCHECK_ESCSEQ		= &h00000001
 	FB_PDCHECK_PARAMMODE	= &h00000002
+	FB_PDCHECK_PARAMSIZE	= &h00000004
 
 	FB_PDCHECK_ALL			= &hffffffff
 end enum
@@ -225,6 +226,7 @@ enum FB_LANG
 	FB_LANG_FB
 	FB_LANG_FB_DEPRECATED
 	FB_LANG_QB
+	FB_LANG_VB
 
 	FB_LANGS
 end enum
@@ -240,6 +242,7 @@ enum FB_LANG_OPT
 	FB_LANG_OPT_CLASS		= &h00000040
 	FB_LANG_OPT_INITIALIZER = &h00000080
 	FB_LANG_OPT_SINGERRLINE = &h00000100
+	FB_LANG_OPT_VBSYMB 		= &h00000200
 
 	FB_LANG_OPT_GOSUB		= &h00010000
 	FB_LANG_OPT_CALL		= &h00020000
@@ -362,8 +365,8 @@ declare function	fbGetLangName	( _
 '' macros
 ''
 
-#define fbLangOptIsSet( opt ) ((env.langopt and opt) <> 0)
+#define fbLangOptIsSet( opt ) ((env.langopt and (opt)) <> 0)
 
-#define fbPdCheckIsSet( opt ) ((env.clopt.pdcheckopt and opt) <> 0)
+#define fbPdCheckIsSet( opt ) ((env.clopt.pdcheckopt and (opt)) <> 0)
 
 #endif '' __FB_BI__

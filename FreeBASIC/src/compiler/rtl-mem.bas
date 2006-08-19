@@ -26,106 +26,177 @@
 #include once "inc\ast.bi"
 #include once "inc\rtl.bi"
 
-
-'' name, alias, _
-'' type, callconv, _
-'' callback, options, _
-'' params, _
-'' [param type, mode, optional[, value]] * params
-funcdata:
-
-'' fb_NullPtrChk ( byval p as any ptr, byval linenum as integer, byval fname as zstring ptr ) as any ptr
-data @FB_RTL_NULLPTRCHK,"", _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 3, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_MemCopy cdecl ( dst as any, src as any, byval bytes as integer ) as void
-data @FB_RTL_MEMCOPY,"memcpy", _
-	 FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 3, _
-	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
-	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_MemSwap ( dst as any, src as any, byval bytes as integer ) as void
-data @FB_RTL_MEMSWAP,"", _
-	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 3, _
-	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
-	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
-
-'' fb_MemCopyClear ( dst as any, byval dstlen as integer, src as any, byval srclen as integer ) as void
-data @FB_RTL_MEMCOPYCLEAR,"", _
-	 FB_DATATYPE_VOID,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 4, _
-	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
-
-'' fre ( ) as uinteger
-data @"fre","fb_GetMemAvail", _
-	 FB_DATATYPE_UINT,FB_FUNCMODE_STDCALL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0
-
-'' allocate ( byval bytes as integer ) as any ptr
-data @"allocate","malloc", _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
-
-'' callocate ( byval bytes as integer ) as any ptr
-data @"callocate","calloc", _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 2, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,1
-
-'' reallocate ( byval p as any ptr, byval bytes as integer ) as any ptr
-data @"reallocate","realloc", _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 2, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
-
-'' deallocate ( byval p as any ptr ) as void
-data @"deallocate","free", _
-	 FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 1, _
-	 FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE
-
-'' clear ( dst as any, byval value as integer = 0, byval bytes as integer ) as void
-data @"clear","memset", _
-	 FB_DATATYPE_VOID,FB_FUNCMODE_CDECL, _
-	 NULL, FB_RTL_OPT_NONE, _
-	 3, _
-	 FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE,0, _
-	 FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE
-
-'' EOL
-data NULL
-
+	dim shared as FB_RTL_PROCDEF funcdata( 0 to 11 ) = _
+	{ _
+		/' fb_NullPtrChk ( byval p as any ptr, byval linenum as integer, byval fname as zstring ptr ) as any ptr '/ _
+		( _
+			@FB_RTL_NULLPTRCHK, NULL, _
+	 		FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_CHAR,FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_MemCopy cdecl ( dst as any, src as any, byval bytes as integer ) as void '/ _
+		( _
+			@FB_RTL_MEMCOPY, @"memcpy", _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( _
+					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_MemSwap ( dst as any, src as any, byval bytes as integer ) as void '/ _
+		( _
+			@FB_RTL_MEMSWAP, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( _
+					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fb_MemCopyClear ( dst as any, byval dstlen as integer, src as any, byval srclen as integer ) as void '/ _
+		( _
+			@FB_RTL_MEMCOPYCLEAR, NULL, _
+			FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+			4, _
+			{ _
+				( _
+					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' fre ( ) as uinteger '/ _
+		( _
+			@"fre", @"fb_GetMemAvail", _
+			FB_DATATYPE_UINT, FB_FUNCMODE_STDCALL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE, 0 _
+	 			) _
+	 		} _
+		), _
+		/' allocate ( byval bytes as integer ) as any ptr '/ _
+		( _
+			@"allocate", @"malloc", _
+			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' callocate ( byval bytes as integer ) as any ptr '/ _
+		( _
+			@"callocate", @"calloc", _
+			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+ 			NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
+				( _
+					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE, 1 _
+	 			) _
+	 		} _
+		), _
+		/' reallocate ( byval p as any ptr, byval bytes as integer ) as any ptr '/ _
+		( _
+			@"reallocate", @"realloc", _
+			FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+ 			NULL, FB_RTL_OPT_NONE, _
+			2, _
+			{ _
+				( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' deallocate ( byval p as any ptr ) as void '/ _
+		( _
+			@"deallocate", @"free", _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+			1, _
+			{ _
+				( _
+					FB_DATATYPE_POINTER+FB_DATATYPE_VOID,FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+		), _
+		/' clear ( dst as any, byval value as integer = 0, byval bytes as integer ) as void '/ _
+		( _
+			@"clear", @"memset", _
+			FB_DATATYPE_VOID, FB_FUNCMODE_CDECL, _
+	 		NULL, FB_RTL_OPT_NONE, _
+			3, _
+			{ _
+				( _
+					FB_DATATYPE_VOID,FB_PARAMMODE_BYREF, FALSE _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, TRUE, 0 _
+	 			), _
+	 			( _
+					FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+	 			) _
+	 		} _
+	 	), _
+	 	/' EOL '/ _
+	 	( _
+	 		NULL _
+	 	) _
+	 }
 
 '':::::
 sub rtlMemModInit( )
 
-	restore funcdata
-	rtlAddIntrinsicProcs( )
+	rtlAddIntrinsicProcs( @funcdata(0) )
 
 end sub
 
