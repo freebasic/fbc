@@ -12,7 +12,7 @@ ifdef FIXME
 endif
 
 FBCMPFLAGS := $(FBFLAGS) -c
-FBLNKFLAGS := -l fbx
+FBLNKFLAGS := 
 
 HOST :=
 ifeq ($(OS),DOS)
