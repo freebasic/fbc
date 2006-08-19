@@ -81,9 +81,9 @@ const FB_SIGN				= "FreeBASIC v" +  FB_VERSION + "b"
 
 #define FB_TO_STRING(v)		#v
 
-#define FB_VER_STR_MAJOR    FB_TO_STRING(FB_VER_MAJOR)
-#define FB_VER_STR_MINOR    FB_TO_STRING(FB_VER_MINOR)
-#define FB_VER_STR_PATCH    FB_TO_STRING(FB_VER_PATCH)
+#define FB_VER_STR_MAJOR    str(FB_VER_MAJOR)
+#define FB_VER_STR_MINOR    str(FB_VER_MINOR)
+#define FB_VER_STR_PATCH    str(FB_VER_PATCH)
 
 #ifndef __FB_MIN_VERSION__
 #define __FB_MIN_VERSION__(major,minor,patch_level) _
