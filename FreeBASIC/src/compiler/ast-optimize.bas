@@ -1418,14 +1418,19 @@ function astOptAssignment _
 	function = n
 
 	'' try to convert "foo = foo op expr" to "foo op= expr" (including unary ops)
-	if( n = NULL ) then
-		exit function
-	end if
 
+	select case n->class
 	'' there's just one assignment per tree (always at top), so, just check this node
-	if( n->class <> AST_NODECLASS_ASSIGN ) then
+	case AST_NODECLASS_ASSIGN
+
+	'' SelfBOP will have to use link( l, r ) to handle side-effects
+	case AST_NODECLASS_LINK
+		n->r = astOptAssignment( n->r )
 		exit function
-	end if
+
+	case else
+		exit function
+	end select
 
 	l = n->l
 	r = n->r

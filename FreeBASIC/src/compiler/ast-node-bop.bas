@@ -1241,20 +1241,55 @@ function astNewSelfBOP _
 	'' check op overloading
 	hDoGlobOpOverload( op, l, r )
 
-	'' if the operator was was not overloaded, convert
-	'' lvalue op= expr to lvalue = lvalue op expr, this
-	'' will be optimized later, but will create side-
-	'' effects like in C/C++, if lvalue has a function call
-
 	'' assuming _SELF comes right-after the binary op
-	r = astNewBOP( op - 1, astCloneTree( l ), r, ex, options or AST_OPOPT_ALLOCRES )
 
-	if( r = NULL ) then
-		exit function
+	'' if there's a function call in lvalue, convert to tmp = @lvalue, *tmp = *tmp op rhs:
+	if( astIsClassOnTree( AST_NODECLASS_CALL, l ) ) then
+		dim as FBSYMBOL ptr tmp, subtype
+		dim as integer dtype
+		dim as ASTNODE ptr ll, lr
+
+		dtype = astGetDataType( l )
+		subtype = astGetSubType( l )
+		tmp = symbAddTempVar( FB_DATATYPE_POINTER + dtype, subtype )
+
+		'' tmp = @lvalue
+		ll = astNewASSIGN( astNewVAR( tmp, 0, FB_DATATYPE_POINTER + dtype, subtype ), _
+					   	   astNewADDR( AST_OP_ADDROF, l ) )
+
+		'' *tmp = *tmp op expr
+		lr = astNewASSIGN( astNewPTR( 0, _
+				   		   			   astNewVAR( tmp, _
+				   		   			   			  0, _
+				   		   			   			  FB_DATATYPE_POINTER + dtype, _
+				   		   			   			  subtype ),_
+				   		   			   dtype, _
+				   		   			   subtype ), _
+						   astNewBOP( op - 1, _
+				   		   			  astNewPTR( 0, _
+				   		   			   			  astNewVAR( tmp, _
+				   		   			   			  			 0, _
+				   		   			   			  			 FB_DATATYPE_POINTER + dtype, _
+				   		   			   			  			 subtype ), _
+				   		   			   			  dtype, _
+				   		   			   			  subtype ), _
+					   	   			  r, _
+					   	   			  ex, _
+					   	   			  options or AST_OPOPT_ALLOCRES ) )
+
+		function = astNewLink( ll, lr )
+
+	'' no side-effects, convert it to lvalue = lvalue op rhs and let it be optimized later
+	else
+		r = astNewBOP( op - 1, astCloneTree( l ), r, ex, options or AST_OPOPT_ALLOCRES )
+
+ 		if( r = NULL ) then
+ 			exit function
+ 		end if
+
+ 		'' do the assignment
+		function = astNewASSIGN( l, r )
 	end if
-
-	'' do the assignment
-    function = astNewASSIGN( l, r )
 
 end function
 

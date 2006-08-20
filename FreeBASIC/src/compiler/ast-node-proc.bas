@@ -207,7 +207,7 @@ sub astAdd _
 		exit sub
 	end if
 
-	'' do updates and optimizations now are they can
+	'' do updates and optimizations now as they can
 	'' allocate new vars and create/delete nodes
 	n = astTypeIniUpdate( n )
 	n = astOptimize( n )
