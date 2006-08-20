@@ -53,7 +53,8 @@ end type
 		( 0, @"Function result was not explicitly set" ), _
 		( 0, @"Branch crossing local variable definition" ), _
 		( 0, @"No explicit BYREF or BYVAL" ), _
-		( 0, @"Possible escape sequence found in" ) _
+		( 0, @"Possible escape sequence found in" ), _
+		( 0, @"The type length is too large, consider passing BYREF" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring ptr => _
