@@ -22,8 +22,6 @@
 '' chng: jul/2006 written [coderJeff]
 ''
 
-option explicit
-
 #include once "common.bi"
 #include once "CWiki.bi"
 #include once "CWakka2fbhelp.bi"
@@ -35,7 +33,7 @@ const chIndent = chr(9)
 const chSpace = " "
 
 
-option nokeyword iif
+#undef iif
 
 private function iif(c as integer, a as string, b as string) as string
 	if (c) then

@@ -22,8 +22,6 @@
 '' chng: may/2006 written [coderJeff]
 ''
 
-option explicit
-
 #include once "common.bi"
 #include once "CWiki.bi"
 #include once "CWakka2Html.bi"
@@ -31,7 +29,7 @@ option explicit
 
 #include once "CFbCode.bi"
 
-option nokeyword iif
+#undef iif
 
 private function iif(c as integer, a as string, b as string) as string
 	if (c) then

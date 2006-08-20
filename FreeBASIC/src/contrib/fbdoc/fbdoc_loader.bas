@@ -24,8 +24,6 @@
 '' chng: jun/2006 written [coderJeff]
 ''
 
-option explicit
-
 #include once "common.bi"
 #include once "CwikiCon.bi"
 #include once "CwikiCache.bi"

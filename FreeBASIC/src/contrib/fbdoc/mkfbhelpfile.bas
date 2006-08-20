@@ -1,6 +1,3 @@
-option explicit
-option private
-
 #define TRUE 1
 #define FALSE 0
 #define NULL 0
@@ -26,7 +23,7 @@ dim shared head as head_t
 dim shared files(1 to 1000) as item_t
 dim shared nfiles as integer
 
-sub GetFiles( )
+private sub GetFiles( )
 	dim d as string
 	d = dir( fbhelp_dir + "*.txt" )
 	while( d > "" )
@@ -41,7 +38,7 @@ sub GetFiles( )
 	wend
 end sub
 
-sub KillOutfile( )
+private sub KillOutfile( )
 	dim as integer h
 	h = freefile
 	if( open( fbhelp_dir + "fbhelp.dat" for input as #h ) = 0 ) then
@@ -50,7 +47,7 @@ sub KillOutfile( )
 	end if
 end sub
 
-function WriteHeader( h as integer ) as integer
+private function WriteHeader( h as integer ) as integer
 
 	dim b as string
 
@@ -62,7 +59,7 @@ function WriteHeader( h as integer ) as integer
 
 end function
 
-function WriteIndex( h as integer ) as integer
+private function WriteIndex( h as integer ) as integer
 
 	dim as string b
 	dim as integer i
@@ -80,7 +77,7 @@ function WriteIndex( h as integer ) as integer
 
 end function
 
-function WriteNames( h as integer ) as integer
+private function WriteNames( h as integer ) as integer
 
 	dim as string b, t
 	dim as integer n, i
@@ -110,7 +107,7 @@ function WriteNames( h as integer ) as integer
 
 end function
 
-function WritePage( h as integer, byval filename as zstring ptr ) as integer
+private function WritePage( h as integer, byval filename as zstring ptr ) as integer
 
 	dim as integer f, n
 	dim as string b, t
@@ -146,7 +143,7 @@ function WritePage( h as integer, byval filename as zstring ptr ) as integer
 
 end function
 
-function WritePages( h as integer ) as integer
+private function WritePages( h as integer ) as integer
 
 	dim as integer n, ret, i
 
@@ -165,7 +162,7 @@ function WritePages( h as integer ) as integer
 
 end function
 
-function WriteOutfile( filename as string )
+private function WriteOutfile( filename as string ) as integer
 
 	dim h as integer
 	

@@ -22,8 +22,6 @@
 '' chng: may/2006 written [coderJeff]
 ''
 
-option explicit
-
 #include once "CPageList.bi"
 #include once "list.bi"
 

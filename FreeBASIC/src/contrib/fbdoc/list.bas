@@ -22,8 +22,6 @@
 '' chng: jan/2005 written [v1ctor]
 ''
 
-option explicit
-
 #include once "common.bi"
 #include once "list.bi"
 

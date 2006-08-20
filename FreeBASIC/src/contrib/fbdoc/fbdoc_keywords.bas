@@ -22,8 +22,6 @@
 '' chng: jun/2006 written [coderJeff]
 ''
 
-option explicit
-
 #include once "common.bi"
 
 dim shared keyworddata as string

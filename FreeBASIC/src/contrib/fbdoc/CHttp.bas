@@ -22,8 +22,6 @@
 '' chng: apr/2006 written [v1ctor]
 ''
 
-option explicit
-
 #include once "CHttp.bi"
 #include once "CHttpForm.bi"
 #include once "CHttpStream.bi"

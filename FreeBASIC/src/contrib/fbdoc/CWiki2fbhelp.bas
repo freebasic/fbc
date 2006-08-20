@@ -22,8 +22,6 @@
 '' chng: jul/2006 written [coderJeff]
 ''
 
-option explicit
-
 #include once "common.bi"
 #include once "fbdoc_lang.bi"
 
@@ -130,6 +128,8 @@ private function _OutputFile _
 	dim as string sOutputFile, ret
 
 	ret = Lang_ExpandString( sContent )
+
+	ret = ReplaceSubStr( ret, "&middot;", "-" )
 
 	sOutputFile = *_this->outputdir + *sFileName
 

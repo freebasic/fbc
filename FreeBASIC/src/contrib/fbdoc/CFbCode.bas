@@ -22,8 +22,6 @@
 '' chng: jun/2006 written [coderJeff]
 ''
 
-option explicit
-
 #include once "common.bi"
 #include once "CFbCode.bi"
 #include once "fbdoc_keywords.bi"
@@ -233,8 +231,9 @@ end function
 private function _ReadSuffix _
 	( _
 		byval _this as CFbCode ptr, _
-		byval additional = FALSE _
-	)
+		byval additional as integer = FALSE _
+	) as integer
+
 	dim as integer c
 
 	c = PeekChar( _this )
@@ -323,7 +322,7 @@ end function
 private function _ReadToEOL _
 	( _
 		byval _this as CFbCode ptr _
-	)
+	) as integer
 
 	dim as integer c
 

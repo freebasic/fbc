@@ -23,8 +23,6 @@
 '' chng: may/2006 written [coderJeff]
 ''
 
-option explicit
-
 #include once "common.bi"
 #include once "CPage.bi"
 

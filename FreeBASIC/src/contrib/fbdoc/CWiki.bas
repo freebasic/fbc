@@ -23,8 +23,6 @@
 '' chng: apr/2006 written [v1ctor]
 '' chng: may/2006 added page links list [coderJeff]
 
-option explicit
-
 #include once "common.bi"
 #include once "CRegex.bi"
 #include once "list.bi"
