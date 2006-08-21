@@ -27,6 +27,7 @@
 #include once "inc\hash.bi"
 #include once "inc\list.bi"
 #include once "inc\lex.bi"
+#include once "inc\hlp.bi"
 
 type DEFCALLBACK as function() as string
 
@@ -57,9 +58,10 @@ declare function 	hDefErr_cb 			( ) as string
 declare function 	hDefExErr_cb 		( ) as string
 declare function 	hDefExxErr_cb 		( ) as string
 declare function	hDefLang_cb			( ) as string
+declare function    hDefPath_cb         ( ) as string
 
 '' predefined #defines: name, value, flags, proc (for description flags, see FBS_DEFINE)
-const SYMB_MAXDEFINES = 26
+const SYMB_MAXDEFINES = 32
 
 	dim shared defTb( 0 to SYMB_MAXDEFINES-1 ) as SYMBDEF => _
 	{ _
@@ -76,6 +78,7 @@ const SYMB_MAXDEFINES = 26
 		(@"__LINE__",				NULL,			   1, @hDefLine_cb       ), _
 		(@"__DATE__",				NULL,			   0, @hDefDate_cb       ), _
 		(@"__TIME__",				NULL,			   0, @hDefTime_cb       ), _
+		(@"__PATH__",     		    NULL,       	   0, @hDefPath_cb    	 ), _
 		(@"__FB_OPTION_BYVAL__",	NULL,		  	   1, @hDefOptByval_cb   ), _
 		(@"__FB_OPTION_DYNAMIC__",	NULL,		  	   1, @hDefOptDynamic_cb ), _
 		(@"__FB_OPTION_ESCAPE__",	NULL,		  	   1, @hDefOptEscape_cb  ), _
@@ -95,6 +98,30 @@ const SYMB_MAXDEFINES = 26
 private function hDefFile_cb( ) as string static
 
 	function = env.inf.name
+
+end function
+
+ '':::::
+private function hDefPath_cb( ) as string static
+
+    dim as string path
+
+	'' not in the original directory?
+	if( instr( env.inf.name, "/" ) > 0 ) then
+		'' leave path, with trailing slash
+		path = hStripFilename( env.inf.name )
+
+        '' remove trailing slash
+		path = left( path, len( path ) - 1 )
+
+        '' add leading slash
+		path = RSLASH + path
+
+	else
+		path = ""
+	end if
+
+	function = curdir( ) + path
 
 end function
 
