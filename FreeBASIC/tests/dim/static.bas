@@ -1,26 +1,28 @@
+# include "fbcu.bi"
 
+namespace fbc_tests.dim_.static_
 
-sub test1
+sub test1 cdecl
 	static as integer array(0 to 3) = { 0, 1, 2, 3 }
 	
 	dim as integer i
 	for i = 0 to 3
-		assert( array(i) = i )
+		CU_ASSERT( array(i) = i )
 	next
 	
 end sub
 
-sub test2 static
+sub test2 cdecl static
 	dim as integer array(0 to 3) = { 0, 1, 2, 3 }
 	
 	dim as integer i
 	for i = 0 to 3
-		assert( array(i) = i )
+		CU_ASSERT( array(i) = i )
 	next
 	
 end sub
 
-sub test3
+sub test3 cdecl
 	static as integer array()
 	
 	redim array(0 to 3)
@@ -31,12 +33,12 @@ sub test3
 	next
 	
 	for i = 0 to 3
-		assert( array(i) = i )
+		CU_ASSERT( array(i) = i )
 	next
 	
 end sub
 
-sub test4 static
+sub test4 cdecl static
 	dim as integer array()
 	
 	redim array(0 to 3)
@@ -47,13 +49,20 @@ sub test4 static
 	next
 	
 	for i = 0 to 3
-		assert( array(i) = i )
+		CU_ASSERT( array(i) = i )
 	next
 	
 end sub
 
+private sub ctor () constructor
 
-	test1
-	test2
-	test3
-	test4
+	fbcu.add_suite("fbc_tests.dim.static")
+	fbcu.add_test("test 1", @test1)
+	fbcu.add_test("test 2", @test2)
+	fbcu.add_test("test 3", @test3)
+	fbcu.add_test("test 1", @test4)
+
+end sub
+
+end namespace
+	

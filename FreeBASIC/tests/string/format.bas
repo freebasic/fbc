@@ -1,7 +1,11 @@
+# include "fbcu.bi"
+# include "vbcompat.bi"
 
-#include "vbcompat.bi"
 
-declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as integer )
+
+'option escape
+
+ 
 
 tests_num:
 	data 0.1236,    "",                 ".1236"
@@ -12,7 +16,7 @@ tests_num:
 	data 1234.0,    "",                 "1234"
 
 	data 0.1236,    "##0.00%",          "12.36%"
-    data 123,       !"\"asd\\\"",       !"asd\\"
+    data 123,       !"\"asd\\\"",        !"asd\\"
 	data 0,         "###",              "0"
 	data 123,       "###",              "123"
 	data 123,       "###00000",         "00123"
@@ -39,7 +43,7 @@ tests_num:
 	data 0.999999,  "#.00e+000",        "1.00e+000"
 
 	data -0.1236,   "##0.00%",          "-12.36%"
-    data -123,      !"\"asd\\\"",       !"asd\\"
+    data -123,      !"\"asd\\\"",        !"asd\\"
 	data -0,        "###",              "0"
 	data -123,      "###",              "-123"
 	data -123,      "###00000",         "-00123"
@@ -66,7 +70,7 @@ tests_num:
 	data -0.999999, "#.00e+000",        "-1.00e+000"
 
 	data -0.1236,   "##0.00%-",         "12.36%-"
-    data -123,      !"\"asd\\\"",       !"asd\\"
+    data -123,      !"\"asd\\\"",        !"asd\\"
 	data -0,        "###-",             "0"
 	data -123,      "###-",             "123-"
 	data -123,      "###00000-",        "00123-"
@@ -93,7 +97,7 @@ tests_num:
 	data -0.999999, "#.00e+000-",       "1.00e+000-"
 
 	data 0.1236,    "##0.00%-",         "12.36%"
-    data 123,       !"\"asd\\\"",       !"asd\\"
+    data 123,       !"\"asd\\\"",        !"asd\\"
 	data 0,         "###-",             "0"
 	data 123,       "###-",             "123"
 	data 123,       "###00000-",        "00123"
@@ -149,7 +153,11 @@ tests_dt:
     data "Aug. 9, 2005",      "ddd dddd ddddd",   "Tue Tuesday 08/09/2005"
     data "."
 
-sub test_num
+namespace fbc_tests.string_.format_
+
+declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as integer )
+
+sub numberFormatTest cdecl ()
 	dim as string sValue, sMask, sWanted, sResult
 	dim as double dblValue
 
@@ -159,15 +167,15 @@ sub test_num
 	    dblValue = val(sValue)
 	    read sMask, sWanted
 '        print sWanted,
-	    sResult = format(dblValue, sMask)
+	    sResult = Format(dblValue, sMask)
 '        print sResult
-        ASSERTWARN( sWanted = sResult )
+        CU_ASSERT_EQUAL( sWanted, sResult )
         read sValue
 	wend
 
 end sub
 
-sub test_dt
+sub dateFormatTest cdecl ()
 	dim as string sValue, sMask, sWanted, sResult
 	dim as double dblValue
 
@@ -177,15 +185,32 @@ sub test_dt
 	    dblValue = datevalue(sValue) + timevalue(sValue)
 	    read sMask, sWanted
 '        print sWanted,
-	    sResult = format(dblValue, sMask)
+	    sResult = Format(dblValue, sMask)
 '        print sResult
-        ASSERTWARN( sWanted = sResult )
+        CU_ASSERT_EQUAL( sWanted, sResult )
         read sValue
 	wend
 
 end sub
 
-' Turn off I18N and L10N
-fb_I18nSet 0
-test_num
-test_dt
+function init cdecl () as integer
+	' Turn off I18N and L10N
+	fb_I18nSet 0
+	return 0
+end function
+
+function cleanup cdecl () as integer
+	' Turn on I18N and L10N
+	fb_I18nSet 1
+	return 0
+end function
+
+sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.string_.format_", @init, @cleanup)
+	fbcu.add_test("number format test", @numberFormatTest)
+	fbcu.add_test("date format test", @dateFormatTest)
+
+end sub
+
+end namespace

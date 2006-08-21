@@ -14,15 +14,15 @@ namespace foo
 		sub test_1
 			dim as foo.bar b = foo.one
 	
-			assert( b = TEST_VAL1 )
-			assert( foo.two = TEST_VAL2 )
+			CU_ASSERT( b = TEST_VAL1 )
+			CU_ASSERT( foo.two = TEST_VAL2 )
 		end sub
 
 		sub test_2
 			dim as bar b = one
 			
-			assert( b = TEST_VAL1 )
-			assert( two = TEST_VAL2 )
+			CU_ASSERT( b = TEST_VAL1 )
+			CU_ASSERT( two = TEST_VAL2 )
 		end sub
 
 	end namespace
@@ -32,8 +32,8 @@ end namespace
 sub test_1
 	dim as foo.bar b = foo.one
 	
-	assert( b = TEST_VAL1 )
-	assert( foo.two = TEST_VAL2 )
+	CU_ASSERT( b = TEST_VAL1 )
+	CU_ASSERT( foo.two = TEST_VAL2 )
 
 end sub
 
@@ -43,8 +43,8 @@ sub test_2
 
 	dim as bar b = one
 	
-	assert( b = TEST_VAL1 )
-	assert( two = TEST_VAL2 )
+	CU_ASSERT( b = TEST_VAL1 )
+	CU_ASSERT( two = TEST_VAL2 )
 	
 end sub
 

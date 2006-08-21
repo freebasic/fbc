@@ -11,8 +11,8 @@ sub arr_init()
 end sub
 
 sub arr_test()
-	assert( lbound(arr_dynamic_int) = TEST_LBOUND )
-	assert( lbound(arr_dynamic_int) = TEST_LBOUND )
-	assert( ubound(arr_dynamic_int_with_alias) = TEST_UBOUND )
-	assert( ubound(arr_dynamic_int_with_alias) = TEST_UBOUND )
+	CU_ASSERT( lbound(arr_dynamic_int) = TEST_LBOUND )
+	CU_ASSERT( lbound(arr_dynamic_int) = TEST_LBOUND )
+	CU_ASSERT( ubound(arr_dynamic_int_with_alias) = TEST_UBOUND )
+	CU_ASSERT( ubound(arr_dynamic_int_with_alias) = TEST_UBOUND )
 end sub

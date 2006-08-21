@@ -1,11 +1,21 @@
+ï»¿# include "fbcu.bi"
 
+
+
+
+namespace fbc_tests.wstrings.utf_conv
 
 #include once "utf_conv.bi"
 
-#define NULL 0
+# if defined(NULL)
+# 	define NULL_ NULL
+# 	undef NULL
+# 	define NULL cptr(any ptr, 0)
+# endif
 
-sub test_z
-	dim as zstring ptr srcstr = @"ã é ô"
+sub test_z cdecl ()
+
+	dim as zstring ptr srcstr = @"Ã£ Ã© Ã´"
 	dim as byte ptr utfstr
 	dim as integer bytes
 
@@ -14,15 +24,16 @@ sub test_z
 	dim as zstring ptr newstr
 	newstr = UTFToChar( UTF_ENCOD_UTF8, utfstr, NULL, @bytes )
 
-	assert( *newstr = *srcstr )
+	CU_ASSERT( *newstr = *srcstr )
 
 	deallocate( newstr )
 	deallocate( utfstr )
+
 end sub
 
-sub test_w
+sub test_w cdecl ()
 	
-	dim as wstring ptr srcstr = @wstr("ã é ô")
+	dim as wstring ptr srcstr = @wstr("Ã£ Ã© Ã´")
 	dim as byte ptr utfstr
 	dim as integer bytes
 
@@ -31,12 +42,25 @@ sub test_w
 	dim as wstring ptr newstr
 	newstr = UTFToWChar( UTF_ENCOD_UTF8, utfstr, NULL, @bytes )
 	
-	assert( *newstr = *srcstr )
+	CU_ASSERT( *newstr = *srcstr )
 
 	deallocate( newstr )
 	deallocate( utfstr )
+
 end sub
 
+sub ctor () constructor
 
-	test_z
-	test_w
+	fbcu.add_suite("fbc_tests.wstrings.utf_conv")
+	fbcu.add_test("test_z", @test_z)
+	fbcu.add_test("test_w", @test_w)
+
+end sub
+
+# if defined(NULL_)
+# undef NULL
+# define NULL NULL_
+# undef NULL_
+# endif
+
+end namespace

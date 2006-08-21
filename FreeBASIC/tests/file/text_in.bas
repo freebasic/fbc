@@ -1,23 +1,21 @@
-'
-'
-' Test cases
-'
-'
+# include "fbcu.bi"
 
-function TestInputEOF as integer
+namespace fbc_tests.file.text_in
+
+sub TestInputEOF cdecl
 	dim i as integer
 	dim l as string
 
     on local error goto file_access_failed
-	open exepath() + "/../data/empty.txt" for input as #1
+	open exepath() + "data/empty.txt" for input as #1
 	i=0
 	while not eof(1)
     	line input #1, l
         select case i
         case 0
-        	if l<>"" and l<>chr(26) then return 0
+        	if l<>"" and l<>chr(26) then CU_FAIL( "ERROR" )
         case else
-            return 0
+            CU_FAIL( "ERROR" )
         end select
 		i+=1
 	wend
@@ -25,91 +23,59 @@ function TestInputEOF as integer
 
 	' we cannot check for i=0 because on some platforms we can only detect
 	' the EOF after a read access (e.g. line input statement)
-	return i>=0 and i<=1
+	CU_ASSERT_TRUE( i>=0 and i<=1 )
 
 file_access_failed:
     close 1
-    return 0
-end function
+    CU_FAIL( "ERROR" )
+end sub
 
-function TestInputContentsEOF1 as integer
+sub TestInputContentsEOF1 cdecl
 	dim i as integer
 	dim l as string
   
     on local error goto file_access_failed
-	open exepath() + "/../data/two.txt" for input as #1
+	open exepath() + "data/two.txt" for input as #1
 	i=0
 	while not eof(1)
     	line input #1, l
         select case i
         case 0
-        	if l<>"1" then return 0
+        	if l<>"1" then CU_FAIL( "ERROR" )
         case 1
-        	if l<>"2" and l<>"2"+chr(26) then return 0
+        	if l<>"2" and l<>"2"+chr(26) then CU_FAIL( "ERROR" )
         case else
-            return 0
+            CU_FAIL( "ERROR" )
         end select
 		i+=1
 	wend
 	close #1
 
-	return i=2
+	CU_ASSERT_EQUAL( i, 2 )
 
 file_access_failed:
     close 1
-    return 0
-end function
+    CU_FAIL( "ERROR" )
+end sub
 
-function TestInputContentsEOF2 as integer
+sub TestInputContentsEOF2 cdecl
 	dim i as integer
 	dim l as string
   
     on local error goto file_access_failed
-	open exepath() + "/../data/three.txt" for input as #1
+	open exepath() + "data/three.txt" for input as #1
 	i=0
 	while not eof(1)
     	line input #1, l
         select case i
         case 0
-        	if l<>"1" then return 0
+        	if l<>"1" then CU_FAIL( "ERROR" )
         case 1
-        	if l<>"2" then return 0
+        	if l<>"2" then CU_FAIL( "ERROR" )
         case 2
-        	if l<>"" and l<>chr(26) then return 0
+        	if l<>"" and l<>chr(26) then CU_FAIL( "ERROR" )
         case else
-            return 0
-        end select
-		i+=1
-	wend
-	close #1
-
-	' we cannot check for i=2 because on some platforms we can only detect
-	' the EOF after a read access (e.g. line input statement)
-	return i>=2 and i<=3
-
-file_access_failed:
-    close 1
-    return 0
-end function
-
-function TestInputContentsEOF3 as integer
-	dim i as integer
-	dim l as string
-  
-    on local error goto file_access_failed
-	open exepath() + "/../data/threebin.txt" for input as #1
-	i=0
-	while not eof(1)
-    	line input #1, l
-        select case i
-        case 0
-        	if l<>"1" then return 0
-        case 1
-        	if l<>"2" and l<>"2"+chr(26) then return 0
-        case 2
-        	if l<>"" and l<>"3" then return 0
-        case else
-            return 0
+            CU_FAIL( "ERROR" )
         end select
 		i+=1
 	wend
@@ -117,33 +83,65 @@ function TestInputContentsEOF3 as integer
 
 	' we cannot check for i=2 because on some platforms we can only detect
 	' the EOF after a read access (e.g. line input statement)
-	return i>=2 and i<=3
+	CU_ASSERT_TRUE( i>=2 and i<=3 )
 
 file_access_failed:
     close 1
-    return 0
-end function
+    CU_FAIL( "ERROR" )
+end sub
 
-function TestInputContentsEOF4 as integer
+sub TestInputContentsEOF3 cdecl
 	dim i as integer
 	dim l as string
   
     on local error goto file_access_failed
-	open exepath() + "/../data/fourbin.txt" for input as #1
+	open exepath() + "data/threebin.txt" for input as #1
 	i=0
 	while not eof(1)
     	line input #1, l
         select case i
         case 0
-        	if l<>"1" then return 0
+        	if l<>"1" then CU_FAIL( "ERROR" )
         case 1
-        	if l<>"2" then return 0
+        	if l<>"2" and l<>"2"+chr(26) then CU_FAIL( "ERROR" )
         case 2
-        	if l<>"" and l<>chr(26)+"3" then return 0
+        	if l<>"" and l<>"3" then CU_FAIL( "ERROR" )
+        case else
+            CU_FAIL( "ERROR" )
+        end select
+		i+=1
+	wend
+	close #1
+
+	' we cannot check for i=2 because on some platforms we can only detect
+	' the EOF after a read access (e.g. line input statement)
+	CU_ASSERT_TRUE( i>=2 and i<=3 )
+
+file_access_failed:
+    close 1
+    CU_FAIL( "ERROR" )
+end sub
+
+sub TestInputContentsEOF4 cdecl
+	dim i as integer
+	dim l as string
+  
+    on local error goto file_access_failed
+	open exepath() + "data/fourbin.txt" for input as #1
+	i=0
+	while not eof(1)
+    	line input #1, l
+        select case i
+        case 0
+        	if l<>"1" then CU_FAIL( "ERROR" )
+        case 1
+        	if l<>"2" then CU_FAIL( "ERROR" )
+        case 2
+        	if l<>"" and l<>chr(26)+"3" then CU_FAIL( "ERROR" )
         case 3
-            if l<>"4" then return 0
+            if l<>"4" then CU_FAIL( "ERROR" )
         case else
-            return 0
+            CU_FAIL( "ERROR" )
         end select
 		i+=1
 	wend
@@ -151,224 +149,173 @@ function TestInputContentsEOF4 as integer
 
 	' we cannot check for i=2 because on some platforms we can only detect
 	' the EOF after a read access (e.g. line input statement)
-	return i>=2 and i<=4
+	CU_ASSERT_TRUE( i>=2 and i<=4 )
 
 file_access_failed:
     close 1
-    return 0
-end function
+    CU_FAIL( "ERROR" )
+end sub
 
-function TestBinaryEOF as integer
+sub TestBinaryEOF cdecl
 	dim i as integer
 	dim l as string
 
     on local error goto file_access_failed
-	open exepath() + "/../data/empty.txt" for binary access read as #1
+	open exepath() + "data/empty.txt" for binary access read as #1
 	i=0
 	while not eof(1)
     	line input #1, l
         select case i
         case 0
-        	if l<>chr(26) then return 0
+        	if l<>chr(26) then CU_FAIL( "ERROR" )
         case else
-            return 0
+            CU_FAIL( "ERROR" )
         end select
 		i+=1
 	wend
 	close #1
 
-	return i=1
+	CU_ASSERT_EQUAL( i, 1 )
 
 file_access_failed:
     close 1
-    return 0
-end function
+    CU_FAIL( "ERROR" )
+end sub
 
-function TestBinaryContentsEOF1 as integer
+sub TestBinaryContentsEOF1 cdecl
 	dim i as integer
 	dim l as string
   
     on local error goto file_access_failed
-	open exepath() + "/../data/two.txt" for binary access read as #1
+	open exepath() + "data/two.txt" for binary access read as #1
 	i=0
 	while not eof(1)
     	line input #1, l
         select case i
         case 0
-        	if l<>"1" then return 0
+        	if l<>"1" then CU_FAIL( "ERROR" )
         case 1
-        	if l<>"2"+chr(26) then return 0
+        	if l<>"2"+chr(26) then CU_FAIL( "ERROR" )
         case else
-            return 0
+            CU_FAIL( "ERROR" )
         end select
 		i+=1
 	wend
 	close #1
 
-	return i=2
+	CU_ASSERT_EQUAL( i, 2 )
 
 file_access_failed:
     close 1
-    return 0
-end function
+    CU_FAIL( "ERROR" )
+end sub
 
-function TestBinaryContentsEOF2 as integer
+sub TestBinaryContentsEOF2 cdecl
 	dim i as integer
 	dim l as string
 
     on local error goto file_access_failed
-	open exepath() + "/../data/three.txt" for binary access read as #1
+	open exepath() + "data/three.txt" for binary access read as #1
 	i=0
 	while not eof(1)
     	line input #1, l
         select case i
         case 0
-        	if l<>"1" then return 0
+        	if l<>"1" then CU_FAIL( "ERROR" )
         case 1
-        	if l<>"2" then return 0
+        	if l<>"2" then CU_FAIL( "ERROR" )
         case 2
-        	if l<>chr(26) then return 0
+        	if l<>chr(26) then CU_FAIL( "ERROR" )
         case else
-            return 0
+            CU_FAIL( "ERROR" )
         end select
 		i+=1
 	wend
 	close #1
 
-	return i=3
+	CU_ASSERT_EQUAL( i, 3 )
 
 file_access_failed:
     close 1
-    return 0
-end function
+    CU_FAIL( "ERROR" )
+end sub
 
-function TestBinaryContentsEOF3 as integer
-	dim i as integer
-	dim l as string
-  
-    on local error goto file_access_failed
-	open exepath() + "/../data/threebin.txt" for binary access read as #1
-	i=0
-	while not eof(1)
-    	line input #1, l
-        select case i
-        case 0
-        	if l<>"1" then return 0
-        case 1
-        	if l<>"2"+chr(26) then return 0
-        case 2
-        	if l<>"3" then return 0
-        case else
-            return 0
-        end select
-		i+=1
-	wend
-	close #1
-
-	return i=3
-
-file_access_failed:
-    close 1
-    return 0
-end function
-
-function TestBinaryContentsEOF4 as integer
+sub TestBinaryContentsEOF3 cdecl
 	dim i as integer
 	dim l as string
   
     on local error goto file_access_failed
-	open exepath() + "/../data/fourbin.txt" for binary access read as #1
+	open exepath() + "data/threebin.txt" for binary access read as #1
 	i=0
 	while not eof(1)
     	line input #1, l
         select case i
         case 0
-        	if l<>"1" then return 0
+        	if l<>"1" then CU_FAIL( "ERROR" )
         case 1
-        	if l<>"2" then return 0
+        	if l<>"2"+chr(26) then CU_FAIL( "ERROR" )
         case 2
-        	if l<>chr(26)+"3" then return 0
+        	if l<>"3" then CU_FAIL( "ERROR" )
+        case else
+            CU_FAIL( "ERROR" )
+        end select
+		i+=1
+	wend
+	close #1
+
+	CU_ASSERT_EQUAL( i, 3 )
+
+file_access_failed:
+    close 1
+    CU_FAIL( "ERROR" )
+end sub
+
+sub TestBinaryContentsEOF4 cdecl
+	dim i as integer
+	dim l as string
+  
+    on local error goto file_access_failed
+	open exepath() + "data/fourbin.txt" for binary access read as #1
+	i=0
+	while not eof(1)
+    	line input #1, l
+        select case i
+        case 0
+        	if l<>"1" then CU_FAIL( "ERROR" )
+        case 1
+        	if l<>"2" then CU_FAIL( "ERROR" )
+        case 2
+        	if l<>chr(26)+"3" then CU_FAIL( "ERROR" )
         case 3
-        	if l<>"4" then return 0
+        	if l<>"4" then CU_FAIL( "ERROR" )
         case else
-            return 0
+            CU_FAIL( "ERROR" )
         end select
 		i+=1
 	wend
 	close #1
 
-	return i=4
+	CU_ASSERT_EQUAL( i, 4 )
 
 file_access_failed:
     close 1
-    return 0
-end function
+    CU_FAIL( "ERROR" )
+end sub
 
+private sub ctor () constructor
 
+	fbcu.add_suite("fbc_tests.file.text_in")
+	fbcu.add_test("INPUT_EOF", @TestInputEOF())
+	fbcu.add_test("INPUT_CONTENTS_EOF_01", @TestInputContentsEOF1())
+	fbcu.add_test("INPUT_CONTENTS_EOF_02", @TestInputContentsEOF2())
+	fbcu.add_test("INPUT_CONTENTS_EOF_03", @TestInputContentsEOF3())
+	fbcu.add_test("INPUT_CONTENTS_EOF_04", @TestInputContentsEOF4())
+	fbcu.add_test("BINARY_EOF", @TestBinaryEOF())
+	fbcu.add_test("BINARY_CONTENTS_EOF_01", @TestBinaryContentsEOF1())
+	fbcu.add_test("BINARY_CONTENTS_EOF_02", @TestBinaryContentsEOF2())
+	fbcu.add_test("BINARY_CONTENTS_EOF_03", @TestBinaryContentsEOF3())
+	fbcu.add_test("BINARY_CONTENTS_EOF_04", @TestBinaryContentsEOF4())
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-'
-'
-' Code that executes all tests
-'
-'
-
-dim shared error_count as integer
-
-type FnTest as function() as integer
-
-function RunTest(byval description as string, byval pfnTest as FnTest) as integer
-    print description + ": ";
-    if not pfnTest() then
-        print "ERR"
-        error_count+=1
-        function = 0
-    else
-        print "OK"
-        function = -1
-    end if
-end function
-
-
-
-
-'
-'
-' Add more test calls here
-'
-'
-
-RunTest("INPUT_EOF", @TestInputEOF())
-RunTest("INPUT_CONTENTS_EOF_01", @TestInputContentsEOF1())
-RunTest("INPUT_CONTENTS_EOF_02", @TestInputContentsEOF2())
-RunTest("INPUT_CONTENTS_EOF_03", @TestInputContentsEOF3())
-RunTest("INPUT_CONTENTS_EOF_04", @TestInputContentsEOF4())
-RunTest("BINARY_EOF", @TestBinaryEOF())
-RunTest("BINARY_CONTENTS_EOF_01", @TestBinaryContentsEOF1())
-RunTest("BINARY_CONTENTS_EOF_02", @TestBinaryContentsEOF2())
-RunTest("BINARY_CONTENTS_EOF_03", @TestBinaryContentsEOF3())
-RunTest("BINARY_CONTENTS_EOF_04", @TestBinaryContentsEOF4())
-
-if error_count<>0 then
-    end 1
-end if
-
-end 0
+end sub
+	
+end namespace

@@ -27,14 +27,14 @@ namespace ns
 end namespace
 
 	dim f as ns.foo = ( TEST_VAL1 )
-	assert( ns.bar( @f ) = TEST_VAL1 + 1 )
+	CU_ASSERT( ns.bar( @f ) = TEST_VAL1 + 1 )
 	
 	scope
 		using ns
 		dim f as ns.foo = ( TEST_VAL2 )
-		assert( ns.bar( @f ) = TEST_VAL2 + 1 )
+		CU_ASSERT( ns.bar( @f ) = TEST_VAL2 + 1 )
 	end scope
 	
-	assert( ns.bar( @f ) = TEST_VAL1 + 1 )
+	CU_ASSERT( ns.bar( @f ) = TEST_VAL1 + 1 )
 	
 	

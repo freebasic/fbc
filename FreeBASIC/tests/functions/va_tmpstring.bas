@@ -1,3 +1,10 @@
+# include "fbcu.bi"
+
+
+
+
+namespace fbc_tests.functions.va_tempstring
+
 	dim shared strtb(1 to 2) as zstring * 6+1 => { "ABCdef", "defABC" }
 		
 '':::::
@@ -24,17 +31,19 @@ end function
 '':::::
 sub printstrings cdecl ( byval cnt as integer, ... )
 	dim va as any ptr
+	dim i as integer
 	
 	va = va_first( )
 	
-	dim i as integer 
 	for i = 1 to cnt
-		assert( *va_arg( va, zstring ptr ) = strtb(i) )
+		CU_ASSERT( *va_arg( va, zstring ptr ) = strtb(i) )
 		va = va_next( va, zstring ptr )
 	next
 
 end sub
 	
+sub test_1 cdecl ()
+
 	dim s as string
 	dim z as zstring * 3+1
 	
@@ -42,3 +51,14 @@ end sub
 	z = "dEf"
 	
 	printstrings 2, concatz( toupperz( s ), tolowerz( z ) ), concatz( tolowerz( z ), toupperz( s ) )
+
+end sub
+
+sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.functions.va_tempstring")
+	fbcu.add_test("test_1", @test_1)
+
+end sub
+
+end namespace

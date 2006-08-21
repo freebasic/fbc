@@ -1,4 +1,6 @@
 
+
+
 #include once "submod_c.bi"
 
 declare sub test_extdyn( )
@@ -13,7 +15,7 @@ declare sub test_extstat( )
 
 
 ''
-private sub test_extdyn( )
+sub test_extdyn( )
 	
 	ASSERT( ext_dynarray(1,1) = 1 )
 
@@ -22,7 +24,7 @@ private sub test_extdyn( )
 end sub
 
 ''
-private sub test_extstat( )
+sub test_extstat( )
 
 	ASSERT( ext_statarray(1,1) = 3 )
 

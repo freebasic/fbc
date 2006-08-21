@@ -1,18 +1,16 @@
+# include "fbcu.bi"
 
 #define TEST_1 "Hello_"
 #define TEST_2 wstr( "World!" )
 #define TEST_3 1234
 #define TEST_4 5.678
 	
-sub test( byval encod as string )
+namespace fbc_tests.file.encod
 
-	print encod; "..."
-	
-	''
-	'' write
-	''
+private sub WriteToFile (byval encod as string)
+
 	if( open( "test_" + encod + ".txt", for output, encoding encod, as #1 ) <> 0 ) then
-		end
+		CU_FAIL_FATAL("couldn't open test file.")
 	end if
 
 	write #1, TEST_1, TEST_2, TEST_3, TEST_4
@@ -23,42 +21,69 @@ sub test( byval encod as string )
 	
 	close #1
 
-	''
-	'' read
-	''
+end sub
+
+private sub ReadFromFile (byval encod as string)
+
 	dim s as string
 	dim ws as wstring * 100
 	dim i as integer
 	dim d as double
 	
 	if( open( "test_" + encod + ".txt", for input, encoding encod, as #1 ) <> 0 ) then
-		end
+		CU_FAIL_FATAL("couldn't open test file.")
 	end if
-
-	input #1, s, ws, i, d
-	
-	assert( s = TEST_1 )
-	assert( ws = TEST_2 )
-	assert( i = TEST_3 )
-	assert( d = TEST_4 )
 	
 	input #1, s, ws, i, d
-
-	assert( s = TEST_1 )
-	assert( ws = TEST_2 )
-	assert( i = TEST_3 )
-	assert( d = TEST_4 )
-
+	
+	CU_ASSERT_EQUAL( s, TEST_1 )
+	CU_ASSERT_EQUAL( ws, TEST_2 )
+	CU_ASSERT_EQUAL( i, TEST_3 )
+	CU_ASSERT_EQUAL( d, TEST_4 )
+	
+	input #1, s, ws, i, d
+	
+	CU_ASSERT_EQUAL( s, TEST_1 )
+	CU_ASSERT_EQUAL( ws, TEST_2 )
+	CU_ASSERT_EQUAL( i, TEST_3 )
+	CU_ASSERT_EQUAL( d, TEST_4 )
+	
 	close #1
 
-	''
-	'' remove
-	''
+end sub
+
+private sub performTest (byval encod as string)
+
+	'//
+	'// write
+	'//
+
+	WriteToFile(encod)
+	
+	'//
+	'// read
+	'//
+
+	ReadFromFile(encod)
+
 	kill "test_" + encod + ".txt"
 
 end sub
 
-	test "utf8"
-	test "utf16"
-	test "utf32"
-	test "ascii"
+sub encodingTest cdecl ()
+
+	performTest("utf8")
+	performTest("utf16")
+	performTest("utf32")
+	performTest("ascii")
+
+end sub
+
+private sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.file.encod")
+	fbcu.add_test("encodingTest", @encodingTest)
+
+end sub
+
+end namespace

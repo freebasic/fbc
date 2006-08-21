@@ -1,32 +1,44 @@
+# include "fbcu.bi"
 
 
-sub test1
+
+
+namespace fbc_tests.numbers.cast_signed
+
+sub test1 cdecl ()
 	dim as integer dst, src
 	
 	src = &hFFFFFFFF
 	dst = cbyte( src )
 	
-	assert( dst = -1 )
+	CU_ASSERT_EQUAL( dst, -1 )
 end sub
 
-sub test2
+sub test2 cdecl ()
 	dim as integer dst, src
 	
 	src = &hFFFFFFFF
 	dst = cshort( src )
 	
-	assert( dst = -1 )
+	CU_ASSERT_EQUAL( dst, -1 )
 end sub
 
-sub test3
+sub test3 cdecl ()
 	dim as integer dst, src
 	
 	src = &hFFFFFFFF
 	dst = cint( src )
 	
-	assert( dst = -1 )
+	CU_ASSERT_EQUAL( dst, -1 )
 end sub
 
-	test1
-	test2
-	test3
+sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.numbers.cast_signed")
+	fbcu.add_test("test1", @test1)
+	fbcu.add_test("test2", @test2)
+	fbcu.add_test("test3", @test3)
+
+end sub
+
+end namespace

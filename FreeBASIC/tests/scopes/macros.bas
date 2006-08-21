@@ -1,29 +1,43 @@
-''
-'' test for macros defined locally
-''
+# include "fbcu.bi"
 
+
+
+
+'//
+'// test for macros defined locally
+'//
+
+namespace fbc_tests.scopes.macros
+
+sub test_1 cdecl ()
+	#define foo(x) x
+	CU_ASSERT_EQUAL( foo(3), 3 )
+end sub
+
+sub test_2 cdecl ()
+	#define foo(x) x
+	CU_ASSERT_EQUAL( foo(4), 4 )
+end sub
+
+sub test_3 cdecl ()
 	scope
 		#define foo(x) x
-		assert( foo(1) = 1 )
+		CU_ASSERT_EQUAL( foo(1), 1 )
 	end scope
 
 	scope
 		#define foo(x) x
-		assert( foo(2) = 2 )
+		CU_ASSERT_EQUAL( foo(2), 2 )
 	end scope
-
-sub test1
-	#define foo(x) x
-	assert( foo(3) = 3 )
 end sub
 
-sub test2
-	#define foo(x) x
-	assert( foo(4) = 4 )
+sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.scopes.macros")
+	fbcu.add_test("test 1", @test_1)
+	fbcu.add_test("test 2", @test_2)
+	fbcu.add_test("test 3", @test_3)
+
 end sub
 
-	dim foo as integer = 5
-	assert( foo = 5 )
-
-	test1
-	test2
+end namespace

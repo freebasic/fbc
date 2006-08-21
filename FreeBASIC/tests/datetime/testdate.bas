@@ -1,18 +1,23 @@
+# include "fbcu.bi"
+
+# include "vbcompat.bi"
 
 
-#include "vbcompat.bi"
+
 
 declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as integer )
 
+ 
+
 tests_dateserial:
-    data  1,  1, 1900, 1, 2, 2
-    data 30, 12, 1899, 1, 7, 0
-    data  1,  1, 1899, 1, 1, -363
-    data  0,  1, 1900, 0, 1, 1
-    data  1,  0, 1900, 0, 6, -29
-    data  0,  0, 1900, 0, 5, -30
-    data  5,  8, 2005, 1, 6, 38569
-    data "."
+	data  1,  1, 1900, 1, 2, 2
+	data 30, 12, 1899, 1, 7, 0
+	data  1,  1, 1899, 1, 1, -363
+	data  0,  1, 1900, 0, 1, 1
+	data  1,  0, 1900, 0, 6, -29
+	data  0,  0, 1900, 0, 5, -30
+	data  5,  8, 2005, 1, 6, 38569
+	data "."
 
 tests_datevalue:
 	data "Aug 5, 2005",       1, 5, 8, 2005
@@ -35,15 +40,16 @@ tests_datevalue:
 	data "5 August- 2005",    0
 	data "5 August,, 2005",   0
 	data "08-05/2005",        0
-    data "."
+	data "."
 
+namespace fbc_tests.datetime.testdate
 
-sub test_dateserial
+sub test_dateserial cdecl ()
+
+	fb_I18nSet 0
     dim as integer serial_date, test_value, do_dmy_check
 	dim as integer chk_day, chk_month, chk_year, chk_dow
     dim sDay as string
-
-    print "Testing DATESERIAL ...";
 
     restore tests_dateserial
     read sDay
@@ -51,24 +57,23 @@ sub test_dateserial
         chk_day = val(sDay)
         read chk_month, chk_year, do_dmy_check, chk_dow, serial_date
         test_value = dateserial( chk_year, chk_month, chk_day )
-        ASSERT( test_value = serial_date )
-        ASSERT( weekday( serial_date ) = chk_dow )
+        CU_ASSERT( test_value = serial_date )
+        CU_ASSERT( weekday( serial_date ) = chk_dow )
         if( do_dmy_check ) then
-            ASSERT( chk_day = day(serial_date) )
-            ASSERT( chk_month = month(serial_date) )
-            ASSERT( chk_year = year(serial_date) )
+            CU_ASSERT( chk_day = day(serial_date) )
+            CU_ASSERT( chk_month = month(serial_date) )
+            CU_ASSERT( chk_year = year(serial_date) )
         end if
-        print ".";
     	read sDay
     wend
-    print "OK"
+
 end sub
 
-sub test_datevalue
+sub test_datevalue cdecl ()
+
+	fb_I18nSet 0
 	dim as integer chk_day, chk_month, chk_year, serial_date, want_ok
     dim sDate as string
-
-    print "Testing DATEVALUE ...";
 
     restore tests_datevalue
     read sDate
@@ -79,16 +84,20 @@ sub test_datevalue
         
         if want_ok=1 then
             read chk_day, chk_month, chk_year
-	        ASSERT( serial_date = dateserial( chk_year, chk_month, chk_day ) )
+	        CU_ASSERT( serial_date = dateserial( chk_year, chk_month, chk_day ) )
         end if
 
-        print ".";
     	read sDate
     wend
-    print "OK"
+
 end sub
 
-' Turn off I18N and L10N
-fb_I18nSet 0
-test_dateserial
-test_datevalue
+sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.datetime.testdate")
+	fbcu.add_test("test_dateserial", @test_dateserial)
+	fbcu.add_test("test_datevalue", @test_datevalue)
+
+end sub
+
+end namespace

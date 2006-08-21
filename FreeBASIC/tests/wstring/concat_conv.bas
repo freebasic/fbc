@@ -1,16 +1,34 @@
+# include "fbcu.bi"
 
 
-const TEST_1 = "abcd"
-const TEST_2 = "EFGH"
 
-	dim as wstring * 32 w = TEST_1
-	dim as zstring * 32 z = TEST_2
+
+namespace fbc_tests.wstrings.concat_conv
+
+const TESTVALUE_1 = "abcd"
+const TESTVALUE_2 = "EFGH"
+
+sub test_1 cdecl ()
+
+	dim as wstring * 32 w = TESTVALUE_1
+	dim as zstring * 32 z = TESTVALUE_2
 	dim as wstring * 256 res
 	
 	res = w + z
 	
-	assert( res = wstr(TEST_1) + wstr(TEST_2) )
+	CU_ASSERT( res = wstr(TESTVALUE_1) + wstr(TESTVALUE_2) )
 	
 	res = z + w
 	
-	assert( res = wstr(TEST_2) + wstr(TEST_1) )
+	CU_ASSERT( res = wstr(TESTVALUE_2) + wstr(TESTVALUE_1) )
+
+end sub
+
+sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.wstrings.concat_conv")
+	fbcu.add_test("test_1", @test_1)
+
+end sub
+
+end namespace

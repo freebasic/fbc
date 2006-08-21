@@ -38,6 +38,6 @@ end extern
 	
 	res = outer.inner.sum( @z, @f1, @f2, @b )
 	
-	assert( res = 4 )
+	CU_ASSERT( res = 4 )
 
 

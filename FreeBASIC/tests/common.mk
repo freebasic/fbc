@@ -1,19 +1,4 @@
 
-FBC := fbc
-ifeq ($(MAKELEVEL),0)
-	FBC := ../$(FBC)
-else
-	FBC := ../../$(FBC)
-endif
-
-FBFLAGS := -exx -g
-ifdef FIXME
-	FBFLAGS+= -d FIXME=1
-endif
-
-FBCMPFLAGS := $(FBFLAGS) -c
-FBLNKFLAGS := 
-
 HOST :=
 ifeq ($(OS),DOS)
 	HOST := dos
@@ -44,19 +29,8 @@ ifndef TARGET
 	TARGET := $(HOST)
 endif
 
-ifeq ($(TARGET),win32)
-    EXEEXT := .exe
-    FBLNKFLAGS += -l user32
-endif
-
 ifeq ($(TARGET),linux)
-    EXEEXT := .test
-endif
-
-ifeq ($(TARGET),cygwin)
-    EXEEXT := .exe
-endif
-
-ifeq ($(TARGET),dos)
+    EXEEXT :=
+else
     EXEEXT := .exe
 endif

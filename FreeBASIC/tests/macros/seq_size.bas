@@ -1,3 +1,5 @@
+# include "fbcu.bi"
+
 
 
 #define CAT(a,b) a##b
@@ -28,13 +30,27 @@
 #define SEQ_SIZE_SEQ_SIZE_9 9
 #define SEQ_SIZE_SEQ_SIZE_10 10
 
+namespace fbc_tests.macros.size
 
-	assert( SEQ_SIZE( (a) ) = 1 )
-	assert( SEQ_SIZE( (a)(b) ) = 2 )
-	assert( SEQ_SIZE( (a)(b)(c) ) = 3 )
-	assert( SEQ_SIZE( (a)(b)(c)(d) ) = 4 )
-	assert( SEQ_SIZE( (a)(b)(c)(d)(e) ) = 5 )
-	assert( SEQ_SIZE( (a)(b)(c)(d)(e)(f) ) = 6 )
-	assert( SEQ_SIZE( (a)(b)(c)(d)(e)(f)(g) ) = 7 )
-	assert( SEQ_SIZE( (a)(b)(c)(d)(e)(f)(g)(h) ) = 8 )
-	assert( SEQ_SIZE( (a)(b)(c)(d)(e)(f)(g)(h)(i) ) = 9 )
+sub sizeTest cdecl ()
+
+	CU_ASSERT_EQUAL( SEQ_SIZE( (a) ), 1 )
+	CU_ASSERT_EQUAL( SEQ_SIZE( (a)(b) ), 2 )
+	CU_ASSERT_EQUAL( SEQ_SIZE( (a)(b)(c) ), 3 )
+	CU_ASSERT_EQUAL( SEQ_SIZE( (a)(b)(c)(d) ), 4 )
+	CU_ASSERT_EQUAL( SEQ_SIZE( (a)(b)(c)(d)(e) ), 5 )
+	CU_ASSERT_EQUAL( SEQ_SIZE( (a)(b)(c)(d)(e)(f) ), 6 )
+	CU_ASSERT_EQUAL( SEQ_SIZE( (a)(b)(c)(d)(e)(f)(g) ), 7 )
+	CU_ASSERT_EQUAL( SEQ_SIZE( (a)(b)(c)(d)(e)(f)(g)(h) ), 8 )
+	CU_ASSERT_EQUAL( SEQ_SIZE( (a)(b)(c)(d)(e)(f)(g)(h)(i) ), 9 )
+
+end sub
+
+private sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.macros.size")
+	fbcu.add_test("sizeTest", @sizeTest)
+
+end sub
+
+end namespace

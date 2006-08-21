@@ -1,23 +1,53 @@
-#define FALSE 0
-#define TRUE NOT FALSE
+# include "fbcu.bi"
 
-#define FOO TRUE
+# define FALSE 0
+# define TRUE NOT FALSE
 
-#if defined(FOO) and defined(BAR)
-# error 
-#elseif not defined(FOO) and defined(BAR)
-# error 
-#elseif defined(FOO) and not defined(BAR)
-#elseif not defined(FOO) or not defined(BAR)
-# error 
-#endif
+# define FOO TRUE
 
-#if FOO = TRUE
-#else
-# error 
-#endif
+namespace fbc_tests.macros.conditional
 
-#if FOO <> FALSE and not defined(BAR)
-#else
-# error 
-#endif
+sub ifEqualityTest cdecl ()
+
+# if FOO = TRUE
+CU_PASS("")
+# else
+CU_FAIL_FATAL("")
+# endif
+
+end sub
+
+sub ifInequalityTest cdecl ()
+
+# if FOO <> FALSE and not defined(BAR)
+CU_PASS("")
+# else
+CU_FAIL_FATAL("")
+# endif
+
+end sub
+
+sub elseifDefinedTest cdecl ()
+
+# if defined(FOO) and defined(BAR)
+CU_FAIL_FATAL("")
+# elseif not defined(FOO) and defined(BAR)
+CU_FAIL_FATAL("")
+# elseif defined(FOO) and not defined(BAR)
+CU_PASS("")
+# elseif not defined(FOO) or not defined(BAR)
+CU_FAIL_FATAL("")
+# endif
+
+end sub
+
+private sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.macros.conditional")
+	fbcu.add_test("ifEqualityTest", @ifEqualityTest)
+	fbcu.add_test("ifInequalityTest", @ifInequalityTest)
+	fbcu.add_test("elseifDefinedTest", @elseifDefinedTest)
+
+end sub
+
+end namespace

@@ -34,7 +34,7 @@ namespace outer1
 		for i = lbound(array) to ubound(array)
 			array(i) = 0
 		next
-		assert( test_zero( ) <> 0 )
+		CU_ASSERT( test_zero( ) <> 0 )
 	end sub
 
 end namespace
@@ -47,7 +47,7 @@ namespace outer2
 		for i = lbound(array) to ubound(array)
 			array(i) = i
 		next
-		assert( test_lin( ) <> 0 )
+		CU_ASSERT( test_lin( ) <> 0 )
 	end sub
 
 end namespace

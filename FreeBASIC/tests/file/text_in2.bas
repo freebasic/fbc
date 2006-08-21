@@ -1,7 +1,10 @@
+# include "fbcu.bi"
 
-const filename = ".\file\text_in2.txt"
+namespace fbc_tests.file.text_in2
 
-sub test_lineinp
+const filename = "file\text_in2.txt"
+
+sub test_lineinp cdecl
 	
 	dim as integer lines = 0
 	dim as string ln
@@ -15,11 +18,11 @@ sub test_lineinp
 	
 	close #1 
 
-	assert( lines = 2 )
+	CU_ASSERT_EQUAL( lines, 2 )
 	
 end sub
 
-sub test_input
+sub test_input cdecl
 	
 	dim as integer lines = 0, int_
 	
@@ -32,9 +35,16 @@ sub test_input
 	
 	close #1 
 
-	assert( lines = 2 )
+	CU_ASSERT_EQUAL( lines, 2 )
 	
 end sub
+	
+private sub ctor () constructor
 
-	test_lineinp
-	test_input
+	fbcu.add_suite("fbc_tests.file.text_in2")
+	fbcu.add_test("test_lineinp", @test_lineinp)
+	fbcu.add_test("test_input", @test_input)
+
+end sub
+	
+end namespace

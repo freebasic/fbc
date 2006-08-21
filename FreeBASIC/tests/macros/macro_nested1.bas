@@ -1,3 +1,6 @@
+# include "fbcu.bi"
+
+namespace fbc_tests.macros.macro_nested1
 
 # macro create_macro( name_, params_, body_ )
 	# undef name_
@@ -8,9 +11,11 @@
 
   create_macro( join, (foo,bar), foo & bar )
 
-  assert( join( "hello", "world!" ) = "helloworld!" )
+sub nestedTest cdecl ()
+
+  CU_ASSERT_EQUAL( join( "hello", "world!" ), "helloworld!" )
   
-'' test comments
+end sub
 
 # undef create_macro
 
@@ -29,5 +34,18 @@
 
   create_macro( join, (foo,bar), foo & bar ) ' white-space
 
-  assert( join( "hello", "world!" ) = "helloworld!" )
+sub commentsInParamsTest cdecl ()
+
+  CU_ASSERT_EQUAL( join( "hello", "world!" ), "helloworld!" )
   
+end sub
+
+private sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.macros.nested_1")
+	fbcu.add_test("nestedTest", @nestedTest)
+	fbcu.add_test("commentsInParamsTest", @commentsInParamsTest)
+
+end sub
+
+end namespace

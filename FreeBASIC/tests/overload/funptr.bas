@@ -1,44 +1,73 @@
+# include "fbcu.bi"
 
 
-type sub1_t as sub () 
-type sub2_t as sub ( byval as integer ) 
 
-const TEST_SUB1 = 1
-const TEST_SUB2 = 2
+namespace fbc_tests.overloads.funptr
 
-function foobar overload (byval s as sub1_t ptr ) as integer
-   function = TEST_SUB1 
+type sub_wo_params_t as sub () 
+type sub_w_params_t as sub ( byval as integer ) 
+
+enum
+	WITHOUT_PARAMS
+	WITH_PARAMS
+end enum
+
+function proc overload (byval s as sub_wo_params_t ptr ) as integer
+   function = WITHOUT_PARAMS
 end function 
 
-function foobar overload (byval s as sub2_t ptr ) as integer
-   function = TEST_SUB2
+function proc overload (byval s as sub_w_params_t ptr ) as integer
+   function = WITH_PARAMS
 end function 
 
-sub sub1 ( )
+sub sub_wo_params ( )
 end sub 
 
-sub sub2 ( byval i as integer )
+sub sub_w_params ( byval i as integer )
 end sub 
 
-sub test_1
-	dim fn as sub1_t
-	dim pfn as sub1_t ptr
+sub test_initialization_wo_params cdecl ()
+	dim fn as sub_wo_params_t = @sub_wo_params
+	dim pfn as sub_wo_params_t ptr = @fn
 
-	fn = @sub1
-	pfn = @fn
-
-	assert( foobar( pfn ) = TEST_SUB1 )
+	CU_ASSERT_EQUAL( proc( pfn ), WITHOUT_PARAMS )
 end sub
 
-sub test_2
-	dim fn as sub2_t
-	dim pfn as sub2_t ptr
+sub test_assignment_wo_params cdecl ()
+	dim fn as sub_wo_params_t
+	dim pfn as sub_wo_params_t ptr
 
-	fn = @sub2
+	fn = @sub_wo_params
 	pfn = @fn
 
-	assert( foobar( pfn ) = TEST_SUB2 )
+	CU_ASSERT_EQUAL( proc( pfn ), WITHOUT_PARAMS )
 end sub
 
-	test_1
-	test_2
+sub test_initialization_w_params cdecl ()
+	dim fn as sub_w_params_t = @sub_w_params
+	dim pfn as sub_w_params_t ptr = @fn
+
+	CU_ASSERT_EQUAL( proc( pfn ), WITH_PARAMS )
+end sub
+
+sub test_assignment_w_params cdecl ()
+	dim fn as sub_w_params_t
+	dim pfn as sub_w_params_t ptr
+
+	fn = @sub_w_params
+	pfn = @fn
+
+	CU_ASSERT_EQUAL( proc( pfn ), WITH_PARAMS )
+end sub
+
+private sub ctor () constructor
+
+	fbcu.add_suite("fb-tests-overload:function pointers")
+	fbcu.add_test("test_initialization_wo_params", @test_initialization_wo_params)
+	fbcu.add_test("test_assignment_wo_params", @test_assignment_wo_params)
+	fbcu.add_test("test_initialization_w_params", @test_initialization_w_params)
+	fbcu.add_test("test_assignment_w_params", @test_assignment_w_params)
+
+end sub
+
+end namespace

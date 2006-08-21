@@ -1,15 +1,22 @@
+# include "fbcu.bi"
 
 
-const THREADS = 100
+
+
+namespace fbc_tests.threads.racecondition
+
+const NUM_THREADS = 100
 
 declare sub cb(byval i as integer) 
 
-	dim htb(0 to THREADS-1) as integer 
+sub test_1 cdecl ()
+
+	dim htb(0 to NUM_THREADS-1) as integer 
 	dim i as integer
 	
 	randomize timer
 	
-	for i = 0 to THREADS-1
+	for i = 0 to NUM_THREADS-1
 	    htb(i) = threadcreate( @cb, i ) 
 	    if( htb(i) = 0 ) then 
 	       print "error:" & i
@@ -17,7 +24,7 @@ declare sub cb(byval i as integer)
 	   end if 
 	next i 
 
-	for i = 0 to THREADS-1
+	for i = 0 to NUM_THREADS-1
    		print "waiting:" & i 
     	threadwait( htb(i) ) 
 	next
@@ -25,7 +32,21 @@ declare sub cb(byval i as integer)
 	print "Exiting.." 
 	sleep 1000
 
+end sub
+
 sub cb(byval i as integer) 
     sleep rnd * 100
     print "ending:" & i 
-end sub 
+end sub
+
+sub ctor () constructor
+
+'// fbcu should handle this internally ...
+# if defined(FBCU_CONFIG_TEST_OUTPUT)
+	fbcu.add_suite("fbc_tests.threads:race condition")
+	fbcu.add_test("test_1", @test_1)
+# endif
+
+end sub
+
+end namespace

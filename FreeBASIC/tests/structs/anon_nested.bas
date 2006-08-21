@@ -1,3 +1,6 @@
+# include "fbcu.bi"
+
+namespace fbc_tests.structs.anon_nested
 
 type test
 	as short a, b
@@ -29,37 +32,43 @@ function istrue_ptr( byval p1 as test_pair ptr, byval p2 as test_pair ptr ) as i
 end function
   
 
-sub test_ref  
+sub test_ref cdecl ()
   dim as integer istrue
   
   istrue = istrue_ref( type<test_pair>( type<test>( test_1, test_2 ), type<test>( test_3, test_4 ) ), _ 
                   	   type<test_pair>( type<test>( test_4, test_3 ), type<test>( test_2, test_1 ) ) )   
   
-  assert( istrue )
+  CU_ASSERT( istrue )
   
 end sub
 
-sub test_val
+sub test_val cdecl ()
   dim as integer istrue
   
   istrue = istrue_val( type<test_pair>( type<test>( test_1, test_2 ), type<test>( test_3, test_4 ) ), _ 
                   	   type<test_pair>( type<test>( test_4, test_3 ), type<test>( test_2, test_1 ) ) )  
   
-  assert( istrue )
+  CU_ASSERT( istrue )
 
 end sub
 
-sub test_ptr
+sub test_ptr cdecl ()
   dim as integer istrue
   
   istrue = istrue_ptr( @type<test_pair>( type<test>( test_1, test_2 ), type<test>( test_3, test_4 ) ), _ 
                   	   @type<test_pair>( type<test>( test_4, test_3 ), type<test>( test_2, test_1 ) ) )
   
-  assert( istrue )
+  CU_ASSERT( istrue )
 
 end sub
 
+private sub ctor () constructor
 
-	test_ref
-	test_val
-	test_ptr
+	fbcu.add_suite("tests/structs/anon_nested")
+	fbcu.add_test("pass by reference", @test_ref)
+	fbcu.add_test("pass by value", @test_val)
+	fbcu.add_test("pass by address", @test_ptr)
+
+end sub
+
+end namespace

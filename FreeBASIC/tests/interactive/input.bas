@@ -1,17 +1,24 @@
+# include "fbcu.bi"
+#include once "../console/common.bi"
+
+
+
+
+namespace fbc_tests.interactive.input_
+
 ''
 ''	Test app for console mode
 ''
 ''	User input methods test
 
-
-
-#include once "../console/common.bi"
-
 declare sub inkey_test( byval title as string )
 
+dim shared as integer w, h
 
-'':::::
-	dim shared as integer w, h
+sub test_1 cdecl ()
+
+	using fbc_tests.console
+	
 	dim as integer x, y, i, l
 	dim as string s
 
@@ -99,9 +106,11 @@ declare sub inkey_test( byval title as string )
 		
 	loop until multikey(1)
 	
+end sub
 
-'':::::
 sub inkey_test( byval title as string )
+	using fbc_tests.console
+	
 	dim as string s
 	dim as integer y
 	
@@ -121,3 +130,16 @@ sub inkey_test( byval title as string )
 	view print
 	
 end sub
+
+sub ctor () constructor
+
+'// this should be determined internally by fbcu. for
+'// now, this #define suffices ...
+# if defined (FBCU_CONFIG_TEST_USER_INPUT)
+	fbcu.add_suite("fbc_tests.interactive.input_")
+	fbcu.add_test("test_1", @test_1)
+# endif
+
+end sub
+
+end namespace

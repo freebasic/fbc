@@ -1,13 +1,19 @@
+# include "fbcu.bi"
+
+
+
+
+namespace fbc_tests.functions.va_int_and_ptrs
 
 '':::::
 sub varints cdecl ( byval n as integer, ... )
 	dim va as any ptr
+	dim i as integer
 	
 	va = va_first( )
 	
-	dim i as integer 
 	for i = 1 to n
-		assert( va_arg( va, integer ) = i )
+		CU_ASSERT( va_arg( va, integer ) = i )
 		va = va_next( va, integer )
 	next
 	
@@ -16,12 +22,12 @@ end sub
 '':::::
 sub varintptrs cdecl ( byval n as integer, ... )
 	dim va as any ptr
+	dim i as integer
 	
 	va = va_first( )
 	
-	dim i as integer
 	for i = 1 to n
-		assert( *va_arg( va, integer ptr ) )
+		CU_ASSERT( *va_arg( va, integer ptr ) )
 		va = va_next( va, integer ptr )
 	next
 	
@@ -48,4 +54,17 @@ sub vaints_test( d as integer )
 	
 end sub	
 
+sub test_1 cdecl ()
+
 	vaints_test 4
+
+end sub
+
+sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.functions.va_int_and_ptrs")
+	fbcu.add_test("test_1", @test_1)
+
+end sub
+
+end namespace

@@ -1,10 +1,15 @@
+# include "fbcu.bi"
 
+
+
+
+namespace fbc_tests.compound.select_
 
 const FALSE = 0
 const TRUE = not FALSE
 
 ''::::
-sub test_single_1( )
+sub test_single_1 cdecl ( )
 
 const TEST = 100
 	
@@ -38,12 +43,12 @@ const TEST = 100
 		ok = FALSE
 	end select
 	
-	assert( ok = TRUE )
+	CU_ASSERT_EQUAL( ok, TRUE )
 
 end sub
 
 ''::::
-sub test_single_2( )
+sub test_single_2 cdecl ( )
 
 const TEST = -100
 	
@@ -77,12 +82,12 @@ const TEST = -100
 		ok = FALSE
 	end select
 	
-	assert( ok = TRUE )
+	CU_ASSERT_EQUAL( ok, TRUE )
 
 end sub
 
 ''::::
-sub test_range_1( )
+sub test_range_1 cdecl ( )
 
 const TEST = 100
 	
@@ -116,12 +121,12 @@ const TEST = 100
 		ok = FALSE
 	end select
 	
-	assert( ok = TRUE )
+	CU_ASSERT_EQUAL( ok, TRUE )
 
 end sub
 
 ''::::
-sub test_range_2( )
+sub test_range_2 cdecl ( )
 
 const TEST = -100
 	
@@ -155,12 +160,12 @@ const TEST = -100
 		ok = FALSE
 	end select
 	
-	assert( ok = TRUE )
+	CU_ASSERT_EQUAL( ok, TRUE )
 
 end sub
 
 ''::::
-sub test_is_1( )
+sub test_is_1 cdecl ( )
 
 const TEST = 100
 	
@@ -194,12 +199,12 @@ const TEST = 100
 		ok = FALSE
 	end select
 	
-	assert( ok = TRUE )
+	CU_ASSERT_EQUAL( ok, TRUE )
 
 end sub
 
 ''::::
-sub test_is_2( )
+sub test_is_2 cdecl ( )
 
 const TEST = -100
 	
@@ -233,13 +238,20 @@ const TEST = -100
 		ok = FALSE
 	end select
 	
-	assert( ok = TRUE )
+	CU_ASSERT_EQUAL( ok, TRUE )
 
 end sub
 
-	test_single_1
-	test_single_2
-	test_range_1
-	test_range_2
-	test_is_1
-	test_is_2
+sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests-compound:select")
+	fbcu.add_test("test single1", @test_single_1)
+	fbcu.add_test("test single2", @test_single_2)
+	fbcu.add_test("test range1", @test_range_1)
+	fbcu.add_test("test range2", @test_range_2)
+	fbcu.add_test("test is1", @test_is_1)
+	fbcu.add_test("test is2", @test_is_2)
+
+end sub
+
+end namespace

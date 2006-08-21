@@ -20,7 +20,7 @@ namespace bar
 	using foo 
 	
 	sub foobar overload (byval parm1 as t1)
-		assert( parm1.field1 = TEST_T1 )
+		CU_ASSERT( parm1.field1 = TEST_T1 )
 	end sub 
 
 end namespace 
@@ -38,7 +38,7 @@ namespace bar
 	using foo
 	
 	sub foobar overload (byval parm1 as t2)
-		assert( parm1.field1 = TEST_T2 )
+		CU_ASSERT( parm1.field1 = TEST_T2 )
 	end sub 
 
 end namespace

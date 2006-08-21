@@ -36,8 +36,8 @@ end namespace
 
 	using bar
 	
-	assert( foobar( type<t1>( 0 ) ) = TEST_T1 )
-	assert( foobar( type<t2>( 0 ) ) = TEST_T2 )
-	assert( foobar( type<t3>( 0 ) ) = TEST_T3 )
+	CU_ASSERT( foobar( type<t1>( 0 ) ) = TEST_T1 )
+	CU_ASSERT( foobar( type<t2>( 0 ) ) = TEST_T2 )
+	CU_ASSERT( foobar( type<t3>( 0 ) ) = TEST_T3 )
 
 

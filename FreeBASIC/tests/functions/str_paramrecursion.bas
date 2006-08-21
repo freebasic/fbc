@@ -1,3 +1,10 @@
+# include "fbcu.bi"
+
+
+
+
+namespace fbc_tests.functions.str_paramrecursion
+
 '':::::
 function toupperz( byval s as string ) as string
 
@@ -33,6 +40,8 @@ function concatz( byval s1 as string, byval s2 as string ) as string
 
 end function
 
+sub test_1 cdecl ()
+
 	dim s as string
 	dim z as zstring * 3+1
 	dim r as string
@@ -42,11 +51,21 @@ end function
 	z = "dEf"
 		
 	r = toupperz( tolowerz( toupperz( tolowerz( s ) ) ) )
-	assert( r = "ABC" )
+	CU_ASSERT( r = "ABC" )
 	
 	r = tolowers( touppers( tolowers( touppers( s ) ) ) )
-	assert( r = "abc" )
+	CU_ASSERT( r = "abc" )
 	
 	r = concatz( toupperz( s ), tolowers( z ) )
-	assert( r = "ABCdef" )
-	
+	CU_ASSERT( r = "ABCdef" )
+
+end sub
+
+sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.functions.str_paramrecursion")
+	fbcu.add_test("test_1", @test_1)
+
+end sub
+
+end namespace

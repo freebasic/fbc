@@ -1,4 +1,8 @@
+# include "fbcu.bi"
+
  
+
+namespace fbc_tests.structs.bitfield_conversions
 
 const TEST_W = 123
 const TEST_H = 77
@@ -21,39 +25,33 @@ type foo_3 field=1
 	as integer               h
 end type 
 
-#define testw(_type)								_
-	dim as _type w_##_type = f.w					:_
-	assert( w_##_type = TEST_W )
+# macro testw(type_)
+	dim w_##type_ as type_ = f.w
+	CU_ASSERT_EQUAL( w_##type_, TEST_W )
+# endmacro
 
-#define testh(_type)								_
-	dim as _type h_##_type = f.h					:_
-	assert( h_##_type = TEST_H )
+# macro testh(type_)
+	dim h_##type_ as type_ = f.h
+	CU_ASSERT_EQUAL( h_##type_, TEST_H )
+# endmacro
 
-#define dotest_w()									_
-	testw(byte)										:_
-	testw(ubyte)									:_
-	testw(short)									:_
-	testw(ushort)									:_
-	testw(integer)									:_
-	testw(uinteger)									:_
-	testw(longint)									:_
-	testw(ulongint)									:_
-	testw(single)									:_
-	testw(double)
+# macro dotest_w()
+	testw(byte)		:	testw(ubyte)
+	testw(short)	:	testw(ushort)
+	testw(integer)	:	testw(uinteger)
+	testw(longint)	:	testw(ulongint)
+	testw(single)	:	testw(double)
+# endmacro
 
-#define dotest_h()									_
-	testh(byte)										:_
-	testh(ubyte)									:_
-	testh(short)									:_
-	testh(ushort)									:_
-	testh(integer)									:_
-	testh(uinteger)									:_
-	testh(longint)									:_
-	testh(ulongint)									:_
-	testh(single)									:_
-	testh(double)
+# macro dotest_h()
+	testh(byte)		:	testh(ubyte)
+	testh(short)	:	testh(ushort)
+	testh(integer)	:	testh(uinteger)
+	testh(longint)	:	testh(ulongint)
+	testh(single)	:	testh(double)
+# endmacro
 
-sub test_1
+sub test_1 cdecl ()
 
 	dim as foo_1 f
 	
@@ -65,7 +63,7 @@ sub test_1
 
 end sub
 
-sub test_2
+sub test_2 cdecl ()
 
 	dim as foo_2 f
 	
@@ -77,7 +75,7 @@ sub test_2
 
 end sub
 
-sub test_3
+sub test_3 cdecl ()
 
 	dim as foo_3 f
 	
@@ -89,6 +87,13 @@ sub test_3
 
 end sub
 
-	test_1
-	test_2
-	test_3
+private sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.structs.bitfield_conv")
+	fbcu.add_test("test_1", @test_1)
+	fbcu.add_test("test_2", @test_2)
+	fbcu.add_test("test_3", @test_3)
+
+end sub
+
+end namespace

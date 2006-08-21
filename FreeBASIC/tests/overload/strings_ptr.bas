@@ -1,4 +1,6 @@
-	
+# include "fbcu.bi"
+
+namespace fbc_tests.overloads.strings_ptr
 
 enum RESULT
 	RESULT_W
@@ -9,109 +11,100 @@ enum RESULT
 	RESULT_ZZ
 end enum
 
-declare function foo overload( byval bar as zstring ptr, byval baz as zstring ptr ) as RESULT
-declare function foo overload( byval bar as zstring ptr, byval baz as wstring ptr ) as RESULT
-declare function foo overload( byval bar as wstring ptr, byval baz as zstring ptr ) as RESULT
-declare function foo overload( byval bar as wstring ptr, byval baz as wstring ptr ) as RESULT
-declare function foo overload( byval bar as zstring ptr ) as RESULT
-declare function foo overload( byval bar as wstring ptr ) as RESULT
-sub test1
-	assert( foo( "123", "123" ) = RESULT_ZZ )
-	assert( foo( "123", wstr("123") ) = RESULT_ZW )
-	assert( foo( wstr("123"), "123" ) = RESULT_WZ )
-	assert( foo( wstr("123"), wstr("123") ) = RESULT_WW )
-	assert( foo( wstr("123") ) = RESULT_W )
-	assert( foo( "123" ) = RESULT_Z )
-end sub	
-
-sub test2
-	dim as string s
-	assert( foo( s, s ) = RESULT_ZZ )
-	assert( foo( s, wstr(s) ) = RESULT_ZW )
-	assert( foo( wstr(s), s ) = RESULT_WZ )
-	assert( foo( wstr(s), wstr(s) ) = RESULT_WW )
-	assert( foo( wstr(s) ) = RESULT_W )
-	assert( foo( s ) = RESULT_Z )
-end sub	
-
-sub test3
-	dim as string * 10 s
-	assert( foo( s, s ) = RESULT_ZZ )
-	assert( foo( s, wstr(s) ) = RESULT_ZW )
-	assert( foo( wstr(s), s ) = RESULT_WZ )
-	assert( foo( wstr(s), wstr(s) ) = RESULT_WW )
-	assert( foo( wstr(s) ) = RESULT_W )
-	assert( foo( s ) = RESULT_Z )
-end sub	
-
-sub test4
-	dim as zstring * 10 s
-	assert( foo( s, s ) = RESULT_ZZ )
-	assert( foo( s, wstr(s) ) = RESULT_ZW )
-	assert( foo( wstr(s), s ) = RESULT_WZ )
-	assert( foo( wstr(s), wstr(s) ) = RESULT_WW )
-	assert( foo( wstr(s) ) = RESULT_W )
-	assert( foo( s ) = RESULT_Z )
-end sub	
-
-sub test5
-	dim as zstring ptr s
-	assert( foo( s, s ) = RESULT_ZZ )
-	assert( foo( s, wstr(s) ) = RESULT_ZW )
-	assert( foo( wstr(s), s ) = RESULT_WZ )
-	assert( foo( wstr(s), wstr(s) ) = RESULT_WW )
-	assert( foo( wstr(s) ) = RESULT_W )
-	assert( foo( s ) = RESULT_Z )
-end sub	
-
-sub test6
-	dim as wstring * 10 s
-	assert( foo( s, s ) = RESULT_WW )
-	assert( foo( s, str(s) ) = RESULT_WZ )
-	assert( foo( str(s), s ) = RESULT_ZW )
-	assert( foo( str(s), str(s) ) = RESULT_ZZ )
-	assert( foo( str(s) ) = RESULT_Z )
-	assert( foo( s ) = RESULT_W )
-end sub	
-
-sub test7
-	dim as wstring ptr s
-	assert( foo( s, s ) = RESULT_WW )
-	assert( foo( s, str(s) ) = RESULT_WZ )
-	assert( foo( str(s), s ) = RESULT_ZW )
-	assert( foo( str(s), str(s) ) = RESULT_ZZ )
-	assert( foo( str(s) ) = RESULT_Z )
-	assert( foo( s ) = RESULT_W )
-end sub	
-	
-function foo overload( byval bar as zstring ptr, byval baz as zstring ptr ) as RESULT
+function proc overload( byval bar as zstring ptr, byval baz as zstring ptr ) as RESULT
 	function = RESULT_ZZ
 end function
 
-function foo overload( byval bar as zstring ptr, byval baz as wstring ptr ) as RESULT
+function proc overload( byval bar as zstring ptr, byval baz as wstring ptr ) as RESULT
 	function = RESULT_ZW
 end function
 
-function foo overload( byval bar as wstring ptr, byval baz as zstring ptr ) as RESULT
+function proc overload( byval bar as wstring ptr, byval baz as zstring ptr ) as RESULT
 	function = RESULT_WZ
 end function
 	
-function foo overload( byval bar as wstring ptr, byval baz as wstring ptr ) as RESULT
+function proc overload( byval bar as wstring ptr, byval baz as wstring ptr ) as RESULT
 	function = RESULT_WW
 end function
 	
-function foo overload( byval bar as zstring ptr ) as RESULT
+function proc overload( byval bar as zstring ptr ) as RESULT
 	function = RESULT_Z
 end function
 
-function foo overload( byval bar as wstring ptr ) as RESULT
+function proc overload( byval bar as wstring ptr ) as RESULT
 	function = RESULT_W
 end function
 	
-	test1
-	test2
-	test3
-	test4
-	test5
-	test6
-	test7
+# macro RUN_TESTS(s)
+	CU_ASSERT_EQUAL( RESULT_ZZ, proc( s, s ) )
+	CU_ASSERT_EQUAL( RESULT_ZW, proc( s, wstr(s) ) )
+	CU_ASSERT_EQUAL( RESULT_WZ, proc( wstr(s), s ) )
+	CU_ASSERT_EQUAL( RESULT_WW, proc( wstr(s), wstr(s) ) )
+	CU_ASSERT_EQUAL( RESULT_W, proc( wstr(s) ) )
+	CU_ASSERT_EQUAL( RESULT_Z, proc( s ) )
+# endmacro
+
+sub test_literals cdecl ()
+	RUN_TESTS("123")
+end sub	
+
+sub test_string cdecl ()
+	dim s as string
+
+	RUN_TESTS(s)
+end sub
+
+sub test_fixed_string cdecl ()
+	dim fs as string * 10
+
+	RUN_TESTS(fs)
+end sub	
+
+sub test_zstring cdecl ()
+	dim zs as zstring * 10
+
+	RUN_TESTS(zs)
+end sub	
+
+sub test_zstring_ptr cdecl ()
+	dim zsp as zstring ptr
+
+	RUN_TESTS(zsp)
+end sub	
+
+sub test_fixed_wstring cdecl ()
+	dim fws as wstring * 10
+
+	CU_ASSERT_EQUAL( RESULT_WW, proc( fws, fws ) )
+	CU_ASSERT_EQUAL( RESULT_WW, proc( fws, wstr(fws) ) )
+	CU_ASSERT_EQUAL( RESULT_WW, proc( wstr(fws), fws ) )
+	CU_ASSERT_EQUAL( RESULT_WW, proc( wstr(fws), wstr(fws) ) )
+	CU_ASSERT_EQUAL( RESULT_W, proc( wstr(fws) ) )
+	CU_ASSERT_EQUAL( RESULT_W, proc( fws ) )
+end sub	
+
+sub test_wstring_ptr cdecl ()
+	dim wsp as wstring ptr
+
+	CU_ASSERT_EQUAL( RESULT_WW, proc( wsp, wsp ) )
+	CU_ASSERT_EQUAL( RESULT_WW, proc( wsp, wstr(wsp) ) )
+	CU_ASSERT_EQUAL( RESULT_WW, proc( wstr(wsp), wsp ) )
+	CU_ASSERT_EQUAL( RESULT_WW, proc( wstr(wsp), wstr(wsp) ) )
+	CU_ASSERT_EQUAL( RESULT_W, proc( wstr(wsp) ) )
+	CU_ASSERT_EQUAL( RESULT_W, proc( wsp ) )
+end sub	
+
+private sub ctor () constructor
+
+	fbcu.add_suite("fb-tests-overload:string pointers")
+	fbcu.add_test("test_literals", @test_literals)
+	fbcu.add_test("test_string", @test_string)
+	fbcu.add_test("test_fixed_string", @test_fixed_string)
+	fbcu.add_test("test_zstring", @test_zstring)
+	fbcu.add_test("test_zstring_ptr", @test_zstring_ptr)
+	fbcu.add_test("test_fixed_wstring", @test_fixed_wstring)
+	fbcu.add_test("test_wstring ptr", @test_wstring_ptr)
+
+end sub
+
+end namespace

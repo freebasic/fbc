@@ -1,3 +1,7 @@
+# include "fbcu.bi"
+
+namespace fbc_tests.dim_.udt_init
+
 type rational
    num as integer 
    den as integer 
@@ -18,7 +22,7 @@ function add( lhs as rational, rhs as rational ) as rational
 end function 
 
 '':::::
-sub test
+sub test cdecl
 	dim as rational rt(0 to 1) = _
 	{ _
 		add( type(1,2)   , type(3,4)   ), _
@@ -32,11 +36,19 @@ sub test
 	l(1).num = -1: l(1).den = -2
 	r(1).num = -3: r(1).den = -4
 	
-	assert( rt(0).num = radd_num( l(0), r(0) ) )
-	assert( rt(0).den = radd_den( l(0), r(0) ) )
-	assert( rt(1).num = radd_num( l(1), r(1) ) )
-	assert( rt(1).den = radd_den( l(1), r(1) ) )
+	CU_ASSERT( rt(0).num = radd_num( l(0), r(0) ) )
+	CU_ASSERT( rt(0).den = radd_den( l(0), r(0) ) )
+	CU_ASSERT( rt(1).num = radd_num( l(1), r(1) ) )
+	CU_ASSERT( rt(1).den = radd_den( l(1), r(1) ) )
 	
 end sub
 
-	test
+private sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.dim.udt_init")
+	fbcu.add_test("test", @test)
+
+end sub
+
+end namespace
+	

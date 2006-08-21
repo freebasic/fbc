@@ -1,3 +1,9 @@
+# include "fbcu.bi"
+
+
+
+namespace fbc_tests.pointers.funcptr_mangling
+
 ''
 '' no warnings should be shown (bug report #1523070)
 ''
@@ -23,9 +29,21 @@ end sub
 sub foo_cb( byval p as foo ptr )
 end sub
 
+sub test cdecl ()
 
 	dim as foo f
 	dim as bar b
 	
 	f.fn = @foo_cb
 	b.fn = @bar_cb
+
+end sub
+
+private sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.pointers.funcptr_mangling")
+	fbcu.add_test("test", @test)
+
+end sub
+
+end namespace

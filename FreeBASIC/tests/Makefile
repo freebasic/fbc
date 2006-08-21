@@ -1,49 +1,69 @@
-
-DIRLIST := comments compound console data datetime dim expressions file functions macros namespace 
-DIRLIST += numbers optimizations overload pointers scopes string structs swap threads wstring
-
-###
-
 include common.mk
 
-EXELIST := $(patsubst %.bas,%$(EXEEXT),$(foreach i,$(DIRLIST),$(wildcard $(i)/*.bas)))
+FBC := fbc
 
-MAKLIST := $(foreach i,$(DIRLIST),$(wildcard $(i)/*.mk))
+MAINEXE := fbc-tests$(EXEEXT)
 
-RUNLIST := $(foreach i,$(EXELIST) $(patsubst %.mk,%$(EXEEXT),$(MAKLIST)),echo [$(i)] && $(i) &&) cd .
+FBCU_DIR := fbcu
+FBCU_INC := $(FBCU_DIR)/include
+FBCU_LIB := $(FBCU_DIR)/
+FBCU_BIN := $(FBCU_DIR)/libfbcu.a
 
-VPATH = $(DIRLIST)
+FBCU_LIBS := -l cunit -l fbcu
 
-.SUFFIXES:
-.SUFFIXES: .bas .c .cpp $(EXEEXT)
+ifeq ($(TARGET),win32)
+    FBCU_LIBS += -l user32
+endif
 
-### rules
+FBC_CFLAGS := -c -w 0 -i $(FBCU_INC)
+FBC_LFLAGS := $(FBCU_LIBS) -p $(FBCU_DIR) -x $(MAINEXE)
 
-%.o: %.bas
-	$(FBC) $(FBCMPFLAGS) -x $@ $^ -m $(patsubst %.o,%,$@)
+# dirs to be updated: [data] dim namespace
 
-%$(EXEEXT): %.o
-	$(FBC) $(FBLNKFLAGS) -x $@ $^
+DIRLIST := comments compound console crt datetime dim expressions file functions interactive
+DIRLIST += numbers macros optimizations overload pointers scopes string structs swap threads wstring
 
-### targets
+SRCLIST := $(foreach dir, $(DIRLIST), $(wildcard $(dir)/*.bas))
+MAKLIST := $(foreach dir, $(DIRLIST), $(wildcard $(dir)/*.mk))
 
-.PHONY : run_tests
-run_tests: $(EXELIST) sub_make
-	$(RUNLIST)
+OBJLIST := $(SRCLIST:%.bas=%.o)
 
-.PHONY : sub_make
-sub_make: $(MAKLIST)
-	$(foreach i,$(MAKLIST),cd $(dir $(i)) && make -f $(notdir $(i)) build TESTNAME=$(subst .mk,,$(notdir $(i))) && cd .. &&) cd .
+#:
+#: rules
+#:
 
-.PHONY : clean
-clean: exe_clean sub_clean
-	
-.PHONY : exe_clean
-exe_clean: 
-	rm -f $(EXELIST) $(patsubst %$(EXEEXT),%.o,$(EXELIST))
+%.o : %.bas
+	$(FBC) $(FBC_CFLAGS) $^
 
-.PHONY : sub_clean
-sub_clean : $(MAKLIST)
-	cd $(<D) && make -f $(<F) clean TESTNAME=$(subst .mk,,$(<F)) && cd ..
-	
-all: run_tests
+#:
+#: targets
+#:
+
+all : make_fbcu build_tests run_tests
+
+.PHONY: make_fbcu $(FBCU_BIN)
+make_fbcu : $(FBCU_BIN)
+	cd $(FBCU_DIR) && make 
+
+.PHONY: build_tests
+build_tests : $(OBJLIST)
+	$(FBC) $(FBC_LFLAGS) $(OBJLIST)
+
+.PHONY: run_tests
+run_tests : build_tests
+	./$(MAINEXE)
+
+.PHONY: clean
+clean : clean_main_exe clean_tests clean_fbcu
+
+.PHONY: clean_main_exe
+clean_main_exe :
+	rm -f $(MAINEXE)
+
+.PHONY: clean_tests
+clean_tests :
+	rm -f $(OBJLIST)
+
+.PHONY: clean_fbcu
+clean_fbcu :
+	cd $(FBCU_DIR) && make clean

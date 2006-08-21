@@ -1,4 +1,9 @@
+# include "fbcu.bi"
 
+
+
+
+namespace fbc_tests.compound.scope_array
 
 const TEST_1 = -1
 const TEST_2 = -2
@@ -10,18 +15,20 @@ type bar
 	c as single
 end type
 	
-declare sub foo	
+declare sub proc ()
 
 	dim shared array(0 to 3) as bar = { (TEST_1) }
 	
+sub test_scope_array cdecl ()
+
 	scope		
 		scope 
 			dim array(0 to 3) as bar = { (TEST_2) }
 			scope
-				assert( array(0).a = TEST_2 )
+				CU_ASSERT_EQUAL( array(0).a, TEST_2 )
 			end scope
 		end scope
-		assert( array(0).a = TEST_1 )
+		CU_ASSERT_EQUAL( array(0).a, TEST_1 )
 	end scope
 	
 	scope		
@@ -29,27 +36,27 @@ declare sub foo
 			scope
 				dim array(0 to 3) as bar = { (TEST_3) }
 			end scope
-			assert( array(0).a = TEST_1 )
+			CU_ASSERT_EQUAL( array(0).a, TEST_1 )
 		end scope
 	end scope
 	
-	foo
+	proc()
 	
-	assert( array(0).a = TEST_1 )
+	CU_ASSERT_EQUAL( array(0).a, TEST_1 )
 	
-	end 0
-	
+end sub
+
 ''::::
-sub foo
+sub proc ()
 
 	scope		
 		scope 
 			dim array(0 to 3) as bar = { (TEST_2) }
 			scope
-				assert( array(0).a = TEST_2 )
+				CU_ASSERT_EQUAL( array(0).a, TEST_2 )
 			end scope
 		end scope
-		assert( array(0).a = TEST_1 )
+		CU_ASSERT_EQUAL( array(0).a, TEST_1 )
 	end scope
 	
 	scope		
@@ -57,10 +64,19 @@ sub foo
 			scope
 				dim array(0 to 3) as bar = { (TEST_3) }
 			end scope
-			assert( array(0).a = TEST_1 )
+			CU_ASSERT_EQUAL( array(0).a, TEST_1 )
 		end scope
 	end scope
 	
-	assert( array(0).a = TEST_1 )
+	CU_ASSERT_EQUAL( array(0).a, TEST_1 )
 
-end sub	
+end sub
+
+sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.compound.scoped_array")
+	fbcu.add_test("test scope array", @test_scope_array)
+	
+end sub
+
+end namespace

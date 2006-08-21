@@ -17,9 +17,9 @@ end namespace
 
 	using ns
 	
-	assert( func( ) = GLOB_VAL )
-	assert( .func( ) = GLOB_VAL )
-	assert( ..func( ) = GLOB_VAL )
-	assert( global.func( ) = GLOB_VAL )
+	CU_ASSERT( func( ) = GLOB_VAL )
+	CU_ASSERT( .func( ) = GLOB_VAL )
+	CU_ASSERT( ..func( ) = GLOB_VAL )
+	CU_ASSERT( global.func( ) = GLOB_VAL )
 	
-	assert( ns.func( ) = LOCA_VAL )
+	CU_ASSERT( ns.func( ) = LOCA_VAL )

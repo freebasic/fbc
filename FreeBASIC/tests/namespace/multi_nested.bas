@@ -10,32 +10,32 @@ end namespace
 
 	
 sub test1	
-	assert( lev1.lev2.lev3.lev4.lev5.value = TEST_VAL )
+	CU_ASSERT( lev1.lev2.lev3.lev4.lev5.value = TEST_VAL )
 end sub
 
 sub test2
 	using lev1
-	assert( lev2.lev3.lev4.lev5.value = TEST_VAL )
+	CU_ASSERT( lev2.lev3.lev4.lev5.value = TEST_VAL )
 end sub
 
 sub test3
 	using lev1.lev2
-	assert( lev3.lev4.lev5.value = TEST_VAL )
+	CU_ASSERT( lev3.lev4.lev5.value = TEST_VAL )
 end sub
 
 sub test4
 	using lev1.lev2.lev3
-	assert( lev4.lev5.value = TEST_VAL )
+	CU_ASSERT( lev4.lev5.value = TEST_VAL )
 end sub
 
 sub test5
 	using lev1.lev2.lev3.lev4
-	assert( lev5.value = TEST_VAL )
+	CU_ASSERT( lev5.value = TEST_VAL )
 end sub
 
 sub test6
 	using lev1.lev2.lev3.lev4.lev5
-	assert( value = TEST_VAL )
+	CU_ASSERT( value = TEST_VAL )
 end sub
 
 

@@ -57,7 +57,7 @@ namespace outer
 			dupvar.a = 0
 	
 			'' because the "using type_ns", the global "duptype" shouldn't be accessed
-			assert( len( duptype ) = len( integer ) )
+			CU_ASSERT( len( duptype ) = len( integer ) )
 		end sub
 	
 	end namespace
@@ -71,13 +71,13 @@ end namespace
    		using inner
 
    		'' calling the dup function defined in global ns
-   		assert( dupfunc( ) = 0 )
+   		CU_ASSERT( dupfunc( ) = 0 )
    		
-   		assert( outer.inner.dupfunc( ) = TEST_VAL )
+   		CU_ASSERT( outer.inner.dupfunc( ) = TEST_VAL )
 
    		'' outer.inner
    		resetvar
    		
-   		assert( outer.inner.dupfunc( ) = 0 )
+   		CU_ASSERT( outer.inner.dupfunc( ) = 0 )
 	end scope
 

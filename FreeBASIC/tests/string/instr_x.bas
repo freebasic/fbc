@@ -1,36 +1,42 @@
+# include "fbcu.bi"
 
 
-dim as integer result
 
-result = instr("d"+chr(0), any chr(0))
-ASSERT( result = 2 )
-result = instr("d"+chr(0), any chr(0)+"d")
-ASSERT( result = 1 )
-result = instr("d"+chr(0), any "d"+chr(0))
-ASSERT( result = 1 )
-result = instr("d"+chr(0)+"x", any "x"+chr(0))
-ASSERT( result = 2 )
-result = instr("d"+chr(0)+"x", any "")
-ASSERT( result = 1 )
-result = instr("d"+chr(0)+"x", any "q")
-ASSERT( result = 0 )
-result = instr("d"+chr(0)+"x", any "qb")
-ASSERT( result = 0 )
+'option escape
 
-result = instr(2, "d"+chr(0), any chr(0))
-ASSERT( result = 2 )
-result = instr(2, "d"+chr(0), any chr(0)+"d")
-ASSERT( result = 2 )
-result = instr(2, "d"+chr(0), any "d"+chr(0))
-ASSERT( result = 2 )
-result = instr(2, "d"+chr(0)+"x", any "x"+chr(0))
-ASSERT( result = 2 )
-result = instr(2, "d"+chr(0)+"x", any "")
-ASSERT( result = 2 )
-result = instr(2, "d"+chr(0)+"x", any "q")
-ASSERT( result = 0 )
-result = instr(2, "d"+chr(0)+"x", any "qb")
-ASSERT( result = 0 )
+namespace fbc_tests.string_.instr_0
 
-result = instr(3, "d"+chr(0)+"x", any "d"+chr(0))
-ASSERT( result = 0 )
+sub wholeStringTest cdecl ()
+
+	CU_ASSERT( 2 = instr("d"+chr(0), any chr(0)) )
+	CU_ASSERT( 1 = instr("d"+chr(0), any chr(0)+"d") )
+	CU_ASSERT( 1 = instr("d"+chr(0), any "d"+chr(0)) )
+	CU_ASSERT( 2 = instr("d"+chr(0)+"x", any "x"+chr(0)) )
+	CU_ASSERT( 1 = instr("d"+chr(0)+"x", any "") )
+	CU_ASSERT( 0 = instr("d"+chr(0)+"x", any "q") )
+	CU_ASSERT( 0 = instr("d"+chr(0)+"x", any "qb") )
+
+end sub
+
+sub partialStringTest cdecl ()
+
+	CU_ASSERT( 2 = instr(2, "d"+chr(0), any chr(0)) )
+	CU_ASSERT( 2 = instr(2, "d"+chr(0), any chr(0)+"d") )
+	CU_ASSERT( 2 = instr(2, "d"+chr(0), any "d"+chr(0)) )
+	CU_ASSERT( 2 = instr(2, "d"+chr(0)+"x", any "x"+chr(0)) )
+	CU_ASSERT( 2 = instr(2, "d"+chr(0)+"x", any "") )
+	CU_ASSERT( 0 = instr(2, "d"+chr(0)+"x", any "q") )
+	CU_ASSERT( 0 = instr(2, "d"+chr(0)+"x", any "qb") )
+	CU_ASSERT( 0 = instr(3, "d"+chr(0)+"x", any "d"+chr(0)) )
+
+end sub
+
+sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.string_.instr_X")
+	fbcu.add_test("whole string test", @wholeStringTest)
+	fbcu.add_test("partial string test", @partialStringTest)
+
+end sub
+
+end namespace

@@ -1,15 +1,28 @@
+# include once "fbcu.bi"
 
 
-dim test as string*3
-dim i as integer
-dim h as string
 
-h="123"
 
-print "TEST_TEMPORARY_DESCRIPTIOR: ";
-for i=1 to 260
-  mid(test,1)=h
-  if len(str(i))=0 then print "ERROR": end 1
-next
-print "OK"
-end 0
+namespace fbc_tests.string_.mid_set
+
+sub midSetTest cdecl ()
+
+	dim h as string = "123"
+	dim test as string * 3
+	dim i as integer
+
+	for i = 1 to 260
+	  mid(test,1) = h
+	  CU_ASSERT_NOT_EQUAL( 0, len(str(i)) )
+	next
+
+end sub
+
+sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.string_.mid_set")
+	fbcu.add_test("midSetTest", @midSetTest)
+
+end sub
+
+end namespace

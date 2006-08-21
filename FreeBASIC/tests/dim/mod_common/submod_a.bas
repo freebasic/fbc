@@ -1,4 +1,6 @@
 
+
+
 #include once "submod.bi"
 
 declare sub test_extdyn( )
@@ -8,14 +10,14 @@ declare sub test_extdyn( )
 	
 	test_extdyn( )
 	
-	assert( ext_nonshared_dynarray(1,1) = -1 )
-	assert( ext_nonshared_dynarray(1,2) = -2 )
+	CU_ASSERT( ext_nonshared_dynarray(1,1) = -1 )
+	CU_ASSERT( ext_nonshared_dynarray(1,2) = -2 )
 	
-	assert( ext_nonshared_var = 1234 )
+	CU_ASSERT( ext_nonshared_var = 1234 )
 	
 
 ''
-private sub test_extdyn( )
+sub test_extdyn( )
 	
 	ASSERT( ext_dynarray(1,1) = 1 )
 	ASSERT( ext_dynarray(1,2) = 2 )

@@ -1,41 +1,41 @@
+# include "fbcu.bi"
 
+namespace fbc_tests.string_.instr_0
 
-dim as integer result
+private sub wholeStringTest cdecl ()
 
-result = instr("asd"+chr(0), chr(0))
-ASSERT( result = 4 )
-result = instr("asd"+chr(0), "d")
-ASSERT( result = 3 )
-result = instr("asd"+chr(0), "a")
-ASSERT( result = 1 )
-result = instr("asd"+chr(0), "sd")
-ASSERT( result = 2 )
-result = instr("asd"+chr(0), "")
-ASSERT( result = 0 )
-result = instr("asd"+chr(0), "asdfg")
-ASSERT( result = 0 )
-result = instr("asd"+chr(0), "qwe")
-ASSERT( result = 0 )
-result = instr("", "asdf")
-ASSERT( result = 0 )
-result = instr("", "")
-ASSERT( result = 0 )
+	CU_ASSERT_EQUAL( 4, instr("asd"+chr(0), chr(0)) )
+	CU_ASSERT_EQUAL( 3, instr("asd"+chr(0), "d") )
+	CU_ASSERT_EQUAL( 1, instr("asd"+chr(0), "a") )
+	CU_ASSERT_EQUAL( 2, instr("asd"+chr(0), "sd") )
+	CU_ASSERT_EQUAL( 0, instr("asd"+chr(0), "") )
+	CU_ASSERT_EQUAL( 0, instr("asd"+chr(0), "asdfg") )
+	CU_ASSERT_EQUAL( 0, instr("asd"+chr(0), "qwe") )
+	CU_ASSERT_EQUAL( 0, instr("", "asdf") )
+	CU_ASSERT_EQUAL( 0, instr("", "") )
 
-result = instr(2, "asd"+chr(0), chr(0))
-ASSERT( result = 4 )
-result = instr(2, "asd"+chr(0), "d")
-ASSERT( result = 3 )
-result = instr(2, "asd"+chr(0), "a")
-ASSERT( result = 0 )
-result = instr(2, "asd"+chr(0), "sd")
-ASSERT( result = 2 )
-result = instr(2, "asd"+chr(0), "")
-ASSERT( result = 0 )
-result = instr(2, "asd"+chr(0), "asdfg")
-ASSERT( result = 0 )
-result = instr(2, "asd"+chr(0), "qwe")
-ASSERT( result = 0 )
-result = instr(2, "", "asdf")
-ASSERT( result = 0 )
-result = instr(2, "", "")
-ASSERT( result = 0 )
+end sub
+
+private sub partialStringTest cdecl ()
+
+	CU_ASSERT_EQUAL( 4, instr(2, "asd"+chr(0), chr(0)) )
+	CU_ASSERT_EQUAL( 3, instr(2, "asd"+chr(0), "d") )
+	CU_ASSERT_EQUAL( 0, instr(2, "asd"+chr(0), "a") )
+	CU_ASSERT_EQUAL( 2, instr(2, "asd"+chr(0), "sd") )
+	CU_ASSERT_EQUAL( 0, instr(2, "asd"+chr(0), "") )
+	CU_ASSERT_EQUAL( 0, instr(2, "asd"+chr(0), "asdfg") )
+	CU_ASSERT_EQUAL( 0, instr(2, "asd"+chr(0), "qwe") )
+	CU_ASSERT_EQUAL( 0, instr(2, "", "asdf") )
+	CU_ASSERT_EQUAL( 0, instr(2, "", "") )
+
+end sub
+
+private sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.string_.instr_0")
+	fbcu.add_test("whole string test", @wholeStringTest)
+	fbcu.add_test("partial string test", @partialStringTest)
+
+end sub
+
+end namespace

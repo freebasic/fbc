@@ -1,3 +1,9 @@
+# include "fbcu.bi"
+
+
+
+
+namespace fbc_tests.functions.str_paramcopy
 
 '':::::
 sub nocopyback( byval s as string )
@@ -13,31 +19,43 @@ sub copyback( byref s as string )
 	
 end sub
 
+sub test_1 cdecl ()
+
 	dim s as string
 	dim z as zstring * 3+1
 	dim f as string * 3
 	
 	s = "var"
 	nocopyback( s )
-	assert( s = "VAR" )
+	CU_ASSERT( s = "VAR" )
 
 	s = "var"
 	copyback( s )
-	assert( s = "VAR" )
+	CU_ASSERT( s = "VAR" )
 	
 	z = "zer"
 	copyback( z )
-	assert( z = "zer" )
+	CU_ASSERT( z = "zer" )
 	
 	z = "zer"
 	nocopyback( z )
-	assert( z = "ZER" )
+	CU_ASSERT( z = "ZER" )
 
 	f = "fix"
 	nocopyback( f )
-	assert( f = "FIX" )
+	CU_ASSERT( f = "FIX" )
 
 	f = "fix"
 	copyback( f )
-	assert( f = "FIX" )
+	CU_ASSERT( f = "FIX" )
 	
+end sub
+
+sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.functions.str_paramcopy")
+	fbcu.add_test("test_1", @test_1)
+
+end sub
+
+end namespace

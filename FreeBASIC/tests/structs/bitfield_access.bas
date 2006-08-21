@@ -1,4 +1,8 @@
- 
+# include "fbcu.bi"
+
+
+
+namespace fbc_tests.structs.bitfield_access
 
 const TEST_W = 200
 const TEST_H = 100
@@ -22,7 +26,7 @@ type foo_3 field=1
 end type 
 
 
-sub test_1
+sub test_1 cdecl ()
 
 	dim as foo_1 f
 	
@@ -31,11 +35,11 @@ sub test_1
 	
 	dim as integer res = f.w * f.h
 	
-	assert( res = (TEST_W * TEST_H) )
+	CU_ASSERT_EQUAL( res, TEST_W * TEST_H )
 
 end sub
 
-sub test_2
+sub test_2 cdecl ()
 
 	dim as foo_2 f
 	
@@ -44,11 +48,11 @@ sub test_2
 	
 	dim as integer res = f.w * f.h
 	
-	assert( res = (TEST_W * TEST_H) )
+	CU_ASSERT_EQUAL( res, TEST_W * TEST_H )
 
 end sub
 
-sub test_3
+sub test_3 cdecl ()
 
 	dim as foo_3 f
 	
@@ -57,10 +61,17 @@ sub test_3
 	
 	dim as integer res = f.w * f.h
 	
-	assert( res = (TEST_W * TEST_H) )
+	CU_ASSERT_EQUAL( res, TEST_W * TEST_H )
 
 end sub
 
-	test_1
-	test_2
-	test_3
+private sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.structs.bitfield_access")
+	fbcu.add_test("test_1", @test_1)
+	fbcu.add_test("test_2", @test_2)
+	fbcu.add_test("test_3", @test_3)
+
+end sub
+
+end namespace

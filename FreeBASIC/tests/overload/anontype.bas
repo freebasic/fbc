@@ -1,37 +1,59 @@
+# include "fbcu.bi"
 
 
-type foo1
+
+namespace fbc_tests.overloads.test_anontype
+
+type udt1
 	a as integer
 	b as integer
 end type
 
-type foo2
+type udt2
 	a as integer
 	b as integer
 	c as integer
 end type
 
-function bar overload (byref x as foo1) as foo1
-	
-	function = type<foo1>( x.a, x.b )
-	
-end function
-
-function bar (byref x as foo2) as foo1
-	
-	function = type<foo1>( x.a, x.b )
-	
-end function
-
-''
 const TEST1_A = 1, TEST1_B = 2
 const TEST2_A = 3, TEST2_B = 4, TEST2_C = 3
+
+function proc overload (byref x as udt1) as udt1
 	
-	dim as foo1 res
+	CU_ASSERT_EQUAL( x.a, TEST1_A )
+	CU_ASSERT_EQUAL( x.b, TEST1_B )
+
+	function = type<udt1>( x.a, x.b )
 	
-	res = bar( type<foo1>( TEST1_A, TEST1_B ) )
-	assert( res.a = TEST1_A and res.b = TEST1_B )
+end function
+
+function proc (byref x as udt2) as udt1
 	
-	res = bar( type<foo2>( TEST2_A, TEST2_B, TEST2_C ) )
-	assert( res.a = TEST2_A and res.b = TEST2_B )
+	CU_ASSERT_EQUAL( x.a, TEST2_A )
+	CU_ASSERT_EQUAL( x.b, TEST2_B )
+	CU_ASSERT_EQUAL( x.c, TEST2_C )
+
+	function = type<udt1>( x.a, x.b )
 	
+end function
+
+sub test_arguments_and_returns cdecl ()
+	
+	dim as udt1 res
+	
+	res = proc( type<udt1>( TEST1_A, TEST1_B ) )
+	CU_ASSERT( res.a = TEST1_A and res.b = TEST1_B )
+	
+	res = proc( type<udt2>( TEST2_A, TEST2_B, TEST2_C ) )
+	CU_ASSERT( res.a = TEST2_A and res.b = TEST2_B )
+	
+end sub
+
+private sub ctor () constructor
+
+	fbcu.add_suite("fb-tests-overload:anonymous types")
+	fbcu.add_test("test_arguments_and_returns", @test_arguments_and_returns)
+
+end sub
+
+end namespace

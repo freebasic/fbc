@@ -1,4 +1,8 @@
+# include "fbcu.bi"
 
+
+
+namespace fbc_tests.pointers.casting1
 
 const TEST_VAL = &hDeadC0de
 
@@ -14,8 +18,15 @@ type udttype
 	fparray  as functype ptr
 end type
 	
-declare function realfunc( ) as funcudt ptr
-	
+function realfunc( ) as funcudt ptr
+	static as funcudt t = ( TEST_VAL )
+
+	function = @t
+
+end function
+
+sub test cdecl ()
+
 	dim as udttype t
 	
 	dim as any ptr p
@@ -28,13 +39,15 @@ declare function realfunc( ) as funcudt ptr
 	
 	t.fparray[10] = @realfunc
 	
-	assert( cast(udttype ptr, *cast(any ptr ptr, pptr))->fparray[10]()->field = TEST_VAL )
+	CU_ASSERT( cast(udttype ptr, *cast(any ptr ptr, pptr))->fparray[10]()->field = TEST_VAL )
 	
+end sub
 
-'':::::
-function realfunc( ) as funcudt ptr
-	static as funcudt t = ( TEST_VAL )
+private sub ctor () constructor
 
-	function = @t
+	fbcu.add_suite("fbc_tests.pointers.casting1")
+	fbcu.add_test("test", @test)
 
-end function
+end sub
+
+end namespace

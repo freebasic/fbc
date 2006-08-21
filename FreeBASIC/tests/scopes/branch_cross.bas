@@ -1,78 +1,93 @@
+# include "fbcu.bi"
 
-sub test_1
+namespace fbc_tests.scopes.branch_cross
+
+sub test_1 cdecl ()
 	
-	dim as integer z '' no cross
+	dim z as integer '' no cross
 	
 	scope
 	
-		dim as integer y '' no cross
+		dim y as integer '' no cross
 		
 		scope
-			dim as integer x '' no cross
+			dim x as integer '' no cross
 			
+			# print 3 warning follow ...
 			goto scope2
 			
-			dim as integer w '' no cross
+			dim w as integer '' no cross
 		end scope
 	
-		dim as integer v '' no cross
+		dim v as integer '' no cross
 	end scope
 	
-	dim as integer a '' cross
+	dim a as integer '' cross
 	
 	scope
-		dim as integer b	'' cross
+		dim b	as integer '' cross
 		
 		scope
-			dim as integer c	'' cross
+			dim c	as integer '' cross
 
 scope2:	
 
-			dim as integer d	'' no cross
+			dim d	as integer '' no cross
 		end scope
 		
-		dim as integer e  '' no cross
+		dim e as integer '' no cross
 	end scope
 	
-	dim as integer f	'' no cross
+	dim f	as integer '' no cross
 	
 end sub
 
-sub test_2
+sub test_2 cdecl ()
 	
-	dim as integer z '' no cross
+	dim z as integer '' no cross
 	
 	scope
 	
-		dim as integer y '' cross
+		dim y as integer '' cross
 		
 		scope
-			dim as integer x '' cross
+			dim x as integer '' cross
 			
 scope2:
 			
-			dim as integer w '' no cross
+			dim w as integer '' no cross
 		end scope
 	
-		dim as integer v '' no cross
+		dim v as integer '' no cross
 	end scope
 	
-	dim as integer a '' no cross
+	dim a as integer '' no cross
 	
 	scope
-		dim as integer b	'' no cross
+		dim b	as integer '' no cross
 		
 		scope
-			dim as integer c	'' no cross
+			dim c	as integer '' no cross
 
+			# print 2 warnings follow ...
 			goto scope2	
 
-			dim as integer d	'' no cross
+			dim d	as integer '' no cross
 		end scope
 		
-		dim as integer e  '' no cross
+		dim e as integer '' no cross
 	end scope
 	
-	dim as integer f	'' no cross
+	dim f	as integer '' no cross
 	
 end sub
+
+sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.scopes.branch crossing")
+	fbcu.add_test("test 1", @test_1)
+'	fbcu.add_test("test 2", @test_2)
+
+end sub
+
+end namespace

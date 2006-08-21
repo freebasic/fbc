@@ -1,18 +1,29 @@
+# include once "fbcu.bi"
 
 
-const TEST_VAL = 1234
 
-sub test1
-	dim as integer value = TEST_VAL, test = -1
+
+namespace fbc_tests.expressions.iif2_tests
+
+const TEST_VAL as integer = 1234
+
+sub test_1 cdecl ()
+	dim value as integer = TEST_VAL
+	dim test as integer = 0
 	
-	if( test > 0 ) then
-		value += iif( test > 5, 10, -10 ) + iif( test < 5, 10, -10 )
-	else
-		value += iif( test > -5, 10, -10 ) + iif( test < -5, 10, -10 )
-	end if
-	
-	assert( value = TEST_VAL )
-	
+	value += iif (test > 5, 10, -10) + iif (test < 5, 10, -10)
+	CU_ASSERT_EQUAL( value, TEST_VAL )
+
+	value += iif (test > -5, 10, -10) + iif (test < -5, 10, -10)
+	CU_ASSERT_EQUAL( value, TEST_VAL )
+
 end sub
 
-	test1
+sub ctor () constructor
+
+	fbcu.add_suite("fbc-tests-expressions-iif")
+	fbcu.add_test("test 1", @test_1)
+
+end sub
+
+end namespace

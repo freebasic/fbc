@@ -1,4 +1,8 @@
-sub test1
+# include "fbcu.bi"
+
+namespace fbc_tests.dim_.array_init
+
+sub test1 cdecl
 	dim as integer array(1 to 2, 1 to 2, 1 to 3) = _ 
 	  { _
 			{ _
@@ -17,7 +21,7 @@ sub test1
 	for i = 1 to 2
 		for j = 1 to 2
 			for k = 1 to 3
-				assert( array(i, j, k) = cnt )
+				CU_ASSERT( array(i, j, k) = cnt )
 				cnt += 1
 			next
 		next
@@ -25,7 +29,7 @@ sub test1
 		
 end sub
 
-sub test2
+sub test2 cdecl
 	dim as integer array(1 to 2+1, 1 to 2+1, 1 to 3+1) = _ 
 	  { _
 			{ _
@@ -44,26 +48,26 @@ sub test2
 	for i = 1 to 2
 		for j = 1 to 2
 			for k = 1 to 3
-				assert( array(i, j, k) = cnt )
+				CU_ASSERT( array(i, j, k) = cnt )
 				cnt += 1
 			next
-			assert( array(i, j, 4) = 0 )
+			CU_ASSERT( array(i, j, 4) = 0 )
 		next
 		
 		for k = 1 to 3+1
-			assert( array(i, 3, k) = 0 )
+			CU_ASSERT( array(i, 3, k) = 0 )
 		next
 	next
 
 	for j = 1 to 2+1
 		for k = 1 to 3+1
-			assert( array(3, j, k) = 0 )
+			CU_ASSERT( array(3, j, k) = 0 )
 		next
 	next
 		
 end sub
 
-sub test3 static
+sub test3 cdecl static
 	dim as integer array(1 to 2, 1 to 2, 1 to 3) = _ 
 	  { _
 			{ _
@@ -82,7 +86,7 @@ sub test3 static
 	for i = 1 to 2
 		for j = 1 to 2
 			for k = 1 to 3
-				assert( array(i, j, k) = cnt )
+				CU_ASSERT( array(i, j, k) = cnt )
 				cnt += 1
 			next
 		next
@@ -90,7 +94,7 @@ sub test3 static
 		
 end sub
 
-sub test4 static
+sub test4 cdecl static
 	dim as integer array(1 to 2+1, 1 to 2+1, 1 to 3+1) = _ 
 	  { _
 			{ _
@@ -109,26 +113,34 @@ sub test4 static
 	for i = 1 to 2
 		for j = 1 to 2
 			for k = 1 to 3
-				assert( array(i, j, k) = cnt )
+				CU_ASSERT( array(i, j, k) = cnt )
 				cnt += 1
 			next
-			assert( array(i, j, 4) = 0 )
+			CU_ASSERT( array(i, j, 4) = 0 )
 		next
 		
 		for k = 1 to 3+1
-			assert( array(i, 3, k) = 0 )
+			CU_ASSERT( array(i, 3, k) = 0 )
 		next
 	next
 
 	for j = 1 to 2+1
 		for k = 1 to 3+1
-			assert( array(3, j, k) = 0 )
+			CU_ASSERT( array(3, j, k) = 0 )
 		next
 	next
 		
 end sub
 
-	test1
-	test2
-	test3
-	test4
+private sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.dim.array_init")
+	fbcu.add_test("test 1", @test1)
+	fbcu.add_test("test 2", @test2)
+	fbcu.add_test("test 3", @test3)
+	fbcu.add_test("test 1", @test4)
+
+end sub
+
+end namespace
+	

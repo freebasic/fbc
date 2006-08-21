@@ -1,3 +1,4 @@
+# include "fbcu.bi"
 
 # macro hello1( )
 	 	
@@ -13,8 +14,6 @@
 	 
 # endmacro
 
-  assert( hello1( ) + world1( ) = "helloworld!" ) 
-  
 '' with args
 
 # macro hello2( foo )
@@ -31,4 +30,26 @@
 	 
 # endmacro
 
-  assert( hello2( 0 ) + world2( 0 ) = "helloworld!" ) 
+namespace fbc_tests.macros.macro_trim
+
+sub noArgTest cdecl ()
+
+  CU_ASSERT_EQUAL( hello1( ) + world1( ), "helloworld!" ) 
+
+end sub
+  
+sub withArgTest cdecl ()
+
+  CU_ASSERT_EQUAL( hello2( __ ) + world2( __ ), "helloworld!" ) 
+
+end sub
+
+private sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.macros.macro_trim")
+	fbcu.add_test("noArgTest", @noArgTest)
+	fbcu.add_test("withArgTest", @withArgTest)
+
+end sub
+
+end namespace

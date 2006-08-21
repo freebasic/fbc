@@ -1,4 +1,9 @@
+# include "fbcu.bi"
 
+
+
+
+namespace fbc_tests.functions.var_args
 
 const TEST_B as byte = -128
 const TEST_UB as ubyte = 255
@@ -34,47 +39,47 @@ sub test cdecl (fmtstr as string, ...)
 			
 			select case as const char
 			case asc( "b" )
-				assert( va_arg( arg, byte ) = TEST_B )
+				CU_ASSERT( va_arg( arg, byte ) = TEST_B )
 				arg = va_next( arg, integer )
 
 			case asc( "c" )
-				assert( va_arg( arg, ubyte ) = TEST_UB )
+				CU_ASSERT( va_arg( arg, ubyte ) = TEST_UB )
 				arg = va_next( arg, uinteger )
 
 			case asc( "s" )
-				assert( va_arg( arg, short ) = TEST_S )
+				CU_ASSERT( va_arg( arg, short ) = TEST_S )
 				arg = va_next( arg, integer )
 
 			case asc( "r" )
-				assert( va_arg( arg, ushort ) = TEST_US )
+				CU_ASSERT( va_arg( arg, ushort ) = TEST_US )
 				arg = va_next( arg, uinteger )
 
 			case asc( "i" )
-				assert( va_arg( arg, integer ) = TEST_I )
+				CU_ASSERT( va_arg( arg, integer ) = TEST_I )
 				arg = va_next( arg, integer )
 
 			case asc( "j" )
-				assert( va_arg( arg, uinteger ) = TEST_UI )
+				CU_ASSERT( va_arg( arg, uinteger ) = TEST_UI )
 				arg = va_next( arg, uinteger )
 
 			case asc( "l" )
-				assert( va_arg( arg, longint ) = TEST_L )
+				CU_ASSERT( va_arg( arg, longint ) = TEST_L )
 				arg = va_next( arg, longint )
 
 			case asc( "m" )
-				assert( va_arg( arg, ulongint ) = TEST_UL )
+				CU_ASSERT( va_arg( arg, ulongint ) = TEST_UL )
 				arg = va_next( arg, ulongint )
 			
 			case asc( "f" )
-				assert( va_arg( arg, double ) = TEST_F )
+				CU_ASSERT( va_arg( arg, double ) = TEST_F )
 				arg = va_next( arg, double )
 
 			case asc( "d" )
-				assert( va_arg( arg, double ) = TEST_D )
+				CU_ASSERT( va_arg( arg, double ) = TEST_D )
 				arg = va_next( arg, double )
 			
 			case asc( "z" )
-				assert( *va_arg( arg, zstring ptr ) = TEST_Z )
+				CU_ASSERT( *va_arg( arg, zstring ptr ) = TEST_Z )
 				arg = va_next( arg, zstring ptr )
 			end select
 			
@@ -83,6 +88,8 @@ sub test cdecl (fmtstr as string, ...)
 	loop
 
 end sub
+
+sub test_1 cdecl ()
 
 	dim as byte b = TEST_B
 	dim as ubyte ub = TEST_UB
@@ -99,3 +106,14 @@ end sub
 
 	test( "%b %c %s %r %i %j %l %m %f %d %z %z", _
 		   b, ub, s, us, i, ui, l, ul, f, d, vs, z )
+
+end sub
+
+sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.functions.var_args")
+	fbcu.add_test("test_1", @test_1)
+
+end sub
+
+end namespace

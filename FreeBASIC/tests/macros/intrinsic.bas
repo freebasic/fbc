@@ -104,10 +104,6 @@
 
 '' Always defined for this test
 
-#ifndef __FB_MAIN__ 
-#error __FB_MAIN__ not defined
-#endif
-
 #ifndef __FB_LANG__
 #error __FB_LANG__ not defined
 #endif

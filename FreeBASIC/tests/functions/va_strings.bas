@@ -1,16 +1,21 @@
+# include "fbcu.bi"
+
+
+
+
+namespace fbc_tests.functions.va_strings
 	
 	dim shared strtb(1 to 8) as zstring * 4 => { "abc", "cde", "efg", "ghi", "ijk", "klm", "mno", "opq" }
-
 
 '':::::
 sub varstrings cdecl ( byval n as integer, ... )
 	dim va as any ptr
+	dim i as integer
 	
 	va = va_first( )
 	
-	dim i as integer
 	for i = 1 to n
-		assert( *va_arg( va, zstring ptr ) = strtb(i) )
+		CU_ASSERT( *va_arg( va, zstring ptr ) = strtb(i) )
 		va = va_next( va, zstring ptr )
 	next
 	
@@ -34,5 +39,17 @@ sub vastrings_test( byval a as string )
 	
 end sub	
 
+sub test_1 cdecl ()
 
 	vastrings_test strtb(6)
+
+end sub
+
+sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.functions.va_strings")
+	fbcu.add_test("test_1", @test_1)
+
+end sub
+
+end namespace

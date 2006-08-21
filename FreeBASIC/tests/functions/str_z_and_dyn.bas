@@ -1,3 +1,10 @@
+# include "fbcu.bi"
+
+
+
+
+namespace fbc_tests.functions.str_z_and_dyn
+
 const ZTESTSTR = "ABC"	
 const FTESTSTR = "def"
 const VTESTSTR = "GhI"
@@ -10,6 +17,8 @@ declare function zconcat2 ( byref s as string ) as zstring ptr
 declare function sconcat1 ( byval s as string ) as string
 declare function sconcat2 ( byref s as string ) as string
 	
+sub test_1 cdecl ()
+
 	dim z1 as zstring ptr
 	dim z2 as zstring * TOTLEN+1
 	dim f1 as string * TOTLEN
@@ -22,24 +31,25 @@ declare function sconcat2 ( byref s as string ) as string
 	f1 = FTESTSTR
 	d1 = VTESTSTR
 	
-	assert( *zconcat1( z2 ) = ZTESTSTR + CONCATSTR )
-	assert( *zconcat2( *z1 ) = ZTESTSTR + CONCATSTR )
+	CU_ASSERT( *zconcat1( z2 ) = ZTESTSTR + CONCATSTR )
+	CU_ASSERT( *zconcat2( *z1 ) = ZTESTSTR + CONCATSTR )
 	
-	assert( *zconcat1( f1 ) = FTESTSTR  + CONCATSTR )
-	assert( *zconcat2( f1 ) = FTESTSTR + CONCATSTR )
+	CU_ASSERT( *zconcat1( f1 ) = FTESTSTR  + CONCATSTR )
+	CU_ASSERT( *zconcat2( f1 ) = FTESTSTR + CONCATSTR )
 	
-	assert( *zconcat1( d1 ) = VTESTSTR + CONCATSTR )
-	assert( *zconcat2( d1 ) = VTESTSTR + CONCATSTR )
+	CU_ASSERT( *zconcat1( d1 ) = VTESTSTR + CONCATSTR )
+	CU_ASSERT( *zconcat2( d1 ) = VTESTSTR + CONCATSTR )
 
-	assert( sconcat1( z2 ) = ZTESTSTR + CONCATSTR )
-	assert( sconcat2( *z1 ) = ZTESTSTR + CONCATSTR )
+	CU_ASSERT( sconcat1( z2 ) = ZTESTSTR + CONCATSTR )
+	CU_ASSERT( sconcat2( *z1 ) = ZTESTSTR + CONCATSTR )
 	
-	assert( sconcat1( f1 ) = FTESTSTR  + CONCATSTR )
-	assert( sconcat2( f1 ) = FTESTSTR + CONCATSTR )
+	CU_ASSERT( sconcat1( f1 ) = FTESTSTR  + CONCATSTR )
+	CU_ASSERT( sconcat2( f1 ) = FTESTSTR + CONCATSTR )
 	
-	assert( sconcat1( d1 ) = VTESTSTR + CONCATSTR )
-	assert( sconcat2( d1 ) = VTESTSTR + CONCATSTR )
+	CU_ASSERT( sconcat1( d1 ) = VTESTSTR + CONCATSTR )
+	CU_ASSERT( sconcat2( d1 ) = VTESTSTR + CONCATSTR )
 	
+end sub
 	
 '':::
 function zconcat1 ( byval s as string ) as zstring ptr
@@ -74,3 +84,12 @@ function sconcat2 ( byref s as string ) as string
 	return s + CONCATSTR
 
 end function
+
+sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.functions.str_z_and_dyn")
+	fbcu.add_test("test_1", @test_1)
+
+end sub
+
+end namespace

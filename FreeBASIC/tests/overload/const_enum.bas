@@ -1,31 +1,48 @@
+# include "fbcu.bi
 
 
-enum 
-	RES_FOO
+
+namespace fbc_tests.overloads.const_enum
+
+enum
+	RES_ENUM
 	RES_INT
 	RES_DBL
 end enum
 
-enum foo 
+enum enum_t 
    a, b, c 
 end enum 
 
-const as foo bar_a = a, bar_b = b, bar_c = c
-const bar_i as integer = a
-const bar_d as double = b
-                 
-function foo overload( byval x as foo ) as integer
-	function = RES_FOO
+const enum_a as enum_t = a
+const enum_b as enum_t = b
+const enum_c as enum_t = c
+const i as integer = a
+const d as double = b
+
+function proc overload( byval x as enum_t ) as integer
+	function = RES_ENUM
 end function
 
-function foo overload( byval x as integer ) as integer
+function proc overload( byval x as integer ) as integer
 	function = RES_INT
 end function
 
-function foo overload( byval x as double ) as integer
+function proc overload( byval x as double ) as integer
 	function = RES_DBL
 end function
 
-	assert( foo( bar_a ) = RES_FOO )
-	assert( foo( bar_i ) = RES_INT )
-	assert( foo( bar_d ) = RES_DBL )
+sub test_params_and_returns cdecl ()
+	CU_ASSERT_EQUAL( proc( enum_a ), RES_ENUM )
+	CU_ASSERT_EQUAL( proc( i ), RES_INT )
+	CU_ASSERT_EQUAL( proc( d ), RES_DBL )
+end sub
+
+private sub ctor () constructor
+
+	fbcu.add_suite("fb-tests-overload:by descriptor")
+	fbcu.add_test("test_params_and_returns", @test_params_and_returns)
+
+end sub
+
+end namespace

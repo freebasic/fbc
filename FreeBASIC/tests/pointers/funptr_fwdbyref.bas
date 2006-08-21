@@ -1,4 +1,8 @@
+# include "fbcu.bi"
 
+
+
+namespace fbc_tests.pointers.funcptr_fwdbyref
 
 enum TEST_RES
 	TEST_FOO 
@@ -30,13 +34,24 @@ function fun(byref p as bar) as TEST_RES
 	function = TEST_BAR
 end function
 
+sub test cdecl ()
+
 	dim f as foo
 	dim b as bar
 	
 	f.foo = @fun
 	b.bar = @fun
 	
-	assert( f.foo(f) = TEST_FOO )
-	assert( b.bar(b) = TEST_BAR )
-	
-	
+	CU_ASSERT_EQUAL( f.foo(f), TEST_FOO )
+	CU_ASSERT_EQUAL( b.bar(b), TEST_BAR )
+
+end sub
+
+private sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.pointers.funcptr_fwdbyref")
+	fbcu.add_test("test", @test)
+
+end sub
+
+end namespace

@@ -1,29 +1,43 @@
-''
-'' test for enums defined locally
-''
+# include "fbcu.bi"
 
+
+
+
+'//
+'// test for enums defined locally
+'//
+
+namespace fbc_tests.scopes.enums
+
+sub test_1 cdecl ()
+	enum foo: foo_val = 3: end enum
+	CU_ASSERT_EQUAL( foo_val, 3 )
+end sub
+
+sub test_2 cdecl ()
+	enum foo: foo_val = 4: end enum
+	CU_ASSERT_EQUAL( foo_val, 4 )
+end sub
+
+sub test_3 cdecl ()
 	scope
 		enum foo: foo_val = 1: end enum
-		assert( foo_val = 1 )
+		CU_ASSERT_EQUAL( foo_val, 1 )
 	end scope
 
 	scope
 		enum foo: foo_val = 2: end enum
-		assert( foo_val = 2 )
+		CU_ASSERT_EQUAL( foo_val, 2 )
 	end scope
-
-sub test1
-	enum foo: foo_val = 3: end enum
-	assert( foo_val = 3 )
 end sub
 
-sub test2
-	enum foo: foo_val = 4: end enum
-	assert( foo_val = 4 )
+sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.scopes.enums")
+	fbcu.add_test("test 1", @test_1)
+	fbcu.add_test("test 2", @test_2)
+	fbcu.add_test("test 3", @test_3)
+
 end sub
 
-	dim foo as integer = 5
-	assert( foo = 5 )
-
-	test1
-	test2
+end namespace

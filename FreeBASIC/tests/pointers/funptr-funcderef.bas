@@ -1,4 +1,6 @@
+# include "fbcu.bi"
 
+namespace fbc_tests.pointers.funptr_funcderef
 
 const TEST_SUBR = 1234
 const TEST_FUNC = 5678
@@ -9,11 +11,11 @@ type fntype
 end type
 
 sub subr_cb (byval x as integer)
-	assert( x = TEST_SUBR )
+	CU_ASSERT_EQUAL( x, TEST_SUBR )
 end sub
 	
 function func_cb (byval x as integer) as integer
-	assert( x = TEST_FUNC )
+	CU_ASSERT_EQUAL( x, TEST_FUNC )
 	function = -1
 end function
 
@@ -23,6 +25,16 @@ function getFn () as fntype ptr
 end function
 
 	
-	assert( getFn( )->func( TEST_FUNC ) = -1 )
-	
+sub test_basic cdecl ()
+	CU_ASSERT_EQUAL( getFn( )->func( TEST_FUNC ), -1 )
 	getFn( )->subr( TEST_SUBR )
+end sub
+
+private sub ctor () constructor
+
+	fbcu.add_suite("fb-tests-pointers:funptr_funcderef")
+	fbcu.add_test("test_basic", @test_basic)
+
+end sub
+	
+end namespace
