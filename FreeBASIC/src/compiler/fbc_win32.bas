@@ -62,9 +62,41 @@ function fbcInit_win32( ) as integer
 end function
 
 '':::::
+private function hAddPathEnv as string
+    dim as string res, path
+    dim as integer pi, pe, lgt
+
+	res = ""
+
+	path = trim( environ( "PATH" ) )
+
+	pi = 0
+	do
+		pe = instr( pi+1, path, ";" )
+		if( pe = 0 ) then
+			if( pi = 0 ) then
+				res = path
+			end if
+			exit do
+		end if
+
+		lgt = (pe - pi) - 1
+		if( lgt > 0 ) then
+			'' !!!FIXME!!! LD won't search the system dirs for DLL's
+			res += " -rpath-link " + QUOTE + mid( path, pi+1, lgt ) + QUOTE
+		end if
+
+		pi = pe
+	loop
+
+	function = res
+
+end function
+
+'':::::
 private function _linkFiles as integer
-	dim as integer i
-	dim as string ldpath, libdir, ldcline, libname, dllname
+	dim as integer i, hotlinking
+	dim as string ldpath, libdir, ldcline, libname, liblist, dllname
 
 	function = FALSE
 
@@ -135,6 +167,29 @@ private function _linkFiles as integer
 	'' stack size
 	ldcline += " --stack " + str( fbc.stacksize ) + "," + str( fbc.stacksize )
 
+    '' add libraries from cmm-line and found when parsing
+    hotlinking = FALSE
+    for i = 0 to fbc.libs-1
+    	libname = fbc.liblist(i)
+
+		if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
+    		'' check if the lib isn't the dll's import library itself
+            if( libname = dllname ) then
+            	continue for
+            end if
+    	end if
+
+/' !!!FIXME!!! see hAddPathEnv()
+    	'' try hot-linking
+    	if( lcase( right( libname, 4 ) ) <> ".dll" ) then
+    		hotlinking = TRUE
+    		liblist += "-l"
+    	end if
+'/
+
+    	liblist += "-l" + libname + " "
+    next
+
     '' default lib path
     libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
 
@@ -145,7 +200,14 @@ private function _linkFiles as integer
     '' add additional user-specified library search paths
     for i = 0 to fbc.pths-1
     	ldcline += " -L " + QUOTE + fbc.pthlist(i) + QUOTE
-    next i
+    next
+
+/' !!!FIXME!!! see hAddPathEnv()
+    '' hot-linking? add PATH to the LD search path
+    if( hotlinking ) then
+    	ldcline += hAddPathEnv( )
+    end if
+'/
 
 	'' crt entry
 	if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
@@ -159,35 +221,18 @@ private function _linkFiles as integer
     '' add objects from output list
     for i = 0 to fbc.inps-1
     	ldcline += QUOTE + fbc.outlist(i) + (QUOTE + " ")
-    next i
+    next
 
     '' add objects from cmm-line
     for i = 0 to fbc.objs-1
     	ldcline += QUOTE + fbc.objlist(i) + (QUOTE + " ")
-    next i
+    next
 
     '' set executable name
     ldcline += "-o " + QUOTE + fbc.outname + QUOTE
 
-    '' init lib group
-    ldcline += " -( "
-
-    '' add libraries from cmm-line and found when parsing
-    for i = 0 to fbc.libs-1
-    	libname = fbc.liblist(i)
-
-		if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
-    		'' check if the lib isn't the dll's import library itself
-            if( libname = dllname ) then
-            	continue for
-            end if
-    	end if
-
-    	ldcline += "-l" + libname + " "
-    next
-
-    '' end lib group
-    ldcline += "-) "
+    '' group
+    ldcline += " -( " + liblist + "-) "
 
 	'' crt end
 	ldcline += QUOTE + libdir + (RSLASH + "crtend.o" + QUOTE)
