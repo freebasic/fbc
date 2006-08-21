@@ -128,9 +128,8 @@ sub rtlAddIntrinsicProcs _
 	dim as FBSYMBOL ptr proc
 	dim as ASTNODE ptr param_optval
 
-	''
+	'' for each proc..
 	do
-		'' for each proc..
 		if( procdef->name = NULL ) then
 			exit do
 		end if
