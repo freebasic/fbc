@@ -43,6 +43,7 @@ Version 0.17 Beta:
 - the __FILE_NQ__ and __FUNCTION_NQ__ intrinsic defines, same as __FILE__ and __FUNCTION__, but without double-quotes (v1c)
 - ISDATE function in rtlibx (jeffm)
 - serial device support in Linux, written by Jose Manuel Postigo (v1c)
+- the __PATH__ intrinsic define, that returns the __FILE__'s path - the patch was sent my cha0s (v1c)
 
 [fixed]
 - premature optimization in bitfields when converting to a signed integer type (v1c)

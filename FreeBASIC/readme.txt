@@ -616,10 +616,10 @@ Most Important Features:
   o Escape characters inside literal strings:
 
     - Same as in C (except numbers are interpreted as decimal, not octal).
-      Use the OPTION ESCAPE statement to turn this behavior on or off.
+    
+    - Use the ! prefix with the literal strings to escape them
 
-      OPTION ESCAPE
-      PRINT "\"Hello from FreeBASIC!\""
+      PRINT !"\"Hello from FreeBASIC!\""
 
   o Debugging support:
 

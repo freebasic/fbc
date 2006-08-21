@@ -22,12 +22,13 @@ use "-lang qb" (without quotes) option in the command-line when running FBC.
       1) implicit variables
          - all variables must be always explicitly declared
       
-      2) suffixes (! # $ % &), even for constants
-         - use type-casting or the f (single), d (double), ll (longint), 
+      2) suffixes (! # $ % &)
+         - they are only allowed for numeric constants, but it's recommended 
+           to use type-casting or the f (single), d (double), ll (longint), 
            ul (uinteger), ull (ulongint) suffix with constants to resolve 
            overloading
       
-      3) DEF###, so there's no implicit types
+      3) DEF###, so there are no implicit types
          - AS is always needed when declaring *any* symbol but CONST's, 
            where types are inferred
       
@@ -74,17 +75,22 @@ use "-lang qb" (without quotes) option in the command-line when running FBC.
    
     o deprecated:
      
-	  Supported: anything allowed in version 0.16, but: 
+      Supported: anything allowed in version 0.16, but: 
      
       1) GOSUB/RETURN and ON ... GOSUB (even at module-level)
          - so the GOSUB implementation could be thread-unsafe in the 
            "-lang qb" mode, allowing fast executation ("-lang qb" doesn't 
            support multi-threading, while "-lang deprecated" does)
+
+      2) Implicit or explicit variables will always respect the scope
+         blocks, implicit (opened by compound statements like IF, DO, etc)
+         or explicit (SCOPE .. END SCOPE), use "-lang qb" to compile
+         old sources that depend on no scope rules
      
       Not supported:
      
       1) Classes
-         - periods allowed in symbols names make it too difficult and/or
+         - periods allowed in symbol names make it too difficult and/or
            ambiguous
      
       2) Operator overloading
@@ -122,5 +128,5 @@ use "-lang qb" (without quotes) option in the command-line when running FBC.
            making local initializers too difficult to support
      
      
-	The -lang qb and -lang deprecated options will always be supported in
+    The -lang qb and -lang deprecated options will always be supported in
 future versions.
