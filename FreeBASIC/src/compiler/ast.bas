@@ -1201,7 +1201,7 @@ function astCheckConst _
 		if( symbIsSigned( astGetDataType( n ) ) = FALSE ) then
 			'' too big?
 			if( astGetValueAsULongInt( n ) > 9223372036854775807ULL ) then
-				n = astNewCONV( INVALID, dtype, NULL, n )
+				n = astNewCONV( dtype, NULL, n )
 				errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
 			end if
 		end if
@@ -1212,7 +1212,7 @@ function astCheckConst _
 		if( symbIsSigned( astGetDataType( n ) ) ) then
 			'' too big?
 			if( astGetValueAsLongInt( n ) and &h8000000000000000 ) then
-				n = astNewCONV( INVALID, dtype, NULL, n )
+				n = astNewCONV( dtype, NULL, n )
 				errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
 			end if
 		end if
@@ -1223,7 +1223,7 @@ function astCheckConst _
 		lval = astGetValueAsLongInt( n )
 		if( (lval < ast_minlimitTB( dtype )) or _
 			(lval > clngint( ast_maxlimitTB( dtype ) )) ) then
-			n = astNewCONV( INVALID, dtype, NULL, n )
+			n = astNewCONV( dtype, NULL, n )
 			errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
 		end if
 
@@ -1234,7 +1234,7 @@ function astCheckConst _
 		ulval = astGetValueAsULongInt( n )
 		if( (ulval < culngint( ast_minlimitTB( dtype ) )) or _
 			(ulval > ast_maxlimitTB( dtype )) ) then
-			n = astNewCONV( INVALID, dtype, NULL, n )
+			n = astNewCONV( dtype, NULL, n )
 			errReportWarn( FB_WARNINGMSG_IMPLICITCONVERSION )
 		end if
 

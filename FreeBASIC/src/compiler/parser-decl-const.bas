@@ -265,7 +265,7 @@ function cConstAssign _
 			if( (dtype <> edtype) or _
 				(subtype <> astGetSubtype( expr )) ) then
 
-				expr = astNewCONV( INVALID, dtype, subtype, expr, FALSE )
+				expr = astNewCONV( dtype, subtype, expr )
 				if( expr = NULL ) then
 					if( errReportEx( FB_ERRMSG_INVALIDDATATYPES, id ) = FALSE ) then
 						exit function

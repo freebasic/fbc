@@ -59,7 +59,6 @@ declare sub		 parserEnd				( )
 			FB_LANG_OPT_CLASS or _
 			FB_LANG_OPT_INITIALIZER or _
 			FB_LANG_OPT_SINGERRLINE or _
-			FB_LANG_OPT_ALWAYSOVL or _
 			FB_LANG_OPT_QUIRKFUNC _
 		) _
 		, _

@@ -135,7 +135,7 @@ private function hAllocTmpWstrPtr _
 	'' create temp wstring ptr to pass as parameter
 	t = hAllocTmpStrNode( parent, NULL, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, FALSE )
 
-	n = astNewCONV( AST_OP_TOPOINTER, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, NULL, n )
+	n = astNewCONV( FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR, NULL, n, AST_OP_TOPOINTER )
 
 	'' temp string = src string
 	return astNewASSIGN( astNewVAR( t->tmpsym, 0, FB_DATATYPE_POINTER+FB_DATATYPE_WCHAR ), n )
@@ -314,19 +314,19 @@ private function hStrParamToPtrArg _
 
 		'' not fixed-len? deref var-len (ptr at offset 0)
 		if( arg_dtype <> FB_DATATYPE_FIXSTR ) then
-    		n->l = astNewCONV( AST_OP_TOPOINTER, _
-    						   FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
+    		n->l = astNewCONV( FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
     						   NULL, _
-    						   astNewADDR( AST_OP_DEREF, n->l ) )
+    						   astNewADDR( AST_OP_DEREF, n->l ), _
+    						   AST_OP_TOPOINTER )
 
         '' fixed-len..
         else
             '' get the address of
         	if( arg->class <> AST_NODECLASS_PTR ) then
-				n->l = astNewCONV( AST_OP_TOPOINTER, _
-    						   	   FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
+				n->l = astNewCONV( FB_DATATYPE_POINTER + FB_DATATYPE_CHAR, _
     						   	   NULL, _
-							   	   astNewADDR( AST_OP_ADDROF, n->l ) )
+							   	   astNewADDR( AST_OP_ADDROF, n->l ), _
+							   	   AST_OP_TOPOINTER )
 			end if
 		end if
 
@@ -559,8 +559,7 @@ private function hCheckParam _
 			case else
 				'' if < len(integer), convert to int (C ABI)
 				if( symbGetDataSize( arg_dtype ) < FB_INTEGERSIZE ) then
-					arg = astNewCONV( INVALID, _
-									  iif( symbIsSigned( arg_dtype ), _
+					arg = astNewCONV( iif( symbIsSigned( arg_dtype ), _
 										   FB_DATATYPE_INTEGER, _
 										   FB_DATATYPE_UINT ), _
 									  NULL, _
@@ -573,7 +572,7 @@ private function hCheckParam _
 		case FB_DATACLASS_FPOINT
 			'' float? convert it to double (C ABI)
 			if( arg_dtype = FB_DATATYPE_SINGLE ) then
-				arg = astNewCONV( INVALID, FB_DATATYPE_DOUBLE, NULL, arg )
+				arg = astNewCONV( FB_DATATYPE_DOUBLE, NULL, arg )
 				n->dtype = arg->dtype
 				n->l = arg
 			end if
@@ -842,7 +841,7 @@ private function hCheckParam _
 			end if
 		end if
 
-		arg = astNewCONV( INVALID, param_dtype, symbGetSubtype( param ), arg )
+		arg = astNewCONV( param_dtype, symbGetSubtype( param ), arg )
 		if( arg = NULL ) then
 			hParamError( parent, FB_ERRMSG_INVALIDDATATYPES )
 			exit function

@@ -81,7 +81,7 @@ function cPokeStmt _
         exit function
 
 	case FB_DATACLASS_FPOINT
-    	expr1 = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, expr1 )
+    	expr1 = astNewCONV( FB_DATATYPE_UINT, NULL, expr1 )
 
 	case else
         if( astGetDataSize( expr1 ) <> FB_POINTERSIZE ) then
@@ -168,7 +168,7 @@ function cPeekFunct _
 		end if
 
 	case FB_DATACLASS_FPOINT
-		expr = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, expr )
+		expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
 
 	case else
 		if( astGetDataSize( expr ) <> FB_POINTERSIZE ) then

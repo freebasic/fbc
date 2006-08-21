@@ -188,7 +188,7 @@ function astNewUOP _
 		else
 			dtype = FB_DATATYPE_UINT
 		end if
-		o = astNewCONV( INVALID, dtype, NULL, o )
+		o = astNewCONV( dtype, NULL, o )
 	end if
 
 	select case as const op
@@ -196,7 +196,7 @@ function astNewUOP _
 	case AST_OP_NOT
 		if( dclass <> FB_DATACLASS_INTEGER ) then
 			dtype = FB_DATATYPE_INTEGER
-			o = astNewCONV( INVALID, dtype, NULL, o )
+			o = astNewCONV( dtype, NULL, o )
 		end if
 
 	'' with SGN the result is always signed integer
@@ -212,7 +212,7 @@ function astNewUOP _
 		 AST_OP_TAN, AST_OP_ATAN, AST_OP_SQRT, AST_OP_LOG, AST_OP_FLOOR
 		if( dclass <> FB_DATACLASS_FPOINT ) then
 			dtype = FB_DATATYPE_DOUBLE
-			o = astNewCONV( INVALID, dtype, NULL, o )
+			o = astNewCONV( dtype, NULL, o )
 		end if
 
 	'' '+'? do nothing..

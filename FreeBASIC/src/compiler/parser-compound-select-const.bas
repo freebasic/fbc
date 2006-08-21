@@ -102,7 +102,7 @@ function cSelConstStmtBegin( ) as integer
 	end if
 
 	if( astGetDataType( expr ) <> FB_DATATYPE_UINT ) then
-		expr = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, expr )
+		expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
 	end if
 
 	'' add labels

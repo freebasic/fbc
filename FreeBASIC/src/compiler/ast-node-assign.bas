@@ -544,7 +544,7 @@ function astNewASSIGN _
 			if( ((ldclass <> FB_DATACLASS_FPOINT) and _
 				 (rdclass <> FB_DATACLASS_FPOINT)) or _
 				(ldtype = FB_DATATYPE_ULONGINT) ) then
-				r = astNewCONV( INVALID, ldtype, l->subtype, r )
+				r = astNewCONV( ldtype, l->subtype, r )
 				if( r = NULL ) then
 					exit function
 				end if

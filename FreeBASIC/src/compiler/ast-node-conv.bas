@@ -234,31 +234,40 @@ function astCheckCONV _
 end function
 
 '':::::
+#macro hDoGlobOpOverload( to_dtype, to_subtype, node )
+	scope
+		dim as FBSYMBOL ptr proc
+		dim as integer is_ambiguous
+
+		proc = symbFindCastOvlProc( to_dtype, to_subtype, node, @is_ambiguous )
+		if( proc <> NULL ) then
+			'' build a proc call
+			return astBuildCALL( proc, 1, l )
+		else
+			if( is_ambiguous ) then
+				return NULL
+			end if
+		end if
+	end scope
+#endmacro
+
+'':::::
 function astNewCONV _
 	( _
-		byval op as integer, _
 		byval to_dtype as integer, _
 		byval to_subtype as FBSYMBOL ptr, _
 		byval l as ASTNODE ptr, _
+		byval op as AST_OP, _
 		byval check_str as integer _
 	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
-    dim as integer ldclass, ldtype, is_ambiguous
-    dim as FBSYMBOL ptr proc
+    dim as integer ldclass, ldtype
 
 	function = NULL
 
-	'' try implicit casting op overloading
-	proc = symbFindCastOvlProc( to_dtype, to_subtype, l, @is_ambiguous )
-	if( proc <> NULL ) then
-		'' build a proc call
-		return astBuildCALL( proc, 1, l )
-	else
-		if( is_ambiguous ) then
-			return NULL
-		end if
-	end if
+	'' try casting op overloading
+	hDoGlobOpOverload( to_dtype, to_subtype, l )
 
 	'' UDT? can't convert..
 	if( to_dtype = FB_DATATYPE_STRUCT ) then
@@ -404,6 +413,22 @@ function astNewCONV _
 	n->l = l
 
 	function = n
+
+end function
+
+'':::::
+function astNewOvlCONV _
+	( _
+		byval to_dtype as integer, _
+		byval to_subtype as FBSYMBOL ptr, _
+		byval l as ASTNODE ptr _
+	) as ASTNODE ptr static
+
+	'' try casting op overloading only
+	hDoGlobOpOverload( to_dtype, to_subtype, l )
+
+	'' nothing to do
+	function = l
 
 end function
 

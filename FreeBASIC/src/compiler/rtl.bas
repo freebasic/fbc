@@ -193,10 +193,9 @@ sub rtlAddIntrinsicProcs _
 								 	 procdef->name, procdef->alias, "fb", _
 								 	 procdef->dtype, NULL, ptrcnt, _
 								 	 attrib, procdef->callconv, _
-								 	 FB_SYMBOPT_DECLARING )
+								 	 FB_SYMBOPT_DECLARING or FB_SYMBOPT_RTL )
 
 			if( proc <> NULL ) then
-				symbSetIsRTL( proc )
 				symbSetProcCallback( proc, procdef->callback )
 				if( (procdef->options and FB_RTL_OPT_ERROR) <> 0 ) then
 					symbSetIsThrowable( proc )

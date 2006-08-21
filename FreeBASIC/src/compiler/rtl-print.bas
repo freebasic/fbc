@@ -911,12 +911,9 @@ function rtlPrint _
 		'' UDT? try to convert to string with type casting op overloading
 		select case astGetDataType( expr )
 		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
-			dim as ASTNODE ptr conv_expr
-
-			conv_expr = astNewCONV( INVALID, FB_DATATYPE_STRING, NULL, expr )
-
-			if( conv_expr <> NULL ) then
-				expr = conv_expr
+			expr = astNewOvlCONV( FB_DATATYPE_STRING, NULL, expr )
+			if( expr = NULL ) then
+				exit function
 			end if
 		end select
 
@@ -1013,7 +1010,7 @@ function rtlPrint _
 				else
 					f = PROCLOOKUP( PRINTUINT )
 				end if
-				expr = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, expr )
+				expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
 
 			'' UDT's or anything else..
 			else
@@ -1190,7 +1187,7 @@ function rtlWrite _
 		case else
 			if( dtype >= FB_DATATYPE_POINTER ) then
 				f = PROCLOOKUP( WRITEUINT )
-				expr = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, expr )
+				expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
 
 			'' UDT's or anything else..
 			else

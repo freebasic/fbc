@@ -502,9 +502,9 @@ private sub hOptConstAccum2 _
 			dtype = symbMaxDataType( l->dtype, r->dtype )
 			if( dtype <> INVALID ) then
 				if( dtype <> l->dtype ) then
-					n->l = astNewCONV( INVALID, dtype, r->subtype, l )
+					n->l = astNewCONV( dtype, r->subtype, l )
 				else
-					n->r = astNewCONV( INVALID, dtype, l->subtype, r )
+					n->r = astNewCONV( dtype, l->subtype, r )
 				end if
 				n->dtype = dtype
 			else
@@ -813,7 +813,7 @@ private sub hOptConstIDX _
 			'' convert to integer if needed
 			if( (symbGetDataClass( l->dtype ) <> FB_DATACLASS_INTEGER) or _
 			    (symbGetDataSize( l->dtype ) <> FB_POINTERSIZE) ) then
-				n->l = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, l )
+				n->l = astNewCONV( FB_DATATYPE_INTEGER, NULL, l )
 			end if
 
         end if
@@ -1014,20 +1014,21 @@ private sub hOptToShift _
 													bits = symbGetDataBits( FB_DATATYPE_INTEGER ) - 1
 												end if
 
-												n->l = astNewCONV( AST_OP_TOSIGNED, _
-																   0, _
+												n->l = astNewCONV( 0, _
 																   NULL, _
 																   astNewBOP( AST_OP_ADD, _
 															       			  astCloneTree( l ), _
 															       			  astNewBOP( AST_OP_SHR, _
-																  			  			 astNewCONV( AST_OP_TOUNSIGNED, _
-																  			  			  			 0, _
+																  			  			 astNewCONV( 0, _
 																  			  			  			 NULL, _
-																  			  			  			 l ), _
+																  			  			  			 l, _
+																  			  			  			 AST_OP_TOUNSIGNED _
+																  			  			  		   ), _
 																  			  			 astNewCONSTi( bits, _
 																  									   FB_DATATYPE_INTEGER ), _
 																					   ), _
-																   			) _
+																   			), _
+																   	AST_OP_TOSIGNED _
 																 )
 
 												n->op.op = AST_OP_SHR
@@ -1452,7 +1453,7 @@ function astOptAssignment _
   		if( r->defined ) then
   			if( dclass = FB_DATACLASS_FPOINT ) then
 				if( symbGetDataClass( r->dtype ) <> FB_DATACLASS_FPOINT ) then
-					n->r = astNewCONV( INVALID, dtype, NULL, r )
+					n->r = astNewCONV( dtype, NULL, r )
 				end if
 			end if
 		end if

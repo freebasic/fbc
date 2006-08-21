@@ -251,6 +251,38 @@ private function hGetProcRealType _
 end function
 
 '':::::
+private function hCanOverload _
+	( _
+		byval proc as FBSYMBOL ptr _
+	) as integer static
+
+	dim as FBSYMBOL ptr pparam
+
+	'' arg-less?
+	if( symbGetProcParams( proc ) = 0 ) then
+		return TRUE
+	end if
+
+	'' can't be vararg..
+	pparam = symbGetProcTailParam( proc )
+	if( pparam->param.mode = FB_PARAMMODE_VARARG ) then
+		return FALSE
+	end if
+
+	'' any AS ANY param?
+	do while( pparam <> NULL )
+		if( pparam->typ = FB_DATATYPE_VOID ) then
+			return FALSE
+		end if
+
+		pparam = pparam->prev
+	loop
+
+	function = TRUE
+
+end function
+
+'':::::
 private function hAddOvlProc _
 	( _
 		byval proc as FBSYMBOL ptr, _
@@ -276,17 +308,16 @@ private function hAddOvlProc _
 		if( pparam->param.mode = FB_PARAMMODE_VARARG ) then
 			exit function
 		end if
+
+		'' any AS ANY param?
+		do while( pparam <> NULL )
+			if( pparam->typ = FB_DATATYPE_VOID ) then
+				exit function
+			end if
+
+			pparam = pparam->prev
+		loop
 	end if
-
-	'' any AS AN param?
-	pparam = symbGetProcTailParam( proc )
-	do while( pparam <> NULL )
-		if( pparam->typ = FB_DATATYPE_VOID ) then
-			exit function
-		end if
-
-		pparam = pparam->prev
-	loop
 
 	'' for each overloaded proc..
 	f = parent
@@ -595,6 +626,22 @@ private function hSetupProc _
 			end if
 
 			attrib or= FB_SYMBATTRIB_OVERLOADED
+
+		else
+			'' only if not the RTL
+			if( (options and FB_SYMBOPT_RTL) = 0 ) then
+				'' check overloading
+				if( (attrib and FB_SYMBATTRIB_OVERLOADED) <> 0 ) then
+					if( hCanOverload( sym ) = FALSE ) then
+						exit function
+					end if
+
+				elseif( fbLangOptIsSet( FB_LANG_OPT_ALWAYSOVL ) ) then
+					if( hCanOverload( sym ) ) then
+						attrib or= FB_SYMBATTRIB_OVERLOADED
+					end if
+				end if
+			end if
 		end if
 
 		proc->proc.ext = NULL
@@ -641,12 +688,16 @@ private function hSetupProc _
 	proc->proc.lgt = lgt
 
 	if( (options and FB_SYMBOPT_DECLARING) <> 0 ) then
-		symbSetIsDeclared( proc )
+		stats or= FB_SYMBSTATS_DECLARED
 
     	'' param list too large?
     	if( lgt > 256 ) then
 	    	errReportWarn( FB_WARNINGMSG_PARAMLISTSIZETOOBIG, id )
     	end if
+	end if
+
+	if( (options and FB_SYMBOPT_RTL) <> 0 ) then
+		stats or= FB_SYMBSTATS_RTL
 	end if
 
 	proc->proc.mode	= mode
@@ -681,10 +732,10 @@ private function hSetupProc _
 	'' ctor or dtor? even if private it should be always emitted
 	elseif( (attrib and (FB_SYMBATTRIB_CONSTRUCTOR or _
 						 FB_SYMBATTRIB_DESTRUCTOR)) <> 0 ) then
-		symbSetIsCalled( proc )
+		stats or= FB_SYMBSTATS_CALLED
 	end if
 
-	''
+	'' hack! stats field shared with mangling info
 	proc->stats or= stats
 
 	function = proc
@@ -806,6 +857,7 @@ function symbPreAddProc _
 	proc->proc.paramtb.tail = NULL
 	proc->id.name = symbol
 	proc->proc.ext = NULL
+	proc->stats = 0
 
 	function = proc
 

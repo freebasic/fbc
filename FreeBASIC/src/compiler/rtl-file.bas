@@ -1797,7 +1797,7 @@ function rtlFileInputGet _
 	case else
 		if( dtype >= FB_DATATYPE_POINTER ) then	'' non-sense but..
 			f = PROCLOOKUP( INPUTINT )
-			dstexpr = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, dstexpr )
+			dstexpr = astNewCONV( FB_DATATYPE_UINT, NULL, dstexpr )
 
 		'' UDT, bit-fields..
 		else

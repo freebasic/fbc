@@ -264,8 +264,7 @@ private function hFlushExprStatic _
 		else
 			'' different types?
 			if( edtype <> sdtype ) then
-				expr = astNewCONV( INVALID, _
-								   sdtype, _
+				expr = astNewCONV( sdtype, _
 								   symbGetSubtype( sym ), _
 								   expr )
 

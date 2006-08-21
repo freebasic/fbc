@@ -442,11 +442,17 @@ declare function 	astNewASSIGN		( _
 										) as ASTNODE ptr
 
 declare function 	astNewCONV			( _
-											byval op as integer, _
 											byval to_dtype as integer, _
 											byval to_subtype as FBSYMBOL ptr, _
 											byval l as ASTNODE ptr, _
+											byval op as AST_OP = INVALID, _
 											byval check_str as integer = FALSE _
+										) as ASTNODE ptr
+
+declare function 	astNewOvlCONV 		( _
+											byval to_dtype as integer, _
+											byval to_subtype as FBSYMBOL ptr, _
+											byval l as ASTNODE ptr _
 										) as ASTNODE ptr
 
 declare function 	astNewBOP			( _

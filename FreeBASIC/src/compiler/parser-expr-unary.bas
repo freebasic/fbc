@@ -469,8 +469,11 @@ private function hCast _
 		end select
 	end if
 
-	expr = astNewCONV( iif( ptronly, AST_OP_TOPOINTER, INVALID ), _
-					   dtype, subtype, expr, TRUE )
+	expr = astNewCONV( dtype, _
+					   subtype, _
+					   expr, _
+					   iif( ptronly, AST_OP_TOPOINTER, INVALID ), _
+					   TRUE )
     if( expr = NULL ) Then
     	if( errReport( FB_ERRMSG_TYPEMISMATCH, TRUE ) = FALSE ) then
     		exit function
@@ -935,9 +938,10 @@ function cAddrOfExpression _
 			dtype = FB_DATATYPE_CHAR
 		end if
 
-		addrofexpr = astNewCONV( AST_OP_TOPOINTER, _
-								 FB_DATATYPE_POINTER+dtype, NULL, _
-								 expr )
+		addrofexpr = astNewCONV( FB_DATATYPE_POINTER + dtype, _
+								 NULL, _
+								 expr, _
+								 AST_OP_TOPOINTER )
 
 		return (addrofexpr <> NULL)
 	end select

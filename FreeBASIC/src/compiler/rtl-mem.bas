@@ -223,7 +223,10 @@ function rtlNullPtrCheck _
    	proc = astNewCALL( PROCLOOKUP( NULLPTRCHK ) )
 
 	'' ptr
-	p = astNewCONV( AST_OP_TOPOINTER, FB_DATATYPE_POINTER+FB_DATATYPE_VOID, NULL, p )
+	p = astNewCONV( FB_DATATYPE_POINTER+FB_DATATYPE_VOID, _
+					NULL, _
+					p, _
+					AST_OP_TOPOINTER )
 	if( astNewARG( proc, p, FB_DATATYPE_POINTER+FB_DATATYPE_VOID ) = NULL ) then
 		exit function
 	end if

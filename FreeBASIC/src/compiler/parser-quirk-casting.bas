@@ -96,7 +96,7 @@ function cTypeConvExpr _
 		end if
 	end if
 
-	expr = astNewCONV( op, dtype, NULL, expr, TRUE )
+	expr = astNewCONV( dtype, NULL, expr, op, TRUE )
     if( expr = NULL ) Then
     	if( errReport( FB_ERRMSG_TYPEMISMATCH, TRUE ) = FALSE ) then
     		exit function

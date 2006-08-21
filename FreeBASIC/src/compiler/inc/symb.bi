@@ -98,6 +98,7 @@ enum FB_SYMBOPT
 	FB_SYMBOPT_UNSCOPE			= &h00000004
 	FB_SYMBOPT_DECLARING		= &h00000008
 	FB_SYMBOPT_MOVETOGLOB		= &h00000010
+	FB_SYMBOPT_RTL				= &h00000020
 end enum
 
 type FBSYMBOL_ as FBSYMBOL
@@ -1294,8 +1295,6 @@ declare	sub 		symbSetDefType			( _
 
 #define symbGetIsRTL(s) ((s->stats and FB_SYMBSTATS_RTL) <> 0)
 
-#define symbSetIsRTL(s) s->stats or= FB_SYMBSTATS_RTL
-
 #define symbGetIsThrowable(s) ((s->stats and FB_SYMBSTATS_THROWABLE) <> 0)
 
 #define symbSetIsThrowable(s) s->stats or= FB_SYMBSTATS_THROWABLE
@@ -1536,6 +1535,8 @@ declare	sub 		symbSetDefType			( _
 #define symbGetProcLocTb(f) f->proc.symtb
 
 #define symbGetProcLocTbHead(f) f->proc.symtb.head
+
+#define symbGetProcOvlNext(f) f->proc.ovl.next
 
 #define symbGetParamMode(a) a->param.mode
 

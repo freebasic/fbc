@@ -71,7 +71,7 @@ private function hFieldArray _
 		'' if index isn't an integer, convert
 		if( (astGetDataClass( dimexpr ) <> FB_DATACLASS_INTEGER) or _
 			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
-			dimexpr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, dimexpr )
+			dimexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
 				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 					exit function
@@ -331,7 +331,7 @@ function cDerefFields _
 			'' if index isn't an integer, convert
 			if( (astGetDataClass( idxexpr ) <> FB_DATACLASS_INTEGER) or _
 				(astGetDataSize( idxexpr ) <> FB_POINTERSIZE) ) then
-				idxexpr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, idxexpr )
+				idxexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, idxexpr )
 				if( idxexpr = NULL ) then
 					if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 						exit function
@@ -689,7 +689,7 @@ function cDynArrayIdx _
 		if( (astGetDataClass( dimexpr ) <> FB_DATACLASS_INTEGER) or _
 			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
 
-			dimexpr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, dimexpr )
+			dimexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
 				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 					exit function
@@ -809,7 +809,7 @@ function cArgArrayIdx _
 		if( (astGetDataClass( dimexpr ) <> FB_DATACLASS_INTEGER) or _
 			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
 
-			dimexpr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, dimexpr )
+			dimexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
 				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 					exit function
@@ -925,7 +925,7 @@ function cArrayIdx _
 		if( (astGetDataClass( dimexpr ) <> FB_DATACLASS_INTEGER) or _
 			(astGetDataSize( dimexpr ) <> FB_INTEGERSIZE) ) then
 
-			dimexpr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, dimexpr )
+			dimexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, dimexpr )
 			if( dimexpr = NULL ) then
 				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
 					exit function

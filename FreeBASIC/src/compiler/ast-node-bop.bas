@@ -582,8 +582,8 @@ private function hDoPointerArith _
     		end if
 
     		'' convert to uint or BOP will complain..
-    		p = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, p )
-    		e = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, e )
+    		p = astNewCONV( FB_DATATYPE_UINT, NULL, p )
+    		e = astNewCONV( FB_DATATYPE_UINT, NULL, e )
 
  			'' subtract..
  			e = astNewBOP( AST_OP_SUB, p, e )
@@ -597,7 +597,7 @@ private function hDoPointerArith _
 
     '' not integer? convert
     if( edtype <> FB_DATATYPE_INTEGER ) then
-    	e = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, e )
+    	e = astNewCONV( FB_DATATYPE_INTEGER, NULL, e )
     end if
 
     '' any op but +|-?
@@ -936,7 +936,7 @@ function astNewBOP _
 			else
 				ldtype = FB_DATATYPE_UINT
 			end if
-			l = astNewCONV( INVALID, ldtype, NULL, l )
+			l = astNewCONV( ldtype, NULL, l )
 		end if
 	end if
 
@@ -947,7 +947,7 @@ function astNewBOP _
 			else
 				rdtype = FB_DATATYPE_UINT
 			end if
-			r = astNewCONV( INVALID, rdtype, NULL, r )
+			r = astNewCONV( rdtype, NULL, r )
 		end if
 	end if
 
@@ -958,7 +958,7 @@ function astNewBOP _
 
 		if( ldclass <> FB_DATACLASS_FPOINT ) then
 			ldtype = FB_DATATYPE_DOUBLE
-			l = astNewCONV( INVALID, ldtype, NULL, l )
+			l = astNewCONV( ldtype, NULL, l )
 			ldclass = FB_DATACLASS_FPOINT
 		end if
 
@@ -968,7 +968,7 @@ function astNewBOP _
 				rdtype = FB_DATATYPE_DOUBLE
 			else
 				rdtype = FB_DATATYPE_DOUBLE
-				r = astNewCONV( INVALID, rdtype, NULL, r )
+				r = astNewCONV( rdtype, NULL, r )
 			end if
 			rdclass = FB_DATACLASS_FPOINT
 		end if
@@ -979,13 +979,13 @@ function astNewBOP _
 
 		if( ldclass <> FB_DATACLASS_INTEGER ) then
 			ldtype = FB_DATATYPE_INTEGER
-			l = astNewCONV( INVALID, ldtype, NULL, l )
+			l = astNewCONV( ldtype, NULL, l )
 			ldclass = FB_DATACLASS_INTEGER
 		end if
 
 		if( rdclass <> FB_DATACLASS_INTEGER ) then
 			rdtype = FB_DATATYPE_INTEGER
-			r = astNewCONV( INVALID, rdtype, NULL, r )
+			r = astNewCONV( rdtype, NULL, r )
 			rdclass = FB_DATACLASS_INTEGER
 		end if
 
@@ -994,13 +994,13 @@ function astNewBOP _
 
 		if( ldclass <> FB_DATACLASS_FPOINT ) then
 			ldtype = FB_DATATYPE_DOUBLE
-			l = astNewCONV( INVALID, ldtype, NULL, l )
+			l = astNewCONV( ldtype, NULL, l )
 			ldclass = FB_DATACLASS_FPOINT
 		end if
 
 		if( rdclass <> FB_DATACLASS_FPOINT ) then
 			rdtype = FB_DATATYPE_DOUBLE
-			r = astNewCONV( INVALID, rdtype, NULL, r )
+			r = astNewCONV( rdtype, NULL, r )
 			rdclass = FB_DATACLASS_FPOINT
 		end if
 
@@ -1039,7 +1039,7 @@ function astNewBOP _
 			'' convert the l operand?
 			if( dtype <> ldtype ) then
 				subtype = r->subtype
-				l = astNewCONV( INVALID, dtype, subtype, l )
+				l = astNewCONV( dtype, subtype, l )
 				ldtype = dtype
 				ldclass = rdclass
 
@@ -1053,7 +1053,7 @@ function astNewBOP _
 					'' it's already an integer
 
 				case else
-					r = astNewCONV( INVALID, dtype, subtype, r )
+					r = astNewCONV( dtype, subtype, r )
 					rdtype = dtype
 					rdclass = ldclass
 				end select
@@ -1079,7 +1079,7 @@ function astNewBOP _
 		if( rdtype <> FB_DATATYPE_INTEGER ) then
 			if( rdtype <> FB_DATATYPE_UINT ) then
 				rdtype = FB_DATATYPE_INTEGER
-				r = astNewCONV( INVALID, rdtype, NULL, r )
+				r = astNewCONV( rdtype, NULL, r )
 				rdclass = FB_DATACLASS_INTEGER
 			end if
 		end if

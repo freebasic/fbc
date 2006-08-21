@@ -373,7 +373,7 @@ function rtlArrayRedim _
 
     	'' convert to int
     	if( astGetDataType( expr ) <> FB_DATATYPE_INTEGER ) then
-    		expr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, expr )
+    		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
     	end if
 
 		if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
@@ -385,7 +385,7 @@ function rtlArrayRedim _
 
     	'' convert to int
     	if( astGetDataType( expr ) <> FB_DATATYPE_INTEGER ) then
-    		expr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, expr )
+    		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
     	end if
 
 		if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then
@@ -749,7 +749,7 @@ function rtlArrayBoundsCheck _
 
 	'' idx
 	if( astNewARG( proc, _
-					 astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, idx ), _
+					 astNewCONV( FB_DATATYPE_INTEGER, NULL, idx ), _
 					 FB_DATATYPE_INTEGER ) = NULL ) then
 		exit function
 	end if

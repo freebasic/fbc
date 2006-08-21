@@ -475,7 +475,10 @@ function cProcArgList _
 
 	'' overloaded?
 	if( symbGetProcIsOverloaded( proc ) ) then
-		return hOvlProcArgList( proc, ptrexpr, isfunc, optonly )
+		'' only if there's more than one overloaded function
+		if( symbGetProcOvlNext( proc ) <> NULL ) then
+			return hOvlProcArgList( proc, ptrexpr, isfunc, optonly )
+		end if
 	end if
 
 	function = NULL

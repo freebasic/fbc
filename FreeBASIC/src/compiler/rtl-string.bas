@@ -3143,7 +3143,7 @@ function rtlToStr _
 		'' pointer..
 		case else
 			f = PROCLOOKUP( UINT2STR )
-			expr = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, expr )
+			expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
 		end select
 
 	case FB_DATACLASS_FPOINT
@@ -3224,7 +3224,7 @@ function rtlToWstr _
 		'' pointer..
 		case else
 			f = PROCLOOKUP( UINT2WSTR )
-			expr = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, expr )
+			expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
 		end select
 
 	case FB_DATACLASS_FPOINT
@@ -3585,7 +3585,7 @@ function rtlStrChr _
 
     	'' convert to int as chr() is a varargs function
     	case else
-    		expr = astNewCONV( INVALID, FB_DATATYPE_INTEGER, NULL, expr )
+    		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
     	end select
 
     	if( astNewARG( proc, expr, FB_DATATYPE_INTEGER ) = NULL ) then

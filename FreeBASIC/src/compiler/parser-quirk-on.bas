@@ -43,7 +43,7 @@ function cGOTBStmt _
 
 	'' convert to uinteger if needed
 	if( astGetDataType( expr ) <> FB_DATATYPE_UINT ) then
-		expr = astNewCONV( INVALID, FB_DATATYPE_UINT, NULL, expr )
+		expr = astNewCONV( FB_DATATYPE_UINT, NULL, expr )
 	end if
 
 	'' store expression into a temp var
