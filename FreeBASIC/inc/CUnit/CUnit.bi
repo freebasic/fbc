@@ -47,16 +47,16 @@
   CU_assertImplementation(CU_FALSE, __LINE__, ("CU_FAIL_FATAL(" #msg ")"), __FILE__, "", CU_TRUE)
 
 #define CU_ASSERT_TRUE(value) _
-  CU_assertImplementation((value), __LINE__, ("CU_ASSERT_TRUE(" #value ")"), __FILE__, "", CU_FALSE)
+  CU_assertImplementation((value) <> 0, __LINE__, ("CU_ASSERT_TRUE(" #value ")"), __FILE__, "", CU_FALSE)
 
 #define CU_ASSERT_TRUE_FATAL(value) _
   CU_assertImplementation((value), __LINE__, ("CU_ASSERT_TRUE_FATAL(" #value ")"), __FILE__, "", CU_TRUE)
 
 #define CU_ASSERT_FALSE(value) _
-  CU_assertImplementation(!(value), __LINE__, ("CU_ASSERT_FALSE(" #value ")"), __FILE__, "", CU_FALSE)
+  CU_assertImplementation((value) = 0, __LINE__, ("CU_ASSERT_FALSE(" #value ")"), __FILE__, "", CU_FALSE)
 
 #define CU_ASSERT_FALSE_FATAL(value) _
-  CU_assertImplementation(!(value), __LINE__, ("CU_ASSERT_FALSE_FATAL(" #value ")"), __FILE__, "", CU_TRUE)
+  CU_assertImplementation((value) = 0, __LINE__, ("CU_ASSERT_FALSE_FATAL(" #value ")"), __FILE__, "", CU_TRUE)
 
 #define CU_ASSERT_EQUAL(actual, expected) _
   CU_assertImplementation(((actual) = (expected)), __LINE__, ("CU_ASSERT_EQUAL(" #actual "," #expected ")"), __FILE__, "", CU_FALSE)
