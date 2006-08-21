@@ -372,6 +372,8 @@ function cProcHeader _
 		end if
     end if
 
+	hCheckSuffix( dtype )
+
 	subtype = NULL
 	ptrcnt = 0
 

@@ -278,6 +278,16 @@ private function hAddOvlProc _
 		end if
 	end if
 
+	'' any AS AN param?
+	pparam = symbGetProcTailParam( proc )
+	do while( pparam <> NULL )
+		if( pparam->typ = FB_DATATYPE_VOID ) then
+			exit function
+		end if
+
+		pparam = pparam->prev
+	loop
+
 	'' for each overloaded proc..
 	f = parent
 	do while( f <> NULL )
@@ -571,7 +581,9 @@ private function hSetupProc _
 
 			'' proc was defined as overloadable?
 			if( symbIsOverloaded( parent ) = FALSE ) then
-				exit function
+				if( fbLangOptIsSet( FB_LANG_OPT_ALWAYSOVL ) = FALSE ) then
+					exit function
+				end if
 			end if
 
 			'' try to overload..
@@ -630,6 +642,11 @@ private function hSetupProc _
 
 	if( (options and FB_SYMBOPT_DECLARING) <> 0 ) then
 		symbSetIsDeclared( proc )
+
+    	'' param list too large?
+    	if( lgt > 256 ) then
+	    	errReportWarn( FB_WARNINGMSG_PARAMLISTSIZETOOBIG, id )
+    	end if
 	end if
 
 	proc->proc.mode	= mode

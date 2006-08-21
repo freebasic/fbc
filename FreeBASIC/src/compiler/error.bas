@@ -51,10 +51,11 @@ end type
 		( 0, @"Implicit variable allocation" ), _
 		( 0, @"Missing closing quote in literal string" ), _
 		( 0, @"Function result was not explicitly set" ), _
-		( 0, @"Branch crossing local variable definition" ), _
+		( 1, @"Branch crossing local variable definition" ), _
 		( 0, @"No explicit BYREF or BYVAL" ), _
 		( 0, @"Possible escape sequence found in" ), _
-		( 0, @"The type length is too large, consider passing BYREF" ) _
+		( 0, @"The type length is too large, consider passing BYREF" ), _
+		( 1, @"The length of the parameters list is too large, consider passing UDT's BYREF" ) _
 	}
 
 	dim shared errorMsgs( 1 to FB_ERRMSGS-1 ) as zstring ptr => _
@@ -352,17 +353,24 @@ function errReportEx _
 
 end function
 
+'':::::
 private function hAddToken _
 	( _
 		byval isbefore as integer, _
-		byval addcomma as integer _
+		byval addcomma as integer, _
+		byval msgex as zstring ptr = NULL _
 	) as string static
 
 	dim as string res, token
 
 	res = ""
 
-	token = *lexGetText( )
+	if( msgex = NULL ) then
+		token = *lexGetText( )
+	else
+		token = *msgex
+	end if
+
 	if( len( token ) > 0 ) then
 		'' don't print control chars
 		select case lexGetToken( )
@@ -463,26 +471,27 @@ end sub
 function errReportNotAllowed _
 	( _
 		byval opt as FB_LANG_OPT, _
-		byval errnum as integer _
+		byval errnum as integer, _
+		byval msgex as zstring ptr _
 	) as integer
 
-	dim as string msgex = ""
+	dim as string msg = ""
 	dim as integer i, langs
 
 	langs = 0
 	for i = 0 to FB_LANGS-1
 		if( (fbGetLangOptions( i ) and opt) <> 0 ) then
 			if( langs > 0 ) then
-				msgex += " or "
+				msg += " or "
 			end if
-			msgex += fbGetLangName( i )
+			msg += fbGetLangName( i )
 			langs += 1
 		end if
 	next
 
-	msgex += hAddToken( FALSE, langs > 0 )
+	msg += hAddToken( FALSE, langs > 0, msgex )
 
-	function = errReportEx( errnum, msgex, , FB_ERRMSGOPT_NONE )
+	function = errReportEx( errnum, msg, , FB_ERRMSGOPT_NONE )
 
 end function
 

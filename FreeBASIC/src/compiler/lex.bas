@@ -459,45 +459,25 @@ private sub hReadIdentifier _
 		select case as const lexCurrentChar( )
 		'' '%' or '&'?
 		case FB_TK_INTTYPECHAR, FB_TK_LNGTYPECHAR
-			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
-				dtype = FB_DATATYPE_INTEGER
-			else
-				errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
-			end if
-
+			dtype = FB_DATATYPE_INTEGER
 			c = lexEatChar( )
 
 		'' '!'?
 		case FB_TK_SGNTYPECHAR
-			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
-				dtype = FB_DATATYPE_SINGLE
-			else
-				errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
-			end if
-
+			dtype = FB_DATATYPE_SINGLE
 			c = lexEatChar( )
 
 		'' '#'?
 		case FB_TK_DBLTYPECHAR
 			'' isn't it a '##'?
 			if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
-				if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
-					dtype = FB_DATATYPE_DOUBLE
-				else
-					errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
-				end if
-
+				dtype = FB_DATATYPE_DOUBLE
 				c = lexEatChar( )
 			end if
 
 		'' '$'?
 		case FB_TK_STRTYPECHAR
-			if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
-				dtype = FB_DATATYPE_STRING
-			else
-				errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
-			end if
-
+			dtype = FB_DATATYPE_STRING
 			c = lexEatChar( )
 		end select
     end if
@@ -787,41 +767,27 @@ private sub hReadFloatNumber _
 
 	'' [FSUFFIX | { EXPCHAR [opadd] DIGIT { DIGIT } } | ]
 	select case as const lexCurrentChar( )
-	'' '!'
-	case FB_TK_SGNTYPECHAR
-		if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
-			dtype = FB_DATATYPE_SINGLE
-		else
-			errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
-		end if
-
-		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
-			c = lexEatChar( )
-		end if
-
-	'' 'F' | 'f'
-	case CHAR_FUPP, CHAR_FLOW
-        '' only allow because function overloading..
-		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
-			c = lexEatChar( )
-		end if
+	'' '!', 'F', 'f'?
+	case FB_TK_SGNTYPECHAR, CHAR_FUPP, CHAR_FLOW
 		dtype = FB_DATATYPE_SINGLE
 
-	'' '#'
-	case FB_TK_DBLTYPECHAR
-		if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
-			dtype = FB_DATATYPE_DOUBLE
-		else
-			errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
+		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
+			c = lexEatChar( )
 		end if
+
+	'' '#'?
+	case FB_TK_DBLTYPECHAR
+		dtype = FB_DATATYPE_DOUBLE
 
 		if( (flags and LEXCHECK_NOSUFFIX) = 0 ) then
 			c = lexEatChar( )
 		end if
 
+	'' 'e', 'E', 'd', 'D'?
 	case CHAR_ELOW, CHAR_EUPP, CHAR_DLOW, CHAR_DUPP
 		'' EXPCHAR
 		c = lexEatChar( )
+
 		if( skipchar = FALSE ) then
 			*pnum = CHAR_ELOW
 			pnum += 1
@@ -1094,38 +1060,24 @@ private sub hReadNumber _
 					end if
 				end if
 
-			'' 'F' | 'f'
-			case CHAR_FUPP, CHAR_FLOW
-				lexEatChar( )
+			'' 'F' | 'f' | '!'
+			case CHAR_FUPP, CHAR_FLOW, FB_TK_SGNTYPECHAR
 				dtype = FB_DATATYPE_SINGLE
+				lexEatChar( )
 
 			'' 'D' | 'd'
 			case CHAR_DUPP, CHAR_DLOW
-				lexEatChar( )
 				dtype = FB_DATATYPE_DOUBLE
+				lexEatChar( )
 
 			'' '%' | '&'
 			case FB_TK_INTTYPECHAR, FB_TK_LNGTYPECHAR
-				if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
-					if( islong ) then
-						if( skipchar = FALSE ) then
-							if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
-								errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
-							end if
+				if( islong ) then
+					if( skipchar = FALSE ) then
+						if( (flags and LEXCHECK_NOLINECONT) = 0 ) then
+							errReportWarn( FB_WARNINGMSG_NUMBERTOOBIG )
 						end if
 					end if
-                else
-					errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
-				end if
-
-				lexEatChar( )
-
-			'' '!'
-			case FB_TK_SGNTYPECHAR
-				if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
-					dtype = FB_DATATYPE_SINGLE
-                else
-					errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
 				end if
 
 				lexEatChar( )
@@ -1134,12 +1086,7 @@ private sub hReadNumber _
 			case FB_TK_DBLTYPECHAR
 				'' isn't it a '##'?
 				if( lexGetLookAheadChar( ) <> FB_TK_DBLTYPECHAR ) then
-					if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) ) then
-						dtype = FB_DATATYPE_DOUBLE
-                	else
-						errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
-					end if
-
+					dtype = FB_DATATYPE_DOUBLE
 					lexEatChar( )
 				end if
 

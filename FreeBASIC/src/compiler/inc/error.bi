@@ -182,6 +182,7 @@ enum FBWARNINGMSG_ENUM
 	FB_WARNINGMSG_NOEXPLICITPARAMMODE
 	FB_WARNINGMSG_POSSIBLEESCSEQ
 	FB_WARNINGMSG_PARAMSIZETOOBIG
+	FB_WARNINGMSG_PARAMLISTSIZETOOBIG
 
 	FB_WARNINGMSGS
 end enum
@@ -275,7 +276,8 @@ declare function	errReportUndef			( _
 
 declare function	errReportNotAllowed		( _
 												byval opt as FB_LANG_OPT, _
-												byval errnum as integer = FB_ERRMSG_ONLYVALIDINLANG _
+												byval errnum as integer = FB_ERRMSG_ONLYVALIDINLANG, _
+												byval msgex as zstring ptr = NULL _
 											) as integer
 
 declare function	errFatal				( _

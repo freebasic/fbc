@@ -321,8 +321,11 @@ private function hParamDecl _
 	if( readid ) then
 		'' ID
 		*param_id = *lexGetText( )
-		param_dtype = lexGetType( )
 		dotpos = lexGetPeriodPos( )
+
+		param_dtype = lexGetType( )
+		hCheckSuffix( param_dtype )
+
 		lexSkipToken( )
 
 		'' ('('')')

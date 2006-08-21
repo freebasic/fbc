@@ -1,6 +1,6 @@
 [ ] proc def:
     - when checking the prototype, the access modifiers must be checked too: PUBLIC, PRIVATE
-    - don't allow AS ANY params in overloaded procs
+    - to support params > 64k, "ret" can't be used
 
 [ ] operator overloading:
     - if the struct/class has a dtor, virtual method or a copy ctor, it won't be
@@ -68,7 +68,6 @@
       [ ] include the vbdos and vb6-only functions in the rtlibx directly in the
           rtl definitions
           - use #if __FB_LANG_ <> "vb" in vbcompat.bi
-      [ ] with the change above, move the rtlibx back to the rtlib
       [ ] vb-compat like: byref params, def type as variant (if VARIANT is fully
           op. overloaded), no scopes (GOSUB can't be added as "vb" must
           support multi-threading too)

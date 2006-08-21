@@ -150,7 +150,10 @@ function cConstAssign _
 	end select
 
 	id = *lexGetText( )
+
 	edtype = lexGetType( )
+	hCheckSuffix( edtype )
+
 	lexSkipToken( )
 
 	'' not multiple?

@@ -1103,8 +1103,11 @@ function cVariableEx _
 	dim as integer isbyref = any, isfuncptr = any, isimport = any, isarray = any
 
 	''
-	dtype = lexGetType( )
 	id = lexGetText( )
+
+	dtype = lexGetType( )
+	hCheckSuffix( dtype )
+
 	subtype = NULL
 
     '' no suffix? lookup the default type (last DEF###) in the

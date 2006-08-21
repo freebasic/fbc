@@ -766,48 +766,62 @@ declare function 	hMatchExpr 				( _
 	hSkipUntil( INVALID, FALSE )
 
 '':::::
-#define hMatchLPRNT()													_
-	if( lexGetToken( ) <> CHAR_LPRNT ) then								:_
-		if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then		:_
-			exit function												:_
-		end if                                                          :_
-	else																:_
-		lexSkipToken( )                                                 :_
+#macro hMatchLPRNT()
+	if( lexGetToken( ) <> CHAR_LPRNT ) then
+		if( errReport( FB_ERRMSG_EXPECTEDLPRNT ) = FALSE ) then
+			exit function
+		end if
+	else
+		lexSkipToken( )
 	end if
+#endmacro
 
 '':::::
-#define hMatchRPRNT()													_
-	if( lexGetToken( ) <> CHAR_RPRNT ) then								:_
-		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then		:_
-			exit function												:_
-		else															:_
-			hSkipUntil( CHAR_RPRNT, TRUE )								:_
-		end if                                                          :_
-	else																:_
-		lexSkipToken( )                                                 :_
+#macro hMatchRPRNT()
+	if( lexGetToken( ) <> CHAR_RPRNT ) then
+		if( errReport( FB_ERRMSG_EXPECTEDRPRNT ) = FALSE ) then
+			exit function
+		else
+			hSkipUntil( CHAR_RPRNT, TRUE )
+		end if
+	else
+		lexSkipToken( )
 	end if
+#endmacro
 
 '':::::
-#define hMatchCOMMA()													_
-	if( lexGetToken( ) <> CHAR_COMMA ) then								:_
-		if( errReport( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then		:_
-			exit function												:_
-		end if                                                          :_
-	else																:_
-		lexSkipToken( )                                                 :_
+#macro hMatchCOMMA()
+	if( lexGetToken( ) <> CHAR_COMMA ) then
+		if( errReport( FB_ERRMSG_EXPECTEDCOMMA ) = FALSE ) then
+			exit function
+		end if
+	else
+		lexSkipToken( )
 	end if
+#endmacro
 
 '':::::
-#define hMatchExpression(e)									 			_
-	e = hMatchExpr( INVALID )											:_
-	if( e = NULL ) then													:_
-		exit function													:_
+#macro hMatchExpression(e)
+	e = hMatchExpr( INVALID )
+	if( e = NULL ) then
+		exit function
 	end if
+#endmacro
 
 '':::::
-#define hMatchExpressionEx(e, dtype)						 			_
-	e = hMatchExpr( dtype )												:_
-	if( e = NULL ) then													:_
-		exit function													:_
+#macro hMatchExpressionEx(e, dtype)
+	e = hMatchExpr( dtype )
+	if( e = NULL ) then
+		exit function
 	end if
+#endmacro
+
+'':::::
+#macro hCheckSuffix(suffix)
+	if( suffix <> INVALID ) then
+		if( fbLangOptIsSet( FB_LANG_OPT_SUFFIX ) = FALSE ) then
+			errReportNotAllowed( FB_LANG_OPT_SUFFIX, FB_ERRMSG_SUFFIXONLYVALIDINLANG )
+		end if
+	end if
+#endmacro
 

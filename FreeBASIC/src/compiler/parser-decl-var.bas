@@ -802,6 +802,8 @@ private function hVarDecl _
 
     		id = *lexGetText( )
     		suffix = lexGetType( )
+    		hCheckSuffix( suffix )
+
     		lexSkipToken( )
 
 		case FB_TKCLASS_QUIRKWD
@@ -818,6 +820,7 @@ private function hVarDecl _
     		else
     			id = *lexGetText( )
     			suffix = lexGetType( )
+    			hCheckSuffix( suffix )
     		end if
 
     		lexSkipToken( )
