@@ -61,37 +61,85 @@ function fbcInit_win32( ) as integer
 
 end function
 
+/'
 '':::::
-private function hAddPathEnv as string
-    dim as string res, path
-    dim as integer pi, pe, lgt
+private function hSplitPathEnv _
+	( _
+		pathTb() as string _
+	) as integer
 
-	res = ""
+    dim as string path
+    dim as integer pi, pe, lgt, paths, i
 
 	path = trim( environ( "PATH" ) )
+
+	paths = 8
+	redim pathTb(0 to paths-1)
 
 	pi = 0
 	do
 		pe = instr( pi+1, path, ";" )
 		if( pe = 0 ) then
 			if( pi = 0 ) then
-				res = path
+				pathTb(0) = path
+				i = 1
 			end if
 			exit do
 		end if
 
 		lgt = (pe - pi) - 1
 		if( lgt > 0 ) then
-			'' !!!FIXME!!! LD won't search the system dirs for DLL's
-			res += " -rpath-link " + QUOTE + mid( path, pi+1, lgt ) + QUOTE
+			if( i >= paths ) then
+				paths += 8
+				redim preserve pathTb(0 to paths-1)
+			end if
+
+			pathTb(i) = mid( path, pi+1, lgt )
+
+			i += 1
 		end if
 
 		pi = pe
 	loop
 
-	function = res
+	function = i
 
 end function
+
+'':::::
+function hFindDllPath _
+	( _
+		byval dllname as zstring ptr _
+	) as zstring ptr
+
+	static as integer paths = 0
+	static as string pathTb()
+	dim as integer i, c
+
+	if( paths = 0 ) then
+		paths = hSplitPathEnv( pathTb() )
+
+		'' add last slash
+		for i = 0 to paths-1
+			c = pathTb(i)[len(pathTb(i))-1]
+			if( c <> asc( RSLASH ) ) then
+				if( c <> asc( "/" ) ) then
+					pathTb(i) += "/"
+				end if
+			end if
+		next
+	end if
+
+	for i = 0 to paths-1
+		if( hFileExists( pathTb(i) + *dllname ) ) then
+			return strptr( pathTb(i) )
+		end if
+	next
+
+	function = NULL
+
+end function
+'/
 
 '':::::
 private function _linkFiles as integer
@@ -179,16 +227,23 @@ private function _linkFiles as integer
             end if
     	end if
 
-/' !!!FIXME!!! see hAddPathEnv()
+/'
     	'' try hot-linking
-    	if( lcase( right( libname, 4 ) ) <> ".dll" ) then
+    	if( lcase( right( libname, 4 ) ) = ".dll" ) then
     		hotlinking = TRUE
+    		liblist += *hFindDllPath( libname )
+    	else
+'/
     		liblist += "-l"
+/'
     	end if
 '/
-
-    	liblist += "-l" + libname + " "
+    	liblist += libname + " "
     next
+
+	if( hotlinking ) then
+		ldcline += " --enable-stdcall-fixup"
+	end if
 
     '' default lib path
     libdir = exepath( ) + *fbGetPath( FB_PATH_LIB )
@@ -201,13 +256,6 @@ private function _linkFiles as integer
     for i = 0 to fbc.pths-1
     	ldcline += " -L " + QUOTE + fbc.pthlist(i) + QUOTE
     next
-
-/' !!!FIXME!!! see hAddPathEnv()
-    '' hot-linking? add PATH to the LD search path
-    if( hotlinking ) then
-    	ldcline += hAddPathEnv( )
-    end if
-'/
 
 	'' crt entry
 	if( fbc.outtype = FB_OUTTYPE_DYNAMICLIB ) then
