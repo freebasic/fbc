@@ -69,7 +69,8 @@ int fb_DevFileEof
     /* non-text mode? */
     case FB_FILE_MODE_BINARY:
     case FB_FILE_MODE_RANDOM:
-        res = ( (ftell( fp ) - handle->putback_size) >= handle->size? FB_TRUE : FB_FALSE );
+        /* note: handle->putback_size will be checked by fb_FileEofEx() */
+        res = ( ftell( fp ) >= handle->size? FB_TRUE : FB_FALSE );
         break;
 
     /* text-mode (INPUT, OUTPUT or APPEND) */
@@ -86,7 +87,7 @@ int fb_DevFileEof
         	/* note: fseek() is unreliable in text-mode, sise must be calculated
                  	 re-opening the file in binary mode */
         	if( has_size )
-        		if( (ftell( fp ) - handle->putback_size) >= handle->size )
+        		if( ftell( fp ) >= handle->size )
             		res = FB_TRUE;
     	}
     }
