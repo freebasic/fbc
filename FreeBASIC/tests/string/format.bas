@@ -1,12 +1,6 @@
 # include "fbcu.bi"
 # include "vbcompat.bi"
 
-
-
-'option escape
-
- 
-
 tests_num:
 	data 0.1236,    "",                 ".1236"
 ' The following example now works because FORMAT now restricts the precision
@@ -153,9 +147,9 @@ tests_dt:
     data "Aug. 9, 2005",      "ddd dddd ddddd",   "Tue Tuesday 08/09/2005"
     data "."
 
-namespace fbc_tests.string_.format_
-
 declare sub fb_I18nSet alias "fb_I18nSet"( byval on_off as integer )
+
+namespace fbc_tests.string_.format_
 
 sub numberFormatTest cdecl ()
 	dim as string sValue, sMask, sWanted, sResult

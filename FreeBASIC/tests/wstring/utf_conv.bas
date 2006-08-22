@@ -2,10 +2,9 @@
 
 
 
+#include once "utf_conv.bi"
 
 namespace fbc_tests.wstrings.utf_conv
-
-#include once "utf_conv.bi"
 
 # if defined(NULL)
 # 	define NULL_ NULL
