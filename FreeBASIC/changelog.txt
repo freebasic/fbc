@@ -19,6 +19,7 @@ Version 0.17 Beta:
 - the STATIC attribute when used in the left-side of function declarations was removed, it will only accepted at the
   right-side, as in QB, to allow STATIC to be used with class methods later (v1v)
 - symbols declared inside namespaces using keyword names (like INPUT, PRINT, etc) are now allowed (v1c)
+- even with an explicit alias, symbols will be mangled if declared inside a namespace (v1c)
 
 [added]
 - the -lang command-line option, to allow language compatibility without keeping FB from progress, see the migrating.txt file (v1c)
