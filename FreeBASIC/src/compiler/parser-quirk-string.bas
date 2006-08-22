@@ -46,6 +46,20 @@ function cMidStmt _
 
 	hMatchExpressionEx( expr1, FB_DATATYPE_STRING )
 
+	dim as FBSYMBOL ptr sym = astGetSymbol( expr1 )
+
+	if( sym = NULL ) then
+		if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE ) = FALSE ) then
+			exit function
+		end if
+	else
+		if( symbIsConstant( sym ) ) then
+			if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE ) = FALSE ) then
+				exit function
+			end if
+	 	end if
+	end if
+
 	hMatchCOMMA( )
 
 	hMatchExpressionEx( expr2, FB_DATATYPE_INTEGER )
@@ -104,6 +118,20 @@ function cLSetStmt _
 	case FB_DATATYPE_STRING, FB_DATATYPE_FIXSTR, _
 		 FB_DATATYPE_CHAR, FB_DATATYPE_WCHAR, _
 		 FB_DATATYPE_STRUCT
+
+		dim as FBSYMBOL ptr sym = astGetSymbol( dstexpr )
+
+		if( sym = NULL ) then
+			if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER, TRUE ) = FALSE ) then
+				exit function
+			end if
+		else
+			if( symbIsConstant( sym ) ) then
+				if( errReport( FB_ERRMSG_CONSTANTCANTBECHANGED, TRUE ) = FALSE ) then
+					exit function
+				end if
+			end if
+		end if
 
 	case else
 		if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
