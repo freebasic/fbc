@@ -95,6 +95,9 @@ int fb_FilePutDataEx
         handle->len!=0 &&
         handle->hooks->pfnSeek!=NULL )
     {
+				if( length != handle->len )
+					res = fb_ErrorSetNum( FB_RTERROR_FILEIO );
+
         /* if in random mode, writes must be of reclen.
          * The device must also support the SEEK method and the length
          * must be non-null */
