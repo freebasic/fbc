@@ -171,8 +171,9 @@ Debugging:
       was compiled, type: "dir path/to/my/application/sources".
 
     - Place a breakpoint in the first line using: "b main". To place a breakpoint
-      in a function called "abc" use: "b ABC" (note: all in uppercase, GDB isn't 
-      case insensitive).
+      in a function called "abc" use: "b ABC" (note: all in uppercase, GDB is 
+      case sensitive by default, but you can use the "set language pascal" command
+      to change GDB to case-insensitive mode).
 
     - Type "r" to start the application.
 
