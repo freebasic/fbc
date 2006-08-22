@@ -6,8 +6,11 @@ sub TestInputEOF cdecl
 	dim i as integer
 	dim l as string
 
-    on local error goto file_access_failed
-	open exepath() + "data/empty.txt" for input as #1
+	if( open( "data/empty.txt", for input, as #1 ) <> 0 ) then
+		CU_FAIL( "ERROR" )
+		exit sub
+	end if
+		
 	i=0
 	while not eof(1)
     	line input #1, l
@@ -24,18 +27,19 @@ sub TestInputEOF cdecl
 	' we cannot check for i=0 because on some platforms we can only detect
 	' the EOF after a read access (e.g. line input statement)
 	CU_ASSERT_TRUE( i>=0 and i<=1 )
+	exit sub
 
-file_access_failed:
-    close 1
-    CU_FAIL( "ERROR" )
 end sub
 
 sub TestInputContentsEOF1 cdecl
 	dim i as integer
 	dim l as string
   
-    on local error goto file_access_failed
-	open exepath() + "data/two.txt" for input as #1
+	if( open( "data/two.txt" for input as #1 ) <> 0 ) then
+		CU_FAIL( "ERROR" )
+		exit sub
+	end if
+
 	i=0
 	while not eof(1)
     	line input #1, l
@@ -52,18 +56,19 @@ sub TestInputContentsEOF1 cdecl
 	close #1
 
 	CU_ASSERT_EQUAL( i, 2 )
+	exit sub
 
-file_access_failed:
-    close 1
-    CU_FAIL( "ERROR" )
 end sub
 
 sub TestInputContentsEOF2 cdecl
 	dim i as integer
 	dim l as string
   
-    on local error goto file_access_failed
-	open exepath() + "data/three.txt" for input as #1
+	if( open( "data/three.txt" for input as #1 ) <> 0 ) then
+		CU_FAIL( "ERROR" )
+		exit sub
+	end if
+
 	i=0
 	while not eof(1)
     	line input #1, l
@@ -84,18 +89,19 @@ sub TestInputContentsEOF2 cdecl
 	' we cannot check for i=2 because on some platforms we can only detect
 	' the EOF after a read access (e.g. line input statement)
 	CU_ASSERT_TRUE( i>=2 and i<=3 )
+	exit sub
 
-file_access_failed:
-    close 1
-    CU_FAIL( "ERROR" )
 end sub
 
 sub TestInputContentsEOF3 cdecl
 	dim i as integer
 	dim l as string
   
-    on local error goto file_access_failed
-	open exepath() + "data/threebin.txt" for input as #1
+	if( open( "data/threebin.txt" for input as #1 ) <> 0 ) then
+		CU_FAIL( "ERROR" )
+		exit sub
+	end if
+	
 	i=0
 	while not eof(1)
     	line input #1, l
@@ -116,18 +122,19 @@ sub TestInputContentsEOF3 cdecl
 	' we cannot check for i=2 because on some platforms we can only detect
 	' the EOF after a read access (e.g. line input statement)
 	CU_ASSERT_TRUE( i>=2 and i<=3 )
+	exit sub
 
-file_access_failed:
-    close 1
-    CU_FAIL( "ERROR" )
 end sub
 
 sub TestInputContentsEOF4 cdecl
 	dim i as integer
 	dim l as string
   
-    on local error goto file_access_failed
-	open exepath() + "data/fourbin.txt" for input as #1
+	if( open( "data/fourbin.txt" for input as #1 ) <> 0 ) then
+		CU_FAIL( "ERROR" )
+		exit sub
+	end if
+
 	i=0
 	while not eof(1)
     	line input #1, l
@@ -150,18 +157,19 @@ sub TestInputContentsEOF4 cdecl
 	' we cannot check for i=2 because on some platforms we can only detect
 	' the EOF after a read access (e.g. line input statement)
 	CU_ASSERT_TRUE( i>=2 and i<=4 )
+	exit sub
 
-file_access_failed:
-    close 1
-    CU_FAIL( "ERROR" )
 end sub
 
 sub TestBinaryEOF cdecl
 	dim i as integer
 	dim l as string
 
-    on local error goto file_access_failed
-	open exepath() + "data/empty.txt" for binary access read as #1
+	if( open( "data/empty.txt" for binary access read as #1 ) <> 0 ) then
+		CU_FAIL( "ERROR" )
+		exit sub
+	end if
+	
 	i=0
 	while not eof(1)
     	line input #1, l
@@ -176,18 +184,19 @@ sub TestBinaryEOF cdecl
 	close #1
 
 	CU_ASSERT_EQUAL( i, 1 )
+	exit sub
 
-file_access_failed:
-    close 1
-    CU_FAIL( "ERROR" )
 end sub
 
 sub TestBinaryContentsEOF1 cdecl
 	dim i as integer
 	dim l as string
   
-    on local error goto file_access_failed
-	open exepath() + "data/two.txt" for binary access read as #1
+	if( open( "data/two.txt" for binary access read as #1 ) <> 0 ) then
+		CU_FAIL( "ERROR" )
+		exit sub
+	end if
+	
 	i=0
 	while not eof(1)
     	line input #1, l
@@ -204,18 +213,19 @@ sub TestBinaryContentsEOF1 cdecl
 	close #1
 
 	CU_ASSERT_EQUAL( i, 2 )
+	exit sub
 
-file_access_failed:
-    close 1
-    CU_FAIL( "ERROR" )
 end sub
 
 sub TestBinaryContentsEOF2 cdecl
 	dim i as integer
 	dim l as string
 
-    on local error goto file_access_failed
-	open exepath() + "data/three.txt" for binary access read as #1
+	if( open( "data/three.txt" for binary access read as #1 ) <> 0 ) then
+		CU_FAIL( "ERROR" )
+		exit sub
+	end if
+	
 	i=0
 	while not eof(1)
     	line input #1, l
@@ -234,6 +244,7 @@ sub TestBinaryContentsEOF2 cdecl
 	close #1
 
 	CU_ASSERT_EQUAL( i, 3 )
+	exit sub
 
 file_access_failed:
     close 1
@@ -244,8 +255,11 @@ sub TestBinaryContentsEOF3 cdecl
 	dim i as integer
 	dim l as string
   
-    on local error goto file_access_failed
-	open exepath() + "data/threebin.txt" for binary access read as #1
+	if( open( "data/threebin.txt" for binary access read as #1 ) <> 0 ) then
+		CU_FAIL( "ERROR" )
+		exit sub
+	end if
+	
 	i=0
 	while not eof(1)
     	line input #1, l
@@ -264,18 +278,19 @@ sub TestBinaryContentsEOF3 cdecl
 	close #1
 
 	CU_ASSERT_EQUAL( i, 3 )
+	exit sub
 
-file_access_failed:
-    close 1
-    CU_FAIL( "ERROR" )
 end sub
 
 sub TestBinaryContentsEOF4 cdecl
 	dim i as integer
 	dim l as string
   
-    on local error goto file_access_failed
-	open exepath() + "data/fourbin.txt" for binary access read as #1
+	if( open( "data/fourbin.txt" for binary access read as #1 ) <> 0 ) then
+		CU_FAIL( "ERROR" )
+		exit sub
+	end if
+
 	i=0
 	while not eof(1)
     	line input #1, l
@@ -296,10 +311,8 @@ sub TestBinaryContentsEOF4 cdecl
 	close #1
 
 	CU_ASSERT_EQUAL( i, 4 )
+	exit sub
 
-file_access_failed:
-    close 1
-    CU_FAIL( "ERROR" )
 end sub
 
 private sub ctor () constructor
