@@ -184,7 +184,7 @@ function cTypeField _
 		case CHAR_DOT
 			lexSkipToken( LEXCHECK_NOPERIOD )
 
-       	'' (FIELDDEREF DREF* TypeField)*
+       	'' ('->' DREF* TypeField)*
        	case FB_TK_FIELDDEREF
        		if( checkderef = FALSE ) then
        			exit do
@@ -287,7 +287,7 @@ function cTypeField _
 end function
 
 '':::::
-''DerefFields	=   ((FIELDDEREF DREF* | '[' Expression ']') TypeField)* .
+''DerefFields	=   (('->' DREF* | '[' Expression ']') TypeField)* .
 ''
 function cDerefFields _
 	( _
@@ -297,7 +297,7 @@ function cDerefFields _
 		byval checkarray as integer _
 	) as integer
 
-	dim as integer derefcnt = any, isderef = any, lgt = any
+	dim as integer derefcnt = any, isfield = any, lgt = any
 	dim as ASTNODE ptr expr = any, idxexpr = any
 	dim as FBSYMBOL ptr sym = any
 
@@ -306,13 +306,22 @@ function cDerefFields _
 	do
 		idxexpr = NULL
 		derefcnt = 0
-		isderef = FALSE
+		isfield = FALSE
 
         select case lexGetToken( )
-        '' (FIELDDEREF DREF* TypeField)*
+        '' ('->' DREF* TypeField)*
         case FB_TK_FIELDDEREF
-        	'' cTypeField will do the rest..
-        	isderef = TRUE
+        	'' ditto..
+        	isfield = TRUE
+
+			if( dtype < FB_DATATYPE_POINTER ) then
+				if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
+					exit function
+				end if
+
+			else
+				dtype -= FB_DATATYPE_POINTER
+			end if
 
 		'' '['
 		case CHAR_LBRACKET
@@ -441,25 +450,17 @@ function cDerefFields _
 								 idxexpr, _
 								 astNewCONSTi( lgt, FB_DATATYPE_INTEGER ) )
 
+
+			dtype -= FB_DATATYPE_POINTER
+
 		'' exit..
 		case else
 			exit function
 
 		end select
 
-		if( dtype < FB_DATATYPE_POINTER ) then
-			if( errReport( FB_ERRMSG_EXPECTEDPOINTER, TRUE ) = FALSE ) then
-				exit function
-			else
-				'' error recovery: fake a pointer
-				dtype += FB_DATATYPE_POINTER
-			end if
-		end if
-
-		dtype -= FB_DATATYPE_POINTER
-
+		select case as const dtype
 		'' incomplete type?
-		select case dtype
 		case FB_DATATYPE_VOID, FB_DATATYPE_FWDREF
 			if( errReport( FB_ERRMSG_INCOMPLETETYPE, TRUE ) = FALSE ) then
 				exit function
@@ -468,13 +469,25 @@ function cDerefFields _
 				dtype = FB_DATATYPE_POINTER + FB_DATATYPE_BYTE
 				subtype = NULL
 			end if
+
+		case FB_DATATYPE_STRUCT
+
+		case else
+			if( isfield ) then
+				if( errReport( FB_ERRMSG_INVALIDDATATYPES, TRUE ) = FALSE ) then
+					exit function
+				else
+					exit do
+				end if
+			end if
+
 		end select
 
 		'' TypeField
 		expr = NULL
 		sym = cTypeField( dtype, subtype, expr, derefcnt, checkarray, TRUE )
 		if( sym = NULL ) then
-			if( isderef ) then
+			if( isfield ) then
 				if( errReport( FB_ERRMSG_EXPECTEDIDENTIFIER ) = FALSE ) then
 					exit function
 				else

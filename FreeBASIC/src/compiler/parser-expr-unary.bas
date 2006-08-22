@@ -139,7 +139,7 @@ function cStrIdxOrFieldDeref _
 	) as integer
 
 	dim as FBSYMBOL ptr subtype = any
-	dim as integer isfuncptr = any, dtype = any
+	dim as integer dtype = any
 
 	dtype = astGetDataType( expr )
 	subtype = astGetSubType( expr )
@@ -153,17 +153,42 @@ function cStrIdxOrFieldDeref _
 		end if
 
 	case else
-		'' FuncPtrOrDerefFields?
-		if( dtype >= FB_DATATYPE_POINTER ) then
-			isfuncptr = FALSE
-			if( dtype = FB_DATATYPE_POINTER+FB_DATATYPE_FUNCTION ) then
-				if( lexGetToken( ) = CHAR_LPRNT ) then
-					isfuncptr = TRUE
+
+		'' udt '.' ?
+		if( dtype = FB_DATATYPE_STRUCT ) then
+			if( lexGetToken( ) = CHAR_DOT ) then
+   				dim as integer drefcnt = any
+    			dim as FBSYMBOL ptr sym = any
+
+    			sym = cTypeField( dtype, subtype, expr, drefcnt, TRUE, FALSE )
+				if( sym = NULL ) then
+					errReport( FB_ERRMSG_EXPECTEDIDENTIFIER )
+				else
+    				expr = astNewFIELD( expr, sym, dtype, subtype )
 				end if
 			end if
-
-			cFuncPtrOrDerefFields( dtype, subtype, expr, isfuncptr, TRUE )
 		end if
+
+		'' FuncPtrOrDerefFields?
+		if( dtype >= FB_DATATYPE_POINTER ) then
+			dim as integer isfuncptr = FALSE, isfield = FALSE
+
+			select case lexGetToken( )
+			'' function ptr '(' ?
+			case CHAR_LPRNT
+				isfuncptr = ( dtype = FB_DATATYPE_POINTER+FB_DATATYPE_FUNCTION )
+				isfield = isfuncptr
+
+			'' ptr ('->' | '[') ?
+			case FB_TK_FIELDDEREF, CHAR_LBRACKET
+				isfield = TRUE
+		    end select
+
+			if( isfield ) then
+				cFuncPtrOrDerefFields( dtype, subtype, expr, isfuncptr, TRUE )
+			end if
+		end if
+
 	end select
 
 	function = (errGetLast() = FB_ERRMSG_OK)
