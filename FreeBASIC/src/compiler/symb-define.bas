@@ -106,22 +106,37 @@ private function hDefPath_cb( ) as string static
 
     dim as string path
 
-	'' not in the original directory?
-	if( instr( env.inf.name, "/" ) > 0 ) then
-		'' leave path, with trailing slash
+    '' absolute path given?
+	if( instr( env.inf.name, ":" ) > 0 ) then
+   		'' leave path, with trailing slash
 		path = hStripFilename( env.inf.name )
 
         '' remove trailing slash
 		path = left( path, len( path ) - 1 )
 
-        '' add leading slash
-		path = RSLASH + path
+		function = path
 
-	else
-		path = ""
-	end if
+    else
+      '' relative path
 
-	function = curdir( ) + path
+    	'' not in the original directory?
+    	if( instr( env.inf.name, "/" ) > 0 ) then
+    		'' leave path, with trailing slash
+    		path = hStripFilename( env.inf.name )
+
+            '' remove trailing slash
+    		path = left( path, len( path ) - 1 )
+
+            '' add leading slash
+    		path = RSLASH + path
+
+    	else
+    		path = ""
+    	end if
+
+    	function = curdir( ) + path
+
+    end if
 
 end function
 
