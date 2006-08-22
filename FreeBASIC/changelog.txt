@@ -87,6 +87,7 @@ Version 0.17 Beta:
 - quirk string functions were refusing invalid types without reporting the errors (v1c)
 - RETURN could be used in functions without returning any expression (v1c)
 - lvalue op= rhs had side-effects if functions were present in lvalue (v1c)
+- (*udtptr).field wasn't allowed (v1c)
 
 
 Version 0.16 Beta:
