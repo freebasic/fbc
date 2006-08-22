@@ -151,8 +151,6 @@ int fb_FileGetDataEx( FB_FILE *handle, long pos, void *dst, size_t *pchars,
         }
     }
 
-    *pchars = read_chars;
-
     if( handle->mode == FB_FILE_MODE_RANDOM &&
         res == FB_RTERROR_OK &&
         adjust_rec_pos &&
@@ -162,6 +160,10 @@ int fb_FileGetDataEx( FB_FILE *handle, long pos, void *dst, size_t *pchars,
         /* if in random mode, reads must be of reclen.
          * The device must also support the SEEK method and the length
          * must be non-null */
+
+				if( *pchars != handle->len )
+					res = fb_ErrorSetNum( FB_RTERROR_FILEIO );
+
         size_t skip_size = handle->len - (read_chars % handle->len);
         if( skip_size != 0 )
         {
@@ -185,6 +187,8 @@ int fb_FileGetDataEx( FB_FILE *handle, long pos, void *dst, size_t *pchars,
             handle->hooks->pfnSeek( handle, skip_size, SEEK_CUR );
         }
     }
+
+    *pchars = read_chars;
 
 	FB_UNLOCK();
 
