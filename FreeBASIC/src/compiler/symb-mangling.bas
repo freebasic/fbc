@@ -343,8 +343,8 @@ private function hDoCppMangling _
     	return TRUE
     end if
 
-    '' explicit alias?
-    if( (sym->stats and FB_SYMBSTATS_HASALIAS) <> 0 ) then
+    '' RTL?
+    if( symbGetIsRTL( sym ) ) then
     	return FALSE
     end if
 
