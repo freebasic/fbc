@@ -228,23 +228,24 @@ FBCALL FBSTRING *fb_Dir ( FBSTRING *filespec, int attrib, int *out_attrib )
 		else
 		{
 			/* no pattern, use stat on single file */
-
-			tmp_attrib = get_attrib( filespec->data, &info );
-			if( !stat( filespec->data, &info ) && ( (tmp_attrib  & ~attrib ) == 0 ) )
+			if( !stat( filespec->data, &info ) )
 			{
-				name = strrchr( filespec->data, '/' );
-				if( !name )
-					name = filespec->data;
-				else
-					name++;
-				*out_attrib = tmp_attrib;
+				tmp_attrib = get_attrib( filespec->data, &info );
+				if( (tmp_attrib & ~attrib ) == 0 )
+				{
+					name = strrchr( filespec->data, '/' );
+					if( !name )
+						name = filespec->data;
+					else
+						name++;
+					*out_attrib = tmp_attrib;
+				}
 			}
 		}
 	}
-	else {
-
+	else 
+	{
 		/* findnext */
-
 		if( ctx->in_use )
 			name = find_next( out_attrib );
 	}
