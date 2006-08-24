@@ -46,7 +46,9 @@ char *fb_hFloat2Str( double val, char *buffer, int digits, int mask )
 {
 	int len;
 	char *p;
+#ifndef TARGET_WIN32
 	char fmtstr[16], *fstr;
+#endif
 
 	if( mask & FB_F2A_ADDBLANK )
 		p = &buffer[1];

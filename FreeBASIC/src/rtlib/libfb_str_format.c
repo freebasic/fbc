@@ -37,9 +37,10 @@
  *
  */
 
+#include <stdlib.h>
 #include <float.h>
 #include <math.h>
-#include <stdlib.h>
+#include <string.h>
 #include "fb.h"
 
 typedef enum _eMaskType {

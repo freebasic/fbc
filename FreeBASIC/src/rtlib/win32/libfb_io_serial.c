@@ -150,7 +150,8 @@ int fb_SerialOpen( struct _FB_FILE *handle,
 				*pszDev = '\0';
 
 			strcat(pszDev, pszDevice);
-			if(p = strchr( pszDev, ':'))
+			p = strchr( pszDev, ':');
+			if( p )
 				*p = '\0';
 		}
 		uiDevNameLen = strlen( pszDev );
