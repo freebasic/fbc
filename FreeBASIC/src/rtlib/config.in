@@ -210,6 +210,12 @@
 /* Define to 1 if you have the <wchar.h> header file. */
 #undef HAVE_WCHAR_H
 
+/* Define to 1 if you have the `wcstoll' function. */
+#undef HAVE_WCSTOLL
+
+/* Define to 1 if you have the `wcstoull' function. */
+#undef HAVE_WCSTOULL
+
 /* Define to 1 if you have the <wctype.h> header file. */
 #undef HAVE_WCTYPE_H
 

@@ -87,4 +87,20 @@ static __inline__ int snprintf (char *buffer, size_t n, const char *format, ...)
  #endif /* TARGET_WIN32 */
 #endif /* HAVE_SNPRINTF */
 
+#if !defined(HAVE_WCSTOLL) || defined(_NO_OLDNAMES)
+ #ifdef TARGET_WIN32
+  long long __cdecl _wcstoi64(const wchar_t * __restrict__, wchar_t** __restrict__, int);
+  #undef wcstoll
+  #define wcstoll _wcstoi64
+ #endif
+#endif
+
+#if !defined(HAVE_WCSTOULL) || defined(_NO_OLDNAMES)
+ #ifdef TARGET_WIN32
+  unsigned long long __cdecl _wcstoui64(const wchar_t * __restrict__, wchar_t ** __restrict__, int);
+  #undef wcstoull
+  #define wcstoull _wcstoui64
+ #endif
+#endif
+
 #endif /* __FB_CONFIG_H__ */

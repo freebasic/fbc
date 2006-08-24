@@ -86,7 +86,7 @@ AC_FUNC_SETVBUF_REVERSED
 AC_FUNC_STAT
 AC_FUNC_STRTOD
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([atexit chdir floor getcwd gettimeofday memchr memmove memset mkdir pow pclose popen putenv rint rmdir select strcasecmp strchr strdup strncasecmp strrchr strstr strtof strtod strtoul strtoull snprintf])
+AC_CHECK_FUNCS([atexit chdir floor getcwd gettimeofday memchr memmove memset mkdir pow pclose popen putenv rint rmdir select strcasecmp strchr strdup strncasecmp strrchr strstr strtof strtod strtoul strtoull snprintf wcstoll wcstoull])
 
 AC_ARG_ENABLE([maintainer-mode],
 [  --enable-maintainer-mode enable rules only needed by maintainers],,
