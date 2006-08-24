@@ -60,7 +60,7 @@ ifndef FBC
 	endif
 endif
 
-FBCFLAGS :=
+FBCFLAGS := -w pedantic
 
 ifdef DEBUG
 FBCFLAGS += -exx -g

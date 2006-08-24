@@ -31,7 +31,7 @@
 
 #undef iif
 
-private function iif(c as integer, a as string, b as string) as string
+private function iif(byval c as integer, byref a as string, byref b as string) as string
 	if (c) then
 		return a
 	else
@@ -317,7 +317,7 @@ end function
 
 
 '':::::
-private function _codeToHtml( byval _this as CWakka2Html ptr, text as zstring ptr ) as string
+private function _codeToHtml( byval _this as CWakka2Html ptr, byval text as zstring ptr ) as string
 
 	dim res as string
 	dim as any ptr token_i 
@@ -412,7 +412,7 @@ private function _codeToHtml( byval _this as CWakka2Html ptr, text as zstring pt
 end function
 
 '':::::
-private function _find_fbdocitem( byval itemTb as fbdoc_item_t ptr, itemname as zstring ptr ) as integer
+private function _find_fbdocitem( byval itemTb as fbdoc_item_t ptr, byval itemname as zstring ptr ) as integer
 	dim i as integer
 	for i = 0 to FBDOC_ITEMS - 1
 		if( lcase(*itemTb[i].item_name) = lcase(*itemname) ) then
@@ -423,7 +423,7 @@ private function _find_fbdocitem( byval itemTb as fbdoc_item_t ptr, itemname as 
 end function
 
 '':::::
-private sub _explode_link( strValue as string, strPage as string, strName as string )
+private sub _explode_link( byref strValue as string, byref strPage as string, byref strName as string )
 
 	dim i as integer
 

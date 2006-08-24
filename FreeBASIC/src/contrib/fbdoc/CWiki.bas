@@ -43,16 +43,16 @@ type CWiki_
 	as TLIST      pagelinklist
 end type
 
-const WIKI_PATTERN =  "\%\%.*?\%\%|" + _
-				  	  """"".*?""""|" + _
-				  	  "\[\[[^\[]*?\]\]|" + _
-				  	  "-{4,}|\-\-\-|" + _
-				  	  "\b[a-z]+:\/\/\S+|" + _
-				  	  "\*\*|\'\'|\#\#|\#\%|\@\@|\:\:c\:\:|\>\>|\<\<|\+\+|\_\_|\<|\>|\/\/|" + _
-				  	  "\=\=\=\=\=\=|\=\=\=\=\=|\=\=\=\=|\=\=\=|\=\=|" + _
-				  	  "^[\t|\~]+(-|&|[0-9a-zA-Z]+\))?|" + _
-				  	  "\{\{.*?\}\}|" + _
-				  	  "\n|\r\n"
+const WIKI_PATTERN =  $"\%\%.*?\%\%|" + _
+				  	  $""""".*?""""|" + _
+				  	  $"\[\[[^\[]*?\]\]|" + _
+				  	  $"-{4,}|\-\-\-|" + _
+				  	  $"\b[a-z]+:\/\/\S+|" + _
+				  	  $"\*\*|\'\'|\#\#|\#\%|\@\@|\:\:c\:\:|\>\>|\<\<|\+\+|\_\_|\<|\>|\/\/|" + _
+				  	  $"\=\=\=\=\=\=|\=\=\=\=\=|\=\=\=\=|\=\=\=|\=\=|" + _
+				  	  $"^[\t|\~]+(-|&|[0-9a-zA-Z]+\))?|" + _
+				  	  $"\{\{.*?\}\}|" + _
+				  	  $"\n|\r\n"
 
 '':::::
 private function CWiki_AllocRe _
@@ -87,17 +87,17 @@ private function CWiki_AllocRe _
 		exit function
 	end if
 
-	_this->action2re = CRegex_New( "([a-zA-Z0-9_]+)[\t ]+(.*?$)" )
+	_this->action2re = CRegex_New( $"([a-zA-Z0-9_]+)[\t ]+(.*?$)" )
 	if( _this->action2re = NULL ) then
 		exit function
 	end if
 
-	_this->indentre = CRegex_New( "^([\t|\~]+)((-|&|[0-9a-zA-Z]+\))?)", REGEX_OPT_DOTALL )
+	_this->indentre = CRegex_New( $"^([\t|\~]+)((-|&|[0-9a-zA-Z]+\))?)", REGEX_OPT_DOTALL )
 	if( _this->indentre = NULL ) then	
 		exit function
 	end if
 
-	_this->actionparamre = CRegex_New( "([a-zA-Z]+)[ \t]*\=[ \t]*""(.*?)""", REGEX_OPT_DOTALL )
+	_this->actionparamre = CRegex_New( $"([a-zA-Z]+)[ \t]*\=[ \t]*""(.*?)""", REGEX_OPT_DOTALL )
 	if( _this->actionparamre = NULL ) then	
 		exit function
 	end if
@@ -636,8 +636,8 @@ end sub
 private sub _AddPageLink _
 	( _
 		byval lst as TLIST ptr, _
-		spagetext as string, _
-		spagename as string, _
+		byref spagetext as string, _
+		byref spagename as string, _
 		byval level as integer _
 	)
 

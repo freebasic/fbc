@@ -47,7 +47,7 @@ private sub KillOutfile( )
 	end if
 end sub
 
-private function WriteHeader( h as integer ) as integer
+private function WriteHeader( byval h as integer ) as integer
 
 	dim b as string
 
@@ -59,7 +59,7 @@ private function WriteHeader( h as integer ) as integer
 
 end function
 
-private function WriteIndex( h as integer ) as integer
+private function WriteIndex( byval h as integer ) as integer
 
 	dim as string b
 	dim as integer i
@@ -77,7 +77,7 @@ private function WriteIndex( h as integer ) as integer
 
 end function
 
-private function WriteNames( h as integer ) as integer
+private function WriteNames( byval h as integer ) as integer
 
 	dim as string b, t
 	dim as integer n, i
@@ -107,7 +107,7 @@ private function WriteNames( h as integer ) as integer
 
 end function
 
-private function WritePage( h as integer, byval filename as zstring ptr ) as integer
+private function WritePage( byval h as integer, byval filename as zstring ptr ) as integer
 
 	dim as integer f, n
 	dim as string b, t
@@ -143,7 +143,7 @@ private function WritePage( h as integer, byval filename as zstring ptr ) as int
 
 end function
 
-private function WritePages( h as integer ) as integer
+private function WritePages( byval h as integer ) as integer
 
 	dim as integer n, ret, i
 
@@ -162,7 +162,7 @@ private function WritePages( h as integer ) as integer
 
 end function
 
-private function WriteOutfile( filename as string ) as integer
+private function WriteOutfile( byref filename as string ) as integer
 
 	dim h as integer
 	

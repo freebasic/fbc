@@ -48,7 +48,7 @@ declare function CWikiCache_LoadPage _
 	( _
 		byval _this as CWikiCache ptr, _
 		byval sPage as zstring ptr, _
-		sBody as string _
+		byref sBody as string _
 	) as integer
 
 declare function CWikiCache_SavePage _

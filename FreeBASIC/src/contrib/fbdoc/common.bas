@@ -65,7 +65,7 @@ function ReplaceSubStr _
 end function
 
 '':::::
-Function ReplaceQuotes(a as string, q as string) As String
+Function ReplaceQuotes(byref a as string, byref q as string) As String
   Dim b As String, bOK As integer
   If Len(a) >= 2 Then
     If Left(a, 1) = """" And Right(a, 1) = """" Then
@@ -100,7 +100,7 @@ Function ReplaceQuotes(a as string, q as string) As String
 End Function
 
 '':::::
-Function StripQuotes (a As String) As String
+Function StripQuotes (byref a As String) As String
   return ReplaceQuotes(a, "")
 End Function
 
@@ -148,12 +148,12 @@ function LoadFileAsString _
 end function
 
 '':::::
-function CapFirstLetter( a as string ) as string
+function CapFirstLetter( byref a as string ) as string
 	return ucase(left(trim(a),1)) + lcase(mid(trim(a),2))
 end function
 
 '':::::
-function FormatPageTitle(a as string) as string
+function FormatPageTitle(byref a as string) as string
 
 	dim as string r = a
 	dim as integer i = 0, n = len(a), c = 1
@@ -181,7 +181,7 @@ end function
 '':::::
 function Text2Html _
 	( _
-		text as string, _
+		byref text as string, _
 		byval br as integer, _
 		byval sp as integer _
 	) as string

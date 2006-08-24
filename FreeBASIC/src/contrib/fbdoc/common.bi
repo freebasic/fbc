@@ -41,20 +41,20 @@ declare function ReplaceSubStr _
 		byval rep as zstring ptr _
 	) as string 
 
-Declare Function ReplaceQuotes(a as string, q as string) As String
-Declare Function StripQuotes (a as string) As String
+Declare Function ReplaceQuotes(byref a as string, byref q as string) As String
+Declare Function StripQuotes (byref a as string) As String
 
 declare function LoadFileAsString _
 	( _
 		byval sFileName as zstring ptr _
 	) as string
 
-declare function CapFirstLetter( a as string ) as string
-declare function FormatPageTitle(a as string) as string
+declare function CapFirstLetter( byref a as string ) as string
+declare function FormatPageTitle( byref a as string) as string
 
 declare function Text2Html _
 	( _
-		text as string, _
+		byref text as string, _
 		byval br as integer = FALSE, _
 		byval sp as integer = FALSE _
 	) as string
