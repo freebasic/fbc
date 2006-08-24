@@ -77,7 +77,7 @@ static int calc_comp_height( int h )
 /*:::::*/
 static void update_mask_8(unsigned char *pixel, unsigned char *mask, int w, int h)
 {
-	int x, y, b;
+	int x, b;
 	unsigned char *p = pixel;
 	
 	for(; h; h--) {
@@ -99,7 +99,7 @@ static void update_mask_8(unsigned char *pixel, unsigned char *mask, int w, int 
 /*:::::*/
 static void update_mask_16(unsigned char *pixel, unsigned char *mask, int w, int h)
 {
-	int x, y, b;
+	int x, b;
 	unsigned short *p = (unsigned short *)pixel;
 	
 	for(; h; h--) {
@@ -121,7 +121,7 @@ static void update_mask_16(unsigned char *pixel, unsigned char *mask, int w, int
 /*:::::*/
 static void update_mask_32(unsigned char *pixel, unsigned char *mask, int w, int h)
 {
-	int x, y, b;
+	int x, b;
 	unsigned int *p = (unsigned int *)pixel;
 	
 	for(; h; h--) {

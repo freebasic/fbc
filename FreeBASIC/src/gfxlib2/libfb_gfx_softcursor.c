@@ -132,7 +132,7 @@ void fb_hSoftCursorPut(int x, int y)
 {
 	unsigned char *d;
 	int w, h, px, py, pixel;
-	unsigned int color;
+	unsigned int color = 0;
 	
 	copy_cursor_area(x, y, FALSE);
 	

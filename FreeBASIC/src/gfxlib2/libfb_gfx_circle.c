@@ -115,7 +115,7 @@ static void get_arc_point(float angle, float a, float b, int *x, int *y)
 /*:::::*/
 FBCALL void fb_GfxEllipse(void *target, float fx, float fy, float radius, unsigned int color, float aspect, float start, float end, int fill, int coord_type)
 {
-	int x, y, x1, y1, y2, top, bottom;
+	int x, y, x1, y1, top, bottom;
 	unsigned int orig_color;
 	float a, b, increment;
 	

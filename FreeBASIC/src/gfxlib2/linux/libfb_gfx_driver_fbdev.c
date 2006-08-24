@@ -92,7 +92,7 @@ static void *driver_thread(void *arg)
 	fd_set set;
 	struct timeval tv = { 0, 0 };
 	unsigned char buffer[1024];
-	int i, bytes_read, bytes_left = 0;
+	int bytes_read, bytes_left = 0;
 	
 	(void)arg;
 	
