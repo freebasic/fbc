@@ -118,7 +118,7 @@ static void fb_dos_kb_exit(void)
 static int fb_dos_mouse_init(void)
 {
 	
-	if (!fb_dos.mouse_ok) return;
+	if (!fb_dos.mouse_ok) return 0;
 
 	/* set horizontal range */
 	fb_dos.regs.x.ax = 0x7;
@@ -149,6 +149,7 @@ static int fb_dos_mouse_init(void)
 	fb_dos.regs.x.dx = fb_dos_mouse_isr_rmcb.offset16;
 	__dpmi_int(0x33, &fb_dos.regs);
 
+	return -1;
 }
 
 /*:::::*/
@@ -202,7 +203,7 @@ static void fb_dos_mouse_exit(void)
 static int fb_dos_timer_handler(unsigned irq)
 {
 	int do_abort;
-	int mouse_x, mouse_y;
+	int mouse_x = 0, mouse_y = 0;
 
 	fb_dos.timer_ticks += fb_dos.timer_step;
 	if( (do_abort = fb_dos.timer_ticks < 65536)==FALSE )
@@ -342,7 +343,8 @@ void fb_dos_detect(void)
 		fb_dos.mouse_wheel_ok = ((fb_dos.regs.x.ax == 0x574D) && (fb_dos.regs.x.cx & 1)) ? TRUE : FALSE;
 		
 		/* detect nearptr */
-		if ( fb_dos.nearptr_ok = __djgpp_nearptr_enable() )
+		fb_dos.nearptr_ok = __djgpp_nearptr_enable();
+		if ( fb_dos.nearptr_ok )
 			__djgpp_nearptr_disable();
 	}
 	

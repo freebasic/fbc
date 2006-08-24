@@ -45,7 +45,6 @@ FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *
 {
 	JOYINFOEX info;
 	JOYDATA *j;
-	int povdir;
 	
 	*buttons = -1;
 	*a1 = *a2 = *a3 = *a4 = *a5 = *a6 = -1000.0;

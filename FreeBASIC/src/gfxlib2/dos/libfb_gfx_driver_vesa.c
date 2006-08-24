@@ -226,7 +226,6 @@ int *fb_dos_vesa_fetch_modes(int depth, int *size)
 static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rate, int flags)
 {
 	int depth = MAX(8, depth_arg);
-	int mode;
 	
 	fb_dos_detect();
 	fb_dos_vesa_detect();

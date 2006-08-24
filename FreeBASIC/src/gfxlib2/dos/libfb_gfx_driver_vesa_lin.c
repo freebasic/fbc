@@ -59,7 +59,6 @@ static int data_locked = FALSE;
 static int driver_init(char *title, int w, int h, int depth_arg, int refresh_rate, int flags)
 {
 	int depth = MAX(8, depth_arg);
-	int i, mode;
 	
 	fb_dos_detect();
 	fb_dos_vesa_detect();
@@ -133,7 +132,7 @@ static void driver_exit(void)
 /*:::::*/
 static void driver_update(void)
 {
-	blitter(video, fb_dos.vesa_mode_info.BytesPerScanLine);
+	blitter((unsigned char*)video, fb_dos.vesa_mode_info.BytesPerScanLine);
 }
 
 static void end_of_driver_update(void) { /* do not remove */ }
