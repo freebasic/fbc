@@ -29,24 +29,24 @@ type wchar_t as ushort
 #endif
 
 type WCHAR as wchar_t
-type PWCHAR as wstring ptr
-type LPWCH as wstring ptr
-type PWCH as wstring ptr
+type PWCHAR as WCHAR ptr
+type LPWCH as WCHAR ptr
+type PWCH as WCHAR ptr
 type NWPSTR as wstring ptr
 type LPWSTR as wstring ptr
 type PWSTR as wstring ptr
-type LPCWCH as wstring ptr
-type PCWCH as wstring ptr
+type LPCWCH as WCHAR ptr
+type PCWCH as WCHAR ptr
 type LPCWSTR as wstring ptr
 type PCWSTR as wstring ptr
 
-type PCHAR as zstring ptr
-type LPCH as zstring ptr
-type PCH as zstring ptr
+type PCHAR as CHAR ptr
+type LPCH as CHAR ptr
+type PCH as CHAR ptr
 type NPSTR as zstring ptr
 type LPSTR as zstring ptr
 type PSTR as zstring ptr
-type LPCCH as zstring ptr
+type LPCCH as CHAR ptr
 type PCSTR as zstring ptr
 type LPCSTR as zstring ptr
 
@@ -60,15 +60,24 @@ type _TCHAR as CHAR
 # endif
 #endif
 
+#ifdef UNICODE
+type PTSTR as wstring ptr
+type LPTSTR as wstring ptr
+type LP as wstring ptr
+type LPCTSTR as wstring ptr
+#else
+type PTSTR as zstring ptr
+type LPTSTR as zstring ptr
+type LP as zstring ptr
+type LPCTSTR as zstring ptr
+#endif
+
 type TBYTE as TCHAR
 type PTCH as TCHAR ptr
 type PTBYTE as TCHAR ptr
 type LPTCH as TCHAR ptr
-type PTSTR as TCHAR ptr
-type LPTSTR as TCHAR ptr
-type LP as TCHAR ptr
 type PTCHAR as TCHAR ptr
-type LPCTSTR as TCHAR ptr
+
 type PSHORT as SHORT ptr
 type PLONG as LONG ptr
 type HANDLE as any ptr
