@@ -44,7 +44,7 @@ static int max_x1 = 0, max_y1 = 0, max_x2 = 0, max_y2 = 0;
 __dpmi_regs regs;
 
 /*:::::*/
-FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6)
+FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *a3, float *a4, float *a5, float *a6, float *a7, float *a8)
 {
 	unsigned char status;
 	int count;
@@ -52,7 +52,7 @@ FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *
 	
 	if (!detected) {
 		*buttons = -1;
-		*a1 = *a2 = *a3 = *a4 = *a5 = *a6 = -1000.0;
+		*a1 = *a2 = *a3 = *a4 = *a5 = *a6 = *a7 = *a8 = -1000.0;
 		return fb_ErrorSetNum(FB_RTERROR_ILLEGALFUNCTIONCALL);
 	}
 	
@@ -122,7 +122,7 @@ FBCALL int fb_GfxGetJoystick(int id, int *buttons, float *a1, float *a2, float *
 	
 	*buttons = (~status >> 4) & 0xF;
 	
-	*a5 = *a6 = -1000.0;
+	*a5 = *a6 = *a7 = *a8 = -1000.0;
 	
 	return FB_RTERROR_OK;
 	

@@ -783,12 +783,14 @@ declare function 	hPorts_cb			( byval sym as FBSYMBOL ptr ) as integer
 		), _
 		/' fb_GfxGetJoystick ( byval id as integer, byref buttons as integer = 0, _
 							   byref a1 as single = 0, byref a2 as single = 0, byref a3 as single = 0, _
-							   byref a4 as single = 0, byref a5 as single = 0, byref a6 as single = 0 ) as integer '/ _
+							   byref a4 as single = 0, byref a5 as single = 0, byref a6 as single = 0, _
+							   byref a7 as single = 0, byref a8 as single = 0 _
+							    ) as integer '/ _
 		( _
 			@"getjoystick", @"fb_GfxGetJoystick", _
 			FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
 	 		@hGfxlib_cb, FB_RTL_OPT_NONE, _
-			8, _
+			10, _
 			{ _
 				( _
 					FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
@@ -808,6 +810,12 @@ declare function 	hPorts_cb			( byval sym as FBSYMBOL ptr ) as integer
 				( _
 					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 _
 				), _
+				( _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 _
+				), _
+				( _
+					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 _
+	 			), _
 				( _
 					FB_DATATYPE_SINGLE, FB_PARAMMODE_BYREF, TRUE, 0 _
 				), _
