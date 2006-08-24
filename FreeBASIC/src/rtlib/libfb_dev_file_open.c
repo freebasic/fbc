@@ -43,7 +43,7 @@
 #include <malloc.h>
 #include "fb.h"
 
-int fb_hFileSeekStart
+int fb_hDevFileSeekStart
 	(
 		FILE *fp,
 		int mode,

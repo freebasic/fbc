@@ -70,7 +70,7 @@ extern pthread_mutex_t fb_string_mutex;
 # define FB_STRUNLOCK()				pthread_mutex_unlock(&fb_string_mutex)
 # define FB_TLSENTRY				pthread_key_t
 # define FB_TLSALLOC(key) 			pthread_key_create( &(key), NULL )
-# define FB_TLSFREE(key)			pthread_key_delete( &(key) )
+# define FB_TLSFREE(key)			pthread_key_delete( (key) )
 # define FB_TLSSET(key,value)		pthread_setspecific((key), (const void *)(value))
 # define FB_TLSGET(key)				pthread_getspecific((key))
 #endif

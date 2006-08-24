@@ -37,6 +37,7 @@
  *
  */
 
+#define _ISOC99_SOURCE
 #include <stdlib.h>
 #include "fb.h"
 

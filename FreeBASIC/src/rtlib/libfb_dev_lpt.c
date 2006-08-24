@@ -131,7 +131,8 @@ int fb_DevLptOpen( FB_FILE *handle, const char *filename, size_t filename_len )
 		devInfo->driver_opaque = NULL;
 
     /* Test if the printer is already open. */
-		if( tmp_handle = fb_DevLptFindDeviceByName( devInfo->iPort, devInfo->pszDevice, FALSE ) )
+		tmp_handle = fb_DevLptFindDeviceByName( devInfo->iPort, devInfo->pszDevice, FALSE );
+		if( tmp_handle )
 		{
 			free(devInfo);
       redir_handle = tmp_handle;
@@ -193,7 +194,8 @@ int fb_DevPrinterSetWidth( const char *pszDevice, int width, int default_width )
 		pszDev = fb_DevLptMakeDeviceName( lpt_proto );
 
     /* Test all printers. */
-		if( tmp_handle = fb_DevLptFindDeviceByName( lpt_proto->iPort, pszDev, TRUE ) )
+		tmp_handle = fb_DevLptFindDeviceByName( lpt_proto->iPort, pszDev, TRUE );
+		if( tmp_handle )
 		{
       if( width!=-1 )
           tmp_handle->width = width;
@@ -224,7 +226,8 @@ int fb_DevPrinterGetOffset( const char *pszDevice )
 		pszDev = fb_DevLptMakeDeviceName( lpt_proto );
 
     /* Test all printers. */
-		if( tmp_handle = fb_DevLptFindDeviceByName( lpt_proto->iPort, pszDev, TRUE ) )
+		tmp_handle = fb_DevLptFindDeviceByName( lpt_proto->iPort, pszDev, TRUE );
+		if( tmp_handle )
       cur = tmp_handle->line_length;
 
 		if( lpt_proto )

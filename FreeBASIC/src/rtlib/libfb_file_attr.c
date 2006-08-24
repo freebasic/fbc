@@ -39,11 +39,11 @@
 
 #include "fb.h"
 
-static file_mode_map[] = { FB_FILE_ATTR_MODE_BINARY,   /* FB_FILE_MODE_BINARY = 0 */
-                           FB_FILE_ATTR_MODE_RANDOM,   /* FB_FILE_MODE_RANDOM = 1 */
-                           FB_FILE_ATTR_MODE_INPUT,    /* FB_FILE_MODE_INPUT  = 2 */
-                           FB_FILE_ATTR_MODE_OUTPUT,   /* FB_FILE_MODE_OUTPUT = 3 */
-                           FB_FILE_ATTR_MODE_APPEND }; /* FB_FILE_MODE_APPEND = 4 */
+static int file_mode_map[] = { FB_FILE_ATTR_MODE_BINARY,   /* FB_FILE_MODE_BINARY = 0 */
+	                           FB_FILE_ATTR_MODE_RANDOM,   /* FB_FILE_MODE_RANDOM = 1 */
+    	                       FB_FILE_ATTR_MODE_INPUT,    /* FB_FILE_MODE_INPUT  = 2 */
+    	                       FB_FILE_ATTR_MODE_OUTPUT,   /* FB_FILE_MODE_OUTPUT = 3 */
+    	                       FB_FILE_ATTR_MODE_APPEND }; /* FB_FILE_MODE_APPEND = 4 */
 
 FBCALL int fb_FileAttr 
 	( 

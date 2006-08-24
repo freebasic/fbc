@@ -42,7 +42,7 @@
 /*:::::*/
 FB_WCHAR *fb_FloatExToWstr( double val, FB_WCHAR *buffer, int digits, int mask )
 {
-	FB_WCHAR *p, *r;
+	FB_WCHAR *p;
 	int len;
 
 	if( mask & FB_F2A_ADDBLANK )

@@ -156,7 +156,7 @@ int fb_SerialOpen
     int DesiredAccess = O_RDWR|O_NOCTTY|O_NONBLOCK;
     unsigned int RxBufferSize = BUFSIZ*2;
     int SerialFD = (-1);
-    char *DevName, DeviceName[512];
+    char *DevName = NULL, DeviceName[512];
     size_t DevNameLen;
     struct termios oldserp, nwserp;
     speed_t TermSpeed;
@@ -188,24 +188,24 @@ int fb_SerialOpen
     }
 
     if( iPort == 0 )
+	{
+		if( strcasecmp(pszDevice, "COM") == 0 )
 		{
-			if( strcasecmp(pszDevice, "COM") == 0 )
-			{
-				strcpy(DevName, "/dev/modem");      
-				DevNameLen = strlen( DevName );
-			}
-			else
-			{
-				DevName = strcpy( DeviceName, pszDevice );
-				DevNameLen = strlen( DevName );
-				DevName[DevNameLen] = 0;
-			}
+			strcpy(DevName, "/dev/modem");      
+			DevNameLen = strlen( DevName );
 		}
 		else
 		{
-			sprintf(DevName, "/dev/ttyS%d", (iPort-1));      
+			DevName = strcpy( DeviceName, pszDevice );
 			DevNameLen = strlen( DevName );
+			DevName[DevNameLen] = 0;
 		}
+	}
+	else
+	{
+		sprintf(DevName, "/dev/ttyS%d", (iPort-1));      
+		DevNameLen = strlen( DevName );
+	}
     
     /* Setting speed baud line */
     TermSpeed = get_speed(options->uiSpeed);
