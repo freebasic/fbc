@@ -48,7 +48,10 @@ static int fb_PrintUsingFmtStr( int fnum );
 
 
 /*:::::*/
-FBCALL int fb_PrintUsingInit( FBSTRING *fmtstr )
+FBCALL int fb_PrintUsingInit
+	( 
+		FBSTRING *fmtstr 
+	)
 {
     FB_PRINTUSGCTX *ctx;
 
@@ -66,7 +69,10 @@ FBCALL int fb_PrintUsingInit( FBSTRING *fmtstr )
 }
 
 /*:::::*/
-FBCALL int fb_PrintUsingEnd( int fnum )
+FBCALL int fb_PrintUsingEnd
+	( 
+		int fnum 
+	)
 {
 	FB_PRINTUSGCTX *ctx;
 
@@ -86,7 +92,10 @@ FBCALL int fb_PrintUsingEnd( int fnum )
 }
 
 /*:::::*/
-static int fb_PrintUsingFmtStr( int fnum )
+static int fb_PrintUsingFmtStr
+	( 
+		int fnum 
+	)
 {
 	FB_PRINTUSGCTX *ctx;
 	char buffer[BUFFERLEN+1];
@@ -124,9 +133,14 @@ static int fb_PrintUsingFmtStr( int fnum )
 		case '&':
 		case '+':
 		case ',':
-		case '.':
 		case '#':
 			doexit = 1;
+			break;
+
+		case '.':
+			if( nc == '#' || lc == '#' )
+				doexit = 1;
+
 			break;
 
 		case '_':
@@ -161,7 +175,12 @@ static int fb_PrintUsingFmtStr( int fnum )
 
 
 /*:::::*/
-FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
+FBCALL int fb_PrintUsingStr
+	( 
+		int fnum, 
+		FBSTRING *s, 
+		int mask 
+	)
 {
 	FB_PRINTUSGCTX *ctx;
 	char buffer[BUFFERLEN+1];
@@ -286,7 +305,12 @@ FBCALL int fb_PrintUsingStr( int fnum, FBSTRING *s, int mask )
 }
 
 /*::::*/
-static double hRound( double value, int intdigs, int decdigs )
+static double hRound
+	( 
+		double value, 
+		int intdigs, 
+		int decdigs 
+	)
 {
 	double fix, frac = modf( value, &fix );
 
@@ -330,11 +354,16 @@ static double hRound( double value, int intdigs, int decdigs )
 }
 
 /*::::*/
-static void hToString( double value,
-					   char *fix_buf, int *fix_len,
-				   	   char *frac_buf, int *frac_len,
-				   	   int intdigs,
-				   	   int decdigs )
+static void hToString
+	( 
+		double value,
+		char *fix_buf, 
+		int *fix_len,
+		char *frac_buf, 
+		int *frac_len,
+		int intdigs,
+		int decdigs 
+	)
 {
 	double fix, frac = modf( value, &fix );
 
@@ -362,7 +391,13 @@ static void hToString( double value,
 }
 
 /*:::::*/
-static int hPrintDouble( int fnum, double value, int mask, int maxdigits )
+static int hPrintDouble
+	( 
+		int fnum, 
+		double value, 
+		int mask, 
+		int maxdigits 
+	)
 {
 	FB_PRINTUSGCTX *ctx;
 	char fix_buf[BUFFERLEN+1], frac_buf[16+1+1], expbuff[16+1+1+1];
@@ -527,7 +562,7 @@ static int hPrintDouble( int fnum, double value, int mask, int maxdigits )
 
 	if( doscale )
 	{
-		/* scall down if it's big - must done after hRound() */
+		/* scall down if it's big - must be done after hRound() */
 		if( value_exp > 0 )
 		{
 			if( value_exp > intdigs )
@@ -678,13 +713,23 @@ static int hPrintDouble( int fnum, double value, int mask, int maxdigits )
 
 
 /*:::::*/
-FBCALL int fb_PrintUsingDouble( int fnum, double value, int mask )
+FBCALL int fb_PrintUsingDouble
+	( 
+		int fnum, 
+		double value, 
+		int mask 
+	)
 {
 	return hPrintDouble( fnum, value, mask, 16 );
 }
 
 /*:::::*/
-FBCALL int fb_PrintUsingSingle( int fnum, float value_f, int mask )
+FBCALL int fb_PrintUsingSingle
+	( 
+		int fnum, 
+		float value_f, 
+		int mask
+	)
 {
 	double value = value_f;
 	int value_exp;
@@ -705,7 +750,12 @@ FBCALL int fb_PrintUsingSingle( int fnum, float value_f, int mask )
 
 /* !!!FIXME!! remove this function when the chicken-egg is over */
 
-FBCALL int fb_PrintUsingVal( int fnum, double value, int mask )
+FBCALL int fb_PrintUsingVal
+	( 
+		int fnum, 
+		double value, 
+		int mask 
+	)
 {
 	return fb_PrintUsingDouble( fnum, value, mask );
 }
