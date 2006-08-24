@@ -44,6 +44,7 @@
 typedef struct _FBCOND
 {
 	pthread_cond_t id;
+	pthread_mutex_t lock;
 } FBCOND;
 
 
@@ -56,6 +57,7 @@ FBCALL FBCOND *fb_CondCreate( void )
 	if( !cond )
 		return NULL;
 
+	pthread_mutex_init( &cond->lock, NULL );
 	pthread_cond_init( &cond->id, NULL );
 
 	return cond;
@@ -68,6 +70,7 @@ FBCALL void fb_CondDestroy( FBCOND *cond )
 		return;
 
 	pthread_cond_destroy( &cond->id );
+	pthread_mutex_destroy( &cond->lock );
 
 	free( (void *)cond );
 }
@@ -78,7 +81,9 @@ FBCALL void fb_CondSignal( FBCOND *cond )
 	if( cond == NULL )
 		return;
 
+	pthread_mutex_lock( &cond->lock );
 	pthread_cond_signal( &cond->id );
+	pthread_mutex_unlock( &cond->lock );
 }
 
 /*:::::*/
@@ -87,7 +92,9 @@ FBCALL void fb_CondBroadcast( FBCOND *cond )
 	if( cond == NULL )
 		return;
 
+	pthread_mutex_lock( &cond->lock );
 	pthread_cond_broadcast( &cond->id );
+	pthread_mutex_unlock( &cond->lock );
 }
 
 /*:::::*/
@@ -96,5 +103,7 @@ FBCALL void fb_CondWait( FBCOND *cond )
 	if( cond == NULL )
 		return;
 
+	pthread_mutex_lock( &cond->lock );
 	pthread_cond_wait( &cond->id, &cond->lock );
+	pthread_mutex_unlock( &cond->lock );
 }
