@@ -12,7 +12,7 @@ Version 0.17 Beta:
   to make room for new common flags at smaller digits (lillo)
 - the CUSTOM PUT mode now accepts one more parameter to be passed to the blender function, which now must have the form:
   function blender(byval src as uinteger, byval dest as uinteger, byval param as any ptr) as uinteger
-- GETJOYSTICK on win32 returns POV as U, V axis values if POV is available (jeffm)
+- GETJOYSTICK now supports up to 8 axis and on win32 returns POV as axis 7 and 8. (jeffm)
 - main GFX window on win32 captures mouse input to allow out of window mouse button releases (jeffm)
 - the arguments passed to overloaded functions that contain enum parameters must be enum's too, no auto-coercion will
   be done from integer/floating-point, to support operator overloading (v1c)
