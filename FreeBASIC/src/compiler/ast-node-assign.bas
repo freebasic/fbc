@@ -394,18 +394,18 @@ function astNewASSIGN _
     dim as FB_DATATYPE ldtype, rdtype
     dim as FB_DATACLASS ldclass, rdclass
     dim as FBSYMBOL ptr lsubtype, proc
-	dim as integer is_ambiguous
+	dim as FB_ERRMSG err_num
 
 	function = NULL
 
 	'' 1st) check assign op overloading
 	if( symb.globOpOvlTb(AST_OP_ASSIGN).head <> NULL ) then
-		proc = symbFindBopOvlProc( AST_OP_ASSIGN, l, r, @is_ambiguous )
+		proc = symbFindBopOvlProc( AST_OP_ASSIGN, l, r, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call
 			return astBuildCALL( proc, 2, l, r )
 		else
-			if( is_ambiguous ) then
+			if( err_num <> FB_ERRMSG_OK ) then
 				return NULL
 			end if
 		end if
@@ -416,12 +416,12 @@ function astNewASSIGN _
 	lsubtype = l->subtype
 
 	'' 2nd) implicit casting op overloading
-	proc = symbFindCastOvlProc( ldtype, lsubtype, r, @is_ambiguous )
+	proc = symbFindCastOvlProc( ldtype, lsubtype, r, @err_num )
 	if( proc <> NULL ) then
 		'' build a proc call
 		r = astBuildCALL( proc, 1, r )
 	else
-		if( is_ambiguous ) then
+		if( err_num <> FB_ERRMSG_OK ) then
 			return NULL
 		end if
 	end if

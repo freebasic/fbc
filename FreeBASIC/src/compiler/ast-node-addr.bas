@@ -141,8 +141,9 @@ function astNewADDR _
 	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
-    dim as integer delchild, dtype, is_ambiguous
+    dim as integer delchild, dtype
     dim as FBSYMBOL ptr subtype, s, proc
+    dim as FB_ERRMSG err_num
 
 	if( l = NULL ) then
 		return NULL
@@ -150,12 +151,12 @@ function astNewADDR _
 
 	'' check op overloading
 	if( symb.globOpOvlTb(op).head <> NULL ) then
-		proc = symbFindUopOvlProc( op, l, @is_ambiguous )
+		proc = symbFindUopOvlProc( op, l, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call
 			return astBuildCALL( proc, 1, l )
 		else
-			if( is_ambiguous ) then
+			if( err_num <> FB_ERRMSG_OK ) then
 				exit function
 			end if
 		end if

@@ -1472,7 +1472,7 @@ function symbFindClosestOvlProc _
 		byval proc_head as FBSYMBOL ptr, _
 		byval args as integer, _
 		byval arg_head as FB_CALL_ARG ptr, _
-		byval is_ambiguous as integer ptr _
+		byval err_num as FB_ERRMSG ptr _
 	) as FBSYMBOL ptr static
 
 	dim as FBSYMBOL ptr proc, ovl_proc, param
@@ -1550,22 +1550,18 @@ function symbFindClosestOvlProc _
 		proc = proc->proc.ovl.next
 	loop
 
-	if( is_ambiguous <> NULL ) then
-		*is_ambiguous = amb_cnt > 0
-	end if
-
 	'' more than one possibility?
 	if( amb_cnt > 0 ) then
-		errReportParam( proc_head, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
+		*err_num = FB_ERRMSG_AMBIGUOUSCALLTOPROC
 		function = NULL
 	else
 		'' no matches?
 		if( ovl_proc = NULL ) then
-			'' only show the error if not trying to find an operator
-			if( is_ambiguous = NULL ) then
-				errReportParam( proc_head, 0, NULL, FB_ERRMSG_NOMATCHINGPROC )
-			end if
+			*err_num = FB_ERRMSG_NOMATCHINGPROC
+		else
+			*err_num = FB_ERRMSG_OK
 		end if
+
 		function = ovl_proc
 	end if
 
@@ -1577,7 +1573,7 @@ function symbFindBopOvlProc _
 		byval op as AST_OP, _
 		byval l as ASTNODE ptr, _
 		byval r as ASTNODE ptr, _
-		byval isambiguous as integer ptr _
+		byval err_num as FB_ERRMSG ptr _
 	) as FBSYMBOL ptr static
 
 	dim as FB_CALL_ARG argTb(0 to 1)
@@ -1595,7 +1591,7 @@ function symbFindBopOvlProc _
    		case FB_DATATYPE_STRUCT, FB_DATATYPE_ENUM
 
    		case else
-   			*isambiguous = FALSE
+   			*err_num = FB_ERRMSG_OK
    			return NULL
    		end select
    	end select
@@ -1609,7 +1605,7 @@ function symbFindBopOvlProc _
 	argTb(1).mode = INVALID
 	argTb(1).next = NULL
 
-	function = symbFindClosestOvlProc( pop->head, 2, @argTb(0), isambiguous )
+	function = symbFindClosestOvlProc( pop->head, 2, @argTb(0), err_num )
 
 end function
 
@@ -1618,7 +1614,7 @@ function symbFindUopOvlProc _
 	( _
 		byval op as AST_OP, _
 		byval l as ASTNODE ptr, _
-		byval isambiguous as integer ptr _
+		byval err_num as FB_ERRMSG ptr _
 	) as FBSYMBOL ptr static
 
 	dim as FB_CALL_ARG argTb(0)
@@ -1632,7 +1628,7 @@ function symbFindUopOvlProc _
 
    	case else
    		'' note: the CAST op shouldn't be passed to this function
-   		*isambiguous = FALSE
+   		*err_num = FB_ERRMSG_OK
    		return NULL
    	end select
 
@@ -1640,7 +1636,7 @@ function symbFindUopOvlProc _
 	argTb(0).mode = INVALID
 	argTb(0).next = NULL
 
-	function = symbFindClosestOvlProc( pop->head, 1, @argTb(0), isambiguous )
+	function = symbFindClosestOvlProc( pop->head, 1, @argTb(0), err_num )
 
 end function
 
@@ -1703,21 +1699,31 @@ function symbFindCastOvlProc _
 		byval to_dtype as integer, _
 		byval to_subtype as FBSYMBOL ptr, _
 		byval l as ASTNODE ptr, _
-		byval isambiguous as integer ptr _
+		byval err_num as FB_ERRMSG ptr _
 	) as FBSYMBOL ptr static
 
-	dim as FBSYMBOL ptr proc_head, proc, ovl_proc
+	dim as FBSYMBOL ptr proc_head, proc, ovl_proc, subtype
 	dim as integer matches, max_matches, amb_cnt
 
-   	*isambiguous = FALSE
+   	*err_num = FB_ERRMSG_OK
 
 	'' arg must be an UDT
    	select case astGetDataType( l )
    	case FB_DATATYPE_STRUCT
-   		proc_head = astGetSubType( l )->udt.opovl.cast
+   		subtype = astGetSubType( l )
+   		if( subtype = NULL ) then
+   			return NULL
+   		end if
+
+   		proc_head = subtype->udt.opovl.cast
 
    	case FB_DATATYPE_ENUM
-   		proc_head = astGetSubType( l )->enum.opovl.cast
+   		subtype = astGetSubType( l )
+   		if( subtype = NULL ) then
+   			return NULL
+   		end if
+
+   		proc_head = subtype->enum.opovl.cast
 
    	case else
    		return NULL
@@ -1757,7 +1763,7 @@ function symbFindCastOvlProc _
 
 	'' more than one possibility?
 	if( amb_cnt > 0 ) then
-		*isambiguous = TRUE
+		*err_num = FB_ERRMSG_AMBIGUOUSCALLTOPROC
 		errReportParam( proc_head, 0, NULL, FB_ERRMSG_AMBIGUOUSCALLTOPROC )
 		function = NULL
 	else
