@@ -1,14 +1,14 @@
-    Since version 0.17 FreeBASIC has a -lang command-line option, used to 
+    FreeBASIC version 0.17 introduces a -lang command-line option, used to 
 change the language compatibility mode.
 
-	It was needed to let FB support object-orientation in future, without
-crippling the QuickBASIC support, or breaking compatibility with old FB
+    It was needed to allow FB to support object-orientation in the future, 
+without crippling the QuickBASIC support or breaking compatibility with old FB
 sources, and without making FB difficult to maintain with n-different 
 versions of pretty much the same packages. The QB support can be improved
 now too, if needed, without breaking the sources written specifically for FB.
 
     To compile old GW-BASIC and QB(ASIC) sources without too many changes,
-use "-lang qb" (without quotes) option in the command-line when running FBC.
+use "-lang qb" (without quotes) option on the command-line when running FBC.
 
     To compile 0.16 or below sources, use the "-lang deprecated" option.
     
@@ -20,57 +20,57 @@ use "-lang qb" (without quotes) option in the command-line when running FBC.
       Not supported:
       
       1) implicit variables
-         - all variables must be always explicitly declared
+         - All variables must be always explicitly declared.
       
       2) suffixes (! # $ % &)
-         - they are only allowed for numeric constants, but it's recommended 
+         - They are only allowed for numeric constants, but it's recommended 
            to use type-casting or the f (single), d (double), ll (longint), 
-           ul (uinteger), ull (ulongint) suffix with constants to resolve 
-           overloading
+           ul (uinteger), ull (ulongint) suffixes with constants to resolve 
+           overloading.
       
       3) DEF###, so there are no implicit types
          - AS is always needed when declaring *any* symbol but CONST's, 
-           where types are inferred
+           where types are inferred.
       
       4) default BYREF parameters
-         - all parameters are passed by value (BYVAL) by default 
-         - use the "-w pedantic" command-line option to get paramaters 
-           without explicit BYREF or BYVAL reported
+         - All parameters are passed by value (BYVAL) by default 
+         - Use the "-w pedantic" command-line option to have paramaters 
+           without explicit BYREF or BYVAL reported.
       
       5) OPTION's of any kind (no context-sensitivity)
-         - instead of NOKEYWORD, use #undef
-         - instead of ESCAPE, use: !"some esc seq \n\r" (notice the '!' char)
-           and pass "-w pedantic" to check for possible escape sequences
-         - EXPLICIT isn't needed, see item 1
-         - BYVAL isn't needed, see item 4
-         - instead of DYNAMIC, use REDIM to create dynamic arrays, or 
-           declare them with empty subcripts: DIM array() AS sometype
-         - instead of BASE, use explicit lbound subcripts in arrays
-         - instead of PRIVATE, declare each function as PRIVATE
+         - Instead of NOKEYWORD, use #undef.
+         - Instead of ESCAPE, use: !"some esc seq \n\r" (notice the '!' char)
+           and pass "-w pedantic" to check for possible escape sequences.
+         - EXPLICIT isn't needed, see item 1.
+         - BYVAL isn't needed, see item 4.
+         - Instead of DYNAMIC, use REDIM to create dynamic arrays, or 
+           declare them with empty subcripts: DIM array() AS sometype.
+         - Instead of BASE, use explicit lbound subcripts in arrays.
+         - Instead of PRIVATE, declare each function as PRIVATE.
       
       6) periods in symbol names 
-         - use namespaces instead
+         - Use namespaces instead.
      
       7) GOSUB/RETURN 
-         - nested functions may be allowed in future
+         - Nested functions may be allowed in future.
       
       8) ON .. GOSUB|GOTO 
-         - use SELECT expr AS CONST for the latter
+         - Use SELECT expr AS CONST for the latter.
       
       9) ON ERROR | RESUME 
-         - all statements can be used as functions to check for run-time 
+         - All statements can be used as functions to check for run-time 
            errors like:  IF OPEN( "text" FOR INPUT AS #1 ) <> 0 THEN error... 
       
      10) '$DYNAMIC, '$STATIC, '$INCLUDE meta-commands embedded in 
          comments
-         - see item 5 about OPTION DYNAMIC
-         - use #include "filename" instead of '$include
+         - See item 5 about OPTION DYNAMIC.
+         - Use #include "filename" instead of '$include.
      
      11) CALL or LET
-         - just remove them
+         - Just remove them.
      
      12) numeric labels
-         - no comment
+         - No comment.
      
    
     o deprecated:
@@ -79,41 +79,41 @@ use "-lang qb" (without quotes) option in the command-line when running FBC.
      
       1) GOSUB/RETURN and ON ... GOSUB (even at module-level)
          - so the GOSUB implementation could be thread-unsafe in the 
-           "-lang qb" mode, allowing fast executation ("-lang qb" doesn't 
-           support multi-threading, while "-lang deprecated" does)
+           "-lang qb" mode, allowing fast execution ("-lang qb" doesn't 
+           support multi-threading, while "-lang deprecated" does).
 
       2) Implicit or explicit variables will always respect the scope
          blocks, implicit (opened by compound statements like IF, DO, etc)
          or explicit (SCOPE .. END SCOPE), use "-lang qb" to compile
-         old sources that depend on no scope rules
+         old sources that depend on the absence of scope rules.
      
       Not supported:
      
       1) Classes
-         - periods allowed in symbol names make it too difficult and/or
-           ambiguous
+         - Periods allowed in symbol names make it too difficult and/or
+           ambiguous.
      
       2) Operator overloading
-      	 - ditto
+         - Ditto.
      
    
     o qb:
      
       Supported: Everything not supported/allowed in the fb mode, plus:
       
-      1) CALL can be used with forward functions (W.I.P.)
+      1) CALL can be used with forward-referenced functions. (W.I.P.)
      
-      2) SHARED can be used inside functions   (W.I.P.)
+      2) SHARED can be used inside functions.   (W.I.P.)
      
-      3) all variables, implicit or explicit, are always allocated in
-         the function scope, as in QB
+      3) All variables, implicit or explicit, are always allocated in
+         the function scope, as in QB.
         
       4) ...
      
       Not supported:
      
       1) Multi-threading
-         - the thread*, mutex* and cond* functions can't be used
+         - The thread*, mutex* and cond* functions can't be used.
      
       2) Classes and Namespaces
      
@@ -124,8 +124,8 @@ use "-lang qb" (without quotes) option in the command-line when running FBC.
       5) EXTERN blocks
       
       6) Variable initializers
-         - all variables are moved to the function scope (as in QB), 
-           making local initializers too difficult to support
+         - All variables are moved to the function scope (as in QB), 
+           making local initializers too difficult to support.
      
      
     The -lang qb and -lang deprecated options will always be supported in

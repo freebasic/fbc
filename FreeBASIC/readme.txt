@@ -162,9 +162,9 @@ Debugging:
 
     - Load it in GDB using: "gdb myapplicationname.exe".
 
-    - Set the arguments to the application been debugged using:
+    - Set the arguments to the application being debugged using:
       "set args arg1 arg2 argn". You can also run GDB and pass the arguments 
-      directly to the application been debugged: 
+      directly to the application being debugged: 
       "gdb --args myapp.exe arg1 arg2 arg3".
 
     - If the executable isn't in the same directory of the source files where it
@@ -202,7 +202,7 @@ Debugging:
 
     - Type "q" to quit.
 
-    - Type "help" to see a list of commands, there are hundred others.
+    - Type "help" to see a list of commands, there are hundreds of others.
 
 
 Most Important Features:
@@ -262,7 +262,7 @@ Most Important Features:
 
     - cgi-util and FastCGI: web development
 
-    - Windows API - the most complete headers set between the BASIC
+    - Windows API - the most complete headers set among the BASIC
       compilers available, including support for the Unicode functions
 
     - DirectX - Direct3D, DirectDraw, DirectSound, DirectMusic, DirectInput, 
@@ -279,8 +279,8 @@ Most Important Features:
 
     - The run-time library was written with portability in mind. All third-party
       tools used exist on most operating systems already as they are from the
-      GNU binutils. The compiler is written in 100% FreeBASIC code (that's it,
-      FreeBASIC compiles itself.), what makes it simple to be bootstrapped as it
+      GNU binutils. The compiler is written in 100% FreeBASIC code (that's right,
+      FreeBASIC compiles itself.), which makes it simple to be bootstrapped as it
       doesn't depend on non-portable tools.
 
   o Multi-threading:
@@ -288,7 +288,7 @@ Most Important Features:
      - The run-time library comes in single- and multi-threaded versions, so the
        mutexes/locks are only used if the MT version is selected.
 
-     - The MT version is automatically select when thread functions like 
+     - The MT version is automatically selected when thread functions like 
        ThreadCreate are used. It can also be selected manually, passing the 
        -mt option when compiling.
 
@@ -300,7 +300,7 @@ Most Important Features:
       the same project (also with other ASCII files).
 
     - Literal strings can be typed in the original non-latin alphabet, just use 
-      an text-editor that supports some of the Unicode formats listed above.
+      a text-editor that supports one of the Unicode formats listed above.
       
     - The WSTRING type holds wide-characters, all string functions (like LEFT, 
       TRIM, etc) will work with wide-strings too.
@@ -308,11 +308,11 @@ Most Important Features:
     - OPEN was extended to support the ENCODING "format" option, files in UTF-8, 
       UTF-16LE and UTF-32LE can be read (using INPUT # or LINE INPUT #) and 
       written (using PRINT # or WRITE #) when opened in INPUT, OUTPUT 
-      and APPEND modes, all the conversion between Unicode to ASCII is be done
+      and APPEND modes, all of the conversion between Unicode to ASCII is done
       automatically if necessary.
       
     - PRINT'ing to console is also supported (see Requirements), INPUT or LINE
-      INPUT from console still not allowing wide-characters to be entered yet.
+      INPUT from console doesn't allow wide-characters to be entered yet.
 
   o Name spaces:
     - Recursive (to an unlimited number of levels):
@@ -326,13 +326,13 @@ Most Important Features:
 
       outer.inner.bar = outer.foo + 1
 
-    - Can be imported (including into another name spaces):
+    - Can be imported (including into other name spaces):
 
       USING outer
 
       inner.bar = foo + 1
 
-    - Imported name spaces go out-scope if used inside compound statements or 
+    - Imported name spaces go out of scope if used inside compound statements or 
       routines:
 
       NAMESPACE ns1
@@ -411,7 +411,9 @@ Most Important Features:
       TYPE MyList
          ListData(0 TO MAXITEMS - 1) AS MyItem
       END TYPE
-
+      
+      (Note: Dynamic arrays are currently not allowed in TYPE's.)
+      
     - Function field types:
 
       TYPE MyType
@@ -516,9 +518,9 @@ Most Important Features:
 
     - Type Casting:
 
-      cptr(byte ptr, intptr) += 1
+      CPTR(BYTE PTR, intptr) += 1
 
-      cptr(myudt1 ptr, @udt2)->foo = *cptr(integer ptr, bar)
+      CPTR(myudt1 PTR, @udt2)->foo = *CPTR(INTEGER PTR, bar)
 
   o Variable initializers for static, module-level or local variables, arrays
     and UDT's:
@@ -555,12 +557,14 @@ Most Important Features:
 
       et cetera.
       
+      - Optional arguments can be initialized with expressions, not only constants.
+      
   o Function overloading:
   
-  	DECLARE SUB Test OVERLOAD (a AS DOUBLE)
-  	DECLARE SUB Test (a AS SINGLE)
-  	DECLARE SUB Test (a AS INTEGER, b AS INTEGER = 1234)
-  	DECLARE SUB Test (a AS BYTE, b AS SHORT)
+    DECLARE SUB Test OVERLOAD (a AS DOUBLE)
+    DECLARE SUB Test (a AS SINGLE)
+    DECLARE SUB Test (a AS INTEGER, b AS INTEGER = 1234)
+    DECLARE SUB Test (a AS BYTE, b AS SHORT)
 
   o Inline Assembly:
 
@@ -591,6 +595,23 @@ Most Important Features:
       #DEFINE bar(x,y) ((x) * (y))
       #DEFINE foo(x,y) bar(x-y,y-x)
       a = foo(b, c)
+      
+    - MACRO...ENDMACRO construct, to simplify multi-line #DEFINE's
+      
+      Instead of: 
+
+      #DEFINE WhileHoldingKey(code)               _
+        DO                                       :_
+          SLEEP 1                              :_
+        LOOP WHILE MULTIKEY(code)
+
+      You may do:
+      
+      #MACRO WhileHoldingKey(code)
+        DO
+          SLEEP 1
+        LOOP WHILE MULTIKEY(code)
+      #ENDMACRO
 
   o Typedefs:
 
@@ -640,7 +661,7 @@ Most Important Features:
 
   o Non-fatal error handling:
 
-    - The FreeBASIC parser won't quit unless n# syntax and/or semantic errors 
+    - The FreeBASIC parser won't quit unless n# (default:10) syntax and/or semantic errors 
       happened, making it easier to port sources from different languages and 
       to work with large projects.
 
@@ -661,7 +682,7 @@ Most Important Features:
   o Completely free:
 
     - All third-party tools are also free. No piece of abandoned or copyrighted
-      software is used (but GoRC on Win32). The assembler, linker, archiver, and
+      software is used (except GoRC on Win32). The assembler, linker, archiver, and
       other command-line applications come from the GNU binutil programming 
       tools.
 
@@ -671,8 +692,9 @@ What FreeBASIC Isn't:
   o FreeBASIC is not a QuickBASIC clone, neither an emulator.
 
     - DEF SEG, PEEK and POKE to absolute 16-bit memory locations and many
-      old and deprecated statements, that are seldom used today, were not
-      implemented, read the docs/keywords.txt file for a list of differences.
+      old and deprecated statements that are seldom used today were not
+      implemented, please see http://www.freebasic.net/wiki/wikka.php?wakka=LangQB
+      for a list of differences.
 
     - While FB is certainly the BASIC compiler that most resembles the Microsoft
       BASIC compilers for DOS, don't expect to compile old source-codes filled
@@ -683,10 +705,12 @@ What FreeBASIC Isn't:
     - There are no events, or any GUI wrapper of any kind. (You can create them
       easily with UDT's and function pointers.)
 
-  o FreeBASIC is most certainly not bug free, as with any other program.
+  o FreeBASIC is most certainly not bug free.
 
-    - The FreeBASIC project was started in September 2004, and was not/is not
-      tested enough.
+    - The FreeBASIC project was started in September 2004, and was/is not
+      tested enough. There are no alpha/beta closed testing groups, so the final
+      users are also testers. Regression tests are always added when a bug
+      is fixed.
 
 
 Possible Additions to Next Versions:
@@ -694,6 +718,7 @@ Possible Additions to Next Versions:
   o CLASS data structure (for object-oriented programming):
 
     - GUI code would be much easier to write.
+    - Eventually allowing interfaces with object-oriented c++ libraries
 
 
 Credits (in alphabetic order):
@@ -702,7 +727,7 @@ Credits (in alphabetic order):
     - Ported FreeBASIC to Linux; port maintainer.
     - Developer of GFXLib2.
     - Added profiling support.
-    - Added build-in threads, dynlib support and I/O ports access support.
+    - Added built-in threads, dynlib support and I/O ports access support.
     - Made the rtlib thread-safe, besides many other runtime lib
       and compiler improvements.
 
@@ -753,7 +778,7 @@ Credits (in alphabetic order):
   o fsw (fsw.fb[at]comcast.net):
     - Translated most of the Windows API headers (later replaced by the SWIG FB 
       wrapper version).
-    - Wrote the glade_gui demo at the examples/Gtk directory, besides the
+    - Wrote the glade_gui demo at the examples/Gtk directory, in addition to the
       wx-c GUI examples (not included).
 
   o Garvan O'Keeffe (sisophon2001[at]yahoo.com):
@@ -789,7 +814,7 @@ Credits (in alphabetic order):
 
   o Marzec:
     - Wrote the SDL_bassgl, SDL_opengl, and SDL_key tests in the SDL directory.
-    - Translated the first SDL headers (replaced by new ones since version 0.11b).
+    - Translated the first SDL headers (replaced by new ones in version 0.11b).
     - Wrote the first file routines for the run-time library, later replaced.
 
   o Nek (dave[at]nodtveidt.net):
@@ -802,6 +827,10 @@ Credits (in alphabetic order):
 
   o Randy Keeling (randy[at]keeling.com):
     - Wrote the GSL matrix test at the examples/GSL directory.
+    
+  o Ruben Rodriguez (rubentbstk[at]gmail.com):
+    - Corrected the errors in English in readme.txt and migrating.txt, plus
+      the messages in compiler/error.bas.
 
   o Sterling Christensen (sterling[at]engineer.com):
     - Ex-project member, developer of the QB-like graphics library (later 

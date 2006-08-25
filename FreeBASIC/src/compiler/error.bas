@@ -181,12 +181,12 @@ end type
 		@"Expected 'END DESTRUCTOR'", _
 		@"Expected 'END OPERATOR'", _
 		@"Declaration outside the original namespace", _
-		@("No end of multi-line comment, expected " + QUOTE + "'/" + QUOTE), _
+		@"No end of multi-line comment, expected ""'/""", _
 		@"Too many errors, exiting", _
 		@"Expected 'ENDMACRO'", _
 		@"EXTERN or COMMON variables cannot be initialized", _
-		@"At least one parameter must be an user-defined type", _
-		@"Parameter or result must be an user-defined type", _
+		@"At least one parameter must be a user-defined type", _
+		@"Parameter or result must be a user-defined type", _
 		@"Both parameters can't be of the same type", _
 		@"Parameter and result can't be of the same type", _
 		@"Invalid result type for this operator", _
