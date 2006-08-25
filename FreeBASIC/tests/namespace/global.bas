@@ -1,4 +1,4 @@
-
+# include "fbcu.bi"
 
 #define global .
 	
@@ -7,7 +7,7 @@ const LOCA_VAL = &hdeadc0de
 
 dim shared as integer foo = GLOB_VAL
 
-namespace ns
+namespace fbc_tests.ns.glob
 	dim as integer foo = not GLOB_VAL
 	
 	type bar
@@ -15,8 +15,8 @@ namespace ns
 	end type
 end namespace
 
-sub test_1	
-	using ns
+private sub test_1 cdecl
+	using fbc_tests.ns.glob
 
 	CU_ASSERT( foo = GLOB_VAL )
 	CU_ASSERT( .foo = GLOB_VAL )
@@ -24,10 +24,10 @@ sub test_1
 	CU_ASSERT( global.foo = GLOB_VAL )
 end sub	
 
-sub test_2
+private sub test_2 cdecl
 	dim as integer foo = LOCA_VAL
 	
-	using ns
+	using fbc_tests.ns.glob
 
 	CU_ASSERT( foo = LOCA_VAL )
 	CU_ASSERT( .foo = LOCA_VAL )
@@ -35,8 +35,8 @@ sub test_2
 	CU_ASSERT( global.foo = LOCA_VAL )
 end sub	
 
-sub test_3
-	dim as ns.bar bar = ( LOCA_VAL )
+private sub test_3 cdecl
+	dim as fbc_tests.ns.glob.bar bar = ( LOCA_VAL )
 
 	with bar
 		CU_ASSERT( foo = GLOB_VAL )
@@ -46,6 +46,12 @@ sub test_3
 	end with
 end sub	
 	
-	test_1
-	test_2
-	test_3
+private sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.namespace.global")
+	
+	fbcu.add_test("test 1", @test_1)
+	fbcu.add_test("test 2", @test_2)
+	fbcu.add_test("test 3", @test_3)
+	
+end sub

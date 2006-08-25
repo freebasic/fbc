@@ -20,7 +20,7 @@ FBC_LFLAGS := $(FBCU_LIBS) -p $(FBCU_DIR) -x $(MAINEXE)
 
 # dirs to be updated: [data] dim namespace
 
-DIRLIST := comments compound console crt datetime dim expressions file functions interactive
+DIRLIST := comments compound console crt datetime dim expressions file functions interactive namespace
 DIRLIST += numbers macros optimizations overload pointers scopes string structs swap threads wstring
 
 SRCLIST := $(foreach dir, $(DIRLIST), $(wildcard $(dir)/*.bas))

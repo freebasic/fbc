@@ -1,24 +1,23 @@
- 
+# include "fbcu.bi"
 
 const TEST_VAL1 = 1234
 const TEST_VAL2 = 5678
 
-namespace foo
+namespace fbc_tests.ns.enum_
 	enum bar
     	one = TEST_VAL1
         two = TEST_VAL2
 	end enum 
-
 	
 	namespace inner
-		sub test_1
-			dim as foo.bar b = foo.one
+		private sub test_3 cdecl
+			dim as fbc_tests.ns.enum_.bar b = fbc_tests.ns.enum_.one
 	
 			CU_ASSERT( b = TEST_VAL1 )
-			CU_ASSERT( foo.two = TEST_VAL2 )
+			CU_ASSERT( fbc_tests.ns.enum_.two = TEST_VAL2 )
 		end sub
 
-		sub test_2
+		private sub test_4 cdecl
 			dim as bar b = one
 			
 			CU_ASSERT( b = TEST_VAL1 )
@@ -29,17 +28,17 @@ namespace foo
 end namespace 
 
 ''
-sub test_1
-	dim as foo.bar b = foo.one
+private sub test_1 cdecl
+	dim as fbc_tests.ns.enum_.bar b = fbc_tests.ns.enum_.one
 	
 	CU_ASSERT( b = TEST_VAL1 )
-	CU_ASSERT( foo.two = TEST_VAL2 )
+	CU_ASSERT( fbc_tests.ns.enum_.two = TEST_VAL2 )
 
 end sub
 
 ''
-sub test_2
-	using foo
+private sub test_2 cdecl
+	using fbc_tests.ns.enum_
 
 	dim as bar b = one
 	
@@ -48,12 +47,19 @@ sub test_2
 	
 end sub
 
-	test_1
-	test_2
-	
-	foo.inner.test_1
+private sub ctor () constructor
 
-	using foo
-	inner.test_2
+	fbcu.add_suite("fbc_tests.namespace.enum")
+
+	fbcu.add_test("test 1", @test_1)
+
+	fbcu.add_test("test 2", @test_2)
+
+	fbcu.add_test("test 3", @fbc_tests.ns.enum_.inner.test_3)
+
+	using fbc_tests.ns.enum_
+	fbcu.add_test("test 4", @inner.test_4)
+
+end sub
 
 	

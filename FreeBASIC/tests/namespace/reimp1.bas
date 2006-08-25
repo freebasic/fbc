@@ -2,12 +2,12 @@
 '' namespace re-implementation + USING test
 ''
 
-
+# include "fbcu.bi"
 
 const TEST_T1 = -123
 const TEST_T2 = 123
 
-namespace foo 
+namespace fbc_tests.ns.reimp1.foo 
 
 	type t1
 		field1 as byte 
@@ -15,7 +15,7 @@ namespace foo
 
 end namespace 
 
-namespace bar 
+namespace fbc_tests.ns.reimp1.bar 
 
 	using foo 
 	
@@ -25,7 +25,7 @@ namespace bar
 
 end namespace 
 
-namespace foo 
+namespace fbc_tests.ns.reimp1.foo 
 
 	type t2
 		field1 as ubyte
@@ -33,7 +33,7 @@ namespace foo
 
 end namespace 
 
-namespace bar 
+namespace fbc_tests.ns.reimp1.bar 
 
 	using foo
 	
@@ -43,7 +43,14 @@ namespace bar
 
 end namespace
 
-	
-	bar.foobar( type<foo.t1>( TEST_T1 ) )
-	bar.foobar( type<foo.t2>( TEST_T2 ) )
+private sub test cdecl
+	fbc_tests.ns.reimp1.bar.foobar( type<fbc_tests.ns.reimp1.foo.t1>( TEST_T1 ) )
+	fbc_tests.ns.reimp1.bar.foobar( type<fbc_tests.ns.reimp1.foo.t2>( TEST_T2 ) )
+end sub
 
+private sub ctor () constructor
+
+	fbcu.add_suite("fbc_tests.namespace.reimp1")
+	fbcu.add_test("test", @test)
+	
+end sub
