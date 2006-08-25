@@ -93,10 +93,6 @@ type FB_CMPSTMT_EXTERN
 	lastmang	as FB_MANGLING
 end type
 
-type FB_CMPSTMT_SCOPE
-	lastisscope	as integer
-end type
-
 type FB_CMPSTMTSTK
 	id			as integer
 	allowmask	as FB_CMPSTMT_MASK
@@ -111,7 +107,6 @@ type FB_CMPSTMTSTK
 		with	as FB_CMPSTMT_WITH
 		nspc	as FB_CMPSTMT_NAMESPACE
 		ext		as FB_CMPSTMT_EXTERN
-		scp		as FB_CMPSTMT_SCOPE
 	end union
 end type
 

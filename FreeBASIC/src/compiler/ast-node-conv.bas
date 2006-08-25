@@ -237,14 +237,14 @@ end function
 #macro hDoGlobOpOverload( to_dtype, to_subtype, node )
 	scope
 		dim as FBSYMBOL ptr proc
-		dim as integer is_ambiguous
+		dim as FB_ERRMSG err_num
 
-		proc = symbFindCastOvlProc( to_dtype, to_subtype, node, @is_ambiguous )
+		proc = symbFindCastOvlProc( to_dtype, to_subtype, node, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call
 			return astBuildCALL( proc, 1, l )
 		else
-			if( is_ambiguous ) then
+			if( err_num <> FB_ERRMSG_OK ) then
 				return NULL
 			end if
 		end if

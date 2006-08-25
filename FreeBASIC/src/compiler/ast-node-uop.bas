@@ -131,8 +131,9 @@ function astNewUOP _
 	) as ASTNODE ptr static
 
     dim as ASTNODE ptr n
-    dim as integer dclass, dtype, is_ambiguous
+    dim as integer dclass, dtype
     dim as FBSYMBOL ptr proc
+    dim as FB_ERRMSG err_num
 
 	function = NULL
 
@@ -142,12 +143,12 @@ function astNewUOP _
 
 	'' check op overloading
 	if( symb.globOpOvlTb(op).head <> NULL ) then
-		proc = symbFindUopOvlProc( op, o, @is_ambiguous )
+		proc = symbFindUopOvlProc( op, o, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call
 			return astBuildCALL( proc, 1, o )
 		else
-			if( is_ambiguous ) then
+			if( err_num <> FB_ERRMSG_OK ) then
 				exit function
 			end if
 		end if

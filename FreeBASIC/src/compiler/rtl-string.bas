@@ -3265,6 +3265,7 @@ function rtlStrToVal _
     dim as ASTNODE ptr proc
     dim as FBSYMBOL ptr f, s
     dim as FB_CALL_ARG arg
+    dim as FB_ERRMSG err_num
 
     function = NULL
 
@@ -3298,7 +3299,10 @@ function rtlStrToVal _
 	arg.expr = expr
 	arg.mode = INVALID
 	arg.next = NULL
-	f = symbFindClosestOvlProc( f, 1, @arg )
+	f = symbFindClosestOvlProc( f, 1, @arg, @err_num )
+    if( f = NULL ) then
+    	exit function
+    end if
 
     proc = astNewCALL( f )
 

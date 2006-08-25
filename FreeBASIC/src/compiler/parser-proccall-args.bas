@@ -312,6 +312,7 @@ private function hOvlProcArgList _
     dim as ASTNODE ptr procexpr = any
     dim as FBSYMBOL ptr param = any, ovlproc = any
     dim as FB_CALL_ARG ptr arg_head = any, arg_tail = any, arg = any, nxt = any
+    dim as FB_ERRMSG err_num = any
 
 	function = NULL
 
@@ -397,8 +398,12 @@ private function hOvlProcArgList _
 	end if
 
 	'' try finding the closest overloaded proc
-	ovlproc = symbFindClosestOvlProc( proc, args, arg_head )
+	ovlproc = symbFindClosestOvlProc( proc, args, arg_head, @err_num )
 	if( ovlproc = NULL ) then
+		if( err_num <> FB_ERRMSG_OK ) then
+			errReportParam( proc, 0, NULL, err_num )
+		end if
+
 		hDelArgNodes( arg_head )
 		if( errGetLast( ) <> FB_ERRMSG_OK ) then
 			exit function

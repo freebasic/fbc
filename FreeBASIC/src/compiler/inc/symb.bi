@@ -606,27 +606,27 @@ declare function 	symbFindClosestOvlProc	( _
 												byval proc as FBSYMBOL ptr, _
 					   		    			  	byval params as integer, _
 												byval arg_head as FB_CALL_ARG ptr, _
-												byval isAmbiguous as integer ptr = NULL _
+												byval err_num as FB_ERRMSG ptr _
 											) as FBSYMBOL ptr
 
 declare function 	symbFindBopOvlProc		( _
 												byval op as AST_OP, _
 												byval l as ASTNODE ptr, _
 												byval r as ASTNODE ptr, _
-												byval isambiguous as integer ptr _
+												byval err_num as FB_ERRMSG ptr _
 											) as FBSYMBOL ptr
 
 declare function 	symbFindUopOvlProc		( _
 												byval op as AST_OP, _
 												byval l as ASTNODE ptr, _
-												byval isambiguous as integer ptr _
+												byval err_num as FB_ERRMSG ptr _
 											) as FBSYMBOL ptr
 
 declare function 	symbFindCastOvlProc 	( _
 												byval to_dtype as integer, _
 												byval to_subtype as FBSYMBOL ptr, _
 												byval expr as ASTNODE ptr, _
-												byval isambiguous as integer ptr _
+												byval err_num as FB_ERRMSG ptr _
 											) as FBSYMBOL ptr
 
 declare function 	symbLookupUDTElm		( _

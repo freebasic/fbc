@@ -624,26 +624,26 @@ end function
 
 	if( symb.globOpOvlTb(op).head <> NULL ) then
 		dim as FBSYMBOL ptr proc
-		dim as integer is_ambiguous
+		dim as FB_ERRMSG err_num
 
-		proc = symbFindBopOvlProc( op, l, r, @is_ambiguous )
+		proc = symbFindBopOvlProc( op, l, r, @err_num )
 		if( proc <> NULL ) then
 			'' build a proc call
 			return astBuildCALL( proc, 2, l, r )
 		else
-			if( is_ambiguous ) then
+			if( err_num <> FB_ERRMSG_OK ) then
 				return NULL
 			end if
 
 			'' commutative?
 			if( astGetOpIsCommutative( op ) ) then
 				'' try (r, l) too
-				proc = symbFindBopOvlProc( op, r, l, @is_ambiguous )
+				proc = symbFindBopOvlProc( op, r, l, @err_num )
 				if( proc <> NULL ) then
 					'' build a proc call
 					return astBuildCALL( proc, 2, r, l )
 				else
-					if( is_ambiguous ) then
+					if( err_num <> FB_ERRMSG_OK ) then
 						return NULL
 					end if
 				end if

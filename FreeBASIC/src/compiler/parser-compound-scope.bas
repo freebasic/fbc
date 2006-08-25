@@ -56,11 +56,6 @@ function cScopeStmtBegin as integer
 	stk = cCompStmtPush( FB_TK_SCOPE )
 	stk->scopenode = n
 
-	'' QB quirk: implicit vars inside implicit scope blocks
-	'' are allocated in the function scope
-	stk->scp.lastisscope = env.isscope
-	env.isscope = TRUE
-
 	function = TRUE
 
 end function
@@ -81,8 +76,6 @@ function cScopeStmtEnd as integer
 	'' END SCOPE
 	lexSkipToken( )
 	lexSkipToken( )
-
-	env.isscope = stk->scp.lastisscope
 
 	''
 	if( stk->scopenode <> NULL ) then

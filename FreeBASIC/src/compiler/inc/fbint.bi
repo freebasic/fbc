@@ -663,7 +663,6 @@ type FBENV
 	checkarray		as integer					'' used by LEN() to handle expr's and ()-less arrays
 	ctxsym			as FBSYMBOL ptr				'' used to resolve the address of overloaded procs
 	isexpr 			as integer					'' parsing an expression?
-	isscope			as integer					'' explicit SCOPE .. END SCOPE?
 
 	''
 	langopt			as FB_LANG_OPT				'' language supported features
