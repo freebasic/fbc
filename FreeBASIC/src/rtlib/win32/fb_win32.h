@@ -47,9 +47,8 @@
 #endif
 
 #ifdef TARGET_WIN32
-/* don't include libmingex */
+/* don't include liboldname */
 #define _NO_OLDNAMES 1
-#define __NO_ISOCEXT 1
 #endif
 
 #define WIN32_LEAN_AND_MEAN

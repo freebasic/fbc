@@ -35,12 +35,12 @@
 
 #if !defined(HAVE_STRTOF)
  #undef strtof
- #define strtof(x,y) ((float)strtod(x,y))
+ #define strtof(x, y) ((float)strtod(x, y))
 #endif
 
 #if !defined(HAVE_POPEN) || defined(_NO_OLDNAMES)
  #undef popen
- #define popen(c,m) _popen(c, m)
+ #define popen(c, m) _popen(c, m)
 #endif
 
 #if !defined(HAVE_PCLOSE) || defined(_NO_OLDNAMES)
@@ -60,12 +60,17 @@
 
 #if !defined(HAVE_MKDIR) || defined(_NO_OLDNAMES)
  #undef mkdir
- #define mkdir(x,y) _mkdir(x)
+ #define mkdir(x, y) _mkdir(x)
 #endif
 
 #if !defined(HAVE_RMDIR) || defined(_NO_OLDNAMES)
  #undef rmdir
  #define rmdir(x) _rmdir(x)
+#endif
+
+#if !defined(HAVE_STRNCASECMP) || defined(_NO_OLDNAMES)
+ #undef strncasecmp
+ #define strncasecmp(sz1, sz2, siz) _strnicmp(sz1, sz2, siz)
 #endif
 
 #if !defined(HAVE_SNPRINTF) || defined(_NO_OLDNAMES)
@@ -86,21 +91,5 @@ static __inline__ int snprintf (char *buffer, size_t n, const char *format, ...)
 }
  #endif /* TARGET_WIN32 */
 #endif /* HAVE_SNPRINTF */
-
-#if !defined(HAVE_WCSTOLL) || defined(_NO_OLDNAMES)
- #ifdef TARGET_WIN32
-  long long __cdecl _wcstoi64(const wchar_t * __restrict__, wchar_t** __restrict__, int);
-  #undef wcstoll
-  #define wcstoll _wcstoi64
- #endif
-#endif
-
-#if !defined(HAVE_WCSTOULL) || defined(_NO_OLDNAMES)
- #ifdef TARGET_WIN32
-  unsigned long long __cdecl _wcstoui64(const wchar_t * __restrict__, wchar_t ** __restrict__, int);
-  #undef wcstoull
-  #define wcstoull _wcstoui64
- #endif
-#endif
 
 #endif /* __FB_CONFIG_H__ */
