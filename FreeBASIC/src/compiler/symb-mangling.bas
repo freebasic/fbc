@@ -990,10 +990,10 @@ private function hGetOperatorName _
 		function = @"eO"
 
 	case AST_OP_EQV
-		function = @"eq"
+		function = @"ev"
 
 	case AST_OP_EQV_SELF
-		function = @"eQ"
+		function = @"eV"
 
 	case AST_OP_IMP
 		function = @"im"
