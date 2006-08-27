@@ -88,6 +88,7 @@ Version 0.17 Beta:
 - RETURN could be used in functions without returning any expression (v1c)
 - lvalue op= rhs had side-effects if functions were present in lvalue (v1c)
 - (*udtptr).field wasn't allowed (v1c)
+- pointers were being allowed as array indexes (v1c)
 
 
 Version 0.16 Beta:
