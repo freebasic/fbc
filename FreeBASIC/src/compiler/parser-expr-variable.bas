@@ -27,6 +27,39 @@
 #include once "inc\parser.bi"
 #include once "inc\ast.bi"
 
+'':::::
+private function hCheckIndex _
+	( _
+		byval expr as ASTNODE ptr _
+	) as ASTNODE ptr
+
+	'' if index isn't an integer, convert
+	select case astGetDataType( expr )
+	case FB_DATATYPE_INTEGER, FB_DATATYPE_UINT
+
+	case is >= FB_DATATYPE_POINTER
+		if( errReport( FB_ERRMSG_INVALIDARRAYINDEX, TRUE ) = FALSE ) then
+			exit function
+		else
+			'' error recovery: fake an expr
+			expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+		end if
+
+	case else
+		expr = astNewCONV( FB_DATATYPE_INTEGER, NULL, expr )
+		if( expr = NULL ) then
+			if( errReport( FB_ERRMSG_INVALIDARRAYINDEX, TRUE ) = FALSE ) then
+				exit function
+			else
+				'' error recovery: fake an expr
+				expr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
+			end if
+		end if
+	end select
+
+	function = expr
+
+end function
 
 '':::::
 ''FieldArray    =   '(' Expression (',' Expression)* ')' .
@@ -68,18 +101,10 @@ private function hFieldArray _
 			end if
 		end if
 
-		'' if index isn't an integer, convert
-		if( (astGetDataClass( dimexpr ) <> FB_DATACLASS_INTEGER) or _
-			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
-			dimexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, dimexpr )
-			if( dimexpr = NULL ) then
-				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					dimexpr = astNewCONSTi( d->lower, FB_DATATYPE_INTEGER )
-				end if
-			end if
+		'' convert index if needed
+		dimexpr = hCheckIndex( dimexpr )
+		if( dimexpr = NULL ) then
+			exit function
 		end if
 
     	'' bounds checking
@@ -337,18 +362,10 @@ function cDerefFields _
 				end if
 			end if
 
-			'' if index isn't an integer, convert
-			if( (astGetDataClass( idxexpr ) <> FB_DATACLASS_INTEGER) or _
-				(astGetDataSize( idxexpr ) <> FB_POINTERSIZE) ) then
-				idxexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, idxexpr )
-				if( idxexpr = NULL ) then
-					if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-						exit function
-					else
-						'' error recovery: faken an expr
-						idxexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-					end if
-				end if
+			'' convert index if needed
+			idxexpr = hCheckIndex( idxexpr )
+			if( idxexpr = NULL ) then
+				exit function
 			end if
 
 			'' ']'
@@ -698,19 +715,10 @@ function cDynArrayIdx _
 			end if
 		end if
 
-		'' if index isn't an integer, convert
-		if( (astGetDataClass( dimexpr ) <> FB_DATACLASS_INTEGER) or _
-			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
-
-			dimexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, dimexpr )
-			if( dimexpr = NULL ) then
-				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					dimexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				end if
-			end if
+		'' convert index if needed
+		dimexpr = hCheckIndex( dimexpr )
+		if( dimexpr = NULL ) then
+			exit function
 		end if
 
     	'' bounds checking
@@ -818,19 +826,10 @@ function cArgArrayIdx _
 			end if
 		end if
 
-		'' if index isn't an integer, convert
-		if( (astGetDataClass( dimexpr ) <> FB_DATACLASS_INTEGER) or _
-			(astGetDataSize( dimexpr ) <> FB_POINTERSIZE) ) then
-
-			dimexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, dimexpr )
-			if( dimexpr = NULL ) then
-				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					dimexpr = astNewCONSTi( 0, FB_DATATYPE_INTEGER )
-				end if
-			end if
+		'' convert index if needed
+		dimexpr = hCheckIndex( dimexpr )
+		if( dimexpr = NULL ) then
+			exit function
 		end if
 
     	'' bounds checking
@@ -934,19 +933,10 @@ function cArrayIdx _
 			end if
 		end if
 
-		'' if index isn't an integer, convert
-		if( (astGetDataClass( dimexpr ) <> FB_DATACLASS_INTEGER) or _
-			(astGetDataSize( dimexpr ) <> FB_INTEGERSIZE) ) then
-
-			dimexpr = astNewCONV( FB_DATATYPE_INTEGER, NULL, dimexpr )
-			if( dimexpr = NULL ) then
-				if( errReport( FB_ERRMSG_INVALIDDATATYPES ) = FALSE ) then
-					exit function
-				else
-					'' error recovery: fake an expr
-					dimexpr = astNewCONSTi( d->lower, FB_DATATYPE_INTEGER )
-            	end if
-			end if
+		'' convert index if needed
+		dimexpr = hCheckIndex( dimexpr )
+		if( dimexpr = NULL ) then
+			exit function
 		end if
 
     	'' bounds checking

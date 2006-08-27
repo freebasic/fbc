@@ -20,7 +20,6 @@
 ''
 ''
 
-
 #include once "inc\fb.bi"
 #include once "inc\fbint.bi"
 #include once "inc\ir.bi"
@@ -196,7 +195,8 @@ end type
 		@"Only valid in -lang", _
 		@"Default types or suffixes are only valid in -lang", _
 		@"Suffixes are only valid in -lang", _
-		@"Implicit variables are only valid in -lang" _
+		@"Implicit variables are only valid in -lang", _
+		@"Invalid array index" _
 	}
 
 
