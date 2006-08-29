@@ -794,11 +794,8 @@ FUNC(fb_hPutAlpha4MMX)
 	subl %ebx, %edx
 	movl %edx, LOCAL2
 	movq (rb_32), %mm5
-	movl $0x10001, %eax
 	movq %mm5, %mm6
-	movd %eax, %mm7
 	psllw $8, %mm6
-	punpckldq %mm7, %mm7
 
 LABEL(alpha4_y_loop)
 	movl ARG3, %ecx
@@ -849,7 +846,6 @@ LABEL(alpha4_x_loop)
 	pand %mm5, %mm0
 	punpcklwd %mm2, %mm2
 	pand %mm5, %mm1
-	paddw %mm7, %mm2
 	psrlw $8, %mm3
 	psubw %mm1, %mm0
 	psrlw $8, %mm4

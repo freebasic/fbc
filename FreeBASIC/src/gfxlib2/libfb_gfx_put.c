@@ -71,7 +71,7 @@ static void fb_hPutAlpha4C(unsigned char *src, unsigned char *dest, int w, int h
 		for (x = w; x; x--) {
 			sc = *s++;
 			dc = *d;
-			a = (sc >> 24) + 1;
+			a = (sc >> 24);
 			srb = sc & MASK_RB_32;
 			sg = sc & MASK_G_32;
 			drb = dc & MASK_RB_32;
