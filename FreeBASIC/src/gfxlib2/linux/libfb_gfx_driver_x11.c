@@ -182,6 +182,7 @@ static int x11_init(void)
 		else
 			update_mask = update_mask_32;
 	}
+	XMapRaised(fb_linux.display, fb_linux.window);
 	
 	fb_linux.display_offset = 0;
 	display_name = XDisplayName(NULL);
@@ -230,7 +231,6 @@ static int x11_init(void)
 	if (!image)
 		return -1;
 	
-	XMapRaised(fb_linux.display, fb_linux.window);
 	XSync(fb_linux.display, False);
 	
 	return 0;
