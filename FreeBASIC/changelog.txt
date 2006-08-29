@@ -89,6 +89,8 @@ Version 0.17 Beta:
 - lvalue op= rhs had side-effects if functions were present in lvalue (v1c)
 - (*udtptr).field wasn't allowed (v1c)
 - pointers were being allowed as array indexes (v1c)
+- Linux X11 gfx driver kept the program window hidden when starting in fullscreen mode (lillo)
+- 'DRAW "X" & @cmd' did reset coordinates before executing cmd to the starting position before running the whole DRAW statement (lillo)
 
 
 Version 0.16 Beta:
