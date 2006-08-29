@@ -138,9 +138,13 @@ FBCALL void fb_GfxDraw(void *target, FBSTRING *command)
 				 * resides at location NAN (0x80000000) */
 				if ((value1 = parse_number(&c)) == NAN)
 					goto error;
+				fb_mode->last_x = x - 0.5;
+				fb_mode->last_y = y - 0.5;
 				DRIVER_UNLOCK();
 				fb_GfxDraw(target, (FBSTRING *)value1);
 				DRIVER_LOCK();
+				x = fb_mode->last_x + 0.5;
+				y = fb_mode->last_y + 0.5;
 				break;
 
 			case 'P':
