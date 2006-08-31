@@ -18,15 +18,15 @@ type BUFFER
 	buff			as zstring * SERVER_BUFFSIZE+1
 	ptr				as zstring ptr
 	len				as integer
-	cond			as integer
+	cond			as any ptr
 end type
 
 type CLIENT
 	socket			as SOCKET
 	ip				as integer
 	port			as integer
-	recvthread		as integer	
-	sendthread		as integer
+	recvthread		as any ptr
+	sendthread		as any ptr
 	recvbuffer 		as BUFFER
 	sendbuffer 		as BUFFER
 	

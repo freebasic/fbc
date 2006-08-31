@@ -173,7 +173,8 @@ Debugging:
     - Place a breakpoint in the first line using: "b main". To place a breakpoint
       in a function called "abc" use: "b ABC" (note: all in uppercase, GDB is 
       case sensitive by default, but you can use the "set language pascal" command
-      to change GDB to case-insensitive mode).
+      to change GDB to case-insensitive mode, pointer dereference will follow the
+      pascal syntax then).
 
     - Type "r" to start the application.
 

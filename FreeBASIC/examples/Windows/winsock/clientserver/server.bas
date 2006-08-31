@@ -15,9 +15,9 @@ end type
 
 type SERVERCTX
 	socket			as SOCKET
-	acceptthread	as integer
+	acceptthread	as any ptr
 	isrunning		as integer
-	globmutex		as integer
+	globmutex		as any ptr
 	
 	clientlist		as CLIENTLIST
 end type
