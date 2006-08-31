@@ -5,8 +5,8 @@
 declare sub consumer ( byval param as integer )
 declare sub producer ( byval param as integer )
 
-	dim shared produced as integer, consumed as integer
-	dim consumer_id as integer, producer_id as integer
+	dim shared as any ptr produced, consumed 
+	dim as any ptr consumer_id, producer_id
 
 	produced = mutexcreate
 	consumed = mutexcreate

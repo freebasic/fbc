@@ -325,10 +325,10 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		} _
 	 	), _
 		/' threadcreate ( byval proc as sub( byval param as integer ),
-						  byval param as integer = 0) as integer '/ _
+						  byval param as integer = 0) as any ptr '/ _
 		( _
 			@"threadcreate", @"fb_ThreadCreate", _
-	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
 	 		@hMultithread_cb, FB_RTL_OPT_MT, _
 	 		2, _
 	 		{ _
@@ -340,7 +340,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 	 	), _
-		/' threadwait ( byval id as integer ) as void '/ _
+		/' threadwait ( byval id as any ptr ) as void '/ _
 		( _
 			@"threadwait", @"fb_ThreadWait", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
@@ -348,18 +348,18 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		1, _
 	 		{ _
 	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 	 	), _
-		/' mutexcreate ( ) as integer '/ _
+		/' mutexcreate ( ) as any ptr '/ _
 		( _
 			@"mutexcreate", @"fb_MutexCreate", _
-	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
 	 		NULL, FB_RTL_OPT_MT, _
 	 		0 _
 	 	), _
-		/' mutexdestroy ( byval id as integer ) as void '/ _
+		/' mutexdestroy ( byval id as any ptr ) as void '/ _
 		( _
 			@"mutexdestroy", @"fb_MutexDestroy", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
@@ -367,11 +367,11 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		1, _
 	 		{ _
 	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 	 	), _
-		/' mutexlock ( byval id as integer ) as void '/ _
+		/' mutexlock ( byval id as any ptr ) as void '/ _
 		( _
 			@"mutexlock", @"fb_MutexLock", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
@@ -379,11 +379,11 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		1, _
 	 		{ _
 	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 	 	), _
-		/' mutexunlock ( byval id as integer ) as void '/ _
+		/' mutexunlock ( byval id as any ptr ) as void '/ _
 		( _
 			@"mutexunlock", @"fb_MutexUnlock", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
@@ -391,18 +391,18 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		1, _
 	 		{ _
 	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 	 	), _
-		/' condcreate ( ) as integer '/ _
+		/' condcreate ( ) as any ptr '/ _
 		( _
 			@"condcreate", @"fb_CondCreate", _
-	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
 	 		NULL, FB_RTL_OPT_MT, _
 	 		0 _
 	 	), _
-		/' conddestroy ( byval id as integer ) as void '/ _
+		/' conddestroy ( byval id as any ptr ) as void '/ _
 		( _
 			@"conddestroy", @"fb_CondDestroy", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
@@ -410,11 +410,11 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		1, _
 	 		{ _
 	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 	 	), _
-		/' condsignal ( byval id as integer ) as void '/ _
+		/' condsignal ( byval id as any ptr ) as void '/ _
 		( _
 			@"condsignal", @"fb_CondSignal", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
@@ -422,11 +422,11 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		1, _
 	 		{ _
 	 			( _
-	 				FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 	 	), _
-		/' condbroadcast ( byval id as integer ) as void '/ _
+		/' condbroadcast ( byval id as any ptr ) as void '/ _
 		( _
 			@"condbroadcast", @"fb_CondBroadcast", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
@@ -434,11 +434,11 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		1, _
 	 		{ _
 	 			( _
-	 				FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 	 	), _
-		/' condwait ( byval id as integer ) as void '/ _
+		/' condwait ( byval id as any ptr ) as void '/ _
 		( _
 			@"condwait", @"fb_CondWait", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
@@ -446,14 +446,14 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		1, _
 	 		{ _
 	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 	 	), _
-		/' dylibload ( filename as string ) as integer '/ _
+		/' dylibload ( filename as string ) as any ptr '/ _
 		( _
 			@"dylibload", @"fb_DylibLoad", _
-	 		FB_DATATYPE_INTEGER, FB_FUNCMODE_STDCALL, _
+	 		FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
 	 		NULL, FB_RTL_OPT_NONE, _
 	 		1, _
 	 		{ _
@@ -462,7 +462,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 			) _
 	 		} _
 	 	), _
-		/' dylibsymbol ( byval library as integer, symbol as string) as any ptr '/ _
+		/' dylibsymbol ( byval library as any ptr, symbol as string) as any ptr '/ _
 		( _
 			@"dylibsymbol", @"fb_DylibSymbol", _
 	 		FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
@@ -470,14 +470,14 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		2, _
 	 		{ _
 	 			( _
-	 				FB_DATATYPE_INTEGER, FB_PARAMMODE_BYVAL, FALSE _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
 	 			), _
 	 			( _
 	 				FB_DATATYPE_STRING, FB_PARAMMODE_BYREF, FALSE _
 	 			) _
 	 		} _
 	 	), _
-		/' dylibfree ( byval library as integer ) as void '/ _
+		/' dylibfree ( byval library as any ptr ) as void '/ _
 		( _
 			@"dylibfree", @"fb_DylibFree", _
 	 		FB_DATATYPE_VOID, FB_FUNCMODE_STDCALL, _
@@ -485,7 +485,7 @@ declare function 	hMultithread_cb		( byval sym as FBSYMBOL ptr ) as integer
 	 		1, _
 	 		{ _
 	 			( _
-	 				FB_DATATYPE_INTEGER,FB_PARAMMODE_BYVAL, FALSE _
+	 				FB_DATATYPE_POINTER+FB_DATATYPE_VOID, FB_PARAMMODE_BYVAL, FALSE _
 	 			) _
 	 		} _
 		), _

@@ -1,5 +1,5 @@
 ''
-'' freeBASIC threads example
+'' threads example
 ''
 
 const THREADS   = 5
@@ -7,8 +7,8 @@ const SECS 		= 3
 
 declare sub mythread ( byval num as integer )
 
-	dim thread(THREADS) as integer
-	dim i as integer
+	dim as any ptr thread(0 to THREADS-1)
+	dim as integer i 
 	
 	'' create and call the threads
 	for i = 0 to THREADS-1
@@ -17,16 +17,16 @@ declare sub mythread ( byval num as integer )
 			print "Error creating thread! Exiting..."
 			end 1
 		end if
-	next i
+	next
 	
 	'' wait all threads to finish
 	for i = 0 to THREADS-1
 		threadwait( thread(i) )
-	next i
+	next
 	
 '':::::	
 sub mythread ( byval num as integer )
-	dim i as integer, k as string
+	dim as integer i
 	
 	for i = 0 to SECS-1
 		print "Hello from thread: " & num & " (" & SECS-i & " sec(s) left)"
