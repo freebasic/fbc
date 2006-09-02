@@ -163,7 +163,7 @@ end type
 		@"END SELECT without SELECT", _
 		@"END SUB or FUNCTION without SUB or FUNCTION",_
 		@"END SCOPE without SCOPE", _
-		@"END MAMESPACE without NAMESPACE", _
+		@"END NAMESPACE without NAMESPACE", _
 		@"END EXTERN without EXTERN", _
 		@"ELSEIF without IF", _
 		@"ELSE without IF", _
