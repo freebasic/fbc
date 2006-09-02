@@ -1,9 +1,5 @@
-# include "fbcu.bi"
 
-
-
-
-namespace fbc_tests.comments.multiline
+' TEST_MODE : COMPILE_ONLY_OK
 
 sub test_1 cdecl ()
 /'
@@ -28,11 +24,9 @@ end sub
 sub proc /' no alias '/ ( byval bar as zstring ptr /' const '/ = 0, _
 						 byref baz as integer /' in-out '/ = 0 ) /' void '/
 
-	CU_ASSERT_EQUAL( bar, 0 /' this comment wouldn't appear in CU_ASSERT '/ )
+  ASSERT( bar = 0 /' this comment wouldn't appear in ASSERT '/ )
 
 end sub
 
-sub ctor () constructor
-end sub
+proc
 
-end namespace

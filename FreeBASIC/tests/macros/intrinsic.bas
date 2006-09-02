@@ -1,3 +1,4 @@
+' TEST_MODE : COMPILE_ONLY_OK
 
 '' Test intrinsic defines that are always defined
 
@@ -86,7 +87,7 @@
 #endif
 
 #ifndef __FB_OUT_OBJ__ 
-#error __DATE__ not defined
+#error __FB_OUT_OBJ__ not defined
 #endif
 
 #ifndef __LINE__ 

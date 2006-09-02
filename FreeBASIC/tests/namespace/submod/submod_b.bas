@@ -1,3 +1,5 @@
+' TEST_MODE : MULTI_MODULE_TEST
+
 #include "common.bi"
 
 namespace ns

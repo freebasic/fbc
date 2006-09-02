@@ -50,17 +50,17 @@ end namespace
 
 	dim foo as foo
 
-	CU_ASSERT( len( foo ) = len( ns2.foo ) )
+  ASSERT( len( foo ) = len( ns2.foo ) )
 	foo.bar.abc = len( ns3.ns1.baz1 )
-	CU_ASSERT( foo.bar.abc = len( ns3.ns1.baz1 ) )
+  ASSERT( foo.bar.abc = len( ns3.ns1.baz1 ) )
 
 ''
 private sub func
 	dim foo as ns2.foo
-	CU_ASSERT( len( foo ) = len( ns2.foo ) )
+  ASSERT( len( foo ) = len( ns2.foo ) )
 
 	foo.bar.abc = len( ns3.ns1.baz2 )
-	CU_ASSERT( foo.bar.abc = len( ns3.ns1.baz2 ) )
+  ASSERT( foo.bar.abc = len( ns3.ns1.baz2 ) )
 end sub
 
 	func

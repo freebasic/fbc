@@ -1,4 +1,4 @@
-
+' TEST_MODE : MULTI_MODULE_TEST
 
 
 #include once "submod.bi"

@@ -1,6 +1,8 @@
+include ../common.mk
+
 #:: the names
 
-FBC := fbc
+FBC := fbc$(EXEEXT)
 FBCU_ := fbcu
 
 

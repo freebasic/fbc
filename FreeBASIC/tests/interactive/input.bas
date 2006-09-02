@@ -28,8 +28,8 @@ sub test_1 cdecl ()
 	cls
 	locate ,,0
 	
-	draw_rect 1, 1, w, h
-	center 2, "INPUT test"
+  fbc_tests.console.draw_rect 1, 1, w, h
+  fbc_tests.console.center 2, "INPUT test"
 	
 	locate 5, 3, 1: input ">", s
 	
@@ -39,8 +39,8 @@ sub test_1 cdecl ()
 	cls
 	locate ,,0
 	
-	draw_rect 1, 1, w, h
-	center 2, "MULTIKEY test (ESC to exit)"
+  fbc_tests.console.draw_rect 1, 1, w, h
+  fbc_tests.console.center 2, "MULTIKEY test (ESC to exit)"
 	
 	do
 		for x = 0 to 127
@@ -56,8 +56,8 @@ sub test_1 cdecl ()
 	cls
 	locate ,,0
 	
-	draw_rect 1, 1, w, h
-	center 2, "GETMOUSE test (ESC to exit)"
+  fbc_tests.console.draw_rect 1, 1, w, h
+  fbc_tests.console.center 2, "GETMOUSE test (ESC to exit)"
 	
 	do
 		getmouse x, y
@@ -75,8 +75,8 @@ sub test_1 cdecl ()
 	cls
 	locate ,,0
 	
-	draw_rect 1, 1, w, h
-	center 2, "All together! (ESC to exit)"
+  fbc_tests.console.draw_rect 1, 1, w, h
+  fbc_tests.console.center 2, "All together! (ESC to exit)"
 	
 	l = 10
 	do
@@ -115,8 +115,8 @@ sub inkey_test( byval title as string )
 	dim as integer y
 	
 	cls
-	draw_rect 1, 1, w, h
-	center 2, title
+  fbc_tests.console.draw_rect 1, 1, w, h
+  fbc_tests.console.center 2, title
 	
 	view print 5 to h - 5
 	do

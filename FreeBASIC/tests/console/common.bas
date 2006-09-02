@@ -1,3 +1,5 @@
+# include once "fbcu.bi"
+
 '//
 '//	Common routines for console tests
 '//

@@ -1,4 +1,4 @@
-
+' TEST_MODE : MULTI_MODULE_TEST
 
 
 #include once "submod.bi"
@@ -10,10 +10,10 @@ declare sub test_extdyn( )
 	
 	test_extdyn( )
 	
-	CU_ASSERT( ext_nonshared_dynarray(1,1) = -1 )
-	CU_ASSERT( ext_nonshared_dynarray(1,2) = -2 )
+  ASSERT( ext_nonshared_dynarray(1,1) = -1 )
+  ASSERT( ext_nonshared_dynarray(1,2) = -2 )
 	
-	CU_ASSERT( ext_nonshared_var = 1234 )
+  ASSERT( ext_nonshared_var = 1234 )
 	
 
 ''

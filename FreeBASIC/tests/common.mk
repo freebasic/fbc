@@ -1,3 +1,8 @@
+# common.mk
+# This file is part of the FreeBASIC test suite
+#
+# Guess HOST and TARGET if not already set
+# 
 
 HOST :=
 ifeq ($(OS),DOS)
@@ -28,6 +33,9 @@ ifndef TARGET
 	endif
 	TARGET := $(HOST)
 endif
+
+# set default command names
+# 
 
 ifeq ($(TARGET),linux)
     EXEEXT :=

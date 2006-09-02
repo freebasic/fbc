@@ -1,4 +1,4 @@
-
+' TEST_MODE : MULTI_MODULE_TEST
 
 #include "common.bi"
 
@@ -11,8 +11,8 @@ sub arr_init()
 end sub
 
 sub arr_test()
-	CU_ASSERT( lbound(arr_dynamic_int) = TEST_LBOUND )
-	CU_ASSERT( lbound(arr_dynamic_int) = TEST_LBOUND )
-	CU_ASSERT( ubound(arr_dynamic_int_with_alias) = TEST_UBOUND )
-	CU_ASSERT( ubound(arr_dynamic_int_with_alias) = TEST_UBOUND )
+  ASSERT( lbound(arr_dynamic_int) = TEST_LBOUND )
+  ASSERT( lbound(arr_dynamic_int) = TEST_LBOUND )
+  ASSERT( ubound(arr_dynamic_int_with_alias) = TEST_UBOUND )
+  ASSERT( ubound(arr_dynamic_int_with_alias) = TEST_UBOUND )
 end sub

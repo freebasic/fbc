@@ -1,3 +1,6 @@
+
+' TEST_MODE : COMPILE_ONLY_OK
+
 #ifdef  empty1
 #error  empty1 should not be defined
 #endif
