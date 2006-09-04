@@ -67,7 +67,7 @@ type NewtonHingeSliderUpdateDescTag
 end type
 
 type NewtonHingeSliderUpdateDesc as NewtonHingeSliderUpdateDescTag
-type NewtonAllocMemory as function cdecl(byval as integer) as any ptr
+type NewtonAllocMemory as sub cdecl(byval as integer)
 type NewtonFreeMemory as sub cdecl(byval as any ptr, byval as integer)
 type NewtonSerialize as sub cdecl(byval as any ptr, byval as any ptr, byval as integer)
 type NewtonDeserialize as sub cdecl(byval as any ptr, byval as any ptr, byval as integer)
@@ -82,6 +82,7 @@ type NewtonSetTransform as sub cdecl(byval as NewtonBody ptr, byval as dFloat pt
 type NewtonSetRagDollTransform as sub cdecl(byval as NewtonRagDollBone ptr)
 type NewtonGetBuoyancyPlane as function cdecl(byval as integer, byval as any ptr, byval as dFloat ptr, byval as dFloat ptr) as integer
 type NewtonVehicleTireUpdate as sub cdecl(byval as NewtonJoint ptr)
+type NewtonWorldRayPrefilterCallback as function cdecl(byval as NewtonBody ptr, byval as NewtonCollision ptr, byval as any ptr) as uinteger
 type NewtonWorldRayFilterCallback as function cdecl(byval as NewtonBody ptr, byval as dFloat ptr, byval as integer, byval as any ptr, byval as dFloat) as dFloat
 type NewtonBodyLeaveWorld as sub cdecl(byval as NewtonBody ptr)
 type NewtonContactBegin as function cdecl(byval as NewtonMaterial ptr, byval as NewtonBody ptr, byval as NewtonBody ptr) as integer
@@ -115,7 +116,7 @@ declare sub NewtonWorldForEachBodyInAABBDo cdecl alias "NewtonWorldForEachBodyIn
 declare sub NewtonWorldSetUserData cdecl alias "NewtonWorldSetUserData" (byval newtonWorld as NewtonWorld ptr, byval userData as any ptr)
 declare function NewtonWorldGetUserData cdecl alias "NewtonWorldGetUserData" (byval newtonWorld as NewtonWorld ptr) as any ptr
 declare function NewtonWorldGetVersion cdecl alias "NewtonWorldGetVersion" (byval newtonWorld as NewtonWorld ptr) as integer
-declare sub NewtonWorldRayCast cdecl alias "NewtonWorldRayCast" (byval newtonWorld as NewtonWorld ptr, byval p0 as dFloat ptr, byval p1 as dFloat ptr, byval filter as NewtonWorldRayFilterCallback, byval userData as any ptr)
+declare sub NewtonWorldRayCast cdecl alias "NewtonWorldRayCast" (byval newtonWorld as NewtonWorld ptr, byval p0 as dFloat ptr, byval p1 as dFloat ptr, byval filter as NewtonWorldRayFilterCallback, byval userData as any ptr, byval prefilter as NewtonWorldRayPrefilterCallback)
 declare function NewtonMaterialGetDefaultGroupID cdecl alias "NewtonMaterialGetDefaultGroupID" (byval newtonWorld as NewtonWorld ptr) as integer
 declare function NewtonMaterialCreateGroupID cdecl alias "NewtonMaterialCreateGroupID" (byval newtonWorld as NewtonWorld ptr) as integer
 declare sub NewtonMaterialDestroyAllGroupID cdecl alias "NewtonMaterialDestroyAllGroupID" (byval newtonWorld as NewtonWorld ptr)
