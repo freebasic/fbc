@@ -1,0 +1,6 @@
+
+# TEST_MODE : MULTI_MODULE_OK
+
+MAIN := submod_a.bas
+SRCS := submod_b.bas
+
