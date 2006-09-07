@@ -5,6 +5,7 @@
 # EDIT this file when new directories are added to the testing tree
 
 DIRLIST := \
+pretest \
 comments \
 compound \
 console \
