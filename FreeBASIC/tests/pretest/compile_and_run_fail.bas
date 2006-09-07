@@ -1,0 +1,7 @@
+
+' TEST_MODE : COMPILE_AND_RUN_FAIL
+
+ASSERT( 0=1 )
+
+end 0
+
