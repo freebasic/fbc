@@ -11,7 +11,7 @@
 
 declare sub timer_handler ( byval id as integer )
 
-	dim t1, t2, t3
+	dim as integer t1, t2, t3
 	
 	print "starting.."
 	

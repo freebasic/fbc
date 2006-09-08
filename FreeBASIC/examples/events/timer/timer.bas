@@ -21,8 +21,8 @@ type TIMER_CTX
 	interval	as integer
 	callback	as TIMER_CALLBACK
 	userdata	as integer
-	cond		as integer
-	thread		as integer
+	cond		as any ptr
+	thread		as any ptr
 end type
 
 '':::::

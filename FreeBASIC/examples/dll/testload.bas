@@ -7,7 +7,7 @@
 ''       directory; see mydll.bas for info on how to create this.
 ''
 
-	dim library as integer
+	dim library as any ptr
 	dim addnumbers as function( byval operand1 as integer, byval operand2 as integer ) as integer
 
 	'' Note we specify just "mydll" as library file name; this is to ensure
@@ -28,8 +28,8 @@
 	
 	randomize timer
 	
-	x = rnd * 10
-	y = rnd * 10
+	dim as integer x = rnd * 10
+	dim as integer y = rnd * 10
 	
 	print x; " +"; y; " ="; addnumbers( x, y )
 	
