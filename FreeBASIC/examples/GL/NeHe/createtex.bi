@@ -3,8 +3,6 @@ const TEX_MIPMAP = &h2
 const TEX_NOFILTER = &h4
 const TEX_HASALPHA = &h8
 
-declare function CreateTexture( byval buffer as any ptr, byval flags as integer = 0) as uinteger
-
 '------------------------------------------------------------------------
 '' Create texture creates textures from BLOAD buffer
 private function CreateTexture( byval buffer as any ptr, byval flags as integer = 0 ) as uinteger
@@ -27,7 +25,7 @@ private function CreateTexture( byval buffer as any ptr, byval flags as integer 
 		exit function
 	end if
 
-	redim dat(w * h) as uinteger
+	redim dat(0 to (w * h) - 1) as uinteger
 	p = @dat(0)
 
 	glGenTextures 1, @tex
@@ -75,6 +73,7 @@ private function CreateTexture( byval buffer as any ptr, byval flags as integer 
 			GL_UNSIGNED_BYTE, @dat(0)
 		minfilter = magfilter
 	end if
+
 	glTexParameteri GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minfilter
 	glTexParameteri GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magfilter
 

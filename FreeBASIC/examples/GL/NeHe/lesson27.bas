@@ -65,8 +65,8 @@ dim shared as glObject obj              '' Object
 	dim as single wlp(0 to 3), lp(0 to 3)
 
 
+	screen 19, 16, , GFX_OPENGL or GFX_STENCIL_BUFFER
 	windowtitle "Banu Octavian & NeHe's Shadow Casting Tutorial"   '' Set window title
-	screen 19, 16, , 2 or &h10                   '' Request stencil buffer (&h10)
 
 	'' ReSizeGLScene
 	glViewport 0, 0, 800, 600                    '' Reset The Current Viewport

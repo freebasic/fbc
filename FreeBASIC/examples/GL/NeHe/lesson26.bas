@@ -54,8 +54,8 @@ dim shared q as GLUquadricObj ptr                          '' Quadratic For Draw
 	' Clip Plane Equations
 	dim eqr(0 to 3) as double => {0.0, - 1.0, 0.0, 0.0}        '' Plane Equation To Use For The Reflected Objects
 
+	screen 18, 16, , GFX_OPENGL or GFX_STENCIL_BUFFER
 	windowtitle "Banu Octavian & NeHe's Stencil & Reflection Tutorial"   '' Set window title
-	screen 18, 16, , 2 or &h10                   '' Request stencil buffer (&h10)
 
 	'' ReSizeGLScene
 	glViewport 0, 0, 640, 480                    '' Reset The Current Viewport
