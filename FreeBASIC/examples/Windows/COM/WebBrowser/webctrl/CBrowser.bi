@@ -20,7 +20,7 @@ declare function 	CBrowser_Resize 		( byval _this as CBrowser ptr, _
 											  byval width_ as DWORD, _
 											  byval height as DWORD ) as BOOL
 
-declare function 	CBrowser_SetFocus		( byval _this as CBrowser ptr )
+declare function 	CBrowser_SetFocus		( byval _this as CBrowser ptr ) as BOOL
 
 declare function 	CBrowser_Navigate 		( byval _this as CBrowser ptr, _
 											  byval url as wstring ptr, _
