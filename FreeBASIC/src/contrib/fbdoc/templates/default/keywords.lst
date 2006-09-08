@@ -156,7 +156,10 @@ Explicit
 Export
 Extern
 Field
+Fileattr
 Filecopy
+Filedatetime
+Fileexists
 Filelen
 Fix
 Flip
@@ -258,6 +261,7 @@ Option Explicit
 Option Nokeyword
 Option Private
 Or
+
 Out
 Output
 Overload
@@ -437,3 +441,4 @@ __FILE__
 __FUNCTION__
 __LINE__
 __TIME__
+__PATH__
