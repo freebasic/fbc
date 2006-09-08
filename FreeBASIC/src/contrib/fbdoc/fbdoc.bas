@@ -55,6 +55,7 @@ const default_CacheDir = "cache/"
 	dim as integer bEmitChm = FALSE
 	dim as integer bEmitfbhelp = FALSE
 	dim as string SinglePage = ""
+	dim as integer bSinglePage = FALSE
 	redim as string webPageList(1 to 10)
 	dim as integer webPageCount = 0, bWebPages = FALSE
 
@@ -85,8 +86,10 @@ const default_CacheDir = "cache/"
 		? "   -chm           generate html and chm output"
 		? "   -fbhelp        generate output for fbhelp viewer"
 		? "   -version       show version"
-		? "   -getpage page1 [page2 [ ... pageN ]]]
+		? "   -getpage page1 [page2 [ ... pageN ]]]"
 		? "                  retrieve specified pages from web and store in the cache"
+		? "   -makepage  pagename"
+		? "                  process a single page (and links on page) only"
 		? ""
 		end 1
 	end if
@@ -112,7 +115,15 @@ const default_CacheDir = "cache/"
 			end if
 		end if
 
-		if( bWebPages = FALSE ) then
+		if( bSinglePage ) then
+			if left( command(i), 1) = "-" then
+				bSinglePage = FALSE
+			else
+				SinglePage = command(i)
+			end if
+		end if
+
+		if(( bWebPages = FALSE ) and ( bSinglePage = FALSE )) then
 
 			select case lcase(command(i))
 			case "-makeini"
@@ -133,7 +144,8 @@ const default_CacheDir = "cache/"
 				bEmitfbhelp = TRUE
 			case "-getpage"
 				bWebPages = TRUE
-
+			case "-s"
+				bSinglePage = TRUE
 			case else
 				? "Unrecognized option '" + command(i) + "'"
 				end 1

@@ -321,6 +321,7 @@ private function _emitText _
 		_this->res += chBreak
 		_this->col = 0
 		_this->row += 1
+		_this->attrib = 0
 
 		_emitIndent( _this )
 		p += n
@@ -516,15 +517,17 @@ private function _emitLink _
 		return TRUE
 	end if
 
-	if( len(*text) = 0 ) then
-		_emitTestLineLength( _this, len( *url ) )
-		return _emitTextNoWrap( _this, url )
-	end if
+	'if( len(*text) = 0 ) then
+	'	_emitTestLineLength( _this, len( *url ) )
+	'	return _emitTextNoWrap( _this, url )
+	'end if
 
 	_emitIndent( _this )
 
 	if( lcase(left( *url, 5 )) = "keypg" ) then
 		_emitTestLineLength( _this, len( FormatPageTitle(*text) ) )
+	elseif( len(*text) = 0 ) then
+		_emitTestLineLength( _this, len( *url ) )
 	else
 		_emitTestLineLength( _this, len( *text ) )
 	end if
@@ -535,6 +538,8 @@ private function _emitLink _
 
 	if( lcase(left( *url, 5 )) = "keypg" ) then
 		_emitTextNoWrap( _this, FormatPageTitle(*text) )	''   text
+	elseif( len(*text) = 0 ) then
+		_emitTextNoWrap( _this, url )
 	else
 		_emitTextNoWrap( _this, *text )					''   text
 	end if
