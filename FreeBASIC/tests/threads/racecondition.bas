@@ -11,7 +11,7 @@ declare sub cb(byval i as integer)
 
 sub test_1 cdecl ()
 
-	dim htb(0 to NUM_THREADS-1) as integer 
+	dim htb(0 to NUM_THREADS-1) as any ptr
 	dim i as integer
 	
 	randomize timer
