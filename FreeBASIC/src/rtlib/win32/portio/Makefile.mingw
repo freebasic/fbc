@@ -38,7 +38,6 @@ fbportio_ctl.exe: fbportio_ctl.o
 	gcc -o $@ $^
 
 i386/fbportio.sys: fbportio.o fbportio_rc.o
-	mkdir -p $(@D)
 	gcc $(SYS_LDFLAGS) -o $@ $^ $(SYS_LIBS)
 ifndef DEBUG
 	strip -s $@

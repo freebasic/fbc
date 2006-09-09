@@ -49,11 +49,12 @@
 
 #ifndef __GNUC__
 #include <ntddk.h>
+#undef STDCALL
+#define STDCALL __stdcall
 #else
 #include <ddk/ntddk.h>
 #endif
-#undef STDCALL
-#define STDCALL __stdcall
+
 #include "fbportio.h"
 
 #define DEVICE_NAME			L"\\Device\\fbportio"
