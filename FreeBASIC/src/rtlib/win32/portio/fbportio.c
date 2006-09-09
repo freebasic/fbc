@@ -52,7 +52,8 @@
 #else
 #include <ddk/ntddk.h>
 #endif
-
+#undef STDCALL
+#define STDCALL __stdcall
 #include "fbportio.h"
 
 #define DEVICE_NAME			L"\\Device\\fbportio"
