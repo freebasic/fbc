@@ -1,7 +1,7 @@
 # cunit-tests.mk
 # This file is part of the FreeBASIC test suite
 #
-# make file for building cunit compatible tests with fbcu
+# make file for building non-cunit tests
 #
 
 # ------------------------------------------------------------------------
@@ -25,7 +25,14 @@ ifndef FBC
 FBC := fbc$(EXEEXT)
 endif
 
-ifneq ($(FB_LANG),)
+# verify the FB_LANG option
+# - must be set to a valid -lang option
+$
+
+ifeq ($(FB_LANG),)
+$(error FB_LANG option must be specified)
+endif
+
 ifneq ($(FB_LANG),fb)
 ifneq ($(FB_LANG),qb)
 ifneq ($(FB_LANG),deprecated)
@@ -33,11 +40,21 @@ $(error Unsupported language option -lang $(FB_LANG))
 endif
 endif
 endif
-endif
 
 DIRLIST_INC := dirlist.mk
-DIRLIST :=
 include $(DIRLIST_INC)
+
+ifeq ($(FB_LANG),fb)
+DIRLIST := $(DIRLIST_FB)
+endif
+
+ifeq ($(FB_LANG),qb)
+DIRLIST := $(DIRLIST_QB)
+endif
+
+ifeq ($(FB_LANG),deprecated)
+DIRLIST := $(DIRLIST_DEPRECATED)
+endif
 
 ifeq ($(DIRLIST),)
 $(error No directories specified in $(DIRLIST_INC))
@@ -48,9 +65,9 @@ endif
 
 # ------------------------------------------------------------------------
 
-LOG_TESTS_INC := log-tests.inc
-FAILED_LOG_TESTS_INC := failed-log-tests.inc
-SUMMARY_LOG := summary.log
+LOG_TESTS_INC := log-tests-$(FB_LANG).inc
+FAILED_LOG_TESTS_INC := failed-log-tests-$(FB_LANG).inc
+FAILED_LOG := failed-$(FB_LANG).log
 
 SRCLIST_COMPILE_ONLY_OK :=
 SRCLIST_COMPILE_ONLY_FAIL :=
@@ -111,38 +128,35 @@ LOGLIST_MULTI_MODULE_OK := $(patsubst %.bmk,%.log,$(SRCLIST_MULTI_MODULE_OK))
 SRCLIST_MULTI_MODULE_FAIL := $(filter %.bmk,$(SRCLIST_MULTI_MODULE_FAIL))
 LOGLIST_MULTI_MODULE_FAIL := $(patsubst %.bmk,%.log,$(SRCLIST_MULTI_MODULE_FAIL))
 
+# BUILDLIST
+LOGLIST_ALL := $(strip \
+$(LOGLIST_COMPILE_ONLY_OK) \
+$(LOGLIST_COMPILE_ONLY_FAIL) \
+$(LOGLIST_COMPILE_AND_RUN_OK) \
+$(LOGLIST_COMPILE_AND_RUN_FAIL) \
+$(LOGLIST_MULTI_MODULE_OK) \
+$(LOGLIST_MULTI_MODULE_FAIL) \
+)
+
+
 # set ABORT_CMD := false to abort on failed tests, true to continue anyway
 ABORT_CMD := true
 
-# ------------------------------------------------------------------------
-ifeq ($FAILED_ONLY),1)
-
-tests : \
-$(LOGLIST_COMPILE_ONLY_OK) \
-$(LOGLIST_COMPILE_ONLY_FAIL) \
-$(LOGLIST_COMPILE_AND_RUN_OK) \
-$(LOGLIST_COMPILE_AND_RUN_FAIL) \
-$(LOGLIST_MULTI_MODULE_OK) \
-$(LOGLIST_MULTI_MODULE_FAIL)
-
-else
-
-tests : \
-$(LOGLIST_COMPILE_ONLY_OK) \
-$(LOGLIST_COMPILE_ONLY_FAIL) \
-$(LOGLIST_COMPILE_AND_RUN_OK) \
-$(LOGLIST_COMPILE_AND_RUN_FAIL) \
-$(LOGLIST_MULTI_MODULE_OK) \
-$(LOGLIST_MULTI_MODULE_FAIL)
-
+FBC_CFLAGS := -w 0
+ifneq ($(FB_LANG),)
+FBC_CFLAGS += -lang $(FB_LANG)
 endif
+
+# ------------------------------------------------------------------------
+
+all : $(LOGLIST_ALL)
 
 # ------------------------------------------------------------------------
 ifneq ($(LOGLIST_COMPILE_ONLY_OK),)
 $(LOGLIST_COMPILE_ONLY_OK) : %.log : %.bas
 	@$(ECHO) -e "$< : TEST_MODE=COMPILE_ONLY_OK"
 	@$(ECHO) -e "$< : TEST_MODE=COMPILE_ONLY_OK" > $@
-	@if $(FBC) -w 0 -c $< \
+	@if $(FBC) $(FBC_CFLAGS) -c $< \
 	; then \
 		$(ECHO) -e "$< : RESULT=PASSED" && \
 		true \
@@ -158,7 +172,7 @@ ifneq ($(LOGLIST_COMPILE_ONLY_FAIL),)
 $(LOGLIST_COMPILE_ONLY_FAIL) : %.log : %.bas
 	@$(ECHO) -e "$< : TEST_MODE=COMPILE_ONLY_FAIL"
 	@$(ECHO) -e "$< : TEST_MODE=COMPILE_ONLY_FAIL" > $@
-	@if $(FBC) -w 0 -c $< \
+	@if $(FBC) $(FBC_CFLAGS) -c $< \
 	; then \
 		$(ECHO) -e "$< : RESULT=FAILED" && \
 		$(RM) -f $(patsubst %.bas,%.o,$<) && \
@@ -316,33 +330,24 @@ $(LOG_TESTS_INC) :
 # results
 #
 
-results : \
-$(LOGLIST_COMPILE_ONLY_OK) \
-$(LOGLIST_COMPILE_ONLY_FAIL) \
-$(LOGLIST_COMPILE_AND_RUN_OK) \
-$(LOGLIST_COMPILE_AND_RUN_FAIL) \
-$(LOGLIST_MULTI_MODULE_OK) \
-$(LOGLIST_MULTI_MODULE_FAIL)
+results : $(LOGLIST_ALL)
 
-	@$(ECHO) -e "FAILED LOG-TESTS LOG" > failed.log
+	@$(ECHO) -e "\n\nFAILED LOG - for log-tests -lang $(FB_LANG)" > $(FAILED_LOG)
 
+ifeq ($(LOGLIST_ALL),)
+	@$(ECHO) -e "None Found\n" >> $(FAILED_LOG)
+else
 	@if  \
-$(GREP) -i -E '^.*[[:space:]]*:[[:space:]]*RESULT=FAILED' \
-$(LOGLIST_COMPILE_ONLY_OK) \
-$(LOGLIST_COMPILE_ONLY_FAIL) \
-$(LOGLIST_COMPILE_AND_RUN_OK) \
-$(LOGLIST_COMPILE_AND_RUN_FAIL) \
-$(LOGLIST_MULTI_MODULE_OK) \
-$(LOGLIST_MULTI_MODULE_FAIL) \
+$(GREP) -i -E '^.*[[:space:]]*:[[:space:]]*RESULT=FAILED' $(LOGLIST_ALL) \
 	; then \
 		$(ECHO) -e " " && \
 		true \
 	; else \
-		$(ECHO) -e "NONE" && \
+		$(ECHO) -e "None Found\n" && \
 		true \
-	; fi  >> failed.log
-
-	@$(CAT) failed.log
+	; fi  >> $(FAILED_LOG)
+endif
+	@$(CAT) $(FAILED_LOG)
 
 # ------------------------------------------------------------------------
 # clean-up
@@ -355,7 +360,7 @@ mostlyclean : clean_tests
 
 .PHONY: clean_tests
 clean_tests :
-	@$(ECHO) Cleaning log-tests files ...
+	@$(ECHO) Cleaning log-tests for -lang $(FB_LANG) ...
 ifneq ($(OBJLIST_COMPILE_ONLY_OK),)
 	@$(RM) $(OBJLIST_COMPILE_ONLY_OK) 
 endif
@@ -402,7 +407,7 @@ endif
 .PHONY: clean_include
 clean_include :
 	$(RM) $(LOG_TESTS_INC)
-	@$(RM) failed.log 
+	@$(RM) $(FAILED_LOG) 
 
 .PHONY: clean_failed_include
 clean_failed_include :

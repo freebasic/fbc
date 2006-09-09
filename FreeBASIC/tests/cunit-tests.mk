@@ -25,8 +25,9 @@ FBC := fbc$(EXEEXT)
 endif
 
 DIRLIST_INC := dirlist.mk
-DIRLIST :=
+
 include $(DIRLIST_INC)
+DIRLIST := $(DIRLIST_FB)
 
 ifeq ($(DIRLIST),)
 $(error No directories specified in $(DIRLIST_INC))

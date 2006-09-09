@@ -53,6 +53,10 @@ endif
 FBC_CFLAGS :=
 FBC_LFLAGS :=
 
+ifneq ($(FB_LANG),)
+FBC_CFLAGS += -lang $(FB_LANG)
+endif
+
 MAINX :=
 SRCSX :=
 

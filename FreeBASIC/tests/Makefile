@@ -22,6 +22,32 @@ ifndef FBC
 FBC := fbc$(EXEEXT)
 endif
 
+# verify the FB_LANG option
+#
+ifneq ($(FB_LANG),)
+ifneq ($(FB_LANG),fb)
+ifneq ($(FB_LANG),qb)
+ifneq ($(FB_LANG),deprecated)
+$(error Unsupported language option -lang $(FB_LANG))
+endif
+endif
+endif
+endif
+
+# build sub-targets based on FB_LANG option
+#
+ifeq ($(FB_LANG),)
+REQ_MOSTLYCLEAN := mostlyclean-cunit mostlyclean-fb mostlyclean-qb mostlyclean-deprecated
+REQ_CLEAN := clean-cunit clean-fb clean-qb clean-deprecated
+REQ_TESTS := log-tests-fb log-tests-qb log-tests-deprecated
+REQ_FAILED := failed-tests-fb failed-tests-qb failed-tests-deprecated
+else
+REQ_MOSTLYCLEAN := mostlyclean-cunit mostlyclean-$(FB_LANG)
+REQ_CLEAN := clean-cunit clean-$(FB_LANG)
+REQ_TESTS := log-tests-$(FB_LANG)
+REQ_FAILED := failed-tests-$(FB_LANG)
+endif
+
 # ------------------------------------------------------------------------
 
 CUNITTESTS_MAKEFILE := cunit-tests.mk
@@ -50,14 +76,22 @@ all :
 	@$(ECHO) -e ""
 	@$(ECHO) -e "Options:"
 	@$(ECHO) -e "   FBC=/path/fbc"
+	@$(ECHO) -e "   FB_LANG=fb | qb | deprecated"
 	@$(ECHO) -e ""
 	@$(ECHO) -e "Targets: Configuration and Checks"
 	@$(ECHO) -e "   check"
 	@$(ECHO) -e ""
+	@$(ECHO) -e "Example: make all available tests"
+	@$(ECHO) -e "   make cunit-tests"
+	@$(ECHO) -e "   make log-tests"
+	@$(ECHO) -e ""
+	@$(ECHO) -e "Example: make obj -lang qb tests"
+	@$(ECHO) -e "   make log-tests FB_LANG=qb"
+	@$(ECHO) -e ""
 
 # ------------------------------------------------------------------------
 # Sanity checks
-# these tests do not generate and files, only output to the screen
+# these tests do not generate any files, only output to the screen
 #
 .PHONY: check
 check :
@@ -110,30 +144,85 @@ cunit-tests :
 # make log-test compatible tests
 #
 .PHONY: log-tests
-log-tests :
-	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) mostlyclean
-	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) tests
-	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) results
+log-tests : $(REQ_TESTS)
+
+.PHONY: log-tests-fb
+log-tests-fb :
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) mostlyclean FB_LANG=fb
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) all FB_LANG=fb
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) results FB_LANG=fb
+
+.PHONY: log-tests-qb
+log-tests-qb :
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) mostlyclean FB_LANG=qb
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) all FB_LANG=qb
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) results FB_LANG=qb
+
+.PHONY: log-tests-deprecated
+log-tests-deprecated :
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) mostlyclean FB_LANG=deprecated
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) all FB_LANG=deprecated
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) results FB_LANG=deprecated
 
 .PHONY: failed-tests
-failed-tests :
-	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) mostlyclean FAILED_ONLY=1
-	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) tests FAILED_ONLY=1
-	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) results
+failed-tests : $(REQ_FAILED)
 
-.PHONY: failed-results
-failed-results :
-	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) results
+.PHONY: failed-tests-fb
+failed-tests-fb :
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) mostlyclean FAILED_ONLY=1 FB_LANG=fb
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) all FAILED_ONLY=1 FB_LANG=fb
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) results FB_LANG=fb
+
+.PHONY: failed-tests-qb
+failed-tests-qb :
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) mostlyclean FAILED_ONLY=1 FB_LANG=qb
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) all FAILED_ONLY=1 FB_LANG=qb
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) results FB_LANG=qb
+
+.PHONY: failed-tests-deprecated
+failed-tests-deprecated :
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) mostlyclean FAILED_ONLY=1 FB_LANG=deprecated
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) all FAILED_ONLY=1 FB_LANG=deprecated
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) results FB_LANG=deprecated
 
 # ------------------------------------------------------------------------
 # clean-up
 #
 .PHONY: mostlyclean
-mostlyclean :
-	cd . && $(MAKE) -f $(CUNITTESTS_MAKEFILE) mostlyclean
-	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) mostlyclean
+mostlyclean : $(REQ_MOSTLYCLEAN)
 
-.PHONY: clean
-clean :
+.PHONY: mostlyclean-cunit
+mostlyclean-cunit :
+	cd . && $(MAKE) -f $(CUNITTESTS_MAKEFILE) mostlyclean
+
+.PHONY: mostlyclean-fb
+mostlyclean-fb :
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) mostlyclean FB_LANG=fb
+
+.PHONY: mostlyclean-qb
+mostlyclean-qb :
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) mostlyclean FB_LANG=qb
+
+.PHONY: mostlyclean-deprecated
+mostlyclean-deprecated :
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) mostlyclean FB_LANG=deprecated
+
+
+.PHONY:  clean
+ clean : $(REQ_CLEAN)
+
+.PHONY: clean-cunit
+clean-cunit :
 	cd . && $(MAKE) -f $(CUNITTESTS_MAKEFILE) clean
-	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) clean
+
+.PHONY: clean-fb
+clean-fb :
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) clean FB_LANG=fb
+
+.PHONY: clean-qb
+clean-qb :
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) clean FB_LANG=qb
+
+.PHONY: clean-deprecated
+clean-deprecated :
+	cd . && $(MAKE) -f $(LOGTESTS_MAKEFILE) clean FB_LANG=deprecated

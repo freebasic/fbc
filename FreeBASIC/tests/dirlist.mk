@@ -4,7 +4,7 @@
 
 # EDIT this file when new directories are added to the testing tree
 
-DIRLIST := \
+DIRLIST_FB := \
 pretest \
 comments \
 compound \
@@ -29,3 +29,9 @@ structs \
 swap \
 threads \
 wstring
+
+DIRLIST_QB := \
+qb
+
+DIRLIST_DEPRECATED := \
+deprecated
