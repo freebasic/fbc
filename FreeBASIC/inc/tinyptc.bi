@@ -27,7 +27,7 @@ declare function ptc_close	cdecl alias "ptc_close"		() as integer
 # inclib "gdi32"
 #elseif defined(__FB_LINUX__)
 # inclib "X11"
-# libpath: "/usr/X11R6/lib"
+# libpath "/usr/X11R6/lib"
 #elseif defined(__FB_DOS__)
 '''
 #else
