@@ -86,7 +86,7 @@ int fb_DevPipeOpen( struct _FB_FILE *handle, const char *filename, size_t filena
         if( handle->access != FB_FILE_ACCESS_READ )
             res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
 
-        strcpy( openmask, "rt" );
+        strcpy( openmask, "r" );
         break;
 
     case FB_FILE_MODE_OUTPUT:
@@ -96,7 +96,7 @@ int fb_DevPipeOpen( struct _FB_FILE *handle, const char *filename, size_t filena
         if( handle->access != FB_FILE_ACCESS_WRITE )
             res = fb_ErrorSetNum( FB_RTERROR_ILLEGALFUNCTIONCALL );
         
-        strcpy( openmask, "wt" );
+        strcpy( openmask, "w" );
         break;
 
     case FB_FILE_MODE_BINARY:
